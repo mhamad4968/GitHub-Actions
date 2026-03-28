@@ -1,5 +1,10 @@
 # Security NEXT の RSS を kintone ニュースアプリへ登録するだけのワークフロー
 # スケジュール: 毎日 10:00 / 17:00（日本標準時 JST）。GitHub の cron は UTC のため 01:00 / 08:00 UTC に相当。
+#
+# シークレットの置き場所（どちらかで可）:
+# - Settings → Secrets and variables → Actions → Repository secrets
+# - または Settings → Environments → New environment → 名前を kintone-collect で作成し、
+#   その環境の「Environment secrets」に KINTONE_DOMAIN などを登録（ジョブが environment を参照する必要あり）
 
 name: security-next-daily-collect
 
@@ -19,7 +24,9 @@ concurrency:
 jobs:
   collect:
     runs-on: ubuntu-latest
-    # ステップごとではなくジョブ単位で渡す（Repository secrets の名前は env と一致必須）
+    # Environment secrets を使うときは、この名前と GitHub の Environments で作る名前を一致させる
+    environment: kintone-collect
+    # ステップごとではなくジョブ単位で渡す（secrets は Repository と Environment の両方から解決される）
     env:
       KINTONE_DOMAIN: ${{ secrets.KINTONE_DOMAIN }}
       KINTONE_APP_ID: ${{ secrets.KINTONE_APP_ID }}
@@ -36,8 +43,8 @@ jobs:
       - name: kintone 用シークレットが渡っているか確認（値は出さない）
         run: |
           if [ -z "${KINTONE_DOMAIN}" ] || [ -z "${KINTONE_APP_ID}" ] || [ -z "${KINTONE_API_TOKEN}" ]; then
-            echo "::error::Repository secrets が空です。次を「このリポジトリ」の Settings → Secrets and variables → Actions → Repository secrets に追加してください（名前は半角英大文字で完全一致）: KINTONE_DOMAIN, KINTONE_APP_ID, KINTONE_API_TOKEN"
-            echo "::notice::Environment の secrets だけだと、このワークフローは参照しません。Repository secrets に同じ名前で追加してください。"
+            echo "::error::KINTONE_DOMAIN / KINTONE_APP_ID / KINTONE_API_TOKEN がいずれも空です。"
+            echo "::notice::(1) Repository secrets: Settings → Secrets and variables → Actions → Secrets → Repository secrets に上記3つを追加。または (2) Settings → Environments で environment「kintone-collect」を作成し、その「Environment secrets」に同じ名前で3つ追加（この workflow は environment: kintone-collect を参照済み）。Variables タブだけでは secrets.〇〇 は埋まりません。"
             exit 1
           fi
           echo "必須の kintone 系 secrets は非空です（内容はログに出しません）"

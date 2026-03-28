@@ -28,6 +28,7 @@ jobs:
   collect:
     if: github.event_name == 'workflow_dispatch' && (github.event.inputs.job == 'collect' || github.event.inputs.job == 'both')
     runs-on: ubuntu-latest
+    environment: kintone-collect
     defaults:
       run:
         working-directory: security-next-automation
@@ -71,6 +72,7 @@ jobs:
       (github.event_name == 'workflow_dispatch' && (github.event.inputs.job == 'analyze' || github.event.inputs.job == 'both')) ||
       (github.event_name == 'schedule' && github.event.schedule == '0 11 * * 5')
     runs-on: ubuntu-latest
+    environment: kintone-collect
     defaults:
       run:
         working-directory: security-next-automation
