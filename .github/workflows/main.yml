@@ -1,5 +1,8 @@
 # Security NEXT: 週次 LLM 要約を「ニュース週次要約」アプリへ投稿する（＋手動で collect / analyze）
 # 定時の RSS 収集は daily-collect.yml（毎日 10:00 / 17:00 JST）を参照
+#
+# Environment: kintone-collect（collect / analyze 共通）
+# collect 用トークンは GitHub Secret 名 KINTONE_API_TOKEN_COLLECT → 環境変数 KINTONE_API_TOKEN_COLLECT として渡す
 
 name: security-next-kintone
 
@@ -44,11 +47,11 @@ jobs:
       - name: 依存関係インストール
         run: npm ci
 
-      - name: RSS 収集して kintone へ登録
+      - name: Run collect script
         env:
           KINTONE_DOMAIN: ${{ secrets.KINTONE_DOMAIN }}
-          KINTONE_APP_ID: ${{ secrets.KINTONE_APP_ID }}
-          KINTONE_API_TOKEN: ${{ secrets.KINTONE_API_TOKEN }}
+          KINTONE_APP_ID: ${{ secrets.KINTONE_APP }}
+          KINTONE_API_TOKEN_COLLECT: ${{ secrets.KINTONE_API_TOKEN_COLLECT }}
           SECURITY_NEXT_RSS_URL: ${{ secrets.SECURITY_NEXT_RSS_URL }}
           NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
           COLLECT_MAX_NEW_PER_RUN: ${{ vars.COLLECT_MAX_NEW_PER_RUN }}
@@ -91,8 +94,10 @@ jobs:
       - name: 週次要約でニュース週次要約アプリへ投稿
         env:
           KINTONE_DOMAIN: ${{ secrets.KINTONE_DOMAIN }}
-          KINTONE_APP_ID: ${{ secrets.KINTONE_APP_ID }}
+          KINTONE_APP_ID: ${{ secrets.KINTONE_APP }}
           KINTONE_REPORT_APP_ID: ${{ secrets.KINTONE_REPORT_APP_ID }}
+          KINTONE_API_TOKEN_COLLECT: ${{ secrets.KINTONE_API_TOKEN_COLLECT }}
+          KINTONE_API_TOKEN_ANALYZE: ${{ secrets.KINTONE_API_TOKEN_ANALYZE }}
           KINTONE_API_TOKEN: ${{ secrets.KINTONE_API_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
