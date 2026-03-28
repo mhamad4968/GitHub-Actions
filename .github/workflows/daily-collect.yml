@@ -5,6 +5,7 @@
 # Environment secrets に置く名前の例（Repository secrets に同じ名前があっても可・マージされる）:
 #   KINTONE_DOMAIN / KINTONE_APP / KINTONE_API_TOKEN_COLLECT
 #   実行時は env の KINTONE_API_TOKEN に Secret KINTONE_API_TOKEN_COLLECT を渡す（config.ts の collect 解決と整合）
+# npm run collect はリポジトリ直下ではなく security-next-automation/ の package.json を使う（該当ステップのみ working-directory を指定）
 
 name: security-next-daily-collect
 
@@ -30,17 +31,15 @@ jobs:
       SECURITY_NEXT_RSS_URL: ${{ secrets.SECURITY_NEXT_RSS_URL }}
       NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
       COLLECT_MAX_NEW_PER_RUN: ${{ vars.COLLECT_MAX_NEW_PER_RUN }}
-    defaults:
-      run:
-        working-directory: security-next-automation
     steps:
+      # checkout より前にサブディレクトリへ cd するとディレクトリ不存在で落ちるため、先に取得する
+      - uses: actions/checkout@v4
+
       - name: GitHub が secrets を認識しているか（true=名前が登録済み、値は表示しない）
         run: |
           echo "KINTONE_DOMAIN_defined=${{ secrets.KINTONE_DOMAIN != '' }}"
           echo "KINTONE_APP_defined=${{ secrets.KINTONE_APP != '' }}"
           echo "KINTONE_API_TOKEN_COLLECT_defined=${{ secrets.KINTONE_API_TOKEN_COLLECT != '' }}"
-
-      - uses: actions/checkout@v4
 
       - name: kintone 用シークレットがシェルに渡っているか確認（値は出さない）
         env:
@@ -70,10 +69,13 @@ jobs:
           cache: npm
           cache-dependency-path: security-next-automation/package-lock.json
 
+      # collect スクリプトはモノレポ内の security-next-automation パッケージ（リポジトリルート名ではない）
       - name: 依存関係インストール
+        working-directory: security-next-automation
         run: npm ci
 
       - name: Run collect script
+        working-directory: security-next-automation
         env:
           # 1. ドメイン（これは今のままでOK）
           KINTONE_DOMAIN: ${{ secrets.KINTONE_DOMAIN }}
