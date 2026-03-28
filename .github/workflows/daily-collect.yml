@@ -44,9 +44,13 @@ jobs:
 
       - name: kintone 用シークレットがシェルに渡っているか確認（値は出さない）
         env:
-          # ここを GitHub の画面にある名前に一字一句合わせます
+          # 1. ドメイン（これは今のままでOK）
           KINTONE_DOMAIN: ${{ secrets.KINTONE_DOMAIN }}
+
+          # 2. アプリID（画像では KINTONE_APP でした）
           KINTONE_APP_ID: ${{ secrets.KINTONE_APP }}
+
+          # 3. トークン（画像では KINTONE_API_TOKEN_COLLECT でした）
           KINTONE_API_TOKEN: ${{ secrets.KINTONE_API_TOKEN_COLLECT }}
         run: |
           if [ -z "${KINTONE_DOMAIN}" ] || [ -z "${KINTONE_APP_ID}" ]; then
@@ -71,9 +75,13 @@ jobs:
 
       - name: Run collect script
         env:
-          # ここを GitHub の画面にある名前に一字一句合わせます
+          # 1. ドメイン（これは今のままでOK）
           KINTONE_DOMAIN: ${{ secrets.KINTONE_DOMAIN }}
+
+          # 2. アプリID（画像では KINTONE_APP でした）
           KINTONE_APP_ID: ${{ secrets.KINTONE_APP }}
+
+          # 3. トークン（画像では KINTONE_API_TOKEN_COLLECT でした）
           KINTONE_API_TOKEN: ${{ secrets.KINTONE_API_TOKEN_COLLECT }}
           SECURITY_NEXT_RSS_URL: ${{ secrets.SECURITY_NEXT_RSS_URL }}
           NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
