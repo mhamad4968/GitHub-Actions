@@ -1,6 +1,11 @@
-import OpenAI from "openai";
+/**
+ * 631 番ニュースアプリから「今週分」（JST 月〜金・作成日時ベース）のタイトル・概要を取得し、
+ * Gemini 1.5 Flash でセキュリティトレンドと対策を約 1000 字にまとめ、
+ * 632 番レポートアプリの weekly_trend（画面: 今週の傾向と対策・リッチテキスト）へ 1 件追加する。
+ */
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-import { loadConfig, requireOpenAiKey, resolveApiTokenForAnalyze } from "./lib/config.js";
+import { loadConfig, requireGeminiApiKey, resolveApiTokenForAnalyze } from "./lib/config.js";
 import { CREATED_TIME_CODE, NEWS_FIELDS, REPORT_FIELDS } from "./lib/field-codes.js";
 import { createKintoneClient } from "./lib/kintone-client.js";
 import { notifyFailure } from "./lib/notify.js";
@@ -9,6 +14,8 @@ import { getRunningWeekRangeJst } from "./lib/week-jst.js";
 
 const MAX_ARTICLES = 45;
 const SUMMARY_CHARS_PER_ARTICLE = 320;
+/** 週次要約の出力モデル（無料枠向け Flash） */
+const GEMINI_MODEL = "gemini-1.5-flash";
 
 /**
  * 週次: 作成日時がその週（月〜金・JST）に入るニュースを全部取得
@@ -67,38 +74,39 @@ function buildCondensedContext(
   return lines.join("\n\n");
 }
 
-async function summarizeTrend(client: OpenAI, model: string, condensed: string): Promise<string> {
-  const completion = await client.chat.completions.create({
-    model,
-    temperature: 0.35,
-    max_tokens: 1800,
-    messages: [
-      {
-        role: "system",
-        content: [
-          "あなたは情報セキュリティニュースの編集長です。",
-          "入力は Security NEXT 相当のニュース一覧の要約のみです。本文全文はありません。",
-          "日本語で、次を必ず含めてください: (1) 今週の傾向（脅威・製品・制度など観点で箇条書き中心）(2) 組織が取るべき対策（優先度が高い順）。",
-          "全体でおおよそ900〜1100文字。前置きや謝罪、Markdown見出し記号は不要。",
-          "記載内容は入力の範囲に限定し、足りない情報は推測で断定しない。",
-        ].join(""),
-      },
-      {
-        role: "user",
-        content: `以下が今週登録されたニュース要約のみです（トークン節約のため短縮済み）。\n\n${condensed}`,
-      },
-    ],
+/**
+ * Gemini 1.5 Flash で今週の傾向と対策を日本語 1000 字前後で生成
+ */
+async function summarizeTrendGemini(apiKey: string, condensed: string): Promise<string> {
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const model = genAI.getGenerativeModel({
+    model: GEMINI_MODEL,
+    systemInstruction: [
+      "あなたは情報セキュリティニュースの編集長です。",
+      "入力は Security NEXT 相当のニュース一覧の要約のみです。本文全文はありません。",
+      "日本語で、次を必ず含めてください: (1) 今週の傾向（脅威・製品・制度など観点で箇条書き中心）(2) 組織が取るべき対策（優先度が高い順）。",
+      "全体でおおよそ900〜1100文字。前置きや謝罪、Markdown見出し記号は不要。",
+      "記載内容は入力の範囲に限定し、足りない情報は推測で断定しない。",
+    ].join(""),
+    generationConfig: {
+      temperature: 0.35,
+      maxOutputTokens: 2048,
+    },
   });
-  const text = completion.choices[0]?.message?.content?.trim();
-  if (!text) throw new Error("OpenAI から空の応答が返りました");
+  const prompt =
+    "以下が今週登録されたニュース要約のみです（トークン節約のため短縮済み）。\n\n" + condensed;
+  const result = await model.generateContent(prompt);
+  const text = result.response.text().trim();
+  if (!text) throw new Error("Gemini から空の応答が返りました");
   return text;
 }
 
 async function main(): Promise<void> {
   const cfg = loadConfig();
   if (!cfg.reportAppId) {
-    throw new Error("analyze には KINTONE_REPORT_APP_ID が必要です。");
+    throw new Error("analyze には KINTONE_REPORT_APP_ID が必要です（632 等）。");
   }
+  const geminiKey = requireGeminiApiKey();
   const kintone = createKintoneClient(cfg, resolveApiTokenForAnalyze());
   const week = getRunningWeekRangeJst(new Date());
   console.log("[analyze] 対象週（月曜日）:", week.targetWeekMonday);
@@ -113,8 +121,8 @@ async function main(): Promise<void> {
   }
 
   const condensed = buildCondensedContext(records);
-  const openai = new OpenAI({ apiKey: requireOpenAiKey(cfg) });
-  const reportText = await summarizeTrend(openai, cfg.openaiModel, condensed);
+  console.log("[analyze] Gemini モデル:", GEMINI_MODEL);
+  const reportText = await summarizeTrendGemini(geminiKey, condensed);
   console.log("[analyze] LLM 出力文字数:", reportText.length);
 
   const rich = plainTextToRichTextHtml(reportText);
@@ -125,7 +133,7 @@ async function main(): Promise<void> {
       [REPORT_FIELDS.weeklyTrend]: { value: rich },
     },
   });
-  console.log("[analyze] レポートアプリへ登録完了");
+  console.log("[analyze] レポートアプリ（632）へ weekly_trend を登録完了");
 }
 
 main().catch(async (err) => {

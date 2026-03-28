@@ -1,0 +1,10 @@
+---
+description: kintone 周辺・ニュース収集・LLM 連係の補足（重要度判定・フィールド等）
+alwaysApply: true
+---
+
+# kintone ・ Security NEXT ニュース（補足）
+
+- ニュースの重要度判定では「IPAの注意喚起」「JVNの深刻度」「国内インシデント」を優先するように Gemini へのプロンプトを構成すること。
+
+（実装の正本: `security-next-automation/src/collect.ts` の Gemini `systemInstruction` 等。ルールを変えたらコード側も同趣旨に追従する。）

@@ -16,6 +16,7 @@ export const NEWS_FIELDS = {
 /** ニュース週次要約用アプリ（ニュース本体とは別アプリ）。analyze.ts が使用 */
 export const REPORT_FIELDS = {
   targetWeek: "target_week",
+  /** 画面「今週の傾向と対策」= 週次 LLM 要約（RICH_TEXT）。口頭の「今週の要約」はここに相当 */
   weeklyTrend: "weekly_trend",
 } as const;
 

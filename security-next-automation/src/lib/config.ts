@@ -117,3 +117,18 @@ export function requireOpenAiKey(cfg: AppConfig): string {
   }
   return cfg.openaiApiKey;
 }
+
+/** analyze（Gemini）用。環境変数 GEMINI_API_KEY を必須にする */
+export function requireGeminiApiKey(): string {
+  const k = process.env.GEMINI_API_KEY?.trim();
+  if (!k) {
+    throw new Error(
+      [
+        "collect（Gemini 選別）/ analyze には GEMINI_API_KEY が必要です。",
+        `- ローカル: ${envMainPath} に GEMINI_API_KEY= を追記してください。`,
+        "- GitHub Actions: Environment または Repository の secrets に GEMINI_API_KEY を登録してください。",
+      ].join("\n"),
+    );
+  }
+  return k;
+}

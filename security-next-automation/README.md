@@ -43,7 +43,7 @@ npm run setup:security-next-report-app
 | 概要 | `summary` | 文字列（複数行） | 任意 | RSS 抜粋を `collect` が投入 |
 | 要約 | `digest` | 文字列（複数行） | 任意 | `collect` は空で追加。手入力・別処理用 |
 
-設計CSV: [`docs/security-next-news-app-design.csv`](docs/security-next-news-app-design.csv)。`collect` は **`article_url`** の重複を問い合わせてスキップします。
+設計CSV: [`docs/security-next-news-app-design.csv`](docs/security-next-news-app-design.csv)。`collect` は **`article_url`** の重複を問い合わせてスキップしたうえで、**Gemini** が未登録候補から重要記事を最大 **3 件**に絞ります。
 
 ### アプリ B: ニュース週次要約（ニュース本体とは別アプリ）
 
@@ -91,8 +91,9 @@ npm run setup:security-next-report-app
 | `KINTONE_API_TOKEN` | △ | 従来どおり 1 Secret 運用のとき。`collect` では `COLLECT` が無ければ必須 |
 | `KINTONE_API_TOKEN_COLLECT` | △ | ニュースアプリ専用トークン（あれば `collect` はこれを優先） |
 | `KINTONE_API_TOKEN_ANALYZE` | △ | 週次要約アプリ専用。`analyze` で 2 トークン運用する場合に `COLLECT` とセット |
-| `OPENAI_API_KEY` | ○ | OpenAI（analyze・将来の拡張で collect にも使用可） |
-| `OPENAI_MODEL` | — | 既定 `gpt-4o-mini` |
+| `GEMINI_API_KEY` | ○ | Google AI（`collect` の重要記事3件選別・`analyze` の週次要約）。`@google/generative-ai` |
+| `OPENAI_API_KEY` | — | 未使用（将来の拡張用。現行 `collect` / `analyze` は Gemini のみ） |
+| `OPENAI_MODEL` | — | 同上 |
 | `SECURITY_NEXT_RSS_URL` | — | 既定 `https://www.security-next.com/feed` |
 | `NOTIFY_WEBHOOK_URL` | — | 失敗時に POST する Slack 等の URL（スクリプト内・Workflow の双方で任意） |
 

@@ -3,6 +3,7 @@
 #
 # Environment: kintone-collect（collect / analyze 共通）
 # kintone 系は Secret 名 KINTONE_DOMAIN / KINTONE_APP / KINTONE_API_TOKEN（環境変数 KINTONE_APP_ID へマップ）
+# collect は GEMINI_API_KEY で記事を3件に絞り込み
 
 name: security-next-kintone
 
@@ -53,6 +54,7 @@ jobs:
           # GitHub Secret は KINTONE_APP（末尾に _ID なし）
           KINTONE_APP_ID: ${{ secrets.KINTONE_APP }}
           KINTONE_API_TOKEN: ${{ secrets.KINTONE_API_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           SECURITY_NEXT_RSS_URL: ${{ secrets.SECURITY_NEXT_RSS_URL }}
           NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
           COLLECT_MAX_NEW_PER_RUN: ${{ vars.COLLECT_MAX_NEW_PER_RUN }}
@@ -99,8 +101,7 @@ jobs:
           KINTONE_REPORT_APP_ID: ${{ secrets.KINTONE_REPORT_APP_ID }}
           # analyze は複数アプリ時、カンマ区切りの 1 Secret（KINTONE_API_TOKEN）でも可（config.ts 参照）
           KINTONE_API_TOKEN: ${{ secrets.KINTONE_API_TOKEN }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
         run: npm run analyze
 
