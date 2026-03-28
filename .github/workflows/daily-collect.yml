@@ -3,8 +3,8 @@
 #
 # Environment 名: kintone-collect（Settings → Environments と一字一句同じ）
 # Environment secrets に置く名前の例（Repository secrets に同じ名前があっても可・マージされる）:
-#   KINTONE_DOMAIN / KINTONE_APP / KINTONE_API_TOKEN_COLLECT（アプリ ID は env の KINTONE_APP_ID に渡す）
-# トークンは Secret 名 KINTONE_API_TOKEN_COLLECT をそのまま環境変数 KINTONE_API_TOKEN_COLLECT へ渡す（collect.ts はこれを最優先で読む）
+#   KINTONE_DOMAIN / KINTONE_APP / KINTONE_API_TOKEN_COLLECT
+#   実行時は env の KINTONE_API_TOKEN に Secret KINTONE_API_TOKEN_COLLECT を渡す（collect は KINTONE_API_TOKEN も解決可能）
 
 name: security-next-daily-collect
 
@@ -45,15 +45,17 @@ jobs:
       - name: kintone 用シークレットがシェルに渡っているか確認（値は出さない）
         env:
           KINTONE_DOMAIN: ${{ secrets.KINTONE_DOMAIN }}
+          # GitHub の画面で「KINTONE_APP」と登録しているなら、ここも KINTONE_APP にする
           KINTONE_APP_ID: ${{ secrets.KINTONE_APP }}
-          KINTONE_API_TOKEN_COLLECT: ${{ secrets.KINTONE_API_TOKEN_COLLECT }}
+          # もし GitHub の画面で「KINTONE_API_TOKEN_COLLECT」にしているなら、ここも合わせる
+          KINTONE_API_TOKEN: ${{ secrets.KINTONE_API_TOKEN_COLLECT }}
         run: |
           if [ -z "${KINTONE_DOMAIN}" ] || [ -z "${KINTONE_APP_ID}" ]; then
             echo "::error::KINTONE_DOMAIN または KINTONE_APP_ID が空です。Environment kintone-collect の secrets（KINTONE_DOMAIN / KINTONE_APP）を確認してください。"
             exit 1
           fi
-          if [ -z "${KINTONE_API_TOKEN_COLLECT}" ]; then
-            echo "::error::collect 用トークンが空です。Secret 名 KINTONE_API_TOKEN_COLLECT を Environment kintone-collect（または Repository secrets）に登録してください。"
+          if [ -z "${KINTONE_API_TOKEN}" ]; then
+            echo "::error::KINTONE_API_TOKEN（ソース: Secret KINTONE_API_TOKEN_COLLECT）が空です。Environment kintone-collect（または Repository secrets）を確認してください。"
             echo "::notice::ログの env で値が空表示でもマスクの場合があるため、上段の KINTONE_API_TOKEN_COLLECT_defined を確認してください。"
             exit 1
           fi
@@ -71,8 +73,10 @@ jobs:
       - name: Run collect script
         env:
           KINTONE_DOMAIN: ${{ secrets.KINTONE_DOMAIN }}
+          # GitHub の画面で「KINTONE_APP」と登録しているなら、ここも KINTONE_APP にする
           KINTONE_APP_ID: ${{ secrets.KINTONE_APP }}
-          KINTONE_API_TOKEN_COLLECT: ${{ secrets.KINTONE_API_TOKEN_COLLECT }}
+          # もし GitHub の画面で「KINTONE_API_TOKEN_COLLECT」にしているなら、ここも合わせる
+          KINTONE_API_TOKEN: ${{ secrets.KINTONE_API_TOKEN_COLLECT }}
           SECURITY_NEXT_RSS_URL: ${{ secrets.SECURITY_NEXT_RSS_URL }}
           NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
           COLLECT_MAX_NEW_PER_RUN: ${{ vars.COLLECT_MAX_NEW_PER_RUN }}
