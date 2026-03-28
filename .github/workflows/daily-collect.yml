@@ -19,11 +19,28 @@ concurrency:
 jobs:
   collect:
     runs-on: ubuntu-latest
+    # ステップごとではなくジョブ単位で渡す（Repository secrets の名前は env と一致必須）
+    env:
+      KINTONE_DOMAIN: ${{ secrets.KINTONE_DOMAIN }}
+      KINTONE_APP_ID: ${{ secrets.KINTONE_APP_ID }}
+      KINTONE_API_TOKEN: ${{ secrets.KINTONE_API_TOKEN }}
+      SECURITY_NEXT_RSS_URL: ${{ secrets.SECURITY_NEXT_RSS_URL }}
+      NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
+      COLLECT_MAX_NEW_PER_RUN: ${{ vars.COLLECT_MAX_NEW_PER_RUN }}
     defaults:
       run:
         working-directory: security-next-automation
     steps:
       - uses: actions/checkout@v4
+
+      - name: kintone 用シークレットが渡っているか確認（値は出さない）
+        run: |
+          if [ -z "${KINTONE_DOMAIN}" ] || [ -z "${KINTONE_APP_ID}" ] || [ -z "${KINTONE_API_TOKEN}" ]; then
+            echo "::error::Repository secrets が空です。次を「このリポジトリ」の Settings → Secrets and variables → Actions → Repository secrets に追加してください（名前は半角英大文字で完全一致）: KINTONE_DOMAIN, KINTONE_APP_ID, KINTONE_API_TOKEN"
+            echo "::notice::Environment の secrets だけだと、このワークフローは参照しません。Repository secrets に同じ名前で追加してください。"
+            exit 1
+          fi
+          echo "必須の kintone 系 secrets は非空です（内容はログに出しません）"
 
       - uses: actions/setup-node@v4
         with:
@@ -35,13 +52,6 @@ jobs:
         run: npm ci
 
       - name: RSS 収集して kintone へ登録
-        env:
-          KINTONE_DOMAIN: ${{ secrets.KINTONE_DOMAIN }}
-          KINTONE_APP_ID: ${{ secrets.KINTONE_APP_ID }}
-          KINTONE_API_TOKEN: ${{ secrets.KINTONE_API_TOKEN }}
-          SECURITY_NEXT_RSS_URL: ${{ secrets.SECURITY_NEXT_RSS_URL }}
-          NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
-          COLLECT_MAX_NEW_PER_RUN: ${{ vars.COLLECT_MAX_NEW_PER_RUN }}
         run: npm run collect
 
       - name: 失敗時通知（任意 Webhook）
