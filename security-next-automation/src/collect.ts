@@ -1,7 +1,7 @@
 /**
  * Security NEXT（既定 RSS）から記事を取得し、
- * 「kintone に未登録の候補」のうち Gemini が重要度上位と判断した最大 3 件だけをニュースアプリへ追加する。
- * 重複: article_url が既存レコードと一致するものは候補に含めない。
+ * kintone 未登録の候補のうち、Gemini が「実害のあるセキュリティ事故（インシデント）」記事だけと判断したものを最大 3 件登録する。
+ * パッチ・アップデート・注意喚起など予防情報は選別で除外する（プロンプト厳守）。重複 URL は候補に含めない。
  */
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Parser from "rss-parser";
@@ -121,17 +121,13 @@ function buildScoringPromptBlock(candidates: NormalizedNewsRow[]): string {
 }
 
 /**
- * 未登録候補のうち、重要度が高いと判断した URL を最大 TOP_N 件返す（入力に無い URL は捨てる）。
+ * 未登録候補のうち「インシデント事例」だけを残し、重要度順に最大 TOP_N 件の URL を返す（予防系は採用しない）。
  */
 async function pickTopUrlsWithGemini(
   apiKey: string,
   candidates: NormalizedNewsRow[],
 ): Promise<string[]> {
   if (candidates.length === 0) return [];
-  if (candidates.length <= TOP_N) {
-    console.log("[collect] 候補が", candidates.length, "件のため Gemini 呼び出しを省略し全件採用");
-    return candidates.map((c) => c.link);
-  }
 
   const pool = candidates.slice(0, MAX_CANDIDATES_FOR_GEMINI);
   if (pool.length < candidates.length) {
@@ -149,18 +145,28 @@ async function pickTopUrlsWithGemini(
   const model = genAI.getGenerativeModel({
     model: GEMINI_MODEL,
     systemInstruction: [
-      "あなたは情報セキュリティメディアの編集者です。与えられた候補記事だけから重要度を比較し、採用する URL を選んでください。",
-      "採用基準（総合スコアの目安）。日本の公的・準公的な情報源と国内影響を最優先に読むこと:",
-      "・IPA（情報処理推進機構）の注意喚起・IPA に言及する内容は他条件が同程度なら上位に置く",
-      "・JVN（Japan Vulnerability Notes）の掲載・公表や、その脆弱性の深刻度（Critical / High）に直結する記述は強く加点",
-      "・国内インシデント（日本国内組織の被害・日本向け勧告・国内サービスへの実害・当局・業界団体の国内向け警告）は高優先",
-      "1) 脆弱性の深刻度: Critical / High が記事内で明示されている、または強く示唆されるものを最優先",
-      "2) 日本国内への影響度: 日本の組織・サービス・ユーザーへの直接的影響、国内での注意喚起・対応の必要性が高いもの",
-      "3) 攻撃の発生状況: 実悪用・ゼロデイ・大規模インシデント・注意喚起レベルの緊急性が高いもの",
-      "厳守:",
-      "- リストに無い URL を捏造しない。必ず入力「URL:」行の文字列と完全一致で返す",
-      "- 最大3件。明確に価値が低いだけなら3件未満でもよい",
-      '- 応答は JSON オブジェクトのみ。形式: {"top_urls":["https://...","..."]}',
+      "あなたは情報セキュリティニュースの選別担当です。与えられた候補から、アウトプット用に採用する URL だけを選びます。",
+      "",
+      "【選考対象・必須】実際に発生した「セキュリティ事故（インシデント）」に関する記事のみ。例:",
+      "・情報漏洩・個人情報の流出、不正アクセス、ランサムウェア被害、マルウェア／ウイルス感染",
+      "・機器・媒体の紛失、誤送信・誤掲載などヒューマンエラーによる漏えい",
+      "記事の内容が「すでに起きた被害・事件」であることがタイトルまたは概要から読み取れるものに限定する。",
+      "",
+      "【除外対象・厳禁】次に該当するものは一切採用しない:",
+      "・脆弱性の修正パッチ、セキュリティパッチのリリース・配布・適用勧告だけの話",
+      "・OS・ソフトウェア・ファームウェアの通常アップデート・バージョンアップの案内",
+      "・注意喚起・セキュリティアドバイザリ・「対策を」と言うだけで具体的事故の記述がない予防・管理情報",
+      "・CVE の解説だけ・深刻度表の更新だけなど、事故の発生を報じない技術速報",
+      "",
+      "【判定基準】タイトル・概要に次に近い語やニュアンスがあるものを最優先: 被害、流出、漏洩、不正ログイン、",
+      "不正アクセス、身代金、ランサム、感染、誤送信、紛失、インシデント、情報流出 など具体的事件性を示す表現。",
+      "曖昧な場合は採用しない（予防記事を誤って入れない）。",
+      "",
+      "【出力】",
+      "- 採用する URL は入力リストの「URL:」行と完全一致のみ。捏造禁止。",
+      "- 条件を満たす記事が無ければ top_urls は空配列。",
+      "- 条件を満たす中で事件の重大さ・具体的さが高い順に最大3件。",
+      '- JSON のみ: {"top_urls":["https://..."]}',
     ].join("\n"),
     generationConfig: {
       temperature: 0.2,
@@ -170,29 +176,34 @@ async function pickTopUrlsWithGemini(
   });
 
   const userText =
-    "以下は kintone に未登録の新規候補です（上ほど新しい）。top_urls に重要度順で最大3件の URL を入れてください。\n\n" +
-    buildScoringPromptBlock(pool);
+    [
+      "以下は kintone に未登録の RSS 候補です（上ほど新しい）。",
+      "実際に被害・事故が発生したインシデント記事に絶対に限定し、パッチ・アップデート・注意喚起のみの記事は一切選ばないでください。",
+      "該当がなければ top_urls は []。該当がある場合のみ最大3件の URL を重要度順で top_urls に入れてください。",
+      "",
+      buildScoringPromptBlock(pool),
+    ].join("\n");
 
   let text: string;
   try {
     const result = await model.generateContent(userText);
     text = result.response.text();
   } catch (e) {
-    console.warn("[collect] Gemini API エラー。フォールバックで新しい順3件。", e);
-    return pool.slice(0, TOP_N).map((p) => p.link);
+    console.warn("[collect] Gemini API エラー。インシデント選別できないため今回は登録しません。", e);
+    return [];
   }
   let parsed: { top_urls?: unknown };
   try {
     parsed = JSON.parse(extractJsonObjectText(text)) as { top_urls?: unknown };
   } catch (e) {
-    console.warn("[collect] Gemini の JSON 解析に失敗。フォールバックで新しい順3件を採用します。", e);
-    return pool.slice(0, TOP_N).map((p) => p.link);
+    console.warn("[collect] Gemini の JSON 解析に失敗。予防記事を混ぜないよう今回は登録しません。", e);
+    return [];
   }
 
   const urlsRaw = parsed.top_urls;
   if (!Array.isArray(urlsRaw)) {
-    console.warn("[collect] top_urls が配列ではありません。フォールバックで新しい順3件。");
-    return pool.slice(0, TOP_N).map((p) => p.link);
+    console.warn("[collect] top_urls が配列ではありません。今回は登録しません。");
+    return [];
   }
 
   const picked: string[] = [];
@@ -208,8 +219,7 @@ async function pickTopUrlsWithGemini(
   }
 
   if (picked.length === 0) {
-    console.warn("[collect] 有効な URL が得られなかったためフォールバックで新しい順3件。");
-    return pool.slice(0, TOP_N).map((p) => p.link);
+    console.log("[collect] インシデント記事として採用された URL は0件（または該当なし）。");
   }
 
   return picked;
@@ -223,7 +233,7 @@ async function main(): Promise<void> {
   console.log("[collect] ドメイン:", cfg.kintoneDomain);
   console.log("[collect] ニュースアプリ ID:", cfg.newsAppId);
   console.log("[collect] RSS URL:", cfg.rssUrl);
-  console.log("[collect] Gemini 選別モデル:", GEMINI_MODEL, "上限登録:", TOP_N, "件/回");
+  console.log("[collect] Gemini 選別モデル:", GEMINI_MODEL, "方針: インシデント事例のみ最大", TOP_N, "件/回");
   if (MAX_NEW_PER_RUN > 0) {
     console.log("[collect] COLLECT_MAX_NEW_PER_RUN（選別後の追加Cap）:", MAX_NEW_PER_RUN);
   }

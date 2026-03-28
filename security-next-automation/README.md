@@ -43,7 +43,7 @@ npm run setup:security-next-report-app
 | 概要 | `summary` | 文字列（複数行） | 任意 | RSS 抜粋を `collect` が投入 |
 | 要約 | `digest` | 文字列（複数行） | 任意 | `collect` は空で追加。手入力・別処理用 |
 
-設計CSV: [`docs/security-next-news-app-design.csv`](docs/security-next-news-app-design.csv)。`collect` は **`article_url`** の重複を問い合わせてスキップしたうえで、**Gemini** が未登録候補から重要記事を最大 **3 件**に絞ります。
+設計CSV: [`docs/security-next-news-app-design.csv`](docs/security-next-news-app-design.csv)。`collect` は **`article_url`** の重複を問い合わせてスキップしたうえで、**Gemini** が未登録候補から **実害のあるインシデント記事のみ** を最大 **3 件**選びます（パッチ・更新・注意喚起のみの記事は選別で除外）。
 
 ### アプリ B: ニュース週次要約（ニュース本体とは別アプリ）
 
