@@ -106,7 +106,7 @@ async function loadExistingUrls(
 
 async function main(): Promise<void> {
   const cfg = loadConfig();
-  const client = createKintoneClient(cfg);
+  const client = createKintoneClient(cfg, cfg.kintoneApiTokenForCollect);
 
   console.log("[collect] ドメイン:", cfg.kintoneDomain);
   console.log("[collect] ニュースアプリ ID:", cfg.newsAppId);

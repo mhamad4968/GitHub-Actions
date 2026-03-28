@@ -29,7 +29,11 @@ export type AppConfig = {
   newsAppId: string;
   /** 空のときは collect のみ想定 */
   reportAppId: string;
-  kintoneApiToken: string;
+  /**
+   * collect（ニュースアプリのみ）向けの API トークン。
+   * KINTONE_API_TOKEN_COLLECT を優先し、無ければ KINTONE_API_TOKEN（従来・1 本またはカンマ区切りの先頭運用は kintone 側に任せる）。
+   */
+  kintoneApiTokenForCollect: string;
   /** analyze のとき必須。collect では未設定でもよい */
   openaiApiKey: string | undefined;
   openaiModel: string;
@@ -52,7 +56,45 @@ function requireEnv(name: string): string {
 }
 
 /**
- * 共通設定。OpenAI は collect では不要なため任意。
+ * collect 用トークン。専用 Secret があればそれを使い、無ければ従来の 1 本運用。
+ */
+function resolveApiTokenForCollect(): string {
+  const dedicated = process.env.KINTONE_API_TOKEN_COLLECT?.trim();
+  if (dedicated) return dedicated;
+  const legacy = process.env.KINTONE_API_TOKEN?.trim();
+  if (legacy) return legacy;
+  throw new Error(
+    [
+      "collect 用の kintone API トークンがありません。",
+      "次のいずれかを設定してください: KINTONE_API_TOKEN_COLLECT（ニュース保存アプリ）、",
+      "または従来どおり KINTONE_API_TOKEN（1 アプリ／または公式どおりカンマ区切りで複数）。",
+    ].join("\n"),
+  );
+}
+
+/**
+ * analyze はニュースアプリを読み、レポートアプリに書くため「複数アプリのトークン」が要る。
+ * - 2 Secret 運用: KINTONE_API_TOKEN_COLLECT（631 等）+ KINTONE_API_TOKEN_ANALYZE（632 等）を配列で渡す。
+ * - 従来: KINTONE_API_TOKEN にカンマ区切りで複数トークンを 1 つにまとめる。
+ */
+export function resolveApiTokenForAnalyze(): string | string[] {
+  const collect = process.env.KINTONE_API_TOKEN_COLLECT?.trim();
+  const analyze = process.env.KINTONE_API_TOKEN_ANALYZE?.trim();
+  const legacy = process.env.KINTONE_API_TOKEN?.trim();
+  if (collect && analyze) return [collect, analyze];
+  if (legacy) return legacy;
+  throw new Error(
+    [
+      "analyze 用の kintone API トークンがありません。",
+      "次のいずれかを設定してください:",
+      "(A) KINTONE_API_TOKEN_COLLECT と KINTONE_API_TOKEN_ANALYZE の両方（ニュース用・レポート用）",
+      "(B) または従来どおり KINTONE_API_TOKEN（カンマ区切りで複数アプリのトークンを 1 Secret にまとめる）",
+    ].join("\n"),
+  );
+}
+
+/**
+ * 共通設定。collect は OpenAI 不要。analyze は resolveApiTokenForAnalyze と別途組み合わせる。
  */
 export function loadConfig(): AppConfig {
   const key = process.env.OPENAI_API_KEY?.trim();
@@ -61,7 +103,7 @@ export function loadConfig(): AppConfig {
     newsAppId: requireEnv("KINTONE_APP_ID"),
     /** analyze で必須。collect のみなら空でもよい */
     reportAppId: process.env.KINTONE_REPORT_APP_ID?.trim() || "",
-    kintoneApiToken: requireEnv("KINTONE_API_TOKEN"),
+    kintoneApiTokenForCollect: resolveApiTokenForCollect(),
     openaiApiKey: key && key.length > 0 ? key : undefined,
     openaiModel: process.env.OPENAI_MODEL?.trim() || "gpt-4o-mini",
     rssUrl: process.env.SECURITY_NEXT_RSS_URL?.trim() || "https://www.security-next.com/feed",

@@ -1,0 +1,160 @@
+# kintone JavaScript/CSS カスタマイズを API トークンでデプロイする
+#
+# ■ GitHub Environment: kintone-collect
+#
+# ■ Environment / Repository secrets（名前は画像の登録どおり）
+#   KINTONE_DOMAIN … ドメインまたは https://…（KINTONE_BASE_URL に正規化）
+#   KINTONE_APP … 対象アプリ ID（629 のときのみソース路径が shucccho-seisan）
+#   KINTONE_API_TOKEN … そのアプリの API トークン（file / アプリ設定に権限あり）
+#   SLACK_WEBHOOK_URL / TEAMS_WEBHOOK_URL（任意）
+#
+# ■ kintone-customize-uploader について
+#   公式 @kintone/customize-uploader に --api-token は存在しません（--oauth-token / パスワードのみ）。
+#   そのため同一の kintone REST API 手順（file.json → preview/app/customize → deploy）を
+#   X-Cybozu-API-Token で実行する scripts/deploy-customize-api-token.js を呼びます。
+#
+# ■ push: customize/** 等の変更時のみ（kintone-apps.md のみの push では再実行しない）
+
+name: kintone-customize-deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "customize/**"
+      - ".github/workflows/kintone-customize-deploy.yml"
+      - "eslint.config.js"
+      - "scripts/record-kintone-apps-deploy.js"
+      - "scripts/deploy-customize-api-token.js"
+      - "package.json"
+      - "package-lock.json"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kintone-customize-deploy-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: kintone-collect
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: npm ci（ESLint 用）
+        run: npm ci
+
+      - name: ESLint（customize の JS 構文・ルールチェック）
+        run: npm run lint:customize
+
+      - name: ベース URL 正規化・アプリ ID に応じた路径解決・アップロード用 JS 配置
+        env:
+          KINTONE_DOMAIN: ${{ secrets.KINTONE_DOMAIN }}
+          # Secret 名は KINTONE_APP（末尾 _ID なし）→ シェルでは KINTONE_APP_ID
+          KINTONE_APP_ID: ${{ secrets.KINTONE_APP }}
+        run: |
+          set -euo pipefail
+          BASE="${KINTONE_DOMAIN}"
+          if [[ -z "${BASE}" ]]; then
+            echo "::error::secrets.KINTONE_DOMAIN が空です"
+            exit 1
+          fi
+          if [[ "${BASE}" != https://* ]] && [[ "${BASE}" != http://* ]]; then
+            BASE="https://${BASE}"
+          fi
+          echo "KINTONE_BASE_URL=${BASE}" >> "${GITHUB_ENV}"
+
+          APP_ID="${KINTONE_APP_ID}"
+          if [[ -z "${APP_ID}" ]]; then
+            echo "::error::secrets.KINTONE_APP（→ KINTONE_APP_ID）が空です"
+            exit 1
+          fi
+          if [[ "${APP_ID}" == "629" ]]; then
+            SRC="customize/shucccho-seisan/desktop.js"
+          else
+            SRC="customize/${APP_ID}/desktop.js"
+          fi
+          echo "使用するソース: ${SRC}（app=${APP_ID}）"
+          echo "DEPLOY_REL_PATH=${SRC}" >> "${GITHUB_ENV}"
+          if [[ ! -f "${SRC}" ]]; then
+            echo "::error::アップロード元がありません: ${SRC}"
+            exit 1
+          fi
+
+          mkdir -p .kintone-deploy
+          cp "${SRC}" .kintone-deploy/upload.js
+
+      - name: kintone へ反映（API トークン・REST 手順）
+        env:
+          KINTONE_BASE_URL: ${{ env.KINTONE_BASE_URL }}
+          KINTONE_API_TOKEN: ${{ secrets.KINTONE_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${KINTONE_API_TOKEN:-}" ]]; then
+            echo "::error::secrets.KINTONE_API_TOKEN が空です"
+            exit 1
+          fi
+          if [[ -z "${KINTONE_BASE_URL:-}" ]]; then
+            echo "::error::KINTONE_BASE_URL が未設定です（KINTONE_DOMAIN を確認してください）"
+            exit 1
+          fi
+          node scripts/deploy-customize-api-token.js "${{ secrets.KINTONE_APP }}" .kintone-deploy/upload.js
+
+      - name: kintone-apps.md にデプロイ記録（必要ならメイン表に 1 行追加）
+        if: success()
+        env:
+          KINTONE_APP_ID: ${{ secrets.KINTONE_APP }}
+          DEPLOY_REL_PATH: ${{ env.DEPLOY_REL_PATH }}
+        run: |
+          set -euo pipefail
+          node scripts/record-kintone-apps-deploy.js "${KINTONE_APP_ID}" "${DEPLOY_REL_PATH}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add kintone-apps.md
+          if git diff --staged --quiet; then
+            echo "kintone-apps.md に変更なし"
+            exit 0
+          fi
+          git commit -m "docs(kintone): Actions デプロイ記録 [skip ci]"
+          git pull --rebase origin main
+          git push
+
+      - name: Slack / Teams へデプロイ結果を通知
+        if: always()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+        run: |
+          set -euo pipefail
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          REPO="${{ github.repository }}"
+          REF="${{ github.ref_name }}"
+          STATUS="${{ job.status }}"
+          if [[ "${STATUS}" == "success" ]]; then
+            MSG="✅ *kintone-customize-deploy* 成功\n• リポジトリ: ${REPO}\n• ブランチ: ${REF}"
+          else
+            MSG="❌ *kintone-customize-deploy* 失敗\n• リポジトリ: ${REPO}\n• ブランチ: ${REF}\n• ログ: ${RUN_URL}"
+          fi
+          PAYLOAD=$(jq -n --arg t "${MSG}" '{text: $t}')
+          if [[ -n "${SLACK_WEBHOOK_URL:-}" ]]; then
+            curl -sS -X POST -H 'Content-Type: application/json' -d "${PAYLOAD}" "${SLACK_WEBHOOK_URL}" \
+              || echo "::warning::Slack 送信に失敗（ワークフロー自体の成否は上記ステータスに従います）"
+            echo "Slack 通知を試行しました"
+          else
+            echo "SLACK_WEBHOOK_URL 未設定のため Slack はスキップ"
+          fi
+          if [[ -n "${TEAMS_WEBHOOK_URL:-}" ]]; then
+            curl -sS -X POST -H 'Content-Type: application/json' -d "${PAYLOAD}" "${TEAMS_WEBHOOK_URL}" \
+              || echo "::warning::Teams 送信に失敗"
+            echo "Teams 通知を試行しました"
+          else
+            echo "TEAMS_WEBHOOK_URL 未設定のため Teams はスキップ"
+          fi

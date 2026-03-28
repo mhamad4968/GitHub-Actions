@@ -46,6 +46,7 @@
     "security-next:analyze": "npm run analyze --prefix security-next-automation",
     "setup:security-next-apps": "npx dotenv -e .env -e .env.proxy -- node scripts/create-security-next-apps.js",
     "setup:security-next-report-app": "npx dotenv -e .env -e .env.proxy -- node scripts/create-security-next-report-app.js",
+    "lint:customize": "eslint customize",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -55,6 +56,10 @@
     "dotenv": "^17.3.1",
     "dotenv-cli": "^11.0.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "eslint": "^9.39.4",
+    "globals": "^15.15.0"
+  },
   "description": ""
 }

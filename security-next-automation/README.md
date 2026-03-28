@@ -56,7 +56,10 @@ npm run setup:security-next-report-app
 
 ## API トークンに付与する権限
 
-**1 つの API トークン**に **631（ニュース）と 632（週次要約）の両アプリ**を追加し、GitHub Secrets の `KINTONE_API_TOKEN` に保存する運用が簡単です。
+次のどちらかが使えます。
+
+- **おすすめ（管理が楽）**: 1 トークンに両アプリ権限を付け、GitHub Secrets の **`KINTONE_API_TOKEN`** だけに保存する（または kintone 公式どおり **カンマ区切り**で複数トークンを 1 Secret にまとめる）。
+- **2 Secret に分ける**: **`KINTONE_API_TOKEN_COLLECT`**（ニュース保存用）+ **`KINTONE_API_TOKEN_ANALYZE`**（週次要約用）。`analyze` はニュースを読んでレポートに書くため **両方が必要**（`ANALYZE` だけでは足りません）。`collect` は `COLLECT` があればそれだけ、無ければ従来どおり `KINTONE_API_TOKEN` を使います。
 
 ### このリポジトリのスクリプトが実際に使う権限（最低限）
 
@@ -85,7 +88,9 @@ npm run setup:security-next-report-app
 | `KINTONE_DOMAIN` | ○ | 例 `jbis-kintone.cybozu.com`（`https://` なし） |
 | `KINTONE_APP_ID` | ○ | Security NEXT ニュースのアプリ ID |
 | `KINTONE_REPORT_APP_ID` | ○ | **ニュース週次要約**アプリの ID（`analyze` 専用） |
-| `KINTONE_API_TOKEN` | ○ | 上記 2 アプリに権限のあるトークン |
+| `KINTONE_API_TOKEN` | △ | 従来どおり 1 Secret 運用のとき。`collect` では `COLLECT` が無ければ必須 |
+| `KINTONE_API_TOKEN_COLLECT` | △ | ニュースアプリ専用トークン（あれば `collect` はこれを優先） |
+| `KINTONE_API_TOKEN_ANALYZE` | △ | 週次要約アプリ専用。`analyze` で 2 トークン運用する場合に `COLLECT` とセット |
 | `OPENAI_API_KEY` | ○ | OpenAI（analyze・将来の拡張で collect にも使用可） |
 | `OPENAI_MODEL` | — | 既定 `gpt-4o-mini` |
 | `SECURITY_NEXT_RSS_URL` | — | 既定 `https://www.security-next.com/feed` |
@@ -128,7 +133,7 @@ npm run analyze --prefix security-next-automation
 - `KINTONE_DOMAIN`
 - `KINTONE_APP_ID`
 - `KINTONE_REPORT_APP_ID`
-- `KINTONE_API_TOKEN`
+- **`KINTONE_API_TOKEN`** または **`KINTONE_API_TOKEN_COLLECT` + `KINTONE_API_TOKEN_ANALYZE`**（後者は `analyze` で両方必須）
 - `OPENAI_API_KEY`
 - （任意）`OPENAI_MODEL` / `SECURITY_NEXT_RSS_URL` / `NOTIFY_WEBHOOK_URL`
 

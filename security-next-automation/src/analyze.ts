@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 
-import { loadConfig, requireOpenAiKey } from "./lib/config.js";
+import { loadConfig, requireOpenAiKey, resolveApiTokenForAnalyze } from "./lib/config.js";
 import { CREATED_TIME_CODE, NEWS_FIELDS, REPORT_FIELDS } from "./lib/field-codes.js";
 import { createKintoneClient } from "./lib/kintone-client.js";
 import { notifyFailure } from "./lib/notify.js";
@@ -99,7 +99,7 @@ async function main(): Promise<void> {
   if (!cfg.reportAppId) {
     throw new Error("analyze には KINTONE_REPORT_APP_ID が必要です。");
   }
-  const kintone = createKintoneClient(cfg);
+  const kintone = createKintoneClient(cfg, resolveApiTokenForAnalyze());
   const week = getRunningWeekRangeJst(new Date());
   console.log("[analyze] 対象週（月曜日）:", week.targetWeekMonday);
   console.log("[analyze] 作成日時範囲 JST:", week.startInclusive, "〜", week.endInclusive);
