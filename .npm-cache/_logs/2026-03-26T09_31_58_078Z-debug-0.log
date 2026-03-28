@@ -1,0 +1,123 @@
+0 verbose cli /home/mhamada202408224/.nvm/versions/node/v20.20.2/bin/node /home/mhamada202408224/.nvm/versions/node/v20.20.2/bin/npm
+1 info using npm@10.8.2
+2 info using node@v20.20.2
+3 silly config load:file:/home/mhamada202408224/.nvm/versions/node/v20.20.2/lib/node_modules/npm/npmrc
+4 silly config load:file:/home/mhamada202408224/kintone-ai-lab/.npmrc
+5 silly config load:file:/home/mhamada202408224/.npmrc
+6 silly config load:file:/home/mhamada202408224/.npm-global/etc/npmrc
+7 verbose title npm install dotenv dotenv-cli
+8 verbose argv "install" "dotenv" "dotenv-cli"
+9 verbose logfile logs-max:10 dir:/home/mhamada202408224/kintone-ai-lab/.npm-cache/_logs/2026-03-26T09_31_58_078Z-
+10 verbose logfile /home/mhamada202408224/kintone-ai-lab/.npm-cache/_logs/2026-03-26T09_31_58_078Z-debug-0.log
+11 silly packumentCache heap:2197815296 maxSize:549453824 maxEntrySize:274726912
+12 silly logfile done cleaning log files
+13 silly idealTree buildDeps
+14 silly fetch manifest dotenv@*
+15 silly packumentCache full:https://registry.npmjs.org/dotenv cache-miss
+16 http fetch GET 200 https://registry.npmjs.org/dotenv 159ms (cache miss)
+17 silly packumentCache full:https://registry.npmjs.org/dotenv set size:undefined disposed:false
+18 silly fetch manifest dotenv-cli@*
+19 silly packumentCache full:https://registry.npmjs.org/dotenv-cli cache-miss
+20 http fetch GET 200 https://registry.npmjs.org/dotenv-cli 77ms (cache miss)
+21 silly packumentCache full:https://registry.npmjs.org/dotenv-cli set size:undefined disposed:false
+22 silly placeDep ROOT dotenv@17.3.1 OK for: kintone-ai-lab@1.0.0 want: *
+23 silly placeDep ROOT dotenv-cli@11.0.0 OK for: kintone-ai-lab@1.0.0 want: *
+24 silly fetch manifest cross-spawn@^7.0.6
+25 silly packumentCache full:https://registry.npmjs.org/cross-spawn cache-miss
+26 silly fetch manifest dotenv-expand@^12.0.0
+27 silly packumentCache full:https://registry.npmjs.org/dotenv-expand cache-miss
+28 silly fetch manifest minimist@^1.2.6
+29 silly packumentCache full:https://registry.npmjs.org/minimist cache-miss
+30 http fetch GET 200 https://registry.npmjs.org/cross-spawn 73ms (cache miss)
+31 silly packumentCache full:https://registry.npmjs.org/cross-spawn set size:undefined disposed:false
+32 http fetch GET 200 https://registry.npmjs.org/minimist 132ms (cache miss)
+33 silly packumentCache full:https://registry.npmjs.org/minimist set size:undefined disposed:false
+34 http fetch GET 200 https://registry.npmjs.org/dotenv-expand 150ms (cache miss)
+35 silly packumentCache full:https://registry.npmjs.org/dotenv-expand set size:undefined disposed:false
+36 silly placeDep ROOT cross-spawn@7.0.6 OK for: dotenv-cli@11.0.0 want: ^7.0.6
+37 silly placeDep ROOT dotenv-expand@12.0.3 OK for: dotenv-cli@11.0.0 want: ^12.0.0
+38 silly placeDep ROOT minimist@1.2.8 OK for: dotenv-cli@11.0.0 want: ^1.2.6
+39 silly fetch manifest which@^2.0.1
+40 silly packumentCache full:https://registry.npmjs.org/which cache-miss
+41 silly fetch manifest path-key@^3.1.0
+42 silly packumentCache full:https://registry.npmjs.org/path-key cache-miss
+43 silly fetch manifest shebang-command@^2.0.0
+44 silly packumentCache full:https://registry.npmjs.org/shebang-command cache-miss
+45 silly fetch manifest dotenv@^16.4.5
+46 silly packumentCache full:https://registry.npmjs.org/dotenv cache-miss
+47 http fetch GET 200 https://registry.npmjs.org/dotenv 10ms (cache hit)
+48 silly packumentCache full:https://registry.npmjs.org/dotenv set size:270065 disposed:false
+49 http fetch GET 200 https://registry.npmjs.org/which 36ms (cache miss)
+50 silly packumentCache full:https://registry.npmjs.org/which set size:undefined disposed:false
+51 http fetch GET 200 https://registry.npmjs.org/path-key 41ms (cache miss)
+52 silly packumentCache full:https://registry.npmjs.org/path-key set size:undefined disposed:false
+53 http fetch GET 200 https://registry.npmjs.org/shebang-command 43ms (cache miss)
+54 silly packumentCache full:https://registry.npmjs.org/shebang-command set size:undefined disposed:false
+55 silly placeDep ROOT path-key@3.1.1 OK for: cross-spawn@7.0.6 want: ^3.1.0
+56 silly placeDep ROOT shebang-command@2.0.0 OK for: cross-spawn@7.0.6 want: ^2.0.0
+57 silly placeDep ROOT which@2.0.2 OK for: cross-spawn@7.0.6 want: ^2.0.1
+58 silly fetch manifest shebang-regex@^3.0.0
+59 silly packumentCache full:https://registry.npmjs.org/shebang-regex cache-miss
+60 silly fetch manifest isexe@^2.0.0
+61 silly packumentCache full:https://registry.npmjs.org/isexe cache-miss
+62 http fetch GET 200 https://registry.npmjs.org/shebang-regex 34ms (cache miss)
+63 silly packumentCache full:https://registry.npmjs.org/shebang-regex set size:undefined disposed:false
+64 http fetch GET 200 https://registry.npmjs.org/isexe 37ms (cache miss)
+65 silly packumentCache full:https://registry.npmjs.org/isexe set size:undefined disposed:false
+66 silly placeDep node_modules/dotenv-expand dotenv@16.6.1 OK for: dotenv-expand@12.0.3 want: ^16.4.5
+67 silly placeDep ROOT shebang-regex@3.0.0 OK for: shebang-command@2.0.0 want: ^3.0.0
+68 silly placeDep ROOT isexe@2.0.0 OK for: which@2.0.2 want: ^2.0.0
+69 silly reify moves {}
+70 silly audit bulk request {
+70 silly audit   dotenv: [ '17.3.1', '16.6.1' ],
+70 silly audit   'dotenv-cli': [ '11.0.0' ],
+70 silly audit   'cross-spawn': [ '7.0.6' ],
+70 silly audit   'dotenv-expand': [ '12.0.3' ],
+70 silly audit   minimist: [ '1.2.8' ],
+70 silly audit   'path-key': [ '3.1.1' ],
+70 silly audit   'shebang-command': [ '2.0.0' ],
+70 silly audit   which: [ '2.0.2' ],
+70 silly audit   'shebang-regex': [ '3.0.0' ],
+70 silly audit   isexe: [ '2.0.0' ]
+70 silly audit }
+71 silly tarball no local data for shebang-regex@https://registry.npmjs.org/shebang-regex/-/shebang-regex-3.0.0.tgz. Extracting by manifest.
+72 silly tarball no local data for isexe@https://registry.npmjs.org/isexe/-/isexe-2.0.0.tgz. Extracting by manifest.
+73 silly tarball no local data for which@https://registry.npmjs.org/which/-/which-2.0.2.tgz. Extracting by manifest.
+74 silly tarball no local data for path-key@https://registry.npmjs.org/path-key/-/path-key-3.1.1.tgz. Extracting by manifest.
+75 silly tarball no local data for minimist@https://registry.npmjs.org/minimist/-/minimist-1.2.8.tgz. Extracting by manifest.
+76 silly tarball no local data for cross-spawn@https://registry.npmjs.org/cross-spawn/-/cross-spawn-7.0.6.tgz. Extracting by manifest.
+77 silly tarball no local data for dotenv-expand@https://registry.npmjs.org/dotenv-expand/-/dotenv-expand-12.0.3.tgz. Extracting by manifest.
+78 silly tarball no local data for dotenv-cli@https://registry.npmjs.org/dotenv-cli/-/dotenv-cli-11.0.0.tgz. Extracting by manifest.
+79 silly tarball no local data for dotenv@https://registry.npmjs.org/dotenv/-/dotenv-17.3.1.tgz. Extracting by manifest.
+80 silly tarball no local data for dotenv@https://registry.npmjs.org/dotenv/-/dotenv-16.6.1.tgz. Extracting by manifest.
+81 silly tarball no local data for shebang-command@https://registry.npmjs.org/shebang-command/-/shebang-command-2.0.0.tgz. Extracting by manifest.
+82 http fetch GET 200 https://registry.npmjs.org/shebang-regex/-/shebang-regex-3.0.0.tgz 48ms (cache miss)
+83 http fetch GET 200 https://registry.npmjs.org/isexe/-/isexe-2.0.0.tgz 49ms (cache miss)
+84 http fetch POST 200 https://registry.npmjs.org/-/npm/v1/security/advisories/bulk 134ms
+85 silly audit report {}
+86 http fetch GET 200 https://registry.npmjs.org/cross-spawn/-/cross-spawn-7.0.6.tgz 168ms (cache miss)
+87 http fetch GET 200 https://registry.npmjs.org/which/-/which-2.0.2.tgz 171ms (cache miss)
+88 http fetch GET 200 https://registry.npmjs.org/dotenv-cli/-/dotenv-cli-11.0.0.tgz 179ms (cache miss)
+89 http fetch GET 200 https://registry.npmjs.org/path-key/-/path-key-3.1.1.tgz 181ms (cache miss)
+90 http fetch GET 200 https://registry.npmjs.org/shebang-command/-/shebang-command-2.0.0.tgz 186ms (cache miss)
+91 http fetch GET 200 https://registry.npmjs.org/dotenv-expand/-/dotenv-expand-12.0.3.tgz 198ms (cache miss)
+92 http fetch GET 200 https://registry.npmjs.org/minimist/-/minimist-1.2.8.tgz 203ms (cache miss)
+93 http fetch GET 200 https://registry.npmjs.org/dotenv/-/dotenv-16.6.1.tgz 204ms (cache miss)
+94 http fetch GET 200 https://registry.npmjs.org/dotenv/-/dotenv-17.3.1.tgz 205ms (cache miss)
+95 silly ADD node_modules/isexe
+96 silly ADD node_modules/shebang-regex
+97 silly ADD node_modules/which
+98 silly ADD node_modules/shebang-command
+99 silly ADD node_modules/path-key
+100 silly ADD node_modules/minimist
+101 silly ADD node_modules/dotenv-expand
+102 silly ADD node_modules/dotenv-expand/node_modules/dotenv
+103 silly ADD node_modules/cross-spawn
+104 silly ADD node_modules/dotenv-cli
+105 silly ADD node_modules/dotenv
+106 verbose cwd /home/mhamada202408224/kintone-ai-lab
+107 verbose os Linux 6.6.87.2-microsoft-standard-WSL2
+108 verbose node v20.20.2
+109 verbose npm  v10.8.2
+110 verbose exit 0
+111 info ok

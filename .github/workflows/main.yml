@@ -1,0 +1,111 @@
+# Security NEXT: 週次 LLM 要約を「ニュース週次要約」アプリへ投稿する（＋手動で collect / analyze）
+# 定時の RSS 収集は daily-collect.yml（毎日 10:00 / 17:00 JST）を参照
+
+name: security-next-kintone
+
+on:
+  schedule:
+    - cron: "0 11 * * 5"
+  workflow_dispatch:
+    inputs:
+      job:
+        description: 手動実行するジョブ
+        type: choice
+        default: both
+        options:
+          - collect
+          - analyze
+          - both
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-next-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    if: github.event_name == 'workflow_dispatch' && (github.event.inputs.job == 'collect' || github.event.inputs.job == 'both')
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: security-next-automation
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: security-next-automation/package-lock.json
+
+      - name: 依存関係インストール
+        run: npm ci
+
+      - name: RSS 収集して kintone へ登録
+        env:
+          KINTONE_DOMAIN: ${{ secrets.KINTONE_DOMAIN }}
+          KINTONE_APP_ID: ${{ secrets.KINTONE_APP_ID }}
+          KINTONE_API_TOKEN: ${{ secrets.KINTONE_API_TOKEN }}
+          SECURITY_NEXT_RSS_URL: ${{ secrets.SECURITY_NEXT_RSS_URL }}
+          NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
+          COLLECT_MAX_NEW_PER_RUN: ${{ vars.COLLECT_MAX_NEW_PER_RUN }}
+        run: npm run collect
+
+      - name: 失敗時通知（任意 Webhook）
+        if: failure()
+        env:
+          NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
+        run: |
+          if [ -z "$NOTIFY_WEBHOOK_URL" ]; then
+            echo "NOTIFY_WEBHOOK_URL 未設定のため通知スキップ"
+            exit 0
+          fi
+          curl -sS -X POST "$NOTIFY_WEBHOOK_URL" \
+            -H 'Content-Type: application/json' \
+            -d '{"text":"❌ security-next collect 失敗: ${{ github.repository }} run ${{ github.run_id }}"}'
+
+  analyze:
+    if: |
+      (github.event_name == 'workflow_dispatch' && (github.event.inputs.job == 'analyze' || github.event.inputs.job == 'both')) ||
+      (github.event_name == 'schedule' && github.event.schedule == '0 11 * * 5')
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: security-next-automation
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: security-next-automation/package-lock.json
+
+      - name: 依存関係インストール
+        run: npm ci
+
+      - name: 週次要約でニュース週次要約アプリへ投稿
+        env:
+          KINTONE_DOMAIN: ${{ secrets.KINTONE_DOMAIN }}
+          KINTONE_APP_ID: ${{ secrets.KINTONE_APP_ID }}
+          KINTONE_REPORT_APP_ID: ${{ secrets.KINTONE_REPORT_APP_ID }}
+          KINTONE_API_TOKEN: ${{ secrets.KINTONE_API_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
+          NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
+        run: npm run analyze
+
+      - name: 失敗時通知（任意 Webhook）
+        if: failure()
+        env:
+          NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
+        run: |
+          if [ -z "$NOTIFY_WEBHOOK_URL" ]; then
+            echo "NOTIFY_WEBHOOK_URL 未設定のため通知スキップ"
+            exit 0
+          fi
+          curl -sS -X POST "$NOTIFY_WEBHOOK_URL" \
+            -H 'Content-Type: application/json' \
+            -d '{"text":"❌ security-next analyze 失敗: ${{ github.repository }} run ${{ github.run_id }}"}'

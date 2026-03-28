@@ -1,0 +1,44 @@
+0 verbose cli /home/mhamada202408224/.nvm/versions/node/v20.20.2/bin/node /home/mhamada202408224/.nvm/versions/node/v20.20.2/bin/npm
+1 info using npm@10.8.2
+2 info using node@v20.20.2
+3 silly config load:file:/home/mhamada202408224/.nvm/versions/node/v20.20.2/lib/node_modules/npm/npmrc
+4 silly config load:file:/home/mhamada202408224/kintone-ai-lab/.npmrc
+5 silly config load:file:/home/mhamada202408224/.npmrc
+6 silly config load:file:/home/mhamada202408224/.npm-global/etc/npmrc
+7 verbose title npm install undici
+8 verbose argv "install" "undici"
+9 verbose logfile logs-max:10 dir:/home/mhamada202408224/kintone-ai-lab/.npm-cache/_logs/2026-03-26T09_52_31_756Z-
+10 verbose logfile /home/mhamada202408224/kintone-ai-lab/.npm-cache/_logs/2026-03-26T09_52_31_756Z-debug-0.log
+11 silly packumentCache heap:2197815296 maxSize:549453824 maxEntrySize:274726912
+12 silly logfile done cleaning log files
+13 silly idealTree buildDeps
+14 silly fetch manifest undici@*
+15 silly packumentCache full:https://registry.npmjs.org/undici cache-miss
+16 http fetch GET 200 https://registry.npmjs.org/undici 252ms (cache miss)
+17 silly packumentCache full:https://registry.npmjs.org/undici set size:undefined disposed:false
+18 silly placeDep ROOT undici@7.24.6 OK for: kintone-ai-lab@1.0.0 want: *
+19 silly reify moves {}
+20 silly audit bulk request {
+20 silly audit   'cross-spawn': [ '7.0.6' ],
+20 silly audit   dotenv: [ '17.3.1', '16.6.1' ],
+20 silly audit   'dotenv-cli': [ '11.0.0' ],
+20 silly audit   'dotenv-expand': [ '12.0.3' ],
+20 silly audit   isexe: [ '2.0.0' ],
+20 silly audit   minimist: [ '1.2.8' ],
+20 silly audit   'path-key': [ '3.1.1' ],
+20 silly audit   'shebang-command': [ '2.0.0' ],
+20 silly audit   'shebang-regex': [ '3.0.0' ],
+20 silly audit   which: [ '2.0.2' ],
+20 silly audit   undici: [ '7.24.6' ]
+20 silly audit }
+21 silly tarball no local data for undici@https://registry.npmjs.org/undici/-/undici-7.24.6.tgz. Extracting by manifest.
+22 http fetch POST 200 https://registry.npmjs.org/-/npm/v1/security/advisories/bulk 147ms
+23 silly audit report {}
+24 http fetch GET 200 https://registry.npmjs.org/undici/-/undici-7.24.6.tgz 181ms (cache miss)
+25 silly ADD node_modules/undici
+26 verbose cwd /home/mhamada202408224/kintone-ai-lab
+27 verbose os Linux 6.6.87.2-microsoft-standard-WSL2
+28 verbose node v20.20.2
+29 verbose npm  v10.8.2
+30 verbose exit 0
+31 info ok

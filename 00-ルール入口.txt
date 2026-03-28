@@ -1,0 +1,2 @@
+ルールの地図（迷子防止）はワークスペース1つ上の RULES-INDEX.md です。
+WSL: /home/mhamada202408224/RULES-INDEX.md

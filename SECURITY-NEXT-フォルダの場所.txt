@@ -1,0 +1,15 @@
+security-next-automation は「C:\ の直下」にはありません。
+
+■ この Cursor / WSL 環境での実際の場所（Linux パス）
+  /home/mhamada202408224/kintone-ai-lab/security-next-automation
+
+  ターミナルで確認:
+    cd ~/kintone-ai-lab/security-next-automation
+    ls -la
+
+■ Windows のエクスプローラーから開く例
+  \\wsl.localhost\Ubuntu\home\mhamada202408224\kintone-ai-lab\security-next-automation
+  （WSL のディストリ名が Ubuntu でない場合は、左の「Linux」から home → ユーザー名 → kintone-ai-lab を開く）
+
+■ 設計CSVを Windows 側で探しやすい場所へもコピー済み（Excel 用）
+  C:\Users\mhamada202408224\Documents\security-next-news-app-design.csv
