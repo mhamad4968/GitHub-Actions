@@ -9,6 +9,7 @@
   "scripts": {
     "collect": "tsx src/collect.ts",
     "analyze": "tsx src/analyze.ts",
+    "delete-all-news": "tsx src/delete-all-news.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
