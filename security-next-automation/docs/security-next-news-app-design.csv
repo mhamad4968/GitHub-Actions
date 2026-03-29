@@ -3,4 +3,4 @@
 URL,article_url,文字列（1行）,SINGLE_LINE_TEXT,はい,はい,記事URL。重複登録判定に使用。collect が投入
 公開日,published_date,日付,DATE,いいえ,いいえ,RSS公開日をJSTで日付のみ。collect が投入（field-codes.ts 正本と一致）
 概要,summary,文字列（複数行）,MULTI_LINE_TEXT,いいえ,いいえ,RSS抜粋。collect が投入
-要約,digest,文字列（複数行）,MULTI_LINE_TEXT,いいえ,いいえ,collect は空で追加。手入力・別ジョブで編集
+要約,digest,文字列（複数行）,MULTI_LINE_TEXT,いいえ,いいえ,collect は概要と同じ RSS 抜粋を投入。手入力で上書き可

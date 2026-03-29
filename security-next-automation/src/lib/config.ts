@@ -55,6 +55,51 @@ function requireEnv(name: string): string {
   return v.trim();
 }
 
+/** https:// や末尾スラッシュ・パスを除き、ホスト名だけにそろえる */
+function normalizeKintoneDomain(raw: string): string {
+  const s = raw.trim().replace(/^https?:\/\//i, "").replace(/\/$/, "");
+  const host = s.split("/")[0]?.trim() || "";
+  return host;
+}
+
+/**
+ * kintone ドメイン（ホスト名のみ）。
+ * KINTONE_DOMAIN を優先し、無ければ KINTONE_BASE_URL（フル URL 可）を読む（GitHub のリポジトリ変数と名前をそろえやすくするため）。
+ */
+function resolveKintoneDomain(): string {
+  const direct = process.env.KINTONE_DOMAIN?.trim();
+  if (direct) return normalizeKintoneDomain(direct);
+  const base = process.env.KINTONE_BASE_URL?.trim();
+  if (base) return normalizeKintoneDomain(base);
+  throw new Error(
+    [
+      "kintone のドメイン（ホスト名）がありません。",
+      `- ローカル: ${envMainPath} に KINTONE_DOMAIN=（例: xxx.cybozu.com）を設定するか、`,
+      "  KINTONE_BASE_URL=https://xxx.cybozu.com のどちらかを設定してください。",
+      "- GitHub Actions: Environment kintone-collect の secrets に KINTONE_DOMAIN を設定してください。",
+    ].join("\n"),
+  );
+}
+
+/**
+ * ニュースアプリ ID。KINTONE_APP_ID を優先し、無ければ KINTONE_APP（Actions の Secret 名と同じ）を読む。
+ */
+function resolveNewsAppId(): string {
+  const id =
+    process.env.KINTONE_APP_ID?.trim() ||
+    process.env.KINTONE_APP?.trim();
+  if (!id) {
+    throw new Error(
+      [
+        "ニュースアプリ ID がありません。",
+        `- ローカル: ${envMainPath} に KINTONE_APP_ID= を設定するか、GitHub と同じ名前の KINTONE_APP= を設定してください。`,
+        "- GitHub Actions: Secret 名は KINTONE_APP（値はアプリ ID）。ワークフローで KINTONE_APP_ID として渡ります。",
+      ].join("\n"),
+    );
+  }
+  return id;
+}
+
 /**
  * collect 用トークン。専用 Secret があればそれを使い、無ければ従来の 1 本運用。
  */
@@ -66,8 +111,9 @@ function resolveApiTokenForCollect(): string {
   throw new Error(
     [
       "collect 用の kintone API トークンがありません。",
-      "次のいずれかを設定してください: KINTONE_API_TOKEN_COLLECT（ニュース保存アプリ）、",
+      "次のいずれかを設定してください: KINTONE_API_TOKEN_COLLECT（ニュース保存アプリ・GitHub と同じ Secret 名）、",
       "または従来どおり KINTONE_API_TOKEN（1 アプリ／または公式どおりカンマ区切りで複数）。",
+      `- ローカル: ${envMainPath} に上記いずれかを追記してください（値は GitHub Environment「kintone-collect」からコピー可）。`,
     ].join("\n"),
   );
 }
@@ -99,8 +145,8 @@ export function resolveApiTokenForAnalyze(): string | string[] {
 export function loadConfig(): AppConfig {
   const key = process.env.OPENAI_API_KEY?.trim();
   return {
-    kintoneDomain: requireEnv("KINTONE_DOMAIN").replace(/^https?:\/\//, "").replace(/\/$/, ""),
-    newsAppId: requireEnv("KINTONE_APP_ID"),
+    kintoneDomain: resolveKintoneDomain(),
+    newsAppId: resolveNewsAppId(),
     /** analyze で必須。collect のみなら空でもよい */
     reportAppId: process.env.KINTONE_REPORT_APP_ID?.trim() || "",
     kintoneApiTokenForCollect: resolveApiTokenForCollect(),
@@ -118,13 +164,13 @@ export function requireOpenAiKey(cfg: AppConfig): string {
   return cfg.openaiApiKey;
 }
 
-/** analyze（Gemini）用。環境変数 GEMINI_API_KEY を必須にする */
+/** analyze（Gemini）用。collect はキーワード選別のため不要 */
 export function requireGeminiApiKey(): string {
   const k = process.env.GEMINI_API_KEY?.trim();
   if (!k) {
     throw new Error(
       [
-        "collect（Gemini 選別）/ analyze には GEMINI_API_KEY が必要です。",
+        "analyze（Gemini 週次要約）には GEMINI_API_KEY が必要です。",
         `- ローカル: ${envMainPath} に GEMINI_API_KEY= を追記してください。`,
         "- GitHub Actions: Environment または Repository の secrets に GEMINI_API_KEY を登録してください。",
       ].join("\n"),

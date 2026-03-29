@@ -8,7 +8,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { loadConfig, requireGeminiApiKey, resolveApiTokenForAnalyze } from "./lib/config.js";
 import { CREATED_TIME_CODE, NEWS_FIELDS, REPORT_FIELDS } from "./lib/field-codes.js";
 import { createKintoneClient } from "./lib/kintone-client.js";
-import { notifyFailure } from "./lib/notify.js";
+import { notifyFailure, notifyRunSummary } from "./lib/notify.js";
 import { plainTextToRichTextHtml, stripHtmlToPlain, truncateForLlm } from "./lib/text.js";
 import { getRunningWeekRangeJst } from "./lib/week-jst.js";
 
@@ -112,11 +112,22 @@ async function main(): Promise<void> {
   console.log("[analyze] 対象週（月曜日）:", week.targetWeekMonday);
   console.log("[analyze] 作成日時範囲 JST:", week.startInclusive, "〜", week.endInclusive);
 
+  const summaryUrl = process.env.NOTIFY_SUMMARY_WEBHOOK_URL;
+
   const records = await fetchWeekNewsRecords(kintone, cfg.newsAppId, week.startInclusive, week.endInclusive);
   console.log("[analyze] 週内レコード件数:", records.length);
 
   if (records.length === 0) {
     console.log("[analyze] 対象なしのためレポートを作らず終了");
+    await notifyRunSummary(summaryUrl, {
+      workflow: "analyze",
+      candidateCount: 0,
+      addedCount: 0,
+      extraLines: [
+        `• 対象週（月曜）: ${week.targetWeekMonday}`,
+        "• 補足: 週内ニュース 0 件のため週次レコード未作成",
+      ],
+    });
     return;
   }
 
@@ -134,6 +145,17 @@ async function main(): Promise<void> {
     },
   });
   console.log("[analyze] レポートアプリ（632）へ weekly_trend を登録完了");
+
+  await notifyRunSummary(summaryUrl, {
+    workflow: "analyze",
+    candidateCount: records.length,
+    addedCount: 1,
+    extraLines: [
+      `• 対象週（月曜）: ${week.targetWeekMonday}`,
+      `• レポートアプリ ID: ${cfg.reportAppId}`,
+      `• 要約文字数: ${reportText.length}`,
+    ],
+  });
 }
 
 main().catch(async (err) => {

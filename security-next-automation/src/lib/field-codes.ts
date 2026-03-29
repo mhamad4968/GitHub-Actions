@@ -9,7 +9,7 @@ export const NEWS_FIELDS = {
   /** RSS の公開日を JST の日付のみで格納（kintone の「日付」型） */
   publishedDate: "published_date",
   summary: "summary",
-  /** collect では空で投入。手入力・別処理で追記 */
+  /** collect では summary と同じ RSS 抜粋を投入（一覧の「要約」列も埋める）。手入力で上書き可 */
   digest: "digest",
 } as const;
 

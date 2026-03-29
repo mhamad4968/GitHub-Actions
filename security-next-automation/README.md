@@ -7,6 +7,15 @@
 - ニュース保存: [`docs/security-next-news-app-design.csv`](docs/security-next-news-app-design.csv) / [`docs/kintone-app-creation-steps.md`](docs/kintone-app-creation-steps.md)  
 - **ニュース週次要約（週次レポート）**: [`docs/security-next-weekly-report-app-design.csv`](docs/security-next-weekly-report-app-design.csv) / [`docs/kintone-weekly-report-app-creation-steps.md`](docs/kintone-weekly-report-app-creation-steps.md)
 
+### 運用スケジュールと内容（確定・2026-03）
+
+| タイミング | 内容 |
+|------------|------|
+| **毎日 10:00 / 17:00（JST）** | `daily-collect.yml` → `collect.ts`。RSS から未登録候補を **高度キーワード**で選別（Gemini 不使用）。事件性（国内・重大）＋世界的重大警告語を含み、**予防・管理**語（パッチ・アドバイザリ・**リリース**等）を含まないものを、公開日の新しい順に最大 **3 件**をアプリ **631** へ保存。 |
+| **毎週金曜 17:00（JST）** | `main.yml` の `security-next-kintone` → `analyze.ts`（`cron: 0 8 * * 5` = 金曜 08:00 UTC）。その週の **631** のニュースを振り返り、傾向と対策を **632**（`weekly_trend`）へ投稿。 |
+
+**動作確認の目安**: 日次実行後、**631** にキーワードに合致した記事が追加されていれば意図どおり（完全一致ではないため、必要に応じてキーワード一覧を `collect.ts` で調整）。重要事故の**即時**通知が必要なら、kintone の通知設定や Webhook 連係（`NOTIFY_WEBHOOK_URL` / `NOTIFY_SUMMARY_WEBHOOK_URL`）の拡張を検討。
+
 ## kintone アプリの作り方（フィールド具体設定）
 
 **スペース 48 に自動作成**（管理者 `.env` が必要。**API トークンだけではアプリ新規作成はできません**）:
@@ -41,9 +50,9 @@ npm run setup:security-next-report-app
 | URL | `article_url` | 文字列（1行） | 推奨 | **重複禁止**推奨（重複判定に使用） |
 | 公開日 | `published_date` | **日付** | 任意 | RSS の公開日を JST で日付のみ投入 |
 | 概要 | `summary` | 文字列（複数行） | 任意 | RSS 抜粋を `collect` が投入 |
-| 要約 | `digest` | 文字列（複数行） | 任意 | `collect` は空で追加。手入力・別処理用 |
+| 要約 | `digest` | 文字列（複数行） | 任意 | `collect` は概要と同じ RSS 抜粋を投入。手入力で上書き可 |
 
-設計CSV: [`docs/security-next-news-app-design.csv`](docs/security-next-news-app-design.csv)。`collect` は **`article_url`** の重複を問い合わせてスキップしたうえで、**Gemini** が未登録候補から **実害のあるインシデント記事のみ** を最大 **3 件**選びます（パッチ・更新・注意喚起のみの記事は選別で除外）。
+設計CSV: [`docs/security-next-news-app-design.csv`](docs/security-next-news-app-design.csv)。`collect` は **`article_url`** の重複を問い合わせてスキップしたうえで、**キーワード**（事件性あり・パッチ系除外）に合う未登録候補を公開日の新しい順に最大 **3 件**選びます（実装は `collect.ts` の定数一覧）。
 
 ### アプリ B: ニュース週次要約（ニュース本体とは別アプリ）
 
@@ -91,11 +100,12 @@ npm run setup:security-next-report-app
 | `KINTONE_API_TOKEN` | △ | 従来どおり 1 Secret 運用のとき。`collect` では `COLLECT` が無ければ必須 |
 | `KINTONE_API_TOKEN_COLLECT` | △ | ニュースアプリ専用トークン（あれば `collect` はこれを優先） |
 | `KINTONE_API_TOKEN_ANALYZE` | △ | 週次要約アプリ専用。`analyze` で 2 トークン運用する場合に `COLLECT` とセット |
-| `GEMINI_API_KEY` | ○ | Google AI（`collect` の重要記事3件選別・`analyze` の週次要約）。`@google/generative-ai` |
-| `OPENAI_API_KEY` | — | 未使用（将来の拡張用。現行 `collect` / `analyze` は Gemini のみ） |
+| `GEMINI_API_KEY` | △ | **`analyze` の週次要約に必須**。`collect` はキーワード選別のため不要 |
+| `OPENAI_API_KEY` | — | 未使用（将来の拡張用。現行 `analyze` は Gemini） |
 | `OPENAI_MODEL` | — | 同上 |
 | `SECURITY_NEXT_RSS_URL` | — | 既定 `https://www.security-next.com/feed` |
-| `NOTIFY_WEBHOOK_URL` | — | 失敗時に POST する Slack 等の URL（スクリプト内・Workflow の双方で任意） |
+| `NOTIFY_WEBHOOK_URL` | — | **失敗時**に POST する Slack 等の URL（`{"text":"..."}` 互換） |
+| `NOTIFY_SUMMARY_WEBHOOK_URL` | — | **成功時**サマリー（候補数・追加件数必須）。Slack/Teams 向けも同形式なら可。未設定なら送信しない |
 
 ## ローカル実行
 
@@ -119,6 +129,14 @@ npm run analyze --prefix security-next-automation
 ```
 
 （`.env` は `security-next-automation/.env` に置くこと。起動時に `dotenv` で読み込みます。）
+
+**`collect` をローカルで完走させる最低限**
+
+- `.env.example` にはドメイン・アプリ ID の例を入れ済み。`cp .env.example .env` 後、次を **GitHub Environment「kintone-collect」と同じ値**で埋める。  
+  - `KINTONE_API_TOKEN_COLLECT`（または 1 本運用なら `KINTONE_API_TOKEN`）  
+  - （`collect` のみなら `GEMINI_API_KEY` は不要。`analyze` を回すときは必要）  
+- ドメインは `KINTONE_DOMAIN=ホスト名` か `KINTONE_BASE_URL=https://…` のどちらか。  
+- ニュースアプリ ID は `KINTONE_APP_ID` か、Actions の Secret 名に合わせた `KINTONE_APP`。
 
 ## GitHub Actions
 
