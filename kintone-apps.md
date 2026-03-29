@@ -30,7 +30,7 @@ npm run app:fields <アプリID>
 
 **出張精算の ID 出所**: テナントで `GET /k/v1/apps.json?name=出張精算` を実行し **629** と突合済み（2026-03-28）。
 
-**Security NEXT**: 収集 [631](https://jbis-kintone.cybozu.com/k/631/) ・週次要約 [632](https://jbis-kintone.cybozu.com/k/632/)（ユーザー確定）。630 は未使用なら無視可。トークンに **631 と 632** の権限を付与。シークレットは **Secrets / `.env` のみ**。
+**Security NEXT**: 収集 [631](https://jbis-kintone.cybozu.com/k/631/) ・週次要約 [632](https://jbis-kintone.cybozu.com/k/632/)（ユーザー確定）。630 は未使用なら無視可。トークンに **631 と 632** の権限を付与。シークレットは **Secrets / `.env` のみ**。**日次（10:00/17:00 JST）**: `collect.ts` がキーワード選別で最大3件を631へ（Gemini 不使用）。**金曜17:00 JST**: `analyze` が週次要約を632へ（Gemini 使用）。詳細は `security-next-automation/README.md` の「運用スケジュール」。
 
 **Security NEXT 連携**: フィールドコードの正本は `security-next-automation/README.md` と `security-next-automation/src/lib/field-codes.ts`。アプリ新規なら `npm run setup:security-next-apps` も可。
 
@@ -46,7 +46,7 @@ npm run app:fields <アプリID>
 | `article_url` | 文字列（1行） | URL（重複禁止推奨） |
 | `published_date` | **日付** | 公開日 |
 | `summary` | 文字列（複数行） | 概要 |
-| `digest` | 文字列（複数行） | 要約（collect は空で投入） |
+| `digest` | 文字列（複数行） | 要約（collect は概要と同じ RSS 抜粋を投入） |
 
 - **631** … 上表と一致（収集本番）。**630** は旧・誤フォームの可能性あり。運用は **631** に統一。
 

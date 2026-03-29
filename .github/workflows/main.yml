@@ -1,15 +1,17 @@
 # Security NEXT: 週次 LLM 要約を「ニュース週次要約」アプリへ投稿する（＋手動で collect / analyze）
 # 定時の RSS 収集は daily-collect.yml（毎日 10:00 / 17:00 JST）を参照
+# 週次 analyze: 金曜 17:00 JST = 08:00 UTC → cron 0 8 * * 5
 #
 # Environment: kintone-collect（collect / analyze 共通）
 # kintone 系は Secret 名 KINTONE_DOMAIN / KINTONE_APP / KINTONE_API_TOKEN（環境変数 KINTONE_APP_ID へマップ）
-# collect は GEMINI_API_KEY で記事を3件に絞り込み
+# collect はキーワード選別で最大3件（GEMINI 不要）。analyze は GEMINI_API_KEY 利用。
+# 任意: NOTIFY_SUMMARY_WEBHOOK_URL / NOTIFY_EMAIL_TO + SMTP_USER + SMTP_PASS（Gmail はアプリパスワード）
 
 name: security-next-kintone
 
 on:
   schedule:
-    - cron: "0 11 * * 5"
+    - cron: "0 8 * * 5"
   workflow_dispatch:
     inputs:
       job:
@@ -33,6 +35,12 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && (github.event.inputs.job == 'collect' || github.event.inputs.job == 'both')
     runs-on: ubuntu-latest
     environment: kintone-collect
+    env:
+      NOTIFY_SUMMARY_WEBHOOK_URL: ${{ secrets.NOTIFY_SUMMARY_WEBHOOK_URL }}
+      NOTIFY_EMAIL_TO: ${{ secrets.NOTIFY_EMAIL_TO }}
+      SMTP_USER: ${{ secrets.SMTP_USER }}
+      SMTP_PASS: ${{ secrets.SMTP_PASS }}
+      SMTP_FROM: ${{ secrets.SMTP_FROM }}
     defaults:
       run:
         working-directory: security-next-automation
@@ -54,7 +62,6 @@ jobs:
           # GitHub Secret は KINTONE_APP（末尾に _ID なし）
           KINTONE_APP_ID: ${{ secrets.KINTONE_APP }}
           KINTONE_API_TOKEN: ${{ secrets.KINTONE_API_TOKEN }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           SECURITY_NEXT_RSS_URL: ${{ secrets.SECURITY_NEXT_RSS_URL }}
           NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
           COLLECT_MAX_NEW_PER_RUN: ${{ vars.COLLECT_MAX_NEW_PER_RUN }}
@@ -76,9 +83,15 @@ jobs:
   analyze:
     if: |
       (github.event_name == 'workflow_dispatch' && (github.event.inputs.job == 'analyze' || github.event.inputs.job == 'both')) ||
-      (github.event_name == 'schedule' && github.event.schedule == '0 11 * * 5')
+      (github.event_name == 'schedule' && github.event.schedule == '0 8 * * 5')
     runs-on: ubuntu-latest
     environment: kintone-collect
+    env:
+      NOTIFY_SUMMARY_WEBHOOK_URL: ${{ secrets.NOTIFY_SUMMARY_WEBHOOK_URL }}
+      NOTIFY_EMAIL_TO: ${{ secrets.NOTIFY_EMAIL_TO }}
+      SMTP_USER: ${{ secrets.SMTP_USER }}
+      SMTP_PASS: ${{ secrets.SMTP_PASS }}
+      SMTP_FROM: ${{ secrets.SMTP_FROM }}
     defaults:
       run:
         working-directory: security-next-automation
