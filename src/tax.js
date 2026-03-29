@@ -6,11 +6,11 @@
   const FIELD_AMOUNT = 'kingaku';
   // 消費税額を格納する数値フィールドのフィールドコード（フォームに同名フィールドを用意すること）。
   const FIELD_TAX = 'tax';
-  // 標準税率 10%（軽減税率 8% にしたいときは 0.08 に変更）。
-  const TAX_RATE = 0.1;
+  // 軽減税率 8%（標準 10% に戻すときは 0.1 に変更）。
+  const TAX_RATE = 0.08;
 
   /**
-   * レcord から税抜金額を数値化して取り出します。
+   * レコードから税抜金額を数値化して取り出します。
    * @param {import('kintone').Types.Record} record kintone のレコード
    * @returns {number|null} 有効な数値ならその値、空・不正なら null
    */
