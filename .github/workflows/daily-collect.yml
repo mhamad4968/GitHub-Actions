@@ -3,7 +3,9 @@
 #
 # Environment 名: kintone-collect（Settings → Environments と一字一句同じ）
 # Environment secrets に置く名前の例（Repository secrets に同じ名前があっても可・マージされる）:
-#   KINTONE_DOMAIN / KINTONE_APP / KINTONE_API_TOKEN_COLLECT（collect はキーワード選別のため GEMINI 不要）
+#   KINTONE_DOMAIN / KINTONE_APP / KINTONE_API_TOKEN_COLLECT
+#   任意: GEMINI_API_KEY（概要・要約の体裁整形。analyze と同じ Secret 名で共有可能）
+#   任意: Repository variables GEMINI_MODEL（省略時コード既定は gemini-2.0-flash）
 #   任意: NOTIFY_SUMMARY_WEBHOOK_URL / NOTIFY_EMAIL_TO + SMTP_USER + SMTP_PASS（Gmail はアプリパスワード）
 #   実行時は env の KINTONE_API_TOKEN に Secret KINTONE_API_TOKEN_COLLECT を渡す（config.ts の collect 解決と整合）
 # collect は security-next-automation/ の package（リポジトリ名 kintone-ai-lab はルートで、サブフォルダ名はこちら）。npm は --prefix で場所を指定する
@@ -29,6 +31,8 @@ jobs:
     # GitHub で作った Environment 名と一字一句同じにする
     environment: kintone-collect
     env:
+      # Node 20 系アクション警告の抑止（v6 アクションと併用可）https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       SECURITY_NEXT_RSS_URL: ${{ secrets.SECURITY_NEXT_RSS_URL }}
       NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
       COLLECT_MAX_NEW_PER_RUN: ${{ vars.COLLECT_MAX_NEW_PER_RUN }}
@@ -39,14 +43,14 @@ jobs:
       SMTP_FROM: ${{ secrets.SMTP_FROM }}
     steps:
       # checkout より前にサブディレクトリへ cd するとディレクトリ不存在で落ちるため、先に取得する
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: GitHub が secrets を認識しているか（true=名前が登録済み、値は表示しない）
         run: |
           echo "KINTONE_DOMAIN_defined=${{ secrets.KINTONE_DOMAIN != '' }}"
           echo "KINTONE_APP_defined=${{ secrets.KINTONE_APP != '' }}"
           echo "KINTONE_API_TOKEN_COLLECT_defined=${{ secrets.KINTONE_API_TOKEN_COLLECT != '' }}"
-          echo "GEMINI_API_KEY_defined=${{ secrets.GEMINI_API_KEY != '' }}（collect では未使用・analyze 用）"
+          echo "GEMINI_API_KEY_defined=${{ secrets.GEMINI_API_KEY != '' }}（collect の体裁整形で任意）"
 
       - name: kintone 用シークレットがシェルに渡っているか確認（値は出さない）
         env:
@@ -70,7 +74,7 @@ jobs:
           fi
           echo "必須の kintone 用の値はシェル上で非空です（内容はログに出しません）"
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: "22"
           cache: npm
@@ -88,8 +92,11 @@ jobs:
           # 2. アプリID（画像では KINTONE_APP でした）
           KINTONE_APP_ID: ${{ secrets.KINTONE_APP }}
 
-          # 3. トークン（画像では KINTONE_API_TOKEN_COLLECT でした）
+          # 3. トークン（config.ts は KINTONE_API_TOKEN_COLLECT を優先）
+          KINTONE_API_TOKEN_COLLECT: ${{ secrets.KINTONE_API_TOKEN_COLLECT }}
           KINTONE_API_TOKEN: ${{ secrets.KINTONE_API_TOKEN_COLLECT }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
           SECURITY_NEXT_RSS_URL: ${{ secrets.SECURITY_NEXT_RSS_URL }}
           NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
           COLLECT_MAX_NEW_PER_RUN: ${{ vars.COLLECT_MAX_NEW_PER_RUN }}
