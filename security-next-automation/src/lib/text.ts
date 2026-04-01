@@ -90,17 +90,42 @@ export function buildRssMaterialSummaryDigest(
       ? truncateForLlm(ex, 900)
       : `（RSS 抜粋が空です。タイトル: ${truncateForLlm(t, 200)}）`;
 
-  const firstParagraph = (ex.split(/\n{2,}/)[0] ?? ex).trim();
+  /**
+   * 「事象」に載せた抜粋と同じ段落を「脆弱性関連」にコピーしない。
+   * 技術寄りの文だけ拾い、先頭〜200字程度と同一始まりなら捨てる。
+   */
+  const techSentenceRe =
+    /脆弱|CVE|インジェクション|認証|バイパス|ゼロデイ|悪用|権限|RCE|XSS|SQL|バッファ|オーバーフロー|リモート|コード実行|攻撃|スクリプト|ホール|欠陥/i;
 
   let 脆弱性関連 =
-    "RSS 抜粋に CVE・脆弱性の詳細は明記されていません。元記事・公式アドバイザリで確認してください。";
+    "RSS 抜粋に CVE・攻撃種別等の技術的明記が乏しい場合があります。製品名・版数・深刻度は元記事・ベンダ情報で確認してください。";
   const cveRe = /CVE-\d{4}-\d+/gi;
   const cveMatch = cveRe.exec(ex);
   if (cveMatch) {
     const i = cveMatch.index;
     脆弱性関連 = truncateForLlm(ex.slice(Math.max(0, i - 24), i + cveMatch[0].length + 200).trim(), 500);
-  } else if (/脆弱|不正アクセス|ランサム|ゼロデイ|認証|バイパス|乗っ取り/.test(ex)) {
-    脆弱性関連 = truncateForLlm(firstParagraph || ex, 520);
+  } else if (techSentenceRe.test(ex)) {
+    const chunks = ex
+      .split(/[。．]/)
+      .map((c) => c.trim())
+      .filter((c) => c.length > 4);
+    const jishoHead = 事象本文.replace(/\s+/g, "").slice(0, 120);
+    const hits: string[] = [];
+    for (const c of chunks) {
+      if (!techSentenceRe.test(c)) continue;
+      const cn = c.replace(/\s+/g, "");
+      if (
+        jishoHead.length >= 24 &&
+        (jishoHead.startsWith(cn.slice(0, Math.min(48, cn.length))) ||
+          cn.startsWith(jishoHead.slice(0, Math.min(48, jishoHead.length))))
+      ) {
+        continue;
+      }
+      hits.push(`${c}。`);
+    }
+    if (hits.length > 0) {
+      脆弱性関連 = truncateForLlm(hits.join(" "), 520);
+    }
   }
 
   let 修正対策 =
@@ -123,6 +148,20 @@ export function buildRssMaterialSummaryDigest(
   ].join("\n");
 
   return { overview, digest };
+}
+
+/**
+ * digest 末尾の「見解:」直後の本文だけを差し替える（Gemini 見解のみ注入など）
+ */
+export function replaceDigestInsightParagraph(digest: string, newInsightBody: string): string {
+  const label = "見解:";
+  const idx = digest.indexOf(label);
+  const body = newInsightBody.trim();
+  if (!body) return digest;
+  if (idx === -1) {
+    return `${digest.trim()}\n${label} ${body}`;
+  }
+  return `${digest.slice(0, idx + label.length)} ${body}`;
 }
 
 /**

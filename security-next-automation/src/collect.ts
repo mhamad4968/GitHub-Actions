@@ -3,19 +3,20 @@
  * フィードから kintone ニュースアプリ（631 等）へ未登録分を登録する。
  * - ポジティブ: タイトル・抜粋にインシデント関連語／ネガティブ語で除外
  * - 最大 3 件・同一 URL 1 件
- * **GEMINI_API_KEY あり**: Gemini で体裁付け（概要＝何が起きたか 1〜2 文＋末尾 `Security NEXT`。要約＝事象・脆弱性関連・修正・対策・見解の 4 見出し）。
+ * **GEMINI_API_KEY あり**: Gemini で体裁付け（概要＝何が起きたか 1〜2 文＋末尾 `Security NEXT`。要約＝事象・脆弱性関連・修正・対策・見解の 4 見出し）。全文 API が失敗しても **見解** だけは Gemini で差し替え試行（`formatDigestInsightOnly`）。
  * **キーなし**または **COLLECT_SKIP_GEMINI_FORMAT=1**: `buildRssMaterialSummaryDigest` で4見出し＋概要。選別は常に全文抜粋ベース。
  */
 import Parser from "rss-parser";
 
 import { loadConfig } from "./lib/config.js";
-import { formatNewsForKintone } from "./lib/format-news-gemini.js";
+import { formatDigestInsightOnly, formatNewsForKintone } from "./lib/format-news-gemini.js";
 import { NEWS_FIELDS } from "./lib/field-codes.js";
 import { createKintoneClient } from "./lib/kintone-client.js";
 import { notifyFailure, notifyRunSummary } from "./lib/notify.js";
 import {
   buildRssMaterialSummaryDigest,
   escapeKintoneQueryString,
+  replaceDigestInsightParagraph,
   stripHtmlToPlain,
   truncateForLlm,
 } from "./lib/text.js";
@@ -367,13 +368,16 @@ async function main(): Promise<void> {
   }
 
   const records: Array<Record<string, { value: string }>> = [];
-  /** 通知用: 実際に Gemini 通過で書けた件数 */
-  let geminiFormattedCount = 0;
+  /** 通知用: 全文 Gemini 成功 */
+  let geminiFullCount = 0;
+  /** 通知用: 見解のみ Gemini（全文は RSS 材料など） */
+  let geminiInsightOnlyCount = 0;
 
   for (const row of toAdd) {
     let overview: string;
     let digest: string;
     let usedGeminiForThis = false;
+    let usedGeminiInsightOnly = false;
     if (useGemini && geminiKey) {
       try {
         const fmt = await formatNewsForKintone(geminiKey, {
@@ -437,15 +441,39 @@ async function main(): Promise<void> {
       overview = `${truncateForLlm(stub, COLLECT_OVERVIEW_MAX_CHARS)}\nSecurity NEXT`;
     }
 
-    if (usedGeminiForThis) {
-      geminiFormattedCount++;
+    /** 全文 Gemini を使えなかったがキーがある → 見解だけ Gemini（429 時の体裁） */
+    if (!usedGeminiForThis && shouldUseGeminiFormat() && geminiKey) {
+      try {
+        const insightBody = await formatDigestInsightOnly(geminiKey, {
+          title: row.title,
+          articleUrl: row.link,
+          publishedDate: row.publishedDate,
+          rssExcerptPlain: row.digestFullText,
+        });
+        digest = replaceDigestInsightParagraph(digest, insightBody);
+        usedGeminiInsightOnly = true;
+        console.log("[ニュース収集] 見解のみ Gemini で反映（全文は RSS 材料または検証フォールバック）:", row.link);
+      } catch (eInsight) {
+        console.warn(
+          "[ニュース収集] 見解のみ Gemini に失敗。要約の見解は材料整形のまま:",
+          row.link,
+          eInsight,
+        );
+      }
     }
+
+    if (usedGeminiForThis) {
+      geminiFullCount++;
+    } else if (usedGeminiInsightOnly) {
+      geminiInsightOnlyCount++;
+    }
+    const geminiMark: "Y" | "I" | "N" = usedGeminiForThis ? "Y" : usedGeminiInsightOnly ? "I" : "N";
     const prevDigest = digest.slice(0, 72).replace(/\s+/g, " ");
     console.log(
       "[ニュース収集] 登録直前:",
       row.link,
       "| gemini=",
-      usedGeminiForThis ? "Y" : "N",
+      geminiMark,
       "| 概要(先頭40字)=",
       overview.replace(/\s+/g, " ").slice(0, 40),
       "| 要約(先頭72字)=",
@@ -477,7 +505,7 @@ async function main(): Promise<void> {
     extraLines: [
       `• キーワードに合致した候補（件数）: ${keywordMatchedCount}`,
       `• 保存先アプリの識別番号: ${cfg.newsAppId}`,
-      `• 概要・要約: Gemini で整形した件数 ${geminiFormattedCount}/${ids.length}（0 なら GEMINI_API_KEY 未設定・失敗・または再フォールバック。ログの「登録直前」参照）`,
+      `• 概要・要約: Gemini 全文 ${geminiFullCount}／見解のみ ${geminiInsightOnlyCount}／登録 ${ids.length} 件（ログ「登録直前」: Y=全文・I=見解のみ・N=Gemini 未使用）`,
       ...(ids[0] ? [`• 今回の先頭レコード識別番号: ${ids[0]}`] : []),
     ],
   });

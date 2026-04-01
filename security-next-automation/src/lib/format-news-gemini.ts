@@ -67,6 +67,11 @@ const EXCERPT_FOR_LLM_MAX = 3500;
 /** 体裁検証に失敗したときの最大再試行回数（プロンプトに検証メッセージを付けてやり直す） */
 const FORMAT_MAX_ATTEMPTS = 3;
 
+/** 全文 Gemini 失敗時に「見解」だけを埋める API 呼び出しの再試行回数 */
+const INSIGHT_MAX_ATTEMPTS = 2;
+
+const INSIGHT_EXCERPT_MAX = 2000;
+
 const DIGEST_HEADINGS = [
   "事象:",
   "脆弱性関連:",
@@ -99,6 +104,15 @@ function parseFormatJson(raw: string): NewsFormatOutput {
     throw new Error("Gemini の JSON に overview または digest が空です");
   }
   return { overview, digest };
+}
+
+function digestSectionBody(digest: string, heading: string, nextHeading: string | null): string {
+  const i = digest.indexOf(heading);
+  if (i < 0) return "";
+  const from = i + heading.length;
+  const end = nextHeading ? digest.indexOf(nextHeading, from) : digest.length;
+  const to = end < 0 ? digest.length : end;
+  return digest.slice(from, to).trim();
 }
 
 /**
@@ -158,6 +172,15 @@ export function validateNewsFormat(out: NewsFormatOutput): void {
   if (normOverviewBody.length > 0 && normDigest.startsWith(normOverviewBody.slice(0, Math.min(40, normOverviewBody.length)))) {
     throw new Error("digest の先頭が overview 本文と同じ始まりになっています。要約は別の言い回しで書いてください");
   }
+
+  const jisho = digestSectionBody(digest, "事象:", "脆弱性関連:").replace(/\s+/g, "");
+  const zeikan = digestSectionBody(digest, "脆弱性関連:", "修正・対策:").replace(/\s+/g, "");
+  const minHead = Math.min(80, jisho.length, zeikan.length);
+  if (minHead >= 40 && jisho.slice(0, minHead) === zeikan.slice(0, minHead)) {
+    throw new Error(
+      "事象 と 脆弱性関連 の冒頭が重複しています。事象はニュースの出来事・状況のみ。脆弱性関連は CVE・製品コンポーネント・攻撃種別・認証の問題など技術用語で別の文にしてください",
+    );
+  }
 }
 
 /**
@@ -190,8 +213,9 @@ export async function formatNewsForKintone(
       "修正・対策:",
       "見解:",
       "各見出しのコロン**直後**は空にしない。**最低 1 文・おおよそ 15 文字以上**。抜粋に無い事項は「記事・公式で要確認」「抜粋に明示なし」と明示する。",
-      "事象: 影響範囲・停止・被害の様子・攻撃の手口の素朴な説明（抜粋ベース）。",
-      "脆弱性関連: CVE・製品名・認証の問題等。抜粋に無ければ推測せず確認依頼の文にする。",
+      "**事象: と 脆弱性関連: は同じ文・同じ言い回しを繰り返さない**（コピペ禁止）。事象は「何が公表・観測されたか」のストリート。脆弱性関連は **技術側**（CVE 番号・攻撃ベクトル・弱点の性質・影響しうる資産）に絞る。",
+      "事象: メーカー公表や報道ベースの**出来事**（製品名は出てよいが、技術説明の細部は脆弱性関連へ回す）。",
+      "脆弱性関連: **技術名・CVE・認証・権限・コード実行の有無**など。事象で語った内容の言い換え繰り返しは禁止。抜粋に技術情報が無ければ短く「抜粋に CVE・詳細なし。元記事・アドバイザリで要確認」など。",
       "修正・対策: パッチ・バージョン・推奨設定が抜粋にあれば。無ければ「元記事の対応を確認」系。",
       "見解: 管理者向けに優先度の目安・すぐ確認すべき点を 1〜2 文（断定しすぎない）。",
     ].join("\n"),
@@ -217,7 +241,7 @@ export async function formatNewsForKintone(
     const fix =
       attempt === 0
         ? ""
-        : `\n\n[前回の出力は要件を満たしませんでした: ${lastErr}。overview は最終行のみ Security NEXT。digest は4見出し順守・各見出しに本文1文以上・overview との重複なし。JSON のみ再出力。]`;
+        : `\n\n[前回の出力は要件を満たしませんでした: ${lastErr}。overview は最終行のみ Security NEXT。digest は4見出し順守・事象と脆弱性関連は内容を分離・各見出しに本文1文以上・overview との重複なし。JSON のみ再出力。]`;
     const result = await generateContentWith429Retries(model, userBase + fix);
     const text = result.response.text().trim();
     if (!text) {
@@ -239,4 +263,74 @@ export async function formatNewsForKintone(
     }
   }
   throw new Error(`Gemini 体裁が ${FORMAT_MAX_ATTEMPTS} 回とも検証に失敗しました: ${lastErr}`);
+}
+
+function parseInsightJson(raw: string): string {
+  let t = raw.trim();
+  if (t.startsWith("```")) {
+    t = t.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/i, "");
+  }
+  const o = JSON.parse(t) as { insight?: unknown };
+  const insight = typeof o.insight === "string" ? o.insight.trim() : "";
+  if (insight.length < 15) {
+    throw new Error("insight が短すぎます");
+  }
+  if (/Security NEXT/i.test(insight)) {
+    throw new Error("insight に Security NEXT を含めないでください");
+  }
+  return insight;
+}
+
+/**
+ * 要約の「見解:」欄のみ Gemini で生成する（全文整形が 429 等で失敗したとき用。トークンを抑える）
+ */
+export async function formatDigestInsightOnly(apiKey: string, input: NewsFormatInput): Promise<string> {
+  const excerpt = truncateForLlm(input.rssExcerptPlain, INSIGHT_EXCERPT_MAX);
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const model = genAI.getGenerativeModel({
+    model: GEMINI_MODEL,
+    systemInstruction: [
+      "あなたは組織の情報セキュリティ担当向けのアドバイザです。",
+      "入力は RSS 抜粋のみ。抜粋に無い事実は断定せず、優先度や確認観点は「目安」「要確認」と留める。",
+      "出力は有効な JSON オブジェクト 1 つだけ。キーは厳密に \"insight\" のみ。",
+      "insight の値: 日本語で 1〜3 文。対応優先度の目安、社内で確認すべき論点（資産・利用範囲・パッチ方針など）、リスクの捉え方。",
+      "「RSS 由来です」「自動登録です」などのメタ説明は書かない。中身の提案に集中。",
+      "Security NEXT という文字列は insight に含めない。",
+    ].join("\n"),
+    generationConfig: {
+      temperature: 0.28,
+      maxOutputTokens: 640,
+    },
+  });
+
+  const userBase = [
+    "次の記事について、キー insight だけを JSON で返してください。",
+    "",
+    "タイトル: " + input.title,
+    "URL: " + input.articleUrl,
+    "公開日: " + input.publishedDate,
+    "",
+    "RSS 抜粋:",
+    excerpt,
+  ].join("\n");
+
+  let lastErr = "（初回）";
+  for (let attempt = 0; attempt < INSIGHT_MAX_ATTEMPTS; attempt++) {
+    const fix =
+      attempt === 0
+        ? ""
+        : `\n\n[前回不備: ${lastErr}。insight のみ・1〜3文・日本語・JSONのみ再出力。]`;
+    const result = await generateContentWith429Retries(model, userBase + fix);
+    const text = result.response.text().trim();
+    if (!text) {
+      lastErr = "空応答";
+      continue;
+    }
+    try {
+      return parseInsightJson(text);
+    } catch (e) {
+      lastErr = e instanceof Error ? e.message : String(e);
+    }
+  }
+  throw new Error(`Gemini 見解のみが ${INSIGHT_MAX_ATTEMPTS} 回とも失敗: ${lastErr}`);
 }
