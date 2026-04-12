@@ -7,12 +7,23 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { generateContentWith429Retries } from "./gemini-rate-limit.js";
 import { normalizeInsightParagraphBody, truncateForLlm } from "./text.js";
 
-/** 試行順: GEMINI_MODEL（設定時は先頭）→ 404 のとき次へ（gemini-1.5-flash 等の v1beta 非対応を救済） */
+/**
+ * 未設定時の候補（404 時はこの順に試す）。
+ * gemini-2.0-flash は 2026 時点で提供終了・404 になりやすいため含めない。
+ * @see https://ai.google.dev/gemini-api/docs/models
+ */
+export const GEMINI_MODEL_FALLBACKS = [
+  "gemini-2.5-flash",
+  "gemini-flash-latest",
+  "gemini-2.5-flash-lite",
+  "gemini-3-flash-preview",
+] as const;
+
+/** 試行順: GEMINI_MODEL（設定時は先頭）→ 404 のとき FALLBACKS へ */
 export function geminiModelCandidates(): string[] {
-  const fallbacks = ["gemini-2.0-flash", "gemini-2.5-flash-preview-05-20"] as const;
   const primary = process.env.GEMINI_MODEL?.trim();
-  if (!primary) return [...fallbacks];
-  return [...new Set([primary, ...fallbacks])];
+  if (!primary) return [...GEMINI_MODEL_FALLBACKS];
+  return [...new Set([primary, ...GEMINI_MODEL_FALLBACKS])];
 }
 
 export function isGeminiModelNotFoundError(err: unknown): boolean {
@@ -338,7 +349,7 @@ export async function formatNewsForKintone(
     throw new Error(`Gemini 体裁（${modelId}）が ${FORMAT_MAX_ATTEMPTS} 回とも検証に失敗しました: ${lastErr}`);
   }
   throw new Error(
-    `Gemini の全候補モデルが利用不可（404 等）です。GitHub Variables の GEMINI_MODEL を空にするか gemini-2.0-flash にしてください。 ${lastAll404Msg}`,
+    `Gemini の全候補モデルが利用不可（404 等）です。AI Studio で API キーに紐づくモデル一覧を確認し、GEMINI_MODEL に gemini-2.5-flash 等を指定してください。 ${lastAll404Msg}`,
   );
 }
 

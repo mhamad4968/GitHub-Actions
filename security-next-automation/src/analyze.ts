@@ -1,11 +1,14 @@
 /**
  * 631 番ニュースアプリから「今週分」（JST 月〜金・作成日時ベース）のタイトル・概要を取得し、
- * Gemini 1.5 Flash でセキュリティトレンドと対策を約 1000 字にまとめ、
+ * Gemini（GEMINI_MODEL 省略時は gemini-2.5-flash 等へ順次フォールバック）でセキュリティトレンドと対策を約 1000 字にまとめ、
  * 632 番レポートアプリの weekly_trend（画面: 今週の傾向と対策・リッチテキスト）へ 1 件追加する。
+ * 429 時は collect 体裁と同様に待機再試行する（gemini-rate-limit.ts）。
  */
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 import { loadConfig, requireGeminiApiKey, resolveApiTokenForAnalyze } from "./lib/config.js";
+import { geminiModelCandidates, isGeminiModelNotFoundError } from "./lib/format-news-gemini.js";
+import { generateContentWith429Retries } from "./lib/gemini-rate-limit.js";
 import { CREATED_TIME_CODE, NEWS_FIELDS, REPORT_FIELDS } from "./lib/field-codes.js";
 import { createKintoneClient } from "./lib/kintone-client.js";
 import { notifyFailure, notifyRunSummary } from "./lib/notify.js";
@@ -14,9 +17,6 @@ import { getRunningWeekRangeJst } from "./lib/week-jst.js";
 
 const MAX_ARTICLES = 45;
 const SUMMARY_CHARS_PER_ARTICLE = 320;
-/** 週次要約の出力モデル（無料枠向け Flash） */
-const GEMINI_MODEL = "gemini-1.5-flash";
-
 /**
  * 週次: 作成日時がその週（月〜金・JST）に入るニュースを全部取得
  */
@@ -75,30 +75,43 @@ function buildCondensedContext(
 }
 
 /**
- * Gemini 1.5 Flash で今週の傾向と対策を日本語 1000 字前後で生成
+ * Gemini で今週の傾向と対策を日本語 1000 字前後で生成（429 時は自動再試行）
  */
 async function summarizeTrendGemini(apiKey: string, condensed: string): Promise<string> {
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({
-    model: GEMINI_MODEL,
-    systemInstruction: [
-      "あなたは情報セキュリティニュースの編集長です。",
-      "入力は Security NEXT 相当のニュース一覧の要約のみです。本文全文はありません。",
-      "日本語で、次を必ず含めてください: (1) 今週の傾向（脅威・製品・制度など観点で箇条書き中心）(2) 組織が取るべき対策（優先度が高い順）。",
-      "全体でおおよそ900〜1100文字。前置きや謝罪、Markdown見出し記号は不要。",
-      "記載内容は入力の範囲に限定し、足りない情報は推測で断定しない。",
-    ].join(""),
-    generationConfig: {
-      temperature: 0.35,
-      maxOutputTokens: 2048,
-    },
-  });
   const prompt =
     "以下が今週登録されたニュース要約のみです（トークン節約のため短縮済み）。\n\n" + condensed;
-  const result = await model.generateContent(prompt);
-  const text = result.response.text().trim();
-  if (!text) throw new Error("Gemini から空の応答が返りました");
-  return text;
+  let last404 = "";
+  for (const modelId of geminiModelCandidates()) {
+    const model = genAI.getGenerativeModel({
+      model: modelId,
+      systemInstruction: [
+        "あなたは情報セキュリティニュースの編集長です。",
+        "入力は Security NEXT 相当のニュース一覧の要約のみです。本文全文はありません。",
+        "日本語で、次を必ず含めてください: (1) 今週の傾向（脅威・製品・制度など観点で箇条書き中心）(2) 組織が取るべき対策（優先度が高い順）。",
+        "全体でおおよそ900〜1100文字。前置きや謝罪、Markdown見出し記号は不要。",
+        "記載内容は入力の範囲に限定し、足りない情報は推測で断定しない。",
+      ].join(""),
+      generationConfig: {
+        temperature: 0.35,
+        maxOutputTokens: 2048,
+      },
+    });
+    try {
+      const result = await generateContentWith429Retries(model, prompt, { logTag: "[analyze] Gemini" });
+      const text = result.response.text().trim();
+      if (!text) throw new Error("Gemini から空の応答が返りました");
+      return text;
+    } catch (e) {
+      if (isGeminiModelNotFoundError(e)) {
+        last404 = e instanceof Error ? e.message : String(e);
+        console.warn(`[analyze] model=${modelId} が利用不可（404 等）。次候補へ`);
+        continue;
+      }
+      throw e;
+    }
+  }
+  throw new Error(`[analyze] Gemini 全候補が利用不可（404 等）。GEMINI_MODEL または API キーを確認。 ${last404}`);
 }
 
 async function main(): Promise<void> {
@@ -132,7 +145,7 @@ async function main(): Promise<void> {
   }
 
   const condensed = buildCondensedContext(records);
-  console.log("[analyze] Gemini モデル:", GEMINI_MODEL);
+  console.log("[analyze] Gemini モデル試行順:", geminiModelCandidates().join(" → "));
   const reportText = await summarizeTrendGemini(geminiKey, condensed);
   console.log("[analyze] LLM 出力文字数:", reportText.length);
 
