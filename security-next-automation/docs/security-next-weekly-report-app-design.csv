@@ -1,3 +1,9 @@
 フィールド名（画面表示）,フィールドコード,フィールド種類,kintone上の型コード,必須,値の重複を禁止,説明・用途・備考
-対象週,target_week,日付,DATE,推奨,いいえ,ISO週の月曜日を1件1日で格納。analyze.ts が週次ジョブで自動投入（JST）
-今週の傾向と対策,weekly_trend,リッチエディタ,RICH_TEXT,推奨,いいえ,LLMが900〜1100字程度で生成。analyze.ts がHTML文字列で投入。ニュースアプリ（631等）とは別アプリに置く
+対象週,target_week,日付,DATE,推奨,いいえ,ISO週の月曜日を1件1日で格納。analyze.ts が Idempotency のキーに使用
+今週の傾向と対策,weekly_trend,リッチエディタ,RICH_TEXT,推奨,いいえ,LLMが900〜1100字程度で生成。analyze.ts がHTML文字列で投入
+週次サマリー1行,summary_one_line,文字列（1行）,SINGLE_LINE_TEXT,任意,いいえ,ポータル・通知・検索用。Gemini が本文とは別に生成。一覧の先頭列向け
+参照631件数（内部）,internal_ref_news_count,数値,NUMBER,任意,いいえ,LLM に渡した 631 レコード件数（上限45件で打ち切った後の件数）
+参照631レコード番号最小（内部）,internal_ref_record_id_min,数値,NUMBER,任意,いいえ,上記に含まれる 631 の $id 最小値
+参照631レコード番号最大（内部）,internal_ref_record_id_max,数値,NUMBER,任意,いいえ,上記に含まれる 631 の $id 最大値
+分析実行日時（内部）,internal_analysis_run_at,日時,DATETIME,任意,いいえ,analyze 実行時刻（JST オフセット付きISO）
+GitHub run_id（内部）,internal_github_run_id,文字列（1行）,SINGLE_LINE_TEXT,任意,いいえ,Actions の GITHUB_RUN_ID。再現性・トレース用

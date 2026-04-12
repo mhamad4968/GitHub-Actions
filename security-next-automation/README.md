@@ -35,7 +35,7 @@ Claude Code やエージェントが仕様・トラブル・開発作法を見�
 | タイミング | 内容 |
 |------------|------|
 | **毎日 10:00 / 17:00（JST）** | `daily-collect.yml` → `collect.ts`。RSS から未登録候補を **高度キーワード**で選別（Gemini 不使用）。事件性（国内・重大）＋世界的重大警告語を含み、**予防・管理**語（パッチ・アドバイザリ・**リリース**等）を含まないものを、公開日の新しい順に最大 **3 件**をアプリ **631** へ保存。 |
-| **毎週金曜 17:00（JST）** | `main.yml` の `security-next-kintone` → `analyze.ts`（`cron: 0 8 * * 5` = 金曜 08:00 UTC）。その週の **631** のニュースを振り返り、傾向と対策を **632**（`weekly_trend`）へ投稿。 |
+| **毎週金曜 17:00（JST）** | `main.yml` の `security-next-kintone` → `analyze.ts`（`cron: 0 8 * * 5` = 金曜 08:00 UTC）。その週の **631** を集約し **632** へ **新規追加または同一 `target_week` の更新**（Idempotency）。本文・1行サマリー・参照エビデンス・`GITHUB_RUN_ID` を保存。 |
 
 **動作確認の目安**: 日次実行後、**631** にキーワードに合致した記事が追加されていれば意図どおり（完全一致ではないため、必要に応じてキーワード一覧を `collect.ts` で調整）。重要事故の**即時**通知が必要なら、kintone の通知設定や Webhook 連係（`NOTIFY_WEBHOOK_URL` / `NOTIFY_SUMMARY_WEBHOOK_URL`）の拡張を検討。
 
@@ -209,10 +209,14 @@ Security NEXT
 
 | 画面のフィールド名 | フィールドコード（このコード名で固定） | 種類 |
 |-------------------|----------------------------------------|------|
-| 対象週 | `target_week` | **日付**（その週の月曜日を 1 件 1 日で格納） |
+| 対象週 | `target_week` | **日付**（その週の月曜日。同一日付は更新） |
 | 今週の傾向と対策 | `weekly_trend` | **リッチエディタ**（`analyze.ts` が HTML で投入） |
+| 週次サマリー1行 | `summary_one_line` | **文字列（1行）**（一覧・通知向け） |
+| （内部）参照件数・$id 範囲・実行日時・run_id | `internal_*` | **数値／日時／1行**（監査用。一覧では非表示推奨） |
 
 設計 CSV: [`docs/security-next-weekly-report-app-design.csv`](docs/security-next-weekly-report-app-design.csv)。手順: [`docs/kintone-weekly-report-app-creation-steps.md`](docs/kintone-weekly-report-app-creation-steps.md)。
+
+**632 を既に運用中の場合**: 不足している `summary_one_line` と `internal_*` をフォームに追加してから `analyze` を実行してください。
 
 ## API トークンに付与する権限
 
@@ -226,9 +230,9 @@ Security NEXT
 | 処理 | 必要な権限 |
 |------|------------|
 | `collect` | **レコードの閲覧**（`article_url` 重複チェック）、**レコードの追加** |
-| `analyze` | ニュース側の **閲覧**、週次要約側の **閲覧**（任意）＋ **追加** |
+| `analyze` | ニュース側の **閲覧**、週次要約側の **閲覧**（任意）＋ **追加** ＋ **編集**（同一 `target_week` の更新） |
 
-**編集・削除・アプリ管理**は `collect` / `analyze` では呼びません。
+`collect` は **編集・削除・アプリ管理**を呼びません。`analyze` は Idempotency のため週次要約アプリで **レコードの編集**を使います。
 
 ### フル権限のトークンについて
 
@@ -259,6 +263,8 @@ Security NEXT
 | `SECURITY_NEXT_RSS_URL` | — | 既定 `https://www.security-next.com/feed` |
 | `NOTIFY_WEBHOOK_URL` | — | **失敗時**に POST する Slack 等の URL（`{"text":"..."}` 互換） |
 | `NOTIFY_SUMMARY_WEBHOOK_URL` | — | **成功時**サマリー（候補数・追加件数必須）。Slack/Teams 向けも同形式なら可。未設定なら送信しない |
+| `GITHUB_RUN_ID` | — | GitHub Actions が自動設定。632 の `internal_github_run_id` に記録（ローカルは `local`） |
+| `ANALYZE_EXISTING_WEEK_RECORD` | — | `update`（既定）＝同一週は上書き、`skip`＝既存があればスキップ。Repository variables でも可 |
 
 ## ローカル実行
 

@@ -1,6 +1,6 @@
 /**
  * Security NEXT 週次要約用アプリだけをスペース 48 に作る（ニュース用 630/631 は触らない）。
- * analyze.ts が期待するフィールド: target_week（日付）, weekly_trend（リッチエディタ）。
+ * analyze.ts が期待するフィールド: target_week, weekly_trend, summary_one_line, internal_*（件数・$id 範囲・実行日時・run_id）。詳細は field-codes.ts / security-next-weekly-report-app-design.csv。
  *
  * 実行例:
  *   cd /path/to/kintone-ai-lab && npm run setup:security-next-report-app
@@ -76,7 +76,7 @@ async function resolveDefaultThreadId(spaceId) {
   return Number(dt);
 }
 
-/** field-codes.ts の REPORT_FIELDS と一致 */
+/** field-codes.ts の REPORT_FIELDS と一致（新規アプリ作成時のみ一括投入） */
 const REPORT_FIELD_DEFS = {
   target_week: {
     type: "DATE",
@@ -94,6 +94,87 @@ const REPORT_FIELD_DEFS = {
     label: "今週の傾向と対策",
     noLabel: false,
     required: false,
+    defaultValue: "",
+  },
+  summary_one_line: {
+    type: "SINGLE_LINE_TEXT",
+    code: "summary_one_line",
+    label: "週次サマリー1行",
+    noLabel: false,
+    required: false,
+    minLength: "",
+    maxLength: "",
+    expression: "",
+    hideExpression: false,
+    unique: false,
+    defaultValue: "",
+  },
+  internal_ref_news_count: {
+    type: "NUMBER",
+    code: "internal_ref_news_count",
+    label: "参照631件数（内部）",
+    noLabel: false,
+    required: false,
+    minValue: "",
+    maxValue: "",
+    digit: false,
+    unique: false,
+    defaultValue: "",
+    displayScale: "",
+    unit: "",
+    unitPosition: "BEFORE",
+  },
+  internal_ref_record_id_min: {
+    type: "NUMBER",
+    code: "internal_ref_record_id_min",
+    label: "参照631レコード番号最小（内部）",
+    noLabel: false,
+    required: false,
+    minValue: "",
+    maxValue: "",
+    digit: false,
+    unique: false,
+    defaultValue: "",
+    displayScale: "",
+    unit: "",
+    unitPosition: "BEFORE",
+  },
+  internal_ref_record_id_max: {
+    type: "NUMBER",
+    code: "internal_ref_record_id_max",
+    label: "参照631レコード番号最大（内部）",
+    noLabel: false,
+    required: false,
+    minValue: "",
+    maxValue: "",
+    digit: false,
+    unique: false,
+    defaultValue: "",
+    displayScale: "",
+    unit: "",
+    unitPosition: "BEFORE",
+  },
+  internal_analysis_run_at: {
+    type: "DATETIME",
+    code: "internal_analysis_run_at",
+    label: "分析実行日時（内部）",
+    noLabel: false,
+    required: false,
+    unique: false,
+    defaultValue: "",
+    defaultNowValue: false,
+  },
+  internal_github_run_id: {
+    type: "SINGLE_LINE_TEXT",
+    code: "internal_github_run_id",
+    label: "GitHub run_id（内部）",
+    noLabel: false,
+    required: false,
+    minLength: "",
+    maxLength: "",
+    expression: "",
+    hideExpression: false,
+    unique: false,
     defaultValue: "",
   },
 };

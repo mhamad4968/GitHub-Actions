@@ -18,6 +18,14 @@ export const REPORT_FIELDS = {
   targetWeek: "target_week",
   /** 画面「今週の傾向と対策」= 週次 LLM 要約（RICH_TEXT）。口頭の「今週の要約」はここに相当 */
   weeklyTrend: "weekly_trend",
+  /** 一覧・通知・ポータル向けのプレーン 1 行（Gemini 出力・表示用） */
+  summaryOneLine: "summary_one_line",
+  /** 以下 internal_* … 管理者・監査向け。一覧レイアウトでは非表示推奨 */
+  internalRefNewsCount: "internal_ref_news_count",
+  internalRefRecordIdMin: "internal_ref_record_id_min",
+  internalRefRecordIdMax: "internal_ref_record_id_max",
+  internalAnalysisRunAt: "internal_analysis_run_at",
+  internalGithubRunId: "internal_github_run_id",
 } as const;
 
 /** クエリでつかう作成日時（日本語環境の標準フィールドコード） */

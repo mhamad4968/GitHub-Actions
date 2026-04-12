@@ -1,12 +1,16 @@
 /**
  * 631 番ニュースアプリから「今週分」（JST 月〜金・作成日時ベース）のタイトル・概要を取得し、
- * Gemini（GEMINI_MODEL 省略時は format-news-gemini の GEMINI_MODEL_FALLBACKS:
- * flash-latest → 2.5-flash → 2.5-flash-lite → pro-latest → 3.1-flash-preview）で
+ * Gemini（GEMINI_MODEL 省略時は format-news-gemini の GEMINI_MODEL_FALLBACKS）で
  * セキュリティトレンドと対策を約 1000 字にまとめ、
- * 632 番レポートアプリの weekly_trend（画面: 今週の傾向と対策・リッチテキスト）へ 1 件追加する。
- * 429 時は collect 体裁と同様に待機再試行する（gemini-rate-limit.ts）。
+ * 632 番レポートアプリへ投入する。
+ * - target_week をキーに既存レコードがあれば更新（PUT）、なければ追加（POST）。
+ * - 参照エビデンス・1 行サマリー・GitHub run_id を内部／表示用フィールドに保存。
  */
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import type { KintoneRestAPIClient } from "@kintone/rest-api-client";
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone.js";
+import utc from "dayjs/plugin/utc.js";
 
 import { loadConfig, requireGeminiApiKey, resolveApiTokenForAnalyze } from "./lib/config.js";
 import { geminiModelCandidates, isGeminiModelNotFoundError } from "./lib/format-news-gemini.js";
@@ -17,19 +21,77 @@ import { notifyFailure, notifyRunSummary } from "./lib/notify.js";
 import { plainTextToRichTextHtml, stripHtmlToPlain, truncateForLlm } from "./lib/text.js";
 import { getRunningWeekRangeJst } from "./lib/week-jst.js";
 
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+const TZ = "Asia/Tokyo";
 const MAX_ARTICLES = 45;
 const SUMMARY_CHARS_PER_ARTICLE = 320;
+const SUMMARY_ONE_LINE_MAX = 200;
+
+type WeeklyGeminiOut = {
+  weekly_article: string;
+  summary_one_line: string;
+};
+
+function nowJstForKintoneDatetime(): string {
+  return dayjs().tz(TZ).format("YYYY-MM-DDTHH:mm:ssZ");
+}
+
+function recordNumericId(r: Record<string, { value?: unknown }>): number | null {
+  const raw = (r as { $id?: { value?: unknown } }).$id?.value;
+  if (raw === undefined || raw === null) return null;
+  const n = Number(String(raw));
+  return Number.isFinite(n) ? n : null;
+}
+
+/**
+ * 既存週レコードの扱い: `update`（既定）= upsert、`skip` = 既存があれば何もしない
+ */
+function resolveExistingWeekBehavior(): "update" | "skip" {
+  const v = process.env.ANALYZE_EXISTING_WEEK_RECORD?.trim().toLowerCase();
+  if (v === "skip") return "skip";
+  return "update";
+}
+
+function githubRunIdForEvidence(): string {
+  const id = process.env.GITHUB_RUN_ID?.trim();
+  return id || "local";
+}
+
+function parseWeeklyReportJson(raw: string): WeeklyGeminiOut {
+  let t = raw.trim();
+  if (t.startsWith("```")) {
+    t = t.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/i, "");
+  }
+  const o = JSON.parse(t) as { weekly_article?: unknown; summary_one_line?: unknown };
+  const weekly_article = typeof o.weekly_article === "string" ? o.weekly_article.trim() : "";
+  let summary_one_line =
+    typeof o.summary_one_line === "string" ? o.summary_one_line.trim().replace(/\s+/g, " ") : "";
+  if (!weekly_article) {
+    throw new Error("JSON に weekly_article がありません");
+  }
+  if (!summary_one_line) {
+    summary_one_line = truncateForLlm(weekly_article.replace(/\s+/g, " "), 120).trim();
+  }
+  if (summary_one_line.length > SUMMARY_ONE_LINE_MAX) {
+    summary_one_line = summary_one_line.slice(0, SUMMARY_ONE_LINE_MAX);
+  }
+  return { weekly_article, summary_one_line };
+}
+
 /**
  * 週次: 作成日時がその週（月〜金・JST）に入るニュースを全部取得
  */
 async function fetchWeekNewsRecords(
-  client: ReturnType<typeof createKintoneClient>,
+  client: KintoneRestAPIClient,
   app: string,
   start: string,
   end: string,
 ): Promise<Array<Record<string, { value?: unknown }>>> {
   const query = `${CREATED_TIME_CODE} >= "${start}" and ${CREATED_TIME_CODE} <= "${end}"`;
   const fields = [
+    "$id",
     NEWS_FIELDS.title,
     NEWS_FIELDS.articleUrl,
     NEWS_FIELDS.summary,
@@ -45,9 +107,9 @@ async function fetchWeekNewsRecords(
   return out;
 }
 
-function buildCondensedContext(
+function buildCondensedContextAndUsed(
   records: Array<Record<string, { value?: unknown }>>,
-): string {
+): { condensed: string; usedRecords: Array<Record<string, { value?: unknown }>> } {
   let list = records;
   if (list.length > MAX_ARTICLES) {
     console.warn(
@@ -73,13 +135,67 @@ function buildCondensedContext(
         : "";
     return `${idx + 1}. ${title}\n   URL: ${url}\n   概要: ${summary}${digest}`;
   });
-  return lines.join("\n\n");
+  return { condensed: lines.join("\n\n"), usedRecords: list };
+}
+
+function evidenceMinMaxIds(used: Array<Record<string, { value?: unknown }>>): {
+  min: number | null;
+  max: number | null;
+} {
+  const ids = used.map(recordNumericId).filter((n): n is number => n !== null);
+  if (ids.length === 0) return { min: null, max: null };
+  return { min: Math.min(...ids), max: Math.max(...ids) };
+}
+
+function buildReportRecordValues(params: {
+  targetWeekMonday: string;
+  reportText: string;
+  summaryOneLine: string;
+  usedCount: number;
+  minId: number | null;
+  maxId: number | null;
+  runAtJst: string;
+  githubRunId: string;
+}): Record<string, { value: string }> {
+  const rich = plainTextToRichTextHtml(params.reportText);
+  const rec: Record<string, { value: string }> = {
+    [REPORT_FIELDS.targetWeek]: { value: params.targetWeekMonday },
+    [REPORT_FIELDS.weeklyTrend]: { value: rich },
+    [REPORT_FIELDS.summaryOneLine]: { value: params.summaryOneLine },
+    [REPORT_FIELDS.internalRefNewsCount]: { value: String(params.usedCount) },
+    [REPORT_FIELDS.internalAnalysisRunAt]: { value: params.runAtJst },
+    [REPORT_FIELDS.internalGithubRunId]: { value: params.githubRunId.slice(0, 120) },
+  };
+  if (params.minId !== null) {
+    rec[REPORT_FIELDS.internalRefRecordIdMin] = { value: String(params.minId) };
+  }
+  if (params.maxId !== null) {
+    rec[REPORT_FIELDS.internalRefRecordIdMax] = { value: String(params.maxId) };
+  }
+  return rec;
+}
+
+async function findExistingWeeklyRecord(
+  client: KintoneRestAPIClient,
+  appId: string,
+  targetWeekMonday: string,
+): Promise<{ id: string } | null> {
+  const res = await client.record.getRecords({
+    app: appId,
+    query: `${REPORT_FIELDS.targetWeek} = "${targetWeekMonday}"`,
+    fields: ["$id", REPORT_FIELDS.targetWeek],
+  });
+  const rec = res.records[0];
+  if (!rec) return null;
+  const id = String((rec as { $id?: { value?: unknown } }).$id?.value ?? "");
+  if (!id) return null;
+  return { id };
 }
 
 /**
- * Gemini で今週の傾向と対策を日本語 1000 字前後で生成（429 時は自動再試行）
+ * Gemini: 本文（プレーン）と 1 行サマリーを JSON で返させる
  */
-async function summarizeTrendGemini(apiKey: string, condensed: string): Promise<string> {
+async function summarizeWeeklyReportGemini(apiKey: string, condensed: string): Promise<WeeklyGeminiOut> {
   const genAI = new GoogleGenerativeAI(apiKey);
   const prompt =
     "以下が今週登録されたニュース要約のみです（トークン節約のため短縮済み）。\n\n" + condensed;
@@ -90,20 +206,35 @@ async function summarizeTrendGemini(apiKey: string, condensed: string): Promise<
       systemInstruction: [
         "あなたは情報セキュリティニュースの編集長です。",
         "入力は Security NEXT 相当のニュース一覧の要約のみです。本文全文はありません。",
-        "日本語で、次を必ず含めてください: (1) 今週の傾向（脅威・製品・制度など観点で箇条書き中心）(2) 組織が取るべき対策（優先度が高い順）。",
-        "全体でおおよそ900〜1100文字。前置きや謝罪、Markdown見出し記号は不要。",
-        "記載内容は入力の範囲に限定し、足りない情報は推測で断定しない。",
-      ].join(""),
+        "出力は有効な JSON オブジェクト 1 つのみ。前後に説明・マークダウン・コードフェンスを付けない。",
+        'キーは厳密に "weekly_article" と "summary_one_line" の 2 つ。',
+        "weekly_article: 日本語プレーンテキスト。次を必ず含める: (1) 今週の傾向（脅威・製品・制度など観点で箇条書き中心）(2) 組織が取るべき対策（優先度が高い順）。",
+        "weekly_article はおおよそ 900〜1100 文字。Markdown 見出し記号は使わない。",
+        "summary_one_line: 同じ内容を 1 行に要約した日本語。改行なし。おおよそ 80〜160 文字。ポータル・通知の一行向け。",
+        "記載は入力の範囲に限定し、足りない情報は推測で断定しない。",
+      ].join("\n"),
       generationConfig: {
         temperature: 0.35,
-        maxOutputTokens: 2048,
+        maxOutputTokens: 2800,
       },
     });
     try {
       const result = await generateContentWith429Retries(model, prompt, { logTag: "[analyze] Gemini" });
       const text = result.response.text().trim();
       if (!text) throw new Error("Gemini から空の応答が返りました");
-      return text;
+      try {
+        return parseWeeklyReportJson(text);
+      } catch (e1) {
+        console.warn("[analyze] JSON パース失敗、1 回だけ全文を再依頼します:", e1);
+        const fixPrompt =
+          prompt +
+          "\n\n[前回は JSON 形式ではなかったか、キー名が違いました。weekly_article（本文）と summary_one_line（1行）のみの JSON を再出力してください。]";
+        const result2 = await generateContentWith429Retries(model, fixPrompt, {
+          logTag: "[analyze] Gemini JSON retry",
+        });
+        const text2 = result2.response.text().trim();
+        return parseWeeklyReportJson(text2);
+      }
     } catch (e) {
       if (isGeminiModelNotFoundError(e)) {
         last404 = e instanceof Error ? e.message : String(e);
@@ -124,8 +255,10 @@ async function main(): Promise<void> {
   const geminiKey = requireGeminiApiKey();
   const kintone = createKintoneClient(cfg, resolveApiTokenForAnalyze());
   const week = getRunningWeekRangeJst(new Date());
+  const existingMode = resolveExistingWeekBehavior();
   console.log("[analyze] 対象週（月曜日）:", week.targetWeekMonday);
   console.log("[analyze] 作成日時範囲 JST:", week.startInclusive, "〜", week.endInclusive);
+  console.log("[analyze] 既存レコード時の挙動:", existingMode);
 
   const summaryUrl = process.env.NOTIFY_SUMMARY_WEBHOOK_URL;
 
@@ -146,20 +279,60 @@ async function main(): Promise<void> {
     return;
   }
 
-  const condensed = buildCondensedContext(records);
-  console.log("[analyze] Gemini モデル試行順:", geminiModelCandidates().join(" → "));
-  const reportText = await summarizeTrendGemini(geminiKey, condensed);
-  console.log("[analyze] LLM 出力文字数:", reportText.length);
+  const { condensed, usedRecords } = buildCondensedContextAndUsed(records);
+  const { min: minId, max: maxId } = evidenceMinMaxIds(usedRecords);
+  const usedCount = usedRecords.length;
+  const runAtJst = nowJstForKintoneDatetime();
+  const ghRun = githubRunIdForEvidence();
 
-  const rich = plainTextToRichTextHtml(reportText);
-  await kintone.record.addRecord({
-    app: cfg.reportAppId,
-    record: {
-      [REPORT_FIELDS.targetWeek]: { value: week.targetWeekMonday },
-      [REPORT_FIELDS.weeklyTrend]: { value: rich },
-    },
+  const existing = await findExistingWeeklyRecord(kintone, cfg.reportAppId, week.targetWeekMonday);
+  if (existing && existingMode === "skip") {
+    console.log("[analyze] 同一 target_week のレコードが既に存在するためスキップ（ANALYZE_EXISTING_WEEK_RECORD=skip）:", existing.id);
+    await notifyRunSummary(summaryUrl, {
+      workflow: "analyze",
+      candidateCount: records.length,
+      addedCount: 0,
+      extraLines: [
+        `• 対象週（月曜）: ${week.targetWeekMonday}`,
+        `• 既存レコード $id=${existing.id} のためスキップ`,
+        `• 参照 631 件数（週内総数）: ${records.length}`,
+      ],
+    });
+    return;
+  }
+
+  console.log("[analyze] Gemini モデル試行順:", geminiModelCandidates().join(" → "));
+  const geminiOut = await summarizeWeeklyReportGemini(geminiKey, condensed);
+  console.log("[analyze] LLM 本文文字数:", geminiOut.weekly_article.length);
+  console.log("[analyze] 1行サマリー:", geminiOut.summary_one_line);
+
+  const recordValues = buildReportRecordValues({
+    targetWeekMonday: week.targetWeekMonday,
+    reportText: geminiOut.weekly_article,
+    summaryOneLine: geminiOut.summary_one_line,
+    usedCount,
+    minId,
+    maxId,
+    runAtJst,
+    githubRunId: ghRun,
   });
-  console.log("[analyze] レポートアプリ（632）へ weekly_trend を登録完了");
+
+  let writeMode: "insert" | "update" = "insert";
+  if (existing) {
+    await kintone.record.updateRecord({
+      app: cfg.reportAppId,
+      id: existing.id,
+      record: recordValues,
+    });
+    writeMode = "update";
+    console.log("[analyze] レポートアプリ（632）既存レコードを更新完了 $id=", existing.id);
+  } else {
+    await kintone.record.addRecord({
+      app: cfg.reportAppId,
+      record: recordValues,
+    });
+    console.log("[analyze] レポートアプリ（632）へ週次レコードを新規追加完了");
+  }
 
   await notifyRunSummary(summaryUrl, {
     workflow: "analyze",
@@ -168,7 +341,12 @@ async function main(): Promise<void> {
     extraLines: [
       `• 対象週（月曜）: ${week.targetWeekMonday}`,
       `• レポートアプリ ID: ${cfg.reportAppId}`,
-      `• 要約文字数: ${reportText.length}`,
+      `• 書き込み: ${writeMode === "update" ? "更新（同一 target_week）" : "新規追加"}`,
+      `• LLM 入力に使った 631 件数: ${usedCount}（週内総数 ${records.length}）`,
+      `• 631 $id 範囲: ${minId ?? "—"} 〜 ${maxId ?? "—"}`,
+      `• 実行日時(JST系): ${runAtJst}`,
+      `• github_run_id: ${ghRun}`,
+      `• 要約文字数: ${geminiOut.weekly_article.length}`,
     ],
   });
 }

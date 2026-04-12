@@ -46,8 +46,9 @@ npm run report:space-health
 ## フェーズ 3 — 自動化（collect / analyze）の確認
 
 1. **collect**: `security-next-automation` の `npm run collect`（または Actions `security-next-daily-collect`）。ログの `登録完了`・`gemini=` を確認。
-2. **analyze**: `npm run analyze`（または `security-next-kintone` の analyze）。632 への `weekly_trend` 投稿を確認。
+2. **analyze**: `npm run analyze`（または `security-next-kintone` の analyze）。632 への **新規または同一 `target_week` の更新**・`summary_one_line` / `internal_*` を確認。
 3. **Gemini / kintone 404** が出たら [`security-next-automation/src/lib/format-news-gemini.ts`](../security-next-automation/src/lib/format-news-gemini.ts) の `GEMINI_MODEL_FALLBACKS` と Secrets の `GEMINI_API_KEY` を確認。
+4. **631 の拡張（未実装）**: [`phase2-631-collect-improvements.md`](phase2-631-collect-improvements.md) と **AGENTS.md 収集ガードレール**。
 
 ---
 

@@ -116,6 +116,9 @@ jobs:
           KINTONE_API_TOKEN: ${{ secrets.KINTONE_API_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          # 既定 update = 同一 target_week は上書き。skip = 既存があれば何もしない
+          ANALYZE_EXISTING_WEEK_RECORD: ${{ vars.ANALYZE_EXISTING_WEEK_RECORD }}
         run: npm run analyze
 
       - name: 失敗時通知（任意 Webhook）

@@ -65,24 +65,29 @@ npm run app:fields <アプリID>
 
 **ニュース保存（631 等）とは別アプリ**。`analyze.ts` のみが書き込む。フィールドコードの正本は `field-codes.ts` の `REPORT_FIELDS` と **`security-next-automation/docs/security-next-weekly-report-app-design.csv`**。
 
-### 確定フォーム（この 2 つ以外は不要）
+### 確定フォーム（632）
 
 | フィールドコード | 型 | 画面ラベル例 | 説明 |
 |------------------|-----|----------------|------|
-| `target_week` | **日付** | 対象週 | その週の **月曜日**（JST・`YYYY-MM-DD`）。`analyze` が自動設定 |
-| `weekly_trend` | **リッチエディタ** | 今週の傾向と対策 | LLM 要約（約 900〜1100 字想定）。`analyze` が HTML で投入 |
+| `target_week` | **日付** | 対象週 | その週の **月曜日**（JST）。**Idempotency キー**（同一日付は `analyze` が更新） |
+| `weekly_trend` | **リッチエディタ** | 今週の傾向と対策 | LLM 本文（約 900〜1100 字想定）。HTML で投入 |
+| `summary_one_line` | **文字列（1行）** | 週次サマリー1行 | 一覧・通知・ポータル向けプレーン 1 行 |
+| `internal_ref_news_count` | **数値** | 参照631件数（内部） | LLM に渡した 631 件数（最大 45 件カット後） |
+| `internal_ref_record_id_min` | **数値** | （内部） | 上記に含まれる 631 の `$id` 最小 |
+| `internal_ref_record_id_max` | **数値** | （内部） | 上記に含まれる 631 の `$id` 最大 |
+| `internal_analysis_run_at` | **日付と時刻** | （内部） | 実行日時（JST オフセット付き） |
+| `internal_github_run_id` | **文字列（1行）** | （内部） | `GITHUB_RUN_ID`（Actions）／ローカルは `local` |
 
-手動作成手順: `security-next-automation/docs/kintone-weekly-report-app-creation-steps.md`
+**内部フィールド**は一覧レイアウトで非表示にし、権限を管理者に絞る運用を推奨。
+
+手動作成・追補手順: `security-next-automation/docs/kintone-weekly-report-app-creation-steps.md`
 
 ### 確定インスタンス: アプリ **632**
 
 URL: [https://jbis-kintone.cybozu.com/k/632/](https://jbis-kintone.cybozu.com/k/632/) 。`npm run app:fields 632` 結果（カスタムフィールドは 2 のみ）:
 
 ```
-App 632 fields (10)
-target_week	DATE	対象週
-weekly_trend	RICH_TEXT	今週の傾向と対策
-（以下システム・カテゴリ等）
+App 632 fields（上表のカスタム＋システムフィールド）。カスタムは `target_week`・`weekly_trend`・`summary_one_line`・`internal_*` を含む。
 ```
 
 **`KINTONE_REPORT_APP_ID=632`** と API トークン権限を設定すること。
