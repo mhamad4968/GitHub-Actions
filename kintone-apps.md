@@ -49,15 +49,23 @@ npm run app:fields <アプリID>
 
 正本: `security-next-automation/src/lib/field-codes.ts` ＝ `security-next-automation/docs/security-next-news-app-design.csv`。
 
-| フィールドコード | 型 | 画面ラベル例 |
-|------------------|-----|----------------|
-| `title` | 文字列（1行） | タイトル |
-| `article_url` | 文字列（1行） | URL（重複禁止推奨） |
-| `published_date` | **日付** | 公開日 |
-| `summary` | 文字列（複数行） | 概要 |
-| `digest` | 文字列（複数行） | 要約（collect は概要と同じ RSS 抜粋を投入） |
+| フィールドコード | 型 | 画面ラベル例 | 説明 |
+|------------------|-----|----------------|------|
+| `title` | 文字列（1行） | タイトル | 記事タイトル |
+| `article_url` | 文字列（1行） | URL | 重複禁止推奨 |
+| `published_date` | **日付** | 公開日 | RSS 公開日（JST） |
+| `summary` | 文字列（複数行） | 概要 | RSS 抜粋 |
+| `digest` | 文字列（複数行） | 要約 | collect は概要と同じ RSS 抜粋を投入 |
+| `match_keywords_display` | 文字列（1行） | 採用キーワード | マッチしたキーワードのカンマ区切り |
+| `internal_match_meta_json` | 文字列（複数行） | 採用メタJSON（内部） | 監査・デバッグ用 JSON |
+| `internal_source` | 文字列（1行） | ソース（内部） | `rss` / `nvd` |
+| `internal_gemini_mark` | 文字列（1行） | Gemini成否（内部） | `Y` / `I` / `N` |
+| `needs_review` | チェックボックス | 要レビュー | 複合条件で自動セット |
+| `internal_severity_tier` | 文字列（1行） | 重大度区分（内部） | `normal` / `exception` |
 
 - **631** … 上表と一致（収集本番）。**630** は旧・誤フォームの可能性あり。運用は **631** に統一。
+- **内部フィールド**（`internal_*`）は一覧レイアウトで非表示にし、権限を管理者に絞る運用を推奨。
+- **例外枠**: AGENTS.md §7 に基づき 1 日あたり最大 3 件。通常枠 3 + 例外枠 3 = 合計 6 件/日がハードリミット。
 
 ---
 

@@ -32,6 +32,7 @@ export type EnrichOneResult = {
   overview: string;
   digest: string;
   geminiMark: GeminiUsageMark;
+  needsReview: boolean;
 };
 
 /** 概要と要約が実質同一か（空白差のみ無視） */
@@ -227,5 +228,20 @@ export async function enrichOneNewsForKintone(row: NormalizedNewsRow): Promise<E
           : "GeminiOff";
   logPipeline(STEP_ENRICH, { Result: geminiMark, Mode: mode, Url: shortUrlForLog(row.link) });
 
-  return { overview, digest, geminiMark };
+  const needsReview = computeNeedsReview(geminiMark, digest, row.title);
+
+  return { overview, digest, geminiMark, needsReview };
+}
+
+/**
+ * 複合条件で「要レビュー」フラグを決定する。
+ * gemini=N 単独では立てない（RSS のみでも十分なケースを排除しない）。
+ */
+function computeNeedsReview(geminiMark: GeminiUsageMark, digest: string, title: string): boolean {
+  if (geminiMark === "Y") return false;
+  const plainDigest = digest.replace(/\s+/g, " ").trim();
+  if (plainDigest.length < 60) return true;
+  if (digestContainsBannedBoilerplate(digest)) return true;
+  if (/個人情報|氏名|住所|電話番号|メールアドレス/.test(title)) return true;
+  return false;
 }

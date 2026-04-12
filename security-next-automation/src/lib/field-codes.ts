@@ -11,6 +11,18 @@ export const NEWS_FIELDS = {
   summary: "summary",
   /** collect では summary と同じ RSS 抜粋を投入（一覧の「要約」列も埋める）。手入力で上書き可 */
   digest: "digest",
+  /** 表示用: マッチしたキーワードのカンマ区切り（一覧で見やすい形） */
+  matchKeywordsDisplay: "match_keywords_display",
+  /** 内部: マッチ詳細 JSON（監査・デバッグ用。一覧では非表示推奨） */
+  internalMatchMetaJson: "internal_match_meta_json",
+  /** 内部: ソース（rss / nvd） */
+  internalSource: "internal_source",
+  /** 内部: Gemini 成否 Y/I/N */
+  internalGeminiMark: "internal_gemini_mark",
+  /** 表示: 要レビュー（チェックボックス） */
+  needsReview: "needs_review",
+  /** 内部: normal / exception（例外枠使用の追跡） */
+  internalSeverityTier: "internal_severity_tier",
 } as const;
 
 /** ニュース週次要約用アプリ（ニュース本体とは別アプリ）。analyze.ts が使用 */

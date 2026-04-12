@@ -34,7 +34,7 @@ Claude Code やエージェントが仕様・トラブル・開発作法を見�
 
 | タイミング | 内容 |
 |------------|------|
-| **毎日 10:00 / 17:00（JST）** | `daily-collect.yml` → `collect.ts`。RSS から未登録候補を **高度キーワード**で選別（Gemini 不使用）。事件性（国内・重大）＋世界的重大警告語を含み、**予防・管理**語（パッチ・アドバイザリ・**リリース**等）を含まないものを、公開日の新しい順に最大 **3 件**をアプリ **631** へ保存。 |
+| **毎日 10:00 / 17:00（JST）** | `daily-collect.yml` → `collect.ts`。RSS から未登録候補を **高度キーワード**で選別。通常枠は最大 **3 件**、重大度例外枠（ランサム＋国内等）は **1 日最大 3 件**追加可能（合計上限 6 件/日）。各レコードに **採用キーワード・ソース・Gemini 成否・重大度区分** の内部メタデータと **要レビュー** 品質フラグを保存。 |
 | **毎週金曜 17:00（JST）** | `main.yml` の `security-next-kintone` → `analyze.ts`（`cron: 0 8 * * 5` = 金曜 08:00 UTC）。その週の **631** を集約し **632** へ **新規追加または同一 `target_week` の更新**（Idempotency）。本文・1行サマリー・参照エビデンス・`GITHUB_RUN_ID` を保存。 |
 
 **動作確認の目安**: 日次実行後、**631** にキーワードに合致した記事が追加されていれば意図どおり（完全一致ではないため、必要に応じてキーワード一覧を `collect.ts` で調整）。重要事故の**即時**通知が必要なら、kintone の通知設定や Webhook 連係（`NOTIFY_WEBHOOK_URL` / `NOTIFY_SUMMARY_WEBHOOK_URL`）の拡張を検討。
@@ -170,7 +170,7 @@ npm run setup:security-next-report-app
 | 概要 | `summary` | 文字列（複数行） | 任意 | **`GEMINI_API_KEY` あり**: 「何が起きたか」の**1〜2文**の全体像＋最終行 `Security NEXT`。**なし**: 抜粋から短いリード＋最終行 `Security NEXT`（`buildRssMaterialSummaryDigest`） |
 | 要約 | `digest` | 文字列（複数行） | 任意 | **`GEMINI_API_KEY` あり**: 概要より掘り下げ、`事象:` `脆弱性関連:` `修正・対策:` `見解:` の4段（未達時は最大3回まで再生成）。**なし**: 同じ4見出しを抜粋から機械的に整形（材料用・Gemini 非依存）。手入力可 |
 
-設計CSV: [`docs/security-next-news-app-design.csv`](docs/security-next-news-app-design.csv)。`collect` は **`article_url`** の重複を問い合わせてスキップしたうえで、**キーワード**（事件性あり・パッチ系除外）に合う未登録候補を公開日の新しい順に最大 **3 件**選びます（実装は `collect.ts` の定数一覧）。
+設計CSV: [`docs/security-next-news-app-design.csv`](docs/security-next-news-app-design.csv)。`collect` は **`article_url`** の重複を問い合わせてスキップしたうえで、**キーワード**（事件性あり・パッチ系除外）に合う未登録候補を公開日の新しい順に最大 **3 件**（通常枠）＋ **重大度例外枠最大 3 件/日**（AGENTS.md §7 準拠）を選びます。各レコードには `match_keywords_display`（マッチキーワード）、`internal_source`（rss/nvd）、`internal_gemini_mark`（Y/I/N）、`needs_review`（品質フラグ）、`internal_severity_tier`（normal/exception）が自動保存されます。
 
 #### 概要と要約の定義
 

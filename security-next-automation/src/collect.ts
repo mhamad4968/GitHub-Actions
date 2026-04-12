@@ -23,8 +23,15 @@ import { escapeKintoneQueryString, stripHtmlToPlain, truncateForLlm } from "./li
 const maxNewEnv = process.env.COLLECT_MAX_NEW_PER_RUN?.trim();
 const MAX_NEW_PER_RUN = maxNewEnv && /^\d+$/.test(maxNewEnv) ? Math.max(0, parseInt(maxNewEnv, 10)) : 0;
 
-/** 1 回の収集で kintone に追加する最大件数（キーワード選別後） */
+/** 1 回の収集で kintone に追加する最大件数（キーワード選別後・通常枠） */
 const TOP_N = 3;
+
+/**
+ * AGENTS.md §7: 重大度例外枠は 1 日あたり最大 3 件（ハードリミット・環境変数で上書き不可）
+ * 通常枠（TOP_N）との合計: 最大 6 件/日（1 実行 = TOP_N + 例外枠の残り）
+ */
+const EXCEPTION_MAX_PER_DAY = 3;
+const HARD_DAILY_TOTAL_MAX = TOP_N + EXCEPTION_MAX_PER_DAY;
 
 /** ポジティブ（インシデント判定）: タイトルまたは概要にいずれかが含まれるものを残す（部分一致） */
 const INCIDENT_KEYWORDS = [
@@ -76,6 +83,25 @@ const EXCLUSION_KEYWORDS = [
   "脆弱性対策",
   "アドバイザリ",
 ] as const;
+
+/**
+ * 重大度「例外枠」判定キーワード（ホワイトリスト）。
+ * タイトル＋抜粋に対して **AND 条件**（各グループの全語を含む）のいずれかに合致で例外扱い。
+ * OR の羅列を増やしすぎないこと（誤検知＝例外枠浪費・AGENTS.md §7）。
+ */
+const SEVERITY_EXCEPTION_PATTERNS: readonly (readonly string[])[] = [
+  ["ランサム", "国内"],
+  ["ランサム", "被害"],
+  ["ランサム", "攻撃"],
+  ["不正アクセス", "流出"],
+  ["不正アクセス", "漏洩"],
+  ["ゼロデイ", "悪用"],
+] as const;
+
+function matchesSeverityException(title: string, digestFullText: string): boolean {
+  const blob = `${title}\n${digestFullText}`.toLowerCase();
+  return SEVERITY_EXCEPTION_PATTERNS.some((group) => group.every((kw) => blob.includes(kw.toLowerCase())));
+}
 
 /** 記事フィード取得の待ち時間の上限（ミリ秒） */
 const rssParser = new Parser({
@@ -254,6 +280,38 @@ function dedupeCandidatesNewestFirstUniqueUrl(candidates: NormalizedNewsRow[]): 
 function pickKeywordMatchesNewestUpToN(candidates: NormalizedNewsRow[], n: number): NormalizedNewsRow[] {
   const matched = candidates.filter(rowMatchesKeywordRules);
   return dedupeCandidatesNewestFirstUniqueUrl(matched).slice(0, n);
+}
+
+/** JST の今日の日付文字列 YYYY-MM-DD */
+function todayJstDate(): string {
+  return new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Tokyo" });
+}
+
+/**
+ * 当日すでに例外枠で登録された件数を kintone から取得する。
+ * internal_severity_tier="exception" かつ 作成日時が本日 JST の範囲で数える。
+ */
+async function countTodayExceptions(
+  client: ReturnType<typeof createKintoneClient>,
+  appId: string,
+): Promise<number> {
+  const todayStr = todayJstDate();
+  const tomorrowDate = new Date(`${todayStr}T00:00:00+09:00`);
+  tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+  const tomorrowStr = tomorrowDate.toLocaleDateString("sv-SE", { timeZone: "Asia/Tokyo" });
+  const query = `${NEWS_FIELDS.internalSeverityTier} = "exception" and 作成日時 >= "${todayStr}T00:00:00+09:00" and 作成日時 < "${tomorrowStr}T00:00:00+09:00"`;
+  const rows = await client.record.getAllRecordsWithCursor({
+    app: appId,
+    query,
+    fields: ["$id"],
+  });
+  return rows.length;
+}
+
+/** マッチしたキーワードの一覧を返す */
+function allMatchingKeywords(haystack: string, needles: readonly string[]): string[] {
+  const lowerHay = haystack.toLowerCase();
+  return needles.filter((word) => lowerHay.includes(word.toLowerCase()));
 }
 
 async function loadExistingUrls(
@@ -436,7 +494,33 @@ async function main(): Promise<void> {
     toAdd = toAdd.slice(0, MAX_NEW_PER_RUN);
   }
 
-  console.log("[ニュース収集] 登録予定:", toAdd.length, "件（キーワード選別・日付新しい順・最大", TOP_N, "件）");
+  // --- 例外枠: 通常枠 (TOP_N) に漏れたが重大度条件を満たす候補を追加 ---
+  const normalUrls = new Set(toAdd.map((r) => r.link));
+  const alreadyUsedExceptions = await countTodayExceptions(client, cfg.newsAppId);
+  const exceptionBudget = Math.max(0, EXCEPTION_MAX_PER_DAY - alreadyUsedExceptions);
+  let exceptionRows: NormalizedNewsRow[] = [];
+  if (exceptionBudget > 0) {
+    const keywordMatched = candidates.filter(rowMatchesKeywordRules);
+    const potentialExceptions = dedupeCandidatesNewestFirstUniqueUrl(keywordMatched)
+      .filter((r) => !normalUrls.has(r.link))
+      .filter((r) => matchesSeverityException(r.title || "", r.digestFullText));
+    exceptionRows = potentialExceptions.slice(0, exceptionBudget);
+    if (exceptionRows.length > 0) {
+      console.log(
+        `[ニュース収集] 例外枠: ${exceptionRows.length} 件追加（本日の消費: ${alreadyUsedExceptions} → ${alreadyUsedExceptions + exceptionRows.length}/${EXCEPTION_MAX_PER_DAY}）`,
+      );
+      logPipeline("ExceptionPick", { Added: exceptionRows.length, Budget: exceptionBudget, UsedToday: alreadyUsedExceptions });
+    }
+  }
+  // ハードリミット: 通常 + 例外の合計 <= HARD_DAILY_TOTAL_MAX
+  const totalBeforeCap = toAdd.length + exceptionRows.length;
+  if (totalBeforeCap > HARD_DAILY_TOTAL_MAX) {
+    exceptionRows = exceptionRows.slice(0, HARD_DAILY_TOTAL_MAX - toAdd.length);
+    console.log(`[ニュース収集] ハードリミット適用: 合計 ${HARD_DAILY_TOTAL_MAX} 件に制限`);
+  }
+  toAdd = [...toAdd, ...exceptionRows];
+
+  console.log("[ニュース収集] 登録予定:", toAdd.length, "件（通常", toAdd.length - exceptionRows.length, "＋例外", exceptionRows.length, "・最大", HARD_DAILY_TOTAL_MAX, "件/日）");
   logPipeline("KeywordPick", { ToAdd: toAdd.length });
   if (toAdd.length === 0) {
     const rej = countKeywordRejectionReasons(candidates);
@@ -471,38 +555,63 @@ async function main(): Promise<void> {
     );
   }
 
-  const records: Array<Record<string, { value: string }>> = [];
-  /** 通知用: 全文 Gemini 成功 */
+  const exceptionUrlSet = new Set(exceptionRows.map((r) => r.link));
+  const records: Array<Record<string, { value: string | string[] }>> = [];
   let geminiFullCount = 0;
-  /** 通知用: 見解のみ Gemini（全文は RSS 材料など） */
   let geminiInsightOnlyCount = 0;
 
   for (const row of toAdd) {
-    const { overview, digest, geminiMark } = await enrichOneNewsForKintone(row);
+    const { overview, digest, geminiMark, needsReview } = await enrichOneNewsForKintone(row);
     if (geminiMark === "Y") {
       geminiFullCount++;
     } else if (geminiMark === "I") {
       geminiInsightOnlyCount++;
     }
     const prevDigest = digest.slice(0, 72).replace(/\s+/g, " ");
+    const isException = exceptionUrlSet.has(row.link);
+    const severityTier = isException ? "exception" : "normal";
+
+    const blob = `${row.title}\n${row.digestFullText}`;
+    const matchedKws = allMatchingKeywords(blob, INCIDENT_KEYWORDS);
+    const matchMeta = JSON.stringify({
+      matched: matchedKws,
+      source: row.source,
+      severity: severityTier,
+      gemini: geminiMark,
+      needsReview,
+    });
+
     console.log(
       "[ニュース収集] 登録直前:",
       row.link,
       "| gemini=",
       geminiMark,
+      "| severity=",
+      severityTier,
+      "| review=",
+      needsReview,
       "| 概要(先頭40字)=",
       overview.replace(/\s+/g, " ").slice(0, 40),
       "| 要約(先頭72字)=",
       prevDigest,
     );
 
-    records.push({
+    const record: Record<string, { value: string | string[] }> = {
       [NEWS_FIELDS.title]: { value: row.title },
       [NEWS_FIELDS.articleUrl]: { value: row.link },
       [NEWS_FIELDS.publishedDate]: { value: row.publishedDate },
       [NEWS_FIELDS.summary]: { value: overview },
       [NEWS_FIELDS.digest]: { value: digest },
-    });
+      [NEWS_FIELDS.matchKeywordsDisplay]: { value: matchedKws.join(", ") },
+      [NEWS_FIELDS.internalMatchMetaJson]: { value: matchMeta },
+      [NEWS_FIELDS.internalSource]: { value: row.source },
+      [NEWS_FIELDS.internalGeminiMark]: { value: geminiMark },
+      [NEWS_FIELDS.internalSeverityTier]: { value: severityTier },
+    };
+    if (needsReview) {
+      record[NEWS_FIELDS.needsReview] = { value: ["要レビュー"] };
+    }
+    records.push(record);
   }
 
   const addRes = await client.record.addRecords({ app: cfg.newsAppId, records });

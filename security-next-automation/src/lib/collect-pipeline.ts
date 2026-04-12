@@ -15,6 +15,7 @@ export type CollectPipelineStep =
   | "CandidateTrim"
   | "KeywordStats"
   | "KeywordPick"
+  | "ExceptionPick"
   | "Enrichment"
   | "KintonePost"
   | "Notify";
