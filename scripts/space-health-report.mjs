@@ -15,17 +15,28 @@
 import "dotenv/config";
 import { appendFileSync } from "node:fs";
 
-/** @type {{ id: string; name: string; path: string }[]} */
+/** @type {{ id: string; name: string; path: string; expectedFields?: string[] }[]} */
 const DEFAULT_APPS = [
   {
     id: "631",
     name: "Security NEXT ニュース（収集）",
     path: "/k/631/",
+    expectedFields: [
+      "title", "article_url", "published_date", "summary", "digest",
+      "match_keywords_display", "internal_match_meta_json", "internal_source",
+      "internal_gemini_mark", "needs_review", "internal_severity_tier",
+    ],
   },
   {
     id: "632",
     name: "ニュース週次要約（週次 LLM）",
     path: "/k/632/",
+    expectedFields: [
+      "target_week", "weekly_trend", "summary_one_line",
+      "internal_ref_news_count", "internal_ref_record_id_min",
+      "internal_ref_record_id_max", "internal_analysis_run_at",
+      "internal_github_run_id",
+    ],
   },
 ];
 
@@ -91,6 +102,26 @@ async function fetchAppJson(domain, token, appId) {
   return { ok: res.ok, status: res.status, json, text: text.slice(0, 400) };
 }
 
+/** フォームフィールドを取得して期待フィールドの存在を検証する */
+async function checkExpectedFields(domain, token, appId, expectedFields) {
+  if (!expectedFields || expectedFields.length === 0) return { checked: false };
+  const url = `https://${domain}/k/v1/app/form/fields.json?app=${encodeURIComponent(appId)}`;
+  const res = await fetch(url, {
+    method: "GET",
+    headers: { "X-Cybozu-API-Token": token },
+  });
+  if (!res.ok) return { checked: true, missing: [], error: `fields API ${res.status}` };
+  let json;
+  try {
+    json = JSON.parse(await res.text());
+  } catch {
+    return { checked: true, missing: [], error: "fields JSON parse error" };
+  }
+  const existing = new Set(Object.keys(json.properties || {}));
+  const missing = expectedFields.filter((f) => !existing.has(f));
+  return { checked: true, missing, error: null };
+}
+
 /** レコード閲覧権限のみのトークン向け（app.json が 403 のとき） */
 async function fetchRecordsProbe(domain, token, appId) {
   const url = new URL(`https://${domain}/k/v1/records.json`);
@@ -148,18 +179,20 @@ async function main() {
   lines.push(`- **ドメイン**: \`${domain}\``);
   lines.push(`- **検査アプリ数**: ${apps.length}`);
   lines.push("");
-  lines.push("| アプリID | 論理名 | ポータルURL | API | 備考 |");
-  lines.push("| --- | --- | --- | --- | --- |");
+  lines.push("| アプリID | 論理名 | ポータルURL | API | フィールド | 備考 |");
+  lines.push("| --- | --- | --- | --- | --- | --- |");
 
   let allOk = true;
 
   for (const app of apps) {
     const portalUrl = `${base}${app.path}`;
     let best = { ok: false, status: 0, name: "", detail: "" };
+    let successToken = null;
     for (const tok of tokens) {
       const r = await fetchAppJson(domain, tok, app.id);
       if (r.ok && r.json?.name) {
         best = { ok: true, status: r.status, name: String(r.json.name), detail: "" };
+        successToken = tok;
         break;
       }
       if (r.status === 403 || r.status === 401) {
@@ -171,6 +204,7 @@ async function main() {
             name: "",
             detail: "records API（app.json は権限外）",
           };
+          successToken = tok;
           break;
         }
         best = {
@@ -189,6 +223,22 @@ async function main() {
       };
     }
     if (!best.ok) allOk = false;
+
+    let fieldCell = "—";
+    if (best.ok && successToken && app.expectedFields?.length) {
+      const fc = await checkExpectedFields(domain, successToken, app.id, app.expectedFields);
+      if (fc.checked) {
+        if (fc.error) {
+          fieldCell = `検証不可 (${fc.error})`;
+        } else if (fc.missing.length === 0) {
+          fieldCell = `OK (${app.expectedFields.length}/${app.expectedFields.length})`;
+        } else {
+          fieldCell = `**欠落${fc.missing.length}件**: ${fc.missing.join(", ")}`;
+          allOk = false;
+        }
+      }
+    }
+
     const apiCell = best.ok ? `OK (${best.status})` : `**NG** (${best.status})`;
     const esc = (s) => String(s).replace(/\|/g, "\\|").replace(/\n/g, " ");
     const noteCell = best.ok
@@ -197,7 +247,7 @@ async function main() {
         : "—"
       : esc((best.detail || "権限・トークン・アプリIDを確認").slice(0, 160));
     lines.push(
-      `| ${app.id} | ${esc(app.name)} | [開く](${portalUrl}) | ${apiCell} | ${noteCell} |`,
+      `| ${app.id} | ${esc(app.name)} | [開く](${portalUrl}) | ${apiCell} | ${fieldCell} | ${noteCell} |`,
     );
   }
 
