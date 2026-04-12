@@ -4,22 +4,20 @@
  * - ポジティブ: タイトル・抜粋にインシデント関連語／ネガティブ語で除外
  * - 最大 3 件・同一 URL 1 件
  * **GEMINI_API_KEY あり**: Gemini で体裁付け（概要＝何が起きたか 1〜2 文＋末尾 `Security NEXT`。要約＝事象・脆弱性関連・修正・対策・見解の 4 見出し）。全文 API が失敗しても **見解** だけは Gemini で差し替え試行（`formatDigestInsightOnly`）。
- * **キーなし**または **COLLECT_SKIP_GEMINI_FORMAT=1**: `buildRssMaterialSummaryDigest` で4見出し＋概要。選別は常に全文抜粋ベース。
+ * **キーなし**または **COLLECT_SKIP_GEMINI_FORMAT=1**: `collect-enrich.ts` 経由で材料整形（4見出し＋概要）。選別は常に全文抜粋ベース。
+ * **パイプライン**: 型・`[Pipeline]` ログは `lib/collect-pipeline.ts`、体裁付け（Gemini Y/I/N）は `lib/collect-enrich.ts`。
  */
+import { existsSync } from "node:fs";
 import Parser from "rss-parser";
 
-import { loadConfig } from "./lib/config.js";
-import { formatDigestInsightOnly, formatNewsForKintone } from "./lib/format-news-gemini.js";
+import { enrichOneNewsForKintone, shouldUseGeminiFormat } from "./lib/collect-enrich.js";
+import { logPipeline, type NormalizedNewsRow } from "./lib/collect-pipeline.js";
+import { DOTENV_LOCAL_PATH, DOTENV_MAIN_PATH, loadConfig } from "./lib/config.js";
 import { NEWS_FIELDS } from "./lib/field-codes.js";
 import { createKintoneClient } from "./lib/kintone-client.js";
+import { fetchNvdCveRowsAsNormalized } from "./lib/nvd-fetch.js";
 import { notifyFailure, notifyRunSummary } from "./lib/notify.js";
-import {
-  buildRssMaterialSummaryDigest,
-  escapeKintoneQueryString,
-  replaceDigestInsightParagraph,
-  stripHtmlToPlain,
-  truncateForLlm,
-} from "./lib/text.js";
+import { escapeKintoneQueryString, stripHtmlToPlain, truncateForLlm } from "./lib/text.js";
 
 /** 1 回の実行で取り込む候補の上限（負荷調整用。0 または未設定なら切り詰めない） */
 const maxNewEnv = process.env.COLLECT_MAX_NEW_PER_RUN?.trim();
@@ -27,18 +25,6 @@ const MAX_NEW_PER_RUN = maxNewEnv && /^\d+$/.test(maxNewEnv) ? Math.max(0, parse
 
 /** 1 回の収集で kintone に追加する最大件数（キーワード選別後） */
 const TOP_N = 3;
-
-/** 概要（summary）の最大文字数（Gemini 未使用時のフォールバック用） */
-const COLLECT_OVERVIEW_MAX_CHARS = 320;
-
-/** `GEMINI_API_KEY` があれば Gemini 整形を使う。1 にすると常に RSS トリムのみ */
-function shouldUseGeminiFormat(): boolean {
-  if (process.env.COLLECT_SKIP_GEMINI_FORMAT?.trim() === "1") {
-    return false;
-  }
-  const k = process.env.GEMINI_API_KEY?.trim();
-  return Boolean(k);
-}
 
 /** ポジティブ（インシデント判定）: タイトルまたは概要にいずれかが含まれるものを残す（部分一致） */
 const INCIDENT_KEYWORDS = [
@@ -105,16 +91,6 @@ type RssItem = {
   summary?: string;
 };
 
-/** RSS 1 件を kintone 用に正規化した中間データ */
-type NormalizedNewsRow = {
-  title: string;
-  link: string;
-  publishedDate: string;
-  /** 要約欄のたたき台（キーワード選別もこの全文に対して行う） */
-  digestFullText: string;
-  sortTimeMs: number;
-};
-
 function resolveArticleUrl(item: RssItem): string | null {
   const raw = item.link?.trim() || "";
   if (raw.length > 0) return raw;
@@ -157,31 +133,13 @@ function haystackContainsAny(haystack: string, needles: readonly string[]): bool
 }
 
 /** ネガティブ語が無く、ポジティブ（インシデント）語が 1 つ以上ある */
-/** 概要と要約が実質同一か（空白差のみ無視） */
-function sameSummaryAndDigest(a: string, b: string): boolean {
-  const x = a.trim().replace(/\s+/g, " ");
-  const y = b.trim().replace(/\s+/g, " ");
-  return x.length > 0 && x === y;
-}
-
-/**
- * kintone 要約欄の材料用フォーマット（事象・脆弱性関連・修正・対策・見解）が付いているか。
- * 付いていないと画面で概要と同じ長文に見える誤解が起きやすい。
- */
-function digestHasMaterialHeadings(digest: string): boolean {
-  const d = digest.trim();
-  return (
-    /事象:\s*\S/m.test(d) &&
-    /脆弱性関連:\s*\S/m.test(d) &&
-    /修正・対策:\s*\S/m.test(d) &&
-    /見解:\s*\S/m.test(d)
-  );
-}
-
 function rowMatchesKeywordRules(row: NormalizedNewsRow): boolean {
   const blob = `${row.title}\n${row.digestFullText}`;
   if (haystackContainsAny(blob, EXCLUSION_KEYWORDS)) {
     return false;
+  }
+  if (row.source === "nvd") {
+    return true;
   }
   return haystackContainsAny(blob, INCIDENT_KEYWORDS);
 }
@@ -196,6 +154,10 @@ function countKeywordRejectionReasons(rows: NormalizedNewsRow[]): {
   for (const row of rows) {
     const blob = `${row.title}\n${row.digestFullText}`;
     const neg = haystackContainsAny(blob, EXCLUSION_KEYWORDS);
+    if (row.source === "nvd") {
+      if (neg) excludedOnly++;
+      continue;
+    }
     const pos = haystackContainsAny(blob, INCIDENT_KEYWORDS);
     if (neg) {
       excludedOnly++;
@@ -253,14 +215,51 @@ async function loadExistingUrls(
 }
 
 async function main(): Promise<void> {
+  console.log("[ニュース収集] .env の参照パス（collect が読むのはこの 1 本。ルートの .env ではありません）:", DOTENV_MAIN_PATH);
+  if (existsSync(DOTENV_LOCAL_PATH)) {
+    console.log(
+      "[ニュース収集] .env.local あり。ここに書いた同名のキーは .env より優先されます:",
+      DOTENV_LOCAL_PATH,
+    );
+  }
   const cfg = loadConfig();
   const client = createKintoneClient(cfg, cfg.kintoneApiTokenForCollect);
+  logPipeline("Config", {
+    NewsApp: String(cfg.newsAppId),
+    RssFeedCount: cfg.rssFeedUrls.length,
+    NvdEnabled: cfg.collectNvdEnabled ? 1 : 0,
+    TopN: TOP_N,
+  });
+
+  if (!cfg.collectNvdEnabled && process.env.NVD_API_KEY?.trim()) {
+    console.warn(
+      "[ニュース収集] NVD_API_KEY はあるが NVD はオフです。`security-next-automation/.env` に `COLLECT_NVD_ENABLE=1`（または true / yes）があるか確認してください（ルートの .env だけでは collect は読みません）。",
+    );
+  }
+  if (!cfg.collectNvdEnabled && process.env.COLLECT_NVD_ENABLE?.trim()) {
+    const v = process.env.COLLECT_NVD_ENABLE.trim();
+    console.warn(
+      "[ニュース収集] COLLECT_NVD_ENABLE に値はありますがオンとみなせません（有効なのは 1 / true / yes のみ・前後空白は無視）。現在:",
+      JSON.stringify(v),
+    );
+  }
 
   console.log("[ニュース収集] 接続先ドメイン:", cfg.kintoneDomain);
   console.log("[ニュース収集] ニュースを保存するアプリの識別番号:", cfg.newsAppId);
-  console.log("[ニュース収集] 記事フィードの取得先:", cfg.rssUrl);
+  console.log("[ニュース収集] 記事 RSS の取得先（複数可）:", cfg.rssFeedUrls.join(" | "));
+  if (cfg.collectNvdEnabled) {
+    console.log(
+      "[ニュース収集] NVD CVE 併用: 有効（直近",
+      cfg.nvdLookbackDays,
+      "日・プール上限",
+      cfg.nvdMaxPerRun,
+      "件・API キー:",
+      cfg.nvdApiKey ? "あり" : "なし",
+      "）",
+    );
+  }
   console.log(
-    "[ニュース収集] 選別方式: 高度キーワード（ポジティブ＝インシデント語／ネガティブ＝予防・パッチ語。選別そのものはルールのみ）。概要・要約の体裁は GEMINI_API_KEY があれば登録時に Gemini、なければ RSS 材料整形。1 回あたりの登録上限:",
+    "[ニュース収集] 選別方式: RSS はインシデント語／除外語。NVD は除外語のみ（CVE は原則通過）。概要・要約は GEMINI_API_KEY があれば Gemini、なければ材料整形。1 回あたりの登録上限:",
     TOP_N,
     "件",
   );
@@ -268,29 +267,59 @@ async function main(): Promise<void> {
     console.log("[ニュース収集] 候補を先頭から切り詰める件数の上限（環境変数）:", MAX_NEW_PER_RUN);
   }
 
-  const feed = await rssParser.parseURL(cfg.rssUrl);
-  const items = (feed.items || []) as RssItem[];
+  const allFeedItems: RssItem[] = [];
+  for (const feedUrl of cfg.rssFeedUrls) {
+    try {
+      const feed = await rssParser.parseURL(feedUrl);
+      const items = (feed.items || []) as RssItem[];
+      console.log("[ニュース収集] RSS 取得:", feedUrl, "件数:", items.length);
+      logPipeline("FetchRss", { Items: items.length });
+      allFeedItems.push(...items);
+    } catch (e) {
+      console.warn("[ニュース収集] RSS 取得失敗（この URL はスキップ）:", feedUrl, e);
+    }
+  }
 
-  const normalized = items
-    .map((it) => {
-      const link = resolveArticleUrl(it);
-      const title = it.title?.trim() || "(無題)";
-      if (!link) return null;
-      const digestFullText = pickSummary(it);
-      return {
+  const rssNormalized: NormalizedNewsRow[] = allFeedItems.flatMap((it) => {
+    const link = resolveArticleUrl(it);
+    const title = it.title?.trim() || "(無題)";
+    if (!link) return [];
+    const digestFullText = pickSummary(it);
+    return [
+      {
         title,
         link,
         publishedDate: toKintonePublishedDate(it),
         digestFullText,
         sortTimeMs: rssItemSortTimeMs(it),
-      };
-    })
-    .filter((x): x is NormalizedNewsRow => x !== null);
+        source: "rss" as const,
+      },
+    ];
+  });
 
-  normalized.sort((a, b) => b.sortTimeMs - a.sortTimeMs);
+  let nvdRows: NormalizedNewsRow[] = [];
+  if (cfg.collectNvdEnabled) {
+    try {
+      nvdRows = await fetchNvdCveRowsAsNormalized({
+        lookbackDays: cfg.nvdLookbackDays,
+        maxItems: cfg.nvdMaxPerRun,
+        apiKey: cfg.nvdApiKey,
+      });
+      console.log("[ニュース収集] NVD からの候補行:", nvdRows.length);
+      logPipeline("FetchNvd", { Rows: nvdRows.length });
+    } catch (e) {
+      console.warn("[ニュース収集] NVD 取得失敗（RSS のみ続行）:", e);
+    }
+  }
+
+  const merged = [...rssNormalized, ...nvdRows];
+  merged.sort((a, b) => b.sortTimeMs - a.sortTimeMs);
+  logPipeline("MergeSort", { Rows: merged.length });
+  const normalized = dedupeCandidatesNewestFirstUniqueUrl(merged);
+  logPipeline("DedupeUrl", { Rows: normalized.length });
 
   const urls = [...new Set(normalized.map((n) => n.link))];
-  console.log("[ニュース収集] フィード由来の記事行数:", normalized.length, "重複を除いたリンク数:", urls.length);
+  console.log("[ニュース収集] RSS＋NVD 合算の候補行数:", normalized.length, "重複を除いたリンク数:", urls.length);
 
   const existingUrls = await loadExistingUrls(client, cfg.newsAppId, urls);
   let candidates = normalized.filter((n) => !existingUrls.has(n.link));
@@ -302,22 +331,26 @@ async function main(): Promise<void> {
     skippedDup,
     "件",
   );
+  logPipeline("KintoneExistingFilter", { NewCandidates: candidates.length, SkippedRegistered: skippedDup });
 
   if (MAX_NEW_PER_RUN > 0 && candidates.length > MAX_NEW_PER_RUN) {
     console.log("[ニュース収集] 環境変数の上限で候補を切り詰め:", candidates.length, "件 →", MAX_NEW_PER_RUN, "件");
     candidates = candidates.slice(0, MAX_NEW_PER_RUN);
+    logPipeline("CandidateTrim", { MaxPerRun: MAX_NEW_PER_RUN, After: candidates.length });
   }
 
   const summaryUrl = process.env.NOTIFY_SUMMARY_WEBHOOK_URL;
 
   if (candidates.length === 0) {
     console.log("[ニュース収集] 追加なし。終了。");
+    logPipeline("KeywordStats", { CandidateCount: 0 });
     await notifyRunSummary(summaryUrl, {
       workflow: "ニュース収集",
       candidateCount: 0,
       addedCount: 0,
       extraLines: ["• 補足: まだ kintone に未登録の新規候補がありません"],
     });
+    logPipeline("Notify", { Added: 0, Candidates: 0, Webhook: summaryUrl?.trim() ? 1 : 0 });
     return;
   }
 
@@ -330,6 +363,7 @@ async function main(): Promise<void> {
     "/",
     candidateCountForSummary,
   );
+  logPipeline("KeywordStats", { Matched: keywordMatchedCount, Pool: candidateCountForSummary });
 
   let toAdd = pickKeywordMatchesNewestUpToN(candidates, TOP_N);
   if (MAX_NEW_PER_RUN > 0 && toAdd.length > MAX_NEW_PER_RUN) {
@@ -337,6 +371,7 @@ async function main(): Promise<void> {
   }
 
   console.log("[ニュース収集] 登録予定:", toAdd.length, "件（キーワード選別・日付新しい順・最大", TOP_N, "件）");
+  logPipeline("KeywordPick", { ToAdd: toAdd.length });
   if (toAdd.length === 0) {
     const rej = countKeywordRejectionReasons(candidates);
     console.log(
@@ -354,16 +389,17 @@ async function main(): Promise<void> {
         `• 補足: 新着候補はあったがキーワードで 0 件。除外語: ${rej.excludedOnly} 件／事件語不足: ${rej.noIncidentOnly} 件（ログ参照）`,
       ],
     });
+    logPipeline("Notify", { Added: 0, Candidates: candidateCountForSummary, Webhook: summaryUrl?.trim() ? 1 : 0 });
     return;
   }
 
   const useGemini = shouldUseGeminiFormat();
   const geminiKey = process.env.GEMINI_API_KEY?.trim() || "";
   if (useGemini && geminiKey) {
-    console.log("[ニュース収集] GEMINI_API_KEY あり → Gemini で概要・要約を整形します（model は GEMINI_MODEL / format-news-gemini 参照）。");
+    console.log("[ニュース収集] GEMINI_API_KEY あり → collect-enrich 経由で Gemini 体裁（model は GEMINI_MODEL / format-news-gemini 参照）。");
   } else {
     console.log(
-      "[ニュース収集] Gemini オフ（GEMINI_API_KEY 未設定または COLLECT_SKIP_GEMINI_FORMAT=1）→ RSS 抜粋から 4 見出しの材料整形のみ。Actions では Environment kintone-collect に GEMINI_API_KEY があるか確認。",
+      "[ニュース収集] Gemini オフ（GEMINI_API_KEY 未設定または COLLECT_SKIP_GEMINI_FORMAT=1）→ collect-enrich で材料整形のみ。Actions では Environment kintone-collect に GEMINI_API_KEY があるか確認。",
     );
   }
 
@@ -374,100 +410,12 @@ async function main(): Promise<void> {
   let geminiInsightOnlyCount = 0;
 
   for (const row of toAdd) {
-    let overview: string;
-    let digest: string;
-    let usedGeminiForThis = false;
-    let usedGeminiInsightOnly = false;
-    if (useGemini && geminiKey) {
-      try {
-        const fmt = await formatNewsForKintone(geminiKey, {
-          title: row.title,
-          articleUrl: row.link,
-          publishedDate: row.publishedDate,
-          rssExcerptPlain: row.digestFullText,
-        });
-        overview = fmt.overview;
-        digest = fmt.digest;
-        usedGeminiForThis = true;
-      } catch (eGem) {
-        console.warn(
-          "[ニュース収集] Gemini 体裁整形に失敗したため、RSS 抜粋から 4 見出しのフォールバックで登録:",
-          row.link,
-          eGem,
-        );
-        const fb = buildRssMaterialSummaryDigest(
-          row.digestFullText,
-          row.title,
-          COLLECT_OVERVIEW_MAX_CHARS,
-        );
-        overview = fb.overview;
-        digest = fb.digest;
-      }
-    } else {
-      const fb = buildRssMaterialSummaryDigest(
-        row.digestFullText,
-        row.title,
-        COLLECT_OVERVIEW_MAX_CHARS,
-      );
-      overview = fb.overview;
-      digest = fb.digest;
-    }
-
-    /** 要約が 4 見出しでない／概要と同文のとき、材料整形で要約だけ必ず差別化する */
-    if (!digestHasMaterialHeadings(digest) || sameSummaryAndDigest(overview, digest)) {
-      console.warn(
-        "[ニュース収集] 要約が体裁不足または概要と重複のため、buildRssMaterialSummaryDigest で要約を再生成:",
-        row.link,
-      );
-      const fbOnly = buildRssMaterialSummaryDigest(
-        row.digestFullText,
-        row.title,
-        COLLECT_OVERVIEW_MAX_CHARS,
-      );
-      digest = fbOnly.digest;
-      if (sameSummaryAndDigest(overview, digest)) {
-        overview = fbOnly.overview;
-      }
-      usedGeminiForThis = false;
-    }
-
-    if (sameSummaryAndDigest(overview, digest)) {
-      console.warn(
-        "[ニュース収集] 概要と要約が同一検知のため、要約の「事象」から概要を再生成:",
-        row.link,
-      );
-      const m = /^事象:\s*(.+)$/m.exec(digest);
-      const stub = ((m ? m[1] : digest) || "").trim();
-      overview = `${truncateForLlm(stub, COLLECT_OVERVIEW_MAX_CHARS)}\nSecurity NEXT`;
-    }
-
-    /** 全文 Gemini を使えなかったがキーがある → 見解だけ Gemini（429 時の体裁） */
-    if (!usedGeminiForThis && shouldUseGeminiFormat() && geminiKey) {
-      try {
-        const insightBody = await formatDigestInsightOnly(geminiKey, {
-          title: row.title,
-          articleUrl: row.link,
-          publishedDate: row.publishedDate,
-          rssExcerptPlain: row.digestFullText,
-        });
-        digest = replaceDigestInsightParagraph(digest, insightBody);
-        usedGeminiInsightOnly = true;
-        console.log("[ニュース収集] 見解のみ Gemini で反映（全文は RSS 材料または検証フォールバック）:", row.link);
-      } catch (eInsight) {
-        console.warn(
-          "[ニュース収集] 見解のみ Gemini に失敗。要約の見解は材料整形のまま:",
-          row.link,
-          eInsight,
-        );
-      }
-    }
-
-    if (usedGeminiForThis) {
+    const { overview, digest, geminiMark } = await enrichOneNewsForKintone(row);
+    if (geminiMark === "Y") {
       geminiFullCount++;
-    } else if (usedGeminiInsightOnly) {
+    } else if (geminiMark === "I") {
       geminiInsightOnlyCount++;
     }
-    const geminiMark: "Y" | "I" | "N" = usedGeminiForThis ? "Y" : usedGeminiInsightOnly ? "I" : "N";
     const prevDigest = digest.slice(0, 72).replace(/\s+/g, " ");
     console.log(
       "[ニュース収集] 登録直前:",
@@ -497,6 +445,7 @@ async function main(): Promise<void> {
     "／先頭レコードの識別番号:",
     ids[0] ?? "—",
   );
+  logPipeline("KintonePost", { Added: ids.length, FirstId: ids[0] ? Number(ids[0]) : 0 });
 
   await notifyRunSummary(summaryUrl, {
     workflow: "ニュース収集",
@@ -509,6 +458,7 @@ async function main(): Promise<void> {
       ...(ids[0] ? [`• 今回の先頭レコード識別番号: ${ids[0]}`] : []),
     ],
   });
+  logPipeline("Notify", { Added: ids.length, Candidates: candidateCountForSummary, Webhook: summaryUrl?.trim() ? 1 : 0 });
 }
 
 main().catch(async (err) => {

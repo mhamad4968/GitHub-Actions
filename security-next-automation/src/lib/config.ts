@@ -10,6 +10,10 @@ const packageRoot = resolve(here, "..", "..");
 const envMainPath = resolve(packageRoot, ".env");
 const envLocalPath = resolve(packageRoot, ".env.local");
 
+/** collect トラブルシュート用（どのパスの .env が読まれるかの表示に使う） */
+export const DOTENV_MAIN_PATH = envMainPath;
+export const DOTENV_LOCAL_PATH = envLocalPath;
+
 if (existsSync(envMainPath)) {
   loadDotenv({ path: envMainPath });
 } else {
@@ -37,7 +41,18 @@ export type AppConfig = {
   /** analyze のとき必須。collect では未設定でもよい */
   openaiApiKey: string | undefined;
   openaiModel: string;
+  /** ログ・後方互換用の先頭フィード URL（実際の一覧は rssFeedUrls） */
   rssUrl: string;
+  /** 取得する RSS の URL 一覧（SECURITY_NEXT_RSS_URL または RSS_FEED_URLS で複数指定可） */
+  rssFeedUrls: string[];
+  /** 1 のとき NVD API 2.0 から CVE を併用取得する */
+  collectNvdEnabled: boolean;
+  /** NVD API キー（任意。無ければ低速レート） */
+  nvdApiKey: string | undefined;
+  /** NVD の公開日遡り日数 */
+  nvdLookbackDays: number;
+  /** 1 実行あたり NVD から採用する最大件数（TOP_N 前の候補プール） */
+  nvdMaxPerRun: number;
   notifyWebhookUrl: string | undefined;
 };
 
@@ -139,11 +154,32 @@ export function resolveApiTokenForAnalyze(): string | string[] {
   );
 }
 
+/** 改行・カンマ・セミコロン区切りで複数 RSS URL を解決する */
+function resolveRssFeedUrls(): string[] {
+  const primaryList = process.env.RSS_FEED_URLS?.trim();
+  const legacyOrSingle =
+    primaryList ||
+    process.env.SECURITY_NEXT_RSS_URL?.trim() ||
+    "https://www.security-next.com/feed";
+  const parts = legacyOrSingle
+    .split(/[\n,;]+/)
+    .map((s) => s.trim())
+    .filter((s) => /^https?:\/\//i.test(s));
+  const uniq = [...new Set(parts)];
+  return uniq.length > 0 ? uniq : ["https://www.security-next.com/feed"];
+}
+
 /**
  * 共通設定。collect は OpenAI 不要。analyze は resolveApiTokenForAnalyze と別途組み合わせる。
  */
 export function loadConfig(): AppConfig {
   const key = process.env.OPENAI_API_KEY?.trim();
+  const rssFeedUrls = resolveRssFeedUrls();
+  const nvdFlag = process.env.COLLECT_NVD_ENABLE?.trim().toLowerCase();
+  const collectNvdEnabled =
+    nvdFlag === "1" || nvdFlag === "true" || nvdFlag === "yes";
+  const nvdLookRaw = process.env.NVD_LOOKBACK_DAYS?.trim();
+  const nvdMaxRaw = process.env.NVD_MAX_PER_RUN?.trim();
   return {
     kintoneDomain: resolveKintoneDomain(),
     newsAppId: resolveNewsAppId(),
@@ -152,7 +188,14 @@ export function loadConfig(): AppConfig {
     kintoneApiTokenForCollect: resolveApiTokenForCollect(),
     openaiApiKey: key && key.length > 0 ? key : undefined,
     openaiModel: process.env.OPENAI_MODEL?.trim() || "gpt-4o-mini",
-    rssUrl: process.env.SECURITY_NEXT_RSS_URL?.trim() || "https://www.security-next.com/feed",
+    rssUrl: rssFeedUrls[0] || "https://www.security-next.com/feed",
+    rssFeedUrls,
+    collectNvdEnabled,
+    nvdApiKey: process.env.NVD_API_KEY?.trim() || undefined,
+    nvdLookbackDays:
+      nvdLookRaw && /^\d+$/.test(nvdLookRaw) ? Math.max(1, parseInt(nvdLookRaw, 10)) : 7,
+    nvdMaxPerRun:
+      nvdMaxRaw && /^\d+$/.test(nvdMaxRaw) ? Math.max(1, parseInt(nvdMaxRaw, 10)) : 50,
     notifyWebhookUrl: process.env.NOTIFY_WEBHOOK_URL?.trim() || undefined,
   };
 }
@@ -164,7 +207,7 @@ export function requireOpenAiKey(cfg: AppConfig): string {
   return cfg.openaiApiKey;
 }
 
-/** analyze（Gemini）用。collect はキーワード選別のため不要 */
+/** analyze（Gemini）用。collect は体裁整形で任意利用（`GEMINI_API_KEY` 参照） */
 export function requireGeminiApiKey(): string {
   const k = process.env.GEMINI_API_KEY?.trim();
   if (!k) {
