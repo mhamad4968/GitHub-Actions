@@ -33,6 +33,22 @@ export function truncateForLlm(text: string, maxLen: number): string {
 }
 
 /**
+ * 抜粋内の CVE 位置から前後を切り出す。直前が短い固定オフセットだと「Manager」→「nager」のように単語途中になるため、
+ * 直前の句読点／改行まで遡る（無ければ十分長くバックオフセット）。
+ */
+export function excerptWindowAroundCve(ex: string, cveIndex: number, cveLen: number, maxOut: number): string {
+  const backSpan = Math.min(cveIndex, 400);
+  const hardStart = cveIndex - backSpan;
+  const before = ex.slice(hardStart, cveIndex);
+  let rel = before.lastIndexOf("。");
+  if (rel < 0) rel = before.lastIndexOf("．");
+  if (rel < 0) rel = before.lastIndexOf("\n");
+  const start = rel >= 0 ? hardStart + rel + 1 : Math.max(0, cveIndex - 220);
+  const end = Math.min(ex.length, cveIndex + cveLen + 300);
+  return truncateForLlm(ex.slice(start, end).trimStart(), maxOut);
+}
+
+/**
  * 概要欄用に、同じ抜粋から「要約欄より短いリード」を作る（両欄が同一文字列にならないようにする）
  */
 export function shortLeadForOverview(fullPlain: string, maxLen: number): string {
@@ -154,6 +170,9 @@ export function vulnerabilityHintFromTitle(title: string): string {
   if (/IBM|Verify\s*Identity|Security\s*Verify\s*Access|アイ・ビー・エム/i.test(t)) {
     hints.push("IBM 製品（Identity／アクセス制御系）の脆弱性・セキュリティアップデート");
   }
+  if (/Ivanti|EPMM|Endpoint\s*Manager\s*Mobile|CISA|KEV/i.test(t)) {
+    hints.push("Ivanti／MDM・CISA 等の注意喚起・CVE 悪用の文脈");
+  }
   if (/サイバー攻撃|サイバー.?インシデント|ネットワーク攻撃|ハッキング|侵害事件/i.test(t)) {
     hints.push("組織・事業者のサイバーインシデント報道");
   }
@@ -237,8 +256,7 @@ export function buildRssMaterialSummaryDigest(
   /** 抜粋に「脆弱性」があれば CVE 無しでもその付近を要約に載せる（製品名＋脆弱性の一行が多い） */
   const vulnPhrase = ex.match(/[^。\n]{6,240}脆弱性[^。\n]{0,240}/);
   if (cveMatch) {
-    const i = cveMatch.index;
-    脆弱性関連 = truncateForLlm(ex.slice(Math.max(0, i - 24), i + cveMatch[0].length + 200).trim(), 500);
+    脆弱性関連 = excerptWindowAroundCve(ex, cveMatch.index, cveMatch[0].length, 520);
   } else if (techSentenceRe.test(ex)) {
     const chunks = ex
       .split(/[。．]/)
@@ -283,14 +301,18 @@ export function buildRssMaterialSummaryDigest(
   const fixSnip = ex.match(
     /[^。\n]{0,80}(パッチ|アップデート|更新プログラム|修正版|ワークアラウンド|設定変更|対策)[^。\n]{0,240}/,
   );
-  if (fixSnip) {
-    修正対策 = truncateForLlm(fixSnip[0].trim(), 500);
-  }
   const incidentResponseSnip = ex.match(
     /[^。\n]{0,80}(調査|復旧|業務影響|警察|届出|開示|顧客|取引先|対応)[^。\n]{0,280}/,
   );
-  if ((incidentContextRe.test(ex) || incidentContextRe.test(t)) && incidentResponseSnip && !fixSnip) {
+  if (fixSnip) {
+    修正対策 = truncateForLlm(fixSnip[0].trim(), 500);
+  } else if ((incidentContextRe.test(ex) || incidentContextRe.test(t)) && incidentResponseSnip) {
     修正対策 = truncateForLlm(incidentResponseSnip[0].trim(), 500);
+  } else if (cveMatch && /悪用|緊急対応|KEV|要請|注意喚起/i.test(ex)) {
+    修正対策 = truncateForLlm(
+      "該当 CVE・製品の利用有無を確認し、ベンダのセキュリティアドバイザリの修正版・ワークアラウンドを優先適用。悪用・緊急要請が示される場合は適用順位を上げ、影響範囲の洗い出しを早める。",
+      500,
+    );
   }
 
   const 見解 =

@@ -7,8 +7,24 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { generateContentWith429Retries } from "./gemini-rate-limit.js";
 import { normalizeInsightParagraphBody, truncateForLlm } from "./text.js";
 
-/** Google AI Studio / Generative Language API のモデル ID（429・404 時は .env / GEMINI_MODEL で別名へ。例: gemini-2.5-flash-preview） */
-const GEMINI_MODEL = process.env.GEMINI_MODEL?.trim() || "gemini-2.0-flash";
+/** 試行順: GEMINI_MODEL（設定時は先頭）→ 404 のとき次へ（gemini-1.5-flash 等の v1beta 非対応を救済） */
+export function geminiModelCandidates(): string[] {
+  const fallbacks = ["gemini-2.0-flash", "gemini-2.5-flash-preview-05-20"] as const;
+  const primary = process.env.GEMINI_MODEL?.trim();
+  if (!primary) return [...fallbacks];
+  return [...new Set([primary, ...fallbacks])];
+}
+
+export function isGeminiModelNotFoundError(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message : String(err);
+  if (/is not supported for generateContent|not found for API version, or is not supported/i.test(msg)) {
+    return true;
+  }
+  if (err !== null && typeof err === "object" && "status" in err && (err as { status?: number }).status === 404) {
+    return /generativelanguage|models\/|generateContent/i.test(msg);
+  }
+  return false;
+}
 
 /** LLM 入力に渡す RSS＋記事抜粋の上限（記事本文取得時は長めに） */
 const EXCERPT_FOR_LLM_MAX = 9_000;
@@ -228,45 +244,6 @@ export async function formatNewsForKintone(
           "**見解:** 管理者向けの優先度目安・社内確認観点のみ（メタ説明や「自動登録」への言及は禁止）。",
         ].join("\n")
       : "";
-  const model = genAI.getGenerativeModel({
-    model: GEMINI_MODEL,
-    systemInstruction: [
-      "あなたは情報セキュリティ系メディア「Security NEXT」品格の編集者です。",
-      src === "nvd"
-        ? "入力は NIST NVD の CVE 登録抜粋です。本文全体はなく、抜粋に無い事実は断定しない。"
-        : "入力は RSS と（あれば）記事本文の抜粋。無い事実は断定せず、不足は短い確認文にとどめ、**長い免責だけの段落は禁止**。",
-      "出力は有効な JSON オブジェクト 1 つだけ。前後に説明文やマークダウンを付けない。",
-      'キーは厳密に "overview" と "digest" の 2 つ。',
-      "",
-      "【overview】日本語。**概要**＝資料のネタ探し用に「何が起きたか」が一目で分かる**全体像**のみ。",
-      "原則 **1 文または 2 文**（読点は少なめ）。数値・CVE 番号・製品バージョン・手順的な対策の列挙は digest に回す。",
-      "**overview の本文と digest の本文は重複禁止**（同じ文・同じ言い回しのコピペ不可）。digest は別の構成で掘り下げる。",
-      "最終行を**独立した 1 行**とし、`Security NEXT` のみ（他の出典表記は付けない）。",
-      "",
-      "【digest】日本語。**要約**＝概要より詳しく、抜粋に基づき材料として後読み・調査に使える粒度。",
-      "**Security NEXT** という文字列は digest に入れない。",
-      "次の 4 見出しを**この順・この表記**で各行の先頭に付ける（コロンは半角）:",
-      "事象:",
-      "脆弱性関連:",
-      "修正・対策:",
-      "見解:",
-      "各見出しのコロン**直後**は空にしない。**最低 1 文・おおよそ 15 文字以上**。抜粋に無い事項は「記事・公式で要確認」「抜粋に明示なし」と明示する。",
-      "**事象: と 脆弱性関連: は同じ文・同じ言い回しを繰り返さない**（コピペ禁止）。事象は「何が公表・観測されたか」のストリート。脆弱性関連は **技術側**（CVE 番号・攻撃ベクトル・弱点の性質・影響しうる資産）に絞る。",
-      "事象: メーカー公表や報道ベースの**出来事**（製品名は出てよいが、技術説明の細部は脆弱性関連へ回す）。",
-      "脆弱性関連: **技術名・CVE・認証・権限・コード実行**、または**インシデントなら侵害の性質・影響・未確定事項**。事象の言い換え繰り返し禁止。CVE が無くても**入力の固有名詞と事案種別**で1文以上。",
-      "修正・対策: 利用中止・パッチ・バージョン・回避策が入力にあれば具体的に。**事象: のコピペ禁止**。無い場合は一文で「記事内の案内に従い対応を確認」。",
-      "見解: 管理者向けに優先度の目安・すぐ確認すべき点を 1〜2 文（断定しすぎない" +
-        (src === "nvd" ? "。「RSS 由来」という表現は使わない" : "") +
-        "）。",
-      nvdExtra,
-      rssExtra,
-    ].join("\n"),
-    generationConfig: {
-      temperature: 0.22,
-      maxOutputTokens: 2800,
-    },
-  });
-
   const userBase = [
     "次の記事情報を、指示どおり JSON で返してください。",
     "digest の各セクションは**固有名詞を含む具体文**とし、情報不足を理由にした長い免責テンプレのみの回答は不可。",
@@ -279,33 +256,90 @@ export async function formatNewsForKintone(
     excerpt,
   ].join("\n");
 
-  let lastErr = "（初回）";
-  for (let attempt = 0; attempt < FORMAT_MAX_ATTEMPTS; attempt++) {
-    const fix =
-      attempt === 0
-        ? ""
-        : `\n\n[前回不備: ${lastErr}。overview 最終行のみ Security NEXT。digest は4見出し・事象と脆弱性関連は別内容・**長い免責定型は禁止**・タイトル/入力の固有名詞を各セクションに。JSON のみ再出力。]`;
-    const result = await generateContentWith429Retries(model, userBase + fix);
-    const text = result.response.text().trim();
-    if (!text) {
-      lastErr = "Gemini から空の応答";
-      continue;
+  let lastAll404Msg = "";
+  modelLoop: for (const modelId of geminiModelCandidates()) {
+    const model = genAI.getGenerativeModel({
+      model: modelId,
+      systemInstruction: [
+        "あなたは情報セキュリティ系メディア「Security NEXT」品格の編集者です。",
+        src === "nvd"
+          ? "入力は NIST NVD の CVE 登録抜粋です。本文全体はなく、抜粋に無い事実は断定しない。"
+          : "入力は RSS と（あれば）記事本文の抜粋。無い事実は断定せず、不足は短い確認文にとどめ、**長い免責だけの段落は禁止**。",
+        "出力は有効な JSON オブジェクト 1 つだけ。前後に説明文やマークダウンを付けない。",
+        'キーは厳密に "overview" と "digest" の 2 つ。',
+        "",
+        "【overview】日本語。**概要**＝資料のネタ探し用に「何が起きたか」が一目で分かる**全体像**のみ。",
+        "原則 **1 文または 2 文**（読点は少なめ）。数値・CVE 番号・製品バージョン・手順的な対策の列挙は digest に回す。",
+        "**overview の本文と digest の本文は重複禁止**（同じ文・同じ言い回しのコピペ不可）。digest は別の構成で掘り下げる。",
+        "最終行を**独立した 1 行**とし、`Security NEXT` のみ（他の出典表記は付けない）。",
+        "",
+        "【digest】日本語。**要約**＝概要より詳しく、抜粋に基づき材料として後読み・調査に使える粒度。",
+        "**Security NEXT** という文字列は digest に入れない。",
+        "次の 4 見出しを**この順・この表記**で各行の先頭に付ける（コロンは半角）:",
+        "事象:",
+        "脆弱性関連:",
+        "修正・対策:",
+        "見解:",
+        "各見出しのコロン**直後**は空にしない。**最低 1 文・おおよそ 15 文字以上**。抜粋に無い事項は「記事・公式で要確認」「抜粋に明示なし」と明示する。",
+        "**事象: と 脆弱性関連: は同じ文・同じ言い回しを繰り返さない**（コピペ禁止）。事象は「何が公表・観測されたか」のストリート。脆弱性関連は **技術側**（CVE 番号・攻撃ベクトル・弱点の性質・影響しうる資産）に絞る。",
+        "事象: メーカー公表や報道ベースの**出来事**（製品名は出てよいが、技術説明の細部は脆弱性関連へ回す）。",
+        "脆弱性関連: **技術名・CVE・認証・権限・コード実行**、または**インシデントなら侵害の性質・影響・未確定事項**。事象の言い換え繰り返し禁止。CVE が無くても**入力の固有名詞と事案種別**で1文以上。",
+        "修正・対策: 利用中止・パッチ・バージョン・回避策が入力にあれば具体的に。**事象: のコピペ禁止**。無い場合は一文で「記事内の案内に従い対応を確認」。",
+        "見解: 管理者向けに優先度の目安・すぐ確認すべき点を 1〜2 文（断定しすぎない" +
+          (src === "nvd" ? "。「RSS 由来」という表現は使わない" : "") +
+          "）。",
+        nvdExtra,
+        rssExtra,
+      ].join("\n"),
+      generationConfig: {
+        temperature: 0.22,
+        maxOutputTokens: 2800,
+      },
+    });
+
+    let lastErr = "（初回）";
+    for (let attempt = 0; attempt < FORMAT_MAX_ATTEMPTS; attempt++) {
+      const fix =
+        attempt === 0
+          ? ""
+          : `\n\n[前回不備: ${lastErr}。overview 最終行のみ Security NEXT。digest は4見出し・事象と脆弱性関連は別内容・**長い免責定型は禁止**・タイトル/入力の固有名詞を各セクションに。JSON のみ再出力。]`;
+      let result: Awaited<ReturnType<typeof model.generateContent>>;
+      try {
+        result = await generateContentWith429Retries(model, userBase + fix);
+      } catch (e) {
+        if (isGeminiModelNotFoundError(e)) {
+          lastAll404Msg = e instanceof Error ? e.message : String(e);
+          console.warn(
+            `[Gemini体裁] model=${modelId} が利用不可（404 等）。次候補へ: ${lastAll404Msg.slice(0, 160)}`,
+          );
+          continue modelLoop;
+        }
+        throw e;
+      }
+      const text = result.response.text().trim();
+      if (!text) {
+        lastErr = "Gemini から空の応答";
+        continue;
+      }
+      let parsed: NewsFormatOutput;
+      try {
+        parsed = parseFormatJson(text);
+      } catch (e) {
+        lastErr = e instanceof Error ? e.message : String(e);
+        continue;
+      }
+      try {
+        validateNewsFormat(parsed);
+        return parsed;
+      } catch (e) {
+        lastErr = e instanceof Error ? e.message : String(e);
+      }
     }
-    let parsed: NewsFormatOutput;
-    try {
-      parsed = parseFormatJson(text);
-    } catch (e) {
-      lastErr = e instanceof Error ? e.message : String(e);
-      continue;
-    }
-    try {
-      validateNewsFormat(parsed);
-      return parsed;
-    } catch (e) {
-      lastErr = e instanceof Error ? e.message : String(e);
-    }
+    throw new Error(`Gemini 体裁（${modelId}）が ${FORMAT_MAX_ATTEMPTS} 回とも検証に失敗しました: ${lastErr}`);
   }
-  throw new Error(`Gemini 体裁が ${FORMAT_MAX_ATTEMPTS} 回とも検証に失敗しました: ${lastErr}`);
+  throw new Error(
+    `Gemini の全候補モデルが利用不可（404 等）です。GitHub Variables の GEMINI_MODEL を空にするか gemini-2.0-flash にしてください。 ${lastAll404Msg}`,
+  );
 }
 
 function parseInsightJson(raw: string): string {
@@ -334,23 +368,6 @@ export async function formatDigestInsightOnly(apiKey: string, input: NewsFormatI
   const src = input.materialSource === "nvd" ? "nvd" : "rss";
   const excerpt = truncateForLlm(input.rssExcerptPlain, INSIGHT_EXCERPT_MAX);
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({
-    model: GEMINI_MODEL,
-    systemInstruction: [
-      "あなたは組織の情報セキュリティ担当向けのアドバイザです。",
-      src === "nvd"
-        ? "入力は NIST NVD の CVE 登録抜粋のみ。抜粋に無い事実は断定せず、優先度や確認観点は「目安」「要確認」と留める。"
-        : "入力は RSS 抜粋および取得できていれば記事本文抜粋。無い事実は断定せず、優先度や確認観点は「目安」「要確認」と留める。",
-      "出力は有効な JSON オブジェクト 1 つだけ。キーは厳密に \"insight\" のみ。",
-      "insight の値: 日本語で 1〜3 文。対応優先度の目安、社内で確認すべき論点（資産・利用範囲・パッチ方針など）、リスクの捉え方。",
-      "「RSS 由来です」「自動登録です」「一次情報での裏取りを推奨」などのメタ・定型免責は書かない。中身の提案に集中。",
-      "Security NEXT という文字列は insight に含めない。",
-    ].join("\n"),
-    generationConfig: {
-      temperature: 0.28,
-      maxOutputTokens: 640,
-    },
-  });
 
   const userBase = [
     "次の記事について、キー insight だけを JSON で返してください。",
@@ -363,23 +380,55 @@ export async function formatDigestInsightOnly(apiKey: string, input: NewsFormatI
     excerpt,
   ].join("\n");
 
-  let lastErr = "（初回）";
-  for (let attempt = 0; attempt < INSIGHT_MAX_ATTEMPTS; attempt++) {
-    const fix =
-      attempt === 0
-        ? ""
-        : `\n\n[前回不備: ${lastErr}。insight のみ・1〜3文・日本語・JSONのみ再出力。]`;
-    const result = await generateContentWith429Retries(model, userBase + fix);
-    const text = result.response.text().trim();
-    if (!text) {
-      lastErr = "空応答";
-      continue;
+  let lastAll404Msg = "";
+  modelLoop: for (const modelId of geminiModelCandidates()) {
+    const model = genAI.getGenerativeModel({
+      model: modelId,
+      systemInstruction: [
+        "あなたは組織の情報セキュリティ担当向けのアドバイザです。",
+        src === "nvd"
+          ? "入力は NIST NVD の CVE 登録抜粋のみ。抜粋に無い事実は断定せず、優先度や確認観点は「目安」「要確認」と留める。"
+          : "入力は RSS 抜粋および取得できていれば記事本文抜粋。無い事実は断定せず、優先度や確認観点は「目安」「要確認」と留める。",
+        "出力は有効な JSON オブジェクト 1 つだけ。キーは厳密に \"insight\" のみ。",
+        "insight の値: 日本語で 1〜3 文。対応優先度の目安、社内で確認すべき論点（資産・利用範囲・パッチ方針など）、リスクの捉え方。",
+        "「RSS 由来です」「自動登録です」「一次情報での裏取りを推奨」などのメタ・定型免責は書かない。中身の提案に集中。",
+        "Security NEXT という文字列は insight に含めない。",
+      ].join("\n"),
+      generationConfig: {
+        temperature: 0.28,
+        maxOutputTokens: 640,
+      },
+    });
+
+    let lastErr = "（初回）";
+    for (let attempt = 0; attempt < INSIGHT_MAX_ATTEMPTS; attempt++) {
+      const fix =
+        attempt === 0
+          ? ""
+          : `\n\n[前回不備: ${lastErr}。insight のみ・1〜3文・日本語・JSONのみ再出力。]`;
+      let result: Awaited<ReturnType<typeof model.generateContent>>;
+      try {
+        result = await generateContentWith429Retries(model, userBase + fix);
+      } catch (e) {
+        if (isGeminiModelNotFoundError(e)) {
+          lastAll404Msg = e instanceof Error ? e.message : String(e);
+          console.warn(`[Gemini見解] model=${modelId} が利用不可（404 等）。次候補へ`);
+          continue modelLoop;
+        }
+        throw e;
+      }
+      const text = result.response.text().trim();
+      if (!text) {
+        lastErr = "空応答";
+        continue;
+      }
+      try {
+        return parseInsightJson(text);
+      } catch (e) {
+        lastErr = e instanceof Error ? e.message : String(e);
+      }
     }
-    try {
-      return parseInsightJson(text);
-    } catch (e) {
-      lastErr = e instanceof Error ? e.message : String(e);
-    }
+    throw new Error(`Gemini 見解のみ（${modelId}）が ${INSIGHT_MAX_ATTEMPTS} 回とも失敗: ${lastErr}`);
   }
-  throw new Error(`Gemini 見解のみが ${INSIGHT_MAX_ATTEMPTS} 回とも失敗: ${lastErr}`);
+  throw new Error(`Gemini 見解のみ: 全候補モデルが利用不可（404 等）。GEMINI_MODEL を見直してください。 ${lastAll404Msg}`);
 }
