@@ -151,6 +151,9 @@ export function vulnerabilityHintFromTitle(title: string): string {
   if (/不正アクセス|流出|漏えい|漏洩/i.test(t)) hints.push("インシデント・情報流出の文脈");
   if (/パッチ|アップデート|更新プログラム|緊急更新/i.test(t)) hints.push("修正・更新の公表あり");
   if (/Emotet|EmoCheck|マルウェア|ボットネット|トロイの木馬/i.test(t)) hints.push("マルウェア・不正コード関連");
+  if (/IBM|Verify\s*Identity|Security\s*Verify\s*Access|アイ・ビー・エム/i.test(t)) {
+    hints.push("IBM 製品（Identity／アクセス制御系）の脆弱性・セキュリティアップデート");
+  }
   if (/サイバー攻撃|サイバー.?インシデント|ネットワーク攻撃|ハッキング|侵害事件/i.test(t)) {
     hints.push("組織・事業者のサイバーインシデント報道");
   }

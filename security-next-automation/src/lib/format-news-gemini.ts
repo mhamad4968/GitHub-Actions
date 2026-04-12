@@ -14,10 +14,10 @@ const GEMINI_MODEL = process.env.GEMINI_MODEL?.trim() || "gemini-2.0-flash";
 const EXCERPT_FOR_LLM_MAX = 9_000;
 
 /** 体裁検証に失敗したときの最大再試行回数（プロンプトに検証メッセージを付けてやり直す） */
-const FORMAT_MAX_ATTEMPTS = 3;
+const FORMAT_MAX_ATTEMPTS = 5;
 
 /** 全文 Gemini 失敗時に「見解」だけを埋める API 呼び出しの再試行回数 */
-const INSIGHT_MAX_ATTEMPTS = 2;
+const INSIGHT_MAX_ATTEMPTS = 3;
 
 const INSIGHT_EXCERPT_MAX = 2000;
 
@@ -41,10 +41,35 @@ const BANNED_DIGEST_SNIPPETS = [
   "技術的明記が乏しい場合があります",
 ] as const;
 
+/**
+ * 全角英数・不可視文字・ホモグリフ差で禁止定型の文字列一致が外れるのを防ぐ（検知のみ用）
+ */
+export function normalizeTextForBoilerplateScan(raw: string): string {
+  return raw
+    .normalize("NFKC")
+    .replace(/\u200B|\u200C|\u200D|\uFEFF/g, "")
+    .replace(/\r\n/g, "\n")
+    .replace(/[ \t\u00A0\u3000]+/g, " ")
+    .trim();
+}
+
+/** 文字列一致で拾い損ねるテンプレを正規表現でも弾く（normalize 後の文字列に対して検査） */
+const BANNED_DIGEST_REGEXES: readonly RegExp[] = [
+  /RSS\s*抜粋に[\s\S]{0,200}?CVE[\s\S]{0,120}?乏し/i,
+  /RSS\s*由来[\s\S]{0,48}?自動登録/i,
+  /一次情報[\s\S]{0,40}?裏取り[\s\S]{0,24}?推奨/i,
+  /抜粋に[\s\S]{0,80}?修正版[\s\S]{0,80}?手順[\s\S]{0,80}?ない場合/i,
+  /資料化[\s\S]{0,24}?社内検討[\s\S]{0,40}?裏取り/i,
+];
+
 export function digestContainsBannedBoilerplate(digest: string): string | null {
-  const d = digest.replace(/\r\n/g, "\n");
+  const d = normalizeTextForBoilerplateScan(digest.replace(/\r\n/g, "\n"));
   for (const s of BANNED_DIGEST_SNIPPETS) {
-    if (d.includes(s)) return s;
+    const ns = normalizeTextForBoilerplateScan(s);
+    if (d.includes(ns)) return s;
+  }
+  for (let i = 0; i < BANNED_DIGEST_REGEXES.length; i++) {
+    if (BANNED_DIGEST_REGEXES[i].test(d)) return `[template-regex:${i}]`;
   }
   return null;
 }
@@ -160,6 +185,14 @@ export function validateNewsFormat(out: NewsFormatOutput): void {
       "事象 と 脆弱性関連 の冒頭が重複しています。事象はニュースの出来事・状況のみ。脆弱性関連は CVE・製品コンポーネント・攻撃種別・認証の問題など技術用語で別の文にしてください",
     );
   }
+
+  const taishoBody = digestSectionBody(digest, "修正・対策:", "見解:").trim();
+  const jishoPlain = digestSectionBody(digest, "事象:", "脆弱性関連:").trim();
+  if (taishoBody.length >= 22 && jishoPlain.includes(taishoBody)) {
+    throw new Error(
+      "修正・対策 が事象欄の繰り返しです。IBM 等の公式アドバイザリ・修正版の入手先・適用対象版・設定確認など、行動に落ちる別の文にしてください",
+    );
+  }
 }
 
 /**
@@ -191,7 +224,7 @@ export async function formatNewsForKintone(
           "**禁止:** 「情報が乏しいので元記事を読め」だけを長文で繰り返す**免責3段構成**。プロンプトに過去テンプレの**全文引用は出さない**（モデルが誤ってコピーしやすいため、ここでは例文を列挙しない）。",
           "**必須:** タイトル・入力に出る**固有名詞**（製品名・マルウェア名・ツール名・組織名）を **脆弱性関連・修正・対策・見解の各セクションに最低1つずつ**織り込む（無理な断定はしない）。",
           "**脆弱性関連:** CVE が無ければ、(1) **製品・ツールの欠陥系**: 影響対象・悪用経路を入力の語で。(2) **企業公表のサイバーインシデント系**: 公表されている侵害の様相・影響（業務・データ・第三者）、攻撃手口が不明なら「手口は公表段階では不明」と書ける。事象欄の言い換えだけは禁止。",
-          "**修正・対策:** パッチ系なら版数・入手元。インシデント系なら調査・復旧・開示・当局対応など**入力にあれば具体的に**。無い場合は一文で「記事および公表元の公式発表で対応・影響範囲を確認」。",
+          "**修正・対策:** パッチ系なら版数・入手元。インシデント系なら調査・復旧・開示・当局対応など**入力にあれば具体的に**。**事象欄の文末をそのまま貼り付けない**（必ずアドバイザリ URL 言及・適用順・対象製品版のいずれかを足す）。無い場合は一文で「記事および公表元の公式発表で対応・影響範囲を確認」。",
           "**見解:** 管理者向けの優先度目安・社内確認観点のみ（メタ説明や「自動登録」への言及は禁止）。",
         ].join("\n")
       : "";
@@ -221,7 +254,7 @@ export async function formatNewsForKintone(
       "**事象: と 脆弱性関連: は同じ文・同じ言い回しを繰り返さない**（コピペ禁止）。事象は「何が公表・観測されたか」のストリート。脆弱性関連は **技術側**（CVE 番号・攻撃ベクトル・弱点の性質・影響しうる資産）に絞る。",
       "事象: メーカー公表や報道ベースの**出来事**（製品名は出てよいが、技術説明の細部は脆弱性関連へ回す）。",
       "脆弱性関連: **技術名・CVE・認証・権限・コード実行**、または**インシデントなら侵害の性質・影響・未確定事項**。事象の言い換え繰り返し禁止。CVE が無くても**入力の固有名詞と事案種別**で1文以上。",
-      "修正・対策: 利用中止・パッチ・バージョン・回避策が入力にあれば具体的に。無い場合は一文で「記事内の案内に従い対応を確認」。",
+      "修正・対策: 利用中止・パッチ・バージョン・回避策が入力にあれば具体的に。**事象: のコピペ禁止**。無い場合は一文で「記事内の案内に従い対応を確認」。",
       "見解: 管理者向けに優先度の目安・すぐ確認すべき点を 1〜2 文（断定しすぎない" +
         (src === "nvd" ? "。「RSS 由来」という表現は使わない" : "") +
         "）。",
@@ -288,10 +321,8 @@ function parseInsightJson(raw: string): string {
   if (/Security NEXT/i.test(insight)) {
     throw new Error("insight に Security NEXT を含めないでください");
   }
-  for (const s of BANNED_DIGEST_SNIPPETS) {
-    if (insight.includes(s)) {
-      throw new Error("insight に禁止の免責テンプレが含まれます");
-    }
+  if (digestContainsBannedBoilerplate(insight)) {
+    throw new Error("insight に禁止の免責テンプレが含まれます");
   }
   return normalizeInsightParagraphBody(insight);
 }

@@ -2,7 +2,7 @@
  * 収集パイプラインの「体裁付け（Enrichment）」層。
  * Gemini 使用可否・Y/I/N の判定・format-news-gemini / text.ts の呼び出しはここに閉じる。
  */
-import { formatDigestInsightOnly, formatNewsForKintone } from "./format-news-gemini.js";
+import { digestContainsBannedBoilerplate, formatDigestInsightOnly, formatNewsForKintone } from "./format-news-gemini.js";
 import { type NormalizedNewsRow, logPipeline, overviewFooterSource, type CollectPipelineStep } from "./collect-pipeline.js";
 import { tryFetchArticleBodyPlain } from "./fetch-article-plain.js";
 import {
@@ -113,6 +113,23 @@ export async function enrichOneNewsForKintone(row: NormalizedNewsRow): Promise<E
       });
       overview = fmt.overview;
       digest = fmt.digest;
+      if (digestContainsBannedBoilerplate(digest)) {
+        console.warn("[ニュース収集] Gemini 要約に禁止定型が検出されたため材料要約へ差し替え:", shortUrlForLog(row.link));
+        logPipeline(STEP_ENRICH, {
+          Result: "sanitized",
+          Detail: "banned-boilerplate-in-digest",
+          Url: shortUrlForLog(row.link),
+        });
+        const fbSan = buildRssMaterialSummaryDigest(
+          excerptPlain,
+          row.title,
+          COLLECT_OVERVIEW_MAX_CHARS,
+          overviewFooterSource(row),
+          row.source,
+        );
+        digest = fbSan.digest;
+        usedGeminiForThis = false;
+      }
       if (row.source === "nvd") {
         const lines = overview.split("\n");
         const last = (lines[lines.length - 1] || "").trim();
