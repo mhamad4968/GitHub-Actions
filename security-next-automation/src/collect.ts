@@ -59,6 +59,10 @@ const INCIDENT_KEYWORDS = [
   "フィッシング",
   /** タイトルに「脆弱性」が無いセキュリティ更新記事の救済（長い句で誤爆しにくい） */
   "セキュリティアップデート",
+  /** 記録媒体・文書の紛失・選挙文書など（Security NEXT の「所在不明」見出し） */
+  "所在不明",
+  /** 公開設定ミス・残存など個人情報リスクの報道（件数は増えやすいので要チューニング） */
+  "個人情報",
 ] as const;
 
 /**
@@ -141,6 +145,15 @@ function firstMatchingKeyword(haystack: string, needles: readonly string[]): str
   return null;
 }
 
+/**
+ * タイトルだけでセキュリティ事案が明白なら、本文（RSS 抜粋）の「アドバイザリ」等による除外をしない。
+ * 例: 見出しは「脆弱性を修正」だが抜粋にセキュリティアドバイザリ、とある記事の取りこぼし防止。
+ */
+function titleBypassesExclusionKeywords(title: string): boolean {
+  const t = title.trim();
+  return /脆弱性|悪用|CVE-\d{4}|ゼロデイ|ゼロデー|緊急|ランサム|不正アクセス|情報流出|流出|漏洩|漏えい|侵害/i.test(t);
+}
+
 /** 登録 0 件時、各新規候補がキーワードで落ちた理由を 1 行ずつ出す（Actions で調整先が分かる） */
 function logKeywordDetailPerCandidate(rows: NormalizedNewsRow[]): void {
   const n = rows.length;
@@ -157,10 +170,20 @@ function logKeywordDetailPerCandidate(rows: NormalizedNewsRow[]): void {
       continue;
     }
     const ex = firstMatchingKeyword(blob, EXCLUSION_KEYWORDS);
-    if (ex) {
+    const bypass = titleBypassesExclusionKeywords(row.title || "");
+    if (ex && !bypass) {
       console.log(
         `[ニュース収集] キーワード内訳 ${i + 1}/${n}: 除外語「${ex}」でスキップ | ${titleShort} | ${urlShort}`,
       );
+    } else if (ex && bypass) {
+      console.log(
+        `[ニュース収集] キーワード内訳 ${i + 1}/${n}: 本文に「${ex}」があるがタイトルが事案明示のため除外しない | ${titleShort} | ${urlShort}`,
+      );
+      if (!haystackContainsAny(blob, INCIDENT_KEYWORDS)) {
+        console.log(
+          `[ニュース収集]   → ただし事件語なしのため最終的にスキップ（INCIDENT を確認） | ${urlShort}`,
+        );
+      }
     } else if (!haystackContainsAny(blob, INCIDENT_KEYWORDS)) {
       console.log(`[ニュース収集] キーワード内訳 ${i + 1}/${n}: 事件語なし（INCIDENT に該当語がタイトル・抜粋に無い） | ${titleShort} | ${urlShort}`);
     } else {
@@ -172,7 +195,11 @@ function logKeywordDetailPerCandidate(rows: NormalizedNewsRow[]): void {
 /** ネガティブ語が無く、ポジティブ（インシデント）語が 1 つ以上ある */
 function rowMatchesKeywordRules(row: NormalizedNewsRow): boolean {
   const blob = `${row.title}\n${row.digestFullText}`;
-  if (haystackContainsAny(blob, EXCLUSION_KEYWORDS)) {
+  const title = row.title || "";
+  if (
+    haystackContainsAny(blob, EXCLUSION_KEYWORDS) &&
+    !(row.source !== "nvd" && titleBypassesExclusionKeywords(title))
+  ) {
     return false;
   }
   if (row.source === "nvd") {
@@ -190,7 +217,9 @@ function countKeywordRejectionReasons(rows: NormalizedNewsRow[]): {
   let noIncidentOnly = 0;
   for (const row of rows) {
     const blob = `${row.title}\n${row.digestFullText}`;
-    const neg = haystackContainsAny(blob, EXCLUSION_KEYWORDS);
+    const negRaw = haystackContainsAny(blob, EXCLUSION_KEYWORDS);
+    const neg =
+      negRaw && !(row.source !== "nvd" && titleBypassesExclusionKeywords(row.title || ""));
     if (row.source === "nvd") {
       if (neg) excludedOnly++;
       continue;
