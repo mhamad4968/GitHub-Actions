@@ -230,6 +230,8 @@ needs_review = true  ←→  (gemini_mark ≠ "Y")
 | ドキュメント | パス |
 |---|---|
 | Phase 2 設計（631 メタデータ・例外枠・品質フラグ） | [`docs/phase2-631-collect-improvements.md`](docs/phase2-631-collect-improvements.md) |
+| 運用ランブック（エラー対応・権限・環境変数） | [`docs/runbook-security-next.md`](docs/runbook-security-next.md) |
 | メンテナンスプレイブック | [`docs/maintenance-template.md`](docs/maintenance-template.md) |
 | 631 フィールド設計 CSV | [`security-next-automation/docs/security-next-news-app-design.csv`](security-next-automation/docs/security-next-news-app-design.csv) |
 | 632 フィールド設計 CSV | [`security-next-automation/docs/security-next-weekly-report-app-design.csv`](security-next-automation/docs/security-next-weekly-report-app-design.csv) |
+| 防衛線テスト（§7・§9 シミュレーション） | [`security-next-automation/src/__tests__/integration-defense-lines.ts`](security-next-automation/src/__tests__/integration-defense-lines.ts) |
