@@ -150,6 +150,11 @@ export function vulnerabilityHintFromTitle(title: string): string {
   if (/フィッシング|詐欺メール/i.test(t)) hints.push("フィッシング／ソーシャル系");
   if (/不正アクセス|流出|漏えい|漏洩/i.test(t)) hints.push("インシデント・情報流出の文脈");
   if (/パッチ|アップデート|更新プログラム|緊急更新/i.test(t)) hints.push("修正・更新の公表あり");
+  if (/Emotet|EmoCheck|マルウェア|ボットネット|トロイの木馬/i.test(t)) hints.push("マルウェア・不正コード関連");
+  if (/JPCERT|IPA|注意喚起|CC[^A-Z]|コーディネーション/i.test(t)) hints.push("国内 CSIRT・注意喚起の文脈");
+  if (/(ツール|ユーティリティ|チェック|診断).{0,40}脆弱|脆弱.{0,40}(ツール|ユーティリティ)/i.test(t)) {
+    hints.push("セキュリティ系ツール／ユーティリティの脆弱性");
+  }
   if (/脆弱性|悪用|CVE/i.test(t) && hints.length === 0) hints.push("脆弱性・脅威に関する報道");
   if (hints.length === 0) return "";
   return `タイトルから読み取れる論点: ${hints.join("／")}。詳細な技術条件・CVSS・版数は記事本文・アドバイザリで確認。`;

@@ -28,6 +28,22 @@ const DIGEST_HEADINGS = [
   "見解:",
 ] as const;
 
+/** モデルがプロンプト内の「禁止例」を丸写ししやすいため、検証で弾く（部分一致） */
+const BANNED_DIGEST_SNIPPETS = [
+  "RSS 抜粋に CVE・攻撃種別等の技術的明記が乏しい",
+  "抜粋に修正版・パッチ・手順の明記がない場合があります",
+  "RSS 由来の自動登録",
+  "一次情報での裏取りを推奨",
+] as const;
+
+export function digestContainsBannedBoilerplate(digest: string): string | null {
+  const d = digest.replace(/\r\n/g, "\n");
+  for (const s of BANNED_DIGEST_SNIPPETS) {
+    if (d.includes(s)) return s;
+  }
+  return null;
+}
+
 export type NewsFormatInput = {
   title: string;
   articleUrl: string;
@@ -113,9 +129,16 @@ export function validateNewsFormat(out: NewsFormatOutput): void {
     const section = digest.slice(start, next).trim();
     if (section.length < 12) {
       throw new Error(
-        `${label} の直後が空に近いです。情報が無い場合は「RSS 抜粋に明示なし。元記事で要確認。」など 1 文以上書いてください`,
+        `${label} の直後が空に近いです。固有名詞を含む 1 文以上で、不足分は「記事本文で要確認」と短く補う`,
       );
     }
+  }
+
+  const banned = digestContainsBannedBoilerplate(digest);
+  if (banned) {
+    throw new Error(
+      `digest に禁止の免責テンプレが含まれます。脆弱性関連は製品・CVE・攻撃条件など具体語、修正・対策は利用中止・パッチ等の事実、見解は優先度目安のみ（該当: ${banned.slice(0, 28)}…）`,
+    );
   }
 
   const normOverviewBody = body.replace(/\s+/g, " ");
@@ -159,15 +182,12 @@ export async function formatNewsForKintone(
     src === "rss"
       ? [
           "",
-          "【Security NEXT 記事】入力には RSS 抜粋に加え、取得できていれば「記事ページから自動取得した本文抜粋」ブロックが含まれる。そちらを**優先参照**し、CVE・版数・対策を具体的に書ける範囲で書く。",
-          "次の定型文・それに極めて似た言い回しは**出力に含めない**（社内テンプレのフォールバック文のコピペ禁止）:",
-          "・「RSS 抜粋に CVE・攻撃種別等の技術的明記が乏しい場合があります。製品名・版数・深刻度は元記事・ベンダ情報で確認してください。」",
-          "・「抜粋に修正版・パッチ・手順の明記がない場合があります。元記事の対応案を参照してください。」",
-          "・「RSS 由来の自動登録です。資料化・社内検討の前に一次情報での裏取りを推奨します。」",
-          "",
-          "**脆弱性関連:** タイトル・本文抜粋に **CVE 番号**があれば必ず記載。無い場合は製品・コンポーネント・事象種別（ゼロデイ、権限昇格、情報漏えい等）を**入力から拾った語**で1文以上。推測は「可能性」で明示。",
-          "**修正・対策:** 入力にアップデート・パッチ・回避策・設定変更があれば要約。無い場合は「現時点の公開情報ではバージョン／パッチの明示が限定的」など**事実ベース**で1〜2文（上記禁止文ではない）。",
-          "**見解:** 管理者向けに優先度の目安・社内で押さえる確認観点（資産影響、適用窓口）を1〜2文。**「RSS」「自動登録」などのメタ説明は禁止**。",
+          "【Security NEXT 記事】入力には RSS 抜粋に加え、取得できていれば「記事ページから自動取得した本文抜粋」ブロックがある。**そちらを優先**し、CVE・版数・利用中止・パッチ等を書ける範囲で具体化する。",
+          "**禁止:** 「情報が乏しいので元記事を読め」だけを長文で繰り返す**免責3段構成**。プロンプトに過去テンプレの**全文引用は出さない**（モデルが誤ってコピーしやすいため、ここでは例文を列挙しない）。",
+          "**必須:** タイトル・入力に出る**固有名詞**（製品名・マルウェア名・ツール名・組織名）を **脆弱性関連・修正・対策・見解の各セクションに最低1つずつ**織り込む（無理な断定はしない）。",
+          "**脆弱性関連:** CVE が無ければ、影響対象（例: どのツール／ライブラリ）、想定される悪用経路が入力から読み取れる範囲で1〜2文。",
+          "**修正・対策:** 利用中止・アンインストール・代替ツール・パッチ適用など、入力にあれば具体的に。無い場合は「公開されている対応方針は記事内の案内に従う」程度の短い事実文。",
+          "**見解:** 管理者向けの優先度目安・社内確認観点のみ（メタ説明や「自動登録」への言及は禁止）。",
         ].join("\n")
       : "";
   const model = genAI.getGenerativeModel({
@@ -176,7 +196,7 @@ export async function formatNewsForKintone(
       "あなたは情報セキュリティ系メディア「Security NEXT」品格の編集者です。",
       src === "nvd"
         ? "入力は NIST NVD の CVE 登録抜粋です。本文全体はなく、抜粋に無い事実は断定しない。"
-        : "入力は RSS 由来の抜粋のみであり本文全体はありません。抜粋に無い事実は断定せず、不明なら「詳細は確認中」「RSS 抜粋に明示なし」などと書いてください。",
+        : "入力は RSS と（あれば）記事本文の抜粋。無い事実は断定せず、不足は短い確認文にとどめ、**長い免責だけの段落は禁止**。",
       "出力は有効な JSON オブジェクト 1 つだけ。前後に説明文やマークダウンを付けない。",
       'キーは厳密に "overview" と "digest" の 2 つ。',
       "",
@@ -195,8 +215,8 @@ export async function formatNewsForKintone(
       "各見出しのコロン**直後**は空にしない。**最低 1 文・おおよそ 15 文字以上**。抜粋に無い事項は「記事・公式で要確認」「抜粋に明示なし」と明示する。",
       "**事象: と 脆弱性関連: は同じ文・同じ言い回しを繰り返さない**（コピペ禁止）。事象は「何が公表・観測されたか」のストリート。脆弱性関連は **技術側**（CVE 番号・攻撃ベクトル・弱点の性質・影響しうる資産）に絞る。",
       "事象: メーカー公表や報道ベースの**出来事**（製品名は出てよいが、技術説明の細部は脆弱性関連へ回す）。",
-      "脆弱性関連: **技術名・CVE・認証・権限・コード実行の有無**など。事象で語った内容の言い換え繰り返しは禁止。抜粋に技術情報が無ければ短く「抜粋に CVE・詳細なし。元記事・アドバイザリで要確認」など。",
-      "修正・対策: パッチ・バージョン・推奨設定が抜粋にあれば。無ければ「元記事の対応を確認」系。",
+      "脆弱性関連: **技術名・CVE・認証・権限・コード実行の有無**など。事象の言い換え繰り返し禁止。CVE が無い場合もツール名・製品名・事案種別を**入力の語**で1文以上。",
+      "修正・対策: 利用中止・パッチ・バージョン・回避策が入力にあれば具体的に。無い場合は一文で「記事内の案内に従い対応を確認」。",
       "見解: 管理者向けに優先度の目安・すぐ確認すべき点を 1〜2 文（断定しすぎない" +
         (src === "nvd" ? "。「RSS 由来」という表現は使わない" : "") +
         "）。",
@@ -211,6 +231,7 @@ export async function formatNewsForKintone(
 
   const userBase = [
     "次の記事情報を、指示どおり JSON で返してください。",
+    "digest の各セクションは**固有名詞を含む具体文**とし、情報不足を理由にした長い免責テンプレのみの回答は不可。",
     "",
     "タイトル: " + input.title,
     "URL: " + input.articleUrl,
@@ -225,7 +246,7 @@ export async function formatNewsForKintone(
     const fix =
       attempt === 0
         ? ""
-        : `\n\n[前回の出力は要件を満たしませんでした: ${lastErr}。overview は最終行のみ Security NEXT。digest は4見出し順守・事象と脆弱性関連は内容を分離・各見出しに本文1文以上・overview との重複なし。JSON のみ再出力。]`;
+        : `\n\n[前回不備: ${lastErr}。overview 最終行のみ Security NEXT。digest は4見出し・事象と脆弱性関連は別内容・**長い免責定型は禁止**・タイトル/入力の固有名詞を各セクションに。JSON のみ再出力。]`;
     const result = await generateContentWith429Retries(model, userBase + fix);
     const text = result.response.text().trim();
     if (!text) {
@@ -261,6 +282,11 @@ function parseInsightJson(raw: string): string {
   }
   if (/Security NEXT/i.test(insight)) {
     throw new Error("insight に Security NEXT を含めないでください");
+  }
+  for (const s of BANNED_DIGEST_SNIPPETS) {
+    if (insight.includes(s)) {
+      throw new Error("insight に禁止の免責テンプレが含まれます");
+    }
   }
   return normalizeInsightParagraphBody(insight);
 }
