@@ -151,6 +151,10 @@ export function vulnerabilityHintFromTitle(title: string): string {
   if (/不正アクセス|流出|漏えい|漏洩/i.test(t)) hints.push("インシデント・情報流出の文脈");
   if (/パッチ|アップデート|更新プログラム|緊急更新/i.test(t)) hints.push("修正・更新の公表あり");
   if (/Emotet|EmoCheck|マルウェア|ボットネット|トロイの木馬/i.test(t)) hints.push("マルウェア・不正コード関連");
+  if (/サイバー攻撃|サイバー.?インシデント|ネットワーク攻撃|ハッキング|侵害事件/i.test(t)) {
+    hints.push("組織・事業者のサイバーインシデント報道");
+  }
+  if (/子会社|関連会社|合弁|現地法人|海外拠点/i.test(t)) hints.push("グループ会社・海外拠点が関係する事案");
   if (/JPCERT|IPA|注意喚起|CC[^A-Z]|コーディネーション/i.test(t)) hints.push("国内 CSIRT・注意喚起の文脈");
   if (/(ツール|ユーティリティ|チェック|診断).{0,40}脆弱|脆弱.{0,40}(ツール|ユーティリティ)/i.test(t)) {
     hints.push("セキュリティ系ツール／ユーティリティの脆弱性");
@@ -218,12 +222,12 @@ export function buildRssMaterialSummaryDigest(
    * 技術寄りの文だけ拾い、先頭〜200字程度と同一始まりなら捨てる。
    */
   const techSentenceRe =
-    /脆弱|CVE|インジェクション|認証|バイパス|ゼロデイ|悪用|権限|RCE|XSS|SQL|バッファ|オーバーフロー|リモート|コード実行|攻撃|スクリプト|ホール|欠陥/i;
+    /脆弱|CVE|インジェクション|認証|バイパス|ゼロデイ|悪用|権限|RCE|XSS|SQL|バッファ|オーバーフロー|リモート|コード実行|攻撃|スクリプト|ホール|欠陥|サイバー攻撃|不正アクセス|情報漏えい|情報漏洩|ランサム|マルウェア|侵入|侵害|ハッキング|データ流出/i;
 
   const titleHint = vulnerabilityHintFromTitle(t);
   const DIGEST_脆弱性関連_FALLBACK =
     titleHint ||
-    "入力テキストに CVE・攻撃経路の明示が少ない。製品名・版数・深刻度は記事本文およびベンダ通達で要確認。";
+    "抜粋だけでは CVE・攻撃手口の特定に至らない。技術詳細・影響範囲は記事本文および公表元の続報で要確認。";
   let 脆弱性関連 = DIGEST_脆弱性関連_FALLBACK;
   const cveRe = /CVE-\d{4}-\d+/gi;
   const cveMatch = cveRe.exec(ex);
@@ -265,15 +269,25 @@ export function buildRssMaterialSummaryDigest(
     脆弱性関連 = titleHint;
   }
 
+  const incidentContextRe =
+    /サイバー攻撃|不正アクセス|情報漏えい|情報漏洩|ランサム|マルウェア|侵入|侵害|ハッキング|データ流出|インシデント/i;
   let 修正対策 =
     /パッチ|アップデート|更新|緊急|修正版|ワークアラウンド/i.test(t)
       ? "タイトルに更新・対応の示唆あり。適用対象バージョン・入手元は記事本文の手順に従い確認。"
-      : "公開抜粋にパッチ番号・手順の記載が限定的な場合、記事内の対応案・ベンダ案内を参照。";
+      : incidentContextRe.test(ex) || incidentContextRe.test(t)
+        ? "調査・復旧・開示の有無は記事および公表会社の公式発表で確認。社内では類似システム・取引先への影響範囲の整理が有効。"
+        : "パッチ・手順の記載が抜粋に無い場合は、記事内の対応案およびベンダ・公表元の案内を参照。";
   const fixSnip = ex.match(
     /[^。\n]{0,80}(パッチ|アップデート|更新プログラム|修正版|ワークアラウンド|設定変更|対策)[^。\n]{0,240}/,
   );
   if (fixSnip) {
     修正対策 = truncateForLlm(fixSnip[0].trim(), 500);
+  }
+  const incidentResponseSnip = ex.match(
+    /[^。\n]{0,80}(調査|復旧|業務影響|警察|届出|開示|顧客|取引先|対応)[^。\n]{0,280}/,
+  );
+  if ((incidentContextRe.test(ex) || incidentContextRe.test(t)) && incidentResponseSnip && !fixSnip) {
+    修正対策 = truncateForLlm(incidentResponseSnip[0].trim(), 500);
   }
 
   const 見解 =
