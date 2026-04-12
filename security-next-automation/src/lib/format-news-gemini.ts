@@ -4,65 +4,14 @@
  */
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-import { truncateForLlm } from "./text.js";
+import { generateContentWith429Retries } from "./gemini-rate-limit.js";
+import { normalizeInsightParagraphBody, truncateForLlm } from "./text.js";
 
 /** Google AI Studio / Generative Language API のモデル ID（429・404 時は .env / GEMINI_MODEL で別名へ。例: gemini-2.5-flash-preview） */
 const GEMINI_MODEL = process.env.GEMINI_MODEL?.trim() || "gemini-2.0-flash";
 
-function sleepMs(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-/** 429 / クォータ系かざっくり判定（SDK が投げる FetchError の status または文言） */
-function isRateLimitError(err: unknown): boolean {
-  if (err !== null && typeof err === "object" && "status" in err) {
-    const s = (err as { status?: number }).status;
-    if (s === 429) return true;
-  }
-  const msg = err instanceof Error ? err.message : String(err);
-  return /429|Too Many Requests|quota|Quota exceeded|RESOURCE_EXHAUSTED/i.test(msg);
-}
-
-/** API が返す "retry in 38.1s" から待ち毫秒（無ければ null） */
-function getRetryDelayMsFromError(err: unknown): number | null {
-  const msg = err instanceof Error ? err.message : String(err);
-  const m = /retry in ([\d.]+)\s*s\b/i.exec(msg);
-  if (!m) return null;
-  const sec = parseFloat(m[1]);
-  if (Number.isNaN(sec)) return null;
-  return Math.min(120_000, Math.max(5000, Math.ceil(sec * 1000)));
-}
-
-/**
- * 同一プロンプトで generateContent を呼び、429 のときだけ指数バックオフ気味に再試行する（無料枠の一時枯渇向け）
- */
-async function generateContentWith429Retries(
-  model: ReturnType<GoogleGenerativeAI["getGenerativeModel"]>,
-  prompt: string,
-  maxNetAttempts = 4,
-): Promise<Awaited<ReturnType<typeof model.generateContent>>> {
-  let lastErr: unknown;
-  for (let i = 0; i < maxNetAttempts; i++) {
-    try {
-      return await model.generateContent(prompt);
-    } catch (e) {
-      lastErr = e;
-      if (!isRateLimitError(e) || i === maxNetAttempts - 1) {
-        throw e;
-      }
-      const fromApi = getRetryDelayMsFromError(e);
-      const wait = fromApi ?? Math.min(60_000, 8000 * (i + 1));
-      console.warn(
-        `[Gemini体裁] ${i + 1} 回目の呼び出しが 429（クォータ）のため ${wait}ms 待って再試行します（最大 ${maxNetAttempts} 回まで）。別モデルは GEMINI_MODEL、安定運用は課金・枠の確認を。`,
-      );
-      await sleepMs(wait);
-    }
-  }
-  throw lastErr instanceof Error ? lastErr : new Error(String(lastErr));
-}
-
-/** LLM 入力に渡す RSS 抜粋の上限（トークン節約） */
-const EXCERPT_FOR_LLM_MAX = 3500;
+/** LLM 入力に渡す RSS＋記事抜粋の上限（記事本文取得時は長めに） */
+const EXCERPT_FOR_LLM_MAX = 9_000;
 
 /** 体裁検証に失敗したときの最大再試行回数（プロンプトに検証メッセージを付けてやり直す） */
 const FORMAT_MAX_ATTEMPTS = 3;
@@ -85,6 +34,8 @@ export type NewsFormatInput = {
   publishedDate: string;
   /** プレーン化済み RSS 抜粋（要約欄のたたき台） */
   rssExcerptPlain: string;
+  /** rss: Security NEXT 等。nvd: NIST NVD の CVE 登録抜粋（プロンプトと体裁指示を切替） */
+  materialSource?: "rss" | "nvd";
 };
 
 export type NewsFormatOutput = {
@@ -190,13 +141,42 @@ export async function formatNewsForKintone(
   apiKey: string,
   input: NewsFormatInput,
 ): Promise<NewsFormatOutput> {
+  const src = input.materialSource === "nvd" ? "nvd" : "rss";
   const excerpt = truncateForLlm(input.rssExcerptPlain, EXCERPT_FOR_LLM_MAX);
   const genAI = new GoogleGenerativeAI(apiKey);
+  const nvdExtra =
+    src === "nvd"
+      ? [
+          "",
+          "【NVD】入力は NIST NVD の CVE 登録情報の抜粋です（ニュース記事ではありません）。",
+          "事象: 「データベースにどのような事案が CVE として登録されたか」を日本語で 1〜2 文。英語説明がある場合は**要点の日本語要約**を書いてよい（英語全文のコピペは避ける）。",
+          "脆弱性関連: **CVE 番号・CVSS・攻撃条件・技術的影響（機密性・完全性・可用性）**に集中。事象と**同じ英文・同じ段落を繰り返さない**。",
+          "修正・対策: 抜粋にパッチ番号が無いのが普通。**NVD の References・ベンダ・一次情報で確認する**旨を明示。",
+          "見解: **「RSS 由来」と書かない**。優先度の目安と社内確認観点のみ（NVD 自動取り込みであることは必要なら一文でよいがメタ説明に偏らない）。",
+        ].join("\n")
+      : "";
+  const rssExtra =
+    src === "rss"
+      ? [
+          "",
+          "【Security NEXT 記事】入力には RSS 抜粋に加え、取得できていれば「記事ページから自動取得した本文抜粋」ブロックが含まれる。そちらを**優先参照**し、CVE・版数・対策を具体的に書ける範囲で書く。",
+          "次の定型文・それに極めて似た言い回しは**出力に含めない**（社内テンプレのフォールバック文のコピペ禁止）:",
+          "・「RSS 抜粋に CVE・攻撃種別等の技術的明記が乏しい場合があります。製品名・版数・深刻度は元記事・ベンダ情報で確認してください。」",
+          "・「抜粋に修正版・パッチ・手順の明記がない場合があります。元記事の対応案を参照してください。」",
+          "・「RSS 由来の自動登録です。資料化・社内検討の前に一次情報での裏取りを推奨します。」",
+          "",
+          "**脆弱性関連:** タイトル・本文抜粋に **CVE 番号**があれば必ず記載。無い場合は製品・コンポーネント・事象種別（ゼロデイ、権限昇格、情報漏えい等）を**入力から拾った語**で1文以上。推測は「可能性」で明示。",
+          "**修正・対策:** 入力にアップデート・パッチ・回避策・設定変更があれば要約。無い場合は「現時点の公開情報ではバージョン／パッチの明示が限定的」など**事実ベース**で1〜2文（上記禁止文ではない）。",
+          "**見解:** 管理者向けに優先度の目安・社内で押さえる確認観点（資産影響、適用窓口）を1〜2文。**「RSS」「自動登録」などのメタ説明は禁止**。",
+        ].join("\n")
+      : "";
   const model = genAI.getGenerativeModel({
     model: GEMINI_MODEL,
     systemInstruction: [
       "あなたは情報セキュリティ系メディア「Security NEXT」品格の編集者です。",
-      "入力は RSS 由来の抜粋のみであり本文全体はありません。抜粋に無い事実は断定せず、不明なら「詳細は確認中」「RSS 抜粋に明示なし」などと書いてください。",
+      src === "nvd"
+        ? "入力は NIST NVD の CVE 登録抜粋です。本文全体はなく、抜粋に無い事実は断定しない。"
+        : "入力は RSS 由来の抜粋のみであり本文全体はありません。抜粋に無い事実は断定せず、不明なら「詳細は確認中」「RSS 抜粋に明示なし」などと書いてください。",
       "出力は有効な JSON オブジェクト 1 つだけ。前後に説明文やマークダウンを付けない。",
       'キーは厳密に "overview" と "digest" の 2 つ。',
       "",
@@ -217,7 +197,11 @@ export async function formatNewsForKintone(
       "事象: メーカー公表や報道ベースの**出来事**（製品名は出てよいが、技術説明の細部は脆弱性関連へ回す）。",
       "脆弱性関連: **技術名・CVE・認証・権限・コード実行の有無**など。事象で語った内容の言い換え繰り返しは禁止。抜粋に技術情報が無ければ短く「抜粋に CVE・詳細なし。元記事・アドバイザリで要確認」など。",
       "修正・対策: パッチ・バージョン・推奨設定が抜粋にあれば。無ければ「元記事の対応を確認」系。",
-      "見解: 管理者向けに優先度の目安・すぐ確認すべき点を 1〜2 文（断定しすぎない）。",
+      "見解: 管理者向けに優先度の目安・すぐ確認すべき点を 1〜2 文（断定しすぎない" +
+        (src === "nvd" ? "。「RSS 由来」という表現は使わない" : "") +
+        "）。",
+      nvdExtra,
+      rssExtra,
     ].join("\n"),
     generationConfig: {
       temperature: 0.22,
@@ -232,7 +216,7 @@ export async function formatNewsForKintone(
     "URL: " + input.articleUrl,
     "公開日（JST 日付）: " + input.publishedDate,
     "",
-    "RSS 抜粋:",
+    (src === "nvd" ? "NVD 登録抜粋（CVE）:" : "RSS 抜粋:"),
     excerpt,
   ].join("\n");
 
@@ -278,23 +262,26 @@ function parseInsightJson(raw: string): string {
   if (/Security NEXT/i.test(insight)) {
     throw new Error("insight に Security NEXT を含めないでください");
   }
-  return insight;
+  return normalizeInsightParagraphBody(insight);
 }
 
 /**
  * 要約の「見解:」欄のみ Gemini で生成する（全文整形が 429 等で失敗したとき用。トークンを抑える）
  */
 export async function formatDigestInsightOnly(apiKey: string, input: NewsFormatInput): Promise<string> {
+  const src = input.materialSource === "nvd" ? "nvd" : "rss";
   const excerpt = truncateForLlm(input.rssExcerptPlain, INSIGHT_EXCERPT_MAX);
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({
     model: GEMINI_MODEL,
     systemInstruction: [
       "あなたは組織の情報セキュリティ担当向けのアドバイザです。",
-      "入力は RSS 抜粋のみ。抜粋に無い事実は断定せず、優先度や確認観点は「目安」「要確認」と留める。",
+      src === "nvd"
+        ? "入力は NIST NVD の CVE 登録抜粋のみ。抜粋に無い事実は断定せず、優先度や確認観点は「目安」「要確認」と留める。"
+        : "入力は RSS 抜粋および取得できていれば記事本文抜粋。無い事実は断定せず、優先度や確認観点は「目安」「要確認」と留める。",
       "出力は有効な JSON オブジェクト 1 つだけ。キーは厳密に \"insight\" のみ。",
       "insight の値: 日本語で 1〜3 文。対応優先度の目安、社内で確認すべき論点（資産・利用範囲・パッチ方針など）、リスクの捉え方。",
-      "「RSS 由来です」「自動登録です」などのメタ説明は書かない。中身の提案に集中。",
+      "「RSS 由来です」「自動登録です」「一次情報での裏取りを推奨」などのメタ・定型免責は書かない。中身の提案に集中。",
       "Security NEXT という文字列は insight に含めない。",
     ].join("\n"),
     generationConfig: {
@@ -310,7 +297,7 @@ export async function formatDigestInsightOnly(apiKey: string, input: NewsFormatI
     "URL: " + input.articleUrl,
     "公開日: " + input.publishedDate,
     "",
-    "RSS 抜粋:",
+    (src === "nvd" ? "NVD 登録抜粋:" : "RSS 抜粋:"),
     excerpt,
   ].join("\n");
 
