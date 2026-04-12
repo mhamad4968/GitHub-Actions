@@ -1,0 +1,49 @@
+# スペース 48 周辺: kintone アプリ 631・632 などの REST ヘルスチェック
+# 毎日 09:00 JST = 00:00 UTC。手動: Actions → space-health-report → Run workflow
+#
+# Secrets（Environment kintone-collect と同じで可）:
+#   KINTONE_DOMAIN
+#   KINTONE_API_TOKEN_COLLECT または KINTONE_API_TOKEN（631・632 両方を含むトークン推奨）
+# 任意: KINTONE_API_TOKEN_ANALYZE（COLLECT が 631 のみのとき 632 用に試行）
+# 任意: SPACE_HEALTH_APP_IDS（既定 631,632）
+
+name: space-health-report
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: space-health-report-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    environment: kintone-collect
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: 依存関係（dotenv のみルート package）
+        run: npm ci
+
+      - name: システムヘルスチェック（631 / 632）
+        env:
+          KINTONE_DOMAIN: ${{ secrets.KINTONE_DOMAIN }}
+          KINTONE_BASE_URL: https://jbis-kintone.cybozu.com
+          KINTONE_API_TOKEN_COLLECT: ${{ secrets.KINTONE_API_TOKEN_COLLECT }}
+          KINTONE_API_TOKEN_ANALYZE: ${{ secrets.KINTONE_API_TOKEN_ANALYZE }}
+          KINTONE_API_TOKEN: ${{ secrets.KINTONE_API_TOKEN }}
+        run: npm run report:space-health

@@ -34,6 +34,15 @@ npm run app:fields <アプリID>
 
 **Security NEXT 連携**: フィールドコードの正本は `security-next-automation/README.md` と `security-next-automation/src/lib/field-codes.ts`。アプリ新規なら `npm run setup:security-next-apps` も可。
 
+### システムヘルスチェックレポート（631 / 632）
+
+- **ポータル URL（運用確認用）**  
+  - ニュース（収集）: [https://jbis-kintone.cybozu.com/k/631/](https://jbis-kintone.cybozu.com/k/631/)  
+  - 週次要約: [https://jbis-kintone.cybozu.com/k/632/](https://jbis-kintone.cybozu.com/k/632/)
+- **REST 診断（トークンで `app.json` が取れるか）**: ルートで `npm run report:space-health`（`.env` に `KINTONE_DOMAIN` と API トークン）。既定で **631 と 632** を検査。
+- **GitHub Actions**: `.github/workflows/space-health-report.yml`（毎日 09:00 JST 前後・`workflow_dispatch` 可）。ジョブサマリーに Markdown 表が付く。
+- **メンテ手順の正本**: [`docs/maintenance-template.md`](docs/maintenance-template.md) の「一気通貫メンテ・プレイブック」。エージェント・開発の前提ルールは [`AGENTS.md`](AGENTS.md)。
+
 ---
 
 ## Security NEXT ニュース — フォームの確定仕様（自動化と一致）

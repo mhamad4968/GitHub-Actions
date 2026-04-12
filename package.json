@@ -44,6 +44,7 @@
     "security-next:install": "npm ci --prefix security-next-automation",
     "security-next:collect": "npm run collect --prefix security-next-automation",
     "security-next:analyze": "npm run analyze --prefix security-next-automation",
+    "report:space-health": "node scripts/space-health-report.mjs",
     "setup:security-next-apps": "npx dotenv -e .env -e .env.proxy -- node scripts/create-security-next-apps.js",
     "setup:security-next-report-app": "npx dotenv -e .env -e .env.proxy -- node scripts/create-security-next-report-app.js",
     "lint:customize": "eslint customize",
