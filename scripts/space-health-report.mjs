@@ -91,6 +91,26 @@ async function fetchAppJson(domain, token, appId) {
   return { ok: res.ok, status: res.status, json, text: text.slice(0, 400) };
 }
 
+/** レコード閲覧権限のみのトークン向け（app.json が 403 のとき） */
+async function fetchRecordsProbe(domain, token, appId) {
+  const url = new URL(`https://${domain}/k/v1/records.json`);
+  url.searchParams.set("app", appId);
+  url.searchParams.set("totalCount", "true");
+  url.searchParams.set("query", "$id > 0 order by $id desc limit 1");
+  const res = await fetch(url.toString(), {
+    method: "GET",
+    headers: { "X-Cybozu-API-Token": token },
+  });
+  const text = await res.text();
+  let json = null;
+  try {
+    json = JSON.parse(text);
+  } catch {
+    /* noop */
+  }
+  return { ok: res.ok, status: res.status, json, text: text.slice(0, 400) };
+}
+
 function displayBaseUrl(domain) {
   const raw = process.env.KINTONE_BASE_URL?.trim();
   if (raw) {
@@ -141,6 +161,25 @@ async function main() {
       if (r.ok && r.json?.name) {
         best = { ok: true, status: r.status, name: String(r.json.name), detail: "" };
         break;
+      }
+      if (r.status === 403 || r.status === 401) {
+        const rec = await fetchRecordsProbe(domain, tok, app.id);
+        if (rec.ok) {
+          best = {
+            ok: true,
+            status: rec.status,
+            name: "",
+            detail: "records API（app.json は権限外）",
+          };
+          break;
+        }
+        best = {
+          ok: false,
+          status: rec.status,
+          name: "",
+          detail: rec.json?.message || rec.text || r.json?.message || r.text || "",
+        };
+        continue;
       }
       best = {
         ok: r.ok,
