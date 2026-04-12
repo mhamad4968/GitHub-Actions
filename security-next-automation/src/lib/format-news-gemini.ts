@@ -8,15 +8,17 @@ import { generateContentWith429Retries } from "./gemini-rate-limit.js";
 import { normalizeInsightParagraphBody, truncateForLlm } from "./text.js";
 
 /**
- * 未設定時の候補（404 時はこの順に試す）。
- * gemini-2.0-flash は 2026 時点で提供終了・404 になりやすいため含めない。
+ * 未設定時の候補（404 時はこの順に試す）。analyze / collect で共通。
+ * エイリアス（*-latest）を先に置き、背後モデル更新による ID 固定の 404 を抑える。
+ * gemini-2.0-* は 2026 年頃から新規・多環境で 404 になりやすいため含めない。
  * @see https://ai.google.dev/gemini-api/docs/models
  */
 export const GEMINI_MODEL_FALLBACKS = [
-  "gemini-2.5-flash",
   "gemini-flash-latest",
+  "gemini-2.5-flash",
   "gemini-2.5-flash-lite",
-  "gemini-3-flash-preview",
+  "gemini-pro-latest",
+  "gemini-3.1-flash-preview",
 ] as const;
 
 /** 試行順: GEMINI_MODEL（設定時は先頭）→ 404 のとき FALLBACKS へ */

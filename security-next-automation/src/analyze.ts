@@ -1,6 +1,8 @@
 /**
  * 631 番ニュースアプリから「今週分」（JST 月〜金・作成日時ベース）のタイトル・概要を取得し、
- * Gemini（GEMINI_MODEL 省略時は gemini-2.5-flash 等へ順次フォールバック）でセキュリティトレンドと対策を約 1000 字にまとめ、
+ * Gemini（GEMINI_MODEL 省略時は format-news-gemini の GEMINI_MODEL_FALLBACKS:
+ * flash-latest → 2.5-flash → 2.5-flash-lite → pro-latest → 3.1-flash-preview）で
+ * セキュリティトレンドと対策を約 1000 字にまとめ、
  * 632 番レポートアプリの weekly_trend（画面: 今週の傾向と対策・リッチテキスト）へ 1 件追加する。
  * 429 時は collect 体裁と同様に待機再試行する（gemini-rate-limit.ts）。
  */

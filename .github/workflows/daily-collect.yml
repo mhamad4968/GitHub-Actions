@@ -5,7 +5,7 @@
 # Environment secrets に置く名前の例（Repository secrets に同じ名前があっても可・マージされる）:
 #   KINTONE_DOMAIN / KINTONE_APP / KINTONE_API_TOKEN_COLLECT
 #   任意: GEMINI_API_KEY（概要・要約の体裁整形。analyze と同じ Secret 名で共有可能）
-#   任意: Repository variables GEMINI_MODEL（省略時は gemini-2.5-flash 等へ順次フォールバック。1.5/2.0 は 404 になりやすい — 空または AI Studio の ID のみ）
+#   任意: Repository variables GEMINI_MODEL（省略時は flash-latest 起点で順次フォールバック。1.5/2.0 は 404 になりやすい — 空または AI Studio の ID のみ）
 #   任意: NOTIFY_SUMMARY_WEBHOOK_URL / NOTIFY_EMAIL_TO + SMTP_USER + SMTP_PASS（Gmail はアプリパスワード）
 #   実行時は env の KINTONE_API_TOKEN に Secret KINTONE_API_TOKEN_COLLECT を渡す（config.ts の collect 解決と整合）
 # collect は security-next-automation/ の package（リポジトリ名 kintone-ai-lab はルートで、サブフォルダ名はこちら）。npm は --prefix で場所を指定する
