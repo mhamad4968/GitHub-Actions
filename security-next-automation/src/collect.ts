@@ -132,6 +132,43 @@ function haystackContainsAny(haystack: string, needles: readonly string[]): bool
   return needles.some((word) => lowerHay.includes(word.toLowerCase()));
 }
 
+/** ログ用: 最初に一致したキーワード（無ければ null） */
+function firstMatchingKeyword(haystack: string, needles: readonly string[]): string | null {
+  const lowerHay = haystack.toLowerCase();
+  for (const word of needles) {
+    if (lowerHay.includes(word.toLowerCase())) return word;
+  }
+  return null;
+}
+
+/** 登録 0 件時、各新規候補がキーワードで落ちた理由を 1 行ずつ出す（Actions で調整先が分かる） */
+function logKeywordDetailPerCandidate(rows: NormalizedNewsRow[]): void {
+  const n = rows.length;
+  for (let i = 0; i < n; i++) {
+    const row = rows[i];
+    const blob = `${row.title}\n${row.digestFullText}`;
+    const titleShort = truncateForLlm((row.title || "").trim() || "(無題)", 120);
+    const urlShort = row.link.length > 88 ? `${row.link.slice(0, 88)}…` : row.link;
+    if (row.source === "nvd") {
+      const ex = firstMatchingKeyword(blob, EXCLUSION_KEYWORDS);
+      console.log(
+        `[ニュース収集] キーワード内訳 ${i + 1}/${n} (NVD): 除外語=${ex ?? "なし"} | ${titleShort} | ${urlShort}`,
+      );
+      continue;
+    }
+    const ex = firstMatchingKeyword(blob, EXCLUSION_KEYWORDS);
+    if (ex) {
+      console.log(
+        `[ニュース収集] キーワード内訳 ${i + 1}/${n}: 除外語「${ex}」でスキップ | ${titleShort} | ${urlShort}`,
+      );
+    } else if (!haystackContainsAny(blob, INCIDENT_KEYWORDS)) {
+      console.log(`[ニュース収集] キーワード内訳 ${i + 1}/${n}: 事件語なし（INCIDENT に該当語がタイトル・抜粋に無い） | ${titleShort} | ${urlShort}`);
+    } else {
+      console.log(`[ニュース収集] キーワード内訳 ${i + 1}/${n}: (内部不整合の可能性) | ${titleShort} | ${urlShort}`);
+    }
+  }
+}
+
 /** ネガティブ語が無く、ポジティブ（インシデント）語が 1 つ以上ある */
 function rowMatchesKeywordRules(row: NormalizedNewsRow): boolean {
   const blob = `${row.title}\n${row.digestFullText}`;
@@ -381,6 +418,8 @@ async function main(): Promise<void> {
       rej.noIncidentOnly,
       "（`collect.ts` の INCIDENT_KEYWORDS / EXCLUSION_KEYWORDS を参照）",
     );
+    console.log("[ニュース収集] 各候補の落ちた理由（下の「除外語」「事件語なし」を見てキーワード配列を調整）:");
+    logKeywordDetailPerCandidate(candidates);
     await notifyRunSummary(summaryUrl, {
       workflow: "ニュース収集",
       candidateCount: candidateCountForSummary,
