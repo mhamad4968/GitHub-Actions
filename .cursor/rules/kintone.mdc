@@ -5,9 +5,33 @@ alwaysApply: true
 
 # kintone ・ Security NEXT ニュース（補足）
 
+> **本ファイルは AGENTS.md（開発憲法）の補足。矛盾がある場合は AGENTS.md が優先される。**
+
 ## 収集・選別（キーワード / `collect.ts`）
 
 - **現行実装**: **選別**に Gemini は使わない。`collect.ts` の **事件性キーワード**（部分一致）を満たし、**パッチ・予防キーワード**を含まない未登録記事を、公開日の新しい順に最大 3 件登録する。`GEMINI_API_KEY` があるときは **概要・要約の体裁**のみ Gemini（任意）。
-- **ポジティブ（残す）**: 漏洩・不正アクセス・流出・被害・ランサム・ウイルス・乗っ取り・紛失・誤送信・誤廃棄・インシデント・緊急・悪用・悪用確認・ゼロデイ・攻撃・DDoS・侵害・システム障害・情報流出・**脆弱性**・CVE 表記（`cve` 部分一致）・フィッシング・セキュリティアップデート など（`collect.ts` の `INCIDENT_KEYWORDS` 正本）。
+- **ポジティブ（残す）**: 漏洩・不正アクセス・流出・被害・ランサム・ウイルス・乗っ取り・紛失・誤送信・誤廃棄・インシデント・緊急・悪用・悪用確認・ゼロデイ・攻撃・DDoS・侵害・システム障害・情報流出・**脆弱性**・CVE 表記（`cve` 部分一致）・フィッシング・セキュリティアップデート・所在不明・個人情報 など（`collect.ts` の `INCIDENT_KEYWORDS` 正本）。
 - **ネガティブ（除外）**: **パッチ**・**更新プログラム**・**脆弱性対策**・**アドバイザリ** のみ（`EXCLUSION_KEYWORDS`）。見出しとアップデート文が一体の記事を落とさないため、アップデート／修正／リリース単独語は除外に含めない。`GEMINI_API_KEY` 未設定でも `collect` は動く。
-- **正本**: キーワード配列は `security-next-automation/src/collect.ts` の `INCIDENT_KEYWORDS` / `EXCLUSION_KEYWORDS`。ルール変更時はコードとこの節を揃える。
+- **正本**: キーワード配列は `security-next-automation/src/collect.ts` の `INCIDENT_KEYWORDS` / `EXCLUSION_KEYWORDS`。ルール変更時はコードとこの節と **AGENTS.md §8-3** を揃える。
+
+## 例外枠（AGENTS.md §9 準拠）
+
+- **通常枠 3 件/実行** + **例外枠 3 件/日** = **合計上限 6 件/日**（ハードリミット）。
+- 例外条件: `SEVERITY_EXCEPTION_PATTERNS`（AND 条件グループ）。パターン追加は AGENTS.md §8-3 の手続きに従う。
+
+## メタデータ保存（AGENTS.md §8 準拠）
+
+- 631 への POST 時、`match_keywords_display` / `internal_source` / `internal_gemini_mark` / `internal_severity_tier` は**省略不可**。
+- `needs_review` は複合条件で自動セット（AGENTS.md §8-2 参照）。`gemini=N` 単独では立てない。
+
+## Gemini モデル戦略（AGENTS.md §7 準拠）
+
+- **単一モデル依存禁止**。全 Gemini 呼び出しは `geminiModelCandidates()` 経由。
+- `GEMINI_MODEL_FALLBACKS` は **エイリアス → 安定版 → プレビュー版** の 3 層構成を維持。
+- **`gemini-2.0-*` は使用禁止**（2026-06 シャットダウン済み）。
+- 404 発生時は自動フォールバック。全候補失敗しても RSS 材料で 4 見出し構造を保証する。
+
+## ヘルスチェック（AGENTS.md §10 準拠）
+
+- 接続確認 **+** フィールドスキーマ検証の両方がパスして初めて「正常」。
+- フィールド欠落時は MCP (`kintone-add-form-fields`) による自己修復を提案する。
