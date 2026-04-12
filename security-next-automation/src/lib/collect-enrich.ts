@@ -7,6 +7,7 @@ import { type NormalizedNewsRow, logPipeline, overviewFooterSource, type Collect
 import { tryFetchArticleBodyPlain } from "./fetch-article-plain.js";
 import {
   buildRssMaterialSummaryDigest,
+  layoutDigestWithSectionSpacing,
   replaceDigestInsightParagraph,
   truncateForLlm,
 } from "./text.js";
@@ -212,6 +213,8 @@ export async function enrichOneNewsForKintone(row: NormalizedNewsRow): Promise<E
   if (row.source === "nvd") {
     digest = insertNvdSourceTagAfterVulnHeading(digest);
   }
+
+  digest = layoutDigestWithSectionSpacing(digest);
 
   const geminiMark: GeminiUsageMark = usedGeminiForThis ? "Y" : usedGeminiInsightOnly ? "I" : "N";
   const mode =

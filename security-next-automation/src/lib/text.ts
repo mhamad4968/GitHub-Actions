@@ -149,7 +149,7 @@ function buildNvdMaterialSummaryDigestFromParsed(
     `脆弱性関連: ${脆弱性関連}`,
     `修正・対策: ${修正対策}`,
     `見解: ${見解}`,
-  ].join("\n");
+  ].join("\n\n");
 
   return { overview, digest };
 }
@@ -323,9 +323,37 @@ export function buildRssMaterialSummaryDigest(
     `脆弱性関連: ${脆弱性関連}`,
     `修正・対策: ${修正対策}`,
     `見解: ${見解}`,
-  ].join("\n");
+  ].join("\n\n");
 
   return { overview, digest };
+}
+
+/** kintone 要約（digest）の 4 見出し。順序・表記は format-news-gemini の DIGEST_HEADINGS と一致させる */
+const DIGEST_SECTION_LABELS = ["事象:", "脆弱性関連:", "修正・対策:", "見解:"] as const;
+
+/**
+ * 事象・脆弱性関連・修正・対策・見解の各ブロックの間に空行を 1 行入れる（一覧・リッチ変換で段落分けされやすくする）
+ */
+export function layoutDigestWithSectionSpacing(digest: string): string {
+  const d = digest.replace(/\r\n/g, "\n").trim();
+  const parts: string[] = [];
+  for (let i = 0; i < DIGEST_SECTION_LABELS.length; i++) {
+    const h = DIGEST_SECTION_LABELS[i];
+    const next = DIGEST_SECTION_LABELS[i + 1];
+    const start = d.indexOf(h);
+    if (start < 0) {
+      return d;
+    }
+    const from = start + h.length;
+    const end = next ? d.indexOf(next, from) : d.length;
+    if (next !== undefined && end < 0) {
+      return d;
+    }
+    const to = end < 0 ? d.length : end;
+    const body = d.slice(from, to).trim();
+    parts.push(`${h} ${body}`);
+  }
+  return parts.join("\n\n");
 }
 
 /**
