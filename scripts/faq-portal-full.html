@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- faq-portal bundle: 2026-04-15T00:00+09 (strict JP filename repair + favicon) -->
+<!-- faq-portal bundle: 2026-04-15T01:00+09 (download fn= + Content-Disposition) -->
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
@@ -310,11 +310,17 @@
     var _blobNameMap = {};
     var TEMP_KEY_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     function isTempFileKey(key) { return TEMP_KEY_RE.test(key); }
-    function fileUrl(key) {
+    function fileUrl(key, suggestedSaveName) {
         var k = String(key || '').trim();
         if (_blobUrlMap[k]) return _blobUrlMap[k];
         if (isTempFileKey(k)) return '';
-        return FAQ_API_BASE + '/api/file/' + encodeURIComponent(k);
+        var base = FAQ_API_BASE + '/api/file/' + encodeURIComponent(k);
+        var hint = suggestedSaveName != null && suggestedSaveName !== '' ? String(suggestedSaveName) : '';
+        if (!hint) return base;
+        var fn = repairKintoneDisplayName(hint) || hint;
+        try {
+            return base + (base.indexOf('?') >= 0 ? '&' : '?') + 'fn=' + encodeURIComponent(fn);
+        } catch (err) { return base; }
     }
 
     /** ひらがな・全角カタカナ・CJK 漢字のみ「正しい日本語名」。半角ｶﾅは修復バイパスさせない（server.mjs と同条件） */
@@ -1188,14 +1194,17 @@
                     var attachSection = el('div', { style: { marginTop: '12px', padding: '10px 14px', background: 'var(--bg)', borderRadius: '8px', border: '1px solid var(--border)' } });
                     attachSection.appendChild(el('div', { style: { fontWeight: '600', fontSize: '0.85em', color: 'var(--muted)', marginBottom: '6px' }, textContent: '\uD83D\uDCCE \u914D\u5E03\u8CC7\u6599' }));
                     attachArr.forEach(function (af) {
-                        var url = fileUrl(af.fileKey);
+                        var saveName = repairKintoneDisplayName(af.name) || af.name || '';
+                        var url = fileUrl(af.fileKey, saveName);
                         if (!url) return;
                         var disp = attachmentLinkLabel(af.name);
-                        var link = el('a', {
+                        var linkAttrs = {
                             href: url, target: '_blank', rel: 'noopener noreferrer', title: af.name || '',
                             style: { display: 'inline-block', padding: '4px 12px', margin: '3px 4px', borderRadius: '6px', background: 'var(--card)', border: '1px solid var(--border)', textDecoration: 'none', color: 'var(--primary)', fontSize: '0.9em' },
                             textContent: '\uD83D\uDCC4 ' + disp,
-                        });
+                        };
+                        if (saveName) linkAttrs.download = saveName;
+                        var link = el('a', linkAttrs);
                         attachSection.appendChild(link);
                     });
                     inner.appendChild(attachSection);

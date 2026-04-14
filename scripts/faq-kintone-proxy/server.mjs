@@ -202,22 +202,43 @@ function repairKintoneFilename(name) {
   try {
     latin1AsUtf8 = Buffer.from(s, "latin1").toString("utf8");
   } catch { /* noop */ }
+  const latin1HasReplacement = latin1AsUtf8.includes("\uFFFD");
   if (
     latin1AsUtf8 !== s
     && hasStrictFullwidthJapaneseFilenameChars(latin1AsUtf8)
-    && !latin1AsUtf8.includes("\uFFFD")
+    && !latin1HasReplacement
   ) {
     return latin1AsUtf8;
   }
-  try {
-    const sj = iconv.decode(Buffer.from(s, "latin1"), "Shift_JIS");
-    if (sj !== s && hasStrictFullwidthJapaneseFilenameChars(sj) && !sj.includes("\uFFFD")) return sj;
-  } catch { /* noop */ }
-  try {
-    const sj2 = iconv.decode(Buffer.from(s, "utf8"), "Shift_JIS");
-    if (sj2 !== s && hasStrictFullwidthJapaneseFilenameChars(sj2) && !sj2.includes("\uFFFD")) return sj2;
-  } catch { /* noop */ }
+  /** latin1→UTF-8 が U+FFFD を含む場合、C1 制御欠落などでバイト列が壊れている。SJIS 推測は誤爆（例: 裹ｲ.png）しやすいので行わない */
+  if (!latin1HasReplacement) {
+    try {
+      const sj = iconv.decode(Buffer.from(s, "latin1"), "Shift_JIS");
+      if (sj !== s && hasStrictFullwidthJapaneseFilenameChars(sj) && !sj.includes("\uFFFD")) return sj;
+    } catch { /* noop */ }
+    try {
+      const sj2 = iconv.decode(Buffer.from(s, "utf8"), "Shift_JIS");
+      if (sj2 !== s && hasStrictFullwidthJapaneseFilenameChars(sj2) && !sj2.includes("\uFFFD")) return sj2;
+    } catch { /* noop */ }
+  }
   return s;
+}
+
+/** クライアントが ?fn= で渡す保存名（レコード上の修復済み名）。decode 失敗や危険文字は除去 */
+function suggestedDownloadFilenameFromQuery(req) {
+  const raw = req.query.fn;
+  if (raw == null || raw === "") return "";
+  let s;
+  try {
+    s = decodeURIComponent(String(raw));
+  } catch {
+    return "";
+  }
+  return String(s)
+    .normalize("NFC")
+    .replace(/[\u0000-\u001f\u007f<>:"|?*\\/]/g, "")
+    .trim()
+    .slice(0, 200);
 }
 
 function addFilenameAliases(map, rawName, fileKey) {
@@ -394,7 +415,11 @@ app.get("/api/file/:fileKey", async (req, res) => {
     const { contentType, buffer, contentDisposition, filenameFromDisposition } = await kintoneDownloadFile(req.params.fileKey);
     res.setHeader("Content-Type", contentType);
     const kind = dispositionKindFromHeader(contentDisposition);
-    const utf8Name = repairKintoneFilename(filenameFromDisposition || "") || filenameFromDisposition || "file";
+    const suggested = suggestedDownloadFilenameFromQuery(req);
+    const fromHeader = repairKintoneFilename(filenameFromDisposition || "") || filenameFromDisposition || "";
+    const utf8Name = suggested
+      ? (repairKintoneFilename(suggested) || suggested)
+      : (fromHeader || "file");
     res.setHeader("Content-Disposition", contentDispositionWithUtf8Name(kind, utf8Name));
     res.setHeader("Cache-Control", "public, max-age=86400");
     return res.send(buffer);
@@ -422,7 +447,12 @@ app.get("/api/resolve-file/:recordId/:index", async (req, res) => {
     const { contentType, buffer, contentDisposition, filenameFromDisposition } = await kintoneDownloadFile(target.fileKey);
     res.setHeader("Content-Type", contentType);
     const kind = dispositionKindFromHeader(contentDisposition);
-    const utf8Name = repairKintoneFilename(filenameFromDisposition || "") || filenameFromDisposition || repairKintoneFilename(target.name || "") || target.name || "file";
+    const suggested = suggestedDownloadFilenameFromQuery(req);
+    const fromHeader = repairKintoneFilename(filenameFromDisposition || "") || filenameFromDisposition || "";
+    const fromRecord = repairKintoneFilename(target.name || "") || target.name || "";
+    const utf8Name = suggested
+      ? (repairKintoneFilename(suggested) || suggested)
+      : (fromHeader || fromRecord || "file");
     res.setHeader("Content-Disposition", contentDispositionWithUtf8Name(kind, utf8Name));
     res.setHeader("Cache-Control", "public, max-age=86400");
     return res.send(buffer);

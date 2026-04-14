@@ -143,12 +143,20 @@
 5. **`GET /favicon.ico` の 204 応答** — 2026-04-15 追記  
    - ブラウザのデフォルト取得で **404** が大量に出ないよう、`server.mjs` で **`204 No Content`** を返すルートを定義する（本文なし）。HTML 側は `link rel="icon"`（data URL SVG）でタブアイコンを補完可能。
 
+6. **ダウンロード名の二重経路（`?fn=` + SJIS 誤爆防止）** — 2026-04-15 追記  
+   - **事象**: 画面上の配布資料リンクや、保存ダイアログのファイル名が **`åå².png`** のように残る。本文 Markdown 内の `分割.png` は正しいのに、添付フィールドの `name` だけが壊れている。  
+   - **原因**: 本来の Latin-1 誤読列は `å` + **C1 制御**（U+0088, U+0086 等）+ `å` + … のように **不可視バイト**を含む。UI や経路のどこかで **C1 が欠落**すると `latin1→UTF-8` が **U+FFFD** を含み失敗し、その後の **Shift_JIS 推測**が誤って **裹ｲ.png** のような別物を返す（誤爆）。  
+   - **対策 A（修復）**: `latin1→UTF-8` の結果に **U+FFFD が含まれる場合は Shift_JIS 系の補助修復を行わない**（据え置き）。  
+   - **対策 B（ダウンロード名）**: `GET /api/file/:fileKey` に **`?fn=`**（URL エンコードされた UTF-8 名）を付け、**レコード JSON 上で修復できたファイル名**を優先して `Content-Disposition` の `filename*` に使う。`faq-portal-full.html` の配布資料リンクは **`fileUrl(key, saveName)`** で `fn` を付与し、可能なら **`download` 属性**で保存名を指定する。  
+   - **限界**: kintone の `attachment[].name` が **バイト欠落した状態で永続化**されている場合、サーバだけでは **分割.png** に復元できない。**ファイルの再アップロード**が必要。
+
 ### 検証コマンド（回帰用）
 
 ```bash
 cd scripts/faq-kintone-proxy
 node selftest-filename-repair.mjs
 # 典型 mojibake → 期待名（全角＋半角カナ混在）が PASS すること
+# 「C1 欠落の短いゴミ」行は SJIS 誤爆を避け入力と同一のままになること
 
 # favicon（サーバ起動に最低限のダミー env が必要な場合あり）
 HTTP_PORT=19999 KINTONE_DOMAIN=example.cybozu.com KINTONE_API_TOKEN=dummy KINTONE_FAQ_APP_ID=1 node server.mjs &
