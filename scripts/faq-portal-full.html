@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- faq-portal bundle: 2026-04-14T22:18+09 (resolve-file + UI) -->
+<!-- faq-portal bundle: 2026-04-14T22:25+09 (mojibake names + wider file key) -->
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
@@ -249,7 +249,7 @@
     var LS_UNLOCK = 'faq_v5_unlock_until';
     var NEW_BADGE_MS = 3 * 24 * 60 * 60 * 1000;
     var URL_SPLIT_RE = /(https?:\/\/[^\s<>"'`]+)/gi;
-    var IMG_MARKER_RE = /!\[([^\]]*)\]\(file:([A-Za-z0-9_-]+)\)/g;
+    var IMG_MARKER_RE = /!\[([^\]]*)\]\(file:([^)\s]+)\)/g;
     var UNLOCK_MS = 8 * 60 * 60 * 1000;
 
     var FAQ_API_BASE =
@@ -308,9 +308,24 @@
     var TEMP_KEY_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     function isTempFileKey(key) { return TEMP_KEY_RE.test(key); }
     function fileUrl(key) {
-        if (_blobUrlMap[key]) return _blobUrlMap[key];
-        if (isTempFileKey(key)) return '';
-        return FAQ_API_BASE + '/api/file/' + encodeURIComponent(key);
+        var k = String(key || '').trim();
+        if (_blobUrlMap[k]) return _blobUrlMap[k];
+        if (isTempFileKey(k)) return '';
+        return FAQ_API_BASE + '/api/file/' + encodeURIComponent(k);
+    }
+
+    /** 添付名の文字化け（UTF-8 を Latin-1 と誤解した kintone 表示）をブラウザ側でも補正 */
+    function repairKintoneDisplayName(name) {
+        if (name == null || name === '') return name;
+        var s = String(name);
+        if (/[\u3040-\u309F\u30A0-\u30FF\u3005-\u9FFF\uFF66-\uFF9F]/.test(s)) return s;
+        try {
+            var bytes = new Uint8Array(s.length);
+            for (var i = 0; i < s.length; i++) bytes[i] = s.charCodeAt(i) & 255;
+            var dec = new TextDecoder('utf-8').decode(bytes);
+            if (dec.indexOf('\uFFFD') === -1 && /[\u3040-\u309F\u30A0-\u30FF\u3005-\u9FFF]/.test(dec) && dec !== s) return dec;
+        } catch (e) { /* noop */ }
+        return s;
     }
 
     /* ============================================================
@@ -335,7 +350,8 @@
         IMG_MARKER_RE.lastIndex = 0;
         while ((m = IMG_MARKER_RE.exec(text)) !== null) {
             if (m.index > last) renderInlineContent(text.slice(last, m.index), parent);
-            var url = fileUrl(m[2]);
+            var markerKey = String(m[2] || '').trim();
+            var url = fileUrl(markerKey);
             var currentIdx = imgIdx++;
             if (url) {
                 var img = el('img', {
@@ -1155,7 +1171,7 @@
                         var link = el('a', {
                             href: url, target: '_blank', rel: 'noopener noreferrer',
                             style: { display: 'inline-block', padding: '4px 12px', margin: '3px 4px', borderRadius: '6px', background: 'var(--card)', border: '1px solid var(--border)', textDecoration: 'none', color: 'var(--primary)', fontSize: '0.9em' },
-                            textContent: '\uD83D\uDCC4 ' + af.name,
+                            textContent: '\uD83D\uDCC4 ' + repairKintoneDisplayName(af.name),
                         });
                         attachSection.appendChild(link);
                     });

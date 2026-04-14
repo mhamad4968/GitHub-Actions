@@ -147,7 +147,28 @@ function parseCategoryField(raw) {
   return parts[1] || "";
 }
 
-const IMG_MARKER_RE_INLINE = /!\[([^\]]*)\]\(file:([A-Za-z0-9_-]+)\)/g;
+/** kintone の file.name が UTF-8 バイト列を Latin-1 として解釈した文字化けのとき修復 */
+function repairKintoneFilename(name) {
+  if (name == null || name === "") return name;
+  const s = String(name);
+  if (/[\u3040-\u309F\u30A0-\u30FF\u3005-\u9FFF\uFF66-\uFF9F]/.test(s)) return s;
+  try {
+    const t = Buffer.from(s, "latin1").toString("utf8");
+    if (t !== s && /[\u3040-\u309F\u30A0-\u30FF\u3005-\u9FFF]/.test(t) && !t.includes("\uFFFD")) return t;
+  } catch { /* noop */ }
+  return s;
+}
+
+function addFilenameAliases(map, rawName, fileKey) {
+  if (!fileKey) return;
+  const rep = rawName ? repairKintoneFilename(rawName) : "";
+  for (const nm of new Set([rawName, rep].filter(Boolean))) {
+    if (!map[nm]) map[nm] = [];
+    if (!map[nm].includes(fileKey)) map[nm].push(fileKey);
+  }
+}
+
+const IMG_MARKER_RE_INLINE = /!\[([^\]]*)\]\(file:([^)\s]+)\)/g;
 
 function recordToFaq(rec) {
   const r = rec.record || rec;
@@ -159,33 +180,33 @@ function recordToFaq(rec) {
   const created = r.Created_datetime?.value ? new Date(r.Created_datetime.value).getTime() : id;
   const updated = r.Updated_datetime?.value ? new Date(r.Updated_datetime.value).getTime() : created;
 
-  const attachFiles = (r[F.attachment]?.value || []).map((f) => ({
-    fileKey: f.fileKey, name: f.name, size: f.size, contentType: f.contentType,
+  const rawInline = r[F.inlineImages]?.value || [];
+  const rawAttach = r[F.attachment]?.value || [];
+  const attachFiles = rawAttach.map((f) => ({
+    fileKey: f.fileKey, name: repairKintoneFilename(f.name), size: f.size, contentType: f.contentType,
   }));
-  const inlineFiles = (r[F.inlineImages]?.value || []).map((f) => ({
-    fileKey: f.fileKey, name: f.name, size: f.size, contentType: f.contentType,
+  const inlineFiles = rawInline.map((f) => ({
+    fileKey: f.fileKey, name: repairKintoneFilename(f.name), size: f.size, contentType: f.contentType,
   }));
 
-  const permKeySet = new Set(inlineFiles.map((f) => f.fileKey).concat(attachFiles.map((f) => f.fileKey)));
+  const permKeySet = new Set(rawInline.map((f) => f.fileKey).concat(rawAttach.map((f) => f.fileKey)));
   const nameToPermKeys = {};
-  for (const f of [...inlineFiles, ...attachFiles]) {
-    if (f.name) {
-      if (!nameToPermKeys[f.name]) nameToPermKeys[f.name] = [];
-      if (!nameToPermKeys[f.name].includes(f.fileKey)) nameToPermKeys[f.name].push(f.fileKey);
-    }
-  }
+  for (const f of [...rawInline, ...rawAttach]) addFilenameAliases(nameToPermKeys, f.name, f.fileKey);
 
   let answer = r[F.answer]?.value || "";
   let needsFix = false;
-  const markerCheck = /!\[([^\]]*)\]\(file:([A-Za-z0-9_-]+)\)/g;
+  const markerCheck = new RegExp(IMG_MARKER_RE_INLINE.source, "g");
   let mc;
   while ((mc = markerCheck.exec(answer)) !== null) {
-    if (!permKeySet.has(mc[2])) needsFix = true;
+    const k = String(mc[2]).trim();
+    if (!permKeySet.has(k)) needsFix = true;
   }
   if (needsFix) {
+    IMG_MARKER_RE_INLINE.lastIndex = 0;
     const consumed = {};
     let posIdx = 0;
-    answer = answer.replace(/!\[([^\]]*)\]\(file:([A-Za-z0-9_-]+)\)/g, (match, altText, key) => {
+    answer = answer.replace(IMG_MARKER_RE_INLINE, (match, altText, keyRaw) => {
+      const key = String(keyRaw).trim();
       if (permKeySet.has(key)) return match;
       const candidates = nameToPermKeys[altText || ""];
       if (candidates && candidates.length) {
@@ -194,8 +215,8 @@ function recordToFaq(rec) {
         consumed[altText] = idx + 1;
         return `![${altText}](file:${permKey})`;
       }
-      if (inlineFiles.length > 0 && posIdx < inlineFiles.length) {
-        const permKey = inlineFiles[posIdx].fileKey;
+      if (rawInline.length > 0 && posIdx < rawInline.length) {
+        const permKey = rawInline[posIdx].fileKey;
         posIdx++;
         return `![${altText}](file:${permKey})`;
       }
@@ -396,20 +417,16 @@ async function resolveFileKeys(recordId, answerText) {
   const permKeySet = new Set(permInline.map((f) => f.fileKey));
 
   const nameToPermKeys = {};
-  for (const f of [...permInline, ...permAttach]) {
-    if (f.name) {
-      if (!nameToPermKeys[f.name]) nameToPermKeys[f.name] = [];
-      if (!nameToPermKeys[f.name].includes(f.fileKey)) nameToPermKeys[f.name].push(f.fileKey);
-    }
-  }
+  for (const f of [...permInline, ...permAttach]) addFilenameAliases(nameToPermKeys, f.name, f.fileKey);
 
-  const unclaimedPermKeys = permInline.map((f) => f.fileKey).filter((k) => !permKeySet.has(k) || true);
   let unclaimedIdx = 0;
   const nameConsumed = {};
 
   let newAnswer = answerText || "";
   let changed = false;
-  newAnswer = newAnswer.replace(IMG_MARKER_RE_INLINE, (match, altText, key) => {
+  IMG_MARKER_RE_INLINE.lastIndex = 0;
+  newAnswer = newAnswer.replace(IMG_MARKER_RE_INLINE, (match, altText, keyRaw) => {
+    const key = String(keyRaw).trim();
     if (permKeySet.has(key)) return match;
     const fileName = altText || "";
     const candidates = nameToPermKeys[fileName];
@@ -438,8 +455,8 @@ async function resolveFileKeys(recordId, answerText) {
 
   return {
     answer: newAnswer,
-    inlineImages: permInline.map((f) => ({ fileKey: f.fileKey, name: f.name, size: f.size, contentType: f.contentType })),
-    attachments: permAttach.map((f) => ({ fileKey: f.fileKey, name: f.name, size: f.size, contentType: f.contentType })),
+    inlineImages: permInline.map((f) => ({ fileKey: f.fileKey, name: repairKintoneFilename(f.name), size: f.size, contentType: f.contentType })),
+    attachments: permAttach.map((f) => ({ fileKey: f.fileKey, name: repairKintoneFilename(f.name), size: f.size, contentType: f.contentType })),
   };
 }
 
