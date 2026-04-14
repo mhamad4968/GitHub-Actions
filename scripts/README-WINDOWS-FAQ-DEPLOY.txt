@@ -1,5 +1,7 @@
 このフォルダ（scripts）に FAQ 配布用ファイルがあります。
 
+（開発側）受け渡しルールは DEVELOPER-FAQ-HANDOFF.txt と AGENTS.md §22 を参照。
+
 【ファイルサーバーに上げるのはこれだけ（1 と 2）】
   faq-portal-ONLY-1-and-2.tar.gz
     展開すると faq-portal-full.html と server.mjs の2つ（＋説明テキスト）

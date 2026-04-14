@@ -4,6 +4,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
+    "faq:pack-minimal": "bash scripts/package-faq-only-1-and-2.sh",
     "env:check": "node scripts/env-check.js",
     "cli": "npx dotenv -e .env -e .env.proxy -- cli-kintone",
     "cli:help": "npx dotenv -e .env -e .env.proxy -- cli-kintone --help",

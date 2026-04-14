@@ -1,0 +1,25 @@
+経理FAQポータル — 開発側チェックリスト（受け取り側への配慮）
+================================================================
+
+【目的】
+  Windows 側が git pull するだけで、最新の HTML・server.mjs・2ファイル用 tar が揃うこと。
+
+【コードを直したら必ず】
+
+  [ ] npm run faq:pack-minimal
+        → scripts/faq-portal-ONLY-1-and-2.tar.gz が更新される
+
+  [ ] git add scripts/faq-portal-full.html scripts/faq-kintone-proxy/server.mjs \
+         scripts/faq-portal-ONLY-1-and-2.tar.gz
+        （他に FAQ 関連を触ったらそれも）
+
+  [ ] git commit / git push（合意ブランチへ。現状: feature/calculate-tax）
+
+【触らない】
+  scripts/faq-kintone-proxy/.env … 秘密。リポジトリに入れない。
+
+【受け取り側が見るファイル】
+  scripts/FAQ-replace-files-only.txt … 上げるのは2つだけの説明
+  scripts/README-WINDOWS-FAQ-DEPLOY.txt … エクスプローラー用メモ
+
+================================================================
