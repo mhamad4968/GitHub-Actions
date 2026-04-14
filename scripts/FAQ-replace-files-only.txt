@@ -1,0 +1,30 @@
+FAQ ポータル — こちら側で「ファイルだけ入れ替え」するとき
+============================================================
+
+■ 必ず上書きする（これだけ差し替えれば動作の正本）
+
+  1) scripts/faq-portal-full.html
+  2) scripts/faq-kintone-proxy/server.mjs
+
+■ 依存パッケージを変えたときだけ（package.json が変わっている場合）
+
+  3) scripts/faq-kintone-proxy/package.json
+  4) scripts/faq-kintone-proxy/package-lock.json
+     → 上書き後、faq-kintone-proxy フォルダで:
+        npm ci
+     または npm install
+
+■ 上書きしてはいけない（消さない）
+
+  scripts/faq-kintone-proxy/.env
+    … 本番の kintone ドメイン・認証。ここを入れ替えると接続できなくなります。
+
+■ なくてもよい（入れ替え不要・補助）
+
+  faq-portal-fileserver.tar.gz … 配布用まとめ。直接 HTML/サーバーを置くなら不要
+  Open-FAQ-scripts-in-Explorer.bat … エクスプローラー用ショートカット
+  DEPLOY-README.txt / README-WINDOWS-FAQ-DEPLOY.txt … 説明
+  package-faq-deploy.sh … tar を作り直すとき用
+
+============================================================
+要するに: 中身の更新は (1)(2) の2ファイルが中心。.env は触らない。
