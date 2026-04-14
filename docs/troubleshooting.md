@@ -46,12 +46,6 @@
    - 一時keyで初回取得が失敗しても、レコードIDベースで2回目に成功する
    - 2回目も失敗した場合のみプレースホルダーを表示
 
-### 添付ファイル名の文字化け表示（2026-04-14 追記）
-
-- **症状**: 配布資料に `åå².png` のように、本来「分割.png」などであるべき名前が壊れて見える
-- **原因**: kintone API が返す `name` が、UTF-8 バイト列を Latin-1 として解釈した結果になっている場合がある
-- **対策**: `server.mjs` の `repairKintoneFilename` で API 応答の `name` を補正。`faq-portal-full.html` の `repairKintoneDisplayName` でリンク表示も二重に補正
-
 ### UI 改善: 編集ボタンの summary タグ外移動（2026-04-14）
 
 - 編集/削除ボタンを `<details>` 内部からカードレベル（`<details>` の外）に移動
@@ -63,7 +57,7 @@
 - kintone の fileKey は **アップロード直後は一時的** で、**レコード保存後に恒久キーに変わる**。この2段階を理解せずにキーをそのまま使うと必ず 404 になる
 - 画像プレビューは **Blob URL** を使えばネットワークリクエスト不要で即表示できる
 - ブラウザキャッシュが古い HTML/JS を保持していると、修正済みコードが反映されない。ユーザーに **Ctrl+Shift+R（ハードリフレッシュ）** を案内する
-- **ファイル名の文字化け（mojibake）** は名前ベースのマッチングを無効化する。位置ベースまたはレコードIDベースのフォールバックが不可欠
+- **ファイル名の文字化け（mojibake）** は名前ベースのマッチングを無効化する。位置ベースまたはレコードIDベースのフォールバックが不可欠（表示名・`Content-Disposition` の対策は **TSB-004**）
 - 操作ボタンは `<details>` や折りたたみ要素の外に配置すべき。展開が必要な操作は UX を損なう
 
 ---
@@ -112,3 +106,39 @@
 - バッチファイル内に **日本語を含めない**（日本語メッセージは Python 側で出力）
 - 動作確認は `cmd.exe /c "..."` で行う
 - 詳細: `.cursor/rules/windows-cross-platform.mdc`
+
+---
+
+## TSB-004: 配布資料のファイル名が文字化け（mojibake）する
+
+| 項目 | 内容 |
+|------|------|
+| **発生日** | 2026-04-14 |
+| **対象** | 経理FAQポータル `scripts/faq-kintone-proxy/server.mjs`（アップロード・ダウンロード中継）、`faq-portal-full.html`（表示） |
+| **症状** | 配布資料リンクに `åå².png` のように表示される。本来は `分割.png` や `テスト.jpg` 等の日本語名であるべき |
+| **根本原因（調査結果）** | **複合**。(1) **kintone REST** が返すレコード内の `attachment` / `inline_images` の `name` が、UTF-8 ファイル名を誤解釈した文字列として格納されているケース。(2) **プロキシの `GET /api/file`** が kintone の `Content-Disposition` をそのまま転送しており、**`filename*=UTF-8''...`（RFC 5987）** が無いとブラウザが `filename` のバイト列を誤って解釈する。(3) **`kintoneUploadFile`** が `FormData.append(..., Blob, filename)` のみで、環境によっては **非 ASCII ファイル名**が multipart で不適切に送られ、kintone 側の `name` が最初から壊れる。(4) **multer** 受信時、`originalname` が multipart の `filename` のエンコーディング（RFC 2231 / UTF-8）と一致しない場合に文字化けが残る |
+
+### 修正方針（server.mjs）
+
+1. **アップロード（`POST /api/upload` → `kintoneUploadFile`）**  
+   - 受信: `repairKintoneFilename(String(req.file.originalname).normalize('NFC'))` で multer 由来の名前を補正してから kintone に送る。  
+   - 送信: **`File` オブジェクト**を `FormData.append('file', file)` で渡す（Node 20+）。`File` が無い環境は従来どおり `Blob` + 第3引数 `filename`。  
+   - 目的: UTF-8 の NFC 正規化されたファイル名を kintone ファイル API に渡す。
+
+2. **ダウンロード中継（`GET /api/file/:fileKey` / `GET /api/resolve-file/...`）**  
+   - kintone 応答の `Content-Disposition` を **パース**し（`filename*` 優先）、表示用に **`repairKintoneFilename`** を適用。  
+   - ブラウザへは **`filename*=UTF-8''` + ASCII の `filename="..."` フォールバック** を付けた `Content-Disposition` を **再生成**してセット（kintone 生ヘッダのまま転送しない）。  
+   - `inline` / `attachment` は元ヘッダを維持。
+
+3. **JSON 表示（`/api/bootstrap`）**  
+   - 既存の **`repairKintoneFilename`** を `recordToFaq` の `attachments` / `inlineImages` の `name` に継続適用（API 上の名前の補正）。
+
+### 教訓
+
+- ファイル名は **multipart の `filename*`** と **レスポンスの `Content-Disposition` の `filename*`** を UTF-8 で明示しないと、中間プロキシやブラウザで二重に壊れる。  
+- **Blob + ファイル名**だけに頼らず、可能なら **`File`** で送る。  
+- レコードに既に壊れた `name` が入っているデータは、**再アップロード**または kintone 側修正が必要な場合がある（修復関数で直せない欠損パターンあり）。
+
+### 関連
+
+- **TSB-001**（fileKey と画像 404）と独立して管理。表示名は本 TSB を正とする。

@@ -13,6 +13,7 @@ import http from "node:http";
 import { fileURLToPath } from "node:url";
 import { dirname, join, resolve } from "node:path";
 import { existsSync, readFileSync } from "node:fs";
+import iconv from "iconv-lite";
 
 const DOMAIN = process.env.KINTONE_DOMAIN?.trim();
 const APP = process.env.KINTONE_FAQ_APP_ID?.trim();
@@ -102,9 +103,14 @@ async function kintoneDeleteRecord(id) {
 }
 
 async function kintoneUploadFile(buffer, filename, contentType) {
-  const blob = new Blob([buffer], { type: contentType || "application/octet-stream" });
+  const safeName = String(filename || "file").normalize("NFC");
+  const ct = contentType || "application/octet-stream";
   const form = new FormData();
-  form.append("file", blob, filename);
+  if (typeof File !== "undefined") {
+    form.append("file", new File([buffer], safeName, { type: ct }));
+  } else {
+    form.append("file", new Blob([buffer], { type: ct }), safeName);
+  }
   const res = await fetch(`${kintoneBase()}/k/v1/file.json`, {
     method: "POST",
     headers: authHeaders(),
@@ -125,9 +131,11 @@ async function kintoneDownloadFile(fileKey) {
     const text = await res.text();
     throw new Error(`kintone file download ${res.status}: ${text.slice(0, 200)}`);
   }
+  const rawCd = res.headers.get("content-disposition") || "";
   return {
     contentType: res.headers.get("content-type") || "application/octet-stream",
-    contentDisposition: res.headers.get("content-disposition") || "",
+    contentDisposition: rawCd,
+    filenameFromDisposition: parseFilenameFromContentDisposition(rawCd),
     body: res.body,
     buffer: Buffer.from(await res.arrayBuffer()),
   };
@@ -147,14 +155,54 @@ function parseCategoryField(raw) {
   return parts[1] || "";
 }
 
-/** kintone の file.name が UTF-8 バイト列を Latin-1 として解釈した文字化けのとき修復 */
+function hasCjk(s) {
+  return /[\u3040-\u309F\u30A0-\u30FF\u3005-\u9FFF\uFF66-\uFF9F]/.test(s);
+}
+
+/** kintone / ブラウザが返す Content-Disposition からファイル名を取り出す */
+function parseFilenameFromContentDisposition(header) {
+  if (!header || typeof header !== "string") return null;
+  const star = /filename\*\s*=\s*([^']*?)''([^;\s]+)/i.exec(header);
+  if (star && star[2]) {
+    try { return decodeURIComponent(star[2]); } catch { /* noop */ }
+  }
+  const quoted = /filename\s*=\s*"((?:\\.|[^"\\])*)"/i.exec(header);
+  if (quoted) return quoted[1].replace(/\\(.)/g, "$1");
+  const plain = /filename\s*=\s*([^;\s]+)/i.exec(header);
+  if (plain) return plain[1].replace(/^["']|["']$/g, "");
+  return null;
+}
+
+/** ブラウザが UTF-8 名を正しく保存・表示できるよう RFC 5987 の filename* を付与 */
+function contentDispositionWithUtf8Name(dispositionKind, utf8Name) {
+  const base = String(utf8Name || "file").normalize("NFC");
+  const kind = dispositionKind === "inline" ? "inline" : "attachment";
+  const ascii = base.replace(/[^\x20-\x7E]/g, "_").replace(/"/g, "_") || "file";
+  return `${kind}; filename="${ascii}"; filename*=UTF-8''${encodeURIComponent(base)}`;
+}
+
+function dispositionKindFromHeader(header) {
+  if (!header || typeof header !== "string") return "attachment";
+  const m = /^\s*(inline|attachment)/i.exec(header.trim());
+  return m && String(m[1]).toLowerCase() === "inline" ? "inline" : "attachment";
+}
+
+/** kintone の file.name の文字化けを複数パターンで修復（直らない場合は元のまま） */
 function repairKintoneFilename(name) {
   if (name == null || name === "") return name;
   const s = String(name);
-  if (/[\u3040-\u309F\u30A0-\u30FF\u3005-\u9FFF\uFF66-\uFF9F]/.test(s)) return s;
+  if (hasCjk(s)) return s;
   try {
     const t = Buffer.from(s, "latin1").toString("utf8");
-    if (t !== s && /[\u3040-\u309F\u30A0-\u30FF\u3005-\u9FFF]/.test(t) && !t.includes("\uFFFD")) return t;
+    if (t !== s && hasCjk(t) && !t.includes("\uFFFD")) return t;
+  } catch { /* noop */ }
+  try {
+    const sj = iconv.decode(Buffer.from(s, "latin1"), "Shift_JIS");
+    if (sj !== s && hasCjk(sj) && !sj.includes("\uFFFD")) return sj;
+  } catch { /* noop */ }
+  try {
+    const sj2 = iconv.decode(Buffer.from(s, "utf8"), "Shift_JIS");
+    if (sj2 !== s && hasCjk(sj2) && !sj2.includes("\uFFFD")) return sj2;
   } catch { /* noop */ }
   return s;
 }
@@ -310,8 +358,9 @@ app.post("/api/upload", upload.single("file"), async (req, res) => {
   if (!DOMAIN || !(TOKEN || (KT_USER && KT_PASS))) return res.status(500).json({ ok: false, error: "kintone設定が未設定です" });
   if (!req.file) return res.status(400).json({ ok: false, error: "ファイルがありません" });
   try {
-    const fileKey = await kintoneUploadFile(req.file.buffer, req.file.originalname, req.file.mimetype);
-    return res.json({ ok: true, fileKey, name: req.file.originalname, size: req.file.size, contentType: req.file.mimetype });
+    const uploadName = repairKintoneFilename(String(req.file.originalname || "file").normalize("NFC"));
+    const fileKey = await kintoneUploadFile(req.file.buffer, uploadName, req.file.mimetype);
+    return res.json({ ok: true, fileKey, name: uploadName, size: req.file.size, contentType: req.file.mimetype });
   } catch (e) {
     console.error("upload error:", e);
     return res.status(500).json({ ok: false, error: e.message });
@@ -325,9 +374,11 @@ app.post("/api/upload", upload.single("file"), async (req, res) => {
 app.get("/api/file/:fileKey", async (req, res) => {
   if (!DOMAIN || !(TOKEN || (KT_USER && KT_PASS))) return res.status(500).json({ ok: false, error: "kintone設定が未設定です" });
   try {
-    const { contentType, buffer, contentDisposition } = await kintoneDownloadFile(req.params.fileKey);
+    const { contentType, buffer, contentDisposition, filenameFromDisposition } = await kintoneDownloadFile(req.params.fileKey);
     res.setHeader("Content-Type", contentType);
-    if (contentDisposition) res.setHeader("Content-Disposition", contentDisposition);
+    const kind = dispositionKindFromHeader(contentDisposition);
+    const utf8Name = repairKintoneFilename(filenameFromDisposition || "") || filenameFromDisposition || "file";
+    res.setHeader("Content-Disposition", contentDispositionWithUtf8Name(kind, utf8Name));
     res.setHeader("Cache-Control", "public, max-age=86400");
     return res.send(buffer);
   } catch (e) {
@@ -351,9 +402,11 @@ app.get("/api/resolve-file/:recordId/:index", async (req, res) => {
     const inlineFiles = rec[F.inlineImages]?.value || [];
     const target = inlineFiles[idx];
     if (!target || !target.fileKey) return res.status(404).json({ ok: false, error: "image not found at index " + idx });
-    const { contentType, buffer, contentDisposition } = await kintoneDownloadFile(target.fileKey);
+    const { contentType, buffer, contentDisposition, filenameFromDisposition } = await kintoneDownloadFile(target.fileKey);
     res.setHeader("Content-Type", contentType);
-    if (contentDisposition) res.setHeader("Content-Disposition", contentDisposition);
+    const kind = dispositionKindFromHeader(contentDisposition);
+    const utf8Name = repairKintoneFilename(filenameFromDisposition || "") || filenameFromDisposition || repairKintoneFilename(target.name || "") || target.name || "file";
+    res.setHeader("Content-Disposition", contentDispositionWithUtf8Name(kind, utf8Name));
     res.setHeader("Cache-Control", "public, max-age=86400");
     return res.send(buffer);
   } catch (e) {
@@ -566,7 +619,14 @@ const PUBLIC_DIR = process.env.PUBLIC_DIR
   ? resolve(process.env.PUBLIC_DIR)
   : resolve(__dirname, "..");
 
-app.use(express.static(PUBLIC_DIR, { index: "faq-portal-full.html" }));
+app.use(express.static(PUBLIC_DIR, {
+  index: "faq-portal-full.html",
+  setHeaders(res, filePath) {
+    if (filePath.replace(/\\/g, "/").endsWith("/faq-portal-full.html")) {
+      res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+    }
+  },
+}));
 
 /* ------------------------------------------------------------------ */
 /*  Start                                                              */

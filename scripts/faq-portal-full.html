@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<!-- faq-portal bundle: 2026-04-14T22:25+09 (mojibake names + wider file key) -->
+<!-- faq-portal bundle: 2026-04-14T22:35+09 (no-cache html + attachment label fallback) -->
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title id="pageTitle">社内FAQポータル</title>
     <style>
@@ -326,6 +328,16 @@
             if (dec.indexOf('\uFFFD') === -1 && /[\u3040-\u309F\u30A0-\u30FF\u3005-\u9FFF]/.test(dec) && dec !== s) return dec;
         } catch (e) { /* noop */ }
         return s;
+    }
+
+    /** 修復できない kintone 由来の文字化け名は汎用ラベル（å / ã 等の典型パターン） */
+    function attachmentLinkLabel(name) {
+        var r = repairKintoneDisplayName(name);
+        if (r !== name) return r;
+        if (/[\u00E5\u00E3\u00E2\u00C3\u00BF]|\u00E3[\u0080-\u024F]/.test(String(name))) {
+            return '\u6dfb\u4ed8\u30d5\u30a1\u30a4\u30eb';
+        }
+        return name;
     }
 
     /* ============================================================
@@ -1168,10 +1180,11 @@
                     attachArr.forEach(function (af) {
                         var url = fileUrl(af.fileKey);
                         if (!url) return;
+                        var disp = attachmentLinkLabel(af.name);
                         var link = el('a', {
-                            href: url, target: '_blank', rel: 'noopener noreferrer',
+                            href: url, target: '_blank', rel: 'noopener noreferrer', title: af.name || '',
                             style: { display: 'inline-block', padding: '4px 12px', margin: '3px 4px', borderRadius: '6px', background: 'var(--card)', border: '1px solid var(--border)', textDecoration: 'none', color: 'var(--primary)', fontSize: '0.9em' },
-                            textContent: '\uD83D\uDCC4 ' + repairKintoneDisplayName(af.name),
+                            textContent: '\uD83D\uDCC4 ' + disp,
                         });
                         attachSection.appendChild(link);
                     });
