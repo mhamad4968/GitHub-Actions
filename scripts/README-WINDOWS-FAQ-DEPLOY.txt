@@ -1,3 +1,7 @@
+【重要】これらのファイルは Git のブランチ main にはありません。
+  必ずブランチ feature/calculate-tax に切り替えてから git pull してください。
+  リポジトリのルートの WHERE-TO-FIND-FAQ.txt も参照。
+
 このフォルダ（scripts）に FAQ 配布用ファイルがあります。
 
 （開発側）受け渡しルールは DEVELOPER-FAQ-HANDOFF.txt と AGENTS.md §22 を参照。

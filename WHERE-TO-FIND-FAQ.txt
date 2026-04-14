@@ -1,0 +1,26 @@
+経理FAQポータル用ファイルがエクスプローラーに無いとき
+============================================================
+
+【理由】
+  faq-portal-full.html や faq-portal-ONLY-1-and-2.tar.gz などは、
+  Git ブランチ **feature/calculate-tax** にだけあります。
+  ブランチ **main** のまま clone / pull していると、scripts に出てきません。
+
+【Windows で直す手順】
+
+  1. コマンドプロンプトまたは PowerShell でフォルダへ:
+       cd C:\Users\mhamada202408224\kintone-ai-lab
+
+  2. ブランチを切り替えて取得:
+       git fetch origin
+       git checkout feature/calculate-tax
+       git pull origin feature/calculate-tax
+
+  3. エクスプローラーで開く:
+       scripts フォルダ
+       （またはルートの Open-FAQ-scripts-in-Explorer.bat をダブルクリック）
+
+【ブラウザで中身だけ確認】
+  https://github.com/mhamad4968/GitHub-Actions/tree/feature/calculate-tax/scripts
+
+============================================================
