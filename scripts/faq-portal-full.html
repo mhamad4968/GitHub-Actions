@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<!-- faq-portal bundle: 2026-04-14T22:35+09 (no-cache html + attachment label fallback) -->
+<!-- faq-portal bundle: 2026-04-15T00:00+09 (strict JP filename repair + favicon) -->
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23007bff'/%3E%3Ctext x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-family='sans-serif'%3EF%3C/text%3E%3C/svg%3E">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -316,17 +317,26 @@
         return FAQ_API_BASE + '/api/file/' + encodeURIComponent(k);
     }
 
+    /** ひらがな・全角カタカナ・CJK 漢字のみ「正しい日本語名」。半角ｶﾅは修復バイパスさせない（server.mjs と同条件） */
+    function hasStrictFullwidthJapaneseFilenameChars(s) {
+        return /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/.test(String(s));
+    }
     /** 添付名の文字化け（UTF-8 を Latin-1 と誤解した kintone 表示）をブラウザ側でも補正 */
     function repairKintoneDisplayName(name) {
         if (name == null || name === '') return name;
         var s = String(name);
-        if (/[\u3040-\u309F\u30A0-\u30FF\u3005-\u9FFF\uFF66-\uFF9F]/.test(s)) return s;
+        if (hasStrictFullwidthJapaneseFilenameChars(s)) return s;
+        var latin1AsUtf8 = s;
         try {
             var bytes = new Uint8Array(s.length);
             for (var i = 0; i < s.length; i++) bytes[i] = s.charCodeAt(i) & 255;
-            var dec = new TextDecoder('utf-8').decode(bytes);
-            if (dec.indexOf('\uFFFD') === -1 && /[\u3040-\u309F\u30A0-\u30FF\u3005-\u9FFF]/.test(dec) && dec !== s) return dec;
+            latin1AsUtf8 = new TextDecoder('utf-8').decode(bytes);
         } catch (e) { /* noop */ }
+        if (latin1AsUtf8.indexOf('\uFFFD') === -1
+            && latin1AsUtf8 !== s
+            && hasStrictFullwidthJapaneseFilenameChars(latin1AsUtf8)) {
+            return latin1AsUtf8;
+        }
         return s;
     }
 

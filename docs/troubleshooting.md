@@ -133,11 +133,34 @@
 3. **JSON 表示（`/api/bootstrap`）**  
    - 既存の **`repairKintoneFilename`** を `recordToFaq` の `attachments` / `inlineImages` の `name` に継続適用（API 上の名前の補正）。
 
+4. **修復判定の厳格化（半角カタカナによる latin1→UTF-8 バイパス問題）** — 2026-04-15 追記  
+   - **事象**: kintone が返す `name` が、UTF-8 バイト列を **Latin-1 として解釈した文字列**（例: `ã...`）ではなく、**半角カタカナ（U+FF61–FF9F）中心**のゴミ文字列になるケースがある。  
+   - **誤った実装**: `repairKintoneFilename` / `repairKintoneDisplayName` が「日本語らしさ」を **`/[\u3040-\u309F\u30A0-\u30FF\u3005-\u9FFF\uFF66-\uFF9F]/`** のように判定し、**半角カタカナを「すでに正しい日本語」**とみなして **latin1→UTF-8 修復をスキップ**していた。結果として、添付リンク表示が `ク.jpg` のように残る。  
+   - **正しい判定（厳格条件）**: 「修復不要」とみなすのは **ひらがな（U+3040–309F）・全角カタカナ（U+30A0–30FF）・CJK 統合漢字（U+4E00–9FFF）** のいずれかが **1 文字でも**含まれる場合に限定する。半角カタカナ・々（U+3005）帯・Latin-1 拡張文字だけでは **修復不要としない**。  
+   - **修復手順**: 厳格条件を満たさない文字列は、**必ず** `Buffer.from(s, "latin1").toString("utf8")`（ブラウザは `TextDecoder("utf-8")` で code unit をバイト化）を試行し、結果が厳格条件を満たし `\uFFFD` を含まなければ採用。それでも直らなければ従来どおり **Shift_JIS 経由**の補助修復を試す。  
+   - **限界**: 元データが **半角カタカナのみ**で、UTF-8 バイト列として意味のある全角日本語に戻せない場合は据え置きとなる。**再アップロード**が必要なことがある。
+
+5. **`GET /favicon.ico` の 204 応答** — 2026-04-15 追記  
+   - ブラウザのデフォルト取得で **404** が大量に出ないよう、`server.mjs` で **`204 No Content`** を返すルートを定義する（本文なし）。HTML 側は `link rel="icon"`（data URL SVG）でタブアイコンを補完可能。
+
+### 検証コマンド（回帰用）
+
+```bash
+cd scripts/faq-kintone-proxy
+node selftest-filename-repair.mjs
+# 典型 mojibake → 期待名（全角＋半角カナ混在）が PASS すること
+
+# favicon（サーバ起動に最低限のダミー env が必要な場合あり）
+HTTP_PORT=19999 KINTONE_DOMAIN=example.cybozu.com KINTONE_API_TOKEN=dummy KINTONE_FAQ_APP_ID=1 node server.mjs &
+curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:19999/favicon.ico   # 期待: 204
+```
+
 ### 教訓
 
 - ファイル名は **multipart の `filename*`** と **レスポンスの `Content-Disposition` の `filename*`** を UTF-8 で明示しないと、中間プロキシやブラウザで二重に壊れる。  
 - **Blob + ファイル名**だけに頼らず、可能なら **`File`** で送る。  
-- レコードに既に壊れた `name` が入っているデータは、**再アップロード**または kintone 側修正が必要な場合がある（修復関数で直せない欠損パターンあり）。
+- レコードに既に壊れた `name` が入っているデータは、**再アップロード**または kintone 側修正が必要な場合がある（修復関数で直せない欠損パターンあり）。  
+- **修復関数の「日本語あり」判定に半角カタカナブロックを含めないこと**。含めると latin1 修復が永遠にバイパスされる。
 
 ### 関連
 

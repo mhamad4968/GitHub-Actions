@@ -155,8 +155,13 @@ function parseCategoryField(raw) {
   return parts[1] || "";
 }
 
-function hasCjk(s) {
-  return /[\u3040-\u309F\u30A0-\u30FF\u3005-\u9FFF\uFF66-\uFF9F]/.test(s);
+/**
+ * 「すでに正しい UTF-8 の日本語ファイル名」とみなす厳格条件。
+ * ひらがな・全角カタカナ・CJK 統合漢字のみ。半角カタカナ(U+FF61–FF9F)や「々」等( U+3005 帯)は
+ * 文字化けの残骸になりやすいため含めない → これらだけの文字列でも latin1→UTF-8 修復をバイパスしない。
+ */
+function hasStrictFullwidthJapaneseFilenameChars(s) {
+  return /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/.test(String(s));
 }
 
 /** kintone / ブラウザが返す Content-Disposition からファイル名を取り出す */
@@ -191,18 +196,26 @@ function dispositionKindFromHeader(header) {
 function repairKintoneFilename(name) {
   if (name == null || name === "") return name;
   const s = String(name);
-  if (hasCjk(s)) return s;
+  if (hasStrictFullwidthJapaneseFilenameChars(s)) return s;
+  /** 厳格条件を満たさない限り、必ず latin1 バイト列として UTF-8 解釈を試す（半角ｶﾅのみ等のバイパス防止） */
+  let latin1AsUtf8 = s;
   try {
-    const t = Buffer.from(s, "latin1").toString("utf8");
-    if (t !== s && hasCjk(t) && !t.includes("\uFFFD")) return t;
+    latin1AsUtf8 = Buffer.from(s, "latin1").toString("utf8");
   } catch { /* noop */ }
+  if (
+    latin1AsUtf8 !== s
+    && hasStrictFullwidthJapaneseFilenameChars(latin1AsUtf8)
+    && !latin1AsUtf8.includes("\uFFFD")
+  ) {
+    return latin1AsUtf8;
+  }
   try {
     const sj = iconv.decode(Buffer.from(s, "latin1"), "Shift_JIS");
-    if (sj !== s && hasCjk(sj) && !sj.includes("\uFFFD")) return sj;
+    if (sj !== s && hasStrictFullwidthJapaneseFilenameChars(sj) && !sj.includes("\uFFFD")) return sj;
   } catch { /* noop */ }
   try {
     const sj2 = iconv.decode(Buffer.from(s, "utf8"), "Shift_JIS");
-    if (sj2 !== s && hasCjk(sj2) && !sj2.includes("\uFFFD")) return sj2;
+    if (sj2 !== s && hasStrictFullwidthJapaneseFilenameChars(sj2) && !sj2.includes("\uFFFD")) return sj2;
   } catch { /* noop */ }
   return s;
 }
@@ -326,6 +339,10 @@ function isClientGeneratedId(id) {
 }
 
 const app = express();
+app.get("/favicon.ico", (_req, res) => {
+  res.setHeader("Cache-Control", "public, max-age=86400");
+  res.status(204).end();
+});
 app.use(express.json({ limit: "8mb" }));
 
 app.use((req, res, next) => {
