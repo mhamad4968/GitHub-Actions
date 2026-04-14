@@ -1,15 +1,13 @@
 このフォルダ（scripts）に FAQ 配布用ファイルがあります。
 
+【ファイルサーバーに上げるのはこれだけ（1 と 2）】
+  faq-portal-ONLY-1-and-2.tar.gz
+    展開すると faq-portal-full.html と server.mjs の2つ（＋説明テキスト）
+    配置先は FAQ-replace-files-only.txt または中の UPLOAD-THIS-2-FILES.txt を参照
+
 【エクスプローラーでここを開く】
-  リポジトリのルートにある次をダブルクリック:
-    Open-FAQ-scripts-in-Explorer.bat
+  リポジトリのルートの Open-FAQ-scripts-in-Explorer.bat をダブルクリック
 
-【主なファイル】
-  faq-portal-fileserver.tar.gz  … ファイルサーバー用まとめ
-  faq-portal-full.html         … ポータル本体
-  faq-kintone-proxy/           … Node プロキシ
-  DEPLOY-README.txt            … 手順
-
-【tar.gz が無いとき】
-  Git Bash などでリポジトリのルートから:
-    bash scripts/package-faq-deploy.sh
+【その他（入れ替え不要なら無視してよい）】
+  faq-portal-fileserver.tar.gz … 一式まとめ
+  bash scripts/package-faq-only-1-and-2.sh … 上記2ファイルだけの tar を作り直す
