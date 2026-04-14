@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- faq-portal bundle: 2026-04-15T01:00+09 (download fn= + Content-Disposition) -->
+<!-- faq-portal bundle: 2026-04-15T02:00+09 (latin1 suspect + multi-pass + CD filename*) -->
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
@@ -327,22 +327,45 @@
     function hasStrictFullwidthJapaneseFilenameChars(s) {
         return /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/.test(String(s));
     }
-    /** 添付名の文字化け（UTF-8 を Latin-1 と誤解した kintone 表示）をブラウザ側でも補正 */
+    function eachCodeUnitSafeForLatin1ByteTruncation(s) {
+        var u = String(s);
+        for (var i = 0; i < u.length; i++) {
+            var c = u.charCodeAt(i);
+            if (c <= 0xff) continue;
+            if (c >= 0xFF61 && c <= 0xFF9F) continue;
+            return false;
+        }
+        return true;
+    }
+    function hasLatin1Utf8MojibakeSuspect(s) {
+        var u = String(s);
+        for (var i = 0; i < u.length; i++) {
+            var c = u.charCodeAt(i);
+            if (c >= 0x80 && c <= 0xff) return true;
+        }
+        if (/[\u00C2-\u00C4\u00C5\u00E2-\u00E5\u00E7\u00EF][\u0080-\u00BF]/.test(u)) return true;
+        if (/[\u00C3\u00E3\u00E5][\u0080-\u00BF][\u0080-\u00BF]/.test(u)) return true;
+        return false;
+    }
+    /** 添付名の文字化け（UTF-8 を Latin-1 と誤解した kintone 表示）をブラウザ側でも補正（server と同ロジックのサブセット） */
     function repairKintoneDisplayName(name) {
         if (name == null || name === '') return name;
         var s = String(name);
-        if (hasStrictFullwidthJapaneseFilenameChars(s)) return s;
-        var latin1AsUtf8 = s;
-        try {
-            var bytes = new Uint8Array(s.length);
-            for (var i = 0; i < s.length; i++) bytes[i] = s.charCodeAt(i) & 255;
-            latin1AsUtf8 = new TextDecoder('utf-8').decode(bytes);
-        } catch (e) { /* noop */ }
-        if (latin1AsUtf8.indexOf('\uFFFD') === -1
-            && latin1AsUtf8 !== s
-            && hasStrictFullwidthJapaneseFilenameChars(latin1AsUtf8)) {
-            return latin1AsUtf8;
+        if (hasStrictFullwidthJapaneseFilenameChars(s) && !hasLatin1Utf8MojibakeSuspect(s)) return s;
+        var cur = s;
+        for (var pass = 0; pass < 4; pass++) {
+            if (!eachCodeUnitSafeForLatin1ByteTruncation(cur)) {
+                if (hasStrictFullwidthJapaneseFilenameChars(cur) && cur.indexOf('\uFFFD') === -1) return cur;
+                break;
+            }
+            var bytes = new Uint8Array(cur.length);
+            for (var j = 0; j < cur.length; j++) bytes[j] = cur.charCodeAt(j) & 255;
+            var next = new TextDecoder('utf-8').decode(bytes);
+            if (next.indexOf('\uFFFD') !== -1 || next === cur) break;
+            cur = next;
+            if (hasStrictFullwidthJapaneseFilenameChars(cur) && !hasLatin1Utf8MojibakeSuspect(cur)) return cur;
         }
+        if (hasStrictFullwidthJapaneseFilenameChars(cur) && cur.indexOf('\uFFFD') === -1) return cur;
         return s;
     }
 

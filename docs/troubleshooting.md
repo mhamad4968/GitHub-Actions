@@ -150,6 +150,11 @@
    - **対策 B（ダウンロード名）**: `GET /api/file/:fileKey` に **`?fn=`**（URL エンコードされた UTF-8 名）を付け、**レコード JSON 上で修復できたファイル名**を優先して `Content-Disposition` の `filename*` に使う。`faq-portal-full.html` の配布資料リンクは **`fileUrl(key, saveName)`** で `fn` を付与し、可能なら **`download` 属性**で保存名を指定する。  
    - **限界**: kintone の `attachment[].name` が **バイト欠落した状態で永続化**されている場合、サーバだけでは **分割.png** に復元できない。**ファイルの再アップロード**が必要。
 
+7. **修復の積極化 + Content-Disposition の順序** — 2026-04-15 追記  
+   - **Latin-1 残骸検出**: `hasLatin1Utf8MojibakeSuspect` で U+0080–00FF 帯や UTF-8 先頭バイトっぽい列を検出し、**全角日本語が含まれていても**（厳格条件を満たしていても）**latin1→UTF-8 の多段デコード**を最大 4 回まで試す。  
+   - **安全条件**: 各ラウンドは `eachCodeUnitSafeForLatin1ByteTruncation` が真のときのみ（各コードポイントが U+00FF 以下、または半角カナ U+FF61–FF9F）。**既に正しい CJK だけ**の文字列では latin1 を掛けず打ち切る。  
+   - **Content-Disposition**: `filename*=UTF-8''` + `encodeURIComponent` を **先頭**に置き、続けて ASCII のみの `filename="..."`（`"` と `\` をエスケープ）。ブラウザは `filename*` を優先して保存名を決める。
+
 ### 検証コマンド（回帰用）
 
 ```bash

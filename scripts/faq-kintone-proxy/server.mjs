@@ -164,6 +164,37 @@ function hasStrictFullwidthJapaneseFilenameChars(s) {
   return /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/.test(String(s));
 }
 
+/**
+ * Node の latin1 エンコーディングは U+0100 以上を下位バイトに切り詰める。
+ * 半角カタカナ（FF61–FF9F）は意図的にその挙動でバイト列化する。それ以外の BMP 文字は切り詰め禁止。
+ */
+function eachCodeUnitSafeForLatin1ByteTruncation(s) {
+  const u = String(s);
+  for (let i = 0; i < u.length; i++) {
+    const c = u.charCodeAt(i);
+    if (c <= 0xff) continue;
+    if (c >= 0xFF61 && c <= 0xFF9F) continue;
+    return false;
+  }
+  return true;
+}
+
+/**
+ * UTF-8 バイト列を Latin-1 / ISO-8859-1 として誤表示したときに現れやすいパターン。
+ * これが含まれるのに全角かな・漢字だけ「完成」とみなすと修復が止まるため、厳格日本語があっても再デコードを試す。
+ */
+function hasLatin1Utf8MojibakeSuspect(s) {
+  const u = String(s);
+  for (let i = 0; i < u.length; i++) {
+    const c = u.charCodeAt(i);
+    if (c >= 0x80 && c <= 0xff) return true;
+  }
+  // 典型的な UTF-8 先頭 + 続きバイト（Latin-1 上の 2〜3 文字）
+  if (/[\u00C2-\u00C4\u00C5\u00E2-\u00E5\u00E7\u00EF][\u0080-\u00BF]/.test(u)) return true;
+  if (/[\u00C3\u00E3\u00E5][\u0080-\u00BF][\u0080-\u00BF]/.test(u)) return true;
+  return false;
+}
+
 /** kintone / ブラウザが返す Content-Disposition からファイル名を取り出す */
 function parseFilenameFromContentDisposition(header) {
   if (!header || typeof header !== "string") return null;
@@ -178,12 +209,17 @@ function parseFilenameFromContentDisposition(header) {
   return null;
 }
 
-/** ブラウザが UTF-8 名を正しく保存・表示できるよう RFC 5987 の filename* を付与 */
+/**
+ * RFC 5987 / RFC 6266: filename* を先に置き、UTF-8 は百分号エンコード。
+ * filename= は ASCII のみ（RFC 2616 quoted-string 用に " と \ をエスケープ）。
+ */
 function contentDispositionWithUtf8Name(dispositionKind, utf8Name) {
   const base = String(utf8Name || "file").normalize("NFC");
   const kind = dispositionKind === "inline" ? "inline" : "attachment";
-  const ascii = base.replace(/[^\x20-\x7E]/g, "_").replace(/"/g, "_") || "file";
-  return `${kind}; filename="${ascii}"; filename*=UTF-8''${encodeURIComponent(base)}`;
+  const ascii = base.replace(/[^\x20-\x7E]/g, "_").replace(/\\/g, "_").replace(/"/g, "_") || "file";
+  const asciiQuoted = ascii.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+  const star = encodeURIComponent(base);
+  return `${kind}; filename*=UTF-8''${star}; filename="${asciiQuoted}"`;
 }
 
 function dispositionKindFromHeader(header) {
@@ -196,8 +232,27 @@ function dispositionKindFromHeader(header) {
 function repairKintoneFilename(name) {
   if (name == null || name === "") return name;
   const s = String(name);
-  if (hasStrictFullwidthJapaneseFilenameChars(s)) return s;
-  /** 厳格条件を満たさない限り、必ず latin1 バイト列として UTF-8 解釈を試す（半角ｶﾅのみ等のバイパス防止） */
+  if (hasStrictFullwidthJapaneseFilenameChars(s) && !hasLatin1Utf8MojibakeSuspect(s)) return s;
+
+  /** 各ラウンドは「1 バイトに収まる文字列」に対してのみ latin1→UTF-8（CJK 化後の誤再適用で壊さない） */
+  let cur = s;
+  for (let pass = 0; pass < 4; pass++) {
+    if (!eachCodeUnitSafeForLatin1ByteTruncation(cur)) {
+      if (hasStrictFullwidthJapaneseFilenameChars(cur) && !cur.includes("\uFFFD")) return cur;
+      break;
+    }
+    let next;
+    try {
+      next = Buffer.from(cur, "latin1").toString("utf8");
+    } catch {
+      break;
+    }
+    if (next.includes("\uFFFD") || next === cur) break;
+    cur = next;
+    if (hasStrictFullwidthJapaneseFilenameChars(cur) && !hasLatin1Utf8MojibakeSuspect(cur)) return cur;
+  }
+  if (hasStrictFullwidthJapaneseFilenameChars(cur) && !cur.includes("\uFFFD")) return cur;
+
   let latin1AsUtf8 = s;
   try {
     latin1AsUtf8 = Buffer.from(s, "latin1").toString("utf8");
@@ -210,7 +265,7 @@ function repairKintoneFilename(name) {
   ) {
     return latin1AsUtf8;
   }
-  /** latin1→UTF-8 が U+FFFD を含む場合、C1 制御欠落などでバイト列が壊れている。SJIS 推測は誤爆（例: 裹ｲ.png）しやすいので行わない */
+  /** latin1→UTF-8 が U+FFFD を含む場合は SJIS 推測をスキップ（誤爆防止） */
   if (!latin1HasReplacement) {
     try {
       const sj = iconv.decode(Buffer.from(s, "latin1"), "Shift_JIS");
