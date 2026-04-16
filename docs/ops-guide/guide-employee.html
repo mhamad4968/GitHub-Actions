@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>👤 社員マスタガイド</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--accent:#7c3aed;--accent-bg:#f3e8ff;--bg:#f0f4f8;--card:#fff;--text:#1e293b;--sub:#475569;--gray:#f1f5f9;
+  --blue:#2563eb;--blue-bg:#dbeafe;--ok:#16a34a;--ok-bg:#dcfce7;--warn:#ea580c;--warn-bg:#fff7ed;--radius:16px}
+body{font-family:'Segoe UI','Hiragino Sans','Meiryo',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.header{background:linear-gradient(135deg,#5b21b6,#8b5cf6);color:#fff;padding:24px;display:flex;align-items:center;gap:16px}
+.header .back{color:#fff;text-decoration:none;font-size:1.3em;opacity:.8;transition:.2s}
+.header .back:hover{opacity:1}
+.header h1{font-size:1.4em;font-weight:700}
+.container{max-width:760px;margin:0 auto;padding:20px 16px}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:0 2px 12px rgba(0,0,0,.07);padding:22px 24px;margin-bottom:16px}
+.card h2{font-size:1.1em;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.tip{padding:14px 18px;border-radius:12px;margin:10px 0;font-size:.87em;display:flex;align-items:flex-start;gap:10px}
+.tip .e{font-size:1.3em;flex-shrink:0}
+.t-blue{background:var(--blue-bg);border-left:4px solid var(--blue)}
+.t-green{background:var(--ok-bg);border-left:4px solid var(--ok)}
+.t-purple{background:var(--accent-bg);border-left:4px solid var(--accent)}
+.t-orange{background:var(--warn-bg);border-left:4px solid var(--warn)}
+table{width:100%;border-collapse:collapse;font-size:.85em;margin-top:8px}
+th{background:var(--gray);text-align:left;padding:8px 12px}
+td{padding:8px 12px;border-bottom:1px solid #e2e8f0}
+code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:.9em}
+.emp-id-box{display:flex;align-items:center;justify-content:center;gap:12px;padding:20px;margin:10px 0}
+.emp-id-sample{font-size:2.2em;font-weight:800;color:var(--accent);letter-spacing:.05em}
+.emp-id-label{font-size:.85em;color:var(--sub);text-align:left}
+.link-diagram{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px;padding:16px 0}
+.link-box{padding:12px 18px;border-radius:12px;font-size:.85em;font-weight:600;text-align:center;min-width:110px}
+.link-arr{font-size:1.2em;color:var(--accent)}
+.lb{background:var(--blue-bg);color:#1e40af}
+.lg{background:var(--ok-bg);color:#15803d}
+.lp{background:var(--accent-bg);color:#5b21b6}
+.ly{background:#fef9c3;color:#854d0e}
+.footer{text-align:center;padding:16px;font-size:.72em;color:#94a3b8}
+@media print{body{background:#fff}.header{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a href="index.html" class="back">←</a>
+  <h1>👤 社員マスタガイド <small style="font-size:.6em;opacity:.7">App 595</small></h1>
+</div>
+
+<div class="container">
+
+<!-- ===== 概要 ===== -->
+<div class="card">
+  <h2>📌 このアプリは何？</h2>
+  <p style="font-size:.9em">
+    すべての社員の情報を管理する<strong>社員名簿</strong>です。<br>
+    ここから「どのPCを使っているか」「どのアカウントか」もたどれます。
+  </p>
+</div>
+
+<!-- ===== EMP-ID ===== -->
+<div class="card">
+  <h2>🆔 EMP-ID（社員管理番号）とは？</h2>
+  <div class="emp-id-box">
+    <div class="emp-id-sample">EMP-0042</div>
+    <div class="emp-id-label">
+      ← こんな番号が<br>全社員についています
+    </div>
+  </div>
+  <table>
+    <tr><th>質問</th><th>答え</th></tr>
+    <tr><td>何のためにあるの？</td><td>社員を間違いなく特定するための<strong>ユニークな番号</strong></td></tr>
+    <tr><td>自分で決められる？</td><td>いいえ。<strong>自動で付番</strong>されます（EMP-0001 から順に）</td></tr>
+    <tr><td>変わることはある？</td><td>ありません。名前やメールが変わっても<strong>番号は一生同じ</strong></td></tr>
+    <tr><td>どこで見る？</td><td>社員マスタのレコードに表示されています</td></tr>
+  </table>
+  <div class="tip t-purple">
+    <span class="e">💡</span>
+    <span>EMP-IDは<strong>「社員の名札」</strong>のようなもの。<br>
+    PC台帳やアカウント台帳とつなぐときに使います。</span>
+  </div>
+</div>
+
+<!-- ===== 紐付き ===== -->
+<div class="card">
+  <h2>🔗 社員マスタと他のアプリのつながり</h2>
+  <div class="link-diagram">
+    <div class="link-box lp">👤 社員マスタ<br><small>(595)</small></div>
+    <span class="link-arr">←→</span>
+    <div class="link-box lb">💻 PC台帳<br><small>(594)</small></div>
+    <span class="link-arr">←→</span>
+    <div class="link-box ly">🔑 アカウント台帳<br><small>(627)</small></div>
+  </div>
+  <p style="font-size:.88em;color:var(--sub);text-align:center">
+    社員1人に <strong>複数のPC</strong> と <strong>複数のアカウント</strong> を紐付けられます。
+  </p>
+  <div class="tip t-blue">
+    <span class="e">📌</span>
+    <span>紐付けは<strong>サブテーブル</strong>（表の中の表）で管理しています。<br>
+    「PC台帳リスト」「アカウント台帳リスト」の2つがあります。</span>
+  </div>
+</div>
+
+<!-- ===== よく使う操作 ===== -->
+<div class="card">
+  <h2>📋 よく使う操作</h2>
+
+  <h3 style="font-size:.95em;margin:14px 0 6px">🔍 社員を検索する</h3>
+  <p style="font-size:.88em">一覧画面の検索窓に<strong>名前</strong>を入力するだけ。</p>
+
+  <h3 style="font-size:.95em;margin:14px 0 6px">👀 PCとアカウントの紐付けを確認</h3>
+  <p style="font-size:.88em">社員のレコードを開くと、下の方に表があります：</p>
+  <table>
+    <tr><th>サブテーブル名</th><th>中身</th></tr>
+    <tr><td>PC台帳リスト</td><td>その社員が使っているPCの一覧（594のレコード番号）</td></tr>
+    <tr><td>アカウント台帳リスト</td><td>その社員のアカウント一覧（627のレコード番号）</td></tr>
+  </table>
+
+  <h3 style="font-size:.95em;margin:14px 0 6px">✏️ 社員情報を修正する</h3>
+  <p style="font-size:.88em">レコードを開いて編集ボタン → 修正 → 保存。</p>
+  <div class="tip t-orange">
+    <span class="e">⚠️</span>
+    <span><strong>名前の修正は要注意！</strong><br>
+    PC台帳の利用者名ルックアップが名前で検索しているため、<br>
+    名前を変えるとPC台帳側も確認が必要です。</span>
+  </div>
+</div>
+
+<!-- ===== 触らなくていいこと ===== -->
+<div class="card">
+  <h2>🙆 ふだんは触らなくてOK</h2>
+  <div class="tip t-green">
+    <span class="e">✅</span>
+    <span>社員マスタの<strong>サブテーブル（PCリスト・アカウントリスト）</strong>は<br>
+    アカウント自動登録ボタンを押すと<strong>自動で更新</strong>されます。<br>
+    手動で編集する必要はありません。</span>
+  </div>
+  <div class="tip t-green">
+    <span class="e">✅</span>
+    <span><strong>EMP-ID</strong> も自動で付番されます。<br>
+    手で入力したり変更したりしないでください。</span>
+  </div>
+</div>
+
+</div>
+<div class="footer">社員マスタガイド v2.0 ― <a href="index.html" style="color:inherit">← トップに戻る</a></div>
+</body>
+</html>

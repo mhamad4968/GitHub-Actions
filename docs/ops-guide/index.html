@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PC管理システム ガイド</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI','Hiragino Sans','Meiryo',sans-serif;background:#f0f4f8;color:#1e293b;min-height:100vh;display:flex;flex-direction:column}
+.header{background:linear-gradient(135deg,#1e3a5f,#2563eb);color:#fff;padding:40px 24px;text-align:center}
+.header h1{font-size:1.8em;font-weight:800;letter-spacing:.03em}
+.header p{font-size:.95em;opacity:.85;margin-top:8px}
+.container{max-width:800px;margin:0 auto;padding:32px 16px;flex:1}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin-top:8px}
+.guide-card{background:#fff;border-radius:20px;box-shadow:0 4px 20px rgba(0,0,0,.08);padding:32px 28px;
+  text-decoration:none;color:#1e293b;transition:.25s;border:3px solid transparent;display:flex;flex-direction:column;gap:10px}
+.guide-card:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(0,0,0,.14)}
+.guide-card .emoji{font-size:3em}
+.guide-card h2{font-size:1.2em;font-weight:700}
+.guide-card p{font-size:.88em;color:#475569;line-height:1.6}
+.guide-card .tag{display:inline-block;font-size:.72em;font-weight:600;padding:3px 10px;border-radius:20px;margin-top:4px;width:fit-content}
+.c-pc{border-color:#93c5fd}.c-pc .tag{background:#dbeafe;color:#1e40af}
+.c-personal{border-color:#86efac}.c-personal .tag{background:#dcfce7;color:#15803d}
+.c-shared{border-color:#fda4af}.c-shared .tag{background:#ffe4e6;color:#9f1239}
+.c-emp{border-color:#c4b5fd}.c-emp .tag{background:#f3e8ff;color:#7c3aed}
+.footer{text-align:center;padding:24px;font-size:.75em;color:#64748b;margin-top:auto}
+.quick-links{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:24px}
+.quick-links a{font-size:.82em;padding:6px 16px;border-radius:20px;background:#fff;color:#2563eb;
+  text-decoration:none;border:1.5px solid #2563eb;font-weight:600;transition:.2s}
+.quick-links a:hover{background:#2563eb;color:#fff}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🖥️ PC管理システム<br>かんたんガイド</h1>
+  <p>やりたいことに合わせて、ガイドを選んでください</p>
+</div>
+
+<div class="container">
+  <div class="cards">
+
+    <a href="guide-pc.html" class="guide-card c-pc">
+      <div class="emoji">💻</div>
+      <h2>PC台帳ガイド</h2>
+      <p>PCの登録・買替・棚卸など<br>PC管理台帳（594）の使い方</p>
+      <span class="tag">App 594</span>
+    </a>
+
+    <a href="guide-personal-account.html" class="guide-card c-personal">
+      <div class="emoji">🔑</div>
+      <h2>個人アカウントガイド</h2>
+      <p>ボタン1つで自動登録！<br>Windows名・M365の割り当て方</p>
+      <span class="tag">App 627 / 626</span>
+    </a>
+
+    <a href="guide-shared-account.html" class="guide-card c-shared">
+      <div class="emoji">🏢</div>
+      <h2>共有アカウントガイド</h2>
+      <p>拠点ごとの共有PC用<br>共有アカウントの管理方法</p>
+      <span class="tag">App 667</span>
+    </a>
+
+    <a href="guide-employee.html" class="guide-card c-emp">
+      <div class="emoji">👤</div>
+      <h2>社員マスタガイド</h2>
+      <p>EMP-IDとは？社員情報と<br>PC・アカウントの紐付けを確認</p>
+      <span class="tag">App 595</span>
+    </a>
+
+  </div>
+
+  <div class="quick-links">
+    <a href="https://jbis-kintone.cybozu.com/k/594/" target="_blank">💻 PC管理台帳</a>
+    <a href="https://jbis-kintone.cybozu.com/k/627/" target="_blank">🔑 アカウント台帳</a>
+    <a href="https://jbis-kintone.cybozu.com/k/595/" target="_blank">👤 社員マスタ</a>
+    <a href="https://jbis-kintone.cybozu.com/k/667/" target="_blank">🏢 共有採番</a>
+    <a href="https://jbis-kintone.cybozu.com/k/626/" target="_blank">🎰 個人採番</a>
+  </div>
+</div>
+
+<div class="footer">PC管理システム 運用ガイド v2.0 ― 最終更新 2026-04-16</div>
+</body>
+</html>

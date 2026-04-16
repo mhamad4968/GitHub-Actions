@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💻 PC台帳ガイド</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--accent:#2563eb;--accent-bg:#dbeafe;--bg:#f0f4f8;--card:#fff;--text:#1e293b;--sub:#475569;--gray:#f1f5f9;
+  --ok:#16a34a;--ok-bg:#dcfce7;--warn:#ea580c;--warn-bg:#fff7ed;--ng:#dc2626;--ng-bg:#fef2f2;--radius:16px}
+body{font-family:'Segoe UI','Hiragino Sans','Meiryo',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.header{background:linear-gradient(135deg,#1e40af,#3b82f6);color:#fff;padding:24px;display:flex;align-items:center;gap:16px}
+.header .back{color:#fff;text-decoration:none;font-size:1.3em;opacity:.8;transition:.2s}
+.header .back:hover{opacity:1}
+.header h1{font-size:1.4em;font-weight:700}
+.container{max-width:760px;margin:0 auto;padding:20px 16px}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:0 2px 12px rgba(0,0,0,.07);padding:22px 24px;margin-bottom:16px}
+.card h2{font-size:1.1em;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.steps{counter-reset:s;list-style:none}
+.steps li{counter-increment:s;position:relative;padding:12px 16px 12px 52px;margin-bottom:8px;
+  background:var(--gray);border-radius:12px;font-size:.9em}
+.steps li::before{content:counter(s);position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85em}
+.tip{padding:14px 18px;border-radius:12px;margin:10px 0;font-size:.87em;display:flex;align-items:flex-start;gap:10px}
+.tip .e{font-size:1.3em;flex-shrink:0}
+.t-blue{background:var(--accent-bg);border-left:4px solid var(--accent)}
+.t-green{background:var(--ok-bg);border-left:4px solid var(--ok)}
+.t-orange{background:var(--warn-bg);border-left:4px solid var(--warn)}
+.t-red{background:var(--ng-bg);border-left:4px solid var(--ng)}
+.badge{display:inline-block;font-size:.7em;padding:2px 10px;border-radius:12px;font-weight:600;margin-left:6px}
+.flow{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;padding:12px 0}
+.flow-box{padding:10px 16px;border-radius:10px;font-size:.82em;font-weight:600;text-align:center;min-width:100px}
+.flow-arr{font-size:1.3em;color:var(--accent);font-weight:700}
+.fb{background:var(--accent-bg);color:#1e40af}
+.fg{background:var(--ok-bg);color:#15803d}
+.fy{background:#fef9c3;color:#854d0e}
+table{width:100%;border-collapse:collapse;font-size:.85em;margin-top:8px}
+th{background:var(--gray);text-align:left;padding:8px 12px}
+td{padding:8px 12px;border-bottom:1px solid #e2e8f0}
+.footer{text-align:center;padding:16px;font-size:.72em;color:#94a3b8}
+@media print{body{background:#fff}.header{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a href="index.html" class="back">←</a>
+  <h1>💻 PC台帳ガイド <small style="font-size:.6em;opacity:.7">App 594</small></h1>
+</div>
+
+<div class="container">
+
+<!-- ===== このアプリは何？ ===== -->
+<div class="card">
+  <h2>📌 このアプリは何？</h2>
+  <p style="font-size:.9em">
+    会社のすべてのPCを管理する台帳です。<br>
+    <strong>「誰が」「どのPCを」「いつから」使っているか</strong>が分かります。
+  </p>
+</div>
+
+<!-- ===== PC新規登録 ===== -->
+<div class="card">
+  <h2>🆕 新しいPCを登録する</h2>
+  <ol class="steps">
+    <li><strong>＋</strong>ボタンで新規レコードを追加</li>
+    <li><strong>種別</strong>を選ぶ
+      <table>
+        <tr><th>種別</th><th>意味</th></tr>
+        <tr><td>個人</td><td>1人が専用で使うPC</td></tr>
+        <tr><td>共有</td><td>みんなで使うPC</td></tr>
+        <tr><td>JR端末</td><td>JR用端末</td></tr>
+        <tr><td>サーバーNAS</td><td>サーバー・NAS</td></tr>
+      </table>
+    </li>
+    <li><strong>利用者名</strong>をルックアップで選ぶ（個人の場合）</li>
+    <li>PC名・シリアル番号・スペックなど必要事項を入力</li>
+    <li><strong>保存</strong>ボタンを押す</li>
+  </ol>
+  <div class="tip t-green">
+    <span class="e">✅</span>
+    <span>個人PCを保存すると<strong>ガイド画面</strong>が出ます。<br>
+    「次にやること」を教えてくれるので、そのまま進めてOK！</span>
+  </div>
+</div>
+
+<!-- ===== PC買替 ===== -->
+<div class="card">
+  <h2>🔄 PCを買い替える</h2>
+  <ol class="steps">
+    <li>古いPCのレコードを開く</li>
+    <li><strong>PC買替</strong>ボタンをクリック</li>
+    <li>新しいPCの情報を入力して保存</li>
+    <li>古いPCは自動で「使用停止」になる</li>
+  </ol>
+  <div class="tip t-blue">
+    <span class="e">💡</span>
+    <span>アカウントは<strong>自動で引き継ぎ</strong>。再登録は不要です。</span>
+  </div>
+</div>
+
+<!-- ===== 棚卸 ===== -->
+<div class="card">
+  <h2>📋 棚卸をする</h2>
+  <ol class="steps">
+    <li>一覧画面の上にある<strong>検索パネル</strong>を開く</li>
+    <li><strong>拠点・種別・状態</strong>で絞り込む</li>
+    <li>各PCの現物を確認して、状態を更新する</li>
+  </ol>
+  <div class="tip t-blue">
+    <span class="e">🔍</span>
+    <span>カード表示に切り替えると、PCの状態が一目で分かります。</span>
+  </div>
+</div>
+
+<!-- ===== 画面の見方 ===== -->
+<div class="card">
+  <h2>👀 画面の見方</h2>
+
+  <h3 style="font-size:.95em;margin:12px 0 6px">🟥 一覧で行が赤い</h3>
+  <div class="tip t-red">
+    <span class="e">🔴</span>
+    <span><strong>アカウントが紐付いていない個人PC</strong>です。<br>
+    → レコードを開いて「アカウント自動登録」ボタンを押してください。</span>
+  </div>
+
+  <h3 style="font-size:.95em;margin:12px 0 6px">💬 保存後に出るポップアップ</h3>
+  <div class="tip t-blue">
+    <span class="e">📌</span>
+    <span>次にやること（アカウント登録やM365設定）への案内です。<br>
+    「閉じる」で消えます。不要なら無視してOK。</span>
+  </div>
+
+  <h3 style="font-size:.95em;margin:12px 0 6px">❌ エラーが出た</h3>
+  <div class="tip t-orange">
+    <span class="e">🛟</span>
+    <span>データは<strong>自動で元に戻る</strong>ので安心。<br>
+    エラーログ（App 656）に記録されます → 管理者に連絡。</span>
+  </div>
+</div>
+
+<!-- ===== やっちゃダメ ===== -->
+<div class="card">
+  <h2>🚫 やってはいけないこと</h2>
+  <table>
+    <tr><th>NG操作</th><th>理由</th></tr>
+    <tr><td>同じPCで2回「自動登録」を押す</td><td>二重登録になる（実際にはブロックされます）</td></tr>
+    <tr><td>種別「共有」で自動登録ボタンを押す</td><td>個人専用です（アラートが出ます）</td></tr>
+    <tr><td>利用者名を入れずに保存</td><td>アカウント紐付けができなくなります</td></tr>
+  </table>
+</div>
+
+</div>
+<div class="footer">PC台帳ガイド v2.0 ― <a href="index.html" style="color:inherit">← トップに戻る</a></div>
+</body>
+</html>

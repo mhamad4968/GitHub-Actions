@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏢 共有アカウントガイド</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--accent:#e11d48;--accent-bg:#ffe4e6;--bg:#f0f4f8;--card:#fff;--text:#1e293b;--sub:#475569;--gray:#f1f5f9;
+  --blue:#2563eb;--blue-bg:#dbeafe;--ok:#16a34a;--ok-bg:#dcfce7;--warn:#ea580c;--warn-bg:#fff7ed;--radius:16px}
+body{font-family:'Segoe UI','Hiragino Sans','Meiryo',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.header{background:linear-gradient(135deg,#9f1239,#f43f5e);color:#fff;padding:24px;display:flex;align-items:center;gap:16px}
+.header .back{color:#fff;text-decoration:none;font-size:1.3em;opacity:.8;transition:.2s}
+.header .back:hover{opacity:1}
+.header h1{font-size:1.4em;font-weight:700}
+.container{max-width:760px;margin:0 auto;padding:20px 16px}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:0 2px 12px rgba(0,0,0,.07);padding:22px 24px;margin-bottom:16px}
+.card h2{font-size:1.1em;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.steps{counter-reset:s;list-style:none}
+.steps li{counter-increment:s;position:relative;padding:12px 16px 12px 52px;margin-bottom:8px;
+  background:var(--gray);border-radius:12px;font-size:.9em}
+.steps li::before{content:counter(s);position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85em}
+.tip{padding:14px 18px;border-radius:12px;margin:10px 0;font-size:.87em;display:flex;align-items:flex-start;gap:10px}
+.tip .e{font-size:1.3em;flex-shrink:0}
+.t-blue{background:var(--blue-bg);border-left:4px solid var(--blue)}
+.t-green{background:var(--ok-bg);border-left:4px solid var(--ok)}
+.t-orange{background:var(--warn-bg);border-left:4px solid var(--warn)}
+.t-pink{background:var(--accent-bg);border-left:4px solid var(--accent)}
+table{width:100%;border-collapse:collapse;font-size:.85em;margin-top:8px}
+th{background:var(--gray);text-align:left;padding:8px 12px}
+td{padding:8px 12px;border-bottom:1px solid #e2e8f0}
+code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:.9em}
+.loc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin:10px 0}
+.loc-chip{background:var(--accent-bg);border-radius:10px;padding:8px 14px;text-align:center;font-size:.85em;font-weight:600}
+.loc-chip small{font-weight:400;display:block;font-size:.8em;color:var(--sub)}
+.footer{text-align:center;padding:16px;font-size:.72em;color:#94a3b8}
+@media print{body{background:#fff}.header{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a href="index.html" class="back">←</a>
+  <h1>🏢 共有アカウントガイド <small style="font-size:.6em;opacity:.7">App 667</small></h1>
+</div>
+
+<div class="container">
+
+<!-- ===== 概要 ===== -->
+<div class="card">
+  <h2>📌 共有アカウントとは？</h2>
+  <p style="font-size:.9em">
+    複数人が交代で使う<strong>共有PC</strong>用のアカウントです。<br>
+    個人アカウントとは別の番号体系（<code>js0001</code>〜）で管理します。
+  </p>
+  <div class="tip t-pink">
+    <span class="e">⚠️</span>
+    <span>共有アカウントは<strong>自動登録ボタンでは作れません</strong>。<br>
+    以下の手順で<strong>手動</strong>で登録します。</span>
+  </div>
+</div>
+
+<!-- ===== 番号のルール ===== -->
+<div class="card">
+  <h2>🏷️ 番号のルール</h2>
+  <p style="font-size:.9em;margin-bottom:8px">共有アカウントは次の形で作ります：</p>
+  <div style="background:var(--gray);border-radius:12px;padding:16px 20px;text-align:center;font-size:1.1em;font-weight:700;letter-spacing:.03em;margin-bottom:12px">
+    js<span style="color:var(--accent)">0001</span>[<span style="color:var(--blue)">tohoku</span>-<span style="color:var(--ok)">001</span>]
+  </div>
+  <table>
+    <tr><th>部分</th><th>意味</th><th>例</th></tr>
+    <tr><td><code>js0001</code></td><td>全社通し番号（1から順に）</td><td>js0001, js0002...</td></tr>
+    <tr><td><code>tohoku</code></td><td>拠点コード</td><td>下の一覧を参照</td></tr>
+    <tr><td><code>001</code></td><td>拠点内の枝番</td><td>001, 002, 003...</td></tr>
+  </table>
+</div>
+
+<!-- ===== 拠点一覧 ===== -->
+<div class="card">
+  <h2>🗺️ 拠点コード一覧</h2>
+  <div class="loc-grid">
+    <div class="loc-chip">honsya<small>本社</small></div>
+    <div class="loc-chip">tohoku<small>東北</small></div>
+    <div class="loc-chip">kan-etsu<small>関越</small></div>
+    <div class="loc-chip">tokyo<small>東京</small></div>
+    <div class="loc-chip">tokai<small>東海</small></div>
+    <div class="loc-chip">reform<small>リフォーム</small></div>
+    <div class="loc-chip">tekko<small>鉄工</small></div>
+    <div class="loc-chip">wangan<small>湾岸</small></div>
+  </div>
+</div>
+
+<!-- ===== 登録手順 ===== -->
+<div class="card">
+  <h2>📋 共有アカウントを登録する手順</h2>
+  <ol class="steps">
+    <li><strong>共有アカウント採番マスタ（667）</strong>を開く</li>
+    <li>未使用の番号を探す（<code>used_count</code> が空のもの）</li>
+    <li>使う番号の <code>used_count</code> を「〇」に変更して保存</li>
+    <li><strong>アカウント管理台帳（627）</strong>を開いて新規レコードを追加</li>
+    <li>以下を手動で入力：
+      <table>
+        <tr><th>フィールド</th><th>入れるもの</th></tr>
+        <tr><td>ログオン名</td><td>採番マスタの <code>windows_id</code></td></tr>
+        <tr><td>アカウント種別</td><td>「共有アカウント」を選択</td></tr>
+        <tr><td>PC名</td><td>対象の共有PC名</td></tr>
+      </table>
+    </li>
+    <li>保存して完了！</li>
+  </ol>
+</div>
+
+<!-- ===== 個人との違い ===== -->
+<div class="card">
+  <h2>🆚 個人アカウントとの違い</h2>
+  <table>
+    <tr><th></th><th>個人アカウント</th><th>共有アカウント</th></tr>
+    <tr><td>番号</td><td><code>jbm00001</code>〜</td><td><code>js0001</code>〜</td></tr>
+    <tr><td>登録方法</td><td>ボタン1つで自動</td><td>手動で登録</td></tr>
+    <tr><td>採番アプリ</td><td>App 626</td><td>App 667</td></tr>
+    <tr><td>1PCに何人？</td><td>1人専用</td><td>複数人で共有</td></tr>
+    <tr><td>Windows名</td><td><code>jbm00009[m-kondo]</code></td><td><code>js0001[tohoku-001]</code></td></tr>
+  </table>
+</div>
+
+<!-- ===== 注意 ===== -->
+<div class="card">
+  <h2>⚠️ 注意すること</h2>
+  <div class="tip t-orange">
+    <span class="e">📝</span>
+    <span>採番マスタ（667）の番号は<strong>一度使ったら戻さない</strong>。<br>
+    PCが不要になっても番号は使い回しません（混乱を防ぐため）。</span>
+  </div>
+  <div class="tip t-blue">
+    <span class="e">💡</span>
+    <span>新しい拠点が増えたら、管理者に連絡してコードを追加してもらってください。</span>
+  </div>
+</div>
+
+</div>
+<div class="footer">共有アカウントガイド v2.0 ― <a href="index.html" style="color:inherit">← トップに戻る</a></div>
+</body>
+</html>

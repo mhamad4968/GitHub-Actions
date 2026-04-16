@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔑 個人アカウントガイド</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--accent:#16a34a;--accent-bg:#dcfce7;--bg:#f0f4f8;--card:#fff;--text:#1e293b;--sub:#475569;--gray:#f1f5f9;
+  --blue:#2563eb;--blue-bg:#dbeafe;--warn:#ea580c;--warn-bg:#fff7ed;--ng:#dc2626;--ng-bg:#fef2f2;--radius:16px}
+body{font-family:'Segoe UI','Hiragino Sans','Meiryo',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.header{background:linear-gradient(135deg,#15803d,#22c55e);color:#fff;padding:24px;display:flex;align-items:center;gap:16px}
+.header .back{color:#fff;text-decoration:none;font-size:1.3em;opacity:.8;transition:.2s}
+.header .back:hover{opacity:1}
+.header h1{font-size:1.4em;font-weight:700}
+.container{max-width:760px;margin:0 auto;padding:20px 16px}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:0 2px 12px rgba(0,0,0,.07);padding:22px 24px;margin-bottom:16px}
+.card h2{font-size:1.1em;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.steps{counter-reset:s;list-style:none}
+.steps li{counter-increment:s;position:relative;padding:12px 16px 12px 52px;margin-bottom:8px;
+  background:var(--gray);border-radius:12px;font-size:.9em}
+.steps li::before{content:counter(s);position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85em}
+.tip{padding:14px 18px;border-radius:12px;margin:10px 0;font-size:.87em;display:flex;align-items:flex-start;gap:10px}
+.tip .e{font-size:1.3em;flex-shrink:0}
+.t-blue{background:var(--blue-bg);border-left:4px solid var(--blue)}
+.t-green{background:var(--accent-bg);border-left:4px solid var(--accent)}
+.t-orange{background:var(--warn-bg);border-left:4px solid var(--warn)}
+.t-red{background:var(--ng-bg);border-left:4px solid var(--ng)}
+.flow{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;padding:14px 0}
+.flow-box{padding:10px 16px;border-radius:10px;font-size:.82em;font-weight:600;text-align:center;min-width:100px}
+.flow-arr{font-size:1.3em;color:var(--accent);font-weight:700}
+.fb{background:var(--blue-bg);color:#1e40af}
+.fg{background:var(--accent-bg);color:#15803d}
+.fy{background:#fef9c3;color:#854d0e}
+.fp{background:#f3e8ff;color:#7c3aed}
+table{width:100%;border-collapse:collapse;font-size:.85em;margin-top:8px}
+th{background:var(--gray);text-align:left;padding:8px 12px}
+td{padding:8px 12px;border-bottom:1px solid #e2e8f0}
+code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:.9em}
+.big-num{font-size:2.5em;font-weight:800;color:var(--accent);text-align:center;padding:8px 0}
+.footer{text-align:center;padding:16px;font-size:.72em;color:#94a3b8}
+@media print{body{background:#fff}.header{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a href="index.html" class="back">←</a>
+  <h1>🔑 個人アカウントガイド <small style="font-size:.6em;opacity:.7">App 627 / 626</small></h1>
+</div>
+
+<div class="container">
+
+<!-- ===== 概要 ===== -->
+<div class="card">
+  <h2>📌 これは何？</h2>
+  <p style="font-size:.9em">
+    個人PCに <strong>Windowsログオン名</strong> と <strong>M365アカウント</strong> を<br>
+    <strong>ボタン1つで自動割り当て</strong>する仕組みです。
+  </p>
+  <div class="big-num">ボタン1回 → 3アプリ同時更新</div>
+</div>
+
+<!-- ===== どうやるの ===== -->
+<div class="card">
+  <h2>📋 やり方はたった3ステップ</h2>
+  <ol class="steps">
+    <li><strong>PC管理台帳（594）</strong>で、対象のPCレコードを開く</li>
+    <li>画面にある<br>
+      <span style="display:inline-block;margin:6px 0;padding:8px 20px;border-radius:8px;background:linear-gradient(135deg,#2563eb,#3b82f6);color:#fff;font-weight:700;font-size:.95em">
+        📋 アカウント自動登録
+      </span><br>
+      ボタンをクリック
+    </li>
+    <li>「✅ 完了しました！」と出たら<strong>成功</strong> 🎉</li>
+  </ol>
+</div>
+
+<!-- ===== 裏で何が起きてる？ ===== -->
+<div class="card">
+  <h2>⚙️ 裏で何が起きてるの？</h2>
+  <p style="font-size:.85em;color:var(--sub);margin-bottom:8px">（知らなくても大丈夫。興味がある人向け）</p>
+  <div class="flow">
+    <div class="flow-box fb">🎰 採番アプリ(626)<br><small>空きアカウントを取得</small></div>
+    <span class="flow-arr">→</span>
+    <div class="flow-box fy">🔑 アカウント台帳(627)<br><small>新レコードを自動作成</small></div>
+    <span class="flow-arr">→</span>
+    <div class="flow-box fg">💻 PC台帳(594)<br>👤 社員マスタ(595)<br>🎰 採番(626)<br><small>3つ同時更新！</small></div>
+  </div>
+  <div class="tip t-green">
+    <span class="e">🛡️</span>
+    <span>途中で失敗しても<strong>自動で元に戻る</strong>（ロールバック）ので、データが壊れることはありません。</span>
+  </div>
+</div>
+
+<!-- ===== 自動で作られるもの ===== -->
+<div class="card">
+  <h2>🔄 自動で作られるもの</h2>
+  <table>
+    <tr><th>項目</th><th>どう作られるか</th><th>例</th></tr>
+    <tr><td>ログオン名</td><td>採番アプリから自動取得</td><td><code>jbm00009</code></td></tr>
+    <tr><td>Windows名</td><td>ログオン名 + [メール@前]</td><td><code>jbm00009[m-kondo]</code></td></tr>
+    <tr><td>M365 ID</td><td>メール@前 + @kensetsutoso01...</td><td><code>m-kondo@kensetsutoso01.onmicrosoft.com</code></td></tr>
+    <tr><td>パスワード群</td><td>採番アプリから自動コピー</td><td>（初期パスワード）</td></tr>
+    <tr><td>アカウント状態</td><td>自動で「有効」にセット</td><td>有効 / 在籍</td></tr>
+  </table>
+</div>
+
+<!-- ===== 条件 ===== -->
+<div class="card">
+  <h2>⚠️ 使える条件</h2>
+  <table>
+    <tr><th>条件</th><th>OK / NG</th></tr>
+    <tr><td>種別が「個人」</td><td style="color:var(--accent);font-weight:700">✅ OK</td></tr>
+    <tr><td>種別が「共有」「JR」など</td><td style="color:var(--ng);font-weight:700">❌ NG（手動で）</td></tr>
+    <tr><td>利用者名が入力済み</td><td style="color:var(--accent);font-weight:700">✅ OK</td></tr>
+    <tr><td>利用者名が空</td><td style="color:var(--ng);font-weight:700">❌ NG（先に入力）</td></tr>
+    <tr><td>まだアカウント未登録</td><td style="color:var(--accent);font-weight:700">✅ OK</td></tr>
+    <tr><td>もう登録済み</td><td style="color:var(--ng);font-weight:700">❌ NG（二重登録防止）</td></tr>
+  </table>
+</div>
+
+<!-- ===== トラブル ===== -->
+<div class="card">
+  <h2>🆘 困ったとき</h2>
+
+  <div class="tip t-orange">
+    <span class="e">🤔</span>
+    <span><strong>「採番に空きがありません」と出た</strong><br>
+    → 管理者に連絡。アカウント採番(626)に未使用レコードを追加してもらう。</span>
+  </div>
+
+  <div class="tip t-orange">
+    <span class="e">🤔</span>
+    <span><strong>「すでに紐付け済みです」と出た</strong><br>
+    → そのPCは登録完了済み。もう何もしなくてOK。</span>
+  </div>
+
+  <div class="tip t-red">
+    <span class="e">❌</span>
+    <span><strong>エラーが出た</strong><br>
+    → データは自動で元に戻ります。管理者にエラーのSTEP番号を伝えてください。</span>
+  </div>
+</div>
+
+</div>
+<div class="footer">個人アカウントガイド v2.0 ― <a href="index.html" style="color:inherit">← トップに戻る</a></div>
+</body>
+</html>
