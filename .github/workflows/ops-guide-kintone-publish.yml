@@ -1,0 +1,66 @@
+# 運用ガイド（docs/ops-guide）を Kintone に同期し、customize/ops-guide/desktop.js をデプロイする
+#
+# 既存の kintone-customize-deploy.yml（API トークン・マトリクス）とは別系統。
+# 本ワークフローは scripts/ops-guide-kintone.mjs が使う「管理者ログイン」と同じ変数を想定する。
+#
+# ■ GitHub Environment（推奨）: kintone-collect（既存の customize デプロイと同じでもよい）
+#
+# ■ Repository or Environment secrets（必須）
+#   KINTONE_BASE_URL … https://（サブドメイン）.cybozu.com または https://（サブドメイン）.kintone.com
+#   KINTONE_USERNAME … 管理者（アプリ作成・レコード更新が可能なユーザー）
+#   KINTONE_PASSWORD … 上記のパスワード
+#   KINTONE_OPS_GUIDE_APP … 運用ガイドアプリの数値 ID（npm run ops-guide:init 初回で表示された値）
+#
+# ■ 任意
+#   KINTONE_BASIC_AUTH_USERNAME / KINTONE_BASIC_AUTH_PASSWORD … ドメイン前段 Basic 認証がある場合
+
+name: ops-guide-kintone-publish
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "docs/ops-guide/**"
+      - "scripts/ops-guide-kintone.mjs"
+      - "customize/ops-guide/**"
+      - ".github/workflows/ops-guide-kintone-publish.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ops-guide-kintone-publish-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: kintone-collect
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      KINTONE_BASE_URL: ${{ secrets.KINTONE_BASE_URL }}
+      KINTONE_USERNAME: ${{ secrets.KINTONE_USERNAME }}
+      KINTONE_PASSWORD: ${{ secrets.KINTONE_PASSWORD }}
+      KINTONE_OPS_GUIDE_APP: ${{ secrets.KINTONE_OPS_GUIDE_APP }}
+      KINTONE_BASIC_AUTH_USERNAME: ${{ secrets.KINTONE_BASIC_AUTH_USERNAME }}
+      KINTONE_BASIC_AUTH_PASSWORD: ${{ secrets.KINTONE_BASIC_AUTH_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+
+      - name: npm ci
+        run: npm ci
+
+      - name: 運用ガイドを Kintone に publish（同期 + JS デプロイ）
+        run: |
+          set -euo pipefail
+          if [[ -z "${KINTONE_BASE_URL:-}" ]]; then echo "::error::KINTONE_BASE_URL が空です"; exit 1; fi
+          if [[ -z "${KINTONE_USERNAME:-}" ]]; then echo "::error::KINTONE_USERNAME が空です"; exit 1; fi
+          if [[ -z "${KINTONE_PASSWORD:-}" ]]; then echo "::error::KINTONE_PASSWORD が空です"; exit 1; fi
+          if [[ -z "${KINTONE_OPS_GUIDE_APP:-}" ]]; then echo "::error::KINTONE_OPS_GUIDE_APP が空です"; exit 1; fi
+          node scripts/ops-guide-kintone.mjs publish
