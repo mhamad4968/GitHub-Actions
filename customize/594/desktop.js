@@ -64,6 +64,19 @@
   const FC_627_M365_PW = 'm365_pw';
 
   const M365_DOMAIN = 'kensetsutoso01.onmicrosoft.com';
+
+  // Shared account numbering master (App 667)
+  const SHARED_NUMBERING_APP = 667;
+  const FC_667_WINDOWS_ID = 'windows_id';
+  const FC_667_USED = 'used_count';
+  const FC_667_USED_MARK = '〇';
+
+  // 594 ↔ 627 cross-link field codes
+  const FC_594_LEDGER_RECORD_ID = 'ledger_record_id';
+  const FC_627_PC_594_RECORD_ID = 'pc_594_record_id';
+  const FC_627_PC_NAME_FIELD = 'PC_name';
+  const FC_627_ACCOUNT_TYPE = 'account_type';
+  const STORAGE_KEY_594_SHARED_LINK = 'jbis594_shared_link_v1';
   // Restrict heavy custom behavior to known card views only (safe for production).
   const CARD_VIEW_IDS = new Set([13314933, 13314733, 13314927, 13314929, 13314931]);
 
@@ -1594,6 +1607,194 @@
     return event;
   });
 
+  // ── Shared PC: account link modal ───────────────────────────
+  const searchSharedAccounts = async (keyword) => {
+    const kw = String(keyword).trim();
+    if (!kw) return [];
+    const q = `(${FC_627_AD_LOGON} like "${esc(kw)}" or ${FC_627_WINDOWS_NAME} like "${esc(kw)}" or ${FC_627_PC_NAME_FIELD} like "${esc(kw)}") order by $id desc limit 20`;
+    const res = await kintone.api(kintone.api.url('/k/v1/records', true), 'GET', {
+      app: LEDGER_APP_ID,
+      query: q,
+      fields: ['$id', FC_627_AD_LOGON, FC_627_WINDOWS_NAME, FC_627_PC_NAME_FIELD, FC_627_ACCOUNT_TYPE],
+    });
+    return res.records || [];
+  };
+
+  const linkSharedAccount = async (recordId594, ledgerId627, pcName594) => {
+    const patches = [];
+    patches.push(
+      kintone.api(kintone.api.url('/k/v1/record', true), 'PUT', {
+        app: LEDGER_APP_ID,
+        id: ledgerId627,
+        record: {
+          [FC_627_PC_594_RECORD_ID]: { value: String(recordId594) },
+          [FC_627_PC_NAME_FIELD]: { value: pcName594 || '' },
+        },
+      })
+    );
+    patches.push(
+      kintone.api(kintone.api.url('/k/v1/record', true), 'PUT', {
+        app: kintone.app.getId(),
+        id: recordId594,
+        record: { [FC_594_LEDGER_RECORD_ID]: { value: String(ledgerId627) } },
+      }).catch(() => {})
+    );
+    await Promise.all(patches);
+  };
+
+  const createSharedAccountFromNumbering = async (recordId594, pcName594) => {
+    const unused = await getOneRecord(
+      SHARED_NUMBERING_APP,
+      `${FC_667_USED} not in ("${FC_667_USED_MARK}") and ${FC_667_WINDOWS_ID} != "" order by $id asc limit 1`,
+      ['$id', '$revision', FC_667_WINDOWS_ID]
+    );
+    if (!unused) return { ok: false, message: '共有アカウント採番マスタ(667)に未使用の番号がありません。管理者に連絡してください。' };
+    const windowsId = (unused[FC_667_WINDOWS_ID]?.value || '').trim();
+
+    await kintone.api(kintone.api.url('/k/v1/record', true), 'PUT', {
+      app: SHARED_NUMBERING_APP,
+      id: unused.$id.value,
+      revision: unused.$revision.value,
+      record: { [FC_667_USED]: { value: FC_667_USED_MARK } },
+    });
+
+    const newRec = {};
+    newRec[FC_627_AD_LOGON] = { value: windowsId };
+    newRec[FC_627_WINDOWS_NAME] = { value: `${windowsId}[${pcName594 || ''}]` };
+    newRec[FC_627_PC_NAME_FIELD] = { value: pcName594 || '' };
+    newRec[FC_627_ACCOUNT_TYPE] = { value: '共有アカウント' };
+    newRec[FC_627_PC_594_RECORD_ID] = { value: String(recordId594) };
+
+    const created = await kintone.api(kintone.api.url('/k/v1/record', true), 'POST', {
+      app: LEDGER_APP_ID,
+      record: newRec,
+    });
+
+    await kintone.api(kintone.api.url('/k/v1/record', true), 'PUT', {
+      app: kintone.app.getId(),
+      id: recordId594,
+      record: { [FC_594_LEDGER_RECORD_ID]: { value: String(created.id) } },
+    }).catch(() => {});
+
+    return { ok: true, ledgerId: created.id, windowsId };
+  };
+
+  const showSharedAccountLinkModal = (recordId594, pcName594) => {
+    if (document.getElementById('jbis594-shared-link-overlay')) return;
+    const overlay = document.createElement('div');
+    overlay.id = 'jbis594-shared-link-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:2147483600;background:rgba(15,23,42,.55);display:flex;align-items:center;justify-content:center;';
+    overlay.innerHTML =
+      '<div id="jbis594-shared-link-modal" style="max-width:520px;width:95%;background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.3);padding:24px;font-family:inherit;max-height:85vh;overflow-y:auto;">' +
+      '<h2 style="margin:0 0 6px;font-size:15px;font-weight:800;color:#0f172a;">🔗 共有PC — アカウント紐付け</h2>' +
+      '<p style="margin:0 0 16px;font-size:12px;color:#475569;">このPCに紐付けるアカウントを選んでください。</p>' +
+      '<div style="display:flex;gap:6px;margin-bottom:12px;">' +
+      '  <input id="jbis-shared-search" type="text" placeholder="ログオン名 / Windows名 / PC名 で検索" style="flex:1;padding:8px 10px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;">' +
+      '  <button id="jbis-shared-search-btn" type="button" style="padding:8px 14px;border:none;border-radius:6px;background:#2563eb;color:#fff;font-weight:700;font-size:13px;cursor:pointer;">検索</button>' +
+      '</div>' +
+      '<div id="jbis-shared-results" style="margin-bottom:16px;min-height:40px;"></div>' +
+      '<div style="border-top:1px solid #e2e8f0;padding-top:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;">' +
+      '  <button id="jbis-shared-create-new" type="button" style="padding:8px 16px;border:none;border-radius:6px;background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;font-weight:700;font-size:13px;cursor:pointer;">＋ 新規アカウント作成</button>' +
+      '  <button id="jbis-shared-skip" type="button" style="padding:8px 16px;border:1px solid #94a3b8;border-radius:6px;background:#fff;color:#334155;font-weight:600;font-size:13px;cursor:pointer;">あとで（スキップ）</button>' +
+      '</div>' +
+      '</div>';
+    document.body.appendChild(overlay);
+
+    const close = () => { overlay.remove(); };
+    overlay.querySelector('#jbis-shared-skip').onclick = close;
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+
+    const resultsDiv = overlay.querySelector('#jbis-shared-results');
+    const searchInput = overlay.querySelector('#jbis-shared-search');
+
+    const renderResults = (records) => {
+      if (!records.length) {
+        resultsDiv.innerHTML = '<p style="font-size:12px;color:#94a3b8;text-align:center;padding:12px 0;">該当なし</p>';
+        return;
+      }
+      let html = '<table style="width:100%;border-collapse:collapse;font-size:12px;">' +
+        '<tr style="background:#f1f5f9;"><th style="padding:6px 8px;text-align:left;">ログオン名</th><th style="padding:6px 8px;text-align:left;">Windows名</th><th style="padding:6px 8px;text-align:left;">PC名</th><th style="padding:6px 8px;"></th></tr>';
+      for (const r of records) {
+        const id = r.$id.value;
+        const logon = r[FC_627_AD_LOGON]?.value || '';
+        const winName = r[FC_627_WINDOWS_NAME]?.value || '';
+        const pcN = r[FC_627_PC_NAME_FIELD]?.value || '';
+        html += `<tr style="border-bottom:1px solid #e2e8f0;">` +
+          `<td style="padding:6px 8px;">${logon}</td>` +
+          `<td style="padding:6px 8px;">${winName}</td>` +
+          `<td style="padding:6px 8px;">${pcN}</td>` +
+          `<td style="padding:6px 8px;"><button type="button" data-lid="${id}" class="jbis-shared-pick" style="padding:4px 12px;border:none;border-radius:4px;background:#2563eb;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">選択</button></td></tr>`;
+      }
+      html += '</table>';
+      resultsDiv.innerHTML = html;
+
+      resultsDiv.querySelectorAll('.jbis-shared-pick').forEach((btn) => {
+        btn.onclick = async () => {
+          btn.disabled = true;
+          btn.textContent = '処理中…';
+          try {
+            await linkSharedAccount(recordId594, btn.dataset.lid, pcName594);
+            alert('✅ アカウントを紐付けました。');
+            close();
+            location.reload();
+          } catch (e) {
+            alert(`紐付けに失敗しました: ${e?.message || String(e)}`);
+            btn.disabled = false;
+            btn.textContent = '選択';
+          }
+        };
+      });
+    };
+
+    const doSearch = async () => {
+      const kw = searchInput.value.trim();
+      if (!kw) { resultsDiv.innerHTML = '<p style="font-size:12px;color:#94a3b8;text-align:center;padding:12px 0;">検索キーワードを入力してください</p>'; return; }
+      resultsDiv.innerHTML = '<p style="font-size:12px;color:#94a3b8;text-align:center;padding:12px 0;">検索中...</p>';
+      try {
+        const recs = await searchSharedAccounts(kw);
+        renderResults(recs);
+      } catch (e) {
+        resultsDiv.innerHTML = `<p style="font-size:12px;color:#dc2626;text-align:center;padding:12px 0;">検索エラー: ${e?.message || String(e)}</p>`;
+      }
+    };
+
+    overlay.querySelector('#jbis-shared-search-btn').onclick = doSearch;
+    searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); doSearch(); } });
+
+    overlay.querySelector('#jbis-shared-create-new').onclick = async () => {
+      const btn = overlay.querySelector('#jbis-shared-create-new');
+      if (!confirm('共有アカウント採番マスタ(667)から番号を取得し、新しいアカウントを作成します。よろしいですか？')) return;
+      btn.disabled = true;
+      btn.textContent = '作成中…';
+      try {
+        const result = await createSharedAccountFromNumbering(recordId594, pcName594);
+        if (!result.ok) { alert(result.message); btn.disabled = false; btn.textContent = '＋ 新規アカウント作成'; return; }
+        alert(`✅ 新規アカウントを作成しました。\nログオン名: ${result.windowsId}\nアカウント台帳レコード: ${result.ledgerId}`);
+        close();
+        location.reload();
+      } catch (e) {
+        alert(`アカウント作成に失敗しました: ${e?.message || String(e)}`);
+        btn.disabled = false;
+        btn.textContent = '＋ 新規アカウント作成';
+      }
+    };
+
+    searchInput.focus();
+  };
+
+  // After saving a shared PC, prompt account linking
+  kintone.events.on(['app.record.create.submit.success', 'app.record.edit.submit.success'], (event) => {
+    const rec = event.record || {};
+    const typeVal = (rec[FC_594_TYPE]?.value || '').trim();
+    if (typeVal !== '共有') return event;
+    const ledgerVal = String(rec[FC_594_LEDGER_RECORD_ID]?.value || '').trim();
+    if (ledgerVal && /^\d+$/.test(ledgerVal)) return event;
+    const recId = event.recordId || kintone.app.record.getId();
+    const pcName = (rec[FC_594_PC_NAME]?.value || '').trim();
+    sessionStorage.setItem(STORAGE_KEY_594_SHARED_LINK, JSON.stringify({ id: recId, pcName }));
+    return event;
+  });
+
   /** 詳細画面の 627 / PC買替 ボタンコンテナ（重複挿入防止） */
   const DETAIL_ACC_BTN_WRAP_ID = 'jbis594-detail-acc001-wrap';
 
@@ -1826,6 +2027,23 @@
       void runPcReplacementFlow();
     };
 
+    // Shared PC: link account button (shown only for type=共有 without linked account)
+    const curForType = kintone.app.record.get();
+    const curType = cellText(curForType, FC_594_TYPE);
+    const curLedger = cellText(curForType, FC_594_LEDGER_RECORD_ID);
+    if (curType === '共有' && (!curLedger || !/^\d+$/.test(curLedger))) {
+      const btnSharedLink = document.createElement('button');
+      btnSharedLink.type = 'button';
+      btnSharedLink.textContent = '🔗 共有アカウント紐付け';
+      btnSharedLink.style.cssText = 'padding:6px 14px;border:none;border-radius:6px;background:linear-gradient(135deg,#0ea5e9,#38bdf8);color:#fff;font-weight:700;font-size:12px;cursor:pointer;';
+      btnSharedLink.onclick = () => {
+        const rid = kintone.app.record.getId();
+        const pn = cellText(curForType, FC_594_PC_NAME);
+        showSharedAccountLinkModal(rid, pn);
+      };
+      host.insertBefore(btnSharedLink, host.firstChild);
+    }
+
     const btn = makeButton('アカウント管理台帳(627) 作成/更新して開く');
     btn.onclick = async () => {
       btn.disabled = true;
@@ -1881,9 +2099,20 @@
     });
   };
 
+  const maybeShowSharedLinkModalFromStorage = () => {
+    try {
+      const raw = sessionStorage.getItem(STORAGE_KEY_594_SHARED_LINK);
+      if (!raw) return;
+      sessionStorage.removeItem(STORAGE_KEY_594_SHARED_LINK);
+      const { id, pcName } = JSON.parse(raw);
+      if (id) setTimeout(() => showSharedAccountLinkModal(id, pcName), 400);
+    } catch (_e) { /* noop */ }
+  };
+
   const on594RecordDetailShow = (event) => {
     ensureGlobalLabelStyle();
     maybeShow594ReplacementNoticeFromStorage();
+    maybeShowSharedLinkModalFromStorage();
     schedule594DetailAccButtonMount();
     return event;
   };

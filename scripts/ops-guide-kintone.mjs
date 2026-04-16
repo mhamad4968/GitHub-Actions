@@ -31,6 +31,7 @@ const GUIDE_FILES = [
   { file: 'guide-personal-account.html', slug: 'personal', title: '個人アカウントガイド' },
   { file: 'guide-shared-account.html', slug: 'shared', title: '共有アカウントガイド' },
   { file: 'guide-employee.html', slug: 'employee', title: '社員マスタガイド' },
+  { file: 'guide-lifecycle.html', slug: 'lifecycle', title: '異動・退職・買替ガイド' },
 ];
 
 function requireEnv(key) {

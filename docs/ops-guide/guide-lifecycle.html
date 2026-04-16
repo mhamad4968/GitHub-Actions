@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔄 異動・退職・買替ガイド</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--accent:#0ea5e9;--accent-bg:#e0f2fe;--bg:#f0f4f8;--card:#fff;--text:#1e293b;--sub:#475569;--gray:#f1f5f9;
+  --blue:#2563eb;--blue-bg:#dbeafe;--ok:#16a34a;--ok-bg:#dcfce7;--warn:#ea580c;--warn-bg:#fff7ed;
+  --ng:#dc2626;--ng-bg:#fef2f2;--purple:#7c3aed;--purple-bg:#f3e8ff;--radius:16px}
+body{font-family:'Segoe UI','Hiragino Sans','Meiryo',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.header{background:linear-gradient(135deg,#0369a1,#38bdf8);color:#fff;padding:24px;display:flex;align-items:center;gap:16px}
+.header .back{color:#fff;text-decoration:none;font-size:1.3em;opacity:.8;transition:.2s}
+.header .back:hover{opacity:1}
+.header h1{font-size:1.4em;font-weight:700}
+.container{max-width:760px;margin:0 auto;padding:20px 16px}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:0 2px 12px rgba(0,0,0,.07);padding:22px 24px;margin-bottom:16px}
+.card h2{font-size:1.1em;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.steps{counter-reset:s;list-style:none}
+.steps li{counter-increment:s;position:relative;padding:12px 16px 12px 52px;margin-bottom:8px;
+  background:var(--gray);border-radius:12px;font-size:.9em}
+.steps li::before{content:counter(s);position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85em}
+.tip{padding:14px 18px;border-radius:12px;margin:10px 0;font-size:.87em;display:flex;align-items:flex-start;gap:10px}
+.tip .e{font-size:1.3em;flex-shrink:0}
+.t-blue{background:var(--blue-bg);border-left:4px solid var(--blue)}
+.t-green{background:var(--ok-bg);border-left:4px solid var(--ok)}
+.t-orange{background:var(--warn-bg);border-left:4px solid var(--warn)}
+.t-red{background:var(--ng-bg);border-left:4px solid var(--ng)}
+.t-purple{background:var(--purple-bg);border-left:4px solid var(--purple)}
+.t-sky{background:var(--accent-bg);border-left:4px solid var(--accent)}
+table{width:100%;border-collapse:collapse;font-size:.85em;margin-top:8px}
+th{background:var(--gray);text-align:left;padding:8px 12px}
+td{padding:8px 12px;border-bottom:1px solid #e2e8f0}
+.scene-tag{display:inline-block;font-size:.72em;font-weight:700;padding:3px 12px;border-radius:20px;margin-bottom:8px}
+.st-transfer{background:#e0f2fe;color:#0369a1}
+.st-retire{background:#fef2f2;color:#dc2626}
+.st-replace{background:#dcfce7;color:#15803d}
+.flow{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;padding:14px 0}
+.flow-box{padding:10px 16px;border-radius:10px;font-size:.82em;font-weight:600;text-align:center;min-width:100px}
+.flow-arr{font-size:1.3em;color:var(--accent);font-weight:700}
+.fb{background:var(--blue-bg);color:#1e40af}
+.fg{background:var(--ok-bg);color:#15803d}
+.fr{background:var(--ng-bg);color:#991b1b}
+.fp{background:var(--purple-bg);color:#5b21b6}
+.fs{background:var(--accent-bg);color:#0369a1}
+.footer{text-align:center;padding:16px;font-size:.72em;color:#94a3b8}
+@media print{body{background:#fff}.header{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a href="index.html" class="back">←</a>
+  <h1>🔄 異動・退職・買替ガイド</h1>
+</div>
+
+<div class="container">
+
+<!-- ===== 概要 ===== -->
+<div class="card">
+  <h2>📌 このガイドは何？</h2>
+  <p style="font-size:.9em">
+    社員の<strong>異動・退職・PC買替</strong>が発生したときに、<br>
+    どのアプリで何をすればよいかをまとめたガイドです。
+  </p>
+  <div class="tip t-sky">
+    <span class="e">💡</span>
+    <span>退職とPC買替は<strong>ほとんど自動</strong>で処理されます。<br>
+    人がやるのは「きっかけの 1 操作」だけです。</span>
+  </div>
+</div>
+
+<!-- ===== 早見表 ===== -->
+<div class="card">
+  <h2>📋 場面ごとの早見表</h2>
+  <table>
+    <tr><th>場面</th><th>人がやること</th><th>自動で起きること</th></tr>
+    <tr>
+      <td><strong>異動（PCそのまま）</strong></td>
+      <td>社員マスタ(595)の部署を変更</td>
+      <td>特になし</td>
+    </tr>
+    <tr>
+      <td><strong>異動（PC変更あり）</strong></td>
+      <td>594 で「PC買替」ボタン</td>
+      <td>旧PC→廃棄、アカウント引継ぎ</td>
+    </tr>
+    <tr>
+      <td><strong>退職</strong></td>
+      <td>595 に退職日を入力</td>
+      <td>ステータス→退職、627→退職、594 記事欄に追記</td>
+    </tr>
+    <tr>
+      <td><strong>PC買替</strong></td>
+      <td>594 で「PC買替」ボタン</td>
+      <td>旧PC→廃棄、新PC作成、アカウント引継ぎ</td>
+    </tr>
+  </table>
+</div>
+
+<!-- ===== 異動 ===== -->
+<div class="card">
+  <span class="scene-tag st-transfer">異動</span>
+  <h2>🏢 所属の異動</h2>
+
+  <h3 style="font-size:.95em;margin:14px 0 6px">PCがそのまま（拠点・部署だけ変わる）</h3>
+  <ol class="steps">
+    <li><strong>社員マスタ（595）</strong>で該当社員のレコードを開く</li>
+    <li>部署・拠点などの情報を修正して<strong>保存</strong></li>
+  </ol>
+  <div class="tip t-green">
+    <span class="e">✅</span>
+    <span>これだけでOKです。PC台帳やアカウント台帳は<strong>変更不要</strong>。<br>
+    PCもアカウントもそのまま使い続けられます。</span>
+  </div>
+
+  <h3 style="font-size:.95em;margin:14px 0 6px">PCも変わる（異動先で別のPCを使う）</h3>
+  <ol class="steps">
+    <li>社員マスタ（595）の部署情報を変更</li>
+    <li>PC台帳（594）で旧PCレコードを開く</li>
+    <li><strong>「PC買替」ボタン</strong>を押す → 新PCの情報を入力</li>
+  </ol>
+  <div class="tip t-blue">
+    <span class="e">💡</span>
+    <span>アカウントは<strong>自動で新PCに引き継がれる</strong>ので、<br>
+    アカウント台帳（627）を触る必要はありません。</span>
+  </div>
+</div>
+
+<!-- ===== 退職 ===== -->
+<div class="card">
+  <span class="scene-tag st-retire">退職</span>
+  <h2>👋 退職の処理</h2>
+
+  <h3 style="font-size:.95em;margin:14px 0 6px">やること（手動は1か所だけ）</h3>
+  <ol class="steps">
+    <li><strong>社員マスタ（595）</strong>で退職する社員のレコードを開く</li>
+    <li><strong>「退職日」フィールド</strong>に日付を入力</li>
+    <li><strong>保存</strong>する</li>
+  </ol>
+
+  <h3 style="font-size:.95em;margin:14px 0 6px">自動で起きること</h3>
+  <div class="flow">
+    <div class="flow-box fp">👤 社員マスタ(595)<br><small>退職日を入力</small></div>
+    <span class="flow-arr">→</span>
+    <div class="flow-box fr">自動①<br><small>在籍ステータス→「退職」</small></div>
+    <span class="flow-arr">→</span>
+    <div class="flow-box fr">自動②<br><small>627 アカウント状態→「退職」</small></div>
+    <span class="flow-arr">→</span>
+    <div class="flow-box fs">自動③<br><small>594 記事欄に退職者利用分を追記</small></div>
+  </div>
+
+  <table>
+    <tr><th>自動処理</th><th>内容</th></tr>
+    <tr><td>在籍ステータス（595）</td><td>退職日が入ると<strong>自動で「退職」に変更</strong></td></tr>
+    <tr><td>アカウント状態（627）</td><td><strong>自動で「退職」に変更</strong></td></tr>
+    <tr><td>PC台帳の記事欄（594）</td><td><strong>「○年○月 ○○（退職者）利用分」</strong>が自動追記</td></tr>
+    <tr><td>一覧表示</td><td>退職者のPC・アカウントは<strong>表示されなくなる</strong>（データは残る）</td></tr>
+  </table>
+
+  <div class="tip t-green">
+    <span class="e">✅</span>
+    <span><strong>やらなくてよいこと：</strong><br>
+    ・アカウント台帳（627）を手動で「退職」にする → 不要（自動）<br>
+    ・PC台帳（594）のレコードを消す → 不要（非表示になるだけ）<br>
+    ・社員マスタのサブテーブルを編集する → 不要</span>
+  </div>
+
+  <div class="tip t-orange">
+    <span class="e">⚠️</span>
+    <span><strong>退職日を消すと「在籍」に戻ります。</strong><br>
+    間違えて入力した場合は退職日を空にすればOK。</span>
+  </div>
+</div>
+
+<!-- ===== PC買替 ===== -->
+<div class="card">
+  <span class="scene-tag st-replace">PC買替</span>
+  <h2>💻 PCの買替</h2>
+
+  <ol class="steps">
+    <li>PC台帳（594）で<strong>古いPCのレコード</strong>を開く</li>
+    <li><strong>「PC買替」ボタン</strong>をクリック</li>
+    <li>新しいPCの情報（カテゴリ等）を入力</li>
+    <li>登録すると新PCのレコードが作成される</li>
+  </ol>
+
+  <h3 style="font-size:.95em;margin:14px 0 6px">自動で起きること</h3>
+  <table>
+    <tr><th>自動処理</th><th>内容</th></tr>
+    <tr><td>旧PCのステータス</td><td><strong>自動で「廃棄」に変更</strong></td></tr>
+    <tr><td>新PCのレコード</td><td>利用者・拠点などを<strong>引き継いで新規作成</strong></td></tr>
+    <tr><td>アカウント</td><td><strong>自動で新PCに紐付け</strong>（再登録不要）</td></tr>
+  </table>
+
+  <div class="tip t-green">
+    <span class="e">✅</span>
+    <span>アカウントの再登録は<strong>一切不要</strong>です。<br>
+    ログオン名もM365もそのまま引き継がれます。</span>
+  </div>
+
+  <div class="tip t-blue">
+    <span class="e">📝</span>
+    <span>買替後、新PCのレコードに<strong>赤いバナー</strong>が出ます。<br>
+    購入日・価格・シリアル番号など残りの項目を入力してください。</span>
+  </div>
+
+  <div class="tip t-orange">
+    <span class="e">⚠️</span>
+    <span>廃止済みのPCでは「PC買替」ボタンは使えません。</span>
+  </div>
+</div>
+
+<!-- ===== よくある質問 ===== -->
+<div class="card">
+  <h2>❓ よくある質問</h2>
+
+  <h3 style="font-size:.95em;margin:14px 0 6px">Q. 退職者のデータは消えるの？</h3>
+  <div class="tip t-blue">
+    <span class="e">💡</span>
+    <span><strong>消えません。</strong>一覧に表示されなくなるだけで、データは残っています。<br>
+    レコード番号で検索すれば確認できます。</span>
+  </div>
+
+  <h3 style="font-size:.95em;margin:14px 0 6px">Q. 退職を取り消したい（誤入力）</h3>
+  <div class="tip t-blue">
+    <span class="e">💡</span>
+    <span>社員マスタ（595）の<strong>退職日を空にして保存</strong>すると、<br>
+    在籍ステータスが「在籍」に戻ります。</span>
+  </div>
+
+  <h3 style="font-size:.95em;margin:14px 0 6px">Q. 異動で拠点が変わったら共有PCのアカウントは？</h3>
+  <div class="tip t-blue">
+    <span class="e">💡</span>
+    <span>共有アカウントは<strong>拠点のPCに紐付いている</strong>ので、<br>
+    異動した社員が使わなくなっても番号はそのまま残します。<br>
+    新しい拠点で共有PCを使うなら、別の番号が割り当てられます。</span>
+  </div>
+
+  <h3 style="font-size:.95em;margin:14px 0 6px">Q. PC買替のときにエラーが出たら？</h3>
+  <div class="tip t-orange">
+    <span class="e">🛟</span>
+    <span>データは<strong>自動で元に戻ります</strong>（ロールバック）。<br>
+    エラーメッセージを管理者に伝えてください。</span>
+  </div>
+</div>
+
+</div>
+<div class="footer">異動・退職・買替ガイド v1.0 ― <a href="index.html" style="color:inherit">← トップに戻る</a></div>
+</body>
+</html>

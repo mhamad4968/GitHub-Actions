@@ -92,9 +92,33 @@ code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:.9em}
   </div>
 </div>
 
-<!-- ===== 登録手順 ===== -->
+<!-- ===== PC台帳から紐付け（推奨） ===== -->
 <div class="card">
-  <h2>📋 共有アカウントを登録する手順</h2>
+  <h2>🚀 PC台帳からかんたん紐付け（推奨）</h2>
+  <p style="font-size:.9em;margin-bottom:10px">共有PCを保存すると、<strong>自動でアカウント紐付けモーダル</strong>が表示されます。</p>
+  <ol class="steps">
+    <li><strong>PC管理台帳（594）</strong>で共有PCのレコードを新規作成 or 編集して<strong>保存</strong></li>
+    <li>「🔗 共有PC — アカウント紐付け」モーダルが自動表示される</li>
+    <li>2つの方法から選ぶ：
+      <table>
+        <tr><th>方法</th><th>内容</th></tr>
+        <tr><td><strong>既存アカウントを検索</strong></td><td>ログオン名・Windows名・PC名で検索 → 「選択」ボタン</td></tr>
+        <tr><td><strong>＋ 新規アカウント作成</strong></td><td>採番マスタ(667)から自動で番号を取得して作成</td></tr>
+      </table>
+    </li>
+    <li>紐付け完了！（あとでやる場合は「スキップ」でOK）</li>
+  </ol>
+  <div class="tip t-green">
+    <span class="e">✅</span>
+    <span>スキップした場合でも、詳細画面にある<strong>「🔗 共有アカウント紐付け」ボタン</strong>から<br>
+    いつでも紐付けできます。</span>
+  </div>
+</div>
+
+<!-- ===== 手動登録（従来の方法） ===== -->
+<div class="card">
+  <h2>📋 手動で登録する方法（従来）</h2>
+  <p style="font-size:.85em;color:var(--sub);margin-bottom:8px">上のPC台帳からの紐付けが使えない場合はこちら。</p>
   <ol class="steps">
     <li><strong>共有アカウント採番マスタ（667）</strong>を開く</li>
     <li>未使用の番号を探す（<code>used_count</code> が空のもの）</li>
