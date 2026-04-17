@@ -24,6 +24,7 @@ npm run app:fields <アプリID>
 | 出張精算アプリ | **629** | `customize/shucccho-seisan/desktop.js` | `npm run deploy:629` |
 | Security NEXT ニュース（収集） | **631** | `security-next-automation` | [https://jbis-kintone.cybozu.com/k/631/](https://jbis-kintone.cybozu.com/k/631/) ・`KINTONE_APP_ID` |
 | ニュース週次要約（週次LLM） | **632** | `security-next-automation` | [https://jbis-kintone.cybozu.com/k/632/](https://jbis-kintone.cybozu.com/k/632/) ・`KINTONE_REPORT_APP_ID` ・[設計CSV](security-next-automation/docs/security-next-weekly-report-app-design.csv) |
+| 運用ガイド（PC台帳・アカウント周りの操作手順） | **668** | `customize/ops-guide/desktop.js` | `npm run ops-guide:publish`（HTML レコード同期＋desktop.js デプロイ） |
 
 ※ **631** … `collect` / `analyze` が読むニュース。**632** … `analyze` が書き込む週次要約のみ。`.env`: `KINTONE_APP_ID=631` , `KINTONE_REPORT_APP_ID=632`。API トークンに **両アプリ**を載せる。  
 ※ **権限**: 自動化の最低限は **レコード閲覧＋追加**。閲覧・追加・編集・削除・アプリ管理のフル付与でもスクリプトは動作するが、トークン漏えい時のリスク低減のため余分な権限は削るとよい（詳細は `security-next-automation/README.md`）。
@@ -34,12 +35,14 @@ npm run app:fields <アプリID>
 
 **Security NEXT 連携**: フィールドコードの正本は `security-next-automation/README.md` と `security-next-automation/src/lib/field-codes.ts`。アプリ新規なら `npm run setup:security-next-apps` も可。
 
-### システムヘルスチェックレポート（631 / 632）
+### システムヘルスチェックレポート（全アプリ・案A）
 
 - **ポータル URL（運用確認用）**  
   - ニュース（収集）: [https://jbis-kintone.cybozu.com/k/631/](https://jbis-kintone.cybozu.com/k/631/)  
   - 週次要約: [https://jbis-kintone.cybozu.com/k/632/](https://jbis-kintone.cybozu.com/k/632/)
-- **REST 診断**: ルートで `npm run report:space-health`（`.env` に `KINTONE_DOMAIN` と API トークン）。既定で **631 と 632** を検査。まず `app.json`、**アプリ設定の閲覧権限が無いトークン**では `records.json` の取得にフォールバックする。**フィールド検証**も実行し、631（Phase 2: メタデータ・品質フラグ・例外枠の 11 フィールド）と 632（Phase 1: エビデンス・1行サマリーの 8 フィールド）の期待フィールドが全て存在するか確認する。
+- **REST 診断**: ルートで `npm run report:space-health`。**認証はパスワード（`KINTONE_USERNAME` / `KINTONE_PASSWORD`）を推奨**（GitHub Environment `kintone-collect` に Secrets 追加）。外側 Basic 認証がある場合は `KINTONE_BASIC_AUTH_*` も設定。トークンのみでも可（従来どおり）。
+- **検査対象**: `SPACE_HEALTH_APP_IDS` 未指定かつパスワード認証ありのとき、**`kintone-apps.md` の「## アプリ一覧」表からアプリ ID を自動抽出**（594, 595, 626, 627, 629, 631, 632, 668 など）。手動で絞る場合は `SPACE_HEALTH_APP_IDS=631,632` のように指定。MD 抽出を止める場合は `SPACE_HEALTH_USE_KINTONE_APPS_MD=0`。
+- **フィールド検証**: 631 は設計どおり 11 フィールド。632 は本番フォームが Phase1 未移行の場合があるため、**`target_week` と `weekly_trend` の存在のみ**を検証（フォーム拡張後に期待セットを見直すこと）。
 - **GitHub Actions**: `.github/workflows/space-health-report.yml`（毎日 09:00 JST 前後・`workflow_dispatch` 可）。ジョブサマリーに Markdown 表が付く。
 - **メンテ手順の正本**: [`docs/maintenance-template.md`](docs/maintenance-template.md) の「一気通貫メンテ・プレイブック」。エージェント・開発の前提ルールは [`AGENTS.md`](AGENTS.md)。
 
@@ -263,8 +266,54 @@ Updated_datetime	UPDATED_TIME	Updated datetime
 
 ---
 
+## 668（運用ガイド・ops-guide）
+
+- **アプリID**: 668（環境変数 `KINTONE_OPS_GUIDE_APP` が正本）
+- **本番 URL 例**: `KINTONE_BASE_URL` のドメイン + `/k/668/`
+- **目的**: PC台帳／アカウント台帳／社員マスタ等の操作手順を社内向け HTML として配信。`docs/ops-guide/*.html` がソース、Kintone レコードに同期して iframe で表示。
+- **カスタマイズ方針** (2026-04-18 v4.1):
+  - 主要メニュー（💻 PC管理台帳 / 🔑 アカウント台帳 等）は **iframe の外** に Kintone DOM 直下のテキストリンクとして描画（`buildQuickLinkBar` / `jbis-ops-quick-link-bar`）。iframe 内クリッピング問題の根本回避策。
+  - iframe は **最低 1500px** 固定、postMessage (`jbis-ops-guide-iframe-resize`) による grow-only オートリサイズ。auto-resize 失敗時のフォールバックとして iframe 自身のスクロールも許可。
+
+`npm run app:fields 668` 相当のフィールド（実取得 2026-04-16）:
+
+```
+App 668 fields (11)
+Assignee            STATUS_ASSIGNEE     Assignee
+Categories          CATEGORY            Categories
+Created_by          CREATOR             Created by
+Created_datetime    CREATED_TIME        Created datetime
+guide_body_html     MULTI_LINE_TEXT     HTML本文      ← レコード本文（iframe srcdoc に注入）
+guide_slug          SINGLE_LINE_TEXT    ガイドID      ← 'hub' / 'pc' / 'personal' / 'shared' / 'employee' / 'lifecycle'
+guide_title         SINGLE_LINE_TEXT    タイトル
+Record_number       RECORD_NUMBER       Record number
+Status              STATUS              Status
+Updated_by          MODIFIER            Updated by
+Updated_datetime    UPDATED_TIME        Updated datetime
+```
+
+レコード（slug ↔ HTML ファイル）の対応:
+
+| guide_slug | guide_title | ソース HTML |
+|------------|-------------|-------------|
+| `hub` | ガイドトップ | `docs/ops-guide/index.html` |
+| `pc` | PC台帳ガイド | `docs/ops-guide/guide-pc.html` |
+| `personal` | 個人アカウントガイド | `docs/ops-guide/guide-personal-account.html` |
+| `shared` | 共有アカウントガイド | `docs/ops-guide/guide-shared-account.html` |
+| `employee` | 社員マスタガイド | `docs/ops-guide/guide-employee.html` |
+| `lifecycle` | 異動・退職・買替ガイド | `docs/ops-guide/guide-lifecycle.html` |
+
+**運用コマンド**:
+- `npm run ops-guide:sync` — HTML を Kintone レコードへ同期のみ
+- `npm run ops-guide:deploy` — desktop.js のみデプロイ
+- `npm run ops-guide:publish` — sync + deploy（日次更新の標準）
+
+---
+
 ## 変更履歴
 
 | 日付 | 変更内容 |
 |------|----------|
 | 2026-03-28 | 初版テンプレ。629 を `/k/v1/apps.json` で特定、594/595/626/627/629 の `app:fields` を本文へ反映、`npm run deploy:629` を `package.json` に追加 |
+| 2026-04-16 | App 668（運用ガイド）を一覧に追加。フィールドコードは `guide_slug` / `guide_body_html` / `guide_title`（推測しないこと）。`KINTONE_OPS_GUIDE_APP` が正本 ID |
+| 2026-04-18 | システムヘルスチェックを案A化: パスワード認証 + `kintone-apps.md` 一覧から全アプリ ID 自動抽出。632 のフィールド検証は実テナントに合わせ最小セット |

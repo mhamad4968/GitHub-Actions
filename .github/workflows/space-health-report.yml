@@ -1,11 +1,12 @@
-# スペース 48 周辺: kintone アプリ 631・632 などの REST ヘルスチェック
+# kintone アプリの REST ヘルスチェック（案A: パスワード認証 + kintone-apps.md から全アプリ ID 自動抽出）
 # 毎日 09:00 JST = 00:00 UTC。手動: Actions → space-health-report → Run workflow
 #
-# Secrets（Environment kintone-collect と同じで可）:
-#   KINTONE_DOMAIN
-#   KINTONE_API_TOKEN_COLLECT または KINTONE_API_TOKEN（631・632 両方を含むトークン推奨）
-# 任意: KINTONE_API_TOKEN_ANALYZE（COLLECT が 631 のみのとき 632 用に試行）
-# 任意: SPACE_HEALTH_APP_IDS（既定 631,632）
+# Secrets（Environment kintone-collect 推奨）:
+#   推奨（案A）: KINTONE_DOMAIN, KINTONE_USERNAME, KINTONE_PASSWORD
+#   任意: KINTONE_BASIC_AUTH_USERNAME / KINTONE_BASIC_AUTH_PASSWORD（Cybozu 外側 Basic）
+#   フォールバック: KINTONE_API_TOKEN_COLLECT / KINTONE_API_TOKEN_ANALYZE / KINTONE_API_TOKEN
+# 任意: SPACE_HEALTH_APP_IDS（カンマ区切り。未設定時はパスワードありなら kintone-apps.md の一覧表から ID 抽出）
+# 任意: SPACE_HEALTH_USE_KINTONE_APPS_MD=0 で MD 抽出を無効化（631,632 のみ既定）
 
 name: space-health-report
 
@@ -39,10 +40,14 @@ jobs:
       - name: 依存関係（dotenv のみルート package）
         run: npm ci
 
-      - name: システムヘルスチェック（631 / 632）
+      - name: システムヘルスチェック（kintone-apps.md 準拠・全アプリ）
         env:
           KINTONE_DOMAIN: ${{ secrets.KINTONE_DOMAIN }}
           KINTONE_BASE_URL: https://jbis-kintone.cybozu.com
+          KINTONE_USERNAME: ${{ secrets.KINTONE_USERNAME }}
+          KINTONE_PASSWORD: ${{ secrets.KINTONE_PASSWORD }}
+          KINTONE_BASIC_AUTH_USERNAME: ${{ secrets.KINTONE_BASIC_AUTH_USERNAME }}
+          KINTONE_BASIC_AUTH_PASSWORD: ${{ secrets.KINTONE_BASIC_AUTH_PASSWORD }}
           KINTONE_API_TOKEN_COLLECT: ${{ secrets.KINTONE_API_TOKEN_COLLECT }}
           KINTONE_API_TOKEN_ANALYZE: ${{ secrets.KINTONE_API_TOKEN_ANALYZE }}
           KINTONE_API_TOKEN: ${{ secrets.KINTONE_API_TOKEN }}

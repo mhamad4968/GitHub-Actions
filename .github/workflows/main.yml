@@ -112,7 +112,9 @@ jobs:
           KINTONE_DOMAIN: ${{ secrets.KINTONE_DOMAIN }}
           KINTONE_APP_ID: ${{ secrets.KINTONE_APP }}
           KINTONE_REPORT_APP_ID: ${{ secrets.KINTONE_REPORT_APP_ID }}
-          # analyze は複数アプリ時、カンマ区切りの 1 Secret（KINTONE_API_TOKEN）でも可（config.ts 参照）
+          # analyze は 631 読取 + 632 書込のため、collect 用・analyze 用の両トークンを明示（config.ts）
+          KINTONE_API_TOKEN_COLLECT: ${{ secrets.KINTONE_API_TOKEN_COLLECT }}
+          KINTONE_API_TOKEN_ANALYZE: ${{ secrets.KINTONE_API_TOKEN_ANALYZE }}
           KINTONE_API_TOKEN: ${{ secrets.KINTONE_API_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
