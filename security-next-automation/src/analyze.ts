@@ -1,7 +1,7 @@
 /**
  * 631 番ニュースアプリから「今週分」（JST 月〜金・作成日時ベース）のタイトル・概要を取得し、
  * Gemini（GEMINI_MODEL 省略時は format-news-gemini の GEMINI_MODEL_FALLBACKS）で
- * セキュリティトレンドと対策を約 1000 字にまとめ、
+ * セキュリティトレンドと対策を資料向けの構成（【】見出し・箇条書き）でまとめ、
  * 632 番レポートアプリへ投入する。
  * - target_week をキーに既存レコードがあれば更新（PUT）、なければ追加（POST）。
  * - 参照エビデンス・1 行サマリー・GitHub run_id を内部／表示用フィールドに保存。
@@ -204,18 +204,23 @@ async function summarizeWeeklyReportGemini(apiKey: string, condensed: string): P
     const model = genAI.getGenerativeModel({
       model: modelId,
       systemInstruction: [
-        "あなたは情報セキュリティニュースの編集長です。",
+        "あなたは情報セキュリティニュースの編集長です。読者は社内で報告書・提案資料を作る担当者です。",
         "入力は Security NEXT 相当のニュース一覧の要約のみです。本文全文はありません。",
         "出力は有効な JSON オブジェクト 1 つのみ。前後に説明・マークダウン・コードフェンスを付けない。",
         'キーは厳密に "weekly_article" と "summary_one_line" の 2 つ。',
-        "weekly_article: 日本語プレーンテキスト。次を必ず含める: (1) 今週の傾向（脅威・製品・制度など観点で箇条書き中心）(2) 組織が取るべき対策（優先度が高い順）。",
-        "weekly_article はおおよそ 900〜1100 文字。Markdown 見出し記号は使わない。",
-        "summary_one_line: 同じ内容を 1 行に要約した日本語。改行なし。おおよそ 80〜160 文字。ポータル・通知の一行向け。",
+        "weekly_article: 日本語プレーンテキスト。Markdown の # や ** は使わない。見出しは全角【】のみ。",
+        "weekly_article の構成と順序（必ずこの順。セクションの間は空行 1 行で区切る。箇条書きの行頭は「・」で統一）:",
+        "1) 1 行目に「【週の全体像】」のみ。その次の行から経営・部会向けに貼れる段落を 2〜5 文（句点で区切る。改行は文の区切り程度）。",
+        "2) 空行のあと「【今週の注目トピック】」。次行から「・」で 3〜7 行。各 1 文で製品名・CVE・組織名など入力に出る固有名を可能な範囲で含める。",
+        "3) 空行のあと「【推奨アクション（優先度付き）】」。次行から「・【高】」「・【中】」「・【低】」をそれぞれ 1〜3 行ずつ。各行は「誰が／何を／いつまでに」のいずれかを短く含める。",
+        "4) 入力に不確かな話題がある場合のみ、空行のあと「【フォロー注意（未確定）】」を最大 2 行。断定せず「報道では〜」程度にとどめる。不要ならこの節は省略。",
+        "weekly_article はおおよそ 1200〜1700 文字。冗長な前置きや同義反復を避ける。",
+        "summary_one_line: weekly_article と同じ内容を 1 行に圧縮した日本語。改行なし。80〜160 文字。一覧・表紙・通知の一行向け。",
         "記載は入力の範囲に限定し、足りない情報は推測で断定しない。",
       ].join("\n"),
       generationConfig: {
-        temperature: 0.35,
-        maxOutputTokens: 2800,
+        temperature: 0.28,
+        maxOutputTokens: 3200,
       },
     });
     try {
@@ -228,7 +233,7 @@ async function summarizeWeeklyReportGemini(apiKey: string, condensed: string): P
         console.warn("[analyze] JSON パース失敗、1 回だけ全文を再依頼します:", e1);
         const fixPrompt =
           prompt +
-          "\n\n[前回は JSON 形式ではなかったか、キー名が違いました。weekly_article（本文）と summary_one_line（1行）のみの JSON を再出力してください。]";
+          "\n\n[前回は JSON 形式ではなかったか、キー名が違いました。weekly_article（【】見出しと・箇条書きの本文）と summary_one_line（1行）のみの JSON を再出力してください。]";
         const result2 = await generateContentWith429Retries(model, fixPrompt, {
           logTag: "[analyze] Gemini JSON retry",
         });
