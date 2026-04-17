@@ -204,6 +204,42 @@ async function findExistingWeeklyRecord(
 }
 
 /**
+ * JSON が途中で切れた等の失敗時、同じモデルで schema 付きの修復を 1 回だけ試す。
+ */
+async function repairWeeklyReportJsonGemini(
+  apiKey: string,
+  modelId: string,
+  malformed: string,
+): Promise<WeeklyGeminiOut> {
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const model = genAI.getGenerativeModel({
+    model: modelId,
+    systemInstruction: [
+      "入力は壊れた・途中までの JSON テキスト、または不正な JSON です。",
+      "内容を解釈し、有効な JSON オブジェクト 1 つだけを返す。",
+      'キーは厳密に "weekly_article" と "summary_one_line"。',
+      "weekly_article は日本語プレーン（【】見出しと・箇条書きの構成は維持）。推測で補完せず、読み取れる範囲で復元し不明部分は省略。",
+      "summary_one_line は weekly_article の要約を 1 行・80〜160 文字程度。",
+    ].join("\n"),
+    generationConfig: {
+      temperature: 0.1,
+      maxOutputTokens: 8192,
+      responseMimeType: "application/json",
+      responseSchema: WEEKLY_REPORT_RESPONSE_SCHEMA,
+    },
+  });
+  const body = malformed.length > 12000 ? malformed.slice(0, 12000) : malformed;
+  const r = await generateContentWith429Retries(
+    model,
+    "次のテキストを有効な JSON（weekly_article / summary_one_line のみ）に直してください:\n\n" + body,
+    { logTag: "[analyze] Gemini JSON repair" },
+  );
+  const out = r.response.text().trim();
+  if (!out) throw new Error("Gemini 修復パスから空の応答");
+  return parseWeeklyReportJson(out);
+}
+
+/**
  * Gemini: 本文（プレーン）と 1 行サマリーを JSON で返させる
  */
 async function summarizeWeeklyReportGemini(apiKey: string, condensed: string): Promise<WeeklyGeminiOut> {
@@ -226,13 +262,13 @@ async function summarizeWeeklyReportGemini(apiKey: string, condensed: string): P
         "2) 空行のあと「【今週の注目トピック】」。次行から「・」で 3〜7 行。各 1 文で製品名・CVE・組織名など入力に出る固有名を可能な範囲で含める。",
         "3) 空行のあと「【推奨アクション（優先度付き）】」。次行から「・【高】」「・【中】」「・【低】」をそれぞれ 1〜3 行ずつ。各行は「誰が／何を／いつまでに」のいずれかを短く含める。",
         "4) 入力に不確かな話題がある場合のみ、空行のあと「【フォロー注意（未確定）】」を最大 2 行。断定せず「報道では〜」程度にとどめる。不要ならこの節は省略。",
-        "weekly_article はおおよそ 1200〜1700 文字。冗長な前置きや同義反復を避ける。",
+        "weekly_article はおおよそ 1000〜1400 文字（長すぎると API 応答が途中で切れ JSON が壊れる）。冗長な前置きや同義反復を避ける。",
         "summary_one_line: weekly_article と同じ内容を 1 行に圧縮した日本語。改行なし。80〜160 文字。一覧・表紙・通知の一行向け。",
         "記載は入力の範囲に限定し、足りない情報は推測で断定しない。",
       ].join("\n"),
       generationConfig: {
         temperature: 0.28,
-        maxOutputTokens: 3200,
+        maxOutputTokens: 8192,
         responseMimeType: "application/json",
         responseSchema: WEEKLY_REPORT_RESPONSE_SCHEMA,
       },
@@ -252,7 +288,12 @@ async function summarizeWeeklyReportGemini(apiKey: string, condensed: string): P
           logTag: "[analyze] Gemini JSON retry",
         });
         const text2 = result2.response.text().trim();
-        return parseWeeklyReportJson(text2);
+        try {
+          return parseWeeklyReportJson(text2);
+        } catch (e2) {
+          console.warn("[analyze] 再依頼でも JSON 失敗、修復パスへ:", e2);
+          return await repairWeeklyReportJsonGemini(apiKey, modelId, text2.length > 200 ? text2 : text);
+        }
       }
     } catch (e) {
       if (isGeminiModelNotFoundError(e)) {
