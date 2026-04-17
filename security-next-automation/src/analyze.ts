@@ -6,7 +6,8 @@
  * - target_week をキーに既存レコードがあれば更新（PUT）、なければ追加（POST）。
  * - 参照エビデンス・1 行サマリー・GitHub run_id を内部／表示用フィールドに保存。
  */
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
+import type { ObjectSchema } from "@google/generative-ai";
 import type { KintoneRestAPIClient } from "@kintone/rest-api-client";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone.js";
@@ -28,6 +29,16 @@ const TZ = "Asia/Tokyo";
 const MAX_ARTICLES = 45;
 const SUMMARY_CHARS_PER_ARTICLE = 320;
 const SUMMARY_ONE_LINE_MAX = 200;
+
+/** Gemini の structured JSON 出力用（weekly_article 内の生の " で JSON が壊れるのを防ぐ） */
+const WEEKLY_REPORT_RESPONSE_SCHEMA: ObjectSchema = {
+  type: SchemaType.OBJECT,
+  properties: {
+    weekly_article: { type: SchemaType.STRING },
+    summary_one_line: { type: SchemaType.STRING },
+  },
+  required: ["weekly_article", "summary_one_line"],
+};
 
 type WeeklyGeminiOut = {
   weekly_article: string;
@@ -209,6 +220,7 @@ async function summarizeWeeklyReportGemini(apiKey: string, condensed: string): P
         "出力は有効な JSON オブジェクト 1 つのみ。前後に説明・マークダウン・コードフェンスを付けない。",
         'キーは厳密に "weekly_article" と "summary_one_line" の 2 つ。',
         "weekly_article: 日本語プレーンテキスト。Markdown の # や ** は使わない。見出しは全角【】のみ。",
+        "weekly_article の本文に ASCII の二重引用符（半角の引用符）を含めない。強調・引用は全角かぎ括弧「」を使う（JSON 破損防止）。",
         "weekly_article の構成と順序（必ずこの順。セクションの間は空行 1 行で区切る。箇条書きの行頭は「・」で統一）:",
         "1) 1 行目に「【週の全体像】」のみ。その次の行から経営・部会向けに貼れる段落を 2〜5 文（句点で区切る。改行は文の区切り程度）。",
         "2) 空行のあと「【今週の注目トピック】」。次行から「・」で 3〜7 行。各 1 文で製品名・CVE・組織名など入力に出る固有名を可能な範囲で含める。",
@@ -221,6 +233,8 @@ async function summarizeWeeklyReportGemini(apiKey: string, condensed: string): P
       generationConfig: {
         temperature: 0.28,
         maxOutputTokens: 3200,
+        responseMimeType: "application/json",
+        responseSchema: WEEKLY_REPORT_RESPONSE_SCHEMA,
       },
     });
     try {
