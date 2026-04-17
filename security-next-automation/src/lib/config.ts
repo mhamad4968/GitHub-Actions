@@ -142,7 +142,13 @@ export function resolveApiTokenForAnalyze(): string | string[] {
   const collect = process.env.KINTONE_API_TOKEN_COLLECT?.trim();
   const analyze = process.env.KINTONE_API_TOKEN_ANALYZE?.trim();
   const legacy = process.env.KINTONE_API_TOKEN?.trim();
-  if (collect && analyze) return [collect, analyze];
+  // 同一文字列を 2 本渡すと Kintone が GAIA_DA03（重複トークン）で拒否する
+  if (collect && analyze) {
+    if (collect === analyze) return collect;
+    return [collect, analyze];
+  }
+  if (collect && !analyze) return collect;
+  if (!collect && analyze) return analyze;
   if (legacy) return legacy;
   throw new Error(
     [
