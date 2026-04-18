@@ -255,7 +255,7 @@ function buildAutoBlockHtml(reportMd, jstLabel) {
 function truncateReportInBlock(html, maxChars) {
   if (html.length <= maxChars) return html;
   const note =
-    `<p style="color:#b45309;font-size:12px">（レポートが長いため ${maxChars} 文字で切り詰めました。全文は GitHub Actions のジョブサマリーを参照してください。）</p>`;
+    `<p style="color:#b45309;font-size:12px">（レポートが長いため ${maxChars} 文字で切り詰めました。詳細は GitHub Actions のワークフローログを参照してください。）</p>`;
   return html.slice(0, Math.max(0, maxChars - note.length)) + note;
 }
 
@@ -427,7 +427,7 @@ export async function pushReportToSpacePortal(opts) {
   if (reportMd.length > maxMdChars) {
     reportMd =
       reportMd.slice(0, maxMdChars) +
-      "\n\n…（レポートが長いため省略。全文は GitHub Actions のジョブサマリー参照）…\n";
+      "\n\n…（レポートが長いため省略。詳細は GitHub Actions のワークフローログ参照）…\n";
   }
 
   let inner = buildAutoBlockHtml(reportMd, jstLabel);

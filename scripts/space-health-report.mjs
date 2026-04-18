@@ -18,7 +18,7 @@
  *   KINTONE_APPS_MD_PATH（任意）kintone-apps.md の絶対パス
  *   KINTONE_API_TOKEN がカンマ区切りのときは各トークンを順に試す（トークン認証時のみ）
  *
- * GitHub Actions: GITHUB_STEP_SUMMARY があれば同内容を追記する。
+ * GitHub Actions: ジョブサマリー（$GITHUB_STEP_SUMMARY）には書き込まない（ログと kintone のみ）。
  *
  * kintone スペース 48 等への自動反映（任意）:
  *   KINTONE_SPACE_HEALTH_SPACE_ID を設定し、更新対象の HTML（ポータル or 既定スレッド）に
@@ -26,7 +26,7 @@
  *   パスワード認証（KINTONE_USERNAME + KINTONE_PASSWORD）必須。
  */
 import "dotenv/config";
-import { appendFileSync, readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { pushReportToSpacePortal } from "./space-health-push-space-body.mjs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -578,15 +578,6 @@ async function main() {
   const report = lines.join("\n");
   console.log(report);
 
-  const summaryPath = process.env.GITHUB_STEP_SUMMARY;
-  if (summaryPath) {
-    try {
-      appendFileSync(summaryPath, `\n${report}\n`, "utf8");
-    } catch (e) {
-      console.warn("[space-health-report] GITHUB_STEP_SUMMARY 追記に失敗:", e);
-    }
-  }
-
   let spacePushOk = true;
   const spaceIdForPush = process.env.KINTONE_SPACE_HEALTH_SPACE_ID?.trim();
   if (spaceIdForPush) {
@@ -594,27 +585,9 @@ async function main() {
       domain,
       pwHeaders,
       reportMd: report,
-      summaryPath,
     });
     if (!pushResult.skipped && !pushResult.ok) {
       spacePushOk = false;
-      if (summaryPath) {
-        try {
-          appendFileSync(
-            summaryPath,
-            `\n### kintone スペース本文の自動反映\n**失敗**: ${pushResult.message}\n`,
-            "utf8",
-          );
-        } catch {
-          /* noop */
-        }
-      }
-    } else if (!pushResult.skipped && pushResult.ok && summaryPath) {
-      try {
-        appendFileSync(summaryPath, `\n### kintone スペース本文の自動反映\n${pushResult.message}\n`, "utf8");
-      } catch {
-        /* noop */
-      }
     }
   }
 
