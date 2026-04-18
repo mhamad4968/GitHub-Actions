@@ -575,13 +575,6 @@ async function main() {
 
   lines.push(...buildVerdictAndCommentLines(rowSummary));
 
-  lines.push("");
-  lines.push("### 参照");
-  lines.push("");
-  lines.push("- アプリ正: リポジトリ直下 `kintone-apps.md`");
-  lines.push("- メンテ手順: `docs/maintenance-template.md`（一気通貫メンテ・プレイブック）");
-  lines.push("");
-
   const report = lines.join("\n");
   console.log(report);
 
