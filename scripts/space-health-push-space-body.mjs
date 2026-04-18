@@ -18,6 +18,9 @@
  *   A: HTML コメント `<!-- JBIS_SPACE_HEALTH_AUTO_START -->` … `END`
  *   B: リッチテキストのみのとき用のプレーンマーカー `[[JBIS-SPACE-HEALTH-AUTO-START]]` … `END`
  *   C: kintone がコメントをエスケープして保存した場合の `&lt;!-- … --&gt;` 形式（A と同文言）
+ *
+ * 置換成功時は常に A 形式（HTML コメント）で書き戻す。画面上の [[…]] 帯を解消し、
+ * マーカー直後に残った旧手貼りヘッダ／重複アプリ表を保守的に除去する。
  */
 
 import { healthReportMarkdownToHtml } from "./lib/health-report-md-to-html.mjs";
@@ -210,14 +213,37 @@ async function putThreadBody(domain, headers, threadId, bodyHtml) {
  */
 function buildAutoBlockHtml(reportMd, jstLabel) {
   const reportHtml = healthReportMarkdownToHtml(reportMd);
+  const mdTrim = reportMd.trim();
+  const hasMainHeading = /(?:^|\n)##\s+システムヘルスチェック/.test(mdTrim);
+  const subtitle =
+    hasMainHeading
+      ? ""
+      : `<h3 style="margin:0 0 10px;font-size:14px;font-weight:700;color:#0f172a;border-left:4px solid #2563eb;padding:4px 0 4px 10px;background:linear-gradient(90deg,#f8fafc 0%,transparent 100%)">📊 システムヘルスチェックレポート</h3>`;
+  const metaTable =
+    `<table role="presentation" style="width:100%;border-collapse:collapse;margin:0 0 14px;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;box-shadow:0 1px 2px rgba(15,23,42,0.06)">` +
+    `<tbody>` +
+    `<tr style="background:#0f172a;color:#fff">` +
+    `<td colspan="2" style="padding:12px 14px;font-size:15px;font-weight:700;letter-spacing:0.02em">🤖 デイリーヘルスチェック</td>` +
+    `</tr>` +
+    `<tr style="background:#f8fafc">` +
+    `<td style="padding:9px 12px;font-size:12px;color:#64748b;width:30%;border-top:1px solid #e2e8f0;vertical-align:middle">更新日時（JST）</td>` +
+    `<td style="padding:9px 12px;font-size:13px;font-weight:600;color:#0f172a;border-top:1px solid #e2e8f0;vertical-align:middle">${escapeHtml(jstLabel)}</td>` +
+    `</tr>` +
+    `<tr style="background:#fff">` +
+    `<td style="padding:9px 12px;font-size:12px;color:#64748b;border-top:1px solid #e2e8f0;vertical-align:middle">更新元</td>` +
+    `<td style="padding:9px 12px;font-size:13px;color:#334155;border-top:1px solid #e2e8f0;vertical-align:middle">GitHub Actions <code style="font-size:12px;background:#f1f5f9;padding:2px 6px;border-radius:4px;color:#0f172a">space-health-report</code></td>` +
+    `</tr>` +
+    `<tr style="background:#f8fafc">` +
+    `<td style="padding:9px 12px;font-size:12px;color:#64748b;border-top:1px solid #e2e8f0;vertical-align:middle">区分</td>` +
+    `<td style="padding:9px 12px;font-size:13px;color:#334155;border-top:1px solid #e2e8f0;vertical-align:middle">AI自動更新（マーカー内は CI が上書き）</td>` +
+    `</tr>` +
+    `</tbody></table>`;
   return (
-    `<div class="jbis-space-health-auto" style="font-family:system-ui,'Segoe UI',sans-serif;max-width:100%;line-height:1.45">` +
-    `<h2 style="font-size:18px;margin:0 0 10px">kintoneアプリ稼働確認用</h2>` +
-    `<p style="font-size:14px;color:#334155;margin:0 0 6px">🤖 <strong>AI自動更新セクション</strong>（GitHub Actions <code>space-health-report</code>）</p>` +
-    `<p style="font-size:14px;margin:0 0 12px"><strong>🤖 デイリーヘルスチェック</strong> <span style="color:#64748b">（更新: ${escapeHtml(jstLabel)}）</span></p>` +
-    `<h3 style="font-size:16px;margin:16px 0 8px">📊 システムヘルスチェックレポート</h3>` +
+    `<div class="jbis-space-health-auto" style="font-family:system-ui,'Segoe UI',sans-serif;max-width:100%;line-height:1.5;color:#334155;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 18px 14px;box-shadow:0 1px 3px rgba(15,23,42,0.06)">` +
+    metaTable +
+    subtitle +
     reportHtml +
-    `<p style="font-size:11px;color:#94a3b8;margin:12px 0 0">このブロックは CI により上書きされます。手編集はマーカー外で行ってください。</p>` +
+    `<p style="font-size:11px;color:#94a3b8;margin:14px 0 0;border-top:1px solid #f1f5f9;padding-top:10px">このブロックは CI により上書きされます。手編集はマーカー外で行ってください。</p>` +
     `</div>`
   );
 }
@@ -231,6 +257,62 @@ function truncateReportInBlock(html, maxChars) {
   const note =
     `<p style="color:#b45309;font-size:12px">（レポートが長いため ${maxChars} 文字で切り詰めました。全文は GitHub Actions のジョブサマリーを参照してください。）</p>`;
   return html.slice(0, Math.max(0, maxChars - note.length)) + note;
+}
+
+/**
+ * 自動ブロック終了マーカー直後に残る、旧 CI 手前の見出し／段落のみを先頭から除去する。
+ * @param {string} tail
+ */
+function stripLeadingLegacyAfterMarker(tail) {
+  let t = tail;
+  for (let i = 0; i < 30; i++) {
+    const prev = t;
+    t = t.replace(/^\s+/, "");
+    t = t.replace(/^(?:<br\s*\/?>\s*)+/i, "");
+    t = t.replace(/^<h[1-6][^>]*>([\s\S]*?)<\/h[1-6]>\s*/i, (m, inn) => {
+      if (/(?:AI自動更新セクション|システムヘルスチェックレポート|デイリーヘルスチェック|📊\s*システム)/.test(inn)) return "";
+      return m;
+    });
+    t = t.replace(/^<p[^>]*>([\s\S]*?)<\/p>\s*/i, (m, inn) => {
+      if (/(?:デイリーヘルスチェック|AI自動更新セクション)/.test(inn)) return "";
+      return m;
+    });
+    t = t.replace(/^<div[^>]*>(\s*<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>\s*)<\/div>\s*/i, (m, inn) => {
+      if (/(?:AI自動更新|システムヘルスチェックレポート|デイリーヘルスチェック)/.test(inn)) return "";
+      return m;
+    });
+    if (t === prev) break;
+  }
+  return t;
+}
+
+/**
+ * マーカー終了直後に続く、同一アプリ一覧らしき重複テーブルを 1 回だけ除去（631・632 を含む場合）。
+ * @param {string} tail
+ */
+function stripDuplicateAppTableIfPresent(tail) {
+  return tail.replace(
+    /^(?:<div[^>]*>)?\s*(?:<br\s*\/?>\s*)*<table\b[\s\S]*?<\/table>\s*(?:<\/div>)?\s*/i,
+    (block) => {
+      const flat = block.replace(/<[^>]+>/g, " ");
+      if (/アプリID/.test(flat) && /論理名/.test(flat) && /631/.test(flat) && /632/.test(flat)) return "";
+      return block;
+    },
+  );
+}
+
+/**
+ * @param {string} html
+ */
+function stripLegacyAfterAutoBlockEnd(html) {
+  const endTok = SPACE_HEALTH_MARKER_END;
+  const idx = html.indexOf(endTok);
+  if (idx === -1) return html;
+  const head = html.slice(0, idx + endTok.length);
+  let tail = html.slice(idx + endTok.length);
+  tail = stripLeadingLegacyAfterMarker(tail);
+  tail = stripDuplicateAppTableIfPresent(tail);
+  return head + tail;
 }
 
 /**
@@ -360,7 +442,8 @@ export async function pushReportToSpacePortal(opts) {
     console.error("[space-health-push-space-body]", msg);
     return { ok: false, skipped: false, message: msg };
   }
-  let newBody = oldBody.replace(re, `${start}\n${inner}\n${end}`);
+  let newBody = oldBody.replace(re, `${SPACE_HEALTH_MARKER_START}\n${inner}\n${SPACE_HEALTH_MARKER_END}`);
+  newBody = stripLegacyAfterAutoBlockEnd(newBody);
   newBody = truncateReportInBlock(newBody, 65500);
 
   let put;

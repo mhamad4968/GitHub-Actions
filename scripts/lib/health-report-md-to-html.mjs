@@ -61,16 +61,22 @@ function tableLinesToHtml(tableLines) {
   if (rows.length === 0) return `<p>${escapeHtml(tableLines.join("\n"))}</p>`;
   const head = rows[0];
   const body = rows.slice(1);
-  const th = head.map((c) => `<th style="border:1px solid #cbd5e1;padding:6px 8px;background:#f1f5f9;text-align:left;font-size:12px">${formatTableCell(c)}</th>`).join("");
+  const th = head
+    .map(
+      (c) =>
+        `<th style="border:1px solid #e2e8f0;padding:8px 10px;background:#f8fafc;text-align:left;font-size:11px;font-weight:600;color:#334155;letter-spacing:0.02em">${formatTableCell(c)}</th>`,
+    )
+    .join("");
   const trs = body
-    .map((r) => {
+    .map((r, ri) => {
       const pad = head.length - r.length;
       const cells = [...r, ...Array(Math.max(0, pad)).fill("—")].slice(0, head.length);
-      return `<tr>${cells.map((c) => `<td style="border:1px solid #e2e8f0;padding:6px 8px;font-size:12px;vertical-align:top">${formatTableCell(c)}</td>`).join("")}</tr>`;
+      const bg = ri % 2 === 0 ? "#ffffff" : "#fafbfc";
+      return `<tr style="background:${bg}">${cells.map((c) => `<td style="border:1px solid #e2e8f0;padding:8px 10px;font-size:12px;vertical-align:top;color:#334155">${formatTableCell(c)}</td>`).join("")}</tr>`;
     })
     .join("");
   return (
-    `<div style="overflow-x:auto;margin:8px 0">` +
+    `<div style="overflow-x:auto;margin:10px 0;border-radius:8px;border:1px solid #e2e8f0;background:#fff">` +
     `<table style="border-collapse:collapse;width:100%;max-width:100%;table-layout:fixed">` +
     `<thead><tr>${th}</tr></thead>` +
     `<tbody>${trs}</tbody>` +
@@ -89,14 +95,14 @@ export function healthReportMarkdownToHtml(md) {
     const line = lines[i];
     if (line.startsWith("## ")) {
       blocks.push(
-        `<h3 style="margin:14px 0 8px;font-size:15px;font-weight:700">${escapeOutsideLinks(line.slice(3))}</h3>`,
+        `<h3 style="margin:0 0 10px;font-size:14px;font-weight:700;color:#0f172a;border-left:4px solid #2563eb;padding:4px 0 4px 10px;background:linear-gradient(90deg,#f8fafc 0%,transparent 100%)">${escapeOutsideLinks(line.slice(3))}</h3>`,
       );
       i++;
       continue;
     }
     if (line.startsWith("### ")) {
       blocks.push(
-        `<h4 style="margin:12px 0 6px;font-size:14px;font-weight:700">${escapeOutsideLinks(line.slice(4))}</h4>`,
+        `<h4 style="margin:12px 0 6px;font-size:13px;font-weight:700;color:#1e293b">${escapeOutsideLinks(line.slice(4))}</h4>`,
       );
       i++;
       continue;
@@ -124,5 +130,5 @@ export function healthReportMarkdownToHtml(md) {
     blocks.push(`<p style="margin:5px 0;font-size:13px">${escapeOutsideLinks(line)}</p>`);
     i++;
   }
-  return `<div class="jbis-health-md" style="font-size:13px;line-height:1.5">${blocks.join("\n")}</div>`;
+  return `<div class="jbis-health-md" style="font-size:13px;line-height:1.55;color:#334155">${blocks.join("\n")}</div>`;
 }
