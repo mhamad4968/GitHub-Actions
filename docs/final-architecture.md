@@ -53,7 +53,7 @@ graph TB
     HEALTH --> HRS
     HRS -->|"閲覧+スキーマ検証"| APP631
     HRS -->|"閲覧+スキーマ検証"| APP632
-    HRS --> SPACE48
+    HRS -->|"PUT space/body または<br/>PUT space/thread"| SPACE48
 
     CTS --> WEBHOOK
     CTS --> EMAIL

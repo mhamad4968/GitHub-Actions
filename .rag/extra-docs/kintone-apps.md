@@ -46,6 +46,10 @@ npm run app:fields <アプリID>
 - **検査対象**: `SPACE_HEALTH_APP_IDS` 未指定かつパスワード認証ありのとき、**`kintone-apps.md` の「## アプリ一覧」表からアプリ ID を自動抽出**（594, 595, 626, 627, 629, 631, 632, 668 など）。手動で絞る場合は `SPACE_HEALTH_APP_IDS=631,632` のように指定。MD 抽出を止める場合は `SPACE_HEALTH_USE_KINTONE_APPS_MD=0`。
 - **フィールド検証**: 631 は設計どおり 11 フィールド。632 は本番フォームが Phase1 未移行の場合があるため、**`target_week` と `weekly_trend` の存在のみ**を検証（フォーム拡張後に期待セットを見直すこと）。
 - **GitHub Actions**: `.github/workflows/space-health-report.yml`（毎日 09:00 JST 前後・`workflow_dispatch` 可）。ジョブサマリーに Markdown 表が付く。
+- **スペース 48 ポータルへの自動反映（CI）**: 環境変数 `KINTONE_SPACE_HEALTH_SPACE_ID`（既定で Actions に **48** を渡す）が設定され、**マルチスレッド**のスペースであること。**実行ユーザー（Secrets の KINTONE_USERNAME）がスペース管理者**であること。本文に次の **いずれか 1 組**を**この順**で挿入する（間は空でよい。初回以降 CI がこの間を上書きする）:
+  - **A（HTML コメント）**: `<!-- JBIS_SPACE_HEALTH_AUTO_START -->` / `<!-- JBIS_SPACE_HEALTH_AUTO_END -->`
+  - **B（リッチテキストのみのとき）**: `[[JBIS-SPACE-HEALTH-AUTO-START]]` / `[[JBIS-SPACE-HEALTH-AUTO-END]]`（画面上に短く出るが、CI 後はブロック内に収まる）
+  - **シングルスレッド**では既定スレッド本文へ **GET/PUT `/k/v1/space/thread.json`**（マーカーもここ）。**マルチスレッド**では **PUT `/k/v1/space/body.json`**（ポータル本文）。長文は `SPACE_HEALTH_KINTONE_BODY_MAX_CHARS`（既定 62000）、再試行は `SPACE_HEALTH_KINTONE_PUSH_RETRIES`（既定 3）。
 - **メンテ手順の正本**: [`docs/maintenance-template.md`](docs/maintenance-template.md) の「一気通貫メンテ・プレイブック」。エージェント・開発の前提ルールは [`AGENTS.md`](AGENTS.md)。
 
 ---

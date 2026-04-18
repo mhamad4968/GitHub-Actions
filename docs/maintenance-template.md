@@ -41,6 +41,8 @@ npm run report:space-health
 
 **GitHub Actions**: ワークフロー `space-health-report.yml` が同スクリプトを実行し、ジョブサマリーに Markdown を出力する。
 
+**スペース 48 ポータル自動反映**: `KINTONE_SPACE_HEALTH_SPACE_ID` が設定され、HTML に `<!-- JBIS_SPACE_HEALTH_AUTO_START -->` … `END` マーカーがあるとき、ジョブ成功後に **マルチスレッドなら** [スペースの本文を更新する API](https://cybozu.dev/ja/kintone/docs/rest-api/spaces/update-space-body/) 、**シングルスレッドなら** [スレッド更新 API](https://cybozu.dev/ja/kintone/docs/rest-api/spaces/update-thread/) で上書きする。手順の細部は `kintone-apps.md` の「システムヘルスチェック」節。
+
 ---
 
 ## フェーズ 3 — 自動化（collect / analyze）の確認
