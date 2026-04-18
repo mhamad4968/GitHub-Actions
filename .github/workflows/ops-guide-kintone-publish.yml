@@ -39,7 +39,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: kintone-collect
     env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       KINTONE_BASE_URL: ${{ secrets.KINTONE_BASE_URL }}
       KINTONE_USERNAME: ${{ secrets.KINTONE_USERNAME }}
       KINTONE_PASSWORD: ${{ secrets.KINTONE_PASSWORD }}

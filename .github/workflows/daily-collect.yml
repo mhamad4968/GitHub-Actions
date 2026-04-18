@@ -31,8 +31,6 @@ jobs:
     # GitHub で作った Environment 名と一字一句同じにする
     environment: kintone-collect
     env:
-      # Node 20 系アクション警告の抑止（v6 アクションと併用可）https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       SECURITY_NEXT_RSS_URL: ${{ secrets.SECURITY_NEXT_RSS_URL }}
       NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
       COLLECT_MAX_NEW_PER_RUN: ${{ vars.COLLECT_MAX_NEW_PER_RUN }}
