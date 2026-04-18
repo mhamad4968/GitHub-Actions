@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  // BUILD: 2026-04-18-v477 (相関ダッシュボード備考: 紐付けなし+ledger残存の警告)
+  // BUILD: 2026-04-18-v478 (詳細: 627⇔594 紐付け解除ボタン)
   // JBIS-ACC-001
   // PC台帳(594)からアカウント管理台帳(627)を「作成/更新して開く」
   // - mail をキーに 627 を作成/更新
@@ -1553,6 +1553,102 @@
     const u = new URL(`${location.origin}/k/${LEDGER_APP_ID}/show`);
     u.searchParams.set('record', String(ledgerId));
     window.open(u.toString(), '_blank', 'noopener,noreferrer');
+  };
+
+  /**
+   * 627 レコードから「この PC（594 の $id）」への参照だけを外す PATCH を組む。
+   * PC名・メール等の他フィールドには触れない（安全のため最小変更）。
+   * @param {Record<string, unknown>} rec627
+   * @param {string} pc594Str
+   * @returns {Record<string, { value: unknown }>}
+   */
+  const build627UnlinkPatchForPc594 = (rec627, pc594Str) => {
+    const patch = /** @type {Record<string, { value: unknown }>} */ ({});
+    const pid = String(pc594Str || '').trim();
+    if (!pid) return patch;
+    const single = String(rec627[FC_627_PC_594_RECORD_ID]?.value ?? '').trim();
+    if (single === pid) {
+      patch[FC_627_PC_594_RECORD_ID] = { value: null };
+    }
+    const currentSub = Array.isArray(rec627[FC_627_PC_SUBTABLE]?.value)
+      ? rec627[FC_627_PC_SUBTABLE].value
+      : [];
+    const kept = currentSub.filter(
+      (row) => String(row?.value?.[FC_627_PC_SUB_594]?.value ?? '').trim() !== pid,
+    );
+    if (kept.length !== currentSub.length) {
+      patch[FC_627_PC_SUBTABLE] = { value: kept.map((row) => ({ id: row.id, value: row.value })) };
+    }
+    return patch;
+  };
+
+  /**
+   * 627（候補IDすべて）からこの PC への参照を外し、続けて 594 の ledger_record_id を空にする。
+   * 627 のレコード削除は行わない。627 の PUT が 1 件でも失敗した場合は 594 を変更しない。
+   * @param {string} pc594Str
+   * @param {string[]} ledgerIdCandidates 627 の $id（重複可・空可）
+   */
+  const unlinkPc594FromLedgerRecords = async (pc594Str, ledgerIdCandidates) => {
+    const pid = String(pc594Str || '').trim();
+    if (!pid || !/^\d+$/.test(pid)) {
+      return { ok: false, message: 'PC台帳のレコード番号が不正です。', touched627: 0 };
+    }
+    const ids = [
+      ...new Set(
+        (ledgerIdCandidates || [])
+          .map((x) => String(x || '').trim())
+          .filter((x) => /^\d+$/.test(x)),
+      ),
+    ];
+    let touched627 = 0;
+    const errors = /** @type {string[]} */ ([]);
+    for (const lid of ids) {
+      try {
+        const res627 = await kintone.api(kintone.api.url('/k/v1/record', true), 'GET', {
+          app: LEDGER_APP_ID,
+          id: lid,
+        });
+        const rec627 = res627.record || {};
+        const patch = build627UnlinkPatchForPc594(rec627, pid);
+        if (Object.keys(patch).length === 0) continue;
+        await kintone.api(kintone.api.url('/k/v1/record', true), 'PUT', {
+          app: LEDGER_APP_ID,
+          id: lid,
+          revision: rec627.$revision?.value,
+          record: patch,
+        });
+        touched627++;
+      } catch (e) {
+        errors.push(`627 #${lid}: ${e instanceof Error ? e.message : String(e)}`);
+      }
+    }
+    if (errors.length) {
+      return { ok: false, message: errors.join('\n'), touched627 };
+    }
+
+    try {
+      const app594 = kintone.app.getId();
+      const r594 = await kintone.api(kintone.api.url('/k/v1/record', true), 'GET', { app: app594, id: pid });
+      const rec594 = r594.record || {};
+      const curLed = String(rec594[FC_594_LEDGER_RECORD_ID]?.value ?? '').trim();
+      if (curLed) {
+        await kintone.api(kintone.api.url('/k/v1/record', true), 'PUT', {
+          app: app594,
+          id: pid,
+          revision: rec594.$revision?.value,
+          record: { [FC_594_LEDGER_RECORD_ID]: { value: null } },
+        });
+      }
+    } catch (e) {
+      return {
+        ok: false,
+        message:
+          `627 側は ${touched627} 件更新しましたが、594 のアカウント台帳番号のクリアに失敗しました: ` +
+          (e instanceof Error ? e.message : String(e)),
+        touched627,
+      };
+    }
+    return { ok: true, message: '', touched627 };
   };
 
   /**
@@ -3310,6 +3406,65 @@
       const candidates = new Set(linked627Ids);
       if (ledgerSingle && /^\d+$/.test(ledgerSingle)) candidates.add(ledgerSingle);
       const ids = Array.from(candidates);
+      const has594LedgerNum = !!(ledgerSingle && /^\d+$/.test(String(ledgerSingle).trim()));
+
+      /** 627⇔594 の参照解除（627は該当PC分のみ・594は台帳番号のみ）。627レコード削除はしない。 */
+      const attachUnlinkToolbar = () => {
+        const targetLedgerIds = [
+          ...new Set(
+            [...linked627Ids, ...(has594LedgerNum ? [String(ledgerSingle).trim()] : [])]
+              .map((x) => String(x || '').trim())
+              .filter((x) => /^\d+$/.test(x)),
+          ),
+        ];
+        if (targetLedgerIds.length === 0 && !has594LedgerNum) return;
+
+        const tb = document.createElement('div');
+        tb.style.cssText =
+          'flex-basis:100%;margin-top:8px;padding-top:8px;border-top:1px dashed #e2e8f0;' +
+          'display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;';
+        const hint = document.createElement('span');
+        hint.style.cssText = 'font-size:11px;color:#64748b;flex:1;min-width:200px;line-height:1.45;';
+        hint.innerHTML =
+          '<b>紐付け解除</b>：627 のこの PC への参照（<code>pc_594_record_id</code> または ' +
+          '<code>pc_ledger_links</code> の該当行）だけを外し、594 の <code>ledger_record_id</code> を空にします。' +
+          '627 のレコード削除や氏名・パスワード等の変更はしません。';
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = '627⇔594 紐付け解除…';
+        btn.style.cssText =
+          'padding:6px 12px;border-radius:6px;border:1px solid #b45309;background:#fff7ed;' +
+          'color:#9a3412;font-weight:800;font-size:12px;cursor:pointer;white-space:nowrap;';
+        btn.addEventListener('click', async () => {
+          const msg =
+            '【紐付け解除の確認】\n\n' +
+            `・PC台帳(594) レコード番号: ${pcId}\n` +
+            '・627: 上記 PC を指している参照だけを外します（台帳レコード自体は削除しません）。\n' +
+            '・594: アカウント台帳番号(ledger_record_id) を空にします。\n\n' +
+            '再設定は手動です。実行しますか？';
+          if (!confirm(msg)) return;
+          btn.disabled = true;
+          btn.textContent = '処理中…';
+          try {
+            const res = await unlinkPc594FromLedgerRecords(pcId, targetLedgerIds);
+            if (!res.ok) {
+              alert(`紐付け解除を完了できませんでした。\n\n${res.message || ''}`);
+              btn.disabled = false;
+              btn.textContent = '627⇔594 紐付け解除…';
+              return;
+            }
+            alert(`紐付け解除が完了しました（627を更新した件数: ${res.touched627}）。画面を再読み込みします。`);
+            location.reload();
+          } catch (e) {
+            alert(`エラー: ${e instanceof Error ? e.message : String(e)}`);
+            btn.disabled = false;
+            btn.textContent = '627⇔594 紐付け解除…';
+          }
+        });
+        tb.appendChild(hint);
+        tb.appendChild(btn);
+        wrap.appendChild(tb);
+      };
 
       linkArea.innerHTML = '';
       if (ids.length === 0) {
@@ -3319,6 +3474,7 @@
           ? '⚠ 紐付くアカウント台帳がまだありません。上の共有アカウント紐付けから登録してください。'
           : '⚠ 紐付くアカウント台帳がまだありません。上の「アカウント管理台帳(627) 作成/更新して開く」から作成してください。';
         linkArea.appendChild(note);
+        if (has594LedgerNum) attachUnlinkToolbar();
         return true;
       }
 
@@ -3360,6 +3516,7 @@
       });
       details.appendChild(list);
       linkArea.appendChild(details);
+      attachUnlinkToolbar();
     } catch (e) {
       console.warn('[JBIS-594] action panel link area failed', e);
       linkArea.textContent = 'アカウント台帳との紐付け取得に失敗しました。';
