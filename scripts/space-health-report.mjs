@@ -375,6 +375,46 @@ function resolveApps(pwHeaders) {
   return DEFAULT_APPS;
 }
 
+/**
+ * 各行のステータスから総合判定と運用向け短いコメントを Markdown で返す。
+ * @param {{ id: string; label: string; status: string }[]} rows
+ * @returns {string[]}
+ */
+function buildVerdictAndCommentLines(rows) {
+  const ng = rows.filter((r) => r.status === "異常");
+  const warn = rows.filter((r) => r.status === "警告");
+  const ok = rows.filter((r) => r.status === "正常");
+  const out = ["", "### 総合判定", ""];
+  if (ng.length > 0) {
+    out.push(`**要対応**（異常 ${ng.length} 件）`);
+  } else if (warn.length > 0) {
+    out.push(`**注意**（警告 ${warn.length} 件・異常なし）`);
+  } else {
+    out.push("**正常**（全アプリで API 疎通および想定フィールドに問題なし）");
+  }
+  out.push("", "### コメント", "");
+  if (rows.length === 0) {
+    out.push("- 検査対象アプリがありません。");
+    return out;
+  }
+  out.push(`- 検査対象 **${rows.length}** アプリ（正常 ${ok.length} / 警告 ${warn.length} / 異常 ${ng.length}）。`);
+  if (ng.length > 0) {
+    out.push(
+      `- **異常**（App ID: ${ng.map((r) => r.id).join(", ")}）: 認証・権限・アプリ ID・ネットワークを確認してください。`,
+    );
+  }
+  if (warn.length > 0) {
+    out.push(
+      `- **警告**（App ID: ${warn.map((r) => r.id).join(", ")}）: 上表のアプリ名どおりで、想定フィールドの不足があります。フォーム整備を検討してください。`,
+    );
+  }
+  if (ng.length === 0 && warn.length === 0) {
+    out.push("- 本実行では API と（対象アプリに設定されている場合のみ）必須フィールド検証に問題は見つかりませんでした。");
+  }
+  out.push("- レコード数・24h変動は REST の集計であり、アプリ設計によっては算出できない列があります（表では — ）。");
+  return out;
+}
+
 async function main() {
   const domain = requireDomain();
   const pwHeaders = passwordAuthHeaders();
@@ -404,6 +444,8 @@ async function main() {
   lines.push("");
 
   let allOk = true;
+  /** @type {{ id: string; label: string; status: string }[]} */
+  const rowSummary = [];
 
   for (const app of apps) {
     let best = { ok: false, status: 0, name: "", detail: "" };
@@ -462,6 +504,7 @@ async function main() {
       lines.push(
         `| ${app.id} | ${esc(displayName)} | ${recCell} | ${h24Cell} | ${statusJa} | ${esc(stats.lastUpdatedDisplay)} |`,
       );
+      rowSummary.push({ id: app.id, label: String(displayName), status: statusJa });
       continue;
     }
 
@@ -527,7 +570,10 @@ async function main() {
     lines.push(
       `| ${app.id} | ${esc(displayName)} | ${recCell} | ${h24Cell} | ${statusJa} | ${esc(stats.lastUpdatedDisplay)} |`,
     );
+    rowSummary.push({ id: app.id, label: String(displayName), status: statusJa });
   }
+
+  lines.push(...buildVerdictAndCommentLines(rowSummary));
 
   lines.push("");
   lines.push("### 参照");
