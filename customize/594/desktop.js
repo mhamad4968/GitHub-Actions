@@ -1,6 +1,7 @@
 (() => {
   'use strict';
 
+  // BUILD: 2026-04-18-v477 (相関ダッシュボード備考: 紐付けなし+ledger残存の警告)
   // JBIS-ACC-001
   // PC台帳(594)からアカウント管理台帳(627)を「作成/更新して開く」
   // - mail をキーに 627 を作成/更新
@@ -81,6 +82,8 @@
   const STORAGE_KEY_594_SHARED_LINK = 'jbis594_shared_link_v1';
   // Restrict heavy custom behavior to known card views only (safe for production).
   const CARD_VIEW_IDS = new Set([13314933, 13314733, 13314927, 13314929, 13314931]);
+  // PC↔アカウント相関ダッシュボード（CUSTOMビュー）
+  const QUALITY_DASHBOARD_VIEW_ID = 13459660;
 
   /** カード用カスタムHTML(#pc-card-container)を内包しない既定一覧グリッドだけ抑止（狭幅で2段目が表と重なる対策） */
   const JBIS594_SUPPRESS_SELECTOR_LIST = [
@@ -98,6 +101,10 @@
       body.jbis594-card-view .jbis594-header-menu-elevate {
         position: relative !important;
         z-index: 2147482990 !important;
+        overflow: visible !important;
+        height: auto !important;
+        max-height: none !important;
+        min-height: 0 !important;
       }
       body.jbis594-card-view #jbis-pc-search-panel.jbis-search-toolbar {
         position: relative;
@@ -219,14 +226,14 @@
         --jbisBadge-border: rgba(37, 99, 235, .25);
         --jbisBadge-text: #1d4ed8;
       }
-      /* Kintone list background feels flat without custom CSS; add gentle canvas */
-      body{
+      /* Kintone list background feels flat without custom CSS; add gentle canvas (card view only) */
+      body.jbis594-card-view{
         background:
           radial-gradient(1200px 600px at 8% 0%, rgba(37,99,235,.08), rgba(255,255,255,0) 55%),
           radial-gradient(900px 500px at 95% 5%, rgba(16,185,129,.07), rgba(255,255,255,0) 50%),
           linear-gradient(180deg, rgba(2,6,23,.02), rgba(2,6,23,0) 30%);
       }
-      #pc-card-container{
+      #pc-card-container, #jbis-table-search-cards{
         display:grid;
         grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
         gap:14px;
@@ -348,8 +355,8 @@
     document.head.appendChild(style);
   };
 
-  const renderCardsIfNeeded = (event) => {
-    const container = document.getElementById('pc-card-container');
+  const renderCardsIfNeeded = (event, overrideContainer) => {
+    const container = overrideContainer || document.getElementById('pc-card-container');
     if (!container) return;
     // スペーサーは「パネル vs #pc-card-container の幾何」のみ。検索で中身だけ差し替えるたびに
     // invalidate すると push が再計測で小さくなりカードが上にジャンプするのでここでは無効化しない。
@@ -369,11 +376,14 @@
       empty.style.padding = '8px 0';
       empty.textContent = '該当するレコードがありません。';
       container.appendChild(empty);
-      schedulePcCardGridSync();
-      requestAnimationFrame(() => requestAnimationFrame(syncPcCardGridOffset));
+      if (!overrideContainer) {
+        schedulePcCardGridSync();
+        requestAnimationFrame(() => requestAnimationFrame(syncPcCardGridOffset));
+      }
       return;
     }
 
+    const frag = document.createDocumentFragment();
     for (const r of records) {
       const id = r.$id?.value;
       const type = r.type?.value || '';
@@ -413,11 +423,9 @@
       const titleWrap = document.createElement('div');
       const title = document.createElement('div');
       title.className = 'jbisPcCard__title';
-      // 1段目：所属グループ[所属名] 使用者 種別
       title.textContent = `🏢 ${group || ''}${dept ? ` [${dept}]` : ''}   👤 ${user || '未設定'}${type ? ` (${type})` : ''}`.trim();
       const sub = document.createElement('div');
       sub.className = 'jbisPcCard__sub';
-      // 2段目：PC名[共有端末名]（大きく表示）
       sub.innerHTML = `<span class="jbisPcCard__pcLine">💻 ${pcName || '(PC名なし)'}${shared ? ` [${shared}]` : ''}</span>`;
       titleWrap.appendChild(title);
       if (sub.textContent) titleWrap.appendChild(sub);
@@ -432,7 +440,6 @@
       const footer = document.createElement('div');
       footer.className = 'jbisPcCard__footer';
       const left = document.createElement('div');
-      // 3段目：メーカー[モデル] 購入日
       left.textContent = `🛠 ${maker || ''}${model ? ` [${model}]` : ''}`.trim();
       const right = document.createElement('div');
       right.textContent = `💰 購入: ${dop || '-'}`;
@@ -442,7 +449,6 @@
       card.appendChild(top);
       card.appendChild(footer);
 
-      // 4段目：最新棚卸日 設置場所
       const bottom = document.createElement('div');
       bottom.className = 'jbisPcCard__footer';
       bottom.style.marginTop = '6px';
@@ -456,10 +462,13 @@
       bottom.appendChild(bRight);
       card.appendChild(bottom);
 
-      container.appendChild(card);
+      frag.appendChild(card);
     }
-    schedulePcCardGridSync();
-    requestAnimationFrame(() => requestAnimationFrame(syncPcCardGridOffset));
+    container.appendChild(frag);
+    if (!overrideContainer) {
+      schedulePcCardGridSync();
+      requestAnimationFrame(() => requestAnimationFrame(syncPcCardGridOffset));
+    }
   };
 
   /** スペーサー高さをスクロールのたびに再計算すると gr.top が変わり続け、ページが上下にジャンプするためキャッシュする */
@@ -519,7 +528,7 @@
   };
 
   const schedulePcCardGridSync = () => {
-    [0, 50, 150, 400, 1000, 2000].forEach((ms) => setTimeout(syncPcCardGridOffset, ms));
+    [0, 100, 500, 1500].forEach((ms) => setTimeout(syncPcCardGridOffset, ms));
   };
 
   if (!window.__jbis594ListResizeSync) {
@@ -823,8 +832,12 @@
       '  #jbis-pc-search-panel .jbisAct--link{background:transparent;border:none;color:#2563eb;padding:4px 6px;text-decoration:underline;text-underline-offset:2px;}' +
       '  #jbis-pc-search-panel .jbisAct--link:hover{color:#1d4ed8;background:#eff6ff;}' +
       '  #jbis-pc-search-panel .jbisAct--link[aria-pressed="true"]{color:#fff;background:#0284c7;text-decoration:none;border-radius:4px;}' +
-      '  #jbis-pc-search-panel .jbisAct--ghost{background:#fff;border:1px solid #94a3b8;color:#0f172a;padding:4px 10px;font-weight:600;}' +
-      '  #jbis-pc-search-panel .jbisAct--ghost:hover{background:#f8fafc;}' +
+      '  #jbis-pc-search-panel .jbisAct--alert{color:#7c2d12;background:#fff7ed;border:1px solid #b45309;text-decoration:none;padding:4px 8px;}' +
+      '  #jbis-pc-search-panel .jbisAct--alert:hover{background:#fed7aa;border-color:#9a3412;}' +
+      '  #jbis-pc-search-panel .jbisAct--alert[aria-pressed="true"]{color:#fff;background:#b91c1c;border-color:#7f1d1d;}' +
+      '  #jbis-pc-search-panel .jbisAct--ghost{background:#fff7ed;border:1.5px solid #b45309;color:#7c2d12;padding:4px 12px;font-weight:700;}' +
+      '  #jbis-pc-search-panel .jbisAct--ghost:hover{background:#fed7aa;border-color:#9a3412;}' +
+      '  #jbis-pc-search-panel .jbisAct--ghost::before{content:"↺ ";font-weight:900;}' +
       '  #jbis-pc-search-panel .jbisAct--primary{background:#2563eb;border:1px solid #1d4ed8;color:#fff;padding:4px 12px;}' +
       '  #jbis-pc-search-panel .jbisAct--primary:hover{background:#1d4ed8;}' +
       '  .jbis-act-sep{width:1px;height:18px;background:#cbd5e1;margin:0 2px;flex:0 0 auto;}' +
@@ -840,6 +853,7 @@
       '  .jbis-date-calbtn:hover{background:#e2e8f0;}' +
       '  #jbis-q-dep{box-sizing:border-box;padding:3px 7px;border:1px solid #cbd5e1;border-radius:4px;font-size:11px;min-width:0;width:100%;height:22px;}' +
       '  #jbis-q-pc,#jbis-q-usr{box-sizing:border-box;padding:3px 7px;border:1px solid #cbd5e1;border-radius:4px;font-size:11px;height:22px;}' +
+      '  #jbis-q-type{box-sizing:border-box;padding:2px 4px;border:1px solid #cbd5e1;border-radius:4px;font-size:11px;height:22px;flex:0 0 auto;min-width:60px;background:#fff;}' +
       '  .jbisSuggest{position:relative;display:block;width:100%;min-width:0;}' +
       '  .jbisSuggestList{position:absolute;left:0;top:100%;margin-top:4px;z-index:1000;min-width:min(100%,280px);max-width:420px;max-height:160px;overflow:auto;background:#fff;border:1px solid #cbd5e1;border-radius:6px;box-shadow:0 10px 22px rgba(15,23,42,.12);display:none;}' +
       '  .jbisSuggestItem{padding:6px 8px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px;}' +
@@ -851,6 +865,8 @@
       '      <div class="jbisSearchActions--top">' +
       `        <button type="button" id="jbis-short-unfinished" class="jbisAct jbisAct--link" aria-pressed="false">棚卸未了</button>` +
       `        <button type="button" id="jbis-short-fy-done" class="jbisAct jbisAct--link" aria-pressed="false">本年分棚卸完了</button>` +
+      `        <button type="button" id="jbis-short-no-acct" class="jbisAct jbisAct--link" aria-pressed="false">台帳未紐付</button>` +
+      `        <button type="button" id="jbis-short-multi-acct" class="jbisAct jbisAct--link jbisAct--alert" aria-pressed="false" title="このPCに627アカウントが2件以上紐付いているもののみを抽出します">📌 アカウント複数</button>` +
       '        <span class="jbis-act-sep" aria-hidden="true"></span>' +
       '        <button type="button" id="jbis-q-btn" class="jbisAct jbisAct--primary">検索</button>' +
       '        <button type="button" id="jbis-q-rst" class="jbisAct jbisAct--ghost">リセット</button>' +
@@ -863,6 +879,7 @@
       '      <input type="text" id="jbis-q-dep" placeholder="所属/所属グループ（複数OK: 本社 tokyo 等）">' +
       '      <div id="jbis-q-dep-suggest" class="jbisSuggestList" role="listbox"></div>' +
       '    </span>' +
+      '    <select id="jbis-q-type"><option value="">種別</option><option value="個人">個人</option><option value="共有">共有</option><option value="サーバーNAS">サーバーNAS</option><option value="JR端末">JR端末</option><option value="その他">その他</option></select>' +
       '    <input type="text" id="jbis-q-pc" placeholder="端末名">' +
       '    <input type="text" id="jbis-q-usr" placeholder="利用者(部分一致)">' +
       '    <div class="jbis-date-range"><span>購入</span>' +
@@ -875,19 +892,25 @@
 
     header.classList.add('jbis594-header-menu-elevate');
     header.appendChild(panel);
-    [header, header.parentElement].forEach((el) => {
-      if (!el) return;
-      const cs = window.getComputedStyle(el);
-      if (cs.display === 'flex' && cs.flexWrap === 'nowrap') {
-        el.style.flexWrap = 'wrap';
-      }
-    });
+    let ancestor = header;
+    for (let i = 0; i < 4 && ancestor; i++) {
+      try {
+        const cs = window.getComputedStyle(ancestor);
+        if (cs.display === 'flex' && cs.flexWrap === 'nowrap') {
+          ancestor.style.flexWrap = 'wrap';
+        }
+        if (cs.overflow === 'hidden' || cs.overflowY === 'hidden') {
+          ancestor.style.setProperty('overflow', 'visible', 'important');
+        }
+      } catch (_) { /* noop */ }
+      ancestor = ancestor.parentElement;
+    }
 
     schedulePcCardGridSync();
     if (typeof ResizeObserver !== 'undefined') {
       new ResizeObserver(() => {
         invalidatePcCardSpacerCache();
-        syncPcCardGridOffset();
+        requestAnimationFrame(() => requestAnimationFrame(syncPcCardGridOffset));
       }).observe(panel);
     }
 
@@ -1009,16 +1032,163 @@
     // unique
     return Array.from(new Set(out));
   };
+  // M2: カナ正規化（ひらがな→カタカナ、全角→半角、小文字化）
+  // 「とうきょう」「トウキョウ」「ﾄｳｷｮｳ」「TOKYO」を等価に扱う。
+  const hiraToKata = (s) => String(s || '').replace(/[\u3041-\u3096]/g, (m) =>
+    String.fromCharCode(m.charCodeAt(0) + 0x60)
+  );
+  const normalizeForSearch = (s) => {
+    try {
+      return hiraToKata(String(s || '').normalize('NFKC')).toLowerCase();
+    } catch (_) {
+      return String(s || '').toLowerCase();
+    }
+  };
+
   const matchesAnyToken = (haystack, tokens) => {
     if (!tokens.length) return true;
-    const h = String(haystack || '').toLowerCase();
-    return tokens.some((t) => h.includes(String(t).toLowerCase()));
+    const h = normalizeForSearch(haystack);
+    return tokens.some((t) => h.includes(normalizeForSearch(t)));
+  };
+
+  const includesNormalized = (haystack, needle) => {
+    const n = normalizeForSearch(needle);
+    if (!n) return true;
+    return normalizeForSearch(haystack).includes(n);
+  };
+
+  const jbis594FetchCache = { key: '', records: null, ts: 0 };
+
+  // M1: 検索条件の永続化（sessionStorage、ビューID別キー）
+  const JBIS594_SEARCH_STATE_PREFIX = 'jbis594_search_state_v1:';
+  const getSearchStateKey = () => {
+    const viewId = (typeof kintone.app.getViewId === 'function') ? kintone.app.getViewId() : '';
+    return `${JBIS594_SEARCH_STATE_PREFIX}${viewId || 'default'}`;
+  };
+  const captureSearchState = () => {
+    const panel = document.getElementById('jbis-pc-search-panel');
+    return {
+      dep: document.getElementById('jbis-q-dep')?.value || '',
+      type: document.getElementById('jbis-q-type')?.value || '',
+      pc: document.getElementById('jbis-q-pc')?.value || '',
+      usr: document.getElementById('jbis-q-usr')?.value || '',
+      ds: document.getElementById('jbis-ds')?.value || '',
+      de: document.getElementById('jbis-de')?.value || '',
+      shortUnfinished: panel?.dataset.shortUnfinished || '0',
+      shortFyDone: panel?.dataset.shortFyDone || '0',
+      shortNoAcct: panel?.dataset.shortNoAcct || '0',
+      shortMultiAcct: panel?.dataset.shortMultiAcct || '0',
+    };
+  };
+  const persistSearchState = () => {
+    try {
+      const st = captureSearchState();
+      sessionStorage.setItem(getSearchStateKey(), JSON.stringify(st));
+    } catch (_) { /* noop: private mode 等 */ }
+  };
+  const loadSearchState = () => {
+    try {
+      const raw = sessionStorage.getItem(getSearchStateKey());
+      if (!raw) return null;
+      return JSON.parse(raw);
+    } catch (_) { return null; }
+  };
+  const applySearchStateToUi = (st) => {
+    if (!st) return false;
+    const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v ?? ''; };
+    setVal('jbis-q-dep', st.dep);
+    setVal('jbis-q-type', st.type);
+    setVal('jbis-q-pc', st.pc);
+    setVal('jbis-q-usr', st.usr);
+    setVal('jbis-ds', st.ds);
+    setVal('jbis-de', st.de);
+    const panel = document.getElementById('jbis-pc-search-panel');
+    if (panel) {
+      panel.dataset.shortUnfinished = st.shortUnfinished || '0';
+      panel.dataset.shortFyDone = st.shortFyDone || '0';
+      panel.dataset.shortNoAcct = st.shortNoAcct || '0';
+      panel.dataset.shortMultiAcct = st.shortMultiAcct || '0';
+    }
+    const setPressed = (id, on) => {
+      const b = document.getElementById(id);
+      if (b) b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    };
+    setPressed('jbis-short-unfinished', (st.shortUnfinished === '1'));
+    setPressed('jbis-short-fy-done', (st.shortFyDone === '1'));
+    setPressed('jbis-short-no-acct', (st.shortNoAcct === '1'));
+    setPressed('jbis-short-multi-acct', (st.shortMultiAcct === '1'));
+    return Boolean(
+      (st.dep && st.dep.trim()) || (st.type && st.type.trim()) ||
+      (st.pc && st.pc.trim()) || (st.usr && st.usr.trim()) ||
+      (st.ds && st.ds.trim()) || (st.de && st.de.trim()) ||
+      st.shortUnfinished === '1' || st.shortFyDone === '1' ||
+      st.shortNoAcct === '1' || st.shortMultiAcct === '1'
+    );
+  };
+  const clearSearchState = () => {
+    try { sessionStorage.removeItem(getSearchStateKey()); } catch (_) { /* noop */ }
+  };
+
+  /**
+   * 「アカウント複数」トグル用のデータ取得・集計。
+   * 1度取れば 5 分キャッシュ。返すのは「対象とすべき 594 ID の Set」。
+   * 判定ロジック (純粋にユーザー要望どおり):
+   *   627 から 594ID を逆引きして、同じ 594ID に 2 件以上のアカウント (=627 レコード) が
+   *   紐付いていれば対象。`pc_594_record_id` (単独) と `pc_ledger_links.pc_ledger_link_594_id`
+   *   の和集合で 594 ID を集め、594 ID 別の **アカウント件数** をカウントして判定する。
+   *   (旧 v1 で混ぜていた "ledger_record_id 重複" 判定はユーザー視点では「アカウント1つ」
+   *    にしか見えず誤解を招いたため除外)
+   */
+  const jbis594MultiAcctCache = { ts: 0, ids: null };
+  const buildMultiAcct594IdSet = async () => {
+    const TTL_MS = 5 * 60 * 1000;
+    if (jbis594MultiAcctCache.ids && (Date.now() - jbis594MultiAcctCache.ts) < TTL_MS) {
+      return jbis594MultiAcctCache.ids;
+    }
+    const url = kintone.api.url('/k/v1/records', true);
+    const result = new Set();
+    const counter = new Map();
+    for (let off = 0; off < 50000; off += 500) {
+      const res = await kintone.api(url, 'GET', {
+        app: LEDGER_APP_ID,
+        query: `$id > 0 order by $id asc limit 500 offset ${off}`,
+        fields: ['$id', FC_627_PC_594_RECORD_ID, FC_627_PC_SUBTABLE],
+      });
+      const recs = res?.records ?? [];
+      for (const r of recs) {
+        const aid = String(r.$id?.value ?? '').trim();
+        if (!aid) continue;
+        const ids = new Set();
+        const single = String(r[FC_627_PC_594_RECORD_ID]?.value ?? '').trim();
+        if (single) ids.add(single);
+        const rows = r[FC_627_PC_SUBTABLE]?.value ?? [];
+        for (const row of rows) {
+          const v = String(row?.value?.[FC_627_PC_SUB_594]?.value ?? '').trim();
+          if (v) ids.add(v);
+        }
+        for (const pid of ids) {
+          counter.set(pid, (counter.get(pid) || 0) + 1);
+        }
+      }
+      if (recs.length < 500) break;
+    }
+    counter.forEach((cnt, pid) => { if (cnt >= 2) result.add(pid); });
+    jbis594MultiAcctCache.ids = result;
+    jbis594MultiAcctCache.ts = Date.now();
+    return result;
   };
 
   const fetchAllForCurrentView = async () => {
     const app = kintone.app.getId();
     const qCond = kintone.app.getQueryCondition() || '';
     const qFull = kintone.app.getQuery() || '';
+
+    const viewId = (typeof kintone.app.getViewId === 'function') ? kintone.app.getViewId() : '';
+    const cacheKey = `${qCond}|${viewId}`;
+    if (jbis594FetchCache.key === cacheKey && jbis594FetchCache.records && (Date.now() - jbis594FetchCache.ts) < 60000) {
+      return jbis594FetchCache.records;
+    }
+
     const sort = qFull.includes('order by')
       ? ` ${qFull.substring(qFull.indexOf('order by')).split(/limit|offset/i)[0]}`
       : '';
@@ -1030,6 +1200,10 @@
       all.push(...(res.records || []));
       if (!res.records || res.records.length < 500) break;
     }
+
+    jbis594FetchCache.key = cacheKey;
+    jbis594FetchCache.records = all;
+    jbis594FetchCache.ts = Date.now();
     return all;
   };
 
@@ -1446,13 +1620,20 @@
   kintone.events.on('app.record.index.show', (event) => {
     try {
       ensureGlobalLabelStyle();
+      // PC↔アカウント相関ダッシュボード（独立CUSTOMビュー）。検索パネル等は出さず専用画面を描画。
+      if (Number(event.viewId) === QUALITY_DASHBOARD_VIEW_ID) {
+        document.body.classList.remove('jbis594-card-view');
+        renderQualityDashboard().catch((err) => {
+          console.error('[JBIS-594] dashboard render failed', err);
+          const root = document.getElementById('jbis-quality-dashboard');
+          if (root) root.innerHTML = `<div style="color:#b91c1c;padding:16px;">ダッシュボードの読込に失敗しました: ${String(err?.message || err)}</div>`;
+        });
+        return event;
+      }
       const isCardView = CARD_VIEW_IDS.has(Number(event.viewId));
       if (!isCardView) {
         document.body.classList.remove('jbis594-card-view');
         clear594DefaultListGridSuppressions();
-        kintone.app.getHeaderMenuSpaceElement()?.classList.remove('jbis594-header-menu-elevate');
-        const oldPanel = document.getElementById('jbis-pc-search-panel');
-        if (oldPanel) oldPanel.remove();
         invalidatePcCardSpacerCache();
         const moPack = window.__jbis594GridMo;
         if (moPack?.obs) {
@@ -1463,13 +1644,317 @@
           clearTimeout(moPack.timer);
           moPack.timer = null;
         }
+
+        ensureSearchPanel();
+
+        const spEl = document.getElementById('jbis-pc-search-panel');
+        const headerMenu = kintone.app.getHeaderMenuSpaceElement();
+
+        const TABLE_WRAPPER_ID = 'jbis-594-table-search-wrapper';
+        let wrapper = document.getElementById(TABLE_WRAPPER_ID);
+        if (wrapper) wrapper.style.display = '';
+        if (!wrapper) {
+          wrapper = document.createElement('div');
+          wrapper.id = TABLE_WRAPPER_ID;
+          wrapper.style.cssText = 'position:relative;z-index:50;background:#f8fafc;border-bottom:1px solid #e2e8f0;padding:0 8px 4px;';
+          const anchor = document.querySelector('.contents-gaia') || document.querySelector('.gaia-argoui-app-index-toolbar') || headerMenu?.parentNode;
+          if (anchor && anchor.parentNode) {
+            anchor.parentNode.insertBefore(wrapper, anchor);
+          } else {
+            document.body.prepend(wrapper);
+          }
+        }
+        if (spEl && spEl.parentNode !== wrapper) {
+          wrapper.appendChild(spEl);
+        }
+
+        const JBIS_TABLE_CONTAINER_ID = 'jbis-table-search-cards';
+        let tableSearchContainer = document.getElementById(JBIS_TABLE_CONTAINER_ID);
+        if (!tableSearchContainer) {
+          tableSearchContainer = document.createElement('div');
+          tableSearchContainer.id = JBIS_TABLE_CONTAINER_ID;
+          tableSearchContainer.style.display = 'none';
+          if (wrapper.parentNode) {
+            wrapper.parentNode.insertBefore(tableSearchContainer, wrapper.nextSibling);
+          } else {
+            document.body.appendChild(tableSearchContainer);
+          }
+        }
+        tableSearchContainer.style.display = 'none';
+        tableSearchContainer.innerHTML = '';
+
+        const JBIS594_TABLE_SELECTORS = [
+          '.gaia-argoui-app-index-table',
+          '.ocean-ui-grid',
+          '.recordlist-gaia',
+          '.contents-recordlist-gaia',
+          '.gaia-argoui-app-index-pager',
+          '.recordlist-header-cell-gaia',
+        ];
+        const showDefaultTable = () => {
+          JBIS594_TABLE_SELECTORS.forEach((sel) => {
+            document.querySelectorAll(sel).forEach((el) => {
+              el.style.removeProperty('display');
+            });
+          });
+          // カード描画コンテナを必ず空＆非表示に。残骸でテーブルとカードが二重に出る事故を防ぐ。
+          tableSearchContainer.style.display = 'none';
+          tableSearchContainer.innerHTML = '';
+        };
+        const hideDefaultTable = () => {
+          JBIS594_TABLE_SELECTORS.forEach((sel) => {
+            document.querySelectorAll(sel).forEach((el) => {
+              el.style.setProperty('display', 'none', 'important');
+            });
+          });
+          tableSearchContainer.style.display = '';
+        };
+
+        showDefaultTable();
+
+        const countEl = document.getElementById('jbis-q-count');
+        if (countEl) countEl.textContent = '読込中...';
+
+        fetchAllForCurrentView().then((allRecs) => {
+          if (countEl) countEl.textContent = `${allRecs.length}件`;
+
+          const doTableSearch = () => {
+            const panel = document.getElementById('jbis-pc-search-panel');
+            const depTokens = expandDepTokens(splitTokens(document.getElementById('jbis-q-dep')?.value || ''));
+            const vPc = document.getElementById('jbis-q-pc')?.value || '';
+            const vUsr = document.getElementById('jbis-q-usr')?.value || '';
+            const vType = document.getElementById('jbis-q-type')?.value || '';
+            const ds = document.getElementById('jbis-ds')?.value || '';
+            const de = document.getElementById('jbis-de')?.value || '';
+            const shortUnfinished = panel?.dataset.shortUnfinished === '1';
+            const shortFyDone = panel?.dataset.shortFyDone === '1';
+            const shortNoAcct = panel?.dataset.shortNoAcct === '1';
+            const shortMultiAcct = panel?.dataset.shortMultiAcct === '1';
+            const fyStart = panel?.dataset.fyStart || '';
+            const fyEnd = panel?.dataset.fyEnd || '';
+            const multiAcctSet = (shortMultiAcct && jbis594MultiAcctCache.ids) || null;
+
+            const hasFilter = depTokens.length > 0 || vPc || vUsr || vType || ds || de || shortUnfinished || shortFyDone || shortNoAcct || shortMultiAcct;
+            const filtered = allRecs.filter((r) => {
+              const depHay = `${getV(r, 'dept_name')} ${getV(r, 'group_name')}`;
+              const mDep = matchesAnyToken(depHay, depTokens);
+              const mPc = !vPc || includesNormalized(`${getV(r, 'PC_name')} ${getV(r, 'shared_terminal_name')}`, vPc);
+              const mUsr = !vUsr || includesNormalized(getV(r, 'user_name'), vUsr);
+              const mType = !vType || getV(r, 'type') === vType;
+              const valDop = getV(r, 'dop');
+              const valFin = getV(r, 'inventory_finish_date');
+              const mD = (!ds || valDop >= ds) && (!de || (valDop <= de && valDop !== ''));
+              const mShortUnfinished = !shortUnfinished || !valFin;
+              const mShortFyDone = !shortFyDone || (!!valFin && (!fyStart || valFin >= fyStart) && (!fyEnd || valFin <= fyEnd));
+              const lid = String(getV(r, 'ledger_record_id')).trim();
+              const mNoAcct = !shortNoAcct || !lid || lid === '#N/A' || lid === '-' || !/^\d+$/.test(lid);
+              const rid = String(r?.$id?.value ?? '').trim();
+              const mMultiAcct = !shortMultiAcct || (multiAcctSet && multiAcctSet.has(rid));
+              return mDep && mPc && mUsr && mType && mD && mShortUnfinished && mShortFyDone && mNoAcct && mMultiAcct;
+            });
+
+            if (countEl) countEl.textContent = `${filtered.length}件`;
+
+            if (hasFilter) {
+              ensureListStyles();
+              hideDefaultTable();
+              renderCardsIfNeeded({ records: filtered }, tableSearchContainer);
+            } else {
+              showDefaultTable();
+            }
+            persistSearchState();
+          };
+
+          const panel = document.getElementById('jbis-pc-search-panel');
+          const btnUnfinished = document.getElementById('jbis-short-unfinished');
+          const btnFyDone = document.getElementById('jbis-short-fy-done');
+          const btnNoAcct = document.getElementById('jbis-short-no-acct');
+
+          // パネル"絞り込み中"視覚状態の同期（赤枠＋桜色背景）。テーブル全表示中に
+          // 「条件が残っているのに何も絞られてない」混乱を防ぐ。
+          const setPanelFilteredVisual = (active) => {
+            const panelEl = document.getElementById('jbis-pc-search-panel');
+            if (!panelEl) return;
+            if (active) {
+              panelEl.style.outline = '2px solid #b91c1c';
+              panelEl.style.outlineOffset = '2px';
+              panelEl.style.background = '#fef2f2';
+              panelEl.dataset.jbisFiltered = '1';
+            } else {
+              panelEl.style.removeProperty('outline');
+              panelEl.style.removeProperty('outline-offset');
+              panelEl.style.removeProperty('background');
+              panelEl.dataset.jbisFiltered = '0';
+            }
+          };
+
+          // 復元バナー（前回の検索条件あり）。
+          const RESTORE_BANNER_ID = 'jbis-q-restore-banner';
+          const removeRestoreBanner = () => {
+            const b = document.getElementById(RESTORE_BANNER_ID);
+            if (b && b.parentNode) b.parentNode.removeChild(b);
+          };
+          const showRestoreBanner = () => {
+            removeRestoreBanner();
+            const panelEl = document.getElementById('jbis-pc-search-panel');
+            if (!panelEl) return;
+            const div = document.createElement('div');
+            div.id = RESTORE_BANNER_ID;
+            div.style.cssText =
+              'margin:6px 0 0;padding:8px 12px;background:#fff7ed;border:2px solid #f59e0b;' +
+              'border-radius:8px;color:#7c2d12;font-size:12px;font-weight:700;display:flex;' +
+              'align-items:center;gap:8px;flex-wrap:wrap;';
+            const txt = document.createElement('span');
+            txt.textContent = '⚠ 前回の検索条件がパネルに残っています（現在は全件表示）。';
+            div.appendChild(txt);
+            const apply = document.createElement('button');
+            apply.type = 'button';
+            apply.textContent = 'この条件で絞り込む';
+            apply.style.cssText =
+              'background:#b91c1c;color:#fff;border:none;border-radius:6px;padding:4px 10px;' +
+              'font-weight:700;cursor:pointer;font-size:12px;';
+            apply.onclick = () => { removeRestoreBanner(); runTableSearchAndSync(); };
+            div.appendChild(apply);
+            const clr = document.createElement('button');
+            clr.type = 'button';
+            clr.textContent = '条件をクリア';
+            clr.style.cssText =
+              'background:#fff;color:#7c2d12;border:1px solid #b45309;border-radius:6px;padding:4px 10px;' +
+              'font-weight:700;cursor:pointer;font-size:12px;';
+            clr.onclick = () => {
+              document.getElementById('jbis-q-rst')?.click();
+            };
+            div.appendChild(clr);
+            panelEl.appendChild(div);
+          };
+
+          // doTableSearch を呼んだ後にパネルの視覚同期＆復元バナー除去まで一括で行うラッパー。
+          const runTableSearchAndSync = () => {
+            removeRestoreBanner();
+            doTableSearch();
+            const panelEl = document.getElementById('jbis-pc-search-panel');
+            const active = !!(
+              (document.getElementById('jbis-q-dep')?.value || '').trim() ||
+              (document.getElementById('jbis-q-type')?.value || '').trim() ||
+              (document.getElementById('jbis-q-pc')?.value || '').trim() ||
+              (document.getElementById('jbis-q-usr')?.value || '').trim() ||
+              (document.getElementById('jbis-ds')?.value || '').trim() ||
+              (document.getElementById('jbis-de')?.value || '').trim() ||
+              panelEl?.dataset.shortUnfinished === '1' ||
+              panelEl?.dataset.shortFyDone === '1' ||
+              panelEl?.dataset.shortNoAcct === '1' ||
+              panelEl?.dataset.shortMultiAcct === '1'
+            );
+            setPanelFilteredVisual(active);
+          };
+
+          const btnMultiAcct = document.getElementById('jbis-short-multi-acct');
+
+          if (btnUnfinished && panel) {
+            btnUnfinished.onclick = () => {
+              const next = panel.dataset.shortUnfinished === '1' ? '0' : '1';
+              panel.dataset.shortUnfinished = next;
+              btnUnfinished.setAttribute('aria-pressed', next === '1' ? 'true' : 'false');
+              runTableSearchAndSync();
+            };
+          }
+          if (btnFyDone && panel) {
+            btnFyDone.onclick = () => {
+              const next = panel.dataset.shortFyDone === '1' ? '0' : '1';
+              panel.dataset.shortFyDone = next;
+              btnFyDone.setAttribute('aria-pressed', next === '1' ? 'true' : 'false');
+              runTableSearchAndSync();
+            };
+          }
+          if (btnNoAcct && panel) {
+            btnNoAcct.onclick = () => {
+              const next = panel.dataset.shortNoAcct === '1' ? '0' : '1';
+              panel.dataset.shortNoAcct = next;
+              btnNoAcct.setAttribute('aria-pressed', next === '1' ? 'true' : 'false');
+              runTableSearchAndSync();
+            };
+          }
+          if (btnMultiAcct && panel) {
+            btnMultiAcct.onclick = async () => {
+              const next = panel.dataset.shortMultiAcct === '1' ? '0' : '1';
+              panel.dataset.shortMultiAcct = next;
+              btnMultiAcct.setAttribute('aria-pressed', next === '1' ? 'true' : 'false');
+              if (next === '1') {
+                btnMultiAcct.disabled = true;
+                const orig = btnMultiAcct.textContent;
+                btnMultiAcct.textContent = '集計中…';
+                try {
+                  await buildMultiAcct594IdSet();
+                } catch (e) {
+                  console.warn('[JBIS-594] multi-acct fetch failed', e);
+                  alert('「アカウント複数/重複疑い」の集計でエラーが発生しました。コンソールをご確認ください。');
+                  panel.dataset.shortMultiAcct = '0';
+                  btnMultiAcct.setAttribute('aria-pressed', 'false');
+                } finally {
+                  btnMultiAcct.disabled = false;
+                  btnMultiAcct.textContent = orig;
+                }
+              }
+              runTableSearchAndSync();
+            };
+          }
+
+          document.getElementById('jbis-q-btn').onclick = runTableSearchAndSync;
+          document.getElementById('jbis-q-rst').onclick = () => {
+            ['jbis-q-dep', 'jbis-q-pc', 'jbis-q-usr', 'jbis-ds', 'jbis-de'].forEach((id) => {
+              const el = document.getElementById(id);
+              if (el) el.value = '';
+            });
+            const typeEl = document.getElementById('jbis-q-type');
+            if (typeEl) typeEl.value = '';
+            if (panel) {
+              panel.dataset.shortUnfinished = '0';
+              panel.dataset.shortFyDone = '0';
+              panel.dataset.shortNoAcct = '0';
+              panel.dataset.shortMultiAcct = '0';
+            }
+            if (btnUnfinished) btnUnfinished.setAttribute('aria-pressed', 'false');
+            if (btnFyDone) btnFyDone.setAttribute('aria-pressed', 'false');
+            if (btnNoAcct) btnNoAcct.setAttribute('aria-pressed', 'false');
+            if (btnMultiAcct) btnMultiAcct.setAttribute('aria-pressed', 'false');
+            showDefaultTable();
+            if (countEl) countEl.textContent = `${allRecs.length}件`;
+            clearSearchState();
+            setPanelFilteredVisual(false);
+            removeRestoreBanner();
+          };
+
+          // M1（修正後）: 表形式ビューでは「条件の自動絞り込み」を行わない。
+          // - 入力欄/トグルへの値復元はする（ユーザーがすぐに「検索」を押せるように）
+          // - ただし表は全件表示のまま維持し、バナーで明示する。
+          // - これで「表形式全表示なのにカード表示が出ている」という違和感を撲滅。
+          const savedSt = loadSearchState();
+          const hasRestoredCond = applySearchStateToUi(savedSt);
+          showDefaultTable();
+          if (hasRestoredCond) {
+            if (countEl) countEl.textContent = `全${allRecs.length}件（前回の検索条件あり）`;
+            showRestoreBanner();
+          }
+          setPanelFilteredVisual(false);
+        });
+
         return event;
       }
       ensure594CardViewLayerCss();
       document.body.classList.add('jbis594-card-view');
       suppress594DefaultListGrids();
 
+      const tableWrapper = document.getElementById('jbis-594-table-search-wrapper');
+      if (tableWrapper) tableWrapper.style.display = 'none';
+      const tableCards = document.getElementById('jbis-table-search-cards');
+      if (tableCards) { tableCards.style.display = 'none'; tableCards.innerHTML = ''; }
+
       ensureSearchPanel();
+      const spPanel = document.getElementById('jbis-pc-search-panel');
+      const hdrMenu = kintone.app.getHeaderMenuSpaceElement();
+      if (spPanel && hdrMenu && spPanel.parentNode !== hdrMenu) {
+        hdrMenu.appendChild(spPanel);
+      }
       if (!window.__jbis594GridMo) window.__jbis594GridMo = { obs: null, timer: null, deb: null };
       const moPack = window.__jbis594GridMo;
       if (moPack.obs) moPack.obs.disconnect();
@@ -1482,14 +1967,17 @@
           syncPcCardGridOffset();
         }, 250);
       });
-      moPack.obs.observe(document.body, { childList: true, subtree: true });
+      const moTarget = document.querySelector('.contents-gaia')
+        || (document.getElementById('pc-card-container') && document.getElementById('pc-card-container').parentElement)
+        || document.body;
+      moPack.obs.observe(moTarget, { childList: true, subtree: true });
       moPack.timer = setTimeout(() => {
         if (moPack.obs) {
           moPack.obs.disconnect();
           moPack.obs = null;
         }
         moPack.timer = null;
-      }, 20000);
+      }, 10000);
 
       const countEl = document.getElementById('jbis-q-count');
       if (countEl) countEl.textContent = '読込中...';
@@ -1500,36 +1988,47 @@
           suppress594DefaultListGrids();
           const panel = document.getElementById('jbis-pc-search-panel');
           const depTokens = expandDepTokens(splitTokens(document.getElementById('jbis-q-dep')?.value || ''));
-          const vPc = (document.getElementById('jbis-q-pc')?.value || '').toLowerCase();
-          const vUsr = (document.getElementById('jbis-q-usr')?.value || '').toLowerCase();
+          const vPc = document.getElementById('jbis-q-pc')?.value || '';
+          const vUsr = document.getElementById('jbis-q-usr')?.value || '';
+          const vType = document.getElementById('jbis-q-type')?.value || '';
           const ds = document.getElementById('jbis-ds')?.value || '';
           const de = document.getElementById('jbis-de')?.value || '';
           const shortUnfinished = panel?.dataset.shortUnfinished === '1';
           const shortFyDone = panel?.dataset.shortFyDone === '1';
+          const shortNoAcct = panel?.dataset.shortNoAcct === '1';
+          const shortMultiAcct = panel?.dataset.shortMultiAcct === '1';
           const fyStart = panel?.dataset.fyStart || '';
           const fyEnd = panel?.dataset.fyEnd || '';
+          const multiAcctSet = (shortMultiAcct && jbis594MultiAcctCache.ids) || null;
 
           const filtered = allRecs.filter((r) => {
-            // 所属/所属グループ: token OR search (comma/space separated)
             const depHay = `${getV(r, 'dept_name')} ${getV(r, 'group_name')}`;
             const mDep = matchesAnyToken(depHay, depTokens);
-            const mPc = !vPc || (getV(r, 'PC_name') + getV(r, 'shared_terminal_name')).toLowerCase().includes(vPc);
-            const mUsr = !vUsr || getV(r, 'user_name').toLowerCase().includes(vUsr);
+            const mPc = !vPc || includesNormalized(`${getV(r, 'PC_name')} ${getV(r, 'shared_terminal_name')}`, vPc);
+            const mUsr = !vUsr || includesNormalized(getV(r, 'user_name'), vUsr);
+            const mType = !vType || getV(r, 'type') === vType;
             const valDop = getV(r, 'dop');
             const valFin = getV(r, 'inventory_finish_date');
             const mD = (!ds || valDop >= ds) && (!de || (valDop <= de && valDop !== ''));
-            const mShortUnfinished = !shortUnfinished || !valFin; // 未了: 完了日が空
+            const mShortUnfinished = !shortUnfinished || !valFin;
             const mShortFyDone = !shortFyDone || (!!valFin && (!fyStart || valFin >= fyStart) && (!fyEnd || valFin <= fyEnd));
-            return mDep && mPc && mUsr && mD && mShortUnfinished && mShortFyDone;
+            const lid = String(getV(r, 'ledger_record_id')).trim();
+            const mNoAcct = !shortNoAcct || !lid || lid === '#N/A' || lid === '-' || !/^\d+$/.test(lid);
+            const rid = String(r?.$id?.value ?? '').trim();
+            const mMultiAcct = !shortMultiAcct || (multiAcctSet && multiAcctSet.has(rid));
+            return mDep && mPc && mUsr && mType && mD && mShortUnfinished && mShortFyDone && mNoAcct && mMultiAcct;
           });
           if (countEl) countEl.textContent = `${filtered.length}件`;
           renderCardsIfNeeded({ records: filtered });
           schedulePcCardGridSync();
+          persistSearchState();
         };
 
         const panel = document.getElementById('jbis-pc-search-panel');
         const btnUnfinished = document.getElementById('jbis-short-unfinished');
         const btnFyDone = document.getElementById('jbis-short-fy-done');
+        const btnNoAcct = document.getElementById('jbis-short-no-acct');
+        const btnMultiAcct = document.getElementById('jbis-short-multi-acct');
         if (btnUnfinished && panel) {
           btnUnfinished.onclick = () => {
             const next = panel.dataset.shortUnfinished === '1' ? '0' : '1';
@@ -1547,23 +2046,80 @@
           };
         }
 
+        if (btnNoAcct && panel) {
+          btnNoAcct.onclick = () => {
+            const next = panel.dataset.shortNoAcct === '1' ? '0' : '1';
+            panel.dataset.shortNoAcct = next;
+            btnNoAcct.setAttribute('aria-pressed', next === '1' ? 'true' : 'false');
+            doSearch();
+          };
+        }
+        if (btnMultiAcct && panel) {
+          btnMultiAcct.onclick = async () => {
+            const next = panel.dataset.shortMultiAcct === '1' ? '0' : '1';
+            panel.dataset.shortMultiAcct = next;
+            btnMultiAcct.setAttribute('aria-pressed', next === '1' ? 'true' : 'false');
+            if (next === '1') {
+              btnMultiAcct.disabled = true;
+              const orig = btnMultiAcct.textContent;
+              btnMultiAcct.textContent = '集計中…';
+              try {
+                await buildMultiAcct594IdSet();
+              } catch (e) {
+                console.warn('[JBIS-594] multi-acct fetch failed', e);
+                alert('「アカウント複数/重複疑い」の集計でエラーが発生しました。コンソールをご確認ください。');
+                panel.dataset.shortMultiAcct = '0';
+                btnMultiAcct.setAttribute('aria-pressed', 'false');
+              } finally {
+                btnMultiAcct.disabled = false;
+                btnMultiAcct.textContent = orig;
+              }
+            }
+            doSearch();
+          };
+        }
+
         document.getElementById('jbis-q-btn').onclick = doSearch;
         document.getElementById('jbis-q-rst').onclick = () => {
           ['jbis-q-dep', 'jbis-q-pc', 'jbis-q-usr', 'jbis-ds', 'jbis-de'].forEach((id) => {
             const el = document.getElementById(id);
             if (el) el.value = '';
           });
+          const typeEl = document.getElementById('jbis-q-type');
+          if (typeEl) typeEl.value = '';
           if (panel) {
             panel.dataset.shortUnfinished = '0';
             panel.dataset.shortFyDone = '0';
+            panel.dataset.shortNoAcct = '0';
+            panel.dataset.shortMultiAcct = '0';
           }
           const btnUnfinished = document.getElementById('jbis-short-unfinished');
           const btnFyDone = document.getElementById('jbis-short-fy-done');
+          const btnNoAcct2 = document.getElementById('jbis-short-no-acct');
+          const btnMultiAcct2 = document.getElementById('jbis-short-multi-acct');
           if (btnUnfinished) btnUnfinished.setAttribute('aria-pressed', 'false');
           if (btnFyDone) btnFyDone.setAttribute('aria-pressed', 'false');
+          if (btnNoAcct2) btnNoAcct2.setAttribute('aria-pressed', 'false');
+          if (btnMultiAcct2) btnMultiAcct2.setAttribute('aria-pressed', 'false');
+          clearSearchState();
           doSearch();
         };
-        doSearch();
+        // M1: 検索状態の復元（カードビュー）。保存値があれば復元、なければ通常の初回描画。
+        const savedStCard = loadSearchState();
+        applySearchStateToUi(savedStCard);
+        // shortMultiAcct はサーバ集計が必要なため、復元時にキャッシュを温める（無音・失敗時はOFFに戻す）
+        if (savedStCard?.shortMultiAcct === '1') {
+          buildMultiAcct594IdSet().then(() => doSearch()).catch((e) => {
+            console.warn('[JBIS-594] multi-acct restore failed', e);
+            const p = document.getElementById('jbis-pc-search-panel');
+            if (p) p.dataset.shortMultiAcct = '0';
+            const b = document.getElementById('jbis-short-multi-acct');
+            if (b) b.setAttribute('aria-pressed', 'false');
+            doSearch();
+          });
+        } else {
+          doSearch();
+        }
       });
     } catch (e) {
       // If card render fails, do not break list view.
@@ -1612,15 +2168,31 @@
   // ── Shared PC → 627 account link ─────────────────────────────
 
   const searchSharedAccounts = async (keyword) => {
-    const kw = String(keyword).trim();
+    const kw = String(keyword).trim().toLowerCase();
     if (!kw) return [];
-    const q = `(${FC_627_AD_LOGON} like "${esc(kw)}" or ${FC_627_WINDOWS_NAME} like "${esc(kw)}" or ${FC_627_PC_NAME_FIELD} like "${esc(kw)}") order by $id desc limit 20`;
-    const res = await kintone.api(kintone.api.url('/k/v1/records', true), 'GET', {
-      app: LEDGER_APP_ID,
-      query: q,
-      fields: ['$id', FC_627_AD_LOGON, FC_627_WINDOWS_NAME, FC_627_PC_NAME_FIELD, FC_627_ACCOUNT_TYPE],
-    });
-    return res.records || [];
+    const fields = ['$id', FC_627_AD_LOGON, FC_627_WINDOWS_NAME, FC_627_PC_NAME_FIELD, FC_627_ACCOUNT_TYPE, FC_627_NAME];
+    const baseQ = `${FC_627_ACCOUNT_TYPE} in ("共有アカウント") order by $id desc`;
+    const all = [];
+    let offset = 0;
+    for (;;) {
+      const q = `${baseQ} limit 500 offset ${offset}`;
+      const res = await kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', {
+        app: LEDGER_APP_ID, query: q, fields,
+      });
+      const recs = res?.records ?? [];
+      all.push(...recs);
+      if (recs.length < 500) break;
+      offset += 500;
+    }
+    return all.filter((r) => {
+      const vals = [
+        r[FC_627_AD_LOGON]?.value,
+        r[FC_627_WINDOWS_NAME]?.value,
+        r[FC_627_PC_NAME_FIELD]?.value,
+        r[FC_627_NAME]?.value,
+      ];
+      return vals.some((v) => v && String(v).toLowerCase().includes(kw));
+    }).slice(0, 30);
   };
 
   const linkSharedAccountTo627 = async (recordId594, ledgerId627, pcName594) => {
@@ -1704,7 +2276,7 @@
       '<h2 style="margin:0 0 6px;font-size:15px;font-weight:800;color:#0f172a;">🔗 共有PC — アカウント紐付け</h2>' +
       '<p style="margin:0 0 16px;font-size:12px;color:#475569;">このPCに紐付けるアカウントを選んでください。</p>' +
       '<div style="display:flex;gap:6px;margin-bottom:12px;">' +
-      '  <input id="jbis-shared-search" type="text" placeholder="ログオン名 / Windows名 / PC名 で検索" style="flex:1;padding:8px 10px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;">' +
+      '  <input id="jbis-shared-search" type="text" placeholder="ログオン名 / Windows名 / 利用者名 / PC名 で検索" style="flex:1;padding:8px 10px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;">' +
       '  <button id="jbis-shared-search-btn" type="button" style="padding:8px 14px;border:none;border-radius:6px;background:#2563eb;color:#fff;font-weight:700;font-size:13px;cursor:pointer;">検索</button>' +
       '</div>' +
       '<div id="jbis-shared-results" style="margin-bottom:16px;min-height:40px;"></div>' +
@@ -1727,15 +2299,17 @@
         return;
       }
       let html = '<table style="width:100%;border-collapse:collapse;font-size:12px;">' +
-        '<tr style="background:#f1f5f9;"><th style="padding:6px 8px;text-align:left;">ログオン名</th><th style="padding:6px 8px;text-align:left;">Windows名</th><th style="padding:6px 8px;text-align:left;">PC名</th><th style="padding:6px 8px;"></th></tr>';
+        '<tr style="background:#f1f5f9;"><th style="padding:6px 8px;text-align:left;">ログオン名</th><th style="padding:6px 8px;text-align:left;">Windows名</th><th style="padding:6px 8px;text-align:left;">利用者</th><th style="padding:6px 8px;text-align:left;">PC名</th><th style="padding:6px 8px;"></th></tr>';
       for (const r of records) {
         const id = r.$id.value;
         const logon = r[FC_627_AD_LOGON]?.value || '';
         const winName = r[FC_627_WINDOWS_NAME]?.value || '';
+        const userName = r[FC_627_NAME]?.value || '';
         const pcN = r[FC_627_PC_NAME_FIELD]?.value || '';
         html += '<tr style="border-bottom:1px solid #e2e8f0;">' +
           `<td style="padding:6px 8px;">${logon}</td>` +
           `<td style="padding:6px 8px;">${winName}</td>` +
+          `<td style="padding:6px 8px;">${userName}</td>` +
           `<td style="padding:6px 8px;">${pcN}</td>` +
           `<td style="padding:6px 8px;"><button type="button" data-lid="${id}" class="jbis-shared-pick" style="padding:4px 12px;border:none;border-radius:4px;background:#2563eb;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">選択</button></td></tr>`;
       }
@@ -2112,11 +2686,700 @@
     });
   };
 
+  // ── M3: PC台帳 詳細画面 アクションパネル（コピー/相互リンク） ─────────
+  const JBIS594_ACTION_PANEL_ID = 'jbis594-action-panel';
+  const build627RecordUrl = (id) => {
+    const u = new URL(`${location.origin}/k/${LEDGER_APP_ID}/show`);
+    u.searchParams.set('record', String(id));
+    return u.toString();
+  };
+
+  const findLinked627RecordIds = async (pc594Id) => {
+    const idStr = String(pc594Id || '').trim();
+    if (!idStr || !/^\d+$/.test(idStr)) return [];
+    const ids = new Set();
+    try {
+      // サブテーブル内フィールド（pc_ledger_link_594_id）は = 演算子非対応のため in() を使う。
+      // 親フィールド（pc_594_record_id）は通常の単一行なので = で問題なし。
+      const q = `pc_594_record_id = "${idStr}" or pc_ledger_link_594_id in ("${idStr}")`;
+      const res = await kintone.api(kintone.api.url('/k/v1/records', true), 'GET', {
+        app: LEDGER_APP_ID,
+        query: `${q} order by $id asc limit 500`,
+        fields: ['$id'],
+      });
+      (res.records || []).forEach((r) => {
+        const v = String(r.$id?.value || '').trim();
+        if (v) ids.add(v);
+      });
+    } catch (e) {
+      console.warn('[JBIS-594] findLinked627RecordIds failed', e);
+    }
+    return Array.from(ids);
+  };
+
+  // ===== PC↔アカウント相関ダッシュボード =====
+  // 設計趣旨: 「PC台帳のPC1件 ＝ 1行」で、紐付くWindowsIDとフラグを俯瞰できる別画面。
+  // フラグ定義（2026-04-18 修正）:
+  //   ✅ 正常        … このPCに紐付く 627 アカウントが 1 件以上、または「アカウント設定対象外」種別
+  //   🟠 重複あり    … このPCに 2 件以上のアカウントが紐付いている
+  //   🟡 紐付けなし  … 627 上で 1 件もこのPCに紐付いていない（ただし下記対象外種別を除く）
+  // アカウント設定対象外 PC 種別（紐付けなし扱いしない）:
+  //   - "サーバーNAS" : サーバ/NAS は AD アカウントを割り当てない運用
+  //   - "その他"      : 同上
+  const QD_NO_ACCT_REQUIRED_TYPES = new Set(['サーバーNAS', 'その他']);
+  const qdIsNoAcctRequiredType = (raw) => {
+    const v = String(raw ?? '').trim();
+    return QD_NO_ACCT_REQUIRED_TYPES.has(v);
+  };
+  const QD_LOCAL_LOGON_PLACEHOLDER = 'ローカルアカウント';
+  const qdNormLogon = (raw) => {
+    const v = String(raw ?? '');
+    try { return v.normalize('NFKC').trim(); } catch { return v.trim(); }
+  };
+  const qdIsLocalLogon = (raw) => qdNormLogon(raw) === QD_LOCAL_LOGON_PLACEHOLDER;
+  const qdEsc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+  ));
+  const qdLink594 = (id) => `${location.origin}/k/594/show#record=${encodeURIComponent(id)}`;
+  const qdLink627 = (id) => `${location.origin}/k/627/show#record=${encodeURIComponent(id)}`;
+
+  const fetchAll594ForDashboard = async () => {
+    const url = kintone.api.url('/k/v1/records', true);
+    const all = [];
+    for (let off = 0; off < 50000; off += 500) {
+      const res = await kintone.api(url, 'GET', {
+        app: 594,
+        query: `$id > 0 order by $id asc limit 500 offset ${off}`,
+        fields: ['$id', 'PC_name', 'shared_terminal_name', 'user_name', 'type',
+          'dept_name', 'group_name', 'ledger_record_id', 'inventory_finish_date'],
+      });
+      const recs = res?.records ?? [];
+      all.push(...recs);
+      if (recs.length < 500) break;
+    }
+    return all;
+  };
+
+  const fetchAll627ForDashboard = async () => {
+    const url = kintone.api.url('/k/v1/records', true);
+    const all = [];
+    for (let off = 0; off < 50000; off += 500) {
+      const res = await kintone.api(url, 'GET', {
+        app: LEDGER_APP_ID,
+        query: `$id > 0 order by $id asc limit 500 offset ${off}`,
+        fields: ['$id', 'logon_name', 'user_name', 'employment_status',
+          FC_627_ACCOUNT_TYPE, FC_627_PC_594_RECORD_ID, FC_627_PC_SUBTABLE],
+      });
+      const recs = res?.records ?? [];
+      all.push(...recs);
+      if (recs.length < 500) break;
+    }
+    return all;
+  };
+
+  const buildQualityRows = (recs594, recs627) => {
+    // 627 → 紐付く 594ID 集合へ展開
+    const link594ToAccts = new Map(); // pc594Id -> [{$id, logon, user, status, type}]
+    const logonToCount = new Map();   // normalizedLogon -> count（"ローカルアカウント"/空 は除外済）
+    const logonToAccts = new Map();   // normalizedLogon -> [{$id, logon}]
+    for (const r of recs627) {
+      const aid = String(r.$id?.value || '').trim();
+      if (!aid) continue;
+      const logonRaw = r.logon_name?.value ?? '';
+      const logonNorm = qdNormLogon(logonRaw);
+      if (logonNorm && !qdIsLocalLogon(logonRaw)) {
+        logonToCount.set(logonNorm, (logonToCount.get(logonNorm) || 0) + 1);
+        if (!logonToAccts.has(logonNorm)) logonToAccts.set(logonNorm, []);
+        logonToAccts.get(logonNorm).push({ id: aid, logon: logonRaw });
+      }
+      const linked = new Set();
+      const single = String(r[FC_627_PC_594_RECORD_ID]?.value || '').trim();
+      if (single) linked.add(single);
+      const rows = r[FC_627_PC_SUBTABLE]?.value || [];
+      for (const sr of rows) {
+        const v = String(sr?.value?.[FC_627_PC_SUB_594]?.value || '').trim();
+        if (v) linked.add(v);
+      }
+      const acct = {
+        id: aid,
+        logon: logonRaw,
+        logonNorm,
+        user: String(r.user_name?.value || '').trim(),
+        status: String(r.employment_status?.value || '').trim(),
+        type: String(r[FC_627_ACCOUNT_TYPE]?.value || '').trim(),
+      };
+      for (const pid of linked) {
+        if (!link594ToAccts.has(pid)) link594ToAccts.set(pid, []);
+        link594ToAccts.get(pid).push(acct);
+      }
+    }
+
+    // 594 → 各PCの行を組み立て
+    const rows = recs594.map((r) => {
+      const id = String(r.$id?.value || '').trim();
+      const pcName = String(r.PC_name?.value || r.shared_terminal_name?.value || '').trim();
+      const userName = String(r.user_name?.value || '').trim();
+      const dept = String(r.dept_name?.value || '').trim();
+      const group = String(r.group_name?.value || '').trim();
+      const type = String(r.type?.value || '').trim();
+      const lid = String(r.ledger_record_id?.value || '').trim();
+      const accts = link594ToAccts.get(id) || [];
+      const cnt = accts.length;
+
+      // フラグ判定はあくまで「このPCに紐付くアカウントの件数」のみで決める。
+      // ここを「他PCでもWindowsID流用あり」と混ぜると、件数1件のPCが
+      // 重複ありと表示されて利用者が混乱するため、明確に分離する。
+      const reasons = [];
+      if (cnt >= 2 && type === '個人') {
+        reasons.push(`個人PCに ${cnt} 件のアカウントが紐付いています`);
+      } else if (cnt >= 2) {
+        reasons.push(`このPCに ${cnt} 件のアカウントが紐付いています`);
+      }
+      // WindowsIDの他PC流用は「参考情報」として備考に出すだけ（フラグは変えない）
+      const dupLogonAccts = [];
+      for (const a of accts) {
+        if (!a.logonNorm) continue;
+        if (qdIsLocalLogon(a.logon)) continue;
+        const c = logonToCount.get(a.logonNorm) || 0;
+        if (c >= 2) {
+          const others = (logonToAccts.get(a.logonNorm) || []).filter((x) => x.id !== a.id);
+          dupLogonAccts.push({ acct: a, others });
+        }
+      }
+
+      // サーバーNAS / その他 はアカウント設定対象外。紐付け0件でも 紐付けなし扱いしない。
+      const noAcctRequired = qdIsNoAcctRequiredType(type);
+      let flag = 'OK';
+      if (cnt === 0 && !noAcctRequired) flag = 'NO_LINK';
+      else if (cnt >= 2) flag = 'DUP';
+
+      return {
+        id, pcName, userName, dept, group, type, lid,
+        accts, flag, reasons, dupLogonAccts, noAcctRequired,
+      };
+    });
+    return rows;
+  };
+
+  // CSVダウンロード（kintone環境向けの堅牢実装）
+  // 1) msSaveOrOpenBlob（IE/旧Edge）優先、2) Blob + a[download]、3) フォールバックで data: URL を新規タブ
+  const downloadCsvSafe = (filename, csvText) => {
+    const text = (csvText && csvText.startsWith('\ufeff')) ? csvText : ('\ufeff' + (csvText || ''));
+    let blob;
+    try {
+      blob = new Blob([text], { type: 'text/csv;charset=utf-8;' });
+    } catch (e) {
+      console.warn('[CSV] Blob() failed, fallback to data URL', e);
+      const w = window.open('data:text/csv;charset=utf-8,' + encodeURIComponent(text), '_blank');
+      if (!w) alert('CSV出力でポップアップがブロックされました。ブラウザ設定をご確認ください。');
+      return;
+    }
+    if (window.navigator && typeof window.navigator.msSaveOrOpenBlob === 'function') {
+      window.navigator.msSaveOrOpenBlob(blob, filename);
+      return;
+    }
+    const URLObj = window.URL || window.webkitURL;
+    const url = URLObj.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.rel = 'noopener';
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    try {
+      a.click();
+    } catch (e) {
+      console.warn('[CSV] a.click() failed, fallback to window.open', e);
+      const w = window.open(url, '_blank');
+      if (!w) alert('CSV出力でポップアップがブロックされました。ブラウザ設定をご確認ください。');
+    }
+    setTimeout(() => {
+      try { a.remove(); } catch (_) { /* noop */ }
+      try { URLObj.revokeObjectURL(url); } catch (_) { /* noop */ }
+    }, 1500);
+  };
+
+  const renderQualityDashboard = async () => {
+    const root = document.getElementById('jbis-quality-dashboard');
+    if (!root) return;
+    root.style.padding = '0';
+    root.innerHTML = `
+      <div style="padding:18px 22px 12px;background:linear-gradient(180deg,#0f172a,#1e293b);color:#fff;">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <div style="font-size:20px;font-weight:800;">📊 PC↔アカウント相関ダッシュボード</div>
+          <div style="font-size:12px;color:#cbd5e1;">PC台帳(594) × アカウント台帳(627) のデータ品質を1画面で確認</div>
+        </div>
+        <div style="margin-top:6px;font-size:11px;color:#94a3b8;">
+          <b>フラグの定義（このPC自体に紐付く件数で判定）</b>:
+          <span style="color:#10b981;">✅ 正常</span>＝紐付け 1 件／
+          <span style="color:#f59e0b;">🟠 重複あり</span>＝このPCに 2 件以上のアカウントが紐付き／
+          <span style="color:#eab308;">🟡 紐付けなし</span>＝627 に紐付くアカウントが 0 件
+          <br><span style="color:#94a3b8;">※ 同一WindowsID が他PCでも使われている場合は、フラグには影響させず備考に「ℹ 参考情報」として表示します。</span>
+          <br><span style="color:#94a3b8;">※ 種別「サーバーNAS」「その他」はアカウント設定対象外のため、0 件でも 🟡 紐付けなし に含めません（備考に「対象外」と表示）。</span>
+        </div>
+      </div>
+      <div id="qd-summary" style="display:flex;gap:8px;flex-wrap:wrap;padding:12px 22px;background:#f1f5f9;border-bottom:1px solid #e2e8f0;font-size:13px;">読込中…</div>
+      <div style="padding:10px 22px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:#fff;border-bottom:1px solid #e2e8f0;">
+        <input id="qd-q-pc" type="search" placeholder="PC名で検索" style="padding:6px 10px;border:1px solid #cbd5e1;border-radius:6px;min-width:180px;">
+        <input id="qd-q-user" type="search" placeholder="利用者で検索" style="padding:6px 10px;border:1px solid #cbd5e1;border-radius:6px;min-width:160px;">
+        <input id="qd-q-dep" type="search" placeholder="部署/グループで検索" style="padding:6px 10px;border:1px solid #cbd5e1;border-radius:6px;min-width:200px;">
+        <select id="qd-q-type" style="padding:6px 10px;border:1px solid #cbd5e1;border-radius:6px;">
+          <option value="">種別: すべて</option>
+          <option value="個人">個人</option>
+          <option value="共有">共有</option>
+          <option value="サーバ">サーバ</option>
+          <option value="その他">その他</option>
+        </select>
+        <span style="margin-left:6px;display:inline-flex;gap:6px;align-items:center;">
+          <label style="cursor:pointer;font-weight:700;color:#10b981;"><input type="checkbox" id="qd-f-ok" checked> ✅ 正常</label>
+          <label style="cursor:pointer;font-weight:700;color:#b45309;"><input type="checkbox" id="qd-f-dup" checked> 🟠 重複あり</label>
+          <label style="cursor:pointer;font-weight:700;color:#a16207;"><input type="checkbox" id="qd-f-no" checked> 🟡 紐付けなし</label>
+        </span>
+        <button id="qd-reset" type="button" style="margin-left:auto;background:#fff;border:1px solid #cbd5e1;border-radius:6px;padding:6px 10px;cursor:pointer;font-weight:700;">条件をクリア</button>
+        <button id="qd-csv" type="button" style="background:#0f172a;color:#fff;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-weight:700;">📥 CSVダウンロード</button>
+      </div>
+      <div id="qd-table-wrap" style="padding:0 22px 24px;background:#fff;">
+        <div id="qd-loading" style="padding:24px;color:#475569;">読込中… (594全件 + 627全件を取得して突合しています)</div>
+      </div>
+      <div id="qd-fab-group" style="position:fixed;right:20px;bottom:20px;z-index:9999;display:none;flex-direction:column;gap:10px;">
+        <button id="qd-fab-filter" type="button" title="検索フィルタへ移動" style="background:#1d4ed8;color:#fff;border:none;border-radius:50%;width:48px;height:48px;font-size:20px;font-weight:700;cursor:pointer;box-shadow:0 6px 16px rgba(15,23,42,0.3);">🔍</button>
+        <button id="qd-fab-top" type="button" title="ページ先頭へ" style="background:#0f172a;color:#fff;border:none;border-radius:50%;width:48px;height:48px;font-size:20px;font-weight:700;cursor:pointer;box-shadow:0 6px 16px rgba(15,23,42,0.3);">↑</button>
+      </div>
+    `;
+
+    let recs594 = [];
+    let recs627 = [];
+    try {
+      [recs594, recs627] = await Promise.all([
+        fetchAll594ForDashboard(),
+        fetchAll627ForDashboard(),
+      ]);
+    } catch (e) {
+      const wrap = document.getElementById('qd-table-wrap');
+      if (wrap) wrap.innerHTML = `<div style="color:#b91c1c;padding:16px;">データ取得失敗: ${qdEsc(e?.message || e)}</div>`;
+      return;
+    }
+
+    const rows = buildQualityRows(recs594, recs627);
+    const totals = { OK: 0, DUP: 0, NO_LINK: 0 };
+    rows.forEach((r) => { totals[r.flag] = (totals[r.flag] || 0) + 1; });
+
+    const summary = document.getElementById('qd-summary');
+    if (summary) {
+      summary.innerHTML = `
+        <span style="background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:6px 12px;">合計 <b>${rows.length}</b> 件</span>
+        <span style="background:#dcfce7;border:1px solid #86efac;border-radius:6px;padding:6px 12px;color:#166534;">✅ 正常 <b>${totals.OK || 0}</b></span>
+        <span style="background:#ffedd5;border:1px solid #fdba74;border-radius:6px;padding:6px 12px;color:#9a3412;">🟠 重複あり <b>${totals.DUP || 0}</b></span>
+        <span style="background:#fef9c3;border:1px solid #fde047;border-radius:6px;padding:6px 12px;color:#854d0e;">🟡 紐付けなし <b>${totals.NO_LINK || 0}</b></span>
+      `;
+    }
+
+    const tableWrap = document.getElementById('qd-table-wrap');
+    const renderTable = () => {
+      const qPc = (document.getElementById('qd-q-pc')?.value || '').trim().toLowerCase();
+      const qUser = (document.getElementById('qd-q-user')?.value || '').trim().toLowerCase();
+      const qDep = (document.getElementById('qd-q-dep')?.value || '').trim().toLowerCase();
+      const qType = document.getElementById('qd-q-type')?.value || '';
+      const fOk = !!document.getElementById('qd-f-ok')?.checked;
+      const fDup = !!document.getElementById('qd-f-dup')?.checked;
+      const fNo = !!document.getElementById('qd-f-no')?.checked;
+      const filtered = rows.filter((r) => {
+        if (qPc && !(`${r.pcName}`).toLowerCase().includes(qPc)) return false;
+        if (qUser && !(`${r.userName}`).toLowerCase().includes(qUser)) return false;
+        if (qDep && !(`${r.dept} ${r.group}`).toLowerCase().includes(qDep)) return false;
+        if (qType && r.type !== qType) return false;
+        if (r.flag === 'OK' && !fOk) return false;
+        if (r.flag === 'DUP' && !fDup) return false;
+        if (r.flag === 'NO_LINK' && !fNo) return false;
+        return true;
+      });
+
+      // テーブル生成
+      const flagCell = (f) => {
+        if (f === 'OK') return '<span style="color:#166534;font-weight:700;">✅ 正常</span>';
+        if (f === 'DUP') return '<span style="color:#9a3412;font-weight:700;">🟠 重複あり</span>';
+        return '<span style="color:#854d0e;font-weight:700;">🟡 紐付けなし</span>';
+      };
+      const acctCell = (accts) => {
+        if (!accts || accts.length === 0) return '<span style="color:#9ca3af;">— なし —</span>';
+        return accts.map((a) => {
+          const stIco = a.status === '退職' ? '🪦' : (a.status === '休職' ? '⏸' : '');
+          const lblLogon = a.logon ? qdEsc(a.logon) : '<span style="color:#9ca3af;">(空)</span>';
+          const lblUser = a.user ? qdEsc(a.user) : '';
+          const lblType = a.type ? `<span style="color:#64748b;">[${qdEsc(a.type)}]</span>` : '';
+          return `<div style="display:flex;align-items:center;gap:6px;padding:2px 0;border-bottom:1px dashed #f1f5f9;">
+            ${stIco ? `<span title="${qdEsc(a.status)}">${stIco}</span>` : ''}
+            <a href="${qdLink627(a.id)}" target="_blank" rel="noopener" style="color:#1d4ed8;text-decoration:none;font-weight:600;">${lblLogon}</a>
+            ${lblUser ? `<span style="color:#475569;">${lblUser}</span>` : ''}
+            ${lblType}
+          </div>`;
+        }).join('');
+      };
+      const remarkCell = (r) => {
+        const parts = [];
+        if (r.type) parts.push(`種別: ${qdEsc(r.type)}`);
+        if (r.noAcctRequired && r.accts.length === 0) {
+          parts.push(`<span style="color:#475569;background:#f1f5f9;padding:1px 6px;border-radius:4px;font-weight:700;">⚪ アカウント設定対象外（${qdEsc(r.type)}）</span>`);
+        }
+        if (r.dept || r.group) parts.push(`所属: ${qdEsc([r.dept, r.group].filter(Boolean).join(' / '))}`);
+        if (r.lid && !/^\d+$/.test(r.lid)) parts.push(`<span style="color:#b91c1c;">ledger_record_id 異常: ${qdEsc(r.lid)}</span>`);
+        if (r.flag === "NO_LINK" && r.lid) {
+          parts.push(
+            '<span style="color:#b45309;">⚠ アカウント台帳番号(<code>ledger_record_id</code>)のみ残存: 627側にこのPCへの紐付けがありません。番号のクリアまたは627の紐付け修正を検討してください。</span>',
+          );
+        }
+        if (r.reasons && r.reasons.length > 0) {
+          for (const rs of r.reasons) parts.push(`<span style="color:#9a3412;">⚠ ${qdEsc(rs)}</span>`);
+        }
+        if (r.dupLogonAccts && r.dupLogonAccts.length > 0) {
+          for (const d of r.dupLogonAccts) {
+            const links = d.others.slice(0, 5).map((o) => `<a href="${qdLink627(o.id)}" target="_blank" rel="noopener" style="color:#1d4ed8;">#${qdEsc(o.id)}</a>`).join(', ');
+            // フラグには影響しない参考情報。グレートーンで提示。
+            parts.push(`<span style="color:#475569;">ℹ 同一WindowsID(${qdEsc(d.acct.logon)}) 他レコードでも使用: ${links}</span>`);
+          }
+        }
+        return parts.length > 0 ? parts.join('<br>') : '<span style="color:#9ca3af;">—</span>';
+      };
+
+      // 通常のヘッダー（Kintone埋め込みでは sticky が不安定なため、表内では使わない）
+      const headerStyle = 'background:#0f172a;color:#fff;padding:10px 8px;text-align:left;font-size:12px;font-weight:700;border-bottom:2px solid #334155;';
+      const cellBase = 'padding:8px;border-bottom:1px solid #e2e8f0;vertical-align:top;font-size:13px;';
+      const rowsHtml = filtered.map((r, i) => {
+        const bg = r.flag === 'DUP' ? '#fff7ed' : (r.flag === 'NO_LINK' ? '#fefce8' : (i % 2 === 0 ? '#ffffff' : '#f8fafc'));
+        return `<tr style="background:${bg};">
+          <td style="${cellBase}text-align:right;color:#64748b;font-variant-numeric:tabular-nums;font-weight:700;width:48px;">${i + 1}</td>
+          <td style="${cellBase}font-weight:700;">
+            <a href="${qdLink594(r.id)}" target="_blank" rel="noopener" style="color:#0f172a;text-decoration:none;">${qdEsc(r.pcName) || '<span style="color:#9ca3af;">(PC名なし)</span>'}</a>
+            <div style="font-size:10px;color:#64748b;font-weight:400;">#${qdEsc(r.id)}</div>
+          </td>
+          <td style="${cellBase}">${qdEsc(r.userName) || '<span style="color:#9ca3af;">—</span>'}</td>
+          <td style="${cellBase}">${acctCell(r.accts)}</td>
+          <td style="${cellBase}text-align:center;white-space:nowrap;">${flagCell(r.flag)}<div style="font-size:10px;color:#64748b;margin-top:2px;">${r.accts.length}件</div></td>
+          <td style="${cellBase}font-size:11px;">${remarkCell(r)}</td>
+        </tr>`;
+      }).join('');
+
+      tableWrap.innerHTML = `
+        <div style="margin:10px 0 6px;color:#475569;font-size:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <span>表示中: <b>${filtered.length}</b> / ${rows.length} 件</span>
+          <a href="#qd-summary" id="qd-jump-top" style="color:#1d4ed8;text-decoration:none;font-weight:600;">↑ 検索フィルタへ戻る</a>
+        </div>
+        <div style="border:1px solid #e2e8f0;border-radius:8px;">
+          <table style="width:100%;border-collapse:collapse;background:#fff;">
+            <thead><tr>
+              <th style="${headerStyle}width:48px;text-align:right;">No.</th>
+              <th style="${headerStyle}min-width:180px;">PC名（キー）</th>
+              <th style="${headerStyle}min-width:120px;">利用者</th>
+              <th style="${headerStyle}min-width:300px;">紐付くWindowsID（行ごと）</th>
+              <th style="${headerStyle}min-width:110px;">フラグ</th>
+              <th style="${headerStyle}min-width:280px;">備考</th>
+            </tr></thead>
+            <tbody>${rowsHtml || '<tr><td colspan="6" style="padding:24px;text-align:center;color:#94a3b8;">該当なし</td></tr>'}</tbody>
+          </table>
+        </div>
+      `;
+    };
+
+    ['qd-q-pc', 'qd-q-user', 'qd-q-dep'].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', renderTable);
+    });
+    document.getElementById('qd-q-type')?.addEventListener('change', renderTable);
+    ['qd-f-ok', 'qd-f-dup', 'qd-f-no'].forEach((id) => {
+      document.getElementById(id)?.addEventListener('change', renderTable);
+    });
+    document.getElementById('qd-reset')?.addEventListener('click', () => {
+      ['qd-q-pc', 'qd-q-user', 'qd-q-dep'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      const ts = document.getElementById('qd-q-type');
+      if (ts) ts.value = '';
+      ['qd-f-ok', 'qd-f-dup', 'qd-f-no'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.checked = true;
+      });
+      renderTable();
+    });
+    document.getElementById('qd-csv')?.addEventListener('click', () => {
+      const btn = document.getElementById('qd-csv');
+      const origLabel = btn?.textContent;
+      try {
+        if (btn) { btn.disabled = true; btn.textContent = '生成中…'; }
+        const header = ['No.', 'PC名', 'PC台帳レコード番号', '利用者', '部署', 'グループ', '種別', 'ledger_record_id',
+          '紐付くWindowsID', '紐付くアカウント利用者名', '紐付くアカウント在籍状態', '紐付き件数', 'フラグ', 'アカウント設定対象外', '備考'];
+        const lines = [header.join(',')];
+        const csvEsc = (s) => {
+          const v = String(s ?? '');
+          return /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
+        };
+        rows.forEach((r, i) => {
+          const logons = r.accts.map((a) => a.logon).join(' / ');
+          const users = r.accts.map((a) => a.user).join(' / ');
+          const sts = r.accts.map((a) => a.status).join(' / ');
+          const flagText = r.flag === 'OK' ? '正常' : (r.flag === 'DUP' ? '重複あり' : '紐付けなし');
+          const remarks = r.reasons.join(' / ');
+          const noAcctText = r.noAcctRequired ? 'はい' : '';
+          lines.push([i + 1, r.pcName, r.id, r.userName, r.dept, r.group, r.type, r.lid,
+            logons, users, sts, r.accts.length, flagText, noAcctText, remarks].map(csvEsc).join(','));
+        });
+        const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+        const filename = `pc-account-quality-${stamp}.csv`;
+        const csvText = '\ufeff' + lines.join('\r\n');
+        downloadCsvSafe(filename, csvText);
+      } catch (e) {
+        console.error('[JBIS-594] CSV download failed', e);
+        alert(`CSVダウンロードに失敗しました。\n${e?.message || e}\nコンソール(F12) もご確認ください。`);
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = origLabel || '📥 CSVダウンロード'; }
+      }
+    });
+
+    renderTable();
+
+    // フローティングボタン群（🔍 フィルタへ / ↑ ページ先頭へ）
+    // Kintone埋め込みではページ全体・カスタムビューコンテナの両方がスクロールしうるので両方を監視する
+    const fabGroup = document.getElementById('qd-fab-group');
+    const fabTop = document.getElementById('qd-fab-top');
+    const fabFilter = document.getElementById('qd-fab-filter');
+    const findScrollHosts = () => {
+      const hosts = new Set();
+      hosts.add(window);
+      let el = document.getElementById('jbis-quality-dashboard');
+      while (el && el !== document.body) {
+        try {
+          const cs = window.getComputedStyle(el);
+          if (cs && /(auto|scroll)/.test(cs.overflowY) && el.scrollHeight > el.clientHeight + 1) {
+            hosts.add(el);
+          }
+        } catch (_) { /* noop */ }
+        el = el.parentElement;
+      }
+      return [...hosts];
+    };
+    const getScrollY = () => {
+      let max = window.pageYOffset || document.documentElement.scrollTop || 0;
+      for (const h of findScrollHosts()) {
+        if (h !== window && typeof h.scrollTop === 'number') {
+          max = Math.max(max, h.scrollTop);
+        }
+      }
+      return max;
+    };
+    const scrollAllTo = (y) => {
+      try { window.scrollTo({ top: y, behavior: 'smooth' }); } catch (_) { window.scrollTo(0, y); }
+      for (const h of findScrollHosts()) {
+        if (h !== window) {
+          try { h.scrollTo({ top: y, behavior: 'smooth' }); } catch (_) { h.scrollTop = y; }
+        }
+      }
+    };
+    const updateFabVisibility = () => {
+      if (!fabGroup) return;
+      fabGroup.style.display = getScrollY() > 200 ? 'flex' : 'none';
+    };
+    window.addEventListener('scroll', updateFabVisibility, { passive: true });
+    // 内部スクロールコンテナにもイベントを張る
+    setTimeout(() => {
+      for (const h of findScrollHosts()) {
+        if (h !== window) {
+          try { h.addEventListener('scroll', updateFabVisibility, { passive: true }); } catch (_) { /* noop */ }
+        }
+      }
+      updateFabVisibility();
+    }, 300);
+    updateFabVisibility();
+    fabTop?.addEventListener('click', () => scrollAllTo(0));
+    fabFilter?.addEventListener('click', () => {
+      const target = document.getElementById('qd-summary');
+      if (target) {
+        try {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } catch (_) {
+          target.scrollIntoView();
+        }
+      } else {
+        scrollAllTo(0);
+      }
+      setTimeout(() => document.getElementById('qd-q-pc')?.focus(), 400);
+    });
+  };
+
+  const resolve594DetailMountParent = () => {
+    const selectors = [
+      '.gaia-argoui-app-show-contents',
+      '.gaia-argoui-app-show-body',
+      '.ocean-ui-app-record-view-body',
+      '.ocean-ui-app-record-view-layout-content',
+      '.layout-gaia',
+    ];
+    for (const sel of selectors) {
+      const el = document.querySelector(sel);
+      if (el) return el;
+    }
+    try {
+      const sp = kintone.app?.record?.getHeaderMenuSpaceElement?.();
+      if (sp) return sp;
+    } catch { /* noop */ }
+    return null;
+  };
+
+  const mount594ActionPanel = async () => {
+    if (document.getElementById(JBIS594_ACTION_PANEL_ID)) return true;
+    const host = resolve594DetailMountParent();
+    if (!host) return false;
+
+    let cur;
+    try { cur = kintone.app.record.get(); } catch (_) { cur = null; }
+    const rec = cur?.record;
+    if (!rec) return false;
+
+    const pcId = String(cur?.id || rec?.$id?.value || '').trim();
+    const pcName = String(rec[FC_594_PC_NAME]?.value || '').trim();
+    const ledgerSingle = String(rec[FC_594_LEDGER_RECORD_ID]?.value || '').trim();
+    const typeVal = String(rec[FC_594_TYPE]?.value || '').trim();
+
+    const wrap = document.createElement('div');
+    wrap.id = JBIS594_ACTION_PANEL_ID;
+    wrap.style.cssText =
+      'display:flex;align-items:center;gap:10px;flex-wrap:wrap;width:100%;box-sizing:border-box;' +
+      'margin:0 0 10px;padding:10px 12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;';
+
+    const badgeStyle =
+      'display:inline-flex;align-items:center;gap:6px;padding:2px 10px;border-radius:999px;' +
+      'border:1px solid #cbd5e1;background:#ffffff;color:#0f172a;font-size:12px;font-weight:900;';
+
+    const makeCopyButton = (text, valueToCopy) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = text;
+      btn.style.cssText =
+        'padding:4px 10px;border-radius:6px;border:1px solid #1d4ed8;' +
+        'background:#eff6ff;color:#1d4ed8;font-weight:900;font-size:12px;cursor:pointer;white-space:nowrap;';
+      btn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(String(valueToCopy));
+          const orig = btn.textContent;
+          btn.textContent = 'コピー済み';
+          setTimeout(() => { btn.textContent = orig; }, 1200);
+        } catch {
+          alert('コピーできませんでした。手動で選択してコピーしてください。');
+        }
+      });
+      return btn;
+    };
+
+    if (pcId) {
+      const selfId = document.createElement('span');
+      selfId.style.cssText = badgeStyle;
+      selfId.textContent = `PC台帳番号(594): ${pcId}`;
+      wrap.appendChild(selfId);
+      wrap.appendChild(makeCopyButton('コピー', pcId));
+    }
+
+    if (pcName) {
+      const pcNameBadge = document.createElement('span');
+      pcNameBadge.style.cssText = badgeStyle;
+      pcNameBadge.textContent = `PC名: ${pcName}`;
+      wrap.appendChild(pcNameBadge);
+    }
+
+    if (typeVal) {
+      const t = document.createElement('span');
+      t.style.cssText = badgeStyle;
+      t.textContent = `種別: ${typeVal}`;
+      wrap.appendChild(t);
+    }
+
+    const linkArea = document.createElement('div');
+    linkArea.style.cssText = 'flex-basis:100%;font-size:12px;color:#475569;';
+    linkArea.textContent = 'アカウント台帳(627) との紐付け: 検索中…';
+    wrap.appendChild(linkArea);
+
+    const warn = document.createElement('div');
+    warn.style.cssText =
+      'flex-basis:100%;font-size:12px;line-height:1.5;color:#b91c1c;font-weight:900;padding:2px 2px 0 2px;';
+    warn.textContent =
+      '【入力注意】紐付けに使う番号は「一覧の行番号」ではなく、各レコードの「レコード番号($id)」です。';
+    wrap.appendChild(warn);
+
+    host.insertBefore(wrap, host.firstChild);
+
+    try {
+      const linked627Ids = await findLinked627RecordIds(pcId);
+      const candidates = new Set(linked627Ids);
+      if (ledgerSingle && /^\d+$/.test(ledgerSingle)) candidates.add(ledgerSingle);
+      const ids = Array.from(candidates);
+
+      linkArea.innerHTML = '';
+      if (ids.length === 0) {
+        const note = document.createElement('span');
+        note.style.cssText = 'color:#b45309;font-weight:800;';
+        note.textContent = (typeVal === '共有')
+          ? '⚠ 紐付くアカウント台帳がまだありません。上の共有アカウント紐付けから登録してください。'
+          : '⚠ 紐付くアカウント台帳がまだありません。上の「アカウント管理台帳(627) 作成/更新して開く」から作成してください。';
+        linkArea.appendChild(note);
+        return true;
+      }
+
+      const details = document.createElement('details');
+      details.open = ids.length <= 3;
+      const sum = document.createElement('summary');
+      sum.textContent = `アカウント台帳を開く（${ids.length}件）`;
+      sum.style.cssText =
+        'cursor:pointer;color:#1d4ed8;font-weight:800;font-size:12px;user-select:none;';
+      details.appendChild(sum);
+
+      const list = document.createElement('div');
+      list.style.cssText =
+        'margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;';
+      ids.forEach((id) => {
+        const a = document.createElement('a');
+        a.href = build627RecordUrl(id);
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.textContent = `#${id}`;
+        a.style.cssText =
+          'display:inline-block;padding:2px 8px;border-radius:999px;' +
+          'border:1px solid #93c5fd;background:#eff6ff;color:#1d4ed8;font-weight:800;font-size:12px;text-decoration:none;';
+        list.appendChild(a);
+
+        const copyIdBtn = document.createElement('button');
+        copyIdBtn.type = 'button';
+        copyIdBtn.textContent = '番号コピー';
+        copyIdBtn.style.cssText =
+          'padding:1px 6px;border-radius:4px;border:1px solid #94a3b8;background:#fff;color:#334155;font-size:10px;cursor:pointer;';
+        copyIdBtn.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(String(id));
+            copyIdBtn.textContent = 'コピー済み';
+            setTimeout(() => { copyIdBtn.textContent = '番号コピー'; }, 1100);
+          } catch { /* noop */ }
+        });
+        list.appendChild(copyIdBtn);
+      });
+      details.appendChild(list);
+      linkArea.appendChild(details);
+    } catch (e) {
+      console.warn('[JBIS-594] action panel link area failed', e);
+      linkArea.textContent = 'アカウント台帳との紐付け取得に失敗しました。';
+    }
+    return true;
+  };
+
+  const schedule594ActionPanelMount = () => {
+    void mount594ActionPanel();
+    [120, 400, 1100, 2200].forEach((ms) => {
+      setTimeout(() => { void mount594ActionPanel(); }, ms);
+    });
+  };
+
   const on594RecordDetailShow = (event) => {
     ensureGlobalLabelStyle();
     maybeShow594ReplacementNoticeFromStorage();
     maybeShowSharedLinkModalFromStorage();
     schedule594DetailAccButtonMount();
+    schedule594ActionPanelMount();
     return event;
   };
 

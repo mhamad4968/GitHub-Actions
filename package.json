@@ -41,6 +41,8 @@
     "setup:627:account_state": "npx dotenv -e .env -e .env.proxy -- node scripts/setup-627-account-state-field.js",
     "fix:594:inventory_count": "npx dotenv -e .env -e .env.proxy -- node scripts/fix-594-inventory-count-formula.js",
     "recalc:594": "npx dotenv -e .env -e .env.proxy -- node scripts/recalc-594-records.js",
+    "clear:594:orphan-ledger": "npx dotenv -e .env -e .env.proxy -- node scripts/clear-594-orphan-ledger-record-id.mjs",
+    "clear:594:orphan-ledger:apply": "npx dotenv -e .env -e .env.proxy -- node scripts/clear-594-orphan-ledger-record-id.mjs --apply",
     "security-next:install": "npm ci --prefix security-next-automation",
     "security-next:collect": "npm run collect --prefix security-next-automation",
     "security-next:analyze": "npm run analyze --prefix security-next-automation",
