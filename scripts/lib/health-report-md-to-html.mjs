@@ -64,7 +64,7 @@ function tableLinesToHtml(tableLines) {
   const th = head
     .map(
       (c) =>
-        `<th style="border:1px solid #e2e8f0;padding:8px 10px;background:#f8fafc;text-align:left;font-size:11px;font-weight:600;color:#334155;letter-spacing:0.02em">${formatTableCell(c)}</th>`,
+        `<th style="border:1px solid #e2e8f0;padding:11px 12px;background:#f8fafc;text-align:left;font-size:13px;font-weight:600;color:#334155;letter-spacing:0.02em">${formatTableCell(c)}</th>`,
     )
     .join("");
   const trs = body
@@ -72,11 +72,11 @@ function tableLinesToHtml(tableLines) {
       const pad = head.length - r.length;
       const cells = [...r, ...Array(Math.max(0, pad)).fill("—")].slice(0, head.length);
       const bg = ri % 2 === 0 ? "#ffffff" : "#fafbfc";
-      return `<tr style="background:${bg}">${cells.map((c) => `<td style="border:1px solid #e2e8f0;padding:8px 10px;font-size:12px;vertical-align:top;color:#334155">${formatTableCell(c)}</td>`).join("")}</tr>`;
+      return `<tr style="background:${bg}">${cells.map((c) => `<td style="border:1px solid #e2e8f0;padding:11px 12px;font-size:15px;vertical-align:top;color:#1e293b;line-height:1.45">${formatTableCell(c)}</td>`).join("")}</tr>`;
     })
     .join("");
   return (
-    `<div style="overflow-x:auto;margin:10px 0;border-radius:8px;border:1px solid #e2e8f0;background:#fff">` +
+    `<div style="overflow-x:auto;margin:12px 0;border-radius:10px;border:1px solid #e2e8f0;background:#fff;box-shadow:0 1px 2px rgba(15,23,42,0.06)">` +
     `<table style="border-collapse:collapse;width:100%;max-width:100%;table-layout:fixed">` +
     `<thead><tr>${th}</tr></thead>` +
     `<tbody>${trs}</tbody>` +
@@ -130,5 +130,5 @@ export function healthReportMarkdownToHtml(md) {
     blocks.push(`<p style="margin:5px 0;font-size:13px">${escapeOutsideLinks(line)}</p>`);
     i++;
   }
-  return `<div class="jbis-health-md" style="font-size:13px;line-height:1.55;color:#334155">${blocks.join("\n")}</div>`;
+  return `<div class="jbis-health-md" style="font-size:14px;line-height:1.55;color:#334155">${blocks.join("\n")}</div>`;
 }

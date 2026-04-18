@@ -185,13 +185,135 @@ async function fetchRecordsProbe(domain, token, appId) {
   return fetchRecordsProbeWithHeaders(domain, { "X-Cybozu-API-Token": token }, appId);
 }
 
-function displayBaseUrl(domain) {
-  const raw = process.env.KINTONE_BASE_URL?.trim();
-  if (raw) {
-    const u = raw.startsWith("http") ? raw : `https://${raw}`;
-    return u.replace(/\/+$/, "");
+/** JST の境界を kintone レコードクエリ用リテラルにする（+09:00 固定） */
+function toKintoneJstDatetimeLiteral(d) {
+  const s = new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "Asia/Tokyo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).format(d);
+  return `${s.replace(" ", "T")}+09:00`;
+}
+
+/**
+ * @param {string} domain
+ * @param {Record<string, string>} headers
+ * @param {string} appId
+ * @param {string} query
+ */
+async function fetchRecordsWithTotalCount(domain, headers, appId, query) {
+  const url = new URL(`https://${domain}/k/v1/records.json`);
+  url.searchParams.set("app", appId);
+  url.searchParams.set("totalCount", "true");
+  url.searchParams.set("query", query);
+  url.searchParams.set("size", "1");
+  const res = await fetch(url.toString(), { method: "GET", headers });
+  const text = await res.text();
+  let json = null;
+  try {
+    json = JSON.parse(text);
+  } catch {
+    /* noop */
   }
-  return `https://${domain}`;
+  const raw = json?.totalCount;
+  const totalCount = raw != null && !Number.isNaN(Number(raw)) ? Number(raw) : null;
+  return {
+    ok: res.ok,
+    status: res.status,
+    json,
+    totalCount,
+    records: json?.records || [],
+    message: json?.message,
+  };
+}
+
+/** @param {Record<string, unknown>} rec */
+function pickLatestUpdatedLiteral(rec) {
+  const keys = ["更新日時", "Updated_datetime", "updated_time", "Modified_datetime"];
+  for (const k of keys) {
+    const o = rec[k];
+    const v = o && typeof o === "object" && o !== null && "value" in o ? String(/** @type {{ value?: unknown }} */ (o).value ?? "") : "";
+    if (/\d{4}-\d{2}-\d{2}T/.test(v)) return v;
+  }
+  for (const [k, o] of Object.entries(rec)) {
+    if (k.startsWith("$")) continue;
+    const v = o && typeof o === "object" && o !== null && "value" in o ? String(/** @type {{ value?: unknown }} */ (o).value ?? "") : "";
+    if (/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(v)) return v;
+  }
+  return null;
+}
+
+/** @param {string} iso */
+function formatDisplayJst(iso) {
+  try {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return iso.length > 16 ? iso.slice(0, 16) : iso;
+    return new Intl.DateTimeFormat("ja-JP", {
+      timeZone: "Asia/Tokyo",
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(d);
+  } catch {
+    return iso;
+  }
+}
+
+/**
+ * レコード総数・直近24hの更新件数・直近レコードの更新日時表示
+ * @param {string} domain
+ * @param {Record<string, string>} headers
+ * @param {string} appId
+ */
+async function fetchAppStatsWithHeaders(domain, headers, appId) {
+  const totalRes = await fetchRecordsWithTotalCount(domain, headers, appId, "$id > 0 limit 1");
+  const total =
+    totalRes.ok && totalRes.totalCount != null && !Number.isNaN(totalRes.totalCount) ? totalRes.totalCount : null;
+
+  const since = toKintoneJstDatetimeLiteral(new Date(Date.now() - 24 * 60 * 60 * 1000));
+  const updateQueries = [`更新日時 >= "${since}"`, `Updated_datetime >= "${since}"`];
+  /** @type {number | null} */
+  let updated24h = null;
+  for (const q of updateQueries) {
+    const r = await fetchRecordsWithTotalCount(domain, headers, appId, `${q} limit 1`);
+    if (r.ok && r.totalCount != null && !Number.isNaN(r.totalCount)) {
+      updated24h = r.totalCount;
+      break;
+    }
+  }
+
+  /** @type {string | null} */
+  let lastLit = null;
+  const orderQueries = ["$id > 0 order by 更新日時 desc limit 1", "$id > 0 order by $id desc limit 1"];
+  for (const q of orderQueries) {
+    const url = new URL(`https://${domain}/k/v1/records.json`);
+    url.searchParams.set("app", appId);
+    url.searchParams.set("query", q);
+    url.searchParams.set("size", "1");
+    const res = await fetch(url.toString(), { method: "GET", headers });
+    const text = await res.text();
+    let json = null;
+    try {
+      json = JSON.parse(text);
+    } catch {
+      /* noop */
+    }
+    const rec = json?.records?.[0];
+    if (res.ok && rec) {
+      lastLit = pickLatestUpdatedLiteral(rec);
+      if (lastLit) break;
+    }
+  }
+
+  return {
+    total,
+    updated24h,
+    lastUpdatedDisplay: lastLit ? formatDisplayJst(lastLit) : "—",
+  };
 }
 
 function resolveKintoneAppsMdPath() {
@@ -253,24 +375,11 @@ function resolveApps(pwHeaders) {
   return DEFAULT_APPS;
 }
 
-/**
- * @param {{ checked: boolean; missing?: string[]; error?: string | null }} fc
- * @param {{ expectedFields?: string[] }} app
- */
-function formatFieldCell(fc, app) {
-  if (!fc.checked) return "—";
-  if (fc.error) return `検証不可 (${fc.error})`;
-  if (!app.expectedFields?.length) return "—";
-  if (fc.missing.length === 0) return `OK (${app.expectedFields.length}/${app.expectedFields.length})`;
-  return `**欠落${fc.missing.length}件**: ${fc.missing.join(", ")}`;
-}
-
 async function main() {
   const domain = requireDomain();
   const pwHeaders = passwordAuthHeaders();
   const tokens = requireTokensIfNoPassword(pwHeaders);
   const apps = resolveApps(pwHeaders);
-  const base = displayBaseUrl(domain);
 
   const now = new Date().toISOString();
   const lines = [];
@@ -284,13 +393,19 @@ async function main() {
     lines.push(`- **アプリ一覧の出所**: \`kintone-apps.md\` の「## アプリ一覧」表（SPACE_HEALTH_USE_KINTONE_APPS_MD=0 で無効化可）`);
   }
   lines.push("");
-  lines.push("| アプリID | 論理名 | ポータルURL | API | フィールド | 備考 |");
+  lines.push("| App ID | アプリ名 | レコード数 | 24h変動 | ステータス | 最終更新 |");
   lines.push("| --- | --- | --- | --- | --- | --- |");
+  lines.push(
+    "- **24h変動**: 各アプリの「更新日時」（または `Updated_datetime`）が直近24時間以内のレコード件数。算出不可時は — 。",
+  );
+  lines.push(
+    "- **最終更新**: 取得できた範囲で最新の更新日時（`$id` 降順で拾えない場合は — ）。",
+  );
+  lines.push("");
 
   let allOk = true;
 
   for (const app of apps) {
-    const portalUrl = `${base}${app.path}`;
     let best = { ok: false, status: 0, name: "", detail: "" };
     let successToken = null;
 
@@ -321,23 +436,31 @@ async function main() {
 
       if (!best.ok) allOk = false;
 
-      let fieldCell = "—";
+      /** @type {{ checked: boolean; missing?: string[]; error?: string | null }} */
+      let fc = { checked: false, missing: [], error: null };
       if (best.ok && app.expectedFields?.length) {
-        const fc = await checkExpectedFieldsWithHeaders(domain, pwHeaders, app.id, app.expectedFields);
-        fieldCell = formatFieldCell(fc, app);
+        fc = await checkExpectedFieldsWithHeaders(domain, pwHeaders, app.id, app.expectedFields);
         if (fc.checked && !fc.error && fc.missing.length > 0) allOk = false;
       }
 
-      const apiCell = best.ok ? `OK (${best.status})` : `**NG** (${best.status})`;
       const esc = (s) => String(s).replace(/\|/g, "\\|").replace(/\n/g, " ");
       const displayName = best.ok && best.name ? best.name : app.name;
-      const noteCell = best.ok
-        ? best.name
-          ? `kintone名: ${esc(best.name)}${best.detail ? ` / ${esc(best.detail)}` : ""}`
-          : esc(best.detail || "—")
-        : esc((best.detail || "権限・認証情報・アプリIDを確認").slice(0, 160));
+      const fieldWarn = Boolean(fc.checked && !fc.error && fc.missing && fc.missing.length > 0);
+      const statusJa = !best.ok ? "異常" : fieldWarn ? "警告" : "正常";
+
+      let stats = { total: /** @type {number | null} */ (null), updated24h: /** @type {number | null} */ (null), lastUpdatedDisplay: "—" };
+      if (best.ok) {
+        try {
+          stats = await fetchAppStatsWithHeaders(domain, pwHeaders, app.id);
+        } catch {
+          /* keep defaults */
+        }
+      }
+
+      const recCell = stats.total != null ? String(stats.total) : "—";
+      const h24Cell = stats.updated24h != null ? String(stats.updated24h) : "—";
       lines.push(
-        `| ${app.id} | ${esc(displayName)} | [開く](${portalUrl}) | ${apiCell} | ${fieldCell} | ${noteCell} |`,
+        `| ${app.id} | ${esc(displayName)} | ${recCell} | ${h24Cell} | ${statusJa} | ${esc(stats.lastUpdatedDisplay)} |`,
       );
       continue;
     }
@@ -378,23 +501,31 @@ async function main() {
     }
     if (!best.ok) allOk = false;
 
-    let fieldCell = "—";
+    /** @type {{ checked: boolean; missing?: string[]; error?: string | null }} */
+    let fc = { checked: false, missing: [], error: null };
     if (best.ok && successToken && app.expectedFields?.length) {
-      const fc = await checkExpectedFields(domain, successToken, app.id, app.expectedFields);
-      fieldCell = formatFieldCell(fc, app);
+      fc = await checkExpectedFields(domain, successToken, app.id, app.expectedFields);
       if (fc.checked && !fc.error && fc.missing.length > 0) allOk = false;
     }
 
-    const apiCell = best.ok ? `OK (${best.status})` : `**NG** (${best.status})`;
     const esc = (s) => String(s).replace(/\|/g, "\\|").replace(/\n/g, " ");
     const displayName = best.ok && best.name ? best.name : app.name;
-    const noteCell = best.ok
-      ? best.name
-        ? `kintone名: ${esc(best.name)}`
-        : "—"
-      : esc((best.detail || "権限・トークン・アプリIDを確認").slice(0, 160));
+    const fieldWarn = Boolean(fc.checked && !fc.error && fc.missing && fc.missing.length > 0);
+    const statusJa = !best.ok ? "異常" : fieldWarn ? "警告" : "正常";
+
+    let stats = { total: /** @type {number | null} */ (null), updated24h: /** @type {number | null} */ (null), lastUpdatedDisplay: "—" };
+    if (best.ok && successToken) {
+      try {
+        stats = await fetchAppStatsWithHeaders(domain, { "X-Cybozu-API-Token": successToken }, app.id);
+      } catch {
+        /* keep defaults */
+      }
+    }
+
+    const recCell = stats.total != null ? String(stats.total) : "—";
+    const h24Cell = stats.updated24h != null ? String(stats.updated24h) : "—";
     lines.push(
-      `| ${app.id} | ${esc(displayName)} | [開く](${portalUrl}) | ${apiCell} | ${fieldCell} | ${noteCell} |`,
+      `| ${app.id} | ${esc(displayName)} | ${recCell} | ${h24Cell} | ${statusJa} | ${esc(stats.lastUpdatedDisplay)} |`,
     );
   }
 
