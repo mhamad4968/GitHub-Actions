@@ -35,6 +35,7 @@
 - 半歩先のリスクは先回りで言う（§49）
 - 質問は 1 回に 1 つだけ（§41）
 - 時刻に触れる前に必ず `date` 実行（§39）
+- **OneDrive 使用禁止**（`C:\Users\<name>\OneDrive\` を新規ファイル先に選ばない / 代替: `C:\tmp\` `Documents\` 直下 `Claudeとの会話メモ\` `~/.cursor-emergency-backup/`）
 
 【今やってる主タスク】
 - SKYSEA × kintone 594 突合 → orphan 仕分け + 自動インストール仕組み
