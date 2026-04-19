@@ -2,6 +2,7 @@
   'use strict';
 
   // BUILD: 2026-04-18-v480 (相関ダッシュ: 台帳番号列・ミラー取り残し一括クリア)
+  // BUILD: 2026-04-19-v484 (相関ダッシュボード: 既定チェックを「重複あり/紐付けなし」のみに変更・「正常」は任意)
   // BUILD: 2026-04-19-v483 (個人アカウント紐付けモーダル新設・1:2 上限 / 旧「アカウント管理台帳(627) 作成/更新して開く」ボタン廃止)
   // BUILD: 2026-04-18-v482 (関連アプリ横並び小ナビを画面上部に常駐: 668/595/594/627 へのテキストリンク)
   // JBIS-ACC-001
@@ -3403,7 +3404,7 @@
           <option value="その他">その他</option>
         </select>
         <span style="margin-left:6px;display:inline-flex;gap:6px;align-items:center;">
-          <label style="cursor:pointer;font-weight:700;color:#10b981;"><input type="checkbox" id="qd-f-ok" checked> ✅ 正常</label>
+          <label style="cursor:pointer;font-weight:700;color:#10b981;" title="既定で非表示。担当者が必要な時だけチェックを入れる"><input type="checkbox" id="qd-f-ok"> ✅ 正常</label>
           <label style="cursor:pointer;font-weight:700;color:#b45309;"><input type="checkbox" id="qd-f-dup" checked> 🟠 重複あり</label>
           <label style="cursor:pointer;font-weight:700;color:#a16207;"><input type="checkbox" id="qd-f-no" checked> 🟡 紐付けなし</label>
         </span>
