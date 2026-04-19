@@ -2,6 +2,7 @@
   'use strict';
 
   // BUILD: 2026-04-18-v480 (相関ダッシュ: 台帳番号列・ミラー取り残し一括クリア)
+  // BUILD: 2026-04-19-v487 (PC検索: 所属名と所属グループを別フィールドに分離・自動展開廃止で混同防止)
   // BUILD: 2026-04-19-v486 (種別=JR端末 にも共有アカウント紐付けボタンを表示・モーダルタイトルに種別を反映)
   // BUILD: 2026-04-19-v485 (共有アカウント紐付けボタンを常時表示化・紐付け済み共有 PC でも追加紐付け可能に)
   // BUILD: 2026-04-19-v484 (相関ダッシュボード: 既定チェックを「重複あり/紐付けなし」のみに変更・「正常」は任意)
@@ -848,7 +849,8 @@
       '  .jbis-act-sep{width:1px;height:18px;background:#cbd5e1;margin:0 2px;flex:0 0 auto;}' +
       '  #jbis-q-count{font-weight:700;min-width:4em;color:#0f172a;font-size:11px;line-height:22px;white-space:nowrap;margin-left:auto;padding-left:8px;}' +
       '  .jbis-toolbar-fields{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;width:100%;}' +
-      '  .jbis-cell--dep{flex:1 1 220px;min-width:180px;max-width:100%;}' +
+      '  .jbis-cell--dep{flex:1 1 200px;min-width:160px;max-width:100%;}' +
+      '  .jbis-cell--grp{flex:0 1 140px;min-width:120px;max-width:200px;}' +
       '  #jbis-q-pc{flex:0 1 92px;min-width:76px;width:92px;max-width:120px;}' +
       '  #jbis-q-usr{flex:0 1 128px;min-width:100px;width:128px;max-width:180px;}' +
       '  .jbis-date-range{display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px 6px;font-size:11px;color:#334155;flex:0 1 auto;}' +
@@ -856,7 +858,7 @@
       '  .jbis-date-text{width:108px;max-width:100%;box-sizing:border-box;min-height:26px;height:26px;padding:2px 6px;border:1px solid #cbd5e1;border-radius:3px;font-size:11px;line-height:1.2;color:#0f172a;}' +
       '  .jbis-date-calbtn{box-sizing:border-box;flex:0 0 auto;margin:0;padding:0 7px;height:26px;border:1px solid #94a3b8;border-radius:3px;background:#f8fafc;cursor:pointer;font-size:10px;font-weight:700;line-height:1;color:#334155;white-space:nowrap;}' +
       '  .jbis-date-calbtn:hover{background:#e2e8f0;}' +
-      '  #jbis-q-dep{box-sizing:border-box;padding:3px 7px;border:1px solid #cbd5e1;border-radius:4px;font-size:11px;min-width:0;width:100%;height:22px;}' +
+      '  #jbis-q-dep,#jbis-q-grp{box-sizing:border-box;padding:3px 7px;border:1px solid #cbd5e1;border-radius:4px;font-size:11px;min-width:0;width:100%;height:22px;}' +
       '  #jbis-q-pc,#jbis-q-usr{box-sizing:border-box;padding:3px 7px;border:1px solid #cbd5e1;border-radius:4px;font-size:11px;height:22px;}' +
       '  #jbis-q-type{box-sizing:border-box;padding:2px 4px;border:1px solid #cbd5e1;border-radius:4px;font-size:11px;height:22px;flex:0 0 auto;min-width:60px;background:#fff;}' +
       '  .jbisSuggest{position:relative;display:block;width:100%;min-width:0;}' +
@@ -875,14 +877,17 @@
       '        <span class="jbis-act-sep" aria-hidden="true"></span>' +
       '        <button type="button" id="jbis-q-btn" class="jbisAct jbisAct--primary">検索</button>' +
       '        <button type="button" id="jbis-q-rst" class="jbisAct jbisAct--ghost">リセット</button>' +
-      '        <span class="jbis-actions-hint--inline">所属・グループはカンマ/スペース OR。上段はトグル。</span>' +
+      '        <span class="jbis-actions-hint--inline">所属名・所属グループは別欄に分けて入力。AND 検索。</span>' +
       '      </div>' +
       '      <span id="jbis-q-count">読込中...</span>' +
       '    </div>' +
       '    <div class="jbis-toolbar-fields">' +
       '    <span class="jbisSuggest jbis-cell--dep">' +
-      '      <input type="text" id="jbis-q-dep" placeholder="所属/所属グループ（複数OK: 本社 tokyo 等）">' +
+      '      <input type="text" id="jbis-q-dep" placeholder="所属名（例: 東京支店 / 本社）">' +
       '      <div id="jbis-q-dep-suggest" class="jbisSuggestList" role="listbox"></div>' +
+      '    </span>' +
+      '    <span class="jbis-cell--grp">' +
+      '      <input type="text" id="jbis-q-grp" placeholder="所属グループ（例: tokyo）">' +
       '    </span>' +
       '    <select id="jbis-q-type"><option value="">種別</option><option value="個人">個人</option><option value="共有">共有</option><option value="サーバーNAS">サーバーNAS</option><option value="JR端末">JR端末</option><option value="その他">その他</option></select>' +
       '    <input type="text" id="jbis-q-pc" placeholder="端末名">' +
@@ -1074,6 +1079,7 @@
     const panel = document.getElementById('jbis-pc-search-panel');
     return {
       dep: document.getElementById('jbis-q-dep')?.value || '',
+      grp: document.getElementById('jbis-q-grp')?.value || '',
       type: document.getElementById('jbis-q-type')?.value || '',
       pc: document.getElementById('jbis-q-pc')?.value || '',
       usr: document.getElementById('jbis-q-usr')?.value || '',
@@ -1102,6 +1108,7 @@
     if (!st) return false;
     const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v ?? ''; };
     setVal('jbis-q-dep', st.dep);
+    setVal('jbis-q-grp', st.grp);
     setVal('jbis-q-type', st.type);
     setVal('jbis-q-pc', st.pc);
     setVal('jbis-q-usr', st.usr);
@@ -1123,7 +1130,8 @@
     setPressed('jbis-short-no-acct', (st.shortNoAcct === '1'));
     setPressed('jbis-short-multi-acct', (st.shortMultiAcct === '1'));
     return Boolean(
-      (st.dep && st.dep.trim()) || (st.type && st.type.trim()) ||
+      (st.dep && st.dep.trim()) || (st.grp && st.grp.trim()) ||
+      (st.type && st.type.trim()) ||
       (st.pc && st.pc.trim()) || (st.usr && st.usr.trim()) ||
       (st.ds && st.ds.trim()) || (st.de && st.de.trim()) ||
       st.shortUnfinished === '1' || st.shortFyDone === '1' ||
@@ -1821,7 +1829,9 @@
 
           const doTableSearch = () => {
             const panel = document.getElementById('jbis-pc-search-panel');
-            const depTokens = expandDepTokens(splitTokens(document.getElementById('jbis-q-dep')?.value || ''));
+            // 所属名と所属グループは別フィールドとして AND 検索 (旧 expandDepTokens は廃止)
+            const depTokens = splitTokens(document.getElementById('jbis-q-dep')?.value || '');
+            const grpTokens = splitTokens(document.getElementById('jbis-q-grp')?.value || '');
             const vPc = document.getElementById('jbis-q-pc')?.value || '';
             const vUsr = document.getElementById('jbis-q-usr')?.value || '';
             const vType = document.getElementById('jbis-q-type')?.value || '';
@@ -1835,10 +1845,10 @@
             const fyEnd = panel?.dataset.fyEnd || '';
             const multiAcctSet = (shortMultiAcct && jbis594MultiAcctCache.ids) || null;
 
-            const hasFilter = depTokens.length > 0 || vPc || vUsr || vType || ds || de || shortUnfinished || shortFyDone || shortNoAcct || shortMultiAcct;
+            const hasFilter = depTokens.length > 0 || grpTokens.length > 0 || vPc || vUsr || vType || ds || de || shortUnfinished || shortFyDone || shortNoAcct || shortMultiAcct;
             const filtered = allRecs.filter((r) => {
-              const depHay = `${getV(r, 'dept_name')} ${getV(r, 'group_name')}`;
-              const mDep = matchesAnyToken(depHay, depTokens);
+              const mDep = matchesAnyToken(getV(r, 'dept_name'), depTokens);
+              const mGrp = matchesAnyToken(getV(r, 'group_name'), grpTokens);
               const mPc = !vPc || includesNormalized(`${getV(r, 'PC_name')} ${getV(r, 'shared_terminal_name')}`, vPc);
               const mUsr = !vUsr || includesNormalized(getV(r, 'user_name'), vUsr);
               const mType = !vType || getV(r, 'type') === vType;
@@ -1851,7 +1861,7 @@
               const mNoAcct = !shortNoAcct || !lid || lid === '#N/A' || lid === '-' || !/^\d+$/.test(lid);
               const rid = String(r?.$id?.value ?? '').trim();
               const mMultiAcct = !shortMultiAcct || (multiAcctSet && multiAcctSet.has(rid));
-              return mDep && mPc && mUsr && mType && mD && mShortUnfinished && mShortFyDone && mNoAcct && mMultiAcct;
+              return mDep && mGrp && mPc && mUsr && mType && mD && mShortUnfinished && mShortFyDone && mNoAcct && mMultiAcct;
             });
 
             if (countEl) countEl.textContent = `${filtered.length}件`;
@@ -1936,6 +1946,7 @@
             const panelEl = document.getElementById('jbis-pc-search-panel');
             const active = !!(
               (document.getElementById('jbis-q-dep')?.value || '').trim() ||
+              (document.getElementById('jbis-q-grp')?.value || '').trim() ||
               (document.getElementById('jbis-q-type')?.value || '').trim() ||
               (document.getElementById('jbis-q-pc')?.value || '').trim() ||
               (document.getElementById('jbis-q-usr')?.value || '').trim() ||
@@ -2002,7 +2013,7 @@
 
           document.getElementById('jbis-q-btn').onclick = runTableSearchAndSync;
           document.getElementById('jbis-q-rst').onclick = () => {
-            ['jbis-q-dep', 'jbis-q-pc', 'jbis-q-usr', 'jbis-ds', 'jbis-de'].forEach((id) => {
+            ['jbis-q-dep', 'jbis-q-grp', 'jbis-q-pc', 'jbis-q-usr', 'jbis-ds', 'jbis-de'].forEach((id) => {
               const el = document.getElementById(id);
               if (el) el.value = '';
             });
@@ -2088,7 +2099,9 @@
         const doSearch = () => {
           suppress594DefaultListGrids();
           const panel = document.getElementById('jbis-pc-search-panel');
-          const depTokens = expandDepTokens(splitTokens(document.getElementById('jbis-q-dep')?.value || ''));
+          // 所属名と所属グループは別フィールドとして AND 検索 (旧 expandDepTokens は廃止)
+          const depTokens = splitTokens(document.getElementById('jbis-q-dep')?.value || '');
+          const grpTokens = splitTokens(document.getElementById('jbis-q-grp')?.value || '');
           const vPc = document.getElementById('jbis-q-pc')?.value || '';
           const vUsr = document.getElementById('jbis-q-usr')?.value || '';
           const vType = document.getElementById('jbis-q-type')?.value || '';
@@ -2103,8 +2116,8 @@
           const multiAcctSet = (shortMultiAcct && jbis594MultiAcctCache.ids) || null;
 
           const filtered = allRecs.filter((r) => {
-            const depHay = `${getV(r, 'dept_name')} ${getV(r, 'group_name')}`;
-            const mDep = matchesAnyToken(depHay, depTokens);
+            const mDep = matchesAnyToken(getV(r, 'dept_name'), depTokens);
+            const mGrp = matchesAnyToken(getV(r, 'group_name'), grpTokens);
             const mPc = !vPc || includesNormalized(`${getV(r, 'PC_name')} ${getV(r, 'shared_terminal_name')}`, vPc);
             const mUsr = !vUsr || includesNormalized(getV(r, 'user_name'), vUsr);
             const mType = !vType || getV(r, 'type') === vType;
@@ -2117,7 +2130,7 @@
             const mNoAcct = !shortNoAcct || !lid || lid === '#N/A' || lid === '-' || !/^\d+$/.test(lid);
             const rid = String(r?.$id?.value ?? '').trim();
             const mMultiAcct = !shortMultiAcct || (multiAcctSet && multiAcctSet.has(rid));
-            return mDep && mPc && mUsr && mType && mD && mShortUnfinished && mShortFyDone && mNoAcct && mMultiAcct;
+            return mDep && mGrp && mPc && mUsr && mType && mD && mShortUnfinished && mShortFyDone && mNoAcct && mMultiAcct;
           });
           if (countEl) countEl.textContent = `${filtered.length}件`;
           renderCardsIfNeeded({ records: filtered });
@@ -2182,7 +2195,7 @@
 
         document.getElementById('jbis-q-btn').onclick = doSearch;
         document.getElementById('jbis-q-rst').onclick = () => {
-          ['jbis-q-dep', 'jbis-q-pc', 'jbis-q-usr', 'jbis-ds', 'jbis-de'].forEach((id) => {
+          ['jbis-q-dep', 'jbis-q-grp', 'jbis-q-pc', 'jbis-q-usr', 'jbis-ds', 'jbis-de'].forEach((id) => {
             const el = document.getElementById(id);
             if (el) el.value = '';
           });
