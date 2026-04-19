@@ -1,7 +1,9 @@
 (() => {
   'use strict';
 
-  // BUILD: 2026-04-18-v478 (詳細: 627⇔594 紐付け解除ボタン)
+  // BUILD: 2026-04-18-v480 (相関ダッシュ: 台帳番号列・ミラー取り残し一括クリア)
+  // BUILD: 2026-04-19-v483 (個人アカウント紐付けモーダル新設・1:2 上限 / 旧「アカウント管理台帳(627) 作成/更新して開く」ボタン廃止)
+  // BUILD: 2026-04-18-v482 (関連アプリ横並び小ナビを画面上部に常駐: 668/595/594/627 へのテキストリンク)
   // JBIS-ACC-001
   // PC台帳(594)からアカウント管理台帳(627)を「作成/更新して開く」
   // - mail をキーに 627 を作成/更新
@@ -2481,6 +2483,327 @@
     }
   };
 
+  // ── Personal PC → 627 account link ─────────────────────────────
+  // 規定: 1 個人アカウント = 1 ユーザー / 1 ユーザーは個人 PC 最大 2 台 (会社用 + 持ち出し用)
+  // よって 1 個人アカウント (627) ↔ 最大 PERSONAL_ACCOUNT_PC_LIMIT 台 の関係を強制する。
+  const PERSONAL_ACCOUNT_PC_LIMIT = 2;
+
+  const get627PcLinks = (rec627) => {
+    const linked = new Set();
+    const single = String(rec627[FC_627_PC_594_RECORD_ID]?.value || '').trim();
+    if (single) linked.add(single);
+    const rows = rec627[FC_627_PC_SUBTABLE]?.value || [];
+    for (const sr of rows) {
+      const v = String(sr?.value?.[FC_627_PC_SUB_594]?.value || '').trim();
+      if (v) linked.add(v);
+    }
+    return linked;
+  };
+
+  const fetch594NamesByIds = async (ids) => {
+    const list = [...new Set([...ids].map((x) => String(x).trim()).filter(Boolean))];
+    if (list.length === 0) return new Map();
+    const map = new Map();
+    // 安全のため 100 件ずつ分割 (kintone in 演算子の上限)
+    for (let i = 0; i < list.length; i += 100) {
+      const chunk = list.slice(i, i + 100);
+      const q = `$id in (${chunk.map((id) => `"${id}"`).join(',')}) limit 500`;
+      try {
+        const res = await kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', {
+          app: kintone.app.getId(),
+          query: q,
+          fields: ['$id', FC_594_PC_NAME, FC_594_NAME],
+        });
+        for (const r of (res?.records || [])) {
+          map.set(String(r.$id.value), {
+            pcName: r[FC_594_PC_NAME]?.value || '',
+            userName: r[FC_594_NAME]?.value || '',
+          });
+        }
+      } catch (e) {
+        console.warn('[JBIS-594] fetch594NamesByIds chunk error', e);
+      }
+    }
+    return map;
+  };
+
+  const searchPersonalAccounts = async (keyword) => {
+    const kw = String(keyword).trim().toLowerCase();
+    if (!kw) return [];
+    const fields = [
+      '$id', FC_627_AD_LOGON, FC_627_NAME, FC_627_MAIL, FC_627_DEPT, FC_627_GROUP,
+      FC_627_ACCOUNT_TYPE, FC_627_PC_NAME_FIELD, FC_627_PC_594_RECORD_ID, FC_627_PC_SUBTABLE,
+    ];
+    const baseQ = `${FC_627_ACCOUNT_TYPE} in ("個人アカウント") order by $id desc`;
+    const all = [];
+    let offset = 0;
+    for (;;) {
+      const q = `${baseQ} limit 500 offset ${offset}`;
+      const res = await kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', {
+        app: LEDGER_APP_ID, query: q, fields,
+      });
+      const recs = res?.records ?? [];
+      all.push(...recs);
+      if (recs.length < 500) break;
+      offset += 500;
+    }
+    return all.filter((r) => {
+      const vals = [
+        r[FC_627_AD_LOGON]?.value,
+        r[FC_627_NAME]?.value,
+        r[FC_627_MAIL]?.value,
+        r[FC_627_DEPT]?.value,
+      ];
+      return vals.some((v) => v && String(v).toLowerCase().includes(kw));
+    }).slice(0, 30);
+  };
+
+  // 個人アカウントを 594 に紐付ける。
+  // 戻り値: { ok, linked?, alreadyLinked?, blocked?, message?, currentPcs? }
+  // - alreadyLinked: 既に同じ 594 と紐付け済み (no-op)
+  // - blocked: 上限到達 (currentPcs に既存紐付け一覧)
+  // - linked: 紐付け成功
+  const linkPersonalAccountTo627 = async (recordId594, ledgerId627, pcName594) => {
+    const res627 = await kintone.api(kintone.api.url('/k/v1/record', true), 'GET', {
+      app: LEDGER_APP_ID, id: ledgerId627,
+    });
+    const rec627 = res627.record || {};
+
+    const linkedNow = get627PcLinks(rec627);
+    if (linkedNow.has(String(recordId594))) {
+      return { ok: true, alreadyLinked: true };
+    }
+    if (linkedNow.size >= PERSONAL_ACCOUNT_PC_LIMIT) {
+      const linkedNames = await fetch594NamesByIds(linkedNow);
+      const display = [...linkedNow].map((id) => {
+        const info = linkedNames.get(id);
+        return info ? `${info.pcName || '(PC名なし)'} (#${id})` : `#${id}`;
+      });
+      return {
+        ok: false,
+        blocked: true,
+        currentPcs: display,
+        message:
+          `このアカウントは既に ${linkedNow.size} 台 (${display.join(' / ')}) と紐付いており、` +
+          `規定上限の ${PERSONAL_ACCOUNT_PC_LIMIT} 台 (会社用 + 持ち出し用) に達しています。\n` +
+          `先に不要な紐付けを解除してから、再度このボタンを実行してください。`,
+      };
+    }
+
+    // サブテーブルへ追加 + 単一フィールドが空なら埋める + PC_name にマージ
+    const currentSub = Array.isArray(rec627[FC_627_PC_SUBTABLE]?.value)
+      ? rec627[FC_627_PC_SUBTABLE].value : [];
+    const newSub = currentSub.map((row) => ({ id: row.id, value: row.value }));
+    newSub.push({ value: { [FC_627_PC_SUB_594]: { value: String(recordId594) } } });
+
+    const patch627 = { [FC_627_PC_SUBTABLE]: { value: newSub } };
+    const curRep = String(rec627[FC_627_PC_594_RECORD_ID]?.value || '').trim();
+    if (!curRep || !/^\d+$/.test(curRep)) {
+      patch627[FC_627_PC_594_RECORD_ID] = { value: String(recordId594) };
+    }
+    if (pcName594) {
+      const existing = String(rec627[FC_627_PC_NAME_FIELD]?.value || '').trim();
+      if (!existing) patch627[FC_627_PC_NAME_FIELD] = { value: pcName594 };
+      else if (!existing.includes(pcName594)) patch627[FC_627_PC_NAME_FIELD] = { value: `${existing}, ${pcName594}` };
+    }
+
+    await kintone.api(kintone.api.url('/k/v1/record', true), 'PUT', {
+      app: LEDGER_APP_ID, id: ledgerId627, record: patch627,
+    });
+    await kintone.api(kintone.api.url('/k/v1/record', true), 'PUT', {
+      app: kintone.app.getId(), id: recordId594,
+      record: { [FC_594_LEDGER_RECORD_ID]: { value: String(ledgerId627) } },
+    }).catch(() => {});
+
+    return { ok: true, linked: true, linkedCountAfter: linkedNow.size + 1 };
+  };
+
+  const showPersonalAccountLinkModal = (recordId594, pcName594, mail594, name594) => {
+    if (document.getElementById('jbis594-personal-link-overlay')) return;
+    const overlay = document.createElement('div');
+    overlay.id = 'jbis594-personal-link-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:2147483600;background:rgba(15,23,42,.55);display:flex;align-items:center;justify-content:center;';
+    overlay.innerHTML =
+      '<div style="max-width:560px;width:95%;background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.3);padding:24px;font-family:inherit;max-height:88vh;overflow-y:auto;">' +
+      '<h2 style="margin:0 0 6px;font-size:15px;font-weight:800;color:#0f172a;">🔗 個人PC — アカウント紐付け</h2>' +
+      `<p style="margin:0 0 12px;font-size:12px;color:#475569;">PC: <b>${qdEsc(pcName594 || '(名前なし)')}</b> / 利用者: <b>${qdEsc(name594 || '(未入力)')}</b></p>` +
+      '<div style="margin:0 0 16px;padding:8px 10px;background:#fef3c7;border:1px solid #fcd34d;border-radius:6px;font-size:11px;color:#854d0e;">' +
+      '  📌 <b>運用ルール</b>: 1 個人アカウント = 1 ユーザー / 1 ユーザーは個人 PC 最大 2 台 (会社用 + 持ち出し用)<br>' +
+      '  既存の個人アカウントを選ぶ → このPCを追加紐付け / ＋ 新規作成 → 採番プールから新しいアカウントを作る' +
+      '</div>' +
+      '<div style="display:flex;gap:6px;margin-bottom:12px;">' +
+      '  <input id="jbis-personal-search" type="text" placeholder="ログオン名 / 氏名 / メール / 部署 で検索" style="flex:1;padding:8px 10px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;">' +
+      '  <button id="jbis-personal-search-btn" type="button" style="padding:8px 14px;border:none;border-radius:6px;background:#2563eb;color:#fff;font-weight:700;font-size:13px;cursor:pointer;">検索</button>' +
+      '</div>' +
+      '<div id="jbis-personal-results" style="margin-bottom:16px;min-height:40px;"></div>' +
+      '<div style="border-top:1px solid #e2e8f0;padding-top:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;">' +
+      '  <button id="jbis-personal-create-new" type="button" style="padding:8px 16px;border:none;border-radius:6px;background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;font-weight:700;font-size:13px;cursor:pointer;">＋ 新規アカウント作成</button>' +
+      '  <button id="jbis-personal-skip" type="button" style="padding:8px 16px;border:1px solid #94a3b8;border-radius:6px;background:#fff;color:#334155;font-weight:600;font-size:13px;cursor:pointer;">あとで（スキップ）</button>' +
+      '</div></div>';
+    document.body.appendChild(overlay);
+
+    const close = () => { overlay.remove(); };
+    overlay.querySelector('#jbis-personal-skip').onclick = close;
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+
+    const resultsDiv = overlay.querySelector('#jbis-personal-results');
+    const searchInput = overlay.querySelector('#jbis-personal-search');
+
+    // 利用者名一致チェック (氏名の表記揺れ・代理設定の判断材料を提供)
+    const askConfirmIfNameMismatch = (acctName, acctMail) => {
+      const a = String(acctName || '').trim();
+      const b = String(name594 || '').trim();
+      if (!a || !b) return true;  // どちらか空なら警告しない
+      if (a === b) return true;   // 完全一致
+      // 部分一致 (姓名の片方一致 / スペース有無の違い等) は警告レベルを下げる
+      const norm = (s) => s.replace(/[\s　]/g, '');
+      if (norm(a) === norm(b)) return true;  // 全角/半角空白だけの違い
+      const msg =
+        '⚠ 利用者名が一致しません\n\n' +
+        `  アカウント所有者: ${a}\n` +
+        (acctMail ? `  (mail: ${acctMail})\n` : '') +
+        `  PC 利用者: ${b}\n` +
+        (mail594 ? `  (mail: ${mail594})\n` : '') +
+        '\n以下のいずれに該当しますか？\n' +
+        '  1. 氏名の表記揺れ（フルネーム / 通称名 / 旧姓 等）\n' +
+        '     → このまま紐付けて OK\n' +
+        '  2. 氏名の入力ミス\n' +
+        '     → キャンセルして PC 台帳側で利用者名を修正してから再実行を推奨\n' +
+        '  3. 他者の PC を代理で設定 / PC を貸し出し中\n' +
+        '     → このまま紐付けて OK\n' +
+        '\n[OK] = 1 または 3 (このまま紐付ける)\n[キャンセル] = 2 (修正してから再実行)';
+      return confirm(msg);
+    };
+
+    const renderResults = (records) => {
+      if (!records.length) {
+        resultsDiv.innerHTML = '<p style="font-size:12px;color:#94a3b8;text-align:center;padding:12px 0;">該当なし。＋ 新規アカウント作成 を検討してください。</p>';
+        return;
+      }
+      let html = '<table style="width:100%;border-collapse:collapse;font-size:12px;">' +
+        '<tr style="background:#f1f5f9;"><th style="padding:6px 8px;text-align:left;">ログオン名</th><th style="padding:6px 8px;text-align:left;">利用者</th><th style="padding:6px 8px;text-align:left;">メール</th><th style="padding:6px 8px;text-align:center;">紐付け数</th><th style="padding:6px 8px;"></th></tr>';
+      for (const r of records) {
+        const id = r.$id.value;
+        const logon = r[FC_627_AD_LOGON]?.value || '';
+        const userName = r[FC_627_NAME]?.value || '';
+        const mail = r[FC_627_MAIL]?.value || '';
+        const cnt = get627PcLinks(r).size;
+        const cntStyle = cnt >= PERSONAL_ACCOUNT_PC_LIMIT
+          ? 'background:#fee2e2;color:#991b1b;font-weight:700;'
+          : (cnt >= 1 ? 'background:#fef9c3;color:#854d0e;font-weight:600;' : 'background:#dcfce7;color:#15803d;');
+        html += '<tr style="border-bottom:1px solid #e2e8f0;">' +
+          `<td style="padding:6px 8px;">${qdEsc(logon)}</td>` +
+          `<td style="padding:6px 8px;">${qdEsc(userName)}</td>` +
+          `<td style="padding:6px 8px;color:#64748b;font-size:11px;">${qdEsc(mail)}</td>` +
+          `<td style="padding:6px 8px;text-align:center;"><span style="${cntStyle}padding:2px 8px;border-radius:10px;font-size:11px;">${cnt} / ${PERSONAL_ACCOUNT_PC_LIMIT}</span></td>` +
+          `<td style="padding:6px 8px;"><button type="button" data-lid="${id}" data-name="${qdEsc(userName)}" data-mail="${qdEsc(mail)}" class="jbis-personal-pick" style="padding:4px 12px;border:none;border-radius:4px;background:#2563eb;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">選択</button></td></tr>`;
+      }
+      html += '</table>';
+      resultsDiv.innerHTML = html;
+      resultsDiv.querySelectorAll('.jbis-personal-pick').forEach((btn) => {
+        btn.onclick = async () => {
+          const acctName = btn.dataset.name || '';
+          const acctMail = btn.dataset.mail || '';
+          if (!askConfirmIfNameMismatch(acctName, acctMail)) return;
+          btn.disabled = true; btn.textContent = '処理中…';
+          try {
+            const r = await linkPersonalAccountTo627(recordId594, btn.dataset.lid, pcName594);
+            if (r.blocked) {
+              alert(r.message);
+              btn.disabled = false; btn.textContent = '選択';
+              return;
+            }
+            if (r.alreadyLinked) {
+              alert('このPCは既にこのアカウントと紐付け済みです。');
+              close();
+              return;
+            }
+            alert(`✅ アカウントを紐付けました（${r.linkedCountAfter} / ${PERSONAL_ACCOUNT_PC_LIMIT} 台）。`);
+            close();
+            location.reload();
+          } catch (e) {
+            alert(`紐付けに失敗しました: ${e?.message || String(e)}`);
+            btn.disabled = false; btn.textContent = '選択';
+          }
+        };
+      });
+    };
+
+    const doSearch = async () => {
+      const kw = searchInput.value.trim();
+      if (!kw) { resultsDiv.innerHTML = '<p style="font-size:12px;color:#94a3b8;text-align:center;padding:12px 0;">検索キーワードを入力してください</p>'; return; }
+      resultsDiv.innerHTML = '<p style="font-size:12px;color:#94a3b8;text-align:center;padding:12px 0;">検索中...</p>';
+      try { renderResults(await searchPersonalAccounts(kw)); }
+      catch (e) { resultsDiv.innerHTML = `<p style="font-size:12px;color:#dc2626;text-align:center;padding:12px 0;">検索エラー: ${e?.message || String(e)}</p>`; }
+    };
+    overlay.querySelector('#jbis-personal-search-btn').onclick = doSearch;
+    searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); doSearch(); } });
+
+    overlay.querySelector('#jbis-personal-create-new').onclick = async () => {
+      const btn = overlay.querySelector('#jbis-personal-create-new');
+      if (!mail594) {
+        alert('メールアドレス (mail) が未入力のため、新規アカウントを作成できません。\nPC 台帳の mail を入力してから再実行してください。');
+        return;
+      }
+      if (!confirm(`採番プール (626) から番号を取得し、メール ${mail594} で新しい個人アカウントを作成します。よろしいですか？`)) return;
+      btn.disabled = true; btn.textContent = '作成中…';
+      try {
+        const cur = kintone.app.record.get();
+        const rec594 = cur?.record;
+        if (!rec594) throw new Error('レコードを取得できませんでした');
+        const r = await sync627From594ApiRecord(rec594);
+        if (!r.ok) {
+          alert(r.message);
+          btn.disabled = false; btn.textContent = '＋ 新規アカウント作成';
+          return;
+        }
+        if (r.created) {
+          alert(`✅ 新規アカウントを作成し、PC を紐付けました。\nアカウント台帳レコード: ${r.ledgerId}`);
+        } else {
+          alert(
+            `既存のアカウント (#${r.ledgerId}) が見つかったため、氏名・所属を 594 から同期し PC を紐付けました。` +
+            (r.notice ? `\n\n${r.notice}` : '')
+          );
+        }
+        close();
+        location.reload();
+      } catch (e) {
+        alert(`アカウント作成に失敗しました: ${e?.message || String(e)}`);
+        btn.disabled = false; btn.textContent = '＋ 新規アカウント作成';
+      }
+    };
+    searchInput.focus();
+  };
+
+  /**
+   * 非同期: 現在のレコードが type=個人 ならボタンを追加 (常に表示・紐付け済みでも追加紐付けに使える)。
+   */
+  const maybeAddPersonalButton = async (wrap) => {
+    try {
+      if (wrap.querySelector('[data-jbis-personal-link]')) return;
+      const rid = kintone.app.record.getId();
+      if (!rid) return;
+      const { record: recData } = await get594RecordPayloadById(rid);
+      const curType = (recData[FC_594_TYPE]?.value || '').trim();
+      if (curType !== '個人') return;
+      if (String(kintone.app.record.getId()) !== String(rid)) return;
+      if (wrap.querySelector('[data-jbis-personal-link]')) return;
+
+      const pcName = (recData[FC_594_PC_NAME]?.value || '').trim();
+      const mail = (recData[FC_594_MAIL]?.value || '').trim();
+      const userName = (recData[FC_594_NAME]?.value || '').trim();
+      const btnPersonalLink = document.createElement('button');
+      btnPersonalLink.type = 'button';
+      btnPersonalLink.setAttribute('data-jbis-personal-link', '1');
+      btnPersonalLink.textContent = '🔗 個人アカウント紐付け';
+      btnPersonalLink.style.cssText = 'padding:6px 14px;border:none;border-radius:6px;background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;font-weight:700;font-size:12px;cursor:pointer;';
+      btnPersonalLink.onclick = () => showPersonalAccountLinkModal(rid, pcName, mail, userName);
+      wrap.insertBefore(btnPersonalLink, wrap.firstChild);
+    } catch (e) {
+      console.warn('[JBIS-594] personal button check error', e);
+    }
+  };
+
   const maybeShowSharedLinkModalFromStorage = () => {
     try {
       const raw = sessionStorage.getItem(STORAGE_KEY_594_SHARED_LINK);
@@ -2692,7 +3015,7 @@
                 alert(
                   'PC買替は完了しました（旧594は廃棄更新済み）。\n\n' +
                     `627（アカウント管理台帳）の自動反映に失敗しました。\n${sync.message}\n\n` +
-                    '627の画面で「アカウント管理台帳(627) 作成/更新して開く」を実行してください。'
+                    '新しい 594 詳細画面の「🔗 個人アカウント紐付け」ボタンから紐付け直してください。'
                 );
               } else if (sync.notice) {
                 alert(`PC買替は完了しました。\n\n${sync.notice}`);
@@ -2726,38 +3049,10 @@
       void runPcReplacementFlow();
     };
 
-    const btn = makeButton('アカウント管理台帳(627) 作成/更新して開く');
-    btn.onclick = async () => {
-      btn.disabled = true;
-      try {
-        const cur = kintone.app.record.get();
-        const rec594 = cur?.record;
-        if (!rec594) {
-          alert('レコードを取得できませんでした。');
-          return;
-        }
-        const r = await sync627From594ApiRecord(rec594);
-        if (!r.ok) {
-          alert(r.message);
-          return;
-        }
-        if (!r.created) {
-          if (r.notice) {
-            alert(r.notice);
-          } else {
-            alert(
-              'すでにアカウントはあります。\n' +
-                '二重には作りません。このあと 594 の氏名・所属で既存台帳を更新し、別タブで開きます。'
-            );
-          }
-        }
-        openLedgerRecord(r.ledgerId);
-      } catch (e) {
-        alert(`処理に失敗しました: ${e?.message || String(e)}`);
-      } finally {
-        btn.disabled = false;
-      }
-    };
+    // 旧「アカウント管理台帳(627) 作成/更新して開く」ボタンは 2026-04-19 に廃止。
+    // 代わりに種別 = 個人 のとき maybeAddPersonalButton (検索 + 既存選択 or 新規作成のモーダル UX),
+    // 種別 = 共有 のとき maybeAddSharedButton が表示される。
+    // サーバーNAS / その他 / JR端末 はアカウント設定対象外のためボタン無し。
 
     const wrap = document.createElement('div');
     wrap.id = DETAIL_ACC_BTN_WRAP_ID;
@@ -2767,8 +3062,8 @@
       'display:flex;align-items:center;gap:8px;flex-wrap:wrap;width:100%;box-sizing:border-box;' +
       'margin:0 0 10px;padding:8px 10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;';
     wrap.appendChild(btnReplace);
-    wrap.appendChild(btn);
     host.insertBefore(wrap, host.firstChild);
+    maybeAddPersonalButton(wrap);
     maybeAddSharedButton(wrap);
     return true;
   };
@@ -2813,12 +3108,92 @@
     return Array.from(ids);
   };
 
+  /**
+   * 627 に1件も紐付いていない 594 で、ledger_record_id（台帳番号のミラー）だけ残っている行を空にする。
+   * 各件の更新直前に findLinked627RecordIds を再実行し、他ユーザーが紐付け直した場合はスキップ。
+   * 数値の ledger に対応する 627 行に、この PC への古い参照が残っていれば先に外す（レコード削除なし）。
+   * @param {Array<{ id: string, lid: string }>} targets
+   */
+  const bulkClear594OrphanLedgerMirrors = async (targets) => {
+    const app594 = kintone.app.getId();
+    let cleared = 0;
+    let skipped = 0;
+    let failed = 0;
+    const errors = /** @type {string[]} */ ([]);
+    for (const t of targets) {
+      const pid = String(t.id || '').trim();
+      const lidRaw = String(t.lid || '').trim();
+      if (!pid || !/^\d+$/.test(pid)) {
+        skipped++;
+        continue;
+      }
+      if (!lidRaw || !/^\d+$/.test(lidRaw)) {
+        skipped++;
+        continue;
+      }
+      try {
+        const linked0 = await findLinked627RecordIds(pid);
+        if (linked0.length) {
+          skipped++;
+          continue;
+        }
+        try {
+          const res627 = await kintone.api(kintone.api.url('/k/v1/record', true), 'GET', {
+            app: LEDGER_APP_ID,
+            id: lidRaw,
+          });
+          const rec627 = res627.record || {};
+          const patch627 = build627UnlinkPatchForPc594(rec627, pid);
+          if (Object.keys(patch627).length > 0) {
+            await kintone.api(kintone.api.url('/k/v1/record', true), 'PUT', {
+              app: LEDGER_APP_ID,
+              id: lidRaw,
+              revision: rec627.$revision?.value,
+              record: patch627,
+            });
+          }
+        } catch (e627) {
+          console.warn('[JBIS-594] bulkClear594OrphanLedgerMirrors 627 patch skip', pid, lidRaw, e627);
+        }
+
+        const linked1 = await findLinked627RecordIds(pid);
+        if (linked1.length) {
+          skipped++;
+          continue;
+        }
+        const r594 = await kintone.api(kintone.api.url('/k/v1/record', true), 'GET', {
+          app: app594,
+          id: pid,
+        });
+        const rec594 = r594.record || {};
+        const curLed = String(rec594[FC_594_LEDGER_RECORD_ID]?.value ?? '').trim();
+        if (!curLed) {
+          skipped++;
+          continue;
+        }
+        await kintone.api(kintone.api.url('/k/v1/record', true), 'PUT', {
+          app: app594,
+          id: pid,
+          revision: rec594.$revision?.value,
+          record: { [FC_594_LEDGER_RECORD_ID]: { value: null } },
+        });
+        cleared++;
+      } catch (e) {
+        failed++;
+        errors.push(`${pid}: ${e instanceof Error ? e.message : String(e)}`);
+      }
+    }
+    return { cleared, skipped, failed, errors };
+  };
+
   // ===== PC↔アカウント相関ダッシュボード =====
   // 設計趣旨: 「PC台帳のPC1件 ＝ 1行」で、紐付くWindowsIDとフラグを俯瞰できる別画面。
   // フラグ定義（2026-04-18 修正）:
   //   ✅ 正常        … このPCに紐付く 627 アカウントが 1 件以上、または「アカウント設定対象外」種別
   //   🟠 重複あり    … このPCに 2 件以上のアカウントが紐付いている
   //   🟡 紐付けなし  … 627 上で 1 件もこのPCに紐付いていない（ただし下記対象外種別を除く）
+  //   ※ 594 の ledger_record_id は保存時のミラー用フィールドのため、627 側の紐付けが外れても
+  //     自動では消えないことがある（🟡 かつ台帳番号あり＝取り残し）。詳細の紐付け解除・下の一括クリアで整える。
   // アカウント設定対象外 PC 種別（紐付けなし扱いしない）:
   //   - "サーバーNAS" : サーバ/NAS は AD アカウントを割り当てない運用
   //   - "その他"      : 同上
@@ -3010,6 +3385,7 @@
           <span style="color:#10b981;">✅ 正常</span>＝紐付け 1 件／
           <span style="color:#f59e0b;">🟠 重複あり</span>＝このPCに 2 件以上のアカウントが紐付き／
           <span style="color:#eab308;">🟡 紐付けなし</span>＝627 に紐付くアカウントが 0 件
+          <br><span style="color:#fde047;">※ 594 の「アカウント台帳番号」(<code>ledger_record_id</code>) は別フィールドです。627 の紐付けが 0 でも番号だけ残ることがあります（一覧の列と備考の⚠を参照）。</span>
           <br><span style="color:#94a3b8;">※ 同一WindowsID が他PCでも使われている場合は、フラグには影響させず備考に「ℹ 参考情報」として表示します。</span>
           <br><span style="color:#94a3b8;">※ 種別「サーバーNAS」「その他」はアカウント設定対象外のため、0 件でも 🟡 紐付けなし に含めません（備考に「対象外」と表示）。</span>
         </div>
@@ -3032,6 +3408,7 @@
           <label style="cursor:pointer;font-weight:700;color:#a16207;"><input type="checkbox" id="qd-f-no" checked> 🟡 紐付けなし</label>
         </span>
         <button id="qd-reset" type="button" style="margin-left:auto;background:#fff;border:1px solid #cbd5e1;border-radius:6px;padding:6px 10px;cursor:pointer;font-weight:700;">条件をクリア</button>
+        <button id="qd-bulk-clear" type="button" style="background:#854d0e;color:#fff;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-weight:700;" title="627に紐付き0件なのに594の台帳番号だけ残っている行を、APIで再確認のうえ空にします">🧹 台帳番号の取り残し一括クリア…</button>
         <button id="qd-csv" type="button" style="background:#0f172a;color:#fff;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-weight:700;">📥 CSVダウンロード</button>
       </div>
       <div id="qd-table-wrap" style="padding:0 22px 24px;background:#fff;">
@@ -3071,6 +3448,49 @@
     }
 
     const tableWrap = document.getElementById('qd-table-wrap');
+    tableWrap?.addEventListener('click', async (ev) => {
+      const t = (ev.target instanceof Element) ? ev.target.closest('[data-clear-orphan]') : null;
+      if (!t || !(t instanceof HTMLButtonElement)) return;
+      ev.preventDefault();
+      const raw = t.getAttribute('data-clear-orphan') || '';
+      const [pid, lid] = raw.split(':');
+      if (!/^\d+$/.test(pid) || !/^\d+$/.test(lid)) return;
+      const msg =
+        '【594の台帳番号をクリアしますか?】\n\n' +
+        `対象PC: PC台帳(594) レコード番号 ${pid}\n` +
+        `クリア対象: 594の台帳番号 ${lid}\n\n` +
+        '▼ どうなりますか?\n' +
+        '・このPCは「アカウント未紐付け(番号のみ残存)」状態です\n' +
+        `・残っている台帳番号(${lid})だけをクリアします\n` +
+        '・アカウントの登録自体は触りません\n\n' +
+        '▼ 安全のため\n' +
+        '・実行直前にAPIで再確認し、紐付けが付き直していたらスキップします\n\n' +
+        '実行しますか?';
+      if (!confirm(msg)) return;
+      const orig = t.textContent;
+      t.disabled = true;
+      t.textContent = '処理中…';
+      try {
+        const res = await bulkClear594OrphanLedgerMirrors([{ id: pid, lid }]);
+        if (res.cleared > 0) {
+          alert('クリアしました(594の台帳番号 1件)。画面を再読み込みします。');
+          location.reload();
+        } else if (res.skipped > 0) {
+          alert('スキップしました(再確認したらアカウントが紐付いていました)。画面を再読み込みします。');
+          location.reload();
+        } else {
+          const tail = res.errors.length ? `\n\n${res.errors.slice(0, 3).join('\n')}` : '';
+          alert(`クリアできませんでした。${tail}`);
+          t.disabled = false;
+          t.textContent = orig;
+        }
+      } catch (e) {
+        alert(`エラー: ${e instanceof Error ? e.message : String(e)}`);
+        t.disabled = false;
+        t.textContent = orig;
+      }
+    });
+
     const renderTable = () => {
       const qPc = (document.getElementById('qd-q-pc')?.value || '').trim().toLowerCase();
       const qUser = (document.getElementById('qd-q-user')?.value || '').trim().toLowerCase();
@@ -3140,7 +3560,24 @@
       // 通常のヘッダー（Kintone埋め込みでは sticky が不安定なため、表内では使わない）
       const headerStyle = 'background:#0f172a;color:#fff;padding:10px 8px;text-align:left;font-size:12px;font-weight:700;border-bottom:2px solid #334155;';
       const cellBase = 'padding:8px;border-bottom:1px solid #e2e8f0;vertical-align:top;font-size:13px;';
-      const rowsHtml = filtered.map((r, i) => {
+        const lidCell = (r) => {
+          const v = String(r.lid || '').trim();
+          if (!v) return '<span style="color:#9ca3af;">—</span>';
+          const isNum = /^\d+$/.test(v);
+          const inner = isNum
+            ? `<a href="${qdLink627(v)}" target="_blank" rel="noopener" style="color:#1d4ed8;font-weight:700;text-decoration:none;">${qdEsc(v)}</a>`
+            : `<span style="color:#b91c1c;font-weight:700;">${qdEsc(v)}</span>`;
+          if (r.flag === 'NO_LINK' && v) {
+            if (isNum) {
+              const tip = 'アカウント台帳(627)側にこのPCへの紐付けがないため、594の台帳番号だけが単独で残っています。「クリアする」を押すと、この行の番号だけを空にします(下の「🧹 一括クリア」と同じ動きを1件だけ実行)。';
+              const dataAttr = `${qdEsc(r.id)}:${qdEsc(v)}`;
+              return `<div title="${qdEsc(tip)}">${inner}<div style="margin-top:3px;"><button type="button" data-clear-orphan="${dataAttr}" style="padding:3px 10px;font-size:10px;color:#fff;background:#b45309;border:1px solid #92400e;border-radius:4px;font-weight:700;cursor:pointer;line-height:1.3;">⚠ アカウント未紐付け<br>(番号のみ残存) — クリアする</button></div></div>`;
+            }
+            return `<div title="${qdEsc('数値以外の異常値が入っています。PC台帳の詳細から手修正してください。')}" style="cursor:help;">${inner}<div style="font-size:10px;color:#b91c1c;font-weight:700;margin-top:2px;">⚠ 異常値・要手修正</div></div>`;
+          }
+          return inner;
+        };
+        const rowsHtml = filtered.map((r, i) => {
         const bg = r.flag === 'DUP' ? '#fff7ed' : (r.flag === 'NO_LINK' ? '#fefce8' : (i % 2 === 0 ? '#ffffff' : '#f8fafc'));
         return `<tr style="background:${bg};">
           <td style="${cellBase}text-align:right;color:#64748b;font-variant-numeric:tabular-nums;font-weight:700;width:48px;">${i + 1}</td>
@@ -3150,6 +3587,7 @@
           </td>
           <td style="${cellBase}">${qdEsc(r.userName) || '<span style="color:#9ca3af;">—</span>'}</td>
           <td style="${cellBase}">${acctCell(r.accts)}</td>
+          <td style="${cellBase}text-align:center;white-space:nowrap;font-variant-numeric:tabular-nums;">${lidCell(r)}</td>
           <td style="${cellBase}text-align:center;white-space:nowrap;">${flagCell(r.flag)}<div style="font-size:10px;color:#64748b;margin-top:2px;">${r.accts.length}件</div></td>
           <td style="${cellBase}font-size:11px;">${remarkCell(r)}</td>
         </tr>`;
@@ -3167,10 +3605,11 @@
               <th style="${headerStyle}min-width:180px;">PC名（キー）</th>
               <th style="${headerStyle}min-width:120px;">利用者</th>
               <th style="${headerStyle}min-width:300px;">紐付くWindowsID（行ごと）</th>
+              <th style="${headerStyle}min-width:100px;">594の台帳番号<br><span style="font-weight:400;font-size:10px;opacity:.9">ledger_record_id</span></th>
               <th style="${headerStyle}min-width:110px;">フラグ</th>
-              <th style="${headerStyle}min-width:280px;">備考</th>
+              <th style="${headerStyle}min-width:240px;">備考</th>
             </tr></thead>
-            <tbody>${rowsHtml || '<tr><td colspan="6" style="padding:24px;text-align:center;color:#94a3b8;">該当なし</td></tr>'}</tbody>
+            <tbody>${rowsHtml || '<tr><td colspan="7" style="padding:24px;text-align:center;color:#94a3b8;">該当なし</td></tr>'}</tbody>
           </table>
         </div>
       `;
@@ -3197,6 +3636,49 @@
       });
       renderTable();
     });
+    document.getElementById('qd-bulk-clear')?.addEventListener('click', async () => {
+      const targets = rows
+        .filter((r) => r.flag === 'NO_LINK'
+          && String(r.lid || '').trim()
+          && /^\d+$/.test(String(r.lid || '').trim()))
+        .map((r) => ({ id: r.id, lid: String(r.lid).trim() }));
+      if (!targets.length) {
+        alert(
+          '「🟡 紐付けなし」かつ、数値の「594の台帳番号」(ledger_record_id) が入っている行がありません。\n' +
+            '（番号が空、または数値以外の不正値だけの場合は、PC台帳の詳細から手修正してください。）',
+        );
+        return;
+      }
+      const msg =
+        `【台帳番号の取り残し一括クリア】\n\n627 にこの PC への紐付けが 0 件で、594 の台帳番号だけ数値で残っている行が ${targets.length} 件あります。\n\n` +
+        '・各件について API で再確認し、紐付けが付いていなければ 594 の番号を空にします。\n' +
+        '・番号が指す 627 に、この PC への古い参照があれば先に外します（627のレコード削除はしません）。\n\n実行しますか？';
+      if (!confirm(msg)) return;
+      const btn = document.getElementById('qd-bulk-clear');
+      const orig = btn?.textContent;
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = '処理中…';
+      }
+      try {
+        const res = await bulkClear594OrphanLedgerMirrors(targets);
+        const tail = res.errors.length
+          ? `\n\n失敗内訳（先頭5件）:\n${res.errors.slice(0, 5).join('\n')}`
+          : '';
+        alert(
+          `完了しました。\n・594 の台帳番号を空にした件数: ${res.cleared}\n` +
+            `・スキップ（再照会で紐付けあり等）: ${res.skipped}\n・失敗: ${res.failed}${tail}\n\n一覧を最新にするため再読み込みします。`,
+        );
+        location.reload();
+      } catch (e) {
+        alert(`エラー: ${e instanceof Error ? e.message : String(e)}`);
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = orig || '🧹 台帳番号の取り残し一括クリア…';
+        }
+      }
+    });
+
     document.getElementById('qd-csv')?.addEventListener('click', () => {
       const btn = document.getElementById('qd-csv');
       const origLabel = btn?.textContent;
@@ -3426,39 +3908,44 @@
         const hint = document.createElement('span');
         hint.style.cssText = 'font-size:11px;color:#64748b;flex:1;min-width:200px;line-height:1.45;';
         hint.innerHTML =
-          '<b>紐付け解除</b>：627 のこの PC への参照（<code>pc_594_record_id</code> または ' +
-          '<code>pc_ledger_links</code> の該当行）だけを外し、594 の <code>ledger_record_id</code> を空にします。' +
-          '627 のレコード削除や氏名・パスワード等の変更はしません。';
+          '<b>紐付けを外すと…</b>：このPCに紐付いているアカウント台帳側の「PC欄」と、' +
+          'このPC側の「アカウント台帳番号」を空にします。' +
+          '<b>アカウントの登録自体は消えません</b>（氏名・パスワード等もそのまま）。';
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.textContent = '627⇔594 紐付け解除…';
+        const BTN_LABEL_594 = 'このPCからアカウントの紐付けを外す…';
+        btn.textContent = BTN_LABEL_594;
         btn.style.cssText =
           'padding:6px 12px;border-radius:6px;border:1px solid #b45309;background:#fff7ed;' +
           'color:#9a3412;font-weight:800;font-size:12px;cursor:pointer;white-space:nowrap;';
         btn.addEventListener('click', async () => {
           const msg =
-            '【紐付け解除の確認】\n\n' +
-            `・PC台帳(594) レコード番号: ${pcId}\n` +
-            '・627: 上記 PC を指している参照だけを外します（台帳レコード自体は削除しません）。\n' +
-            '・594: アカウント台帳番号(ledger_record_id) を空にします。\n\n' +
-            '再設定は手動です。実行しますか？';
+            '【このPCから「アカウントの紐付け」を外します】\n\n' +
+            `対象PC: PC台帳(594) レコード番号 ${pcId}\n\n` +
+            '▼ どうなりますか?\n' +
+            '・アカウント台帳(627) 側の「PC欄」から、このPCへの参照だけを外します\n' +
+            '・このPC側の「アカウント台帳番号」を空にします\n' +
+            '・アカウント自体(氏名・パスワード・WindowsID等)は削除しません\n\n' +
+            '▼ 元に戻すには\n' +
+            '・もう一度紐付け直す操作が必要です(自動では戻りません)\n\n' +
+            '実行しますか?';
           if (!confirm(msg)) return;
           btn.disabled = true;
           btn.textContent = '処理中…';
           try {
             const res = await unlinkPc594FromLedgerRecords(pcId, targetLedgerIds);
             if (!res.ok) {
-              alert(`紐付け解除を完了できませんでした。\n\n${res.message || ''}`);
+              alert(`アカウントの紐付けを外せませんでした。\n\n${res.message || ''}`);
               btn.disabled = false;
-              btn.textContent = '627⇔594 紐付け解除…';
+              btn.textContent = BTN_LABEL_594;
               return;
             }
-            alert(`紐付け解除が完了しました（627を更新した件数: ${res.touched627}）。画面を再読み込みします。`);
+            alert(`アカウントの紐付けを外しました(更新したアカウント台帳: ${res.touched627} 件)。画面を再読み込みします。`);
             location.reload();
           } catch (e) {
             alert(`エラー: ${e instanceof Error ? e.message : String(e)}`);
             btn.disabled = false;
-            btn.textContent = '627⇔594 紐付け解除…';
+            btn.textContent = BTN_LABEL_594;
           }
         });
         tb.appendChild(hint);
@@ -3471,8 +3958,10 @@
         const note = document.createElement('span');
         note.style.cssText = 'color:#b45309;font-weight:800;';
         note.textContent = (typeVal === '共有')
-          ? '⚠ 紐付くアカウント台帳がまだありません。上の共有アカウント紐付けから登録してください。'
-          : '⚠ 紐付くアカウント台帳がまだありません。上の「アカウント管理台帳(627) 作成/更新して開く」から作成してください。';
+          ? '⚠ 紐付くアカウント台帳がまだありません。上の「🔗 共有アカウント紐付け」から登録してください。'
+          : (typeVal === '個人')
+            ? '⚠ 紐付くアカウント台帳がまだありません。上の「🔗 個人アカウント紐付け」から登録してください。'
+            : '⚠ 紐付くアカウント台帳がまだありません。';
         linkArea.appendChild(note);
         if (has594LedgerNum) attachUnlinkToolbar();
         return true;
@@ -3565,5 +4054,89 @@
   kintone.events.on('app.record.edit.submit.success', (event) => {
     maybeSetSharedLinkStorage(event);
     return event;
+  });
+
+  // ─────────────────────────────────────────────────────────────────
+  // 関連アプリへの横並び小ナビ（一覧／詳細／作成／編集 すべての画面に常駐）
+  // 文字リンクのみ・控えめサイズ。クリックで新規タブで該当アプリを開く。
+  // ─────────────────────────────────────────────────────────────────
+  const JBIS_RELATED_APPS = [
+    { id: '668', label: '利用ガイド' },
+    { id: '595', label: '社員情報マスタ' },
+    { id: '594', label: 'PC管理台帳' },
+    { id: '627', label: 'アカウント管理台帳' },
+  ];
+  const JBIS_RELATED_NAV_ID = 'jbis-related-apps-nav';
+  const JBIS_RELATED_CURRENT_APP_ID = '594';
+
+  const buildRelatedAppsNav = () => {
+    const nav = document.createElement('div');
+    nav.id = JBIS_RELATED_NAV_ID;
+    nav.style.cssText =
+      'display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:4px 6px;'
+      + 'font-size:11px;color:#64748b;line-height:1.6;'
+      + 'font-family:"Hiragino Sans","Meiryo",sans-serif;';
+
+    const prefix = document.createElement('span');
+    prefix.textContent = '🔗 関連:';
+    prefix.style.cssText = 'font-weight:600;color:#475569;';
+    nav.appendChild(prefix);
+
+    JBIS_RELATED_APPS.forEach((app, i) => {
+      if (i > 0) {
+        const sep = document.createElement('span');
+        sep.textContent = '|';
+        sep.style.cssText = 'color:#cbd5e1;';
+        nav.appendChild(sep);
+      }
+      if (app.id === JBIS_RELATED_CURRENT_APP_ID) {
+        const cur = document.createElement('span');
+        cur.textContent = `${app.label}（このアプリ）`;
+        cur.style.cssText = 'color:#94a3b8;font-weight:600;';
+        nav.appendChild(cur);
+      } else {
+        const a = document.createElement('a');
+        a.href = `/k/${app.id}/`;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.textContent = app.label;
+        a.style.cssText = 'color:#0d9488;text-decoration:none;font-weight:600;';
+        a.addEventListener('mouseenter', () => { a.style.textDecoration = 'underline'; });
+        a.addEventListener('mouseleave', () => { a.style.textDecoration = 'none'; });
+        nav.appendChild(a);
+      }
+    });
+    return nav;
+  };
+
+  const mountRelatedAppsNav = () => {
+    if (document.getElementById(JBIS_RELATED_NAV_ID)) return true;
+    let slot = null;
+    try { slot = kintone.app?.record?.getHeaderMenuSpaceElement?.() ?? null; }
+    catch { /* noop */ }
+    if (!slot) {
+      try { slot = kintone.app?.getHeaderMenuSpaceElement?.() ?? null; }
+      catch { /* noop */ }
+    }
+    if (!slot) return false;
+    slot.appendChild(buildRelatedAppsNav());
+    return true;
+  };
+
+  const scheduleRelatedAppsNav = () => {
+    [0, 400, 1000].forEach((ms) => {
+      setTimeout(() => {
+        try { mountRelatedAppsNav(); }
+        catch (e) { console.warn('[jbis related-apps-nav]', e); }
+      }, ms);
+    });
+  };
+
+  ['app.record.index.show', 'app.record.detail.show',
+    'app.record.create.show', 'app.record.edit.show'].forEach((evt) => {
+    kintone.events.on(evt, (event) => {
+      scheduleRelatedAppsNav();
+      return event;
+    });
   });
 })();
