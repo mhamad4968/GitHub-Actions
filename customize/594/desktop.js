@@ -2,6 +2,7 @@
   'use strict';
 
   // BUILD: 2026-04-18-v480 (相関ダッシュ: 台帳番号列・ミラー取り残し一括クリア)
+  // BUILD: 2026-04-19-v486 (種別=JR端末 にも共有アカウント紐付けボタンを表示・モーダルタイトルに種別を反映)
   // BUILD: 2026-04-19-v485 (共有アカウント紐付けボタンを常時表示化・紐付け済み共有 PC でも追加紐付け可能に)
   // BUILD: 2026-04-19-v484 (相関ダッシュボード: 既定チェックを「重複あり/紐付けなし」のみに変更・「正常」は任意)
   // BUILD: 2026-04-19-v483 (個人アカウント紐付けモーダル新設・1:2 上限 / 旧「アカウント管理台帳(627) 作成/更新して開く」ボタン廃止)
@@ -2366,15 +2367,17 @@
     return { ok: true, ledgerId: created.id, windowsId };
   };
 
-  const showSharedAccountLinkModal = (recordId594, pcName594) => {
+  const showSharedAccountLinkModal = (recordId594, pcName594, pcType594) => {
     if (document.getElementById('jbis594-shared-link-overlay')) return;
+    // 種別ラベルをモーダル見出しに反映 (共有 / JR端末 など)
+    const typeLabel = (pcType594 && String(pcType594).trim()) || '共有';
     const overlay = document.createElement('div');
     overlay.id = 'jbis594-shared-link-overlay';
     overlay.style.cssText = 'position:fixed;inset:0;z-index:2147483600;background:rgba(15,23,42,.55);display:flex;align-items:center;justify-content:center;';
     overlay.innerHTML =
       '<div style="max-width:520px;width:95%;background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.3);padding:24px;font-family:inherit;max-height:85vh;overflow-y:auto;">' +
-      '<h2 style="margin:0 0 6px;font-size:15px;font-weight:800;color:#0f172a;">🔗 共有PC — アカウント紐付け</h2>' +
-      '<p style="margin:0 0 16px;font-size:12px;color:#475569;">このPCに紐付けるアカウントを選んでください。</p>' +
+      `<h2 style="margin:0 0 6px;font-size:15px;font-weight:800;color:#0f172a;">🔗 ${qdEsc(typeLabel)}PC — アカウント紐付け</h2>` +
+      '<p style="margin:0 0 16px;font-size:12px;color:#475569;">このPCに紐付ける<b>共有アカウント</b>を選んでください。（採番マスタは 667 共用 / 上限なし）</p>' +
       '<div style="display:flex;gap:6px;margin-bottom:12px;">' +
       '  <input id="jbis-shared-search" type="text" placeholder="ログオン名 / Windows名 / 利用者名 / PC名 で検索" style="flex:1;padding:8px 10px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;">' +
       '  <button id="jbis-shared-search-btn" type="button" style="padding:8px 14px;border:none;border-radius:6px;background:#2563eb;color:#fff;font-weight:700;font-size:13px;cursor:pointer;">検索</button>' +
@@ -2457,10 +2460,12 @@
   };
 
   /**
-   * 非同期: 現在のレコードが type=共有 ならボタンを追加 (常に表示・紐付け済みでも追加紐付けに使える)。
+   * 非同期: 現在のレコードが type=共有 または type=JR端末 ならボタンを追加 (常に表示)。
    * 共有アカウントは 1 アカウント = 複数 PC 運用のため、個人と同じく常時表示が UX 正解。
+   * JR端末も同じく「共有アカウント」を使う運用 (採番マスタ 667 共用 / 上限なし)。
    * REST API で判定するため kintone.app.record.get() を呼ばない（detail.show 中でも安全）。
    */
+  const SHARED_BUTTON_TYPES = new Set(['共有', 'JR端末']);
   const maybeAddSharedButton = async (wrap) => {
     try {
       if (wrap.querySelector('[data-jbis-shared-link]')) return;
@@ -2468,7 +2473,7 @@
       if (!rid) return;
       const { record: recData } = await get594RecordPayloadById(rid);
       const curType = (recData[FC_594_TYPE]?.value || '').trim();
-      if (curType !== '共有') return;
+      if (!SHARED_BUTTON_TYPES.has(curType)) return;
       if (String(kintone.app.record.getId()) !== String(rid)) return;
       if (wrap.querySelector('[data-jbis-shared-link]')) return;
 
@@ -2478,7 +2483,7 @@
       btnSharedLink.setAttribute('data-jbis-shared-link', '1');
       btnSharedLink.textContent = '🔗 共有アカウント紐付け';
       btnSharedLink.style.cssText = 'padding:6px 14px;border:none;border-radius:6px;background:linear-gradient(135deg,#0ea5e9,#38bdf8);color:#fff;font-weight:700;font-size:12px;cursor:pointer;';
-      btnSharedLink.onclick = () => showSharedAccountLinkModal(rid, pcName);
+      btnSharedLink.onclick = () => showSharedAccountLinkModal(rid, pcName, curType);
       wrap.insertBefore(btnSharedLink, wrap.firstChild);
     } catch (e) {
       console.warn('[JBIS-594] shared button check error', e);
