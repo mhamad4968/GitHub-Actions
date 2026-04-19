@@ -8,21 +8,30 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--accent:#16a34a;--accent-bg:#dcfce7;--bg:#f0f4f8;--card:#fff;--text:#1e293b;--sub:#475569;--gray:#f1f5f9;
   --blue:#2563eb;--blue-bg:#dbeafe;--warn:#ea580c;--warn-bg:#fff7ed;--ng:#dc2626;--ng-bg:#fef2f2;--radius:16px}
-body{font-family:'Segoe UI','Hiragino Sans','Meiryo',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
-.header{background:linear-gradient(135deg,#15803d,#22c55e);color:#fff;padding:24px;display:flex;align-items:center;gap:16px}
+body{font-family:'Segoe UI','Hiragino Sans','Meiryo',sans-serif;background:var(--bg);color:var(--text);line-height:1.8;font-size:16px}
+.header{background:linear-gradient(135deg,#15803d,#22c55e);color:#fff;padding:24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.1)}
 .header .back{color:#fff;text-decoration:none;font-size:1.3em;opacity:.8;transition:.2s}
 .header .back:hover{opacity:1}
-.header h1{font-size:1.4em;font-weight:700}
+.header h1{font-size:1.4em;font-weight:700;flex:1}
+.toc-toggle{background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:8px;padding:6px 12px;font-size:.85em;cursor:pointer;font-weight:600}
+.toc-toggle:hover{background:rgba(255,255,255,.3)}
 .container{max-width:760px;margin:0 auto;padding:20px 16px}
-.card{background:var(--card);border-radius:var(--radius);box-shadow:0 2px 12px rgba(0,0,0,.07);padding:22px 24px;margin-bottom:16px}
-.card h2{font-size:1.1em;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.toc{background:#fff;border-radius:var(--radius);box-shadow:0 2px 12px rgba(0,0,0,.07);padding:18px 22px;margin-bottom:16px;display:none}
+.toc.open{display:block}
+.toc h3{font-size:1.05em;margin-bottom:10px;color:var(--accent)}
+.toc ol{margin-left:22px;line-height:1.9}
+.toc a{color:var(--text);text-decoration:none}
+.toc a:hover{color:var(--accent);text-decoration:underline}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:0 2px 12px rgba(0,0,0,.07);padding:22px 24px;margin-bottom:16px;scroll-margin-top:90px}
+.card h2{font-size:1.25em;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card .time-badge{display:inline-block;font-size:.7em;background:#dcfce7;color:#15803d;padding:2px 8px;border-radius:10px;font-weight:600;margin-left:8px}
 .steps{counter-reset:s;list-style:none}
-.steps li{counter-increment:s;position:relative;padding:12px 16px 12px 52px;margin-bottom:8px;
-  background:var(--gray);border-radius:12px;font-size:.9em}
+.steps li{counter-increment:s;position:relative;padding:14px 18px 14px 56px;margin-bottom:10px;
+  background:var(--gray);border-radius:12px;font-size:1em;line-height:1.7}
 .steps li::before{content:counter(s);position:absolute;left:12px;top:50%;transform:translateY(-50%);
   width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;
   display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85em}
-.tip{padding:14px 18px;border-radius:12px;margin:10px 0;font-size:.87em;display:flex;align-items:flex-start;gap:10px}
+.tip{padding:16px 20px;border-radius:12px;margin:12px 0;font-size:1em;line-height:1.7;display:flex;align-items:flex-start;gap:10px}
 .tip .e{font-size:1.3em;flex-shrink:0}
 .t-blue{background:var(--blue-bg);border-left:4px solid var(--blue)}
 .t-green{background:var(--accent-bg);border-left:4px solid var(--accent)}
@@ -35,53 +44,177 @@ body{font-family:'Segoe UI','Hiragino Sans','Meiryo',sans-serif;background:var(-
 .fg{background:var(--accent-bg);color:#15803d}
 .fy{background:#fef9c3;color:#854d0e}
 .fp{background:#f3e8ff;color:#7c3aed}
-table{width:100%;border-collapse:collapse;font-size:.85em;margin-top:8px}
-th{background:var(--gray);text-align:left;padding:8px 12px}
-td{padding:8px 12px;border-bottom:1px solid #e2e8f0}
+table{width:100%;border-collapse:collapse;font-size:.95em;margin-top:8px}
+th{background:var(--gray);text-align:left;padding:10px 14px;font-size:1em}
+td{padding:10px 14px;border-bottom:1px solid #e2e8f0}
 code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:.9em}
 .big-num{font-size:2.5em;font-weight:800;color:var(--accent);text-align:center;padding:8px 0}
+.badge-new{display:inline-block;font-size:.62em;background:#dc2626;color:#fff;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:6px;vertical-align:middle;letter-spacing:.05em}
+.faq summary{font-weight:700;cursor:pointer;padding:12px 0;color:#15803d;font-size:1.02em;list-style:none;display:flex;align-items:center;gap:10px}
+.faq summary::before{content:'▶';color:var(--accent);font-size:.85em;transition:.2s}
+.faq details[open] summary::before{transform:rotate(90deg)}
+.faq summary:hover{color:var(--accent)}
+.faq details{border-bottom:1px solid #e2e8f0;padding-bottom:8px}
+.faq details:last-child{border-bottom:none}
+.faq .answer{padding:8px 0 12px 24px;color:var(--text)}
 .footer{text-align:center;padding:16px;font-size:.72em;color:#94a3b8}
-@media print{body{background:#fff}.header{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+.scroll-top{position:fixed;bottom:20px;right:20px;background:var(--accent);color:#fff;width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;font-size:1.4em;box-shadow:0 4px 12px rgba(22,163,74,.3);z-index:50;opacity:0;transition:.2s;pointer-events:none}
+.scroll-top.show{opacity:1;pointer-events:auto}
+@media print{body{background:#fff}.header{position:static;print-color-adjust:exact;-webkit-print-color-adjust:exact}.toc-toggle,.scroll-top{display:none}}
 </style>
+<script>
+(function(){function r(){try{var h=Math.max(document.body?document.body.scrollHeight:0,document.documentElement?document.documentElement.scrollHeight:0,document.body?document.body.offsetHeight:0);if(h>0&&window.parent)window.parent.postMessage({type:'jbis-ops-guide-iframe-resize',height:h},'*');}catch(e){}}window.addEventListener('load',r);window.addEventListener('resize',r);setTimeout(r,100);setTimeout(r,500);setTimeout(r,1500);setTimeout(r,3000);if(typeof ResizeObserver==='function'){var ro=new ResizeObserver(r);document.addEventListener('DOMContentLoaded',function(){if(document.body)ro.observe(document.body);});}})();
+</script>
 </head>
 <body>
 
 <div class="header">
   <a href="index.html" class="back">←</a>
   <h1>🔑 個人アカウントガイド <small style="font-size:.6em;opacity:.7">App 627 / 626</small></h1>
+  <button class="toc-toggle" onclick="document.getElementById('toc').classList.toggle('open')">📑 目次</button>
 </div>
 
 <div class="container">
 
+<nav id="toc" class="toc">
+  <h3>📑 目次（クリックで移動）</h3>
+  <ol>
+    <li><a href="#about">これは何？</a></li>
+    <li><a href="#how">やり方はたった3ステップ</a></li>
+    <li><a href="#modal">紐付けモーダルの使い方（NEW）</a></li>
+    <li><a href="#dup">重複チェッカー</a></li>
+    <li><a href="#behind">裏で何が起きてる？</a></li>
+    <li><a href="#auto">自動で作られるもの</a></li>
+    <li><a href="#cond">使える条件</a></li>
+    <li><a href="#trouble">困ったとき</a></li>
+    <li><a href="#faq">よくある質問</a></li>
+  </ol>
+</nav>
+
 <!-- ===== 概要 ===== -->
-<div class="card">
+<div id="about" class="card">
   <h2>📌 これは何？</h2>
-  <p style="font-size:.9em">
-    個人PCに <strong>Windowsログオン名</strong> と <strong>M365アカウント</strong> を<br>
-    <strong>ボタン1つで自動割り当て</strong>する仕組みです。
+  <p>
+    個人のパソコンに <strong>Windowsのログイン名</strong> と <strong>Microsoft 365のアカウント</strong> を<br>
+    <strong>ボタンを1回押すだけで自動で作る</strong>仕組みです。
   </p>
   <div class="big-num">ボタン1回 → 3アプリ同時更新</div>
+  <p style="color:var(--sub);text-align:center;margin-top:4px">
+    ボタンを押すと、3つのアプリが一度に更新されます：<br>
+    <strong>PC管理台帳（594）</strong>・<strong>社員マスタ（595）</strong>・<strong>個人採番マスタ（626）</strong>
+  </p>
 </div>
 
 <!-- ===== どうやるの ===== -->
-<div class="card">
-  <h2>📋 やり方はたった3ステップ</h2>
+<div id="how" class="card">
+  <h2>📋 やり方はたった3ステップ <span class="time-badge">所要 30秒</span> <span class="badge-new">2026-04-19 改修</span></h2>
   <ol class="steps">
-    <li><strong>PC管理台帳（594）</strong>で、対象のPCレコードを開く</li>
-    <li>画面にある<br>
-      <span style="display:inline-block;margin:6px 0;padding:8px 20px;border-radius:8px;background:linear-gradient(135deg,#2563eb,#3b82f6);color:#fff;font-weight:700;font-size:.95em">
-        📋 アカウント自動登録
+    <li><strong>PC管理台帳（594）</strong>で、アカウントを作りたいパソコンのレコード（データ）を開く</li>
+    <li>画面上部にある<br>
+      <span style="display:inline-block;margin:6px 0;padding:8px 20px;border-radius:8px;background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;font-weight:700;font-size:.95em">
+        🔗 個人アカウント紐付け
       </span><br>
-      ボタンをクリック
+      ボタンをクリック → モーダル（小窓）が開きます
     </li>
-    <li>「✅ 完了しました！」と出たら<strong>成功</strong> 🎉</li>
+    <li>下記いずれかを選ぶ → 「✅ アカウントを紐付けました」と出たら<strong>成功</strong> 🎉
+      <table style="margin-top:8px">
+        <tr><th>選び方</th><th>使うとき</th></tr>
+        <tr><td><strong>🔍 検索 → 既存選択</strong></td><td>このユーザーに既にアカウントがある（PC 引き継ぎ・2 台目の追加など）</td></tr>
+        <tr><td><strong>＋ 新規アカウント作成</strong></td><td>このユーザーのアカウントがまだ無い（新人など）</td></tr>
+      </table>
+    </li>
   </ol>
+  <div class="tip t-blue">
+    <span class="e">💡</span>
+    <span>旧「<strong>アカウント管理台帳(627) 作成/更新して開く</strong>」ボタンは廃止されました。<br>
+    新しいモーダル方式は<strong>番号の手入力が不要</strong>になり、誤入力事故を防げます。</span>
+  </div>
+</div>
+
+<!-- ===== モーダルの使い方 ===== -->
+<div id="modal" class="card" style="border:2px solid #7c3aed;background:#faf5ff">
+  <h2>🔗 紐付けモーダルの使い方 <span class="badge-new">NEW</span></h2>
+
+  <h3 style="font-size:1.05em;margin:14px 0 8px;color:#5b21b6">A. 既存アカウントに紐付ける場合</h3>
+  <ol class="steps">
+    <li>検索欄に<strong>ログオン名 / 氏名 / メール / 部署</strong>のいずれかを入力 → 検索ボタン</li>
+    <li>結果テーブルで対象アカウントを探す。各行の右端に<strong>紐付け数バッジ</strong>が表示されます
+      <table style="margin-top:6px">
+        <tr><th>バッジ</th><th>意味</th></tr>
+        <tr><td><span style="background:#dcfce7;color:#15803d;padding:2px 8px;border-radius:10px;font-size:.85em">0 / 2</span></td><td>まだ 1 台も紐付いていない（自由に追加可能）</td></tr>
+        <tr><td><span style="background:#fef9c3;color:#854d0e;padding:2px 8px;border-radius:10px;font-size:.85em;font-weight:600">1 / 2</span></td><td>既に 1 台と紐付け中（あと 1 台追加可能）</td></tr>
+        <tr><td><span style="background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:10px;font-size:.85em;font-weight:700">2 / 2</span></td><td><strong>上限到達</strong>（追加するには既存の解除が必要）</td></tr>
+      </table>
+    </li>
+    <li><strong>「選択」</strong>ボタンを押す → ✅ 紐付け完了</li>
+  </ol>
+
+  <h3 style="font-size:1.05em;margin:14px 0 8px;color:#5b21b6">B. 新規アカウントを作成する場合</h3>
+  <ol class="steps">
+    <li>モーダル下部の<strong>「＋ 新規アカウント作成」</strong>緑ボタンを押す</li>
+    <li>確認ダイアログ「採番プールから番号を取得し、メール XXX で新しい個人アカウントを作成します」→ OK</li>
+    <li>✅ 完了。3 つのアプリ（627 / 594 / 626）が同時に更新されます</li>
+  </ol>
+  <div class="tip t-orange">
+    <span class="e">⚠️</span>
+    <span><strong>新規作成にはメール（mail）が必須</strong>です。PC 台帳の mail が空ならボタン押下時にブロックされます。先に mail を入力してから再実行してください。</span>
+  </div>
+
+  <h3 style="font-size:1.05em;margin:14px 0 8px;color:#5b21b6">📌 1 ユーザー = 個人 PC 最大 2 台ルール</h3>
+  <div class="tip t-blue">
+    <span class="e">📋</span>
+    <span><strong>規定</strong>: 1 個人アカウント = 1 ユーザー / 1 ユーザーは個人 PC 最大 2 台まで（会社用 + 持ち出し用）。<br>
+    既に 2 台と紐付いてる個人アカウントを選んでも、エラーで止まります。<br>
+    エラーメッセージに<strong>既存紐付け先の PC 名</strong>が表示されるので、不要な紐付けを解除してから再実行してください。</span>
+  </div>
+
+  <h3 style="font-size:1.05em;margin:14px 0 8px;color:#5b21b6">⚠ 利用者名が一致しないと警告が出ます</h3>
+  <div class="tip t-orange">
+    <span class="e">⚠️</span>
+    <span>選んだアカウントの所有者名と、PC 台帳の利用者名が違うとき、判断材料付きの確認ダイアログが出ます。<br>
+    <strong>1. 表記揺れ（フルネーム / 通称名 / 旧姓）</strong> → そのまま OK<br>
+    <strong>2. 入力ミス</strong> → キャンセルして PC 台帳側を修正してから再実行<br>
+    <strong>3. 代理設定 / 貸し出し中</strong> → そのまま OK</span>
+  </div>
+</div>
+
+<!-- ===== 新機能：重複チェッカー ===== -->
+<div id="dup" class="card" style="border:2px solid #f59e0b;background:#fffbeb">
+  <h2>🛡️ 重複チェッカー <span class="badge-new">NEW</span> <span class="time-badge">自動</span></h2>
+  <p>2026-04-16 から、アカウント台帳(627)を <strong>新規作成・編集して保存する瞬間</strong> に、システムが自動で重複チェックを行うようになりました。</p>
+
+  <h3 style="font-size:1.05em;margin:14px 0 8px;color:#1e3a5f">チェックする項目</h3>
+  <table>
+    <tr><th>項目</th><th>内容</th></tr>
+    <tr><td><strong>メール</strong></td><td>同じメールアドレスのアカウントが既にないか</td></tr>
+    <tr><td><strong>WindowsID（ログオン名）</strong></td><td>同じログオン名が既に使われていないか</td></tr>
+    <tr><td><strong>EMP-ID</strong></td><td>同じ社員番号のアカウントが既にないか（フィールドがある場合のみ）</td></tr>
+  </table>
+
+  <div class="tip t-orange">
+    <span class="e">⚠️</span>
+    <span><strong>重複が見つかった場合</strong>は、保存できません。<br>
+    エラーメッセージに「どの項目が」「どのレコード(ID)と」重複しているかが表示されます。</span>
+  </div>
+
+  <h3 style="font-size:1.05em;margin:14px 0 8px;color:#1e3a5f">既存の重複は警告バナーで表示</h3>
+  <div class="tip t-orange">
+    <span class="e">📛</span>
+    <span>すでに登録済みのレコードを開いたとき、<strong>もし重複があれば赤いバナー</strong>が表示されます。<br>
+    バナーには重複先のレコードIDがリンクで載っているので、すぐに確認・修正できます。</span>
+  </div>
+
+  <div class="tip t-green">
+    <span class="e">✅</span>
+    <span>編集中の自分のレコードは重複対象から自動で除外されます。<br>
+    「同じレコードを編集して保存」しただけでエラーになることはありません。</span>
+  </div>
 </div>
 
 <!-- ===== 裏で何が起きてる？ ===== -->
-<div class="card">
+<div id="behind" class="card">
   <h2>⚙️ 裏で何が起きてるの？</h2>
-  <p style="font-size:.85em;color:var(--sub);margin-bottom:8px">（知らなくても大丈夫。興味がある人向け）</p>
+  <p style="color:var(--sub);margin-bottom:8px">（知らなくても大丈夫です。興味がある人向けの説明です）</p>
   <div class="flow">
     <div class="flow-box fb">🎰 採番アプリ(626)<br><small>空きアカウントを取得</small></div>
     <span class="flow-arr">→</span>
@@ -91,25 +224,25 @@ code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:.9em}
   </div>
   <div class="tip t-green">
     <span class="e">🛡️</span>
-    <span>途中で失敗しても<strong>自動で元に戻る</strong>（ロールバック）ので、データが壊れることはありません。</span>
+    <span>途中でエラーが出ても<strong>自動で元の状態に戻る</strong>ので、データが壊れる心配はありません。</span>
   </div>
 </div>
 
 <!-- ===== 自動で作られるもの ===== -->
-<div class="card">
+<div id="auto" class="card">
   <h2>🔄 自動で作られるもの</h2>
   <table>
     <tr><th>項目</th><th>どう作られるか</th><th>例</th></tr>
     <tr><td>ログオン名</td><td>採番アプリから自動取得</td><td><code>jbm00009</code></td></tr>
     <tr><td>Windows名</td><td>ログオン名 + [メール@前]</td><td><code>jbm00009[m-kondo]</code></td></tr>
-    <tr><td>M365 ID</td><td>メール@前 + @kensetsutoso01...</td><td><code>m-kondo@kensetsutoso01.onmicrosoft.com</code></td></tr>
+    <tr><td>M365 ID</td><td>メール@前 + @kensetsutoso01.onmicrosoft.com</td><td><code>m-kondo@kensetsutoso01.onmicrosoft.com</code></td></tr>
     <tr><td>パスワード群</td><td>採番アプリから自動コピー</td><td>（初期パスワード）</td></tr>
     <tr><td>アカウント状態</td><td>自動で「有効」にセット</td><td>有効 / 在籍</td></tr>
   </table>
 </div>
 
 <!-- ===== 条件 ===== -->
-<div class="card">
+<div id="cond" class="card">
   <h2>⚠️ 使える条件</h2>
   <table>
     <tr><th>条件</th><th>OK / NG</th></tr>
@@ -117,13 +250,15 @@ code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:.9em}
     <tr><td>種別が「共有」「JR」など</td><td style="color:var(--ng);font-weight:700">❌ NG（手動で）</td></tr>
     <tr><td>利用者名が入力済み</td><td style="color:var(--accent);font-weight:700">✅ OK</td></tr>
     <tr><td>利用者名が空</td><td style="color:var(--ng);font-weight:700">❌ NG（先に入力）</td></tr>
-    <tr><td>まだアカウント未登録</td><td style="color:var(--accent);font-weight:700">✅ OK</td></tr>
-    <tr><td>もう登録済み</td><td style="color:var(--ng);font-weight:700">❌ NG（二重登録防止）</td></tr>
+    <tr><td>まだアカウント未登録（新規作成）</td><td style="color:var(--accent);font-weight:700">✅ OK（＋新規作成ボタン）</td></tr>
+    <tr><td>既存個人アカウントへ追加紐付け（〜2 台目）</td><td style="color:var(--accent);font-weight:700">✅ OK（検索→既存選択）</td></tr>
+    <tr><td>既に 2 台と紐付け中のアカウントへ 3 台目</td><td style="color:var(--ng);font-weight:700">❌ NG（規定上限・先に解除）</td></tr>
+    <tr><td>同じ PC を同じアカウントに重複紐付け</td><td style="color:#94a3b8;font-weight:700">⏭ no-op（既に紐付け済み表示）</td></tr>
   </table>
 </div>
 
 <!-- ===== トラブル ===== -->
-<div class="card">
+<div id="trouble" class="card">
   <h2>🆘 困ったとき</h2>
 
   <div class="tip t-orange">
@@ -138,6 +273,13 @@ code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:.9em}
     → そのPCは登録完了済み。もう何もしなくてOK。</span>
   </div>
 
+  <div class="tip t-orange">
+    <span class="e">🤔</span>
+    <span><strong>「重複が見つかりました」と出て保存できない</strong><br>
+    → エラーメッセージのレコードIDを開いて、本当に同じ人かを確認。<br>
+    同じ人なら片方を「退職」にする。違う人なら、メール・WindowsID・EMP-IDのいずれかを正しい値に修正してください。</span>
+  </div>
+
   <div class="tip t-red">
     <span class="e">❌</span>
     <span><strong>エラーが出た</strong><br>
@@ -145,7 +287,97 @@ code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:.9em}
   </div>
 </div>
 
+<!-- ===== FAQ ===== -->
+<div id="faq" class="card faq">
+  <h2>❓ よくある質問</h2>
+
+  <details>
+    <summary>Q. 「🔗 個人アカウント紐付け」ボタンが見当たらない</summary>
+    <div class="answer">
+      ボタンが表示されるのは <strong>個人PCの詳細画面</strong> です。<br>
+      ・種別が「共有」「JR端末」などになっていませんか？ → 個人に変更（共有は「🔗 共有アカウント紐付け」ボタンが出ます）<br>
+      ・画面のリロード（Shift+F5）を試してください<br>
+      ・既にアカウント紐付け済みでも、2 台目追加のためにボタンは常に表示されます
+    </div>
+  </details>
+
+  <details>
+    <summary>Q. 「規定上限の 2 台に達しています」と出た</summary>
+    <div class="answer">
+      1 個人アカウントは最大 2 PC（会社用 + 持ち出し用）までという規定です。<br>
+      エラーメッセージに既存紐付け先の PC 名が表示されているので、<br>
+      <strong>1.</strong> 不要な PC の詳細を開く<br>
+      <strong>2.</strong> 「<strong>594⇔627 紐付け解除</strong>」ボタン（既存）で解除<br>
+      <strong>3.</strong> 元のモーダルに戻り再度「選択」<br>
+      の手順で進めてください。
+    </div>
+  </details>
+
+  <details>
+    <summary>Q. 利用者名が違う警告が出るが本人を選びたい</summary>
+    <div class="answer">
+      表記揺れ（フルネーム / 通称名 / 旧姓）や代理設定 / 貸し出し中なら<strong>「OK」</strong>を押して進めてください。<br>
+      入力ミスの可能性があるなら<strong>「キャンセル」</strong>して PC 台帳側で利用者名を修正してから再実行が安全です。
+    </div>
+  </details>
+
+  <details>
+    <summary>Q. 自動登録した後にメールアドレスを変えたい</summary>
+    <div class="answer">
+      まず社員マスタ(595)で正しいメールに修正してください。<br>
+      その後アカウント台帳(627)のレコードを編集して保存します。<br>
+      <strong>新機能の重複チェック</strong>で、変更後のメールが他の人と被っていないか自動で確認されます。
+    </div>
+  </details>
+
+  <details>
+    <summary>Q. パスワードを変えたい</summary>
+    <div class="answer">
+      アカウント台帳(627)のレコードを開き、パスワード欄を編集して保存してください。<br>
+      初期パスワードは採番アプリから自動コピーされていますが、変更しても問題ありません。
+    </div>
+  </details>
+
+  <details>
+    <summary>Q. 採番(626)プールがゼロになりそう</summary>
+    <div class="answer">
+      管理者へ連絡してください。空き在庫が10件を切ると一覧画面に警告が出ます。<br>
+      新しい未使用レコードを追加すれば、すぐにまた自動登録ができるようになります。
+    </div>
+  </details>
+
+  <details>
+    <summary>Q. 退職した人のアカウントはどうなる？</summary>
+    <div class="answer">
+      社員マスタ(595)で退職日を入れて保存すると、<br>
+      アカウント台帳(627)のアカウント状態が <strong>自動で「退職」</strong> になります。<br>
+      手動で操作する必要はありません。詳しくは <a href="guide-lifecycle.html">異動・退職・買替ガイド</a>。
+    </div>
+  </details>
+
+  <details>
+    <summary>Q. 重複チェックをスキップしたい</summary>
+    <div class="answer">
+      原則できません。<br>
+      重複は <strong>「同じ人が複数アカウントを持つ」「他の人のIDを誤って入力した」</strong> といった事故の元なので、必ず解消してから保存してください。<br>
+      どうしてもやむを得ない理由がある場合は管理者へ相談してください。
+    </div>
+  </details>
 </div>
-<div class="footer">個人アカウントガイド v2.0 ― <a href="index.html" style="color:inherit">← トップに戻る</a></div>
+
+</div>
+
+<button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="トップへ戻る">↑</button>
+
+<div class="footer">個人アカウントガイド v4.0 ― <a href="index.html" style="color:inherit">← トップに戻る</a></div>
+
+<script>
+(function(){
+  var sb = document.querySelector('.scroll-top');
+  window.addEventListener('scroll', function(){
+    if (window.scrollY > 400) sb.classList.add('show'); else sb.classList.remove('show');
+  });
+})();
+</script>
 </body>
 </html>

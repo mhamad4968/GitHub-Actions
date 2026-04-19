@@ -8,24 +8,39 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--accent:#7c3aed;--accent-bg:#f3e8ff;--bg:#f0f4f8;--card:#fff;--text:#1e293b;--sub:#475569;--gray:#f1f5f9;
   --blue:#2563eb;--blue-bg:#dbeafe;--ok:#16a34a;--ok-bg:#dcfce7;--warn:#ea580c;--warn-bg:#fff7ed;--radius:16px}
-body{font-family:'Segoe UI','Hiragino Sans','Meiryo',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
-.header{background:linear-gradient(135deg,#5b21b6,#8b5cf6);color:#fff;padding:24px;display:flex;align-items:center;gap:16px}
+body{font-family:'Segoe UI','Hiragino Sans','Meiryo',sans-serif;background:var(--bg);color:var(--text);line-height:1.8;font-size:16px}
+.header{background:linear-gradient(135deg,#5b21b6,#8b5cf6);color:#fff;padding:24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.1)}
 .header .back{color:#fff;text-decoration:none;font-size:1.3em;opacity:.8;transition:.2s}
 .header .back:hover{opacity:1}
-.header h1{font-size:1.4em;font-weight:700}
+.header h1{font-size:1.4em;font-weight:700;flex:1}
+.toc-toggle{background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:8px;padding:6px 12px;font-size:.85em;cursor:pointer;font-weight:600}
+.toc-toggle:hover{background:rgba(255,255,255,.3)}
 .container{max-width:760px;margin:0 auto;padding:20px 16px}
-.card{background:var(--card);border-radius:var(--radius);box-shadow:0 2px 12px rgba(0,0,0,.07);padding:22px 24px;margin-bottom:16px}
-.card h2{font-size:1.1em;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.tip{padding:14px 18px;border-radius:12px;margin:10px 0;font-size:.87em;display:flex;align-items:flex-start;gap:10px}
+.toc{background:#fff;border-radius:var(--radius);box-shadow:0 2px 12px rgba(0,0,0,.07);padding:18px 22px;margin-bottom:16px;display:none}
+.toc.open{display:block}
+.toc h3{font-size:1.05em;margin-bottom:10px;color:var(--accent)}
+.toc ol{margin-left:22px;line-height:1.9}
+.toc a{color:var(--text);text-decoration:none}
+.toc a:hover{color:var(--accent);text-decoration:underline}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:0 2px 12px rgba(0,0,0,.07);padding:22px 24px;margin-bottom:16px;scroll-margin-top:90px}
+.card h2{font-size:1.25em;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card .time-badge{display:inline-block;font-size:.7em;background:#f3e8ff;color:#5b21b6;padding:2px 8px;border-radius:10px;font-weight:600;margin-left:8px}
+.tip{padding:16px 20px;border-radius:12px;margin:12px 0;font-size:1em;line-height:1.7;display:flex;align-items:flex-start;gap:10px}
 .tip .e{font-size:1.3em;flex-shrink:0}
 .t-blue{background:var(--blue-bg);border-left:4px solid var(--blue)}
 .t-green{background:var(--ok-bg);border-left:4px solid var(--ok)}
 .t-purple{background:var(--accent-bg);border-left:4px solid var(--accent)}
 .t-orange{background:var(--warn-bg);border-left:4px solid var(--warn)}
-table{width:100%;border-collapse:collapse;font-size:.85em;margin-top:8px}
-th{background:var(--gray);text-align:left;padding:8px 12px}
-td{padding:8px 12px;border-bottom:1px solid #e2e8f0}
+table{width:100%;border-collapse:collapse;font-size:.95em;margin-top:8px}
+th{background:var(--gray);text-align:left;padding:10px 14px;font-size:1em}
+td{padding:10px 14px;border-bottom:1px solid #e2e8f0}
 code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:.9em}
+.steps{counter-reset:s;list-style:none}
+.steps li{counter-increment:s;position:relative;padding:14px 18px 14px 56px;margin-bottom:10px;
+  background:var(--gray);border-radius:12px;font-size:1em;line-height:1.7}
+.steps li::before{content:counter(s);position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85em}
 .emp-id-box{display:flex;align-items:center;justify-content:center;gap:12px;padding:20px;margin:10px 0}
 .emp-id-sample{font-size:2.2em;font-weight:800;color:var(--accent);letter-spacing:.05em}
 .emp-id-label{font-size:.85em;color:var(--sub);text-align:left}
@@ -36,30 +51,56 @@ code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:.9em}
 .lg{background:var(--ok-bg);color:#15803d}
 .lp{background:var(--accent-bg);color:#5b21b6}
 .ly{background:#fef9c3;color:#854d0e}
+.faq summary{font-weight:700;cursor:pointer;padding:12px 0;color:#5b21b6;font-size:1.02em;list-style:none;display:flex;align-items:center;gap:10px}
+.faq summary::before{content:'▶';color:var(--accent);font-size:.85em;transition:.2s}
+.faq details[open] summary::before{transform:rotate(90deg)}
+.faq summary:hover{color:var(--accent)}
+.faq details{border-bottom:1px solid #e2e8f0;padding-bottom:8px}
+.faq details:last-child{border-bottom:none}
+.faq .answer{padding:8px 0 12px 24px;color:var(--text)}
 .footer{text-align:center;padding:16px;font-size:.72em;color:#94a3b8}
-@media print{body{background:#fff}.header{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+.scroll-top{position:fixed;bottom:20px;right:20px;background:var(--accent);color:#fff;width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;font-size:1.4em;box-shadow:0 4px 12px rgba(124,58,237,.3);z-index:50;opacity:0;transition:.2s;pointer-events:none}
+.scroll-top.show{opacity:1;pointer-events:auto}
+@media print{body{background:#fff}.header{position:static;print-color-adjust:exact;-webkit-print-color-adjust:exact}.toc-toggle,.scroll-top{display:none}}
 </style>
+<script>
+(function(){function r(){try{var h=Math.max(document.body?document.body.scrollHeight:0,document.documentElement?document.documentElement.scrollHeight:0,document.body?document.body.offsetHeight:0);if(h>0&&window.parent)window.parent.postMessage({type:'jbis-ops-guide-iframe-resize',height:h},'*');}catch(e){}}window.addEventListener('load',r);window.addEventListener('resize',r);setTimeout(r,100);setTimeout(r,500);setTimeout(r,1500);setTimeout(r,3000);if(typeof ResizeObserver==='function'){var ro=new ResizeObserver(r);document.addEventListener('DOMContentLoaded',function(){if(document.body)ro.observe(document.body);});}})();
+</script>
 </head>
 <body>
 
 <div class="header">
   <a href="index.html" class="back">←</a>
   <h1>👤 社員マスタガイド <small style="font-size:.6em;opacity:.7">App 595</small></h1>
+  <button class="toc-toggle" onclick="document.getElementById('toc').classList.toggle('open')">📑 目次</button>
 </div>
 
 <div class="container">
 
+<nav id="toc" class="toc">
+  <h3>📑 目次（クリックで移動）</h3>
+  <ol>
+    <li><a href="#about">このアプリは何？</a></li>
+    <li><a href="#empid">EMP-ID とは？</a></li>
+    <li><a href="#new">新規社員登録</a></li>
+    <li><a href="#link">他のアプリとのつながり</a></li>
+    <li><a href="#use">よく使う操作</a></li>
+    <li><a href="#dont">触らなくていいこと</a></li>
+    <li><a href="#faq">よくある質問</a></li>
+  </ol>
+</nav>
+
 <!-- ===== 概要 ===== -->
-<div class="card">
+<div id="about" class="card">
   <h2>📌 このアプリは何？</h2>
-  <p style="font-size:.9em">
-    すべての社員の情報を管理する<strong>社員名簿</strong>です。<br>
-    ここから「どのPCを使っているか」「どのアカウントか」もたどれます。
+  <p>
+    会社のすべての社員の情報を管理する<strong>社員名簿</strong>です。<br>
+    この画面から「その人がどのパソコンを使っているか」「どのアカウントを持っているか」もすぐに分かります。
   </p>
 </div>
 
 <!-- ===== EMP-ID ===== -->
-<div class="card">
+<div id="empid" class="card">
   <h2>🆔 EMP-ID（社員管理番号）とは？</h2>
   <div class="emp-id-box">
     <div class="emp-id-sample">EMP-0042</div>
@@ -81,8 +122,23 @@ code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:.9em}
   </div>
 </div>
 
+<!-- ===== 新規社員登録 ===== -->
+<div id="new" class="card">
+  <h2>🆕 新規社員登録 <span class="time-badge">所要 2分</span></h2>
+  <p style="margin-bottom:10px">新しい社員が入社したら、<strong>まず最初に社員マスタにデータを作ります</strong>。</p>
+  <ol class="steps">
+    <li><strong>社員マスタ（595）</strong>の画面で、左上の<strong>＋</strong>ボタンを押して新しいデータを追加</li>
+    <li>氏名・メールアドレス・所属部署・勤務地（拠点）を入力する</li>
+    <li><strong>保存</strong>を押すと、<strong>EMP-IDという管理番号が自動で付く</strong></li>
+  </ol>
+  <div class="tip t-green">
+    <span class="e">✅</span>
+    <span>社員マスタの登録後、PC台帳（594）でPCを登録し、利用者名ルックアップでこの社員を選んでください。</span>
+  </div>
+</div>
+
 <!-- ===== 紐付き ===== -->
-<div class="card">
+<div id="link" class="card">
   <h2>🔗 社員マスタと他のアプリのつながり</h2>
   <div class="link-diagram">
     <div class="link-box lp">👤 社員マスタ<br><small>(595)</small></div>
@@ -96,44 +152,46 @@ code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:.9em}
   </p>
   <div class="tip t-blue">
     <span class="e">📌</span>
-    <span>紐付けは<strong>サブテーブル</strong>（表の中の表）で管理しています。<br>
-    「PC台帳リスト」「アカウント台帳リスト」の2つがあります。</span>
+    <span>紐付けは<strong>「表の中にある小さな表」（サブテーブルと呼びます）</strong>で管理しています。<br>
+    レコードの中に「PC台帳リスト」と「アカウント台帳リスト」の2つの表があります。</span>
   </div>
 </div>
 
 <!-- ===== よく使う操作 ===== -->
-<div class="card">
+<div id="use" class="card">
   <h2>📋 よく使う操作</h2>
 
-  <h3 style="font-size:.95em;margin:14px 0 6px">🔍 社員を検索する</h3>
-  <p style="font-size:.88em">一覧画面の検索窓に<strong>名前</strong>を入力するだけ。</p>
+  <h3 style="font-size:1.05em;margin:14px 0 8px">🔍 社員を検索する</h3>
+  <p>一覧画面の上にある検索窓（テキストボックス）に<strong>名前を入力する</strong>だけで見つけられます。</p>
+  <p style="color:var(--sub);font-size:.92em">※ メールアドレスや所属でも検索できます。</p>
 
-  <h3 style="font-size:.95em;margin:14px 0 6px">👀 PCとアカウントの紐付けを確認</h3>
-  <p style="font-size:.88em">社員のレコードを開くと、下の方に表があります：</p>
+  <h3 style="font-size:1.05em;margin:14px 0 8px">👀 パソコンとアカウントの紐付けを確認する</h3>
+  <p>社員のデータを開くと、画面の下のほうに次の表があります：</p>
   <table>
     <tr><th>サブテーブル名</th><th>中身</th></tr>
     <tr><td>PC台帳リスト</td><td>その社員が使っているPCの一覧（594のレコード番号）</td></tr>
     <tr><td>アカウント台帳リスト</td><td>その社員のアカウント一覧（627のレコード番号）</td></tr>
   </table>
 
-  <h3 style="font-size:.95em;margin:14px 0 6px">✏️ 社員情報を修正する</h3>
-  <p style="font-size:.88em">レコードを開いて編集ボタン → 修正 → 保存。</p>
+  <h3 style="font-size:1.05em;margin:14px 0 8px">✏️ 社員情報を修正する</h3>
+  <p>社員のデータを開いて「編集」ボタンを押す → 内容を修正 → 「保存」ボタンを押す。</p>
   <div class="tip t-orange">
     <span class="e">⚠️</span>
-    <span><strong>名前の修正は要注意！</strong><br>
-    PC台帳の利用者名ルックアップが名前で検索しているため、<br>
-    名前を変えるとPC台帳側も確認が必要です。</span>
+    <span><strong>名前の修正は要注意です！</strong><br>
+    PC台帳（594）に表示される利用者名は、社員マスタの名前を自動で引っ張ってきています。<br>
+    名前を変えたら、PC台帳でもそのパソコンのデータを開いて<strong>「編集」→何も変えずに「保存」</strong>を押してください。<br>
+    これをしないと、パソコン一覧の名前が古いままになります。</span>
   </div>
 </div>
 
 <!-- ===== 触らなくていいこと ===== -->
-<div class="card">
+<div id="dont" class="card">
   <h2>🙆 ふだんは触らなくてOK</h2>
   <div class="tip t-green">
     <span class="e">✅</span>
-    <span>社員マスタの<strong>サブテーブル（PCリスト・アカウントリスト）</strong>は<br>
-    アカウント自動登録ボタンを押すと<strong>自動で更新</strong>されます。<br>
-    手動で編集する必要はありません。</span>
+    <span>社員マスタの中にある<strong>PCリスト・アカウントリストの表</strong>は、<br>
+    594（PC台帳）の「🔗 個人アカウント紐付け」または「🔗 共有アカウント紐付け」ボタンで紐付けると<strong>自動で内容が更新</strong>されます。<br>
+    自分で手入力する必要はありません。</span>
   </div>
   <div class="tip t-green">
     <span class="e">✅</span>
@@ -142,7 +200,74 @@ code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:.9em}
   </div>
 </div>
 
+<!-- ===== FAQ ===== -->
+<div id="faq" class="card faq">
+  <h2>❓ よくある質問</h2>
+
+  <details>
+    <summary>Q. EMP-ID を変更したい</summary>
+    <div class="answer">
+      原則NGです。EMP-IDは社員1人に1つだけの「永久ID」として、PC台帳・アカウント台帳から参照されています。<br>
+      変更すると紐付けが切れる可能性があるため、管理者へ相談してください。
+    </div>
+  </details>
+
+  <details>
+    <summary>Q. 退職した人を一覧から非表示にしたい</summary>
+    <div class="answer">
+      退職日を入力して保存すると、<strong>自動で「在籍ステータス」が「退職」に変わり、デフォルト表示から非表示</strong>になります。<br>
+      データは消えていないので、絞り込み条件を外せばいつでも確認できます。
+    </div>
+  </details>
+
+  <details>
+    <summary>Q. 1人の社員にPCを2台割り当てたい</summary>
+    <div class="answer">
+      可能です。PC台帳(594)で2台目のレコードを新規作成し、利用者名で同じ社員を選んでください。<br>
+      社員マスタの「PC台帳リスト」サブテーブルに2台とも自動で表示されます。
+    </div>
+  </details>
+
+  <details>
+    <summary>Q. 異動で部署や勤務地が変わった</summary>
+    <div class="answer">
+      社員マスタの該当レコードを開き、所属/勤務地を修正して保存してください。<br>
+      PC台帳・アカウント台帳の変更は不要です。<br>
+      詳しくは <a href="guide-lifecycle.html">異動・退職・買替ガイド</a> を参照。
+    </div>
+  </details>
+
+  <details>
+    <summary>Q. 同じ人が2回登録されてしまった</summary>
+    <div class="answer">
+      管理者に連絡してください。<br>
+      アカウント台帳(627)にも紐付いている場合は、<strong>新機能の重複チェッカー</strong>でアラートが出ます。<br>
+      正しい片方を残し、もう片方を削除する手順を管理者と決めてください。
+    </div>
+  </details>
+
+  <details>
+    <summary>Q. メールアドレスを変えたら何が起きる？</summary>
+    <div class="answer">
+      社員マスタ(595)で変更後、アカウント台帳(627)に手動で反映する必要があります。<br>
+      ただし、<strong>新機能の重複チェッカー</strong>で「他の人と同じメールではないか」が自動で確認されるので安心です。
+    </div>
+  </details>
 </div>
-<div class="footer">社員マスタガイド v2.0 ― <a href="index.html" style="color:inherit">← トップに戻る</a></div>
+
+</div>
+
+<button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="トップへ戻る">↑</button>
+
+<div class="footer">社員マスタガイド v4.0 ― <a href="index.html" style="color:inherit">← トップに戻る</a></div>
+
+<script>
+(function(){
+  var sb = document.querySelector('.scroll-top');
+  window.addEventListener('scroll', function(){
+    if (window.scrollY > 400) sb.classList.add('show'); else sb.classList.remove('show');
+  });
+})();
+</script>
 </body>
 </html>

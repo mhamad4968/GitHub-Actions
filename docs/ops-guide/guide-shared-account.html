@@ -8,64 +8,102 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--accent:#e11d48;--accent-bg:#ffe4e6;--bg:#f0f4f8;--card:#fff;--text:#1e293b;--sub:#475569;--gray:#f1f5f9;
   --blue:#2563eb;--blue-bg:#dbeafe;--ok:#16a34a;--ok-bg:#dcfce7;--warn:#ea580c;--warn-bg:#fff7ed;--radius:16px}
-body{font-family:'Segoe UI','Hiragino Sans','Meiryo',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
-.header{background:linear-gradient(135deg,#9f1239,#f43f5e);color:#fff;padding:24px;display:flex;align-items:center;gap:16px}
+body{font-family:'Segoe UI','Hiragino Sans','Meiryo',sans-serif;background:var(--bg);color:var(--text);line-height:1.8;font-size:16px}
+.header{background:linear-gradient(135deg,#9f1239,#f43f5e);color:#fff;padding:24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.1)}
 .header .back{color:#fff;text-decoration:none;font-size:1.3em;opacity:.8;transition:.2s}
 .header .back:hover{opacity:1}
-.header h1{font-size:1.4em;font-weight:700}
+.header h1{font-size:1.4em;font-weight:700;flex:1}
+.toc-toggle{background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:8px;padding:6px 12px;font-size:.85em;cursor:pointer;font-weight:600}
+.toc-toggle:hover{background:rgba(255,255,255,.3)}
 .container{max-width:760px;margin:0 auto;padding:20px 16px}
-.card{background:var(--card);border-radius:var(--radius);box-shadow:0 2px 12px rgba(0,0,0,.07);padding:22px 24px;margin-bottom:16px}
-.card h2{font-size:1.1em;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.toc{background:#fff;border-radius:var(--radius);box-shadow:0 2px 12px rgba(0,0,0,.07);padding:18px 22px;margin-bottom:16px;display:none}
+.toc.open{display:block}
+.toc h3{font-size:1.05em;margin-bottom:10px;color:var(--accent)}
+.toc ol{margin-left:22px;line-height:1.9}
+.toc a{color:var(--text);text-decoration:none}
+.toc a:hover{color:var(--accent);text-decoration:underline}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:0 2px 12px rgba(0,0,0,.07);padding:22px 24px;margin-bottom:16px;scroll-margin-top:90px}
+.card h2{font-size:1.25em;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card .time-badge{display:inline-block;font-size:.7em;background:#ffe4e6;color:#9f1239;padding:2px 8px;border-radius:10px;font-weight:600;margin-left:8px}
 .steps{counter-reset:s;list-style:none}
-.steps li{counter-increment:s;position:relative;padding:12px 16px 12px 52px;margin-bottom:8px;
-  background:var(--gray);border-radius:12px;font-size:.9em}
+.steps li{counter-increment:s;position:relative;padding:14px 18px 14px 56px;margin-bottom:10px;
+  background:var(--gray);border-radius:12px;font-size:1em;line-height:1.7}
 .steps li::before{content:counter(s);position:absolute;left:12px;top:50%;transform:translateY(-50%);
   width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;
   display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85em}
-.tip{padding:14px 18px;border-radius:12px;margin:10px 0;font-size:.87em;display:flex;align-items:flex-start;gap:10px}
+.tip{padding:16px 20px;border-radius:12px;margin:12px 0;font-size:1em;line-height:1.7;display:flex;align-items:flex-start;gap:10px}
 .tip .e{font-size:1.3em;flex-shrink:0}
 .t-blue{background:var(--blue-bg);border-left:4px solid var(--blue)}
 .t-green{background:var(--ok-bg);border-left:4px solid var(--ok)}
 .t-orange{background:var(--warn-bg);border-left:4px solid var(--warn)}
 .t-pink{background:var(--accent-bg);border-left:4px solid var(--accent)}
-table{width:100%;border-collapse:collapse;font-size:.85em;margin-top:8px}
-th{background:var(--gray);text-align:left;padding:8px 12px}
-td{padding:8px 12px;border-bottom:1px solid #e2e8f0}
+table{width:100%;border-collapse:collapse;font-size:.95em;margin-top:8px}
+th{background:var(--gray);text-align:left;padding:10px 14px;font-size:1em}
+td{padding:10px 14px;border-bottom:1px solid #e2e8f0}
 code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:.9em}
 .loc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin:10px 0}
 .loc-chip{background:var(--accent-bg);border-radius:10px;padding:8px 14px;text-align:center;font-size:.85em;font-weight:600}
 .loc-chip small{font-weight:400;display:block;font-size:.8em;color:var(--sub)}
+.badge-new{display:inline-block;font-size:.62em;background:#dc2626;color:#fff;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:6px;vertical-align:middle;letter-spacing:.05em}
+.faq summary{font-weight:700;cursor:pointer;padding:12px 0;color:#9f1239;font-size:1.02em;list-style:none;display:flex;align-items:center;gap:10px}
+.faq summary::before{content:'▶';color:var(--accent);font-size:.85em;transition:.2s}
+.faq details[open] summary::before{transform:rotate(90deg)}
+.faq summary:hover{color:var(--accent)}
+.faq details{border-bottom:1px solid #e2e8f0;padding-bottom:8px}
+.faq details:last-child{border-bottom:none}
+.faq .answer{padding:8px 0 12px 24px;color:var(--text)}
 .footer{text-align:center;padding:16px;font-size:.72em;color:#94a3b8}
-@media print{body{background:#fff}.header{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+.scroll-top{position:fixed;bottom:20px;right:20px;background:var(--accent);color:#fff;width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;font-size:1.4em;box-shadow:0 4px 12px rgba(225,29,72,.3);z-index:50;opacity:0;transition:.2s;pointer-events:none}
+.scroll-top.show{opacity:1;pointer-events:auto}
+@media print{body{background:#fff}.header{position:static;print-color-adjust:exact;-webkit-print-color-adjust:exact}.toc-toggle,.scroll-top{display:none}}
 </style>
+<script>
+(function(){function r(){try{var h=Math.max(document.body?document.body.scrollHeight:0,document.documentElement?document.documentElement.scrollHeight:0,document.body?document.body.offsetHeight:0);if(h>0&&window.parent)window.parent.postMessage({type:'jbis-ops-guide-iframe-resize',height:h},'*');}catch(e){}}window.addEventListener('load',r);window.addEventListener('resize',r);setTimeout(r,100);setTimeout(r,500);setTimeout(r,1500);setTimeout(r,3000);if(typeof ResizeObserver==='function'){var ro=new ResizeObserver(r);document.addEventListener('DOMContentLoaded',function(){if(document.body)ro.observe(document.body);});}})();
+</script>
 </head>
 <body>
 
 <div class="header">
   <a href="index.html" class="back">←</a>
   <h1>🏢 共有アカウントガイド <small style="font-size:.6em;opacity:.7">App 667</small></h1>
+  <button class="toc-toggle" onclick="document.getElementById('toc').classList.toggle('open')">📑 目次</button>
 </div>
 
 <div class="container">
 
+<nav id="toc" class="toc">
+  <h3>📑 目次（クリックで移動）</h3>
+  <ol>
+    <li><a href="#about">共有アカウントとは？</a></li>
+    <li><a href="#rule">番号のルール</a></li>
+    <li><a href="#loc">拠点コード一覧</a></li>
+    <li><a href="#easy">PC台帳からかんたん紐付け</a></li>
+    <li><a href="#search">モーダル検索のコツ（新機能）</a></li>
+    <li><a href="#manual">手動で登録する方法</a></li>
+    <li><a href="#diff">個人アカウントとの違い</a></li>
+    <li><a href="#caution">注意すること</a></li>
+    <li><a href="#faq">よくある質問</a></li>
+  </ol>
+</nav>
+
 <!-- ===== 概要 ===== -->
-<div class="card">
+<div id="about" class="card">
   <h2>📌 共有アカウントとは？</h2>
-  <p style="font-size:.9em">
-    複数人が交代で使う<strong>共有PC</strong>用のアカウントです。<br>
-    個人アカウントとは別の番号体系（<code>js0001</code>〜）で管理します。
+  <p>
+    複数人が交代で使う<strong>共有パソコン</strong>用のアカウントです。<br>
+    個人アカウントとは<strong>別の番号ルール</strong>（<code>js0001</code>〜）で管理します。
   </p>
   <div class="tip t-pink">
     <span class="e">⚠️</span>
-    <span>共有アカウントは<strong>自動登録ボタンでは作れません</strong>。<br>
-    以下の手順で<strong>手動</strong>で登録します。</span>
+    <span>共有アカウントは個人用の<strong>自動登録ボタンでは作れません</strong>。<br>
+    PC台帳（594）の保存時モーダルから<strong>半自動</strong>で登録するか、アカウント台帳（627）で<strong>手動</strong>登録します。</span>
   </div>
 </div>
 
 <!-- ===== 番号のルール ===== -->
-<div class="card">
+<div id="rule" class="card">
   <h2>🏷️ 番号のルール</h2>
-  <p style="font-size:.9em;margin-bottom:8px">共有アカウントは次の形で作ります：</p>
+  <p style="margin-bottom:8px">共有アカウントの番号は、次の形になっています：</p>
   <div style="background:var(--gray);border-radius:12px;padding:16px 20px;text-align:center;font-size:1.1em;font-weight:700;letter-spacing:.03em;margin-bottom:12px">
     js<span style="color:var(--accent)">0001</span>[<span style="color:var(--blue)">tohoku</span>-<span style="color:var(--ok)">001</span>]
   </div>
@@ -78,7 +116,7 @@ code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:.9em}
 </div>
 
 <!-- ===== 拠点一覧 ===== -->
-<div class="card">
+<div id="loc" class="card">
   <h2>🗺️ 拠点コード一覧</h2>
   <div class="loc-grid">
     <div class="loc-chip">honsya<small>本社</small></div>
@@ -93,9 +131,9 @@ code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:.9em}
 </div>
 
 <!-- ===== PC台帳から紐付け（推奨） ===== -->
-<div class="card">
-  <h2>🚀 PC台帳からかんたん紐付け（推奨）</h2>
-  <p style="font-size:.9em;margin-bottom:10px">共有PCを保存すると、<strong>自動でアカウント紐付けモーダル</strong>が表示されます。</p>
+<div id="easy" class="card" style="border:2px solid var(--ok);background:#f0fdf4">
+  <h2>🚀 PC台帳からかんたん紐付け <span style="display:inline-block;font-size:.65em;background:var(--ok);color:#fff;padding:2px 10px;border-radius:12px;margin-left:6px">★ 推奨</span> <span class="time-badge">所要 1分</span></h2>
+  <p style="margin-bottom:10px">共有パソコンを保存すると、<strong>画面に「どのアカウントと結びつけますか？」という画面</strong>が自動で出てきます。</p>
   <ol class="steps">
     <li><strong>PC管理台帳（594）</strong>で共有PCのレコードを新規作成 or 編集して<strong>保存</strong></li>
     <li>「🔗 共有PC — アカウント紐付け」モーダルが自動表示される</li>
@@ -115,34 +153,66 @@ code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:.9em}
   </div>
 </div>
 
+<!-- ===== 新機能：モーダル検索 ===== -->
+<div id="search" class="card" style="border:2px solid #f59e0b;background:#fffbeb">
+  <h2>🔍 モーダル検索のコツ <span class="badge-new">NEW</span></h2>
+  <p>共有PC紐付けモーダルの<strong>検索機能が強化</strong>されています。少ない文字でも見つかりやすくなりました。</p>
+
+  <h3 style="font-size:1.05em;margin:14px 0 8px;color:#1e3a5f">こう探せます</h3>
+  <table>
+    <tr><th>探し方</th><th>例</th></tr>
+    <tr><td>ログオン名（数字部分でもOK）</td><td><code>0001</code> → js0001 系がヒット</td></tr>
+    <tr><td>Windows名（拠点コードでも）</td><td><code>tokyo</code> → 東京拠点の共有が出る</td></tr>
+    <tr><td>PC名の一部</td><td><code>jbis03</code> → JBIS03で始まるPC全部</td></tr>
+    <tr><td>ひらがなで検索</td><td><code>とうきょう</code> → tokyo / 東京 もヒット</td></tr>
+  </table>
+
+  <div class="tip t-blue">
+    <span class="e">💡</span>
+    <span>同じ拠点・同じPC名で複数のアカウントが見つかった場合は、<strong>「ログオン名」と「PC名」</strong>を見比べてください。<br>
+    番号末尾（-001, -002）が拠点内の枝番です。</span>
+  </div>
+
+  <div class="tip t-orange">
+    <span class="e">⚠️</span>
+    <span>該当のアカウントが見当たらないときは <strong>「＋ 新規アカウント作成」</strong> を使ってください。<br>
+    採番マスタから自動で次の空き番号を取得します。</span>
+  </div>
+</div>
+
 <!-- ===== 手動登録（従来の方法） ===== -->
-<div class="card">
+<div id="manual" class="card">
   <h2>📋 手動で登録する方法（従来）</h2>
-  <p style="font-size:.85em;color:var(--sub);margin-bottom:8px">上のPC台帳からの紐付けが使えない場合はこちら。</p>
+  <p style="color:var(--sub);margin-bottom:8px">上の「かんたん紐付け」が使えないときは、こちらの方法で登録します。</p>
   <ol class="steps">
     <li><strong>共有アカウント採番マスタ（667）</strong>を開く</li>
-    <li>未使用の番号を探す（<code>used_count</code> が空のもの）</li>
-    <li>使う番号の <code>used_count</code> を「〇」に変更して保存</li>
+    <li>まだ使われていない番号を探す（「使用済み」の欄が空のもの）</li>
+    <li>使う番号の「使用済み」欄を「〇」に変えて保存する</li>
     <li><strong>アカウント管理台帳（627）</strong>を開いて新規レコードを追加</li>
-    <li>以下を手動で入力：
+    <li>以下の項目を手入力する：
       <table>
-        <tr><th>フィールド</th><th>入れるもの</th></tr>
-        <tr><td>ログオン名</td><td>採番マスタの <code>windows_id</code></td></tr>
-        <tr><td>アカウント種別</td><td>「共有アカウント」を選択</td></tr>
-        <tr><td>PC名</td><td>対象の共有PC名</td></tr>
+        <tr><th>入力する場所</th><th>入れる内容</th></tr>
+        <tr><td>ログオン名</td><td>採番マスタで控えた番号（例：<code>js0001</code>）</td></tr>
+        <tr><td>アカウント種別</td><td>「共有アカウント」を選ぶ</td></tr>
+        <tr><td>PC名</td><td>このアカウントを使うパソコンの名前</td></tr>
       </table>
     </li>
     <li>保存して完了！</li>
   </ol>
+  <div class="tip t-orange">
+    <span class="e">📛</span>
+    <span>ログオン名が既存と被ると、<strong>新機能の重複チェッカー</strong>が止めます。<br>
+    エラーが出た場合は、採番マスタで未使用の番号を選び直してください。</span>
+  </div>
 </div>
 
 <!-- ===== 個人との違い ===== -->
-<div class="card">
+<div id="diff" class="card">
   <h2>🆚 個人アカウントとの違い</h2>
   <table>
     <tr><th></th><th>個人アカウント</th><th>共有アカウント</th></tr>
     <tr><td>番号</td><td><code>jbm00001</code>〜</td><td><code>js0001</code>〜</td></tr>
-    <tr><td>登録方法</td><td>ボタン1つで自動</td><td>手動で登録</td></tr>
+    <tr><td>登録方法</td><td>ボタン1つで自動</td><td>594から半自動 or 627で手動</td></tr>
     <tr><td>採番アプリ</td><td>App 626</td><td>App 667</td></tr>
     <tr><td>1PCに何人？</td><td>1人専用</td><td>複数人で共有</td></tr>
     <tr><td>Windows名</td><td><code>jbm00009[m-kondo]</code></td><td><code>js0001[tohoku-001]</code></td></tr>
@@ -150,7 +220,7 @@ code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:.9em}
 </div>
 
 <!-- ===== 注意 ===== -->
-<div class="card">
+<div id="caution" class="card">
   <h2>⚠️ 注意すること</h2>
   <div class="tip t-orange">
     <span class="e">📝</span>
@@ -163,7 +233,68 @@ code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:.9em}
   </div>
 </div>
 
+<!-- ===== FAQ ===== -->
+<div id="faq" class="card faq">
+  <h2>❓ よくある質問</h2>
+
+  <details>
+    <summary>Q. モーダルが出てこない</summary>
+    <div class="answer">
+      共有PCの保存時にだけ自動表示されます。<br>
+      ・種別が「共有」になっていますか？ → 個人や JR の場合はモーダルは出ません<br>
+      ・既に紐付け済みではありませんか？ → アクションパネルで「アカウント台帳を開く」が表示されているか確認<br>
+      もう一度開きたい場合は、詳細画面の <strong>「🔗 共有アカウント紐付け」</strong> ボタンを押してください。
+    </div>
+  </details>
+
+  <details>
+    <summary>Q. 1台のPCに複数の共有アカウントを紐付けたい</summary>
+    <div class="answer">
+      可能です。<br>
+      モーダルで1つ選択して紐付け → 詳細画面の「🔗 共有アカウント紐付け」を再度押して別のアカウントを追加してください。<br>
+      アクションパネルに、紐付くすべての627レコードが一覧表示されます。
+    </div>
+  </details>
+
+  <details>
+    <summary>Q. 採番マスタ(667)に空きがない</summary>
+    <div class="answer">
+      管理者に連絡し、対象拠点の未使用番号を追加してもらってください。<br>
+      その間は手動登録もできません。
+    </div>
+  </details>
+
+  <details>
+    <summary>Q. 退職者が使っていた共有アカウントは消すべき？</summary>
+    <div class="answer">
+      <strong>消さなくてOK</strong>です。<br>
+      共有アカウントは「拠点のPCに紐付く」考え方なので、退職した個人がいなくなっても番号は残します。<br>
+      新しく赴任してきた人が同じ番号を引き続き使えます。
+    </div>
+  </details>
+
+  <details>
+    <summary>Q. 拠点コードを間違えて登録した</summary>
+    <div class="answer">
+      アカウント台帳(627)で該当レコードを開き、Windows名のフォーマットを修正してください。<br>
+      採番マスタ(667)側の番号は変更不要です。
+    </div>
+  </details>
 </div>
-<div class="footer">共有アカウントガイド v2.0 ― <a href="index.html" style="color:inherit">← トップに戻る</a></div>
+
+</div>
+
+<button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="トップへ戻る">↑</button>
+
+<div class="footer">共有アカウントガイド v4.0 ― <a href="index.html" style="color:inherit">← トップに戻る</a></div>
+
+<script>
+(function(){
+  var sb = document.querySelector('.scroll-top');
+  window.addEventListener('scroll', function(){
+    if (window.scrollY > 400) sb.classList.add('show'); else sb.classList.remove('show');
+  });
+})();
+</script>
 </body>
 </html>
