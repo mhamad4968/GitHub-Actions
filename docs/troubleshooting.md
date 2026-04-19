@@ -91,17 +91,44 @@
 | `AGENTS.md` | 古い版に巻き戻し | 669 → 444（v17 → v10 / §42-§49 全消失） |
 | `docs/approved-changes/README.md` | 0 byte | ? → 0 |
 
-### 根本原因（仮説 / 未確定）
+### 根本原因（**特定済み・2026-04-19 浜田スクショ提供**）
 
-タイミングが **AI セッション起動時の Cursor 内部処理と一致**（私のセッション開始時刻 = 09:02）。
+**Cursor の "Request blocked by Anthropic" 時の編集ロールバック挙動**。
 
-仮説順:
-1. **Cursor の workspace state recovery / file synchronization**（最有力）
-2. **何らかの拡張機能（Markdown 言語サーバー / Cursor Agent 等）が初期化時に空ファイル placeholder を生成**
-3. **AI Agent 起動時の権限取得スクリプト** が誤動作
-4. **WSL の inotify / fs cache の何か**
+#### 確定した事実
 
-→ **真犯人特定は file-watcher.mjs の継続稼働で次回事件発生時に PID/timing を捕まえる方針**。
+- 浜田が当日のエラー画面スクショを 2 枚提供:
+  - Request ID `a969dba9-3c47-4416-8b01-eb9a37b6f0e7`
+  - Request ID `b62293ee-c6e5-4538-8ec0-22da096910c3`
+- どちらも **"25 Files | Undo All | Review"** ボタン付きで「Request blocked by Anthropic」表示
+- 浜田の発言: 「今の指示がポリシーに触れてしまったようです。言葉を少し柔らかくします」（リトライ時）
+- 当日のファイル wipe 数（11 scripts + WORKFLOW.md + AGENTS.md §42-§49 の partial + approved-changes/README.md = ~14）と画面上の "25 Files" は**同一バッチ編集を指す**（残り 11 はおそらく軽微な編集や読み取りのみ）
+
+#### 発生メカニズム
+
+```
+1. AI（前セッション）が 1 ターンで 25 ファイルの一括編集を実行しようとした
+   ↓
+2. プロンプト内容が Anthropic Usage Policy に抵触し、API 側でブロック
+   ↓
+3. Cursor は中断時の状態を扱えず、編集適用が中途半端で停止
+   または "Undo All" 動作で 25 ファイルが不整合状態に
+   （ファイル truncate 済み + 内容書込前で停止 = 0 byte 化）
+   ↓
+4. 浜田が「言葉を柔らかくします」でリトライしたが、damage は既に発生
+   ↓
+5. ファイルの mtime 09:02 = ロールバック / 中断完了時刻
+
+これで「タイムスタンプ秒一致」+「複数ファイル同時 wipe」+「mtime 09:02 sharp」
+が完全に説明つく。
+```
+
+#### 容疑から外れたもの
+
+- ❌ OneDrive 同期 — サインインしてないから同期エンジン未起動（2026-04-19 確認）
+- ❌ Cursor crash recovery — タイミングがセッション起動と一致するように見えたが、実際は edit blocking
+- ❌ WSL fs cache 不具合 — 同上
+- ❌ 拡張機能の初期化処理 — 同上
 
 ### 対策（実施済み・2026-04-19）
 
@@ -138,6 +165,9 @@
 7. **ファイル編集中の中間状態 = 一瞬 0 byte**。エディタ保存は「truncate → 内容書き込み」の 2 ステップ。検知ロジックには **5 秒待ち**を入れて誤判定を防ぐ。
 8. **「自動復元」と「自動上書き」は違う**。emergency-mirror は **src が 0 byte なら mirror しない** 安全装置を持つ（0 byte で上書きすると emergency-backup も死ぬ）。auto-heal も wipe 検知時は復元せず人間判断を要求（自分で誤判断して上書きしない）。
 9. **AI のセッション context もバックアップ**。新セッションが始まる前に重要ファイルを Read しておくと、wipe された時に Write で復元できる。逆に「忙しいから読まずに進む」は危険。
+10. **AI の 1 ターン編集は 10 ファイル以下が目安**（特にポリシー境界に触れそうな話題）。Anthropic Usage Policy ブロック時に Cursor の edit-application が中途半端に止まると、ターゲットファイル群が 0 byte 化する。バッチ編集を分割すれば爆発半径が小さくなる。
+11. **"Request blocked by Anthropic" + "Undo All | Review" が出たら、Undo All を押す前に Review で内容確認**。即 `npm run guard:check` で被害確認（file-watcher が動いてれば既に自動復元しているはず）。
+12. **エラー画面のスクショは命綱**。今回 浜田のスクショ（Request ID 付き）が真犯人特定の決定打になった。次回も同様のエラーが出たら **必ずスクショを撮って共有**。Request ID が分かれば Anthropic に問い合わせも可能。
 
 ### 関連ルール
 

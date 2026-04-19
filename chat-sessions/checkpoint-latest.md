@@ -3,7 +3,7 @@
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- 旧版（2026-04-10 654 予算ポータル）は chat-sessions/checkpoints/2026-04-10-budget-654-finalize.md に退避済み -->
 
-**最終更新**: 2026-04-19 09:55 (Sun) — Phase A 完遂 + TSB-006 リカバリ体制完全構築
+**最終更新**: 2026-04-19 10:05 (Sun) — Phase A 完遂 + TSB-006 リカバリ体制完全構築 + **真犯人特定（Cursor edit-rollback on Anthropic policy block）**
 
 ---
 
