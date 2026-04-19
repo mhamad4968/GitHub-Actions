@@ -40,7 +40,23 @@ function out(msg) {
   if (!ARG_JSON) console.log(msg);
 }
 
-function probeMcp(name, server) {
+// Cursor 環境シミュレーション用: Cursor 内蔵 Node v20 のパスを検出
+function findCursorEmbeddedNode() {
+  const cursorBinDir = path.join(os.homedir(), '.cursor-server', 'bin');
+  if (!fs.existsSync(cursorBinDir)) return null;
+  try {
+    const shas = fs.readdirSync(cursorBinDir).filter((d) => /^[a-f0-9]{40}$/.test(d));
+    for (const sha of shas) {
+      const candidate = path.join(cursorBinDir, sha, 'node');
+      if (fs.existsSync(candidate)) return path.join(cursorBinDir, sha);  // bin dir
+    }
+  } catch { /* skip */ }
+  return null;
+}
+
+const CURSOR_NODE_BIN_DIR = findCursorEmbeddedNode();
+
+function probeMcp(name, server, opts = {}) {
   if (server.disabled) return { name, status: 'skip', note: 'disabled:true' };
   // Windows-only コマンドは WSL から実行不可なのでスキップ判定
   if (typeof server.command === 'string' && /\.exe$/i.test(server.command)) {
@@ -55,7 +71,15 @@ function probeMcp(name, server) {
     params: { protocolVersion: '2024-11-05', capabilities: {}, clientInfo: { name: 'health-check', version: '1.0' } },
   });
 
-  const env = { ...process.env, ...(server.env || {}) };
+  // Cursor 環境シミュレーション: Cursor 内蔵 Node v20 の bin を PATH 先頭に置いて再 probe
+  // 「ターミナル緑・Cursor UI 赤」乖離の自動検知用
+  // ただし server.env.PATH が明示されている場合は尊重（mcp.json で対策済みなので false positive 防止）
+  let env = { ...process.env, ...(server.env || {}) };
+  const hasExplicitPath = !!(server.env && server.env.PATH);
+  if (opts.simulateCursor && CURSOR_NODE_BIN_DIR && !hasExplicitPath) {
+    env.PATH = `${CURSOR_NODE_BIN_DIR}:${env.PATH || ''}`;
+  }
+
   const cmd = server.command;
   const args = server.args || [];
 
@@ -84,6 +108,7 @@ function probeMcp(name, server) {
 // ───── MCP ─────
 const mcpJsonPath = path.join(os.homedir(), '.cursor', 'mcp.json');
 let mcpResults = [];
+let cursorDivergence = [];  // ターミナル緑だが Cursor 環境で赤 → UI 赤の予兆
 if (!fs.existsSync(mcpJsonPath)) {
   mcpResults = [{ name: '(mcp.json)', status: 'ng', note: 'mcp.json not found' }];
 } else {
@@ -91,7 +116,19 @@ if (!fs.existsSync(mcpJsonPath)) {
     const cfg = JSON.parse(fs.readFileSync(mcpJsonPath, 'utf8'));
     const servers = cfg.mcpServers || {};
     for (const [name, server] of Object.entries(servers)) {
-      mcpResults.push(probeMcp(name, server));
+      const r = probeMcp(name, server);
+      mcpResults.push(r);
+
+      // Cursor 環境シミュレーション: ターミナル OK でも Cursor 環境で再 probe
+      // OK だった MCP のみ対象（ng はそもそも Cursor 環境でも ng のはず）
+      // 内部で server.env.PATH を尊重するため、mcp.json で対策済みの MCP は影響を受けない
+      if (r.status === 'ok' && CURSOR_NODE_BIN_DIR) {
+        const sim = probeMcp(name, server, { simulateCursor: true });
+        if (sim.status === 'ng') {
+          cursorDivergence.push({ name, terminal: 'ok', cursor_env: 'ng', cursor_note: sim.note });
+          r.note += ' (⚠ Cursor 環境では NG = UI 赤の予兆)';
+        }
+      }
     }
   } catch (e) {
     mcpResults = [{ name: '(mcp.json)', status: 'ng', note: `parse error: ${e.message}` }];
@@ -178,6 +215,7 @@ const summary = {
 const result = {
   generated_at: new Date().toISOString(),
   mcp: mcpResults,
+  cursor_divergence: cursorDivergence,
   node,
   disk,
   memory,
@@ -217,6 +255,20 @@ out(`  - npm cache: ${disk.npm_cache} / npx cache: ${disk.npx_cache}`);
 out(`- Memory: ${memory.line} — ✅`);
 out(`- cron: ${cron.has_morning_prep ? '✅ morning:prep 登録済み' : '❌ morning:prep 未登録'}`);
 out('');
+
+if (cursorDivergence.length > 0) {
+  out('### ⚠ Cursor 環境シミュレーション乖離検知');
+  out('');
+  out('以下の MCP は**ターミナルから疎通 OK だが、Cursor 内蔵 Node v20 環境で再 probe すると NG**。');
+  out('Cursor 再起動時に UI で赤くなる可能性が高い:');
+  out('');
+  out('| MCP | Cursor 環境での問題 |');
+  out('|---|---|');
+  for (const d of cursorDivergence) out(`| ${d.name} | ${d.cursor_note} |`);
+  out('');
+  out('> **対策**: `.cursor/mcp.json` の `command` を NVM v24 絶対パス + `env.PATH` 強制に変更。');
+  out('');
+}
 
 if (wiped.length > 0) {
   out('### 🚨 自己スクリプト wipe 検知');

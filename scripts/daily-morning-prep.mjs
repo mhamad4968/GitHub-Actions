@@ -176,12 +176,16 @@ sections.push(r6.stdout || '_該当なし_');
 sections.push('');
 
 // 7. RAG 再 ingest（任意）
+// (#5 修正) Cursor 内蔵 Node v20 が PATH 先頭にいると npx が古い jsdom (CJS) を引き ERR_REQUIRE_ESM。
+// → コマンドに export PATH=NVM_v24/bin:$PATH を強制
 sections.push('## 7. RAG 知識ベース更新');
 sections.push('');
+const NVM_V24_BIN = '/home/mhamada202408224/.nvm/versions/node/v24.14.1/bin';
 const ragCmd = [
+  `export PATH=${NVM_V24_BIN}:$PATH`,
   'cp RULES-INDEX.md kintone-apps.md AGENTS.md WORKFLOW.md .rag/extra-docs/ 2>/dev/null || true',
-  'npx --yes mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest .rag/extra-docs/ 2>&1 | tail -10 || true',
-  'npx --yes mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest docs/ 2>&1 | tail -10 || true',
+  `${NVM_V24_BIN}/npx --yes mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest .rag/extra-docs/ 2>&1 | tail -10 || true`,
+  `${NVM_V24_BIN}/npx --yes mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest docs/ 2>&1 | tail -10 || true`,
 ].join(' && ');
 const r7 = runCmd('rag-ingest', ragCmd, { timeoutMs: 300_000 });
 // 内側エラー検知: stdout/stderr に Error/ERR_/Exception を含む場合は ⚠ 降格 (#S1)
@@ -190,6 +194,33 @@ const ragHasInnerError = /\b(?:Error|ERR_[A-Z_]+|Exception|Traceback)\b/.test(ra
 if (ragHasInnerError) r7.ok = false;
 sections.push(summary('RAG ingest', r7, { ok: '✅', ng: '⚠️', limit: 12 }));
 if (ragHasInnerError) sections.push('> ⚠ 内側エラー検知: stdout/stderr に `Error/ERR_/Exception` を含むためヘルススコアを失敗扱いに降格しました。\n');
+
+// ========================================
+// §46 Phase 2-4: 健康チェック / 自動治療 / バージョンアップ
+// ========================================
+sections.push('---');
+sections.push('');
+sections.push('# 🌅 §46 朝ルーチン Phase 2-4');
+sections.push('');
+sections.push('> §46 により Phase 2-4 は SKYSEA 等のいかなるタスクよりも先に実行する。異常検出時はここで解消するまで他タスクへ進まない。');
+sections.push('');
+
+// Phase 2: 健康チェック
+const rPhase2 = runCmd('phase2 health-check', 'node scripts/health-check.mjs', { timeoutMs: 180_000 });
+sections.push(rPhase2.stdout || '## 🩺 Phase 2: 健康状況チェック\n\n_(出力なし)_');
+sections.push('');
+
+// Phase 3: 自動治療
+const rPhase3 = runCmd('phase3 auto-heal', 'node scripts/auto-heal.mjs', { timeoutMs: 300_000 });
+sections.push(rPhase3.stdout || '## 🔧 Phase 3: 自動治療\n\n_(出力なし)_');
+sections.push('');
+
+// Phase 4: バージョンアップ
+const rPhase4 = runCmd('phase4 version-up', 'node scripts/version-up.mjs', { timeoutMs: 120_000 });
+sections.push(rPhase4.stdout || '## 📦 Phase 4: バージョンアップ対応\n\n_(出力なし)_');
+sections.push('');
+sections.push('---');
+sections.push('');
 
 // 8. kintone-apps.md 直近変更
 sections.push('## 8. kintone-apps.md 直近の更新履歴（末尾 5 行）');
@@ -288,6 +319,9 @@ const score = [
   ['audit-rules', r5.ok],
   ['scan-plans', r6.ok],
   ['RAG ingest', r7.ok],
+  ['§46 Phase 2 health-check', rPhase2.ok],
+  ['§46 Phase 3 auto-heal', rPhase3.ok],
+  ['§46 Phase 4 version-up', rPhase4.ok],
 ];
 const passed = score.filter(([, ok]) => ok).length;
 sections.push(`**${passed} / ${score.length} 合格**`);

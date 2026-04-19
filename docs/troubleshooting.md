@@ -179,6 +179,46 @@
 
 ---
 
+## TSB-007 — ESLint 6 vs flat config (eslint.config.js) 不整合（2026-04-19 検出）
+
+### 事象
+
+`npm run lint:customize` 実行時に「ESLint couldn't find a configuration file」エラー。
+
+```
+ESLint: 6.4.0.
+ESLint couldn't find a configuration file.
+```
+
+### 根本原因
+
+- リポジトリには `eslint.config.js` (ESLint 8+ の flat config 形式) が存在
+- しかし node_modules に入っている ESLint は **6.4.0**（古い）→ flat config 非対応
+- ESLint 6 は `.eslintrc.*` 形式を期待
+
+### 対策
+
+`package.json` で ESLint 8 以降に upgrade が必要。
+
+```bash
+npm install --save-dev eslint@latest
+# または
+npm install --save-dev eslint@8
+```
+
+ただし本番 CI や customize/ コードへの影響を確認してから実施することを推奨。
+
+### 影響
+
+- `npm run lint:customize` が失敗（朝ブリーフィングで ❌ 表示）
+- 本番動作には影響なし（lint は静的解析のみ）
+
+### 関連
+
+- `docs/dependency-upgrade-backlog.md` に記録予定（依存パッケージ更新案件として）
+
+---
+
 ## TSB テンプレート（新規追加時にコピー）
 
 ```markdown
