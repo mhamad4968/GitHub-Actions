@@ -30,13 +30,41 @@ body{font-family:'Segoe UI','Hiragino Sans','Meiryo',sans-serif;background:#f0f4
 @media print{body{background:#fff}.header{position:static}}
 </style>
 <script>
-(function(){function r(){try{var h=Math.max(document.body?document.body.scrollHeight:0,document.documentElement?document.documentElement.scrollHeight:0);if(h>0&&window.parent)window.parent.postMessage({type:'jbis-ops-guide-iframe-resize',height:h},'*');}catch(e){}}window.addEventListener('load',r);window.addEventListener('resize',r);setTimeout(r,100);setTimeout(r,500);setTimeout(r,1500);setTimeout(r,3000);if(typeof ResizeObserver==='function'){var ro=new ResizeObserver(r);document.addEventListener('DOMContentLoaded',function(){if(document.body)ro.observe(document.body);});}})();
+(function(){
+  // iframe 高さ通知 (debounce で連続発火を抑制)
+  var rt;
+  function r(){
+    clearTimeout(rt);
+    rt = setTimeout(function(){
+      try{
+        var h=Math.max(document.body?document.body.scrollHeight:0,document.documentElement?document.documentElement.scrollHeight:0);
+        if(h>0&&window.parent)window.parent.postMessage({type:"jbis-ops-guide-iframe-resize",height:h},"*");
+      }catch(e){}
+    }, 200);
+  }
+  window.addEventListener("load",r);
+  setTimeout(r,300);
+  setTimeout(r,1200);
+  setTimeout(r,2500);
+  if(typeof ResizeObserver==="function"){
+    var ro=new ResizeObserver(r);
+    document.addEventListener("DOMContentLoaded",function(){if(document.body)ro.observe(document.body);});
+  }
+  // 共通ナビゲーション (data-nav 属性付きボタン)
+  document.addEventListener("click",function(e){
+    var t=e.target.closest("[data-nav]");
+    if(!t)return;
+    e.preventDefault();
+    var slug=t.getAttribute("data-nav");
+    if(window.parent)window.parent.postMessage({type:"jbis-ops-guide-nav",slug:slug},"*");
+  });
+})();
 </script>
 </head>
 <body>
 
 <div class="header">
-  <a href="#" class="back" onclick="event.preventDefault();window.parent.postMessage({type:&quot;jbis-ops-guide-nav&quot;,slug:&quot;hub&quot;},&quot;*&quot;);return false;">←</a>
+  <button type="button" class="back" data-nav="hub" aria-label="トップに戻る">←</button>
   <h1>🔄 異動・退職・買替の流れ</h1>
 </div>
 
@@ -109,7 +137,7 @@ body{font-family:'Segoe UI','Hiragino Sans','Meiryo',sans-serif;background:#f0f4
 
 </div>
 
-<div class="footer">異動・退職・買替ガイド v5 (簡潔版) / 2026-04-19 ― <a href="#" style="color:inherit" onclick="event.preventDefault();window.parent.postMessage({type:&quot;jbis-ops-guide-nav&quot;,slug:&quot;hub&quot;},&quot;*&quot;);return false;">← トップに戻る</a></div>
+<div class="footer">異動・退職・買替ガイド v5 (簡潔版) / 2026-04-19 ― <button type="button" data-nav="hub" style="background:transparent;border:none;color:inherit;cursor:pointer;font:inherit;text-decoration:underline;">← トップに戻る</button></div>
 
 </body>
 </html>
