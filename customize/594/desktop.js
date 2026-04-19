@@ -2,6 +2,7 @@
   'use strict';
 
   // BUILD: 2026-04-18-v480 (相関ダッシュ: 台帳番号列・ミラー取り残し一括クリア)
+  // BUILD: 2026-04-19-v485 (共有アカウント紐付けボタンを常時表示化・紐付け済み共有 PC でも追加紐付け可能に)
   // BUILD: 2026-04-19-v484 (相関ダッシュボード: 既定チェックを「重複あり/紐付けなし」のみに変更・「正常」は任意)
   // BUILD: 2026-04-19-v483 (個人アカウント紐付けモーダル新設・1:2 上限 / 旧「アカウント管理台帳(627) 作成/更新して開く」ボタン廃止)
   // BUILD: 2026-04-18-v482 (関連アプリ横並び小ナビを画面上部に常駐: 668/595/594/627 へのテキストリンク)
@@ -2456,7 +2457,8 @@
   };
 
   /**
-   * 非同期: 現在のレコードが type=共有 かつ ledger 未紐付けなら共有リンクボタンを追加。
+   * 非同期: 現在のレコードが type=共有 ならボタンを追加 (常に表示・紐付け済みでも追加紐付けに使える)。
+   * 共有アカウントは 1 アカウント = 複数 PC 運用のため、個人と同じく常時表示が UX 正解。
    * REST API で判定するため kintone.app.record.get() を呼ばない（detail.show 中でも安全）。
    */
   const maybeAddSharedButton = async (wrap) => {
@@ -2466,8 +2468,7 @@
       if (!rid) return;
       const { record: recData } = await get594RecordPayloadById(rid);
       const curType = (recData[FC_594_TYPE]?.value || '').trim();
-      const curLedger = (recData[FC_594_LEDGER_RECORD_ID]?.value || '').trim();
-      if (curType !== '共有' || (curLedger && /^\d+$/.test(curLedger))) return;
+      if (curType !== '共有') return;
       if (String(kintone.app.record.getId()) !== String(rid)) return;
       if (wrap.querySelector('[data-jbis-shared-link]')) return;
 
