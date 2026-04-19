@@ -1344,29 +1344,37 @@ ${bodyInner}\
       fields: ['$id', 'user_name', 'dept_name', 'group_name'],
     });
 
-  const onUserNameChangeFillDept = async (event) => {
-    try {
-      const rec = event.record;
-      const userName = String(rec?.user_name?.value ?? '').trim();
-      if (!userName) return event;  // 空入力なら何もしない (既存値も触らない)
+  // kintone change イベントは Promise / Thenable を return できない仕様。
+  // → 同期で event を return し、非同期処理は fire-and-forget で起動。
+  //   完了後に kintone.app.record.set() でフォームに反映する (約 200-500ms 後)。
+  const onUserNameChangeFillDept = (event) => {
+    const rec = event.record;
+    const userName = String(rec?.user_name?.value ?? '').trim();
+    if (!userName) return event;  // 空入力なら何もしない (既存値も触らない)
 
-      const resp = await fetch595ByUserName(userName);
+    fetch595ByUserName(userName).then((resp) => {
       const r595 = resp?.records?.[0];
-      if (!r595) return event;  // 595 に該当なし: 既存値を保持
+      if (!r595) return;  // 595 に該当なし: 既存値を保持
 
-      // 自動取得した値で上書き (異動等で user_name 変更時に所属も更新する想定)
-      setRec(rec, 'dept_name', r595.dept_name?.value ?? '');
-      setRec(rec, 'group_name', r595.group_name?.value ?? '');
+      // 現在のフォーム状態を取得して、所属だけ上書きして set
+      const cur = kintone.app.record.get();
+      if (!cur || !cur.record) return;
+      const dept = r595.dept_name?.value ?? '';
+      const grp = r595.group_name?.value ?? '';
+      if (cur.record.dept_name) cur.record.dept_name.value = dept;
+      if (cur.record.group_name) cur.record.group_name.value = grp;
+      kintone.app.record.set(cur);
 
-      // 候補が複数あった場合は注意喚起 (誤った同姓同名を選ばないため)
+      // 同姓同名警告
       if (resp.records.length > 1) {
-        rec.user_name.error = `同姓同名の社員が ${resp.records.length} 件います。所属が想定と違う場合は手動で修正してください。`;
-      } else if (rec.user_name.error) {
-        rec.user_name.error = null;
+        console.info(
+          `[jbis 627] 同姓同名 ${resp.records.length} 件: 自動取得した所属が想定と違う場合は手動修正してください (利用者: ${userName})`
+        );
       }
-    } catch (e) {
+    }).catch((e) => {
       console.warn('[jbis 627 user_name change]', e);
-    }
+    });
+
     return event;
   };
 
