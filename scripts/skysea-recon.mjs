@@ -124,11 +124,18 @@ function normalize(name) {
   return (name ?? '').toString().trim().toUpperCase();
 }
 
-// ===== PC_name の社内 PC 命名規則チェック (KS or JBIS で始まる)=====
+// ===== PC_name の社内 PC 命名規則チェック =====
+// 個人 PC: KS or JBIS で始まる
+// JR端末: maple or jre で始まる (大文字小文字いずれも)
 // 安全網: 万一 type=個人 だが命名規則違反の PC が混入していた場合の検出用
 function isOurNamingConvention(name) {
   const u = (name || '').toString().trim().toUpperCase();
   return u.startsWith('KS') || u.startsWith('JBIS');
+}
+
+function isJrTerminalNaming(name) {
+  const u = (name || '').toString().trim().toUpperCase();
+  return u.startsWith('MAPLE') || u.startsWith('JRE');
 }
 
 // ===== kintone 594 から個人現役 PC 取得 =====
@@ -255,14 +262,14 @@ async function main() {
       const u = pcName.trim().toUpperCase();
       // 推定原因タグ (精査の手がかり)
       let 推定原因 = '';
-      if (u.startsWith('KS') || u.startsWith('JBIS')) {
-        推定原因 = 'kintone 側マスタ更新漏れの可能性 (廃却 / 共有移行 / 保管移行)';
-      } else if (u.startsWith('JREJS')) {
-        推定原因 = 'JR 端末 (個人 type 対象外・正常)';
-      } else if (u.startsWith('SERVER')) {
-        推定原因 = 'サーバー類 (除外漏れ要確認)';
+      if (u.startsWith('KS') || u.startsWith('JBIS') || u.startsWith('JBM')) {
+        推定原因 = '個人PC (kintone 側マスタ更新漏れの可能性: 廃却 / 共有移行 / 保管移行)';
+      } else if (u.startsWith('MAPLE') || u.startsWith('JRE')) {
+        推定原因 = 'JR端末 (共有アカウント運用・kintone 種別=JR端末 で登録要)';
+      } else if (u.startsWith('DS') || u.startsWith('KENT') || u.startsWith('SERVER') || u.includes('NAS')) {
+        推定原因 = 'サーバー/NAS/AD (削除厳禁・kintone 個人 type 対象外で正常)';
       } else {
-        推定原因 = '命名規則外 (要個別確認)';
+        推定原因 = '命名規則外 (要個別確認: 共有 PC か研修用か等)';
       }
       orphanInSkysea.push({
         コンピューター名: pcName,
