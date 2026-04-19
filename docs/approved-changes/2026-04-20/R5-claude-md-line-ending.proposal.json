@@ -1,0 +1,10 @@
+{
+  "id": "R5",
+  "category": "R",
+  "type": "string_replace",
+  "target": "CLAUDE.md",
+  "note": "CLAUDE.md「ファイル編集時の作法」に CRLF/LF 行末コード保持原則を追加",
+  "old_string": "## File Specific Rules\n\n- **`kintone-apps.md`**: **追記のみ**。履歴・以前の行を**削除しない**（`RULES-INDEX.md` の方針どおり）。",
+  "new_string": "## File Specific Rules\n\n- **`kintone-apps.md`**: **追記のみ**。履歴・以前の行を**削除しない**（`RULES-INDEX.md` の方針どおり）。\n- **行末コード保持原則（2026-04-20 制定 / TSB 教訓）**: 既存ファイルを編集する際、**元ファイルの行末コード（CRLF / LF）を保持**する。CRLF ファイルに LF で挿入すると行末が混在し、git diff が「全行変更」扱いになり、レビューが極めて困難になる（2026-04-19 customize/627/desktop.js で +2958/-768 になった事例）。新規追加行は **元ファイルと同じ行末コード**を使う。Windows 由来の .js / .bat 等は CRLF が多い → 編集前に確認する。",
+  "created_at": "2026-04-19T07:50:00.000Z"
+}

@@ -1,0 +1,19 @@
+{
+  "id": "C2",
+  "category": "C",
+  "type": "run_command",
+  "manual_only": true,
+  "command": "# 手動実装: PC 台帳検索パネルに「📌 SKYSEA 配信予定/未確認/失敗」トグル追加",
+  "note": "C2: SKYSEA 計画 4/27 実装フェーズで対応",
+  "manual_instructions": [
+    "1. customize/594/desktop.js の検索パネルに 3 つのトグルボタン追加:",
+    "   - '📌 SKYSEA 未確認' (skysea_status='未確認')",
+    "   - '📌 SKYSEA 配信予定' (skysea_target_flag=ON or skysea_status='配信予定')",
+    "   - '📌 SKYSEA 失敗' (skysea_status='失敗')",
+    "2. 既存の '台帳未紐付' '📌 アカウント複数' トグル群と同じスタイル",
+    "3. K1 (594 フィールド追加) が完了してから着手 = 4/23 以降",
+    "4. SKYSEA 計画 plan §10 進捗ログに連動",
+    "5. デプロイは事前相談 (npm run deploy:594)"
+  ],
+  "created_at": "2026-04-19T07:50:00.000Z"
+}

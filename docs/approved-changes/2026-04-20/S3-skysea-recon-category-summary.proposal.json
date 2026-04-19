@@ -1,0 +1,18 @@
+{
+  "id": "S3",
+  "category": "S",
+  "type": "run_command",
+  "manual_only": true,
+  "command": "# 手動実装: skysea-recon.mjs に orphan カテゴリ別件数集計を追加",
+  "note": "S3: orphan 仕分け時に「個人 PC: N / JR端末: N / サーバ: N / その他: N」を最初に表示",
+  "manual_instructions": [
+    "1. scripts/skysea-recon.mjs の orphanInSkysea ループ後、推定原因タグごとに件数集計",
+    "2. レポート末尾の 'Step 4: 統計' セクションに以下を追加:",
+    "   - 個人PC廃却漏れ (KS/JBIS/JBM): N 件",
+    "   - JR端末 (MAPLE/JRE): N 件",
+    "   - サーバー/NAS/AD (DS/KENT/SERVER/NAS): N 件",
+    "   - 命名規則外: N 件",
+    "3. node scripts/skysea-recon.mjs で動作確認 (4/26 現状調査前に効果が出る)"
+  ],
+  "created_at": "2026-04-19T07:50:00.000Z"
+}

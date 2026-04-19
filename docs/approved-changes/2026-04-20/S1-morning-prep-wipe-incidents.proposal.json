@@ -1,0 +1,16 @@
+{
+  "id": "S1",
+  "category": "S",
+  "type": "run_command",
+  "manual_only": true,
+  "command": "# 手動実装: scripts/daily-morning-prep.mjs に新セクション「## 9. 自動防衛網ログ」を追加し、 logs/file-watcher/wipe-incidents.log の直近 10 行を表示する",
+  "note": "S1: 朝ブリーフィングに wipe-incidents.log を集約表示",
+  "manual_instructions": [
+    "1. customize/scripts/daily-morning-prep.mjs を開く",
+    "2. Phase 4 の section 出力後、§46 終了前に新セクションを追加",
+    "3. logs/file-watcher/wipe-incidents.log を fs.readFileSync で読み、最新 10 行を `## 9. 自動防衛網ログ (前日からの wipe 検知)` セクションで表示",
+    "4. ファイルが空なら '✅ 防衛網稼働中・wipe 検知ゼロ' と出す",
+    "5. node -c で syntax 確認 → cron で確認"
+  ],
+  "created_at": "2026-04-19T07:50:00.000Z"
+}

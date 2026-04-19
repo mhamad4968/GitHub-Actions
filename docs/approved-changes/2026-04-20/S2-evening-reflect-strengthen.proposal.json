@@ -1,0 +1,18 @@
+{
+  "id": "S2",
+  "category": "S",
+  "type": "run_command",
+  "manual_only": true,
+  "command": "# 手動実装: evening-reflect.mjs を強化",
+  "note": "S2: evening-reflect.mjs に git status 警告 / TSB 引用 / checkpoint 鮮度チェックを追加",
+  "manual_instructions": [
+    "1. scripts/evening-reflect.mjs を開く",
+    "2. 自動収集ファクトに以下を追加:",
+    "   a. git status 未コミット件数が 50 件超なら ⚠ 警告セクションを生成",
+    "   b. docs/troubleshooting.md の最新 TSB タイトルを 3 件まで自動引用",
+    "   c. chat-sessions/checkpoint-latest.md の最終更新日を取得し、7 日以上古ければ 🚨 警告",
+    "3. 雛形末尾に「§5 改善提案」テンプレを残しつつ、これら新警告は §1 自動収集ファクトに含める",
+    "4. node -c で syntax 確認 → 浜田が「反省会」と言った時に自動発火"
+  ],
+  "created_at": "2026-04-19T07:50:00.000Z"
+}

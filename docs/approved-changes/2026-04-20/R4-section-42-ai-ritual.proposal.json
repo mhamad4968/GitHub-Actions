@@ -1,0 +1,10 @@
+{
+  "id": "R4",
+  "category": "R",
+  "type": "string_replace",
+  "target": "AGENTS.md",
+  "note": "§42 AI 自身の儀式義務化 (NEW-SESSION-STARTER 連動)",
+  "old_string": "#### 回答前の自己宣言\n回答の冒頭 1 行で **「過去ログ確認: <確認した内容>」** を述べてから本題に入る。確認していない場合は本題に入る前に確認を実行する。",
+  "new_string": "#### 回答前の自己宣言\n回答の冒頭 1 行で **「過去ログ確認: <確認した内容>」** を述べてから本題に入る。確認していない場合は本題に入る前に確認を実行する。\n\n#### AI 自身の儀式義務（2026-04-20 制定 / NEW-SESSION-STARTER 連動）\n**新セッション開始時、AI は浜田が儀式テンプレを貼ってこなくても、自発的に**:\n1. `chat-sessions/checkpoint-latest.md` を Read\n2. `chat-sessions/<最新日付>.md` を Read\n3. 朝ブリーフィング `docs/reports/<今日>-morning-prep.md` を Read（あれば）\n4. 「過去ログ確認: <要約 1-2 行>」と宣言してから本題へ\n\nこの 1〜4 を踏まずに本題に入った場合、§42 違反として即訂正する。NEW-SESSION-STARTER.md を作っておきながら自分が踏まないという 2026-04-19 セッションの矛盾を防ぐため。",
+  "created_at": "2026-04-19T07:50:00.000Z"
+}

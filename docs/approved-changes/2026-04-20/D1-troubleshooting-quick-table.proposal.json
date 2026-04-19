@@ -1,0 +1,10 @@
+{
+  "id": "D1",
+  "category": "D",
+  "type": "string_replace",
+  "target": "docs/troubleshooting.md",
+  "note": "troubleshooting.md 冒頭に教訓早見表を追加 (新セッション AI が即読める)",
+  "old_string": "# TSB（Troubleshooting Bulletin）— 失敗事例と教訓集\n\n> **目的**: 同じ失敗を二度と繰り返さないため、踏んだ落とし穴・原因・対策・教訓を **TSB-XXX 形式** で蓄積する。\n> **連動**: AGENTS.md §21（知見のフィードバック）/ WORKFLOW.md Phase 5（記録）/ RULES-INDEX.md（随時メモ索引）。\n> **更新ルール**: 障害・不具合を解決したら必ず追記。**既存 TSB は削除しない**（追記のみ）。RAG ingest で検索可能にする。",
+  "new_string": "# TSB（Troubleshooting Bulletin）— 失敗事例と教訓集\n\n> **目的**: 同じ失敗を二度と繰り返さないため、踏んだ落とし穴・原因・対策・教訓を **TSB-XXX 形式** で蓄積する。\n> **連動**: AGENTS.md §21（知見のフィードバック）/ WORKFLOW.md Phase 5（記録）/ RULES-INDEX.md（随時メモ索引）。\n> **更新ルール**: 障害・不具合を解決したら必ず追記。**既存 TSB は削除しない**（追記のみ）。RAG ingest で検索可能にする。\n\n## 🚀 教訓早見表（新セッション AI はまずここを読む）\n\n| TSB | 1 行サマリ | 何を防ぐか | 関連ルール |\n|---|---|---|---|\n| TSB-001 | fileKey 問題 | （詳細未記載・履歴上参照のみ）| §15 完成度基準 |\n| TSB-004 | 文字化け修復ロジックを 2 回直しても直らず ASCII 固定名へピボット | 2 回失敗で同じアプローチを続けない | AGENTS.md §14 |\n| TSB-005 | セッション間継続性の構造的脆弱性（checkpoint 10 日放置）| 復元アンカーの鮮度監視がないと文脈喪失する | §42 / 復元プロトコル |\n| TSB-006 | Cursor の Anthropic Policy ブロック時 edit-rollback で複数ファイルが 0 byte 化 | 1 ターンで多ファイル編集すると Policy 抵触時に爆発半径が広がる | §47 大量編集ガード（10 ファイル以上は分割提案）|\n| TSB-007 | ESLint 6.4 と eslint.config.js (flat config 形式) の version mismatch | flat config は ESLint 8+ 必須 / lint:customize エラーの原因 | §38 依存関係保守 |\n\n→ **新セッション AI**: この表を 30 秒読めば、過去の落とし穴 5 つを把握できる。詳細が必要な TSB だけ下にスクロールして本文を読めば良い。\n\n---",
+  "created_at": "2026-04-19T07:50:00.000Z"
+}

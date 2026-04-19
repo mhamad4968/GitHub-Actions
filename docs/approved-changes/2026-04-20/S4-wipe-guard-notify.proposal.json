@@ -1,0 +1,15 @@
+{
+  "id": "S4",
+  "category": "S",
+  "type": "run_command",
+  "manual_only": true,
+  "command": "# 手動実装: wipe-guard.mjs に notify.log 集約 + 朝ブリーフィング表示連携",
+  "note": "S4: wipe-guard 自動復元時の通知集約",
+  "manual_instructions": [
+    "1. scripts/wipe-guard.mjs に logs/wipe-guard/notify.log 出力を追加",
+    "2. 異常検知 + 復元成功なら '[INFO]' ・復元失敗なら '[ALERT]' で append",
+    "3. daily-morning-prep.mjs で notify.log の直近 5 行を表示する section を追加 (S1 と同セクション内に統合可)",
+    "4. 動作確認: wipe-guard を手動実行 → notify.log に記録されることを確認"
+  ],
+  "created_at": "2026-04-19T07:50:00.000Z"
+}

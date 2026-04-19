@@ -1,0 +1,20 @@
+{
+  "id": "K1",
+  "category": "K",
+  "type": "run_command",
+  "manual_only": true,
+  "command": "# 手動: 594 PC 台帳に SKYSEA 系 4 フィールドを追加",
+  "note": "K1: 594 に skysea_status / skysea_checked_at / skysea_install_log / skysea_target_flag を追加",
+  "manual_instructions": [
+    "1. 4/23 (Q7) で浜田から「フィールド追加 OK」承認を得てから実施",
+    "2. kintone 594 アプリ管理画面でフィールド追加:",
+    "   - skysea_status: ドロップダウン (未確認 / 配信予定 / 導入済 / 失敗 / 対象外)",
+    "   - skysea_checked_at: 日時",
+    "   - skysea_install_log: 文字列(複数行)",
+    "   - skysea_target_flag: チェックボックス (ラベル: 次回配信対象)",
+    "3. アプリ更新 → npm run app:fields -- 594 で確認",
+    "4. kintone-apps.md の 594 セクションを更新",
+    "5. K カテゴリ (kintone API) なので apply-approved-changes は自動実行しない (手動操作)"
+  ],
+  "created_at": "2026-04-19T07:50:00.000Z"
+}

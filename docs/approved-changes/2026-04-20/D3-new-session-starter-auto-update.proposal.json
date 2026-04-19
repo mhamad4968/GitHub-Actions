@@ -1,0 +1,17 @@
+{
+  "id": "D3",
+  "category": "D",
+  "type": "run_command",
+  "manual_only": true,
+  "command": "# 手動実装: NEW-SESSION-STARTER.md「今やってる主タスク」を evening-reflect が自動更新",
+  "note": "D3: NEW-SESSION-STARTER の「今やってる主タスク」を毎セッション終わりに自動更新",
+  "manual_instructions": [
+    "1. scripts/evening-reflect.mjs を改修",
+    "2. 雛形生成と同時に, NEW-SESSION-STARTER.md の【今やってる主タスク】ブロックと",
+    "   /mnt/c/Claudeとの会話メモ/NEW-SESSION-STARTER.txt の【今やってる主タスク】を更新",
+    "3. 更新内容のソース: docs/plans/ の最新更新ファイル + 当日の git log + chat-sessions/checkpoint-latest.md",
+    "4. AI が手動で書いた既存内容を尊重しつつ「2026-04-19 自動更新」のタイムスタンプ付きで上書き",
+    "5. 動作確認: evening-reflect を実行 → NEW-SESSION-STARTER の該当ブロックが更新されてること"
+  ],
+  "created_at": "2026-04-19T07:50:00.000Z"
+}

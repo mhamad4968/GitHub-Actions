@@ -1,0 +1,10 @@
+{
+  "id": "R2",
+  "category": "R",
+  "type": "string_replace",
+  "target": "AGENTS.md",
+  "note": "§33-A 必須トリガーに「kintone API の特殊仕様」追加 (TSB 教訓)",
+  "old_string": "- セキュリティ / 暗号 / 認証関連（自己流実装は §18 違反リスク）",
+  "new_string": "- セキュリティ / 暗号 / 認証関連（自己流実装は §18 違反リスク）\n- **kintone API の特殊仕様（2026-04-20 追加 / TSB 教訓）**: `change.<field>` イベントが Promise/Thenable を return できない / lookup フィールドへの API 書き込み制約 / サブテーブル更新時の id 必須 / kintone クエリの演算子制約（type/RADIO_BUTTON は in/not in のみ）/ ルックアップと計算フィールドは API 更新で即時反映されない 等 → **実装前に公式または既存コードで 1 ステップ確認**してからコード書く。2026-04-19 の `change.user_name` で async 書いて Thenable エラーで止まった事例が教訓",
+  "created_at": "2026-04-19T07:50:00.000Z"
+}

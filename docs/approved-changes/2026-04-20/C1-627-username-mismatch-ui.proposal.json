@@ -1,0 +1,17 @@
+{
+  "id": "C1",
+  "category": "C",
+  "type": "run_command",
+  "manual_only": true,
+  "command": "# 手動実装: 627 利用者名→所属自動取得時の同姓同名警告を画面 UI 化",
+  "note": "C1: 627 同姓同名警告を console.info → 画面上部バナーへ変更",
+  "manual_instructions": [
+    "1. customize/627/desktop.js の onUserNameChangeFillDept 関数を改修",
+    "2. resp.records.length > 1 のとき、console.info の代わりに画面上部に黄色バナー表示:",
+    "   '⚠ 同姓同名の社員が N 件あります。所属が想定と違う場合は手動修正してください'",
+    "3. バナー実装は kintone.app.record.getHeaderMenuSpaceElement() に挿入 + 数秒で自動消去 or 閉じるボタン付き",
+    "4. 4/22 (Q5/Q6) 以降に着手 (本番リリース後の余裕がある時)",
+    "5. node -c で syntax 確認 → npm run deploy:627 (デプロイは事前相談)"
+  ],
+  "created_at": "2026-04-19T07:50:00.000Z"
+}
