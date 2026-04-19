@@ -3,353 +3,118 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>💻 PC台帳ガイド</title>
+<title>💻 PC を登録・管理する</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--accent:#2563eb;--accent-bg:#dbeafe;--bg:#f0f4f8;--card:#fff;--text:#1e293b;--sub:#475569;--gray:#f1f5f9;
-  --ok:#16a34a;--ok-bg:#dcfce7;--warn:#ea580c;--warn-bg:#fff7ed;--ng:#dc2626;--ng-bg:#fef2f2;--radius:16px}
-body{font-family:'Segoe UI','Hiragino Sans','Meiryo',sans-serif;background:var(--bg);color:var(--text);line-height:1.8;font-size:16px}
-.header{background:linear-gradient(135deg,#1e40af,#3b82f6);color:#fff;padding:24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.1)}
-.header .back{color:#fff;text-decoration:none;font-size:1.3em;opacity:.8;transition:.2s}
-.header .back:hover{opacity:1}
+body{font-family:'Segoe UI','Hiragino Sans','Meiryo',sans-serif;background:#f0f4f8;color:#1e293b;line-height:1.7;font-size:17px}
+.header{background:linear-gradient(135deg,#1e40af,#3b82f6);color:#fff;padding:20px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.header .back{color:#fff;text-decoration:none;font-size:1.4em;opacity:.85}
 .header h1{font-size:1.4em;font-weight:700;flex:1}
-.toc-toggle{background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:8px;padding:6px 12px;font-size:.85em;cursor:pointer;font-weight:600}
-.toc-toggle:hover{background:rgba(255,255,255,.3)}
-.container{max-width:760px;margin:0 auto;padding:20px 16px}
-.toc{background:#fff;border-radius:var(--radius);box-shadow:0 2px 12px rgba(0,0,0,.07);padding:18px 22px;margin-bottom:16px;display:none}
-.toc.open{display:block}
-.toc h3{font-size:1.05em;margin-bottom:10px;color:var(--accent)}
-.toc ol{margin-left:22px;line-height:1.9}
-.toc a{color:var(--text);text-decoration:none}
-.toc a:hover{color:var(--accent);text-decoration:underline}
-.card{background:var(--card);border-radius:var(--radius);box-shadow:0 2px 12px rgba(0,0,0,.07);padding:22px 24px;margin-bottom:16px;scroll-margin-top:90px}
-.card h2{font-size:1.25em;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.card .time-badge{display:inline-block;font-size:.7em;background:#e0e7ff;color:#3730a3;padding:2px 8px;border-radius:10px;font-weight:600;margin-left:8px}
+.container{max-width:720px;margin:0 auto;padding:18px 14px}
+.card{background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.08);padding:22px 24px;margin-bottom:14px}
+.card h2{font-size:1.2em;font-weight:700;margin-bottom:10px}
 .steps{counter-reset:s;list-style:none}
-.steps li{counter-increment:s;position:relative;padding:14px 18px 14px 56px;margin-bottom:10px;
-  background:var(--gray);border-radius:12px;font-size:1em;line-height:1.7}
-.steps li::before{content:counter(s);position:absolute;left:12px;top:50%;transform:translateY(-50%);
-  width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;
-  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85em}
-.tip{padding:16px 20px;border-radius:12px;margin:12px 0;font-size:1em;line-height:1.7;display:flex;align-items:flex-start;gap:10px}
-.tip .e{font-size:1.3em;flex-shrink:0}
-.t-blue{background:var(--accent-bg);border-left:4px solid var(--accent)}
-.t-green{background:var(--ok-bg);border-left:4px solid var(--ok)}
-.t-orange{background:var(--warn-bg);border-left:4px solid var(--warn)}
-.t-red{background:var(--ng-bg);border-left:4px solid var(--ng)}
-.badge-new{display:inline-block;font-size:.62em;background:#dc2626;color:#fff;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:6px;vertical-align:middle;letter-spacing:.05em}
+.steps>li{counter-increment:s;position:relative;padding:18px 18px 18px 64px;margin-bottom:10px;background:#f1f5f9;border-radius:12px;font-size:1.05em}
+.steps>li::before{content:counter(s);position:absolute;left:14px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:#2563eb;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1em}
+.tip{padding:14px 18px;border-radius:12px;margin:10px 0;font-size:.98em;display:flex;align-items:flex-start;gap:10px}
+.tip .e{font-size:1.4em;flex-shrink:0}
+.t-blue{background:#dbeafe;border-left:4px solid #2563eb}
+.t-warn{background:#fff7ed;border-left:4px solid #ea580c}
+.t-help{background:linear-gradient(135deg,#fef3c7,#fde68a);border:2px solid #f59e0b;border-radius:14px;padding:18px 22px;margin-top:18px;text-align:center}
+.t-help b{color:#7c2d12;font-size:1.15em;display:block;margin-bottom:6px}
 table{width:100%;border-collapse:collapse;font-size:.95em;margin-top:8px}
-th{background:var(--gray);text-align:left;padding:10px 14px;font-size:1em}
-td{padding:10px 14px;border-bottom:1px solid #e2e8f0}
-.search-example{background:#f8fafc;border:2px dashed #94a3b8;border-radius:10px;padding:14px 18px;margin:10px 0;font-size:.95em}
-.search-example .label{font-weight:700;color:#1e3a5f;margin-bottom:6px}
-.kana-table{margin-top:8px}
-.kana-table td:nth-child(1){text-align:center;font-weight:700;color:var(--accent);font-size:1.05em}
-.kana-table td:nth-child(2){text-align:center;font-size:1.2em;color:var(--ok);font-weight:700}
-.faq summary{font-weight:700;cursor:pointer;padding:12px 0;color:#1e3a5f;font-size:1.02em;list-style:none;display:flex;align-items:center;gap:10px}
-.faq summary::before{content:'▶';color:var(--accent);font-size:.85em;transition:.2s}
-.faq details[open] summary::before{transform:rotate(90deg)}
-.faq summary:hover{color:var(--accent)}
-.faq details{border-bottom:1px solid #e2e8f0;padding-bottom:8px}
-.faq details:last-child{border-bottom:none}
-.faq .answer{padding:8px 0 12px 24px;color:var(--text)}
-.copy-demo{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:6px;background:#eff6ff;border:1px solid #1d4ed8;color:#1d4ed8;font-weight:700;font-size:.9em;margin:4px 4px}
-.footer{text-align:center;padding:16px;font-size:.72em;color:#94a3b8}
-.scroll-top{position:fixed;bottom:20px;right:20px;background:var(--accent);color:#fff;width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;font-size:1.4em;box-shadow:0 4px 12px rgba(37,99,235,.3);z-index:50;opacity:0;transition:.2s;pointer-events:none}
-.scroll-top.show{opacity:1;pointer-events:auto}
-@media print{body{background:#fff}.header{position:static;print-color-adjust:exact;-webkit-print-color-adjust:exact}.toc-toggle,.scroll-top{display:none}}
+th{background:#f1f5f9;text-align:left;padding:8px 12px}
+td{padding:8px 12px;border-top:1px solid #e2e8f0}
+.footer{text-align:center;padding:14px;font-size:.75em;color:#94a3b8}
+.btn-sample{display:inline-block;padding:5px 14px;border-radius:6px;color:#fff;font-weight:700;font-size:.88em;margin:0 4px}
+.bp{background:linear-gradient(135deg,#7c3aed,#a78bfa)}
+.bs{background:linear-gradient(135deg,#0ea5e9,#38bdf8)}
+.bg{background:linear-gradient(180deg,#22c55e,#16a34a)}
+@media print{body{background:#fff}.header{position:static}}
 </style>
 <script>
-(function(){function r(){try{var h=Math.max(document.body?document.body.scrollHeight:0,document.documentElement?document.documentElement.scrollHeight:0,document.body?document.body.offsetHeight:0);if(h>0&&window.parent)window.parent.postMessage({type:'jbis-ops-guide-iframe-resize',height:h},'*');}catch(e){}}window.addEventListener('load',r);window.addEventListener('resize',r);setTimeout(r,100);setTimeout(r,500);setTimeout(r,1500);setTimeout(r,3000);if(typeof ResizeObserver==='function'){var ro=new ResizeObserver(r);document.addEventListener('DOMContentLoaded',function(){if(document.body)ro.observe(document.body);});}})();
+(function(){function r(){try{var h=Math.max(document.body?document.body.scrollHeight:0,document.documentElement?document.documentElement.scrollHeight:0);if(h>0&&window.parent)window.parent.postMessage({type:'jbis-ops-guide-iframe-resize',height:h},'*');}catch(e){}}window.addEventListener('load',r);window.addEventListener('resize',r);setTimeout(r,100);setTimeout(r,500);setTimeout(r,1500);setTimeout(r,3000);if(typeof ResizeObserver==='function'){var ro=new ResizeObserver(r);document.addEventListener('DOMContentLoaded',function(){if(document.body)ro.observe(document.body);});}})();
 </script>
 </head>
 <body>
 
 <div class="header">
-  <a href="index.html" class="back">←</a>
-  <h1>💻 PC台帳ガイド <small style="font-size:.6em;opacity:.7">App 594</small></h1>
-  <button class="toc-toggle" onclick="document.getElementById('toc').classList.toggle('open')">📑 目次</button>
+  <a href="#" class="back" onclick="event.preventDefault();window.parent.postMessage({type:&quot;jbis-ops-guide-nav&quot;,slug:&quot;hub&quot;},&quot;*&quot;);return false;">←</a>
+  <h1>💻 PC を登録・管理する</h1>
 </div>
 
 <div class="container">
 
-<!-- 目次 -->
-<nav id="toc" class="toc">
-  <h3>📑 目次（クリックで移動）</h3>
-  <ol>
-    <li><a href="#about">このアプリは何？</a></li>
-    <li><a href="#new">便利な検索（新機能）</a></li>
-    <li><a href="#new-panel">アクションパネル（新機能）</a></li>
-    <li><a href="#register">新しいPCを登録する</a></li>
-    <li><a href="#replace">PCを買い替える</a></li>
-    <li><a href="#inventory">棚卸をする</a></li>
-    <li><a href="#view">画面の見方</a></li>
-    <li><a href="#dont">やってはいけないこと</a></li>
-    <li><a href="#faq">よくある質問</a></li>
-  </ol>
-</nav>
-
-<!-- ===== このアプリは何？ ===== -->
-<div id="about" class="card">
-  <h2>📌 このアプリは何？</h2>
-  <p>
-    会社のすべてのパソコンを管理する台帳（一覧表）です。<br>
-    <strong>「誰が」「どのパソコンを」「いつから」使っているか</strong>が、ひと目で分かります。
-  </p>
-</div>
-
-<!-- ===== 新機能：検索 ===== -->
-<div id="new" class="card" style="border:2px solid #f59e0b;background:#fffbeb">
-  <h2>🔍 便利な検索 <span class="badge-new">NEW</span> <span class="time-badge">所要 1分</span></h2>
-  <p style="margin-bottom:10px">2026-04-16 から、PC台帳の検索が大幅に強化されました。<strong>表形式・カード形式どちらでも同じ検索パネル</strong>が使えます。</p>
-
-  <h3 style="font-size:1.05em;margin:14px 0 8px;color:#1e3a5f">① ひらがな・カタカナ・英字の区別なし</h3>
-  <p>「とうきょう」と入力しても「東京」「トウキョウ」「TOKYO」のレコードが見つかります。</p>
-  <table class="kana-table">
-    <tr><th>あなたの入力</th><th>マッチする値</th></tr>
-    <tr><td>とうきょう</td><td>東京 / トウキョウ / tokyo / Tokyo</td></tr>
-    <tr><td>kondo</td><td>近藤さん（kondoを含む利用者）</td></tr>
-    <tr><td>jbis</td><td>JBIS / jbis を含むPC名</td></tr>
-  </table>
-
-  <h3 style="font-size:1.05em;margin:14px 0 8px;color:#1e3a5f">② 検索条件は消えません</h3>
-  <div class="tip t-green">
-    <span class="e">✅</span>
-    <span>レコードを開いて「←戻る」しても、<strong>さっきの検索条件がそのまま残っています</strong>。<br>
-    やり直しは不要。リセットしたいときは「リセット」ボタンを押してください。</span>
-  </div>
-
-  <h3 style="font-size:1.05em;margin:14px 0 8px;color:#1e3a5f">③ よく使うトグルボタン</h3>
-  <table>
-    <tr><th>ボタン</th><th>意味</th></tr>
-    <tr><td><strong>棚卸未了</strong></td><td>まだ棚卸していないPCだけ表示</td></tr>
-    <tr><td><strong>本年分棚卸完了</strong></td><td>今年度に棚卸が終わったPCだけ表示</td></tr>
-    <tr><td><strong>台帳未紐付</strong></td><td>アカウント台帳(627)と紐付いていないPCだけ表示</td></tr>
-  </table>
-
-  <h3 style="font-size:1.05em;margin:14px 0 8px;color:#1e3a5f">④ 検索パネルの項目</h3>
-  <div class="search-example">
-    <div class="label">📍 部分一致で検索できる項目</div>
-    所属/所属グループ ・ 端末名（PC名） ・ 利用者名
-  </div>
-  <div class="search-example">
-    <div class="label">📍 ぴったり一致で検索する項目</div>
-    種別（個人/共有/JR端末/サーバーNAS/その他）
-  </div>
-  <div class="search-example">
-    <div class="label">📍 範囲で検索する項目</div>
-    購入日（YYYY-MM-DD 〜 YYYY-MM-DD）
-  </div>
-</div>
-
-<!-- ===== 新機能：アクションパネル ===== -->
-<div id="new-panel" class="card" style="border:2px solid #10b981;background:#f0fdf4">
-  <h2>🔗 アクションパネル <span class="badge-new">NEW</span> <span class="time-badge">所要 30秒</span></h2>
-  <p>PCの詳細画面を開くと、上に薄いグレーのパネルが表示されます。次のことが1クリックでできます。</p>
-  <table>
-    <tr><th>表示されるもの</th><th>できること</th></tr>
-    <tr><td><strong>PC台帳番号(594): 〇〇</strong></td><td>横の <span class="copy-demo">コピー</span> ボタンで番号をクリップボードにコピー</td></tr>
-    <tr><td><strong>PC名 / 種別</strong></td><td>このレコードの基本情報を一目で確認</td></tr>
-    <tr><td><strong>アカウント台帳を開く（x件）</strong></td><td>クリックで紐付くアカウントが展開、各 <span class="copy-demo">#番号</span> で別タブで開く、<span class="copy-demo">番号コピー</span> でID取得</td></tr>
-  </table>
-  <div class="tip t-blue">
-    <span class="e">💡</span>
-    <span>共有PCの場合、<strong>複数のアカウントが紐付くこと</strong>があります。すべて表示されるので、関係するアカウントをすぐに確認できます。</span>
-  </div>
-  <div class="tip t-orange">
-    <span class="e">⚠️</span>
-    <span>もし「⚠ 紐付くアカウント台帳がまだありません」と表示されたら、<br>
-    個人 PC は「<strong>🔗 個人アカウント紐付け</strong>」ボタン、<br>
-    共有 PC は「<strong>🔗 共有アカウント紐付け</strong>」ボタンから登録してください。</span>
-  </div>
-</div>
-
-<!-- ===== PC新規登録 ===== -->
-<div id="register" class="card">
-  <h2>🆕 新しいPCを登録する <span class="time-badge">所要 3分</span></h2>
+<div class="card">
+  <h2>🆕 新しい PC を登録（4ステップ）</h2>
   <ol class="steps">
-    <li><strong>＋</strong>ボタンで新規レコードを追加</li>
-    <li><strong>種別</strong>を選ぶ
+    <li>PC 台帳（594）の「＋」ボタンで新規レコード追加</li>
+    <li><b>種別</b>を選ぶ
       <table>
         <tr><th>種別</th><th>意味</th></tr>
-        <tr><td>個人</td><td>1人が専用で使うPC</td></tr>
-        <tr><td>共有</td><td>みんなで使うPC</td></tr>
-        <tr><td>JR端末</td><td>JR用端末</td></tr>
-        <tr><td>サーバーNAS</td><td>サーバー・NAS</td></tr>
+        <tr><td>個人</td><td>1 人専用の PC（最大 2 台/人）</td></tr>
+        <tr><td>共有</td><td>みんなで使う PC</td></tr>
+        <tr><td>JR端末</td><td>JR 用端末</td></tr>
+        <tr><td>サーバーNAS</td><td>サーバー・NAS（アカウント不要）</td></tr>
       </table>
     </li>
-    <li><strong>利用者名</strong>を選ぶ（個人の場合）<br>
-      <span style="color:var(--sub);font-size:.9em">※「利用者名」欄をクリックすると社員マスタから検索できます（＝ルックアップ機能）</span></li>
-    <li>以下の項目を入力する
+    <li>必須項目を入力
       <table>
-        <tr><th>項目</th><th>必須？</th><th>説明</th></tr>
-        <tr><td>PC名</td><td style="color:var(--ng);font-weight:700">必須</td><td>パソコンに付ける名前（例：JBIS0348）</td></tr>
-        <tr><td>シリアル番号</td><td style="color:var(--ng);font-weight:700">必須</td><td>本体の裏に書いてある番号</td></tr>
-        <tr><td>メーカー・型番</td><td>あれば</td><td>パソコンのメーカーとモデル名</td></tr>
-        <tr><td>購入日・価格</td><td>あれば</td><td>あとで追記してもOK</td></tr>
+        <tr><th>項目</th><th>説明</th></tr>
+        <tr><td>PC名</td><td>例: JBIS0348（必須）</td></tr>
+        <tr><td>シリアル番号</td><td>本体裏に書いてある番号（必須）</td></tr>
+        <tr><td>利用者名</td><td>個人 PC のとき。ルックアップで社員から選ぶ</td></tr>
+        <tr><td>mail</td><td>個人 PC は必須（アカウント作成に使う）</td></tr>
       </table>
     </li>
-    <li><strong>保存</strong>ボタンを押す</li>
+    <li><b>保存</b> → 詳細画面でアカウント紐付けボタンを押す
+      <div style="margin-top:8px">
+        個人 PC: <span class="btn-sample bp">🔗 個人アカウント紐付け</span>　　共有 PC: <span class="btn-sample bs">🔗 共有アカウント紐付け</span>
+      </div>
+    </li>
   </ol>
-  <div class="tip t-green">
-    <span class="e">✅</span>
-    <span>個人PCを保存すると<strong>ガイド画面</strong>が出ます。<br>
-    「次にやること」を教えてくれるので、そのまま進めてOK！</span>
-  </div>
-  <div class="tip t-blue">
-    <span class="e">🏢</span>
-    <span><strong>共有PCを保存した場合</strong>は、自動で「アカウント紐付けモーダル」が開きます。<br>
-    既存アカウントを検索するか、新規作成するか選んでください。詳しくは <a href="guide-shared-account.html">共有アカウントガイド</a>。</span>
-  </div>
 </div>
 
-<!-- ===== PC買替 ===== -->
-<div id="replace" class="card">
-  <h2>🔄 PCを買い替える <span class="time-badge">所要 2分</span></h2>
+<div class="card">
+  <h2>🔄 PC を買い替える（2ステップ）</h2>
   <ol class="steps">
-    <li>古いPCのレコードを開く</li>
-    <li><strong>PC買替</strong>ボタンをクリック</li>
-    <li>新しいPCの情報を入力して保存</li>
-    <li>古いPCは自動で「使用停止」になる</li>
+    <li>古い PC のレコードを開く → <span class="btn-sample bg">PC買替</span> ボタン</li>
+    <li>新しい PC の情報を入力 → 保存。古い PC は自動で「廃棄」になる。アカウントも自動引き継ぎ</li>
   </ol>
-  <div class="tip t-blue">
-    <span class="e">💡</span>
-    <span>アカウントは<strong>自動で引き継ぎ</strong>。再登録は不要です。<br>
-    詳しい手順は <a href="guide-lifecycle.html">異動・退職・買替ガイド</a> を参照してください。</span>
-  </div>
 </div>
 
-<!-- ===== 棚卸 ===== -->
-<div id="inventory" class="card">
-  <h2>📋 棚卸をする <span class="time-badge">繰返作業</span></h2>
+<div class="card">
+  <h2>📋 棚卸（半期に 1 回）</h2>
   <ol class="steps">
-    <li>一覧画面の上にある<strong>検索パネル</strong>を開く</li>
-    <li><strong>「棚卸未了」ボタン</strong>を押すと、まだ棚卸していないPCだけ表示</li>
-    <li>各PCの現物を確認して、棚卸完了日を入力</li>
-    <li>あとで途中再開してもOK（検索条件は保持されます）</li>
+    <li>一覧画面の検索パネルで <b>「棚卸未了」</b> をクリック → まだの PC だけ表示</li>
+    <li>各 PC を実機で確認 → 「最新棚卸日」を入力 → 保存</li>
   </ol>
+</div>
+
+<div class="card">
+  <h2>📌 ルール（覚えておくこと）</h2>
   <div class="tip t-blue">
-    <span class="e">🔍</span>
-    <span>カード表示に切り替えると、PCの状態が一目で分かります。検索条件は表⇔カードを切り替えても引き継がれません（それぞれの状態を保持します）。</span>
+    <span class="e">①</span>
+    <span><b>個人 PC は 1 人 2 台まで</b>（会社用 + 持ち出し用）。3 台目以降はアカウント紐付け時にエラーで止まります。</span>
   </div>
-</div>
-
-<!-- ===== 画面の見方 ===== -->
-<div id="view" class="card">
-  <h2>👀 画面の見方</h2>
-
-  <h3 style="font-size:1.05em;margin:14px 0 8px">🟥 一覧で行が赤い</h3>
-  <div class="tip t-red">
-    <span class="e">🔴</span>
-    <span><strong>アカウントが紐付いていない個人PC</strong>です。<br>
-    → レコードを開いて「<strong>🔗 個人アカウント紐付け</strong>」ボタン（紫色）から登録してください。</span>
-  </div>
-
-  <h3 style="font-size:1.05em;margin:14px 0 8px">💬 保存後に出るポップアップ</h3>
   <div class="tip t-blue">
-    <span class="e">📌</span>
-    <span>次にやること（アカウント登録やM365設定）への案内です。<br>
-    「閉じる」で消えます。不要なら無視してOK。</span>
+    <span class="e">②</span>
+    <span><b>サーバーNAS / その他</b> はアカウント設定対象外（紐付けボタン出ません）。</span>
   </div>
-
-  <h3 style="font-size:1.05em;margin:14px 0 8px">❌ エラーが出た</h3>
-  <div class="tip t-orange">
-    <span class="e">🛟</span>
-    <span>データは<strong>自動で元に戻る</strong>ので安心。<br>
-    エラーログ（App 656）に記録されます → 管理者に連絡。</span>
+  <div class="tip t-warn">
+    <span class="e">⚠</span>
+    <span><b>一覧で行が赤い</b> = アカウント未紐付の個人 PC。詳細を開いて紫の「🔗 個人アカウント紐付け」ボタンで登録してください。</span>
   </div>
 </div>
 
-<!-- ===== やっちゃダメ ===== -->
-<div id="dont" class="card" style="border:2px solid var(--ng);background:#fff5f5">
-  <h2 style="color:var(--ng)">🚫 やってはいけないこと</h2>
-  <div class="tip t-red" style="margin-bottom:8px">
-    <span class="e">❌</span>
-    <span><strong>1 個人アカウントを 3 PC 以上に紐付けようとする</strong><br>
-    規定上限 2 台（会社用 + 持ち出し用）でブロックされます。先に既存紐付けを解除してから再実行してください。</span>
-  </div>
-  <div class="tip t-red" style="margin-bottom:8px">
-    <span class="e">❌</span>
-    <span><strong>共有 PC を「個人アカウント紐付け」しようとする</strong><br>
-    種別=個人 のときだけ表示されるボタンです。共有 PC では「<strong>🔗 共有アカウント紐付け</strong>」（水色）が表示されます。詳しくは<a href="guide-shared-account.html">共有アカウントガイド</a>。</span>
-  </div>
-  <div class="tip t-red">
-    <span class="e">❌</span>
-    <span><strong>利用者名を入れずに保存する</strong><br>
-    アカウント紐付けができなくなります。必ず先にルックアップで選んでください。</span>
-  </div>
-</div>
-
-<!-- ===== FAQ ===== -->
-<div id="faq" class="card faq">
-  <h2>❓ よくある質問</h2>
-
-  <details>
-    <summary>Q. 検索しても何も出ない</summary>
-    <div class="answer">
-      まず「リセット」ボタンを押して、すべての検索条件をクリアしてください。<br>
-      それでも出ない場合は、入力した文字に余分なスペースが入っていないか確認してください。<br>
-      <strong>2026-04-16 以降は</strong> ひらがな・カタカナ・英字を区別しないので、より見つかりやすくなっています。
-    </div>
-  </details>
-
-  <details>
-    <summary>Q. 表示が遅い</summary>
-    <div class="answer">
-      最初の表示で全件取得しているため、PCが多い拠点では数秒かかります。<br>
-      2回目以降は<strong>60秒間キャッシュ</strong>されるので速くなります。<br>
-      明らかに遅い場合は、ブラウザを再読み込み（F5キー）してください。
-    </div>
-  </details>
-
-  <details>
-    <summary>Q. アクションパネルの「アカウント台帳を開く（x件）」が出ない</summary>
-    <div class="answer">
-      そのPCに紐付くアカウントがアカウント台帳(627)に登録されていません。<br>
-      個人PCなら「<strong>🔗 個人アカウント紐付け</strong>」ボタン（紫色）、<br>
-      共有PCなら「<strong>🔗 共有アカウント紐付け</strong>」ボタン（水色）から登録してください。
-    </div>
-  </details>
-
-  <details>
-    <summary>Q. 同じPC名のレコードが2つできてしまった</summary>
-    <div class="answer">
-      管理者に連絡してください。重複レコードは古い方を削除する必要があります。<br>
-      新しい方を残して、シリアル番号や購入日が正しいか必ず確認してください。
-    </div>
-  </details>
-
-  <details>
-    <summary>Q. PC名はあとから変えていい？</summary>
-    <div class="answer">
-      原則NGです。アカウント台帳(627)や社員マスタ(595)からも参照されているので、<br>
-      変更すると紐付けが切れる可能性があります。<br>
-      どうしても変えたい場合は管理者へ連絡してください。
-    </div>
-  </details>
-
-  <details>
-    <summary>Q. PCを廃棄したい</summary>
-    <div class="answer">
-      レコードを削除しないでください。<br>
-      <strong>「在籍ステータス」を「廃棄」</strong>に変更して保存します。データは履歴として残ります。
-    </div>
-  </details>
+<div class="t-help">
+  <b>🆘 困ったらシステム推進室のベテランに聞いてください</b>
+  <span style="color:#7c2d12">エラーが解決しない・データ修正が必要・想定外の状況など</span>
 </div>
 
 </div>
 
-<button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="トップへ戻る">↑</button>
+<div class="footer">PC 台帳ガイド v5 (簡潔版) / 2026-04-19 ― <a href="#" style="color:inherit" onclick="event.preventDefault();window.parent.postMessage({type:&quot;jbis-ops-guide-nav&quot;,slug:&quot;hub&quot;},&quot;*&quot;);return false;">← トップに戻る</a></div>
 
-<div class="footer">PC台帳ガイド v4.0 ― <a href="index.html" style="color:inherit">← トップに戻る</a></div>
-
-<script>
-(function(){
-  var sb = document.querySelector('.scroll-top');
-  window.addEventListener('scroll', function(){
-    if (window.scrollY > 400) sb.classList.add('show'); else sb.classList.remove('show');
-  });
-})();
-</script>
 </body>
 </html>

@@ -3,332 +3,113 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🔄 異動・退職・買替ガイド</title>
+<title>🔄 異動・退職・買替の流れ</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--accent:#0ea5e9;--accent-bg:#e0f2fe;--bg:#f0f4f8;--card:#fff;--text:#1e293b;--sub:#475569;--gray:#f1f5f9;
-  --blue:#2563eb;--blue-bg:#dbeafe;--ok:#16a34a;--ok-bg:#dcfce7;--warn:#ea580c;--warn-bg:#fff7ed;
-  --ng:#dc2626;--ng-bg:#fef2f2;--purple:#7c3aed;--purple-bg:#f3e8ff;--radius:16px}
-body{font-family:'Segoe UI','Hiragino Sans','Meiryo',sans-serif;background:var(--bg);color:var(--text);line-height:1.8;font-size:16px}
-.header{background:linear-gradient(135deg,#0369a1,#38bdf8);color:#fff;padding:24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.1)}
-.header .back{color:#fff;text-decoration:none;font-size:1.3em;opacity:.8;transition:.2s}
-.header .back:hover{opacity:1}
+body{font-family:'Segoe UI','Hiragino Sans','Meiryo',sans-serif;background:#f0f4f8;color:#1e293b;line-height:1.7;font-size:17px}
+.header{background:linear-gradient(135deg,#0369a1,#0ea5e9);color:#fff;padding:20px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.header .back{color:#fff;text-decoration:none;font-size:1.4em;opacity:.85}
 .header h1{font-size:1.4em;font-weight:700;flex:1}
-.toc-toggle{background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:8px;padding:6px 12px;font-size:.85em;cursor:pointer;font-weight:600}
-.toc-toggle:hover{background:rgba(255,255,255,.3)}
-.container{max-width:760px;margin:0 auto;padding:20px 16px}
-.toc{background:#fff;border-radius:var(--radius);box-shadow:0 2px 12px rgba(0,0,0,.07);padding:18px 22px;margin-bottom:16px;display:none}
-.toc.open{display:block}
-.toc h3{font-size:1.05em;margin-bottom:10px;color:var(--accent)}
-.toc ol{margin-left:22px;line-height:1.9}
-.toc a{color:var(--text);text-decoration:none}
-.toc a:hover{color:var(--accent);text-decoration:underline}
-.card{background:var(--card);border-radius:var(--radius);box-shadow:0 2px 12px rgba(0,0,0,.07);padding:22px 24px;margin-bottom:16px;scroll-margin-top:90px}
-.card h2{font-size:1.25em;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.card .time-badge{display:inline-block;font-size:.7em;background:#e0f2fe;color:#0369a1;padding:2px 8px;border-radius:10px;font-weight:600;margin-left:8px}
+.container{max-width:720px;margin:0 auto;padding:18px 14px}
+.card{background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.08);padding:22px 24px;margin-bottom:14px}
+.card h2{font-size:1.2em;font-weight:700;margin-bottom:10px}
 .steps{counter-reset:s;list-style:none}
-.steps li{counter-increment:s;position:relative;padding:14px 18px 14px 56px;margin-bottom:10px;
-  background:var(--gray);border-radius:12px;font-size:1em;line-height:1.7}
-.steps li::before{content:counter(s);position:absolute;left:12px;top:50%;transform:translateY(-50%);
-  width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;
-  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85em}
-.tip{padding:16px 20px;border-radius:12px;margin:12px 0;font-size:1em;line-height:1.7;display:flex;align-items:flex-start;gap:10px}
-.tip .e{font-size:1.3em;flex-shrink:0}
-.t-blue{background:var(--blue-bg);border-left:4px solid var(--blue)}
-.t-green{background:var(--ok-bg);border-left:4px solid var(--ok)}
-.t-orange{background:var(--warn-bg);border-left:4px solid var(--warn)}
-.t-red{background:var(--ng-bg);border-left:4px solid var(--ng)}
-.t-purple{background:var(--purple-bg);border-left:4px solid var(--purple)}
-.t-sky{background:var(--accent-bg);border-left:4px solid var(--accent)}
-table{width:100%;border-collapse:collapse;font-size:.95em;margin-top:8px}
-th{background:var(--gray);text-align:left;padding:10px 14px;font-size:1em}
-td{padding:10px 14px;border-bottom:1px solid #e2e8f0}
-.scene-tag{display:inline-block;font-size:.72em;font-weight:700;padding:3px 12px;border-radius:20px;margin-bottom:8px}
-.st-transfer{background:#e0f2fe;color:#0369a1}
-.st-retire{background:#fef2f2;color:#dc2626}
-.st-replace{background:#dcfce7;color:#15803d}
-.flow{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;padding:14px 0}
-.flow-box{padding:10px 16px;border-radius:10px;font-size:.82em;font-weight:600;text-align:center;min-width:100px}
-.flow-arr{font-size:1.3em;color:var(--accent);font-weight:700}
-.fb{background:var(--blue-bg);color:#1e40af}
-.fg{background:var(--ok-bg);color:#15803d}
-.fr{background:var(--ng-bg);color:#991b1b}
-.fp{background:var(--purple-bg);color:#5b21b6}
-.fs{background:var(--accent-bg);color:#0369a1}
-.faq summary{font-weight:700;cursor:pointer;padding:12px 0;color:#0369a1;font-size:1.02em;list-style:none;display:flex;align-items:center;gap:10px}
-.faq summary::before{content:'▶';color:var(--accent);font-size:.85em;transition:.2s}
-.faq details[open] summary::before{transform:rotate(90deg)}
-.faq summary:hover{color:var(--accent)}
-.faq details{border-bottom:1px solid #e2e8f0;padding-bottom:8px}
-.faq details:last-child{border-bottom:none}
-.faq .answer{padding:8px 0 12px 24px;color:var(--text)}
-.footer{text-align:center;padding:16px;font-size:.72em;color:#94a3b8}
-.scroll-top{position:fixed;bottom:20px;right:20px;background:var(--accent);color:#fff;width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;font-size:1.4em;box-shadow:0 4px 12px rgba(14,165,233,.3);z-index:50;opacity:0;transition:.2s;pointer-events:none}
-.scroll-top.show{opacity:1;pointer-events:auto}
-@media print{body{background:#fff}.header{position:static;print-color-adjust:exact;-webkit-print-color-adjust:exact}.toc-toggle,.scroll-top{display:none}}
+.steps>li{counter-increment:s;position:relative;padding:18px 18px 18px 64px;margin-bottom:10px;background:#f1f5f9;border-radius:12px;font-size:1.05em}
+.steps>li::before{content:counter(s);position:absolute;left:14px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:#0ea5e9;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1em}
+.tip{padding:14px 18px;border-radius:12px;margin:10px 0;font-size:.98em;display:flex;align-items:flex-start;gap:10px}
+.tip .e{font-size:1.4em;flex-shrink:0}
+.t-blue{background:#dbeafe;border-left:4px solid #2563eb}
+.t-green{background:#dcfce7;border-left:4px solid #16a34a}
+.t-help{background:linear-gradient(135deg,#fef3c7,#fde68a);border:2px solid #f59e0b;border-radius:14px;padding:18px 22px;margin-top:18px;text-align:center}
+.t-help b{color:#7c2d12;font-size:1.15em;display:block;margin-bottom:6px}
+.btn-sample{display:inline-block;padding:5px 14px;border-radius:6px;color:#fff;font-weight:700;font-size:.88em;margin:0 4px}
+.bg{background:linear-gradient(180deg,#22c55e,#16a34a)}
+.scenario{margin-top:18px;padding:18px 20px;border-radius:12px;border:2px solid #cbd5e1;background:#f8fafc}
+.scenario h3{font-size:1.05em;font-weight:700;margin-bottom:8px;color:#0f172a}
+.footer{text-align:center;padding:14px;font-size:.75em;color:#94a3b8}
+@media print{body{background:#fff}.header{position:static}}
 </style>
 <script>
-(function(){function r(){try{var h=Math.max(document.body?document.body.scrollHeight:0,document.documentElement?document.documentElement.scrollHeight:0,document.body?document.body.offsetHeight:0);if(h>0&&window.parent)window.parent.postMessage({type:'jbis-ops-guide-iframe-resize',height:h},'*');}catch(e){}}window.addEventListener('load',r);window.addEventListener('resize',r);setTimeout(r,100);setTimeout(r,500);setTimeout(r,1500);setTimeout(r,3000);if(typeof ResizeObserver==='function'){var ro=new ResizeObserver(r);document.addEventListener('DOMContentLoaded',function(){if(document.body)ro.observe(document.body);});}})();
+(function(){function r(){try{var h=Math.max(document.body?document.body.scrollHeight:0,document.documentElement?document.documentElement.scrollHeight:0);if(h>0&&window.parent)window.parent.postMessage({type:'jbis-ops-guide-iframe-resize',height:h},'*');}catch(e){}}window.addEventListener('load',r);window.addEventListener('resize',r);setTimeout(r,100);setTimeout(r,500);setTimeout(r,1500);setTimeout(r,3000);if(typeof ResizeObserver==='function'){var ro=new ResizeObserver(r);document.addEventListener('DOMContentLoaded',function(){if(document.body)ro.observe(document.body);});}})();
 </script>
 </head>
 <body>
 
 <div class="header">
-  <a href="index.html" class="back">←</a>
-  <h1>🔄 異動・退職・買替ガイド</h1>
-  <button class="toc-toggle" onclick="document.getElementById('toc').classList.toggle('open')">📑 目次</button>
+  <a href="#" class="back" onclick="event.preventDefault();window.parent.postMessage({type:&quot;jbis-ops-guide-nav&quot;,slug:&quot;hub&quot;},&quot;*&quot;);return false;">←</a>
+  <h1>🔄 異動・退職・買替の流れ</h1>
 </div>
 
 <div class="container">
 
-<nav id="toc" class="toc">
-  <h3>📑 目次（クリックで移動）</h3>
-  <ol>
-    <li><a href="#about">このガイドは何？</a></li>
-    <li><a href="#cheat">場面ごとの早見表</a></li>
-    <li><a href="#transfer">所属の異動</a></li>
-    <li><a href="#retire">退職の処理</a></li>
-    <li><a href="#replace">PCの買替</a></li>
-    <li><a href="#faq">よくある質問</a></li>
-  </ol>
-</nav>
+<div class="card">
+  <h2>📋 シナリオ別・やること一覧</h2>
 
-<!-- ===== 概要 ===== -->
-<div id="about" class="card">
-  <h2>📌 このガイドは何？</h2>
-  <p>
-    社員の<strong>異動（部署や勤務地の変更）・退職・パソコンの買替</strong>が起きたときに、<br>
-    「どの画面で」「何をすればいいのか」をまとめたガイドです。
-  </p>
-  <div class="tip t-sky">
-    <span class="e">💡</span>
-    <span>退職とPC買替は<strong>ほとんど自動</strong>で処理されます。<br>
-    人がやるのは「きっかけの 1 操作」だけです。</span>
+  <div class="scenario">
+    <h3>🆕 入社</h3>
+    <ol class="steps">
+      <li>社員マスタ（595）に新規登録（mail 必須）</li>
+      <li>PC 台帳（594）に PC を新規登録、利用者にこの社員を選択</li>
+      <li>「🔗 個人アカウント紐付け」→「＋ 新規作成」でアカウント自動生成</li>
+    </ol>
+  </div>
+
+  <div class="scenario">
+    <h3>🔁 異動（部署変更）</h3>
+    <ol class="steps">
+      <li>社員マスタ（595）で所属名・所属グループを更新 → 保存</li>
+      <li>PC 台帳・アカウント台帳が<b>自動で連動更新</b>（手動操作不要）</li>
+    </ol>
+  </div>
+
+  <div class="scenario">
+    <h3>🔚 退職</h3>
+    <ol class="steps">
+      <li>社員マスタ（595）で退職日入力 + 在籍ステータス「退職」→ 保存</li>
+      <li>アカウント台帳のアカウント状態が自動で「退職」に</li>
+      <li>PC は <b>登録者が手動で「廃棄」または次の利用者へ譲渡</b>する</li>
+    </ol>
+  </div>
+
+  <div class="scenario">
+    <h3>💻 PC 買替（同じ人が新 PC へ）</h3>
+    <ol class="steps">
+      <li>古い PC のレコードを開く → <span class="btn-sample bg">PC買替</span> ボタン</li>
+      <li>新 PC の情報を入力 → 保存</li>
+      <li>古い PC は自動で「廃棄」に。<b>アカウントは自動引き継ぎ</b>（再登録不要）</li>
+    </ol>
+  </div>
+
+  <div class="scenario">
+    <h3>👥 PC を別の人へ譲渡</h3>
+    <ol class="steps">
+      <li>古い利用者と PC の紐付けを解除（PC 詳細の「<b>594⇔627 紐付け解除</b>」ボタン）</li>
+      <li>PC 台帳でこの PC の利用者を新しい人に変更 → 保存</li>
+      <li>「🔗 個人アカウント紐付け」で新利用者のアカウントに紐付け</li>
+    </ol>
   </div>
 </div>
 
-<!-- ===== 早見表 ===== -->
-<div id="cheat" class="card">
-  <h2>📋 場面ごとの早見表</h2>
-  <table>
-    <tr><th>場面</th><th>人がやること</th><th>自動で起きること</th></tr>
-    <tr>
-      <td><strong>異動（PCそのまま）</strong></td>
-      <td>社員マスタ(595)の部署を変更</td>
-      <td>特になし</td>
-    </tr>
-    <tr>
-      <td><strong>異動（PC変更あり）</strong></td>
-      <td>594 で「PC買替」ボタン</td>
-      <td>旧PC→廃棄、アカウント引継ぎ</td>
-    </tr>
-    <tr>
-      <td><strong>退職</strong></td>
-      <td>595 に退職日を入力</td>
-      <td>ステータス→退職、627→退職、594 記事欄に追記</td>
-    </tr>
-    <tr>
-      <td><strong>PC買替</strong></td>
-      <td>594 で「PC買替」ボタン</td>
-      <td>旧PC→廃棄、新PC作成、アカウント引継ぎ</td>
-    </tr>
-    <tr>
-      <td><strong>共有PCの管理</strong></td>
-      <td colspan="2">共有PCのアカウント登録・紐付けは <a href="guide-shared-account.html">共有アカウントガイド</a> を参照</td>
-    </tr>
-  </table>
-</div>
-
-<!-- ===== 異動 ===== -->
-<div id="transfer" class="card">
-  <span class="scene-tag st-transfer">異動</span>
-  <h2>🏢 所属の異動 <span class="time-badge">所要 2分</span></h2>
-
-  <h3 style="font-size:1.05em;margin:14px 0 8px">パソコンはそのまま（部署や勤務地だけ変わる）</h3>
-  <ol class="steps">
-    <li><strong>社員マスタ（595）</strong>で該当社員のレコードを開く</li>
-    <li>部署・拠点などの情報を修正して<strong>保存</strong></li>
-  </ol>
-  <div class="tip t-green">
-    <span class="e">✅</span>
-    <span>これだけでOKです。PC台帳やアカウント台帳は<strong>変更不要</strong>。<br>
-    PCもアカウントもそのまま使い続けられます。</span>
-  </div>
-
-  <h3 style="font-size:1.05em;margin:14px 0 8px">パソコンも変わる（異動先で別のパソコンを使う）</h3>
-  <ol class="steps">
-    <li>社員マスタ（595）の部署情報を変更</li>
-    <li>PC台帳（594）で旧PCレコードを開く</li>
-    <li><strong>「PC買替」ボタン</strong>を押す → 新PCの情報を入力</li>
-  </ol>
+<div class="card">
+  <h2>📌 知っておくこと</h2>
   <div class="tip t-blue">
-    <span class="e">💡</span>
-    <span>アカウントは<strong>自動で新PCに引き継がれる</strong>ので、<br>
-    アカウント台帳（627）を触る必要はありません。</span>
+    <span class="e">①</span>
+    <span><b>社員マスタの保存が起点</b>。所属変更も退職も、まず 595 で更新すれば PC 台帳・アカウント台帳が連動する。</span>
   </div>
-</div>
-
-<!-- ===== 退職 ===== -->
-<div id="retire" class="card">
-  <span class="scene-tag st-retire">退職</span>
-  <h2>👋 退職の処理 <span class="time-badge">手動 30秒</span></h2>
-
-  <h3 style="font-size:1.05em;margin:14px 0 8px">あなたがやること（手動は1か所だけ！）</h3>
-  <ol class="steps">
-    <li><strong>社員マスタ（595）</strong>で退職する社員のレコードを開く</li>
-    <li><strong>「退職日」フィールド</strong>に日付を入力</li>
-    <li><strong>保存</strong>する</li>
-  </ol>
-
-  <h3 style="font-size:1.05em;margin:14px 0 8px">あとはシステムが自動でやること</h3>
-  <div class="flow">
-    <div class="flow-box fp">👤 社員マスタ(595)<br><small>退職日を入力</small></div>
-    <span class="flow-arr">→</span>
-    <div class="flow-box fr">自動①<br><small>在籍ステータス→「退職」</small></div>
-    <span class="flow-arr">→</span>
-    <div class="flow-box fr">自動②<br><small>627 アカウント状態→「退職」</small></div>
-    <span class="flow-arr">→</span>
-    <div class="flow-box fs">自動③<br><small>594 記事欄に退職者利用分を追記</small></div>
-  </div>
-
-  <table>
-    <tr><th>自動処理</th><th>内容</th></tr>
-    <tr><td>在籍ステータス（595）</td><td>退職日が入ると<strong>自動で「退職」に変更</strong></td></tr>
-    <tr><td>アカウント状態（627）</td><td><strong>自動で「退職」に変更</strong></td></tr>
-    <tr><td>PC台帳の記事欄（594）</td><td><strong>「○年○月 ○○（退職者）利用分」</strong>が自動追記</td></tr>
-    <tr><td>一覧表示</td><td>退職者のPC・アカウントは<strong>表示されなくなる</strong>（データは残る）</td></tr>
-  </table>
-
   <div class="tip t-green">
-    <span class="e">✅</span>
-    <span><strong>やらなくてよいこと：</strong><br>
-    ・アカウント台帳（627）を手動で「退職」にする → 不要（自動）<br>
-    ・PC台帳（594）のレコードを消す → 不要（非表示になるだけ）<br>
-    ・社員マスタのサブテーブルを編集する → 不要</span>
-  </div>
-
-  <div class="tip t-orange">
-    <span class="e">⚠️</span>
-    <span><strong>退職日を消すと「在籍」に戻ります。</strong><br>
-    間違えて入力した場合は退職日を空にすればOK。</span>
+    <span class="e">②</span>
+    <span><b>PC 買替はアカウント自動引き継ぎ</b>。再登録不要。古い PC は廃棄扱いになるだけ。</span>
   </div>
 </div>
 
-<!-- ===== PC買替 ===== -->
-<div id="replace" class="card">
-  <span class="scene-tag st-replace">PC買替</span>
-  <h2>💻 PCの買替 <span class="time-badge">所要 2分</span></h2>
-
-  <ol class="steps">
-    <li>PC台帳（594）で<strong>古いPCのレコード</strong>を開く</li>
-    <li><strong>「PC買替」ボタン</strong>をクリック</li>
-    <li>新しいPCの情報（カテゴリ等）を入力</li>
-    <li>登録すると新PCのレコードが作成される</li>
-  </ol>
-
-  <h3 style="font-size:1.05em;margin:14px 0 8px">あとはシステムが自動でやること</h3>
-  <table>
-    <tr><th>自動処理</th><th>内容</th></tr>
-    <tr><td>旧PCのステータス</td><td><strong>自動で「廃棄」に変更</strong></td></tr>
-    <tr><td>新PCのレコード</td><td>利用者・拠点などを<strong>引き継いで新規作成</strong></td></tr>
-    <tr><td>アカウント</td><td><strong>自動で新PCに紐付け</strong>（再登録不要）</td></tr>
-  </table>
-
-  <div class="tip t-green">
-    <span class="e">✅</span>
-    <span>アカウントの再登録は<strong>一切不要</strong>です。<br>
-    ログオン名もM365もそのまま引き継がれます。</span>
-  </div>
-
-  <div class="tip t-blue">
-    <span class="e">📝</span>
-    <span>買替後、新PCのレコードに<strong>赤いバナー</strong>が出ます。<br>
-    購入日・価格・シリアル番号など残りの項目を入力してください。</span>
-  </div>
-
-  <div class="tip t-orange">
-    <span class="e">⚠️</span>
-    <span>廃止済みのPCでは「PC買替」ボタンは使えません。</span>
-  </div>
-</div>
-
-<!-- ===== よくある質問 ===== -->
-<div id="faq" class="card faq">
-  <h2>❓ よくある質問</h2>
-
-  <details>
-    <summary>Q. 退職者のデータは消えるの？</summary>
-    <div class="answer">
-      <strong>消えません。</strong>一覧のデフォルト表示から非表示になるだけで、データはすべて残っています。<br>
-      レコード番号で直接検索するか、一覧の絞り込み条件を外せば確認できます。
-    </div>
-  </details>
-
-  <details>
-    <summary>Q. 退職を取り消したい（間違えて入力した）</summary>
-    <div class="answer">
-      社員マスタ（595）の<strong>退職日を空にして保存</strong>すると、在籍ステータスが「在籍」に戻ります。<br>
-      アカウント台帳（627）の状態も連動して元に戻ります。
-    </div>
-  </details>
-
-  <details>
-    <summary>Q. 異動で勤務地が変わったら共有パソコンのアカウントはどうなる？</summary>
-    <div class="answer">
-      共有アカウントは<strong>拠点のPCに紐付いている</strong>ので、異動した社員が使わなくなっても番号はそのまま残します。<br>
-      新しい拠点で共有PCを使う場合は別の番号が割り当てられます。<br>
-      詳しくは <a href="guide-shared-account.html">共有アカウントガイド</a> を参照してください。
-    </div>
-  </details>
-
-  <details>
-    <summary>Q. パソコン買替のときにエラーが出たらどうする？</summary>
-    <div class="answer">
-      データは<strong>自動で元の状態に戻る</strong>ので、壊れる心配はありません。<br>
-      表示されたエラーメッセージとSTEP番号をメモして、管理者に伝えてください。<br>
-      エラーの記録はエラーログ（App 656）にも自動保存されています。
-    </div>
-  </details>
-
-  <details>
-    <summary>Q. 退職者のパソコンを別の社員に渡したい</summary>
-    <div class="answer">
-      PC台帳（594）で該当PCのレコードを開き、利用者名を新しい社員に変更して保存してください。<br>
-      アカウントは新しい社員用に改めて自動登録ボタンで作成します。<br>
-      ※ 旧アカウントが「退職」状態のまま残っているため、混同しないようご注意ください。
-    </div>
-  </details>
-
-  <details>
-    <summary>Q. 1人の社員が複数の部署を兼務している</summary>
-    <div class="answer">
-      社員マスタ(595)の所属フィールドに、メイン所属を入力してください。<br>
-      副所属の管理は現状サブテーブルで対応していません。必要があれば管理者へ要望ください。
-    </div>
-  </details>
-
-  <details>
-    <summary>Q. PC買替後の旧PCを下取りに出したい</summary>
-    <div class="answer">
-      旧PCは「廃棄」ステータスになっています。下取り後に物理的に手放す前に、<br>
-      <strong>シリアル番号・記事欄</strong>に下取り業者名や日付をメモしておくと履歴が追いやすくなります。
-    </div>
-  </details>
+<div class="t-help">
+  <b>🆘 困ったらシステム推進室のベテランに聞いてください</b>
+  <span style="color:#7c2d12">mail 変更を伴う異動・連動が動かない・部署統廃合・複雑なケースなど</span>
 </div>
 
 </div>
 
-<button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="トップへ戻る">↑</button>
+<div class="footer">異動・退職・買替ガイド v5 (簡潔版) / 2026-04-19 ― <a href="#" style="color:inherit" onclick="event.preventDefault();window.parent.postMessage({type:&quot;jbis-ops-guide-nav&quot;,slug:&quot;hub&quot;},&quot;*&quot;);return false;">← トップに戻る</a></div>
 
-<div class="footer">異動・退職・買替ガイド v4.0 ― <a href="index.html" style="color:inherit">← トップに戻る</a></div>
-
-<script>
-(function(){
-  var sb = document.querySelector('.scroll-top');
-  window.addEventListener('scroll', function(){
-    if (window.scrollY > 400) sb.classList.add('show'); else sb.classList.remove('show');
-  });
-})();
-</script>
 </body>
 </html>

@@ -6,263 +6,86 @@
 <title>PC管理システム ガイド</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI','Hiragino Sans','Meiryo',sans-serif;background:#f0f4f8;color:#1e293b;min-height:100vh;display:flex;flex-direction:column;font-size:16px;line-height:1.8}
-.header{background:linear-gradient(135deg,#1e3a5f,#2563eb);color:#fff;padding:24px 24px 22px;text-align:center}
-.header h1{font-size:1.55em;font-weight:800;letter-spacing:.03em;line-height:1.3}
-.header p{font-size:.98em;opacity:.85;margin-top:6px}
-.container{max-width:1100px;margin:0 auto;padding:24px 16px 32px;flex:1}
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:8px}
+body{font-family:'Segoe UI','Hiragino Sans','Meiryo',sans-serif;background:#f0f4f8;color:#1e293b;line-height:1.7;font-size:16px}
+.header{background:linear-gradient(135deg,#1e3a5f,#2563eb);color:#fff;padding:24px;text-align:center}
+.header h1{font-size:1.5em;font-weight:800;letter-spacing:.03em}
+.header p{font-size:.95em;opacity:.85;margin-top:6px}
+.container{max-width:1100px;margin:0 auto;padding:24px 16px 32px}
+.intro{background:#fff;border-radius:16px;padding:18px 22px;margin-bottom:20px;box-shadow:0 2px 12px rgba(0,0,0,.08);font-size:1.02em;line-height:1.8}
+.intro b{color:#1e3a5f}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:8px}
 @media(max-width:900px){.cards{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:560px){.cards{grid-template-columns:1fr}}
-.guide-card{background:#fff;border-radius:20px;box-shadow:0 4px 20px rgba(0,0,0,.08);padding:28px 24px;
-  text-decoration:none;color:#1e293b;transition:.25s;border:3px solid transparent;display:flex;flex-direction:column;gap:10px}
-.guide-card:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(0,0,0,.14)}
-.guide-card .emoji{font-size:3em}
-.guide-card h2{font-size:1.25em;font-weight:700}
-.guide-card p{font-size:.95em;color:#475569;line-height:1.7}
-.guide-card .tag{display:inline-block;font-size:.72em;font-weight:600;padding:3px 10px;border-radius:20px;margin-top:4px;width:fit-content}
-.c-pc{border-color:#93c5fd}.c-pc .tag{background:#dbeafe;color:#1e40af}
-.c-personal{border-color:#86efac}.c-personal .tag{background:#dcfce7;color:#15803d}
-.c-shared{border-color:#fda4af}.c-shared .tag{background:#ffe4e6;color:#9f1239}
-.c-emp{border-color:#c4b5fd}.c-emp .tag{background:#f3e8ff;color:#7c3aed}
-.c-life{border-color:#7dd3fc}.c-life .tag{background:#e0f2fe;color:#0369a1}
-.footer{text-align:center;padding:24px;font-size:.75em;color:#64748b;margin-top:auto}
-/* .quick-links / .top-nav は廃止（メインメニューは Kintone DOM 側で直接レンダリングするため） */
-.section-card{background:#fff;border-radius:20px;box-shadow:0 4px 20px rgba(0,0,0,.08);padding:28px 24px;margin-bottom:24px}
-.section-card h2{font-size:1.3em;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.cheat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:14px}
-.cheat-item{background:#f8fafc;border-left:4px solid #2563eb;padding:14px 18px;border-radius:10px}
-.cheat-item .num{display:inline-block;background:#2563eb;color:#fff;border-radius:50%;width:26px;height:26px;line-height:26px;text-align:center;font-weight:700;font-size:.85em;margin-right:8px}
-.cheat-item .ttl{font-weight:700;color:#1e3a5f}
-.cheat-item .dsc{font-size:.92em;color:#475569;margin-top:4px}
-.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:10px}
-.legend-item{padding:10px 14px;border-radius:10px;font-size:.92em;display:flex;align-items:center;gap:10px}
-.legend-item .ic{font-size:1.4em;flex-shrink:0}
-.lg-blue{background:#dbeafe;border-left:4px solid #2563eb}
-.lg-green{background:#dcfce7;border-left:4px solid #16a34a}
-.lg-orange{background:#fff7ed;border-left:4px solid #ea580c}
-.lg-red{background:#fef2f2;border-left:4px solid #dc2626}
-.glossary table{width:100%;border-collapse:collapse;font-size:.95em;margin-top:8px}
-.glossary th{background:#f1f5f9;text-align:left;padding:10px 14px;font-size:.95em}
-.glossary td{padding:10px 14px;border-bottom:1px solid #e2e8f0}
-.update-banner{background:linear-gradient(135deg,#fef3c7,#fde68a);color:#78350f;padding:14px 20px;border-radius:14px;margin-bottom:20px;border:2px solid #f59e0b;font-size:.95em;line-height:1.7}
-.update-banner strong{display:block;font-size:1.05em;margin-bottom:4px}
-.dashboard-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
-@media(max-width:760px){.dashboard-row{grid-template-columns:1fr}}
-.dashboard-banner{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;padding:14px 18px;border-radius:14px;box-shadow:0 6px 18px rgba(15,23,42,.16);text-decoration:none;transition:.2s;border:2px solid #1e293b}
-.dashboard-banner:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(15,23,42,.26)}
-.dashboard-banner .ic{font-size:2em;flex-shrink:0;line-height:1}
-.dashboard-banner .ttl{font-weight:800;font-size:1.02em;letter-spacing:.02em;line-height:1.3}
-.dashboard-banner .dsc{font-size:.82em;color:#cbd5e1;margin-top:3px;line-height:1.5}
-.dashboard-banner .arrow{margin-left:auto;font-size:1.3em;color:#fbbf24}
+.guide-card{background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.08);padding:22px 20px;text-decoration:none;color:#1e293b;transition:.2s;border:3px solid transparent;display:flex;flex-direction:column;gap:8px}
+.guide-card:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,0,0,.14)}
+.guide-card .emoji{font-size:2.4em;line-height:1}
+.guide-card h2{font-size:1.1em;font-weight:700}
+.guide-card p{font-size:.88em;color:#475569;line-height:1.6}
+.c-pc{border-color:#93c5fd}
+.c-personal{border-color:#86efac}
+.c-shared{border-color:#fda4af}
+.c-emp{border-color:#c4b5fd}
+.c-life{border-color:#7dd3fc}
+.help-box{background:linear-gradient(135deg,#fef3c7,#fde68a);border:2px solid #f59e0b;border-radius:16px;padding:20px 24px;margin-top:24px;text-align:center}
+.help-box b{color:#7c2d12;font-size:1.2em;display:block;margin-bottom:6px}
+.help-box span{color:#7c2d12}
+.footer{text-align:center;padding:18px;font-size:.75em;color:#64748b}
 </style>
 <script>
-// iframe 内コンテンツの実高さを親 (customize/ops-guide/desktop.js) に通知
-// 親側は「成長のみ」許可で iframe を拡張（縮小はしない）
-(function () {
-  function reportHeight() {
-    try {
-      var h = Math.max(
-        document.body ? document.body.scrollHeight : 0,
-        document.documentElement ? document.documentElement.scrollHeight : 0,
-        document.body ? document.body.offsetHeight : 0
-      );
-      if (h > 0 && window.parent) {
-        window.parent.postMessage({ type: 'jbis-ops-guide-iframe-resize', height: h }, '*');
-      }
-    } catch (e) { /* noop */ }
-  }
-  window.addEventListener('load', reportHeight);
-  window.addEventListener('resize', reportHeight);
-  setTimeout(reportHeight, 100);
-  setTimeout(reportHeight, 500);
-  setTimeout(reportHeight, 1500);
-  setTimeout(reportHeight, 3000);
-  if (typeof ResizeObserver === 'function') {
-    var ro = new ResizeObserver(reportHeight);
-    document.addEventListener('DOMContentLoaded', function () {
-      if (document.body) ro.observe(document.body);
-    });
-  }
-})();
+(function(){function r(){try{var h=Math.max(document.body?document.body.scrollHeight:0,document.documentElement?document.documentElement.scrollHeight:0);if(h>0&&window.parent)window.parent.postMessage({type:'jbis-ops-guide-iframe-resize',height:h},'*');}catch(e){}}window.addEventListener('load',r);window.addEventListener('resize',r);setTimeout(r,100);setTimeout(r,500);setTimeout(r,1500);setTimeout(r,3000);if(typeof ResizeObserver==='function'){var ro=new ResizeObserver(r);document.addEventListener('DOMContentLoaded',function(){if(document.body)ro.observe(document.body);});}})();
 </script>
 </head>
 <body>
 
 <div class="header">
-  <h1>🖥️ PC管理システム<br>かんたんガイド</h1>
-  <p>はじめての方もすぐに操作できます。やりたいことに合わせて、下のガイドを選んでください。</p>
+  <h1>📖 PC管理システム ガイド</h1>
+  <p>知りたいガイドのカードを選んでください</p>
 </div>
 
 <div class="container">
 
-  <!-- 更新お知らせ -->
-  <div class="update-banner">
-    <strong>📣 2026-04-18 更新：データ品質ダッシュボード 2 種類が登場 ＋ 主要メニューを最上段に固定</strong>
-    下の黒いバナーから 1 クリックで開けます。データ清掃・二重登録チェックにご活用ください。
-  </div>
+<div class="intro">
+  <b>🌟 はじめての方へ</b><br>
+  新入社員の入社時は <b>① 社員マスタ → ② PC 台帳 → ③ 個人アカウント紐付け</b> の順に登録すれば OK。<br>
+  各カードに <b>3 ステップで完結する手順</b> が書いてあります。
+</div>
 
-  <!-- データ品質ダッシュボード（横並び2枚） -->
-  <div class="dashboard-row">
-    <a href="https://jbis-kintone.cybozu.com/k/594/?view=13459660" target="_blank" rel="noopener" class="dashboard-banner">
-      <div class="ic">📊</div>
-      <div>
-        <div class="ttl">PC↔アカウント相関ダッシュボード</div>
-        <div class="dsc">PC × WindowsID × フラグ（正常／重複／紐付けなし）を1画面で俯瞰</div>
-      </div>
-      <div class="arrow">→</div>
-    </a>
-    <a href="https://jbis-kintone.cybozu.com/k/627/?view=13459662" target="_blank" rel="noopener" class="dashboard-banner" style="background:linear-gradient(135deg,#0f172a,#7c2d12);border-color:#7c2d12;">
-      <div class="ic">🪪</div>
-      <div>
-        <div class="ttl">WindowsID重複ダッシュボード</div>
-        <div class="dsc">同じ WindowsID で 2 件以上登録されたアカウントをグループ表示</div>
-      </div>
-      <div class="arrow">→</div>
-    </a>
-  </div>
+<div class="cards">
+  <a class="guide-card c-pc" href="#" onclick="event.preventDefault();window.parent.postMessage({type:'jbis-ops-guide-nav',slug:'pc'},'*');return false;">
+    <div class="emoji">💻</div>
+    <h2>PC を登録・管理する</h2>
+    <p>新規 PC 登録・買替・棚卸の 3 ステップ手順</p>
+  </a>
+  <a class="guide-card c-personal" href="#" onclick="event.preventDefault();window.parent.postMessage({type:'jbis-ops-guide-nav',slug:'personal'},'*');return false;">
+    <div class="emoji">🔑</div>
+    <h2>個人アカウントを作る・紐付ける</h2>
+    <p>1 ユーザー = 1 アカウント / 最大 2 PC まで</p>
+  </a>
+  <a class="guide-card c-shared" href="#" onclick="event.preventDefault();window.parent.postMessage({type:'jbis-ops-guide-nav',slug:'shared'},'*');return false;">
+    <div class="emoji">🔗</div>
+    <h2>共有アカウントを作る・紐付ける</h2>
+    <p>会議室 PC など複数台で 1 アカウント</p>
+  </a>
+  <a class="guide-card c-emp" href="#" onclick="event.preventDefault();window.parent.postMessage({type:'jbis-ops-guide-nav',slug:'employee'},'*');return false;">
+    <div class="emoji">👤</div>
+    <h2>社員マスタの基本</h2>
+    <p>新入社員の登録・基本情報の更新</p>
+  </a>
+  <a class="guide-card c-life" href="#" onclick="event.preventDefault();window.parent.postMessage({type:'jbis-ops-guide-nav',slug:'lifecycle'},'*');return false;">
+    <div class="emoji">🔄</div>
+    <h2>異動・退職・買替の流れ</h2>
+    <p>シナリオ別の手順をまとめて確認</p>
+  </a>
+</div>
 
-  <!-- 主要ガイド（よく使うものを最上段に） -->
-  <div class="cards">
-
-    <a href="guide-pc.html" class="guide-card c-pc">
-      <div class="emoji">💻</div>
-      <h2>PC台帳ガイド</h2>
-      <p>PCの登録・買替・棚卸など<br>PC管理台帳（594）の使い方</p>
-      <span class="tag">App 594</span>
-    </a>
-
-    <a href="guide-personal-account.html" class="guide-card c-personal">
-      <div class="emoji">🔑</div>
-      <h2>個人アカウントガイド</h2>
-      <p>ボタン1つで自動登録！<br>Windows名・M365の割り当て方</p>
-      <span class="tag">App 627 / 626</span>
-    </a>
-
-    <a href="guide-shared-account.html" class="guide-card c-shared">
-      <div class="emoji">🏢</div>
-      <h2>共有アカウントガイド</h2>
-      <p>拠点ごとの共有PC用<br>共有アカウントの管理方法</p>
-      <span class="tag">App 667</span>
-    </a>
-
-    <a href="guide-employee.html" class="guide-card c-emp">
-      <div class="emoji">👤</div>
-      <h2>社員マスタガイド</h2>
-      <p>EMP-IDとは？社員情報と<br>PC・アカウントの紐付けを確認</p>
-      <span class="tag">App 595</span>
-    </a>
-
-    <a href="guide-lifecycle.html" class="guide-card c-life">
-      <div class="emoji">🔄</div>
-      <h2>異動・退職・買替ガイド</h2>
-      <p>人事異動・退職・PC買替のとき<br>場面ごとの操作手順と自動処理の早見表</p>
-      <span class="tag">594 / 595 / 627</span>
-    </a>
-
-  </div>
-
-  <!-- 5つの基本操作チートシート -->
-  <div class="section-card">
-    <h2>⚡ よくある5つの操作（チートシート）</h2>
-    <p style="color:#475569">「あの操作どうやるんだっけ？」というときの早見表です。</p>
-    <div class="cheat-grid">
-      <div class="cheat-item">
-        <div><span class="num">1</span><span class="ttl">新しい人にPCを渡す</span></div>
-        <div class="dsc">595で社員登録 → 594でPC登録 → 「🔗 個人アカウント紐付け」ボタン</div>
-      </div>
-      <div class="cheat-item">
-        <div><span class="num">2</span><span class="ttl">PCを買い替える</span></div>
-        <div class="dsc">594で古いPCを開く → 「PC買替」ボタン → 新PC情報を入力</div>
-      </div>
-      <div class="cheat-item">
-        <div><span class="num">3</span><span class="ttl">退職処理をする</span></div>
-        <div class="dsc">595で退職日を入れて保存 → あとは全部自動</div>
-      </div>
-      <div class="cheat-item">
-        <div><span class="num">4</span><span class="ttl">共有PCにアカウントを紐付け</span></div>
-        <div class="dsc">594で共有PCを保存 → モーダルで検索 or 新規作成</div>
-      </div>
-      <div class="cheat-item">
-        <div><span class="num">5</span><span class="ttl">PCやアカウントを探す</span></div>
-        <div class="dsc">一覧画面の検索バーに名前を入力（部分一致・カナ自動変換）</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- はじめての方への全体フロー（基礎理解は下に） -->
-  <div class="section-card" style="border:3px solid #93c5fd">
-    <h2>📖 はじめての方へ ― 全体の流れ</h2>
-    <p style="margin-bottom:12px">新しい社員が入社してからパソコンとアカウントが使えるまで、<strong>たった4ステップ</strong>です。</p>
-    <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;padding:16px 0">
-      <div style="padding:14px 18px;border-radius:12px;background:#f3e8ff;color:#5b21b6;font-weight:700;text-align:center;min-width:130px;font-size:.95em">
-        <div style="font-size:1.5em;margin-bottom:4px">👤</div>
-        STEP 1<br>社員マスタに登録<br><small style="font-weight:400;color:#7c3aed">(595)</small>
-      </div>
-      <div style="font-size:1.6em;color:#2563eb;font-weight:700">→</div>
-      <div style="padding:14px 18px;border-radius:12px;background:#dbeafe;color:#1e40af;font-weight:700;text-align:center;min-width:130px;font-size:.95em">
-        <div style="font-size:1.5em;margin-bottom:4px">💻</div>
-        STEP 2<br>PC台帳にPC登録<br><small style="font-weight:400;color:#2563eb">(594)</small>
-      </div>
-      <div style="font-size:1.6em;color:#2563eb;font-weight:700">→</div>
-      <div style="padding:14px 18px;border-radius:12px;background:#dcfce7;color:#15803d;font-weight:700;text-align:center;min-width:130px;font-size:.95em">
-        <div style="font-size:1.5em;margin-bottom:4px">🔑</div>
-        STEP 3<br>🔗 個人アカウント紐付け<br><small style="font-weight:400;color:#16a34a">検索 or 新規作成</small>
-      </div>
-      <div style="font-size:1.6em;color:#2563eb;font-weight:700">→</div>
-      <div style="padding:14px 18px;border-radius:12px;background:#fef9c3;color:#854d0e;font-weight:700;text-align:center;min-width:130px;font-size:.95em">
-        <div style="font-size:1.5em;margin-bottom:4px">✅</div>
-        STEP 4<br>完了！
-      </div>
-    </div>
-    <p style="text-align:center;color:#475569;margin-top:4px">
-      くわしい手順は、上のガイドカードをクリックして確認してください。
-    </p>
-  </div>
-
-  <!-- 色・記号の意味 -->
-  <div class="section-card">
-    <h2>🎨 ガイド内の色・記号の意味</h2>
-    <p style="color:#475569">各ガイドで使っている色付き枠と記号は、ぜんぶこの意味です。</p>
-    <div class="legend">
-      <div class="legend-item lg-blue"><span class="ic">💡</span>ヒント・補足</div>
-      <div class="legend-item lg-green"><span class="ic">✅</span>OK・自動処理</div>
-      <div class="legend-item lg-orange"><span class="ic">⚠️</span>注意してほしい</div>
-      <div class="legend-item lg-red"><span class="ic">❌</span>エラー・やってはダメ</div>
-    </div>
-  </div>
-
-  <!-- 用語集 -->
-  <div class="section-card glossary">
-    <h2>📚 用語集 ― これだけ覚えればOK</h2>
-    <p style="color:#475569">画面に出てくる言葉の意味です。気になったときに見てください。</p>
-    <table>
-      <tr><th style="width:30%">用語</th><th>意味（やさしい説明）</th></tr>
-      <tr><td>レコード</td><td>1件1件のデータ。Excel でいう「1行」のこと。</td></tr>
-      <tr><td>レコード番号 / $id</td><td>レコードに自動で付く番号。重複しないユニークな番号。</td></tr>
-      <tr><td>ルックアップ</td><td>他のアプリから情報を引っ張ってくる機能。クリックすると候補が出る。</td></tr>
-      <tr><td>サブテーブル</td><td>1つのレコードの中にある「小さな表」。複数行を入れられる。</td></tr>
-      <tr><td>EMP-ID</td><td>社員1人に1つだけ自動で付く番号（例：EMP-0042）。</td></tr>
-      <tr><td>PC台帳（594）</td><td>会社のすべてのPCを管理する一覧表。</td></tr>
-      <tr><td>アカウント台帳（627）</td><td>WindowsログインやM365アカウントを管理する一覧表。</td></tr>
-      <tr><td>社員マスタ（595）</td><td>社員名簿。氏名・所属・退職日などを管理。</td></tr>
-      <tr><td>採番マスタ（626 / 667）</td><td>未使用のアカウント番号がストックされている棚。</td></tr>
-    </table>
-  </div>
-
-  <!-- 困ったとき -->
-  <div class="section-card" style="border:2px solid #f59e0b;background:#fffbeb">
-    <h2>🆘 困ったとき・分からないとき</h2>
-    <ol style="margin-left:20px;line-height:2">
-      <li>まず該当のガイド（上のカード）を見る。各ガイドの末尾に「よくある質問」があります。</li>
-      <li>エラーが出たら、画面を閉じずに <strong>エラーメッセージとSTEP番号</strong> をメモ。</li>
-      <li>データが壊れる心配はありません（自動で元に戻ります）。落ち着いて管理者へ連絡してください。</li>
-      <li>急ぎでない場合は <a href="https://jbis-kintone.cybozu.com/k/656/" target="_blank">エラーログ（App 656）</a> も自動で記録されています。</li>
-    </ol>
-  </div>
+<div class="help-box">
+  <b>🆘 困ったらシステム推進室のベテランに聞いてください</b>
+  <span>複雑な状況・想定外のエラー・データ修正が必要なケースなど、<br>遠慮なく声を掛けてください</span>
+</div>
 
 </div>
 
-<div class="footer">PC管理システム 運用ガイド v4.1 ― 最終更新 2026-04-18</div>
+<div class="footer">PC管理システム ガイド v5 (簡潔版) / 2026-04-19</div>
+
 </body>
 </html>
