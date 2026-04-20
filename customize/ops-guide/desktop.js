@@ -198,21 +198,21 @@
 
     var shell = document.createElement('div');
     shell.id = 'jbis-ops-guide-shell';
+    // 2026-04-20 v7: kintone のグローバルヘッダー(黄+灰 計 ~120px)で
+    //   shell 上端が常に隠れる問題を、measured top-padding で物理的に押し下げて解決。
+    //   shell 自身の border-radius は外側で隠れるため不要。背景 transparent で kintone と整合。
     shell.style.cssText =
-      'margin:0 0 16px 0;border-radius:12px;overflow:hidden;' +
-      'box-shadow:0 4px 20px rgba(0,0,0,.1);background:#fff;';
+      'margin:0 0 16px 0;background:transparent;' +
+      'box-shadow:0 4px 20px rgba(0,0,0,.1);';
 
-    // ① 主要アプリへの文字リンクメニュー（Kintone DOMに直接置くのでクリッピングしない）
+    // 1) tabs / 2) QuickLink / 3) Dashboard / 4) hint / 5) iframe の順
+    //    QuickLink を spacer 兼 1 行目とすると、青タブが上にあるよりこの順の方が
+    //    新規ユーザーは「外部リンク → 自分が見たいガイドへ」の動線で迷わない。
+
+    // ① 主要アプリへの文字リンクメニュー（最上段。最初の数十pxは kintone ヘッダーで隠れても可）
     shell.appendChild(buildQuickLinkBar());
-    // ② データ品質ダッシュボードへの文字リンク
+    // ② データ品質ダッシュボードへの文字リンク（旧「Windows ID 重複 / 紐付けなしチェック」）
     shell.appendChild(buildDashboardBar());
-
-    var hint = document.createElement('div');
-    hint.style.cssText =
-      'padding:6px 12px;font-size:11px;color:#64748b;background:#f8fafc;border-bottom:1px solid #e2e8f0;';
-    hint.textContent =
-      '※ 画面の内容は Kintone レコードと同期されています。ガイド本文の更新は運用側の自動デプロイ（ops-guide:publish）で反映されます。';
-    shell.appendChild(hint);
 
     // ③ ガイド切り替えタブ
     var bar = document.createElement('div');
@@ -220,6 +220,13 @@
     bar.style.cssText =
       'display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px;background:#1e3a5f;align-items:center;';
     shell.appendChild(bar);
+
+    var hint = document.createElement('div');
+    hint.style.cssText =
+      'padding:6px 12px;font-size:11px;color:#64748b;background:#f8fafc;border-bottom:1px solid #e2e8f0;';
+    hint.textContent =
+      '※ 画面の内容は Kintone レコードと同期されています。ガイド本文の更新は運用側の自動デプロイ（ops-guide:publish）で反映されます。';
+    shell.appendChild(hint);
 
     // ④ ガイド本文iframe（最低 1500px、コンテンツが長ければ postMessage で更に拡張）
     var iframeWrap = document.createElement('div');
@@ -238,6 +245,25 @@
 
     var host = qs('.contents-bodygaia') || qs('.ocean-ui-plugin-kintone-layout') || document.body;
     host.insertBefore(shell, host.firstChild);
+
+    // 2026-04-20 v7: kintone のグローバルヘッダーで shell 上端が隠れる問題を物理補正。
+    //   getBoundingClientRect().top を計測し、ヘッダー(動的取得)の高さより上にあれば
+    //   marginTop で押し下げる。SPA 遷移後の DOM 変動にも追従するため複数タイミングで実行。
+    function adjustShellOffset() {
+      var s = qs('#jbis-ops-guide-shell');
+      if (!s) return;
+      // kintone ヘッダーの実高さを取れたら使う、ダメなら 100px 既定
+      var hdr = qs('.gaia-header') || qs('.gaia-header-banner-gaia') || qs('header');
+      var hdrH = (hdr && hdr.offsetHeight) ? hdr.offsetHeight : 100;
+      var rect = s.getBoundingClientRect();
+      // shell 上端が viewport 最上 (ヘッダー直下) より上にあれば押し下げる
+      if (rect.top < hdrH + 4) {
+        s.style.marginTop = (hdrH - rect.top + 8) + 'px';
+      }
+    }
+    setTimeout(adjustShellOffset, 50);
+    setTimeout(adjustShellOffset, 300);
+    setTimeout(adjustShellOffset, 1000);
 
     return shell;
   }
