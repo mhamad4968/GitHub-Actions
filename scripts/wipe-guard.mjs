@@ -61,6 +61,14 @@ function log(msg) {
   console.log(line);
 }
 
+// S4 (2026-04-20): notify.log に集約。朝ブリーフィングで参照される。
+// 異常検知 + 復元成功 = [INFO] / 復元失敗 = [ALERT]
+const NOTIFY_LOG = path.join(LOG_DIR, 'notify.log');
+function notify(level, msg) {
+  const line = `[${new Date().toISOString()}] [${level}] ${msg}`;
+  try { fs.appendFileSync(NOTIFY_LOG, line + '\n'); } catch (_) { /* noop */ }
+}
+
 function findLatestWorkspaceBackup(rel) {
   if (!fs.existsSync(BACKUPS_ROOT)) return null;
   const dirs = fs.readdirSync(BACKUPS_ROOT)
@@ -116,6 +124,7 @@ if (issues.length === 0) {
 
 log(`🚨 異常検知 ${issues.length} 件:`);
 for (const i of issues) log(`  - ${i.rel}: ${i.issue}`);
+notify('INFO', `異常検知 ${issues.length} 件: ${issues.map((i) => i.rel).join(', ').slice(0, 200)}`);
 
 let restoredOk = 0;
 let restoredFail = 0;
@@ -124,9 +133,11 @@ for (const i of issues) {
   if (r.ok) {
     restoredOk++;
     log(`  ✅ 復元成功: ${i.rel} ← ${r.source}${r.snapshot ? ` (${r.snapshot})` : ''}`);
+    notify('INFO', `復元成功: ${i.rel} ← ${r.source}${r.snapshot ? ` (${r.snapshot})` : ''}`);
   } else {
     restoredFail++;
     log(`  ❌ 復元失敗: ${i.rel}: ${r.reason}`);
+    notify('ALERT', `復元失敗: ${i.rel}: ${r.reason}`);
   }
 }
 
@@ -134,6 +145,7 @@ log(`📊 結果: 復元成功 ${restoredOk} / 失敗 ${restoredFail}`);
 
 if (restoredFail > 0) {
   log('⚠️ 復元失敗ファイルがあります。バックアップ元を確認してください。');
+  notify('ALERT', `復元失敗 ${restoredFail} 件 / 成功 ${restoredOk} 件 - 朝のブリーフィングで詳細確認`);
   process.exit(2);
 }
 

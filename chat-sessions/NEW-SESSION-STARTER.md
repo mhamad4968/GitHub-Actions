@@ -40,11 +40,8 @@
 - 時刻に触れる前に必ず `date` 実行（§39）
 - **OneDrive 使用禁止**（`C:\Users\<name>\OneDrive\` を新規ファイル先に選ばない / 代替: `C:\tmp\` `Documents\` 直下 `Claudeとの会話メモ\` `~/.cursor-emergency-backup/`）
 
-【今やってる主タスク】
-- SKYSEA × kintone 594 突合 → orphan 仕分け + 自動インストール仕組み
-  → 来週土日（2026-04-25/26）に持ち越し中
-- 詳細: `docs/plans/2026-04-18-skysea-installer.md`
-- 4 CSV 出力済み: `data/skysea/*-2026-04-19.csv`
+【今やってる主タスク（2026-04-20 自動更新）】
+- 進行中 plan: docs/plans/2026-04-18-skysea-installer.md
 
 【今日（このセッション）の依頼】
 （ここに自由文で書く。例: 「SKYSEA の続きやろう」「○○について教えて」など）

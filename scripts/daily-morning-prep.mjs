@@ -222,6 +222,52 @@ sections.push('');
 sections.push('---');
 sections.push('');
 
+// ========================================
+// S1+S4 (2026-04-20): 自動防衛網ログ集約
+// file-watcher / wipe-guard が記録した wipe 検知 + 復元結果を表示
+// ========================================
+sections.push('## 🛡 自動防衛網ログ（前日からの活動）');
+sections.push('');
+
+const fwLog = path.join(REPO_ROOT, 'logs', 'file-watcher', 'wipe-incidents.log');
+const wgNotify = path.join(REPO_ROOT, 'logs', 'wipe-guard', 'notify.log');
+
+const tailLog = (filePath, n) => {
+  if (!fs.existsSync(filePath)) return null;
+  try {
+    const text = fs.readFileSync(filePath, 'utf8');
+    const lines = text.trim().split('\n').filter(Boolean);
+    if (lines.length === 0) return '';
+    return lines.slice(-n).join('\n');
+  } catch (_) { return null; }
+};
+
+const fwTail = tailLog(fwLog, 10);
+const wgTail = tailLog(wgNotify, 10);
+
+if (!fwTail && !wgTail) {
+  sections.push('✅ **前日からの wipe 検知ゼロ**（防衛網は静かに稼働中）');
+} else {
+  if (fwTail !== null) {
+    sections.push('### file-watcher wipe-incidents.log（直近 10 行）');
+    sections.push('');
+    sections.push('```text');
+    sections.push(fwTail || '(空・検知ゼロ)');
+    sections.push('```');
+    sections.push('');
+  }
+  if (wgTail !== null) {
+    sections.push('### wipe-guard notify.log（直近 10 行）');
+    sections.push('');
+    sections.push('```text');
+    sections.push(wgTail || '(空・検知ゼロ)');
+    sections.push('```');
+    sections.push('');
+  }
+}
+sections.push('---');
+sections.push('');
+
 // 8. kintone-apps.md 直近変更
 sections.push('## 8. kintone-apps.md 直近の更新履歴（末尾 5 行）');
 sections.push('');

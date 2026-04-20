@@ -302,6 +302,27 @@ async function main() {
   console.log(`| 🔴 **要インストール** (kintone あり / SKYSEA 無し) | **${needInstall.length}** | \`${OUT_NEEDS_INSTALL}\` |`);
   console.log(`| 🟡 SKYSEA のみ (kintone 側マスタ更新候補) | ${orphanInSkysea.length} | \`${OUT_ORPHAN}\` |`);
   console.log('');
+
+  // S3 (2026-04-20): orphan のカテゴリ別件数集計
+  if (orphanInSkysea.length > 0) {
+    const catCount = { '個人PC': 0, 'JR端末': 0, 'サーバー/NAS/AD': 0, '命名規則外': 0 };
+    for (const r of orphanInSkysea) {
+      const reason = r['推定原因'] || '';
+      if (reason.startsWith('個人PC')) catCount['個人PC']++;
+      else if (reason.startsWith('JR端末')) catCount['JR端末']++;
+      else if (reason.startsWith('サーバー')) catCount['サーバー/NAS/AD']++;
+      else catCount['命名規則外']++;
+    }
+    console.log(`### Orphan カテゴリ別件数 (削除可否判断の起点)`);
+    console.log('');
+    console.log(`| カテゴリ | 件数 | 削除可否ヒント |`);
+    console.log(`|---|---|---|`);
+    console.log(`| 個人PC (KS/JBIS/JBM 廃却漏れ疑い)  | ${catCount['個人PC']} | ⭕ 削除候補 (kintone 側で廃却済か確認後) |`);
+    console.log(`| JR端末 (MAPLE/JRE)                  | ${catCount['JR端末']} | ⚠ 共有アカウント運用・kintone 種別=JR端末 で登録要 |`);
+    console.log(`| サーバー/NAS/AD (DS/KENT/SERVER/NAS) | ${catCount['サーバー/NAS/AD']} | 🚫 削除厳禁 (業務インフラ) |`);
+    console.log(`| 命名規則外 (要個別確認)             | ${catCount['命名規則外']} | ⚠ 共有 PC・研修用等の可能性 |`);
+    console.log('');
+  }
   console.log(`## Step 4: ライセンス充足チェック`);
   const licenseTotal = 241;
   const licenseUsed = 158;

@@ -138,6 +138,86 @@ if (fs.existsSync(pendingDir)) {
   }
 }
 
+// ── 1-H. S2 (2026-04-20): git status 汚れ度合い警告 ──
+let gitDirtyWarning = '';
+if (gitCheck.ok && gitCheck.stdout === 'true') {
+  const stCount = run('git status --short | wc -l');
+  const cnt = parseInt(stCount.stdout || '0', 10);
+  if (cnt > 50) {
+    gitDirtyWarning = `\n### ⚠ 1-H. git 未コミット件数警告\n\n**未コミット ${cnt} 件**（50 件超え）→ 区切り良いところで commit 推奨。状況把握が困難になる前に整理する。`;
+  } else if (cnt > 30) {
+    gitDirtyWarning = `\n### ℹ 1-H. git 未コミット件数\n\n${cnt} 件（注意レベル）。`;
+  }
+}
+
+// ── 1-I. S2 (2026-04-20): 直近 TSB 引用 ──
+let tsbSection = '_(troubleshooting.md なし)_';
+const tsbPath = path.join(REPO_ROOT, 'docs', 'troubleshooting.md');
+if (fs.existsSync(tsbPath)) {
+  const text = fs.readFileSync(tsbPath, 'utf8');
+  const tsbHeadings = text.split(/\r?\n/).filter((l) => /^## TSB-\d+/.test(l)).slice(-3);
+  if (tsbHeadings.length > 0) {
+    tsbSection = '直近の TSB（参考・学習リソース）:\n' + tsbHeadings.map((h) => `- ${h.replace(/^##\s*/, '')}`).join('\n');
+  }
+}
+
+// ── 1-J. S2 (2026-04-20): checkpoint-latest.md 鮮度チェック ──
+let checkpointFreshness = '';
+const cpPath = path.join(REPO_ROOT, 'chat-sessions', 'checkpoint-latest.md');
+if (fs.existsSync(cpPath)) {
+  const mtime = fs.statSync(cpPath).mtimeMs;
+  const daysOld = Math.floor((Date.now() - mtime) / 86400_000);
+  if (daysOld >= 7) {
+    checkpointFreshness = `\n### 🚨 1-J. checkpoint-latest.md 鮮度警告\n\n**${daysOld} 日間更新されていません**（7 日以上）→ TSB-005 再発リスク。本日中に更新を強く推奨。`;
+  } else if (daysOld >= 3) {
+    checkpointFreshness = `\n### ⚠ 1-J. checkpoint-latest.md 鮮度\n\n最終更新から ${daysOld} 日経過。区切り良いタイミングで更新検討。`;
+  }
+}
+
+// ── D3 (2026-04-20): NEW-SESSION-STARTER「今やってる主タスク」自動更新 ──
+// 直近の plan ファイル + git log + checkpoint から「今やってる主タスク」のサマリを生成し、
+// NEW-SESSION-STARTER.md と Windows 版 .txt の該当ブロックを上書き更新する。
+function updateNewSessionStarter() {
+  const summary = [];
+  // 直近の plan
+  const plansDir = path.join(REPO_ROOT, 'docs', 'plans');
+  if (fs.existsSync(plansDir)) {
+    const plans = fs.readdirSync(plansDir).filter((f) => f.endsWith('.md'))
+      .map((f) => ({ name: f, mtime: fs.statSync(path.join(plansDir, f)).mtimeMs }))
+      .sort((a, b) => b.mtime - a.mtime).slice(0, 1);
+    if (plans.length > 0) {
+      summary.push(`- 進行中 plan: docs/plans/${plans[0].name}`);
+    }
+  }
+  // 当日 commit のうち主要なもの
+  const todayCommits = run(`git log --since=midnight --pretty=format:'%s' | head -3`);
+  if (todayCommits.ok && todayCommits.stdout) {
+    summary.push('- 当日コミット (上位 3):');
+    todayCommits.stdout.split('\n').forEach((s) => summary.push(`  - ${s.slice(0, 80)}`));
+  }
+  if (summary.length === 0) summary.push('- _(進行中タスクなし)_');
+
+  const newBlock = `【今やってる主タスク（${today.iso} 自動更新）】\n${summary.join('\n')}`;
+
+  // NEW-SESSION-STARTER.md (リポ正本)
+  const nss1 = path.join(REPO_ROOT, 'chat-sessions', 'NEW-SESSION-STARTER.md');
+  if (fs.existsSync(nss1)) {
+    let txt = fs.readFileSync(nss1, 'utf8');
+    txt = txt.replace(/【今やってる主タスク[^】]*】[\s\S]*?(?=\n\n【|\n\n##|\n```|$)/, newBlock);
+    fs.writeFileSync(nss1, txt, 'utf8');
+  }
+  // Windows メモ帳版
+  const nss2 = '/mnt/c/Claudeとの会話メモ/NEW-SESSION-STARTER.txt';
+  try {
+    if (fs.existsSync(nss2)) {
+      let txt = fs.readFileSync(nss2, 'utf8');
+      txt = txt.replace(/【今やってる主タスク[^】]*】[\s\S]*?(?=\n\n【|\n\n━|$)/, newBlock);
+      fs.writeFileSync(nss2, txt, 'utf8');
+    }
+  } catch (_) { /* mnt 不可 */ }
+}
+try { updateNewSessionStarter(); } catch (e) { console.warn('[D3] NEW-SESSION-STARTER 更新失敗:', e.message); }
+
 // ── 1-G. 未参照ルール統廃合候補 (#S4) ───────────────
 let unrefSection = '_(audit-rules 出力取得失敗)_';
 const auditRes = run('node scripts/audit-rules.mjs 2>&1');
@@ -189,6 +269,14 @@ ${tsSection}
 
 ### 1-F. 保留中の改善提案
 ${pendingSection}
+
+### 1-G. 直近 TSB（参考）
+${tsbSection}
+
+### 1-K. 未参照ルール統廃合候補
+${unrefSection}
+${gitDirtyWarning}
+${checkpointFreshness}
 
 ---
 
