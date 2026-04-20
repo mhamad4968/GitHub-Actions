@@ -265,38 +265,93 @@ _(本日の追記なし)_
 
 ---
 
-## 📝 2. 今日やったこと（AI が記入）
+## 📝 2. 今日やったこと
 
-<!-- AI が agent-transcripts と git 差分から要約 -->
+### 朝 06:00（cron 自動）
+- daily-morning-prep.mjs 起動 → Phase 1-4 完走 → ヘルススコア 9/10（lint:customize のみ ❌、既知 TSB-007）
+- apply-approved-changes.mjs が 16 件の proposals を処理:
+  - **8 件適用**（R1-R5 / D1-D2 / D4 = string_replace 系）
+  - **8 件 manual_only キュー化**（S1-S4 / D3 / C1-C2 / K1）
+- file-watcher / wipe-guard / emergency-mirror 全て静かに稼働（**前日からの wipe ゼロ**）
+
+### 夜 21:00（浜田就寝中・AI 単独実装）
+- **manual_only 5 件を AI が一気に実装**（S1 / S2 / S3 / S4 / D3）
+  - S1: 朝ブリーフィングに wipe-incidents.log + notify.log 集約
+  - S2: 夕反省に git 50件超警告 / TSB 引用 / checkpoint 鮮度チェック / 未参照ルール
+  - S3: skysea-recon orphan 4 カテゴリ自動集計
+  - S4: wipe-guard が notify.log に [INFO]/[ALERT] 集約
+  - D3: 夕反省実行時に NEW-SESSION-STARTER の主タスクを自動上書き
+- commit `0a46ef3` + レポート `2026-04-20-overnight-implementations.md`
+
+### 夜 21:30（浜田復帰後・git 大掃除）
+- 未コミット 201 件 → カテゴリ別 6 commit に整理（`facd93b` 〜 `92b4807`）
+- .gitignore を強化: `*.orig` `*.rej` `*.backup.*Z` `temp/` `logs/` `backups/` `dist/` `.rag/lancedb/` `.rag/models/` `GitHub-Actions/`
+- 結果: **未コミット 0 件**で本日終了
 
 ---
 
-## ✅ 3. うまくいったこと（AI が記入）
+## ✅ 3. うまくいったこと
 
-<!-- AI が記入 -->
+1. **TSB-006 防衛網が初稼働で完全静音 = 設計通り**
+   - file-watcher / wipe-guard 共に 0 件検知 → 04/19 09:02 のような事故は再発せず
+   - S4 で notify.log → S1 で朝ブリーフィングに自動転載まで配線完了
+2. **§44「夕反省」 → §46「朝適用」 → §44 また夕反省 が初めて 1 サイクル完走**
+   - 4/19 夜の承認 → 4/20 朝の自動適用 (16/16 件処理) → 4/20 夜の追加実装 = ループ確立
+3. **manual_only 5 件を一晩で実装**
+   - §47-§49 ベースで「ユーザー就寝中の自律判断」を実行 → 浜田が朝起きたら結果だけ確認できる体制に
+4. **git 201 件整理が綺麗にカテゴリ分割できた**
+   - 暴れたファイルツリーを 6 commit で論理単位に分けられた → 後日 git blame しやすい
 
 ---
 
-## ⚠️ 4. 詰まった・失敗したこと（AI が記入）
+## ⚠️ 4. 詰まった・失敗したこと
 
-<!-- AI が記入。失敗の根本原因 + 学び -->
+1. **lint:customize（TSB-007）が朝 cron で 6 日連続失敗**
+   - ESLint 6.4.0 が flat config (`eslint.config.js`) を読めない
+   - 影響: ヘルススコアが常に 9/10 で頭打ち（緑判定にならない）
+   - 根本原因: `npm install --save-dev eslint@latest` 未実施
+2. **NEW-SESSION-STARTER の「当日コミット」自動更新が空表示**
+   - D3 実装後、20:57 時点で当日 commit ゼロだったため `(進行中タスクなし)` 様の表示
+   - 原因: evening-reflect が `git log --since=midnight` で取るが、commit が 21:30 以降の時間帯に集中
+3. **未参照ルール §45/§46/§47/§48 が放置中**
+   - 4 個全てが WORKFLOW.md / RULES-INDEX.md から本文参照されていない（定義のみ）
+   - 一見ルールは増えたが「索引から辿れない」 → 実運用で忘却リスク
+4. **昨日 .rej に残っていた RAG 内側エラー検知ロジックを未適用のまま削除した**
+   - `daily-morning-prep.mjs.rej` に「stdout に Error/ERR_/Exception があれば降格」の良い設計があった
+   - 今夜「不要」として削除してしまった → **#S5 として再提案**
 
 ---
 
-## 🚀 5. 改善提案（AI が記入。ユーザー承認待ち）
+## 🚀 5. 改善提案（ユーザー承認待ち）
 
 | ID | カテゴリ | 提案 | 想定リスク | 翌朝自動実施可? |
 |---|---|---|---|---|
-| #R1 | R | _(AI が記入)_ | _(低/中/高)_ | _(○/×/手動)_ |
+| #S5 | S | **RAG ingest 内側エラー検知**: daily-morning-prep の RAG 実行で stdout/stderr に `Error/ERR_/Exception/Traceback` を含む場合、exit=0 でもヘルス降格。.rej に残っていたロジックの再導入 | 低 | ○ |
+| #S6 | S | **lint:customize 修復 (TSB-007)**: `npm install --save-dev eslint@latest @eslint/js` でヘルス 9/10 → 10/10 に。flat config 対応版に上げる。あわせて lint エラーを ESLint 9 ベースで修正 | 中（既存コードで新規エラー出る可能性）| × 手動 |
+| #D5 | D | **evening-reflect の「当日コミット」抽出を直す**: `git log --since=midnight` を `--since='1 hour ago'` か「実行直前 12h」に変更。または夜実行用に `--all --since='12 hours ago'` | 低 | ○ |
+| #R6 | R | **未参照ルール §45/§46/§47/§48 を WORKFLOW.md / RULES-INDEX.md から本文参照**。索引から辿れる経路を確保し、audit-rules 警告解消 | 低 | ○ |
+| #S7 | S | **gitignore 強化を恒常化するため audit スクリプト作成**: `scripts/audit-untracked-bloat.mjs` を新設。100 件超 untracked を検知したら朝ブリーフィングで警告 | 低 | ○ |
+| #C3 | C | **594 PC 検索パネルに「SKYSEA 状態フィルタ」追加 (再掲 C2)**: 「未インストール」「インストール済」「orphan」を 1 タップで絞り込み。K1 (フィールド 4 つ追加) 完了後に着手 | 低 | × 手動 (K1 完了待ち) |
+| #K1 | K | **594 に SKYSEA 関連フィールド追加 (再掲)**: `skysea_status` / `skysea_checked_at` / `skysea_install_log` / `skysea_target_flag`。承認されたら明日朝の SKYSEA 計画 Q&A 開始前に実施 | 低 | × 手動 |
 
 > カテゴリ: **R**=ルール改善 / **S**=スクリプト改善 / **D**=ドキュメント / **C**=customize 改修(deploy 除く) / **K**=kintone API 操作
 
 ### ユーザー応答方法
-- 個別: 「#R1 承認」「#S1 却下」「#D1 修正して: <修正内容>」
-- 一括: 「全部承認」「Rカテゴリだけ承認」
+- 個別: 「#S5 承認」「#R6 却下」「#S6 修正して: <修正内容>」
+- 一括: 「全部承認」「Rカテゴリだけ承認」「自動○のだけ承認」
+
+### 推奨セット（私の §48 ベスト案）
+**「#S5 / #D5 / #R6 / #S7 を承認」** = 翌朝自動で全部入る安全カルテット。
+S6 (lint修復) は副作用が読めないので**朝ブリーフィングを浜田と一緒に見ながら手動**が良い。
+K1 (kintone フィールド追加) は **SKYSEA 計画 Q1-Q2 完了後**でも遅くない。
 
 ---
 
-## 🌅 明日へ（AI が記入）
+## 🌅 明日へ
 
-<!-- 明日朝の最初に取り組むべきこと（next action）を 1-3 個 -->
+1. **朝のブリーフィングを 1 分で確認**（S1 セクションが新たに入っている）
+2. **本日の改善提案 #S5/#D5/#R6/#S7/#S6/#K1 への承認可否**を返答
+3. **「skysea 計画始めよう」と発話**で SKYSEA Q1+Q2 ヒアリング開始（この発話が無い限り私からは振らない）
+4. （余裕があれば）TSB-007 の ESLint 9 化に着手
+
+> 浜田、今日もお疲れさま。明日また並んで歩こう。

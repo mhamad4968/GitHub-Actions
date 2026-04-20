@@ -3,20 +3,24 @@
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- 旧版（2026-04-10 654 予算ポータル）は chat-sessions/checkpoints/2026-04-10-budget-654-finalize.md に退避済み -->
 
-**最終更新**: 2026-04-19 10:05 (Sun) — Phase A 完遂 + TSB-006 リカバリ体制完全構築 + **真犯人特定（Cursor edit-rollback on Anthropic policy block）**
+**最終更新**: 2026-04-20 22:00 (Mon) — 夕反省承認分 (S1-S4+D3) 夜間実装完了 + git 大掃除 (201→0 件 / 6 commit) + 本日改善提案 7 件キュー化
+
+**前回更新**: 2026-04-19 10:05 (Sun) — Phase A 完遂 + TSB-006 リカバリ体制完全構築 + 真犯人特定（Cursor edit-rollback on Anthropic policy block）
 
 ---
 
 ## 現在のゴール（1〜3 行）
 
-- **継続性体制の再構築**: ポリシーブロックや突発的中断でセッションが切れても、`chat-sessions/<日付>.md` ＋ 本ファイル ＋ `docs/reports/<日付>-morning-prep.md` だけで完全復元可能な状態を恒常維持する。
-- **SKYSEA 突合**: 朝の 4 CSV は `data/skysea/` に保管済み。orphan 32 件の仕分けと管理画面削除は **来週土日（2026-04-25/26）** に持ち越し（ユーザー判断）。
-- **次回再開ファイル**: `@chat-sessions/2026-04-19.md` ＋ 本ファイル ＋ `@RULES-INDEX.md`。
+- **SKYSEA 計画 Q&A 着手**: 浜田が「skysea 計画始めよう」と発話したら Q1+Q2 ヒアリング開始（4/24 まで毎日 2 問ずつ）→ 4/26 現状調査 → 5/7 段階展開開始予定。
+- **改善提案 7 件への承認可否を朝に確認**: `docs/reports/2026-04-20-evening-reflection.md` §5 に #S5/#S6/#S7/#D5/#R6/#C3/#K1 を提示済。
+- **継続性体制は安定運用フェーズへ**: TSB-006 防衛網は 4/19 構築 → 4/20 で 1 サイクル完走、wipe 検知ゼロ。今後は問題が起きるまで触らない。
 
 ## 着手中のコンテキスト
 
-- **App / トピック**: PC台帳スタック（594/595/626/627）+ SKYSEA × kintone 突合 + ルール体系継続性
-- **ヘルススコア（朝 06:55 時点）**: 🟢 緑 10/10 合格
+- **App / トピック**: SKYSEA 計画 (4/20 着手前夜・Q1+Q2 待機状態) + 自動化基盤の通常運用
+- **ヘルススコア（4/20 朝 06:00 時点）**: 🟡 9/10 (lint:customize のみ ❌ = TSB-007 / 既知 / 影響軽微)
+- **本日 commit**: 7 個 (`facd93b` `e9587a3` `bbbf86e` `ebcf256` `d60adcf` `92b4807` + 夜実装 `0a46ef3`)
+- **未コミット**: 0 件 (本日整理済 / `*.orig` `*.rej` `*.backup.*Z` `temp/` `logs/` を gitignore 追加で恒常化)
 - **触ったファイル（本日午前）**:
   - `data/skysea/installed-pcs-2026-04-19.csv`（158 行・SKYSEA 元データ）
   - `data/skysea/already-installed-2026-04-19.csv`（122 行・両方あり）
@@ -66,17 +70,17 @@
 ### 憲法化（Phase C / 別セッションで提案予定）
 - [ ] AGENTS.md §40（欠番埋め）または §50 として「セッション継続性義務」を制定
 
-## 次セッションで最初にやること
+## 次セッションで最初にやること（2026-04-21 朝）
 
 **最短ルート**: `chat-sessions/NEW-SESSION-STARTER.md`（または Windows: `C:\Claudeとの会話メモ\NEW-SESSION-STARTER.txt`）の「貼り付け用テンプレート」をそのまま新チャットに貼る。
 
 手動で進める場合の手順:
 
-1. **`@chat-sessions/2026-04-19.md`** を読む（今日の経緯・課題・関係性合意・次の一手まで全記録）
-2. **`@chat-sessions/checkpoint-latest.md`**（本ファイル）で現在地確認
-3. **`docs/reports/<当日>-morning-prep.md`** で §46 朝ルーチン状態確認（緑じゃなければ §46 が先）
-4. **呼称ルール確認**: 濱田にはさん付けせず、友人としてタメ口 OK（`~/.cursor/rules/persist-policies.mdc` 2026-04-19 合意）
-5. SKYSEA 続きなら → 来週土日タスクの最上位「`skysea-recon.mjs` 再実行」から
+1. **`@docs/reports/2026-04-20-overnight-implementations.md`** を読む（夜間実装 5 件の結果サマリ）
+2. **`@docs/reports/2026-04-20-evening-reflection.md` §5** で改善提案 7 件 (#S5/#S6/#S7/#D5/#R6/#C3/#K1) を確認 → 承認可否を返答
+3. **`@docs/reports/2026-04-21-morning-prep.md`** で §46 朝ルーチン状態確認（朝 06:00 cron が新 S1/S4 セクション付きで生成）
+4. **呼称ルール確認**: 友人としてタメ口 OK（`~/.cursor/rules/persist-policies.mdc` 2026-04-19 合意）
+5. **SKYSEA 計画着手**: 「skysea 計画始めよう」と発話 → AI から Q1+Q2 を投げる（GPO 等は丁寧解説モード）
 6. それ以外の新規依頼なら → §42 過去ログ確認 → WORKFLOW.md Phase 0 から
 
 ## ブロッカー・要確認
