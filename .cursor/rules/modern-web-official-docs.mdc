@@ -1,0 +1,16 @@
+---
+description: Next.js・React・Tailwind・TypeScript・Supabase・Prisma・Firebase・OpenAI・LangChain・Lucide・Notion API のコード生成・設計時に、公式ドキュメント索引へ誘導する。
+alwaysApply: false
+---
+
+# モダン FE / BE / AI の公式ドキュメント
+
+次のいずれかに触れるタスクでは、**実装前に**リポジトリ内の **`docs/cursor-official-references.md`** を開き、該当技術の**公式 URL**（必要なら **MCP `fetch`** でページ本文）を最新仕様として参照する。
+
+- フロント: Next.js（App Router）、React、Tailwind CSS、TypeScript  
+- バックエンド / 認証: Supabase、Prisma、Firebase（`firebase.google.com`）  
+- AI: OpenAI API、LangChain  
+- UI アイコン: Lucide  
+- 連携: Notion API（`developers.notion.com`）
+
+**kintone の JavaScript カスタマイズ**が主題のときは **`kintone-apps.md`** と **`kintone-javascript.mdc`** を優先し、本ルールは補助とする。

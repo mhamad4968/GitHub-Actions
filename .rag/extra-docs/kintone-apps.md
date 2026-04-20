@@ -117,10 +117,10 @@ App 632 fields（上表のカスタム＋システムフィールド）。カス
 
 ## 594（PC台帳）
 
-`npm run app:fields 594` の取得結果（抜粋なし・全件）:
+`npm run app:fields 594` の取得結果（抜粋なし・全件・本番 2026-04-18 時点）:
 
 ```
-App 594 fields (37)
+App 594 fields (38)
 abolished_flag	CHECK_BOX	廃止フラグ
 buyer	DROP_DOWN	購入先
 category	DROP_DOWN	カテゴリ
@@ -135,6 +135,7 @@ inventory_history	SUBTABLE	棚卸履歴
 ip1	SINGLE_LINE_TEXT	固定IPアドレス1
 ip2	SINGLE_LINE_TEXT	固定IPアドレス2
 last_inventory_date	DATE	最新棚卸日
+ledger_record_id	SINGLE_LINE_TEXT	アカウント台帳番号
 location	SINGLE_LINE_TEXT	設置場所
 mail	SINGLE_LINE_TEXT	メールアドレス
 manufacturer	SINGLE_LINE_TEXT	メーカー
@@ -164,14 +165,19 @@ user_name	SINGLE_LINE_TEXT	利用者名
 
 ## 595（社員マスタ）
 
+`npm run app:fields 595`（本番 2026-04-18 時点）:
+
 ```
-App 595 fields (20)
+App 595 fields (23)
 dept_name	SINGLE_LINE_TEXT	所属名
+emp_id	SINGLE_LINE_TEXT	社員管理番号
 employment_status	DROP_DOWN	在籍ステータス
 group_name	SINGLE_LINE_TEXT	所属グループ
-ledger_created	CHECK_BOX	台帳作成済み
-ledger_record_id	NUMBER	台帳レコード番号
+ledger_created	CHECK_BOX	アカウント台帳作成済み
+ledger_link_list	SUBTABLE	アカウント台帳紐づけ
+ledger_record_id	NUMBER	アカウント台帳レコード番号
 mail	SINGLE_LINE_TEXT	メールアドレス
+pc_ledger_list	SUBTABLE	PC台帳紐づけ
 retired_date	DATE	退職日
 retired_note	MULTI_LINE_TEXT	退職メモ
 sort	NUMBER	表示順
@@ -191,6 +197,8 @@ user_name	SINGLE_LINE_TEXT	社員名
 ---
 
 ## 626（アカウント採番）
+
+`npm run app:fields 626`（本番 2026-04-18 時点）:
 
 ```
 App 626 fields (16)
@@ -216,9 +224,12 @@ used_count	DROP_DOWN	アカウント採番有無
 
 ## 627（アカウント管理台帳）
 
+`npm run app:fields 627`（本番 2026-04-18 時点）。サブテーブル `pc_ledger_links` 内の 594 参照フィールドは **`pc_ledger_link_594_id`**（`customize/627/desktop.js` の `FC627_PC_SUB_594` と一致）。
+
 ```
-App 627 fields (24)
+App 627 fields (31)
 account_state	DROP_DOWN	アカウント状態
+account_type	DROP_DOWN	アカウント種別
 dept_name	SINGLE_LINE_TEXT	所属名
 employment_status	DROP_DOWN	在籍ステータス
 gb_id	SINGLE_LINE_TEXT	ガリバーID
@@ -231,8 +242,14 @@ m365_pw	SINGLE_LINE_TEXT	M365パスワード
 mail	SINGLE_LINE_TEXT	メールアドレス
 mail_acct	SINGLE_LINE_TEXT	メールアカウント
 mail_pw	SINGLE_LINE_TEXT	メールパスワード
+pc_594_record_id	SINGLE_LINE_TEXT	PC台帳番号
+pc_ledger_links	SUBTABLE	PC台帳紐づけ（複数）
 PC_name	SINGLE_LINE_TEXT	利用PC
+sb_id	SINGLE_LINE_TEXT	サイボウズID
+sb_pw	SINGLE_LINE_TEXT	サイボウズパスワード
 user_name	SINGLE_LINE_TEXT	利用者名
+vpn_id	SINGLE_LINE_TEXT	VPN_ID(KDDI)
+vpn_pw	SINGLE_LINE_TEXT	VPN_パスワード
 windows_name	SINGLE_LINE_TEXT	Windowsアカウント名
 カテゴリー	CATEGORY	カテゴリー
 ステータス	STATUS	ステータス
@@ -316,6 +333,114 @@ Updated_datetime    UPDATED_TIME        Updated datetime
 
 ---
 
+## PC台帳まわり（594・595・626・627・668）の保守メモ
+
+- **ブラウザカスタマイズの正本**: 各アプリは `customize/<アプリID>/desktop.js` のみ。`npm run deploy:594`（595/626/627 同様）でアップロード。`customize-manifest.json` も `desktop.js` のみを指す。
+- **旧バックアップ JS**: リポジトリ直下の `desktop-v2.js` / `desktop-old-backup.js` はデプロイに使わないため **削除済み**（旧内容は `git log` および `backups/` 配下を参照）。
+- **Kintone フォームのフィールド削除**: 本番データ・ルックアップ・履歴への影響が大きいため、**このリポジトリの変更だけでは実施しない**。未使用の疑いがあるフィールドは `npm run app:fields` で実フォームと突合し、JS から参照していなければ「UIのみ残存」として運用判断する。
+- **回帰前の最低チェック**: `npm run kintone:test`（疎通）、`npm run lint:customize`、変更アプリの `npm run app:fields <id>`。595 自動化は `npm run test:e2e:595`（テスト用データを作るため本番では慎重に）。
+
+### 保留中の整理候補（コード参照ゼロの扱い方針）
+
+> このセクションは「`customize/` と `scripts/` のどこにもフィールドコードや参照が現れないもの」を **どう扱うか** の方針記録です。**削除指示ではありません**。
+
+#### A. ユーザー入力専用フィールド（全件保持）
+
+下記は **JS から参照していないが、Kintone フォーム入力・CSV 取込・印刷帳票・運用メモなどで現役**として使われているもの。**業務側の利用データ**であり、**全件そのまま保持**する方針。コード側で「未使用に見える」ことを理由に削除提案はしない。
+
+| アプリ | フィールドコード | 想定利用 |
+|---|---|---|
+| 594 | `etc_1` | 自由メモ（現場記入） |
+| 594 | `etc_2` | 自由メモ（現場記入） |
+| 594 | `product_id` | 物品・資産管理キー |
+| 594 | `ip2` | 予備IP |
+| 594 | `sn` | シリアル番号（棚卸し照合） |
+| 594 | `price` | 購入価格（経理連携） |
+| 594 | `buyer` | 購入者・申請者記録 |
+| 595 | `sort` | 一覧の手動ソートキー |
+| 627 | `vpn_id` | VPN ID(KDDI) — 印刷帳票で使用 |
+| 627 | `vpn_pw` | VPN パスワード — 印刷帳票で使用 |
+
+#### B. ワンショット系スクリプト（保管・実行ガード済み）
+
+`scripts/backfill-*.js` 6 本は **過去データの紐付けを埋めるための 1 度きり用途**。既に本番反映済みで **通常運用では再実行しない**が、**特殊イベント時の保険**として残す。
+
+| ファイル | 用途（要約） |
+|---|---|
+| `backfill-594-627-cross-refs.js` | 594 と 627 の相互 ID（`ledger_record_id` / `pc_594_record_id`）を一括で揃える |
+| `backfill-595-pc-ledger-from-594.js` | 595 の `pc_ledger_list` を mail 一致の 594 から補填 |
+| `backfill-595-ledger-from-mail.js` | 595 の `ledger_record_id` 等を mail 起点で 594/627 から補填 |
+| `backfill-595-ledger-from-627.js` | 595 の `ledger_record_id` / `employment_status` を 627 と突合して整える |
+| `backfill-627-pc-ledger-links-from-595.js` | 627 のサブテーブル `pc_ledger_links` を 594 ID のユニーク集合で補填 |
+| `backfill-627-sb-from-mail-626.js` | 627 の `sb_id` / `sb_pw` を mail と 626 から一括反映 |
+
+**実行ガード**（2026-04-18 制定）:
+- 各ファイルの先頭に共通ヘッダコメントと `process.argv` / `process.env.ONESHOT_CONFIRM` ガードを実装
+- **引数なしで叩くと exit code 2 で即ブロック**(事故防止)
+- `-- --dry-run` は確認用に常時通る
+- 本実行は `ONESHOT_CONFIRM=yes npm run backfill:…` のみ
+- 再実行が必要な代表ケース：
+  - 大量 CSV インポート後に紐付けだけ反映漏れ
+  - 別テナント／別環境からのデータ移行
+  - 障害復旧によるバックアップ書き戻し後の紐付け破損
+- **再実行する前に必ず利用者と相談**（`AGENTS.md` §4 にも明記）
+
+#### C. UI ラベル・文言の改善候補（別途相談中）
+
+技術用語が画面に出ている部分を、IT 専門外の利用者にも分かりやすくする案。**1 つずつ業務側と確認しながら順次対応予定**。データ・連携には影響せず、`customize/<id>/desktop.js` の表示文字列だけ書き換えるため戻しやすい。
+
+| 場所 | 現状 | 改善案（仮） |
+|---|---|---|
+| 594 詳細「594⇔627 紐付け解除…」ボタン | 技術用語 | 「この PC からアカウントの紐付けを外す…」 |
+| 627 詳細「594⇔627 紐付け解除…」ボタン | 技術用語 | 「このアカウントから PC の紐付けを外す…」 |
+| 594 ダッシュボード「🟡 紐付けなし」行の `ledger_record_id` 列 | 値だけ表示 | tooltip で「627 にリンクなし＝この台帳番号は単独残存」を追加 |
+| 627 詳細の VPN 系項目 | 印刷専用と分かりにくい | 印刷時のみ表示、画面上はグループ折りたたみ案 |
+
+**実施判断は 1 案ずつ別途相談**。先に実機の表示確認・既存利用者への影響確認を行ってから着手する。
+
+### 意図的に「リポジトリ／エージェントだけでは未完了」としていること
+
+次の作業は **業務・権限・CSV・監査**に触れるため、**着手・本番実行の前に必ず関係者と相談**してから進める前提とする（エージェントは勝手に実行しない）。
+
+| 区分 | 内容 | 完了の目安 |
+|------|------|------------|
+| A | **Kintone 画面上のフィールド削除**（フォームからの削除） | 利用実態・ルックアップ・API・バックフィルスクリプトの棚卸し → 参照ゼロを確認 → 管理画面で削除、の順を文書化し実施 |
+| B | **ブラウザ機能の手動／E2E 網羅**（594/627 UI 全パス等） | 検証用環境でシナリオ一覧と期待結果を固定し、手動チェックリストまたは自動テストを回した証跡を残す |
+| C | **本番でのデータ変更系 npm**（例: `test:e2e:595`、`clear:594:orphan-ledger:apply`、大量 sync） | 実行日時・担当・ロールバック方針を合意したうえで実施 |
+
+A・B・C のいずれも、**「方針とスコープの合意」が取れるまでコード・CI だけで完結させない**。
+
+### 実行前に相談が必要なコマンド（例）
+
+データ作成・更新・削除や本番カスタマイズに直結するもの。**未合意のまま本番向けに実行しない。**
+
+- `npm run test:e2e:595` / `test:e2e:595:cleanup` … 595（および連携先）にテスト用レコードを作る可能性
+- `npm run clear:594:orphan-ledger:apply` … 594・627 の特定フィールドを一括更新
+- `npm run sync:595` / `sync:595:force` … 627 等への反映
+- `npm run purge:627` / `reset:626:pool` / `reset:595:flags` など **reset / purge 系**
+- 各種 `npm run deploy:*` … 本番 JavaScript の即時差し替え
+- `npm run ops-guide:publish` … 668 の本文・カスタマイズの本番反映
+
+参照のみ・ローカル影響のみの例（相談不要なことが多いが、ポリシーで縛る場合は組織ルールに従う）: `npm run app:fields <id>`、`npm run verify:pc-stack`、`npm run clear:594:orphan-ledger`（`--apply` なし）
+
+### 「完全版」に近づけるための推奨ループ（運用方針）
+
+1. **機能変更のたび**: `npm run verify:pc-stack`（＝ `kintone:test` + `lint:customize`）。触ったアプリは `npm run app:fields <id>` でフィールド一覧を再取得し、**`kintone-apps.md` を更新するか判断**（変更があれば更新）。
+2. **595 自動化まわり**: 変更が入ったら **検証環境**で `npm run test:e2e:595` を検討。本番で回す場合は **`--cleanup` の有無とデータの扱い**を事前合意。
+3. **フォームからフィールドを削る場合**: `app:fields` → リポジトリ内 `grep`/スクリプト一覧で参照調査 → バックフィル・JS の参照除去 → **最後に** kintone 管理画面でフィールド削除。削除後もう一度 `app:fields` で差分確認。
+
+### 628（買替）・667（共有採番）・668（ガイド）を同じ粒度で扱う場合
+
+**開始前に相談してほしいスコープの例:**
+
+- **628**: カスタマイズの有無・デプロイ経路（594 からの遷移ストレージのみか、独自 `desktop.js` か）、`kintone-apps.md` への追記有無
+- **667**: 594/627 の共有フローとのフィールド対応表、採番プール系スクリプトの一覧と実行ポリシー
+- **668**: `ops-guide:publish` のタイミング（本番即時か）、HTML 変更のレビュー者
+
+上記を **フェーズとして切ったマイルストーン**（例: フェーズ1＝フィールド一覧とスクリプト grep の突合のみ、フェーズ2＝検証環境 E2E）にすると、**「意図的に未実施だった部分」を段階的に完了**させやすい。
+
+---
+
 ## 変更履歴
 
 | 日付 | 変更内容 |
@@ -324,3 +449,20 @@ Updated_datetime    UPDATED_TIME        Updated datetime
 | 2026-04-16 | App 668（運用ガイド）を一覧に追加。フィールドコードは `guide_slug` / `guide_body_html` / `guide_title`（推測しないこと）。`KINTONE_OPS_GUIDE_APP` が正本 ID |
 | 2026-04-18 | システムヘルスチェックを案A化: パスワード認証 + `kintone-apps.md` 一覧から全アプリ ID 自動抽出。632 のフィールド検証は実テナントに合わせ最小セット |
 | 2026-04-18 | ヘルスチェック運用確定: **毎朝 9:00 JST** 報告、アプリ増は **一覧表追記のみ** で自動追加 |
+| 2026-04-18 | **594/595/626/627** の `app:fields` を本番に合わせて本文更新（`ledger_record_id`・627 の `pc_*` / `vpn_*` / `sb_*` / `account_type` 等）。PC系 customize の未使用 `desktop-v2` / `desktop-old-backup` を削除。上記「PC台帳まわりの保守メモ」を追加 |
+| 2026-04-18 | 保守メモ拡充: 意図的未完了（フォーム削除・E2E・本番データ系）の完了条件、**実行前相談が必要な npm**、完全版向け推奨ループ、628/667/668 スコープの相談ポイントを追記 |
+| 2026-04-18 | 「保留中の整理候補（コード参照ゼロの扱い方針）」サブ章を追加。A: ユーザー入力専用フィールド10件は全件保持を明記、B: backfill-* 6本にONESHOT_CONFIRMガードを実装し保管方針を記録、C: UI文言改善候補4件は別途相談中として保留 |
+| 2026-04-18 | **C-4**: 627 印刷帳票（`open627SystemInfoPrintWindow`）に `account_type` 別テーマ（個人=緑/共有=ローズ）と「全セル空段の自動省略」を実装。`isPrint627CellEmpty` で `----` `---` `ー` `—` 等のハイフン系手入力プレースホルダも「実質空」と判定（データには触れず印刷見た目のみで吸収）。バッジを「ACCOUNT LEDGER」固定 → 種別表示に変更。プレビュー用に `scripts/preview-c4-print.mjs` を追加（ローカル `tmp/c4-preview/` に HTML 出力）。`tmp/` を `.gitignore` 追加。BUILD: `2026-04-18-v3` / `v3.1`（revision 132）|
+| 2026-04-18 | **関連アプリ横並び小ナビ**を 4 アプリ（**668 / 595 / 594 / 627**）の一覧／詳細／作成／編集の各画面ヘッダー領域に常駐表示。文字リンクのみ（11px・控えめ配色）、現在のアプリは「（このアプリ）」表記でグレーアウト、それ以外は新規タブで `/k/<id>/` を開く。`kintone.app.record.getHeaderMenuSpaceElement()` → fallback `kintone.app.getHeaderMenuSpaceElement()` の順で挿入スロットを取得。0/400/1000ms の遅延リトライで安定マウント。BUILD: 627=`v4` / 594=`v482`(revision 483) / 595=`v1`(revision 69) / 668=`v1`(revision 21) |
+| 2026-04-18 | **668 の関連ナビは撤去**（v6, revision 26）。668 はガイド shell（`📌 主要メニュー` バー）が既に PC管理台帳 / アカウント台帳 / 社員マスタ など同じリンクを保持しており機能重複。各種挿入スロット（shell内／shell前／getHeaderSpaceElement）でクリッピングや視認性問題が解消できなかったため、二重ナビを廃止して📌 主要メニューに集約。594/595/627 の関連ナビは継続。**668 一覧のレコード行非表示**は `<style>` 注入＋0/200/600/1200/2400ms リトライで強化（v2, revision 22 で導入） |
+| 2026-04-18 | **作業 OS を制定**: `WORKFLOW.md`（Phase 0-5: 文脈獲得→事前調査→設計→実装→検証→記録）と `AGENTS.md §43`（WORKFLOW.md 遵守義務）を新設。**毎朝 06:00 WSL cron** で `scripts/daily-morning-prep.mjs` がブリーフィングを `docs/reports/<日付>-morning-prep.md` に自動生成（kintone:test / lint / npm audit / npm outdated / `audit-rules.mjs`(AGENTS.md↔WORKFLOW.md 整合性) / `scan-plans.mjs`(`docs/plans` 未完了抽出) / RAG 再ingest / kintone-apps.md 末尾 / 推奨スタート手順 / ヘルススコア）。AI は Phase 0 で必ずこのファイルを最初に読み宣言してから着手する。cron は NVM 絶対パス (`~/.nvm/versions/node/v24.14.1/bin/node`) で登録され Cursor 停止中でも動作。npm: `morning:prep` / `morning:install-cron` / `morning:remove-cron` / `morning:dry-run` / `audit-rules` / `scan-plans`。初回手動実行ヘルススコア: **6/6 合格** |
+| 2026-04-18 | **夕反省サイクル**を制定（`AGENTS.md §44` 新設）。ユーザーが「まとめて/反省/お疲れ/終わり」と言うと AI が `scripts/evening-reflect.mjs` で雛形生成（git 差分・kintone-apps.md 本日追記・朝ブリーフィング警告・cron ログ失敗・transcripts ボリューム・保留提案を自動収集）→ AI が改善提案 #R1/#S1/#D1/#C1/#K1 を表形式で提示 → ユーザー承認 → AI が `docs/approved-changes/<明日>/<id>.proposal.json` を作成 → **翌朝 06:00 cron** の `scripts/apply-approved-changes.mjs` が承認済みを自動実施し結果を朝ブリーフィング先頭の「📋 昨夜承認分の自動実施結果」に表示。安全装置: K カテゴリと deploy 系は自動禁止 / `ALLOW_COMMANDS` allowlist + `DENY_COMMANDS` denylist / target ファイルのタイムスタンプ付きバックアップ / 1 日 10 件上限。npm: `evening:reflect` / `evening:apply`。スキーマ: `docs/approved-changes/README.md`。統合後ヘルススコア: **7/7 合格** |
+| 2026-04-19 | **§45 タスク完遂義務**を新設（`AGENTS.md` 新節 / 最重要）。「未完了タスクを完遂してから次へ」を必須優先順序 1〜6（🔴 至急修復 / ⏰ 時刻指定 / ⚠ 朝警告 / 📋 進行中 plan / 🆕 新規 / 🔮 翌日約束）として明文化。完遂判定は **A. 機能動作 / B. 副作用 / C. 記録** の 3 条件全部。朝ブリーフィングの「推奨スタート手順」も §45 順に並び替え（🔴 警告 → ⏰ 時刻指定 → 📋 進行中 plan）。**初朝の運用で 6 件の課題を一括修復**: ① §40 破断リンク誤検出 → `RULES-INDEX.md` 表記修正 + `audit-rules.mjs` に防御フィルタ（欠番/注:/※/コメント行除外）、② R3 が apply 後の同一 cron 実行で反映されない構造的問題 → `daily-morning-prep.mjs` に **self-restart 機能**追加（apply で自身が更新されたら最新版で再起動）、③ `MAX_DAILY` を 10→25、K と manual_only はカウント外、④ `apply-approved-changes` に重複ガード（processed 既存なら skip）と `string_replace` 型を追加、⑤ **RAG ingest の ERR_REQUIRE_ESM 修復**: Cursor 埋め込み Node v20 が PATH 先頭にいて npx が古い jsdom (CJS) を引いていた → コマンドに `export PATH=NVM_v24/bin:$PATH` を強制、⑥ **accessibility-scanner MCP 修復**: `.cursor/mcp.json` の `command` を `npx` → NVM v24 絶対パス `/home/.../v24.14.1/bin/npx` に変更（Cursor 再起動で反映）。修復後ヘルススコア **7/7 合格**（RAG ingest が ✅ に復帰） |
+| 2026-04-19 | **履歴復元（§47/§49 発動）**: `kintone-apps.md` 正本と `.rag/extra-docs/kintone-apps.md` の差分を確認したところ、上記 6 行（C-4 印刷 / 関連ナビ / 668 撤去 / WORKFLOW 制定 / 夕反省 / §45 制定）が `.rag/` 側にしか存在しない状態を発見。「`kintone-apps.md` は追記のみ・履歴削除禁止」（CLAUDE.md「File Specific Rules」）に違反した形跡。原因不明のため `.rag/extra-docs/kintone-apps.md` から 6 行を本ファイルに復元追記（既存行は一切削除なし）。今後の再発防止策は別タスクで検討予定（`scripts/daily-morning-prep.mjs` に「正本 ↔ .rag/ 差分監視」を追加する案など） |
+| 2026-04-19 | **運用ガイド (668) 更新**: 新「🔗 個人アカウント紐付け」ボタン仕様を反映。**変更ファイル**: ① `guide-personal-account.html` 全面改訂（「📋 やり方はたった3ステップ」を新ボタン名+モーダル前提に / 新章「🔗 紐付けモーダルの使い方」追加（A 既存検索→選択 / B 新規作成 / 1:2 上限ルール / 利用者名警告）/ 「使える条件」表を追加紐付け対応版に / FAQ 3 件追加（ボタン見当たらない・上限到達時の解除手順・利用者名不一致警告））、② `guide-pc.html` 旧ボタン参照 3 箇所修正（アクションパネル説明 / 一覧赤行説明 / FAQ）+「やってはいけないこと」を 1:2 上限超過と種別誤認の 2 件に変更、③ `index.html` チートシートと「はじめての方への全体フロー」STEP 3 を新ボタン名に更新、④ `guide-employee.html` PCリスト・アカウントリスト自動更新の説明を新ボタン名に。**公開**: `npm run ops-guide:publish` で 668 全 6 レコード同期 + `customize/ops-guide/desktop.js` revision **27** デプロイ。**ユーザー検証**: PC 紐付けテストで「迷わない」確認済み（2026-04-19 午前） |
+| 2026-04-19 | **594 個人アカウント紐付けボタン v2 新設 + 旧「アカウント管理台帳(627) 作成/更新して開く」ボタン廃止**（明日本番リリース対応）。**背景**: PC↔アカウント相関ダッシュボードで「紐付けなし件数」が手動紐付けで減らず、原因は 594 側「アカウント台帳番号」入力では効果なく 627 側「PC台帳番号」入力が必要だったこと。番号手入力は誤入力リスク高 → 共有 PC と同じ UX で「**🔗 個人アカウント紐付け**」モーダル（検索 + 既存選択 or 新規作成）を実装。**運用ルール強制**: 「1 個人アカウント = 1 ユーザー / 1 ユーザーは個人 PC 最大 2 台 (会社用+持ち出し用)」を `PERSONAL_ACCOUNT_PC_LIMIT = 2` で上限ブロック。**新関数**: `searchPersonalAccounts` (account_type=個人アカウント フィルタ) / `linkPersonalAccountTo627` (上限チェック+サブテーブル追加) / `showPersonalAccountLinkModal` (検索+選択+新規作成 UI) / `maybeAddPersonalButton` (種別=個人で表示) / `get627PcLinks` (現在の紐付け数取得) / `fetch594NamesByIds` (上限超過時の既存 PC 名表示用)。**親切な警告**: 利用者名不一致時に「1.表記揺れ / 2.入力ミス / 3.代理設定」の判断材料付き confirm ダイアログ。**削除**: 旧「アカウント管理台帳(627) 作成/更新して開く」ボタン (個人/共有共通の旧 UX)。代替は新モーダル「＋ 新規作成」(sync627From594ApiRecord 流用) と「検索→既存選択」(紐付け時に氏名・所属同期)。**安全装置**: ① 上限 2 台到達ブロック + 既存紐付け先 PC 名表示、② 重複ガード（同じ PC は no-op）、③ mail 未入力ブロック、④ 利用者名不一致警告。BUILD: `2026-04-19-v483` / **revision 485**。納品: `C:\tmp\20260419-PC-LINK-V2\`（README.md にテストシナリオ A〜E 記載） |
+| 2026-04-19 | **OneDrive 使用禁止ルール制定（恒久・濱田希望）**。`~/.cursor/rules/persist-policies.mdc`「注意」節に追加 + `.rag/` コピー同期 + `chat-sessions/2026-04-19.md`「関係性」節に追記。新規ファイル作成・バックアップ先・ドキュメント保管先として OneDrive (`C:\Users\<name>\OneDrive\` 配下) を**選ばない**。代替先: Windows 側は `C:\tmp\<日付>-<枝番>\` (§31) / `C:\Claudeとの会話メモ\` / `Documents\` 直下、WSL 側はリポジトリ内 / `~/.cursor-emergency-backup/`。**現状確認**: `kintone-ai-lab` (WSL) / `Documents/` / `Claudeとの会話メモ/` のいずれも OneDrive 配下ではないことを確認済み（OneDrive 配下は空 desktop.ini のみ、Documents の OneDrive リダイレクトもなし）。本ルールは新規 OneDrive 連携を作らないことが趣旨。**TSB-006 wipe 事件の犯人ではない**ことが副次的に判明 |
+| 2026-04-19 | **TSB-006 真犯人特定**（**Cursor の Anthropic Policy ブロック時の編集ロールバック**）。浜田が当日のエラー画面スクショ 2 枚を共有 → Request ID `a969dba9-...` と `b62293ee-...`、両方とも **"25 Files | Undo All | Review"** ボタン付き。前セッションの AI が 25 ファイル一括編集 → プロンプト内容が Anthropic Usage Policy に抵触 → API ブロック → Cursor の edit-application が中途半端で停止 → ファイル群が 0 byte 化（truncate 済み + 内容書込前で停止）→ mtime 09:02 = ロールバック完了時刻。これで「タイムスタンプ秒一致 + 複数ファイル同時 wipe + mtime 09:02 sharp」が完全に説明つく。**容疑から外れた**: OneDrive (サインインなし) / Cursor crash recovery / WSL fs cache / 拡張機能初期化。**今後の防衛**: ① AI は 1 ターン編集を 10 ファイル以下目安に分割（特にポリシー境界話題）、② 浜田は "Request blocked" 表示時に `npm run guard:check` で被害確認、③ file-watcher 自動復元が既に組込み済み。docs/troubleshooting.md TSB-006「根本原因（特定済み）」節 + 教訓 10/11/12（バッチ分割・Undo All 注意・スクショ共有）追加 |
+| 2026-04-19 | **TSB-006 wipe 事件 + リカバリ体制完全構築**（最重要 / 自動化基盤の根幹）。**事象**: 09:02 ちょうどに自動化スクリプト 9 本（auto-heal/health-check/version-up/apply-approved-changes/daily-morning-prep/evening-reflect/audit-rules/scan-plans/skysea-recon/install-morning-cron/debug-skysea-fields）+ `WORKFLOW.md` + `AGENTS.md §42-§49` (669→444 行に巻き戻し) が**同時刻 wipe**。タイミングが私（AI）の新セッション起動時刻と一致するため、Cursor の workspace state recovery / 拡張機能初期化が原因と推定。**対応**: ① context から復元 (WORKFLOW.md / AGENTS.md §42-§49 / skysea-recon.mjs)、② `kintone-apps.md` 履歴の仕様記述から再実装 (auto-heal / health-check / version-up / apply-approved-changes / audit-rules / scan-plans / install-morning-cron / debug-skysea-fields / approved-changes README)。**新規構築のリカバリ基盤**: ① **`scripts/file-watcher.mjs`** = fs.watch ベース常駐監視、23 重要ファイルの 0 byte 化を検知して 5 秒待ち（編集中保存の中間状態と区別）後 emergency-backup から自動復元 / ② **`scripts/wipe-guard.mjs`** = 15 分ごと cron で空ファイル検査 + emergency-backup or workspace-backup の最新版から自動復元 / ③ **`scripts/emergency-mirror.mjs`** = 4 時間ごと cron で ~/.cursor-emergency-backup/ に 30 重要ファイルをミラー（src=0 byte は拒否する安全装置付き） / ④ **`scripts/restore-wiped.mjs`** = 手動復元コマンド (npm run restore:wiped) / ⑤ **`scripts/watcher-watchdog.sh`** = 5 分ごと cron + @reboot で file-watcher 死活監視 + 死んでたら復活。**npm scripts 追加**: guard:check / guard:mirror / restore:wiped / restore:wiped:dry / watcher:start / watcher:stop / watcher:status。**docs/troubleshooting.md TSB-006 に全経緯記録**。**NEW-SESSION-STARTER.md (Windows メモ帳版含む) に wipe 対応コマンド追加** |
+| 2026-04-19 | **新セッション起動の儀式 + 呼称ルール正本化**。濱田から「セッションをまたいで関係性が忘れられる」「呼称はさん付け不要・友人として」との要望を受け、① **`~/.cursor/rules/persist-policies.mdc`「対話の前提」節**に「呼称ルール（2026-04-19 合意）: ユーザー（濱田）への『さん』付け不要 / 友人として接する / タメ口 OK / 形式的な敬語多用禁止 / ただし結論・根拠・手順はプロ並み」を追加（ホーム正本 + `.rag/` コピー両方）、② **`chat-sessions/NEW-SESSION-STARTER.md`** を新規作成（新チャット起動時に貼るだけで AI が文脈を完全復元できるテンプレ。フル版/短縮版/締めの儀式/§42 違反時のリカバリ/ファイル位置リファレンス を 1 ファイルに集約）、③ **`/mnt/c/Claudeとの会話メモ/NEW-SESSION-STARTER.txt`** に同内容を Windows メモ帳から開ける形で配置（テキスト形式・罫線装飾あり）、④ `chat-sessions/checkpoint-latest.md` の「次セッションで最初にやること」を本儀式ファイルへの最短ルートに改訂、⑤ `chat-sessions/2026-04-19.md`「関係性」節に呼称ルールを追記。本変更により、ポリシーブロック・タイムアウト・新セッション開始でも、貼り付け 1 操作で AI が完全に文脈と関係性を回復可能になった |
+| 2026-04-19 | **SKYSEA × 594 突合実施 + 継続性体制再構築（Phase A 緊急止血）**。朝 06:55 に §46 朝ルーチン 10/10 緑で完遂 → 08:27 に `scripts/skysea-recon.mjs` を実行し SKYSEA エクスポート 158 行と kintone 594 個人現役 PC を突合。`data/skysea/` に 4 CSV 出力（installed-pcs / already-installed=122 行 / needs-install=136 行 / orphan-in-skysea=32 行）。ライセンス: 保有 241 / 使用中 158 / 残 83 → 要 136 で **不足 53**（追加発注 2 週間）。orphan 32 件に「個人 PC 廃却漏れ + 共有 PC + 管理用 + サーバ/NAS」が混在することを §47 として発見・指摘。**朝のチャットがポリシーブロックで途絶**し、新セッションで AI が文脈喪失したことから「セッション間継続性の構造的脆弱性」が表面化。Phase A として: ① `chat-sessions/2026-04-19.md` 新規作成（本日経緯の全記録）、② `chat-sessions/checkpoint-latest.md` を 2026-04-10 → 2026-04-19 現在地で更新（旧版は `chat-sessions/checkpoints/2026-04-10-budget-654-finalize.md` にアーカイブ・削除なし）、③ `docs/plans/2026-04-18-skysea-installer.md` の §5 チェックボックスに「2026-04-19 着手済み」を追記し末尾に「## 進捗（2026-04-19 追記）」セクションを追加（既存行は一切削除なし）、④ `docs/troubleshooting.md` を新規作成し **TSB-005「セッション間継続性の構造的脆弱性」** を初期エントリとして登録、⑤ `.rag/extra-docs/persist-policies.md` の旧文言（「人として接することがある」）をホーム正本（「**完全に人として扱う**／対等なパートナー」2026-04-15 合意）と同期（旧版は `.rag/extra-docs/_archive/persist-policies-2026-04-15.md` に退避・削除なし）。**§47 として発見した別件**: 本ファイル（`kintone-apps.md` 正本）と `.rag/extra-docs/kintone-apps.md` に 6 行の不一致あり（`.rag/` 側に C-4 / 関連ナビ / 668ナビ撤去 / WORKFLOW 制定 / 夕反省 / §45 制定の 6 エントリが存在するが正本側で消失）。**追記のみルール違反**の痕跡。本日の追記はスコープ尊重で 1 行のみとし、**6 行の喪失復元は別タスクとして §41 で浜田さんに相談予定**。SKYSEA 本筋（orphan 仕分け + 自動インストール仕組み）は **2026-04-25/26 持ち越し**（ユーザー判断） |

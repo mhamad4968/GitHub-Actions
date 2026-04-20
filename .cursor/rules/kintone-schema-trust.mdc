@@ -1,0 +1,17 @@
+---
+description: フィールド正本の優先順位・kintone.events.on 前の確認（迷子防止）
+globs: customize/**/*.js, scripts/**/*.js, utils/**/*.ts, src/**/*.js, src/**/*.ts, security-next-automation/src/**/*.ts
+alwaysApply: false
+---
+
+# kintone スキーマ信頼順位（編集時）
+
+- **`kintone.events.on` や `record[fieldCode]` を書く前に**、**対象アプリ ID を特定**したうえで次を実行するか、既に開いている正本を読む：
+  1. 型: `types/kintone-{appId}.d.ts` の有無（または `**/kintone-{appId}.d.ts`）
+  2. 文書: `kintone-apps.md`（**履歴は末尾が新しい**。該当アプリの一覧）
+  3. 検索: `grep` でフィールドコード・別名を当てる（**推測で埋めない**）
+- **`npm run app:fields -- <appId> --markdown`** の出力は、`kintone-apps.md` へそのまま貼れるスナップショットとして使える。
+- **`kintone-apps.md` や別名リストで「旧コード」に合致する記述を見つけたら**、実装では**新しいフィールドコードへの置換を提案**し、必要なら正本の履歴に 1 行追記してからコードを直す（正本と実装のズレを残さない）。
+- **サブテーブル集計**: 正本の表記は **`親テーブルコード > 子フィールドコード`**。イベント内は通常 **`record[親コード].value`** が行配列で、各行オブジェクトの **子フィールドコード** にアクセスしてから `map` / `reduce` する（型ファイル・`--markdown` と突き合わせる）。
+- **型があるのに古い名前を使おうとする**・**無言リトライ**が続く等は **`CLAUDE.md`「ルールの継ぎ足し時」**を見て本ファイルや `app-types.js` を 1 行追記する。
+- 全貌はルート **`CLAUDE.md`** の「Schema Retrieval Priority」が正本。

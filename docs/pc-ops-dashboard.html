@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PC管理 かんたんガイド</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f4f8;--card:#fff;--primary:#2563eb;--primary-light:#dbeafe;
+  --success:#16a34a;--success-light:#dcfce7;
+  --warn:#ea580c;--warn-light:#fff7ed;
+  --danger:#dc2626;--danger-light:#fef2f2;
+  --gray:#64748b;--gray-light:#f1f5f9;
+  --text:#1e293b;--text-sub:#475569;
+  --radius:16px;--shadow:0 2px 12px rgba(0,0,0,.08);
+}
+body{font-family:'Segoe UI','Hiragino Sans','Meiryo',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+
+/* ── Header ── */
+.header{background:linear-gradient(135deg,#1e40af,#3b82f6);color:#fff;padding:28px 24px;text-align:center}
+.header h1{font-size:1.6em;font-weight:700;letter-spacing:.03em}
+.header p{font-size:.9em;opacity:.85;margin-top:4px}
+
+/* ── Nav ── */
+.nav{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:16px 16px 0;max-width:900px;margin:0 auto}
+.nav a{text-decoration:none;padding:8px 18px;border-radius:24px;font-size:.85em;font-weight:600;
+  background:var(--card);color:var(--primary);border:2px solid var(--primary);transition:.2s}
+.nav a:hover{background:var(--primary);color:#fff}
+
+/* ── Section ── */
+.container{max-width:900px;margin:0 auto;padding:16px}
+.section{margin-bottom:28px}
+.section-title{display:flex;align-items:center;gap:10px;font-size:1.25em;font-weight:700;margin-bottom:14px;
+  padding-bottom:8px;border-bottom:3px solid var(--primary)}
+.section-title .icon{font-size:1.4em}
+
+/* ── Cards ── */
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 24px;margin-bottom:14px}
+.card h3{font-size:1em;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+
+/* ── Steps ── */
+.steps{counter-reset:step;list-style:none}
+.steps li{counter-increment:step;position:relative;padding:12px 16px 12px 54px;margin-bottom:10px;
+  background:var(--gray-light);border-radius:12px;font-size:.92em}
+.steps li::before{content:counter(step);position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  width:30px;height:30px;border-radius:50%;background:var(--primary);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85em}
+
+/* ── Alert boxes ── */
+.tip{padding:14px 18px;border-radius:12px;margin:10px 0;font-size:.88em;display:flex;align-items:flex-start;gap:10px}
+.tip .emoji{font-size:1.3em;flex-shrink:0}
+.tip-blue{background:var(--primary-light);border-left:4px solid var(--primary)}
+.tip-green{background:var(--success-light);border-left:4px solid var(--success)}
+.tip-orange{background:var(--warn-light);border-left:4px solid var(--warn)}
+.tip-red{background:var(--danger-light);border-left:4px solid var(--danger)}
+
+/* ── App map ── */
+.app-map{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:14px 0}
+.app-card{border-radius:12px;padding:16px;text-align:center;font-weight:600;font-size:.9em;
+  border:2px solid transparent;transition:.2s}
+.app-card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.1)}
+.app-card .app-id{font-size:.75em;font-weight:400;opacity:.7;margin-top:4px}
+.app-card .app-emoji{font-size:2em;margin-bottom:6px}
+.app-pc{background:#dbeafe;border-color:#93c5fd}
+.app-emp{background:#dcfce7;border-color:#86efac}
+.app-acct{background:#fef9c3;border-color:#fde047}
+.app-num{background:#f3e8ff;border-color:#c4b5fd}
+.app-js{background:#ffe4e6;border-color:#fda4af}
+
+/* ── Flow diagram ── */
+.flow{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;padding:16px 0}
+.flow-box{padding:10px 18px;border-radius:10px;font-size:.85em;font-weight:600;text-align:center;min-width:120px}
+.flow-arrow{font-size:1.4em;color:var(--primary);font-weight:700}
+.flow-blue{background:var(--primary-light);color:#1e40af}
+.flow-green{background:var(--success-light);color:#15803d}
+.flow-yellow{background:#fef9c3;color:#854d0e}
+.flow-purple{background:#f3e8ff;color:#7c3aed}
+
+/* ── FAQ ── */
+.faq-q{cursor:pointer;padding:14px 18px;background:var(--gray-light);border-radius:12px;margin-bottom:6px;
+  font-weight:600;font-size:.92em;display:flex;align-items:center;gap:8px;transition:.15s}
+.faq-q:hover{background:#e2e8f0}
+.faq-q::after{content:'▼';margin-left:auto;font-size:.7em;transition:.3s}
+.faq-q.open::after{transform:rotate(180deg)}
+.faq-a{display:none;padding:10px 18px 16px;font-size:.88em;color:var(--text-sub);line-height:1.7}
+.faq-a.open{display:block}
+
+/* ── Footer ── */
+.footer{text-align:center;padding:20px;font-size:.75em;color:var(--gray)}
+
+/* ── Print ── */
+@media print{
+  .nav{display:none}
+  .card,.steps li{break-inside:avoid}
+  body{background:#fff}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== Header ===== -->
+<div class="header">
+  <h1>🖥️ PC管理システム かんたんガイド</h1>
+  <p>技術者でなくてもわかる、やさしい操作マニュアル</p>
+</div>
+
+<!-- ===== Nav ===== -->
+<div class="nav">
+  <a href="#map">🗺️ アプリ全体図</a>
+  <a href="#new-pc">🆕 PC登録</a>
+  <a href="#auto-acct">🔗 アカウント登録</a>
+  <a href="#replace">🔄 PC買替</a>
+  <a href="#inventory">📋 棚卸</a>
+  <a href="#alerts">⚠️ 警告の意味</a>
+  <a href="#faq">❓ よくある質問</a>
+</div>
+
+<div class="container">
+
+<!-- ===== アプリ全体図 ===== -->
+<div class="section" id="map">
+  <div class="section-title"><span class="icon">🗺️</span> アプリの全体図</div>
+  <p style="font-size:.9em;color:var(--text-sub);margin-bottom:10px">
+    PC管理は<strong>5つのアプリ</strong>が連携して動いています。
+  </p>
+  <div class="app-map">
+    <div class="app-card app-pc">
+      <div class="app-emoji">💻</div>
+      PC管理台帳
+      <div class="app-id">App 594 ― PCの情報を管理</div>
+    </div>
+    <div class="app-card app-emp">
+      <div class="app-emoji">👤</div>
+      社員マスタ
+      <div class="app-id">App 595 ― 社員の情報</div>
+    </div>
+    <div class="app-card app-acct">
+      <div class="app-emoji">🔑</div>
+      アカウント管理台帳
+      <div class="app-id">App 627 ― 誰がどのアカウントを使うか</div>
+    </div>
+    <div class="app-card app-num">
+      <div class="app-emoji">🎰</div>
+      アカウント採番
+      <div class="app-id">App 626 ― まだ使っていないアカウントの在庫</div>
+    </div>
+    <div class="app-card app-js">
+      <div class="app-emoji">🏢</div>
+      共有アカウント採番
+      <div class="app-id">App 667 ― 拠点ごとの共有アカウント管理</div>
+    </div>
+  </div>
+
+  <div class="tip tip-blue">
+    <span class="emoji">💡</span>
+    <span>ふだん触るのは <strong>PC管理台帳（594）</strong> だけでOK！<br>
+    ボタンを押すと、他のアプリは<strong>自動で更新</strong>されます。</span>
+  </div>
+</div>
+
+<!-- ===== PC新規登録 ===== -->
+<div class="section" id="new-pc">
+  <div class="section-title"><span class="icon">🆕</span> 新しいPCを登録する</div>
+  <div class="card">
+    <h3>📝 新規登録のながれ</h3>
+    <ol class="steps">
+      <li><strong>PC管理台帳</strong>を開いて <strong>＋（レコード追加）</strong> をクリック</li>
+      <li><strong>種別</strong>を選ぶ（個人PC → 「個人」、みんなで使うPC → 「共有」）</li>
+      <li><strong>利用者名</strong>をルックアップで選ぶ（個人の場合）</li>
+      <li>PC名・シリアル番号・スペックなどを入力</li>
+      <li><strong>保存ボタン</strong>を押す</li>
+    </ol>
+    <div class="tip tip-green">
+      <span class="emoji">✅</span>
+      <span>保存すると、「次にやること」を教えてくれる<strong>ガイド画面</strong>が出ます。<br>
+      そのまま案内に従えばOKです。</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== アカウント自動登録 ===== -->
+<div class="section" id="auto-acct">
+  <div class="section-title"><span class="icon">🔗</span> アカウント自動登録（いちばん大事！）</div>
+
+  <div class="card">
+    <h3>🎯 これは何？</h3>
+    <p style="font-size:.9em">
+      新しいPCに <strong>Windowsログオン名・M365アカウント</strong> を自動で割り当てる機能です。<br>
+      ボタン1つで <strong>3つのアプリを同時に更新</strong> します。
+    </p>
+
+    <div class="flow">
+      <div class="flow-box flow-blue">💻 PC管理台帳<br><small>ボタンを押す</small></div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-box flow-purple">🎰 採番アプリ<br><small>空きアカウント取得</small></div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-box flow-yellow">🔑 アカウント台帳<br><small>自動で作成</small></div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-box flow-green">✅ 完了！<br><small>3アプリ一括更新</small></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📋 やり方（3ステップ）</h3>
+    <ol class="steps">
+      <li>PC管理台帳で、対象のPCレコードを<strong>開く</strong></li>
+      <li>画面にある <strong style="color:var(--primary)">📋 アカウント自動登録</strong> ボタンをクリック</li>
+      <li>「完了しました！」が出たら<strong>成功</strong> 🎉</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h3>⚠️ 使えるのは「個人」のPCだけ</h3>
+    <div class="tip tip-orange">
+      <span class="emoji">🚫</span>
+      <span><strong>共有PC・JR端末・サーバー</strong>では、このボタンは使えません。<br>
+      「種別が共有です」というメッセージが出ます。→ 手動で紐付けてください。</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🔄 自動で作られるもの</h3>
+    <table style="width:100%;font-size:.88em;border-collapse:collapse;margin-top:8px">
+      <thead>
+        <tr style="background:var(--gray-light)">
+          <th style="padding:8px 12px;text-align:left;border-radius:8px 0 0 0">項目</th>
+          <th style="padding:8px 12px;text-align:left;border-radius:0 8px 0 0">例</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td style="padding:8px 12px;border-bottom:1px solid #e2e8f0">Windows名</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0"><code>jbm00009[m-kondo]</code></td></tr>
+        <tr><td style="padding:8px 12px;border-bottom:1px solid #e2e8f0">M365 ID</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0"><code>m-kondo@kensetsutoso01.onmicrosoft.com</code></td></tr>
+        <tr><td style="padding:8px 12px">アカウント状態</td>
+            <td style="padding:8px 12px">有効 / 在籍</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== PC買替 ===== -->
+<div class="section" id="replace">
+  <div class="section-title"><span class="icon">🔄</span> PCを買い替えるとき</div>
+  <div class="card">
+    <h3>🔄 買替のながれ</h3>
+    <ol class="steps">
+      <li>PC管理台帳で<strong>古いPC</strong>のレコードを開く</li>
+      <li><strong>PC買替</strong>ボタンをクリック</li>
+      <li>新しいPCの情報を入力して保存</li>
+      <li>古いPCは自動で「使用停止」になる</li>
+    </ol>
+    <div class="tip tip-blue">
+      <span class="emoji">💡</span>
+      <span>アカウント情報は<strong>自動で引き継がれる</strong>ので、再登録は不要です。</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 棚卸 ===== -->
+<div class="section" id="inventory">
+  <div class="section-title"><span class="icon">📋</span> 棚卸（たなおろし）</div>
+  <div class="card">
+    <h3>📦 棚卸のやり方</h3>
+    <ol class="steps">
+      <li>PC管理台帳の一覧画面で <strong>検索パネル</strong> を使って絞り込み</li>
+      <li>各PCの現物を確認し、状態を更新</li>
+      <li>一覧画面のカード表示で、視覚的に確認</li>
+    </ol>
+    <div class="tip tip-green">
+      <span class="emoji">🔍</span>
+      <span>検索パネルは一覧画面の上部にあります。<br>
+      <strong>拠点・種別・状態</strong>で絞り込めます。</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 警告の意味 ===== -->
+<div class="section" id="alerts">
+  <div class="section-title"><span class="icon">⚠️</span> 画面に出る警告の意味</div>
+
+  <div class="card">
+    <h3>🟥 一覧画面の赤い行</h3>
+    <div class="tip tip-red">
+      <span class="emoji">🔴</span>
+      <span><strong>「個人PCなのに、アカウントが紐付いていない」</strong> という意味です。<br><br>
+      対処 → そのレコードを開いて <strong>📋 アカウント自動登録</strong> ボタンを押してください。</span>
+    </div>
+    <p style="font-size:.82em;color:var(--gray);margin-top:8px">
+      赤くなる条件：種別＝個人 ＋ 状態＝使用中 ＋ アカウント台帳番号＝空欄
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>💬 保存後のガイド画面（コンシェルジュ）</h3>
+    <div class="tip tip-blue">
+      <span class="emoji">📌</span>
+      <span>個人PCを保存したあとに出る<strong>案内ポップアップ</strong>です。<br><br>
+      「アカウント管理台帳を開く」「M365管理センターを開く」のリンクが表示されます。<br>
+      <strong>閉じるボタン</strong>で消せます。次のステップの参考にしてください。</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>❌ エラーが出たら</h3>
+    <div class="tip tip-orange">
+      <span class="emoji">🛟</span>
+      <span>エラーメッセージに <strong>「STEPいくつ」</strong> と表示されます。<br><br>
+      <strong>あわてなくて大丈夫。</strong>データは<strong>自動で元に戻ります</strong>（ロールバック）。<br>
+      エラーログ（App 656）に詳細が残るので、管理者に連絡してください。</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== よくある質問 ===== -->
+<div class="section" id="faq">
+  <div class="section-title"><span class="icon">❓</span> よくある質問</div>
+
+  <div class="faq-q" onclick="toggleFaq(this)">
+    🤔 ボタンが表示されないのはなぜ？
+  </div>
+  <div class="faq-a">
+    レコードの詳細画面で表示されます。一覧画面や編集画面では出ません。<br>
+    また、すでにアカウントが紐付いているPCにもボタンは出ますが、<br>
+    押すと「すでに紐付け済みです」と教えてくれます。
+  </div>
+
+  <div class="faq-q" onclick="toggleFaq(this)">
+    🤔 共有PCのアカウントはどうするの？
+  </div>
+  <div class="faq-a">
+    共有PCの場合、自動登録ボタンは使えません。<br>
+    アカウント管理台帳（627）を直接開いて、手動でレコードを作ってください。<br>
+    共有アカウント採番マスタ（667）から番号を確認できます。
+  </div>
+
+  <div class="faq-q" onclick="toggleFaq(this)">
+    🤔 採番アプリに空きがないと言われたら？
+  </div>
+  <div class="faq-a">
+    アカウント採番（626）に、未使用のアカウントが残っていません。<br>
+    管理者に連絡して、新しいアカウントを追加してもらってください。
+  </div>
+
+  <div class="faq-q" onclick="toggleFaq(this)">
+    🤔 間違えて登録してしまったら？
+  </div>
+  <div class="faq-a">
+    管理者に連絡してください。<br>
+    アカウント管理台帳（627）のレコードを削除し、<br>
+    PC管理台帳（594）のアカウント番号欄を空にすれば元に戻せます。
+  </div>
+
+  <div class="faq-q" onclick="toggleFaq(this)">
+    🤔 エラーが出てもデータは壊れない？
+  </div>
+  <div class="faq-a">
+    <strong>はい、壊れません。</strong><br>
+    途中でエラーが起きた場合、自動で「ロールバック」（巻き戻し）されます。<br>
+    中途半端な状態にはならないので、安心してください。
+  </div>
+
+  <div class="faq-q" onclick="toggleFaq(this)">
+    🤔 EMP-IDって何？
+  </div>
+  <div class="faq-a">
+    社員マスタに付いている <strong>社員管理番号</strong> です。<br>
+    <code>EMP-0001</code> のような形式で、全社員にユニークな番号が振られています。<br>
+    今後、すべてのアプリを正確につなぐための「名札」のようなものです。
+  </div>
+</div>
+
+<!-- ===== クイックリンク ===== -->
+<div class="section" id="links">
+  <div class="section-title"><span class="icon">🔗</span> アプリへのリンク</div>
+  <div class="app-map">
+    <a href="https://jbis-kintone.cybozu.com/k/594/" target="_blank"
+       class="app-card app-pc" style="text-decoration:none;color:var(--text)">
+      <div class="app-emoji">💻</div>
+      PC管理台帳を開く
+      <div class="app-id">→ クリックで移動</div>
+    </a>
+    <a href="https://jbis-kintone.cybozu.com/k/627/" target="_blank"
+       class="app-card app-acct" style="text-decoration:none;color:var(--text)">
+      <div class="app-emoji">🔑</div>
+      アカウント管理台帳を開く
+      <div class="app-id">→ クリックで移動</div>
+    </a>
+    <a href="https://jbis-kintone.cybozu.com/k/595/" target="_blank"
+       class="app-card app-emp" style="text-decoration:none;color:var(--text)">
+      <div class="app-emoji">👤</div>
+      社員マスタを開く
+      <div class="app-id">→ クリックで移動</div>
+    </a>
+    <a href="https://jbis-kintone.cybozu.com/k/667/" target="_blank"
+       class="app-card app-js" style="text-decoration:none;color:var(--text)">
+      <div class="app-emoji">🏢</div>
+      共有アカウント採番を開く
+      <div class="app-id">→ クリックで移動</div>
+    </a>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<div class="footer">
+  PC管理システム 運用ガイド v1.0 ― 最終更新 2026-04-16
+</div>
+
+<script>
+function toggleFaq(el){
+  el.classList.toggle('open');
+  var a=el.nextElementSibling;
+  if(a)a.classList.toggle('open');
+}
+</script>
+</body>
+</html>

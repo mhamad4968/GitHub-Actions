@@ -1,0 +1,36 @@
+# kintone 共通開発ルール
+
+**エージェント向けの「どの正本を信じるか」の優先順位**はルート **`CLAUDE.md`**（Schema Retrieval Priority）を正とする。
+
+## 型の使い分け（共通とアプリ個別）
+
+- **共通型（プラットフォーム標準）**: kintone で何ができるか（イベント、`kintone.api`、画面 JS API の形）をエディタに伝える。**npm パッケージ名は `@kintone/types` ではなく、公式の `@kintone/dts-gen` に同梱の `kintone.d.ts`**（`declare namespace kintone`）。本リポジトリでは `types/kintone-js-api-reference.d.ts` と `jsconfig.json` で参照する。
+- **アプリ個別（フィールド・レコード形）**: そのアプリにどんなフィールドコードがあるか（例: `customer_name` か `Customer_Name` か）を伝える。**`kintone-dts-gen` でアプリから生成した `.d.ts`** があれば最優先。**無い場合は** `kintone-apps.md` や `npm run app:fields <アプリID>` の出力を正とし、フィールドコードを推測しない。
+
+## 実装時の指針
+
+- kintone JavaScript API（`kintone.events.on`、`kintone.app.record.get` など）を使うときは、**上記共通型（`@kintone/dts-gen` の定義）に沿う**こと。コードは注意して使用すること（型は補助であり、実行時は kintone のランタイムに依存する）。
+- **レコードの取得・登録・更新・削除など REST 経由の操作**には **`@kintone/rest-api-client`** を使うこと（ブラウザカスタマイズでも Node スクリプトでも、方針として REST はここに寄せる）。
+- フィールドコードやアプリ固有のプロパティ名が必要なときは、**プロジェクト内の具体的な型定義（生成 `.d.ts`）や `kintone-apps.md` を優先参照**し、共通の `kintone.d.ts` だけに頼らないこと。
+
+## 「共通型」を使ったコードの書き方（例）
+
+これにより特定のアプリ ID を型に埋め込まなくても、**kintone 標準 API の呼び方**の補完・誤字防止に効く。
+
+```typescript
+import { KintoneRestAPIClient } from "@kintone/rest-api-client";
+
+// REST: クライアントとメソッド名・引数の形が型で分かる
+const client = new KintoneRestAPIClient(/* 環境に応じた認証・baseUrl */);
+await client.record.getRecords({ app: 0 /* 実アプリIDは実行時に */ });
+
+// 画面 JS: kintone グローバルは @kintone/dts-gen の kintone.d.ts 由来の補助（別コンテキスト）
+// kintone.events.on("app.record.index.show", (event) => { return event; });
+```
+
+## 汎用ユーティリティ
+
+- **正本**: **`utils/kintone-common.ts`**（`createKintoneClientFromLabEnv`・`getAllRecords`・`updateRecordByKey`・`showErrorInSpaceOrAlert`・`KintoneCommon`）。**裸の `new KintoneRestAPIClient()` は使わず**、`.env` の `KINTONE_BASE_URL` / パスワード or `KINTONE_API_TOKEN` / 任意 Basic / 任意 `KINTONE_GUEST_SPACE_ID` をここで組み立てる（`scripts/` と同じ考え方）。スクリプトでは先頭で `import "dotenv/config"` か `dotenv -e .env` 付き `npm run`。
+- **型チェック**: `npm run typecheck:utils`（`tsconfig.utils.json`）。
+- **エラー表示**: `showErrorInSpaceOrAlert` はスペースの **elementId** がフォームに無いと **常に `alert`**。アプリ設計とセット。
+- A→B コピー等は「**`utils/kintone-common.ts` を前提に**」と指示すると Cursor が文脈を拾いやすい。
