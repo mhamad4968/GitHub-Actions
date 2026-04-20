@@ -1,0 +1,3 @@
+# 社員のショートカットが開く URL（1 行目に実URL。パスまで含む）
+# 例: IIS または http-server で 8080 配信した場合
+http://192.168.1.250:8080/faq-portal-full.html

@@ -19,3 +19,7 @@ tmp/
 # patch / 編集ツールが残すバックアップ・拒否片（2026-04-20 追加）
 *.orig
 *.rej
+
+# apply-approved-changes.mjs が世代保存するタイムスタンプ付バックアップ（2026-04-20 追加）
+# パターン例: scripts/foo.mjs.backup.2026-04-20T10-23-45-678Z
+*.backup.*Z

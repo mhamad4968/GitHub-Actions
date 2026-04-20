@@ -1,0 +1,15 @@
+FAQ portal + proxy — deploy checklist (ASCII filenames policy)
+
+1) Backup current server.mjs and faq-portal-full.html on the host.
+2) Copy new server.mjs into scripts/faq-kintone-proxy/ (keep .env).
+3) Copy new faq-portal-full.html into scripts/ (same dir as static root / PUBLIC_DIR).
+4) Restart node (server.mjs). Confirm process is the new file (mtime).
+5) Hard reload browser (Ctrl+F5) on the portal page.
+6) curl -sI "http://HOST:PORT/api/file/FILEKEY"
+   Windows:  ... | findstr /i content-disposition
+   Linux/WSL: ... | grep -i content-disposition
+   Expect: attachment; filename="download_file.jpg" (or .pdf / .docx 等), ASCII のみ。
+7) UI: FAQ card "配布資料" link text = download_file.* only. Edit form attach chips = same.
+8) If still wrong: confirm URL hits THIS host (not cached CDN), no nginx overwriting Content-Disposition.
+
+Pack: from repo root run: npm run faq:pack-minimal

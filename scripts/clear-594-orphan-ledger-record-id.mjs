@@ -2,7 +2,11 @@
 /**
  * PC台帳(594) の ledger_record_id が入っているが、627 から当該 594 に
  * 1 件も紐付いていない（pc_594_record_id / pc_ledger_links）レコードを検出し、
- * 任意で ledger_record_id をクリアする。
+ * 任意で次を実行する:
+ *   - 594 の ledger_record_id を空にする
+ *   - かつ ledger に入っている 627 レコード番号が存在し、その 627 がこの 594 を
+ *     pc_594_record_id またはサブテーブルで参照している場合のみ、その参照を外す
+ *     （627 の他フィールド・他行は変更しない）
  *
  * 前提: 627 が「真実の紐付け」、594 の番号は整合時のミラー。
  *
@@ -129,6 +133,31 @@ function buildLinked594IdSet(recs627) {
   return linked;
 }
 
+/**
+ * 627 レコードから「指定 594 $id」への参照だけを外す PATCH（他は触れない）
+ * @param {Record<string, unknown>} rec627
+ * @param {string} pc594Id
+ */
+function build627UnlinkPatchForPc594(rec627, pc594Id) {
+  const patch = /** @type {Record<string, { value: unknown }>} */ ({});
+  const pid = normId(pc594Id);
+  if (!pid) return patch;
+  const single = normId(rec627[FC_627_PC594]?.value);
+  if (single === pid) {
+    patch[FC_627_PC594] = { value: null };
+  }
+  const currentSub = Array.isArray(rec627[FC_627_PC_SUBTABLE]?.value)
+    ? rec627[FC_627_PC_SUBTABLE].value
+    : [];
+  const kept = currentSub.filter(
+    (row) => normId(row?.value?.[FC_627_PC_SUB_594]?.value) !== pid,
+  );
+  if (kept.length !== currentSub.length) {
+    patch[FC_627_PC_SUBTABLE] = { value: kept.map((row) => ({ id: row.id, value: row.value })) };
+  }
+  return patch;
+}
+
 async function main() {
   const apply = process.argv.includes("--apply");
   const ledgerType = await getFieldType(APP_594, FC_594_LEDGER);
@@ -163,7 +192,9 @@ async function main() {
   }
 
   if (!apply) {
-    console.log("\n（ドライラン）--apply を付けると上記の ledger_record_id をクリアします。");
+    console.log(
+      "\n（ドライラン）--apply を付けると、627 側の該当参照（あれば）を外したうえで 594 の ledger_record_id をクリアします。",
+    );
     return;
   }
 
@@ -171,6 +202,33 @@ async function main() {
   let fail = 0;
   for (const o of orphans) {
     try {
+      const ledger627 = normId(o.ledger);
+      if (/^\d+$/.test(ledger627)) {
+        try {
+          const r627 = await fetchJson(
+            `${baseUrl}/k/v1/record.json?app=${APP_627}&id=${encodeURIComponent(ledger627)}`,
+            { method: "GET", headers: headersWithoutContentType() },
+          );
+          const rec627 = r627.record || {};
+          const p627 = build627UnlinkPatchForPc594(rec627, o.id);
+          if (Object.keys(p627).length > 0) {
+            await fetchJson(`${baseUrl}/k/v1/record.json`, {
+              method: "PUT",
+              headers,
+              body: JSON.stringify({
+                app: APP_627,
+                id: ledger627,
+                revision: rec627.$revision?.value,
+                record: p627,
+              }),
+            });
+            console.log(`[apply] patched 627 id=${ledger627} (unlink 594#${o.id})`);
+          }
+        } catch (e) {
+          console.warn(`[apply] skip/warn 627 ledger=${ledger627} for 594#${o.id}`, e?.message || e);
+        }
+      }
+
       const rec = await fetchJson(
         `${baseUrl}/k/v1/record.json?app=${APP_594}&id=${encodeURIComponent(o.id)}`,
         { method: "GET", headers: headersWithoutContentType() },

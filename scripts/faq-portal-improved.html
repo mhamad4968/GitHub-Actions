@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title id="pageTitle">社内FAQポータル</title>
+    <style>
+        :root {
+            --sidebar-width: 380px;
+            --primary: #007bff;
+            --dark: #2c3e50;
+            --important: #ff4757;
+            --accent: #20bf6b;
+        }
+        body { font-family: "Segoe UI", "Meiryo", sans-serif; margin: 0; display: flex; min-height: 100vh; background: #f4f7f6; color: #333; }
+        #sidebar { width: var(--sidebar-width); background: var(--dark); color: white; padding: 30px; flex-shrink: 0; display: flex; flex-direction: column; box-shadow: 4px 0 15px rgba(0,0,0,0.15); z-index: 10; }
+        .portal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
+        .portal-name { margin: 0; font-size: 1.8em; letter-spacing: 1px; flex-grow: 1; word-break: break-word; }
+        .edit-portal-btn { font-size: 0.6em; color: #f1c40f; cursor: pointer; opacity: 0.6; padding-left: 10px; border: none; background: none; }
+        .edit-portal-btn:hover, .edit-portal-btn:focus { opacity: 1; outline: 2px solid #f1c40f; outline-offset: 2px; }
+        #categoryMenu { flex-grow: 1; overflow-y: auto; margin-top: 25px; }
+        .parent-group { margin-bottom: 25px; background: rgba(255,255,255,0.05); border-radius: 10px; padding: 15px; }
+        .parent-label { font-weight: bold; color: #bdc3c7; display: flex; justify-content: space-between; align-items: center; font-size: 1em; padding-bottom: 10px; border-bottom: 1px solid #444; margin-bottom: 8px; }
+        .child-row { display: flex; align-items: stretch; gap: 6px; margin: 6px 0; }
+        .child-item { padding: 14px 18px; cursor: pointer; border-radius: 8px; font-size: 0.95em; display: flex; justify-content: space-between; align-items: center; flex: 1; min-width: 0; transition: 0.2s; border: none; box-sizing: border-box; text-align: left; color: inherit; font: inherit; background: transparent; }
+        .child-item:hover, .child-item:focus { background: rgba(255,255,255,0.08); outline: none; }
+        .child-item.active { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .child-row .edit-icon-big { flex-shrink: 0; align-self: center; }
+        .edit-icon-big { font-size: 1.5em; cursor: pointer; padding: 5px 10px; border-radius: 6px; transition: 0.3s; opacity: 0.7; border: none; background: transparent; color: inherit; line-height: 1; }
+        .edit-icon-big:hover, .edit-icon-big:focus { opacity: 1; background: rgba(255,255,255,0.2); transform: scale(1.1); outline: none; }
+        #main-content { flex-grow: 1; overflow-y: auto; padding: 40px 50px; }
+        .search-wrap { margin-bottom: 40px; }
+        .search-wrap label { display: block; font-size: 0.85em; color: #666; margin-bottom: 8px; font-weight: 600; }
+        .search-bar { width: 100%; max-width: 800px; padding: 18px 30px; font-size: 1.2em; border: none; border-radius: 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); outline: none; box-sizing: border-box; }
+        .search-bar:focus { box-shadow: 0 4px 15px rgba(0,123,255,0.25); }
+        .faq-card { background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); margin-bottom: 15px; border-left: 8px solid var(--primary); transition: 0.3s; overflow: hidden; }
+        .faq-card.is-important { border-left-color: var(--important); }
+        .faq-card details { margin: 0; }
+        .faq-card summary { padding: 22px; font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 1.15em; list-style: none; }
+        .faq-card summary::-webkit-details-marker { display: none; }
+        .faq-card summary::after { content: "▼"; color: #999; font-size: 0.8em; font-weight: normal; }
+        .faq-card details[open] summary::after { content: "▲"; }
+        .faq-body-inner { padding: 0 25px 25px; background: #fafafa; border-top: 1px solid #eee; }
+        .faq-link { display: inline-block; background: #e7f3ff; color: #0056b3; padding: 10px 20px; border-radius: 25px; text-decoration: none; font-weight: bold; margin-top: 10px; border: 1px solid #b3d7ff; }
+        .faq-link:hover, .faq-link:focus { text-decoration: underline; outline: none; }
+        .faq-actions { margin-top: 20px; text-align: right; border-top: 1px dashed #ddd; padding-top: 15px; }
+        .faq-actions button { background: none; border: none; font-size: 0.95em; cursor: pointer; font-weight: bold; }
+        .faq-actions button:focus { outline: 2px solid var(--primary); outline-offset: 2px; }
+        .admin-section { background: white; padding: 35px; border-radius: 15px; margin-top: 60px; border: 1px solid #eee; }
+        .sidebar-footer-btns button { cursor: pointer; }
+        .sidebar-footer-btns button:focus { outline: 2px solid #ecf0f1; outline-offset: 2px; }
+    </style>
+</head>
+<body>
+
+<nav id="sidebar" aria-label="カテゴリナビゲーション">
+    <div class="portal-header">
+        <h1 class="portal-name" id="portalName">FAQ Portal</h1>
+        <button type="button" class="edit-portal-btn" id="btnEditPortal" aria-label="ポータル名を編集">✎ 編集</button>
+    </div>
+    <p id="portalSub" style="font-size: 0.8em; color: #95a5a6; margin: 10px 0 0 0; border-bottom: 1px solid #444; padding-bottom: 20px;">Knowledge Sharing Platform</p>
+
+    <div id="categoryMenu"></div>
+
+    <div class="sidebar-footer-btns" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #444;">
+        <button type="button" style="width:100%; background:#34495e; color:#ecf0f1; border:1px dashed #5d6d7e; padding:12px; border-radius:8px; font-weight:bold;" id="btnAddParent">＋ 親カテゴリを新規作成</button>
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <button type="button" id="btnExport" style="flex:1; font-size: 0.8em; background: #444; color: #ccc; padding: 10px; border: none; border-radius: 6px;">エクスポート</button>
+            <button type="button" id="btnImport" style="flex:1; font-size: 0.8em; background: #444; color: #ccc; padding: 10px; border: none; border-radius: 6px;">インポート</button>
+        </div>
+    </div>
+</nav>
+
+<main id="main-content">
+    <div class="search-wrap">
+        <label for="searchInput">検索</label>
+        <input type="search" id="searchInput" class="search-bar" placeholder="キーワード・カテゴリ・回答から検索..." autocomplete="off" aria-label="FAQをキーワード検索">
+    </div>
+    <div id="faqList" role="list"></div>
+
+    <section class="admin-section" aria-label="FAQ投稿フォーム">
+        <h2 id="formTitle" style="margin-top:0;">📝 新規FAQ投稿</h2>
+        <input type="hidden" id="f-id">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+            <select id="f-cat" aria-label="カテゴリ" style="padding: 12px; border-radius: 8px; border: 1px solid #ddd;"></select>
+            <label style="display: flex; align-items: center; gap: 12px; font-weight: bold; color: var(--important); cursor:pointer;">
+                <input type="checkbox" id="f-imp" style="width:20px; height:20px;"> 重要マーク
+            </label>
+            <input type="text" id="f-q" placeholder="質問文を入力" aria-label="質問" style="grid-column: span 2; padding: 15px; border-radius: 8px; border: 1px solid #ddd;">
+            <textarea id="f-a" placeholder="回答を入力（URLは自動変換）" aria-label="回答" style="grid-column: span 2; height: 150px; padding: 15px; border-radius: 8px; border: 1px solid #ddd;"></textarea>
+        </div>
+        <div style="display:flex; gap:15px;">
+            <button type="button" id="btnSubmitFaq" style="background:var(--primary); color:white; padding:15px 40px; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">保存・公開</button>
+            <button type="button" id="cancel-edit" style="display:none; background: #eee; color: #666; padding:15px 30px; border:none; border-radius:8px; cursor:pointer;">キャンセル</button>
+        </div>
+    </section>
+</main>
+
+<script>
+const LS_SETTINGS = 'faq_v5_s';
+const LS_HIERARCHY = 'faq_v5_h';
+const LS_DATA = 'faq_v5_d';
+const NEW_BADGE_MS = 3 * 24 * 60 * 60 * 1000;
+const URL_SPLIT_RE = /(https?:\/\/[^\s<>"'`]+)/gi;
+
+function escapeHtml(s) {
+    return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+function escapeAttr(s) {
+    return escapeHtml(s).replace(/'/g, '&#39;');
+}
+
+function linkifyAnswer(raw) {
+    if (raw == null) return '';
+    const parts = String(raw).split(URL_SPLIT_RE);
+    return parts.map(function (part, i) {
+        if (i % 2 === 1) {
+            var u = part.trim();
+            if (/^https?:\/\//i.test(u) && !/^https?:\/\/javascript:/i.test(u)) {
+                return '<br><a href="' + escapeAttr(u) + '" class="faq-link" target="_blank" rel="noopener noreferrer">🔗 リンクを開く</a>';
+            }
+            return escapeHtml(part);
+        }
+        return escapeHtml(part).replace(/\n/g, '<br>');
+    }).join('');
+}
+
+const masterData = {
+    settings: { name: 'FAQ Portal', sub: 'Knowledge Sharing Platform' },
+    hierarchy: { '全般': ['お知らせ'], 'IT・システム': ['PCトラブル'], '申請': ['交通費'] },
+    faqs: []
+};
+
+const app = {
+    settings: masterData.settings,
+    hierarchy: masterData.hierarchy,
+    data: masterData.faqs,
+    currentFilter: 'all',
+
+    init: function () {
+        try {
+            var s = localStorage.getItem(LS_SETTINGS);
+            if (s) this.settings = JSON.parse(s);
+            var h = localStorage.getItem(LS_HIERARCHY);
+            if (h) this.hierarchy = JSON.parse(h);
+            var d = localStorage.getItem(LS_DATA);
+            if (d) this.data = JSON.parse(d);
+        } catch (e) {
+            console.warn('FAQ localStorage 読込エラー:', e);
+        }
+        this.applySettings();
+        this.renderAll();
+        this.bindEvents();
+    },
+
+    applySettings: function () {
+        document.getElementById('portalName').textContent = this.settings.name;
+        document.getElementById('pageTitle').textContent = this.settings.name;
+        document.getElementById('portalSub').textContent = this.settings.sub || '';
+    },
+
+    bindEvents: function () {
+        var self = this;
+        document.getElementById('btnEditPortal').onclick = () => self.editPortalName();
+        document.getElementById('btnAddParent').onclick = () => self.addParent();
+        document.getElementById('btnExport').onclick = () => self.exportJson();
+        document.getElementById('btnImport').onclick = () => self.importJson();
+        document.getElementById('btnSubmitFaq').onclick = () => self.submitFaq();
+        document.getElementById('cancel-edit').onclick = () => self.resetForm();
+        document.getElementById('searchInput').oninput = function (e) {
+            self.search(e.target.value);
+        };
+
+        document.getElementById('categoryMenu').onclick = function (e) {
+            var t = e.target;
+            if (t.closest('.edit-icon-big[data-edit-parent]')) {
+                e.preventDefault();
+                e.stopPropagation();
+                self.editParent(t.closest('[data-edit-parent]').getAttribute('data-edit-parent'));
+                return;
+            }
+            if (t.closest('.edit-icon-big[data-add-child]')) {
+                e.preventDefault();
+                e.stopPropagation();
+                self.addChild(t.closest('[data-add-child]').getAttribute('data-add-child'));
+                return;
+            }
+            if (t.closest('.edit-icon-big[data-edit-child]')) {
+                e.preventDefault();
+                e.stopPropagation();
+                var el = t.closest('[data-edit-child]');
+                self.editChild(el.getAttribute('data-parent'), el.getAttribute('data-child'));
+                return;
+            }
+            var filterBtn = e.target.closest('[data-filter]');
+            if (filterBtn) self.filter(filterBtn.getAttribute('data-filter'));
+        };
+
+        document.getElementById('faqList').onclick = function (e) {
+            var editBtn = e.target.closest('[data-edit-faq]');
+            if (editBtn) {
+                e.preventDefault();
+                self.editFaq(Number(editBtn.getAttribute('data-edit-faq')));
+                return;
+            }
+            var delBtn = e.target.closest('[data-delete-faq]');
+            if (delBtn) {
+                e.preventDefault();
+                self.deleteFaq(Number(delBtn.getAttribute('data-delete-faq')));
+            }
+        };
+    },
+
+    editPortalName: function () {
+        var newName = prompt('新しいポータル名を入力してください', this.settings.name);
+        if (newName == null || newName === '') return;
+        var newSub = prompt('新しいサブタイトル（説明文）を入力してください', this.settings.sub);
+        this.settings.name = newName;
+        this.settings.sub = newSub != null ? newSub : '';
+        localStorage.setItem(LS_SETTINGS, JSON.stringify(this.settings));
+        this.applySettings();
+    },
+
+    renderAll: function () {
+        this.renderMenu();
+        this.renderFaq();
+    },
+
+    renderMenu: function () {
+        var menu = document.getElementById('categoryMenu');
+        var select = document.getElementById('f-cat');
+        var parts = [];
+        parts.push(
+            '<button type="button" class="child-item' + (this.currentFilter === 'all' ? ' active' : '') + '" data-filter="all">🏠 すべて表示</button>'
+        );
+        var selectParts = [];
+        for (var parent in this.hierarchy) {
+            if (!Object.prototype.hasOwnProperty.call(this.hierarchy, parent)) continue;
+            var children = this.hierarchy[parent];
+            parts.push('<div class="parent-group">');
+            parts.push('<div class="parent-label"><span>' + escapeHtml(parent) + '</span><span>');
+            parts.push('<button type="button" class="edit-icon-big" data-edit-parent="' + escapeAttr(parent) + '" aria-label="親カテゴリを編集">✎</button>');
+            parts.push('<button type="button" class="edit-icon-big" data-add-child="' + escapeAttr(parent) + '" aria-label="子カテゴリを追加">＋</button>');
+            parts.push('</span></div>');
+            for (var j = 0; j < children.length; j++) {
+                var child = children[j];
+                var active = this.currentFilter === child ? ' active' : '';
+                parts.push('<div class="child-row">');
+                parts.push(
+                    '<button type="button" class="child-item' + active + '" data-filter="' + escapeAttr(child) + '">└ ' + escapeHtml(child) + '</button>'
+                );
+                parts.push(
+                    '<button type="button" class="edit-icon-big" data-edit-child data-parent="' + escapeAttr(parent) + '" data-child="' + escapeAttr(child) + '" aria-label="子カテゴリを編集">✎</button>'
+                );
+                parts.push('</div>');
+                selectParts.push('<option value="' + escapeAttr(child) + '">' + escapeHtml(parent + ' ＞ ' + child) + '</option>');
+            }
+            parts.push('</div>');
+        }
+        menu.innerHTML = parts.join('');
+        select.innerHTML = selectParts.join('');
+    },
+
+    renderFaq: function () {
+        var list = document.getElementById('faqList');
+        list.innerHTML = '';
+        var self = this;
+        var filtered = this.data.filter(function (d) {
+            return self.currentFilter === 'all' || d.cat === self.currentFilter;
+        });
+        filtered.sort(function (a, b) {
+            return (b.imp ? 1 : 0) - (a.imp ? 1 : 0) || (b.id || 0) - (a.id || 0);
+        });
+
+        filtered.forEach(function (item) {
+            var isNew = Date.now() - item.id < NEW_BADGE_MS;
+            var impHtml = item.imp ? '<span style="background:var(--important); color:white; font-size:0.7em; padding:3px 8px; border-radius:4px; margin-right:10px;">重要</span>' : '';
+            var newHtml = isNew ? '<span style="background:var(--accent); color:white; font-size:0.7em; padding:3px 8px; border-radius:4px; margin-right:10px;">New</span>' : '';
+
+            var card = document.createElement('div');
+            card.className = 'faq-card' + (item.imp ? ' is-important' : '');
+            card.setAttribute('role', 'listitem');
+            card.dataset.searchBlob = (item.q + ' ' + item.a + ' ' + item.cat).toLowerCase();
+
+            var details = document.createElement('details');
+            var summary = document.createElement('summary');
+            summary.innerHTML = '<span>' + impHtml + newHtml + 'Q. ' + escapeHtml(item.q) + '</span><span style="color:#999; font-size:0.8em;">' + escapeHtml(item.cat) + '</span>';
+
+            var inner = document.createElement('div');
+            inner.className = 'faq-body-inner';
+            inner.innerHTML =
+                '<div>' + linkifyAnswer(item.a) + '</div>' +
+                '<div class="faq-actions">' +
+                '<button type="button" data-edit-faq="' + item.id + '" style="color:var(--primary)">✎ 編集</button> ' +
+                '<button type="button" data-delete-faq="' + item.id + '" style="color:var(--important); margin-left:20px">× 削除</button>' +
+                '</div>';
+
+            details.appendChild(summary);
+            details.appendChild(inner);
+            card.appendChild(details);
+            list.appendChild(card);
+        });
+    },
+
+    addParent: function () {
+        var n = prompt('新しい親カテゴリー名');
+        if (!n || !n.trim()) return;
+        n = n.trim();
+        if (this.hierarchy[n]) return alert('同名の親カテゴリがあります');
+        this.hierarchy[n] = [];
+        this.save();
+    },
+
+    editParent: function (o) {
+        var n = prompt('親カテゴリー名を編集', o);
+        if (!n || !n.trim() || n.trim() === o) return;
+        n = n.trim();
+        if (this.hierarchy[n]) return alert('その名前の親カテゴリは既にあります');
+        this.hierarchy[n] = this.hierarchy[o];
+        delete this.hierarchy[o];
+        this.save();
+    },
+
+    addChild: function (p) {
+        var n = prompt('「' + p + '」に追加する子カテゴリー名');
+        if (!n || !n.trim()) return;
+        n = n.trim();
+        if (this.hierarchy[p].includes(n)) return alert('同名の子カテゴリがあります');
+        this.hierarchy[p].push(n);
+        this.save();
+    },
+
+    editChild: function (p, o) {
+        var n = prompt('子カテゴリー名を編集', o);
+        if (!n || !n.trim() || n.trim() === o) return;
+        n = n.trim();
+        var idx = this.hierarchy[p].indexOf(o);
+        if (idx === -1) return;
+        if (this.hierarchy[p].includes(n)) return alert('その名前は既にあります');
+        this.hierarchy[p][idx] = n;
+        this.data.forEach(function (d) {
+            if (d.cat === o) d.cat = n;
+        });
+        if (this.currentFilter === o) this.currentFilter = n;
+        this.save();
+    },
+
+    submitFaq: function () {
+        var idEl = document.getElementById('f-id');
+        var q = document.getElementById('f-q').value.trim();
+        var a = document.getElementById('f-a').value;
+        var cat = document.getElementById('f-cat').value;
+        var imp = document.getElementById('f-imp').checked;
+        if (!q || !a.trim()) return alert('質問と回答を入力してください');
+        var id = idEl.value;
+        if (id) {
+            var idx = this.data.findIndex(function (d) { return String(d.id) === String(id); });
+            if (idx === -1) return alert('編集対象が見つかりません');
+            this.data[idx] = { id: this.data[idx].id, q: q, a: a, cat: cat, imp: imp };
+        } else {
+            this.data.push({ id: Date.now(), q: q, a: a, cat: cat, imp: imp });
+        }
+        this.resetForm();
+        this.save();
+    },
+
+    editFaq: function (id) {
+        var item = this.data.find(function (d) { return d.id === id; });
+        if (!item) return;
+        document.getElementById('f-id').value = item.id;
+        document.getElementById('f-q').value = item.q;
+        document.getElementById('f-a').value = item.a;
+        document.getElementById('f-cat').value = item.cat;
+        document.getElementById('f-imp').checked = !!item.imp;
+        document.getElementById('formTitle').textContent = '📝 FAQを編集中...';
+        document.getElementById('cancel-edit').style.display = 'inline-block';
+        document.getElementById('f-q').focus();
+        document.getElementById('formTitle').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    },
+
+    deleteFaq: function (id) {
+        if (!confirm('削除してもよろしいですか？')) return;
+        this.data = this.data.filter(function (d) { return d.id !== id; });
+        this.save();
+    },
+
+    resetForm: function () {
+        document.getElementById('f-id').value = '';
+        document.getElementById('f-q').value = '';
+        document.getElementById('f-a').value = '';
+        document.getElementById('f-imp').checked = false;
+        document.getElementById('formTitle').textContent = '📝 新規FAQ投稿';
+        document.getElementById('cancel-edit').style.display = 'none';
+    },
+
+    save: function () {
+        try {
+            localStorage.setItem(LS_SETTINGS, JSON.stringify(this.settings));
+            localStorage.setItem(LS_HIERARCHY, JSON.stringify(this.hierarchy));
+            localStorage.setItem(LS_DATA, JSON.stringify(this.data));
+        } catch (e) {
+            alert('保存に失敗しました（容量制限等）: ' + e.message);
+        }
+        this.renderAll();
+    },
+
+    filter: function (cat) {
+        this.currentFilter = cat;
+        this.renderAll();
+        document.getElementById('searchInput').value = '';
+    },
+
+    search: function (term) {
+        var l = term.trim().toLowerCase();
+        document.querySelectorAll('#faqList .faq-card').forEach(function (c) {
+            var blob = c.dataset.searchBlob || '';
+            c.style.display = !l || blob.includes(l) ? 'block' : 'none';
+        });
+    },
+
+    exportJson: function () {
+        var out = JSON.stringify({ settings: this.settings, hierarchy: this.hierarchy, faqs: this.data });
+        prompt('全コピーして masterData に貼り付けて保存してください：', out);
+    },
+
+    importJson: function () {
+        var json = prompt('JSONデータを貼り付けてください');
+        if (json == null || !json.trim()) return;
+        try {
+            var res = JSON.parse(json);
+            if (!res || typeof res !== 'object') throw new Error('オブジェクトではありません');
+            if (!res.settings || typeof res.settings !== 'object') throw new Error('settings がありません');
+            if (!res.hierarchy || typeof res.hierarchy !== 'object') throw new Error('hierarchy がありません');
+            if (!Array.isArray(res.faqs)) throw new Error('faqs が配列ではありません');
+            this.settings = res.settings;
+            this.hierarchy = res.hierarchy;
+            this.data = res.faqs;
+            this.save();
+            this.applySettings();
+        } catch (e) {
+            alert('インポートに失敗しました: ' + (e instanceof Error ? e.message : String(e)));
+        }
+    }
+};
+
+app.init();
+</script>
+</body>
+</html>

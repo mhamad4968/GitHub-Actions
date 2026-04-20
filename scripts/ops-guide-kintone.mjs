@@ -124,7 +124,7 @@ const OPS_FIELD_DEFS = {
 };
 
 function injectIframeNavBridge(html) {
-  const snippet = `<script>(function(){function go(s){try{if(window.parent&&typeof window.parent.__JBIS_OPS_GUIDE_NAV__==='function')window.parent.__JBIS_OPS_GUIDE_NAV__(s);}catch(_e){}}document.addEventListener('click',function(e){var a=e.target&&e.target.closest?e.target.closest('a[href]'):null;if(!a)return;var href=(a.getAttribute('href')||'').trim();if(!href)return;if(/^https?:\\/\\//i.test(href))return;e.preventDefault();var left=href.replace(/^\\.\\//,'');var M={'index.html':'hub','guide-pc.html':'pc','guide-personal-account.html':'personal','guide-shared-account.html':'shared','guide-employee.html':'employee'};var slug=M[left];if(slug)go(slug);},true);})();<\/script>`;
+  const snippet = `<script>(function(){function go(s){try{window.parent.postMessage({type:'jbis-ops-guide-nav',slug:s},'*');}catch(_e){}}document.addEventListener('click',function(e){var a=e.target&&e.target.closest?e.target.closest('a[href]'):null;if(!a)return;var href=(a.getAttribute('href')||'').trim();if(!href)return;if(/^https?:\\/\\//i.test(href))return;e.preventDefault();var left=href.replace(/^\\.\\//,'');var M={'index.html':'hub','guide-pc.html':'pc','guide-personal-account.html':'personal','guide-shared-account.html':'shared','guide-employee.html':'employee','guide-lifecycle.html':'lifecycle'};var slug=M[left];if(slug)go(slug);},true);})();<\/script>`;
   if (html.includes('</body>')) return html.replace('</body>', `${snippet}</body>`);
   return html + snippet;
 }
