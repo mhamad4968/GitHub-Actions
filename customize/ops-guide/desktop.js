@@ -139,6 +139,8 @@
   var DASHBOARD_LINKS = [
     { emoji: '📊', label: 'PC↔アカウント相関ダッシュボード', url: 'https://jbis-kintone.cybozu.com/k/594/?view=13459660' },
     { emoji: '🪪', label: 'WindowsID重複ダッシュボード', url: 'https://jbis-kintone.cybozu.com/k/627/?view=13459662' },
+    { emoji: '📧', label: 'M365管理台帳 (M365ID+PC台数)', url: 'https://jbis-kintone.cybozu.com/k/627/?view=13459663' },
+    { emoji: '⚠', label: 'PC台数順 (Office 5台制限管理)', url: 'https://jbis-kintone.cybozu.com/k/627/?view=13459675' },
   ];
 
   function buildQuickLinkBar() {
