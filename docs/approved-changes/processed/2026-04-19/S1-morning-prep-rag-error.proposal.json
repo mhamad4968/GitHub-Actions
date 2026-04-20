@@ -1,0 +1,16 @@
+{
+  "id": "S1",
+  "category": "S",
+  "title": "daily-morning-prep.mjs の RAG ingest セクションで内側エラー(ERR_/Error/Exception)を検知してヘルススコアに反映",
+  "rationale": "現状は `|| true` で exit=0 になるため、内部 ERR_REQUIRE_ESM が出ていてもヘルススコアでは ✅ になる。stderr/stdout に `Error`/`ERR_`/`Exception` を含む場合は ⚠️ 降格",
+  "type": "apply_patch",
+  "target": "scripts/daily-morning-prep.mjs",
+  "patch": "--- a\n+++ b\n@@ -150,11 +150,16 @@\n const ragCmd = [\n   'cp RULES-INDEX.md kintone-apps.md AGENTS.md WORKFLOW.md .rag/extra-docs/ 2>/dev/null || true',\n   'npx --yes mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest .rag/extra-docs/ 2>&1 | tail -10 || true',\n   'npx --yes mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest docs/ 2>&1 | tail -10 || true',\n ].join(' && ');\n const r7 = runCmd('rag-ingest', ragCmd, { timeoutMs: 300_000 });\n-sections.push(summary('RAG ingest', r7, { ok: '✅', ng: '⚠️', limit: 12 }));\n+// 内側エラー検知: stdout/stderr に Error/ERR_/Exception を含む場合は ⚠ 降格 (#S1)\n+const ragOutput = `${r7.stdout}\\n${r7.stderr}`;\n+const ragHasInnerError = /\\b(?:Error|ERR_[A-Z_]+|Exception|Traceback)\\b/.test(ragOutput);\n+if (ragHasInnerError) r7.ok = false;\n+sections.push(summary('RAG ingest', r7, { ok: '✅', ng: '⚠️', limit: 12 }));\n+if (ragHasInnerError) sections.push('> ⚠ 内側エラー検知: stdout/stderr に `Error/ERR_/Exception` を含むためヘルススコアを失敗扱いに降格しました。\\n');\n \n // 8. kintone-apps.md 直近変更\n sections.push('## 8. kintone-apps.md 直近の更新履歴（末尾 5 行）');\n sections.push('');\n const r8 = runCmd('kintone-apps tail', \"tail -n 50 kintone-apps.md | grep -E '^\\\\| 20' | tail -n 5\");\n",
+  "risk": "medium",
+  "status": "failed",
+  "created_at": "2026-04-18T16:35:00+09:00",
+  "approved_at": "2026-04-18T16:35:00+09:00",
+  "execute_after": "2026-04-19T06:00:00+09:00",
+  "result_note": "patch failed: patching file /home/mhamada202408224/kintone-ai-lab/scripts/daily-morning-prep.mjs\nReversed (or previously applied) patch detected!  Assume -R? [n] \nApply anyway? [n] \nSkipping patch.\n1 out of 1 hunk ignored -- saving rejects to file /home/mhamada202408224/kintone-ai-lab/scripts/daily-morning-prep.mjs.rej\n",
+  "executed_at": "2026-04-18T21:32:53.798Z"
+}

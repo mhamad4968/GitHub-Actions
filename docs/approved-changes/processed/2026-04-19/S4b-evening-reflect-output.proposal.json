@@ -1,0 +1,17 @@
+{
+  "id": "S4b",
+  "category": "S",
+  "title": "evening-reflect.mjs の出力テンプレートに 1-G セクションを追加（S4 の表示部分）",
+  "rationale": "S4 で計算した unrefSection を実際にレポートに出力する",
+  "type": "string_replace",
+  "target": "scripts/evening-reflect.mjs",
+  "old_string": "### 1-F. 保留中の改善提案\n${pendingSection}\n\n---",
+  "new_string": "### 1-F. 保留中の改善提案\n${pendingSection}\n\n### 1-G. 未参照ルール統廃合候補（#S4 提供）\n${unrefSection}\n\n---",
+  "risk": "low",
+  "status": "executed",
+  "created_at": "2026-04-18T16:35:00+09:00",
+  "approved_at": "2026-04-18T16:35:00+09:00",
+  "execute_after": "2026-04-19T06:00:00+09:00",
+  "result_note": "string_replace (1個所) → scripts/evening-reflect.mjs (backup: evening-reflect.mjs.backup.2026-04-18T21-32-53-825Z)",
+  "executed_at": "2026-04-18T21:32:53.825Z"
+}

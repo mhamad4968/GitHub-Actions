@@ -1,0 +1,15 @@
+{
+  "id": "K1",
+  "category": "K",
+  "title": "kintone 594 にフィールド `skysea_installed` (Yes/No/Unknown) と `skysea_last_check` (日付) を追加",
+  "rationale": "SKYSEA タスクの前提として 594 側に状態保管フィールドが必要。docs/plans/2026-04-18-skysea-installer.md L89 でも未完了として認識されている",
+  "type": "manual_only",
+  "instructions": "K カテゴリのため自動実施せず、明日朝の AI に手順案内を委譲。AI は以下を実行:\n\n1. WORKFLOW.md Phase 0/1 を経由\n2. `npm run app:fields -- 594` で現状フィールドを確認\n3. 既存フィールド (`skysea_*`) との衝突がないか確認\n4. setup スクリプト雛形 `scripts/setup-594-skysea-fields.js` を作成（Yes/No/Unknown の単一選択 + 日付）\n5. ユーザーに dry-run 結果を提示し承認を取ってから 594 へ反映\n6. 完了後 kintone-apps.md にフィールド追加履歴を記録\n\n注意: §41 一問一答ルール、§40 破壊操作の事前承認、ONESHOT_CONFIRM ガード相当の安全装置を設けること。",
+  "risk": "medium",
+  "status": "manual_required",
+  "created_at": "2026-04-18T16:35:00+09:00",
+  "approved_at": "2026-04-18T16:35:00+09:00",
+  "execute_after": "2026-04-19T07:00:00+09:00",
+  "result_note": "K category: deferred to AI manual handling",
+  "executed_at": "2026-04-18T21:32:53.781Z"
+}

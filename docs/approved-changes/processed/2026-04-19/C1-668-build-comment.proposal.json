@@ -1,0 +1,17 @@
+{
+  "id": "C1",
+  "category": "C",
+  "title": "customize/ops-guide/desktop.js BUILD コメントに v3→v4→v5 試行履歴を追記",
+  "rationale": "将来「なぜ 668 だけ関連ナビ無いの？」「過去にどんな配置を試した？」と疑問に思った時用。同じ失敗を繰り返させないため",
+  "type": "string_replace",
+  "target": "customize/ops-guide/desktop.js",
+  "old_string": "  // BUILD: 2026-04-18-v6 (668 では関連ナビを撤去。📌 主要メニューが既に同じリンクを持つため重複)",
+  "new_string": "  // BUILD: 2026-04-18-v6 (668 では関連ナビを撤去。📌 主要メニューが既に同じリンクを持つため重複)\n  //   試行履歴 (再導入を検討する将来の自分へ):\n  //     v3 = shell.firstChild に挿入 → ヒント文言の下になり視認性低\n  //     v4 = shell の前の sibling に挿入 → 固定ヘッダーでクリッピング\n  //     v5 = kintone.app.getHeaderSpaceElement() に挿入 → 完全に消失（配置不能）\n  //     v6 = 撤去。再導入する場合は QuickLinkBar (📌 主要メニュー) との二重表示も解消すること",
+  "risk": "low",
+  "status": "executed",
+  "created_at": "2026-04-18T16:35:00+09:00",
+  "approved_at": "2026-04-18T16:35:00+09:00",
+  "execute_after": "2026-04-19T06:00:00+09:00",
+  "result_note": "string_replace (1個所) → customize/ops-guide/desktop.js (backup: desktop.js.backup.2026-04-18T21-32-53-768Z)",
+  "executed_at": "2026-04-18T21:32:53.769Z"
+}

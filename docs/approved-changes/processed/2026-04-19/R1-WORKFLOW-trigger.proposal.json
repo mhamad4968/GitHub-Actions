@@ -1,0 +1,17 @@
+{
+  "id": "R1",
+  "category": "R",
+  "title": "WORKFLOW.md Phase 1 必須トリガーに「Web UI への DOM 挿入」を追加",
+  "rationale": "App 668 関連ナビ配置で v3→v4→v5 と 3 回失敗→撤去した反省。Kintone DOM へ挿入する前に Playwright MCP で DOM を確認することを必須化",
+  "type": "string_replace",
+  "target": "WORKFLOW.md",
+  "old_string": "| 新規領域 / 失敗実績あり / iframe / sandbox / 外部 API / セキュリティ | 必須 | 下記 |\n| ルーチン作業（既存の lint, deploy） | 任意（スキップ可。理由を宣言） | - |",
+  "new_string": "| 新規領域 / 失敗実績あり / iframe / sandbox / 外部 API / セキュリティ | 必須 | 下記 |\n| ルーチン作業（既存の lint, deploy） | 任意（スキップ可。理由を宣言） | - |\n| **Web UI への DOM 挿入**（kintone カスタマイズで `getHeaderSpaceElement` 等のスロットに要素を追加する場合）| **必須** | **`scripts/check-dom-injection.mjs <URL> <selector>` または Playwright MCP で対象 URL を開き DOM を確認** |",
+  "risk": "low",
+  "status": "executed",
+  "created_at": "2026-04-18T16:35:00+09:00",
+  "approved_at": "2026-04-18T16:35:00+09:00",
+  "execute_after": "2026-04-19T06:00:00+09:00",
+  "result_note": "string_replace (1個所) → WORKFLOW.md (backup: WORKFLOW.md.backup.2026-04-18T21-32-53-781Z)",
+  "executed_at": "2026-04-18T21:32:53.781Z"
+}

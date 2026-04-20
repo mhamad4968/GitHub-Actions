@@ -1,0 +1,16 @@
+{
+  "id": "D2",
+  "category": "D",
+  "title": "docs/plans/2026-04-18-skysea-installer.md の先頭に開始予定マーカーを追加",
+  "rationale": "#R3（時刻指定タスク抽出）が拾えるマーカー。明日朝の AI 起動時に「⚡ 時刻指定タスク」として最優先表示される",
+  "type": "apply_patch",
+  "target": "docs/plans/2026-04-18-skysea-installer.md",
+  "patch": "--- a\n+++ b\n@@ -1,5 +1,9 @@\n # 2026-04-18 (Sat) 計画メモ：SKYSEA未導入PC自動インストール\n \n+## ⚡ 開始予定: 2026-04-19 07:00 JST\n+\n+> 朝 7 時から着手予定。`docs/reports/2026-04-19-morning-prep.md` の「⚡ 時刻指定タスク」セクションで本タスクが最優先表示される（#R3）。\n+\n - 起票: 2026-04-17 19:24 (Fri) — 翌日着手予定の事前計画\n - 要望（原文）:\n   > 明日はSKYSEAクライアントが入っていないPCを探してAD等で自動的にインストールさせる仕組みをつくりたい。条件はPCが立ち上がっている間に入れたい。\n",
+  "risk": "low",
+  "status": "failed",
+  "created_at": "2026-04-18T16:35:00+09:00",
+  "approved_at": "2026-04-18T16:35:00+09:00",
+  "execute_after": "2026-04-19T06:00:00+09:00",
+  "result_note": "patch failed: patching file /home/mhamada202408224/kintone-ai-lab/docs/plans/2026-04-18-skysea-installer.md\nReversed (or previously applied) patch detected!  Assume -R? [n] \nApply anyway? [n] \nSkipping patch.\n1 out of 1 hunk ignored -- saving rejects to file /home/mhamada202408224/kintone-ai-lab/docs/plans/2026-04-18-skysea-installer.md.rej\n",
+  "executed_at": "2026-04-18T21:32:53.780Z"
+}

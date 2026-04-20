@@ -1,0 +1,18 @@
+{
+  "id": "V1",
+  "category": "V",
+  "title": "[minor] dotenv: 17.3.1 → 17.4.2",
+  "rationale": "Minor version up は後方互換のはず。承認すると翌朝自動で `npm update dotenv` を実行",
+  "pkg": "dotenv",
+  "current": "17.3.1",
+  "wanted": "17.4.2",
+  "latest": "17.4.2",
+  "diff_level": "minor",
+  "type": "run_command",
+  "command": "npm update dotenv",
+  "instructions": null,
+  "risk": "low",
+  "status": "proposed",
+  "created_at": "2026-04-18T21:53:44.365Z",
+  "auto_generated_by": "version-up.mjs"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "S3",
+  "category": "S",
+  "title": "scripts/check-dom-injection.mjs を新設（DOM 挿入前の事前チェッカ）",
+  "rationale": "WORKFLOW.md #R1 の実行手段。Web UI 挿入前に対象 URL の到達性を確認し、Playwright MCP での DOM 確認手順を AI に提示する",
+  "type": "write_file",
+  "target": "scripts/check-dom-injection.mjs",
+  "content": "#!/usr/bin/env node\n/**\n * check-dom-injection.mjs\n *\n * Web UI（特に kintone）に DOM 要素を挿入する前の事前チェッカ。\n *\n * 使い方:\n *   node scripts/check-dom-injection.mjs <URL> [<挿入予定 selector>]\n *\n * 動作:\n *   1. URL に GET リクエスト（HTTP 状態確認）\n *   2. raw HTML 内に挿入予定 selector の手がかり（class/id 名）が存在するか検索\n *   3. kintone は JS 描画なので raw HTML だけでは不十分 → Playwright MCP の手順を案内\n *\n * WORKFLOW.md Phase 1（DOM 挿入トリガー）から呼ばれる。\n * cron からは呼ばれない（手動 / AI 駆動）。\n */\nimport process from 'node:process';\n\nconst [, , url, selector] = process.argv;\n\nif (!url) {\n  console.error('usage: node scripts/check-dom-injection.mjs <URL> [<selector>]');\n  process.exit(2);\n}\n\nconst out = [];\nout.push(`## DOM 挿入事前チェック`);\nout.push('');\nout.push(`- 対象 URL: \\`${url}\\``);\nif (selector) out.push(`- 挿入予定 selector: \\`${selector}\\``);\nout.push('');\n\nlet status = 0;\nlet bodySnippet = '';\nlet contentType = '';\n\ntry {\n  const res = await fetch(url, { redirect: 'follow' });\n  status = res.status;\n  contentType = res.headers.get('content-type') || '(unknown)';\n  const body = await res.text();\n  bodySnippet = body.slice(0, 5000);\n  out.push(`### 1. HTTP 応答`);\n  out.push('');\n  out.push(`- status: **${status}**`);\n  out.push(`- content-type: ${contentType}`);\n  out.push(`- body 長: ${body.length} bytes`);\n  out.push('');\n} catch (e) {\n  out.push(`### 1. HTTP 応答`);\n  out.push('');\n  out.push(`❌ fetch 失敗: ${e.message}`);\n  out.push('');\n}\n\n// 2. selector の手がかり検索（raw HTML）\nif (selector) {\n  out.push(`### 2. raw HTML 内 selector ヒント検索`);\n  out.push('');\n  const tokens = selector.match(/[#.][\\w-]+/g) || [];\n  if (tokens.length === 0) {\n    out.push('(selector からトークンを抽出できませんでした)');\n  } else {\n    for (const t of tokens) {\n      const needle = t.slice(1);\n      const found = bodySnippet.includes(needle);\n      out.push(`- \\`${t}\\` → ${found ? '✅ raw HTML に出現' : '⚠ raw HTML には未出現（JS 描画かも）'}`);\n    }\n  }\n  out.push('');\n}\n\n// 3. kintone の場合は Playwright MCP 案内\nout.push(`### 3. 推奨フォローアップ（kintone 等の JS 描画 UI）`);\nout.push('');\nout.push('raw HTML だけでは Kintone のヘッダースロット等の真の DOM は確認できません。AI は以下を実行してください:');\nout.push('');\nout.push('```');\nout.push('# Playwright MCP（user-playwright）で対象 URL を開く');\nout.push('# DOM 描画後に以下を確認:');\nout.push('#   - kintone.app.record.getHeaderMenuSpaceElement() の実体');\nout.push('#   - kintone.app.getHeaderSpaceElement() の実体');\nout.push('#   - 既存の挿入済み要素との配置干渉');\nout.push('#   - 挿入後の clientHeight 変化（クリッピング検知）');\nout.push('```');\nout.push('');\n\nconsole.log(out.join('\\n'));\nprocess.exit(status >= 200 && status < 400 ? 0 : 1);\n",
+  "risk": "low",
+  "status": "executed",
+  "created_at": "2026-04-18T16:35:00+09:00",
+  "approved_at": "2026-04-18T16:35:00+09:00",
+  "execute_after": "2026-04-19T06:00:00+09:00",
+  "result_note": "write_file → scripts/check-dom-injection.mjs",
+  "executed_at": "2026-04-18T21:32:53.824Z"
+}

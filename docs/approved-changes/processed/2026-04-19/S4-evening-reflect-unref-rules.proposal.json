@@ -1,0 +1,17 @@
+{
+  "id": "S4",
+  "category": "S",
+  "title": "evening-reflect.mjs に「未参照ルール統廃合候補」セクションを追加",
+  "rationale": "audit-rules の検出する未参照 §N 25 個を、夕反省で毎日 1-2 個ずつ取り上げて統廃合判断する仕組み",
+  "type": "string_replace",
+  "target": "scripts/evening-reflect.mjs",
+  "old_string": "// ── 出力 ────────────────────────────────────────────\nconst out = `# 🌙 本日のまとめ・反省 — ${today.label}",
+  "new_string": "// ── 1-G. 未参照ルール統廃合候補 (#S4) ───────────────\nlet unrefSection = '_(audit-rules 出力取得失敗)_';\nconst auditRes = run('node scripts/audit-rules.mjs 2>&1');\nif (auditRes.ok) {\n  const m = auditRes.stdout.match(/未参照ルール:\\s*(§[\\d\\s\\/§]+)/);\n  if (m) {\n    const ids = m[1].split(/\\s*\\/\\s*/).map((s) => s.trim()).filter(Boolean);\n    if (ids.length === 0) {\n      unrefSection = '_(未参照ルールなし)_';\n    } else {\n      const seed = Number(today.iso.replace(/-/g, ''));\n      const picks = [...new Set([(seed) % ids.length, (seed * 7 + 3) % ids.length])]\n        .map((i) => ids[i])\n        .filter(Boolean);\n      unrefSection = `本日の検討対象（${ids.length} 個中 ${picks.length} 件を日付シードで抽出）:\\n` +\n        picks.map((id) => `- ${id}: WORKFLOW.md / RULES-INDEX.md から参照されていない。**統合 / 廃止 / 維持** いずれかを判断`).join('\\n') +\n        `\\n\\n全リスト: ${ids.join(' / ')}`;\n    }\n  } else {\n    unrefSection = '_(出力から未参照ルール行を抽出できず)_';\n  }\n}\n\n// ── 出力 ────────────────────────────────────────────\nconst out = `# 🌙 本日のまとめ・反省 — ${today.label}",
+  "risk": "low",
+  "status": "executed",
+  "created_at": "2026-04-18T16:35:00+09:00",
+  "approved_at": "2026-04-18T16:35:00+09:00",
+  "execute_after": "2026-04-19T06:00:00+09:00",
+  "result_note": "string_replace (1個所) → scripts/evening-reflect.mjs (backup: evening-reflect.mjs.backup.2026-04-18T21-32-53-824Z)",
+  "executed_at": "2026-04-18T21:32:53.824Z"
+}

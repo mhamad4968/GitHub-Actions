@@ -1,0 +1,17 @@
+{
+  "id": "R3",
+  "category": "R",
+  "title": "daily-morning-prep.mjs の「推奨スタート手順」に時刻指定タスクを最優先表示",
+  "rationale": "「明日 7:00 から SKYSEA」のような時刻指定の約束を朝ブリーフィングが拾えるように。docs/plans/*.md の本文から時刻パターンを grep して該当行を表示",
+  "type": "string_replace",
+  "target": "scripts/daily-morning-prep.mjs",
+  "old_string": "// ── 推奨スタート手順を計画ファイルから自動推論 ──\nsections.push('---');\nsections.push('');\nsections.push('## 🚀 今日の推奨スタート手順');\nsections.push('');\n\nconst planList = (() => {",
+  "new_string": "// ── 推奨スタート手順を計画ファイルから自動推論 ──\nsections.push('---');\nsections.push('');\nsections.push('## 🚀 今日の推奨スタート手順');\nsections.push('');\n\n// (#R3) 時刻指定タスクを最優先で抽出\nconst TIME_PATTERNS = [\n  /明日\\s*\\d{1,2}[:：時]/,\n  /翌日\\s*\\d{1,2}[:：時]/,\n  /\\b\\d{1,2}[:：]\\d{2}\\s*(?:JST|から|開始|から開始)/,\n  /\\b\\d{1,2}\\s*時(?:から|開始)/,\n  /開始予定[:：]/,\n  /⚡\\s*開始予定/,\n];\nconst timedTasks = (() => {\n  const dir = path.join(REPO_ROOT, 'docs', 'plans');\n  if (!fs.existsSync(dir)) return [];\n  const hits = [];\n  for (const f of fs.readdirSync(dir).filter((x) => x.endsWith('.md'))) {\n    const full = path.join(dir, f);\n    const text = fs.readFileSync(full, 'utf8');\n    const lines = text.split(/\\r?\\n/);\n    lines.forEach((line, idx) => {\n      if (TIME_PATTERNS.some((re) => re.test(line))) {\n        hits.push({ file: f, line: idx + 1, text: line.trim().slice(0, 200) });\n      }\n    });\n  }\n  return hits.slice(0, 10);\n})();\n\nif (timedTasks.length > 0) {\n  sections.push('### ⚡ 時刻指定タスク（最優先）');\n  sections.push('');\n  for (const t of timedTasks) sections.push(`- \\`${t.file}\\` L${t.line}: ${t.text}`);\n  sections.push('');\n}\n\nconst planList = (() => {",
+  "risk": "low",
+  "status": "failed",
+  "created_at": "2026-04-18T16:35:00+09:00",
+  "approved_at": "2026-04-18T16:35:00+09:00",
+  "execute_after": "2026-04-19T06:00:00+09:00",
+  "result_note": "old_string not found in target",
+  "executed_at": "2026-04-18T21:32:53.791Z"
+}
