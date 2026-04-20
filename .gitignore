@@ -15,6 +15,22 @@ Thumbs.db
 
 # 一時プレビュー・作業ファイル（コミット対象外）
 tmp/
+temp/
+
+# サブプロジェクトの収集ログ
+security-next-automation/collect_log.txt
+collect_log.txt
+
+# 生成物・ログ・バックアップ（2026-04-20 追加）
+.rag/lancedb/
+.rag/models/
+.rag/backup.log
+backups/
+dist/
+logs/
+
+# 別 git リポを内包しているので submodule 化するまでは除外（2026-04-20 追加）
+GitHub-Actions/
 
 # patch / 編集ツールが残すバックアップ・拒否片（2026-04-20 追加）
 *.orig
