@@ -425,6 +425,35 @@
 
   kintone.events.on('app.record.create.submit', onCreateSubmitDuplicateCheck);
   kintone.events.on('app.record.edit.submit', onEditSubmitDuplicateCheck);
+
+  // ====================================================================
+  // 2026-04-21 制定 (#K2): pc_link_count_n 自動更新
+  //   PC_name (カンマ区切り) を解析し、紐付けPC台数を NUMBER フィールドに書き込み。
+  //   - 個人アカウント = 通常 1 (会社用) / 持ち出し用ありで 2
+  //   - 共有アカウント / JR端末 = 複数 (3-7台等)
+  //   - PC_name 空 = 0
+  //   この方式は CALC SUM(pc_ledger_links) 方式の二重管理問題 (TSB-008) を回避する。
+  // ====================================================================
+  const calcPcLinkCount = (event) => {
+    try {
+      const rec = event?.record;
+      if (!rec) return event;
+      const pcname = String(rec.PC_name?.value || '').trim();
+      const n = pcname ? pcname.split(/\s*,\s*/).map((s) => s.trim()).filter(Boolean).length : 0;
+      if (rec.pc_link_count_n) {
+        rec.pc_link_count_n.value = String(n);
+      }
+    } catch (e) {
+      console.warn('[jbis 627 K2 pc_link_count_n auto-fill]', e);
+    }
+    return event;
+  };
+  kintone.events.on('app.record.create.submit', calcPcLinkCount);
+  kintone.events.on('app.record.edit.submit', calcPcLinkCount);
+  if (typeof kintone.mobile !== 'undefined') {
+    kintone.events.on('mobile.app.record.create.submit', calcPcLinkCount);
+    kintone.events.on('mobile.app.record.edit.submit', calcPcLinkCount);
+  }
   if (typeof kintone.mobile !== 'undefined') {
     kintone.events.on(
       'mobile.app.record.create.submit',
@@ -621,6 +650,46 @@
   kintone.events.on('app.record.detail.show', onDetailShowDupNotice);
   if (typeof kintone.mobile !== 'undefined') {
     kintone.events.on('mobile.app.record.detail.show', onDetailShowDupNotice);
+  }
+
+  // ====================================================================
+  // 2026-04-21 制定 (#C4): Office 5 台超過警告バナー
+  //   M365 のライセンスは 1 アカウントで 5 台までインストール可能。
+  //   pc_link_count_n >= 5 のレコードを開いたとき、画面上部に赤バナーで警告。
+  //   入替用に別 M365 アカウント準備が必要であることを管理者に明示する。
+  // ====================================================================
+  const M365_OFFICE_LIMIT = 5;
+  const showOfficeOverLimitBanner = (count) => {
+    const containerId = 'jbis627-office-over-limit-banner';
+    if (document.getElementById(containerId)) return;
+    const space = (typeof kintone !== 'undefined' && kintone.app && kintone.app.record && typeof kintone.app.record.getSpaceElement === 'function')
+      ? kintone.app.record.getHeaderMenuSpaceElement()
+      : null;
+    const host = space || document.querySelector('.gaia-argoui-app-show-header') || document.body;
+    const div = document.createElement('div');
+    div.id = containerId;
+    div.style.cssText =
+      'background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;padding:14px 20px;' +
+      'border-radius:10px;margin:10px 0;font-size:14px;line-height:1.6;' +
+      'box-shadow:0 4px 12px rgba(220,38,38,.3);font-weight:700;';
+    div.innerHTML =
+      '<div style="font-size:18px;margin-bottom:6px;">⚠ M365 Office 5 台インストール制限超過</div>' +
+      '<div style="font-weight:500;">このアカウントには <b>' + count + ' 台</b> の PC が紐付いています（制限: 5 台）。<br>' +
+      '別 M365 アカウントを準備して、超過分の PC のアカウント入替が必要です。</div>';
+    host.insertBefore(div, host.firstChild);
+  };
+  const onDetailShowOfficeLimit = (event) => {
+    try {
+      const count = parseInt(event?.record?.pc_link_count_n?.value ?? '0', 10);
+      if (count >= M365_OFFICE_LIMIT) showOfficeOverLimitBanner(count);
+    } catch (e) {
+      console.warn('[jbis 627 C4 Office over limit banner]', e);
+    }
+    return event;
+  };
+  kintone.events.on('app.record.detail.show', onDetailShowOfficeLimit);
+  if (typeof kintone.mobile !== 'undefined') {
+    kintone.events.on('mobile.app.record.detail.show', onDetailShowOfficeLimit);
   }
 
   /**

@@ -1,0 +1,10 @@
+{
+  "id": "D5b",
+  "category": "D",
+  "type": "string_replace",
+  "target": "scripts/evening-reflect.mjs",
+  "note": "D3 NEW-SESSION-STARTER 自動更新側の git log も 12h 化",
+  "old_string": "  const todayCommits = run(`git log --since=midnight --pretty=format:'%s' | head -3`);",
+  "new_string": "  const todayCommits = run(`git log --since='12 hours ago' --pretty=format:'%s' | head -3`);",
+  "created_at": "2026-04-20T22:35:00.000Z"
+}

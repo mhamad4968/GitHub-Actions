@@ -1,0 +1,10 @@
+{
+  "id": "TSB-008",
+  "category": "D",
+  "type": "string_replace",
+  "target": "docs/troubleshooting.md",
+  "note": "kintone CALC SUM の 0 件 = 空表示問題 + 二重管理データの落とし穴を TSB-008 として記録",
+  "old_string": "- 月次で **RAG 再 ingest**: `npx mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest docs/`\n- **既存 TSB は削除しない**。古くなった内容は「**廃止**: 2026-XX-XX」と先頭にマークするのみ",
+  "new_string": "- 月次で **RAG 再 ingest**: `npx mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest docs/`\n- **既存 TSB は削除しない**。古くなった内容は「**廃止**: 2026-XX-XX」と先頭にマークするのみ\n\n---\n\n## TSB-008 — kintone CALC SUM の「0 件 = 空表示」 + 二重管理データの落とし穴（2026-04-20 制定）\n\n### 症状\n1. サブテーブル合計を計算フィールド `SUM(sub_field)` で出すと、**サブ行 0 件のレコードはセルが空白**（0 と表示されない）。\n2. `IF(SUM(...) = 0, 0, SUM(...))` / `SUM(...) + 0` / `SUM(...) * 1` いずれも効かず修復不可（kintone 計算式の標準範囲外）。\n3. さらに、**単一値フィールド + サブテーブルの二重管理**スキーマ（例: 627 の `pc_594_record_id` + `pc_ledger_links` サブで主 PC が両方に登録される）では、SUM(サブ) すると主 PC を**重複カウント**してしまう。\n\n### 発生事例（2026-04-20 22:00-22:25）\n- 627 アカウント台帳に「Office 5 台制限管理」用のカウントを CALC `SUM(pc_link_count_unit)` で実装\n- 個人アカウント 211 件 = サブ 0 件 → カウント空白表示（「0 と出てほしい」浜田指摘）\n- 共有アカウント「東京管理者」= 表示 8 台だが、サブ 1 行目が空 + pc_594_record_id と重複登録のため**実数 7 台**（誤算出）\n- 浜田の §47 指摘で 4 分以内に rollback 完了 → 誤データ残存ゼロ\n\n### 教訓\n1. **kintone でカウント表示を CALC で実装するのは、サブ行が必ず 1 件以上あると保証できる場合のみ**。それ以外は **NUMBER フィールド + JS 自動更新方式** を使う（保存時に `customize/<app>/desktop.js` で計算してフィールドに書き込み）。\n2. **二重管理データ（単一値 + サブで同じ実体を持つ）に対して SUM するな**。NUMBER + JS 方式なら「PC_name 文字列のカンマ数 + 1」のように**論理的に重複を排した式**で計算できる。\n3. AGENTS.md §47-6（2026-04-20 制定）「データ集計実装前の目視確認義務」と完全に対応。実装前にサンプル 3 件を `node fetch` して field value 構造を目視確認すること。\n\n### 推奨ワークフロー（カウント / 集計実装時）\n```bash\n# Step 1: サンプル 3 件取得して field 構造目視\nnode -e \"... fetch records.json?app=N&fields=...&limit=3 ... console.log(json)\"\n# Step 2: 二重管理 / 空対策 / 単位の設計レビュー\n# Step 3: NUMBER + JS 自動更新 で実装（CALC は最終手段）\n# Step 4: snapshot 保存 → ドライラン → バックフィル → ビュー追加\n```",
+  "created_at": "2026-04-20T22:35:00.000Z"
+}

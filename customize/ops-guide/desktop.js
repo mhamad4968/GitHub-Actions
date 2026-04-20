@@ -140,6 +140,7 @@
     { emoji: '📊', label: 'PC↔アカウント相関ダッシュボード', url: 'https://jbis-kintone.cybozu.com/k/594/?view=13459660' },
     { emoji: '🪪', label: 'WindowsID重複ダッシュボード', url: 'https://jbis-kintone.cybozu.com/k/627/?view=13459662' },
     { emoji: '📧', label: 'M365管理台帳', url: 'https://jbis-kintone.cybozu.com/k/627/?view=13459663' },
+    { emoji: '⚠', label: 'Office5台超過アカウント', url: 'https://jbis-kintone.cybozu.com/k/627/?view=13459688' },
   ];
 
   function buildQuickLinkBar() {
