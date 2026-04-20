@@ -121,6 +121,20 @@ td{padding:8px 12px;border-top:1px solid #e2e8f0}
 </div>
 
 <div class="card">
+  <h2>🔍 健全性チェック（相関ダッシュボード）</h2>
+  <p style="margin-bottom:10px;font-size:.95em">PC 台帳の<b>左メニュー → 「📊 PC ⇄ アカウント 相関ダッシュボード」</b>を開くだけ。既定で <b>2 つの異常</b>が一覧表示されます。</p>
+  <table>
+    <tr><th>表示</th><th>意味</th><th>対応</th></tr>
+    <tr><td><b style="color:#b45309">🟠 重複あり</b></td><td>1 台の PC に <b>2 件以上</b>のアカウントが紐付いている（WindowsID 重複疑い）</td><td>詳細を開いて余分な紐付けを「解除」</td></tr>
+    <tr><td><b style="color:#a16207">🟡 紐付けなし</b></td><td>個人/共有/JR端末なのに <b>627 に紐付くアカウント 0 件</b></td><td>詳細を開いて紫🔗または水色🔗で紐付け</td></tr>
+  </table>
+  <div class="tip t-blue" style="margin-top:10px">
+    <span class="e">💡</span>
+    <span>下部の <b>🧹 台帳番号の取り残し一括クリア</b> ボタンは、627 から既に解除済なのに 594 側に台帳番号だけ残っている行を一括で空にします（安全：再確認後のみ消す）。</span>
+  </div>
+</div>
+
+<div class="card">
   <h2>📌 ルール（覚えておくこと）</h2>
   <div class="tip t-blue">
     <span class="e">①</span>
@@ -143,7 +157,7 @@ td{padding:8px 12px;border-top:1px solid #e2e8f0}
 
 </div>
 
-<div class="footer">PC 台帳ガイド v5 (簡潔版) / 2026-04-19 ― <button type="button" data-nav="hub" style="background:transparent;border:none;color:inherit;cursor:pointer;font:inherit;text-decoration:underline;">← トップに戻る</button></div>
+<div class="footer">PC 台帳ガイド v5.1 / 2026-04-20 (相関ダッシュ復活) ― <button type="button" data-nav="hub" style="background:transparent;border:none;color:inherit;cursor:pointer;font:inherit;text-decoration:underline;">← トップに戻る</button></div>
 
 </body>
 </html>

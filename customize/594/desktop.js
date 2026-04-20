@@ -2,6 +2,7 @@
   'use strict';
 
   // BUILD: 2026-04-18-v480 (相関ダッシュ: 台帳番号列・ミラー取り残し一括クリア)
+  // BUILD: 2026-04-20-v488 (個人/共有アカウント紐付け解除時に 627.PC_name の正確一致削除を追加: 取り残し修正)
   // BUILD: 2026-04-19-v487 (PC検索: 所属名と所属グループを別フィールドに分離・自動展開廃止で混同防止)
   // BUILD: 2026-04-19-v486 (種別=JR端末 にも共有アカウント紐付けボタンを表示・モーダルタイトルに種別を反映)
   // BUILD: 2026-04-19-v485 (共有アカウント紐付けボタンを常時表示化・紐付け済み共有 PC でも追加紐付け可能に)
@@ -1575,7 +1576,18 @@
    * @param {string} pc594Str
    * @returns {Record<string, { value: unknown }>}
    */
-  const build627UnlinkPatchForPc594 = (rec627, pc594Str) => {
+  /**
+   * 627 から「特定 PC への紐付け」を外す patch を組み立てる。
+   * 2026-04-20 v488 修正: PC_name フィールドのクリア処理を追加。
+   *   リンク時 (行 2624-2627) に「PC-A, PC-B」とカンマ追記する仕様に対し、
+   *   解除時に該当 PC 名を分離削除しないと取り残しが発生していたバグを修正。
+   *   pcName594 が指定された場合のみ PC_name を編集する（後方互換）。
+   * @param {Record<string, any>} rec627
+   * @param {string|number} pc594Str  PC 台帳のレコード番号
+   * @param {string} [pcName594]       PC 名 (FC_594_PC_NAME)。省略可
+   * @returns {Record<string, { value: unknown }>}
+   */
+  const build627UnlinkPatchForPc594 = (rec627, pc594Str, pcName594) => {
     const patch = /** @type {Record<string, { value: unknown }>} */ ({});
     const pid = String(pc594Str || '').trim();
     if (!pid) return patch;
@@ -1591,6 +1603,18 @@
     );
     if (kept.length !== currentSub.length) {
       patch[FC_627_PC_SUBTABLE] = { value: kept.map((row) => ({ id: row.id, value: row.value })) };
+    }
+    // PC_name の正確一致削除 (カンマ区切り、トリム済の完全一致のみ)
+    const target = String(pcName594 || '').trim();
+    if (target) {
+      const cur = String(rec627[FC_627_PC_NAME_FIELD]?.value || '').trim();
+      if (cur) {
+        const items = cur.split(/\s*,\s*/).map((s) => s.trim()).filter(Boolean);
+        const filtered = items.filter((n) => n !== target);
+        if (filtered.length !== items.length) {
+          patch[FC_627_PC_NAME_FIELD] = { value: filtered.join(', ') };
+        }
+      }
     }
     return patch;
   };
@@ -1613,6 +1637,16 @@
           .filter((x) => /^\d+$/.test(x)),
       ),
     ];
+    // 2026-04-20 v488: 627.PC_name の正確一致削除のため、まず 594 から PC 名を取得
+    const app594 = kintone.app.getId();
+    let pcName594 = '';
+    let rec594ForPid = null;
+    try {
+      const r594pre = await kintone.api(kintone.api.url('/k/v1/record', true), 'GET', { app: app594, id: pid });
+      rec594ForPid = r594pre.record || {};
+      pcName594 = String(rec594ForPid[FC_594_PC_NAME]?.value || '').trim();
+    } catch (_) { /* PC 名が取れなくても以前の挙動 (PC_name 編集スキップ) で続行 */ }
+
     let touched627 = 0;
     const errors = /** @type {string[]} */ ([]);
     for (const lid of ids) {
@@ -1622,7 +1656,7 @@
           id: lid,
         });
         const rec627 = res627.record || {};
-        const patch = build627UnlinkPatchForPc594(rec627, pid);
+        const patch = build627UnlinkPatchForPc594(rec627, pid, pcName594);
         if (Object.keys(patch).length === 0) continue;
         await kintone.api(kintone.api.url('/k/v1/record', true), 'PUT', {
           app: LEDGER_APP_ID,
@@ -1640,8 +1674,9 @@
     }
 
     try {
-      const app594 = kintone.app.getId();
-      const r594 = await kintone.api(kintone.api.url('/k/v1/record', true), 'GET', { app: app594, id: pid });
+      const r594 = rec594ForPid
+        ? { record: rec594ForPid }
+        : await kintone.api(kintone.api.url('/k/v1/record', true), 'GET', { app: app594, id: pid });
       const rec594 = r594.record || {};
       const curLed = String(rec594[FC_594_LEDGER_RECORD_ID]?.value ?? '').trim();
       if (curLed) {
@@ -3157,13 +3192,19 @@
           skipped++;
           continue;
         }
+        // 2026-04-20 v488: PC_name 正確一致削除のため 594 から PC 名取得
+        let pcName594ForUnlink = '';
+        try {
+          const r594pre = await kintone.api(kintone.api.url('/k/v1/record', true), 'GET', { app: app594, id: pid });
+          pcName594ForUnlink = String(r594pre.record?.[FC_594_PC_NAME]?.value || '').trim();
+        } catch (_) { /* 取得失敗時は PC_name 編集スキップで継続 */ }
         try {
           const res627 = await kintone.api(kintone.api.url('/k/v1/record', true), 'GET', {
             app: LEDGER_APP_ID,
             id: lidRaw,
           });
           const rec627 = res627.record || {};
-          const patch627 = build627UnlinkPatchForPc594(rec627, pid);
+          const patch627 = build627UnlinkPatchForPc594(rec627, pid, pcName594ForUnlink);
           if (Object.keys(patch627).length > 0) {
             await kintone.api(kintone.api.url('/k/v1/record', true), 'PUT', {
               app: LEDGER_APP_ID,
