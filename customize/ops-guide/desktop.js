@@ -5,22 +5,42 @@
 (function () {
   'use strict';
 
-  var TAB_ORDER = ['hub', 'pc', 'personal', 'shared', 'employee'];
+  var TAB_ORDER = ['hub', 'pc', 'personal', 'shared', 'employee', 'lifecycle'];
   var TAB_LABELS = {
     hub: 'トップ',
     pc: 'PC台帳',
     personal: '個人アカウント',
     shared: '共有',
     employee: '社員マスタ',
+    lifecycle: '異動・退職・買替',
   };
 
   var htmlMap = null;
-  var lastBlobUrl = null;
 
   window.__JBIS_OPS_GUIDE_NAV__ = function (slug) {
     window.__JBIS_OPS_GUIDE_ACTIVE_SLUG__ = slug || 'hub';
     renderIframe();
   };
+
+  window.addEventListener('message', function (ev) {
+    if (ev.data && ev.data.type === 'jbis-ops-guide-nav' && ev.data.slug) {
+      window.__JBIS_OPS_GUIDE_NAV__(ev.data.slug);
+    }
+    // iframe 内 HTML が自分の scrollHeight を通知してきたら、iframe を自動リサイズ
+    // ※ 縮小は禁止（最低 1500px は確保）。成長のみ許可することで、計測タイミングが早い場合でも
+    //   初期高さを下回って真っ白になる事故を防ぐ
+    if (ev.data && ev.data.type === 'jbis-ops-guide-iframe-resize' && typeof ev.data.height === 'number') {
+      var iframe = qs('#jbis-ops-guide-iframe');
+      if (iframe) {
+        var requested = Math.ceil(ev.data.height) + 24;
+        var current = iframe.offsetHeight || 1500;
+        var h = Math.max(1500, current, Math.min(requested, 12000));
+        iframe.style.height = h + 'px';
+        var wrap = iframe.parentElement;
+        if (wrap) wrap.style.height = h + 'px';
+      }
+    }
+  });
 
   function qs(sel) {
     return document.querySelector(sel);
@@ -48,17 +68,6 @@
     if (hdr) hdr.style.display = '';
   }
 
-  function revokeBlob() {
-    if (lastBlobUrl) {
-      try {
-        URL.revokeObjectURL(lastBlobUrl);
-      } catch (_e) {
-        /* noop */
-      }
-      lastBlobUrl = null;
-    }
-  }
-
   function renderIframe() {
     var iframe = qs('#jbis-ops-guide-iframe');
     if (!iframe || !htmlMap) return;
@@ -66,15 +75,12 @@
     var entry = htmlMap[slug];
     if (!entry || !entry.html) {
       iframe.removeAttribute('src');
-      iframe.srcdoc = '<body style="font-family:sans-serif;padding:24px">このガイドの HTML がまだ同期されていません。管理者に npm run ops-guide:publish の実行を依頼してください。</body>';
+      iframe.srcdoc = '<body style="font-family:sans-serif;padding:24px">\u3053\u306e\u30ac\u30a4\u30c9\u306e HTML \u304c\u307e\u3060\u540c\u671f\u3055\u308c\u3066\u3044\u307e\u305b\u3093\u3002\u7ba1\u7406\u8005\u306b npm run ops-guide:publish \u306e\u5b9f\u884c\u3092\u4f9d\u983c\u3057\u3066\u304f\u3060\u3055\u3044\u3002</body>';
       return;
     }
-    revokeBlob();
-    var blob = new Blob([entry.html], { type: 'text/html;charset=utf-8' });
-    lastBlobUrl = URL.createObjectURL(blob);
-    iframe.removeAttribute('srcdoc');
-    iframe.src = lastBlobUrl;
-    iframe.setAttribute('title', entry.title || '運用ガイド');
+    iframe.removeAttribute('src');
+    iframe.srcdoc = entry.html;
+    iframe.setAttribute('title', entry.title || '\u904b\u7528\u30ac\u30a4\u30c9');
 
     document.querySelectorAll('[data-ops-tab]').forEach(function (btn) {
       var on = btn.getAttribute('data-ops-tab') === slug;
@@ -121,6 +127,72 @@
     bar.appendChild(listBtn);
   }
 
+  // 主要アプリへのワンクリック遷移メニュー（iframe外＝Kintone DOMに直接配置するためクリッピングしない）
+  var QUICK_LINKS = [
+    { emoji: '💻', label: 'PC管理台帳', url: 'https://jbis-kintone.cybozu.com/k/594/' },
+    { emoji: '🔑', label: 'アカウント台帳', url: 'https://jbis-kintone.cybozu.com/k/627/' },
+    { emoji: '👤', label: '社員マスタ', url: 'https://jbis-kintone.cybozu.com/k/595/' },
+    { emoji: '🏢', label: '共有採番', url: 'https://jbis-kintone.cybozu.com/k/667/' },
+    { emoji: '🎰', label: '個人採番', url: 'https://jbis-kintone.cybozu.com/k/626/' },
+    { emoji: '📋', label: 'エラーログ', url: 'https://jbis-kintone.cybozu.com/k/656/' },
+  ];
+  var DASHBOARD_LINKS = [
+    { emoji: '📊', label: 'PC↔アカウント相関ダッシュボード', url: 'https://jbis-kintone.cybozu.com/k/594/?view=13459660' },
+    { emoji: '🪪', label: 'WindowsID重複ダッシュボード', url: 'https://jbis-kintone.cybozu.com/k/627/?view=13459662' },
+  ];
+
+  function buildQuickLinkBar() {
+    var bar = document.createElement('div');
+    bar.id = 'jbis-ops-quick-link-bar';
+    bar.style.cssText =
+      'background:#0f172a;color:#fff;padding:10px 14px;border-radius:10px 10px 0 0;' +
+      'display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;font-size:13px;line-height:1.6;';
+    var lbl = document.createElement('span');
+    lbl.textContent = '📌 主要メニュー：';
+    lbl.style.cssText = 'color:#fbbf24;font-weight:800;letter-spacing:.04em;flex-shrink:0;';
+    bar.appendChild(lbl);
+    QUICK_LINKS.forEach(function (it) {
+      var a = document.createElement('a');
+      a.href = it.url;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.textContent = it.emoji + ' ' + it.label;
+      a.style.cssText =
+        'color:#fff;text-decoration:underline;text-underline-offset:3px;font-weight:700;' +
+        'padding:2px 4px;border-radius:4px;transition:.15s;white-space:nowrap;';
+      a.addEventListener('mouseenter', function () { a.style.background = 'rgba(251,191,36,.25)'; a.style.color = '#fde68a'; });
+      a.addEventListener('mouseleave', function () { a.style.background = 'transparent'; a.style.color = '#fff'; });
+      bar.appendChild(a);
+    });
+    return bar;
+  }
+
+  function buildDashboardBar() {
+    var bar = document.createElement('div');
+    bar.id = 'jbis-ops-dashboard-bar';
+    bar.style.cssText =
+      'background:#1e293b;color:#fff;padding:8px 14px;' +
+      'display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;font-size:12px;line-height:1.6;border-bottom:2px solid #fbbf24;';
+    var lbl = document.createElement('span');
+    lbl.textContent = '📊 データ品質ダッシュボード：';
+    lbl.style.cssText = 'color:#93c5fd;font-weight:800;flex-shrink:0;';
+    bar.appendChild(lbl);
+    DASHBOARD_LINKS.forEach(function (it) {
+      var a = document.createElement('a');
+      a.href = it.url;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.textContent = it.emoji + ' ' + it.label;
+      a.style.cssText =
+        'color:#fde68a;text-decoration:underline;text-underline-offset:3px;font-weight:700;' +
+        'padding:2px 4px;border-radius:4px;transition:.15s;white-space:nowrap;';
+      a.addEventListener('mouseenter', function () { a.style.background = 'rgba(251,191,36,.25)'; });
+      a.addEventListener('mouseleave', function () { a.style.background = 'transparent'; });
+      bar.appendChild(a);
+    });
+    return bar;
+  }
+
   function injectShell() {
     if (qs('#jbis-ops-guide-shell')) return qs('#jbis-ops-guide-shell');
 
@@ -130,6 +202,11 @@
       'margin:0 0 16px 0;border-radius:12px;overflow:hidden;' +
       'box-shadow:0 4px 20px rgba(0,0,0,.1);background:#fff;';
 
+    // ① 主要アプリへの文字リンクメニュー（Kintone DOMに直接置くのでクリッピングしない）
+    shell.appendChild(buildQuickLinkBar());
+    // ② データ品質ダッシュボードへの文字リンク
+    shell.appendChild(buildDashboardBar());
+
     var hint = document.createElement('div');
     hint.style.cssText =
       'padding:6px 12px;font-size:11px;color:#64748b;background:#f8fafc;border-bottom:1px solid #e2e8f0;';
@@ -137,21 +214,24 @@
       '※ 画面の内容は Kintone レコードと同期されています。ガイド本文の更新は運用側の自動デプロイ（ops-guide:publish）で反映されます。';
     shell.appendChild(hint);
 
+    // ③ ガイド切り替えタブ
     var bar = document.createElement('div');
     bar.id = 'jbis-ops-guide-tabs';
     bar.style.cssText =
       'display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px;background:#1e3a5f;align-items:center;';
     shell.appendChild(bar);
 
+    // ④ ガイド本文iframe（最低 1500px、コンテンツが長ければ postMessage で更に拡張）
     var iframeWrap = document.createElement('div');
-    iframeWrap.style.cssText = 'position:relative;height:min(78vh,900px);background:#e2e8f0;';
+    iframeWrap.style.cssText = 'position:relative;height:1500px;background:#fff;transition:height .25s ease;';
     var iframe = document.createElement('iframe');
     iframe.id = 'jbis-ops-guide-iframe';
     iframe.setAttribute('title', '運用ガイド');
     iframe.setAttribute(
       'sandbox',
-      'allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox'
+      'allow-scripts allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation'
     );
+    // 自動リサイズが間に合わない場合のフォールバックとして iframe 自身にもスクロールを許可
     iframe.style.cssText = 'width:100%;height:100%;border:0;display:block;background:#fff;';
     iframeWrap.appendChild(iframe);
     shell.appendChild(iframeWrap);
