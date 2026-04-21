@@ -1,0 +1,10 @@
+{
+  "id": "TSB-009",
+  "category": "D",
+  "type": "string_replace",
+  "target": "docs/troubleshooting.md",
+  "note": "2026-04-21 FAQ ポータル画像クリック ERR_FILE_NOT_FOUND の根本原因を TSB-009 として記録",
+  "old_string": "- 月次で **RAG 再 ingest**: `npx mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest docs/`\n- **既存 TSB は削除しない**。古くなった内容は「**廃止**: 2026-XX-XX」と先頭にマークするのみ",
+  "new_string": "- 月次で **RAG 再 ingest**: `npx mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest docs/`\n- **既存 TSB は削除しない**。古くなった内容は「**廃止**: 2026-XX-XX」と先頭にマークするのみ\n\n---\n\n## TSB-009 — Chrome 92+ で window.open(blob:URL, '_blank') がブロックされる（2026-04-21 制定）\n\n### 症状\n- HTML フォーム内で `<input type=file>` や drop でアップロードした画像 (blob: URL 化) を `window.open(blob:..., '_blank')` で別タブ表示しようとすると **`Not allowed to load local resource: blob:http://...`** エラー + ERR_FILE_NOT_FOUND。\n- ドロップ・貼り付け自体は成功するが「クリックで拡大」だけが失敗する見え方。\n\n### 発生事例（2026-04-21 19:00 / FAQ ポータル）\n- `scripts/faq-portal-full.html` の 4 箇所で `window.open(this.src, '_blank')` を使用。Chrome 92+ で blob: URL の新規タブ表示はセキュリティ制限でブロック。\n\n### 根本原因\n**Chrome 92+ のセキュリティ制限**: blob: URL を新規タブで開く操作 (window.open / target=_blank) はブロックされる。CSP / Cross-Origin 関連でなく、純粋な URL スキーム制限。\n\n### 解決パターン 3 択\n1. ⭐ **同一ページ内 Lightbox 表示**: 黒オーバーレイ + 拡大画像で表示。blob: でも http: でも安全に動作。今回採用。\n2. **dataURL 化**: 画像を Base64 dataURL に変換してから別タブ表示。大きい画像でメモリ消費。\n3. **正規 URL 発行**: 画像を即サーバへアップロード → 戻ってきた URL を表示。実装重い・通信増える。\n\n### 修正コード例（FAQ ポータル）\n```javascript\n// 修正前 (NG)\nimg.addEventListener('click', function () {\n  if (this.src) window.open(this.src, '_blank');  // ← Chrome 92+ でブロック\n});\n\n// 修正後 (OK)\nimg.addEventListener('click', function () {\n  openImageLightbox(this.src, this.alt);  // ← Lightbox で同一ページ内表示\n});\n```\n\n### 教訓\n- 動的に生成された blob URL を **新規タブで開く** 設計は将来も使えない\n- **「拡大表示」は同一ページ内の Lightbox / モーダル方式** が将来安全\n- セキュリティ制限は OS / ブラウザ更新で増える方向 → 「将来制限される可能性」を先回り設計するのが §49 の精神",
+  "created_at": "2026-04-21T22:00:00.000Z"
+}

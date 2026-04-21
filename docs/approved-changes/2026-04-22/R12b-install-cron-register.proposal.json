@@ -1,0 +1,10 @@
+{
+  "id": "R12b",
+  "category": "S",
+  "type": "string_replace",
+  "target": "scripts/install-morning-cron.sh",
+  "note": "R12 続き: crontab 登録時に health-check + auto-heal も含める",
+  "old_string": "( crontab -l 2>/dev/null | grep -v \"daily-morning-prep\\|wipe-guard\\|emergency-mirror\" ; echo \"${CRON_LINE}\" ; echo \"${WIPE_GUARD_LINE}\" ; echo \"${MIRROR_LINE}\" ) | crontab -",
+  "new_string": "( crontab -l 2>/dev/null | grep -v \"daily-morning-prep\\|wipe-guard\\|emergency-mirror\\|health-check-4h\\|auto-heal-4h\" ; echo \"${CRON_LINE}\" ; echo \"${WIPE_GUARD_LINE}\" ; echo \"${MIRROR_LINE}\" ; echo \"${HEALTH_CHECK_LINE}\" ; echo \"${AUTO_HEAL_LINE}\" ) | crontab -",
+  "created_at": "2026-04-21T22:00:00.000Z"
+}

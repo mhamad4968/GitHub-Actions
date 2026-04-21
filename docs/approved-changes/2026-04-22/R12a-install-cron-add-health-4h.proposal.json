@@ -1,0 +1,10 @@
+{
+  "id": "R12",
+  "category": "S",
+  "type": "string_replace",
+  "target": "scripts/install-morning-cron.sh",
+  "note": "2026-04-21 浜田指示「健康状態こまめに自動修復」に基づき、health-check + auto-heal を 4 時間ごと cron に追加",
+  "old_string": "WIPE_GUARD_LINE=\"*/15 * * * * cd ${REPO_ROOT} && PATH=${NODE_V24_BIN}:/usr/bin:/bin ${NODE_V24_BIN}/node scripts/wipe-guard.mjs >> ${REPO_ROOT}/logs/wipe-guard/cron.log 2>&1 # wipe-guard\"\nMIRROR_LINE=\"17 */4 * * * cd ${REPO_ROOT} && PATH=${NODE_V24_BIN}:/usr/bin:/bin ${NODE_V24_BIN}/node scripts/emergency-mirror.mjs >> ${REPO_ROOT}/logs/wipe-guard/mirror.log 2>&1 # emergency-mirror\"",
+  "new_string": "WIPE_GUARD_LINE=\"*/15 * * * * cd ${REPO_ROOT} && PATH=${NODE_V24_BIN}:/usr/bin:/bin ${NODE_V24_BIN}/node scripts/wipe-guard.mjs >> ${REPO_ROOT}/logs/wipe-guard/cron.log 2>&1 # wipe-guard\"\nMIRROR_LINE=\"17 */4 * * * cd ${REPO_ROOT} && PATH=${NODE_V24_BIN}:/usr/bin:/bin ${NODE_V24_BIN}/node scripts/emergency-mirror.mjs >> ${REPO_ROOT}/logs/wipe-guard/mirror.log 2>&1 # emergency-mirror\"\n# 2026-04-21 制定 #R12: 健康状態こまめに自動チェック + 自動修復 (浜田指示)\nHEALTH_CHECK_LINE=\"33 */4 * * * cd ${REPO_ROOT} && PATH=${NODE_V24_BIN}:/usr/bin:/bin ${NODE_V24_BIN}/node scripts/health-check.mjs >> ${REPO_ROOT}/logs/health/cron.log 2>&1 # health-check-4h\"\nAUTO_HEAL_LINE=\"43 */4 * * * cd ${REPO_ROOT} && PATH=${NODE_V24_BIN}:/usr/bin:/bin ${NODE_V24_BIN}/node scripts/auto-heal.mjs >> ${REPO_ROOT}/logs/heal/cron.log 2>&1 # auto-heal-4h\"",
+  "created_at": "2026-04-21T22:00:00.000Z"
+}
