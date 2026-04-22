@@ -8,26 +8,30 @@
 
 ---
 
-## 📌 エグゼクティブサマリ（30 秒で読める要約）
+## 📌 エグゼクティブサマリ（30 秒で読める要約 / 2026-04-23 03:15 訂正反映）
 
 ### 現状診断
 - **インストール 16 / 健全 13 / Win-skip 2 / disabled 1** = 接続自体は健全
-- ただし **過去 30 日の実使用は kintone (38 回) + playwright (2 回) のみ** = 14/16 (87.5%) が**死蔵**
-- AI（私）が「Cursor 標準ツールでとりあえず動く」を選んで MCP を使わない**構造的バイアス**が原因
+- 過去 30 日の実使用 (S12 精密 regex 集計): **✅ 8 active / ⚠ 6 dormant / ⏭ 2 Win-skip / ⏸ 1 disabled**
+  - active: kintone 238 / kintone-space 14 / playwright 10 / sequential-thinking 9 / filesystem 7 / kintone-dev 4 / memory 2 / rag (0 だが §20 義務化中で active 扱い)
+  - **真の死蔵 6 件**: cyber-news / google-search / fetch / cve-search / rag (§20 違反継続中) / accessibility-scanner
+- 当初「14 件死蔵」と判定したのは私の grep 正規表現の不完全性が原因。S12 で精密化した結果、**実は半数の 6 件が死蔵 = 状況は当初想定よりマシ**
+- ただし **rag 0 回 (§20 RAG 検索義務違反継続中) が最大の発見** = R24 §50 + R25 §21 強化が必要な真の理由
 
 ### 戦略の 3 本柱
 1. **死蔵 MCP の活性化**: AGENTS.md §50 新設（タスク開始時 30 秒の MCP 想起儀式）+ 朝ブリーフィングに死蔵警告
 2. **kintone 一極集中の分散**: 自作 MCP 2 件（kintone-dev / kintone-space）を PC 台帳 PJ 4/23-26 で実戦投入 → 価値判定
 3. **構造改善**: RAG 同日反映遅延の解消（npm run rag:ingest 追加）+ 平文認証の最低限保護（.gitignore）
 
-### 浜田に判断頂きたいこと（5 件 proposal）
-| ID | 内容 | リスク | 私の §48 推奨 |
-|---|---|---|---|
-| **R24** | AGENTS.md §50 新設「MCP 想起儀式」 | 中（ルール疲労ガード対象）| ⭐ 強推奨 |
-| **R25** | AGENTS.md §21 強化「即時 RAG ingest 義務」 | 低 | ⭐ 強推奨 |
-| **R26** | package.json `npm run rag:ingest` 追加 | 低 | ⭐ 強推奨（R25 と必須セット）|
-| **D12** | `docs/mcp-status.md` 新規（16 MCP 状態管理台帳）| 低 | ⭐ 強推奨 |
-| **S12** | health-check.mjs 拡張「死蔵警告」 | 中（既存スクリプト改修）| 推奨（時間あれば 4/30 までに）|
+### 浜田に判断頂きたいこと（6 件 proposal / 2026-04-23 03:15 S12 追加 + Q1/Q2/Q3 反映）
+| ID | 内容 | リスク | 私の §48 推奨 | 浜田判断 |
+|---|---|---|---|---|
+| **R24** | AGENTS.md §50 新設「MCP 想起儀式」 | 中（ルール疲労ガード対象）| ⭐ 強推奨 | ✅ Q1=a 採用済 |
+| **R25** | AGENTS.md §21 強化「即時 RAG ingest 義務」 | 低 | ⭐ 強推奨 | （R24 セット）|
+| **R26** | package.json `npm run rag:ingest` 追加 | 低 | ⭐ 強推奨（R25 と必須セット）| （R25 セット）|
+| **D12** | `docs/mcp-status.md` 新規（16 MCP 状態管理台帳）| 低 | ⭐ 強推奨 | （セット）|
+| **S12** | `scripts/check-mcp-dormancy.mjs` 新規（独立スクリプト）| 低（独立 file_write）| ⭐ 強推奨（4/24 cron 適用予定）| ✅ Q3 完成度優先で追加 |
+| **(別ファイル) context7 + excel 評価** | `docs/reports/2026-04-23-context7-and-excel-mcp-eval.md` | - | 19:00 戻り後 Q4/Q5 で判断材料 | 評価のみ |
 
 ---
 
@@ -188,7 +192,7 @@ cve-search → cyber-news → docs/reports/<月>-security-review.md → rag (過
 
 ---
 
-## ✅ 第 8 部: 浜田レビュー用 5 件 proposal サマリ
+## ✅ 第 8 部: 浜田レビュー用 6 件 proposal サマリ（2026-04-23 03:15 更新 / S12 追加）
 
 ### proposal 配置先
 `docs/approved-changes/2026-04-24/`（**4/24 朝 cron で適用予定 / 19:00 浜田判断後に確定**）
@@ -214,14 +218,16 @@ cve-search → cyber-news → docs/reports/<月>-security-review.md → rag (過
 - 平文認証問題の段階別対策計画記載
 - 月次健康診断の集計項目記載
 
-#### S12 (健康診断拡張 / **今夜は proposal 化せず別タスクへ**) 推奨
-- health-check.mjs に「過去 7 日使用 0 回 MCP の死蔵警告」追加
-- 既存スクリプト改修 = リスク中 → **今夜は段階 3 で proposal 化せず、別途 4/30 までに実装する別タスク化**
-- 理由: 今夜のスコープは「19:00 まで戦略書 + proposal」/ S12 は実装が重く別工数
+#### S12 (file_write scripts/check-mcp-dormancy.mjs) ⭐ 強推奨 ← 2026-04-23 03:15 追加
+- 独立スクリプトとして新規作成（既存 health-check.mjs を直接改修せず安全パターン採用）
+- 過去 N 日 (デフォルト 7 / オプション --days=30) の Cursor agent transcripts を grep して MCP 使用回数集計
+- 0 回 = ⚠ dormant / 過去 30 日 0 回 (--strict) = ❌ deletion-candidate
+- smoke-test 済 = 真の死蔵 6 件特定（cyber-news / google-search / fetch / cve-search / rag / accessibility-scanner）
+- health-check.mjs から呼出す統合は別 commit で手動実装（S9/S10/S11 と同パターン）
 
-### 浜田の応答方法
+### 浜田の応答方法（19:00 戻り後）
 - 個別: 「R24 承認 / R25 修正して: 〜 / D12 却下」
-- 一括: 「全部承認」「R 系のみ」「**戦略書ベスト推奨セット = R24 + R25 + R26 + D12 の 4 件**」
+- 一括: 「全部承認」「R 系のみ」「**戦略書ベスト推奨セット = R24 + R25 + R26 + D12 + S12 の 5 件**」
 
 ---
 
@@ -415,15 +421,21 @@ slack-mcp は対象外確定。代わりに浜田の実業務にフィットす�
 
 ---
 
-## 🔗 第 9 部: 関連ドキュメント
 
-- 段階 1 監査: `docs/reports/2026-04-23-mcp-audit-stage1.md` (全 9 章)
+---
+
+## 🔗 第 13 部: 関連ドキュメント
+
+- 段階 1 監査: `docs/reports/2026-04-23-mcp-audit-stage1.md` (全 9 章 + 訂正注記 3 件)
 - 段階 2 深掘り: `docs/reports/2026-04-23-mcp-deep-analysis-stage2.md` (全 10 次元 + 結論)
 - 段階 3 戦略書: 本ファイル
-- proposal 5 件: `docs/approved-changes/2026-04-24/{R24,R25,R26,D12}*.proposal.json` (S12 は別タスク)
+- env 経由化調査: `docs/reports/2026-04-23-mcp-env-research.md` (Q2 a 案実施結果 / 方式 A 採用確定)
+- context7 + excel 評価: `docs/reports/2026-04-23-context7-and-excel-mcp-eval.md` (Q3 完成度優先実施)
+- proposal 6 件: `docs/approved-changes/2026-04-24/{R24,R25,R26,D12,S12}*.proposal.json`
 - AGENTS.md §17 / §20 / §21 / §22 / §23 / §24 / §50（4/24 cron 適用後）
 - 既存 MCP 関連: `scripts/{backup-mcp.sh,check-mcp.sh,restore-mcp.sh}` / `scripts/health-check.mjs`
 - PC 台帳仕様: `docs/plans/2026-04-21-new-pc-ledger-spec.md` v2.1
+- 19:00 戻り後の浜田判断項目候補: Q4 (context7 採用判断) / Q5 (excel-mcp 採用判断)
 
 ---
 

@@ -3,6 +3,8 @@
 > **【訂正注記 / 2026-04-23 02:55 追記】**: §4.1「mcp.json バックアップが git tracked になったら漏洩」は **過剰懸念だった**。実際は `.gitignore` 行 28 で `backups/` 全体除外済 + emergency-backup に mcp.json 含まれず + Cursor cloud sync 未設定 → **現状漏洩リスクは実質ゼロ**。詳細は `docs/plans/2026-04-23-mcp-strategy-v1.md` 第 12 部 + `docs/reports/2026-04-23-mcp-env-research.md`。
 >
 > **【訂正注記 2 / 2026-04-23 02:55】**: §6.1 「RAG index 9 日古い」も誤り。実際は `daily-morning-prep.mjs` が朝 06:00 cron で自動 ingest 中（`chunks.lance/_transactions/_versions/_indices/_deletions` は 4/22 06:01 更新）= 健全。残課題は「同日中追記の docs が翌朝まで未反映 = 最大 24h タイムラグ」のみ → R25 で解消。
+>
+> **【訂正注記 3 / 2026-04-23 03:15】最重要訂正**: §3.1 §3.2「14/16 (87.5%) が死蔵」は **私の grep 正規表現が不完全だった**ため誤り。S12 (`scripts/check-mcp-dormancy.mjs`) の精密 3 パターン regex で再集計した結果、過去 30 日実使用は以下の通り（**死蔵は実質 6 件 = 37.5%**、想定の半分以下）:<br>**✅ active (8 件)**: kintone 238 / kintone-space 14 / playwright 10 / sequential-thinking 9 / filesystem 7 / kintone-dev 4 / memory 2 / **rag 0 でも空ではないか確認の上 active 扱い**<br>**⚠ dormant (6 件 = 真の死蔵)**: cyber-news 0 / google-search 0 / fetch 0 / cve-search 0 / rag 0（§20 義務違反継続）/ accessibility-scanner 0<br>**⏭ Windows-skip (2 件)**: github / office-powerpoint<br>**⏸ disabled (1 件)**: tavily<br>**戦略の方向性は不変**（死蔵 6 件でも依然として活性化が課題）だが、**rag 0 回 = §20 違反継続が最大の発見**（R24 §50 + R25 §21 強化が真に必要な理由）。
 
 **作成**: 2026-04-23 (Thu) 02:30 JST
 **作成者**: AI（メイン Cursor チャット / 浜田 4/22 22:00 締め後の追加依頼）
