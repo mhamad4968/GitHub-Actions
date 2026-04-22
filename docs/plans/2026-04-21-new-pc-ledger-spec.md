@@ -629,3 +629,11 @@ PC レコード保存・廃棄時:
 ---
 
 _本仕様書は `scripts/evening-reflect.mjs` の §44 サイクルで管理される。改訂時は本ファイルを更新 + kintone-apps.md 履歴に記録。_
+
+---
+
+## §14. 後日検討候補（5/15 以降）
+
+| 項目 | 検討時期 | メモ |
+|---|---|---|
+| Cursor Agent CLI 評価 | 5/15 以降 | 2026-04-21 22:10 浜田に Cursor から「Cursor Agent in Terminal」(Same Commands / Parallel Agents / Headless Support) のポップアップ通知あり。新アプリ構築期間中は触らず、本番安定後に検討。導入検討時の評価軸 = ① 朝 cron からの AI レビュー自動化価値 / ② 並列実行の credit 消費 / ③ 既存 Cursor IDE 内ワークフローとの差分 |
