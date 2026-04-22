@@ -1,0 +1,10 @@
+{
+  "id": "R21",
+  "category": "R",
+  "type": "string_replace",
+  "target": "AGENTS.md",
+  "note": "改善案 #11 の rule 部分: §44 夕反省サイクルの「関連」リストに check-proposals.mjs を追加 + proposal 作成直後の事前検証を儀式化。S10 と連動。R9 / R13 同型バグの再発防止。",
+  "old_string": "#### 関連\n- スキャフォール: `scripts/evening-reflect.mjs`\n- 実行: `scripts/apply-approved-changes.mjs`\n- スキーマ: `docs/approved-changes/README.md`",
+  "new_string": "#### 関連\n- スキャフォール: `scripts/evening-reflect.mjs`\n- 実行: `scripts/apply-approved-changes.mjs`\n- 事前検証: `scripts/check-proposals.mjs`（**proposal 作成直後 + 朝 cron 実行直前に必須**）\n- スキーマ: `docs/approved-changes/README.md`\n\n#### proposal 事前検証儀式（2026-04-22 制定 / 改善案 #11 / R9 + R13 半角→全角 () 同型バグ再発防止 / 並行チャットによる救済の制度化）\n\n夕反省で承認された proposal を `docs/approved-changes/<明日の日付>/` に書き出した **直後**、必ず以下を実行する:\n\n```bash\nnode scripts/check-proposals.mjs --date=$(date -d tomorrow +%Y-%m-%d)\n```\n\n出力で **❌ が 1 件でもあれば朝 cron で同件数の失敗確定**。今のうちに proposal を修正 → 再検証 → ❌ ゼロにしてから commit する。違反時（事前検証なしで proposal commit → 翌朝 cron で失敗）は §47 違反扱い。**実例**: 2026-04-22 私が R13 で半角 () を使い AGENTS.md 全角 （）と不一致を作る → 並行 Cursor チャットが偶然発見・救済（68d1765）= 本ルール導入で救済を仕組み化。**朝 cron 統合（段階 2）**: `scripts/apply-approved-changes.mjs` が実行直前に `check-proposals.mjs` を呼び、❌ があれば適用前に朝ブリーフィング先頭に ⚠ 表示する仕組みを 4/24 以降に追加予定。",
+  "created_at": "2026-04-22T22:15:00.000Z"
+}

@@ -376,3 +376,55 @@ img.addEventListener('click', function () {
 - TSB-007（2026-04-19 制定 / 元祖）/ TSB-007 続編（2026-04-21）
 - AGENTS.md §11-3 修正前 30 秒影響分析（改善案 #3 / 4/22 制定）
 - proposal: docs/approved-changes/2026-04-23/{R15,R16,S9}-*.proposal.json
+
+---
+
+## TSB-011 — 並行 Cursor チャット騒動（2026-04-22 21:48 検出 / 改善案 #12 + #13）
+
+### 症状
+浜田が無自覚で Cursor の別窓に同じ「実装手順（22:00 締め目標）」テンプレを貼ったため、2 本の Cursor チャット（transcript `59936008` + `832a7a75`）が同じリポを並行で触る状況が発生。一方のチャット（私 / メイン）が proposal R12-R16 + S9 を作成 commit した直後、もう一方のチャット（並行）が浜田の「壊れてないか確認」要求に反応して **R13 proposal の半角→全角 () バグを発見・自律 fix（commit `68d1765`）**。
+
+### 真因
+1. **Cursor の UI に「同一リポを触っている他チャット数」表示がない** = 並行発生に気付く手段がない
+2. 浜田が「儀式 v2」テンプレ + 「実装手順」テンプレを意図せず両方の窓に貼った（同じテンプレを 2 回コピーした記憶ミス）
+3. 私（メイン側）も「単独で動いている前提」で並行存在を疑わなかった
+
+### 検出方法（事後）
+```bash
+# 過去 24h の Cursor agent transcript を列挙
+find ~/.cursor/projects -name "*.jsonl" -newermt "$(date -d '24 hours ago' '+%Y-%m-%d %H:%M:%S')"
+
+# 同期間の git commit (Made-with: Cursor) を列挙
+git log --since='24 hours ago' --grep='Made-with: Cursor' --format='%h|%ai|%s'
+
+# transcript 数 ≥ 2 + commit 数 ≥ 2 なら並行可能性大
+```
+
+検知の自動化は `scripts/check-parallel-chats.mjs`（改善案 #12 / S11 / 4/23 朝 cron で配置予定）が担う。
+
+### 影響（2026-04-22 のケースは結果的に良性）
+- 並行チャットの fix `68d1765` は **正しい修正** で、私の R13 半角→全角 () バグを 4/23 朝 cron 失敗確定の状態から救済
+- merge conflict は発生せず（diff が独立したファイル / 順次直列化）
+- ただし悪性化シナリオ（同じファイルを別方向に編集 / 矛盾する報告 / トークン 2 倍消費）のリスクは残る
+
+### 対策（実施済み）
+1. 浜田が並行チャットを **手動で閉鎖**（21:51 浜田判断）
+2. `chat-sessions/2026-04-22.md` に並行チャット騒動の経緯を記録
+3. `scripts/check-parallel-chats.mjs` を 4/23 朝 cron 配置（S11 proposal）
+
+### 予防（提案 / 朝 cron で 4/23 自動適用予定）
+| ID | 内容 | 効果 |
+|---|---|---|
+| S11 | `scripts/check-parallel-chats.mjs` 新規（過去 24h transcript 数 + Cursor commit 数を比較し ⚠ 表示）| 翌朝に並行発生を検知 |
+| TSB-011 | 本記事 | 検知方法 + 対策の知識化 |
+
+### 教訓（Lessons Learned）
+1. **「1 リポ 1 チャット」原則を明文化**: 明示的に役割分担している場合（例: AI A = customize / AI B = scripts）以外は並行禁止
+2. **並行発生時の良性条件**: ① 編集ファイルが独立 ② commit 順序が直列化される ③ 双方が良質な批判精神（§47）を持つ。今夜は 3 条件すべて満たして救済された奇跡
+3. **検知の自動化が唯一の継続的対策**: 浜田・AI 双方の「気付き」に頼ると今夜と同じ「21:48 まで誰も気付かない」が再発する
+
+### 関連
+- AGENTS.md §44 夕反省サイクル（改善案 #11 と連動 / proposal 事前検証儀式）
+- AGENTS.md §47-B ルール疲労ガード（改善案 #17 / 並行チャットが救った R13 の元バグの再発防止）
+- proposal: `docs/approved-changes/2026-04-23/S11-check-parallel-chats.proposal.json`
+- 詳細経緯: `chat-sessions/2026-04-22.md` 「夜のセッション 3」
