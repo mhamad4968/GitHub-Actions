@@ -459,7 +459,7 @@ PC 台帳 PJ 4/23-26 は kintone-dev / kintone-space / rag / memory / sequential
 
 | MCP | 段階 1 監査の判断 | 4/23 03:00 実証結果 | 訂正内容 |
 |---|---|---|---|
-| **rag** | active 扱い（§20 義務化中で 0 回でも active 表記） | ❌ **完全 broken** = `documentCount: 0` / `chunkCount: 0` / lancedb 43MB は実在するが MCP サーバが認識できず | **TSB-012 として記録** / 修復は浜田立ち会いで明日以降 |
+| **rag** | active 扱い（§20 義務化中で 0 回でも active 表記） | ❌ **完全 broken** → ✅ **03:30 修復完了**（commit `122ea4f`）= 真因 = mcp-local-rag v0.13.0 server mode が `--db-path` CLI 引数を完全無視（`server-main.js` が `process.env['DB_PATH']` のみ参照）/ 修復 = mcp.json を env vars 化 / 検証 = `documentCount: 64, chunkCount: 2318, hybrid mode` | **TSB-012 修復報告セクション参照** / 浜田出社時に Cursor 再起動必要 |
 | **memory** | 死蔵 6 件 candidate（segment 1 の集計） | ✅ **別 PJ で active 利用中**（GitHub-Actions/security-next-automation で SecurityNextAutomation_Roadmap entity 確認）| 死蔵判断は誤り / kintone-ai-lab 側でも 4 entities + 5 relations 投入で active 化完了 |
 | **cyber-news** | 死蔵 6 件の 1 つ | ✅ **完全動作**（21 feeds = CISA / SANS / Hacker News / Mandiant / Krebs 等 / 直近 npm supply chain worm ニュース取得 OK）| **S14 月次セキュリティ巡回 cron で 5/1 から実戦投入** |
 | **cve-search** | 死蔵 6 件の 1 つ | ✅ **完全動作**（NVD 2026-04-22 最新 / 全 DB 健全 / vendor/product/cve_id 検索 OK）| **S14 月次セキュリティ巡回 cron で 5/1 から実戦投入** / vendor 名は NVD 表記要確認 |
@@ -474,7 +474,7 @@ PC 台帳 PJ 4/23-26 は kintone-dev / kintone-space / rag / memory / sequential
 - accessibility-scanner（実証スキップ / 段階 1 のまま / 経理 FAQ ポータル v3 で活用予定）
 
 **broken = 機能不全**:
-- **rag（重大 / TSB-012）** ← 修復後に「真の active」となる
+- ~~**rag（重大 / TSB-012）**~~ → ✅ **03:30 修復完了** = 「真の active」化（mcp.json 反映には Cursor 再起動 1 回必要）
 
 **実は active**:
 - memory（別 PJ + kintone-ai-lab で本日活性化）
@@ -495,6 +495,6 @@ PC 台帳 PJ 4/23-26 は kintone-dev / kintone-space / rag / memory / sequential
 
 ### 7-4. 浜田 19:00 レビュー時の追加質問
 
-- **Q6 新**: rag MCP の修復方針は？（a: mcp-local-rag 再 install + 再 ingest / b: 別 RAG 実装に乗換 / c: そもそも rag をやめて memory + filesystem で代替）
+- ~~**Q6 新**: rag MCP の修復方針は？~~ → **解決済 (03:30 修復完了 commit `122ea4f`)** / 残課題は (a) mcp-local-rag への上流 issue 報告 (b) バージョン pin 検討 (c) Cursor 再起動 1 回
 - **Q7 新**: S14 月次セキュリティ巡回を 5/1 から開始することを承認するか？（cron 登録 4/30 夜実施可？）
 

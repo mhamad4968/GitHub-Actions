@@ -2,7 +2,9 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-04-23 04:00 (Thu) 早朝 — autonomous mode で MCP 7 件実 call 実証 + memory MCP 活性化 (4 entities + 5 relations) + **TSB-012 rag MCP broken 発見** + S13/S14 proposal 追加 (4/24 cron 待ち計 7 件) + 戦略書 v1.0 7 章追記訂正 / 詳細: `chat-sessions/2026-04-23.md`
+**最終更新**: 2026-04-23 03:30 (Thu) 早朝 — **TSB-012 rag MCP 緊急復旧完了**（commit `122ea4f` / 真因 = v0.13.0 server mode が CLI 引数無視 / mcp.json env vars 化で documentCount 0→64 復旧 / health-check.mjs に DB 内容チェック追加）⚠ **Cursor 再起動 1 回必要**
+
+**前回更新**: 2026-04-23 04:00 (Thu) 早朝 — autonomous mode で MCP 7 件実 call 実証 + memory MCP 活性化 (4 entities + 5 relations) + TSB-012 rag MCP broken 発見 + S13/S14 proposal 追加 (4/24 cron 待ち計 7 件) + 戦略書 v1.0 7 章追記訂正 / 詳細: `chat-sessions/2026-04-23.md`
 
 **前回更新**: 2026-04-23 03:30 (Thu) 早朝 — MCP 強化戦略 v1.0 完成（段階 1-3 + Q1/Q2/Q3 + context7/excel 評価 + S12 死蔵警告 / proposal 5 件 4/24 cron 適用予定 / 19:00 浜田レビュー対応）
 
@@ -19,7 +21,7 @@
 **契機**: 浜田 02:45 指示「a+c 実施 + 死蔵 MCP 活用 + 確認不要」→ AI 単独判断で実 call 実証
 
 ### MCP 実証結果（重大訂正 3 件）
-- ❌ **rag MCP broken** = `documentCount: 0` / lancedb 43MB 実在も MCP サーバ認識不可 → **TSB-012** として記録（修復は浜田立ち会いで明日以降）
+- ❌→✅ **rag MCP broken** = `documentCount: 0` → **03:30 修復完了** (commit `122ea4f`) / 真因 = v0.13.0 server mode が `--db-path` CLI 引数を完全無視 / mcp.json env vars 化で `documentCount: 64, hybrid mode` 復旧 / **TSB-012 修復報告セクション** + health-check.mjs に DB チェック追加 / **⚠ Cursor 再起動 1 回必要**
 - ✅ **memory MCP 既に active**（別 PJ GitHub-Actions/security-next-automation 利用中 / 段階 1 監査の死蔵判断は誤り）→ kintone-ai-lab 側でも 4 entities + 5 relations 投入で活性化完了
 - ✅ **cyber-news + cve-search 完全動作**（21 feeds + NVD 2026-04-22 最新 / 即活用準備可）→ S14 月次セキュリティ巡回 cron で 5/1 から実戦投入
 
@@ -32,7 +34,7 @@
 - 真の死蔵 = 2-3 件のみ（google-search / fetch / accessibility-scanner）/ broken 1 件 = rag / 新たに active 化 = memory + cyber-news + cve-search 3 件
 
 ### 浜田 19:00 レビュー時の追加判断要請
-- **Q6**: rag MCP 修復方針（a/b/c 案 / TSB-012 参照）
+- ~~**Q6**: rag MCP 修復方針~~ → **解決済 (03:30 復旧 commit `122ea4f`)** / 残課題: 上流 issue 報告 / バージョン pin 検討
 - **Q7**: S14 月次セキュリティ巡回 5/1 開始の承認
 
 ### 詳細
