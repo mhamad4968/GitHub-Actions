@@ -2,7 +2,58 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-04-23 03:30 (Thu) 早朝 — **TSB-012 rag MCP 緊急復旧完了**（commit `122ea4f` / 真因 = v0.13.0 server mode が CLI 引数無視 / mcp.json env vars 化で documentCount 0→64 復旧 / health-check.mjs に DB 内容チェック追加）⚠ **Cursor 再起動 1 回必要**
+**最終更新**: 2026-04-23 03:38 (Thu) 早朝 — **Cursor 再起動準備完了**（rag 復旧 commit `122ea4f` 反映待ち / 再起動後チェック手順を本ファイル先頭に明記 / 浜田 03:35 指示「再起動後 AI 判断で対応 / 私の判断不要」= autonomous mode 継続）
+
+**前回更新**: 2026-04-23 03:30 (Thu) 早朝 — TSB-012 rag MCP 緊急復旧完了（commit `122ea4f` / 真因 = v0.13.0 server mode が CLI 引数無視 / mcp.json env vars 化で documentCount 0→64 復旧 / health-check.mjs に DB 内容チェック追加）⚠ **Cursor 再起動 1 回必要**
+
+---
+
+## 🔄 Cursor 再起動後の必須チェック手順（2026-04-23 03:38 制定 / 浜田指示）
+
+**新セッション AI へ**: `NEW-SESSION-STARTER.md` 儀式を完遂したあと、本セクションを**最優先**で順次実行してください（並列禁止 / 1 ステップずつ完了確認）。**浜田指示で autonomous mode 継続 = 異常があれば AI 判断で対応 / 不可逆操作 + kintone API write は §47-8 遵守**。
+
+### Step 1: MCP 全件疎通確認（UI レベル）
+- Cursor 左下の MCP タブで全 MCP がグリーンか目視想定
+- 特に `rag` が起動するか（本日 03:30 mcp.json env vars 化したため、初回起動時に `npx -y mcp-local-rag` が走る = 30-60 秒程度かかる可能性）
+
+### Step 2: rag MCP の DB 認識確認【最重要】
+- `mcp_user-rag_status` を実 call
+- **期待値**: `documentCount: 64, chunkCount: 2318, ftsIndexEnabled: true, searchMode: "hybrid"`
+- ❌ `documentCount: 0` が再発した場合: **TSB-012 修復報告セクション**参照 → さらなる調査が必要
+
+### Step 3: rag 検索動作確認
+- `mcp_user-rag_query_documents("PC 台帳 環境設定マスタ", topK=3)` を実 call
+- **期待値**: 4/21 仕様書 / 4/18 SKYSEA 計画 / AGENTS.md 等から複数 hit
+- ❌ 空配列なら: rag は status OK でも search が壊れている可能性
+
+### Step 4: health-check.mjs 実行
+- `cd ~/kintone-ai-lab && PATH="/home/mhamada202408224/.nvm/versions/node/v24.14.1/bin:$PATH" node scripts/health-check.mjs`
+- 全 MCP probe + 本日追加の **rag deep check** で異常なし確認
+- markdown 出力に「### 🔎 rag MCP DB 内容チェック (TSB-012 再発防止)」セクションが ✅ で出ること
+
+### Step 5: 異常時の AI autonomous 対処パターン
+
+| 異常 | AI が取るべき対処 |
+|---|---|
+| rag が UI で赤（起動失敗）| mcp.json 構文確認（`cat ~/.cursor/mcp.json` JSON parse） / 必要なら `~/.cursor/mcp.json.bak-rag-fix-20260423-031551` から rollback 検討 + 浜田に報告 |
+| rag UI 緑だが documentCount=0 | env.DB_PATH パスの実在確認（`ls .rag/lancedb/chunks.lance/data/`）/ TSB-012 真因再発の可能性 → 詳細調査 |
+| rag 検索が空（status は OK）| FTS index 確認 / lancedb の version 整合 / 上流 mcp-local-rag のバグ可能性 |
+| 別 MCP の状態変化 | 該当 MCP の最近の commit 確認（`git log --oneline -10`）+ mcp.json diff 確認 |
+| health-check 自体が EBADENGINE エラー | NVM v24 PATH 設定確認（TSB-007 系列）/ `which node` 確認 |
+| 想定外の異常 | TSB-### として `docs/troubleshooting.md` に新規記録 + 修復は浜田立ち会いまで保留 |
+
+### Step 6: 完了報告
+- 全 ✅ なら 1 行で「再起動後チェック完了 / 全 MCP 健全 / rag documentCount=N」と報告
+- 異常があれば「異常 N 件 / 対処済 M 件 / 残課題 K 件」と報告
+- 本セクションは再起動成功確認後、削除して構わない（履歴は git で追える）
+
+### 関連参照
+- 真因詳細: `docs/troubleshooting.md` TSB-012 修復報告セクション
+- 本日の commit: `122ea4f` (rag 復旧 + health-check 強化) / `cd91db5` (戦略書 + checkpoint 整合化)
+- backup: `~/.cursor/mcp.json.bak-rag-fix-20260423-031551` + `backups/mcp/20260423-032141/mcp.json`
+- 戦略書: `docs/plans/2026-04-23-mcp-strategy-v1.md` 7 章
+
+---
 
 **前回更新**: 2026-04-23 04:00 (Thu) 早朝 — autonomous mode で MCP 7 件実 call 実証 + memory MCP 活性化 (4 entities + 5 relations) + TSB-012 rag MCP broken 発見 + S13/S14 proposal 追加 (4/24 cron 待ち計 7 件) + 戦略書 v1.0 7 章追記訂正 / 詳細: `chat-sessions/2026-04-23.md`
 
