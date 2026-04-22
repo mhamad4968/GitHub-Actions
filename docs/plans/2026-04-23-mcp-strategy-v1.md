@@ -448,3 +448,53 @@ slack-mcp は対象外確定。代わりに浜田の実業務にフィットす�
 PC 台帳 PJ 4/23-26 は kintone-dev / kintone-space / rag / memory / sequential-thinking の 5 件を**実戦投入する絶好の機会**。これを逃すと「死蔵のまま 5/13 本番運用」に流れ、6 月以降の判断材料が永遠に得られない。
 
 5 月以降は新規 MCP（excel-mcp 等）を慎重に検討するが、§47-B ルール疲労ガードの精神に従い**安易な追加は避ける**。
+
+---
+
+## 7. 4/23 03:00 早朝 MCP 実証結果（重大訂正）
+
+**実施背景**: 浜田「a+c 実施。利用が少ない/ないものは活用方法を考えて有効活用」指示（4/23 02:45）を受け、AI が autonomous mode で MCP 群を実 call し、机上分析（段階 1 監査）の精度を検証。
+
+### 7-1. 実証で判明した重大訂正
+
+| MCP | 段階 1 監査の判断 | 4/23 03:00 実証結果 | 訂正内容 |
+|---|---|---|---|
+| **rag** | active 扱い（§20 義務化中で 0 回でも active 表記） | ❌ **完全 broken** = `documentCount: 0` / `chunkCount: 0` / lancedb 43MB は実在するが MCP サーバが認識できず | **TSB-012 として記録** / 修復は浜田立ち会いで明日以降 |
+| **memory** | 死蔵 6 件 candidate（segment 1 の集計） | ✅ **別 PJ で active 利用中**（GitHub-Actions/security-next-automation で SecurityNextAutomation_Roadmap entity 確認）| 死蔵判断は誤り / kintone-ai-lab 側でも 4 entities + 5 relations 投入で active 化完了 |
+| **cyber-news** | 死蔵 6 件の 1 つ | ✅ **完全動作**（21 feeds = CISA / SANS / Hacker News / Mandiant / Krebs 等 / 直近 npm supply chain worm ニュース取得 OK）| **S14 月次セキュリティ巡回 cron で 5/1 から実戦投入** |
+| **cve-search** | 死蔵 6 件の 1 つ | ✅ **完全動作**（NVD 2026-04-22 最新 / 全 DB 健全 / vendor/product/cve_id 検索 OK）| **S14 月次セキュリティ巡回 cron で 5/1 から実戦投入** / vendor 名は NVD 表記要確認 |
+| **kintone-dev** | 役割不明 / 削除候補? | ⚠ **API 仕様参照ツール**（アプリ作成 MCP ではない）/ 部分動作（英語クエリ + 部分マッチで返るが日本語クエリは空）| 「kintone customize JS / API 開発時の reference」用途で位置付け確定 / 削除候補から除外 |
+| sequential-thinking | active 9 回 | （今回未実証 / 段階 1 結果維持）| 変更なし |
+
+### 7-2. 真の死蔵 MCP（4/23 03:00 実証後の最新版）
+
+**死蔵 = 過去 30 日 0 回かつ実証で機能未確認**:
+- google-search（実証スキップ / 段階 1 のまま）
+- fetch（実証スキップ / 段階 1 のまま）
+- accessibility-scanner（実証スキップ / 段階 1 のまま / 経理 FAQ ポータル v3 で活用予定）
+
+**broken = 機能不全**:
+- **rag（重大 / TSB-012）** ← 修復後に「真の active」となる
+
+**実は active**:
+- memory（別 PJ + kintone-ai-lab で本日活性化）
+- cyber-news（即活用準備可）
+- cve-search（即活用準備可）
+
+### 7-3. 4/23 03:00 早朝に実装したアクション
+
+1. **memory MCP 活性化**（kintone-ai-lab 側 / 完了）:
+   - 4 entities 投入: `kintone-ai-lab_PC_Ledger_PJ` / `kintone-ai-lab_MCP_Strategy_v1` / `TSB-007_episode_3` / `TSB-011`
+   - 5 relations 投入: depends_on / blocked_by_lessons_from / guarded_by_lessons_from / co_developed_with / concurrent_with
+2. **S13 proposal 作成**（4/24 朝 cron 適用待ち）:
+   - `health-check.mjs` に S9（check-node-modules.mjs）と S12（check-mcp-dormancy.mjs）の wiring 追加
+   - グレースフル統合（script 不在時は skip / health-check 全体を止めない）
+3. **S14 proposal 作成**（4/24 朝 cron 適用待ち / cron 登録は別途 4/30 夜に手動）:
+   - 月次セキュリティ巡回スクリプト新規 = cyber-news 5 feeds + cve-search 主要依存パッケージ統合
+   - v1 はスケルトン生成 / v2（5/22 以降）で MCP 結果自動取得実装
+
+### 7-4. 浜田 19:00 レビュー時の追加質問
+
+- **Q6 新**: rag MCP の修復方針は？（a: mcp-local-rag 再 install + 再 ingest / b: 別 RAG 実装に乗換 / c: そもそも rag をやめて memory + filesystem で代替）
+- **Q7 新**: S14 月次セキュリティ巡回を 5/1 から開始することを承認するか？（cron 登録 4/30 夜実施可？）
+

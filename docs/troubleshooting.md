@@ -428,3 +428,59 @@ git log --since='24 hours ago' --grep='Made-with: Cursor' --format='%h|%ai|%s'
 - AGENTS.md §47-B ルール疲労ガード（改善案 #17 / 並行チャットが救った R13 の元バグの再発防止）
 - proposal: `docs/approved-changes/2026-04-23/S11-check-parallel-chats.proposal.json`
 - 詳細経緯: `chat-sessions/2026-04-22.md` 「夜のセッション 3」
+
+---
+
+## TSB-012 — rag MCP が documentCount=0 で完全 broken（2026-04-23 03:00 早朝検出）
+
+### 症状
+2026-04-23 02:50 に AI が autonomous mode で rag MCP を call test した際、`mcp_user-rag_status` が `{ documentCount: 0, chunkCount: 0, ftsIndexEnabled: false, searchMode: "vector-only" }` を返した。`mcp_user-rag_query_documents` で「環境設定マスタ」「PC台帳」「kintone」「customize」など 4 件のクエリを試したが全て空配列 `[]`。
+
+つまり **rag MCP は機能していない** = 過去の cron による ingest 処理が反映されていない。
+
+### 真因（複数仮説 / 浜田立ち会いで確定要）
+
+| # | 仮説 | 確度 |
+|---|---|---|
+| 1 | mcp-local-rag のバージョン不一致（`npx -y mcp-local-rag` で最新 install / cron の ingest コマンドと MCP サーバ起動時のバージョンが違う / lancedb スキーマが内部で更新され旧 table が認識不可）| **本命** |
+| 2 | lancedb の table 名 mismatch（cron の `ingest` がデフォルト table 名で書込 / MCP サーバが別 table 名で read 試行）| 中 |
+| 3 | 環境変数 / config の差異（cron 環境 vs MCP サーバ起動環境）| 低 |
+| 4 | lancedb のロック / 同時アクセス問題（MCP サーバ常駐 + cron ingest が衝突）| 低 |
+
+### 確認済の事実
+- `~/.cursor/mcp.json` の rag 設定は正しい: `--db-path /home/mhamada202408224/kintone-ai-lab/.rag/lancedb` を指している
+- 実際に `.rag/lancedb/` には `chunks.lance` (43MB) が存在 = ingest 自体は成功している
+- が、MCP サーバから `documentCount: 0` = サーバが見ているスキーマと cron が書込んだスキーマが乖離
+
+### 影響範囲
+- **AGENTS.md §20 RAG 検索義務**: 重要設計判断 / 不具合調査 / リファクタ前に rag_search が必須だが、現状の rag では何も返らないので **§20 義務は実質遂行不可**
+- **改善案 #12 戦略 v1.0**: 「14/16 死蔵」の集計に rag を「active 扱い（§20 義務化中）」と書いていたが、**実際は broken** = 訂正必須（戦略書 7 章で訂正済み）
+- **MCP 強化戦略 段階 1 監査の精度低下**: 机上分析で「active」と判断していた MCP の実態確認の重要性を露呈
+
+### 修復プラン（4/23 朝以降 / 浜田立ち会い）
+
+**Phase 1: 原因特定（30 分予算 / §47-9 着手前判断必須）**
+1. `npx --yes mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models status` を CLI で直接実行
+2. lancedb の table 名を `python3 -c "import lancedb; db = lancedb.connect('.rag/lancedb'); print(db.table_names())"` 等で確認
+3. mcp-local-rag のバージョン確認 + changelog 読み（破壊的変更があったか）
+
+**Phase 2: 修復候補（浜田判断後）**
+- a) `.rag/lancedb/` を完全削除 → `npm run rag:ingest`（R26 適用後）で再 ingest（30 分 + ベクトル化時間）
+- b) mcp-local-rag を特定バージョンで pin（package.json devDependencies に追加）
+- c) 別の RAG 実装に乗換（chroma / weaviate-mcp 等）
+- d) rag をやめて memory MCP + filesystem MCP で代替（軽量だが構造化記憶のみ）
+
+**Phase 3: 再発防止（修復後）**
+- `scripts/health-check.mjs` の MCP 疎通チェックに「rag は initialize 応答だけでなく status の documentCount > 0 を確認」を追加
+- `scripts/check-mcp-dormancy.mjs`（S12）に broken 状態検知も追加
+
+### 教訓（Lessons Learned）
+1. **机上分析（段階 1 監査）と実証は両輪**: 「active 扱い」と書いた MCP も実 call で機能未確認なら broken の可能性を疑う
+2. **MCP の status エンドポイントは必ず叩け**: `initialize` 応答が返るだけでは「機能している」と言えない（rag は initialize OK でも DB は空）
+3. **autonomous mode の価値**: 浜田が寝ている間に AI が実証することで、机上で見落とした重大障害を発見できた = §47-9 着手前判断 + autonomy granted の組合せの効果
+
+### 関連
+- 戦略書: `docs/plans/2026-04-23-mcp-strategy-v1.md` 7 章（4/23 03:00 早朝 MCP 実証結果）で訂正
+- 段階 1 監査: `docs/reports/2026-04-23-mcp-audit-stage1.md`（rag を「active 扱い」と書いていた箇所 / 7 章で実態訂正）
+- 関連 proposal: R25 (§21 RAG Ingest Ritual 強化) / R26 (npm run rag:ingest スクリプト) は **rag MCP 修復後でないと意味がない** = 修復が R25/R26 の前提条件
+- AGENTS.md §20 RAG 検索義務 / §21 RAG 知識更新フィードバックループ
