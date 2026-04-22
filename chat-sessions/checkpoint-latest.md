@@ -2,7 +2,9 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-04-23 03:34 (Thu) 早朝 — **Cursor 再起動後チェック完遂**（Step 1-6 全 ✅ / rag documentCount=64 / chunkCount=2318 / hybrid mode 完全復旧確認 / health-check.mjs 正常 19 異常 0 / TSB-012 修復策 commit `122ea4f` の本番動作実証完了）→ 19:00 浜田レビュー時 Q6 (rag 修復方針) は**解決済**として報告可。詳細: `chat-sessions/2026-04-23.md` 「03:33 — Cursor 再起動後チェック完遂」セクション
+**最終更新**: 2026-04-23 03:55 (Thu) 早朝 — **完遂後異常チェック 16 ステップ完了 + autonomous 修復 3 件**（浜田 03:35 指示「健康でない部分は自身で判断し修復」）。検出 + 修復: ① **TSB-007 ep4** (`node_modules/eslint` 再消失 → npm install で v9.39.4 復活) / ② **S14 proposal JSON broken** (over-escape `\\\`` → byte-level 修復で apply-approved-changes が 4/24 朝に S14 を読めるように回復) / ③ emergency-mirror 手動更新。詳細: `chat-sessions/2026-04-23.md` 「03:35 — 完遂後異常チェック」セクション + `docs/troubleshooting.md` TSB-007 episode 4
+
+**前回更新**: 2026-04-23 03:34 (Thu) 早朝 — Cursor 再起動後チェック完遂（Step 1-6 全 ✅ / rag documentCount=64 / chunkCount=2318 / hybrid mode 完全復旧確認 / health-check.mjs 正常 19 異常 0 / TSB-012 修復策 commit `122ea4f` の本番動作実証完了）→ 19:00 浜田レビュー時 Q6 (rag 修復方針) は**解決済**として報告可
 
 **前回更新**: 2026-04-23 03:30 (Thu) 早朝 — TSB-012 rag MCP 緊急復旧完了（commit `122ea4f` / 真因 = v0.13.0 server mode が CLI 引数無視 / mcp.json env vars 化で documentCount 0→64 復旧 / health-check.mjs に DB 内容チェック追加）
 

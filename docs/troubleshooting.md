@@ -379,6 +379,33 @@ img.addEventListener('click', function () {
 
 ---
 
+## TSB-007 episode 4 — node_modules/eslint 再消失（2026-04-23 03:36 検出 / autonomous mode 修復）
+
+### 症状
+4/23 03:35 浜田指示「完了後異常チェックを厳重に」で実施した autonomous mode 検査で、`npm run lint:customize` がまた v6.4.0 (`/usr/bin/eslint`) で実行され ❌。`node_modules/.bin/eslint` 不在 = ep3 と完全同一症状。
+
+### 真因（ep3 と同根 / proposal 未適用ウィンドウで再発）
+- ep3 で予防策 (R15/R16/S9) を 4/22 22:00 に proposal キュー化したが、適用は **4/23 06:00 朝 cron** 待ち
+- 4/22 22:00 〜 4/23 06:00 の **8 時間ウィンドウ**で再発する余地が残っていた
+- ep3 で `npm install` 実行は ep3 直後 1 回のみ。その後 (4/22 夜 〜 4/23 早朝) の何らかの操作 (Cursor 再起動 / npm 操作 / 別 PJ 干渉) で再消失。具体的契機は未特定だが ep3 と同じ silent fail パターン
+
+### 修正（実施済み / autonomous）
+1. `PATH=NVM_v24_PATH npm install` → 81 packages 再追加 / 0 vulnerabilities
+2. `node_modules/.bin/eslint --version` → v9.39.4 復活確認
+3. `npm run lint:customize` → 0 errors 緑復帰
+
+### 教訓（episode 3 + 4 を統合）
+1. **proposal キューイング窓は脆弱**: ep3 で R15/R16/S9 をキュー化しても、適用前ウィンドウで同症状再発した。**critical な修復策は proposal を待たず即時 commit + run** すべき
+2. **検知タイミングの重要性**: 浜田の「完了後異常チェック」指示がなければ、4/23 06:00 cron の S9 適用 → 健康チェックまで気づかなかった可能性。**autonomous mode の検査周期短縮が必要**
+3. **TSB-007 系は再発常連 = 構造的問題**: ep1/ep2/ep3/ep4 = 4 連続。S9 (check-node-modules) + auto-heal 連携 (R16) で根絶を狙う
+
+### 関連
+- TSB-007 episode 3（直前の同症状 / 2026-04-22 22:00）
+- proposal: 同上 R15/R16/S9（4/23 06:00 cron 適用予定 / 適用後は本 episode 4 が最終発生として打ち止め見込み）
+- 検出経緯: `chat-sessions/2026-04-23.md` 「03:35 — 完遂後異常チェック (autonomous mode 2 回目)」セクション
+
+---
+
 ## TSB-011 — 並行 Cursor チャット騒動（2026-04-22 21:48 検出 / 改善案 #12 + #13）
 
 ### 症状
