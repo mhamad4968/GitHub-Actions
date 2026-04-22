@@ -2,7 +2,9 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-04-22 22:00 (Wed) — Hook 化段階 1 + 改善 #1-#6 完了 (proposal 6 件キュー化 / 4/23 朝 cron 適用予定) + 並行チャット騒動 (R13 fix `68d1765`) + TSB-007 episode 3 検知
+**最終更新**: 2026-04-23 03:30 (Thu) 早朝 — MCP 強化戦略 v1.0 完成（段階 1-3 + Q1/Q2/Q3 + context7/excel 評価 + S12 死蔵警告 / proposal 5 件 4/24 cron 適用予定 / 19:00 浜田レビュー対応）
+
+**前回更新**: 2026-04-22 22:00 (Wed) — Hook 化段階 1 + 改善 #1-#6 完了 (proposal 6 件キュー化 / 4/23 朝 cron 適用予定) + 並行チャット騒動 (R13 fix `68d1765`) + TSB-007 episode 3 検知
 
 **前回更新**: 2026-04-22 19:30 (Wed) — サブエージェント PoC-1 凍結 + PC台帳着手 4/23 延期 + リリース 5/13(水) 確定
 
@@ -58,7 +60,17 @@
 - [x] `68d1765` fix(proposal): R13 old_string 半角→全角カッコ修正 ← **並行 Cursor チャットが私のミスを救済**
 
 ### 夜セッション 4 (21:55-22:00+ / 締め儀式) の commit
-- [x] (本 commit) docs(chat-sessions): 4/22 締め (夜 2-3 経緯追加 + checkpoint 反映 + evening-reflection 取込)
+- [x] `9d3a6da` docs(chat-sessions): 4/22 締め (夜 2-3 経緯追加 + checkpoint 反映 + evening-reflection 取込)
+
+### 夜セッション 5 (22:00-22:17 / 4/23 軽プレップ) の commit
+- [x] `a771f34` feat(scripts): 4/23 朝 B-1 移行設計準備スキャン script (PC 台帳着手プレップ)
+
+### 夜セッション 6 (4/23 02:15-03:30 / MCP 強化戦略 v1.0)
+- [x] `5b68faa` docs(mcp-strategy): MCP 強化戦略 v1.0 段階 1-3 報告書 3 件 (845 行)
+- [x] `c61b6ae` docs: MCP 強化戦略 proposal 4 件 (R24/R25/R26/D12 / 4/24 朝 cron 適用予定)
+- [x] `cf90bf4` docs(mcp-strategy): tavily 経緯確定 + slack 候補削除 (浜田 02:30 確認反映)
+- [x] `ed9d42d` docs(mcp-strategy): Q2 .env 経由化調査 + 追加 MCP 候補 + 死蔵 MCP 活性化案
+- [x] (本 commit) docs: S12 死蔵警告 + 戦略書完成度優先反映 + 章順修正 + chat-sessions 追記
 
 **TSB-006 ガード遵守**: すべて 1 commit あたり 5 ファイル以内で分割 → Anthropic Policy ブロック時の wipe リスクゼロ
 **並行チャット注意**: 同日 Cursor 別窓で並行作業すると競合リスク。TSB-011 化候補 (改善 #12)
