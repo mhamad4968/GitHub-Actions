@@ -259,6 +259,36 @@ npm install --save-dev eslint@8
 
 ---
 
+## TSB-010 — 投稿後 URL.revokeObjectURL の dangling reference 問題（2026-04-22 制定）
+
+### 症状
+投稿成功 + 画面リロード後に、表示された画像をクリックして Lightbox を開こうとすると `ERR_FILE_NOT_FOUND` エラーが発生し画像が表示されない。
+
+### 真因
+投稿成功後に `self.reload().then(() => { Object.keys(_blobUrlMap).forEach(k => URL.revokeObjectURL(_blobUrlMap[k])); _blobUrlMap = {}; })` のような revoke 処理を実行していたが、reload で再描画された `<img src="blob:...">` がまだ DOM に残っているうちに blob URL が解放されてしまい、その後のクリック（`openImageLightbox(this.src, ...)`）で **解放済み blob URL を参照する dangling reference** エラーが発生する。
+
+### 検出方法
+ブラウザ DevTools の Console に以下が出る:
+```
+9cfa2534-35a7-42ec-a0cb-bf3f940f5287:1
+GET blob:http://server:port/9cfa2534-... net::ERR_FILE_NOT_FOUND
+openImageLightbox @ (index):397
+(anonymous) @ (index):477
+```
+UUID が src にそのまま出ている = blob URL のリソース ID 部分が解放されている証拠。
+
+### 修正
+投稿後の `URL.revokeObjectURL` 一括実行を **廃止**。blob URL はページ閉じた時にブラウザが自動 GC で解放するため、メモリリークは 1 セッション内のみで実害なし。`_blobUrlMap` / `_blobNameMap` も持ち越しで OK（次の D&D で個別 set される / clear すると closure が古いキーを引けなくなる副作用もあった）。修正コミット: `e7b0a89`。
+
+### 教訓（改善案 #3 §11-3 修正前 30 秒影響分析と連動）
+4/21 Lightbox 修正時に `_blobUrlMap` を grep して revoke 箇所のライフサイクルを確認していれば発見できた。修正対象だけ見て影響範囲を追わない近視眼が原因。次回からは §11-3 に従って修正前 30 秒影響分析を実施する。
+
+### 関連
+- TSB-009: Chrome 92+ で window.open(blob:URL, '_blank') ブロック（2026-04-21 制定 / 同じ FAQ ポータルの問題）
+- AGENTS.md §11-2 信頼度ラベル / §11-3 修正前 30 秒影響分析（2026-04-22 制定 / 改善案 #2 + #3）
+
+---
+
 ## TSB-009 — Chrome 92+ で window.open(blob:URL, '_blank') がブロックされる（2026-04-21 制定）
 
 ### 症状
