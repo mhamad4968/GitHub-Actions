@@ -1,5 +1,9 @@
 # 🔍 MCP 強化戦略 — 段階 1: 16 MCP 現状監査
 
+> **【訂正注記 / 2026-04-23 02:55 追記】**: §4.1「mcp.json バックアップが git tracked になったら漏洩」は **過剰懸念だった**。実際は `.gitignore` 行 28 で `backups/` 全体除外済 + emergency-backup に mcp.json 含まれず + Cursor cloud sync 未設定 → **現状漏洩リスクは実質ゼロ**。詳細は `docs/plans/2026-04-23-mcp-strategy-v1.md` 第 12 部 + `docs/reports/2026-04-23-mcp-env-research.md`。
+>
+> **【訂正注記 2 / 2026-04-23 02:55】**: §6.1 「RAG index 9 日古い」も誤り。実際は `daily-morning-prep.mjs` が朝 06:00 cron で自動 ingest 中（`chunks.lance/_transactions/_versions/_indices/_deletions` は 4/22 06:01 更新）= 健全。残課題は「同日中追記の docs が翌朝まで未反映 = 最大 24h タイムラグ」のみ → R25 で解消。
+
 **作成**: 2026-04-23 (Thu) 02:30 JST
 **作成者**: AI（メイン Cursor チャット / 浜田 4/22 22:00 締め後の追加依頼）
 **対象**: `~/.cursor/mcp.json` 配下の全 16 MCP

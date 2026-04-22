@@ -225,6 +225,196 @@ cve-search → cyber-news → docs/reports/<月>-security-review.md → rag (過
 
 ---
 
+## 🆕 第 10 部: 追加 MCP 候補深掘り（2026-04-23 02:50 浜田追加依頼後）
+
+### 10.1 Slack 候補削除確定（浜田回答 = Slack 未使用）
+
+slack-mcp は対象外確定。代わりに浜田の実業務にフィットする他候補を再検討。
+
+### 10.2 新規候補ランキング（更新版）
+
+| 順位 | 候補 | 用途 | 浜田業務との整合 | 優先度 | 判断時期 |
+|---|---|---|---|---|---|
+| 🥇 | **context7-mcp** | ライブラリ公式 docs を AI が直接引ける（kintone JS API / Vue / React 等の最新 docs を rag 不要で検索）| ⭐⭐⭐ kintone customize JS で公式 API リファレンスを毎回 WebSearch している現状を解消 | 🟢 高 | **5/13 PC 台帳本番後 = 即評価** |
+| 🥈 | **excel-mcp** | Excel 直接操作 | ⭐⭐⭐ M365 5 台ライセンス管理 / 経理 FAQ で Excel 触る場面多数 | 🟢 高 | 5/13 後 |
+| 🥉 | **screenshot-mcp / browser-screenshot** | URL → 画像生成 | ⭐⭐ 経理 FAQ ポータル / kintone UI 改修時の before/after 比較 | 🟡 中 | 5/13 後 |
+| 4 | **date-mcp** | 日時計算専用 | ⭐⭐ §39 発言前日時確認の精度向上 / 営業日計算 / cron 時刻設計 | 🟡 中 | 5/13 後 |
+| 5 | **semgrep-mcp** | 静的解析自動化 | ⭐⭐ kintone customize JS の脆弱性自動スキャン / S8 と統合可能 | 🟡 中 | 6 月以降 |
+| 6 | **git-history-mcp** | git 履歴高度検索 | ⭐ 過去 30 日 TSB 言及 commit 等の複雑検索 | 🟡 中 | 6 月以降 |
+| 7 | **postgres-mcp / sqlite-mcp** | DB 直接操作 | ⭐ logs/task-estimates.jsonl の query 用 / 改善 #5 段階 2 と連動 | 🟡 中 | 6 月以降 |
+
+### 10.3 私の §48 推奨（追加 MCP）
+
+**段階 1 (5/13 後即評価)**: **context7-mcp** を最優先で評価
+- 理由: PC 台帳 PJ の customize JS 開発で kintone 公式 API リファレンスを毎回確認している状況 → context7 で即引き化すれば開発速度大幅向上
+- リスク: パッケージのメンテ状態確認必要（5/14 にまず WebSearch で評価）
+
+**段階 2 (5/20 以降)**: excel-mcp を評価
+- 理由: M365 ライセンス管理を kintone と Excel 両方で運用している現状 → excel-mcp で kintone⇔Excel 同期自動化
+
+**段階 3 (6 月以降)**: その他は様子見
+- §47-B ルール疲労ガード遵守 = 安易に増やさない
+
+### 10.4 検討対象外（明示的に追加しない）
+
+| 候補 | 理由 |
+|---|---|
+| ~~slack-mcp~~ | 浜田 Slack 未使用 |
+| notion-mcp / linear-mcp | 浜田 Notion / Linear 未使用 |
+| chrome-bookmark-mcp | 用途限定的 |
+| claude-code-cli-bridge | TSB-011 並行チャット騒動の温床 = 増やさない |
+
+---
+
+## 🔥 第 11 部: 死蔵 14 MCP 活性化 具体プレイ集
+
+各 MCP に対して「次にいつ・どう使うか」の **具体シーン + コマンド例** を 1 件ずつ提示する。AI（私）が想起しやすいよう実例ベースで記述。
+
+### 11.1 PC 台帳 PJ 即実戦投入（4/23-4/26 / 5 件）
+
+#### a. **kintone-dev** （自作 / 4/23 朝）
+- **シーン**: 環境設定マスタアプリ（spec §6.2）の 5 フィールド一括作成
+- **試行コマンド**: kintone-dev の `describe tools` を最初に実行 → アプリ作成系ツール特定 → 試行
+- **判定基準**: 公式 kintone MCP より高速 / 直感的なら採用 / 同等以下なら 4/26 に削除候補昇格
+
+#### b. **kintone-space** （自作 / 4/23 朝）
+- **シーン**: 環境設定マスタをスペース 21 (システム管理) 直下に配置
+- **試行コマンド**: kintone-space の `describe tools` で配置系ツール特定 → 試行
+- **判定基準**: 浜田が手動で kintone GUI で配置するより高速ならアプリ 5 個分活用継続
+
+#### c. **rag** （4/23 朝）
+- **シーン**: 環境設定マスタ作成前に「過去の kintone マスタ設計判断」を rag_search
+- **コマンド**: `rag_search "kintone マスタ 設計 採番"` または `npx mcp-local-rag query "..."`
+- **狙い**: §20 義務遵守 + 過去判断の引用で「なぜこの設計か」を明示化
+
+#### d. **memory** （4/23 朝）
+- **シーン**: PC 台帳 Day 1 の重要決定（B-2 = 34 件確定 / 廃棄 1 件特定 等）を memory に保存
+- **試行**: memory の `create_entities` で「PC 台帳 PJ 確定事項」を knowledge graph 化
+- **狙い**: 翌日以降のセッションで `memory.search_nodes("PC 台帳")` で即引用
+
+#### e. **sequential-thinking** （4/26 customize Day）
+- **シーン**: customize JS の大型設計判断（PW 自動算出ロジック / バリデーション 2 系統等）
+- **試行**: 設計判断時に sequential-thinking を呼ぶ → 5-7 ステップで仮説出し
+- **狙い**: 私の単独思考より穴が見つかる仮説提示
+
+### 11.2 月次セキュリティ巡回（5/1 開始 / 2 件）
+
+#### f. **cve-search** （5/1 月次 cron 化候補）
+- **シーン**: package.json + security-next-automation の依存パッケージ全件 CVE スキャン
+- **コマンド例**: `cve-search で query "eslint 9.39.4 vulnerabilities"` など
+- **cron 化案**: 毎月 1 日 07:00 に `node scripts/monthly-cve-scan.mjs` 実行 → 結果を `docs/reports/<月>-security-review.md` に出力
+
+#### g. **cyber-news** （5/1 月次 cron 化候補）
+- **シーン**: 月次セキュリティニュース取得 → 浜田業務影響あるものをフィルタ
+- **cron 化案**: 月次 cron に組込（cve-search と同タイミング）
+
+### 11.3 customize 改修時 (4/26 + 経理 FAQ / 2 件)
+
+#### h. **playwright** （4/26 customize Day）
+- **シーン**: 新・PC台帳ver.1 customize の動作 E2E テスト
+- **試行**: kintone 詳細画面遷移 → customize 起動確認 → 値入力 → 保存テスト
+- **狙い**: 手動テストの自動化
+
+#### i. **accessibility-scanner** （4/26 customize Day）
+- **シーン**: 新・PC台帳ver.1 customize の UI a11y 検査
+- **コマンド例**: `accessibility-scanner で URL=<kintone 詳細画面 URL>`
+- **狙い**: アクセシビリティ標準準拠（kintone カスタマイズも対象）
+
+### 11.4 散発活用（必要時 / 3 件）
+
+#### j. **google-search**
+- **シーン**: kintone API 仕様 / customize ベストプラクティス / npm パッケージ評価
+- **使用条件**: Cursor 標準 WebFetch で URL 直指定できない場合（検索が必要な場合）
+- **実例**: 「kintone subtable query best practice 2026」検索
+
+#### k. **fetch**
+- **シーン**: 公式 docs URL の取得（Cursor 標準 WebFetch で代替可なため**原則使わない**）
+- **使用条件**: Cursor WebFetch がブロックされる稀なケース
+- **判定**: 連続 60 日 0 回なら 6 月以降に削除候補
+
+#### l. **sequential-thinking**（重複 = e と同）
+
+### 11.5 Cursor 標準で代替可（削除候補 / 2 件）
+
+#### m. **filesystem**
+- **代替**: Cursor 標準の Read / Write / Glob / Edit ツール
+- **判定**: 連続 60 日 0 回 + Cursor 標準で困らないなら 6/30 に削除
+- **例外**: 別ツール（Claude Code / Anthropic Workbench 等）から共有する場合のみ価値あり
+
+#### n. ~~削除候補同上 = filesystem と同類~~ filesystem のみ
+
+### 11.6 Windows-skip / 散発（3 件 / WSL から触れない）
+
+#### o. **github** （Win 起動）
+- **WSL 側の代替**: `gh` CLI / Cursor 標準で十分
+- **Windows 側起動シーン**: 浜田が Windows Cursor で GitHub Issue 操作する場合のみ
+- **判定**: WSL ベースの私としては「無いものとして扱う」
+
+#### p. **office-powerpoint** （Win 起動）
+- **想定シーン**: 5/13 後の **月次運用レポート PPT 自動生成**
+- **判定**: 浜田が Windows Cursor で PPT 作成タスクをやる時に活性化検討
+
+#### q. **cyber-news** （= f / 月次活用 と重複）
+
+### 11.7 disabled（再評価対象 / 1 件）
+
+#### r. **tavily**
+- **状態**: disabled（浜田確認: 課金必要のため google-search 代替化）
+- **判定**: 5/16 サブエージェント PoC 再議論時に **完全削除 or 維持** を判断
+- **削除推奨理由**: google-search 安定運用継続中 + tavily 復活の業務必要性なし
+
+### 11.8 活性化計画サマリ表
+
+| MCP | 活性化タイミング | アクション | 担当 |
+|---|---|---|---|
+| kintone-dev | 4/23 朝 | アプリ作成試験 | 私 |
+| kintone-space | 4/23 朝 | スペース配置試験 | 私 |
+| rag | 4/23 朝（毎タスク前）| rag_search 義務（§20 + R24 §50）| 私 |
+| memory | 4/23 朝 | PC 台帳確定事項保存試験 | 私 |
+| sequential-thinking | 4/26 | customize 大型判断 | 私 |
+| cve-search | 5/1 | 月次 cron 化 | 私（5 月以降実装）|
+| cyber-news | 5/1 | 月次 cron 化 | 私（5 月以降実装）|
+| playwright | 4/26 | customize E2E | 私 |
+| accessibility-scanner | 4/26 | customize a11y | 私 |
+| google-search | 都度 | 検索必要時 | 私 |
+| fetch | 削除候補 | 4/30 + 60 日後 = 6/30 判断 | 浜田 |
+| filesystem | 削除候補 | 同上 | 浜田 |
+| github | Win 限定 | WSL 側「無視」 | 浜田 |
+| office-powerpoint | 5/13 後 | 月次レポート用検討 | 浜田 |
+| tavily | 5/16 | 削除 or 維持判断 | 浜田 |
+
+---
+
+## ⚠ 第 12 部: 次元 4（mcp.json セキュリティ）の訂正と段階 2 確定
+
+### 12.1 段階 1 監査の過剰懸念訂正
+
+段階 1 §4.1 で「mcp.json バックアップ git tracked リスク」と書いたが、実際の経路を全件確認した結果 = **現状の漏洩リスクは実質ゼロ**。
+
+| 経路 | 状態 |
+|---|---|
+| `backups/` git tracked | ❌ `.gitignore` 行 28 で除外済 |
+| `~/.cursor-emergency-backup/` 複製 | ❌ mcp.json 含まれてない |
+| Cursor cloud sync | ❌ settings.json 不在 = 未設定 |
+| ローカル閲覧 | ✅ 本人のみ可能 = 実質ゼロ |
+
+### 12.2 段階 2（.env 経由化）の方式確定
+
+調査レポート `docs/reports/2026-04-23-mcp-env-research.md` 参照。3 方式比較の結論:
+
+| 方式 | 工数 | 確実性 | 推奨度 |
+|---|---|---|---|
+| **A. ラッパー shell script** | 30 分 | 🟢 最高 | ⭐⭐⭐ 採用 |
+| B. envmcp パッケージ | 15 分 | 🟡 中 | ⭐⭐ 6 月以降検討 |
+| C. ${env:VAR} + /etc/environment | 10 分 | 🟠 低（WSL で動かない可能性）| ⭐ 不採用 |
+
+### 12.3 5 月以降のスケジュール
+- Week 1 (5/14-5/16): wrapper script 2 件作成 + `~/.cursor/.env` 配置
+- Week 2 (5/17-5/23): 安定運用 1 週間 + TSB 記録
+- Week 3+ (5/24+): 全 MCP 統一管理 + envmcp 評価
+
+---
+
 ## 🔗 第 9 部: 関連ドキュメント
 
 - 段階 1 監査: `docs/reports/2026-04-23-mcp-audit-stage1.md` (全 9 章)
