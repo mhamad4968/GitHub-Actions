@@ -1,101 +1,105 @@
 # 復元チェックポイント（最新）
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
-<!-- 旧版（2026-04-10 654 予算ポータル）は chat-sessions/checkpoints/2026-04-10-budget-654-finalize.md に退避済み -->
 
-**最終更新**: 2026-04-20 22:00 (Mon) — 夕反省承認分 (S1-S4+D3) 夜間実装完了 + git 大掃除 (201→0 件 / 6 commit) + 本日改善提案 7 件キュー化
+**最終更新**: 2026-04-22 18:55 (Wed) — 朝 cron 不具合 2 件解消 (`9c6481c`) + 整理 6 commit 完遂 + 新・PC台帳ver.1 着手前夜
 
-**前回更新**: 2026-04-19 10:05 (Sun) — Phase A 完遂 + TSB-006 リカバリ体制完全構築 + 真犯人特定（Cursor edit-rollback on Anthropic policy block）
+**前々回更新**: 2026-04-20 22:00 (Mon) — 夕反省承認分 (S1-S4+D3) 夜間実装完了 + git 大掃除
 
 ---
 
 ## 現在のゴール（1〜3 行）
 
-- **SKYSEA 計画 Q&A 着手**: 浜田が「skysea 計画始めよう」と発話したら Q1+Q2 ヒアリング開始（4/24 まで毎日 2 問ずつ）→ 4/26 現状調査 → 5/7 段階展開開始予定。
-- **改善提案 7 件への承認可否を朝に確認**: `docs/reports/2026-04-20-evening-reflection.md` §5 に #S5/#S6/#S7/#D5/#R6/#C3/#K1 を提示済。
-- **継続性体制は安定運用フェーズへ**: TSB-006 防衛網は 4/19 構築 → 4/20 で 1 サイクル完走、wipe 検知ゼロ。今後は問題が起きるまで触らない。
+- **新・PC台帳ver.1 着手 (本日 4/22 19:00)**: 4/21 21:40 で確定した仕様 v1.1 に従い、環境設定マスタ → M365管理マスタ → 新・PC台帳ver.1 の順で 4/25 までに作成。配置スペース = 21。
+- **5/11(月) 本番運用開始** が最終ゴール。GW 連休前に既存データ移行完了を目指す。
+- **SKYSEA 計画は 5/15(金) リスケ済**（新アプリ移行優先のため）。
 
 ## 着手中のコンテキスト
 
-- **App / トピック**: SKYSEA 計画 (4/20 着手前夜・Q1+Q2 待機状態) + 自動化基盤の通常運用
-- **ヘルススコア（4/20 朝 06:00 時点）**: 🟡 9/10 (lint:customize のみ ❌ = TSB-007 / 既知 / 影響軽微)
-- **本日 commit**: 7 個 (`facd93b` `e9587a3` `bbbf86e` `ebcf256` `d60adcf` `92b4807` + 夜実装 `0a46ef3`)
-- **未コミット**: 0 件 (本日整理済 / `*.orig` `*.rej` `*.backup.*Z` `temp/` `logs/` を gitignore 追加で恒常化)
-- **触ったファイル（本日午前）**:
-  - `data/skysea/installed-pcs-2026-04-19.csv`（158 行・SKYSEA 元データ）
-  - `data/skysea/already-installed-2026-04-19.csv`（122 行・両方あり）
-  - `data/skysea/needs-install-2026-04-19.csv`（136 行・要インストール）
-  - `data/skysea/orphan-in-skysea-2026-04-19.csv`（32 行・SKYSEA のみ＝削除候補）
-- **ライセンス**: 保有 241 / 使用中 158 / 残 83 → 要 136 で **不足 53**（追加発注 2 週間）
+- **メイン**: 新・PC台帳ver.1 (`docs/plans/2026-04-21-new-pc-ledger-spec.md` v1.1)
+- **新規アプリ 3 個**:
+  - 環境設定マスタ（手動設定値の集約 / 1 番手）
+  - M365管理マスタ（5 台ライセンス枯渇時アラート）
+  - 新・PC台帳ver.1（PC + アカウント統合）
+- **既存マスタ継続使用**: 626 / 667 / 595 / 656 / 657
+- **既存 594/627** は無傷で残置（5/11 本番切替時に書込ロック → 1 か月後に廃止判断）
+- **ヘルススコア**: 朝の生成時 🟡 9/10（lint:customize ❌）→ 18:23 修正後の実質 🟢 10/10（明日朝の cron で正式確認）
+
+## 完遂判定（4/22 18:55 時点 / 本日の commit）
+
+### 前セッション (18:00-18:24) の commit
+- [x] `38fc625` docs(plan): 後日検討候補に Cursor Agent CLI 評価追記（5/15 以降）
+- [x] `9c6481c` fix: **朝 cron で発生した不具合 2 件を即時解消**
+  - #R9 (§41 厳格化) old_string 不一致 → AGENTS.md §41-1 補足を直接追記
+  - **TSB-007 (lint:customize ❌ / 8 日連続赤)** → ESLint v9.39.4 ダウングレードで解消
+
+### このセッション (18:32-18:55) の commit
+- [x] `58beb59` chore: 4/21 適用済 proposal 5 件を processed/ へ移動
+- [x] `9f21117` chore: 4/22 適用済 proposal 移動 第1弾 (D7/R10/R12a/R12b/R8)
+- [x] `3f0bfda` chore: 4/22 適用済 proposal 移動 第2弾 (R9/S8/TSB-009)
+- [x] `2aa6c5b` chore: 朝 cron 適用結果反映 (5 ファイル)
+- [x] `525d79c` chore: S8 新規スクリプト + RAG 同期 + 朝レポート (5 ファイル)
+- [x] (本 commit) chore: 継続性ログ 3 件 (4/21.md + 4/22.md 新規 + checkpoint 更新)
+
+**TSB-006 ガード遵守**: すべて 1 commit あたり 5 ファイル以内で分割 → Anthropic Policy ブロック時の wipe リスクゼロ
 
 ## 未完了
 
-### 今日完了済み（Phase A 緊急止血 + 補強）
-- [x] 本 checkpoint-latest.md の更新（旧版 = 2026-04-10 654 予算ポータル をアーカイブ）
-- [x] `chat-sessions/2026-04-19.md` 新規作成（本日経緯の全記録）
-- [x] `docs/plans/2026-04-18-skysea-installer.md` の進捗追記（既存削除なし）
-- [x] `kintone-apps.md` 末尾履歴に追記（追記のみ・既存履歴は一切触らず）
-- [x] `kintone-apps.md` の **6 行喪失復元**（C-4 印刷 / 関連ナビ / 668撤去 / WORKFLOW制定 / 夕反省 / §45）を `.rag/` から正本側へ追記復元
-- [x] `.rag/extra-docs/persist-policies.md` を正本同期（旧版アーカイブ済み）
-- [x] `docs/troubleshooting.md` 新規作成（TSB-005「セッション継続性」記載）
-- [x] **呼称ルール（友人として / さん付け不要 / タメ口 OK）** を `~/.cursor/rules/persist-policies.mdc` の「対話の前提」節に正本追加 + `.rag/` コピー同期 + `chat-sessions/2026-04-19.md` に追記
-- [x] **`chat-sessions/NEW-SESSION-STARTER.md`** 新規作成（新チャット起動の儀式テンプレ）
-- [x] **`/mnt/c/Claudeとの会話メモ/NEW-SESSION-STARTER.txt`** 新規作成（Windows メモ帳から開ける貼り付け用）
+### 19:00 以降（本日メイン / 4/22 ~22:30）
+- [ ] **環境設定マスタアプリ作成**（1 番手 / 私）
+- [ ] スペース 21 への配置確認
+- [ ] 初期データ取込
+- [ ] 22:30 で本日終了 → 夕反省
 
-### 来週土日（2026-04-25/26）持ち越し（SKYSEA 本筋）
-- [ ] `scripts/skysea-recon.mjs` 再実行（最新版で 8 列出力）→ orphan CSV 更新
-- [ ] orphan 32+ 件を 4 カテゴリ仕分け（個人 PC / 共有 / 管理用 / **🚫サーバ・NAS**）
-- [ ] ユーザー（浜田）と削除可否を 1 件ずつ確認（**サーバ・NAS は削除厳禁**）
-- [ ] plan §4 ヒアリング 10 項目で自動インストール方針決定（候補 A〜E）
-- [ ] PowerShell 雛形・kintone 594 フィールド追加・「📌 SKYSEA 未導入」トグル UI 設計
+### 4/23-4/25（このまま継続）
+- [ ] M365管理マスタアプリ作成
+- [ ] 新・PC台帳ver.1 アプリ作成 + customize
+- [ ] 既存 627 印刷レイアウト抽出 (#K4)
+- [ ] 既存 627→595 lookup ロジック抽出 (#K5)
+- [ ] 既存 594 PC名重複検出 CSV 生成 (#K6)
 
-### TSB-006 リカバリ体制（2026-04-19 完成）
+### 4/26 動作確認 → 4/27-28 浜田 CSV 準備 → 4/29-5/2 既存データ移行 → GW → 5/7-10 試運用 → 5/11(月) 本番
 
-- [x] `scripts/file-watcher.mjs` 新規（fs.watch ベース・常駐型・5 秒待ち wipe 検知）
-- [x] `scripts/wipe-guard.mjs` 新規（15 分ごと cron・空ファイル検知 + 自動復元）
-- [x] `scripts/emergency-mirror.mjs` 新規（`~/.cursor-emergency-backup/` にミラー・src=0 byte は拒否）
-- [x] `scripts/restore-wiped.mjs` 新規（手動復元コマンド・人間向けレポート）
-- [x] `scripts/watcher-watchdog.sh` 新規（5 分ごと + @reboot で file-watcher 死活監視）
-- [x] cron 4 件登録（wipe-guard / emergency-mirror / watchdog / @reboot）
-- [x] file-watcher 起動確認（PID 41917）
-- [x] npm scripts 追加（guard:check / guard:mirror / restore:wiped / watcher:start/stop/status）
-- [x] TSB-006 を `docs/troubleshooting.md` に詳細記録
-- [x] `NEW-SESSION-STARTER.md` + Windows メモ帳版に wipe 対応コマンド追加
-
-### 構造的予防（Phase B / 別セッションで提案予定）
-- [ ] `scripts/daily-morning-prep.mjs` に「checkpoint 7日以上古い時に🚨」ロジック追加
-- [ ] `chat-sessions/` を RAG ingest 対象に追加
-- [ ] 夕反省サイクル（§44）に「checkpoint 更新提案」を必須項目化
-
-### 憲法化（Phase C / 別セッションで提案予定）
-- [ ] AGENTS.md §40（欠番埋め）または §50 として「セッション継続性義務」を制定
-
-## 次セッションで最初にやること（2026-04-21 朝）
-
-**最短ルート**: `chat-sessions/NEW-SESSION-STARTER.md`（または Windows: `C:\Claudeとの会話メモ\NEW-SESSION-STARTER.txt`）の「貼り付け用テンプレート」をそのまま新チャットに貼る。
-
-手動で進める場合の手順:
-
-1. **`@docs/reports/2026-04-20-overnight-implementations.md`** を読む（夜間実装 5 件の結果サマリ）
-2. **`@docs/reports/2026-04-20-evening-reflection.md` §5** で改善提案 7 件 (#S5/#S6/#S7/#D5/#R6/#C3/#K1) を確認 → 承認可否を返答
-3. **`@docs/reports/2026-04-21-morning-prep.md`** で §46 朝ルーチン状態確認（朝 06:00 cron が新 S1/S4 セクション付きで生成）
-4. **呼称ルール確認**: 友人としてタメ口 OK（`~/.cursor/rules/persist-policies.mdc` 2026-04-19 合意）
-5. **SKYSEA 計画着手**: 「skysea 計画始めよう」と発話 → AI から Q1+Q2 を投げる（GPO 等は丁寧解説モード）
-6. それ以外の新規依頼なら → §42 過去ログ確認 → WORKFLOW.md Phase 0 から
+### 後日検討 (5/15 以降)
+- [ ] SKYSEA 計画再相談（4/21 リスケ分 / 詳細は `docs/plans/2026-04-18-skysea-installer.md` の進捗追記）
+- [ ] Cursor Agent CLI 評価 (`38fc625` で plan に追記済)
+- [ ] §45 / §46 / §47 / §48 が WORKFLOW.md / RULES-INDEX.md から未参照（仕組み側のバグ修正候補）
 
 ## ブロッカー・要確認
 
-- なし（朝ルーチン緑・全アプリ疎通 OK・ライセンス追加発注は浜田判断待ち）
+- なし（朝 cron 不具合 2 件は 18:23 で全部解消 / 整理 6 commit も完遂 / 19:00 から新・PC台帳着手 OK）
 
-## 参考（任意）
+## 自動化基盤の健康状態 (4/22 18:32 確認)
 
-- **本日の詳細ログ**: `chat-sessions/2026-04-19.md`
-- **2026-04-10 アーカイブ**: `chat-sessions/checkpoints/2026-04-10-budget-654-finalize.md`
-- **朝ブリーフィング**: `docs/reports/2026-04-19-morning-prep.md`（10/10 緑）
-- **SKYSEA plan**: `docs/plans/2026-04-18-skysea-installer.md`
-- **SKYSEA 突合スクリプト**: `scripts/skysea-recon.mjs`
-- **関係性契約の正本**: `~/.cursor/rules/persist-policies.mdc`
-- **思考の三本柱**: `AGENTS.md` 第13章 §47-§49
+| 観点 | 状態 |
+|---|---|
+| file-watcher | ✅ 稼働中 (PID 41917 / Apr19 から 3 日連続)|
+| wipe-guard | ✅ 21 ファイル健在 / 今日 wipe 0 件 |
+| emergency-backup | ✅ ミラー最新 (4/22 16:17) |
+| guard:check | ✅ 異常なし |
+| kintone:test | ✅ 594/595/626/627 全件疎通 |
+| npm audit | ✅ 0 vulnerabilities |
+| MCP 疎通 | ✅ 13/16 (残 3 は Windows-side skip) |
+| cron | ✅ morning:prep 登録済 |
+
+## 次セッションで最初にやること
+
+1. このファイルと `chat-sessions/2026-04-22.md` を読む
+2. `docs/reports/<日付>-morning-prep.md` で §46 朝ルーチン状態確認
+3. **新・PC台帳ver.1 の進捗確認**: `docs/plans/2026-04-21-new-pc-ledger-spec.md` v1.1 のチェックリスト
+4. その日のスケジュール表（4/22 ~ 5/11）に従って次タスクへ
+
+## 参考
+
+- 4/22 詳細: `chat-sessions/2026-04-22.md`
+- 4/21 詳細: `chat-sessions/2026-04-21.md`
+- 4/20 アーカイブ: `chat-sessions/checkpoints/2026-04-20-evening.md`（任意で退避）
+- 4/19 詳細: `chat-sessions/2026-04-19.md`
+- 朝ブリーフィング: `docs/reports/2026-04-22-morning-prep.md`
+- 新・PC台帳仕様書: `docs/plans/2026-04-21-new-pc-ledger-spec.md` v1.1
+- SKYSEA リスケ記録: `docs/plans/2026-04-18-skysea-installer.md`
+- 関係性契約の正本: `~/.cursor/rules/persist-policies.mdc`
+- 思考の三本柱: `AGENTS.md` 第13章 §47-§49
 
 ---
 
@@ -105,7 +109,7 @@
 
 - [ ] **恒久**: 次回も効く決定を **`RULES-INDEX.md` 1 行** または **正本**（`kintone-apps.md` / `docs/*`）に残した
 - [ ] **現在地**: **このファイル**のゴール・未完了・**次に最初にやること**を、チャットと矛盾なく更新した
-- [ ] **詳細**: 長い経緯は **`chat-sessions/2026-04-19.md`** に残した
-- [ ] （任意）**`npm run backup`** で退避したいときは実行する
+- [ ] **詳細**: 長い経緯は **`chat-sessions/<日付>.md`** に残した
+- [ ] （任意）**`npm run guard:mirror`** で emergency-backup を最新化する
 
 ※ 手順の正本: **`docs/agent-restore-checkpoint.md`**「『忘れた』を防ぐ」
