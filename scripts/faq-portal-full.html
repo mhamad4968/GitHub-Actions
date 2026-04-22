@@ -243,7 +243,11 @@
                         📎 ファイルを選択
                         <input type="file" id="f-attach" multiple style="display:none;">
                     </label>
-                    <span id="f-attach-hint" style="font-size:0.8em; color:var(--muted);">PDF・Excel・画像などを複数選択可</span>
+                    <span id="f-attach-hint" style="font-size:0.8em; color:var(--muted);">PDF・Excel・画像などを複数選択可（下のエリアにドラッグ＆ドロップでも可）</span>
+                </div>
+                <!-- 2026-04-22 追加: 添付ファイル用 D&D ゾーン (PDF/Word/Excel/画像 等を一気に追加可) -->
+                <div id="f-attach-drop-zone" style="margin-top:10px; padding:18px 14px; border:2px dashed var(--border); border-radius:8px; text-align:center; color:var(--muted); background:var(--card); font-size:0.95em; transition:background-color .15s, border-color .15s, color .15s;">
+                    ⬇ ここにファイルをドロップ（PDF / Word / Excel / 画像 / その他 何でも可）
                 </div>
                 <div id="f-attach-list" style="margin-top:10px; display:flex; flex-wrap:wrap; gap:8px;"></div>
             </div>
@@ -774,6 +778,62 @@
         });
     }
 
+    /**
+     * 2026-04-22 追加: 添付ファイル用 D&D ゾーン (#f-attach-drop-zone) のイベントを登録する。
+     * ファイル種別に依らず全ファイルを _pendingAttachFiles に追加する (bindAttachInput と同じ挙動)。
+     * 経理要望「PDF をドラッグ＆ドロップで添付したい」への対応。
+     * 本文 textarea の D&D とは完全に独立した実装で、既存挙動 (画像 inline / Lightbox) には一切影響しない。
+     */
+    function bindAttachDragDrop() {
+        var dropZone = document.getElementById('f-attach-drop-zone');
+        if (!dropZone) return;
+
+        // ── 視覚フィードバック (ホバー時にハイライト) ──
+        function highlight() {
+            dropZone.style.background = 'rgba(0,123,255,.12)';
+            dropZone.style.borderColor = 'var(--primary)';
+            dropZone.style.color = 'var(--primary)';
+            dropZone.style.fontWeight = '700';
+        }
+        function unhighlight() {
+            dropZone.style.background = '';
+            dropZone.style.borderColor = '';
+            dropZone.style.color = '';
+            dropZone.style.fontWeight = '';
+        }
+
+        dropZone.addEventListener('dragenter', function (e) { e.preventDefault(); highlight(); });
+        dropZone.addEventListener('dragover', function (e) { e.preventDefault(); highlight(); });
+        dropZone.addEventListener('dragleave', function (e) {
+            // ゾーンの「外」に出た時のみハイライト解除 (子要素の出入りで誤動作しないように)
+            if (e.target === dropZone) unhighlight();
+        });
+        dropZone.addEventListener('drop', function (e) {
+            e.preventDefault();
+            unhighlight();
+            var files = e.dataTransfer && e.dataTransfer.files;
+            if (!files || !files.length) return;
+
+            // bindAttachInput の change ハンドラと完全に同じロジックで処理
+            Array.from(files).forEach(function (file) {
+                var entry = { name: file.name, fileKey: null, uploading: true, size: file.size, contentType: file.type };
+                _pendingAttachFiles.push(entry);
+                renderAttachList();
+                uploadFileToProxy(file)
+                    .then(function (res) {
+                        entry.fileKey = res.fileKey;
+                        entry.uploading = false;
+                        renderAttachList();
+                    })
+                    .catch(function (err) {
+                        entry.name += ' (\u5931\u6557: ' + (err.message || '') + ')';
+                        entry.uploading = false;
+                        renderAttachList();
+                    });
+            });
+        });
+    }
+
     /* ============================================================
        テーマ / PIN
        ============================================================ */
@@ -925,6 +985,7 @@
                 self.bindEvents();
                 bindImageDragDrop();
                 bindAttachInput();
+                bindAttachDragDrop(); // 2026-04-22 追加
                 bindAnswerPreview();
                 refreshLockUI(self.settings);
             }
@@ -1436,11 +1497,16 @@
                         });
                     }
                     self.resetForm();
-                    return self.reload().then(function () {
-                        Object.keys(_blobUrlMap).forEach(function (k) { URL.revokeObjectURL(_blobUrlMap[k]); });
-                        _blobUrlMap = {};
-                        _blobNameMap = {};
-                    });
+                    return self.reload();
+                    // 2026-04-22 修正: 投稿成功後の URL.revokeObjectURL を廃止。
+                    //   理由: reload で <img src="blob:..."> が DOM に再描画された直後に
+                    //   blob URL を解放すると、画像クリック時 (openImageLightbox) が
+                    //   revoke 済 blob URL を参照して ERR_FILE_NOT_FOUND になる既存バグ。
+                    //   blob URL はページ閉じた時にブラウザが自動 GC で解放するので
+                    //   メモリリークは 1 セッション内のみで実害なし。
+                    //   _blobUrlMap / _blobNameMap も次の D&D で個別 set されるので
+                    //   意図的に持ち越して問題なし (clear すると上のクロージャが古いキー
+                    //   を引けなくなる副作用もあったため一括 clear も廃止)。
                 })
                 .catch(function (e) { alert('\u4FDD\u5B58\u5931\u6557: ' + (e.message || String(e))); })
                 .finally(function () { submitBtn.disabled = false; submitBtn.textContent = '\u4FDD\u5B58'; });
