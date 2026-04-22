@@ -150,12 +150,14 @@ cve-search → cyber-news → docs/reports/<月>-security-review.md → rag (過
 | 候補 | 用途 | 優先度 | 判断時期 |
 |---|---|---|---|
 | **excel-mcp** | Excel 直接操作 | 🟢 高 | **5/13 PC 台帳本番運用後** = 浜田の Excel 業務（M365 ライセンス管理 / 経理 FAQ）と直結 |
-| **slack-mcp** | Slack 通知 | 🟡 中 | 浜田に「Slack 使ってる？」を聞いてから判断 |
+| ~~slack-mcp~~ | ~~Slack 通知~~ | ❌ **対象外（浜田確認 2026-04-23: Slack 未使用）** | 検討終了 |
 | postgres-mcp / sqlite-mcp | DB 直接操作 | 🟡 中 | logs/task-estimates.jsonl の query 用 / 改善 #5 R14 の段階 2 と連動 |
 | git-history-mcp | git 履歴高度検索 | 🟡 中 | 過去 30 日 TSB 言及 commit 等の複雑検索用 |
 | その他（notion / linear / chrome-bookmark）| 各種 | 🔴 低 | 既存基盤で十分 / **MCP 16 → 17+ の肥大化防止** |
 
 → §47-B ルール疲労ガードの精神に従い、**安易に増やさない方針**
+
+**追加 MCP 候補の深掘り（2026-04-23 02:30 浜田追加依頼後）**: §10 で別途記載
 
 ---
 
