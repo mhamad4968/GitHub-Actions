@@ -1,0 +1,10 @@
+{
+  "id": "R15",
+  "category": "R",
+  "type": "string_replace",
+  "target": "AGENTS.md",
+  "note": "改善案 #6: §46 Phase 2 表の『健康状況チェック』行に node_modules 完全性チェック追加 + Phase 3 自動可リストに『依存欠損時の npm ci 再実行』を追記。TSB-007 episode 3 (4/22 夜 eslint 消失検知漏れ) の再発防止。",
+  "old_string": "| 2 | **健康状況チェック** | `health-check.mjs` | MCP 全件疎通 / Node 整合 / cron / disk / mem |",
+  "new_string": "| 2 | **健康状況チェック** | `health-check.mjs` + `check-node-modules.mjs` | MCP 全件疎通 / Node 整合 / cron / disk / mem / **node_modules 完全性（critical bins 存在 + package.json devDeps と node_modules/<pkg>/package.json バージョン一致）** |",
+  "created_at": "2026-04-22T21:35:00.000Z"
+}

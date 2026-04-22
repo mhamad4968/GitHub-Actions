@@ -341,3 +341,38 @@ img.addEventListener('click', function () {
 - 5 箇所の実コードを修正（ロジック影響ゼロの代入除去 + 全角空白を半角に）
 - eslint.config.js から off 行を削除して on に戻す
 - 想定工数 15 分・優先度 中
+
+---
+
+## TSB-007 episode 3 — node_modules/eslint 消失で lint:customize 再失敗（2026-04-22 22:00 検出）
+
+### 症状
+4/22 夕方の健康診断で `npm run lint:customize` がまた失敗。原因特定に手間取った末、真因は `node_modules/eslint/` 自体の消失と判明。
+
+### 真因（複数仮説の合成）
+| # | 仮説 | 確度 |
+|---|---|---|
+| 1 | 9c6481c (4/22 18:23) で eslint v10 → v9.39.4 ダウングレード時、Cursor シェル node v20.18.2 が v9 の engine 要件を満たさず `npm install --save-dev eslint@latest` が **silent fail**。`package.json` だけ更新され `node_modules/eslint/` は不整合 or 撤去 | **本命（直接原因）** |
+| 2 | `scripts/health-check.mjs` の `self_check` が `scripts/*.mjs` と `AGENTS.md` のみ検査し **`node_modules/` 完全性を検査しない設計穴** → 朝の cron で異常検知できず | **本命（検知盲点）** |
+| 3 | Cursor 環境 / `npm prune` / 強制 GC | 低（直接証拠なし） |
+
+### 修正（実施済み / 4/22 夜）
+1. `npm ci`（or `npm install`）で再インストール → `node_modules/eslint v9.39.4` 復活確認
+2. `npm run lint:customize` 通過確認
+
+### 予防（提案 / 朝 cron で 4/23 自動適用予定）
+| ID | 内容 | 効果 |
+|---|---|---|
+| R15 | AGENTS.md §46 Phase 2 表に `check-node-modules.mjs` 追加 | ルール明文化 |
+| R16 | AGENTS.md §46 Phase 3 自動可リストに「依存欠損検知時の `npm ci` 再実行」追加 | auto-heal 拡張 |
+| S9 | `scripts/check-node-modules.mjs` 新規（package.json deps と node_modules/<pkg>/package.json バージョン一致 + critical bins 存在検証 / `--json` 対応） | 検知の自動化 |
+
+### 教訓（Lessons Learned / §11-3 修正前 30 秒影響分析と連動）
+1. **パッケージ操作 = post-install 必須儀式化**: `npm install <pkg>` 後は必ず `node_modules/<pkg>/package.json` の `version` を確認する（5 秒で済む）
+2. **engine 要件不一致時の silent fail**: npm は engine 要件 NG でも warning だけ出して成功風 exit する場合がある。**install 後の version 確認は 100% 必須**
+3. **健康診断は「自分自身」も診ろ**: `health-check.mjs` の self_check が node_modules を見ていなかった = 診断ツールの盲点を診断する習慣（メタ診断）が不足
+
+### 関連
+- TSB-007（2026-04-19 制定 / 元祖）/ TSB-007 続編（2026-04-21）
+- AGENTS.md §11-3 修正前 30 秒影響分析（改善案 #3 / 4/22 制定）
+- proposal: docs/approved-changes/2026-04-23/{R15,R16,S9}-*.proposal.json

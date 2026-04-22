@@ -1,0 +1,10 @@
+{
+  "id": "R16",
+  "category": "R",
+  "type": "string_replace",
+  "target": "AGENTS.md",
+  "note": "改善案 #6 続: §46 Phase 2-4 の自動 vs 提案境界『Phase 3 自動可』リストに『依存欠損検知時の npm ci 再実行 (auto-heal)』を追記。R15 とセットで運用される。",
+  "old_string": "- **Phase 3 自動可**: npx キャッシュクリア / `npm audit fix` (patch only) / `npm ci` / logs ローテーション / ESLint --fix",
+  "new_string": "- **Phase 3 自動可**: npx キャッシュクリア / `npm audit fix` (patch only) / `npm ci` / logs ローテーション / ESLint --fix / **依存欠損検知時の `npm ci` 再実行（Phase 2 で `check-node-modules.mjs` が NG を返したら無条件で `npm ci` をリトライ / 改善案 #6 / 2026-04-22 制定）**",
+  "created_at": "2026-04-22T21:35:30.000Z"
+}
