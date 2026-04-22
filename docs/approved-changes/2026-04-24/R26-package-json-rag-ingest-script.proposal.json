@@ -1,0 +1,10 @@
+{
+  "id": "R26",
+  "category": "R",
+  "type": "string_replace",
+  "target": "package.json",
+  "note": "MCP 強化戦略 段階 3 / 次元 3 補足。R25 で参照する npm run rag:ingest を package.json に追加。NVM v24 絶対パス指定で Cursor 環境シミュレーション対策込み (TSB-007 episode 3 教訓継承)。",
+  "old_string": "    \"guard:check\": \"node scripts/wipe-guard.mjs\",\n    \"guard:mirror\": \"node scripts/emergency-mirror.mjs\",",
+  "new_string": "    \"guard:check\": \"node scripts/wipe-guard.mjs\",\n    \"guard:mirror\": \"node scripts/emergency-mirror.mjs\",\n    \"rag:ingest\": \"/home/mhamada202408224/.nvm/versions/node/v24.14.1/bin/npx --yes mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest docs/\",\n    \"rag:ingest:rules\": \"cp RULES-INDEX.md kintone-apps.md AGENTS.md WORKFLOW.md .rag/extra-docs/ 2>/dev/null || true && /home/mhamada202408224/.nvm/versions/node/v24.14.1/bin/npx --yes mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest .rag/extra-docs/\",",
+  "created_at": "2026-04-23T02:32:00.000Z"
+}
