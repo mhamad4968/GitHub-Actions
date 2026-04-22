@@ -2,13 +2,41 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-04-23 03:30 (Thu) 早朝 — MCP 強化戦略 v1.0 完成（段階 1-3 + Q1/Q2/Q3 + context7/excel 評価 + S12 死蔵警告 / proposal 5 件 4/24 cron 適用予定 / 19:00 浜田レビュー対応）
+**最終更新**: 2026-04-23 04:00 (Thu) 早朝 — autonomous mode で MCP 7 件実 call 実証 + memory MCP 活性化 (4 entities + 5 relations) + **TSB-012 rag MCP broken 発見** + S13/S14 proposal 追加 (4/24 cron 待ち計 7 件) + 戦略書 v1.0 7 章追記訂正 / 詳細: `chat-sessions/2026-04-23.md`
+
+**前回更新**: 2026-04-23 03:30 (Thu) 早朝 — MCP 強化戦略 v1.0 完成（段階 1-3 + Q1/Q2/Q3 + context7/excel 評価 + S12 死蔵警告 / proposal 5 件 4/24 cron 適用予定 / 19:00 浜田レビュー対応）
 
 **前回更新**: 2026-04-22 22:00 (Wed) — Hook 化段階 1 + 改善 #1-#6 完了 (proposal 6 件キュー化 / 4/23 朝 cron 適用予定) + 並行チャット騒動 (R13 fix `68d1765`) + TSB-007 episode 3 検知
 
 **前回更新**: 2026-04-22 19:30 (Wed) — サブエージェント PoC-1 凍結 + PC台帳着手 4/23 延期 + リリース 5/13(水) 確定
 
 **前々回更新**: 2026-04-20 22:00 (Mon) — 夕反省承認分 (S1-S4+D3) 夜間実装完了
+
+---
+
+## 🌙 4/23 早朝 autonomous mode セッション追加成果（02:45-04:00）
+
+**契機**: 浜田 02:45 指示「a+c 実施 + 死蔵 MCP 活用 + 確認不要」→ AI 単独判断で実 call 実証
+
+### MCP 実証結果（重大訂正 3 件）
+- ❌ **rag MCP broken** = `documentCount: 0` / lancedb 43MB 実在も MCP サーバ認識不可 → **TSB-012** として記録（修復は浜田立ち会いで明日以降）
+- ✅ **memory MCP 既に active**（別 PJ GitHub-Actions/security-next-automation 利用中 / 段階 1 監査の死蔵判断は誤り）→ kintone-ai-lab 側でも 4 entities + 5 relations 投入で活性化完了
+- ✅ **cyber-news + cve-search 完全動作**（21 feeds + NVD 2026-04-22 最新 / 即活用準備可）→ S14 月次セキュリティ巡回 cron で 5/1 から実戦投入
+
+### 新規 proposal（4/24 朝 cron 待ち / 既存 5 件 + 早朝追加 2 件 = 計 7 件）
+- **S13** `health-check.mjs` に S9（check-node-modules）+ S12（check-mcp-dormancy）の wiring 統合
+- **S14** `monthly-security-rounds.mjs` 新規（cyber-news + cve-search 統合 / v1 はスケルトン / cron 登録は別途 4/30 夜手動）
+
+### 戦略書 v1.0 訂正
+- `docs/plans/2026-04-23-mcp-strategy-v1.md` に **7 章「4/23 03:00 早朝 MCP 実証結果（重大訂正）」を追記**
+- 真の死蔵 = 2-3 件のみ（google-search / fetch / accessibility-scanner）/ broken 1 件 = rag / 新たに active 化 = memory + cyber-news + cve-search 3 件
+
+### 浜田 19:00 レビュー時の追加判断要請
+- **Q6**: rag MCP 修復方針（a/b/c 案 / TSB-012 参照）
+- **Q7**: S14 月次セキュリティ巡回 5/1 開始の承認
+
+### 詳細
+- `chat-sessions/2026-04-23.md`（全タイムライン + 成果物一覧 + §11-2 信頼度ラベル）
 
 ---
 
