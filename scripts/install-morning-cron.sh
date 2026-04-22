@@ -24,11 +24,14 @@ CRON_LINE="0 6 * * * cd ${REPO_ROOT} && PATH=${NODE_V24_BIN}:${NODE_V24_BIN}:/us
 # wipe-guard (15 分ごと) と emergency-mirror (4 時間ごと) も同時に登録
 WIPE_GUARD_LINE="*/15 * * * * cd ${REPO_ROOT} && PATH=${NODE_V24_BIN}:/usr/bin:/bin ${NODE_V24_BIN}/node scripts/wipe-guard.mjs >> ${REPO_ROOT}/logs/wipe-guard/cron.log 2>&1 # wipe-guard"
 MIRROR_LINE="17 */4 * * * cd ${REPO_ROOT} && PATH=${NODE_V24_BIN}:/usr/bin:/bin ${NODE_V24_BIN}/node scripts/emergency-mirror.mjs >> ${REPO_ROOT}/logs/wipe-guard/mirror.log 2>&1 # emergency-mirror"
+# 2026-04-21 制定 #R12: 健康状態こまめに自動チェック + 自動修復 (浜田指示)
+HEALTH_CHECK_LINE="33 */4 * * * cd ${REPO_ROOT} && PATH=${NODE_V24_BIN}:/usr/bin:/bin ${NODE_V24_BIN}/node scripts/health-check.mjs >> ${REPO_ROOT}/logs/health/cron.log 2>&1 # health-check-4h"
+AUTO_HEAL_LINE="43 */4 * * * cd ${REPO_ROOT} && PATH=${NODE_V24_BIN}:/usr/bin:/bin ${NODE_V24_BIN}/node scripts/auto-heal.mjs >> ${REPO_ROOT}/logs/heal/cron.log 2>&1 # auto-heal-4h"
 
 mkdir -p "${REPO_ROOT}/logs/morning-prep" "${REPO_ROOT}/logs/wipe-guard" "${REPO_ROOT}/logs/file-watcher"
 
 # 既存エントリを除去してから追加
-( crontab -l 2>/dev/null | grep -v "daily-morning-prep\|wipe-guard\|emergency-mirror" ; echo "${CRON_LINE}" ; echo "${WIPE_GUARD_LINE}" ; echo "${MIRROR_LINE}" ) | crontab -
+( crontab -l 2>/dev/null | grep -v "daily-morning-prep\|wipe-guard\|emergency-mirror\|health-check-4h\|auto-heal-4h" ; echo "${CRON_LINE}" ; echo "${WIPE_GUARD_LINE}" ; echo "${MIRROR_LINE}" ; echo "${HEALTH_CHECK_LINE}" ; echo "${AUTO_HEAL_LINE}" ) | crontab -
 
 echo "[OK] cron registered:"
 echo "  - daily-morning-prep (06:00 JST 毎日)"

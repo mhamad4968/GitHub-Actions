@@ -40,8 +40,12 @@
 - 時刻に触れる前に必ず `date` 実行（§39）
 - **OneDrive 使用禁止**（`C:\Users\<name>\OneDrive\` を新規ファイル先に選ばない / 代替: `C:\tmp\` `Documents\` 直下 `Claudeとの会話メモ\` `~/.cursor-emergency-backup/`）
 
-【今やってる主タスク（2026-04-20 自動更新）】
-- 進行中 plan: docs/plans/2026-04-18-skysea-installer.md
+【今やってる主タスク（2026-04-21 自動更新）】
+- 進行中 plan: docs/plans/2026-04-21-new-pc-ledger-spec.md
+- 当日コミット (上位 3):
+  - docs(plan): 検索強化 (種別検索 + A+B ハイブリッド補助) を v1.1 に追記
+  - docs(plan): 新・PC台帳ver.1 仕様書 v1.1 (浜田 4 留意事項反映)
+  - docs(plan): 新・PC台帳ver.1 仕様完全版確定 v1.0 (Q&A 37 件 + α / 4 時間ヒアリング)
 
 【今日（このセッション）の依頼】
 （ここに自由文で書く。例: 「SKYSEA の続きやろう」「○○について教えて」など）

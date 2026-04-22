@@ -259,6 +259,43 @@ npm install --save-dev eslint@8
 
 ---
 
+## TSB-009 — Chrome 92+ で window.open(blob:URL, '_blank') がブロックされる（2026-04-21 制定）
+
+### 症状
+- HTML フォーム内で `<input type=file>` や drop でアップロードした画像 (blob: URL 化) を `window.open(blob:..., '_blank')` で別タブ表示しようとすると **`Not allowed to load local resource: blob:http://...`** エラー + ERR_FILE_NOT_FOUND。
+- ドロップ・貼り付け自体は成功するが「クリックで拡大」だけが失敗する見え方。
+
+### 発生事例（2026-04-21 19:00 / FAQ ポータル）
+- `scripts/faq-portal-full.html` の 4 箇所で `window.open(this.src, '_blank')` を使用。Chrome 92+ で blob: URL の新規タブ表示はセキュリティ制限でブロック。
+
+### 根本原因
+**Chrome 92+ のセキュリティ制限**: blob: URL を新規タブで開く操作 (window.open / target=_blank) はブロックされる。CSP / Cross-Origin 関連でなく、純粋な URL スキーム制限。
+
+### 解決パターン 3 択
+1. ⭐ **同一ページ内 Lightbox 表示**: 黒オーバーレイ + 拡大画像で表示。blob: でも http: でも安全に動作。今回採用。
+2. **dataURL 化**: 画像を Base64 dataURL に変換してから別タブ表示。大きい画像でメモリ消費。
+3. **正規 URL 発行**: 画像を即サーバへアップロード → 戻ってきた URL を表示。実装重い・通信増える。
+
+### 修正コード例（FAQ ポータル）
+```javascript
+// 修正前 (NG)
+img.addEventListener('click', function () {
+  if (this.src) window.open(this.src, '_blank');  // ← Chrome 92+ でブロック
+});
+
+// 修正後 (OK)
+img.addEventListener('click', function () {
+  openImageLightbox(this.src, this.alt);  // ← Lightbox で同一ページ内表示
+});
+```
+
+### 教訓
+- 動的に生成された blob URL を **新規タブで開く** 設計は将来も使えない
+- **「拡大表示」は同一ページ内の Lightbox / モーダル方式** が将来安全
+- セキュリティ制限は OS / ブラウザ更新で増える方向 → 「将来制限される可能性」を先回り設計するのが §49 の精神
+
+---
+
 ## TSB-007 続編 — eslint v10 新規 recommended ルールの後始末（2026-04-21 追記）
 
 ### 状況

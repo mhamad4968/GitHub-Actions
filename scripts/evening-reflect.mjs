@@ -64,7 +64,8 @@ let gitSection = '_(git レポジトリではありません)_';
 const gitCheck = run('git rev-parse --is-inside-work-tree 2>/dev/null');
 if (gitCheck.ok && gitCheck.stdout === 'true') {
   const status = run('git status --short');
-  const today_log = run(`git log --since=midnight --pretty=format:'%h %s' | head -20`);
+  // 2026-04-20 制定 (#D5): midnight 起点だと深夜跨ぎ・早朝実行で空になるため直近 12 時間で抽出
+  const today_log = run(`git log --since='12 hours ago' --pretty=format:'%h %s' | head -20`);
   gitSection = [
     '**`git status`（未コミット）**:',
     '```text',
@@ -190,7 +191,7 @@ function updateNewSessionStarter() {
     }
   }
   // 当日 commit のうち主要なもの
-  const todayCommits = run(`git log --since=midnight --pretty=format:'%s' | head -3`);
+  const todayCommits = run(`git log --since='12 hours ago' --pretty=format:'%s' | head -3`);
   if (todayCommits.ok && todayCommits.stdout) {
     summary.push('- 当日コミット (上位 3):');
     todayCommits.stdout.split('\n').forEach((s) => summary.push(`  - ${s.slice(0, 80)}`));
