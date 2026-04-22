@@ -1,0 +1,402 @@
+[
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0001"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": "〇"
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0002"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0003"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0004"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0005"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0006"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0007"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0008"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0009"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0010"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0011"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0012"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0013"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0014"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0015"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0016"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0017"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0018"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0019"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0020"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0021"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0022"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0023"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0024"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0025"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0026"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0027"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0028"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0029"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0030"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0031"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0032"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0033"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0034"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0035"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0036"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0037"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0038"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0039"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  },
+  {
+    "windows_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "js0040"
+    },
+    "used_count": {
+      "type": "DROP_DOWN",
+      "value": null
+    }
+  }
+]
