@@ -109,6 +109,7 @@ function probeMcp(name, server, opts = {}) {
 const mcpJsonPath = path.join(os.homedir(), '.cursor', 'mcp.json');
 let mcpResults = [];
 let cursorDivergence = [];  // ターミナル緑だが Cursor 環境で赤 → UI 赤の予兆
+let ragDeepCheck = null;    // rag MCP DB 内容チェック (TSB-012 再発防止)
 if (!fs.existsSync(mcpJsonPath)) {
   mcpResults = [{ name: '(mcp.json)', status: 'ng', note: 'mcp.json not found' }];
 } else {
@@ -129,6 +130,54 @@ if (!fs.existsSync(mcpJsonPath)) {
           r.note += ' (⚠ Cursor 環境では NG = UI 赤の予兆)';
         }
       }
+    }
+
+    // ───── rag MCP 専用 DB 内容チェック (TSB-012 再発防止 / 2026-04-23 追加) ─────
+    // mcp-local-rag v0.13.0 は server mode で --db-path CLI 引数を無視し env DB_PATH のみ参照する。
+    // 設定不備で documentCount=0 になる事故を 2026-04-23 03:00 早朝に発見 (TSB-012) し、
+    // 静的設定チェック + 動的 status 呼出の二段階で再発防止する。
+    const ragServer = servers.rag;
+    if (ragServer && !ragServer.disabled) {
+      const hasDbPathEnv = !!(ragServer.env && ragServer.env.DB_PATH);
+      const hasDbPathArg = (ragServer.args || []).includes('--db-path');
+      const configIssues = [];
+      if (!hasDbPathEnv) configIssues.push('env.DB_PATH 未設定 (v0.13.0 server mode は CLI 引数無視)');
+      if (hasDbPathArg && !hasDbPathEnv) configIssues.push('args に --db-path 残存 (env.DB_PATH 必須)');
+
+      let documentCount = null;
+      let statusErr = null;
+      try {
+        const reqs = JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: '2024-11-05', capabilities: {}, clientInfo: { name: 'health-check-rag', version: '1.0' } } })
+          + '\n'
+          + JSON.stringify({ jsonrpc: '2.0', id: 2, method: 'tools/call', params: { name: 'status', arguments: {} } })
+          + '\n';
+        const res = spawnSync(ragServer.command, ragServer.args || [], {
+          input: reqs,
+          encoding: 'utf8',
+          timeout: 60_000,
+          env: { ...process.env, ...(ragServer.env || {}) },
+        });
+        const m = (res.stdout || '').match(/documentCount["\\:\s]+(\d+)/);
+        if (m) documentCount = Number(m[1]);
+        else statusErr = `status 応答パース失敗 (exit=${res.status})`;
+      } catch (e) {
+        statusErr = `status 呼出失敗: ${e.message}`;
+      }
+
+      let status = 'ok';
+      const notes = [];
+      if (configIssues.length > 0) { status = 'ng'; notes.push(configIssues.join(' / ')); }
+      if (documentCount === 0) { status = 'ng'; notes.push('documentCount=0 (DB 認識不可 / TSB-012)'); }
+      if (documentCount === null && !statusErr) notes.push('documentCount 不明');
+      if (statusErr) { status = 'ng'; notes.push(statusErr); }
+      if (typeof documentCount === 'number' && documentCount > 0) notes.push(`documentCount=${documentCount}`);
+
+      ragDeepCheck = {
+        status,
+        document_count: documentCount,
+        config_issues: configIssues,
+        note: notes.join(' / '),
+      };
     }
   } catch (e) {
     mcpResults = [{ name: '(mcp.json)', status: 'ng', note: `parse error: ${e.message}` }];
@@ -205,9 +254,11 @@ const selfCheck = {
 };
 
 // ───── 集計 ─────
+const ragDeepNgCount = ragDeepCheck && ragDeepCheck.status === 'ng' ? 1 : 0;
+const ragDeepOkCount = ragDeepCheck && ragDeepCheck.status === 'ok' ? 1 : 0;
 const summary = {
-  ok: mcpResults.filter((r) => r.status === 'ok').length + [node, disk, memory, cron, selfCheck].filter((s) => s.status === 'ok').length,
-  ng: mcpResults.filter((r) => r.status === 'ng').length + [node, cron, selfCheck].filter((s) => s.status === 'ng').length,
+  ok: mcpResults.filter((r) => r.status === 'ok').length + [node, disk, memory, cron, selfCheck].filter((s) => s.status === 'ok').length + ragDeepOkCount,
+  ng: mcpResults.filter((r) => r.status === 'ng').length + [node, cron, selfCheck].filter((s) => s.status === 'ng').length + ragDeepNgCount,
   warn: 0,
   skip: mcpResults.filter((r) => r.status === 'skip').length,
 };
@@ -216,6 +267,7 @@ const result = {
   generated_at: new Date().toISOString(),
   mcp: mcpResults,
   cursor_divergence: cursorDivergence,
+  rag_deep_check: ragDeepCheck,
   node,
   disk,
   memory,
@@ -255,6 +307,18 @@ out(`  - npm cache: ${disk.npm_cache} / npx cache: ${disk.npx_cache}`);
 out(`- Memory: ${memory.line} — ✅`);
 out(`- cron: ${cron.has_morning_prep ? '✅ morning:prep 登録済み' : '❌ morning:prep 未登録'}`);
 out('');
+
+if (ragDeepCheck) {
+  out('### 🔎 rag MCP DB 内容チェック (TSB-012 再発防止)');
+  out('');
+  const icon = ragDeepCheck.status === 'ok' ? '✅' : '❌';
+  out(`- ${icon} ${ragDeepCheck.note}`);
+  if (ragDeepCheck.status === 'ng' && ragDeepCheck.config_issues.length > 0) {
+    out('');
+    out('> **対策**: `~/.cursor/mcp.json` の rag セクションで `env.DB_PATH` と `env.CACHE_DIR` を絶対パスで設定し、`args` から `--db-path` / `--cache-dir` は削除する。理由: mcp-local-rag v0.13.0 server mode は CLI 引数を無視し env vars のみ参照するため (TSB-012 詳細)。');
+  }
+  out('');
+}
 
 if (cursorDivergence.length > 0) {
   out('### ⚠ Cursor 環境シミュレーション乖離検知');

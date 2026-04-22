@@ -484,3 +484,72 @@ git log --since='24 hours ago' --grep='Made-with: Cursor' --format='%h|%ai|%s'
 - 段階 1 監査: `docs/reports/2026-04-23-mcp-audit-stage1.md`（rag を「active 扱い」と書いていた箇所 / 7 章で実態訂正）
 - 関連 proposal: R25 (§21 RAG Ingest Ritual 強化) / R26 (npm run rag:ingest スクリプト) は **rag MCP 修復後でないと意味がない** = 修復が R25/R26 の前提条件
 - AGENTS.md §20 RAG 検索義務 / §21 RAG 知識更新フィードバックループ
+
+---
+
+### 🔧 修復報告（2026-04-23 03:30 / 浜田緊急指示「早急に rag 復旧」）
+
+#### 確定した真因
+**mcp-local-rag v0.13.0 の server mode は `--db-path` / `--cache-dir` CLI 引数を完全に無視する仕様**（バグまたは仕様変更）。
+
+ソースコード調査結果（`/home/mhamada202408224/.npm/_npx/4dccec079c88fcb2/node_modules/mcp-local-rag/dist/`）:
+
+| ファイル | 該当行 | 内容 |
+|---|---|---|
+| `cli/options.js` | line 107-173 | `parseGlobalOptions()` は `--db-path` / `--cache-dir` を**正しくパースする** |
+| `cli/options.js` | line 181 | `resolveGlobalConfig()` は **CLI 引数 → env vars → デフォルト**の優先順で解決する（CLI subcommand mode 専用）|
+| `server-main.js` | line 78-82 | `startServer()` は `process.env['DB_PATH'] \|\| './lancedb/'` だけを参照し、**`resolveGlobalConfig()` を呼ばない** |
+| `index.js` | line 19-39 | サブコマンドありなら `handleCli()` 経由（CLI 引数効く）/ なしなら `startServer()` 直叩き（CLI 引数捨てられる）|
+
+つまり**ingest 側（CLI subcommand mode）は CLI 引数で `.rag/lancedb` を見る**が、**MCP server 側（server mode）は env vars が無いと `process.cwd()/lancedb/` （存在しない空のパス）を見る** = `documentCount: 0` を返し続けていた。
+
+`.rag/lancedb/` 自体は健全（chunks.lance に 17MB / 69 data ファイル / 64 documents / 2318 chunks / 4/22 06:01 まで cron で更新継続）。
+
+#### 修復実施内容
+
+1. **`~/.cursor/mcp.json` の rag セクションを env vars 化**（commit はこの後）:
+
+```json
+"rag": {
+  "command": "/home/.../v24.14.1/bin/npx",
+  "args": ["-y", "mcp-local-rag"],
+  "env": {
+    "PATH": "/home/.../v24.14.1/bin:...",
+    "DB_PATH": "/home/mhamada202408224/kintone-ai-lab/.rag/lancedb",
+    "CACHE_DIR": "/home/mhamada202408224/kintone-ai-lab/.rag/models",
+    "BASE_DIR": "/home/mhamada202408224/kintone-ai-lab"
+  }
+}
+```
+
+2. **CLI レベル復旧検証成功**（PATH 上書きで NVM v24 強制）:
+
+```
+{ documentCount: 64, chunkCount: 2318, ftsIndexEnabled: true, searchMode: 'hybrid' }
+```
+
+3. **検索動作検証成功**: `query_documents("PC 台帳 環境設定マスタ", topK=3)` で 4/21 仕様書 + 4/18 SKYSEA 計画 + AGENTS.md から 10 件 hit。
+
+4. **backup**: `~/.cursor/mcp.json.bak-rag-fix-20260423-031551`
+
+#### 再発防止（実装済 / 同 commit）
+
+| 対策 | 実装場所 | 内容 |
+|---|---|---|
+| **静的設定チェック** | `scripts/health-check.mjs`（rag 専用 DB 内容チェックブロック）| mcp.json の rag に `env.DB_PATH` がなければ ❌ / `args` に `--db-path` が残存していたら ❌ |
+| **動的 status 呼出** | `scripts/health-check.mjs` | rag MCP に initialize + status を spawnSync で送り、`documentCount=0` なら ❌ |
+| **markdown 警告** | `scripts/health-check.mjs` | `### 🔎 rag MCP DB 内容チェック (TSB-012 再発防止)` セクションを朝レポートに追加 |
+| **R25/R26 前提条件明記** | 本セクション | RAG Ingest Ritual の強化案は本修復が前提と明示 |
+
+#### 残課題（浜田 19:00 レビュー時）
+
+- ⚠ **Cursor 再起動が必要**: `~/.cursor/mcp.json` 編集の効果が出るのは Cursor (実際には MCP サーバプロセス) の再起動後。浜田が出社時に Cursor 開き直す or `Reload Window` で反映。
+- ⚠ **mcp-local-rag への issue 報告検討**: v0.13.0 の server mode が CLI 引数を無視する挙動は、`--help` テキスト（`cli/options.js` line 81）で `--db-path` を案内している点と矛盾するため、上流リポへの bug report 候補（GitHub: https://github.com/shinpr/mcp-local-rag）。
+- ⚠ **mcp-local-rag のバージョン pin 検討**: 現在 `npx -y mcp-local-rag`（常に最新）= 上流の挙動変更で再度同じ事故が起きる可能性。`mcp-local-rag@0.13.0` に pin or 自前 fork 検討。
+
+#### この事故から学ぶべき教訓（追加）
+
+1. **MCP の status エンドポイントは健康診断必須**: initialize 通過だけでは「機能している」とは言えない（rag は initialize OK で内部 DB 空でも初期化成功扱い）→ health-check.mjs 修正済
+2. **`npx -y` で取れる「最新」の罠**: 上流の破壊的変更を毎回 install してしまう = バージョン pin の重要性
+3. **autonomous mode の真の価値**: 浜田就寝中の AI が `mcp_user-rag_status` を実 call することで初めて発見できた = 机上設定確認のみでは絶対に気付けなかった
+4. **CLI 引数が「help テキストに書いてあるが server mode で無視」されるのは設計バグの典型パターン**: 同じ落とし穴を他の MCP でも疑う（特に v0.x の若いバージョン）→ 別 MCP 導入時の確認項目に追加すべき
