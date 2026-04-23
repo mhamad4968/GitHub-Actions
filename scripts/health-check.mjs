@@ -268,6 +268,41 @@ const selfCheck = {
   wiped,
 };
 
+// ───── node_modules 完全性チェック (S9 wiring / R15-R16 連動 / TSB-007 episode 3 対策) ─────
+let nodeModulesCheck = { status: 'skip', note: 'check-node-modules.mjs not present' };
+const nodeModulesScriptPath = path.join(REPO_ROOT, 'scripts', 'check-node-modules.mjs');
+if (fs.existsSync(nodeModulesScriptPath)) {
+  const nmRes = spawnSync('node', [nodeModulesScriptPath, '--json'], { encoding: 'utf8', timeout: 30_000 });
+  if (nmRes.status === 0) {
+    nodeModulesCheck = { status: 'ok', note: 'node_modules 完全性 OK' };
+  } else if (nmRes.status === 1) {
+    let detail = '';
+    try { const j = JSON.parse(nmRes.stdout || '{}'); detail = `欠損 ${j.missing?.length || 0} / バージョン不一致 ${j.version_mismatch?.length || 0}`; } catch { detail = '詳細パース失敗'; }
+    nodeModulesCheck = { status: 'ng', note: `node_modules 不整合: ${detail} (npm ci 推奨)` };
+  } else {
+    nodeModulesCheck = { status: 'ng', note: `script error (exit=${nmRes.status})` };
+  }
+}
+
+// ───── MCP 死蔵検知 (S12 wiring / 改善案 #12) ─────
+let mcpDormancyCheck = { status: 'skip', note: 'check-mcp-dormancy.mjs not present' };
+const mcpDormancyScriptPath = path.join(REPO_ROOT, 'scripts', 'check-mcp-dormancy.mjs');
+if (fs.existsSync(mcpDormancyScriptPath)) {
+  const mdRes = spawnSync('node', [mcpDormancyScriptPath, '--json', '--days=7'], { encoding: 'utf8', timeout: 30_000 });
+  try {
+    const j = JSON.parse(mdRes.stdout || '{}');
+    if (j.status === 'ok') {
+      mcpDormancyCheck = { status: 'ok', note: `${j.active}/${j.total} active (過去 ${j.window_short_days} 日)` };
+    } else if (j.dormant > 0 || j.deletion_candidate > 0) {
+      mcpDormancyCheck = { status: 'ng', note: `死蔵 ${j.dormant} / 削除候補 ${j.deletion_candidate} (過去 ${j.window_short_days} 日)` };
+    } else {
+      mcpDormancyCheck = { status: 'ng', note: 'parse error or unknown status' };
+    }
+  } catch {
+    mcpDormancyCheck = { status: 'ng', note: `script error (exit=${mdRes.status})` };
+  }
+}
+
 // ───── 集計 ─────
 const ragDeepNgCount = ragDeepCheck && ragDeepCheck.status === 'ng' ? 1 : 0;
 const ragDeepOkCount = ragDeepCheck && ragDeepCheck.status === 'ok' ? 1 : 0;
