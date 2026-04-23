@@ -2,7 +2,9 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-04-23 22:12 (Thu) 深夜 — **Phase E CLI / ツール / 依存進化 完全達成 / S1 + S2 浜田 sudo 完了**。浜田 22:09-22:11 で:① gh 2.45 → 2.91 (wget + dpkg / 14MB / 1 分) ② git 2.43 → 2.54 (PPA + apt / 9.6MB / 30 秒) → AI 検証 22:12 で **gh auth status mhamad4968 active 維持 / git 2.54.0 で kintone-ai-lab repo 完全動作 / 認証 + Token scopes 全件保持**。**残課題は M1-M7 浜田判断のみ (5/1 月次レビュー or 5/13 本番後)** = autonomous 実施可能領域は 100% 完遂。
+**最終更新**: 2026-04-23 22:40 (Thu) 深夜 — **Phase F CLI 残件処理 完遂 (A 案 / F7+F8 除外)** + **新ルール R8 §47-C + R9 §51-2 制定**。浜田 22:14 「残件も済ませよう」指示 → 11 ステップ完遂: F1-F4 (typescript / @types / openai / eslint major update 全件 ✅) / F5-F6 (jq + ripgrep sudo install ✅) / F7+F8 除外確定 (4/26 customize 影響リスク高 / 浜田「壊れるならやめよう」自発訂正 = R8 制定契機) / F9 (node v25 全 5 検証 OK / 切替判断は浜田 = B 推奨 v24 LTS 維持) / F10 (fetch MCP 公式安定 / 代替不要 / 5/22+ で uvx 化検討) / F11 (R8+R9 commit `25e52df` + RULES-INDEX `966fbff` + 戦略書 v1.1 `0d73c2f` + RAG 3 件 ingest + memory phase_f_residual_2026_04_23 entity)。残課題: M2/M5 (vite/tailwind = 5/13 後) + M4 (node v25 切替 = 5/22+ or v26 LTS 化) + P3 (fetch uvx 化 = 5/22+) = 全部明示再評価日設定済 = やり残し忘れ回避。
+
+**前回更新**: 2026-04-23 22:12 (Thu) — Phase E S1 + S2 浜田 sudo 完了 (gh 2.91 + git 2.54)
 
 **前回更新**: 2026-04-23 23:30 (Thu) 夜 — Phase E CLI / ツール / 依存進化 完遂 / 6 vuln → 0 達成 (即時 U1-U7 7 commit) / 戦略書 v1.0 / S1-S2 浜田 sudo 必要 (本更新で解消済)
 
