@@ -204,6 +204,38 @@ console だけでなく画面上で利用者が状況を把握できるように
 - ❌ NG: `json.dump(d, f, ensure_ascii=False)` で書いて diff 取ったら filesystem path が UTF-8 化していた
 - ✅ OK (rollback 後): `json.dump(d, f, indent=2)` (ensure_ascii default) で書いて diff = google-search 削除 + duckduckgo-search 追加のみ
 
+### §17-3 mcp.json の command 設定: 絶対 path 標準化 (2026-04-23 制定 / TSB-013 v2 真因対策の標準化)
+
+**背景**: 2026-04-23 TSB-013 v2 で cron 環境が `~/.local/bin` を PATH に含まないため、cve-search の `command: "uv"` が起動失敗 (`exit=null`) し ❌ 誤検知が出ていた。健康チェック側の PATH 拡張で対症療法した (commit `21ef26a`) が、根本対策は **mcp.json 側で絶対 path を指定すること**。
+
+**必須遵守 (新規 MCP 追加時 / 既存 MCP 修正時)**:
+
+1. **絶対 path 推奨パッケージ起動コマンド**:
+   - `uv` / `uvx` 系 → `/home/<user>/.local/bin/uv` または `/home/<user>/.local/bin/uvx` (絶対 path)
+   - `npx` 系 → `/home/<user>/.nvm/versions/node/v24.14.1/bin/npx` (絶対 path / または `command` を使う側で PATH 渡す)
+   - `python` / `python3` 系 → `/usr/bin/python3` (システム標準 / 仮想環境なら venv の絶対 path)
+
+2. **PATH 依存 = アンチパターン** (一見動くが cron / 別シェル / NVM 切替時に失敗):
+   - ❌ NG: `"command": "uv"` (PATH 依存)
+   - ✅ OK: `"command": "/home/mhamada202408224/.local/bin/uv"` (絶対 path)
+
+3. **既存 MCP も順次絶対 path 化推奨** (4/24 朝以降 / 月次 MCP 健康診断時に判断):
+   - 現状 `command: "npx"` / `command: "uv"` のものを順次絶対 path に置き換え (proposal 経由 / TSB-006 ガード遵守 = 1 commit ≤5 ファイル)
+   - 影響範囲: cron / WSL 別ターミナル / 別シェルから MCP を呼ぶ場合に効く / Cursor 内では既存形式でも動く
+
+4. **検証義務 (§11-5 段階的検証 3 段階)**:
+   - ① Cursor 経由で実 call ✅ (Cursor 起動時に PATH 通っているケースが多い / 必須最小)
+   - ② 手動 bash で MCP probe (例: `health-check.mjs`)
+   - ③ env -i + cron PATH で MCP probe (cron 環境再現 = 真の絶対 path 動作確認)
+
+**違反 (PATH 依存の command 指定で cron で失敗を起こす)**:
+- TSB 化候補 (TSB-013 v2 と同型)
+- 浜田から「cron で動かない」と指摘されたら本ルール再発動
+
+**実例**:
+- ❌ NG (TSB-013 検出時): `"cve-search": { "command": "uv", ... }` → cron で uv not found
+- ✅ OK (TSB-015 採用 / 新規追加時に絶対 path で予防): `"duckduckgo-search": { "command": "/home/mhamada202408224/.local/bin/uvx", ... }`
+
 ### §18 セキュリティ
 API トークン・パスワード・鍵を回答に不必要に再掲しない。設定例はプレースホルダで示す。
 
