@@ -1,32 +1,41 @@
-# 🚀 新チャット起動の儀式（2026-04-19 制定）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+新チャット起動の儀式 / 2026-04-23 制定 (v3 / 全面リライト)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-> **目的**: 新しい Cursor チャットを開いたら、**この内容をそのまま貼り付ける**だけで、AI がゼロから今までの文脈を完全復元できるようにする。
-> **保存場所**:
-> - 本ファイル（リポ正本）
-> - `/mnt/c/Claudeとの会話メモ/NEW-SESSION-STARTER.txt`（Windows メモ帳から開きやすい場所）
-> - **`C:\Users\mhamada202408224\Desktop\AI緊急用\`** （濱田のデスクトップ常駐・クイックアクセス用 / 2026-04-19 整備）
+このファイルの中身を新しい Cursor チャットにそのまま貼るだけで、
+AI がゼロから今までの文脈を完全復元する。
 
----
+正本: kintone-ai-lab/chat-sessions/NEW-SESSION-STARTER.md
+控え: C:\Users\mhamada202408224\Desktop\AI緊急用\NEW-SESSION-STARTER.txt (Windows メモ帳から開きやすい場所)
 
-## 📋 貼り付け用テンプレート（このブロックをまるごとコピペ）
+v2 (2026-04-19) からの主な強化:
+- 主タスク: SKYSEA → 新・PC 台帳 ver.1 (4/24 環境設定マスタ Day 1)
+- ルール追加: §47-A / §47-B-2 / §47-C / §50 / §50-2 / §51 / §51-2 / §11-5 / §17-2 / §17-3
+- 新ツール: jq / ripgrep / uv 0.11.7 / gh 2.91 / git 2.54
+- 自動化基盤強化: 8 cron + file-watcher 21 ファイル監視
+- MCP 16 件 (active 13 + skip 3 / google-search → duckduckgo-search 入替済 / Chrome 147 + libnspr4 等 sudo install 済)
 
-```text
-【新セッション起動の儀式 / 2026-04-19 版】
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+■ フル版（コピペ推奨 / 新チャットにこのブロックを貼る）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【新セッション起動の儀式 / 2026-04-23 v3】
 
 まず以下を読み込んで文脈を完全復元してから本題に入って：
 
-@kintone-ai-lab/chat-sessions/checkpoint-latest.md   ← 現在地
-@kintone-ai-lab/chat-sessions/2026-04-19.md          ← 直近の詳細経緯
+@kintone-ai-lab/chat-sessions/checkpoint-latest.md   ← 現在地（短く）
+@kintone-ai-lab/chat-sessions/<最新日付>.md          ← 直近の詳細経緯（例: 2026-04-23.md）
 @RULES-INDEX.md                                       ← ホーム索引
-@kintone-ai-lab/RULES-INDEX.md                       ← リポ索引
-@kintone-ai-lab/AGENTS.md                            ← 開発憲法
+@kintone-ai-lab/RULES-INDEX.md                       ← リポ索引（§N 全件チェックリスト + MCP 活用 + 並列禁止セクション）
+@kintone-ai-lab/AGENTS.md                            ← 開発憲法（第15章 §51 並列禁止まで全 50+ ルール）
 @kintone-ai-lab/CLAUDE.md                            ← 儀式・優先順位
 @kintone-ai-lab/WORKFLOW.md                          ← Phase 0-5
 
 そのあと：
-1. `docs/reports/<今日の日付>-morning-prep.md` を読んで朝ルーチン状態（緑/黄/赤）確認
-2. 緑じゃなければ §46 を先に完遂
-3. 緑なら §47-§49（思考の三本柱）を意識して本題へ
+1. docs/reports/<今日の日付>-morning-prep.md を読んで朝ルーチン状態（緑/黄/赤）確認
+2. 緑じゃなければ §46 朝ルーチン絶対優先義務を先に完遂
+3. npm run guard:check で重要ファイル健康確認 (TSB-006 対策 / 21 ファイル健在)
+4. 緑なら §47-§49（思考の三本柱）+ §47-A/B-2/C + §50/§50-2 + §51/§51-2 + §11-5 を意識して本題へ
 
 【関係性の前提（憲法 = persist-policies.mdc 2026-04-19 合意）】
 - 呼称: 「さん」付け不要、友人として接する
@@ -37,121 +46,148 @@
 - トレードオフは複数案 + メリデメ + ベスト推奨を提示（§48）
 - 半歩先のリスクは先回りで言う（§49）
 - 質問は 1 回に 1 つだけ（§41）
-- 時刻に触れる前に必ず `date` 実行（§39）
-- **OneDrive 使用禁止**（`C:\Users\<name>\OneDrive\` を新規ファイル先に選ばない / 代替: `C:\tmp\` `Documents\` 直下 `Claudeとの会話メモ\` `~/.cursor-emergency-backup/`）
+- 時刻に触れる前に必ず date 実行（§39 / §39-7 = 2 ターンルール）
+- OneDrive 使用禁止 (C:\Users\<name>\OneDrive\ を新規ファイル先に選ばない /
+  代替: C:\tmp\ / Documents\ 直下 / Claudeとの会話メモ\ / ~/.cursor-emergency-backup/)
 
-【今やってる主タスク（2026-04-22 自動更新）】
-- 進行中 plan: docs/plans/2026-04-21-new-pc-ledger-spec.md
-- 当日コミット (上位 3):
-  - docs(chat-sessions): 4/22 後半経緯 (仕様書 v2.1 + FAQ 修正 + 既存バグ修正)
-  - fix(faq-portal): PDF D&D 添付対応 + 画像クリック既存バグ修正
-  - data(snapshots): 4/22 採番マスタ + 594 移行対象 実機データ (3 ファイル)
+【2026-04-23 制定の重要追加ルール（必ず遵守 / R1-R9）】
+- §11-5 修復後は「直接実 call / 手動 script / cron 実」3 段階すべてで検証してから「治った」宣言（TSB-013 v1+v2 教訓）
+- §17-2 mcp.json 編集は最小差分手順（ensure_ascii=False 禁止 / diff 取得義務）
+- §17-3 mcp.json command は絶対 path 標準化（cron PATH 依存回避 / TSB-013 v2 教訓）
+- §47-A 「100% 証明して」要求受領時は 30 ステップ深掘り (Phase W テンプレ)
+- §47-B-2 段階的批判の容認（1 段階目で完璧主義禁止 / Phase V → Phase W 反省）
+- §47-C 浜田認識不足判断の AI 否定権限（「全部やる」等で警告内容を再認識した形跡なしなら 2 回目強く再確認 → 沈黙・「やめよう」→ 即停止）
+- §50 タスク開始時 30 秒 MCP 想起儀式（16 シーン × MCP 対応表）
+- §50-2 死蔵 MCP 根絶ルール（30/60/90 日 0 回 → 入替/削除）
+- §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
+- §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
+
+【今やってる主タスク（2026-04-23 22:40 時点）】
+- 4/24（金）: 環境設定マスタ アプリ作成（PC 台帳 Day 1）
+  → CSV 既配置: /mnt/c/tmp/new-pc-ledger/env-master-init.csv
+  → 配置スペース: kintone Space 21 (システム管理)
+  → §47-8 で kintone API write は浜田立ち会い必須
+- 4/25（土）: M365管理マスタ作成
+- 4/26（日）: 新・PC台帳ver.1 + customize（Chrome 147 + Playwright + a11y-scanner で動作確認）
+- 4/27（月）: 動作確認
+- 4/28-29（火水祝）: CSV 準備
+- 4/30-5/2（木金土）: 既存 627 → 新 PC 台帳 移行
+- 5/3-6: GW
+- 5/7-12（木〜火）: 試運用 6 日
+- 5/13（水）: 🚀 本番運用開始
+- 5/16（土）: Cursor サブエージェント PoC-1 再議論
+- 5/17（日）〜: SKYSEA 計画開始（4/21 で 5/15 → 5/17 にリスケ済）
+- 5/22+: M2 vite 6→8 / M5 tailwind 3→4 / M4 node v25 切替 / P3 fetch MCP uvx 化 再評価
+- 2026-10: node v26 LTS 化時に M4 再評価
+- 詳細: docs/plans/2026-04-21-new-pc-ledger-spec.md v1.1
+
+【自動化基盤（TSB-006 + TSB-007 ep5 対策で完成済 / 2026-04-23 時点）】
+- file-watcher (常駐 / PID 41917 / 4/19 から連続稼働): 21 ファイル監視 + 0 byte 化検知 + 自動復元
+- wipe-guard (15 分ごと cron): 空ファイル検知 + 自動復元
+- emergency-mirror (4 時間ごと / 17 */4): ~/.cursor-emergency-backup/ に最新ミラー
+- watcher-watchdog (5 分ごと + @reboot): file-watcher 死活監視・自動再起動
+- daily-morning-prep (06:00 cron): apply-approved-changes + ヘルスチェック + lint + audit + ブリーフィング生成
+- health-check (33 */4 cron): MCP 全件 probe + Node 整合 + cron + disk + mem + rag DB チェック (TSB-013 v2 で uv PATH 拡張済)
+- auto-heal (43 */4 cron): npm audit fix patch only (TSB-007 ep5 対策で --omit=dev 削除済)
+- backup-mcp (00:00 daily cron): mcp.json + MCP サーバ自作コードを backups/mcp/ に世代保存
+- npm run guard:check / restore:wiped / watcher:status / guard:mirror で確認可能
+
+【MCP 構成（2026-04-23 22:40 時点 / 16 件 / active 13 + skip 3）】
+active (13): rag (76+ docs / hybrid mode) / kintone (公式) / kintone-dev (自作 / API 仕様参照) / kintone-space (自作 / 4/24 で実戦投入) / cve-search / cyber-news / fetch / playwright (Chrome 147 install 済) / accessibility-scanner / sequential-thinking / memory (10+ entities + 11+ relations) / filesystem / duckduckgo-search (4/23 google-search から入替 / API key 不要)
+skip (3): github (Win) / office-powerpoint (Win) / tavily (disabled / 課金回避)
+
+【新ツール導入済（2026-04-23）】
+- jq 1.7 (kintone API JSON 整形)
+- ripgrep 14.1.0 (高速 grep / 大量ファイルでは -g '*.md' 等で filter 推奨)
+- uv 0.11.7 (Python uvx)
+- gh 2.91.0 (GitHub CLI / 4/22 リリース最新)
+- git 2.54.0 (Ubuntu PPA latest)
 
 【今日（このセッション）の依頼】
-（ここに自由文で書く。例: 「SKYSEA の続きやろう」「○○について教えて」など）
-```
+（ここに自由文で書く。例:「PC 台帳 Day 1 やろう」「○○について教えて」など）
 
----
 
-## 📝 メモ帳（Windows）用に短縮した版（コピペ用）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+■ 短縮版（メモ帳向け 1 行 / 急ぎの時用）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-```text
-【儀式】@kintone-ai-lab/chat-sessions/checkpoint-latest.md と @kintone-ai-lab/chat-sessions/<最新>.md と @RULES-INDEX.md と @kintone-ai-lab/AGENTS.md と @kintone-ai-lab/CLAUDE.md を読んで、今日の morning-prep.md で §46 緑を確認してから本題へ。呼称さん付け不要・友人としてタメ口 OK・§47-§49 常時発動・§41 一問一答。今日の依頼: ＿＿＿
-```
+【儀式v3】@kintone-ai-lab/chat-sessions/checkpoint-latest.md と @kintone-ai-lab/chat-sessions/<最新>.md と @RULES-INDEX.md と @kintone-ai-lab/AGENTS.md と @kintone-ai-lab/CLAUDE.md を読んで、今日の morning-prep.md で §46 緑を確認 + npm run guard:check で wipe チェックしてから本題へ。呼称さん付け不要・友人としてタメ口 OK・§47-§49 + §47-A/B-2/C + §50/50-2 + §51/51-2 + §11-5 常時発動・§41 一問一答・§39 時刻 date 必須。今日の依頼: ＿＿＿
 
----
 
-## 🔁 セッション終わりの儀式（締め時の 3 点）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+■ セッション終わりの締め（一言投げるだけ）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-セッションを閉じる前に、**この一言**を AI に投げる：
+今日の分、checkpoint-latest.md と chat-sessions/<日付>.md を更新してから締めて。
+新規決定があれば persist-policies.mdc または kintone-apps.md に正本追記もお願い。
+新ルールを制定したら AGENTS.md + RULES-INDEX.md + RAG ingest + memory MCP entity も忘れずに。
+最後に npm run guard:mirror で emergency-backup を最新化してね。
 
-```text
-今日の分、checkpoint-latest.md を更新してから締めて。新規決定があれば persist-policies.mdc または kintone-apps.md に正本追記もお願い。
-```
 
-これで AI が以下を自動実行する（CLAUDE.md「『忘れた』防止」節 + agent-restore-checkpoint.md「セッション締めの 3 点」より）:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+■ 「忘れた？」って気付いたとき（§42 違反）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-| 優先 | 書く場所 | 内容 |
-|---|---|---|
-| 1 | **`RULES-INDEX.md` 1 行** または **正本** | 次回以降も効く決定・例外ルール・参照パス |
-| 2 | **`checkpoint-latest.md`** | いまのゴール・未完了・次に最初にやること（短く） |
-| 3 | **`chat-sessions/<日付>.md`** | 試行錯誤・コマンド・長い文脈 |
+§42 違反。@kintone-ai-lab/chat-sessions/checkpoint-latest.md と
+直近の chat-sessions/<日付>.md を即座に Read して、
+過去ログ確認の宣言を 1 行出してから本題に戻って。
 
----
 
-## 🆘 「忘れた？」って AI に言われたら / 自分で気付いたら
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+■ 「100% 問題ない証明して」を浜田から受けたとき（§47-A 発動）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-```text
-§42 違反。@kintone-ai-lab/chat-sessions/checkpoint-latest.md と直近の chat-sessions/<日付>.md を即座に Read して、過去ログ確認の宣言を 1 行出してから本題に戻って。
-```
+§47-A 発動。Phase W テンプレ = 30 ステップ深掘り検証を 1 つずつ実施:
+- コード基盤 5 (git fsck / package-lock + node_modules / process / PATH / logs)
+- cron + log 監査 7 (morning-prep / wipe-guard / mirror / health-check / auto-heal / watcher / backup)
+- MCP 全件実 call 7 以上 (Tier 4 dormant も含む)
+- データ整合 6 (RAG / memory / 過去 24h logs / 自爆系 grep / .env / cache)
+- ルール / Git 5 (cross-ref / chat-sessions / git push 待ち / §50 自己監査 / proposal dry-run)
+NG 1 件発見 → 修復 → 該当ステップ + 周辺再検証ループ。
+詳細: AGENTS.md §47-A 全文。
 
-これで AI が `AGENTS.md §42（セッション冒頭の過去ログ確認義務）` を踏み直す。
 
----
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+■ ファイル wipe が起きたら（TSB-006 対策）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-## 🛡 ファイル wipe / 自動化基盤が壊れたら
-
-**症状**: スクリプトが 0 byte 化 / `auto-heal.mjs` などが空 / MCP が赤 / 朝ブリーフィングが警告だらけ
-
-### 1 コマンドで現状確認
-
-```bash
 cd /home/mhamada202408224/kintone-ai-lab
-npm run guard:check    # 重要ファイル健康チェック + 自動復元
-npm run restore:wiped:dry   # 復元シミュレーション (実際は変更しない)
-```
+npm run guard:check         ← 現状確認 + 自動復元
+npm run restore:wiped       ← 手動復元 (人間向けレポート)
+npm run watcher:status      ← file-watcher 動作確認
 
-### 復元実行
+→ 詳細は CURSOR-トラブル対応メモ.txt + docs/troubleshooting.md TSB-006
 
-```bash
-npm run restore:wiped   # 異常検出 → emergency-backup or workspace-backup から復元
-```
 
-### file-watcher が動いてるか確認
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+■ ファイル位置リファレンス
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-```bash
-npm run watcher:status
-# → 'mhamada+ ... node scripts/file-watcher.mjs' が出れば OK
-# 死んでたら次の cron (5 分以内) で watchdog が再起動するが、即起動も可:
-npm run watcher:start
-```
+| 用途              | パス                                                       |
+|-------------------|------------------------------------------------------------|
+| 現在地（短く）    | kintone-ai-lab/chat-sessions/checkpoint-latest.md          |
+| 直近の詳細経緯    | kintone-ai-lab/chat-sessions/<YYYY-MM-DD>.md               |
+| 朝ブリーフィング  | kintone-ai-lab/docs/reports/<YYYY-MM-DD>-morning-prep.md   |
+| 開発憲法          | kintone-ai-lab/AGENTS.md (第15章 §51 まで)                  |
+| 儀式・優先順位    | kintone-ai-lab/CLAUDE.md                                   |
+| Phase 0-5 作業 OS | kintone-ai-lab/WORKFLOW.md                                 |
+| ホーム索引        | ~/RULES-INDEX.md                                           |
+| リポ索引          | kintone-ai-lab/RULES-INDEX.md (§N 全件 + MCP 活用 + 並列禁止) |
+| 関係性契約        | ~/.cursor/rules/persist-policies.mdc                       |
+| 復元プロトコル    | kintone-ai-lab/docs/agent-restore-checkpoint.md            |
+| 失敗事例集        | kintone-ai-lab/docs/troubleshooting.md (TSB-006〜TSB-015) |
+| 緊急バックアップ  | ~/.cursor-emergency-backup/                                |
+| 儀式（このファイル）| kintone-ai-lab/chat-sessions/NEW-SESSION-STARTER.md      |
+| トラブル対応      | kintone-ai-lab/chat-sessions/CURSOR-トラブル対応メモ.md   |
+| MCP 状態管理      | kintone-ai-lab/docs/mcp-status.md                          |
+| MCP 強化戦略      | kintone-ai-lab/docs/plans/2026-04-23-mcp-strategy-v1.md    |
+| CLI 進化戦略      | kintone-ai-lab/docs/plans/2026-04-23-cli-evolution-v1.md   |
+| 新・PC 台帳仕様   | kintone-ai-lab/docs/plans/2026-04-21-new-pc-ledger-spec.md |
+| MCP 設定          | ~/.cursor/mcp.json (16 servers / バックアップ backups/mcp/) |
+| WSL ホーム        | /home/mhamada202408224/                                    |
+| Windows Desktop   | /mnt/c/Users/mhamada202408224/Desktop/                     |
+| 緊急メモ控え      | /mnt/c/Users/mhamada202408224/Desktop/AI緊急用/            |
 
-### ログ確認
-
-| 用途 | パス |
-|---|---|
-| ファイル変更履歴 | `logs/file-watcher/<日付>.log` |
-| wipe 検出時のインシデント | `logs/file-watcher/wipe-incidents.log` |
-| wipe-guard 定期実行ログ | `logs/wipe-guard/cron.log` |
-| watchdog (再起動)ログ | `logs/file-watcher/watchdog.log` |
-
-### TSB-006 詳細
-
-→ `docs/troubleshooting.md` の **TSB-006** に経緯と原因仮説を記録済み。
-
----
-
-## 📚 参考: ファイルの場所まとめ
-
-| 用途 | パス |
-|---|---|
-| 現在地（短く）| `kintone-ai-lab/chat-sessions/checkpoint-latest.md` |
-| 直近の詳細経緯 | `kintone-ai-lab/chat-sessions/<YYYY-MM-DD>.md` |
-| 朝ブリーフィング | `kintone-ai-lab/docs/reports/<YYYY-MM-DD>-morning-prep.md` |
-| 開発憲法 | `kintone-ai-lab/AGENTS.md` |
-| 儀式・優先順位 | `kintone-ai-lab/CLAUDE.md` |
-| Phase 0-5 作業 OS | `kintone-ai-lab/WORKFLOW.md` |
-| ホーム索引 | `~/RULES-INDEX.md` |
-| リポ索引 | `kintone-ai-lab/RULES-INDEX.md` |
-| 関係性契約 | `~/.cursor/rules/persist-policies.mdc` |
-| 復元プロトコル | `kintone-ai-lab/docs/agent-restore-checkpoint.md` |
-| 失敗事例集 | `kintone-ai-lab/docs/troubleshooting.md` |
-| 本ファイル（儀式）| `kintone-ai-lab/chat-sessions/NEW-SESSION-STARTER.md` |
-
----
-
-## 💡 補足（メンテナンス）
-
-- 本ファイルは「**チャットを跨ぐためだけの最小儀式**」。長い説明は他の正本に書く。
-- 関係性ルール・憲法が変わったら、本ファイルの「貼り付け用テンプレート」の【関係性の前提】節も同期する。
-- Windows メモ帳側のコピー（`/mnt/c/Claudeとの会話メモ/NEW-SESSION-STARTER.txt`）は、本ファイル変更時に同じ内容で上書きする。
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+最終更新: 2026-04-23 (v3: R1-R9 + Phase A-W-E-F + 新ツール 5 件 + MCP 入替 + 主タスク全面更新)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
