@@ -83,10 +83,14 @@ function probeMcp(name, server, opts = {}) {
   const cmd = server.command;
   const args = server.args || [];
 
+  // ⚠ 2026-04-23: MCP probe timeout を 30 → 60 秒に延長 (TSB-013 対策)
+  //   過去の 4h cron で cve-search が cold start (NVD DB 2.2M records 読込) で
+  //   30 秒以内に initialize 応答を返せず ❌ 誤検知が発生していた。
+  //   実 call では即応答 OK = サーバ自体は健全。timeout を rag (60s) と同じ値に統一。
   const res = spawnSync(cmd, args, {
     input: init + '\n',
     encoding: 'utf8',
-    timeout: 30_000,
+    timeout: 60_000,
     env,
   });
 

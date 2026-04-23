@@ -379,6 +379,31 @@ img.addEventListener('click', function () {
 
 ---
 
+## TSB-013 — health-check 4h cron で cve-search が cold start ❌ 誤検知（2026-04-23 20:30 真因特定 / autonomous 修復）
+
+### 症状
+`logs/health/cron.log` の最新出力で `cve-search ❌ 応答なし (exit=null stderr=)` が記録されていた。一方、私が手動で `node scripts/health-check.mjs` を実行すると同じ cve-search が ✅ になる、また直接 `mcp_user-cve-search_vul_db_update_status` を実 call すると即応答する。**実害ではないが false negative 警報が出続ける**。
+
+### 真因
+`scripts/health-check.mjs` line 89 の MCP probe timeout = **30 秒**。cve-search MCP は **NVD DB 2,238,869 records** を起動時に読み込むため cold start に時間が掛かる。Cursor 経由で常時暖まっている AI 手動実行では即応答する一方、cron は kill-and-restart 的に毎回 cold start になり 30 秒以内に initialize レスポンスを返せず ❌ 誤検知が出ていた。
+
+### 修復（実施済 / 2026-04-23 20:31）
+1. `scripts/health-check.mjs` line 89 の `timeout: 30_000` → `timeout: 60_000` (rag と同じ値に統一)
+2. inline コメントで TSB-013 経緯を明示
+3. 検証: 修正後 health-check 実行 → 全 MCP ✅ (回帰なし) / cve-search も ✅
+
+### 教訓
+1. **cron 環境の cold start を考慮**: 起動時負荷が大きい MCP (cve-search / 大量 DB ロード系) は手動実行のキャッシュ済状態で測ると判断を誤る
+2. **timeout の統一**: 同じ `spawnSync` 内で MCP ごとに timeout が違う設計は false negative の温床。最も負荷の重い MCP に合わせて統一
+3. **過去ログの活用**: 浜田の「再度確認必要では？」指摘で過去 cron log を読んで初めて気付いた = 自分の手動実行結果だけ信じると見逃す
+
+### 関連
+- `scripts/health-check.mjs` (line 86-95)
+- 過去ログ: `logs/health/cron.log`
+- TSB-007 ep5 と同じく「自分の修復ロジックが誤判定を生む」系列
+
+---
+
 ## TSB-007 episode 5 — auto-heal 自爆 (`npm audit fix --omit=dev`) で devDeps が 4h ごと prune（2026-04-23 19:58 真因特定 / autonomous 修復）
 
 ### 症状
