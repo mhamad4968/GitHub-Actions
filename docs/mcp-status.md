@@ -13,7 +13,7 @@
 | 1 | github | ⏭ Win-skip | 0 回 | GitHub Issue/PR 操作 (Win 起動必要) | 5/16（サブエージェント PoC 再議論時）|
 | 2 | cyber-news | ✅ active | **1 回** (4/23 20:11 v0 巡回) | サイバーセキュリティニュース取得 | 5/1（月次健康診断）|
 | 3 | office-powerpoint | ⏭ Win-skip | 0 回 | PPT 自動生成 (Win 起動必要) | 5/13 後（本番運用後の月次レポート用検討）|
-| 4 | google-search | ✅ active | 0 回 | Google Web 検索 | 5/1（月次健康診断）|
+| 4 | google-search | 🟡 起動 OK / Google bot 検知で結果常空 (TSB-015 候補) | 2 回 (4/23 21:25 + 21:30) | Google Web 検索 (実用度低 / brave-search / serpapi 代替検討要) | **5/1 S14 月次巡回時に代替判断** |
 | 5 | filesystem | ✅ active | 0 回 | ローカルファイル操作 (Cursor 標準で代替可) | **削除候補 / 4/30 判断** |
 | 6 | memory | ✅ **active 化済** | **2 回** (4/23 早朝 4 entities + 20:13 5 entities + 6 relations 投入) | セッション横断記憶 (現在 10 entities + 11 relations) | PC 台帳 PJ で実戦投入後判断（5/13 頃）|
 | 7 | fetch | ✅ active | 0 回 | URL fetch (Cursor 標準 WebFetch で代替可) | **削除候補 / 4/30 判断** |
@@ -22,10 +22,10 @@
 | 10 | **kintone-dev (自作)** | ✅ active | 0 回 | API 仕様参照 (アプリ作成 MCP ではない / 4/23 早朝訂正済) | **4/26 PC 台帳 Day 4 後判断** |
 | 11 | **kintone-space (自作)** | ✅ active | 0 回 | kintone スペース操作 | **4/24 環境設定マスタ作成時に実戦投入予定** |
 | 12 | tavily | ⏸ disabled | 0 回 | Tavily Web 検索 | **5/16 削除 or 再有効化判断** |
-| 13 | playwright | ✅ active | 2 回 | ブラウザ自動操作 / E2E | 4/26 PC 台帳 customize テスト時 |
+| 13 | playwright | ✅ active (4/23 21:30 Chrome 147.0.7727.116 install + 実 call 動作確認済) | 3 回 | ブラウザ自動操作 / E2E | 4/26 PC 台帳 customize テスト時 |
 | 14 | cve-search | ✅ **active 化済** | **3 回** (4/23 早朝 db_status + 20:14 vul_last_cves + vul_cve_search) | CVE 脆弱性検索 | 5/1（月次セキュリティ巡回時 / S14）|
 | 15 | rag | ✅ **強化済** | **大量** (本日 ingest_file 8 回 + query_documents 3 回 + status 3 回) | LanceDB ローカル RAG (現在 76 docs / 3429 chunks) | **§50 + §21 強化（R24/R25）後再評価 / 4/30 判断** |
-| 16 | accessibility-scanner | ✅ active | 0 回 | アクセシビリティ検査 | 4/26 PC 台帳 customize 時 |
+| 16 | accessibility-scanner | ✅ active (4/23 21:30 同 Chrome で実 call 動作確認済) | 1 回 | アクセシビリティ検査 | 4/26 PC 台帳 customize 時 |
 
 ### 凡例
 - ✅ active: 正常稼働 / 利用可能

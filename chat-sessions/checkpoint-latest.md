@@ -2,7 +2,9 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-04-23 21:10 (Thu) 夜 — **CVE-2026-33825 影響判定完了 = 影響なし**。浜田 PowerShell 実機検証 (`AMRunningMode = Not running` / `AntivirusEnabled = False`) → Microsoft Defender 完全無効化 / SKYSEA Client View 主軸環境のため Defender CVE は攻撃対象未稼働で**該当外**。memory MCP に `Hamada_PC_Defender_Status` entity 永続化 + `applies_to_endpoint_environment` relation で PC 台帳 PJ と紐付け / 今後の Defender 系 CVE は `AMRunningMode` 1 コマンドで瞬時判定可。逆に SKYSEA 関連脆弱性は主軸 AV のため優先ウォッチ対象に格上げ (S14 月次巡回 5/1 開始時に組み込み)。
+**最終更新**: 2026-04-23 21:30 (Thu) 夜 — **TSB-014 完全解消 / 真の 100% 達成**。浜田 sudo 2 段階実施 (① `playwright install-deps chromium` で system deps 20 packages / ② `playwright install chrome` で Google Chrome 147.0.7727.116) → AI 実 call 検証で **playwright + accessibility-scanner ✅ / google-search 起動 ✅** / health-check 正常 19 / 異常 0 / **全 16 MCP ✅** (active 13 + skip 3) 達成。残課題: google-search の Google bot 検知問題 = TSB-015 候補として S14 月次巡回 (5/1) 時に代替検討 (brave-search / serpapi 等) / 構造的別案件で今夜の作業範囲外。
+
+**前回更新**: 2026-04-23 21:10 (Thu) 夜 — CVE-2026-33825 影響判定完了 = 影響なし (浜田 PC = Defender Not running / SKYSEA 主軸)
 
 **前回更新**: 2026-04-23 21:00 (Thu) 夜 — Phase W 30 ステップ深掘り検証完遂 / TSB-013 v2 真因 = cron 環境で uv PATH not found (commit `21ef26a`) / TSB-014 = ブラウザ系 3 MCP system deps 不足 (浜田 sudo 必要 / 4/26 まで)。本日 commit 13 件全件健全 / 27/30 ✅ + 3/30 浜田 sudo 待ち
 

@@ -379,7 +379,46 @@ img.addEventListener('click', function () {
 
 ---
 
-## TSB-014 — ブラウザ系 3 MCP (playwright / accessibility-scanner / google-search) で Chromium system deps 不足（2026-04-23 21:15 検出 / 浜田 sudo 必要）
+## TSB-014 — ブラウザ系 3 MCP の system deps + Chrome 不足（2026-04-23 21:15 検出 / 21:30 解消 / 浜田 sudo 実施 + AI 検証）
+
+### ✅ 解消ステータス (2026-04-23 21:30)
+- **playwright**: ✅ Chrome 147.0.7727.116 で `browser_tabs` 動作確認
+- **accessibility-scanner**: ✅ 同上 (内部で同 Chrome 使用)
+- **google-search**: 🟡 起動 ✅ / Chromium 動作 ✅ / Google 結果常に空 = **構造的別案件 (TSB-015 候補)** = headless ブラウザ bot 検知のため。今夜の TSB-014 主目的 (4/26 PC 台帳 customize 用) は達成
+
+### 修復経緯 (2 段階 / 浜田 sudo 必須)
+
+**段階 1 (浜田 21:14 実施)**: system deps 一括 install
+```bash
+cd ~/kintone-ai-lab && PATH="/home/mhamada202408224/.nvm/versions/node/v24.14.1/bin:$PATH" sudo $(which npx) playwright install-deps chromium
+```
+- 20 packages 新規 (libnspr4 / libnss3 / libasound2t64 / fonts 系) / 35.6 MB / エラー 0
+
+**段階 2 (浜田 21:25 実施)**: Google Chrome 本体 install
+```bash
+cd ~/kintone-ai-lab && PATH="/home/mhamada202408224/.nvm/versions/node/v24.14.1/bin:$PATH" npx playwright install chrome
+```
+- npx 内部で sudo 自動昇格 (浜田パスワード再要求なし) / google-chrome-stable 147.0.7727.116 が `/opt/google/chrome/` + `/usr/bin/google-chrome-stable` に install / 125 MB
+
+### 検証 (AI 実 call / 21:30)
+- `mcp_user-playwright_browser_tabs(action="list")` → ✅ `[{0: (current) [](about:blank)}]`
+- `mcp_user-accessibility-scanner_browser_tabs(action="list")` → ✅ 同様
+- `mcp_user-google-search_search(query="kintone")` → 🟡 結果空 (CAPTCHA エラー消失 / 起動 OK / Google bot 検知問題)
+- `health-check.mjs` → 正常 19 / 異常 0 / 警告 0 / 全 MCP ✅
+
+### 教訓
+1. **`install-deps chromium` だけでは不足 / `install chrome` で本体追加が必要**: @playwright/mcp は Google 商用 Chrome を要求するため Chromium バイナリだけでは起動しない
+2. **私の前回判断「ブラウザ本体は ms-playwright cache にあるから不要」は不正確**: ms-playwright cache の `chromium-1217` は Chromium / `/opt/google/chrome/chrome` の Chrome は別物
+3. **実証は 1 件ずつ**: 1 件 NG → 「他も同じ」と推測せず**全件実 call で検証する**
+4. **google-search 構造的限界**: Google スクレイピング型 MCP は headless 検知で実用度低い → 別案件 (TSB-015 / S14 月次巡回時に再検討 / brave-search / serpapi 等代替検討)
+
+### 関連
+- `docs/mcp-status.md` の playwright / accessibility-scanner / google-search エントリを ✅ active に更新済 (本 TSB 解消後)
+- 4/26 PC 台帳 customize 動作確認 + a11y 検査が予定通り実施可能に
+
+---
+
+## TSB-014 (旧記録) — 2026-04-23 21:15 検出時の初期記録（解消済 / 上記参照）
 
 ### 症状
 Phase W (浜田 21:00「100% 問題ない証明して」依頼) の MCP 全件実 call で 3 件失敗:
