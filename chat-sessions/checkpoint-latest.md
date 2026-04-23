@@ -2,7 +2,9 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-04-23 21:30 (Thu) 夜 — **Phase W 30 ステップ深掘り検証完遂 / autonomous 範疇内 100% 達成 / 浜田 sudo 1 アクションで完全 100%**（浜田 21:00 「100% 問題ない証明して 1 つでも NG なら再検証」を起点）。新発見 + 修復: ① **TSB-013 v2 真因 = cron 環境で uv が PATH not found** (timeout 60s は副因 / `~/.local/bin` を MCP probe PATH に追加で完全解決 / commit `21ef26a`) / ② **TSB-014 = ブラウザ系 3 MCP (playwright/a11y/google-search) で Chromium system deps 不足** (浜田 sudo 必要 / 4/26 までに対応推奨 / 詳細修復手順は troubleshooting.md TSB-014)。本日 commit 13 件全件健全 / 27/30 検証 ✅ + 3/30 浜田 sudo 待ち。詳細: `chat-sessions/2026-04-23.md` 「21:00-21:30 Phase W」
+**最終更新**: 2026-04-23 21:10 (Thu) 夜 — **CVE-2026-33825 影響判定完了 = 影響なし**。浜田 PowerShell 実機検証 (`AMRunningMode = Not running` / `AntivirusEnabled = False`) → Microsoft Defender 完全無効化 / SKYSEA Client View 主軸環境のため Defender CVE は攻撃対象未稼働で**該当外**。memory MCP に `Hamada_PC_Defender_Status` entity 永続化 + `applies_to_endpoint_environment` relation で PC 台帳 PJ と紐付け / 今後の Defender 系 CVE は `AMRunningMode` 1 コマンドで瞬時判定可。逆に SKYSEA 関連脆弱性は主軸 AV のため優先ウォッチ対象に格上げ (S14 月次巡回 5/1 開始時に組み込み)。
+
+**前回更新**: 2026-04-23 21:00 (Thu) 夜 — Phase W 30 ステップ深掘り検証完遂 / TSB-013 v2 真因 = cron 環境で uv PATH not found (commit `21ef26a`) / TSB-014 = ブラウザ系 3 MCP system deps 不足 (浜田 sudo 必要 / 4/26 まで)。本日 commit 13 件全件健全 / 27/30 ✅ + 3/30 浜田 sudo 待ち
 
 **前回更新**: 2026-04-23 20:46 (Thu) 夜 — Phase V 再検証 10 ステップ完遂 (TSB-013 v1 暫定修復 + 20:43 auto-heal cron 実証で ep5 完全治癒)
 

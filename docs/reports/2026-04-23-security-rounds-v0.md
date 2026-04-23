@@ -30,11 +30,42 @@
 | Patch | https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-33825 |
 
 ### 浜田アクション提案
-- [ ] 社内 PC の **Microsoft Defender Antimalware Platform バージョン**を確認  
-  - 確認方法: PowerShell で `Get-MpComputerStatus | Select AntivirusEngineVersion, AMServiceVersion`
-  - もしくは Windows セキュリティ → ウイルスと脅威の防止 → エンジン バージョン
-- [ ] 4.18.26030.3011 以降であれば対応済 / それ未満なら **24 時間以内に Windows Update**
+- [x] ~~社内 PC の **Microsoft Defender Antimalware Platform バージョン**を確認~~
+- [x] ~~4.18.26030.3011 以降であれば対応済 / それ未満なら **24 時間以内に Windows Update**~~
 - [ ] PC 台帳 (594) で「Defender バージョン」フィールド追加検討 (将来の同種 CVE 対応用)
+
+### ✅ 検証結果 (2026-04-23 21:08 浜田 PowerShell 実機実行)
+
+```powershell
+PS> Get-MpComputerStatus | Select AntivirusEngineVersion, AMServiceVersion
+AntivirusEngineVersion AMServiceVersion
+---------------------- ----------------
+                       0.0.0.0
+
+PS> Get-MpComputerStatus | Select AMRunningMode, AntivirusEnabled, RealTimeProtectionEnabled
+AMRunningMode AntivirusEnabled RealTimeProtectionEnabled
+------------- ---------------- -------------------------
+Not running              False                     False
+```
+
+**判定**: Microsoft Defender は **完全に無効化 (Not running)** / SKYSEA Client View が主軸アンチウイルスとして稼働中と推定 → **CVE-2026-33825 影響なし** (攻撃対象が稼働していないため)。
+
+### 今後の判定フレームワーク (memory MCP に永続化済 / `Hamada_PC_Defender_Status` entity)
+
+Defender 関連 CVE を受領したら、以下のワンライナーで影響有無を即判定できる:
+
+```powershell
+Get-MpComputerStatus | Select AMRunningMode
+```
+
+| AMRunningMode | 影響判定 |
+|---|---|
+| `Normal` | 🚨 Defender 主軸 / Windows Update 必須 |
+| `Passive` / `EDR Block Mode` | 🟡 補助稼働 / 念のため更新 |
+| **`Not running`** (浜田 PC の現状) | ✅ **影響なし** |
+| `Disabled` | ✅ 影響なし |
+
+**逆方向の含意**: SKYSEA 関連脆弱性は浜田環境で**主軸 AV なので影響大** → 今後 cyber-news / cve-search で SKYSEA / SKYBOT / Sky Co Ltd 等を優先ウォッチリスト化する (S14 月次巡回 5/1 開始時に組み込む)。
 
 ---
 
