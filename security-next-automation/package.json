@@ -18,7 +18,7 @@
     "dayjs": "^1.11.13",
     "dotenv": "^17.3.1",
     "nodemailer": "^8.0.4",
-    "openai": "^4.85.1",
+    "openai": "^6.34.0",
     "rss-parser": "^3.13.0"
   },
   "devDependencies": {
