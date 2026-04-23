@@ -2,7 +2,9 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-04-23 22:40 (Thu) 深夜 — **Phase F CLI 残件処理 完遂 (A 案 / F7+F8 除外)** + **新ルール R8 §47-C + R9 §51-2 制定**。浜田 22:14 「残件も済ませよう」指示 → 11 ステップ完遂: F1-F4 (typescript / @types / openai / eslint major update 全件 ✅) / F5-F6 (jq + ripgrep sudo install ✅) / F7+F8 除外確定 (4/26 customize 影響リスク高 / 浜田「壊れるならやめよう」自発訂正 = R8 制定契機) / F9 (node v25 全 5 検証 OK / 切替判断は浜田 = B 推奨 v24 LTS 維持) / F10 (fetch MCP 公式安定 / 代替不要 / 5/22+ で uvx 化検討) / F11 (R8+R9 commit `25e52df` + RULES-INDEX `966fbff` + 戦略書 v1.1 `0d73c2f` + RAG 3 件 ingest + memory phase_f_residual_2026_04_23 entity)。残課題: M2/M5 (vite/tailwind = 5/13 後) + M4 (node v25 切替 = 5/22+ or v26 LTS 化) + P3 (fetch uvx 化 = 5/22+) = 全部明示再評価日設定済 = やり残し忘れ回避。
+**最終更新**: 2026-04-23 22:47 (Thu) 深夜 — **緊急用メモ全面リライト完了 (浜田指示「漏れゼロ」)**。NEW-SESSION-STARTER v2 → v3 + CURSOR-トラブル対応メモ v1 → v2 全面更新 + Desktop 控え 同期 (commit `51bb07a` / 正本 2 ファイル 373 insertions / 201 deletions / Desktop 控え 14818 + 12479 bytes = 旧の 1.8-2.6 倍)。反映内容: 主タスク (4/24 PC 台帳 Day 1 + 5/13 本番 + 5/16 PoC + 5/17 SKYSEA + 5/22+ 残課題 + 2026-10 v26 LTS) / R1-R9 全ルール / TSB-006〜TSB-015 / 新ツール 5 件 / 自動化基盤 8 cron / MCP 16 件 / 新トラブル類型 ⑨〜⑬ / 連絡先メモ 全件 / RAG 再 ingest 済 (NEW-SESSION-STARTER 64 chunks + CURSOR-トラブル対応メモ 62 chunks)。
+
+**前回更新**: 2026-04-23 22:40 (Thu) — Phase F CLI 残件処理 完遂 (A 案 / R8+R9 制定)
 
 **前回更新**: 2026-04-23 22:12 (Thu) — Phase E S1 + S2 浜田 sudo 完了 (gh 2.91 + git 2.54)
 
