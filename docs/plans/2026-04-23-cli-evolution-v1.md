@@ -1,8 +1,65 @@
-# 🎯 CLI / ツール / 依存進化戦略 v1.0
+# 🎯 CLI / ツール / 依存進化戦略 v1.1
 
-**制定日**: 2026-04-23 (Thu) 22:00-23:30  
-**契機**: 浜田 21:54 「CLI 等もアップデート進化出来ないかな？ / 時間あり / 安全に深く 1 つずつ」  
-**ベース**: AGENTS.md §38 (ツール・依存関係の自律保守) + §50-2 (死蔵 MCP 根絶) + §11-5 (3 段階検証) + §51 (並列禁止)
+**制定日**: 2026-04-23 (Thu) 22:00-22:08 (v1.0) / 22:08-22:40 (v1.1 = Phase F 残件処理)  
+**契機**: 浜田 21:54 「CLI 等もアップデート進化出来ないかな？」 → 22:14 「残件も済ませよう / 全部しよう / 1 つずつ深く」 → 22:13 「壊れるならやめよう」 (F7+F8 除外)  
+**ベース**: AGENTS.md §38 (ツール・依存関係の自律保守) + §50-2 (死蔵 MCP 根絶) + §11-5 (3 段階検証) + §51 (並列禁止) + §47-C (浜田認識不足判断の AI 否定権限 = 本日制定 R8) + §51-2 (浜田 2 つ指示時 AI 1 つずつ確認 = 本日制定 R9)
+
+---
+
+## 🆕 v1.1 追記 (2026-04-23 22:08-22:40 / Phase F 残件処理)
+
+### Phase F 全 11 ステップ実績 (A 案採用 = F7+F8 除外)
+
+| Step | 内容 | 結果 | commit |
+|---|---|---|---|
+| F1 | M3 typescript 5→6 (sec-next) | ✅ typecheck OK | `792405d` |
+| F2 | M7 @types/node 22→25 + @types/nodemailer 7→8 (sec-next) | ✅ 型のみ / typecheck OK | `e5bfbeb` |
+| F3 | M6 openai 4→6 (sec-next) | ✅ SDK 未利用で実害ゼロ実証 / typecheck OK | `19b34b2` |
+| F4 | M1 eslint 9→10 (root) | ✅ lint:customize 0 errors / TSB-007 ep 系列克服 | `eaef5a4` |
+| F5 | T1 jq sudo install (浜田 sudo) | ✅ jq-1.7 / mcp.json query 動作 | (system) |
+| F6 | T2 ripgrep sudo install (浜田 sudo) | ✅ rg 14.1.0 / 明示ファイル検索 OK | (system) |
+| **F7** | **vite 6→8 (vite-kintone)** | **🚨 除外確定** (4/26 PC 台帳 customize Day 影響リスク高 / 浜田「壊れるならやめよう」判断) | - |
+| **F8** | **tailwindcss 3→4 (vite-kintone)** | **🚨 除外確定** (config 大改修 + UI 破壊リスク高 / 同上) | - |
+| F9 | M4 node v25 動作検証 (NVM use 試行) | ✅ 全 5 検証 OK (lint / kintone:test / typecheck / health-check 19 active / 切替判断は浜田) | (調査のみ) |
+| F10 | P3 fetch MCP 代替調査 | ✅ 公式安定 / 代替不要 / 5/22+ で uvx 化検討 | (調査のみ) |
+| F11 | R8 + R9 + 戦略書 v1.1 + 整合化 | ✅ commit `25e52df` (R8+R9) + `966fbff` (RULES-INDEX) | (本) |
+
+### F7 + F8 除外決定の経緯 (R8 §47-C 制定契機)
+
+1. 22:13 私 (AI) が「F7+F8 含む全 update 着手」と宣言 (リスク警告は最終警告として記載)
+2. 浜田「最終警告はリスクとか壊れるということ？であればやめよう」 = 自発的訂正
+3. 私 (AI) が **A 案 (F7+F8 除外)** に切替 + R8 §47-C を新ルールとして制定 (浜田 22:14 「今後こちらの認識不足で間違えた判断はすべて否定しやめさせてほしい」)
+
+→ F7 + F8 = M2 + M5 と整合 / **5/13 本番運用後 / customize 完了後**に再評価 (戦略書 v1.0 の 🟡 浜田判断要 セクション参照)
+
+### F9 node v25 動作確認結果 (浜田判断材料)
+
+| 検証項目 | v25.8.2 結果 |
+|---|---|
+| node --version / npm --version | v25.8.2 / npm 11.11.1 |
+| lint:customize (root) | ✅ 0 errors |
+| kintone:test (root) | ✅ 594/595/626/627 全疎通 |
+| typecheck (sec-next / typescript 6 含む) | ✅ type error 0 |
+| health-check.mjs (全 MCP probe) | ✅ 正常 19 / 異常 0 / 警告 0 / 全 16 MCP active |
+
+**選択肢** (浜田判断 / 急がず):
+- **A**: v25 切替実施 (NVM default を v25 に変更 + crontab PATH 更新 + Cursor 再起動 / 影響範囲広 / 工数 30 分 + リスク中)
+- **B (推奨)**: **v24 LTS 維持** (戦略書 v1.0 通り / v25 動作確認は実証データとして保持 / 5/22 以降または v26 LTS 化 (2026-10) 時に再評価)
+
+### F10 fetch MCP 結論
+
+- mcp-server-fetch (Anthropic 公式) は 1 年 release なし = **安定 / 重大バグなし**
+- 代替不要 = **現状維持** (python3 -m mcp_server_fetch)
+- 改善余地: 5/22+ で `uvx mcp-server-fetch` 化 (auto update + pip 依存削除) 検討
+- ライバル: docker 版 / fetch-mcp (typescript) / WebFetch (Cursor 標準) = 緊急性低
+
+### Phase F autonomous 領域 100% 達成
+
+- 即時実施 7 件 (U1-U7) + Phase F 残件 4 件 (F1-F4) + 新ツール 2 件 (F5-F6) + 動作確認 2 件 (F9-F10) = 計 15 件全件完遂
+- F7+F8 除外確定 (浜田判断) = M2/M5 として戦略書記録 = やり残し忘れリスク回避
+- 残課題: M2 (vite 6→8) + M5 (tailwindcss 3→4) + M4 (node v25 切替判断) = 全部 5/13 本番後 or 5/22+ で再評価
+
+---
 
 ---
 
