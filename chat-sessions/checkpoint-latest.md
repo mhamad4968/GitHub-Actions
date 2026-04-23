@@ -2,7 +2,9 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-04-23 23:00 (Thu) 夜 — **ルール改善 7 件 AGENTS.md 直接適用完了**（浜田 22:10 指示「全てやろう / 1 つずつ深く」）。R1 §51 並列処理禁止 (第15章新設) / R2 §11-5 段階的検証 3 段階 / R3 §50-2 死蔵 MCP 根絶 / R4 §17-2 mcp.json 最小差分 / R5 §17-3 絶対 path 標準化 / R6 §47-A 100% 証明 30 ステップ / R7 §47-B-2 段階批判容認 / R8-1 RULES-INDEX 一括反映。8 commit (TSB-006 ガード遵守 / 各 ≤3 ファイル) / AGENTS.md 795→約1100行 / RAG 347 chunks + RULES-INDEX 20 chunks 再 index 済 + §51 検索 hit 実証 / memory MCP に rule_improvement_2026_04_23 entity 永続化。
+**最終更新**: 2026-04-23 23:30 (Thu) 夜 — **Phase E CLI / ツール / 依存進化 完遂 / 6 vuln → 0 達成**（浜田 21:54 指示「CLI 等もアップデート進化できないか？ / 全てやろう / 1 つずつ安全に深く / 時間あり」）。10 ステップ完遂: E1-E5 診断 (root 0 vuln / vite 3 / sec-next 3 / MCP 全件最新 / gh+uv 遅れ ⚠ / scripts 良好) → E6 分類 → E7 即時 update U1-U7 7 commit (dotenv / vite audit fix / sec-next audit fix / uv 0.11.7 / 残 patch / autoprefixer minor) → E9 戦略書 v1.0 (185 行 / S1-S2 浜田 sudo + M1-M7 浜田判断 + 新ツール Tier 1-3 + 中長期) → E10 整合化 (RAG 52 chunks + memory cli_evolution_v1_2026_04_23 entity 永続化)。**残課題**: S1 gh 2.45 → 2.91 + S2 git 2.43 → 2.51 (4/26 までに浜田 sudo) / M1-M7 (5/1 月次レビュー)。
+
+**前回更新**: 2026-04-23 23:00 (Thu) 夜 — ルール改善 7 件 AGENTS.md 直接適用完了 (R1-R7 / RULES-INDEX 反映 / 8 commit)
 
 **前回更新**: 2026-04-23 21:55 (Thu) 夜 — TSB-015 解消 / google-search → duckduckgo-search 入替完了 (死蔵根絶 / 実 call 3 件有用結果取得実証)
 
