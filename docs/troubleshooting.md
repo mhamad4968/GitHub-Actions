@@ -379,6 +379,61 @@ img.addEventListener('click', function () {
 
 ---
 
+## TSB-014 — ブラウザ系 3 MCP (playwright / accessibility-scanner / google-search) で Chromium system deps 不足（2026-04-23 21:15 検出 / 浜田 sudo 必要）
+
+### 症状
+Phase W (浜田 21:00「100% 問題ない証明して」依頼) の MCP 全件実 call で 3 件失敗:
+1. `playwright` `browser_tabs` → `Chromium distribution 'chrome' is not found at /opt/google/chrome/chrome`
+2. `accessibility-scanner` `browser_tabs` → 同上 (内部で playwright 使用)
+3. `google-search` `search` → `libnspr4.so: cannot open shared object file: No such file or directory`
+
+### 真因
+- WSL Linux (Ubuntu 24.04?) に **Chromium 自体 + Chromium 用 system libraries (libnspr4 / libnss3 / libatk1.0 等) が未インストール**
+- Cursor 環境で過去 (Apr 17-19) は問題なかった可能性 = 何らかの理由で消失または初回未インストール
+- `npx playwright install chrome` を実行しようとしたが **sudo パスワード要求**で autonomous 不可
+
+### 影響範囲 (限定的)
+- 4/26 PC 台帳 customize 動作確認時に必要 (§26 視覚的自己検診 / §27 a11y) → **3 日後**
+- 普段の開発では未使用 = 即時影響なし
+- MCP 接続自体は OK (initialize 応答返ってる) = MCP インフラ健全
+
+### 浜田アクション要 (浜田が WSL で sudo 実行してください)
+
+```bash
+# Option A: 公式 playwright 推奨インストール (--with-deps で system deps + browser を一括)
+sudo $(which npx) playwright install --with-deps chrome
+
+# Option B: 手動で system deps + chromium インストール
+sudo apt update
+sudo apt install -y libnspr4 libnss3 libatk1.0-0 libatk-bridge2.0-0 \
+  libcups2 libgbm1 libpango-1.0-0 libdrm2 libxkbcommon0 libxshmfence1 \
+  libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libasound2t64 \
+  fonts-liberation
+npx playwright install chrome  # browser 本体
+```
+
+### 検証手順 (修復後)
+```bash
+# playwright 動作確認 (浜田 / AI 双方)
+node -e "const {chromium}=require('playwright'); chromium.launch().then(b=>{b.close(); console.log('playwright OK')})"
+
+# AI 側で MCP 実 call 再試
+mcp_user-playwright_browser_tabs(action="list")  # → エラーなし
+mcp_user-google-search_search(query="test")       # → 結果取得
+```
+
+### 期日
+- **必須**: 4/26 (PC 台帳 customize 動作確認 Day) までに完了
+- **推奨**: 4/24 朝以降の任意タイミング (浜田の都合の良いとき)
+- **遅延した場合の影響**: §26 視覚自己検診・§27 a11y 検査が手動実機確認に降格 = 工数 +30 分程度
+
+### 関連
+- Phase W 検証で発見: `chat-sessions/2026-04-23.md`「21:00-21:30 Phase W」セクション
+- TSB-013 v2 真因 (uv PATH 不足) と同じく cron 環境差シリーズの兄弟
+- AGENTS.md §50 MCP Recall Ritual で playwright / a11y-scanner / google-search を「Tier 1 (4/26 必須)」と分類済 (`docs/mcp-status.md`)
+
+---
+
 ## TSB-013 — cron 環境で uv 系 MCP (cve-search) が PATH not found で誤検知（2026-04-23 20:30 v1 / 21:00 v2 真因特定 / autonomous 修復）
 
 ### 症状
