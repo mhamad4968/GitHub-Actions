@@ -418,6 +418,62 @@ cd ~/kintone-ai-lab && PATH="/home/mhamada202408224/.nvm/versions/node/v24.14.1/
 
 ---
 
+## TSB-015 — google-search MCP の Google bot 検知で実用度 0 → duckduckgo-search に入替（2026-04-23 21:30 検出 / 21:40 解消 / 浜田指示で死蔵根絶方針）
+
+### 症状
+TSB-014 解消後の MCP 全件実 call 検証で `google-search` MCP が:
+- 起動 ✅ / Chromium 動作 ✅
+- ただし `mcp_user-google-search_search` の結果が**常に空配列** (CAPTCHA エラーは消失したが Google bot 検知で結果隠蔽)
+- 過去 30 日 0 回使用 + 構造的に解消困難 = 死蔵 MCP
+
+### 浜田判断 (2026-04-23 21:30)
+「使っていない理由は？入れているのであれば使いたい。他に有用なものがあれば入れ替えて削除がいいのでは？」
+→ 死蔵根絶方針 = 削除 + 代替導入
+
+### §47 私の正直回答 (使わなかった真の理由)
+1. Cursor 標準 WebSearch / WebFetch が Claude セッションで使えるため MCP 呼ぶ動機が薄かった (= MCP の存在意義を半分奪っていた)
+2. AGENTS.md §33-A 事前調査優先順で 4 番手 (rag → fetch → tavily → google-search)
+3. §50 MCP Recall Ritual が 4/22 まで未制定 = 想起トリガー不在
+
+### 代替候補比較
+| 候補 | API key | 無料枠 | bot 検知 | 結果品質 | 導入工数 |
+|---|---|---|---|---|---|
+| brave-search | 必要 (無料取得) | 2,000 q/月 | なし | ★★★★ | 15 分 |
+| **duckduckgo-search (採用)** | 不要 | 無制限 | 緩 | ★★★ (Bing ベース) | 5 分 |
+| serpapi | 必要 | 100 q/月 | なし | ★★★★★ | 15 分 + 課金リスク |
+| tavily 再有効化 | 必要 | 課金確定 (4/23 02:30) | なし | ★★★★ | 課金判断 |
+
+→ A 案 (duckduckgo-search) 採用 / 浜田負担最小 / API key 不要で即動作。
+
+### 修復 (実施済 / 2026-04-23 21:35)
+1. `bash scripts/backup-mcp.sh` で `backups/mcp/20260423-212946/` バックアップ取得
+2. `~/.cursor/mcp.json` から `google-search` 削除 + `duckduckgo-search` 追加
+   ```json
+   "duckduckgo-search": {
+     "command": "/home/mhamada202408224/.local/bin/uvx",
+     "args": ["duckduckgo-mcp-server"],
+     "env": { "DDG_REGION": "jp-ja" }
+   }
+   ```
+3. **uvx 絶対 path 指定** (TSB-013 v2 教訓 = path 依存回避 / cron でも動く)
+4. inline backup `~/.cursor/mcp.json.bak-ddg-swap-20260423T123011Z` も保存
+
+### 検証手順 (Cursor 再起動後 = 浜田操作後 AI 実 call)
+- `mcp_user-duckduckgo-search_search(query="kintone REST API")` → 結果取得確認
+- `health-check.mjs` → 全 MCP ✅ 確認
+
+### 教訓
+1. **「入れてるなら使え / 使わないなら入替/削除」死蔵根絶方針** (浜田指摘) は AGENTS.md §50 MCP Recall Ritual の精神と整合
+2. **MCP の本来価値は cron / 月次巡回 / 他 AI からも統一インターフェイス**: Cursor 標準 WebSearch は Claude セッションのみ / MCP は CLI / cron で永続価値
+3. **代替検討時の選定軸**: API key 要否 / 無料枠 / bot 検知 / 結果品質 / 導入工数 / 既存資産 (uvx 等) の活用
+4. **uvx 絶対 path 指定**を新規 MCP 設定の標準パターンに (TSB-013 v2 教訓継承)
+
+### 関連
+- TSB-013 v2 (uv PATH 不足) と同じく cron 環境差シリーズ / 絶対 path 採用が共通対策
+- TSB-014 (Chrome 系 system deps 不足 / 4/23 21:30 解消) の延長で発見
+
+---
+
 ## TSB-014 (旧記録) — 2026-04-23 21:15 検出時の初期記録（解消済 / 上記参照）
 
 ### 症状

@@ -13,7 +13,7 @@
 | 1 | github | ⏭ Win-skip | 0 回 | GitHub Issue/PR 操作 (Win 起動必要) | 5/16（サブエージェント PoC 再議論時）|
 | 2 | cyber-news | ✅ active | **1 回** (4/23 20:11 v0 巡回) | サイバーセキュリティニュース取得 | 5/1（月次健康診断）|
 | 3 | office-powerpoint | ⏭ Win-skip | 0 回 | PPT 自動生成 (Win 起動必要) | 5/13 後（本番運用後の月次レポート用検討）|
-| 4 | google-search | 🟡 起動 OK / Google bot 検知で結果常空 (TSB-015 候補) | 2 回 (4/23 21:25 + 21:30) | Google Web 検索 (実用度低 / brave-search / serpapi 代替検討要) | **5/1 S14 月次巡回時に代替判断** |
+| 4 | ~~google-search~~ → **duckduckgo-search** | ✅ active (4/23 21:35 入替 / TSB-015 解消) | 0 回 (新規導入) | DuckDuckGo Web 検索 (uvx duckduckgo-mcp-server / Bing ベース / DDG_REGION=jp-ja / API key 不要 / bot 検知緩) | 5/1 月次巡回 + 必要時随時 |
 | 5 | filesystem | ✅ active | 0 回 | ローカルファイル操作 (Cursor 標準で代替可) | **削除候補 / 4/30 判断** |
 | 6 | memory | ✅ **active 化済** | **2 回** (4/23 早朝 4 entities + 20:13 5 entities + 6 relations 投入) | セッション横断記憶 (現在 10 entities + 11 relations) | PC 台帳 PJ で実戦投入後判断（5/13 頃）|
 | 7 | fetch | ✅ active | 0 回 | URL fetch (Cursor 標準 WebFetch で代替可) | **削除候補 / 4/30 判断** |
