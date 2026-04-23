@@ -46,6 +46,8 @@
     "clear:594:orphan-ledger:apply": "npx dotenv -e .env -e .env.proxy -- node scripts/clear-594-orphan-ledger-record-id.mjs --apply",
     "guard:check": "node scripts/wipe-guard.mjs",
     "guard:mirror": "node scripts/emergency-mirror.mjs",
+    "rag:ingest": "/home/mhamada202408224/.nvm/versions/node/v24.14.1/bin/npx --yes mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest docs/",
+    "rag:ingest:rules": "cp RULES-INDEX.md kintone-apps.md AGENTS.md WORKFLOW.md .rag/extra-docs/ 2>/dev/null || true && /home/mhamada202408224/.nvm/versions/node/v24.14.1/bin/npx --yes mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest .rag/extra-docs/",
     "restore:wiped": "node scripts/restore-wiped.mjs",
     "restore:wiped:dry": "node scripts/restore-wiped.mjs --dry",
     "watcher:start": "nohup node scripts/file-watcher.mjs > logs/file-watcher/watcher.log 2>&1 &",

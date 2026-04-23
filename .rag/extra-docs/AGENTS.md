@@ -259,15 +259,19 @@ npx mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models query "検索�
 
 MCP ツール経由の場合: `rag_search` ツールを使用する。
 
-### §21 知見のフィードバック（学習サイクル）
+### §21 知見のフィードバック（学習サイクル / 2026-04-23 強化 = MCP 強化戦略 次元 3）
 障害・不具合を解決したら、以下のサイクルを回す:
 
 1. **記録**: `docs/troubleshooting.md` に原因・対策・教訓を追記する（TSB-XXX 形式）
-2. **インデックス更新**: `npx mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest docs/troubleshooting.md`
+2. **即時 RAG ingest（2026-04-23 強化）**: 追記直後に必ず以下のいずれかを実行:
+   - 簡略版: `npm run rag:ingest`（package.json に追加 / 4/24 朝 cron 適用予定）
+   - 個別: `npx mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest docs/troubleshooting.md`
+   - 全体: `npx mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest docs/`
+   違反時（追記後 ingest なしで翌朝まで RAG 未反映）= 同日中の rag_search で過去事例が引けず §20 が機能不全に陥るため、§47 違反扱い。
 3. **ルール化**: 繰り返し発生しうる問題は `.cursor/rules/` の該当ファイルにルールとして追記する
 4. **索引更新**: `RULES-INDEX.md` の随時メモに日付付きで1行残す
 
-これにより AI は「過去に学んだことを二度と忘れず、常に最新を追う」学習サイクルを維持する。
+これにより AI は「過去に学んだことを二度と忘れず、常に最新を追う」学習サイクルを維持する。**実例**: 2026-04-22 21:22 に TSB-010 を troubleshooting.md に追記したが即時 ingest しなかったため、翌 06:00 cron まで rag_search で引けず（最大 9 時間タイムラグ）。本ルールでこの構造を解消。
 
 ---
 
