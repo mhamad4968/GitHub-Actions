@@ -8,7 +8,7 @@
  *   2. MODULE_NOT_FOUND → npm ci
  *   3. node_modules 必須バイナリ欠落 → npm install
  *   4. logs ローテ (morning 30 / health 60 / heal 60 日)
- *   5. npm audit fix --omit=dev (patch only)
+ *   5. npm audit fix (patch only / dev 依存も保護 / TSB-007 ep5 対策で --omit=dev 削除済)
  *
  * 出力: stdout に markdown サマリ
  * 出口コード: 0 (修復成功 or 異常なし) / 1 (一部修復失敗)
@@ -84,13 +84,19 @@ if (health) {
 }
 
 // ───── 安全な audit fix (patch only) ─────
+// ⚠ 2026-04-23 (TSB-007 ep5 真因対策): 旧版は `--omit=dev` を付けていたが、
+//    npm v7+ 仕様で `--omit=dev` 付き install/audit fix は devDependencies を node_modules
+//    から prune する。auto-heal が 4h ごとに走るたび eslint (devDep) が消失し、
+//    朝の lint:customize が連日 ❌ になる事故が発生 (TSB-007 episode 5 / 4/23 検出)。
+//    → `--omit=dev` を削除して devDeps を保護。audit fix は patch level のみなので
+//      副作用は最小 (本番依存に脆弱性パッチが当たるが審議要のメジャー更新は走らない)。
 heals.push({
   label: 'npm audit fix (patch only)',
   ok: true,
-  cmd: 'npm audit fix --omit=dev --audit-level=moderate || true',
+  cmd: 'npm audit fix --audit-level=moderate || true',
   exit: 0,
 });
-spawnSync('bash', ['-lc', 'npm audit fix --omit=dev --audit-level=moderate 2>&1 | tail -3'], {
+spawnSync('bash', ['-lc', 'npm audit fix --audit-level=moderate 2>&1 | tail -3'], {
   cwd: REPO_ROOT,
   encoding: 'utf8',
   timeout: 120_000,

@@ -379,6 +379,48 @@ img.addEventListener('click', function () {
 
 ---
 
+## TSB-007 episode 5 — auto-heal 自爆 (`npm audit fix --omit=dev`) で devDeps が 4h ごと prune（2026-04-23 19:58 真因特定 / autonomous 修復）
+
+### 症状
+4/23 朝 cron (06:00) の `lint:customize` がまた v6.4.0 で失敗。03:36 に `npm install` で v9.39.4 復活させたばかりだったが、わずか **2 時間 24 分後** (next auto-heal cron の 04:43) に再消失。19:58 に浜田の状況報告依頼で発覚し ep5 認定 + 真因特定。
+
+### 真因（確定）
+`scripts/auto-heal.mjs` line 90/93 の以下コマンドが本犯人。
+
+```bash
+npm audit fix --omit=dev --audit-level=moderate
+```
+
+- npm v7+ の仕様: `--omit=dev` 付き `npm install` / `npm audit fix` は **devDependencies を node_modules から prune する**（production-only 状態に強制移行）
+- `eslint` は devDependency → 4 時間ごとの auto-heal cron (`43 */4 * * *`) で**毎回**消失
+- ep1〜ep4 の真因と複合: 「ep4 までは npm v7+ 仕様の認識欠落 + ep3 の予防策 (R15/R16/S9) が proposal キュー待ちで未適用窓 → 再発」と分析していたが、**実は予防策があってもなくても auto-heal がトリガーで毎 4h 確実に再発する構造的問題**だった
+
+### 修復（実施済み / 4/23 19:58 〜 20:03）
+1. **緊急復元**: `npm install` → eslint v9.39.4 復活 / lint:customize 0 errors
+2. **根本修正**: `scripts/auto-heal.mjs` line 90/93 から `--omit=dev` 削除 + 削除理由の inline コメント追加
+3. **検証**: 修正後の `node scripts/auto-heal.mjs` 実行 → eslint v9.39.4 が保持されたまま完了 = devDeps prune が止まったことを実測確認
+4. **次回 cron (20:43) で再発しないことを継続観察**
+
+### 教訓（TSB-007 episode 1〜5 を統合）
+
+| ep | 検出 | 真因 | 修復 |
+|---|---|---|---|
+| 1 (元祖) | 4/19 | ESLint 6 vs flat config 不整合 | 設定移行 |
+| 続編 | 4/21 | eslint v10 → v9 ダウングレード残存 | recommended 2 ルール一時 off |
+| 3 | 4/22 22:00 | eslint v10 → v9 ダウングレード時の silent fail で node_modules 不整合 | npm install 再実行 |
+| 4 | 4/23 03:36 | ep3 と同根 / proposal キューイング窓で再発 | npm install (autonomous) |
+| **5** | **4/23 19:58** | **auto-heal の `--omit=dev` が devDeps を 4h ごと prune（構造的真因）** | **`--omit=dev` 削除（恒久対策）** |
+
+**最大の教訓**: ep1〜ep4 は症状を治してきたが、ep5 でようやく **「治しても 4h 後にまた壊れる構造」** が判明。**症状ベースの対策では足りず、修復ループそのものを疑う必要がある（メタ診断）**。S9 (check-node-modules / 4/23 朝 cron 適用済) は 4h ごとに「異常」と検知してくれるが、**何が消すのか** は今回 19:58 の浜田指示「健康でない部分は自身で判断し修復」がなければ気づかなかった。
+
+### 関連
+- TSB-007 episode 1〜4（同一系列の症状）
+- `scripts/auto-heal.mjs` 修正前の commit / 修正後の commit (本日中に commit 予定)
+- 検出経緯: `chat-sessions/2026-04-23.md` 「19:58 — 浜田復帰 / ep5 真因特定」セクション
+- 副次効果: `--omit=dev` 削除により audit fix が devDeps の脆弱性も触る可能性あり。現状 0 vuln なので影響なし
+
+---
+
 ## TSB-007 episode 4 — node_modules/eslint 再消失（2026-04-23 03:36 検出 / autonomous mode 修復）
 
 ### 症状
