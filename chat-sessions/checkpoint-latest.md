@@ -2,7 +2,9 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-04-23 21:30 (Thu) 夜 — **TSB-014 完全解消 / 真の 100% 達成**。浜田 sudo 2 段階実施 (① `playwright install-deps chromium` で system deps 20 packages / ② `playwright install chrome` で Google Chrome 147.0.7727.116) → AI 実 call 検証で **playwright + accessibility-scanner ✅ / google-search 起動 ✅** / health-check 正常 19 / 異常 0 / **全 16 MCP ✅** (active 13 + skip 3) 達成。残課題: google-search の Google bot 検知問題 = TSB-015 候補として S14 月次巡回 (5/1) 時に代替検討 (brave-search / serpapi 等) / 構造的別案件で今夜の作業範囲外。
+**最終更新**: 2026-04-23 21:55 (Thu) 夜 — **TSB-015 解消 / google-search → duckduckgo-search 入替完了 (死蔵根絶方針)**。浜田 21:33 「使ってないなら有用なものに入替/削除」 → A 案 (duckduckgo-search / API key 不要 / 5 分) 即実行 → mcp.json 編集 (commit `942848e`) → 浜田 Cursor 再起動 → AI 実 call で **kintone REST API クエリ 3 件全部有用結果取得実証** (公式 docs + GitHub spec + tips記事) + health-check 正常 19 / 異常 0。Web 検索 MCP が死蔵 → 実用 active 化達成。
+
+**前回更新**: 2026-04-23 21:30 (Thu) 夜 — TSB-014 完全解消 / playwright + a11y-scanner Chrome 147 で実 call 動作確認 / 全 16 MCP ✅ 達成 (浜田 sudo 2 段階実施)
 
 **前回更新**: 2026-04-23 21:10 (Thu) 夜 — CVE-2026-33825 影響判定完了 = 影響なし (浜田 PC = Defender Not running / SKYSEA 主軸)
 
