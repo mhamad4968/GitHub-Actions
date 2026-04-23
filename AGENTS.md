@@ -172,6 +172,38 @@ console だけでなく画面上で利用者が状況を把握できるように
 ### §17 MCP 設定変更の安全手順
 `~/.cursor/mcp.json` を変更する際は最小差分とし、秘密をログに出さない。変更後は JSON-RPC ハンドシェイクテストで動作確認する。
 
+### §17-2 mcp.json 編集の最小差分手順 (2026-04-23 制定 / TSB-015 反省 / `ensure_ascii=False` 副作用教訓)
+
+**背景**: 2026-04-23 TSB-015 の duckduckgo-search 入替時、Python の `json.dump(d, f, ensure_ascii=False)` を使ったため、既存の Unicode escape (`\u6848\u4ef6\u7ba1\u7406` 等) が UTF-8 生表記 (`案件管理`) に変換され、想定外の差分が発生した (機能等価だが浜田が後で diff を見て混乱する)。
+
+**必須遵守 (mcp.json 編集前)**:
+
+1. **編集前バックアップ義務** (二重保全):
+   - `bash scripts/backup-mcp.sh` (公式 backup → `backups/mcp/<YYYYMMDD-HHMMSS>/`)
+   - inline backup: `cp ~/.cursor/mcp.json ~/.cursor/mcp.json.bak-<コンテキスト>-<UTC>` (即時 rollback 用)
+
+2. **編集後 diff 取得義務**:
+   - `diff <inline_backup> ~/.cursor/mcp.json` で必ず差分目視
+   - 想定外の変更 (フォーマット変化 / 並び順変化 / Unicode escape ↔ UTF-8 変換 等) があれば**即 rollback + 再実行**
+
+3. **Python での編集ルール** (該当時):
+   - `json.dump(d, f, indent=2)` のみ (`ensure_ascii` は **default = True** のまま使う / 既存形式維持)
+   - `json.dump(d, f, ensure_ascii=False)` は Unicode escape を破壊するので**禁止**
+   - 末尾改行は元ファイルに合わせる (元ファイルが末尾改行なしなら追加しない)
+
+4. **JSON-RPC ハンドシェイクテスト後実施**:
+   - 編集後 `python3 -c "import json; json.load(open('~/.cursor/mcp.json'))"` で構文 OK 確認
+   - Cursor 再起動 (新 MCP 追加時 / command 変更時)
+   - AI 側で実 call テスト (§11-5 段階的検証 3 段階すべて)
+
+**違反時 (最小差分以外の変更が混入した状態でコミット)**:
+- §17 違反として TSB 化候補
+- 浜田が後で diff を見て混乱した実例 = 本ルールの制定契機
+
+**実例 (2026-04-23 TSB-015)**:
+- ❌ NG: `json.dump(d, f, ensure_ascii=False)` で書いて diff 取ったら filesystem path が UTF-8 化していた
+- ✅ OK (rollback 後): `json.dump(d, f, indent=2)` (ensure_ascii default) で書いて diff = google-search 削除 + duckduckgo-search 追加のみ
+
 ### §18 セキュリティ
 API トークン・パスワード・鍵を回答に不必要に再掲しない。設定例はプレースホルダで示す。
 
