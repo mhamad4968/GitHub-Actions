@@ -2,7 +2,9 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-04-23 21:55 (Thu) 夜 — **TSB-015 解消 / google-search → duckduckgo-search 入替完了 (死蔵根絶方針)**。浜田 21:33 「使ってないなら有用なものに入替/削除」 → A 案 (duckduckgo-search / API key 不要 / 5 分) 即実行 → mcp.json 編集 (commit `942848e`) → 浜田 Cursor 再起動 → AI 実 call で **kintone REST API クエリ 3 件全部有用結果取得実証** (公式 docs + GitHub spec + tips記事) + health-check 正常 19 / 異常 0。Web 検索 MCP が死蔵 → 実用 active 化達成。
+**最終更新**: 2026-04-23 23:00 (Thu) 夜 — **ルール改善 7 件 AGENTS.md 直接適用完了**（浜田 22:10 指示「全てやろう / 1 つずつ深く」）。R1 §51 並列処理禁止 (第15章新設) / R2 §11-5 段階的検証 3 段階 / R3 §50-2 死蔵 MCP 根絶 / R4 §17-2 mcp.json 最小差分 / R5 §17-3 絶対 path 標準化 / R6 §47-A 100% 証明 30 ステップ / R7 §47-B-2 段階批判容認 / R8-1 RULES-INDEX 一括反映。8 commit (TSB-006 ガード遵守 / 各 ≤3 ファイル) / AGENTS.md 795→約1100行 / RAG 347 chunks + RULES-INDEX 20 chunks 再 index 済 + §51 検索 hit 実証 / memory MCP に rule_improvement_2026_04_23 entity 永続化。
+
+**前回更新**: 2026-04-23 21:55 (Thu) 夜 — TSB-015 解消 / google-search → duckduckgo-search 入替完了 (死蔵根絶 / 実 call 3 件有用結果取得実証)
 
 **前回更新**: 2026-04-23 21:30 (Thu) 夜 — TSB-014 完全解消 / playwright + a11y-scanner Chrome 147 で実 call 動作確認 / 全 16 MCP ✅ 達成 (浜田 sudo 2 段階実施)
 
