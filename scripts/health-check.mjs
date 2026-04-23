@@ -80,6 +80,16 @@ function probeMcp(name, server, opts = {}) {
     env.PATH = `${CURSOR_NODE_BIN_DIR}:${env.PATH || ''}`;
   }
 
+  // ⚠ 2026-04-23 (TSB-013 真因 v2): cron 環境で `uv` (Python uvx) 系 MCP が起動失敗する問題対策。
+  //   cve-search の command="uv" は PATH 依存。crontab の PATH=/NVM_v24:/usr/bin:/bin には
+  //   uv (~/.local/bin/uv) が含まれず、cron 実行時のみ ❌ 誤検知 (exit=null = uv not found)。
+  //   手動 / Cursor 経由は ~/.local/bin が PATH にあるため正常動作 = 環境差で false negative。
+  //   → ~/.local/bin を PATH 先頭に必ず追加して cron / 手動どちらでも uv 系 MCP を発見可能にする。
+  if (!hasExplicitPath) {
+    const localBin = `${process.env.HOME || '/home/mhamada202408224'}/.local/bin`;
+    env.PATH = `${localBin}:${env.PATH || ''}`;
+  }
+
   const cmd = server.command;
   const args = server.args || [];
 
@@ -87,6 +97,7 @@ function probeMcp(name, server, opts = {}) {
   //   過去の 4h cron で cve-search が cold start (NVD DB 2.2M records 読込) で
   //   30 秒以内に initialize 応答を返せず ❌ 誤検知が発生していた。
   //   実 call では即応答 OK = サーバ自体は健全。timeout を rag (60s) と同じ値に統一。
+  //   ※ ただし真の真因は uv の PATH 不足だった (上記 v2 対策が本筋)。timeout 60s は念のため維持。
   const res = spawnSync(cmd, args, {
     input: init + '\n',
     encoding: 'utf8',

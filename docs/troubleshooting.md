@@ -379,28 +379,39 @@ img.addEventListener('click', function () {
 
 ---
 
-## TSB-013 — health-check 4h cron で cve-search が cold start ❌ 誤検知（2026-04-23 20:30 真因特定 / autonomous 修復）
+## TSB-013 — cron 環境で uv 系 MCP (cve-search) が PATH not found で誤検知（2026-04-23 20:30 v1 / 21:00 v2 真因特定 / autonomous 修復）
 
 ### 症状
 `logs/health/cron.log` の最新出力で `cve-search ❌ 応答なし (exit=null stderr=)` が記録されていた。一方、私が手動で `node scripts/health-check.mjs` を実行すると同じ cve-search が ✅ になる、また直接 `mcp_user-cve-search_vul_db_update_status` を実 call すると即応答する。**実害ではないが false negative 警報が出続ける**。
 
-### 真因
-`scripts/health-check.mjs` line 89 の MCP probe timeout = **30 秒**。cve-search MCP は **NVD DB 2,238,869 records** を起動時に読み込むため cold start に時間が掛かる。Cursor 経由で常時暖まっている AI 手動実行では即応答する一方、cron は kill-and-restart 的に毎回 cold start になり 30 秒以内に initialize レスポンスを返せず ❌ 誤検知が出ていた。
+### 真因 v1 (2026-04-23 20:30 / 誤判断 = 副因に過ぎなかった)
+当初は「`scripts/health-check.mjs` line 89 の MCP probe timeout = 30 秒では cve-search の cold start (NVD DB 2.2M records 読込) に間に合わない」と判断し、timeout を 60 秒に延長 (commit 8013f2b)。しかし 20:33 cron も同じ ❌ を出し続けた = **timeout は真因ではなく、別の構造的問題が隠れていた**。
 
-### 修復（実施済 / 2026-04-23 20:31）
-1. `scripts/health-check.mjs` line 89 の `timeout: 30_000` → `timeout: 60_000` (rag と同じ値に統一)
-2. inline コメントで TSB-013 経緯を明示
-3. 検証: 修正後 health-check 実行 → 全 MCP ✅ (回帰なし) / cve-search も ✅
+### 真因 v2 (2026-04-23 21:00 / 浜田 Phase W 「100% 証明」要求で深掘り判明 / 確定)
+`mcp.json` で cve-search の起動コマンドは `command: "uv"` (Python uvx package manager / 絶対パス無)。`uv` バイナリは `~/.local/bin/uv` に存在するが、**crontab の PATH = `/NVM_v24:/usr/bin:/bin` には `~/.local/bin` が含まれていない**。結果:
+- 手動 / Cursor 経由実行時 = `~/.local/bin` が PATH にあり uv 起動成功 = ✅
+- cron 実行時 = uv not found → spawnSync exit=null / stdout 空 → ❌ 誤検知
 
-### 教訓
-1. **cron 環境の cold start を考慮**: 起動時負荷が大きい MCP (cve-search / 大量 DB ロード系) は手動実行のキャッシュ済状態で測ると判断を誤る
-2. **timeout の統一**: 同じ `spawnSync` 内で MCP ごとに timeout が違う設計は false negative の温床。最も負荷の重い MCP に合わせて統一
-3. **過去ログの活用**: 浜田の「再度確認必要では？」指摘で過去 cron log を読んで初めて気付いた = 自分の手動実行結果だけ信じると見逃す
+44 秒で `spawnSync` が完了 (timeout 60s 未到達) = process が**そもそも起動していない**ことの証拠だった。timeout の問題ではなかった。
+
+### 修復（実施済 / 2026-04-23 20:31 v1 + 21:00 v2）
+
+**v1 修復 (commit 8013f2b)**: `scripts/health-check.mjs` line 89 の `timeout: 30_000` → `timeout: 60_000` (副因対策 / 念のため維持)
+
+**v2 修復 (本筋)**: `scripts/health-check.mjs` MCP probe 内で **`env.PATH` 先頭に `~/.local/bin` を必ず追加**。cron / 手動どちらの環境でも uv 系 MCP が起動可能に。検証: cron シミュレート (env -i + cron PATH) で実行 → 修正後 cve-search ✅ / 正常 19 / 異常 0。
+
+### 教訓 (Phase W で更新)
+1. **cron 環境差を疑え**: 「手動 OK / cron NG」の乖離は **timeout じゃなく PATH** が真因のことが多い
+2. **`exit=null` は process 異常終了**: spawnSync timeout なら exit=null + 経過時間 ≒ timeout 値になるはず。本件は 44 秒で exit=null = uv 起動失敗 (PATH not found) のサインだった
+3. **修復後の検証は cron 環境で実証必須**: `env -i PATH=cron値 bash -c '...'` で必ず cron 状態を再現してから「治った」と言う
+4. **私の誤判断 = 浜田 §47 二段階発動で救済**: v1 修復で「治った」と確信していたが、Phase W 「100% 証明」要求で **20:33 cron が修正後でも ❌ だった**ことに気付き v2 真因に到達。Phase V → Phase W で 2 段階の浜田批判が必要だった = 1 段階目で完全な確信を持つのは慢心
+5. **uv 系 MCP のリスト化必要**: cve-search 以外にも uv で起動する MCP がある可能性 / 今後 mcp.json 追加時は `command: "uv"` パターンに警戒
 
 ### 関連
-- `scripts/health-check.mjs` (line 86-95)
+- `scripts/health-check.mjs` (line 74-105 = PATH 拡張 + timeout 60s)
 - 過去ログ: `logs/health/cron.log`
-- TSB-007 ep5 と同じく「自分の修復ロジックが誤判定を生む」系列
+- TSB-007 ep5 と同じく「自分の修復ロジックが誤判定を生む」系列 / **v1 修復が表層症状に過ぎなかった点でも ep5 と同型** (ep5 の R15/R16/S9 が表層対策で ep5 真因まで届かなかったのと同じ構造)
+- v2 真因 = 浜田の「100% 問題ない証明して」(Phase W) で深掘りに至った
 
 ---
 
