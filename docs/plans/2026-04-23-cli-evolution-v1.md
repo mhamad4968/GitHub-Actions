@@ -44,7 +44,21 @@
 
 ---
 
-## 🚨 浜田 sudo 必要 (S1 + S2 / 4/26 までに)
+## ✅ 浜田 sudo 完了 (S1 + S2 / 2026-04-23 22:09-22:11 実施 / AI 検証完了)
+
+**S1 ✅ gh 2.45.0 → 2.91.0** (浜田 22:09 wget + sudo dpkg -i / 14MB / 約 1 分 / AI 検証 22:12):
+- `gh --version` → `gh version 2.91.0 (2026-04-22 / 昨日リリース)` ✅
+- `gh auth status` → mhamad4968 active / Token scopes (gist + read:org + repo + workflow) 維持 ✅
+
+**S2 ✅ git 2.43.0 → 2.54.0** (浜田 22:11 add-apt-repository ppa:git-core/ppa + sudo apt install / Ubuntu PPA 経由 / 9.6MB / 約 30 秒 / AI 検証 22:12):
+- `git --version` → `git version 2.54.0` ✅ (Ubuntu 24.04 PPA latest stable)
+- `cd kintone-ai-lab && git status --short` → clean / `git log -1` → 既存 commit 履歴完全認識 ✅
+
+→ **Phase E 全件解消 / 残は M1-M7 浜田判断のみ (5/1 月次レビュー or 5/13 本番後)**
+
+---
+
+## 🚨 浜田 sudo 必要 (S1 + S2 / 4/26 までに) ← 既に解消済 (上記 ✅ 参照)
 
 ### S1: gh CLI 2.45.0 → 2.91.0 (46 minor 遅れ)
 
