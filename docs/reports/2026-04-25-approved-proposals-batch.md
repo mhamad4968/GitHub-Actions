@@ -14,6 +14,6 @@
 | C2 | dormancy_exempt 説明 | `docs/mcp-dormancy-exempt.md` |
 | P1 | Day 3 アクションプラン | `docs/plans/2026-04-25-pc-ledger-day3-action.md` |
 
-**commit**: （本バッチ適用後の SHA を追記）
+**commit**: `ad1c3b3`
 
 **ラベル**: [FEAT]（§56・ツール追加）/ [FIX]（§53-7-H）
