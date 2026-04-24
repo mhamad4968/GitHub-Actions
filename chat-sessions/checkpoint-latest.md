@@ -5,14 +5,14 @@
 ## 朝イチで読む 3 つ（D1 / §42-2 Tier A 推奨）
 
 1. **§52-3 Q6** — 浜田の直近 scope 外は **Tier B**（ついで作業・自律学習は禁止）
-2. **§53-7-G-6** — 外部経路が止まっても **フリーズしない**（可用性最優先）
+2. **§55-6** — セーフモード中も **読取・診断は止めない**（フリーズ回避／副作用は §55-4 で止める）
 3. **§55** — 異常時は **Tier A 縮小**（`🛡 SAFE MODE` / `.session-state/safe-mode.json`）
 
 詳細は `AGENTS.md` 該当節。`AGENTS.md` ハッシュ不一致時は **§42-2-3**（BREAKING フィルタ）必須。
 
 ---
 
-**最終更新**: 2026-04-25 (Sat) 早朝 — **浜田「夕方提案 D1–P1 すべて承認」バッチ適用** ✅（D1 朝テンプレ / **§56 RACI (#3)** / §53-7-H / `docs/mcp-dormancy-exempt.md` / 朝ブリーフィング §0b + `scan-autonomy-log.mjs` / Day 3 プラン `2026-04-25-pc-ledger-day3-action.md` / evening-reflect 1-L）。**前**: §55 (R13)。**次**: **Day 3** 採番マスタ 2 アプリ（プラン参照）— kintone 操作は浜田 GO 毎ステップ。
+**最終更新**: 2026-04-25 (Sat) — **セカンド AI 常時ルール撤去 ([BREAKING] v22)**：旧第17章 §53 削除・§52 は §52-3 のみで Tier A 判定・§54-2 はメイン AI 記録・§54-5 外部月次は任意。朝イチ 3 つは §52-3 Q6 / §55-6 / §55 に更新。**次**: **Day 3** 採番マスタ 2 アプリ（プラン参照）— kintone は §52-3 + 浜田 GO。
 
 **前回更新**: 2026-04-24 21:21 (Fri) 夜 — **5 候補 Synthesis Logic 連続実演 完遂 + 本日制定 8 ルール達成** ✅。浜田 20:13「3 つの深層ルール」+ 浜田 20:35「全 5 件 Tier A 即制定 GO」+ 浜田 21:08「自律優先 / cost OK」追加伝達 → 30 分間で 5 候補すべて §53-7 検証付 Synthesis 6 ステップ処理 = **候補 3** Q6 scope check (R10 §52-3 拡張 / `d49603b`) + **候補 1** Operation Frequency Management (commit `485f804` → 11 分短命廃止 `d3cd276` / [BREAKING] / §47-C 逆発動 = AI 認識不足を浜田が訂正) + **候補 2** §54-4 Mandatory Pre-Op Snapshot (浜田 B 案 全件 snapshot / `cf7b009`) + **候補 4** §54-5 Learning Boundary 制定中止 (Q6 統合 / `6d9c826`) + **候補 5** §54-5 Weekly Self-Critique with External Audit (R11 §53-3 経路 B 連動 / 同一ファミリー閉ループ断ち切り / `55f55f6`)。**Sonnet 反定立 9 回 / 採用率 88% / Negative Log 6 件 (Sonnet 直接書込実例)**。本日 commit 累計 **34 件 / push 17 回**。明日 4/25 (土) 7:00 浜田参加 → ブリーフィング + Day 3 (新個人/共有 WindowsID 採番マスタ作成) 着手予定 / Day 3 事前準備は省略 (浜田判断)。
 

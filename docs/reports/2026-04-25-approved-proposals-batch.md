@@ -7,13 +7,13 @@
 |----|------|--------|
 | D1 | checkpoint「朝イチで読む 3 つ」 | `chat-sessions/checkpoint-latest.md` |
 | D2 | §56 RACI + 計画メモ | `AGENTS.md` 第20章、`docs/plans/2026-04-25-raci-transparency.md` |
-| D3 | 夕反省 1-L（§55-7 フォロー） | `scripts/evening-reflect.mjs` 雛形 |
+| D3 | 夕反省 1-L（§55 整合フォロー） | `scripts/evening-reflect.mjs` 雛形（v22 で文言更新） |
 | E1 | 朝ブリーフィングに §55 表示 | `scripts/daily-morning-prep.mjs` §0b |
 | E2 | 前日 autonomy スキャン | `scripts/scan-autonomy-log.mjs` + morning-prep 呼出 |
-| C1 | 第二意見経路不能時 | `AGENTS.md` §53-7-H |
+| C1 | 憲法 Read 不能時のフォロー | `AGENTS.md` §55-7（※2026-04-25 [BREAKING] v22 で旧 §53-7-H は撤去し本文を §55-7 に統合） |
 | C2 | dormancy_exempt 説明 | `docs/mcp-dormancy-exempt.md` |
 | P1 | Day 3 アクションプラン | `docs/plans/2026-04-25-pc-ledger-day3-action.md` |
 
 **commit**: `ad1c3b3`
 
-**ラベル**: [FEAT]（§56・ツール追加）/ [FIX]（§53-7-H）
+**ラベル**: [FEAT]（§56・ツール追加）/ [FIX]（§55-7 経緯追記）

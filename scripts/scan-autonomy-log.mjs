@@ -51,7 +51,7 @@ const dayLines = lines.filter((ln) => {
 
 let emergency = 0;
 let safeMode = 0;
-let secondSkipped = 0;
+let notesSkipped = 0;
 
 for (const ln of dayLines) {
   try {
@@ -65,8 +65,8 @@ for (const ln of dayLines) {
       /§55|safe_mode/i.test(op)
     )
       safeMode += 1;
-    const so = String(j.second_opinion || '');
-    if (/skipped|API.?limit|未実行/i.test(so)) secondSkipped += 1;
+    const note = String(j.notes || j.second_opinion || '');
+    if (/skipped|API.?limit|未実行/i.test(note)) notesSkipped += 1;
   } catch {
     /* skip */
   }
@@ -76,7 +76,7 @@ console.log(`### 🤖 自律判断ログ（${targetIso} / autonomy scan）\n`);
 console.log(`- **件数**: ${dayLines.length} 行`);
 console.log(`- **emergency:true**: ${emergency} 件`);
 console.log(`- **§55 / safe_mode 関連（推定）**: ${safeMode} 件`);
-console.log(`- **第二意見 skipped 系（推定）**: ${secondSkipped} 件`);
+console.log(`- **notes / 旧 second_opinion に skipped 系（推定）**: ${notesSkipped} 件`);
 if (emergency >= 3) {
   console.log('\n> 🚨 **emergency が 3 件以上** — R10 §52-6 / §54-5-6 の見直しシグナルとして §44 で確認推奨。\n');
 } else {
