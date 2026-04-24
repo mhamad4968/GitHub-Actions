@@ -1253,6 +1253,78 @@ docs/archives/synthesis-graveyard/
 
 **[FEAT/FIX/BREAKING ラベル判定]**: 本廃止は [BREAKING] (§54-1-1 Q2「過去 commit ログの意味変化」Yes = 短命ルール制定の反省記録)
 
+#### §54-4 Mandatory Pre-Op Snapshot (破壊的操作の事前 Snapshot 必須 / 候補 2 / 2026-04-24 制定)
+
+**目的**: 不可逆操作 (削除 / リネーム / push --force / mcp.json 破壊的編集) 前に必ず snapshot 取得 / 最悪の場合に戻せる保証を構造化 / TSB-006 級事故時の最後の砦
+
+**背景**: メイン AI 原案 (全件 snapshot 必須) → Sonnet 反定立 21:03 で「kintone rate limit 枯渇 / JSON 巨大化 / レースコンディション / emergency 例外で制度の自殺」5 件指摘 → メイン AI 「軽量化合」を提案 → 浜田 21:08 + 21:11「自律優先 / cost OK / 全件 snapshot 路線で OK」明示 → **浜田 B 案 = 全件 snapshot 維持 + emergency 例外厳格化のみ採用**で確定。
+
+##### §54-4-1 対象操作 (R10 §52 自己診断 Q1=Yes 該当)
+
+- kintone レコード/アプリ delete (kintone-delete-records / 仮想 delete-app)
+- kintone アプリ rename (例: 5/13 旧アプリ「参照用」リネーム / 594 / 627 / 626 / 667)
+- git push --force / git reset --hard
+- mcp.json 破壊的編集 (entry 削除 / 設定全変更等)
+- データベース ALTER / DROP
+
+##### §54-4-2 Snapshot 取得タイミング
+
+- 操作実行の **直前** (Tier B 投入時に proposal に含める / Tier A 例外実行時も emergency:true でも必須)
+- 取得後に snapshot ファイル検証 (サイズ非ゼロ + JSON valid) → OK で操作実行 / NG で停止
+
+##### §54-4-3 Snapshot ファイル命名規則
+
+`data/snapshots/<対象>-pre-<操作>-<YYYY-MM-DDTHH-MM>.json`
+
+例:
+- `data/snapshots/594-pre-rename-2026-05-13T09-00.json`
+- `data/snapshots/627-pre-delete-2026-06-01T10-00.json`
+- `data/snapshots/mcp-pre-edit-2026-04-25T14-30.json`
+
+##### §54-4-4 保存内容 (cost OK 全件取得)
+
+| 操作対象 | snapshot 内容 |
+|---|---|
+| kintone | kintone-get-records **全件** + kintone-get-form-fields + kintone-get-app + リビジョン番号 |
+| mcp.json | 編集前ファイルバックアップ (full copy) |
+| git | 編集前 HEAD ハッシュ + 関連ブランチ状態 (`git log -1 --format=raw` 全文) |
+| その他 | 操作内容に応じて AI が判断 (浜田 cost OK 方針 = 全件取得が原則) |
+
+##### §54-4-5 保存期間
+
+- **30 日** (cron 自動削除 / S20 拡張で実装 / 4/27 適用予定)
+- **永続保存例外**: `data/snapshots/permanent/` 配下は削除禁止 (5/13 旧アプリリネーム等の歴史的記録)
+
+##### §54-4-6 emergency 例外厳格化 (Sonnet 致命的盲点指摘反映 / スキップ全廃)
+
+**Sonnet 21:03 指摘**: 「emergency:true で snapshot スキップ可」 = TSB-006 級事故時に snapshot されない = 制度の自殺
+
+**対策 (採用)**: emergency:true でも snapshot **必須**:
+- フル snapshot が時間的に取れない場合: **件数 + 主要 ID + commit hash の最小記録のみ** (1 KB 以下)
+- 「snapshot スキップ」選択肢を完全削除
+- emergency:true は「snapshot 簡略化」フラグであって「snapshot 不要」フラグではない
+
+##### §54-4-7 レースコンディション対策 (Sonnet 21:03 指摘反映)
+
+- snapshot 取得 → 操作実行間に **kintone リビジョン番号 (or git HEAD ハッシュ) を再取得 + 一致確認**
+- 不一致 = snapshot 取得後に他更新あり → 操作停止 + 浜田相談 (Tier B 投入)
+
+##### §54-4-8 判断ログ追記
+
+- `pre_op_snapshot:"data/snapshots/..."` フィールド必須
+- emergency 簡略化時: `snapshot_simplified:true / snapshot_size_bytes:N`
+- レースコンディション検出: `race_condition_detected:true / aborted:true`
+
+##### §54-4-9 Sonnet 反定立 5 件指摘の取扱
+
+| Sonnet 指摘 | 取扱 |
+|---|---|
+| 1. 既存インフラ (git/kintone リビジョン) で代替可能 | ⚠ 部分採用 (リビジョン番号は使うが独自 snapshot も維持 / 浜田 cost OK 方針) |
+| 2. emergency:true 例外 = 制度の自殺 | ✅ 全面採用 (§54-4-6 でスキップ全廃) |
+| 3. §54-3 操作頻度上限と複合 | ✅ §54-3 廃止で消失 |
+| 4. rate limit 枯渇 / JSON 巨大化 / レースコンディション | ⚠ 部分採用 (rate limit は浜田 cost OK で許容 / JSON 巨大化は 30 日保存で許容 / レースコンディションは §54-4-7 で対策) |
+| 5. 代替案 (Snapshot 廃止 / dry-run + 公式リビジョン) | ⚠ 部分採用 (リビジョン番号活用は採用 / Snapshot 廃止は浜田 B 案で却下) |
+
 
 ---
 
