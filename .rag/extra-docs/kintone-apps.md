@@ -25,6 +25,8 @@ npm run app:fields <アプリID>
 | Security NEXT ニュース（収集） | **631** | `security-next-automation` | [https://jbis-kintone.cybozu.com/k/631/](https://jbis-kintone.cybozu.com/k/631/) ・`KINTONE_APP_ID` |
 | ニュース週次要約（週次LLM） | **632** | `security-next-automation` | [https://jbis-kintone.cybozu.com/k/632/](https://jbis-kintone.cybozu.com/k/632/) ・`KINTONE_REPORT_APP_ID` ・[設計CSV](security-next-automation/docs/security-next-weekly-report-app-design.csv) |
 | 運用ガイド（PC台帳・アカウント周りの操作手順） | **668** | `customize/ops-guide/desktop.js` | `npm run ops-guide:publish`（HTML レコード同期＋desktop.js デプロイ） |
+| 環境設定マスタ（新・PC台帳ver.1 用 / Day 1） | **670** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-24 作成 / 12 レコード（M365 ドメイン・固定文字・上限値）|
+| M365管理マスタ（新・PC台帳ver.1 用 / Day 2 / 5 台ライセンス厳守） | **671** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-24 作成 / 10 レコード（sjm-001~sjm-010 / X 案 5 台節約）|
 
 ※ **631** … `collect` / `analyze` が読むニュース。**632** … `analyze` が書き込む週次要約のみ。`.env`: `KINTONE_APP_ID=631` , `KINTONE_REPORT_APP_ID=632`。API トークンに **両アプリ**を載せる。  
 ※ **権限**: 自動化の最低限は **レコード閲覧＋追加**。閲覧・追加・編集・削除・アプリ管理のフル付与でもスクリプトは動作するが、トークン漏えい時のリスク低減のため余分な権限は削るとよい（詳細は `security-next-automation/README.md`）。
