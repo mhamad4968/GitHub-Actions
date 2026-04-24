@@ -292,7 +292,8 @@ if (fs.existsSync(mcpDormancyScriptPath)) {
   try {
     const j = JSON.parse(mdRes.stdout || '{}');
     if (j.status === 'ok') {
-      mcpDormancyCheck = { status: 'ok', note: `${j.active}/${j.total} active (過去 ${j.window_short_days} 日)` };
+      const exemptNote = j.exempt > 0 ? ` (${j.exempt} exempt)` : '';
+      mcpDormancyCheck = { status: 'ok', note: `${j.active}/${j.total} active${exemptNote} (過去 ${j.window_short_days} 日)` };
     } else if (j.dormant > 0 || j.deletion_candidate > 0) {
       mcpDormancyCheck = { status: 'ng', note: `死蔵 ${j.dormant} / 削除候補 ${j.deletion_candidate} (過去 ${j.window_short_days} 日)` };
     } else {
@@ -304,13 +305,22 @@ if (fs.existsSync(mcpDormancyScriptPath)) {
 }
 
 // ───── 集計 ─────
+// ⚠ 2026-04-24 (S13 v2 / Phase Z 第 1 ループで判明した「半完成」状態の解消):
+//    S13 v1 (commit b9f3b01) は nodeModulesCheck + mcpDormancyCheck の起動のみで
+//    集計と markdown 出力に未反映だった。v2 で summary + markdown 出力に統合。
 const ragDeepNgCount = ragDeepCheck && ragDeepCheck.status === 'ng' ? 1 : 0;
 const ragDeepOkCount = ragDeepCheck && ragDeepCheck.status === 'ok' ? 1 : 0;
+const nodeModulesOkCount = nodeModulesCheck.status === 'ok' ? 1 : 0;
+const nodeModulesNgCount = nodeModulesCheck.status === 'ng' ? 1 : 0;
+const nodeModulesSkipCount = nodeModulesCheck.status === 'skip' ? 1 : 0;
+const mcpDormancyOkCount = mcpDormancyCheck.status === 'ok' ? 1 : 0;
+const mcpDormancyNgCount = mcpDormancyCheck.status === 'ng' ? 1 : 0;
+const mcpDormancySkipCount = mcpDormancyCheck.status === 'skip' ? 1 : 0;
 const summary = {
-  ok: mcpResults.filter((r) => r.status === 'ok').length + [node, disk, memory, cron, selfCheck].filter((s) => s.status === 'ok').length + ragDeepOkCount,
-  ng: mcpResults.filter((r) => r.status === 'ng').length + [node, cron, selfCheck].filter((s) => s.status === 'ng').length + ragDeepNgCount,
+  ok: mcpResults.filter((r) => r.status === 'ok').length + [node, disk, memory, cron, selfCheck].filter((s) => s.status === 'ok').length + ragDeepOkCount + nodeModulesOkCount + mcpDormancyOkCount,
+  ng: mcpResults.filter((r) => r.status === 'ng').length + [node, cron, selfCheck].filter((s) => s.status === 'ng').length + ragDeepNgCount + nodeModulesNgCount + mcpDormancyNgCount,
   warn: 0,
-  skip: mcpResults.filter((r) => r.status === 'skip').length,
+  skip: mcpResults.filter((r) => r.status === 'skip').length + nodeModulesSkipCount + mcpDormancySkipCount,
 };
 
 const result = {
@@ -323,6 +333,8 @@ const result = {
   memory,
   cron,
   self_check: selfCheck,
+  node_modules: nodeModulesCheck,
+  mcp_dormancy: mcpDormancyCheck,
   summary,
 };
 
@@ -356,6 +368,17 @@ out(`- Disk (\`~\`): ${disk.home} — ✅`);
 out(`  - npm cache: ${disk.npm_cache} / npx cache: ${disk.npx_cache}`);
 out(`- Memory: ${memory.line} — ✅`);
 out(`- cron: ${cron.has_morning_prep ? '✅ morning:prep 登録済み' : '❌ morning:prep 未登録'}`);
+out('');
+
+// ⚠ 2026-04-24 (S13 v2): 自己診断強化 (S9 + S12 wiring 結果) を追加表示
+out('### 🛡 自己診断強化 (S9 + S12 wiring)');
+out('');
+{
+  const nmIcon = { ok: '✅', ng: '❌', skip: '⏭' }[nodeModulesCheck.status] || '?';
+  out(`- **node_modules 完全性 (S9)**: ${nmIcon} ${nodeModulesCheck.note}`);
+  const mdIcon = { ok: '✅', ng: '❌', skip: '⏭' }[mcpDormancyCheck.status] || '?';
+  out(`- **MCP 死蔵検知 (S12)**: ${mdIcon} ${mcpDormancyCheck.note}`);
+}
 out('');
 
 if (ragDeepCheck) {
