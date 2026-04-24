@@ -206,19 +206,67 @@ AI にこう聞く:
   - sudo apt install -y libnspr4 libnss3 libasound2t64 fonts-liberation で復元
 
 
-━━━ 自動で守ってくれてる仕組み（覚えなくて OK / 2026-04-23 時点 8 cron）━━━
+━━━ 自動で守ってくれてる仕組み（覚えなくて OK / 2026-04-24 時点 8 cron + S12 v2 / S13 v2）━━━
 
-- file-watcher: 重要 21 ファイル監視・5 秒で自動復元 (PID 41917 / 4 日連続稼働)
+- file-watcher: 重要 21 ファイル監視・5 秒で自動復元 (PID 41917 / 5 日連続稼働)
 - wipe-guard: 15 分ごとに健康チェック・自動復元
 - emergency-mirror: 4 時間ごと (17 */4) ~/.cursor-emergency-backup/ にコピー
 - watchdog: file-watcher が死んだら 5 分以内に再起動 (+ @reboot)
 - daily-morning-prep: 06:00 cron で apply-approved-changes + ヘルスチェック + ブリーフィング生成
-- health-check: 4 時間ごと (33 */4) MCP 全件 probe + rag DB チェック
+- health-check: 4 時間ごと (33 */4) MCP 全件 probe + rag DB チェック + node_modules + MCP 死蔵 (S13 v2 統合)
 - auto-heal: 4 時間ごと (43 */4) npm audit fix patch only (--omit=dev 削除済)
 - backup-mcp: 00:00 daily で mcp.json + 自作 MCP コードを backups/mcp/ に世代保存
 
 → ユーザーが何もしなくても多重防衛が効いてる
 → 異常検知 → 朝のブリーフィング (docs/reports/<日付>-morning-prep.md) で先頭に 🚨 表示
+→ 4/24 から「🛡 自己診断強化 (S9 + S12 wiring)」セクションも表示 (S13 v2 効果 / 13/16 active 3 exempt 表示)
+
+
+━━━ ⑭ proposal が apply-approved-changes で「old_string 不一致」エラー (2026-04-24 制定) ━━━
+
+【症状】
+朝のブリーフィング「📋 昨夜承認分の自動実施結果」で `❌ old_string 不一致` 表示。
+proposal は processed/ に移動済 (apply-approved-changes は failed でも移動する設計)。
+
+【真因】
+proposal 制定後にコード本体が編集されて、proposal の old_string が部分一致しなくなった。
+4/24 朝の S13 = 4/23 制定時 → 4/23 早朝 TSB-012 修復で集計セクション直前に rag deep
+check コードが挿入された → S13 の old_string が分離 → apply で完全一致せず ❌。
+
+【自己対応 (AI に頼む)】
+「S13 (or 該当 ID) を手動 apply してほしい」と AI に依頼。AI が以下を実行:
+  1. processed/<日付>/<ID>.proposal.json から new_string を取り出す
+  2. 現状コードの該当位置を Read で特定 (proposal の周辺コードを grep)
+  3. StrReplace で手動挿入
+  4. §11-5 3 段階検証 (① syntax / ② 手動 script / ③ cron シミュレート)
+  5. fix commit + 翌朝 cron で実証
+
+【予防】
+proposal 制定時に「old_string にコード位置に依存しない狭めの context を選ぶ」
+(例: `// ───── 集計 ─────\nconst summary = {` のような長文 context は危険 / 短い ID 句を含めるか line 数で固定)
+
+
+━━━ ⑮ MCP 死蔵検知が「Windows-side で false positive」(2026-04-24 制定 / S12 v2 適用済) ━━━
+
+【症状】
+check-mcp-dormancy.mjs / health-check が github + office-powerpoint を「死蔵」⚠ と判定。
+でも Cursor IDE では普通に使えてる。
+
+【真因】
+S12 は WSL 側 usage log のみ計測。Windows-side MCP (Cursor IDE 経由のみ動く) は
+WSL log に現れないため常に shortCount=0 → 自動的に dormant 誤判定。
+
+【対応 (4/24 18:00 適用済 / 自分でやる必要なし)】
+~/.cursor/mcp.json に以下を追加:
+  "github": { ... , "_meta": { "dormancy_exempt": true, "exempt_reason": "..." } }
+  "office-powerpoint": { ... , "_meta": { ... } }
+  "tavily": { ... , "_meta": { ... } } (有料 disabled)
+→ S12 v2 が exempt status として分類 / dormant にカウントせず ⚪ exempt 表示。
+→ 朝のブリーフィングで「✅ 13/16 active (3 exempt)」と表示される。
+
+【新 MCP 追加時の注意】
+WSL から呼べない MCP (Windows-only / Cursor IDE 専用) を追加したら必ず _meta.dormancy_exempt: true を追加。
+mcp.json 編集は R4 §17-2 厳守 (backup + ensure_ascii=True + diff 確認)。
 
 
 ━━━ 連絡先メモ（2026-04-23 時点）━━━━━━━━━━━━━━━━━
@@ -234,6 +282,8 @@ AI にこう聞く:
   TSB-013 v1+v2 (cron uv PATH / 修復済)
   TSB-014 (Chrome system deps / 浜田 sudo 完了)
   TSB-015 (google-search 死蔵 → duckduckgo 入替)
+  S12 v2 (Windows-side MCP false positive / 4/24 解消 / 上記 ⑮)
+  S13 v2 (health-check 半完成 → 出力反映完成 / 4/24 / 上記 ⑭)
 
 【リカバリ運用】
 - 新セッション起動: kintone-ai-lab/chat-sessions/NEW-SESSION-STARTER.md (v3)
@@ -263,7 +313,7 @@ AI にこう聞く:
 
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-最終更新: 2026-04-23 (v2: TSB-013/014/015 + R8/R9 全反映 / 2026-04-19 v1 から全面リライト)
+最終更新: 2026-04-24 v2.1 (⑭ proposal old_string 不一致 + ⑮ MCP 死蔵 false positive 追加 / S12 v2 + S13 v2 効果反映)
 このメモは C:\Users\mhamada202408224\Desktop\AI緊急用\CURSOR-トラブル対応メモ.txt
 正本: kintone-ai-lab/chat-sessions/CURSOR-トラブル対応メモ.md
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
