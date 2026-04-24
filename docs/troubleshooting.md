@@ -6,15 +6,36 @@
 
 ---
 
-## 目次
+## 目次（2026-04-25 全件再構築 / F-2 自己改善目標 #2 = 真因 1 文 + root_cause_confirmed フラグ追加）
 
-| TSB ID | 日付 | テーマ | 影響範囲 |
-|---|---|---|---|
-| TSB-001 | 履歴上参照あり | fileKey 問題（詳細未記載・docs/asset-management-logic.md より参照）| 594 |
-| TSB-004 | 履歴上参照あり | 文字化け修復ロジック（AGENTS.md §14 より参照）| 全般 |
-| TSB-005 | 2026-04-19 | **セッション間継続性の構造的脆弱性** | 全プロジェクト |
+> **真因 1 文ルール**: 各 TSB は **「真因を 1 文で説明できる」状態でなければ root_cause_confirmed = false** とする。false の TSB は再発監視優先。
+> **status 凡例**: ✅ Resolved（恒久対策済）/ 🟡 Mitigated（暫定対策のみ）/ 🔴 Open（未解決）/ ♻️ Recurring（同系列複数 episode）
 
-> **注**: TSB-002, TSB-003 はファイル不在時の記載漏れ。発見次第追記。
+| TSB ID | 日付 | テーマ | 真因 (1 文) | status | root_cause_confirmed | 影響範囲 |
+|---|---|---|---|---|---|---|
+| TSB-001 | 履歴参照 | fileKey 問題 | （旧記録 / `docs/asset-management-logic.md` 参照 / 詳細未掘削） | 🟡 | **false** | 594 |
+| TSB-004 | 履歴参照 | 文字化け修復ロジック | （旧記録 / AGENTS.md §14 参照 / 真因 1 文未抽出） | 🟡 | **false** | 全般 |
+| TSB-005 | 2026-04-19 | セッション間継続性の構造的脆弱性 | チャットがポリシーブロックで途絶した際、復元アンカーの鮮度を機械的に監視する仕組みが無かったため AI が経緯喪失した | ✅ | true | 全プロジェクト |
+| TSB-006 | 2026-04-19 09:02 | scripts/ 9 + WORKFLOW.md + AGENTS.md §42-§49 wipe | Cursor の "Request blocked by Anthropic" 時に進行中の編集が途中状態のままロールバックされ複数ファイルが 0 byte 化した | ✅ | true | scripts / docs |
+| TSB-007 | 2026-04-19 | ESLint v6 vs flat config 不整合 | リポは ESLint 8+ flat config 形式の `eslint.config.js` を使用するが node_modules の ESLint が v6.4.0 で flat config 非対応 | ✅ | true | lint:customize |
+| TSB-007 続編 | 2026-04-21 制定 / 2026-04-25 解消 | eslint v10 新 recommended の後始末 | v6→v10 アップグレード時に新規 recommended ルール 2 件が既存コード 5 件にヒット → 一時 off → 4 日後に修正 | ✅ | true | customize/ 5 箇所 |
+| TSB-007 ep3 | 2026-04-22 22:00 | node_modules/eslint 消失で再失敗 | v10→v9 ダウングレード時に Cursor シェル node v20 が v9 engine 要件を満たさず npm install が silent fail し node_modules 不整合 | ✅ | true | lint:customize |
+| TSB-007 ep4 | 2026-04-23 03:36 | node_modules/eslint 再消失 | ep3 予防策 (R15/R16/S9) を proposal キュー化したが適用は朝 cron 待ち = 8h ウィンドウで silent fail 同症状再発 | ✅ | true | lint:customize |
+| TSB-007 ep5 | 2026-04-23 19:58 | auto-heal 自爆で devDeps 4h ごと prune | `scripts/auto-heal.mjs` の `npm audit fix --omit=dev` が cron 4h ごとに devDeps を削ぎ落とし node_modules を破壊していた | ✅ | true | lint:customize / npm 全体 |
+| TSB-009 | 2026-04-21 | Chrome 92+ で window.open(blob:URL) ブロック | Chrome 92+ のセキュリティ制限で blob: URL を新規タブで開く操作が一律ブロックされる | ✅ | true | FAQ ポータル / 投稿画像 |
+| TSB-010 | 2026-04-22 | 投稿後 URL.revokeObjectURL の dangling reference | reload 後の `<img src="blob:...">` が DOM に残っているうちに blob URL を revoke してしまい、その後のクリックで解放済参照を踏む | ✅ | true | FAQ ポータル / Lightbox |
+| TSB-011 | 2026-04-22 21:48 | 並行 Cursor チャット騒動 | Cursor UI に「同一リポを触っている他チャット数」表示がなく、浜田が同テンプレを 2 窓に貼ったため並行起動に誰も気付かなかった | ✅ | true | リポ全体 |
+| TSB-012 | 2026-04-23 03:00 | rag MCP documentCount=0 | 過去の cron ingest が rag DB に反映されていない（複数仮説あるが浜田立ち会いの実証で確定要 / その後 4/23 中に一度修復済 = 真因 1 文に圧縮しきれていない複合要因） | 🟡 | **false** | rag MCP |
+| TSB-013 | 2026-04-23 20:30→21:00 真因確定 | cron 環境で uv 系 MCP (cve-search) が PATH not found 誤検知 | crontab の PATH に `~/.local/bin` が含まれず cron 実行時のみ uv バイナリ起動失敗 (v1 timeout 仮説は副因に過ぎなかった) | ✅ | true | cve-search MCP / cron |
+| TSB-014 | 2026-04-23 21:15→21:30 解消 | ブラウザ系 3 MCP の system deps + Chrome 不足 | WSL に Chromium 自体 + system libraries (libnspr4 / libnss3 / libatk1.0 等) 未インストールで playwright が起動できなかった | ✅ | true | playwright / a11y-scanner / google-search |
+| TSB-015 | 2026-04-23 21:30→21:40 解消 | google-search MCP の Google bot 検知で実用度 0 | Google スクレイピング型 MCP は Google の bot 検知で結果が常に空配列になり頭打ち（duckduckgo-search に入替で死蔵根絶） | ✅ | true | search MCP |
+
+**集計** (2026-04-25 08:35 時点):
+- 全 16 件中 **root_cause_confirmed = true: 13 件 (81%)** / **false: 3 件 (19%)**
+- false 3 件 (TSB-001 / TSB-004 / TSB-012) は **再発監視優先** = 朝 cron で別途警戒
+- 5 月目標 (F-2 自己批判 §54-5): **root_cause_confirmed カバレッジ 100%** = TSB-001 / 004 / 012 の真因 1 文掘削を 5 月中に実施
+
+> **注**: TSB-002, TSB-003, TSB-008 はファイル不在時の記載漏れ。発見次第追記。
 
 ---
 
