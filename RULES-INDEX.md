@@ -150,6 +150,7 @@
 | §54 | **自己統治能力 (Self-Governance / R12 / 第18章 / 2026-04-24 制定 / 浜田 20:13 提案 + Sonnet 5 件レビュー全反映)** = §54-1 意味論的バージョニング (BREAKING/FEAT/FIX 必須 + 3 質問判定フローチャート + prefix 統合方式) + §54-2 Negative Log (棄却案永続化 + Sonnet 直接書込権限 = 自己申告バイアス排除 + 蓄積膨張対策 + 能動的サーフェシング) |
 | §54-3 | **[DEPRECATED 2026-04-24 21:09]** Operation Frequency Management (11 分短命) - 浜田 21:08「自律優先 / cost OK」明示で全廃 / AI 双方の「上限思想」盲点を浜田が訂正した教訓 / Negative Log permanent/ 永続保存 |
 | §54-4 | **Mandatory Pre-Op Snapshot (破壊的操作の事前 Snapshot 必須 / 候補 2 / 2026-04-24 21:14 制定)** = 浜田 B 案 (cost OK / 全件 snapshot 路線) + Sonnet 反 2 (emergency 例外厳格化 = スキップ全廃) + レースコンディション対策 (リビジョン番号再取得) |
+| §54-5 | **[制定中止 2026-04-24 21:11]** Learning Boundary - Sonnet 反定立 21:10「§52-3 Q6 で既に規制済 / MCP 登録物理矛盾 / 自律 vs 許可制衝突」全面採用 → §52-3 Q6 例示に「AI 自律学習」追加で代替 / §54-5 新章は作らない / 候補 4 廃案 (5 件 → 4 件にルール総量削減 / R7 §47-B-2 整合) |
 
 ---
 

@@ -1377,6 +1377,8 @@ docs/archives/synthesis-graveyard/
      - 浜田が「commit してください」指示で AI が commit のみ → Q6=Yes → Tier A 継続
      - cron 自動実行 (浜田指示なし定常運用) → Q6=Yes (cron 設定自体が浜田過去承認) / 出典: 「cron 自動 / 浜田過去承認済」と判断ログに明記
      - ルール改訂連動 (例: §51 修正で関連 cross-reference 追記) → Q6=Yes (親ルール改訂が浜田明示の親 scope) / 出典: 「親ルール改訂連動 / 浜田 X 時 GO の連動」明記
+     - **AI 自律学習 (新スキル / 新 MCP / 新ツール) を AI が自発的に試そうとする** → Q6=No → **Tier B 強制昇格** (= 浜田明示なし学習禁止 / 候補 4 §54-5 が Q6 で代替された経緯 / Sonnet 21:10 反定立指摘 = 「§54-5 不要 / Q6 で十分」全面採用)
+     - 浜田明示「この MCP 試して」「この skill 動かして」 → Q6=Yes → Tier A 即実行可
    - **狙い (Sonnet 申し送り反映)**: 「『引用を書かせる』より『実行前に止める』機構」を統合 = scope 外検出時に **AI が自律実行できない** 構造的禁止
    - **判断ログフィールド**: `q6_scope_check:"in-scope"|"out-of-scope-tier-B-escalated"|"cron-auto"|"parent-rule-cascade"`
 
