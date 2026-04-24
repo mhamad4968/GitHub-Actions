@@ -27,7 +27,10 @@ collect_log.txt
 .rag/backup.log
 backups/
 dist/
-logs/
+logs/*
+!logs/autonomy-decisions.log
+!logs/.gitkeep
+
 
 # 別 git リポを内包しているので submodule 化するまでは除外（2026-04-20 追加）
 GitHub-Actions/
