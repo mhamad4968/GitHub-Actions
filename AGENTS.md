@@ -259,19 +259,15 @@ npx mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models query "検索�
 
 MCP ツール経由の場合: `rag_search` ツールを使用する。
 
-### §21 知見のフィードバック（学習サイクル / 2026-04-23 強化 = MCP 強化戦略 次元 3）
+### §21 知見のフィードバック（学習サイクル）
 障害・不具合を解決したら、以下のサイクルを回す:
 
 1. **記録**: `docs/troubleshooting.md` に原因・対策・教訓を追記する（TSB-XXX 形式）
-2. **即時 RAG ingest（2026-04-23 強化）**: 追記直後に必ず以下のいずれかを実行:
-   - 簡略版: `npm run rag:ingest`（package.json に追加 / 4/24 朝 cron 適用予定）
-   - 個別: `npx mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest docs/troubleshooting.md`
-   - 全体: `npx mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest docs/`
-   違反時（追記後 ingest なしで翌朝まで RAG 未反映）= 同日中の rag_search で過去事例が引けず §20 が機能不全に陥るため、§47 違反扱い。
+2. **インデックス更新**: `npx mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest docs/troubleshooting.md`
 3. **ルール化**: 繰り返し発生しうる問題は `.cursor/rules/` の該当ファイルにルールとして追記する
 4. **索引更新**: `RULES-INDEX.md` の随時メモに日付付きで1行残す
 
-これにより AI は「過去に学んだことを二度と忘れず、常に最新を追う」学習サイクルを維持する。**実例**: 2026-04-22 21:22 に TSB-010 を troubleshooting.md に追記したが即時 ingest しなかったため、翌 06:00 cron まで rag_search で引けず（最大 9 時間タイムラグ）。本ルールでこの構造を解消。
+これにより AI は「過去に学んだことを二度と忘れず、常に最新を追う」学習サイクルを維持する。
 
 ---
 
@@ -1112,3 +1108,74 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 - 改訂日: 2026-04-19（v15-v16: §46 朝ルーチン絶対優先義務新設。Phase 0-4 / 「健康じゃないといい仕事ができない」哲学 / ユーザー新規依頼より上位）
 - 改訂日: 2026-04-19（v17: 第13章 思考の三本柱 §47-§49 新設。§47 Professional Critique / §48 Best Options / §49 Proactive Insight）
 - 改訂日: 2026-04-19（**緊急復元**: 09:02 の謎 wipe で本ファイル v10 までに巻き戻された §42-§49 を AI セッションコンテキストから復元。原因究明と再発防止は別タスクで対応予定）
+- 改訂日: 2026-04-24（v18: 第16章 自律レベル制 §52 R10 新設。Tier A 自律実行型 / Tier B 承認待ちキュー型 / 自己診断 5 問 / 例外規定。浜田指示「基本は自律 / 確認だけが理想 / リスクあるものは夜の反省会で承諾」反映）
+
+---
+
+## 第16章 自律レベル制（2026-04-24 制定 / 浜田指示「基本は自律で出来るようにする」/ R10）
+
+### §52 自律レベル 2 段階制（Tier A / Tier B）
+
+**背景**: 2026-04-24 18:21-18:42 の PC 台帳 Day 1+2 完遂で、kintone API 書込操作のたびに浜田 GO 確認 (12 回) = 浜田負担過大。浜田指示「基本は自律 / 確認だけが理想 / 別 AI と協議して最高判断 / リスクあるものは夜の反省会で承諾」を受けて §47-9 (kintone API 書込立ち会い必須) を全面再設計。
+
+**核心**: AI 単独判断 + 別 AI 第二意見 (Cursor 内 GPT-5.5 / Gemini 3.1 Pro) で合意なら**即実行 (Tier A)**。不一致 / 不確実 / 高リスクなら**承認待ちキュー (Tier B)** に入れて夜の §44 evening-reflect で浜田承諾を得てから翌朝 cron で実行。
+
+#### §52-1 Tier A (自律実行型 / 即実行)
+
+| 副作用 | 第二意見要否 | 例 |
+|---|---|---|
+| ゼロ | 不要 | get-records / 検証 / commit / git push / RAG ingest / memory 投入 |
+| 軽微 | **必須 → 合意で即実行** | 内部 script 編集 / kintone レコード追加 / mcp.json 軽微編集 |
+| 中度 | **必須 → 合意で即実行** | kintone-add-app + add-form-fields + deploy / フィールド追加 |
+
+監査: 朝のブリーフィング (06:00 cron) で「昨日の自律実行ログ」を浜田に提示。
+
+#### §52-2 Tier B (承認待ちキュー型 / 翌朝 cron 実行)
+
+| トリガー | 例 |
+|---|---|
+| AI 自己診断で「不確実」 | 「これ Tier A か B か判断つかない」 |
+| 第二意見と不一致 | Claude=実行 OK / GPT-5.5=待った |
+| 高リスク (不可逆) | レコード/アプリ削除 / リネーム / push --force / mcp.json 破壊的編集 |
+| 大規模変更 | 5/13 旧アプリ書込ロック / 100 件以上の一括削除 |
+
+実装: `docs/approved-changes/pending-review/<日付>/<ID>.proposal.json` にキュー保存。夜の §44 evening-reflect (21:00 cron) で一覧提示 → 浜田が `docs/approved-changes/<翌日>/` に手動移動 (= 承認) or `docs/approved-changes/rejected/` (= 却下) → 翌朝 06:00 apply-approved-changes で承認分のみ実行。
+
+#### §52-3 AI 自己診断 5 問（実行前 mandatory）
+
+実行前に AI が必ず以下 5 問に答え、回答を `logs/autonomy-decisions.log` に JSON Lines で記録:
+
+1. **Q1**: 不可逆か? → Yes なら **Tier B 強制昇格**
+2. **Q2**: 副作用範囲は? (cron / 他アプリ / 外部システム) → 影響大なら **Tier B 昇格**
+3. **Q3**: ロールバック手順明確か? → No なら **Tier B 昇格**
+4. **Q4**: 過去類似操作で TSB / インシデント発生したか? → Yes なら **Tier B 昇格**
+5. **Q5**: 浜田が今回明示的に「自律で」と言ったか? → Yes なら Tier A 維持可
+
+#### §52-4 迷ったら昇格原則 (Conservative Default)
+
+- 自己診断で 1 問でも不確実 → Tier B 昇格 (安全側)
+- 例: 内部 script 編集だが「ロールバック手順 (Q3) が不明」 → Tier B
+- 例: kintone-add-app だが「過去類似操作で TSB-007 (eslint 系) が起きた (Q4 = yes)」 → Tier B
+
+#### §52-5 判断ログ (`logs/autonomy-decisions.log`)
+
+JSON Lines 形式で各実行に 1 行記録:
+```jsonl
+{"time":"2026-04-25T10:00:00+09:00","operation":"edit health-check.mjs","tier":"A","reason":"内部 script + git revert で戻せる + 副作用 4h cron 限定","q1":"no","q2":"limited:cron-4h","q3":"yes:git-revert","q4":"no","q5":"yes:user-said-autonomous","second_opinion":"agreed:GPT-5.5"}
+```
+
+朝のブリーフィングで前日分を浜田に提示 (proposal 化推奨 / 4/27 朝 cron 適用予定)。
+
+#### §52-6 例外規定 (緊急時 Tier A 強制実行)
+
+AI 自己診断で「待つと被害拡大」と判断 → Tier A 強制実行可:
+- 例: file-watcher dead → 即修復 (待つと wipe 多発)
+- 例: cron が連続失敗 → 即対応 (翌朝まで待つと被害拡大)
+- 例: TSB-006 wipe 発生 → 即復元
+
+判断ログに `emergency:true` フラグ + 朝のブリーフィングで 🚨 強調表示。月次レビュー (R22 / 5/1 開始) で例外発動回数監査 = 多すぎたらルール見直し。
+
+#### §52-7 §47-9 廃止 (R10 で代替)
+
+旧 §47-9 (kintone API 書込立ち会い必須) は本 R10 §52 で置換。kintone API 書込は Tier A (第二意見合意で即実行) or Tier B (高リスクは承認待ち) に分類される。
+
