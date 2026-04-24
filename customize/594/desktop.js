@@ -1713,7 +1713,7 @@
     const group = (rec594[FC_594_GROUP]?.value || '').trim();
 
     const ledger = await ensureLedger({ mail, name, dept, group });
-    let pool = null;
+    let pool;
     if (ledger.created) {
       pool = await ensureClaimedPool(mail);
       if (!pool) {
@@ -2711,7 +2711,7 @@
       if (!a || !b) return true;  // どちらか空なら警告しない
       if (a === b) return true;   // 完全一致
       // 部分一致 (姓名の片方一致 / スペース有無の違い等) は警告レベルを下げる
-      const norm = (s) => s.replace(/[\s　]/g, '');
+      const norm = (s) => s.replace(/[\s\u3000]/g, '');
       if (norm(a) === norm(b)) return true;  // 全角/半角空白だけの違い
       const msg =
         '⚠ 利用者名が一致しません\n\n' +
@@ -3481,8 +3481,7 @@
       </div>
     `;
 
-    let recs594 = [];
-    let recs627 = [];
+    let recs594, recs627;
     try {
       [recs594, recs627] = await Promise.all([
         fetchAll594ForDashboard(),

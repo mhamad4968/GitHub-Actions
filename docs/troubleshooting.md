@@ -326,21 +326,30 @@ img.addEventListener('click', function () {
 
 ---
 
-## TSB-007 続編 — eslint v10 新規 recommended ルールの後始末（2026-04-21 追記）
+## TSB-007 続編 — eslint v10 新規 recommended ルールの後始末（2026-04-21 追記 / 2026-04-25 解消）
 
 ### 状況
-2026-04-21 に `npm install --save-dev eslint@latest` で v6.4.0 → v10.2.1 にアップグレード成功。TSB-007 の lint:customize 7 日連続失敗は解消。ただし v10 で recommended に入った 2 ルールが既存コードに 5 件ヒットしたため一時的に off にしている。
+2026-04-21 に `npm install --save-dev eslint@latest` で v6.4.0 → v10.2.1 にアップグレード成功。TSB-007 の lint:customize 7 日連続失敗は解消。ただし v10 で recommended に入った 2 ルールが既存コードに 5 件ヒットしたため一時的に off にしていた。
 
-### 一時 off 中のルールと該当箇所
+### 一時 off 中のルールと該当箇所（履歴）
 | ルール | 該当箇所 |
 |---|---|
 | `no-useless-assignment` | customize/594/desktop.js 1716 (pool) / 3484 (recs594) / 3485 (recs627) / customize/627/desktop.js 2625 (recs627) |
 | `no-irregular-whitespace` | customize/594/desktop.js 2714 |
 
-### TODO (後日対応)
-- 5 箇所の実コードを修正（ロジック影響ゼロの代入除去 + 全角空白を半角に）
-- eslint.config.js から off 行を削除して on に戻す
-- 想定工数 15 分・優先度 中
+### 解消（2026-04-25 / 浜田 Tier A 承認 / A-3 完遂）
+| 箇所 | 修正内容 | 安全性検証 |
+|---|---|---|
+| 594:1716 | `let pool = null;` → `let pool;` | 直後の `if/else` 両分岐で必ず `pool = ...` 上書きされるため初期値不要 |
+| 594:2714 | `[\s　]` → `[\s\u3000]` | 全角空白 (U+3000) を Unicode escape 化。正規表現セマンティクス完全同一 |
+| 594:3484-3485 | `let recs594 = []; let recs627 = [];` → `let recs594, recs627;` | 直後の destructuring `[recs594, recs627] = await Promise.all(...)` で必ず上書き、catch は `return` で早期離脱 |
+| 627:2625 | `let recs627 = [];` → `let recs627;` | 直後の `recs627 = await dupFetchAll627();` で上書き、catch は `return` で早期離脱 |
+
+`eslint.config.js` の 2 行 off 削除 → recommended 既定 (error) に復帰。`npm run lint:customize` exit 0 / 出力 0 行を確認。
+
+### 教訓
+- 「一時 off + TODO」は風化しやすい。**続編 TSB として明示・期限付き**で残したことで 4 日後に確実に回収できた
+- 修正前に `--rule` 一時上書きで現行違反を検出 → コードと TSB の line 番号一致を確認 → 4 日経過してもコードが安定していることを保証 → 安心して修正
 
 ---
 

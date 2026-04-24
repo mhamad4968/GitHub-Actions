@@ -2622,7 +2622,7 @@ box-shadow:0 -4px 24px rgba(15,23,42,.18);}\
       </div>
     `;
 
-    let recs627 = [];
+    let recs627;
     try {
       recs627 = await dupFetchAll627();
     } catch (e) {

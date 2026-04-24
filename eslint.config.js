@@ -18,11 +18,9 @@ export default [
       ...js.configs.recommended.rules,
       "no-unused-vars": "off",
       "no-console": "off",
-      // 2026-04-21 追加 (#S6 lint:customize 修復・TSB-007 解消):
-      // ESLint v10 で recommended に入った下記ルールは、既存コードに 5 件ヒットするが
-      // ロジック影響ゼロのため一旦 off。後日コード修正時に on に戻す TODO (TSB-007 続編)。
-      "no-useless-assignment": "off",
-      "no-irregular-whitespace": "off",
+      // 2026-04-25 復帰 (TSB-007 続編・A-3 完遂):
+      // 旧 off の no-useless-assignment / no-irregular-whitespace は recommended 既定 (error) に戻した。
+      // 5 違反は customize/594/627 のコード側で実修正済み (let init 削除 / \u3000 escape 化)。
     },
   },
 ];
