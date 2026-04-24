@@ -1272,9 +1272,11 @@ docs/archives/synthesis-graveyard/
 
 実装: `docs/approved-changes/pending-review/<日付>/<ID>.proposal.json` にキュー保存。夜の §44 evening-reflect (21:00 cron) で一覧提示 → 浜田が `docs/approved-changes/<翌日>/` に手動移動 (= 承認) or `docs/approved-changes/rejected/` (= 却下) → 翌朝 06:00 apply-approved-changes で承認分のみ実行。
 
-#### §52-3 AI 自己診断 5 問（実行前 mandatory）
+#### §52-3 AI 自己診断 6 問（実行前 mandatory / 2026-04-24 v3 = Q6 scope check 追加）
 
-実行前に AI が必ず以下 5 問に答え、回答を `logs/autonomy-decisions.log` に JSON Lines で記録:
+**v2 → v3 改訂 (2026-04-24 20:50 / 候補 3 制定 / Sonnet 反定立反映)**: 浜田 20:13 原発言「AI が良かれと思って勝手に行う微調整が、後から巨大な負債になるリスク」を **構造的に封じ込める** ため、Q6 (scope check) を追加。Sonnet 反定立 20:48 で「事後記録は scope creep を防止しない / 事前承認ゲートが必要」指摘 → Q6 + Tier B 強制昇格で **事前ゲート** 実現。
+
+実行前に AI が必ず以下 6 問に答え、回答を `logs/autonomy-decisions.log` に JSON Lines で記録:
 
 1. **Q1**: 不可逆か? → Yes なら **Tier B 強制昇格**
 2. **Q2**: 副作用範囲は? (cron / 他アプリ / 外部システム) → 影響大なら **Tier B 昇格**
@@ -1282,12 +1284,23 @@ docs/archives/synthesis-graveyard/
 4. **Q4**: 過去類似操作で TSB / インシデント発生したか? → Yes なら **Tier B 昇格**
 5. **Q5**: **その操作を実行する直前の会話ターン**で浜田が**当該操作について**明示的に「自律で」「進めて」「OK」と言ったか? → Yes なら Tier A 維持可
    - **重要 (v2 修正 / Sonnet 19:09 指摘)**: 「基本は自律で」「常に 2 人で議論して」のような**セッション全体への一般指示**は Q5=No と判定する (= Q1-Q4 で Tier A 判定が独立に成立する場合のみ Tier A 維持)。Q5=Yes は **直前ターンの当該操作明示** に限定し、自己診断スキップを防ぐ
+6. **Q6 (scope check / v3 追加)**: **この操作は、浜田が今直近のターンで明示要請した範囲内か?**
+   - **Yes** (直近ターンで当該 scope 内) → Tier 判定継続 (Q1-Q5 通常診断結果)
+   - **No** (scope 外 / ついで作業 / AI 判断による範囲拡張) → **Tier B 強制昇格** (浜田裁定必須)
+   - **判定例**:
+     - 浜田が「Day 3 = 採番マスタ作成」指示中に AI が「ついでに 627 リファクタ」 → Q6=No → Tier B 強制
+     - 浜田が「commit してください」指示で AI が commit のみ → Q6=Yes → Tier A 継続
+     - cron 自動実行 (浜田指示なし定常運用) → Q6=Yes (cron 設定自体が浜田過去承認) / 出典: 「cron 自動 / 浜田過去承認済」と判断ログに明記
+     - ルール改訂連動 (例: §51 修正で関連 cross-reference 追記) → Q6=Yes (親ルール改訂が浜田明示の親 scope) / 出典: 「親ルール改訂連動 / 浜田 X 時 GO の連動」明記
+   - **狙い (Sonnet 申し送り反映)**: 「『引用を書かせる』より『実行前に止める』機構」を統合 = scope 外検出時に **AI が自律実行できない** 構造的禁止
+   - **判断ログフィールド**: `q6_scope_check:"in-scope"|"out-of-scope-tier-B-escalated"|"cron-auto"|"parent-rule-cascade"`
 
 #### §52-4 迷ったら昇格原則 (Conservative Default)
 
 - 自己診断で 1 問でも不確実 → Tier B 昇格 (安全側)
 - 例: 内部 script 編集だが「ロールバック手順 (Q3) が不明」 → Tier B
 - 例: kintone-add-app だが「過去類似操作で TSB-007 (eslint 系) が起きた (Q4 = yes)」 → Tier B
+- **例 (v3 追加)**: 浜田が「環境設定マスタ作成」指示中に AI が「ついでに 627 のフィールド整理も」 → Q6=No (scope 外) → **Tier B 強制昇格** (浜田明示承諾なしに 627 編集不可 = scope creep 構造的禁止)
 
 #### §52-5 判断ログ (`logs/autonomy-decisions.log`)
 
