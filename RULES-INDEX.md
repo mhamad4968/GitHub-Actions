@@ -146,6 +146,7 @@
 | §53-3 | Cursor 内 model 切替 (Task tool / claude-4.6-opus / sonnet / opus-4-7-thinking-xhigh / composer-2-fast) |
 | §53-4 | 不一致時の浜田裁定 (Tier B 投入 → 夜の §44 で提示) |
 | §53-5 | cost 管理 (Cursor Ultra $400 クレジット内で完結 / 月次 API 使用量チェック) |
+| §53-7 | **高次元融合プロセス (Synthesis Logic / R11 v3 / 2026-04-24 制定 / 浜田指示「弁証法 正→反→合」)** = ヘーゲル弁証法を AI 対話に適用 / A デフォルト=多元論的並列 / B 重大判断のみ検証付 Synthesis 6 ステップ / Sonnet 承認ステップで自己審判問題解消 / commit 65a1511 |
 
 ---
 
