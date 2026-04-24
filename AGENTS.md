@@ -1240,6 +1240,52 @@ docs/archives/synthesis-graveyard/
 - 浜田・AI どちらの提案でも記録対象
 - 軽微判断 (G-3 適用外 / 並列提示) は記録不要
 
+#### §54-3 Operation Frequency Management (操作頻度管理 / 候補 1 / 2026-04-24 制定)
+
+**目的**: AI 過剰操作による品質劣化リスク管理 / Task tool 暴走防止 / コスト推定フィクション排除 (Cursor Ultra = 定額サブスクリプション)
+
+**背景**: メイン AI 原案「コスト透明化 (Cost Transparency)」 = Claude API price ベースの推定算出を提案 → Sonnet 反定立 20:58 で **「Cursor Ultra は定額 = トークン従量課金ではない / 推定式はフィクション / 浜田が IDE 設定画面で直接見れば済む」** 致命的指摘 → 「コスト計測 → 操作頻度上限」転換で合導出 → 浜田 A 案 GO 21:01。
+
+##### §54-3-1 Task tool 起動上限
+
+- **1 日 20 回上限** (= Sonnet 起動 / Synthesis 発動 / その他 subagent Task tool 全件合算)
+- **計測方法**: `logs/autonomy-decisions.log` の `second_opinion` フィールド (非 "skipped" 値) を 1 件 1 カウント / Synthesis 発動 = 2 カウント (反定立 + 合検証)
+- **集計タイミング**: 各 Task tool 起動前に AI が当日カウントを確認 → 20 件超過時は §54-3-2 適用
+
+##### §54-3-2 超過時の処理 (Tier B 強制昇格 / 物理ガードレール)
+
+- 21 件目以降の Task tool 起動は **Tier B 強制昇格** (R10 §52 連動 / 浜田承認待ち / 自律実行不可)
+- 判断ログに `frequency_limit_exceeded:true / day_count:N` フィールド追加
+- 浜田 §44 evening-reflect で「本日の操作頻度超過: N 件」表示
+
+##### §54-3-3 浜田月次直接確認 (Sonnet 推奨 / 1 行手順 / 100% 正確性)
+
+- 月初 1 日に AI が `docs/reports/<月>-cost-confirmation.md` **雛形のみ作成**
+- 浜田が **Cursor IDE 設定画面のスクショ** を貼付 (浜田アクション / AI は推定値出さない)
+- 浜田直接確認で実コスト把握 = 「フィクション排除」原則遵守
+
+##### §54-3-4 例外規定
+
+- **緊急対応** (TSB-006 wipe / file-watcher dead 等 emergency:true フラグ): 上限カウント外 / ただし朝強調通知 + 月次レビューで監査
+- **浜田明示要請** (「もう 1 回 Sonnet で確認して」等 Q5=Yes): 上限カウント外 / 「user_requested_extra_review:true」フィールド記録
+- **連続 3 日 emergency 例外発動**: R10 §52-6 monitor 同様 R11/§54-3 全体見直しシグナル
+
+##### §54-3-5 日次集計レポート (4/27 cron 適用予定 / S20 拡張)
+
+- 高次元進化ログに「本日の Task tool 起動回数 / 上限 20 回 / 残 N 回」セクション追加
+- emergency 例外 / Q5 Yes 例外の内訳明示
+- 翌日に「昨日 18 件起動」と表示されたら AI が「本日は慎重に進めよう」と自己抑制
+
+##### §54-3-6 Sonnet 反定立 5 件指摘の解消
+
+| Sonnet 指摘 | 解消方法 |
+|---|---|
+| 1. 中間層不要 | ✅ 浜田直接確認 (§54-3-3) |
+| 2. Cursor Ultra 定額モデル誤解 | ✅ コスト推定全廃 / 「Operation Frequency」に名称変更 |
+| 3. §52-3 v3 Q6 と二重トリップワイヤー | ✅ Q6 (scope check) + §54-3-2 (頻度上限) は独立 = 単一トリップワイヤー |
+| 4. 4/25 朝破綻シナリオ | ✅ 推定式廃止で計測ループ消失 |
+| 5. 代替案 (頻度上限) | ✅ 全面採用
+
 
 ---
 
