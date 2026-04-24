@@ -133,6 +133,34 @@ if (SELF_RESTARTED) {
 sections.push('---');
 sections.push('');
 
+// 0b. §55 セーフモード + 前日 autonomy スキャン（E1 + E2 / 2026-04-25 浜田承認バッチ）
+sections.push('## 0b. §55 セーフモード・前日自律ログ');
+sections.push('');
+const safePath = path.join(REPO_ROOT, '.session-state', 'safe-mode.json');
+if (fs.existsSync(safePath)) {
+  try {
+    const raw = fs.readFileSync(safePath, 'utf8');
+    const sm = JSON.parse(raw);
+    if (sm.active === true) {
+      sections.push(
+        `- 🛡 **SAFE MODE 継続中** — reason: \`${String(sm.reason || '').slice(0, 120)}\` / since: ${sm.since || '(なし)'} / entered_by: ${sm.entered_by || '(なし)'}`
+      );
+    } else {
+      sections.push('- §55: `safe-mode.json` あり → `active` は false（通常運用）');
+    }
+  } catch (e) {
+    sections.push(`- ⚠ \`safe-mode.json\` 解析エラー: ${e.message}`);
+  }
+} else {
+  sections.push('- §55: `safe-mode.json` なし（未発動または初回）');
+}
+sections.push('');
+const rScan = runCmd('scan-autonomy-log', 'node scripts/scan-autonomy-log.mjs', { timeoutMs: 15_000 });
+sections.push(rScan.stdout || '_(scan-autonomy-log 出力なし)_');
+sections.push('');
+sections.push('---');
+sections.push('');
+
 // 1. 環境ヘルス
 sections.push('## 1. 環境ヘルス（kintone API 疎通）');
 sections.push('');
