@@ -136,7 +136,7 @@
 | §52 | **自律レベル 2 段階制** (R10 / 第16章 / Tier A 自律実行型 + Tier B 承認待ちキュー型 / 2026-04-24 v3 = §52-3 自己診断 5 問 → 6 問拡張 = Q6 scope check 追加 / scope 外 → Tier B 強制昇格 = scope creep 構造的禁止 / Sonnet 反定立 20:48 + 浜田 20:50 GO で v3) |
 | §52-1 | Tier A (自律実行型 / 即実行) - 副作用ゼロ→単独 / 副作用あり→第二意見合意で即実行 |
 | §52-2 | Tier B (承認待ちキュー型) - 不確実 / 不一致 / 高リスク → 夜の §44 で浜田承諾 → 翌朝 cron で実行 |
-| §52-3 | AI 自己診断 5 問 (Q1 不可逆 / Q2 副作用 / Q3 ロールバック / Q4 過去 TSB / Q5 浜田明示) |
+| §52-3 | AI 自己診断 6 問 (v3 / Q1 不可逆 / Q2 副作用 / Q3 ロールバック / Q4 過去 TSB / Q5 浜田明示 / Q6 scope check / **Q6 例示に「AI 自律学習」追加** = 旧候補 4 §54-5 Learning Boundary を統合 / 候補 4 制定中止) |
 | §52-4 | 迷ったら昇格原則 (Conservative Default / 1 問でも不確実 → Tier B) |
 | §52-5 | 判断ログ (`logs/autonomy-decisions.log` / JSON Lines / 朝のブリーフィング監査) |
 | §52-6 | 例外規定 (緊急時 Tier A 強制実行 / `emergency:true` フラグ) |
@@ -150,7 +150,7 @@
 | §54 | **自己統治能力 (Self-Governance / R12 / 第18章 / 2026-04-24 制定 / 浜田 20:13 提案 + Sonnet 5 件レビュー全反映)** = §54-1 意味論的バージョニング (BREAKING/FEAT/FIX 必須 + 3 質問判定フローチャート + prefix 統合方式) + §54-2 Negative Log (棄却案永続化 + Sonnet 直接書込権限 = 自己申告バイアス排除 + 蓄積膨張対策 + 能動的サーフェシング) |
 | §54-3 | **[DEPRECATED 2026-04-24 21:09]** Operation Frequency Management (11 分短命) - 浜田 21:08「自律優先 / cost OK」明示で全廃 / AI 双方の「上限思想」盲点を浜田が訂正した教訓 / Negative Log permanent/ 永続保存 |
 | §54-4 | **Mandatory Pre-Op Snapshot (破壊的操作の事前 Snapshot 必須 / 候補 2 / 2026-04-24 21:14 制定)** = 浜田 B 案 (cost OK / 全件 snapshot 路線) + Sonnet 反 2 (emergency 例外厳格化 = スキップ全廃) + レースコンディション対策 (リビジョン番号再取得) |
-| §54-5 | **[制定中止 2026-04-24 21:11]** Learning Boundary - Sonnet 反定立 21:10「§52-3 Q6 で既に規制済 / MCP 登録物理矛盾 / 自律 vs 許可制衝突」全面採用 → §52-3 Q6 例示に「AI 自律学習」追加で代替 / §54-5 新章は作らない / 候補 4 廃案 (5 件 → 4 件にルール総量削減 / R7 §47-B-2 整合) |
+| §54-5 | **Weekly Self-Critique with External Audit (週次自己批判 + 外部 AI 月次審査 / 候補 5 / 2026-04-24 21:18 制定)** = メイン AI 「Daily」案を Sonnet 反定立で「同一ファミリー馴れ合い」指摘 → 「Weekly + 外部 AI 月次審査 (R11 §53-3 経路 B) + 浜田任意採点」で全件採用 / 同一 AI ファミリー閉ループ断ち切り / ※候補 4 (旧 §54-5 Learning Boundary) は §52-3 Q6 統合で制定中止 (上記行参照) |
 
 ---
 
