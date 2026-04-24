@@ -103,22 +103,32 @@ const shortFiles = collectTranscripts(sinceShort);
 const strictFiles = ARG_STRICT ? collectTranscripts(sinceStrict) : null;
 
 // ───── 3. 集計 ─────
+// ⚠ 2026-04-24 (S12 v2 / Phase Z 第 2 ループで発覚した false positive 対策):
+//    Windows-side MCP (github / office-powerpoint) は WSL からの usage log に
+//    現れず常に dormant 誤判定されていた。mcp.json の _meta.dormancy_exempt: true
+//    フラグを読み取り、exempt status として分類 (dormant にも deletion にもカウントせず)。
+//    詳細: docs/plans/_future/2026-05-01-s12-v2-windows-exempt.md
 const results = mcpNames.map((name) => {
   const shortCount = countUsage(shortFiles, name);
   const strictCount = ARG_STRICT ? countUsage(strictFiles, name) : null;
   const disabled = !!mcpServers[name].disabled;
+  const meta = mcpServers[name]._meta || {};
+  const exempt = !!meta.dormancy_exempt;
+  const exemptReason = meta.exempt_reason || null;
   let status;
-  if (disabled) status = 'disabled';
+  if (exempt) status = 'exempt';
+  else if (disabled) status = 'disabled';
   else if (shortCount === 0 && ARG_STRICT && strictCount === 0) status = 'deletion-candidate';
   else if (shortCount === 0) status = 'dormant';
   else status = 'active';
-  return { name, shortCount, strictCount, disabled, status };
+  return { name, shortCount, strictCount, disabled, exempt, exemptReason, status };
 });
 
 const dormantCount = results.filter((r) => r.status === 'dormant').length;
 const deletionCandidateCount = results.filter((r) => r.status === 'deletion-candidate').length;
 const activeCount = results.filter((r) => r.status === 'active').length;
 const disabledCount = results.filter((r) => r.status === 'disabled').length;
+const exemptCount = results.filter((r) => r.status === 'exempt').length;
 
 const summary = {
   generated_at: new Date().toISOString(),
@@ -129,6 +139,7 @@ const summary = {
   dormant: dormantCount,
   deletion_candidate: deletionCandidateCount,
   disabled: disabledCount,
+  exempt: exemptCount,
   status: dormantCount === 0 && deletionCandidateCount === 0 ? 'ok' : 'ng',
   results,
 };
@@ -141,14 +152,15 @@ if (ARG_JSON) {
 // markdown 出力
 out('## 📦 MCP 死蔵検知');
 out('');
-out(`**${mcpNames.length} MCP 検査** (過去 ${DAYS} 日${ARG_STRICT ? ` + strict ${STRICT_DAYS} 日` : ''}): ✅ ${activeCount} 稼働 / ⚠ ${dormantCount} 死蔵 / ❌ ${deletionCandidateCount} 削除候補 / ⏸ ${disabledCount} disabled`);
+out(`**${mcpNames.length} MCP 検査** (過去 ${DAYS} 日${ARG_STRICT ? ` + strict ${STRICT_DAYS} 日` : ''}): ✅ ${activeCount} 稼働 / ⚠ ${dormantCount} 死蔵 / ❌ ${deletionCandidateCount} 削除候補 / ⏸ ${disabledCount} disabled / ⚪ ${exemptCount} exempt`);
 out('');
-out('| MCP | 過去 ' + DAYS + ' 日 | ' + (ARG_STRICT ? '過去 ' + STRICT_DAYS + ' 日 | ' : '') + '状態 |');
-out('|---|---|' + (ARG_STRICT ? '---|' : '') + '---|');
+out('| MCP | 過去 ' + DAYS + ' 日 | ' + (ARG_STRICT ? '過去 ' + STRICT_DAYS + ' 日 | ' : '') + '状態 | 備考 |');
+out('|---|---|' + (ARG_STRICT ? '---|' : '') + '---|---|');
 for (const r of results) {
-  const icon = { active: '✅', dormant: '⚠', 'deletion-candidate': '❌', disabled: '⏸' }[r.status];
+  const icon = { active: '✅', dormant: '⚠', 'deletion-candidate': '❌', disabled: '⏸', exempt: '⚪' }[r.status];
   const strictCol = ARG_STRICT ? `${r.strictCount} | ` : '';
-  out(`| ${r.name} | ${r.shortCount} | ${strictCol}${icon} ${r.status} |`);
+  const note = r.status === 'exempt' ? (r.exemptReason || 'dormancy_exempt') : '';
+  out(`| ${r.name} | ${r.shortCount} | ${strictCol}${icon} ${r.status} | ${note} |`);
 }
 out('');
 
