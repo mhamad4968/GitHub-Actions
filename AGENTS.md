@@ -1033,6 +1033,7 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 | 単一目的のパイプ処理 | `cat file \| grep pattern \| head -5` | 1 コマンドの意味的単位 |
 | 並列読み取り (Read 複数 / Grep 複数) | 関連ファイル群の事前一括把握時のみ | 読み取りで状態変化なし / **編集前の事前調査限定** |
 | 依存関係明示 | `cd repo && git status` | ディレクトリ変更後の状態確認は 1 単位 |
+| **Task tool 経由の readonly 第二意見起動** (2026-04-24 v2 追加 / R11 §53 連動) | `Task(subagent_type=generalPurpose, model=claude-4.6-sonnet-medium-thinking, readonly=true)` で別 model に判断レビュー依頼 | R11 §53 で常時発動 / readonly 厳守 / 副作用ゼロ / 1 つの目的の単一処理 (= 第二意見取得) / Sonnet 19:09 指摘で本例外を明示化 |
 
 #### 違反時の挙動
 
@@ -1149,7 +1150,8 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 2. **Q2**: 副作用範囲は? (cron / 他アプリ / 外部システム) → 影響大なら **Tier B 昇格**
 3. **Q3**: ロールバック手順明確か? → No なら **Tier B 昇格**
 4. **Q4**: 過去類似操作で TSB / インシデント発生したか? → Yes なら **Tier B 昇格**
-5. **Q5**: 浜田が今回明示的に「自律で」と言ったか? → Yes なら Tier A 維持可
+5. **Q5**: **その操作を実行する直前の会話ターン**で浜田が**当該操作について**明示的に「自律で」「進めて」「OK」と言ったか? → Yes なら Tier A 維持可
+   - **重要 (v2 修正 / Sonnet 19:09 指摘)**: 「基本は自律で」「常に 2 人で議論して」のような**セッション全体への一般指示**は Q5=No と判定する (= Q1-Q4 で Tier A 判定が独立に成立する場合のみ Tier A 維持)。Q5=Yes は **直前ターンの当該操作明示** に限定し、自己診断スキップを防ぐ
 
 #### §52-4 迷ったら昇格原則 (Conservative Default)
 
@@ -1175,9 +1177,13 @@ AI 自己診断で「待つと被害拡大」と判断 → Tier A 強制実行�
 
 判断ログに `emergency:true` フラグ + 朝のブリーフィングで 🚨 強調表示。月次レビュー (R22 / 5/1 開始) で例外発動回数監査 = 多すぎたらルール見直し。
 
-#### §52-7 §47-9 廃止 (R10 で代替)
+#### §52-7 旧運用慣行の置換 (§47-8 を細分化 / R10 v2 修正)
 
-旧 §47-9 (kintone API 書込立ち会い必須) は本 R10 §52 で置換。kintone API 書込は Tier A (第二意見合意で即実行) or Tier B (高リスクは承認待ち) に分類される。
+**v1 (2026-04-24 19:00) 誤記訂正**: 当初「旧 §47-9 (kintone API 書込立ち会い必須) を本 R10 で置換」と記したが、現 AGENTS.md の §47 第 9 項は「**着手前 §47 発動 / 30 分超タスク 5 分予算チェック**」であり、kintone API 書込立ち会い必須という条文は実在しない (Sonnet 第二意見で 19:09 指摘 / メイン AI 事実誤認)。
+
+**正しい置換対象**: 2026-04-22 制定 §47 第 8 項「**自動化より運用者の明示的アクション優先**」を kintone API 書込操作に厳格適用していた **2026-04-23-4/24 朝までの運用慣行**（PC 台帳 Day 1+2 で全 12 回の API call ごとに浜田 GO 取得）を本 R10 で置換する。
+
+§47-8 の精神（枯渇時 / 例外時 / 不可逆操作時は自動化禁止 + 明示的アクション）は今後も有効。R10 はその精神を細分化し、Tier A（副作用軽微+第二意見合意で即実行可）/ Tier B（不可逆 / 大規模 / 不一致は浜田承諾必須）を明確に区別する位置付け。
 
 ---
 
@@ -1204,17 +1210,50 @@ AI 自己診断で「待つと被害拡大」と判断 → Tier A 強制実行�
 - 浜田が「3 AI 揃えて検討」と明示時
 - TSB 系列の予防策設計時 (例: TSB-013 v3 cron PATH 統一の方針決定)
 
-#### §53-3 Cursor 内 model 切替方法 (Task tool / 追加課金ほぼゼロ)
+#### §53-3 AI 選定基準 + Cursor 内 model 切替方法 (v2 拡張)
 
-Cursor Ultra プラン ($200/月 / Claude + GPT-5.5 + Gemini 3.1 Pro = 20x usage) を活用し、Task tool で別 model の subagent を起動して第二意見を取得:
+##### A. 第二意見の 2 経路
 
-- **second-opinion**: `Task(subagent_type=generalPurpose, model=claude-4.6-sonnet-medium-thinking, readonly=true)` で軽量レビュー (cost 最小)
-- **best-of-n**: `Task` 並列起動 (3 並列 / 異なる model 指定) → 結果比較 + 一致/不一致判定
-- 利用可能 model:
-  - `claude-4.6-opus-high-thinking` (高品質 / メイン)
-  - `claude-4.6-sonnet-medium-thinking` (軽量 / second-opinion 標準)
-  - `claude-opus-4-7-thinking-xhigh` (最高品質 / 重要判断時)
-  - `composer-2-fast` (超高速 / 簡単な確認)
+Cursor Ultra プラン ($200/月 / Claude + GPT-5.5 + Gemini 3.1 Pro = 20x usage) を活用するが、**Task tool で起動できるのは Claude family 4 種のみ** (Cursor システム制約 / 2026-04-24 19:11 メイン AI 自己訂正)。GPT-5.5 / Gemini 3.1 Pro は Cursor IDE のチャット画面で浜田が手動切替 or `second-opinion` skill (Codex CLI / Gemini CLI) 経由で利用。
+
+| 経路 | 利用可能 AI | AI 自律性 | コスト |
+|---|---|---|---|
+| **A. Task tool** | Claude family 4 種のみ (下記) | ✅ AI 自律で起動 | Cursor Ultra 内で完結 ($0 追加) |
+| **B. second-opinion skill** | OpenAI Codex (GPT-5 系) / Google Gemini CLI | ✅ AI 自律で起動 | 別 API key 設定必要 / 月 $1-10 |
+
+##### B. Task tool 利用可能 model 4 種
+
+- `claude-4.6-opus-high-thinking` (高品質 / メイン操作の second-opinion)
+- `claude-4.6-sonnet-medium-thinking` (軽量 / 標準 second-opinion)
+- `claude-opus-4-7-thinking-xhigh` (最高品質 / 重要判断 / TSB 真因究明)
+- `composer-2-fast` (超高速 / token 消費最小 / 軽微確認)
+
+##### C. AI 選定基準 マトリクス (場面別推奨)
+
+| 場面 | 推奨 (Task tool 軸) | 別 family 補強 (skill 経由 / 任意) | 理由 |
+|---|---|---|---|
+| 軽微確認 (内部 script コメント / 日付更新) | `composer-2-fast` (**E 項により第二意見自体スキップ可** / Q3 ロールバック確認のみ) | 不要 | 超高速 / cost 最小 |
+| 中度判断 (kintone 書込 / mcp.json 編集 / 内部 script ロジック変更) | `claude-4.6-sonnet-medium-thinking` | 不要 | 標準 second-opinion / バランス |
+| 重大判断 (削除 / リネーム / 大規模変更) | `claude-opus-4-7-thinking-xhigh` | **skill で Codex/Gemini 1 件必須** | 最高品質 + 別 family で多視点 / 1 family 偏重回避 |
+| TSB 真因究明 | `claude-opus-4-7-thinking-xhigh` | skill で Gemini (任意 / 別視点) | 最高思考力 / じっくり推論 |
+| 月次レビュー (大量データ評価) | `claude-4.6-opus-high-thinking` (200K context) | skill で Gemini (2M context) | 長文 context / 大量ログ評価 |
+| コード差分レビュー | `claude-4.6-sonnet-medium-thinking` | skill で Codex (任意) | コーディング標準 / 別 family は GPT 強い |
+
+##### D. 選定原則 5 つ
+
+1. **メイン AI と異なる model を必ず選ぶ** (現在 Opus → second-opinion は Sonnet/composer / 同じ Opus 同士は禁止)
+2. **軽微 = 速度優先 / 重大 = 品質優先**
+3. **重大判断は必ず Claude family + 別 family (skill 経由 GPT or Gemini)** = 1 family 偏重を避ける
+4. **best-of-n (3 AI 並列) は最重大時のみ** = Task tool で Opus + Sonnet + composer の 3 並列 (異なる thinking レベル) or skill 併用で 3 family
+5. **コスト管理**: 軽微 = composer / 月次 = skill (Gemini 安い) / 通常 = sonnet
+
+##### E. v2 適用範囲の絞込 (Sonnet 19:09 指摘 #3 への対応)
+
+§53-1 トリガーで「Tier A 副作用ある全操作で第二意見必須」とすると cost 爆発 + §51 並列禁止と衝突。以下に絞る:
+
+- **必須**: 中度以上の副作用 (kintone 書込 / mcp.json 編集 / 内部 script ロジック変更)
+- **任意**: 軽微 (script コメント追加 / 日付更新 / 単純な値 1 つ変更等) → Q3 (ロールバック可) 確認のみで第二意見スキップ可
+- **必須昇格**: 不可逆 / 大規模 / TSB 真因究明 / 浜田相談時 / Tier B 投入前判定
 
 #### §53-4 不一致時の浜田裁定
 
