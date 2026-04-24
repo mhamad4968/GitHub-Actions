@@ -31,6 +31,10 @@ logs/*
 !logs/autonomy-decisions.log
 !logs/.gitkeep
 
+# §42-2 Continuity Assurance (ファイル直読方式 / 2026-04-24 制定)
+# AGENTS.md ハッシュは個人 WSL ローカル state / git 管理しない
+.session-state/
+
 
 # 別 git リポを内包しているので submodule 化するまでは除外（2026-04-20 追加）
 GitHub-Actions/
