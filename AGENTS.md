@@ -1179,3 +1179,60 @@ AI 自己診断で「待つと被害拡大」と判断 → Tier A 強制実行�
 
 旧 §47-9 (kintone API 書込立ち会い必須) は本 R10 §52 で置換。kintone API 書込は Tier A (第二意見合意で即実行) or Tier B (高リスクは承認待ち) に分類される。
 
+---
+
+## 第17章 第二意見メカニズム（2026-04-24 制定 / 浜田指示「別の AI と協議して最高の案や判断」/ R11）
+
+### §53 第二意見の常時発動 + Cursor 内 model 切替
+
+**背景**: AI 単独判断では「自分の判断を正しいと信じ込む盲点」が必ず出る (例: 4/24 朝 Phase Z で発見した S13 v1 半完成、TSB-007 ep5 auto-heal 自爆等)。浜田指示「別の AI と協議して最高の案や判断」を受けて、**第二意見を標準プロセスに組込み**、AI 同士の意見対立を浜田裁定の入口とする。
+
+**核心**: メイン AI (Claude 4.6 Opus / 現在) + 第二意見 (Cursor Ultra 内の GPT-5.5 / Gemini 3.1 Pro) で **副作用ある全操作で合意確認**。合意なら Tier A 即実行 / 不一致なら Tier B 承認待ちキュー。
+
+#### §53-1 second-opinion (1 AI レビュー) トリガー
+
+- Tier A 副作用ありの操作 (内部 script 編集 / kintone 書込 / mcp.json 編集 等)
+- AI 自己診断で「不確実」フラグ (Q1-Q5 のいずれかで判断不能)
+- 浜田から「判定して」「これどう?」相談時
+- TSB 真因究明時
+- L3 操作 (削除等) の **Tier B 投入前** 必須 (= 「これは本当に Tier B か?」確認)
+
+#### §53-2 best-of-n (3 AI 並列) トリガー
+
+- 不可逆 + 影響範囲大の組合せ (例: アプリ削除 / 旧アプリリネーム / 100 件以上の一括削除)
+- 月次レビュー (過去 1 か月の自律判断ログ全評価 / R22 5/1 開始予定と統合)
+- 浜田が「3 AI 揃えて検討」と明示時
+- TSB 系列の予防策設計時 (例: TSB-013 v3 cron PATH 統一の方針決定)
+
+#### §53-3 Cursor 内 model 切替方法 (Task tool / 追加課金ほぼゼロ)
+
+Cursor Ultra プラン ($200/月 / Claude + GPT-5.5 + Gemini 3.1 Pro = 20x usage) を活用し、Task tool で別 model の subagent を起動して第二意見を取得:
+
+- **second-opinion**: `Task(subagent_type=generalPurpose, model=claude-4.6-sonnet-medium-thinking, readonly=true)` で軽量レビュー (cost 最小)
+- **best-of-n**: `Task` 並列起動 (3 並列 / 異なる model 指定) → 結果比較 + 一致/不一致判定
+- 利用可能 model:
+  - `claude-4.6-opus-high-thinking` (高品質 / メイン)
+  - `claude-4.6-sonnet-medium-thinking` (軽量 / second-opinion 標準)
+  - `claude-opus-4-7-thinking-xhigh` (最高品質 / 重要判断時)
+  - `composer-2-fast` (超高速 / 簡単な確認)
+
+#### §53-4 不一致時の浜田裁定
+
+- 3 AI で意見不一致 → Tier B 投入 (承認待ちキュー) → 夜の §44 evening-reflect で **不一致内容を浜田に提示**
+- 浜田が「メインの判断を採用」「第二意見を採用」「どちらでもない (新案)」を選択
+- 結果を判断ログに記録 + R10 自己診断ルールの改善材料に
+
+#### §53-5 第二意見の cost 管理
+
+- Cursor Ultra $400 クレジット内で完結が原則
+- 月次で API 使用量チェック (R22 月次レビュー時 / proposal 化推奨)
+- 想定: second-opinion 100 回/月 + best-of-n 10 回/月 = $0-10 程度の追加課金 (ほぼゼロ)
+- 超過時は `composer-2-fast` (軽量) を優先 / 不要な second-opinion をスキップ
+
+#### §53-6 R11 を補強する関連スキル
+
+- `second-opinion` skill (skills/trailofbits-second-opinion / OpenAI Codex / Google Gemini CLI)
+- `best-of-n-runner` skill (skills/best-of-n-runner / 並列 git worktree)
+- 月次で利用度評価 / 死蔵なら廃止検討 (R3 §50-2 死蔵 MCP 根絶ルールと整合)
+
+
