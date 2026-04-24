@@ -1,0 +1,53 @@
+{
+  "id": "S21-best-of-n-redesign",
+  "title": "best-of-n を External Multi-Review に再設計 (G-5 適合 + アンカリングバイアス回避)",
+  "tier": "B",
+  "created_at": "2026-04-24T20:05:00+09:00",
+  "trigger": "§53-7-G-5 (浜田 19:55 制定 / 物理並列禁止 / シングル・エージェント・コントロール) との衝突解消",
+  "synthesis_logic": {
+    "正_メイン_AI_案_D": {
+      "summary": "best-of-n を 2 AI 順次起動 + 必要時 3 AI 順次起動 (浜田明示時)",
+      "rationale": "G-5 完全遵守 (順次) + 多視点性確保 (2 AI で大半カバー)",
+      "verdict": "REJECTED by Sonnet (アンカリングバイアス構造化 / 概念的詐欺)"
+    },
+    "反_Sonnet_反定立_19:58": {
+      "summary": "best-of-n subagent 完全廃止 / 外部 CLI (Codex/Gemini) 必須 or 浜田手動切替",
+      "key_critique": [
+        "順次化は best-of-n の本質 (独立並列生成→比較) を破壊 = 別物に変質 = 概念的詐欺",
+        "アンカリングバイアス: AI #2 が AI #1 出力受け取れば引きずられる → G-1 馴れ合い構造化",
+        "G-1 違反 (馴れ合い) / G-2 違反 (ラベル管理崩壊) / G-3 違反 (境界線骨抜き) 同時発生",
+        "破綻シナリオ: ケース① 重大判断 3 件連続で待機 6 倍 / ケース② rubber stamp / ケース③ 浜田明示条件死文化"
+      ]
+    },
+    "合_高次元統合": {
+      "name": "External Multi-Review (多重外部レビュー)",
+      "summary": "best-of-n ラベル廃止 + 概念再定義 + 三経路明記",
+      "details": {
+        "decision": "Cursor 内 Task tool による best-of-n は完全廃止 (G-5 違反 + アンカリング回避)",
+        "経路_A_軽量中度": "Cursor 内 Task tool で Sonnet 1 件 = 現状の second-opinion (G-5 適合 / subagent 1 つまで)",
+        "経路_B_重大判断_多視点必須": "外部 CLI (skills/trailofbits-second-opinion / Codex or Gemini) → 完全独立性 (Cursor 内コンテキスト渡らず) → アンカリングバイアスゼロ",
+        "経路_C_最重要判断_浜田明示": "浜田自身が Cursor IDE でモデル手動切替 → 同じ質問を別 model で投げ直し (コストゼロ / 制御 100%)",
+        "発動条件": "§53-2 継承 (不可逆 + 影響大 / 月次レビュー / 浜田明示時)"
+      },
+      "g_violations_resolved": {
+        "G-1_馴れ合い厳禁": "✅ 解消 (経路 B 外部 CLI で完全独立 / 経路 C 浜田手動で AI 同士接触なし)",
+        "G-2_ラベル必須": "✅ 維持 (合提示時のラベル必須は変更なし)",
+        "G-3_境界線厳守": "✅ 維持 (発動条件 §53-2 継承)",
+        "G-5_物理並列禁止": "✅ 解消 (Task tool subagent 同時起動なし / 経路 A は 1 件のみ / 経路 B/C は外部)"
+      }
+    },
+    "合_検証_Sonnet_pending": "Sonnet 再レビューは翌朝 cron 適用前に浜田判断仰ぐ際に再実施 (時間節約 / 浜田裁定で代替)"
+  },
+  "old_string": "#### §53-2 best-of-n (3 AI 並列) トリガー\n\n- 不可逆 + 影響範囲大の組合せ (例: アプリ削除 / 旧アプリリネーム / 100 件以上の一括削除)\n- 月次レビュー (過去 1 か月の自律判断ログ全評価 / R22 5/1 開始予定と統合)\n- 浜田が「3 AI 揃えて検討」と明示時\n- TSB 系列の予防策設計時 (例: TSB-013 v3 cron PATH 統一の方針決定)",
+  "new_string": "#### §53-2 External Multi-Review (多重外部レビュー / R11 v4 / 2026-04-25 制定 / 浜田 4/24 §53-7-G-5 制定の衝突解消)\n\n**v3 → v4 改訂**: 旧 §53-2「best-of-n (3 AI 並列起動)」は §53-7-G-5 (物理並列禁止) と衝突 + Sonnet 反定立 (アンカリングバイアス指摘) で v4 で再設計。Cursor 内 Task tool による best-of-n は **完全廃止**。代替として「External Multi-Review (多重外部レビュー)」三経路を採用。\n\n##### 三経路\n\n| 経路 | 手段 | 適用 | G-5 適合 |\n|---|---|---|---|\n| **A. 軽量〜中度** | Cursor 内 Task tool で Sonnet 1 件 (= 現状の second-opinion) | 通常の第二意見 | ✅ subagent 1 つまで |\n| **B. 重大判断 + 多視点必須** | 外部 CLI (`skills/trailofbits-second-opinion` / Codex or Gemini CLI) | 不可逆 / 大規模 / TSB 真因究明 / アンカリングバイアス回避必須時 | ✅ 完全独立性 (Cursor 内コンテキスト渡らず) |\n| **C. 最重要判断 + 浜田明示** | 浜田自身が Cursor IDE でモデル手動切替 → 同じ質問を別 model で投げ直し | 浜田が「Cursor で別 model で確認したい」と明示時 | ✅ コストゼロ / 制御 100% / AI 同士接触なし |\n\n##### 発動条件 (旧 §53-2 継承)\n\n- 不可逆 + 影響範囲大の組合せ (例: アプリ削除 / 旧アプリリネーム / 100 件以上の一括削除)\n- 月次レビュー (過去 1 か月の自律判断ログ全評価 / R22 5/1 開始予定と統合)\n- 浜田が「3 AI 揃えて検討」「External Multi-Review で」「外部レビューも」と明示時\n- TSB 系列の予防策設計時 (例: TSB-013 v3 cron PATH 統一の方針決定)\n\n##### v3 → v4 変更点\n\n- ❌ 廃止: Cursor 内 Task tool で 3 AI 並列起動 (§53-7-G-5 違反 / アンカリングバイアス構造化)\n- ✅ 追加: 経路 A (Cursor 内単独 Task) / 経路 B (外部 CLI) / 経路 C (浜田手動切替)\n- ✅ 改名: 「best-of-n」 → 「External Multi-Review」 (Sonnet 「概念的詐欺」批判反映)",
+  "target_file": "AGENTS.md",
+  "verification_required": [
+    "G-1/G-2/G-3/G-5 全件適合確認",
+    "アンカリングバイアスゼロ確認",
+    "skills/trailofbits-second-opinion (Codex/Gemini CLI) の Cursor Ultra 内利用可能性確認 (経路 B 実装可能性)",
+    "経路 C 浜田手動切替の操作手順確認 (Cursor IDE のモデル切替 UI)"
+  ],
+  "rollback": "git revert 後 §53-2 v3 (best-of-n 3 AI 並列) に戻す / ただし G-5 違反継続のため非推奨",
+  "review_status": "pending_user_review_2026-04-24_evening_reflect",
+  "expected_apply_date": "2026-04-25 06:00 cron"
+}
