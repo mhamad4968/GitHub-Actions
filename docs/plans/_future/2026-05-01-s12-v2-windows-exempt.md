@@ -1,7 +1,8 @@
-# 🔮 S12 v2: Windows-side MCP 除外 + dormancy 判定強化
+# ✅ S12 v2: Windows-side MCP 除外 + dormancy 判定強化【2026-04-24 18:10 実装完了 / 前倒し】
 
 **制定日**: 2026-04-24 (Fri) 朝 Phase Z 第 2 ループで発覚  
-**実施予定日**: 2026-05-01 (Fri) 月次レビュー or 5/22 メジャー一括レビュー  
+**実施予定日 (当初)**: 2026-05-01 (Fri) 月次レビュー  
+**実施日 (前倒し)**: 2026-04-24 (Fri) 18:00-18:10 (浜田 17:43 帰宅後の 1h17m 改善枠 / commit `7c50259`)  
 **契機**: 4/24 朝 Phase Z 第 2 ループで S12 が **github + office-powerpoint を dormant 誤検知**  
 **対象スクリプト**: `scripts/check-mcp-dormancy.mjs`
 
