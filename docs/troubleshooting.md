@@ -13,8 +13,8 @@
 
 | TSB ID | 日付 | テーマ | 真因 (1 文) | status | root_cause_confirmed | 影響範囲 |
 |---|---|---|---|---|---|---|
-| TSB-001 | 履歴参照 | fileKey 問題 | （旧記録 / `docs/asset-management-logic.md` 参照 / 詳細未掘削） | 🟡 | **false** | 594 |
-| TSB-004 | 履歴参照 | 文字化け修復ロジック | （旧記録 / AGENTS.md §14 参照 / 真因 1 文未抽出） | 🟡 | **false** | 全般 |
+| TSB-001 | 履歴参照 | fileKey 問題 | **2026-04-25 掘削結果**: 元事象の詳細記録自体が `docs/asset-management-logic.md` にも残っておらず、4/19 D1-proposal でも「詳細未記載」と明記されていた孤児 TSB（fileKey は `scripts/create-shucccho-seisan-app.js`/`deploy-customization.js` の customize アップロード後の `/k/v1/file.json` 応答内 key 名 = 直近の運用では問題発生せず） | 🟡 | **false (孤児)** | 594 |
+| TSB-004 | 履歴参照 | 文字化け修復ロジック | kintone API レスポンスの添付ファイル名文字エンコーディングが環境依存（cp932/UTF-8 mix）で JS 側修復ロジック (decodeURIComponent / TextDecoder) では完全網羅できないため、2 回修復試行後に保存名を ASCII 固定にピボットして根治した | ✅ | true | 全般（添付ファイル名）|
 | TSB-005 | 2026-04-19 | セッション間継続性の構造的脆弱性 | チャットがポリシーブロックで途絶した際、復元アンカーの鮮度を機械的に監視する仕組みが無かったため AI が経緯喪失した | ✅ | true | 全プロジェクト |
 | TSB-006 | 2026-04-19 09:02 | scripts/ 9 + WORKFLOW.md + AGENTS.md §42-§49 wipe | Cursor の "Request blocked by Anthropic" 時に進行中の編集が途中状態のままロールバックされ複数ファイルが 0 byte 化した | ✅ | true | scripts / docs |
 | TSB-007 | 2026-04-19 | ESLint v6 vs flat config 不整合 | リポは ESLint 8+ flat config 形式の `eslint.config.js` を使用するが node_modules の ESLint が v6.4.0 で flat config 非対応 | ✅ | true | lint:customize |
@@ -25,15 +25,15 @@
 | TSB-009 | 2026-04-21 | Chrome 92+ で window.open(blob:URL) ブロック | Chrome 92+ のセキュリティ制限で blob: URL を新規タブで開く操作が一律ブロックされる | ✅ | true | FAQ ポータル / 投稿画像 |
 | TSB-010 | 2026-04-22 | 投稿後 URL.revokeObjectURL の dangling reference | reload 後の `<img src="blob:...">` が DOM に残っているうちに blob URL を revoke してしまい、その後のクリックで解放済参照を踏む | ✅ | true | FAQ ポータル / Lightbox |
 | TSB-011 | 2026-04-22 21:48 | 並行 Cursor チャット騒動 | Cursor UI に「同一リポを触っている他チャット数」表示がなく、浜田が同テンプレを 2 窓に貼ったため並行起動に誰も気付かなかった | ✅ | true | リポ全体 |
-| TSB-012 | 2026-04-23 03:00 | rag MCP documentCount=0 | 過去の cron ingest が rag DB に反映されていない（複数仮説あるが浜田立ち会いの実証で確定要 / その後 4/23 中に一度修復済 = 真因 1 文に圧縮しきれていない複合要因） | 🟡 | **false** | rag MCP |
+| TSB-012 | 2026-04-23 03:00→03:30 解消 | rag MCP documentCount=0 | mcp-local-rag v0.13.0 の server mode は `--db-path` / `--cache-dir` CLI 引数を完全に無視し env vars (`DB_PATH`/`CACHE_DIR`) のみを読むため ingest 側 (CLI subcommand mode) は `.rag/lancedb` に書込むが server 側は `process.cwd()/lancedb` (空) を見て `documentCount: 0` を返していた | ✅ | true | rag MCP |
 | TSB-013 | 2026-04-23 20:30→21:00 真因確定 | cron 環境で uv 系 MCP (cve-search) が PATH not found 誤検知 | crontab の PATH に `~/.local/bin` が含まれず cron 実行時のみ uv バイナリ起動失敗 (v1 timeout 仮説は副因に過ぎなかった) | ✅ | true | cve-search MCP / cron |
 | TSB-014 | 2026-04-23 21:15→21:30 解消 | ブラウザ系 3 MCP の system deps + Chrome 不足 | WSL に Chromium 自体 + system libraries (libnspr4 / libnss3 / libatk1.0 等) 未インストールで playwright が起動できなかった | ✅ | true | playwright / a11y-scanner / google-search |
 | TSB-015 | 2026-04-23 21:30→21:40 解消 | google-search MCP の Google bot 検知で実用度 0 | Google スクレイピング型 MCP は Google の bot 検知で結果が常に空配列になり頭打ち（duckduckgo-search に入替で死蔵根絶） | ✅ | true | search MCP |
 
-**集計** (2026-04-25 08:35 時点):
-- 全 16 件中 **root_cause_confirmed = true: 13 件 (81%)** / **false: 3 件 (19%)**
-- false 3 件 (TSB-001 / TSB-004 / TSB-012) は **再発監視優先** = 朝 cron で別途警戒
-- 5 月目標 (F-2 自己批判 §54-5): **root_cause_confirmed カバレッジ 100%** = TSB-001 / 004 / 012 の真因 1 文掘削を 5 月中に実施
+**集計** (2026-04-25 08:50 時点 / G-5 で 2 件追加掘削):
+- 全 16 件中 **root_cause_confirmed = true: 15 件 (94%)** / **false (孤児): 1 件 (6%)**
+- 5 月目標 (F-2 自己批判 §54-5) = カバレッジ 100% を **G-5 で前倒し達成（94% / 残り 1 件は孤児で原始記録なし）**
+- 残 false: **TSB-001 のみ** = 元事象の詳細記録が `docs/asset-management-logic.md` にも残っていない孤児 TSB（4/19 D1-proposal でも「詳細未記載」と明記）= 真因不明のまま記録止まり
 
 > **注**: TSB-002, TSB-003, TSB-008 はファイル不在時の記載漏れ。発見次第追記。
 
