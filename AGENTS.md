@@ -223,8 +223,14 @@ agent
 
 **月次リセット**:
 
-- 浜田 Cursor 課金日（例: 毎月 14 日 → 浜田が初回設定時に `npm run credit:set --reset-day=14` で記録）
+- 浜田 Cursor 課金日（例: 毎月 14 日 → 浜田が初回設定時に `npm run credit:reset -- --day=14` で記録）
 - リセット日に AI が `data/credit-usage.json` の月次集計を `data/credit-usage-history.jsonl` に append → 当月分 reset
+
+**タイムゾーン (P1 / 2026-04-26 / off-by-one バグ修正)**:
+
+- **全ての日付計算は JST (UTC+9) 基準**。`scripts/credit-budget.mjs` の `todayJstIso()` / `nowJstIso()` / `dateToJstIsoDate()` を使用
+- 旧実装 (UTC `toISOString()`) では JST 0:00-8:59 に記録すると前日扱いになる off-by-one バグがあった (実例: O-series 制定日 2026-04-26 07:16 JST の浜田報告が `2026-04-25` として記録された)
+- 修正後: cursor.com/billing が表示する日付（JST 表記）と一致する。データ保存も `recorded_at` が `+09:00` 付き ISO 8601
 
 **AI 管理範囲（§1-2-4 の役割分担）**:
 
@@ -1521,6 +1527,7 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 - 改訂日: 2026-04-26 06:42（[FEAT] v23.7 / N-3: §1-2-2「API 制限到達時の自動フォールバック禁止」新設（浜田朝指示「Switched to Composer 2 after reaching API limit. を改善したい」反映）。Cursor IDE 側の Opus → Composer/Sonnet silent fallback を §1-2 違反として構造的禁止。IDE 設定 5 項目（Auto / Auto-fallback / Use Auto on limits / 有効モデル一覧 / Background agents）を必須状態表で明記。AI 検知時動作（§47-E 連動）: 即時中断 → 浜田へ「§1-2-2 違反検知」報告 → GO 待ち。TSB-018 起票。RULES-INDEX.md §1-2 行を §1-2-2 まで拡張、§N チェックリストに §1-2 / §1-2-2 を追加。）
 - 改訂日: 2026-04-26 07:05（[FEAT] v23.8 / N-4+N-5+N-6 / O-series: 浜田「甲：フル実装」承認 → §1-2-2 N-4 強化（4 択 A-D 提示の枠組み + §1-2-2-1 Cursor IDE 必須設定 = On-Demand ON + Spend Cap $130）+ §1-2-3 N-5 新設「Opus 内モデル使い分け」（Max Thinking vs Extra High / 既定は Extra High / Max Thinking 切替の証跡義務）+ §1-2-4 N-6 新設「クレジット予算管理」（月予算 $200+$130 / 1 日 1 回 % 貼付フロー / 70-85-95% 自発警告 / `scripts/credit-budget.mjs` + `data/credit-usage.json` + `daily-morning-prep.mjs §0` 統合 / AI と浜田の役割分担表）。Ultra プラン枯渇傾向の構造的対策完了。RULES-INDEX.md / NEW-SESSION-STARTER.md v3.3 / CURSOR-トラブル対応メモ.md v2.3 / 浜田 Desktop AI緊急用 同期。）
 - 改訂日: 2026-04-26 07:55（[FEAT] v23.9 / Q1: §1-2-2-1 を 4 → 8 項目に拡張 + 第18章 §52-8「高リスク shell 暴走防止」新設。発端 = §1-2-2-1 検証中に浜田スクショで Cursor IDE Settings → Agents タブ `Auto-Run Mode = Run Everything (Unsandboxed)` + `Browser Protection: OFF` + `MCP Tools Protection: OFF` 三重 OFF を発見 → §52 RACI Tier B が IDE レベルで構造的 bypass される憲法違反級の silent breach（kintone 本番 API も承認なし執行可能だった）。浜田暫定対処 = Auto-Run Mode 維持（基本自律）+ Browser/MCP Protection ON（kintone MCP 経由ゲート復活 / Cap は $300 のまま 5/14 に $130 へ）。§1-2-2-1 拡張: A 課金 (On-Demand mode + Monthly Limit) / B Models (有効モデル一覧 + Add 操作) / C Agents (Auto-Run + Browser + MCP Protection) / D Cloud Agents 不使用注記。§52-8 新設: rm -rf / git push --force / npm install (新規) / chmod -R / sudo / .env 編集 等を「事前報告 → GO 待ち」必須化（読取系・既知 npm スクリプト・git 安全コマンドは例外）。TSB-019 起票。）
+- 改訂日: 2026-04-26 08:10（[FIX] v23.10 / P1: `scripts/credit-budget.mjs` の JST 化（off-by-one バグ修正）+ `data/credit-usage.json` を git 追跡化。発端 = O-series で UTC 基準 `toISOString()` を使ったため JST 0:00-8:59 の記録が前日として保存されるバグ（実例: 2026-04-26 07:16 JST の浜田報告が `2026-04-25` として記録）。修正: 全日付計算を JST (UTC+9) 基準に統一する `todayJstIso() / nowJstIso() / dateToJstIsoDate() / jstIsoDateToDate() / jstDateAtMidnight()` ヘルパー導入。`recorded_at` が `+09:00` 付き ISO 8601 に。既存データも修正（4/25→4/26 / current_period_start 4/13→4/14）。AGENTS.md §1-2-4 末尾に「タイムゾーン」節追記。`reset --day=` の正しい usage 例も訂正（誤: `--reset-day=` / 正: `npm run credit:reset -- --day=14`）。`data/credit-usage.json` を git tracked にし、複数セッション間でも継続性が保たれるように。）
 
 ---
 

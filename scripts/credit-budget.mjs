@@ -61,40 +61,73 @@ function saveState(state) {
   fs.writeFileSync(USAGE_FILE, JSON.stringify(state, null, 2) + '\n', 'utf8');
 }
 
-function todayIso() {
-  const d = new Date();
-  return d.toISOString().slice(0, 10);
+/**
+ * JST タイムゾーン基準の日時ユーティリティ (P1 / 2026-04-26 / off-by-one バグ修正)
+ *
+ * 背景: O-series で UTC 基準の `new Date().toISOString()` を使ったため
+ *   JST 0:00 〜 8:59 に記録すると前日 (UTC 日付) として保存される問題があった。
+ * 方針: 全ての「日付」概念を JST (UTC+9) 基準に統一。
+ *   JST 日付 = (UTC 時刻 + 9h) を ISO 化した先頭 10 文字。
+ */
+const JST_OFFSET_MS = 9 * 60 * 60 * 1000;
+
+/** 任意の Date オブジェクトを「JST 日付」(YYYY-MM-DD) 文字列に変換 */
+function dateToJstIsoDate(d) {
+  return new Date(d.getTime() + JST_OFFSET_MS).toISOString().slice(0, 10);
 }
 
-function nowIso() {
-  return new Date().toISOString();
+/** 今日の JST 日付 (YYYY-MM-DD) */
+function todayJstIso() {
+  return dateToJstIsoDate(new Date());
+}
+
+/** 現在時刻の JST タイムスタンプ (例: 2026-04-26T08:30:00.000+09:00) */
+function nowJstIso() {
+  const now = new Date();
+  const local = new Date(now.getTime() + JST_OFFSET_MS).toISOString();
+  return local.replace('Z', '+09:00');
+}
+
+/** "YYYY-MM-DD" を JST 0:00 として Date オブジェクト化 (= UTC では前日 15:00) */
+function jstDateAtMidnight(year, month, day) {
+  return new Date(Date.UTC(year, month, day) - JST_OFFSET_MS);
+}
+
+/** "YYYY-MM-DD" 文字列 → JST 0:00 の Date オブジェクト */
+function jstIsoDateToDate(isoDate) {
+  const [y, m, d] = isoDate.split('-').map(Number);
+  return jstDateAtMidnight(y, m - 1, d);
+}
+
+/** 今日の JST y/m/d を取得 */
+function todayJstYmd() {
+  const today = todayJstIso();
+  const [y, m, d] = today.split('-').map(Number);
+  return { year: y, month: m - 1, day: d };
 }
 
 /**
- * 次回課金日を計算 (reset_day = 14 → 今月 14 日 or 来月 14 日)
+ * 次回課金日を計算 (reset_day = 14 → 今月 14 日 or 来月 14 日 / JST 基準)
  */
-function computeNextResetDate(resetDay, today = new Date()) {
+function computeNextResetDate(resetDay, todayYmd = todayJstYmd()) {
   if (!resetDay) return null;
-  const d = new Date(today);
-  d.setHours(0, 0, 0, 0);
-  const thisMonth = new Date(d.getFullYear(), d.getMonth(), resetDay);
-  if (d.getDate() < resetDay) {
-    return thisMonth;
+  const { year, month, day } = todayYmd;
+  if (day < resetDay) {
+    return jstDateAtMidnight(year, month, resetDay);
   }
-  return new Date(d.getFullYear(), d.getMonth() + 1, resetDay);
+  return jstDateAtMidnight(year, month + 1, resetDay);
 }
 
 /**
- * 現在の period 開始日を計算 (前回 reset_day から今日までの間)
+ * 現在の period 開始日を計算 (前回 reset_day から今日までの間 / JST 基準)
  */
-function computeCurrentPeriodStart(resetDay, today = new Date()) {
+function computeCurrentPeriodStart(resetDay, todayYmd = todayJstYmd()) {
   if (!resetDay) return null;
-  const d = new Date(today);
-  d.setHours(0, 0, 0, 0);
-  if (d.getDate() >= resetDay) {
-    return new Date(d.getFullYear(), d.getMonth(), resetDay);
+  const { year, month, day } = todayYmd;
+  if (day >= resetDay) {
+    return jstDateAtMidnight(year, month, resetDay);
   }
-  return new Date(d.getFullYear(), d.getMonth() - 1, resetDay);
+  return jstDateAtMidnight(year, month - 1, resetDay);
 }
 
 function daysBetween(a, b) {
@@ -119,10 +152,12 @@ function warningLevel(pct) {
  */
 function predictExhaustionDate(records, currentPeriodStart) {
   if (!records || records.length < 2) return null;
-  const start = currentPeriodStart ? new Date(currentPeriodStart) : new Date(records[0].date);
+  const start = currentPeriodStart instanceof Date
+    ? currentPeriodStart
+    : (typeof currentPeriodStart === 'string' ? jstIsoDateToDate(currentPeriodStart) : jstIsoDateToDate(records[0].date));
   const recent = records.slice(-7);
   const points = recent.map((r) => ({
-    x: daysBetween(start, new Date(r.date)),
+    x: daysBetween(start, jstIsoDateToDate(r.date)),
     y: r.percent,
   }));
   const n = points.length;
@@ -150,17 +185,17 @@ function cmdSet(pct) {
   const state = loadState();
   if (state.reset_day && !state.current_period_start) {
     const start = computeCurrentPeriodStart(state.reset_day);
-    if (start) state.current_period_start = start.toISOString().slice(0, 10);
+    if (start) state.current_period_start = dateToJstIsoDate(start);
   }
-  const today = todayIso();
+  const today = todayJstIso();
   const idx = state.daily_records.findIndex((r) => r.date === today);
-  const rec = { date: today, percent: pct, recorded_at: nowIso() };
+  const rec = { date: today, percent: pct, recorded_at: nowJstIso() };
   if (idx >= 0) state.daily_records[idx] = rec;
   else state.daily_records.push(rec);
   state.daily_records.sort((a, b) => a.date.localeCompare(b.date));
   saveState(state);
   const w = warningLevel(pct);
-  console.log(`[credit-budget] ✅ ${today} の消費を ${pct}% で記録 ${w.icon} ${w.label}`);
+  console.log(`[credit-budget] ✅ ${today} (JST) の消費を ${pct}% で記録 ${w.icon} ${w.label}`);
   if (w.level !== 'ok') {
     console.log('  → 詳細状態は: npm run credit:status');
   }
@@ -173,10 +208,11 @@ function cmdStatus(asJson = false) {
   const pct = latest ? latest.percent : null;
   const w = pct !== null ? warningLevel(pct) : { level: 'unknown', icon: '⚪', label: '未記録 (npm run credit:set <pct> で初回記録を)' };
   const nextReset = state.reset_day ? computeNextResetDate(state.reset_day) : null;
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const remainingDays = nextReset ? daysBetween(today, nextReset) : null;
-  const periodStart = state.current_period_start ? new Date(state.current_period_start) : (state.reset_day ? computeCurrentPeriodStart(state.reset_day) : null);
+  const todayJst = jstIsoDateToDate(todayJstIso());
+  const remainingDays = nextReset ? daysBetween(todayJst, nextReset) : null;
+  const periodStart = state.current_period_start
+    ? jstIsoDateToDate(state.current_period_start)
+    : (state.reset_day ? computeCurrentPeriodStart(state.reset_day) : null);
   const exhaustion = predictExhaustionDate(records, periodStart);
   const result = {
     latest_percent: pct,
@@ -188,24 +224,25 @@ function cmdStatus(asJson = false) {
     budget_usd_l1_credits: state.budget_usd_l1_credits,
     budget_usd_l2_on_demand_cap: state.budget_usd_l2_on_demand_cap,
     reset_day: state.reset_day,
-    next_reset_date: nextReset ? nextReset.toISOString().slice(0, 10) : null,
+    next_reset_date: nextReset ? dateToJstIsoDate(nextReset) : null,
     remaining_days: remainingDays,
-    current_period_start: periodStart ? (typeof periodStart === 'string' ? periodStart : periodStart.toISOString().slice(0, 10)) : null,
-    predicted_exhaustion_date: exhaustion ? exhaustion.toISOString().slice(0, 10) : null,
+    current_period_start: periodStart ? dateToJstIsoDate(periodStart) : null,
+    predicted_exhaustion_date: exhaustion ? dateToJstIsoDate(exhaustion) : null,
     records_count: records.length,
-    advice: deriveAdvice(w.level, pct, nextReset, exhaustion, today),
+    advice: deriveAdvice(w.level, pct, nextReset, exhaustion, todayJst),
+    timezone: 'JST (UTC+9)',
   };
   if (asJson) {
     console.log(JSON.stringify(result, null, 2));
     return;
   }
-  console.log('### Cursor Ultra クレジット予算 (§1-2-4)');
+  console.log('### Cursor Ultra クレジット予算 (§1-2-4 / JST 基準)');
   console.log('');
   console.log(`- 直近消費: ${pct === null ? '未記録' : pct + '%'} (${latest ? latest.date : 'N/A'}) ${w.icon} ${w.label}`);
   console.log(`- 月予算: L1 $${state.budget_usd_l1_credits} (Ultra 内) + L2 $${state.budget_usd_l2_on_demand_cap} (On-Demand cap) = $${state.budget_usd_total}`);
-  console.log(`- 課金日: ${state.reset_day ? `毎月 ${state.reset_day} 日` : '⚠️ 未設定 (npm run credit:reset --day=14 で設定)'}`);
-  if (nextReset) console.log(`- 次回リセット: ${nextReset.toISOString().slice(0, 10)} (残 ${remainingDays} 日)`);
-  if (exhaustion) console.log(`- 線形回帰予測 枯渇日: ${exhaustion.toISOString().slice(0, 10)} ${exhaustion < nextReset ? '⚠️ リセット日より前' : 'OK'}`);
+  console.log(`- 課金日: ${state.reset_day ? `毎月 ${state.reset_day} 日 (JST)` : '⚠️ 未設定 (npm run credit:reset --day=14 で設定)'}`);
+  if (nextReset) console.log(`- 次回リセット: ${dateToJstIsoDate(nextReset)} (残 ${remainingDays} 日)`);
+  if (exhaustion) console.log(`- 線形回帰予測 枯渇日: ${dateToJstIsoDate(exhaustion)} ${exhaustion < nextReset ? '⚠️ リセット日より前' : 'OK'}`);
   if (result.advice) console.log(`- AI 助言: ${result.advice}`);
   console.log(`- 履歴件数: ${records.length} 日分`);
 }
@@ -235,29 +272,29 @@ function cmdReset(args) {
     }
     state.reset_day = day;
     const start = computeCurrentPeriodStart(day);
-    state.current_period_start = start ? start.toISOString().slice(0, 10) : null;
+    state.current_period_start = start ? dateToJstIsoDate(start) : null;
     saveState(state);
-    console.log(`[credit-budget] ✅ 課金日を毎月 ${day} 日に設定 / 当 period 開始: ${state.current_period_start}`);
+    console.log(`[credit-budget] ✅ 課金日を毎月 ${day} 日 (JST) に設定 / 当 period 開始: ${state.current_period_start}`);
     return;
   }
   if (nowFlag) {
     if (state.daily_records.length > 0) {
       const summary = {
         period_start: state.current_period_start,
-        period_end: todayIso(),
+        period_end: todayJstIso(),
         records: state.daily_records,
         peak_percent: Math.max(...state.daily_records.map((r) => r.percent)),
         final_percent: state.daily_records[state.daily_records.length - 1].percent,
-        archived_at: nowIso(),
+        archived_at: nowJstIso(),
       };
       ensureDataDir();
       fs.appendFileSync(HISTORY_FILE, JSON.stringify(summary) + '\n', 'utf8');
       console.log(`[credit-budget] ✅ 月次集計を ${HISTORY_FILE} に append (${state.daily_records.length} 日分 / peak ${summary.peak_percent}%)`);
     }
     state.daily_records = [];
-    state.current_period_start = todayIso();
+    state.current_period_start = todayJstIso();
     saveState(state);
-    console.log(`[credit-budget] ✅ 当 period をリセット / 新 period 開始: ${state.current_period_start}`);
+    console.log(`[credit-budget] ✅ 当 period をリセット / 新 period 開始: ${state.current_period_start} (JST)`);
     return;
   }
   console.error('[credit-budget] ❌ --day=<1-28> または --now のいずれかを指定してください');

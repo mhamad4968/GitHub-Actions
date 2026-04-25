@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "budget_usd_total": 530,
+  "budget_usd_l1_credits": 400,
+  "budget_usd_l2_on_demand_cap": 130,
+  "reset_day": 14,
+  "current_period_start": "2026-04-14",
+  "daily_records": [
+    {
+      "date": "2026-04-26",
+      "percent": 100,
+      "recorded_at": "2026-04-26T07:16:44.809+09:00",
+      "note": "P1 / 2026-04-26 / JST off-by-one バグ修正前のデータ移行 (元: date=2026-04-25 / recorded_at=2026-04-25T22:16:44.809Z) — 実際の浜田報告は JST 4/26 07:16 (Ultra プラン枯渇報告)"
+    }
+  ]
+}
