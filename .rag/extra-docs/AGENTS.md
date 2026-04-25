@@ -1622,6 +1622,8 @@ $ node scripts/parallel-session-detector.mjs --explain # 軸ごとの内訳を�
 - 改訂日: 2026-04-26 07:55（[FEAT] v23.9 / Q1: §1-2-2-1 を 4 → 8 項目に拡張 + 第18章 §52-8「高リスク shell 暴走防止」新設。発端 = §1-2-2-1 検証中に浜田スクショで Cursor IDE Settings → Agents タブ `Auto-Run Mode = Run Everything (Unsandboxed)` + `Browser Protection: OFF` + `MCP Tools Protection: OFF` 三重 OFF を発見 → §52 RACI Tier B が IDE レベルで構造的 bypass される憲法違反級の silent breach（kintone 本番 API も承認なし執行可能だった）。浜田暫定対処 = Auto-Run Mode 維持（基本自律）+ Browser/MCP Protection ON（kintone MCP 経由ゲート復活 / Cap は $300 のまま 5/14 に $130 へ）。§1-2-2-1 拡張: A 課金 (On-Demand mode + Monthly Limit) / B Models (有効モデル一覧 + Add 操作) / C Agents (Auto-Run + Browser + MCP Protection) / D Cloud Agents 不使用注記。§52-8 新設: rm -rf / git push --force / npm install (新規) / chmod -R / sudo / .env 編集 等を「事前報告 → GO 待ち」必須化（読取系・既知 npm スクリプト・git 安全コマンドは例外）。TSB-019 起票。）
 - 改訂日: 2026-04-26 08:10（[FIX] v23.10 / P1: `scripts/credit-budget.mjs` の JST 化（off-by-one バグ修正）+ `data/credit-usage.json` を git 追跡化。発端 = O-series で UTC 基準 `toISOString()` を使ったため JST 0:00-8:59 の記録が前日として保存されるバグ（実例: 2026-04-26 07:16 JST の浜田報告が `2026-04-25` として記録）。修正: 全日付計算を JST (UTC+9) 基準に統一する `todayJstIso() / nowJstIso() / dateToJstIsoDate() / jstIsoDateToDate() / jstDateAtMidnight()` ヘルパー導入。`recorded_at` が `+09:00` 付き ISO 8601 に。既存データも修正（4/25→4/26 / current_period_start 4/13→4/14）。AGENTS.md §1-2-4 末尾に「タイムゾーン」節追記。`reset --day=` の正しい usage 例も訂正（誤: `--reset-day=` / 正: `npm run credit:reset -- --day=14`）。`data/credit-usage.json` を git tracked にし、複数セッション間でも継続性が保たれるように。）
 - 改訂日: 2026-04-26 08:25（[FEAT] v23.11 / P4: 第15章 §51-4「並列セッション疑いの 4 軸機械判定」+ §51-5「並列セッション疑い時のログ保全」新設。発端 = TSB-017 (別 Cursor セッションが現セッションの提案を勝手に実行) + P3 K-3 ログ観察で「現状は AI 個別判断頼み」と判明。実装: `scripts/parallel-session-detector.mjs` (4 軸 = ① watcher_pid 不一致 +5 / ② 同一ファイル 5 分以内 5+ 件編集 +2 / ③ session-lock 不在編集 +3 / ④ 不審バックアップ +4 / 閾値 = 0-2 静穏 / 3-4 注意 / 5-6 警報 / 7+ 確定)。`scripts/daily-morning-prep.mjs §5-5` に detector 結果統合 / `smoke-test.mjs` 第 8 検査として組込 (3-4 点 = warn / 5+ 点 = ng)。npm scripts: `audit:parallel` / `audit:parallel:json` / `audit:parallel:explain` 追加。誤検知抑止: `--ignore-suspicion=<reason>` で `logs/parallel-suspicion/false-positive.jsonl` に履歴化。RULES-INDEX.md 同期。smoke-test 8/8 グリーン確認。）
+- 改訂日: 2026-04-26 08:45（[FEAT] v23.12 / P5-1 / R1: 第18章 §52-8-1「物理 block 層」新設 = TSB-019 構造的根本対策。`~/.cursor/hooks.json` に `beforeShellExecution` フックを追加、`~/.cursor/hooks/dangerous-shell-blocker.sh` で §52-8 deny カテゴリを物理 block (exit 2 + JSON deny)。三層防御アーキテクチャ確定: 第 1 層 AI 自己制約 (§52-8) + 第 2 層 IDE 承認ゲート (§1-2-2-1 #6/#7) + **第 3 層 OS 物理 block (§52-8-1)**。Hooks 自身の改ざん防止も deny pattern に追加で物理層自己保全。設計仕様書 `docs/cursor-hooks-design.md` 新規 (hooks.json 全文 / blocker.sh 全文 / 検証ログ 11 件 / 復旧手順)。検証: 単独テスト 10/10 グリーン + Cursor IDE Shell ツール経由 `rm -rf /tmp/<not-exist>` 実証 = `Rejected: Command execution was blocked by a hook` 確認。残構造的盲点: StrReplace 経由の hooks 改ざんは hook 対象外 → §52-8 第 1 層 AI 自己制約で「hooks 編集前は浜田 GO 必須」を内在化。浜田 P5-1 で R1 GO 取得済。）
+- 改訂日: 2026-04-26 08:55（[FEAT] v23.13 / P5-2 / R2: `.cursorignore` 新設（86 行 / 5 カテゴリ = 秘密情報 + 大量自動生成 + バックアップ + parallel-suspicion + 一時ファイル）。Cursor IDE のセマンティック検索 / @ メンション補完から `.env` / `data/credit-usage.json` / `logs/file-watcher/*.jsonl` / `*.bak` 等を除外。設計方針 = source code/docs/scripts/tests は絶対 ignore しない（浜田指示「インデックス範囲変更で見落としないように」反映）。同時に **§52-8-1 物理 block hook の誤検知 1 件発覚 → 浜田 GO で即修正**: regex `(>|>>|tee)[[:space:]]+.*\.env` の `.* ` が heredoc 本文の `.env` 文字列にマッチ → `[^[:space:]<>&|;]*` で第 1 トークンに制約 + `sed -i` 系も AND 条件で分割。回帰テスト 14/14 グリーン (T2-T15) で誤検知解消 + 既存検知維持を確認。`docs/cursor-hooks-design.md` §11.5 に修正履歴記録。）
 
 ---
 
@@ -2263,4 +2265,49 @@ AI 自己診断で「待つと被害拡大」と判断 → Tier A 強制実行�
 **TSB-019 教訓との接続**:
 - TSB-019 で「IDE 設定が憲法を bypass する」を学んだ → §52-8 は **AI 側の自己制約** で IDE 設定の「shell 自由」をルール側で部分的にカバーする保険策
 - Browser/MCP Protection ON が既存の構造的ゲート / §52-8 が shell 用の AI 側ゲート = **IDE と AI の二重防御**
+
+##### §52-8-1 物理 block 層（2026-04-26 P5-1 / R1 制定 / TSB-019 構造的根本対策）
+
+**背景**: §52-8 第 1 層（AI 自己制約）は AI が「うっかり忘れる」可能性があり、§1-2-2-1 第 2 層（IDE 承認ゲート / Browser/MCP Protection ON）は shell 実行は対象外（TSB-019 の Run Everything 設定で shell は引き続き全自動執行）。本条で **第 3 層 = OS レベルの物理 block** を制定し、AI が憲法違反を試みても物理的に止まる構造的不可逆性を提供する。
+
+**実装**: `~/.cursor/hooks.json` に `beforeShellExecution` フックを追加し、`~/.cursor/hooks/dangerous-shell-blocker.sh` で §52-8 deny カテゴリを stdin の `command` フィールドで判定。一致すれば JSON `{"permission":"deny", ...}` + exit 2 を返し、Cursor IDE が AI のツール実行を **承認なしで Reject** する。
+
+**三層防御の整理**:
+
+| 層 | 主体 | 機構 | 対象 | 実装 |
+|---|---|---|---|---|
+| 第 1 層: AI 自己制約 | AI | §52-8 報告 → GO 待ち | 全危険カテゴリ | AGENTS.md §52-8 (本条文) |
+| 第 2 層: IDE 承認ゲート | Cursor IDE | Browser Protection / MCP Tools Protection | browser / kintone MCP | §1-2-2-1 #6/#7 |
+| **第 3 層: 物理 block** ⭐ | OS / hook | beforeShellExecution → deny + exit 2 | shell 実行 | `~/.cursor/hooks/dangerous-shell-blocker.sh` |
+
+**deny カテゴリ（§52-8 と完全整合）**:
+- 削除系 (再帰 / 危険ターゲット): `rm -rf /` / `rm -rf ~` / `rm -rf $HOME` / `rm -rf *` / `rm -rf /<path>` / `find ... -delete` / `xargs rm`
+- git 破壊系: `git push --force` / `git push -f` / `git reset --hard` / `git clean -fdx` / `git rebase` / `git filter-branch` / `git update-ref -d`
+- 権限変更 (再帰): `chmod -R` / `chown -R` / `setfacl`
+- 特権コマンド: `sudo ...` 全般
+- コンテナ系 (削除): `docker rm` / `docker system prune` / `docker volume rm` / `kubectl delete` / `helm uninstall`
+- 秘密情報: `> .env` / `tee .env` / `sed -i ... .env` / 同 `.cursor/mcp.json` / 同 `~/.ssh/`
+- **Hooks 自身の改ざん防止**: `> ~/.cursor/hooks*` / `sed -i ~/.cursor/hooks*` ⭐（物理層自体の保護）
+
+**allow カテゴリ（block しない / §52-8 例外と一致）**: 読取系 / 既知 npm スクリプト / git 安全コマンド / session-lock / 単発検証
+
+**block された時の AI 動作**:
+1. Cursor IDE から `Rejected: Command execution was blocked by a hook: { ... agent_message: "⛔ §52-8 BLOCK ..." }` を受信
+2. 即座に浜田へ「§52-8 物理 block 検知」を報告（§52-8 第 1 層と同じ報告様式 = "⚠️ §52-8 高リスク shell 検知 / 実行前 GO 確認"）
+3. 浜田が GO を明示するまで再実行しない
+4. 誤検知 (false positive) なら AI は `~/.cursor/hooks/dangerous-shell-blocker.sh` のパターン緩和を提案 → §57 改定プロセス
+
+**自己改ざん防止の構造的盲点**:
+- hook は **shell 実行のみ** を block する。**StrReplace ツール経由での hooks 改ざんは hook 対象外**。
+- AI は `~/.cursor/hooks*` の StrReplace 編集前に **必ず浜田 GO を取得** すること（§52-8 第 1 層 AI 自己制約で内在化）
+- 万が一の hook 暴発時の復旧手順は `docs/cursor-hooks-design.md` section 11 参照
+
+**例外運用 (浜田 GO で実行する場合)**:
+- 案 A: スクリプトファイル化して `npm run` で実行（hook 対象外になるため allow）
+- 案 B: §57 改定プロセスを経て deny pattern を緩和
+- 案 C: 緊急停止 = 浜田が `~/.cursor/hooks.json` から `beforeShellExecution` セクションを手動削除
+
+**設計仕様書**: `docs/cursor-hooks-design.md`（hooks.json 全文 / blocker.sh 全文 / 検証ログ 11 件 / 復旧手順）
+
+**検証 (P5-1 / 2026-04-26 08:40 JST)**: 単独テスト 10/10 + Cursor IDE Shell ツール経由実証 1/1 = **TSB-019 物理 block 層稼働確認**。
 

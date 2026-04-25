@@ -109,6 +109,35 @@ v2.5 (2026-04-26 08:25) §51-4/§51-5 並列セッション疑い 4 軸機械判
 2. スコアが 3+ 点なら AI に「§51-4 注意レベル」と伝える
 3. AI は §47-E 連動で **即作業中断 + 状況報告** + ロールバック案提示
 
+v2.6 (2026-04-26 08:45) §52-8-1 物理 block 層 / TSB-019 構造的根本対策（P5-1 / R1）:
+- **目的**: §52-8 の高リスク shell（rm -rf / git push --force / sudo / .env 編集 等）を **AI が承認なしに実行できない** ように OS レベルで block
+- **実装ファイル**:
+  - `~/.cursor/hooks.json` ← `beforeShellExecution` フック設定（既存の preflight-reminder.sh と並存）
+  - `~/.cursor/hooks/dangerous-shell-blocker.sh` ← 判定スクリプト（実行権限 +x 必要）
+- **三層防御**: 第 1 層 AI 自己制約 (§52-8) + 第 2 層 IDE ゲート (§1-2-2-1 #6/#7) + **第 3 層 物理 block (§52-8-1)**
+- **block されたら**:
+  - Cursor IDE が `Rejected: Command execution was blocked by a hook` を表示
+  - AI は即座に「§52-8 物理 block 検知」を浜田に報告 → GO 待ち
+  - 浜田が「§52-8 例外 GO」と明示すれば AI は別経路（npm スクリプト化等）で実行
+- **動作確認方法**（浜田用）:
+  1. WSL ターミナルで `tail -20 /tmp/cursor-shell-blocker.log` を実行 → 直近の判定履歴が見える
+  2. 例: `[2026-04-26 08:39:53 +0900] BLOCK category=秘密情報(.env 編集) cmd=echo "FOO=bar" > .env`
+- **緊急停止（hook 自体が壊れた場合）**:
+  ```bash
+  mv ~/.cursor/hooks.json ~/.cursor/hooks.json.broken
+  # Cursor を再起動 → hook なしで起動 → 復旧後は再構築
+  ```
+  または `mv ~/.cursor/hooks/dangerous-shell-blocker.sh ~/.cursor/hooks/dangerous-shell-blocker.sh.disabled`
+- **設計仕様書**: `docs/cursor-hooks-design.md`（フル仕様 + 検証ログ + 復旧手順）
+- **誤検知（false positive）の場合**:
+  - 浜田は AI に「これは誤検知。`docs/cursor-hooks-design.md` の deny pattern を緩和して」と伝える
+  - AI は §57 改定プロセスを経てから `dangerous-shell-blocker.sh` のパターンを修正
+
+【浜田が「hook が誤って block する」と感じたら】
+1. `tail /tmp/cursor-shell-blocker.log` で判定履歴を確認
+2. 該当コマンドを AI に伝えて「§52-8-1 誤検知の可能性。パターン修正案を出して」と依頼
+3. AI が緩和案を提示 → 浜田 GO → AI が `~/.cursor/hooks/dangerous-shell-blocker.sh` を修正（StrReplace 経由 = hook 対象外）
+
 
 ━━━ ① まず現状確認（30 秒）━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -410,7 +439,7 @@ mcp.json 編集は R4 §17-2 厳守 (backup + ensure_ascii=True + diff 確認)�
 
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-最終更新: 2026-04-26 v2.5 (P4 §51-4/§51-5 並列セッション疑い 4 軸機械判定 / parallel-session-detector.mjs / smoke-test 第 8 検査 / 朝報 §5-5 統合)
+最終更新: 2026-04-26 v2.6 (P5-1 R1 §52-8-1 物理 block 層 / TSB-019 構造的根本対策 / ~/.cursor/hooks/dangerous-shell-blocker.sh / 三層防御確立)
 このメモは C:\Users\mhamada202408224\Desktop\AI緊急用\CURSOR-トラブル対応メモ.txt
 正本: kintone-ai-lab/chat-sessions/CURSOR-トラブル対応メモ.md
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

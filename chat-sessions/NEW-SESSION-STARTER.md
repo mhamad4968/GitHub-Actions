@@ -69,6 +69,18 @@ v3.5 (2026-04-26 08:25) §51-4/§51-5 並列セッション疑い 4 軸機械判
 - **統合**: smoke-test 第 8 検査として組込（3-4 点 = warn / 5+ 点 = ng）+ 朝報 §5-5 末尾に detector 結果統合
 - **AI 開口一番ルール**: 起動時に `npm run audit:parallel` で 0 点 (🟢 静穏) を確認 / 3+ 点なら浜田に即報告
 
+v3.6 (2026-04-26 08:45) §52-8-1 物理 block 層 / TSB-019 構造的根本対策（P5-1 / R1）:
+- **§52-8-1 制定**: §52-8 高リスク shell を **OS レベル物理 block** = 三層防御確立  
+  第 1 層 AI 自己制約 (§52-8) + 第 2 層 IDE ゲート (§1-2-2-1 #6/#7) + **第 3 層 物理 block (本条 = §52-8-1)**
+- **実装**: `~/.cursor/hooks.json` に `beforeShellExecution` フック追加 + `~/.cursor/hooks/dangerous-shell-blocker.sh` 新規  
+  Cursor IDE が `Rejected: Command execution was blocked by a hook` を表示 = AI が承認なしで実行不可
+- **deny カテゴリ**: rm -rf (絶対パス/危険ターゲット) / git 破壊系 (push --force / reset --hard / rebase 等) / chmod -R / sudo / docker rm / kubectl delete / .env 編集 / mcp.json 編集 / SSH 鍵 / **Hooks 自身の改ざん防止** ⭐
+- **allow カテゴリ**: 読取系 / 既知 npm スクリプト / git 安全 / session-lock / 単発検証
+- **block 時 AI 動作**: 即 浜田に「§52-8 物理 block 検知」を報告 → GO 待ち / 誤検知なら §57 改定プロセスでパターン緩和提案
+- **構造的盲点**: hook は shell のみ → StrReplace 経由の hooks 改ざんは対象外 → §52-8 第 1 層で「hooks 編集前は浜田 GO 必須」を内在化
+- **設計仕様書**: `docs/cursor-hooks-design.md` (hooks.json 全文 / blocker.sh 全文 / 検証 11 件 / 復旧手順)
+- **検証**: 単独テスト 10/10 + Cursor IDE 経由 `rm -rf /tmp/<not-exist>` 実証 = 物理 block 動作確認済
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ■ フル版（コピペ推奨 / 新チャットにこのブロックを貼る）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
