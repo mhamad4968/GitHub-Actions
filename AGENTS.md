@@ -1489,6 +1489,99 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 
 **§51 / §47-E との関係**: §51 = AI 内部の並列禁止 / §51-3 = 物理セッション間の並列検知 + 自衛 / §47-E = 浜田の憲法違反指示の却下 = **三層防御** (内部 / 物理 / 規範)
 
+### §51-4 並列セッション疑いの 4 軸機械判定（2026-04-26 P4 制定 / TSB-017 + P3 観察知見の規範化）
+
+**背景**: 2026-04-26 P3 (K-3 ログ観察) で、現状 §51-3 段階 1-3 は「lock 取得時に検知」「watcher で記録」までは整備済だが、**「複数の証拠から並列セッションを疑う閾値判定」が AI 個別判断に委ねられている** ことが判明。本条で **4 軸 + スコアリング** による機械的判定を規範化し、`scripts/parallel-session-detector.mjs` で実装する。
+
+**4 軸 (各軸に重み付き点数)**:
+
+| # | 軸 | 観測対象 | 検知トリガー | 重み | 真陽性度 |
+|---|---|---|---|---|---|
+| 軸 1 | **watcher_pid 不一致** | `logs/file-watcher/agents-md-changes.jsonl` | 1 ファイル内に 2 つ以上の watcher_pid 値が出現 | **+5** | ⭐ 最高 (= 別 file-watcher = 別セッション物理証拠) |
+| 軸 2 | **同一ファイル過密編集** | 同上 jsonl | 同一 file が **5 分以内に 5 件以上** 変化記録 | **+2** | 中 (= AI 連続編集でも発生し得るため警告レベル) |
+| 軸 3 | **session-lock 不在編集** | `logs/session-lock.log` + jsonl | jsonl に変更記録があるが対応する lock acquire ログが直近 10 分以内に存在しない | **+3** | 高 (= L-1 規約違反 = 怠慢 or 別セッション) |
+| 軸 4 | **不審なバックアップ命名** | working tree 直下の dotfile / hidden | `.b7-pre-*` / `.tsb-*-pre-*` / `.proposal-pre-*` / `.session-handoff-*` 等が意図せず出現 | **+4** | 高 (= TSB-017 で発覚した別 AI による「私の手順を文字通り実行」パターン) |
+
+**判定閾値**:
+
+| 合計スコア | 判定 | AI 動作 |
+|---|---|---|
+| 0-2 点 | 🟢 静穏 | 通常運用継続 |
+| 3-4 点 | 🟡 注意 | 朝報 §5-5 に「⚠️ 並列セッション疑い (N 点 / 内訳: 軸 X)」を追記 / AI 開口一番に「§51-4 注意レベル」を報告 |
+| 5-6 点 | 🟠 警報 | **作業を中断** + 浜田に「§51-4 警報。詳細を logs/parallel-suspicion/<時刻>.json に記録しました。続行可否ご判断を」と GO 待ち |
+| 7 点以上 | 🔴 確定 | **即座に session-lock を release + 自分側 abort** (= §51-3 段階 1 自衛発動) + 浜田に強い警告 + 段階 2 (force kill) 適用候補として L-6 リストへ追加 |
+
+**実装**: `scripts/parallel-session-detector.mjs`
+
+```
+$ node scripts/parallel-session-detector.mjs           # 標準実行 (テキスト出力)
+$ node scripts/parallel-session-detector.mjs --json    # 朝報・smoke-test 統合用
+$ node scripts/parallel-session-detector.mjs --explain # 軸ごとの内訳を詳細表示
+```
+
+**False Positive 抑制 (= 真の並列でない時に騒がない仕組み)**:
+
+1. **軸 2 (過密編集)**: 私自身の連続編集を誤検知しないため、**同一 watcher_pid 内の編集** はスコア対象外
+2. **軸 3 (lock 不在)**: 読取専用セッション (= 何も編集しない情報収集セッション) は判定スコープ外
+3. **軸 4 (不審 backup)**: 既知の合法 backup pattern (`*.bak.<timestamp>` 等) は除外リスト化
+4. **直近 10 分の grace period**: 起動直後の watcher 自体の grace と整合
+5. **手動上書き**: `--ignore-suspicion=<reason>` フラグで誤検知を一時的に skip + reason を `logs/parallel-suspicion/false-positive.jsonl` に記録 (5/10 月次レビューで誤検知パターンを学習)
+
+**統合ポイント**:
+
+- `scripts/daily-morning-prep.mjs §5-5`: 朝報生成時に detector を呼び出し、3 点以上なら ⚠️ 表示
+- `scripts/smoke-test.mjs`: 第 8 検査として detector 結果を表示 (5/10 月次レビュー後に組み込む / 当面は手動実行のみ)
+- `scripts/health-check.mjs S18 候補`: 月次レビューで実装判断
+
+**§51 / §51-3 / §51-4 の関係**:
+
+- **§51** = AI 内部の並列禁止 (= 1 セッション内での parallel tool 実行禁止)
+- **§51-3** = 物理セッション間の並列検知 + 自衛 (= lock 機構 / file-watcher / 段階導入)
+- **§51-4** = 物理並列の **判定基準の機械化** (= 4 軸スコアリング / detector script)
+- **§47-E** = 浜田の憲法違反指示の即却下 (= ルール優先性)
+- **四層防御** (内部 / 物理検知 / 物理判定 / 規範却下)
+
+**反パターン**:
+
+- ❌ detector 出力を読まずに作業継続する (= 警報無視)
+- ❌ false positive と決めつけて `--ignore-suspicion` を乱用する (= 月次レビュー時に履歴で発覚)
+- ❌ 5 点以上を浜田 GO なしで「自分で大丈夫と判断」して続行する (= §47-E 違反)
+
+**実例 (本条の制定契機)**:
+
+- TSB-017 (2026-04-25): 別セッション AI が `.b7-pre-` を作成 + AGENTS.md / RULES-INDEX.md 連動編集 → 軸 1 (watcher_pid 不一致) + 軸 4 (.b7-pre-) で **+9 点 = 確定** だった蓋然性大 (当時 detector 未実装で気付くまで 30 分以上)
+- P3 観察 (2026-04-26): 私の連続 commit (N→O→Q1→P1) で軸 2 (過密編集) +2 点のみ = 静穏判定 (= false positive を出さず正しく動作する見込み)
+
+### §51-5 並列セッション疑い時のログ保全（P4 制定）
+
+**目的**: 検知時のスナップショット保全 → 月次レビューでの誤検知 / 真陽性パターン学習 + フォレンジック証拠保全。
+
+**保存先**: `logs/parallel-suspicion/YYYY-MM-DD-HHMM-<score>.json`
+
+**スキーマ**:
+
+```json
+{
+  "detected_at": "2026-04-26T08:30:00+09:00",
+  "score_total": 7,
+  "verdict": "RED_CONFIRMED",
+  "axis_breakdown": {
+    "axis1_watcher_pid_mismatch": { "score": 5, "evidence": ["pid=212 (24 件)", "pid=8765 (1 件)"] },
+    "axis2_burst_edit": { "score": 2, "evidence": ["AGENTS.md 7 件 / 4 分間"] },
+    "axis3_no_lock": { "score": 0, "evidence": [] },
+    "axis4_suspicious_backup": { "score": 0, "evidence": [] }
+  },
+  "ai_action": "session-lock release + abort + 浜田報告",
+  "snapshot": {
+    "agents_md_sha256": "...",
+    "session_lock_holder": "P4-...",
+    "running_pids": ["..."],
+    "recent_commits": ["..."]
+  },
+  "follow_up": "L-6 段階 2 force kill 適用候補リストに追加"
+}
+```
+
 ---
 
 ## 付則
@@ -1528,6 +1621,7 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 - 改訂日: 2026-04-26 07:05（[FEAT] v23.8 / N-4+N-5+N-6 / O-series: 浜田「甲：フル実装」承認 → §1-2-2 N-4 強化（4 択 A-D 提示の枠組み + §1-2-2-1 Cursor IDE 必須設定 = On-Demand ON + Spend Cap $130）+ §1-2-3 N-5 新設「Opus 内モデル使い分け」（Max Thinking vs Extra High / 既定は Extra High / Max Thinking 切替の証跡義務）+ §1-2-4 N-6 新設「クレジット予算管理」（月予算 $200+$130 / 1 日 1 回 % 貼付フロー / 70-85-95% 自発警告 / `scripts/credit-budget.mjs` + `data/credit-usage.json` + `daily-morning-prep.mjs §0` 統合 / AI と浜田の役割分担表）。Ultra プラン枯渇傾向の構造的対策完了。RULES-INDEX.md / NEW-SESSION-STARTER.md v3.3 / CURSOR-トラブル対応メモ.md v2.3 / 浜田 Desktop AI緊急用 同期。）
 - 改訂日: 2026-04-26 07:55（[FEAT] v23.9 / Q1: §1-2-2-1 を 4 → 8 項目に拡張 + 第18章 §52-8「高リスク shell 暴走防止」新設。発端 = §1-2-2-1 検証中に浜田スクショで Cursor IDE Settings → Agents タブ `Auto-Run Mode = Run Everything (Unsandboxed)` + `Browser Protection: OFF` + `MCP Tools Protection: OFF` 三重 OFF を発見 → §52 RACI Tier B が IDE レベルで構造的 bypass される憲法違反級の silent breach（kintone 本番 API も承認なし執行可能だった）。浜田暫定対処 = Auto-Run Mode 維持（基本自律）+ Browser/MCP Protection ON（kintone MCP 経由ゲート復活 / Cap は $300 のまま 5/14 に $130 へ）。§1-2-2-1 拡張: A 課金 (On-Demand mode + Monthly Limit) / B Models (有効モデル一覧 + Add 操作) / C Agents (Auto-Run + Browser + MCP Protection) / D Cloud Agents 不使用注記。§52-8 新設: rm -rf / git push --force / npm install (新規) / chmod -R / sudo / .env 編集 等を「事前報告 → GO 待ち」必須化（読取系・既知 npm スクリプト・git 安全コマンドは例外）。TSB-019 起票。）
 - 改訂日: 2026-04-26 08:10（[FIX] v23.10 / P1: `scripts/credit-budget.mjs` の JST 化（off-by-one バグ修正）+ `data/credit-usage.json` を git 追跡化。発端 = O-series で UTC 基準 `toISOString()` を使ったため JST 0:00-8:59 の記録が前日として保存されるバグ（実例: 2026-04-26 07:16 JST の浜田報告が `2026-04-25` として記録）。修正: 全日付計算を JST (UTC+9) 基準に統一する `todayJstIso() / nowJstIso() / dateToJstIsoDate() / jstIsoDateToDate() / jstDateAtMidnight()` ヘルパー導入。`recorded_at` が `+09:00` 付き ISO 8601 に。既存データも修正（4/25→4/26 / current_period_start 4/13→4/14）。AGENTS.md §1-2-4 末尾に「タイムゾーン」節追記。`reset --day=` の正しい usage 例も訂正（誤: `--reset-day=` / 正: `npm run credit:reset -- --day=14`）。`data/credit-usage.json` を git tracked にし、複数セッション間でも継続性が保たれるように。）
+- 改訂日: 2026-04-26 08:25（[FEAT] v23.11 / P4: 第15章 §51-4「並列セッション疑いの 4 軸機械判定」+ §51-5「並列セッション疑い時のログ保全」新設。発端 = TSB-017 (別 Cursor セッションが現セッションの提案を勝手に実行) + P3 K-3 ログ観察で「現状は AI 個別判断頼み」と判明。実装: `scripts/parallel-session-detector.mjs` (4 軸 = ① watcher_pid 不一致 +5 / ② 同一ファイル 5 分以内 5+ 件編集 +2 / ③ session-lock 不在編集 +3 / ④ 不審バックアップ +4 / 閾値 = 0-2 静穏 / 3-4 注意 / 5-6 警報 / 7+ 確定)。`scripts/daily-morning-prep.mjs §5-5` に detector 結果統合 / `smoke-test.mjs` 第 8 検査として組込 (3-4 点 = warn / 5+ 点 = ng)。npm scripts: `audit:parallel` / `audit:parallel:json` / `audit:parallel:explain` 追加。誤検知抑止: `--ignore-suspicion=<reason>` で `logs/parallel-suspicion/false-positive.jsonl` に履歴化。RULES-INDEX.md 同期。smoke-test 8/8 グリーン確認。）
 
 ---
 

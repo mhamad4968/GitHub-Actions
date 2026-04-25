@@ -45,6 +45,7 @@ const checks = [
   { id: 'audit:xref', cmd: 'node', args: ['scripts/audit-cross-references.mjs'], label: 'AGENTS.md ↔ RULES-INDEX.md drift' },
   { id: 'health-check', cmd: 'node', args: ['scripts/health-check.mjs'], label: 'S1-S16 統合健康診断' },
   { id: 'rule-watcher', cmd: 'node', args: ['scripts/rule-watcher-status.mjs'], label: '憲法ファイル watcher 稼働 (K-3 / S16)' },
+  { id: 'audit:parallel', cmd: 'node', args: ['scripts/parallel-session-detector.mjs'], label: '§51-4 並列セッション疑い 4 軸機械判定 (P4)' },
 ];
 
 const results = [];
@@ -74,6 +75,12 @@ for (const c of checks) {
   } else if (c.id === 'rule-watcher' && exitCode === 2) {
     status = 'warn';
     note = 'file-watcher 未稼働 (npm run watcher:start 推奨)';
+  } else if (c.id === 'audit:parallel' && exitCode === 1) {
+    status = 'warn';
+    note = '§51-4 注意レベル (3-4 点) — 朝報 §5-5 で内訳確認を';
+  } else if (c.id === 'audit:parallel' && exitCode === 2) {
+    status = 'ng';
+    note = '§51-4 警報以上 (5+ 点) — 即座に作業中断 + 浜田 GO 待ち';
   } else if (exitCode !== 0) {
     status = 'ng';
     note = `exit=${exitCode}`;

@@ -336,6 +336,34 @@ sections.push('');
     }
   }
   sections.push('');
+  // P4 統合 (2026-04-26): §51-4 並列セッション疑い 4 軸機械判定
+  sections.push('### §51-4 並列セッション疑い判定（P4 / parallel-session-detector）');
+  sections.push('');
+  try {
+    const r = runCmd('parallel-detector', 'node scripts/parallel-session-detector.mjs --json', { timeoutMs: 5_000 });
+    if (r.stdout) {
+      const j = JSON.parse(r.stdout);
+      sections.push(`**総合スコア**: ${j.score_total} 点 / ${j.verdict_icon} ${j.verdict_label}`);
+      sections.push('');
+      sections.push('| 軸 | スコア | 内訳（要約） |');
+      sections.push('|---|---:|---|');
+      const ab = j.axis_breakdown;
+      const summary = (e) => (Array.isArray(e) ? e.join(' / ').slice(0, 100) : '');
+      sections.push(`| 軸1: watcher_pid 不一致 | ${ab.axis1_watcher_pid_mismatch.score} | ${summary(ab.axis1_watcher_pid_mismatch.evidence)} |`);
+      sections.push(`| 軸2: 過密編集 | ${ab.axis2_burst_edit.score} | ${summary(ab.axis2_burst_edit.evidence) || '該当なし'} |`);
+      sections.push(`| 軸3: lock 不在 | ${ab.axis3_no_lock.score} | ${summary(ab.axis3_no_lock.evidence)} |`);
+      sections.push(`| 軸4: 不審バックアップ | ${ab.axis4_suspicious_backup.score} | ${summary(ab.axis4_suspicious_backup.evidence)} |`);
+      if (j.snapshot_saved_to) {
+        sections.push('');
+        sections.push(`**🔴 スナップショット**: \`${j.snapshot_saved_to}\``);
+      }
+    } else {
+      sections.push('_detector 実行エラー（朝報生成は継続）_');
+    }
+  } catch (e) {
+    sections.push(`_detector 統合エラー: ${e.message}_`);
+  }
+  sections.push('');
 })();
 
 // 6. プラン進捗

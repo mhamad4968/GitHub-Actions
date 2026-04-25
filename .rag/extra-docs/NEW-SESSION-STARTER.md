@@ -59,6 +59,16 @@ v3.4 (2026-04-26 07:55) Cursor IDE Auto-Run + RACI bypass 防御（Q1 / TSB-019 
 - **TSB-019 起票**: 真因 + 暫定対処 + 恒久対処 + 教訓 5 件 (詳細は `docs/troubleshooting.md`)
 - **後続**: Q-series 包括 Cursor 設定監査（残 5 タブ Hooks / Tools & MCPs / Rules-Skills / Indexing / Plan & Usage）= PC 台帳完了後
 
+v3.5 (2026-04-26 08:25) §51-4/§51-5 並列セッション疑い 4 軸機械判定（P4）:
+- **§51-4 制定**: 並列セッション疑いを **4 軸 + スコア** で機械判定（AI 個別判断 → 客観基準）  
+  軸1: watcher_pid 不一致 +5 / 軸2: 同一ファイル 5 分以内 5+ 件編集 +2 / 軸3: session-lock 不在編集 +3 / 軸4: 不審バックアップ +4  
+  閾値: 0-2 静穏 / 3-4 注意 / 5-6 警報 (作業中断 + 浜田 GO 待ち) / 7+ 確定 (即 abort)
+- **§51-5 制定**: 警報以上で `logs/parallel-suspicion/<JST>-score<N>.json` に snapshot 保全  
+  誤検知は `--ignore-suspicion=<reason>` で `false-positive.jsonl` に履歴化
+- **実装**: `scripts/parallel-session-detector.mjs` / `npm run audit:parallel` (= `audit:parallel:json` / `audit:parallel:explain`)
+- **統合**: smoke-test 第 8 検査として組込（3-4 点 = warn / 5+ 点 = ng）+ 朝報 §5-5 末尾に detector 結果統合
+- **AI 開口一番ルール**: 起動時に `npm run audit:parallel` で 0 点 (🟢 静穏) を確認 / 3+ 点なら浜田に即報告
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ■ フル版（コピペ推奨 / 新チャットにこのブロックを貼る）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

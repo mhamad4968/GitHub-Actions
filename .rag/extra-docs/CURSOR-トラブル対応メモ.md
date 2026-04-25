@@ -83,6 +83,32 @@ v2.4 (2026-04-26 07:55) Cursor IDE Auto-Run + RACI bypass 防御（Q1 / TSB-019 
 3. 必要なら git revert / npm run restore:wiped / バックアップ復元
 4. 違反を `logs/autonomy-decisions/` に記録 (再発防止)
 
+v2.5 (2026-04-26 08:25) §51-4/§51-5 並列セッション疑い 4 軸機械判定（P4）:
+- **目的**: 「並列セッションかも？」を AI 個別判断ではなく **客観的 4 軸スコア** で機械判定
+- **検知 4 軸**:  
+  ① watcher_pid 不一致 = +5（別 file-watcher が動いている = 別セッション物理証拠）  
+  ② 同一ファイル 5 分以内 5+ 件編集 = +2（暴走編集の警告）  
+  ③ session-lock 不在編集 = +3（L-1 規約違反 or 別セッション）  
+  ④ 不審バックアップ命名（`.b7-pre-*` / `.tsb-*-pre-*` / `.proposal-pre-*` 等）= +4（TSB-017 パターン）
+- **判定閾値**:  
+  - 0-2 点: 🟢 静穏（通常運用）  
+  - 3-4 点: 🟡 注意（朝報追記 / AI 開口一番に報告）  
+  - 5-6 点: 🟠 警報（**作業中断 + 浜田 GO 待ち**）  
+  - 7+ 点: 🔴 確定（即 abort + 段階 2 force kill 候補）
+- **CLI コマンド**:  
+  - `npm run audit:parallel` — 標準実行（テキスト出力）  
+  - `npm run audit:parallel:explain` — 軸ごとの内訳詳細  
+  - `npm run audit:parallel:json` — JSON（朝報・smoke-test 用）
+- **統合**: `npm run smoke` の第 8 検査として組込（3-4 点 = warn / 5+ 点 = ng）  
+  朝報 §5-5 末尾に detector 結果（軸ごとの内訳テーブル）が常時表示
+- **誤検知抑制**: AI が「これは false positive」と判断したら `--ignore-suspicion=<reason>` で `logs/parallel-suspicion/false-positive.jsonl` に履歴化
+- **警報以上の自動保全**: 5+ 点で `logs/parallel-suspicion/<JST>-score<N>.json` にスナップショット保存（後日 §51-3 段階 2 force kill 候補に追加）
+
+【浜田が「並列っぽい」と感じたら】
+1. WSL ターミナルで `cd /home/mhamada202408224/kintone-ai-lab && npm run audit:parallel:explain` を実行
+2. スコアが 3+ 点なら AI に「§51-4 注意レベル」と伝える
+3. AI は §47-E 連動で **即作業中断 + 状況報告** + ロールバック案提示
+
 
 ━━━ ① まず現状確認（30 秒）━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -384,7 +410,7 @@ mcp.json 編集は R4 §17-2 厳守 (backup + ensure_ascii=True + diff 確認)�
 
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-最終更新: 2026-04-26 v2.4 (Cursor IDE Auto-Run + RACI bypass 防御 / Q1 / TSB-019 連動 / Browser+MCP Protection ON 化 + §52-8 高リスク shell 暴走防止)
+最終更新: 2026-04-26 v2.5 (P4 §51-4/§51-5 並列セッション疑い 4 軸機械判定 / parallel-session-detector.mjs / smoke-test 第 8 検査 / 朝報 §5-5 統合)
 このメモは C:\Users\mhamada202408224\Desktop\AI緊急用\CURSOR-トラブル対応メモ.txt
 正本: kintone-ai-lab/chat-sessions/CURSOR-トラブル対応メモ.md
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
