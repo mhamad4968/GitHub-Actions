@@ -1,4 +1,4 @@
-# 🌅 朝のブリーフィング — 2026-04-25 (Sat) 08:57
+# 🌅 朝のブリーフィング — 2026-04-25 (Sat) 10:12
 
 > 本ファイルは `scripts/daily-morning-prep.mjs` が毎朝 06:00（WSL cron）に自動生成しています。
 > AI エージェントは WORKFLOW.md §Phase 0 に従い、最初にこのファイルを読みます。
@@ -62,21 +62,20 @@ _すべて最新_
 
 ### ルール整合性チェック
 
-- AGENTS.md 定義: §1 / §2 / §3 / §4 / §5 / §6 / §7 / §8 / §9 / §10 / §11 / §12 / §13 / §14 / §15 / §16 / §17 / §18 / §19 / §20 / §21 / §22 / §23 / §24 / §25 / §26 / §27 / §28 / §29 / §30 / §31 / §32 / §33 / §34 / §35 / §36 / §37 / §38 / §39 / §41 / §42 / §43 / §44 / §45 / §46 / §47 / §48 / §49 / §50 / §51 / §52 / §53 / §54 / §55 / §56
+- AGENTS.md 定義: §1 / §2 / §3 / §4 / §5 / §6 / §7 / §8 / §9 / §10 / §11 / §12 / §13 / §14 / §15 / §16 / §17 / §18 / §19 / §20 / §21 / §22 / §23 / §24 / §25 / §26 / §27 / §28 / §29 / §30 / §31 / §32 / §33 / §34 / §35 / §36 / §37 / §38 / §39 / §41 / §42 / §43 / §44 / §45 / §46 / §47 / §48 / §49 / §50 / §51 / §52 / §54 / §55 / §56
 - RULES-INDEX.md: 54 個の §N 参照
 - WORKFLOW.md: 18 個の §N 参照
 
 ✅ 破断リンクなし（参照されている §N はすべて AGENTS.md に存在）
-⚠️ 未参照ルール: §53 （定義のみで参照なし）
 
 ## 5-2. TSB confirmed フラグ整合性（F-2 5月目標 #2 監視）
 
 ### TSB confirmed flag audit (F-2 5月目標 #2 監視)
 
 - ファイル: `docs/troubleshooting.md`
-- 目次行数: 16
-- 本文セクション数 (## TSB-): 15
-- root_cause_confirmed = true: 15 件 (**94%**)
+- 目次行数: 17
+- 本文セクション数 (## TSB-): 16
+- root_cause_confirmed = true: 16 件 (**94%**)
 - root_cause_confirmed = false: 1 件
 
 ✅ 5 月目標 #2 (カバレッジ 100% / 実質 = 孤児を除く 100%) を達成中 (94%)
@@ -85,6 +84,16 @@ _すべて最新_
 ℹ️ 目次に 2 件あるが本文に該当セクションなし (履歴参照は info)
   - TSB-001
   - TSB-004
+
+## 5-3. post-BREAKING 削除 復活検知（TSB-016 #20 = ゾンビ復活ガード）
+
+### post-BREAKING 削除 復活検知 (TSB-016 #20 / I-1)
+
+- 対象ファイル: `AGENTS.md`
+- 走査範囲: 直近 50 commit (実走査 50 件)
+- [BREAKING] commit 検出: 2 件
+
+✅ pass: 現在の HEAD に「ゾンビ復活した削除済章/節」は存在せず
 
 ## 6. 未完了プラン抽出（docs/plans/*.md）
 
@@ -134,9 +143,9 @@ VectorStore: Inserted 9 chunks
 --- Ingest Summary ---
 Succeeded: 14
 Failed:    0
-Total chunks: 1328
-[97/98] /home/mhamada202408224/kintone-ai-lab/docs/security-news-app-troubleshoot.md ... OK (10 chunks)
-Parsed MD: /home/mhamada202408224/kintone-ai-lab/docs/troubleshooting.md (38714 characters)
+Total chunks: 1231
+[98/99] /home/mhamada202408224/kintone-ai-lab/docs/security-news-app-troubleshoot.md ... OK (10 chunks)
+Parsed MD: /home/mhamada202408224/kintone-ai-lab/docs/troubleshooting.md (41638 characters)
 ```
 
 ---
@@ -175,9 +184,9 @@ Parsed MD: /home/mhamada202408224/kintone-ai-lab/docs/troubleshooting.md (38714 
 - Node: `v24.14.1` (npm `11.12.1`) — ✅
   - which: `/home/mhamada202408224/.nvm/versions/node/v24.14.1/bin/node`
   - NVM v24 present: ✅
-- Disk (`~`): 2% 941G available on / — ✅
+- Disk (`~`): 2% 942G available on / — ✅
   - npm cache: 3.9G / npx cache: 2.0G
-- Memory: 5467/7694 MiB (71%) — ✅
+- Memory: 2947/7694 MiB (38%) — ✅
 - cron: ✅ morning:prep 登録済み
 
 ### 🛡 自己診断強化 (S9 + S12 wiring)
@@ -187,7 +196,7 @@ Parsed MD: /home/mhamada202408224/kintone-ai-lab/docs/troubleshooting.md (38714 
 
 ### 🔎 rag MCP DB 内容チェック (TSB-012 再発防止)
 
-- ✅ documentCount=119
+- ✅ documentCount=120
 
 ## 🔧 Phase 3: 自動治療
 
@@ -212,8 +221,6 @@ _Phase 3 の patch 対応のみで完結。新規 proposal なし。_
 ### file-watcher wipe-incidents.log（直近 10 行）
 
 ```text
-{"time":"2026-04-24T12:58:09.465Z","file":"chat-sessions/checkpoint-latest.md","old_size":25453,"new_size":0,"parent_pid":41914,"self_pid":41917}
-{"time":"2026-04-24T12:58:12.932Z","file":"RULES-INDEX.md","old_size":11937,"new_size":0,"parent_pid":41914,"self_pid":41917}
 {"time":"2026-04-24T12:58:16.038Z","file":"AGENTS.md","old_size":160253,"new_size":0,"parent_pid":41914,"self_pid":41917}
 {"time":"2026-04-24T12:58:18.476Z","file":"RULES-INDEX.md","old_size":12095,"new_size":0,"parent_pid":41914,"self_pid":41917}
 {"time":"2026-04-24T20:40:57.537Z","file":"RULES-INDEX.md","old_size":12298,"new_size":0,"parent_pid":41914,"self_pid":41917}
@@ -222,6 +229,8 @@ _Phase 3 の patch 対応のみで完結。新規 proposal なし。_
 {"time":"2026-04-24T20:43:29.586Z","file":"RULES-INDEX.md","old_size":9568,"new_size":0,"parent_pid":41914,"self_pid":41917}
 {"time":"2026-04-24T20:43:36.281Z","file":"chat-sessions/checkpoint-latest.md","old_size":25286,"new_size":0,"parent_pid":41914,"self_pid":41917}
 {"time":"2026-04-24T23:50:21.218Z","file":"docs/troubleshooting.md","old_size":60131,"new_size":0,"parent_pid":41914,"self_pid":41917}
+{"time":"2026-04-25T00:09:58.961Z","file":"docs/troubleshooting.md","old_size":60395,"new_size":0,"parent_pid":41914,"self_pid":41917}
+{"time":"2026-04-25T01:12:05.168Z","file":"scripts/daily-morning-prep.mjs","old_size":17239,"new_size":0,"parent_pid":41914,"self_pid":41917}
 ```
 
 ---
@@ -245,11 +254,11 @@ _Phase 3 の patch 対応のみで完結。新規 proposal なし。_
 - `2026-04-18-skysea-installer.md` L16: ## ⚡ 開始予定: 2026-04-19 07:00 JST
 - `2026-04-18-skysea-installer.md` L18: > 朝 7 時から着手予定。`docs/reports/2026-04-19-morning-prep.md` の「⚡ 時刻指定タスク」セクションで本タスクが最優先表示される（#R3）。
 - `2026-04-23-mcp-strategy-v1.md` L3: **起票**: 2026-04-23 (Thu) 02:35 JST
-- `INDEX.md` L3: **最終更新**: 2026-04-25 (Sat) 08:20 JST / E-3 タスクで初版作成
+- `INDEX.md` L3: **最終更新**: 2026-04-25 (Sat) 09:25 JST / E-3 で初版 / H-3 で v2 設計書追加
 
 ### 直近の計画ファイル（3 件）
 
-- `docs/plans/INDEX.md` （更新: 2026-04-24 23:21）
+- `docs/plans/INDEX.md` （更新: 2026-04-25 00:25）
 - `docs/plans/2026-04-25-pc-ledger-day3-action.md` （更新: 2026-04-24 22:51）
 - `docs/plans/2026-04-25-raci-transparency.md` （更新: 2026-04-24 12:57）
 
@@ -262,7 +271,7 @@ _Phase 3 の patch 対応のみで完結。新規 proposal なし。_
 
 ## 🔍 ヘルススコア
 
-**11 / 11 合格**
+**12 / 12 合格**
 
 - ✅ apply-approved-changes
 - ✅ kintone:test
@@ -270,6 +279,7 @@ _Phase 3 の patch 対応のみで完結。新規 proposal なし。_
 - ✅ npm audit
 - ✅ audit-rules
 - ✅ audit-tsb-confirmed
+- ✅ verify-breaking-deletions
 - ✅ scan-plans
 - ✅ RAG ingest
 - ✅ §46 Phase 2 health-check

@@ -203,6 +203,13 @@ const r5b = runCmd('audit-tsb-confirmed', 'node scripts/audit-tsb-confirmed.mjs'
 sections.push(r5b.stdout || '(出力なし)');
 sections.push('');
 
+// 5-3. post-BREAKING 削除 復活検知 (TSB-016 改善案 #20 / I-1 で追加 2026-04-25)
+sections.push('## 5-3. post-BREAKING 削除 復活検知（TSB-016 #20 = ゾンビ復活ガード）');
+sections.push('');
+const r5c = runCmd('verify-breaking-deletions', 'node scripts/verify-breaking-deletions.mjs --since=50');
+sections.push(r5c.stdout || '(出力なし)');
+sections.push('');
+
 // 6. プラン進捗
 sections.push('## 6. 未完了プラン抽出（docs/plans/*.md）');
 sections.push('');
@@ -399,6 +406,7 @@ const score = [
   ['npm audit', r3.exit === 0],
   ['audit-rules', r5.ok],
   ['audit-tsb-confirmed', r5b.ok],
+  ['verify-breaking-deletions', r5c.ok],
   ['scan-plans', r6.ok],
   ['RAG ingest', r7.ok],
   ['§46 Phase 2 health-check', rPhase2.ok],
