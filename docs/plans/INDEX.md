@@ -40,6 +40,7 @@ docs/plans/
 | ファイル | 実行予定 | 概要 |
 |----------|----------|------|
 | [`_future/2026-04-22-poc-subagent-review.md`](_future/2026-04-22-poc-subagent-review.md) | 4/22 *過去* | PoC subagent レビュー（実装スキップ判断 / 残置） |
+| [`_future/2026-04-26-agents-md-realtime-watch.md`](_future/2026-04-26-agents-md-realtime-watch.md) | 4/26 (Sun) | **K-3** AGENTS.md リアルタイム編集監視 hook (TSB-017 防御) |
 | [`_future/2026-04-27-customize-auto-verify.md`](_future/2026-04-27-customize-auto-verify.md) | 4/27 (Mon) | customize 自動検証 |
 | [`_future/2026-04-27-morning-ritual-hook-v2.md`](_future/2026-04-27-morning-ritual-hook-v2.md) | 4/27 (Mon) | 朝 ritual hook v2 |
 | [`_future/2026-04-27-r10-r11-automation.md`](_future/2026-04-27-r10-r11-automation.md) | 4/27 (Mon) | R10/R11 自動化 |
