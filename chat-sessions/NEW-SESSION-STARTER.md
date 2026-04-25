@@ -48,6 +48,17 @@ v3.3 (2026-04-26 07:05) Cursor Ultra クレジット予算管理（O-series / �
 - npm scripts 追加: `npm run credit:set` / `npm run credit:status` / `npm run credit:reset`
 - 実装: `scripts/credit-budget.mjs` + `data/credit-usage.json` + `daily-morning-prep.mjs §0a` 統合
 
+v3.4 (2026-04-26 07:55) Cursor IDE Auto-Run + RACI bypass 防御（Q1 / TSB-019 連動）:
+- **発見**: §1-2-2-1 設定検証中に Cursor IDE Settings → Agents タブで `Auto-Run Mode = Run Everything (Unsandboxed)` + `Browser Protection: OFF` + `MCP Tools Protection: OFF` 三重 OFF を発見  
+  → §52 RACI Tier B (kintone 本番 API 等) が **IDE レベルで構造的 bypass されていた憲法違反級 silent breach**
+- **暫定対処（浜田 07:48 実施）**: Auto-Run Mode 維持（基本自律 + 都度承認回避）/ **Browser Protection: ON + MCP Tools Protection: ON ⭐**  
+  → kintone MCP 経由の本番 API 書込が承認ゲート復活
+- **§1-2-2-1 拡張**: 4 → 8 項目 (A 課金 / B Models / C Agents / D Cloud Agents)
+- **§52-8 新設**: 高リスク shell 暴走防止 = `rm -rf` / `git push --force` / `npm install` (新規) / `chmod -R` / `sudo` / `.env` 編集 等は **事前報告 → 浜田 GO 待ち** 必須  
+  例外: 読取系 (`ls`, `cat`, `grep`) / 既知 npm スクリプト (`npm run smoke` 等) / git 安全 (`git status/log/diff/add/commit/push origin main`)
+- **TSB-019 起票**: 真因 + 暫定対処 + 恒久対処 + 教訓 5 件 (詳細は `docs/troubleshooting.md`)
+- **後続**: Q-series 包括 Cursor 設定監査（残 5 タブ Hooks / Tools & MCPs / Rules-Skills / Indexing / Plan & Usage）= PC 台帳完了後
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ■ フル版（コピペ推奨 / 新チャットにこのブロックを貼る）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

@@ -120,13 +120,37 @@ agent
   4. 浜田の選択を待つ間は **Tier A 副作用ゼロ**（読取・計画・診断のみ可）
   5. 選択結果を `logs/autonomy-decisions/model-fallback-YYYY-MM-DD-HHMM.md` に記録（AI 起案理由 + 4 択 + 浜田選択 + 後続アクション）
 
-**§1-2-2-1 Cursor IDE 必須設定（2026-04-26 N-4 追記 / 浜田のみ実施可）**:
+**§1-2-2-1 Cursor IDE 必須設定（2026-04-26 N-4 / Q1 で 4 → 7 項目に拡張 / 浜田のみ実施可 / TSB-018 + TSB-019 連動）**:
 
-| 設定 | 必須状態 | 設定場所 |
-|---|---|---|
-| **On-Demand billing** | **ON** | cursor.com/billing → "Enable on-demand spending" |
-| **Spend Cap (月額)** | **$130 (= ¥20,000 浜田承認額)** | cursor.com/billing → "Monthly spend limit" |
-| その他（Auto / Auto-fallback / 有効モデル一覧 / Background agents）| §1-2-2 上段表の通り | 設定 → Models |
+**A. 課金 (cursor.com/billing → Spending タブ)**:
+
+| # | 設定 | 必須状態 | 備考 |
+|---|---|---|---|
+| 1 | **On-Demand mode** | **Fixed** | "Disabled" は緊急停止用 / "Unlimited" 禁止（暴走時損害大）|
+| 2 | **Monthly Limit** | **平常時 $130 / 緊急時 $300 (Q1 浜田承認 / 5/14 で $130 に戻す)** | 5/14 リセット時に AI が朝報で reminder |
+
+**B. Models (Settings → Models)**:
+
+| # | 設定 | 必須状態 | TSB-018 関連 |
+|---|---|---|---|
+| 3 | **有効モデル一覧** | **Opus 4.7 1M Extra High + Opus 4.7 1M Max Thinking のみ ON / 他は全 OFF** | 標準 "Opus 4.7" は OFF（§1-2-3 2 段階明確化のため）/ Composer 系・GPT 系・Auto は OFF（silent fallback 完封）|
+| 4 | **Add or search model** で追加 | Cursor は標準で `Opus 4.7 1M Extra High` `Opus 4.7 1M Max Thinking` を **add で明示追加** する必要がある（2026/03〜の UI 仕様変更）| 知らないと「リストに無い → 諦める」罠 |
+
+**C. Agents (Settings → Agents → Auto-Run section / TSB-019 連動 / 2026-04-26 Q1 追加)**:
+
+| # | 設定 | 必須状態 | TSB-019 関連 |
+|---|---|---|---|
+| 5 | **Auto-Run Mode** | **Run Everything (Unsandboxed)** （浜田判断 = 基本自律 / 都度承認はつらい）| 但し下 #6 #7 で危険カテゴリは個別ゲート |
+| 6 | **Browser Protection** | **ON** | playwright 等の暴走防止 |
+| 7 | **MCP Tools Protection** | **ON** ⭐ | **kintone 本番 API 暴走防止（§52 Tier B 実効性確保の核心）** |
+
+**D. Cloud Agents**:
+
+| # | 設定 | 必須状態 | 備考 |
+|---|---|---|---|
+| 8 | Background Agents (Cloud Agents) | **不使用 = N/A**（Cloud Agents タブで "Open a Git repository" と表示されていれば未使用 / 使用する場合は Opus 4.7 系に固定）| 使用開始時に §1-2-2-1 を即更新 |
+
+**URL 注意 (Q1 追記)**: cursor.com/billing は **`/ja/`（日本語ロケール）パス未対応 → 404**。必ず英語 URL で開く（または cursor.com/dashboard 経由）。
 
 **CLI 側（既存ガイド）との整合**:
 
@@ -1496,6 +1520,7 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 - 改訂日: 2026-04-26 06:35（[FEAT] v23.6 / N-2: 第21章 §57「憲法改定プロセス」新設（案 1 / 浜田朝ブリーフィング 06:33 GO）。§47-E から `§57 改定プロセスに移行します` 参照のみ存在し本体未定義 → audit-rules 破断リンク 1 件 を 0 件に解消。§54-1（ラベル）と §57（手順）の役割分担を表で明記。§57-1〜§57-9: 提起→起案→ラベル決定→適用（並列禁止 / ファイル編集順序）→検証（audit-rules + audit-tsb + verify-breaking + audit-xref + health-check + smoke-test）→周知→meta→記録様式→§47-E/§47-D/§51/§54-2 接続。RULES-INDEX.md §N チェックリスト + 「📜 憲法改定プロセス」表を追記。npm scripts に `audit:rules` / `health-check` / `smoke-test` 別名追加（§57-5 検証コマンドの正規化）。）
 - 改訂日: 2026-04-26 06:42（[FEAT] v23.7 / N-3: §1-2-2「API 制限到達時の自動フォールバック禁止」新設（浜田朝指示「Switched to Composer 2 after reaching API limit. を改善したい」反映）。Cursor IDE 側の Opus → Composer/Sonnet silent fallback を §1-2 違反として構造的禁止。IDE 設定 5 項目（Auto / Auto-fallback / Use Auto on limits / 有効モデル一覧 / Background agents）を必須状態表で明記。AI 検知時動作（§47-E 連動）: 即時中断 → 浜田へ「§1-2-2 違反検知」報告 → GO 待ち。TSB-018 起票。RULES-INDEX.md §1-2 行を §1-2-2 まで拡張、§N チェックリストに §1-2 / §1-2-2 を追加。）
 - 改訂日: 2026-04-26 07:05（[FEAT] v23.8 / N-4+N-5+N-6 / O-series: 浜田「甲：フル実装」承認 → §1-2-2 N-4 強化（4 択 A-D 提示の枠組み + §1-2-2-1 Cursor IDE 必須設定 = On-Demand ON + Spend Cap $130）+ §1-2-3 N-5 新設「Opus 内モデル使い分け」（Max Thinking vs Extra High / 既定は Extra High / Max Thinking 切替の証跡義務）+ §1-2-4 N-6 新設「クレジット予算管理」（月予算 $200+$130 / 1 日 1 回 % 貼付フロー / 70-85-95% 自発警告 / `scripts/credit-budget.mjs` + `data/credit-usage.json` + `daily-morning-prep.mjs §0` 統合 / AI と浜田の役割分担表）。Ultra プラン枯渇傾向の構造的対策完了。RULES-INDEX.md / NEW-SESSION-STARTER.md v3.3 / CURSOR-トラブル対応メモ.md v2.3 / 浜田 Desktop AI緊急用 同期。）
+- 改訂日: 2026-04-26 07:55（[FEAT] v23.9 / Q1: §1-2-2-1 を 4 → 8 項目に拡張 + 第18章 §52-8「高リスク shell 暴走防止」新設。発端 = §1-2-2-1 検証中に浜田スクショで Cursor IDE Settings → Agents タブ `Auto-Run Mode = Run Everything (Unsandboxed)` + `Browser Protection: OFF` + `MCP Tools Protection: OFF` 三重 OFF を発見 → §52 RACI Tier B が IDE レベルで構造的 bypass される憲法違反級の silent breach（kintone 本番 API も承認なし執行可能だった）。浜田暫定対処 = Auto-Run Mode 維持（基本自律）+ Browser/MCP Protection ON（kintone MCP 経由ゲート復活 / Cap は $300 のまま 5/14 に $130 へ）。§1-2-2-1 拡張: A 課金 (On-Demand mode + Monthly Limit) / B Models (有効モデル一覧 + Add 操作) / C Agents (Auto-Run + Browser + MCP Protection) / D Cloud Agents 不使用注記。§52-8 新設: rm -rf / git push --force / npm install (新規) / chmod -R / sudo / .env 編集 等を「事前報告 → GO 待ち」必須化（読取系・既知 npm スクリプト・git 安全コマンドは例外）。TSB-019 起票。）
 
 ---
 
@@ -2026,6 +2051,7 @@ logs/autonomy-decisions/rule-amendment-YYYY-MM-DD-HHMM.md
 | AI 自己診断で「不確実」 | 「これ Tier A か B か判断つかない」 |
 | Q1-Q6 のいずれかで Tier B 昇格 | 不可逆・ロールバック不明・過去 TSB・scope 外 等 |
 | 高リスク (不可逆) | レコード/アプリ削除 / リネーム / push --force / mcp.json 破壊的編集 |
+| **高リスク shell コマンド (§52-8 / TSB-019 連動 / 2026-04-26 Q1 制定)** | **`rm -rf` / `git push --force` / `git reset --hard` / `npm install` (新規) / `npm uninstall` / `chmod -R` / `chown -R` / WSL 外への書込 / docker / kubectl / kubectl delete / sudo 系 / .env 編集** |
 | 大規模変更 | 5/13 旧アプリ書込ロック / 100 件以上の一括削除 |
 
 実装: `docs/approved-changes/pending-review/<日付>/<ID>.proposal.json` にキュー保存。夜の §44 evening-reflect (21:00 cron) で一覧提示 → 浜田が `docs/approved-changes/<翌日>/` に手動移動 (= 承認) or `docs/approved-changes/rejected/` (= 却下) → 翌朝 06:00 apply-approved-changes で承認分のみ実行。
@@ -2087,4 +2113,53 @@ AI 自己診断で「待つと被害拡大」と判断 → Tier A 強制実行�
 **正しい置換対象**: 2026-04-22 制定 §47 第 8 項「**自動化より運用者の明示的アクション優先**」を kintone API 書込操作に厳格適用していた **2026-04-23-4/24 朝までの運用慣行**（PC 台帳 Day 1+2 で全 12 回の API call ごとに浜田 GO 取得）を本 R10 で置換する。
 
 §47-8 の精神（枯渇時 / 例外時 / 不可逆操作時は自動化禁止 + 明示的アクション）は今後も有効。R10 はその精神を細分化し、Tier A（§52-3 自己診断を満たす軽微副作用は即実行可）/ Tier B（不可逆・大規模・不確実・scope 外は浜田承諾必須）を明確に区別する位置付け。
+
+#### §52-8 高リスク shell 暴走防止（2026-04-26 Q1 制定 / TSB-019 連動）
+
+**背景**: 2026-04-26 07:42 に Cursor IDE Agents タブで `Auto-Run Mode = Run Everything (Unsandboxed)` が判明（TSB-019）。浜田判断「基本自律 + 危険時のみ確認 / 都度承認はつらい」を踏まえ、**Browser Protection ON + MCP Tools Protection ON** で kintone 本番 API と browser 経由は構造的にゲートされた。しかし **shell コマンドは引き続き Run Everything で自動実行される** ため、AI 側で **高リスク shell コマンドのみ事前報告 → GO 待ち** とする補強が必要。
+
+**運用ルール**:
+
+1. **AI は以下の高リスク shell カテゴリを実行する直前に、必ず浜田に事前報告 → GO 待ち**:
+
+| カテゴリ | 例 | 理由 |
+|---|---|---|
+| **削除系（再帰）** | `rm -rf`, `find ... -delete`, `xargs rm` | 復旧不可能 |
+| **git 破壊系** | `git push --force`, `git push -f`, `git reset --hard`, `git clean -fdx`, `git rebase` | リポジトリ歴史改変 / 履歴喪失 |
+| **依存関係変更** | `npm install <new-pkg>`, `npm uninstall`, `npm update`, `pip install`, `uv add` | 新規コード持ち込み = 任意コード実行リスク（supply chain）|
+| **権限変更** | `chmod -R`, `chown -R`, `setfacl` | システム整合性 |
+| **WSL 外への書込** | `cp ... /mnt/c/Windows/...`, `> /mnt/c/...`（既知の AI緊急用 sync は除外）| Windows 側破壊リスク |
+| **コンテナ系** | `docker rm`, `docker system prune`, `kubectl delete`, `helm uninstall` | サービス停止 |
+| **特権コマンド** | `sudo apt`, `sudo systemctl`, `sudo rm`, `sudo chmod` | システム全体への影響 |
+| **秘密情報変更** | `.env` 編集, `~/.cursor/mcp.json` 編集（既存 §17-2 / §17-3 と連動）, `~/.ssh/` 編集 | クレデンシャル / MCP 接続性 |
+
+2. **報告様式**（AI が出すメッセージ）:
+   ```
+   ⚠️ §52-8 高リスク shell 検知 / 実行前 GO 確認
+   - コマンド: <full command>
+   - カテゴリ: <table 上のどれか>
+   - 影響: <1 行説明>
+   - ロールバック: <可能なら手順 / 不可能なら "不可逆">
+   - 代替案: <あれば>
+   GO ですか?
+   ```
+
+3. **例外（事前報告不要 = 安全 shell カテゴリ / 都度承認回避）**:
+   - 読取系: `ls`, `cat`, `head`, `tail`, `grep`, `rg`, `find ... -print`（`-delete` なしの探索のみ）
+   - 既知の npm スクリプト: `npm run guard:check`, `npm run smoke`, `npm run health-check`, `npm test` 系（package.json で定義済かつ副作用 cron-限定）
+   - 既知の AI緊急用 sync: `cp <repo>/chat-sessions/*.md /mnt/c/Users/.../Desktop/AI緊急用/` （§57-6 周知ステップ）
+   - git の安全コマンド: `git status`, `git log`, `git diff`, `git add`, `git commit`, `git push origin main`（force なし）
+   - session-lock: `node scripts/session-lock.mjs *`
+   - 単発検証: `node -e "..."`, `node scripts/<既存スクリプト>` (副作用なし or §52-3 で Tier A 判定済)
+
+4. **§52-3 自己診断との整合**:
+   - 高リスク shell は **Q1 (不可逆) = Yes 蓋然性高** で **Tier B 強制昇格相当**
+   - §52-8 は §52-3 を「shell カテゴリ」軸で機械的に判定する補完規定
+   - 両ルールが矛盾する場合は **より厳しい方** を採用（= 浜田 GO 待ち）
+
+5. **AI 側の自己学習**: 過去 24h で §52-8 違反（事前報告なしに高リスク shell を実行した痕跡）が `logs/` に残っていれば、朝報 §0c で「§52-8 違反検知 N 件」として浜田に提示（5/10 月次レビューで実装検討）
+
+**TSB-019 教訓との接続**:
+- TSB-019 で「IDE 設定が憲法を bypass する」を学んだ → §52-8 は **AI 側の自己制約** で IDE 設定の「shell 自由」をルール側で部分的にカバーする保険策
+- Browser/MCP Protection ON が既存の構造的ゲート / §52-8 が shell 用の AI 側ゲート = **IDE と AI の二重防御**
 

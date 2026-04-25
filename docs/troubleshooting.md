@@ -32,10 +32,11 @@
 | TSB-016 | 2026-04-25 09:00 検出 / H-2 で発見 | BREAKING 削除が 1.5h 後の無関係 commit で無自覚に undone | 4/25 5:41 commit `5f928dd` [BREAKING] で Ch.17 (§53 第二意見系 293 行) を削除したが、7:24 commit `6bac959` (主目的 = §35-5 task-log 制定) が AGENTS.md 末尾に **299 行を追加** = Ch.17 全体が誤って復活していた / 2 commit 間で連続検証 (post-commit hash 比較 / 章数カウント) が無かったため誰も気付かず 1.5h 放置 → H-2 AGENTS.md 章調査で発見 | ✅ | true | AGENTS.md / セッション認識 |
 | TSB-017 | 2026-04-25 11:03 検出 / B-7 提案中に発見 | **§51 並列禁止違反** — 別 Cursor セッションが現セッション AI の B-7 提案テキストを読み実行 | 11:03 私が §47-D 追記提案中に grep したら **§47-D 既追加 + RULES-INDEX.md も連動編集 + `.b7-pre-...` バックアップ 2 件**を発見。`.b7-pre` 命名は私が B-7 提案メッセージで書いた手順 (`cp AGENTS.md AGENTS.md.b7-pre`) を文字通り実行した証拠 = 別セッション関与確定。AGENTS.md mtime 10:58:57 / RULES-INDEX.md 10:59:11 / 連動編集 / 35 行 AI 風文体 = 別 AI による完璧な実装。証拠 2 件は `backups/tsb-017-evidence/` に保全 | ✅ | true | AGENTS.md / RULES-INDEX.md / **§51 並列セッション** |
 | TSB-018 | 2026-04-26 06:33 検出 / N-3 / 浜田朝ブリーフィング | **Cursor IDE の API 制限到達時の silent fallback** — Opus 4.7 → composer-2 へ自動切替（§1-2 違反の構造的温床） | 浜田が `Switched to Composer 2 after reaching API limit.` を IDE chat で受領。Opus クレジット枯渇時に Cursor IDE が低コスト composer-2 へユーザー GO なく切替する既定挙動。CLI 側 `composer-2-fast` 罠（§1-2-1 で documented）とは別ソース。§1-2-2 を制定し IDE 設定 5 項目（Auto / Auto-fallback / Use Auto on limits / 有効モデル一覧 / Background agents）の必須状態を明文化 + 検知時 AI 即時中断ルール化 | ✅ | true | Cursor IDE / §1-2 単一モデル前提 |
+| TSB-019 | 2026-04-26 07:42 検出 / Q1 / §1-2-2-1 設定検証中に発見 | **Cursor IDE Auto-Run Mode = "Run Everything (Unsandboxed)" + Browser/MCP Protection OFF が §52 RACI Tier B を構造的に bypass** — kintone 本番 API 書込含む全 MCP ツール・shell・file-write が浜田 GO なしに実行可能だった | §1-2-2-1 (Cursor IDE 必須設定) の verify 中に Agents タブを浜田に開いてもらい発見。`Auto-Run Mode = Run Everything (Unsandboxed)` + `Browser Protection: OFF` + `MCP Tools Protection: OFF` の三重 OFF 構成で、AI Agent が shell・file-write・MCP ツール（**kintone MCP / filesystem / memory / playwright 等含む**）を **承認プロンプト無しで全自動実行する状態**だった。AGENTS.md §52 RACI が「Tier B (irreversible) は浜田の明示 GO 必須」と規定していても **IDE レベルで bypass されており実効性ゼロ**。過去の TSB-006 (Undo All 破壊) / TSB-017 (並列セッション勝手書換) もこの設定と相互作用していた可能性大。対処: Auto-Run Mode は「基本自律 + 危険時確認」浜田判断で `Run Everything` 維持しつつ、**Browser Protection: ON + MCP Tools Protection: ON** に変更（kintone 本番 API は MCP 経由のため MCP Protection ON で構造的にゲート）。§1-2-2-1 を 5 → 8 項目に拡張、§52 RACI に「shell 暴走防止 = 高リスクコマンドは事前報告」追記 | ✅ | true | Cursor IDE 全体 / §52 RACI / kintone 本番 |
 
-**集計** (2026-04-26 06:42 時点 / TSB-018 追加):
-- 全 19 件中 **root_cause_confirmed = true: 18 件 (95%)** / **false (孤児): 1 件 (5%)**
-- 5 月目標 (F-2 自己批判 §54-5) = カバレッジ 100% を TSB-018 真因確定 (Cursor IDE 既定挙動) で **95% に向上**
+**集計** (2026-04-26 07:55 時点 / TSB-019 追加):
+- 全 20 件中 **root_cause_confirmed = true: 19 件 (95%)** / **false (孤児): 1 件 (5%)**
+- 5 月目標 (F-2 自己批判 §54-5) = カバレッジ 100% を TSB-019 真因確定 (Cursor IDE Agents 設定) で **95% 維持**
 - 残 false: **TSB-001 のみ** = 孤児 TSB（4/19 D1-proposal でも「詳細未記載」）= 真因不明のまま記録止まり
 
 > **注**: TSB-002, TSB-003, TSB-008 はファイル不在時の記載漏れ。発見次第追記。
@@ -1025,3 +1026,77 @@ Cursor IDE の既定挙動:
 - 関連 TSB: TSB-016 (AGENTS.md zombie / 構造的防御の重要性) / TSB-017 (silent breach 系の双子)
 - 関連 ルール: §1-2 単一モデル / §1-2-1 環境別実モデル名 / §1-2-2 自動フォールバック禁止 (本件で制定) / §47-E 憲法違反却下 (検知時動作)
 - 関連 commit: TBD (N-3 commit で参照更新)
+
+---
+
+## TSB-019 — Cursor IDE Auto-Run "Run Everything (Unsandboxed)" + Browser/MCP Protection OFF が §52 RACI を構造的 bypass（2026-04-26 07:42 検出 / Q1 / §1-2-2-1 設定検証中に発見）
+
+### 事象
+
+2026-04-26 朝、§1-2-2-1 (Cursor IDE 必須設定) の設定検証フェーズで浜田に Cursor IDE Settings → **Agents** タブを開いてもらいスクショを送付してもらった結果、以下の極めて危険な構成が発覚した:
+
+| 項目 | 設定値 | 危険度 |
+|---|---|---|
+| **Auto-Run Mode** | **Run Everything (Unsandboxed)** | 🔴 最高 |
+| **Browser Protection** | **OFF** | 🔴 高 |
+| **MCP Tools Protection** | **OFF** | 🔴 **kintone 本番 API 直撃** |
+
+これは Cursor IDE が AI Agent に対して以下のすべてを **承認プロンプト無し** で実行可能にする構成:
+
+- **shell コマンド**: `npm run`, `git`, `ls`, **`rm -rf`** などすべて
+- **file write**: 任意ファイル作成・上書き・削除
+- **MCP ツール**:
+  - **kintone MCP** (本番 API への record 作成・更新・削除・app 設定変更)
+  - **filesystem MCP** (任意パスへのファイル操作)
+  - **memory MCP** (knowledge graph 改変)
+  - **playwright MCP** (ブラウザ自動操作 / form 入力 / リンク click)
+  - **accessibility-scanner / cve-search / cyber-news** 等
+
+### 根本原因
+
+| # | 原因 | 詳細 |
+|---|---|---|
+| 1 | **AGENTS.md §52 RACI と Cursor IDE 設定の乖離** | §52 は「Tier B (irreversible) は浜田の明示 GO 必須」と憲法レベルで規定。しかし IDE が Run Everything (Unsandboxed) かつ Protection OFF だと **§52 が IDE レベルで完全に bypass される** = 憲法と実装が乖離 |
+| 2 | **§1-2-2 (N-3 / 2026-04-26 06:42) 制定時に Auto-Run Mode を見落とし** | §1-2-2 制定の主目的は「Composer 2 silent fallback」防御（モデル選択側）。実行制御 (Auto-Run Mode) は同一画面 (Settings → Models / Agents) にあるが別概念のため見落としていた |
+| 3 | **設定検証は浜田スクショ依存で初回確認まで時間がかかる** | AI から IDE 設定を直接読む API なし。浜田が「困っていない」と感じている間は OK と推定する設計 = **silent breach** が長期間放置されるリスク |
+| 4 | **過去のインシデントとの相互作用未検証** | TSB-006 (Undo All 破壊), TSB-017 (並列セッション勝手書換) は本設定と組み合わさると被害が拡大する構造だった可能性大。当時の浜田の困惑「自分が触ってないのに動いた」は本設定が一因だった蓋然性が高い |
+
+### 影響範囲
+
+- **kintone 本番データ全 22 アプリ**（特に PC 台帳 594/595/626/627/668、M365管理マスタ 670、環境設定マスタ 669 等）
+- **shell 実行可能な全操作**（git push --force / npm install で任意コード実行 / WSL 全ファイル）
+- **MCP 16 件 (active 13)** すべての副作用ツール
+- **本日午前の AI 実行履歴**: O-series commit (07:05 [FEAT] credit-budget) の段階で既にこの設定下で動作していた = 過去 commit の MCP/shell 実行は浜田 GO なしの自動承認で進んだ可能性
+
+### 暫定対処（浜田 07:48 実施）
+
+| # | 項目 | Before | After |
+|---|---|---|---|
+| 1 | Auto-Run Mode | Run Everything (Unsandboxed) | **そのまま維持**（浜田判断「基本自律 + 危険時のみ確認」/ 都度承認はつらい）|
+| 2 | Browser Protection | OFF | **ON** |
+| 3 | MCP Tools Protection | OFF | **ON** ⭐ kintone 本番 API ゲート復活 |
+
+→ Cursor 設計上、`Run Everything` mode でも Browser/MCP Protection を ON にすると **その 2 カテゴリのみ承認ゲートが復活** する仕様を活用。「基本自律 + kintone 本番 API は浜田確認」を 2 トグルで実現。
+
+### 恒久対処
+
+| # | 対処 | 状態 |
+|---|---|---|
+| 1 | **§1-2-2-1 を 4 → 7 項目に拡張**（On-Demand + Auto-Run + Browser Protection + MCP Tools Protection を追記）| 本 commit |
+| 2 | **§52 RACI 補強**: 「shell 暴走防止 = AI が `rm -rf` / `git push --force` / `npm install` 等高リスク shell は **事前報告 → 浜田 GO 待ち**」を AGENTS.md に追加 | 本 commit |
+| 3 | **§57-5 検証ステップに Cursor IDE 設定確認を追加候補**（Q-series で別途検討）| Q-series |
+| 4 | **health-check.mjs S17 候補**: 「Cursor IDE Agents 設定の手動確認リマインダ（月 1 回）」 | 5/10 月次レビュー検討 |
+
+### 教訓
+
+1. **憲法と IDE 設定の乖離は「silent breach 級」** — §52 のような重大ルールは IDE 設定で裏打ちされていなければ実効性ゼロ
+2. **「設定 = ドキュメント」ではない** — §1-2-2-1 を 4 項目で「ヨシ」と判断したのは早計。Cursor IDE は仕様変更が頻繁で、隣接設定群（同じ画面の別 section）も全件確認が必要
+3. **Browser/MCP Protection という Cursor の優れた設計を活用すべきだった** — 「YOLO か Manual か」の二者択一ではなく「カテゴリ別承認ゲート」が用意されている。設定検証時に dropdown / トグルを **すべて読む** 必要がある
+4. **Q-series 包括監査の必要性** — 残 5 タブ (Hooks / Tools & MCPs / Rules-Skills-Subagents / Indexing & Docs / Plan & Usage) も同様の隠れた違反設定がある可能性 → PC 台帳完了後に必須実施
+5. **「困ってない = 安全」は誤り** — 浜田が違和感を感じない設定こそが silent breach の温床（TSB-018 と同じ構造）
+
+### 関連
+- 関連 TSB: TSB-006 (Undo All 破壊 / 本設定と相互作用の可能性) / TSB-017 (並列セッション / 本設定があれば被害拡大していた) / TSB-018 (silent breach 系の親戚)
+- 関連 ルール: §1-2-2 / §1-2-2-1 (本件で 4 → 7 項目拡張) / §52 RACI (本件で shell 暴走防止追記) / §47-E 憲法違反却下
+- 関連 commit: 本 commit (Q1 [FEAT])
+- 後続: Q-series 包括 Cursor 設定監査（PC 台帳完了後）

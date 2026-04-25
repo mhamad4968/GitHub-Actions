@@ -56,6 +56,33 @@ v2.3 (2026-04-26 07:05) Cursor Ultra クレジット予算管理（O-series / §
   - `npm run credit:status` — 現在の状態（残日数 / 想定枯渇日 / AI 助言）  
   - `npm run credit:reset -- --day=14` — 課金日を毎月 14 日に設定（初回のみ）
 
+v2.4 (2026-04-26 07:55) Cursor IDE Auto-Run + RACI bypass 防御（Q1 / TSB-019 連動）:
+- **発見**: Settings → Agents タブで `Auto-Run Mode = Run Everything (Unsandboxed)` + Browser/MCP Protection OFF だった  
+  → AI が kintone 本番 API・shell・file-write を **承認なし全自動執行できる構成** = §52 RACI Tier B 実効性ゼロ
+- **暫定対処（浜田 07:48 完了）**: Auto-Run Mode 維持 + **Browser Protection: ON + MCP Tools Protection: ON ⭐**  
+  → kintone MCP 経由の本番 API 書込が承認ゲート復活（基本自律 + 危険時のみ確認）
+- **§1-2-2-1 拡張**: 4 → 8 項目 (A 課金 / B Models / C Agents / D Cloud Agents) — 詳細は AGENTS.md §1-2-2-1
+- **§52-8 高リスク shell 暴走防止**:  
+  - **AI が事前報告必須**: `rm -rf` / `git push --force` / `git reset --hard` / `npm install` (新規) / `npm uninstall` / `chmod -R` / `chown -R` / `sudo` 系 / `.env` 編集 / `~/.cursor/mcp.json` 編集 / docker・kubectl 系 / WSL 外への書込  
+  - **AI が即実行可（事前報告不要 = 安全カテゴリ）**: 読取 (`ls`, `cat`, `grep`, `rg`, `find -print`) / 既知 npm スクリプト (`npm run smoke`, `health-check`, `guard:check`, `test`) / git 安全 (`git status/log/diff/add/commit/push origin main`) / session-lock (`scripts/session-lock.mjs`)  
+  - **AI 報告様式（覚えておく）**:  
+    ```
+    ⚠️ §52-8 高リスク shell 検知 / 実行前 GO 確認
+    - コマンド: <full command>
+    - カテゴリ: <table 上のどれか>
+    - 影響: <1 行説明>
+    - ロールバック: <手順 or "不可逆">
+    GO ですか?
+    ```
+- **TSB-019 詳細**: `docs/troubleshooting.md` 末尾セクション参照（事象 / 真因 / 影響 / 暫定 / 恒久 / 教訓 5 件）
+- **後続**: Q-series 包括 Cursor 設定監査（残 5 タブ Hooks / Tools & MCPs / Rules-Skills-Subagents / Indexing & Docs / Plan & Usage）= PC 台帳完了後に実施
+
+【浜田が違反検知したら / 例: AI が rm -rf を勝手に実行したら】
+1. 即座にチャットで **「§52-8 違反です」** と AI に伝える
+2. AI は §47-E 連動で即時謝罪 + 影響評価 + 復旧手順提示
+3. 必要なら git revert / npm run restore:wiped / バックアップ復元
+4. 違反を `logs/autonomy-decisions/` に記録 (再発防止)
+
 
 ━━━ ① まず現状確認（30 秒）━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -357,7 +384,7 @@ mcp.json 編集は R4 §17-2 厳守 (backup + ensure_ascii=True + diff 確認)�
 
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-最終更新: 2026-04-24 v2.1 (⑭ proposal old_string 不一致 + ⑮ MCP 死蔵 false positive 追加 / S12 v2 + S13 v2 効果反映)
+最終更新: 2026-04-26 v2.4 (Cursor IDE Auto-Run + RACI bypass 防御 / Q1 / TSB-019 連動 / Browser+MCP Protection ON 化 + §52-8 高リスク shell 暴走防止)
 このメモは C:\Users\mhamada202408224\Desktop\AI緊急用\CURSOR-トラブル対応メモ.txt
 正本: kintone-ai-lab/chat-sessions/CURSOR-トラブル対応メモ.md
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
