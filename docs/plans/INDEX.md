@@ -40,7 +40,8 @@ docs/plans/
 | ファイル | 実行予定 | 概要 |
 |----------|----------|------|
 | [`_future/2026-04-22-poc-subagent-review.md`](_future/2026-04-22-poc-subagent-review.md) | 4/22 *過去* | PoC subagent レビュー（実装スキップ判断 / 残置） |
-| [`_future/2026-04-26-agents-md-realtime-watch.md`](_future/2026-04-26-agents-md-realtime-watch.md) | 4/26 (Sun) | **K-3** AGENTS.md リアルタイム編集監視 hook (TSB-017 防御) |
+| [`_future/2026-04-26-agents-md-realtime-watch.md`](_future/2026-04-26-agents-md-realtime-watch.md) | 4/26 (Sun) | **K-3** AGENTS.md リアルタイム編集監視 hook (TSB-017 防御 / §51-3 段階 3) |
+| [`_future/2026-05-10-session-lock-stage2-force-kill.md`](_future/2026-05-10-session-lock-stage2-force-kill.md) | 5/10 (Sun) | **L-6** session-lock --force-kill モード (§51-3 段階 2 / 浜田 GO 必須 / 誤殺リスク評価) |
 | [`_future/2026-04-27-customize-auto-verify.md`](_future/2026-04-27-customize-auto-verify.md) | 4/27 (Mon) | customize 自動検証 |
 | [`_future/2026-04-27-morning-ritual-hook-v2.md`](_future/2026-04-27-morning-ritual-hook-v2.md) | 4/27 (Mon) | 朝 ritual hook v2 |
 | [`_future/2026-04-27-r10-r11-automation.md`](_future/2026-04-27-r10-r11-automation.md) | 4/27 (Mon) | R10/R11 自動化 |
