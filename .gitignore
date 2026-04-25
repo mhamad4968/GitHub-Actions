@@ -25,6 +25,9 @@ collect_log.txt
 .rag/lancedb/
 .rag/models/
 .rag/backup.log
+# I-12 (2026-04-25): RAG ingest 用コピー先 = chat-sessions/ + docs/troubleshooting.md からの再生成物 / 元は git 管理
+.rag/extra-docs/sessions/
+.rag/extra-docs/troubleshooting.md
 backups/
 dist/
 logs/*

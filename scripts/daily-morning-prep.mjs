@@ -210,6 +210,13 @@ const r5c = runCmd('verify-breaking-deletions', 'node scripts/verify-breaking-de
 sections.push(r5c.stdout || '(出力なし)');
 sections.push('');
 
+// 5-4. AGENTS.md ↔ RULES-INDEX.md 相互参照 drift (I-11 で追加 2026-04-25)
+sections.push('## 5-4. AGENTS.md ↔ RULES-INDEX.md 相互参照 drift（索引漏れ + 死参照 検知）');
+sections.push('');
+const r5d = runCmd('audit-cross-references', 'node scripts/audit-cross-references.mjs');
+sections.push(r5d.stdout || '(出力なし)');
+sections.push('');
+
 // 6. プラン進捗
 sections.push('## 6. 未完了プラン抽出（docs/plans/*.md）');
 sections.push('');
@@ -407,6 +414,7 @@ const score = [
   ['audit-rules', r5.ok],
   ['audit-tsb-confirmed', r5b.ok],
   ['verify-breaking-deletions', r5c.ok],
+  ['audit-cross-references', r5d.ok],
   ['scan-plans', r6.ok],
   ['RAG ingest', r7.ok],
   ['§46 Phase 2 health-check', rPhase2.ok],

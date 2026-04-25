@@ -284,6 +284,48 @@ if (fs.existsSync(nodeModulesScriptPath)) {
   }
 }
 
+// ───── Git ahead/behind チェック (S15 wiring / I-10 2026-04-25) ─────
+//   目的: push 忘れ / pull 忘れ早期検知
+//   背景: 4/22-23 で 134 commits ahead 状態が続いた前例 → push trigger 自動化したい
+let gitStatusCheck = { status: 'skip', note: 'git command unavailable' };
+try {
+  const remoteCheck = spawnSync('git', ['-C', REPO_ROOT, 'rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}'], { encoding: 'utf8', timeout: 5_000 });
+  if (remoteCheck.status === 0) {
+    const upstream = remoteCheck.stdout.trim();
+    const counts = spawnSync('git', ['-C', REPO_ROOT, 'rev-list', '--left-right', '--count', `${upstream}...HEAD`], { encoding: 'utf8', timeout: 5_000 });
+    if (counts.status === 0) {
+      const [behindStr, aheadStr] = counts.stdout.trim().split(/\s+/);
+      const behind = Number(behindStr) || 0;
+      const ahead = Number(aheadStr) || 0;
+      const branch = (spawnSync('git', ['-C', REPO_ROOT, 'rev-parse', '--abbrev-ref', 'HEAD'], { encoding: 'utf8' }).stdout || '').trim();
+      // 50 commits 以上 ahead / behind なら警告 (push/pull 忘れ閾値)
+      const heavyAhead = ahead >= 50;
+      const heavyBehind = behind >= 10;
+      if (heavyAhead || heavyBehind) {
+        gitStatusCheck = {
+          status: 'ng',
+          note: `${branch}: ${ahead} ahead / ${behind} behind ${upstream} (push/pull 忘れの恐れ)`,
+          ahead, behind, branch, upstream,
+        };
+      } else if (ahead === 0 && behind === 0) {
+        gitStatusCheck = { status: 'ok', note: `${branch} = ${upstream} (完全同期)`, ahead, behind, branch, upstream };
+      } else {
+        gitStatusCheck = {
+          status: 'ok',
+          note: `${branch}: ${ahead} ahead / ${behind} behind ${upstream}`,
+          ahead, behind, branch, upstream,
+        };
+      }
+    } else {
+      gitStatusCheck = { status: 'skip', note: 'rev-list 失敗 (branch 未追跡?)' };
+    }
+  } else {
+    gitStatusCheck = { status: 'skip', note: 'upstream 未設定' };
+  }
+} catch (e) {
+  gitStatusCheck = { status: 'skip', note: `git status check error: ${e?.message || e}` };
+}
+
 // ───── MCP 死蔵検知 (S12 wiring / 改善案 #12) ─────
 let mcpDormancyCheck = { status: 'skip', note: 'check-mcp-dormancy.mjs not present' };
 const mcpDormancyScriptPath = path.join(REPO_ROOT, 'scripts', 'check-mcp-dormancy.mjs');
@@ -316,11 +358,14 @@ const nodeModulesSkipCount = nodeModulesCheck.status === 'skip' ? 1 : 0;
 const mcpDormancyOkCount = mcpDormancyCheck.status === 'ok' ? 1 : 0;
 const mcpDormancyNgCount = mcpDormancyCheck.status === 'ng' ? 1 : 0;
 const mcpDormancySkipCount = mcpDormancyCheck.status === 'skip' ? 1 : 0;
+const gitStatusOkCount = gitStatusCheck.status === 'ok' ? 1 : 0;
+const gitStatusNgCount = gitStatusCheck.status === 'ng' ? 1 : 0;
+const gitStatusSkipCount = gitStatusCheck.status === 'skip' ? 1 : 0;
 const summary = {
-  ok: mcpResults.filter((r) => r.status === 'ok').length + [node, disk, memory, cron, selfCheck].filter((s) => s.status === 'ok').length + ragDeepOkCount + nodeModulesOkCount + mcpDormancyOkCount,
-  ng: mcpResults.filter((r) => r.status === 'ng').length + [node, cron, selfCheck].filter((s) => s.status === 'ng').length + ragDeepNgCount + nodeModulesNgCount + mcpDormancyNgCount,
+  ok: mcpResults.filter((r) => r.status === 'ok').length + [node, disk, memory, cron, selfCheck].filter((s) => s.status === 'ok').length + ragDeepOkCount + nodeModulesOkCount + mcpDormancyOkCount + gitStatusOkCount,
+  ng: mcpResults.filter((r) => r.status === 'ng').length + [node, cron, selfCheck].filter((s) => s.status === 'ng').length + ragDeepNgCount + nodeModulesNgCount + mcpDormancyNgCount + gitStatusNgCount,
   warn: 0,
-  skip: mcpResults.filter((r) => r.status === 'skip').length + nodeModulesSkipCount + mcpDormancySkipCount,
+  skip: mcpResults.filter((r) => r.status === 'skip').length + nodeModulesSkipCount + mcpDormancySkipCount + gitStatusSkipCount,
 };
 
 const result = {
@@ -335,6 +380,7 @@ const result = {
   self_check: selfCheck,
   node_modules: nodeModulesCheck,
   mcp_dormancy: mcpDormancyCheck,
+  git_status: gitStatusCheck,
   summary,
 };
 
@@ -378,6 +424,8 @@ out('');
   out(`- **node_modules 完全性 (S9)**: ${nmIcon} ${nodeModulesCheck.note}`);
   const mdIcon = { ok: '✅', ng: '❌', skip: '⏭' }[mcpDormancyCheck.status] || '?';
   out(`- **MCP 死蔵検知 (S12)**: ${mdIcon} ${mcpDormancyCheck.note}`);
+  const gsIcon = { ok: '✅', ng: '❌', skip: '⏭' }[gitStatusCheck.status] || '?';
+  out(`- **Git ahead/behind (S15)**: ${gsIcon} ${gitStatusCheck.note}`);
 }
 out('');
 
