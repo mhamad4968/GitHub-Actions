@@ -260,24 +260,44 @@ sections.push(r5d.stdout || '(出力なし)');
 sections.push('');
 
 // 5-5. 憲法ファイル リアルタイム変更ログ (K-3 / 過去 24h)
+// P3 改良 (2026-04-26): 朝報生成時刻と watcher 編集タイミングのずれによる「ログなし」誤表示を改善
+//   - watcher プロセス稼働状態の同時表示
+//   - 朝報生成時点で過去 24h 0 件でも、watcher 自体の健在性を明示
+//   - watcher 健在 + 0 件 = 静穏 / watcher 不在 + 0 件 = ⚠️ 監視欠落
+//   - JSON 出力にも生成時刻 + 当日中の最新 entry 時刻を追加
 sections.push('## 5-5. 憲法ファイル リアルタイム変更ログ（過去 24h / K-3 / agents-md-changes.jsonl）');
 sections.push('');
 (() => {
   const jsonlPath = path.join(REPO_ROOT, 'logs', 'file-watcher', 'agents-md-changes.jsonl');
+  const generatedAtJst = new Date(Date.now() + 9 * 3600 * 1000).toISOString().replace('Z', '+09:00');
   const cutoff = Date.now() - 24 * 3600 * 1000;
+  // watcher プロセス稼働確認 (rule-watcher-status.mjs を呼び出し)
+  let watcherStatus = 'unknown';
+  try {
+    const r = runCmd('rule-watcher-status', 'node scripts/rule-watcher-status.mjs', { timeoutMs: 3_000 });
+    if (r.stdout && r.stdout.includes('WATCHER_STATUS=running')) watcherStatus = 'running';
+    else if (r.stdout && r.stdout.includes('WATCHER_STATUS=stopped')) watcherStatus = 'stopped';
+  } catch { /* keep unknown */ }
+  const watcherIcon = watcherStatus === 'running' ? '🟢 稼働中' : (watcherStatus === 'stopped' ? '🔴 停止中' : '⚪ 不明');
+  sections.push(`**watcher プロセス状態**: ${watcherIcon} (\`scripts/file-watcher.mjs\`)`);
+  sections.push(`**朝報生成時刻**: ${generatedAtJst} (この時刻以降の編集は翌朝報で確認)`);
+  sections.push('');
   if (!fs.existsSync(jsonlPath)) {
-    sections.push('_ログなし（file-watcher 未起動 or 未変更）。`npm run watcher:start` で K-3 監視を有効化。_');
+    sections.push('_ログなし（agents-md-changes.jsonl 未生成）。`npm run watcher:start` で K-3 監視を有効化。_');
     sections.push('');
     return;
   }
   let entries = [];
+  let allEntries = [];
   try {
     const lines = fs.readFileSync(jsonlPath, 'utf8').trim().split('\n').filter(Boolean);
     for (const line of lines) {
       try {
         const j = JSON.parse(line);
         const t = new Date(j.time).getTime();
-        if (!Number.isNaN(t) && t >= cutoff) entries.push(j);
+        if (Number.isNaN(t)) continue;
+        allEntries.push({ ...j, _ts: t });
+        if (t >= cutoff) entries.push(j);
       } catch { /* skip */ }
     }
   } catch {
@@ -285,18 +305,34 @@ sections.push('');
     sections.push('');
     return;
   }
-  sections.push(`**過去 24h の SHA256 変化イベント: ${entries.length} 件**`);
+  sections.push(`**過去 24h の SHA256 変化イベント: ${entries.length} 件** (jsonl 全件: ${allEntries.length})`);
+  if (allEntries.length > 0) {
+    const latest = allEntries[allEntries.length - 1];
+    const latestJst = new Date(latest._ts + 9 * 3600 * 1000).toISOString().replace('Z', '+09:00');
+    sections.push(`**jsonl 最新 entry**: ${latestJst} \`${latest.file}\``);
+  }
   sections.push('');
-  if (entries.length === 0) {
-    sections.push('_該当なし（静穏）_');
+  if (entries.length === 0 && watcherStatus === 'running') {
+    sections.push('_該当なし（静穏 / watcher 健在なので過去 24h に憲法ファイル変更が無かったことを示す）_');
+  } else if (entries.length === 0 && watcherStatus !== 'running') {
+    sections.push('_⚠️ 該当なし + watcher も停止 = 監視欠落の可能性。`npm run watcher:start` で再開を_');
   } else {
     const tail = entries.slice(-8);
-    sections.push('| 時刻 (UTC) | ファイル | grace | sha256 (先頭) |');
+    sections.push('| 時刻 (JST) | ファイル | grace | sha256 (先頭) |');
     sections.push('|---|---|:---:|---|');
     for (const e of tail) {
+      const tJst = new Date(new Date(e.time).getTime() + 9 * 3600 * 1000).toISOString().replace('Z', '+09:00');
       const g = e.in_grace ? '起動直後' : '—';
       const sh = (e.sha256 || '').slice(0, 12);
-      sections.push(`| ${e.time || ''} | \`${e.file || ''}\` | ${g} | \`${sh}\` |`);
+      sections.push(`| ${tJst} | \`${e.file || ''}\` | ${g} | \`${sh}\` |`);
+    }
+    // 重複ファイル多発 (= 同一ファイル 5+ 件) 検知
+    const fileCount = {};
+    for (const e of entries) fileCount[e.file] = (fileCount[e.file] || 0) + 1;
+    const heavy = Object.entries(fileCount).filter(([, n]) => n >= 5);
+    if (heavy.length > 0) {
+      sections.push('');
+      sections.push(`**⚠️ 24h 内に 5 件以上編集されたファイル**: ${heavy.map(([f, n]) => `\`${f}\` (${n})`).join(' / ')} → 並列セッション混入の可能性チェック推奨`);
     }
   }
   sections.push('');
