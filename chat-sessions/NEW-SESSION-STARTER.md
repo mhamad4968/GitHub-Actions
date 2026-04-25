@@ -15,6 +15,17 @@ v2 (2026-04-19) からの主な強化:
 - 自動化基盤強化: 8 cron + file-watcher 21 ファイル監視
 - MCP 16 件 (active 13 + skip 3 / google-search → duckduckgo-search 入替済 / Chrome 147 + libnspr4 等 sudo install 済)
 
+v3.1 (2026-04-25) 憲法・並列防御（緊急用メモ同期 / Desktop 控えと常に同内容）:
+- §47-D **矛盾指示は却下**（折衷・部分着手禁止。浜田が「却下して叱って」と明示）
+- §47-E **憲法違反指示も却下**（ルール改定の明示がない限り。改定なら §54-1 BREAKING 手順へ）
+- §51-3 **並列セッション対策**: 憲法ファイル（AGENTS.md 等 5 件）を編集する前に  
+  `node scripts/session-lock.mjs acquire --manual --holder=<作業ID>` → 完了後 `release`
+- **K-3**: `npm run watcher:start` で `file-watcher.mjs` 常駐推奨。憲法 5 ファイルの SHA256 変化は  
+  `logs/file-watcher/agents-md-changes.jsonl` に記録。**watcher または file-watcher.mjs を更新したら必ず**  
+  `npm run watcher:stop && npm run watcher:start`（古いプロセスのまま K-3 が無効なことがある）
+- 朝〜作業前の一発確認: `npm run smoke`（**7 検査** = guard + 4 audit + health + rule-watcher）
+- 参考: `docs/troubleshooting.md` **TSB-017**（別 Cursor セッションによる並列編集インシデント）
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ■ フル版（コピペ推奨 / 新チャットにこのブロックを貼る）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

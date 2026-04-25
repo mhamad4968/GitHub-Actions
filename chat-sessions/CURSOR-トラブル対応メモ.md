@@ -12,6 +12,15 @@ v1 (2026-04-19) からの主な強化:
 - 自動防衛仕組みを 8 cron + file-watcher 21 ファイル監視に更新
 - 連絡先メモに新規 TSB-013/014/015 + R8/R9 + 戦略書 v1 追加
 
+v2.1 (2026-04-25) 並列セッション + K-3（憲法ファイルリアルタイム監視）:
+- **疑い**: 自分が触ってないのに AGENTS.md / RULES-INDEX.md 等が変わった → `docs/troubleshooting.md` **TSB-017**、  
+  `logs/file-watcher/agents-md-changes.jsonl` を確認。**作業即中止** → 浜田連絡（§51-3）
+- **watcher 更新後は必ず再起動**:  
+  `cd /home/mhamada202408224/kintone-ai-lab && npm run watcher:stop && npm run watcher:start`  
+  （古い PID のままだと K-3 の SHA256 監視が効かない）
+- **稼働確認**: `npm run watcher:status` または `npm run watcher:rules-status`
+- **全体診断**: `npm run smoke`（7 項目）
+
 
 ━━━ ① まず現状確認（30 秒）━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -37,7 +46,7 @@ WSL ターミナルで:
   2. ✅ Review で内容を確認（何を変更しようとしてたか）
   3. ✅ エラー画面のスクショを保存（Request ID が原因究明の決定打）
   4. ✅ npm run guard:check で被害確認
-  5. ✅ file-watcher が動いてれば自動復元してるはず (PID 41917 / 4/19 から連続稼働)
+  5. ✅ file-watcher が動いてれば自動復元しやすい（`npm run watcher:status` で PID 確認）
 
 【リクエストが多すぎたとき】
   → AI に「ファイル数を分けて 5 個ずつ実行して」と頼む（AGENTS.md §47-5 大量編集ガード）
