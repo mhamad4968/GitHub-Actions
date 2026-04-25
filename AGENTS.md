@@ -1284,8 +1284,8 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 | 段階 | 機構 | AI 動作 | 状態 |
 |---|---|---|---|
 | 段階 1 | `scripts/session-lock.mjs` (manual lock) | 検知 = 自分側を即座に abort + 浜田に報告 (= 自衛) | **2026-04-25 実装済 (L-1)** |
-| 段階 2 | `ps aux` ベースの強制 kill | 検知 = 既存セッション pid を SIGTERM → SIGKILL | **future plan (L-6) / 浜田 GO 必須 / 誤殺リスク評価必要** |
-| 段階 3 | リアルタイム file watcher (AGENTS.md 等) | 不審な mtime 更新 = 即座に warn + 自分側 abort | **future plan (K-3) / 2026-04-26 着手予定** |
+| 段階 2 | `ps aux` ベースの強制 kill (`--force-kill` モード) | 検知 = 既存セッション pid を SIGTERM → SIGKILL | **設計確定 (M-series 2026-04-25 11:28): A-2 三重防御 + B-1 本リポのみ + C-2 段階 3 連携 / 実装は 5/10 future plan (L-6) / 浜田 GO 必須** |
+| 段階 3 | リアルタイム file watcher (AGENTS.md 等) | 不審な mtime 更新 = 即座に warn + 自分側 abort | **future plan (K-3) / 2026-04-26 着手予定 (本日前倒し検討中)** |
 
 **遵守事項 (現行 = 段階 1)**:
 
@@ -1295,12 +1295,14 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 4. **作業完了時**: `node scripts/session-lock.mjs release` で lock 解放 + commit + push 後に他セッションを許可
 5. **不審な兆候 (lock なしでも)**: AGENTS.md の mtime が予期せず更新 / `.b7-pre`等の不審な backup file 出現 / smoke-test の予期せぬ warn = **§51-3 警報** として浜田に報告
 
-**段階 2 (強制終了モード) の適用条件 (将来 / 浜田 GO 必須)**:
+**段階 2 (強制終了モード) の適用条件 (浜田 GO 確定 2026-04-25 11:28 / 実装は 5/10 予定)**:
 
-- 浜田 GO 後のみ有効化 (`scripts/session-lock.mjs --force-kill` 等)
-- kill 対象は **`cursor` プロセス** に限定 (other agents 誤殺禁止)
-- kill 前に必ず lock holder 情報 + ps aux 出力を `logs/parallel-kills/` に記録
-- 自殺 (= 自分自身を kill) を防ぐため `process.pid` 除外
+- **A-2 三重防御**: `--force-kill` フラグ + `SESSION_LOCK_FORCE_KILL=1` env + 対話確認 (`read -p "kill pid=X holder=Y? (yes/no): "`) すべて満たした時のみ kill 実行
+- **B-1 本リポ限定**: `/proc/<pid>/cwd` で対象が `kintone-ai-lab` 配下の cursor プロセスのみ kill (他プロジェクトの cursor / claude / codex / gemini は誤殺禁止)
+- **C-2 段階 3 連携**: 段階 3 (K-3 file-watcher) が並列疑い検知時に対話プロンプトで段階 2 を呼び出す統合形 (= 段階 2 単独実行はサポートしない設計)
+- kill 前に必ず lock holder 情報 + ps aux 出力を `logs/parallel-kills/YYYY-MM-DD-HHMM.json` に記録
+- 自殺 (= 自分自身を kill) を防ぐため `process.pid` + 全祖先 pid を除外
+- 実装順序 (浜田 11:28 「ABC の順で進めて」): A 三重防御 → B cwd 判定 → C 段階 3 連携
 
 **反パターン**:
 
@@ -1348,6 +1350,7 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 - 改訂日: 2026-04-25 09:00（[FIX] v23.1: 7:24 commit `6bac959` (§35-5 task-log 制定) で誤って末尾に再追加されていた旧第17章 (§53 第二意見系 296 行) を H-2 タスクで発見 → 完全削除。AGENTS.md は 2005 行 → 1709 行に縮小（5月目標 #6「1700 行以下」を 9 行差まで前倒し達成）。audit-rules: 破断リンクなし / §53 定義消失確認。audit-tsb-confirmed: カバレッジ 94% 維持。事故詳細は TSB-016 に記録。再発防止: H-2 改善案 #20「post-BREAKING-commit ハッシュ検証 hook」を 5/22 リファクタで実装検討。）
 - 改訂日: 2026-04-25 10:58（[FEAT] v23.2 / K-1: 第13章 §47-D「矛盾指示の却下義務」新設。短時間内の矛盾指示を AI が自律判断で却下する義務化。浜田 10:57「矛盾があるので却下しますでいいよ。叱ってほしい」明示要求を反映。）
 - 改訂日: 2026-04-25 11:15（[FEAT] v23.3 / L-2: 第13章 §47-E「憲法違反指示の即却下義務」新設 + 第15章 §51-3「並列セッション検知時の AI 動作」新設。浜田 11:12「ルール = 憲法なので、私がルールと違う場合も同様に却下してほしい / 並列セッションの疑いがあれば即座に他セッションを強制的に終了するように」を反映。`scripts/session-lock.mjs` 段階 1 (manual lock + 自衛 abort) 実装済 (L-1)。段階 2 (強制終了モード) は L-6 future plan として起票予定。TSB-017 (別 Cursor セッションの §51 違反) を構造的に防御。）
+- 改訂日: 2026-04-25 11:28（[FIX] v23.4 / M-series: §51-3 段階 2 (force-kill モード) 設計確定。浜田 GO: A-2 三重防御 (--force-kill フラグ + SESSION_LOCK_FORCE_KILL=1 env + 対話確認 read -p) / B-1 本リポのみ (/proc/<pid>/cwd 判定) / C-2 段階 3 連携 (= 段階 3 file-watcher から段階 2 を呼び出す統合形 / 段階 2 単独実行はサポートしない)。実装順序 ABC。実装は 5/10 (L-6 future plan)。）
 
 ---
 

@@ -94,12 +94,26 @@ node scripts/session-lock.mjs acquire --manual --holder=<id> --force-kill
 | kill しても zombie として残る | 低 | 低 | SIGKILL fallback |
 | 段階 2 が暴発して段階 1 まで壊れる | 高 | 低 | 機能独立 + ロールバック計画 |
 
-## 浜田判断ポイント
+## 浜田判断ポイント — **2026-04-25 11:28 GO 確定 (M-series)**
 
-実装着手時に浜田に問う:
-- A. 対話確認 (`read -p`) を必須にするか / フラグ + env で十分とするか
-- B. kill 範囲を「現リポジトリの cursor プロセスのみ」「全 cursor プロセス」のどちらにするか
-- C. 段階 2 と段階 3 (file-watcher) のどちらを先に実装するか
+| # | 質問 | 浜田 GO 確定 | 1 行根拠 |
+|---|---|---|---|
+| **A** | 対話確認 `read -p` を必須にするか | ✅ **A-2: フラグ + env + 対話の三重防御 (必須化)** | 浜田 11:28「Aは必須なので」/ §52 Tier B = 浜田明示 GO は外せない |
+| **B** | kill 範囲: 本リポジトリのみ / 全 cursor | ✅ **B-1: 本リポジトリ (`/proc/<pid>/cwd` で `kintone-ai-lab` 配下のみ)** | TSB-017 の本質は本リポ並列のみ / 他プロジェクト誤殺ゼロ |
+| **C** | 段階 2 (force-kill) vs 段階 3 (file-watcher) の優先順位 | ✅ **C-2: 段階 3 file-watcher を先 → 段階 2 は段階 3 から発動する連携形** | 24/7 自動検知 / lock 取り忘れも捕捉 / 段階 2 を段階 3 から呼ぶ統合実装で省工数 |
+
+### 順序 (浜田 11:28 「ABC の順で進めて」指示)
+
+5/10 段階 2 着手時の実装順:
+
+1. **A** = 対話確認 `read -p` 実装 (`scripts/session-lock.mjs --force-kill` モード新設時に三重防御を最優先で組み込む)
+2. **B** = `/proc/<pid>/cwd` 判定で本リポの cursor 限定 (kill 対象を `kintone-ai-lab` 配下のみに絞る)
+3. **C** = 段階 3 (K-3 file-watcher) との連携実装 (= 段階 3 が並列疑い検知 → 浜田に「force-kill しますか?」プロンプト → 浜田 GO で段階 2 発動)
+
+### 残された浜田判断 (5/10 着手時に確認)
+
+- **対話プロンプト文面** (例: 「kill pid=X holder=Y? (yes/no): 」で OK か / もっと詳細な情報表示が必要か)
+- **kill 後の通知** (= kintone log アプリ書き込み / 朝報通知 等を併用するか)
 
 ## 関連リンク
 
