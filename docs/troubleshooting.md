@@ -877,8 +877,20 @@ git log --since='24 hours ago' --grep='Made-with: Cursor' --format='%h|%ai|%s'
 3. **changelog vs 実体の乖離検知**: changelog で "撤去" と書かれた章が実体に存在する場合 = §42-2 Continuity Assurance の死角 / 自動検知ルール追加候補（H-2 改善案 #20 で起票予定）
 4. **「並列禁止」だけでなく「commit 前検証」も並列予防に効く**: §51 並列禁止が守られても、直列 commit でも編集差分の検証を怠れば同種事故は再発する
 
+### 再発防止策（構造的 / 完了）
+
+| ID | 実施日時 | 内容 | 状態 |
+|---|---|---|---|
+| I-1/I-2 | 2026-04-25 09:45-10:18 | `scripts/verify-breaking-deletions.mjs` v3 多ファイル対応 (AGENTS.md / RULES-INDEX.md / WORKFLOW.md / CLAUDE.md / kintone-apps.md 一括) + cron 統合 (daily-morning-prep §5-3) | ✅ 完了 |
+| I-9 | 2026-04-25 10:33 | **post-commit Git hook 導入** (改善案 #20 の本実装) — 全 commit 後に `verify-breaking-deletions.mjs --since=50` 自動実行。warn 検知時は terminal-bell + 強調表示 + `logs/git-hooks/post-commit.log` 記録。`bash scripts/install-hooks.sh` または `npm run hooks:install` で setup | ✅ 完了 |
+| I-10 | 2026-04-25 10:35 | `health-check.mjs` S15 (Git ahead/behind 検知) 追加 — push/pull 忘れ閾値超過で警告（4/22-23 で 134 commits ahead 状態だった前例の再発防止） | ✅ 完了 |
+| I-11 | 2026-04-25 10:38 | `scripts/audit-cross-references.mjs` 新規 (AGENTS.md ↔ RULES-INDEX.md drift) — 索引漏れ / 死参照 検知 / 「§N は欠番」等の正規宣言は info 扱い除外 | ✅ 完了 |
+| I-15 | 2026-04-25 10:42 | `npm run verify:all` 統合スクリプト (audit-rules / audit-tsb / verify-breaking / audit-xref を直列実行) | ✅ 完了 |
+
+→ **TSB-016 構造的再発防止 完了**。今後同種事故 (BREAKING 削除が後続 commit で undone) は post-commit hook が即座に検知し、cron も daily で再確認する 2 段防御体制。
+
 ### 関連
 - 朝 5:30 浜田指示原文: 「セカンドAI関係のルールだけ確実に消してほしい。その他のルールは絶対に保護してほしい」
-- 関連 commit: `5f928dd` / `5156f69` / `6bac959` / 修復 commit (本 TSB 確定後 push)
-- 改善案: H-2 改善案 #20「post-BREAKING-commit ハッシュ検証 hook」（5/22 リファクタで実装検討）
+- 関連 commit: `5f928dd` / `5156f69` / `6bac959` / 修復 commit `e7a64a1`
+- 再発防止 commit: `7b62986` (verify v2 修復) / `c8adce0` (I-9〜I-15 一括導入)
 - §42-2 Continuity Assurance: ファイル直読方式 = changelog vs 実体乖離の検知強化候補
