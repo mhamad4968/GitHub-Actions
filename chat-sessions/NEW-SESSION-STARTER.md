@@ -26,6 +26,15 @@ v3.1 (2026-04-25) 憲法・並列防御（緊急用メモ同期 / Desktop 控え
 - 朝〜作業前の一発確認: `npm run smoke`（**7 検査** = guard + 4 audit + health + rule-watcher）
 - 参考: `docs/troubleshooting.md` **TSB-017**（別 Cursor セッションによる並列編集インシデント）
 
+v3.2 (2026-04-26) Composer 2 silent fallback 防御 + §57 改定プロセス:
+- §1-2-2 **API 制限到達時の自動フォールバック禁止**（N-3 / TSB-018）  
+  → `Switched to (Composer|Sonnet|GPT|Gemini|Auto) ...` 検知で **即作業中断 + 浜田報告**（§47-E 連動）
+- §57 **憲法改定プロセス**（N-2）= §54-1（ラベル）と §57（手順）の役割分担。  
+  改定は §57-1 提起 → §57-2 起案 → §57-3 ラベル決定 → §57-4 適用（並列禁止 / ファイル編集順序）→  
+  §57-5 検証（audit-rules + audit-tsb + verify-breaking + audit-xref + health-check + smoke-test）→  
+  §57-6 周知（changelog + NEW-SESSION-STARTER + CURSOR-トラブル対応メモ + 浜田 Desktop 同期）
+- npm scripts 別名追加: `npm run audit:rules` / `npm run health-check` / `npm run smoke-test`
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ■ フル版（コピペ推奨 / 新チャットにこのブロックを貼る）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

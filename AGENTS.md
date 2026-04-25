@@ -83,6 +83,50 @@ curl https://cursor.com/install -fsS | bash
 agent
 ```
 
+**§1-2-2 API 制限到達時の自動フォールバック禁止（2026-04-26 制定 / 浜田 N-3 朝指示「Switched to Composer 2 after reaching API limit. を改善したい」）**
+
+**背景**: 2026-04-26 朝、浜田が **Cursor IDE chat** で `Switched to Composer 2 after reaching API limit.` のメッセージを受領。これは Cursor IDE 側が Opus 4.7 のレート制限/クレジット枯渇に達した際、**ユーザーの GO なしに `composer-2` (Cursor 独自の安価フォールバック)** へ自動切替する挙動。§1-2 の「Sonnet/軽量モデル/他社モデルへ切り替えてタスクを進めない」を **構造的に違反する** ため、IDE 設定で恒久禁止する。
+
+**禁止する Cursor IDE 設定（Windows / 設定 → Models）**:
+
+| 設定 | 必須状態 | 理由 |
+|---|---|---|
+| `Auto` モデルピッカー | **OFF** | 「Auto」は実モデル名を隠して安価モデルを選ぶため §1-2 違反の温床 |
+| `Auto-fallback to Composer/Sonnet on rate limit` 系 | **OFF** | `composer-2` への silent switch 元 |
+| `Use Auto model when limits reached` 系 | **OFF** | 同上 |
+| 有効モデル一覧 | **`Opus 4.7 1M Extra High` のみ ON** | 他モデル全 OFF → 強制的に Opus 単独 |
+| `Background agents` モデル | **Opus 4.7 系に固定**（または無効化）| 別モデル常時起動禁止（§1-2-2 + §51）|
+
+**API 制限到達時の正しい動作（§1-2-2 適用後）**:
+
+1. Opus 4.7 のクレジット枯渇 → Cursor IDE は **エラー表示**（モデル切替なし）
+2. 浜田が **明示的に「Sonnet で続けて」「Composer で続けて」と指示** したときのみ別モデル可（§1-2 例外規定 ①）
+3. AI 側は `Switched to Composer/Sonnet/...` 等のメッセージを検知したら **即座にタスク中断**して浜田に「§1-2-2 違反検知。継続可否を確認します」と報告（§47-E 同等扱い）
+
+**検知時の AI 動作（§47-E 連動）**:
+
+- メッセージ `Switched to (Composer|Sonnet|GPT|Gemini|Auto) (\d+|.*)` を検知した時点で:
+  1. 即座に **作業を中断**（Tier A 副作用は §52-3 で再判定 / Tier B 起票も保留）
+  2. 浜田へ報告: `§1-2-2 違反: モデルが <name> へ自動切替された可能性。Opus 4.7 へ復帰確認後に再開します`
+  3. 浜田の判断:
+     - **「復帰待ち」**: Opus 4.7 再選択を依頼 → 確認後に再開
+     - **「一時的に <別モデル> で続行」**: §1-2 例外 ① として明示 GO 扱い、`logs/autonomy-decisions/model-fallback-YYYY-MM-DD-HHMM.md` に記録
+
+**CLI 側（既存ガイド）との整合**:
+
+- CLI 既定 `composer-2-fast` 罠は `docs/cursor-cli-usage.md §2.1`（既設）+ `~/.cursor/cli-config.json` の `hasChangedDefaultModel: true` で対応済。
+- 本節は **IDE 側のフォールバック** を扱う（CLI 設定とは別ソース）。
+
+**TSB-018 連動**: 本節の検知契機は TSB-018 (`docs/troubleshooting.md`) に記録。再発防止の構造化として §1-2-2 を制定。
+
+**正パターン**:
+- ✅ 「Opus 4.7 のクレジット 0 になったので、本日の重い処理は明日に持ち越します」
+- ✅ 「§1-2-2 検知: Composer 2 へ自動切替されました。Opus 4.7 を選択し直してください、それまで作業停止します」
+
+**反パターン（本節で禁止）**:
+- ❌ Composer/Sonnet へ自動切替されたまま黙って続行（= §1-2 silent breach）
+- ❌ 「Auto モードに戻したほうが楽です」と提案する（= §1-2 を浜田の意思より下に置く）
+
 ### §2 正本主義
 すべての設計判断・フィールド定義・運用ルールは **ファイルに記録されたものを正本** とする。チャットだけで完結させない。
 
@@ -1353,6 +1397,8 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 - 改訂日: 2026-04-25 11:15（[FEAT] v23.3 / L-2: 第13章 §47-E「憲法違反指示の即却下義務」新設 + 第15章 §51-3「並列セッション検知時の AI 動作」新設。浜田 11:12「ルール = 憲法なので、私がルールと違う場合も同様に却下してほしい / 並列セッションの疑いがあれば即座に他セッションを強制的に終了するように」を反映。`scripts/session-lock.mjs` 段階 1 (manual lock + 自衛 abort) 実装済 (L-1)。段階 2 (強制終了モード) は L-6 future plan として起票予定。TSB-017 (別 Cursor セッションの §51 違反) を構造的に防御。）
 - 改訂日: 2026-04-25 11:28（[FIX] v23.4 / M-series: §51-3 段階 2 (force-kill モード) 設計確定。浜田 GO: A-2 三重防御 (--force-kill フラグ + SESSION_LOCK_FORCE_KILL=1 env + 対話確認 read -p) / B-1 本リポのみ (/proc/<pid>/cwd 判定) / C-2 段階 3 連携 (= 段階 3 file-watcher から段階 2 を呼び出す統合形 / 段階 2 単独実行はサポートしない)。実装順序 ABC。実装は 5/10 (L-6 future plan)。）
 - 改訂日: 2026-04-25 11:35（[FEAT] v23.5 / K-3: §51-3 段階 3 実装（憲法 5 ファイル SHA256 リアルタイム監視 / `scripts/file-watcher.mjs` + `agents-md-changes.jsonl`）。§42-2-2 に K-3 補完を追記。health-check S16 + smoke-test 第 7 検査 (`rule-watcher-status.mjs` / 未稼働は warn)。朝ブリーフィング 5-5 に過去 24h 集計。浜田 GO: K-3 本日前倒し着手。）
+- 改訂日: 2026-04-26 06:35（[FEAT] v23.6 / N-2: 第21章 §57「憲法改定プロセス」新設（案 1 / 浜田朝ブリーフィング 06:33 GO）。§47-E から `§57 改定プロセスに移行します` 参照のみ存在し本体未定義 → audit-rules 破断リンク 1 件 を 0 件に解消。§54-1（ラベル）と §57（手順）の役割分担を表で明記。§57-1〜§57-9: 提起→起案→ラベル決定→適用（並列禁止 / ファイル編集順序）→検証（audit-rules + audit-tsb + verify-breaking + audit-xref + health-check + smoke-test）→周知→meta→記録様式→§47-E/§47-D/§51/§54-2 接続。RULES-INDEX.md §N チェックリスト + 「📜 憲法改定プロセス」表を追記。npm scripts に `audit:rules` / `health-check` / `smoke-test` 別名追加（§57-5 検証コマンドの正規化）。）
+- 改訂日: 2026-04-26 06:42（[FEAT] v23.7 / N-3: §1-2-2「API 制限到達時の自動フォールバック禁止」新設（浜田朝指示「Switched to Composer 2 after reaching API limit. を改善したい」反映）。Cursor IDE 側の Opus → Composer/Sonnet silent fallback を §1-2 違反として構造的禁止。IDE 設定 5 項目（Auto / Auto-fallback / Use Auto on limits / 有効モデル一覧 / Background agents）を必須状態表で明記。AI 検知時動作（§47-E 連動）: 即時中断 → 浜田へ「§1-2-2 違反検知」報告 → GO 待ち。TSB-018 起票。RULES-INDEX.md §1-2 行を §1-2-2 まで拡張、§N チェックリストに §1-2 / §1-2-2 を追加。）
 
 ---
 
@@ -1742,6 +1788,119 @@ docs/archives/synthesis-graveyard/
 #### §56-4 §52 との関係
 
 - §52 = **実行ゲート**（止める／進める）、§56 = **説明責任の地図**。衝突時は **浜田裁定**。
+
+---
+
+<!-- TIER:A -->
+## 第21章 憲法改定プロセス（2026-04-26 制定 / 浜田 「§57 案 1」朝ブリーフィング / R15 / [FEAT]）
+
+### §57 改定プロセス (Amendment Workflow)
+
+**背景**: §47-D / §47-E / §51 / §54-1 が「**ルール = 憲法**」前提で運用される以上、**改定そのものの手順** を明文化しておかないと「却下のしようがない」。§47-E は「改定意図明示時のみ却下せず議論に入る」と書いているが、その「議論」の手順が未定義 → §47-E から `§57 改定プロセスに移行します` という参照だけが先行し、**audit-rules で破断リンクが発生していた**（2026-04-26 朝ブリーフィングで検出）。本節はそれを実体化する。
+
+**§54-1 との役割分担**:
+
+| 軸 | §54-1 意味論的バージョニング | §57 改定プロセス |
+|---|---|---|
+| **What** | どのラベルを付けるか（[BREAKING] / [FEAT] / [FIX]）| 誰がどう変えるか（手順・順序） |
+| **粒度** | 1 commit = 1 ラベル | 1 改定 = 提起 → 起案 → 適用 → 検証 → 周知 |
+| **発動契機** | commit する瞬間 | 浜田が「§X を変えたい」と明示した瞬間 |
+| **記録先** | commit message + 付則 changelog | `logs/autonomy-decisions/` + 付則 changelog |
+| **失敗時の防御** | `verify-breaking-deletions.mjs`（再追加検知）| `audit-rules.mjs`（破断リンク検知）+ §57-5 |
+
+つまり **§54-1 はラベル / §57 は手順**。改定 commit には両方が適用される（[BREAKING] ラベルが付くなら §57-3 で BREAKING を選ぶ）。
+
+#### §57-1 改定提起 (Proposal)
+
+- **発動主体**: 浜田 or AI（§47-A Professional Critique 等で AI が提起することも可）
+- **発動条件のいずれか**:
+  1. 浜田が `§X を変えたい` `§X を撤回したい` `§X を改定したい` 等、**明示的に改定意図を表明**
+  2. AI が §47-A / §47-D / §47-E / §54-2 Negative Log 等で **構造的矛盾を発見**し、改定提案を Tier B キューに起票
+  3. TSB / インシデントの再発防止策として AI が改定提案を起票（[FEAT] / [BREAKING] 候補）
+- **却下事由（§57-1 で止まる）**:
+  - 改定意図の明示なし → §47-E で **即却下**（§57 に進まない）
+  - S0/S1 障害対応中 → 安全側固定（§55 セーフモード解除後に §57-1 へ戻す）
+
+#### §57-2 起案・レビュー (Drafting & Review)
+
+- AI が **diff 案 + 影響範囲** を提示する。最低限以下を含める:
+  1. **改定対象** (§X-Y / 該当行 / 関連 §)
+  2. **改定理由** (背景 + 引用元: 浜田指示 / TSB / 朝報 / Negative Log)
+  3. **§54-1 ラベル候補** ([BREAKING] / [FEAT] / [FIX]) と判定根拠
+  4. **影響を受ける他条文** (cross-reference / RULES-INDEX エントリ更新要否)
+  5. **ロールバック手順** ([BREAKING] の場合は必須 / §54-4 Snapshot ID も併記)
+- 浜田レビュー: 起案を読んで **GO / 修正指示 / 却下** を返す。GO 時は §57-3 へ。
+- AI 単独提起の場合: Tier B キューに `tier-b-rule-amendment-YYYY-MM-DD-HHMM` で起票し、浜田 GO まで保留。
+
+#### §57-3 ラベル決定 (Label Selection)
+
+- §54-1 の 3 質問判定フローチャートを実行 → ラベル確定。
+- ラベルは **commit message の prefix** と **付則 changelog の prefix** の両方に必ず付ける（例: `[BREAKING] v24: ...` / `[FEAT] v23.6 / N-2: ...`）。
+- ラベル不一致時は §54-1 違反として再起案。
+
+#### §57-4 適用 (Apply)
+
+- ファイル編集順序（**並列禁止 / §51 厳守**）:
+  1. `AGENTS.md` 本文（条文追加・削除・改訂）
+  2. `RULES-INDEX.md`（参照テーブル / §N 一覧 / 役割表 行追加）
+  3. `WORKFLOW.md`（手順影響あり時のみ）
+  4. 関連スクリプト（`scripts/*.mjs` の参照更新）
+  5. `chat-sessions/NEW-SESSION-STARTER.md` / `CURSOR-トラブル対応メモ.md`（運用に直結する変更時）
+  6. 浜田 Desktop `AI緊急用/*.txt`（§57-6 周知で同期）
+- 1 ターン 1 ファイルが原則だが、**整合性確保のため同一意図の更新は同一 commit に含める** ことを許可（[BREAKING] 時は特に必須 = `verify-breaking-deletions.mjs` 誤検知防止）。
+
+#### §57-5 検証 (Verify)
+
+- 必須コマンド（順序実行 / 並列禁止）:
+  ```bash
+  npm run audit:rules            # 破断リンク 0 を確認
+  npm run audit:tsb              # TSB カバレッジ維持
+  npm run verify:breaking        # [BREAKING] 削除文の再追加なしを確認
+  npm run audit:xref             # AGENTS ↔ RULES-INDEX 整合
+  npm run health-check           # S1-S16 通過
+  npm run smoke-test             # 7 検査オールグリーン
+  ```
+- 1 つでも `❌` が出たら **commit を保留して原因究明** → §57-2 へ戻る（妥協禁止 / 浜田 N-series 朝指示）。
+- AGENTS.md hash が変わるので `.session-state/agents-md-hash.txt` を更新する（§42-2-2）。
+
+#### §57-6 周知 (Communication)
+
+- **付則 changelog に必ず 1 行追記**（日付 + ラベル + バージョン + 一文サマリ + 反映箇所）。
+- **重大改定**（[BREAKING] / Tier 構造変更 / セーフモード変更 / §57 自身の改定）は以下も同期:
+  - `chat-sessions/NEW-SESSION-STARTER.md`（次セッション継続性）
+  - `chat-sessions/CURSOR-トラブル対応メモ.md`（緊急時参照）
+  - 浜田 Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用\*.txt`（SHA256 一致確認）
+- 翌朝 `daily-morning-prep.mjs` の §1 で「昨日の改定」として浜田に提示。
+
+#### §57-7 改定の改定 (Meta)
+
+- §57 自身を改定するとき:
+  - 必ず [BREAKING] ラベル（手順骨格を変えるため）
+  - §47-E / §54-1 / §51 / §52 と矛盾しないことを **明示確認**（提案テンプレに「他憲法と矛盾なし」チェック欄を含める）
+  - 浜田の **明示 GO** が無い限り適用禁止（AI 単独で §57 を変えてはならない）
+
+#### §57-8 記録様式 (Logging Format)
+
+```
+logs/autonomy-decisions/rule-amendment-YYYY-MM-DD-HHMM.md
+- proposer: hamada | ai
+- amendment_id: e.g. N-2-section-57-newly-defined
+- target: §57 (新設) / §47-E (改訂) など
+- label: [BREAKING] | [FEAT] | [FIX]
+- diff_summary: <3-5 行>
+- impact: <影響条文・スクリプト・ドキュメント>
+- review_at: YYYY-MM-DD HH:MM
+- approved_by: hamada (時刻明記)
+- applied_commit: <sha>
+- verify_result: smoke-test ✅ / audit-rules ✅ / verify-breaking ✅
+```
+
+#### §57-9 §47-E / §47-D / §51 との接続
+
+- **§47-E**: 浜田指示が憲法違反 → **改定意図が明示なら §57-1 へ** / なければ即却下。
+- **§47-D**: 浜田の短時間矛盾 → 矛盾即却下。改定したい場合は浜田が改めて §57-1 を起こす。
+- **§51 / §51-3**: §57 適用中も並列禁止。session-lock 取得後に §57-4 の編集順序を進める。
+- **§54-2 Negative Log**: 棄却された改定案も `synthesis-graveyard/` に保管（再提案時の参考に）。
 
 ---
 

@@ -21,6 +21,19 @@ v2.1 (2026-04-25) 並列セッション + K-3（憲法ファイルリアルタ�
 - **稼働確認**: `npm run watcher:status` または `npm run watcher:rules-status`
 - **全体診断**: `npm run smoke`（7 項目）
 
+v2.2 (2026-04-26) Composer 2 silent fallback 防御（§1-2-2 / TSB-018）:
+- **症状**: Cursor IDE chat に `Switched to Composer 2 after reaching API limit.` 表示  
+  → Opus 4.7 のクレジット枯渇で自動的に composer-2 (軽量) に切り替えられた状態
+- **AI 側挙動**: §47-E 連動で **即作業中断** → 浜田に「§1-2-2 違反検知」報告 → GO 待ち
+- **浜田復旧手順 (30 秒)**: Cursor IDE → 設定 → Models で:
+  1. `Auto` モデルピッカーを **OFF**
+  2. `Auto-fallback to Composer/Sonnet on rate limit` 系を **OFF**
+  3. `Use Auto model when limits reached` 系を **OFF**
+  4. 有効モデル一覧で **`Opus 4.7 1M Extra High` のみ ON**、他は全 OFF
+  5. Background agents モデルを Opus 4.7 系に固定（または無効化）
+- **クレジット枯渇時**: エラー停止が正常。別モデル続行は浜田が明示 GO した時のみ（§1-2 例外 ①）
+- **§57 改定プロセス（2026-04-26 N-2 制定）**: ルール改定は §57-1〜§57-9 を厳守
+
 
 ━━━ ① まず現状確認（30 秒）━━━━━━━━━━━━━━━━━━━━━━━━
 

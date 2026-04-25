@@ -31,10 +31,11 @@
 | TSB-015 | 2026-04-23 21:30→21:40 解消 | google-search MCP の Google bot 検知で実用度 0 | Google スクレイピング型 MCP は Google の bot 検知で結果が常に空配列になり頭打ち（duckduckgo-search に入替で死蔵根絶） | ✅ | true | search MCP |
 | TSB-016 | 2026-04-25 09:00 検出 / H-2 で発見 | BREAKING 削除が 1.5h 後の無関係 commit で無自覚に undone | 4/25 5:41 commit `5f928dd` [BREAKING] で Ch.17 (§53 第二意見系 293 行) を削除したが、7:24 commit `6bac959` (主目的 = §35-5 task-log 制定) が AGENTS.md 末尾に **299 行を追加** = Ch.17 全体が誤って復活していた / 2 commit 間で連続検証 (post-commit hash 比較 / 章数カウント) が無かったため誰も気付かず 1.5h 放置 → H-2 AGENTS.md 章調査で発見 | ✅ | true | AGENTS.md / セッション認識 |
 | TSB-017 | 2026-04-25 11:03 検出 / B-7 提案中に発見 | **§51 並列禁止違反** — 別 Cursor セッションが現セッション AI の B-7 提案テキストを読み実行 | 11:03 私が §47-D 追記提案中に grep したら **§47-D 既追加 + RULES-INDEX.md も連動編集 + `.b7-pre-...` バックアップ 2 件**を発見。`.b7-pre` 命名は私が B-7 提案メッセージで書いた手順 (`cp AGENTS.md AGENTS.md.b7-pre`) を文字通り実行した証拠 = 別セッション関与確定。AGENTS.md mtime 10:58:57 / RULES-INDEX.md 10:59:11 / 連動編集 / 35 行 AI 風文体 = 別 AI による完璧な実装。証拠 2 件は `backups/tsb-017-evidence/` に保全 | ✅ | true | AGENTS.md / RULES-INDEX.md / **§51 並列セッション** |
+| TSB-018 | 2026-04-26 06:33 検出 / N-3 / 浜田朝ブリーフィング | **Cursor IDE の API 制限到達時の silent fallback** — Opus 4.7 → composer-2 へ自動切替（§1-2 違反の構造的温床） | 浜田が `Switched to Composer 2 after reaching API limit.` を IDE chat で受領。Opus クレジット枯渇時に Cursor IDE が低コスト composer-2 へユーザー GO なく切替する既定挙動。CLI 側 `composer-2-fast` 罠（§1-2-1 で documented）とは別ソース。§1-2-2 を制定し IDE 設定 5 項目（Auto / Auto-fallback / Use Auto on limits / 有効モデル一覧 / Background agents）の必須状態を明文化 + 検知時 AI 即時中断ルール化 | ✅ | true | Cursor IDE / §1-2 単一モデル前提 |
 
-**集計** (2026-04-25 11:05 時点 / TSB-017 追加):
-- 全 18 件中 **root_cause_confirmed = true: 17 件 (94%)** / **false (孤児): 1 件 (6%)**
-- 5 月目標 (F-2 自己批判 §54-5) = カバレッジ 100% を TSB-017 真因確定 (証拠ベース) で **94% 維持**
+**集計** (2026-04-26 06:42 時点 / TSB-018 追加):
+- 全 19 件中 **root_cause_confirmed = true: 18 件 (95%)** / **false (孤児): 1 件 (5%)**
+- 5 月目標 (F-2 自己批判 §54-5) = カバレッジ 100% を TSB-018 真因確定 (Cursor IDE 既定挙動) で **95% に向上**
 - 残 false: **TSB-001 のみ** = 孤児 TSB（4/19 D1-proposal でも「詳細未記載」）= 真因不明のまま記録止まり
 
 > **注**: TSB-002, TSB-003, TSB-008 はファイル不在時の記載漏れ。発見次第追記。
@@ -963,3 +964,64 @@ git log --since='24 hours ago' --grep='Made-with: Cursor' --format='%h|%ai|%s'
 - 関連 TSB: TSB-016 (AGENTS.md zombie 復活) / TSB-005 (セッション間継続性脆弱性)
 - 関連 commit: `1c49fa2` (§47-D 公式化) / 続く K-シリーズ commit
 - 関連 ルール: §42-2-2 hash 監視 / §51 並列禁止 / §47-D 矛盾却下 (本件で公式化)
+
+---
+
+## TSB-018 — Cursor IDE が API 制限到達で `Composer 2` へ silent fallback（2026-04-26 06:33 検出 / N-3 / 浜田朝ブリーフィングで報告）
+
+### 症状
+
+2026-04-26 朝、浜田が Cursor IDE chat で以下のメッセージを受領:
+
+```
+Switched to Composer 2 after reaching API limit.
+```
+
+これは Cursor IDE が **Opus 4.7 のレート制限/クレジット枯渇** に達した際、ユーザー GO なしで `composer-2` (Cursor 独自の安価フォールバックモデル) へ自動切替する仕様。§1-2 の「Sonnet/軽量モデル/他社モデルへ切り替えてタスクを進めない」を **構造的に違反** する。
+
+### 影響
+
+- **モデル品質低下**: Opus 4.7 (1M Max Thinking) → composer-2 (軽量) で同等の判断は得られない
+- **silent breach**: 警告が小さく、AI 側が気付かないまま作業継続するリスク
+- **ルール違反の常態化**: §1-2 が形骸化する恐れ
+- **過去 inferred 事象**: 2026-04-25 の TSB-013 v1 表層対策、TSB-007 系の品質揺れも、もしかすると別モデル稼働時の影響だった可能性（要追跡）
+
+### 真因
+
+Cursor IDE の既定挙動:
+
+1. Opus 4.7 のクレジット枯渇 → 自動的に低コストモデル (composer-2 / sonnet 等) へフォールバック
+2. ユーザー設定で「Auto モデル」「Auto-fallback」が有効な場合、silent switch
+3. CLI と異なり IDE 側に `cli-config.json` 相当の `hasChangedDefaultModel` フラグ単体では防御不可（IDE 設定 UI で複数項目を OFF にする必要）
+
+### 対応実施内容（2026-04-26 06:42 / N-3）
+
+1. **§1-2-2 制定**: AGENTS.md に「API 制限到達時の自動フォールバック禁止」を新設。IDE 設定 5 項目（Auto / Auto-fallback / Use Auto on limits / 有効モデル一覧 / Background agents）の必須状態を表で明文化。
+2. **AI 検知時動作**: メッセージ `Switched to (Composer|Sonnet|GPT|Gemini|Auto) ...` を検知したら **即座に作業中断** → 浜田へ「§1-2-2 違反検知」報告 → GO 待ち。§47-E 同等扱い。
+3. **RULES-INDEX 更新**: §1-2-2 を「タスク開始時に必ず参照」表に統合。
+4. **CURSOR-トラブル対応メモ.md 更新**: Composer 2 検知時の浜田復旧手順を追加（IDE 設定 → Models で Auto OFF + Opus 4.7 単独 ON）。
+5. **NEW-SESSION-STARTER.md 更新**: §1-2-2 を冒頭の「最重要 5 件」リストに追加。
+6. **浜田 Desktop 同期**: AI緊急用フォルダの `.txt` を更新後反映（§57-6）。
+
+### 浜田復旧手順（IDE 側 / 30 秒）
+
+1. Cursor IDE → 設定 → Models を開く
+2. 以下を OFF:
+   - `Auto` モデルピッカー
+   - `Auto-fallback to Composer/Sonnet on rate limit`（または同等項目）
+   - `Use Auto model when limits reached`（または同等項目）
+3. 有効モデル一覧で **`Opus 4.7 1M Extra High` のみ ON**、他は全 OFF
+4. Background agents モデルも Opus 4.7 系に固定（または無効化）
+5. クレジット枯渇時はエラー表示で停止する設定にする
+
+### 教訓
+
+1. **CLI と IDE は別ソース** — `~/.cursor/cli-config.json` の対策（§1-2-1 で documented）は CLI のみ。IDE 側のフォールバックは別経路。
+2. **silent switch は最大の敵** — メッセージが小さい / モデル名が変わるだけで AI/ユーザー双方が気付きにくい
+3. **検知 → 即停止が原則** — §47-E 連動で「ルール違反は浜田が出した指示でも却下」と整合
+4. **モデル切替監視を将来 health-check 化候補** — `health-check.mjs` に S17 として「直近の Cursor model log にフォールバック痕跡なし」を追加検討（5/10 月次レビュー）
+
+### 関連
+- 関連 TSB: TSB-016 (AGENTS.md zombie / 構造的防御の重要性) / TSB-017 (silent breach 系の双子)
+- 関連 ルール: §1-2 単一モデル / §1-2-1 環境別実モデル名 / §1-2-2 自動フォールバック禁止 (本件で制定) / §47-E 憲法違反却下 (検知時動作)
+- 関連 commit: TBD (N-3 commit で参照更新)
