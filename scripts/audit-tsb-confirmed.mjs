@@ -77,13 +77,15 @@ function extractTocRows(t) {
     if (cells.length < 6) continue;
 
     const id = cells[0];
+    const date = cells[1] || '';
     const confirmedRaw = cells[5] || '';
     let confirmed = null;
     if (/\btrue\b/i.test(confirmedRaw)) confirmed = true;
     else if (/\bfalse\b/i.test(confirmedRaw)) confirmed = false;
 
     const status = cells[4] || '';
-    rows.push({ id, confirmed, confirmedRaw, status });
+    const isHistoryReference = /履歴参照/.test(date);
+    rows.push({ id, date, confirmed, confirmedRaw, status, isHistoryReference });
   }
   return rows;
 }
@@ -126,7 +128,9 @@ if (sectionMissingFromToc.length > 0) {
   });
 }
 
-const tocOrphan = [...tocIds].filter((id) => {
+const historyRefIds = new Set(tocRows.filter((r) => r.isHistoryReference).map((r) => r.id));
+
+const tocOrphanRaw = [...tocIds].filter((id) => {
   const base = id.replace(/\s.*$/, '');
   for (const sid of sectionIdsArr) {
     if (sid === id) return false;
@@ -134,15 +138,27 @@ const tocOrphan = [...tocIds].filter((id) => {
     if (sid.startsWith(base + ' ')) return false;
     if (id.startsWith(sid + ' ')) return false;
   }
-  return /履歴参照/.test(id) ? false : true;
+  return true;
 });
 
-if (tocOrphan.length > 0) {
+const tocOrphanUnexpected = tocOrphanRaw.filter((id) => !historyRefIds.has(id));
+const tocOrphanExpected = tocOrphanRaw.filter((id) => historyRefIds.has(id));
+
+if (tocOrphanUnexpected.length > 0) {
+  issues.push({
+    severity: 'warn',
+    type: 'toc-orphan-unexpected',
+    message: `目次に ${tocOrphanUnexpected.length} 件あるが本文に該当セクションなし (date 列が「履歴参照」ではない = 想定外)`,
+    items: tocOrphanUnexpected,
+  });
+}
+
+if (tocOrphanExpected.length > 0) {
   issues.push({
     severity: 'info',
-    type: 'toc-orphan',
-    message: `目次に ${tocOrphan.length} 件あるが本文に該当セクションなし (履歴参照は info)`,
-    items: tocOrphan,
+    type: 'toc-orphan-history-ref',
+    message: `履歴参照 marker (date="履歴参照") として本文セクションなしは想定通り (${tocOrphanExpected.length} 件)`,
+    items: tocOrphanExpected,
   });
 }
 
