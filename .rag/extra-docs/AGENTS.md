@@ -103,29 +103,125 @@ agent
 2. 浜田が **明示的に「Sonnet で続けて」「Composer で続けて」と指示** したときのみ別モデル可（§1-2 例外規定 ①）
 3. AI 側は `Switched to Composer/Sonnet/...` 等のメッセージを検知したら **即座にタスク中断**して浜田に「§1-2-2 違反検知。継続可否を確認します」と報告（§47-E 同等扱い）
 
-**検知時の AI 動作（§47-E 連動）**:
+**検知時の AI 動作（§47-E 連動 / 2026-04-26 N-4 で 4 択提示に強化）**:
 
 - メッセージ `Switched to (Composer|Sonnet|GPT|Gemini|Auto) (\d+|.*)` を検知した時点で:
   1. 即座に **作業を中断**（Tier A 副作用は §52-3 で再判定 / Tier B 起票も保留）
-  2. 浜田へ報告: `§1-2-2 違反: モデルが <name> へ自動切替された可能性。Opus 4.7 へ復帰確認後に再開します`
-  3. 浜田の判断:
-     - **「復帰待ち」**: Opus 4.7 再選択を依頼 → 確認後に再開
-     - **「一時的に <別モデル> で続行」**: §1-2 例外 ① として明示 GO 扱い、`logs/autonomy-decisions/model-fallback-YYYY-MM-DD-HHMM.md` に記録
+  2. 浜田へ報告: `§1-2-2 違反検知 / Opus 4.7 クレジット枯渇の可能性。以下 4 択から選択してください`
+  3. **必ず以下 4 択を提示**（4 択を省略・推測で進行することを禁止）:
+
+| 択 | 内容 | 即時性 | 月コスト目安 | 推奨度 |
+|---|---|---|---|---|
+| **A** | **On-Demand 課金で Opus 継続**（事前に §1-2-2-1 の Cursor 設定が必要）| 即時 | 従量制 / 月キャップ $130 内 | ★★★（業務継続優先 / Ultra 既定パス）|
+| **B** | **本日の作業を停止 → 次回課金日まで待つ**（次回課金日 = 浜田 Cursor アカウント請求日）| 翌請求日 | 0 | ★★（軽微作業 or 月末ギリギリ時）|
+| **C** | **個人 Anthropic API key (BYOK) 投入で継続** | 即時 | Anthropic 直接料金（Cursor On-Demand より高い + ZDR 適用外）| ★（最終手段 / kintone 業務には ZDR 観点で非推奨）|
+| **D** | **その他**（明示の別モデル一時利用 / プラン昇格 / `hi@cursor.com` 早期更新依頼）| 個別 | 個別 | 個別判断 |
+
+  4. 浜田の選択を待つ間は **Tier A 副作用ゼロ**（読取・計画・診断のみ可）
+  5. 選択結果を `logs/autonomy-decisions/model-fallback-YYYY-MM-DD-HHMM.md` に記録（AI 起案理由 + 4 択 + 浜田選択 + 後続アクション）
+
+**§1-2-2-1 Cursor IDE 必須設定（2026-04-26 N-4 追記 / 浜田のみ実施可）**:
+
+| 設定 | 必須状態 | 設定場所 |
+|---|---|---|
+| **On-Demand billing** | **ON** | cursor.com/billing → "Enable on-demand spending" |
+| **Spend Cap (月額)** | **$130 (= ¥20,000 浜田承認額)** | cursor.com/billing → "Monthly spend limit" |
+| その他（Auto / Auto-fallback / 有効モデル一覧 / Background agents）| §1-2-2 上段表の通り | 設定 → Models |
 
 **CLI 側（既存ガイド）との整合**:
 
 - CLI 既定 `composer-2-fast` 罠は `docs/cursor-cli-usage.md §2.1`（既設）+ `~/.cursor/cli-config.json` の `hasChangedDefaultModel: true` で対応済。
 - 本節は **IDE 側のフォールバック** を扱う（CLI 設定とは別ソース）。
 
-**TSB-018 連動**: 本節の検知契機は TSB-018 (`docs/troubleshooting.md`) に記録。再発防止の構造化として §1-2-2 を制定。
+**TSB-018 連動**: 本節の検知契機は TSB-018 (`docs/troubleshooting.md`) に記録。再発防止の構造化として §1-2-2 を制定 + N-4 で 4 択提示に強化。
 
 **正パターン**:
-- ✅ 「Opus 4.7 のクレジット 0 になったので、本日の重い処理は明日に持ち越します」
-- ✅ 「§1-2-2 検知: Composer 2 へ自動切替されました。Opus 4.7 を選択し直してください、それまで作業停止します」
+- ✅ 「§1-2-2 検知: Composer 2 へ自動切替されました。A/B/C/D の 4 択をご提示します（表で）」
+- ✅ 「Opus 4.7 のクレジット枯渇 → On-Demand 残額 $X / 残日数 Y 日 → A 推奨（§1-2-4 の予測ロジック）」
 
 **反パターン（本節で禁止）**:
 - ❌ Composer/Sonnet へ自動切替されたまま黙って続行（= §1-2 silent breach）
+- ❌ 4 択を省略して「とりあえず継続しますね」と続ける（= 浜田選択権の剥奪）
 - ❌ 「Auto モードに戻したほうが楽です」と提案する（= §1-2 を浜田の意思より下に置く）
+
+### §1-2-3 Opus 内モデル使い分け（2026-04-26 制定 / N-5 / Ultra プラン枯渇傾向対策）
+
+**背景**: 2026-04-26 浜田指示「Ultra プランで枯渇再発傾向 / 月 ¥20,000 追加可」を受け、§1-2 (Opus 単一モデル) の枠内で **「Max Thinking」と「Extra High」を使い分け** ることを正式化。Opus 4.6 / 4.7 の `thinking=ON` は token 消費が **3-5 倍**（output $25/1M tokens でレバレッジが効くため、節約効果が大きい）。
+
+**原則**: 「Opus 系最高段を 1 本に固定」(§1-2) は維持しつつ、**Opus ファミリー内の 2 段階** で使い分ける。
+
+| タスク種別 | 推奨モデル | 理由 |
+|---|---|---|
+| **Max Thinking 必須**（Opus 4.7 1M Max Thinking）| §47-A 100% 証明要求 / 設計判断（§48 Best Options 起案）/ 複雑バグ修正（§47-B-2 段階的批判）/ TSB 真因究明 / 憲法改定 §57 起案 / 重大インシデント分析 | 推論深度が結果品質を左右する |
+| **Extra High 推奨**（Opus 4.7 1M Extra High / no-thinking）| lint / refactor / 既知パターン kintone deploy / commit message 起草 / RAG 同期 / chat-sessions 更新 / 朝報整形 / npm script 別名追加 / ファイルコピー検証 | thinking 不要 / コスト 1/3〜1/5 |
+
+**運用ルール**:
+
+1. **既定は Extra High**（CLI / IDE とも）。タスク開始時に AI が判定し、Max Thinking が必要なら「§1-2-3 で Max Thinking に切替えて再実行をお願いします」と浜田に明示要求
+2. **Max Thinking 切替の証跡**: AI が要求した場合は理由を 1 行で添える（例: 「§57 改定 起案のため Max Thinking 必須」）
+3. **Extra High でも品質低下が観察される場合**: §47-B-2 信頼度ラベル 🟡 90% 上限とし、Max Thinking 再実行を提案
+4. **既存 §1-2 / §1-2-1 との整合**: IDE 「Opus 4.7 1M Extra High」 + CLI 「Opus 4.7 1M Max Thinking」 の両方を **有効モデル一覧で ON** にしておき、用途で切替（他モデルは引き続き OFF）
+
+**反パターン**:
+- ❌ 全てのタスクを Max Thinking で処理する（コスト過剰 / Ultra 月次クレジット枯渇の主因）
+- ❌ Extra High で複雑バグ修正を進めて「動くはず」宣言（§11-2 信頼度ラベル違反相当）
+
+**§1-2-2 / §1-2-4 との関係**: §1-2-3 = 通常時のコスト最適化 / §1-2-2 = 枯渇検知時の選択 / §1-2-4 = 予算予測。三本柱で Ultra プラン内に収める。
+
+### §1-2-4 クレジット予算管理（2026-04-26 制定 / N-6 / 朝ブリーフィング §0 統合）
+
+**背景**: 2026-04-26 浜田指示「枯渇再発傾向 / 月 ¥20,000 追加可 / AI 側で管理してほしい」を受け、月次クレジット消費の **可視化 + 自発警告 + 超過予測** を構造化。Cursor は公開課金 API を提供していないため、**浜田が 1 日 1 回 30 秒で % を貼付 + AI が予測・記録** のハイブリッド運用とする。
+
+**月次予算（2026-04-26 浜田承認）**:
+
+| 区分 | 金額 | 用途 |
+|---|---|---|
+| Cursor Ultra 月額 | $200 (=$400 クレジット) | 通常運用 (L1) |
+| On-Demand Spend Cap | $130 (≈ ¥20,000) | 月次クレジット枯渇後の業務継続 (L2) |
+| **合算上限** | **約 $530 / ≈ ¥80,000 相当** | Ultra 単独 2.6 倍のヘッドルーム |
+
+**毎日 1 回の貼付フロー（朝ブリーフィング §0 統合）**:
+
+1. 浜田が cursor.com/billing or アカウント設定の "Usage" を開いて **「今月のクレジット消費 X%」** を 1 行コピー
+2. AI に「今月 X%」とだけ伝える（または `npm run credit:set 65` で直接記録）
+3. AI が `data/credit-usage.json` に {date, percent} を append
+4. AI が予測ロジックで **「想定枯渇日 / 残日数 / 月末予測%」** を計算
+5. 翌朝のブリーフィング §0 に表示
+
+**自発警告 閾値**:
+
+| 消費率 | AI 動作 |
+|---|---|
+| **70%** | 朝報 §0 に「⚠️ 70% 到達 / Max Thinking タスクは要選択」と表示。AI 側で §1-2-3 適用を強化（Max Thinking 要求時に「節約のため Extra High で代替可能か」と問い返し）|
+| **85%** | 朝報 §0 + AI 開口一番に **「85% 到達。本日中に On-Demand 移行 or タスク絞り込みのご判断を」**と提示 |
+| **95%** | AI が **タスク開始前に必ず**「95% 超過、§1-2-2 4 択提示しますか? それとも軽微作業のみ続行しますか?」と確認。重い設計タスク・PC 台帳本番は要 GO |
+| **100%** | §1-2-2 検知挙動と完全一体化（4 択提示 → 浜田選択待ち）|
+
+**月次リセット**:
+
+- 浜田 Cursor 課金日（例: 毎月 14 日 → 浜田が初回設定時に `npm run credit:set --reset-day=14` で記録）
+- リセット日に AI が `data/credit-usage.json` の月次集計を `data/credit-usage-history.jsonl` に append → 当月分 reset
+
+**AI 管理範囲（§1-2-4 の役割分担）**:
+
+| 項目 | AI | 浜田 |
+|---|---|---|
+| ルール維持・改訂 | ✅ | (§57 改定 GO のみ) |
+| % 入力フォーム提供 (`npm run credit:set <pct>`)| ✅ | 入力 30 秒 / 1 日 1 回 |
+| 予測計算・JSON 保存 | ✅ | - |
+| 朝報 §0 表示 | ✅ | 朝チェック |
+| 70/85/95% 自発警告 | ✅ | 判断 |
+| Cursor 設定変更 (On-Demand / Spend Cap) | ❌ | ✅（月 1 回 + 必要時）|
+| 支払い・プラン変更 | ❌ | ✅ |
+
+**実装ファイル**:
+
+- `scripts/credit-budget.mjs` — 入力・記録・予測ロジック (npm run credit:set / credit:status / credit:reset)
+- `data/credit-usage.json` — 当月の日次 % 履歴
+- `data/credit-usage-history.jsonl` — 月次集計の永続化
+- `scripts/daily-morning-prep.mjs §0` — 朝報統合（残日数 / 想定枯渇日 / 警告レベル）
+
+**§1-2-2 / §1-2-3 との関係**: §1-2-4 = **予算予測（事前防御）**、§1-2-2 = **枯渇検知時の選択（事後対応）**、§1-2-3 = **通常時のコスト最適化**。3 つで枯渇シーケンスを完全カバー。
 
 ### §2 正本主義
 すべての設計判断・フィールド定義・運用ルールは **ファイルに記録されたものを正本** とする。チャットだけで完結させない。
@@ -1399,6 +1495,7 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 - 改訂日: 2026-04-25 11:35（[FEAT] v23.5 / K-3: §51-3 段階 3 実装（憲法 5 ファイル SHA256 リアルタイム監視 / `scripts/file-watcher.mjs` + `agents-md-changes.jsonl`）。§42-2-2 に K-3 補完を追記。health-check S16 + smoke-test 第 7 検査 (`rule-watcher-status.mjs` / 未稼働は warn)。朝ブリーフィング 5-5 に過去 24h 集計。浜田 GO: K-3 本日前倒し着手。）
 - 改訂日: 2026-04-26 06:35（[FEAT] v23.6 / N-2: 第21章 §57「憲法改定プロセス」新設（案 1 / 浜田朝ブリーフィング 06:33 GO）。§47-E から `§57 改定プロセスに移行します` 参照のみ存在し本体未定義 → audit-rules 破断リンク 1 件 を 0 件に解消。§54-1（ラベル）と §57（手順）の役割分担を表で明記。§57-1〜§57-9: 提起→起案→ラベル決定→適用（並列禁止 / ファイル編集順序）→検証（audit-rules + audit-tsb + verify-breaking + audit-xref + health-check + smoke-test）→周知→meta→記録様式→§47-E/§47-D/§51/§54-2 接続。RULES-INDEX.md §N チェックリスト + 「📜 憲法改定プロセス」表を追記。npm scripts に `audit:rules` / `health-check` / `smoke-test` 別名追加（§57-5 検証コマンドの正規化）。）
 - 改訂日: 2026-04-26 06:42（[FEAT] v23.7 / N-3: §1-2-2「API 制限到達時の自動フォールバック禁止」新設（浜田朝指示「Switched to Composer 2 after reaching API limit. を改善したい」反映）。Cursor IDE 側の Opus → Composer/Sonnet silent fallback を §1-2 違反として構造的禁止。IDE 設定 5 項目（Auto / Auto-fallback / Use Auto on limits / 有効モデル一覧 / Background agents）を必須状態表で明記。AI 検知時動作（§47-E 連動）: 即時中断 → 浜田へ「§1-2-2 違反検知」報告 → GO 待ち。TSB-018 起票。RULES-INDEX.md §1-2 行を §1-2-2 まで拡張、§N チェックリストに §1-2 / §1-2-2 を追加。）
+- 改訂日: 2026-04-26 07:05（[FEAT] v23.8 / N-4+N-5+N-6 / O-series: 浜田「甲：フル実装」承認 → §1-2-2 N-4 強化（4 択 A-D 提示の枠組み + §1-2-2-1 Cursor IDE 必須設定 = On-Demand ON + Spend Cap $130）+ §1-2-3 N-5 新設「Opus 内モデル使い分け」（Max Thinking vs Extra High / 既定は Extra High / Max Thinking 切替の証跡義務）+ §1-2-4 N-6 新設「クレジット予算管理」（月予算 $200+$130 / 1 日 1 回 % 貼付フロー / 70-85-95% 自発警告 / `scripts/credit-budget.mjs` + `data/credit-usage.json` + `daily-morning-prep.mjs §0` 統合 / AI と浜田の役割分担表）。Ultra プラン枯渇傾向の構造的対策完了。RULES-INDEX.md / NEW-SESSION-STARTER.md v3.3 / CURSOR-トラブル対応メモ.md v2.3 / 浜田 Desktop AI緊急用 同期。）
 
 ---
 

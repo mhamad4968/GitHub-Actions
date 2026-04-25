@@ -34,6 +34,28 @@ v2.2 (2026-04-26) Composer 2 silent fallback 防御（§1-2-2 / TSB-018）:
 - **クレジット枯渇時**: エラー停止が正常。別モデル続行は浜田が明示 GO した時のみ（§1-2 例外 ①）
 - **§57 改定プロセス（2026-04-26 N-2 制定）**: ルール改定は §57-1〜§57-9 を厳守
 
+v2.3 (2026-04-26 07:05) Cursor Ultra クレジット予算管理（O-series / §1-2-2 + §1-2-3 + §1-2-4）:
+- **§1-2-2 N-4 強化**: Composer 2 検知時に AI が **必ず 4 択 A-D を提示**（省略禁止）  
+  - A: On-Demand 課金で Opus 継続（要 §1-2-2-1 設定 / 月 $130 cap）★★★ 推奨  
+  - B: 本日の作業を停止 → 次回課金日まで待つ ★★  
+  - C: 個人 Anthropic API key (BYOK) 投入 ★（ZDR 観点で kintone 業務には非推奨）  
+  - D: その他（明示の別モデル一時利用 / プラン昇格 / `hi@cursor.com` 早期更新依頼）
+- **§1-2-2-1 Cursor IDE 必須設定**（浜田のみ実施可 / 月 1 回 + 必要時）:  
+  - cursor.com/billing → "Enable on-demand spending" を **ON**  
+  - cursor.com/billing → Monthly spend limit を **$130** に設定
+- **§1-2-3 Opus 内モデル使い分け**（コスト最適化）:  
+  - 既定: **Opus 4.7 1M Extra High**（cost 1/3-1/5 / lint・refactor・既知 deploy・commit message）  
+  - **Opus 4.7 1M Max Thinking**: §47-A 100% 証明・設計判断・複雑バグ修正・TSB 真因究明・憲法改定起案のみ  
+  - AI が判定し Max Thinking 切替時は理由 1 行明示
+- **§1-2-4 クレジット予算管理**（朝報 §0a に常時表示）:  
+  - 月予算: L1 $400 (Ultra) + L2 $130 (On-Demand) = $530  
+  - 浜田: 1 日 1 回 30 秒で cursor.com/billing の % を確認 → `npm run credit:set <pct>` で記録  
+  - AI: 70% / 85% / 95% / 100% で 4 段階自発警告 + 線形回帰で枯渇日予測
+- **CLI コマンド**:  
+  - `npm run credit:set 65` — 今日の消費を 65% で記録  
+  - `npm run credit:status` — 現在の状態（残日数 / 想定枯渇日 / AI 助言）  
+  - `npm run credit:reset -- --day=14` — 課金日を毎月 14 日に設定（初回のみ）
+
 
 ━━━ ① まず現状確認（30 秒）━━━━━━━━━━━━━━━━━━━━━━━━
 

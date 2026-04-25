@@ -133,6 +133,48 @@ if (SELF_RESTARTED) {
 sections.push('---');
 sections.push('');
 
+// 0a. §1-2-4 Cursor Ultra クレジット予算ダッシュボード (N-6 / 2026-04-26 制定)
+sections.push('## 0a. 💳 Cursor Ultra クレジット予算（§1-2-4）');
+sections.push('');
+const rCredit = runCmd('credit-budget', 'node scripts/credit-budget.mjs status --json', { timeoutMs: 5_000 });
+let creditAdvice = null;
+let creditWarn = null;
+if (rCredit.ok && rCredit.stdout) {
+  try {
+    const c = JSON.parse(rCredit.stdout);
+    sections.push(`- 直近消費: ${c.latest_percent === null ? '⚪ 未記録' : c.warning_icon + ' ' + c.latest_percent + '%'} (${c.latest_date || 'N/A'}) — ${c.warning_label}`);
+    sections.push(`- 月予算: L1 $${c.budget_usd_l1_credits} (Ultra) + L2 $${c.budget_usd_l2_on_demand_cap} (On-Demand cap) = **$${c.budget_usd_total}**`);
+    if (c.reset_day) {
+      sections.push(`- 課金日: 毎月 ${c.reset_day} 日 / 次回リセット **${c.next_reset_date}** (残 **${c.remaining_days}** 日)`);
+    } else {
+      sections.push('- 課金日: ⚠️ **未設定** — 浜田 GO 後に `npm run credit:reset -- --day=<1-28>` で設定');
+    }
+    if (c.predicted_exhaustion_date) {
+      const earlier = c.next_reset_date && c.predicted_exhaustion_date < c.next_reset_date;
+      sections.push(`- 線形回帰予測 枯渇日: **${c.predicted_exhaustion_date}** ${earlier ? '⚠️ リセット日より前' : '✅ リセット日以降'}`);
+    }
+    if (c.advice) {
+      sections.push(`- AI 助言: ${c.advice}`);
+      creditAdvice = c.advice;
+    }
+    sections.push(`- 履歴件数: ${c.records_count} 日分`);
+    if (c.warning_level === 'critical' || c.warning_level === 'warn') creditWarn = c;
+  } catch (e) {
+    sections.push(`- ⚠️ credit-budget JSON 解析エラー: ${e.message}`);
+  }
+} else {
+  sections.push('- ⚠️ `npm run credit:status` 取得失敗');
+}
+sections.push('');
+sections.push('> 1 日 1 回 30 秒: cursor.com/billing で「今月のクレジット消費 X%」を確認 → `npm run credit:set <pct>` で記録');
+sections.push('');
+if (creditWarn) {
+  sections.push(`> ${creditWarn.warning_icon} **AI 自発警告 (§1-2-4)**: ${creditWarn.warning_label}`);
+  sections.push('');
+}
+sections.push('---');
+sections.push('');
+
 // 0b. §55 セーフモード + 前日 autonomy スキャン（E1 + E2 / 2026-04-25 浜田承認バッチ）
 sections.push('## 0b. §55 セーフモード・前日自律ログ');
 sections.push('');
