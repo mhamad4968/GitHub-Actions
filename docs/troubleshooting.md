@@ -29,9 +29,10 @@
 | TSB-013 | 2026-04-23 20:30→21:00 真因確定 | cron 環境で uv 系 MCP (cve-search) が PATH not found 誤検知 | crontab の PATH に `~/.local/bin` が含まれず cron 実行時のみ uv バイナリ起動失敗 (v1 timeout 仮説は副因に過ぎなかった) | ✅ | true | cve-search MCP / cron |
 | TSB-014 | 2026-04-23 21:15→21:30 解消 | ブラウザ系 3 MCP の system deps + Chrome 不足 | WSL に Chromium 自体 + system libraries (libnspr4 / libnss3 / libatk1.0 等) 未インストールで playwright が起動できなかった | ✅ | true | playwright / a11y-scanner / google-search |
 | TSB-015 | 2026-04-23 21:30→21:40 解消 | google-search MCP の Google bot 検知で実用度 0 | Google スクレイピング型 MCP は Google の bot 検知で結果が常に空配列になり頭打ち（duckduckgo-search に入替で死蔵根絶） | ✅ | true | search MCP |
+| TSB-016 | 2026-04-25 09:00 検出 / H-2 で発見 | BREAKING 削除が 1.5h 後の無関係 commit で無自覚に undone | 4/25 5:41 commit `5f928dd` [BREAKING] で Ch.17 (§53 第二意見系 293 行) を削除したが、7:24 commit `6bac959` (主目的 = §35-5 task-log 制定) が AGENTS.md 末尾に **299 行を追加** = Ch.17 全体が誤って復活していた / 2 commit 間で連続検証 (post-commit hash 比較 / 章数カウント) が無かったため誰も気付かず 1.5h 放置 → H-2 AGENTS.md 章調査で発見 | ✅ | true | AGENTS.md / セッション認識 |
 
-**集計** (2026-04-25 08:50 時点 / G-5 で 2 件追加掘削):
-- 全 16 件中 **root_cause_confirmed = true: 15 件 (94%)** / **false (孤児): 1 件 (6%)**
+**集計** (2026-04-25 09:00 時点 / G-5 で 2 件 + H-2 で 1 件追加):
+- 全 17 件中 **root_cause_confirmed = true: 16 件 (94%)** / **false (孤児): 1 件 (6%)**
 - 5 月目標 (F-2 自己批判 §54-5) = カバレッジ 100% を **G-5 で前倒し達成（94% / 残り 1 件は孤児で原始記録なし）**
 - 残 false: **TSB-001 のみ** = 元事象の詳細記録が `docs/asset-management-logic.md` にも残っていない孤児 TSB（4/19 D1-proposal でも「詳細未記載」と明記）= 真因不明のまま記録止まり
 
@@ -838,3 +839,46 @@ git log --since='24 hours ago' --grep='Made-with: Cursor' --format='%h|%ai|%s'
 2. **`npx -y` で取れる「最新」の罠**: 上流の破壊的変更を毎回 install してしまう = バージョン pin の重要性
 3. **autonomous mode の真の価値**: 浜田就寝中の AI が `mcp_user-rag_status` を実 call することで初めて発見できた = 机上設定確認のみでは絶対に気付けなかった
 4. **CLI 引数が「help テキストに書いてあるが server mode で無視」されるのは設計バグの典型パターン**: 同じ落とし穴を他の MCP でも疑う（特に v0.x の若いバージョン）→ 別 MCP 導入時の確認項目に追加すべき
+
+---
+
+## TSB-016 — BREAKING 削除が 1.5h 後の無関係 commit で無自覚に undone（2026-04-25 09:00 検出 / H-2 で発見）
+
+### 症状
+2026-04-25 09:00 に H-2 タスク（AGENTS.md 章リファクタ下調査）で AGENTS.md (2004 行) を分析中、**「## 第17章 第二意見メカニズム」が line 1711 から完全な形で残存**を発見。同章は浜田 5:30 GO「セカンドAI関係のルールだけ確実に消してほしい」で削除済みのはずだった。
+
+`grep -c "§53|第17章|second.opinion|セカンド.?AI"` で **AGENTS.md に 50 件 hit** = 完全に復活している状態。
+
+### 真因（git log 実証で確定）
+| 時刻 (4/25) | commit | 内容 | AGENTS.md への影響 |
+|---|---|---|---|
+| 05:41 | `5f928dd` | [BREAKING] remove ch.17 second-AI (§53); Tier A via §52-3 only | 451 行削除 / 135 行追加 (8 ファイル) = **Ch.17 削除実施** ✅ |
+| 06:16 | `5156f69` | [FIX] re-remove ch.17 fragment | 1 行削除 / 15 行追加 (微細) ✅ |
+| 07:24 | `6bac959` | [FEAT] §35-5 task-log.mjs (主目的 = 別の rule 制定) | **AGENTS.md +298 行 / -1 行** = `@@ -1706,3 +1706,299 @@` で **末尾に Ch.17 全 299 行を再追加** ❌ |
+| 07:30 | `c00ba97` | [FEAT] §11-4 / §11-5 checklists | +4 / -2 (微細 / 影響なし) |
+
+つまり commit `6bac959` は主目的 (§35-5 task-log 制定) の編集中、AGENTS.md の編集バッファに **削除済の Ch.17 が古い状態で残存** していたか、AI が誤ってクリップボード/古い view から Ch.17 を貼付したかで、**299 行の意図せぬ復活**が起きた。誰もこの差分の異常を気付かず 1.5h 放置（→ 4/25 09:00 H-2 で発見）。
+
+### 影響範囲
+- 浜田 5:30 GO「セカンドAI 削除」が **1.5 時間で無自覚に undone** されていた
+- AGENTS.md が 2004 行 (実 1711 行 + 復活 293 行) = 5月目標 #6 (1700 行以下) 未達原因
+- changelog (line 1228) が "v22 で撤去" と書きつつ実体は復活 = **ドキュメント vs 実体の乖離** = §42-2 Continuity Assurance の死角
+- RULES-INDEX.md / WORKFLOW.md / scripts は §53 を参照していない（=実体だけが亡霊として残存していた）
+
+### 修復実施内容（H-2 同時実施）
+1. AGENTS.md line 1708-EOF を完全削除 = 297 行削減 (2004 → 1707 行 → 5月目標 1700 行以下を 7 行差で達成寸前)
+2. v23 changelog (line 1229 領域) に「**v23.1 [FIX] 4/25 7:24 で誤復活した Ch.17 を再々削除**」追記
+3. audit-rules / audit-tsb-confirmed / health-check で副作用なし確認
+4. commit + push 後、`.session-state/agents-md-hash.txt` を新ハッシュで更新（次セッション継続性確保）
+
+### 教訓（Lessons Learned）
+1. **無関係 commit が破壊的変更を undone するパターン**: BREAKING 削除直後の数時間は **AGENTS.md ハッシュ + 章数を全 commit で post-commit verify** すべき。git pre-commit hook で検知可能
+2. **編集バッファの罠**: AI 補助編集中、古い view / クリップボード / 内部キャッシュから削除済セクションが復活することがある。**commit 前に削除されたはずの章が含まれていないか grep 必須**
+3. **changelog vs 実体の乖離検知**: changelog で "撤去" と書かれた章が実体に存在する場合 = §42-2 Continuity Assurance の死角 / 自動検知ルール追加候補（H-2 改善案 #20 で起票予定）
+4. **「並列禁止」だけでなく「commit 前検証」も並列予防に効く**: §51 並列禁止が守られても、直列 commit でも編集差分の検証を怠れば同種事故は再発する
+
+### 関連
+- 朝 5:30 浜田指示原文: 「セカンドAI関係のルールだけ確実に消してほしい。その他のルールは絶対に保護してほしい」
+- 関連 commit: `5f928dd` / `5156f69` / `6bac959` / 修復 commit (本 TSB 確定後 push)
+- 改善案: H-2 改善案 #20「post-BREAKING-commit ハッシュ検証 hook」（5/22 リファクタで実装検討）
+- §42-2 Continuity Assurance: ファイル直読方式 = changelog vs 実体乖離の検知強化候補
