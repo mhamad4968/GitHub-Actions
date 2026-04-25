@@ -196,6 +196,13 @@ const r5 = runCmd('audit-rules', 'node scripts/audit-rules.mjs');
 sections.push(r5.stdout || '(出力なし)');
 sections.push('');
 
+// 5-2. TSB confirmed フラグ整合性 (F-2 5月目標 #2 監視 / H-1 で追加 2026-04-25)
+sections.push('## 5-2. TSB confirmed フラグ整合性（F-2 5月目標 #2 監視）');
+sections.push('');
+const r5b = runCmd('audit-tsb-confirmed', 'node scripts/audit-tsb-confirmed.mjs');
+sections.push(r5b.stdout || '(出力なし)');
+sections.push('');
+
 // 6. プラン進捗
 sections.push('## 6. 未完了プラン抽出（docs/plans/*.md）');
 sections.push('');
@@ -391,6 +398,7 @@ const score = [
   ['lint:customize', r2.ok],
   ['npm audit', r3.exit === 0],
   ['audit-rules', r5.ok],
+  ['audit-tsb-confirmed', r5b.ok],
   ['scan-plans', r6.ok],
   ['RAG ingest', r7.ok],
   ['§46 Phase 2 health-check', rPhase2.ok],
