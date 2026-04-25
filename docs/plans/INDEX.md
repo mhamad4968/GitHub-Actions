@@ -1,6 +1,6 @@
 # 📚 docs/plans/ ディレクトリ・インデックス
 
-**最終更新**: 2026-04-25 (Sat) 08:20 JST / E-3 タスクで初版作成
+**最終更新**: 2026-04-25 (Sat) 09:25 JST / E-3 で初版 / H-3 で v2 設計書追加
 
 このディレクトリは **計画書（plan）** を集約。仕様書・proposal・アクションプランなど、作業の前段に立てる "設計文書" を置く。完了したものは `_archive/` へ。未来の予約タスクは `_future/` へ。
 
@@ -48,6 +48,7 @@ docs/plans/
 | [`_future/2026-05-01-s13-v2-summary-markdown.md`](_future/2026-05-01-s13-v2-summary-markdown.md) | 5/1 | S13 v2: 週次サマリ markdown 化 |
 | [`_future/2026-05-15-morning-cron-load.md`](_future/2026-05-15-morning-cron-load.md) | 5/15 | 朝 cron 負荷分析 |
 | [`_future/2026-05-22-cron-path-unification.md`](_future/2026-05-22-cron-path-unification.md) | 5/22 | cron PATH 統一 |
+| [`_future/2026-05-22-monthly-security-rounds-v2.md`](_future/2026-05-22-monthly-security-rounds-v2.md) | 5/22 | monthly-security-rounds v2 (MCP 自動呼出 / H-3 設計) |
 | [`_future/2026-05-22-major-update-review.md`](_future/2026-05-22-major-update-review.md) | 5/22 | メジャーアップデート定期レビュー |
 | [`_future/2026-06-typescript-migration.md`](_future/2026-06-typescript-migration.md) | 6 月 | scripts/ TypeScript 移行検討 |
 
