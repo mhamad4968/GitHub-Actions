@@ -13,7 +13,8 @@
  *   3. audit:tsb          — audit-tsb-confirmed.mjs (TSB root_cause_confirmed 監視)
  *   4. verify:breaking    — verify-breaking-deletions.mjs --since=50 (TSB-016 系防御)
  *   5. audit:xref         — audit-cross-references.mjs (AGENTS ↔ RULES-INDEX drift)
- *   6. health-check       — scripts/health-check.mjs (S1-S15 統合)
+ *   6. health-check       — scripts/health-check.mjs (S1-S16 統合)
+ *   7. rule-watcher       — rule-watcher-status.mjs (S16 / K-3 稼働確認、未起動は warn)
  *
  * 出力: markdown サマリ + 各検査の status (ok / warn / ng / skip)
  *
@@ -42,7 +43,8 @@ const checks = [
   { id: 'audit:tsb', cmd: 'node', args: ['scripts/audit-tsb-confirmed.mjs'], label: 'TSB root_cause_confirmed カバレッジ' },
   { id: 'verify:breaking', cmd: 'node', args: ['scripts/verify-breaking-deletions.mjs', '--since=50'], label: 'BREAKING 削除 復活検知 (TSB-016 防御)' },
   { id: 'audit:xref', cmd: 'node', args: ['scripts/audit-cross-references.mjs'], label: 'AGENTS.md ↔ RULES-INDEX.md drift' },
-  { id: 'health-check', cmd: 'node', args: ['scripts/health-check.mjs'], label: 'S1-S15 統合健康診断' },
+  { id: 'health-check', cmd: 'node', args: ['scripts/health-check.mjs'], label: 'S1-S16 統合健康診断' },
+  { id: 'rule-watcher', cmd: 'node', args: ['scripts/rule-watcher-status.mjs'], label: '憲法ファイル watcher 稼働 (K-3 / S16)' },
 ];
 
 const results = [];
@@ -69,6 +71,9 @@ for (const c of checks) {
   if (exitCode === null) {
     status = 'ng';
     note = `signal=${res.signal} / timeout?`;
+  } else if (c.id === 'rule-watcher' && exitCode === 2) {
+    status = 'warn';
+    note = 'file-watcher 未稼働 (npm run watcher:start 推奨)';
   } else if (exitCode !== 0) {
     status = 'ng';
     note = `exit=${exitCode}`;

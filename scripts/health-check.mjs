@@ -8,6 +8,7 @@
  * 3. cron 登録状況 (morning-prep が登録されているか)
  * 4. ディスク空き / メモリ使用率
  * 5. 自分自身のスクリプト群が空ファイルになっていないか（再 wipe 検知）
+ * 6. (S16) 憲法ファイル watcher (file-watcher.mjs) 稼働確認 — 未起動は warn（ng ではない）
  *
  * 出力:
  *   - logs/health/<日付>-health.json (構造化)
@@ -326,6 +327,22 @@ try {
   gitStatusCheck = { status: 'skip', note: `git status check error: ${e?.message || e}` };
 }
 
+// ───── 憲法ファイル watcher 稼働 (S16 / K-3 / §51-3 段階 3) ─────
+let ruleWatcherCheck = { status: 'ok', note: 'file-watcher.mjs 稼働中 (憲法 5 ファイル SHA256 監視)' };
+{
+  const rwPs = spawnSync(
+    'bash',
+    ['-lc', "ps aux | grep -v grep | grep -F 'scripts/file-watcher.mjs' || true"],
+    { encoding: 'utf8', timeout: 5_000 },
+  );
+  if (!(rwPs.stdout || '').trim()) {
+    ruleWatcherCheck = {
+      status: 'warn',
+      note: 'file-watcher 未稼働 — `npm run watcher:start` 推奨 (K-3 / commit 前並列編集検知)',
+    };
+  }
+}
+
 // ───── MCP 死蔵検知 (S12 wiring / 改善案 #12) ─────
 let mcpDormancyCheck = { status: 'skip', note: 'check-mcp-dormancy.mjs not present' };
 const mcpDormancyScriptPath = path.join(REPO_ROOT, 'scripts', 'check-mcp-dormancy.mjs');
@@ -361,10 +378,12 @@ const mcpDormancySkipCount = mcpDormancyCheck.status === 'skip' ? 1 : 0;
 const gitStatusOkCount = gitStatusCheck.status === 'ok' ? 1 : 0;
 const gitStatusNgCount = gitStatusCheck.status === 'ng' ? 1 : 0;
 const gitStatusSkipCount = gitStatusCheck.status === 'skip' ? 1 : 0;
+const ruleWatcherOkCount = ruleWatcherCheck.status === 'ok' ? 1 : 0;
+const ruleWatcherWarnCount = ruleWatcherCheck.status === 'warn' ? 1 : 0;
 const summary = {
-  ok: mcpResults.filter((r) => r.status === 'ok').length + [node, disk, memory, cron, selfCheck].filter((s) => s.status === 'ok').length + ragDeepOkCount + nodeModulesOkCount + mcpDormancyOkCount + gitStatusOkCount,
+  ok: mcpResults.filter((r) => r.status === 'ok').length + [node, disk, memory, cron, selfCheck].filter((s) => s.status === 'ok').length + ragDeepOkCount + nodeModulesOkCount + mcpDormancyOkCount + gitStatusOkCount + ruleWatcherOkCount,
   ng: mcpResults.filter((r) => r.status === 'ng').length + [node, cron, selfCheck].filter((s) => s.status === 'ng').length + ragDeepNgCount + nodeModulesNgCount + mcpDormancyNgCount + gitStatusNgCount,
-  warn: 0,
+  warn: ruleWatcherWarnCount,
   skip: mcpResults.filter((r) => r.status === 'skip').length + nodeModulesSkipCount + mcpDormancySkipCount + gitStatusSkipCount,
 };
 
@@ -381,6 +400,7 @@ const result = {
   node_modules: nodeModulesCheck,
   mcp_dormancy: mcpDormancyCheck,
   git_status: gitStatusCheck,
+  rule_watcher: ruleWatcherCheck,
   summary,
 };
 
@@ -426,6 +446,8 @@ out('');
   out(`- **MCP 死蔵検知 (S12)**: ${mdIcon} ${mcpDormancyCheck.note}`);
   const gsIcon = { ok: '✅', ng: '❌', skip: '⏭' }[gitStatusCheck.status] || '?';
   out(`- **Git ahead/behind (S15)**: ${gsIcon} ${gitStatusCheck.note}`);
+  const rwIcon = { ok: '✅', warn: '⚠️' }[ruleWatcherCheck.status] || '?';
+  out(`- **憲法ファイル watcher (S16 / K-3)**: ${rwIcon} ${ruleWatcherCheck.note}`);
 }
 out('');
 

@@ -217,6 +217,49 @@ const r5d = runCmd('audit-cross-references', 'node scripts/audit-cross-reference
 sections.push(r5d.stdout || '(出力なし)');
 sections.push('');
 
+// 5-5. 憲法ファイル リアルタイム変更ログ (K-3 / 過去 24h)
+sections.push('## 5-5. 憲法ファイル リアルタイム変更ログ（過去 24h / K-3 / agents-md-changes.jsonl）');
+sections.push('');
+(() => {
+  const jsonlPath = path.join(REPO_ROOT, 'logs', 'file-watcher', 'agents-md-changes.jsonl');
+  const cutoff = Date.now() - 24 * 3600 * 1000;
+  if (!fs.existsSync(jsonlPath)) {
+    sections.push('_ログなし（file-watcher 未起動 or 未変更）。`npm run watcher:start` で K-3 監視を有効化。_');
+    sections.push('');
+    return;
+  }
+  let entries = [];
+  try {
+    const lines = fs.readFileSync(jsonlPath, 'utf8').trim().split('\n').filter(Boolean);
+    for (const line of lines) {
+      try {
+        const j = JSON.parse(line);
+        const t = new Date(j.time).getTime();
+        if (!Number.isNaN(t) && t >= cutoff) entries.push(j);
+      } catch { /* skip */ }
+    }
+  } catch {
+    sections.push('_jsonl 読取失敗_');
+    sections.push('');
+    return;
+  }
+  sections.push(`**過去 24h の SHA256 変化イベント: ${entries.length} 件**`);
+  sections.push('');
+  if (entries.length === 0) {
+    sections.push('_該当なし（静穏）_');
+  } else {
+    const tail = entries.slice(-8);
+    sections.push('| 時刻 (UTC) | ファイル | grace | sha256 (先頭) |');
+    sections.push('|---|---|:---:|---|');
+    for (const e of tail) {
+      const g = e.in_grace ? '起動直後' : '—';
+      const sh = (e.sha256 || '').slice(0, 12);
+      sections.push(`| ${e.time || ''} | \`${e.file || ''}\` | ${g} | \`${sh}\` |`);
+    }
+  }
+  sections.push('');
+})();
+
 // 6. プラン進捗
 sections.push('## 6. 未完了プラン抽出（docs/plans/*.md）');
 sections.push('');

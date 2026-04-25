@@ -19,6 +19,7 @@
  * ログ出力:
  *   - logs/file-watcher/<日付>.log（全変更履歴）
  *   - logs/file-watcher/wipe-incidents.log（wipe 検知時のみ・追記専用）
+ *   - logs/file-watcher/agents-md-changes.jsonl（K-3 / §51-3 段階 3: 憲法 5 ファイルの SHA256 変化・commit 前並列編集検知）
  *
  * 自動復元:
  *   - ~/.cursor-emergency-backup/ にミラーがある場合、wipe 検知後 5 秒待って復元
@@ -27,6 +28,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
+import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -34,8 +36,32 @@ const REPO_ROOT = path.resolve(path.dirname(__filename), '..');
 const EMERGENCY_BACKUP = path.join(os.homedir(), '.cursor-emergency-backup');
 const LOG_DIR = path.join(REPO_ROOT, 'logs', 'file-watcher');
 const WIPE_LOG = path.join(LOG_DIR, 'wipe-incidents.log');
+/** K-3: verify-breaking と同じ 5 憲法ファイル（working tree 変化を SHA256 で記録） */
+const PROTECTED_RULE_FILES = new Set([
+  'AGENTS.md',
+  'RULES-INDEX.md',
+  'WORKFLOW.md',
+  'CLAUDE.md',
+  'kintone-apps.md',
+]);
+const RULE_CHANGES_JSONL = path.join(LOG_DIR, 'agents-md-changes.jsonl');
+/** 起動直後はエディタ初期読込等で誤警報しやすい → 60s は stderr ベルを抑止（jsonl は常に記録） */
+const RULE_CHANGE_GRACE_MS = 60_000;
 
 fs.mkdirSync(LOG_DIR, { recursive: true });
+
+const WATCHER_START_MS = Date.now();
+
+function sha256File(rel) {
+  const full = path.join(REPO_ROOT, rel);
+  if (!fs.existsSync(full)) return null;
+  try {
+    const buf = fs.readFileSync(full);
+    return crypto.createHash('sha256').update(buf).digest('hex');
+  } catch {
+    return null;
+  }
+}
 
 const CRITICAL_FILES = [
   'AGENTS.md',
@@ -82,7 +108,7 @@ function nowIso() {
 }
 
 console.log(`[${nowIso()}] file-watcher 起動 (PID ${process.pid})`);
-console.log(`[${nowIso()}] 監視対象: ${CRITICAL_FILES.length} ファイル`);
+console.log(`[${nowIso()}] 監視対象: ${CRITICAL_FILES.length} ファイル (K-3: 憲法 5 ファイル SHA256 → ${path.relative(REPO_ROOT, RULE_CHANGES_JSONL)})`);
 console.log(`[${nowIso()}] emergency-backup: ${EMERGENCY_BACKUP}`);
 
 function attemptRestore(rel) {
@@ -113,6 +139,12 @@ for (const rel of CRITICAL_FILES) {
   }
 }
 
+const lastRuleHashes = new Map();
+for (const rel of PROTECTED_RULE_FILES) {
+  lastRuleHashes.set(rel, sha256File(rel));
+}
+const ruleChangeDebounce = new Map();
+
 const watchers = [];
 for (const rel of CRITICAL_FILES) {
   const full = path.join(REPO_ROOT, rel);
@@ -125,6 +157,46 @@ for (const rel of CRITICAL_FILES) {
       const newSize = fs.existsSync(full) ? fs.statSync(full).size : -1;
       const oldSize = lastSizes.get(rel) ?? -1;
       logToFile(`[${nowIso()}] [${eventType}] ${rel}  size: ${oldSize} → ${newSize}`);
+
+      // K-3 / §51-3 段階 3: 憲法 5 ファイルの SHA256 変化（post-commit より前の並列編集を検知）
+      if (PROTECTED_RULE_FILES.has(rel)) {
+        const prevT = ruleChangeDebounce.get(rel);
+        if (prevT) clearTimeout(prevT);
+        ruleChangeDebounce.set(
+          rel,
+          setTimeout(() => {
+            ruleChangeDebounce.delete(rel);
+            const newHash = sha256File(rel);
+            if (newHash == null) return;
+            const prevHash = lastRuleHashes.get(rel);
+            if (newHash === prevHash) return;
+            lastRuleHashes.set(rel, newHash);
+            const inGrace = Date.now() - WATCHER_START_MS < RULE_CHANGE_GRACE_MS;
+            const rec = {
+              time: nowIso(),
+              file: rel,
+              eventType,
+              sha256: newHash,
+              previous_sha256: prevHash,
+              watcher_pid: process.pid,
+              in_grace: inGrace,
+            };
+            try {
+              fs.appendFileSync(RULE_CHANGES_JSONL, JSON.stringify(rec) + '\n');
+            } catch (e) {
+              console.error(`[${nowIso()}] RULE-CHANGE jsonl 追記失敗: ${e.message}`);
+            }
+            logToFile(
+              `[${nowIso()}] [RULE-CHANGE] ${rel} sha256 ${(prevHash || 'null').slice(0, 8)}→${newHash.slice(0, 8)} grace=${inGrace}`,
+            );
+            if (!inGrace) {
+              console.error(
+                `\x07[${nowIso()}] ⚠️ §51-3 K-3 憲法ファイル変更検知: ${rel} (並列セッション疑い / TSB-017) — see logs/file-watcher/agents-md-changes.jsonl`,
+              );
+            }
+          }, 500),
+        );
+      }
 
       // wipe 検知: 1KB 以上 → 0 byte
       if (oldSize > 1024 && newSize === 0) {
@@ -169,6 +241,10 @@ console.log(`[${nowIso()}] ${watchers.length} ファイルの監視開始`);
 // 終了処理
 function shutdown() {
   console.log(`[${nowIso()}] file-watcher 終了 (PID ${process.pid})`);
+  for (const t of ruleChangeDebounce.values()) {
+    try { clearTimeout(t); } catch { /* skip */ }
+  }
+  ruleChangeDebounce.clear();
   for (const { w } of watchers) {
     try { w.close(); } catch { /* skip */ }
   }

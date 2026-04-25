@@ -597,6 +597,7 @@ AIエージェント自身および開発環境のすべてのツール・ライ
 - 次回起動時に `sha256sum AGENTS.md` を実行 → 前回 hash と比較
 - **一致** → ルール変更なし → 即業務開始可 (浜田待機ゼロ)
 - **不一致** → セッション間で AGENTS.md 変更あり → §42-2-3 ステップへ
+- **補完 (K-3 / §51-3 段階 3)**: バックグラウンドで `npm run watcher:start`（`scripts/file-watcher.mjs`）を常時稼働させると、AGENTS.md 等 **憲法 5 ファイル** の working tree 上の内容変化を `fs.watch` + **SHA256** で検知し、`logs/file-watcher/agents-md-changes.jsonl` に追記する。**起動から 60 秒**はエディタ初期読込の誤警報抑制（`in_grace: true` / stderr ベルなし）、以降は **stderr + 端末ベル** で即時警告。post-commit hook（TSB-016）が拾うのは **commit 後**のみなので、**commit 前の並列編集**（TSB-017 型）の死角を埋める。
 
 ##### §42-2-3 BREAKING ラベルフィルタ (§54-1 連動)
 
@@ -1285,7 +1286,7 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 |---|---|---|---|
 | 段階 1 | `scripts/session-lock.mjs` (manual lock) | 検知 = 自分側を即座に abort + 浜田に報告 (= 自衛) | **2026-04-25 実装済 (L-1)** |
 | 段階 2 | `ps aux` ベースの強制 kill (`--force-kill` モード) | 検知 = 既存セッション pid を SIGTERM → SIGKILL | **設計確定 (M-series 2026-04-25 11:28): A-2 三重防御 + B-1 本リポのみ + C-2 段階 3 連携 / 実装は 5/10 future plan (L-6) / 浜田 GO 必須** |
-| 段階 3 | リアルタイム file watcher (AGENTS.md 等) | 不審な mtime 更新 = 即座に warn + 自分側 abort | **future plan (K-3) / 2026-04-26 着手予定 (本日前倒し検討中)** |
+| 段階 3 | リアルタイム file watcher (AGENTS.md 等 5 憲法ファイル / SHA256) | working tree 変化 = jsonl 記録 + grace 外は stderr ベル | **2026-04-25 実装済 (K-3 / `scripts/file-watcher.mjs` 拡張 + S16 稼働確認)** |
 
 **遵守事項 (現行 = 段階 1)**:
 
@@ -1351,6 +1352,7 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 - 改訂日: 2026-04-25 10:58（[FEAT] v23.2 / K-1: 第13章 §47-D「矛盾指示の却下義務」新設。短時間内の矛盾指示を AI が自律判断で却下する義務化。浜田 10:57「矛盾があるので却下しますでいいよ。叱ってほしい」明示要求を反映。）
 - 改訂日: 2026-04-25 11:15（[FEAT] v23.3 / L-2: 第13章 §47-E「憲法違反指示の即却下義務」新設 + 第15章 §51-3「並列セッション検知時の AI 動作」新設。浜田 11:12「ルール = 憲法なので、私がルールと違う場合も同様に却下してほしい / 並列セッションの疑いがあれば即座に他セッションを強制的に終了するように」を反映。`scripts/session-lock.mjs` 段階 1 (manual lock + 自衛 abort) 実装済 (L-1)。段階 2 (強制終了モード) は L-6 future plan として起票予定。TSB-017 (別 Cursor セッションの §51 違反) を構造的に防御。）
 - 改訂日: 2026-04-25 11:28（[FIX] v23.4 / M-series: §51-3 段階 2 (force-kill モード) 設計確定。浜田 GO: A-2 三重防御 (--force-kill フラグ + SESSION_LOCK_FORCE_KILL=1 env + 対話確認 read -p) / B-1 本リポのみ (/proc/<pid>/cwd 判定) / C-2 段階 3 連携 (= 段階 3 file-watcher から段階 2 を呼び出す統合形 / 段階 2 単独実行はサポートしない)。実装順序 ABC。実装は 5/10 (L-6 future plan)。）
+- 改訂日: 2026-04-25 11:35（[FEAT] v23.5 / K-3: §51-3 段階 3 実装（憲法 5 ファイル SHA256 リアルタイム監視 / `scripts/file-watcher.mjs` + `agents-md-changes.jsonl`）。§42-2-2 に K-3 補完を追記。health-check S16 + smoke-test 第 7 検査 (`rule-watcher-status.mjs` / 未稼働は warn)。朝ブリーフィング 5-5 に過去 24h 集計。浜田 GO: K-3 本日前倒し着手。）
 
 ---
 

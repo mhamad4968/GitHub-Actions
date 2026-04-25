@@ -56,6 +56,7 @@
     "watcher:start": "nohup node scripts/file-watcher.mjs > logs/file-watcher/watcher.log 2>&1 &",
     "watcher:stop": "pkill -f 'scripts/file-watcher.mjs' || true",
     "watcher:status": "ps aux | grep -v grep | grep 'scripts/file-watcher.mjs' || echo 'not running'",
+    "watcher:rules-status": "node scripts/rule-watcher-status.mjs",
     "security-next:install": "npm ci --prefix security-next-automation",
     "security-next:collect": "npm run collect --prefix security-next-automation",
     "security-next:analyze": "npm run analyze --prefix security-next-automation",

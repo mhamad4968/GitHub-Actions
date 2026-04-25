@@ -1,8 +1,19 @@
 # 📅 K-3 AGENTS.md リアルタイム編集監視 hook (TSB-017 防御)
 
 **制定日**: 2026-04-25 (Sat) / TSB-017 (原因不明 AGENTS.md 編集) 直後の対応
-**実施予定日**: 2026-04-26 (Sun) または 4/27 (Mon) 朝
+**実装完了日**: **2026-04-25 11:35**（浜田 GO: K-3 本日前倒し / 当初予定 4/26 を前倒し）
 **契機**: TSB-017 = §42-2-2 hash 監視は機能したが手動チェックでしか発見できない死角を露呈
+
+## ✅ 実装サマリ（v23.5）
+
+| 項目 | 実装 |
+|---|---|
+| 監視ロジック | 既存 `scripts/file-watcher.mjs` に憲法 5 ファイル SHA256 + 500ms debounce + 60s grace を追加 |
+| ログ | `logs/file-watcher/agents-md-changes.jsonl`（1 行 1 イベント JSON） |
+| 健康診断 | `scripts/health-check.mjs` **S16**（未稼働 = warn、ng ではない） |
+| smoke | `scripts/rule-watcher-status.mjs` を第 7 検査として追加（exit 2 = warn） |
+| 朝報 | `daily-morning-prep.mjs` **§5-5** 過去 24h 集計 |
+| 憲法追記 | AGENTS.md §42-2-2 補完 + §51-3 段階 3 行 + 付則 v23.5 |
 
 ---
 
@@ -16,9 +27,9 @@ post-commit hook (I-9) は commit 後検知だが、TSB-017 は「working tree �
 
 ## 📋 設計
 
-### 既存基盤
+### 既存基盤（実装方針どおり `fs.watch` 延長）
 
-`scripts/file-watcher.mjs` が `chokidar` ベースで稼働中（用途: 定期スナップショット）。これに **AGENTS.md 編集検知 + 警告** を追加する。
+`scripts/file-watcher.mjs` は Node `fs.watch`（inotify）ベースで稼働中。**憲法 5 ファイル** に SHA256 変化検知を追加済み（`chokidar` 依存は追加していない）。
 
 ### 追加する動作
 
