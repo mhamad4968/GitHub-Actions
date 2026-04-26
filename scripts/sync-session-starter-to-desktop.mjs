@@ -21,6 +21,7 @@ const destDir =
 const files = [
   ['chat-sessions/NEW-SESSION-STARTER.md', 'NEW-SESSION-STARTER.txt'],
   ['chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md', 'SESSION-BOOTSTRAP-CHECKLIST.txt'],
+  ['chat-sessions/HANDOFF-HUMAN.txt', 'HANDOFF-HUMAN.txt'],
 ];
 
 function main() {
