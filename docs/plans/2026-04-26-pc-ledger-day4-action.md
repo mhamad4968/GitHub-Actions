@@ -170,14 +170,15 @@
 ```json
 {
   "name": "新・PC台帳ver.1",
-  "space": 21,
-  "thread": 23
+  "space": 21
 }
 ```
 
+（`thread: 23` は **MCP スキーマ上は渡せない**。スペース掲示はデプロイ後に管理画面で確認。§0 参照）
+
 - **AI 行動**: 上記引数を chat に dump → 「これで kintone-add-app を呼んで良いですか？」浜田 GO 待ち
-- **GO 後**: MCP `kintone-add-app` 実行 → app ID（想定 674）取得 → revision=1 確定
-- **直後**: `node scripts/revision-snapshot.mjs <app_id> 1 step1-add-app` で snapshot 保存
+- **GO 後**: MCP `kintone-add-app` 実行 → app ID（想定 674）取得 → **revision は環境により 1 ではない**（2026-04-26 実測: **プレビュー上 `2`**。以降は **GET preview の応答 revision を常に使う**）
+- **直後**: `npm run revision:snapshot -- --app=<id> --label=step1-add-app`（`--app` / `--label` 形式。保存値は実測 revision）
 
 ### Step 2: kintone-add-form-fields（35 フィールド一括追加）
 
@@ -191,16 +192,16 @@
     "pc_serial_no": { "type": "NUMBER", "code": "pc_serial_no", "label": "PC連番", "required": false },
     ... (§2 の全 35 フィールド分 / 別途 scripts/field-spec-diff.mjs で完全版を生成可) ...
   },
-  "revision": 1
+  "revision": <Step1 直後の実測 revision。例: 2>
 }
 ```
 
 - **AI 行動**:
-  1. §2 から 35 フィールドの完全 JSON を生成（field-spec-diff.mjs に generate モード追加検討）
-  2. chat に dump（フィールド数を 35 と verbalize）
+  1. §2 から 35 フィールドの完全 JSON を生成（`npm run field-spec:generate -- --spec=docs/plans/2026-04-26-pc-ledger-day4-action.md`）
+  2. chat に dump（フィールド数を 35 と verbalize）。**表示ラベル**は `scripts/pc-ledger-v1-labels.mjs`（正本 §4.2 整合は `npm run pc-ledger:verify-labels-spec`）
   3. 「app: 674 (新・PC台帳ver.1) で間違いないですか？」浜田 GO 待ち
-- **GO 後**: MCP `kintone-add-form-fields` 実行 → revision=2
-- **直後**: `node scripts/revision-snapshot.mjs 674 2 step2-add-form-fields`
+- **GO 後**: MCP `kintone-add-form-fields` 実行 → **revision は +1**（2026-04-26 実測: Step2 完了後 **3**）
+- **直後**: `npm run revision:snapshot -- --app=674 --label=step2-add-form-fields`
 
 ### Step 3: kintone-deploy-app（本番反映）
 
@@ -209,21 +210,27 @@
 ```json
 {
   "apps": [
-    { "app": 674, "revision": 2 }
+    { "app": 674, "revision": <Step2 直後の実測 revision。例: 3> }
   ]
 }
 ```
 
-- **AI 行動**: 引数 dump → 浜田 GO 待ち
+- **AI 行動**: 引数 dump → 浜田 GO 待ち（**手順書の固定数字 2 に依存しない**。Step2 の PUT 応答 revision をそのまま使う）
 - **GO 後**: `kintone-deploy-app` 実行
 - **直後**: `kintone-get-app-deploy-status` で SUCCESS 確認（PROCESSING の場合は 5 秒間隔で 3 回まで polling）
+
+#### Step 3b（推奨・表示ラベル = 正本 §4.2）
+
+- Step2 の `add-form-fields` は **code と型が主目的**で、画面上の **表示ラベル**は kintone 既定や短文化しがち。**正本どおりに揃える**には **`npm run pc-ledger:apply-labels`**（浜田 GO 後・Tier B）→ その後の revision は再 GET で確認。
+- リポ内ゲート: **`npm run pc-ledger:verify-labels-spec`**（`PC_LEDGER_V1_LABELS` が §4.2 + JSON と一致すること）
 
 ### Step 4: kintone-get-form-fields（現状取得）+ field-spec-diff（仕様 vs 実装 機械検証）
 
 - **AI 行動**:
-  1. `kintone-get-form-fields` (app=674) → 全フィールド定義取得
-  2. `node scripts/field-spec-diff.mjs --app=674 --spec=docs/plans/2026-04-26-pc-ledger-day4-action.md`
-  3. **diff 0 件**なら次へ。1 件以上あれば調査 → 浜田に修正 GO を仰ぐ
+  1. `kintone-get-form-fields` (app=674) → 全フィールド定義取得、または `npm run revision:snapshot -- --app=674 --label=post-step4-verify`
+  2. `node scripts/field-spec-diff.mjs --spec=docs/plans/2026-04-26-pc-ledger-day4-action.md --actual=<上記 JSON パス> --diff`（**`revision-snapshot` 出力全体をそのまま渡してよい**）
+  3. **`npm run pc-ledger:verify-labels-spec`**（表示ラベルが正本 §4.2 と一致）
+  4. **diff 0 件**かつ verify OK なら次へ。1 件以上あれば調査 → 浜田に修正 GO を仰ぐ
 
 ### Step 5: customize JS upload（雛形のみ / lint pass 済）
 

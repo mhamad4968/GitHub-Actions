@@ -20,7 +20,8 @@
 //
 // 使い方:
 //   node scripts/field-spec-diff.mjs --spec=docs/plans/2026-04-26-pc-ledger-day4-action.md --generate
-//   node scripts/field-spec-diff.mjs --spec=docs/plans/2026-04-26-pc-ledger-day4-action.md --actual=data/snapshots/674-form-2026-04-26.json --diff
+//   node scripts/field-spec-diff.mjs --spec=... --actual=<snapshot.json> --diff
+//   --actual は { properties } でも revision-snapshot の { form_fields_live } でも可
 //
 // 注意:
 //   - `--generate` は read + JSON 出力のみ (Tier A)。表示ラベルは pc-ledger-v1-labels.mjs。
@@ -197,8 +198,16 @@ function generateProperties(fields) {
 }
 
 // 実際の get-form-fields JSON (kintone API レスポンス) と仕様を比較
+/** revision-snapshot.mjs 出力（form_fields_live）または get-form-fields 素の JSON から properties を取り出す */
+function resolveActualProperties(actualJson) {
+  if (actualJson.properties && typeof actualJson.properties === 'object') return actualJson.properties;
+  const live = actualJson.form_fields_live?.properties;
+  if (live && typeof live === 'object') return live;
+  return actualJson;
+}
+
 function diffFields(specFields, actualJson) {
-  const actualProps = actualJson.properties || actualJson;
+  const actualProps = resolveActualProperties(actualJson);
   const specMap = new Map(specFields.map((f) => [f.code, f]));
   const actualMap = new Map(Object.entries(actualProps));
 

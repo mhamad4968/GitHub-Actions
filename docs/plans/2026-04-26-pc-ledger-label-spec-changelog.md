@@ -36,6 +36,14 @@
 | **追加** | なし |
 | **変更** | `gb_id` / `gb_pw` / `sb_id` / `sb_pw` の **表示ラベル**のみ: 「Google（Business）」「SmartHR」→ **「サイボウズ」「ガリバー」**（`pc-ledger-v1-labels.mjs` と `pc-ledger-spec-4222-ui-labels.json` の `ui_label` / `spec_anchor`）。**生成ロジック（=mail_acct / =logon_name）は元から §4.2.2 と一致しており未変更** |
 
+### 2026-04-26 夕 — kintone 674 実機の再整合（Step1〜3 後のラベル抜け）
+
+| 種別 | 内容 |
+|---|---|
+| **事実** | 旧スナップショット上、**22 フィールド**の `label` が `PC_LEDGER_V1_LABELS` と不一致（短文のまま） |
+| **実施** | **`npm run pc-ledger:apply-labels`**（PUT + deploy SUCCESS、revision 4→5）後、`674-labels-spec-realign-*.json` で **全 35 ラベル一致**を確認 |
+| **リポ** | `field-spec-diff.mjs` の `--diff` が **`revision-snapshot` の `form_fields_live` 形式**を読めるよう拡張（Step4 機械検証の取り回し改善） |
+
 ---
 
 ## 2. 全フィールド — 表示ラベルの対照（短文初版 → 現在）
