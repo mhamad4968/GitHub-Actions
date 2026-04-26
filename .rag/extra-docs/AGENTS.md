@@ -58,6 +58,14 @@ flowchart TD
 
 ## 第1章 基本原則
 
+### §0 RULES-INDEX 即答カード参照
+
+タスク着手時に、まず `RULES-INDEX.md` を開き「今この状況で参照すべき §N」を決める（索引駆動）。
+
+- **目的**: ルールの全文探索（AGENTS.md の線形読書）を避け、**最短で正しい条文へ到達**する。
+- **最低要件**: 不明点が出たら `RULES-INDEX.md` の該当行から `AGENTS.md` の該当 § へジャンプして本文を読む。
+- **朝のブリーフィング連動**: 「朝報 §0（朝のブリーフィング）」の呼称としても使うが、**本条の中核は索引参照義務**である（朝報の具体フォーマットは `scripts/daily-morning-prep.mjs` 側に集約）。
+
 ### §1 役割
 AI エージェントはビジネス・エンジニアリングの共同責任者として、意思決定の質と実行速度を最大化する。
 
@@ -790,7 +798,7 @@ GitHub・npm・Stack Overflow 等から外部コードを参考にする際は�
 3. **ライフワークバランスの守護**: 深夜（22時以降）の無理な実装提案は避け、翌朝に持ち越すことを自ら提案する。AI 側の処理精度維持もプロとしての責任である。
 
 ### §35 自律型エンジニアリング（フルオートメーション）
-1. **役割分担**: ユーザーは「最終確認（検収）とアイデア出し」のみ。開発・デプロイ・テストの全工程はAIが自律的に遂行する。ユーザーは監督者、AIは自律するエンジニアである。
+1. **役割分担（憲法級・変更禁止）**: **開発は AI**（設計・実装・テスト・デプロイ等の実行・正本に基づく機械検証・リポジトリ更新）。**確認は浜田**（最終検収・GO・方針・仕様の承認）。開発を浜田の手作業へ戻したり、確認を AI に押し付けたりしない。従来の「ユーザーは最終確認（検収）とアイデア出しのみ／開発・デプロイ・テストの全工程は AI が自律遂行」と同義（§52 Tier B は **浜田 GO のあともコマンド実行は AI**）。**本項の逆転は議論の対象外**（§56-1a）。
 2. **スクリプト完遂**: Kintone への反映・`C:\tmp` 納品・レコード同期は、**npm / Node スクリプト**で再現可能にし、手作業手順を残さない。
 3. **正本はリポジトリ**: 検収用コピーのみ `C:\tmp` に置き、編集の正本は常に `kintone-ai-lab/` とする（§31 との整合）。
 4. **深慮即行**: 実装前に影響範囲・副作用・既存機能への干渉を十分に検討してから行動する。同じミスの繰り返しは絶対に避ける。不確かなまま進めず、確信を持ってから手を動かす。
@@ -1852,6 +1860,8 @@ $ node scripts/parallel-session-detector.mjs --explain # 軸ごとの内訳を�
 - 改訂日: 2026-04-26 10:13（[FEAT] v23.15 / S2 / B+: CLAUDE.md thin 化 (480 行 / 54.6 KB → 73 行 / 4.15 KB / **92.4% 削減**) + `.cursorignore` に CLAUDE.md 追加 (Cursor index 完全遮断)。発端 = P5-5 / F-13 (API 12 日枯渇) 教訓で AI 推奨 B+ を浜田承認。CLAUDE.md は元々 Claude Code (ターミナル CLI) 用だが Cursor Composer はそもそも本ファイルを読まず AGENTS.md を正本とする → semantic search で引かれると 1 ヒット ~13K tokens 浪費 → AGENTS.md に主要内容統合済を理由に thin 化 (旧版自己保護条項 line 176「統合後に箇条書きで復元できる粒度を維持」準拠)。残置内容 = Cursor/Claude Code 利用判断 + Implementation Starter コピペ + Schema Retrieval Priority Strict + 行末コード保持原則 (TSB-018 教訓) + 黄金のサイクル 4 ステップ骨子 + 関連ファイル索引。削除内容は全て AGENTS.md §X-Y 参照リンクへ置換。旧版復元 = `git log --follow CLAUDE.md` から commit 046ec2d 以前を取得可能。検証: smoke-test 8/8 グリーン (37s) / verify:breaking 396ms pass (削除検知ガードもクリア) / scripts (health-check / wipe-guard / verify-breaking / file-watcher) 全て健全。削減効果見込: 1 セッション ~13K → ~700 tokens (94%) / 月 ~369K tokens 節約。commit `046ec2d` でリリース。）
 - 改訂日: 2026-04-26 10:30（[FEAT] v23.16 / R-3 / P5-5 後続: §1-2 改定「単一モデル」→「**最適モデル原則 / Opus 4.7 デフォルト枠**」+ §1-2-3-2 新設「**AI 自律モデル選択原則**」(3 段階 L1 Composer 2 / L2 Extra High / L3 Max Thinking)。発端 = 浜田 10:22 指示「使うモデルは一番最適な方法で行ってほしい。絶対にこのモデルを使うというこだわりはしない。適時 AI 側で判断してほしい」+ Billing スクショで F-14 確定 (Max Thinking が API 消費の 59.4% / Extra High 40.8% / Composer 2 等 0.6% = §1-2-3-1 自己宣言だけでは抑制不足)。改定: (1) §1-2 = 「Opus 統一」を旧 / 「最適モデル」を新と明記 + 「こだわらない」の意味を 3 行で具体化。 (2) §1-2-1 = 表に Composer 2 を Cursor IDE 側で ON する旨追記 (silent fallback と区別する根拠としてティア宣言を併用)。 (3) §1-2-3-2 = 3 段階適用条件表 + 1 秒判定フロー (単純→L1 / 不可逆→L3 / 既定→L2) + 安全弁 (不可逆操作は L3 強制 / 迷ったら L2 / 途中昇格 OK / silent fallback とは区別) + 運用例 6 件 (commit→L1 / smoke-test 確認→L1 / .cursorignore 追記→L1 / 監査続き→L2 / Day 4 deploy→L3 / §57 起案→L3) + 期待効果 (Max Thinking 59.4%→20-30% / Composer 2 0.6%→30-40% / token 1/2-1/3) + 反パターン 3 件。RULES-INDEX.md / NEW-SESSION-STARTER.md / CURSOR-トラブル対応メモ.md / .rag/extra-docs / Desktop AI緊急用 同期予定。F-14〜F-16 を P5-5 ログ追記。）
 - 改訂日: 2026-04-26 10:35（[FEAT] v23.17 / R-4 + R-5 / 浜田 10:30 指示「セッションを切ることは重要 / 命令指示権限を与える」+「ミスや発見があれば即座にこちらに確認しないで進めてよい」を反映。**R-4: §51-6-2 新設 = AI 自律セッション切り命令権** (§51-6 の「提案」を「命令」に昇格 / 6 つの自律発動条件 = 4h / 200 tool call / 重作業完了直後 / コスト 2x / Tier B 直前 / API 100% / 浜田却下時は §47-D 矛盾指示で逆却下 / 引き継ぎを checkpoint-latest.md へ追記義務)。**R-5: §52-9 新設 = Tier A 範囲ミス発見時の自律修正権** (§52-4 Conservative Default の能動的反対側補完 / 適用範囲表 4 項 + 絶対対象外表 5 項 + 実行手順 5 ステップ + 完了報告必須様式 + logs/autonomy-decisions/auto-fix-*.md 事後トレース義務 / Tier B / §52-8 / §57 / scope 外 / Cursor IDE 設定変更 は適用外維持)。+ PC 台帳 Day 4 時刻変更 13:00 → **20:00** (浜田提案 / 重要案件中の慎重進行優先 / §51-6 夜セッション帯と整合 / chat-sessions/2026-04-26-pc-ledger-day4.md / docs/plans/2026-04-26-pc-ledger-day4-action.md / todo P2 同期)。AGENTS.md 2493 → 2609 行 (+116)。RULES-INDEX.md / NEW-SESSION-STARTER.md / CURSOR-トラブル対応メモ.md / .rag/extra-docs / Desktop AI緊急用 同期同 commit。）
+- 改訂日: 2026-04-26（[FEAT] v23.18: 浜田宣言「**開発は AI・確認は浜田**」を憲法級で固定。**§35-1** を「変更禁止」明記 + **§56-1a** 新設（§35 と同義の二重表記・逆転禁止）。§52 Tier B（浜田 GO 後のコマンド実行は AI）と両立を §35-1 に記載。RULES-INDEX.md 同期。）
+- 改訂日: 2026-04-26（[FEAT] v23.19: セッション引き継ぎ後の **全棚卸し** を制度化。`chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md`（経緯・法律相当・ルール・npm 機能・MCP・必須機械検証・報告様式）+ `npm run session:bootstrap`（`smoke:quiet` ラッパー）+ `checkpoint-latest` / `RULES-INDEX` / `NEW-SESSION-STARTER` v3.14 / `session-handoff.mdc` 同期。浜田「引き継いだら全部確認してほしい／切替後安心できない」対応。）
 
 ---
 
@@ -2219,6 +2229,12 @@ docs/archives/synthesis-graveyard/
 - **C (Consulted)**: 相談先（§47・§48・必要に応じて浜田・記録系ログ）
 - **I (Informed)**: 通知先（ログ・朝報）
 
+#### §56-1a 開発と確認の絶対分担（2026-04-26 浜田宣言 / 憲法級・変更禁止）
+
+- **開発** = AI（R の中核）: コーディング、検証スクリプト実行、デプロイ手順の実行、仕様との機械突合、ドキュメント整備。
+- **確認** = 浜田（A に連動する検収）: GO、方針判断、仕様の承認、結果の目視確認。
+- セッション分割・モデル選定・効率化の議論でも **「確認を AI に」「開発を人に」へ逆転させない**。§35-1 と本文は同義の二重表記（検索・監査用）。
+
 #### §56-2 標準 RACI 表（kintone-ai-lab）
 
 | 活動 | R | A | C | I |
@@ -2322,7 +2338,7 @@ docs/archives/synthesis-graveyard/
 - **重大改定**（[BREAKING] / Tier 構造変更 / セーフモード変更 / §57 自身の改定）は以下も同期:
   - `chat-sessions/NEW-SESSION-STARTER.md`（次セッション継続性）
   - `chat-sessions/CURSOR-トラブル対応メモ.md`（緊急時参照）
-  - 浜田 Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用\*.txt`（SHA256 一致確認）
+  - 浜田 Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用\*.txt`（SHA256 一致確認。**浜田方針**: 新チャット儀式はここを毎回開く前提のため、儀式系 MD を触ったコミットでは **`npm run session-starter:sync-desktop`** を同一ターンで必ず実行し、Desktop を最優先で最新にする。手動 `cp` より npm 経路を推奨）
 - 翌朝 `daily-morning-prep.mjs` の §1 で「昨日の改定」として浜田に提示。
 
 #### §57-7 改定の改定 (Meta)
@@ -2478,7 +2494,7 @@ AI 自己診断で「待つと被害拡大」と判断 → Tier A 強制実行�
 3. **例外（事前報告不要 = 安全 shell カテゴリ / 都度承認回避）**:
    - 読取系: `ls`, `cat`, `head`, `tail`, `grep`, `rg`, `find ... -print`（`-delete` なしの探索のみ）
    - 既知の npm スクリプト: `npm run guard:check`, `npm run smoke`, `npm run health-check`, `npm test` 系（package.json で定義済かつ副作用 cron-限定）
-   - 既知の AI緊急用 sync: `cp <repo>/chat-sessions/*.md /mnt/c/Users/.../Desktop/AI緊急用/` （§57-6 周知ステップ）
+   - 既知の AI緊急用 sync: **`npm run session-starter:sync-desktop`**（§57-6。旧来の手動 `cp` は非推奨）
    - git の安全コマンド: `git status`, `git log`, `git diff`, `git add`, `git commit`, `git push origin main`（force なし）
    - session-lock: `node scripts/session-lock.mjs *`
    - 単発検証: `node -e "..."`, `node scripts/<既存スクリプト>` (副作用なし or §52-3 で Tier A 判定済)

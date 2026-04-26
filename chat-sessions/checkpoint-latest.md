@@ -60,7 +60,9 @@
 
 ---
 
-**最終更新**: 2026-04-26 (Sun) 深夜 JST — **スターター常に `yyyymmdd.txt` へ同期**（変更時のみ旧版を `_2`…退避）**+ verify 最終行に貼付推奨**（案 C/D）**+ README.txt 同期 + 日終わり手順**（案 A/B）。**前回**: 枝番最大を貼る運用。
+**最終更新**: 2026-04-27 (Mon) JST — **App 674 浜田 GO**: `npm run pc-ledger:apply-labels`（差分なし）→ `npm run deploy:674` **Deploy SUCCESS**（preview **revision=10**）→ `revision:snapshot` `go-post-apply-labels` / `go-post-deploy-674` → `field-spec:diff` **35/35 match** → `npm run kintone:test` **9/9** → `npm run smoke:quiet` **9/9**。
+
+**前回更新**: 2026-04-26 (Sun) 深夜 JST — **スターター常に `yyyymmdd.txt` へ同期**（変更時のみ旧版を `_2`…退避）**+ verify 最終行に貼付推奨**（案 C/D）**+ README.txt 同期 + 日終わり手順**（案 A/B）。**前回**: 枝番最大を貼る運用。
 
 **前回更新**: 2026-04-26 (Sun) 12:30 — **再開** ✅。**本日 2026-04-26 完了サマリ**: 朝 06:00 ブリーフィング → API 100% 枯渇発覚 → 甲フル実装 (Monthly Limit $300→$1000 / S1-S5 5 措置) → S2 CLAUDE.md 480→73 行 thin 化 (`046ec2d`) → P5-3 Rules/Skills/Subagents 監査 7 件発見 → P5-4 Indexing 監査 3 件発見 → P5-5 Plan&Usage 監査 7 件発見 (F-14 Max Thinking 59.4% 確定) → **R-3** 「最適モデル原則」+ §1-2-3-2 新設 (`92b89d5`) → **R-4 §51-6-2 + R-5 §52-9 新設 + Day 4 時刻 13:00→20:00 + RAG/Desktop 同期 + §52-9 即日 2 件発動** (`01d18e5`) → **P5-1 Hooks 監査 完了** / **P5-2 Tools&MCPs 監査 完了** / **TSB-022 起票 + 恒久案 (docs) + `~/.cursor/hooks/dangerous-shell-blocker.sh` heredoc 本文 strip 実装 + `artifacts/cursor-hooks/dangerous-shell-blocker.sh` スナップショット** ✅。**Day 4 (PC 台帳) は 20:00 開始予定** (浜田指示 / 慎重進行優先)。**文書化コミット**: `b201232`（§0/TSB-022/日次/スターター追記 + hook スナップショット）。**次**: `git push`（**任意** / いま `main` は `origin/main` より ahead 1）→ Day4 は 20:00 開始予定。**並列禁止 §51 100% 遵守 / 不可逆操作ゼロ**。
 

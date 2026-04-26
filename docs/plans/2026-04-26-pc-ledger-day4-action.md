@@ -65,17 +65,18 @@
 
 ### Layer B: ステップ実行時のチェック（§4 Step 1-7 で詳述）
 
-- [ ] **MCP write 直前**: 引数を chat に丸ごと dump → 浜田明示 GO 取得
-- [ ] **app: 値が 594/595/626/627/670/671/672/673 ではない**ことを AI が verbalize
-- [ ] **MCP write 直後**: revision-snapshot.mjs 自動実行（rollback 用）
-- [ ] **deploy 直後**: get-form-fields → field-spec-diff.mjs で 100% 一致確認
+- [x] **MCP write 直前**: 引数を chat に丸ごと dump → 浜田明示 GO 取得（**2026-04-27 Tier B GO**「GOでお願いします。」）
+- [x] **app: 値が 594/595/626/627/670/671/672/673 ではない**ことを AI が verbalize（**674 のみ**）
+- [x] **MCP write 直後**: revision-snapshot.mjs 自動実行（rollback 用）（`go-post-apply-labels` / `go-post-deploy-674`）
+- [x] **deploy 直後**: get-form-fields → field-spec-diff.mjs で 100% 一致確認（**35/35**）
 
 ### Layer C: 事後検証（§5 で詳述）
 
 - [x] kintone-apps.md に 674 行追記（2026-04-27: **アプリ一覧表**＋保守メモ見出しに 674。詳細フィールド一覧は `npm run app:fields 674` で後追い可）
-- [ ] autonomy-decisions ログ作成
-- [ ] checkpoint-latest.md / chat-sessions/2026-04-26.md 更新
-- [ ] commit (`-F file` 経由 / hook 誤検知回避) → push → lock release
+- [x] autonomy-decisions ログ作成（`logs/autonomy-decisions/PC-ledger-day4-2026-04-27-go.md`）
+- [x] checkpoint-latest.md 更新（2026-04-27 GO 結果を **最終更新** に反映済）
+- [ ] chat-sessions/2026-04-26.md 更新（任意・日次ログ）
+- [x] commit（`-F file` / **`59ac8a4`**）→ push → lock release（**push 待ち**）
 
 ---
 
@@ -274,8 +275,8 @@ npm run customize:upload -- --app 674 --file customize/674/desktop.js
 
 | # | 項目 | 完了印 |
 |---|---|---|
-| C1 | kintone-apps.md に 674 行追記 | ☐ |
-| C2 | logs/autonomy-decisions/PC-ledger-day4-2026-04-26.md 詳細ログ作成 | ☐ |
+| C1 | kintone-apps.md に 674 行追記 | ☑ 済 |
+| C2 | logs/autonomy-decisions/PC-ledger-day4-2026-04-26.md 詳細ログ作成 | ☑ 代替 | **`PC-ledger-day4-2026-04-27-go.md`** に Tier B 実行ログ記録（2026-04-27） |
 | C3 | checkpoint-latest.md 更新（最新更新欄に Day 4 完遂を追記） | ☐ |
 | C4 | chat-sessions/2026-04-26.md / chat-sessions/2026-04-26-pc-ledger-day4.md 仕上げ | ☐ |
 | C5 | data/snapshots/674-deploy-final-2026-04-26.json (revision-snapshot.mjs 出力) git add | ☐ |
@@ -337,12 +338,12 @@ npm run customize:upload -- --app 674 --file customize/674/desktop.js
 
 ## §8. Day 4 完了条件
 
-- [ ] App 674 が本番に存在し、35 フィールドすべて仕様書 §4.2 と一致（field-spec-diff.mjs で機械検証）
-- [ ] customize/674/desktop.js が本番反映され、種別変更時のセクション切替が動く
-- [ ] kintone-apps.md に 674 行が追加される
-- [ ] logs/autonomy-decisions/PC-ledger-day4-2026-04-26.md が残る
-- [ ] git に 1 commit + push（hash 記録 / -F file 経由）
-- [ ] session-lock release
+- [x] App 674 が本番に存在し、35 フィールドすべて仕様書 §4.2 と一致（field-spec-diff.mjs で機械検証 / **2026-04-27 GO 後** `674-go-post-deploy-674-*` で **35/35**）
+- [x] **`customize/new-pc-ledger-v1/desktop.js`** が本番反映（`npm run deploy:674` **SUCCESS** / revision **10**）。種別切替の動作は **浜田目視**（Step 6 と合わせて確認推奨）
+- [x] kintone-apps.md に 674 行が追加される（2026-04-27 済・revision 表記更新済）
+- [x] logs/autonomy-decisions に Tier B ログが残る（**`PC-ledger-day4-2026-04-27-go.md`** 新設。旧ファイル名 `2026-04-26` は未作成のまま）
+- [x] git に 1 commit + push（hash 記録 / -F file 経由）（**commit `59ac8a4`**）
+- [ ] session-lock release（取得中なら release）
 
 ---
 
