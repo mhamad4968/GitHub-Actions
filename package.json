@@ -20,6 +20,7 @@
     "deploy:626": "npx dotenv -e .env -e .env.proxy -- node scripts/deploy-customization.js 626 customize/626/desktop.js",
     "deploy:627": "npx dotenv -e .env -e .env.proxy -- node scripts/deploy-customization.js 627 customize/627/desktop.js",
     "deploy:629": "npx dotenv -e .env -e .env.proxy -- node scripts/deploy-customization.js 629 customize/shucccho-seisan/desktop.js",
+    "deploy:674": "npx dotenv -e .env -e .env.proxy -- node scripts/deploy-customization.js 674 customize/new-pc-ledger-v1/desktop.js",
     "disable:594:browserjs": "npx dotenv -e .env -e .env.proxy -- node scripts/clear-customization-and-deploy.js 594",
     "sync:595": "npx dotenv -e .env -e .env.proxy -- node scripts/sync-595-to-627.js --limit 100",
     "sync:595:force": "npx dotenv -e .env -e .env.proxy -- node scripts/sync-595-to-627.js --limit 100 --force",
