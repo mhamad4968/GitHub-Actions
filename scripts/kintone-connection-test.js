@@ -1,9 +1,9 @@
 /**
- * Kintone 疎通確認（認証・594/595/626/627 + 670/671/672/673 のアプリ設定が読めるか）。
+ * Kintone 疎通確認（認証・594/595/626/627 + 670/671/672/673/674 のアプリ設定が読めるか）。
  * `npm run kintone:test` から実行。
  *
  * 旧 PC 台帳スタック: 594/595/626/627
- * 新 PC 台帳スタック: 670 (環境設定) / 671 (M365 管理) / 672 (jbm 採番) / 673 (sjbm 採番)
+ * 新 PC 台帳スタック: 670 (環境設定) / 671 (M365 管理) / 672 (jbm 採番) / 673 (sjbm 採番) / 674 (新・PC台帳ver.1)
  */
 import 'dotenv/config';
 
@@ -27,7 +27,7 @@ if (process.env.KINTONE_BASIC_AUTH_USERNAME && process.env.KINTONE_BASIC_AUTH_PA
   headers.Authorization = `Basic ${Buffer.from(`${bu}:${bp}`, 'utf8').toString('base64')}`;
 }
 
-const PC_STACK_APPS = [594, 595, 626, 627, 670, 671, 672, 673];
+const PC_STACK_APPS = [594, 595, 626, 627, 670, 671, 672, 673, 674];
 
 async function fetchJson(url) {
   const res = await fetch(url, { method: 'GET', headers });

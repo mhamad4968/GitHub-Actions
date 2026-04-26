@@ -54,11 +54,11 @@
 
 ### Layer A: 事前準備で 80% 排除（20:00 までに完了 / 本ファイル §3 で詳述）
 
-- [x] kintone:test 拡張（8 apps 全件疎通 OK 確認 / 20:00 直前にも再実行）
-- [ ] field-spec-diff.mjs で「仕様書 vs add-form-fields 引数」を機械照合
-- [ ] customize 雛形 JS (lint:customize pass 済) を事前作成
-- [ ] revision-snapshot.mjs で deploy 直後の自動 backup 仕組み準備
-- [ ] このアクション plan 書を浜田が一読（20:00 開始時）
+- [x] kintone:test 拡張（**9 apps** ＝ 594/595/626/627/670/671/672/673/**674** 全件疎通 OK / `scripts/kintone-connection-test.js` に 674 追加済 / 20:00 直前にも再実行推奨）
+- [x] field-spec-diff.mjs で「仕様書 vs add-form-fields 引数」を機械照合（2026-04-27: `--spec=本書` vs `--actual=data/snapshots/674-step3-after-deploy-20260426-174110.json` → **35 fields all match** exit 0）
+- [x] customize 雛形 JS (lint:customize pass 済) を事前作成（`customize/new-pc-ledger-v1/desktop.js` / BUILD `2026-04-26-day4-skeleton-v0.2` / 2026-04-27 `npm run lint:customize` exit 0）
+- [x] revision-snapshot.mjs で deploy 直後の自動 backup 仕組み準備（スクリプト既存 / 2026-04-27 実走 `674-order2-layer-a-readiness-*` 生成・live revision=9・43 fields 確認）
+- [ ] このアクション plan 書を浜田が一読（20:00 開始時 or 次 Tier B 直前）
 
 ### Layer B: ステップ実行時のチェック（§4 Step 1-7 で詳述）
 
@@ -148,15 +148,15 @@
 |---|---|---|---|
 | A0 | session-lock 取得 (holder=PC-ledger-day4-prep-2026-04-26) | ☑ 済 | 09:00 取得 |
 | A1 | 本ファイル作成 | ☑ 済 | 本ファイル |
-| A2 | kintone:test 拡張 (594-627 + 670-673 = 8 apps) + 全件 OK 確認 | ☑ 済 | 09:00 確認 |
-| A3 | scripts/field-spec-diff.mjs 新規 | ☐ | 仕様書 §4.2 vs add-form-fields 引数 機械照合 |
-| A6 | scripts/revision-snapshot.mjs 新規 | ☐ | deploy 直後の自動 backup |
-| A4 | customize 雛形 JS 骨組み + lint:customize pass | ☐ | customize/674/desktop.js |
-| A5 | chat-sessions/2026-04-26-pc-ledger-day4.md 雛形 | ☐ | 当日ログ用 |
+| A2 | kintone:test 拡張 (594-627 + 670-674 = **9 apps**) + 全件 OK 確認 | ☑ 済 | 09:00 初回 + **2026-04-27** 674 追加 |
+| A3 | scripts/field-spec-diff.mjs（仕様 vs 実フィールド機械照合） | ☑ 済 | `--diff` 2026-04-27 vs step3 snapshot → 35 match |
+| A6 | scripts/revision-snapshot.mjs（deploy 前後 backup） | ☑ 済 | 2026-04-27 実走 `order2-layer-a-readiness` |
+| A4 | customize 雛形 JS 骨組み + lint:customize pass | ☑ 済 | **`customize/new-pc-ledger-v1/desktop.js`**（674 用・Day4 雛形） |
+| A5 | chat-sessions/2026-04-26-pc-ledger-day4.md 雛形 | ☑ 済 | 当日ログ用ファイルあり |
 | B1 | 20:00 直前: session-lock 切替（holder=PC-ledger-day4-2026-04-26） | ☐ | 旧 lock release → 新 lock acquire |
 | B2 | 20:00 直前: `npm run audit:parallel` = 0 点 | ☐ | 3 点以上で着手中止 |
-| B3 | 20:00 直前: `npm run smoke` = 8/8 ✅ | ☐ | NG なら着手中止 |
-| B4 | 20:00 直前: `npm run kintone:test` = 8/8 ✅ | ☐ | 採番マスタ落ちてないか最終確認 |
+| B3 | 20:00 直前: `npm run smoke` = **9/9** ✅（`smoke:quiet`） | ☐ | NG なら着手中止 |
+| B4 | 20:00 直前: `npm run kintone:test` = **9/9** ✅ | ☐ | 674 含む疎通最終確認 |
 | B5 | 浜田に「準備 100% / 着手可」報告 → **GO 待ち** | ☐ | GO もらってから §4 に進む |
 
 ---
