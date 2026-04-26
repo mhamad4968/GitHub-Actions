@@ -16,6 +16,10 @@
     "created_at_jst": {
       "label": "作成日時（JST）",
       "spec_ref": "docs/plans/2026-04-26-pc-ledger-day4-action.md §2.5"
+    },
+    "skysea_system_meta": {
+      "label": "SKYSEA処理用",
+      "spec_ref": "docs/plans/2026-04-21-new-pc-ledger-spec.md §4.2.3a"
     }
   }
 }

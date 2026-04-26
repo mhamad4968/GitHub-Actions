@@ -12,6 +12,7 @@
     "extra_info_1": "その他情報1",
     "extra_info_2": "その他情報2",
     "internal_system_meta": "内部処理用",
+    "skysea_system_meta": "SKYSEA処理用",
     "account_type": "種別 (個人 / 共有 / JR端末 / サーバーNAS / その他)",
     "pc_status": "ステータス (利用中 / 保管 / 廃棄)",
     "user_name": "利用者名",

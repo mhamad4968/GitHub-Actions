@@ -60,7 +60,9 @@
 
 ---
 
-**最終更新**: 2026-04-28 (Tue) JST — **App 674 浜田 GO**: 594 HW **7 フィールド** POST → **`internal_system_meta`（GROUP）** POST → preview **deploy**（rev **11**）→ `pc-ledger:674:layout-internal-group`（内部メタ 5 件をグループ内へ + deploy **rev 12**）→ `pc-ledger:apply-labels`（2 件）+ deploy **rev 13**）→ `deploy:674` customize（**rev 14** / fileKey `741fd3e9-fce3-4efb-ad15-833cc6363bc1`）→ `revision:snapshot` `674-go-2026-04-28-hw-group-customize-*` → `field-spec:diff` **43/43** → `kintone:test` **9/9** → `smoke:quiet` **9/9**。
+**最終更新**: 2026-04-28 (Tue) JST — **App 674 SKYSEA グループ化**（浜田依頼・チャット GO 相当）: `skysea_system_meta`（**SKYSEA処理用**）preview POST → deploy **rev 15** → `pc-ledger:674:layout-skysea-group`（SKYSEA 4 件をグループ内へ **rev 16**）→ `deploy:674` customize（**rev 17** / fileKey `1f1119b7-6617-49f8-91f7-a3a19edb76c2` / `BUILD=2026-04-28-skysea-group-ui-v0.1`・浜田以外は SKYSEA ブロック非表示）→ `revision:snapshot` `674-skysea-group-2026-04-28-*` → `field-spec:diff` **44/44** → `kintone:test` **9/9** → `smoke:quiet` **9/9**。
+
+**前回更新**: 2026-04-28 (Tue) JST — **App 674 浜田 GO**: 594 HW **7 フィールド** POST → **`internal_system_meta`（GROUP）** POST → preview **deploy**（rev **11**）→ `pc-ledger:674:layout-internal-group`（内部メタ 5 件をグループ内へ + deploy **rev 12**）→ `pc-ledger:apply-labels`（2 件）+ deploy **rev 13**）→ `deploy:674` customize（**rev 14** / fileKey `741fd3e9-fce3-4efb-ad15-833cc6363bc1`）→ `revision:snapshot` `674-go-2026-04-28-hw-group-customize-*` → `field-spec:diff` **43/43** → `kintone:test` **9/9** → `smoke:quiet` **9/9**。
 
 **前回更新**: 2026-04-27 (Mon) JST — **App 674 浜田 GO**: `npm run pc-ledger:apply-labels`（差分なし）→ `npm run deploy:674` **Deploy SUCCESS**（preview **revision=10**）→ `revision:snapshot` `go-post-apply-labels` / `go-post-deploy-674` → `field-spec:diff` **35/35 match** → `npm run kintone:test` **9/9** → `npm run smoke:quiet` **9/9**。
 

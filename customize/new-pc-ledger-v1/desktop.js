@@ -4,11 +4,12 @@
  * 仕様: docs/plans/2026-04-21-new-pc-ledger-spec.md v2.1 §4
  * Day 4 plan: docs/plans/2026-04-26-pc-ledger-day4-action.md
  *
- * BUILD: 2026-04-28-internal-group-ui-v0.2 (§4.2.1a 標準 GROUP「内部処理用」初期閉 + 子 disabled)
+ * BUILD: 2026-04-28-skysea-group-ui-v0.1 (§4.2.1a 内部 GROUP + §4.2.3a SKYSEA GROUP 初期閉・浜田のみ表示)
  *
  * Day 4 雛形スコープ:
  *   - 種別 (account_type) による表示制御 (show/hide)
  *   - §4.2.1a: 内部メタは kintone 標準グループ `internal_system_meta` に収容（レイアウトは `npm run pc-ledger:674:layout-internal-group`）。表示時はグループを閉じる・新規・編集では子を disabled
+ *   - §4.2.3a: SKYSEA 4 件は `skysea_system_meta`（表示名 SKYSEA処理用）に収容（`pc-ledger:674:add-skysea-group-preview` → `pc-ledger:674:layout-skysea-group`）。**浜田以外**はフォーム上でグループ＋子を非表示。浜田のみ閉じた初期表示・編集可
  *   - 自動生成ボタン雛形 (クリックで alert "Day 5 で実装")
  *   - 5 台ライセンス警告雛形 (赤バナーは仕組みのみ)
  *   - リセット/PC買替/印刷ボタン雛形
@@ -24,7 +25,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-04-28-internal-group-ui-v0.2';
+  const BUILD = '2026-04-28-skysea-group-ui-v0.1';
 
   // ===== 関連アプリ ID (kintone-apps.md 参照) =====
   const APP_ENV_MASTER = '670';     // 環境設定マスタ
@@ -71,6 +72,24 @@
     FC_LEGACY_RECORD_ID_594,
     FC_CREATED_AT_JST,
   ];
+
+  /** §4.2.3a SKYSEA グループ（表示名 SKYSEA処理用） */
+  const FC_SKYSEA_GROUP = 'skysea_system_meta';
+  const FC_SKYSEA_STATUS = 'skysea_status';
+  const FC_SKYSEA_CHECKED_AT = 'skysea_checked_at';
+  const FC_SKYSEA_INSTALL_LOG = 'skysea_install_log';
+  const FC_SKYSEA_TARGET_FLAG = 'skysea_target_flag';
+  const SKYSEA_CHILD_CODES = [
+    FC_SKYSEA_STATUS,
+    FC_SKYSEA_CHECKED_AT,
+    FC_SKYSEA_INSTALL_LOG,
+    FC_SKYSEA_TARGET_FLAG,
+  ];
+  /**
+   * SKYSEA ブロックを **画面上** 見せる Cybozu ログイン名（`kintone.getLoginUser().code` と完全一致）。
+   * 別アカウント（例: メール形式の code）でログインする場合はこの Set に追加する。
+   */
+  const SKYSEA_ALLOWED_LOGIN_CODES = new Set(['mhamada202408224']);
 
   // ===== 種別 (account_type) のオプション =====
   const TYPE_PERSONAL = '個人';
@@ -131,6 +150,46 @@
       const cell = record[code];
       if (cell && Object.prototype.hasOwnProperty.call(cell, 'disabled')) {
         cell.disabled = true;
+      }
+    }
+  }
+
+  function isSkyseaPrivilegedUser() {
+    try {
+      const code = String(kintone.getLoginUser()?.code || '');
+      return code !== '' && SKYSEA_ALLOWED_LOGIN_CODES.has(code);
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /**
+   * §4.2.3a: SKYSEA は `skysea_system_meta` に収容。浜田のみグループ＋子を表示し初期は閉じる。
+   * 浜田以外は setFieldShown(false)（API・エクスポートは正本注記どおり別途考慮）。
+   */
+  function applySkyseaGroupUi(record, mode) {
+    const show = isSkyseaPrivilegedUser();
+    const skyseaCodes = [FC_SKYSEA_GROUP, ...SKYSEA_CHILD_CODES];
+    setFieldsVisibility(skyseaCodes, show);
+    if (!show) return;
+    try {
+      kintone.app.record.setGroupFieldOpen(FC_SKYSEA_GROUP, false);
+    } catch (e) {
+      console.warn(`[NEW-PC-LEDGER-V1] setGroupFieldOpen skysea (desktop):`, e.message);
+    }
+    try {
+      if (kintone.mobile && kintone.mobile.app && kintone.mobile.app.record) {
+        kintone.mobile.app.record.setGroupFieldOpen(FC_SKYSEA_GROUP, false);
+      }
+    } catch (e) {
+      console.warn(`[NEW-PC-LEDGER-V1] setGroupFieldOpen skysea (mobile):`, e.message);
+    }
+    if (mode === 'editable') {
+      for (const code of SKYSEA_CHILD_CODES) {
+        const cell = record[code];
+        if (cell && Object.prototype.hasOwnProperty.call(cell, 'disabled')) {
+          cell.disabled = false;
+        }
       }
     }
   }
@@ -321,6 +380,7 @@
     const editable =
       event.type === 'app.record.create.show' || event.type === 'app.record.edit.show';
     applyInternalMetaFieldUi(event.record, editable ? 'editable' : 'detail');
+    applySkyseaGroupUi(event.record, editable ? 'editable' : 'detail');
     applyVisibilityByType(event.record);
     showJrBannerIfNeeded(event.record);
     showLicenseBannerIfNeeded(event.record);
@@ -337,6 +397,7 @@
     let result = confirmTypeChangeIfNeeded(event);
     result = showJrAlertIfNeeded(result);
     applyInternalMetaFieldUi(result.record, 'editable');
+    applySkyseaGroupUi(result.record, 'editable');
     applyVisibilityByType(result.record);
     showJrBannerIfNeeded(result.record);
     injectButtons(result);

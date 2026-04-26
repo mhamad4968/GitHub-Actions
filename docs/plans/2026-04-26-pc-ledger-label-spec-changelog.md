@@ -69,6 +69,15 @@
 | **npm** | `pc-ledger:674:layout-internal-group`（プレビュー layout PUT + deploy）／断片 JSON `pc-ledger-674-add-internal-group-properties.json` |
 | **customize** | `setGroupFieldOpen(..., false)` + 子 5 件 `disabled`（`BUILD=2026-04-28-internal-group-ui-v0.2`） |
 
+### 2026-04-28（追記）— SKYSEA 4 件を標準 GROUP「SKYSEA処理用」+ 浜田のみ表示
+
+| 種別 | 内容 |
+|---|---|
+| **正本** | §4.2.3a 新設。`skysea_system_meta`（`GROUP`）で `skysea_*` 4 件を収容。浜田以外は **フォーム上は非表示**（API 限界は §4.2.3a 注と同型） |
+| **表示** | `skysea_system_meta` の短文ラベル **SKYSEA処理用**（`pc-ledger-v1-ui-display-labels.json`／拡張 JSON に code 追加） |
+| **npm** | `pc-ledger:674:add-skysea-group-preview` → `pc-ledger:674:layout-skysea-group` |
+| **customize** | `SKYSEA_ALLOWED_LOGIN_CODES`（既定: Cybozu `code` = `mhamada202408224`）に一致する場合のみグループ＋子を表示。初期は `setGroupFieldOpen(..., false)`。浜田の新規・編集では子は **編集可**（`BUILD=2026-04-28-skysea-group-ui-v0.1`） |
+
 ### 2026-04-28 — 594 相当 HW 属性 7 項目 + `pc_serial_no` / `serial` ラベル明確化
 
 | 種別 | 内容 |
@@ -139,6 +148,7 @@
 | `extra_info_1` | （なし） | その他情報1 | 2026-04-28 新規 |
 | `extra_info_2` | （なし） | その他情報2 | 2026-04-28 新規 |
 | `internal_system_meta` | （なし） | 内部処理用 | 2026-04-28 GROUP |
+| `skysea_system_meta` | （なし） | SKYSEA処理用 | 2026-04-28 GROUP §4.2.3a |
 | `account_type` | アカウント種別 | 種別 (個人 / 共有 / JR端末 / サーバーNAS / その他) | 同上 |
 | `pc_status` | PCステータス | ステータス (利用中 / 保管 / 廃棄) | 同上 |
 | `user_name` | 利用者名 | 利用者名（595 ルックアップ） | 同上 |

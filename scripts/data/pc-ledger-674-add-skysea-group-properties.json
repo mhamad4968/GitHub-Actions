@@ -1,0 +1,11 @@
+{
+  "_comment": "674 に追加する SKYSEA 用フィールドグループのみ（Tier B / preview POST fields）。続けて `npm run pc-ledger:674:layout-skysea-group` で skysea_* 4 件をグループ内へ移動し preview deploy。",
+  "properties": {
+    "skysea_system_meta": {
+      "type": "GROUP",
+      "code": "skysea_system_meta",
+      "label": "SKYSEA処理用",
+      "openGroup": false
+    }
+  }
+}
