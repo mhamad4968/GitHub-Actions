@@ -84,6 +84,17 @@ const suites = [
     rel: '.cursor/rules/session-handoff.mdc',
     needles: ['TSB-024', '§35-1'],
   },
+  {
+    id: 'checkpoint-bootstrap-order',
+    rel: 'chat-sessions/checkpoint-latest.md',
+    needles: [
+      'verify:constitution-handoff',
+      'セッション切替後の自律復元',
+      'session:bootstrap',
+      'Read より前',
+      '項番 0',
+    ],
+  },
 ];
 
 const failures = [];

@@ -8,3 +8,7 @@ Windows から開きやすい控え: C:\Users\mhamada202408224\Desktop\AI緊急�
 次にやる1つ:
 GO待ち（なし／内容）:
 触らないで（なし／内容）:
+
+---
+（AI 向け・浜田は空欄でよい）新チャットで先に貼ると迷いにくい 1 行:
+「項番 0: npm run verify:constitution-handoff → session:bootstrap を実行してから本題。PC 台帳は checkpoint の明日オーダーに従う」

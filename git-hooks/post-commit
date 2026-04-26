@@ -14,6 +14,7 @@
 #   1. 全 commit 後に verify:breaking を実行
 #   2. ✅ pass なら silent (邪魔しない)
 #   3. ❌ warn なら terminal bell + 強調メッセージ + ログ記録
+#   4. 続けて verify-constitution-handoff.mjs（TSB-024 物理ガード）— ng なら bell + ログ（commit は止めない）
 #
 # インストール: bash scripts/install-hooks.sh
 # アンインストール: rm .git/hooks/post-commit
@@ -76,6 +77,31 @@ if [ "$STATUS" = "warn" ]; then
   echo "============================================================"
   echo "  対応: 上記 active-zombie を削除する新 commit を作成"
   echo "       詳細: docs/troubleshooting.md TSB-016"
+  echo "============================================================"
+fi
+
+# --- TSB-024 / 憲法級ハンドオフ物理ガード（commit 直後に即検知）---
+CONST_OUT="$("$NODE_BIN" scripts/verify-constitution-handoff.mjs 2>&1)"
+CONST_EXIT=$?
+{
+  echo "[$TS] commit=$COMMIT_SHA constitution-handoff exit=$CONST_EXIT subject=\"$COMMIT_SUBJECT\""
+  if [ "$CONST_EXIT" != "0" ]; then
+    echo "$CONST_OUT" | tail -20
+  fi
+} >> "$LOG_FILE"
+
+if [ "$CONST_EXIT" != "0" ]; then
+  printf '\a'
+  echo ""
+  echo "============================================================"
+  echo "  ⚠️  post-commit hook: CONSTITUTION HANDOFF GUARD FAILED"
+  echo "============================================================"
+  echo "  Commit: $COMMIT_SHA \"$COMMIT_SUBJECT\""
+  echo "  詳細: docs/troubleshooting.md TSB-024 / npm run verify:constitution-handoff"
+  echo ""
+  echo "$CONST_OUT" | tail -25
+  echo "============================================================"
+  echo "  対応: NEW-SESSION-STARTER 冒頭 🚨 / SESSION-BOOTSTRAP フェーズ7 / TSB-024 本文を復元"
   echo "============================================================"
 fi
 

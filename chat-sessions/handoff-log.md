@@ -60,3 +60,28 @@ AI は、セッション切替・終了・浜田さんがそのテンプレを�
 **次セッションへの 1 行**: `npm run session:bootstrap` が **9 検査**になったことを確認。憲法ドキュを削る編集後は必ず **緑**を取ってから Tier B へ。
 
 ---
+
+### 2026-04-26 深夜 JST
+
+**浜田メモ（原文）**:
+> 明日やることはPC台帳が要件通りか確認→今日やる予定であったことで出来ていないことの対応→４/２７予定事項の実施ですね。今後はセッションを切り替えた際に今回のことにならないような仕組みで考慮もれはないですか？深く深く考えて再度検討し実行してほしい。
+
+**経緯（簡潔 / §37）**:
+- 明日オーダーを **`2026-04-27-pc-ledger-1b-one-by-one.md`「明日の公式オーダー」**に正本化（3 段: 要件確認 / 4/26 未完了 / 4/27 予定）
+- **考慮漏れ対策（実装）**: `checkpoint-latest` **項番 0** = Read より前に `verify:constitution-handoff`／`session-bootstrap-verify` が **smoke 前に光速 verify**／`git-hooks/post-commit` が **commit 直後**に同検査＋ログ
+- `SESSION-BOOTSTRAP` フェーズ 6・`constitution-handoff-gate.mdc`・`session-handoff.mdc`・`HANDOFF-HUMAN.txt` を同期
+- `docs/troubleshooting.md` TSB-024 対策 **項 6** 追記
+
+**AI 補足（漏れ防止）**:
+- `git`: commit 直後（本ブロック後）
+- `次の1手`: `npm run verify:constitution-handoff` && `npm run smoke:quiet` で回帰確認 → push → `session-starter:sync-desktop`
+- `GO待ち`: なし
+- `session-lock`: なし
+- `関連パス`:
+  - `scripts/session-bootstrap-verify.mjs`
+  - `git-hooks/post-commit`
+  - `chat-sessions/2026-04-27-pc-ledger-1b-one-by-one.md`
+
+**次セッションへの 1 行**: チャット切替直後は **項番 0 → session:bootstrap**。**明日**は同ファイル「明日の公式オーダー」の **1→2→3**。
+
+---

@@ -169,6 +169,13 @@ v3.12 (2026-04-26) 人間5行引き継ぎ + AI 追記義務:
 - **AI**: 同ターンで `chat-sessions/handoff-log.md` 末尾へ必ず追記（`.cursor/rules/session-handoff.mdc` / 漏れ禁止）
 - **checkpoint-latest.md** に手順リンク済み
 
+v3.20 (2026-04-26 深夜) **セッション切替の考慮漏れ潰し**（浜田「深く再検討し実行」）:
+- **`checkpoint-latest.md` 項番 0** = **Read より前**に `npm run verify:constitution-handoff`（光速ガード）
+- **`session:bootstrap`** = 先に verify 単体 → 続けて smoke 9 連（長い検査の前に憲法を二重確認）
+- **`git-hooks/post-commit`** = commit 直後に verify（憲法ドキュ誤削除を push 前に検知・ログ `logs/git-hooks/post-commit.log`）
+- **`2026-04-27-pc-ledger-1b-one-by-one.md`** に **「明日の公式オーダー」**（要件確認 → 4/26 未完了 → 4/27 予定）を追記
+- **`HANDOFF-HUMAN.txt`** に AI 向け 1 行テンプレを追記（任意貼付）
+
 v3.19 (2026-04-26 19:37) **機械ゲート**（迷走再発防止 / 浜田「仕組みを今日作って」）:
 - **`scripts/verify-constitution-handoff.mjs`** + `npm run verify:constitution-handoff` — 必須フレーズ（TSB-024 / §35-1 / 役割宣言テンプレ等）が欠けたら **即 exit 2**
 - **`npm run smoke:quiet` 第 9 検査**に組込 → `npm run session:bootstrap` でも自動実行

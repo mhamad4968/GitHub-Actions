@@ -14,6 +14,16 @@
 
 ---
 
+## 明日の公式オーダー（2026-04-27 / 浜田合意テンプレ）
+
+> セッション切替直後は `checkpoint-latest.md` **項番 0**（`verify:constitution-handoff`）→ `session:bootstrap` を忘れずに。
+
+1. **PC 台帳が要件通りか確認** — 正本 `docs/plans/2026-04-21-new-pc-ledger-spec.md` と実装・ラベル・674 customize の突合。機械ゲート: `npm run pc-ledger:verify-labels-spec` / 必要なら `npm run field-spec:generate -- --spec=docs/plans/2026-04-26-pc-ledger-day4-action.md`（35 fields）。**フェーズ 1b-C テンプレ**をチャットに残す。
+2. **今日（4/26）やる予定で未完了のもの** — `docs/plans/2026-04-26-pc-ledger-day4-action.md` **§1 Layer A** の未チェック（field-spec 機械照合・revision-snapshot 運用・`kintone-apps.md` 674 行 等）を棚卸しし、**Tier B は浜田 GO 後に AI が実行**。
+3. **本日の予定事項（4/27 プラン）** — 下記 **§B 人間＋AI** の未チェックを上から **1 ターン 1 問**（19:15 ルールは `checkpoint-latest.md` 最終更新参照）。精読キューはこのファイル **「精読・19:15…」** 節。
+
+---
+
 ## A. リポ・機械（2026-04-27 時点で AI が順に確認済み）
 
 - [x] **1** 正本に `#### 4.2.0 浜田認識の整理` がある（§4.2.0 節の存在）

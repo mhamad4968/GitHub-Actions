@@ -5,6 +5,10 @@ alwaysApply: true
 
 # 憲法級ハンドオフ・実行ゲート（TSB-024）
 
+## 新セッション第 0 手（考慮漏れ防止）
+
+**チャットを切り替えたら、Read や本題の前に** リポルートで **`npm run verify:constitution-handoff`**（exit 0 必須）。続けて **`npm run session:bootstrap`**（= 光速ガード再実行 + smoke 9 連）。手順の正本: `chat-sessions/checkpoint-latest.md`「セッション切替後の自律復元」**項番 0**。
+
 ## 役割（逆転禁止）
 
 - **開発 = AI**: 設計・実装・lint・テスト・**デプロイ（`npm run deploy:*` 等）の実行**・push・kintone API 書込・再試行・検証コマンドの実行と結果の解釈・引き継ぎファイル追記

@@ -121,8 +121,9 @@ cd /path/to/kintone-ai-lab && npm run session:bootstrap
 
 - [ ] 上記が **exit 0**（warn のみなら内容をチャットに要約し、続行可否を判断）
 - [ ] **ng なら** その検査を直すまで本題の kintone 書込・憲法改定・hooks 変更に進まない
+- [ ] **新チャットで時間がないとき**は最低 **`npm run verify:constitution-handoff`** だけでも **Read より先**に実行（光速・TSB-024）。**ng なら本題に入らない**。
 
-`session:bootstrap` は内部で **`npm run smoke:quiet`**（guard + 4 audit + verify:breaking + xref + health + rule-watcher + parallel + **verify:constitution-handoff**）を実行する。
+`session:bootstrap` は内部で **(A)** `verify-constitution-handoff.mjs`（**先頭・光速**）→ **(B)** **`npm run smoke:quiet`**（guard + 4 audit + verify:breaking + xref + health + rule-watcher + parallel + **verify:constitution-handoff** 再実行）の順で実行する。
 
 ---
 

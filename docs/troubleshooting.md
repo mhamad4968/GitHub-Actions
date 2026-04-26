@@ -1196,6 +1196,7 @@ PC 台帳 Day4 Step1 で MCP `kintone-add-app` 実行後、ブラウザの **`/k
 3. **SESSION-BOOTSTRAP-CHECKLIST.md フェーズ 7**: チャット報告 6 項目に **「(7) 役割宣言: deploy / apply / push / 検証は AI 自身が実行する。浜田には GO と目視確認のみ依頼する」** を追記。AI は新セッション 1 ターン目でこれを声に出して引き継ぎ完了の証跡にする。
 4. **handoff-log.md**: 本件を「禁句アンチパターン」として記録（次の AI が末尾 3 件読みで必ず触れる）。
 5. **機械ゲート（2026-04-26 夜追補）**: `scripts/verify-constitution-handoff.mjs` 新設 → `npm run smoke:quiet` **第 9 検査**に組込（必須フレーズ欠落で即 ng）。`handoff-log.md` に HTML コメント **アンカー**（要約で消えにくい）。`.cursor/rules/constitution-handoff-gate.mdc`（`alwaysApply: true`）で毎ターン想起。
+6. **光速 + commit 後（2026-04-26 深夜追補）**: `session-bootstrap-verify.mjs` が **smoke の前に** `verify-constitution-handoff` を単独実行（長い smoke を待たずに憲法欠落を即検知）。`git-hooks/post-commit` が **commit 直後**にも同スクリプトを実行しログ追記（憲法ドキュを誤削除して push する前にローカルで気づく）。
 
 ### 教訓
 

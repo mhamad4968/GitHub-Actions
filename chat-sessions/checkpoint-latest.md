@@ -16,15 +16,16 @@
 
 **目的**: チャットが変わっても **浜田へ「どこまで？」と聞く前に**、ファイルと API で状態を復元し、自律的に次手へ進める。
 
-**新チャット初手（Read 順・上から）**:
+**新チャット初手（実行順・上から）**:
 
+0. **光速ガード（項番 0 / Read より前・必須）**: リポルートで **`npm run verify:constitution-handoff`** → **exit 0** を確認（TSB-024 物理ガード）。**ng のまま Read・Tier B・本題に進まない**（憲法ドキュ修復のみ）。
 1. 本ファイル `chat-sessions/checkpoint-latest.md`（先頭〜直近の **最終更新** 1 行）
 2. **`chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` を通読**（経緯・法律相当・ルール・機能・MCP の棚卸し表）
 3. `chat-sessions/NEW-SESSION-STARTER.md` の **冒頭〜最新 v3.x ブロック**（kintone プレビュー／憲法級など）
 4. `chat-sessions/handoff-log.md` の **末尾から最大 3 件**（無ければスキップ可）
 5. **PC 台帳（Day4 継続中または 674・新・PC台帳 customize を触る場合）** … `docs/plans/2026-04-26-pc-ledger-day4-action.md` の **「AI 引継ぎ: …」**（Day4 時）＋ `chat-sessions/2026-04-26-pc-ledger-day4.md` ＋ **正本仕様書** `docs/plans/2026-04-21-new-pc-ledger-spec.md` の **§4.2.0〜§4.4 を Read**（手順書のみで代替しない／詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b**）＋画面ラベルは **短文 JSON**／検証は **`npm run pc-ledger:verify-labels-spec`**
 6. `RULES-INDEX.md` の **「セッション切替・文脈復元」** 行（索引 1 行で他ドキュへジャンプ）
-7. **AI は `npm run session:bootstrap` を実行**し、結果をチャットに要約（**Read だけで終わらせない**／詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 6–7）
+7. **AI は `npm run session:bootstrap` を実行**し、結果をチャットに要約（先頭で **verify:constitution-handoff を再実行の上** smoke 9 連／**Read だけで終わらせない**／詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 6–7）
 
 **禁止に近い非推奨**: `kintone-add-app` 直後に「まだ公開してない？」だけを理由に浜田へ確認すること（先に本条と TSB-023・プレビュー `app/settings` を確認）。**Tier B の浜田 GO**（書込・deploy）は従来どおり必須。
 
@@ -47,7 +48,7 @@
 
 ---
 
-**最終更新**: 2026-04-26 (Sun) 19:37 JST — **TSB-024 機械ゲート**: `scripts/verify-constitution-handoff.mjs` + `npm run smoke:quiet` **第 9 検査** + `.cursor/rules/constitution-handoff-gate.mdc`（alwaysApply）+ `handoff-log.md` HTML アンカー。**PC 台帳コード・674 は本日未着手（明日）**。**前回（同日早め）**: 19:15 JST 以降の仕様 1 ターン 1 問・正本精読（§10.1 / §11.H / 採番表記）。
+**最終更新**: 2026-04-26 (Sun) 深夜 JST — **セッション切替考慮漏れ潰し**: `checkpoint-latest` **項番 0**（Read より前 `verify:constitution-handoff`）+ `session:bootstrap` 先頭光速化 + `post-commit` で憲法検知 + `2026-04-27-pc-ledger-1b-one-by-one.md`「明日の公式オーダー」追記。**明日**: PC 台帳要件確認 → 4/26 未完了（Day4 Layer A 等）→ 4/27 予定（1b オーダー）。**前回**: TSB-024 機械ゲート v3.19 導入。
 
 **前回更新**: 2026-04-26 (Sun) 12:30 — **再開** ✅。**本日 2026-04-26 完了サマリ**: 朝 06:00 ブリーフィング → API 100% 枯渇発覚 → 甲フル実装 (Monthly Limit $300→$1000 / S1-S5 5 措置) → S2 CLAUDE.md 480→73 行 thin 化 (`046ec2d`) → P5-3 Rules/Skills/Subagents 監査 7 件発見 → P5-4 Indexing 監査 3 件発見 → P5-5 Plan&Usage 監査 7 件発見 (F-14 Max Thinking 59.4% 確定) → **R-3** 「最適モデル原則」+ §1-2-3-2 新設 (`92b89d5`) → **R-4 §51-6-2 + R-5 §52-9 新設 + Day 4 時刻 13:00→20:00 + RAG/Desktop 同期 + §52-9 即日 2 件発動** (`01d18e5`) → **P5-1 Hooks 監査 完了** / **P5-2 Tools&MCPs 監査 完了** / **TSB-022 起票 + 恒久案 (docs) + `~/.cursor/hooks/dangerous-shell-blocker.sh` heredoc 本文 strip 実装 + `artifacts/cursor-hooks/dangerous-shell-blocker.sh` スナップショット** ✅。**Day 4 (PC 台帳) は 20:00 開始予定** (浜田指示 / 慎重進行優先)。**文書化コミット**: `b201232`（§0/TSB-022/日次/スターター追記 + hook スナップショット）。**次**: `git push`（**任意** / いま `main` は `origin/main` より ahead 1）→ Day4 は 20:00 開始予定。**並列禁止 §51 100% 遵守 / 不可逆操作ゼロ**。
 
