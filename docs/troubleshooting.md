@@ -6,7 +6,7 @@
 
 ---
 
-## 目次（2026-04-25 全件再構築 / 2026-04-26 TSB-022 / TSB-023 追記 / F-2 自己改善目標 #2 = 真因 1 文 + root_cause_confirmed フラグ追加）
+## 目次（2026-04-25 全件再構築 / 2026-04-26 TSB-022 / TSB-023 / TSB-024 追記 / F-2 自己改善目標 #2 = 真因 1 文 + root_cause_confirmed フラグ追加）
 
 > **真因 1 文ルール**: 各 TSB は **「真因を 1 文で説明できる」状態でなければ root_cause_confirmed = false** とする。false の TSB は再発監視優先。
 > **status 凡例**: ✅ Resolved（恒久対策済）/ 🟡 Mitigated（暫定対策のみ）/ 🔴 Open（未解決）/ ♻️ Recurring（同系列複数 episode）
@@ -35,10 +35,11 @@
 | TSB-019 | 2026-04-26 07:42 検出 / Q1 / §1-2-2-1 設定検証中に発見 | **Cursor IDE Auto-Run Mode = "Run Everything (Unsandboxed)" + Browser/MCP Protection OFF が §52 RACI Tier B を構造的に bypass** — kintone 本番 API 書込含む全 MCP ツール・shell・file-write が浜田 GO なしに実行可能だった | §1-2-2-1 (Cursor IDE 必須設定) の verify 中に Agents タブを浜田に開いてもらい発見。`Auto-Run Mode = Run Everything (Unsandboxed)` + `Browser Protection: OFF` + `MCP Tools Protection: OFF` の三重 OFF 構成で、AI Agent が shell・file-write・MCP ツール（**kintone MCP / filesystem / memory / playwright 等含む**）を **承認プロンプト無しで全自動実行する状態**だった。AGENTS.md §52 RACI が「Tier B (irreversible) は浜田の明示 GO 必須」と規定していても **IDE レベルで bypass されており実効性ゼロ**。過去の TSB-006 (Undo All 破壊) / TSB-017 (並列セッション勝手書換) もこの設定と相互作用していた可能性大。対処: Auto-Run Mode は「基本自律 + 危険時確認」浜田判断で `Run Everything` 維持しつつ、**Browser Protection: ON + MCP Tools Protection: ON** に変更（kintone 本番 API は MCP 経由のため MCP Protection ON で構造的にゲート）。§1-2-2-1 を 5 → 8 項目に拡張、§52 RACI に「shell 暴走防止 = 高リスクコマンドは事前報告」追記 | ✅ | true | Cursor IDE 全体 / §52 RACI / kintone 本番 |
 | TSB-022 | 2026-04-26 | dangerous-shell-blocker.sh heredoc 誤検知 | `dangerous-shell-blocker.sh` がコマンド全文（heredoc 本文含む）へ deny regex を適用し、**heredoc 内の文字列**が `git rebase` 等の危険パターンに一致して誤検知していた | ✅ | true | Cursor Hooks / §52-8-1 |
 | TSB-023 | 2026-04-26 | kintone MCP `kintone-add-app` 直後に「未公開？」確認が冗長 | `add-app` は **プレビュー先行**でライブ `app.json` が 404 になりうるが、AI がドキュメント未読のまま浜田へ「まだ公開してない？」と聞き、セッション切替後も同質問が再発する構造だった | ✅ | true | kintone MCP / PC 台帳 Day4 |
+| TSB-024 | 2026-04-26 | AI がデプロイ等 Tier B 実行を浜田に委ねる禁句 | 会話要約で **§35-1 / §56-1a** が脱落し「コード=AI・反映=浜田」誤分担が再構築され「再デプロイしてください」「手動アップロードで OK」等が再発した | ✅ | true | kintone 反映 / 引き継ぎ |
 
-**集計** (2026-04-26 時点 / TSB-023 追記):
-- 全 22 件中 **root_cause_confirmed = true: 21 件 (95%)** / **false (孤児): 1 件 (5%)**
-- 5 月目標 (F-2 自己批判 §54-5) = カバレッジ 100% を TSB-019 真因確定 (Cursor IDE Agents 設定) で **95% 前後を維持**（TSB-023 追記で分母増）
+**集計** (2026-04-27 時点 / TSB-024 目次追記):
+- 全 **23** 件中 **root_cause_confirmed = true: 22 件 (~96%)** / **false (孤児): 1 件 (~4%)**
+- 5 月目標 (F-2 自己批判 §54-5) = カバレッジ 100% を TSB-019 真因確定 (Cursor IDE Agents 設定) で **95% 前後を維持**（分母は TSB セクション数に追随）
 - 残 false: **TSB-001 のみ** = 孤児 TSB（4/19 D1-proposal でも「詳細未記載」）= 真因不明のまま記録止まり
 
 > **注**: TSB-002, TSB-003, TSB-008 はファイル不在時の記載漏れ。発見次第追記。
