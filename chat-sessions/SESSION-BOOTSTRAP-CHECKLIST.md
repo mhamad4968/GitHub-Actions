@@ -2,7 +2,7 @@
 
 > **目的**: 経緯・「法律」に相当する制約・ルール・備わっている機能・MCP を **読み飛ばさず** 再確認し、浜田が気づかないまま **逆方向に進む事故** を防ぐ。  
 > **憲法**: **開発は AI・確認は浜田**（`AGENTS.md` §35-1 / §56-1a）。本リストは **AI が実行・報告**する（浜田に全文チェックを押し付けない）。  
-> **浜田運用の最優先**: `C:\Users\mhamada202408224\Desktop\AI緊急用\` の `.txt`。本ファイルを更新したコミットでは **`npm run session-starter:sync-desktop`** を同一ターンで実行し、`SESSION-BOOTSTRAP-CHECKLIST.txt` を必ず揃える（`/mnt/c` が無いときだけスキップ＋チャット 1 行）。
+> **浜田運用の最優先**: `C:\Users\mhamada202408224\Desktop\AI緊急用\` の **儀式用 `.txt`**（`NEW-SESSION-STARTER_yyyymmdd.txt` / `SESSION-BOOTSTRAP-CHECKLIST.txt` / `HANDOFF-HUMAN.txt` / **`README.txt`**）。本ファイルを更新したコミットでは **`npm run session-starter:sync-desktop`** を同一ターンで実行し、上記を必ず揃える（`/mnt/c` が無いときだけスキップ＋チャット 1 行）。
 
 ---
 
@@ -12,13 +12,23 @@
 
 ---
 
+## 日終わり（推奨・2026-04-26 追補）
+
+> 正本: `chat-sessions/checkpoint-latest.md`「**日終わり（推奨）**」。
+
+- [ ] **`npm run session-starter:sync-desktop`**（`NEW-SESSION-STARTER_yyyymmdd.txt` + `SESSION-BOOTSTRAP` + `HANDOFF-HUMAN` + **`README.txt`**）
+- [ ] **`npm run verify:desktop-ai-emergency-sync`**（成功時 **貼付推奨**行まで確認。チャットに 1 行要約してよい）
+- [ ] 時間があれば **`npm run session:bootstrap`** まで
+
+---
+
 ## セッション切替の推奨フロー（浜田運用・2026-04-26 追補）
 
 > 正本: `chat-sessions/checkpoint-latest.md`「セッション切替後の自律復元」**項番 -1 / -0 / 0**。
 
 | 順 | 誰 | すること |
 |---|-----|----------|
-| **-1** | **浜田** | 新チャット **1 通目**に **`AI緊急用\NEW-SESSION-STARTER_yyyymmdd.txt`（同日は枝番最大が最新）** の **全文**を貼る（任意だが **強く推奨**）。続けて `HANDOFF-HUMAN.txt` 5 行でも可。 |
+| **-1** | **浜田** | 新チャット **1 通目**に **`AI緊急用\NEW-SESSION-STARTER_yyyymmdd.txt`（JST・常にこの 1 ファイル名）** の **全文**を貼る（任意だが **強く推奨**）。**貼付推奨**は verify の最終行。続けて `HANDOFF-HUMAN.txt` 5 行でも可。 |
 | **-0** | **浜田＋AI** | AI: ティア宣言＋スターター受領＋**次に着手すること**を **§41 一問だけ**確認。**浜田 OK が出るまで項番 0（verify/bootstrap）に着手しない**。 |
 | **0** | **AI** | **`npm run session:bootstrap`**（内包順: `verify:constitution-handoff` → **`session-starter:sync-desktop`**（`C:\Users\mhamada202408224\Desktop\AI緊急用` 都度メンテ）→ **`verify:desktop-ai-emergency-sync`**（バイト一致）→ `smoke:quiet`）。激短のみ verify だけは非推奨。 |
 
@@ -146,7 +156,7 @@ AI は上記を終えたら **このターン内**で、次を **箇条書きで
 1. **経緯**: checkpoint 最終更新 1 行の要約 + handoff から続くか  
 2. **憲法**: §35-1 / §56-1a を再確認したこと  
 3. **session:bootstrap**: ok / warn / ng（ng ならどれか）  
-3b. **Desktop AI緊急用**: `verify:desktop-ai-emergency-sync` が **OK 全行**か **SKIP（フォルダ無し）**かを 1 行（セッション切替のメンテ確認）  
+3b. **Desktop AI緊急用**: `verify:desktop-ai-emergency-sync` が **OK 全行**か **SKIP（フォルダ無し）**かを 1 行（セッション切替のメンテ確認）。**成功時は最終行の `貼付推奨（項番-1）:` をそのままチャットに貼ってよい**（案 D）  
 4. **MCP**: health-check 上の active / 注意（1 行）  
 5. **次の 1 手**: 何をするか（Tier B なら GO 待ちと明記）  
 6. **新・PC台帳を触る場合**: フェーズ **1b-C テンプレ**を貼ったうえで **1b 完了**と書く（テンプレ無しの「仕様確認しました」は不可。**未完了なら Tier B に進まない**）  
@@ -163,4 +173,4 @@ AI は上記を終えたら **このターン内**で、次を **箇条書きで
 
 - 新しい「必須検査」が `smoke-test.mjs` に入ったら **本ファイルフェーズ 6 の説明を同期**する。  
 - 新しい永続ドキュが「引き継ぎ必読」になったら **フェーズ 1–2 の表に 1 行追加**する。
-- **`NEW-SESSION-STARTER.md` / 本ファイルを編集して push した AI** は、**同一ターンで `npm run session-starter:sync-desktop` を必須**とし、続けて **`npm run verify:desktop-ai-emergency-sync`** で浜田が開く `AI緊急用\*.txt` をリポと揃えたことを確認する（§57-6）。WSL で `/mnt/c` が無い等のときだけ省略可＋チャットに理由 1 行。
+- **`NEW-SESSION-STARTER.md` / 本ファイルを編集して push した AI** は、**同一ターンで `npm run session-starter:sync-desktop` を必須**とし、続けて **`npm run verify:desktop-ai-emergency-sync`** で浜田が開く `AI緊急用\`（`NEW-SESSION-STARTER_yyyymmdd.txt` / `README.txt` 等）をリポと揃えたことを確認する（§57-6）。WSL で `/mnt/c` が無い等のときだけ省略可＋チャットに理由 1 行。

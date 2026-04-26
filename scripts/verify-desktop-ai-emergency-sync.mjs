@@ -1,17 +1,17 @@
 #!/usr/bin/env node
 /**
- * 浜田 Desktop「AI緊急用」の .txt がリポ正本（chat-sessions/*.md / .txt）と一致するか検証する。
- * NEW-SESSION-STARTER は `NEW-SESSION-STARTER_yyyymmdd.txt` または `_yyyymmdd_N.txt` のいずれかが正本と一致すれば OK。
- *
- * - 控えフォルダが無い（WSL 未マウント等）: exit 0（メッセージのみ。CI / 純 Linux でも壊さない）
- * - フォルダはあるが中身がリポと不一致: exit 2（先に `npm run session-starter:sync-desktop` を実行）
- *
- * セッション切替時は checkpoint-latest.md 項番 0 および `session:bootstrap` から呼ばれる想定。
+ * 浜田 Desktop「AI緊急用」の .txt がリポ正本と一致するか検証する。
+ * NEW-SESSION-STARTER: **当日 JST の NEW-SESSION-STARTER_yyyymmdd.txt** のみ正とする（アーカイブ _2… は未検査）。
+ * 成功時、**貼付推奨ファイル名**を 1 行で出す（項番 -1 / 案 D）。
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { starterDesktopMatchesRepo } from './lib/session-starter-desktop.mjs';
+import {
+  getJstYyyymmdd,
+  recommendedStarterPasteFilename,
+  starterCanonicalMatchesRepo,
+} from './lib/session-starter-desktop.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const destDir =
@@ -21,6 +21,7 @@ const destDir =
 const otherFiles = [
   ['chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md', 'SESSION-BOOTSTRAP-CHECKLIST.txt'],
   ['chat-sessions/HANDOFF-HUMAN.txt', 'HANDOFF-HUMAN.txt'],
+  ['chat-sessions/AI緊急用-README.txt', 'README.txt'],
 ];
 
 function main() {
@@ -38,6 +39,8 @@ function main() {
   }
 
   let bad = false;
+  const ymd = getJstYyyymmdd();
+  const pasteName = recommendedStarterPasteFilename(ymd);
 
   const starterSrc = path.join(root, 'chat-sessions/NEW-SESSION-STARTER.md');
   if (!fs.existsSync(starterSrc)) {
@@ -45,17 +48,15 @@ function main() {
     bad = true;
   } else {
     const a = fs.readFileSync(starterSrc);
-    const { ok, matched } = starterDesktopMatchesRepo(destDir, a);
-    if (!ok) {
+    const r = starterCanonicalMatchesRepo(destDir, a, ymd);
+    if (!r.ok) {
       console.warn(
-        '[verify-desktop-ai-emergency-sync] NG: Desktop に NEW-SESSION-STARTER_yyyymmdd*.txt で正本と一致する控えが無い\n' +
+        `[verify-desktop-ai-emergency-sync] NG: ${pasteName} が無いか正本と不一致 (${r.reason})\n` +
           '  先に: npm run session-starter:sync-desktop'
       );
       bad = true;
     } else {
-      for (const name of matched) {
-        console.log(`[verify-desktop-ai-emergency-sync] OK ${name} (NEW-SESSION-STARTER 正本一致)`);
-      }
+      console.log(`[verify-desktop-ai-emergency-sync] OK ${pasteName} (NEW-SESSION-STARTER 正本一致)`);
     }
   }
 
@@ -89,6 +90,7 @@ function main() {
     process.exit(2);
   }
   console.log('[verify-desktop-ai-emergency-sync] ✅ 全ファイル一致（AI緊急用メンテ確認済）');
+  console.log(`[verify-desktop-ai-emergency-sync] 貼付推奨（項番-1）: ${pasteName}`);
   process.exit(0);
 }
 

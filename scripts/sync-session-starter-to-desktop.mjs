@@ -1,20 +1,15 @@
 #!/usr/bin/env node
 /**
  * リポの儀式ファイルを Windows Desktop「AI緊急用」へコピーする。
- * NEW-SESSION-STARTER は **メンテ日入りファイル名**（JST `NEW-SESSION-STARTER_yyyymmdd.txt`、同日複数は `_2` 以降）で出力する。
- * 浜田運用ではここが毎回の参照先のため、儀式 MD を編集したターンで必ず実行する想定。
- * セッション切替時は `npm run verify:desktop-ai-emergency-sync` でバイト一致を機械確認する（`session:bootstrap` 内包）。
- * WSL で /mnt/c/... が見える環境でのみ実際に書き込む。無ければスキップ（exit 0）。
- *
- * 既定先: SESSION_STARTER_DESKTOP_DIR または
- *   /mnt/c/Users/mhamada202408224/Desktop/AI緊急用
+ * NEW-SESSION-STARTER は **JST の NEW-SESSION-STARTER_yyyymmdd.txt** に常に同期（内容変更時のみ旧版を _2… に退避）。
+ * README.txt（正本 chat-sessions/AI緊急用-README.txt）も同期する。
  *
  * @see chat-sessions/NEW-SESSION-STARTER.md 冒頭
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { getJstYyyymmdd, pickStarterWritePath } from './lib/session-starter-desktop.mjs';
+import { recommendedStarterPasteFilename, syncStarterToDesktopCanonical } from './lib/session-starter-desktop.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const destDir =
@@ -24,6 +19,7 @@ const destDir =
 const otherFiles = [
   ['chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md', 'SESSION-BOOTSTRAP-CHECKLIST.txt'],
   ['chat-sessions/HANDOFF-HUMAN.txt', 'HANDOFF-HUMAN.txt'],
+  ['chat-sessions/AI緊急用-README.txt', 'README.txt'],
 ];
 
 function main() {
@@ -40,12 +36,14 @@ function main() {
   if (!fs.existsSync(starterSrc)) {
     console.warn('[sync-session-starter-to-desktop] スキップ: 元ファイルなし chat-sessions/NEW-SESSION-STARTER.md');
   } else {
-    const srcBuf = fs.readFileSync(starterSrc);
-    const dest = pickStarterWritePath(destDir, srcBuf);
-    fs.copyFileSync(starterSrc, dest);
-    const ymd = getJstYyyymmdd();
+    const { basePath, archived, ymd } = syncStarterToDesktopCanonical(destDir, starterSrc);
+    const paste = recommendedStarterPasteFilename(ymd);
+    console.log(`[sync-session-starter-to-desktop] OK chat-sessions/NEW-SESSION-STARTER.md -> ${basePath}`);
+    if (archived) {
+      console.log(`[sync-session-starter-to-desktop] アーカイブ退避: -> ${path.join(destDir, archived)}`);
+    }
     console.log(
-      `[sync-session-starter-to-desktop] OK chat-sessions/NEW-SESSION-STARTER.md -> ${dest} (JST メンテ日 ${ymd}、項番 -1 はこのファイル名を開いて全文貼付)`
+      `[sync-session-starter-to-desktop] 貼付推奨（項番-1）: ${paste}（Windows: C:\\Users\\mhamada202408224\\Desktop\\AI緊急用\\${paste}）`
     );
   }
 

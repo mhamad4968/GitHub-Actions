@@ -1,9 +1,10 @@
 /**
- * Desktop「AI緊急用」の NEW-SESSION-STARTER 控えファイル名（メンテ日ベース）。
- * 正本: chat-sessions/NEW-SESSION-STARTER.md 冒頭・checkpoint-latest 項番 -1
+ * Desktop「AI緊急用」の NEW-SESSION-STARTER 控え（メンテ日ベース）。
  *
- * 命名: NEW-SESSION-STARTER_yyyymmdd.txt（JST の日付）
- * 同一日内で内容が変わったら: NEW-SESSION-STARTER_yyyymmdd_2.txt, _3.txt, …
+ * 方針（案 C 確定版）:
+ * - **常に** `NEW-SESSION-STARTER_yyyymmdd.txt`（JST）へ正本を書く＝**貼付推奨もこの 1 名だけ**（案 D）。
+ * - 同日に**内容が変わる** sync のときだけ、上書き前の旧 `yyyymmdd.txt` を **`_2` `_3`…** に退避（枝番＝履歴）。
+ * - `_N` はアーカイブのみ。検証は **当日の yyyymmdd.txt が正本と一致**すれば OK。
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -17,31 +18,46 @@ export function getJstYyyymmdd(now = new Date()) {
 export const STARTER_DESKTOP_RE = /^NEW-SESSION-STARTER_(\d{8})(?:_(\d+))?\.txt$/;
 
 /**
- * 次に書き込む Desktop パス（同一内容なら既存ファイルを上書きするパスを返す）。
+ * 次に使うアーカイブファイル名（`NEW-SESSION-STARTER_${d}_N.txt`、N>=2）。
  * @param {string} destDir
- * @param {Buffer} srcBuf
+ * @param {string} d yyyymmdd
  */
-export function pickStarterWritePath(destDir, srcBuf) {
-  const d = getJstYyyymmdd();
-  const base = path.join(destDir, `NEW-SESSION-STARTER_${d}.txt`);
-  if (!fs.existsSync(base)) {
-    return base;
-  }
-  if (fs.readFileSync(base).equals(srcBuf)) {
-    return base;
-  }
+export function nextStarterArchiveFilename(destDir, d) {
   let k = 2;
-  while (k < 1000) {
-    const p = path.join(destDir, `NEW-SESSION-STARTER_${d}_${k}.txt`);
-    if (!fs.existsSync(p)) {
-      return p;
-    }
-    if (fs.readFileSync(p).equals(srcBuf)) {
-      return p;
+  while (k < 100000) {
+    const name = `NEW-SESSION-STARTER_${d}_${k}.txt`;
+    if (!fs.existsSync(path.join(destDir, name))) {
+      return name;
     }
     k += 1;
   }
-  throw new Error('[session-starter-desktop] 枝番が上限に達しました');
+  throw new Error('[session-starter-desktop] アーカイブ枝番が上限に達しました');
+}
+
+/**
+ * 正本 MD を Desktop の **当日 canonical** へ同期。内容変更時は旧 canonical をアーカイブ。
+ * @param {string} destDir
+ * @param {string} srcPath リポの NEW-SESSION-STARTER.md 絶対パス
+ * @returns {{ basePath: string, archived: string | null, ymd: string }}
+ */
+export function syncStarterToDesktopCanonical(destDir, srcPath) {
+  const ymd = getJstYyyymmdd();
+  const basePath = path.join(destDir, `NEW-SESSION-STARTER_${ymd}.txt`);
+  const srcBuf = fs.readFileSync(srcPath);
+
+  let archived = null;
+  if (fs.existsSync(basePath)) {
+    const prev = fs.readFileSync(basePath);
+    if (!prev.equals(srcBuf)) {
+      const arcName = nextStarterArchiveFilename(destDir, ymd);
+      const arcPath = path.join(destDir, arcName);
+      fs.copyFileSync(basePath, arcPath);
+      archived = arcName;
+    }
+  }
+
+  fs.copyFileSync(srcPath, basePath);
+  return { basePath, archived, ymd };
 }
 
 /**
@@ -56,49 +72,36 @@ export function listStarterDesktopFiles(destDir) {
 }
 
 /**
- * リポ正本とバイト一致する控えが 1 つ以上あるか。
- * @param {string} destDir
- * @param {Buffer} srcBuf
- * @returns {{ ok: boolean, matched: string[] }}
+ * 指定 JST 日の **canonical** パス（ファイルが無ければ null）。
  */
-/**
- * 指定 JST 日の控えのうち、枝番が最大のファイルの絶対パス（無ければ null）。
- * @param {string} destDir
- * @param {string} [ymd] getJstYyyymmdd() 形式
- */
-export function pickLatestStarterDesktopPathForDate(destDir, ymd = getJstYyyymmdd()) {
-  const names = listStarterDesktopFiles(destDir).filter((n) => {
-    const m = n.match(STARTER_DESKTOP_RE);
-    return m && m[1] === ymd;
-  });
-  if (names.length === 0) {
-    return null;
-  }
-  let bestName = names[0];
-  let bestBranch = 0;
-  for (const n of names) {
-    const m = n.match(STARTER_DESKTOP_RE);
-    const branch = m[2] ? parseInt(m[2], 10) : 1;
-    if (branch > bestBranch) {
-      bestBranch = branch;
-      bestName = n;
-    }
-  }
-  return path.join(destDir, bestName);
+export function starterCanonicalPath(destDir, ymd = getJstYyyymmdd()) {
+  const p = path.join(destDir, `NEW-SESSION-STARTER_${ymd}.txt`);
+  return fs.existsSync(p) ? p : null;
 }
 
-export function starterDesktopMatchesRepo(destDir, srcBuf) {
-  const names = listStarterDesktopFiles(destDir);
-  const matched = [];
-  for (const name of names) {
-    const p = path.join(destDir, name);
-    try {
-      if (fs.readFileSync(p).equals(srcBuf)) {
-        matched.push(name);
-      }
-    } catch {
-      /* ignore */
-    }
+/** 項番 -1 用のファイル名（当日 JST） */
+export function recommendedStarterPasteFilename(ymd = getJstYyyymmdd()) {
+  return `NEW-SESSION-STARTER_${ymd}.txt`;
+}
+
+/**
+ * @deprecated 互換: evening-reflect 等。canonical のみ返す。
+ */
+export function pickLatestStarterDesktopPathForDate(destDir, ymd = getJstYyyymmdd()) {
+  return starterCanonicalPath(destDir, ymd);
+}
+
+/**
+ * 当日 canonical が正本と一致するか（アーカイブは検証しない）。
+ */
+export function starterCanonicalMatchesRepo(destDir, srcBuf, ymd = getJstYyyymmdd()) {
+  const p = path.join(destDir, `NEW-SESSION-STARTER_${ymd}.txt`);
+  if (!fs.existsSync(p)) {
+    return { ok: false, path: p, reason: 'missing' };
   }
-  return { ok: matched.length > 0, matched };
+  const disk = fs.readFileSync(p);
+  if (!disk.equals(srcBuf)) {
+    return { ok: false, path: p, reason: 'mismatch' };
+  }
+  return { ok: true, path: p };
 }

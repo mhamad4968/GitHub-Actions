@@ -63,6 +63,8 @@ const suites = [
       '[§1-2-3 ティア判定',
       'verify-desktop-ai-emergency-sync',
       '3b.',
+      '貼付推奨',
+      '日終わり',
     ],
   },
   {
@@ -108,6 +110,9 @@ const suites = [
       '項番 0.9',
       'OK が返るまで',
       '着手しない',
+      '貼付推奨',
+      '日終わり',
+      'README.txt',
     ],
   },
 ];

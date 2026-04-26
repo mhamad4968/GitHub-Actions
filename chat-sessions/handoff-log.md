@@ -49,7 +49,7 @@ AI は、セッション切替・終了・浜田さんがそのテンプレを�
 
 **AI 補足（漏れ防止）**:
 - `git`: 本ブロック追記後に commit 予定（未コミット）
-- `次の1手`: 浜田: **Desktop の NEW-SESSION-STARTER_yyyymmdd.txt（同日は枝番最大）を開き直す**（`npm run session-starter:sync-desktop` 済前提）／明日: PC 台帳（Day5 予定）のみ
+- `次の1手`: 浜田: **Desktop の NEW-SESSION-STARTER_yyyymmdd.txt（JST・canonical）を開き直す**（`npm run session-starter:sync-desktop` 済前提）／明日: PC 台帳（Day5 予定）のみ
 - `GO待ち`: なし
 - `session-lock`: なし
 - `関連パス`:

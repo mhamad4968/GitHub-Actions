@@ -6,7 +6,7 @@
 AI がゼロから今までの文脈を完全復元する。
 
 正本: kintone-ai-lab/chat-sessions/NEW-SESSION-STARTER.md
-控え: C:\Users\mhamada202408224\Desktop\AI緊急用\NEW-SESSION-STARTER_yyyymmdd.txt（JST メンテ日・同日は枝番最大が最新）
+控え: C:\Users\mhamada202408224\Desktop\AI緊急用\NEW-SESSION-STARTER_yyyymmdd.txt（JST・canonical。貼付推奨は verify 最終行）
 
 v2 (2026-04-19) からの主な強化:
 - 主タスク: SKYSEA → 新・PC 台帳 ver.1 (4/24 環境設定マスタ Day 1)

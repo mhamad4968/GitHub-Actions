@@ -18,13 +18,13 @@
 
 **新チャット初手（実行順・上から）**:
 
-**項番 -1（人間・強く推奨）**: 新チャットの **ユーザー最初の 1 メッセージ** に、Desktop の **`NEW-SESSION-STARTER_yyyymmdd.txt` 全文**（**JST のメンテ日**＝ファイル名の 8 桁。同日に複数ある場合は **枝番 `_2` `_3`… が付いたもの**のうち **いちばん大きい枝番**＝最新控え）を **そのまま貼る**（= リポ `chat-sessions/NEW-SESSION-STARTER.md` の **■ フル版**と同内容）。直近の sync が書いたファイル名は **`npm run session-starter:sync-desktop` のログ 1 行**でも確認できる。🚨憲法ブロック・`@` 参照リスト・bootstrap 手順が一括で入り、**要約脱落に強い**。続けて **`HANDOFF-HUMAN.txt` 5 行**でもよい。
+**項番 -1（人間・強く推奨）**: 新チャットの **ユーザー最初の 1 メッセージ** に、Desktop の **`NEW-SESSION-STARTER_yyyymmdd.txt` 全文**（**JST の日付 8 桁**＝ファイル名にそのまま入る。**常にこの 1 ファイル名だけ**が正本コピー先。同日に内容が変わった sync では旧版が **`_2` `_3`…** に退避するが、**貼るのは常に `yyyymmdd.txt` 側**）を **そのまま貼る**（= リポ `chat-sessions/NEW-SESSION-STARTER.md` の **■ フル版**と同内容）。**貼付推奨**は **`npm run verify:desktop-ai-emergency-sync` の最終行**（または `session-starter:sync-desktop` の「貼付推奨」行）でも確認できる。🚨憲法ブロック・`@` 参照リスト・bootstrap 手順が一括で入り、**要約脱落に強い**。続けて **`HANDOFF-HUMAN.txt` 5 行**でもよい。
 
 **項番 -0（人間＋AI・合意・1 往復・開始ゲート）**: AI は **先頭に `[§1-2-3 ティア判定: …]`** を付け、スターター **受領**を一言言い、`checkpoint` 最終更新＋`handoff` 末尾＋`HANDOFF-HUMAN` の **「次にやる1つ」** を要約して **「本日の本題（これから着手する次の一手）は ○○で合っていますか？」と §41 一問だけ**浜田へ確認する。**浜田から OK が返るまで**（「はい」「OK」「進めて」または **1 行の修正指示**で合意が取れた状態）、**項番 0（`verify` / `session:bootstrap` / 以降の Read 連鎖・本題の実行）に着手しない**。OK のあと **項番 0** へ進む。
 
 0. **光速ガード（項番 0 / Read より前・必須・AI）**（`npm run session:bootstrap` も **同じ順**を内包）:
    - **0a 憲法ガード**: リポルートで **`npm run verify:constitution-handoff`** → **exit 0**（TSB-024 物理ガード）。**ng のまま Read・Tier B・本題に進まない**（憲法ドキュ修復のみ）。
-   - **0b Desktop「AI緊急用」都度メンテ（浜田指示）**: 浜田が毎回開く **`C:\Users\mhamada202408224\Desktop\AI緊急用`**（WSL: `/mnt/c/Users/mhamada202408224/Desktop/AI緊急用`）を、**セッション切替のたびに AI がメンテ済みか確認する**。手順: **`npm run session-starter:sync-desktop`**（`.txt` 3 本をリポ正本へコピー）→ 続けて **`npm run verify:desktop-ai-emergency-sync`**（フォルダがある環境では **バイト一致**で機械確認）。**控えフォルダが無い**ときは verify が SKIP のみ → チャットに **「AI緊急用は未照合（/mnt/c なし等）」と 1 行**（環境復帰後に sync + verify を再実行）。
+   - **0b Desktop「AI緊急用」都度メンテ（浜田指示）**: 浜田が毎回開く **`C:\Users\mhamada202408224\Desktop\AI緊急用`**（WSL: `/mnt/c/Users/mhamada202408224/Desktop/AI緊急用`）を、**セッション切替のたびに AI がメンテ済みか確認する**。手順: **`npm run session-starter:sync-desktop`**（`NEW-SESSION-STARTER_yyyymmdd.txt` + `SESSION-BOOTSTRAP` + `HANDOFF-HUMAN` + **`README.txt`** をリポ正本へコピー）→ 続けて **`npm run verify:desktop-ai-emergency-sync`**（フォルダがある環境では **バイト一致**で機械確認。**貼付推奨ファイル名を最終行に表示**）。**控えフォルダが無い**ときは verify が SKIP のみ → チャットに **「AI緊急用は未照合（/mnt/c なし等）」と 1 行**（環境復帰後に sync + verify を再実行）。
 1. 本ファイル `chat-sessions/checkpoint-latest.md`（先頭〜直近の **最終更新** 1 行）
 2. **`chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` を通読**（経緯・法律相当・ルール・機能・MCP の棚卸し表）
 3. `chat-sessions/NEW-SESSION-STARTER.md` の **冒頭〜最新 v3.x ブロック**（kintone プレビュー／憲法級など）
@@ -41,6 +41,10 @@
 
 **憲法級（変更禁止）**: **開発は AI・確認は浜田**（`AGENTS.md` **§35-1** / **§56-1a**）。逆転しない。
 
+### 日終わり（推奨・案 A）
+
+作業を閉じる前（またはその日の最後の push 直後）に、AI は **`npm run session-starter:sync-desktop` → `npm run verify:desktop-ai-emergency-sync`** を実行し、**貼付推奨行**まで含めて結果をチャットに 1 行要約する（時間があれば **`npm run session:bootstrap`** まで）。浜田は **`README.txt`**（Desktop）でフォルダの意味を再確認できる。
+
 ### 正本主義（PC 台帳 ver.1 フィールド・表示ラベル）
 
 - **仕様の正本**（フィールド設計・説明・浜田認識・コア vs SKYSEA）: `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.2.0 〜 §4.4**（Day4 手順書は運用補助。**実装・ラベル・customize を変える前に仕様書を Read**／手順書・チャットだけで代替しない）。
@@ -56,7 +60,7 @@
 
 ---
 
-**最終更新**: 2026-04-26 (Sun) 深夜 JST — **Desktop スターター命名**: `NEW-SESSION-STARTER_yyyymmdd.txt`（同日複数は `_2` 以降）。sync ログでファイル名確認。**前回**: 項番 -0 開始ゲート・0.9。
+**最終更新**: 2026-04-26 (Sun) 深夜 JST — **スターター常に `yyyymmdd.txt` へ同期**（変更時のみ旧版を `_2`…退避）**+ verify 最終行に貼付推奨**（案 C/D）**+ README.txt 同期 + 日終わり手順**（案 A/B）。**前回**: 枝番最大を貼る運用。
 
 **前回更新**: 2026-04-26 (Sun) 12:30 — **再開** ✅。**本日 2026-04-26 完了サマリ**: 朝 06:00 ブリーフィング → API 100% 枯渇発覚 → 甲フル実装 (Monthly Limit $300→$1000 / S1-S5 5 措置) → S2 CLAUDE.md 480→73 行 thin 化 (`046ec2d`) → P5-3 Rules/Skills/Subagents 監査 7 件発見 → P5-4 Indexing 監査 3 件発見 → P5-5 Plan&Usage 監査 7 件発見 (F-14 Max Thinking 59.4% 確定) → **R-3** 「最適モデル原則」+ §1-2-3-2 新設 (`92b89d5`) → **R-4 §51-6-2 + R-5 §52-9 新設 + Day 4 時刻 13:00→20:00 + RAG/Desktop 同期 + §52-9 即日 2 件発動** (`01d18e5`) → **P5-1 Hooks 監査 完了** / **P5-2 Tools&MCPs 監査 完了** / **TSB-022 起票 + 恒久案 (docs) + `~/.cursor/hooks/dangerous-shell-blocker.sh` heredoc 本文 strip 実装 + `artifacts/cursor-hooks/dangerous-shell-blocker.sh` スナップショット** ✅。**Day 4 (PC 台帳) は 20:00 開始予定** (浜田指示 / 慎重進行優先)。**文書化コミット**: `b201232`（§0/TSB-022/日次/スターター追記 + hook スナップショット）。**次**: `git push`（**任意** / いま `main` は `origin/main` より ahead 1）→ Day4 は 20:00 開始予定。**並列禁止 §51 100% 遵守 / 不可逆操作ゼロ**。
 
