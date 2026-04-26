@@ -14,10 +14,12 @@
 6. `npm run kintone:test` — **9/9**
 7. `npm run smoke:quiet` — **9/9**
 
-## customize 要点
+## customize 要点（2026-04-28 夕方 方針変更）
 
-- `kintone.getLoginUser().code` が `SKYSEA_ALLOWED_LOGIN_CODES`（既定: `mhamada202408224`）に **完全一致**する場合のみ、グループ＋子を表示。それ以外は `setFieldShown(false)`。
-- 浜田表示時はグループ初期閉、子は編集可（SKYSEA 運用のため）。
+- **当初**: ログイン allowlist で浜田のみ表示（`BUILD=v0.1`）。
+- **現在**: アカウント部寄りのため **権限のあるユーザーは全員表示・編集可**（`BUILD=v0.2`）。**運用で触るのは浜田のみ**は **周知**で担保。
+
+- グループは初期閉（`setGroupFieldOpen(..., false)`）。
 
 ## リポ
 

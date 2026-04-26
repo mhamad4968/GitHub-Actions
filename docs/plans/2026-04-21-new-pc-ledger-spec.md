@@ -228,9 +228,9 @@ PC レコード保存・廃棄時:
 | フィールド code | 役割 | UI 方針 |
 |---|---|---|
 | `skysea_system_meta` | kintone **標準のフィールドグループ**（ラベル **SKYSEA処理用**） | `properties` で `type: GROUP` / `openGroup: false`。レイアウト API で **`skysea_status` / `skysea_checked_at` / `skysea_install_log` / `skysea_target_flag`** を **このグループ内に配置**（リポ: `npm run pc-ledger:674:layout-skysea-group`）。フィールド追加は `npm run pc-ledger:674:add-skysea-group-preview`（Tier B） |
-| skysea_status ほか 4 件 | §4.2.3 の SKYSEA 施策用メタ | グループ内に配置。**閉じた状態を維持**（`setGroupFieldOpen('skysea_system_meta', false)`）。**画面上の閲覧・編集**は customize で **浜田本人の Cybozu ログイン名（`kintone.getLoginUser().code`）に一致する場合のみ** グループ＋子を表示し、それ以外のユーザーでは **フォーム上は非表示**（`setFieldShown`） |
+| skysea_status ほか 4 件 | §4.2.3 の SKYSEA 施策用メタ（**アカウント部の管轄に近い領域**） | グループ内に配置。**閉じた状態を維持**（`setGroupFieldOpen('skysea_system_meta', false)`）。**編集権限**はアプリの閲覧・編集権を持つユーザーに従う（技術的には編集可）。**運用ルール**として「日々触るのは浜田のみ」と **周知**する（customize ではログインによる非表示は行わない） |
 
-**注（限界）**: 上記の非表示は **ブラウザ上の UI** のみ。**REST API や CSV エクスポート**では権限の範囲で値が参照される。**完全秘匿**が必要ならアプリ権限設計や別保管を検討する。
+**注**: 値の参照範囲は **アプリ権限・API・CSV エクスポート**に依存する。運用の取り決めと権限設計を併せて管理する。
 
 #### 4.2.4 M365 リンク参照（自動更新）
 | code | type | 内容 |

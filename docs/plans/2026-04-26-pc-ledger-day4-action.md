@@ -159,7 +159,7 @@
 
 | # | code | type | required | unique | 備考 |
 |---|---|---|---|---|---|
-| 44 | `skysea_system_meta` | GROUP | false | - | 表示名=**SKYSEA処理用** / `openGroup` 既定 **false** / レイアウトで **skysea_status・skysea_checked_at・skysea_install_log・skysea_target_flag** を本グループ内に収容（`npm run pc-ledger:674:add-skysea-group-preview` → `npm run pc-ledger:674:layout-skysea-group`）/ customize で **浜田以外はフォーム非表示**（§4.2.3a） |
+| 44 | `skysea_system_meta` | GROUP | false | - | 表示名=**SKYSEA処理用** / `openGroup` 既定 **false** / レイアウトで **skysea_status・skysea_checked_at・skysea_install_log・skysea_target_flag** を本グループ内に収容（`npm run pc-ledger:674:add-skysea-group-preview` → `npm run pc-ledger:674:layout-skysea-group`）/ customize は **初期閉＋全員編集可**、運上は浜田のみ周知（§4.2.3a） |
 
 **合計**: 44 フィールド（594 相当 HW 7 + 内部メタ GROUP 1 + SKYSEA GROUP 1）
 

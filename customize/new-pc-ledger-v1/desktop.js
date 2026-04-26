@@ -4,12 +4,12 @@
  * 仕様: docs/plans/2026-04-21-new-pc-ledger-spec.md v2.1 §4
  * Day 4 plan: docs/plans/2026-04-26-pc-ledger-day4-action.md
  *
- * BUILD: 2026-04-28-skysea-group-ui-v0.1 (§4.2.1a 内部 GROUP + §4.2.3a SKYSEA GROUP 初期閉・浜田のみ表示)
+ * BUILD: 2026-04-28-skysea-group-ui-v0.2 (§4.2.1a 内部 GROUP + §4.2.3a SKYSEA GROUP 初期閉・全員編集可／運上は浜田のみ周知)
  *
  * Day 4 雛形スコープ:
  *   - 種別 (account_type) による表示制御 (show/hide)
  *   - §4.2.1a: 内部メタは kintone 標準グループ `internal_system_meta` に収容（レイアウトは `npm run pc-ledger:674:layout-internal-group`）。表示時はグループを閉じる・新規・編集では子を disabled
- *   - §4.2.3a: SKYSEA 4 件は `skysea_system_meta`（表示名 SKYSEA処理用）に収容（`pc-ledger:674:add-skysea-group-preview` → `pc-ledger:674:layout-skysea-group`）。**浜田以外**はフォーム上でグループ＋子を非表示。浜田のみ閉じた初期表示・編集可
+ *   - §4.2.3a: SKYSEA 4 件は `skysea_system_meta`（表示名 SKYSEA処理用）に収容。アカウント部領域のため **権限のあるユーザーは編集可能**。運用で触るのは浜田のみと **周知**（customize ではログインによる非表示はしない）。通常はグループを閉じた初期表示
  *   - 自動生成ボタン雛形 (クリックで alert "Day 5 で実装")
  *   - 5 台ライセンス警告雛形 (赤バナーは仕組みのみ)
  *   - リセット/PC買替/印刷ボタン雛形
@@ -25,7 +25,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-04-28-skysea-group-ui-v0.1';
+  const BUILD = '2026-04-28-skysea-group-ui-v0.2';
 
   // ===== 関連アプリ ID (kintone-apps.md 参照) =====
   const APP_ENV_MASTER = '670';     // 環境設定マスタ
@@ -85,11 +85,6 @@
     FC_SKYSEA_INSTALL_LOG,
     FC_SKYSEA_TARGET_FLAG,
   ];
-  /**
-   * SKYSEA ブロックを **画面上** 見せる Cybozu ログイン名（`kintone.getLoginUser().code` と完全一致）。
-   * 別アカウント（例: メール形式の code）でログインする場合はこの Set に追加する。
-   */
-  const SKYSEA_ALLOWED_LOGIN_CODES = new Set(['mhamada202408224']);
 
   // ===== 種別 (account_type) のオプション =====
   const TYPE_PERSONAL = '個人';
@@ -154,24 +149,13 @@
     }
   }
 
-  function isSkyseaPrivilegedUser() {
-    try {
-      const code = String(kintone.getLoginUser()?.code || '');
-      return code !== '' && SKYSEA_ALLOWED_LOGIN_CODES.has(code);
-    } catch (e) {
-      return false;
-    }
-  }
-
   /**
-   * §4.2.3a: SKYSEA は `skysea_system_meta` に収容。浜田のみグループ＋子を表示し初期は閉じる。
-   * 浜田以外は setFieldShown(false)（API・エクスポートは正本注記どおり別途考慮）。
+   * §4.2.3a: SKYSEA は `skysea_system_meta` に収容。全員表示・編集可（運上は浜田のみが触る旨を周知）。
+   * 子は setFieldShown で隠さない。通常は畳んだまま（setGroupFieldOpen false）。
    */
   function applySkyseaGroupUi(record, mode) {
-    const show = isSkyseaPrivilegedUser();
     const skyseaCodes = [FC_SKYSEA_GROUP, ...SKYSEA_CHILD_CODES];
-    setFieldsVisibility(skyseaCodes, show);
-    if (!show) return;
+    setFieldsVisibility(skyseaCodes, true);
     try {
       kintone.app.record.setGroupFieldOpen(FC_SKYSEA_GROUP, false);
     } catch (e) {

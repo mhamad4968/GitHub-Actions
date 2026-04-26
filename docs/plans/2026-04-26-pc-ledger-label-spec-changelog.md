@@ -69,14 +69,21 @@
 | **npm** | `pc-ledger:674:layout-internal-group`（プレビュー layout PUT + deploy）／断片 JSON `pc-ledger-674-add-internal-group-properties.json` |
 | **customize** | `setGroupFieldOpen(..., false)` + 子 5 件 `disabled`（`BUILD=2026-04-28-internal-group-ui-v0.2`） |
 
-### 2026-04-28（追記）— SKYSEA 4 件を標準 GROUP「SKYSEA処理用」+ 浜田のみ表示
+### 2026-04-28（追記）— SKYSEA 4 件を標準 GROUP「SKYSEA処理用」
 
 | 種別 | 内容 |
 |---|---|
-| **正本** | §4.2.3a 新設。`skysea_system_meta`（`GROUP`）で `skysea_*` 4 件を収容。浜田以外は **フォーム上は非表示**（API 限界は §4.2.3a 注と同型） |
+| **正本** | §4.2.3a 新設。`skysea_system_meta`（`GROUP`）で `skysea_*` 4 件を収容 |
 | **表示** | `skysea_system_meta` の短文ラベル **SKYSEA処理用**（`pc-ledger-v1-ui-display-labels.json`／拡張 JSON に code 追加） |
 | **npm** | `pc-ledger:674:add-skysea-group-preview` → `pc-ledger:674:layout-skysea-group` |
-| **customize** | `SKYSEA_ALLOWED_LOGIN_CODES`（既定: Cybozu `code` = `mhamada202408224`）に一致する場合のみグループ＋子を表示。初期は `setGroupFieldOpen(..., false)`。浜田の新規・編集では子は **編集可**（`BUILD=2026-04-28-skysea-group-ui-v0.1`） |
+
+### 2026-04-28（追記2）— SKYSEA ブロックは周知ベース（全員表示・編集可）
+
+| 種別 | 内容 |
+|---|---|
+| **方針** | アカウント部寄りの項目のため **権限のあるユーザーは編集可能**とし、**運用で触るのは浜田のみ**は **周知**で担保（customize のログイン非表示を撤廃） |
+| **正本** | §4.2.3a の UI 方針を上記に合わせて更新 |
+| **customize** | `BUILD=2026-04-28-skysea-group-ui-v0.2` — 全員 `setFieldShown` 表示、初期閉、新規・編集で子は編集可 |
 
 ### 2026-04-28 — 594 相当 HW 属性 7 項目 + `pc_serial_no` / `serial` ラベル明確化
 
