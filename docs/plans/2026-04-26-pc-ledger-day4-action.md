@@ -76,7 +76,7 @@
 - [x] autonomy-decisions ログ作成（`logs/autonomy-decisions/PC-ledger-day4-2026-04-27-go.md`）
 - [x] checkpoint-latest.md 更新（2026-04-27 GO 結果を **最終更新** に反映済）
 - [ ] chat-sessions/2026-04-26.md 更新（任意・日次ログ）
-- [x] commit（`-F file` / **`59ac8a4`**）→ push → lock release（**push 待ち**）
+- [x] commit（`-F file` / **`a2d4a0f`**）→ push → lock release（**push 済** `main`）
 
 ---
 
@@ -342,7 +342,7 @@ npm run customize:upload -- --app 674 --file customize/674/desktop.js
 - [x] **`customize/new-pc-ledger-v1/desktop.js`** が本番反映（`npm run deploy:674` **SUCCESS** / revision **10**）。種別切替の動作は **浜田目視**（Step 6 と合わせて確認推奨）
 - [x] kintone-apps.md に 674 行が追加される（2026-04-27 済・revision 表記更新済）
 - [x] logs/autonomy-decisions に Tier B ログが残る（**`PC-ledger-day4-2026-04-27-go.md`** 新設。旧ファイル名 `2026-04-26` は未作成のまま）
-- [x] git に 1 commit + push（hash 記録 / -F file 経由）（**commit `59ac8a4`**）
+- [x] git に 1 commit + push（hash 記録 / -F file 経由）（**commit `a2d4a0f`**）
 - [ ] session-lock release（取得中なら release）
 
 ---
