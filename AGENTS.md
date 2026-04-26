@@ -61,22 +61,37 @@ flowchart TD
 ### §1 役割
 AI エージェントはビジネス・エンジニアリングの共同責任者として、意思決定の質と実行速度を最大化する。
 
-### §1-2 モデル前提（単一モデル / Opus 4.7）
+### §1-2 モデル前提（最適モデル原則 / Opus 4.7 デフォルト枠）
 
-**2026-04-25 制定（浜田指示: Opus 4.7 のみで動かす状態へ戻す）**
+**2026-04-26 改定 (P5-5 / 浜田指示「使うモデルは一番最適な方法で行ってほしい。絶対にこのモデルを使うというこだわりはしない。適時 AI 側で判断してほしい」)**
 
-1. **既定モデル**: Cursor のチャット・Agent を **Claude Opus 4.7**（UI 表記が `opus-4-7-thinking-xhigh` 等でもよいが、**Opus 系の最高段を 1 本に固定**）に置く。作業セッション中に **Sonnet / 軽量モデル / 他社モデルへ切り替えてタスクを進めない**。
-2. **Task / サブエージェント**: **別モデルを常時起動する用途**（レビュー専用サブエージェント等）は行わない。§51（1 タスク 1 操作）とあわせ、**同一プロジェクト文脈は Opus 4.7 単一ストリーム**で完結させる。
-3. **例外（限定的）**: ① 浜田がチャットで明示した短時間の実験 ② Opus が利用不能な間の**一時**回避のみ。
+**旧 (2026-04-25)**: 「Opus 4.7 単一モデル / 他モデルへの切替禁止」
+**新 (2026-04-26)**: 「**最適モデル原則** / Opus 4.7 はデフォルト枠 / **AI 自律でタスク種別に応じて選択**」
+
+1. **既定モデル**: タスクの性質に応じて **AI が自律的に最適モデルを選択** (§1-2-3-2 / §1-2-3-1 自己宣言義務)。Opus 4.7 (Extra High) はデフォルト枠として Cursor IDE 設定で ON にしておく。
+2. **AI 自律選択の範囲** (浜田事前承認 **不要**):
+   - **Composer 2** … ルーチンタスク (lint 結果整形 / chat-sessions 更新 / commit message 起草 / RAG 同期確認 / 単純なファイル追記 等)
+   - **Opus 4.7 Extra High** … 通常の実装・調査・設計 (= デフォルト枠)
+   - **Opus 4.7 Max Thinking** … §47-A 100% 証明要求 / §57 憲法改定 / 真因究明 / 重大インシデント分析
+3. **AI 自律選択の禁止** (§1-2-2 連動):
+   - Cursor IDE 側の **silent fallback** (`Switched to Composer 2 after reaching API limit.`) は §1-2-2 で **禁止維持** = **AI が事前明示的に選ぶ Composer 2 と区別**
+   - silent fallback 検知時は §1-2-2 の 4 択を必ず提示
+4. **Task / サブエージェント**: 別モデル常時起動（レビュー専用サブエージェント等）は §51 と合わせて行わない。同一プロジェクト文脈は **AI 主導の単一ストリーム** で完結。
+5. **例外（限定的）**: ① 浜田がチャットで明示した短時間の実験 ② Cursor IDE 設定で禁止モデルが ON になっていた場合の一時回避のみ。
+
+**「こだわらない」の意味 (浜田 2026-04-26 指示)**:
+- ❌ 「Opus 4.7 統一」を金科玉条にして、ルーチン作業まで Max Thinking で処理する (= F-13 / F-14 主因)
+- ✅ 「最適性」を優先 = Composer 2 で十分なタスクは Composer 2、複雑判断のみ Max Thinking
+- ✅ AI が **タスク冒頭で §1-2-3-1 ティア判定を宣言** することで、浜田が透明に確認できる
 
 **§1-2-1 環境別の実モデル名（2026-04-25 追記）**
 
 | 環境 | 設定場所 | 選択する実モデル名 | 備考 |
 |---|---|---|---|
-| Cursor IDE（Windows） | チャット欄のモデルピッカー / 設定 → Models | **Opus 4.7 1M Extra High** | 他モデル（Sonnet / GPT / Gemini 等）は **OFF**。 |
+| Cursor IDE（Windows） | チャット欄のモデルピッカー / 設定 → Models | **Opus 4.7 1M Extra High** (デフォルト) + **Opus 4.7 1M Max Thinking** (重い設計用) + **Composer 2** (ルーチン用) | 他モデル（Sonnet / GPT / Gemini / Auto 等）は **OFF**。Composer 2 は §1-2-3-2 で AI 自律選択時のみ使用 (silent fallback とは区別) |
 | Cursor Agent CLI（WSL） | `agent` 起動後 `/model` | **Opus 4.7 1M Max Thinking** | CLI 側に "Extra High" は無いため、最上段の "Max Thinking" を選ぶ。 |
 
-どちらも **Opus 4.7 系の最高段** であり、§1-2 の単一モデル前提を満たす。CLI を使う場合は最新版へ更新してから `/model` を確認する：
+**2026-04-26 改定 (P5-5)**: §1-2 の「最適モデル原則」を満たすため、Cursor IDE では **3 モデル (Extra High / Max Thinking / Composer 2)** を ON にしておく。AI が §1-2-3-2 に従って自律選択し、§1-2-3-1 で都度ティア判定を宣言する。CLI を使う場合は最新版へ更新してから `/model` を確認する：
 
 ```bash
 curl https://cursor.com/install -fsS | bash
@@ -226,6 +241,68 @@ agent
 - ❌ ティア判定を **省略** して作業に入る（= 形骸化の温床 / §1-2-3-1 違反）
 
 **§1-2-2 / §1-2-4 との関係**: §1-2-3 = 通常時のコスト最適化 / §1-2-2 = 枯渇検知時の選択 / §1-2-4 = 予算予測。三本柱で Ultra プラン内に収める。**§1-2-3-1 (自己宣言義務) は §1-2-3 の遵守徹底機構**。
+
+**§1-2-3-2 AI 自律モデル選択原則（2026-04-26 P5-5 追加 / 浜田指示「最適モデル / こだわらない / 適時 AI 判断」)**:
+
+**背景**: 2026-04-26 P5-5 監査で **F-14 (Max Thinking が API 消費の 59.4% / Extra High 40.8% / Composer 2 等 0.6%)** が判明。§1-2-3-1 (自己宣言義務) を制定したが、それだけでは **「Composer 2 を使えるはずのルーチンタスクも Max Thinking で処理する」傾向が残る** ため、本節で **Composer 2 を含む 3 段階自律選択** を正式化。浜田の指示「絶対にこのモデルを使うというこだわりはしない / 適時 AI 側で判断してほしい」を実装する。
+
+**3 段階の自律選択基準** (AI が §1-2-3-1 のティア判定で 1 行宣言):
+
+| ティア | 実モデル名 | 適用条件 (AI 判断基準) | 月コスト目安 |
+|---|---|---|---|
+| **L1: Composer 2** | composer-2 (Cursor 独自) | ① 既知の定型タスク (lint 結果整形 / RAG 同期確認 / chat-sessions 記録更新 / commit message 起草 / 単純ファイル追記 / 朝報整形 / npm script 別名追加) ② 浜田の指示が **2-3 文以下の短いタスク** ③ 創造的判断不要 | 最安 (~1/10) |
+| **L2: Extra High** | claude-opus-4-7-thinking-xhigh | ① 通常の実装・調査・設計 ② kintone Day N の **Tier A 範囲** ③ §57 改定の文章編集 (起案ではない) ④ TSB 整形 | 中 (基準) |
+| **L3: Max Thinking** | claude-opus-4-7-max-thinking | ① §47-A 100% 証明要求 ② §57 改定 **起案** ③ TSB 真因究明 ④ 重大インシデント分析 ⑤ kintone Day N の **Tier B / 不可逆操作前** ⑥ §48 Best Options 起案 ⑦ 複雑な抽象設計 | 高 (~1.5x) |
+
+**判定フロー (AI 思考内 / 1 秒判定)**:
+
+```
+浜田の指示を受領
+  ↓
+1. 「単純な追記 / 整形 / 確認 / 既知定型」か？
+   YES → L1 Composer 2  (例: 「commit して」「ログ確認」)
+   NO ↓
+2. 「Tier B / 100% 証明要求 / 真因究明 / 改定起案」か？
+   YES → L3 Max Thinking (例: 「PC 台帳 Day 4 進めて」「TSB 起票」)
+   NO ↓
+3. デフォルト → L2 Extra High (例: 「実装お願い」「監査して」)
+```
+
+**自律判断の安全弁**:
+
+1. **不可逆操作 (Tier B / kintone API write / git push --force / rm -rf) は L3 Max Thinking 強制** = 浜田の §47-A 100% 証明要求と整合
+2. **判断に迷ったら L3 にフォールバック** ではなく **L2 (Extra High) にフォールバック** (= F-14 防止 / コスト過剰回避)
+3. **Composer 2 → Extra High 昇格**: タスク途中で複雑性発覚 → 「§1-2-3-2 ティア昇格: L1 → L2」と宣言して継続
+4. **silent fallback との区別 (§1-2-2 連動)**: Cursor IDE が裏で `Switched to Composer 2 after reaching API limit.` を出した場合は §1-2-2 で 4 択提示が必要。**AI が事前明示的に Composer 2 を選んだ場合は §1-2-2 対象外** = ティア宣言が両者を区別する証跡
+
+**運用例 (2026-04-26 観察値ベース)**:
+
+| 浜田指示 | 旧 (今朝まで) | 新 (本節適用後) |
+|---|---|---|
+| 「commit して push して」 | L3 Max Thinking | **L1 Composer 2** |
+| 「smoke-test 結果を見せて」 | L3 Max Thinking | **L1 Composer 2** |
+| 「.cursorignore に追記」 | L3 Max Thinking | **L1 Composer 2** |
+| 「P5-5 監査の続き」 | L3 Max Thinking | **L2 Extra High** |
+| 「PC 台帳 Day 4 deploy」 | L3 Max Thinking | **L3 Max Thinking** (維持) |
+| 「§1-2-3 改定起案」 | L3 Max Thinking | **L3 Max Thinking** (維持) |
+
+**期待効果**:
+
+- **Max Thinking 比率 59.4% → 20-30% 想定** (= 重い設計タスク時のみ)
+- **Composer 2 比率 0.6% → 30-40% 想定** (= ルーチンタスク全般)
+- API token 消費 1/2 〜 1/3 (= F-13 / 12 日枯渇 → 30 日以上に延伸見込み)
+
+**反パターン (本節で禁止)**:
+
+- ❌ ルーチンタスクを L3 Max Thinking で処理する (= F-14 主因 / 「最適モデル原則」違反)
+- ❌ 不可逆操作を L1 Composer 2 で処理する (= §47-A 違反)
+- ❌ ティア宣言を省略して作業に入る (= §1-2-3-1 違反 / 浜田の透明性確認権剥奪)
+
+**§1-2-2 との明確な区別**:
+- 本節 (§1-2-3-2) = **AI が事前明示で Composer 2 等を選択** (= 健全な最適化)
+- §1-2-2 = **Cursor IDE が silent fallback で勝手に切替** (= 浜田選択権剥奪 / 4 択提示必須)
+
+ティア宣言で両者を区別する証跡を残すことで、§1-2-2 違反検知の精度も維持する。
 
 ### §1-2-4 クレジット予算管理（2026-04-26 制定 / N-6 / 朝ブリーフィング §0 統合）
 
@@ -1725,6 +1802,8 @@ $ node scripts/parallel-session-detector.mjs --explain # 軸ごとの内訳を�
 - 改訂日: 2026-04-26 08:45（[FEAT] v23.12 / P5-1 / R1: 第18章 §52-8-1「物理 block 層」新設 = TSB-019 構造的根本対策。`~/.cursor/hooks.json` に `beforeShellExecution` フックを追加、`~/.cursor/hooks/dangerous-shell-blocker.sh` で §52-8 deny カテゴリを物理 block (exit 2 + JSON deny)。三層防御アーキテクチャ確定: 第 1 層 AI 自己制約 (§52-8) + 第 2 層 IDE 承認ゲート (§1-2-2-1 #6/#7) + **第 3 層 OS 物理 block (§52-8-1)**。Hooks 自身の改ざん防止も deny pattern に追加で物理層自己保全。設計仕様書 `docs/cursor-hooks-design.md` 新規 (hooks.json 全文 / blocker.sh 全文 / 検証ログ 11 件 / 復旧手順)。検証: 単独テスト 10/10 グリーン + Cursor IDE Shell ツール経由 `rm -rf /tmp/<not-exist>` 実証 = `Rejected: Command execution was blocked by a hook` 確認。残構造的盲点: StrReplace 経由の hooks 改ざんは hook 対象外 → §52-8 第 1 層 AI 自己制約で「hooks 編集前は浜田 GO 必須」を内在化。浜田 P5-1 で R1 GO 取得済。）
 - 改訂日: 2026-04-26 08:55（[FEAT] v23.13 / P5-2 / R2: `.cursorignore` 新設（86 行 / 5 カテゴリ = 秘密情報 + 大量自動生成 + バックアップ + parallel-suspicion + 一時ファイル）。Cursor IDE のセマンティック検索 / @ メンション補完から `.env` / `data/credit-usage.json` / `logs/file-watcher/*.jsonl` / `*.bak` 等を除外。設計方針 = source code/docs/scripts/tests は絶対 ignore しない（浜田指示「インデックス範囲変更で見落としないように」反映）。同時に **§52-8-1 物理 block hook の誤検知 1 件発覚 → 浜田 GO で即修正**: regex `(>|>>|tee)[[:space:]]+.*\.env` の `.* ` が heredoc 本文の `.env` 文字列にマッチ → `[^[:space:]<>&|;]*` で第 1 トークンに制約 + `sed -i` 系も AND 条件で分割。回帰テスト 14/14 グリーン (T2-T15) で誤検知解消 + 既存検知維持を確認。`docs/cursor-hooks-design.md` §11.5 に修正履歴記録。）
 - 改訂日: 2026-04-26 09:55（[FEAT] v23.14 / P5-5: §1-2-3-1「AI 自己宣言義務」新設 + §1-2-4 改定 (3 系統対応 + 80% 警告 + Spending スクショ確認 必須化 + Monthly Limit $130 → $1000 引上げ反映) + §51-6「セッション分割推奨」新設。発端 = P5-5 (Plan & Usage タブ監査) で 3 重大発見: F-11 (Cursor IDE 側に 70/85/95% 警告 UI なし → AI 側で完全カバー必須) + F-12 (On-Demand $235.94/$300 で残 20 日 = 4/29-5/3 突破見込み → 浜田 GO で $1000 引上げ + S1-S5 節約パッケージ全実施) + F-13 (API token 16.7M を 12 日完全枯渇 = TSB-018 根本原因 / §1-2-3 形骸化)。改定: §1-2-3-1 = タスク冒頭で AI が `[§1-2-3 ティア判定: Extra High/Max Thinking]` を 1 行宣言義務化 (= 形骸化対策)。§1-2-4 = 月次予算表 $200+$1000 (Worst $1200/¥186,000 / 節約後見込 $430-500/¥66,000-78,000) + 朝の Spending スクショ抽出 4 値 (Total% / API% / On-Demand $ / Monthly Limit) + 3 系統閾値 (70/80/85/95%) + API 系統 100% 単独到達時の特例 (Composer 2 fallback トリガ = §1-2-2 検知挙動連動)。§51-6 = session 朝 (06-10) / 昼 (12:30-17) / 夜 (19-22) 区切り推奨 + 4h/200 tool call で AI 提案 + PC 台帳など不可逆操作直前は必ず新セッション + §51-3 並列禁止と補完関係 (時間軸分割は推奨)。TSB-021 候補起票: credit-budget.mjs に On-Demand 取得機能追加 (Day 5-6)。logs/autonomy-decisions/P5-5-plan-usage-2026-04-26.md 記録。S1-S5 節約パッケージ = S1 (ルーチン Composer 2 許容) + S2 (CLAUDE.md 整理) + S3 (Extra High 既定徹底) + S4 (session 区切り) + S5 (.cursorignore 強化)。）
+- 改訂日: 2026-04-26 10:13（[FEAT] v23.15 / S2 / B+: CLAUDE.md thin 化 (480 行 / 54.6 KB → 73 行 / 4.15 KB / **92.4% 削減**) + `.cursorignore` に CLAUDE.md 追加 (Cursor index 完全遮断)。発端 = P5-5 / F-13 (API 12 日枯渇) 教訓で AI 推奨 B+ を浜田承認。CLAUDE.md は元々 Claude Code (ターミナル CLI) 用だが Cursor Composer はそもそも本ファイルを読まず AGENTS.md を正本とする → semantic search で引かれると 1 ヒット ~13K tokens 浪費 → AGENTS.md に主要内容統合済を理由に thin 化 (旧版自己保護条項 line 176「統合後に箇条書きで復元できる粒度を維持」準拠)。残置内容 = Cursor/Claude Code 利用判断 + Implementation Starter コピペ + Schema Retrieval Priority Strict + 行末コード保持原則 (TSB-018 教訓) + 黄金のサイクル 4 ステップ骨子 + 関連ファイル索引。削除内容は全て AGENTS.md §X-Y 参照リンクへ置換。旧版復元 = `git log --follow CLAUDE.md` から commit 046ec2d 以前を取得可能。検証: smoke-test 8/8 グリーン (37s) / verify:breaking 396ms pass (削除検知ガードもクリア) / scripts (health-check / wipe-guard / verify-breaking / file-watcher) 全て健全。削減効果見込: 1 セッション ~13K → ~700 tokens (94%) / 月 ~369K tokens 節約。commit `046ec2d` でリリース。）
+- 改訂日: 2026-04-26 10:30（[FEAT] v23.16 / R-3 / P5-5 後続: §1-2 改定「単一モデル」→「**最適モデル原則 / Opus 4.7 デフォルト枠**」+ §1-2-3-2 新設「**AI 自律モデル選択原則**」(3 段階 L1 Composer 2 / L2 Extra High / L3 Max Thinking)。発端 = 浜田 10:22 指示「使うモデルは一番最適な方法で行ってほしい。絶対にこのモデルを使うというこだわりはしない。適時 AI 側で判断してほしい」+ Billing スクショで F-14 確定 (Max Thinking が API 消費の 59.4% / Extra High 40.8% / Composer 2 等 0.6% = §1-2-3-1 自己宣言だけでは抑制不足)。改定: (1) §1-2 = 「Opus 統一」を旧 / 「最適モデル」を新と明記 + 「こだわらない」の意味を 3 行で具体化。 (2) §1-2-1 = 表に Composer 2 を Cursor IDE 側で ON する旨追記 (silent fallback と区別する根拠としてティア宣言を併用)。 (3) §1-2-3-2 = 3 段階適用条件表 + 1 秒判定フロー (単純→L1 / 不可逆→L3 / 既定→L2) + 安全弁 (不可逆操作は L3 強制 / 迷ったら L2 / 途中昇格 OK / silent fallback とは区別) + 運用例 6 件 (commit→L1 / smoke-test 確認→L1 / .cursorignore 追記→L1 / 監査続き→L2 / Day 4 deploy→L3 / §57 起案→L3) + 期待効果 (Max Thinking 59.4%→20-30% / Composer 2 0.6%→30-40% / token 1/2-1/3) + 反パターン 3 件。RULES-INDEX.md / NEW-SESSION-STARTER.md / CURSOR-トラブル対応メモ.md / .rag/extra-docs / Desktop AI緊急用 同期予定。F-14〜F-16 を P5-5 ログ追記。）
 
 ---
 

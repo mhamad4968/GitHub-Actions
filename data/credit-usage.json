@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "budget_usd_total": 530,
-  "budget_usd_l1_credits": 400,
-  "budget_usd_l2_on_demand_cap": 130,
+  "budget_usd_total": 1200,
+  "budget_usd_l1_credits": 200,
+  "budget_usd_l2_on_demand_cap": 1000,
   "reset_day": 14,
   "current_period_start": "2026-04-14",
   "daily_records": [
     {
       "date": "2026-04-26",
-      "percent": 100,
-      "recorded_at": "2026-04-26T07:16:44.809+09:00",
-      "note": "P1 / 2026-04-26 / JST off-by-one バグ修正前のデータ移行 (元: date=2026-04-25 / recorded_at=2026-04-25T22:16:44.809Z) — 実際の浜田報告は JST 4/26 07:16 (Ultra プラン枯渇報告)"
+      "percent": 45,
+      "recorded_at": "2026-04-26T10:22:00+09:00",
+      "note": "P5-5 / Spending スクショ確認 (浜田 10:22 提供 5 枚) = Total 45% (4% Auto + 100% API used) / On-Demand $241.34 / $1000 (Monthly Limit $1000 設定済 = 浜田 10:13 完了) / API token 16.7M 100% 状態継続 (= Composer 2 fallback リスク継続) / 内訳 (Billing): Max Thinking 59.4% + Extra High 40.8% + Auto+Composer 0.6% = F-14 確定。旧 record (4/26 07:16 percent=100 / Ultra 枯渇) は本日中の最新値で上書き (= credit-budget.mjs 仕様通り)。On-Demand $ の正式追跡は TSB-021 で実装予定 (Day 5-6)。"
     }
   ]
 }
