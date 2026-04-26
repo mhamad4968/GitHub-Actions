@@ -1,4 +1,7 @@
 （そのままチャットに貼る。日時だけ直す）
+正本: WSL 内 ~/kintone-ai-lab/chat-sessions/HANDOFF-HUMAN.txt
+Windows から開きやすい控え: C:\Users\mhamada202408224\Desktop\AI緊急用\HANDOFF-HUMAN.txt
+※ C:\Users\mhamada202408224\kintone-ai-lab は chat-sessions 無しの別ツリーなので、このファイルは置かない。
 
 日時(JST):
 いま何してた（1行）:
