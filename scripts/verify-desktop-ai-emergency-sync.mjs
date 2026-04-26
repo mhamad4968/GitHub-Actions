@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * 浜田 Desktop「AI緊急用」の .txt がリポ正本（chat-sessions/*.md / .txt）と一致するか検証する。
- * @see scripts/sync-session-starter-to-desktop.mjs（同一マッピング）
+ * NEW-SESSION-STARTER は `NEW-SESSION-STARTER_yyyymmdd.txt` または `_yyyymmdd_N.txt` のいずれかが正本と一致すれば OK。
  *
  * - 控えフォルダが無い（WSL 未マウント等）: exit 0（メッセージのみ。CI / 純 Linux でも壊さない）
  * - フォルダはあるが中身がリポと不一致: exit 2（先に `npm run session-starter:sync-desktop` を実行）
@@ -11,14 +11,14 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { starterDesktopMatchesRepo } from './lib/session-starter-desktop.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const destDir =
   process.env.SESSION_STARTER_DESKTOP_DIR ||
   '/mnt/c/Users/mhamada202408224/Desktop/AI緊急用';
 
-const files = [
-  ['chat-sessions/NEW-SESSION-STARTER.md', 'NEW-SESSION-STARTER.txt'],
+const otherFiles = [
   ['chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md', 'SESSION-BOOTSTRAP-CHECKLIST.txt'],
   ['chat-sessions/HANDOFF-HUMAN.txt', 'HANDOFF-HUMAN.txt'],
 ];
@@ -38,7 +38,28 @@ function main() {
   }
 
   let bad = false;
-  for (const [rel, outName] of files) {
+
+  const starterSrc = path.join(root, 'chat-sessions/NEW-SESSION-STARTER.md');
+  if (!fs.existsSync(starterSrc)) {
+    console.warn('[verify-desktop-ai-emergency-sync] NG: リポ側なし chat-sessions/NEW-SESSION-STARTER.md');
+    bad = true;
+  } else {
+    const a = fs.readFileSync(starterSrc);
+    const { ok, matched } = starterDesktopMatchesRepo(destDir, a);
+    if (!ok) {
+      console.warn(
+        '[verify-desktop-ai-emergency-sync] NG: Desktop に NEW-SESSION-STARTER_yyyymmdd*.txt で正本と一致する控えが無い\n' +
+          '  先に: npm run session-starter:sync-desktop'
+      );
+      bad = true;
+    } else {
+      for (const name of matched) {
+        console.log(`[verify-desktop-ai-emergency-sync] OK ${name} (NEW-SESSION-STARTER 正本一致)`);
+      }
+    }
+  }
+
+  for (const [rel, outName] of otherFiles) {
     const src = path.join(root, rel);
     const dest = path.join(destDir, outName);
     if (!fs.existsSync(src)) {

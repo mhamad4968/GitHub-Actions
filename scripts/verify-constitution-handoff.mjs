@@ -101,7 +101,7 @@ const suites = [
       '項番 0',
       '項番 -1',
       '項番 -0',
-      'NEW-SESSION-STARTER.txt',
+      'NEW-SESSION-STARTER_yyyymmdd',
       'session-starter:sync-desktop',
       'verify:desktop-ai-emergency-sync',
       'C:\\Users\\mhamada202408224\\Desktop\\AI緊急用',

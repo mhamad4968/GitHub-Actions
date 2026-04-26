@@ -9,7 +9,7 @@ alwaysApply: true
 
 **正本の順序**（`checkpoint-latest.md`「セッション切替後の自律復元」）:
 
-1. **項番 -1（浜田・強く推奨）**: 新チャット **最初の 1 メッセージ**に **`NEW-SESSION-STARTER.txt` 全文**を貼る（憲法 🚨・`@` リスト・儀式を一括注入）。
+1. **項番 -1（浜田・強く推奨）**: 新チャット **最初の 1 メッセージ**に Desktop の **`NEW-SESSION-STARTER_yyyymmdd.txt`（同日複数は枝番最大が最新）**の **全文**を貼る（憲法 🚨・`@` リスト・儀式を一括注入）。
 2. **項番 -0（浜田＋AI・開始ゲート）**: AI は **ティア宣言**のうえスターター受領＋**これから着手する次の一手**を **§41 一問だけ**浜田へ確認する。**浜田の OK が返るまで項番 0（verify / bootstrap 以降）に着手しない**。OK 後に項番 0 へ。（食い違いが後から出た場合の再一問は `checkpoint-latest.md` **項番 0.9**。）
 3. **項番 0（AI・必須）**: リポルートで **`npm run verify:constitution-handoff`**（exit 0）。続けて **`npm run session:bootstrap`**（= verify 再実行 + **`session-starter:sync-desktop`** で **`C:\Users\mhamada202408224\Desktop\AI緊急用`** を都度揃え + **`verify:desktop-ai-emergency-sync`** でバイト一致確認 + smoke 9 連）。Desktop 未マウント時は verify が SKIP → チャットに **未照合 1 行**。
 

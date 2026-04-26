@@ -46,8 +46,8 @@
 このファイルの中身を新しい Cursor チャットにそのまま貼るだけで、
 AI がゼロから今までの文脈を完全復元する。
 
-**浜田が毎回最初に開く場所（運用上いちばん大事）**: `C:\Users\mhamada202408224\Desktop\AI緊急用\NEW-SESSION-STARTER.txt`（メモ帳）。**セッション切替時は、この `.txt` 全文を新チャットの最初の 1 メッセージに貼ることを強く推奨**（`checkpoint-latest.md` **項番 -1**）。貼ったあと **本日やること（次の一手）** を AI と **1 問だけ**確認し、**浜田の OK が出てから**項番 0（`verify:constitution-handoff`）へ（**項番 -0** = **OK まで着手しない開始ゲート**）。ここが **最優先で最新**になるよう、AI は本ファイルを編集して **push する同一ターン**で必ず **`npm run session-starter:sync-desktop`** を実行する（浜田依頼）。**リポだけ更新して Desktop を古いままにしない**。**セッション切替の初手**でも **`verify:desktop-ai-emergency-sync`** で一致確認する（`session:bootstrap` に含まれる）。
-Git 上の編集正本: `kintone-ai-lab/chat-sessions/NEW-SESSION-STARTER.md`（差分・履歴用。`.md` と `.txt` は自動同期しないため、上記 npm が橋渡し）。`/mnt/c` が無くコピーできないときはチャットに「AI緊急用の .txt は未更新（理由）」と 1 行書き、環境復帰後に npm を再実行する。
+**浜田が毎回最初に開く場所（運用上いちばん大事）**: `C:\Users\mhamada202408224\Desktop\AI緊急用\NEW-SESSION-STARTER_yyyymmdd.txt`（**JST のメンテ日**がファイル名の 8 桁。同日に複数控えがある場合は **`_2` `_3`… の枝番が最大のファイル**＝最新。メモ帳）。**セッション切替時は、この控えの全文を新チャットの最初の 1 メッセージに貼ることを強く推奨**（`checkpoint-latest.md` **項番 -1**）。直近で sync が書いた名前は **`npm run session-starter:sync-desktop` の標準出力**で確認できる。貼ったあと **本日やること（次の一手）** を AI と **1 問だけ**確認し、**浜田の OK が出てから**項番 0（`verify:constitution-handoff`）へ（**項番 -0** = **OK まで着手しない開始ゲート**）。ここが **最優先で最新**になるよう、AI は本ファイルを編集して **push する同一ターン**で必ず **`npm run session-starter:sync-desktop`** を実行する（浜田依頼）。**リポだけ更新して Desktop を古いままにしない**。**セッション切替の初手**でも **`verify:desktop-ai-emergency-sync`** で一致確認する（`session:bootstrap` に含まれる）。
+Git 上の編集正本: `kintone-ai-lab/chat-sessions/NEW-SESSION-STARTER.md`（差分・履歴用。`.md` と `.txt` は自動同期しないため、上記 npm が橋渡し）。`/mnt/c` が無くコピーできないときはチャットに「AI緊急用の NEW-SESSION-STARTER_yyyymmdd*.txt は未更新（理由）」と 1 行書き、環境復帰後に npm を再実行する。
 
 v2 (2026-04-19) からの主な強化:
 - 主タスク: SKYSEA → 新・PC 台帳 ver.1 (4/24 環境設定マスタ Day 1)
@@ -180,6 +180,10 @@ v3.12 (2026-04-26) 人間5行引き継ぎ + AI 追記義務:
 - **AI**: 同ターンで `chat-sessions/handoff-log.md` 末尾へ必ず追記（`.cursor/rules/session-handoff.mdc` / 漏れ禁止）
 - **checkpoint-latest.md** に手順リンク済み
 
+v3.25 (2026-04-26) **Desktop スターター控えのファイル名 = メンテ日（JST）＋枝番**（浜田指示）:
+- 出力名: **`NEW-SESSION-STARTER_yyyymmdd.txt`**。同一 JST 日に内容が変わるたび **`_2` `_3`…**（`scripts/lib/session-starter-desktop.mjs` / `sync-session-starter-to-desktop.mjs`）。
+- **項番 -1**: 貼付は **当日分で枝番が最大の控え**（`verify:desktop-ai-emergency-sync` は `NEW-SESSION-STARTER_*.txt` のいずれかが正本と一致すれば OK）。
+
 v3.24 (2026-04-26) **「次にやること」確認 → 浜田 OK → 開始（項番 -0 開始ゲート）**（浜田指示）:
 - **項番 -0**: AI が **次の一手**を **§41 一問**で確認。**浜田の OK が返るまで** `verify` / `session:bootstrap` / 本題に **着手しない**。
 - **項番 0.9**: bootstrap 後に合意と状況が **ズレたときだけ**再一問（副作用ある実行の直前）。
@@ -190,7 +194,7 @@ v3.23 (2026-04-26) **Desktop `AI緊急用` の都度メンテ＋セッション�
 - **`npm run session:bootstrap`** に sync + verify を組込（憲法 verify の直後）。
 
 v3.22 (2026-04-26) **セッション切替＝先にスターター貼付（項番 -1/-0）**（浜田提案・採用）:
-- **推奨フロー**: 新チャット **1 通目**に `NEW-SESSION-STARTER.txt` **全文** → AI と本題 **§41 一問**（**項番 -0**）→ **`verify` / `session:bootstrap`（項番 0）**
+- **推奨フロー**: 新チャット **1 通目**に `NEW-SESSION-STARTER_yyyymmdd.txt`（**枝番最大**）**全文** → AI と本題 **§41 一問**（**項番 -0**）→ **`verify` / `session:bootstrap`（項番 0）**
 - **`checkpoint-latest.md`** に **項番 -1 / -0** を追記（機械検査 `verify-constitution-handoff` にも必須フレーズとして組込）
 - **`HANDOFF-HUMAN.txt`** / **`SESSION-BOOTSTRAP-CHECKLIST`** / **`session-handoff.mdc`** / **`constitution-handoff-gate.mdc`** を同期
 
