@@ -4,10 +4,11 @@
  * 仕様: docs/plans/2026-04-21-new-pc-ledger-spec.md v2.1 §4
  * Day 4 plan: docs/plans/2026-04-26-pc-ledger-day4-action.md
  *
- * BUILD: 2026-04-26-day4-skeleton-v0.2 (§4.4 JR でも共有用ボタン表示 / 本実装は 4/27)
+ * BUILD: 2026-04-28-internal-fields-hide-v0.1 (§4.2.1a 内部メタ非表示 + 新規・編集で disabled)
  *
  * Day 4 雛形スコープ:
  *   - 種別 (account_type) による表示制御 (show/hide)
+ *   - §4.2.1a: pc_serial_no / import_source / legacy_* / created_at_jst は常に非表示（詳細含む）・新規・編集では disabled
  *   - 自動生成ボタン雛形 (クリックで alert "Day 5 で実装")
  *   - 5 台ライセンス警告雛形 (赤バナーは仕組みのみ)
  *   - リセット/PC買替/印刷ボタン雛形
@@ -23,7 +24,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-04-26-day4-skeleton-v0.2';
+  const BUILD = '2026-04-28-internal-fields-hide-v0.1';
 
   // ===== 関連アプリ ID (kintone-apps.md 参照) =====
   const APP_ENV_MASTER = '670';     // 環境設定マスタ
@@ -57,6 +58,18 @@
   const FC_SB_ID = 'sb_id';
   const FC_SB_PW = 'sb_pw';
   const FC_M365_MASTER_RECORD_ID = 'm365_master_record_id';
+  /** §4.2.1a 内部メタ（画面では非表示・新規・編集では編集不可） */
+  const FC_IMPORT_SOURCE = 'import_source';
+  const FC_LEGACY_PC_NAME_594 = 'legacy_pc_name_594';
+  const FC_LEGACY_RECORD_ID_594 = 'legacy_record_id_594';
+  const FC_CREATED_AT_JST = 'created_at_jst';
+  const INTERNAL_UI_HIDDEN_CODES = [
+    FC_PC_SERIAL_NO,
+    FC_IMPORT_SOURCE,
+    FC_LEGACY_PC_NAME_594,
+    FC_LEGACY_RECORD_ID_594,
+    FC_CREATED_AT_JST,
+  ];
 
   // ===== 種別 (account_type) のオプション =====
   const TYPE_PERSONAL = '個人';
@@ -79,6 +92,22 @@
       } catch (e) {
         // 一部フィールドが未配置でもエラーで全停止しない (雛形)
         console.warn(`[NEW-PC-LEDGER-V1] setFieldShown failed for ${code}:`, e.message);
+      }
+    }
+  }
+
+  /**
+   * §4.2.1a: 内部メタは登録者・閲覧者に見せない・新規・編集では触れない。
+   * @param {Record<string, object>} record kintone レコードオブジェクト
+   * @param {'detail'|'editable'} mode 詳細は非表示のみ / 新規・編集は disabled も付与
+   */
+  function applyInternalMetaFieldUi(record, mode) {
+    setFieldsVisibility(INTERNAL_UI_HIDDEN_CODES, false);
+    if (mode !== 'editable') return;
+    for (const code of INTERNAL_UI_HIDDEN_CODES) {
+      const cell = record[code];
+      if (cell && Object.prototype.hasOwnProperty.call(cell, 'disabled')) {
+        cell.disabled = true;
       }
     }
   }
@@ -266,6 +295,9 @@
   ];
   kintone.events.on(showEvents, (event) => {
     console.log(`[NEW-PC-LEDGER-V1] BUILD=${BUILD} event=${event.type}`);
+    const editable =
+      event.type === 'app.record.create.show' || event.type === 'app.record.edit.show';
+    applyInternalMetaFieldUi(event.record, editable ? 'editable' : 'detail');
     applyVisibilityByType(event.record);
     showJrBannerIfNeeded(event.record);
     showLicenseBannerIfNeeded(event.record);
@@ -281,6 +313,7 @@
   kintone.events.on(typeChangeEvents, (event) => {
     let result = confirmTypeChangeIfNeeded(event);
     result = showJrAlertIfNeeded(result);
+    applyInternalMetaFieldUi(result.record, 'editable');
     applyVisibilityByType(result.record);
     showJrBannerIfNeeded(result.record);
     injectButtons(result);
