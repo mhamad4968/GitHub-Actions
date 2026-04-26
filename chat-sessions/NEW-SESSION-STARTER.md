@@ -139,6 +139,8 @@ v3.12 (2026-04-26) 人間5行引き継ぎ + AI 追記義務:
 - **AI**: 同ターンで `chat-sessions/handoff-log.md` 末尾へ必ず追記（`.cursor/rules/session-handoff.mdc` / 漏れ禁止）
 - **checkpoint-latest.md** に手順リンク済み
 
+v3.17 (2026-04-27) 仕様確認の進め方: **AI が正本を読み、不明点を 1 つずつ質問**（1 ターン 1 問／`chat-sessions/2026-04-27-pc-ledger-1b-one-by-one.md` 冒頭）。明日続き可。
+
 v3.16 (2026-04-27) 仕様確認＝**オーダー完遂**（曖昧な「確認しますか？」禁止）:
 - **問題**: 「今日は仕様確認しますか？」だけでは **オーダー通りに作れない**（証跡も完了条件も無い）。
 - **対応**: `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b** を **1b-A Read → 1b-B 機械ゲート → 1b-C チャットテンプレ**の順に **同一ターンで完走**。テンプレ無しで **Tier B（`kintone-add-app` 等）に進まない**。
