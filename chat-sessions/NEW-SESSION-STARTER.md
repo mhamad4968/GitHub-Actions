@@ -169,6 +169,13 @@ v3.12 (2026-04-26) 人間5行引き継ぎ + AI 追記義務:
 - **AI**: 同ターンで `chat-sessions/handoff-log.md` 末尾へ必ず追記（`.cursor/rules/session-handoff.mdc` / 漏れ禁止）
 - **checkpoint-latest.md** に手順リンク済み
 
+v3.19 (2026-04-26 19:37) **機械ゲート**（迷走再発防止 / 浜田「仕組みを今日作って」）:
+- **`scripts/verify-constitution-handoff.mjs`** + `npm run verify:constitution-handoff` — 必須フレーズ（TSB-024 / §35-1 / 役割宣言テンプレ等）が欠けたら **即 exit 2**
+- **`npm run smoke:quiet` 第 9 検査**に組込 → `npm run session:bootstrap` でも自動実行
+- **`.cursor/rules/constitution-handoff-gate.mdc`**（`alwaysApply: true`）— 毎チャット想起（禁句・§1-2-3-1）
+- **`handoff-log.md` HTML アンカー** — 要約で消えにくい固定子
+- `RULES-INDEX.md` セッション切替表に TSB-024 行追加
+
 v3.18 (2026-04-26 19:25) TSB-024 / 引き継ぎ要約耐性: 開発=AI / 確認=浜田 の禁句リスト化（最上段 🚨 ブロック）:
 - **発端**: §4.4 仕様揃え修正後、AI が「再デプロイしてください」「手動アップロードで OK」と締めて §35-1 / §56-1a 違反 → 浜田 ×2 指摘 → 即訂正 + `npm run deploy:674` 新設・実行・検証
 - **真因**: 会話要約段階で §35-1 / §56-1a が脱落。条文番号より「**禁句リスト + 自己宣言テンプレ**」の方が要約耐性が高い
@@ -187,7 +194,7 @@ v3.15 (2026-04-27) 新・PC台帳は **仕様書を読んでから**:
 
 v3.14 (2026-04-26) 引き継ぎ後の安心 — 経緯・法律相当・ルール・機能・MCP を棚卸し:
 - **必読**: `chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md`（フェーズ 0–7）。**Read だけで終わらせない**。
-- **必実行**: `npm run session:bootstrap`（= `smoke:quiet` / 8 連検査）。結果をチャットに **短く要約**（チェックリスト フェーズ 7）。
+- **必実行**: `npm run session:bootstrap`（= `smoke:quiet` / **9 連検査**）。結果をチャットに **短く要約**（チェックリスト フェーズ 7）。
 - **Desktop（最優先）**: 浜田が参照する `AI緊急用\*.txt` を、本ファイルをコミットした **同一ターン**で **`npm run session-starter:sync-desktop`** により必ず更新する。未マウント時はスキップ＋チャット 1 行（後で再実行）。
 - **目的**: 浜田が気づかないまま逆方向に進む事故を減らす（確認負荷は人に押し付けない）。
 
@@ -225,7 +232,7 @@ v3.13 (2026-04-26) PC 台帳仕様の正本固定 + セッション切替後も�
 @kintone-ai-lab/docs/plans/2026-04-21-new-pc-ledger-spec.md ← **新・PC台帳（674・ラベル・customize）を触るなら §4.2.0〜 を必ず Read**（PC 以外のタスクならスキップ可／`SESSION-BOOTSTRAP` フェーズ 1b）
 
 そのあと：
-0. **npm run session:bootstrap**（リポルートで実行 / smoke 8 連 = guard+audits+health 等）→ 結果をチャットに短く要約（SESSION-BOOTSTRAP フェーズ 7）
+0. **npm run session:bootstrap**（リポルートで実行 / smoke **9 連** = guard+audits+health+**TSB-024 物理ガード** 等）→ 結果をチャットに短く要約（SESSION-BOOTSTRAP フェーズ 7）
 1. docs/reports/<今日の日付>-morning-prep.md を読んで朝ルーチン状態（緑/黄/赤）確認
 2. 緑じゃなければ §46 朝ルーチン絶対優先義務を先に完遂
 3. 緑なら §47-§49（思考の三本柱）+ §47-A/B-2/C + §50/§50-2 + §51/§51-2 + §11-5 を意識して本題へ

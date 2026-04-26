@@ -1195,6 +1195,7 @@ PC 台帳 Day4 Step1 で MCP `kintone-add-app` 実行後、ブラウザの **`/k
 2. **NEW-SESSION-STARTER v3.18**: 文書の **最上段**（v 番号より上）に **🚨 憲法級ブロック**を新設し、`AGENTS.md §35-1 / §56-1a` を 5 行で再宣言＋禁句サンプル（「再デプロイしてください」「手動アップロードで問題ありません」「`npm run xxx` を実行してください」）を列挙。Desktop 緊急用 `.txt` も `npm run session-starter:sync-desktop` で同期。
 3. **SESSION-BOOTSTRAP-CHECKLIST.md フェーズ 7**: チャット報告 6 項目に **「(7) 役割宣言: deploy / apply / push / 検証は AI 自身が実行する。浜田には GO と目視確認のみ依頼する」** を追記。AI は新セッション 1 ターン目でこれを声に出して引き継ぎ完了の証跡にする。
 4. **handoff-log.md**: 本件を「禁句アンチパターン」として記録（次の AI が末尾 3 件読みで必ず触れる）。
+5. **機械ゲート（2026-04-26 夜追補）**: `scripts/verify-constitution-handoff.mjs` 新設 → `npm run smoke:quiet` **第 9 検査**に組込（必須フレーズ欠落で即 ng）。`handoff-log.md` に HTML コメント **アンカー**（要約で消えにくい）。`.cursor/rules/constitution-handoff-gate.mdc`（`alwaysApply: true`）で毎ターン想起。
 
 ### 教訓
 
@@ -1209,3 +1210,4 @@ PC 台帳 Day4 Step1 で MCP `kintone-add-app` 実行後、ブラウザの **`/k
 - 引き継ぎ: `chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 7 / `.cursor/rules/session-handoff.mdc`
 - 緊急用: `chat-sessions/NEW-SESSION-STARTER.md` v3.18（最上段 🚨 憲法級ブロック）
 - 直近実例: `npm run deploy:674` 新設 commit `4e9a062`（事後対応）
+- 機械検証: `npm run verify:constitution-handoff` / `npm run session:bootstrap`（smoke 内蔵）

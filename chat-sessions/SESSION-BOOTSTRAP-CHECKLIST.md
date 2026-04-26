@@ -94,7 +94,7 @@
 | # | コマンドまたはファイル | 目的 |
 |---|------------------------|------|
 | 4.1 | `package.json` の `scripts` を **ざっと目視**（特に `smoke` / `verify:all` / `health-check` / `pc-ledger:*`） | 何が一発で回るか |
-| 4.2 | `scripts/smoke-test.mjs` 先頭コメント（8 検査の内訳） | 機械ゲートの意味 |
+| 4.2 | `scripts/smoke-test.mjs` 先頭コメント（9 検査の内訳） | 機械ゲートの意味 |
 | 4.3 | `scripts/health-check.mjs` がプローブする項目（S1–S16） | MCP・cron・RAG 等 |
 | 4.4 | 必要なら `docs/troubleshooting.md` の cron / hook 系 TSB | 未起動 watcher 等 |
 
@@ -122,7 +122,7 @@ cd /path/to/kintone-ai-lab && npm run session:bootstrap
 - [ ] 上記が **exit 0**（warn のみなら内容をチャットに要約し、続行可否を判断）
 - [ ] **ng なら** その検査を直すまで本題の kintone 書込・憲法改定・hooks 変更に進まない
 
-`session:bootstrap` は内部で **`npm run smoke:quiet`**（guard + 4 audit + verify:breaking + xref + health + rule-watcher + parallel）を実行する。
+`session:bootstrap` は内部で **`npm run smoke:quiet`**（guard + 4 audit + verify:breaking + xref + health + rule-watcher + parallel + **verify:constitution-handoff**）を実行する。
 
 ---
 

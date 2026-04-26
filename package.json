@@ -92,6 +92,7 @@
     "smoke-test": "node scripts/smoke-test.mjs",
     "smoke:json": "node scripts/smoke-test.mjs --json",
     "smoke:quiet": "node scripts/smoke-test.mjs --quiet",
+    "verify:constitution-handoff": "node scripts/verify-constitution-handoff.mjs",
     "session:bootstrap": "node scripts/session-bootstrap-verify.mjs",
     "session-starter:sync-desktop": "node scripts/sync-session-starter-to-desktop.mjs",
     "hooks:install": "bash scripts/install-hooks.sh",

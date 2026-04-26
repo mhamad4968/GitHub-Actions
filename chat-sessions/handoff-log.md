@@ -3,6 +3,8 @@
 浜田さんは `chat-sessions/HANDOFF-HUMAN.txt` を5行だけ埋めてチャットに貼る。  
 AI は、セッション切替・終了・浜田さんがそのテンプレを貼ったタイミングで **必ずこのファイルの末尾に新しいブロックを追記**する（追記のみ。過去ブロックは消さない）。
 
+<!-- verify-constitution-handoff-anchor: TSB-024 v1 — DO NOT REMOVE (scripts/verify-constitution-handoff.mjs) -->
+
 ---
 
 ### 2026-04-26 19:25 JST
@@ -29,5 +31,32 @@ AI は、セッション切替・終了・浜田さんがそのテンプレを�
   - `chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 7 第 7 項
 
 **次セッションへの 1 行**: 開口一番に **役割宣言テンプレ（フェーズ 7 第 7 項）**を貼る。`deploy:<appId>` が未整備なら **AI が npm script を追加して実行**する（依頼しない）。`AGENTS.md §35-1 / §56-1a` 逆転禁止。
+
+---
+
+### 2026-04-26 19:37 JST
+
+**浜田メモ（原文）**:
+> 今回迷走してしまったことを反省し今後このようなことにならない仕組みを今日は作ってほしい。PC台帳系は今日はやらない。明日やることとします。
+
+**経緯（簡潔 / §37）**:
+- **PC 台帳コード・674 には未着手**（明日へ保留 / 本ターンは憲法・引き継ぎの **機械ゲートのみ**）
+- `scripts/verify-constitution-handoff.mjs` 新設 + `npm run verify:constitution-handoff` + **smoke 第 9 検査**組込 + `session:bootstrap` 文言 9 連へ
+- `.cursor/rules/constitution-handoff-gate.mdc`（`alwaysApply: true`）新設 + `session-handoff.mdc` に TSB-024 逆転禁止を追記
+- `handoff-log.md` に **HTML アンカー**（`verify-constitution-handoff-anchor`）を恒久挿入
+- `RULES-INDEX.md` セッション切替表に **TSB-024** 行追加、`docs/troubleshooting.md` TSB-024 の対策に **機械ゲート**追記
+- `npm run smoke:quiet` = **ok 9 / warn 0 / ng 0**
+
+**AI 補足（漏れ防止）**:
+- `git`: 本ブロック追記後に commit 予定（未コミット）
+- `次の1手`: 浜田: **Desktop の NEW-SESSION-STARTER.txt を開き直す**（`npm run session-starter:sync-desktop` 済前提）／明日: PC 台帳（Day5 予定）のみ
+- `GO待ち`: なし
+- `session-lock`: なし
+- `関連パス`:
+  - `scripts/verify-constitution-handoff.mjs`
+  - `.cursor/rules/constitution-handoff-gate.mdc`
+  - `scripts/smoke-test.mjs`（checks 配列 9 件目）
+
+**次セッションへの 1 行**: `npm run session:bootstrap` が **9 検査**になったことを確認。憲法ドキュを削る編集後は必ず **緑**を取ってから Tier B へ。
 
 ---
