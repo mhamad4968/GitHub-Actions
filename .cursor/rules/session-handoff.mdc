@@ -29,7 +29,7 @@ alwaysApply: true
      - `session-lock`: 取得中なら holder／なければ「なし」
      - `関連パス`: 計画・TSB・ログ等があれば最大3件
 5. **チャットで次セッション初手を明示**: `SESSION-BOOTSTRAP-CHECKLIST.md` ＋ `NEW-SESSION-STARTER.md`（または Desktop 控え）＋ `chat-sessions/checkpoint-latest.md` Read ＋ **`chat-sessions/handoff-log.md` の末尾から最大3件** Read ＋ **`npm run session:bootstrap`**（引き継ぎ先 AI が次ターンで実行）。
-6. **自律復元（浜田へ「どこまで？」を先に聞かない）**: `checkpoint-latest.md` の **「セッション切替後の自律復元」** に従い、PC 台帳 Day4 なら `docs/plans/2026-04-26-pc-ledger-day4-action.md` の **「AI 引継ぎ: kintone-add-app 直後に…」** と `docs/troubleshooting.md` **TSB-023** を先に Read。`kintone-add-app` 直後の「未公開？」は **プレビュー REST** で確認してから進む（冗長確認を減らす）。**新・PC台帳のフィールド・ラベル・自動生成・SKYSEA 枠を変える前**は正本 `docs/plans/2026-04-21-new-pc-ledger-spec.md` の **§4.2.0〜§4.4 を Read してから**（手順書・チャット要約だけで十分としない。詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b**）。**フィールド表示名**は `pc-ledger-v1-ui-display-labels.json` と整合し、変更前後で **`npm run pc-ledger:verify-labels-spec`** を通す（浜田は確認のみ／全文目視突合を人に依頼しない）。
+6. **自律復元（浜田へ「どこまで？」を先に聞かない）**: `checkpoint-latest.md` の **「セッション切替後の自律復元」** に従い、PC 台帳 Day4 なら `docs/plans/2026-04-26-pc-ledger-day4-action.md` の **「AI 引継ぎ: kintone-add-app 直後に…」** と `docs/troubleshooting.md` **TSB-023** を先に Read。`kintone-add-app` 直後の「未公開？」は **プレビュー REST** で確認してから進む（冗長確認を減らす）。**新・PC台帳の Tier B 前**は `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b（1b-A〜C＋チャットテンプレ）**を完走（「仕様確認しますか？」だけ禁止）。正本 `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.2.0〜§4.4**。ラベル変更時は **`npm run pc-ledger:verify-labels-spec`**（浜田は確認のみ／全文目視突合を人に依頼しない）。
 
 ## 禁止
 

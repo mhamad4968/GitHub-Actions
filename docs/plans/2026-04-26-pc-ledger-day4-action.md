@@ -163,7 +163,7 @@
 
 ## §4. 当日 7 ステップ手順（Day 3 と同型 + 強化）
 
-> **前提条件（Step 1 より前）**: 正本 `docs/plans/2026-04-21-new-pc-ledger-spec.md` の **§4.2.0〜§4.4** を Read 済みであること（`SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b**／チャットに **「§4.2.0〜読了」** 1 行）。**仕様書を読まないまま `kintone-add-app` に進んでも、§2 の 35 フィールド・型・必須・SKYSEA 枠の根拠が無く、Step 2 以降を安全に組めない**（手順書・チャット要約だけでは不足）。**読了＝アプリを正しく作るためのゲート**。
+> **前提条件（Step 1 より前）**: `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b 全体**（**1b-A Read → 1b-B 機械ゲート → 1b-C チャットテンプレ**）を **同一ターンで完了**していること。**「仕様確認しますか？」や「読みました」一文だけでは Step 1 に進まない**（オーダー通りに作れない）。正本は `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.2.0〜§4.4**。35 フィールド根拠は `npm run field-spec:generate -- --spec=...` の **`[field-spec-diff] generated 35 fields`** で証跡化。
 
 ### Step 1: kintone-add-app（アプリ枠だけ作成）
 

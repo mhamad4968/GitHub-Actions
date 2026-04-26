@@ -25,13 +25,38 @@
 
 ## フェーズ 1b — 新・PC台帳 ver.1 を触る場合（仕様書必読）
 
-> **Day4 手順書・チャット要約だけで判断しない**。正本は `docs/plans/2026-04-21-new-pc-ledger-spec.md`。**仕様を読まないままではアプリ枠（`kintone-add-app`）以降を設計根拠付きで進められない**（§2 の 35 フィールド・採番・SKYSEA 別枠はすべて正本に依存）。次のいずれかに当てはまる **着手前**に必ず Read し、チャットに **「§4.2.0〜読了」** と 1 行書く。
+> **Day4 手順書・チャット要約だけで判断しない**。正本は `docs/plans/2026-04-21-new-pc-ledger-spec.md`。**仕様を読まないままではアプリ枠（`kintone-add-app`）以降を設計根拠付きで進められない**（§2 の 35 フィールド・採番・SKYSEA 別枠はすべて正本に依存）。  
+> **「今日は仕様確認しますか？」だけでターンを終えない**。仕様確認＝下の **1b-A〜C オーダー**を同一ターン内で完了し、**テンプレをチャットに貼るまで**。ここが空のまま **Tier B（`kintone-add-app` 等）に進むことは禁止**（オーダー通りに作れない）。
+
+次のいずれかに当てはまる **着手前**に、**1b-A〜C すべて**を実施する。
 
 - [ ] **kintone** の **アプリ新規作成（`kintone-add-app`）**、または App 674（新・PC台帳）の **フィールド追加・変更・deploy・ラベル適用**
 - [ ] `scripts/data/pc-ledger-v1-ui-display-labels.json` / `pc-ledger-spec-4222-ui-labels.json` / `field-spec-diff` / `pc-ledger:apply-labels` を触る
 - [ ] `customize/**/desktop.js`（新・PC台帳）の **自動生成・種別切替・バナー**等のロジック変更
 
-**Read 範囲（最低）**: **§4.2.0**（浜田認識・コア vs SKYSEA）〜 **§4.4**（ボタン・表示切替）。迷ったら **§4.3 採番**まで広げる。読了後、ラベル JSON を変えるなら **`npm run pc-ledger:verify-labels-spec`** を同ターンで回す。
+**Read 範囲（最低）**: **§4.2.0**（浜田認識・コア vs SKYSEA）〜 **§4.4**（ボタン・表示切替）。迷ったら **§4.3 採番**まで広げる。
+
+#### 1b-A Read（必須）
+
+- [ ] `docs/plans/2026-04-21-new-pc-ledger-spec.md` の **§4.2.0〜§4.4** を Read 済み
+
+#### 1b-B 機械ゲート（必須・同一ターン内）
+
+- [ ] `npm run field-spec:generate -- --spec=docs/plans/2026-04-26-pc-ledger-day4-action.md` を実行し、stderr に **`[field-spec-diff] generated 35 fields`** があること（≠35 なら正本か §2 を直してから再実行）
+- [ ] ラベル JSON または `pc-ledger:apply-labels` を触るタスクなら **`npm run pc-ledger:verify-labels-spec`** = **OK**（触らないなら **対象外**とテンプレに書く）
+
+#### 1b-C チャット報告テンプレ（必須・§37 簡潔でよい）
+
+コピーして空欄を埋め、**同一ターン内**に貼る。
+
+```
+【1b 仕様確認オーダー完了】
+- Read: §4.2.0〜4.4 済
+- コア* vs SKYSEA 別枠: 説明可能（1行で可）
+- field-spec:generate: 35 fields 確認済
+- verify-labels: OK / 対象外
+- 次: Tier B …（GO待ち or 実行内容）
+```
 
 ---
 
@@ -107,7 +132,7 @@ AI は上記を終えたら **このターン内**で、次を **箇条書きで
 3. **session:bootstrap**: ok / warn / ng（ng ならどれか）  
 4. **MCP**: health-check 上の active / 注意（1 行）  
 5. **次の 1 手**: 何をするか（Tier B なら GO 待ちと明記）  
-6. **新・PC台帳を触る場合**: フェーズ **1b** の仕様書 Read を **実施済み**と明記（未実施なら先に 1b を完了してから本題）
+6. **新・PC台帳を触る場合**: フェーズ **1b-C テンプレ**を貼ったうえで **1b 完了**と書く（テンプレ無しの「仕様確認しました」は不可。**未完了なら Tier B に進まない**）
 
 ---
 
