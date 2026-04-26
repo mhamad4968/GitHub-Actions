@@ -6,7 +6,7 @@
 // 機能:
 //   1. --generate: 仕様書 markdown のフィールド表から
 //      kintone-add-form-fields の properties JSON を生成 (浜田 GO 取得用テンプレ)
-//      表示ラベルは scripts/pc-ledger-v1-labels.mjs の日本語マップを使用
+//      表示ラベルは scripts/data/pc-ledger-v1-ui-display-labels.json（短文）を使用
 //   2. --diff:     仕様 vs 実際の get-form-fields 結果を機械照合 → diff 0 でなければ exit 1
 //
 // 期待する仕様 markdown 形式 (Day 4 plan §2):
@@ -24,7 +24,7 @@
 //   --actual は { properties } でも revision-snapshot の { form_fields_live } でも可
 //
 // 注意:
-//   - `--generate` は read + JSON 出力のみ (Tier A)。表示ラベルは pc-ledger-v1-labels.mjs。
+//   - `--generate` は read + JSON 出力のみ (Tier A)。表示ラベルは短文 JSON（pc-ledger-v1-ui-display-labels.json）。
 //   - kintone への label 反映は `scripts/kintone-pc-ledger-apply-labels.mjs`（Tier B / 浜田 GO）
 
 import { readFileSync } from 'node:fs';

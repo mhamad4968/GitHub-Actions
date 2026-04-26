@@ -22,7 +22,7 @@
 2. **`chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` を通読**（経緯・法律相当・ルール・機能・MCP の棚卸し表）
 3. `chat-sessions/NEW-SESSION-STARTER.md` の **冒頭〜最新 v3.x ブロック**（kintone プレビュー／憲法級など）
 4. `chat-sessions/handoff-log.md` の **末尾から最大 3 件**（無ければスキップ可）
-5. **PC 台帳 Day4 継続中なら** `docs/plans/2026-04-26-pc-ledger-day4-action.md` の **「AI 引継ぎ: kintone-add-app 直後に…」** ＋ `chat-sessions/2026-04-26-pc-ledger-day4.md` ＋ 表示ラベルは **正本 §4.2**（`docs/plans/2026-04-21-new-pc-ledger-spec.md`）と **`npm run pc-ledger:verify-labels-spec`**
+5. **PC 台帳 Day4 継続中なら** `docs/plans/2026-04-26-pc-ledger-day4-action.md` の **「AI 引継ぎ: kintone-add-app 直後に…」** ＋ `chat-sessions/2026-04-26-pc-ledger-day4.md` ＋ 画面ラベルは **短文 JSON**（`scripts/data/pc-ledger-v1-ui-display-labels.json`）／意味の正本は **§4.2**（`2026-04-21-new-pc-ledger-spec.md`）／検証は **`npm run pc-ledger:verify-labels-spec`**
 6. `RULES-INDEX.md` の **「セッション切替・文脈復元」** 行（索引 1 行で他ドキュへジャンプ）
 7. **AI は `npm run session:bootstrap` を実行**し、結果をチャットに要約（**Read だけで終わらせない**／詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 6–7）
 
@@ -35,7 +35,7 @@
 ### 正本主義（PC 台帳 ver.1 フィールド・表示ラベル）
 
 - **仕様の正本**（フィールド設計・説明文）: `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.2**（Day4 の手順書は運用補助。ズレたら **正本を優先**して計画書・スクリプトを直す）。
-- **浜田の役割は確認のみ**（全文目視突合・一覧チェックを人に押し付けない）。**AI 側**が `scripts/pc-ledger-v1-labels.mjs` と `npm run pc-ledger:verify-labels-spec` で正本＋JSON と機械整合し、差分はレポートで残す。
+- **浜田の役割は確認のみ**（全文目視突合・一覧チェックを人に押し付けない）。**AI 側**が `pc-ledger-v1-ui-display-labels.json` と `npm run pc-ledger:verify-labels-spec` で短文ラベル＋マトリクス指紋を機械整合し、差分はレポートで残す。
 - **追加・変更の履歴**（コミット別・全フィールド対照）: `docs/plans/2026-04-26-pc-ledger-label-spec-changelog.md`
 - **セッションが変わっても**上記パスと npm script を読めば「何が正か」に迷わないようにする（口頭の続きに依存しない）。
 

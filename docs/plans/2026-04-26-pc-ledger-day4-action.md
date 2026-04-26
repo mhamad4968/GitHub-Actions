@@ -198,7 +198,7 @@
 
 - **AI 行動**:
   1. §2 から 35 フィールドの完全 JSON を生成（`npm run field-spec:generate -- --spec=docs/plans/2026-04-26-pc-ledger-day4-action.md`）
-  2. chat に dump（フィールド数を 35 と verbalize）。**表示ラベル**は `scripts/pc-ledger-v1-labels.mjs`（正本 §4.2 整合は `npm run pc-ledger:verify-labels-spec`）
+  2. chat に dump（フィールド数を 35 と verbalize）。**表示ラベル（短文）**は `scripts/data/pc-ledger-v1-ui-display-labels.json`（`npm run pc-ledger:verify-labels-spec`）
   3. 「app: 674 (新・PC台帳ver.1) で間違いないですか？」浜田 GO 待ち
 - **GO 後**: MCP `kintone-add-form-fields` 実行 → **revision は +1**（2026-04-26 実測: Step2 完了後 **3**）
 - **直後**: `npm run revision:snapshot -- --app=674 --label=step2-add-form-fields`
@@ -219,17 +219,18 @@
 - **GO 後**: `kintone-deploy-app` 実行
 - **直後**: `kintone-get-app-deploy-status` で SUCCESS 確認（PROCESSING の場合は 5 秒間隔で 3 回まで polling）
 
-#### Step 3b（推奨・表示ラベル = 正本 §4.2）
+#### Step 3b（推奨・表示ラベル = 短文正本）
 
-- Step2 の `add-form-fields` は **code と型が主目的**で、画面上の **表示ラベル**は kintone 既定や短文化しがち。**正本どおりに揃える**には **`npm run pc-ledger:apply-labels`**（浜田 GO 後・Tier B）→ その後の revision は再 GET で確認。
-- リポ内ゲート: **`npm run pc-ledger:verify-labels-spec`**（`PC_LEDGER_V1_LABELS` が §4.2 + JSON と一致すること）
+- Step2 の `add-form-fields` は **code と型が主目的**で、画面上の **表示ラベル**は kintone 既定のままになりがち。**画面用の短いラベル**は **`scripts/data/pc-ledger-v1-ui-display-labels.json`** を正本とし、**§4.2 の長い「説明」文をそのままラベルに載せない**（仕様の意味は MD §4.2 側で担保）。
+- 反映コマンド: **`npm run pc-ledger:apply-labels`**（浜田 GO 後・Tier B）→ revision は再 GET で確認。
+- リポ内ゲート: **`npm run pc-ledger:verify-labels-spec`**（短文 JSON + §4.2.2 マトリクス指紋 + 拡張 JSON）
 
 ### Step 4: kintone-get-form-fields（現状取得）+ field-spec-diff（仕様 vs 実装 機械検証）
 
 - **AI 行動**:
   1. `kintone-get-form-fields` (app=674) → 全フィールド定義取得、または `npm run revision:snapshot -- --app=674 --label=post-step4-verify`
   2. `node scripts/field-spec-diff.mjs --spec=docs/plans/2026-04-26-pc-ledger-day4-action.md --actual=<上記 JSON パス> --diff`（**`revision-snapshot` 出力全体をそのまま渡してよい**）
-  3. **`npm run pc-ledger:verify-labels-spec`**（表示ラベルが正本 §4.2 と一致）
+  3. **`npm run pc-ledger:verify-labels-spec`**（短文 JSON + §4.2.2 指紋 + 拡張）
   4. **diff 0 件**かつ verify OK なら次へ。1 件以上あれば調査 → 浜田に修正 GO を仰ぐ
 
 ### Step 5: customize JS upload（雛形のみ / lint pass 済）
@@ -318,7 +319,7 @@ npm run customize:upload -- --app 674 --file customize/674/desktop.js
 
 ## §7. 仕様書との突合ポイント
 
-- **画面表示ラベル**（正本 §4.2 原文 + §4.2.2 マトリクス指紋付き UI 短文 + 拡張 4）: `npm run pc-ledger:verify-labels-spec`（`scripts/pc-ledger-v1-labels.mjs` / `scripts/data/pc-ledger-spec-4222-ui-labels.json` / `scripts/data/pc-ledger-spec-field-extensions.json`）。**追加・変更の一覧**は `docs/plans/2026-04-26-pc-ledger-label-spec-changelog.md`（コミット別・全フィールド対照表）
+- **画面表示ラベル（短文）** + §4.2.2 マトリクス指紋 + 拡張 4: `npm run pc-ledger:verify-labels-spec`（`scripts/data/pc-ledger-v1-ui-display-labels.json` / `pc-ledger-spec-4222-ui-labels.json` / `pc-ledger-spec-field-extensions.json`）。**意味の正本**は §4.2 MD。**追加・変更の一覧**は `docs/plans/2026-04-26-pc-ledger-label-spec-changelog.md`
 - ✅ §4.2.1 PC 基本情報 12 フィールド: 完全一致
 - ✅ §4.2.2 アカウント情報 14 フィールド: 完全一致
 - ✅ §4.2.3 SKYSEA 関連 4 フィールド: 完全一致

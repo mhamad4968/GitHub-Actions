@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 新・PC台帳ver.1 — プレビュー上のフィールド label を日本語に更新し deploy まで行う。
+ * 新・PC台帳ver.1 — プレビュー上のフィールド label を **短文正本**（pc-ledger-v1-ui-display-labels.json）どおりに更新し deploy まで行う。
  * Tier B（浜田 GO 必須）。単体: npx dotenv -e .env -e .env.proxy -- node scripts/kintone-pc-ledger-apply-labels.mjs --app=674
  */
 import 'dotenv/config';

@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
- * 正本 docs/plans/2026-04-21-new-pc-ledger-spec.md §4.2 と PC_LEDGER_V1_LABELS の整合検証。
+ * kintone 表示ラベル（短文）と正本仕様書の機械的整合を検証する。
  *
- * - §4.2.1 / 4.2.3 / 4.2.4: 「説明」「内容」列と表示ラベル完全一致（kintone 全角64文字以内を警告）
- * - §4.2.2: マトリクス行の指紋が scripts/data/pc-ledger-spec-4222-ui-labels.json と一致すること。
- *           UI 短文ラベルは同 JSON のみ（正本に一行ラベル列が無いため）。
- * - 正本表外: scripts/data/pc-ledger-spec-field-extensions.json
+ * - **画面ラベル（短文）の正本**: scripts/data/pc-ledger-v1-ui-display-labels.json（= `PC_LEDGER_V1_LABELS`）
+ * - **意味・候補値・ルールの正本**: docs/plans/2026-04-21-new-pc-ledger-spec.md §4.2（長文はこちら。ラベルに載せない）
+ * - **§4.2.2**: マトリクス行の指紋 + `pc-ledger-spec-4222-ui-labels.json` の `ui_label` が短文 JSON と一致
+ * - **正本表外**: scripts/data/pc-ledger-spec-field-extensions.json の `label` が短文 JSON と一致
  *
  * Usage:
  *   node scripts/pc-ledger-verify-labels-vs-spec.mjs
@@ -23,6 +23,7 @@ const ROOT = path.resolve(__dirname, '..');
 const SPEC = path.join(ROOT, 'docs/plans/2026-04-21-new-pc-ledger-spec.md');
 const PATH_4222 = path.join(__dirname, 'data/pc-ledger-spec-4222-ui-labels.json');
 const PATH_EXT = path.join(__dirname, 'data/pc-ledger-spec-field-extensions.json');
+const PATH_DISPLAY = path.join(__dirname, 'data/pc-ledger-v1-ui-display-labels.json');
 
 const MAX_LABEL_CHARS = 64;
 
@@ -36,6 +37,12 @@ function main() {
   const parsed = parsePcLedgerSpec42(SPEC);
   const doc4222 = loadJson(PATH_4222);
   const docExt = loadJson(PATH_EXT);
+  const docDisplay = loadJson(PATH_DISPLAY);
+  const displayFields = docDisplay.fields;
+  if (!displayFields || typeof displayFields !== 'object') {
+    console.error(`${PATH_DISPLAY}: missing "fields" object`);
+    process.exit(1);
+  }
 
   if (updateFp) {
     const fields = { ...doc4222.fields };
@@ -66,28 +73,12 @@ function main() {
     }
   }
 
-  for (const [code, expected] of Object.entries(parsed.labels421)) {
+  for (const [code, lbl] of Object.entries(displayFields)) {
     const got = PC_LEDGER_V1_LABELS[code];
-    checkLen(code, expected);
-    if (got !== expected) {
-      errors.push(`§4.2.1 ${code}: 期待「${expected}」実際「${got ?? '(未定義)'}」`);
+    if (got !== lbl) {
+      errors.push(`短文正本 ${code}: JSON「${lbl}」≠ pc-ledger-v1-labels「${got ?? '(未定義)'}」`);
     }
-  }
-
-  for (const [code, expected] of Object.entries(parsed.labels423)) {
-    const got = PC_LEDGER_V1_LABELS[code];
-    checkLen(code, expected);
-    if (got !== expected) {
-      errors.push(`§4.2.3 ${code}: 期待「${expected}」実際「${got ?? '(未定義)'}」`);
-    }
-  }
-
-  for (const [code, expected] of Object.entries(parsed.labels424)) {
-    const got = PC_LEDGER_V1_LABELS[code];
-    checkLen(code, expected);
-    if (got !== expected) {
-      errors.push(`§4.2.4 ${code}: 期待「${expected}」実際「${got ?? '(未定義)'}」`);
-    }
+    checkLen(code, lbl);
   }
 
   const fields4222 = doc4222.fields;
@@ -146,7 +137,7 @@ function main() {
     process.exit(1);
   }
   console.log(
-    `OK: PC_LEDGER_V1_LABELS が正本 §4.2（${SPEC}）+ §4.2.2 UI JSON + 拡張 JSON と一致（${actualCodes.size} フィールド）`
+    `OK: 表示ラベル（短文）${actualCodes.size} 件 = ${PATH_DISPLAY} + §4.2.2 指紋 + 拡張 JSON（意味の正本: ${SPEC} §4.2）`
   );
 }
 

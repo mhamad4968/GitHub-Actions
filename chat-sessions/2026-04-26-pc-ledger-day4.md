@@ -109,6 +109,7 @@
 - **ラベル仕様**: スナップショット `674-step3b-japanese-labels-*.json` 時点で **22 コードが `PC_LEDGER_V1_LABELS` と不一致**（短文のまま残存）→ **`npm run pc-ledger:apply-labels`** で PUT + deploy SUCCESS（revision **4→5**）→ 新スナップショット `data/snapshots/674-labels-spec-realign-20260426-182035.json` で **全 35 ラベル一致を node 検証済**
 - **型・必須・件数**: `node scripts/field-spec-diff.mjs --spec=docs/plans/2026-04-26-pc-ledger-day4-action.md --actual=data/snapshots/674-labels-spec-realign-20260426-182035.json --diff` → **✅ 35 fields all match**（`field-spec-diff` は `form_fields_live` 対応済み）
 - **リポ内ゲート**: `npm run pc-ledger:verify-labels-spec` → **OK**
+- **2026-04-26 夜**: 画面上の長文問題のため、**短文正本** `pc-ledger-v1-ui-display-labels.json` に切替 → `pc-ledger:apply-labels`（revision **5→6**）→ スナップショット `674-labels-short-ui-*.json`
 
 ### Step 5: customize upload
 

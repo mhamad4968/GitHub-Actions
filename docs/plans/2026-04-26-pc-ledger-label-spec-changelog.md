@@ -1,6 +1,6 @@
 # 新・PC台帳 ver.1 — 表示ラベル・正本突合の変更履歴（2026-04-26）
 
-> **最新の正**: リポジトリの `HEAD`（`scripts/pc-ledger-v1-labels.mjs` + `scripts/data/pc-ledger-spec-4222-ui-labels.json` + `scripts/data/pc-ledger-spec-field-extensions.json`）を `npm run pc-ledger:verify-labels-spec` で検証した状態。  
+> **最新の正**: リポジトリの `HEAD`（**画面用短文** `scripts/data/pc-ledger-v1-ui-display-labels.json` → `pc-ledger-v1-labels.mjs` + `pc-ledger-spec-4222-ui-labels.json` + `pc-ledger-spec-field-extensions.json`）を `npm run pc-ledger:verify-labels-spec` で検証した状態。**意味の正本**は `2026-04-21-new-pc-ledger-spec.md` §4.2。  
 > **役割の正本（変更禁止）**: **開発は AI・確認は浜田**（`AGENTS.md` **§35-1** / **§56-1a**）。  
 > **仕様の正本**（フィールド定義・説明文）: `docs/plans/2026-04-21-new-pc-ledger-spec.md` §4.2。付録の **§C アカウント生成ロジック**（同ファイル後半の Q&A 表）は §4.2.2 と同趣旨の要約。**表示名**で §4.2.2 に語が無い行は JSON の `ui_label` が正（マトリクス指紋で正本変更を検知）。
 
@@ -43,6 +43,15 @@
 | **事実** | 旧スナップショット上、**22 フィールド**の `label` が `PC_LEDGER_V1_LABELS` と不一致（短文のまま） |
 | **実施** | **`npm run pc-ledger:apply-labels`**（PUT + deploy SUCCESS、revision 4→5）後、`674-labels-spec-realign-*.json` で **全 35 ラベル一致**を確認 |
 | **リポ** | `field-spec-diff.mjs` の `--diff` が **`revision-snapshot` の `form_fields_live` 形式**を読めるよう拡張（Step4 機械検証の取り回し改善） |
+
+### 2026-04-26 夜 — 表示ラベルを「短文」に戻す（仕様全文をラベルに載せない）
+
+| 種別 | 内容 |
+|---|---|
+| **背景** | §4.2 の説明文をそのまま kintone の `label` に載せたため、**画面上に仕様書のような長文**が出て運用しづらい |
+| **方針** | **画面** = `scripts/data/pc-ledger-v1-ui-display-labels.json`（短文のみ）。**意味・ルールの正本** = `2026-04-21-new-pc-ledger-spec.md` §4.2（変更なし） |
+| **実装** | `pc-ledger-v1-labels.mjs` は JSON を読み込み export のみ。検証は `pc-ledger-verify-labels-vs-spec.mjs` を「短文 + マトリクス指紋」方式に変更 |
+| **kintone** | **`npm run pc-ledger:apply-labels`** で 674 を短文に更新（スナップショット `674-labels-short-ui-*.json`） |
 
 ---
 
