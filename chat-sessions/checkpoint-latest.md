@@ -12,6 +12,12 @@
 
 詳細は `AGENTS.md` 該当節。`AGENTS.md` ハッシュ不一致時は **§42-2-3**（BREAKING フィルタ）必須。
 
+## 引き継ぎ（短縮・人間5行）
+
+- **浜田さん**: `chat-sessions/HANDOFF-HUMAN.txt` を5行だけ埋めてチャットに貼る（それだけでよい）。
+- **AI（必須）**: 同じターンで `chat-sessions/handoff-log.md` **末尾に追記**する。チャットだけで終わらせない（詳細は `.cursor/rules/session-handoff.mdc`）。
+- **次チャット初手**: `NEW-SESSION-STARTER.md` ＋ 本ファイル ＋ `handoff-log.md` の**末尾から最大3件**を Read。
+
 ---
 
 **最終更新**: 2026-04-26 (Sun) 12:30 — **再開** ✅。**本日 2026-04-26 完了サマリ**: 朝 06:00 ブリーフィング → API 100% 枯渇発覚 → 甲フル実装 (Monthly Limit $300→$1000 / S1-S5 5 措置) → S2 CLAUDE.md 480→73 行 thin 化 (`046ec2d`) → P5-3 Rules/Skills/Subagents 監査 7 件発見 → P5-4 Indexing 監査 3 件発見 → P5-5 Plan&Usage 監査 7 件発見 (F-14 Max Thinking 59.4% 確定) → **R-3** 「最適モデル原則」+ §1-2-3-2 新設 (`92b89d5`) → **R-4 §51-6-2 + R-5 §52-9 新設 + Day 4 時刻 13:00→20:00 + RAG/Desktop 同期 + §52-9 即日 2 件発動** (`01d18e5`) → **P5-1 Hooks 監査 完了** / **P5-2 Tools&MCPs 監査 完了** / **TSB-022 起票 + 恒久案 (docs) + `~/.cursor/hooks/dangerous-shell-blocker.sh` heredoc 本文 strip 実装 + `artifacts/cursor-hooks/dangerous-shell-blocker.sh` スナップショット** ✅。**Day 4 (PC 台帳) は 20:00 開始予定** (浜田指示 / 慎重進行優先)。**文書化コミット**: `b201232`（§0/TSB-022/日次/スターター追記 + hook スナップショット）。**次**: `git push`（**任意** / いま `main` は `origin/main` より ahead 1）→ Day4 は 20:00 開始予定。**並列禁止 §51 100% 遵守 / 不可逆操作ゼロ**。

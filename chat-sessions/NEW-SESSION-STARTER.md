@@ -124,6 +124,11 @@ v3.11 (2026-04-26 12:20) §0 定義 + TSB-022 追記 + 日次ログ整備:
 - **日次**: `kintone-ai-lab/chat-sessions/2026-04-26.md` 作成 + `kintone-ai-lab/chat-sessions/checkpoint-latest.md` 最終追記
 - **機械監査（ローカル）**: `npm run verify:all` + `npm run smoke:quiet` = ✅
 
+v3.12 (2026-04-26) 人間5行引き継ぎ + AI 追記義務:
+- **浜田**: `chat-sessions/HANDOFF-HUMAN.txt`（5行だけ）→ チャットへ貼る
+- **AI**: 同ターンで `chat-sessions/handoff-log.md` 末尾へ必ず追記（`.cursor/rules/session-handoff.mdc` / 漏れ禁止）
+- **checkpoint-latest.md** に手順リンク済み
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ■ フル版（コピペ推奨 / 新チャットにこのブロックを貼る）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -133,6 +138,7 @@ v3.11 (2026-04-26 12:20) §0 定義 + TSB-022 追記 + 日次ログ整備:
 まず以下を読み込んで文脈を完全復元してから本題に入って：
 
 @kintone-ai-lab/chat-sessions/checkpoint-latest.md   ← 現在地（短く）
+@kintone-ai-lab/chat-sessions/handoff-log.md        ← 直近引き継ぎ（末尾から最大3ブロック）
 @kintone-ai-lab/chat-sessions/<最新日付>.md          ← 直近の詳細経緯（例: 2026-04-23.md）
 @RULES-INDEX.md                                       ← ホーム索引
 @kintone-ai-lab/RULES-INDEX.md                       ← リポ索引（§N 全件チェックリスト + MCP 活用 + 並列禁止セクション）
