@@ -121,6 +121,33 @@ PC レコード保存・廃棄時:
 
 **kintone 画面上の表示名**はリポジトリの `scripts/data/pc-ledger-v1-ui-display-labels.json` を正とする（**PC 名・種別・ステータス**は説明付きラベル、その他は短文。下表の「説明」「内容」列は仕様の意味・ルール用）。
 
+#### 4.2.0 浜田認識の整理（コア自動生成 vs SKYSEA）
+
+- **SKYSEA 計画（別枠）**: §4.2.3 の `skysea_status` / `skysea_checked_at` / `skysea_install_log` / `skysea_target_flag` は **SKYSEA 施策の状態・履歴・配信対象の管理用**です。**下表の * は PC 名〜VPN までの「採番・ID 連動」のコア**であり、SKYSEA 4 フィールドとは役割が分かれます（自動生成ボタンが主に触るのは §4.2.2 マトリクス＋下表の論理）。
+- **595 ルックアップ等**: `mail` / `mail_acct` / `user_name` / `dept_name` / `group_name` は **コア表の外**ですが、個人フローで M365 等に必要になるため **別フィールドで保持**（§4.2.1・§4.2.2）。
+- **実務属性**: 棚卸日・購入日・シリアル・備考・種別・ステータス等は **運用メタ**（§4.2.1）。
+
+| * コア（浜田認識） | ルール要約 | kintone `code`（主） |
+|---|---|---|
+| 個人 PC 名 | `JBIS` + 4 桁連番 + `-` + `YYYYMM`（新規分のみ） | `pc_name`（`pc_serial_no` が 4 桁の源・§4.3.1） |
+| 共有 PC 名 | `S-JBIS` + 4 桁連番 + `-` + `YYYYMM`（新規分のみ） | 同上 |
+| JR端末 PC 名 | 手入力 | `pc_name` |
+| 個人 WindowsID | `jbm` + 4 桁（626 から） | `logon_name` |
+| 共有 WindowsID | `sjbm` + 4 桁（667 から） | `logon_name` |
+| JR WindowsID | 手入力 | `logon_name` |
+| WindowsPW | = WindowsID（= `logon_name`） | `logon_pw` |
+| Windows アカウント名 | `WindowsID[mail@前]`（個人/共有）/ 手入力（JR） | `windows_name` |
+| メールパスワード | `jb` + ランダム 4 桁数字 + `K#`（個人用ボタン 1 回生成） | `mail_pw` |
+| 個人 M365 PW | `WindowsID` + `K#`（例: `jbm0001K#`） | `m365_pw` |
+| 共有/JR M365 PW | `kent2511K#` 固定（環境設定マスタ由来） | `m365_pw` |
+| 個人 M365 ID | `mail_acct` + `@kensetsutoso01.onmicrosoft.com` | `m365_id` |
+| 共有/JR M365 ID | M365 管理マスタから自動取得 | `m365_id` |
+| サイボウズ ID | = `mail_acct`（個人のみ） | `gb_id` |
+| サイボウズ PW | = WindowsID（= `logon_name`）（個人のみ） | `gb_pw` |
+| ガリバー ID | = `mail_acct`（個人のみ） | `sb_id` |
+| ガリバー PW | = WindowsID（個人のみ） | `sb_pw` |
+| VPN ID / PW | 手入力（個人/共有）/ 不要（JR） | `vpn_id` / `vpn_pw` |
+
 #### 4.2.1 PC 基本情報（全種別共通）
 | code | type | 説明 |
 |---|---|---|
