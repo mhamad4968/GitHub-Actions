@@ -227,6 +227,7 @@ P5-2 で `.cursorignore` を heredoc 経由 (`cat > .cursorignore <<EOF ... EOF`
 ### 学び
 - regex ベース hook の本質的限界 = bash 構文を完全解析しないとリダイレクトの「実体」と「文字列」を完全区別不可
 - 第 1 トークン制約 (`[^[:space:]<>&\|;]*`) で実用的な精度は達成可能
+- **追加の実務知見**: heredoc を含むコマンドは deny regex が heredoc 本文（単なる文字列）を拾って誤検知しうるため、判定前に heredoc 本文を strip する前処理が有効（TSB-022）。`<<EOF` / `<<-EOF` / `<<'EOF'` / `<<-"EOF"` / `<<\\EOF` 等を best-effort で扱う。
 - 将来 obfuscation 攻撃が懸念されるなら allow-list 方式への切替検討（現状は `AI が良かれと思って` シナリオのみ対象なので deny-list で十分）
 
 ---

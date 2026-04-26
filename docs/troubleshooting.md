@@ -6,7 +6,7 @@
 
 ---
 
-## 目次（2026-04-25 全件再構築 / F-2 自己改善目標 #2 = 真因 1 文 + root_cause_confirmed フラグ追加）
+## 目次（2026-04-25 全件再構築 / 2026-04-26 TSB-022 追記 / F-2 自己改善目標 #2 = 真因 1 文 + root_cause_confirmed フラグ追加）
 
 > **真因 1 文ルール**: 各 TSB は **「真因を 1 文で説明できる」状態でなければ root_cause_confirmed = false** とする。false の TSB は再発監視優先。
 > **status 凡例**: ✅ Resolved（恒久対策済）/ 🟡 Mitigated（暫定対策のみ）/ 🔴 Open（未解決）/ ♻️ Recurring（同系列複数 episode）
@@ -33,9 +33,10 @@
 | TSB-017 | 2026-04-25 11:03 検出 / B-7 提案中に発見 | **§51 並列禁止違反** — 別 Cursor セッションが現セッション AI の B-7 提案テキストを読み実行 | 11:03 私が §47-D 追記提案中に grep したら **§47-D 既追加 + RULES-INDEX.md も連動編集 + `.b7-pre-...` バックアップ 2 件**を発見。`.b7-pre` 命名は私が B-7 提案メッセージで書いた手順 (`cp AGENTS.md AGENTS.md.b7-pre`) を文字通り実行した証拠 = 別セッション関与確定。AGENTS.md mtime 10:58:57 / RULES-INDEX.md 10:59:11 / 連動編集 / 35 行 AI 風文体 = 別 AI による完璧な実装。証拠 2 件は `backups/tsb-017-evidence/` に保全 | ✅ | true | AGENTS.md / RULES-INDEX.md / **§51 並列セッション** |
 | TSB-018 | 2026-04-26 06:33 検出 / N-3 / 浜田朝ブリーフィング | **Cursor IDE の API 制限到達時の silent fallback** — Opus 4.7 → composer-2 へ自動切替（§1-2 違反の構造的温床） | 浜田が `Switched to Composer 2 after reaching API limit.` を IDE chat で受領。Opus クレジット枯渇時に Cursor IDE が低コスト composer-2 へユーザー GO なく切替する既定挙動。CLI 側 `composer-2-fast` 罠（§1-2-1 で documented）とは別ソース。§1-2-2 を制定し IDE 設定 5 項目（Auto / Auto-fallback / Use Auto on limits / 有効モデル一覧 / Background agents）の必須状態を明文化 + 検知時 AI 即時中断ルール化 | ✅ | true | Cursor IDE / §1-2 単一モデル前提 |
 | TSB-019 | 2026-04-26 07:42 検出 / Q1 / §1-2-2-1 設定検証中に発見 | **Cursor IDE Auto-Run Mode = "Run Everything (Unsandboxed)" + Browser/MCP Protection OFF が §52 RACI Tier B を構造的に bypass** — kintone 本番 API 書込含む全 MCP ツール・shell・file-write が浜田 GO なしに実行可能だった | §1-2-2-1 (Cursor IDE 必須設定) の verify 中に Agents タブを浜田に開いてもらい発見。`Auto-Run Mode = Run Everything (Unsandboxed)` + `Browser Protection: OFF` + `MCP Tools Protection: OFF` の三重 OFF 構成で、AI Agent が shell・file-write・MCP ツール（**kintone MCP / filesystem / memory / playwright 等含む**）を **承認プロンプト無しで全自動実行する状態**だった。AGENTS.md §52 RACI が「Tier B (irreversible) は浜田の明示 GO 必須」と規定していても **IDE レベルで bypass されており実効性ゼロ**。過去の TSB-006 (Undo All 破壊) / TSB-017 (並列セッション勝手書換) もこの設定と相互作用していた可能性大。対処: Auto-Run Mode は「基本自律 + 危険時確認」浜田判断で `Run Everything` 維持しつつ、**Browser Protection: ON + MCP Tools Protection: ON** に変更（kintone 本番 API は MCP 経由のため MCP Protection ON で構造的にゲート）。§1-2-2-1 を 5 → 8 項目に拡張、§52 RACI に「shell 暴走防止 = 高リスクコマンドは事前報告」追記 | ✅ | true | Cursor IDE 全体 / §52 RACI / kintone 本番 |
+| TSB-022 | 2026-04-26 | dangerous-shell-blocker.sh heredoc 誤検知 | `dangerous-shell-blocker.sh` がコマンド全文（heredoc 本文含む）へ deny regex を適用し、**heredoc 内の文字列**が `git rebase` 等の危険パターンに一致して誤検知していた | ✅ | true | Cursor Hooks / §52-8-1 |
 
-**集計** (2026-04-26 07:55 時点 / TSB-019 追加):
-- 全 20 件中 **root_cause_confirmed = true: 19 件 (95%)** / **false (孤児): 1 件 (5%)**
+**集計** (2026-04-26 12:30 時点 / TSB-022 追記):
+- 全 21 件中 **root_cause_confirmed = true: 20 件 (95%)** / **false (孤児): 1 件 (5%)**
 - 5 月目標 (F-2 自己批判 §54-5) = カバレッジ 100% を TSB-019 真因確定 (Cursor IDE Agents 設定) で **95% 維持**
 - 残 false: **TSB-001 のみ** = 孤児 TSB（4/19 D1-proposal でも「詳細未記載」）= 真因不明のまま記録止まり
 
@@ -1100,3 +1101,44 @@ Cursor IDE の既定挙動:
 - 関連 ルール: §1-2-2 / §1-2-2-1 (本件で 4 → 7 項目拡張) / §52 RACI (本件で shell 暴走防止追記) / §47-E 憲法違反却下
 - 関連 commit: 本 commit (Q1 [FEAT])
 - 後続: Q-series 包括 Cursor 設定監査（PC 台帳完了後）
+
+---
+
+## TSB-022 — dangerous-shell-blocker.sh が heredoc 本文を誤検知（2026-04-26）
+
+### 事象
+
+`~/.cursor/hooks/dangerous-shell-blocker.sh` は `beforeShellExecution` フックで **実行予定コマンド文字列**を正規表現で判定して deny する。
+
+しかしコマンドに heredoc が含まれる場合、heredoc の **本文（単なる文字列）**の中に `git rebase` 等が出現すると、deny regex がそれを「実際の実行コマンド」と誤認して block する可能性があった。
+
+例（概念）:
+
+```bash
+git commit -m "$(cat <<'EOF'
+手順メモ: git rebase は後でやる
+EOF
+)"
+```
+
+### 根本原因（真因 1 文）
+
+**deny 判定がコマンド全文に対して行われ、bash 構文上「実行されない heredoc 本文」もマッチ対象に含まれていたため。**
+
+### 対策（恒久）
+
+- heredoc を含むコマンドは、deny 判定前に **heredoc 本文を除去した文字列**（header + delimiter 行のみ）に正規表現を適用する。
+- これにより「実行されない文字列」が危険コマンド扱いされる false positive を防ぐ。
+- 実装は `~/.cursor/hooks/dangerous-shell-blocker.sh` の `strip_heredoc_bodies()` で行い、delimiter token を best-effort で抽出して本文をスキップする（例: `<<EOF`, `<<-EOF`, `<<'EOF'`, `<<-"EOF"`, `<<\\EOF`）。
+- **補足（消失対策）**: 実行正本は `~/.cursor/hooks/...`（git 管理外）のため、履歴上の再現性・バックアップ用に同内容のスナップショットを `artifacts/cursor-hooks/dangerous-shell-blocker.sh` として `kintone-ai-lab` 側に保持する（コメント 1 行差のみ）。
+- 既知の限界: bash 構文を完全解析しているわけではないため、特殊な heredoc（delimiter が変数展開、空白を含む等）は想定外。hook は fail-open のため、その場合でも **誤 block よりは通す** 振る舞いになる。
+
+### 教訓
+
+1. regex ベースの hook は bash 構文を完全解析できないため、**「実行される部分だけを見る」前処理**が必要。
+2. heredoc を含む複雑な 1 行コマンド（特に commit message 生成）は、`git commit -F /tmp/<msg>.txt` のように分離するとさらに安全。
+
+### 関連
+
+- 関連仕様: `docs/cursor-hooks-design.md`（誤検知履歴）
+- 関連ルール: `AGENTS.md §52-8 / §52-8-1`

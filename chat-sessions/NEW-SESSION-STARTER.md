@@ -118,6 +118,12 @@ v3.10 (2026-04-26 10:35) R-4 + R-5 / v23.17: §51-6-2 + §52-9 新設（commit �
 - **§52-9 制定（Tier A 範囲ミス発見時の自律修正権 / R-5）**: §52-4 Conservative Default の **能動的反対側補完**。適用範囲 = Tier A のみ即修正可。絶対対象外 = Tier B / §52-8 / §57 / scope 外 / Cursor IDE 設定変更。完了報告 + `logs/autonomy-decisions/auto-fix-*.md` 事後トレース義務。
 - **PC 台帳 Day 4 時刻シフト**: 13:00 → **20:00** (浜田指示 / R-3/R-4/R-5 案件継続中の慎重進行優先 / §51-6 夜セッション帯と整合 / Day 4 着手前は §51-6-2 で必ず新セッション)
 
+v3.11 (2026-04-26 12:20) §0 定義 + TSB-022 追記 + 日次ログ整備:
+- **§0 定義（audit-rules 破断解消）**: `AGENTS.md` に **§0 RULES-INDEX 即答カード参照**を追加 + `kintone-ai-lab/RULES-INDEX.md` に §0 行を追加（索引駆動の入口を明文化）
+- **TSB-022（Hooks / heredoc 誤検知）起票＋恒久案追記**: `docs/troubleshooting.md` + `docs/cursor-hooks-design.md`（deny 判定前に heredoc 本文 strip / 限界=bash完全解析不可 / fail-open）
+- **日次**: `kintone-ai-lab/chat-sessions/2026-04-26.md` 作成 + `kintone-ai-lab/chat-sessions/checkpoint-latest.md` 最終追記
+- **機械監査（ローカル）**: `npm run verify:all` + `npm run smoke:quiet` = ✅
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ■ フル版（コピペ推奨 / 新チャットにこのブロックを貼る）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
