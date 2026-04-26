@@ -60,7 +60,9 @@
 
 ---
 
-**最終更新**: 2026-04-27 (Mon) JST — **App 674 浜田 GO**: `npm run pc-ledger:apply-labels`（差分なし）→ `npm run deploy:674` **Deploy SUCCESS**（preview **revision=10**）→ `revision:snapshot` `go-post-apply-labels` / `go-post-deploy-674` → `field-spec:diff` **35/35 match** → `npm run kintone:test` **9/9** → `npm run smoke:quiet` **9/9**。
+**最終更新**: 2026-04-28 (Tue) JST — **App 674 浜田 GO**: 594 HW **7 フィールド** POST → **`internal_system_meta`（GROUP）** POST → preview **deploy**（rev **11**）→ `pc-ledger:674:layout-internal-group`（内部メタ 5 件をグループ内へ + deploy **rev 12**）→ `pc-ledger:apply-labels`（2 件）+ deploy **rev 13**）→ `deploy:674` customize（**rev 14** / fileKey `741fd3e9-fce3-4efb-ad15-833cc6363bc1`）→ `revision:snapshot` `674-go-2026-04-28-hw-group-customize-*` → `field-spec:diff` **43/43** → `kintone:test` **9/9** → `smoke:quiet` **9/9**。
+
+**前回更新**: 2026-04-27 (Mon) JST — **App 674 浜田 GO**: `npm run pc-ledger:apply-labels`（差分なし）→ `npm run deploy:674` **Deploy SUCCESS**（preview **revision=10**）→ `revision:snapshot` `go-post-apply-labels` / `go-post-deploy-674` → `field-spec:diff` **35/35 match** → `npm run kintone:test` **9/9** → `npm run smoke:quiet` **9/9**。
 
 **前回更新**: 2026-04-26 (Sun) 深夜 JST — **スターター常に `yyyymmdd.txt` へ同期**（変更時のみ旧版を `_2`…退避）**+ verify 最終行に貼付推奨**（案 C/D）**+ README.txt 同期 + 日終わり手順**（案 A/B）。**前回**: 枝番最大を貼る運用。
 
