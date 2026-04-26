@@ -107,3 +107,11 @@ chat-sessions/_archive/
 # ─────────────────────────────────────────────
 # docs/reports/archive/YYYY-MM/ の月次アーカイブ = 履歴目的のみで AI 参照頻度低
 docs/reports/archive/**
+
+# ─────────────────────────────────────────────
+# (9) CLAUDE.md（2026-04-26 P5-5 / S2 / B+ 採択）
+# ─────────────────────────────────────────────
+# Cursor Composer は AGENTS.md を読むため CLAUDE.md は index 不要。
+# Claude Code (ターミナル CLI) は .cursorignore を見ないので影響なし。
+# F-13 教訓: semantic search で引かれると ~13K tokens 消費していた → 完全遮断。
+CLAUDE.md
