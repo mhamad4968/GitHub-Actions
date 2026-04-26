@@ -6,6 +6,7 @@
 // 機能:
 //   1. --generate: 仕様書 markdown のフィールド表から
 //      kintone-add-form-fields の properties JSON を生成 (浜田 GO 取得用テンプレ)
+//      表示ラベルは scripts/pc-ledger-v1-labels.mjs の日本語マップを使用
 //   2. --diff:     仕様 vs 実際の get-form-fields 結果を機械照合 → diff 0 でなければ exit 1
 //
 // 期待する仕様 markdown 形式 (Day 4 plan §2):
@@ -22,11 +23,12 @@
 //   node scripts/field-spec-diff.mjs --spec=docs/plans/2026-04-26-pc-ledger-day4-action.md --actual=data/snapshots/674-form-2026-04-26.json --diff
 //
 // 注意:
-//   - kintone API write は本ツール対象外 (Tier B / 浜田 GO 必須)
-//   - 本ツールは read + parse + 比較のみ実施 (Tier A 自律)
+//   - `--generate` は read + JSON 出力のみ (Tier A)。表示ラベルは pc-ledger-v1-labels.mjs。
+//   - kintone への label 反映は `scripts/kintone-pc-ledger-apply-labels.mjs`（Tier B / 浜田 GO）
 
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { PC_LEDGER_V1_LABELS } from './pc-ledger-v1-labels.mjs';
 
 function parseArgs(argv) {
   const args = { spec: null, actual: null, mode: null };
@@ -170,7 +172,7 @@ function generateProperties(fields) {
     const prop = {
       type: f.type,
       code: f.code,
-      label: f.code,
+      label: PC_LEDGER_V1_LABELS[f.code] ?? f.code,
       required: f.required,
     };
     if (f.unique && (f.type === 'SINGLE_LINE_TEXT' || f.type === 'NUMBER')) {

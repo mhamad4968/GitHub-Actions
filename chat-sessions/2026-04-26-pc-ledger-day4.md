@@ -66,6 +66,7 @@
 - MCP `kintone-add-app` は **`thread` 非対応**（スキーマは `name` + `space` のみ）。スレッド 23 は kintone 管理画面で要確認。
 - 返却 **revision `"2"`**（計画の revision 1 想定と異なる）。Step2 の `revision` 引数は **実測 2** を使うこと。
 - Step2 完了後の **revision は `3`**。Step3 `kintone-deploy-app` は **`{ "app": 674, "revision": 3 }`** を使うこと。
+- **表示ラベル日本語化**（Step4 前）: `npm run pc-ledger:apply-labels` → preview PUT + deploy SUCCESS、**revision `4`**。以降のフォーム更新は **実測 revision** を使うこと。
 
 ---
 
@@ -89,9 +90,18 @@
 
 ### Step 3: deploy-app
 
-- 実行時刻: `(空欄)`
-- status: `(空欄)` (SUCCESS なら OK / PROCESSING なら polling)
-- snapshot: `(空欄)`
+- 引数: `{"apps":[{"app":"674","revision":"3"}],"revert":false}`（**674 のみ**）
+- 実行時刻: 2026-04-26（Step3 GO セッション）
+- status: **SUCCESS**（`kintone-get-app-deploy-status` 1 回目で確認、追加 polling 不要）
+- snapshot: `data/snapshots/674-step3-after-deploy-20260426-174110.json`（本番反映後・live 43 fields）
+
+### Step 3b: フィールド表示ラベル（日本語）
+
+- 背景: Step2 生成が `label=code` のため入力時に分かりにくい → **リポの新版仕様を正**として日本語化。
+- 実装: `scripts/pc-ledger-v1-labels.mjs`（35 コードマップ）+ `scripts/kintone-pc-ledger-apply-labels.mjs`（GET preview → PUT → deploy）
+- 結果: **35 ラベル更新**、PUT 後 **revision `4`**、deploy **SUCCESS**
+- 再発防止: `field-spec-diff.mjs --generate` は **日本語 `label`** を出力（`pc-ledger-v1-labels.mjs` 参照）
+- snapshot: `data/snapshots/674-step3b-japanese-labels-20260426-175027.json`
 
 ### Step 4: field-spec-diff
 
