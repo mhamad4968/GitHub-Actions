@@ -78,6 +78,7 @@
     "field-spec:diff": "node scripts/field-spec-diff.mjs",
     "field-spec:generate": "node scripts/field-spec-diff.mjs --generate",
     "pc-ledger:apply-labels": "npx dotenv -e .env -e .env.proxy -- node scripts/kintone-pc-ledger-apply-labels.mjs --app=674",
+    "pc-ledger:verify-labels-spec": "node scripts/pc-ledger-verify-labels-vs-spec.mjs",
     "revision:snapshot": "npx dotenv -e .env -e .env.proxy -- node scripts/revision-snapshot.mjs",
     "audit:tsb": "node scripts/audit-tsb-confirmed.mjs",
     "audit:xref": "node scripts/audit-cross-references.mjs",

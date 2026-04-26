@@ -1,0 +1,75 @@
+{
+  "_comment": "§4.2.2 は code|type|個人|共有|JR のマトリクスのみ。UI 表示ラベルは短文固定。matrix_fingerprint は正本から算出した行指紋（仕様変更検知用）。",
+  "fields": {
+    "logon_name": {
+      "ui_label": "WindowsID",
+      "spec_anchor": "§4.3.2 WindowsID（logon_name）",
+      "matrix_fingerprint": "10a799f95fa7dedb"
+    },
+    "logon_pw": {
+      "ui_label": "ログオン初期PW",
+      "spec_anchor": "§4.2.2（=logon_name）",
+      "matrix_fingerprint": "5ddf1988f931af9c"
+    },
+    "windows_name": {
+      "ui_label": "Windows名",
+      "spec_anchor": "§4.2.2 logon_name[mail@前]",
+      "matrix_fingerprint": "0afcd4b2c069ea8c"
+    },
+    "mail": {
+      "ui_label": "メール（595 から）",
+      "spec_anchor": "§4.2.2 個人列",
+      "matrix_fingerprint": "0e0c2a68bd037801"
+    },
+    "mail_acct": {
+      "ui_label": "mailの@前",
+      "spec_anchor": "§4.2.2",
+      "matrix_fingerprint": "d7dd69ac0a312eb0"
+    },
+    "mail_pw": {
+      "ui_label": "メール初期PW",
+      "spec_anchor": "§4.2.2 jb+ランダム…",
+      "matrix_fingerprint": "d22d318342ceecc1"
+    },
+    "m365_id": {
+      "ui_label": "M365 ID",
+      "spec_anchor": "§4.2.2",
+      "matrix_fingerprint": "b82f97ca2a96ce74"
+    },
+    "m365_pw": {
+      "ui_label": "M365 PW",
+      "spec_anchor": "§4.2.2",
+      "matrix_fingerprint": "97cebf14968b8de2"
+    },
+    "gb_id": {
+      "ui_label": "Google（Business）ID",
+      "spec_anchor": "§4.2.2 =mail_acct",
+      "matrix_fingerprint": "b171e659672a3189"
+    },
+    "gb_pw": {
+      "ui_label": "Google（Business）PW",
+      "spec_anchor": "§4.2.2 =logon_name",
+      "matrix_fingerprint": "0e8b939c14f39174"
+    },
+    "sb_id": {
+      "ui_label": "SmartHR ID",
+      "spec_anchor": "§4.2.2 =mail_acct",
+      "matrix_fingerprint": "b171e659672a3189"
+    },
+    "sb_pw": {
+      "ui_label": "SmartHR PW",
+      "spec_anchor": "§4.2.2 =logon_name",
+      "matrix_fingerprint": "0e8b939c14f39174"
+    },
+    "vpn_id": {
+      "ui_label": "VPN ID",
+      "spec_anchor": "§4.2.2 手入力",
+      "matrix_fingerprint": "678c72c9a0d64ae6"
+    },
+    "vpn_pw": {
+      "ui_label": "VPN PW",
+      "spec_anchor": "§4.2.2 手入力",
+      "matrix_fingerprint": "678c72c9a0d64ae6"
+    }
+  }
+}
