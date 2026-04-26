@@ -69,7 +69,7 @@
 
 ### Layer C: 事後検証（§5 で詳述）
 
-- [ ] kintone-apps.md に 674 行追記
+- [x] kintone-apps.md に 674 行追記（2026-04-27: **アプリ一覧表**＋保守メモ見出しに 674。詳細フィールド一覧は `npm run app:fields 674` で後追い可）
 - [ ] autonomy-decisions ログ作成
 - [ ] checkpoint-latest.md / chat-sessions/2026-04-26.md 更新
 - [ ] commit (`-F file` 経由 / hook 誤検知回避) → push → lock release
