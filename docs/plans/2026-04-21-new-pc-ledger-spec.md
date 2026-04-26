@@ -135,8 +135,8 @@ PC レコード保存・廃棄時:
 | 個人 PC 名 | `JBIS` + 4 桁連番 + `-` + `YYYYMM`（新規分のみ） | `pc_name`（`pc_serial_no` が 4 桁の源・§4.3.1） |
 | 共有 PC 名 | `S-JBIS` + 4 桁連番 + `-` + `YYYYMM`（新規分のみ） | 同上 |
 | JR端末 PC 名 | 手入力 | `pc_name` |
-| 個人 WindowsID | `jbm` + 4 桁（626 から） | `logon_name` |
-| 共有 WindowsID | `sjbm` + 4 桁（667 から） | `logon_name` |
+| 個人 WindowsID | `jbm` + 4 桁（**新個人WindowsID採番マスタ**・§2） | `logon_name` |
+| 共有 WindowsID | `sjbm` + 4 桁（**新共有WindowsID採番マスタ**・§2） | `logon_name` |
 | JR WindowsID | 手入力 | `logon_name` |
 | WindowsPW | = WindowsID（= `logon_name`） | `logon_pw` |
 | Windows アカウント名 | メール @ より前との連動（個人のみ）/ **共有は `=logon_name`**（メールなし）/ 手入力（JR） | `windows_name` |
@@ -171,11 +171,11 @@ PC レコード保存・廃棄時:
 
 #### 4.2.2 アカウント情報（個人・共有はボタンで多項目を表示・JR は Windows 系手入力＋M365 のみマスタ連動）
 
-- **浜田方針（2026-04-27）**: **メール（595）は個人用 PC のみ**必要。共有 PC と **JR 端末は共有 PC 扱い**とし、台帳上のアカウント運用は **Windows（`logon_name` / `windows_name` 等）と M365 のみ**（会社メール・`mail_acct` 由来の gb/sb 等は不要。UI は §4.5）。
+- **浜田方針（2026-04-27）**: **メール（595）は個人用 PC のみ**。**共有・JR はサイボウズ・ガリバー・会社メールを台帳に持たない**（§4.2.2 マトリクス・§4.5）。**自動でフォームへ出す範囲**は **§4.1 直下の区分が正**（共有＝Windows+M365／JR＝**M365 のみ**・Windows 系は手入力）。
 
 | code | type | 個人 | 共有 | JR端末 |
 |---|---|---|---|---|
-| `logon_name` | SINGLE_LINE_TEXT | jbm**** (626 から) | sjbm**** (667 から) | 手入力 |
+| `logon_name` | SINGLE_LINE_TEXT | jbm****（**新個人WindowsID採番マスタ**・§2／旧626は5/13以降参照のみ） | sjbm****（**新共有WindowsID採番マスタ**・§2／旧667は5/13以降参照のみ） | 手入力 |
 | `logon_pw` | SINGLE_LINE_TEXT | =logon_name | =logon_name | 手入力 |
 | `windows_name` | SINGLE_LINE_TEXT | `mail` の @ より前（595・個人メール） | `=logon_name`（メールなし・共有 PC） | 手入力 |
 | `mail` | SINGLE_LINE_TEXT | 595 から | （不要）| （不要）|
@@ -390,11 +390,11 @@ PC レコード保存・廃棄時:
 
 | code | type | 内容 |
 |---|---|---|
-| `m365_id` | SINGLE_LINE_TEXT (UNIQUE) | M365 ID（jbs****@…onmicrosoft.com）|
+| `m365_id` | SINGLE_LINE_TEXT (UNIQUE) | M365 ID（共有/JR 割当は **`sjm-NNN@…onmicrosoft.com`** 形式・§4.3.3。個人は本マスタ非対象）|
 | `m365_pw` | SINGLE_LINE_TEXT | `kent2511K#`（環境設定マスタから取得）|
 | `account_type` | DROP_DOWN | 種別（共有 / 個人）|
 | `status` | DROP_DOWN | 利用可 / 満杯（5/5）/ 廃止 |
-| `serial_no` | NUMBER | 連番（jbs**0001** = 1）|
+| `serial_no` | NUMBER | 連番（§5.3 の `ORDER BY serial_no` 用。例: `1` ↔ `sjm-001`）|
 | `usage_count` | NUMBER (0-5) | 使用ライセンス数（自動更新）|
 | `linked_pcs` | MULTI_LINE_TEXT | 使用中 PC 名一覧（カンマ区切り）|
 | `created_at` | DATETIME | 作成日時 |
@@ -636,7 +636,7 @@ snapshot: `data/snapshots/594-pre-migration-scan-2026-04-22.json`
 - [ ] **新個人・新共有 WindowsID 採番マスタ**（§2）から正しく払い出される（旧 626/667 は 5/13 以降参照のみ）
 - [ ] 595 から所属名・所属グループ・メールが自動引用される
 
-### 10.2 試運用フェーズ（5/7-5/10）
+### 10.2 試運用フェーズ（5/7-5/12）
 - 1 部署で先行運用 → 浜田 + 担当者 2 名のみアクセスのため社内影響ゼロ
 - 不具合があれば即修正
 
@@ -673,8 +673,8 @@ snapshot: `data/snapshots/594-pre-migration-scan-2026-04-22.json`
 | 個人 PC 名 | JBIS+4桁連番+-YYYYMM（新規分のみ）|
 | 共有 PC 名 | S-JBIS+4桁連番+-YYYYMM（新規分のみ）|
 | JR端末 PC 名 | 手入力 |
-| 個人 WindowsID | jbm+4桁（626 から）|
-| 共有 WindowsID | sjbm+4桁（667 から）|
+| 個人 WindowsID | jbm+4桁（**新個人WindowsID採番マスタ**・§2／旧626は5/13以降参照のみ）|
+| 共有 WindowsID | sjbm+4桁（**新共有WindowsID採番マスタ**・§2／旧667は5/13以降参照のみ）|
 | JR WindowsID | 手入力 |
 | WindowsPW | =WindowsID |
 | Windows アカウント名 | メール @ より前（個人）/ =logon_name（共有・メールなし）/ 手入力（JR）|
@@ -742,7 +742,7 @@ snapshot: `data/snapshots/594-pre-migration-scan-2026-04-22.json`
 | Q | 確定 |
 |---|---|
 | 595 連動 | JS カスタマイズで自動引用（既存 627 と同方式）|
-| 626/667 連動 | 既存マスタ継続使用 |
+| 626/667 と新採番 | **新規 WindowsID 発番の正**: §2 の **新個人 / 新共有 WindowsID 採番マスタ**。旧 626/667 は **5/13 書込ロック後は閲覧のみ**（§3.2）。移行データ参照で旧アプリを読む期間はあるが、**新規採番先は新アプリ** |
 | 656 エラーログ | 既存と同じ仕組みで送信 |
 | 657 ダッシュボード | 新アプリのみ集計対象に切替 |
 | 相関ダッシュボード | 新アプリにも作る |

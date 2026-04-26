@@ -4,7 +4,7 @@
     "logon_name": {
       "ui_label": "WindowsID",
       "spec_anchor": "§4.3.2 WindowsID（logon_name）",
-      "matrix_fingerprint": "10a799f95fa7dedb"
+      "matrix_fingerprint": "645a86535ab19c80"
     },
     "logon_pw": {
       "ui_label": "ログオン初期PW",
