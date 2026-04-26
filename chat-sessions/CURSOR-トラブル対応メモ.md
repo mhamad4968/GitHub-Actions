@@ -138,6 +138,34 @@ v2.6 (2026-04-26 08:45) §52-8-1 物理 block 層 / TSB-019 構造的根本対�
 2. 該当コマンドを AI に伝えて「§52-8-1 誤検知の可能性。パターン修正案を出して」と依頼
 3. AI が緩和案を提示 → 浜田 GO → AI が `~/.cursor/hooks/dangerous-shell-blocker.sh` を修正（StrReplace 経由 = hook 対象外）
 
+v2.7 (2026-04-26 09:55) Cursor Plan & Usage 監査 + 節約パッケージ全実施（P5-5 / S1-S5）:
+- **発見**: Spending タブで On-Demand $235.94 / $300 (78.6%) + API 100% 枯渇 + Cursor IDE 側に 70/85/95% 警告 UI なし  
+  → 4/29-5/3 頃 $300 突破見込み（このまま放置で月総額 $629 = ¥97,517）= **3 重大発見 F-11/F-12/F-13**
+- **浜田操作 (実施済)**: Cursor IDE Settings → Spending → Monthly Limit を **$300 → $1000** へ引上げ済（Worst $1200/¥186,000 / 節約後想定 $430-500/¥66,000-78,000）
+- **§1-2-3-1 制定（AI 自己宣言義務）**: タスク冒頭で `[§1-2-3 ティア判定: Extra High/Max Thinking]` 1 行明示が新ルール  
+  → 浜田は AI が忘れたら「§1-2-3-1 ティア判定は?」と一言で促してください
+- **§1-2-4 改定**: 3 系統警告（Total% / API% / On-Demand $）+ 80% 警告 新設  
+  → 浜田は朝のブリーフィング時に **Spending タブのスクショも追加で送付** (4 値を AI が抽出 → 80% 超で警告)
+- **§51-6 制定（セッション分割推奨）**: 朝/昼/夜で chat session 区切り推奨  
+  → 浜田が「ここで区切ろう」と言えば AI は素直に新セッションへ誘導 / 同セッション 4h 超で AI から提案
+- **節約パッケージ S1-S5**:  
+  - S1: ルーチン (朝報・smoke 整理) は浜田が UI で **Composer 2 に切替**して実行（重要分析時のみ Opus に戻す）  
+  - S2: CLAUDE.md 整理（要浜田判断 / 完全削除 / thin 化 / 維持 の 3 択 → 後述）  
+  - S3: 浜田が UI で **既定モデルを Extra High に切替**（Max Thinking は手動切替に）  
+  - S4: session 区切り運用 (上記 §51-6)  
+  - S5: `.cursorignore` を 87 行 → 109 行に拡張（snapshot/archive 追記）
+- **TSB-021 候補**: credit-budget.mjs に On-Demand 取得機能（Day 5-6 起票予定）
+
+【浜田が朝のブリーフィングで Spending スクショを送るとき】
+1. Cursor IDE 起動 → Settings → Plan & Usage → Spending タブ
+2. スクショして AI に貼付（「今日の Spending」とだけコメント可）
+3. AI が 4 値抽出 (Total% / API% / On-Demand $X / Monthly Limit $Y) → JSON 記録 + 80% 超なら警告
+
+【浜田が「セッション長すぎ / 区切ろう」と感じたら】
+1. AI に「§51-6 区切ろう」と一言
+2. AI は完了報告 + チェックポイント更新 + 「次セッションで NEW-SESSION-STARTER.md を貼ってください」と案内
+3. 新チャットで NEW-SESSION-STARTER の v3.7 までを貼付 → 文脈復元
+
 
 ━━━ ① まず現状確認（30 秒）━━━━━━━━━━━━━━━━━━━━━━━━
 

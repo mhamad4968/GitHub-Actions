@@ -84,3 +84,26 @@ logs/parallel-suspicion/*.json
 # package.json / package-lock.json
 # logs/autonomy-decisions/ 配下（意思決定ログ / index 対象維持）
 # data/credit-budget-config.json（予算設定 / index 対象維持）
+
+# ─────────────────────────────────────────────
+# (6) PC 台帳 Day N 中間 snapshot（2026-04-26 P5-5 / S5 追記）
+# ─────────────────────────────────────────────
+# Z-2 hybrid 戦略: baseline + rollback の JSON は git tracked だが
+# Cursor index には不要（AI コンテキストに乗ると枯渇加速 = F-13 教訓）
+data/snapshots/*-step*.json
+data/snapshots/*-pre*.json
+data/snapshots/*-post*.json
+
+# ─────────────────────────────────────────────
+# (7) アーカイブ chat-sessions（2026-04-26 P5-5 / S5 追記）
+# ─────────────────────────────────────────────
+# 30 日以上前の chat-sessions は _archive/ に移動予定（Day 4 後 Phase 2 で
+# scripts/archive-reports.mjs と同時に scripts/archive-sessions.mjs 実装予定）
+# .rag/extra-docs/sessions/ で最新 7 日分は別途同期済 → Cursor index 不要
+chat-sessions/_archive/
+
+# ─────────────────────────────────────────────
+# (8) 月次レポートアーカイブ（2026-04-26 P5-5 / S5 追記 / Z-3 Phase 2 連携）
+# ─────────────────────────────────────────────
+# docs/reports/archive/YYYY-MM/ の月次アーカイブ = 履歴目的のみで AI 参照頻度低
+docs/reports/archive/**

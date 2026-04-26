@@ -81,6 +81,23 @@ v3.6 (2026-04-26 08:45) §52-8-1 物理 block 層 / TSB-019 構造的根本対�
 - **設計仕様書**: `docs/cursor-hooks-design.md` (hooks.json 全文 / blocker.sh 全文 / 検証 11 件 / 復旧手順)
 - **検証**: 単独テスト 10/10 + Cursor IDE 経由 `rm -rf /tmp/<not-exist>` 実証 = 物理 block 動作確認済
 
+v3.7 (2026-04-26 09:55) Cursor Plan & Usage 監査 + 節約パッケージ全実施（P5-5 / S1-S5）:
+- **発見**: Spending タブで On-Demand $235.94 / $300 (78.6%) + API 100% 枯渇 + Cursor IDE 側に 70/85/95% 警告 UI なし  
+  → 4/29-5/3 頃 $300 突破見込み = **3 重大発見 F-11/F-12/F-13**
+- **§1-2-3-1 制定（AI 自己宣言義務）**: タスク冒頭で必ず `[§1-2-3 ティア判定: Extra High/Max Thinking]` を 1 行明示 + 根拠 1 行  
+  Max Thinking で実行中に「これはルーチン」と気付いたら自発的に「Extra High に切替を」と通知（= F-13 形骸化対策）
+- **§1-2-4 改定**: 月予算 L1 $200 + L2 **$1000 引上げ**（旧 $130）= Worst $1200/¥186,000 / 節約後 $430-500/¥66,000-78,000  
+  3 系統 (Total% / API% / On-Demand $) / 70-80-85-95-100% 5 段階警告 / 朝の Spending スクショ抽出 必須化  
+  API 系統 100% 単独到達 = §1-2-2 連動（Composer 2 fallback トリガ）
+- **§51-6 制定（セッション分割推奨）**: 朝 06-10 / 昼 12:30-17 / 夜 19-22 で chat session 区切り推奨  
+  同セッション 4h or 200 tool call 超で AI 提案 / PC 台帳 deploy 等 不可逆操作直前は必ず新セッション  
+  §51-3 並列禁止と補完関係 = 時間軸分割は推奨（F-13 教訓 = 連続 6h 稼働で API 12 日完全枯渇）
+- **節約パッケージ S1-S5**: S1 ルーチン Composer 2 許容 / S2 CLAUDE.md 整理（要浜田判断） / S3 Extra High 既定徹底 / S4 session 区切り / S5 .cursorignore 強化（snapshot/archive 追記 → 109 行）
+- **TSB-021 候補**: credit-budget.mjs に On-Demand 取得機能追加（Day 5-6）
+- **浜田操作**: Cursor IDE Settings → Spending → Monthly Limit を **$300 → $1000** へ引上げ済  
+  Models タブの Extra High 既定切替（S3 反映）も実施推奨
+- **logs/autonomy-decisions/P5-5-plan-usage-2026-04-26.md** に詳細記録
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ■ フル版（コピペ推奨 / 新チャットにこのブロックを貼る）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
