@@ -18,7 +18,11 @@
 
 **新チャット初手（実行順・上から）**:
 
-0. **光速ガード（項番 0 / Read より前・必須）**: リポルートで **`npm run verify:constitution-handoff`** → **exit 0** を確認（TSB-024 物理ガード）。**ng のまま Read・Tier B・本題に進まない**（憲法ドキュ修復のみ）。
+**項番 -1（人間・強く推奨）**: 新チャットの **ユーザー最初の 1 メッセージ** に、Desktop の **`NEW-SESSION-STARTER.txt` 全文**（= リポ `chat-sessions/NEW-SESSION-STARTER.md` の **■ フル版**と同内容）を **そのまま貼る**。🚨憲法ブロック・`@` 参照リスト・bootstrap 手順が一括で入り、**要約脱落に強い**。続けて **`HANDOFF-HUMAN.txt` 5 行**でもよい。
+
+**項番 -0（人間＋AI・合意・1 往復）**: AI は **先頭に `[§1-2-3 ティア判定: …]`** を付け、スターター **受領**を一言言い、`checkpoint` 最終更新＋`handoff` 末尾＋`HANDOFF-HUMAN` の **「次にやる1つ」** を要約して **「本日の本題は ○○で合っていますか？」と §41 一問だけ**確認する。浜田 **OK** のあと **項番 0** へ（ズレなら 1 行修正してから）。
+
+0. **光速ガード（項番 0 / Read より前・必須・AI）**: リポルートで **`npm run verify:constitution-handoff`** → **exit 0** を確認（TSB-024 物理ガード）。**ng のまま Read・Tier B・本題に進まない**（憲法ドキュ修復のみ）。
 1. 本ファイル `chat-sessions/checkpoint-latest.md`（先頭〜直近の **最終更新** 1 行）
 2. **`chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` を通読**（経緯・法律相当・ルール・機能・MCP の棚卸し表）
 3. `chat-sessions/NEW-SESSION-STARTER.md` の **冒頭〜最新 v3.x ブロック**（kintone プレビュー／憲法級など）
@@ -48,7 +52,7 @@
 
 ---
 
-**最終更新**: 2026-04-26 (Sun) 深夜 JST — **§1-2-3-1 可視化**: 各ターン先頭 `[§1-2-3 ティア判定:…]`＋モデル切替時再宣言を **NEW-SESSION-STARTER 🚨 / constitution-handoff-gate / フェーズ7第8項 / verify スクリプト**に固定。**前回**: セッション切替項番0・post-commit 憲法検知・明日公式オーダー。
+**最終更新**: 2026-04-26 (Sun) 深夜 JST — **項番 -1/-0**: セッション切替時は **`NEW-SESSION-STARTER.txt` を最初に貼る**→AIと本題を1問確認→`verify`。**前回**: §1-2-3-1 可視化・post-commit 憲法検知。
 
 **前回更新**: 2026-04-26 (Sun) 12:30 — **再開** ✅。**本日 2026-04-26 完了サマリ**: 朝 06:00 ブリーフィング → API 100% 枯渇発覚 → 甲フル実装 (Monthly Limit $300→$1000 / S1-S5 5 措置) → S2 CLAUDE.md 480→73 行 thin 化 (`046ec2d`) → P5-3 Rules/Skills/Subagents 監査 7 件発見 → P5-4 Indexing 監査 3 件発見 → P5-5 Plan&Usage 監査 7 件発見 (F-14 Max Thinking 59.4% 確定) → **R-3** 「最適モデル原則」+ §1-2-3-2 新設 (`92b89d5`) → **R-4 §51-6-2 + R-5 §52-9 新設 + Day 4 時刻 13:00→20:00 + RAG/Desktop 同期 + §52-9 即日 2 件発動** (`01d18e5`) → **P5-1 Hooks 監査 完了** / **P5-2 Tools&MCPs 監査 完了** / **TSB-022 起票 + 恒久案 (docs) + `~/.cursor/hooks/dangerous-shell-blocker.sh` heredoc 本文 strip 実装 + `artifacts/cursor-hooks/dangerous-shell-blocker.sh` スナップショット** ✅。**Day 4 (PC 台帳) は 20:00 開始予定** (浜田指示 / 慎重進行優先)。**文書化コミット**: `b201232`（§0/TSB-022/日次/スターター追記 + hook スナップショット）。**次**: `git push`（**任意** / いま `main` は `origin/main` より ahead 1）→ Day4 は 20:00 開始予定。**並列禁止 §51 100% 遵守 / 不可逆操作ゼロ**。
 

@@ -3,6 +3,8 @@
 Windows から開きやすい控え: C:\Users\mhamada202408224\Desktop\AI緊急用\HANDOFF-HUMAN.txt
 ※ C:\Users\mhamada202408224\kintone-ai-lab は chat-sessions 無しの別ツリーなので、このファイルは置かない。
 
+推奨フロー（セッション切替）: ① 先に同フォルダの **NEW-SESSION-STARTER.txt 全文**をチャットへ貼る（checkpoint **項番 -1**）② この 5 行を貼る ③ AI と「次にやる1つ」で合意（**項番 -0**）④ AI が verify → bootstrap。
+
 日時(JST):
 いま何してた（1行）:
 次にやる1つ:

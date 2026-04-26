@@ -9,6 +9,7 @@ alwaysApply: true
 
 ## 人間（浜田さん）
 
+- **セッション切替の推奨**: 新チャット **最初**に **`NEW-SESSION-STARTER.txt`（Desktop AI緊急用）全文**を貼る（`checkpoint-latest.md` **項番 -1**）。続けて `HANDOFF-HUMAN.txt` を **5行だけ**埋めて貼ってもよい（**項番 -0** で AI と本題を一言確認）。
 - `chat-sessions/HANDOFF-HUMAN.txt` を開き、**5行だけ**埋めてチャットに貼る。それ以上書かなくてよい。
 
 ## AI（必須・省略禁止）

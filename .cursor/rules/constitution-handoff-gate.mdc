@@ -7,7 +7,11 @@ alwaysApply: true
 
 ## 新セッション第 0 手（考慮漏れ防止）
 
-**チャットを切り替えたら、Read や本題の前に** リポルートで **`npm run verify:constitution-handoff`**（exit 0 必須）。続けて **`npm run session:bootstrap`**（= 光速ガード再実行 + smoke 9 連）。手順の正本: `chat-sessions/checkpoint-latest.md`「セッション切替後の自律復元」**項番 0**。
+**正本の順序**（`checkpoint-latest.md`「セッション切替後の自律復元」）:
+
+1. **項番 -1（浜田・強く推奨）**: 新チャット **最初の 1 メッセージ**に **`NEW-SESSION-STARTER.txt` 全文**を貼る（憲法 🚨・`@` リスト・儀式を一括注入）。
+2. **項番 -0（浜田＋AI）**: AI は **ティア宣言**のうえスターター受領＋本日の本題を **§41 一問だけ**確認。OK 後に次へ。
+3. **項番 0（AI・必須）**: リポルートで **`npm run verify:constitution-handoff`**（exit 0）。続けて **`npm run session:bootstrap`**（光速再実行 + smoke 9 連）。
 
 ## 役割（逆転禁止）
 

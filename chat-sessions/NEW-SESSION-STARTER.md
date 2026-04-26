@@ -46,7 +46,7 @@
 このファイルの中身を新しい Cursor チャットにそのまま貼るだけで、
 AI がゼロから今までの文脈を完全復元する。
 
-**浜田が毎回最初に開く場所（運用上いちばん大事）**: `C:\Users\mhamada202408224\Desktop\AI緊急用\NEW-SESSION-STARTER.txt`（メモ帳）。ここが **最優先で最新**になるよう、AI は本ファイルを編集して **push する同一ターン**で必ず **`npm run session-starter:sync-desktop`** を実行する（浜田依頼）。**リポだけ更新して Desktop を古いままにしない**。
+**浜田が毎回最初に開く場所（運用上いちばん大事）**: `C:\Users\mhamada202408224\Desktop\AI緊急用\NEW-SESSION-STARTER.txt`（メモ帳）。**セッション切替時は、この `.txt` 全文を新チャットの最初の 1 メッセージに貼ることを強く推奨**（`checkpoint-latest.md` **項番 -1**）。貼ったあと **本日やること** を AI と **1 問だけ**確認してから項番 0（`verify:constitution-handoff`）へ（**項番 -0**）。ここが **最優先で最新**になるよう、AI は本ファイルを編集して **push する同一ターン**で必ず **`npm run session-starter:sync-desktop`** を実行する（浜田依頼）。**リポだけ更新して Desktop を古いままにしない**。
 Git 上の編集正本: `kintone-ai-lab/chat-sessions/NEW-SESSION-STARTER.md`（差分・履歴用。`.md` と `.txt` は自動同期しないため、上記 npm が橋渡し）。`/mnt/c` が無くコピーできないときはチャットに「AI緊急用の .txt は未更新（理由）」と 1 行書き、環境復帰後に npm を再実行する。
 
 v2 (2026-04-19) からの主な強化:
@@ -179,6 +179,11 @@ v3.12 (2026-04-26) 人間5行引き継ぎ + AI 追記義務:
 - **浜田**: `chat-sessions/HANDOFF-HUMAN.txt`（5行だけ）→ チャットへ貼る
 - **AI**: 同ターンで `chat-sessions/handoff-log.md` 末尾へ必ず追記（`.cursor/rules/session-handoff.mdc` / 漏れ禁止）
 - **checkpoint-latest.md** に手順リンク済み
+
+v3.22 (2026-04-26) **セッション切替＝先にスターター貼付（項番 -1/-0）**（浜田提案・採用）:
+- **推奨フロー**: 新チャット **1 通目**に `NEW-SESSION-STARTER.txt` **全文** → AI と本題 **§41 一問**（**項番 -0**）→ **`verify` / `session:bootstrap`（項番 0）**
+- **`checkpoint-latest.md`** に **項番 -1 / -0** を追記（機械検査 `verify-constitution-handoff` にも必須フレーズとして組込）
+- **`HANDOFF-HUMAN.txt`** / **`SESSION-BOOTSTRAP-CHECKLIST`** / **`session-handoff.mdc`** / **`constitution-handoff-gate.mdc`** を同期
 
 v3.21 (2026-04-26) **§1-2-3-1 ティア宣言の可視化**（浜田「モデル切替時も分かりやすく」）:
 - **NEW-SESSION-STARTER** 最上段 🚨 に **毎ターン先頭の `[§1-2-3 ティア判定: …]`**＋モデル切替時の再宣言・浜田の見方を明記

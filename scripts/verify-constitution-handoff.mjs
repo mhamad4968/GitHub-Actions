@@ -97,6 +97,9 @@ const suites = [
       'session:bootstrap',
       'Read より前',
       '項番 0',
+      '項番 -1',
+      '項番 -0',
+      'NEW-SESSION-STARTER.txt',
     ],
   },
 ];
