@@ -237,7 +237,7 @@ v3.15 (2026-04-27) 新・PC台帳は **仕様書を読んでから**:
 v3.14 (2026-04-26) 引き継ぎ後の安心 — 経緯・法律相当・ルール・機能・MCP を棚卸し:
 - **必読**: `chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md`（フェーズ 0–7）。**Read だけで終わらせない**。
 - **必実行**: `npm run session:bootstrap`（= `smoke:quiet` / **9 連検査**）。結果をチャットに **短く要約**（チェックリスト フェーズ 7）。
-- **Desktop（最優先）**: 浜田が参照する `AI緊急用\*.txt` を、本ファイルをコミットした **同一ターン**で **`npm run session-starter:sync-desktop`** により必ず更新する。未マウント時はスキップ＋チャット 1 行（後で再実行）。
+- **Desktop（最優先）**: 浜田が参照する `AI緊急用\` の **`NEW-SESSION-STARTER_yyyymmdd*.txt`**（儀式）および **`HANDOFF-HUMAN.txt` / `SESSION-BOOTSTRAP-CHECKLIST.txt`** を、本ファイルをコミットした **同一ターン**で **`npm run session-starter:sync-desktop`** により必ず更新する。未マウント時はスキップ＋チャット 1 行（後で再実行）。
 - **目的**: 浜田が気づかないまま逆方向に進む事故を減らす（確認負荷は人に押し付けない）。
 
 v3.13 (2026-04-26) PC 台帳仕様の正本固定 + セッション切替後もブレない管理:
