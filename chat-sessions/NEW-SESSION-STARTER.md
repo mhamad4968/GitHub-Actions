@@ -139,6 +139,11 @@ v3.12 (2026-04-26) 人間5行引き継ぎ + AI 追記義務:
 - **AI**: 同ターンで `chat-sessions/handoff-log.md` 末尾へ必ず追記（`.cursor/rules/session-handoff.mdc` / 漏れ禁止）
 - **checkpoint-latest.md** に手順リンク済み
 
+v3.13 (2026-04-26) PC 台帳仕様の正本固定 + セッション切替後もブレない管理:
+- **フィールド設計・表示ラベルの正本**: `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.2**（手順書やチャット記憶より優先。矛盾したら正本に合わせてリポを直す）。
+- **浜田 = 確認のみ**（仕様の全文目視・ラベル一覧の人手突合を求めない）。整合は **AI が `npm run pc-ledger:verify-labels-spec`**（`scripts/pc-ledger-v1-labels.mjs` + `scripts/data/pc-ledger-spec-4222-ui-labels.json` + `scripts/data/pc-ledger-spec-field-extensions.json`）で機械ゲートする。
+- **新チャットでも迷わない**: `chat-sessions/checkpoint-latest.md` の **「正本主義（PC 台帳 ver.1）」** と `RULES-INDEX.md` の **「セッション切替・文脈復元」** 表の該当行を Read 順に含める。
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ■ フル版（コピペ推奨 / 新チャットにこのブロックを貼る）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
