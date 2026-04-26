@@ -42,23 +42,23 @@
       "matrix_fingerprint": "97cebf14968b8de2"
     },
     "gb_id": {
-      "ui_label": "Google（Business）ID",
-      "spec_anchor": "§4.2.2 =mail_acct",
+      "ui_label": "サイボウズ ID",
+      "spec_anchor": "§C サイボウズ ID / §4.2.2 gb_id =mail_acct",
       "matrix_fingerprint": "b171e659672a3189"
     },
     "gb_pw": {
-      "ui_label": "Google（Business）PW",
-      "spec_anchor": "§4.2.2 =logon_name",
+      "ui_label": "サイボウズ PW",
+      "spec_anchor": "§C サイボウズ PW / §4.2.2 gb_pw =logon_name（=WindowsID）",
       "matrix_fingerprint": "0e8b939c14f39174"
     },
     "sb_id": {
-      "ui_label": "SmartHR ID",
-      "spec_anchor": "§4.2.2 =mail_acct",
+      "ui_label": "ガリバー ID",
+      "spec_anchor": "§C ガリバー ID / §4.2.2 sb_id =mail_acct",
       "matrix_fingerprint": "b171e659672a3189"
     },
     "sb_pw": {
-      "ui_label": "SmartHR PW",
-      "spec_anchor": "§4.2.2 =logon_name",
+      "ui_label": "ガリバー PW",
+      "spec_anchor": "§C ガリバー PW / §4.2.2 sb_pw =logon_name（=WindowsID）",
       "matrix_fingerprint": "0e8b939c14f39174"
     },
     "vpn_id": {
