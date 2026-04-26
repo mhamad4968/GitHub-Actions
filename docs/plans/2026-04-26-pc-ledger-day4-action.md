@@ -61,7 +61,7 @@
 - [x] field-spec-diff.mjs で「仕様書 vs add-form-fields 引数」を機械照合（2026-04-27: `--spec=本書` vs `--actual=data/snapshots/674-step3-after-deploy-20260426-174110.json` → **35 fields all match** exit 0）
 - [x] customize 雛形 JS (lint:customize pass 済) を事前作成（`customize/new-pc-ledger-v1/desktop.js` / BUILD `2026-04-26-day4-skeleton-v0.2` / 2026-04-27 `npm run lint:customize` exit 0）
 - [x] revision-snapshot.mjs で deploy 直後の自動 backup 仕組み準備（スクリプト既存 / 2026-04-27 実走 `674-order2-layer-a-readiness-*` 生成・live revision=9・43 fields 確認）
-- [ ] このアクション plan 書を浜田が一読（20:00 開始時 or 次 Tier B 直前）
+- [x] このアクション plan 書を浜田が一読（**2026-04-27**: 読み物 1/5〜5/5 で通読・Layer B の「引数」は平易説明済・§2 は他担当者向けにも重要と確認）
 
 ### Layer B: ステップ実行時のチェック（§4 Step 1-7 で詳述）
 
