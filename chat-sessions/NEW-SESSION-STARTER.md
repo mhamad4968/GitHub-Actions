@@ -139,6 +139,11 @@ v3.12 (2026-04-26) 人間5行引き継ぎ + AI 追記義務:
 - **AI**: 同ターンで `chat-sessions/handoff-log.md` 末尾へ必ず追記（`.cursor/rules/session-handoff.mdc` / 漏れ禁止）
 - **checkpoint-latest.md** に手順リンク済み
 
+v3.14 (2026-04-26) 引き継ぎ後の安心 — 経緯・法律相当・ルール・機能・MCP を棚卸し:
+- **必読**: `chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md`（フェーズ 0–7）。**Read だけで終わらせない**。
+- **必実行**: `npm run session:bootstrap`（= `smoke:quiet` / 8 連検査）。結果をチャットに **短く要約**（チェックリスト フェーズ 7）。
+- **目的**: 浜田が気づかないまま逆方向に進む事故を減らす（確認負荷は人に押し付けない）。
+
 v3.13 (2026-04-26) PC 台帳仕様の正本固定 + セッション切替後もブレない管理:
 - **フィールド設計・表示ラベルの正本**: `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.2**（手順書やチャット記憶より優先。矛盾したら正本に合わせてリポを直す）。
 - **浜田 = 確認のみ（仕様の目視全文チェックは人に押し付けない）**／**Tier B は GO のみ人が出す**。整合は **AI が `npm run pc-ledger:verify-labels-spec`** で機械ゲート。**デプロイ・フィールド適用・snapshot 等のコマンド実行は GO 後も従来どおり AI が行う**（「やらない」「できない」にしない）。
@@ -155,6 +160,7 @@ v3.13 (2026-04-26) PC 台帳仕様の正本固定 + セッション切替後も�
 まず以下を読み込んで文脈を完全復元してから本題に入って：
 
 @kintone-ai-lab/chat-sessions/checkpoint-latest.md   ← 現在地（短く）
+@kintone-ai-lab/chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md ← 経緯・法律相当・ルール・機能・MCP 棚卸し＋報告様式（必読）
 @kintone-ai-lab/chat-sessions/handoff-log.md        ← 直近引き継ぎ（末尾から最大3ブロック）
 @kintone-ai-lab/chat-sessions/<最新日付>.md          ← 直近の詳細経緯（例: 2026-04-23.md）
 @RULES-INDEX.md                                       ← ホーム索引
@@ -164,10 +170,10 @@ v3.13 (2026-04-26) PC 台帳仕様の正本固定 + セッション切替後も�
 @kintone-ai-lab/WORKFLOW.md                          ← Phase 0-5
 
 そのあと：
+0. **npm run session:bootstrap**（リポルートで実行 / smoke 8 連 = guard+audits+health 等）→ 結果をチャットに短く要約（SESSION-BOOTSTRAP フェーズ 7）
 1. docs/reports/<今日の日付>-morning-prep.md を読んで朝ルーチン状態（緑/黄/赤）確認
 2. 緑じゃなければ §46 朝ルーチン絶対優先義務を先に完遂
-3. npm run guard:check で重要ファイル健康確認 (TSB-006 対策 / 21 ファイル健在)
-4. 緑なら §47-§49（思考の三本柱）+ §47-A/B-2/C + §50/§50-2 + §51/§51-2 + §11-5 を意識して本題へ
+3. 緑なら §47-§49（思考の三本柱）+ §47-A/B-2/C + §50/§50-2 + §51/§51-2 + §11-5 を意識して本題へ
 
 【関係性の前提（憲法 = persist-policies.mdc 2026-04-19 合意）】
 - 呼称: 「さん」付け不要、友人として接する

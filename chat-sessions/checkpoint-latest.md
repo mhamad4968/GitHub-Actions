@@ -19,10 +19,12 @@
 **新チャット初手（Read 順・上から）**:
 
 1. 本ファイル `chat-sessions/checkpoint-latest.md`（先頭〜直近の **最終更新** 1 行）
-2. `chat-sessions/NEW-SESSION-STARTER.md` の **冒頭〜最新 v3.x ブロック**（現: v3.8 = kintone MCP プレビュー／本番の見え方）
-3. `chat-sessions/handoff-log.md` の **末尾から最大 3 件**（無ければスキップ可）
-4. **PC 台帳 Day4 継続中なら** `docs/plans/2026-04-26-pc-ledger-day4-action.md` の **「AI 引継ぎ: kintone-add-app 直後に…」** ＋ `chat-sessions/2026-04-26-pc-ledger-day4.md` ＋ 表示ラベルは **正本 §4.2**（`docs/plans/2026-04-21-new-pc-ledger-spec.md`）と **`npm run pc-ledger:verify-labels-spec`**
-5. `RULES-INDEX.md` の **「セッション切替・文脈復元」** 行（索引 1 行で他ドキュへジャンプ）
+2. **`chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` を通読**（経緯・法律相当・ルール・機能・MCP の棚卸し表）
+3. `chat-sessions/NEW-SESSION-STARTER.md` の **冒頭〜最新 v3.x ブロック**（kintone プレビュー／憲法級など）
+4. `chat-sessions/handoff-log.md` の **末尾から最大 3 件**（無ければスキップ可）
+5. **PC 台帳 Day4 継続中なら** `docs/plans/2026-04-26-pc-ledger-day4-action.md` の **「AI 引継ぎ: kintone-add-app 直後に…」** ＋ `chat-sessions/2026-04-26-pc-ledger-day4.md` ＋ 表示ラベルは **正本 §4.2**（`docs/plans/2026-04-21-new-pc-ledger-spec.md`）と **`npm run pc-ledger:verify-labels-spec`**
+6. `RULES-INDEX.md` の **「セッション切替・文脈復元」** 行（索引 1 行で他ドキュへジャンプ）
+7. **AI は `npm run session:bootstrap` を実行**し、結果をチャットに要約（**Read だけで終わらせない**／詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 6–7）
 
 **禁止に近い非推奨**: `kintone-add-app` 直後に「まだ公開してない？」だけを理由に浜田へ確認すること（先に本条と TSB-023・プレビュー `app/settings` を確認）。**Tier B の浜田 GO**（書込・deploy）は従来どおり必須。
 
@@ -41,11 +43,11 @@
 
 - **浜田さん**: `chat-sessions/HANDOFF-HUMAN.txt` を5行だけ埋めてチャットに貼る（それだけでよい）。
 - **AI（必須）**: **追記の前に**チャットで確定前ドラフトを出し、浜田の OK（または1行修正）を受けてから `chat-sessions/handoff-log.md` **末尾に追記**する。チャットだけで終わらせない（詳細は `.cursor/rules/session-handoff.mdc`）。
-- **次チャット初手**: 本ファイルの **「セッション切替後の自律復元」** の Read 順に従う（従来の 3 点セット＋ Day4 plan／TSB-023 等）。
+- **次チャット初手**: 本ファイルの **「セッション切替後の自律復元」** の Read 順に従う（**SESSION-BOOTSTRAP-CHECKLIST** ＋ `npm run session:bootstrap` 必須）。
 
 ---
 
-**最終更新**: 2026-04-26 (Sun) — **自律復元**（本条 §セッション切替後／`RULES-INDEX`「セッション切替・文脈復元」／`session-handoff.mdc` 手順6／`NEW-SESSION-STARTER` **v3.13**／TSB-023）。**PC 台帳正本**: `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.2** ＋ **`npm run pc-ledger:verify-labels-spec`**（浜田＝確認のみ・人手全文突合しない）。**Day4 の現況・次手**: `docs/plans/2026-04-26-pc-ledger-day4-action.md` を見る（下記「前回更新」に古い revision 記述が残る場合あり）。
+**最終更新**: 2026-04-26 (Sun) — **引き継ぎ全棚卸し**: `SESSION-BOOTSTRAP-CHECKLIST.md` + **`npm run session:bootstrap`**（smoke 8 連）を Read 順に追加。**自律復元**（`RULES-INDEX`／`session-handoff`／`NEW-SESSION-STARTER` **v3.14**／TSB-023）。**PC 台帳正本** §4.2 + `pc-ledger:verify-labels-spec`。**Day4 現況**: `2026-04-26-pc-ledger-day4-action.md`（履歴ブロックに古い revision あり得る）。
 
 **前回更新**: 2026-04-26 (Sun) 12:30 — **再開** ✅。**本日 2026-04-26 完了サマリ**: 朝 06:00 ブリーフィング → API 100% 枯渇発覚 → 甲フル実装 (Monthly Limit $300→$1000 / S1-S5 5 措置) → S2 CLAUDE.md 480→73 行 thin 化 (`046ec2d`) → P5-3 Rules/Skills/Subagents 監査 7 件発見 → P5-4 Indexing 監査 3 件発見 → P5-5 Plan&Usage 監査 7 件発見 (F-14 Max Thinking 59.4% 確定) → **R-3** 「最適モデル原則」+ §1-2-3-2 新設 (`92b89d5`) → **R-4 §51-6-2 + R-5 §52-9 新設 + Day 4 時刻 13:00→20:00 + RAG/Desktop 同期 + §52-9 即日 2 件発動** (`01d18e5`) → **P5-1 Hooks 監査 完了** / **P5-2 Tools&MCPs 監査 完了** / **TSB-022 起票 + 恒久案 (docs) + `~/.cursor/hooks/dangerous-shell-blocker.sh` heredoc 本文 strip 実装 + `artifacts/cursor-hooks/dangerous-shell-blocker.sh` スナップショット** ✅。**Day 4 (PC 台帳) は 20:00 開始予定** (浜田指示 / 慎重進行優先)。**文書化コミット**: `b201232`（§0/TSB-022/日次/スターター追記 + hook スナップショット）。**次**: `git push`（**任意** / いま `main` は `origin/main` より ahead 1）→ Day4 は 20:00 開始予定。**並列禁止 §51 100% 遵守 / 不可逆操作ゼロ**。
 
