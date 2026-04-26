@@ -6,7 +6,7 @@
 
 ---
 
-## 目次（2026-04-25 全件再構築 / 2026-04-26 TSB-022 追記 / F-2 自己改善目標 #2 = 真因 1 文 + root_cause_confirmed フラグ追加）
+## 目次（2026-04-25 全件再構築 / 2026-04-26 TSB-022 / TSB-023 追記 / F-2 自己改善目標 #2 = 真因 1 文 + root_cause_confirmed フラグ追加）
 
 > **真因 1 文ルール**: 各 TSB は **「真因を 1 文で説明できる」状態でなければ root_cause_confirmed = false** とする。false の TSB は再発監視優先。
 > **status 凡例**: ✅ Resolved（恒久対策済）/ 🟡 Mitigated（暫定対策のみ）/ 🔴 Open（未解決）/ ♻️ Recurring（同系列複数 episode）
@@ -34,10 +34,11 @@
 | TSB-018 | 2026-04-26 06:33 検出 / N-3 / 浜田朝ブリーフィング | **Cursor IDE の API 制限到達時の silent fallback** — Opus 4.7 → composer-2 へ自動切替（§1-2 違反の構造的温床） | 浜田が `Switched to Composer 2 after reaching API limit.` を IDE chat で受領。Opus クレジット枯渇時に Cursor IDE が低コスト composer-2 へユーザー GO なく切替する既定挙動。CLI 側 `composer-2-fast` 罠（§1-2-1 で documented）とは別ソース。§1-2-2 を制定し IDE 設定 5 項目（Auto / Auto-fallback / Use Auto on limits / 有効モデル一覧 / Background agents）の必須状態を明文化 + 検知時 AI 即時中断ルール化 | ✅ | true | Cursor IDE / §1-2 単一モデル前提 |
 | TSB-019 | 2026-04-26 07:42 検出 / Q1 / §1-2-2-1 設定検証中に発見 | **Cursor IDE Auto-Run Mode = "Run Everything (Unsandboxed)" + Browser/MCP Protection OFF が §52 RACI Tier B を構造的に bypass** — kintone 本番 API 書込含む全 MCP ツール・shell・file-write が浜田 GO なしに実行可能だった | §1-2-2-1 (Cursor IDE 必須設定) の verify 中に Agents タブを浜田に開いてもらい発見。`Auto-Run Mode = Run Everything (Unsandboxed)` + `Browser Protection: OFF` + `MCP Tools Protection: OFF` の三重 OFF 構成で、AI Agent が shell・file-write・MCP ツール（**kintone MCP / filesystem / memory / playwright 等含む**）を **承認プロンプト無しで全自動実行する状態**だった。AGENTS.md §52 RACI が「Tier B (irreversible) は浜田の明示 GO 必須」と規定していても **IDE レベルで bypass されており実効性ゼロ**。過去の TSB-006 (Undo All 破壊) / TSB-017 (並列セッション勝手書換) もこの設定と相互作用していた可能性大。対処: Auto-Run Mode は「基本自律 + 危険時確認」浜田判断で `Run Everything` 維持しつつ、**Browser Protection: ON + MCP Tools Protection: ON** に変更（kintone 本番 API は MCP 経由のため MCP Protection ON で構造的にゲート）。§1-2-2-1 を 5 → 8 項目に拡張、§52 RACI に「shell 暴走防止 = 高リスクコマンドは事前報告」追記 | ✅ | true | Cursor IDE 全体 / §52 RACI / kintone 本番 |
 | TSB-022 | 2026-04-26 | dangerous-shell-blocker.sh heredoc 誤検知 | `dangerous-shell-blocker.sh` がコマンド全文（heredoc 本文含む）へ deny regex を適用し、**heredoc 内の文字列**が `git rebase` 等の危険パターンに一致して誤検知していた | ✅ | true | Cursor Hooks / §52-8-1 |
+| TSB-023 | 2026-04-26 | kintone MCP `kintone-add-app` 直後に「未公開？」確認が冗長 | `add-app` は **プレビュー先行**でライブ `app.json` が 404 になりうるが、AI がドキュメント未読のまま浜田へ「まだ公開してない？」と聞き、セッション切替後も同質問が再発する構造だった | ✅ | true | kintone MCP / PC 台帳 Day4 |
 
-**集計** (2026-04-26 12:30 時点 / TSB-022 追記):
-- 全 21 件中 **root_cause_confirmed = true: 20 件 (95%)** / **false (孤児): 1 件 (5%)**
-- 5 月目標 (F-2 自己批判 §54-5) = カバレッジ 100% を TSB-019 真因確定 (Cursor IDE Agents 設定) で **95% 維持**
+**集計** (2026-04-26 時点 / TSB-023 追記):
+- 全 22 件中 **root_cause_confirmed = true: 21 件 (95%)** / **false (孤児): 1 件 (5%)**
+- 5 月目標 (F-2 自己批判 §54-5) = カバレッジ 100% を TSB-019 真因確定 (Cursor IDE Agents 設定) で **95% 前後を維持**（TSB-023 追記で分母増）
 - 残 false: **TSB-001 のみ** = 孤児 TSB（4/19 D1-proposal でも「詳細未記載」）= 真因不明のまま記録止まり
 
 > **注**: TSB-002, TSB-003, TSB-008 はファイル不在時の記載漏れ。発見次第追記。
@@ -1142,3 +1143,36 @@ EOF
 
 - 関連仕様: `docs/cursor-hooks-design.md`（誤検知履歴）
 - 関連ルール: `AGENTS.md §52-8 / §52-8-1`
+
+---
+
+## TSB-023 — kintone MCP `kintone-add-app` 直後の「未公開？」が冗長（2026-04-26）
+
+### 事象
+
+PC 台帳 Day4 Step1 で MCP `kintone-add-app` 実行後、ブラウザの **`/k/<新appId>/`** やスペース 21 のアプリ一覧に **新アプリが見えず**、**「まだ公開していないのでは」**という認識になった。
+
+### 根本原因（真因 1 文）
+
+**`kintone-add-app` はプレビュー（pre-live）にアプリを作るため、初回 `kintone-deploy-app` までライブ REST・レコード URL が空に見えるのが正常挙動なのに、その前提がドキュメント化されておらず、AI が浜田へ冗長確認するしかなかった。**
+
+### 対策（恒久）
+
+1. **正本**: `docs/plans/2026-04-26-pc-ledger-day4-action.md` に **「AI 引継ぎ: kintone-add-app 直後に…」** 節を追加（REST 手順・`thread` 非対応・`revision-snapshot` のプレビューフォールバック）。
+2. **スターター**: `chat-sessions/NEW-SESSION-STARTER.md` **v3.8** で要約＋上記への誘導。
+3. **復元**: `chat-sessions/checkpoint-latest.md` に **「セッション切替後の自律復元」**（Read 順）を追加。
+4. **索引**: `RULES-INDEX.md` に **「セッション切替・文脈復元」** 表を追加。
+5. **引き継ぎルール**: `.cursor/rules/session-handoff.mdc` に **手順 6（自律復元）** を追加。
+6. **スクリプト**: `scripts/revision-snapshot.mjs` がライブ 404 時に **プレビュー API**へフォールバック（`preview_environment_only`）。
+
+### 教訓
+
+1. **浜田へ聞く前に** `GET /k/v1/preview/app/settings.json?app=<id>` の `name` と MCP 戻り値 `app` で事実確認する。
+2. **MCP スキーマ**は `thread` を持たない。掲示スレッドは **手動**前提を計画に書く。
+3. **セッション切替**ごとに同じ説明を繰り返さないよう、**索引 1 行**から正本へ飛ばす。
+
+### 関連
+
+- 正本（詳細）: `docs/plans/2026-04-26-pc-ledger-day4-action.md`（AI 引継ぎ節）
+- 索引: `RULES-INDEX.md`（セッション切替・文脈復元）
+- 当日ログ: `chat-sessions/2026-04-26-pc-ledger-day4.md`

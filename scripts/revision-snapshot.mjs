@@ -102,27 +102,34 @@ async function main() {
   const headers = buildHeaders();
   const ts = jstTimestamp();
 
-  // 1. app.json (アプリ基本情報)
+  // 1. app 基本情報（未デプロイのアプリは live の app.json が 404 → preview settings にフォールバック）
   const appUrl = new URL(`${baseUrl}/k/v1/app.json`);
   appUrl.searchParams.set('id', args.app);
-  const appInfo = await fetchJson(appUrl.toString(), headers);
+  let appInfo;
+  let previewOnly = false;
+  try {
+    appInfo = await fetchJson(appUrl.toString(), headers);
+  } catch (e) {
+    const em = String(e.message || e);
+    if (!em.includes('HTTP 404')) throw e;
+    previewOnly = true;
+    const previewSettingsUrl = new URL(`${baseUrl}/k/v1/preview/app/settings.json`);
+    previewSettingsUrl.searchParams.set('app', args.app);
+    appInfo = await fetchJson(previewSettingsUrl.toString(), headers);
+  }
 
-  // 2. app/settings.json (revision を含む)
+  // 2. settings（live または preview）
   let settings = null;
   try {
-    const settingsUrl = new URL(`${baseUrl}/k/v1/app/settings.json`);
+    const path = previewOnly ? '/k/v1/preview/app/settings.json' : '/k/v1/app/settings.json';
+    const settingsUrl = new URL(`${baseUrl}${path}`);
     settingsUrl.searchParams.set('app', args.app);
     settings = await fetchJson(settingsUrl.toString(), headers);
   } catch (e) {
     settings = { error: String(e.message || e) };
   }
 
-  // 3. form/fields.json (フィールド定義 / live)
-  const fieldsUrl = new URL(`${baseUrl}/k/v1/app/form/fields.json`);
-  fieldsUrl.searchParams.set('app', args.app);
-  const fields = await fetchJson(fieldsUrl.toString(), headers);
-
-  // 4. preview/app/form/fields.json (preview revision のフィールド = deploy 前の編集中状態)
+  // 3. preview のフィールド（deploy 前の編集状態）
   let previewFields = null;
   try {
     const previewUrl = new URL(`${baseUrl}/k/v1/preview/app/form/fields.json`);
@@ -132,10 +139,21 @@ async function main() {
     previewFields = { error: String(e.message || e) };
   }
 
+  // 4. live のフィールド（本番反映済みのみ存在）
+  let fields;
+  if (previewOnly) {
+    fields = previewFields;
+  } else {
+    const fieldsUrl = new URL(`${baseUrl}/k/v1/app/form/fields.json`);
+    fieldsUrl.searchParams.set('app', args.app);
+    fields = await fetchJson(fieldsUrl.toString(), headers);
+  }
+
   const snapshot = {
     snapshot_timestamp_jst: ts,
     snapshot_label: args.label,
     app_id: Number(args.app),
+    preview_environment_only: previewOnly,
     app: appInfo,
     settings,
     form_fields_live: fields,
@@ -150,8 +168,9 @@ async function main() {
   writeFileSync(outPath, JSON.stringify(snapshot, null, 2));
 
   console.log(`✅ snapshot saved: ${outPath}`);
+  if (previewOnly) console.log('   (preview のみ = 本番未デプロイ。add-app 直後など)');
   console.log(`   app: ${args.app} (${appInfo.name || '?'})`);
-  console.log(`   live revision:    ${settings?.revision || appInfo.revision || '?'}`);
+  console.log(`   revision:         ${settings?.revision ?? appInfo.revision ?? '?'}`);
   console.log(`   live fields:      ${Object.keys(fields.properties || {}).length}`);
   console.log(`   preview fields:   ${previewFields?.properties ? Object.keys(previewFields.properties).length : 'N/A'}`);
 }

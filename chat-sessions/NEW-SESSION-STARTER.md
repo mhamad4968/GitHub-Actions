@@ -98,6 +98,16 @@ v3.7 (2026-04-26 09:55) Cursor Plan & Usage 監査 + 節約パッケージ全実
   Models タブの Extra High 既定切替（S3 反映）も実施推奨
 - **logs/autonomy-decisions/P5-5-plan-usage-2026-04-26.md** に詳細記録
 
+v3.8 (2026-04-26) kintone MCP `kintone-add-app` とプレビュー／本番の見え方（Day4 教訓）:
+- **AI は浜田に「まだ公開？」を先に聞かない**: 本条 + `docs/plans/2026-04-26-pc-ledger-day4-action.md` の **「AI 引継ぎ: kintone-add-app 直後に…」** を読む。  
+- **事実**: `add-app` 直後は **プレビュー先行** → ライブ `app.json` は **404 になりうる** / `/k/<id>/` やスペース一覧に **出ないことがある**（正常範囲）。確認は **`GET /k/v1/preview/app/settings.json?app=<id>`** の `name` と MCP の `app`。  
+- **MCP 制約**: **`thread` は渡せない**（`name` + `space` のみ）。defaultThread 23 は **手動**。  
+- **snapshot**: `revision-snapshot.mjs` は未デプロイ IDで **プレビューにフォールバック**（`preview_environment_only`）。
+
+v3.9 (2026-04-26) セッション切替でも文脈を失わない（浜田「自律的に引き継ぎ」）:
+- **新チャット初手の Read 順**は `chat-sessions/checkpoint-latest.md` の **「セッション切替後の自律復元」** を正本とする（checkpoint → 本条 v3.8+ → `handoff-log` 末尾 → Day4 plan → `RULES-INDEX` 索引行）。  
+- **TSB-023**: `docs/troubleshooting.md`（冗長な「未公開？」確認の根絶と索引化）。
+
 v3.8 (2026-04-26 10:13) S2 / B+: CLAUDE.md thin 化 + .cursorignore 追加（commit 046ec2d）:
 - **CLAUDE.md**: 480 行 / 54.6 KB → 73 行 / 4.15 KB（**92.4% 削減**）= Cursor Composer から実質遮断
 - **.cursorignore**: CLAUDE.md を index 除外（109 → 117 行）= semantic search で引かれる ~13K tokens を完全節約

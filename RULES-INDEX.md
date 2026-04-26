@@ -205,6 +205,18 @@
 
 ---
 
+## セッション切替・文脈復元（2026-04-26 / 浜田「セッションが変わっても分かるように」）
+
+| 正本 | 役割 |
+|---|---|
+| `chat-sessions/checkpoint-latest.md` §「セッション切替後の自律復元」 | 新チャット初手の **Read 順**（checkpoint → NEW-SESSION-STARTER v3.8+ → handoff-log 末尾 → Day4 plan → 本索引） |
+| `chat-sessions/NEW-SESSION-STARTER.md` **v3.8+** | kintone MCP `kintone-add-app` と **プレビュー先行**／`/k/<id>/` が空に見える件の要約 |
+| `docs/plans/2026-04-26-pc-ledger-day4-action.md` **「AI 引継ぎ: kintone-add-app 直後に…」** | 上記の **詳細**（REST 確認手順・`thread` 不可・`revision-snapshot`） |
+| `docs/troubleshooting.md` **TSB-023** | 「公開してない？」**先確認せず浜田へ聞かない**で済むようにした教訓（索引用 1 行 + 本文） |
+| `.cursor/rules/session-handoff.mdc` | 人間 5 行＋AI の `handoff-log` 追記手順。**自律復元**の追記あり |
+
+---
+
 ## 関連
 
 - `AGENTS.md` — ルール本文（憲法）

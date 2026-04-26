@@ -52,23 +52,40 @@
 
 - _(以下、実時刻ログを追記 / 着手前に §51-6-2 で新セッション必須)_
 
+### 17:18 (実時刻 / 新セッション・B1–B4 直前ヘルスチェック)
+
+- §51-6-2: 新セッションで着手（本ブロック）
+- **B1** session-lock: `PC-ledger-day4-prep-2026-04-26` release → `PC-ledger-day4-2026-04-26` acquire ✅（pid 56643）
+- **B2** `npm run audit:parallel`: 総合 **2 点** / 🟢 静穏（軸2: AGENTS.md / RULES-INDEX 過密編集各 2 点寄与／3 点未満のため継続可）
+- **B3** `npm run smoke`: **8/8** ✅（overall=ok）
+- **B4** `npm run kintone:test`: **8/8** ✅（594/595/626/627/670/671/672/673）
+- **Step1 以降**: 浜田 GO 後に Step1 実行済み（下記検証ログ）
+
+### Step1 実行後メモ
+
+- MCP `kintone-add-app` は **`thread` 非対応**（スキーマは `name` + `space` のみ）。スレッド 23 は kintone 管理画面で要確認。
+- 返却 **revision `"2"`**（計画の revision 1 想定と異なる）。Step2 の `revision` 引数は **実測 2** を使うこと。
+- Step2 完了後の **revision は `3`**。Step3 `kintone-deploy-app` は **`{ "app": 674, "revision": 3 }`** を使うこと。
+
 ---
 
 ## 検証ログ (各 Step 完了時に記入)
 
 ### Step 1: add-app
 
-- 引数: `(空欄)`
-- 実行時刻: `(空欄)`
-- 結果: app_id=`?` revision=`?`
-- snapshot: `(空欄)`
+- 引数: `{"name":"新・PC台帳ver.1","space":21}`（MCP スキーマ上 `thread` 不可）
+- 実行時刻: 2026-04-26（Step1 実行セッション）
+- 結果: app_id=`674` revision=`2`（プレビュー環境 / 本番未デプロイ）
+- snapshot: `data/snapshots/674-step1-add-app-20260426-172313.json`（`preview_environment_only: true`）
 
 ### Step 2: add-form-fields
 
-- フィールド数: `35`
-- 実行時刻: `(空欄)`
-- 結果: revision=`?`
-- snapshot: `(空欄)`
+- フィールド数: `35`（`field-spec-diff.mjs --generate` / plan §2）
+- 実行時刻: 2026-04-26（Step2 GO セッション）
+- 引数: `app=674`, `revision=2`, `properties` = 上記 35 コード（**594/595/626/627/670/671/672/673 ではない**）
+- 実行方法: 引数サイズのため **`POST /k/v1/preview/app/form/fields.json`**（MCP `kintone-add-form-fields` と同等のプレビュー書込）
+- 結果: revision=`3`（API 応答）
+- snapshot: `data/snapshots/674-step2-add-form-fields-20260426-173851.json`
 
 ### Step 3: deploy-app
 
