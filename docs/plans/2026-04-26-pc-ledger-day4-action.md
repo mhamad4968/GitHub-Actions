@@ -41,7 +41,7 @@
 | 要素 | 範囲 |
 |---|---|
 | アプリ作成 | 1 アプリ（新・PC台帳ver.1 / 想定 App ID = **674**） |
-| フィールド | 約 35 個（§4.2.1 + §4.2.2 + §4.2.3 + §4.2.4） |
+| フィールド | 約 42 個（§4.2.1 + §4.2.2 + §4.2.3 + §4.2.4 + 移行用） |
 | 配置 | スペース 21 (システム管理) / defaultThread 23 |
 | customize 雛形 | 雛形のみ（種別判定 + 5 台警告 のスケルトン）/ 仕上げは 4/27 |
 | 採番マスタ参照 | 672 (jbm) / 673 (sjbm) （read のみ） |
@@ -58,7 +58,7 @@
 ### Layer A: 事前準備で 80% 排除（20:00 までに完了 / 本ファイル §3 で詳述）
 
 - [x] kintone:test 拡張（**9 apps** ＝ 594/595/626/627/670/671/672/673/**674** 全件疎通 OK / `scripts/kintone-connection-test.js` に 674 追加済 / 20:00 直前にも再実行推奨）
-- [x] field-spec-diff.mjs で「仕様書 vs add-form-fields 引数」を機械照合（2026-04-27: `--spec=本書` vs `--actual=data/snapshots/674-step3-after-deploy-20260426-174110.json` → **35 fields all match** exit 0）
+- [x] field-spec-diff.mjs で「仕様書 vs add-form-fields 引数」を機械照合（2026-04-27: `--spec=本書` vs `--actual=data/snapshots/674-step3-after-deploy-20260426-174110.json` → **当時 35 fields all match** exit 0。**2026-04-28**: 正本 **42 件**（594 HW 7 項目）— 実 kintone は **add-form-fields 未反映の間は diff に warn が出る**のが正常）
 - [x] customize 雛形 JS (lint:customize pass 済) を事前作成（`customize/new-pc-ledger-v1/desktop.js` / BUILD `2026-04-26-day4-skeleton-v0.2` / 2026-04-27 `npm run lint:customize` exit 0）
 - [x] revision-snapshot.mjs で deploy 直後の自動 backup 仕組み準備（スクリプト既存 / 2026-04-27 実走 `674-order2-layer-a-readiness-*` 生成・live revision=9・43 fields 確認）
 - [x] このアクション plan 書を浜田が一読（**2026-04-27**: 読み物 1/5〜5/5 で通読・Layer B の「引数」は平易説明済・§2 は他担当者向けにも重要と確認）
@@ -68,7 +68,7 @@
 - [x] **MCP write 直前**: 引数を chat に丸ごと dump → 浜田明示 GO 取得（**2026-04-27 Tier B GO**「GOでお願いします。」）
 - [x] **app: 値が 594/595/626/627/670/671/672/673 ではない**ことを AI が verbalize（**674 のみ**）
 - [x] **MCP write 直後**: revision-snapshot.mjs 自動実行（rollback 用）（`go-post-apply-labels` / `go-post-deploy-674`）
-- [x] **deploy 直後**: get-form-fields → field-spec-diff.mjs で 100% 一致確認（**35/35**）
+- [x] **deploy 直後**: get-form-fields → field-spec-diff.mjs で 100% 一致確認（**2026-04-27 時点 35/35**。**2026-04-28** 正本 42 件化後は再 GO で **42/42** 目標）
 
 ### Layer C: 事後検証（§5 で詳述）
 
@@ -80,69 +80,76 @@
 
 ---
 
-## §2. フィールド一覧（仕様書 §4.2 完全版 / 35 フィールド）
+## §2. フィールド一覧（仕様書 §4.2 完全版 / 42 フィールド）
 
-### 2.1 PC 基本情報（全種別共通 / 12 フィールド）
+### 2.1 PC 基本情報（全種別共通 / 19 フィールド）
 
 | # | code | type | required | unique | 備考 |
 |---|---|---|---|---|---|
 | 1 | `pc_name` | SINGLE_LINE_TEXT | true | false | 個人=JBIS****-YYYYMM / 共有=S-JBIS****-YYYYMM / JR=手入力 |
-| 2 | `pc_serial_no` | NUMBER | false | false | 種別別自動採番（新規発番分のみ） |
-| 3 | `serial` | SINGLE_LINE_TEXT | false | false | PC シリアル番号 |
-| 4 | `account_type` | DROP_DOWN | true | - | options: [個人, 共有, JR端末, サーバーNAS, その他] / default=個人 |
-| 5 | `pc_status` | DROP_DOWN | true | - | options: [利用中, 保管, 廃棄] / default=利用中 |
-| 6 | `user_name` | SINGLE_LINE_TEXT | false | false | 利用者名（595 ルックアップ）|
-| 7 | `dept_name` | SINGLE_LINE_TEXT | false | false | 所属名（595 から自動引用） |
-| 8 | `group_name` | SINGLE_LINE_TEXT | false | false | 所属グループ（595 から自動引用） |
-| 9 | `shared_terminal_name` | SINGLE_LINE_TEXT | false | false | 共有端末名（共有/JR で必須・customize で動的検証） |
-| 10 | `purchase_date` | DATE | false | false | 購入日 |
-| 11 | `latest_inventory_date` | DATE | false | false | 最新棚卸日 |
-| 12 | `note` | MULTI_LINE_TEXT | false | false | 備考 |
+| 2 | `pc_serial_no` | NUMBER | false | false | PC 名の 4 桁採番用内部カウンタ（§4.3.1・594 の台帳連番とは別） |
+| 3 | `serial` | SINGLE_LINE_TEXT | false | false | シリアルナンバー（594 相当） |
+| 4 | `manufacturer` | SINGLE_LINE_TEXT | false | false | メーカー（594 相当） |
+| 5 | `model_name` | SINGLE_LINE_TEXT | false | false | モデル名／型式（594 相当） |
+| 6 | `manufacturing_no` | SINGLE_LINE_TEXT | false | false | 製造番号（594 相当・`serial` とは別） |
+| 7 | `fixed_ip_1` | SINGLE_LINE_TEXT | false | false | 固定 IP アドレス 1（594 相当） |
+| 8 | `fixed_ip_2` | SINGLE_LINE_TEXT | false | false | 固定 IP アドレス 2（594 相当） |
+| 9 | `extra_info_1` | MULTI_LINE_TEXT | false | false | その他情報 1（594 相当） |
+| 10 | `extra_info_2` | MULTI_LINE_TEXT | false | false | その他情報 2（594 相当） |
+| 11 | `account_type` | DROP_DOWN | true | - | options: [個人, 共有, JR端末, サーバーNAS, その他] / default=個人 |
+| 12 | `pc_status` | DROP_DOWN | true | - | options: [利用中, 保管, 廃棄] / default=利用中 |
+| 13 | `user_name` | SINGLE_LINE_TEXT | false | false | 利用者名（595 ルックアップ）|
+| 14 | `dept_name` | SINGLE_LINE_TEXT | false | false | 所属名（595 から自動引用） |
+| 15 | `group_name` | SINGLE_LINE_TEXT | false | false | 所属グループ（595 から自動引用） |
+| 16 | `shared_terminal_name` | SINGLE_LINE_TEXT | false | false | 共有端末名（共有/JR で必須・customize で動的検証） |
+| 17 | `purchase_date` | DATE | false | false | 購入日 |
+| 18 | `latest_inventory_date` | DATE | false | false | 最新棚卸日 |
+| 19 | `note` | MULTI_LINE_TEXT | false | false | 備考 |
 
 ### 2.2 アカウント情報（個人/共有 自動生成・JR 手入力 / 14 フィールド）
 
 | # | code | type | required | unique | 備考 |
 |---|---|---|---|---|---|
-| 13 | `logon_name` | SINGLE_LINE_TEXT | false | false | jbm**** (個人) / sjbm**** (共有) / 手入力 (JR) |
-| 14 | `logon_pw` | SINGLE_LINE_TEXT | false | false | =logon_name |
-| 15 | `windows_name` | SINGLE_LINE_TEXT | false | false | logon_name (個人/共有) / 手入力 (JR) |
-| 16 | `mail` | SINGLE_LINE_TEXT | false | false | 595 から（個人のみ） |
-| 17 | `mail_acct` | SINGLE_LINE_TEXT | false | false | mail の @ 前 |
-| 18 | `mail_pw` | SINGLE_LINE_TEXT | false | false | jb+ランダム4桁数字+K# |
-| 19 | `m365_id` | SINGLE_LINE_TEXT | false | false | mail_acct + 環境設定マスタの M365_DOMAIN（個人）/ M365管理マスタから（共有/JR） |
-| 20 | `m365_pw` | SINGLE_LINE_TEXT | false | false | logon_name + K#（個人）/ kent2511K#（共有/JR） |
-| 21 | `gb_id` | SINGLE_LINE_TEXT | false | false | =mail_acct（個人のみ） |
-| 22 | `gb_pw` | SINGLE_LINE_TEXT | false | false | =logon_name（個人のみ） |
-| 23 | `sb_id` | SINGLE_LINE_TEXT | false | false | =mail_acct（個人のみ） |
-| 24 | `sb_pw` | SINGLE_LINE_TEXT | false | false | =logon_name（個人のみ） |
-| 25 | `vpn_id` | SINGLE_LINE_TEXT | false | false | 手入力 |
-| 26 | `vpn_pw` | SINGLE_LINE_TEXT | false | false | 手入力 |
+| 20 | `logon_name` | SINGLE_LINE_TEXT | false | false | jbm**** (個人) / sjbm**** (共有) / 手入力 (JR) |
+| 21 | `logon_pw` | SINGLE_LINE_TEXT | false | false | =logon_name |
+| 22 | `windows_name` | SINGLE_LINE_TEXT | false | false | logon_name (個人/共有) / 手入力 (JR) |
+| 23 | `mail` | SINGLE_LINE_TEXT | false | false | 595 から（個人のみ） |
+| 24 | `mail_acct` | SINGLE_LINE_TEXT | false | false | mail の @ 前 |
+| 25 | `mail_pw` | SINGLE_LINE_TEXT | false | false | jb+ランダム4桁数字+K# |
+| 26 | `m365_id` | SINGLE_LINE_TEXT | false | false | mail_acct + 環境設定マスタの M365_DOMAIN（個人）/ M365管理マスタから（共有/JR） |
+| 27 | `m365_pw` | SINGLE_LINE_TEXT | false | false | logon_name + K#（個人）/ kent2511K#（共有/JR） |
+| 28 | `gb_id` | SINGLE_LINE_TEXT | false | false | =mail_acct（個人のみ） |
+| 29 | `gb_pw` | SINGLE_LINE_TEXT | false | false | =logon_name（個人のみ） |
+| 30 | `sb_id` | SINGLE_LINE_TEXT | false | false | =mail_acct（個人のみ） |
+| 31 | `sb_pw` | SINGLE_LINE_TEXT | false | false | =logon_name（個人のみ） |
+| 32 | `vpn_id` | SINGLE_LINE_TEXT | false | false | 手入力 |
+| 33 | `vpn_pw` | SINGLE_LINE_TEXT | false | false | 手入力 |
 
 ### 2.3 SKYSEA 関連（4 フィールド）
 
 | # | code | type | required | unique | 備考 |
 |---|---|---|---|---|---|
-| 27 | `skysea_status` | DROP_DOWN | false | - | options: [未確認, インストール済, 未インストール, インストール対象外] / default=未確認 |
-| 28 | `skysea_checked_at` | DATETIME | false | false | SKYSEA 最終確認日時 |
-| 29 | `skysea_install_log` | MULTI_LINE_TEXT | false | false | SKYSEA インストール履歴 |
-| 30 | `skysea_target_flag` | CHECK_BOX | false | - | options: [配信対象] |
+| 34 | `skysea_status` | DROP_DOWN | false | - | options: [未確認, インストール済, 未インストール, インストール対象外] / default=未確認 |
+| 35 | `skysea_checked_at` | DATETIME | false | false | SKYSEA 最終確認日時 |
+| 36 | `skysea_install_log` | MULTI_LINE_TEXT | false | false | SKYSEA インストール履歴 |
+| 37 | `skysea_target_flag` | CHECK_BOX | false | - | options: [配信対象] |
 
 ### 2.4 M365 リンク参照（1 フィールド）
 
 | # | code | type | required | unique | 備考 |
 |---|---|---|---|---|---|
-| 31 | `m365_master_record_id` | NUMBER | false | false | 紐付き M365管理マスタ レコード番号（共有/JR のみ） |
+| 38 | `m365_master_record_id` | NUMBER | false | false | 紐付き M365管理マスタ レコード番号（共有/JR のみ） |
 
 ### 2.5 移行用 hidden（v2.1 §4.7.2 / 4 フィールド）
 
 | # | code | type | required | unique | 備考 |
 |---|---|---|---|---|---|
-| 32 | `import_source` | SINGLE_LINE_TEXT | false | false | "csv" or "" / バリデーション 2 系統判別用 |
-| 33 | `legacy_pc_name_594` | SINGLE_LINE_TEXT | false | false | 旧 594 の PC 名（移行追跡用） |
-| 34 | `legacy_record_id_594` | NUMBER | false | false | 旧 594 のレコード ID（移行追跡用） |
-| 35 | `created_at_jst` | DATETIME | false | false | レコード作成 JST timestamp（後付け検索用） |
+| 39 | `import_source` | SINGLE_LINE_TEXT | false | false | "csv" or "" / バリデーション 2 系統判別用 |
+| 40 | `legacy_pc_name_594` | SINGLE_LINE_TEXT | false | false | 旧 594 の PC 名（移行追跡用） |
+| 41 | `legacy_record_id_594` | NUMBER | false | false | 旧 594 のレコード ID（移行追跡用） |
+| 42 | `created_at_jst` | DATETIME | false | false | レコード作成 JST timestamp（後付け検索用） |
 
-**合計**: 35 フィールド（仕様書 §4.2 想定数と一致）
+**合計**: 42 フィールド（594 相当 HW 属性 7 項目を §4.2.1 に追加）
 
 ---
 
@@ -153,7 +160,7 @@
 | A0 | session-lock 取得 (holder=PC-ledger-day4-prep-2026-04-26) | ☑ 済 | 09:00 取得 |
 | A1 | 本ファイル作成 | ☑ 済 | 本ファイル |
 | A2 | kintone:test 拡張 (594-627 + 670-674 = **9 apps**) + 全件 OK 確認 | ☑ 済 | 09:00 初回 + **2026-04-27** 674 追加 |
-| A3 | scripts/field-spec-diff.mjs（仕様 vs 実フィールド機械照合） | ☑ 済 | `--diff` 2026-04-27 vs step3 snapshot → 35 match |
+| A3 | scripts/field-spec-diff.mjs（仕様 vs 実フィールド機械照合） | ☑ 済 | 2026-04-27: step3 snapshot **35 match**／2026-04-28: 正本 **42**（kintone 反映は別 Tier B） |
 | A6 | scripts/revision-snapshot.mjs（deploy 前後 backup） | ☑ 済 | 2026-04-27 実走 `order2-layer-a-readiness` |
 | A4 | customize 雛形 JS 骨組み + lint:customize pass | ☑ 済 | **`customize/new-pc-ledger-v1/desktop.js`**（674 用・Day4 雛形） |
 | A5 | chat-sessions/2026-04-26-pc-ledger-day4.md 雛形 | ☑ 済 | 当日ログ用ファイルあり |
@@ -167,7 +174,7 @@
 
 ## §4. 当日 7 ステップ手順（Day 3 と同型 + 強化）
 
-> **前提条件（Step 1 より前）**: `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b 全体**（**1b-A Read → 1b-B 機械ゲート → 1b-C チャットテンプレ**）を **同一ターンで完了**していること。**「仕様確認しますか？」や「読みました」一文だけでは Step 1 に進まない**（オーダー通りに作れない）。正本は `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.2.0〜§4.4**。35 フィールド根拠は `npm run field-spec:generate -- --spec=...` の **`[field-spec-diff] generated 35 fields`** で証跡化。
+> **前提条件（Step 1 より前）**: `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b 全体**（**1b-A Read → 1b-B 機械ゲート → 1b-C チャットテンプレ**）を **同一ターンで完了**していること。**「仕様確認しますか？」や「読みました」一文だけでは Step 1 に進まない**（オーダー通りに作れない）。正本は `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.2.0〜§4.4**。42 フィールド根拠は `npm run field-spec:generate -- --spec=...` の **`[field-spec-diff] generated 42 fields`** で証跡化。
 
 ### Step 1: kintone-add-app（アプリ枠だけ作成）
 
@@ -186,7 +193,7 @@
 - **GO 後**: MCP `kintone-add-app` 実行 → app ID（想定 674）取得 → **revision は環境により 1 ではない**（2026-04-26 実測: **プレビュー上 `2`**。以降は **GET preview の応答 revision を常に使う**）
 - **直後**: `npm run revision:snapshot -- --app=<id> --label=step1-add-app`（`--app` / `--label` 形式。保存値は実測 revision）
 
-### Step 2: kintone-add-form-fields（35 フィールド一括追加）
+### Step 2: kintone-add-form-fields（42 フィールド一括追加）
 
 #### 引数テンプレ（縮小版・実引数は §2 を JSON 化したもの）
 
@@ -196,15 +203,15 @@
   "properties": {
     "pc_name": { "type": "SINGLE_LINE_TEXT", "code": "pc_name", "label": "PC名", "required": true },
     "pc_serial_no": { "type": "NUMBER", "code": "pc_serial_no", "label": "PC連番", "required": false },
-    ... (§2 の全 35 フィールド分 / 別途 scripts/field-spec-diff.mjs で完全版を生成可) ...
+    ... (§2 の全 42 フィールド分 / 別途 scripts/field-spec-diff.mjs で完全版を生成可) ...
   },
   "revision": <Step1 直後の実測 revision。例: 2>
 }
 ```
 
 - **AI 行動**:
-  1. §2 から 35 フィールドの完全 JSON を生成（`npm run field-spec:generate -- --spec=docs/plans/2026-04-26-pc-ledger-day4-action.md`）
-  2. chat に dump（フィールド数を 35 と verbalize）。**表示ラベル（短文）**は `scripts/data/pc-ledger-v1-ui-display-labels.json`（`npm run pc-ledger:verify-labels-spec`）
+  1. §2 から 42 フィールドの完全 JSON を生成（`npm run field-spec:generate -- --spec=docs/plans/2026-04-26-pc-ledger-day4-action.md`）
+  2. chat に dump（フィールド数を 42 と verbalize）。**表示ラベル（短文）**は `scripts/data/pc-ledger-v1-ui-display-labels.json`（`npm run pc-ledger:verify-labels-spec`）
   3. 「app: 674 (新・PC台帳ver.1) で間違いないですか？」浜田 GO 待ち
 - **GO 後**: MCP `kintone-add-form-fields` 実行 → **revision は +1**（2026-04-26 実測: Step2 完了後 **3**）
 - **直後**: `npm run revision:snapshot -- --app=674 --label=step2-add-form-fields`
@@ -338,7 +345,7 @@ npm run customize:upload -- --app 674 --file customize/674/desktop.js
 
 ## §8. Day 4 完了条件
 
-- [x] App 674 が本番に存在し、35 フィールドすべて仕様書 §4.2 と一致（field-spec-diff.mjs で機械検証 / **2026-04-27 GO 後** `674-go-post-deploy-674-*` で **35/35**）
+- [ ] App 674 が本番に存在し、**仕様書 §4.2 と一致**（field-spec-diff.mjs で機械検証）。**2026-04-27 GO 後**は `674-go-post-deploy-674-*` で **当時の 35/35**。**2026-04-28**: 594 相当 HW 属性 **7 項目追加で正本 42 件** → kintone へは **`add-form-fields` + `deploy:674` + `apply-labels`**（Tier B GO）後に **42/42** を再検証
 - [x] **`customize/new-pc-ledger-v1/desktop.js`** が本番反映（`npm run deploy:674` **SUCCESS** / revision **10**）。種別切替の動作は **浜田目視**（Step 6 と合わせて確認推奨）
 - [x] kintone-apps.md に 674 行が追加される（2026-04-27 済・revision 表記更新済）
 - [x] logs/autonomy-decisions に Tier B ログが残る（**`PC-ledger-day4-2026-04-27-go.md`** 新設。旧ファイル名 `2026-04-26` は未作成のまま）

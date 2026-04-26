@@ -60,6 +60,14 @@
 | **背景** | 短文化の際に `mailの@前` 等の **説明寄りの文言**が混ざり、浜田が既に決めていた **PC名 / メールアカウント** 等と不一致 |
 | **正本** | `pc-ledger-v1-ui-display-labels.json` を **ad9e842 初版（短文）列**に揃える（例: `mail_acct`→**メールアカウント**、`account_type`→**アカウント種別**、`mail`→**メール（595）**）。`logon_name` は仕様上 **WindowsID** のまま。`pc-ledger-spec-4222-ui-labels.json` の `ui_label` も同一文字列に同期 |
 
+### 2026-04-28 — 594 相当 HW 属性 7 項目 + `pc_serial_no` / `serial` ラベル明確化
+
+| 種別 | 内容 |
+|---|---|
+| **正本** | §4.2.1 に `manufacturer` / `model_name` / `manufacturing_no` / `fixed_ip_1` / `fixed_ip_2` / `extra_info_1` / `extra_info_2` を追加（旧 594 のメーカー・型式・製造番号・シリアル・固定 IP×2・その他×2）。合計 **42 フィールド**（Day4 手順書 §2 を同期） |
+| **表示** | 上記 7 コードの短文ラベルを `pc-ledger-v1-ui-display-labels.json` に追加。`pc_serial_no`→**PC連番（PC名4桁用）**、`serial`→**シリアルナンバー**（594 のシリアル列と同趣旨） |
+| **kintone** | 既存 674 フォームへの **フィールド API 追加は未実施**（浜田 Tier B GO 後に `add-form-fields` → deploy → `apply-labels`） |
+
 ### 2026-04-27 — 表示名の言い換え + PC名/種別/ステータスは説明付き + `pc_serial_no` 注釈
 
 | 種別 | 内容 |
@@ -109,11 +117,18 @@
 
 ## 2. 全フィールド — 表示ラベルの対照（短文初版 → 現在）
 
-| code | `ad9e842` 初版（短文） | 現在 `HEAD`（699043b） | 備考 |
+| code | `ad9e842` 初版（短文） | 現在 `HEAD`（短文 JSON） | 備考 |
 |---|---|---|---|
 | `pc_name` | PC名 | PC 名（個人=JBIS****-YYYYMM / 共有=S-JBIS****-YYYYMM / JR=手入力） | §4.2.1 原文 |
-| `pc_serial_no` | PC連番 | PC 連番（種別別自動採番、新規発番分のみ） | 同上 |
-| `serial` | PCシリアル番号 | シリアル番号 | 同上 |
+| `pc_serial_no` | PC連番 | PC連番（PC名4桁用） | 2026-04-28 用途明確化 |
+| `serial` | PCシリアル番号 | シリアルナンバー | 2026-04-28 594 表記に寄せる |
+| `manufacturer` | （なし） | メーカー | 2026-04-28 新規 |
+| `model_name` | （なし） | モデル名／型式 | 2026-04-28 新規 |
+| `manufacturing_no` | （なし） | 製造番号 | 2026-04-28 新規 |
+| `fixed_ip_1` | （なし） | 固定IPアドレス1 | 2026-04-28 新規 |
+| `fixed_ip_2` | （なし） | 固定IPアドレス2 | 2026-04-28 新規 |
+| `extra_info_1` | （なし） | その他情報1 | 2026-04-28 新規 |
+| `extra_info_2` | （なし） | その他情報2 | 2026-04-28 新規 |
 | `account_type` | アカウント種別 | 種別 (個人 / 共有 / JR端末 / サーバーNAS / その他) | 同上 |
 | `pc_status` | PCステータス | ステータス (利用中 / 保管 / 廃棄) | 同上 |
 | `user_name` | 利用者名 | 利用者名（595 ルックアップ） | 同上 |

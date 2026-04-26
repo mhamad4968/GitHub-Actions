@@ -1,0 +1,47 @@
+{
+  "_comment": "674 にのみ追加する 7 フィールド（594 相当）。kintone-add-form-fields の properties にそのままマージ。app=674・revision は実行直前の GET で置換。Tier B 浜田 GO 必須。",
+  "properties": {
+    "manufacturer": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "manufacturer",
+      "label": "メーカー",
+      "required": false
+    },
+    "model_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "model_name",
+      "label": "モデル名／型式",
+      "required": false
+    },
+    "manufacturing_no": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "manufacturing_no",
+      "label": "製造番号",
+      "required": false
+    },
+    "fixed_ip_1": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "fixed_ip_1",
+      "label": "固定IPアドレス1",
+      "required": false
+    },
+    "fixed_ip_2": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "fixed_ip_2",
+      "label": "固定IPアドレス2",
+      "required": false
+    },
+    "extra_info_1": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "extra_info_1",
+      "label": "その他情報1",
+      "required": false
+    },
+    "extra_info_2": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "extra_info_2",
+      "label": "その他情報2",
+      "required": false
+    }
+  }
+}
