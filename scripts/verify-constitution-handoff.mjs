@@ -105,6 +105,9 @@ const suites = [
       'session-starter:sync-desktop',
       'verify:desktop-ai-emergency-sync',
       'C:\\Users\\mhamada202408224\\Desktop\\AI緊急用',
+      '項番 0.9',
+      'OK が返るまで',
+      '着手しない',
     ],
   },
 ];

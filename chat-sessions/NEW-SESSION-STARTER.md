@@ -46,7 +46,7 @@
 このファイルの中身を新しい Cursor チャットにそのまま貼るだけで、
 AI がゼロから今までの文脈を完全復元する。
 
-**浜田が毎回最初に開く場所（運用上いちばん大事）**: `C:\Users\mhamada202408224\Desktop\AI緊急用\NEW-SESSION-STARTER.txt`（メモ帳）。**セッション切替時は、この `.txt` 全文を新チャットの最初の 1 メッセージに貼ることを強く推奨**（`checkpoint-latest.md` **項番 -1**）。貼ったあと **本日やること** を AI と **1 問だけ**確認してから項番 0（`verify:constitution-handoff`）へ（**項番 -0**）。ここが **最優先で最新**になるよう、AI は本ファイルを編集して **push する同一ターン**で必ず **`npm run session-starter:sync-desktop`** を実行する（浜田依頼）。**リポだけ更新して Desktop を古いままにしない**。**セッション切替の初手**でも **`verify:desktop-ai-emergency-sync`** で一致確認する（`session:bootstrap` に含まれる）。
+**浜田が毎回最初に開く場所（運用上いちばん大事）**: `C:\Users\mhamada202408224\Desktop\AI緊急用\NEW-SESSION-STARTER.txt`（メモ帳）。**セッション切替時は、この `.txt` 全文を新チャットの最初の 1 メッセージに貼ることを強く推奨**（`checkpoint-latest.md` **項番 -1**）。貼ったあと **本日やること（次の一手）** を AI と **1 問だけ**確認し、**浜田の OK が出てから**項番 0（`verify:constitution-handoff`）へ（**項番 -0** = **OK まで着手しない開始ゲート**）。ここが **最優先で最新**になるよう、AI は本ファイルを編集して **push する同一ターン**で必ず **`npm run session-starter:sync-desktop`** を実行する（浜田依頼）。**リポだけ更新して Desktop を古いままにしない**。**セッション切替の初手**でも **`verify:desktop-ai-emergency-sync`** で一致確認する（`session:bootstrap` に含まれる）。
 Git 上の編集正本: `kintone-ai-lab/chat-sessions/NEW-SESSION-STARTER.md`（差分・履歴用。`.md` と `.txt` は自動同期しないため、上記 npm が橋渡し）。`/mnt/c` が無くコピーできないときはチャットに「AI緊急用の .txt は未更新（理由）」と 1 行書き、環境復帰後に npm を再実行する。
 
 v2 (2026-04-19) からの主な強化:
@@ -179,6 +179,10 @@ v3.12 (2026-04-26) 人間5行引き継ぎ + AI 追記義務:
 - **浜田**: `chat-sessions/HANDOFF-HUMAN.txt`（5行だけ）→ チャットへ貼る
 - **AI**: 同ターンで `chat-sessions/handoff-log.md` 末尾へ必ず追記（`.cursor/rules/session-handoff.mdc` / 漏れ禁止）
 - **checkpoint-latest.md** に手順リンク済み
+
+v3.24 (2026-04-26) **「次にやること」確認 → 浜田 OK → 開始（項番 -0 開始ゲート）**（浜田指示）:
+- **項番 -0**: AI が **次の一手**を **§41 一問**で確認。**浜田の OK が返るまで** `verify` / `session:bootstrap` / 本題に **着手しない**。
+- **項番 0.9**: bootstrap 後に合意と状況が **ズレたときだけ**再一問（副作用ある実行の直前）。
 
 v3.23 (2026-04-26) **Desktop `AI緊急用` の都度メンテ＋セッション切替時の AI 確認義務**（浜田指示）:
 - **正本パス**: `C:\Users\mhamada202408224\Desktop\AI緊急用`（WSL: `/mnt/c/Users/mhamada202408224/Desktop/AI緊急用`）。**セッション切替のたび**に AI が **メンテ済みか確認**（`checkpoint-latest.md` **項番 0b**）。

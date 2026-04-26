@@ -19,7 +19,7 @@
 | 順 | 誰 | すること |
 |---|-----|----------|
 | **-1** | **浜田** | 新チャット **1 通目**に **`AI緊急用\NEW-SESSION-STARTER.txt` 全文**を貼る（任意だが **強く推奨**）。続けて `HANDOFF-HUMAN.txt` 5 行でも可。 |
-| **-0** | **浜田＋AI** | AI: ティア宣言＋スターター受領＋本題を **§41 一問だけ**確認。浜田: OK または 1 行修正。 |
+| **-0** | **浜田＋AI** | AI: ティア宣言＋スターター受領＋**次に着手すること**を **§41 一問だけ**確認。**浜田 OK が出るまで項番 0（verify/bootstrap）に着手しない**。 |
 | **0** | **AI** | **`npm run session:bootstrap`**（内包順: `verify:constitution-handoff` → **`session-starter:sync-desktop`**（`C:\Users\mhamada202408224\Desktop\AI緊急用` 都度メンテ）→ **`verify:desktop-ai-emergency-sync`**（バイト一致）→ `smoke:quiet`）。激短のみ verify だけは非推奨。 |
 
 ---
