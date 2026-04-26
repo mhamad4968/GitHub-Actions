@@ -81,7 +81,7 @@
 
 ## 3. 運用メモ
 
-- **674 の画面上のラベル**をリポと一致させる操作は、従来どおり `npm run pc-ledger:apply-labels`（Tier B / 浜田 GO ポリシーに従う）。コミットだけでは kintone 側は自動では変わらない。
+- **674 の画面上のラベル**をリポと一致させる操作は、従来どおり **`npm run pc-ledger:apply-labels` を AI がターミナルで実行**する（**Tier B = 浜田 GO 後**に実行。GO は人、**コマンド実行は従来どおり AI**）。コミットだけでは kintone 側は自動では変わらない。
 - **正本の §4.2.2 マトリクス**の「個人/共有/JR」列の文言が変わった場合は、`npm run pc-ledger:verify-labels-spec` が指紋不一致で落ちる → `node scripts/pc-ledger-verify-labels-vs-spec.mjs --update-4222-fingerprints` で JSON の指紋更新後、必要なら `ui_label` を見直す。
 
 ---
