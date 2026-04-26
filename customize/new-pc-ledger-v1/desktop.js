@@ -4,7 +4,7 @@
  * 仕様: docs/plans/2026-04-21-new-pc-ledger-spec.md v2.1 §4
  * Day 4 plan: docs/plans/2026-04-26-pc-ledger-day4-action.md
  *
- * BUILD: 2026-04-26-day4-skeleton (v0.1 / 雛形のみ / 本実装は 4/27)
+ * BUILD: 2026-04-26-day4-skeleton-v0.2 (§4.4 JR でも共有用ボタン表示 / 本実装は 4/27)
  *
  * Day 4 雛形スコープ:
  *   - 種別 (account_type) による表示制御 (show/hide)
@@ -23,7 +23,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-04-26-day4-skeleton-v0.1';
+  const BUILD = '2026-04-26-day4-skeleton-v0.2';
 
   // ===== 関連アプリ ID (kintone-apps.md 参照) =====
   const APP_ENV_MASTER = '670';     // 環境設定マスタ
@@ -181,10 +181,14 @@
       }));
     }
 
-    // 共有用 自動生成 (種別=共有 のみ表示)
-    if (type === TYPE_SHARED) {
+    // 共有用 自動生成 (種別=共有 または JR端末 — 仕様書 §4.4)
+    if (type === TYPE_SHARED || type === TYPE_JR) {
       wrapper.appendChild(createGenerateButton('🟢 共有用 自動生成', '#198754', () => {
-        alert('🛠 Day 5 で実装予定: 673 採番マスタ + 671 M365 マスタから自動払い出し');
+        if (type === TYPE_JR) {
+          alert('🛠 Day 5 で実装予定: 671 M365 管理マスタからのみ自動払い出し（Windows 系は手入力）');
+        } else {
+          alert('🛠 Day 5 で実装予定: 673 採番マスタ + 671 M365 マスタから自動払い出し');
+        }
       }));
     }
 
