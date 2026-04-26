@@ -1,0 +1,240 @@
+{
+  "snapshot_timestamp_jst": "20260426-090720",
+  "snapshot_label": "baseline-day4-prep-v2",
+  "app_id": 672,
+  "app": {
+    "appId": "672",
+    "code": "",
+    "name": "新個人WindowsID採番マスタ",
+    "description": "",
+    "createdAt": "2026-04-24T22:42:59.000Z",
+    "creator": {
+      "code": "admin",
+      "name": "管理者"
+    },
+    "modifiedAt": "2026-04-24T22:46:58.000Z",
+    "modifier": {
+      "code": "admin",
+      "name": "管理者"
+    },
+    "spaceId": "21",
+    "threadId": "23"
+  },
+  "settings": {
+    "name": "新個人WindowsID採番マスタ",
+    "description": "",
+    "icon": {
+      "type": "PRESET",
+      "key": "APP39"
+    },
+    "theme": "WHITE",
+    "titleField": {
+      "selectionMode": "AUTO",
+      "code": "logon_name"
+    },
+    "enableThumbnails": true,
+    "enableBulkDeletion": false,
+    "enableComments": true,
+    "enableDuplicateRecord": true,
+    "enableInlineRecordEditing": true,
+    "numberPrecision": {
+      "digits": "16",
+      "decimalPlaces": "4",
+      "roundingMode": "HALF_EVEN"
+    },
+    "firstMonthOfFiscalYear": "4",
+    "revision": "3"
+  },
+  "form_fields_live": {
+    "revision": "3",
+    "properties": {
+      "logon_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "logon_name",
+        "label": "Windows ID (logon_name)",
+        "noLabel": false,
+        "required": true,
+        "minLength": "7",
+        "maxLength": "7",
+        "expression": "",
+        "hideExpression": false,
+        "unique": true,
+        "defaultValue": ""
+      },
+      "カテゴリー": {
+        "type": "CATEGORY",
+        "code": "カテゴリー",
+        "label": "カテゴリー",
+        "enabled": false
+      },
+      "note": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "note",
+        "label": "備考",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "レコード番号": {
+        "type": "RECORD_NUMBER",
+        "code": "レコード番号",
+        "label": "レコード番号",
+        "noLabel": false
+      },
+      "作業者": {
+        "type": "STATUS_ASSIGNEE",
+        "code": "作業者",
+        "label": "作業者",
+        "enabled": false
+      },
+      "更新者": {
+        "type": "MODIFIER",
+        "code": "更新者",
+        "label": "更新者",
+        "noLabel": false
+      },
+      "作成者": {
+        "type": "CREATOR",
+        "code": "作成者",
+        "label": "作成者",
+        "noLabel": false
+      },
+      "ステータス": {
+        "type": "STATUS",
+        "code": "ステータス",
+        "label": "ステータス",
+        "enabled": false
+      },
+      "更新日時": {
+        "type": "UPDATED_TIME",
+        "code": "更新日時",
+        "label": "更新日時",
+        "noLabel": false
+      },
+      "作成日時": {
+        "type": "CREATED_TIME",
+        "code": "作成日時",
+        "label": "作成日時",
+        "noLabel": false
+      },
+      "status": {
+        "type": "DROP_DOWN",
+        "code": "status",
+        "label": "状態",
+        "noLabel": false,
+        "required": true,
+        "options": {
+          "使用済": {
+            "label": "使用済",
+            "index": "1"
+          },
+          "無効": {
+            "label": "無効",
+            "index": "2"
+          },
+          "未使用": {
+            "label": "未使用",
+            "index": "0"
+          }
+        },
+        "defaultValue": "未使用"
+      }
+    }
+  },
+  "form_fields_preview": {
+    "revision": "3",
+    "properties": {
+      "logon_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "logon_name",
+        "label": "Windows ID (logon_name)",
+        "noLabel": false,
+        "required": true,
+        "minLength": "7",
+        "maxLength": "7",
+        "expression": "",
+        "hideExpression": false,
+        "unique": true,
+        "defaultValue": ""
+      },
+      "カテゴリー": {
+        "type": "CATEGORY",
+        "code": "カテゴリー",
+        "label": "カテゴリー",
+        "enabled": false
+      },
+      "note": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "note",
+        "label": "備考",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "レコード番号": {
+        "type": "RECORD_NUMBER",
+        "code": "レコード番号",
+        "label": "レコード番号",
+        "noLabel": false
+      },
+      "作業者": {
+        "type": "STATUS_ASSIGNEE",
+        "code": "作業者",
+        "label": "作業者",
+        "enabled": false
+      },
+      "更新者": {
+        "type": "MODIFIER",
+        "code": "更新者",
+        "label": "更新者",
+        "noLabel": false
+      },
+      "作成者": {
+        "type": "CREATOR",
+        "code": "作成者",
+        "label": "作成者",
+        "noLabel": false
+      },
+      "ステータス": {
+        "type": "STATUS",
+        "code": "ステータス",
+        "label": "ステータス",
+        "enabled": false
+      },
+      "更新日時": {
+        "type": "UPDATED_TIME",
+        "code": "更新日時",
+        "label": "更新日時",
+        "noLabel": false
+      },
+      "作成日時": {
+        "type": "CREATED_TIME",
+        "code": "作成日時",
+        "label": "作成日時",
+        "noLabel": false
+      },
+      "status": {
+        "type": "DROP_DOWN",
+        "code": "status",
+        "label": "状態",
+        "noLabel": false,
+        "required": true,
+        "options": {
+          "使用済": {
+            "label": "使用済",
+            "index": "1"
+          },
+          "無効": {
+            "label": "無効",
+            "index": "2"
+          },
+          "未使用": {
+            "label": "未使用",
+            "index": "0"
+          }
+        },
+        "defaultValue": "未使用"
+      }
+    }
+  }
+}
