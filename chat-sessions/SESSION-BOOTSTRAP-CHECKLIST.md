@@ -25,9 +25,9 @@
 
 ## フェーズ 1b — 新・PC台帳 ver.1 を触る場合（仕様書必読）
 
-> **Day4 手順書・チャット要約だけで判断しない**。正本は `docs/plans/2026-04-21-new-pc-ledger-spec.md`。次のいずれかに当てはまる **着手前**に必ず Read し、チャットに **「§4.2.0〜読了」** と 1 行書く。
+> **Day4 手順書・チャット要約だけで判断しない**。正本は `docs/plans/2026-04-21-new-pc-ledger-spec.md`。**仕様を読まないままではアプリ枠（`kintone-add-app`）以降を設計根拠付きで進められない**（§2 の 35 フィールド・採番・SKYSEA 別枠はすべて正本に依存）。次のいずれかに当てはまる **着手前**に必ず Read し、チャットに **「§4.2.0〜読了」** と 1 行書く。
 
-- [ ] **kintone** App 674（または新・PC台帳）の **フィールド追加・変更・deploy・ラベル適用**
+- [ ] **kintone** の **アプリ新規作成（`kintone-add-app`）**、または App 674（新・PC台帳）の **フィールド追加・変更・deploy・ラベル適用**
 - [ ] `scripts/data/pc-ledger-v1-ui-display-labels.json` / `pc-ledger-spec-4222-ui-labels.json` / `field-spec-diff` / `pc-ledger:apply-labels` を触る
 - [ ] `customize/**/desktop.js`（新・PC台帳）の **自動生成・種別切替・バナー**等のロジック変更
 

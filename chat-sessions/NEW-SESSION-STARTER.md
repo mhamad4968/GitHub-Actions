@@ -140,8 +140,8 @@ v3.12 (2026-04-26) 人間5行引き継ぎ + AI 追記義務:
 - **checkpoint-latest.md** に手順リンク済み
 
 v3.15 (2026-04-27) 新・PC台帳は **仕様書を読んでから**:
-- **正本**: `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.2.0〜§4.4**（Day4 手順書・チャットだけで判断しない）。
-- **引き継ぎチェックリスト**: `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b**（674・ラベル JSON・新・PC台帳 customize を触る前に Read＋チャット 1 行）。
+- **正本**: `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.2.0〜§4.4**（Day4 手順書・チャットだけで判断しない）。**未読のままではアプリ作成〜35 フィールドを根拠付きで進められない**。
+- **引き継ぎチェックリスト**: `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b**（`kintone-add-app` 含む・674・ラベル JSON・新・PC台帳 customize を触る前に Read＋チャット 1 行）。
 
 v3.14 (2026-04-26) 引き継ぎ後の安心 — 経緯・法律相当・ルール・機能・MCP を棚卸し:
 - **必読**: `chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md`（フェーズ 0–7）。**Read だけで終わらせない**。
