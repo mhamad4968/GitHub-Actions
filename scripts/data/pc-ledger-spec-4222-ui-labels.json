@@ -14,7 +14,7 @@
     "windows_name": {
       "ui_label": "Windows名",
       "spec_anchor": "§4.2.2 logon_name[mail@前]",
-      "matrix_fingerprint": "0afcd4b2c069ea8c"
+      "matrix_fingerprint": "96d4671cb92ecbd5"
     },
     "mail": {
       "ui_label": "メールアドレス",

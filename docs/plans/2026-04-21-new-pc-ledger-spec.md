@@ -124,7 +124,7 @@ PC レコード保存・廃棄時:
 #### 4.2.0 浜田認識の整理（コア自動生成 vs SKYSEA）
 
 - **SKYSEA 計画（別枠）**: §4.2.3 の `skysea_status` / `skysea_checked_at` / `skysea_install_log` / `skysea_target_flag` は **SKYSEA 施策の状態・履歴・配信対象の管理用**です。**下表の * は PC 名〜VPN までの「採番・ID 連動」のコア**であり、SKYSEA 4 フィールドとは役割が分かれます（自動生成ボタンが主に触るのは §4.2.2 マトリクス＋下表の論理）。
-- **595 ルックアップ等**: `mail` / `mail_acct` / `user_name` / `dept_name` / `group_name` は **コア表の外**ですが、個人フローで M365 等に必要になるため **別フィールドで保持**（§4.2.1・§4.2.2）。
+- **595 ルックアップ等**: `mail` / `mail_acct` / `user_name` / `dept_name` / `group_name` は **コア表の外**ですが、個人フローで M365 等に必要になるため **別フィールドで保持**（§4.2.1・§4.2.2）。**会社メール（595）は個人用 PC のみ**採用し、共有 PC・JR 端末は **共有 PC 扱い**で **Windows + M365 のみ**（メールアカウント不要・§4.5）。
 - **実務属性**: 棚卸日・購入日・シリアル・備考・種別・ステータス等は **運用メタ**（§4.2.1）。
 
 | * コア（浜田認識） | ルール要約 | kintone `code`（主） |
@@ -136,7 +136,7 @@ PC レコード保存・廃棄時:
 | 共有 WindowsID | `sjbm` + 4 桁（667 から） | `logon_name` |
 | JR WindowsID | 手入力 | `logon_name` |
 | WindowsPW | = WindowsID（= `logon_name`） | `logon_pw` |
-| Windows アカウント名 | `WindowsID[mail@前]`（個人/共有）/ 手入力（JR） | `windows_name` |
+| Windows アカウント名 | メール @ より前との連動（個人のみ）/ **共有は `=logon_name`**（メールなし）/ 手入力（JR） | `windows_name` |
 | メールパスワード | `jb` + ランダム 4 桁数字 + `K#`（個人用ボタン 1 回生成） | `mail_pw` |
 | 個人 M365 PW | `WindowsID` + `K#`（例: `jbm0001K#`） | `m365_pw` |
 | 共有/JR M365 PW | `kent2511K#` 固定（環境設定マスタ由来） | `m365_pw` |
@@ -168,11 +168,13 @@ PC レコード保存・廃棄時:
 
 #### 4.2.2 アカウント情報（個人/共有 で自動生成・JR は手入力）
 
+- **浜田方針（2026-04-27）**: **メール（595）は個人用 PC のみ**必要。共有 PC と **JR 端末は共有 PC 扱い**とし、台帳上のアカウント運用は **Windows（`logon_name` / `windows_name` 等）と M365 のみ**（会社メール・`mail_acct` 由来の gb/sb 等は不要。UI は §4.5）。
+
 | code | type | 個人 | 共有 | JR端末 |
 |---|---|---|---|---|
 | `logon_name` | SINGLE_LINE_TEXT | jbm**** (626 から) | sjbm**** (667 から) | 手入力 |
 | `logon_pw` | SINGLE_LINE_TEXT | =logon_name | =logon_name | 手入力 |
-| `windows_name` | SINGLE_LINE_TEXT | logon_name[mail@前] | logon_name[mail@前] | 手入力 |
+| `windows_name` | SINGLE_LINE_TEXT | `mail` の @ より前（595・個人メール） | `=logon_name`（メールなし・共有 PC） | 手入力 |
 | `mail` | SINGLE_LINE_TEXT | 595 から | （不要）| （不要）|
 | `mail_acct` | SINGLE_LINE_TEXT | mail の @ 前 | （不要）| （不要）|
 | `mail_pw` | SINGLE_LINE_TEXT | `jb`+ランダム4桁数字+`K#` | （不要）| （不要）|
@@ -259,7 +261,7 @@ PC レコード保存・廃棄時:
 
 ### 4.5 UI 出し分け（種別による）
 
-- **共有・JR で `mail` / `mail_acct` 等**: §4.2.2 マトリクス上は共有・JR 列が「（不要）」だが、kintone フォーム上は **フィールド定義としては存在**する。**画面上**は本表のとおり **アカウント情報セクションでは非表示**（customize の表示切替。値は空のまま運用してよい）。
+- **共有・JR で `mail` / `mail_acct` 等**: §4.2.2 のとおり **個人用 PC のみメール必須**；共有・JR は **Windows + M365 のみ**のためマトリクス上は「（不要）」。kintone フォーム上は **フィールド定義としては存在**する。**画面上**は本表のとおり **アカウント情報セクションでは非表示**（customize の表示切替。値は空のまま運用してよい）。
 
 | 種別 | アカウント情報セクション |
 |---|---|
@@ -672,7 +674,7 @@ snapshot: `data/snapshots/594-pre-migration-scan-2026-04-22.json`
 | 共有 WindowsID | sjbm+4桁（667 から）|
 | JR WindowsID | 手入力 |
 | WindowsPW | =WindowsID |
-| Windows アカウント名 | WindowsID[mail@前]（個人/共有）/ 手入力（JR）|
+| Windows アカウント名 | メール @ より前（個人）/ =logon_name（共有・メールなし）/ 手入力（JR）|
 | メールパスワード | jb+ランダム4桁数字+K#（個人用ボタン押下時 1 回生成）|
 | 個人 M365 PW | WindowsID + K#（例: jbm0001K#）|
 | 共有/JR M365 PW | kent2511K# 固定 |
