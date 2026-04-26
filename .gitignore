@@ -32,7 +32,11 @@ backups/
 dist/
 logs/*
 !logs/autonomy-decisions.log
+!logs/autonomy-decisions/
 !logs/.gitkeep
+# Z-1 構造修正 (2026-04-26): autonomy-decisions/ ディレクトリ全体を git 追跡対象に
+# (P3-k3 / P4-parallel / P5-1-cursor-hooks / Q1-tsb019 / Z1-eslint 等の重要決定記録が
+#  これまで除外されていたバグを修正)
 
 # §42-2 Continuity Assurance (ファイル直読方式 / 2026-04-24 制定)
 # AGENTS.md ハッシュは個人 WSL ローカル state / git 管理しない
@@ -49,3 +53,10 @@ GitHub-Actions/
 # apply-approved-changes.mjs が世代保存するタイムスタンプ付バックアップ（2026-04-20 追加）
 # パターン例: scripts/foo.mjs.backup.2026-04-20T10-23-45-678Z
 *.backup.*Z
+
+# Z-2 (2026-04-26): kintone revision-snapshot 中間ファイルは追跡しない
+# 命名規約 (Day 4 で確立):
+#   <app>-baseline-*.json         → commit (作業前/後の決定的状態)
+#   <app>-step<N>-*.json          → ignore (作業途中の中間snapshot / リポ肥大防止)
+#   <app>-rollback-trigger-*.json → commit (異常検知時の保全 / 重要)
+data/snapshots/*-step*.json
