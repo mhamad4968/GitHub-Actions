@@ -119,13 +119,13 @@ PC レコード保存・廃棄時:
 
 ### 4.2 フィールド設計（主要・約 35 個想定）
 
-**kintone 画面上の表示名（短文）**はリポジトリの `scripts/data/pc-ledger-v1-ui-display-labels.json` を正とする（下表の「説明」「内容」列は**意味・ルール**用。長文をそのままフィールド `label` に載せない）。
+**kintone 画面上の表示名**はリポジトリの `scripts/data/pc-ledger-v1-ui-display-labels.json` を正とする（**PC 名・種別・ステータス**は説明付きラベル、その他は短文。下表の「説明」「内容」列は仕様の意味・ルール用）。
 
 #### 4.2.1 PC 基本情報（全種別共通）
 | code | type | 説明 |
 |---|---|---|
 | `pc_name` | SINGLE_LINE_TEXT | PC 名（個人=JBIS****-YYYYMM / 共有=S-JBIS****-YYYYMM / JR=手入力）|
-| `pc_serial_no` | NUMBER | PC 連番（種別別自動採番、新規発番分のみ）|
+| `pc_serial_no` | NUMBER | 内部連番（PC 名の 4 桁採番用・§4.3.1 参照）|
 | `serial` | SINGLE_LINE_TEXT | シリアル番号 |
 | `account_type` | DROP_DOWN | 種別 (個人 / 共有 / JR端末 / サーバーNAS / その他) |
 | `pc_status` | DROP_DOWN | ステータス (利用中 / 保管 / 廃棄) |
@@ -136,6 +136,8 @@ PC レコード保存・廃棄時:
 | `purchase_date` | DATE | 購入日 |
 | `latest_inventory_date` | DATE | 最新棚卸日 |
 | `note` | MULTI_LINE_TEXT | 備考 |
+
+- **`pc_serial_no` について**: **v2.1（2026-04-22）の仕様改定で追加**した NUMBER フィールドです（当初の口頭合意時点にはありませんでした）。**用途**は §4.3.1 のとおり、個人・共有の **PC 名（`JBIS####-YYYYMM` / `S-JBIS####-YYYYMM`）の 4 桁部分**を、アプリ内の **`MAX(pc_serial_no) + 1`** で採番するためのカウンタです。594 等からの **移行取込は `0`**、**新規発番分のみ** 1, 2, 3… と増えます。画面上のラベルは分かりやすさのため **「PC連番」**（`pc-ledger-v1-ui-display-labels.json`）。
 
 #### 4.2.2 アカウント情報（個人/共有 で自動生成・JR は手入力）
 
@@ -159,7 +161,7 @@ PC レコード保存・廃棄時:
 #### 4.2.3 SKYSEA 関連（昨夜 #K1 で 594 に追加・新アプリにも継承）
 | code | type | 内容 |
 |---|---|---|
-| `skysea_status` | DROP_DOWN | 未確認 / インストール済 / 未インストール / インストール対象外 |
+| `skysea_status` | DROP_DOWN | 画面上の項目名＝SKYSEAインストール種別。選択肢: 未確認 / インストール済 / 未インストール / インストール対象外 |
 | `skysea_checked_at` | DATETIME | SKYSEA 最終確認日時 |
 | `skysea_install_log` | MULTI_LINE_TEXT | SKYSEA インストール履歴 |
 | `skysea_target_flag` | CHECK_BOX | 配信対象フラグ |
