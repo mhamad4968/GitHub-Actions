@@ -1176,3 +1176,36 @@ PC 台帳 Day4 Step1 で MCP `kintone-add-app` 実行後、ブラウザの **`/k
 - 正本（詳細）: `docs/plans/2026-04-26-pc-ledger-day4-action.md`（AI 引継ぎ節）
 - 索引: `RULES-INDEX.md`（セッション切替・文脈復元）
 - 当日ログ: `chat-sessions/2026-04-26-pc-ledger-day4.md`
+
+---
+
+## TSB-024 — AI が浜田にデプロイ等 Tier B 実行を委ねるアンチパターン（2026-04-26 19:20 検出）
+
+### 事象
+
+新・PC 台帳 v1 の §4.4 仕様揃え修正（`customize/new-pc-ledger-v1/desktop.js`）後、AI が回答末尾に「**デプロイ: 674 にこの JS を載せている場合は、いつもどおり再デプロイしてください。`deploy:674` 用スクリプトがなければ手動アップロードで問題ありません。**」と書いて締めた。浜田の指摘 ×2 で訂正し、AI 自身で `npm run deploy:674` を新設＋実行＋検証した。
+
+### 根本原因（真因 1 文）
+
+**会話要約（context summary）で `AGENTS.md §35-1` / `§56-1a`（=「開発は AI・確認は浜田・逆転禁止」）が脱落し、引き継いだ AI が「コード変更 = AI / 反映実行 = 浜田」という誤った分担を再構築してしまった**（`checkpoint-latest.md` `RULES-INDEX.md` `NEW-SESSION-STARTER v3.13` には明記されていたが、要約段階で削られた）。
+
+### 対策（恒久）
+
+1. **TSB（本条）**: 引き継ぎ要約から落ちないよう、アンチパターンを「絶対やらない例文付き」で記録する。
+2. **NEW-SESSION-STARTER v3.18**: 文書の **最上段**（v 番号より上）に **🚨 憲法級ブロック**を新設し、`AGENTS.md §35-1 / §56-1a` を 5 行で再宣言＋禁句サンプル（「再デプロイしてください」「手動アップロードで問題ありません」「`npm run xxx` を実行してください」）を列挙。Desktop 緊急用 `.txt` も `npm run session-starter:sync-desktop` で同期。
+3. **SESSION-BOOTSTRAP-CHECKLIST.md フェーズ 7**: チャット報告 6 項目に **「(7) 役割宣言: deploy / apply / push / 検証は AI 自身が実行する。浜田には GO と目視確認のみ依頼する」** を追記。AI は新セッション 1 ターン目でこれを声に出して引き継ぎ完了の証跡にする。
+4. **handoff-log.md**: 本件を「禁句アンチパターン」として記録（次の AI が末尾 3 件読みで必ず触れる）。
+
+### 教訓
+
+1. **「再デプロイしてください」「手動アップロードでも OK」は §35-1 違反**。`deploy:<appId>` が無いなら **AI が npm script を追加して**そのまま実行する。
+2. **「動作確認だけ依頼」は OK**（ボタン表示・バナー・色味・UX）。「**コマンド実行を依頼**」は **NG**。境界を毎ターン意識する。
+3. **要約耐性のあるルールは TSB 化する**: §35-1 は条文上「変更禁止」だが、conversation summarizer は重み付けに条文番号を渡せない。**禁句リスト形式**で書くと要約後も生き残りやすい。
+
+### 関連
+
+- 憲法: `AGENTS.md` §35-1（自律型エンジニアリング）/ §56-1a（開発と確認の絶対分担）
+- 索引: `RULES-INDEX.md`「タスク開始時に必ず参照」表 / 「セッション切替・文脈復元」表
+- 引き継ぎ: `chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 7 / `.cursor/rules/session-handoff.mdc`
+- 緊急用: `chat-sessions/NEW-SESSION-STARTER.md` v3.18（最上段 🚨 憲法級ブロック）
+- 直近実例: `npm run deploy:674` 新設 commit `4e9a062`（事後対応）
