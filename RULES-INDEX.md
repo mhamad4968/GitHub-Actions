@@ -212,6 +212,7 @@
 | `chat-sessions/checkpoint-latest.md` §「セッション切替後の自律復元」 | 新チャット初手の **Read 順**（checkpoint → NEW-SESSION-STARTER v3.8+ → handoff-log 末尾 → Day4 plan → 本索引） |
 | `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.2** | 新・PC台帳 ver.1 の **フィールド設計・説明の正本**（表示ラベル整合は `npm run pc-ledger:verify-labels-spec`／人への全文突合依頼はしない） |
 | `npm run pc-ledger:verify-labels-spec` | `PC_LEDGER_V1_LABELS` を正本 §4.2＋`scripts/data/pc-ledger-spec-4222-ui-labels.json`＋拡張 JSON と機械突合（セッション切替後のブレ止め） |
+| `docs/plans/2026-04-26-pc-ledger-label-spec-changelog.md` | 表示ラベル周りの **追加 vs 変更**（コミット別・全フィールド対照表） |
 | `chat-sessions/NEW-SESSION-STARTER.md` **v3.8+** | kintone MCP `kintone-add-app` と **プレビュー先行**／`/k/<id>/` が空に見える件の要約 |
 | `docs/plans/2026-04-26-pc-ledger-day4-action.md` **「AI 引継ぎ: kintone-add-app 直後に…」** | 上記の **詳細**（REST 確認手順・`thread` 不可・`revision-snapshot`） |
 | `docs/troubleshooting.md` **TSB-023** | 「公開してない？」**先確認せず浜田へ聞かない**で済むようにした教訓（索引用 1 行 + 本文） |

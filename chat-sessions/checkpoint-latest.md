@@ -30,6 +30,7 @@
 
 - **仕様の正本**（フィールド設計・説明文）: `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.2**（Day4 の手順書は運用補助。ズレたら **正本を優先**して計画書・スクリプトを直す）。
 - **浜田の役割は確認のみ**（全文目視突合・一覧チェックを人に押し付けない）。**AI 側**が `scripts/pc-ledger-v1-labels.mjs` と `npm run pc-ledger:verify-labels-spec` で正本＋JSON と機械整合し、差分はレポートで残す。
+- **追加・変更の履歴**（コミット別・全フィールド対照）: `docs/plans/2026-04-26-pc-ledger-label-spec-changelog.md`
 - **セッションが変わっても**上記パスと npm script を読めば「何が正か」に迷わないようにする（口頭の続きに依存しない）。
 
 ## 引き継ぎ（短縮・人間5行）

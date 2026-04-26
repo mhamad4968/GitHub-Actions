@@ -311,7 +311,7 @@ npm run customize:upload -- --app 674 --file customize/674/desktop.js
 
 ## §7. 仕様書との突合ポイント
 
-- **画面表示ラベル**（正本 §4.2 原文 + §4.2.2 マトリクス指紋付き UI 短文 + 拡張 4）: `npm run pc-ledger:verify-labels-spec`（`scripts/pc-ledger-v1-labels.mjs` / `scripts/data/pc-ledger-spec-4222-ui-labels.json` / `scripts/data/pc-ledger-spec-field-extensions.json`）
+- **画面表示ラベル**（正本 §4.2 原文 + §4.2.2 マトリクス指紋付き UI 短文 + 拡張 4）: `npm run pc-ledger:verify-labels-spec`（`scripts/pc-ledger-v1-labels.mjs` / `scripts/data/pc-ledger-spec-4222-ui-labels.json` / `scripts/data/pc-ledger-spec-field-extensions.json`）。**追加・変更の一覧**は `docs/plans/2026-04-26-pc-ledger-label-spec-changelog.md`（コミット別・全フィールド対照表）
 - ✅ §4.2.1 PC 基本情報 12 フィールド: 完全一致
 - ✅ §4.2.2 アカウント情報 14 フィールド: 完全一致
 - ✅ §4.2.3 SKYSEA 関連 4 フィールド: 完全一致
