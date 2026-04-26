@@ -2338,7 +2338,7 @@ docs/archives/synthesis-graveyard/
 - **重大改定**（[BREAKING] / Tier 構造変更 / セーフモード変更 / §57 自身の改定）は以下も同期:
   - `chat-sessions/NEW-SESSION-STARTER.md`（次セッション継続性）
   - `chat-sessions/CURSOR-トラブル対応メモ.md`（緊急時参照）
-  - 浜田 Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用\*.txt`（SHA256 一致確認）
+  - 浜田 Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用\*.txt`（SHA256 一致確認。**浜田方針**: 新チャット儀式はここを毎回開く前提のため、儀式系 MD を触ったコミットでは **`npm run session-starter:sync-desktop`** を同一ターンで必ず実行し、Desktop を最優先で最新にする。手動 `cp` より npm 経路を推奨）
 - 翌朝 `daily-morning-prep.mjs` の §1 で「昨日の改定」として浜田に提示。
 
 #### §57-7 改定の改定 (Meta)
@@ -2494,7 +2494,7 @@ AI 自己診断で「待つと被害拡大」と判断 → Tier A 強制実行�
 3. **例外（事前報告不要 = 安全 shell カテゴリ / 都度承認回避）**:
    - 読取系: `ls`, `cat`, `head`, `tail`, `grep`, `rg`, `find ... -print`（`-delete` なしの探索のみ）
    - 既知の npm スクリプト: `npm run guard:check`, `npm run smoke`, `npm run health-check`, `npm test` 系（package.json で定義済かつ副作用 cron-限定）
-   - 既知の AI緊急用 sync: `cp <repo>/chat-sessions/*.md /mnt/c/Users/.../Desktop/AI緊急用/` （§57-6 周知ステップ）
+   - 既知の AI緊急用 sync: **`npm run session-starter:sync-desktop`**（§57-6。旧来の手動 `cp` は非推奨）
    - git の安全コマンド: `git status`, `git log`, `git diff`, `git add`, `git commit`, `git push origin main`（force なし）
    - session-lock: `node scripts/session-lock.mjs *`
    - 単発検証: `node -e "..."`, `node scripts/<既存スクリプト>` (副作用なし or §52-3 で Tier A 判定済)

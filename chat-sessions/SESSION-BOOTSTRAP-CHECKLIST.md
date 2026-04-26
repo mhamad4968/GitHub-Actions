@@ -2,7 +2,7 @@
 
 > **目的**: 経緯・「法律」に相当する制約・ルール・備わっている機能・MCP を **読み飛ばさず** 再確認し、浜田が気づかないまま **逆方向に進む事故** を防ぐ。  
 > **憲法**: **開発は AI・確認は浜田**（`AGENTS.md` §35-1 / §56-1a）。本リストは **AI が実行・報告**する（浜田に全文チェックを押し付けない）。  
-> **Desktop 控え**: 本ファイルを更新したコミットでは **`npm run session-starter:sync-desktop`** で `AI緊急用\SESSION-BOOTSTRAP-CHECKLIST.txt` にも反映（WSL `/mnt/c` がある場合）。
+> **浜田運用の最優先**: `C:\Users\mhamada202408224\Desktop\AI緊急用\` の `.txt`。本ファイルを更新したコミットでは **`npm run session-starter:sync-desktop`** を同一ターンで実行し、`SESSION-BOOTSTRAP-CHECKLIST.txt` を必ず揃える（`/mnt/c` が無いときだけスキップ＋チャット 1 行）。
 
 ---
 
@@ -102,4 +102,4 @@ AI は上記を終えたら **このターン内**で、次を **箇条書きで
 
 - 新しい「必須検査」が `smoke-test.mjs` に入ったら **本ファイルフェーズ 6 の説明を同期**する。  
 - 新しい永続ドキュが「引き継ぎ必読」になったら **フェーズ 1–2 の表に 1 行追加**する。
-- **`NEW-SESSION-STARTER.md` / 本ファイルを編集して push した AI** は、可能なら **`npm run session-starter:sync-desktop`** を同じターンで実行し、Desktop の `.txt` 控えをリポと揃える（§57-6 周知の実務化）。
+- **`NEW-SESSION-STARTER.md` / 本ファイルを編集して push した AI** は、**同一ターンで `npm run session-starter:sync-desktop` を必須**とし、浜田が開く `AI緊急用\*.txt` をリポと揃える（§57-6）。WSL で `/mnt/c` が無い等のときだけ省略可＋チャットに理由 1 行。

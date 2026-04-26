@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 /**
- * リポの儀式ファイルを Windows Desktop「AI緊急用」控えへコピーする。
+ * リポの儀式ファイルを Windows Desktop「AI緊急用」へコピーする。
+ * 浜田運用ではここが毎回の参照先のため、儀式 MD を編集したターンで必ず実行する想定。
  * WSL で /mnt/c/... が見える環境でのみ実際に書き込む。無ければスキップ（exit 0）。
  *
  * 既定先: SESSION_STARTER_DESKTOP_DIR または
  *   /mnt/c/Users/mhamada202408224/Desktop/AI緊急用
  *
- * @see chat-sessions/NEW-SESSION-STARTER.md 冒頭「控え」
+ * @see chat-sessions/NEW-SESSION-STARTER.md 冒頭
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -26,7 +27,8 @@ function main() {
   if (!fs.existsSync(destDir)) {
     console.log(
       `[sync-session-starter-to-desktop] スキップ: 控えフォルダが無い (${destDir})\n` +
-        '  WSL 以外、または /mnt/c 未マウント。リポ内 MD が正本。'
+        '  WSL 以外、または /mnt/c 未マウント。浜田の参照先 AI緊急用は未更新のまま。' +
+        ' /mnt/c 復帰後に npm run session-starter:sync-desktop を再実行すること。'
     );
     process.exit(0);
   }

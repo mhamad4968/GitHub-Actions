@@ -5,8 +5,8 @@
 このファイルの中身を新しい Cursor チャットにそのまま貼るだけで、
 AI がゼロから今までの文脈を完全復元する。
 
-正本: `kintone-ai-lab/chat-sessions/NEW-SESSION-STARTER.md`（Git / リポが常に最新）
-控え: `C:\Users\mhamada202408224\Desktop\AI緊急用\NEW-SESSION-STARTER.txt`（メモ帳用。**リポと自動同期しない**。WSL から **`npm run session-starter:sync-desktop`** で上書きコピーする。AI は本ファイルまたは `SESSION-BOOTSTRAP-CHECKLIST.md` を **コミットしたターン**でこの npm を実行し、失敗したらチャットに「控え未更新（/mnt/c なし等）」と 1 行書く）
+**浜田が毎回最初に開く場所（運用上いちばん大事）**: `C:\Users\mhamada202408224\Desktop\AI緊急用\NEW-SESSION-STARTER.txt`（メモ帳）。ここが **最優先で最新**になるよう、AI は本ファイルを編集して **push する同一ターン**で必ず **`npm run session-starter:sync-desktop`** を実行する（浜田依頼）。**リポだけ更新して Desktop を古いままにしない**。
+Git 上の編集正本: `kintone-ai-lab/chat-sessions/NEW-SESSION-STARTER.md`（差分・履歴用。`.md` と `.txt` は自動同期しないため、上記 npm が橋渡し）。`/mnt/c` が無くコピーできないときはチャットに「AI緊急用の .txt は未更新（理由）」と 1 行書き、環境復帰後に npm を再実行する。
 
 v2 (2026-04-19) からの主な強化:
 - 主タスク: SKYSEA → 新・PC 台帳 ver.1 (4/24 環境設定マスタ Day 1)
@@ -142,7 +142,7 @@ v3.12 (2026-04-26) 人間5行引き継ぎ + AI 追記義務:
 v3.14 (2026-04-26) 引き継ぎ後の安心 — 経緯・法律相当・ルール・機能・MCP を棚卸し:
 - **必読**: `chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md`（フェーズ 0–7）。**Read だけで終わらせない**。
 - **必実行**: `npm run session:bootstrap`（= `smoke:quiet` / 8 連検査）。結果をチャットに **短く要約**（チェックリスト フェーズ 7）。
-- **Desktop 控え**: 本ファイルをコミットしたターンで **`npm run session-starter:sync-desktop`**（WSL→`AI緊急用\*.txt`。未マウントならスキップ＋チャット 1 行）。
+- **Desktop（最優先）**: 浜田が参照する `AI緊急用\*.txt` を、本ファイルをコミットした **同一ターン**で **`npm run session-starter:sync-desktop`** により必ず更新する。未マウント時はスキップ＋チャット 1 行（後で再実行）。
 - **目的**: 浜田が気づかないまま逆方向に進む事故を減らす（確認負荷は人に押し付けない）。
 
 v3.13 (2026-04-26) PC 台帳仕様の正本固定 + セッション切替後もブレない管理:
