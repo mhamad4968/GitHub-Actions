@@ -60,6 +60,15 @@
 | **背景** | 短文化の際に `mailの@前` 等の **説明寄りの文言**が混ざり、浜田が既に決めていた **PC名 / メールアカウント** 等と不一致 |
 | **正本** | `pc-ledger-v1-ui-display-labels.json` を **ad9e842 初版（短文）列**に揃える（例: `mail_acct`→**メールアカウント**、`account_type`→**アカウント種別**、`mail`→**メール（595）**）。`logon_name` は仕様上 **WindowsID** のまま。`pc-ledger-spec-4222-ui-labels.json` の `ui_label` も同一文字列に同期 |
 
+### 2026-04-28（追記）— 内部メタは標準 GROUP「内部処理用」+ レイアウトスクリプト
+
+| 種別 | 内容 |
+|---|---|
+| **正本** | §4.2.1 に `internal_system_meta`（`GROUP`）を追加。§4.2.1a を **非表示方針からグループ収容 + 初期閉 + 子 disabled** に変更 |
+| **表示** | `internal_system_meta` の短文ラベル **内部処理用** |
+| **npm** | `pc-ledger:674:layout-internal-group`（プレビュー layout PUT + deploy）／断片 JSON `pc-ledger-674-add-internal-group-properties.json` |
+| **customize** | `setGroupFieldOpen(..., false)` + 子 5 件 `disabled`（`BUILD=2026-04-28-internal-group-ui-v0.2`） |
+
 ### 2026-04-28 — 594 相当 HW 属性 7 項目 + `pc_serial_no` / `serial` ラベル明確化
 
 | 種別 | 内容 |
@@ -129,6 +138,7 @@
 | `fixed_ip_2` | （なし） | 固定IPアドレス2 | 2026-04-28 新規 |
 | `extra_info_1` | （なし） | その他情報1 | 2026-04-28 新規 |
 | `extra_info_2` | （なし） | その他情報2 | 2026-04-28 新規 |
+| `internal_system_meta` | （なし） | 内部処理用 | 2026-04-28 GROUP |
 | `account_type` | アカウント種別 | 種別 (個人 / 共有 / JR端末 / サーバーNAS / その他) | 同上 |
 | `pc_status` | PCステータス | ステータス (利用中 / 保管 / 廃棄) | 同上 |
 | `user_name` | 利用者名 | 利用者名（595 ルックアップ） | 同上 |

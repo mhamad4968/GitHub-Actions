@@ -65,6 +65,7 @@ const KINTONE_TYPES = new Set([
   'USER_SELECT',
   'GROUP_SELECT',
   'ORGANIZATION_SELECT',
+  'GROUP',
   'STATUS',
   'CREATED_TIME',
   'UPDATED_TIME',
@@ -170,6 +171,15 @@ function parseSpecMarkdown(specPath) {
 function generateProperties(fields) {
   const properties = {};
   for (const f of fields) {
+    if (f.type === 'GROUP') {
+      properties[f.code] = {
+        type: 'GROUP',
+        code: f.code,
+        label: PC_LEDGER_V1_LABELS[f.code] ?? f.code,
+        openGroup: false,
+      };
+      continue;
+    }
     const prop = {
       type: f.type,
       code: f.code,
@@ -227,7 +237,11 @@ function diffFields(specFields, actualJson) {
         detail: `仕様=${spec.type} 実装=${actual.type}`,
       });
     }
-    if (Boolean(actual.required) !== Boolean(spec.required)) {
+    if (
+      spec.type !== 'GROUP' &&
+      actual.type !== 'GROUP' &&
+      Boolean(actual.required) !== Boolean(spec.required)
+    ) {
       issues.push({
         code,
         severity: 'warn',
@@ -235,7 +249,7 @@ function diffFields(specFields, actualJson) {
         detail: `仕様=${spec.required} 実装=${Boolean(actual.required)}`,
       });
     }
-    if (spec.unique && !actual.unique) {
+    if (spec.type !== 'GROUP' && actual.type !== 'GROUP' && spec.unique && !actual.unique) {
       issues.push({
         code,
         severity: 'error',

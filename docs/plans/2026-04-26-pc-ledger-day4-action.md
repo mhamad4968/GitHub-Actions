@@ -41,7 +41,7 @@
 | 要素 | 範囲 |
 |---|---|
 | アプリ作成 | 1 アプリ（新・PC台帳ver.1 / 想定 App ID = **674**） |
-| フィールド | 約 42 個（§4.2.1 + §4.2.2 + §4.2.3 + §4.2.4 + 移行用） |
+| フィールド | 約 43 個（§4.2.1 + §4.2.2 + §4.2.3 + §4.2.4 + 移行用 + **GROUP 1**） |
 | 配置 | スペース 21 (システム管理) / defaultThread 23 |
 | customize 雛形 | 雛形のみ（種別判定 + 5 台警告 のスケルトン）/ 仕上げは 4/27 |
 | 採番マスタ参照 | 672 (jbm) / 673 (sjbm) （read のみ） |
@@ -80,7 +80,7 @@
 
 ---
 
-## §2. フィールド一覧（仕様書 §4.2 完全版 / 42 フィールド）
+## §2. フィールド一覧（仕様書 §4.2 完全版 / 43 フィールド）
 
 ### 2.1 PC 基本情報（全種別共通 / 19 フィールド）
 
@@ -149,7 +149,13 @@
 | 41 | `legacy_record_id_594` | NUMBER | false | false | 旧 594 のレコード ID（移行追跡用） |
 | 42 | `created_at_jst` | DATETIME | false | false | レコード作成 JST timestamp（後付け検索用） |
 
-**合計**: 42 フィールド（594 相当 HW 属性 7 項目を §4.2.1 に追加）
+### 2.6 フィールドグループ（内部処理用 / 1）
+
+| # | code | type | required | unique | 備考 |
+|---|---|---|---|---|---|
+| 43 | `internal_system_meta` | GROUP | false | - | 表示名=**内部処理用** / `openGroup` 既定 **false**（閉じる）/ レイアウトで **pc_serial_no・import_source・legacy_pc_name_594・legacy_record_id_594・created_at_jst** を本グループ内に収容（`npm run pc-ledger:674:layout-internal-group`） |
+
+**合計**: 43 フィールド（594 相当 HW 7 + 内部メタ GROUP 1）
 
 ---
 
@@ -174,7 +180,7 @@
 
 ## §4. 当日 7 ステップ手順（Day 3 と同型 + 強化）
 
-> **前提条件（Step 1 より前）**: `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b 全体**（**1b-A Read → 1b-B 機械ゲート → 1b-C チャットテンプレ**）を **同一ターンで完了**していること。**「仕様確認しますか？」や「読みました」一文だけでは Step 1 に進まない**（オーダー通りに作れない）。正本は `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.2.0〜§4.4**。42 フィールド根拠は `npm run field-spec:generate -- --spec=...` の **`[field-spec-diff] generated 42 fields`** で証跡化。
+> **前提条件（Step 1 より前）**: `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b 全体**（**1b-A Read → 1b-B 機械ゲート → 1b-C チャットテンプレ**）を **同一ターンで完了**していること。**「仕様確認しますか？」や「読みました」一文だけでは Step 1 に進まない**（オーダー通りに作れない）。正本は `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.2.0〜§4.4**。43 フィールド根拠は `npm run field-spec:generate -- --spec=...` の **`[field-spec-diff] generated 43 fields`** で証跡化。
 
 ### Step 1: kintone-add-app（アプリ枠だけ作成）
 
@@ -193,7 +199,7 @@
 - **GO 後**: MCP `kintone-add-app` 実行 → app ID（想定 674）取得 → **revision は環境により 1 ではない**（2026-04-26 実測: **プレビュー上 `2`**。以降は **GET preview の応答 revision を常に使う**）
 - **直後**: `npm run revision:snapshot -- --app=<id> --label=step1-add-app`（`--app` / `--label` 形式。保存値は実測 revision）
 
-### Step 2: kintone-add-form-fields（42 フィールド一括追加）
+### Step 2: kintone-add-form-fields（43 フィールド一括追加）
 
 #### 引数テンプレ（縮小版・実引数は §2 を JSON 化したもの）
 
@@ -203,15 +209,15 @@
   "properties": {
     "pc_name": { "type": "SINGLE_LINE_TEXT", "code": "pc_name", "label": "PC名", "required": true },
     "pc_serial_no": { "type": "NUMBER", "code": "pc_serial_no", "label": "PC連番", "required": false },
-    ... (§2 の全 42 フィールド分 / 別途 scripts/field-spec-diff.mjs で完全版を生成可) ...
+    ... (§2 の全 43 フィールド分 / 別途 scripts/field-spec-diff.mjs で完全版を生成可) ...
   },
   "revision": <Step1 直後の実測 revision。例: 2>
 }
 ```
 
 - **AI 行動**:
-  1. §2 から 42 フィールドの完全 JSON を生成（`npm run field-spec:generate -- --spec=docs/plans/2026-04-26-pc-ledger-day4-action.md`）
-  2. chat に dump（フィールド数を 42 と verbalize）。**表示ラベル（短文）**は `scripts/data/pc-ledger-v1-ui-display-labels.json`（`npm run pc-ledger:verify-labels-spec`）
+  1. §2 から 43 フィールドの完全 JSON を生成（`npm run field-spec:generate -- --spec=docs/plans/2026-04-26-pc-ledger-day4-action.md`）
+  2. chat に dump（フィールド数を 43 と verbalize）。**表示ラベル（短文）**は `scripts/data/pc-ledger-v1-ui-display-labels.json`（`npm run pc-ledger:verify-labels-spec`）
   3. 「app: 674 (新・PC台帳ver.1) で間違いないですか？」浜田 GO 待ち
 - **GO 後**: MCP `kintone-add-form-fields` 実行 → **revision は +1**（2026-04-26 実測: Step2 完了後 **3**）
 - **直後**: `npm run revision:snapshot -- --app=674 --label=step2-add-form-fields`
@@ -345,7 +351,7 @@ npm run customize:upload -- --app 674 --file customize/674/desktop.js
 
 ## §8. Day 4 完了条件
 
-- [ ] App 674 が本番に存在し、**仕様書 §4.2 と一致**（field-spec-diff.mjs で機械検証）。**2026-04-27 GO 後**は `674-go-post-deploy-674-*` で **当時の 35/35**。**2026-04-28**: 594 相当 HW 属性 **7 項目追加で正本 42 件** → kintone へは **`add-form-fields` + `deploy:674` + `apply-labels`**（Tier B GO）後に **42/42** を再検証
+- [ ] App 674 が本番に存在し、**仕様書 §4.2 と一致**（field-spec-diff.mjs で機械検証）。**2026-04-27 GO 後**は `674-go-post-deploy-674-*` で **当時の 35/35**。**2026-04-28**: 594 HW + 内部 GROUP で正本 **43 件** → kintone へは **`add-form-fields` + `pc-ledger:674:layout-internal-group` + `deploy:674` + `apply-labels`**（Tier B GO）後に **43/43** を再検証
 - [x] **`customize/new-pc-ledger-v1/desktop.js`** が本番反映（`npm run deploy:674` **SUCCESS** / revision **10**）。種別切替の動作は **浜田目視**（Step 6 と合わせて確認推奨）
 - [x] kintone-apps.md に 674 行が追加される（2026-04-27 済・revision 表記更新済）
 - [x] logs/autonomy-decisions に Tier B ログが残る（**`PC-ledger-day4-2026-04-27-go.md`** 新設。旧ファイル名 `2026-04-26` は未作成のまま）

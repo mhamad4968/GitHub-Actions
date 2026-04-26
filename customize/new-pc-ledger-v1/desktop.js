@@ -4,11 +4,11 @@
  * 仕様: docs/plans/2026-04-21-new-pc-ledger-spec.md v2.1 §4
  * Day 4 plan: docs/plans/2026-04-26-pc-ledger-day4-action.md
  *
- * BUILD: 2026-04-28-internal-fields-hide-v0.1 (§4.2.1a 内部メタ非表示 + 新規・編集で disabled)
+ * BUILD: 2026-04-28-internal-group-ui-v0.2 (§4.2.1a 標準 GROUP「内部処理用」初期閉 + 子 disabled)
  *
  * Day 4 雛形スコープ:
  *   - 種別 (account_type) による表示制御 (show/hide)
- *   - §4.2.1a: pc_serial_no / import_source / legacy_* / created_at_jst は常に非表示（詳細含む）・新規・編集では disabled
+ *   - §4.2.1a: 内部メタは kintone 標準グループ `internal_system_meta` に収容（レイアウトは `npm run pc-ledger:674:layout-internal-group`）。表示時はグループを閉じる・新規・編集では子を disabled
  *   - 自動生成ボタン雛形 (クリックで alert "Day 5 で実装")
  *   - 5 台ライセンス警告雛形 (赤バナーは仕組みのみ)
  *   - リセット/PC買替/印刷ボタン雛形
@@ -24,7 +24,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-04-28-internal-fields-hide-v0.1';
+  const BUILD = '2026-04-28-internal-group-ui-v0.2';
 
   // ===== 関連アプリ ID (kintone-apps.md 参照) =====
   const APP_ENV_MASTER = '670';     // 環境設定マスタ
@@ -58,12 +58,13 @@
   const FC_SB_ID = 'sb_id';
   const FC_SB_PW = 'sb_pw';
   const FC_M365_MASTER_RECORD_ID = 'm365_master_record_id';
-  /** §4.2.1a 内部メタ（画面では非表示・新規・編集では編集不可） */
+  /** §4.2.1a 内部メタ（フィールドグループ内・新規・編集では編集不可） */
+  const FC_INTERNAL_GROUP = 'internal_system_meta';
   const FC_IMPORT_SOURCE = 'import_source';
   const FC_LEGACY_PC_NAME_594 = 'legacy_pc_name_594';
   const FC_LEGACY_RECORD_ID_594 = 'legacy_record_id_594';
   const FC_CREATED_AT_JST = 'created_at_jst';
-  const INTERNAL_UI_HIDDEN_CODES = [
+  const INTERNAL_CHILD_CODES = [
     FC_PC_SERIAL_NO,
     FC_IMPORT_SOURCE,
     FC_LEGACY_PC_NAME_594,
@@ -97,14 +98,36 @@
   }
 
   /**
-   * §4.2.1a: 内部メタは登録者・閲覧者に見せない・新規・編集では触れない。
+   * 標準フィールドグループを初期状態で閉じる（PC / モバイル）。
+   */
+  function setInternalGroupClosed() {
+    try {
+      kintone.app.record.setGroupFieldOpen(FC_INTERNAL_GROUP, false);
+    } catch (e) {
+      console.warn(`[NEW-PC-LEDGER-V1] setGroupFieldOpen(desktop):`, e.message);
+    }
+    try {
+      if (kintone.mobile && kintone.mobile.app && kintone.mobile.app.record) {
+        kintone.mobile.app.record.setGroupFieldOpen(FC_INTERNAL_GROUP, false);
+      }
+    } catch (e) {
+      console.warn(`[NEW-PC-LEDGER-V1] setGroupFieldOpen(mobile):`, e.message);
+    }
+  }
+
+  /**
+   * §4.2.1a: 内部メタはフォーム上では標準グループ `internal_system_meta`（表示名「内部処理用」）に収容する想定。
+   * 子フィールドは **setFieldShown では隠さない**（グループを閉じたときにまとめて隠れる）。
+   * 新規・編集では子を **disabled**（グレーアウト・手入力不可）。
+   * 注意: GROUP が未配置の間は子がフォーム上にバラけて見えるため、**add-form-fields + `npm run pc-ledger:674:layout-internal-group`** を先に実施すること。
    * @param {Record<string, object>} record kintone レコードオブジェクト
-   * @param {'detail'|'editable'} mode 詳細は非表示のみ / 新規・編集は disabled も付与
+   * @param {'detail'|'editable'} mode
    */
   function applyInternalMetaFieldUi(record, mode) {
-    setFieldsVisibility(INTERNAL_UI_HIDDEN_CODES, false);
+    setFieldsVisibility(INTERNAL_CHILD_CODES, true);
+    setInternalGroupClosed();
     if (mode !== 'editable') return;
-    for (const code of INTERNAL_UI_HIDDEN_CODES) {
+    for (const code of INTERNAL_CHILD_CODES) {
       const cell = record[code];
       if (cell && Object.prototype.hasOwnProperty.call(cell, 'disabled')) {
         cell.disabled = true;
