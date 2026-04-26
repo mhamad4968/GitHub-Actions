@@ -15,7 +15,7 @@
 ## 引き継ぎ（短縮・人間5行）
 
 - **浜田さん**: `chat-sessions/HANDOFF-HUMAN.txt` を5行だけ埋めてチャットに貼る（それだけでよい）。
-- **AI（必須）**: 同じターンで `chat-sessions/handoff-log.md` **末尾に追記**する。チャットだけで終わらせない（詳細は `.cursor/rules/session-handoff.mdc`）。
+- **AI（必須）**: **追記の前に**チャットで確定前ドラフトを出し、浜田の OK（または1行修正）を受けてから `chat-sessions/handoff-log.md` **末尾に追記**する。チャットだけで終わらせない（詳細は `.cursor/rules/session-handoff.mdc`）。
 - **次チャット初手**: `NEW-SESSION-STARTER.md` ＋ 本ファイル ＋ `handoff-log.md` の**末尾から最大3件**を Read。
 
 ---
