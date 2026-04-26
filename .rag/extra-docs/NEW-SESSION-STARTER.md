@@ -98,6 +98,26 @@ v3.7 (2026-04-26 09:55) Cursor Plan & Usage 監査 + 節約パッケージ全実
   Models タブの Extra High 既定切替（S3 反映）も実施推奨
 - **logs/autonomy-decisions/P5-5-plan-usage-2026-04-26.md** に詳細記録
 
+v3.8 (2026-04-26 10:13) S2 / B+: CLAUDE.md thin 化 + .cursorignore 追加（commit 046ec2d）:
+- **CLAUDE.md**: 480 行 / 54.6 KB → 73 行 / 4.15 KB（**92.4% 削減**）= Cursor Composer から実質遮断
+- **.cursorignore**: CLAUDE.md を index 除外（109 → 117 行）= semantic search で引かれる ~13K tokens を完全節約
+- 残置内容 = Claude Code (ターミナル CLI) 特化 = Implementation Starter コピペ + Schema Retrieval Strict + 行末コード保持原則 + 黄金サイクル骨子
+- **節約効果**: 1 セッション ~13K → ~700 tokens (94%) / 月 ~369K tokens 節約見込
+- 旧版復元 = `git log --follow CLAUDE.md` で 046ec2d 以前を取得可能
+
+v3.9 (2026-04-26 10:30) R-3 / v23.16: §1-2 改定「最適モデル原則」+ §1-2-3-2 新設「AI 自律モデル選択」（commit 92b89d5）:
+- **発端**: 浜田 10:22「使うモデルは一番最適な方法で行ってほしい。絶対にこのモデルを使うというこだわりはしない。適時 AI 側で判断してほしい」+ Billing スクショで **F-14 確定** (Max Thinking 59.4% / Extra High 40.8% / Composer 2 等 0.6%)
+- **§1-2 改定**: 「単一モデル / Opus 4.7」→ 「**最適モデル原則 / Opus 4.7 デフォルト枠**」へ転換。「こだわらない」の意味を 3 行で具体化
+- **§1-2-3-2 新設（AI 自律モデル選択）**: 3 段階表 (L1 Composer 2 / L2 Extra High / L3 Max Thinking) + 1 秒判定フロー (単純→L1 / 不可逆→L3 / 既定→L2) + 安全弁 4 項 + 運用例 6 件 (commit→L1 / 監査続き→L2 / Day N deploy→L3) + 期待効果 (Max Thinking 59.4%→20-30% / Composer 2 0.6%→30-40% / API token 1/2-1/3)
+- **silent fallback と区別**: AI が事前明示で Composer 2 選択 (= 健全) ≠ Cursor IDE が裏で自動切替 (= §1-2-2 違反 / 4 択提示必須)。**ティア宣言が両者を区別する証跡**
+- **data/credit-usage.json 更新**: budget_usd_total 530 → 1200 / l1 400 → 200 (Ultra 月額) / l2 130 → 1000 (On-Demand) / 4/26 record = Total 45% / On-Demand $241.34 / $1000
+
+v3.10 (2026-04-26 10:35) R-4 + R-5 / v23.17: §51-6-2 + §52-9 新設（commit 同 v23.17）:
+- **発端**: 浜田 10:30「セッションを切ることは重要 / 命令指示権限を与える」+「ミスや発見があれば即座にこちらに確認しないで進めてよい」
+- **§51-6-2 制定（AI 自律セッション切り命令権 / R-4）**: §51-6 の「提案」を「命令」に昇格。6 つの自律発動条件 (4h / 200 tool call / 重作業完了直後 / コスト 2x / Tier B 直前 / API 100%)。命令文言 = `[§51-6-2 命令発動] 発動条件 / 理由 / 命令 / 引き継ぎ`。浜田却下時は §47-D で逆却下。
+- **§52-9 制定（Tier A 範囲ミス発見時の自律修正権 / R-5）**: §52-4 Conservative Default の **能動的反対側補完**。適用範囲 = Tier A のみ即修正可。絶対対象外 = Tier B / §52-8 / §57 / scope 外 / Cursor IDE 設定変更。完了報告 + `logs/autonomy-decisions/auto-fix-*.md` 事後トレース義務。
+- **PC 台帳 Day 4 時刻シフト**: 13:00 → **20:00** (浜田指示 / R-3/R-4/R-5 案件継続中の慎重進行優先 / §51-6 夜セッション帯と整合 / Day 4 着手前は §51-6-2 で必ず新セッション)
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ■ フル版（コピペ推奨 / 新チャットにこのブロックを貼る）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

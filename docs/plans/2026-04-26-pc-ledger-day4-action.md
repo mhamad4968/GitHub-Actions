@@ -1,7 +1,7 @@
 # PC 台帳 Day 4 — 新・PC台帳ver.1 (本体) 作成 + customize 雛形（P2）
 
 **作成**: 2026-04-26 (Sun) 09:00 JST  
-**実施予定**: **2026-04-26 (Sun) 13:00 〜** (浜田立会い)  
+**実施予定**: **2026-04-26 (Sun) 20:00 〜** (浜田立会い)  
 **前提**: Day 1 (670 環境設定) ・ Day 2 (671 M365) ・ Day 3 (672 jbm 採番 / 673 sjbm 採番) 完了済  
 **正本仕様**: `docs/plans/2026-04-21-new-pc-ledger-spec.md` v2.1 §4（新・PC台帳ver.1 詳細仕様）  
 **遵守**: §51（直列）/ §52-3（Q1–Q6）/ §52-8（高リスク shell）/ §52-8-1（hook 物理 block）/ §55（異常時は縮小）/ kintone 書込は **浜田 GO 毎ステップ**
@@ -20,19 +20,19 @@
 | customize 雛形 | 雛形のみ（種別判定 + 5 台警告 のスケルトン）/ 仕上げは 4/27 |
 | 採番マスタ参照 | 672 (jbm) / 673 (sjbm) （read のみ） |
 | 既存アプリ操作 | **絶対しない**（594 / 627 / 626 / 667 への write 厳禁） |
-| 浜田負担 | 約 2 時間想定（13:00 〜 15:00） |
+| 浜田負担 | 約 2 時間想定（20:00 〜 22:00） |
 
 ---
 
 ## §1. ミス防止三層チェック
 
-### Layer A: 事前準備で 80% 排除（13:00 までに完了 / 本ファイル §3 で詳述）
+### Layer A: 事前準備で 80% 排除（20:00 までに完了 / 本ファイル §3 で詳述）
 
-- [x] kintone:test 拡張（8 apps 全件疎通 OK 確認 / 13:00 直前にも再実行）
+- [x] kintone:test 拡張（8 apps 全件疎通 OK 確認 / 20:00 直前にも再実行）
 - [ ] field-spec-diff.mjs で「仕様書 vs add-form-fields 引数」を機械照合
 - [ ] customize 雛形 JS (lint:customize pass 済) を事前作成
 - [ ] revision-snapshot.mjs で deploy 直後の自動 backup 仕組み準備
-- [ ] このアクション plan 書を浜田が一読（13:00 開始時）
+- [ ] このアクション plan 書を浜田が一読（20:00 開始時）
 
 ### Layer B: ステップ実行時のチェック（§4 Step 1-7 で詳述）
 
@@ -116,7 +116,7 @@
 
 ---
 
-## §3. 事前準備チェックリスト（13:00 までに AI 完了）
+## §3. 事前準備チェックリスト（20:00 までに AI 完了）
 
 | # | 項目 | 完了印 | 備考 |
 |---|---|---|---|
@@ -127,10 +127,10 @@
 | A6 | scripts/revision-snapshot.mjs 新規 | ☐ | deploy 直後の自動 backup |
 | A4 | customize 雛形 JS 骨組み + lint:customize pass | ☐ | customize/674/desktop.js |
 | A5 | chat-sessions/2026-04-26-pc-ledger-day4.md 雛形 | ☐ | 当日ログ用 |
-| B1 | 13:00 直前: session-lock 切替（holder=PC-ledger-day4-2026-04-26） | ☐ | 旧 lock release → 新 lock acquire |
-| B2 | 13:00 直前: `npm run audit:parallel` = 0 点 | ☐ | 3 点以上で着手中止 |
-| B3 | 13:00 直前: `npm run smoke` = 8/8 ✅ | ☐ | NG なら着手中止 |
-| B4 | 13:00 直前: `npm run kintone:test` = 8/8 ✅ | ☐ | 採番マスタ落ちてないか最終確認 |
+| B1 | 20:00 直前: session-lock 切替（holder=PC-ledger-day4-2026-04-26） | ☐ | 旧 lock release → 新 lock acquire |
+| B2 | 20:00 直前: `npm run audit:parallel` = 0 点 | ☐ | 3 点以上で着手中止 |
+| B3 | 20:00 直前: `npm run smoke` = 8/8 ✅ | ☐ | NG なら着手中止 |
+| B4 | 20:00 直前: `npm run kintone:test` = 8/8 ✅ | ☐ | 採番マスタ落ちてないか最終確認 |
 | B5 | 浜田に「準備 100% / 着手可」報告 → **GO 待ち** | ☐ | GO もらってから §4 に進む |
 
 ---
