@@ -53,6 +53,13 @@
 | **実装** | `pc-ledger-v1-labels.mjs` は JSON を読み込み export のみ。検証は `pc-ledger-verify-labels-vs-spec.mjs` を「短文 + マトリクス指紋」方式に変更 |
 | **kintone** | **`npm run pc-ledger:apply-labels`** で 674 を短文に更新（スナップショット `674-labels-short-ui-*.json`） |
 
+### 2026-04-26 — 表示名を「決定済みのフィールド名」に戻す
+
+| 種別 | 内容 |
+|---|---|
+| **背景** | 短文化の際に `mailの@前` 等の **説明寄りの文言**が混ざり、浜田が既に決めていた **PC名 / メールアカウント** 等と不一致 |
+| **正本** | `pc-ledger-v1-ui-display-labels.json` を **ad9e842 初版（短文）列**に揃える（例: `mail_acct`→**メールアカウント**、`account_type`→**アカウント種別**、`mail`→**メール（595）**）。`logon_name` は仕様上 **WindowsID** のまま。`pc-ledger-spec-4222-ui-labels.json` の `ui_label` も同一文字列に同期 |
+
 ---
 
 ## 2. 全フィールド — 表示ラベルの対照（短文初版 → 現在）

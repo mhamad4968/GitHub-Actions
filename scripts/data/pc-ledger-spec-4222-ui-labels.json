@@ -17,17 +17,17 @@
       "matrix_fingerprint": "0afcd4b2c069ea8c"
     },
     "mail": {
-      "ui_label": "メール",
+      "ui_label": "メール（595）",
       "spec_anchor": "§4.2.2 個人列",
       "matrix_fingerprint": "0e0c2a68bd037801"
     },
     "mail_acct": {
-      "ui_label": "mailの@前",
+      "ui_label": "メールアカウント",
       "spec_anchor": "§4.2.2",
       "matrix_fingerprint": "d7dd69ac0a312eb0"
     },
     "mail_pw": {
-      "ui_label": "メール初期PW",
+      "ui_label": "メールPW",
       "spec_anchor": "§4.2.2 jb+ランダム…",
       "matrix_fingerprint": "d22d318342ceecc1"
     },
