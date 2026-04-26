@@ -22,7 +22,7 @@
 2. **`chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` を通読**（経緯・法律相当・ルール・機能・MCP の棚卸し表）
 3. `chat-sessions/NEW-SESSION-STARTER.md` の **冒頭〜最新 v3.x ブロック**（kintone プレビュー／憲法級など）
 4. `chat-sessions/handoff-log.md` の **末尾から最大 3 件**（無ければスキップ可）
-5. **PC 台帳 Day4 継続中なら** `docs/plans/2026-04-26-pc-ledger-day4-action.md` の **「AI 引継ぎ: kintone-add-app 直後に…」** ＋ `chat-sessions/2026-04-26-pc-ledger-day4.md` ＋ 画面ラベルは **短文 JSON**（`scripts/data/pc-ledger-v1-ui-display-labels.json`）／意味の正本は **§4.2**（`2026-04-21-new-pc-ledger-spec.md`）／検証は **`npm run pc-ledger:verify-labels-spec`**
+5. **PC 台帳（Day4 継続中または 674・新・PC台帳 customize を触る場合）** … `docs/plans/2026-04-26-pc-ledger-day4-action.md` の **「AI 引継ぎ: …」**（Day4 時）＋ `chat-sessions/2026-04-26-pc-ledger-day4.md` ＋ **正本仕様書** `docs/plans/2026-04-21-new-pc-ledger-spec.md` の **§4.2.0〜§4.4 を Read**（手順書のみで代替しない／詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b**）＋画面ラベルは **短文 JSON**／検証は **`npm run pc-ledger:verify-labels-spec`**
 6. `RULES-INDEX.md` の **「セッション切替・文脈復元」** 行（索引 1 行で他ドキュへジャンプ）
 7. **AI は `npm run session:bootstrap` を実行**し、結果をチャットに要約（**Read だけで終わらせない**／詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 6–7）
 
@@ -34,7 +34,7 @@
 
 ### 正本主義（PC 台帳 ver.1 フィールド・表示ラベル）
 
-- **仕様の正本**（フィールド設計・説明文）: `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.2**（Day4 の手順書は運用補助。ズレたら **正本を優先**して計画書・スクリプトを直す）。
+- **仕様の正本**（フィールド設計・説明・浜田認識・コア vs SKYSEA）: `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.2.0 〜 §4.4**（Day4 手順書は運用補助。**実装・ラベル・customize を変える前に仕様書を Read**／手順書・チャットだけで代替しない）。
 - **浜田の役割は確認のみ**（全文目視突合・一覧チェックを人に押し付けない）。**AI 側**が `pc-ledger-v1-ui-display-labels.json` と `npm run pc-ledger:verify-labels-spec` で短文ラベル＋マトリクス指紋を機械整合し、差分はレポートで残す。
 - **追加・変更の履歴**（コミット別・全フィールド対照）: `docs/plans/2026-04-26-pc-ledger-label-spec-changelog.md`
 - **セッションが変わっても**上記パスと npm script を読めば「何が正か」に迷わないようにする（口頭の続きに依存しない）。
@@ -47,7 +47,7 @@
 
 ---
 
-**最終更新**: 2026-04-26 (Sun) — **引き継ぎ全棚卸し**: `SESSION-BOOTSTRAP-CHECKLIST.md` + **`npm run session:bootstrap`**（smoke 8 連）を Read 順に追加。**自律復元**（`RULES-INDEX`／`session-handoff`／`NEW-SESSION-STARTER` **v3.14**／TSB-023）。**PC 台帳正本** §4.2 + `pc-ledger:verify-labels-spec`。**Day4 現況**: `2026-04-26-pc-ledger-day4-action.md`（履歴ブロックに古い revision あり得る）。
+**最終更新**: 2026-04-27 (Mon) — **新・PC台帳は仕様書 Read 必須**: `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b**（§4.2.0〜§4.4）＋ `NEW-SESSION-STARTER` **v3.15**／`session-handoff`／`checkpoint` 正本主義／`RULES-INDEX` 索引行を同期。**前回**: 2026-04-26 引き継ぎ全棚卸し・`session:bootstrap`・TSB-023・PC 台帳ラベル検証。
 
 **前回更新**: 2026-04-26 (Sun) 12:30 — **再開** ✅。**本日 2026-04-26 完了サマリ**: 朝 06:00 ブリーフィング → API 100% 枯渇発覚 → 甲フル実装 (Monthly Limit $300→$1000 / S1-S5 5 措置) → S2 CLAUDE.md 480→73 行 thin 化 (`046ec2d`) → P5-3 Rules/Skills/Subagents 監査 7 件発見 → P5-4 Indexing 監査 3 件発見 → P5-5 Plan&Usage 監査 7 件発見 (F-14 Max Thinking 59.4% 確定) → **R-3** 「最適モデル原則」+ §1-2-3-2 新設 (`92b89d5`) → **R-4 §51-6-2 + R-5 §52-9 新設 + Day 4 時刻 13:00→20:00 + RAG/Desktop 同期 + §52-9 即日 2 件発動** (`01d18e5`) → **P5-1 Hooks 監査 完了** / **P5-2 Tools&MCPs 監査 完了** / **TSB-022 起票 + 恒久案 (docs) + `~/.cursor/hooks/dangerous-shell-blocker.sh` heredoc 本文 strip 実装 + `artifacts/cursor-hooks/dangerous-shell-blocker.sh` スナップショット** ✅。**Day 4 (PC 台帳) は 20:00 開始予定** (浜田指示 / 慎重進行優先)。**文書化コミット**: `b201232`（§0/TSB-022/日次/スターター追記 + hook スナップショット）。**次**: `git push`（**任意** / いま `main` は `origin/main` より ahead 1）→ Day4 は 20:00 開始予定。**並列禁止 §51 100% 遵守 / 不可逆操作ゼロ**。
 

@@ -3,7 +3,7 @@
 **作成**: 2026-04-26 (Sun) 09:00 JST  
 **実施予定**: **2026-04-26 (Sun) 20:00 〜** (浜田立会い)  
 **前提**: Day 1 (670 環境設定) ・ Day 2 (671 M365) ・ Day 3 (672 jbm 採番 / 673 sjbm 採番) 完了済  
-**正本仕様**: `docs/plans/2026-04-21-new-pc-ledger-spec.md` v2.1 §4（新・PC台帳ver.1 詳細仕様）  
+**正本仕様**: `docs/plans/2026-04-21-new-pc-ledger-spec.md` v2.1 §4（新・PC台帳ver.1 詳細仕様）。**着手前**は **§4.2.0〜§4.4 を Read**（`chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b** と同趣旨。本手順書だけで正本を読み替えない）。  
 **遵守**: §51（直列）/ §52-3（Q1–Q6）/ §52-8（高リスク shell）/ §52-8-1（hook 物理 block）/ §55（異常時は縮小）/ kintone 書込は **浜田 GO 毎ステップ**
 
 ---

@@ -139,6 +139,10 @@ v3.12 (2026-04-26) 人間5行引き継ぎ + AI 追記義務:
 - **AI**: 同ターンで `chat-sessions/handoff-log.md` 末尾へ必ず追記（`.cursor/rules/session-handoff.mdc` / 漏れ禁止）
 - **checkpoint-latest.md** に手順リンク済み
 
+v3.15 (2026-04-27) 新・PC台帳は **仕様書を読んでから**:
+- **正本**: `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.2.0〜§4.4**（Day4 手順書・チャットだけで判断しない）。
+- **引き継ぎチェックリスト**: `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b**（674・ラベル JSON・新・PC台帳 customize を触る前に Read＋チャット 1 行）。
+
 v3.14 (2026-04-26) 引き継ぎ後の安心 — 経緯・法律相当・ルール・機能・MCP を棚卸し:
 - **必読**: `chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md`（フェーズ 0–7）。**Read だけで終わらせない**。
 - **必実行**: `npm run session:bootstrap`（= `smoke:quiet` / 8 連検査）。結果をチャットに **短く要約**（チェックリスト フェーズ 7）。
@@ -146,7 +150,7 @@ v3.14 (2026-04-26) 引き継ぎ後の安心 — 経緯・法律相当・ルー�
 - **目的**: 浜田が気づかないまま逆方向に進む事故を減らす（確認負荷は人に押し付けない）。
 
 v3.13 (2026-04-26) PC 台帳仕様の正本固定 + セッション切替後もブレない管理:
-- **フィールド設計・説明の正本**: `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.2**。**画面上の短文ラベル**は `scripts/data/pc-ledger-v1-ui-display-labels.json`（長文はフォームに載せない）。
+- **フィールド設計・説明の正本**: `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.2.0 〜 §4.4**（**着手前に Read**／v3.15・`SESSION-BOOTSTRAP` フェーズ 1b と同趣旨）。**画面上の短文ラベル**は `scripts/data/pc-ledger-v1-ui-display-labels.json`（長文はフォームに載せない）。
 - **浜田 = 確認のみ（仕様の目視全文チェックは人に押し付けない）**／**Tier B は GO のみ人が出す**。整合は **AI が `npm run pc-ledger:verify-labels-spec`** で機械ゲート。**デプロイ・フィールド適用・snapshot 等のコマンド実行は GO 後も従来どおり AI が行う**（「やらない」「できない」にしない）。
 - **何が追加され何が変わったか**: `docs/plans/2026-04-26-pc-ledger-label-spec-changelog.md`（コミット別・全フィールド対照表）
 - **憲法級（変更禁止）**: **開発は AI・確認は浜田**（`AGENTS.md` **§35-1** / **§56-1a**）。逆転しない。
@@ -169,6 +173,7 @@ v3.13 (2026-04-26) PC 台帳仕様の正本固定 + セッション切替後も�
 @kintone-ai-lab/AGENTS.md                            ← 開発憲法（第15章 §51 並列禁止まで全 50+ ルール）
 @kintone-ai-lab/CLAUDE.md                            ← 儀式・優先順位
 @kintone-ai-lab/WORKFLOW.md                          ← Phase 0-5
+@kintone-ai-lab/docs/plans/2026-04-21-new-pc-ledger-spec.md ← **新・PC台帳（674・ラベル・customize）を触るなら §4.2.0〜 を必ず Read**（PC 以外のタスクならスキップ可／`SESSION-BOOTSTRAP` フェーズ 1b）
 
 そのあと：
 0. **npm run session:bootstrap**（リポルートで実行 / smoke 8 連 = guard+audits+health 等）→ 結果をチャットに短く要約（SESSION-BOOTSTRAP フェーズ 7）

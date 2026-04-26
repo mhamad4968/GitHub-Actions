@@ -23,6 +23,18 @@
 
 ---
 
+## フェーズ 1b — 新・PC台帳 ver.1 を触る場合（仕様書必読）
+
+> **Day4 手順書・チャット要約だけで判断しない**。正本は `docs/plans/2026-04-21-new-pc-ledger-spec.md`。次のいずれかに当てはまる **着手前**に必ず Read し、チャットに **「§4.2.0〜読了」** と 1 行書く。
+
+- [ ] **kintone** App 674（または新・PC台帳）の **フィールド追加・変更・deploy・ラベル適用**
+- [ ] `scripts/data/pc-ledger-v1-ui-display-labels.json` / `pc-ledger-spec-4222-ui-labels.json` / `field-spec-diff` / `pc-ledger:apply-labels` を触る
+- [ ] `customize/**/desktop.js`（新・PC台帳）の **自動生成・種別切替・バナー**等のロジック変更
+
+**Read 範囲（最低）**: **§4.2.0**（浜田認識・コア vs SKYSEA）〜 **§4.4**（ボタン・表示切替）。迷ったら **§4.3 採番**まで広げる。読了後、ラベル JSON を変えるなら **`npm run pc-ledger:verify-labels-spec`** を同ターンで回す。
+
+---
+
 ## フェーズ 2 — ルール・憲法（迷ったらここ）
 
 | # | 読む / すること | 目的 |
@@ -94,7 +106,8 @@ AI は上記を終えたら **このターン内**で、次を **箇条書きで
 2. **憲法**: §35-1 / §56-1a を再確認したこと  
 3. **session:bootstrap**: ok / warn / ng（ng ならどれか）  
 4. **MCP**: health-check 上の active / 注意（1 行）  
-5. **次の 1 手**: 何をするか（Tier B なら GO 待ちと明記）
+5. **次の 1 手**: 何をするか（Tier B なら GO 待ちと明記）  
+6. **新・PC台帳を触る場合**: フェーズ **1b** の仕様書 Read を **実施済み**と明記（未実施なら先に 1b を完了してから本題）
 
 ---
 
