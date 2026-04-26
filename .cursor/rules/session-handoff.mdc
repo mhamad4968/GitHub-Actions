@@ -15,7 +15,7 @@ alwaysApply: true
 
 次のいずれかで引き継ぎフローに入る: 浜田が HANDOFF-HUMAN 相当を貼った／「セッション切る」「今日はここまで」「新チャットで続き」「引き継ぎ」／セッション分割・51-6-2 命令を出した／4h・200 tools 等で区切る合意。
 
-0. **新チャットの第 0 手（Read より前）**: リポルートで **`npm run verify:constitution-handoff`** を実行し **exit 0** を確認（`checkpoint-latest.md`「光速ガード」＝ TSB-024）。**ng なら本題に入らず**憲法ドキュ（`NEW-SESSION-STARTER` 冒頭 🚨 / `SESSION-BOOTSTRAP` フェーズ 7 第 7 項 / `docs/troubleshooting.md` TSB-024）の復旧のみ。
+0. **新チャットの第 0 手（Read より前）**: リポルートで **`npm run verify:constitution-handoff`** を実行し **exit 0** を確認（`checkpoint-latest.md`「光速ガード」＝ TSB-024）。**ng なら本題に入らず**憲法ドキュ（`NEW-SESSION-STARTER` 冒頭 🚨 / `SESSION-BOOTSTRAP` フェーズ 7 第 7–8 項 / `docs/troubleshooting.md` TSB-024）の復旧のみ。**このターンのチャット応答先頭**に **`[§1-2-3 ティア判定: …]`**（§1-2-3-1）を付ける（浜田が遵守確認する目印）。
 
 1. **切替直前の確認（デフォルト必須）**: `handoff-log.md` に書き込む **前に**、チャットへ **確定前ドラフト**を出す。内容 = 浜田5行の読み取り結果＋下記「AI 補足」項目のドラフト（箇条書きでよい）。浜田から **「OK」または1行修正**を受けてから次へ進む。  
    - **例外**: 浜田が **「確認省略で書いて」** と明示したときだけ、このステップをスキップしてよい。

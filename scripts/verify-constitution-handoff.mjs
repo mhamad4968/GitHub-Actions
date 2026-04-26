@@ -47,6 +47,8 @@ const suites = [
       '(7) 役割宣言',
       '再デプロイしてください',
       '🚫 AI が絶対に書いてはいけない禁句',
+      '[§1-2-3 ティア判定',
+      '§1-2-3-1',
     ],
   },
   {
@@ -57,6 +59,8 @@ const suites = [
       '(7) 役割宣言:',
       '§35-1',
       '§56-1a',
+      '§1-2-3-1 ティア宣言',
+      '[§1-2-3 ティア判定',
     ],
   },
   {
@@ -77,7 +81,7 @@ const suites = [
   {
     id: 'cursor-rule-gate',
     rel: '.cursor/rules/constitution-handoff-gate.mdc',
-    needles: ['TSB-024', '§35-1', '§1-2-3-1', 'alwaysApply: true'],
+    needles: ['TSB-024', '§35-1', '§1-2-3-1', 'alwaysApply: true', '[§1-2-3 ティア判定:', '浜田（確認）'],
   },
   {
     id: 'session-handoff-tsb',
