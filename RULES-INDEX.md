@@ -209,7 +209,7 @@
 
 | 正本 | 役割 |
 |---|---|
-| `chat-sessions/checkpoint-latest.md` §「セッション切替後の自律復元」 | 新チャット初手の **実行順**（**項番 -1** `NEW-SESSION-STARTER.txt` 貼付 → **-0** 本題合意 → **0** `verify:constitution-handoff` → checkpoint → **SESSION-BOOTSTRAP-CHECKLIST** → … → **`npm run session:bootstrap`**） |
+| `chat-sessions/checkpoint-latest.md` §「セッション切替後の自律復元」 | 新チャット初手の **実行順**（**項番 -1** 貼付 → **-0** 合意 → **0** verify → **0b** Desktop **`C:\Users\mhamada202408224\Desktop\AI緊急用`** = `session-starter:sync-desktop` + `verify:desktop-ai-emergency-sync`（`session:bootstrap` 内包）→ checkpoint → **SESSION-BOOTSTRAP-CHECKLIST** → …） |
 | `chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` | 引き継ぎ後の **全棚卸し**（経緯・法律相当・ルール・npm 機能・MCP・**必須機械検証**・チャット報告様式） |
 | `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.2.0〜** | 新・PC台帳 ver.1 の **正本**（浜田認識・コア vs SKYSEA・フィールド・ボタン）。**実装・ラベル・674 customize を変える前に Read**（手順書のみで代替しない）。**画面ラベル**は `scripts/data/pc-ledger-v1-ui-display-labels.json`／検証は `npm run pc-ledger:verify-labels-spec`／引き継ぎは `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b** |
 | `npm run pc-ledger:verify-labels-spec` | 短文表示ラベル JSON + §4.2.2 マトリクス指紋 + 拡張 JSON を機械突合（セッション切替後のブレ止め） |

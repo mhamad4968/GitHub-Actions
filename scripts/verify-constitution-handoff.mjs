@@ -61,6 +61,8 @@ const suites = [
       '§56-1a',
       '§1-2-3-1 ティア宣言',
       '[§1-2-3 ティア判定',
+      'verify-desktop-ai-emergency-sync',
+      '3b.',
     ],
   },
   {
@@ -100,6 +102,9 @@ const suites = [
       '項番 -1',
       '項番 -0',
       'NEW-SESSION-STARTER.txt',
+      'session-starter:sync-desktop',
+      'verify:desktop-ai-emergency-sync',
+      'C:\\Users\\mhamada202408224\\Desktop\\AI緊急用',
     ],
   },
 ];

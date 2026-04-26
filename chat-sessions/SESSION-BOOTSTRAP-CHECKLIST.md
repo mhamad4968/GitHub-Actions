@@ -20,7 +20,7 @@
 |---|-----|----------|
 | **-1** | **浜田** | 新チャット **1 通目**に **`AI緊急用\NEW-SESSION-STARTER.txt` 全文**を貼る（任意だが **強く推奨**）。続けて `HANDOFF-HUMAN.txt` 5 行でも可。 |
 | **-0** | **浜田＋AI** | AI: ティア宣言＋スターター受領＋本題を **§41 一問だけ**確認。浜田: OK または 1 行修正。 |
-| **0** | **AI** | `npm run verify:constitution-handoff` → `npm run session:bootstrap`（または時間がなければ verify のみ）。 |
+| **0** | **AI** | **`npm run session:bootstrap`**（内包順: `verify:constitution-handoff` → **`session-starter:sync-desktop`**（`C:\Users\mhamada202408224\Desktop\AI緊急用` 都度メンテ）→ **`verify:desktop-ai-emergency-sync`**（バイト一致）→ `smoke:quiet`）。激短のみ verify だけは非推奨。 |
 
 ---
 
@@ -135,7 +135,7 @@ cd /path/to/kintone-ai-lab && npm run session:bootstrap
 - [ ] **ng なら** その検査を直すまで本題の kintone 書込・憲法改定・hooks 変更に進まない
 - [ ] **新チャットで時間がないとき**は最低 **`npm run verify:constitution-handoff`** だけでも **Read より先**に実行（光速・TSB-024）。**ng なら本題に入らない**。
 
-`session:bootstrap` は内部で **(A)** `verify-constitution-handoff.mjs`（**先頭・光速**）→ **(B)** **`npm run smoke:quiet`**（guard + 4 audit + verify:breaking + xref + health + rule-watcher + parallel + **verify:constitution-handoff** 再実行）の順で実行する。
+`session:bootstrap` は内部で **(A)** `verify-constitution-handoff.mjs`（**先頭・光速**）→ **(B)** `session-starter:sync-desktop`（浜田 Desktop **AI緊急用**）→ **(C)** `verify-desktop-ai-emergency-sync.mjs`（`.txt` とリポ正本のバイト一致）→ **(D)** **`npm run smoke:quiet`**（guard + 4 audit + verify:breaking + xref + health + rule-watcher + parallel + **verify:constitution-handoff** 再実行）の順で実行する。
 
 ---
 
@@ -146,6 +146,7 @@ AI は上記を終えたら **このターン内**で、次を **箇条書きで
 1. **経緯**: checkpoint 最終更新 1 行の要約 + handoff から続くか  
 2. **憲法**: §35-1 / §56-1a を再確認したこと  
 3. **session:bootstrap**: ok / warn / ng（ng ならどれか）  
+3b. **Desktop AI緊急用**: `verify:desktop-ai-emergency-sync` が **OK 全行**か **SKIP（フォルダ無し）**かを 1 行（セッション切替のメンテ確認）  
 4. **MCP**: health-check 上の active / 注意（1 行）  
 5. **次の 1 手**: 何をするか（Tier B なら GO 待ちと明記）  
 6. **新・PC台帳を触る場合**: フェーズ **1b-C テンプレ**を貼ったうえで **1b 完了**と書く（テンプレ無しの「仕様確認しました」は不可。**未完了なら Tier B に進まない**）  
@@ -162,4 +163,4 @@ AI は上記を終えたら **このターン内**で、次を **箇条書きで
 
 - 新しい「必須検査」が `smoke-test.mjs` に入ったら **本ファイルフェーズ 6 の説明を同期**する。  
 - 新しい永続ドキュが「引き継ぎ必読」になったら **フェーズ 1–2 の表に 1 行追加**する。
-- **`NEW-SESSION-STARTER.md` / 本ファイルを編集して push した AI** は、**同一ターンで `npm run session-starter:sync-desktop` を必須**とし、浜田が開く `AI緊急用\*.txt` をリポと揃える（§57-6）。WSL で `/mnt/c` が無い等のときだけ省略可＋チャットに理由 1 行。
+- **`NEW-SESSION-STARTER.md` / 本ファイルを編集して push した AI** は、**同一ターンで `npm run session-starter:sync-desktop` を必須**とし、続けて **`npm run verify:desktop-ai-emergency-sync`** で浜田が開く `AI緊急用\*.txt` をリポと揃えたことを確認する（§57-6）。WSL で `/mnt/c` が無い等のときだけ省略可＋チャットに理由 1 行。

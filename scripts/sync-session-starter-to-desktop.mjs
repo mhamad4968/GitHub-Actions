@@ -2,6 +2,7 @@
 /**
  * リポの儀式ファイルを Windows Desktop「AI緊急用」へコピーする。
  * 浜田運用ではここが毎回の参照先のため、儀式 MD を編集したターンで必ず実行する想定。
+ * セッション切替時は `npm run verify:desktop-ai-emergency-sync` でバイト一致を機械確認する（`session:bootstrap` 内包）。
  * WSL で /mnt/c/... が見える環境でのみ実際に書き込む。無ければスキップ（exit 0）。
  *
  * 既定先: SESSION_STARTER_DESKTOP_DIR または

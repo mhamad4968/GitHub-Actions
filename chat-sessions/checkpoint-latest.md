@@ -22,14 +22,16 @@
 
 **項番 -0（人間＋AI・合意・1 往復）**: AI は **先頭に `[§1-2-3 ティア判定: …]`** を付け、スターター **受領**を一言言い、`checkpoint` 最終更新＋`handoff` 末尾＋`HANDOFF-HUMAN` の **「次にやる1つ」** を要約して **「本日の本題は ○○で合っていますか？」と §41 一問だけ**確認する。浜田 **OK** のあと **項番 0** へ（ズレなら 1 行修正してから）。
 
-0. **光速ガード（項番 0 / Read より前・必須・AI）**: リポルートで **`npm run verify:constitution-handoff`** → **exit 0** を確認（TSB-024 物理ガード）。**ng のまま Read・Tier B・本題に進まない**（憲法ドキュ修復のみ）。
+0. **光速ガード（項番 0 / Read より前・必須・AI）**（`npm run session:bootstrap` も **同じ順**を内包）:
+   - **0a 憲法ガード**: リポルートで **`npm run verify:constitution-handoff`** → **exit 0**（TSB-024 物理ガード）。**ng のまま Read・Tier B・本題に進まない**（憲法ドキュ修復のみ）。
+   - **0b Desktop「AI緊急用」都度メンテ（浜田指示）**: 浜田が毎回開く **`C:\Users\mhamada202408224\Desktop\AI緊急用`**（WSL: `/mnt/c/Users/mhamada202408224/Desktop/AI緊急用`）を、**セッション切替のたびに AI がメンテ済みか確認する**。手順: **`npm run session-starter:sync-desktop`**（`.txt` 3 本をリポ正本へコピー）→ 続けて **`npm run verify:desktop-ai-emergency-sync`**（フォルダがある環境では **バイト一致**で機械確認）。**控えフォルダが無い**ときは verify が SKIP のみ → チャットに **「AI緊急用は未照合（/mnt/c なし等）」と 1 行**（環境復帰後に sync + verify を再実行）。
 1. 本ファイル `chat-sessions/checkpoint-latest.md`（先頭〜直近の **最終更新** 1 行）
 2. **`chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` を通読**（経緯・法律相当・ルール・機能・MCP の棚卸し表）
 3. `chat-sessions/NEW-SESSION-STARTER.md` の **冒頭〜最新 v3.x ブロック**（kintone プレビュー／憲法級など）
 4. `chat-sessions/handoff-log.md` の **末尾から最大 3 件**（無ければスキップ可）
 5. **PC 台帳（Day4 継続中または 674・新・PC台帳 customize を触る場合）** … `docs/plans/2026-04-26-pc-ledger-day4-action.md` の **「AI 引継ぎ: …」**（Day4 時）＋ `chat-sessions/2026-04-26-pc-ledger-day4.md` ＋ **正本仕様書** `docs/plans/2026-04-21-new-pc-ledger-spec.md` の **§4.2.0〜§4.4 を Read**（手順書のみで代替しない／詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b**）＋画面ラベルは **短文 JSON**／検証は **`npm run pc-ledger:verify-labels-spec`**
 6. `RULES-INDEX.md` の **「セッション切替・文脈復元」** 行（索引 1 行で他ドキュへジャンプ）
-7. **AI は `npm run session:bootstrap` を実行**し、結果をチャットに要約（先頭で **verify:constitution-handoff を再実行の上** smoke 9 連／**Read だけで終わらせない**／詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 6–7）
+7. **AI は `npm run session:bootstrap` を実行**し、結果をチャットに要約（**verify:constitution-handoff → session-starter:sync-desktop → verify:desktop-ai-emergency-sync → smoke** 9 連／**Read だけで終わらせない**／詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 6–7）
 
 **禁止に近い非推奨**: `kintone-add-app` 直後に「まだ公開してない？」だけを理由に浜田へ確認すること（先に本条と TSB-023・プレビュー `app/settings` を確認）。**Tier B の浜田 GO**（書込・deploy）は従来どおり必須。
 
@@ -52,7 +54,7 @@
 
 ---
 
-**最終更新**: 2026-04-26 (Sun) 深夜 JST — **項番 -1/-0**: セッション切替時は **`NEW-SESSION-STARTER.txt` を最初に貼る**→AIと本題を1問確認→`verify`。**前回**: §1-2-3-1 可視化・post-commit 憲法検知。
+**最終更新**: 2026-04-26 (Sun) 深夜 JST — **項番 0b**: セッション切替のたび **`C:\Users\mhamada202408224\Desktop\AI緊急用`** を **`sync-desktop` + `verify:desktop-ai-emergency-sync`** でメンテ確認（`session:bootstrap` に組込）。**前回**: 項番 -1/-0（先にスターター貼付）。
 
 **前回更新**: 2026-04-26 (Sun) 12:30 — **再開** ✅。**本日 2026-04-26 完了サマリ**: 朝 06:00 ブリーフィング → API 100% 枯渇発覚 → 甲フル実装 (Monthly Limit $300→$1000 / S1-S5 5 措置) → S2 CLAUDE.md 480→73 行 thin 化 (`046ec2d`) → P5-3 Rules/Skills/Subagents 監査 7 件発見 → P5-4 Indexing 監査 3 件発見 → P5-5 Plan&Usage 監査 7 件発見 (F-14 Max Thinking 59.4% 確定) → **R-3** 「最適モデル原則」+ §1-2-3-2 新設 (`92b89d5`) → **R-4 §51-6-2 + R-5 §52-9 新設 + Day 4 時刻 13:00→20:00 + RAG/Desktop 同期 + §52-9 即日 2 件発動** (`01d18e5`) → **P5-1 Hooks 監査 完了** / **P5-2 Tools&MCPs 監査 完了** / **TSB-022 起票 + 恒久案 (docs) + `~/.cursor/hooks/dangerous-shell-blocker.sh` heredoc 本文 strip 実装 + `artifacts/cursor-hooks/dangerous-shell-blocker.sh` スナップショット** ✅。**Day 4 (PC 台帳) は 20:00 開始予定** (浜田指示 / 慎重進行優先)。**文書化コミット**: `b201232`（§0/TSB-022/日次/スターター追記 + hook スナップショット）。**次**: `git push`（**任意** / いま `main` は `origin/main` より ahead 1）→ Day4 は 20:00 開始予定。**並列禁止 §51 100% 遵守 / 不可逆操作ゼロ**。
 

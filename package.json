@@ -95,6 +95,7 @@
     "verify:constitution-handoff": "node scripts/verify-constitution-handoff.mjs",
     "session:bootstrap": "node scripts/session-bootstrap-verify.mjs",
     "session-starter:sync-desktop": "node scripts/sync-session-starter-to-desktop.mjs",
+    "verify:desktop-ai-emergency-sync": "node scripts/verify-desktop-ai-emergency-sync.mjs",
     "hooks:install": "bash scripts/install-hooks.sh",
     "hooks:uninstall": "bash scripts/install-hooks.sh --uninstall",
     "ops-guide:init": "npx dotenv -e .env -e .env.proxy -- node scripts/ops-guide-kintone.mjs init",

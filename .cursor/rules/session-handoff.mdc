@@ -9,12 +9,14 @@ alwaysApply: true
 
 ## 人間（浜田さん）
 
-- **セッション切替の推奨**: 新チャット **最初**に **`NEW-SESSION-STARTER.txt`（Desktop AI緊急用）全文**を貼る（`checkpoint-latest.md` **項番 -1**）。続けて `HANDOFF-HUMAN.txt` を **5行だけ**埋めて貼ってもよい（**項番 -0** で AI と本題を一言確認）。
+- **セッション切替の推奨**: 新チャット **最初**に Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用\NEW-SESSION-STARTER.txt` の **全文**を貼る（`checkpoint-latest.md` **項番 -1**）。続けて `HANDOFF-HUMAN.txt` を **5行だけ**埋めて貼ってもよい（**項番 -0** で AI と本題を一言確認）。
 - `chat-sessions/HANDOFF-HUMAN.txt` を開き、**5行だけ**埋めてチャットに貼る。それ以上書かなくてよい。
 
 ## AI（必須・省略禁止）
 
 次のいずれかで引き継ぎフローに入る: 浜田が HANDOFF-HUMAN 相当を貼った／「セッション切る」「今日はここまで」「新チャットで続き」「引き継ぎ」／セッション分割・51-6-2 命令を出した／4h・200 tools 等で区切る合意。
+
+- **項番 0b（Desktop AI緊急用）**: セッション切替のたび、浜田の **`C:\Users\mhamada202408224\Desktop\AI緊急用`** を **`session-starter:sync-desktop` + `verify:desktop-ai-emergency-sync`** で都度メンテ・照合する（`session:bootstrap` に内包。未マウント時はチャットに **未照合 1 行**）。
 
 0. **新チャットの第 0 手（Read より前）**: リポルートで **`npm run verify:constitution-handoff`** を実行し **exit 0** を確認（`checkpoint-latest.md`「光速ガード」＝ TSB-024）。**ng なら本題に入らず**憲法ドキュ（`NEW-SESSION-STARTER` 冒頭 🚨 / `SESSION-BOOTSTRAP` フェーズ 7 第 7–8 項 / `docs/troubleshooting.md` TSB-024）の復旧のみ。**このターンのチャット応答先頭**に **`[§1-2-3 ティア判定: …]`**（§1-2-3-1）を付ける（浜田が遵守確認する目印）。
 
