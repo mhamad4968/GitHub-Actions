@@ -20,3 +20,4 @@ npm run verify:gate
 ## 参照
 
 - `../../scripts/mandatory-read-gate.mjs` — 本番ゲート（コピー元の思想）
+- **`docs/shin-format-excel-layout.md`** — 浜田ローカル `C:\tmp\予算管理\…xlsx` のシート **`新フォーマット`** の列・行構造（予実のフィールドたたき台）
