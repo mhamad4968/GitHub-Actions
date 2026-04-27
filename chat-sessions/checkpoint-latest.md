@@ -61,7 +61,9 @@
 
 ---
 
-**最終更新**: 2026-04-28 (Tue) JST — **SESSION-CLOCK（§51-6-2 時間軸の客観化）**: `chat-sessions/SESSION-CLOCK.md` ＋ `scripts/session-clock.mjs` ＋ `npm run session:clock:set` / `session:split-check`。`mandatory-read-gate` が **4 時間超**で exit 2。未設定時は警告のみで通過。
+**最終更新**: 2026-04-28 (Tue) JST — **session:clock:watch（チャット外通知）**: `scripts/session-clock-watch.mjs` ＋ `npm run session:clock:watch`。`session-clock.mjs check-json` をポーリングし **4 時間超**でデスクトップ通知（Linux/macOS/Windows）。AIが常時監視できない穴を **ローカル常駐**で埋める。
+
+**前回更新**: 2026-04-28 (Tue) JST — **SESSION-CLOCK（§51-6-2 時間軸の客観化）**: `chat-sessions/SESSION-CLOCK.md` ＋ `scripts/session-clock.mjs` ＋ `npm run session:clock:set` / `session:split-check`。`mandatory-read-gate` が **4 時間超**で exit 2。未設定時は警告のみで通過。
 
 **前回更新**: 2026-04-28 (Tue) JST — **mandatory-read-gate 強化 + §51-6-2 リマインダ + 予算テンプレ**: `mandatory-read-gate.mjs` に RULES-INDEX / NEW-SESSION-STARTER 冒頭 / post-commit / constitution-handoff-gate / **`SESSION-SPLIT-REMINDER.md`** を追加検査。`chat-sessions/SESSION-SPLIT-REMINDER.md` 新設（浜田=4h アラーム・AI=**【セッション切替】** 先頭行）。`templates/yojitsu-budget-lite/` に部署予算ゼロベース用の薄いゲート雛形。
 

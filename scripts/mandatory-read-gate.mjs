@@ -81,7 +81,7 @@ for (const n of ['次にやる1つ', 'HANDOFF-HUMAN', '推奨フロー']) {
 const bootRel = 'chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md';
 const boot = read(bootRel);
 const bootHead = boot.slice(0, 14_000);
-for (const n of ['フェーズ 6', 'session:bootstrap', 'mandatory-read-gate.mjs', 'SESSION-SPLIT-REMINDER', 'SESSION-CLOCK']) {
+for (const n of ['フェーズ 6', 'session:bootstrap', 'mandatory-read-gate.mjs', 'SESSION-SPLIT-REMINDER', 'SESSION-CLOCK', 'session:clock:watch']) {
   if (!bootHead.includes(n)) fail(`${bootRel} (head): missing "${n}"`);
 }
 

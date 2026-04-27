@@ -99,6 +99,7 @@
     "verify:mandatory-read-gate": "node scripts/mandatory-read-gate.mjs",
     "session:clock:set": "node scripts/session-clock.mjs set",
     "session:split-check": "node scripts/session-clock.mjs check",
+    "session:clock:watch": "node scripts/session-clock-watch.mjs",
     "session:bootstrap": "node scripts/session-bootstrap-verify.mjs",
     "session-starter:sync-desktop": "node scripts/sync-session-starter-to-desktop.mjs",
     "verify:desktop-ai-emergency-sync": "node scripts/verify-desktop-ai-emergency-sync.mjs",

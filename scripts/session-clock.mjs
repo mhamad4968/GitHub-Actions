@@ -4,6 +4,7 @@
  *
  *   npm run session:clock:set   — chat-sessions/SESSION-CLOCK.md の「開始」を現在の Asia/Tokyo に更新
  *   npm run session:split-check — 開始から 4 時間経過なら exit 2（未満なら 0）
+ *   node scripts/session-clock.mjs check-json — 1 行 JSON（watch 用・exit は check と同じ）
  *
  * 「開始」が未設定のときは check をスキップ（警告のみ）— 一度 set すると以降は機械判定が効く。
  *
@@ -46,11 +47,18 @@ const HEADER =
   '## 開始（この1行だけを書き換えればよい）\n\n' +
   '開始: ';
 
+const alertFlagAbs = path.join(root, 'logs', '.session-clock-split-alerted');
+
 function writeClock() {
   const line = nowTokyoYYYYMMDDHHmm();
   const body = `${HEADER}${line}\n`;
   fs.mkdirSync(path.dirname(clockAbs), { recursive: true });
   fs.writeFileSync(clockAbs, body, 'utf8');
+  try {
+    if (fs.existsSync(alertFlagAbs)) fs.unlinkSync(alertFlagAbs);
+  } catch {
+    /* noop */
+  }
   console.log(`[session-clock] ✅ set → ${clockRel}`);
   console.log(`  開始: ${line} (Asia/Tokyo)`);
 }
@@ -88,6 +96,20 @@ function fmtDuration(ms) {
   const h = Math.floor(m / 60);
   const mm = m % 60;
   return `${h}h${String(mm).padStart(2, '0')}m`;
+}
+
+function runCheckJson() {
+  const r = parseClock();
+  const payload = {
+    mode: r.mode,
+    startLine: r.line ?? null,
+    elapsedMs: r.elapsedMs ?? null,
+    elapsedHuman: typeof r.elapsedMs === 'number' ? fmtDuration(r.elapsedMs) : null,
+  };
+  console.log(JSON.stringify(payload));
+  if (r.mode === 'missing' || r.mode === 'skip' || r.mode === 'ok') process.exit(0);
+  if (r.mode === 'bad' || r.mode === 'over') process.exit(2);
+  process.exit(0);
 }
 
 function runCheck() {
@@ -128,6 +150,9 @@ if (cmd === 'set') {
 if (cmd === 'check') {
   runCheck();
 }
+if (cmd === 'check-json') {
+  runCheckJson();
+}
 
-console.error('Usage: node scripts/session-clock.mjs set|check');
+console.error('Usage: node scripts/session-clock.mjs set|check|check-json');
 process.exit(2);

@@ -118,6 +118,7 @@ const suites = [
       'SESSION-CLOCK.md',
       'session:clock:set',
       'session:split-check',
+      'session:clock:watch',
     ],
   },
 ];

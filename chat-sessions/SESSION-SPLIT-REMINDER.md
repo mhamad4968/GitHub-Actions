@@ -25,6 +25,16 @@
 - **客観起点（推奨）**: 新チャットで会話を始めたら、**すぐ** `npm run session:clock:set` を実行し **`chat-sessions/SESSION-CLOCK.md`** の `開始:` を JST の「いま」にする。以降 **`npm run session:split-check`** または **`session:bootstrap` 内包**で **4 時間超**が機械検出される。  
 - 新チャット開始時は従来どおり **`NEW-SESSION-STARTER_yyyymmdd.txt` 全文** ＋ `HANDOFF-HUMAN` 5 行。
 
+## チャット外で「教える」（`session:clock:watch`）
+
+AI は Cursor のチャットを **常時監視できない**。代わりに **ローカルプロセス**でポーリングし、**4 時間超**のとき **デスクトップ通知**（Linux `notify-send` / macOS 通知 / Windows ポップアップ）を出す。
+
+```bash
+cd ~/kintone-ai-lab && npm run session:clock:watch
+```
+
+別ターミナルで常駐。**既定 2 分**ごと（`SESSION_CLOCK_WATCH_MS` で変更）。同一 `開始:` に対する通知は **1 回**（`logs/.session-clock-split-alerted`）。`session:clock:set` でリセット。
+
 ## 参照
 
 - `AGENTS.md` §51-6-2（命令文言・反パターン・§47-D）  

@@ -57,6 +57,7 @@ const CRITICAL = [
   'chat-sessions/SESSION-CLOCK.md',
   'scripts/mandatory-read-gate.mjs',
   'scripts/session-clock.mjs',
+  'scripts/session-clock-watch.mjs',
 ];
 
 function log(msg) {
