@@ -3,7 +3,7 @@
 Windows から開きやすい控え: C:\Users\mhamada202408224\Desktop\AI緊急用\HANDOFF-HUMAN.txt
 ※ C:\Users\mhamada202408224\kintone-ai-lab は chat-sessions 無しの別ツリーなので、このファイルは置かない。
 
-推奨フロー（セッション切替）: ① **`NEW-SESSION-STARTER_yyyymmdd.txt`（JST・常にこのファイル名）全文**（checkpoint **項番 -1**・貼付推奨は verify 最終行）② この 5 行 ③ **項番 -0**: AI が「次にやること」を一問確認 → **浜田 OK が出るまで項番 0 に入らない** ④ OK 後、verify → AI緊急用 sync+verify → bootstrap（項番 0）。**日終わり**: sync → verify（checkpoint「日終わり」）。
+推奨フロー（セッション切替）: ① **`NEW-SESSION-STARTER_yyyymmdd.txt`（JST・常にこのファイル名）全文**（checkpoint **項番 -1**・貼付推奨は verify 最終行）② この 5 行 ③ **項番 -0**: AI が「次にやること」を一問確認 → **浜田 OK が出るまで項番 0 に入らない** ④ OK 後、verify → AI緊急用 sync+verify → bootstrap（項番 0）。**bootstrap 内の (1c)** で **`verify:session-clock-health`（strict）** が走り、**hooks / crontab / node（install-pin と cron 行）**を再確認できる。**日終わり**: sync → verify（checkpoint「日終わり」）。
 
 日時(JST):
 いま何してた（1行）:
@@ -13,5 +13,5 @@ GO待ち（なし／内容）:
 
 ---
 （AI 向け・浜田は空欄でよい）新チャットで先に貼ると迷いにくい 1 行:
-「項番 0: session:clock:set（新チャットの JST 開始）→ verify:constitution-handoff → verify:mandatory-read-gate → session-starter:sync-desktop → verify:desktop-ai-emergency-sync（最終行の貼付推奨を確認）→ session:bootstrap。日終わりも同じ 2 本（sync→verify）。PC 台帳は checkpoint に従う」
+「項番 0: session:clock:set（新チャットの JST 開始）→ verify:constitution-handoff → verify:mandatory-read-gate → session-starter:sync-desktop → verify:desktop-ai-emergency-sync（最終行の貼付推奨を確認）→ session:bootstrap（内包 (1c) verify:session-clock-health strict＝hooks・crontab・node 再確認）。日終わりも同じ 2 本（sync→verify）。PC 台帳は checkpoint に従う」
 （浜田向け）各ターン先頭に `[§1-2-3 ティア判定:` が無ければ §1-2-3-1 未遵守として指摘してよい。

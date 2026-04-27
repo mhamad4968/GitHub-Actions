@@ -61,7 +61,7 @@
 
 ---
 
-**最終更新**: 2026-04-27 (Mon) JST — **壁時計運用**: `npm run session:clock:health`（ワンショット）／`verify:session-clock-health`（`session:bootstrap` 内包・hooks + crontab node 整合）／通知は **ダイアログ優先**（`desktop-notify`）／監査 `logs/session-split-notify-audit.jsonl`。従来どおり **`sessionStart` hook** が `session:clock:set` + `session:clock:watch`。
+**最終更新**: 2026-04-27 (Mon) JST — **壁時計運用**: `npm run session:clock:health`（ワンショット）／`verify:session-clock-health`（`session:bootstrap` 内包 **(1c)**・hooks + crontab node 整合／**次セッションも `session:bootstrap` 通過で同 strict が再走し再確認**）／通知は **ダイアログ優先**（`desktop-notify`）／監査 `logs/session-split-notify-audit.jsonl`。従来どおり **`sessionStart` hook** が `session:clock:set` + `session:clock:watch`。
 
 **前回更新**: 2026-04-28 (Tue) JST — **SESSION-CLOCK（§51-6-2 時間軸の客観化）**: `chat-sessions/SESSION-CLOCK.md` ＋ `scripts/session-clock.mjs` ＋ `npm run session:clock:set` / `session:split-check`。`mandatory-read-gate` が **4 時間超**で exit 2。未設定時は警告のみで通過。
 

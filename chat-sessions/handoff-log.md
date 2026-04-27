@@ -108,6 +108,9 @@ AI は、セッション切替・終了・浜田さんがそのテンプレを�
 - 4h 通知タイトル・本文を短文化。`session-split-notify-audit.jsonl`（watch/cron・alerted/dup）。`SESSION_CLOCK_QUIET`、powershell 失敗ログ、Windows 用 `install-session-clock-windows.ps1`。
 - `scripts/lib/session-clock-cron-node.mjs` 共通化、`desktop-notify` の darwin/win/console ベル経路整理。
 
-**次の1手**: `npm run session:bootstrap` で 1c 通過確認 → push 希望なら浜田指示。
+**次セッション（引継ぎで覚えておくこと）**:
+- **`npm run session:bootstrap` を通すと (1c)** で **`verify:session-clock-health`**（`scripts/session-clock-health.mjs --strict`）が **bootstrap 連鎖の中で自動実行**される。そこで **hooks（`hooks.json` 等）・crontab の session-split 行・install-pin（`logs/.session-clock-install-node`）と cron 行の node パス**を改めて機械確認できる。単発だけ欲しいときは **`npm run session:clock:health`** でも可。
+
+**次の1手**: 項番 -0 の合意のあと **`session:bootstrap`**（上記 (1c) 同梱）。push は済（`8f08374`）。Desktop 控えは **`session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync`** を checkpoint に従う。
 
 ---
