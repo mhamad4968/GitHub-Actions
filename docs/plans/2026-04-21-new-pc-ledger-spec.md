@@ -140,7 +140,7 @@ PC レコード保存・廃棄時:
 | 共有 WindowsID | `sjbm` + 4 桁（**新共有WindowsID採番マスタ**・§2） | `logon_name` |
 | JR WindowsID | 手入力 | `logon_name` |
 | WindowsPW | **個人・新規:** = `logon_name`。**共有・新規:** `kent0000` 固定（§4.7.3・`LOGON_PW_SHARED_FIXED`）。**JR:** 手入力（自動で既定値を埋めない）。**既存（全種別）:** 手入力を正 | `logon_pw` |
-| Windows アカウント名 | メール @ より前との連動（個人のみ）/ **共有は `=logon_name`**（メールなし）/ 手入力（JR） | `windows_name` |
+| Windows アカウント名 | **個人:** §4.2.2 直後の注（595 `mail` の `@` より前／運用で `logon_name` と同一にも可）。**共有:** `=logon_name`（例 `sjbm0001`）。**JR:** 手入力 | `windows_name` |
 | メールパスワード | `jb` + ランダム 4 桁数字 + `K#`（個人用ボタン 1 回生成） | `mail_pw` |
 | 個人 M365 PW | `WindowsID` + `K#`（例: `jbm0001K#`） | `m365_pw` |
 | 共有/JR M365 PW | `kent2511K#` 固定（環境設定マスタ由来） | `m365_pw` |
@@ -221,6 +221,11 @@ PC レコード保存・廃棄時:
 | `sb_pw` | SINGLE_LINE_TEXT | =logon_name | （不要）| （不要）|
 | `vpn_id` | SINGLE_LINE_TEXT | 手入力 | 手入力 | （不要）|
 | `vpn_pw` | SINGLE_LINE_TEXT | 手入力 | 手入力 | （不要）|
+
+- **`windows_name`（浜田認識・2026-04-28 確認）**:
+  - **個人**: 説明では **`jbm****` 等のログオン IDと対で**語られることがあるが、**マトリクス上の主たる連動**は **`mail`（595）の @ より前**（例: `hamada`）。**実務で `logon_name` と同じ文字列**（例: `jbm0001`）にしたい場合は、**個人用自動生成の表示**で揃えてよい（§4.4「手入力済値は保護＝マージ」）。**既存は手入力を正**。
+  - **共有**: **`logon_name` と同じ**（例: `sjbm0001`）でよい。
+  - **JR**: **手入力**。
 
 #### 4.2.3 SKYSEA 関連（昨夜 #K1 で 594 に追加・新アプリにも継承）
 | code | type | 内容 |
@@ -753,7 +758,7 @@ snapshot: `data/snapshots/594-pre-migration-scan-2026-04-22.json`
 | 共有 WindowsID | sjbm+4桁（**新共有WindowsID採番マスタ**・§2／旧667は5/13以降参照のみ）|
 | JR WindowsID | 手入力 |
 | WindowsPW | 個人=WindowsID／共有新規=`kent0000` 固定／JR=手入力／既存は手入力を正（§4.7.3）|
-| Windows アカウント名 | メール @ より前（個人）/ =logon_name（共有・メールなし）/ 手入力（JR）|
+| Windows アカウント名 | 個人=§4.2.2 注（`mail` @ より前／運用で `logon_name` 同一可）/ 共有=`logon_name`（例 sjbm0001）/ JR=手入力|
 | メールパスワード | jb+ランダム4桁数字+K#（個人用ボタン押下時 1 回生成）|
 | 個人 M365 PW | WindowsID + K#（例: jbm0001K#）|
 | 共有/JR M365 PW | kent2511K# 固定 |
