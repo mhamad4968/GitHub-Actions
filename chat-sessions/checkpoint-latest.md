@@ -65,6 +65,10 @@
 
 **最終更新**: 2026-04-27 (Mon) JST — **NEW-SESSION-STARTER v3.27 / v3.28**: **「■ 貼付単独で完走」**＝項番 -1〜0 を **スターター単独で完結**（checkpoint チャット重複不要・**-0 OK → bootstrap → @ Read**）。**v3.28**＝以後の手順改定は **同ブロックを唯一正本**とし BOOTSTRAP／checkpoint／RULES-INDEX／`session-handoff.mdc` 等は **追随のみ**。**壁時計**: `session:clock:health`／`session:bootstrap` **(1c)**／`desktop-notify`／監査 jsonl。**`sessionStart` hook**。
 
+### 浜田メモ（直近日程・チャット反映）
+
+- **2026-04-28（火）**（朝の発言・本チャット 2026-04-27 反映）: **予実管理**を **ゼロベースから議論して仕様を決める**。たたき台・薄い SPEC 雛形: `templates/yojitsu-budget-lite/README.md` / `SPEC.template.md`。既存マイルストーンの **4/28–29（PC 台帳 CSV 準備）** との **優先順は当日に合意**。
+
 **前回更新**: 2026-04-28 (Tue) JST — **SESSION-CLOCK（§51-6-2 時間軸の客観化）**: `chat-sessions/SESSION-CLOCK.md` ＋ `scripts/session-clock.mjs` ＋ `npm run session:clock:set` / `session:split-check`。`mandatory-read-gate` が **4 時間超**で exit 2。未設定時は警告のみで通過。
 
 **前回更新**: 2026-04-28 (Tue) JST — **mandatory-read-gate 強化 + §51-6-2 リマインダ + 予算テンプレ**: `mandatory-read-gate.mjs` に RULES-INDEX / NEW-SESSION-STARTER 冒頭 / post-commit / constitution-handoff-gate / **`SESSION-SPLIT-REMINDER.md`** を追加検査。`chat-sessions/SESSION-SPLIT-REMINDER.md` 新設（浜田=4h アラーム・AI=**【セッション切替】** 先頭行）。`templates/yojitsu-budget-lite/` に部署予算ゼロベース用の薄いゲート雛形。
