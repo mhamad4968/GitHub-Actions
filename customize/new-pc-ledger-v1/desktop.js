@@ -4,7 +4,7 @@
  * 仕様: docs/plans/2026-04-21-new-pc-ledger-spec.md v2.1 §4
  * Day 4 plan: docs/plans/2026-04-26-pc-ledger-day4-action.md
  *
- * BUILD: 2026-04-28-skysea-group-ui-v0.2 (§4.2.1a 内部 GROUP + §4.2.3a SKYSEA GROUP 初期閉・全員編集可／運上は浜田のみ周知)
+ * BUILD: 2026-04-28-dept-help-banner-v0.1 (§4.2.0b 所属ヘルプ常時帯 + skysea v0.2 維持)
  *
  * Day 4 雛形スコープ:
  *   - 種別 (account_type) による表示制御 (show/hide)
@@ -25,7 +25,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-04-28-skysea-group-ui-v0.2';
+  const BUILD = '2026-04-28-dept-help-banner-v0.1';
 
   // ===== 関連アプリ ID (kintone-apps.md 参照) =====
   const APP_ENV_MASTER = '670';     // 環境設定マスタ
@@ -207,6 +207,67 @@
     }
   }
 
+  // ===== §4.2.0b 所属名・所属グループ 常時ヘルプ帯 =====
+
+  const DEPT_HELP_ID = 'new-pc-ledger-dept-help';
+
+  /**
+   * 一覧・レコード画面のヘッダに、所属の入れ方を常時表示する（折りたたみなし・小さめ）。
+   * @param {'index'|'record'} mode
+   */
+  function injectDeptHelpBanner(mode) {
+    const space =
+      mode === 'index'
+        ? kintone.app.getHeaderSpaceElement()
+        : kintone.app.record.getHeaderMenuSpaceElement();
+    if (!space) return;
+
+    const prev = document.getElementById(DEPT_HELP_ID);
+    if (prev) prev.remove();
+
+    const box = document.createElement('div');
+    box.id = DEPT_HELP_ID;
+    box.style.cssText =
+      'font-size:12px;line-height:1.45;padding:8px 12px;margin:4px 0 8px;' +
+      'background:#e8f4fd;border:1px solid #9ec5fe;border-radius:4px;color:#052c65;';
+
+    const title = document.createElement('div');
+    title.style.cssText = 'font-weight:bold;margin-bottom:4px;';
+    title.textContent = '📌 所属名・所属グループの入れ方';
+    box.appendChild(title);
+
+    const ul = document.createElement('ul');
+    ul.style.cssText = 'margin:0 0 6px 1.1em;padding:0;';
+    const li1 = document.createElement('li');
+    li1.textContent =
+      '個人：利用者名（595と一致する氏名）を入力後、所属は社員マスタ（595）から自動反映（※JS連携は次アップデートで有効化予定。それまでは手入力可）。';
+    const li2 = document.createElement('li');
+    li2.textContent =
+      '共有・JR：マスタと一致しない表記があり得ます。下の例をコピーして改変してください。';
+    ul.appendChild(li1);
+    ul.appendChild(li2);
+    box.appendChild(ul);
+
+    const exLabel = document.createElement('div');
+    exLabel.style.cssText = 'font-weight:bold;font-size:11px;margin:2px 0 2px;';
+    exLabel.textContent = 'コピー用の例（共有・JR）';
+    box.appendChild(exLabel);
+
+    const ta = document.createElement('textarea');
+    ta.readOnly = true;
+    ta.rows = 3;
+    ta.style.cssText =
+      'width:100%;max-width:720px;font-size:11px;font-family:Consolas,monospace;' +
+      'box-sizing:border-box;padding:6px;border:1px solid #86b7fe;border-radius:4px;resize:vertical;';
+    ta.value =
+      '例（共有）所属名: システム推進室\n' +
+      '例（共有）所属グループ: システム管理\n' +
+      '例（JR）  所属名: ○○支社 / 所属グループ: 端末管理（※○○は現場名に置換）';
+    box.appendChild(ta);
+
+    space.insertBefore(box, space.firstChild);
+  }
+
   // ===== JR端末用 黄色バナー (雛形 / 仕様書 §4.5) =====
 
   function showJrBannerIfNeeded(record) {
@@ -361,6 +422,7 @@
   ];
   kintone.events.on(showEvents, (event) => {
     console.log(`[NEW-PC-LEDGER-V1] BUILD=${BUILD} event=${event.type}`);
+    injectDeptHelpBanner('record');
     const editable =
       event.type === 'app.record.create.show' || event.type === 'app.record.edit.show';
     applyInternalMetaFieldUi(event.record, editable ? 'editable' : 'detail');
@@ -380,12 +442,19 @@
   kintone.events.on(typeChangeEvents, (event) => {
     let result = confirmTypeChangeIfNeeded(event);
     result = showJrAlertIfNeeded(result);
+    injectDeptHelpBanner('record');
     applyInternalMetaFieldUi(result.record, 'editable');
     applySkyseaGroupUi(result.record, 'editable');
     applyVisibilityByType(result.record);
     showJrBannerIfNeeded(result.record);
     injectButtons(result);
     return result;
+  });
+
+  // 一覧画面でも常時表示（§4.2.0b）
+  kintone.events.on('app.record.index.show', () => {
+    injectDeptHelpBanner('index');
+    return true;
   });
 
   // 保存前バリデーション (仕様書 §4.7.1)
