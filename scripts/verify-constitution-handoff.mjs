@@ -85,12 +85,21 @@ const suites = [
   {
     id: 'hooks-json-session-autopilot',
     rel: '.cursor/hooks.json',
-    needles: ['sessionStart', 'session-start-autopilot.mjs', 'session:clock:set'],
+    needles: ['sessionStart', 'session-start-autopilot.mjs', 'session:clock:set', '§51-6-2 壁時計', '黙実行禁止'],
   },
   {
     id: 'cursor-rule-gate',
     rel: '.cursor/rules/constitution-handoff-gate.mdc',
-    needles: ['TSB-024', '§35-1', '§1-2-3-1', 'alwaysApply: true', '[§1-2-3 ティア判定:', '浜田（確認）'],
+    needles: [
+      'TSB-024',
+      '§35-1',
+      '§1-2-3-1',
+      'alwaysApply: true',
+      '[§1-2-3 ティア判定:',
+      '浜田（確認）',
+      '§51-6-2 壁時計',
+      '言葉に出す',
+    ],
   },
   {
     id: 'session-handoff-tsb',
