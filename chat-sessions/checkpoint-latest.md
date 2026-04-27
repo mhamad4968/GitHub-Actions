@@ -32,7 +32,7 @@
 4. `chat-sessions/handoff-log.md` の **末尾から最大 3 件**（無ければスキップ可）
 5. **PC 台帳（Day4 継続中または 674・新・PC台帳 customize を触る場合）** … `docs/plans/2026-04-26-pc-ledger-day4-action.md` の **「AI 引継ぎ: …」**（Day4 時）＋ `chat-sessions/2026-04-26-pc-ledger-day4.md` ＋ **正本仕様書** `docs/plans/2026-04-21-new-pc-ledger-spec.md` の **§4.2.0〜§4.4 を Read**（手順書のみで代替しない／詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b**）＋画面ラベルは **短文 JSON**／検証は **`npm run pc-ledger:verify-labels-spec`**
 6. `RULES-INDEX.md` の **「セッション切替・文脈復元」** 行（索引 1 行で他ドキュへジャンプ）
-7. **AI は `npm run session:bootstrap` を実行**し、結果をチャットに要約（**verify:constitution-handoff → verify:mandatory-read-gate → session-starter:sync-desktop → verify:desktop-ai-emergency-sync → smoke** 10 連／**Read だけで終わらせない**／詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 6–7）
+7. **AI は `npm run session:bootstrap` を実行**し、結果をチャットに要約（**verify:constitution-handoff → verify:mandatory-read-gate → verify:session-clock-health → session-starter:sync-desktop → verify:desktop-ai-emergency-sync → smoke** 10 連／**Read だけで終わらせない**／詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 6–7）
 
 **項番 0.9（本題の実行開始・任意の再確認）**: **項番 -0** で合意した「次の一手」と、項番 0〜7 後の状況に **食い違いが出た**とき（checkpoint 最終更新が想定外・浜田がチャットで方針変更した等）だけ、AI は **§41 一問だけ**改めて浜田へ確認し、**OK のあと**に Tier B・kintone 書込・`deploy` 等 **副作用のある本題実行**へ入る。食い違いが無いときは **-0 の OK をそのまま実行開始の合意**とみなし、項番 1 の Read から本題へ進んでよい。
 
@@ -61,7 +61,7 @@
 
 ---
 
-**最終更新**: 2026-04-27 (Mon) JST — **`sessionStart` hook で 1・2 自動**: `.cursor/hooks/session-start-autopilot.mjs` が **`session:clock:set`** と未稼働時の **`session:clock:watch`** を起動。従来の **`scripts/session-clock-watch.mjs`**（4 時間超デスクトップ通知）はその実体。手動は hook 無効時のみ。
+**最終更新**: 2026-04-27 (Mon) JST — **壁時計運用**: `npm run session:clock:health`（ワンショット）／`verify:session-clock-health`（`session:bootstrap` 内包・hooks + crontab node 整合）／通知は **ダイアログ優先**（`desktop-notify`）／監査 `logs/session-split-notify-audit.jsonl`。従来どおり **`sessionStart` hook** が `session:clock:set` + `session:clock:watch`。
 
 **前回更新**: 2026-04-28 (Tue) JST — **SESSION-CLOCK（§51-6-2 時間軸の客観化）**: `chat-sessions/SESSION-CLOCK.md` ＋ `scripts/session-clock.mjs` ＋ `npm run session:clock:set` / `session:split-check`。`mandatory-read-gate` が **4 時間超**で exit 2。未設定時は警告のみで通過。
 

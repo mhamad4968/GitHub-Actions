@@ -57,8 +57,28 @@ function isWsl() {
   }
 }
 
+function logPowershellWslFailure(repoRoot, r) {
+  if (!repoRoot) return;
+  try {
+    const line = {
+      ts: new Date().toISOString(),
+      status: r.status,
+      error: r.error ? String(r.error.message || r.error) : null,
+      stderr: (r.stderr && r.stderr.toString('utf8').trim().slice(0, 2000)) || null,
+    };
+    fs.mkdirSync(path.join(repoRoot, 'logs'), { recursive: true });
+    fs.appendFileSync(
+      path.join(repoRoot, 'logs', 'session-desktop-notify-powershell.log'),
+      `${JSON.stringify(line)}\n`,
+      'utf8',
+    );
+  } catch {
+    /* noop */
+  }
+}
+
 /** WSL2: Windows に **ダイアログ**（WScript.Shell.Popup）。64=情報 / 4096=システムモーダル（最前面寄り） */
-function tryPowershellWslPopup(title, body) {
+function tryPowershellWslPopup(title, body, repoRoot) {
   const exe = '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe';
   if (!fs.existsSync(exe)) return false;
   const t = sanitize(title, 120).replace(/'/g, "''");
@@ -66,12 +86,13 @@ function tryPowershellWslPopup(title, body) {
   const flags = 64 + 4096;
   const ps = `$ws=New-Object -ComObject WScript.Shell;$ws.Popup('${b}',12,'${t}',${flags})|Out-Null`;
   const r = spawnSync(exe, ['-NoProfile', '-NonInteractive', '-WindowStyle', 'Hidden', '-Command', ps], {
-    stdio: 'ignore',
+    stdio: ['ignore', 'pipe', 'pipe'],
     windowsHide: true,
     timeout: 22_000,
   });
-  if (r.error) return false;
-  return r.status === 0;
+  if (!r.error && r.status === 0) return true;
+  logPowershellWslFailure(repoRoot, r);
+  return false;
 }
 
 /** D-Bus 不調時に無限待ちしないよう短い timeout（超過時は子を SIGTERM） */
@@ -190,6 +211,7 @@ function tryWin32Popup(title, body) {
  */
 export function desktopNotify(title, body, opts = {}) {
   const root = opts.repoRoot ?? DEFAULT_ROOT;
+  const quietBell = process.env.SESSION_CLOCK_QUIET === '1';
   const t0 = sanitize(title, 300);
   const b0 = sanitize(body, 2000);
   let method = 'none';
@@ -197,7 +219,7 @@ export function desktopNotify(title, body, opts = {}) {
 
   if (process.platform === 'linux') {
     const env = linuxNotifyEnv();
-    if (isWsl() && tryPowershellWslPopup(t0, b0)) {
+    if (isWsl() && tryPowershellWslPopup(t0, b0, root)) {
       ok = true;
       method = 'powershell-wsl-popup';
     } else if (tryNotifySend(t0, b0, env)) {
@@ -215,15 +237,15 @@ export function desktopNotify(title, body, opts = {}) {
     } else if (tryXmessage(t0, b0, env)) {
       ok = true;
       method = 'xmessage';
-    } else if (!isWsl() && tryPowershellWslPopup(t0, b0)) {
+    } else if (!isWsl() && tryPowershellWslPopup(t0, b0, root)) {
       ok = true;
       method = 'powershell-wsl-popup';
     } else {
-      if (!opts.silentConsole) {
-        console.log(`\x07[desktop-notify] ${t0}: ${b0}`);
-      }
       method = 'console-bell';
       ok = true;
+      if (!opts.silentConsole && !quietBell) {
+        console.log(`\x07[desktop-notify] ${t0}: ${b0}`);
+      }
     }
   } else if (process.platform === 'darwin') {
     if (tryDarwinDialog(t0, b0)) {
@@ -232,26 +254,30 @@ export function desktopNotify(title, body, opts = {}) {
     } else if (tryDarwin(t0, b0)) {
       ok = true;
       method = 'osascript-notification';
-    } else if (!opts.silentConsole) {
-      console.log(`\x07[desktop-notify] ${t0}: ${b0}`);
+    } else {
       method = 'console-bell';
       ok = true;
+      if (!opts.silentConsole && !quietBell) {
+        console.log(`\x07[desktop-notify] ${t0}: ${b0}`);
+      }
     }
   } else if (process.platform === 'win32') {
     if (tryWin32Popup(t0, b0)) {
       ok = true;
       method = 'powershell-popup';
-    } else if (!opts.silentConsole) {
-      console.log(`\x07[desktop-notify] ${t0}: ${b0}`);
+    } else {
       method = 'console-bell';
       ok = true;
+      if (!opts.silentConsole && !quietBell) {
+        console.log(`\x07[desktop-notify] ${t0}: ${b0}`);
+      }
     }
   } else {
-    if (!opts.silentConsole) {
-      console.log(`\x07[desktop-notify] ${t0}: ${b0}`);
-    }
     method = 'console-bell';
     ok = true;
+    if (!opts.silentConsole && !quietBell) {
+      console.log(`\x07[desktop-notify] ${t0}: ${b0}`);
+    }
   }
 
   appendLog(root, {

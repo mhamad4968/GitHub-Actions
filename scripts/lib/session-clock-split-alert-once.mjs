@@ -7,14 +7,28 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { desktopNotify } from './desktop-notify.mjs';
 
-const NOTIFY_TITLE = '§51-6-2 セッション切替時刻';
+/** 短いタイトル／本文（ポップアップ・ダイアログ向け） */
+const NOTIFY_TITLE = '§51-6-2: 4時間超 → 新Composer';
 
 function bodyFromPayload(payload) {
-  return `同一セッション開始から ${payload.elapsedHuman ?? '4h+'} 経過（開始 ${payload.startLine} JST）。新しい Composer で開き直すと sessionStart hook が時刻を取り直します。`;
+  return `開始 ${payload.startLine}（${payload.elapsedHuman ?? '4h+'}）→ 新しい Composer を開き直すと時計リセット。詳細: SESSION-SPLIT-REMINDER.md`;
+}
+
+function appendSplitAudit(root, entry) {
+  try {
+    fs.mkdirSync(path.join(root, 'logs'), { recursive: true });
+    fs.appendFileSync(
+      path.join(root, 'logs', 'session-split-notify-audit.jsonl'),
+      `${JSON.stringify(entry)}\n`,
+      'utf8',
+    );
+  } catch {
+    /* noop */
+  }
 }
 
 /**
- * @param {{ root: string }} opts
+ * @param {{ root: string, source?: 'watch'|'cron'|'unknown' }} opts
  * @returns {{
  *   outcome: 'parse-error'|'ok-reset'|'not-over'|'dup'|'alerted',
  *   payload?: object,
@@ -23,6 +37,9 @@ function bodyFromPayload(payload) {
  */
 export function pollSessionSplitAlertOnce(opts) {
   const { root } = opts;
+  const source = opts.source ?? 'unknown';
+  const ts = new Date().toISOString();
+
   const j = spawnSync(process.execPath, ['scripts/session-clock.mjs', 'check-json'], {
     cwd: root,
     encoding: 'utf8',
@@ -56,6 +73,13 @@ export function pollSessionSplitAlertOnce(opts) {
     /* noop */
   }
   if (prev === payload.startLine) {
+    appendSplitAudit(root, {
+      ts,
+      source,
+      outcome: 'dup',
+      startLine: payload.startLine,
+      note: 'same startLine already alerted; skip second UI',
+    });
     return { outcome: 'dup', payload };
   }
 
@@ -64,5 +88,12 @@ export function pollSessionSplitAlertOnce(opts) {
 
   const body = bodyFromPayload(payload);
   const n = desktopNotify(NOTIFY_TITLE, body, { repoRoot: root });
+  appendSplitAudit(root, {
+    ts,
+    source,
+    outcome: 'alerted',
+    startLine: payload.startLine,
+    notifyMethod: n.method,
+  });
   return { outcome: 'alerted', payload, notifyMethod: n.method };
 }

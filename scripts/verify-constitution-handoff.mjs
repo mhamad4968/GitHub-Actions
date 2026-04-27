@@ -119,6 +119,7 @@ const suites = [
       '日終わり',
       'README.txt',
       'mandatory-read-gate.mjs',
+      'verify:session-clock-health',
       'SESSION-SPLIT-REMINDER.md',
       'SESSION-CLOCK.md',
       'session:clock:set',

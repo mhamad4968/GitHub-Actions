@@ -58,6 +58,8 @@ const CRITICAL = [
   'scripts/mandatory-read-gate.mjs',
   'scripts/session-clock.mjs',
   'scripts/session-clock-watch.mjs',
+  'scripts/session-clock-health.mjs',
+  'scripts/lib/session-clock-cron-node.mjs',
   '.cursor/hooks/session-start-autopilot.mjs',
 ];
 

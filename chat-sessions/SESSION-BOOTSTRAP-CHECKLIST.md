@@ -30,7 +30,7 @@
 |---|-----|----------|
 | **-1** | **浜田** | 新チャット **1 通目**に **`AI緊急用\NEW-SESSION-STARTER_yyyymmdd.txt`（JST・常にこの 1 ファイル名）** の **全文**を貼る（任意だが **強く推奨**）。**貼付推奨**は verify の最終行。続けて `HANDOFF-HUMAN.txt` 5 行でも可。 |
 | **-0** | **浜田＋AI** | AI: ティア宣言＋スターター受領＋**次に着手すること**を **§41 一問だけ**確認。**浜田 OK が出るまで項番 0（verify/bootstrap）に着手しない**。 |
-| **0** | **AI** | **`npm run session:bootstrap`**（内包順: `verify:constitution-handoff` → **`verify:mandatory-read-gate`**（必読ファイル構造）→ **`session-starter:sync-desktop`**（`C:\Users\mhamada202408224\Desktop\AI緊急用` 都度メンテ）→ **`verify:desktop-ai-emergency-sync`**（バイト一致）→ `smoke:quiet`）。激短のみ verify だけは非推奨。 |
+| **0** | **AI** | **`npm run session:bootstrap`**（内包順: `verify:constitution-handoff` → **`verify:mandatory-read-gate`**（必読ファイル構造）→ **`verify:session-clock-health`**（§51-6-2 hooks / crontab node）→ **`session-starter:sync-desktop`**（`C:\Users\mhamada202408224\Desktop\AI緊急用` 都度メンテ）→ **`verify:desktop-ai-emergency-sync`**（バイト一致）→ `smoke:quiet`）。激短のみ verify だけは非推奨。 |
 
 ---
 
@@ -152,7 +152,7 @@ cd /path/to/kintone-ai-lab && npm run session:bootstrap
 - [ ] **ng なら** その検査を直すまで本題の kintone 書込・憲法改定・hooks 変更に進まない
 - [ ] **新チャットで時間がないとき**は最低 **`npm run verify:constitution-handoff`** → **`npm run verify:mandatory-read-gate`** を **Read より先**に実行（光速・TSB-024 ＋ 必読構造）。**いずれか ng なら本題に入らない**。
 
-`session:bootstrap` は内部で **(A)** `verify-constitution-handoff.mjs`（**先頭・光速**）→ **(A2)** `mandatory-read-gate.mjs`（**必読ファイル構造**）→ **(B)** `session-starter:sync-desktop`（浜田 Desktop **AI緊急用**）→ **(C)** `verify-desktop-ai-emergency-sync.mjs`（`.txt` とリポ正本のバイト一致）→ **(D)** **`npm run smoke:quiet`**（guard + 4 audit + verify:breaking + xref + health + rule-watcher + parallel + **verify:constitution-handoff** + **verify:mandatory-read-gate** の **10 検査**）の順で実行する。
+`session:bootstrap` は内部で **(A)** `verify-constitution-handoff.mjs`（**先頭・光速**）→ **(A2)** `mandatory-read-gate.mjs`（**必読ファイル構造**）→ **(A3)** `session-clock-health.mjs --strict`（**§51-6-2 壁時計** hooks / crontab node 整合）→ **(B)** `session-starter:sync-desktop`（浜田 Desktop **AI緊急用**）→ **(C)** `verify-desktop-ai-emergency-sync.mjs`（`.txt` とリポ正本のバイト一致）→ **(D)** **`npm run smoke:quiet`**（guard + 4 audit + verify:breaking + xref + health + rule-watcher + parallel + **verify:constitution-handoff** + **verify:mandatory-read-gate** の **10 検査**）の順で実行する。
 
 ---
 

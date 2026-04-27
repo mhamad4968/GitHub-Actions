@@ -25,7 +25,7 @@ function logLine(msg) {
   process.stdout.write(line);
 }
 
-const r = pollSessionSplitAlertOnce({ root });
+const r = pollSessionSplitAlertOnce({ root, source: 'cron' });
 
 switch (r.outcome) {
   case 'parse-error':

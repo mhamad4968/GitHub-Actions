@@ -84,7 +84,7 @@ for (const sig of ['SIGINT', 'SIGTERM', 'SIGHUP']) {
 }
 
 function tick() {
-  const r = pollSessionSplitAlertOnce({ root });
+  const r = pollSessionSplitAlertOnce({ root, source: 'watch' });
   if (r.outcome === 'parse-error') return;
   if (r.outcome === 'alerted') {
     if (r.notifyMethod === 'console-bell') {

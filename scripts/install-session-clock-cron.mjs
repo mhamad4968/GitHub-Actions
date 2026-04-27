@@ -12,39 +12,11 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { resolveNodeForCron } from './lib/session-clock-cron-node.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const pingScript = path.join(root, 'scripts', 'session-split-cron-ping.mjs');
 const MARKER = '# kintone-ai-lab session-split-cron (do not edit this line by hand; use npm run session:clock:uninstall-cron)';
-
-/** cron 用の node。KINTONE_AI_LAB_NODE → login shell の node → ~/.nvm 最新 → 実行中 node（Cursor 同梱は最後） */
-function resolveNodeForCron() {
-  const envNode = process.env.KINTONE_AI_LAB_NODE;
-  if (envNode && fs.existsSync(envNode)) return path.resolve(envNode);
-
-  const sh = spawnSync('bash', ['-lc', 'command -v node 2>/dev/null || true'], { encoding: 'utf8' });
-  const fromShell = ((sh.stdout || '').trim().split('\n')[0] || '').trim();
-  if (fromShell && fs.existsSync(fromShell) && !fromShell.includes('.cursor-server')) return fromShell;
-
-  const nvmNode = pickLatestNvmNode();
-  if (nvmNode) return nvmNode;
-
-  return process.execPath;
-}
-
-function pickLatestNvmNode() {
-  const base = path.join(os.homedir(), '.nvm', 'versions', 'node');
-  if (!fs.existsSync(base)) return null;
-  const dirs = fs
-    .readdirSync(base)
-    .map((d) => d.replace(/^v/, ''))
-    .filter((d) => /^\d+\.\d+\.\d+/.test(d));
-  if (!dirs.length) return null;
-  dirs.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-  const latest = dirs[dirs.length - 1];
-  const p = path.join(base, `v${latest}`, 'bin', 'node');
-  return fs.existsSync(p) ? p : null;
-}
 
 function readCrontab() {
   const r = spawnSync('crontab', ['-l'], { encoding: 'utf8' });
@@ -94,6 +66,11 @@ const filtered = lines.filter((l) => !l.includes(MARKER) && !l.includes('session
 if (uninstall) {
   const newTab = filtered.length ? `${filtered.join('\n')}\n` : '';
   writeCrontab(newTab);
+  try {
+    fs.unlinkSync(path.join(root, 'logs', '.session-clock-install-node'));
+  } catch {
+    /* noop */
+  }
   console.log('[install-session-clock-cron] ✅ 削除済み（session-split-cron の行を除去）');
   process.exit(0);
 }
@@ -116,6 +93,7 @@ const cronLine = `*/10 * * * * ${displayPrefix}cd ${shellQuote(root)} && ${shell
 const newTab = `${filtered.join('\n')}${filtered.length ? '\n' : ''}${cronLine}\n`;
 const norm = (s) => s.replace(/\r\n/g, '\n').trimEnd();
 if (norm(tab) === norm(newTab)) {
+  writeInstallNodePin(root, nodeBin);
   console.log('[install-session-clock-cron] crontab は既に同じ内容のため変更なし。');
   console.log(`  node: ${nodeBin}`);
   console.log('  確認: crontab -l | grep session-split');
@@ -123,6 +101,7 @@ if (norm(tab) === norm(newTab)) {
 }
 
 writeCrontab(newTab);
+writeInstallNodePin(root, nodeBin);
 console.log('[install-session-clock-cron] ✅ crontab を更新しました（10 分ごと・§51-6-2 通知）。');
 console.log(`  node: ${nodeBin}`);
 console.log(`  repo: ${root}`);
@@ -130,6 +109,15 @@ console.log('  確認: crontab -l | grep kintone-ai-lab');
 console.log('  削除: npm run session:clock:uninstall-cron');
 console.log('  補足: WSL は **cron デーモン起動**が必要なことがあります（`sudo service cron start` / `sudo apt install -y cron`）。');
 process.exit(0);
+
+function writeInstallNodePin(repoRoot, nodeBinPath) {
+  try {
+    fs.mkdirSync(path.join(repoRoot, 'logs'), { recursive: true });
+    fs.writeFileSync(path.join(repoRoot, 'logs', '.session-clock-install-node'), `${nodeBinPath}\n`, 'utf8');
+  } catch {
+    /* noop */
+  }
+}
 
 /** @param {string} p */
 function shellQuote(p) {

@@ -100,3 +100,14 @@ AI は、セッション切替・終了・浜田さんがそのテンプレを�
 **次セッションへの 1 行**: 新 Composer では **`additional_context`** に自動済みが入る。**手打ち 1・2 は hook 無効時のみ**。
 
 ---
+
+### 2026-04-27 JST — session:clock:health / 通知短文化 / crontab pin / bootstrap (1c)
+
+**経緯**:
+- **`npm run session:clock:health`** / **`verify:session-clock-health`**（`session:bootstrap` 1c 段追加）。`install-cron` が `logs/.session-clock-install-node` に node パスを保存 → ドリフト検知。
+- 4h 通知タイトル・本文を短文化。`session-split-notify-audit.jsonl`（watch/cron・alerted/dup）。`SESSION_CLOCK_QUIET`、powershell 失敗ログ、Windows 用 `install-session-clock-windows.ps1`。
+- `scripts/lib/session-clock-cron-node.mjs` 共通化、`desktop-notify` の darwin/win/console ベル経路整理。
+
+**次の1手**: `npm run session:bootstrap` で 1c 通過確認 → push 希望なら浜田指示。
+
+---

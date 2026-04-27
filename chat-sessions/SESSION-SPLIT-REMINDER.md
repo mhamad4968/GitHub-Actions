@@ -43,6 +43,8 @@
 
 **Cursor が閉じていても効かせる（この PC に仕込む・推奨）**: WSL/Linux で **`npm run session:clock:install-cron`**。ユーザー crontab に **10 分ごと**の `session-split-cron-ping.mjs` が入り、4h 超なら watch と **同じ抑止フラグ**で1回だけ通知する。解除は **`npm run session:clock:uninstall-cron`**。WSL では **`cron` デーモン起動**（例: `sudo service cron start`）が必要なことがある。cron 用の `node` は **`~/.nvm` の最新 semver**を優先（Cursor 同梱は避ける）。**固定したいとき**は `export KINTONE_AI_LAB_NODE=/path/to/node` を付けてから `npm run session:clock:install-cron`。crontab 行には **`DISPLAY=:0`** を付与する（インストーラが自動。別ディスプレイなら `SESSION_CLOCK_CRON_DISPLAY=:1 npm run session:clock:install-cron` 等）。
 
+**健康診断・整合**: **`npm run session:clock:health`**（hooks / crontab 行 / node ドリフト）／**`npm run verify:session-clock-health`**（`session:bootstrap` と同じ厳格チェック）。**期待 node**は最後に成功した **`npm run session:clock:install-cron`** が `logs/.session-clock-install-node` に保存したパスを優先（`git pull` 後のドリフト検知用）。**監査ログ**: `logs/session-split-notify-audit.jsonl`（`watch` / `cron` からの `alerted` / `dup`）。**深夜のベル抑止**: 環境変数 **`SESSION_CLOCK_QUIET=1`**（`console-bell` のみ抑止・ファイルログは残る）。**Windows ネイティブ**のタスク登録サンプル: `scripts/install-session-clock-windows.ps1`。**WSL Popup 失敗時の stderr**: `logs/session-desktop-notify-powershell.log`。
+
 手動だけ動かす場合:
 
 ```bash
