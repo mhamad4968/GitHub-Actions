@@ -27,11 +27,14 @@
 ~/.cursor/
 ├── hooks.json                                 # 設定 (sessionStart + beforeSubmitPrompt + beforeShellExecution)
 └── hooks/
+    ├── session-start-autopilot-delegate.sh   # sessionStart 先頭: CURSOR_PROJECT_DIR に autopilot があれば実行
     ├── preflight-reminder.sh                  # 既存 (sessionStart / beforeSubmitPrompt)
     └── dangerous-shell-blocker.sh             # 新規 (beforeShellExecution / R1)
 ```
 
 `~/.cursor/hooks.json` は user-global スコープ = 全プロジェクトで有効。
+
+**session-clock 自動化（2026-04-27）**: Cursor は **project と user の両方の `sessionStart` を実行してマージ**する。ワークスペースが親フォルダだけ開かれている等で **リポ内 `.cursor/hooks.json` の autopilot が走らない**場合でも、`session-start-autopilot-delegate.sh` が **`CURSOR_PROJECT_DIR` 配下に `.cursor/hooks/session-start-autopilot.mjs` があるときだけ**同スクリプトを起動し、`npm run session:clock:set` と `session:clock:watch` を実行する。ミラー: `artifacts/cursor-hooks/session-start-autopilot-delegate.sh`。
 
 ---
 
@@ -42,6 +45,11 @@
   "version": 1,
   "hooks": {
     "sessionStart": [
+      {
+        "command": "./hooks/session-start-autopilot-delegate.sh",
+        "timeout": 25,
+        "failClosed": false
+      },
       {
         "command": "./hooks/preflight-reminder.sh",
         "timeout": 3,
