@@ -158,3 +158,19 @@ AI は、セッション切替・終了・浜田さんが引き継ぎテンプ�
 **次セッションへの 1 行**: 新チャット直後は **時計 4h 超なら先に `session:clock:set`**。並列 **7点**が出たら **explain で軸内訳**を見てから判断（再起動残骸なら本修正後は静穏になる）。
 
 ---
+
+### 2026-04-28 JST — 夕反省引き継ぎ正本（evening-reflect-queue）
+
+**浜田メモ（原文）**:
+> 夜の反省会で行うようにAI側で忘れずに引継ぎ出来るようにしておいてほしい。
+
+**経緯（簡潔）**:
+- **`chat-sessions/evening-reflect-queue.md`** 新設＝昼→夕の **固定正本**（チェックリスト形式）。
+- **`scripts/evening-reflect.mjs`**: 雛形の **§1-M** にキュー全文を自動取り込み。**§1-L** 付近のテンプレ内バッククォート未エスケープを修正（SyntaxError 予防）。
+- **`package.json`**: `npm run evening:reflect` エイリアス追加。
+- **`HANDOFF-HUMAN.txt`**: AI 向けに正本パスと `npm run evening:reflect` を 1 行追記。
+- **注意**: `evening-reflect.mjs` の D3 が **`NEW-SESSION-STARTER` の主タスク長表を自動サマリに置換**しうるため、**検証実行後は必要なら `NEW-SESSION-STARTER` を手で戻す**（本ターンは意図せぬ差分のため checkout 復元）。
+
+**次セッションへの 1 行**: 夕方は **`npm run evening:reflect`** → 生成 md の **§1-M** と **`evening-reflect-queue.md`** を最初に読む → 消化したら正本で `[x]` か削除。
+
+---

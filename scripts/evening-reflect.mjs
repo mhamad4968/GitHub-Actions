@@ -11,6 +11,7 @@
  *   4. logs/morning-prep/<日付>.log の失敗痕跡
  *   5. agent-transcripts/ の本日 .jsonl のサイズ（参考値）
  *   6. 既存の保留改善提案（docs/approved-changes/pending/*.json）
+ *   7. chat-sessions/evening-reflect-queue.md（昼→夕の固定引き継ぎ正本）
  *
  * 出力:
  *   - docs/reports/<日付>-evening-reflection.md（雛形）
@@ -229,6 +230,14 @@ function updateNewSessionStarter() {
 }
 try { updateNewSessionStarter(); } catch (e) { console.warn('[D3] NEW-SESSION-STARTER 更新失敗:', e.message); }
 
+// ── 1-M. 夕反省キュー（昼→夜の固定引き継ぎ正本）────────────────
+const eveningQueuePath = path.join(REPO_ROOT, 'chat-sessions', 'evening-reflect-queue.md');
+let eveningQueueSection = '_(ファイルなし)_';
+if (fs.existsSync(eveningQueuePath)) {
+  const qRaw = fs.readFileSync(eveningQueuePath, 'utf8').trim();
+  eveningQueueSection = qRaw.length > 0 ? qRaw : '_(空)_';
+}
+
 // ── 1-G. 未参照ルール統廃合候補 (#S4) ───────────────
 let unrefSection = '_(audit-rules 出力取得失敗)_';
 const auditRes = run('node scripts/audit-rules.mjs 2>&1');
@@ -281,6 +290,12 @@ ${tsSection}
 ### 1-F. 保留中の改善提案
 ${pendingSection}
 
+### 1-M. 夕反省キュー（引き継ぎ正本・chat-sessions/evening-reflect-queue.md）
+
+> AI は **§2 以降で本節のチェック項目を処理**し、完了したら **正本キュー**で \`- [x]\` にするか行を削除すること。
+
+${eveningQueueSection}
+
 ### 1-G. 直近 TSB（参考）
 ${tsbSection}
 
@@ -294,7 +309,7 @@ ${checkpointFreshness}
 <!-- 浜田チェック不要・自己申告用。AI が埋める。 -->
 
 - [ ] **§55-4/§55-5 整合**: 本日 AGENTS.md / RULES-INDEX を [BREAKING] 更新した場合、セーフモード・解除条件と矛盾がないかを 1 行で確認した
-- 該当なし → `_（該当なし）_`
+- 該当なし → \`_（該当なし）_\`
 
 ---
 
