@@ -189,16 +189,17 @@ def insert_recurring_rule(
     return int(cur.lastrowid)
 
 
-def list_recurring_rules(conn: sqlite3.Connection, account_id: int) -> pd.DataFrame:
+def list_all_recurring_rules(conn: sqlite3.Connection) -> pd.DataFrame:
+    """全口座の繰り返しルール（銀行名付き）。"""
     return pd.read_sql(
         """
-        SELECT id, description, income, expense, anchor_date, interval_months, active
-        FROM recurring_rules
-        WHERE account_id = ?
-        ORDER BY id
+        SELECT r.id, r.account_id, a.name AS bank_name, r.description, r.income,
+               r.expense, r.anchor_date, r.interval_months, r.active
+        FROM recurring_rules r
+        JOIN accounts a ON a.id = r.account_id
+        ORDER BY a.sort_order, a.id, r.id
         """,
         conn,
-        params=(account_id,),
     )
 
 
@@ -262,6 +263,17 @@ def generate_recurring_up_to(
             d = add_months(d, step)
     conn.commit()
     return inserted
+
+
+def generate_all_recurring_up_to(conn: sqlite3.Connection, through: date) -> int:
+    """有効なルールが紐づく全口座について、一括で取引生成。"""
+    rows = conn.execute(
+        "SELECT DISTINCT account_id FROM recurring_rules WHERE active = 1"
+    ).fetchall()
+    total = 0
+    for (aid,) in rows:
+        total += generate_recurring_up_to(conn, int(aid), through)
+    return total
 
 
 def get_opening_balance(conn: sqlite3.Connection, account_id: int) -> float:
@@ -568,7 +580,7 @@ def main() -> None:
                 st.rerun()
 
     with tab3:
-        _render_recurring_tab(conn, account_id, choice)
+        _render_recurring_tab(conn, names, acc_options)
 
     conn.close()
 
@@ -581,12 +593,17 @@ def _interval_label(months: int) -> str:
     return f"{months}か月ごと"
 
 
-def _render_recurring_tab(conn: sqlite3.Connection, account_id: int, bank_name: str) -> None:
-    st.subheader(f"繰り返し（固定）— {bank_name}")
+def _render_recurring_tab(
+    conn: sqlite3.Connection,
+    account_names: list[str],
+    acc_options: dict[str, int],
+) -> None:
+    st.subheader("繰り返し（固定）— 全体")
     st.markdown(
         "**都度購入はここでは入れません。**「追加（都度）」タブで都度登録してください。"
         "ここは家賃・サブスクなど**同じ金額が決まった間隔で続くもの**だけです。"
-        "「生成する最終日」まで取引行をまとめて追加できます。"
+        "ルールは**口座ごと**に紐づきますが、この画面では**すべての口座のルールを一覧**し、"
+        "生成も**まとめて**行えます。"
         "**同じルール×同じ年月は二重登録されません**（再実行しても安全）。"
     )
 
@@ -595,6 +612,14 @@ def _render_recurring_tab(conn: sqlite3.Connection, account_id: int, bank_name: 
 
     with st.form("add_recurring"):
         st.markdown("**新しい繰り返しルール**")
+        rule_bank = st.selectbox(
+            "引き落とし・記帳する口座",
+            options=account_names,
+            index=0,
+            help="このルールで作る取引は、この口座にだけ登録されます。",
+            key="rec_rule_bank",
+        )
+        rule_aid = acc_options[rule_bank]
         ra = st.date_input(
             "最初の支払日",
             value=date.today(),
@@ -622,13 +647,13 @@ def _render_recurring_tab(conn: sqlite3.Connection, account_id: int, bank_name: 
             st.warning("摘要を入れてください。")
         else:
             insert_recurring_rule(
-                conn, account_id, rdesc, rinc, rexp, ra, int(rim)
+                conn, rule_aid, rdesc, rinc, rexp, ra, int(rim)
             )
-            st.success("ルールを保存しました。下の「取引を生成」で一覧に反映してください。")
+            st.success("ルールを保存しました。下の「一括生成」で取引に反映してください。")
             st.rerun()
 
     st.divider()
-    st.markdown("**この銀行のルールから取引を生成**")
+    st.markdown("**すべての有効ルールから取引を一括生成**")
     head = date.today().replace(day=1)
     end_head = add_months(head, 6)
     last_d = calendar.monthrange(end_head.year, end_head.month)[1]
@@ -638,15 +663,15 @@ def _render_recurring_tab(conn: sqlite3.Connection, account_id: int, bank_name: 
         value=default_through,
         key="gen_through",
     )
-    if st.button("繰り返しから取引を生成", type="primary", key="gen_btn"):
-        n = generate_recurring_up_to(conn, account_id, gen_through)
+    if st.button("繰り返しから取引を一括生成", type="primary", key="gen_btn"):
+        n = generate_all_recurring_up_to(conn, gen_through)
         st.success(f"{n} 件の取引を追加しました（既にあった分はスキップ）。")
         st.rerun()
 
     st.divider()
-    rules_df = list_recurring_rules(conn, account_id)
+    rules_df = list_all_recurring_rules(conn)
     if rules_df.empty:
-        st.info("この銀行にはまだ繰り返しルールがありません。")
+        st.info("まだ繰り返しルールがありません。")
         return
 
     show = rules_df.copy()
@@ -655,13 +680,14 @@ def _render_recurring_tab(conn: sqlite3.Connection, account_id: int, bank_name: 
     show = show.rename(
         columns={
             "id": "ID",
+            "bank_name": "口座",
             "description": "摘要",
             "income": "収入",
             "expense": "支出",
             "anchor_date": "最初の支払日",
         }
     )
-    disp_cols = ["ID", "摘要", "収入", "支出", "最初の支払日", "間隔", "有効"]
+    disp_cols = ["ID", "口座", "摘要", "収入", "支出", "最初の支払日", "間隔", "有効"]
     st.dataframe(
         show[disp_cols],
         use_container_width=True,
@@ -674,7 +700,10 @@ def _render_recurring_tab(conn: sqlite3.Connection, account_id: int, bank_name: 
     for _, r in rules_df.iterrows():
         rid = int(r["id"])
         st_ = "【停止中】" if int(r["active"]) == 0 else ""
-        labels.append(f"{rid} — {r['description']} {_interval_label(int(r['interval_months']))} {st_}".strip())
+        bnk = str(r["bank_name"])
+        labels.append(
+            f"{rid} — [{bnk}] {r['description']} {_interval_label(int(r['interval_months']))} {st_}".strip()
+        )
         ids.append(rid)
     pick = st.selectbox("ルール", options=range(len(labels)), format_func=lambda i: labels[i], key="rule_pick")
     rid = ids[pick]
