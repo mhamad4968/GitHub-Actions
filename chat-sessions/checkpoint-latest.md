@@ -24,6 +24,7 @@
 
 0. **光速ガード（項番 0 / Read より前・必須・AI）**（`npm run session:bootstrap` も **同じ順**を内包）:
    - **0a 憲法ガード**: リポルートで **`npm run verify:constitution-handoff`** → **exit 0**（TSB-024 物理ガード）。**ng のまま Read・Tier B・本題に進まない**（憲法ドキュ修復のみ）。
+   - **0a2 必読構造ゲート**: 続けて **`npm run verify:mandatory-read-gate`** → **exit 0**（`scripts/mandatory-read-gate.mjs`）。checkpoint の **最終更新** 行・`handoff-log` の見出し・`HANDOFF-HUMAN` テンプレ・`SESSION-BOOTSTRAP` 冒頭・`AGENTS.md` 最小サイズを機械検査。**議論だけで抜けた未読了前提を exit 2 で止める**。**`npm run session:bootstrap` 単体**なら 0a→0a2 は内包済み。
    - **0b Desktop「AI緊急用」都度メンテ（浜田指示）**: 浜田が毎回開く **`C:\Users\mhamada202408224\Desktop\AI緊急用`**（WSL: `/mnt/c/Users/mhamada202408224/Desktop/AI緊急用`）を、**セッション切替のたびに AI がメンテ済みか確認する**。手順: **`npm run session-starter:sync-desktop`**（`NEW-SESSION-STARTER_yyyymmdd.txt` + `SESSION-BOOTSTRAP` + `HANDOFF-HUMAN` + **`README.txt`** をリポ正本へコピー）→ 続けて **`npm run verify:desktop-ai-emergency-sync`**（フォルダがある環境では **バイト一致**で機械確認。**貼付推奨ファイル名を最終行に表示**）。**控えフォルダが無い**ときは verify が SKIP のみ → チャットに **「AI緊急用は未照合（/mnt/c なし等）」と 1 行**（環境復帰後に sync + verify を再実行）。
 1. 本ファイル `chat-sessions/checkpoint-latest.md`（先頭〜直近の **最終更新** 1 行）
 2. **`chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` を通読**（経緯・法律相当・ルール・機能・MCP の棚卸し表）
@@ -31,7 +32,7 @@
 4. `chat-sessions/handoff-log.md` の **末尾から最大 3 件**（無ければスキップ可）
 5. **PC 台帳（Day4 継続中または 674・新・PC台帳 customize を触る場合）** … `docs/plans/2026-04-26-pc-ledger-day4-action.md` の **「AI 引継ぎ: …」**（Day4 時）＋ `chat-sessions/2026-04-26-pc-ledger-day4.md` ＋ **正本仕様書** `docs/plans/2026-04-21-new-pc-ledger-spec.md` の **§4.2.0〜§4.4 を Read**（手順書のみで代替しない／詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b**）＋画面ラベルは **短文 JSON**／検証は **`npm run pc-ledger:verify-labels-spec`**
 6. `RULES-INDEX.md` の **「セッション切替・文脈復元」** 行（索引 1 行で他ドキュへジャンプ）
-7. **AI は `npm run session:bootstrap` を実行**し、結果をチャットに要約（**verify:constitution-handoff → session-starter:sync-desktop → verify:desktop-ai-emergency-sync → smoke** 9 連／**Read だけで終わらせない**／詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 6–7）
+7. **AI は `npm run session:bootstrap` を実行**し、結果をチャットに要約（**verify:constitution-handoff → verify:mandatory-read-gate → session-starter:sync-desktop → verify:desktop-ai-emergency-sync → smoke** 10 連／**Read だけで終わらせない**／詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 6–7）
 
 **項番 0.9（本題の実行開始・任意の再確認）**: **項番 -0** で合意した「次の一手」と、項番 0〜7 後の状況に **食い違いが出た**とき（checkpoint 最終更新が想定外・浜田がチャットで方針変更した等）だけ、AI は **§41 一問だけ**改めて浜田へ確認し、**OK のあと**に Tier B・kintone 書込・`deploy` 等 **副作用のある本題実行**へ入る。食い違いが無いときは **-0 の OK をそのまま実行開始の合意**とみなし、項番 1 の Read から本題へ進んでよい。
 
@@ -60,7 +61,9 @@
 
 ---
 
-**最終更新**: 2026-04-28 (Tue) JST — **App 674 SKYSEA customize v0.2**（浜田方針）: SKYSEA ブロックは **アカウント部扱いで編集は権限者すべて可**／**運用で触るのは浜田のみは周知**に合わせ、ログイン非表示を撤廃 → `deploy:674` **rev 18** / fileKey `73ae0e96-0809-462f-a8f0-65fbe9f6cb96` / `BUILD=2026-04-28-skysea-group-ui-v0.2`（正本 §4.2.3a・手順書 §2.7 追記）。
+**最終更新**: 2026-04-28 (Tue) JST — **mandatory-read-gate**: `scripts/mandatory-read-gate.mjs` 新設。`verify:constitution-handoff` の直後に **`npm run verify:mandatory-read-gate`**（`session:bootstrap` / `smoke` に組込）。checkpoint 項番0・SESSION-BOOTSTRAP フェーズ6・憲法 verify の checkpoint needle に `mandatory-read-gate.mjs` を追加。議論で抜ける「未読了で進む」を **exit 2** で止める。
+
+**前回更新**: 2026-04-28 (Tue) JST — **App 674 SKYSEA customize v0.2**（浜田方針）: SKYSEA ブロックは **アカウント部扱いで編集は権限者すべて可**／**運用で触るのは浜田のみは周知**に合わせ、ログイン非表示を撤廃 → `deploy:674` **rev 18** / fileKey `73ae0e96-0809-462f-a8f0-65fbe9f6cb96` / `BUILD=2026-04-28-skysea-group-ui-v0.2`（正本 §4.2.3a・手順書 §2.7 追記）。
 
 **前回更新**: 2026-04-28 (Tue) JST — **App 674 SKYSEA グループ化**（浜田依頼・チャット GO 相当）: `skysea_system_meta`（**SKYSEA処理用**）preview POST → deploy **rev 15** → `pc-ledger:674:layout-skysea-group`（SKYSEA 4 件をグループ内へ **rev 16**）→ `deploy:674` customize（**rev 17** / fileKey `1f1119b7-6617-49f8-91f7-a3a19edb76c2` / `BUILD=2026-04-28-skysea-group-ui-v0.1`・当初は浜田以外 SKYSEA 非表示）→ `revision:snapshot` `674-skysea-group-2026-04-28-*` → `field-spec:diff` **44/44** → `kintone:test` **9/9** → `smoke:quiet` **9/9**。
 

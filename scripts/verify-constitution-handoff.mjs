@@ -113,6 +113,7 @@ const suites = [
       '貼付推奨',
       '日終わり',
       'README.txt',
+      'mandatory-read-gate.mjs',
     ],
   },
 ];

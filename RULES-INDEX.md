@@ -217,7 +217,7 @@
 | `chat-sessions/NEW-SESSION-STARTER.md` **v3.8+** | kintone MCP `kintone-add-app` と **プレビュー先行**／`/k/<id>/` が空に見える件の要約 |
 | `docs/plans/2026-04-26-pc-ledger-day4-action.md` **「AI 引継ぎ: kintone-add-app 直後に…」** | 上記の **詳細**（REST 確認手順・`thread` 不可・`revision-snapshot`） |
 | `docs/troubleshooting.md` **TSB-023** | 「公開してない？」**先確認せず浜田へ聞かない**で済むようにした教訓（索引用 1 行 + 本文） |
-| `docs/troubleshooting.md` **TSB-024** | 憲法級アンチパターン（**デプロイ・適用・push を人に押し付けない**／禁句リスト／`npm run verify:constitution-handoff` で機械監視） |
+| `docs/troubleshooting.md` **TSB-024** | 憲法級アンチパターン（**デプロイ・適用・push を人に押し付けない**／禁句リスト／`npm run verify:constitution-handoff` ＋ **`npm run verify:mandatory-read-gate`**（必読ファイル構造）で機械監視） |
 | `.cursor/rules/constitution-handoff-gate.mdc` | **alwaysApply** — §35-1 / §56-1a / TSB-024 / §1-2-3-1 を毎ターン想起（Cursor 全チャット） |
 | `.cursor/rules/session-handoff.mdc` | 人間 5 行＋AI の `handoff-log` 追記手順。**自律復元**の追記あり |
 

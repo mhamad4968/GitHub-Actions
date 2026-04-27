@@ -15,6 +15,7 @@
 #   2. ✅ pass なら silent (邪魔しない)
 #   3. ❌ warn なら terminal bell + 強調メッセージ + ログ記録
 #   4. 続けて verify-constitution-handoff.mjs（TSB-024 物理ガード）— ng なら bell + ログ（commit は止めない）
+#   5. 続けて mandatory-read-gate.mjs（必読ファイル構造）— ng なら bell + ログ（commit は止めない）
 #
 # インストール: bash scripts/install-hooks.sh
 # アンインストール: rm .git/hooks/post-commit
@@ -102,6 +103,31 @@ if [ "$CONST_EXIT" != "0" ]; then
   echo "$CONST_OUT" | tail -25
   echo "============================================================"
   echo "  対応: NEW-SESSION-STARTER 冒頭 🚨 / SESSION-BOOTSTRAP フェーズ7 / TSB-024 本文を復元"
+  echo "============================================================"
+fi
+
+# --- 必読ファイル構造ゲート（commit 直後）---
+MR_OUT="$("$NODE_BIN" scripts/mandatory-read-gate.mjs 2>&1)"
+MR_EXIT=$?
+{
+  echo "[$TS] commit=$COMMIT_SHA mandatory-read-gate exit=$MR_EXIT subject=\"$COMMIT_SUBJECT\""
+  if [ "$MR_EXIT" != "0" ]; then
+    echo "$MR_OUT" | tail -20
+  fi
+} >> "$LOG_FILE"
+
+if [ "$MR_EXIT" != "0" ]; then
+  printf '\a'
+  echo ""
+  echo "============================================================"
+  echo "  ⚠️  post-commit hook: MANDATORY READ GATE FAILED"
+  echo "============================================================"
+  echo "  Commit: $COMMIT_SHA \"$COMMIT_SUBJECT\""
+  echo "  詳細: npm run verify:mandatory-read-gate / chat-sessions/checkpoint-latest.md 項番 0"
+  echo ""
+  echo "$MR_OUT" | tail -25
+  echo "============================================================"
+  echo "  対応: checkpoint 最終更新・handoff 見出し・HANDOFF-HUMAN・SESSION-BOOTSTRAP・AGENTS.md を確認"
   echo "============================================================"
 fi
 

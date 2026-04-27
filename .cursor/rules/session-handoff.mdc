@@ -18,7 +18,7 @@ alwaysApply: true
 
 - **項番 0b（Desktop AI緊急用）**: セッション切替のたび、浜田の **`C:\Users\mhamada202408224\Desktop\AI緊急用`** を **`session-starter:sync-desktop` + `verify:desktop-ai-emergency-sync`** で都度メンテ・照合する（`session:bootstrap` に内包。未マウント時はチャットに **未照合 1 行**）。
 
-0. **新チャットの第 0 手（Read より前）**: **`checkpoint-latest.md` 項番 -0** で浜田 **OK 済み**であること（未 OK なら先に **一問だけ**確認してから）。リポルートで **`npm run verify:constitution-handoff`** を実行し **exit 0** を確認（「光速ガード」＝ TSB-024）。**ng なら本題に入らず**憲法ドキュ（`NEW-SESSION-STARTER` 冒頭 🚨 / `SESSION-BOOTSTRAP` フェーズ 7 第 7–8 項 / `docs/troubleshooting.md` TSB-024）の復旧のみ。**このターンのチャット応答先頭**に **`[§1-2-3 ティア判定: …]`**（§1-2-3-1）を付ける（浜田が遵守確認する目印）。
+0. **新チャットの第 0 手（Read より前）**: **`checkpoint-latest.md` 項番 -0** で浜田 **OK 済み**であること（未 OK なら先に **一問だけ**確認してから）。リポルートで **`npm run verify:constitution-handoff`** → **`npm run verify:mandatory-read-gate`** を実行し **いずれも exit 0**（光速・TSB-024 ＋ **必読ファイル構造ゲート**）。**`npm run session:bootstrap` 単体**なら上記 2 本は内包済み。**ng なら本題に入らず**憲法ドキュ（`NEW-SESSION-STARTER` 冒頭 🚨 / `SESSION-BOOTSTRAP` フェーズ 7 第 7–8 項 / `docs/troubleshooting.md` TSB-024）の復旧のみ。**このターンのチャット応答先頭**に **`[§1-2-3 ティア判定: …]`**（§1-2-3-1）を付ける（浜田が遵守確認する目印）。
 
 1. **切替直前の確認（デフォルト必須）**: `handoff-log.md` に書き込む **前に**、チャットへ **確定前ドラフト**を出す。内容 = 浜田5行の読み取り結果＋下記「AI 補足」項目のドラフト（箇条書きでよい）。浜田から **「OK」または1行修正**を受けてから次へ進む。  
    - **例外**: 浜田が **「確認省略で書いて」** と明示したときだけ、このステップをスキップしてよい。
@@ -33,7 +33,7 @@ alwaysApply: true
      - `GO待ち`: あれば具体的に／なければ「なし」
      - `session-lock`: 取得中なら holder／なければ「なし」
      - `関連パス`: 計画・TSB・ログ等があれば最大3件
-5. **チャットで次セッション初手を明示**: `SESSION-BOOTSTRAP-CHECKLIST.md` ＋ `NEW-SESSION-STARTER.md`（または Desktop 控え）＋ `chat-sessions/checkpoint-latest.md` Read ＋ **`chat-sessions/handoff-log.md` の末尾から最大3件** Read ＋ **手順 0（verify:constitution-handoff）のあと** **`npm run session:bootstrap`**（引き継ぎ先 AI が次ターンで実行）。
+5. **チャットで次セッション初手を明示**: `SESSION-BOOTSTRAP-CHECKLIST.md` ＋ `NEW-SESSION-STARTER.md`（または Desktop 控え）＋ `chat-sessions/checkpoint-latest.md` Read ＋ **`chat-sessions/handoff-log.md` の末尾から最大3件** Read ＋ **手順 0（`verify:constitution-handoff` → `verify:mandatory-read-gate` のあと）** **`npm run session:bootstrap`**（引き継ぎ先 AI が次ターンで実行。bootstrap 内で上記 2 本は再実行される）。
 6. **自律復元（浜田へ「どこまで？」を先に聞かない）**: `checkpoint-latest.md` の **「セッション切替後の自律復元」** に従い、PC 台帳 Day4 なら `docs/plans/2026-04-26-pc-ledger-day4-action.md` の **「AI 引継ぎ: kintone-add-app 直後に…」** と `docs/troubleshooting.md` **TSB-023** を先に Read。`kintone-add-app` 直後の「未公開？」は **プレビュー REST** で確認してから進む（冗長確認を減らす）。**新・PC台帳の Tier B 前**は `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b（1b-A〜C＋チャットテンプレ）**を完走（「仕様確認しますか？」だけ禁止）。正本 `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.2.0〜§4.4**。ラベル変更時は **`npm run pc-ledger:verify-labels-spec`**（浜田は確認のみ／全文目視突合を人に依頼しない）。
 
 ## 禁止

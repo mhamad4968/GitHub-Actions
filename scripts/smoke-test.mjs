@@ -17,6 +17,7 @@
  *   7. rule-watcher       — rule-watcher-status.mjs (S16 / K-3 稼働確認、未起動は warn)
  *   8. audit:parallel     — parallel-session-detector.mjs (§51-4 4 軸スコア)
  *   9. verify:constitution-handoff — verify-constitution-handoff.mjs (TSB-024 物理ガード)
+ *  10. verify:mandatory-read-gate — mandatory-read-gate.mjs（必読ファイル構造）
  *
  * 出力: markdown サマリ + 各検査の status (ok / warn / ng / skip)
  *
@@ -49,6 +50,7 @@ const checks = [
   { id: 'rule-watcher', cmd: 'node', args: ['scripts/rule-watcher-status.mjs'], label: '憲法ファイル watcher 稼働 (K-3 / S16)' },
   { id: 'audit:parallel', cmd: 'node', args: ['scripts/parallel-session-detector.mjs'], label: '§51-4 並列セッション疑い 4 軸機械判定 (P4)' },
   { id: 'verify:constitution-handoff', cmd: 'node', args: ['scripts/verify-constitution-handoff.mjs'], label: '憲法級ハンドオフ物理ガード (TSB-024 / 第9検査)' },
+  { id: 'verify:mandatory-read-gate', cmd: 'node', args: ['scripts/mandatory-read-gate.mjs'], label: '必読ファイル構造ゲート (mandatory-read-gate / 第10検査)' },
 ];
 
 const results = [];
