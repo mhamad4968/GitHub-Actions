@@ -21,7 +21,7 @@ DEFAULT_BANK_ACCOUNTS: tuple[tuple[str, int], ...] = (
     ("みずほ", 0),
     ("三井住友", 1),
 )
-# 合算一覧に載せる銀行（取引の流れ）。合算の残金列の起点は手入力（combined_balance_anchor）。
+# 合算一覧に載せる銀行。合算の起点＝みずほ・三井それぞれの手入力残高の合計（user_manual_bank_balance）。
 COMBINED_BANK_NAMES: frozenset[str] = frozenset({"みずほ", "三井住友"})
 
 
@@ -78,7 +78,7 @@ def init_db(conn: sqlite3.Connection) -> None:
                 list(DEFAULT_BANK_ACCOUNTS),
             )
     _migrate_recurring_schema(conn)
-    _migrate_combined_anchor(conn)
+    _migrate_manual_bank_balances(conn)
     conn.commit()
 
 
@@ -113,37 +113,87 @@ def _migrate_recurring_schema(conn: sqlite3.Connection) -> None:
     )
 
 
-def _migrate_combined_anchor(conn: sqlite3.Connection) -> None:
-    """合算表示の起点残高（手入力）。口座の期首とは別。"""
+def _migrate_manual_bank_balances(conn: sqlite3.Connection) -> None:
+    """通帳ベースのみずほ・三井それぞれの手入力残高。合算の起点はその合計。"""
     conn.executescript(
         """
-        CREATE TABLE IF NOT EXISTS combined_balance_anchor (
-            id INTEGER PRIMARY KEY CHECK (id = 1),
+        CREATE TABLE IF NOT EXISTS user_manual_bank_balance (
+            bank_name TEXT PRIMARY KEY,
             balance REAL NOT NULL DEFAULT 0,
             updated_at TEXT NOT NULL DEFAULT (datetime('now'))
         );
-        INSERT OR IGNORE INTO combined_balance_anchor (id, balance) VALUES (1, 0);
         """
     )
+    for bn in sorted(COMBINED_BANK_NAMES):
+        conn.execute(
+            "INSERT OR IGNORE INTO user_manual_bank_balance (bank_name, balance) VALUES (?, 0)",
+            (bn,),
+        )
+    leg = conn.execute(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='combined_balance_anchor'"
+    ).fetchone()
+    if leg:
+        row = conn.execute(
+            "SELECT balance FROM combined_balance_anchor WHERE id = 1"
+        ).fetchone()
+        if row:
+            legacy = float(row[0])
+            srow = conn.execute(
+                "SELECT COALESCE(SUM(balance), 0) FROM user_manual_bank_balance"
+            ).fetchone()
+            if srow and float(srow[0]) == 0 and legacy != 0:
+                half = legacy / 2.0
+                conn.execute(
+                    """
+                    UPDATE user_manual_bank_balance
+                    SET balance = ?, updated_at = datetime('now') WHERE bank_name = 'みずほ'
+                    """,
+                    (half,),
+                )
+                conn.execute(
+                    """
+                    UPDATE user_manual_bank_balance
+                    SET balance = ?, updated_at = datetime('now') WHERE bank_name = '三井住友'
+                    """,
+                    (half,),
+                )
+        conn.execute("DROP TABLE IF EXISTS combined_balance_anchor")
 
 
-def get_combined_manual_balance(conn: sqlite3.Connection) -> float:
+def get_manual_bank_balance(conn: sqlite3.Connection, bank_name: str) -> float:
     row = conn.execute(
-        "SELECT balance FROM combined_balance_anchor WHERE id = 1"
+        "SELECT balance FROM user_manual_bank_balance WHERE bank_name = ?",
+        (bank_name,),
     ).fetchone()
     return float(row[0]) if row else 0.0
 
 
-def set_combined_manual_balance(conn: sqlite3.Connection, value: float) -> None:
+def set_manual_bank_balance(conn: sqlite3.Connection, bank_name: str, value: float) -> None:
     conn.execute(
         """
-        UPDATE combined_balance_anchor
+        UPDATE user_manual_bank_balance
         SET balance = ?, updated_at = datetime('now')
-        WHERE id = 1
+        WHERE bank_name = ?
         """,
-        (float(value),),
+        (float(value), bank_name),
     )
     conn.commit()
+
+
+def get_sum_manual_two_banks(conn: sqlite3.Connection) -> float:
+    row = conn.execute(
+        "SELECT COALESCE(SUM(balance), 0) FROM user_manual_bank_balance"
+    ).fetchone()
+    return float(row[0]) if row else 0.0
+
+
+def copy_ledger_balance_to_manual(conn: sqlite3.Connection, bank_name: str) -> None:
+    """帳簿計算（期首＋取引）の残高を、その銀行の手入力欄にコピー。"""
+    row = conn.execute("SELECT id FROM accounts WHERE name = ?", (bank_name,)).fetchone()
+    if not row:
+        return
+    b = current_book_balance(conn, int(row[0]))
+    set_manual_bank_balance(conn, bank_name, b)
 
 
 def add_months(d: date, months: int) -> date:
@@ -340,8 +390,8 @@ def combined_opening_total(conn: sqlite3.Connection) -> float:
 def load_combined_ledger(conn: sqlite3.Connection) -> pd.DataFrame:
     """
     みずほ・三井住友の取引を日付順で統合。
-    残金（合算）＝手入力の「合算残高の起点」＋（収入−支出）の時系列累計。
-    支出はプラスの金額として登録されているので、残金からは差し引かれる。
+    残金（合算）＝（手入力のみずほ＋手入力の三井住友）＋（収入−支出）の時系列累計。
+    支出は残金を減らす方向に働く。
     """
     names_sorted = sorted(COMBINED_BANK_NAMES)
     id_rows = conn.execute(
@@ -363,7 +413,7 @@ def load_combined_ledger(conn: sqlite3.Connection) -> pd.DataFrame:
     ORDER BY t.txn_date ASC, t.account_id ASC, t.id ASC
     """
     df = pd.read_sql(q, conn, params=tuple(ids))
-    base = get_combined_manual_balance(conn)
+    base = get_sum_manual_two_banks(conn)
     if df.empty:
         return df.assign(balance=pd.Series(dtype="float64"))
     net = df["income"].fillna(0) - df["expense"].fillna(0)
@@ -395,7 +445,7 @@ def current_book_balance(conn: sqlite3.Connection, account_id: int) -> float:
 def current_combined_book_balance(conn: sqlite3.Connection) -> float:
     df = load_combined_ledger(conn)
     if df.empty:
-        return get_combined_manual_balance(conn)
+        return get_sum_manual_two_banks(conn)
     return float(df["balance"].iloc[-1])
 
 
@@ -407,31 +457,6 @@ def sum_per_combined_bank_book(conn: sqlite3.Connection) -> float:
         if row:
             total += current_book_balance(conn, int(row[0]))
     return total
-
-
-def total_net_combined_bank_transactions(conn: sqlite3.Connection) -> float:
-    """合算対象口座の全取引の（収入−支出）の合計。"""
-    ns = sorted(COMBINED_BANK_NAMES)
-    if not ns:
-        return 0.0
-    ph = ",".join("?" * len(ns))
-    row = conn.execute(
-        f"""
-        SELECT COALESCE(SUM(t.income), 0) - COALESCE(SUM(t.expense), 0)
-        FROM transactions t
-        JOIN accounts a ON a.id = t.account_id
-        WHERE a.name IN ({ph})
-        """,
-        tuple(ns),
-    ).fetchone()
-    return float(row[0]) if row else 0.0
-
-
-def anchor_aligned_to_per_bank_books(conn: sqlite3.Connection) -> float:
-    """合算一覧の最終行が sum_per_combined_bank_book と一致するようにする起点。"""
-    return sum_per_combined_bank_book(conn) - total_net_combined_bank_transactions(
-        conn
-    )
 
 
 def combined_ledger_for_display(df: pd.DataFrame) -> pd.DataFrame:
@@ -503,26 +528,35 @@ def main() -> None:
     with st.sidebar:
         st.subheader("銀行")
         st.caption(
-            "**合算の残金**は「一覧」→「合算」で。**起点の金額はそこで手入力**し、"
-            "みずほ・三井の取引の収支がその起点から差し引かれ／足されます。"
-            "銀行別の期首は各口座の帳簿用です。"
+            "**合算の起点**は、下の **みずほ・三井それぞれの手入力**の合計です。"
+            "その合計から、取引の収入・支出が増減します。銀行別の期首は帳簿計算用です。"
         )
         choice = st.selectbox("追加・繰り返し・銀行別一覧で使う銀行", names, index=0)
         account_id = acc_options[choice]
         st.divider()
-        st.markdown("**帳簿上の残高（リアル合わせ用）**")
-        st.caption(
-            "通帳がプラスなのに帳簿がマイナスなら、**期首**か**取引の金額・収入／支出の取り違え**を疑ってください。"
-            "「選択中の銀行の計算内訳」で数字を確認できます。"
-        )
-        sum_books = sum_per_combined_bank_book(conn)
-        ledger_tail = current_combined_book_balance(conn)
-        st.metric("各銀行帳簿の合計（みずほ＋三井）", f"{sum_books:,.0f} 円")
-        st.metric("合算一覧の最終残（起点＋取引）", f"{ledger_tail:,.0f} 円")
-        if abs(sum_books - ledger_tail) > 0.01:
+        with st.expander("通帳の残高（みずほ・三井・手入力）", expanded=True):
             st.caption(
-                "上の2つが違うとき: 「一覧」→「合算」で **起点を帳簿に合わせる** ボタンを押すと一致します。"
+                "ここに入れた **2つの合計** が、合算一覧の起点になります。"
+                "支出はその合計から引かれる形で一覧に反映されます。"
             )
+            mz0 = get_manual_bank_balance(conn, "みずほ")
+            sm0 = get_manual_bank_balance(conn, "三井住友")
+            with st.form("sidebar_manual_balances"):
+                in_mz = st.number_input("みずほ（円）", value=float(mz0), step=1000.0, key="sb_mz")
+                in_sm = st.number_input("三井住友（円）", value=float(sm0), step=1000.0, key="sb_sm")
+                if st.form_submit_button("手入力を保存", type="primary"):
+                    set_manual_bank_balance(conn, "みずほ", in_mz)
+                    set_manual_bank_balance(conn, "三井住友", in_sm)
+                    st.rerun()
+        sum_man = get_sum_manual_two_banks(conn)
+        tail = current_combined_book_balance(conn)
+        st.metric("手入力の合計（合算の起点）", f"{sum_man:,.0f} 円")
+        st.metric("合算一覧の最終残（起点＋取引）", f"{tail:,.0f} 円")
+        st.divider()
+        st.markdown("**帳簿計算（参考）**")
+        st.caption("期首＋取引だけで出した値。手入力と違うときは、通帳に合わせて上を直すか、帳簿側を「追加」で整えてください。")
+        sum_books = sum_per_combined_bank_book(conn)
+        st.metric("帳簿計算の合計（みずほ＋三井）", f"{sum_books:,.0f} 円")
         neg_bank = False
         for bn in ("みずほ", "三井住友"):
             if bn in acc_options:
@@ -533,8 +567,8 @@ def main() -> None:
                     neg_bank = True
         if neg_bank:
             st.warning(
-                "いずれかの銀行の帳簿がマイナスです。登録データ上は「期首＋収入−支出」が負になっています。"
-                "通帳と合うようにするには、その銀行で**期首**を直すか、**追加**で収入／支出を調整してください。"
+                "帳簿計算がマイナスの口座があります（期首＋取引の結果）。"
+                "通帳と合わせるには**期首**や**追加**で直すか、上の**手入力**を通帳の残高に合わせてください。"
             )
         with st.expander("選択中の銀行の計算内訳", expanded=False):
             ob, si, se, n = account_balance_breakdown(conn, account_id)
@@ -552,7 +586,7 @@ def main() -> None:
                 value=float(ob),
                 step=1000.0,
                 key=f"ob_{account_id}",
-                help="銀行別の残金＝この口座の期首＋（収入−支出）。合算の起点は「一覧→合算」で手入力。",
+                help="銀行別の残金＝この口座の期首＋（収入−支出）。合算の起点はサイドバーのみずほ・三井の手入力の合計。",
             )
             if st.button("期首を保存", key=f"save_ob_{account_id}"):
                 set_opening_balance(conn, account_id, new_ob)
@@ -580,45 +614,30 @@ def main() -> None:
         with sub_a:
             st.subheader("合算一覧（みずほ＋三井住友）")
             st.markdown(
-                "**残金（合算）**は、下で入力した **合算残高の起点** から、"
-                "みずほ・三井の取引を時系列で **（収入 − 支出）** を足し引きした値です。"
-                "**支出は残金を減らし、収入は増やします。** 通帳の合計と合わせたいときは起点を更新してください。"
+                "**残金（合算）** ＝ **（手入力のみずほ ＋ 手入力の三井住友）** ＋、"
+                "この2口座の取引を時系列に並べた **（収入 − 支出）** の累計です。"
+                "**支出は合計からマイナス**、収入はプラスに働きます。"
+                "手入力は **サイドバー** の「通帳の残高」でも同じものを編集できます。"
             )
             ob_sum = combined_opening_total(conn)
-            anchor = get_combined_manual_balance(conn)
-            with st.form("combined_anchor_form"):
-                st.markdown("**合算残高の起点（都度入力）**")
-                new_anchor = st.number_input(
-                    "みずほ＋三井を合わせたい残高（円）",
-                    value=float(anchor),
-                    step=1000.0,
-                    key="combined_anchor_input",
-                    help="ここを基準に、一覧の取引だけで増減します。銀行の期首とは別です。",
-                )
-                if st.form_submit_button("起点を保存", type="primary"):
-                    set_combined_manual_balance(conn, new_anchor)
-                    st.success("保存しました。")
-                    st.rerun()
-            if st.button("期首の合計を起点にコピー（参考）", key="copy_opening_to_anchor"):
-                set_combined_manual_balance(conn, ob_sum)
-                st.rerun()
-            if st.button(
-                "各銀行帳簿の合計に合わせて起点を自動設定",
-                key="sync_anchor_to_books",
-                help="合算一覧の最終残が、サイドバーの「各銀行帳簿の合計」と同じになるように起点を計算して保存します。",
-            ):
-                set_combined_manual_balance(conn, anchor_aligned_to_per_bank_books(conn))
-                st.success("起点を更新しました。")
-                st.rerun()
-            st.caption(
-                f"参考: みずほ・三井の**口座期首の合計**は **{ob_sum:,.0f}** 円（銀行別帳簿用）。"
-                f"各銀行帳簿の合計は **{sum_per_combined_bank_book(conn):,.0f}** 円です。"
-            )
+            sum_man = get_sum_manual_two_banks(conn)
             c1, c2 = st.columns(2)
             with c1:
-                st.metric("合算の起点（手入力）", f"{anchor:,.0f} 円")
+                st.metric("手入力の合計（起点）", f"{sum_man:,.0f} 円")
             with c2:
-                st.metric("いまの合算残（起点＋収支）", f"{current_combined_book_balance(conn):,.0f} 円")
+                st.metric("いまの合算残（起点＋取引）", f"{current_combined_book_balance(conn):,.0f} 円")
+            st.caption(
+                f"参考: 口座**期首の合計** {ob_sum:,.0f} 円 ／ **帳簿計算の合計** {sum_per_combined_bank_book(conn):,.0f} 円"
+            )
+            c3, c4 = st.columns(2)
+            with c3:
+                if st.button("みずほの帳簿残を手入力にコピー", key="cp_mz_man"):
+                    copy_ledger_balance_to_manual(conn, "みずほ")
+                    st.rerun()
+            with c4:
+                if st.button("三井住友の帳簿残を手入力にコピー", key="cp_sm_man"):
+                    copy_ledger_balance_to_manual(conn, "三井住友")
+                    st.rerun()
             cdf = load_combined_ledger(conn)
             cdisplay = combined_ledger_for_display(cdf)
             if cdf.empty:
@@ -675,7 +694,7 @@ def main() -> None:
         st.info(
             f"**今登録する銀行: {choice}** — 通帳・ATMの実残高に合わせるときは、"
             "この銀行を選んだうえで **収入**（または支出）に差分を入れ、摘要に「残高調整」などと書くとよいです。"
-            "合算の「残金」は一覧の「合算」タブで確認できます。"
+            "合算の「残金」は一覧の「合算」タブで確認できます（起点はサイドバーでみずほ・三井を入力）。"
         )
         with st.form("add_txn"):
             d = st.date_input("支払日", value=date.today())
