@@ -16,6 +16,8 @@ if not defined UBUNTU_PATH (
   pause
   exit /b 1
 )
+REM wslpath -u "...\." may print a trailing dot; remove it for a real directory path
+if "%UBUNTU_PATH:~-1%"=="." set "UBUNTU_PATH=%UBUNTU_PATH:~0,-1%"
 
 echo WSL path: %UBUNTU_PATH%
 echo Browser: http://localhost:8501
