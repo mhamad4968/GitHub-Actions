@@ -21,6 +21,8 @@ DEFAULT_BANK_ACCOUNTS: tuple[tuple[str, int], ...] = (
     ("みずほ", 0),
     ("三井住友", 1),
 )
+# 合算の「残金」に含める銀行（この2口座の取引を時系列で一列にし、残金は合算累計）
+COMBINED_BANK_NAMES: frozenset[str] = frozenset({"みずほ", "三井住友"})
 
 
 def get_conn() -> sqlite3.Connection:
@@ -277,6 +279,81 @@ def set_opening_balance(conn: sqlite3.Connection, account_id: int, value: float)
     conn.commit()
 
 
+def combined_opening_total(conn: sqlite3.Connection) -> float:
+    """みずほ・三井住友の期首残金の合計（存在する口座のみ）。"""
+    if not COMBINED_BANK_NAMES:
+        return 0.0
+    ph = ",".join("?" * len(COMBINED_BANK_NAMES))
+    row = conn.execute(
+        f"SELECT COALESCE(SUM(opening_balance), 0) FROM accounts WHERE name IN ({ph})",
+        tuple(sorted(COMBINED_BANK_NAMES)),
+    ).fetchone()
+    return float(row[0]) if row else 0.0
+
+
+def load_combined_ledger(conn: sqlite3.Connection) -> pd.DataFrame:
+    """みずほ・三井住友の取引を日付順で統合。残金列は両口座の期首合計からの累計。"""
+    names_sorted = sorted(COMBINED_BANK_NAMES)
+    id_rows = conn.execute(
+        f"SELECT id, name FROM accounts WHERE name IN ({','.join('?' * len(names_sorted))}) "
+        "ORDER BY sort_order, id",
+        names_sorted,
+    ).fetchall()
+    if not id_rows:
+        return pd.DataFrame(
+            columns=["id", "txn_date", "bank_name", "description", "income", "expense", "balance"],
+        )
+    ids = [int(r[0]) for r in id_rows]
+    ph = ",".join("?" * len(ids))
+    q = f"""
+    SELECT t.id, t.txn_date, a.name AS bank_name, t.description, t.income, t.expense
+    FROM transactions t
+    JOIN accounts a ON a.id = t.account_id
+    WHERE t.account_id IN ({ph})
+    ORDER BY t.txn_date ASC, t.account_id ASC, t.id ASC
+    """
+    df = pd.read_sql(q, conn, params=tuple(ids))
+    opening = combined_opening_total(conn)
+    if df.empty:
+        return df.assign(balance=pd.Series(dtype="float64"))
+    net = df["income"].fillna(0) - df["expense"].fillna(0)
+    df["balance"] = opening + net.cumsum()
+    return df
+
+
+def current_book_balance(conn: sqlite3.Connection, account_id: int) -> float:
+    """その口座の帳簿上の最終残金（取引がなければ期首のみ）。"""
+    df = load_ledger(conn, account_id)
+    if df.empty:
+        return get_opening_balance(conn, account_id)
+    return float(df["balance"].iloc[-1])
+
+
+def current_combined_book_balance(conn: sqlite3.Connection) -> float:
+    df = load_combined_ledger(conn)
+    if df.empty:
+        return combined_opening_total(conn)
+    return float(df["balance"].iloc[-1])
+
+
+def combined_ledger_for_display(df: pd.DataFrame) -> pd.DataFrame:
+    if df.empty:
+        return pd.DataFrame(
+            columns=["支払日", "銀行", "摘要", "収入", "支出", "残金（合算）"],
+        )
+    out = df.drop(columns=["id"], errors="ignore").rename(
+        columns={
+            "txn_date": "支払日",
+            "bank_name": "銀行",
+            "description": "摘要",
+            "income": "収入",
+            "expense": "支出",
+            "balance": "残金（合算）",
+        }
+    )
+    return out
+
+
 def load_ledger(conn: sqlite3.Connection, account_id: int) -> pd.DataFrame:
     """支払日（txn_date）昇順 → 同日は id 昇順。残金は期首＋累計。"""
     q = """
@@ -327,17 +404,33 @@ def main() -> None:
 
     with st.sidebar:
         st.subheader("銀行")
-        st.caption("みずほと三井住友は別口座。それぞれ期首残金・取引・残金の一覧が独立します。")
-        choice = st.selectbox("表示・登録する銀行", names, index=0)
+        st.caption(
+            "**合算の残金**は「一覧」タブの「合算（みずほ＋三井）」。"
+            "支出・収入はどちらの口座に登録したかがそのまま合算の収支になります。"
+        )
+        choice = st.selectbox("追加・繰り返し・銀行別一覧で使う銀行", names, index=0)
         account_id = acc_options[choice]
-        with st.expander("期首残金（その銀行の残金の起点に合わせる）", expanded=False):
+        st.divider()
+        st.markdown("**帳簿上の残高（リアル合わせ用）**")
+        st.caption(
+            "通帳・アプリの残高とずれたら、その銀行を選んで「追加」から**収入**（または支出）で調整。"
+        )
+        comb = current_combined_book_balance(conn)
+        st.metric("みずほ＋三井 合算（帳簿）", f"{comb:,.0f} 円")
+        for bn in ("みずほ", "三井住友"):
+            if bn in acc_options:
+                bid = acc_options[bn]
+                bb = current_book_balance(conn, bid)
+                st.metric(f"{bn}（帳簿）", f"{bb:,.0f} 円")
+        st.divider()
+        with st.expander("期首残金（その銀行の起点）", expanded=False):
             ob = get_opening_balance(conn, account_id)
             new_ob = st.number_input(
                 f"「{choice}」の期首残金（円）",
                 value=float(ob),
                 step=1000.0,
                 key=f"ob_{account_id}",
-                help="一覧の「残金」＝この銀行の期首＋（収入−支出）の累計。銀行ごとに別々に入れられます。",
+                help="銀行別の残金＝この口座の期首＋（収入−支出）。合算の起点はみずほ・三井の期首の合計。",
             )
             if st.button("期首を保存", key=f"save_ob_{account_id}"):
                 set_opening_balance(conn, account_id, new_ob)
@@ -361,39 +454,79 @@ def main() -> None:
     )
 
     with tab1:
-        st.subheader(f"一覧（{choice}）")
-        st.markdown(
-            "支払日の古い順に固定表示しています。"
-            "**セル編集はなく**、キー操作で数字が勝手に変わることはありません。"
-            "**都度の購入や一時の入出金**は「追加（都度）」タブから入れてください。"
-            "毎月同じ額が続くものは「繰り返し（固定）」タブを使います。"
-        )
-        df = load_ledger(conn, account_id)
-        display_df = ledger_for_display(df)
-        if df.empty:
-            st.info("まだ取引がありません。「追加（都度）」タブから登録してください。")
-            ob = get_opening_balance(conn, account_id)
-            if ob != 0:
-                st.metric("期首残金のみ（取引なし）", f"{ob:,.0f} 円")
-        else:
-            st.dataframe(
-                display_df,
-                use_container_width=True,
-                hide_index=True,
-                column_config={
-                    "支払日": st.column_config.TextColumn("支払日"),
-                    "摘要": st.column_config.TextColumn("摘要"),
-                    "収入": st.column_config.NumberColumn("収入", format="%.0f 円"),
-                    "支出": st.column_config.NumberColumn("支出", format="%.0f 円"),
-                    "残金": st.column_config.NumberColumn("残金", format="%.0f 円"),
-                },
+        sub_a, sub_b = st.tabs(["合算（みずほ＋三井）", f"銀行別（{choice}）"])
+        with sub_a:
+            st.subheader("合算一覧（みずほ＋三井住友）")
+            st.markdown(
+                "両口座の取引を**支払日順**に並べ、**残金（合算）**は "
+                "「みずほの期首＋三井住友の期首」の合計から、上から順に収入・支出を差し引いた累計です。"
+                "どちらの口座に登録した取引も、この一列の合算残金に反映されます。"
             )
+            ob_sum = combined_opening_total(conn)
+            c1, c2 = st.columns(2)
+            with c1:
+                st.metric("期首の合計（みずほ＋三井）", f"{ob_sum:,.0f} 円")
+            with c2:
+                st.metric("いまの帳簿合算", f"{current_combined_book_balance(conn):,.0f} 円")
+            cdf = load_combined_ledger(conn)
+            cdisplay = combined_ledger_for_display(cdf)
+            if cdf.empty:
+                st.info("合算対象の取引がまだありません。「追加（都度）」でどちらかの銀行に登録してください。")
+                if ob_sum != 0:
+                    st.caption("期首だけ設定されている状態です。")
+            else:
+                st.dataframe(
+                    cdisplay,
+                    use_container_width=True,
+                    hide_index=True,
+                    column_config={
+                        "支払日": st.column_config.TextColumn("支払日"),
+                        "銀行": st.column_config.TextColumn("銀行"),
+                        "摘要": st.column_config.TextColumn("摘要"),
+                        "収入": st.column_config.NumberColumn("収入", format="%.0f 円"),
+                        "支出": st.column_config.NumberColumn("支出", format="%.0f 円"),
+                        "残金（合算）": st.column_config.NumberColumn(
+                            "残金（合算）", format="%.0f 円"
+                        ),
+                    },
+                )
+        with sub_b:
+            st.subheader(f"銀行別一覧（{choice}）")
+            st.markdown(
+                "この銀行口座だけの取引と、その口座単体の残金です。"
+                "合算の残金は上の「合算」タブを見てください。"
+            )
+            df = load_ledger(conn, account_id)
+            display_df = ledger_for_display(df)
+            if df.empty:
+                st.info("この銀行にはまだ取引がありません。「追加（都度）」タブから登録してください。")
+                ob = get_opening_balance(conn, account_id)
+                if ob != 0:
+                    st.metric("期首残金のみ（取引なし）", f"{ob:,.0f} 円")
+            else:
+                st.dataframe(
+                    display_df,
+                    use_container_width=True,
+                    hide_index=True,
+                    column_config={
+                        "支払日": st.column_config.TextColumn("支払日"),
+                        "摘要": st.column_config.TextColumn("摘要"),
+                        "収入": st.column_config.NumberColumn("収入", format="%.0f 円"),
+                        "支出": st.column_config.NumberColumn("支出", format="%.0f 円"),
+                        "残金": st.column_config.NumberColumn("残金", format="%.0f 円"),
+                    },
+                )
 
     with tab2:
         st.subheader("取引を追加（都度）")
         st.caption(
             "スーパー・ネット通販・臨時の入金など、**その都度金額が変わるもの**はここで1件ずつ登録します。"
             "家賃のように同じ額が続くものは「繰り返し（固定）」タブへ。"
+        )
+        st.info(
+            f"**今登録する銀行: {choice}** — 通帳・ATMの実残高に合わせるときは、"
+            "この銀行を選んだうえで **収入**（または支出）に差分を入れ、摘要に「残高調整」などと書くとよいです。"
+            "合算の「残金」は一覧の「合算」タブで確認できます。"
         )
         with st.form("add_txn"):
             d = st.date_input("支払日", value=date.today())
