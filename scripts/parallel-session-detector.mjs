@@ -31,6 +31,9 @@ const LOCK_FILE_PATH = path.join(REPO_ROOT, '.session-state', 'ai-session.lock')
 const SUSPICION_DIR = path.join(REPO_ROOT, 'logs', 'parallel-suspicion');
 const FALSE_POSITIVE_LOG = path.join(SUSPICION_DIR, 'false-positive.jsonl');
 
+/** 憲法 jsonl は無期限だと watcher 再起動の旧 pid が軸1に残り続けるため、直近のみ評価 */
+const JSONL_LOOKBACK_MS = 14 * 24 * 60 * 60 * 1000;
+
 const JST_OFFSET_MS = 9 * 60 * 60 * 1000;
 
 function nowJstIso() {
@@ -56,29 +59,34 @@ function loadJsonlEntries() {
 
 /**
  * 軸 1: watcher_pid 不一致検知
- * 同一 jsonl 内に 2 つ以上の watcher_pid 値が出現したら +5
+ * **2 つ以上の pid がそれぞれ 3 件以上**の記録があるときだけ +5。
+ * watcher 再起動直後に旧 pid が 1〜2 行だけ残るパターンは並列ではない（TSB 朝報誤警報対策）。
  */
 function axis1WatcherPidMismatch(entries) {
-  const pids = new Set();
   const pidCounts = {};
   for (const e of entries) {
     if (e.watcher_pid) {
-      pids.add(e.watcher_pid);
       pidCounts[e.watcher_pid] = (pidCounts[e.watcher_pid] || 0) + 1;
     }
   }
-  const isMismatch = pids.size >= 2;
+  const summary = Object.entries(pidCounts).map(([pid, n]) => `pid=${pid} (${n} 件)`);
+  const activePids = Object.keys(pidCounts).filter((pid) => pidCounts[pid] >= 3);
+  const isMismatch = activePids.length >= 2;
   return {
     score: isMismatch ? 5 : 0,
-    evidence: Object.entries(pidCounts).map(([pid, n]) => `pid=${pid} (${n} 件)`),
-    pid_count: pids.size,
+    evidence: isMismatch
+      ? summary
+      : (summary.length
+        ? [...summary, '（3 件以上の記録がある watcher_pid が 1 種類のみ → 並列疑いなし）']
+        : ['watcher_pid 記録なし']),
+    pid_count: Object.keys(pidCounts).length,
+    active_pid_count_3plus: activePids.length,
   };
 }
 
 /**
- * 軸 2: 同一ファイル過密編集
- * 同一 file が 5 分以内に 5 件以上変化 = +2
- * (同一 watcher_pid 内の編集は AI 連続編集として除外しない代わりに重み低)
+ * 軸 2: 同一ファイル過密編集（**複数 watcher_pid が同一 5 分窓に混在**するときのみ +2）
+ * 単一 pid の連続保存は 1 セッションの憲法ファイル連続編集であり並列ではない。
  */
 function axis2BurstEdit(entries) {
   const WINDOW_MS = 5 * 60 * 1000;
@@ -86,27 +94,31 @@ function axis2BurstEdit(entries) {
   const offenders = [];
   const byFile = {};
   for (const e of entries) {
+    if (!e.file) continue;
     if (!byFile[e.file]) byFile[e.file] = [];
-    byFile[e.file].push(new Date(e.time).getTime());
+    byFile[e.file].push({
+      t: new Date(e.time).getTime(),
+      pid: e.watcher_pid,
+    });
   }
-  for (const [file, times] of Object.entries(byFile)) {
-    times.sort();
-    let maxBurst = 0;
-    for (let i = 0; i < times.length; i++) {
-      let cnt = 1;
-      for (let j = i + 1; j < times.length; j++) {
-        if (times[j] - times[i] <= WINDOW_MS) cnt++;
-        else break;
+  for (const [file, evs] of Object.entries(byFile)) {
+    evs.sort((a, b) => a.t - b.t);
+    for (let i = 0; i < evs.length; i++) {
+      const pids = new Set();
+      let j = i;
+      for (; j < evs.length && evs[j].t - evs[i].t <= WINDOW_MS; j++) {
+        if (evs[j].pid) pids.add(evs[j].pid);
       }
-      if (cnt > maxBurst) maxBurst = cnt;
-    }
-    if (maxBurst >= THRESHOLD) {
-      offenders.push(`${file}: ${maxBurst} 件 / 5 分間`);
+      const cnt = j - i;
+      if (cnt >= THRESHOLD && pids.size >= 2) {
+        offenders.push(`${file}: ${cnt} 件 / 5 分間 / watcher_pid=${[...pids].join(',')}`);
+        break;
+      }
     }
   }
   return {
     score: offenders.length > 0 ? 2 : 0,
-    evidence: offenders,
+    evidence: offenders.length ? offenders : ['同一 5 分窓に複数 pid で 5 件超の連続なし'],
     burst_count: offenders.length,
   };
 }
@@ -243,9 +255,18 @@ function saveSuspicionSnapshot(result) {
   return fn;
 }
 
+function filterEntriesByLookback(entries) {
+  const cut = Date.now() - JSONL_LOOKBACK_MS;
+  return entries.filter((e) => {
+    const t = new Date(e.time).getTime();
+    return Number.isFinite(t) && t >= cut;
+  });
+}
+
 function main() {
   const args = detectArgs(process.argv.slice(2));
-  const entries = loadJsonlEntries();
+  const raw = loadJsonlEntries();
+  const entries = filterEntriesByLookback(raw);
   const a1 = axis1WatcherPidMismatch(entries);
   const a2 = axis2BurstEdit(entries);
   const a3 = axis3NoLock(entries);
@@ -260,8 +281,15 @@ function main() {
     verdict_icon: v.icon,
     verdict_label: v.label,
     jsonl_entries_examined: entries.length,
+    jsonl_entries_raw: raw.length,
+    jsonl_lookback_ms: JSONL_LOOKBACK_MS,
     axis_breakdown: {
-      axis1_watcher_pid_mismatch: { score: a1.score, evidence: a1.evidence, pid_count: a1.pid_count },
+      axis1_watcher_pid_mismatch: {
+        score: a1.score,
+        evidence: a1.evidence,
+        pid_count: a1.pid_count,
+        active_pid_count_3plus: a1.active_pid_count_3plus,
+      },
       axis2_burst_edit: { score: a2.score, evidence: a2.evidence, burst_count: a2.burst_count },
       axis3_no_lock: { score: a3.score, evidence: a3.evidence },
       axis4_suspicious_backup: { score: a4.score, evidence: a4.evidence, suspicious_count: a4.suspicious_count },
@@ -286,7 +314,7 @@ function main() {
   console.log(`### §51-4 並列セッション疑い判定 (${nowJstIso()})`);
   console.log('');
   console.log(`**総合スコア**: ${scoreTotal} 点 / ${v.icon} ${v.label}`);
-  console.log(`**jsonl 検査件数**: ${entries.length} 件`);
+  console.log(`**jsonl 検査件数**: ${entries.length} 件（全 ${raw.length} 件中・直近 ${Math.round(JSONL_LOOKBACK_MS / 86400000)} 日）`);
   if (result.ignored) console.log(`**⚠️ ignore-suspicion 指定**: ${result.ignored.reason} (履歴: ${result.ignored.logged_to})`);
   if (result.snapshot_saved_to) console.log(`**🔴 スナップショット保全**: ${result.snapshot_saved_to}`);
   console.log('');

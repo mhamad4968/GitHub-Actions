@@ -136,3 +136,25 @@ AI は、セッション切替・終了・浜田さんが引き継ぎテンプ�
 **次セッションへの 1 行**: **v3.30** スターター＋`yojitsu-spec-session-checklist.md` を開き、**項番 -0** で予実本題 → `session:bootstrap` → 仕様合意後 **`kintone-apps` 1 行**を更新。
 
 ---
+
+### 2026-04-28 JST — 朝: ブリーフィング + 健康100% + §51-4 誤警報修正
+
+**浜田メモ（原文）**:
+> 朝ブリーフィング / 健康診断100% / MCP・ツール更新（CURSOR.exe は自分で）
+
+**経緯（簡潔）**:
+- 新チャット: スターター受領。**項番 -0** は同一メッセージ内の依頼で本題合意済みと扱い **項番 0** へ。
+- 初回 `session:bootstrap` は **SESSION-CLOCK 4h 超**で停止 → **`npm run session:clock:set`**（開始 2026-04-28 07:07 JST）後に **bootstrap 緑**（verify 連鎖 + Desktop sync + **smoke 10/10**）。
+- **朝報** `docs/reports/2026-04-28-morning-prep.md` 読了: kintone:test・lint・audit・RAG 等 **緑**／旧ロジックの **§51-4 スコア7** は **watcher pid 再起動 + 単一 pid 連続保存**の誤検知と判明。
+- **`scripts/parallel-session-detector.mjs`**: 軸1＝「3件以上の記録がある watcher_pid が **2 種類以上**」のときのみ +5。軸2＝同一5分窓に **複数 pid かつ 5件超** のときのみ +2。jsonl は **直近14日**に限定評価。→ **`npm run audit:parallel` 0点**・**`npm run smoke:quiet` 10/10**・**`npm run verify:all` 緑**。
+- **`npm run health-check`**: 正常 23 / 異常 0。`npm run credit:status` 45% 記録（4/26）・通常運用継続。
+
+**AI 補足（漏れ防止）**:
+- `git`: 本ブロック＋並列検知修正・SESSION-CLOCK・RAG extra-docs 同期・朝報追跡を **commit 予定**。
+- `次の1手`: 本題の **予実仕様デイ**（`shin-format-excel-layout.md` + `yojitsu-spec-session-checklist.md`）へ。PC 台帳 CSV との優先は checkpoint と §41 で再確認可。
+- `GO待ち`: なし（本ターンは診断・検知ロジック修正のみ）。
+- `session-lock`: なし。
+
+**次セッションへの 1 行**: 新チャット直後は **時計 4h 超なら先に `session:clock:set`**。並列 **7点**が出たら **explain で軸内訳**を見てから判断（再起動残骸なら本修正後は静穏になる）。
+
+---
