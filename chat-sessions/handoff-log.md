@@ -114,3 +114,14 @@ AI は、セッション切替・終了・浜田さんが引き継ぎテンプ�
 **次の1手**: 項番 -0 の合意のあと **`session:bootstrap`**（上記 (1c) 同梱）。push は済（`8f08374`）。Desktop 控えは **`session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync`** を checkpoint に従う。
 
 ---
+
+### 2026-04-27 JST — 日終わり: セッション時計 WEB ＋予実レイアウト正本 ＋明日スターター
+
+**経緯（簡潔）**:
+- **セッション時計ローカル WEB**（`npm run session:clock:web`）: 30 秒更新が効かない件 → **Cache-Control: no-store**＋**`setInterval` で `location.reload()`**（`31ba08b`）。表示の経過が進まない件 → **各 GET 前に `node scripts/session-clock.mjs write-ticker`** を同期実行（`acf37c5`）。
+- **予実たたき台**: Excel **新フォーマット**の列・行構造を `templates/yojitsu-budget-lite/docs/shin-format-excel-layout.md` に記載。`README.md` / `SPEC.template.md` からリンク（`24af3f8`）。
+- **明日合意**: 4/28 は **十分な時間**で **予実の仕様のみ** を決める（案の詳細は明日ヒアリング）。**NEW-SESSION-STARTER v3.29**＝フル版に **次セッション優先**・**@ shin-format**・変更履歴を追記。**checkpoint-latest** の最終更新・浜田メモを同期。
+
+**次セッションへの 1 行**: 新チャットは **`NEW-SESSION-STARTER_yyyymmdd.txt` 全文** → **項番 -0** で「本題＝**予実仕様デイ**（または PC 台帳 CSV 側）」を確認 → **`session:bootstrap`** → `@shin-format-excel-layout.md` を予実の日は Read。
+
+---

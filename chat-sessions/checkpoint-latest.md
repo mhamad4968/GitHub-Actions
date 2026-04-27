@@ -63,11 +63,11 @@
 
 ---
 
-**最終更新**: 2026-04-27 (Mon) JST — **NEW-SESSION-STARTER v3.27 / v3.28**: **「■ 貼付単独で完走」**＝項番 -1〜0 を **スターター単独で完結**（checkpoint チャット重複不要・**-0 OK → bootstrap → @ Read**）。**v3.28**＝以後の手順改定は **同ブロックを唯一正本**とし BOOTSTRAP／checkpoint／RULES-INDEX／`session-handoff.mdc` 等は **追随のみ**。**壁時計**: `session:clock:health`／`session:bootstrap` **(1c)**／`desktop-notify`／監査 jsonl。**`sessionStart` hook**。
+**最終更新**: 2026-04-27 (Mon) JST — **NEW-SESSION-STARTER v3.27 / v3.28 / v3.29**: **「■ 貼付単独で完走」**＝項番 -1〜0 を **スターター単独で完結**（checkpoint チャット重複不要・**-0 OK → bootstrap → @ Read**）。**v3.28**＝手順改定の **唯一詳細正本**は同ブロック。**v3.29**＝**4/28 予実仕様デイ**（十分な時間・Excel **新フォーマット**／`templates/yojitsu-budget-lite/docs/shin-format-excel-layout.md`）。**セッション時計 WEB**: 各 GET で `write-ticker`＋キャッシュ抑止。**壁時計**: `session:clock:health`／`session:bootstrap` **(1c)**／`sessionStart` hook。
 
 ### 浜田メモ（直近日程・チャット反映）
 
-- **2026-04-28（火）**（朝の発言・本チャット 2026-04-27 反映）: **予実管理**を **ゼロベースから議論して仕様を決める**。たたき台・薄い SPEC 雛形: `templates/yojitsu-budget-lite/README.md` / `SPEC.template.md`。既存マイルストーンの **4/28–29（PC 台帳 CSV 準備）** との **優先順は当日に合意**。
+- **2026-04-28（火）**（本チャット 2026-04-27 夜 反映）: **予実管理**で **十分な時間を取り**、**ゼロベースから仕様だけ** 決める（実装は合意後で可）。表イメージ: Excel `C:\tmp\予算管理\2026年度システム推進室_年間予算案20260123.xlsx` シート **新フォーマット**／列構造要約 `templates/yojitsu-budget-lite/docs/shin-format-excel-layout.md`。雛形: `templates/yojitsu-budget-lite/README.md` / `SPEC.template.md`。**4/28–29（PC 台帳 CSV 準備）** との **優先順は当日に合意**。
 
 **前回更新**: 2026-04-28 (Tue) JST — **SESSION-CLOCK（§51-6-2 時間軸の客観化）**: `chat-sessions/SESSION-CLOCK.md` ＋ `scripts/session-clock.mjs` ＋ `npm run session:clock:set` / `session:split-check`。`mandatory-read-gate` が **4 時間超**で exit 2。未設定時は警告のみで通過。
 
