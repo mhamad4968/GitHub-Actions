@@ -3,7 +3,7 @@
 Windows から開きやすい控え: C:\Users\mhamada202408224\Desktop\AI緊急用\HANDOFF-HUMAN.txt
 ※ C:\Users\mhamada202408224\kintone-ai-lab は chat-sessions 無しの別ツリーなので、このファイルは置かない。
 
-推奨フロー（セッション切替）: ① **`NEW-SESSION-STARTER_yyyymmdd.txt`（JST・常にこのファイル名）全文**（checkpoint **項番 -1**・貼付推奨は verify 最終行）② この 5 行 ③ **項番 -0**: AI が「次にやること」を一問確認 → **浜田 OK が出るまで項番 0 に入らない** ④ OK 後、verify → AI緊急用 sync+verify → bootstrap（項番 0）。**bootstrap 内の (1c)** で **`verify:session-clock-health`（strict）** が走り、**hooks / crontab / node（install-pin と cron 行）**を再確認できる。**日終わり**: sync → verify（checkpoint「日終わり」）。
+推奨フロー（セッション切替）: ① **`NEW-SESSION-STARTER_yyyymmdd.txt`（JST・常にこのファイル名）全文**（**v3.27**: 本文冒頭 **「■ 貼付単独で完走」** に **項番 -1〜0（機械）** を内包。checkpoint をチャットに重ねて貼らなくてよい。貼付推奨は verify 最終行）② この 5 行（任意）③ **項番 -0**: AI が「次にやること」を一問確認 → **浜田 OK が出るまで項番 0 に入らない** ④ OK 後 **`npm run session:bootstrap`（項番 0 一括）**＝憲法 verify → mandatory gate → **(1c) session-clock-health strict** → Desktop sync+verify → smoke。**日終わり**: sync → verify（checkpoint「日終わり」）。
 
 日時(JST):
 いま何してた（1行）:
