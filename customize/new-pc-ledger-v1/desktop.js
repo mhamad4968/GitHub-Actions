@@ -4,7 +4,7 @@
  * 仕様: docs/plans/2026-04-21-new-pc-ledger-spec.md v2.1 §4
  * Day 4 plan: docs/plans/2026-04-26-pc-ledger-day4-action.md
  *
- * BUILD: 2026-04-28-dept-help-banner-v0.4 (§4.2.0b 所属一覧 textarea を低め＋スクロール主体)
+ * BUILD: 2026-04-28-dept-help-banner-v0.5 (§4.2.0b 所属ヘルプは詳細・新規のみ／一覧・編集では非表示)
  *
  * Day 4 雛形スコープ:
  *   - 種別 (account_type) による表示制御 (show/hide)
@@ -25,7 +25,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-04-28-dept-help-banner-v0.4';
+  const BUILD = '2026-04-28-dept-help-banner-v0.5';
 
   /** 共有・JR 等の手入力時の参照用（浜田提供・順序固定） */
   const DEPT_HELP_REFERENCE_TEXT =
@@ -258,15 +258,21 @@
 
   const DEPT_HELP_ID = 'new-pc-ledger-dept-help';
 
+  const DEPT_HELP_SHOW_RECORD_EVENTS = new Set([
+    'app.record.detail.show',
+    'app.record.create.show',
+  ]);
+
+  function removeDeptHelpBanner() {
+    const el = document.getElementById(DEPT_HELP_ID);
+    if (el) el.remove();
+  }
+
   /**
-   * 一覧・レコード画面のヘッダに、所属の入れ方を常時表示する（折りたたみなし・小さめ）。
-   * @param {'index'|'record'} mode
+   * レコード画面ヘッダに所属ヘルプを出す（詳細・新規のみ。一覧・編集では remove を呼ぶ）。
    */
-  function injectDeptHelpBanner(mode) {
-    const space =
-      mode === 'index'
-        ? kintone.app.getHeaderSpaceElement()
-        : kintone.app.record.getHeaderMenuSpaceElement();
+  function injectDeptHelpBanner() {
+    const space = kintone.app.record.getHeaderMenuSpaceElement();
     if (!space) return;
 
     const prev = document.getElementById(DEPT_HELP_ID);
@@ -466,7 +472,11 @@
   ];
   kintone.events.on(showEvents, (event) => {
     console.log(`[NEW-PC-LEDGER-V1] BUILD=${BUILD} event=${event.type}`);
-    injectDeptHelpBanner('record');
+    if (DEPT_HELP_SHOW_RECORD_EVENTS.has(event.type)) {
+      injectDeptHelpBanner();
+    } else {
+      removeDeptHelpBanner();
+    }
     const editable =
       event.type === 'app.record.create.show' || event.type === 'app.record.edit.show';
     applyInternalMetaFieldUi(event.record, editable ? 'editable' : 'detail');
@@ -486,7 +496,11 @@
   kintone.events.on(typeChangeEvents, (event) => {
     let result = confirmTypeChangeIfNeeded(event);
     result = showJrAlertIfNeeded(result);
-    injectDeptHelpBanner('record');
+    if (result.type.startsWith('app.record.create.')) {
+      injectDeptHelpBanner();
+    } else {
+      removeDeptHelpBanner();
+    }
     applyInternalMetaFieldUi(result.record, 'editable');
     applySkyseaGroupUi(result.record, 'editable');
     applyVisibilityByType(result.record);
@@ -495,9 +509,9 @@
     return result;
   });
 
-  // 一覧画面でも常時表示（§4.2.0b）
+  // 一覧では所属ヘルプを出さない（§4.2.0b 詳細・新規のみ）
   kintone.events.on('app.record.index.show', () => {
-    injectDeptHelpBanner('index');
+    removeDeptHelpBanner();
     return true;
   });
 
