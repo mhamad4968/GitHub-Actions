@@ -58,3 +58,11 @@ alwaysApply: true
 ## 機械ゲート
 
 ドキュを編集したら `npm run verify:constitution-handoff` または `npm run session:bootstrap`（smoke 第 9 検査）で **物理ガード健在**を確認する。
+
+## Desktop「AI緊急用」同期（忘れない）
+
+**目的**: 浜田が毎回開く **`C:\Users\mhamada202408224\Desktop\AI緊急用`**（WSL: `/mnt/c/Users/mhamada202408224/Desktop/AI緊急用`）が **リポ正本とズレない**ようにする（**浜田に手動コピーを依頼しない**／TSB-024）。
+
+- **`chat-sessions/NEW-SESSION-STARTER.md`**、**`HANDOFF-HUMAN.txt`**、**`SESSION-BOOTSTRAP-CHECKLIST.md`**、**`AI緊急用-README.txt`** 等を AI が編集した **同一ターン**で、リポルートから **`npm run session-starter:sync-desktop`** を実行する（**push の前後どちらでもよいが、そのターン中に必ず**）。
+- 続けて可能なら **`npm run verify:desktop-ai-emergency-sync`**（バイト一致・**貼付推奨**行）。
+- **`/mnt/c` なし等で verify が SKIP** なら、チャットに **`AI緊急用は未照合（理由 1 語）`** と書き、復帰後に再実行。

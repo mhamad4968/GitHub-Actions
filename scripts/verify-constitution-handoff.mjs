@@ -108,6 +108,7 @@ const suites = [
       '言葉に出す',
       'SESSION-CLOCK-TICKER',
       'セッション切替で新チャット',
+      'Desktop「AI緊急用」同期',
     ],
   },
   {
