@@ -12,17 +12,17 @@
  *   - `scripts/lib/desktop-notify.mjs`（notify-send → gdbus → zenity → コンソールベル）
  *   - いずれの経路でも `logs/session-desktop-notify.log` に 1 行追記
  *   - 診断: `npm run session:notify-selftest`
+ *   - Cursor 外の保険: `npm run session:clock:install-cron`（10 分ごと・WSL/Linux crontab）
  *
  * 同一「開始」行に対しては 1 回だけ通知（`logs/.session-clock-split-alerted`）。
  * `npm run session:clock:set` でフラグ解除済み。
  *
  * @see chat-sessions/SESSION-SPLIT-REMINDER.md
  */
-import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { desktopNotify } from './lib/desktop-notify.mjs';
+import { pollSessionSplitAlertOnce } from './lib/session-clock-split-alert-once.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const intervalMs = Math.max(15_000, Number(process.env.SESSION_CLOCK_WATCH_MS || 120_000));
@@ -83,53 +83,17 @@ for (const sig of ['SIGINT', 'SIGTERM', 'SIGHUP']) {
   }
 }
 
-function notify(title, body) {
-  const r = desktopNotify(title, body, { repoRoot: root });
-  if (r.method === 'console-bell') {
-    console.warn(`[session-clock-watch] 通知は GUI 経路なし（${r.method}）。\`npm run session:notify-selftest\` で環境を確認。`);
-  }
-}
-
 function tick() {
-  const j = spawnSync(process.execPath, ['scripts/session-clock.mjs', 'check-json'], {
-    cwd: root,
-    encoding: 'utf8',
-  });
-  const flagAbs = path.join(root, 'logs', '.session-clock-split-alerted');
-  let payload;
-  try {
-    payload = JSON.parse((j.stdout || '').trim().split('\n').filter(Boolean).pop() || '{}');
-  } catch {
-    return;
-  }
-
-  if (payload.mode === 'ok') {
-    try {
-      if (fs.existsSync(flagAbs)) fs.unlinkSync(flagAbs);
-    } catch {
-      /* noop */
+  const r = pollSessionSplitAlertOnce({ root });
+  if (r.outcome === 'parse-error') return;
+  if (r.outcome === 'alerted') {
+    if (r.notifyMethod === 'console-bell') {
+      console.warn(
+        `[session-clock-watch] 通知は GUI 経路なし（${r.notifyMethod}）。\`npm run session:notify-selftest\` で環境を確認。`,
+      );
     }
-    return;
+    console.warn(`[session-clock-watch] 通知送信: 開始 ${r.payload?.startLine}（経過 ${r.payload?.elapsedHuman}）`);
   }
-
-  if (payload.mode !== 'over' || !payload.startLine) return;
-
-  let prev = '';
-  try {
-    if (fs.existsSync(flagAbs)) prev = fs.readFileSync(flagAbs, 'utf8').trim();
-  } catch {
-    /* noop */
-  }
-  if (prev === payload.startLine) return;
-
-  fs.mkdirSync(path.join(root, 'logs'), { recursive: true });
-  fs.writeFileSync(flagAbs, payload.startLine, 'utf8');
-
-  notify(
-    '§51-6-2 セッション切替時刻',
-    `同一セッション開始から ${payload.elapsedHuman ?? '4h+'} 経過（開始 ${payload.startLine} JST）。新しい Composer で開き直すと sessionStart hook が時刻を取り直します。`,
-  );
-  console.warn(`[session-clock-watch] 通知送信: 開始 ${payload.startLine}（経過 ${payload.elapsedHuman}）`);
 }
 
 console.log(
