@@ -13,8 +13,8 @@
     },
     "windows_name": {
       "ui_label": "Windows名",
-      "spec_anchor": "§4.2.2 logon_name[mail@前]",
-      "matrix_fingerprint": "96d4671cb92ecbd5"
+      "spec_anchor": "§4.2.2 注（個人 jbm****[xxxx] 型・共有=logon）",
+      "matrix_fingerprint": "eb7f977f7858ed9f"
     },
     "mail": {
       "ui_label": "メールアドレス",
