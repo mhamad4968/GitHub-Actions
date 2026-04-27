@@ -399,6 +399,41 @@ def current_combined_book_balance(conn: sqlite3.Connection) -> float:
     return float(df["balance"].iloc[-1])
 
 
+def sum_per_combined_bank_book(conn: sqlite3.Connection) -> float:
+    """みずほ・三井それぞれの帳簿残（期首＋収支）を足した値。通帳の合計イメージ。"""
+    total = 0.0
+    for name in sorted(COMBINED_BANK_NAMES):
+        row = conn.execute("SELECT id FROM accounts WHERE name = ?", (name,)).fetchone()
+        if row:
+            total += current_book_balance(conn, int(row[0]))
+    return total
+
+
+def total_net_combined_bank_transactions(conn: sqlite3.Connection) -> float:
+    """合算対象口座の全取引の（収入−支出）の合計。"""
+    ns = sorted(COMBINED_BANK_NAMES)
+    if not ns:
+        return 0.0
+    ph = ",".join("?" * len(ns))
+    row = conn.execute(
+        f"""
+        SELECT COALESCE(SUM(t.income), 0) - COALESCE(SUM(t.expense), 0)
+        FROM transactions t
+        JOIN accounts a ON a.id = t.account_id
+        WHERE a.name IN ({ph})
+        """,
+        tuple(ns),
+    ).fetchone()
+    return float(row[0]) if row else 0.0
+
+
+def anchor_aligned_to_per_bank_books(conn: sqlite3.Connection) -> float:
+    """合算一覧の最終行が sum_per_combined_bank_book と一致するようにする起点。"""
+    return sum_per_combined_bank_book(conn) - total_net_combined_bank_transactions(
+        conn
+    )
+
+
 def combined_ledger_for_display(df: pd.DataFrame) -> pd.DataFrame:
     if df.empty:
         return pd.DataFrame(
@@ -477,16 +512,30 @@ def main() -> None:
         st.divider()
         st.markdown("**帳簿上の残高（リアル合わせ用）**")
         st.caption(
-            "通帳・アプリの残高とずれたら、その銀行を選んで「追加」から**収入**（または支出）で調整。"
-            "**マイナス**は、期首＋収入−支出が負のとき（支出や借入の反映など）で起こり得ます。"
+            "通帳がプラスなのに帳簿がマイナスなら、**期首**か**取引の金額・収入／支出の取り違え**を疑ってください。"
+            "「選択中の銀行の計算内訳」で数字を確認できます。"
         )
-        comb = current_combined_book_balance(conn)
-        st.metric("みずほ＋三井 合算（帳簿）", f"{comb:,.0f} 円")
+        sum_books = sum_per_combined_bank_book(conn)
+        ledger_tail = current_combined_book_balance(conn)
+        st.metric("各銀行帳簿の合計（みずほ＋三井）", f"{sum_books:,.0f} 円")
+        st.metric("合算一覧の最終残（起点＋取引）", f"{ledger_tail:,.0f} 円")
+        if abs(sum_books - ledger_tail) > 0.01:
+            st.caption(
+                "上の2つが違うとき: 「一覧」→「合算」で **起点を帳簿に合わせる** ボタンを押すと一致します。"
+            )
+        neg_bank = False
         for bn in ("みずほ", "三井住友"):
             if bn in acc_options:
                 bid = acc_options[bn]
                 bb = current_book_balance(conn, bid)
                 st.metric(f"{bn}（帳簿）", f"{bb:,.0f} 円")
+                if bb < 0:
+                    neg_bank = True
+        if neg_bank:
+            st.warning(
+                "いずれかの銀行の帳簿がマイナスです。登録データ上は「期首＋収入−支出」が負になっています。"
+                "通帳と合うようにするには、その銀行で**期首**を直すか、**追加**で収入／支出を調整してください。"
+            )
         with st.expander("選択中の銀行の計算内訳", expanded=False):
             ob, si, se, n = account_balance_breakdown(conn, account_id)
             end = ob + si - se
@@ -553,8 +602,17 @@ def main() -> None:
             if st.button("期首の合計を起点にコピー（参考）", key="copy_opening_to_anchor"):
                 set_combined_manual_balance(conn, ob_sum)
                 st.rerun()
+            if st.button(
+                "各銀行帳簿の合計に合わせて起点を自動設定",
+                key="sync_anchor_to_books",
+                help="合算一覧の最終残が、サイドバーの「各銀行帳簿の合計」と同じになるように起点を計算して保存します。",
+            ):
+                set_combined_manual_balance(conn, anchor_aligned_to_per_bank_books(conn))
+                st.success("起点を更新しました。")
+                st.rerun()
             st.caption(
-                f"参考: みずほ・三井の**口座期首の合計**は **{ob_sum:,.0f}** 円（銀行別帳簿用。合算の起点に使うかは任意です）。"
+                f"参考: みずほ・三井の**口座期首の合計**は **{ob_sum:,.0f}** 円（銀行別帳簿用）。"
+                f"各銀行帳簿の合計は **{sum_per_combined_bank_book(conn):,.0f}** 円です。"
             )
             c1, c2 = st.columns(2)
             with c1:
