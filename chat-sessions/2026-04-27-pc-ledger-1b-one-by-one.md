@@ -44,9 +44,13 @@
 - [x] **11（1b-A）** 正本 **§4.2.0〜§4.4** を開き、**コア * と SKYSEA 4 件が別枠**と自分の言葉で言える（チャット 1 行で可）
 - [x] **12（1b-A）** §4.2.0 の表と、浜田が把握している **PC 名〜VPN** の行が一致するか **1 行ずつ**目視（違えば正本か認識を合わせる）（**2026-04-28** チャットで 1 行ずつ確認完了・正本 `2026-04-21-new-pc-ledger-spec.md` 随時更新。VPN＝個人/共有は手入力・JR は不要で最終行 **OK**）
 - [x] **13（1b-C）** テンプレ `【1b 仕様確認オーダー完了】` をチャットに貼る（**5** の 1 行と **6** の結果を転記）
-- [ ] **14** 浜田 **Tier B GO** 後のみ: `kintone-add-app` 等（Day4 §4）
+- [x] **14** 浜田 **Tier B GO** 後のみ: `kintone-add-app` 等（Day4 §4）（**674 は Day4 完了済**・2026-04-28 時点で `kintone:test` 9 apps OK、`field-spec-diff` day4 §2 vs `data/snapshots/674-pre-fieldspec-2026-04-28-20260428-073655.json` → **44 fields all match**。**今後** 別アプリ枠を Tier B で新設するときは同チェックを踏む）
 
 ---
+
+## B 棚卸しメモ（2026-04-28・残り時間に実施）
+
+- **機械**: `npm run kintone:test`（594–674）OK / `npm run pc-ledger:verify-labels-spec` OK / `npm run lint:customize` OK / `field-spec-diff`（`2026-04-26-pc-ledger-day4-action.md` §2 vs 上記 snapshot）**44/44 match**。
 
 ## 再開メモ（22:00 までのとき）
 
