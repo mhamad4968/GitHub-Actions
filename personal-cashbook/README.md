@@ -39,6 +39,12 @@ chmod +x run.sh
 
 初回起動で `data/cashbook.db` が作成されます。
 
+### Windows デスクトップから起動（WSL 利用時）
+
+`start-from-windows.bat` をデスクトップにコピーするか、ショートカットのリンク先にこの bat を指定してください。  
+ダブルクリックで WSL が開き、`Desktop\personal-cashbook` の仮想環境から Streamlit が起動します。  
+プロジェクトをデスクトップ以外に置いた場合は、bat 内の `cd '...'` のパスを書き換えてください。
+
 ## データの扱い
 
 - **バックアップ**: `data/cashbook.db` をコピーするだけで丸ごと退避できます。
