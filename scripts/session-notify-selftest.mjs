@@ -35,6 +35,11 @@ try {
   console.log('logs/: 書込不可（リポルートで実行してください）');
 }
 
+if (process.platform === 'linux' && !process.env.DISPLAY) {
+  process.env.DISPLAY = ':0';
+  console.log('DISPLAY 未設定 → 診断のため `:0` を付与（WSLg 想定）。\n');
+}
+
 console.log('\nテスト通知を送ります（1 回）…');
 const r = desktopNotify(
   'kintone-ai-lab 通知テスト',
@@ -42,10 +47,16 @@ const r = desktopNotify(
   { repoRoot: root },
 );
 console.log(`結果: ok=${r.ok} method=${r.method}`);
+
+console.log(
+  '\n【通知の出どころ】\n' +
+    '・`notify-send` / `gdbus` が効いたとき: **WSLg** なら多くの環境で **Windows 11 の通知**（画面右下のトースト）。Linux デスクトップ単体なら GNOME/KDE 等の通知領域。\n' +
+    '・`console-bell`: **GUI には出ない**。ターミナルへのベル（無音のこともある）。**必ず** `logs/session-desktop-notify.log` に 1 行残る。',
+);
 if (which('notify-send') && r.method === 'console-bell') {
   console.log(
-    '\n補足: `notify-send` はあるが今回は失敗（多くは **DISPLAY 未設定** / D-Bus セッション無し）。Cursor 内蔵ターミナルや WSLg 有効端末で再実行すると GUI 経路になることがあります。',
+    '\n補足: `notify-send` はあるが今回は失敗（**D-Bus セッション**が無い等）。`export DISPLAY=:0` 済みでも起きる。Windows 側で WSL アプリの通知がオフになっていないか確認。',
   );
 }
-console.log('\nGUI が出なかった場合: WSL なら `sudo apt install libnotify-bin` や Windows 側ターミナル連携を確認。ログだけでも履歴は残ります。');
+console.log('\nGUI が出なかった場合: `sudo apt install libnotify-bin`（未導入時）/ WSL の更新・Windows 側の通知設定を確認。ログだけでも履歴は残ります。');
 process.exit(0);
