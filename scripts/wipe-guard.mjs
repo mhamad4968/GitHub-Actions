@@ -54,7 +54,9 @@ const CRITICAL = [
   'chat-sessions/checkpoint-latest.md',
   'chat-sessions/NEW-SESSION-STARTER.md',
   'chat-sessions/SESSION-SPLIT-REMINDER.md',
+  'chat-sessions/SESSION-CLOCK.md',
   'scripts/mandatory-read-gate.mjs',
+  'scripts/session-clock.mjs',
 ];
 
 function log(msg) {

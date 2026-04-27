@@ -15,6 +15,7 @@
  *
  * @see chat-sessions/checkpoint-latest.md 項番 0（0a の直後）
  */
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -80,7 +81,7 @@ for (const n of ['次にやる1つ', 'HANDOFF-HUMAN', '推奨フロー']) {
 const bootRel = 'chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md';
 const boot = read(bootRel);
 const bootHead = boot.slice(0, 14_000);
-for (const n of ['フェーズ 6', 'session:bootstrap', 'mandatory-read-gate.mjs', 'SESSION-SPLIT-REMINDER']) {
+for (const n of ['フェーズ 6', 'session:bootstrap', 'mandatory-read-gate.mjs', 'SESSION-SPLIT-REMINDER', 'SESSION-CLOCK']) {
   if (!bootHead.includes(n)) fail(`${bootRel} (head): missing "${n}"`);
 }
 
@@ -126,6 +127,19 @@ const split = read(splitRel);
 if (split.length < 400) fail(`${splitRel}: unexpectedly short`);
 for (const n of ['§51-6-2', '4 時間', '【セッション切替】']) {
   if (!split.includes(n)) fail(`${splitRel}: missing "${n}"`);
+}
+
+// --- SESSION-CLOCK.md（§51-6-2 時間軸の客観条件）---
+const clockRel = 'chat-sessions/SESSION-CLOCK.md';
+read(clockRel);
+const clk = spawnSync(process.execPath, ['scripts/session-clock.mjs', 'check'], {
+  cwd: root,
+  encoding: 'utf8',
+});
+if (clk.stdout) process.stdout.write(clk.stdout);
+if (clk.stderr) process.stderr.write(clk.stderr);
+if (clk.status !== 0 && clk.status !== null) {
+  fail(`session-clock check failed (exit ${clk.status}).§51-6-2 時間軸を確認。`);
 }
 
 console.log(`

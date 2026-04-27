@@ -138,6 +138,7 @@
 ## フェーズ 5.5 — §51-6-2（セッション切替時刻の目印）
 
 - [ ] **`chat-sessions/SESSION-SPLIT-REMINDER.md`** を Read（浜田=4h アラーム / AI=**【セッション切替】** 先頭行）
+- [ ] **`npm run session:clock:set`** で **`chat-sessions/SESSION-CLOCK.md`** の `開始:` を更新（§51-6-2 **時間軸**の客観起点）
 - [ ] 長時間作業を始める前に **OS タイマー 4 時間**をセット（任意だが強く推奨）
 
 ## フェーズ 6 — 機械検証（**必須・Read だけで終わらせない**）

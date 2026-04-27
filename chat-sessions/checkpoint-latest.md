@@ -20,11 +20,11 @@
 
 **項番 -1（人間・強く推奨）**: 新チャットの **ユーザー最初の 1 メッセージ** に、Desktop の **`NEW-SESSION-STARTER_yyyymmdd.txt` 全文**（**JST の日付 8 桁**＝ファイル名にそのまま入る。**常にこの 1 ファイル名だけ**が正本コピー先。同日に内容が変わった sync では旧版が **`_2` `_3`…** に退避するが、**貼るのは常に `yyyymmdd.txt` 側**）を **そのまま貼る**（= リポ `chat-sessions/NEW-SESSION-STARTER.md` の **■ フル版**と同内容）。**貼付推奨**は **`npm run verify:desktop-ai-emergency-sync` の最終行**（または `session-starter:sync-desktop` の「貼付推奨」行）でも確認できる。🚨憲法ブロック・`@` 参照リスト・bootstrap 手順が一括で入り、**要約脱落に強い**。続けて **`HANDOFF-HUMAN.txt` 5 行**でもよい。
 
-**項番 -0（人間＋AI・合意・1 往復・開始ゲート）**: AI は **先頭に `[§1-2-3 ティア判定: …]`** を付け、スターター **受領**を一言言い、`checkpoint` 最終更新＋`handoff` 末尾＋`HANDOFF-HUMAN` の **「次にやる1つ」** を要約して **「本日の本題（これから着手する次の一手）は ○○で合っていますか？」と §41 一問だけ**浜田へ確認する。**浜田から OK が返るまで**（「はい」「OK」「進めて」または **1 行の修正指示**で合意が取れた状態）、**項番 0（`verify` / `session:bootstrap` / 以降の Read 連鎖・本題の実行）に着手しない**。OK のあと **項番 0** へ進む。
+**項番 -0（人間＋AI・合意・1 往復・開始ゲート）**: AI は **先頭に `[§1-2-3 ティア判定: …]`** を付け、スターター **受領**を一言言い、`checkpoint` 最終更新＋`handoff` 末尾＋`HANDOFF-HUMAN` の **「次にやる1つ」** を要約して **「本日の本題（これから着手する次の一手）は ○○で合っていますか？」と §41 一問だけ**浜田へ確認する。**浜田から OK が返るまで**（「はい」「OK」「進めて」または **1 行の修正指示**で合意が取れた状態）、**項番 0（`verify` / `session:bootstrap` / 以降の Read 連鎖・本題の実行）に着手しない**。OK のあと **項番 0** へ進む。**新チャットの「いま」**を **`npm run session:clock:set`** で `SESSION-CLOCK.md` に刻む（§51-6-2 時間軸の客観起点。項番 0 の verify より前でも可）。
 
 0. **光速ガード（項番 0 / Read より前・必須・AI）**（`npm run session:bootstrap` も **同じ順**を内包）:
    - **0a 憲法ガード**: リポルートで **`npm run verify:constitution-handoff`** → **exit 0**（TSB-024 物理ガード）。**ng のまま Read・Tier B・本題に進まない**（憲法ドキュ修復のみ）。
-   - **0a2 必読構造ゲート**: 続けて **`npm run verify:mandatory-read-gate`** → **exit 0**（`scripts/mandatory-read-gate.mjs`）。checkpoint の **最終更新** 行・`handoff-log` の見出し・`HANDOFF-HUMAN` テンプレ・`SESSION-BOOTSTRAP` 冒頭・`AGENTS.md` 最小サイズを機械検査。**議論だけで抜けた未読了前提を exit 2 で止める**。**`npm run session:bootstrap` 単体**なら 0a→0a2 は内包済み。
+   - **0a2 必読構造ゲート**: 続けて **`npm run verify:mandatory-read-gate`** → **exit 0**（`scripts/mandatory-read-gate.mjs`）。checkpoint の **最終更新** 行・`handoff-log` の見出し・`HANDOFF-HUMAN` テンプレ・`SESSION-BOOTSTRAP` 冒頭・`AGENTS.md` 最小サイズを機械検査。**内包**: **`chat-sessions/SESSION-CLOCK.md`** ＋ **`npm run session:split-check`**（§51-6-2 **時間軸**／`開始:` から **4 時間超**で exit 2）。**議論だけで抜けた未読了前提を exit 2 で止める**。**`npm run session:bootstrap` 単体**なら 0a→0a2 は内包済み。
    - **0b Desktop「AI緊急用」都度メンテ（浜田指示）**: 浜田が毎回開く **`C:\Users\mhamada202408224\Desktop\AI緊急用`**（WSL: `/mnt/c/Users/mhamada202408224/Desktop/AI緊急用`）を、**セッション切替のたびに AI がメンテ済みか確認する**。手順: **`npm run session-starter:sync-desktop`**（`NEW-SESSION-STARTER_yyyymmdd.txt` + `SESSION-BOOTSTRAP` + `HANDOFF-HUMAN` + **`README.txt`** をリポ正本へコピー）→ 続けて **`npm run verify:desktop-ai-emergency-sync`**（フォルダがある環境では **バイト一致**で機械確認。**貼付推奨ファイル名を最終行に表示**）。**控えフォルダが無い**ときは verify が SKIP のみ → チャットに **「AI緊急用は未照合（/mnt/c なし等）」と 1 行**（環境復帰後に sync + verify を再実行）。
 1. 本ファイル `chat-sessions/checkpoint-latest.md`（先頭〜直近の **最終更新** 1 行）
 2. **`chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` を通読**（経緯・法律相当・ルール・機能・MCP の棚卸し表）
@@ -61,7 +61,9 @@
 
 ---
 
-**最終更新**: 2026-04-28 (Tue) JST — **mandatory-read-gate 強化 + §51-6-2 リマインダ + 予算テンプレ**: `mandatory-read-gate.mjs` に RULES-INDEX / NEW-SESSION-STARTER 冒頭 / post-commit / constitution-handoff-gate / **`SESSION-SPLIT-REMINDER.md`** を追加検査。`chat-sessions/SESSION-SPLIT-REMINDER.md` 新設（浜田=4h アラーム・AI=**【セッション切替】** 先頭行）。`templates/yojitsu-budget-lite/` に部署予算ゼロベース用の薄いゲート雛形。
+**最終更新**: 2026-04-28 (Tue) JST — **SESSION-CLOCK（§51-6-2 時間軸の客観化）**: `chat-sessions/SESSION-CLOCK.md` ＋ `scripts/session-clock.mjs` ＋ `npm run session:clock:set` / `session:split-check`。`mandatory-read-gate` が **4 時間超**で exit 2。未設定時は警告のみで通過。
+
+**前回更新**: 2026-04-28 (Tue) JST — **mandatory-read-gate 強化 + §51-6-2 リマインダ + 予算テンプレ**: `mandatory-read-gate.mjs` に RULES-INDEX / NEW-SESSION-STARTER 冒頭 / post-commit / constitution-handoff-gate / **`SESSION-SPLIT-REMINDER.md`** を追加検査。`chat-sessions/SESSION-SPLIT-REMINDER.md` 新設（浜田=4h アラーム・AI=**【セッション切替】** 先頭行）。`templates/yojitsu-budget-lite/` に部署予算ゼロベース用の薄いゲート雛形。
 
 **前回更新**: 2026-04-28 (Tue) JST — **mandatory-read-gate**: `scripts/mandatory-read-gate.mjs` 新設。`verify:constitution-handoff` の直後に **`npm run verify:mandatory-read-gate`**（`session:bootstrap` / `smoke` に組込）。checkpoint 項番0・SESSION-BOOTSTRAP フェーズ6・憲法 verify の checkpoint needle に `mandatory-read-gate.mjs` を追加。議論で抜ける「未読了で進む」を **exit 2** で止める。
 

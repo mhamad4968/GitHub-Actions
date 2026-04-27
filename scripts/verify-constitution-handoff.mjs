@@ -115,6 +115,9 @@ const suites = [
       'README.txt',
       'mandatory-read-gate.mjs',
       'SESSION-SPLIT-REMINDER.md',
+      'SESSION-CLOCK.md',
+      'session:clock:set',
+      'session:split-check',
     ],
   },
 ];

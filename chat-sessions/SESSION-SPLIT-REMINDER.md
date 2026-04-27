@@ -22,6 +22,7 @@
 ## 浜田（壁時計）
 
 - **4 時間**は OS の **タイマー・カレンダーアラーム**に任せると抜けにくい（チャットだけに依存しない）。  
+- **客観起点（推奨）**: 新チャットで会話を始めたら、**すぐ** `npm run session:clock:set` を実行し **`chat-sessions/SESSION-CLOCK.md`** の `開始:` を JST の「いま」にする。以降 **`npm run session:split-check`** または **`session:bootstrap` 内包**で **4 時間超**が機械検出される。  
 - 新チャット開始時は従来どおり **`NEW-SESSION-STARTER_yyyymmdd.txt` 全文** ＋ `HANDOFF-HUMAN` 5 行。
 
 ## 参照
