@@ -24,6 +24,7 @@
 - **4 時間**は OS の **タイマー・カレンダーアラーム**に任せると抜けにくい（チャットだけに依存しない）。  
 - **客観起点（正本）**: **`sessionStart` hook** が **`session:clock:set`** で **`chat-sessions/SESSION-CLOCK.md`** の `開始:` を JST の「いま」に更新し、必要なら **`session:clock:watch`** も起動する（上記「1・2を自動化」節）。hook が無いときだけ **手で** `npm run session:clock:set`。以降 **`npm run session:split-check`** または **`session:bootstrap` 内包**で **4 時間超**が機械検出される。  
 - 新チャット開始時は **`NEW-SESSION-STARTER_yyyymmdd.txt` 全文**（**v3.27+**: 本文 **「■ 貼付単独で完走」** に -1〜0 手順を内包。**`HANDOFF-HUMAN` 5 行は任意**）。
+- **セッション切替で新チャットに繋いだ直後（忘れ防止）**: **`SESSION-CLOCK.md` の `開始:` を確認**。未設定のままなら、**hook が動いていない可能性**がある → **下の「浜田 → AI 依頼文」を 1 行チャットに送る**（または AI が口頭＋`set`）。hook が効いていれば **追加の依頼は不要**。
 
 ## 浜田 → AI 依頼文（壁時計セット・Tier A）
 

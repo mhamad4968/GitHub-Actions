@@ -51,6 +51,7 @@ alwaysApply: true
 - **`chat-sessions/SESSION-CLOCK.md` の `開始:` が未設定**（または文字列「未設定」）のとき、**項番 -0 で浜田の OK を待っている間を除き**、本題（Read 連鎖・bootstrap・仕様実装など）に入る **最初のターン**で、AI は **チャット本文に必ず 1 行**書く（例: 「**壁時計（§51-6-2）が未設定なので、このターンで `session:clock:set` を実行する**」）。**言いっぱなしで終わらせない**。
 - **同一ターンで** `npm run session:clock:set` を実行し、更新後の **`開始:` を 1 行で事実報告**。**浜田へ「npm を実行してください」とは言わない**（TSB-024）。
 - **`sessionStart` hook で既に JST が入っている**なら、この注意文は **毎ターン繰り返さない**（必要なら `Read` で確認してから黙って進める）。
+- **セッション切替で新チャットに繋いだ直後**: `chat-sessions/SESSION-CLOCK.md` の **`開始:` を早い段階で確認**（hook の `additional_context` でも可）。**未設定のまま**長く放置しない。**hook が効いていれば** `session:clock:set` は原則自動。**hook が無効・失敗**しているときは、浜田は **`SESSION-SPLIT-REMINDER.md` の浜田 → AI 依頼文を 1 行**忘れず送る（AI は本条どおり口頭＋同一ターン `set` でもよい）。
 - 依頼文のコピペ用は `chat-sessions/SESSION-SPLIT-REMINDER.md` **浜田 → AI 依頼文**。
 - **浜田がターミナル無しで経過を見る**: `chat-sessions/SESSION-CLOCK-TICKER.md` をエディタで開いて固定（自動更新・`SESSION-SPLIT-REMINDER.md`「人間向けタイマー」参照）。
 

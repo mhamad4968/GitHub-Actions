@@ -85,7 +85,14 @@ const suites = [
   {
     id: 'hooks-json-session-autopilot',
     rel: '.cursor/hooks.json',
-    needles: ['sessionStart', 'session-start-autopilot.mjs', 'session:clock:set', '§51-6-2 壁時計', '黙実行禁止'],
+    needles: [
+      'sessionStart',
+      'session-start-autopilot.mjs',
+      'session:clock:set',
+      '§51-6-2 壁時計',
+      '黙実行禁止',
+      'セッション切替直後',
+    ],
   },
   {
     id: 'cursor-rule-gate',
@@ -100,6 +107,7 @@ const suites = [
       '§51-6-2 壁時計',
       '言葉に出す',
       'SESSION-CLOCK-TICKER',
+      'セッション切替で新チャット',
     ],
   },
   {
