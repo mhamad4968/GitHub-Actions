@@ -3,6 +3,8 @@
 > **目的**: 経緯・「法律」に相当する制約・ルール・備わっている機能・MCP を **読み飛ばさず** 再確認し、浜田が気づかないまま **逆方向に進む事故** を防ぐ。  
 > **憲法**: **開発は AI・確認は浜田**（`AGENTS.md` §35-1 / §56-1a）。本リストは **AI が実行・報告**する（浜田に全文チェックを押し付けない）。  
 > **浜田運用の最優先**: `C:\Users\mhamada202408224\Desktop\AI緊急用\` の **儀式用 `.txt`**（`NEW-SESSION-STARTER_yyyymmdd.txt` / `SESSION-BOOTSTRAP-CHECKLIST.txt` / `HANDOFF-HUMAN.txt` / **`README.txt`**）。本ファイルを更新したコミットでは **`npm run session-starter:sync-desktop`** を同一ターンで実行し、上記を必ず揃える（`/mnt/c` が無いときだけスキップ＋チャット 1 行）。
+>
+> **v3.27+ 恒久**: セッション初手の **項番 -1〜0（機械）と実行順**の**詳細正本**は **`NEW-SESSION-STARTER.md` 冒頭「■ 貼付単独で完走」** のみ。本チェックリストの下表は **鏡像**（追従）。**浜田の貼付はスターター全文＋任意 HANDOFF** に固定し増やさない。
 
 ---
 
@@ -24,13 +26,13 @@
 
 ## セッション切替の推奨フロー（浜田運用・2026-04-26 追補）
 
-> 正本: `chat-sessions/checkpoint-latest.md`「セッション切替後の自律復元」**項番 -1 / -0 / 0**。
+> 正本（詳細）: `chat-sessions/NEW-SESSION-STARTER.md` **「■ 貼付単独で完走」**。索引・日付整合: `chat-sessions/checkpoint-latest.md`「セッション切替後の自律復元」**項番 -1 / -0 / 0**。
 
 | 順 | 誰 | すること |
 |---|-----|----------|
-| **-1** | **浜田** | 新チャット **1 通目**に **`AI緊急用\NEW-SESSION-STARTER_yyyymmdd.txt`（JST・常にこの 1 ファイル名）** の **全文**を貼る（任意だが **強く推奨**）。**貼付推奨**は verify の最終行。続けて `HANDOFF-HUMAN.txt` 5 行でも可。 |
-| **-0** | **浜田＋AI** | AI: ティア宣言＋スターター受領＋**次に着手すること**を **§41 一問だけ**確認。**浜田 OK が出るまで項番 0（verify/bootstrap）に着手しない**。 |
-| **0** | **AI** | **`npm run session:bootstrap`**（内包順: `verify:constitution-handoff` → **`verify:mandatory-read-gate`**（必読ファイル構造）→ **`verify:session-clock-health`**（§51-6-2 hooks / crontab node）→ **`session-starter:sync-desktop`**（`C:\Users\mhamada202408224\Desktop\AI緊急用` 都度メンテ）→ **`verify:desktop-ai-emergency-sync`**（バイト一致）→ `smoke:quiet`）。激短のみ verify だけは非推奨。 |
+| **-1** | **浜田** | 新チャット **1 通目**に **`AI緊急用\NEW-SESSION-STARTER_yyyymmdd.txt`（JST・常にこの 1 ファイル名）** の **全文**を貼る（**必須級・これだけで項番 -1 素材は足りる**）。**貼付推奨**は verify の最終行。`HANDOFF-HUMAN.txt` 5 行は **任意**（メモ用）。checkpoint をチャットに **重ねて貼らなくてよい**（v3.27）。 |
+| **-0** | **浜田＋AI** | AI: ティア宣言＋スターター受領＋**次に着手すること**を **§41 一問だけ**確認。**浜田 OK が出るまで項番 0（verify/bootstrap）に着手しない**。詳細はスターター内 **「■ 貼付単独で完走」**。 |
+| **0** | **AI** | **`npm run session:bootstrap`**（内包順: `verify:constitution-handoff` → **`verify:mandatory-read-gate`**（必読ファイル構造）→ **`verify:session-clock-health`**（§51-6-2 hooks / crontab node）→ **`session-starter:sync-desktop`**（`C:\Users\mhamada202408224\Desktop\AI緊急用` 都度メンテ）→ **`verify:desktop-ai-emergency-sync`**（バイト一致）→ `smoke:quiet`）。**全文貼付済みなら -0 OK 直後に実行**し、棚卸し Read（フェーズ 1）は **bootstrap 通過後**でよい。激短のみ verify だけは非推奨。 |
 
 ---
 
@@ -151,6 +153,7 @@ cd /path/to/kintone-ai-lab && npm run session:bootstrap
 - [ ] 上記が **exit 0**（warn のみなら内容をチャットに要約し、続行可否を判断）
 - [ ] **ng なら** その検査を直すまで本題の kintone 書込・憲法改定・hooks 変更に進まない
 - [ ] **新チャットで時間がないとき**は最低 **`npm run verify:constitution-handoff`** → **`npm run verify:mandatory-read-gate`** を **Read より先**に実行（光速・TSB-024 ＋ 必読構造）。**いずれか ng なら本題に入らない**。
+- [ ] **v3.27+・スターター全文貼付済み**: **項番 -0 で浜田 OK 後**に本フェーズの **`session:bootstrap` を最優先**。フェーズ 1 の棚卸し Read は **bootstrap 成功後**でよい（実行順の正本は `NEW-SESSION-STARTER.md` **「■ 貼付単独で完走」**）。
 
 `session:bootstrap` は内部で **(A)** `verify-constitution-handoff.mjs`（**先頭・光速**）→ **(A2)** `mandatory-read-gate.mjs`（**必読ファイル構造**）→ **(A3)** `session-clock-health.mjs --strict`（**§51-6-2 壁時計** hooks / crontab node 整合）→ **(B)** `session-starter:sync-desktop`（浜田 Desktop **AI緊急用**）→ **(C)** `verify-desktop-ai-emergency-sync.mjs`（`.txt` とリポ正本のバイト一致）→ **(D)** **`npm run smoke:quiet`**（guard + 4 audit + verify:breaking + xref + health + rule-watcher + parallel + **verify:constitution-handoff** + **verify:mandatory-read-gate** の **10 検査**）の順で実行する。
 

@@ -1,7 +1,7 @@
 # 引き継ぎログ（短縮）
 
-浜田さんは `chat-sessions/HANDOFF-HUMAN.txt` を5行だけ埋めてチャットに貼る。  
-AI は、セッション切替・終了・浜田さんがそのテンプレを貼ったタイミングで **必ずこのファイルの末尾に新しいブロックを追記**する（追記のみ。過去ブロックは消さない）。
+浜田さんはセッション切替時 **`NEW-SESSION-STARTER_yyyymmdd.txt` 全文**を貼る（v3.27+ 正本）。`HANDOFF-HUMAN.txt` 5 行は **任意**。  
+AI は、セッション切替・終了・浜田さんが引き継ぎテンプレを貼ったタイミングで **必ずこのファイルの末尾に新しいブロックを追記**する（追記のみ。過去ブロックは消さない）。
 
 <!-- verify-constitution-handoff-anchor: TSB-024 v1 — DO NOT REMOVE (scripts/verify-constitution-handoff.mjs) -->
 

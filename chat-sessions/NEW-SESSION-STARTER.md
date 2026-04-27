@@ -60,6 +60,8 @@
 
 **例外**: 浜田が **追加メモ**（`HANDOFF-HUMAN`・独自箇条書き）を貼った場合は、**項番 -0 の「本題」** に織り込む。憲法改定・並列編集・Tier B GO は従来どおり `AGENTS.md` / `SESSION-BOOTSTRAP` のまま。
 
+**改定ルール（恒久・浜田指示「今後はすべてそう」）**: セッション初手の **項番 -1〜0（機械）および -0→bootstrap→@ Read の順**を変えるときは **本節（「■ 貼付単独で完走」）を唯一の詳細正本として先に更新**する。`checkpoint-latest.md`・`SESSION-BOOTSTRAP-CHECKLIST.md`・`RULES-INDEX.md`・`.cursor/rules/session-handoff.mdc`・`SESSION-SPLIT-REMINDER.md`・`HANDOFF-HUMAN.txt` は **本節と矛盾しない短い鏡像・リンクに留め、浜田への貼付義務を増やさない**（**スターター全文＋任意 HANDOFF** が既定）。
+
 ---
 
 **単独貼付の範囲**: 上記 **■ 貼付単独で完走** が **項番 -1〜項番 0（機械）**の正本。チャットに `checkpoint-latest.md` を **別添しなくてよい**（AI はツールで読む）。続く **@ Read** で文脈を厚くしてから本題へ。
@@ -194,7 +196,7 @@ v3.11 (2026-04-26 12:20) §0 定義 + TSB-022 追記 + 日次ログ整備:
 - **機械監査（ローカル）**: `npm run verify:all` + `npm run smoke:quiet` = ✅
 
 v3.12 (2026-04-26) 人間5行引き継ぎ + AI 追記義務:
-- **浜田**: `chat-sessions/HANDOFF-HUMAN.txt`（5行だけ）→ チャットへ貼る
+- **浜田**: `HANDOFF-HUMAN.txt`（5行）は **任意**（v3.27 以降・正本は **NEW-SESSION-STARTER 全文貼付**）
 - **AI**: 同ターンで `chat-sessions/handoff-log.md` 末尾へ必ず追記（`.cursor/rules/session-handoff.mdc` / 漏れ禁止）
 - **checkpoint-latest.md** に手順リンク済み
 
@@ -208,6 +210,9 @@ v3.27 (2026-04-27) **貼付単独で完走**（浜田指示）:
 - **本文冒頭**に **「■ 貼付単独で完走」** を追加 = `checkpoint-latest.md` **項番 -1〜項番 0（機械）**の同値正本を **NEW-SESSION-STARTER 内に内包**。
 - 浜田は **フル版から末尾まで（Desktop txt 全文）だけ**貼れば開始素材は足りる。`HANDOFF-HUMAN` は任意。
 - AI は **項番 -0 OK → `session:bootstrap`（内包 (1c) session-clock-health strict）→ @ Read → 本題**。**先に全部 Read してから bootstrap** は廃止。
+
+v3.28 (2026-04-27) **単一正本の恒久運用**（浜田「今後はすべてそう」）:
+- **「■ 貼付単独で完走」** を今後も **詳細手順の唯一正本**とし、他ドキュは追随のみ（二重正本禁止・貼付増やさない）。
 
 v3.25 (2026-04-26) **Desktop スターター控えのファイル名 = メンテ日（JST）＋枝番**（浜田指示）※ **v3.26 で運用確定**（枝番最大を貼る方式から **常に yyyymmdd.txt** へ）:
 - 参照用に履歴のみ残す。

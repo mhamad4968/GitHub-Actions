@@ -57,13 +57,13 @@
 
 ## 引き継ぎ（短縮・人間5行）
 
-- **浜田さん**: `chat-sessions/HANDOFF-HUMAN.txt` を5行だけ埋めてチャットに貼る（それだけでよい）。
+- **浜田さん**: セッション切替の **必須貼付は `NEW-SESSION-STARTER_yyyymmdd.txt` 全文**（v3.27+・詳細はスターター **「■ 貼付単独で完走」**）。`HANDOFF-HUMAN.txt` 5 行は **任意**（状況メモ）。
 - **AI（必須）**: **追記の前に**チャットで確定前ドラフトを出し、浜田の OK（または1行修正）を受けてから `chat-sessions/handoff-log.md` **末尾に追記**する。チャットだけで終わらせない（詳細は `.cursor/rules/session-handoff.mdc`）。
 - **次チャット初手**: 本ファイルの **「セッション切替後の自律復元」** の Read 順に従う（**SESSION-BOOTSTRAP-CHECKLIST** ＋ `npm run session:bootstrap` 必須）。**§51-6-2（セッション切替時刻）**の壁時計・目印は `chat-sessions/SESSION-SPLIT-REMINDER.md`。
 
 ---
 
-**最終更新**: 2026-04-27 (Mon) JST — **NEW-SESSION-STARTER v3.27**: 冒頭 **「■ 貼付単独で完走」**＝項番 -1〜0（機械）を **スターター本文のみで完結**（フル版貼付なら checkpoint 重複貼付不要・**-0 OK → bootstrap → @ Read**）。**壁時計運用**: `session:clock:health`／`verify:session-clock-health`（`session:bootstrap` **(1c)**）／`desktop-notify`／監査 `session-split-notify-audit.jsonl`。**`sessionStart` hook** が `session:clock:set` + `session:clock:watch`。
+**最終更新**: 2026-04-27 (Mon) JST — **NEW-SESSION-STARTER v3.27 / v3.28**: **「■ 貼付単独で完走」**＝項番 -1〜0 を **スターター単独で完結**（checkpoint チャット重複不要・**-0 OK → bootstrap → @ Read**）。**v3.28**＝以後の手順改定は **同ブロックを唯一正本**とし BOOTSTRAP／checkpoint／RULES-INDEX／`session-handoff.mdc` 等は **追随のみ**。**壁時計**: `session:clock:health`／`session:bootstrap` **(1c)**／`desktop-notify`／監査 jsonl。**`sessionStart` hook**。
 
 **前回更新**: 2026-04-28 (Tue) JST — **SESSION-CLOCK（§51-6-2 時間軸の客観化）**: `chat-sessions/SESSION-CLOCK.md` ＋ `scripts/session-clock.mjs` ＋ `npm run session:clock:set` / `session:split-check`。`mandatory-read-gate` が **4 時間超**で exit 2。未設定時は警告のみで通過。
 
