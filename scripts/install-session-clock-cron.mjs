@@ -105,8 +105,13 @@ if (nodeBin.includes('.cursor-server')) {
   );
 }
 
+// 10 分ごと。ログは logs/session-cron-ping.log。cron は通常 DISPLAY 無しのため WSLg では :0 を既定にする。
+const displayForCron =
+  process.platform !== 'win32' ? process.env.DISPLAY || process.env.SESSION_CLOCK_CRON_DISPLAY || ':0' : '';
+const displayPrefix = displayForCron ? `DISPLAY=${shellQuote(displayForCron)} ` : '';
+
 // 10 分ごと。ログは logs/session-cron-ping.log
-const cronLine = `*/10 * * * * cd ${shellQuote(root)} && ${shellQuote(nodeBin)} ${shellQuote(pingScript)} >> ${shellQuote(path.join(root, 'logs', 'session-cron-ping.log'))} 2>&1 ${MARKER}`;
+const cronLine = `*/10 * * * * ${displayPrefix}cd ${shellQuote(root)} && ${shellQuote(nodeBin)} ${shellQuote(pingScript)} >> ${shellQuote(path.join(root, 'logs', 'session-cron-ping.log'))} 2>&1 ${MARKER}`;
 
 const newTab = `${filtered.join('\n')}${filtered.length ? '\n' : ''}${cronLine}\n`;
 const norm = (s) => s.replace(/\r\n/g, '\n').trimEnd();
