@@ -144,7 +144,7 @@ PC レコード保存・廃棄時:
 | メールパスワード | `jb` + ランダム 4 桁数字 + `K#`（個人用ボタン 1 回生成） | `mail_pw` |
 | 個人 M365 PW | `WindowsID` + `K#`（例: `jbm0001K#`） | `m365_pw` |
 | 共有/JR M365 PW | `kent2511K#` 固定（環境設定マスタ由来） | `m365_pw` |
-| 個人 M365 ID | `mail_acct` + `@kensetsutoso01.onmicrosoft.com` | `m365_id` |
+| 個人 M365 ID | **`mail_acct`（メール @ より前）+ 環境設定マスタ `M365_DOMAIN`**（例 `@kensetsutoso01.onmicrosoft.com`・浜田確認 2026-04-28） | `m365_id` |
 | 共有/JR M365 ID | M365 管理マスタから自動取得 | `m365_id` |
 | サイボウズ ID | = `mail_acct`（個人のみ） | `gb_id` |
 | サイボウズ PW | = WindowsID（= `logon_name`）（個人のみ） | `gb_pw` |
@@ -762,7 +762,7 @@ snapshot: `data/snapshots/594-pre-migration-scan-2026-04-22.json`
 | メールパスワード | jb+ランダム4桁数字+K#（個人用ボタン押下時 1 回生成）|
 | 個人 M365 PW | WindowsID + K#（例: jbm0001K#）|
 | 共有/JR M365 PW | kent2511K# 固定 |
-| 個人 M365 ID | mail_acct + @kensetsutoso01.onmicrosoft.com |
+| 個人 M365 ID | mail_acct + `M365_DOMAIN`（環境設定マスタ・例 @kensetsutoso01.onmicrosoft.com）|
 | 共有/JR M365 ID | M365管理マスタから自動取得 |
 | サイボウズ ID | =mail_acct（個人のみ）|
 | サイボウズ PW | =WindowsID（個人のみ）|
