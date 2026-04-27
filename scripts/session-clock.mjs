@@ -5,6 +5,7 @@
  *   npm run session:clock:set   — chat-sessions/SESSION-CLOCK.md の「開始」を現在の Asia/Tokyo に更新
  *   npm run session:split-check — 開始から 4 時間経過なら exit 2（未満なら 0）
  *   node scripts/session-clock.mjs check-json — 1 行 JSON（watch 用・exit は check と同じ）
+ *   node scripts/session-clock.mjs prompt-hook — 1 行 JSON（Cursor beforeSubmitPrompt 用・経過/残りを additional_context）
  *
  * 「開始」が未設定のときは check をスキップ（警告のみ）— 一度 set すると以降は機械判定が効く。
  *
@@ -112,6 +113,30 @@ function runCheckJson() {
   process.exit(0);
 }
 
+/** Cursor `beforeSubmitPrompt`: 毎プロンプトで経過/残りを 1 行表示 */
+function runPromptHook() {
+  const r = parseClock();
+  let msg;
+  if (r.mode === 'missing') {
+    msg =
+      '⏱ **セッション時計**: `SESSION-CLOCK.md` がまだない。新チャットの sessionStart か `npm run session:clock:set` で開始を記録すると、ここに経過と 4h までの残りが出る。';
+  } else if (r.mode === 'skip') {
+    msg =
+      '⏱ **セッション時計**: 開始が「未設定」。`npm run session:clock:set`（または新チャット）後に経過タイマーが表示される。';
+  } else if (r.mode === 'bad') {
+    msg = `⏱ **セッション時計**: 開始行の形式が不正（\`${String(r.line ?? '').slice(0, 80)}\`）。\`chat-sessions/SESSION-CLOCK.md\` を直してほしい。`;
+  } else if (r.mode === 'over') {
+    msg = `⏱ **セッション時計**: **4 時間超**（開始 **${r.line}** JST・経過 **${fmtDuration(r.elapsedMs)}**）。§51-6-2 に従い **新チャット**を推奨。`;
+  } else {
+    const elapsed = fmtDuration(r.elapsedMs);
+    const leftMs = Math.max(0, FOUR_H_MS - r.elapsedMs);
+    const left = fmtDuration(leftMs);
+    msg = `⏱ **セッション時計**（§51-6-2）: 開始 **${r.line}** JST → 経過 **${elapsed}** / **4h まであと ${left}**`;
+  }
+  process.stdout.write(`${JSON.stringify({ additional_context: msg })}\n`);
+  process.exit(0);
+}
+
 function runCheck() {
   const r = parseClock();
   if (r.mode === 'missing') {
@@ -153,6 +178,9 @@ if (cmd === 'check') {
 if (cmd === 'check-json') {
   runCheckJson();
 }
+if (cmd === 'prompt-hook') {
+  runPromptHook();
+}
 
-console.error('Usage: node scripts/session-clock.mjs set|check|check-json');
+console.error('Usage: node scripts/session-clock.mjs set|check|check-json|prompt-hook');
 process.exit(2);
