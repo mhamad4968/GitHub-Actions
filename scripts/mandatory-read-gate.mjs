@@ -80,7 +80,7 @@ for (const n of ['次にやる1つ', 'HANDOFF-HUMAN', '推奨フロー']) {
 const bootRel = 'chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md';
 const boot = read(bootRel);
 const bootHead = boot.slice(0, 14_000);
-for (const n of ['フェーズ 6', 'session:bootstrap', 'mandatory-read-gate.mjs']) {
+for (const n of ['フェーズ 6', 'session:bootstrap', 'mandatory-read-gate.mjs', 'SESSION-SPLIT-REMINDER']) {
   if (!bootHead.includes(n)) fail(`${bootRel} (head): missing "${n}"`);
 }
 
@@ -91,6 +91,43 @@ if (agents.length < 30_000) {
   fail(`${agentsRel}: unexpectedly short (${agents.length} chars)`);
 }
 
+// --- RULES-INDEX.md（ゲートの索引が消えていないか）---
+const indexRel = 'RULES-INDEX.md';
+const index = read(indexRel);
+if (!index.includes('verify:mandatory-read-gate')) {
+  fail(`${indexRel}: missing "verify:mandatory-read-gate"`);
+}
+
+// --- NEW-SESSION-STARTER.md（冒頭ブロックの最低限）---
+const starterRel = 'chat-sessions/NEW-SESSION-STARTER.md';
+const starter = read(starterRel);
+const starterHead = starter.slice(0, 9000);
+for (const n of ['TSB-024', '§35-1', '§56-1a']) {
+  if (!starterHead.includes(n)) fail(`${starterRel} (head): missing "${n}"`);
+}
+
+// --- post-commit hook（リポ正本にゲートが配線されているか）---
+const hookRel = 'git-hooks/post-commit';
+const hook = read(hookRel);
+if (!hook.includes('mandatory-read-gate.mjs')) {
+  fail(`${hookRel}: missing mandatory-read-gate.mjs wiring`);
+}
+
+// --- constitution-handoff-gate.mdc ---
+const gateRuleRel = '.cursor/rules/constitution-handoff-gate.mdc';
+const gateRule = read(gateRuleRel);
+if (!gateRule.includes('verify:mandatory-read-gate')) {
+  fail(`${gateRuleRel}: missing verify:mandatory-read-gate`);
+}
+
+// --- SESSION-SPLIT-REMINDER.md（§51-6-2 運用控え）---
+const splitRel = 'chat-sessions/SESSION-SPLIT-REMINDER.md';
+const split = read(splitRel);
+if (split.length < 400) fail(`${splitRel}: unexpectedly short`);
+for (const n of ['§51-6-2', '4 時間', '【セッション切替】']) {
+  if (!split.includes(n)) fail(`${splitRel}: missing "${n}"`);
+}
+
 console.log(`
 === mandatory-read-gate（必読ファイル構造検査）===
 憲法 needle 検査の次・Desktop sync の前。NG 時は exit 2 で本題に入れない。
@@ -98,7 +135,7 @@ console.log(`
 - checkpoint **最終更新**（先頭の 1 行）:
   ${finalLineFull.length > 240 ? `${finalLineFull.slice(0, 240)}…` : finalLineFull}
 - handoff エントリ数: ${headingMatches.length}（末尾見出し: ${lastHeading.slice(0, 100)}${lastHeading.length > 100 ? '…' : ''}）
-- HANDOFF-HUMAN / SESSION-BOOTSTRAP（冒頭）/ AGENTS: 構造 OK
+- HANDOFF-HUMAN / SESSION-BOOTSTRAP（冒頭）/ AGENTS / RULES-INDEX / NEW-SESSION-STARTER（冒頭）/ post-commit / gate.mdc / SESSION-SPLIT-REMINDER: 構造 OK
 - mtime: checkpoint=${mtimeIso(checkpointRel)} | handoff=${mtimeIso(handoffRel)}
 `);
 

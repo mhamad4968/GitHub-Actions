@@ -53,6 +53,7 @@ const CRITICAL = [
   'docs/troubleshooting.md',
   'chat-sessions/checkpoint-latest.md',
   'chat-sessions/NEW-SESSION-STARTER.md',
+  'chat-sessions/SESSION-SPLIT-REMINDER.md',
   'scripts/mandatory-read-gate.mjs',
 ];
 

@@ -57,11 +57,13 @@
 
 - **浜田さん**: `chat-sessions/HANDOFF-HUMAN.txt` を5行だけ埋めてチャットに貼る（それだけでよい）。
 - **AI（必須）**: **追記の前に**チャットで確定前ドラフトを出し、浜田の OK（または1行修正）を受けてから `chat-sessions/handoff-log.md` **末尾に追記**する。チャットだけで終わらせない（詳細は `.cursor/rules/session-handoff.mdc`）。
-- **次チャット初手**: 本ファイルの **「セッション切替後の自律復元」** の Read 順に従う（**SESSION-BOOTSTRAP-CHECKLIST** ＋ `npm run session:bootstrap` 必須）。
+- **次チャット初手**: 本ファイルの **「セッション切替後の自律復元」** の Read 順に従う（**SESSION-BOOTSTRAP-CHECKLIST** ＋ `npm run session:bootstrap` 必須）。**§51-6-2（セッション切替時刻）**の壁時計・目印は `chat-sessions/SESSION-SPLIT-REMINDER.md`。
 
 ---
 
-**最終更新**: 2026-04-28 (Tue) JST — **mandatory-read-gate**: `scripts/mandatory-read-gate.mjs` 新設。`verify:constitution-handoff` の直後に **`npm run verify:mandatory-read-gate`**（`session:bootstrap` / `smoke` に組込）。checkpoint 項番0・SESSION-BOOTSTRAP フェーズ6・憲法 verify の checkpoint needle に `mandatory-read-gate.mjs` を追加。議論で抜ける「未読了で進む」を **exit 2** で止める。
+**最終更新**: 2026-04-28 (Tue) JST — **mandatory-read-gate 強化 + §51-6-2 リマインダ + 予算テンプレ**: `mandatory-read-gate.mjs` に RULES-INDEX / NEW-SESSION-STARTER 冒頭 / post-commit / constitution-handoff-gate / **`SESSION-SPLIT-REMINDER.md`** を追加検査。`chat-sessions/SESSION-SPLIT-REMINDER.md` 新設（浜田=4h アラーム・AI=**【セッション切替】** 先頭行）。`templates/yojitsu-budget-lite/` に部署予算ゼロベース用の薄いゲート雛形。
+
+**前回更新**: 2026-04-28 (Tue) JST — **mandatory-read-gate**: `scripts/mandatory-read-gate.mjs` 新設。`verify:constitution-handoff` の直後に **`npm run verify:mandatory-read-gate`**（`session:bootstrap` / `smoke` に組込）。checkpoint 項番0・SESSION-BOOTSTRAP フェーズ6・憲法 verify の checkpoint needle に `mandatory-read-gate.mjs` を追加。議論で抜ける「未読了で進む」を **exit 2** で止める。
 
 **前回更新**: 2026-04-28 (Tue) JST — **App 674 SKYSEA customize v0.2**（浜田方針）: SKYSEA ブロックは **アカウント部扱いで編集は権限者すべて可**／**運用で触るのは浜田のみは周知**に合わせ、ログイン非表示を撤廃 → `deploy:674` **rev 18** / fileKey `73ae0e96-0809-462f-a8f0-65fbe9f6cb96` / `BUILD=2026-04-28-skysea-group-ui-v0.2`（正本 §4.2.3a・手順書 §2.7 追記）。
 

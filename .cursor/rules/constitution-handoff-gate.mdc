@@ -10,7 +10,7 @@ alwaysApply: true
 **正本の順序**（`checkpoint-latest.md`「セッション切替後の自律復元」）:
 
 1. **項番 -1（浜田・強く推奨）**: 新チャット **最初の 1 メッセージ**に Desktop の **`NEW-SESSION-STARTER_yyyymmdd.txt`（JST・常にこの 1 ファイル名）**の **全文**を貼る（**貼付推奨**は `verify:desktop-ai-emergency-sync` 成功時の最終行。憲法 🚨・`@` リスト・儀式を一括注入）。
-2. **項番 -0（浜田＋AI・開始ゲート）**: AI は **ティア宣言**のうえスターター受領＋**これから着手する次の一手**を **§41 一問だけ**浜田へ確認する。**浜田の OK が返るまで項番 0（verify / bootstrap 以降）に着手しない**。OK 後に項番 0 へ。（食い違いが後から出た場合の再一問は `checkpoint-latest.md` **項番 0.9**。）
+2. **項番 -0（浜田＋AI・開始ゲート）**: AI は **ティア宣言**のうえスターター受領＋**これから着手する次の一手**を **§41 一問だけ**浜田へ確認する。**浜田の OK が返るまで項番 0（verify / bootstrap 以降）に着手しない**。OK 後に項番 0 へ。（食い違いが後から出た場合の再一問は `checkpoint-latest.md` **項番 0.9**。）**§51-6-2 該当時**は `chat-sessions/SESSION-SPLIT-REMINDER.md` に従い、**応答最上段**を `【セッション切替】§51-6-2 …` で始めてから浜田へ伝える（「教えて」＝目印を見失わせない）。
 3. **項番 0（AI・必須）**: リポルートで **`npm run verify:constitution-handoff`**（exit 0）→ **`npm run verify:mandatory-read-gate`**（exit 0）。続けて **`npm run session:bootstrap`**（= 上記 2 本 + **`session-starter:sync-desktop`** で **`C:\Users\mhamada202408224\Desktop\AI緊急用`** を都度揃え + **`verify:desktop-ai-emergency-sync`** でバイト一致確認 + smoke **10** 連）。Desktop 未マウント時は verify が SKIP → チャットに **未照合 1 行**。
 
 ## 役割（逆転禁止）

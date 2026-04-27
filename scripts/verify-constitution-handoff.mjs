@@ -114,6 +114,7 @@ const suites = [
       '日終わり',
       'README.txt',
       'mandatory-read-gate.mjs',
+      'SESSION-SPLIT-REMINDER.md',
     ],
   },
 ];

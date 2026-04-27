@@ -1,0 +1,9 @@
+{
+  "name": "yojitsu-budget-lite-from-template",
+  "private": true,
+  "description": "部署予算・予実のゼロベース用テンプレ（kintone-ai-lab/templates からコピーしてリネーム）",
+  "scripts": {
+    "verify:gate": "node scripts/mandatory-read-gate.mjs",
+    "session:bootstrap": "node scripts/mandatory-read-gate.mjs"
+  }
+}
