@@ -4,7 +4,7 @@
  * 仕様: docs/plans/2026-04-21-new-pc-ledger-spec.md v2.1 §4
  * Day 4 plan: docs/plans/2026-04-26-pc-ledger-day4-action.md
  *
- * BUILD: 2026-04-28-dept-help-banner-v0.3 (§4.2.0b 所属名・グループ公式一覧をヘルプ帯に反映)
+ * BUILD: 2026-04-28-dept-help-banner-v0.4 (§4.2.0b 所属一覧 textarea を低め＋スクロール主体)
  *
  * Day 4 雛形スコープ:
  *   - 種別 (account_type) による表示制御 (show/hide)
@@ -25,7 +25,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-04-28-dept-help-banner-v0.3';
+  const BUILD = '2026-04-28-dept-help-banner-v0.4';
 
   /** 共有・JR 等の手入力時の参照用（浜田提供・順序固定） */
   const DEPT_HELP_REFERENCE_TEXT =
@@ -302,9 +302,9 @@
 
     const ta = document.createElement('textarea');
     ta.readOnly = true;
-    ta.rows = 12;
+    ta.rows = 6;
     ta.style.cssText =
-      'width:100%;max-width:720px;max-height:240px;font-size:11px;font-family:Consolas,monospace;' +
+      'width:100%;max-width:720px;max-height:132px;font-size:11px;font-family:Consolas,monospace;' +
       'box-sizing:border-box;padding:6px;border:1px solid #86b7fe;border-radius:4px;resize:vertical;overflow-y:auto;';
     ta.value = DEPT_HELP_REFERENCE_TEXT;
     box.appendChild(ta);
