@@ -6,6 +6,7 @@
  *   npm run session:split-check — 開始から 4 時間経過なら exit 2（未満なら 0）
  *   node scripts/session-clock.mjs check-json — 1 行 JSON（watch 用・exit は check と同じ）
  *   node scripts/session-clock.mjs prompt-hook — 1 行 JSON（Cursor beforeSubmitPrompt 用・経過/残りを additional_context）
+ *   node scripts/session-clock.mjs write-ticker — `SESSION-CLOCK-TICKER.md` を更新（人間がエディタで見る用）
  *
  * 「開始」が未設定のときは check をスキップ（警告のみ）— 一度 set すると以降は機械判定が効く。
  *
@@ -20,6 +21,8 @@ const FOUR_H_MS = 4 * 60 * 60 * 1000;
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const clockRel = 'chat-sessions/SESSION-CLOCK.md';
 const clockAbs = path.join(root, clockRel);
+const tickerRel = 'chat-sessions/SESSION-CLOCK-TICKER.md';
+const tickerAbs = path.join(root, tickerRel);
 
 /** @returns {string} */
 function nowTokyoYYYYMMDDHHmm() {
@@ -43,6 +46,7 @@ const HEADER =
   '# セッション壁時計（JST）\n\n' +
   '同一 Cursor 会話の **§51-6-2 時間軸（4 時間）** を機械判定する。**新チャット直後**または**作業再開時**に次を1回実行する。\n\n' +
   '**チャットから AI に依頼**（浜田が手で npm を打たなくてよい）: 「**壁時計をいまの時刻でセットして**（`npm run session:clock:set`）」→ AI が実行（§35-1）。依頼文の一覧は `chat-sessions/SESSION-SPLIT-REMINDER.md` の **浜田 → AI 依頼文**。\n\n' +
+  '**人間向けの経過表示（エディタ）**: **`SESSION-CLOCK-TICKER.md`** をタブで開いて固定（自動生成・git 追跡外）。`session:clock:watch` 稼働中は **既定 2 分ごと**に更新、`set` の直後も更新。`npm run session:clock:prompt-hook` は不要。\n\n' +
   '```bash\n' +
   'npm run session:clock:set\n' +
   '```\n\n' +
@@ -63,6 +67,7 @@ function writeClock() {
   }
   console.log(`[session-clock] ✅ set → ${clockRel}`);
   console.log(`  開始: ${line} (Asia/Tokyo)`);
+  writeTickerFile();
 }
 
 /**
@@ -100,6 +105,38 @@ function fmtDuration(ms) {
   return `${h}h${String(mm).padStart(2, '0')}m`;
 }
 
+/** 浜田がエディタで開く用（gitignore）。watch の tick からも更新 */
+function writeTickerFile() {
+  const displayUpdateJst = nowTokyoYYYYMMDDHHmm();
+  const r = parseClock();
+  let body = '# セッション時計（人間向け・自動）\n\n';
+  body +=
+    '> **自動生成**（手で直さない）。**経過／4h までの残り**を表示。正本の `開始:` は [`SESSION-CLOCK.md`](./SESSION-CLOCK.md)。\n\n';
+  body += `- **この表示の更新(JST)**: ${displayUpdateJst}\n`;
+  if (r.mode === 'missing') {
+    body += '- **状態**: `SESSION-CLOCK.md` がまだない → `cd ~/kintone-ai-lab && npm run session:clock:set`\n';
+  } else if (r.mode === 'skip') {
+    body += `- **開始**: 未設定 → 新チャットの hook か AI 依頼で \`session:clock:set\`\n`;
+  } else if (r.mode === 'bad') {
+    body += `- **開始行**: 形式不正 → \`SESSION-CLOCK.md\` の \`開始:\` を \`YYYY-MM-DD HH:mm\` に\n`;
+  } else if (r.mode === 'over') {
+    body += `- **開始(JST)**: ${r.line}\n`;
+    body += `- **経過**: **${fmtDuration(r.elapsedMs)}**（**4h 超**）→ 新 Composer 推奨（§51-6-2）\n`;
+  } else {
+    const leftMs = Math.max(0, FOUR_H_MS - r.elapsedMs);
+    body += `- **開始(JST)**: ${r.line}\n`;
+    body += `- **経過**: **${fmtDuration(r.elapsedMs)}**\n`;
+    body += `- **4h まであと**: **${fmtDuration(leftMs)}**\n`;
+  }
+  body += '\n';
+  try {
+    fs.mkdirSync(path.dirname(tickerAbs), { recursive: true });
+    fs.writeFileSync(tickerAbs, body, 'utf8');
+  } catch (e) {
+    console.warn(`[session-clock] ⚠ write-ticker: ${e.message}`);
+  }
+}
+
 function runCheckJson() {
   const r = parseClock();
   const payload = {
@@ -132,7 +169,7 @@ function runPromptHook() {
     const elapsed = fmtDuration(r.elapsedMs);
     const leftMs = Math.max(0, FOUR_H_MS - r.elapsedMs);
     const left = fmtDuration(leftMs);
-    msg = `⏱ **セッション時計**（§51-6-2）: 開始 **${r.line}** JST → 経過 **${elapsed}** / **4h まであと ${left}**`;
+    msg = `⏱ **セッション時計**（§51-6-2）: 開始 **${r.line}** JST → 経過 **${elapsed}** / **4h まであと ${left}**（人間向け常時表示は \`chat-sessions/SESSION-CLOCK-TICKER.md\`）`;
   }
   process.stdout.write(`${JSON.stringify({ additional_context: msg })}\n`);
   process.exit(0);
@@ -182,6 +219,15 @@ if (cmd === 'check-json') {
 if (cmd === 'prompt-hook') {
   runPromptHook();
 }
+if (cmd === 'write-ticker') {
+  try {
+    writeTickerFile();
+    process.exit(0);
+  } catch (e) {
+    console.error('[session-clock] ❌ write-ticker', e.message);
+    process.exit(2);
+  }
+}
 
-console.error('Usage: node scripts/session-clock.mjs set|check|check-json|prompt-hook');
+console.error('Usage: node scripts/session-clock.mjs set|check|check-json|prompt-hook|write-ticker');
 process.exit(2);

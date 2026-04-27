@@ -19,6 +19,7 @@
  *
  * @see chat-sessions/SESSION-SPLIT-REMINDER.md
  */
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -84,6 +85,10 @@ for (const sig of ['SIGINT', 'SIGTERM', 'SIGHUP']) {
 }
 
 function tick() {
+  spawnSync(process.execPath, ['scripts/session-clock.mjs', 'write-ticker'], {
+    cwd: root,
+    encoding: 'utf8',
+  });
   const r = pollSessionSplitAlertOnce({ root, source: 'watch' });
   if (r.outcome === 'parse-error') return;
   if (r.outcome === 'alerted') {

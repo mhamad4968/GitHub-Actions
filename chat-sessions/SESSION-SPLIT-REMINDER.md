@@ -40,6 +40,14 @@
 
 AI は **`npm run session:clock:set`** を実行し、結果（`SESSION-CLOCK.md` の `開始:` 1 行）を短く報告すればよい。`npm run session:clock:prompt-hook` で表示確認できる。
 
+## 人間向けタイマー（エディタで見る・`prompt-hook` 不要）
+
+**目的**: ターミナルで `npm run session:clock:prompt-hook` を打たなくても、**エディタのタブ**で経過と 4h までの残りが分かる。
+
+- **ファイル**: `chat-sessions/SESSION-CLOCK-TICKER.md`（**自動生成・git 追跡外**）
+- **更新タイミング**: `npm run session:clock:set` の直後、`session:clock:watch` の **既定 2 分ごと**、cron の `session-split-cron-ping` の **各実行**（`npm run session:clock:write-ticker` と同じ処理）
+- **運用**: Cursor でこのファイルを **開いてタブを固定**（split でも可）。外部更新で内容が変わるので、必要なら **エディタの「ファイルの再読み込み」**またはタブを閉じて開き直す
+
 ## 「1」「2」を AI 側で自動化（正本: Cursor `sessionStart` hook）
 
 **1**（`session:clock:set`）と **2**（`session:clock:watch` の常駐）は、**浜田が毎回打たなくてよい**ように、**Composer 新セッションの `sessionStart`** で自動実行する。

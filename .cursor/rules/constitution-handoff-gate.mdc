@@ -52,6 +52,7 @@ alwaysApply: true
 - **同一ターンで** `npm run session:clock:set` を実行し、更新後の **`開始:` を 1 行で事実報告**。**浜田へ「npm を実行してください」とは言わない**（TSB-024）。
 - **`sessionStart` hook で既に JST が入っている**なら、この注意文は **毎ターン繰り返さない**（必要なら `Read` で確認してから黙って進める）。
 - 依頼文のコピペ用は `chat-sessions/SESSION-SPLIT-REMINDER.md` **浜田 → AI 依頼文**。
+- **浜田がターミナル無しで経過を見る**: `chat-sessions/SESSION-CLOCK-TICKER.md` をエディタで開いて固定（自動更新・`SESSION-SPLIT-REMINDER.md`「人間向けタイマー」参照）。
 
 ## 機械ゲート
 

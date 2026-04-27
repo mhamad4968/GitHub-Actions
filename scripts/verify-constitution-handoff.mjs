@@ -99,6 +99,7 @@ const suites = [
       '浜田（確認）',
       '§51-6-2 壁時計',
       '言葉に出す',
+      'SESSION-CLOCK-TICKER',
     ],
   },
   {

@@ -99,6 +99,7 @@
     "verify:mandatory-read-gate": "node scripts/mandatory-read-gate.mjs",
     "session:clock:set": "node scripts/session-clock.mjs set",
     "session:clock:prompt-hook": "node scripts/session-clock.mjs prompt-hook",
+    "session:clock:write-ticker": "node scripts/session-clock.mjs write-ticker",
     "session:split-check": "node scripts/session-clock.mjs check",
     "session:clock:watch": "node scripts/session-clock-watch.mjs",
     "session:notify-selftest": "node scripts/session-notify-selftest.mjs",

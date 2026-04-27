@@ -5,6 +5,7 @@
  *
  * インストール: npm run session:clock:install-cron
  */
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -25,6 +26,10 @@ function logLine(msg) {
   process.stdout.write(line);
 }
 
+spawnSync(process.execPath, ['scripts/session-clock.mjs', 'write-ticker'], {
+  cwd: root,
+  encoding: 'utf8',
+});
 const r = pollSessionSplitAlertOnce({ root, source: 'cron' });
 
 switch (r.outcome) {
