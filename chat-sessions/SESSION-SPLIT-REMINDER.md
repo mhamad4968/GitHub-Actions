@@ -62,7 +62,11 @@ AI は **`npm run session:clock:set`** を実行し、結果（`SESSION-CLOCK.md
 
 手動だけ動かす場合:
 
+- **`npm run session:clock:*` はリポルートで**（`~/` 直下だと `package.json` が無く **ENOENT** になる）。
+- どこからでも叩くなら: `node ~/kintone-ai-lab/scripts/session-clock.mjs set`
+
 ```bash
+cd ~/kintone-ai-lab && npm run session:clock:set
 cd ~/kintone-ai-lab && npm run session:clock:watch
 ```
 
