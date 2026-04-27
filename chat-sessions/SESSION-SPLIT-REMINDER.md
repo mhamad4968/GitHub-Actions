@@ -39,7 +39,7 @@
 
 **通常は hook が起動する**ので、別ターミナルで手動起動は不要。ポーリングは **既定 2 分**（`SESSION_CLOCK_WATCH_MS`）。同一 `開始:` に対する通知は **1 回**（`logs/.session-clock-split-alerted`）。`session:clock:set` でリセット。
 
-**標準ツールが無い環境**: 通知本体は `scripts/lib/desktop-notify.mjs`（`notify-send` → `gdbus` → `zenity` → ベル）。**GUI が出なくても** `logs/session-desktop-notify.log` に **毎回 1 行**残る。経路の確認は **`npm run session:notify-selftest`**。
+**標準ツールが無い環境**: 通知本体は `scripts/lib/desktop-notify.mjs`（**ダイアログ／ポップアップ優先**: WSL2 は Windows `Popup` → 他は `notify-send` / `gdbus` / `zenity --warning`（timeout）/ `xmessage` → ベル）。**GUI が出なくても** `logs/session-desktop-notify.log` に **毎回 1 行**残る。経路の確認は **`npm run session:notify-selftest`**。
 
 **Cursor が閉じていても効かせる（この PC に仕込む・推奨）**: WSL/Linux で **`npm run session:clock:install-cron`**。ユーザー crontab に **10 分ごと**の `session-split-cron-ping.mjs` が入り、4h 超なら watch と **同じ抑止フラグ**で1回だけ通知する。解除は **`npm run session:clock:uninstall-cron`**。WSL では **`cron` デーモン起動**（例: `sudo service cron start`）が必要なことがある。cron 用の `node` は **`~/.nvm` の最新 semver**を優先（Cursor 同梱は避ける）。**固定したいとき**は `export KINTONE_AI_LAB_NODE=/path/to/node` を付けてから `npm run session:clock:install-cron`。crontab 行には **`DISPLAY=:0`** を付与する（インストーラが自動。別ディスプレイなら `SESSION_CLOCK_CRON_DISPLAY=:1 npm run session:clock:install-cron` 等）。
 

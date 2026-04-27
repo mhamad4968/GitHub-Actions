@@ -49,14 +49,16 @@ const r = desktopNotify(
 console.log(`結果: ok=${r.ok} method=${r.method}`);
 
 console.log(
-  '\n【通知の出どころ】\n' +
-    '・`notify-send` / `gdbus`: **WSLg** なら多くの環境で **Windows 11 のトースト**（右下）。純 Linux デスクトップなら GNOME/KDE 等。\n' +
-    '・`powershell-wsl-popup`: **WSL2 専用フォールバック**。Linux 通知が通らないとき **Windows 側に小さなダイアログ**（WScript.Shell.Popup）。数秒で閉じる。\n' +
-    '・`console-bell`: **GUI なし**（ベル・無音のことも）。**必ず** `logs/session-desktop-notify.log` に 1 行。',
+  '\n【通知の出どころ（ダイアログ／ポップアップ優先）】\n' +
+    '・`powershell-wsl-popup`: **WSL2 で最優先**。Windows の **モーダル風ダイアログ**（WScript.Shell.Popup / 約12秒）。\n' +
+    '・`zenity-dialog` / `xmessage`: Linux の **ウィンドウダイアログ**（timeout で自動閉じ）。\n' +
+    '・`osascript-dialog` (macOS): **ネイティブダイアログ**（自動で消える）。\n' +
+    '・`notify-send` / `gdbus` / `zenity-notification`: **トースト／バルーン**（補助）。\n' +
+    '・`console-bell`: **GUI なし**。**必ず** `logs/session-desktop-notify.log` に 1 行。',
 );
 if (which('notify-send') && r.method === 'console-bell') {
   console.log(
-    '\n補足: `notify-send` はあるが最後まで失敗（D-Bus / WSL 連携）。`desktop-notify` は `/run/user/<uid>/bus` を補うが効かない環境もある。その場合は上記 `powershell-wsl-popup` に任せる（WSL2 + `/mnt/c/.../powershell.exe` 必須）。',
+    '\n補足: すべての GUI 経路が失敗したときだけ `console-bell`。WSL2 なら通常は `powershell-wsl-popup` が先に当たる（`/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe`）。',
   );
 }
 console.log('\n最後まで GUI が無いとき: `sudo apt install libnotify-bin`（未導入時）/ Windows の通知設定 / `logs/session-desktop-notify.log` で履歴確認。');

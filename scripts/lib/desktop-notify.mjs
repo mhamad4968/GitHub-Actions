@@ -1,7 +1,7 @@
 /**
  * デスクトップ通知の多段フォールバック + 必ずディスクに1行残す。
- * notify-send が無い WSL / 最小 Linux でも「何が効いたか」を後から追える。
- * Linux: `DISPLAY` / `DBUS_SESSION_BUS_ADDRESS`（`/run/user/<uid>/bus`）を補完 → 失敗時 WSL なら `powershell.exe` 小窓。
+ * 方針: **トーストよりポップアップ／ダイアログを優先**（目に入る UI）。
+ * Linux: `DISPLAY` / `DBUS_SESSION_BUS_ADDRESS` を補完。WSL2 は **先に** Windows 側 `WScript.Shell.Popup`（システムモーダル）。
  */
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -57,16 +57,18 @@ function isWsl() {
   }
 }
 
-/** WSL2: Linux 側の通知が通らないとき、Windows に小さなダイアログを出す（powershell.exe 経由） */
+/** WSL2: Windows に **ダイアログ**（WScript.Shell.Popup）。64=情報 / 4096=システムモーダル（最前面寄り） */
 function tryPowershellWslPopup(title, body) {
   const exe = '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe';
   if (!fs.existsSync(exe)) return false;
   const t = sanitize(title, 120).replace(/'/g, "''");
   const b = sanitize(body, 400).replace(/'/g, "''");
-  const ps = `$ws=New-Object -ComObject WScript.Shell;$ws.Popup('${b}',8,'${t}',64)|Out-Null`;
+  const flags = 64 + 4096;
+  const ps = `$ws=New-Object -ComObject WScript.Shell;$ws.Popup('${b}',12,'${t}',${flags})|Out-Null`;
   const r = spawnSync(exe, ['-NoProfile', '-NonInteractive', '-WindowStyle', 'Hidden', '-Command', ps], {
     stdio: 'ignore',
     windowsHide: true,
+    timeout: 25_000,
   });
   return !r.error && r.status === 0;
 }
@@ -107,11 +109,53 @@ function tryGdbusNotify(title, body, env) {
   return false;
 }
 
+/** モーダル風ダイアログ（timeout 秒で自動閉じ。OK クリックでも閉じる） */
+function tryZenityDialog(title, body, env) {
+  const t = sanitize(title, 200);
+  const b = sanitize(body, 1200);
+  const r = spawnSync(
+    'zenity',
+    ['--warning', '--title', t, '--text', b, '--timeout', '20', '--no-wrap'],
+    { stdio: 'ignore', env, timeout: 25_000 },
+  );
+  if (r.error) return false;
+  return [0, 1, 5].includes(Number(r.status));
+}
+
 function tryZenity(title, body, env) {
   const text = `${sanitize(title, 200)}\n${sanitize(body, 500)}`;
   const r = spawnSync('zenity', ['--notification', '--text', text], { stdio: 'ignore', env });
   if (!r.error && r.status === 0) return true;
   return false;
+}
+
+/** X11 の簡易ダイアログ（timeout 秒） */
+function tryXmessage(title, body, env) {
+  if (!env.DISPLAY) return false;
+  const msg = `${sanitize(title, 200)}\n\n${sanitize(body, 700)}`;
+  const r = spawnSync('xmessage', ['-center', '-timeout', '15', msg], {
+    stdio: 'ignore',
+    env,
+    timeout: 20_000,
+  });
+  if (r.error) return false;
+  return [0, 1, 11].includes(Number(r.status));
+}
+
+/** macOS: まず **ダイアログ**（自動で消える）、ダメなら通知トースト */
+function tryDarwinDialog(title, body) {
+  const esc = (s) =>
+    sanitize(s, 600)
+      .replace(/\\/g, '\\\\')
+      .replace(/"/g, '\\"');
+  const t = esc(title);
+  const b = esc(body);
+  const r = spawnSync(
+    'osascript',
+    ['-e', `display dialog "${b}" with title "${t}" buttons {"OK"} default button "OK" giving up after 18`],
+    { stdio: 'ignore', timeout: 22_000 },
+  );
+  return !r.error && r.status === 0;
 }
 
 function tryDarwin(title, body) {
@@ -125,10 +169,12 @@ function tryDarwin(title, body) {
 }
 
 function tryWin32Popup(title, body) {
-  const ps = `$ws = New-Object -ComObject Wscript.Shell; $ws.Popup('${sanitize(body, 400).replace(/'/g, "''")}', 5, '${sanitize(title, 120).replace(/'/g, "''")}', 64) | Out-Null`;
+  const flags = 64 + 4096;
+  const ps = `$ws = New-Object -ComObject Wscript.Shell; $ws.Popup('${sanitize(body, 400).replace(/'/g, "''")}', 12, '${sanitize(title, 120).replace(/'/g, "''")}', ${flags}) | Out-Null`;
   const r = spawnSync('powershell', ['-NoProfile', '-WindowStyle', 'Hidden', '-Command', ps], {
     stdio: 'ignore',
     windowsHide: true,
+    timeout: 20_000,
   });
   if (!r.error && r.status === 0) return true;
   return false;
@@ -149,16 +195,25 @@ export function desktopNotify(title, body, opts = {}) {
 
   if (process.platform === 'linux') {
     const env = linuxNotifyEnv();
-    if (tryNotifySend(t0, b0, env)) {
+    if (isWsl() && tryPowershellWslPopup(t0, b0)) {
+      ok = true;
+      method = 'powershell-wsl-popup';
+    } else if (tryNotifySend(t0, b0, env)) {
       ok = true;
       method = 'notify-send';
     } else if (tryGdbusNotify(t0, b0, env)) {
       ok = true;
       method = 'gdbus-session';
+    } else if (tryZenityDialog(t0, b0, env)) {
+      ok = true;
+      method = 'zenity-dialog';
     } else if (tryZenity(t0, b0, env)) {
       ok = true;
-      method = 'zenity';
-    } else if (isWsl() && tryPowershellWslPopup(t0, b0)) {
+      method = 'zenity-notification';
+    } else if (tryXmessage(t0, b0, env)) {
+      ok = true;
+      method = 'xmessage';
+    } else if (!isWsl() && tryPowershellWslPopup(t0, b0)) {
       ok = true;
       method = 'powershell-wsl-popup';
     } else {
@@ -169,9 +224,12 @@ export function desktopNotify(title, body, opts = {}) {
       ok = true;
     }
   } else if (process.platform === 'darwin') {
-    if (tryDarwin(t0, b0)) {
+    if (tryDarwinDialog(t0, b0)) {
       ok = true;
-      method = 'osascript';
+      method = 'osascript-dialog';
+    } else if (tryDarwin(t0, b0)) {
+      ok = true;
+      method = 'osascript-notification';
     } else if (!opts.silentConsole) {
       console.log(`\x07[desktop-notify] ${t0}: ${b0}`);
       method = 'console-bell';
