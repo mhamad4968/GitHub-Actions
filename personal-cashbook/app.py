@@ -304,7 +304,11 @@ def combined_opening_total(conn: sqlite3.Connection) -> float:
 
 
 def load_combined_ledger(conn: sqlite3.Connection) -> pd.DataFrame:
-    """みずほ・三井住友の取引を日付順で統合。残金列は両口座の期首合計からの累計。"""
+    """
+    みずほ・三井住友の取引を日付順で統合。
+    残金（合算）＝その行の直後における「各口座の帳簿残」の合計
+    （各口座は期首＋当口座の取引だけで残高を更新し、最後に足し合わせる）。
+    """
     names_sorted = sorted(COMBINED_BANK_NAMES)
     id_rows = conn.execute(
         f"SELECT id, name FROM accounts WHERE name IN ({','.join('?' * len(names_sorted))}) "
@@ -313,23 +317,37 @@ def load_combined_ledger(conn: sqlite3.Connection) -> pd.DataFrame:
     ).fetchall()
     if not id_rows:
         return pd.DataFrame(
-            columns=["id", "txn_date", "bank_name", "description", "income", "expense", "balance"],
+            columns=[
+                "id",
+                "account_id",
+                "txn_date",
+                "bank_name",
+                "description",
+                "income",
+                "expense",
+                "balance",
+            ],
         )
     ids = [int(r[0]) for r in id_rows]
     ph = ",".join("?" * len(ids))
     q = f"""
-    SELECT t.id, t.txn_date, a.name AS bank_name, t.description, t.income, t.expense
+    SELECT t.id, t.account_id, t.txn_date, a.name AS bank_name, t.description, t.income, t.expense
     FROM transactions t
     JOIN accounts a ON a.id = t.account_id
     WHERE t.account_id IN ({ph})
     ORDER BY t.txn_date ASC, t.account_id ASC, t.id ASC
     """
     df = pd.read_sql(q, conn, params=tuple(ids))
-    opening = combined_opening_total(conn)
     if df.empty:
         return df.assign(balance=pd.Series(dtype="float64"))
-    net = df["income"].fillna(0) - df["expense"].fillna(0)
-    df["balance"] = opening + net.cumsum()
+    running = {i: get_opening_balance(conn, i) for i in ids}
+    combined_after: list[float] = []
+    for _, row in df.iterrows():
+        aid = int(row["account_id"])
+        net = float(row["income"] or 0) - float(row["expense"] or 0)
+        running[aid] += net
+        combined_after.append(sum(running[i] for i in ids))
+    df["balance"] = combined_after
     return df
 
 
@@ -366,7 +384,7 @@ def combined_ledger_for_display(df: pd.DataFrame) -> pd.DataFrame:
         return pd.DataFrame(
             columns=["支払日", "銀行", "摘要", "収入", "支出", "残金（合算）"],
         )
-    out = df.drop(columns=["id"], errors="ignore").rename(
+    out = df.drop(columns=["id", "account_id"], errors="ignore").rename(
         columns={
             "txn_date": "支払日",
             "bank_name": "銀行",
@@ -492,9 +510,10 @@ def main() -> None:
         with sub_a:
             st.subheader("合算一覧（みずほ＋三井住友）")
             st.markdown(
-                "両口座の取引を**支払日順**に並べ、**残金（合算）**は "
-                "「みずほの期首＋三井住友の期首」の合計から、上から順に収入・支出を差し引いた累計です。"
-                "どちらの口座に登録した取引も、この一列の合算残金に反映されます。"
+                "両口座の取引を**支払日順**に並べます。**残金（合算）**は、"
+                "その行の時点での **（みずほの帳簿残）＋（三井住友の帳簿残）** です。"
+                "支出・収入は **登録した口座の帳簿だけ** が動き、合算列は **両方を足した結果** になります。"
+                "（他口座にだけある取引は合算対象外です。）"
             )
             ob_sum = combined_opening_total(conn)
             c1, c2 = st.columns(2)
