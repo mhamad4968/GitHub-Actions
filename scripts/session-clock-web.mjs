@@ -41,6 +41,14 @@ function readTicker() {
   }
 }
 
+/** http 表示用: `./SESSION-CLOCK.md` 相対リンクは localhost 上で 404 になるので平文化 */
+function readTickerForWeb() {
+  return readTicker().replace(
+    /\[`SESSION-CLOCK\.md`\]\(\.\/SESSION-CLOCK\.md\)/g,
+    '`chat-sessions/SESSION-CLOCK.md`',
+  );
+}
+
 function createHandler(boundPort) {
   return (req, res) => {
     const u = req.url?.split('?')[0] ?? '/';
@@ -55,7 +63,7 @@ function createHandler(boundPort) {
       return;
     }
 
-    const raw = readTicker();
+    const raw = readTickerForWeb();
     const html = `<!DOCTYPE html>
 <html lang="ja">
 <head>
