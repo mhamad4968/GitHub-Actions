@@ -21,7 +21,7 @@ DEFAULT_BANK_ACCOUNTS: tuple[tuple[str, int], ...] = (
     ("みずほ", 0),
     ("三井住友", 1),
 )
-# 合算の「残金」に含める銀行（この2口座の取引を時系列で一列にし、残金は合算累計）
+# 合算一覧に載せる銀行（取引の流れ）。合算の残金列の起点は手入力（combined_balance_anchor）。
 COMBINED_BANK_NAMES: frozenset[str] = frozenset({"みずほ", "三井住友"})
 
 
@@ -78,6 +78,7 @@ def init_db(conn: sqlite3.Connection) -> None:
                 list(DEFAULT_BANK_ACCOUNTS),
             )
     _migrate_recurring_schema(conn)
+    _migrate_combined_anchor(conn)
     conn.commit()
 
 
@@ -110,6 +111,39 @@ def _migrate_recurring_schema(conn: sqlite3.Connection) -> None:
         WHERE recurring_rule_id IS NOT NULL AND period_key IS NOT NULL;
         """
     )
+
+
+def _migrate_combined_anchor(conn: sqlite3.Connection) -> None:
+    """合算表示の起点残高（手入力）。口座の期首とは別。"""
+    conn.executescript(
+        """
+        CREATE TABLE IF NOT EXISTS combined_balance_anchor (
+            id INTEGER PRIMARY KEY CHECK (id = 1),
+            balance REAL NOT NULL DEFAULT 0,
+            updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+        );
+        INSERT OR IGNORE INTO combined_balance_anchor (id, balance) VALUES (1, 0);
+        """
+    )
+
+
+def get_combined_manual_balance(conn: sqlite3.Connection) -> float:
+    row = conn.execute(
+        "SELECT balance FROM combined_balance_anchor WHERE id = 1"
+    ).fetchone()
+    return float(row[0]) if row else 0.0
+
+
+def set_combined_manual_balance(conn: sqlite3.Connection, value: float) -> None:
+    conn.execute(
+        """
+        UPDATE combined_balance_anchor
+        SET balance = ?, updated_at = datetime('now')
+        WHERE id = 1
+        """,
+        (float(value),),
+    )
+    conn.commit()
 
 
 def add_months(d: date, months: int) -> date:
@@ -306,8 +340,8 @@ def combined_opening_total(conn: sqlite3.Connection) -> float:
 def load_combined_ledger(conn: sqlite3.Connection) -> pd.DataFrame:
     """
     みずほ・三井住友の取引を日付順で統合。
-    残金（合算）＝その行の直後における「各口座の帳簿残」の合計
-    （各口座は期首＋当口座の取引だけで残高を更新し、最後に足し合わせる）。
+    残金（合算）＝手入力の「合算残高の起点」＋（収入−支出）の時系列累計。
+    支出はプラスの金額として登録されているので、残金からは差し引かれる。
     """
     names_sorted = sorted(COMBINED_BANK_NAMES)
     id_rows = conn.execute(
@@ -317,37 +351,23 @@ def load_combined_ledger(conn: sqlite3.Connection) -> pd.DataFrame:
     ).fetchall()
     if not id_rows:
         return pd.DataFrame(
-            columns=[
-                "id",
-                "account_id",
-                "txn_date",
-                "bank_name",
-                "description",
-                "income",
-                "expense",
-                "balance",
-            ],
+            columns=["id", "txn_date", "bank_name", "description", "income", "expense", "balance"],
         )
     ids = [int(r[0]) for r in id_rows]
     ph = ",".join("?" * len(ids))
     q = f"""
-    SELECT t.id, t.account_id, t.txn_date, a.name AS bank_name, t.description, t.income, t.expense
+    SELECT t.id, t.txn_date, a.name AS bank_name, t.description, t.income, t.expense
     FROM transactions t
     JOIN accounts a ON a.id = t.account_id
     WHERE t.account_id IN ({ph})
     ORDER BY t.txn_date ASC, t.account_id ASC, t.id ASC
     """
     df = pd.read_sql(q, conn, params=tuple(ids))
+    base = get_combined_manual_balance(conn)
     if df.empty:
         return df.assign(balance=pd.Series(dtype="float64"))
-    running = {i: get_opening_balance(conn, i) for i in ids}
-    combined_after: list[float] = []
-    for _, row in df.iterrows():
-        aid = int(row["account_id"])
-        net = float(row["income"] or 0) - float(row["expense"] or 0)
-        running[aid] += net
-        combined_after.append(sum(running[i] for i in ids))
-    df["balance"] = combined_after
+    net = df["income"].fillna(0) - df["expense"].fillna(0)
+    df["balance"] = base + net.cumsum()
     return df
 
 
@@ -375,7 +395,7 @@ def current_book_balance(conn: sqlite3.Connection, account_id: int) -> float:
 def current_combined_book_balance(conn: sqlite3.Connection) -> float:
     df = load_combined_ledger(conn)
     if df.empty:
-        return combined_opening_total(conn)
+        return get_combined_manual_balance(conn)
     return float(df["balance"].iloc[-1])
 
 
@@ -384,7 +404,7 @@ def combined_ledger_for_display(df: pd.DataFrame) -> pd.DataFrame:
         return pd.DataFrame(
             columns=["支払日", "銀行", "摘要", "収入", "支出", "残金（合算）"],
         )
-    out = df.drop(columns=["id", "account_id"], errors="ignore").rename(
+    out = df.drop(columns=["id"], errors="ignore").rename(
         columns={
             "txn_date": "支払日",
             "bank_name": "銀行",
@@ -448,8 +468,9 @@ def main() -> None:
     with st.sidebar:
         st.subheader("銀行")
         st.caption(
-            "**合算の残金**は「一覧」タブの「合算（みずほ＋三井）」。"
-            "支出・収入はどちらの口座に登録したかがそのまま合算の収支になります。"
+            "**合算の残金**は「一覧」→「合算」で。**起点の金額はそこで手入力**し、"
+            "みずほ・三井の取引の収支がその起点から差し引かれ／足されます。"
+            "銀行別の期首は各口座の帳簿用です。"
         )
         choice = st.selectbox("追加・繰り返し・銀行別一覧で使う銀行", names, index=0)
         account_id = acc_options[choice]
@@ -482,7 +503,7 @@ def main() -> None:
                 value=float(ob),
                 step=1000.0,
                 key=f"ob_{account_id}",
-                help="銀行別の残金＝この口座の期首＋（収入−支出）。合算の起点はみずほ・三井の期首の合計。",
+                help="銀行別の残金＝この口座の期首＋（収入−支出）。合算の起点は「一覧→合算」で手入力。",
             )
             if st.button("期首を保存", key=f"save_ob_{account_id}"):
                 set_opening_balance(conn, account_id, new_ob)
@@ -510,23 +531,40 @@ def main() -> None:
         with sub_a:
             st.subheader("合算一覧（みずほ＋三井住友）")
             st.markdown(
-                "両口座の取引を**支払日順**に並べます。**残金（合算）**は、"
-                "その行の時点での **（みずほの帳簿残）＋（三井住友の帳簿残）** です。"
-                "支出・収入は **登録した口座の帳簿だけ** が動き、合算列は **両方を足した結果** になります。"
-                "（他口座にだけある取引は合算対象外です。）"
+                "**残金（合算）**は、下で入力した **合算残高の起点** から、"
+                "みずほ・三井の取引を時系列で **（収入 − 支出）** を足し引きした値です。"
+                "**支出は残金を減らし、収入は増やします。** 通帳の合計と合わせたいときは起点を更新してください。"
             )
             ob_sum = combined_opening_total(conn)
+            anchor = get_combined_manual_balance(conn)
+            with st.form("combined_anchor_form"):
+                st.markdown("**合算残高の起点（都度入力）**")
+                new_anchor = st.number_input(
+                    "みずほ＋三井を合わせたい残高（円）",
+                    value=float(anchor),
+                    step=1000.0,
+                    key="combined_anchor_input",
+                    help="ここを基準に、一覧の取引だけで増減します。銀行の期首とは別です。",
+                )
+                if st.form_submit_button("起点を保存", type="primary"):
+                    set_combined_manual_balance(conn, new_anchor)
+                    st.success("保存しました。")
+                    st.rerun()
+            if st.button("期首の合計を起点にコピー（参考）", key="copy_opening_to_anchor"):
+                set_combined_manual_balance(conn, ob_sum)
+                st.rerun()
+            st.caption(
+                f"参考: みずほ・三井の**口座期首の合計**は **{ob_sum:,.0f}** 円（銀行別帳簿用。合算の起点に使うかは任意です）。"
+            )
             c1, c2 = st.columns(2)
             with c1:
-                st.metric("期首の合計（みずほ＋三井）", f"{ob_sum:,.0f} 円")
+                st.metric("合算の起点（手入力）", f"{anchor:,.0f} 円")
             with c2:
-                st.metric("いまの帳簿合算", f"{current_combined_book_balance(conn):,.0f} 円")
+                st.metric("いまの合算残（起点＋収支）", f"{current_combined_book_balance(conn):,.0f} 円")
             cdf = load_combined_ledger(conn)
             cdisplay = combined_ledger_for_display(cdf)
             if cdf.empty:
                 st.info("合算対象の取引がまだありません。「追加（都度）」でどちらかの銀行に登録してください。")
-                if ob_sum != 0:
-                    st.caption("期首だけ設定されている状態です。")
             else:
                 st.dataframe(
                     cdisplay,
