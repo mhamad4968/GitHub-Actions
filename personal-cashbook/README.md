@@ -39,11 +39,12 @@ chmod +x run.sh
 
 初回起動で `data/cashbook.db` が作成されます。
 
-### Windows デスクトップから起動（WSL 利用時）
+### Windows からダブルクリック起動（WSL 利用時）
 
-`start-from-windows.bat` をデスクトップにコピーするか、ショートカットのリンク先にこの bat を指定してください。  
-ダブルクリックで WSL が開き、`Desktop\personal-cashbook` の仮想環境から Streamlit が起動します。  
-プロジェクトをデスクトップ以外に置いた場合は、bat 内の `cd '...'` のパスを書き換えてください。
+- **`start-from-windows.bat` は `app.py` と同じ `personal-cashbook` フォルダの中に置く**（フォルダ外にコピーしない）。
+- デスクトップには **この bat へのショートカット**を作るとよいです（リンク先は `...\personal-cashbook\start-from-windows.bat`）。
+- bat は **`wslpath`** で現在のフォルダを WSL 用パスに変換するので、デスクトップ以外の場所に置いても動きます。
+- 起動しないとき: **既定の WSL** に `.venv` と同じ環境があるか確認（`wsl -l -v`）。別ディストリだけ使う場合は bat 内の `wsl.exe` を `wsl.exe -d ディストリ名` に変更してください。
 
 ## データの扱い
 

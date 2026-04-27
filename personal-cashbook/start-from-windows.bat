@@ -1,9 +1,31 @@
 @echo off
-REM デスクトップの personal-cashbook を WSL から起動する（この .bat をデスクトップにコピーしても可）
-REM フォルダを Desktop 以外に置いた場合は、下の cd のパスだけ書き換えてください。
+setlocal EnableExtensions
+REM このファイルは app.py と同じ「personal-cashbook」フォルダ内に置いてください。
+REM デスクトップのショートカットは、この bat へのリンクで構いません（bat 本体はフォルダ内のまま）。
 
-wsl.exe bash -lc "cd '/mnt/c/Users/%USERNAME%/Desktop/personal-cashbook' && source .venv/bin/activate && exec python -m streamlit run app.py"
+cd /d "%~dp0"
+if not exist "app.py" (
+  echo [ERROR] app.py not found. Put this bat inside the personal-cashbook folder.
+  pause
+  exit /b 1
+)
+
+REM 現在の Windows フォルダを WSL のパスに変換（Desktop 以外に置いても動く）
+for /f "delims=" %%i in ('wsl.exe wslpath -u "%CD%"') do set "UBUNTU_PATH=%%i"
+if not defined UBUNTU_PATH (
+  echo [ERROR] wslpath failed. Check: wsl.exe --status
+  wsl.exe echo WSL_OK
+  pause
+  exit /b 1
+)
+
+echo WSL path: %UBUNTU_PATH%
+echo Open http://localhost:8501 in your browser after Streamlit starts.
+echo.
+
+wsl.exe bash -lc "cd '%UBUNTU_PATH%' && source .venv/bin/activate && python -m streamlit run app.py"
+set ERR=%ERRORLEVEL%
 
 echo.
-echo Streamlit を終了しました。ウィンドウを閉じるには何かキーを押してください。
-pause >nul
+if not "%ERR%"=="0" echo [ERROR] exit code %ERR%
+pause
