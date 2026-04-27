@@ -58,6 +58,7 @@ const CRITICAL = [
   'scripts/mandatory-read-gate.mjs',
   'scripts/session-clock.mjs',
   'scripts/session-clock-watch.mjs',
+  '.cursor/hooks/session-start-autopilot.mjs',
 ];
 
 function log(msg) {

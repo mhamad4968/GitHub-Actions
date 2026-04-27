@@ -139,7 +139,7 @@
 
 - [ ] **`chat-sessions/SESSION-SPLIT-REMINDER.md`** を Read（浜田=4h アラーム / AI=**【セッション切替】** 先頭行）
 - [ ] **`npm run session:clock:set`** で **`chat-sessions/SESSION-CLOCK.md`** の `開始:` を更新（§51-6-2 **時間軸**の客観起点）
-- [ ] （任意・**チャット外通知**）別ターミナルで **`npm run session:clock:watch`** を常駐（`SESSION-SPLIT-REMINDER` の「チャット外で教える」節）
+- [ ] **sessionStart hook** により **`session:clock:set` + `session:clock:watch`** が自動（`.cursor/hooks.json`）。無効環境のみ手動で `SESSION-SPLIT-REMINDER` 参照
 - [ ] 長時間作業を始める前に **OS タイマー 4 時間**をセット（任意だが強く推奨）
 
 ## フェーズ 6 — 機械検証（**必須・Read だけで終わらせない**）

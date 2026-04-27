@@ -20,7 +20,7 @@
 
 **項番 -1（人間・強く推奨）**: 新チャットの **ユーザー最初の 1 メッセージ** に、Desktop の **`NEW-SESSION-STARTER_yyyymmdd.txt` 全文**（**JST の日付 8 桁**＝ファイル名にそのまま入る。**常にこの 1 ファイル名だけ**が正本コピー先。同日に内容が変わった sync では旧版が **`_2` `_3`…** に退避するが、**貼るのは常に `yyyymmdd.txt` 側**）を **そのまま貼る**（= リポ `chat-sessions/NEW-SESSION-STARTER.md` の **■ フル版**と同内容）。**貼付推奨**は **`npm run verify:desktop-ai-emergency-sync` の最終行**（または `session-starter:sync-desktop` の「貼付推奨」行）でも確認できる。🚨憲法ブロック・`@` 参照リスト・bootstrap 手順が一括で入り、**要約脱落に強い**。続けて **`HANDOFF-HUMAN.txt` 5 行**でもよい。
 
-**項番 -0（人間＋AI・合意・1 往復・開始ゲート）**: AI は **先頭に `[§1-2-3 ティア判定: …]`** を付け、スターター **受領**を一言言い、`checkpoint` 最終更新＋`handoff` 末尾＋`HANDOFF-HUMAN` の **「次にやる1つ」** を要約して **「本日の本題（これから着手する次の一手）は ○○で合っていますか？」と §41 一問だけ**浜田へ確認する。**浜田から OK が返るまで**（「はい」「OK」「進めて」または **1 行の修正指示**で合意が取れた状態）、**項番 0（`verify` / `session:bootstrap` / 以降の Read 連鎖・本題の実行）に着手しない**。OK のあと **項番 0** へ進む。**新チャットの「いま」**を **`npm run session:clock:set`** で `SESSION-CLOCK.md` に刻む（§51-6-2 時間軸の客観起点。項番 0 の verify より前でも可）。
+**項番 -0（人間＋AI・合意・1 往復・開始ゲート）**: AI は **先頭に `[§1-2-3 ティア判定: …]`** を付け、スターター **受領**を一言言い、`checkpoint` 最終更新＋`handoff` 末尾＋`HANDOFF-HUMAN` の **「次にやる1つ」** を要約して **「本日の本題（これから着手する次の一手）は ○○で合っていますか？」と §41 一問だけ**浜田へ確認する。**浜田から OK が返るまで**（「はい」「OK」「進めて」または **1 行の修正指示**で合意が取れた状態）、**項番 0（`verify` / `session:bootstrap` / 以降の Read 連鎖・本題の実行）に着手しない**。OK のあと **項番 0** へ進む。**新チャットの「いま」**は **Cursor `sessionStart` hook**（`.cursor/hooks/session-start-autopilot.mjs`）が **`session:clock:set`** と **`session:clock:watch`** を原則自動実行する（`SESSION-CLOCK.md` の客観起点・§51-6-2）。hook が無い環境のみ **`npm run session:clock:set`** を手で打つ（項番 0 の verify より前でも可）。
 
 0. **光速ガード（項番 0 / Read より前・必須・AI）**（`npm run session:bootstrap` も **同じ順**を内包）:
    - **0a 憲法ガード**: リポルートで **`npm run verify:constitution-handoff`** → **exit 0**（TSB-024 物理ガード）。**ng のまま Read・Tier B・本題に進まない**（憲法ドキュ修復のみ）。
@@ -61,7 +61,7 @@
 
 ---
 
-**最終更新**: 2026-04-28 (Tue) JST — **session:clock:watch（チャット外通知）**: `scripts/session-clock-watch.mjs` ＋ `npm run session:clock:watch`。`session-clock.mjs check-json` をポーリングし **4 時間超**でデスクトップ通知（Linux/macOS/Windows）。AIが常時監視できない穴を **ローカル常駐**で埋める。
+**最終更新**: 2026-04-27 (Mon) JST — **`sessionStart` hook で 1・2 自動**: `.cursor/hooks/session-start-autopilot.mjs` が **`session:clock:set`** と未稼働時の **`session:clock:watch`** を起動。従来の **`scripts/session-clock-watch.mjs`**（4 時間超デスクトップ通知）はその実体。手動は hook 無効時のみ。
 
 **前回更新**: 2026-04-28 (Tue) JST — **SESSION-CLOCK（§51-6-2 時間軸の客観化）**: `chat-sessions/SESSION-CLOCK.md` ＋ `scripts/session-clock.mjs` ＋ `npm run session:clock:set` / `session:split-check`。`mandatory-read-gate` が **4 時間超**で exit 2。未設定時は警告のみで通過。
 

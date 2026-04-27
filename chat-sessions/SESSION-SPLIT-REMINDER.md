@@ -22,18 +22,28 @@
 ## 浜田（壁時計）
 
 - **4 時間**は OS の **タイマー・カレンダーアラーム**に任せると抜けにくい（チャットだけに依存しない）。  
-- **客観起点（推奨）**: 新チャットで会話を始めたら、**すぐ** `npm run session:clock:set` を実行し **`chat-sessions/SESSION-CLOCK.md`** の `開始:` を JST の「いま」にする。以降 **`npm run session:split-check`** または **`session:bootstrap` 内包**で **4 時間超**が機械検出される。  
+- **客観起点（正本）**: **`sessionStart` hook** が **`session:clock:set`** で **`chat-sessions/SESSION-CLOCK.md`** の `開始:` を JST の「いま」に更新し、必要なら **`session:clock:watch`** も起動する（上記「1・2を自動化」節）。hook が無いときだけ **手で** `npm run session:clock:set`。以降 **`npm run session:split-check`** または **`session:bootstrap` 内包**で **4 時間超**が機械検出される。  
 - 新チャット開始時は従来どおり **`NEW-SESSION-STARTER_yyyymmdd.txt` 全文** ＋ `HANDOFF-HUMAN` 5 行。
 
-## チャット外で「教える」（`session:clock:watch`）
+## 「1」「2」を AI 側で自動化（正本: Cursor `sessionStart` hook）
 
-AI は Cursor のチャットを **常時監視できない**。代わりに **ローカルプロセス**でポーリングし、**4 時間超**のとき **デスクトップ通知**（Linux `notify-send` / macOS 通知 / Windows ポップアップ）を出す。
+**1**（`session:clock:set`）と **2**（`session:clock:watch` の常駐）は、**浜田が毎回打たなくてよい**ように、**Composer 新セッションの `sessionStart`** で自動実行する。
+
+- 実装: `.cursor/hooks.json` の `sessionStart` 先頭 → **`node .cursor/hooks/session-start-autopilot.mjs`**
+- 動作: **`npm run session:clock:set`** で `SESSION-CLOCK.md` を JST のいまに更新 → 未稼働なら **`session:clock:watch`** を **デタッチ起動**（4 時間超でデスクトップ通知）
+- AI への事実注入: hook の stdout **`additional_context`**（プロンプト直下に入る想定）— **手動 1・2 は原則不要**と分かる
+- ログ: `logs/session-start-hook.log` / `logs/session-clock-watch.log`
+- **hook が無効**な環境・Cursor 外だけ、従来どおり手動で `session:clock:set` と（必要なら）`session:clock:watch`
+
+## チャット外で「教える」（`session:clock:watch` の中身）
+
+**通常は hook が起動する**ので、別ターミナルで手動起動は不要。ポーリングは **既定 2 分**（`SESSION_CLOCK_WATCH_MS`）。同一 `開始:` に対する通知は **1 回**（`logs/.session-clock-split-alerted`）。`session:clock:set` でリセット。
+
+手動だけ動かす場合:
 
 ```bash
 cd ~/kintone-ai-lab && npm run session:clock:watch
 ```
-
-別ターミナルで常駐。**既定 2 分**ごと（`SESSION_CLOCK_WATCH_MS` で変更）。同一 `開始:` に対する通知は **1 回**（`logs/.session-clock-split-alerted`）。`session:clock:set` でリセット。
 
 ## 参照
 

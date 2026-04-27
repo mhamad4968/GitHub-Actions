@@ -83,6 +83,11 @@ const suites = [
     needles: ['verify-constitution-handoff-anchor', 'TSB-024'],
   },
   {
+    id: 'hooks-json-session-autopilot',
+    rel: '.cursor/hooks.json',
+    needles: ['sessionStart', 'session-start-autopilot.mjs', 'session:clock:set'],
+  },
+  {
     id: 'cursor-rule-gate',
     rel: '.cursor/rules/constitution-handoff-gate.mdc',
     needles: ['TSB-024', '§35-1', '§1-2-3-1', 'alwaysApply: true', '[§1-2-3 ティア判定:', '浜田（確認）'],

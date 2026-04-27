@@ -9,7 +9,7 @@ alwaysApply: true
 
 ## 人間（浜田さん）
 
-- **セッション切替の推奨**: 新チャット **最初**に Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用\NEW-SESSION-STARTER_yyyymmdd.txt`（**JST・常にこのファイル名**）の **全文**を貼る（`checkpoint-latest.md` **項番 -1**。**貼付推奨**は verify 最終行）。続けて `HANDOFF-HUMAN.txt` を **5行だけ**埋めて貼ってもよい。**項番 -0**: AI が「次にやること」を **一問だけ**確認し、**浜田の OK が出るまで** verify・bootstrap・本題に **着手しない**。**§51-6-2 時間軸の客観起点**は **`npm run session:clock:set`**（`SESSION-CLOCK.md` の `開始:` を JST のいまにする。AI がターミナルで実行可）。
+- **セッション切替の推奨**: 新チャット **最初**に Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用\NEW-SESSION-STARTER_yyyymmdd.txt`（**JST・常にこのファイル名**）の **全文**を貼る（`checkpoint-latest.md` **項番 -1**。**貼付推奨**は verify 最終行）。続けて `HANDOFF-HUMAN.txt` を **5行だけ**埋めて貼ってもよい。**項番 -0**: AI が「次にやること」を **一問だけ**確認し、**浜田の OK が出るまで** verify・bootstrap・本題に **着手しない**。**§51-6-2 時間軸の客観起点**は **`sessionStart` hook**（`.cursor/hooks/session-start-autopilot.mjs`）が **`session:clock:set`** を原則自動実行（`SESSION-CLOCK.md` の `開始:` を JST のいまにする）。hook が無いときだけ **`npm run session:clock:set`** を手動。
 - `chat-sessions/HANDOFF-HUMAN.txt` を開き、**5行だけ**埋めてチャットに貼る。それ以上書かなくてよい。
 
 ## AI（必須・省略禁止）

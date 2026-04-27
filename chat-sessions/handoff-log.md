@@ -85,3 +85,18 @@ AI は、セッション切替・終了・浜田さんがそのテンプレを�
 **次セッションへの 1 行**: チャット切替直後は **項番 0 → session:bootstrap**。**明日**は同ファイル「明日の公式オーダー」の **1→2→3**。
 
 ---
+
+### 2026-04-27 JST — sessionStart hook で §51-6-2 の「1」「2」自動化
+
+**経緯（簡潔）**:
+- Cursor **`sessionStart`** 先頭で **`node .cursor/hooks/session-start-autopilot.mjs`** を実行。`npm run session:clock:set` を毎回走らせ、未稼働なら **`session:clock:watch`** をデタッチ起動（pid ファイルでシングルトン）。
+- `session-clock-watch.mjs` に pid ロック、`verify-constitution-handoff` に `hooks.json` needle、`mandatory-read-gate` に `sessionStart hook` 文字列、`wipe-guard` CRITICAL に autopilot スクリプトを追加。
+- `SESSION-SPLIT-REMINDER.md` / `checkpoint-latest.md` / `SESSION-BOOTSTRAP-CHECKLIST.md` / `session-handoff.mdc` を **hook が正本**と整合。
+
+**AI 補足**:
+- `次の1手`: 本変更を **1 commit** → 希望なら push → Desktop sync
+- `関連パス`: `.cursor/hooks.json`, `.cursor/hooks/session-start-autopilot.mjs`, `scripts/session-clock-watch.mjs`
+
+**次セッションへの 1 行**: 新 Composer では **`additional_context`** に自動済みが入る。**手打ち 1・2 は hook 無効時のみ**。
+
+---

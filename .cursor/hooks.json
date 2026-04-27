@@ -3,8 +3,12 @@
   "hooks": {
     "sessionStart": [
       {
+        "command": "node .cursor/hooks/session-start-autopilot.mjs",
+        "timeout": 20
+      },
+      {
         "type": "prompt",
-        "prompt": "新セッション開始です。以下の最重要ルールを意識して動いてください:\n\n1. §42 過去ログ確認義務 (chat-sessions/checkpoint-latest.md + 当日の docs/reports/<日付>-morning-prep.md を必ず読む)\n2. §47 鵜呑み禁止 + 着手前 §47 発動 (30 分超のタスクは『そもそもやるべきか』を §48 ベスト推奨で先に問う)\n3. §41 一問一答 (質問は 1 つ / 順序リスト OK / 回答待ちは 1 個)\n4. §11 『動くはず』禁止 (実機未検証なら『未検証 / 信頼度 50%』と必ず明示)\n5. #R8 議論前の全フィールド/全資料確認 (議論冒頭 30 秒以内に対象アプリ全フィールド + 既存仕様書取得)\n6. TSB-006 ガード (1 ターン 10 ファイル超は分割提案)\n\n最初のアクションは chat-sessions/checkpoint-latest.md の Read から開始してください。",
+        "prompt": "新セッション開始です。以下の最重要ルールを意識して動いてください:\n\n1. §42 過去ログ確認義務 (chat-sessions/checkpoint-latest.md + 当日の docs/reports/<日付>-morning-prep.md を必ず読む)\n2. §47 鵜呑み禁止 + 着手前 §47 発動 (30 分超のタスクは『そもそもやるべきか』を §48 ベスト推奨で先に問う)\n3. §41 一問一答 (質問は 1 つ / 順序リスト OK / 回答待ちは 1 個)\n4. §11 『動くはず』禁止 (実機未検証なら『未検証 / 信頼度 50%』と必ず明示)\n5. #R8 議論前の全フィールド/全資料確認 (議論冒頭 30 秒以内に対象アプリ全フィールド + 既存仕様書取得)\n6. TSB-006 ガード (1 ターン 10 ファイル超は分割提案)\n7. sessionStart hook により `session:clock:set` / `session:clock:watch` は原則自動済み（`additional_context` を確認）\n\n最初のアクションは chat-sessions/checkpoint-latest.md の Read から開始してください。",
         "timeout": 5
       }
     ],
