@@ -57,9 +57,19 @@ AI は **`npm run session:clock:set`** を実行し、結果（`SESSION-CLOCK.md
 - **URL**: ターミナルに **`[session-clock-web] 開く: http://127.0.0.1:…/`** と出る **実際のポート**を開く（既定 **47931** から最大 **30** 個ぶん、**空きまで自動**で試す。前回のプロセスが残っていると **47932** などになる）
 - **ポートの起点だけ変える**: `SESSION_CLOCK_WEB_PORT=48000 npm run session:clock:web`
 - **ブックマーク / デスクトップの URL ショートカット**: 上記 URL を登録（**127.0.0.1 のみ**で待ち受け — インターネットには公開されない）
-- **表示の中身**: `SESSION-CLOCK-TICKER.md` と同じ。**30 秒ごと**にページが自動再読み込み
+- **表示の中身**: `SESSION-CLOCK-TICKER.md` と同じ。**30 秒ごと**にページが自動再読み込み（`Cache-Control: no-store`＋`location.reload()`）
 - **止める**: サーバを起動したターミナルで **Ctrl+C**
-- **前提**: `session:clock:set` 済みで、`write-ticker` / `watch` / `cron` のどれかで **TICKER が生成・更新**されていること
+- **前提**: `session:clock:set` 済みで、`SESSION-CLOCK.md` の `開始:` が有効であること（WEB は **各 GET の直前**に in-process で `write-ticker` 相当を実行するため、**watch なしでも**経過表示は進む）
+
+### データの流れ（WEB・5 行）
+
+1. **正本**: `chat-sessions/SESSION-CLOCK.md` の **`開始:`**（JST 壁時計・hook または `session:clock:set` で更新）
+2. **再計算**: WEB サーバが **HTTP GET `/` を受けるたび**、`SESSION-CLOCK.md` を読み直して **経過 ms** を計算し `SESSION-CLOCK-TICKER.md` を **上書き**（`scripts/lib/session-clock-write-ticker.mjs`）
+3. **表示**: 続けて **TICKER を読み**、HTML の `<pre>` に埋め込む
+4. **ブラウザ**: **30 秒ごとに `reload()`** → 再び 2〜3 が走る（経過・残りが進む）
+5. **補助**: `session:clock:watch` / cron は **エディタ用 TICKER** や **通知**のため（WEB 単体でも壁時計は回る）
+
+**負荷・将来案**: `docs/session-clock-web-performance-notes.md`
 
 ### ブラウザが `ERR_CONNECTION_REFUSED` のとき
 

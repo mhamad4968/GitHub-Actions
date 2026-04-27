@@ -9,38 +9,25 @@
  *   node scripts/session-clock.mjs write-ticker — `SESSION-CLOCK-TICKER.md` を更新（人間がエディタで見る用）
  *
  * 「開始」が未設定のときは check をスキップ（警告のみ）— 一度 set すると以降は機械判定が効く。
+ * TICKER 本文生成は `scripts/lib/session-clock-write-ticker.mjs` と共有（WEB は in-process 呼び出し）。
  *
  * @see chat-sessions/SESSION-CLOCK.md
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+  pathsFromRoot,
+  parseClock,
+  fmtDuration,
+  nowTokyoYYYYMMDDHHmm,
+  FOUR_H_MS,
+} from './lib/session-clock-core.mjs';
+import { writeTickerFile } from './lib/session-clock-write-ticker.mjs';
 
-const TOKYO = 'Asia/Tokyo';
-const FOUR_H_MS = 4 * 60 * 60 * 1000;
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const { clockAbs } = pathsFromRoot(root);
 const clockRel = 'chat-sessions/SESSION-CLOCK.md';
-const clockAbs = path.join(root, clockRel);
-const tickerRel = 'chat-sessions/SESSION-CLOCK-TICKER.md';
-const tickerAbs = path.join(root, tickerRel);
-
-/** @returns {string} */
-function nowTokyoYYYYMMDDHHmm() {
-  const s = new Date().toLocaleString('sv-SE', {
-    timeZone: TOKYO,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  });
-  // sv-SE + Tokyo: "2026-04-28 11:49:03" または "2026-04-28 11:49"
-  const m = s.match(/^(\d{4}-\d{2}-\d{2})[ T](\d{1,2}):(\d{2})/);
-  if (!m) throw new Error(`unexpected tokyo locale string: ${s}`);
-  const hh = m[2].padStart(2, '0');
-  return `${m[1]} ${hh}:${m[3]}`;
-}
 
 const HEADER =
   '# セッション壁時計（JST）\n\n' +
@@ -67,78 +54,11 @@ function writeClock() {
   }
   console.log(`[session-clock] ✅ set → ${clockRel}`);
   console.log(`  開始: ${line} (Asia/Tokyo)`);
-  writeTickerFile();
-}
-
-/**
- * @returns {{ mode: 'ok'|'skip'|'over'|'bad'|'missing', line?: string, elapsedMs?: number, start?: Date }}
- */
-function parseClock() {
-  if (!fs.existsSync(clockAbs)) {
-    return { mode: 'missing' };
-  }
-  const raw = fs.readFileSync(clockAbs, 'utf8');
-  const m = raw.match(/^\s*開始:\s*(.+)$/m);
-  if (!m) return { mode: 'bad', line: undefined };
-  const val = m[1].trim();
-  if (/未設定|\(未設定\)|TBD|未登録/i.test(val)) {
-    return { mode: 'skip', line: val };
-  }
-  const dm = val.match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{1,2}):(\d{2})$/);
-  if (!dm) return { mode: 'bad', line: val };
-  const y = Number(dm[1]);
-  const mo = Number(dm[2]);
-  const d = Number(dm[3]);
-  const h = Number(dm[4]);
-  const mi = Number(dm[5]);
-  const start = new Date(Date.UTC(y, mo - 1, d, h - 9, mi, 0, 0));
-  if (Number.isNaN(start.getTime())) return { mode: 'bad', line: val };
-  const elapsedMs = Date.now() - start.getTime();
-  if (elapsedMs >= FOUR_H_MS) return { mode: 'over', line: val, elapsedMs, start };
-  return { mode: 'ok', line: val, elapsedMs, start };
-}
-
-function fmtDuration(ms) {
-  const m = Math.floor(ms / 60000);
-  const h = Math.floor(m / 60);
-  const mm = m % 60;
-  return `${h}h${String(mm).padStart(2, '0')}m`;
-}
-
-/** 浜田がエディタで開く用（gitignore）。watch の tick からも更新 */
-function writeTickerFile() {
-  const displayUpdateJst = nowTokyoYYYYMMDDHHmm();
-  const r = parseClock();
-  let body = '# セッション時計（人間向け・自動）\n\n';
-  body +=
-    '> **自動生成**（手で直さない）。**経過／4h までの残り**を表示。正本の `開始:` は [`SESSION-CLOCK.md`](./SESSION-CLOCK.md)。\n\n';
-  body += `- **この表示の更新(JST)**: ${displayUpdateJst}\n`;
-  if (r.mode === 'missing') {
-    body += '- **状態**: `SESSION-CLOCK.md` がまだない → `cd ~/kintone-ai-lab && npm run session:clock:set`\n';
-  } else if (r.mode === 'skip') {
-    body += `- **開始**: 未設定 → 新チャットの hook か AI 依頼で \`session:clock:set\`\n`;
-  } else if (r.mode === 'bad') {
-    body += `- **開始行**: 形式不正 → \`SESSION-CLOCK.md\` の \`開始:\` を \`YYYY-MM-DD HH:mm\` に\n`;
-  } else if (r.mode === 'over') {
-    body += `- **開始(JST)**: ${r.line}\n`;
-    body += `- **経過**: **${fmtDuration(r.elapsedMs)}**（**4h 超**）→ 新 Composer 推奨（§51-6-2）\n`;
-  } else {
-    const leftMs = Math.max(0, FOUR_H_MS - r.elapsedMs);
-    body += `- **開始(JST)**: ${r.line}\n`;
-    body += `- **経過**: **${fmtDuration(r.elapsedMs)}**\n`;
-    body += `- **4h まであと**: **${fmtDuration(leftMs)}**\n`;
-  }
-  body += '\n';
-  try {
-    fs.mkdirSync(path.dirname(tickerAbs), { recursive: true });
-    fs.writeFileSync(tickerAbs, body, 'utf8');
-  } catch (e) {
-    console.warn(`[session-clock] ⚠ write-ticker: ${e.message}`);
-  }
+  writeTickerFile(root);
 }
 
 function runCheckJson() {
-  const r = parseClock();
+  const r = parseClock(clockAbs);
   const payload = {
     mode: r.mode,
     startLine: r.line ?? null,
@@ -153,7 +73,7 @@ function runCheckJson() {
 
 /** Cursor `beforeSubmitPrompt`: 毎プロンプトで経過/残りを 1 行表示 */
 function runPromptHook() {
-  const r = parseClock();
+  const r = parseClock(clockAbs);
   let msg;
   if (r.mode === 'missing') {
     msg =
@@ -176,7 +96,7 @@ function runPromptHook() {
 }
 
 function runCheck() {
-  const r = parseClock();
+  const r = parseClock(clockAbs);
   if (r.mode === 'missing') {
     console.warn(`[session-clock] ⚠ ${clockRel} がありません。新規作成: npm run session:clock:set`);
     process.exit(0);
@@ -221,7 +141,7 @@ if (cmd === 'prompt-hook') {
 }
 if (cmd === 'write-ticker') {
   try {
-    writeTickerFile();
+    writeTickerFile(root);
     process.exit(0);
   } catch (e) {
     console.error('[session-clock] ❌ write-ticker', e.message);

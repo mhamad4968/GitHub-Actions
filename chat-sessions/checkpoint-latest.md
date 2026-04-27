@@ -63,7 +63,7 @@
 
 ---
 
-**最終更新**: 2026-04-27 (Mon) JST — **NEW-SESSION-STARTER v3.27 / v3.28 / v3.29**: **「■ 貼付単独で完走」**＝項番 -1〜0 を **スターター単独で完結**（checkpoint チャット重複不要・**-0 OK → bootstrap → @ Read**）。**v3.28**＝手順改定の **唯一詳細正本**は同ブロック。**v3.29**＝**4/28 予実仕様デイ**（十分な時間・Excel **新フォーマット**／`templates/yojitsu-budget-lite/docs/shin-format-excel-layout.md`）。**セッション時計 WEB**: 各 GET で `write-ticker`＋キャッシュ抑止。**壁時計**: `session:clock:health`／`session:bootstrap` **(1c)**／`sessionStart` hook。
+**最終更新**: 2026-04-28 (Tue) JST — **NEW-SESSION-STARTER v3.27–v3.30**: **「■ 貼付単独で完走」**＝項番 -1〜0 の正本。**v3.29**＝4/28 **予実仕様デイ**（`shin-format-excel-layout.md`）。**v3.30**＝予実チェックリスト・Excel 二正本メンテ・**時計 WEB in-process**＋TICKER mtime・`docs/session-clock-web-performance-notes.md`・`SESSION-SPLIT` データ流 5 行・`session-handoff` 日終わり例外・`kintone-apps` 予実予定行・`npm run yojitsu:excel-draft`。**壁時計**: `session:clock:health`／`session:bootstrap` **(1c)**／`sessionStart` hook。
 
 ### 浜田メモ（直近日程・チャット反映）
 

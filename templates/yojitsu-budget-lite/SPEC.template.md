@@ -15,7 +15,8 @@
 ## 3. データの正
 
 - （例）Excel: `…パス…` または DB のスキーマ定義へのリンク
-- レイアウト例（年度予算・月次四つ柱）: 本テンプレの **`docs/shin-format-excel-layout.md`**（シート名「新フォーマット」相当の列構造）
+- レイアウト例（年度予算・月次四つ柱）: 本テンプレの **`docs/shin-format-excel-layout.md`**（シート名「新フォーマット」相当の列構造・Excel 変更時の md 追随ルール）
+- 仕様セッション当日: **`docs/yojitsu-spec-session-checklist.md`** を開きながら合意事項を埋める
 
 ## 4. 受け入れ条件
 

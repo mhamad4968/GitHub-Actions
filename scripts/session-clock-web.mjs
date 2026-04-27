@@ -5,8 +5,10 @@
  *   npm run session:clock:web
  *   → http://127.0.0.1:47931/ から **空いているポート**を順に試す（既定起点: SESSION_CLOCK_WEB_PORT または 47931）
  *
- * 表示は `SESSION-CLOCK-TICKER.md` を読む。**各 GET の直前**に `session-clock.mjs write-ticker` を同期実行し、
- * 経過／残りを壁時計で再計算する（watch なしでもブラウザの 30 秒 reload で数字が進む）。
+ * 表示は `SESSION-CLOCK-TICKER.md` を読む。**各 GET の直前**に `writeTickerFile(root)`（`lib/session-clock-write-ticker.mjs`）を
+ * in-process で実行し、経過／残りを再計算する（子プロセス不要・watch なしでも 30 秒 reload で数字が進む）。
+ *
+ * 負荷・将来案: `docs/session-clock-web-performance-notes.md`
  *
  * セキュリティ: 既定 **127.0.0.1** のみ。WSL で Windows ブラウザから繋がらないときだけ
  *   `SESSION_CLOCK_WEB_HOST=0.0.0.0`（同一 LAN に露出するので自宅外では使わない）。
@@ -15,11 +17,12 @@ import http from 'node:http';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { pathsFromRoot } from './lib/session-clock-core.mjs';
+import { writeTickerFile } from './lib/session-clock-write-ticker.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const tickerAbs = path.join(root, 'chat-sessions', 'SESSION-CLOCK-TICKER.md');
+const { tickerAbs } = pathsFromRoot(root);
 
 function resolveBindHost() {
   const h = (process.env.SESSION_CLOCK_WEB_HOST || '127.0.0.1').trim();
@@ -73,21 +76,11 @@ function readTickerForWeb() {
   );
 }
 
-/** ディスク上の TICKER を最新化（経過は parseClock の Date.now() に追随） */
-function refreshTickerFromClock() {
-  const script = path.join(root, 'scripts', 'session-clock.mjs');
+function tickerMtimeIso() {
   try {
-    const r = spawnSync(process.execPath, [script, 'write-ticker'], {
-      cwd: root,
-      encoding: 'utf8',
-      timeout: 15_000,
-      windowsHide: true,
-    });
-    if (r.error) console.warn('[session-clock-web] write-ticker:', r.error.message);
-    else if (r.status !== 0)
-      console.warn('[session-clock-web] write-ticker exit', r.status, (r.stderr || '').slice(0, 200));
-  } catch (e) {
-    console.warn('[session-clock-web] write-ticker:', e?.message ?? e);
+    return fs.statSync(tickerAbs).mtime.toISOString();
+  } catch {
+    return '（未取得）';
   }
 }
 
@@ -105,7 +98,8 @@ function createHandler(boundPort) {
       return;
     }
 
-    refreshTickerFromClock();
+    writeTickerFile(root);
+    const tickerMtime = tickerMtimeIso();
     const raw = readTickerForWeb();
     const generatedAt = new Date().toISOString();
     const html = `<!DOCTYPE html>
@@ -126,8 +120,9 @@ function createHandler(boundPort) {
 </head>
 <body>
   <h1>セッション時計（ローカル · ${escapeHtml(DISPLAY_HOST)}:${boundPort}）</h1>
-  <p>下は <code>SESSION-CLOCK-TICKER.md</code> の中身です。各表示の直前に <code>write-ticker</code> を実行してから読みます。<strong>30 秒ごと</strong>に <code>location.reload()</code>（キャッシュ抑止ヘッダ付き）。</p>
-  <p class="hint" style="font-size:12px;color:#71717a">ページ生成(UTC): ${escapeHtml(generatedAt)} — この時刻が変わっていれば再読込できている</p>
+  <p>下は <code>SESSION-CLOCK-TICKER.md</code> の中身です。各表示の直前に <code>writeTickerFile</code>（in-process）で再生成してから読みます。<strong>30 秒ごと</strong>に <code>location.reload()</code>（キャッシュ抑止ヘッダ付き）。</p>
+  <p class="hint" style="font-size:12px;color:#71717a">ページ生成(UTC): ${escapeHtml(generatedAt)} — 再読込の目印<br>
+  TICKER ファイル更新(ローカル mtime・UTC): ${escapeHtml(tickerMtime)} — <code>write-ticker</code> 直後の値</p>
   <pre>${escapeHtml(raw)}</pre>
   <p class="hint">止める: このサーバを起動したターミナルで <kbd>Ctrl+C</kbd>。<br>
   詳細: <code>chat-sessions/SESSION-SPLIT-REMINDER.md</code>（人間向けタイマー / WEB）</p>

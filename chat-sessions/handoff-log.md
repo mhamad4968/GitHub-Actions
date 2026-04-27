@@ -125,3 +125,14 @@ AI は、セッション切替・終了・浜田さんが引き継ぎテンプ�
 **次セッションへの 1 行**: 新チャットは **`NEW-SESSION-STARTER_yyyymmdd.txt` 全文** → **項番 -0** で「本題＝**予実仕様デイ**（または PC 台帳 CSV 側）」を確認 → **`session:bootstrap`** → `@shin-format-excel-layout.md` を予実の日は Read。
 
 ---
+
+### 2026-04-28 JST — v3.30 一括（浜田「すべて承認」反映）
+
+**経緯**:
+- 前ターンの **P0–P3 案**を実装: 予実 **チェックリスト**・`shin-format` **二正本メンテ**・`SESSION-SPLIT` **WEB データ流 5 行**・`docs/session-clock-web-performance-notes.md`・`session-handoff` **日終わり例外**・`kintone-apps` **予実予定行**・`npm run yojitsu:excel-draft`（Python / openpyxl）。
+- **セッション時計**: `session-clock-core.mjs` + `session-clock-write-ticker.mjs` に分離。**WEB は in-process** `writeTickerFile`（子プロセス廃止）。HTML に **TICKER mtime（UTC）**。
+- `fmtDuration` の **分 floor** 挙動を **JSDoc** で明示（`session-clock-core.mjs`）。
+
+**次セッションへの 1 行**: **v3.30** スターター＋`yojitsu-spec-session-checklist.md` を開き、**項番 -0** で予実本題 → `session:bootstrap` → 仕様合意後 **`kintone-apps` 1 行**を更新。
+
+---

@@ -108,6 +108,7 @@
     "session:clock:uninstall-cron": "node scripts/install-session-clock-cron.mjs --uninstall",
     "session:clock:health": "node scripts/session-clock-health.mjs",
     "verify:session-clock-health": "node scripts/session-clock-health.mjs --strict",
+    "yojitsu:excel-draft": "python3 scripts/yojitsu_excel_columns_draft.py",
     "session:bootstrap": "node scripts/session-bootstrap-verify.mjs",
     "session-starter:sync-desktop": "node scripts/sync-session-starter-to-desktop.mjs",
     "verify:desktop-ai-emergency-sync": "node scripts/verify-desktop-ai-emergency-sync.mjs",

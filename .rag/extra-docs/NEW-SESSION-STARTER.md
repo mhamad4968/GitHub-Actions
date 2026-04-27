@@ -221,6 +221,14 @@ v3.29 (2026-04-28) **明日＝部署予実の仕様デイ**（浜田合意・十
 - **薄い雛形**: `templates/yojitsu-budget-lite/README.md` / `SPEC.template.md`（複製先で `SPEC.md`）。
 - **§51-6-2 セッション時計 WEB**（4/27 改修）: ブラウザ再読込で経過が進むよう **各 GET 前に `write-ticker`**＋**キャッシュ抑止**＋**30 秒 `location.reload()`**（`scripts/session-clock-web.mjs`）。
 
+v3.30 (2026-04-28) **本日承認分のフォロー一式**（浜田「すべて承認」）:
+- **予実**: `shin-format-excel-layout.md` に **Excel↔md 二正本のメンテ表**／**`yojitsu-spec-session-checklist.md`**（仕様デイ用）／`npm run yojitsu:excel-draft`（列見出しドラフト・openpyxl）。
+- **時計 WEB**: `writeTickerFile` を **`lib/session-clock-write-ticker.mjs`** に共通化（WEB は **in-process**・子プロセス廃止）。**TICKER の mtime（UTC）**を HTML に表示。負荷メモ **`docs/session-clock-web-performance-notes.md`**。`SESSION-SPLIT-REMINDER` に **データの流れ 5 行**。
+- **`fmtDuration`**: 経過と残りは **それぞれ分 floor** のため表示上の分の和が 240 に見えないことがある旨を **コメントで明示**（`session-clock-core.mjs`）。
+- **`session-handoff.mdc`**: **日終わり・明示依頼＋チャット合意**ならドラフト省略可の **例外 1 行**。
+- **`SESSION-CLOCK.md`**: **壁時計 set で差分が出うる**。**コミットに含めるかは任意**（未コミット＝異常とは限らない）。
+- **`kintone-apps.md`**: **部署予実（予定）**行＋「仕様合意後にアプリ ID を追記」の運用一文。
+
 v3.25 (2026-04-26) **Desktop スターター控えのファイル名 = メンテ日（JST）＋枝番**（浜田指示）※ **v3.26 で運用確定**（枝番最大を貼る方式から **常に yyyymmdd.txt** へ）:
 - 参照用に履歴のみ残す。
 
@@ -317,6 +325,7 @@ v3.13 (2026-04-26) PC 台帳仕様の正本固定 + セッション切替後も�
 @kintone-ai-lab/WORKFLOW.md                          ← Phase 0-5
 @kintone-ai-lab/docs/plans/2026-04-21-new-pc-ledger-spec.md ← **新・PC台帳（674・ラベル・customize）を触るなら §4.2.0〜 を必ず Read**（PC 以外のタスクならスキップ可／`SESSION-BOOTSTRAP` フェーズ 1b）
 @kintone-ai-lab/templates/yojitsu-budget-lite/docs/shin-format-excel-layout.md ← **4/28 予実仕様デイ**なら先に Read（Excel「新フォーマット」列対応のたたき台／本文 **v3.29**）
+@kintone-ai-lab/templates/yojitsu-budget-lite/docs/yojitsu-spec-session-checklist.md ← 予実の **仕様セッション**で上から埋める（**v3.30**）
 
 朝ルーチン:
 1. docs/reports/<今日の日付>-morning-prep.md を読んで朝ルーチン状態（緑/黄/赤）確認
