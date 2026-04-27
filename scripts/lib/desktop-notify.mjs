@@ -1,6 +1,7 @@
 /**
  * デスクトップ通知の多段フォールバック + 必ずディスクに1行残す。
  * notify-send が無い WSL / 最小 Linux でも「何が効いたか」を後から追える。
+ * Linux: `DISPLAY` / `DBUS_SESSION_BUS_ADDRESS`（`/run/user/<uid>/bus`）を補完 → 失敗時 WSL なら `powershell.exe` 小窓。
  */
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -32,14 +33,52 @@ function appendLog(root, record) {
   }
 }
 
-function tryNotifySend(title, body) {
-  const r = spawnSync('notify-send', [title, body], { stdio: 'ignore' });
+/** Cursor 内蔵ターミナル等で DBUS が無いとき、systemd ユーザーソケットを補う */
+function linuxNotifyEnv() {
+  const e = { ...process.env };
+  if (!e.DISPLAY) e.DISPLAY = ':0';
+  try {
+    if (!e.DBUS_SESSION_BUS_ADDRESS && typeof process.getuid === 'function') {
+      const uid = process.getuid();
+      const bus = `/run/user/${uid}/bus`;
+      if (fs.existsSync(bus)) e.DBUS_SESSION_BUS_ADDRESS = `unix:path=${bus}`;
+    }
+  } catch {
+    /* noop */
+  }
+  return e;
+}
+
+function isWsl() {
+  try {
+    return /microsoft/i.test(fs.readFileSync('/proc/version', 'utf8'));
+  } catch {
+    return false;
+  }
+}
+
+/** WSL2: Linux 側の通知が通らないとき、Windows に小さなダイアログを出す（powershell.exe 経由） */
+function tryPowershellWslPopup(title, body) {
+  const exe = '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe';
+  if (!fs.existsSync(exe)) return false;
+  const t = sanitize(title, 120).replace(/'/g, "''");
+  const b = sanitize(body, 400).replace(/'/g, "''");
+  const ps = `$ws=New-Object -ComObject WScript.Shell;$ws.Popup('${b}',8,'${t}',64)|Out-Null`;
+  const r = spawnSync(exe, ['-NoProfile', '-NonInteractive', '-WindowStyle', 'Hidden', '-Command', ps], {
+    stdio: 'ignore',
+    windowsHide: true,
+  });
+  return !r.error && r.status === 0;
+}
+
+function tryNotifySend(title, body, env) {
+  const r = spawnSync('notify-send', [title, body], { stdio: 'ignore', env });
   if (!r.error && r.status === 0) return true;
   return false;
 }
 
 /** D-Bus org.freedesktop.Notifications（notify-send が無くても GNOME 等で動くことがある） */
-function tryGdbusNotify(title, body) {
+function tryGdbusNotify(title, body, env) {
   const t = sanitize(title, 200);
   const b = sanitize(body, 400);
   const r = spawnSync(
@@ -62,15 +101,15 @@ function tryGdbusNotify(title, body) {
       '{}',
       '15000',
     ],
-    { stdio: 'ignore' },
+    { stdio: 'ignore', env },
   );
   if (!r.error && r.status === 0) return true;
   return false;
 }
 
-function tryZenity(title, body) {
+function tryZenity(title, body, env) {
   const text = `${sanitize(title, 200)}\n${sanitize(body, 500)}`;
-  const r = spawnSync('zenity', ['--notification', '--text', text], { stdio: 'ignore' });
+  const r = spawnSync('zenity', ['--notification', '--text', text], { stdio: 'ignore', env });
   if (!r.error && r.status === 0) return true;
   return false;
 }
@@ -109,15 +148,19 @@ export function desktopNotify(title, body, opts = {}) {
   let ok = false;
 
   if (process.platform === 'linux') {
-    if (tryNotifySend(t0, b0)) {
+    const env = linuxNotifyEnv();
+    if (tryNotifySend(t0, b0, env)) {
       ok = true;
       method = 'notify-send';
-    } else if (tryGdbusNotify(t0, b0)) {
+    } else if (tryGdbusNotify(t0, b0, env)) {
       ok = true;
       method = 'gdbus-session';
-    } else if (tryZenity(t0, b0)) {
+    } else if (tryZenity(t0, b0, env)) {
       ok = true;
       method = 'zenity';
+    } else if (isWsl() && tryPowershellWslPopup(t0, b0)) {
+      ok = true;
+      method = 'powershell-wsl-popup';
     } else {
       if (!opts.silentConsole) {
         console.log(`\x07[desktop-notify] ${t0}: ${b0}`);
