@@ -321,12 +321,25 @@ def load_combined_ledger(conn: sqlite3.Connection) -> pd.DataFrame:
     return df
 
 
+def account_balance_breakdown(
+    conn: sqlite3.Connection, account_id: int
+) -> tuple[float, float, float, int]:
+    """期首、収入合計、支出合計、取引件数。帳簿残＝期首＋収入合計−支出合計。"""
+    ob = get_opening_balance(conn, account_id)
+    row = conn.execute(
+        """
+        SELECT COALESCE(SUM(income), 0), COALESCE(SUM(expense), 0), COUNT(*)
+        FROM transactions WHERE account_id = ?
+        """,
+        (account_id,),
+    ).fetchone()
+    return (ob, float(row[0]), float(row[1]), int(row[2]))
+
+
 def current_book_balance(conn: sqlite3.Connection, account_id: int) -> float:
     """その口座の帳簿上の最終残金（取引がなければ期首のみ）。"""
-    df = load_ledger(conn, account_id)
-    if df.empty:
-        return get_opening_balance(conn, account_id)
-    return float(df["balance"].iloc[-1])
+    ob, si, se, _n = account_balance_breakdown(conn, account_id)
+    return ob + si - se
 
 
 def current_combined_book_balance(conn: sqlite3.Connection) -> float:
@@ -414,6 +427,7 @@ def main() -> None:
         st.markdown("**帳簿上の残高（リアル合わせ用）**")
         st.caption(
             "通帳・アプリの残高とずれたら、その銀行を選んで「追加」から**収入**（または支出）で調整。"
+            "**マイナス**は、期首＋収入−支出が負のとき（支出や借入の反映など）で起こり得ます。"
         )
         comb = current_combined_book_balance(conn)
         st.metric("みずほ＋三井 合算（帳簿）", f"{comb:,.0f} 円")
@@ -422,6 +436,14 @@ def main() -> None:
                 bid = acc_options[bn]
                 bb = current_book_balance(conn, bid)
                 st.metric(f"{bn}（帳簿）", f"{bb:,.0f} 円")
+        with st.expander("選択中の銀行の計算内訳", expanded=False):
+            ob, si, se, n = account_balance_breakdown(conn, account_id)
+            end = ob + si - se
+            st.write(f"**{choice}**（取引 {n} 件）")
+            st.write(f"- 期首残金: **{ob:,.0f}** 円")
+            st.write(f"- 収入の合計: **{si:,.0f}** 円")
+            st.write(f"- 支出の合計: **{se:,.0f}** 円")
+            st.write(f"- 期首＋収入−支出: **{end:,.0f}** 円（＝帳簿残）")
         st.divider()
         with st.expander("期首残金（その銀行の起点）", expanded=False):
             ob = get_opening_balance(conn, account_id)
