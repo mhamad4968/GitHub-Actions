@@ -48,6 +48,18 @@ AI は **`npm run session:clock:set`** を実行し、結果（`SESSION-CLOCK.md
 - **更新タイミング**: `npm run session:clock:set` の直後、`session:clock:watch` の **既定 2 分ごと**、cron の `session-split-cron-ping` の **各実行**（`npm run session:clock:write-ticker` と同じ処理）
 - **運用**: Cursor でこのファイルを **開いてタブを固定**（split でも可）。外部更新で内容が変わるので、必要なら **エディタの「ファイルの再読み込み」**またはタブを閉じて開き直す
 
+## ブラウザで見る（クリック・ブックマーク）
+
+**目的**: エディタを開かず、**リンクやお気に入り**からいつでも経過を見る。
+
+- **起動**（リポルート）: `npm run session:clock:web`
+- **URL（既定）**: `http://127.0.0.1:47931/` — ターミナルに同じ行が出るので **クリック**できる端末ならそのまま開ける
+- **ポート変更**: `SESSION_CLOCK_WEB_PORT=47932 npm run session:clock:web`
+- **ブックマーク / デスクトップの URL ショートカット**: 上記 URL を登録（**127.0.0.1 のみ**で待ち受け — インターネットには公開されない）
+- **表示の中身**: `SESSION-CLOCK-TICKER.md` と同じ。**30 秒ごと**にページが自動再読み込み
+- **止める**: サーバを起動したターミナルで **Ctrl+C**
+- **前提**: `session:clock:set` 済みで、`write-ticker` / `watch` / `cron` のどれかで **TICKER が生成・更新**されていること
+
 ## 「1」「2」を AI 側で自動化（正本: Cursor `sessionStart` hook）
 
 **1**（`session:clock:set`）と **2**（`session:clock:watch` の常駐）は、**浜田が毎回打たなくてよい**ように、**Composer 新セッションの `sessionStart`** で自動実行する。
