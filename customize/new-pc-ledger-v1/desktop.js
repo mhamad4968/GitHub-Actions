@@ -4,7 +4,7 @@
  * 仕様: docs/plans/2026-04-21-new-pc-ledger-spec.md v2.1 §4
  * Day 4 plan: docs/plans/2026-04-26-pc-ledger-day4-action.md
  *
- * BUILD: 2026-04-28-dept-help-banner-v0.1 (§4.2.0b 所属ヘルプ常時帯 + skysea v0.2 維持)
+ * BUILD: 2026-04-28-dept-help-banner-v0.3 (§4.2.0b 所属名・グループ公式一覧をヘルプ帯に反映)
  *
  * Day 4 雛形スコープ:
  *   - 種別 (account_type) による表示制御 (show/hide)
@@ -25,7 +25,54 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-04-28-dept-help-banner-v0.1';
+  const BUILD = '2026-04-28-dept-help-banner-v0.3';
+
+  /** 共有・JR 等の手入力時の参照用（浜田提供・順序固定） */
+  const DEPT_HELP_REFERENCE_TEXT =
+    '【所属名】\n' +
+    '　◆本社\n' +
+    '　　役員室\n' +
+    '　　顧問室\n' +
+    '　　総務部\n' +
+    '　　経理部\n' +
+    '　　経営企画部\n' +
+    '　　人事研修部\n' +
+    '　　安全推進部\n' +
+    '　　施工推進部\n' +
+    '　　メンテナンス技術部\n' +
+    '　　塗装技術部\n' +
+    '　　品質管理部\n' +
+    '　◆支店・営業所\n' +
+    '　　東北支店\n' +
+    '　　　秋田営業所\n' +
+    '　　　盛岡営業所\n' +
+    '　　　仙台営業所\n' +
+    '　　関越支店\n' +
+    '　　　新潟営業所\n' +
+    '　　　長野営業所\n' +
+    '　　　高崎営業所\n' +
+    '　　東京支店\n' +
+    '　　　千葉営業所\n' +
+    '　　　水戸営業所\n' +
+    '　　東海支店\n' +
+    '　　　東京営業所\n' +
+    '　　　静岡営業所\n' +
+    '　　　名古屋営業所\n' +
+    '　　　関西営業所\n' +
+    '　　札幌支店\n' +
+    '　　首都圏支店\n' +
+    '　　鉄構支店\n' +
+    '　　湾岸工事所\n' +
+    '\n' +
+    '【所属グループ】\n' +
+    '　honsya\n' +
+    '　tohoku\n' +
+    '　kan-etsu\n' +
+    '　tokyo\n' +
+    '　tokai\n' +
+    '　reform\n' +
+    '　tekko\n' +
+    '　wangan\n';
 
   // ===== 関連アプリ ID (kintone-apps.md 参照) =====
   const APP_ENV_MASTER = '670';     // 環境設定マスタ
@@ -243,26 +290,23 @@
       '個人：利用者名（595と一致する氏名）を入力後、所属は社員マスタ（595）から自動反映（※JS連携は次アップデートで有効化予定。それまでは手入力可）。';
     const li2 = document.createElement('li');
     li2.textContent =
-      '共有・JR：マスタと一致しない表記があり得ます。下の例をコピーして改変してください。';
+      '共有・JR：`所属名` と `所属グループ` は別フィールド。下表は会社既定の候補を**この順**で記載（必要な行だけコピーして入力）。';
     ul.appendChild(li1);
     ul.appendChild(li2);
     box.appendChild(ul);
 
     const exLabel = document.createElement('div');
     exLabel.style.cssText = 'font-weight:bold;font-size:11px;margin:2px 0 2px;';
-    exLabel.textContent = 'コピー用の例（共有・JR）';
+    exLabel.textContent = '所属名・所属グループ 一覧（上から順・コピー参照）';
     box.appendChild(exLabel);
 
     const ta = document.createElement('textarea');
     ta.readOnly = true;
-    ta.rows = 3;
+    ta.rows = 12;
     ta.style.cssText =
-      'width:100%;max-width:720px;font-size:11px;font-family:Consolas,monospace;' +
-      'box-sizing:border-box;padding:6px;border:1px solid #86b7fe;border-radius:4px;resize:vertical;';
-    ta.value =
-      '例（共有）所属名: システム推進室\n' +
-      '例（共有）所属グループ: システム管理\n' +
-      '例（JR）  所属名: ○○支社 / 所属グループ: 端末管理（※○○は現場名に置換）';
+      'width:100%;max-width:720px;max-height:240px;font-size:11px;font-family:Consolas,monospace;' +
+      'box-sizing:border-box;padding:6px;border:1px solid #86b7fe;border-radius:4px;resize:vertical;overflow-y:auto;';
+    ta.value = DEPT_HELP_REFERENCE_TEXT;
     box.appendChild(ta);
 
     space.insertBefore(box, space.firstChild);
