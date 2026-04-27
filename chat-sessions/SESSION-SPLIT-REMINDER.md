@@ -25,6 +25,19 @@
 - **客観起点（正本）**: **`sessionStart` hook** が **`session:clock:set`** で **`chat-sessions/SESSION-CLOCK.md`** の `開始:` を JST の「いま」に更新し、必要なら **`session:clock:watch`** も起動する（上記「1・2を自動化」節）。hook が無いときだけ **手で** `npm run session:clock:set`。以降 **`npm run session:split-check`** または **`session:bootstrap` 内包**で **4 時間超**が機械検出される。  
 - 新チャット開始時は **`NEW-SESSION-STARTER_yyyymmdd.txt` 全文**（**v3.27+**: 本文 **「■ 貼付単独で完走」** に -1〜0 手順を内包。**`HANDOFF-HUMAN` 5 行は任意**）。
 
+## 浜田 → AI 依頼文（壁時計セット・Tier A）
+
+**方針**: 時計の更新は **AI が端末で実行**（浜田はチャットで依頼するだけ / §35-1・TSB-024）。
+
+- **いまの JST で開始を記録**（いちばん短い）:  
+  `壁時計をいまの時刻でセットして（npm run session:clock:set）`
+- **作業再開で時刻を切り直す**（中抜け後など）:  
+  `このチャット用に壁時計をいまの JST で取り直して（session:clock:set）`
+- **watch も欲しい**（通知プロセスが落ちたとき等）:  
+  `壁時計をセットしたうえで、session:clock:watch もバックグラウンドで起動して`
+
+AI は **`npm run session:clock:set`** を実行し、結果（`SESSION-CLOCK.md` の `開始:` 1 行）を短く報告すればよい。`npm run session:clock:prompt-hook` で表示確認できる。
+
 ## 「1」「2」を AI 側で自動化（正本: Cursor `sessionStart` hook）
 
 **1**（`session:clock:set`）と **2**（`session:clock:watch` の常駐）は、**浜田が毎回打たなくてよい**ように、**Composer 新セッションの `sessionStart`** で自動実行する。

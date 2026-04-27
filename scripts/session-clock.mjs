@@ -42,6 +42,7 @@ function nowTokyoYYYYMMDDHHmm() {
 const HEADER =
   '# セッション壁時計（JST）\n\n' +
   '同一 Cursor 会話の **§51-6-2 時間軸（4 時間）** を機械判定する。**新チャット直後**または**作業再開時**に次を1回実行する。\n\n' +
+  '**チャットから AI に依頼**（浜田が手で npm を打たなくてよい）: 「**壁時計をいまの時刻でセットして**（`npm run session:clock:set`）」→ AI が実行（§35-1）。依頼文の一覧は `chat-sessions/SESSION-SPLIT-REMINDER.md` の **浜田 → AI 依頼文**。\n\n' +
   '```bash\n' +
   'npm run session:clock:set\n' +
   '```\n\n' +
@@ -122,7 +123,7 @@ function runPromptHook() {
       '⏱ **セッション時計**: `SESSION-CLOCK.md` がまだない。新チャットの sessionStart か `npm run session:clock:set` で開始を記録すると、ここに経過と 4h までの残りが出る。';
   } else if (r.mode === 'skip') {
     msg =
-      '⏱ **セッション時計**: 開始が「未設定」。`npm run session:clock:set`（または新チャット）後に経過タイマーが表示される。';
+      '⏱ **セッション時計**: 開始が「未設定」。**チャットで**「壁時計をいまの時刻でセットして」と **AI に依頼**（`session:clock:set`）するか、新チャットの sessionStart を待つと経過タイマーが表示される。';
   } else if (r.mode === 'bad') {
     msg = `⏱ **セッション時計**: 開始行の形式が不正（\`${String(r.line ?? '').slice(0, 80)}\`）。\`chat-sessions/SESSION-CLOCK.md\` を直してほしい。`;
   } else if (r.mode === 'over') {
