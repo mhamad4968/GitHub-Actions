@@ -8,8 +8,8 @@
     },
     "logon_pw": {
       "ui_label": "ログオン初期PW",
-      "spec_anchor": "§4.2.2（=logon_name）",
-      "matrix_fingerprint": "5ddf1988f931af9c"
+      "spec_anchor": "§4.7.3 logon_pw（個人=ID／共有・JR新規=kent0000／既存は手入力）",
+      "matrix_fingerprint": "4c08696cfa0ee672"
     },
     "windows_name": {
       "ui_label": "Windows名",

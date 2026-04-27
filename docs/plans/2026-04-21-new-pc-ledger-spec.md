@@ -118,7 +118,7 @@ PC レコード保存・廃棄時:
 | **その他** | ❌ 不要 | （なし） |
 
 - **共有 PC（種別=共有）**: **Windows（新共有WindowsID採番マスタ）と M365（M365管理マスタ）の両方**を「共有用 自動生成」でフォームに表示（L1・§4.4）。
-- **JR 端末（種別=JR）**: **M365（管理マスタ）のみ**が自動割当の対象。**`logon_name` / `windows_name` / `logon_pw` 等の Windows 系はすべて手入力**（AD 不参加・§4.3.2）。サイボウズ・ガリバーは **社内アカウントなし**（§4.2.2 どおり `gb_*` / `sb_*` は不要）。M365 をフォームに出す操作は §4.4（共有と **同一ボタン**・表示条件に JR を含む）。
+- **JR 端末（種別=JR）**: **M365（管理マスタ）のみ**が自動割当の対象。**`logon_name` / `windows_name` は手入力**（AD 不参加・§4.3.2）。**`logon_pw`** は新規時 **既定 `kent0000`** をフォームに出しうるが（§4.7.3）、**既存は手入力を正**。サイボウズ・ガリバーは **社内アカウントなし**（§4.2.2 どおり `gb_*` / `sb_*` は不要）。M365 をフォームに出す操作は §4.4（共有と **同一ボタン**・表示条件に JR を含む）。
 
 ### 4.2 フィールド設計（主要・約 43 個想定）
 
@@ -138,7 +138,7 @@ PC レコード保存・廃棄時:
 | 個人 WindowsID | `jbm` + 4 桁（**新個人WindowsID採番マスタ**・§2） | `logon_name` |
 | 共有 WindowsID | `sjbm` + 4 桁（**新共有WindowsID採番マスタ**・§2） | `logon_name` |
 | JR WindowsID | 手入力 | `logon_name` |
-| WindowsPW | = WindowsID（= `logon_name`） | `logon_pw` |
+| WindowsPW | **個人・新規:** = `logon_name`。**共有・JR・新規:** `kent0000` 固定（§4.7.3・環境設定 `LOGON_PW_SHARED_JR_FIXED`）。**既存（全種別）:** 手入力を正 | `logon_pw` |
 | Windows アカウント名 | メール @ より前との連動（個人のみ）/ **共有は `=logon_name`**（メールなし）/ 手入力（JR） | `windows_name` |
 | メールパスワード | `jb` + ランダム 4 桁数字 + `K#`（個人用ボタン 1 回生成） | `mail_pw` |
 | 個人 M365 PW | `WindowsID` + `K#`（例: `jbm0001K#`） | `m365_pw` |
@@ -207,7 +207,7 @@ PC レコード保存・廃棄時:
 | code | type | 個人 | 共有 | JR端末 |
 |---|---|---|---|---|
 | `logon_name` | SINGLE_LINE_TEXT | jbm****（**新個人WindowsID採番マスタ**・§2／旧626は5/13以降参照のみ） | sjbm****（**新共有WindowsID採番マスタ**・§2／旧667は5/13以降参照のみ） | 手入力 |
-| `logon_pw` | SINGLE_LINE_TEXT | =logon_name | =logon_name | 手入力 |
+| `logon_pw` | SINGLE_LINE_TEXT | **新規:** =`logon_name`。**既存:** 手入力を正 | **新規:** `kent0000` 固定（§4.7.3）。**既存:** 手入力を正 | **新規:** `kent0000` 固定（§4.7.3）。**既存:** 手入力を正 |
 | `windows_name` | SINGLE_LINE_TEXT | `mail` の @ より前（595・個人メール） | `=logon_name`（メールなし・共有 PC） | 手入力 |
 | `mail` | SINGLE_LINE_TEXT | 595 から | （不要）| （不要）|
 | `mail_acct` | SINGLE_LINE_TEXT | mail の @ 前 | （不要）| （不要）|
@@ -303,6 +303,8 @@ PC レコード保存・廃棄時:
 | **🔄 PC買替** | 全種別 | 既存 594 と同じ動作で継承 |
 | **➕ M365管理マスタへ手動追加** | 共有/JR で必要時 | M365管理マスタへ次連番レコードを**手動**で追加（Microsoft 管理画面で実体作成済の前提）|
 
+- **`logon_pw`（共有・JR）**: 自動生成で **空欄にのみ** §4.7.3 の **`kent0000`**（`LOGON_PW_SHARED_JR_FIXED`）を**表示**してよい。**既に手入力されている値は上書きしない**（上表「手入力済値は保護＝マージ」）。
+
 ### 4.5 UI 出し分け（種別による）
 
 - **共有・JR で `mail` / `mail_acct` 等**: §4.2.2 のとおり **個人用 PC のみメール必須**；共有・JR は **Windows + M365 のみ**のためマトリクス上は「（不要）」。kintone フォーム上は **フィールド定義としては存在**する。**画面上**は本表のとおり **アカウント情報セクションでは非表示**（customize の表示切替。値は空のまま運用してよい）。
@@ -359,6 +361,12 @@ PC レコード保存・廃棄時:
 - CSV インポート経由なら **既存移行系（緩い）** を customize で自動切替
 - **画面上で既存アカウントの `logon_name` を手入力して登録する場合**（浜田合意 2026-04-28）: **入力された文字列を正として保存**する。**新規発番系（厳格）のパターンのみを強制しない**（自動生成ボタンで上書きしない）。バリデーションは **既存移行系（緩い）**と同列に扱う（`^jbm\d{4,6}$` / `^sjbm\d{4,6}$` 等・AD 実名に合わせる）。緩い系でもパスしない特殊表記が出たら **別途ルール追加**（`import_source` フラグ等）で扱う。
 - 実装ヒント: `record.import_source.value === 'csv'` のような **内部メタ**（`import_source`・§4.2.1a）を CSV 側に仕込む or `event.type` で判定。**画面上は常に非表示**（登録者が手で触らない）
+
+#### 4.7.3 `logon_pw`（Windows ログオン初期 PW）（浜田合意 2026-04-28）
+
+- **個人・新規（自動生成ボタン等）**: `logon_pw` = `logon_name`（従来どおり）。
+- **共有・JR・新規（自動生成ボタン等）**: **`kent0000` 固定**（実装は環境設定マスタ **`LOGON_PW_SHARED_JR_FIXED`** を参照。初期値 `kent0000`）。
+- **既存アカウント（個人・共有・JR のいずれも）**: **手入力された `logon_pw` を正**として保存する（上記の固定・「=` ルールを強制しない）。
 
 ### 4.8 検索仕様（v1.1 強化）
 - **検索バー**: 画面上部に固定配置（カスタマイズで強化）
@@ -535,6 +543,7 @@ PC レコード保存・廃棄時:
 | `MAIL_PW_SUFFIX` | `K#` | Mail | メール PW 末尾 |
 | `M365_PW_PERSONAL_SUFFIX` | `K#` | M365 | 個人 M365 PW 末尾 |
 | `M365_PW_SHARED_FIXED` | `kent2511K#` | M365 | 共有 M365 PW 固定値 |
+| `LOGON_PW_SHARED_JR_FIXED` | `kent0000` | Windows | 共有・JR の **Windows ログオン PW** 新規自動生成時の固定値 |
 | `PC_NAME_PREFIX_PERSONAL` | `JBIS` | Windows | 個人 PC 名接頭辞 |
 | `PC_NAME_PREFIX_SHARED` | `S-JBIS` | Windows | 共有 PC 名接頭辞 |
 | `M365_LICENSE_LIMIT` | `5` | 上限値 | M365 ライセンス上限（1 アカウントあたり）|
@@ -741,7 +750,7 @@ snapshot: `data/snapshots/594-pre-migration-scan-2026-04-22.json`
 | 個人 WindowsID | jbm+4桁（**新個人WindowsID採番マスタ**・§2／旧626は5/13以降参照のみ）|
 | 共有 WindowsID | sjbm+4桁（**新共有WindowsID採番マスタ**・§2／旧667は5/13以降参照のみ）|
 | JR WindowsID | 手入力 |
-| WindowsPW | =WindowsID |
+| WindowsPW | 個人=WindowsID／共有・JR 新規=`kent0000` 固定／既存は手入力を正（§4.7.3）|
 | Windows アカウント名 | メール @ より前（個人）/ =logon_name（共有・メールなし）/ 手入力（JR）|
 | メールパスワード | jb+ランダム4桁数字+K#（個人用ボタン押下時 1 回生成）|
 | 個人 M365 PW | WindowsID + K#（例: jbm0001K#）|
