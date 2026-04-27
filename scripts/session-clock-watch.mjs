@@ -9,9 +9,9 @@
  *   SESSION_CLOCK_WATCH_MS — ポーリング間隔 ms（既定 120000 = 2 分）
  *
  * 通知:
- *   - Linux: notify-send（存在時）
- *   - macOS: osascript display notification
- *   - Windows: WScript.Shell.Popup（5 秒で閉じる）
+ *   - `scripts/lib/desktop-notify.mjs`（notify-send → gdbus → zenity → コンソールベル）
+ *   - いずれの経路でも `logs/session-desktop-notify.log` に 1 行追記
+ *   - 診断: `npm run session:notify-selftest`
  *
  * 同一「開始」行に対しては 1 回だけ通知（`logs/.session-clock-split-alerted`）。
  * `npm run session:clock:set` でフラグ解除済み。
@@ -22,6 +22,7 @@ import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { desktopNotify } from './lib/desktop-notify.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const intervalMs = Math.max(15_000, Number(process.env.SESSION_CLOCK_WATCH_MS || 120_000));
@@ -83,26 +84,9 @@ for (const sig of ['SIGINT', 'SIGTERM', 'SIGHUP']) {
 }
 
 function notify(title, body) {
-  const t = title.replace(/"/g, '\\"');
-  const b = body.replace(/"/g, '\\"').replace(/\n/g, ' ');
-  if (process.platform === 'linux') {
-    const r = spawnSync('notify-send', [title, body], { stdio: 'ignore' });
-    if (r.error || r.status !== 0) {
-      console.log(`\x07[session-clock-watch] ${title}: ${body}`);
-    }
-  } else if (process.platform === 'darwin') {
-    spawnSync('osascript', [
-      '-e',
-      `display notification "${b}" with title "${t}"`,
-    ], { stdio: 'ignore' });
-  } else if (process.platform === 'win32') {
-    const ps = `$ws = New-Object -ComObject Wscript.Shell; $ws.Popup('${body.replace(/'/g, "''")}', 5, '${title.replace(/'/g, "''")}', 64) | Out-Null`;
-    spawnSync('powershell', ['-NoProfile', '-WindowStyle', 'Hidden', '-Command', ps], {
-      stdio: 'ignore',
-      windowsHide: true,
-    });
-  } else {
-    console.log(`\x07[session-clock-watch] ${title}: ${body}`);
+  const r = desktopNotify(title, body, { repoRoot: root });
+  if (r.method === 'console-bell') {
+    console.warn(`[session-clock-watch] 通知は GUI 経路なし（${r.method}）。\`npm run session:notify-selftest\` で環境を確認。`);
   }
 }
 

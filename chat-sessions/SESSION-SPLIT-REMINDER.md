@@ -39,6 +39,8 @@
 
 **通常は hook が起動する**ので、別ターミナルで手動起動は不要。ポーリングは **既定 2 分**（`SESSION_CLOCK_WATCH_MS`）。同一 `開始:` に対する通知は **1 回**（`logs/.session-clock-split-alerted`）。`session:clock:set` でリセット。
 
+**標準ツールが無い環境**: 通知本体は `scripts/lib/desktop-notify.mjs`（`notify-send` → `gdbus` → `zenity` → ベル）。**GUI が出なくても** `logs/session-desktop-notify.log` に **毎回 1 行**残る。経路の確認は **`npm run session:notify-selftest`**。
+
 手動だけ動かす場合:
 
 ```bash
