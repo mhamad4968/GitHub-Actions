@@ -40,7 +40,10 @@ if (process.platform === 'linux' && !process.env.DISPLAY) {
   console.log('DISPLAY 未設定 → 診断のため `:0` を付与（WSLg 想定）。\n');
 }
 
-console.log('\nテスト通知を送ります（1 回）…');
+console.log(
+  '\nテスト通知を送ります（1 回）…\n' +
+    '※ WSL2 では先に **Windows のダイアログ**が最大約12秒出ます。その後 `notify-send` 等は各数秒で打ち切りです。完了まで最大20秒程度かかることがあります。',
+);
 const r = desktopNotify(
   'kintone-ai-lab 通知テスト',
   'session:notify-selftest が正常に動いています。この行は logs/session-desktop-notify.log にも記録されます。',

@@ -68,13 +68,15 @@ function tryPowershellWslPopup(title, body) {
   const r = spawnSync(exe, ['-NoProfile', '-NonInteractive', '-WindowStyle', 'Hidden', '-Command', ps], {
     stdio: 'ignore',
     windowsHide: true,
-    timeout: 25_000,
+    timeout: 22_000,
   });
-  return !r.error && r.status === 0;
+  if (r.error) return false;
+  return r.status === 0;
 }
 
+/** D-Bus 不調時に無限待ちしないよう短い timeout（超過時は子を SIGTERM） */
 function tryNotifySend(title, body, env) {
-  const r = spawnSync('notify-send', [title, body], { stdio: 'ignore', env });
+  const r = spawnSync('notify-send', [title, body], { stdio: 'ignore', env, timeout: 4_000 });
   if (!r.error && r.status === 0) return true;
   return false;
 }
@@ -103,7 +105,7 @@ function tryGdbusNotify(title, body, env) {
       '{}',
       '15000',
     ],
-    { stdio: 'ignore', env },
+    { stdio: 'ignore', env, timeout: 5_000 },
   );
   if (!r.error && r.status === 0) return true;
   return false;
@@ -124,7 +126,7 @@ function tryZenityDialog(title, body, env) {
 
 function tryZenity(title, body, env) {
   const text = `${sanitize(title, 200)}\n${sanitize(body, 500)}`;
-  const r = spawnSync('zenity', ['--notification', '--text', text], { stdio: 'ignore', env });
+  const r = spawnSync('zenity', ['--notification', '--text', text], { stdio: 'ignore', env, timeout: 4_000 });
   if (!r.error && r.status === 0) return true;
   return false;
 }
