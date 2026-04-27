@@ -60,6 +60,14 @@ AI は **`npm run session:clock:set`** を実行し、結果（`SESSION-CLOCK.md
 - **止める**: サーバを起動したターミナルで **Ctrl+C**
 - **前提**: `session:clock:set` 済みで、`write-ticker` / `watch` / `cron` のどれかで **TICKER が生成・更新**されていること
 
+### ブラウザが `ERR_CONNECTION_REFUSED` のとき
+
+1. **`npm run session:clock:web` を起動したターミナルが生きているか**（閉じる・Ctrl+C すると **即ダウン**して接続拒否になる）
+2. **ブックマークのポートが古い**（前回は 47933、今回は別番 …）→ **毎回ターミナルに出た URL を開く**
+3. **WSL で Windows の Chrome/Edge から `127.0.0.1` が繋がらない**環境では、試しに:  
+   `SESSION_CLOCK_WEB_HOST=0.0.0.0 npm run session:clock:web`  
+   （**同一 LAN に見える**ので、外出先 PC・職場の共有 Wi‑Fi では使わない）
+
 ## 「1」「2」を AI 側で自動化（正本: Cursor `sessionStart` hook）
 
 **1**（`session:clock:set`）と **2**（`session:clock:watch` の常駐）は、**浜田が毎回打たなくてよい**ように、**Composer 新セッションの `sessionStart`** で自動実行する。

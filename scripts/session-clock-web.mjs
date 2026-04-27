@@ -8,17 +8,40 @@
  * 表示内容は `chat-sessions/SESSION-CLOCK-TICKER.md`（write-ticker / watch / set で更新）。
  * ページは 30 秒ごとに meta refresh で再読込（追加依存なし）。
  *
- * セキュリティ: **127.0.0.1 のみ**バインド（LAN からは見えない）。
+ * セキュリティ: 既定 **127.0.0.1** のみ。WSL で Windows ブラウザから繋がらないときだけ
+ *   `SESSION_CLOCK_WEB_HOST=0.0.0.0`（同一 LAN に露出するので自宅外では使わない）。
  */
 import http from 'node:http';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const tickerAbs = path.join(root, 'chat-sessions', 'SESSION-CLOCK-TICKER.md');
-const HOST = '127.0.0.1';
+
+function resolveBindHost() {
+  const h = (process.env.SESSION_CLOCK_WEB_HOST || '127.0.0.1').trim();
+  if (h === '127.0.0.1' || h === '0.0.0.0' || h === '::1') return h;
+  console.warn(`[session-clock-web] 未対応の SESSION_CLOCK_WEB_HOST=${JSON.stringify(h)} → 127.0.0.1`);
+  return '127.0.0.1';
+}
+
+const BIND_HOST = resolveBindHost();
+/** ブラウザに見せる URL（0.0.0.0 待受でも同マシンは 127.0.0.1 で開けることが多い） */
+const DISPLAY_HOST = BIND_HOST === '0.0.0.0' ? '127.0.0.1' : BIND_HOST === '::1' ? '[::1]' : BIND_HOST;
 const PORT_RANGE = 30;
+
+function firstNonInternalIPv4() {
+  const nets = os.networkInterfaces();
+  for (const name of Object.keys(nets)) {
+    for (const e of nets[name] || []) {
+      const v4 = e.family === 'IPv4' || e.family === 4;
+      if (v4 && !e.internal && e.address) return e.address;
+    }
+  }
+  return null;
+}
 
 function escapeHtml(s) {
   return String(s)
@@ -80,7 +103,7 @@ function createHandler(boundPort) {
   </style>
 </head>
 <body>
-  <h1>セッション時計（ローカル · ${escapeHtml(HOST)}:${boundPort}）</h1>
+  <h1>セッション時計（ローカル · ${escapeHtml(DISPLAY_HOST)}:${boundPort}）</h1>
   <p>下は <code>SESSION-CLOCK-TICKER.md</code> の中身です。<strong>30 秒ごと</strong>に自動再読み込みします。</p>
   <pre>${escapeHtml(raw)}</pre>
   <p class="hint">止める: このサーバを起動したターミナルで <kbd>Ctrl+C</kbd>。<br>
@@ -114,7 +137,7 @@ function tryListenOnce(p) {
       reject(err);
     };
     server.on('error', onErr);
-    server.listen(p, HOST, () => {
+    server.listen(p, BIND_HOST, () => {
       server.off('error', onErr);
       server.on('error', err => {
         console.error('[session-clock-web] runtime', err.message);
@@ -131,12 +154,20 @@ async function main() {
     try {
       const server = await tryListenOnce(p);
       if (server) {
-        const url = `http://${HOST}:${p}/`;
+        const url = `http://${DISPLAY_HOST}:${p}/`;
         console.log(`[session-clock-web] 開く: ${url}`);
         if (p !== base) {
           console.log(`  （起点 ${base} は使用中のため ${p} にフォールバック）`);
         }
+        if (BIND_HOST === '0.0.0.0') {
+          const lan = firstNonInternalIPv4();
+          if (lan) console.log(`  （同一 LAN の別端末用の例）http://${lan}:${p}/`);
+        }
         console.log('  止める: Ctrl+C');
+        console.log('  ※ ERR_CONNECTION_REFUSED → サーバ未起動かポート違い。ターミナルを閉じると止まる。URL は毎回このログに合わせる。');
+        if (BIND_HOST === '127.0.0.1') {
+          console.log('  ※ WSL で Windows ブラウザから繋がらないとき: SESSION_CLOCK_WEB_HOST=0.0.0.0 npm run session:clock:web');
+        }
         return;
       }
     } catch (e) {
