@@ -87,12 +87,14 @@ function createHandler(boundPort) {
     }
 
     const raw = readTickerForWeb();
+    const generatedAt = new Date().toISOString();
     const html = `<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="refresh" content="30">
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
   <title>セッション時計 §51-6-2</title>
   <style>
     body { font-family: system-ui, sans-serif; margin: 1.5rem; max-width: 52rem; line-height: 1.5; }
@@ -104,14 +106,26 @@ function createHandler(boundPort) {
 </head>
 <body>
   <h1>セッション時計（ローカル · ${escapeHtml(DISPLAY_HOST)}:${boundPort}）</h1>
-  <p>下は <code>SESSION-CLOCK-TICKER.md</code> の中身です。<strong>30 秒ごと</strong>に自動再読み込みします。</p>
+  <p>下は <code>SESSION-CLOCK-TICKER.md</code> の中身です。<strong>30 秒ごと</strong>に <code>location.reload()</code> で再読み込み（キャッシュ抑止ヘッダ付き）。</p>
+  <p class="hint" style="font-size:12px;color:#71717a">ページ生成(UTC): ${escapeHtml(generatedAt)} — この時刻が変わっていれば再読込できている</p>
   <pre>${escapeHtml(raw)}</pre>
   <p class="hint">止める: このサーバを起動したターミナルで <kbd>Ctrl+C</kbd>。<br>
   詳細: <code>chat-sessions/SESSION-SPLIT-REMINDER.md</code>（人間向けタイマー / WEB）</p>
+  <script>
+(function(){
+  var sec = 30;
+  setInterval(function () { location.reload(); }, sec * 1000);
+})();
+  </script>
 </body>
 </html>`;
 
-    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    res.writeHead(200, {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      Pragma: 'no-cache',
+      Expires: '0',
+    });
     res.end(html);
   };
 }
