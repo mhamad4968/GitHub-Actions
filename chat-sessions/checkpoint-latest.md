@@ -18,7 +18,7 @@
 
 **新チャット初手（実行順・上から）**:
 
-**項番 -1（人間・強く推奨）**: 新チャットの **ユーザー最初の 1 メッセージ** に、Desktop の **`NEW-SESSION-STARTER_yyyymmdd.txt` 全文**（**JST の日付 8 桁**＝ファイル名にそのまま入る。**常にこの 1 ファイル名だけ**が正本コピー先。同日に内容が変わった sync では旧版が **`_2` `_3`…** に退避するが、**貼るのは常に `yyyymmdd.txt` 側**）を **そのまま貼る**（= リポ `chat-sessions/NEW-SESSION-STARTER.md` の **■ フル版**と同内容）。**貼付推奨**は **`npm run verify:desktop-ai-emergency-sync` の最終行**（または `session-starter:sync-desktop` の「貼付推奨」行）でも確認できる。🚨憲法ブロック・`@` 参照リスト・bootstrap 手順が一括で入り、**要約脱落に強い**。続けて **`HANDOFF-HUMAN.txt` 5 行**でもよい。
+**項番 -1（人間・強く推奨）**: 新チャットの **ユーザー最初の 1 メッセージ** に、Desktop の **`NEW-SESSION-STARTER_yyyymmdd.txt` 全文**（**JST の日付 8 桁**＝ファイル名にそのまま入る。**常にこの 1 ファイル名だけ**が正本コピー先。同日に内容が変わった sync では旧版が **`_2` `_3`…** に退避するが、**貼るのは常に `yyyymmdd.txt` 側**）を **そのまま貼る**（= リポ `chat-sessions/NEW-SESSION-STARTER.md` の **■ フル版**と同内容。**v3.27**: 本文冒頭の **「■ 貼付単独で完走」** に **項番 -1〜項番 0（機械）と同値の手順**を内包するため、**チャットへ `checkpoint-latest.md` を重ねて貼らなくてよい**。AI はツールで本ファイル／checkpoint を読む）。**貼付推奨**は **`npm run verify:desktop-ai-emergency-sync` の最終行**（または `session-starter:sync-desktop` の「貼付推奨」行）でも確認できる。🚨憲法ブロック・`@` 参照リスト・bootstrap 手順が一括で入り、**要約脱落に強い**。続けて **`HANDOFF-HUMAN.txt` 5 行**でもよい。
 
 **項番 -0（人間＋AI・合意・1 往復・開始ゲート）**: AI は **先頭に `[§1-2-3 ティア判定: …]`** を付け、スターター **受領**を一言言い、`checkpoint` 最終更新＋`handoff` 末尾＋`HANDOFF-HUMAN` の **「次にやる1つ」** を要約して **「本日の本題（これから着手する次の一手）は ○○で合っていますか？」と §41 一問だけ**浜田へ確認する。**浜田から OK が返るまで**（「はい」「OK」「進めて」または **1 行の修正指示**で合意が取れた状態）、**項番 0（`verify` / `session:bootstrap` / 以降の Read 連鎖・本題の実行）に着手しない**。OK のあと **項番 0** へ進む。**新チャットの「いま」**は **Cursor `sessionStart` hook**（`.cursor/hooks/session-start-autopilot.mjs`）が **`session:clock:set`** と **`session:clock:watch`** を原則自動実行する（`SESSION-CLOCK.md` の客観起点・§51-6-2）。hook が無い環境のみ **`npm run session:clock:set`** を手で打つ（項番 0 の verify より前でも可）。
 
@@ -33,6 +33,8 @@
 5. **PC 台帳（Day4 継続中または 674・新・PC台帳 customize を触る場合）** … `docs/plans/2026-04-26-pc-ledger-day4-action.md` の **「AI 引継ぎ: …」**（Day4 時）＋ `chat-sessions/2026-04-26-pc-ledger-day4.md` ＋ **正本仕様書** `docs/plans/2026-04-21-new-pc-ledger-spec.md` の **§4.2.0〜§4.4 を Read**（手順書のみで代替しない／詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b**）＋画面ラベルは **短文 JSON**／検証は **`npm run pc-ledger:verify-labels-spec`**
 6. `RULES-INDEX.md` の **「セッション切替・文脈復元」** 行（索引 1 行で他ドキュへジャンプ）
 7. **AI は `npm run session:bootstrap` を実行**し、結果をチャットに要約（**verify:constitution-handoff → verify:mandatory-read-gate → verify:session-clock-health → session-starter:sync-desktop → verify:desktop-ai-emergency-sync → smoke** 10 連／**Read だけで終わらせない**／詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 6–7）
+
+**実行順の短絡（NEW-SESSION-STARTER v3.27・項番 -1 で全文貼付済みのとき）**: スターター内 **「■ 貼付単独で完走」** が正本。**項番 -0 で浜田 OK の直後に項番 7（`session:bootstrap`）を実行**し、その **後**に項番 1〜6 の Read に入ってよい（上の番号順より **starter 本文の順を優先**）。
 
 **項番 0.9（本題の実行開始・任意の再確認）**: **項番 -0** で合意した「次の一手」と、項番 0〜7 後の状況に **食い違いが出た**とき（checkpoint 最終更新が想定外・浜田がチャットで方針変更した等）だけ、AI は **§41 一問だけ**改めて浜田へ確認し、**OK のあと**に Tier B・kintone 書込・`deploy` 等 **副作用のある本題実行**へ入る。食い違いが無いときは **-0 の OK をそのまま実行開始の合意**とみなし、項番 1 の Read から本題へ進んでよい。
 
@@ -61,7 +63,7 @@
 
 ---
 
-**最終更新**: 2026-04-27 (Mon) JST — **壁時計運用**: `npm run session:clock:health`（ワンショット）／`verify:session-clock-health`（`session:bootstrap` 内包 **(1c)**・hooks + crontab node 整合／**次セッションも `session:bootstrap` 通過で同 strict が再走し再確認**）／通知は **ダイアログ優先**（`desktop-notify`）／監査 `logs/session-split-notify-audit.jsonl`。従来どおり **`sessionStart` hook** が `session:clock:set` + `session:clock:watch`。
+**最終更新**: 2026-04-27 (Mon) JST — **NEW-SESSION-STARTER v3.27**: 冒頭 **「■ 貼付単独で完走」**＝項番 -1〜0（機械）を **スターター本文のみで完結**（フル版貼付なら checkpoint 重複貼付不要・**-0 OK → bootstrap → @ Read**）。**壁時計運用**: `session:clock:health`／`verify:session-clock-health`（`session:bootstrap` **(1c)**）／`desktop-notify`／監査 `session-split-notify-audit.jsonl`。**`sessionStart` hook** が `session:clock:set` + `session:clock:watch`。
 
 **前回更新**: 2026-04-28 (Tue) JST — **SESSION-CLOCK（§51-6-2 時間軸の客観化）**: `chat-sessions/SESSION-CLOCK.md` ＋ `scripts/session-clock.mjs` ＋ `npm run session:clock:set` / `session:split-check`。`mandatory-read-gate` が **4 時間超**で exit 2。未設定時は警告のみで通過。
 

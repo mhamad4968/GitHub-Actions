@@ -43,10 +43,28 @@
 新チャット起動の儀式 / 2026-04-23 制定 (v3 / 全面リライト)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-このファイルの中身を新しい Cursor チャットにそのまま貼るだけで、
-AI がゼロから今までの文脈を完全復元する。
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+■ 貼付単独で完走（checkpoint 項番 -1 〜 項番 0 機械部分・本文内正本）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-**浜田が毎回最初に開く場所（運用上いちばん大事）**: `C:\Users\mhamada202408224\Desktop\AI緊急用\NEW-SESSION-STARTER_yyyymmdd.txt`（**JST の日付 8 桁**。**常にこのファイル名だけ**が正本。同日に内容が変わった sync では旧版が **`_2` `_3`…** に退避するが、**貼るのは常に `yyyymmdd.txt`**。メモ帳）。**貼付推奨**は **`npm run verify:desktop-ai-emergency-sync` の最終行**（または `session-starter:sync-desktop` の「貼付推奨」行）。フォルダの説明は同梱の **`README.txt`**。**セッション切替時は、この控えの全文を新チャットの最初の 1 メッセージに貼ることを強く推奨**（`checkpoint-latest.md` **項番 -1**）。貼ったあと **本日やること（次の一手）** を AI と **1 問だけ**確認し、**浜田の OK が出てから**項番 0（`verify:constitution-handoff`）へ（**項番 -0** = **OK まで着手しない開始ゲート**）。ここが **最優先で最新**になるよう、AI は本ファイルを編集して **push する同一ターン**で必ず **`npm run session-starter:sync-desktop`** を実行する（浜田依頼）。**リポだけ更新して Desktop を古いままにしない**。**日終わり**にも sync → verify（`checkpoint-latest.md`「日終わり」）。
+**方針**: 浜田が **下記「■ フル版」からファイル末尾まで**（Desktop の **`NEW-SESSION-STARTER_yyyymmdd.txt` 全文** と同内容）を **新チャットの最初の 1 メッセージに貼れば**、`checkpoint-latest.md` の **項番 -1** に相当する素材は **これだけで足りる**（同内容を二重に貼る必要はない）。`HANDOFF-HUMAN.txt` 5 行は **任意**（当日メモ・状況共有用。無くても項番 0 は実行可）。
+
+**AI がこのチャット内だけで守る順序（checkpoint 項番 -0 〜 0 と同値）**:
+
+1. **頭出し**: 応答 **先頭**に `[§1-2-3 ティア判定: …]`。**スターター全文を受領した**旨を一言。
+2. **項番 -0（開始ゲート）**: ツールで `chat-sessions/checkpoint-latest.md` の **「最終更新」先頭 1 行**と `chat-sessions/handoff-log.md` の **末尾見出し 1 ブロック**を読む。浜田が `HANDOFF-HUMAN` を貼っていればその **「次にやる1つ」** も採用。**§41 で一問だけ**: 「本日の本題（これから着手する次の一手）は ○○で合っていますか？」**浜田の OK**（はい／OK／進めて／1 行の修正指示）が返るまで、`verify:*`・**`npm run session:bootstrap`**・本題の **副作用**（Tier B・deploy・kintone 本番書込等）に **着手しない**。
+3. **項番 0（機械ゲート一括）**: リポルートで **`npm run session:bootstrap` を 1 回実行**するだけでよい。内部の直列は **`(1)`** `verify:constitution-handoff` → **`(1b)`** `verify:mandatory-read-gate`（必読構造＋ `session:split-check` 等）→ **`(1c)`** `verify:session-clock-health --strict`（**hooks・crontab の session-split 行・`logs/.session-clock-install-node` と cron 行の node 整合**）→ **`npm run session-starter:sync-desktop`** → **`verify:desktop-ai-emergency-sync`** → **`(4)`** `smoke:quiet`（10 連）。終了コードと WARN/NG をチャットに **短く要約**（詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 7）。
+4. **壁時計（客観起点）**: Cursor **`sessionStart` hook** が有効なら **`session:clock:set` と `session:clock:watch` は自動**。hook 無効環境のみ、本題前に **`npm run session:clock:set`**（`SESSION-CLOCK.md` の `開始:` 未設定なら特に推奨）。
+
+**文脈復元（@ Read）**: **項番 0 が通ったあと**、本題に入る前に **下記「■ フル版」内の @ リスト**を読む（パスはファイル内の通り。PC 台帳を触らない日は仕様書の @ はスキップ可）。**Read だけで終わらず**、合意した本題へ進む。
+
+**例外**: 浜田が **追加メモ**（`HANDOFF-HUMAN`・独自箇条書き）を貼った場合は、**項番 -0 の「本題」** に織り込む。憲法改定・並列編集・Tier B GO は従来どおり `AGENTS.md` / `SESSION-BOOTSTRAP` のまま。
+
+---
+
+**単独貼付の範囲**: 上記 **■ 貼付単独で完走** が **項番 -1〜項番 0（機械）**の正本。チャットに `checkpoint-latest.md` を **別添しなくてよい**（AI はツールで読む）。続く **@ Read** で文脈を厚くしてから本題へ。
+
+**浜田が毎回最初に開く場所（運用上いちばん大事）**: `C:\Users\mhamada202408224\Desktop\AI緊急用\NEW-SESSION-STARTER_yyyymmdd.txt`（**JST の日付 8 桁**。**常にこのファイル名だけ**が正本。同日に内容が変わった sync では旧版が **`_2` `_3`…** に退避するが、**貼るのは常に `yyyymmdd.txt`**。メモ帳）。**貼付推奨**は **`npm run verify:desktop-ai-emergency-sync` の最終行**（または `session-starter:sync-desktop` の「貼付推奨」行）。フォルダの説明は同梱の **`README.txt`**。**セッション切替時は、この控えの全文を新チャットの最初の 1 メッセージに貼ることを強く推奨**（`checkpoint-latest.md` **項番 -1** と同値の素材は **本文冒頭「■ 貼付単独で完走」までに内包**）。貼ったあと **本日やること（次の一手）** を AI と **1 問だけ**確認し、**浜田の OK が出てから**項番 0（**`npm run session:bootstrap`**＝憲法 verify・mandatory gate・**(1c) session-clock-health**・Desktop sync・smoke を内包）へ（**項番 -0** = **OK まで着手しない開始ゲート**）。ここが **最優先で最新**になるよう、AI は本ファイルを編集して **push する同一ターン**で必ず **`npm run session-starter:sync-desktop`** を実行する（浜田依頼）。**リポだけ更新して Desktop を古いままにしない**。**日終わり**にも sync → verify（`checkpoint-latest.md`「日終わり」）。
 Git 上の編集正本: `kintone-ai-lab/chat-sessions/NEW-SESSION-STARTER.md`（差分・履歴用。`.md` と `.txt` は自動同期しないため、上記 npm が橋渡し）。`/mnt/c` が無くコピーできないときはチャットに「AI緊急用の NEW-SESSION-STARTER_yyyymmdd.txt は未更新（理由）」と 1 行書き、環境復帰後に npm を再実行する。
 
 v2 (2026-04-19) からの主な強化:
@@ -146,7 +164,7 @@ v3.8 (2026-04-26) kintone MCP `kintone-add-app` とプレビュー／本番の�
 - **snapshot**: `revision-snapshot.mjs` は未デプロイ IDで **プレビューにフォールバック**（`preview_environment_only`）。
 
 v3.9 (2026-04-26) セッション切替でも文脈を失わない（浜田「自律的に引き継ぎ」）:
-- **新チャット初手の Read 順**は `chat-sessions/checkpoint-latest.md` の **「セッション切替後の自律復元」** を正本とする（checkpoint → 本条 v3.8+ → `handoff-log` 末尾 → Day4 plan → `RULES-INDEX` 索引行）。  
+- **新チャット初手の Read 順**は `chat-sessions/checkpoint-latest.md` の **「セッション切替後の自律復元」** を正本とする（checkpoint → 本条 v3.8+ → `handoff-log` 末尾 → Day4 plan → `RULES-INDEX` 索引行）。**実行順（-0 → bootstrap → Read）**は **v3.27** の **「■ 貼付単独で完走」** を上書き正本とする。  
 - **TSB-023**: `docs/troubleshooting.md`（冗長な「未公開？」確認の根絶と索引化）。
 
 v3.8 (2026-04-26 10:13) S2 / B+: CLAUDE.md thin 化 + .cursorignore 追加（commit 046ec2d）:
@@ -185,6 +203,11 @@ v3.26 (2026-04-26) **canonical 固定 + 貼付推奨ログ + README + 日終わ�
 - **案 D**: **`verify:desktop-ai-emergency-sync`** の **成功時最終行**に **`貼付推奨（項番-1）:`** を出す。`session-starter:sync-desktop` にも **貼付推奨**行。
 - **案 B**: リポ `chat-sessions/AI緊急用-README.txt` → Desktop **`README.txt`** を sync/verify 対象に追加。
 - **案 A**: `checkpoint-latest.md` に **「日終わり（推奨）」**（sync → verify または bootstrap）。
+
+v3.27 (2026-04-27) **貼付単独で完走**（浜田指示）:
+- **本文冒頭**に **「■ 貼付単独で完走」** を追加 = `checkpoint-latest.md` **項番 -1〜項番 0（機械）**の同値正本を **NEW-SESSION-STARTER 内に内包**。
+- 浜田は **フル版から末尾まで（Desktop txt 全文）だけ**貼れば開始素材は足りる。`HANDOFF-HUMAN` は任意。
+- AI は **項番 -0 OK → `session:bootstrap`（内包 (1c) session-clock-health strict）→ @ Read → 本題**。**先に全部 Read してから bootstrap** は廃止。
 
 v3.25 (2026-04-26) **Desktop スターター控えのファイル名 = メンテ日（JST）＋枝番**（浜田指示）※ **v3.26 で運用確定**（枝番最大を貼る方式から **常に yyyymmdd.txt** へ）:
 - 参照用に履歴のみ残す。
@@ -267,7 +290,9 @@ v3.13 (2026-04-26) PC 台帳仕様の正本固定 + セッション切替後も�
 `[§1-2-3 ティア判定: L2 Extra High] 引き継ぎ直後`
 `(7) 役割宣言: deploy / apply / push / 検証は AI が実行する。浜田には GO と目視のみ依頼（§35-1 / §56-1a / TSB-024）。`
 
-まず以下を読み込んで文脈を完全復元してから本題に入って：
+**（項番 -0 で浜田 OK のあと）機械ゲート**: リポルートで **`npm run session:bootstrap` を 1 回**実行する（詳細は **本文冒頭「■ 貼付単独で完走」項番 0**＝憲法 verify → mandatory-read-gate → **(1c) verify:session-clock-health strict** → Desktop sync → verify:desktop → **smoke:quiet 10 連**）。結果をチャットに短く要約（`SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 7）。
+
+**bootstrap 通過後**、文脈を厚くしてから本題へ（**先に全部 Read してから bootstrap は不要**。不足していれば本題の副作用は開始しない）:
 
 @kintone-ai-lab/chat-sessions/checkpoint-latest.md   ← 現在地（短く）
 @kintone-ai-lab/chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md ← 経緯・法律相当・ルール・機能・MCP 棚卸し＋報告様式（必読）
@@ -280,8 +305,7 @@ v3.13 (2026-04-26) PC 台帳仕様の正本固定 + セッション切替後も�
 @kintone-ai-lab/WORKFLOW.md                          ← Phase 0-5
 @kintone-ai-lab/docs/plans/2026-04-21-new-pc-ledger-spec.md ← **新・PC台帳（674・ラベル・customize）を触るなら §4.2.0〜 を必ず Read**（PC 以外のタスクならスキップ可／`SESSION-BOOTSTRAP` フェーズ 1b）
 
-そのあと：
-0. **npm run session:bootstrap**（リポルートで実行 / smoke **9 連** = guard+audits+health+**TSB-024 物理ガード** 等）→ 結果をチャットに短く要約（SESSION-BOOTSTRAP フェーズ 7）
+朝ルーチン:
 1. docs/reports/<今日の日付>-morning-prep.md を読んで朝ルーチン状態（緑/黄/赤）確認
 2. 緑じゃなければ §46 朝ルーチン絶対優先義務を先に完遂
 3. 緑なら §47-§49（思考の三本柱）+ §47-A/B-2/C + §50/§50-2 + §51/§51-2 + §11-5 を意識して本題へ
