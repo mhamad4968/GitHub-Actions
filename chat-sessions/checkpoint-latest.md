@@ -63,7 +63,9 @@
 
 ---
 
-**最終更新**: 2026-04-28 (Tue) JST — **NEW-SESSION-STARTER v3.27–v3.30**: **「■ 貼付単独で完走」**＝項番 -1〜0 の正本。**v3.29**＝4/28 **予実仕様デイ**（`shin-format-excel-layout.md`）。**v3.30**＝予実チェックリスト・Excel 二正本メンテ・**時計 WEB in-process**＋TICKER mtime・`docs/session-clock-web-performance-notes.md`・`SESSION-SPLIT` データ流 5 行・`session-handoff` 日終わり例外・`kintone-apps` 予実予定行・`npm run yojitsu:excel-draft`。**壁時計**: `session:clock:health`／`session:bootstrap` **(1c)**／`sessionStart` hook。
+**最終更新**: 2026-04-28 (Tue) JST **午前終了・次セッション引継ぎ** — **Tier A 完**: `audit-tsb-confirmed.mjs` に **孤児明示 false** を実質カバレッジから分離（F-2 名目/実質表示）。`parallel-session-detector.mjs` **軸1** に副次件数床 `max(5,⌊主×12%⌋)`（watcher 再起動残骸の誤 **RED** 防止）。`evening-reflect-queue.md` の **mcp-status** 項目消化済み。`smoke:quiet` は **軸3**（直近編集＋ **`.session-state/ai-session.lock` 不在**）で **warn のみ可**（午後は lock 運用で静穏化可）。**朝報** `2026-04-28-morning-prep.md` の §51-4 は **再生成任意**（キュー参照）。**13:00 予実**は checkpoint の直近日程どおり。**次チャット**: `NEW-SESSION-STARTER_yyyymmdd.txt` 全文 → **項番 -0** → **`npm run session:bootstrap`**（時計超なら先に `session:clock:set`）。
+
+**前回更新**: 2026-04-28 (Tue) JST — **NEW-SESSION-STARTER v3.27–v3.30**: **「■ 貼付単独で完走」**＝項番 -1〜0 の正本。**v3.29**＝4/28 **予実仕様デイ**（`shin-format-excel-layout.md`）。**v3.30**＝予実チェックリスト・Excel 二正本メンテ・**時計 WEB in-process**＋TICKER mtime・`docs/session-clock-web-performance-notes.md`・`SESSION-SPLIT` データ流 5 行・`session-handoff` 日終わり例外・`kintone-apps` 予実予定行・`npm run yojitsu:excel-draft`。**壁時計**: `session:clock:health`／`session:bootstrap` **(1c)**／`sessionStart` hook。
 
 ### 浜田メモ（直近日程・チャット反映）
 

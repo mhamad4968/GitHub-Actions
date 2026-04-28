@@ -174,3 +174,24 @@ AI は、セッション切替・終了・浜田さんが引き継ぎテンプ�
 **次セッションへの 1 行**: 夕方は **`npm run evening:reflect`** → 生成 md の **§1-M** と **`evening-reflect-queue.md`** を最初に読む → 消化したら正本で `[x]` か削除。
 
 ---
+
+### 2026-04-28 JST — 午前終了（自律 Tier A 完・引継ぎ更新済み）
+
+**浜田メモ（原文）**:
+> 終わりましたら終わりと宣言してください。その後次のセッションへの引継ぎ準備をしてほしい。それで午前は終わりです。
+
+**経緯（簡潔）**:
+- **午前の本チャット**: 候補 verify 実行 → `smoke:quiet` が **audit:parallel ng**（jsonl で旧 watcher_pid **3 件**＋新 pid 多数が軸1 **+5**）。
+- **修正**: `scripts/parallel-session-detector.mjs` 軸1に **副次件数床** `max(5,⌊主×12%⌋)` → 同条件で軸1 **0**・総点 **3（黄）**・smoke は **warn のみ**（**軸3**＝直近編集＋lock 不在で **+3** は残り）。
+- **そのほか Tier A**: `audit-tsb-confirmed.mjs`（孤児 false 分離・名目/実質）／`evening-reflect-queue` の mcp-status **[x]**／`field-spec:diff` は **`--spec=docs/plans/2026-04-26-pc-ledger-day4-action.md`** ＋ snapshot で **44/44**。コミット例: `34b150f`（TSB 監査）`cd5a377`（軸1）。
+- **引継ぎ**: `checkpoint-latest.md` **最終更新**＋本ブロック、`HANDOFF-HUMAN.txt` 5 行を **4/28 午前終了**用に更新。
+
+**AI 補足（漏れ防止）**:
+- `git`: 上記は **push 済み**（`main` 最新に軸1・TSB 監査含む）。本 handoff 追記を **commit/push** する。
+- `次の1手`（午後）: **13:00 予実**（`shin-format-excel-layout.md` / checklist）。**夜**: `evening-reflect-queue` の朝報・読みやすさ。
+- `GO待ち`: Tier B なし。
+- `session-lock`: なし（憲法 5 ファイル直接編集なし）。
+
+**次セッションへの 1 行**: 新チャットは **スターター全文** → **項番 -0** → **`session:clock:set`（4h 超なら先）** → **`npm run session:bootstrap`**；`smoke` が黄なら **軸3＝lock** を確認。
+
+---
