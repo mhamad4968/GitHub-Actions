@@ -5,7 +5,7 @@
 ## AI・開発者への指示
 
 - 新規アプリやフィールド変更があったら **このファイルを更新**する（アプリ名・アプリID・フィールド一覧）。
-- **部署予実（予算・実績・修正）**: 仕様は `templates/yojitsu-budget-lite/SPEC.md`。**入力アプリ**と **集計（ダッシュ）アプリ**の **最低 2 本**＋必要なら **マスタ系を別アプリ**（`SPEC.md` §6b）。合意後は下記一覧表に **アプリごとに 1 行追加**（ID・customize・リンク）。たたき台は `shin-format-excel-layout.md` と `yojitsu-spec-session-checklist.md`。
+- **部署予実（予算・実績・修正）**: 仕様は `templates/yojitsu-budget-lite/SPEC.md`（**§6c**＝`支払内訳` サブテーブル等のたたき台）。**入力**と **ダッシュ**の **2 アプリ**＋任意マスタ（`SPEC.md` §6b）。一覧表は **アプリごと 1 行**（下表参照）。`shin-format-excel-layout.md`・`excel-column-draft-2026-04-28.md`・`yojitsu-spec-session-checklist.md`。
 - 生成したアップロード前の JS などは、可能なら **`Documents/kintone-src`**（WSL: `/mnt/c/Users/mhamada202408224/Documents/kintone-src`）に置く。既存のデプロイ済みソースは `kintone-ai-lab/customize/<アプリIDまたは別名>/` を参照。
 - フィールド一覧を最新化するときは、リポジトリ直下で次を実行し、出力を貼るか表に反映する。
 
@@ -31,7 +31,8 @@ npm run app:fields <アプリID>
 | 新個人WindowsID採番マスタ（新・PC台帳ver.1 用 / Day 3 / 旧 626 置換） | **672** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-25 作成 / 0 レコード（`^jbm\d{4}$` 厳格 / `jbm0001` から払出予定）|
 | 新共有WindowsID採番マスタ（新・PC台帳ver.1 用 / Day 3 / 旧 667 置換） | **673** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-25 作成 / 0 レコード（`^sjbm\d{4}$` 厳格 / `sjbm0001` から払出予定）|
 | 新・PC台帳ver.1（本体 / Day 4 雛形→Day 5 本実装） | **674** | `customize/new-pc-ledger-v1/desktop.js` | `npm run deploy:674` / Space **21** [一覧](https://jbis-kintone.cybozu.com/k/#/space/21) / thread **23** / 浜田部署スペース・アクセス権限あり / **live revision 18**（2026-04-28：SKYSEA customize `BUILD=2026-04-28-skysea-group-ui-v0.2`＝全員編集可・運上浜田のみ周知 / fileKey `73ae0e96-0809-462f-a8f0-65fbe9f6cb96` / field-spec **44/44**） |
-| **部署予実（予算・実績・修正）**（**予定**・**入力用＋集計ダッシュ用**の 2 アプリ想定・ID は後追記） | **（未定）** | （未定） | **当部署のみ・部内利用**／`SPEC.md`／Excel `新フォーマット`／`shin-format-excel-layout.md`／マスタは必要に応じて別アプリ |
+| **部署予実・入力**（明細・`新フォーマット` 全列・`支払内訳` サブテーブル・月次 12 行） | **（未定）** | （未定） | `SPEC.md` §6–§6c・`excel-column-draft-2026-04-28.md`・当部署のみ |
+| **部署予実・ダッシュ**（集計・俯瞰・入力アプリ参照） | **（未定）** | （未定） | `SPEC.md` §6b・入力アプリと別 ID で作成予定 |
 
 ※ **631** … `collect` / `analyze` が読むニュース。**632** … `analyze` が書き込む週次要約のみ。`.env`: `KINTONE_APP_ID=631` , `KINTONE_REPORT_APP_ID=632`。API トークンに **両アプリ**を載せる。  
 ※ **権限**: 自動化の最低限は **レコード閲覧＋追加**。閲覧・追加・編集・削除・アプリ管理のフル付与でもスクリプトは動作するが、トークン漏えい時のリスク低減のため余分な権限は削るとよい（詳細は `security-next-automation/README.md`）。

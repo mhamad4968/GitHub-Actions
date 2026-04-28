@@ -22,5 +22,5 @@ npm run verify:gate
 - `../../scripts/mandatory-read-gate.mjs` — 本番ゲート（コピー元の思想）
 - **`docs/shin-format-excel-layout.md`** — 浜田ローカル `C:\tmp\予算管理\…xlsx` のシート **`新フォーマット`** の列・行構造（予実のフィールドたたき台・**Excel 変更時の md 追随ルール**付き）
 - **`docs/yojitsu-spec-session-checklist.md`** — 仕様決めの日に使う **チェックリスト**（スコープ・権限・kintone 化の範囲・取込）
-- 列見出しの **下書き生成**（openpyxl 必須）: リポルートで `npm run yojitsu:excel-draft`（既定パスはスクリプト内。別ファイルは第 1 引数）
+- 列見出しの **下書き生成**（openpyxl 必須）: リポルートで `npm run yojitsu:excel-draft`（既定パスはスクリプト内。別ファイルは第 1 引数）。直近の保存例: **`docs/excel-column-draft-2026-04-28.md`**
 - セッション時計 WEB の負荷メモ: リポ `docs/session-clock-web-performance-notes.md`

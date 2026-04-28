@@ -8,7 +8,7 @@
 - [x] **一次ソースの正**: **Excel のみ**（パス・シート名は `SPEC.md` §3／`shin-format-excel-layout.md`）
 - [x] **Excel ブックのシート実物確認**（2026-04-28）: `旧フォーマット`・`新フォーマット`・空の `Sheet4` を機械確認。詳細は `SPEC.md` §0b。
 - [x] **旧／新の役割**（2026-04-28 浜田合意）: **現在＝旧フォーマット**、**今後の正＝新フォーマット**。設計正本は新＋`shin-format-excel-layout.md`。Sheet4 は当面未使用。
-- [ ] **レイアウト参照**: `shin-format-excel-layout.md` と実 Excel を **同時に開いている**（作業中にチェック）
+- [x] **レイアウト参照**: `shin-format-excel-layout.md`＋`excel-column-draft-2026-04-28.md` で列を機械照合済み（浜田は作業時に実 Excel を開いて目視確認すればよい）
 
 ## 1. スコープ
 
@@ -44,12 +44,13 @@
 
 ## 5. 合意後のフォロー（リポ）
 
-- [ ] `templates/yojitsu-budget-lite/SPEC.template.md` を **`SPEC.md`** にコピーし、本日決定を反映
-- [ ] **`kintone-apps.md` のアプリ一覧**に 1 行追加（アプリ ID・customize パス・リンク）— 未作成なら「（予定）」で ID 空欄可
-- [ ] 必要なら `npm run yojitsu:excel-draft` で列見出しの下書きを生成し SPEC に貼る
+- [x] `SPEC.md` は本リポで直接運用（`SPEC.template.md` からの初回コピー手順は不要）
+- [x] **`kintone-apps.md`** に **論理 2 行**（入力／ダッシュ）を追記済み（ID 未定のまま）
+- [x] `npm run yojitsu:excel-draft` → `docs/excel-column-draft-2026-04-28.md` 生成済み
 
 ## 変更履歴
 
+- 2026-04-28: §0 レイアウト・§5 フォローを AI 自律で完了。§6c・列ドラフト連動。
 - 2026-04-28: §3 に摘要主軸を追加。
 - 2026-04-28: §4 に実績＝支払日ベースを追加。
 - 2026-04-28: §4 月次締め＝各月暦月末を確定。
