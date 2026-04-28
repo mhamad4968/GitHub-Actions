@@ -32,7 +32,7 @@ npm run app:fields <アプリID>
 | 新共有WindowsID採番マスタ（新・PC台帳ver.1 用 / Day 3 / 旧 667 置換） | **673** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-25 作成 / 0 レコード（`^sjbm\d{4}$` 厳格 / `sjbm0001` から払出予定）|
 | 新・PC台帳ver.1（本体 / Day 4 雛形→Day 5 本実装） | **674** | `customize/new-pc-ledger-v1/desktop.js` | `npm run deploy:674` / Space **21** [一覧](https://jbis-kintone.cybozu.com/k/#/space/21) / thread **23** / 浜田部署スペース・アクセス権限あり / **live revision 18**（2026-04-28：SKYSEA customize `BUILD=2026-04-28-skysea-group-ui-v0.2`＝全員編集可・運上浜田のみ周知 / fileKey `73ae0e96-0809-462f-a8f0-65fbe9f6cb96` / field-spec **44/44**） |
 | **部署予実・入力**（明細・`新フォーマット` 全列・`支払内訳` サブテーブル・月次 12 行） | **（未定）** | （未定） | `SPEC.md` §6–§6c・`excel-column-draft-2026-04-28.md`・当部署のみ |
-| **部署予実・ダッシュ**（集計・俯瞰・入力アプリ参照） | **（未定）** | （未定） | `SPEC.md` §6b・入力アプリと別 ID で作成予定 |
+| **部署予実・ダッシュ**（**集計管理の主画面**・俯瞰・入力アプリ参照） | **（未定）** | （未定） | `SPEC.md` §6b・Excel 日常セル運用は廃止 |
 
 ※ **631** … `collect` / `analyze` が読むニュース。**632** … `analyze` が書き込む週次要約のみ。`.env`: `KINTONE_APP_ID=631` , `KINTONE_REPORT_APP_ID=632`。API トークンに **両アプリ**を載せる。  
 ※ **権限**: 自動化の最低限は **レコード閲覧＋追加**。閲覧・追加・編集・削除・アプリ管理のフル付与でもスクリプトは動作するが、トークン漏えい時のリスク低減のため余分な権限は削るとよい（詳細は `security-next-automation/README.md`）。
