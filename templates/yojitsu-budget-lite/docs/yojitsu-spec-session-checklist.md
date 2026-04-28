@@ -7,6 +7,7 @@
 - [x] **今日のゴール**: **仕様書（`templates/yojitsu-budget-lite/SPEC.md`）まで**（2026-04-28 セッション合意）
 - [x] **一次ソースの正**: **Excel のみ**（パス・シート名は `SPEC.md` §3／`shin-format-excel-layout.md`）
 - [x] **Excel ブックのシート実物確認**（2026-04-28）: `旧フォーマット`・`新フォーマット`・空の `Sheet4` を機械確認。詳細は `SPEC.md` §0b。
+- [x] **旧／新の役割**（2026-04-28 浜田合意）: **現在＝旧フォーマット**、**今後の正＝新フォーマット**。設計正本は新＋`shin-format-excel-layout.md`。Sheet4 は当面未使用。
 - [ ] **レイアウト参照**: `shin-format-excel-layout.md` と実 Excel を **同時に開いている**（作業中にチェック）
 
 ## 1. スコープ
