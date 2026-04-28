@@ -7,6 +7,8 @@ alwaysApply: true
 
 > **本ファイルは AGENTS.md（開発憲法）の補足。矛盾がある場合は AGENTS.md が優先される。**
 
+- **§ 番号の正本**: 本リポジトリ **ルートの `AGENTS.md`**（`kintone-ai-lab/AGENTS.md`）に照合する。`security-next-automation/` 等に別ファイルがあっても、**本 `.mdc` の「AGENTS.md §8 / §9 …」はルート AGENTS を指す**（ニュース用サブプロジェクト専用の複製と混同しない）。
+
 ## 収集・選別（キーワード / `collect.ts`）
 
 - **現行実装**: **選別**に Gemini は使わない。`collect.ts` の **事件性キーワード**（部分一致）を満たし、**パッチ・予防キーワード**を含まない未登録記事を、公開日の新しい順に最大 3 件登録する。`GEMINI_API_KEY` があるときは **概要・要約の体裁**のみ Gemini（任意）。
