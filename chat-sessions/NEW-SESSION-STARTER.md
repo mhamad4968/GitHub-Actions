@@ -71,8 +71,8 @@ CEO 浜田 4/29 朝指示（「Claude Code v2.1.111 準拠」）を、Cursor + �
 
 §51 が並列を禁止していた歴史的経緯 = **「並列でエラー/ポリシー違反でよく止まっていた」を CIO は絶対忘れない**。**並列を選ぶ前に以下 5 点を全部 ✅ してから発火する**:
 
-1. **副作用ゼロか？** = Read / Glob / Grep / GET API のみ。**書込・編集・git push・kintone REST 書込・workflow_dispatch は絶対に並列しない**
-2. **依存関係ゼロか？** = どの呼出の結果も他に影響しない（前段の出力を後段が使わない）
+1. **副作用ゼロか？** = Read / Glob / Grep / GET API のみ。**書込・編集・git push・kintone REST 書込・workflow_dispatch は絶対に並列しない**。**判定例**: `npm run session-starter:sync-desktop`（Windows 側に書込 = 副作用あり）は並列不可
+2. **依存関係ゼロか？** = どの呼出の結果も他に影響しない（前段の出力を後段が使わない）。**NG 具体例**: `sync` → `verify:desktop-ai-emergency-sync` は **sync 完了後でないと verify が NG（不一致）になる**ため依存関係あり。**必ず `npm run desktop:sync-and-verify` で直列実行**（2026-04-29 朝の事故より）
 3. **失敗時の「無視 OK」性** = 1 つ失敗しても他の成功結果を捨てて単独 retry できる構造か
 4. **§51 例外表に該当するか？** = 「同種・副作用ゼロ・独立操作」「並列読み取り（編集前事前調査限定）」に正確に当てはまるか
 5. **ターン内総数 ≤ 5 か？** = 1 ターンに 6 個以上の並列は判断ミスのリスク。CIO は 5 を上限とする

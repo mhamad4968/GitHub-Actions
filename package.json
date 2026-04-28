@@ -114,6 +114,7 @@
     "session:bootstrap": "node scripts/session-bootstrap-verify.mjs",
     "session-starter:sync-desktop": "node scripts/sync-session-starter-to-desktop.mjs",
     "verify:desktop-ai-emergency-sync": "node scripts/verify-desktop-ai-emergency-sync.mjs",
+    "desktop:sync-and-verify": "npm run session-starter:sync-desktop && npm run verify:desktop-ai-emergency-sync",
     "hooks:install": "bash scripts/install-hooks.sh",
     "hooks:uninstall": "bash scripts/install-hooks.sh --uninstall",
     "ops-guide:init": "npx dotenv -e .env -e .env.proxy -- node scripts/ops-guide-kintone.mjs init",
