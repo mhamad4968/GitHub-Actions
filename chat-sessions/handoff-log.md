@@ -362,3 +362,93 @@ AI は、セッション切替・終了・浜田さんが引き継ぎテンプ�
 **次セッションへの 1 行**: スターター全文 → 項番 -0 → `session:clock:set` → `session:bootstrap` → §57 改定 **M → A〜L** を 1 件ずつ反映（並列禁止 §51）。`.cursorrules` 冒頭の CIO 5 強化要件と NEW-SESSION-STARTER.md の CIO 体制ブロックを必ず再認識。
 
 ---
+
+## 2026-04-29 (Wed) JST 07:15 — Phase A（CLI 確認）+ Phase B（再発防止スクリプト化）完了
+
+**ティア判定**: §1-2-3-1 = L2 Opus 4.7 1M Extra High（憲法級ドキュ＋スクリプト追加 / Tier A）
+
+### CEO 朝指示 3 点（07:14 JST 受領）への対応
+
+| # | 指示 | 結果 |
+|---|---|---|
+| 1 | CLI v2.1.111 以上準拠の確認 | ✅ v2.1.114 インストール確認。`--effort xhigh` / `--permission-mode bypassPermissions` / `fewer-permission-prompts` skill すべて存在。`~/.claude/settings.json` は空 (`{}`)。**CEO 判断「CLI 直接起動しない・AI 側運用確立済で OK」で永続化不要に確定** |
+| 2 | 反省・仕組み見直し（並列発火事故の恒久対策） | ✅ 完了 push 済（commit `59b4bab`）|
+| 3 | §57 改定 M（CEO 4/29 朝指示の §50-3 統合）「進めて OK」 | **保留**（CEO「のちほど確認」を受けて Phase C は CEO 確認待ち） |
+
+### Phase A 結果（CLI v2.1.114 事実確認）
+
+- CLI: `claude --version` = v2.1.114 ✅（要求 v2.1.111+ 充足）
+- `--effort` choices: `low/medium/high/xhigh/max` ✅
+- `--permission-mode` choices: `acceptEdits/auto/bypassPermissions/default/dontAsk/plan` ✅
+- `~/.claude/settings.json`: `{}`（空・最適化未永続化）
+- CEO 判断: **本セッション AI = Cursor 内 Opus 4.7 が `.cursorrules` 冒頭の CIO 5 強化要件と既存憲法（§1-2-3-2 / §50-3 / §51 / §52-8）で同等以上達成済 → 追加対応なし**
+
+### Phase B 結果（並列発火事故の恒久対策）
+
+#### 反省（CIO 自己分析）
+
+- **認知バグ**: 「並列 5 点チェック ✅」と冒頭で宣言しながら、`sync→verify` を「副作用ゼロ」と誤判定して並列発火 → verify NG（HANDOFF-HUMAN.txt / README.txt 不一致）
+- **真因**: チェックが人間の主観に依存。「どのコマンドが副作用か／依存か」の機械的紐付けがなかった
+- **構造的弱点**: 同じ罠は次セッションの CIO（自分含む）も踏む可能性が高かった
+
+#### 恒久対策（実装）
+
+| # | 変更 | 効果 |
+|---|---|---|
+| 1 | `package.json` に `npm run desktop:sync-and-verify` 追加（`session-starter:sync-desktop && verify:desktop-ai-emergency-sync`） | 単一コマンド = 並列発火の余地ゼロ |
+| 2 | `chat-sessions/NEW-SESSION-STARTER.md` の並列 5 点チェック「副作用ゼロか」「依存関係ゼロか」項目に**コマンド名そのもの**を NG 例として明記（2026-04-29 朝の事故を実例として記録） | 次セッションの CIO も同じ罠を回避 |
+
+#### 検収（憲法適合済み: `npm run desktop:sync-and-verify`）
+
+```text
+[verify-desktop-ai-emergency-sync] OK NEW-SESSION-STARTER_20260429.txt
+[verify-desktop-ai-emergency-sync] OK SESSION-BOOTSTRAP-CHECKLIST.txt
+[verify-desktop-ai-emergency-sync] OK HANDOFF-HUMAN.txt
+[verify-desktop-ai-emergency-sync] OK README.txt
+[verify-desktop-ai-emergency-sync] ✅ 全ファイル一致
+```
+
+| 項目 | 値 |
+|---|---|
+| commit | `59b4bab` (chore(safety): add desktop:sync-and-verify combined script + 並列5点チェックに sync→verify NG 例を明記) |
+| push | ✅ `93afb00..59b4bab  main -> main` |
+| 変更ファイル | `package.json` + `chat-sessions/NEW-SESSION-STARTER.md`（1 commit 1 意味）|
+| §51-3 lock | 取得 → release 済 |
+
+### ⚠️ 異常検知 NG 2 件（Phase C 着手前に要対応・CEO 確認待ち）
+
+post-commit hook が以下 2 件を NG 検知（**Phase B の commit 内容自体は OK**、リポ全体の整合性として要対応）。
+
+| # | 検知 | 内容 | 原因仮説 |
+|---|---|---|---|
+| 1 | `verify:constitution-handoff` NG | `NEW-SESSION-STARTER.md` 冒頭 5200 文字に「(7) 役割宣言」見出しが**消えている** | 私の編集箇所（71 行目）と異なる**上部**で改変が起きた形跡（私の編集ではない） |
+| 2 | `session-clock` NG | `SESSION-CLOCK.md` の開始時刻が `2026-04-28 21:29` に書き換わり、「2026-04-29 浜田 CIO 注意書き」も**削除**されている | 私の編集ではない（git 履歴調査要） |
+
+**CIO 仮説**: 昨夜（4/28 21:29 JST）以降、私が知らない別経路で `SESSION-CLOCK.md` と `NEW-SESSION-STARTER.md` 冒頭が**一部巻き戻った**可能性。`git reflog` / `git log -- chat-sessions/...` での調査が必要。
+
+### Phase C（§57 改定 M）保留状況
+
+- 改定 M = CEO 4/29 朝指示の 5 強化要件を `AGENTS.md` §50-3 へ正式統合
+- 暫定対応済（昨日 commit `93afb00`）: `.cursorrules` 冒頭 + `NEW-SESSION-STARTER.md` 内の最小参照
+- 未実施: `AGENTS.md` §50-3 本文への正式追記（§57-1〜§57-6 改定プロセス遵守）
+- ブロッカー: 上記異常 2 件を解消しないと §57-5 検証で確実に NG
+- 推奨着手順: (1) 異常 2 件の原因特定・復元 (2) `session:clock:set` で壁時計リセット (3) Phase C 着手
+
+### CIO 今後の運用宣言（再発防止）
+
+- ✅ 並列発火前は **必ず**「並列 5 点チェック」を機械的に通す（コマンド名ベースで判定）
+- ✅ sync→verify 系は今後 **`npm run desktop:sync-and-verify` を必ず使う**（個別呼出禁止）
+- ✅ 憲法級ファイル（`AGENTS.md` / `RULES-INDEX.md` / `NEW-SESSION-STARTER.md` / `SESSION-CLOCK.md` / `SESSION-SPLIT-REMINDER.md`）の編集前は **必ず session-lock 取得 → release**
+- ✅ 異常検知時は **即停止して報告**、CEO 確認後に修復着手
+
+**MCP 利用**: 0 円（CIO 単独完結）
+
+**AI 補足（漏れ防止）**:
+- `git`: 4 ファイル（package.json + NEW-SESSION-STARTER + 報告書新規 + checkpoint + handoff-log + HANDOFF-HUMAN）を **本ターン Phase B + 報告書面化の 2 commit で push**
+- `次の1手`: CEO 確認後 → 異常 2 件の原因特定・復元 → Phase C（§57 改定 M）→ A〜L を 1 件ずつ
+- `GO待ち`: 異常 2 件の対応方針 / Phase C 着手タイミング / 本日の優先タスク
+- `Tier B`: なし（修復・改定すべて Tier A）
+
+**次セッションへの 1 行**: 異常 2 件（NEW-SESSION-STARTER 冒頭「(7) 役割宣言」消失・SESSION-CLOCK 巻き戻り）を必ず確認し、`docs/reports/2026-04-29-morning-phase-b-completion.md` を Read してから着手。
+
+---

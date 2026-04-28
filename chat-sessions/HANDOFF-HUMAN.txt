@@ -5,11 +5,11 @@ Windows から開きやすい控え: C:\Users\mhamada202408224\Desktop\AI緊急�
 
 推奨フロー（セッション切替）: ① **`NEW-SESSION-STARTER_yyyymmdd.txt`（JST・常にこのファイル名）全文**（**v3.27+**: **「■ 貼付単独で完走」** が **唯一の詳細正本**（項番 -1〜0・**v3.28** 以後の改定もここ優先）。checkpoint 重複貼付不要。貼付推奨は verify 最終行）② この 5 行（**任意**）③ **項番 -0** → ④ **`session:bootstrap` 一括**。**日終わり**: sync → verify。
 
-日時(JST): 2026-04-29（水）06:58 — CEO 朝指示・5 強化要件を Cursor 流に統合
-いま何してた（1行）: WSL に Claude Code CLI v2.1.114 確認（CEO 要求 v2.1.111+ 充足）も、本セッション AI=Cursor 内 Opus 4.7 と事実訂正。CEO の 6 強化目的（xhigh/1M/承認最小化/航海図 3 要素/Stop Hook/MCP 厳格委譲）を `.cursorrules` 冒頭に Cursor 流で統合 + NEW-SESSION-STARTER.md にも最小参照追加 + §57 改定キューに新 M 案最優先登録。
-次にやる1つ: §57 改定 **M → A → B → C → D → E → F → G → H → I → J → K → L** の順で 1 件ずつ反映。M=CEO 4/29 朝指示の `AGENTS.md` §50-3 への正式統合、L=KINTONE_APP Secret 二重利用解消が次に重要。**4/29 19:00 までに kintone 部署予実アプリ作成のスペース決定**（CEO §41）。
-GO待ち（なし／内容）: Tier B なし（CIO 自律権限内で完了）。`.cursorrules` 等 5 ファイル更新を浜田の目視ご確認だけ依頼（依頼者・確認者ロール）。
-触らないで（なし／内容）: PC 台帳・kintone customize 本番書込は §41 確認後
+日時(JST): 2026-04-29（水）07:15 — Phase A（CLI 確認）+ Phase B（再発防止スクリプト化）完了 push 済
+いま何してた（1行）: CEO 朝指示 3 点に対応。(1) CLI v2.1.114 確認 → CEO 判断「直接起動しないので AI 側運用確立済で OK」で永続化不要に確定。(2) 並列発火事故（sync→verify 誤判定）の恒久対策として `npm run desktop:sync-and-verify` を新設 + 並列 5 点チェック NG 例明記（commit `59b4bab` push 済）。(3) §57 改定 M は CEO「のちほど確認」を受けて保留。**詳細報告書**: `docs/reports/2026-04-29-morning-phase-b-completion.md`。
+次にやる1つ: **CEO ご確認待ち（3 点）**: ① 異常 2 件（NEW-SESSION-STARTER 冒頭「(7) 役割宣言」消失・SESSION-CLOCK 巻き戻り）を CIO 自律で git reflog 調査 → 復元してよいか / ② Phase C（§57 改定 M）着手タイミング / ③ 本日の優先（M / L=KINTONE_APP Secret 分離 / §41=4/29 19:00 までの kintone 部署予実アプリのスペース決定）の順位。
+GO待ち（なし／内容）: Tier B なし。**異常 2 件の対応方針**と **Phase C 着手タイミング**を CEO のちほどご確認願います。
+触らないで（なし／内容）: 異常 2 件（NEW-SESSION-STARTER 冒頭・SESSION-CLOCK）の原因特定前は §57 改定本文編集に進まない。PC 台帳・kintone customize 本番書込は §41 確認後
 
 ---
 （AI 向け・浜田は空欄でよい）新チャットで先に貼ると迷いにくい 1 行:
@@ -19,3 +19,6 @@ GO待ち（なし／内容）: Tier B なし（CIO 自律権限内で完了）�
 （浜田）新チャット接続直後: `SESSION-CLOCK.md` の「開始:」を確認。未設定なら壁時計の依頼を忘れず（`SESSION-SPLIT-REMINDER.md` 浜田→AI）。hook が効いていれば不要。
 （CIO 体制 / 2026-04-28 制定）: チャット起動時に NEW-SESSION-STARTER.md 冒頭の「🎖️ AI 内部の役割分担」+「🔥 実行と確認の分離」+「🛡 並列セーフガード 5 点」+「📐 CEO 4/29 朝指示 5 強化要件」を必ず再認識。CIO=本体 AI / Kimi=実務 / DeepSeek=知恵袋 / OpenRouter=保険 / 浜田=依頼者・確認者。
 （事実訂正 / 2026-04-29 朝）: WSL に Claude Code CLI v2.1.114 インストール済だが、本セッション AI=Cursor 内 Opus 4.7（CLI と別プロセス）。CEO 意図する xhigh/1M/承認最小化/航海図/Stop Hook/MCP 委譲は Cursor + 既存憲法で同等達成（詳細 `.cursorrules` 冒頭）。
+（2026-04-29 07:14 CEO 確定）: CLI 永続化不要（CEO 直接起動しない・AI 側運用確立済で OK）。
+（2026-04-29 07:15 Phase B 完了）: `npm run desktop:sync-and-verify` 新設（sync→verify 直列保証）。次回からこれ必須・個別呼出禁止。詳細 `docs/reports/2026-04-29-morning-phase-b-completion.md`。
+（2026-04-29 07:15 異常検知）: NEW-SESSION-STARTER 冒頭「(7) 役割宣言」消失 + SESSION-CLOCK 開始時刻が 4/28 21:29 に巻き戻り（私の編集ではない）。CEO 確認後に git reflog 調査・復元予定。
