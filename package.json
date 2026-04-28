@@ -97,6 +97,7 @@
     "smoke:quiet": "node scripts/smoke-test.mjs --quiet",
     "verify:constitution-handoff": "node scripts/verify-constitution-handoff.mjs",
     "verify:mandatory-read-gate": "node scripts/mandatory-read-gate.mjs",
+    "verify:agent-env": "node scripts/verify-agent-env.mjs",
     "session:clock:set": "node scripts/session-clock.mjs set",
     "session:clock:prompt-hook": "node scripts/session-clock.mjs prompt-hook",
     "session:clock:write-ticker": "node scripts/session-clock.mjs write-ticker",

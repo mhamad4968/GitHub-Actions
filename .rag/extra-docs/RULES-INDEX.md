@@ -177,7 +177,7 @@
 | §57-2 | 起案・レビュー（diff + 影響範囲 + §54-1 ラベル候補 + ロールバック手順）|
 | §57-3 | ラベル決定（§54-1 3 質問判定フローチャートに接続）|
 | §57-4 | 適用（並列禁止 / ファイル編集順序: AGENTS → RULES-INDEX → WORKFLOW → scripts → chat-sessions → Desktop AI緊急用）|
-| §57-5 | 検証（audit-rules / audit-tsb / verify-breaking / audit-xref / health-check / smoke-test 全通過 / `.session-state/agents-md-hash.txt` 更新）|
+| §57-5 | 検証（audit-rules / audit-tsb / verify-breaking / audit-xref / health-check / smoke-test 全通過 / `.session-state/agents-md-hash.txt` 更新）／**`npm run verify:agent-env`**（Tier A・Desktop 同期なしの自律環境ワンショット＝憲法＋必読ゲート＋上記 4 audit 連鎖＋`smoke:quiet`／`.cursor/rules/mcp-tool-discipline.mdc` アイドル枠）|
 | §57-6 | 周知（付則 changelog 1 行追記 / 重大改定は NEW-SESSION-STARTER + CURSOR-トラブル対応メモ + 浜田 Desktop AI緊急用 同期）|
 | §57-7 | §57 自身の改定（[BREAKING] 必須 / §47-E/§54-1/§51/§52 と矛盾なし確認 / 浜田明示 GO 必須）|
 | §57-8 | 記録様式（`logs/autonomy-decisions/rule-amendment-YYYY-MM-DD-HHMM.md`）|

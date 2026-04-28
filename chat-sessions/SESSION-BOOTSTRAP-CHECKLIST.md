@@ -153,6 +153,7 @@ cd /path/to/kintone-ai-lab && npm run session:bootstrap
 - [ ] 上記が **exit 0**（warn のみなら内容をチャットに要約し、続行可否を判断）
 - [ ] **ng なら** その検査を直すまで本題の kintone 書込・憲法改定・hooks 変更に進まない
 - [ ] **新チャットで時間がないとき**は最低 **`npm run verify:constitution-handoff`** → **`npm run verify:mandatory-read-gate`** を **Read より先**に実行（光速・TSB-024 ＋ 必読構造）。**いずれか ng なら本題に入らない**。
+- [ ] **Desktop が無い環境・余剰時間の自律健全性**（Tier A）: **`npm run verify:agent-env`**（憲法→必読ゲート→`verify:all`→`smoke:quiet`。**Desktop 同期・`verify:session-clock-health` は含まない**＝`session:bootstrap` の代替ではない）。warn/ng があれば **1 件**だけ直す。
 - [ ] **v3.27+・スターター全文貼付済み**: **項番 -0 で浜田 OK 後**に本フェーズの **`session:bootstrap` を最優先**。フェーズ 1 の棚卸し Read は **bootstrap 成功後**でよい（実行順の正本は `NEW-SESSION-STARTER.md` **「■ 貼付単独で完走」**）。
 
 `session:bootstrap` は内部で **(A)** `verify-constitution-handoff.mjs`（**先頭・光速**）→ **(A2)** `mandatory-read-gate.mjs`（**必読ファイル構造**）→ **(A3)** `session-clock-health.mjs --strict`（**§51-6-2 壁時計** hooks / crontab node 整合）→ **(B)** `session-starter:sync-desktop`（浜田 Desktop **AI緊急用**）→ **(C)** `verify-desktop-ai-emergency-sync.mjs`（`.txt` とリポ正本のバイト一致）→ **(D)** **`npm run smoke:quiet`**（guard + 4 audit + verify:breaking + xref + health + rule-watcher + parallel + **verify:constitution-handoff** + **verify:mandatory-read-gate** の **10 検査**）の順で実行する。
@@ -181,6 +182,7 @@ AI は上記を終えたら **このターン内**で、次を **箇条書きで
 
 ## メンテナンス
 
+- **`npm run verify:agent-env`** の中身（`package.json` の連鎖）を変えたら **フェーズ 6 の該当箇条書き**と **`RULES-INDEX.md` §57-5 行**を同期する。
 - 新しい「必須検査」が `smoke-test.mjs` に入ったら **本ファイルフェーズ 6 の説明を同期**する。  
 - 新しい永続ドキュが「引き継ぎ必読」になったら **フェーズ 1–2 の表に 1 行追加**する。
 - **`NEW-SESSION-STARTER.md` / 本ファイルを編集して push した AI** は、**同一ターンで `npm run session-starter:sync-desktop` を必須**とし、続けて **`npm run verify:desktop-ai-emergency-sync`** で浜田が開く `AI緊急用\`（`NEW-SESSION-STARTER_yyyymmdd.txt` / `README.txt` 等）をリポと揃えたことを確認する（§57-6）。WSL で `/mnt/c` が無い等のときだけ省略可＋チャットに理由 1 行。

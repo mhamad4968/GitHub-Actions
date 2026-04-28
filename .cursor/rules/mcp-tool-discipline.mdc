@@ -22,7 +22,7 @@ Cursor の **MCP FileSystem** 上の `mcps/<server>/tools/*.json`（または同
 
 ## アイドル時間の有効活用（浜田希望・2026-04-28）
 
-- **本題がなく・待ち・余裕があるターン**では、**先に浜田へ確認を挟まず**、リポ内の **メンテ・整合**に充ててよい。**優先の目安（上から）**: ① **緑の回復**（`smoke:quiet` / `verify:all` / `verify:mandatory-read-gate` 等で出た **warn/ng の原因を 1 件だけ**潰す）② **引継ぎ鮮度**（`checkpoint-latest.md` / `evening-reflect-queue.md` / `handoff-log.md` の **事実と一致**）③ **ドキュ・ルール整合**（`RULES-INDEX` / `.cursor/rules` / `docs/mcp-status.md` の矛盾 1 件）④ **監査メモの 1 歩**（P5-3 等の **未消化を 1 件**）。いずれも **Tier A** のみ。
+- **本題がなく・待ち・余裕があるターン**では、**先に浜田へ確認を挟まず**、リポ内の **メンテ・整合**に充ててよい。**優先の目安（上から）**: ① **緑の回復**（まず **`npm run verify:agent-env`**＝憲法→必読ゲート→`verify:all`→`smoke:quiet` の **Tier A 一発**／Desktop 同期・時計 strict は含まない。出た **warn/ng を 1 件だけ**潰す）② **引継ぎ鮮度**（`checkpoint-latest.md` / `evening-reflect-queue.md` / `handoff-log.md` の **事実と一致**）③ **ドキュ・ルール整合**（`RULES-INDEX` / `.cursor/rules` / `docs/mcp-status.md` の矛盾 1 件）④ **監査メモの 1 歩**（P5-3 等の **未消化を 1 件**）。いずれも **Tier A** のみ。
 - **例（従来どおり）**: 未コミットの整理、**Tier A** の `npm run verify:*` / `npm run lint:*`、`chat-sessions/evening-reflect-queue.md` の処理済み反映、**`logs/autonomy-decisions/`** への短文証跡。
 - **禁止**: 浜田方針どおり **PC 台帳の前倒し本実装**、**Tier B（kintone 書込・deploy・本番ラベル適用）を GO なしで実行**、憲法違反の **「人に npm / deploy を依頼」**（`docs/troubleshooting.md` TSB-024）。
 - **成果物**は通常どおり **commit + push**（小さな単独コミットでよい）。
