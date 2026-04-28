@@ -26,4 +26,4 @@ Cursor の **MCP FileSystem** 上の `mcps/<server>/tools/*.json`（または同
 - **例（従来どおり）**: 未コミットの整理、**Tier A** の `npm run verify:*` / `npm run lint:*`、`chat-sessions/evening-reflect-queue.md` の処理済み反映、**`logs/autonomy-decisions/`** への短文証跡。
 - **禁止**: 浜田方針どおり **PC 台帳の前倒し本実装**、**Tier B（kintone 書込・deploy・本番ラベル適用）を GO なしで実行**、憲法違反の **「人に npm / deploy を依頼」**（`docs/troubleshooting.md` TSB-024）。
 - **成果物**は通常どおり **commit + push**（小さな単独コミットでよい）。
-- **浜田側の環境改善**（余剰時間に検討してよい・AIは提案と検証まで）: Cursor の **Browser / MCP Protection ON**、**Workspace Trust**、**`~/.cursor/permissions.json`** の最小許可、**憲法 watcher + `ai-session.lock`** の運用（§51-4 軸3 の黄対策）。リポ外のため **変更は浜田判断**。
+- **自律エージェント向け環境改善**（余剰時間・**Tier A**・ここが本題）: リポとスクリプト側で **AI が止まりにくくなる**整え。**例**: `smoke` / `verify:*` の **warn・ng を 1 件**潰す（誤検知なら detector 等を直す）、**引継ぎ 3 点**（`checkpoint-latest.md` / `handoff-log.md` / `evening-reflect-queue.md`）の事実整合、**MCP** の descriptor 鮮度と **`docs/mcp-status.md`**、**`session:bootstrap` に載る手順・npm script の欠け**を 1 件埋める、hooks と憲法 watcher の **ログが読める**状態。**Cursor の MCP/Browser Protection・`permissions.json`・`ai-session.lock`** はリポ外だが、自律の**前提**としてスターター／`AGENTS` から **参照 1 行**を足すのは可（**端末での ON/OFF の操作は人間**）。
