@@ -195,3 +195,21 @@ AI は、セッション切替・終了・浜田さんが引き継ぎテンプ�
 **次セッションへの 1 行**: 新チャットは **スターター全文** → **項番 -0** → **`session:clock:set`（4h 超なら先）** → **`npm run session:bootstrap`**；`smoke` が黄なら **軸3＝lock** を確認。
 
 ---
+
+### 2026-04-28 JST — 本チャット終了（verify:agent-env・引継ぎ正本更新）
+
+**浜田メモ（原文）**:
+> よし、では引継ぎ準備ができたら終わりね。
+
+**経緯（簡潔）**:
+- **`npm run verify:agent-env`** 追加（`scripts/verify-agent-env.mjs`）＝憲法→必読ゲート→`verify:all`→`smoke:quiet`（Desktop 同期なし）。`mcp-tool-discipline`・`SESSION-BOOTSTRAP` フェーズ 6・`RULES-INDEX` §57-5・RAG 用 `RULES-INDEX` を同期。
+- **自律エージェント向け環境改善**の文言整理（浜田端末ではなく **AI がリポで自走しやすい整え**が主語）。
+- **引継ぎ**: `checkpoint-latest.md` **最終更新**、`HANDOFF-HUMAN.txt` 5 行、本ログを **本チャット終了**用に更新。実装 **`9685e74`** に続け **本 3 ファイルを 1 commit で push**。
+
+**AI 補足**:
+- `git`: 本ブロック＋checkpoint＋HANDOFF を **1 commit で push**（完了後 `git log -1` で確認）。
+- `次の1手`: 上記 **次セッションへの 1 行** ＋ 任意 **`verify:agent-env`**。
+
+**次セッションへの 1 行**: **`verify:agent-env`** で Tier A 健全性を一発確認できる（warn は smoke 従来どおり）。フル手順は **`session:bootstrap`**。
+
+---
