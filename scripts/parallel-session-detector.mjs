@@ -3,7 +3,7 @@
  * parallel-session-detector.mjs — §51-4 並列セッション疑い 4 軸機械判定
  *
  * 4 軸 (各軸に重み付き点数):
- *   軸 1: watcher_pid 不一致 (+5)   = jsonl 内に 2 つ以上の watcher_pid 値が出現
+ *   軸 1: watcher_pid 不一致 (+5)   = 副次 watcher が「十分な件数」で主 watcher と並立（再起動残骸のみは除外）
  *   軸 2: 同一ファイル過密編集 (+2) = 同一 file が 5 分以内に 5 件以上変化記録
  *   軸 3: session-lock 不在編集 (+3) = jsonl 変更ありかつ直近 10 分以内に lock acquire ログなし
  *   軸 4: 不審なバックアップ命名 (+4) = .b7-pre-* / .tsb-*-pre-* / .proposal-pre-* 等が出現
@@ -57,10 +57,16 @@ function loadJsonlEntries() {
   }
 }
 
+/** 軸 1: 副次 pid がこの件数未満なら「主 pid の取りこぼし」とみなし並列にしない */
+const AXIS1_MIN_SECONDARY_EVENTS = 5;
+/** 主 pid 件数に対する副次の最低比率（再起動で旧 pid が数件だけ残るパターンを除外） */
+const AXIS1_MIN_SECONDARY_RATIO = 0.12;
+
 /**
  * 軸 1: watcher_pid 不一致検知
- * **2 つ以上の pid がそれぞれ 3 件以上**の記録があるときだけ +5。
- * watcher 再起動直後に旧 pid が 1〜2 行だけ残るパターンは並列ではない（TSB 朝報誤警報対策）。
+ * **2 つ以上の pid がそれぞれ 3 件以上**あるうえで、**2 位の件数がしきい値以上**のときだけ +5。
+ * しきい値 = max(AXIS1_MIN_SECONDARY_EVENTS, floor(主件数 × AXIS1_MIN_SECONDARY_RATIO))。
+ * watcher 再起動で旧 pid が少数行だけ残る（例: 3 件 vs 99 件）は並列ではない（朝報 smoke 誤警報対策）。
  */
 function axis1WatcherPidMismatch(entries) {
   const pidCounts = {};
@@ -70,17 +76,43 @@ function axis1WatcherPidMismatch(entries) {
     }
   }
   const summary = Object.entries(pidCounts).map(([pid, n]) => `pid=${pid} (${n} 件)`);
-  const activePids = Object.keys(pidCounts).filter((pid) => pidCounts[pid] >= 3);
-  const isMismatch = activePids.length >= 2;
+  const sortedDesc = Object.entries(pidCounts).sort((a, b) => b[1] - a[1]);
+  const withMin3 = sortedDesc.filter(([, n]) => n >= 3);
+  let isMismatch = false;
+  let secondaryFloor = 0;
+  if (withMin3.length >= 2) {
+    const primary = withMin3[0][1];
+    const secondary = withMin3[1][1];
+    secondaryFloor = Math.max(
+      AXIS1_MIN_SECONDARY_EVENTS,
+      Math.floor(AXIS1_MIN_SECONDARY_RATIO * primary),
+    );
+    isMismatch = secondary >= secondaryFloor;
+  }
+  const activePidsGe3 = Object.keys(pidCounts).filter((pid) => pidCounts[pid] >= 3);
+  const evidence = [];
+  if (summary.length === 0) {
+    evidence.push('watcher_pid 記録なし');
+  } else {
+    evidence.push(...summary);
+    if (isMismatch) {
+      evidence.push(`（2 位の件数 >= ${secondaryFloor} → 並列疑い +5）`);
+    } else if (activePidsGe3.length >= 2) {
+      evidence.push(
+        `（2 位の件数 < ${secondaryFloor} = max(${AXIS1_MIN_SECONDARY_EVENTS}, ${Math.round(AXIS1_MIN_SECONDARY_RATIO * 100)}%×主件数) → watcher 再起動残骸の可能性、並列疑いなし）`,
+      );
+    } else if (activePidsGe3.length === 0 && summary.length > 0) {
+      evidence.push('（いずれの watcher_pid も 3 件未満 → 並列疑いなし）');
+    } else {
+      evidence.push('（3 件以上の記録がある watcher_pid が 1 種類のみ → 並列疑いなし）');
+    }
+  }
   return {
     score: isMismatch ? 5 : 0,
-    evidence: isMismatch
-      ? summary
-      : (summary.length
-        ? [...summary, '（3 件以上の記録がある watcher_pid が 1 種類のみ → 並列疑いなし）']
-        : ['watcher_pid 記録なし']),
+    evidence,
     pid_count: Object.keys(pidCounts).length,
-    active_pid_count_3plus: activePids.length,
+    active_pid_count_3plus: activePidsGe3.length,
+    secondary_floor: withMin3.length >= 2 ? secondaryFloor : null,
   };
 }
 
