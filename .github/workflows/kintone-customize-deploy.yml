@@ -7,7 +7,8 @@
 #   KINTONE_APP … 対象アプリ ID（API デプロイ先・トークンのスコープと一致させる）
 #   ソース路径の既定: 629 → customize/shucccho-seisan/desktop.js / 674 → customize/new-pc-ledger-v1/desktop.js / その他 → customize/<ID>/desktop.js
 #   任意 KINTONE_CUSTOMIZE_SRC … 上書き（例: 631 のまま token を使うが別路径を流したい場合。**アプリ ID と実ファイルの対応は運用者責任**）
-#   KINTONE_API_TOKEN … そのアプリの API トークン（file / アプリ設定に権限あり）
+#   KINTONE_API_TOKEN … そのアプリの API トークン（**file.json アップロード用**。プレビュー割当は公式上 API トークン不可のため **KINTONE_USERNAME / KINTONE_PASSWORD 必須**）
+#   KINTONE_USERNAME / KINTONE_PASSWORD … プレビュー反映・本番反映（deploy-customize-api-token.js ハイブリッド認証）
 #   SLACK_WEBHOOK_URL / TEAMS_WEBHOOK_URL（任意）
 #
 # ■ kintone-customize-uploader について
@@ -101,14 +102,22 @@ jobs:
           mkdir -p .kintone-deploy
           cp "${SRC}" .kintone-deploy/upload.js
 
-      - name: kintone へ反映（API トークン・REST 手順）
+      - name: kintone へ反映（API トークン + パスワード・REST 手順）
         env:
           KINTONE_BASE_URL: ${{ env.KINTONE_BASE_URL }}
           KINTONE_API_TOKEN: ${{ secrets.KINTONE_API_TOKEN }}
+          KINTONE_USERNAME: ${{ secrets.KINTONE_USERNAME }}
+          KINTONE_PASSWORD: ${{ secrets.KINTONE_PASSWORD }}
+          KINTONE_BASIC_AUTH_USERNAME: ${{ secrets.KINTONE_BASIC_AUTH_USERNAME }}
+          KINTONE_BASIC_AUTH_PASSWORD: ${{ secrets.KINTONE_BASIC_AUTH_PASSWORD }}
         run: |
           set -euo pipefail
           if [[ -z "${KINTONE_API_TOKEN:-}" ]]; then
             echo "::error::secrets.KINTONE_API_TOKEN が空です"
+            exit 1
+          fi
+          if [[ -z "${KINTONE_USERNAME:-}" ]] || [[ -z "${KINTONE_PASSWORD:-}" ]]; then
+            echo "::error::preview/app/customize.json は API トークン不可のため secrets.KINTONE_USERNAME と KINTONE_PASSWORD が必須です（kintone 公式）"
             exit 1
           fi
           if [[ -z "${KINTONE_BASE_URL:-}" ]]; then

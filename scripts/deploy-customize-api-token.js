@@ -1,9 +1,14 @@
 /**
- * kintone カスタマイズ JS を「アプリの API トークン」（X-Cybozu-API-Token）でデプロイする。
- * 公式 kintone-customize-uploader は --api-token に非対応のため、同じ REST 手順を fetch で実装する。
+ * kintone カスタマイズ JS をデプロイする（ファイルアップロード + プレビュー反映 + 本番反映）。
+ *
+ * - **file.json（アップロード）**: `X-Cybozu-API-Token` 可（[Upload File](https://kintone.dev/en/docs/kintone/rest-api/files/upload-file/)）。
+ * - **preview/app/customize.json（プレビューへの JS 割当）**: 公式に **API トークン不可**
+ *   （[Update Customization](https://kintone.dev/en/docs/kintone/rest-api/apps/update-customization/) の Authentication）。
+ *   そのため **`KINTONE_USERNAME` + `KINTONE_PASSWORD`**（`X-Cybozu-Authorization`）を渡すと、
+ *   アップロードは API トークン・**プレビュー更新以降はパスワード**のハイブリッドで実行する。
  *
  * 使い方:
- *   KINTONE_BASE_URL=https://xxx.cybozu.com KINTONE_API_TOKEN=... \\
+ *   KINTONE_BASE_URL=... KINTONE_API_TOKEN=... KINTONE_USERNAME=... KINTONE_PASSWORD=... \\
  *     node scripts/deploy-customize-api-token.js <APP_ID> <JS_PATH>
  */
 import { readFile } from "node:fs/promises";
@@ -22,7 +27,8 @@ const jsPath = process.argv[3];
 if (!appId || !/^\d+$/.test(appId) || !jsPath) {
   console.error("Usage: node scripts/deploy-customize-api-token.js <APP_id> <JS_PATH>");
   console.error("Example: node scripts/deploy-customize-api-token.js 594 customize/594/desktop.js");
-  console.error("Required env: KINTONE_BASE_URL, KINTONE_API_TOKEN");
+  console.error("Required env: KINTONE_BASE_URL, KINTONE_API_TOKEN, KINTONE_USERNAME, KINTONE_PASSWORD");
+  console.error("(API token cannot call PUT preview/app/customize.json — see kintone Update Customization API docs.)");
   process.exit(2);
 }
 
@@ -30,13 +36,33 @@ let baseUrl = requireEnv("KINTONE_BASE_URL").trim().replace(/\/+$/, "");
 baseUrl = baseUrl.replace(/\/k$/, "");
 const apiToken = requireEnv("KINTONE_API_TOKEN").trim();
 
-const commonHeaders = {
+function addBasicAuth(headers) {
+  const out = { ...headers };
+  if (process.env.KINTONE_BASIC_AUTH_USERNAME && process.env.KINTONE_BASIC_AUTH_PASSWORD) {
+    const bu = String(process.env.KINTONE_BASIC_AUTH_USERNAME);
+    const bp = String(process.env.KINTONE_BASIC_AUTH_PASSWORD);
+    out.Authorization = `Basic ${Buffer.from(`${bu}:${bp}`, "utf8").toString("base64")}`;
+  }
+  return out;
+}
+
+const uploadHeaders = addBasicAuth({
   "X-Cybozu-API-Token": apiToken,
-};
-if (process.env.KINTONE_BASIC_AUTH_USERNAME && process.env.KINTONE_BASIC_AUTH_PASSWORD) {
-  const bu = String(process.env.KINTONE_BASIC_AUTH_USERNAME);
-  const bp = String(process.env.KINTONE_BASIC_AUTH_PASSWORD);
-  commonHeaders.Authorization = `Basic ${Buffer.from(`${bu}:${bp}`, "utf8").toString("base64")}`;
+});
+
+const user = (process.env.KINTONE_USERNAME || "").trim();
+const pass = (process.env.KINTONE_PASSWORD || "").trim();
+const hasPasswordAuth = Boolean(user && pass);
+const previewHeaders = addBasicAuth(
+  hasPasswordAuth
+    ? { "X-Cybozu-Authorization": Buffer.from(`${user}:${pass}`, "utf8").toString("base64") }
+    : { "X-Cybozu-API-Token": apiToken },
+);
+
+if (!hasPasswordAuth) {
+  throw new Error(
+    "KINTONE_USERNAME and KINTONE_PASSWORD are required: PUT /k/v1/preview/app/customize.json does not accept API token authentication (kintone official docs).",
+  );
 }
 
 async function uploadFile(path) {
@@ -45,7 +71,7 @@ async function uploadFile(path) {
   form.set("file", new Blob([buf], { type: "text/javascript" }), path.split("/").pop() || "desktop.js");
 
   const url = new URL(`${baseUrl}/k/v1/file.json`);
-  const res = await fetch(url, { method: "POST", headers: commonHeaders, body: form });
+  const res = await fetch(url, { method: "POST", headers: uploadHeaders, body: form });
   const text = await res.text();
   const json = JSON.parse(text);
   if (!res.ok) {
@@ -66,7 +92,7 @@ async function updatePreviewCustomization(app, fileKey) {
   };
   const res = await fetch(url, {
     method: "PUT",
-    headers: { ...commonHeaders, "Content-Type": "application/json" },
+    headers: { ...previewHeaders, "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
   const text = await res.text();
@@ -84,7 +110,7 @@ async function deployAppSettings(app, revision) {
   const body = { apps: [{ app, revision }] };
   const res = await fetch(url, {
     method: "POST",
-    headers: { ...commonHeaders, "Content-Type": "application/json" },
+    headers: { ...previewHeaders, "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
   const text = await res.text();
@@ -104,7 +130,7 @@ async function deployAppSettings(app, revision) {
 async function getDeployStatus(app) {
   const url = new URL(`${baseUrl}/k/v1/preview/app/deploy.json`);
   url.searchParams.set("apps[0]", String(app));
-  const res = await fetch(url, { method: "GET", headers: commonHeaders });
+  const res = await fetch(url, { method: "GET", headers: previewHeaders });
   const text = await res.text();
   const json = JSON.parse(text);
   if (!res.ok) {
