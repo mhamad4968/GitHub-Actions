@@ -85,7 +85,18 @@ function extractTocRows(t) {
 
     const status = cells[4] || '';
     const isHistoryReference = /履歴参照/.test(date);
-    rows.push({ id, date, confirmed, confirmedRaw, status, isHistoryReference });
+    /** 目次で「孤児」と明示され false の行 = 真因は欠落だが調査打ち切り確定（F-2 実質カバレッジから除外） */
+    const isExplicitOrphan =
+      confirmed === false && /孤児|orphan/i.test(confirmedRaw);
+    rows.push({
+      id,
+      date,
+      confirmed,
+      confirmedRaw,
+      status,
+      isHistoryReference,
+      isExplicitOrphan,
+    });
   }
   return rows;
 }
@@ -165,8 +176,18 @@ if (tocOrphanExpected.length > 0) {
 const total = tocRows.length;
 const confirmedTrue = tocRows.filter((r) => r.confirmed === true).length;
 const confirmedFalse = tocRows.filter((r) => r.confirmed === false).length;
+const orphanFalse = tocRows.filter((r) => r.isExplicitOrphan).length;
+const actionableFalse = tocRows.filter(
+  (r) => r.confirmed === false && !r.isExplicitOrphan,
+).length;
 const noFlag = tocRows.filter((r) => r.confirmed === null).length;
-const coverage = total > 0 ? Math.round((confirmedTrue / total) * 100) : 0;
+const denomEffective = total - orphanFalse;
+const coverage =
+  total > 0 ? Math.round((confirmedTrue / total) * 100) : 0;
+const coverageEffective =
+  denomEffective > 0
+    ? Math.round((confirmedTrue / denomEffective) * 100)
+    : 0;
 
 if (ARG_JSON) {
   console.log(JSON.stringify({
@@ -178,7 +199,14 @@ if (ARG_JSON) {
     no_flag: noFlag,
     coverage_percent: coverage,
     issues,
-    target_5month: { goal_percent: 100, current_percent: coverage, achieved: coverage >= 94 },
+    target_5month: {
+      goal_percent: 100,
+      current_percent: coverage,
+      current_percent_effective: coverageEffective,
+      orphan_false_rows: orphanFalse,
+      achieved: coverage >= 94,
+      achieved_effective: coverageEffective >= 100 && actionableFalse === 0,
+    },
   }, null, 2));
   process.exit(0);
 }
@@ -188,22 +216,32 @@ console.log('');
 console.log(`- ファイル: \`${path.relative(REPO_ROOT, TSB_FILE)}\``);
 console.log(`- 目次行数: ${total}`);
 console.log(`- 本文セクション数 (## TSB-): ${sectionIds.size}`);
-console.log(`- root_cause_confirmed = true: ${confirmedTrue} 件 (**${coverage}%**)`);
-console.log(`- root_cause_confirmed = false: ${confirmedFalse} 件`);
+console.log(`- root_cause_confirmed = true: ${confirmedTrue} 件 (**${coverage}%** 名目 / 孤児除外 **${coverageEffective}%**)`);
+console.log(`- root_cause_confirmed = false: ${confirmedFalse} 件（うち孤児明示 **${orphanFalse}** / 要対応 **${actionableFalse}**）`);
 if (noFlag > 0) console.log(`- フラグ不明: ${noFlag} 件`);
 console.log('');
 
-if (coverage >= 94) {
-  console.log(`✅ 5 月目標 #2 (カバレッジ 100% / 実質 = 孤児を除く 100%) を達成中 (${coverage}%)`);
+if (coverageEffective >= 100 && actionableFalse === 0) {
+  console.log(
+    `✅ 5 月目標 #2 (カバレッジ 100% / 実質 = 孤児を除く 100%) を達成（名目 ${coverage}% / 実質 ${coverageEffective}%）`,
+  );
+} else if (coverage >= 94) {
+  console.log(`✅ 5 月目標 #2 を達成中 (名目 ${coverage}% / 実質 ${coverageEffective}% — 要対応 false が残る場合は掘削継続)`);
 } else if (coverage >= 80) {
   console.log(`⚠️ 5 月目標 #2 まで残り ${100 - coverage}% (現状 ${coverage}%) — 真因 1 文掘削を継続`);
 } else {
   console.log(`❌ 5 月目標 #2 未達 (現状 ${coverage}% / 目標 100%) — 真因 1 文掘削を緊急実施`);
 }
 
-if (confirmedFalse > 0) {
-  const falseList = tocRows.filter((r) => r.confirmed === false).map((r) => r.id);
-  console.log(`- false 件名: ${falseList.join(' / ')}`);
+if (orphanFalse > 0) {
+  const oList = tocRows.filter((r) => r.isExplicitOrphan).map((r) => r.id);
+  console.log(`- 孤児確定 (調査打ち切り・目次維持): ${oList.join(' / ')}`);
+}
+if (actionableFalse > 0) {
+  const falseList = tocRows
+    .filter((r) => r.confirmed === false && !r.isExplicitOrphan)
+    .map((r) => r.id);
+  console.log(`- 要対応 false 件名: ${falseList.join(' / ')}`);
 }
 
 console.log('');
