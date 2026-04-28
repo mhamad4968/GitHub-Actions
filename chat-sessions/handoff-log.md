@@ -213,3 +213,20 @@ AI は、セッション切替・終了・浜田さんが引き継ぎテンプ�
 **次セッションへの 1 行**: **`verify:agent-env`** で Tier A 健全性を一発確認できる（warn は smoke 従来どおり）。フル手順は **`session:bootstrap`**。
 
 ---
+
+### 2026-04-28 JST — 部署予実（日程・マスタ案）＋Desktop「AI緊急用」1 ファイル集約（夜前）
+
+**浜田メモ（要旨）**: 今日の作業をセッション切替後も分かるようまとめる。**Desktop\AI緊急用** は過去ファイルを削除し**最新版だけ**。**夜の反省会は約 20:00 JST** に再度入る（**セッションは変わる**）。
+
+**経緯（簡潔）**:
+- **部署予実（`templates/yojitsu-budget-lite/`）**: マイルストーン **4/29 アプリ作成（〜19:00 JST）**／4/30 項目確定／5/1 投入／5/2 機能／5/3 運用整理（`SPEC.md` §10.1）。**マスタ v1 は不要**（会社・工種・摘要は別アプリにしない。費用種別はドロップダウン）— `docs/yojitsu-master-and-field-plan.md`・`SPEC.md` §6d。チェックリスト **§3b 読了 [x]**。関連コミット例: `7ffe29c` `218e2d5` `405124a` `de45591`。**`main` → `origin` は push 済み**。
+- **Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用`**: `README.txt` / `HANDOFF-HUMAN.txt` / `SESSION-BOOTSTRAP-CHECKLIST.txt` / `NEW-SESSION-STARTER_20260428.txt` を削除。**残り 1 本**: `SESSION-HANDOFF-LATEST-2026-04-28.txt`（今日の全会話要約・20:00 再入場・儀式 4 ファイル復元手順・パス早見）。
+
+**AI 補足**:
+- `git`: 本ブロック＋`checkpoint-latest.md` **最終更新**を **commit / push**。
+- `次の1手`（夜 **~20:00**）: **反省会**なら `evening-reflect-queue.md`／**予実続き**なら Desktop txt を貼って **項番 -0**。**`session:bootstrap`** 前に儀式用 `.txt` が必要なら **`npm run session-starter:sync-desktop`**（未復元だと `verify:desktop-ai-emergency-sync` が NG になり得る）。
+- `GO待ち`: Tier B なし（4/29 kintone 作成まで）。
+
+**次セッションへの 1 行**: **`SESSION-HANDOFF-LATEST-2026-04-28.txt`** を開くか全文貼る →（必要なら）**`session-starter:sync-desktop`** → **項番 -0** → **`npm run session:bootstrap`**。
+
+---
