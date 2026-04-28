@@ -36,9 +36,10 @@
 | TSB-022 | 2026-04-26 | dangerous-shell-blocker.sh heredoc 誤検知 | `dangerous-shell-blocker.sh` がコマンド全文（heredoc 本文含む）へ deny regex を適用し、**heredoc 内の文字列**が `git rebase` 等の危険パターンに一致して誤検知していた | ✅ | true | Cursor Hooks / §52-8-1 |
 | TSB-023 | 2026-04-26 | kintone MCP `kintone-add-app` 直後に「未公開？」確認が冗長 | `add-app` は **プレビュー先行**でライブ `app.json` が 404 になりうるが、AI がドキュメント未読のまま浜田へ「まだ公開してない？」と聞き、セッション切替後も同質問が再発する構造だった | ✅ | true | kintone MCP / PC 台帳 Day4 |
 | TSB-024 | 2026-04-26 | AI がデプロイ等 Tier B 実行を浜田に委ねる禁句 | 会話要約で **§35-1 / §56-1a** が脱落し「コード=AI・反映=浜田」誤分担が再構築され「再デプロイしてください」「手動アップロードで OK」等が再発した | ✅ | true | kintone 反映 / 引き継ぎ |
+| TSB-026 | 2026-04-29 07:15 検出 / 07:25 解消 | 機械的書換による「人間注意書き」の構造的消失 | **NEW-SESSION-STARTER 冒頭の累積編集で hand 5200 needle が押し出され**、かつ **`session:clock:set` が HEADER 全置換で人間追記注意書きを上書き**して、要約耐性ガードが構造的に失われた（恒久対策: NEW-SESSION-STARTER 冒頭に `(7) 役割宣言` 永続追加 + `session-clock.mjs` HEADER 定数に注意書き永続化） | ✅ | true | 憲法級ハンドオフ / SESSION-CLOCK |
 
-**集計** (2026-04-27 時点 / TSB-024 目次追記):
-- 全 **23** 件中 **root_cause_confirmed = true: 22 件 (~96%)** / **false (孤児): 1 件 (~4%)**
+**集計** (2026-04-29 時点 / TSB-026 目次追記):
+- 全 **24** 件中 **root_cause_confirmed = true: 23 件 (~96%)** / **false (孤児): 1 件 (~4%)**
 - 5 月目標 (F-2 自己批判 §54-5) = カバレッジ 100% を TSB-019 真因確定 (Cursor IDE Agents 設定) で **95% 前後を維持**（分母は TSB セクション数に追随）
 - 残 false: **TSB-001 のみ** = 孤児 TSB（4/19 D1-proposal でも「詳細未記載」）= 真因不明のまま記録止まり
 
@@ -1213,3 +1214,56 @@ PC 台帳 Day4 Step1 で MCP `kintone-add-app` 実行後、ブラウザの **`/k
 - 緊急用: `chat-sessions/NEW-SESSION-STARTER.md` v3.18（最上段 🚨 憲法級ブロック）
 - 直近実例: `npm run deploy:674` 新設 commit `4e9a062`（事後対応）
 - 機械検証: `npm run verify:constitution-handoff` / **`npm run verify:mandatory-read-gate`** / `npm run session:bootstrap`（smoke 内蔵・**10 検査**）
+
+---
+
+## TSB-026 — 機械的書換による「人間注意書き」の構造的消失（2026-04-29 07:15 検出 / 07:25 恒久対策）
+
+### 事象
+
+2026-04-29 朝、Phase B（並列発火事故の恒久対策）commit `59b4bab` の post-commit hook で **2 件の NG が同時検知**された：
+
+1. **`verify:constitution-handoff` NG**: `chat-sessions/NEW-SESSION-STARTER.md` 冒頭 5200 文字に **`(7) 役割宣言`** needle が見つからない（`scripts/verify-constitution-handoff.mjs` line 47）
+2. **`session-clock` NG**: `chat-sessions/SESSION-CLOCK.md` から「**2026-04-29（浜田 CIO）注意書き**」が**削除**され、開始時刻が `2026-04-28 21:29` に巻き戻っていた（私の編集ではない）
+
+CIO の最初の仮説は「悪意ある書き換え／別経路ロールバック」だったが、`git log` / `git reflog` 調査で**両方とも設計上の構造バグ**と判明した。
+
+### 根本原因（真因 1 文）
+
+**機械的書換（編集の累積で冒頭が肥大化／`session:clock:set` の HEADER 全置換）が、人間が後から追加した「冒頭付近の見出し・注意書き」を物理的に押し出したり上書きしたりして、要約耐性ガード（needles 検査・運用注記）を構造的に失わせた**。
+
+| 異常 | 機械的書換の仕組み | 失われたもの |
+|---|---|---|
+| 1. NEW-SESSION-STARTER 冒頭 | 私の累積編集（4/28 夜 CIO 体制 / 4/29 朝 5 強化要件 / 4/29 朝 sync→verify NG 例）で冒頭が **10396 文字に肥大化** | `(7) 役割宣言` が `line 110`（冒頭 5200 文字超）に押し出され、`verify` の needle 検査に引っ掛からなくなった |
+| 2. SESSION-CLOCK.md 巻き戻り | `scripts/session-clock.mjs` の `writeClock()` (line 45-58) が **`HEADER + 開始:` で全文置換**する設計。HEADER 定数に「2026-04-29 浜田 CIO 注意書き」は含まれていなかった | `npm run session:clock:set` を呼ぶたび、ファイル本文に追記された人間注意書きが**自動削除される** |
+
+### 対策（恒久）
+
+1. **異常 1 の対策（NEW-SESSION-STARTER 冒頭）**:
+   - **`(7) 役割宣言` を冒頭 (line 24 周辺)** に短い 1 行要約として**永続追加**（既存 line 110 のコードブロック自己宣言は後方互換で残置）
+   - **運用ルール**: 今後 NEW-SESSION-STARTER.md 冒頭に大きなブロックを追加するときは、**`verify:constitution-handoff` の needle 検査位置（冒頭 5200 文字）に重要 needle が残っているか**を必ず確認する
+   - **将来検討**: `verify-constitution-handoff.mjs` の `headChars: 5200` を実態に合わせて引き上げ（現状 5200 でぎりぎり、6500 程度が緩衝）。本 TSB では運用解で対応し、閾値変更は §57 改定に委ねる
+
+2. **異常 2 の対策（SESSION-CLOCK.md HEADER 全置換）**:
+   - **`scripts/session-clock.mjs` の `HEADER` 定数に「2026-04-29 浜田 CIO 注意書き」を永続化**：set 実行時の HEADER 全置換でも自動復元される
+   - **HEADER 内に明示**：「人間注意書きの追記はここ（scripts/session-clock.mjs の HEADER 定数）に行うこと」と HEADER 自身に書き込み、次の AI/人間が `SESSION-CLOCK.md` 本文に追記しないよう誘導
+   - **本質的設計原則**: `set` で全置換されるファイルは、本文に人間注記を置かず、**スクリプトの HEADER 定数を正本**とする
+
+3. **検証（憲法適合済み）**:
+   - `npm run verify:constitution-handoff` → exit 0 ✅
+   - `npm run verify:mandatory-read-gate` → exit 0 ✅
+   - `npm run session:clock:set` 実行 → SESSION-CLOCK.md HEADER に注意書きが**自動復元**されることを実機確認 ✅
+
+### 教訓
+
+1. **「冒頭 N 文字の needle 検査」は冒頭の物理位置に依存する**。文書を肥大化させるときは、`verify` 検査位置の維持を**機械的に意識**しないと silent fail する（commit は通り post-commit hook で警告のみ）。
+2. **「全置換書込スクリプト」は人間追記を構造的に失わせる**。書込先のファイル本文に人間注記を置かず、**スクリプトの HEADER 定数（コードレビュー対象）を正本**とせよ。
+3. **異常検知時に「悪意ある書換」「別経路ロールバック」を仮説の最初に置かない**。まず `git log -p` / `git diff` / 関連スクリプトの書込ロジックを **読んで事実確認**する（§47-E 事実歪曲禁止の応用）。CIO は本件で「謎の改変」と最初書いたが、20 分の調査で**設計バグ**と判明した。
+
+### 関連
+
+- 憲法: `AGENTS.md` §35-1 / §56-1a / TSB-024（要約耐性 4 点ガード）
+- 検証スクリプト: `scripts/verify-constitution-handoff.mjs` (line 40-50 needles) / `scripts/session-clock.mjs` (line 32-41 HEADER) / `scripts/lib/session-clock-core.mjs` (parseClock)
+- 当該 commit: `59b4bab`（事象検知）/ Phase B 復元 commit（本 TSB と同 commit で push 予定）
+- 索引: `RULES-INDEX.md`（更新予定）/ `chat-sessions/NEW-SESSION-STARTER.md` line 24 周辺（冒頭永続化）
+- 関連: TSB-024（要約耐性アンチパターン）/ TSB-016（BREAKING 削除が無自覚に undone）— 「機械的書換で人間制御が失われる」共通系列

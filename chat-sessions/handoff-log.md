@@ -452,3 +452,73 @@ post-commit hook が以下 2 件を NG 検知（**Phase B の commit 内容自�
 **次セッションへの 1 行**: 異常 2 件（NEW-SESSION-STARTER 冒頭「(7) 役割宣言」消失・SESSION-CLOCK 巻き戻り）を必ず確認し、`docs/reports/2026-04-29-morning-phase-b-completion.md` を Read してから着手。
 
 ---
+
+## 2026-04-29 (Wed) JST 07:30 — 異常 2 件の真因特定・復元・恒久対策完了 (TSB-026)
+
+**ティア判定**: §1-2-3-1 = L3 Opus 4.7 1M Max Thinking（**真因究明 = 不可逆／構造バグ調査** / Tier B 直前判定）
+
+### CEO 直命
+
+> 「異常検知 NG 2 件は対応し恒久対策までお願いします」（2026-04-29 07:20 JST）
+
+CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 恒久対策 → 検証 → TSB 起票まで一気通貫。
+
+### 真因究明（CIO 自己反省ポイント）
+
+**最初の仮説（誤り）**: 「悪意ある書き換え／別経路ロールバック／私の知らない誰か」
+
+**真因（事実）**: **両方とも設計上の構造バグ**
+
+| 異常 | 真因 | 機械的書換の仕組み |
+|---|---|---|
+| 1. NEW-SESSION-STARTER 冒頭 needle 消失 | `verify-constitution-handoff.mjs` は `headChars: 5200` で needle 検査するが、私の累積編集（4/28 夜 CIO 体制 + 4/29 朝 5 強化要件 + 4/29 朝 sync→verify NG 例）で冒頭が **10396 文字に肥大化** → `(7) 役割宣言` (line 110) が閾値超過位置に押し出された | 編集の累積による冒頭肥大化 |
+| 2. SESSION-CLOCK 巻き戻り | `scripts/session-clock.mjs` の `writeClock()` (line 45-58) が **`HEADER + 開始:` で全文置換**。HEADER 定数に「2026-04-29 浜田 CIO 注意書き」は含まれていなかった → `set` のたびに人間追記が消える | HEADER 全置換書込（自動削除設計） |
+
+**CIO の最初の仮説が誤っていた理由**: §47-E 事実歪曲禁止を本来適用すべきだった。`git log -p` / `git reflog` / 関連スクリプト本体を**読まずに**「謎の改変」と早合点した。20 分の調査で両方とも設計バグと判明。
+
+### 復元 + 恒久対策（実装内容）
+
+#### 異常 1: `(7) 役割宣言` 冒頭永続化
+
+- `chat-sessions/NEW-SESSION-STARTER.md` line 24 周辺に **1 行要約**を新設（既存 line 110 のコードブロック自己宣言は後方互換で残置）
+- §51-3 lock 取得 → release 済（`cio-2026-04-29-tsb026-restore`）
+- `verify:constitution-handoff` → exit 0 ✅
+
+#### 異常 2: `session-clock.mjs` HEADER に永続化
+
+- `scripts/session-clock.mjs` の `HEADER` 定数に「2026-04-29（浜田 CIO）注意書き」を追加
+- HEADER 内に明示: 「人間注意書きの追記はここ（scripts/session-clock.mjs の HEADER 定数）に行うこと」
+- `npm run session:clock:set` 実行で `SESSION-CLOCK.md` を**注意書き含む状態で再生成**することを実機確認 ✅
+- 開始時刻: `2026-04-29 07:25` (Asia/Tokyo) にリセット → `verify:mandatory-read-gate` exit 0 ✅
+
+#### TSB-026 起票
+
+- `docs/troubleshooting.md` に **TSB-026: 機械的書換による「人間注意書き」の構造的消失** を新規追加
+- 目次にも 1 行追加（全 24 件中 root_cause_confirmed 23 件 ~96%）
+- 関連 TSB: TSB-024（要約耐性）/ TSB-016（BREAKING 削除が undone）— 「機械的書換で人間制御が失われる」共通系列
+
+### 検収（憲法適合済み: `npm run verify:constitution-handoff && npm run verify:mandatory-read-gate`）
+
+```text
+[verify-constitution-handoff] ✅ OK (憲法級ハンドオフ物理ガード健在)
+[mandatory-read-gate] ✅ OK
+[verify-desktop-ai-emergency-sync] ✅ 全ファイル一致（4 ファイル）
+```
+
+### CIO 教訓（次回以降）
+
+1. **「冒頭 N 文字 needle 検査」は冒頭物理位置に依存**。文書を肥大化させるときは `verify` 検査位置の維持を機械的に意識する（commit は通り post-commit hook で警告のみ → 黙って違反する状態）
+2. **「全置換書込スクリプト」は本文ではなく HEADER 定数を正本とせよ**。書込先のファイル本文に人間注記を置かない設計原則を徹底する
+3. **異常検知時に「悪意ある書換」を仮説の最初に置かない**。まず `git log -p` / 関連スクリプトの書込ロジックを**読んで事実確認**する（§47-E 事実歪曲禁止）。CIO は本件で「謎の改変」と最初書いたが、20 分の調査で**設計バグ**と判明した。この反省は本セッションの 2 度目の自己批判（1 度目: sync→verify 並列発火事故）
+
+**MCP 利用**: 0 円（CIO 単独完結・憲法ドキュ + scripts のみ）
+
+**AI 補足（漏れ防止）**:
+- `git`: 7 ファイル（scripts/session-clock.mjs + NEW-SESSION-STARTER + SESSION-CLOCK + docs/troubleshooting + checkpoint + handoff + HANDOFF-HUMAN）を **1 commit で push**
+- `次の1手`: Phase C（§57 改定 M）は引き続き CEO 確認待ち。本日中に着手するか、別タスク（L = KINTONE_APP Secret 分離 / §41 = 4/29 19:00 までの kintone 部署予実アプリのスペース決定）を優先するかは CEO 判断
+- `GO待ち`: なし（CIO 自律権限内・CEO 直命範囲内で完結）
+- `Tier B`: なし
+
+**次セッションへの 1 行**: TSB-026 で異常 2 件は完全解消・恒久対策済。次は §57 改定 M（CEO 4/29 朝指示の §50-3 統合）または優先順位 CEO 判断。`scripts/session-clock.mjs` HEADER は今後追記してはならない（HEADER 全置換特性）。
+
+---

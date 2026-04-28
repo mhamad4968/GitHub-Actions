@@ -5,11 +5,11 @@ Windows から開きやすい控え: C:\Users\mhamada202408224\Desktop\AI緊急�
 
 推奨フロー（セッション切替）: ① **`NEW-SESSION-STARTER_yyyymmdd.txt`（JST・常にこのファイル名）全文**（**v3.27+**: **「■ 貼付単独で完走」** が **唯一の詳細正本**（項番 -1〜0・**v3.28** 以後の改定もここ優先）。checkpoint 重複貼付不要。貼付推奨は verify 最終行）② この 5 行（**任意**）③ **項番 -0** → ④ **`session:bootstrap` 一括**。**日終わり**: sync → verify。
 
-日時(JST): 2026-04-29（水）07:15 — Phase A（CLI 確認）+ Phase B（再発防止スクリプト化）完了 push 済
-いま何してた（1行）: CEO 朝指示 3 点に対応。(1) CLI v2.1.114 確認 → CEO 判断「直接起動しないので AI 側運用確立済で OK」で永続化不要に確定。(2) 並列発火事故（sync→verify 誤判定）の恒久対策として `npm run desktop:sync-and-verify` を新設 + 並列 5 点チェック NG 例明記（commit `59b4bab` push 済）。(3) §57 改定 M は CEO「のちほど確認」を受けて保留。**詳細報告書**: `docs/reports/2026-04-29-morning-phase-b-completion.md`。
-次にやる1つ: **CEO ご確認待ち（3 点）**: ① 異常 2 件（NEW-SESSION-STARTER 冒頭「(7) 役割宣言」消失・SESSION-CLOCK 巻き戻り）を CIO 自律で git reflog 調査 → 復元してよいか / ② Phase C（§57 改定 M）着手タイミング / ③ 本日の優先（M / L=KINTONE_APP Secret 分離 / §41=4/29 19:00 までの kintone 部署予実アプリのスペース決定）の順位。
-GO待ち（なし／内容）: Tier B なし。**異常 2 件の対応方針**と **Phase C 着手タイミング**を CEO のちほどご確認願います。
-触らないで（なし／内容）: 異常 2 件（NEW-SESSION-STARTER 冒頭・SESSION-CLOCK）の原因特定前は §57 改定本文編集に進まない。PC 台帳・kintone customize 本番書込は §41 確認後
+日時(JST): 2026-04-29（水）07:30 — 異常 2 件の真因特定・復元・恒久対策完了 (TSB-026 起票)
+いま何してた（1行）: CEO 直命「異常 NG 2 件は対応し恒久対策まで」を受けて CIO 自律で対応。**真因は両方とも設計バグ**（悪意ある書換ではない）: ① NEW-SESSION-STARTER 冒頭の累積編集で `(7) 役割宣言` が verify の 5200 文字閾値超過位置に押し出された → 冒頭に 1 行要約を永続追加 / ② `session-clock.mjs` の `writeClock()` が HEADER 全置換書込で人間注意書きを毎回削除する設計 → HEADER 定数に注意書きを永続化（次回以降 set で自動復元）。**TSB-026 起票** + 目次更新（全 24 件）。両 verify exit 0 ✅。
+次にやる1つ: **CEO ご確認待ち（2 点）**: ① Phase C（§57 改定 M = CEO 4/29 朝指示の §50-3 正式統合）の着手タイミング / ② 本日の優先（M / L=KINTONE_APP Secret 分離 / §41=4/29 19:00 までの kintone 部署予実アプリのスペース決定）の順位。
+GO待ち（なし／内容）: Tier B なし。**Phase C 着手タイミング**と **本日の優先順位**だけ CEO のちほどご確認願います。
+触らないで（なし／内容）: `scripts/session-clock.mjs` の HEADER は今後 SESSION-CLOCK.md 本文ではなく**ここ（コード定数）に追記**すること（TSB-026）。PC 台帳・kintone customize 本番書込は §41 確認後
 
 ---
 （AI 向け・浜田は空欄でよい）新チャットで先に貼ると迷いにくい 1 行:
@@ -22,3 +22,4 @@ GO待ち（なし／内容）: Tier B なし。**異常 2 件の対応方針**�
 （2026-04-29 07:14 CEO 確定）: CLI 永続化不要（CEO 直接起動しない・AI 側運用確立済で OK）。
 （2026-04-29 07:15 Phase B 完了）: `npm run desktop:sync-and-verify` 新設（sync→verify 直列保証）。次回からこれ必須・個別呼出禁止。詳細 `docs/reports/2026-04-29-morning-phase-b-completion.md`。
 （2026-04-29 07:15 異常検知）: NEW-SESSION-STARTER 冒頭「(7) 役割宣言」消失 + SESSION-CLOCK 開始時刻が 4/28 21:29 に巻き戻り（私の編集ではない）。CEO 確認後に git reflog 調査・復元予定。
+（2026-04-29 07:30 TSB-026 解消）: 上記異常 2 件は**両方とも設計バグ**と判明（悪意ある書換ではない）。① NEW-SESSION-STARTER 冒頭肥大化で needle が 5200 文字閾値超過位置に押し出された → 冒頭 line 24 周辺に永続追加。② `session-clock.mjs` の HEADER 全置換書込で人間追記が消える設計 → HEADER 定数に注意書きを永続化（次回 set で自動復元）。TSB-026 起票・両 verify exit 0。詳細 `docs/troubleshooting.md` TSB-026。
