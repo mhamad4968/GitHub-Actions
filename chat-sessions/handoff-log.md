@@ -230,3 +230,48 @@ AI は、セッション切替・終了・浜田さんが引き継ぎテンプ�
 **次セッションへの 1 行**: **`SESSION-HANDOFF-LATEST-2026-04-28.txt`** を開くか全文貼る →（必要なら）**`session-starter:sync-desktop`** → **項番 -0** → **`npm run session:bootstrap`**。
 
 ---
+
+### 2026-04-28 (Tue) JST 19:30 — 夜反省（§44）完了・運用開始 GO 受領・3 役連携の起点
+
+**浜田メモ（要旨）**:
+> 全部採用します。明日のセッション引き継ぎ書の更新はしました？ Desktop\AI緊急用 を最新版にして古いファイルは削除で OK。今日からは 3 名の連携プレイ等なども焦点になると思います。
+
+**経緯（簡潔・本チャット 1 日分）**:
+- **MCP 配線**: `~/.cursor/mcp.json` を WSL `npx` + 実在パッケージに修正（Kimi=`kimi-api-mcp`／DeepSeek=`mcp-deepseek`／OpenRouter=`@mcpservers/openrouterai`／`MOONSHOT_API_KEY`）。
+- **憲法 v23.22**: **§50-3 CTO 運用規定**新設（コスト 2 レーン・**航海図 vs §51 実行**・**CEO 差し替え §50-3-3**・MCP 試行上限 3 回 or 5 分・サニタイズ・**検収コマンド併記 §50-3-6**・§41 一問 §50-3-7）。第15章 §51 に「§50-3 との関係」追記、`.cursorrules` + RULES-INDEX 同期。
+- **憲法 v23.23**: **§1-2-3-3 CIO によるモデル最終判断**（CIO 未指定時は §1-2-3-1/2、明示時は CIO 優先・§35-1 不変）。**§51-6 遵守事項 5**＝切替直後の **`session:clock:set` 必須** + **`session:clock:web` URL を浜田にブラウザ開示**。§51-6-2 命令手順に「次セッション初手で遵守事項 5」追記。`NEW-SESSION-STARTER` 項番 4 ／ `SESSION-CLOCK.md` ／ `SESSION-SPLIT-REMINDER.md` ／ RULES-INDEX 同期。
+- **`kintone-customize-deploy` 安定化**（赤の連発を収束）:
+  - **路径**: 674 → `customize/new-pc-ledger-v1/desktop.js` 分岐（`deploy:674` の正本に整合）。
+  - **APP 入力強化**: `KINTONE_APP` の **trim**、任意 **`KINTONE_CUSTOMIZE_SRC`** で路径上書き、`KINTONE_DEPLOY_APP_ID` を deploy/record に流用。
+  - **paths**: `package.json` / `package-lock.json` を除外（依存更新だけで毎回赤くなるのを停止）。
+  - **認証**: kintone 公式 [Update Customization](https://kintone.dev/en/docs/kintone/rest-api/apps/update-customization/) は API トークン不可 → `deploy-customize-api-token.js` を **ハイブリッド**化（**file=API トークン** / **preview & deploy=`KINTONE_USERNAME`+`PASSWORD`**）。ワークフローも対応 env を流す。
+  - **結果**: run **#50 / Success / 21s**（commit `36a2793` 後）。674 に **`upload.js` 反映**を浜田目視 OK。
+- **CEO 承認・運用開始 GO**: 検収コマンド `node scripts/verify-constitution-handoff.mjs` → **`✅ OK (憲法級ハンドオフ物理ガード健在)`**。
+- **夜反省案 A〜H 全採用**（明日朝から **§57 改定プロセスで 1 件ずつ**実装。並列禁止 §51）:
+  - **A** §51-2 並列風表現禁止句リスト（NG: 並行/同時に/3 人で/A・B・C）
+  - **B** §41 一問先行テンプレ（kintone はアプリ ID／新規 or 既存／GitHub Environment 名を最初に確認）
+  - **C** `session:bootstrap` 内に **`session:clock:set` の冪等内包**（post-commit 4h 警告の自爆防止）
+  - **D** **TSB-025**「kintone customize 認証マトリクス」（file=トークン可 / preview customize=パスワード必須 / deploy=どちらも可）
+  - **E** CI 赤再 push の **30 秒儀式**（§47-9 補強：失敗ログ Read → §41 一問 → 1 commit）
+  - **F** §56 RACI に **CEO=浜田 / CTO=AI / CIO=浜田 兼務** を追記（モデル選択は CIO・コマンド実行は CTO・GO は CEO）
+  - **G** 夜の 30 秒反省会テンプレ（5 行以内 / 良かった 1・反省 1・明日の 1 手）
+  - **H** 朝報 §0 にコスト 2 レーン枠（数値はダッシュボード正本、朝報は 2 行表示）
+- **Desktop メンテ（本ターン実施）**: 手前で `checkpoint-latest.md` / `HANDOFF-HUMAN.txt` を **本日 19:30 JST 反映**へ更新 → **`npm run session-starter:sync-desktop`** → 旧 **`SESSION-HANDOFF-LATEST-2026-04-28.txt` を削除** → **`npm run verify:desktop-ai-emergency-sync`** で機械整合確認。**儀式 4 ファイル**（`NEW-SESSION-STARTER_20260428.txt` / `SESSION-BOOTSTRAP-CHECKLIST.txt` / `HANDOFF-HUMAN.txt` / `README.txt`）に整理。
+
+**反省点（明日朝の §57 改定で吸収）**:
+- 「3 人で対応」など **並列風表現** → A 採用済。
+- Secret 手順を A/B/C 並列で出した → A 採用済（1 つずつ）。
+- アプリ ID（674）確認前にコード分岐を書いた → B 採用済。
+- ワークフロー失敗を短時間に複数 commit → E 採用済。
+- post-commit が壁時計 4h 超で警告（§51-6-2 自分の運用未踏） → C 採用済。
+- kintone preview customize の認証仕様を最初に出せず → D 採用済。
+
+**AI 補足（漏れ防止）**:
+- `git`: 本ブロック＋`checkpoint-latest.md`＋`HANDOFF-HUMAN.txt`＋（Desktop sync は git 外）を **1 commit で push**。
+- `次の1手（明朝 / 4/29 水）`: 新チャット → スターター全文 → 項番 -0 → **`session:clock:set`** → **`npm run session:bootstrap`**。OK 後、**A〜H を § 番号順に 1 件ずつ §57 で反映**（A→B→C→D→E→F→G→H）。**4/29 19:00 までに kintone アプリ作成のスペース決定**（CEO §41）。
+- `GO待ち`: Tier B なし（A〜H は CEO 全採用済）。kintone 本番書込・PC 台帳作業は **朝の §41 確認後**。
+- `session-lock`: 本ターンで憲法 5 ファイル直接編集あり（`AGENTS.md` / RULES-INDEX / `NEW-SESSION-STARTER` / `SESSION-CLOCK` / `SESSION-SPLIT-REMINDER`）。lock holder=`agents-50-3-ceo-2026-04-29` は **既に release 済**（前ターン）。
+
+**次セッションへの 1 行**: スターター全文 → 項番 -0 → **`session:clock:set`** → **`npm run session:bootstrap`** → A〜H を **1 件ずつ** §57 で反映（並列禁止）。
+
+---
