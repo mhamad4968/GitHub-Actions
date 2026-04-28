@@ -15,7 +15,7 @@
 #   そのため同一の kintone REST API 手順（file.json → preview/app/customize → deploy）を
 #   X-Cybozu-API-Token で実行する scripts/deploy-customize-api-token.js を呼びます。
 #
-# ■ push: customize/** 等の変更時のみ（kintone-apps.md のみの push では再実行しない）
+# ■ push: customize/** 等の変更時のみ（package.json のみでは走らせない = collect 用 KINTONE_APP と路径不整合で赤くなるのを防ぐ）
 
 name: kintone-customize-deploy
 
@@ -30,8 +30,6 @@ on:
       - "eslint.config.js"
       - "scripts/record-kintone-apps-deploy.js"
       - "scripts/deploy-customize-api-token.js"
-      - "package.json"
-      - "package-lock.json"
 
 permissions:
   contents: write
