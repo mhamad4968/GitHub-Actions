@@ -59,6 +59,12 @@ npm run app:fields <アプリID>
   - **B（リッチテキストのみのとき）**: `[[JBIS-SPACE-HEALTH-AUTO-START]]` / `[[JBIS-SPACE-HEALTH-AUTO-END]]`（画面上に短く出るが、CI 後はブロック内に収まる）
   - **シングルスレッド**では既定スレッド本文へ **GET/PUT `/k/v1/space/thread.json`**（マーカーもここ）。**マルチスレッド**では **PUT `/k/v1/space/body.json`**（ポータル本文）。長文は `SPACE_HEALTH_KINTONE_BODY_MAX_CHARS`（既定 62000）、再試行は `SPACE_HEALTH_KINTONE_PUSH_RETRIES`（既定 3）。
 - **メンテ手順の正本**: [`docs/maintenance-template.md`](docs/maintenance-template.md) の「一気通貫メンテ・プレイブック」。エージェント・開発の前提ルールは [`AGENTS.md`](AGENTS.md)。
+### GitHub Actions デプロイ記録（自動）
+
+| 日時（UTC） | アプリID | customize パス |
+|-------------|----------|----------------|
+| 2026-04-28T10:27:43Z | 674 | `customize/new-pc-ledger-v1/desktop.js` |
+
 
 ---
 
