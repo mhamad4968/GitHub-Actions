@@ -22,5 +22,7 @@ npm run verify:gate
 - `../../scripts/mandatory-read-gate.mjs` — 本番ゲート（コピー元の思想）
 - **`docs/shin-format-excel-layout.md`** — 旧「新フォーマット」相当の **列・行構造の正本**（運用は **kintone のみ**・Excel 廃止。根拠 xlsx はアーカイブ記録のみ）
 - **`docs/yojitsu-spec-session-checklist.md`** — 仕様決めの日に使う **チェックリスト**（スコープ・権限・kintone 化の範囲・データ投入）
+- **`docs/yojitsu-migration-kyu-to-kintone.md`** — **`旧フォーマット`→kintone** の初回移行（列対応・手順・検証）
+- **`docs/yojitsu-feature-backlog.md`** — 運用後に足す **あったほうがよい機能**（`SPEC.md` §10.3）
 - 列見出しの **下書き生成（開発用・任意）**（openpyxl 必須）: `npm run yojitsu:excel-draft`（手元に旧スナップショット xlsx がある場合のみ）。保存例: **`docs/excel-column-draft-2026-04-28.md`**
 - セッション時計 WEB の負荷メモ: リポ `docs/session-clock-web-performance-notes.md`
