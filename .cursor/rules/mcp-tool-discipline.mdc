@@ -1,5 +1,5 @@
 ---
-description: MCP 呼び出し前の descriptor 確認・認証順序・curl より MCP を優先する（自律ミス低減）
+description: MCP descriptor 必読・認証順序・curl 優先度 + アイドル時間の有効活用（メンテ枠）
 alwaysApply: true
 ---
 
@@ -19,3 +19,9 @@ Cursor の **MCP FileSystem** 上の `mcps/<server>/tools/*.json`（または同
 ## 追加・変更時
 
 - **新規 MCP サーバ**を `mcp.json` に足したら: descriptor を **1 本試読**し、**`docs/mcp-status.md`** に 1 行でもよいので **日付・サーバ名・主用途**を追記する（詳細カウンタの更新は月次診断でよい）。
+
+## アイドル時間の有効活用（浜田希望・2026-04-28）
+
+- **本題がなく・待ち・余裕があるターン**では、**先に浜田へ確認を挟まず**、リポ内の **メンテ・整合**に充ててよい。**例**: `docs/mcp-status.md` / `RULES-INDEX` / `.cursor/rules` の矛盾解消、未コミットの整理、**Tier A** の `npm run verify:*` / `npm run lint:*`、`chat-sessions/evening-reflect-queue.md` の処理済み反映、**`logs/autonomy-decisions/`** への短文証跡、**P5-3 等の未消化メモの 1 件ずつ**。
+- **禁止**: 浜田方針どおり **PC 台帳の前倒し本実装**、**Tier B（kintone 書込・deploy・本番ラベル適用）を GO なしで実行**、憲法違反の **「人に npm / deploy を依頼」**（`docs/troubleshooting.md` TSB-024）。
+- **成果物**は通常どおり **commit + push**（小さな単独コミットでよい）。
