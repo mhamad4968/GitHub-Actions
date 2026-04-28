@@ -4,7 +4,9 @@
 #
 # ■ Environment / Repository secrets（名前は画像の登録どおり）
 #   KINTONE_DOMAIN … ドメインまたは https://…（KINTONE_BASE_URL に正規化）
-#   KINTONE_APP … 対象アプリ ID（特殊路径: 629 → shucccho-seisan / 674 → new-pc-ledger-v1）
+#   KINTONE_APP … 対象アプリ ID（API デプロイ先・トークンのスコープと一致させる）
+#   ソース路径の既定: 629 → customize/shucccho-seisan/desktop.js / 674 → customize/new-pc-ledger-v1/desktop.js / その他 → customize/<ID>/desktop.js
+#   任意 KINTONE_CUSTOMIZE_SRC … 上書き（例: 631 のまま token を使うが別路径を流したい場合。**アプリ ID と実ファイルの対応は運用者責任**）
 #   KINTONE_API_TOKEN … そのアプリの API トークン（file / アプリ設定に権限あり）
 #   SLACK_WEBHOOK_URL / TEAMS_WEBHOOK_URL（任意）
 #
@@ -60,6 +62,7 @@ jobs:
           KINTONE_DOMAIN: ${{ secrets.KINTONE_DOMAIN }}
           # Secret 名は KINTONE_APP（末尾 _ID なし）→ シェルでは KINTONE_APP_ID
           KINTONE_APP_ID: ${{ secrets.KINTONE_APP }}
+          KINTONE_CUSTOMIZE_SRC: ${{ secrets.KINTONE_CUSTOMIZE_SRC }}
         run: |
           set -euo pipefail
           BASE="${KINTONE_DOMAIN}"
@@ -72,12 +75,17 @@ jobs:
           fi
           echo "KINTONE_BASE_URL=${BASE}" >> "${GITHUB_ENV}"
 
-          APP_ID="${KINTONE_APP_ID}"
+          APP_ID="$(printf '%s' "${KINTONE_APP_ID}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
           if [[ -z "${APP_ID}" ]]; then
             echo "::error::secrets.KINTONE_APP（→ KINTONE_APP_ID）が空です"
             exit 1
           fi
-          if [[ "${APP_ID}" == "629" ]]; then
+          echo "KINTONE_DEPLOY_APP_ID=${APP_ID}" >> "${GITHUB_ENV}"
+
+          if [[ -n "${KINTONE_CUSTOMIZE_SRC:-}" ]]; then
+            SRC="$(printf '%s' "${KINTONE_CUSTOMIZE_SRC}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+            echo "使用するソース（KINTONE_CUSTOMIZE_SRC 上書き）: ${SRC}（app=${APP_ID}）"
+          elif [[ "${APP_ID}" == "629" ]]; then
             SRC="customize/shucccho-seisan/desktop.js"
           elif [[ "${APP_ID}" == "674" ]]; then
             SRC="customize/new-pc-ledger-v1/desktop.js"
@@ -87,7 +95,8 @@ jobs:
           echo "使用するソース: ${SRC}（app=${APP_ID}）"
           echo "DEPLOY_REL_PATH=${SRC}" >> "${GITHUB_ENV}"
           if [[ ! -f "${SRC}" ]]; then
-            echo "::error::アップロード元がありません: ${SRC}"
+            echo "::error::アップロード元がありません: ${SRC}（KINTONE_APP=${APP_ID}）。631 等で browser JS が無いと失敗します。対処: (A) KINTONE_APP を JS があるアプリ ID へ、(B) customize/${APP_ID}/desktop.js を追加、(C) 任意 Secret KINTONE_CUSTOMIZE_SRC でリポ内路径を明示。"
+            ls -la customize/*/desktop.js 2>/dev/null || true
             exit 1
           fi
 
@@ -108,12 +117,12 @@ jobs:
             echo "::error::KINTONE_BASE_URL が未設定です（KINTONE_DOMAIN を確認してください）"
             exit 1
           fi
-          node scripts/deploy-customize-api-token.js "${{ secrets.KINTONE_APP }}" .kintone-deploy/upload.js
+          node scripts/deploy-customize-api-token.js "${{ env.KINTONE_DEPLOY_APP_ID }}" .kintone-deploy/upload.js
 
       - name: kintone-apps.md にデプロイ記録（必要ならメイン表に 1 行追加）
         if: success()
         env:
-          KINTONE_APP_ID: ${{ secrets.KINTONE_APP }}
+          KINTONE_APP_ID: ${{ env.KINTONE_DEPLOY_APP_ID }}
           DEPLOY_REL_PATH: ${{ env.DEPLOY_REL_PATH }}
         run: |
           set -euo pipefail
