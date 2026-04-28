@@ -5,10 +5,10 @@ Windows から開きやすい控え: C:\Users\mhamada202408224\Desktop\AI緊急�
 
 推奨フロー（セッション切替）: ① **`NEW-SESSION-STARTER_yyyymmdd.txt`（JST・常にこのファイル名）全文**（**v3.27+**: **「■ 貼付単独で完走」** が **唯一の詳細正本**（項番 -1〜0・**v3.28** 以後の改定もここ優先）。checkpoint 重複貼付不要。貼付推奨は verify 最終行）② この 5 行（**任意**）③ **項番 -0** → ④ **`session:bootstrap` 一括**。**日終わり**: sync → verify。
 
-日時(JST): 2026-04-28（火）19:30 — 本チャット終了・夜反省済・運用開始 GO 受領
-いま何してた（1行）: 憲法 v23.22+v23.23（§50-3 / §1-2-3-3 / §51-6）／kintone-customize-deploy 緑化（674・ハイブリッド認証）／夜反省案 A〜H 全採用
-次にやる1つ: 明日朝、**A〜H を §57 改定プロセスで 1 件ずつ反映**（A=§51-2 並列風表現禁止 / B=§41 一問テンプレ / C=session:bootstrap に clock:set 連動 / D=TSB-025 customize 認証マトリクス / E=CI 赤の 30 秒儀式 / F=§56 RACI 三役 / G=夜反省テンプレ / H=朝報 §0 コスト 2 レーン枠）。**実装は 1 ターン 1 commit（§51 / §51-2）**
-GO待ち（なし／内容）: Tier B なし。A〜H は **CEO 全採用済**（昨夜反省）。途中で迷ったら §41 一問
+日時(JST): 2026-04-28（火）21:35 — kintone 632 完全復旧 + CIO 体制制定（21:00-21:35 延長）
+いま何してた（1行）: 632 アプリの 6 フィールド未作成を CIO 自律で password 認証 API 経由追加 + analyze 再実行（GAIA_AP15 → KINTONE_APP=632 誤上書き発見 → 631 復元 → success 38s）→ 新規 $id=5 完備生成。NEW-SESSION-STARTER.md に CIO 体制 + 「実行と確認の分離」を永続化
+次にやる1つ: 明日朝、**§57 改定 A→B→C→D→E→F→G→H→I→J→K→L を 1 件ずつ反映**（並列禁止 §51）。**新 L 最重要 = `KINTONE_APP` Secret の二重利用解消**（`KINTONE_APP_FOR_COLLECT=631 固定 / KINTONE_APP_FOR_DEPLOY=動的` 分離）= 今回の事故再発防止
+GO待ち（なし／内容）: Tier B なし。CIO 自律権限内で完了。**632 の $id=5 中身の目視確認**だけ浜田に依頼（依頼者・確認者ロール）
 触らないで（なし／内容）: PC 台帳・kintone customize 本番書込は朝の §41 確認後
 
 ---
@@ -17,3 +17,4 @@ GO待ち（なし／内容）: Tier B なし。A〜H は **CEO 全採用済**（
 夕反省の引き継ぎ正本: chat-sessions/evening-reflect-queue.md（昼に「夜で」と積んだ項目を AI が追記。`npm run evening:reflect` が docs/reports/<当日>-evening-reflection.md の §1-M に丸ごと取り込む。処理したら正本で [x] か削除）
 （浜田向け）各ターン先頭に `[§1-2-3 ティア判定:` が無ければ §1-2-3-1 未遵守として指摘してよい。
 （浜田）新チャット接続直後: `SESSION-CLOCK.md` の「開始:」を確認。未設定なら壁時計の依頼を忘れず（`SESSION-SPLIT-REMINDER.md` 浜田→AI）。hook が効いていれば不要。
+（CIO 体制 / 2026-04-28 制定）: チャット起動時に NEW-SESSION-STARTER.md 冒頭の「🎖️ AI 内部の役割分担」+「🔥 実行と確認の分離」を必ず再認識。CIO=本体 AI / Kimi=実務 / DeepSeek=知恵袋 / OpenRouter=保険 / 浜田=依頼者・確認者。実行は CIO 自律で一気通貫、§41 一問は「データ破壊大 / 費用嵩む / 仕様判断要」の 3 つだけ。

@@ -275,3 +275,46 @@ AI は、セッション切替・終了・浜田さんが引き継ぎテンプ�
 **次セッションへの 1 行**: スターター全文 → 項番 -0 → **`session:clock:set`** → **`npm run session:bootstrap`** → A〜H を **1 件ずつ** §57 で反映（並列禁止）。
 
 ---
+
+### 2026-04-28 (Tue) JST 21:35 — kintone 632 完全復旧 + CIO 体制制定（21:00-21:35 延長セッション）
+
+**浜田指示（要旨・時系列）**:
+> 「632 が 4/25 分が上がってない」→「3 人で協力して」→「並列禁止」→「CIO で判断していい案件」→「アカウント情報も渡してある」→「自律で進めろ」→「作成は一気通貫、確認は浜田」→「OK」
+
+**経緯（簡潔）**:
+1. **真因特定**: 632 に target_week=2026-04-20 の $id=4 は存在（4/24 cron success 分）、ただし `summary_one_line` 等 6 フィールドが kintone アプリ側で未作成 → 一覧で「空」に見えた = サイレント部分欠損
+2. **kintone GUI 側追加**: CIO 自律で password 認証 `preview/app/form/fields.json` POST → `deploy.json` POST → polling SUCCESS 確認 → 6 フィールド (`summary_one_line`, `internal_ref_news_count`, `internal_ref_record_id_min/max`, `internal_analysis_run_at`, `internal_github_run_id`) 追加完了 (rev 7→8)
+3. **analyze 再実行 1 回目**: GAIA_AP15 (APIトークンとアプリ不一致)
+4. **切り分け**: ローカル CLI で同 token PUT → 200 OK = ローカル token は 632 用で正常 → GitHub Secret 側ミスマッチと特定
+5. **Secret 更新 1 回目**: `gh secret set KINTONE_API_TOKEN_ANALYZE` → 反映確認 (12:27:29Z)
+6. **analyze 再実行 2 回目**: なお GAIA_AP15
+7. **Secret 一覧解析**: `KINTONE_APP=2026-04-28T10:18:51Z` 更新を発見 → 朝に customize-deploy 用に **`KINTONE_APP=632`** に書き換えていた → analyze は `KINTONE_APP_ID=632` で起動して collect token (631 用) で 632 を読みに行き失敗
+8. **Secret 復元**: `KINTONE_APP=631` に戻す
+9. **analyze 再実行 3 回目**: **success 38s** → **新規 $id=5 (target_week=2026-04-27) が 6 フィールド完備で生成**（summary_one_line / internal_run_at=2026-04-28T21:32+09:00 / run_id=25052937094 / ref_news_count=9 / ref_id 240-249）
+
+**CIO 体制制定（NEW-SESSION-STARTER.md 永続化・2 回更新）**:
+- **役割**: CIO=本体 AI / Kimi=実務 / DeepSeek=知恵袋 / OpenRouter=保険 / 浜田=依頼者・確認者
+- **「実行と確認の分離」**(CEO 21:35 直命): 作成・実装・実行・記録更新は CIO 自律で 1 ターン一気通貫 OK / §41 一問必須は「データ破壊大 / 費用嵩む / 仕様判断要」の 3 つだけ / 検収は浜田
+- **CIO 自律権限**: GitHub Secret 更新・kintone REST 書込・workflow_dispatch・記録更新（破壊的でない限り GO 不要）
+
+**§57 改定キュー（明日朝着手・優先度順）**:
+- 既定 A〜H (昨晩 CEO 全採用)
+- **新 I**: CIO 体制を §56 に正式追記（NEW-SESSION-STARTER の暫定永続化を本式化）
+- **新 J**: `analyze.ts` に「期待フィールド存在 fail-fast」追加 (kintone REST のサイレント無視防止)
+- **新 K**: kintone polling コードの `apps[0]` URL エンコード共通化 → TSB-027
+- **新 L 最重要**: `KINTONE_APP` Secret 二重利用解消（`KINTONE_APP_FOR_COLLECT=631 固定` / `KINTONE_APP_FOR_DEPLOY=動的` に分離）— 今回の事故の恒久対策
+
+**MCP 利用**: 0 円（構造的問題のため CIO 単独完結）
+
+**残未処理（任意・浜田判断）**:
+- $id=3 (4/13 週), $id=4 (4/20 週) のバックフィル — 来週以降の運用には影響なし
+
+**AI 補足（漏れ防止）**:
+- `git`: 本ターンの変更（NEW-SESSION-STARTER.md 2 回更新 + checkpoint + handoff + HANDOFF-HUMAN）を **1 commit で push**
+- `次の1手（明朝 / 4/29 水）`: §57 改定 A→B→C→D→E→F→G→H→I→J→K→L の順で 1 件ずつ
+- `GO待ち`: Tier B なし（CIO 自律権限の範囲内）
+- `kintone 632 検収`: 浜田の目視確認待ち（依頼者ロール）
+
+**次セッションへの 1 行**: スターター全文 → 項番 -0 → **`session:clock:set`** → **`session:bootstrap`** → §57 改定 **A〜L を 1 件ずつ** 順次反映（並列禁止 §51）。
+
+---
