@@ -67,6 +67,8 @@
 **単独貼付の範囲**: 上記 **■ 貼付単独で完走** が **項番 -1〜項番 0（機械）**の正本。チャットに `checkpoint-latest.md` を **別添しなくてよい**（AI はツールで読む）。続く **@ Read** で文脈を厚くしてから本題へ。
 
 **浜田が毎回最初に開く場所（運用上いちばん大事）**: `C:\Users\mhamada202408224\Desktop\AI緊急用\NEW-SESSION-STARTER_yyyymmdd.txt`（**JST の日付 8 桁**。**常にこのファイル名だけ**が正本。同日に内容が変わった sync では旧版が **`_2` `_3`…** に退避するが、**貼るのは常に `yyyymmdd.txt`**。メモ帳）。**貼付推奨**は **`npm run verify:desktop-ai-emergency-sync` の最終行**（または `session-starter:sync-desktop` の「貼付推奨」行）。フォルダの説明は同梱の **`README.txt`**。**セッション切替時は、この控えの全文を新チャットの最初の 1 メッセージに貼ることを強く推奨**（`checkpoint-latest.md` **項番 -1** と同値の素材は **本文冒頭「■ 貼付単独で完走」までに内包**）。貼ったあと **本日やること（次の一手）** を AI と **1 問だけ**確認し、**浜田の OK が出てから**項番 0（**`npm run session:bootstrap`**＝憲法 verify・mandatory gate・**(1c) session-clock-health**・Desktop sync・smoke を内包）へ（**項番 -0** = **OK まで着手しない開始ゲート**）。ここが **最優先で最新**になるよう、AI は本ファイルを編集して **push する同一ターン**で必ず **`npm run session-starter:sync-desktop`** を実行する（浜田依頼）。**リポだけ更新して Desktop を古いままにしない**。**日終わり**にも sync → verify（`checkpoint-latest.md`「日終わり」）。
+
+**補足（2026-04-28）**: 同日に **Desktop に `SESSION-HANDOFF-LATEST-2026-04-28.txt` のみ**置いた場合でも、**先に `npm run session-starter:sync-desktop`** を実行（または AI に依頼）して **`NEW-SESSION-STARTER_yyyymmdd.txt` 等 4 本を復元**してから、上記どおり **スターター全文貼付 → 項番 -0 → bootstrap** でよい。**集約 txt だけ貼る**場合は **項番 -0** で本題を合意したうえで、**直後に sync → bootstrap**（`verify:desktop-ai-emergency-sync` は **sync 後**に意味がある）。
 Git 上の編集正本: `kintone-ai-lab/chat-sessions/NEW-SESSION-STARTER.md`（差分・履歴用。`.md` と `.txt` は自動同期しないため、上記 npm が橋渡し）。`/mnt/c` が無くコピーできないときはチャットに「AI緊急用の NEW-SESSION-STARTER_yyyymmdd.txt は未更新（理由）」と 1 行書き、環境復帰後に npm を再実行する。
 
 v2 (2026-04-19) からの主な強化:
@@ -229,6 +231,12 @@ v3.30 (2026-04-28) **本日承認分のフォロー一式**（浜田「すべて
 - **`SESSION-CLOCK.md`**: **壁時計 set で差分が出うる**。**コミットに含めるかは任意**（未コミット＝異常とは限らない）。
 - **`kintone-apps.md`**: **部署予実（予定）**行＋「仕様合意後にアプリ ID を追記」の運用一文。
 
+v3.31 (2026-04-28) **部署予実＝実装フェーズ手前＋Desktop 一時集約**:
+- **予実仕様**: 4/28 時点で **仕様フェーズ完了**（`SPEC.md` §9・移行 md 列対応・チェックリスト）。**実装マイルストーン**（`SPEC.md` §10.1）: **4/29（水）約 19:00 JST〜** kintone **アプリ作成**（着手前に **配置スペース** 合意・`.cursor/rules/creation-timing-ask.mdc`）／**4/30** 項目・フィールド確定／**5/1** 予算データ投入／**5/2** 便利機能／**5/3** 運用・ダッシュ注意・リンク集／**5/11** 運用開始目安。
+- **マスタ v1**: 会社・工種・摘要は **別マスタ不要**（費用種別はドロップダウン）。`templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md`・`SPEC.md` §6d。チェックリスト §3b **[x]**（浜田読了）。
+- **Desktop `AI緊急用`**: セッション切替用に **`SESSION-HANDOFF-LATEST-2026-04-28.txt` のみ**残した時間帯あり。**儀式 4 本**は **`npm run session-starter:sync-desktop`** で再展開。**再展開前**は `verify:desktop-ai-emergency-sync` が **NG になり得る**（先に sync）。
+- **夜の再入場**: 浜田 **約 20:00 JST**（反省会など）— **新セッション**になる日は `checkpoint-latest.md` **最終更新**と **集約 txt** を **項番 -0** の文脈に含める。
+
 v3.25 (2026-04-26) **Desktop スターター控えのファイル名 = メンテ日（JST）＋枝番**（浜田指示）※ **v3.26 で運用確定**（枝番最大を貼る方式から **常に yyyymmdd.txt** へ）:
 - 参照用に履歴のみ残す。
 
@@ -299,7 +307,7 @@ v3.13 (2026-04-26) PC 台帳仕様の正本固定 + セッション切替後も�
 ■ フル版（コピペ推奨 / 新チャットにこのブロックを貼る）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-【新セッション起動の儀式 / 2026-04-23 v3 / 2026-04-26 v3.18 補強 / **v3.29 4/28 予実仕様デイ**】
+【新セッション起動の儀式 / 2026-04-23 v3 / 2026-04-26 v3.18 補強 / **v3.31 4/28 予実→実装手前・Desktop**】
 
 🚨 **最初に思い出す（要約耐性 / TSB-024 + §1-2-3-1）**:
 **開発 = AI**（実装・**デプロイ実行**・push・lint・API 書込・検証の全工程） / **確認 = 浜田**（GO・仕様判断・画面目視）。
@@ -324,8 +332,11 @@ v3.13 (2026-04-26) PC 台帳仕様の正本固定 + セッション切替後も�
 @kintone-ai-lab/CLAUDE.md                            ← 儀式・優先順位
 @kintone-ai-lab/WORKFLOW.md                          ← Phase 0-5
 @kintone-ai-lab/docs/plans/2026-04-21-new-pc-ledger-spec.md ← **新・PC台帳（674・ラベル・customize）を触るなら §4.2.0〜 を必ず Read**（PC 以外のタスクならスキップ可／`SESSION-BOOTSTRAP` フェーズ 1b）
-@kintone-ai-lab/templates/yojitsu-budget-lite/docs/shin-format-excel-layout.md ← **4/28 予実仕様デイ**なら先に Read（Excel「新フォーマット」列対応のたたき台／本文 **v3.29**）
-@kintone-ai-lab/templates/yojitsu-budget-lite/docs/yojitsu-spec-session-checklist.md ← 予実の **仕様セッション**で上から埋める（**v3.30**）
+@kintone-ai-lab/templates/yojitsu-budget-lite/docs/shin-format-excel-layout.md ← **予実**の列レイアウト正本（Excel「新フォーマット」相当／**v3.29**）
+@kintone-ai-lab/templates/yojitsu-budget-lite/docs/yojitsu-spec-session-checklist.md ← 予実の **仕様セッション**チェックリスト（**v3.30**）
+@kintone-ai-lab/templates/yojitsu-budget-lite/SPEC.md ← **予実の確定仕様・§10 マイルストーン**（**v3.31**）
+@kintone-ai-lab/templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md ← **マスタ要否・フィールドコード案**（**v3.31**）
+@kintone-ai-lab/templates/yojitsu-budget-lite/docs/yojitsu-migration-kyu-to-kintone.md ← **旧フォーマット→kintone 初回投入**（**v3.31**）
 
 朝ルーチン:
 1. docs/reports/<今日の日付>-morning-prep.md を読んで朝ルーチン状態（緑/黄/赤）確認
@@ -357,8 +368,9 @@ v3.13 (2026-04-26) PC 台帳仕様の正本固定 + セッション切替後も�
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【次セッション優先（2026-04-28 JST・項番 -0 の本題候補）】
-- **部署予実管理**: **十分な時間**を取り **仕様のみ** 決める（kintone 化の範囲・誰が何を入力・集計の所在・Excel との関係）。表イメージは Excel **`新フォーマット`**／リポ `templates/yojitsu-budget-lite/docs/shin-format-excel-layout.md`。雛形 `templates/yojitsu-budget-lite/README.md`。
+【次セッション優先（2026-04-28 JST 以降・項番 -0 の本題候補）】
+- **部署予実（実装フェーズ）**: **4/29（水）約 19:00 JST〜** **kintone アプリ作成**（**スペース決定**後に `kintone-add-app`）。続けて **4/30** 項目確定 → **5/1** 初回投入 → **5/2–5/3** 機能・運用（`SPEC.md` §10.1）。仕様正本は **`SPEC.md`**・**`yojitsu-master-and-field-plan.md`**・**`yojitsu-migration-kyu-to-kintone.md`**。
+- **夜・約 20:00 JST 再入場**（反省会など）: **新セッション**— Desktop の **`SESSION-HANDOFF-LATEST-2026-04-28.txt`** または **`checkpoint-latest.md` 最終更新** を開いてから **項番 -0**。必要なら先に **`session-starter:sync-desktop`** で **NEW-SESSION-STARTER_yyyymmdd.txt** を復元。
 - **PC 台帳 CSV 準備（4/28–29）** との **優先順は当日に合意**（`checkpoint-latest.md` 浜田メモと同趣旨）。
 
 【今やってる主タスク（2026-04-23 22:40 時点・歴史参照。当日の一手は上の「次セッション優先」と checkpoint を優先）】
@@ -516,7 +528,8 @@ npm run watcher:status      ← file-watcher 動作確認
 | WSL ホーム        | /home/mhamada202408224/                                    |
 | Windows Desktop   | /mnt/c/Users/mhamada202408224/Desktop/                     |
 | 緊急メモ控え      | /mnt/c/Users/mhamada202408224/Desktop/AI緊急用/            |
+| セッション集約メモ（任意・2026-04-28） | Desktop `SESSION-HANDOFF-LATEST-2026-04-28.txt`（スターター未配置時の要約。sync で 4 本復元） |
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-最終更新: 2026-04-23 (v3: R1-R9 + Phase A-W-E-F + 新ツール 5 件 + MCP 入替 + 主タスク全面更新)
+最終更新: 2026-04-28 JST — **v3.31**（部署予実 §10.1 マイルストーン・§6d・master-field-plan・Desktop 集約時の sync 手順・夜 20:00 再入場メモ）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
