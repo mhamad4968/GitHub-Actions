@@ -1,0 +1,21 @@
+---
+description: MCP 呼び出し前の descriptor 確認・認証順序・curl より MCP を優先する（自律ミス低減）
+alwaysApply: true
+---
+
+# MCP ツール運用（自律エージェント向け）
+
+Cursor の **MCP FileSystem** 上の `mcps/<server>/tools/*.json`（または同等の descriptor）を **`call_mcp_tool` の直前に必ず読む**。引数名・必須パラメータ・型は **descriptor 正**とし、推測で呼ばない。
+
+## 認証
+
+- サーバに **`mcp_auth` 等の認証ツール**がある場合は、**他の MCP ツールより先に単独で**完了させる。**複数サーバの auth を並列に掛けない**。
+
+## 優先度（同一目的）
+
+- **kintone / GitHub 等、MCP が有効なサーバ**が該当する作業では、**生 curl より MCP**（GitHub は `gh` CLI スキル併用可・`trailofbits-gh-cli`）。
+- **ブラウザ操作**は `cursor-ide-browser` の **INSTRUCTIONS.md**（`mcps/cursor-ide-browser/INSTRUCTIONS.md`）の手順に従う（`browser_snapshot` → 操作 → 状態変化後は再 snapshot）。
+
+## 追加・変更時
+
+- **新規 MCP サーバ**を `mcp.json` に足したら: descriptor を **1 本試読**し、**`docs/mcp-status.md`** に 1 行でもよいので **日付・サーバ名・主用途**を追記する（詳細カウンタの更新は月次診断でよい）。
