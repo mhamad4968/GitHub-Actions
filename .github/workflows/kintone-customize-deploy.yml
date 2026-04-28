@@ -4,7 +4,7 @@
 #
 # ■ Environment / Repository secrets（名前は画像の登録どおり）
 #   KINTONE_DOMAIN … ドメインまたは https://…（KINTONE_BASE_URL に正規化）
-#   KINTONE_APP … 対象アプリ ID（629 のときのみソース路径が shucccho-seisan）
+#   KINTONE_APP … 対象アプリ ID（特殊路径: 629 → shucccho-seisan / 674 → new-pc-ledger-v1）
 #   KINTONE_API_TOKEN … そのアプリの API トークン（file / アプリ設定に権限あり）
 #   SLACK_WEBHOOK_URL / TEAMS_WEBHOOK_URL（任意）
 #
@@ -79,6 +79,8 @@ jobs:
           fi
           if [[ "${APP_ID}" == "629" ]]; then
             SRC="customize/shucccho-seisan/desktop.js"
+          elif [[ "${APP_ID}" == "674" ]]; then
+            SRC="customize/new-pc-ledger-v1/desktop.js"
           else
             SRC="customize/${APP_ID}/desktop.js"
           fi
