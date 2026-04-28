@@ -318,3 +318,47 @@ AI は、セッション切替・終了・浜田さんが引き継ぎテンプ�
 **次セッションへの 1 行**: スターター全文 → 項番 -0 → **`session:clock:set`** → **`session:bootstrap`** → §57 改定 **A〜L を 1 件ずつ** 順次反映（並列禁止 §51）。
 
 ---
+
+### 2026-04-29 (Wed) JST 06:58 — CEO 浜田朝指示・5 強化要件を Cursor 流に統合（新セッション 1 ターン目）
+
+**浜田指示（要旨）**:
+> あなたが Claude Code v2.1.111 以上の環境で動作していることを確認してほしい。最新の最適化機能をフル活用し、最新仕様（v2.1.111準拠）に基づき動作環境と憲法（.cursorrules）をアップデートしてほしい：
+> ① Effort=xhigh デフォルト ② Context=1M 俯瞰 ③ Permissions=fewer-permission-prompts ④ 航海図 3 要素（Goal/Constraints/Acceptance）必須 ⑤ Stop Hook で検証義務化 ⑥ MCP 厳格委譲（Kimi/DeepSeek/OpenRouter）
+
+**CIO 開口の事実訂正（§47 鵜呑み禁止）**:
+- WSL に **Claude Code CLI v2.1.114** インストール済（要求 v2.1.111 以上を充足）
+- ただし **本セッションの AI = Cursor IDE 内の Claude Opus 4.7**（CLI とは別プロセス）
+- `/fewer-permission-prompts` 等は CLI 固有 → 私には直接適用不可
+- しかし CEO の 6 強化目的は **Cursor + 既存憲法 (§1-2-3 / §50-3 / 昨夜制定 CIO 体制) で同等達成可能** と CIO 判断 → Cursor 流に翻訳して即実装
+
+**航海図（Goal / Constraints / Acceptance）**:
+- **Goal**: 5 強化要件を `.cursorrules` + `NEW-SESSION-STARTER.md` に統合 + §57 改定キューに新 M 登録 + 1 commit push
+- **Constraints**: §47-E 事実歪曲禁止 / §35-1 役割逆転禁止 / §51 + 並列 5 点チェック / CIO 体制（実行と確認の分離） / §50-3-1 出力閾値 / §50-3-5 サニタイズ
+- **Acceptance**: (1) 5 ファイル編集完了 (2) Desktop 同期 byte 一致 (3) `verify:constitution-handoff` exit 0 (4) commit + push (5) 「憲法適合済み: [検証コマンド名]」併記 (6) CIO 決意の表明
+
+**実装（CIO 自律・直列・一気通貫）**:
+1. `.cursorrules` 冒頭に **「🎖️ CEO 4/29 朝指示・CIO 5 強化要件」**セクション新規追加（前提整理 + 1〜5 の Cursor 流実装 + NEW-SESSION-STARTER への参照）
+2. `NEW-SESSION-STARTER.md` の CIO 体制ブロック内に **「📐 CEO 4/29 朝指示・5 強化要件」**最小参照を追加（次セッションでも自動再認識）
+3. `checkpoint-latest.md` 最終更新を 4/29 朝のブロックに置換
+4. 本ファイル末尾追加（このブロック）
+5. `HANDOFF-HUMAN.txt` 5 行更新
+6. Desktop 同期 (`session-starter:sync-desktop` + `verify:desktop-ai-emergency-sync`)
+7. 検収 (`npm run verify:constitution-handoff`)
+8. 1 commit + push
+
+**§57 改定キュー（CIO 管理・優先度更新）**:
+- **新 M（最優先・本日朝の CEO 直命）**: CEO 4/29 朝指示の 5 強化要件を `AGENTS.md` §50-3 に正式統合（`.cursorrules` の暫定永続化を本式化）
+- A〜H（4/28 夜 CEO 全採用）
+- 新 I（CIO 体制 §56 正式追記）/ 新 J（analyze.ts フィールド存在 fail-fast）/ 新 K（kintone polling URL エンコード共通化 → TSB-027）/ 新 L（KINTONE_APP Secret 二重利用解消・最重要）
+
+**MCP 利用**: 0 円（憲法ドキュ更新のため CIO 直轄・外部 MCP 不要）
+
+**AI 補足（漏れ防止）**:
+- `git`: 5 ファイル（.cursorrules + NEW-SESSION-STARTER + checkpoint + handoff-log + HANDOFF-HUMAN）を **1 commit で push**
+- `次の1手`: §57 改定 **M → A → B → ... → L** の順（1 件ずつ）。本日の CEO 指示が最優先
+- `GO待ち`: なし（CIO 自律権限内・憲法ドキュ更新のみ）
+- `Tier B`: なし
+
+**次セッションへの 1 行**: スターター全文 → 項番 -0 → `session:clock:set` → `session:bootstrap` → §57 改定 **M → A〜L** を 1 件ずつ反映（並列禁止 §51）。`.cursorrules` 冒頭の CIO 5 強化要件と NEW-SESSION-STARTER.md の CIO 体制ブロックを必ず再認識。
+
+---

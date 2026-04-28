@@ -52,6 +52,21 @@
 - **規律・憲法・記録の編集は CIO 直轄**（外部 MCP には投げない）
 - **エラーで止めない**: MCP 失敗 → 次の MCP → 全滅なら CIO が Opus で自力続行
 
+**📐 CEO 4/29 朝指示・5 強化要件（Cursor + Opus 4.7 流の実装 / 詳細は `.cursorrules` 冒頭）**:
+
+CEO 浜田 4/29 朝指示（「Claude Code v2.1.111 準拠」）を、Cursor + 既存憲法で同等達成する形で受け止め、`.cursorrules` 冒頭に統合済（明日以降 §57 改定 **新 M 案** として `AGENTS.md` §50-3 へ正式追記予定）:
+
+1. **Effort = xhigh デフォルト** = L2 Extra High 既定 / Tier B・不可逆・真因究明は L3 Max Thinking（§1-2-3-2）
+2. **Context = 1M 俯瞰** = Cursor で Opus 4.7 1M context 選択 + 必要時 Glob/Grep 並列読取で文脈強化
+3. **Permissions = 最小化** = Auto-Run Mode + §52-8/§52-8-1 物理 block で安全担保（§1-2-2-1 #6）
+4. **航海図 3 要素義務化** = タスク 1 ターン目に **Goal / Constraints / Acceptance** を必ず明文化（§50-3-2 拡張）
+5. **Stop Hook 相当** = 完了時に lint/テスト/verify を自律実行 → 「**憲法適合済み: [検証コマンド名]**」併記（§50-3-6 既存徹底化）
+6. **MCP 厳格委譲** = コード=Kimi / 論理=DeepSeek / 失敗時=OpenRouter / 上限 3 回 5 分（§50-3-4）
+
+**前提整理（事実明示）**: WSL 環境に Claude Code CLI v2.1.114 がインストール済だが、本ファイルを読み込んで応答する AI は **Cursor IDE 内の Claude Opus 4.7**（CLI とは別プロセス）。CEO 意図は Cursor 流に翻訳して同等達成。
+
+---
+
 **🛡 並列処理を選ぶ前の CIO 必須チェック 5 点（2026-04-28 21:41 CEO 浜田指示 / §51 起源の再発防止）**:
 
 §51 が並列を禁止していた歴史的経緯 = **「並列でエラー/ポリシー違反でよく止まっていた」を CIO は絶対忘れない**。**並列を選ぶ前に以下 5 点を全部 ✅ してから発火する**:
