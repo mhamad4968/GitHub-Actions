@@ -4,7 +4,7 @@
  * 仕様: docs/plans/2026-04-21-new-pc-ledger-spec.md v2.1 §4
  * Day 4 plan: docs/plans/2026-04-26-pc-ledger-day4-action.md
  *
- * BUILD: 2026-04-29-day5-autogen-v0.7.2 (fix: record holder PC 優先 + getFieldElement PC 優先、未使用 API ヘルパ削除)
+ * BUILD: 2026-04-29-day5-autogen-v0.7.3（fix: 595 氏名照合に正規化フォールバック＝全角スペース等で保存ブロックされないよう）
  *
  * Day 4 雛形スコープ:
  *   - 種別 (account_type) による表示制御 (show/hide)
@@ -21,7 +21,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-04-29-day5-autogen-v0.7.2';
+  const BUILD = '2026-04-29-day5-autogen-v0.7.3';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -407,6 +407,16 @@
     return String(str || '').replace(/\\/g, '\\\\').replace(/"/g, '\\"');
   }
 
+  /** 保存前照合・自動生成用: 595 user_name と入力の表記ゆれ（全角スペース・ゼロ幅・互換文字）を吸収 */
+  function normalize595UserNameForMatch674(s) {
+    return String(s || '')
+      .replace(/[\u200b-\u200d\ufeff]/g, '')
+      .trim()
+      .replace(/\u3000/g, ' ')
+      .replace(/\s+/g, ' ')
+      .normalize('NFKC');
+  }
+
   function kintoneApiGet(urlPath, params) {
     return kintone.api(kintone.api.url(urlPath, true), 'GET', params);
   }
@@ -435,13 +445,25 @@
   }
 
   function findEmployee595ByUserName(userName) {
-    const q = `user_name = "${escapeQueryValue(userName)}" and employment_status not in ("退職") limit 1`;
+    const raw = String(userName || '').trim();
+    if (!raw) return Promise.resolve(null);
+    const q = `user_name = "${escapeQueryValue(raw)}" and employment_status not in ("退職") limit 1`;
     return kintoneApiGet('/k/v1/records.json', {
       app: APP_EMPLOYEE,
       query: q,
       fields: ['user_name', 'mail', 'dept_name', 'group_name', 'employment_status'],
     }).then(function (resp) {
-      return (resp.records && resp.records[0]) || null;
+      const hit = (resp.records && resp.records[0]) || null;
+      if (hit) return hit;
+      const key = normalize595UserNameForMatch674(raw);
+      if (!key) return null;
+      return searchEmployees595Contains(raw, 25).then(function (rows) {
+        for (const r of rows || []) {
+          const un = (r.user_name && r.user_name.value) || '';
+          if (normalize595UserNameForMatch674(un) === key) return r;
+        }
+        return null;
+      });
     });
   }
 
