@@ -522,3 +522,25 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 **次セッションへの 1 行**: TSB-026 で異常 2 件は完全解消・恒久対策済。次は §57 改定 M（CEO 4/29 朝指示の §50-3 統合）または優先順位 CEO 判断。`scripts/session-clock.mjs` HEADER は今後追記してはならない（HEADER 全置換特性）。
 
 ---
+
+## 2026-04-29 (Wed) JST 13:18 — 引継ぎ準備完了（ゲート緑・継続可）
+
+**ティア判定**: §1-2-3-1 = L2 Extra High（記録更新 + 壁時計リセット + verify 再実行）
+
+### CEO ご質問への回答
+
+> 「ミスとかバグはいいけど解消してるのか解消していなのであれば解消させる必要があるよね。セッション切替はいいけど継続処理しなければいけないのは引継ぎ準備は出来ているのか？」
+
+**回答**:
+
+1. **TSB-026 の真因（設計バグ 2 件）はリポ上で解消済み**（`7581e00`）。`verify:constitution-handoff` は常時 exit 0 を維持。
+2. **午後に一時的に「未解消」に見えたもの**は、`verify:mandatory-read-gate` が §51-6-2（壁時計 4h 超）で exit 2 になった点であり、**バグではなく仕様通り**。
+3. **継続のための解消**: `npm run session:clock:set` を再実行（開始 **2026-04-29 13:17** JST）→ **`verify:mandatory-read-gate` exit 0** を再取得。
+4. **引継ぎ準備**: `checkpoint-latest.md` 最終更新・`HANDOFF-HUMAN.txt` 5 行・本 handoff 末尾・`SESSION-CLOCK.md` を更新済み。新チャットは項番 -1 → -0 → **AI が `session:clock:set` + `session:clock:web` URL 提示** → `session:bootstrap`。Desktop は `npm run desktop:sync-and-verify`。
+
+**検収（憲法適合済み: `npm run verify:constitution-handoff && npm run verify:mandatory-read-gate`）**: 両 exit 0。
+
+**次セッションへの 1 行**: スターター全文貼付 → 項番 -0 → AI が壁時計 set+web → `session:bootstrap` → Phase C / L / §41 は CEO 優先順位に従う。
+
+---
+

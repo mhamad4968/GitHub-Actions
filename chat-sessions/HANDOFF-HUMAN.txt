@@ -5,8 +5,8 @@ Windows から開きやすい控え: C:\Users\mhamada202408224\Desktop\AI緊急�
 
 推奨フロー（セッション切替）: ① **`NEW-SESSION-STARTER_yyyymmdd.txt`（JST・常にこのファイル名）全文**（**v3.27+**: **「■ 貼付単独で完走」** が **唯一の詳細正本**（項番 -1〜0・**v3.28** 以後の改定もここ優先）。checkpoint 重複貼付不要。貼付推奨は verify 最終行）② この 5 行（**任意**）③ **項番 -0** → ④ **`session:bootstrap` 一括**。**日終わり**: sync → verify。
 
-日時(JST): 2026-04-29（水）07:30 — 異常 2 件の真因特定・復元・恒久対策完了 (TSB-026 起票)
-いま何してた（1行）: CEO 直命「異常 NG 2 件は対応し恒久対策まで」を受けて CIO 自律で対応。**真因は両方とも設計バグ**（悪意ある書換ではない）: ① NEW-SESSION-STARTER 冒頭の累積編集で `(7) 役割宣言` が verify の 5200 文字閾値超過位置に押し出された → 冒頭に 1 行要約を永続追加 / ② `session-clock.mjs` の `writeClock()` が HEADER 全置換書込で人間注意書きを毎回削除する設計 → HEADER 定数に注意書きを永続化（次回以降 set で自動復元）。**TSB-026 起票** + 目次更新（全 24 件）。両 verify exit 0 ✅。
+日時(JST): 2026-04-29（水）13:18 — 引継ぎ準備完了（ゲート緑・継続可）
+いま何してた（1行）: CEO ご質問に対し事実確認。**TSB-026 の設計バグ 2 件はリポ上で解消済み**（`7581e00`）。午後は §51-6-2 で `mandatory-read-gate` が 4h 超で exit 2 だったため**仕様通り**→ **継続のため `session:clock:set` を再実行**（開始 **2026-04-29 13:17**）し **`verify:constitution-handoff` + `verify:mandatory-read-gate` 両方 exit 0** を再取得。Desktop は `desktop:sync-and-verify` で同期済み。
 次にやる1つ: **CEO ご確認待ち（2 点）**: ① Phase C（§57 改定 M = CEO 4/29 朝指示の §50-3 正式統合）の着手タイミング / ② 本日の優先（M / L=KINTONE_APP Secret 分離 / §41=4/29 19:00 までの kintone 部署予実アプリのスペース決定）の順位。
 GO待ち（なし／内容）: Tier B なし。**Phase C 着手タイミング**と **本日の優先順位**だけ CEO のちほどご確認願います。
 触らないで（なし／内容）: `scripts/session-clock.mjs` の HEADER は今後 SESSION-CLOCK.md 本文ではなく**ここ（コード定数）に追記**すること（TSB-026）。PC 台帳・kintone customize 本番書込は §41 確認後
@@ -21,5 +21,5 @@ GO待ち（なし／内容）: Tier B なし。**Phase C 着手タイミング**
 （事実訂正 / 2026-04-29 朝）: WSL に Claude Code CLI v2.1.114 インストール済だが、本セッション AI=Cursor 内 Opus 4.7（CLI と別プロセス）。CEO 意図する xhigh/1M/承認最小化/航海図/Stop Hook/MCP 委譲は Cursor + 既存憲法で同等達成（詳細 `.cursorrules` 冒頭）。
 （2026-04-29 07:14 CEO 確定）: CLI 永続化不要（CEO 直接起動しない・AI 側運用確立済で OK）。
 （2026-04-29 07:15 Phase B 完了）: `npm run desktop:sync-and-verify` 新設（sync→verify 直列保証）。次回からこれ必須・個別呼出禁止。詳細 `docs/reports/2026-04-29-morning-phase-b-completion.md`。
-（2026-04-29 07:15 異常検知）: NEW-SESSION-STARTER 冒頭「(7) 役割宣言」消失 + SESSION-CLOCK 開始時刻が 4/28 21:29 に巻き戻り（私の編集ではない）。CEO 確認後に git reflog 調査・復元予定。
-（2026-04-29 07:30 TSB-026 解消）: 上記異常 2 件は**両方とも設計バグ**と判明（悪意ある書換ではない）。① NEW-SESSION-STARTER 冒頭肥大化で needle が 5200 文字閾値超過位置に押し出された → 冒頭 line 24 周辺に永続追加。② `session-clock.mjs` の HEADER 全置換書込で人間追記が消える設計 → HEADER 定数に注意書きを永続化（次回 set で自動復元）。TSB-026 起票・両 verify exit 0。詳細 `docs/troubleshooting.md` TSB-026。
+（2026-04-29 07:30 TSB-026 解消）: 異常 2 件は**設計バグ**と判明。① NEW-SESSION-STARTER 冒頭肥大化 → 冒頭に `(7) 役割宣言` 要約永続追加。② `session-clock.mjs` HEADER 全置換 → HEADER 定数に注意書き永続化。TSB-026 起票・push `7581e00`。詳細 `docs/troubleshooting.md` TSB-026。
+（2026-04-29 13:18 引継ぎ）: 新チャット継続用に壁時計リセット（開始 13:17）→ constitution + mandatory-read-gate 両 exit 0。項番 0 前に必ず `session:clock:set`（§51-6-2）。
