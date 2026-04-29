@@ -4,7 +4,7 @@
  * 仕様: docs/plans/2026-04-21-new-pc-ledger-spec.md v2.1 §4
  * Day 4 plan: docs/plans/2026-04-26-pc-ledger-day4-action.md
  *
- * BUILD: 2026-04-29-day5-autogen-v0.7 (個人: 利用者名候補の input 委譲 + ヘッダフォールバック表示)
+ * BUILD: 2026-04-29-day5-autogen-v0.7.2 (fix: record holder PC 優先 + getFieldElement PC 優先、未使用 API ヘルパ削除)
  *
  * Day 4 雛形スコープ:
  *   - 種別 (account_type) による表示制御 (show/hide)
@@ -21,7 +21,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-04-29-day5-autogen-v0.7';
+  const BUILD = '2026-04-29-day5-autogen-v0.7.2';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -545,15 +545,25 @@
   let userSuggestDocClick674 = false;
   let userNameInputDelegate674 = false;
 
-  function getRecordFormApi674() {
-    try {
-      if (typeof kintone.mobile !== 'undefined' && kintone.mobile.app && kintone.mobile.app.record) {
-        return kintone.mobile.app.record;
+  /** @returns {{ api: object, holder: object }|null} */
+  function getRecordFormHolder674() {
+    const tryOne = function (api) {
+      if (!api || typeof api.get !== 'function') return null;
+      try {
+        const h = api.get();
+        if (h && h.record) return { api: api, holder: h };
+      } catch (err) {
+        return null;
       }
-    } catch (e0) {
-      /* ignore */
-    }
-    return kintone.app.record;
+      return null;
+    };
+    const d = tryOne(kintone.app && kintone.app.record);
+    if (d) return d;
+    return tryOne(
+      typeof kintone.mobile !== 'undefined' && kintone.mobile.app && kintone.mobile.app.record
+        ? kintone.mobile.app.record
+        : null,
+    );
   }
 
   function hideUserSuggest674() {
@@ -567,6 +577,14 @@
 
   function getUserNameFieldEl674() {
     try {
+      if (kintone.app && kintone.app.record && typeof kintone.app.record.getFieldElement === 'function') {
+        const d = kintone.app.record.getFieldElement(FC_USER_NAME);
+        if (d) return d;
+      }
+    } catch (e2) {
+      /* ignore */
+    }
+    try {
       if (typeof kintone.mobile !== 'undefined' && kintone.mobile.app && kintone.mobile.app.record) {
         const m = kintone.mobile.app.record.getFieldElement(FC_USER_NAME);
         if (m) return m;
@@ -574,16 +592,14 @@
     } catch (e1) {
       /* ignore */
     }
-    try {
-      return kintone.app.record.getFieldElement(FC_USER_NAME);
-    } catch (e2) {
-      return null;
-    }
+    return null;
   }
 
   function applyEmployeePickFrom595674(emp) {
-    const api = getRecordFormApi674();
-    const holder = api.get();
+    const bag = getRecordFormHolder674();
+    if (!bag) return;
+    const holder = bag.holder;
+    const api = bag.api;
     const rec = holder.record;
     setScalarFieldValue674(rec, FC_USER_NAME, (emp.user_name && emp.user_name.value) || '');
     setScalarFieldValue674(rec, FC_DEPT_NAME, (emp.dept_name && emp.dept_name.value) || '');
@@ -661,10 +677,9 @@
     if (userSuggestTimer674) clearTimeout(userSuggestTimer674);
     userSuggestTimer674 = setTimeout(function () {
       userSuggestTimer674 = null;
-      const api = getRecordFormApi674();
-      if (!api || !api.get) return;
-      const holder = api.get();
-      const rec = holder.record;
+      const bag = getRecordFormHolder674();
+      if (!bag || !bag.holder || !bag.holder.record) return;
+      const rec = bag.holder.record;
       const type = (rec[FC_ACCOUNT_TYPE] && rec[FC_ACCOUNT_TYPE].value) || '';
       if (type !== TYPE_PERSONAL) {
         hideUserSuggest674();
@@ -713,9 +728,9 @@
           if (!t || (t.tagName !== 'INPUT' && t.tagName !== 'TEXTAREA')) return;
           const fieldEl = getUserNameFieldEl674();
           if (!fieldEl || !fieldEl.contains(t)) return;
-          const api = getRecordFormApi674();
-          if (!api || !api.get) return;
-          const rec = api.get().record;
+          const bag = getRecordFormHolder674();
+          if (!bag || !bag.holder || !bag.holder.record) return;
+          const rec = bag.holder.record;
           const type = (rec[FC_ACCOUNT_TYPE] && rec[FC_ACCOUNT_TYPE].value) || '';
           if (type !== TYPE_PERSONAL) return;
           ensureUserSuggestDocClick674();
@@ -760,8 +775,13 @@
   }
 
   function runPersonalAutoGen() {
-    const api = getRecordFormApi674();
-    const recNow = api.get();
+    const bag = getRecordFormHolder674();
+    if (!bag || !bag.holder || !bag.holder.record) {
+      window.alert('フォームの準備ができていません。少し待ってから再度お試しください。');
+      return Promise.resolve();
+    }
+    const api = bag.api;
+    const recNow = bag.holder;
     const rec = recNow.record;
     const userName = (rec[FC_USER_NAME] && rec[FC_USER_NAME].value) || '';
     if (!String(userName).trim()) {
