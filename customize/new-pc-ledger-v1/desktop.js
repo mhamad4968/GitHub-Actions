@@ -4,7 +4,7 @@
  * 仕様: docs/plans/2026-04-21-new-pc-ledger-spec.md v2.1 §4
  * Day 4 plan: docs/plans/2026-04-26-pc-ledger-day4-action.md
  *
- * BUILD: 2026-04-29-day5-autogen-v0.7.4（fix: 利用者名候補は入力中 DOM を優先＝record 未同期でも検索・候補表示）
+ * BUILD: 2026-04-29-day5-autogen-v0.7.5（feat: 個人向け「社員名を検索（595）」モーダルで氏名を選んで確定）
  *
  * Day 4 雛形スコープ:
  *   - 種別 (account_type) による表示制御 (show/hide)
@@ -21,7 +21,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-04-29-day5-autogen-v0.7.4';
+  const BUILD = '2026-04-29-day5-autogen-v0.7.5';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -300,7 +300,7 @@
     ul.style.cssText = 'margin:0 0 6px 1.1em;padding:0;';
     const li1 = document.createElement('li');
     li1.textContent =
-      '個人：利用者名（595と一致する氏名）を入力後、所属は社員マスタ（595）から自動反映（※JS連携は次アップデートで有効化予定。それまでは手入力可）。';
+      '個人：画面上部の「社員名を検索（595）」で氏名を選ぶか、利用者名欄に入力すると候補が出ます。確定後、所属名・所属グループは595の内容で自動反映されます。';
     const li2 = document.createElement('li');
     li2.textContent =
       '共有・JR：`所属名` と `所属グループ` は別フィールド。下表は会社既定の候補を**この順**で記載（必要な行だけコピーして入力）。';
@@ -562,6 +562,7 @@
   }
 
   const USER_SUGGEST_BOX_ID = 'new-pc-ledger-user-suggest';
+  const EMPLOYEE_SEARCH_MODAL_ID = 'new-pc-ledger-employee-search-modal';
   let userSuggestTimer674 = null;
   let userSuggestReq674 = 0;
   let userSuggestDocClick674 = false;
@@ -642,6 +643,209 @@
       if (v) return v;
     }
     return fromRec;
+  }
+
+  function closeEmployee595SearchModal674() {
+    const m = document.getElementById(EMPLOYEE_SEARCH_MODAL_ID);
+    if (m) m.style.display = 'none';
+  }
+
+  function renderEmployee595SearchResults674(container, rows) {
+    container.textContent = '';
+    if (!rows || !rows.length) {
+      const p = document.createElement('p');
+      p.style.cssText = 'margin:8px 0;color:#6c757d;font-size:13px;line-height:1.5;';
+      p.textContent =
+        '該当する在籍社員が見つかりません。別の表記・苗字だけ・名前の一部でも検索できます。595の user_name と一致する行を選んでください。';
+      container.appendChild(p);
+      return;
+    }
+    for (let r = 0; r < rows.length; r++) {
+      const row = rows[r];
+      const un = (row.user_name && row.user_name.value) || '';
+      const dept = (row.dept_name && row.dept_name.value) || '';
+      const grp = (row.group_name && row.group_name.value) || '';
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.style.cssText =
+        'display:block;width:100%;text-align:left;padding:10px 12px;margin:0 0 6px;border:1px solid #dee2e6;border-radius:4px;background:#fff;cursor:pointer;font-size:14px;line-height:1.4;';
+      item.textContent = un + (dept ? '　／　' + dept : '') + (grp ? '　（' + grp + '）' : '');
+      (function (empRow) {
+        item.addEventListener('mousedown', function (ev) {
+          ev.preventDefault();
+          applyEmployeePickFrom595674(empRow);
+          hideUserSuggest674();
+          closeEmployee595SearchModal674();
+        });
+      })(row);
+      container.appendChild(item);
+    }
+  }
+
+  function runEmployee595SearchModalQuery674() {
+    const modal = document.getElementById(EMPLOYEE_SEARCH_MODAL_ID);
+    if (!modal) return;
+    const input = modal.querySelector('[data-npl-e595-q]');
+    const container = modal.querySelector('[data-npl-e595-results]');
+    if (!input || !container) return;
+    const kw = String(input.value || '').trim();
+    container.textContent = '';
+    if (!kw) {
+      const p = document.createElement('p');
+      p.style.cssText = 'margin:8px 0;color:#6c757d;font-size:13px;';
+      p.textContent = '検索語を入力して「検索」を押すか、Enter キーを押してください。';
+      container.appendChild(p);
+      return;
+    }
+    const loading = document.createElement('p');
+    loading.style.cssText = 'margin:8px;color:#495057;font-size:13px;';
+    loading.textContent = '検索しています…';
+    container.appendChild(loading);
+    searchEmployees595Contains(kw, 25)
+      .then(function (rows) {
+        container.textContent = '';
+        renderEmployee595SearchResults674(container, rows);
+      })
+      .catch(function (e) {
+        console.warn('[NEW-PC-LEDGER-V1] 595 モーダル検索', e);
+        container.textContent = '';
+        const p = document.createElement('p');
+        p.style.cssText = 'margin:8px 0;color:#842029;font-size:13px;';
+        p.textContent = '検索に失敗しました。通信を確認して再度お試しください。';
+        container.appendChild(p);
+      });
+  }
+
+  function ensureEmployee595SearchModal674() {
+    let backdrop = document.getElementById(EMPLOYEE_SEARCH_MODAL_ID);
+    if (backdrop) return backdrop;
+
+    backdrop = document.createElement('div');
+    backdrop.id = EMPLOYEE_SEARCH_MODAL_ID;
+    backdrop.style.cssText =
+      'display:none;position:fixed;inset:0;z-index:100001;align-items:center;justify-content:center;' +
+      'padding:16px;box-sizing:border-box;background:rgba(33,37,41,.48);';
+    backdrop.setAttribute('role', 'dialog');
+    backdrop.setAttribute('aria-modal', 'true');
+    backdrop.addEventListener('click', function (e) {
+      if (e.target === backdrop) closeEmployee595SearchModal674();
+    });
+
+    const panel = document.createElement('div');
+    panel.style.cssText =
+      'background:#fff;border-radius:8px;max-width:560px;width:100%;max-height:88vh;overflow:hidden;display:flex;' +
+      'flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.2);';
+    panel.addEventListener('click', function (e) {
+      e.stopPropagation();
+    });
+
+    const head = document.createElement('div');
+    head.style.cssText = 'padding:14px 16px;border-bottom:1px solid #dee2e6;';
+    const h = document.createElement('div');
+    h.style.cssText = 'font-weight:bold;font-size:16px;color:#052c65;';
+    h.textContent = '社員名を検索（社員マスタ 595）';
+    head.appendChild(h);
+    const sub = document.createElement('div');
+    sub.style.cssText = 'font-size:12px;color:#495057;margin-top:6px;line-height:1.5;';
+    sub.textContent =
+      '氏名の一部でも検索できます。行を押すと「利用者名・所属名・所属グループ」に反映されます（保存は従来どおり手動）。';
+    head.appendChild(sub);
+
+    const body = document.createElement('div');
+    body.style.cssText = 'padding:12px 16px;flex:1;min-height:0;display:flex;flex-direction:column;gap:10px;';
+
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;align-items:center;';
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.setAttribute('data-npl-e595-q', '1');
+    inp.placeholder = '例: 山田　または　政一';
+    inp.style.cssText =
+      'flex:1;min-width:160px;padding:8px 10px;font-size:14px;border:1px solid #ced4da;border-radius:4px;box-sizing:border-box;';
+    const searchBtn = document.createElement('button');
+    searchBtn.type = 'button';
+    searchBtn.textContent = '検索';
+    searchBtn.style.cssText =
+      'padding:8px 16px;font-weight:bold;background:#0d6efd;color:#fff;border:none;border-radius:4px;cursor:pointer;';
+    searchBtn.addEventListener('click', function () {
+      runEmployee595SearchModalQuery674();
+    });
+    inp.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter') {
+        ev.preventDefault();
+        runEmployee595SearchModalQuery674();
+      }
+    });
+    row.appendChild(inp);
+    row.appendChild(searchBtn);
+    body.appendChild(row);
+
+    const results = document.createElement('div');
+    results.setAttribute('data-npl-e595-results', '1');
+    results.style.cssText =
+      'overflow-y:auto;flex:1;min-height:120px;max-height:46vh;border:1px solid #e9ecef;border-radius:4px;padding:8px;background:#f8f9fa;';
+    body.appendChild(results);
+
+    const foot = document.createElement('div');
+    foot.style.cssText = 'padding:12px 16px;border-top:1px solid #dee2e6;display:flex;justify-content:flex-end;gap:8px;';
+    const closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.textContent = '閉じる';
+    closeBtn.style.cssText =
+      'padding:6px 14px;border:1px solid #6c757d;background:#fff;border-radius:4px;cursor:pointer;font-size:13px;';
+    closeBtn.addEventListener('click', function () {
+      closeEmployee595SearchModal674();
+    });
+    foot.appendChild(closeBtn);
+
+    panel.appendChild(head);
+    panel.appendChild(body);
+    panel.appendChild(foot);
+    backdrop.appendChild(panel);
+    document.body.appendChild(backdrop);
+
+    document.addEventListener(
+      'keydown',
+      function nplE595ModalEsc674(ev) {
+        const m = document.getElementById(EMPLOYEE_SEARCH_MODAL_ID);
+        if (!m || m.style.display === 'none') return;
+        if (ev.key === 'Escape') closeEmployee595SearchModal674();
+      },
+      true,
+    );
+    return backdrop;
+  }
+
+  function openEmployee595SearchModal674() {
+    const bag = getRecordFormHolder674();
+    if (!bag || !bag.holder || !bag.holder.record) {
+      window.alert('フォームの準備ができていません。画面を開き直してからお試しください。');
+      return;
+    }
+    const type = (bag.holder.record[FC_ACCOUNT_TYPE] && bag.holder.record[FC_ACCOUNT_TYPE].value) || '';
+    if (type !== TYPE_PERSONAL) {
+      window.alert('社員名検索は種別が「個人」のときのみ使えます。');
+      return;
+    }
+    const backdrop = ensureEmployee595SearchModal674();
+    const input = backdrop.querySelector('[data-npl-e595-q]');
+    const container = backdrop.querySelector('[data-npl-e595-results]');
+    if (container) {
+      container.textContent = '';
+      const p = document.createElement('p');
+      p.style.cssText = 'margin:8px 0;color:#6c757d;font-size:13px;line-height:1.5;';
+      p.textContent = '検索語を入力して「検索」または Enter。利用者名欄の文字列を引き継ぎます。';
+      container.appendChild(p);
+    }
+    backdrop.style.display = 'flex';
+    if (input) {
+      const live = readUserNameLiveValue674(bag.holder.record);
+      input.value = live || '';
+      setTimeout(function () {
+        input.focus();
+        input.select();
+      }, 50);
+    }
   }
 
   function applyEmployeePickFrom595674(emp) {
@@ -1346,7 +1550,7 @@
   }
 
   function injectButtons(event) {
-    const space = kintone.app.record.getHeaderMenuSpaceElement();
+    const space = getHeaderSpace674();
     if (!space) return;
 
     // 既存ボタンを除去 (再 inject 防止)
@@ -1367,6 +1571,11 @@
           window.alert('自動生成でエラー: ' + (e && e.message ? e.message : String(e)));
         });
       }));
+      wrapper.appendChild(
+        createGenerateButton('🔍 社員名を検索（595）', '#5c4d7d', function () {
+          openEmployee595SearchModal674();
+        }),
+      );
     }
 
     // 共有用 自動生成 (種別=共有 または JR端末 — 仕様書 §4.4)
