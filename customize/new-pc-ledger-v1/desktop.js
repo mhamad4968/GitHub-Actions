@@ -4,7 +4,7 @@
  * 仕様: docs/plans/2026-04-21-new-pc-ledger-spec.md v2.1 §4
  * Day 4 plan: docs/plans/2026-04-26-pc-ledger-day4-action.md
  *
- * BUILD: 2026-04-29-day5-autogen-v0.5 (個人: 利用者名 595 入力支援 + 保存前に社員マスタ照合)
+ * BUILD: 2026-04-29-day5-autogen-v0.6 (共有/JR: メール・サイボウズ非表示強化 + 共有端末名の保存前チェック)
  *
  * Day 4 雛形スコープ:
  *   - 種別 (account_type) による表示制御 (show/hide)
@@ -21,7 +21,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-04-29-day5-autogen-v0.5';
+  const BUILD = '2026-04-29-day5-autogen-v0.6';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -237,19 +237,25 @@
       FC_M365_ID, FC_M365_PW,
       FC_GB_ID, FC_GB_PW, FC_SB_ID, FC_SB_PW,
     ];
+    /** 個人のみ。共有/JR は Windows + M365 のみ（メール・サイボウズ等は非表示） */
     const personalOnlyFields = [
       FC_MAIL, FC_MAIL_ACCT, FC_MAIL_PW,
       FC_GB_ID, FC_GB_PW, FC_SB_ID, FC_SB_PW,
     ];
+    /** 共有/JR では利用者名は使わないため非表示（共有端末名を使う） */
+    const personalOnlyUserName = [FC_USER_NAME];
 
     if (type === TYPE_PERSONAL) {
       setFieldsVisibility(accountFields, true);
+      setFieldsVisibility(personalOnlyUserName, true);
     } else if (type === TYPE_SHARED || type === TYPE_JR) {
       setFieldsVisibility(accountFields, true);
       setFieldsVisibility(personalOnlyFields, false);
+      setFieldsVisibility(personalOnlyUserName, false);
     } else {
       // サーバーNAS / その他 → アカウント情報全体を非表示
       setFieldsVisibility(accountFields, false);
+      setFieldsVisibility(personalOnlyUserName, true);
     }
   }
 
@@ -1405,11 +1411,15 @@
       const type = event.record[FC_ACCOUNT_TYPE]?.value || '';
       const errors = [];
 
-      if (type === TYPE_PERSONAL && !event.record[FC_USER_NAME]?.value) {
-        errors.push('種別が「個人」のときは「利用者名」を入力してください。');
+      if (type === TYPE_PERSONAL && !String(event.record[FC_USER_NAME]?.value || '').trim()) {
+        const um = '種別が「個人」のときは「利用者名」を入力してください。';
+        errors.push(um);
+        event.errors = Object.assign(event.errors || {}, { [FC_USER_NAME]: um });
       }
-      if ((type === TYPE_SHARED || type === TYPE_JR) && !event.record[FC_SHARED_TERMINAL_NAME]?.value) {
-        errors.push('種別が「共有」または「JR端末」のときは「共有端末名」を入力してください。');
+      if ((type === TYPE_SHARED || type === TYPE_JR) && !String(event.record[FC_SHARED_TERMINAL_NAME]?.value || '').trim()) {
+        const sm = '共有端末名を入力してください。';
+        errors.push(sm);
+        event.errors = Object.assign(event.errors || {}, { [FC_SHARED_TERMINAL_NAME]: sm });
       }
 
       if (errors.length > 0) {
