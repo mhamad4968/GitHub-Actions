@@ -30,7 +30,7 @@ npm run app:fields <アプリID>
 | M365管理マスタ（新・PC台帳ver.1 用 / Day 2 / 5 台ライセンス厳守） | **671** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-24 作成 / 10 レコード（sjm-001~sjm-010 / X 案 5 台節約）|
 | 新個人WindowsID採番マスタ（新・PC台帳ver.1 用 / Day 3 / 旧 626 置換） | **672** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-25 作成 / 0 レコード（`^jbm\d{4}$` 厳格 / `jbm0001` から払出予定）|
 | 新共有WindowsID採番マスタ（新・PC台帳ver.1 用 / Day 3 / 旧 667 置換） | **673** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-25 作成 / 0 レコード（`^sjbm\d{4}$` 厳格 / `sjbm0001` から払出予定）|
-| 新・PC台帳ver.1（本体 / Day 4 雛形→Day 5 本実装・**構築中・運用開始前**） | **674** | `customize/new-pc-ledger-v1/desktop.js` | `npm run deploy:674` / Space **21** / thread **23** / **live revision 28**（2026-04-29 JST・§4.10.3/§5.3–5.4 編集差分で 671 増減・linked リネーム + 672/673 未使用戻し・v0.3）/ customize **BUILD=`2026-04-29-day5-autogen-v0.3`** / fileKey **`e3aa5326-a8dd-4427-a2aa-b86a7216e469`** / field-spec **44/44**（Day4 手順書）/ **運用開始予定 2026-05-13**（仕様書 §1） |
+| 新・PC台帳ver.1（本体 / Day 4 雛形→Day 5 本実装・**構築中・運用開始前**） | **674** | `customize/new-pc-ledger-v1/desktop.js` | `npm run deploy:674` / Space **21** / thread **23** / **live revision 29**（2026-04-29 JST・§5.3 保存前 6 台目ブロック + v0.4）/ customize **BUILD=`2026-04-29-day5-autogen-v0.4`** / fileKey **`34220f9d-09f7-4b6a-ac67-ff4faed8d0de`** / field-spec **44/44**（Day4 手順書）/ **運用開始予定 2026-05-13**（仕様書 §1） |
 | **部署予実・入力**（明細・`新フォーマット` 全列・`支払内訳` サブテーブル・月次 12 行） | **（未定）** | （未定） | `SPEC.md` §6–§6c・`excel-column-draft-2026-04-28.md`・当部署のみ |
 | **部署予実・ダッシュ**（**集計管理の主画面**・俯瞰・入力アプリ参照） | **（未定）** | （未定） | `SPEC.md` §6b・Excel 日常セル運用は廃止 |
 
@@ -63,6 +63,7 @@ npm run app:fields <アプリID>
 
 | 日時（UTC） | アプリID | customize パス |
 |-------------|----------|----------------|
+| 2026-04-29T05:16:07Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（BUILD v0.4・保存前 M365 6 台目ブロック + 平易メッセージ・手元 deploy） |
 | 2026-04-29T05:15:00Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（BUILD v0.3・671 編集差分リコンサイル + 672/673 未使用戻し・手元 deploy） |
 | 2026-04-29T04:59:55Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（BUILD day5-autogen-v0.2・保存成功 671/672/673 + ライセンスバナー・手元 deploy） |
 | 2026-04-29T04:55:55Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（BUILD day5-autogen-v0.1・手元 deploy） |

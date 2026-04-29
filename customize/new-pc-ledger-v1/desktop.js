@@ -4,7 +4,7 @@
  * 仕様: docs/plans/2026-04-21-new-pc-ledger-spec.md v2.1 §4
  * Day 4 plan: docs/plans/2026-04-26-pc-ledger-day4-action.md
  *
- * BUILD: 2026-04-29-day5-autogen-v0.3 (§4.10.3/§5.3/§5.4: 編集差分で 671 増減・linked リネーム・廃棄解放 + 672/673 未使用戻し)
+ * BUILD: 2026-04-29-day5-autogen-v0.4 (§5.3: 保存前 6 台目ブロック + §4.10/§5.3–5.4 差分整合 + 672/673)
  *
  * Day 4 雛形スコープ:
  *   - 種別 (account_type) による表示制御 (show/hide)
@@ -21,7 +21,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-04-29-day5-autogen-v0.3';
+  const BUILD = '2026-04-29-day5-autogen-v0.4';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -778,6 +778,72 @@
     return chain;
   }
 
+  /**
+   * reconcile671For674Save と同じ条件で、保存成功時に addSlot671 が走るか。
+   */
+  function would671RunAddSlot671(prev, next) {
+    const prevOn = allocation671Active(prev);
+    const nextOn = allocation671Active(next);
+    if (!nextOn) return false;
+    const oMid = prev && prev.m365_master_record_id;
+    const oPc = prev && prev.pc_name;
+    const nMid = next.m365_master_record_id;
+    const nPc = next.pc_name;
+
+    if (prevOn && nextOn && oMid === nMid && oPc === nPc) {
+      return false;
+    }
+    if (prevOn && nextOn && oMid === nMid && oPc !== nPc) {
+      return false;
+    }
+
+    const needAdd = nextOn && (!prevOn || oMid !== nMid || oPc !== nPc);
+    return needAdd;
+  }
+
+  /**
+   * 共有/JR で M365 行に新規に 1 台ぶん載る保存かつ、671 上で既に上限なら保存を止める（§5.3 / MS ポリシー）。
+   * @returns {Promise<string|null>} エラー文言 or null
+   */
+  function validateM671SixthSlotBeforeSave674(event) {
+    const next = extractState674(event.record);
+    if (!allocation671Active(next)) return Promise.resolve(null);
+
+    const isEdit = /\.edit\.submit$/.test(event.type || '');
+    const rid = String((event.recordId || (event.record.$id && event.record.$id.value) || '')).trim();
+    const prev = isEdit && rid ? snapshotBeforeEdit674[rid] : null;
+
+    if (!would671RunAddSlot671(prev, next)) return Promise.resolve(null);
+
+    const nMid = next.m365_master_record_id;
+    const nPc = next.pc_name;
+
+    return loadEnv670Map().then(function (envMap) {
+      const lim = parseInt(envMap.M365_LICENSE_LIMIT || '5', 10) || 5;
+      return kintoneApiGet('/k/v1/record.json', { app: APP_M365_MASTER, id: String(nMid) }).then(function (getResp) {
+        const r = getResp.record;
+        const st = (r.status && r.status.value) || '';
+        if (st === '廃止') {
+          return 'この共有メール（Microsoft 365 の割当）は、利用停止になっています。別の行を選ぶか、システム担当に相談してください。';
+        }
+        const pcs = parseLinked671((r.linked_pcs && r.linked_pcs.value) || '');
+        if (pcs.indexOf(nPc) >= 0) {
+          return null;
+        }
+        if (pcs.length >= lim) {
+          return (
+            '共有のメール（Microsoft 365）は、付けられる PC は ' +
+            lim +
+            ' 台までです。いま選んでいる割当では、すでに ' +
+            lim +
+            ' 台が使われているため、このままでは保存できません。別の空きの割当を選ぶか、Microsoft の管理画面でアカウントを追加してからマスタを更新し、システム担当に相談してください。'
+          );
+        }
+        return null;
+      });
+    });
+  }
+
   function countOther674ByLogon(logon, selfRid, app674) {
     const selfClause = selfRid ? ` and $id != "${escapeQueryValue(String(selfRid))}"` : '';
     return kintoneApiGet('/k/v1/records.json', {
@@ -1130,27 +1196,57 @@
     return true;
   });
 
-  // 保存前バリデーション (仕様書 §4.7.1)
-  const submitEvents = [
+  // 保存前バリデーション (仕様書 §4.7.1 + §5.3 6 台目ブロック)
+  const submitEvents674 = [
     'app.record.create.submit',
     'app.record.edit.submit',
   ];
-  kintone.events.on(submitEvents, (event) => {
-    const type = event.record[FC_ACCOUNT_TYPE]?.value || '';
-    const errors = [];
 
-    if (type === TYPE_PERSONAL && !event.record[FC_USER_NAME]?.value) {
-      errors.push('種別=個人 では「利用者名」必須です');
-    }
-    if ((type === TYPE_SHARED || type === TYPE_JR) && !event.record[FC_SHARED_TERMINAL_NAME]?.value) {
-      errors.push(`種別=${type} では「共有端末名」必須です`);
-    }
+  function onBeforeSubmit674(event) {
+    return new kintone.Promise(function (resolve) {
+      const type = event.record[FC_ACCOUNT_TYPE]?.value || '';
+      const errors = [];
 
-    if (errors.length > 0) {
-      event.error = errors.join(' / ');
-    }
-    return event;
-  });
+      if (type === TYPE_PERSONAL && !event.record[FC_USER_NAME]?.value) {
+        errors.push('種別が「個人」のときは「利用者名」を入力してください。');
+      }
+      if ((type === TYPE_SHARED || type === TYPE_JR) && !event.record[FC_SHARED_TERMINAL_NAME]?.value) {
+        errors.push('種別が「共有」または「JR端末」のときは「共有端末名」を入力してください。');
+      }
+
+      if (errors.length > 0) {
+        event.error = errors.join(' ');
+        resolve(event);
+        return;
+      }
+
+      validateM671SixthSlotBeforeSave674(event)
+        .then(function (m671Msg) {
+          if (m671Msg) {
+            event.error = m671Msg;
+            event.errors = Object.assign(event.errors || {}, {
+              [FC_M365_MASTER_RECORD_ID]: m671Msg,
+            });
+          }
+        })
+        .catch(function (e) {
+          console.error('[NEW-PC-LEDGER-V1] M365 事前チェック', e);
+          event.error =
+            '保存前の確認中にエラーが出ました。通信を確認して再度お試しください。続く場合はシステム担当へ連絡してください。';
+        })
+        .then(function () {
+          resolve(event);
+        });
+    });
+  }
+
+  kintone.events.on(submitEvents674, onBeforeSubmit674);
+  if (typeof kintone.mobile !== 'undefined') {
+    kintone.events.on(
+      ['mobile.app.record.create.submit', 'mobile.app.record.edit.submit'],
+      onBeforeSubmit674,
+    );
+  }
 
   const submitSuccessEvents674 = [
     'app.record.create.submit.success',
