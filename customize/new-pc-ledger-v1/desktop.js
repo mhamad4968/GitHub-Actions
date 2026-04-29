@@ -4,7 +4,7 @@
  * 仕様: docs/plans/2026-04-21-new-pc-ledger-spec.md v2.1 §4
  * Day 4 plan: docs/plans/2026-04-26-pc-ledger-day4-action.md
  *
- * BUILD: 2026-04-29-day5-autogen-v0.7.3（fix: 595 氏名照合に正規化フォールバック＝全角スペース等で保存ブロックされないよう）
+ * BUILD: 2026-04-29-day5-autogen-v0.7.4（fix: 利用者名候補は入力中 DOM を優先＝record 未同期でも検索・候補表示）
  *
  * Day 4 雛形スコープ:
  *   - 種別 (account_type) による表示制御 (show/hide)
@@ -21,7 +21,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-04-29-day5-autogen-v0.7.3';
+  const BUILD = '2026-04-29-day5-autogen-v0.7.4';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -617,6 +617,33 @@
     return null;
   }
 
+  /**
+   * テキスト入力中は record.get() が遅れることがある（change は多くの場合 blur 後）。
+   * 候補検索は DOM の実入力を優先する。
+   */
+  function readUserNameLiveValue674(rec) {
+    const fromRec = String((rec && rec[FC_USER_NAME] && rec[FC_USER_NAME].value) || '').trim();
+    const fieldEl = getUserNameFieldEl674();
+    if (!fieldEl) return fromRec;
+    const ae = document.activeElement;
+    if (
+      ae &&
+      fieldEl.contains(ae) &&
+      (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA') &&
+      ae.type !== 'checkbox' &&
+      ae.type !== 'radio' &&
+      ae.type !== 'button'
+    ) {
+      return String(ae.value != null ? ae.value : '').trim();
+    }
+    const inputs = fieldEl.querySelectorAll('textarea, input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="button"])');
+    for (let i = 0; i < inputs.length; i++) {
+      const v = String(inputs[i].value != null ? inputs[i].value : '').trim();
+      if (v) return v;
+    }
+    return fromRec;
+  }
+
   function applyEmployeePickFrom595674(emp) {
     const bag = getRecordFormHolder674();
     if (!bag) return;
@@ -668,7 +695,8 @@
     if (!rows || !rows.length) {
       const empty = document.createElement('div');
       empty.style.cssText = 'padding:10px;color:#6c757d;';
-      empty.textContent = '在籍の社員名が見つかりません。別の表記でもう一度入力してください。';
+      empty.textContent =
+        '在籍の社員名が見つかりません。595の氏名（user_name）に含まれる文字で検索するか、苗字＋名の表記を試してください。名前の一部だけではヒットしない場合があります。';
       if (useHeaderFallback) anchor.insertBefore(box, anchor.firstChild);
       else anchor.appendChild(box);
       return;
@@ -707,7 +735,7 @@
         hideUserSuggest674();
         return;
       }
-      const raw = String((rec[FC_USER_NAME] && rec[FC_USER_NAME].value) || '').trim();
+      const raw = readUserNameLiveValue674(rec);
       if (!raw) {
         hideUserSuggest674();
         return;
@@ -792,7 +820,7 @@
     if (!un) return Promise.resolve(null);
     return findEmployee595ByUserName(un).then(function (emp) {
       if (emp) return null;
-      return 'この「利用者名」は社員マスタ（在籍）に一致しませんでした。候補一覧から氏名を選ぶか、社員マスタと同じ氏名に直してください。';
+      return 'この「利用者名」は社員マスタ（在籍）の氏名と一致しません。595の user_name と同じ表記（多くは苗字＋名のフルネーム）にするか、入力中にフィールド下へ出る候補から選んでください。名前の一部分だけでは保存できません。';
     });
   }
 

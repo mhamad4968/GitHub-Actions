@@ -30,7 +30,7 @@ npm run app:fields <アプリID>
 | M365管理マスタ（新・PC台帳ver.1 用 / Day 2 / 5 台ライセンス厳守） | **671** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-24 作成 / 10 レコード（sjm-001~sjm-010 / X 案 5 台節約）|
 | 新個人WindowsID採番マスタ（新・PC台帳ver.1 用 / Day 3 / 旧 626 置換） | **672** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-25 作成 / 0 レコード（`^jbm\d{4}$` 厳格 / `jbm0001` から払出予定）|
 | 新共有WindowsID採番マスタ（新・PC台帳ver.1 用 / Day 3 / 旧 667 置換） | **673** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-25 作成 / 0 レコード（`^sjbm\d{4}$` 厳格 / `sjbm0001` から払出予定）|
-| 新・PC台帳ver.1（本体 / Day 4 雛形→Day 5 本実装・**構築中・運用開始前**） | **674** | `customize/new-pc-ledger-v1/desktop.js` | `npm run deploy:674` / Space **21** / thread **23** / **live revision 35**（2026-04-29 JST・595 氏名照合の正規化フォールバック・v0.7.3）/ customize **BUILD=`2026-04-29-day5-autogen-v0.7.3`** / fileKey **`10768671-43ec-4fe5-8a78-e5e0b73dbb8e`** / field-spec **44/44**（Day4 手順書）/ **運用開始予定 2026-05-13**（仕様書 §1） |
+| 新・PC台帳ver.1（本体 / Day 4 雛形→Day 5 本実装・**構築中・運用開始前**） | **674** | `customize/new-pc-ledger-v1/desktop.js` | `npm run deploy:674` / Space **21** / thread **23** / **live revision 36**（2026-04-29 JST・利用者名候補は DOM 優先で入力中も検索・v0.7.4）/ customize **BUILD=`2026-04-29-day5-autogen-v0.7.4`** / fileKey **`dc15146a-3355-4cf1-a32e-cf4456a7e212`** / field-spec **44/44**（Day4 手順書）/ **運用開始予定 2026-05-13**（仕様書 §1） |
 | **部署予実・入力**（明細・`新フォーマット` 全列・`支払内訳` サブテーブル・月次 12 行） | **（未定）** | （未定） | `SPEC.md` §6–§6c・`excel-column-draft-2026-04-28.md`・当部署のみ |
 | **部署予実・ダッシュ**（**集計管理の主画面**・俯瞰・入力アプリ参照） | **（未定）** | （未定） | `SPEC.md` §6b・Excel 日常セル運用は廃止 |
 
@@ -63,6 +63,7 @@ npm run app:fields <アプリID>
 
 | 日時（UTC） | アプリID | customize パス |
 |-------------|----------|----------------|
+| 2026-04-29T05:48:00Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（BUILD v0.7.4・利用者名候補は入力中 DOM を参照・手元 deploy rev 36） |
 | 2026-04-29T05:42:00Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（BUILD v0.7.3・595 user_name 正規化フォールバックで保存前照合・手元 deploy rev 35） |
 | 2026-04-29T05:37:00Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（BUILD v0.7.2・PC `record` holder / getFieldElement PC 優先・手元 deploy rev 34） |
 | 2026-04-29T05:45:00Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（BUILD v0.7・利用者名候補の表示修正・手元 deploy） |
