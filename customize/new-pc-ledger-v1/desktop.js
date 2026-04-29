@@ -4,7 +4,7 @@
  * 仕様: docs/plans/2026-04-21-new-pc-ledger-spec.md v2.1 §4
  * Day 4 plan: docs/plans/2026-04-26-pc-ledger-day4-action.md
  *
- * BUILD: 2026-04-29-day5-autogen-v0.1 (§4.4 自動生成: 595/670/672/673/671 参照・L1 フォーム反映のみ)
+ * BUILD: 2026-04-29-day5-autogen-v0.2 (§4.4 自動生成 + §5.3 保存成功時 671/672/673 連携・満杯は 671 ラベル「満杯」)
  *
  * Day 4 雛形スコープ:
  *   - 種別 (account_type) による表示制御 (show/hide)
@@ -14,18 +14,15 @@
  *   - 5 台ライセンス警告雛形 (赤バナーは仕組みのみ)
  *   - リセット/PC買替/印刷ボタン雛形
  *
- * Day 5 で実装予定 (本実装):
- *   - 採番マスタ 672/673 からの払い出し (個人/共有)
- *   - M365管理マスタ 671 からの ID 取得 (共有/JR)
- *   - 環境設定マスタ 670 からの定数取得
- *   - 595 社員マスタからの自動引用
+ * Day 5 残タスク:
  *   - 印刷帳票 (627 レイアウト移植)
  *   - 検索バー強化
+ *   - 671 編集時の付け替え・解放 (二重加算以外の減算ロジック)
  */
 (function () {
   'use strict';
 
-  const BUILD = '2026-04-29-day5-autogen-v0.1';
+  const BUILD = '2026-04-29-day5-autogen-v0.2';
 
   /** 共有・JR 等の手入力時の参照用（浜田提供・順序固定） */
   const DEPT_HELP_REFERENCE_TEXT =
@@ -318,6 +315,20 @@
     space.insertBefore(box, space.firstChild);
   }
 
+  // ===== ヘッダスペース (PC / モバイル) =====
+
+  function getHeaderSpace674() {
+    try {
+      if (typeof kintone.mobile !== 'undefined' && kintone.mobile.app?.record?.getHeaderMenuSpaceElement) {
+        const el = kintone.mobile.app.record.getHeaderMenuSpaceElement();
+        if (el) return el;
+      }
+    } catch (e) {
+      /* ignore */
+    }
+    return kintone.app.record.getHeaderMenuSpaceElement();
+  }
+
   // ===== JR端末用 黄色バナー (雛形 / 仕様書 §4.5) =====
 
   function showJrBannerIfNeeded(record) {
@@ -327,7 +338,7 @@
 
     if (type !== TYPE_JR) return;
 
-    const space = kintone.app.record.getHeaderMenuSpaceElement();
+    const space = getHeaderSpace674();
     if (!space) return;
     const banner = document.createElement('div');
     banner.id = 'new-pc-ledger-jr-banner';
@@ -336,24 +347,48 @@
     space.appendChild(banner);
   }
 
-  // ===== 5 台ライセンス警告 雛形 (仕様書 §4.6.4) =====
+  // ===== 5 台ライセンス警告 (仕様書 §4.6.4 / 671 実参照) =====
 
-  function showLicenseBannerIfNeeded(record) {
+  /**
+   * 共有・JR で m365_master_record_id があるとき、671 の usage_count が上限以上なら赤バナー。
+   * @returns {Promise<void>}
+   */
+  function refreshLicenseBannerFrom671(record) {
     const existing = document.querySelector('#new-pc-ledger-license-banner');
     if (existing) existing.remove();
 
-    // 雛形: m365_master_record_id がある共有/JR で「警告メッセージ」を表示する仕組みのみ
-    // 本実装 (4/27) では 671 を query して usage_count >= 5 のときに赤バナー表示
-    const masterId = record[FC_M365_MASTER_RECORD_ID]?.value;
-    if (!masterId) return;
+    const masterId = String(record[FC_M365_MASTER_RECORD_ID]?.value || '').trim();
+    if (!masterId) return Promise.resolve();
     const type = record[FC_ACCOUNT_TYPE]?.value || '';
-    if (type !== TYPE_SHARED && type !== TYPE_JR) return;
+    if (type !== TYPE_SHARED && type !== TYPE_JR) return Promise.resolve();
 
-    // 雛形ステージ: 4/27 で 671 query 実装
-    // const usageCount = await fetchUsageCount(masterId);
-    // if (usageCount < 5) return;
+    return Promise.all([
+      loadEnv670Map(),
+      kintoneApiGet('/k/v1/record.json', { app: APP_M365_MASTER, id: masterId }),
+    ]).then(function (results) {
+      const envMap = results[0];
+      const getResp = results[1];
+      const lim = parseInt(envMap.M365_LICENSE_LIMIT || '5', 10) || 5;
+      const usage = parseInt((getResp.record.usage_count && getResp.record.usage_count.value) || '0', 10) || 0;
+      if (usage < lim) return;
 
-    // (Day 4 雛形では赤バナー表示のサンプルのみ)
+      const space = getHeaderSpace674();
+      if (!space) return;
+
+      const banner = document.createElement('div');
+      banner.id = 'new-pc-ledger-license-banner';
+      banner.style.cssText =
+        'background:#f8d7da;color:#842029;padding:8px 12px;margin:6px 0;border:1px solid #f5c2c7;border-radius:4px;font-weight:bold;';
+      banner.textContent =
+        'この M365 アカウント（671 レコード番号 ' +
+        masterId +
+        '）は利用台数がライセンス上限に達しています（' +
+        usage +
+        '/' +
+        lim +
+        '）。Microsoft のポリシーに反する追加分の割当は行わないでください。';
+      space.appendChild(banner);
+    });
   }
 
   // ===== Day 5: 自動生成（§4.4 / L1 フォーム表示のみ・手入力済は上書きしない）=====
@@ -364,6 +399,14 @@
 
   function kintoneApiGet(urlPath, params) {
     return kintone.api(kintone.api.url(urlPath, true), 'GET', params);
+  }
+
+  function kintoneApiPost(urlPath, body) {
+    return kintone.api(kintone.api.url(urlPath, true), 'POST', body);
+  }
+
+  function kintoneApiPut(urlPath, body) {
+    return kintone.api(kintone.api.url(urlPath, true), 'PUT', body);
   }
 
   function loadEnv670Map() {
@@ -558,6 +601,130 @@
     kintone.app.record.set(recNow);
   }
 
+  // ===== 保存成功フック (§5.3: 672/673 採番行の補完 + 671 usage / linked_pcs / 満杯) =====
+
+  function recordHasM671Allocation(rec) {
+    const t = (rec[FC_ACCOUNT_TYPE] && rec[FC_ACCOUNT_TYPE].value) || '';
+    if (t !== TYPE_SHARED && t !== TYPE_JR) return false;
+    const mid = String((rec[FC_M365_MASTER_RECORD_ID] && rec[FC_M365_MASTER_RECORD_ID].value) || '').trim();
+    return !!mid;
+  }
+
+  function ensureNumbering672Row(logonName) {
+    return kintoneApiGet('/k/v1/records.json', {
+      app: APP_JBM_NUMBER,
+      query: 'logon_name = "' + escapeQueryValue(logonName) + '" limit 1',
+      fields: ['$id'],
+    }).then(function (resp) {
+      if (resp.records && resp.records.length) return;
+      return kintoneApiPost('/k/v1/record.json', {
+        app: APP_JBM_NUMBER,
+        record: {
+          logon_name: { value: logonName },
+          status: { value: '使用済' },
+          note: { value: '674 新・PC台帳: jbm 採番として登録' },
+        },
+      });
+    });
+  }
+
+  function ensureNumbering673Row(logonName) {
+    return kintoneApiGet('/k/v1/records.json', {
+      app: APP_SJBM_NUMBER,
+      query: 'logon_name = "' + escapeQueryValue(logonName) + '" limit 1',
+      fields: ['$id'],
+    }).then(function (resp) {
+      if (resp.records && resp.records.length) return;
+      return kintoneApiPost('/k/v1/record.json', {
+        app: APP_SJBM_NUMBER,
+        record: {
+          logon_name: { value: logonName },
+          status: { value: '使用済' },
+          note: { value: '674 新・PC台帳: sjbm 採番として登録' },
+        },
+      });
+    });
+  }
+
+  function incrementM671IfNeeded(rec) {
+    if (!recordHasM671Allocation(rec)) return Promise.resolve();
+    const mid = String(rec[FC_M365_MASTER_RECORD_ID].value).trim();
+    const pcName = String((rec[FC_PC_NAME] && rec[FC_PC_NAME].value) || '').trim();
+    if (!pcName) {
+      console.warn('[NEW-PC-LEDGER-V1] 671 更新スキップ: pc_name が空');
+      return Promise.resolve();
+    }
+    return loadEnv670Map().then(function (envMap) {
+      const lim = parseInt(envMap.M365_LICENSE_LIMIT || '5', 10) || 5;
+      return kintoneApiGet('/k/v1/record.json', {
+        app: APP_M365_MASTER,
+        id: mid,
+      }).then(function (getResp) {
+        const r = getResp.record;
+        const rev = getResp.revision;
+        const usage = parseInt((r.usage_count && r.usage_count.value) || '0', 10) || 0;
+        const linkedRaw = (r.linked_pcs && r.linked_pcs.value) || '';
+        const pcs = linkedRaw.split(/[\r\n,]+/).map(function (s) {
+          return s.trim();
+        }).filter(Boolean);
+        if (pcs.indexOf(pcName) >= 0) return Promise.resolve();
+        if (usage >= lim) {
+          console.warn('[NEW-PC-LEDGER-V1] 671 は上限済みのため usage を増やしません id=' + mid);
+          return Promise.resolve();
+        }
+        const newUsage = usage + 1;
+        pcs.push(pcName);
+        const newLinked = pcs.join(',');
+        const curStatus = (r.status && r.status.value) || '利用可';
+        const nextStatus = newUsage >= lim ? '満杯' : curStatus;
+        return kintoneApiPut('/k/v1/record.json', {
+          app: APP_M365_MASTER,
+          id: mid,
+          revision: rev,
+          record: {
+            usage_count: { value: String(newUsage) },
+            linked_pcs: { value: newLinked },
+            status: { value: nextStatus },
+          },
+        });
+      });
+    });
+  }
+
+  function runPostSaveHooks674(event) {
+    const rec = event.record;
+    const type = (rec[FC_ACCOUNT_TYPE] && rec[FC_ACCOUNT_TYPE].value) || '';
+    const logon = String((rec[FC_LOGON_NAME] && rec[FC_LOGON_NAME].value) || '').trim();
+
+    let chain = Promise.resolve();
+    if (type === TYPE_PERSONAL && /^jbm\d{4}$/.test(logon)) {
+      chain = chain.then(function () {
+        return ensureNumbering672Row(logon);
+      });
+    }
+    if (type === TYPE_SHARED && /^sjbm\d{4}$/.test(logon)) {
+      chain = chain.then(function () {
+        return ensureNumbering673Row(logon);
+      });
+    }
+    chain = chain.then(function () {
+      return incrementM671IfNeeded(rec);
+    });
+    return chain;
+  }
+
+  function onSubmitSuccess674(event) {
+    return new kintone.Promise(function (resolve) {
+      runPostSaveHooks674(event)
+        .catch(function (e) {
+          console.error('[NEW-PC-LEDGER-V1] post-save hooks', e);
+        })
+        .then(function () {
+          resolve(event);
+        });
+    });
+  }
+
   // ===== 自動生成ボタン 雛形 =====
 
   function createGenerateButton(label, color, onClick) {
@@ -687,9 +854,16 @@
     applySkyseaGroupUi(event.record, editable ? 'editable' : 'detail');
     applyVisibilityByType(event.record);
     showJrBannerIfNeeded(event.record);
-    showLicenseBannerIfNeeded(event.record);
     injectButtons(event);
-    return event;
+    return new kintone.Promise(function (resolve) {
+      refreshLicenseBannerFrom671(event.record)
+        .catch(function (e) {
+          console.warn('[NEW-PC-LEDGER-V1] license banner', e);
+        })
+        .then(function () {
+          resolve(event);
+        });
+    });
   });
 
   // 種別変更 (account_type フィールドの change イベント)
@@ -710,6 +884,9 @@
     applyVisibilityByType(result.record);
     showJrBannerIfNeeded(result.record);
     injectButtons(result);
+    refreshLicenseBannerFrom671(result.record).catch(function (e) {
+      console.warn('[NEW-PC-LEDGER-V1] license banner', e);
+    });
     return result;
   });
 
@@ -740,6 +917,18 @@
     }
     return event;
   });
+
+  const submitSuccessEvents674 = [
+    'app.record.create.submit.success',
+    'app.record.edit.submit.success',
+  ];
+  kintone.events.on(submitSuccessEvents674, onSubmitSuccess674);
+  if (typeof kintone.mobile !== 'undefined') {
+    kintone.events.on(
+      ['mobile.app.record.create.submit.success', 'mobile.app.record.edit.submit.success'],
+      onSubmitSuccess674,
+    );
+  }
 
   console.log(`[NEW-PC-LEDGER-V1] customize loaded BUILD=${BUILD}`);
   console.log(`[NEW-PC-LEDGER-V1] 関連アプリ: env=${APP_ENV_MASTER} m365=${APP_M365_MASTER} jbm=${APP_JBM_NUMBER} sjbm=${APP_SJBM_NUMBER} employee=${APP_EMPLOYEE}`);
