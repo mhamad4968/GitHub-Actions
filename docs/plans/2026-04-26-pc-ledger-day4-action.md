@@ -296,11 +296,11 @@ npm run customize:upload -- --app 674 --file customize/674/desktop.js
 |---|---|---|
 | C1 | kintone-apps.md に 674 行追記 | ☑ 済 |
 | C2 | logs/autonomy-decisions/PC-ledger-day4-2026-04-26.md 詳細ログ作成 | ☑ 代替 | **`PC-ledger-day4-2026-04-27-go.md`** に Tier B 実行ログ記録（2026-04-27） |
-| C3 | checkpoint-latest.md 更新（最新更新欄に Day 4 完遂を追記） | ☐ |
-| C4 | chat-sessions/2026-04-26.md / chat-sessions/2026-04-26-pc-ledger-day4.md 仕上げ | ☐ |
-| C5 | data/snapshots/674-deploy-final-2026-04-26.json (revision-snapshot.mjs 出力) git add | ☐ |
-| C6 | smoke-test 8/8 ✅ 再確認 | ☐ |
-| C7 | commit (`-F file` 経由) → push → session-lock release | ☐ |
+| C3 | checkpoint-latest.md 更新（最新更新欄に Day 4 完遂を追記） | ☑ 済 | 2026-04-29: §5 追完に合わせて追記 |
+| C4 | chat-sessions/2026-04-26.md / chat-sessions/2026-04-26-pc-ledger-day4.md 仕上げ | ☑ 済 | 2026-04-29: Day4 追記ブロックを `2026-04-26-pc-ledger-day4.md` に追加 |
+| C5 | data/snapshots/674-deploy-final-2026-04-26.json (revision-snapshot.mjs 出力) git add | ☑ 代替 | **`674-day4-followup-customize-v076-20260429-*.json`**（rev 38）を 2026-04-29 取得・追加 |
+| C6 | smoke-test 8/8 ✅ 再確認 | ☑ 済 | **smoke 10/10**（`smoke-test.mjs` 拡張後の検査数に準拠）2026-04-29 再実行 |
+| C7 | commit (`-F file` 経由) → push → session-lock release | ☑ 済 | 本 commit で C7 まで完遂；lock ファイル不在のため release は不要 |
 
 ---
 
@@ -362,7 +362,7 @@ npm run customize:upload -- --app 674 --file customize/674/desktop.js
 - [x] kintone-apps.md に 674 行が追加される（2026-04-27 済・revision 表記更新済）
 - [x] logs/autonomy-decisions に Tier B ログが残る（**`PC-ledger-day4-2026-04-27-go.md`** 新設。旧ファイル名 `2026-04-26` は未作成のまま）
 - [x] git に 1 commit + push（hash 記録 / -F file 経由）（**commit `a2d4a0f`**）
-- [ ] session-lock release（取得中なら release）
+- [x] session-lock release（取得中なら release）— **2026-04-29 確認**: `.session-state/ai-session.lock` 不在のため不要
 
 ---
 

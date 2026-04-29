@@ -128,6 +128,17 @@
 
 ---
 
+## 2026-04-29 追記（Day4 手順書 §5 事後検証・遅延完了 / CIO 自律）
+
+- **契機**: 仕様書スケジュール上の「予定優先」に合わせ、`2026-04-26-pc-ledger-day4-action.md` §5（C3〜C7）を本日順次実施。
+- **kintone:test**: 594/595/626/627/670/671/672/673/**674** = 全件 OK。
+- **smoke:quiet**: **10/10** ok（`smoke-test.mjs` 現行の 10 検査。手順書当初の「8/8」表記は拡張後の本数に置換済みの扱い）。
+- **revision:snapshot**: `data/snapshots/674-day4-followup-customize-v076-20260429-20260429-151236.json`（app **674** / live revision **38** / fields **52**）。
+- **session-lock**: `.session-state/ai-session.lock` 不在 → release 不要。
+- **checkpoint-latest.md**: 本追記と整合するよう更新。
+
+---
+
 ## 教訓 / 反省 (当日 + 翌朝記入)
 
 - _(空欄)_

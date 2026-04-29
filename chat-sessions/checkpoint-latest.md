@@ -63,6 +63,8 @@
 
 ---
 
+**最終更新**: 2026-04-29 (Wed) JST — **PC 台帳 Day4 手順書 §5（C3〜C7）遅延完了**: `docs/plans/2026-04-26-pc-ledger-day4-action.md` の事後検証チェックを実施。`npm run kintone:test` 全件 OK、`npm run smoke:quiet` **10/10** OK、`revision:snapshot` で **674 rev 38**（label `day4-followup-customize-v076-20260429`）を `data/snapshots/` に保存。`.session-state/ai-session.lock` **不在**のため release 不要。`chat-sessions/2026-04-26-pc-ledger-day4.md` と本ファイルを更新。次: 仕様書 §9 の **4/28–4/29 移行 CSV 準備（浜田）**および Day5 申し送り（印刷・テンプレ CSV 等）は計画表どおり別タスク。
+
 **最終更新**: 2026-04-29 (Wed) JST 13:35 — **CIO: `smoke:quiet` / `session:bootstrap` 10/10 緑を回復**。（1）**並列検知軸1**: `parallel-session-detector.mjs` の副次比率閾値を **0.12→0.28** に調整し、単一オペレーター＋ file-watcher 再起動由来の **211/212 二 pid** を静穏扱い（真の均衡並列は従来どおり警報になり得る）。（2）**S12 MCP 死蔵**: `check-mcp-dormancy.mjs` に **CIO 代替スタック（kimi / deepseek / openrouter）** の **7 日 transcript 未出現 exempt** を追加（`mcp.json` 非改変）。（3）**`--ignore-suspicion` が exit を下げない不具合**を修正（手動 GO パスと整合）。検収: `npm run session:bootstrap` exit 0。残タスクは **Phase C（§57 改定 M）/ L / §41（19:00）**＝CEO 優先順位待ち。**Tier B**: なし。**MCP 出費**: 0 円。
 
 **最終更新**: 2026-04-29 (Wed) JST 13:18 — **セッション切替・継続用の引継ぎ準備完了（ゲート緑）**。TSB-026 の設計バグ 2 件は **commit `7581e00` でリポ上解消済み**。§51-6-2 のため午後は壁時計 4h 超で `verify:mandatory-read-gate` が一時 exit 2（仕様通り）→ **`npm run session:clock:set` 再実行**（開始 **2026-04-29 13:17** JST）し、**`verify:constitution-handoff` / `verify:mandatory-read-gate` 両方 exit 0** を再取得。新チャット: 項番 -1（スターター全文）→ 項番 -0 → AI が **`session:clock:set` + `session:clock:web` URL 提示**（§51-6 遵守事項 5）→ **`npm run session:bootstrap`**。Desktop: **`npm run desktop:sync-and-verify`**。残: Phase C（§57 改定 M）/ L（KINTONE_APP 分離）/ §41（19:00 kintone スペース決定）は CEO 優先待ち。**Tier B**: なし。**MCP 出費**: 0 円。
