@@ -588,7 +588,7 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 - **A**: `docs/plans/2026-04-26-pc-ledger-day4-action.md`「AI 引継ぎ」に **§50-3-9 補足（項番 6）** を追記。
 - **B**: `chat-sessions/checkpoint-latest.md` に **部署予実・航海図テンプレ**（Goal / 手段1 MCP / 手段2 REST / Constraints / Acceptance）を新設。
 - **D+E**: `AGENTS.md` §50-3-9 に **証跡（チャット or `handoff-log` 1 行）**および**期待値の言語化**を追記（`.rag/extra-docs/AGENTS.md` 同期）。`SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1c** に §50-3-9 段落。
-- **C**: リポ差分を **`[FEAT] v23.25 §50-3-9 運用反映・yojitsu・checkpoint`** で **commit / `origin/main` push**（下記 `git` 行を正とする。未 push なら次ターン最優先）。
+- **C**: リポ差分を **`[FEAT] v23.25 §50-3-9 運用反映・yojitsu・checkpoint`** で **commit / `origin/main` push 済み**（`384a195`）。
 
 **次セッションへの 1 行**: 航海図に **手段(第2)=REST** を先に並べる。**§50-3-9**・**§50-3-8**（フィールド・計算・複雑 customize 着手直前）をセットで実行。
 
