@@ -4,7 +4,7 @@
  * 仕様: docs/plans/2026-04-21-new-pc-ledger-spec.md v2.1 §4
  * Day 4 plan: docs/plans/2026-04-26-pc-ledger-day4-action.md
  *
- * BUILD: 2026-04-29-day5-autogen-v0.4 (§5.3: 保存前 6 台目ブロック + §4.10/§5.3–5.4 差分整合 + 672/673)
+ * BUILD: 2026-04-29-day5-autogen-v0.5 (個人: 利用者名 595 入力支援 + 保存前に社員マスタ照合)
  *
  * Day 4 雛形スコープ:
  *   - 種別 (account_type) による表示制御 (show/hide)
@@ -21,7 +21,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-04-29-day5-autogen-v0.4';
+  const BUILD = '2026-04-29-day5-autogen-v0.5';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -439,6 +439,25 @@
     });
   }
 
+  /** 部分一致（苗字・名前の途中入力）。退職者は除外 */
+  function searchEmployees595Contains(keyword, limit) {
+    const k = String(keyword || '').trim();
+    if (!k) return Promise.resolve([]);
+    const lim = Math.min(Math.max(parseInt(String(limit || '12'), 10) || 12, 1), 25);
+    const q =
+      'user_name like "' +
+      escapeQueryValue(k) +
+      '" and employment_status not in ("退職") order by user_name asc limit ' +
+      lim;
+    return kintoneApiGet('/k/v1/records.json', {
+      app: APP_EMPLOYEE,
+      query: q,
+      fields: ['user_name', 'mail', 'dept_name', 'group_name', 'employment_status'],
+    }).then(function (resp) {
+      return resp.records || [];
+    });
+  }
+
   function nextJbmFrom672() {
     return kintoneApiGet('/k/v1/records.json', {
       app: APP_JBM_NUMBER,
@@ -498,6 +517,13 @@
     cell.value = String(value);
   }
 
+  /** 空欄でなくても上書き（595 候補から選んだとき用） */
+  function setScalarFieldValue674(rec, code, value) {
+    const cell = rec[code];
+    if (!cell || typeof cell !== 'object' || !Object.prototype.hasOwnProperty.call(cell, 'value')) return;
+    cell.value = value == null ? '' : String(value);
+  }
+
   function mergeNumberField(rec, code, numVal) {
     if (numVal == null || numVal === '') return;
     const cell = rec[code];
@@ -507,8 +533,178 @@
     cell.value = String(numVal);
   }
 
+  const USER_SUGGEST_BOX_ID = 'new-pc-ledger-user-suggest';
+  let userSuggestTimer674 = null;
+  let userSuggestReq674 = 0;
+  let userSuggestDocClick674 = false;
+
+  function getRecordFormApi674() {
+    try {
+      if (typeof kintone.mobile !== 'undefined' && kintone.mobile.app && kintone.mobile.app.record) {
+        return kintone.mobile.app.record;
+      }
+    } catch (e0) {
+      /* ignore */
+    }
+    return kintone.app.record;
+  }
+
+  function hideUserSuggest674() {
+    const box = document.getElementById(USER_SUGGEST_BOX_ID);
+    if (box) box.remove();
+    const anchors = document.querySelectorAll('[data-npl-user-anchor="1"]');
+    for (let i = 0; i < anchors.length; i++) {
+      anchors[i].removeAttribute('data-npl-user-anchor');
+    }
+  }
+
+  function getUserNameFieldEl674() {
+    try {
+      if (typeof kintone.mobile !== 'undefined' && kintone.mobile.app && kintone.mobile.app.record) {
+        const m = kintone.mobile.app.record.getFieldElement(FC_USER_NAME);
+        if (m) return m;
+      }
+    } catch (e1) {
+      /* ignore */
+    }
+    try {
+      return kintone.app.record.getFieldElement(FC_USER_NAME);
+    } catch (e2) {
+      return null;
+    }
+  }
+
+  function applyEmployeePickFrom595674(emp) {
+    const api = getRecordFormApi674();
+    const holder = api.get();
+    const rec = holder.record;
+    setScalarFieldValue674(rec, FC_USER_NAME, (emp.user_name && emp.user_name.value) || '');
+    setScalarFieldValue674(rec, FC_DEPT_NAME, (emp.dept_name && emp.dept_name.value) || '');
+    setScalarFieldValue674(rec, FC_GROUP_NAME, (emp.group_name && emp.group_name.value) || '');
+    api.set(holder);
+    hideUserSuggest674();
+  }
+
+  function mountUserSuggestDropdown674(rows) {
+    hideUserSuggest674();
+    const anchor = getUserNameFieldEl674();
+    if (!anchor) return;
+    anchor.setAttribute('data-npl-user-anchor', '1');
+    anchor.style.position = 'relative';
+    const box = document.createElement('div');
+    box.id = USER_SUGGEST_BOX_ID;
+    box.style.cssText =
+      'position:absolute;left:0;top:100%;margin-top:2px;min-width:260px;max-width:480px;max-height:260px;overflow:auto;' +
+      'background:#fff;border:1px solid #0d6efd;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,.15);z-index:99999;' +
+      'font-size:13px;line-height:1.4;';
+    const title = document.createElement('div');
+    title.style.cssText =
+      'padding:6px 10px;background:#e7f1ff;border-bottom:1px solid #9ec5fe;font-weight:bold;color:#052c65;font-size:12px;';
+    title.textContent = '社員マスタの候補（タップで確定・所属名も自動で入ります）';
+    box.appendChild(title);
+    if (!rows || !rows.length) {
+      const empty = document.createElement('div');
+      empty.style.cssText = 'padding:10px;color:#6c757d;';
+      empty.textContent = '在籍の社員名が見つかりません。別の表記でもう一度入力してください。';
+      box.appendChild(empty);
+      anchor.appendChild(box);
+      return;
+    }
+    for (let r = 0; r < rows.length; r++) {
+      const row = rows[r];
+      const un = (row.user_name && row.user_name.value) || '';
+      const dept = (row.dept_name && row.dept_name.value) || '';
+      const grp = (row.group_name && row.group_name.value) || '';
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.style.cssText =
+        'display:block;width:100%;text-align:left;padding:8px 10px;border:none;border-bottom:1px solid #dee2e6;background:#fff;cursor:pointer;';
+      item.textContent = un + (dept ? '　／　' + dept : '') + (grp ? '　（' + grp + '）' : '');
+      (function (empRow) {
+        item.addEventListener('mousedown', function (ev) {
+          ev.preventDefault();
+          applyEmployeePickFrom595674(empRow);
+        });
+      })(row);
+      box.appendChild(item);
+    }
+    anchor.appendChild(box);
+  }
+
+  function scheduleUserNameSuggest674() {
+    if (userSuggestTimer674) clearTimeout(userSuggestTimer674);
+    userSuggestTimer674 = setTimeout(function () {
+      userSuggestTimer674 = null;
+      const api = getRecordFormApi674();
+      if (!api || !api.get) return;
+      const holder = api.get();
+      const rec = holder.record;
+      const type = (rec[FC_ACCOUNT_TYPE] && rec[FC_ACCOUNT_TYPE].value) || '';
+      if (type !== TYPE_PERSONAL) {
+        hideUserSuggest674();
+        return;
+      }
+      const raw = String((rec[FC_USER_NAME] && rec[FC_USER_NAME].value) || '').trim();
+      if (!raw) {
+        hideUserSuggest674();
+        return;
+      }
+      const reqId = ++userSuggestReq674;
+      searchEmployees595Contains(raw, 15)
+        .then(function (list) {
+          if (reqId !== userSuggestReq674) return;
+          mountUserSuggestDropdown674(list);
+        })
+        .catch(function (e) {
+          if (reqId !== userSuggestReq674) return;
+          console.warn('[NEW-PC-LEDGER-V1] 595 候補検索', e);
+          hideUserSuggest674();
+        });
+    }, 380);
+  }
+
+  function onUserNameFieldChange674(event) {
+    const type = (event.record[FC_ACCOUNT_TYPE] && event.record[FC_ACCOUNT_TYPE].value) || '';
+    if (type !== TYPE_PERSONAL) {
+      hideUserSuggest674();
+      return event;
+    }
+    ensureUserSuggestDocClick674();
+    scheduleUserNameSuggest674();
+    return event;
+  }
+
+  function ensureUserSuggestDocClick674() {
+    if (userSuggestDocClick674) return;
+    userSuggestDocClick674 = true;
+    document.addEventListener(
+      'click',
+      function (ev) {
+        const box = document.getElementById(USER_SUGGEST_BOX_ID);
+        if (!box) return;
+        const t = ev.target;
+        if (box.contains(t)) return;
+        if (t.closest && t.closest('[data-npl-user-anchor="1"]')) return;
+        hideUserSuggest674();
+      },
+      true,
+    );
+  }
+
+  function validateUserNameIn595ForPersonal674(event) {
+    const type = event.record[FC_ACCOUNT_TYPE]?.value || '';
+    if (type !== TYPE_PERSONAL) return Promise.resolve(null);
+    const un = String(event.record[FC_USER_NAME]?.value || '').trim();
+    if (!un) return Promise.resolve(null);
+    return findEmployee595ByUserName(un).then(function (emp) {
+      if (emp) return null;
+      return 'この「利用者名」は社員マスタ（在籍）に一致しませんでした。候補一覧から氏名を選ぶか、社員マスタと同じ氏名に直してください。';
+    });
+  }
+
   function runPersonalAutoGen() {
-    const recNow = kintone.app.record.get();
+    const api = getRecordFormApi674();
+    const recNow = api.get();
     const rec = recNow.record;
     const userName = (rec[FC_USER_NAME] && rec[FC_USER_NAME].value) || '';
     if (!String(userName).trim()) {
@@ -540,7 +736,7 @@
         if (mailLocal) mergeScalarField(rec, FC_M365_ID, mailLocal + m365Domain);
         mergeScalarField(rec, FC_M365_PW, nextJbm + m365PwSuffix);
 
-        kintone.app.record.set(recNow);
+        api.set(recNow);
         window.alert('個人用フィールドをフォームへ反映しました（空欄のみ）。保存は手動で行ってください。');
       });
   }
@@ -1132,6 +1328,7 @@
     'mobile.app.record.edit.show',
   ];
   kintone.events.on(showEvents, (event) => {
+    hideUserSuggest674();
     console.log(`[NEW-PC-LEDGER-V1] BUILD=${BUILD} event=${event.type}`);
     if (
       event.type === 'app.record.edit.show' ||
@@ -1172,6 +1369,7 @@
     'app.record.edit.change.account_type',
   ];
   kintone.events.on(typeChangeEvents, (event) => {
+    hideUserSuggest674();
     let result = confirmTypeChangeIfNeeded(event);
     result = showJrAlertIfNeeded(result);
     if (result.type.startsWith('app.record.create.')) {
@@ -1220,7 +1418,17 @@
         return;
       }
 
-      validateM671SixthSlotBeforeSave674(event)
+      validateUserNameIn595ForPersonal674(event)
+        .then(function (userMsg) {
+          if (userMsg) {
+            event.error = userMsg;
+            event.errors = Object.assign(event.errors || {}, {
+              [FC_USER_NAME]: userMsg,
+            });
+            return null;
+          }
+          return validateM671SixthSlotBeforeSave674(event);
+        })
         .then(function (m671Msg) {
           if (m671Msg) {
             event.error = m671Msg;
@@ -1230,7 +1438,7 @@
           }
         })
         .catch(function (e) {
-          console.error('[NEW-PC-LEDGER-V1] M365 事前チェック', e);
+          console.error('[NEW-PC-LEDGER-V1] 保存前チェック', e);
           event.error =
             '保存前の確認中にエラーが出ました。通信を確認して再度お試しください。続く場合はシステム担当へ連絡してください。';
         })
@@ -1245,6 +1453,21 @@
     kintone.events.on(
       ['mobile.app.record.create.submit', 'mobile.app.record.edit.submit'],
       onBeforeSubmit674,
+    );
+  }
+
+  const userNameAssistEvents674 = [
+    'app.record.create.change.user_name',
+    'app.record.edit.change.user_name',
+  ];
+  kintone.events.on(userNameAssistEvents674, onUserNameFieldChange674);
+  if (typeof kintone.mobile !== 'undefined') {
+    kintone.events.on(
+      [
+        'mobile.app.record.create.change.user_name',
+        'mobile.app.record.edit.change.user_name',
+      ],
+      onUserNameFieldChange674,
     );
   }
 
