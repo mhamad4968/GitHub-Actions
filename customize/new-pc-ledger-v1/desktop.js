@@ -4,13 +4,13 @@
  * 仕様: docs/plans/2026-04-21-new-pc-ledger-spec.md v2.1 §4
  * Day 4 plan: docs/plans/2026-04-26-pc-ledger-day4-action.md
  *
- * BUILD: 2026-04-28-dept-help-banner-v0.5 (§4.2.0b 所属ヘルプは詳細・新規のみ／一覧・編集では非表示)
+ * BUILD: 2026-04-29-day5-autogen-v0.1 (§4.4 自動生成: 595/670/672/673/671 参照・L1 フォーム反映のみ)
  *
  * Day 4 雛形スコープ:
  *   - 種別 (account_type) による表示制御 (show/hide)
  *   - §4.2.1a: 内部メタは kintone 標準グループ `internal_system_meta` に収容（レイアウトは `npm run pc-ledger:674:layout-internal-group`）。表示時はグループを閉じる・新規・編集では子を disabled
  *   - §4.2.3a: SKYSEA 4 件は `skysea_system_meta`（表示名 SKYSEA処理用）に収容。アカウント部領域のため **権限のあるユーザーは編集可能**。運用で触るのは浜田のみと **周知**（customize ではログインによる非表示はしない）。通常はグループを閉じた初期表示
- *   - 自動生成ボタン雛形 (クリックで alert "Day 5 で実装")
+ *   - 自動生成ボタン: 個人 / 共有 / JR（M365 系）を §4.4 に沿ってフォームへ反映（空欄のみ上書き）
  *   - 5 台ライセンス警告雛形 (赤バナーは仕組みのみ)
  *   - リセット/PC買替/印刷ボタン雛形
  *
@@ -25,7 +25,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-04-28-dept-help-banner-v0.5';
+  const BUILD = '2026-04-29-day5-autogen-v0.1';
 
   /** 共有・JR 等の手入力時の参照用（浜田提供・順序固定） */
   const DEPT_HELP_REFERENCE_TEXT =
@@ -356,6 +356,208 @@
     // (Day 4 雛形では赤バナー表示のサンプルのみ)
   }
 
+  // ===== Day 5: 自動生成（§4.4 / L1 フォーム表示のみ・手入力済は上書きしない）=====
+
+  function escapeQueryValue(str) {
+    return String(str || '').replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+  }
+
+  function kintoneApiGet(urlPath, params) {
+    return kintone.api(kintone.api.url(urlPath, true), 'GET', params);
+  }
+
+  function loadEnv670Map() {
+    return kintoneApiGet('/k/v1/records.json', {
+      app: APP_ENV_MASTER,
+      query: 'order by レコード番号 desc limit 200',
+      fields: ['setting_key', 'setting_value'],
+    }).then(function (resp) {
+      const map = Object.create(null);
+      for (const r of resp.records || []) {
+        const k = (r.setting_key && r.setting_key.value) || '';
+        if (k) map[k] = (r.setting_value && r.setting_value.value) || '';
+      }
+      return map;
+    });
+  }
+
+  function findEmployee595ByUserName(userName) {
+    const q = `user_name = "${escapeQueryValue(userName)}" and employment_status not in ("退職") limit 1`;
+    return kintoneApiGet('/k/v1/records.json', {
+      app: APP_EMPLOYEE,
+      query: q,
+      fields: ['user_name', 'mail', 'dept_name', 'group_name', 'employment_status'],
+    }).then(function (resp) {
+      return (resp.records && resp.records[0]) || null;
+    });
+  }
+
+  function nextJbmFrom672() {
+    return kintoneApiGet('/k/v1/records.json', {
+      app: APP_JBM_NUMBER,
+      query: 'logon_name != "" limit 500',
+      fields: ['logon_name'],
+    }).then(function (resp) {
+      let max = 0;
+      const re = /^jbm(\d{4})$/;
+      for (const r of resp.records || []) {
+        const m = re.exec((r.logon_name && r.logon_name.value) || '');
+        if (m) max = Math.max(max, parseInt(m[1], 10));
+      }
+      return 'jbm' + String(max + 1).padStart(4, '0');
+    });
+  }
+
+  function nextSjbmFrom673() {
+    return kintoneApiGet('/k/v1/records.json', {
+      app: APP_SJBM_NUMBER,
+      query: 'logon_name != "" limit 500',
+      fields: ['logon_name'],
+    }).then(function (resp) {
+      let max = 0;
+      const re = /^sjbm(\d{4})$/;
+      for (const r of resp.records || []) {
+        const m = re.exec((r.logon_name && r.logon_name.value) || '');
+        if (m) max = Math.max(max, parseInt(m[1], 10));
+      }
+      return 'sjbm' + String(max + 1).padStart(4, '0');
+    });
+  }
+
+  /** §5.3: 利用可 かつ usage_count<5 の最古 serial（共有プール。JR も同一プール） */
+  function fetchAssignableM365Record671() {
+    const q = [
+      'status in ("利用可")',
+      'usage_count < 5',
+      'account_type in ("共有")',
+      'order by serial_no asc',
+      'limit 1',
+    ].join(' and ');
+    return kintoneApiGet('/k/v1/records.json', {
+      app: APP_M365_MASTER,
+      query: q,
+      fields: ['$id', 'm365_id', 'm365_pw', 'usage_count', 'status', 'serial_no', 'account_type'],
+    }).then(function (resp) {
+      return (resp.records && resp.records[0]) || null;
+    });
+  }
+
+  function mergeScalarField(rec, code, value) {
+    if (value == null || value === '') return;
+    const cell = rec[code];
+    if (!cell || typeof cell !== 'object') return;
+    const cur = String(cell.value || '').trim();
+    if (cur) return;
+    cell.value = String(value);
+  }
+
+  function mergeNumberField(rec, code, numVal) {
+    if (numVal == null || numVal === '') return;
+    const cell = rec[code];
+    if (!cell || typeof cell !== 'object') return;
+    const cur = String(cell.value || '').trim();
+    if (cur) return;
+    cell.value = String(numVal);
+  }
+
+  function runPersonalAutoGen() {
+    const recNow = kintone.app.record.get();
+    const rec = recNow.record;
+    const userName = (rec[FC_USER_NAME] && rec[FC_USER_NAME].value) || '';
+    if (!String(userName).trim()) {
+      window.alert('種別=個人 の自動生成には「利用者名」を先に入力してください。');
+      return Promise.resolve();
+    }
+    return Promise.all([loadEnv670Map(), findEmployee595ByUserName(userName.trim()), nextJbmFrom672()])
+      .then(function (results) {
+        const envMap = results[0];
+        const emp = results[1];
+        const nextJbm = results[2];
+        if (!emp) {
+          window.alert('社員マスタ（595）に user_name が一致するレコードが見つかりません: ' + userName);
+          return;
+        }
+        const mail = (emp.mail && emp.mail.value) || '';
+        const at = mail.indexOf('@');
+        const mailLocal = at > 0 ? mail.slice(0, at) : '';
+        const m365Domain = envMap.M365_DOMAIN || '@kensetsutoso01.onmicrosoft.com';
+        const m365PwSuffix = envMap.M365_PW_PERSONAL_SUFFIX || 'K#';
+
+        mergeScalarField(rec, FC_DEPT_NAME, (emp.dept_name && emp.dept_name.value) || '');
+        mergeScalarField(rec, FC_GROUP_NAME, (emp.group_name && emp.group_name.value) || '');
+        mergeScalarField(rec, FC_MAIL, mail);
+        mergeScalarField(rec, FC_MAIL_ACCT, mailLocal);
+        mergeScalarField(rec, FC_LOGON_NAME, nextJbm);
+        mergeScalarField(rec, FC_LOGON_PW, nextJbm);
+        mergeScalarField(rec, FC_WINDOWS_NAME, nextJbm + mailLocal);
+        if (mailLocal) mergeScalarField(rec, FC_M365_ID, mailLocal + m365Domain);
+        mergeScalarField(rec, FC_M365_PW, nextJbm + m365PwSuffix);
+
+        kintone.app.record.set(recNow);
+        window.alert('個人用フィールドをフォームへ反映しました（空欄のみ）。保存は手動で行ってください。');
+      });
+  }
+
+  function runSharedAutoGen() {
+    const recNow = kintone.app.record.get();
+    const rec = recNow.record;
+    const type = (rec[FC_ACCOUNT_TYPE] && rec[FC_ACCOUNT_TYPE].value) || '';
+
+    return Promise.all([loadEnv670Map(), fetchAssignableM365Record671(), nextSjbmFrom673()])
+      .then(function (results) {
+        const envMap = results[0];
+        const m671 = results[1];
+        const nextSjbm = results[2];
+
+        if (!m671) {
+          window.alert(
+            'M365 アカウントの空きがありません。Microsoft 365 管理画面で作成し、M365管理マスタへ追加してから再度お試しください。',
+          );
+          return;
+        }
+
+        const m365Id = (m671.m365_id && m671.m365_id.value) || '';
+        const m365Pw = (m671.m365_pw && m671.m365_pw.value) || envMap.M365_PW_SHARED_FIXED || 'kent2511K#';
+        const m365RowId = m671.$id && m671.$id.value;
+
+        if (type === TYPE_SHARED) {
+          mergeScalarField(rec, FC_LOGON_NAME, nextSjbm);
+          mergeScalarField(rec, FC_WINDOWS_NAME, nextSjbm);
+          const fixedPw = envMap.LOGON_PW_SHARED_FIXED || 'kent0000';
+          const lpw = rec[FC_LOGON_PW];
+          if (lpw && (!lpw.value || !String(lpw.value).trim())) lpw.value = fixedPw;
+        }
+
+        mergeScalarField(rec, FC_M365_ID, m365Id);
+        mergeScalarField(rec, FC_M365_PW, m365Pw);
+        mergeNumberField(rec, FC_M365_MASTER_RECORD_ID, m365RowId);
+
+        kintone.app.record.set(recNow);
+        window.alert(
+          type === TYPE_JR
+            ? 'M365 系のみフォームへ反映しました（空欄のみ）。Windows 系は手入力ください。保存は手動で行ってください。'
+            : '共有向け（Windows + M365）をフォームへ反映しました（空欄のみ）。保存は手動で行ってください。',
+        );
+      });
+  }
+
+  function runClearAccountFields() {
+    const recNow = kintone.app.record.get();
+    const rec = recNow.record;
+    const codes = [
+      FC_LOGON_NAME, FC_LOGON_PW, FC_WINDOWS_NAME,
+      FC_MAIL, FC_MAIL_ACCT, FC_MAIL_PW,
+      FC_M365_ID, FC_M365_PW,
+      FC_GB_ID, FC_GB_PW, FC_SB_ID, FC_SB_PW,
+      FC_M365_MASTER_RECORD_ID,
+    ];
+    for (const code of codes) {
+      const cell = rec[code];
+      if (cell && Object.prototype.hasOwnProperty.call(cell, 'value')) cell.value = '';
+    }
+    kintone.app.record.set(recNow);
+  }
+
   // ===== 自動生成ボタン 雛形 =====
 
   function createGenerateButton(label, color, onClick) {
@@ -383,18 +585,20 @@
     // 個人用 自動生成 (種別=個人 のみ表示)
     if (type === TYPE_PERSONAL) {
       wrapper.appendChild(createGenerateButton('🔵 個人用 自動生成', '#0d6efd', () => {
-        alert('🛠 Day 5 で実装予定: 595 社員マスタ + 672 採番マスタから自動払い出し');
+        runPersonalAutoGen().catch(function (e) {
+          console.error(e);
+          window.alert('自動生成でエラー: ' + (e && e.message ? e.message : String(e)));
+        });
       }));
     }
 
     // 共有用 自動生成 (種別=共有 または JR端末 — 仕様書 §4.4)
     if (type === TYPE_SHARED || type === TYPE_JR) {
       wrapper.appendChild(createGenerateButton('🟢 共有用 自動生成', '#198754', () => {
-        if (type === TYPE_JR) {
-          alert('🛠 Day 5 で実装予定: 671 M365 管理マスタからのみ自動払い出し（Windows 系は手入力）');
-        } else {
-          alert('🛠 Day 5 で実装予定: 673 採番マスタ + 671 M365 マスタから自動払い出し');
-        }
+        runSharedAutoGen().catch(function (e) {
+          console.error(e);
+          window.alert('自動生成でエラー: ' + (e && e.message ? e.message : String(e)));
+        });
       }));
     }
 
@@ -402,7 +606,7 @@
     wrapper.appendChild(createGenerateButton('🔴 全フィールドリセット', '#dc3545', () => {
       const ok = window.confirm('アカウント情報を全クリアしますか？');
       if (!ok) return;
-      alert('🛠 Day 5 で実装予定: アカウント情報全フィールドをクリア');
+      runClearAccountFields();
     }));
 
     // PC 買替 (全種別)
