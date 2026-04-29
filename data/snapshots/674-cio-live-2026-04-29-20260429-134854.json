@@ -1,0 +1,1305 @@
+{
+  "snapshot_timestamp_jst": "20260429-134854",
+  "snapshot_label": "cio-live-2026-04-29",
+  "app_id": 674,
+  "preview_environment_only": false,
+  "app": {
+    "appId": "674",
+    "code": "",
+    "name": "新・PC台帳ver.1",
+    "description": "",
+    "createdAt": "2026-04-26T08:21:50.000Z",
+    "creator": {
+      "code": "admin",
+      "name": "管理者"
+    },
+    "modifiedAt": "2026-04-28T10:29:44.000Z",
+    "modifier": {
+      "code": "admin",
+      "name": "管理者"
+    },
+    "spaceId": "21",
+    "threadId": "23"
+  },
+  "settings": {
+    "name": "新・PC台帳ver.1",
+    "description": "",
+    "icon": {
+      "type": "PRESET",
+      "key": "APP39"
+    },
+    "theme": "WHITE",
+    "titleField": {
+      "selectionMode": "AUTO",
+      "code": "pc_name"
+    },
+    "enableThumbnails": true,
+    "enableBulkDeletion": false,
+    "enableComments": true,
+    "enableDuplicateRecord": true,
+    "enableInlineRecordEditing": true,
+    "numberPrecision": {
+      "digits": "16",
+      "decimalPlaces": "4",
+      "roundingMode": "HALF_EVEN"
+    },
+    "firstMonthOfFiscalYear": "4",
+    "revision": "24"
+  },
+  "form_fields_live": {
+    "revision": "24",
+    "properties": {
+      "account_type": {
+        "type": "DROP_DOWN",
+        "code": "account_type",
+        "label": "種別 (個人 / 共有 / JR端末 / サーバーNAS / その他)",
+        "noLabel": false,
+        "required": true,
+        "options": {
+          "共有": {
+            "label": "共有",
+            "index": "1"
+          },
+          "個人": {
+            "label": "個人",
+            "index": "0"
+          },
+          "JR端末": {
+            "label": "JR端末",
+            "index": "2"
+          },
+          "サーバーNAS": {
+            "label": "サーバーNAS",
+            "index": "3"
+          },
+          "その他": {
+            "label": "その他",
+            "index": "4"
+          }
+        },
+        "defaultValue": "個人"
+      },
+      "skysea_status": {
+        "type": "DROP_DOWN",
+        "code": "skysea_status",
+        "label": "SKYSEAインストール種別",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "未インストール": {
+            "label": "未インストール",
+            "index": "2"
+          },
+          "インストール対象外": {
+            "label": "インストール対象外",
+            "index": "3"
+          },
+          "インストール済": {
+            "label": "インストール済",
+            "index": "1"
+          },
+          "未確認": {
+            "label": "未確認",
+            "index": "0"
+          }
+        },
+        "defaultValue": "未確認"
+      },
+      "レコード番号": {
+        "type": "RECORD_NUMBER",
+        "code": "レコード番号",
+        "label": "レコード番号",
+        "noLabel": false
+      },
+      "mail": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "mail",
+        "label": "メールアドレス",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "latest_inventory_date": {
+        "type": "DATE",
+        "code": "latest_inventory_date",
+        "label": "最新棚卸日",
+        "noLabel": false,
+        "required": false,
+        "unique": false,
+        "defaultValue": "",
+        "defaultNowValue": false
+      },
+      "mail_pw": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "mail_pw",
+        "label": "メールパスワード",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "ステータス": {
+        "type": "STATUS",
+        "code": "ステータス",
+        "label": "ステータス",
+        "enabled": false
+      },
+      "sb_id": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "sb_id",
+        "label": "ガリバー ID",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "skysea_install_log": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "skysea_install_log",
+        "label": "SKYSEAインストール履歴",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "vpn_pw": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "vpn_pw",
+        "label": "VPN PW",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "mail_acct": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "mail_acct",
+        "label": "メールアカウント",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "logon_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "logon_name",
+        "label": "WindowsID",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "カテゴリー": {
+        "type": "CATEGORY",
+        "code": "カテゴリー",
+        "label": "カテゴリー",
+        "enabled": false
+      },
+      "model_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "model_name",
+        "label": "モデル名／型式",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "pc_serial_no": {
+        "type": "NUMBER",
+        "code": "pc_serial_no",
+        "label": "PC連番（PC名4桁用）",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "作業者": {
+        "type": "STATUS_ASSIGNEE",
+        "code": "作業者",
+        "label": "作業者",
+        "enabled": false
+      },
+      "legacy_pc_name_594": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "legacy_pc_name_594",
+        "label": "旧PC名（594）",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "group_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "group_name",
+        "label": "所属グループ",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "gb_id": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "gb_id",
+        "label": "サイボウズ ID",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "gb_pw": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "gb_pw",
+        "label": "サイボウズ PW",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "m365_master_record_id": {
+        "type": "NUMBER",
+        "code": "m365_master_record_id",
+        "label": "M365管理マスタ レコード番号",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "internal_system_meta": {
+        "type": "GROUP",
+        "code": "internal_system_meta",
+        "label": "内部処理用",
+        "noLabel": false,
+        "openGroup": false
+      },
+      "windows_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "windows_name",
+        "label": "Windows名",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "purchase_date": {
+        "type": "DATE",
+        "code": "purchase_date",
+        "label": "購入日",
+        "noLabel": false,
+        "required": false,
+        "unique": false,
+        "defaultValue": "",
+        "defaultNowValue": false
+      },
+      "import_source": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "import_source",
+        "label": "取込元",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "作成日時": {
+        "type": "CREATED_TIME",
+        "code": "作成日時",
+        "label": "作成日時",
+        "noLabel": false
+      },
+      "pc_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "pc_name",
+        "label": "PC 名（個人=JBIS****-YYYYMM / 共有=S-JBIS****-YYYYMM / JR=手入力）",
+        "noLabel": false,
+        "required": true,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "note": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "note",
+        "label": "備考",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "m365_pw": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "m365_pw",
+        "label": "M365 PW",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "fixed_ip_2": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "fixed_ip_2",
+        "label": "固定IPアドレス2",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "manufacturing_no": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "manufacturing_no",
+        "label": "製造番号",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "fixed_ip_1": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "fixed_ip_1",
+        "label": "固定IPアドレス1",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "更新者": {
+        "type": "MODIFIER",
+        "code": "更新者",
+        "label": "更新者",
+        "noLabel": false
+      },
+      "user_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "user_name",
+        "label": "利用者名",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "logon_pw": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "logon_pw",
+        "label": "ログオン初期PW",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "extra_info_2": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "extra_info_2",
+        "label": "その他情報2",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "legacy_record_id_594": {
+        "type": "NUMBER",
+        "code": "legacy_record_id_594",
+        "label": "旧レコードID（594）",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "manufacturer": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "manufacturer",
+        "label": "メーカー",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "shared_terminal_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "shared_terminal_name",
+        "label": "共有端末名",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "m365_id": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "m365_id",
+        "label": "M365 ID",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "extra_info_1": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "extra_info_1",
+        "label": "その他情報1",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "作成者": {
+        "type": "CREATOR",
+        "code": "作成者",
+        "label": "作成者",
+        "noLabel": false
+      },
+      "dept_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "dept_name",
+        "label": "所属名",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "created_at_jst": {
+        "type": "DATETIME",
+        "code": "created_at_jst",
+        "label": "作成日時（JST）",
+        "noLabel": false,
+        "required": false,
+        "unique": false,
+        "defaultValue": "",
+        "defaultNowValue": false
+      },
+      "更新日時": {
+        "type": "UPDATED_TIME",
+        "code": "更新日時",
+        "label": "更新日時",
+        "noLabel": false
+      },
+      "serial": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "serial",
+        "label": "シリアルナンバー",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "sb_pw": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "sb_pw",
+        "label": "ガリバー PW",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "skysea_checked_at": {
+        "type": "DATETIME",
+        "code": "skysea_checked_at",
+        "label": "SKYSEA確認日時",
+        "noLabel": false,
+        "required": false,
+        "unique": false,
+        "defaultValue": "",
+        "defaultNowValue": false
+      },
+      "pc_status": {
+        "type": "DROP_DOWN",
+        "code": "pc_status",
+        "label": "ステータス (利用中 / 保管 / 廃棄)",
+        "noLabel": false,
+        "required": true,
+        "options": {
+          "廃棄": {
+            "label": "廃棄",
+            "index": "2"
+          },
+          "利用中": {
+            "label": "利用中",
+            "index": "0"
+          },
+          "保管": {
+            "label": "保管",
+            "index": "1"
+          }
+        },
+        "defaultValue": "利用中"
+      },
+      "skysea_system_meta": {
+        "type": "GROUP",
+        "code": "skysea_system_meta",
+        "label": "SKYSEA処理用",
+        "noLabel": false,
+        "openGroup": false
+      },
+      "vpn_id": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "vpn_id",
+        "label": "VPN ID",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "skysea_target_flag": {
+        "type": "CHECK_BOX",
+        "code": "skysea_target_flag",
+        "label": "SKYSEA配信対象",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "配信対象": {
+            "label": "配信対象",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      }
+    }
+  },
+  "form_fields_preview": {
+    "revision": "24",
+    "properties": {
+      "account_type": {
+        "type": "DROP_DOWN",
+        "code": "account_type",
+        "label": "種別 (個人 / 共有 / JR端末 / サーバーNAS / その他)",
+        "noLabel": false,
+        "required": true,
+        "options": {
+          "共有": {
+            "label": "共有",
+            "index": "1"
+          },
+          "個人": {
+            "label": "個人",
+            "index": "0"
+          },
+          "JR端末": {
+            "label": "JR端末",
+            "index": "2"
+          },
+          "サーバーNAS": {
+            "label": "サーバーNAS",
+            "index": "3"
+          },
+          "その他": {
+            "label": "その他",
+            "index": "4"
+          }
+        },
+        "defaultValue": "個人"
+      },
+      "skysea_status": {
+        "type": "DROP_DOWN",
+        "code": "skysea_status",
+        "label": "SKYSEAインストール種別",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "未インストール": {
+            "label": "未インストール",
+            "index": "2"
+          },
+          "インストール対象外": {
+            "label": "インストール対象外",
+            "index": "3"
+          },
+          "インストール済": {
+            "label": "インストール済",
+            "index": "1"
+          },
+          "未確認": {
+            "label": "未確認",
+            "index": "0"
+          }
+        },
+        "defaultValue": "未確認"
+      },
+      "レコード番号": {
+        "type": "RECORD_NUMBER",
+        "code": "レコード番号",
+        "label": "レコード番号",
+        "noLabel": false
+      },
+      "mail": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "mail",
+        "label": "メールアドレス",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "latest_inventory_date": {
+        "type": "DATE",
+        "code": "latest_inventory_date",
+        "label": "最新棚卸日",
+        "noLabel": false,
+        "required": false,
+        "unique": false,
+        "defaultValue": "",
+        "defaultNowValue": false
+      },
+      "mail_pw": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "mail_pw",
+        "label": "メールパスワード",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "ステータス": {
+        "type": "STATUS",
+        "code": "ステータス",
+        "label": "ステータス",
+        "enabled": false
+      },
+      "sb_id": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "sb_id",
+        "label": "ガリバー ID",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "skysea_install_log": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "skysea_install_log",
+        "label": "SKYSEAインストール履歴",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "vpn_pw": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "vpn_pw",
+        "label": "VPN PW",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "mail_acct": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "mail_acct",
+        "label": "メールアカウント",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "logon_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "logon_name",
+        "label": "WindowsID",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "カテゴリー": {
+        "type": "CATEGORY",
+        "code": "カテゴリー",
+        "label": "カテゴリー",
+        "enabled": false
+      },
+      "model_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "model_name",
+        "label": "モデル名／型式",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "pc_serial_no": {
+        "type": "NUMBER",
+        "code": "pc_serial_no",
+        "label": "PC連番（PC名4桁用）",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "作業者": {
+        "type": "STATUS_ASSIGNEE",
+        "code": "作業者",
+        "label": "作業者",
+        "enabled": false
+      },
+      "legacy_pc_name_594": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "legacy_pc_name_594",
+        "label": "旧PC名（594）",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "group_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "group_name",
+        "label": "所属グループ",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "gb_id": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "gb_id",
+        "label": "サイボウズ ID",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "gb_pw": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "gb_pw",
+        "label": "サイボウズ PW",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "m365_master_record_id": {
+        "type": "NUMBER",
+        "code": "m365_master_record_id",
+        "label": "M365管理マスタ レコード番号",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "internal_system_meta": {
+        "type": "GROUP",
+        "code": "internal_system_meta",
+        "label": "内部処理用",
+        "noLabel": false,
+        "openGroup": false
+      },
+      "windows_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "windows_name",
+        "label": "Windows名",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "purchase_date": {
+        "type": "DATE",
+        "code": "purchase_date",
+        "label": "購入日",
+        "noLabel": false,
+        "required": false,
+        "unique": false,
+        "defaultValue": "",
+        "defaultNowValue": false
+      },
+      "import_source": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "import_source",
+        "label": "取込元",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "作成日時": {
+        "type": "CREATED_TIME",
+        "code": "作成日時",
+        "label": "作成日時",
+        "noLabel": false
+      },
+      "pc_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "pc_name",
+        "label": "PC 名（個人=JBIS****-YYYYMM / 共有=S-JBIS****-YYYYMM / JR=手入力）",
+        "noLabel": false,
+        "required": true,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "note": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "note",
+        "label": "備考",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "m365_pw": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "m365_pw",
+        "label": "M365 PW",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "fixed_ip_2": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "fixed_ip_2",
+        "label": "固定IPアドレス2",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "manufacturing_no": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "manufacturing_no",
+        "label": "製造番号",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "fixed_ip_1": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "fixed_ip_1",
+        "label": "固定IPアドレス1",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "更新者": {
+        "type": "MODIFIER",
+        "code": "更新者",
+        "label": "更新者",
+        "noLabel": false
+      },
+      "user_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "user_name",
+        "label": "利用者名",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "logon_pw": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "logon_pw",
+        "label": "ログオン初期PW",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "extra_info_2": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "extra_info_2",
+        "label": "その他情報2",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "legacy_record_id_594": {
+        "type": "NUMBER",
+        "code": "legacy_record_id_594",
+        "label": "旧レコードID（594）",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "manufacturer": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "manufacturer",
+        "label": "メーカー",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "shared_terminal_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "shared_terminal_name",
+        "label": "共有端末名",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "m365_id": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "m365_id",
+        "label": "M365 ID",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "extra_info_1": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "extra_info_1",
+        "label": "その他情報1",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "作成者": {
+        "type": "CREATOR",
+        "code": "作成者",
+        "label": "作成者",
+        "noLabel": false
+      },
+      "dept_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "dept_name",
+        "label": "所属名",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "created_at_jst": {
+        "type": "DATETIME",
+        "code": "created_at_jst",
+        "label": "作成日時（JST）",
+        "noLabel": false,
+        "required": false,
+        "unique": false,
+        "defaultValue": "",
+        "defaultNowValue": false
+      },
+      "更新日時": {
+        "type": "UPDATED_TIME",
+        "code": "更新日時",
+        "label": "更新日時",
+        "noLabel": false
+      },
+      "serial": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "serial",
+        "label": "シリアルナンバー",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "sb_pw": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "sb_pw",
+        "label": "ガリバー PW",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "skysea_checked_at": {
+        "type": "DATETIME",
+        "code": "skysea_checked_at",
+        "label": "SKYSEA確認日時",
+        "noLabel": false,
+        "required": false,
+        "unique": false,
+        "defaultValue": "",
+        "defaultNowValue": false
+      },
+      "pc_status": {
+        "type": "DROP_DOWN",
+        "code": "pc_status",
+        "label": "ステータス (利用中 / 保管 / 廃棄)",
+        "noLabel": false,
+        "required": true,
+        "options": {
+          "廃棄": {
+            "label": "廃棄",
+            "index": "2"
+          },
+          "利用中": {
+            "label": "利用中",
+            "index": "0"
+          },
+          "保管": {
+            "label": "保管",
+            "index": "1"
+          }
+        },
+        "defaultValue": "利用中"
+      },
+      "skysea_system_meta": {
+        "type": "GROUP",
+        "code": "skysea_system_meta",
+        "label": "SKYSEA処理用",
+        "noLabel": false,
+        "openGroup": false
+      },
+      "vpn_id": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "vpn_id",
+        "label": "VPN ID",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "skysea_target_flag": {
+        "type": "CHECK_BOX",
+        "code": "skysea_target_flag",
+        "label": "SKYSEA配信対象",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "配信対象": {
+            "label": "配信対象",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      }
+    }
+  }
+}
