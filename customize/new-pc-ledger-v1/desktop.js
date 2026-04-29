@@ -4,7 +4,7 @@
  * 仕様: docs/plans/2026-04-21-new-pc-ledger-spec.md v2.1 §4
  * Day 4 plan: docs/plans/2026-04-26-pc-ledger-day4-action.md
  *
- * BUILD: 2026-04-29-day5-autogen-v0.7.5（feat: 個人向け「社員名を検索（595）」モーダルで氏名を選んで確定）
+ * BUILD: 2026-04-29-day5-autogen-v0.7.6（fix: 全フィールドリセットで PC・氏名・SKYSEA・その他入力欄まで型に応じてクリア）
  *
  * Day 4 雛形スコープ:
  *   - 種別 (account_type) による表示制御 (show/hide)
@@ -21,7 +21,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-04-29-day5-autogen-v0.7.5';
+  const BUILD = '2026-04-29-day5-autogen-v0.7.6';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -131,6 +131,57 @@
     FC_SKYSEA_INSTALL_LOG,
     FC_SKYSEA_TARGET_FLAG,
   ];
+
+  /** 全フィールドリセット対象（種別・PCステータス・作成日時JST・システム項目は除外） */
+  const FC_EXTRA_INFO_1 = 'extra_info_1';
+  const FC_EXTRA_INFO_2 = 'extra_info_2';
+  const FC_FIXED_IP_1 = 'fixed_ip_1';
+  const FC_FIXED_IP_2 = 'fixed_ip_2';
+  const FC_MANUFACTURER = 'manufacturer';
+  const FC_MANUFACTURING_NO = 'manufacturing_no';
+  const FC_MODEL_NAME = 'model_name';
+  const FC_NOTE = 'note';
+  const FC_PURCHASE_DATE = 'purchase_date';
+  const FC_LATEST_INVENTORY_DATE = 'latest_inventory_date';
+  const FC_VPN_ID = 'vpn_id';
+  const FC_VPN_PW = 'vpn_pw';
+  const FULL_RESET_FIELD_CODES_674 = [
+    FC_PC_NAME,
+    FC_SERIAL,
+    FC_PC_SERIAL_NO,
+    FC_USER_NAME,
+    FC_DEPT_NAME,
+    FC_GROUP_NAME,
+    FC_SHARED_TERMINAL_NAME,
+    FC_EXTRA_INFO_1,
+    FC_EXTRA_INFO_2,
+    FC_FIXED_IP_1,
+    FC_FIXED_IP_2,
+    FC_MANUFACTURER,
+    FC_MANUFACTURING_NO,
+    FC_MODEL_NAME,
+    FC_NOTE,
+    FC_PURCHASE_DATE,
+    FC_LATEST_INVENTORY_DATE,
+    FC_VPN_ID,
+    FC_VPN_PW,
+    FC_LOGON_NAME,
+    FC_LOGON_PW,
+    FC_WINDOWS_NAME,
+    FC_MAIL,
+    FC_MAIL_ACCT,
+    FC_MAIL_PW,
+    FC_M365_ID,
+    FC_M365_PW,
+    FC_GB_ID,
+    FC_GB_PW,
+    FC_SB_ID,
+    FC_SB_PW,
+    FC_M365_MASTER_RECORD_ID,
+    FC_IMPORT_SOURCE,
+    FC_LEGACY_PC_NAME_594,
+    FC_LEGACY_RECORD_ID_594,
+  ].concat(SKYSEA_CHILD_CODES);
 
   // ===== 種別 (account_type) のオプション =====
   const TYPE_PERSONAL = '個人';
@@ -1115,21 +1166,42 @@
       });
   }
 
-  function runClearAccountFields() {
-    const recNow = kintone.app.record.get();
-    const rec = recNow.record;
-    const codes = [
-      FC_LOGON_NAME, FC_LOGON_PW, FC_WINDOWS_NAME,
-      FC_MAIL, FC_MAIL_ACCT, FC_MAIL_PW,
-      FC_M365_ID, FC_M365_PW,
-      FC_GB_ID, FC_GB_PW, FC_SB_ID, FC_SB_PW,
-      FC_M365_MASTER_RECORD_ID,
-    ];
-    for (const code of codes) {
-      const cell = rec[code];
-      if (cell && Object.prototype.hasOwnProperty.call(cell, 'value')) cell.value = '';
+  /** kintone レコードオブジェクトの 1 フィールドを「空」にする（型別） */
+  function clearRecordFieldCell674(cell) {
+    if (!cell || typeof cell !== 'object' || !Object.prototype.hasOwnProperty.call(cell, 'value')) return;
+    const t = cell.type;
+    if (t === 'CHECK_BOX') {
+      cell.value = [];
+      return;
     }
-    kintone.app.record.set(recNow);
+    if (t === 'NUMBER') {
+      cell.value = null;
+      return;
+    }
+    if (t === 'FILE') {
+      cell.value = [];
+      return;
+    }
+    if (t === 'USER_SELECT' || t === 'ORGANIZATION_SELECT' || t === 'GROUP_SELECT') {
+      cell.value = [];
+      return;
+    }
+    cell.value = '';
+  }
+
+  function runClearAccountFields() {
+    const bag = getRecordFormHolder674();
+    if (!bag || !bag.holder || !bag.holder.record) {
+      window.alert('フォームの準備ができていません。少し待ってから再度お試しください。');
+      return;
+    }
+    const recNow = bag.holder;
+    const rec = recNow.record;
+    for (let i = 0; i < FULL_RESET_FIELD_CODES_674.length; i++) {
+      clearRecordFieldCell674(rec[FULL_RESET_FIELD_CODES_674[i]]);
+    }
+    bag.api.set(recNow);
+    hideUserSuggest674();
   }
 
   // ===== 保存成功フック (§4.10.3 / §5.3–5.4: 671 増減・linked リネーム + 672/673) =====
@@ -1590,7 +1662,9 @@
 
     // 全フィールドリセット (全種別)
     wrapper.appendChild(createGenerateButton('🔴 全フィールドリセット', '#dc3545', () => {
-      const ok = window.confirm('アカウント情報を全クリアしますか？');
+      const ok = window.confirm(
+        'PC名・シリアル・利用者名・所属・各種アカウント・SKYSEA・備考など、入力欄をまとめて空にします。種別・ステータス（利用中/保管/廃棄）・作成日時（JST）は変えません。続行しますか？',
+      );
       if (!ok) return;
       runClearAccountFields();
     }));
