@@ -4,7 +4,7 @@
  * 仕様: docs/plans/2026-04-21-new-pc-ledger-spec.md v2.1 §4
  * Day 4 plan: docs/plans/2026-04-26-pc-ledger-day4-action.md
  *
- * BUILD: 2026-04-29-day5-autogen-v0.2 (§4.4 自動生成 + §5.3 保存成功時 671/672/673 連携・満杯は 671 ラベル「満杯」)
+ * BUILD: 2026-04-29-day5-autogen-v0.3 (§4.10.3/§5.3/§5.4: 編集差分で 671 増減・linked リネーム・廃棄解放 + 672/673 未使用戻し)
  *
  * Day 4 雛形スコープ:
  *   - 種別 (account_type) による表示制御 (show/hide)
@@ -17,12 +17,14 @@
  * Day 5 残タスク:
  *   - 印刷帳票 (627 レイアウト移植)
  *   - 検索バー強化
- *   - 671 編集時の付け替え・解放 (二重加算以外の減算ロジック)
  */
 (function () {
   'use strict';
 
-  const BUILD = '2026-04-29-day5-autogen-v0.2';
+  const BUILD = '2026-04-29-day5-autogen-v0.3';
+
+  /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
+  const snapshotBeforeEdit674 = Object.create(null);
 
   /** 共有・JR 等の手入力時の参照用（浜田提供・順序固定） */
   const DEPT_HELP_REFERENCE_TEXT =
@@ -258,6 +260,8 @@
   const DEPT_HELP_SHOW_RECORD_EVENTS = new Set([
     'app.record.detail.show',
     'app.record.create.show',
+    'mobile.app.record.detail.show',
+    'mobile.app.record.create.show',
   ]);
 
   function removeDeptHelpBanner() {
@@ -601,13 +605,271 @@
     kintone.app.record.set(recNow);
   }
 
-  // ===== 保存成功フック (§5.3: 672/673 採番行の補完 + 671 usage / linked_pcs / 満杯) =====
+  // ===== 保存成功フック (§4.10.3 / §5.3–5.4: 671 増減・linked リネーム + 672/673) =====
 
-  function recordHasM671Allocation(rec) {
-    const t = (rec[FC_ACCOUNT_TYPE] && rec[FC_ACCOUNT_TYPE].value) || '';
-    if (t !== TYPE_SHARED && t !== TYPE_JR) return false;
-    const mid = String((rec[FC_M365_MASTER_RECORD_ID] && rec[FC_M365_MASTER_RECORD_ID].value) || '').trim();
-    return !!mid;
+  function extractState674(rec) {
+    return {
+      account_type: (rec[FC_ACCOUNT_TYPE] && rec[FC_ACCOUNT_TYPE].value) || '',
+      m365_master_record_id: String((rec[FC_M365_MASTER_RECORD_ID] && rec[FC_M365_MASTER_RECORD_ID].value) || '').trim(),
+      pc_name: String((rec[FC_PC_NAME] && rec[FC_PC_NAME].value) || '').trim(),
+      logon_name: String((rec[FC_LOGON_NAME] && rec[FC_LOGON_NAME].value) || '').trim(),
+      pc_status: String((rec[FC_PC_STATUS] && rec[FC_PC_STATUS].value) || '').trim(),
+    };
+  }
+
+  /** 共有/JR で M365 マスタ行が有効に 1 台分カウントされる状態（§4.10.4 廃棄はカウント外） */
+  function allocation671Active(st) {
+    if (!st) return false;
+    if (st.account_type !== TYPE_SHARED && st.account_type !== TYPE_JR) return false;
+    if (!st.m365_master_record_id || !st.pc_name) return false;
+    if (st.pc_status === '廃棄') return false;
+    return true;
+  }
+
+  function parseLinked671(raw) {
+    return String(raw || '')
+      .split(/[\r\n,]+/)
+      .map(function (s) {
+        return s.trim();
+      })
+      .filter(Boolean);
+  }
+
+  function dedupeLinked671PreserveOrder(pcs) {
+    const seen = Object.create(null);
+    const out = [];
+    for (const p of pcs) {
+      if (!p || seen[p]) continue;
+      seen[p] = true;
+      out.push(p);
+    }
+    return out;
+  }
+
+  function next671StatusFromUsage(count, lim) {
+    return count >= lim ? '満杯' : '利用可';
+  }
+
+  /** GET 直後の 671 を mutator で更新。revision 競合時は 1 回だけ再試行 */
+  function put671Mutation(mid, buildPartialFromRecord) {
+    function once() {
+      return kintoneApiGet('/k/v1/record.json', { app: APP_M365_MASTER, id: String(mid) }).then(function (getResp) {
+        const r = getResp.record;
+        const st = (r.status && r.status.value) || '';
+        if (st === '廃止') {
+          console.warn('[NEW-PC-LEDGER-V1] 671 廃止 id=' + mid + ' のため M365 台数は更新しません');
+          return Promise.resolve();
+        }
+        const partial = buildPartialFromRecord(r);
+        if (!partial) return Promise.resolve();
+        return kintoneApiPut('/k/v1/record.json', {
+          app: APP_M365_MASTER,
+          id: String(mid),
+          revision: getResp.revision,
+          record: partial,
+        });
+      });
+    }
+    return once().catch(function (e) {
+      console.warn('[NEW-PC-LEDGER-V1] 671 PUT 再試行:', e && (e.message || e.code || String(e)));
+      return once();
+    });
+  }
+
+  function removeOneSlot671(mid, pcName, lim) {
+    return put671Mutation(mid, function (r) {
+      const pcs = parseLinked671((r.linked_pcs && r.linked_pcs.value) || '');
+      const ix = pcs.indexOf(pcName);
+      if (ix < 0) {
+        console.warn('[NEW-PC-LEDGER-V1] 671 linked に PC なし id=' + mid + ' pc=' + pcName);
+        return null;
+      }
+      pcs.splice(ix, 1);
+      const us = pcs.length;
+      return {
+        linked_pcs: { value: pcs.join(',') },
+        usage_count: { value: String(us) },
+        status: { value: next671StatusFromUsage(us, lim) },
+      };
+    });
+  }
+
+  function addSlot671(mid, pcName, lim) {
+    return put671Mutation(mid, function (r) {
+      const pcs = parseLinked671((r.linked_pcs && r.linked_pcs.value) || '');
+      if (pcs.indexOf(pcName) >= 0) return null;
+      if (pcs.length >= lim) {
+        console.error('[NEW-PC-LEDGER-V1] 671 ライセンス上限のため PC を追加しません id=' + mid + ' (既に ' + lim + ' 台)');
+        return null;
+      }
+      pcs.push(pcName);
+      const us = pcs.length;
+      return {
+        linked_pcs: { value: pcs.join(',') },
+        usage_count: { value: String(us) },
+        status: { value: next671StatusFromUsage(us, lim) },
+      };
+    });
+  }
+
+  /** §4.10.3: 同一 M365 行で PC 名のみ差し替え（台数は linked の長さで整合） */
+  function renameSlot671(mid, oldPc, newPc, lim) {
+    return put671Mutation(mid, function (r) {
+      let pcs = parseLinked671((r.linked_pcs && r.linked_pcs.value) || '');
+      const ix = pcs.indexOf(oldPc);
+      if (ix < 0) {
+        if (pcs.indexOf(newPc) < 0 && pcs.length < lim) {
+          pcs.push(newPc);
+          const us = pcs.length;
+          return {
+            linked_pcs: { value: pcs.join(',') },
+            usage_count: { value: String(us) },
+            status: { value: next671StatusFromUsage(us, lim) },
+          };
+        }
+        return null;
+      }
+      pcs[ix] = newPc;
+      pcs = dedupeLinked671PreserveOrder(pcs);
+      const us = pcs.length;
+      return {
+        linked_pcs: { value: pcs.join(',') },
+        usage_count: { value: String(us) },
+        status: { value: next671StatusFromUsage(us, lim) },
+      };
+    });
+  }
+
+  /**
+   * 編集前後の差分で 671 を整合（手入力・自動生成のどちらが正でも、保存結果に合わせる）。
+   */
+  function reconcile671For674Save(prev, next, lim) {
+    const prevOn = allocation671Active(prev);
+    const nextOn = allocation671Active(next);
+    const oMid = prev && prev.m365_master_record_id;
+    const oPc = prev && prev.pc_name;
+    const nMid = next.m365_master_record_id;
+    const nPc = next.pc_name;
+
+    if (prevOn && nextOn && oMid === nMid && oPc === nPc) {
+      return Promise.resolve();
+    }
+    if (prevOn && nextOn && oMid === nMid && oPc !== nPc) {
+      if (!nPc) {
+        return removeOneSlot671(oMid, oPc, lim);
+      }
+      return renameSlot671(nMid, oPc, nPc, lim);
+    }
+
+    let chain = Promise.resolve();
+    const needRemove = prevOn && (!nextOn || oMid !== nMid || oPc !== nPc);
+    const needAdd = nextOn && (!prevOn || oMid !== nMid || oPc !== nPc);
+
+    if (needRemove) {
+      chain = chain.then(function () {
+        return removeOneSlot671(oMid, oPc, lim);
+      });
+    }
+    if (needAdd) {
+      chain = chain.then(function () {
+        return addSlot671(nMid, nPc, lim);
+      });
+    }
+    return chain;
+  }
+
+  function countOther674ByLogon(logon, selfRid, app674) {
+    const selfClause = selfRid ? ` and $id != "${escapeQueryValue(String(selfRid))}"` : '';
+    return kintoneApiGet('/k/v1/records.json', {
+      app: app674,
+      query: 'logon_name = "' + escapeQueryValue(logon) + '"' + selfClause + ' limit 1',
+      fields: ['$id'],
+    }).then(function (resp) {
+      return (resp.records && resp.records.length) || 0;
+    });
+  }
+
+  function release672LogonIfOrphan(logon, selfRid, app674) {
+    if (!/^jbm\d{4}$/.test(logon)) return Promise.resolve();
+    return countOther674ByLogon(logon, selfRid, app674).then(function (cnt) {
+      if (cnt > 0) return Promise.resolve();
+      return kintoneApiGet('/k/v1/records.json', {
+        app: APP_JBM_NUMBER,
+        query: 'logon_name = "' + escapeQueryValue(logon) + '" limit 1',
+        fields: ['$id', '$revision'],
+      }).then(function (resp) {
+        const row = resp.records && resp.records[0];
+        if (!row) return Promise.resolve();
+        return kintoneApiPut('/k/v1/record.json', {
+          app: APP_JBM_NUMBER,
+          id: row.$id.value,
+          revision: row.$revision.value,
+          record: {
+            status: { value: '未使用' },
+            note: { value: '674: 台帳で割当解除（未使用へ）' },
+          },
+        });
+      });
+    });
+  }
+
+  function release673LogonIfOrphan(logon, selfRid, app674) {
+    if (!/^sjbm\d{4}$/.test(logon)) return Promise.resolve();
+    return countOther674ByLogon(logon, selfRid, app674).then(function (cnt) {
+      if (cnt > 0) return Promise.resolve();
+      return kintoneApiGet('/k/v1/records.json', {
+        app: APP_SJBM_NUMBER,
+        query: 'logon_name = "' + escapeQueryValue(logon) + '" limit 1',
+        fields: ['$id', '$revision'],
+      }).then(function (resp) {
+        const row = resp.records && resp.records[0];
+        if (!row) return Promise.resolve();
+        return kintoneApiPut('/k/v1/record.json', {
+          app: APP_SJBM_NUMBER,
+          id: row.$id.value,
+          revision: row.$revision.value,
+          record: {
+            status: { value: '未使用' },
+            note: { value: '674: 台帳で割当解除（未使用へ）' },
+          },
+        });
+      });
+    });
+  }
+
+  function reconcile672673For674Save(prev, next, rid674, isEdit) {
+    const app674 = String(kintone.app.getId());
+    let chain = Promise.resolve();
+    const newT = (next && next.account_type) || '';
+    const newL = (next && next.logon_name) || '';
+
+    if (isEdit && prev) {
+      const oldT = prev.account_type || '';
+      const oldL = prev.logon_name || '';
+      if (oldT === TYPE_PERSONAL && /^jbm\d{4}$/.test(oldL) && (newT !== TYPE_PERSONAL || newL !== oldL)) {
+        chain = chain.then(function () {
+          return release672LogonIfOrphan(oldL, rid674, app674);
+        });
+      }
+      if (oldT === TYPE_SHARED && /^sjbm\d{4}$/.test(oldL) && (oldT !== TYPE_SHARED || newL !== oldL)) {
+        chain = chain.then(function () {
+          return release673LogonIfOrphan(oldL, rid674, app674);
+        });
+      }
+    }
+
+    if (newT === TYPE_PERSONAL && /^jbm\d{4}$/.test(newL)) {
+      chain = chain.then(function () {
+        return ensureNumbering672Row(newL);
+      });
+    }
+    if (newT === TYPE_SHARED && /^sjbm\d{4}$/.test(newL)) {
+      chain = chain.then(function () {
+        return ensureNumbering673Row(newL);
+      });
+    }
+
+    return chain;
   }
 
   function ensureNumbering672Row(logonName) {
@@ -646,80 +908,39 @@
     });
   }
 
-  function incrementM671IfNeeded(rec) {
-    if (!recordHasM671Allocation(rec)) return Promise.resolve();
-    const mid = String(rec[FC_M365_MASTER_RECORD_ID].value).trim();
-    const pcName = String((rec[FC_PC_NAME] && rec[FC_PC_NAME].value) || '').trim();
-    if (!pcName) {
-      console.warn('[NEW-PC-LEDGER-V1] 671 更新スキップ: pc_name が空');
-      return Promise.resolve();
-    }
-    return loadEnv670Map().then(function (envMap) {
-      const lim = parseInt(envMap.M365_LICENSE_LIMIT || '5', 10) || 5;
-      return kintoneApiGet('/k/v1/record.json', {
-        app: APP_M365_MASTER,
-        id: mid,
-      }).then(function (getResp) {
-        const r = getResp.record;
-        const rev = getResp.revision;
-        const usage = parseInt((r.usage_count && r.usage_count.value) || '0', 10) || 0;
-        const linkedRaw = (r.linked_pcs && r.linked_pcs.value) || '';
-        const pcs = linkedRaw.split(/[\r\n,]+/).map(function (s) {
-          return s.trim();
-        }).filter(Boolean);
-        if (pcs.indexOf(pcName) >= 0) return Promise.resolve();
-        if (usage >= lim) {
-          console.warn('[NEW-PC-LEDGER-V1] 671 は上限済みのため usage を増やしません id=' + mid);
-          return Promise.resolve();
-        }
-        const newUsage = usage + 1;
-        pcs.push(pcName);
-        const newLinked = pcs.join(',');
-        const curStatus = (r.status && r.status.value) || '利用可';
-        const nextStatus = newUsage >= lim ? '満杯' : curStatus;
-        return kintoneApiPut('/k/v1/record.json', {
-          app: APP_M365_MASTER,
-          id: mid,
-          revision: rev,
-          record: {
-            usage_count: { value: String(newUsage) },
-            linked_pcs: { value: newLinked },
-            status: { value: nextStatus },
-          },
-        });
-      });
-    });
-  }
-
   function runPostSaveHooks674(event) {
     const rec = event.record;
-    const type = (rec[FC_ACCOUNT_TYPE] && rec[FC_ACCOUNT_TYPE].value) || '';
-    const logon = String((rec[FC_LOGON_NAME] && rec[FC_LOGON_NAME].value) || '').trim();
+    const rid = String((event.recordId || (rec.$id && rec.$id.value) || '')).trim();
+    const isEdit = /\.edit\.submit\.success$/.test(event.type || '');
+    const prev = isEdit && rid ? snapshotBeforeEdit674[rid] : null;
+    const next = extractState674(rec);
 
-    let chain = Promise.resolve();
-    if (type === TYPE_PERSONAL && /^jbm\d{4}$/.test(logon)) {
-      chain = chain.then(function () {
-        return ensureNumbering672Row(logon);
-      });
+    if (isEdit && rid && !prev) {
+      console.warn(
+        '[NEW-PC-LEDGER-V1] 編集スナップショットなし: 671 の減算は行えません。画面を開き直してから保存すると差分が取れます。',
+      );
     }
-    if (type === TYPE_SHARED && /^sjbm\d{4}$/.test(logon)) {
-      chain = chain.then(function () {
-        return ensureNumbering673Row(logon);
+
+    return loadEnv670Map().then(function (envMap) {
+      const lim = parseInt(envMap.M365_LICENSE_LIMIT || '5', 10) || 5;
+      return reconcile671For674Save(prev, next, lim).then(function () {
+        return reconcile672673For674Save(prev, next, rid, isEdit);
       });
-    }
-    chain = chain.then(function () {
-      return incrementM671IfNeeded(rec);
     });
-    return chain;
   }
 
   function onSubmitSuccess674(event) {
+    const rid = String(
+      (event.recordId || (event.record && event.record.$id && event.record.$id.value) || ''),
+    ).trim();
+    const isEdit = /\.edit\.submit\.success$/.test(event.type || '');
     return new kintone.Promise(function (resolve) {
       runPostSaveHooks674(event)
         .catch(function (e) {
           console.error('[NEW-PC-LEDGER-V1] post-save hooks', e);
         })
         .then(function () {
+          if (isEdit && rid) delete snapshotBeforeEdit674[rid];
           resolve(event);
         });
     });
@@ -835,21 +1056,34 @@
 
   // ===== Event handlers =====
 
-  // show events (詳細・新規作成・編集) で UI 適用
+  // show events (詳細・新規作成・編集 / PC・モバイル) で UI 適用
   const showEvents = [
     'app.record.detail.show',
     'app.record.create.show',
     'app.record.edit.show',
+    'mobile.app.record.detail.show',
+    'mobile.app.record.create.show',
+    'mobile.app.record.edit.show',
   ];
   kintone.events.on(showEvents, (event) => {
     console.log(`[NEW-PC-LEDGER-V1] BUILD=${BUILD} event=${event.type}`);
+    if (
+      event.type === 'app.record.edit.show' ||
+      event.type === 'mobile.app.record.edit.show'
+    ) {
+      const rid = event.record.$id && event.record.$id.value;
+      if (rid) snapshotBeforeEdit674[String(rid)] = extractState674(event.record);
+    }
     if (DEPT_HELP_SHOW_RECORD_EVENTS.has(event.type)) {
       injectDeptHelpBanner();
     } else {
       removeDeptHelpBanner();
     }
     const editable =
-      event.type === 'app.record.create.show' || event.type === 'app.record.edit.show';
+      event.type === 'app.record.create.show' ||
+      event.type === 'app.record.edit.show' ||
+      event.type === 'mobile.app.record.create.show' ||
+      event.type === 'mobile.app.record.edit.show';
     applyInternalMetaFieldUi(event.record, editable ? 'editable' : 'detail');
     applySkyseaGroupUi(event.record, editable ? 'editable' : 'detail');
     applyVisibilityByType(event.record);
