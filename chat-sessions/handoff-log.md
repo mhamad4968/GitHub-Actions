@@ -561,3 +561,36 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 
 ---
 
+### 2026-04-29 (Wed) JST 16:25 — セッション終了引継ぎ（浜田 ~19:00 までシャットダウン）
+
+**浜田メモ（原文）**: 「では19：00くらいまでシャットダウンするのでセッション終了の引継ぎ準備を行って報告してほしい。」
+
+**AI 補足（漏れ防止）**:
+- `git`: `main...origin/main`。**未コミット変更が多い**（例: `AGENTS.md` / `RULES-INDEX.md` / `chat-sessions/NEW-SESSION-STARTER.md` / `chat-sessions/checkpoint-latest.md` / `chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` / `.cursor/rules/session-handoff.mdc` / `.rag/extra-docs/*` / `kintone-apps.md` / `templates/yojitsu-budget-lite/docs/*` / `docs/plans/*` / `chat-sessions/SESSION-CLOCK.md` 等）。**再開後**: 内容を確認し **commit 単位**を CEO/CIO で決めてから push 推奨（混在コミット回避）。
+- `次の1手`: **~19:00 JST 再開** — Desktop **`NEW-SESSION-STARTER_20260429.txt` 全文**（貼付推奨は `verify:desktop-ai-emergency-sync` 最終行）→ **項番 -0**（本題＝**部署予実 5A** 等を §41 一問）→ **`npm run session:clock:set`**（hook 無効時のみ手動）→ **`npm run session:clock:web`**（URL をチャット転記・浜田ブラウザ）→ **`npm run session:bootstrap`**。予実/kintone/計算ロジック/複雑 customize に入る**直前**に **`§50-3-8`**（DeepSeek 盲点3点＋**約3行突合メモ**・**新チャットでは必ず再実行**）。**kintone アプリ作成**前は **配置スペース**（`.cursor/rules/creation-timing-ask.mdc` §41）。
+- `GO待ち`: **Tier B**（`kintone-add-app` 等）は従来どおり **浜田 GO 後に CIO が実行**。スペース未決なら作成着手しない。
+- `session-lock`: なし
+- `関連パス`: `AGENTS.md`（§50-3-8）/ `chat-sessions/NEW-SESSION-STARTER.md`（v3.32）/ `templates/yojitsu-budget-lite/SPEC.md` §10.1
+
+**検収（憲法適合済み: `npm run verify:constitution-handoff`）**: exit 0（本ターン実施）。
+
+**Desktop（CIO 義務）**: `npm run session-starter:sync-desktop` → `npm run verify:desktop-ai-emergency-sync` を実施し、結果をチャット報告に含める（`/mnt/c` 不在時は SKIP＋理由 1 行）。
+
+**次セッションへの 1 行**: ~19:00 再開 → スターター全文 → -0 → 壁時計 set+web → bootstrap → **§50-3-8** → 予実本題（5A）／未コミットは再開後に整理 commit。
+
+---
+
+### 2026-04-30 (Wed) JST — §50-3-9 運用反映（提案 A–E）＋ `tmp-kintone-*` 証跡
+
+**AI 補足（§50-3-9 証跡）**: **`scripts/tmp-kintone-*.mjs` は本セッションでは未作成**（該当なし）。
+
+**実施内容（要約）**:
+- **A**: `docs/plans/2026-04-26-pc-ledger-day4-action.md`「AI 引継ぎ」に **§50-3-9 補足（項番 6）** を追記。
+- **B**: `chat-sessions/checkpoint-latest.md` に **部署予実・航海図テンプレ**（Goal / 手段1 MCP / 手段2 REST / Constraints / Acceptance）を新設。
+- **D+E**: `AGENTS.md` §50-3-9 に **証跡（チャット or `handoff-log` 1 行）**および**期待値の言語化**を追記（`.rag/extra-docs/AGENTS.md` 同期）。`SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1c** に §50-3-9 段落。
+- **C**: リポ差分を **`[FEAT] v23.25 §50-3-9 運用反映・yojitsu・checkpoint`** で **commit / `origin/main` push**（下記 `git` 行を正とする。未 push なら次ターン最優先）。
+
+**次セッションへの 1 行**: 航海図に **手段(第2)=REST** を先に並べる。**§50-3-9**・**§50-3-8**（フィールド・計算・複雑 customize 着手直前）をセットで実行。
+
+---
+

@@ -2,6 +2,20 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
+## 部署予実・kintone フィールド追加日の航海図テンプレ（§50-3-9）
+
+**本題が 677/678 のフィールド追加・deploy 等のとき、着手 1 ターン目に CIO がチャットへそのまま貼る短い表**（§50-3-2 / §50-3-9）。
+
+| 要素 | 内容 |
+|------|------|
+| **Goal** | アプリ **677（入力）** / **678（ダッシュ）** へのフィールド追加（範囲は `SPEC.md` §10.1 のどこまでか、項番 -0 で一文固定） |
+| **手段(第1)** | MCP `kintone-add-form-fields`（または MCP 経由の同等操作）※浜田 **Tier B GO** 後のみ実行 |
+| **手段(第2)** | REST `POST /k/v1/preview/app/form/fields.json` 等＋必要時 **`scripts/tmp-kintone-*.mjs`**（構造エラー時は **同一 MCP を再試行せず**即移行） |
+| **Constraints** | §50-3-9（構造エラー再試行禁止・通信 1 回・完了時 **tmp 削除／昇格**＋**証跡 1 行**）/ §51 / §50-3-8（着手直前の DeepSeek＋突合メモ） |
+| **Acceptance** | `kintone-get-form-fields` または `npm run app:fields <id>` で期待フィールドが揃うこと／`tmp-kintone-*` 無残しまたは昇格済み |
+
+**CEO の一言**: 上表を見て **「承認。着手」** でよい（GO が別途要る操作は Tier B どおり）。
+
 ## 朝イチで読む 5 つ（D1 / §42-2 Tier A 推奨 / v23.17 改訂）
 
 1. **§1-2 (v23.16 改定)** — **「最適モデル原則」** = AI が **L1 Composer 2 (routine) / L2 Opus 4.7 1M Extra High (default) / L3 Opus 4.7 1M Max Thinking (Tier B/不可逆/憲法)** を自律選択。Opus 単一固定は撤廃 (浜田 2026-04-26 10:30 指示)
@@ -20,7 +34,7 @@
 
 **項番 -1（人間・強く推奨）**: 新チャットの **ユーザー最初の 1 メッセージ** に、Desktop の **`NEW-SESSION-STARTER_yyyymmdd.txt` 全文**（**JST の日付 8 桁**＝ファイル名にそのまま入る。**常にこの 1 ファイル名だけ**が正本コピー先。同日に内容が変わった sync では旧版が **`_2` `_3`…** に退避するが、**貼るのは常に `yyyymmdd.txt` 側**）を **そのまま貼る**（= リポ `chat-sessions/NEW-SESSION-STARTER.md` の **■ フル版**と同内容。**v3.27**: 本文冒頭の **「■ 貼付単独で完走」** に **項番 -1〜項番 0（機械）と同値の手順**を内包するため、**チャットへ `checkpoint-latest.md` を重ねて貼らなくてよい**。AI はツールで本ファイル／checkpoint を読む）。**貼付推奨**は **`npm run verify:desktop-ai-emergency-sync` の最終行**（または `session-starter:sync-desktop` の「貼付推奨」行）でも確認できる。🚨憲法ブロック・`@` 参照リスト・bootstrap 手順が一括で入り、**要約脱落に強い**。続けて **`HANDOFF-HUMAN.txt` 5 行**でもよい。
 
-**項番 -0（人間＋AI・合意・1 往復・開始ゲート）**: AI は **先頭に `[§1-2-3 ティア判定: …]`** を付け、スターター **受領**を一言言い、`checkpoint` 最終更新＋`handoff` 末尾＋`HANDOFF-HUMAN` の **「次にやる1つ」** を要約して **「本日の本題（これから着手する次の一手）は ○○で合っていますか？」と §41 一問だけ**浜田へ確認する。**浜田から OK が返るまで**（「はい」「OK」「進めて」または **1 行の修正指示**で合意が取れた状態）、**項番 0（`verify` / `session:bootstrap` / 以降の Read 連鎖・本題の実行）に着手しない**。OK のあと **項番 0** へ進む。**新チャットの「いま」**は **Cursor `sessionStart` hook**（`.cursor/hooks/session-start-autopilot.mjs`）が **`session:clock:set`** と **`session:clock:watch`** を原則自動実行する（`SESSION-CLOCK.md` の客観起点・§51-6-2）。hook が無い環境のみ **`npm run session:clock:set`** を手で打つ（項番 0 の verify より前でも可）。
+**項番 -0（人間＋AI・合意・1 往復・開始ゲート）**: AI は **先頭に `[§1-2-3 ティア判定: …]`** を付け、スターター **受領**を一言言い、**続けて** `chat-sessions/NEW-SESSION-STARTER.md` を **Read ツールで全文通読**（チャット貼付だけに頼らない／長文は `offset`/`limit` 連続で **抜けなし**。`NEW-SESSION-STARTER.md`「■ 貼付単独で完走」手順 2 と同じ）。そのうえで `checkpoint` 最終更新＋`handoff` 末尾＋`HANDOFF-HUMAN` の **「次にやる1つ」** を要約して **「本日の本題（これから着手する次の一手）は ○○で合っていますか？」と §41 一問だけ**浜田へ確認する。**浜田から OK が返るまで**（「はい」「OK」「進めて」または **1 行の修正指示**で合意が取れた状態）、**項番 0（`verify` / `session:bootstrap` / 以降の Read 連鎖・本題の実行）に着手しない**。OK のあと **項番 0** へ進む。**新チャットの「いま」**は **Cursor `sessionStart` hook**（`.cursor/hooks/session-start-autopilot.mjs`）が **`session:clock:set`** と **`session:clock:watch`** を原則自動実行する（`SESSION-CLOCK.md` の客観起点・§51-6-2）。hook が無い環境のみ **`npm run session:clock:set`** を手で打つ（項番 0 の verify より前でも可）。
 
 0. **光速ガード（項番 0 / Read より前・必須・AI）**（`npm run session:bootstrap` も **同じ順**を内包）:
    - **0a 憲法ガード**: リポルートで **`npm run verify:constitution-handoff`** → **exit 0**（TSB-024 物理ガード）。**ng のまま Read・Tier B・本題に進まない**（憲法ドキュ修復のみ）。
@@ -30,7 +44,9 @@
 2. **`chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` を通読**（経緯・法律相当・ルール・機能・MCP の棚卸し表）
 3. `chat-sessions/NEW-SESSION-STARTER.md` の **冒頭〜最新 v3.x ブロック**（kintone プレビュー／憲法級など）
 4. `chat-sessions/handoff-log.md` の **末尾から最大 3 件**（無ければスキップ可）
-5. **PC 台帳（Day4 継続中または 674・新・PC台帳 customize を触る場合）** … `docs/plans/2026-04-26-pc-ledger-day4-action.md` の **「AI 引継ぎ: …」**（Day4 時）＋ `chat-sessions/2026-04-26-pc-ledger-day4.md` ＋ **正本仕様書** `docs/plans/2026-04-21-new-pc-ledger-spec.md` の **§4.2.0〜§4.4 を Read**（手順書のみで代替しない／詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b**）＋画面ラベルは **短文 JSON**／検証は **`npm run pc-ledger:verify-labels-spec`**
+5. **本題に応じた Read（項番 -0 で合意した本題だけ。PC 台帳と部署予実の正本を混読しない）**
+   - **5A 部署予実（yojitsu）を本題にする場合**: `templates/yojitsu-budget-lite/SPEC.md`（§9・§10.1 等）／`templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md`／`templates/yojitsu-budget-lite/docs/yojitsu-migration-kyu-to-kintone.md`／`templates/yojitsu-budget-lite/docs/shin-format-excel-layout.md`／`templates/yojitsu-budget-lite/docs/yojitsu-spec-session-checklist.md`。**kintone にアプリ作成・フィールド追加する前**は `.cursor/rules/creation-timing-ask.mdc`（スペース・着手タイミング）。**§50-3-8**: **予実／ロジック／複雑 customize**へ入る**直前**に DeepSeek 盲点3点＋**約3行突合メモ**（`AGENTS.md`）。**セッション切替後**は前チャットのメモで代替せず**再実行**。**674・新・PC台帳 §4.2・Day4 手順書は、674／customize／ラベル／採番アプリを触らない限り Read 不要**（無関係正本のミス読み・憲法と逆転の誘因を防ぐ）。詳細手順は `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1c**。
+   - **5B 新・PC台帳（Day4 継続中または 674・新・PC台帳 customize・672/673 を触る場合）** … `docs/plans/2026-04-26-pc-ledger-day4-action.md` の **「AI 引継ぎ: …」**（Day4 時）＋ `chat-sessions/2026-04-26-pc-ledger-day4.md`（あれば）＋ **正本仕様書** `docs/plans/2026-04-21-new-pc-ledger-spec.md` の **§4.2.0〜§4.4 を Read**（手順書のみで代替しない／詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b**）＋画面ラベルは **短文 JSON**／検証は **`npm run pc-ledger:verify-labels-spec`**
 6. `RULES-INDEX.md` の **「セッション切替・文脈復元」** 行（索引 1 行で他ドキュへジャンプ）
 7. **AI は `npm run session:bootstrap` を実行**し、結果をチャットに要約（**verify:constitution-handoff → verify:mandatory-read-gate → verify:session-clock-health → session-starter:sync-desktop → verify:desktop-ai-emergency-sync → smoke** 10 連／**Read だけで終わらせない**／詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 6–7）
 
@@ -63,7 +79,11 @@
 
 ---
 
-**最終更新**: 2026-04-29 (Wed) JST — **PC 台帳 Day4 手順書 §5（C3〜C7）遅延完了**: `docs/plans/2026-04-26-pc-ledger-day4-action.md` の事後検証チェックを実施。`npm run kintone:test` 全件 OK、`npm run smoke:quiet` **10/10** OK、`revision:snapshot` で **674 rev 38**（label `day4-followup-customize-v076-20260429`）を `data/snapshots/` に保存。`.session-state/ai-session.lock` **不在**のため release 不要。`chat-sessions/2026-04-26-pc-ledger-day4.md` と本ファイルを更新。次: 仕様書 §9 の **4/28–4/29 移行 CSV 準備（浜田）**および Day5 申し送り（印刷・テンプレ CSV 等）は計画表どおり別タスク。
+**最終更新**: 2026-04-30 (Wed) JST — **§50-3-9 運用の文書化（提案 A–E 一括）**: `docs/plans/2026-04-26-pc-ledger-day4-action.md` に **§50-3-9 補足（項番 6）**／`SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1c** に §50-3-9 段落／`checkpoint-latest.md` に **航海図テンプレ**（上表）／`AGENTS.md` §50-3-9 に **証跡**＋**期待値の言語化**。**git**: 本更新を含む差分を **`[FEAT] v23.25 §50-3-9 運用反映・yojitsu・checkpoint`** で **commit / `origin/main` へ push**（CI 緑を確認。**未実施なら次ターン最優先**）。**部署予実**: アプリ **677**（入力）・**678**（ダッシュ）枠作成済み（`kintone-apps.md` / `SPEC.md` 状態欄）。**Desktop `AI緊急用`**: `npm run desktop:sync-and-verify` で **NEW-SESSION-STARTER v3.33** 同期済みなら貼付推奨行に従う。
+
+**最終更新**: 2026-04-29 (Wed) JST **16:25** — **セッション終了引継ぎ（浜田 ~19:00 JST までシャットダウン）**。本日のドキュ改定: 憲法 **§50-3-8**（DeepSeek 盲点＋突合メモ・v23.24）／`NEW-SESSION-STARTER.md` **v3.32**（§50-3-8 常設・セッション切替後の **§50-3-8 再実行**・**CIO=session-starter:sync-desktop 義務**の明文化）／`SESSION-BOOTSTRAP-CHECKLIST.md` 1c／`checkpoint-latest.md` 5A／`.cursor/rules/session-handoff.mdc` 項番 7／`.rag/extra-docs` 同期。**CIO**: `npm run session-starter:sync-desktop` 実施済（Desktop 儀式 4 ファイル）。**git**: `main` に対し **未コミット変更が多い**（次回再開後に commit 方針を決めてから push 推奨）。**~19:00 再開後の 1 手**: スターター全文 → 項番 -0（本題 **5A 予実** 等）→ `session:clock:set`（要時）→ `session:bootstrap` → 予実/kintone/ロジック **着手直前**に **§50-3-8 必須**。kintone アプリ作成前は **スペース決定**（`creation-timing-ask` §41）。
+
+**最終更新**: 2026-04-29 (Wed) JST — **PC 台帳 Day4 手順書 §5（C3〜C7）遅延完了**: `docs/plans/2026-04-26-pc-ledger-day4-action.md` の事後検証チェックを実施。`npm run kintone:test` 全件 OK、`npm run smoke:quiet` **10/10** OK、`revision:snapshot` で **674 rev 38**（label `day4-followup-customize-v076-20260429`）を `data/snapshots/` に保存。`.session-state/ai-session.lock` **不在**のため release 不要。`chat-sessions/2026-04-26-pc-ledger-day4.md` と本ファイルを更新。次: **B-1**＝**4/28–29** は §9 どおりの準備のみ（**前倒し禁止**・§9.0）／**本番 import は 4/30–5/2**。**B-2（共有+JR）**＝**5/13 本番以降**に旧台帳を見ながら **1 件ずつ手登録**（一括移行はしない・`2026-04-21-new-pc-ledger-spec.md` **§7.4.6**・§9・§13）。Day5 申し送り（印刷・テンプレ CSV 等）は計画表どおり別タスク。
 
 **最終更新**: 2026-04-29 (Wed) JST 13:35 — **CIO: `smoke:quiet` / `session:bootstrap` 10/10 緑を回復**。（1）**並列検知軸1**: `parallel-session-detector.mjs` の副次比率閾値を **0.12→0.28** に調整し、単一オペレーター＋ file-watcher 再起動由来の **211/212 二 pid** を静穏扱い（真の均衡並列は従来どおり警報になり得る）。（2）**S12 MCP 死蔵**: `check-mcp-dormancy.mjs` に **CIO 代替スタック（kimi / deepseek / openrouter）** の **7 日 transcript 未出現 exempt** を追加（`mcp.json` 非改変）。（3）**`--ignore-suspicion` が exit を下げない不具合**を修正（手動 GO パスと整合）。検収: `npm run session:bootstrap` exit 0。残タスクは **Phase C（§57 改定 M）/ L / §41（19:00）**＝CEO 優先順位待ち。**Tier B**: なし。**MCP 出費**: 0 円。
 
@@ -79,7 +99,7 @@
 
 **【参考】2026-04-28 19:30 — 夜反省（§44）完了・運用開始 GO 受領**。**憲法 v23.22+v23.23**（§50-3 CTO 運用 / §1-2-3-3 CIO モデル最終判断 / §51-6 切替壁時計＋WEB 必須 / `.cursorrules` + RULES-INDEX 同期）。**`kintone-customize-deploy` 安定化**: 674 → `customize/new-pc-ledger-v1/desktop.js` 分岐 / `KINTONE_APP` trim + `KINTONE_CUSTOMIZE_SRC` 任意上書き / paths から `package.json` 除外 / **ハイブリッド認証**（file=API トークン・preview/deploy=`KINTONE_USERNAME`+`PASSWORD`、kintone 公式が API トークン不可のため）→ run #50 **Success 21s** / 674 に `upload.js` 反映を浜田目視 OK。**夜反省案 A〜H 全採用**: A=§51-2 並列風表現禁止句 / B=§41 一問先行テンプレ / C=`session:bootstrap` で `session:clock:set` を冪等内包 / D=**TSB-025** kintone customize 認証マトリクス（API トークン vs パスワード）/ E=CI 赤再 push の 30 秒儀式（§47-9 補強）/ F=§56 RACI に **CEO=浜田 / CTO=AI / CIO=浜田 兼務** 追記 / G=夜反省 30 秒テンプレ / H=朝報 §0 にコスト 2 レーン枠。**実装は明日朝以降、§57 改定プロセスで 1 件ずつ**（§51 並列禁止）。**Desktop `AI緊急用`**: 本ターンで **`session-starter:sync-desktop`** → **`verify:desktop-ai-emergency-sync`** を実施し、**`SESSION-HANDOFF-LATEST-2026-04-28.txt` を削除**して **儀式 4 ファイル**に整理。次チャットは **`NEW-SESSION-STARTER_20260428.txt` 全文** → 項番 -0 → **`session:clock:set`** → **`npm run session:bootstrap`**。
 
-**前回更新**: 2026-04-28 (Tue) JST **夕方〜夜前・部署予実＋Desktop 集約** — **予実**: `SPEC.md` §10.1（4/29〜5/3）・§6d・`docs/yojitsu-master-and-field-plan.md`（マスタ v1 不要・フィールド案）・チェックリスト §3b **[x]**・`main` **push 済み**（`de45591` ほか）。**Desktop `AI緊急用`**: 旧 4 ファイル削除、**`SESSION-HANDOFF-LATEST-2026-04-28.txt` のみ**（セッション切替・**約 20:00 JST 再入場**・`session-starter:sync-desktop` で儀式 4 ファイル復元の手順を記載）。**次チャット／夜**: その txt を貼るか @ 参照 → 必要なら **`npm run session-starter:sync-desktop`** → 項番 -0 → **`npm run session:bootstrap`**。**4/29 19:00**: kintone アプリ作成前に **スペース決定**。
+**前回更新**: 2026-04-28 (Tue) JST **夕方〜夜前・部署予実＋Desktop 集約** — **予実**: `SPEC.md` §10.1（4/29〜5/3）・§6d・`docs/yojitsu-master-and-field-plan.md`（マスタ v1 不要・フィールド案）・チェックリスト §3b **[x]**・`main` **push 済み**（`de45591` ほか）。**Desktop `AI緊急用`**: 旧 4 ファイル削除、**`SESSION-HANDOFF-LATEST-2026-04-28.txt` のみ**（セッション切替・**約 20:00 JST 再入場**・`session-starter:sync-desktop` で儀式 4 ファイル復元の手順を記載）。**次チャット／夜**: その txt を貼るか @ 参照 → 控えが欠けるときは **CIO が `npm run session-starter:sync-desktop`** → 項番 -0 → **`npm run session:bootstrap`**（sync は **CIO 義務**／浜田へ npm 依頼しない）。**4/29 19:00**: kintone アプリ作成前に **スペース決定**。
 
 **前回更新**: 2026-04-28 (Tue) JST — **本チャット終了・引継ぎ準備完了**: **`npm run verify:agent-env`** 新設（`scripts/verify-agent-env.mjs`＝憲法→`mandatory-read-gate`→`verify:all`→`smoke:quiet`／**Desktop 同期・時計 strict は含まない**）。`.cursor/rules/mcp-tool-discipline.mdc` に **自律エージェント向け環境改善**とアイドル①の第一歩を明記。`SESSION-BOOTSTRAP-CHECKLIST` フェーズ 6／`RULES-INDEX` §57-5／`.rag/extra-docs` 同期（実装は **`9685e74`**）。**次チャット**: スターター全文 → 項番 -0 → **`session:clock:set`**（要時）→ **`npm run session:bootstrap`**。余剰のみ Tier A なら **`verify:agent-env`** 可。
 
@@ -89,7 +109,7 @@
 
 ### 浜田メモ（直近日程・チャット反映）
 
-- **2026-04-28（火）**（本チャット 2026-04-27 夜 反映）: **予実管理**で **十分な時間を取り**、**ゼロベースから仕様だけ** 決める（実装は合意後で可）。表イメージ: Excel `C:\tmp\予算管理\2026年度システム推進室_年間予算案20260123.xlsx` シート **新フォーマット**／列構造要約 `templates/yojitsu-budget-lite/docs/shin-format-excel-layout.md`。雛形: `templates/yojitsu-budget-lite/README.md` / `SPEC.template.md`。**4/28–29（PC 台帳 CSV 準備）** との **優先順は当日に合意**。
+- **2026-04-28（火）**（本チャット 2026-04-27 夜 反映）: **予実管理**で **十分な時間を取り**、**ゼロベースから仕様だけ** 決める（実装は合意後で可）。表イメージ: Excel `C:\tmp\予算管理\2026年度システム推進室_年間予算案20260123.xlsx` シート **新フォーマット**／列構造要約 `templates/yojitsu-budget-lite/docs/shin-format-excel-layout.md`。雛形: `templates/yojitsu-budget-lite/README.md` / `SPEC.template.md`。**4/28–29（PC 台帳・B-1 は §9 どおりの準備のみ・**前倒し禁止**・§9.0／B-2 は本番後 5/13〜・§7.4.6）** との **優先順は当日に合意**。
 
 **前回更新**: 2026-04-28 (Tue) JST — **SESSION-CLOCK（§51-6-2 時間軸の客観化）**: `chat-sessions/SESSION-CLOCK.md` ＋ `scripts/session-clock.mjs` ＋ `npm run session:clock:set` / `session:split-check`。`mandatory-read-gate` が **4 時間超**で exit 2。未設定時は警告のみで通過。
 
@@ -290,7 +310,7 @@
 - [ ] 既存 627→595 lookup ロジック抽出 (#K5)
 - [ ] 既存 594 PC名重複検出 CSV 生成 (#K6)
 
-### 4/27(月) 動作確認 → 4/28-29(火水祝) CSV準備 → 4/30-5/2(木金土) 移行 → GW → 5/7-12(木火) 試運用 6 日 → **5/13(水) 🚀 本番**
+### 4/27(月) 動作確認 → 4/28-29(火水祝) **B-1** 準備（**前倒し禁止**・§9.0） → 4/30-5/2(木金土) **B-1 import** → GW → 5/7-12(木火) 試運用 6 日 → **5/13(水) 🚀 本番** → **以降 B-2（共有+JR）1 件ずつ**
 
 ### 後日検討（スケジュール確定済）
 

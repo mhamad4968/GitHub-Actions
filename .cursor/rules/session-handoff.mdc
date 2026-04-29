@@ -16,11 +16,13 @@ alwaysApply: true
 
 次のいずれかで引き継ぎフローに入る: 浜田が HANDOFF-HUMAN 相当を貼った／「セッション切る」「今日はここまで」「新チャットで続き」「引き継ぎ」／セッション分割・51-6-2 命令を出した／4h・200 tools 等で区切る合意。
 
+- **NEW-SESSION-STARTER 通読（浜田が全文貼った直後・必須）**: チャット貼付を「読了」とみなさない。**必ず** `chat-sessions/NEW-SESSION-STARTER.md` を **Read ツールで冒頭〜末尾まで**（長い場合は `offset`/`limit` を切らずに連続取得）。**要約だけで** `checkpoint`・項番 -0・`session:bootstrap` に進まない（詳細は同ファイル **「■ 貼付単独で完走」手順 2**）。
+
 - **§51-6-2（セッション切替時刻）**: `AGENTS.md` §51-6-2 の **いずれかの発動条件**を満たしたら、**このターンの応答の最上段**に **`【セッション切替】§51-6-2 命令発動 — 条件: … — 理由: …`** を **第 1 行**に置く。**第 2 行**に **`[§1-2-3 ティア判定: …]`** を続けてよい。続けて **同節の `[§51-6-2 命令発動]` テンプレ全文**を出す。浜田へ「そろそろですか？」と聞き返さず **命令として通知**する。壁時計の控えは `chat-sessions/SESSION-SPLIT-REMINDER.md`。
 
 - **項番 0b（Desktop AI緊急用）**: セッション切替のたび、浜田の **`C:\Users\mhamada202408224\Desktop\AI緊急用`** を **`session-starter:sync-desktop` + `verify:desktop-ai-emergency-sync`** で都度メンテ・照合する（`session:bootstrap` に内包。未マウント時はチャットに **未照合 1 行**）。
 
-0. **新チャットの第 0 手（Read より前）**: **`checkpoint-latest.md` 項番 -0** で浜田 **OK 済み**であること（未 OK なら先に **一問だけ**確認してから）。リポルートで **`npm run session:bootstrap`** を実行（内包: **`verify:constitution-handoff`** → **`verify:mandatory-read-gate`** → **(1c) `verify:session-clock-health`** → Desktop sync+verify → **smoke**）。**ng なら本題に入らず**憲法ドキュ（`NEW-SESSION-STARTER` 冒頭 🚨 / **「■ 貼付単独で完走」** / `SESSION-BOOTSTRAP` フェーズ 7 第 7–8 項 / `docs/troubleshooting.md` TSB-024）の復旧のみ。**このターンのチャット応答先頭**に **`[§1-2-3 ティア判定: …]`**（§1-2-3-1）を付ける（浜田が遵守確認する目印）。
+0. **新チャットの第 0 手（Read より前）**: 浜田が **NEW-SESSION-STARTER 全文**を貼ったターンでは **先に** `chat-sessions/NEW-SESSION-STARTER.md` を **Read で全文通読**（`NEW-SESSION-STARTER.md`「■ 貼付単独で完走」手順 2。**読み飛ばし禁止**）。**`checkpoint-latest.md` 項番 -0** で浜田 **OK 済み**であること（未 OK なら先に **一問だけ**確認してから）。リポルートで **`npm run session:bootstrap`** を実行（内包: **`verify:constitution-handoff`** → **`verify:mandatory-read-gate`** → **(1c) `verify:session-clock-health`** → Desktop sync+verify → **smoke**）。**ng なら本題に入らず**憲法ドキュ（`NEW-SESSION-STARTER` 冒頭 🚨 / **「■ 貼付単独で完走」** / `SESSION-BOOTSTRAP` フェーズ 7 第 7–8 項 / `docs/troubleshooting.md` TSB-024）の復旧のみ。**このターンのチャット応答先頭**に **`[§1-2-3 ティア判定: …]`**（§1-2-3-1）を付ける（浜田が遵守確認する目印）。
 
 1. **切替直前の確認（デフォルト必須）**: `handoff-log.md` に書き込む **前に**、チャットへ **確定前ドラフト**を出す。内容 = 浜田5行の読み取り結果＋下記「AI 補足」項目のドラフト（箇条書きでよい）。浜田から **「OK」または1行修正**を受けてから次へ進む。  
    - **例外**: 浜田が **「確認省略で書いて」** と明示したときだけ、このステップをスキップしてよい。
@@ -37,10 +39,12 @@ alwaysApply: true
      - `session-lock`: 取得中なら holder／なければ「なし」
      - `関連パス`: 計画・TSB・ログ等があれば最大3件
 5. **チャットで次セッション初手を明示**: `NEW-SESSION-STARTER.md`（または Desktop 控え **全文**）に **「■ 貼付単独で完走」** があるので、引き継ぎ先 AI は **項番 -0 OK → `npm run session:bootstrap`** を正とし、続けて `SESSION-BOOTSTRAP-CHECKLIST.md`・`checkpoint-latest.md`・**`handoff-log.md` 末尾最大3件** を Read（順序の詳細はスターター本文）。
-6. **自律復元（浜田へ「どこまで？」を先に聞かない）**: `checkpoint-latest.md` の **「セッション切替後の自律復元」** に従い、PC 台帳 Day4 なら `docs/plans/2026-04-26-pc-ledger-day4-action.md` の **「AI 引継ぎ: kintone-add-app 直後に…」** と `docs/troubleshooting.md` **TSB-023** を先に Read。`kintone-add-app` 直後の「未公開？」は **プレビュー REST** で確認してから進む（冗長確認を減らす）。**新・PC台帳の Tier B 前**は `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b（1b-A〜C＋チャットテンプレ）**を完走（「仕様確認しますか？」だけ禁止）。正本 `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.2.0〜§4.4**。ラベル変更時は **`npm run pc-ledger:verify-labels-spec`**（浜田は確認のみ／全文目視突合を人に依頼しない）。
+6. **自律復元（浜田へ「どこまで？」を先に聞かない）**: `checkpoint-latest.md` の **「セッション切替後の自律復元」項番 5** に従い、**項番 -0 で合意した本題**に対応する正本だけを Read する。**部署予実のみ**なら `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1c**（`templates/yojitsu-budget-lite/` 正本）。**新・PC台帳**を触るなら Day4 時は `docs/plans/2026-04-26-pc-ledger-day4-action.md` の **「AI 引継ぎ: kintone-add-app 直後に…」** と `docs/troubleshooting.md` **TSB-023** を先に Read。`kintone-add-app` 直後の「未公開？」は **プレビュー REST** で確認してから進む（冗長確認を減らす）。**Tier B 前**は **本題が PC 台帳のときだけ** `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b（1b-A〜C＋チャットテンプレ）**を完走（「仕様確認しますか？」だけ禁止）。正本 `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.2.0〜§4.4**。ラベル変更時は **`npm run pc-ledger:verify-labels-spec`**（浜田は確認のみ／全文目視突合を人に依頼しない）。
+7. **§50-3-8（部署予実・ロジック・複雑 kintone customize）**: 本題が **5A 予実**で、**kintone 作成・フィールド・計算ロジック・複雑 customize** または **仕様ファイルの編集**に入る**直前**は、**新チャットでも**憲法 **§50-3-8** どおり **DeepSeek 盲点抽出 → 約3行突合メモ**を**必ず再実行**する（前セッションのチャット要約・旧メモでスキップしない）。詳細は `AGENTS.md` §50-3-8 と `NEW-SESSION-STARTER.md`（v3.32）。
 
 ## 禁止
 
 - 引き継ぎ内容があるのに **`handoff-log.md` を更新せず**にターンを終えること。
 - 「チャットに書いたから大丈夫」で **ファイル記録をスキップ**すること。
+- 浜田が **NEW-SESSION-STARTER 全文を貼ったターン**で、**`chat-sessions/NEW-SESSION-STARTER.md` を Read で通読せず**に項番 -0・`verify`・`session:bootstrap`・本題へ進むこと（**読み飛ばし禁止**）。
 - **§35-1 / §56-1a 逆転（TSB-024）**: `deploy` / `apply-labels` / `git push` / 検証用 `npm run` の**実行を浜田へ依頼してターンを終える**こと（「手動で」「再デプロイお願い」等）。**AI がターミナルで実行**し、浜田には GO と目視確認のみ依頼する。詳細: `docs/troubleshooting.md` **TSB-024**。

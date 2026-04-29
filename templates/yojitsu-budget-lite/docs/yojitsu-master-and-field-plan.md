@@ -48,6 +48,7 @@
 | イニシャル費用（変動費） | `initial_variable_budget` | 数値 | 任意 | 旧 U「都度」→ 直接移行 |
 | 備考 | `notes` | 複数行テキスト | 任意 | 旧 W |
 | 旧通番 | `legacy_row_no` | 数値 | 任意 | 旧 B 列。突合・ログ用 |
+| 表示順 | `display_order` | 数値 | 任意 | **一覧・ダッシュ明細表の並び**（`SPEC.md` §6b）。追加時の挿入位置。未設定時の既定は **4/30 確定** |
 | 添付ファイル | `attachments` | 添付ファイル | 任意 | 請求 PDF 等 |
 
 **計算フィールド（案）**: `変動費の工種予算（表示用）` = `learning_fixed_budget` + `initial_variable_budget`（`SPEC.md` §6）。フィールドコード例: `variable_budget_total_display`。
@@ -105,4 +106,5 @@ kintone 上の **表示名**は `SPEC.md` の用語どおり **「支払内訳�
 
 ## 変更履歴
 
+- 2026-04-29: `display_order`（表示順・挿入位置）をレコード直下案に追加（`SPEC.md` §6b と整合）。
 - 2026-04-28: 初版（マスタ不要 v1・フィールドコード案・サブテーブル案）。

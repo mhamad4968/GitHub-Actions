@@ -43,7 +43,33 @@
 | 1.1 | `chat-sessions/checkpoint-latest.md` 先頭〜**最終更新** | 現在地・自律復元 Read 順 |
 | 1.2 | `chat-sessions/handoff-log.md` **末尾最大 3 ブロック** | 直前セッションの合意・GO・git 一行 |
 | 1.3 | `chat-sessions/<本日または直近日付>.md` があれば | 当日タイムライン |
-| 1.4 | 継続タスクの **実行計画**（例: `docs/plans/2026-04-26-pc-ledger-day4-action.md`） | 次の 1 手・Tier B の有無 |
+| 1.4 | 継続タスクの **実行計画（本題 1 つに対応）** | 次の 1 手・Tier B の有無。例: **PC 台帳**＝`docs/plans/2026-04-26-pc-ledger-day4-action.md` 等／**部署予実**＝`templates/yojitsu-budget-lite/SPEC.md` §10.1 ＋同ディレクトリ `docs/*.md`。**本題と無関係な plan は読まない**（項番 -0 と食い違うと項番 0.9） |
+
+---
+
+## フェーズ 1c — 部署予実（yojitsu）を本題にする場合（PC 台帳と混同しない）
+
+> **目的**: セッション切替直後に **PC 台帳用の 1b・674・§4.2** を読みに行き、**予実の kintone 化**と手順を取り違える迷走を防ぐ。`checkpoint-latest.md` **項番 5A** と同義。
+
+次のいずれかに当てはまる **着手前**に、**最低限**下表を Read 済みにする（**PC 台帳フェーズ 1b はスキップ可**）。
+
+- [ ] **kintone** で **部署予実アプリの新規作成**（`kintone-add-app`）・フィールド設計・deploy・本番データ投入を行う
+- [ ] `templates/yojitsu-budget-lite/SPEC.md` または同配下 `docs/*.md` を **仕様変更として**編集する
+
+| # | 読むファイル | 目的 |
+|---|-------------|------|
+| 1c.1 | `templates/yojitsu-budget-lite/SPEC.md`（**§9・§10.1** を含む） | 確定仕様・マイルストーン |
+| 1c.2 | `templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md` | マスタ要否・フィールド案 |
+| 1c.3 | `templates/yojitsu-budget-lite/docs/yojitsu-migration-kyu-to-kintone.md` | 旧→kintone 投入方針 |
+| 1c.4 | `templates/yojitsu-budget-lite/docs/shin-format-excel-layout.md` | Excel 列・二正本 |
+| 1c.5 | `templates/yojitsu-budget-lite/docs/yojitsu-spec-session-checklist.md` | 仕様セッション用チェック |
+| 1c.6 | `.cursor/rules/creation-timing-ask.mdc` | **作成着手前**のスペース・タイミング（§41） |
+
+**§50-3-8（憲法・盲点・セッション切替後も再実行）**: 上表の **kintone 作成・フィールド・計算ロジック・複雑 customize** または **`SPEC.md` / `docs/*.md` の仕様変更編集**に**着手する直前**、必ず **DeepSeek** で盲点3点（型／SPEC 乖離／差異ロジック）を抽出し、**直後**に正本と突合した**約3行の突合メモ**をチャットに残す（`AGENTS.md` §50-3-8）。**新チャットに切り替わったら**、前セッションの突合メモだけで済ませず、**同じ作業区分に再入る直前に再度** §50-3-8 を実行する。
+
+**Tier B**: `kintone-add-app` / `add-form-fields` / deploy / 本番レコード書込は従来どおり **浜田 GO 後に AI が実行**（§35-1 / §56-1a / TSB-024）。
+
+**§50-3-9（憲法・kintone MCP 失敗時）**: kintone 系 MCP が **構造エラー**を返したら **同一ツールを再試行せず**、**REST**（`scripts/` 実績パターンまたは `scripts/tmp-kintone-*.mjs`）へ移行して完遂する（詳細は `AGENTS.md` §50-3-9）。**タスク着手 1 ターン目の航海図**に **手段(第2)=REST** を併記する（§50-3-2）。
 
 ---
 
@@ -171,6 +197,7 @@ AI は上記を終えたら **このターン内**で、次を **箇条書きで
 4. **MCP**: health-check 上の active / 注意（1 行）  
 5. **次の 1 手**: 何をするか（Tier B なら GO 待ちと明記）  
 6. **新・PC台帳を触る場合**: フェーズ **1b-C テンプレ**を貼ったうえで **1b 完了**と書く（テンプレ無しの「仕様確認しました」は不可。**未完了なら Tier B に進まない**）  
+6b. **部署予実を触る場合**: フェーズ **1c** の Read をした旨を 1 行（**1c 対象外**なら「予実本題なし」と明記）  
 7. **役割宣言（TSB-024 / 2026-04-26 追加 / 引き継ぎ要約耐性）**: 次の 1 行を必ず貼る  
    `(7) 役割宣言: deploy / apply / push / 検証コマンドの実行は私（AI）が行います。浜田には GO と画面目視の確認のみ依頼します（§35-1 / §56-1a / TSB-024）。`  
    これを宣言しないままターンを終えるのは禁止。**「再デプロイしてください」「手動アップロードで OK」「`npm run xxx` を実行してください」は §35-1 違反**（禁句一覧は `NEW-SESSION-STARTER.md` 最上段 🚨 ブロック）。
