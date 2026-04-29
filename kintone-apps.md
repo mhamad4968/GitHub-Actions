@@ -63,6 +63,7 @@ npm run app:fields <アプリID>
 
 | 日時（UTC） | アプリID | customize パス |
 |-------------|----------|----------------|
+| 2026-04-29T10:58:00Z | 674 | `customize/new-pc-ledger-v1/desktop.js` |
 | 2026-04-29T06:15:00Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（BUILD v0.7.6・全フィールドリセット対象拡張・手元 deploy rev 38） |
 | 2026-04-29T06:05:00Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（BUILD v0.7.5・社員名検索モーダル 595・手元 deploy rev 37） |
 | 2026-04-29T05:48:00Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（BUILD v0.7.4・利用者名候補は入力中 DOM を参照・手元 deploy rev 36） |
