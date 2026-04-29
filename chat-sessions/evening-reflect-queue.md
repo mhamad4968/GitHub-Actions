@@ -7,7 +7,7 @@
 
 ## アクティブ（未消化）
 
-- [ ] **朝報 `docs/reports/2026-04-28-morning-prep.md` の §51-4「7点確定」**: 06:00 生成の**古いスナップショット**（`parallel-session-detector.mjs` は **4/28 日中に修正済み**）。**任意**: 当日中に `node scripts/daily-morning-prep.mjs` で朝報を再生成するか、**翌朝 cron まで待つ**。
+- [ ] **朝報 `docs/reports/2026-04-28-morning-prep.md` の §51-4「7点確定」**: 06:00 生成の**古いスナップショット**（4/28 修正に続き **4/29 13:35 JST**: CIO が軸1比率閾値 **0.28** 化＋`smoke` 緑を再確認。**任意**: `node scripts/daily-morning-prep.mjs` で朝報を再生成するか、**翌朝 cron まで待つ**）。
 - [ ] **朝報の読みやすさ**: 先頭1枚サマリ、PDF 化、`daily-morning-prep.mjs` の構成見直しなど——**夜に方針だけ決める**。
 - [x] **`docs/mcp-status.md`（4/28 追随）**: 見出しに **最終更新 2026-04-28**・**「表の鮮度」節**（4/23 カウントのまま明示）・**自律向けルール**（`mcp-tool-discipline.mdc`）を追記済み。行ごとの使用回数は月次／イベント時まで据え置き。
 

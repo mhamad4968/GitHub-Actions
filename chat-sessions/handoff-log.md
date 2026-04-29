@@ -544,3 +544,20 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 
 ---
 
+### 2026-04-29 (Wed) JST 13:35 — CIO: smoke 2 件解消・`session:bootstrap` 緑回復（浜田 CEO 指示）
+
+**浜田メモ（原文）**: 「上記2点をCIO判断で完了をまずさせて。その後今日やることを済ませてその後問題点の解消をしようか」
+
+**AI 補足（漏れ防止）**:
+- `git`: `main` 上で `scripts/check-mcp-dormancy.mjs` / `scripts/parallel-session-detector.mjs` / `chat-sessions/checkpoint-latest.md` / `HANDOFF-HUMAN.txt` / `evening-reflect-queue.md` / `handoff-log.md` を **同一 commit 予定**（`.rag`・`templates` 等の既存ローカル変更は **含めない**）
+- `次の1手`: CEO **本日優先順位**確定後 → **§57 改定を 1 件ずつ**（Phase C / L / §41 の順は CEO 判断）。任意: `daily-morning-prep.mjs` で朝報再生成（evening-reflect-queue 参照）
+- `GO待ち`: Tier B なし。**§57 憲法改定の中身**は CEO 確定後に着手
+- `session-lock`: なし
+- `関連パス`: `scripts/check-mcp-dormancy.mjs` / `scripts/parallel-session-detector.mjs` / `chat-sessions/checkpoint-latest.md`
+
+**検収（憲法適合済み: `npm run session:bootstrap`）**: exit 0（`smoke:quiet` 10/10 ok）
+
+**次セッションへの 1 行**: bootstrap 緑維持。次は CEO 優先順位 → §57 1 件ずつ。並列検知の閾値変更は **真の均衡並列**では従来どおり上がり得るため、朝報の古い §51-4 数値は **再生成または翌 cron** で追随可。
+
+---
+

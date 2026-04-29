@@ -5,10 +5,10 @@ Windows から開きやすい控え: C:\Users\mhamada202408224\Desktop\AI緊急�
 
 推奨フロー（セッション切替）: ① **`NEW-SESSION-STARTER_yyyymmdd.txt`（JST・常にこのファイル名）全文**（**v3.27+**: **「■ 貼付単独で完走」** が **唯一の詳細正本**（項番 -1〜0・**v3.28** 以後の改定もここ優先）。checkpoint 重複貼付不要。貼付推奨は verify 最終行）② この 5 行（**任意**）③ **項番 -0** → ④ **`session:bootstrap` 一括**。**日終わり**: sync → verify。
 
-日時(JST): 2026-04-29（水）13:18 — 引継ぎ準備完了（ゲート緑・継続可）
-いま何してた（1行）: CEO ご質問に対し事実確認。**TSB-026 の設計バグ 2 件はリポ上で解消済み**（`7581e00`）。午後は §51-6-2 で `mandatory-read-gate` が 4h 超で exit 2 だったため**仕様通り**→ **継続のため `session:clock:set` を再実行**（開始 **2026-04-29 13:17**）し **`verify:constitution-handoff` + `verify:mandatory-read-gate` 両方 exit 0** を再取得。Desktop は `desktop:sync-and-verify` で同期済み。
-次にやる1つ: **CEO ご確認待ち（2 点）**: ① Phase C（§57 改定 M = CEO 4/29 朝指示の §50-3 正式統合）の着手タイミング / ② 本日の優先（M / L=KINTONE_APP Secret 分離 / §41=4/29 19:00 までの kintone 部署予実アプリのスペース決定）の順位。
-GO待ち（なし／内容）: Tier B なし。**Phase C 着手タイミング**と **本日の優先順位**だけ CEO のちほどご確認願います。
+日時(JST): 2026-04-29（水）13:35 — `session:bootstrap` 10/10 緑（CIO 回復）
+いま何してた（1行）: **浜田 CEO 指示**: smoke 2 件（並列軸1・S12）を **CIO 判断で解消** → `parallel-session-detector.mjs` 閾値調整 + `check-mcp-dormancy.mjs` に CIO 代替 MCP exempt + `--ignore-suspicion` exit 修正 → **`npm run session:bootstrap` exit 0** 確認済み。Desktop はこの後の `desktop:sync-and-verify` で再同期予定。
+次にやる1つ: **CEO 優先順位**（Phase C §57 改定 M / L=KINTONE_APP 分離 / §41=19:00 kintone スペース）の確定 → 確定後に **§57 を 1 件ずつ** 反映着手（並列禁止 §51）。
+GO待ち（なし／内容）: Tier B なし。**本日の CEO 優先順位**のみ。bootstrap は緑。
 触らないで（なし／内容）: `scripts/session-clock.mjs` の HEADER は今後 SESSION-CLOCK.md 本文ではなく**ここ（コード定数）に追記**すること（TSB-026）。PC 台帳・kintone customize 本番書込は §41 確認後
 
 ---

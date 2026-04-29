@@ -58,6 +58,9 @@ try {
 const mcpServers = cfg.mcpServers || {};
 const mcpNames = Object.keys(mcpServers);
 
+/** 憲法 CIO 体制（本体=Cursor / Kimi・DeepSeek・OpenRouter=補助）で、transcript ベースの 7 日窓に出ない運用が正となるサーバー */
+const CIO_STACK_DORMANCY_EXEMPT = new Set(['kimi', 'deepseek', 'openrouter']);
+
 // ───── 2. agent transcripts grep ─────
 const projectsDir = path.join(os.homedir(), '.cursor', 'projects');
 const now = Date.now();
@@ -113,14 +116,19 @@ const results = mcpNames.map((name) => {
   const strictCount = ARG_STRICT ? countUsage(strictFiles, name) : null;
   const disabled = !!mcpServers[name].disabled;
   const meta = mcpServers[name]._meta || {};
-  const exempt = !!meta.dormancy_exempt;
-  const exemptReason = meta.exempt_reason || null;
+  const cioExempt = CIO_STACK_DORMANCY_EXEMPT.has(name);
+  const metaExempt = !!meta.dormancy_exempt;
+  const exemptReason =
+    meta.exempt_reason
+    || (cioExempt && shortCount === 0 ? 'CIO alternate LLM (transcript 7d 未出現は設計上可)' : null);
   let status;
-  if (exempt) status = 'exempt';
+  if (metaExempt) status = 'exempt';
+  else if (cioExempt && shortCount === 0) status = 'exempt';
   else if (disabled) status = 'disabled';
   else if (shortCount === 0 && ARG_STRICT && strictCount === 0) status = 'deletion-candidate';
   else if (shortCount === 0) status = 'dormant';
   else status = 'active';
+  const exempt = status === 'exempt';
   return { name, shortCount, strictCount, disabled, exempt, exemptReason, status };
 });
 

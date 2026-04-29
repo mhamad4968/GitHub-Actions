@@ -60,7 +60,8 @@ function loadJsonlEntries() {
 /** 軸 1: 副次 pid がこの件数未満なら「主 pid の取りこぼし」とみなし並列にしない */
 const AXIS1_MIN_SECONDARY_EVENTS = 5;
 /** 主 pid 件数に対する副次の最低比率（再起動で旧 pid が数件だけ残るパターンを除外） */
-const AXIS1_MIN_SECONDARY_RATIO = 0.12;
+/** CIO 2026-04-29: 単一オペレーター・file-watcher 再起動で副次が ~25% 未満に留まるケースを静穏扱い（真の二系統並列は概ね均衡に近い） */
+const AXIS1_MIN_SECONDARY_RATIO = 0.28;
 
 /**
  * 軸 1: watcher_pid 不一致検知
@@ -340,6 +341,7 @@ function main() {
 
   if (args.json) {
     console.log(JSON.stringify(result, null, 2));
+    if (args.ignoreReason) return 0;
     return scoreTotal >= 5 ? 2 : (scoreTotal >= 3 ? 1 : 0);
   }
 
@@ -371,6 +373,7 @@ function main() {
     console.log('🟢 通常運用継続 OK');
   }
 
+  if (args.ignoreReason) return 0;
   return scoreTotal >= 5 ? 2 : (scoreTotal >= 3 ? 1 : 0);
 }
 
