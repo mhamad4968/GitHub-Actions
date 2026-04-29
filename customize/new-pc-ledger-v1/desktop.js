@@ -4,7 +4,7 @@
  * 仕様: docs/plans/2026-04-21-new-pc-ledger-spec.md v2.1 §4
  * Day 4 plan: docs/plans/2026-04-26-pc-ledger-day4-action.md
  *
- * BUILD: 2026-04-29-day5-autogen-v0.6 (共有/JR: メール・サイボウズ非表示強化 + 共有端末名の保存前チェック)
+ * BUILD: 2026-04-29-day5-autogen-v0.7 (個人: 利用者名候補の input 委譲 + ヘッダフォールバック表示)
  *
  * Day 4 雛形スコープ:
  *   - 種別 (account_type) による表示制御 (show/hide)
@@ -21,7 +21,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-04-29-day5-autogen-v0.6';
+  const BUILD = '2026-04-29-day5-autogen-v0.7';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -543,6 +543,7 @@
   let userSuggestTimer674 = null;
   let userSuggestReq674 = 0;
   let userSuggestDocClick674 = false;
+  let userNameInputDelegate674 = false;
 
   function getRecordFormApi674() {
     try {
@@ -593,16 +594,34 @@
 
   function mountUserSuggestDropdown674(rows) {
     hideUserSuggest674();
-    const anchor = getUserNameFieldEl674();
-    if (!anchor) return;
-    anchor.setAttribute('data-npl-user-anchor', '1');
-    anchor.style.position = 'relative';
+    let anchor = getUserNameFieldEl674();
+    let useHeaderFallback = false;
+    if (!anchor) {
+      anchor = getHeaderSpace674();
+      useHeaderFallback = true;
+      if (!anchor) {
+        console.warn('[NEW-PC-LEDGER-V1] 利用者名候補: フィールド要素もヘッダも取得できず表示できません');
+        return;
+      }
+    }
+    if (!useHeaderFallback) {
+      anchor.setAttribute('data-npl-user-anchor', '1');
+      anchor.style.position = 'relative';
+    }
     const box = document.createElement('div');
     box.id = USER_SUGGEST_BOX_ID;
-    box.style.cssText =
-      'position:absolute;left:0;top:100%;margin-top:2px;min-width:260px;max-width:480px;max-height:260px;overflow:auto;' +
-      'background:#fff;border:1px solid #0d6efd;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,.15);z-index:99999;' +
-      'font-size:13px;line-height:1.4;';
+    if (useHeaderFallback) {
+      box.setAttribute('data-npl-user-suggest-fallback', '1');
+      box.style.cssText =
+        'position:relative;margin:4px 0 10px;padding:0;min-width:260px;max-width:520px;max-height:260px;overflow:auto;' +
+        'background:#fff;border:1px solid #0d6efd;border-radius:4px;box-shadow:0 2px 10px rgba(0,0,0,.12);z-index:99999;' +
+        'font-size:13px;line-height:1.4;';
+    } else {
+      box.style.cssText =
+        'position:absolute;left:0;top:100%;margin-top:2px;min-width:260px;max-width:480px;max-height:260px;overflow:auto;' +
+        'background:#fff;border:1px solid #0d6efd;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,.15);z-index:99999;' +
+        'font-size:13px;line-height:1.4;';
+    }
     const title = document.createElement('div');
     title.style.cssText =
       'padding:6px 10px;background:#e7f1ff;border-bottom:1px solid #9ec5fe;font-weight:bold;color:#052c65;font-size:12px;';
@@ -612,8 +631,8 @@
       const empty = document.createElement('div');
       empty.style.cssText = 'padding:10px;color:#6c757d;';
       empty.textContent = '在籍の社員名が見つかりません。別の表記でもう一度入力してください。';
-      box.appendChild(empty);
-      anchor.appendChild(box);
+      if (useHeaderFallback) anchor.insertBefore(box, anchor.firstChild);
+      else anchor.appendChild(box);
       return;
     }
     for (let r = 0; r < rows.length; r++) {
@@ -634,7 +653,8 @@
       })(row);
       box.appendChild(item);
     }
-    anchor.appendChild(box);
+    if (useHeaderFallback) anchor.insertBefore(box, anchor.firstChild);
+    else anchor.appendChild(box);
   }
 
   function scheduleUserNameSuggest674() {
@@ -675,9 +695,37 @@
       hideUserSuggest674();
       return event;
     }
+    ensureUserNameInputDelegate674();
     ensureUserSuggestDocClick674();
     scheduleUserNameSuggest674();
     return event;
+  }
+
+  /** change.user_name が発火しない環境向け: 利用者名 input の input イベントを document で捕捉 */
+  function ensureUserNameInputDelegate674() {
+    if (userNameInputDelegate674) return;
+    userNameInputDelegate674 = true;
+    document.addEventListener(
+      'input',
+      function (ev) {
+        try {
+          const t = ev.target;
+          if (!t || (t.tagName !== 'INPUT' && t.tagName !== 'TEXTAREA')) return;
+          const fieldEl = getUserNameFieldEl674();
+          if (!fieldEl || !fieldEl.contains(t)) return;
+          const api = getRecordFormApi674();
+          if (!api || !api.get) return;
+          const rec = api.get().record;
+          const type = (rec[FC_ACCOUNT_TYPE] && rec[FC_ACCOUNT_TYPE].value) || '';
+          if (type !== TYPE_PERSONAL) return;
+          ensureUserSuggestDocClick674();
+          scheduleUserNameSuggest674();
+        } catch (err) {
+          console.warn('[NEW-PC-LEDGER-V1] user_name input delegate', err);
+        }
+      },
+      true,
+    );
   }
 
   function ensureUserSuggestDocClick674() {
@@ -689,8 +737,11 @@
         const box = document.getElementById(USER_SUGGEST_BOX_ID);
         if (!box) return;
         const t = ev.target;
+        const fieldEl = getUserNameFieldEl674();
+        if (fieldEl && fieldEl.contains(t)) return;
         if (box.contains(t)) return;
         if (t.closest && t.closest('[data-npl-user-anchor="1"]')) return;
+        if (t.closest && t.closest('[data-npl-user-suggest-fallback="1"]')) return;
         hideUserSuggest674();
       },
       true,
@@ -1358,6 +1409,18 @@
     applyVisibilityByType(event.record);
     showJrBannerIfNeeded(event.record);
     injectButtons(event);
+    if (editable) {
+      ensureUserNameInputDelegate674();
+      const ac = event.record[FC_ACCOUNT_TYPE]?.value || '';
+      if (ac === TYPE_PERSONAL) {
+        setTimeout(function () {
+          scheduleUserNameSuggest674();
+        }, 120);
+        setTimeout(function () {
+          scheduleUserNameSuggest674();
+        }, 600);
+      }
+    }
     return new kintone.Promise(function (resolve) {
       refreshLicenseBannerFrom671(event.record)
         .catch(function (e) {
@@ -1373,12 +1436,14 @@
   const typeChangeEvents = [
     'app.record.create.change.account_type',
     'app.record.edit.change.account_type',
+    'mobile.app.record.create.change.account_type',
+    'mobile.app.record.edit.change.account_type',
   ];
   kintone.events.on(typeChangeEvents, (event) => {
     hideUserSuggest674();
     let result = confirmTypeChangeIfNeeded(event);
     result = showJrAlertIfNeeded(result);
-    if (result.type.startsWith('app.record.create.')) {
+    if (result.type.indexOf('create.change') !== -1) {
       injectDeptHelpBanner();
     } else {
       removeDeptHelpBanner();
@@ -1388,6 +1453,12 @@
     applyVisibilityByType(result.record);
     showJrBannerIfNeeded(result.record);
     injectButtons(result);
+    if ((result.record[FC_ACCOUNT_TYPE] && result.record[FC_ACCOUNT_TYPE].value) === TYPE_PERSONAL) {
+      ensureUserNameInputDelegate674();
+      setTimeout(function () {
+        scheduleUserNameSuggest674();
+      }, 120);
+    }
     refreshLicenseBannerFrom671(result.record).catch(function (e) {
       console.warn('[NEW-PC-LEDGER-V1] license banner', e);
     });
