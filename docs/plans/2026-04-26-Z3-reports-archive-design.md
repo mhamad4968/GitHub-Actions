@@ -88,7 +88,7 @@ await maybeArchivePreviousMonth();
 |-------|------|-----------|----------|
 | **P1** | archive/ ディレクトリ作成 + .gitkeep + 設計書 (本ファイル) | 2026-04-26 09:21 JST | ✅ 完了 |
 | **P2** | scripts/archive-reports.mjs 新規 + 朝 cron 組込 + dry-run 動作確認 | Day 4 完全終了後 (今夜 or 4/27) | ✅ 完了（`daily-morning-prep.mjs` 冒頭 hook + `npm run reports:archive*`） |
-| **P3** | 2026-05-01 朝の初回 archive 自動実行 + 動作検証 + autonomy log 記録 | 2026-05-01 06:30 JST | ✅ 完了（手動 `--force` + commit `7e6bb70` + `logs/autonomy-decisions/Z3-archive-2026-04-actual-2026-05-01.md`） |
+| **P3** | 2026-05-01 朝の初回 archive 自動実行 + 動作検証 + autonomy log 記録 | 2026-05-01 06:30 JST | ✅ 完了（手動 `--force` + archive commit `f67b112` + autonomy `60f5d46` 追記、`logs/autonomy-decisions/Z3-archive-2026-04-actual-2026-05-01.md`） |
 
 ## 4. リスク & 対策
 
