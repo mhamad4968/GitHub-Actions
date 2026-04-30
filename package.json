@@ -24,6 +24,7 @@
     "pc-ledger:674:user-name-optional": "npx dotenv -e .env -e .env.proxy -- node scripts/pc-ledger-674-user-name-optional.mjs",
     "pc-ledger:b1-review-csv": "npx dotenv -e .env -e .env.proxy -- node scripts/build-b1-review-csv.mjs",
     "pc-ledger:b1-import-csv": "npx dotenv -e .env -e .env.proxy -- node scripts/build-b1-import-csv.mjs",
+    "pc-ledger:b1-import-csv:normalize-dates": "node scripts/normalize-b1-import-csv-dates.mjs",
     "disable:594:browserjs": "npx dotenv -e .env -e .env.proxy -- node scripts/clear-customization-and-deploy.js 594",
     "sync:595": "npx dotenv -e .env -e .env.proxy -- node scripts/sync-595-to-627.js --limit 100",
     "sync:595:force": "npx dotenv -e .env -e .env.proxy -- node scripts/sync-595-to-627.js --limit 100 --force",
