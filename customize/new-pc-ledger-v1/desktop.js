@@ -21,7 +21,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-04-29-day5-autogen-v0.7.6';
+  const BUILD = '2026-04-30-personal-storage-4.1a-v0.7.7';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -190,6 +190,16 @@
   const TYPE_SERVER = 'サーバーNAS';
   const TYPE_OTHER = 'その他';
 
+  /** §4.1a 個人×保管 — アカウント運用対象外（627 非結合・CSV アカウント空） */
+  const PC_STATUS_STORAGE = '保管';
+
+  function isPersonalStored(record) {
+    if (!record || !record[FC_ACCOUNT_TYPE]) return false;
+    if ((record[FC_ACCOUNT_TYPE].value || '') !== TYPE_PERSONAL) return false;
+    const st = String((record[FC_PC_STATUS] && record[FC_PC_STATUS].value) || '').trim();
+    return st === PC_STATUS_STORAGE;
+  }
+
   // ===== ユーティリティ =====
 
   /**
@@ -295,6 +305,13 @@
     ];
     /** 共有/JR では利用者名は使わないため非表示（共有端末名を使う） */
     const personalOnlyUserName = [FC_USER_NAME];
+
+    if (isPersonalStored(record)) {
+      setFieldsVisibility(accountFields, false);
+      setFieldsVisibility(personalOnlyFields, false);
+      setFieldsVisibility(personalOnlyUserName, false);
+      return;
+    }
 
     if (type === TYPE_PERSONAL) {
       setFieldsVisibility(accountFields, true);
@@ -986,7 +1003,7 @@
       if (!bag || !bag.holder || !bag.holder.record) return;
       const rec = bag.holder.record;
       const type = (rec[FC_ACCOUNT_TYPE] && rec[FC_ACCOUNT_TYPE].value) || '';
-      if (type !== TYPE_PERSONAL) {
+      if (type !== TYPE_PERSONAL || isPersonalStored(rec)) {
         hideUserSuggest674();
         return;
       }
@@ -1011,7 +1028,7 @@
 
   function onUserNameFieldChange674(event) {
     const type = (event.record[FC_ACCOUNT_TYPE] && event.record[FC_ACCOUNT_TYPE].value) || '';
-    if (type !== TYPE_PERSONAL) {
+    if (type !== TYPE_PERSONAL || isPersonalStored(event.record)) {
       hideUserSuggest674();
       return event;
     }
@@ -1036,8 +1053,9 @@
           const bag = getRecordFormHolder674();
           if (!bag || !bag.holder || !bag.holder.record) return;
           const rec = bag.holder.record;
-          const type = (rec[FC_ACCOUNT_TYPE] && rec[FC_ACCOUNT_TYPE].value) || '';
-          if (type !== TYPE_PERSONAL) return;
+      const type = (rec[FC_ACCOUNT_TYPE] && rec[FC_ACCOUNT_TYPE].value) || '';
+      if (type !== TYPE_PERSONAL) return;
+      if (isPersonalStored(rec)) return;
           ensureUserSuggestDocClick674();
           scheduleUserNameSuggest674();
         } catch (err) {
@@ -1070,7 +1088,7 @@
 
   function validateUserNameIn595ForPersonal674(event) {
     const type = event.record[FC_ACCOUNT_TYPE]?.value || '';
-    if (type !== TYPE_PERSONAL) return Promise.resolve(null);
+    if (type !== TYPE_PERSONAL || isPersonalStored(event.record)) return Promise.resolve(null);
     const un = String(event.record[FC_USER_NAME]?.value || '').trim();
     if (!un) return Promise.resolve(null);
     return findEmployee595ByUserName(un).then(function (emp) {
@@ -1088,6 +1106,10 @@
     const api = bag.api;
     const recNow = bag.holder;
     const rec = recNow.record;
+    if (isPersonalStored(rec)) {
+      window.alert('種別=個人かつステータス=保管のレコードでは、自動生成は使いません（§4.1a）。');
+      return Promise.resolve();
+    }
     const userName = (rec[FC_USER_NAME] && rec[FC_USER_NAME].value) || '';
     if (!String(userName).trim()) {
       window.alert('種別=個人 の自動生成には「利用者名」を先に入力してください。');
@@ -1634,9 +1656,10 @@
     wrapper.style.cssText = 'display:flex;flex-wrap:wrap;align-items:center;margin:8px 0;';
 
     const type = event.record[FC_ACCOUNT_TYPE]?.value || '';
+    const stored = isPersonalStored(event.record);
 
-    // 個人用 自動生成 (種別=個人 のみ表示)
-    if (type === TYPE_PERSONAL) {
+    // 個人用 自動生成 (種別=個人 かつ §4.1a 保管以外のみ表示)
+    if (type === TYPE_PERSONAL && !stored) {
       wrapper.appendChild(createGenerateButton('🔵 個人用 自動生成', '#0d6efd', () => {
         runPersonalAutoGen().catch(function (e) {
           console.error(e);
@@ -1765,7 +1788,7 @@
     if (editable) {
       ensureUserNameInputDelegate674();
       const ac = event.record[FC_ACCOUNT_TYPE]?.value || '';
-      if (ac === TYPE_PERSONAL) {
+      if (ac === TYPE_PERSONAL && !isPersonalStored(event.record)) {
         setTimeout(function () {
           scheduleUserNameSuggest674();
         }, 120);
@@ -1792,9 +1815,12 @@
     'mobile.app.record.create.change.account_type',
     'mobile.app.record.edit.change.account_type',
   ];
-  kintone.events.on(typeChangeEvents, (event) => {
+  function onAccountTypeOrPcStatusChange674(event) {
     hideUserSuggest674();
-    let result = confirmTypeChangeIfNeeded(event);
+    let result = event;
+    if (String(event.type || '').indexOf('account_type') !== -1) {
+      result = confirmTypeChangeIfNeeded(event);
+    }
     result = showJrAlertIfNeeded(result);
     if (result.type.indexOf('create.change') !== -1) {
       injectDeptHelpBanner();
@@ -1806,7 +1832,10 @@
     applyVisibilityByType(result.record);
     showJrBannerIfNeeded(result.record);
     injectButtons(result);
-    if ((result.record[FC_ACCOUNT_TYPE] && result.record[FC_ACCOUNT_TYPE].value) === TYPE_PERSONAL) {
+    if (
+      (result.record[FC_ACCOUNT_TYPE] && result.record[FC_ACCOUNT_TYPE].value) === TYPE_PERSONAL &&
+      !isPersonalStored(result.record)
+    ) {
       ensureUserNameInputDelegate674();
       setTimeout(function () {
         scheduleUserNameSuggest674();
@@ -1816,7 +1845,17 @@
       console.warn('[NEW-PC-LEDGER-V1] license banner', e);
     });
     return result;
-  });
+  }
+
+  kintone.events.on(typeChangeEvents, onAccountTypeOrPcStatusChange674);
+
+  const pcStatusChangeEvents = [
+    'app.record.create.change.pc_status',
+    'app.record.edit.change.pc_status',
+    'mobile.app.record.create.change.pc_status',
+    'mobile.app.record.edit.change.pc_status',
+  ];
+  kintone.events.on(pcStatusChangeEvents, onAccountTypeOrPcStatusChange674);
 
   // 一覧では所属ヘルプを出さない（§4.2.0b 詳細・新規のみ）
   kintone.events.on('app.record.index.show', () => {
@@ -1835,7 +1874,11 @@
       const type = event.record[FC_ACCOUNT_TYPE]?.value || '';
       const errors = [];
 
-      if (type === TYPE_PERSONAL && !String(event.record[FC_USER_NAME]?.value || '').trim()) {
+      if (
+        type === TYPE_PERSONAL &&
+        !isPersonalStored(event.record) &&
+        !String(event.record[FC_USER_NAME]?.value || '').trim()
+      ) {
         const um = '種別が「個人」のときは「利用者名」を入力してください。';
         errors.push(um);
         event.errors = Object.assign(event.errors || {}, { [FC_USER_NAME]: um });
