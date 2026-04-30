@@ -12,6 +12,7 @@
  *   5. ルール整合性: scripts/audit-rules.mjs
  *   6. プラン進捗: scripts/scan-plans.mjs
  *   7. RAG 再 ingest（任意・失敗してもブリーフィングは続ける）
+ *   7b. Z-3: 月初 JST のみ scripts/archive-reports.mjs で先月 docs/reports/*.md を archive/ へ
  *   8. ブリーフィング Markdown を docs/reports/<YYYY-MM-DD>-morning-prep.md に出力
  *   9. 失敗ログを logs/morning-prep/<YYYY-MM-DD>.log に保存
  *
@@ -26,6 +27,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execSync, spawnSync } from 'node:child_process';
+import { maybeArchivePreviousMonth } from './archive-reports.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -81,6 +83,16 @@ function summary(label, result, { ok = '✅', ng = '❌', limit = 20 } = {}) {
   const head = `### ${result.ok ? ok : ng} ${label}`;
   const lines = (result.stdout || result.stderr || '').split('\n').slice(0, limit);
   return `${head}\n\n${fence('text', lines.join('\n'))}\n`;
+}
+
+// Z-3: docs/reports/ 先月分 archive（cron 失敗時も月初 1 回で完走させる。失敗しても朝報は続行）
+try {
+  const ar = maybeArchivePreviousMonth({ logger: log });
+  if (ar.skipped) log(`archive-reports: skipped (${ar.reason || 'n/a'})`);
+  else if (ar.dryRun) log(`archive-reports: dry-run files=${ar.moved}`);
+  else log(`archive-reports: moved ${ar.moved} → ${ar.dest}${ar.commitAbbrev ? ` (${ar.commitAbbrev})` : ''}`);
+} catch (e) {
+  log(`archive-reports: ERROR ${e?.message || e}`);
 }
 
 // ── ステップ実行 ────────────────────────────────────

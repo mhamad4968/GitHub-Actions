@@ -2,7 +2,7 @@
 
 **日時**: 2026-04-26
 **Tier**: B (浜田判断 = `archive_monthly` + `all_reports` + `after_day4` 取得済)
-**ステータス**: Phase 1 完了 / Phase 2 = Day 4 後 / Phase 3 = 2026-05-01 朝
+**ステータス**: Phase 1〜3 完了（P3 実施: 2026-05-01 JST）
 
 ---
 
@@ -87,8 +87,8 @@ await maybeArchivePreviousMonth();
 | Phase | 内容 | タイミング | ステータス |
 |-------|------|-----------|----------|
 | **P1** | archive/ ディレクトリ作成 + .gitkeep + 設計書 (本ファイル) | 2026-04-26 09:21 JST | ✅ 完了 |
-| **P2** | scripts/archive-reports.mjs 新規 + 朝 cron 組込 + dry-run 動作確認 | Day 4 完全終了後 (今夜 or 4/27) | ⏳ TODO |
-| **P3** | 2026-05-01 朝の初回 archive 自動実行 + 動作検証 + autonomy log 記録 | 2026-05-01 06:30 JST | ⏳ TODO |
+| **P2** | scripts/archive-reports.mjs 新規 + 朝 cron 組込 + dry-run 動作確認 | Day 4 完全終了後 (今夜 or 4/27) | ✅ 完了（`daily-morning-prep.mjs` 冒頭 hook + `npm run reports:archive*`） |
+| **P3** | 2026-05-01 朝の初回 archive 自動実行 + 動作検証 + autonomy log 記録 | 2026-05-01 06:30 JST | ✅ 完了（手動 `--force` + commit `7e6bb70` + `logs/autonomy-decisions/Z3-archive-2026-04-actual-2026-05-01.md`） |
 
 ## 4. リスク & 対策
 
