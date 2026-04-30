@@ -1,0 +1,363 @@
+# 🌅 朝のブリーフィング — 2026-04-30 (Thu) 06:00
+
+> 本ファイルは `scripts/daily-morning-prep.mjs` が毎朝 06:00（WSL cron）に自動生成しています。
+> AI エージェントは WORKFLOW.md §Phase 0 に従い、最初にこのファイルを読みます。
+
+---
+
+## 📋 昨夜承認分の自動実施結果
+
+_(承認済み案件なし)_
+
+---
+
+## 0a. 💳 Cursor Ultra クレジット予算（§1-2-4）
+
+- 直近消費: 🟢 45% (2026-04-26) — OK / 通常運用継続
+- 月予算: L1 $200 (Ultra) + L2 $1000 (On-Demand cap) = **$1200**
+- 課金日: 毎月 14 日 / 次回リセット **2026-05-14** (残 **14** 日)
+- AI 助言: 通常運用継続 OK
+- 履歴件数: 1 日分
+
+> 1 日 1 回 30 秒: cursor.com/billing で「今月のクレジット消費 X%」を確認 → `npm run credit:set <pct>` で記録
+
+---
+
+## 0b. §55 セーフモード・前日自律ログ
+
+- §55: `safe-mode.json` なし（未発動または初回）
+
+### 🤖 自律判断ログ（2026-04-29 / autonomy scan）
+
+- **件数**: 0 行
+- **emergency:true**: 0 件
+- **§55 / safe_mode 関連（推定）**: 0 件
+- **notes / 旧 second_opinion に skipped 系（推定）**: 0 件
+
+---
+
+## 1. 環境ヘルス（kintone API 疎通）
+
+### ✅ npm run kintone:test
+
+```text
+[ok] app 594: PC管理台帳ver.2
+[ok] app 595: 社員情報マスタ
+[ok] app 626: アカウント採番アプリ
+[ok] app 627: アカウント管理台帳
+[ok] app 670: 環境設定マスタ
+[ok] app 671: M365管理マスタ
+[ok] app 672: 新個人WindowsID採番マスタ
+[ok] app 673: 新共有WindowsID採番マスタ
+[ok] app 674: 新・PC台帳ver.1
+[kintone:test] PC台帳スタック疎通 OK
+```
+
+## 2. 静的解析（ESLint）
+
+### ✅ npm run lint:customize
+
+```text
+(出力なし)
+```
+
+## 3. セキュリティ（npm audit）
+
+### ✅ npm audit
+
+```text
+found 0 vulnerabilities
+```
+
+## 4. 依存パッケージの最新性（npm outdated）
+
+```text
+_すべて最新_
+```
+
+## 5. ルール整合性（AGENTS.md ↔ RULES-INDEX.md / WORKFLOW.md）
+
+### ルール整合性チェック
+
+- AGENTS.md 定義: §0 / §1 / §2 / §3 / §4 / §5 / §6 / §7 / §8 / §9 / §10 / §11 / §12 / §13 / §14 / §15 / §16 / §17 / §18 / §19 / §20 / §21 / §22 / §23 / §24 / §25 / §26 / §27 / §28 / §29 / §30 / §31 / §32 / §33 / §34 / §35 / §36 / §37 / §38 / §39 / §41 / §42 / §43 / §44 / §45 / §46 / §47 / §48 / §49 / §50 / §51 / §52 / §54 / §55 / §56 / §57
+- RULES-INDEX.md: 56 個の §N 参照
+- WORKFLOW.md: 18 個の §N 参照
+
+✅ 破断リンクなし（参照されている §N はすべて AGENTS.md に存在）
+
+## 5-2. TSB confirmed フラグ整合性（F-2 5月目標 #2 監視）
+
+### TSB confirmed flag audit (F-2 5月目標 #2 監視)
+
+- ファイル: `docs/troubleshooting.md`
+- 目次行数: 24
+- 本文セクション数 (## TSB-): 23
+- root_cause_confirmed = true: 23 件 (**96%** 名目 / 孤児除外 **100%**)
+- root_cause_confirmed = false: 1 件（うち孤児明示 **1** / 要対応 **0**）
+
+✅ 5 月目標 #2 (カバレッジ 100% / 実質 = 孤児を除く 100%) を達成（名目 96% / 実質 100%）
+- 孤児確定 (調査打ち切り・目次維持): TSB-001
+
+ℹ️ 履歴参照 marker (date="履歴参照") として本文セクションなしは想定通り (2 件)
+  - TSB-001
+  - TSB-004
+
+## 5-3. post-BREAKING 削除 復活検知（TSB-016 #20 = ゾンビ復活ガード）
+
+### post-BREAKING 削除 復活検知 (TSB-016 #20 / I-1+I-3)
+
+- 対象ファイル (5 件): `AGENTS.md` / `RULES-INDEX.md` / `WORKFLOW.md` / `CLAUDE.md` / `kintone-apps.md`
+- 走査範囲: 直近 50 commit (実走査 50 件)
+- [BREAKING] commit 検出: 0 件
+
+| ファイル | BREAKING削除実施数 | 残存ゾンビ | 履歴上復活→修復済 |
+|---|---:|---:|---:|
+| `AGENTS.md` | 0 | ✅ 0 | 0 |
+| `RULES-INDEX.md` | 0 | ✅ 0 | 0 |
+| `WORKFLOW.md` | 0 | ✅ 0 | 0 |
+| `CLAUDE.md` | 0 | ✅ 0 | 0 |
+| `kintone-apps.md` | 0 | ✅ 0 | 0 |
+
+✅ pass: 全対象ファイルに「ゾンビ復活した削除済章/節」は存在せず
+
+## 5-4. AGENTS.md ↔ RULES-INDEX.md 相互参照 drift（索引漏れ + 死参照 検知）
+
+### Cross-reference audit (AGENTS.md ↔ RULES-INDEX.md / I-11)
+
+- AGENTS.md 定義済 §N: **156** 件
+- AGENTS.md 全言及 §N: 176 件
+- RULES-INDEX.md 言及 §N: **131** 件
+
+✅ pass: AGENTS.md と RULES-INDEX.md の §N drift (warn) なし
+  (info: sub-section 個別未列挙 40 件は親登録あり = 許容)
+
+## 5-5. 憲法ファイル リアルタイム変更ログ（過去 24h / K-3 / agents-md-changes.jsonl）
+
+**watcher プロセス状態**: 🟢 稼働中 (`scripts/file-watcher.mjs`)
+**朝報生成時刻**: 2026-04-30T06:00:08.820+09:00 (この時刻以降の編集は翌朝報で確認)
+
+**過去 24h の SHA256 変化イベント: 0 件** (jsonl 全件: 125)
+**jsonl 最新 entry**: 2026-04-28T19:39:33.612+09:00 `kintone-apps.md`
+
+_該当なし（静穏 / watcher 健在なので過去 24h に憲法ファイル変更が無かったことを示す）_
+
+### §51-4 並列セッション疑い判定（P4 / parallel-session-detector）
+
+**総合スコア**: 0 点 / 🟢 静穏 (通常運用継続)
+
+| 軸 | スコア | 内訳（要約） |
+|---|---:|---|
+| 軸1: watcher_pid 不一致 | 0 | pid=211 (26 件) / pid=212 (99 件) / （2 位の件数 < 27 = max(5, 28%×主件数) → watcher 再起動残骸の可能性、並列疑いなし） |
+| 軸2: 過密編集 | 0 | 同一 5 分窓に複数 pid で 5 件超の連続なし |
+| 軸3: lock 不在 | 0 | 直近 10 分に編集なし → 判定スキップ |
+| 軸4: 不審バックアップ | 0 | 不審なバックアップ命名なし |
+
+## 6. 未完了プラン抽出（docs/plans/*.md）
+
+### 未完了タスク（docs/plans/）
+
+> **52 件の未完了項目を 4 ファイルから検出**
+
+#### 2026-04-18-skysea-installer.md
+
+- L105: - [ ] PowerShell スクリプト雛形（突合 → 起動確認 → リモートインストール → 結果CSV） → **2026-04-25/26 持ち越し**
+- L106: - [ ] kintone 594 にフィールド追加案： → **2026-04-25/26 持ち越し**
+- L110: - [ ] 「📌 SKYSEA未導入」トグルを 594 検索パネルに追加する設計案（既存トグル群と同じ枠で） → **2026-04-25/26 持ち越し**
+
+#### 2026-04-21-new-pc-ledger-spec.md
+
+- L582: - [ ] 他アプリからの 627/594/626/667 ルックアップ参照を grep で洗い出し
+- L583: - [ ] 595/656/657 等が 627/594/626/667 を参照してないか確認
+- L584: - [ ] kintone API で 627/594/626/667 を叩くスクリプト全件特定
+- L585: - [ ] 削除直前に CSV 全件エクスポート → リポジトリ保存
+- L586: - [ ] 削除直前の最後の JSON Snapshot 取得 (`data/snapshots/{627,594,626,667}-final-<date>.json`)
+- L620: - [ ] 627 スキャン（個人 259 件に紐付くアカウント実態 / status / 重複紐付け確認）
+- L621: - [ ] 廃棄 1 件の種別特定 → B-1/B-2 除外確定
+- L622: - [ ] CSV マッピング表（594 + 627 + 595 → 新・PC台帳ver.1 の各フィールド）
+- L623: - [ ] CSV 整形ロジック実装（PW 自動算出 / バリデーション 2 系統対応 / etc）
+- L624: - [ ] CSV 出力 → 浜田レビュー → 浜田 import → 検証（件数一致 + 抜け漏れゼロ）
+- ...他 27 件
+
+#### 2026-04-25-pc-ledger-day3-action.md
+
+- L59: - [ ] `logs/autonomy-decisions.log` に Tier 判断が残る（該当操作があれば）
+- L105: - [ ] 新・PC台帳ver.1（Day 4 で作成予定）から 672/673 を呼ぶ採番ボタン UI 実装
+- L106: - [ ] 初期データ投入: jbm0001〜jbmXXXX / sjbm0001〜sjbmXXXX（必要数を浜田と決定）
+- L107: - [ ] 旧 626（1993 件）/ 旧 667（40 件）の凍結タイミング決定（5/13 月曜本番切替日）
+- L108: - [ ] 旧 626/667 のリネーム + 権限変更（書込ロック）
+
+#### 2026-04-26-pc-ledger-day4-action.md
+
+- L83: - [ ] chat-sessions/2026-04-26.md 更新（任意・日次ログ）
+- L273: - [ ] 印刷ボタン（4/27 で本実装）
+- L274: - [ ] 既存 627 印刷レイアウト移植（4/27）
+- L365: - [ ] App 674 が本番に存在し、**仕様書 §4.2 と一致**（field-spec-diff.mjs で機械検証）。**2026-04-27 GO 後**は `674-go-post-deploy-674-*` で **当時の 35/35**。**2026-04-28**: 594 HW + 内部 GROUP で正本 **43 件** → Tier B 後 **43/43**。**
+- L376: - [ ] customize 仕上げ:
+- L381: - [ ] テンプレ CSV 配布（B-1 移行用・**本番取込は 4/30-5/2**／手順は仕様書 **§7.4.6**・**§8.3**。**日程・着手順の絶対正本・前倒し禁止は §9（§9.0）**—チャットや手順書だけで日付をずらさない）
+- L382: - [ ] 動作確認チェックリスト（仕様書 §10.1 / 17 項目）
+
+## 7. RAG 知識ベース更新
+
+### ✅ RAG ingest
+
+```text
+[25/26] /home/mhamada202408224/kintone-ai-lab/.rag/extra-docs/troubleshooting.md ... OK (376 chunks)
+Parsed MD: /home/mhamada202408224/kintone-ai-lab/.rag/extra-docs/windows-cross-platform.md (1132 characters)
+VectorStore: Deleted chunks for file "/home/mhamada202408224/kintone-ai-lab/.rag/extra-docs/windows-cross-platform.md"
+VectorStore: Inserted 9 chunks
+[26/26] /home/mhamada202408224/kintone-ai-lab/.rag/extra-docs/windows-cross-platform.md ... OK (9 chunks)
+
+--- Ingest Summary ---
+Succeeded: 26
+Failed:    0
+Total chunks: 3024
+[113/114] /home/mhamada202408224/kintone-ai-lab/docs/session-clock-web-performance-notes.md ... OK (7 chunks)
+Parsed MD: /home/mhamada202408224/kintone-ai-lab/docs/troubleshooting.md (63555 characters)
+```
+
+---
+
+# 🌅 §46 朝ルーチン Phase 2-4
+
+> §46 により Phase 2-4 は SKYSEA 等のいかなるタスクよりも先に実行する。異常検出時はここで解消するまで他タスクへ進まない。
+
+## 🩺 Phase 2: 健康状況チェック
+
+**総合**: 正常 26 / 異常 0 / 警告 0 / スキップ 3
+
+### MCP 疎通
+
+| MCP | 結果 | 詳細 |
+|---|---|---|
+| github | ⏭ | Windows-side / WSL から疎通不可 |
+| cyber-news | ✅ | initialize 応答 OK |
+| office-powerpoint | ⏭ | Windows-side / WSL から疎通不可 |
+| filesystem | ✅ | initialize 応答 OK |
+| memory | ✅ | initialize 応答 OK |
+| fetch | ✅ | initialize 応答 OK |
+| sequential-thinking | ✅ | initialize 応答 OK |
+| kintone | ✅ | initialize 応答 OK |
+| kintone-dev | ✅ | initialize 応答 OK |
+| kintone-space | ✅ | initialize 応答 OK |
+| tavily | ⏭ | disabled:true |
+| playwright | ✅ | initialize 応答 OK |
+| cve-search | ✅ | initialize 応答 OK |
+| rag | ✅ | initialize 応答 OK |
+| accessibility-scanner | ✅ | initialize 応答 OK |
+| duckduckgo-search | ✅ | initialize 応答 OK |
+| kimi | ✅ | initialize 応答 OK |
+| deepseek | ✅ | initialize 応答 OK |
+| openrouter | ✅ | initialize 応答 OK |
+
+### システム
+
+- Node: `v24.14.1` (npm `11.12.1`) — ✅
+  - which: `/home/mhamada202408224/.nvm/versions/node/v24.14.1/bin/node`
+  - NVM v24 present: ✅
+- Disk (`~`): 2% 941G available on / — ✅
+  - npm cache: 4.2G / npx cache: 2.2G
+- Memory: 1013/7694 MiB (13%) — ✅
+- cron: ✅ morning:prep 登録済み
+
+### 🛡 自己診断強化 (S9 + S12 wiring)
+
+- **node_modules 完全性 (S9)**: ✅ node_modules 完全性 OK
+- **MCP 死蔵検知 (S12)**: ✅ 16/19 active (3 exempt) (過去 7 日)
+- **Git ahead/behind (S15)**: ✅ main = origin/main (完全同期)
+- **憲法ファイル watcher (S16 / K-3)**: ✅ file-watcher.mjs 稼働中 (憲法 5 ファイル SHA256 監視)
+
+### 🔎 rag MCP DB 内容チェック (TSB-012 再発防止)
+
+- ✅ documentCount=148
+
+## 🔧 Phase 3: 自動治療
+
+**結果**: 修復 0/0 件 / ログローテ完了 / 失敗 0
+
+| 操作 | 結果 |
+|---|---|
+| logs ローテ | ✅ `morning(0) health(0) heal(0)` |
+| npm audit fix (patch only) | ✅ `npm audit fix --audit-level=moderate || true` |
+
+## 📦 Phase 4: バージョンアップ対応
+
+**検出**: patch 0 / minor 0 / major 0
+**proposal 化**: 新規 0 / 重複スキップ 0
+
+_Phase 3 の patch 対応のみで完結。新規 proposal なし。_
+
+---
+
+## 🛡 自動防衛網ログ（前日からの活動）
+
+### file-watcher wipe-incidents.log（直近 10 行）
+
+```text
+{"time":"2026-04-28T09:21:06.584Z","file":"RULES-INDEX.md","old_size":25502,"new_size":0,"parent_pid":1,"self_pid":211}
+{"time":"2026-04-28T11:53:17.998Z","file":"scripts/wipe-guard.mjs","old_size":5613,"new_size":0,"parent_pid":1,"self_pid":211}
+{"time":"2026-04-28T11:53:18.012Z","file":"scripts/daily-morning-prep.mjs","old_size":25854,"new_size":0,"parent_pid":1,"self_pid":211}
+{"time":"2026-04-28T11:53:18.015Z","file":"CLAUDE.md","old_size":4149,"new_size":0,"parent_pid":1,"self_pid":211}
+{"time":"2026-04-28T11:53:18.017Z","file":"docs/troubleshooting.md","old_size":95535,"new_size":0,"parent_pid":1,"self_pid":211}
+{"time":"2026-04-28T21:54:40.952Z","file":"scripts/wipe-guard.mjs","old_size":5613,"new_size":0,"parent_pid":1,"self_pid":211}
+{"time":"2026-04-28T21:56:00.547Z","file":"CLAUDE.md","old_size":4149,"new_size":0,"parent_pid":1,"self_pid":211}
+{"time":"2026-04-28T22:26:45.627Z","file":"docs/troubleshooting.md","old_size":100931,"new_size":0,"parent_pid":1,"self_pid":211}
+{"time":"2026-04-29T04:15:41.290Z","file":"CLAUDE.md","old_size":4149,"new_size":0,"parent_pid":1,"self_pid":211}
+{"time":"2026-04-29T09:25:29.934Z","file":"scripts/daily-morning-prep.mjs","old_size":25854,"new_size":0,"parent_pid":1,"self_pid":211}
+```
+
+---
+
+## 8. kintone-apps.md 直近の更新履歴（末尾 5 行）
+
+```text
+| 2026-04-25 07:50 | **Day 3 / 採番マスタ 2 アプリ作成完了 (v2.1 仕様準拠)**: ① **新個人WindowsID採番マスタ (672)** = `^jbm\d{4}$` 厳格 4 桁ゼロ埋め (`logon_name` SINGLE_LINE_TEXT / `unique:true` / `required:true` / `minLength=maxLength=7` (jbm + 4 桁) / `status` DROP_DOWN [未使用/使用済/無効] default=未使用 / `note` MULTI_LINE_TEXT) / Space 21 / **5/13 旧 626 凍結後置換**。② **新共有WindowsID採番マスタ (673)** = `^sjbm\d{4}$` 厳格 4 桁ゼロ埋め (`logon_name` `minLength=maxLength=8` (sjbm + 4 桁) / status・note は App A と同構造) / Space 21 / **5/13 旧 667 凍結後置換**。**設計判断**: 既存移行 PC (5-6 桁) は採番マスタ経由せず新・PC台帳ver.1 に直接登録 + 緩いバリデーション (仕様書 §4.3.2) → 採番マスタは厳格 4 桁のみ受付 / `unique` + `minLength`/`maxLength` 一致で物理的二重発番防止。Day 3 は「器のみ」: payout 追跡フィールド (`assigned_to` / `assigned_at`) は Day 4 customize 設計時に追加検討。**MCP 工程**: kintone-add-app (each: revision 2) → kintone-add-form-fields (each: revision 3) → kintone-deploy-app → kintone-get-app-deploy-status (両方 SUCCESS) → kintone-get-form-fields で実フィールド突合 (3 カスタム + 標準 8 = 計 11 / 仕様完全一致)。**Day 4 以降の予定**: 採番ボタン UI 実装 (新・PC台帳ver.1 から呼出 / 最古「未使用」を pick → 「使用済」更新 + logon_name 引用) / 初期データ投入 (`jbm0001`〜 / `sjbm0001`〜) / 旧 626/667 凍結タイミング決定 (5/13 予定 / リネーム + 権限変更) |
+| 2026-04-29 | **PC台帳 B-1 移行の時期・方法（正本）**: **個人・NAS・その他（B-1）**は **AI が整形式 CSV・マッピング主担当**（**4/28-29** は §9 表どおりの準備のみ・**前倒し禁止**・**§9.0**）。**本番 import は §9 の 4/30-5/2**（`docs/plans/2026-04-21-new-pc-ledger-spec.md` **§7.4.6**・**§8.3**・**画面 CSV 一括**が既定）。下記 4/21 行「⑬」は当時要約—**B-2 は別行（同日）** |
+| 2026-04-29 | **PC台帳 B-2（共有+JR）を本番後へ（浜田確定・文書初記録）**: **53 件は 5/13 本番運用開始以降**、旧 594／627 を確認しながら **1 件ずつ手登録**（一括 CSV 移行はしない）。**4/28-5/2 の大移行から B-2 を除外**。正本 `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§7.4.6**・**§9**・**§13** 同日追記行。 |
+| 2026-04-29 | **部署予実 2 アプリ作成（枠のみ・本番反映済み）**: **入力 677**・**ダッシュ 678**。Space **54** / thread **58**。`kintone-add-app` MCP は出力検証エラーのため **`POST /k/v1/preview/app.json`**（`name` + `space` + `thread`）→ **`POST /k/v1/preview/app/deploy.json`**（各 revision **2**）を手実行。フィールド・customize は未着手（`SPEC.md` §10.1）。 |
+| 2026-04-21 21:40 | **新・PC台帳ver.1 仕様完全版確定 (Q&A 37 件 + α / 4 時間の徹底ヒアリング)**: 部署メンバー要望「PC 台帳とアカウント台帳が分かれてて使いづらい」を起点に、新規アプリ 3 個 (環境設定マスタ / M365管理マスタ / 新・PC台帳ver.1) を構築する全体仕様を浜田 × AI で徹底ヒアリング・確定。**設計方針**: 既存 594/627 は無傷のまま保険として残置 (1 か月後に廃止判断)・新規アプリ並行運用 → 5/11 月曜本番切替 + 旧アプリ書込ロック・段階移行で既存破壊ゼロ。**主要決定**: ① **アプリ名 = 新・PC台帳ver.1** (将来 ver.2 等にアップデート前提)、② **配置スペース = 21 (システム管理)** で既存全アプリと同居、③ **1 PC = 1 アカウント** の単純構造で「1 画面完結」、④ **共有アカウントは PC 単位重複登録** (1 共有 M365 を N PC で使う = N 行に重複)、⑤ **JR端末は OS ローカル + AD 不参加** で WindowsアカウントとM365アカウントのみ・他は不要、⑥ **M365 5 台ライセンス厳守** = M365管理マスタの usage_count + 自動払い出し/解放、⑦ **採番 = 新アプリ内自動採番** (種別別 MAX+1 / マスタなし)、⑧ **印刷レイアウト = 既存 627 からコピー** (個人用・共有用 2 種を種別で自動切替)、⑨ **検索 = カスタマイズ強化版** (検索バー + Enter 実行で部分検索 / PC名・所属・WindowsID・M365ID・利用者名対象)、⑩ **バリデーション** 個人=user_name 必須 / 共有・JR=shared_terminal_name 必須、⑪ **アクセス権限 = 浜田+担当者2名のみ** (既存と同じ運用継承)、⑫ **既存マスタ 626/667/595/656/657 は継続使用** (採番・社員引用・エラーログ・ダッシュボード集計対象切替)、⑬ **既存データ移行 = 浜田 CSV 作成 + 私レビュー** (`C:\\tmp\\new-pc-ledger\\` 経由)、⑭ **SKYSEA 計画は新アプリ移行完了後にリスケ** (5/15 再相談)、⑮ **PC買替 = 既存と同じ動作 + M365 引き継ぎ**、⑯ **5 台超過警告** = M365 マスタ枯渇 + 新規連番自動生成時に「Microsoft 管理画面で作成してください」alert 表示。**スケジュール**: 4/22(水) 19:00 着手 → 4/22-4/25 アプリ作成 + customize → 4/26 動作確認 → 4/27-4/28 浜田 CSV 準備 → **4/29-5/2 既存データ移行 (4 日間)** → 5/3-5/6 GW 連休 → 5/7-5/10 試運用 → **5/11(月) 本番運用開始** + 旧アプリ書込ロック + リネーム → 5/15(金) SKYSEA 再相談。**仕様書**: `docs/plans/2026-04-21-new-pc-ledger-spec.md` v1.0 (13 章・約 500 行・Q&A 確定一覧含む)。**今後の §47 改善**: 仕様詰め途中で「JR端末を共有から外す」「M365 マスタは新規」「サイボウズも新アプリで保持」など仕様が複数箇所変わった経緯あり → 仕様書 v0.1 段階での部分提示よりは **要件文書を一度全網羅で書き出してから AI に提示する** 方が議論ターン数を圧縮できる教訓を後で AGENTS.md 化検討 |
+```
+
+---
+
+## 🚀 今日の推奨スタート手順
+
+### ⚡ 時刻指定タスク（最優先）
+
+- `2026-04-18-skysea-installer.md` L16: ## ⚡ 開始予定: 2026-04-19 07:00 JST
+- `2026-04-18-skysea-installer.md` L18: > 朝 7 時から着手予定。`docs/reports/2026-04-19-morning-prep.md` の「⚡ 時刻指定タスク」セクションで本タスクが最優先表示される（#R3）。
+- `2026-04-23-mcp-strategy-v1.md` L3: **起票**: 2026-04-23 (Thu) 02:35 JST
+- `2026-04-26-Z3-reports-archive-design.md` L89: | **P1** | archive/ ディレクトリ作成 + .gitkeep + 設計書 (本ファイル) | 2026-04-26 09:21 JST | ✅ 完了 |
+- `2026-04-26-Z3-reports-archive-design.md` L91: | **P3** | 2026-05-01 朝の初回 archive 自動実行 + 動作検証 + autonomy log 記録 | 2026-05-01 06:30 JST | ⏳ TODO |
+- `2026-04-26-pc-ledger-day4-action.md` L3: **作成**: 2026-04-26 (Sun) 09:00 JST
+- `INDEX.md` L3: **最終更新**: 2026-04-25 (Sat) 10:50 JST / J-シリーズで Tier C 4 件 (C-9〜C-12) 追記
+
+### 直近の計画ファイル（3 件）
+
+- `docs/plans/2026-04-26-pc-ledger-day4-action.md` （更新: 2026-04-29 10:46）
+- `docs/plans/2026-04-21-new-pc-ledger-spec.md` （更新: 2026-04-29 09:25）
+- `docs/plans/2026-04-26-Z3-reports-archive-design.md` （更新: 2026-04-29 09:25）
+
+**AI への指示例**:
+```
+「2026-04-26-pc-ledger-day4-action.md の続きを進めて」
+```
+
+---
+
+## 🔍 ヘルススコア
+
+**13 / 13 合格**
+
+- ✅ apply-approved-changes
+- ✅ kintone:test
+- ✅ lint:customize
+- ✅ npm audit
+- ✅ audit-rules
+- ✅ audit-tsb-confirmed
+- ✅ verify-breaking-deletions
+- ✅ audit-cross-references
+- ✅ scan-plans
+- ✅ RAG ingest
+- ✅ §46 Phase 2 health-check
+- ✅ §46 Phase 3 auto-heal
+- ✅ §46 Phase 4 version-up
