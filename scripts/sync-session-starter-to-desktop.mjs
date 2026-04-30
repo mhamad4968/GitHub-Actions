@@ -9,7 +9,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { recommendedStarterPasteFilename, syncStarterToDesktopCanonical } from './lib/session-starter-desktop.mjs';
+import {
+  pruneNonCanonicalStarterDesktopFiles,
+  recommendedStarterPasteFilename,
+  syncStarterToDesktopCanonical,
+} from './lib/session-starter-desktop.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const destDir =
@@ -41,6 +45,10 @@ function main() {
     console.log(`[sync-session-starter-to-desktop] OK chat-sessions/NEW-SESSION-STARTER.md -> ${basePath}`);
     if (archived) {
       console.log(`[sync-session-starter-to-desktop] アーカイブ退避: -> ${path.join(destDir, archived)}`);
+    }
+    const pruned = pruneNonCanonicalStarterDesktopFiles(destDir, ymd);
+    for (const n of pruned) {
+      console.log(`[sync-session-starter-to-desktop] 旧ファイル削除: ${n}`);
     }
     console.log(
       `[sync-session-starter-to-desktop] 貼付推奨（項番-1）: ${paste}（Windows: C:\\Users\\mhamada202408224\\Desktop\\AI緊急用\\${paste}）`

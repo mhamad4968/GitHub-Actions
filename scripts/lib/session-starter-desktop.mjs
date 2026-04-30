@@ -105,3 +105,29 @@ export function starterCanonicalMatchesRepo(destDir, srcBuf, ymd = getJstYyyymmd
   }
   return { ok: true, path: p };
 }
+
+/**
+ * Desktop 上の `NEW-SESSION-STARTER_*.txt` のうち、**当日 canonical 以外を削除**する。
+ * 他日付の退避ファイル・当日の `_2` `_3`… アーカイブも削除し、**貼付推奨は常に 1 本**に揃える。
+ * @param {string} destDir
+ * @param {string} ymd JST yyyymmdd
+ * @returns {string[]} 削除したファイル名
+ */
+export function pruneNonCanonicalStarterDesktopFiles(destDir, ymd) {
+  if (!fs.existsSync(destDir)) {
+    return [];
+  }
+  const keepName = `NEW-SESSION-STARTER_${ymd}.txt`;
+  const removed = [];
+  for (const name of fs.readdirSync(destDir)) {
+    if (!STARTER_DESKTOP_RE.test(name)) {
+      continue;
+    }
+    if (name === keepName) {
+      continue;
+    }
+    fs.unlinkSync(path.join(destDir, name));
+    removed.push(name);
+  }
+  return removed;
+}

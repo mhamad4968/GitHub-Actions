@@ -635,3 +635,21 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 
 ---
 
+### 2026-04-30 (Wed) JST — §50-3-10・595 索引検索・Desktop 正本・dry-run runbook
+
+**浜田メモ（要約）**: 提案 A–D をすべて進める。**セッション切替の準備**。**`C:\Users\mhamada202408224\Desktop\AI緊急用`** に最新版を入れ、旧 `NEW-SESSION-STARTER_*` は削除。
+
+**実施内容（要約）**:
+- **`AGENTS.md` §50-3-10**（`.cursorrules` 鏡像: 完全覚醒・MCP 可視性・検索語義・Kimi 30 行＋Opus フォールバック）。**`.cursorrules`** に kintone `like` と **`docs/runbooks/dry-run-apply-checklist.md`** への参照。**`docs/runbooks/dry-run-apply-checklist.md`** 新設。
+- **`customize/595/desktop.js`**: 索引フルスキャン上限 **2000**、`totalCount` 事前取得で超過時はアラート＋スキップ、検索中の **busy 文言**（ボタン「検索中…」・ステータス「一覧を取得しています…」）。BUILD 文字列更新。
+- **`scripts/lib/session-starter-desktop.mjs`**: **`pruneNonCanonicalStarterDesktopFiles`**（当日 canonical のみ残し、他日付・当日 `_2` 等を削除）。
+- **`scripts/sync-session-starter-to-desktop.mjs`**: 同期後に **prune** 実行・削除ログ。
+- **`RULES-INDEX.md`**: §50-3 行・長い参照行に **§50-3-10** を反映。
+- **`chat-sessions/checkpoint-latest.md`**: 最終更新（Desktop prune・§50-3-10・595・runbook）を追記。
+
+**次の一手**: **`npm run desktop:sync-and-verify`**（または `session-starter:sync-desktop` + `verify:desktop-ai-emergency-sync`）で **AI緊急用** を正本化。**595** は **`npm run deploy:595`** で本番反映（未実施なら次ターン）。変更一式は **commit / push**。
+
+**次セッションへの 1 行**: Desktop の **`NEW-SESSION-STARTER_20260430.txt`（canonical）** を貼付ターンで Read。**dry-run → apply** は **`docs/runbooks/dry-run-apply-checklist.md`**。**595** 一覧検索は **2000 件超**でフルスキャンしない。
+
+---
+
