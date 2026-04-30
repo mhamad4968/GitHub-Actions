@@ -608,3 +608,18 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 
 ---
 
+### 2026-04-30 (Wed) JST — B-1 GO: 674 取込ドラフト CSV + マッピング表 v0
+
+**浜田メモ**: GO。
+
+**実施内容**:
+- `docs/plans/2026-04-30-b1-field-mapping-to-674.md`（§7.4.7 整合のマッピング表ドラフト v0）。
+- `scripts/build-b1-import-csv.mjs` + `npm run pc-ledger:b1-import-csv` → `C:\tmp\new-pc-ledger\b1-import-674-draft-*.csv`、`*-dryrun.txt`、`*-exceptions.csv`（layout API 列順）。
+- 仕様書 §7.4.7（5）にマッピング表リンク、§13 に 1 行。
+
+**次の一手**: ドライランの **pc_name 重複**（`JBIS0053-202602`）を浜田確認。**本番取込は未実施**（ドラフトのみ）。
+
+**次セッションへの 1 行**: 重複解消後に取込リハ → 件数 272 検収。
+
+---
+
