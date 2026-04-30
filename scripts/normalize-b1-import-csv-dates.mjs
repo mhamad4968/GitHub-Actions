@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 /**
- * B-1 取込用 CSV の日付列を `YYYY/MM/DD` → `YYYY-MM-DD` に正規化（ゼロ埋め）。
+ * B-1 取込用 CSV の整形:
+ * - `purchase_date` / `latest_inventory_date`: `YYYY/M/D` → `YYYY-MM-DD`
+ * - `serial`: 科学的記数法 → 整数文字列（空はそのまま）
  *
  *   node scripts/normalize-b1-import-csv-dates.mjs [入力.csv] [出力.csv省略時=上書き]
  *
  * 既定入力: /mnt/c/tmp/new-pc-ledger/b1-import-674-draft-2026-04-30.csv
- * 上書きが EACCES のときは `tmp/b1-import-674-draft-…-dates-fixed.csv` に退避。
+ * 上書きが EACCES のときは `tmp/b1-import-normalized-….csv` に退避。
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -14,18 +16,32 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, '..');
 const DEFAULT = '/mnt/c/tmp/new-pc-ledger/b1-import-674-draft-2026-04-30.csv';
-const TARGET_COLS = new Set(['purchase_date', 'latest_inventory_date']);
+const DATE_COLS = new Set(['purchase_date', 'latest_inventory_date']);
+const SERIAL_COL = 'serial';
 
-/** `2023/4/17` or `2023/04/17` → `2023-04-17`。既に `YYYY-MM-DD` はそのまま。 */
+/** `2023/4/17` → `2023-04-17`。既に `YYYY-MM-DD` はそのまま。 */
 function normalizeSlashDate(s) {
   const t = String(s ?? '').trim();
   if (!t) return '';
   const m = t.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/);
   if (!m) return t;
-  const y = m[1];
-  const mo = m[2].padStart(2, '0');
-  const d = m[3].padStart(2, '0');
-  return `${y}-${mo}-${d}`;
+  return `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}`;
+}
+
+/** `4.25208E+13` 等 → 整数文字列。先頭ゼロは復元しない。 */
+function expandScientificToIntegerString(raw) {
+  const t = String(raw ?? '').trim().replace(/\s+/g, '');
+  if (t === '') return '';
+  if (/^[+-]?(?:\d+\.?\d*|\d*\.\d+)[eE][+-]?\d+$/.test(t)) {
+    const n = Number(t);
+    if (!Number.isFinite(n)) return String(raw ?? '').trim();
+    if (Math.abs(n) > Number.MAX_SAFE_INTEGER) return String(raw ?? '').trim();
+    const rounded = Math.round(n);
+    if (Math.abs(n - rounded) > 1e-9 * Math.max(1, Math.abs(n))) return String(raw ?? '').trim();
+    return String(rounded);
+  }
+  if (/^\d+\.0+$/.test(t)) return t.slice(0, t.indexOf('.'));
+  return String(raw ?? '').trim();
 }
 
 function parseCsvLine(line) {
@@ -64,13 +80,18 @@ function main() {
   const lines = raw.split(/\r?\n/).filter((l) => l.length);
   if (!lines.length) throw new Error('empty file');
   const header = parseCsvLine(lines[0]);
-  const idxs = [];
+  const dateIdxs = [];
+  let serialIdx = -1;
   for (let i = 0; i < header.length; i++) {
-    if (TARGET_COLS.has(header[i].trim())) idxs.push(i);
+    const code = header[i].trim();
+    if (DATE_COLS.has(code)) dateIdxs.push(i);
+    if (code === SERIAL_COL) serialIdx = i;
   }
-  if (!idxs.length) throw new Error(`no target columns in header: ${TARGET_COLS}`);
+  if (!dateIdxs.length) throw new Error(`no date columns in header: ${[...DATE_COLS]}`);
+  if (serialIdx < 0) throw new Error(`no column "${SERIAL_COL}" in header`);
 
-  let changed = 0;
+  let changedDate = 0;
+  let changedSerial = 0;
   const out = [];
   out.push(lines[0]);
   for (let li = 1; li < lines.length; li++) {
@@ -78,12 +99,20 @@ function main() {
     if (row.length !== header.length) {
       throw new Error(`line ${li + 1}: expected ${header.length} cols, got ${row.length}`);
     }
-    for (const i of idxs) {
+    for (const i of dateIdxs) {
       const before = row[i];
       const after = normalizeSlashDate(before);
       if (before !== after) {
         row[i] = after;
-        changed++;
+        changedDate++;
+      }
+    }
+    {
+      const before = row[serialIdx];
+      const after = expandScientificToIntegerString(before);
+      if (before !== after) {
+        row[serialIdx] = after;
+        changedSerial++;
       }
     }
     out.push(row.map(csvCell).join(','));
@@ -100,7 +129,7 @@ function main() {
       const fallback = path.join(
         REPO_ROOT,
         'tmp',
-        `b1-import-dates-fixed-${path.basename(inPath).replace(/\.csv$/i, '')}.csv`,
+        `b1-import-normalized-${path.basename(inPath).replace(/\.csv$/i, '')}.csv`,
       );
       fs.mkdirSync(path.dirname(fallback), { recursive: true });
       fs.writeFileSync(fallback, body, 'utf8');
@@ -108,7 +137,9 @@ function main() {
       console.log(`Wrote ${fallback}`);
     } else throw e;
   }
-  console.log(`normalized_cells=${changed} (columns: ${[...TARGET_COLS].join(', ')})`);
+  console.log(
+    `normalized_date_cells=${changedDate} (${[...DATE_COLS].join(', ')}) / serial_cells=${changedSerial} (${SERIAL_COL})`,
+  );
 }
 
 main();
