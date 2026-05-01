@@ -1,0 +1,82 @@
+{
+  "properties": {
+    "work_type_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "work_type_name",
+      "label": "工種名称",
+      "required": true
+    },
+    "work_type_code": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "work_type_code",
+      "label": "工種コード"
+    },
+    "cost_category": {
+      "type": "DROP_DOWN",
+      "code": "cost_category",
+      "label": "費用種別",
+      "required": true,
+      "defaultValue": "",
+      "options": {
+        "変動費": { "label": "変動費", "index": "0" },
+        "固定費": { "label": "固定費", "index": "1" },
+        "その他": { "label": "その他", "index": "2" }
+      }
+    },
+    "summary_text": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "summary_text",
+      "label": "摘要",
+      "required": true
+    },
+    "partner_company": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "partner_company",
+      "label": "会社"
+    },
+    "issue_date": {
+      "type": "DATE",
+      "code": "issue_date",
+      "label": "起票日"
+    },
+    "legacy_cash_date": {
+      "type": "DATE",
+      "code": "legacy_cash_date",
+      "label": "出納日（参照用）"
+    },
+    "learning_fixed_budget": {
+      "type": "NUMBER",
+      "code": "learning_fixed_budget",
+      "label": "ラーニング費用（定額費）",
+      "digit": true
+    },
+    "initial_variable_budget": {
+      "type": "NUMBER",
+      "code": "initial_variable_budget",
+      "label": "イニシャル費用（変動費）",
+      "digit": true
+    },
+    "notes": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "notes",
+      "label": "備考"
+    },
+    "legacy_row_no": {
+      "type": "NUMBER",
+      "code": "legacy_row_no",
+      "label": "旧通番",
+      "digit": false
+    },
+    "display_order": {
+      "type": "NUMBER",
+      "code": "display_order",
+      "label": "表示順",
+      "digit": false
+    },
+    "attachments": {
+      "type": "FILE",
+      "code": "attachments",
+      "label": "添付ファイル"
+    }
+  }
+}

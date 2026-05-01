@@ -131,6 +131,7 @@
     "session:clock:health": "node scripts/session-clock-health.mjs",
     "verify:session-clock-health": "node scripts/session-clock-health.mjs --strict",
     "yojitsu:excel-draft": "python3 scripts/yojitsu_excel_columns_draft.py",
+    "yojitsu:677:batch1-preview": "npx dotenv -e .env -e .env.proxy -- node scripts/yojitsu-677-add-batch1-preview.mjs",
     "evening:reflect": "node scripts/evening-reflect.mjs",
     "reports:archive": "node scripts/archive-reports.mjs --force",
     "reports:archive:dry-run": "node scripts/archive-reports.mjs --dry-run --force",

@@ -736,3 +736,16 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 **次の 1 手**: 677 にレコード直下＋サブテーブル追加（着手直前 **50-3-8**）。
 
 ---
+
+### 2026-05-02 JST（追記）— 677 batch1 フィールド本番反映
+
+<!-- handoff: 677-batch1-20260502 -->
+
+- **DeepSeek**: CALC は数値フィールド後の batch2。DROP_DOWN はラベル＝キー運用に注意。
+- **実行**: `scripts/yojitsu-677-add-batch1-preview.mjs` + `scripts/data/yojitsu-677-batch1-properties.json`、preview revision **3** → deploy **SUCCESS**。
+- **検証**: `npm run app:fields 677` → **21 フィールド**（業務フィールド 13 追加）。
+- **npm**: `yojitsu:677:batch1-preview` を `package.json` に追加。
+
+**batch2（DeepSeek合意）**: `monthly_breakdown` / `payment_breakdown` は **1 POST に内包フィールド全部 → deploy 1 回**。レコード直下 CALC はサブテーブル後。
+
+---
