@@ -2,6 +2,10 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
+## DeepSeek × Cursor 役割分担（2026-05-01 浜田確定・全セッション継承）
+
+**憲法**: 仕様確認・予実本題では **分業は必須**。詳細は **`.cursor/rules/deepseek-cursor-spec-division.mdc`**（`alwaysApply: true`）。要約: **DeepSeek = 一次**（網羅・質問票・要約）、**Cursor = セカンドオピニオン**（正本照合・節番号付き反証/同意・仕様の単独確定禁止）。**§50-3-8**（盲点＋**約 3 行突合メモ**）と併用。**PC 台帳（674 等）を触らない日**は本題を **部署予実（677/678・`SPEC.md`）**に寄せ、正本を混読しない（本ファイル 5A/5B）。
+
 ## 部署予実・kintone フィールド追加日の航海図テンプレ（§50-3-9）
 
 **本題が 677/678 のフィールド追加・deploy 等のとき、着手 1 ターン目に CIO がチャットへそのまま貼る短い表**（§50-3-2 / §50-3-9）。
@@ -41,11 +45,12 @@
    - **0a2 必読構造ゲート**: 続けて **`npm run verify:mandatory-read-gate`** → **exit 0**（`scripts/mandatory-read-gate.mjs`）。checkpoint の **最終更新** 行・`handoff-log` の見出し・`HANDOFF-HUMAN` テンプレ・`SESSION-BOOTSTRAP` 冒頭・`AGENTS.md` 最小サイズを機械検査。**内包**: **`chat-sessions/SESSION-CLOCK.md`** ＋ **`npm run session:split-check`**（§51-6-2 **時間軸**／`開始:` から **4 時間超**で exit 2）。**議論だけで抜けた未読了前提を exit 2 で止める**。**`npm run session:bootstrap` 単体**なら 0a→0a2 は内包済み。
    - **0b Desktop「AI緊急用」都度メンテ（浜田指示）**: 浜田が毎回開く **`C:\Users\mhamada202408224\Desktop\AI緊急用`**（WSL: `/mnt/c/Users/mhamada202408224/Desktop/AI緊急用`）を、**セッション切替のたびに AI がメンテ済みか確認する**。手順: **`npm run session-starter:sync-desktop`**（`NEW-SESSION-STARTER_yyyymmdd.txt` + `SESSION-BOOTSTRAP` + `HANDOFF-HUMAN` + **`README.txt`** をリポ正本へコピー）→ 続けて **`npm run verify:desktop-ai-emergency-sync`**（フォルダがある環境では **バイト一致**で機械確認。**貼付推奨ファイル名を最終行に表示**）。**控えフォルダが無い**ときは verify が SKIP のみ → チャットに **「AI緊急用は未照合（/mnt/c なし等）」と 1 行**（環境復帰後に sync + verify を再実行）。
 1. 本ファイル `chat-sessions/checkpoint-latest.md`（先頭〜直近の **最終更新** 1 行）
-2. **`chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` を通読**（経緯・法律相当・ルール・機能・MCP の棚卸し表）
+2. **`chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` を通読**（経緯・法律相当・ルール・機能・MCP の棚卸し表）。**着手前にルールだけ五段階、その後に本題の確認を小出し**したいときは、`chat-sessions/SESSION-READ-LADDER.md` の **A→B** に従ってよい（本項番 1〜5 と併用可）。
+   - **`SESSION-READ-LADDER.md` を併用するとき（第0手・AI 分業の抜け防止）**: 先に **`chat-sessions/desktop-ai-emergency-read-pack/READ-02.txt`〜`READ-06.txt` を番号昇順で Read**（未使用のみのファイルはスキップ可＋理由 1 行）。**`READ-06.txt` を Read した直後**にチャットへ **`【AI分業チェック】`** を **1 回必ず**出す（テンプレは `READ-06` 先頭。「省略」「同上」禁止）。続けて **`SESSION-READ-LADDER.md` を通読**してから **A・第1段**へ。手順の正本は **`chat-sessions/desktop-ai-emergency-read-pack/READ-01.txt` 項番 4** および `.cursor/rules/session-read-ladder-two-phase.mdc`（**ラダー全文より先に番号パック**）。
 3. `chat-sessions/NEW-SESSION-STARTER.md` の **冒頭〜最新 v3.x ブロック**（kintone プレビュー／憲法級など）
 4. `chat-sessions/handoff-log.md` の **末尾から最大 3 件**（無ければスキップ可）
 5. **本題に応じた Read（項番 -0 で合意した本題だけ。PC 台帳と部署予実の正本を混読しない）**
-   - **5A 部署予実（yojitsu）を本題にする場合**: `templates/yojitsu-budget-lite/SPEC.md`（§9・§10.1 等）／`templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md`／`templates/yojitsu-budget-lite/docs/yojitsu-migration-kyu-to-kintone.md`／`templates/yojitsu-budget-lite/docs/shin-format-excel-layout.md`／`templates/yojitsu-budget-lite/docs/yojitsu-spec-session-checklist.md`。**kintone にアプリ作成・フィールド追加する前**は `.cursor/rules/creation-timing-ask.mdc`（スペース・着手タイミング）。**§50-3-8**: **予実／ロジック／複雑 customize**へ入る**直前**に DeepSeek 盲点3点＋**約3行突合メモ**（`AGENTS.md`）。**セッション切替後**は前チャットのメモで代替せず**再実行**。**674・新・PC台帳 §4.2・Day4 手順書は、674／customize／ラベル／採番アプリを触らない限り Read 不要**（無関係正本のミス読み・憲法と逆転の誘因を防ぐ）。詳細手順は `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1c**。
+   - **5A 部署予実（yojitsu）を本題にする場合**: `templates/yojitsu-budget-lite/SPEC.md`（§9・§10.1 等）／`templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md`／`templates/yojitsu-budget-lite/docs/yojitsu-migration-kyu-to-kintone.md`／`templates/yojitsu-budget-lite/docs/shin-format-excel-layout.md`／`templates/yojitsu-budget-lite/docs/yojitsu-spec-session-checklist.md`。**kintone にアプリ作成・フィールド追加する前**は `.cursor/rules/creation-timing-ask.mdc`（スペース・着手タイミング）。**§50-3-8**: **予実／ロジック／複雑 customize**へ入る**直前**に DeepSeek 盲点3点＋**約3行突合メモ**（`AGENTS.md`）。**仕様確認デー**は **`.cursor/rules/deepseek-cursor-spec-division.mdc`**（DeepSeek 一次／Cursor セカンドの**必須分業**）。**セッション切替後**は前チャットのメモで代替せず**再実行**。**674・新・PC台帳 §4.2・Day4 手順書は、674／customize／ラベル／採番アプリを触らない限り Read 不要**（無関係正本のミス読み・憲法と逆転の誘因を防ぐ）。詳細手順は `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1c**。
    - **5B 新・PC台帳（Day4 継続中または 674・新・PC台帳 customize・672/673 を触る場合）** … `docs/plans/2026-04-26-pc-ledger-day4-action.md` の **「AI 引継ぎ: …」**（Day4 時）＋ `chat-sessions/2026-04-26-pc-ledger-day4.md`（あれば）＋ **正本仕様書** `docs/plans/2026-04-21-new-pc-ledger-spec.md` の **§4.2.0〜§4.4 を Read**（手順書のみで代替しない／詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b**）＋画面ラベルは **短文 JSON**／検証は **`npm run pc-ledger:verify-labels-spec`**
 6. `RULES-INDEX.md` の **「セッション切替・文脈復元」** 行（索引 1 行で他ドキュへジャンプ）
 7. **AI は `npm run session:bootstrap` を実行**し、結果をチャットに要約（**verify:constitution-handoff → verify:mandatory-read-gate → verify:session-clock-health → session-starter:sync-desktop → verify:desktop-ai-emergency-sync → smoke** 10 連／**Read だけで終わらせない**／詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 6–7）
@@ -78,6 +83,8 @@
 - **次チャット初手**: 本ファイルの **「セッション切替後の自律復元」** の Read 順に従う（**SESSION-BOOTSTRAP-CHECKLIST** ＋ `npm run session:bootstrap` 必須）。**§51-6-2（セッション切替時刻）**の壁時計・目印は `chat-sessions/SESSION-SPLIT-REMINDER.md`。
 
 ---
+
+**最終更新**: 2026-05-01 (Thu) JST — **DeepSeek × Cursor 分業の恒久化（浜田指示）**: `.cursor/rules/deepseek-cursor-spec-division.mdc` 新設（`alwaysApply: true`）。`checkpoint-latest.md` に本節＋ 5A からの参照を追加。**役割**: DeepSeek = 一次（網羅・質問票）、Cursor = セカンド（正本照合・§ 付き反証/同意・単独で仕様確定しない）。**§50-3-8 突合メモ**と併用。**次本題**: 部署予実は **明日から仕様確認**（PC 台帳は一旦停止）。`RULES-INDEX.md` §50-3 行に本ルールへの索引を 1 語追記。
 
 **最終更新**: 2026-04-30 (Wed) JST — **セッション締め・翌日準備（CIO 一括）**: 本会話で合意した **A〜D 案の実装**（`595` 一覧検索の **全件上限2000件**＋**検索中UI**、`session-starter:sync-desktop` の **Desktop 上 `NEW-SESSION-STARTER_*` 非canonical削除**、`AGENTS.md` **§50-3-10** 鏡像、`.cursorrules` 検索用語、`docs/runbooks/dry-run-apply-checklist.md`）。**次チャット**: スターター貼付 → Read 通読 → §41 → `session:bootstrap`。**Desktop**: `npm run desktop:sync-and-verify` 済みなら当日 `NEW-SESSION-STARTER_yyyymmdd.txt` のみ残る運用。
 
