@@ -9,8 +9,9 @@
  *   1c) session-clock-health.mjs --strict（§51-6-2 壁時計 hooks / crontab node 整合）
  *   2) npm run session-starter:sync-desktop（浜田 Desktop AI緊急用へ儀式 .txt をコピー）
  *   3) verify-desktop-ai-emergency-sync.mjs（コピー後のバイト一致＝メンテ確認）
+ *   3b) verify-cursor-mcp-windows.mjs（Windows mcp.json 機械検査・TSB-028）
  *   4) npm run smoke:quiet（10 連検査＝従来 9 ＋ mandatory-read-gate）
- * 終了コード: (1)(1b)(1c)(3) が非 0 なら即終了 / さもなければ smoke に委譲（0=ok / 1=warn / 2=ng）。
+ * 終了コード: (1)(1b)(1c)(3)(3b) が非 0 なら即終了 / さもなければ smoke に委譲（0=ok / 1=warn / 2=ng）。
  */
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
@@ -27,6 +28,7 @@ console.log(`
 (1c) node scripts/session-clock-health.mjs --strict  ← 壁時計 hooks / crontab node 整合
 (2) npm run session-starter:sync-desktop  ← Desktop AI緊急用
 (3) node scripts/verify-desktop-ai-emergency-sync.mjs  ← バイト一致確認
+(3b) node scripts/verify-cursor-mcp-windows.mjs  ← Windows Cursor mcp.json（TSB-028）
 (4) npm run smoke:quiet（直列 10 検査）
 `);
 
@@ -69,6 +71,15 @@ const desk = spawnSync(process.execPath, ['scripts/verify-desktop-ai-emergency-s
 });
 if (desk.status !== 0) {
   process.exit(typeof desk.status === 'number' && desk.status !== 0 ? desk.status : 2);
+}
+
+const mcpWin = spawnSync(process.execPath, ['scripts/verify-cursor-mcp-windows.mjs'], {
+  cwd: root,
+  stdio: 'inherit',
+});
+if (mcpWin.status !== 0) {
+  console.error('→ Windows Cursor mcp.json が不正です。WSL 正本を直してから: npm run mcp:sync-cursor-windows');
+  process.exit(typeof mcpWin.status === 'number' && mcpWin.status !== 0 ? mcpWin.status : 2);
 }
 
 const r = spawnSync('npm', ['run', 'smoke:quiet'], {

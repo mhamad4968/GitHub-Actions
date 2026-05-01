@@ -1267,3 +1267,29 @@ CIO の最初の仮説は「悪意ある書き換え／別経路ロールバッ�
 - 当該 commit: `59b4bab`（事象検知）/ Phase B 復元 commit（本 TSB と同 commit で push 予定）
 - 索引: `RULES-INDEX.md`（更新予定）/ `chat-sessions/NEW-SESSION-STARTER.md` line 24 周辺（冒頭永続化）
 - 関連: TSB-024（要約耐性アンチパターン）/ TSB-016（BREAKING 削除が無自覚に undone）— 「機械的書換で人間制御が失われる」共通系列
+
+---
+
+## TSB-028 — Windows Cursor の `mcp.json` が WSL 正本とズレて MCP 全赤化（2026-05-01 検出 / 同日 恒久対策）
+
+### 事象
+
+Windows 上の Cursor の MCP 一覧で **filesystem / kintone-space / markdownify** などが **赤（Error）**。一方 WSL で `npm run health-check` は緑。
+
+### 根本原因（2 層）
+
+1. **二重ファイル**: Cursor（Windows）は `C:\Users\<user>\.cursor\mcp.json` を読むが、作業正本は WSL の `~/.cursor/mcp.json` にあり、**手編集・別ツールで片方だけ更新**されると定義が食い違う。
+2. **誤生成バグ**: WSL→Windows 同期を試みたスクリプトが **`filesystem` の `command` に `args[0]`（`-y`）を代入**し、`command: "-y"` になった。あわせて **`/mnt/c` / `C:\` / `/home` が混在**し、Windows ネイティブの `npx` 系 MCP が起動不能になった。
+3. **起動形態**: `kintone-space` を **`wsl -e node` のみ**にすると、Cursor の `env` が子 `node` に届かず認証失敗しうる。**`markdownify`** は Windows の古い `node` で `npx` が落ちうる。
+
+### 恒久対策
+
+1. **正本**: **`~/.cursor/mcp.json`（WSL）**のみを人間・CIO が編集する。Windows 側は **生成物**とみなす。
+2. **同期**: `npm run mcp:sync-cursor-windows`（`scripts/sync-cursor-mcp-windows-from-wsl.mjs`）で Windows `mcp.json` を **常に同じ変換規則**から再生成する（バックアップ `.bak-<timestamp>` 付き）。
+3. **検証**: `npm run verify:cursor-mcp-windows`（`scripts/verify-cursor-mcp-windows.mjs`）で **`filesystem.command === "npx"`**、パスが **Windows ドライブ形式**、`kintone-space` が **`bash -lc`** 等を機械判定。
+4. **運用フック**: `npm run desktop:sync-and-verify` と **`npm run session:bootstrap`** に **verify を組み込み**（`/mnt/c` 不在時は SKIP）。赤が出たらまず **`npm run mcp:sync-cursor-windows`** → Cursor **Reload Window**。
+
+### 教訓
+
+- **`mcp.json` の `command` と `args` を合成するときは `server.command` を正本にする**（`args[0]` を command にしない）。
+- **WSL と Windows でパス体系が違う**ため、同期は **明示の変換関数**＋**検証スクリプト**のセットで持つ。
