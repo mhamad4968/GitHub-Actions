@@ -1,10 +1,10 @@
 /**
- * 新・PC台帳ver.1 (Day 4 雛形 / Day 5 で本実装)
+ * 新・PC台帳ver.1（Day 4 以降の継続実装）
  *
  * 仕様: docs/plans/2026-04-21-new-pc-ledger-spec.md v2.1 §4
  * Day 4 plan: docs/plans/2026-04-26-pc-ledger-day4-action.md
  *
- * BUILD: 2026-05-01-account-manual-truth-v0.9.4（アカウント欄は手入力を正とする／共有671満杯時の自動切替で M365 を上書きしない）
+ * 直近: アカウント手入力優先・671 満杯時の上書き抑止・627 相当の印刷帳票（§4.9）
  *
  * Day 4 雛形スコープ:
  *   - 種別 (account_type) による表示制御 (show/hide)
@@ -12,19 +12,19 @@
  *   - §4.2.3a: SKYSEA 4 件は `skysea_system_meta`（表示名 SKYSEA処理用）に収容。アカウント部領域のため **権限のあるユーザーは編集可能**。運用で触るのは浜田のみと **周知**（customize ではログインによる非表示はしない）。通常はグループを閉じた初期表示
  *   - 自動生成ボタン: 個人 / 共有 / JR（M365 系）を §4.4 に沿ってフォームへ反映（空欄のみ上書き）
  *   - 5 台ライセンス警告雛形 (赤バナーは仕組みのみ)
- *   - リセット/PC買替/印刷ボタン雛形
+ *   - リセット／PC買替ボタン（PC買替は Day 5 予定）／印刷（627 レイアウト移植済）
  *
  * Day 5 残タスク:
- *   - 印刷帳票 (627 レイアウト移植)
- *   - 検索バー強化
+ *   - 検索バー強化（一覧・オートコンプリート + 種別チップ）
  */
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-01-account-manual-truth-v0.9.4';
+  const BUILD = '2026-05-01-print627-port-v0.9.5';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
+  let jb674PrintRecordSnapshot = null;
 
   /** 共有・JR 等の手入力時の参照用（浜田提供・順序固定） */
   const DEPT_HELP_REFERENCE_TEXT =
@@ -2001,6 +2001,318 @@
     });
   }
 
+  // ===== 印刷（627 移植・§4.9）=====
+  const JBIS674_PRINT_LAYOUT = [
+    [
+      { label: '部署名', code: 'dept_name' },
+      { label: '利用者名', code: 'user_name' },
+      { label: 'PC名', code: 'pc_name' },
+    ],
+    [
+      { label: 'メールアドレス', code: 'mail' },
+      { label: 'メールアカウント', code: 'mail_acct' },
+      { label: 'メールパスワード', code: 'mail_pw' },
+    ],
+    [
+      { label: 'WindowsID', code: 'logon_name' },
+      { label: 'Windowsパスワード', code: 'logon_pw' },
+    ],
+    [
+      { label: 'サイボウズID', code: 'sb_id' },
+      { label: 'サイボウズパスワード', code: 'sb_pw' },
+    ],
+    [
+      { label: 'ガリバーID', code: 'gb_id' },
+      { label: 'ガリバーパスワード', code: 'gb_pw' },
+    ],
+    [
+      { label: 'M365ID', code: 'm365_id' },
+      { label: 'M365パスワード', code: 'm365_pw' },
+    ],
+    [
+      { label: 'VPN ID(KDDI)', code: 'vpn_id' },
+      { label: 'VPNパスワード', code: 'vpn_pw' },
+    ],
+  ];
+
+  const esc674PrintHtml = (s) =>
+    String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+
+  const get674PrintFieldValue = (rec, code) => {
+    if (!rec) return '';
+    if (code === '$id') return String(rec.$id?.value ?? '');
+    const fld = rec[code];
+    if (fld?.value == null) return '';
+    const v = fld.value;
+    if (typeof v === 'object') {
+      if (Array.isArray(v)) return v.join(', ');
+      if (v.name != null) return String(v.name);
+      return '';
+    }
+    return String(v);
+  };
+
+  const get674PrintCellValue = (rec, cell) =>
+    cell ? get674PrintFieldValue(rec, cell.code) : '';
+
+  /**
+   * セル値が「実質空」かどうか（空文字 / 空白だけ / ハイフン系記号だけ）。
+   * 過去運用で「未使用」を表す `----` `---` `--` `ー` `—` `－` 等が手入力されているため、
+   * これらを空欄と同等に扱う（C-4: 印刷帳票のみの判定。データには影響なし）。
+   * ハイフン系: ASCII `-` (U+002D), Hyphen `‐` (U+2010), En dash `–` (U+2013),
+   *            Em dash `—` (U+2014), Horizontal bar `―` (U+2015),
+   *            Katakana long sound `ー` (U+30FC), Halfwidth `ｰ` (U+FF70),
+   *            Full-width hyphen-minus `－` (U+FF0D)
+   */
+  const isPrint674CellEmpty = (raw) =>
+    /^[\s\u002D\u2010\u2013\u2014\u2015\u30FC\uFF70\uFF0D]*$/u.test(String(raw ?? ''));
+
+  /**
+   * 1段ぶんの HTML（横並びグリッドセル）。tierIndex 0 は部署・氏名・PC を強調表示。
+   * tierIndex >= 1 で全セルが「実質空」なら段ごと省略する（C-4: 共有/個人で不要セクションを抑制）。
+   */
+  const build674PrintTierHtml = (rec, tierCells, tierIndex) => {
+    const isLead = tierIndex === 0;
+    if (!isLead) {
+      const allEmpty = tierCells.every(
+        (cell) => isPrint674CellEmpty(get674PrintCellValue(rec, cell))
+      );
+      if (allEmpty) return '';
+    }
+    let tierClass = 'jbis674-tier';
+    if (isLead) tierClass += ' jbis674-tier--lead';
+    const ncol = tierCells.length;
+    if (ncol === 3) {
+      tierClass += ' jbis674-tier--cols3';
+    } else if (ncol === 2) {
+      tierClass += ' jbis674-tier--cols2';
+      if (tierCells[0]?.code === 'm365_id') tierClass += ' jbis674-tier--m365';
+    }
+    const cellsHtml = tierCells.map((cell) => {
+      const raw = get674PrintCellValue(rec, cell);
+      const isEmpty = isPrint674CellEmpty(raw);
+      const val = isEmpty ? '---' : raw.trim();
+      const dimStyle = isEmpty ? ' style="color:#94a3b8;font-style:italic"' : '';
+      return `<div class="jbis674-cell">\
+<div class="jbis674-lab">${esc674PrintHtml(cell.label)}</div>\
+<div class="jbis674-val"${dimStyle}>${esc674PrintHtml(val)}</div></div>`;
+    }).join('');
+    return `<div class="${tierClass}">${cellsHtml}</div>`;
+  };
+
+  /**
+   * 別ウィンドウに表を出し、ブラウザの印刷ダイアログを開く（パスワード行を含むので取り扱い注意）。
+   * head/body を document 直下に append だけすると環境によって白画面になるため document.write で組み立てる。
+   */
+  const open674SystemInfoPrintWindow = (rec) => {
+    const w = window.open('', '_blank');
+    if (!w) {
+      alert('別ウィンドウを開けませんでした。ポップアップブロックを解除してください。');
+      return;
+    }
+    w.opener = null;
+
+    const recNo = get674PrintFieldValue(rec, 'レコード番号');
+    const bodyInner = JBIS674_PRINT_LAYOUT
+      .map((tier, i) => build674PrintTierHtml(rec, tier, i))
+      .filter(Boolean)
+      .join('');
+    const metaLine =
+      `${recNo ? `No. ${esc674PrintHtml(recNo)} \u00b7 ` : ''}${esc674PrintHtml(new Date().toLocaleString('ja-JP'))}`;
+
+    // C-4: account_type で印刷テーマと文言を出し分け（既存の 668 ガイド配色と統一）
+    const accTypeRaw = String(rec?.[FC_ACCOUNT_TYPE]?.value ?? '').trim();
+    const isShared = accTypeRaw === TYPE_SHARED || accTypeRaw === TYPE_JR;
+    const theme = isShared
+      ? {
+          label: accTypeRaw || '共有・JR',
+          title: '新・PC台帳ver.1（共有・JR）',
+          subtitle: 'システム情報（印刷用）。本紙は機密性の高い内容を含みます。',
+          notice: '本アカウントは複数メンバーで<b>共有して利用するID/PW</b>です。'
+            + 'ID・パスワードを変更した場合は<b>関係者全員に必ず共有</b>してください。'
+            + '印刷物の紛失・置き忘れ・第三者への提示がないよう、適切に保管してください。',
+          heroBg: '#ffe4e6',
+          heroFg: '#881337',
+          heroBorder: '#fecdd3',
+          heroSub: '#9f1239',
+          noticeBorder: '#e11d48',
+          noticeBg: '#ffe4e6',
+          noticeFg: '#881337',
+          badgeBg: '#fff1f2',
+          badgeBorder: '#fda4af',
+          badgeFg: '#9f1239',
+          cardBorder: '#fecdd3',
+          bodyBg: '#fff1f2',
+          tierLeadBg: '#fff5f7',
+          tierLeadBorder: '#ffe4e6',
+          tierEvenBg: '#fff8f9',
+          shadowColor: 'rgba(159,18,57,.12)',
+        }
+      : {
+          label: accTypeRaw || '個人アカウント',
+          title: '新・PC台帳ver.1',
+          subtitle: 'システム情報（印刷用）。本紙は機密性の高い内容を含みます。',
+          notice: 'アカウント情報の管理は個人の責任で行ってください。'
+            + '印刷物の紛失・置き忘れ・第三者への提示がないよう、適切に保管してください。',
+          heroBg: '#d1fae5',
+          heroFg: '#134e4a',
+          heroBorder: '#a7f3d0',
+          heroSub: '#365f52',
+          noticeBorder: '#0d9488',
+          noticeBg: '#d1fae5',
+          noticeFg: '#134e4a',
+          badgeBg: '#ecfdf5',
+          badgeBorder: '#86efac',
+          badgeFg: '#166534',
+          cardBorder: '#bbf7d0',
+          bodyBg: '#ecfdf5',
+          tierLeadBg: '#f0fdf4',
+          tierLeadBorder: '#dcfce7',
+          tierEvenBg: '#f7fef9',
+          shadowColor: 'rgba(15,118,110,.12)',
+        };
+
+    const docHtml = `<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">\
+<meta name="viewport" content="width=device-width,initial-scale=1">\
+<title>新・PC台帳・システム情報</title>\
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&amp;display=swap">\
+<style>\
+:root{\
+--hero-bg:${theme.heroBg};--hero-fg:${theme.heroFg};--hero-border:${theme.heroBorder};--hero-sub:${theme.heroSub};\
+--notice-border:${theme.noticeBorder};--notice-bg:${theme.noticeBg};--notice-fg:${theme.noticeFg};\
+--badge-bg:${theme.badgeBg};--badge-border:${theme.badgeBorder};--badge-fg:${theme.badgeFg};\
+--card-border:${theme.cardBorder};--body-bg:${theme.bodyBg};\
+--tier-lead-bg:${theme.tierLeadBg};--tier-lead-border:${theme.tierLeadBorder};--tier-even-bg:${theme.tierEvenBg};\
+--shadow-color:${theme.shadowColor};\
+}\
+*{box-sizing:border-box;}\
+body{margin:0;padding:28px 20px 40px;background:var(--body-bg);\
+font-family:"Noto Sans JP",system-ui,sans-serif;color:#0f172a;-webkit-print-color-adjust:exact;print-color-adjust:exact;}\
+.jbis674-wrap{max-width:880px;margin:0 auto;}\
+.jbis674-hero{background:var(--hero-bg);color:var(--hero-fg);padding:26px 28px 22px;border-radius:18px 18px 0 0;\
+border:1px solid var(--hero-border);border-bottom:none;\
+box-shadow:0 10px 28px var(--shadow-color);position:relative;}\
+.jbis674-hero h1{margin:0;font-size:1.35rem;font-weight:700;letter-spacing:.02em;}\
+.jbis674-hero p{margin:10px 0 0;font-size:12px;font-weight:500;line-height:1.65;color:var(--hero-sub);}\
+.jbis674-badge{display:inline-block;margin-top:12px;padding:4px 12px;border-radius:999px;\
+background:var(--badge-bg);font-size:11px;font-weight:700;letter-spacing:.04em;\
+border:1px solid var(--badge-border);color:var(--badge-fg);}\
+.jbis674-notice{margin:0;padding:14px 18px 16px;border-left:4px solid var(--notice-border);\
+background:var(--notice-bg);border-bottom:1px solid var(--hero-border);}\
+.jbis674-notice p{margin:0;font-size:12px;font-weight:600;line-height:1.7;color:var(--notice-fg);}\
+.jbis674-card{background:#fff;border-radius:0 0 18px 18px;\
+box-shadow:0 18px 40px rgba(15,23,42,.08);overflow:hidden;border:1px solid var(--card-border);\
+border-top:none;}\
+.jbis674-tier{display:grid;gap:0;padding:0;border-bottom:1px solid #e2e8f0;}\
+.jbis674-tier--cols1{grid-template-columns:1fr;}\
+.jbis674-tier--cols2{grid-template-columns:1fr 1fr;}\
+.jbis674-tier--cols3{grid-template-columns:1fr 1fr 1fr;}\
+.jbis674-tier--m365{grid-template-columns:minmax(0,1.9fr) minmax(0,1fr);}\
+.jbis674-tier--memo .jbis674-cell--memo{min-height:0;padding:18px 20px 22px;border-right:none;}\
+.jbis674-lab--memo{text-transform:none;letter-spacing:0.04em;font-size:11px;font-weight:700;\
+color:#475569;margin-bottom:8px;line-height:1.35;}\
+.jbis674-memo-space{min-height:72px;border:1px dashed #94a3b8;border-radius:6px;background:#f8fafc;\
+margin-top:10px;}\
+.jbis674-tier:last-child{border-bottom:none;}\
+.jbis674-cell{padding:18px 20px 20px;background:#fff;border-right:1px solid #f1f5f9;min-height:92px;}\
+.jbis674-cell:last-child{border-right:none;}\
+.jbis674-tier:nth-child(even) .jbis674-cell{background:var(--tier-even-bg);}\
+.jbis674-tier--lead .jbis674-cell{background:var(--tier-lead-bg);padding:22px 22px 24px;min-height:108px;\
+border-right:1px solid var(--tier-lead-border);}\
+.jbis674-tier--lead .jbis674-lab{font-size:12px;font-weight:700;color:#475569;letter-spacing:.06em;\
+text-transform:none;margin-bottom:10px;}\
+.jbis674-tier--lead .jbis674-val{font-size:1.35rem;font-weight:700;line-height:1.45;color:#0f172a;}\
+.jbis674-lab{font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.1em;\
+margin-bottom:8px;line-height:1.3;}\
+.jbis674-val{font-size:14px;font-weight:600;line-height:1.55;color:#0f172a;word-break:break-word;\
+min-height:1.4em;font-feature-settings:"tnum";}\
+.jbis674-foot{margin-top:22px;text-align:center;font-size:11px;color:#64748b;font-weight:500;}\
+@media print{\
+@page{size:A4 portrait;margin:7mm;}\
+body{padding:0;background:var(--body-bg);-webkit-print-color-adjust:exact;print-color-adjust:exact;}\
+.jbis674-wrap{max-width:100%;margin:0;}\
+.jbis674-hero{padding:12px 16px 10px;border-radius:0;box-shadow:none;border:1px solid var(--hero-border);\
+background:var(--hero-bg);color:var(--hero-fg);}\
+.jbis674-hero h1{font-size:16pt;line-height:1.2;margin:0;color:var(--hero-fg);}\
+.jbis674-hero p{margin:7px 0 0;font-size:9.5pt;line-height:1.45;font-weight:500;color:var(--hero-sub);}\
+.jbis674-badge{display:inline-block;margin-top:8px;padding:3px 10px;border-radius:999px;\
+background:var(--badge-bg);border:1px solid var(--badge-border);color:var(--badge-fg);\
+font-size:9pt;font-weight:700;letter-spacing:.04em;}\
+.jbis674-notice{padding:10px 14px 11px;border-left:4px solid var(--notice-border);background:var(--notice-bg);\
+border-bottom:1px solid var(--hero-border);}\
+.jbis674-notice p{margin:0;font-size:9.5pt;line-height:1.55;font-weight:600;color:var(--notice-fg);}\
+.jbis674-card{box-shadow:none;border-radius:0;border:1px solid var(--card-border);border-top:none;}\
+.jbis674-tier{break-inside:avoid;page-break-inside:avoid;border-color:#cbd5e1;}\
+.jbis674-cell{padding:12px 16px 14px;min-height:0;border-color:#e2e8f0;}\
+.jbis674-tier:nth-child(even) .jbis674-cell{background:var(--tier-even-bg) !important;}\
+.jbis674-tier--lead .jbis674-cell{background:var(--tier-lead-bg) !important;padding:14px 18px 16px;min-height:0;\
+border-right:1px solid var(--tier-lead-border);}\
+.jbis674-tier--lead .jbis674-lab{font-size:11pt;margin-bottom:6px;color:#475569;\
+text-transform:none;letter-spacing:0.02em;font-weight:700;}\
+.jbis674-tier--lead .jbis674-val{font-size:15pt;font-weight:700;line-height:1.35;color:#0f172a;}\
+.jbis674-lab{font-size:10pt;margin-bottom:5px;line-height:1.3;color:#475569;\
+text-transform:none;letter-spacing:0.02em;font-weight:700;}\
+.jbis674-val{font-size:12.5pt;line-height:1.45;font-weight:600;word-break:break-word;\
+overflow-wrap:anywhere;}\
+.jbis674-foot{margin-top:12px;font-size:9.5pt;line-height:1.35;color:#64748b;}\
+.jbis674-tier--memo .jbis674-cell--memo{padding:10px 14px 12px !important;}\
+.jbis674-lab--memo{font-size:9pt !important;margin-bottom:4px !important;}\
+.jbis674-memo-space{min-height:48px;margin-top:6px;background:#fafafa !important;}\
+}\
+</style></head><body>\
+<div class="jbis674-wrap">\
+<header class="jbis674-hero">\
+<h1>${esc674PrintHtml(theme.title)}</h1>\
+<p>${esc674PrintHtml(theme.subtitle)}</p>\
+<span class="jbis674-badge">${esc674PrintHtml(theme.label)}</span>\
+</header>\
+<aside class="jbis674-notice" role="note">\
+<p>${theme.notice}</p>\
+</aside>\
+<div class="jbis674-card">\
+${bodyInner}\
+<div class="jbis674-tier jbis674-tier--cols1 jbis674-tier--memo">\
+<div class="jbis674-cell jbis674-cell--memo">\
+<div class="jbis674-lab jbis674-lab--memo">その他・メモ（手書き用）</div>\
+<div class="jbis674-memo-space" aria-hidden="true"></div>\
+</div></div>\
+</div>\
+<p class="jbis674-foot">${metaLine}</p>\
+</div></body></html>`;
+
+    const d = w.document;
+    d.open();
+    d.write(docHtml);
+    d.close();
+    w.focus();
+    setTimeout(() => {
+      try { w.print(); } catch (e) { console.warn('[NEW-PC-LEDGER-V1] window.print', e); }
+    }, 400);
+  };
+
+  /** 編集・詳細では get()、スナップショットの順で印刷用レコードを得る（627 相当） */
+  function resolve674PrintRecord() {
+    try {
+      const holder = kintone.app.record.get();
+      if (holder && holder.record) return holder.record;
+    } catch (e) {
+      /* 詳細画面など */
+    }
+    try {
+      if (typeof kintone.mobile !== 'undefined') {
+        const holder = kintone.mobile.app.record.get();
+        if (holder && holder.record) return holder.record;
+      }
+    } catch (e2) {
+      /* noop */
+    }
+    return jb674PrintRecordSnapshot;
+  }
+
   // ===== 自動生成ボタン 雛形 =====
 
   function createGenerateButton(label, color, onClick) {
@@ -2012,6 +2324,7 @@
   }
 
   function injectButtons(event) {
+    jb674PrintRecordSnapshot = event.record;
     const space = getHeaderSpace674();
     if (!space) return;
 
@@ -2067,7 +2380,12 @@
 
     // 印刷 (全種別)
     wrapper.appendChild(createGenerateButton('📄 印刷', '#0dcaf0', () => {
-      alert('🛠 Day 5 で実装予定: 種別に応じた印刷レイアウト (627 移植)');
+      const rec = resolve674PrintRecord();
+      if (!rec) {
+        window.alert('レコードを取得できませんでした。画面を開き直すか、一覧から再度開いてください。');
+        return;
+      }
+      open674SystemInfoPrintWindow(rec);
     }));
 
     space.appendChild(wrapper);
