@@ -6,7 +6,7 @@
 
 ---
 
-## 目次（2026-04-25 全件再構築 / 2026-05-01 TSB-028・TSB-029 目次表追記 / F-2 自己改善目標 #2 = 真因 1 文 + root_cause_confirmed フラグ追加）
+## 目次（2026-04-25 全件再構築 / 2026-05-01 TSB-028・TSB-029 目次表追記 / 2026-05-02 TSB-030 追記 / F-2 自己改善目標 #2 = 真因 1 文 + root_cause_confirmed フラグ追加）
 
 > **真因 1 文ルール**: 各 TSB は **「真因を 1 文で説明できる」状態でなければ root_cause_confirmed = false** とする。false の TSB は再発監視優先。
 > **status 凡例**: ✅ Resolved（恒久対策済）/ 🟡 Mitigated（暫定対策のみ）/ 🔴 Open（未解決）/ ♻️ Recurring（同系列複数 episode）
@@ -39,9 +39,10 @@
 | TSB-026 | 2026-04-29 07:15 検出 / 07:25 解消 | 機械的書換による「人間注意書き」の構造的消失 | **NEW-SESSION-STARTER 冒頭の累積編集で hand 5200 needle が押し出され**、かつ **`session:clock:set` が HEADER 全置換で人間追記注意書きを上書き**して、要約耐性ガードが構造的に失われた（恒久対策: NEW-SESSION-STARTER 冒頭に `(7) 役割宣言` 永続追加 + `session-clock.mjs` HEADER 定数に注意書き永続化） | ✅ | true | 憲法級ハンドオフ / SESSION-CLOCK |
 | TSB-028 | 2026-05-01 | Windows Cursor の `mcp.json` が WSL 正本とズレて MCP 全赤化 | **Windows と WSL に二重の `mcp.json` があり片方だけ更新**される／同期スクリプトの **`command`/`args` 合成バグ**で `filesystem` が壊れる等、**パス体系の混在**で MCP 起動が失敗する | ✅ | true | Cursor MCP 全体 |
 | TSB-029 | 2026-05-01 | `user-markdownify`（`@iflow-mcp/markdownify-mcp`）stdio 即死 | **npm 公開 tarball に `preinstall.js` が含まれないのに `package.json` が `preinstall` を定義**しており、`npm install -g`（スクリプト有効）や **`npx` 展開のライフサイクルが失敗して子が即終了**する（副因として Windows `_npx` 掃除 EPERM ログも出うる） | ✅ | true | Cursor MCP `markdownify` |
+| TSB-030 | 2026-05-02 | GitHub Actions `security-next-*` が **GAIA_AP15**（403）で失敗 | **GitHub Environment `kintone-collect` の API トークン（`KINTONE_API_TOKEN_COLLECT` / `KINTONE_API_TOKEN_ANALYZE` 等）が、ワークフローが参照するアプリ ID（`KINTONE_APP`・`KINTONE_REPORT_APP_ID`）と kintone 上で一致しておらず** REST が **403 GAIA_AP15** を返している | 🟡 | true | `.github/workflows/main.yml` / `daily-collect.yml` / `security-next-automation/` |
 
-**集計** (2026-05-01 時点 / TSB-028・029 目次表追記):
-- 全 **26** 件中 **root_cause_confirmed = true: 25 件 (~96%)** / **false (孤児): 1 件 (~4%)**
+**集計** (2026-05-02 時点 / TSB-030 追記):
+- 全 **27** 件中 **root_cause_confirmed = true: 26 件** / **false (孤児): 1 件**
 - 5 月目標 (F-2 自己批判 §54-5) = カバレッジ 100% を TSB-019 真因確定 (Cursor IDE Agents 設定) で **95% 前後を維持**（分母は TSB セクション数に追随）
 - 残 false: **TSB-001 のみ** = 孤児 TSB（4/19 D1-proposal でも「詳細未記載」）= 真因不明のまま記録止まり
 
@@ -1324,4 +1325,35 @@ Cursor の MCP ログで **`Connection failed: MCP error -32000: Connection clos
 
 - **TSB-028**（`mcp.json` 二重定義・同期）／`npm run verify:cursor-mcp-windows`／`npm run mcp:sync-cursor-windows`
 - 正本（ユーザー環境）: **`C:\Users\<user>\.cursor\mcp.json`** の `markdownify` ブロック（リポ外。秘密はコミットしない）
+
+---
+
+## TSB-030 — GitHub Actions `security-next-kintone` / `security-next-daily-collect` が **GAIA_AP15**（403）で失敗（2026-05-02 検出）
+
+### 事象
+
+`gh run list` で **schedule** 実行の **security-next-kintone**（`analyze`）および **security-next-daily-collect**（`collect`）が **failure**。ログ例: run `25210258504` / `25210156439`。
+
+### 根本原因（真因 1 文）
+
+**GitHub Actions の Environment `kintone-collect` に設定された API トークンが、ワークフローがアクセスする kintone アプリ ID と一致しておらず**、`@kintone/rest-api-client` が **HTTP 403 `[GAIA_AP15] APIトークンとアプリ（id: …）の組み合わせが正しくありません`** で落ちている。
+
+### 確認手順（浜田 / 管理者・リポ外）
+
+1. GitHub → **Settings → Environments → `kintone-collect` → Environment secrets** で **`KINTONE_DOMAIN`** / **`KINTONE_APP`**（ニュース用アプリ ID）/ **`KINTONE_REPORT_APP_ID`**（レポート用）/ **`KINTONE_API_TOKEN_COLLECT`** / **`KINTONE_API_TOKEN_ANALYZE`**（および従来 **`KINTONE_API_TOKEN`** を使う場合）が **意図したアプリに対応しているか**を見直す。
+2. kintone 管理画面で **各アプリの API トークン**を再発行し、**そのアプリ専用の権限**（`analyze` は 631 読取 + 632 書込の二系統）に合わせて Secret を更新する（詳細は `security-next-automation/src/lib/config.ts` のコメントと `.github/workflows/main.yml` の `env:` ブロック）。
+3. 修正後 **`workflow_dispatch`** で `security-next-kintone` の **collect / analyze** を手動再実行し **success** を確認する。
+
+### 恒久対策（コード側の補助）
+
+- 本 TSB を索引に残し、**失敗ログに GAIA_AP15 が出たら Secret 見直しを最優先**とする（READ-07「GitHub のワークフローでエラーが出ていたら速やかに直す」と整合）。
+
+### 教訓
+
+- **403 GAIA_AP15 は「REST のバグ」ではなくトークンとアプリの組み合わせ不一致**がほとんど。CI の赤は **まず Secrets とアプリ ID**。
+- **Environment secrets と Repository secrets の取り違え**でも `env` が空になりうる（ワークフロー内の `::error::` メッセージ参照）。
+
+### 関連
+
+- `.github/workflows/main.yml` / `.github/workflows/daily-collect.yml` / `security-next-automation/`
 
