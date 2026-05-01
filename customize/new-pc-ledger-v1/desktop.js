@@ -15,12 +15,12 @@
  *   - リセット／PC買替ボタン（PC買替は Day 5 予定）／印刷（627 レイアウト移植済）
  *
  * Day 5 残タスク:
- *   - 検索バー強化（一覧・オートコンプリート + 種別チップ）
+ *   - （一覧）検索バー強化は §4.8a 対応済み。SKYSEA 状態フィルタ等は別途。
  */
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-01-print627-port-v0.9.5';
+  const BUILD = '2026-05-01-index-search-v0.9.6';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -2544,11 +2544,361 @@ ${bodyInner}\
   ];
   kintone.events.on(pcStatusChangeEvents, onAccountTypeOrPcStatusChange674);
 
-  // 一覧では所属ヘルプを出さない（§4.2.0b 詳細・新規のみ）
-  kintone.events.on('app.record.index.show', () => {
-    removeDeptHelpBanner();
+  // --- 一覧：§4.8a 検索（キーワード + 種別チップ、datalist オートコンプリート） ---
+  const SEARCH674_WRAP_ID = 'new-pc-ledger-674-index-search';
+  const SEARCH674_WRAP_VER = '2026-05-01-v1';
+  const SEARCH674_DL_ID = 'new-pc-ledger-674-search-datalist';
+
+  const SEARCH674_HINT_FIELDS = [
+    FC_PC_NAME,
+    FC_LOGON_NAME,
+    FC_M365_ID,
+    FC_USER_NAME,
+    FC_DEPT_NAME,
+    FC_GROUP_NAME,
+    FC_SHARED_TERMINAL_NAME,
+  ];
+
+  const SEARCH674_TYPE_CHIPS = [
+    { value: TYPE_PERSONAL, label: '👤 個人' },
+    { value: TYPE_SHARED, label: '🟦 共有' },
+    { value: TYPE_JR, label: '🚆 JR端末' },
+    { value: TYPE_SERVER, label: '🖥 サーバーNAS' },
+    { value: TYPE_OTHER, label: '📦 その他' },
+  ];
+
+  const cache674IndexSearch = { key: '', records: [], ts: 0 };
+
+  function cell674PlainForSearch(rec, code) {
+    const f = rec[code];
+    if (!f || f.value == null) return '';
+    if (typeof f.value === 'object' && !Array.isArray(f.value)) {
+      return f.value.name != null ? String(f.value.name) : '';
+    }
+    return String(f.value).trim();
+  }
+
+  function escape674QueryLike(s) {
+    return String(s).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+  }
+
+  function build674IndexListQuery(keyword, selectedTypes) {
+    const parts = [];
+    const types = selectedTypes instanceof Set ? [...selectedTypes] : [];
+    if (types.length) {
+      const quoted = types
+        .map(function (t) {
+          return '"' + escape674QueryLike(t) + '"';
+        })
+        .join(', ');
+      parts.push('(' + FC_ACCOUNT_TYPE + ' in (' + quoted + '))');
+    }
+    let kw = String(keyword || '').trim();
+    if (kw.length > 80) {
+      kw = kw.slice(0, 80);
+    }
+    if (kw) {
+      const e = escape674QueryLike(kw);
+      const ors = SEARCH674_HINT_FIELDS.map(function (c) {
+        return '(' + c + ' like "' + e + '")';
+      });
+      parts.push('(' + ors.join(' or ') + ')');
+    }
+    if (!parts.length) return '';
+    return parts.join(' and ');
+  }
+
+  function navigate674ListWithQuery(queryStr) {
+    let u;
+    try {
+      u = new URL(location.href);
+    } catch (e) {
+      return;
+    }
+    if (queryStr) {
+      u.searchParams.set('query', queryStr);
+    } else {
+      u.searchParams.delete('query');
+    }
+    location.href = u.toString();
+  }
+
+  function resolve674ListSearchMount() {
+    const oceanHead = document.querySelector('.ocean-ui-app-index-head');
+    if (oceanHead) return { parent: oceanHead, insert: 'first' };
+    if (typeof kintone.app.getHeaderSpaceElement === 'function') {
+      const headerSpace = kintone.app.getHeaderSpaceElement();
+      if (headerSpace) return { parent: headerSpace, insert: 'last' };
+    }
+    const menu = kintone.app.getHeaderMenuSpaceElement();
+    if (menu) return { parent: menu, insert: 'last' };
+    for (const sel of ['.gaia-argoui-app-toolbar-top', '.gaia-argoui-app-index-head']) {
+      const n = document.querySelector(sel);
+      if (n) return { parent: n, insert: 'first' };
+    }
+    const listBox = document.querySelector('.recordlist-gaia');
+    if (listBox) return { parent: listBox, insert: 'first' };
+    const layoutGaia = document.querySelector('#contents-body .layout-gaia');
+    if (layoutGaia) return { parent: layoutGaia, insert: 'first' };
+    return { parent: null, insert: 'last' };
+  }
+
+  function attach674ListSearchPanel(wrap) {
+    const info = resolve674ListSearchMount();
+    if (!info.parent) return false;
+    if (info.insert === 'first') {
+      info.parent.insertBefore(wrap, info.parent.firstChild);
+    } else {
+      info.parent.appendChild(wrap);
+    }
     return true;
-  });
+  }
+
+  async function fetch674IndexSearchCache() {
+    const app = kintone.app.getId();
+    let viewId;
+    try {
+      viewId = typeof kintone.app.getViewId === 'function' ? String(kintone.app.getViewId()) : '';
+    } catch (e) {
+      viewId = '';
+    }
+    /** 一覧 URL の query（絞り込み結果）を混ぜない。datalist はアプリ内の値候補を広く出す。 */
+    const cacheKey = String(app) + '|' + viewId + '|674search-hints';
+    const now = Date.now();
+    if (
+      cache674IndexSearch.key === cacheKey &&
+      cache674IndexSearch.records.length &&
+      now - cache674IndexSearch.ts < 120000
+    ) {
+      return cache674IndexSearch.records;
+    }
+    const fields = ['$id'].concat(SEARCH674_HINT_FIELDS, [FC_ACCOUNT_TYPE]);
+    const all = [];
+    for (let off = 0; off < 120000; off += 500) {
+      const query = '$id > 0 order by $id desc limit 500 offset ' + off;
+      const res = await kintone.api(kintone.api.url('/k/v1/records', true), 'GET', {
+        app,
+        query,
+        fields,
+      });
+      const recs = res.records || [];
+      all.push(...recs);
+      if (recs.length < 500) break;
+    }
+    cache674IndexSearch.key = cacheKey;
+    cache674IndexSearch.records = all;
+    cache674IndexSearch.ts = now;
+    return all;
+  }
+
+  function update674SearchDatalist(records, prefix) {
+    const dl = document.getElementById(SEARCH674_DL_ID);
+    if (!dl) return;
+    while (dl.firstChild) dl.removeChild(dl.firstChild);
+    const p = String(prefix || '').trim().toLowerCase();
+    if (!p) return;
+    const seen = new Set();
+    const out = [];
+    for (let ri = 0; ri < records.length; ri++) {
+      const rec = records[ri];
+      for (let fi = 0; fi < SEARCH674_HINT_FIELDS.length; fi++) {
+        const code = SEARCH674_HINT_FIELDS[fi];
+        const v = cell674PlainForSearch(rec, code);
+        if (!v) continue;
+        if (!v.toLowerCase().includes(p)) continue;
+        if (seen.has(v)) continue;
+        seen.add(v);
+        out.push(v);
+        if (out.length >= 80) break;
+      }
+      if (out.length >= 80) break;
+    }
+    out.sort(function (a, b) {
+      return a.length - b.length || a.localeCompare(b);
+    });
+    for (let i = 0; i < out.length; i++) {
+      const o = document.createElement('option');
+      o.value = out[i];
+      dl.appendChild(o);
+    }
+  }
+
+  function render674IndexSearchBar() {
+    const existing = document.getElementById(SEARCH674_WRAP_ID);
+    if (existing && existing.getAttribute('data-npl-ver') === SEARCH674_WRAP_VER) {
+      return;
+    }
+    if (existing) {
+      try {
+        existing.remove();
+      } catch (eRem) {
+        console.warn('[NEW-PC-LEDGER-V1] remove old search panel', eRem);
+      }
+    }
+
+    const wrap = document.createElement('div');
+    wrap.id = SEARCH674_WRAP_ID;
+    wrap.setAttribute('data-npl-ver', SEARCH674_WRAP_VER);
+    wrap.style.cssText =
+      'box-sizing:border-box;width:100%;max-width:min(100%,calc(100vw - 24px));' +
+      'margin:0 0 12px 0;padding:10px 12px 12px;background:#f1f5f9;border:1px solid #cbd5e1;' +
+      'border-radius:8px;font-family:system-ui,sans-serif;';
+
+    const title = document.createElement('div');
+    title.style.cssText = 'font-size:12px;font-weight:700;color:#0f172a;margin-bottom:8px;';
+    title.textContent =
+      'キーワード検索（PC名・WindowsID・M365・利用者名・所属・グループ・共有端末名）／種別チップ';
+
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px;';
+
+    const inpKw = document.createElement('input');
+    inpKw.type = 'text';
+    inpKw.setAttribute('list', SEARCH674_DL_ID);
+    inpKw.setAttribute('autocomplete', 'off');
+    inpKw.placeholder = '例: jb ／ KS0 ／ メールの一部';
+    inpKw.style.cssText =
+      'min-width:220px;flex:1;max-width:420px;padding:6px 10px;border:1px solid #94a3b8;border-radius:6px;';
+
+    const dl = document.createElement('datalist');
+    dl.id = SEARCH674_DL_ID;
+
+    const btnGo = document.createElement('button');
+    btnGo.type = 'button';
+    btnGo.textContent = '絞り込み';
+    btnGo.style.cssText =
+      'padding:6px 14px;border-radius:6px;border:none;background:#0d9488;color:#fff;font-weight:700;cursor:pointer;';
+
+    const btnClr = document.createElement('button');
+    btnClr.type = 'button';
+    btnClr.textContent = '条件クリア';
+    btnClr.style.cssText =
+      'padding:6px 12px;border-radius:6px;border:1px solid #64748b;background:#fff;color:#334155;font-weight:700;cursor:pointer;';
+
+    row.appendChild(inpKw);
+    row.appendChild(dl);
+    row.appendChild(btnGo);
+    row.appendChild(btnClr);
+
+    const chipRow = document.createElement('div');
+    chipRow.style.cssText =
+      'display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px;';
+
+    const selectedTypes = new Set();
+
+    SEARCH674_TYPE_CHIPS.forEach(function (def) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = def.label;
+      b.dataset.typeValue = def.value;
+      b.style.cssText =
+        'padding:4px 10px;border-radius:999px;border:1px solid #94a3b8;background:#fff;' +
+        'font-size:12px;font-weight:700;cursor:pointer;color:#0f172a;';
+      b.setAttribute('aria-pressed', 'false');
+      b.addEventListener('click', function () {
+        const val = b.dataset.typeValue || '';
+        if (selectedTypes.has(val)) {
+          selectedTypes.delete(val);
+          b.setAttribute('aria-pressed', 'false');
+          b.style.background = '#fff';
+          b.style.borderColor = '#94a3b8';
+        } else {
+          selectedTypes.add(val);
+          b.setAttribute('aria-pressed', 'true');
+          b.style.background = '#cffafe';
+          b.style.borderColor = '#0e7490';
+        }
+      });
+      chipRow.appendChild(b);
+    });
+
+    const hint = document.createElement('div');
+    hint.style.cssText = 'font-size:11px;color:#475569;line-height:1.45;';
+    hint.textContent =
+      'Enter または「絞り込み」で一覧を更新します。種別チップは複数選択可（account_type in）、キーワードは上記フィールドに対する部分一致（OR）と AND です。';
+
+    wrap.appendChild(title);
+    wrap.appendChild(row);
+    wrap.appendChild(chipRow);
+    wrap.appendChild(hint);
+
+    const apply674 = function () {
+      const q = build674IndexListQuery(inpKw.value, selectedTypes);
+      navigate674ListWithQuery(q);
+    };
+
+    btnGo.addEventListener('click', function () {
+      apply674();
+    });
+    btnClr.addEventListener('click', function () {
+      inpKw.value = '';
+      selectedTypes.clear();
+      Array.prototype.forEach.call(chipRow.querySelectorAll('button'), function (b) {
+        b.setAttribute('aria-pressed', 'false');
+        b.style.background = '#fff';
+        b.style.borderColor = '#94a3b8';
+      });
+      navigate674ListWithQuery('');
+    });
+    inpKw.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter') {
+        ev.preventDefault();
+        apply674();
+      }
+    });
+
+    let cachePromise = null;
+    function ensure674SearchCache() {
+      if (!cachePromise) {
+        cachePromise = fetch674IndexSearchCache();
+      }
+      return cachePromise;
+    }
+
+    inpKw.addEventListener('input', function () {
+      ensure674SearchCache()
+        .then(function (recs) {
+          update674SearchDatalist(recs, inpKw.value);
+        })
+        .catch(function (e) {
+          console.warn('[NEW-PC-LEDGER-V1] index search datalist', e);
+        });
+    });
+
+    if (!attach674ListSearchPanel(wrap)) {
+      console.warn('[NEW-PC-LEDGER-V1] index search mount failed');
+      return;
+    }
+
+    ensure674SearchCache()
+      .then(function (recs) {
+        update674SearchDatalist(recs, inpKw.value);
+      })
+      .catch(function (e) {
+        console.warn('[NEW-PC-LEDGER-V1] initial search cache', e);
+      });
+  }
+
+  function schedule674IndexSearch() {
+    [0, 400, 1200].forEach(function (ms) {
+      setTimeout(function () {
+        try {
+          render674IndexSearchBar();
+        } catch (e) {
+          console.warn('[NEW-PC-LEDGER-V1] schedule674IndexSearch', e);
+        }
+      }, ms);
+    });
+  }
+
+  // 一覧では所属ヘルプを出さない（§4.2.0b 詳細・新規のみ）
+  function onRecordIndexShow674(event) {
+    removeDeptHelpBanner();
+    schedule674IndexSearch();
+    return event;
+  }
+  kintone.events.on('app.record.index.show', onRecordIndexShow674);
+  kintone.events.on('mobile.app.record.index.show', onRecordIndexShow674);
 
   // 保存前バリデーション (仕様書 §4.7.1 + §5.3 6 台目ブロック)
   const submitEvents674 = [
