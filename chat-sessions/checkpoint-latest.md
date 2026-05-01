@@ -2,9 +2,9 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-## DeepSeek × Cursor 役割分担（2026-05-01 浜田確定・全セッション継承）
+## CIO × 知恵袋（仕様確認分業・2026-05-01 浜田確定・全セッション継承）
 
-**憲法**: 仕様確認・予実本題では **分業は必須**。詳細は **`.cursor/rules/deepseek-cursor-spec-division.mdc`**（`alwaysApply: true`）。要約: **DeepSeek = 一次**（網羅・質問票・要約）、**Cursor = セカンドオピニオン**（正本照合・節番号付き反証/同意・仕様の単独確定禁止）。**§50-3-8**（盲点＋**約 3 行突合メモ**）と併用。**PC 台帳（674 等）を触らない日**は本題を **部署予実（677/678・`SPEC.md`）**に寄せ、正本を混読しない（本ファイル 5A/5B）。
+**上位表**: `NEW-SESSION-STARTER.md` 冒頭 **🎖️ AI 内部の役割分担**（CIO / Kimi / 知恵袋=DeepSeek / …）＋ **🔥 実行と確認の分離**。**分業の手順詳細**は **`.cursor/rules/deepseek-cursor-spec-division.mdc`**（`alwaysApply: true`・**CIO の列を増やさず**「結果統合」に内包）。要約: **知恵袋 = 網羅・論理一次**、**CIO = 正本突合・セカンドオピニオン・§50-3-8 約 3 行突合メモ**（仕様の単独確定禁止）。**PC 台帳（674 等）を触らない日**は本題を **部署予実（677/678・`SPEC.md`）**に寄せ、正本を混読しない（本ファイル 5A/5B）。
 
 ## 部署予実・kintone フィールド追加日の航海図テンプレ（§50-3-9）
 
@@ -50,7 +50,7 @@
 3. `chat-sessions/NEW-SESSION-STARTER.md` の **冒頭〜最新 v3.x ブロック**（kintone プレビュー／憲法級など）
 4. `chat-sessions/handoff-log.md` の **末尾から最大 3 件**（無ければスキップ可）
 5. **本題に応じた Read（項番 -0 で合意した本題だけ。PC 台帳と部署予実の正本を混読しない）**
-   - **5A 部署予実（yojitsu）を本題にする場合**: `templates/yojitsu-budget-lite/SPEC.md`（§9・§10.1 等）／`templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md`／`templates/yojitsu-budget-lite/docs/yojitsu-migration-kyu-to-kintone.md`／`templates/yojitsu-budget-lite/docs/shin-format-excel-layout.md`／`templates/yojitsu-budget-lite/docs/yojitsu-spec-session-checklist.md`。**kintone にアプリ作成・フィールド追加する前**は `.cursor/rules/creation-timing-ask.mdc`（スペース・着手タイミング）。**§50-3-8**: **予実／ロジック／複雑 customize**へ入る**直前**に DeepSeek 盲点3点＋**約3行突合メモ**（`AGENTS.md`）。**仕様確認デー**は **`.cursor/rules/deepseek-cursor-spec-division.mdc`**（DeepSeek 一次／Cursor セカンドの**必須分業**）。**セッション切替後**は前チャットのメモで代替せず**再実行**。**674・新・PC台帳 §4.2・Day4 手順書は、674／customize／ラベル／採番アプリを触らない限り Read 不要**（無関係正本のミス読み・憲法と逆転の誘因を防ぐ）。詳細手順は `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1c**。
+   - **5A 部署予実（yojitsu）を本題にする場合**: `templates/yojitsu-budget-lite/SPEC.md`（§9・§10.1 等）／`templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md`／`templates/yojitsu-budget-lite/docs/yojitsu-migration-kyu-to-kintone.md`／`templates/yojitsu-budget-lite/docs/shin-format-excel-layout.md`／`templates/yojitsu-budget-lite/docs/yojitsu-spec-session-checklist.md`。**kintone にアプリ作成・フィールド追加する前**は `.cursor/rules/creation-timing-ask.mdc`（スペース・着手タイミング）。**§50-3-8**: **予実／ロジック／複雑 customize**へ入る**直前**に DeepSeek 盲点3点＋**約3行突合メモ**（`AGENTS.md`）。**仕様確認デー**は **`.cursor/rules/deepseek-cursor-spec-division.mdc`**（🎖️表の **知恵袋 → CIO 突合**の**必須分業**）。**セッション切替後**は前チャットのメモで代替せず**再実行**。**674・新・PC台帳 §4.2・Day4 手順書は、674／customize／ラベル／採番アプリを触らない限り Read 不要**（無関係正本のミス読み・憲法と逆転の誘因を防ぐ）。詳細手順は `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1c**。
    - **5B 新・PC台帳（Day4 継続中または 674・新・PC台帳 customize・672/673 を触る場合）** … `docs/plans/2026-04-26-pc-ledger-day4-action.md` の **「AI 引継ぎ: …」**（Day4 時）＋ `chat-sessions/2026-04-26-pc-ledger-day4.md`（あれば）＋ **正本仕様書** `docs/plans/2026-04-21-new-pc-ledger-spec.md` の **§4.2.0〜§4.4 を Read**（手順書のみで代替しない／詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b**）＋画面ラベルは **短文 JSON**／検証は **`npm run pc-ledger:verify-labels-spec`**
 6. `RULES-INDEX.md` の **「セッション切替・文脈復元」** 行（索引 1 行で他ドキュへジャンプ）
 7. **AI は `npm run session:bootstrap` を実行**し、結果をチャットに要約（**verify:constitution-handoff → verify:mandatory-read-gate → verify:session-clock-health → session-starter:sync-desktop → verify:desktop-ai-emergency-sync → smoke** 10 連／**Read だけで終わらせない**／詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 6–7）
@@ -84,7 +84,7 @@
 
 ---
 
-**最終更新**: 2026-05-01 (Thu) JST — **DeepSeek × Cursor 分業の恒久化（浜田指示）**: `.cursor/rules/deepseek-cursor-spec-division.mdc` 新設（`alwaysApply: true`）。`checkpoint-latest.md` に本節＋ 5A からの参照を追加。**役割**: DeepSeek = 一次（網羅・質問票）、Cursor = セカンド（正本照合・§ 付き反証/同意・単独で仕様確定しない）。**§50-3-8 突合メモ**と併用。**次本題**: 部署予実は **明日から仕様確認**（PC 台帳は一旦停止）。`RULES-INDEX.md` §50-3 行に本ルールへの索引を 1 語追記。
+**最終更新**: 2026-05-01 (Thu) JST — **CIO×知恵袋分業を 🎖️表に接続（浜田指示）**: `.cursor/rules/deepseek-cursor-spec-division.mdc` を **NEW-SESSION-STARTER 冒頭の CIO 体制表**の下位手順に書き換え（**CIO の列は増やさない**／セカンドオピニオンは **結果統合**に内包）。`NEW-SESSION-STARTER.md`（＋`.rag` 鏡像）に **補足（2026-05-01）** 1 段落を追加。**§50-3-8** と併用。**次本題**: 部署予実は明日から仕様確認（PC 台帳は一旦停止）。
 
 **最終更新**: 2026-04-30 (Wed) JST — **セッション締め・翌日準備（CIO 一括）**: 本会話で合意した **A〜D 案の実装**（`595` 一覧検索の **全件上限2000件**＋**検索中UI**、`session-starter:sync-desktop` の **Desktop 上 `NEW-SESSION-STARTER_*` 非canonical削除**、`AGENTS.md` **§50-3-10** 鏡像、`.cursorrules` 検索用語、`docs/runbooks/dry-run-apply-checklist.md`）。**次チャット**: スターター貼付 → Read 通読 → §41 → `session:bootstrap`。**Desktop**: `npm run desktop:sync-and-verify` 済みなら当日 `NEW-SESSION-STARTER_yyyymmdd.txt` のみ残る運用。
 

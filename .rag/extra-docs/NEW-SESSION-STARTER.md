@@ -37,6 +37,8 @@
 | **バックアップ** | **OpenRouter**（`mcp_user-openrouter_chat_completion`） | 上記失敗時の代替（`provider.sort=price, allow_fallbacks=true`） |
 | **依頼者・確認者** | **浜田**（CEO） | 仕様提示・GO/NO-GO・kintone 画面の目視 |
 
+**補足（2026-05-01 / CIO 統合に内包）**: 仕様確認を **知恵袋で網羅 → CIO が正本と突合（セカンドオピニオン）**と固定する運用の手順書は **`.cursor/rules/deepseek-cursor-spec-division.mdc`**（`alwaysApply: true`）。**CIO の表の職分は増えない**（「結果統合」に収まる）。**憲法 §50-3-8**（盲点 3 点＋約 3 行突合メモ）と併用。
+
 **🔥 実行と確認の分離（2026-04-28 21:35 CEO 浜田指示 / 最重要 / §51 を緩和する CEO 直命）**:
 
 - **実行フェーズ（作成・実装・コマンド・API 呼出・kintone 書込・git push・workflow_dispatch・記録更新）= CIO 自律で一気通貫**。1 ターンに複数ツール call を連続発火してよい（§51 例外として CEO 公認）
