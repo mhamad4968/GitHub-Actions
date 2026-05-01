@@ -17,12 +17,12 @@
  * Day 5 残タスク:
  *   - （一覧）検索バー強化は §4.8a 対応済み。SKYSEA 状態フィルタ等は別途。
  *   - 新規・編集: 入力ガイド帯・所属ヘルプ（編集は一覧折りたたみ）・操作ヒント。
- *   - レコード画面: フォーム上に区切り帯（getFieldElement 直前）。現行フォームは「識別・利用の基本 → アカウント → 機器・備考」の縦並びに文言を合わせる。
+ *   - レコード画面: 区切り帯（getFieldElement 直前）。標準グループ pc_ledger_g_* があるときは帯を抑止（scripts/pc-ledger-674-*-ux-section-groups）。
  */
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-01-form-order-copy-v0.9.10';
+  const BUILD = '2026-05-01-ux-native-groups-v0.9.11';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -155,6 +155,8 @@
   const FC_LATEST_INVENTORY_DATE = 'latest_inventory_date';
   const FC_VPN_ID = 'vpn_id';
   const FC_VPN_PW = 'vpn_pw';
+  /** フォームにあれば JS の区切り帯は出さない（`pc-ledger-674-*-ux-section-groups` で追加） */
+  const FC_UX_GROUP_IDENTITY = 'pc_ledger_g_identity';
   const FULL_RESET_FIELD_CODES_674 = [
     FC_PC_NAME,
     FC_SERIAL,
@@ -382,6 +384,10 @@
     return null;
   }
 
+  function ux674NativeSectionGroupsPresent() {
+    return !!getFieldDom674(FC_UX_GROUP_IDENTITY);
+  }
+
   function shouldShow674AccountRibbon(record) {
     if (isPersonalStored(record)) return false;
     const type = record[FC_ACCOUNT_TYPE]?.value || '';
@@ -433,6 +439,9 @@
   function apply674FormSectionRibbons(record) {
     if (!record) return;
     remove674FormSectionRibbons();
+    if (ux674NativeSectionGroupsPresent()) {
+      return;
+    }
     const type = record[FC_ACCOUNT_TYPE]?.value || '';
     const hasAccountBlock = shouldShow674AccountRibbon(record);
     const subTop = hasAccountBlock
@@ -579,10 +588,15 @@
     const layoutNote = document.createElement('div');
     layoutNote.style.cssText =
       'margin-top:8px;padding-top:8px;border-top:1px solid #6ee7b7;font-size:11px;line-height:1.55;color:#047857;';
-    const hasAccLayout = shouldShow674AccountRibbon(event.record);
-    layoutNote.textContent = hasAccLayout
-      ? 'フォームの並び：現状は画面上部で「PC名・種別・利用者・日付」などを入力し、中段にアカウント欄、さらに下にメーカー・型番・IP・備考などの機器・ネットワーク欄が続きます。機器を先に入力したい場合は、kintone のフォーム設定でフィールドの並び替えをしてください（カスタマイズ JS では安全に入れ替えていません）。'
-      : 'フォームの並び：この種別ではアカウント欄を出さず、上で識別・利用の基本を入力したあと、下の方のメーカー・型番・IP・備考などの機器欄が続きます。並びを変えたい場合もフォーム設定での調整が必要です。';
+    if (ux674NativeSectionGroupsPresent()) {
+      layoutNote.textContent =
+        'フォームは kintone の標準フィールドグループ（PC・利用の基本／アカウント／機器・ネットワーク・備考）で区切っています。並び替えやラベルはフォーム設定から調整してください。';
+    } else {
+      const hasAccLayout = shouldShow674AccountRibbon(event.record);
+      layoutNote.textContent = hasAccLayout
+        ? 'フォームの並び：現状は画面上部で「PC名・種別・利用者・日付」などを入力し、中段にアカウント欄、さらに下にメーカー・型番・IP・備考などの機器・ネットワーク欄が続きます。機器を先に入力したい場合は、kintone のフォーム設定でフィールドの並び替えをしてください（カスタマイズ JS では安全に入れ替えていません）。'
+        : 'フォームの並び：この種別ではアカウント欄を出さず、上で識別・利用の基本を入力したあと、下の方のメーカー・型番・IP・備考などの機器欄が続きます。並びを変えたい場合もフォーム設定での調整が必要です。';
+    }
     box.appendChild(layoutNote);
 
     const dept = document.getElementById(DEPT_HELP_ID);

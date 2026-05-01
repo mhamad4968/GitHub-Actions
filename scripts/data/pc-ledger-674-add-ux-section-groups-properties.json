@@ -1,0 +1,23 @@
+{
+  "_comment": "674 に UX 用フィールドグループ 3 つを追加（preview POST）。続けて `npm run pc-ledger:674:layout-ux-section-groups` でルート上の該当フィールドを各グループ内へ移動し preview deploy。既存の internal_system_meta / skysea_system_meta は触れません。",
+  "properties": {
+    "pc_ledger_g_identity": {
+      "type": "GROUP",
+      "code": "pc_ledger_g_identity",
+      "label": "PC・利用の基本",
+      "openGroup": true
+    },
+    "pc_ledger_g_account": {
+      "type": "GROUP",
+      "code": "pc_ledger_g_account",
+      "label": "アカウント",
+      "openGroup": true
+    },
+    "pc_ledger_g_hardware": {
+      "type": "GROUP",
+      "code": "pc_ledger_g_hardware",
+      "label": "機器・ネットワーク・備考",
+      "openGroup": true
+    }
+  }
+}
