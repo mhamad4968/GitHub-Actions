@@ -1,6 +1,6 @@
 ---
 description: Snyk で生成・変更コードをスキャンする（Secure at Inception 相当）
-alwaysApply: true
+alwaysApply: false
 ---
 
 # セキュリティ（Snyk）

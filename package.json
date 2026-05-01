@@ -28,6 +28,8 @@
     "pc-ledger:b1-review-csv": "npx dotenv -e .env -e .env.proxy -- node scripts/build-b1-review-csv.mjs",
     "pc-ledger:b1-import-csv": "npx dotenv -e .env -e .env.proxy -- node scripts/build-b1-import-csv.mjs",
     "pc-ledger:674:export-honsya-account-clear-csv": "npx dotenv -e .env -e .env.proxy -- node scripts/export-674-honsya-account-clear-csv.mjs",
+    "pc-ledger:674:import-honsya-account-clear-csv:dry-run": "npx dotenv -e .env -e .env.proxy -- node scripts/import-674-honsya-account-clear-csv.mjs --dry-run",
+    "pc-ledger:674:import-honsya-account-clear-csv:apply": "npx dotenv -e .env -e .env.proxy -- node scripts/import-674-honsya-account-clear-csv.mjs --apply",
     "pc-ledger:b1-import-csv:normalize-dates": "node scripts/normalize-b1-import-csv-dates.mjs",
     "pc-ledger:b1-patch-674-secrets-from-627:dry-run": "npx dotenv -e .env -e .env.proxy -- node scripts/patch-674-account-secrets-from-627.mjs --dry-run",
     "pc-ledger:b1-patch-674-secrets-from-627:apply": "npx dotenv -e .env -e .env.proxy -- node scripts/patch-674-account-secrets-from-627.mjs --apply",

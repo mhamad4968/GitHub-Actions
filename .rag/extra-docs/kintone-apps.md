@@ -30,9 +30,9 @@ npm run app:fields <アプリID>
 | M365管理マスタ（新・PC台帳ver.1 用 / Day 2 / 5 台ライセンス厳守） | **671** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-24 作成 / 10 レコード（sjm-001~sjm-010 / X 案 5 台節約）|
 | 新個人WindowsID採番マスタ（新・PC台帳ver.1 用 / Day 3 / 旧 626 置換） | **672** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-25 作成 / 0 レコード（`^jbm\d{4}$` 厳格 / `jbm0001` から払出予定）|
 | 新共有WindowsID採番マスタ（新・PC台帳ver.1 用 / Day 3 / 旧 667 置換） | **673** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-25 作成 / 0 レコード（`^sjbm\d{4}$` 厳格 / `sjbm0001` から払出予定）|
-| 新・PC台帳ver.1（本体 / Day 4 雛形→Day 5 本実装） | **674** | `customize/new-pc-ledger-v1/desktop.js` | `npm run deploy:674` / Space **21** [一覧](https://jbis-kintone.cybozu.com/k/#/space/21) / thread **23** / 浜田部署スペース・アクセス権限あり / **live revision 18**（2026-04-28：SKYSEA customize `BUILD=2026-04-28-skysea-group-ui-v0.2`＝全員編集可・運上浜田のみ周知 / fileKey `73ae0e96-0809-462f-a8f0-65fbe9f6cb96` / field-spec **44/44**） |
-| **部署予実・入力**（明細・`新フォーマット` 全列・`支払内訳` サブテーブル・月次 12 行） | **（未定）** | （未定） | `SPEC.md` §6–§6c・`excel-column-draft-2026-04-28.md`・当部署のみ |
-| **部署予実・ダッシュ**（**集計管理の主画面**・俯瞰・入力アプリ参照） | **（未定）** | （未定） | `SPEC.md` §6b・Excel 日常セル運用は廃止 |
+| 新・PC台帳ver.1（本体 / Day 4 雛形→Day 5 本実装・**構築中・運用開始前**） | **674** | `customize/new-pc-ledger-v1/desktop.js` | `npm run deploy:674` / Space **21** / thread **23** / **live revision 38**（2026-04-29 JST・全フィールドリセット拡張・v0.7.6）/ customize **BUILD=`2026-04-29-day5-autogen-v0.7.6`** / fileKey **`01d42a25-ddbe-4a03-a009-69034f7e1d6a`** / field-spec **44/44**（Day4 手順書）/ **運用開始予定 2026-05-13**（仕様書 §1） |
+| **部署予実・入力**（明細・`新フォーマット` 全列・`支払内訳` サブテーブル・月次 12 行） | **677** | （まだなし / フィールド設計後に `customize/677/desktop.js` 等を想定） | [https://jbis-kintone.cybozu.com/k/677/](https://jbis-kintone.cybozu.com/k/677/)・**配置**: Space **54** / thread **58**・ポータル [スペース 54（thread 58）](https://jbis-kintone.cybozu.com/k/#/space/54/thread/58)。**2026-04-29**: `POST /k/v1/preview/app.json` → `preview/app/deploy.json` で枠のみ作成・本番反映（preview revision **2** → deploy **SUCCESS**）。スペース内の旧アプリは **運用開始までに削除予定**（不要分）。`SPEC.md` §6–§6c |
+| **部署予実・ダッシュ**（**集計管理の主画面**・俯瞰・入力アプリ参照） | **678** | （まだなし / 同上 `customize/678/desktop.js` 想定） | [https://jbis-kintone.cybozu.com/k/678/](https://jbis-kintone.cybozu.com/k/678/)・入力と同スペース。**2026-04-29** 同上手順で枠のみ・deploy **SUCCESS**。`SPEC.md` §6b |
 
 ※ **631** … `collect` / `analyze` が読むニュース。**632** … `analyze` が書き込む週次要約のみ。`.env`: `KINTONE_APP_ID=631` , `KINTONE_REPORT_APP_ID=632`。API トークンに **両アプリ**を載せる。  
 ※ **権限**: 自動化の最低限は **レコード閲覧＋追加**。閲覧・追加・編集・削除・アプリ管理のフル付与でもスクリプトは動作するが、トークン漏えい時のリスク低減のため余分な権限は削るとよい（詳細は `security-next-automation/README.md`）。
@@ -63,6 +63,23 @@ npm run app:fields <アプリID>
 
 | 日時（UTC） | アプリID | customize パス |
 |-------------|----------|----------------|
+| 2026-04-30T12:49:20Z | 674 | `customize/new-pc-ledger-v1/desktop.js` |
+| 2026-04-30T09:14:42Z | 674 | `customize/new-pc-ledger-v1/desktop.js` |
+| 2026-04-29T10:58:37Z | 674 | `customize/new-pc-ledger-v1/desktop.js` |
+| 2026-04-29T10:58:00Z | 674 | `customize/new-pc-ledger-v1/desktop.js` |
+| 2026-04-29T06:15:00Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（BUILD v0.7.6・全フィールドリセット対象拡張・手元 deploy rev 38） |
+| 2026-04-29T06:05:00Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（BUILD v0.7.5・社員名検索モーダル 595・手元 deploy rev 37） |
+| 2026-04-29T05:48:00Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（BUILD v0.7.4・利用者名候補は入力中 DOM を参照・手元 deploy rev 36） |
+| 2026-04-29T05:42:00Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（BUILD v0.7.3・595 user_name 正規化フォールバックで保存前照合・手元 deploy rev 35） |
+| 2026-04-29T05:37:00Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（BUILD v0.7.2・PC `record` holder / getFieldElement PC 優先・手元 deploy rev 34） |
+| 2026-04-29T05:45:00Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（BUILD v0.7・利用者名候補の表示修正・手元 deploy） |
+| 2026-04-29T05:35:00Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（BUILD v0.6・共有/JR メール非表示 + 共有端末名チェック・手元 deploy） |
+| 2026-04-29T05:25:00Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（BUILD v0.5・個人 利用者名 595 入力支援 + 保存前照合・手元 deploy） |
+| 2026-04-29T05:16:07Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（BUILD v0.4・保存前 M365 6 台目ブロック + 平易メッセージ・手元 deploy） |
+| 2026-04-29T05:15:00Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（BUILD v0.3・671 編集差分リコンサイル + 672/673 未使用戻し・手元 deploy） |
+| 2026-04-29T04:59:55Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（BUILD day5-autogen-v0.2・保存成功 671/672/673 + ライセンスバナー・手元 deploy） |
+| 2026-04-29T04:55:55Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（BUILD day5-autogen-v0.1・手元 deploy） |
+| 2026-04-29T04:49:43Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（BUILD v0.5・手元 deploy） |
 | 2026-04-28T10:29:46Z | 674 | `customize/new-pc-ledger-v1/desktop.js` |
 | 2026-04-28T10:27:43Z | 674 | `customize/new-pc-ledger-v1/desktop.js` |
 
@@ -488,4 +505,5 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 | 2026-04-25 07:50 | **Day 3 / 採番マスタ 2 アプリ作成完了 (v2.1 仕様準拠)**: ① **新個人WindowsID採番マスタ (672)** = `^jbm\d{4}$` 厳格 4 桁ゼロ埋め (`logon_name` SINGLE_LINE_TEXT / `unique:true` / `required:true` / `minLength=maxLength=7` (jbm + 4 桁) / `status` DROP_DOWN [未使用/使用済/無効] default=未使用 / `note` MULTI_LINE_TEXT) / Space 21 / **5/13 旧 626 凍結後置換**。② **新共有WindowsID採番マスタ (673)** = `^sjbm\d{4}$` 厳格 4 桁ゼロ埋め (`logon_name` `minLength=maxLength=8` (sjbm + 4 桁) / status・note は App A と同構造) / Space 21 / **5/13 旧 667 凍結後置換**。**設計判断**: 既存移行 PC (5-6 桁) は採番マスタ経由せず新・PC台帳ver.1 に直接登録 + 緩いバリデーション (仕様書 §4.3.2) → 採番マスタは厳格 4 桁のみ受付 / `unique` + `minLength`/`maxLength` 一致で物理的二重発番防止。Day 3 は「器のみ」: payout 追跡フィールド (`assigned_to` / `assigned_at`) は Day 4 customize 設計時に追加検討。**MCP 工程**: kintone-add-app (each: revision 2) → kintone-add-form-fields (each: revision 3) → kintone-deploy-app → kintone-get-app-deploy-status (両方 SUCCESS) → kintone-get-form-fields で実フィールド突合 (3 カスタム + 標準 8 = 計 11 / 仕様完全一致)。**Day 4 以降の予定**: 採番ボタン UI 実装 (新・PC台帳ver.1 から呼出 / 最古「未使用」を pick → 「使用済」更新 + logon_name 引用) / 初期データ投入 (`jbm0001`〜 / `sjbm0001`〜) / 旧 626/667 凍結タイミング決定 (5/13 予定 / リネーム + 権限変更) |
 | 2026-04-29 | **PC台帳 B-1 移行の時期・方法（正本）**: **個人・NAS・その他（B-1）**は **AI が整形式 CSV・マッピング主担当**（**4/28-29** は §9 表どおりの準備のみ・**前倒し禁止**・**§9.0**）。**本番 import は §9 の 4/30-5/2**（`docs/plans/2026-04-21-new-pc-ledger-spec.md` **§7.4.6**・**§8.3**・**画面 CSV 一括**が既定）。下記 4/21 行「⑬」は当時要約—**B-2 は別行（同日）** |
 | 2026-04-29 | **PC台帳 B-2（共有+JR）を本番後へ（浜田確定・文書初記録）**: **53 件は 5/13 本番運用開始以降**、旧 594／627 を確認しながら **1 件ずつ手登録**（一括 CSV 移行はしない）。**4/28-5/2 の大移行から B-2 を除外**。正本 `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§7.4.6**・**§9**・**§13** 同日追記行。 |
+| 2026-04-29 | **部署予実 2 アプリ作成（枠のみ・本番反映済み）**: **入力 677**・**ダッシュ 678**。Space **54** / thread **58**。`kintone-add-app` MCP は出力検証エラーのため **`POST /k/v1/preview/app.json`**（`name` + `space` + `thread`）→ **`POST /k/v1/preview/app/deploy.json`**（各 revision **2**）を手実行。フィールド・customize は未着手（`SPEC.md` §10.1）。 |
 | 2026-04-21 21:40 | **新・PC台帳ver.1 仕様完全版確定 (Q&A 37 件 + α / 4 時間の徹底ヒアリング)**: 部署メンバー要望「PC 台帳とアカウント台帳が分かれてて使いづらい」を起点に、新規アプリ 3 個 (環境設定マスタ / M365管理マスタ / 新・PC台帳ver.1) を構築する全体仕様を浜田 × AI で徹底ヒアリング・確定。**設計方針**: 既存 594/627 は無傷のまま保険として残置 (1 か月後に廃止判断)・新規アプリ並行運用 → 5/11 月曜本番切替 + 旧アプリ書込ロック・段階移行で既存破壊ゼロ。**主要決定**: ① **アプリ名 = 新・PC台帳ver.1** (将来 ver.2 等にアップデート前提)、② **配置スペース = 21 (システム管理)** で既存全アプリと同居、③ **1 PC = 1 アカウント** の単純構造で「1 画面完結」、④ **共有アカウントは PC 単位重複登録** (1 共有 M365 を N PC で使う = N 行に重複)、⑤ **JR端末は OS ローカル + AD 不参加** で WindowsアカウントとM365アカウントのみ・他は不要、⑥ **M365 5 台ライセンス厳守** = M365管理マスタの usage_count + 自動払い出し/解放、⑦ **採番 = 新アプリ内自動採番** (種別別 MAX+1 / マスタなし)、⑧ **印刷レイアウト = 既存 627 からコピー** (個人用・共有用 2 種を種別で自動切替)、⑨ **検索 = カスタマイズ強化版** (検索バー + Enter 実行で部分検索 / PC名・所属・WindowsID・M365ID・利用者名対象)、⑩ **バリデーション** 個人=user_name 必須 / 共有・JR=shared_terminal_name 必須、⑪ **アクセス権限 = 浜田+担当者2名のみ** (既存と同じ運用継承)、⑫ **既存マスタ 626/667/595/656/657 は継続使用** (採番・社員引用・エラーログ・ダッシュボード集計対象切替)、⑬ **既存データ移行 = 浜田 CSV 作成 + 私レビュー** (`C:\\tmp\\new-pc-ledger\\` 経由)、⑭ **SKYSEA 計画は新アプリ移行完了後にリスケ** (5/15 再相談)、⑮ **PC買替 = 既存と同じ動作 + M365 引き継ぎ**、⑯ **5 台超過警告** = M365 マスタ枯渇 + 新規連番自動生成時に「Microsoft 管理画面で作成してください」alert 表示。**スケジュール**: 4/22(水) 19:00 着手 → 4/22-4/25 アプリ作成 + customize → 4/26 動作確認 → 4/27-4/28 浜田 CSV 準備 → **4/29-5/2 既存データ移行 (4 日間)** → 5/3-5/6 GW 連休 → 5/7-5/10 試運用 → **5/11(月) 本番運用開始** + 旧アプリ書込ロック + リネーム → 5/15(金) SKYSEA 再相談。**仕様書**: `docs/plans/2026-04-21-new-pc-ledger-spec.md` v1.0 (13 章・約 500 行・Q&A 確定一覧含む)。**今後の §47 改善**: 仕様詰め途中で「JR端末を共有から外す」「M365 マスタは新規」「サイボウズも新アプリで保持」など仕様が複数箇所変わった経緯あり → 仕様書 v0.1 段階での部分提示よりは **要件文書を一度全網羅で書き出してから AI に提示する** 方が議論ターン数を圧縮できる教訓を後で AGENTS.md 化検討 |

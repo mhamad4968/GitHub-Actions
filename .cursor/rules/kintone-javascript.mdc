@@ -1,6 +1,6 @@
 ---
 description: kintone の JS カスタマイズ・API 連係（フィールド・保存先・レート制限・uploader・コマンド）
-alwaysApply: true
+alwaysApply: false
 ---
 
 # kintone 開発（JavaScript / カスタマイズ）

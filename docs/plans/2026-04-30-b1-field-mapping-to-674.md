@@ -43,7 +43,7 @@
 
 | 条件 | 627 を 674 に載せる範囲 |
 |---|---|
-| `account_type`=個人 かつ `pc_status`≠保管 かつ 627 が `pc_594_record_id` で突合 | `logon_name`, `mail`, `mail_acct`, `m365_id`, `windows_name`, `user_name`, `dept_name`, `group_name` を **627 優先**（§7.4.7（3）） |
+| `account_type`=個人 かつ `pc_status`≠保管 かつ 627 が突合 | **突合キー**: ① `627.pc_594_record_id` = `594.$id` ② ①で無いとき `594.ledger_record_id` = `627.$id` または `627.レコード番号`。上記にマッチしたら `logon_name`, `logon_pw`, `mail`, `mail_acct`, `mail_pw`, `m365_id`, `m365_pw`, `windows_name`, `user_name`, `dept_name`, `group_name`, `gb_id`, `gb_pw`, `sb_id`, `sb_pw`, `vpn_id`, `vpn_pw` を **627 優先**（§7.4.7（3））。`mail_acct` / `m365_id` が 627 空なら **627→594 の `mail`** から @ 前・`M365_DOMAIN`（既定 `kensetsutoso01.onmicrosoft.com`）で補完。個人×627 未突合でも **594 `mail` のみ**から `mail_acct` / `m365_id` を補完可 |
 | 個人×**保管**（§4.1a） | **627 は無視**（アカウント列は空）。`user_name` 等は 594 のみ |
 | サーバーNAS / その他 | 627 不使用。`user_name` / `dept_name` / `group_name` / `mail` は **594** |
 
@@ -65,7 +65,7 @@
 
 | 旧 | 理由 |
 |---|---|
-| `ledger_record_id` | 674 に同名フィールドなし（§7.4.7）。必要なら将来 `note` 等へ **浜田 GO** のうえ C で追記 |
+| `ledger_record_id` | 674 には出力しないが、**627 突合の補助キー**として使用（上表 §4）。必要なら将来 `note` 等へ **浜田 GO** のうえ C で追記も可 |
 | `abolished_flag` | 廃止済みは B-1 から除外済み |
 | 627 の `$id` / `pc_594_record_id` | 674レコードのフィールドとしては持たない（突合メタ） |
 

@@ -1,0 +1,9754 @@
+[
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0304-202401"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "大内　清孝"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "649"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0201-202303"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "髙橋　政彦"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "638"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0202-202303"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "望月　之次"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "650"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0289-202312"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "美尾　真二"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "651"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0205-202303"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "篠田　尚野"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "635"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0203-202303"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "小林　翔太"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "652"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0204-202303"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "山田　拓斗"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "653"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0303-202401"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "平野　隼人"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "654"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0225-202303"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "河林　那樹"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "655"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0265-202308"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "羽場　剛"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "576"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0418-202502"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "黒岩　誠"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "577"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0267-202308"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "齋藤　翔也"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "578"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "jrejs-nagano001"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "長野営業所JR端末001"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "長野管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "JR端末"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "kanetsu-bk"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "バックアップ用NAS_16TB"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "関越管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "サーバーNAS"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0295-202312"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "柴田　正人"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "642"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0208-202303"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "古賀　哲平"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "643"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0209-202303"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "岡本　賢治"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "644"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0219-202303"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "山本　元成"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "645"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0220-202303"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "早坂　翔"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "646"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0297-20212"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "湯川　俊"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "647"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0242-202304"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "小草　光嗣"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "648"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0221-202303"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京営業所共有001"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京営業所管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "tokai-bk"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東海支店バックアップNAS_20TB"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京営業所管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "サーバーNAS"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0399-202501"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "天野　博仁"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "629"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0397-202501"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "小林　俊久"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "630"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0007-202505"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "山崎　邦夫"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "631"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0442-202504"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "大内　琢磨"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "632"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0160-202211"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "高橋　和明"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "667"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0185-202302"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "高橋　和明"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "667"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0406-202502"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "西川　寿幸"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "668"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0410-202502"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "早勢　泰博"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "669"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0262-202306"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "荒木　知道"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "670"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0345-202406"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "成瀬　桃子"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "671"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0276-202310"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "菅原　新"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "672"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0290-202312"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "箱田　圭亮"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "673"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0355-202407"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "鶴田　晃"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "674"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0358-202408"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "岩崎　貴哉"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "675"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0368-202411"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "大湊　有希"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "676"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0407-202502"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "相澤　勇"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "677"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0409-202502"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "塚本　貴史"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "678"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0294-202312"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "嶋谷　仁"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "680"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0165-202212"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "向井　ゆかり"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "681"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0048-202512"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "小林　昭夫"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "679"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "REFORM"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "札幌共用NAS"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "札幌管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "サーバーNAS"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0391-202412"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "中鉢　悟"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "625"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0394-202501"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "宮本　茂"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "626"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0488-202504"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "鈴木　幸男"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "627"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0395-202501"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "山口　智典"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "628"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "jrejs-mito001"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京支店水戸営業所JR端末001"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "水戸管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "JR端末"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "maple-mito01"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京支店水戸営業所共有001"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "水戸管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0333-202403"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "鈴木　義明"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "569"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0322-202403"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "迎田　秀樹"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "570"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0045-202511"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "小林　桂樹"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "571"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0170-202301"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "五十嵐　益夫"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "572"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0433-202503"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "木村　忠雄"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "573"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0257-202306"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "瀧澤　道夫"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "574"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0310-202401"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "佐藤　聡美"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "575"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0430-202503"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "新潟営業所共有001"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "新潟管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "jrejs-niigata01"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "新潟営業所JR端末001"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "新潟管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "JR端末"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0352-202407"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "桐越　秀樹"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "542"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0364-202409"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "長岡　範夫"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "543"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0353-202407"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "鎌田　大樹"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "544"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0287-202312"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "三浦　貴"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "545"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0283-202311"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "佐藤　竜太郎"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "546"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0046-202511"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "塩田　稜"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "547"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "jrejs-akita001"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "秋田営業所JR端末001"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "秋田管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "JR端末"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "jrejs-akita-ex"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "秋田営業所JR端末002"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "秋田管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "JR端末"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "TS5200DBC2 "
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "秋田営業所NAS"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "秋田管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "サーバーNAS"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0284-202311"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "野中　照彦"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "548"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0155-202209"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "金田　悟司"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "549"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0292-202312"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "佐々木　誠志"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "550"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0336-202403"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "太田　信彦"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "551"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS035-202407"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "及川　育男"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "552"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0043-202510"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "佐々木　祥昭"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "553"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0105-202201"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "板倉　白真"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "554"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "jrejs-morioka001"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "盛岡営業所JR端末001"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "盛岡管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "JR端末"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "jrejs-morioka-ex"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "盛岡営業所JR端末002"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "盛岡管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "JR端末"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0252-202306"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "森　昌徳"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "530"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0324-202403"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "渡辺　忍"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "531"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0349-202407"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "奥山　伸之"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "522"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0351-202407"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "小田島　優生"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "532"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0367-202410"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "星野　仁"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "533"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0286-202312"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "齋藤　直吉"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "534"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0073-202106"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "須磨　一樹"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "535"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0238-202304"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "本田　怜央"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "537"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0018-202506"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "紺野　敦幹"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "538"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0321-202403"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "高橋　笑瑠"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "539"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0435-202503"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "三浦　詞"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "540"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0019-202406"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "加藤　雄志"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "541"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "jrejs-sendai001"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "仙台営業所JR端末001"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "仙台管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "JR端末"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "jrejs-sendai002"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "仙台営業所JR端末002"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "仙台管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "JR端末"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0048-202103"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "仙台営業所共有"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "仙台管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "769"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0176-202302"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "諸治　友一郎"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "520"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0188-202302"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "竹花　万寿男"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "521"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0350-202407"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "永澤　千鶴子"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "523"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0044-202510"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "佐藤　沙緒理"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "524"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0293-202312"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "佐々木　和也"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "525"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0037-202509"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "佐々木　勝法"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "527"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0323-202403"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "三上　義昭"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "528"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0001-202504"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "田村　基"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "529"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0356-202407"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "中西　巧"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "526"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "jrejs-tohoku001"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東北支店JR端末001"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東北管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "JR端末"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0339-202405"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東北支店リモート用PC001"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東北管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "769"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0387-202412"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "木谷　雄一"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "618"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0385-202412"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "花房　竜美"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "619"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0386-202412"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "村山　文男"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "620"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0388-202412"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "石井　裕太"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "621"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0441-202504"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "林　大河"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "622"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0440-202504"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "前田　徳雲"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "623"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0246-202304"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "中田　雄基"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "624"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "jrejs-chiba001"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京支店千葉営業所JR端末001"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "千葉管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "JR端末"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0273-202406"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "今井　賢一"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "633"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0119-202303"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "水口　広美"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "634"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0302-202401"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "長谷川　雅子"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "636"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0300-202303"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "西尾　彰洋"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "637"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0198-202303"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "瀬下　哲志"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "640"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0189-202302"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "細川　カレン"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "641"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0374-202412"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東海支店共有001"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京営業所管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0369-202412"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東海支店共有002"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京営業所管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0206-202303"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "春名　宏胤"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "656"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0207-202303"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "近藤　充"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "657"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS021-202303"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "望月　豊"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "658"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0212-202303"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "太田　雅也"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "659"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0288-202312"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "田山　稜太"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "660"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0211-202303"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "藤原　克裕"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "661"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0318-202403"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "宮田　航平"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "662"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0034-202012"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "新開　達也"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "556"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0446-202504"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "浅見　聡一"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "557"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0328-202403"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "虻川　和美"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "558"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0366-202410"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "名西　理"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "559"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0263-202308"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "関　禎幸"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "560"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0360-20248"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "田口　裕司"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "561"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0360-202408"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "松永　雄太"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "567"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0331-202403"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "高橋　優弥"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "566"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0166-202212"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "飯島　拓"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "568"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0317-202403"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "揚張　智樹"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "565"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0261-202306"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "高澤　裕季"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "562"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0196-202203"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "後藤　駿介"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "563"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0330-202403"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "小出　悟史"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "583"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0329-202403"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "畑岡　直樹"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "564"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0365-202409"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "湯浅　啓司"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "580"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "jrejs-kan-etsu001"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "関越支店JR端末001"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "関越管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "JR端末"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "jrejs-kan-etsu002"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "関越支店JR端末002"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "関越管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "JR端末"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0029-202506"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "関越支店共有001"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "関越管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": [
+        "廃止"
+      ]
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "廃棄"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "K0462-202004N7"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "関越支店共有002"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "関越管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "Kanetsu-share"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "関越支店NAS"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "関越管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "サーバーNAS"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0214-202303"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "市居　勉"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "639"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0373-202412"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "元島　誠一"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "663"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0215-202303"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "杉本　雅博"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "664"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0216-202303"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "山根　博"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "665"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0022-202303"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東海支店関西営業所共有001"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "関西管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0049-202512"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "上島　咲蘭"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "725"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0283-202302"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "大塚　英雄"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "584"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0005-202505"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "篠原　良治"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "585"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0298-202312"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "山田　健太郎"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "586"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0445-202504"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "清水　悦郎"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "587"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0309-202401"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "北村　直樹"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "588"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS169-202301"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "小泉　佳代"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "589"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0308-202401"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "後藤　真由美"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "590"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0405-202502"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "廣瀬　貴之"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "591"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0171-202302"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "髙瀬　誠司"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "592"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0378-202412"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "松橋　正一"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "593"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0004-202505"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "伊藤　典雄"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "594"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0342-202405"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "高良　智樹"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "595"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0381-202412"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "柏﨑　孝"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "597"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0326-202403"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "根本　孝"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "599"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0250-202305"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "島﨑　信弘"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "600"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0243-202304"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "日田　聖人"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "601"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0013-202506"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "松本　結太"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "602"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0443-202504"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "鈴木　純平"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "603"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0003-202505"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "海藤　光治"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "604"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0389-202412"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "加賀谷　慎吾"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "605"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0275-202310"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "赤堀　太一"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "606"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0346-202309"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "渡邊　陽一"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "608"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0344-202406"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "大前　涼"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "609"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0415-202502"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "藤田　大輝"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "610"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0014-202506"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "森　蕉太"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "612"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0139-202303"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "伊藤　祐二"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "613"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0425-202503"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "中嶋　優歩"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "614"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS02082-202311"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "米沢　一起"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "616"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0042-202510"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "チンフックタン"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "607"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0347-202309"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "小森　優輝"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "617"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "jrejs-tokyo001"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京支店JR端末001"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "JR端末"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "jrejs-tokyo002"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京支店JR端末002"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "JR端末"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "jrejs-tokyo003"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京支店JR端末003"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "JR端末"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0154-202209"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "6-B会議室"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0113-202202"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "センターテーブル"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0285-202311"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "6-A会議室"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "K0465-202004N10"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京支店線閉責任者①"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "K0466-202004N11"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京支店線閉責任者②"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "K0467-202004N12"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京支店線閉責任者③"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "TOKYO_HDD"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京支店NAS1"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "サーバーNAS"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "TS5410D015"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京支店NAS2"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "サーバーNAS"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0114-202203"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "村山　克之"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "579"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0438-202503"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "星野　幸夫"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "581"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0259-202306"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "山形　光希"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "582"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0239-202304"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "高崎営業所共有001"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "高崎管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0007-2005N7"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "高崎営業所共有002"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "高崎管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "jrejs-takasaki001"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "高崎営業所JR端末001"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "高崎管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "JR端末"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0050-202601"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "千葉　達也"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "536"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0416-202502"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "橋山　修"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "683"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0348-202406"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "隈元　康郎"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "706"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0424-202502"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "安藤　聡"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "707"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0402-202502"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "小原　昌子"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "708"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0403-202502"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "鳥飼　紀子"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "709"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0375-202412"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "鈴木　健人"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "712"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0422-202502"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "安倍　勝宏"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "711"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0419-202502"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "小川　雄太"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "713"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0412-202502"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "平澤　亜実"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "710"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0313-202402"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "竹井　あづさ"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "714"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0429-202502"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "近藤　節二"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "715"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0191-202303"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "吉沢　弘"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "682"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0411-202502"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "横山　雅好"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "684"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0258-202306"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "羽賀　康広"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "685"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0032-202506"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "5-A会議室用PC"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "本社管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0027-202506"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "5Fコミュニティルーム"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "本社管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0028-202506"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "5-B・C会議室用PC"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "本社管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0096-202111"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "仲里　一則"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "698"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0026-202506"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "首都圏支店会議室PC"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "首都圏管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0269-202308"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "首都圏支店共有001"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "首都圏管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0040-202509"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "首都圏支店共有002"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "首都圏管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0325-202403"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "仲里　一則"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "698"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0417-202502"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "原田　憲一"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "686"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0420-202502"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "竹村　智"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "687"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0423-202502"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "是永　真人"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "688"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0343-202406"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "大杉　貴徳"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "689"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0426-202502"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "加治　雅春"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "690"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0035-202508"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "樋笠　美奈子"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "691"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0428-202502"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "白須　蓮太"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "692"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0272-202309"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "鈴木　隆史"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "693"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0383-202412"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "會田　匠"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "703"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0041-202509"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "大類　仁美"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "694"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0017-202506"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "大野　龍巳"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "695"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0427-202502"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "中山　勝"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "700"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0306-202401"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "小泉　智嗣"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "699"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0413-202502"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "大村　玲"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "701"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0421-202502"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "須澤　海斗"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "702"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0393-202502"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "飯塚　崇"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "704"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0408-202502"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "戸村　唯斗"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "705"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "reform01-nas"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "首都圏NAS１"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "首都圏管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "サーバーNAS"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "NEW-REFORMNAS"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "首都圏NAS２"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "首都圏管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "サーバーNAS"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0053-202602"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "五十嵐　益夫"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "572"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0052-202602"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "在宅用"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "羽柴　祥子"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "498"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0053-202602"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "高橋　成典"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "615"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0066-202603"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "竹林　久美子"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "517"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0021-202506"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "北村　公一"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "716"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0213-202303"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "高野　郁美"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "728"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0437-202503"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "山原　夏美"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "729"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0444-202404"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "小岩　洋平"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "719"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0281-202311"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "松田　健太郎"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "721"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0008-202505"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "河上　陽亮"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "722"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0431-202503"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "鉄構支店入札用"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "鉄構管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0150-202206"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "鉄構支店会議室用"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "鉄構管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "790"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0377-202412"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "持永　健次郎"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "730"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0392-202501"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "金子　達哉"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "731"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0218-202303"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "本間　伸吾"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "732"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "jrejs-wangan"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "湾岸工事所JR端末001"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "湾岸管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "JR端末"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0320-202403"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "佐藤　嘉辰"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "611"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0382-202412"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "平嶋　伸也"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "596"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0379-202412"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "津田　健太郎"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "598"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0237-202304"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "静岡共有001"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "静岡管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0400-202412"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "静岡共有002"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "静岡管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "TS5200DF70"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "静岡共用NAS_4TB"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "静岡管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "サーバーNAS"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "Server01-1"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "本社ファイルサーバーバックアップ用"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "本社管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "その他"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "Server01-2"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "本社ファイルサーバーレプリケーション用"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "本社管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "その他"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0054-202602"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "メンテナンス技術部共有001"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "本社管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0057-202603"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "湯澤　昂"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "733"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0059-202603"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "阿部　伊吹"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "734"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0058-202603"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "蛭川　大和"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "735"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0060-202603"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "和田　英祐"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "736"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0061-202603"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "菅原　未希斗"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "737"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0062-202603"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "和田　渉"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "739"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0064-202603"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "及川　樂"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "740"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0065-202603"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "石坂　真之佑"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "741"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0328-202603"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "但田　元秀"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "742"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0179-202302"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "山岸　秀典"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "666"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "Tokyo_nas_bk"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京支店NAS_BK"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "サーバーNAS"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0329-202603"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "奥富　誠"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "512"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0337-202603"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "船生　誠"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "504"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0047-202512"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "嶋田　大赳"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "696"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0051-202601"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "松本　貴光"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "697"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0348-202604"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "関越支店WEB会議用"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "関越管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0349-202604"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "近藤　匡浩"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "809"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0110-202202"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "多目的スペース"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "東京管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0161-202212"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "下田　竜也"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "717"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0247-202304"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "半田　健輔"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "718"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0301-202401"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "小林　優磨"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "720"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0296-202312"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "町田　達弥"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "723"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0244-202304"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "石井　貴大"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "724"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0357-202407"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "大盛　幹一郎"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "726"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0271-202308"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "河原井　庸次"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "727"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0256-202306"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "堀込　順一"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "483"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0172-202302"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "荻原　郁男"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "484"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0184-202302"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "矢嶋　敬"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "485"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0175-202302"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "藍郷　一博"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "486"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0177-202302"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "小副川　誠"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "487"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0181-202302"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "藤原　亨"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "515"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0432-202503"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "高木　達也"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "516"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0128-202303"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "根津　友明"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "488"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0334-202403"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "飛田　まさ子"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "489"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0335-202403"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "浪江　崇"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "490"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0447-202504"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "木下　澪帆"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "491"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0274-202310"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "土屋　秀幸"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "492"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0314-202402"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "楠　直江"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "493"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0315-202402"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "和田　麻子"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "494"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0241-202305"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "船崎　優愛"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "495"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0010-202506"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "増井　洋介"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "513"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0011-202506"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "前田　邦彦"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "511"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0270-202308"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "小俣　富士夫"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "514"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0436-202503"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "在宅用"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "荒井　茂"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "500"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0174-202302"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "荒井　茂"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "500"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0363-202409"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "武井　洋子"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "501"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0404-202502"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "佐藤　健太"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "502"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0024-202506"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "五井　奈月"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "503"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0361-202408"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "大貫　義昭"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "497"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0235-202304"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "兒玉　敏洋"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "509"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0033-202507"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "安全推進部共有"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "本社管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0167-202301"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "木藤　美博"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "510"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0187-202302"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "品質管理部共有"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "本社管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "518"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0500-202510"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "濵田　政一"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "496"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS9999-202602"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "山口　順也"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "499"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0023-202506"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "鈴木　隼人"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "518"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0022-202506"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "金原　風雅"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "個人"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "519"
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "KS0079-202109"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "塗装技術部共有"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "本社管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  },
+  {
+    "PC_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "JBIS0350-202604"
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "首都圏支店共有003"
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": "首都圏管理者"
+    },
+    "type": {
+      "type": "RADIO_BUTTON",
+      "value": "共有"
+    },
+    "abolished_flag": {
+      "type": "CHECK_BOX",
+      "value": []
+    },
+    "status": {
+      "type": "RADIO_BUTTON",
+      "value": "使用中"
+    },
+    "ledger_record_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "value": ""
+    }
+  }
+]

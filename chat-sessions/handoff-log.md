@@ -653,3 +653,25 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 
 ---
 
+### 2026-05-01 10:57 JST
+
+**浜田メモ（原文）**:
+> 一旦落としますのでセッション切替の準備をお願いしたい。
+
+**AI 補足（漏れ防止）**:
+- `git`: `## main...origin/main` — 作業ツリー **変更多数**（`customize/new-pc-ledger-v1/desktop.js`・`package.json`・各種 `.cursor/rules`・新規 `scripts/export-674-honsya-account-clear-csv.mjs` ほか）。**未 commit** のまま混在の可能性あり（`git status -sb` で要確認）。
+- `次の1手`:
+  - 新チャット初手: Desktop **`NEW-SESSION-STARTER_yyyymmdd.txt` 全文**貼付 → `chat-sessions/NEW-SESSION-STARTER.md` を **Read で通読** → 項番 **-0** で次の一手を **一問**確認し **浜田 OK** 後に **`npm run session:bootstrap`**（憲法・必読ゲート・時計・Desktop 同期・smoke）。
+  - **674 honsya 用 CSV**: `npm run pc-ledger:674:export-honsya-account-clear-csv` → 既定 **`C:\tmp\new-pc-ledger\674-honsya-account-clear-template-<JST日付>.csv`**。1 行目は **フォーム API のフィールド名（label）**。対象クエリは **`group_name = "honsya"`** のみ。アカウント列はテンプレで **空**（手入力→一括更新想定）。
+  - **674 customize（本セッション系）**: 595 候補確定時は **所属は空欄のみ補完**（手入力維持）。共有 671 満杯の自動切替で **手入力 M365 ID/PW があるときは上書きせずエラー**。アカウント自動生成は従来どおり **空欄のみ merge**。
+- `GO待ち`: **Tier B 系の明示 GO は本ログブロック範囲では未記載**（次セッションで要確認）。
+- `session-lock`: **なし**
+- `関連パス`:
+  - `customize/new-pc-ledger-v1/desktop.js`（上記挙動・BUILD 文字列）
+  - `scripts/export-674-honsya-account-clear-csv.mjs`（既定出力 `/mnt/c/tmp/new-pc-ledger/`）
+  - `chat-sessions/NEW-SESSION-STARTER.md`（貼付単独完走の正本）
+
+**次セッションへの 1 行**: スターター貼付 → Read 通読 → **-0 OK** → `session:bootstrap` → 続く本題（674 手直し CSV 取込の検収や未 commit の整理など）。
+
+---
+

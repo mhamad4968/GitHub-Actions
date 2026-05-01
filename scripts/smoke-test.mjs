@@ -59,10 +59,12 @@ let started = Date.now();
 
 for (const c of checks) {
   const t0 = Date.now();
+  // health-check は MCP initialize 列挙で 60s を超えうる（実測 ~75s）
+  const timeoutMs = c.id === 'health-check' ? 120_000 : 60_000;
   const res = spawnSync(c.cmd, c.args, {
     cwd: REPO_ROOT,
     encoding: 'utf8',
-    timeout: 60_000,
+    timeout: timeoutMs,
   });
   const elapsed = Date.now() - t0;
 

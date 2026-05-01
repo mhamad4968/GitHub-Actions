@@ -1,6 +1,6 @@
 ---
 description: 開発は自律実行するが、確認が必要なら着手前に浜田へ聞く（浜田指示）
-alwaysApply: true
+alwaysApply: false
 ---
 
 # 自律と「聞く」の両立（必須）

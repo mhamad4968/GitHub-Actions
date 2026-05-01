@@ -1,6 +1,6 @@
 ---
 description: セキュリティニュースの説明・要約・整理を依頼されたときの出力形式と CVE 時の調査
-alwaysApply: true
+alwaysApply: false
 ---
 
 # セキュリティニュース依頼時の出力（チャット）

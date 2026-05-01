@@ -1,6 +1,6 @@
 ---
 description: 595・経理FAQまわりの次回フォロー（ユーザー依頼で次回に生かす提案）
-alwaysApply: true
+alwaysApply: false
 ---
 
 # 次回セッションで確認・促す（JBIS / 595 / FAQ）

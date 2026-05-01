@@ -71,14 +71,24 @@ const FIELDS_594 = [
 
 const FIELDS_627 = [
   '$id',
+  'レコード番号',
   'account_type',
   'user_name',
   'dept_name',
   'group_name',
   'logon_name',
+  'logon_pw',
   'mail',
   'mail_acct',
+  'mail_pw',
   'm365_id',
+  'm365_pw',
+  'gb_id',
+  'gb_pw',
+  'sb_id',
+  'sb_pw',
+  'vpn_id',
+  'vpn_pw',
   'pc_594_record_id',
   'windows_name',
 ];
@@ -147,6 +157,23 @@ function flattenSingleLine(s) {
     .trim();
 }
 
+/** 594 `mail` / 627 `mail` の @ より前（アカウント系のフォールバック用） */
+function mailLocalPartFromMail(mail) {
+  const t = String(mail ?? '').trim();
+  const i = t.indexOf('@');
+  if (i <= 0) return '';
+  return t.slice(0, i);
+}
+
+/** 627 に `m365_id` が無いときの補完（環境変数 `M365_DOMAIN` で上書き可・先頭 @ 任意） */
+function deriveM365IdFromMailAcct(mailAcct) {
+  const acct = String(mailAcct ?? '').trim();
+  if (!acct) return '';
+  const rawDom = (process.env.M365_DOMAIN || 'kensetsutoso01.onmicrosoft.com').trim();
+  const dom = rawDom.replace(/^@/, '');
+  return `${acct}@${dom}`;
+}
+
 function expandScientificToIntegerString(raw) {
   const t = String(raw ?? '').trim().replace(/\s+/g, '');
   if (t === '') return '';
@@ -198,6 +225,36 @@ function buildExtraInfo1(r594) {
   return parts.join('\n');
 }
 
+/** 627 を 594 `$id`（pc_594_record_id）または 594 `ledger_record_id`（627 の $id / レコード番号）で解決 */
+function build627JoinMaps(rec627, warnings) {
+  const by594Id = new Map();
+  const by627Id = new Map();
+  const dupPc594 = new Set();
+  for (const r of rec627) {
+    const pid = val(r, 'pc_594_record_id').trim();
+    if (pid) {
+      if (!by594Id.has(pid)) by594Id.set(pid, r);
+      else if (!dupPc594.has(pid)) {
+        dupPc594.add(pid);
+        warnings.push(`627 duplicate pc_594_record_id=${pid} (first row kept)`);
+      }
+    }
+    const kid = val(r, '$id').trim();
+    if (kid && !by627Id.has(kid)) by627Id.set(kid, r);
+    const rn = val(r, 'レコード番号').trim();
+    if (rn && !by627Id.has(rn)) by627Id.set(rn, r);
+  }
+  return { by594Id, by627Id };
+}
+
+function resolveK627(id594, r594, by594Id, by627Id) {
+  const byPc = by594Id.get(id594);
+  if (byPc) return byPc;
+  const lid = val(r594, 'ledger_record_id').trim();
+  if (!lid) return undefined;
+  return by627Id.get(lid) || undefined;
+}
+
 function buildNote594627(r594, k627, use627) {
   let n = val(r594, 'note').trim();
   if (use627 && k627) {
@@ -240,6 +297,18 @@ function buildFlat674Row({
     flat.mail = val(k627, 'mail').trim() || val(r594, 'mail').trim();
     flat.mail_acct = val(k627, 'mail_acct').trim();
     flat.m365_id = val(k627, 'm365_id').trim();
+    const mail594 = val(r594, 'mail').trim();
+    const kMail = val(k627, 'mail').trim();
+    if (!flat.mail_acct) {
+      flat.mail_acct =
+        mailLocalPartFromMail(flat.mail) || mailLocalPartFromMail(kMail) || mailLocalPartFromMail(mail594);
+    }
+    if (!flat.m365_id && flat.mail_acct) {
+      flat.m365_id = deriveM365IdFromMailAcct(flat.mail_acct);
+    }
+    if (!flat.mail && mail594) {
+      flat.mail = mail594;
+    }
   } else if (isStoragePersonal) {
     flat.user_name = val(r594, 'user_name').trim();
     flat.dept_name = val(r594, 'dept_name').trim();
@@ -250,6 +319,17 @@ function buildFlat674Row({
     flat.dept_name = val(r594, 'dept_name').trim();
     flat.group_name = val(r594, 'group_name').trim();
     flat.mail = val(r594, 'mail').trim();
+  }
+
+  /* 個人・利用中だが 627 未突合: 594 のメールから mail_acct / m365_id のみ補完 */
+  if (typ === '個人' && !isStoragePersonal && !k627) {
+    const mail594 = val(r594, 'mail').trim();
+    if (!String(flat.mail_acct || '').trim() && mail594) {
+      flat.mail_acct = mailLocalPartFromMail(mail594);
+    }
+    if (!String(flat.m365_id || '').trim() && String(flat.mail_acct || '').trim()) {
+      flat.m365_id = deriveM365IdFromMailAcct(flat.mail_acct);
+    }
   }
 
   flat.shared_terminal_name = '';
@@ -267,6 +347,18 @@ function buildFlat674Row({
   flat.vpn_id = '';
   flat.vpn_pw = '';
   flat.m365_master_record_id = '';
+
+  if (use627 && k627) {
+    flat.logon_pw = val(k627, 'logon_pw').trim();
+    flat.mail_pw = val(k627, 'mail_pw').trim();
+    flat.m365_pw = val(k627, 'm365_pw').trim();
+    flat.gb_id = val(k627, 'gb_id').trim();
+    flat.gb_pw = val(k627, 'gb_pw').trim();
+    flat.sb_id = val(k627, 'sb_id').trim();
+    flat.sb_pw = val(k627, 'sb_pw').trim();
+    flat.vpn_id = val(k627, 'vpn_id').trim();
+    flat.vpn_pw = val(k627, 'vpn_pw').trim();
+  }
 
   flat.manufacturer = val(r594, 'manufacturer').trim();
   flat.model_name = flattenSingleLine(val(r594, 'model_name'));
@@ -310,11 +402,8 @@ async function main() {
     fetchAll(APP_627, FIELDS_627),
   ]);
 
-  const by594Id = new Map();
-  for (const r of rec627) {
-    const pid = val(r, 'pc_594_record_id').trim();
-    if (pid) by594Id.set(pid, r);
-  }
+  const warnings = [];
+  const { by594Id, by627Id } = build627JoinMaps(rec627, warnings);
 
   const TYPE_PERSONAL = '個人';
   const TYPE_NAS = 'サーバーNAS';
@@ -322,8 +411,6 @@ async function main() {
   const TYPE_SHARED = '共有';
   const TYPE_JR = 'JR端末';
   const STATUS_DISPOSED = '廃棄';
-
-  const warnings = [];
   const exceptions = [];
   const flatRows = [];
   const pcNameCount = new Map();
@@ -336,7 +423,7 @@ async function main() {
     if (typ !== TYPE_PERSONAL && typ !== TYPE_NAS && typ !== TYPE_OTHER) continue;
 
     const id594 = val(r, '$id').trim();
-    const k627 = by594Id.get(id594);
+    const k627 = resolveK627(id594, r, by594Id, by627Id);
     const isStoragePersonal = typ === TYPE_PERSONAL && st === '保管';
     const use627 = typ === TYPE_PERSONAL && k627 && !isStoragePersonal;
 

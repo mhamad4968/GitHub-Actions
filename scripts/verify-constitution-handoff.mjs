@@ -101,7 +101,7 @@ const suites = [
       'TSB-024',
       '§35-1',
       '§1-2-3-1',
-      'alwaysApply: true',
+      'alwaysApply: false',
       '[§1-2-3 ティア判定:',
       '浜田（確認）',
       '§51-6-2 壁時計',

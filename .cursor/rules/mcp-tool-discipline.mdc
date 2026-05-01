@@ -1,6 +1,6 @@
 ---
 description: MCP descriptor 必読・認証順序・curl 優先度 + アイドル時間の有効活用（メンテ枠）
-alwaysApply: true
+alwaysApply: false
 ---
 
 # MCP ツール運用（自律エージェント向け）

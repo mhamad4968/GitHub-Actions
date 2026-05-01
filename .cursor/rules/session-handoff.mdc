@@ -1,6 +1,6 @@
 ---
 description: セッション切替時の引き継ぎ（人間5行テンプレ＋AIが handoff-log へ必ず追記して漏れ防止）
-alwaysApply: true
+alwaysApply: false
 ---
 
 # セッション引き継ぎ（漏れ防止）

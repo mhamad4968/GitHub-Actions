@@ -63,3 +63,6 @@ GitHub-Actions/
 #   <app>-step<N>-*.json          → ignore (作業途中の中間snapshot / リポ肥大防止)
 #   <app>-rollback-trigger-*.json → commit (異常検知時の保全 / 重要)
 data/snapshots/*-step*.json
+
+# Constitution 網羅統合版（`scripts/regenerate-constitution-rule.sh` でローカル生成・大容量のためリポ非追跡）
+.cursor/rules/constitution.mdc

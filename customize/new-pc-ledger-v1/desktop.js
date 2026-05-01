@@ -4,7 +4,7 @@
  * 仕様: docs/plans/2026-04-21-new-pc-ledger-spec.md v2.1 §4
  * Day 4 plan: docs/plans/2026-04-26-pc-ledger-day4-action.md
  *
- * BUILD: 2026-04-29-day5-autogen-v0.7.6（fix: 全フィールドリセットで PC・氏名・SKYSEA・その他入力欄まで型に応じてクリア）
+ * BUILD: 2026-05-01-account-manual-truth-v0.9.4（アカウント欄は手入力を正とする／共有671満杯時の自動切替で M365 を上書きしない）
  *
  * Day 4 雛形スコープ:
  *   - 種別 (account_type) による表示制御 (show/hide)
@@ -21,7 +21,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-04-30-personal-storage-4.1a-v0.7.7';
+  const BUILD = '2026-05-01-account-manual-truth-v0.9.4';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -80,6 +80,12 @@
   const APP_SJBM_NUMBER = '673';    // 新共有WindowsID採番マスタ (sjbm)
   const APP_EMPLOYEE = '595';       // 社員情報マスタ
 
+  /** 595 側: 新・PC台帳（674）との紐づけ（setup-595-pc-ledger-v1-list-subtable.js で追加） */
+  const FC595_PC674_SUB = 'pc_ledger_v1_list';
+  const FC595_PC674_ID = 'pc_674_record_id';
+  /** 個人は PC 最大2台まで 595 にリンク（共有・JR は制限なし＝595に書かない） */
+  const PERSONAL674_LINK_MAX = 2;
+
   // ===== フィールドコード定数 (Day 4 plan §2 と一致) =====
   // PC 基本情報
   const FC_PC_NAME = 'pc_name';
@@ -96,6 +102,8 @@
   const FC_LOGON_PW = 'logon_pw';
   const FC_WINDOWS_NAME = 'windows_name';
   const FC_MAIL = 'mail';
+  /** 595 の社員管理番号と同じ値（個人のみ。mail が無いときの595突合用） */
+  const FC_EMP_ID = 'emp_id';
   const FC_MAIL_ACCT = 'mail_acct';
   const FC_MAIL_PW = 'mail_pw';
   const FC_M365_ID = 'm365_id';
@@ -297,6 +305,7 @@
       FC_MAIL, FC_MAIL_ACCT, FC_MAIL_PW,
       FC_M365_ID, FC_M365_PW,
       FC_GB_ID, FC_GB_PW, FC_SB_ID, FC_SB_PW,
+      FC_VPN_ID, FC_VPN_PW,
     ];
     /** 個人のみ。共有/JR は Windows + M365 のみ（メール・サイボウズ等は非表示） */
     const personalOnlyFields = [
@@ -310,20 +319,24 @@
       setFieldsVisibility(accountFields, false);
       setFieldsVisibility(personalOnlyFields, false);
       setFieldsVisibility(personalOnlyUserName, false);
+      setFieldsVisibility([FC_EMP_ID], false);
       return;
     }
 
     if (type === TYPE_PERSONAL) {
       setFieldsVisibility(accountFields, true);
       setFieldsVisibility(personalOnlyUserName, true);
+      setFieldsVisibility([FC_EMP_ID], true);
     } else if (type === TYPE_SHARED || type === TYPE_JR) {
       setFieldsVisibility(accountFields, true);
       setFieldsVisibility(personalOnlyFields, false);
       setFieldsVisibility(personalOnlyUserName, false);
+      setFieldsVisibility([FC_EMP_ID], false);
     } else {
       // サーバーNAS / その他 → アカウント情報全体を非表示
       setFieldsVisibility(accountFields, false);
       setFieldsVisibility(personalOnlyUserName, true);
+      setFieldsVisibility([FC_EMP_ID], false);
     }
   }
 
@@ -519,7 +532,7 @@
     return kintoneApiGet('/k/v1/records.json', {
       app: APP_EMPLOYEE,
       query: q,
-      fields: ['user_name', 'mail', 'dept_name', 'group_name', 'employment_status'],
+      fields: ['user_name', 'mail', 'emp_id', 'dept_name', 'group_name', 'employment_status'],
     }).then(function (resp) {
       const hit = (resp.records && resp.records[0]) || null;
       if (hit) return hit;
@@ -548,7 +561,7 @@
     return kintoneApiGet('/k/v1/records.json', {
       app: APP_EMPLOYEE,
       query: q,
-      fields: ['user_name', 'mail', 'dept_name', 'group_name', 'employment_status'],
+      fields: ['user_name', 'mail', 'emp_id', 'dept_name', 'group_name', 'employment_status'],
     }).then(function (resp) {
       return resp.records || [];
     });
@@ -604,6 +617,12 @@
     });
   }
 
+  function trimmedScalarValue674(rec, code) {
+    const cell = rec[code];
+    if (!cell || typeof cell !== 'object') return '';
+    return String(cell.value || '').trim();
+  }
+
   function mergeScalarField(rec, code, value) {
     if (value == null || value === '') return;
     const cell = rec[code];
@@ -626,6 +645,17 @@
     if (!cell || typeof cell !== 'object') return;
     const cur = String(cell.value || '').trim();
     if (cur) return;
+    cell.value = String(numVal);
+  }
+
+  /** NUMBER: 満杯切替などで既存値を上書きする */
+  function setNumberFieldValue674(rec, code, numVal) {
+    const cell = rec[code];
+    if (!cell || typeof cell !== 'object' || !Object.prototype.hasOwnProperty.call(cell, 'value')) return;
+    if (numVal == null || numVal === '') {
+      cell.value = null;
+      return;
+    }
     cell.value = String(numVal);
   }
 
@@ -923,8 +953,10 @@
     const api = bag.api;
     const rec = holder.record;
     setScalarFieldValue674(rec, FC_USER_NAME, (emp.user_name && emp.user_name.value) || '');
-    setScalarFieldValue674(rec, FC_DEPT_NAME, (emp.dept_name && emp.dept_name.value) || '');
-    setScalarFieldValue674(rec, FC_GROUP_NAME, (emp.group_name && emp.group_name.value) || '');
+    setScalarFieldValue674(rec, FC_EMP_ID, (emp.emp_id && emp.emp_id.value) || '');
+    // §4.2.0b: 所属は595連携＋手入力補正を許容。候補確定でも既入力の dept / group は上書きしない（空欄のみ 595 で補完）
+    mergeScalarField(rec, FC_DEPT_NAME, (emp.dept_name && emp.dept_name.value) || '');
+    mergeScalarField(rec, FC_GROUP_NAME, (emp.group_name && emp.group_name.value) || '');
     api.set(holder);
     hideUserSuggest674();
   }
@@ -962,7 +994,7 @@
     const title = document.createElement('div');
     title.style.cssText =
       'padding:6px 10px;background:#e7f1ff;border-bottom:1px solid #9ec5fe;font-weight:bold;color:#052c65;font-size:12px;';
-    title.textContent = '社員マスタの候補（タップで確定・所属名も自動で入ります）';
+    title.textContent = '社員マスタの候補（タップで確定・所属は空欄のときのみ補完します）';
     box.appendChild(title);
     if (!rows || !rows.length) {
       const empty = document.createElement('div');
@@ -1132,6 +1164,7 @@
 
         mergeScalarField(rec, FC_DEPT_NAME, (emp.dept_name && emp.dept_name.value) || '');
         mergeScalarField(rec, FC_GROUP_NAME, (emp.group_name && emp.group_name.value) || '');
+        mergeScalarField(rec, FC_EMP_ID, (emp.emp_id && emp.emp_id.value) || '');
         mergeScalarField(rec, FC_MAIL, mail);
         mergeScalarField(rec, FC_MAIL_ACCT, mailLocal);
         mergeScalarField(rec, FC_LOGON_NAME, nextJbm);
@@ -1269,6 +1302,94 @@
 
   function next671StatusFromUsage(count, lim) {
     return count >= lim ? '満杯' : '利用可';
+  }
+
+  /**
+   * 674 の実データ（共有/JR・廃棄以外）から、671 1行の linked_pcs / usage_count / status を再計算して上書きする。
+   * M365管理マスタを手で触った場合のズレ吸収用（正本は 674）。
+   */
+  function sync671MasterFrom674674(masterRecordId) {
+    const midStr = String(masterRecordId || '').trim();
+    if (!midStr) return Promise.resolve();
+
+    function put671From674Once() {
+      return loadEnv670Map().then(function (envMap) {
+        const lim = parseInt(envMap.M365_LICENSE_LIMIT || '5', 10) || 5;
+        const q =
+          '(account_type in ("共有", "JR端末")) and pc_status not in ("廃棄") and m365_master_record_id = ' +
+          midStr +
+          ' limit 500';
+        return kintoneApiGet('/k/v1/records.json', {
+          app: kintone.app.getId(),
+          query: q,
+          fields: ['pc_name'],
+        }).then(function (resp674) {
+          const set = Object.create(null);
+          for (let i = 0; i < (resp674.records || []).length; i++) {
+            const row = resp674.records[i];
+            const p = (row.pc_name && row.pc_name.value) || '';
+            const t = String(p).trim();
+            if (t) set[t] = true;
+          }
+          const pcsArr = Object.keys(set).sort();
+          const desiredLinked = pcsArr.join(',');
+          const desiredUsage = pcsArr.length;
+          const desiredStatus = next671StatusFromUsage(desiredUsage, lim);
+
+          return kintoneApiGet('/k/v1/record.json', { app: APP_M365_MASTER, id: midStr }).then(function (get671) {
+            const r671 = get671.record;
+            const st671 = (r671.status && r671.status.value) || '';
+            if (st671 === '廃止') {
+              console.warn('[NEW-PC-LEDGER-V1] sync671 skip 廃止 id=' + midStr);
+              return Promise.resolve();
+            }
+            const curList = parseLinked671((r671.linked_pcs && r671.linked_pcs.value) || '');
+            const curNorm = dedupeLinked671PreserveOrder(curList)
+              .slice()
+              .sort()
+              .join(',');
+            if (curNorm === desiredLinked) {
+              const curUs = parseInt((r671.usage_count && r671.usage_count.value) || '0', 10) || 0;
+              const curSt = (r671.status && r671.status.value) || '';
+              if (curUs === desiredUsage && curSt === desiredStatus) return Promise.resolve();
+            }
+            return kintoneApiPut('/k/v1/record.json', {
+              app: APP_M365_MASTER,
+              id: midStr,
+              revision: get671.revision,
+              record: {
+                linked_pcs: { value: desiredLinked },
+                usage_count: { value: String(desiredUsage) },
+                status: { value: desiredStatus },
+              },
+            });
+          });
+        });
+      });
+    }
+    return put671From674Once().catch(function (e) {
+      console.warn('[NEW-PC-LEDGER-V1] sync671MasterFrom674674 retry id=' + midStr, e);
+      return put671From674Once();
+    });
+  }
+
+  function sync671MastersFrom674ByIds674(mids) {
+    const uniq = [];
+    const seen = Object.create(null);
+    for (let i = 0; i < (mids || []).length; i++) {
+      const s = String(mids[i] || '').trim();
+      if (!s || seen[s]) continue;
+      seen[s] = true;
+      uniq.push(s);
+    }
+    let chain = Promise.resolve();
+    for (let j = 0; j < uniq.length; j++) {
+      const mid = uniq[j];
+      chain = chain.then(function () {
+        return sync671MasterFrom674674(mid);
+      });
+    }
+    return chain;
   }
 
   /** GET 直後の 671 を mutator で更新。revision 競合時は 1 回だけ再試行 */
@@ -1423,10 +1544,13 @@
   }
 
   /**
-   * 共有/JR で M365 行に新規に 1 台ぶん載る保存かつ、671 上で既に上限なら保存を止める（§5.3 / MS ポリシー）。
+   * 共有/JR で 671 の同一行へ新規に 1 台載せようとする保存で、その行が満杯なら
+   * `fetchAssignableM365Record671`（usage_count が上限未満・利用可の最古行）へ **自動切替**（§5.3）。
+   * フォームに M365 ID / PW が手入力されているときは上書きせずエラー（手入力を正とする）。
+   * 空き行が無いときのみエラー。
    * @returns {Promise<string|null>} エラー文言 or null
    */
-  function validateM671SixthSlotBeforeSave674(event) {
+  function ensureM671SlotOrAutoReassign674(event) {
     const next = extractState674(event.record);
     if (!allocation671Active(next)) return Promise.resolve(null);
 
@@ -1451,16 +1575,49 @@
         if (pcs.indexOf(nPc) >= 0) {
           return null;
         }
-        if (pcs.length >= lim) {
-          return (
-            '共有のメール（Microsoft 365）は、付けられる PC は ' +
-            lim +
-            ' 台までです。いま選んでいる割当では、すでに ' +
-            lim +
-            ' 台が使われているため、このままでは保存できません。別の空きの割当を選ぶか、Microsoft の管理画面でアカウントを追加してからマスタを更新し、システム担当に相談してください。'
-          );
+        if (pcs.length < lim) {
+          return null;
         }
-        return null;
+        return fetchAssignableM365Record671().then(function (m671) {
+          if (!m671) {
+            return (
+              '共有のメール（Microsoft 365）は付けられる PC が ' +
+              lim +
+              ' 台までです。すべての割当が満杯のため、別の行へ自動切替できません。Microsoft の管理画面でアカウントを追加してからマスタを更新し、システム担当に相談してください。'
+            );
+          }
+          const newRowId = m671.$id && m671.$id.value;
+          if (String(newRowId) === String(nMid)) {
+            return (
+              '割当先が満杯ですが、別の空き行を取得できませんでした。ページを開き直して再度保存するか、システム担当に相談してください。'
+            );
+          }
+          const m365Id = (m671.m365_id && m671.m365_id.value) || '';
+          const m365Pw =
+            (m671.m365_pw && m671.m365_pw.value) || envMap.M365_PW_SHARED_FIXED || 'kent2511K#';
+          if (trimmedScalarValue674(event.record, FC_M365_ID) || trimmedScalarValue674(event.record, FC_M365_PW)) {
+            return (
+              '共有のメール（Microsoft 365）は付けられる PC が ' +
+              lim +
+              ' 台までです。選択した割当は満杯です。フォームに M365 ID またはパスワードが入力されているため、別行への自動切替は行いません（手入力を優先）。M365管理マスタで別の割当レコードを選ぶか、入力を調整してから再度保存してください。'
+            );
+          }
+          setScalarFieldValue674(event.record, FC_M365_ID, m365Id);
+          setScalarFieldValue674(event.record, FC_M365_PW, m365Pw);
+          setNumberFieldValue674(event.record, FC_M365_MASTER_RECORD_ID, newRowId);
+          try {
+            window.alert(
+              '選択されていた M365 割当は ' +
+                lim +
+                ' 台に達していました。空きのある別の割当へ自動で切り替えました。\n\n' +
+                (m365Id ? 'M365 ID: ' + m365Id + '\n' : '') +
+                '内容を確認のうえ保存してください。',
+            );
+          } catch (eA) {
+            /* ignore */
+          }
+          return null;
+        });
       });
     });
   }
@@ -1595,6 +1752,205 @@
     });
   }
 
+  function find595RowsByMail674(mail) {
+    const m = String(mail || '').trim();
+    if (!m) return Promise.resolve([]);
+    return kintoneApiGet('/k/v1/records.json', {
+      app: APP_EMPLOYEE,
+      query: 'mail = "' + escapeQueryValue(m) + '" order by $id asc limit 5',
+      fields: ['$id', '$revision', FC595_PC674_SUB],
+    }).then(function (resp) {
+      return resp.records || [];
+    });
+  }
+
+  function find595RowsByEmpId674(empId) {
+    const e = String(empId || '').trim();
+    if (!e) return Promise.resolve([]);
+    return kintoneApiGet('/k/v1/records.json', {
+      app: APP_EMPLOYEE,
+      query: 'emp_id = "' + escapeQueryValue(e) + '" order by $id asc limit 5',
+      fields: ['$id', '$revision', FC595_PC674_SUB],
+    }).then(function (resp) {
+      return resp.records || [];
+    });
+  }
+
+  function resolve595RowsForLink674(mail, empId) {
+    const m = String(mail || '').trim();
+    const e = String(empId || '').trim();
+    if (m) return find595RowsByMail674(m);
+    if (e) return find595RowsByEmpId674(e);
+    return Promise.resolve([]);
+  }
+
+  function remove674LinkFromSingle595674(id595, id674) {
+    const idStr = String(id674).trim();
+    return kintoneApiGet('/k/v1/record.json', { app: APP_EMPLOYEE, id: String(id595) }).then(function (g) {
+      const r = g.record;
+      const rev = g.revision;
+      const subField = r[FC595_PC674_SUB];
+      if (!subField || !Array.isArray(subField.value)) return Promise.resolve();
+      const rows = [...subField.value];
+      const filtered = rows.filter(function (row) {
+        const cell = row.value && row.value[FC595_PC674_ID];
+        const v = cell != null && cell.value != null && cell.value !== '' ? String(cell.value).trim() : '';
+        return !v || v !== idStr;
+      });
+      if (filtered.length === rows.length) return Promise.resolve();
+      return put595Pc674Sub674(String(id595), rev, clone595Pc674SubRows674(filtered));
+    });
+  }
+
+  function remove674From595Matches674(mail, empId, id674) {
+    const seen = Object.create(null);
+    function stripList(rows595) {
+      if (!rows595 || !rows595.length) return Promise.resolve();
+      let chain = Promise.resolve();
+      for (let i = 0; i < rows595.length; i++) {
+        const id595 = String(rows595[i].$id && rows595[i].$id.value ? rows595[i].$id.value : '').trim();
+        if (!id595 || seen[id595]) continue;
+        seen[id595] = true;
+        (function (id5) {
+          chain = chain.then(function () {
+            return remove674LinkFromSingle595674(id5, id674);
+          });
+        })(id595);
+      }
+      return chain;
+    }
+    let p = Promise.resolve();
+    const m = String(mail || '').trim();
+    const e = String(empId || '').trim();
+    if (m) p = p.then(function () {
+      return find595RowsByMail674(m).then(stripList);
+    });
+    if (e) p = p.then(function () {
+      return find595RowsByEmpId674(e).then(stripList);
+    });
+    return p;
+  }
+
+  function merge674Into595Subtable674(id595, id674, accountType) {
+    const idStr = String(id674).trim();
+    return kintoneApiGet('/k/v1/record.json', { app: APP_EMPLOYEE, id: String(id595) }).then(function (g) {
+      const r = g.record;
+      const rev = g.revision;
+      const subField = r[FC595_PC674_SUB];
+      if (!subField) {
+        console.warn(
+          '[NEW-PC-LEDGER-V1] 595 にフィールド ' +
+            FC595_PC674_SUB +
+            ' がありません。`npm run setup:595:pc-ledger-v1-list` を実行してください。',
+        );
+        return Promise.resolve();
+      }
+      const rows = Array.isArray(subField.value) ? [...subField.value] : [];
+      for (let i = 0; i < rows.length; i++) {
+        const cell = rows[i].value && rows[i].value[FC595_PC674_ID];
+        const v = cell != null && cell.value != null && cell.value !== '' ? String(cell.value).trim() : '';
+        if (v && v === idStr) {
+          return Promise.resolve();
+        }
+      }
+      const idSet = collect674IdsFrom595Sub674({ value: rows });
+      if (accountType === TYPE_PERSONAL && idSet.size >= PERSONAL674_LINK_MAX) {
+        window.alert(
+          '社員マスタ（595）への新PC台帳リンクは、個人利用中PCあたり最大' +
+            PERSONAL674_LINK_MAX +
+            '台までです。既存の674レコードを確認するか、不要行を595の「' +
+            FC595_PC674_SUB +
+            '」から削除してから保存してください。',
+        );
+        return Promise.resolve();
+      }
+      const nextRows = clone595Pc674SubRows674(rows);
+      const addCell = {};
+      addCell[FC595_PC674_ID] = { value: idStr };
+      nextRows.push({ value: addCell });
+      return put595Pc674Sub674(String(id595), rev, nextRows);
+    });
+  }
+
+  function collect674IdsFrom595Sub674(subField) {
+    const rows = (subField && subField.value) || [];
+    const set = new Set();
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      const cell = row.value && row.value[FC595_PC674_ID];
+      const v = cell != null && cell.value != null && cell.value !== '' ? String(cell.value).trim() : '';
+      if (v) set.add(v);
+    }
+    return set;
+  }
+
+  function clone595Pc674SubRows674(rows) {
+    return rows.map(function (row) {
+      const o = { value: {} };
+      if (row.id) o.id = row.id;
+      const cell = row.value && row.value[FC595_PC674_ID];
+      o.value[FC595_PC674_ID] = cell ? { value: cell.value } : { value: '' };
+      return o;
+    });
+  }
+
+  function put595Pc674Sub674(id595, revision, nextRows) {
+    return kintoneApiPut('/k/v1/record.json', {
+      app: APP_EMPLOYEE,
+      id: String(id595),
+      revision: revision,
+      record: {
+        [FC595_PC674_SUB]: { value: nextRows },
+      },
+    });
+  }
+
+  /**
+   * 595 の pc_ledger_v1_list に674 $id を追記・削除する（個人のみ）。
+   * - 個人（非保管）: mail 優先、無ければ emp_id で595を引く。リンクは最大2台。
+   * - 共有・JR: 社員に紐付けないため595へ追記しない。削除は mail のみ試行（個人→共有で mail が残る場合の名残除去）。
+   * - 上記以外（保管の個人・NAS等）: mail + emp_id で削除試行。
+   */
+  function sync595PcLedgerV1Link674(event) {
+    const id674 = String(
+      (event.recordId || (event.record && event.record.$id && event.record.$id.value) || ''),
+    ).trim();
+    if (!id674) return Promise.resolve();
+
+    const rec = event.record;
+    const type = (rec[FC_ACCOUNT_TYPE] && rec[FC_ACCOUNT_TYPE].value) || '';
+    const mail = (rec[FC_MAIL] && rec[FC_MAIL].value && String(rec[FC_MAIL].value).trim()) || '';
+    const empId =
+      (rec[FC_EMP_ID] && rec[FC_EMP_ID].value && String(rec[FC_EMP_ID].value).trim()) || '';
+
+    const eligible =
+      !isPersonalStored(rec) && type === TYPE_PERSONAL && (!!mail || !!empId);
+
+    if (!eligible) {
+      if (type === TYPE_SHARED || type === TYPE_JR) {
+        return remove674From595Matches674(mail, '', id674);
+      }
+      return remove674From595Matches674(mail, empId, id674);
+    }
+
+    return resolve595RowsForLink674(mail, empId).then(function (rows595) {
+      if (!rows595.length) {
+        console.warn(
+          '[NEW-PC-LEDGER-V1] 595 未ヒット: type=' + type + ' mail=' + mail + ' emp_id=' + empId,
+        );
+        return;
+      }
+      if (rows595.length > 1) {
+        console.warn(
+          '[NEW-PC-LEDGER-V1] 595 が複数ヒット（先頭行のみ更新） mail=' + mail + ' emp_id=' + empId,
+        );
+      }
+      const id595 = String(rows595[0].$id && rows595[0].$id.value ? rows595[0].$id.value : '').trim();
+      if (!id595) return;
+      return merge674Into595Subtable674(id595, id674, TYPE_PERSONAL);
+    });
+  }
+
   function runPostSaveHooks674(event) {
     const rec = event.record;
     const rid = String((event.recordId || (rec.$id && rec.$id.value) || '')).trim();
@@ -1610,9 +1966,21 @@
 
     return loadEnv670Map().then(function (envMap) {
       const lim = parseInt(envMap.M365_LICENSE_LIMIT || '5', 10) || 5;
-      return reconcile671For674Save(prev, next, lim).then(function () {
-        return reconcile672673For674Save(prev, next, rid, isEdit);
-      });
+      return reconcile671For674Save(prev, next, lim)
+        .then(function () {
+          const mids = [];
+          if (prev && prev.m365_master_record_id) mids.push(String(prev.m365_master_record_id).trim());
+          if (next && next.m365_master_record_id) mids.push(String(next.m365_master_record_id).trim());
+          return sync671MastersFrom674ByIds674(mids);
+        })
+        .then(function () {
+          return reconcile672673For674Save(prev, next, rid, isEdit);
+        })
+        .then(function () {
+          return sync595PcLedgerV1Link674(event).catch(function (e) {
+            console.error('[NEW-PC-LEDGER-V1] 595↔674リンク', e);
+          });
+        });
     });
   }
 
@@ -1732,6 +2100,7 @@
       FC_MAIL, FC_MAIL_ACCT, FC_MAIL_PW,
       FC_M365_ID, FC_M365_PW,
       FC_GB_ID, FC_GB_PW, FC_SB_ID, FC_SB_PW,
+      FC_VPN_ID, FC_VPN_PW,
     ];
     for (const code of accountCodes) {
       if (event.record[code]) event.record[code].value = '';
@@ -1904,7 +2273,7 @@
             });
             return null;
           }
-          return validateM671SixthSlotBeforeSave674(event);
+          return ensureM671SlotOrAutoReassign674(event);
         })
         .then(function (m671Msg) {
           if (m671Msg) {

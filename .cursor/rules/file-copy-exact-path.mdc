@@ -1,6 +1,6 @@
 ---
 description: ユーザーが指定したフォルダへファイルをコピーするときはその直下に置く
-alwaysApply: true
+alwaysApply: false
 ---
 
 # ファイル配置（指定パス厳守）

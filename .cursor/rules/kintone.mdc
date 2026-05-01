@@ -1,6 +1,6 @@
 ---
 description: kintone 周辺・ニュース収集・LLM 連係の補足（重要度判定・フィールド等）
-alwaysApply: true
+alwaysApply: false
 ---
 
 # kintone ・ Security NEXT ニュース（補足）
