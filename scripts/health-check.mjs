@@ -57,6 +57,44 @@ function findCursorEmbeddedNode() {
 
 const CURSOR_NODE_BIN_DIR = findCursorEmbeddedNode();
 
+/** MCP 子プロセスが undici 等で global File を要求するため Node 20+ が必要。WSL で `npm run` が /usr/bin/node (v18) のままだと cyber-news 等が誤 NG になる。 */
+function parseSemverFromDirname(name) {
+  const m = name.match(/^v(\d+)\.(\d+)\.(\d+)/);
+  if (!m) return null;
+  return [Number(m[1]), Number(m[2]), Number(m[3])];
+}
+function cmpSemverDirDesc(a, b) {
+  const pa = parseSemverFromDirname(a);
+  const pb = parseSemverFromDirname(b);
+  if (!pa || !pb) return 0;
+  for (let i = 0; i < 3; i++) {
+    if (pa[i] !== pb[i]) return pb[i] - pa[i];
+  }
+  return 0;
+}
+function findNvmNodeBinMinMajor20() {
+  if (process.env.MCP_PROBE_NODE && fs.existsSync(process.env.MCP_PROBE_NODE)) {
+    return process.env.MCP_PROBE_NODE;
+  }
+  const nvmNodes = path.join(os.homedir(), '.nvm/versions/node');
+  if (!fs.existsSync(nvmNodes)) return null;
+  const dirs = fs.readdirSync(nvmNodes).filter((d) => /^v\d+\.\d+\.\d+/.test(d));
+  dirs.sort(cmpSemverDirDesc);
+  for (const d of dirs) {
+    const major = Number(d.slice(1).split('.')[0]);
+    if (major < 20) continue;
+    const bin = path.join(nvmNodes, d, 'bin/node');
+    if (fs.existsSync(bin)) return bin;
+  }
+  return null;
+}
+function resolveNodeBinForMcpProbe(requestedCmd) {
+  if (typeof requestedCmd !== 'string') return requestedCmd;
+  if (path.basename(requestedCmd) !== 'node') return requestedCmd;
+  const nvmNode = findNvmNodeBinMinMajor20();
+  return nvmNode || requestedCmd;
+}
+
 function probeMcp(name, server, opts = {}) {
   if (server.disabled) return { name, status: 'skip', note: 'disabled:true' };
   // Windows-only コマンドは WSL から実行不可なのでスキップ判定
@@ -91,7 +129,7 @@ function probeMcp(name, server, opts = {}) {
     env.PATH = `${localBin}:${env.PATH || ''}`;
   }
 
-  const cmd = server.command;
+  const cmd = resolveNodeBinForMcpProbe(server.command);
   const args = server.args || [];
 
   // ⚠ 2026-04-23: MCP probe timeout を 30 → 60 秒に延長 (TSB-013 対策)
@@ -167,7 +205,7 @@ if (!fs.existsSync(mcpJsonPath)) {
           + '\n'
           + JSON.stringify({ jsonrpc: '2.0', id: 2, method: 'tools/call', params: { name: 'status', arguments: {} } })
           + '\n';
-        const res = spawnSync(ragServer.command, ragServer.args || [], {
+        const res = spawnSync(resolveNodeBinForMcpProbe(ragServer.command), ragServer.args || [], {
           input: reqs,
           encoding: 'utf8',
           timeout: 60_000,
