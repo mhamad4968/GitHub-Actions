@@ -17,12 +17,12 @@
  * Day 5 残タスク:
  *   - （一覧）検索バー強化は §4.8a 対応済み。SKYSEA 状態フィルタ等は別途。
  *   - 新規・編集: 入力ガイド帯・所属ヘルプ（編集は一覧折りたたみ）・操作ヒント。
- *   - レコード画面: フォーム上にデバイス／利用者／アカウントの区切り帯（getFieldElement 直前挿入）。アプリ側のラベル欄と重複し得るため文言は「上段／下段」で差別化。
+ *   - レコード画面: フォーム上に区切り帯（getFieldElement 直前）。現行フォームは「識別・利用の基本 → アカウント → 機器・備考」の縦並びに文言を合わせる。
  */
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-01-form-section-ribbons-v0.9.9';
+  const BUILD = '2026-05-01-form-order-copy-v0.9.10';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -434,12 +434,11 @@
     if (!record) return;
     remove674FormSectionRibbons();
     const type = record[FC_ACCOUNT_TYPE]?.value || '';
-    insert674SectionRibbon(
-      FC_PC_NAME,
-      'device',
-      'PC・機器・ネットワーク（上段）',
-      'このアプリのフォームでは、PC名・種別・日付のあとにアカウント欄が続き、そのさらに下にメーカー・型番・固定IP・備考などの機器欄があります。下まで一度スクロールしてから入力すると迷いにくいです。',
-    );
+    const hasAccountBlock = shouldShow674AccountRibbon(record);
+    const subTop = hasAccountBlock
+      ? 'PC名・共有端末名・種別・ステータス・所属／利用者名・購入日などはこの付近です。現行レイアウトではこのあとにアカウント欄が続き、さらに下にメーカー・型番・IP・備考などの機器欄があります。'
+      : 'PC名・種別・ステータス・利用者・日付などはこの付近です。アカウント欄を出さない種別では、この下に続けてメーカー・型番・IP・備考などの機器欄を入力します。';
+    insert674SectionRibbon(FC_PC_NAME, 'device', '識別・利用の基本（画面上部）', subTop);
     if (type === TYPE_SHARED || type === TYPE_JR) {
       insert674SectionRibbon(
         FC_SHARED_TERMINAL_NAME,
@@ -455,18 +454,18 @@
         '個人では氏名・所属が中心です。サーバーNAS／その他では、必要なときだけ担当や設置のメモに使ってください。',
       );
     }
-    if (shouldShow674AccountRibbon(record)) {
+    if (hasAccountBlock) {
       insert674SectionRibbon(
         FC_LOGON_NAME,
         'account',
         'アカウント（ログイン・メール・クラウド）',
-        'Windows・メール・M365・VPN など。種別がサーバーNAS／その他のときはこの欄群は使いません（帯ごと非表示になります）。',
+        'Windows・メール・M365・VPN など。現行フォームでは画面の中段付近にまとまっています。',
       );
       insert674SectionRibbon(
         FC_MANUFACTURER,
         'device',
-        'PC・機器・ネットワーク（下段）',
-        'メーカー・型番・製造番号・シリアル・固定IP・追加情報・備考など、機器とネットワークの続きはこの付近です（上段のPC名ブロックとセットで見てください）。',
+        '機器スペック・ネットワーク・備考',
+        'メーカー・型番・シリアル・製造番号・固定IP・その他情報・備考などはこの付近です（アカウント欄の下に続くのが現行の並びです）。',
       );
     }
   }
@@ -576,6 +575,15 @@
       ol.appendChild(li);
     }
     box.appendChild(ol);
+
+    const layoutNote = document.createElement('div');
+    layoutNote.style.cssText =
+      'margin-top:8px;padding-top:8px;border-top:1px solid #6ee7b7;font-size:11px;line-height:1.55;color:#047857;';
+    const hasAccLayout = shouldShow674AccountRibbon(event.record);
+    layoutNote.textContent = hasAccLayout
+      ? 'フォームの並び：現状は画面上部で「PC名・種別・利用者・日付」などを入力し、中段にアカウント欄、さらに下にメーカー・型番・IP・備考などの機器・ネットワーク欄が続きます。機器を先に入力したい場合は、kintone のフォーム設定でフィールドの並び替えをしてください（カスタマイズ JS では安全に入れ替えていません）。'
+      : 'フォームの並び：この種別ではアカウント欄を出さず、上で識別・利用の基本を入力したあと、下の方のメーカー・型番・IP・備考などの機器欄が続きます。並びを変えたい場合もフォーム設定での調整が必要です。';
+    box.appendChild(layoutNote);
 
     const dept = document.getElementById(DEPT_HELP_ID);
     if (dept) {
