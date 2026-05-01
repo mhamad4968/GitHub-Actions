@@ -30,7 +30,7 @@ npm run app:fields <アプリID>
 | M365管理マスタ（新・PC台帳ver.1 用 / Day 2 / 5 台ライセンス厳守） | **671** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-24 作成 / 10 レコード（sjm-001~sjm-010 / X 案 5 台節約）|
 | 新個人WindowsID採番マスタ（新・PC台帳ver.1 用 / Day 3 / 旧 626 置換） | **672** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-25 作成 / 0 レコード（`^jbm\d{4}$` 厳格 / `jbm0001` から払出予定）|
 | 新共有WindowsID採番マスタ（新・PC台帳ver.1 用 / Day 3 / 旧 667 置換） | **673** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-25 作成 / 0 レコード（`^sjbm\d{4}$` 厳格 / `sjbm0001` から払出予定）|
-| 新・PC台帳ver.1（本体 / Day 4 雛形→Day 5 本実装・**構築中・運用開始前**） | **674** | `customize/new-pc-ledger-v1/desktop.js` | `npm run deploy:674` / Space **21** / thread **23** / **live revision 38**（2026-04-29 JST・全フィールドリセット拡張・v0.7.6）/ customize **BUILD=`2026-04-29-day5-autogen-v0.7.6`** / fileKey **`01d42a25-ddbe-4a03-a009-69034f7e1d6a`** / field-spec **44/44**（Day4 手順書）/ **運用開始予定 2026-05-13**（仕様書 §1） |
+| 新・PC台帳ver.1（本体・674 customize **本実装進行中**・**運用開始前**） | **674** | `customize/new-pc-ledger-v1/desktop.js` | `npm run deploy:674` / Space **21** / thread **23** / customize **BUILD=`2026-05-02-pc-replace-mount-v0.9.14`**（PC買替 §4.10.3 含む・**627 は二重更新しない**）/ fileKey **`01d42a25-ddbe-4a03-a009-69034f7e1d6a`** / field-spec **44/44** / **運用開始予定 2026-05-13**（仕様書 §1） |
 | **部署予実・入力**（明細・`新フォーマット` 全列・`支払内訳` サブテーブル・月次 12 行） | **677** | （まだなし / フィールド設計後に `customize/677/desktop.js` 等を想定） | [https://jbis-kintone.cybozu.com/k/677/](https://jbis-kintone.cybozu.com/k/677/)・**配置**: Space **54** / thread **58**・ポータル [スペース 54（thread 58）](https://jbis-kintone.cybozu.com/k/#/space/54/thread/58)。**2026-04-29**: `POST /k/v1/preview/app.json` → `preview/app/deploy.json` で枠のみ作成・本番反映（preview revision **2** → deploy **SUCCESS**）。スペース内の旧アプリは **運用開始までに削除予定**（不要分）。`SPEC.md` §6–§6c |
 | **部署予実・ダッシュ**（**集計管理の主画面**・俯瞰・入力アプリ参照） | **678** | （まだなし / 同上 `customize/678/desktop.js` 想定） | [https://jbis-kintone.cybozu.com/k/678/](https://jbis-kintone.cybozu.com/k/678/)・入力と同スペース。**2026-04-29** 同上手順で枠のみ・deploy **SUCCESS**。`SPEC.md` §6b |
 
@@ -477,6 +477,7 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 
 | 日付 | 変更内容 |
 |------|----------|
+| 2026-05-02 | **674 行の正本整合**: 一覧表の **674** を **Day 4 雛形→Day 5** 表記から改め、**PC買替（§4.10.3）は customize 実装済**・**627 は二重更新しない**を明記。**BUILD** を手元正本 `2026-05-02-pc-replace-mount-v0.9.14` に更新。`docs/plans/2026-04-21-new-pc-ledger-spec.md` §4.4・§11・§13 と同趣旨 |
 | 2026-03-28 | 初版テンプレ。629 を `/k/v1/apps.json` で特定、594/595/626/627/629 の `app:fields` を本文へ反映、`npm run deploy:629` を `package.json` に追加 |
 | 2026-04-16 | App 668（運用ガイド）を一覧に追加。フィールドコードは `guide_slug` / `guide_body_html` / `guide_title`（推測しないこと）。`KINTONE_OPS_GUIDE_APP` が正本 ID |
 | 2026-04-18 | システムヘルスチェックを案A化: パスワード認証 + `kintone-apps.md` 一覧から全アプリ ID 自動抽出。632 のフィールド検証は実テナントに合わせ最小セット |

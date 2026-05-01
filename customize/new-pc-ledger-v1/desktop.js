@@ -12,16 +12,17 @@
  *   - §4.2.3a: SKYSEA 4 件は `skysea_system_meta`（表示名 SKYSEA処理用）に収容。アカウント部領域のため **権限のあるユーザーは編集可能**。運用で触るのは浜田のみと **周知**（customize ではログインによる非表示はしない）。通常はグループを閉じた初期表示
  *   - 自動生成ボタン: 個人 / 共有 / JR（M365 系）を §4.4 に沿ってフォームへ反映（空欄のみ上書き）
  *   - 5 台ライセンス警告雛形 (赤バナーは仕組みのみ)
- *   - リセット／PC買替ボタン（PC買替は Day 5 予定）／印刷（627 レイアウト移植済）
+ *   - リセット／PC買替（§4.10.3・596 採番・671 整合・595 個人リンク）／印刷（627 レイアウト移植済）
  *
- * Day 5 残タスク:
- *   - （一覧）検索バー強化は §4.8a 対応済み。SKYSEA 状態フィルタ等は別途。
+ * Day 5 残タスク（未完了のみ）:
+ *   - （一覧）SKYSEA 状態フィルタ等は別途（検索バー強化 §4.8a は対応済）。
+ *   - **PC買替は実装済**（§4.10.3）。594 同趣旨。**627 二重更新なし**。v0.9.14: ボタン掛け先フォールバック＋遅延再 inject、`import_source=PC_REPLACE_FROM_674:<旧$id>`・legacy 594 フィールドクリア。
  *   - 新規・編集: 所属ヘルプ（編集ではコピー用一覧を details で折りたたみ）。説明用の JS 帯は撤去（フォームの標準グループに委譲）。
  */
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-01-remove-explanation-blocks-v0.9.12';
+  const BUILD = '2026-05-02-pc-replace-mount-v0.9.14';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -80,6 +81,17 @@
   const APP_JBM_NUMBER = '672';     // 新個人WindowsID採番マスタ (jbm)
   const APP_SJBM_NUMBER = '673';    // 新共有WindowsID採番マスタ (sjbm)
   const APP_EMPLOYEE = '595';       // 社員情報マスタ
+  /** PC 採番マスタ（594 買替と同一。596 の in_code に 〇 で占有） */
+  const APP_PC_NUMBER_596 = '596';
+  const FC_596_PREFIX = 'number_top';
+  const FC_596_IN_USE = 'in_code';
+  const USED_MARK_596 = '〇';
+
+  /** §4.10.3 PC買替: 旧レコードのステータス・新規側の初期ステータス（アプリのドロップダウン文言と一致させる） */
+  const STATUS_AFTER_REPLACE_OLD_674 = '廃棄';
+  const STATUS_FOR_NEW_AFTER_REPLACE_674 = '利用中';
+  /** 買替完了後、新レコード表示でフォロー用バナーを一度だけ出す */
+  const STORAGE_KEY_674_REPLACE_NOTICE = 'jbis674_replace_notice_v1';
 
   /** 595 側: 新・PC台帳（674）との紐づけ（setup-595-pc-ledger-v1-list-subtable.js で追加） */
   const FC595_PC674_SUB = 'pc_ledger_v1_list';
@@ -190,6 +202,25 @@
     FC_IMPORT_SOURCE,
     FC_LEGACY_PC_NAME_594,
     FC_LEGACY_RECORD_ID_594,
+  ].concat(SKYSEA_CHILD_CODES);
+
+  /** PC買替で新レコード側から空にする項目（アカウント・種別・所属は継承。§4.10.3） */
+  const REPLACEMENT_CLEAR_FIELD_CODES_674 = [
+    FC_SERIAL,
+    FC_PC_SERIAL_NO,
+    FC_MANUFACTURER,
+    FC_MANUFACTURING_NO,
+    FC_MODEL_NAME,
+    FC_NOTE,
+    FC_PURCHASE_DATE,
+    FC_LATEST_INVENTORY_DATE,
+    FC_EXTRA_INFO_1,
+    FC_EXTRA_INFO_2,
+    FC_FIXED_IP_1,
+    FC_FIXED_IP_2,
+    /** 新機は旧 594 行と 1:1 ではないため、買替起点の追跡は import_source に寄せる */
+    FC_LEGACY_RECORD_ID_594,
+    FC_LEGACY_PC_NAME_594,
   ].concat(SKYSEA_CHILD_CODES);
 
   // ===== 種別 (account_type) のオプション =====
@@ -436,6 +467,53 @@
       /* ignore */
     }
     return kintone.app.record.getHeaderMenuSpaceElement();
+  }
+
+  /**
+   * ヘッダメニュースペースが未配置の環境でもボタンを出す（594 側の遅延マウントと同趣旨）。
+   * @returns {{ el: HTMLElement, mode: 'header' | 'toolbar' | 'body' } | null}
+   */
+  function resolveButtonMountSpace674() {
+    const h = getHeaderSpace674();
+    if (h) return { el: h, mode: 'header' };
+    const toolbar = document.querySelector('.gaia-argoui-app-toolbar');
+    if (toolbar) return { el: toolbar, mode: 'toolbar' };
+    if (document.body) return { el: document.body, mode: 'body' };
+    return null;
+  }
+
+  /** show 後でもヘッダ DOM が遅れることがあるため、ボタン未生成なら再試行する */
+  function getRecord674ForInject674() {
+    try {
+      const h = kintone.app.record.get();
+      if (h && h.record) return h.record;
+    } catch (_e) {
+      /* noop */
+    }
+    try {
+      if (typeof kintone.mobile !== 'undefined' && kintone.mobile.app && kintone.mobile.app.record) {
+        const hm = kintone.mobile.app.record.get();
+        if (hm && hm.record) return hm.record;
+      }
+    } catch (_e2) {
+      /* noop */
+    }
+    return null;
+  }
+
+  function scheduleInjectButtons674(event) {
+    injectButtons(event);
+    const delays = [150, 400, 900, 2000, 3500];
+    for (let i = 0; i < delays.length; i++) {
+      (function (ms) {
+        setTimeout(function () {
+          if (document.getElementById('new-pc-ledger-buttons')) return;
+          const rec = getRecord674ForInject674();
+          if (!rec) return;
+          injectButtons({ type: event.type, record: rec });
+        }, ms);
+      })(delays[i]);
+    }
   }
 
   // ===== JR端末用 黄色バナー (雛形 / 仕様書 §4.5) =====
@@ -2002,6 +2080,387 @@
     });
   }
 
+  // ===== PC買替（§4.10.3・594 と同趣旨: 596 採番・旧=廃棄・新=アカウント継承・671 / 595 整合）=====
+
+  function yyyymmTokyo674(d) {
+    const dt = d || new Date();
+    const s = dt.toLocaleString('sv-SE', { timeZone: 'Asia/Tokyo' });
+    const m = s.match(/^(\d{4})-(\d{2})/);
+    return m ? m[1] + m[2] : `${dt.getFullYear()}${String(dt.getMonth() + 1).padStart(2, '0')}`;
+  }
+
+  function shouldBeDisposedStatus674(status) {
+    const s = String(status || '').trim();
+    return s.includes('廃棄') || s.includes('除却') || s.includes('廃止');
+  }
+
+  function getCurrent674RecordId674() {
+    let id = '';
+    try {
+      const v = kintone.app.record.getId();
+      if (v != null && String(v).trim()) id = String(v).trim();
+    } catch (_e) {
+      /* noop */
+    }
+    if (!id && typeof kintone.mobile !== 'undefined' && kintone.mobile.app && kintone.mobile.app.record) {
+      try {
+        const v2 = kintone.mobile.app.record.getId();
+        if (v2 != null && String(v2).trim()) id = String(v2).trim();
+      } catch (_e2) {
+        /* noop */
+      }
+    }
+    return id;
+  }
+
+  function get674RecordPayloadById674(recordId) {
+    return kintoneApiGet('/k/v1/record.json', {
+      app: kintone.app.getId(),
+      id: String(recordId),
+    }).then(function (res) {
+      return {
+        record: res.record || {},
+        revision: res.revision != null ? String(res.revision) : '',
+      };
+    });
+  }
+
+  function getOneRecordApp674(app, query, fields) {
+    return kintoneApiGet('/k/v1/records.json', { app: app, query: query, fields: fields }).then(function (r) {
+      return r.records && r.records.length ? r.records[0] : null;
+    });
+  }
+
+  function peek596HasUnused674() {
+    const q = FC_596_IN_USE + ' not in ("' + USED_MARK_596 + '") order by $id asc limit 1';
+    return getOneRecordApp674(APP_PC_NUMBER_596, q, ['$id', FC_596_PREFIX, FC_596_IN_USE]).then(function (rec) {
+      return !!(rec && (rec[FC_596_PREFIX] && String(rec[FC_596_PREFIX].value || '').trim()));
+    });
+  }
+
+  /**
+   * 買替用: 596 を占有し PC 名用文字列を返す。POST 失敗時のみ rollback596 を呼ぶ。
+   * @returns {Promise<{ newPcName: string, rollback596: () => Promise<void> } | null>}
+   */
+  function claimPcNumberFrom596ForReplacementApi674() {
+    const q = FC_596_IN_USE + ' not in ("' + USED_MARK_596 + '") order by $id asc limit 1';
+    return getOneRecordApp674(APP_PC_NUMBER_596, q, ['$id', '$revision', FC_596_PREFIX, FC_596_IN_USE]).then(function (
+      rec,
+    ) {
+      if (!rec) return null;
+      const prefix = (rec[FC_596_PREFIX] && String(rec[FC_596_PREFIX].value || '').trim()) || '';
+      if (!prefix) throw new Error('596マスタに採番プレフィックス(number_top)がありません。');
+
+      return kintoneApiPut('/k/v1/record.json', {
+        app: APP_PC_NUMBER_596,
+        id: rec.$id.value,
+        revision: rec.$revision.value,
+        record: {
+          [FC_596_IN_USE]: { value: USED_MARK_596 },
+        },
+      }).then(function (putRes) {
+        const id596 = rec.$id.value;
+        const revAfter = putRes.revision;
+        const newPcName = prefix + '-' + yyyymmTokyo674();
+
+        const rollback596 = function () {
+          return kintoneApiPut('/k/v1/record.json', {
+            app: APP_PC_NUMBER_596,
+            id: id596,
+            revision: revAfter,
+            record: {
+              [FC_596_IN_USE]: { value: '' },
+            },
+          }).catch(function (e) {
+            console.error('[NEW-PC-LEDGER-V1] 596 rollback failed (replacement)', e);
+          });
+        };
+
+        return { newPcName: newPcName, rollback596: rollback596 };
+      });
+    });
+  }
+
+  function emptyValueForFieldType674(t) {
+    if (t === 'CHECK_BOX' || t === 'MULTI_SELECT') return [];
+    if (t === 'USER_SELECT' || t === 'ORGANIZATION_SELECT' || t === 'GROUP_SELECT') return [];
+    if (t === 'SUBTABLE') return [];
+    if (t === 'NUMBER') return '';
+    return '';
+  }
+
+  const SKIP_CLONE_FIELD_TYPES_674 = new Set(['CALC', 'FILE']);
+
+  /**
+   * API 取得レコードをベースに POST 用レコードを組み立てる（資産・SKYSEA 系はクリア、アカウントは継承）。
+   * @param {string} [old674RecordId] 買替元 674 の $id（import_source 追跡用）
+   */
+  function build674ReplacementPostRecord674(srcRecord, newPcName, old674RecordId) {
+    const out = {};
+    for (const code of Object.keys(srcRecord || {})) {
+      const cell = srcRecord[code];
+      if (!cell || typeof cell !== 'object') continue;
+      if (code.startsWith('$')) continue;
+      if (SKIP_CLONE_FIELD_TYPES_674.has(cell.type)) continue;
+      if (cell.type === 'SUBTABLE') {
+        out[code] = { type: 'SUBTABLE', value: [] };
+        continue;
+      }
+      out[code] = JSON.parse(JSON.stringify(cell));
+    }
+
+    for (let i = 0; i < REPLACEMENT_CLEAR_FIELD_CODES_674.length; i++) {
+      const code = REPLACEMENT_CLEAR_FIELD_CODES_674[i];
+      if (!out[code]) continue;
+      out[code].value = emptyValueForFieldType674(out[code].type);
+    }
+
+    if (out[FC_PC_NAME]) {
+      out[FC_PC_NAME].value = newPcName;
+    } else {
+      out[FC_PC_NAME] = { type: 'SINGLE_LINE_TEXT', value: newPcName };
+    }
+    if (out[FC_PC_STATUS]) {
+      out[FC_PC_STATUS].value = STATUS_FOR_NEW_AFTER_REPLACE_674;
+    } else {
+      out[FC_PC_STATUS] = { type: 'DROP_DOWN', value: STATUS_FOR_NEW_AFTER_REPLACE_674 };
+    }
+
+    const oid = String(old674RecordId || '').trim();
+    const tag = oid ? 'PC_REPLACE_FROM_674:' + oid : 'PC_REPLACE_FROM_674';
+    if (out[FC_IMPORT_SOURCE]) {
+      out[FC_IMPORT_SOURCE].value = tag;
+    } else {
+      out[FC_IMPORT_SOURCE] = { type: 'SINGLE_LINE_TEXT', value: tag };
+    }
+
+    return out;
+  }
+
+  function show674ReplacementFollowupBanner674() {
+    const msg =
+      '【PC買替の続き】シリアル・メーカー・モデル・購入日・在庫日・備考・SKYSEA 関連など、ハード側の項目は必ず入力してください。';
+    const inject = function () {
+      if (document.getElementById('jbis674-replace-banner')) return true;
+      const host = getHeaderSpace674() || document.querySelector('.gaia-argoui-app-toolbar') || document.body;
+      if (!host) return false;
+      const el = document.createElement('div');
+      el.id = 'jbis674-replace-banner';
+      el.setAttribute('role', 'alert');
+      el.setAttribute('tabindex', '0');
+      el.style.cssText =
+        'margin:8px 12px;padding:14px 18px;background:#fee2e2;border:2px solid #b91c1c;border-radius:6px;color:#991b1b;font-size:14px;font-weight:bold;line-height:1.55;box-shadow:0 2px 6px rgba(0,0,0,.12);position:relative;z-index:99999;';
+      el.textContent = msg;
+      host.insertBefore(el, host.firstChild);
+      return true;
+    };
+    if (!inject()) {
+      setTimeout(inject, 200);
+      setTimeout(inject, 600);
+      setTimeout(inject, 1500);
+    }
+    setTimeout(function () {
+      try {
+        window.alert(msg);
+      } catch (_a) {
+        /* noop */
+      }
+    }, 400);
+  }
+
+  function maybeShow674ReplacementNoticeFromStorage674() {
+    try {
+      if (sessionStorage.getItem(STORAGE_KEY_674_REPLACE_NOTICE) === '1') {
+        sessionStorage.removeItem(STORAGE_KEY_674_REPLACE_NOTICE);
+        show674ReplacementFollowupBanner674();
+      }
+    } catch (_e) {
+      /* noop */
+    }
+  }
+
+  /**
+   * 共有/JR で同一 M365 行に新旧が一瞬二重計上されないよう、先に旧を廃棄してから新規 POST し、671 を再同期する。
+   */
+  function runPcReplacementFlow674() {
+    const oldId = getCurrent674RecordId674();
+    if (!oldId) {
+      window.alert('PC買替は、保存済みのレコード（詳細／編集を開いた状態）でのみ使用できます。');
+      return Promise.resolve();
+    }
+    const ok = window.confirm(
+      'PC買替を実行しますか？\n\n' +
+        '・現在のレコードは「' +
+        STATUS_AFTER_REPLACE_OLD_674 +
+        '」になります。\n' +
+        '・アカウント情報を引き継いだ新しいレコードが追加され、596 で新しい PC 名が採番されます。\n' +
+        '（処理後は新レコードの画面へ移動します）',
+    );
+    if (!ok) return Promise.resolve();
+
+    let claim = null;
+    /** POST 成功後にセット。以降の 671/595 で失敗した場合は 596 ロールバックや旧ステータス復元はしない */
+    let createdNewId = '';
+
+    return peek596HasUnused674()
+      .then(function (has596) {
+        if (!has596) {
+          window.alert(
+            'PC採番マスタ(596)に未使用の番号がありません。処理を中止しました（596・674は未変更です）。',
+          );
+          return null;
+        }
+        return get674RecordPayloadById674(oldId);
+      })
+      .then(function (payload0) {
+        if (!payload0) return null;
+        const src0 = payload0.record;
+        const st0 = (src0[FC_PC_STATUS] && src0[FC_PC_STATUS].value) || '';
+        if (shouldBeDisposedStatus674(st0)) {
+          window.alert('このレコードはすでに廃棄等の状態です。PC買替は実行できません。');
+          return null;
+        }
+        return claimPcNumberFrom596ForReplacementApi674().then(function (c) {
+          if (!c) {
+            window.alert(
+              'PC採番マスタ(596)に未使用の番号がありません。処理を中止しました（596・674は未変更です）。',
+            );
+            return null;
+          }
+          claim = c;
+          return { src0: src0, newPcName: c.newPcName };
+        });
+      })
+      .then(function (ctx) {
+        if (!ctx || !claim) return null;
+        const postBody = build674ReplacementPostRecord674(ctx.src0, ctx.newPcName, oldId);
+        const prevStatus = (ctx.src0[FC_PC_STATUS] && String(ctx.src0[FC_PC_STATUS].value || '').trim()) || '';
+        const mid = String((ctx.src0[FC_M365_MASTER_RECORD_ID] && ctx.src0[FC_M365_MASTER_RECORD_ID].value) || '').trim();
+        const acType = (ctx.src0[FC_ACCOUNT_TYPE] && ctx.src0[FC_ACCOUNT_TYPE].value) || '';
+        const mail = (ctx.src0[FC_MAIL] && String(ctx.src0[FC_MAIL].value || '').trim()) || '';
+        const empId = (ctx.src0[FC_EMP_ID] && String(ctx.src0[FC_EMP_ID].value || '').trim()) || '';
+
+        return get674RecordPayloadById674(oldId)
+          .then(function (freshOld) {
+            if (!freshOld.revision) {
+              throw new Error('旧レコードのリビジョンを取得できませんでした。');
+            }
+            return kintoneApiPut('/k/v1/record.json', {
+              app: kintone.app.getId(),
+              id: oldId,
+              revision: freshOld.revision,
+              record: {
+                [FC_PC_STATUS]: { value: STATUS_AFTER_REPLACE_OLD_674 },
+              },
+            }).then(function () {
+              return kintoneApiPost('/k/v1/record.json', {
+                app: kintone.app.getId(),
+                record: postBody,
+              });
+            });
+          })
+          .then(function (created) {
+            const newId = created && created.id != null ? String(created.id) : '';
+            if (!newId) throw new Error('新規レコードの id を取得できませんでした。');
+            createdNewId = newId;
+
+            let chain = Promise.resolve();
+            if (mid && (acType === TYPE_SHARED || acType === TYPE_JR)) {
+              chain = chain.then(function () {
+                return sync671MasterFrom674674(mid);
+              });
+            }
+
+            if (acType === TYPE_PERSONAL) {
+              chain = chain.then(function () {
+                return remove674From595Matches674(mail, empId, oldId).then(function () {
+                  return resolve595RowsForLink674(mail, empId).then(function (rows595) {
+                    if (!rows595.length) {
+                      console.warn(
+                        '[NEW-PC-LEDGER-V1] PC買替: 595 未ヒットのためサブテーブル追記をスキップ mail=' +
+                          mail +
+                          ' emp_id=' +
+                          empId,
+                      );
+                      return;
+                    }
+                    const id595 = String(rows595[0].$id && rows595[0].$id.value ? rows595[0].$id.value : '').trim();
+                    if (!id595) return;
+                    return merge674Into595Subtable674(id595, newId, TYPE_PERSONAL);
+                  });
+                });
+              });
+            }
+
+            return chain.then(function () {
+              try {
+                sessionStorage.setItem(STORAGE_KEY_674_REPLACE_NOTICE, '1');
+              } catch (_s) {
+                /* noop */
+              }
+              window.alert(
+                'PC買替が完了しました。続いてハード／SKYSEA 関連の項目を入力してください。\n\n新しいレコードの画面へ移ります。',
+              );
+              location.href =
+                location.origin +
+                '/k/' +
+                encodeURIComponent(String(kintone.app.getId())) +
+                '/show?record=' +
+                encodeURIComponent(newId);
+            });
+          })
+          .catch(function (ePost) {
+            const roll596 =
+              !createdNewId && claim
+                ? claim.rollback596().catch(function (_r) {
+                    /* noop */
+                  })
+                : Promise.resolve();
+            return roll596
+              .then(function () {
+                if (!createdNewId && prevStatus) {
+                  return get674RecordPayloadById674(oldId).then(function (rBack) {
+                    if (!rBack.revision) return;
+                    return kintoneApiPut('/k/v1/record.json', {
+                      app: kintone.app.getId(),
+                      id: oldId,
+                      revision: rBack.revision,
+                      record: {
+                        [FC_PC_STATUS]: { value: prevStatus },
+                      },
+                    }).catch(function (e2) {
+                      console.error('[NEW-PC-LEDGER-V1] PC買替 rollback 旧ステータス失敗', e2);
+                    });
+                  });
+                }
+                if (createdNewId) {
+                  console.error(
+                    '[NEW-PC-LEDGER-V1] PC買替: 新規674は作成済みだが後続処理に失敗 id=' + createdNewId,
+                    ePost,
+                  );
+                }
+              })
+              .then(function () {
+                throw ePost;
+              });
+          });
+      })
+      .catch(function (e) {
+        console.error('[NEW-PC-LEDGER-V1] PC買替', e);
+        if (createdNewId) {
+          window.alert(
+            '新しい674レコード（レコード番号 ' +
+              createdNewId +
+              '）は作成済みですが、その後の処理でエラーが発生しました。\n' +
+              (e && e.message ? e.message : String(e)) +
+              '\n\n671（M365管理）や595（社員マスタ）を確認してください。',
+          );
+          return;
+        }
+        window.alert('PC買替に失敗しました。\n' + (e && e.message ? e.message : String(e)));
+      });
+  }
+
   function onSubmitSuccess674(event) {
     const rid = String(
       (event.recordId || (event.record && event.record.$id && event.record.$id.value) || ''),
@@ -2343,8 +2802,8 @@ ${bodyInner}\
 
   function injectButtons(event) {
     jb674PrintRecordSnapshot = event.record;
-    const space = getHeaderSpace674();
-    if (!space) return;
+    const mount = resolveButtonMountSpace674();
+    if (!mount || !mount.el) return;
 
     // 既存ボタンを除去 (再 inject 防止)
     const existing = document.querySelector('#new-pc-ledger-buttons');
@@ -2352,7 +2811,14 @@ ${bodyInner}\
 
     const wrapper = document.createElement('div');
     wrapper.id = 'new-pc-ledger-buttons';
-    wrapper.style.cssText = 'display:flex;flex-wrap:wrap;align-items:center;margin:8px 0;';
+    if (mount.mode === 'body') {
+      wrapper.style.cssText =
+        'display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:0;padding:10px 12px;' +
+        'position:fixed;top:0;left:0;right:0;z-index:100000;background:#f8fafc;border-bottom:1px solid #cbd5e1;' +
+        'box-shadow:0 2px 6px rgba(15,23,42,.12);';
+    } else {
+      wrapper.style.cssText = 'display:flex;flex-wrap:wrap;align-items:center;margin:8px 0;';
+    }
 
     const type = event.record[FC_ACCOUNT_TYPE]?.value || '';
     const stored = isPersonalStored(event.record);
@@ -2391,9 +2857,12 @@ ${bodyInner}\
       runClearAccountFields();
     }));
 
-    // PC 買替 (全種別)
+    // PC 買替 (全種別 / §4.10.3)
     wrapper.appendChild(createGenerateButton('🔄 PC買替', '#6c757d', () => {
-      alert('🛠 Day 5 で実装予定: 既存 594 と同じ動作で継承');
+      runPcReplacementFlow674().catch(function (e) {
+        console.error('[NEW-PC-LEDGER-V1] PC買替', e);
+        window.alert('PC買替でエラー: ' + (e && e.message ? e.message : String(e)));
+      });
     }));
 
     // 印刷 (全種別)
@@ -2406,7 +2875,7 @@ ${bodyInner}\
       open674SystemInfoPrintWindow(rec);
     }));
 
-    space.appendChild(wrapper);
+    mount.el.appendChild(wrapper);
   }
 
   // ===== 種別変更時の確認ダイアログ (仕様書 §4.6.1) =====
@@ -2467,6 +2936,7 @@ ${bodyInner}\
   ];
   kintone.events.on(showEvents, (event) => {
     hideUserSuggest674();
+    maybeShow674ReplacementNoticeFromStorage674();
     console.log(`[NEW-PC-LEDGER-V1] BUILD=${BUILD} event=${event.type}`);
     if (
       event.type === 'app.record.edit.show' ||
@@ -2491,7 +2961,7 @@ ${bodyInner}\
     applySkyseaGroupUi(event.record, editable ? 'editable' : 'detail');
     applyVisibilityByType(event.record);
     showJrBannerIfNeeded(event.record);
-    injectButtons(event);
+    scheduleInjectButtons674(event);
     if (editable) {
       ensureUserNameInputDelegate674();
       const ac = event.record[FC_ACCOUNT_TYPE]?.value || '';
@@ -2536,7 +3006,7 @@ ${bodyInner}\
     applySkyseaGroupUi(result.record, 'editable');
     applyVisibilityByType(result.record);
     showJrBannerIfNeeded(result.record);
-    injectButtons(result);
+    scheduleInjectButtons674(result);
     if (
       (result.record[FC_ACCOUNT_TYPE] && result.record[FC_ACCOUNT_TYPE].value) === TYPE_PERSONAL &&
       !isPersonalStored(result.record)
