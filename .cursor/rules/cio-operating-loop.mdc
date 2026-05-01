@@ -1,0 +1,32 @@
+---
+description: CIO 運用の一本線（正シェル・朝ブリーフィング・軽検査・Desktop 同期の判断）
+alwaysApply: true
+---
+
+# CIO 運用ループ（仕組み・判断の正）
+
+## 正シェル（混同防止）
+
+- **npm / git / 憲法 verify / `session:bootstrap` / Desktop sync** は **`$HOME/kintone-ai-lab`（WSL）** をカレントに実行する。
+- **`C:\Users\mhamada202408224\kintone-ai-lab`** が **スクリプト不足のコピー**のときがある。**その場合は WSL 側を正**とし、Windows 側だけで結論を出さない。
+
+## 朝（cron 以外の手動でも同じ順）
+
+1. **`docs/reports/<JSTの今日>-morning-prep.md`** を Read（§46 Phase 0）。
+2. 追徴・不安があれば **`npm run cio:quick-health`**（疎通 + wipe 監視。数分以内）。
+3. フル棚卸しは既存どおり **`npm run session:bootstrap`**（項番 -0 OK 後）。
+
+## セッション切替・憲法ゲート
+
+- **詳細正本**: `chat-sessions/NEW-SESSION-STARTER.md` の **「■ 貼付単独で完走」**。
+- **想起**: `constitution-handoff-gate.mdc`（-1 / スターター Read / -0 / 0）。
+- **段階読解**: `chat-sessions/SESSION-READ-LADDER.md` + `chat-sessions/desktop-ai-emergency-read-pack/READ-*.txt`（READ-06 直後は **【AI分業チェック】** 必須）。
+- **仕様の網羅→突合**: `.cursor/rules/deepseek-cursor-spec-division.mdc`。
+
+## ドキュ・Desktop を触ったあと
+
+- **`npm run desktop:sync-and-verify`**（`session-starter:sync-desktop` 単体より **依存順が保証**されている方を優先）。
+
+## MCP と §51
+
+- 航海図は複数行でもよいが、**実呼び出しは直列**（§50-3 と §51）。MCP を使ったターンは憲法どおり **`[実行経路: MCP …]`** を付ける。

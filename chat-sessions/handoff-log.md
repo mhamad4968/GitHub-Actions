@@ -695,3 +695,14 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 
 ---
 
+### 2026-05-02 (Sat) JST — CIO 運用ループ（常時想起）+ 軽検査 npm 一本化
+
+**実施内容（CIO）**:
+- **`.cursor/rules/cio-operating-loop.mdc`** を新設（`alwaysApply: true`）。正シェルは **`~/kintone-ai-lab`（WSL）**、朝は **`docs/reports/<JST>-morning-prep.md`**、追徴は **`npm run cio:quick-health`**、Desktop 更新後は **`npm run desktop:sync-and-verify`** を優先する旨を固定。
+- **`package.json`**: `cio:quick-health` = `kintone:test` && `guard:check`。
+- **`RULES-INDEX.md`**: §0 直後の表に **（Cursor）`cio-operating-loop.mdc`** 行を追加（索引から辿れるようにする）。
+
+**次セッションへの 1 行**: 朝イチは **morning-prep Read** → 気になるとき **`npm run cio:quick-health`** → セッション本格は従来どおり **スターター + -0 + `session:bootstrap`**。
+
+---
+
