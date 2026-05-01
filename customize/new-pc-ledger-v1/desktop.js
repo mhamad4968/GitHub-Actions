@@ -17,12 +17,12 @@
  * Day 5 残タスク:
  *   - （一覧）検索バー強化は §4.8a 対応済み。SKYSEA 状態フィルタ等は別途。
  *   - 新規・編集: 入力ガイド帯・所属ヘルプ（編集は一覧折りたたみ）・操作ヒント。
- *   - レコード画面: フォーム上にデバイス／利用者／アカウントの区切り帯（getFieldElement 直前挿入）。
+ *   - レコード画面: フォーム上にデバイス／利用者／アカウントの区切り帯（getFieldElement 直前挿入）。アプリ側のラベル欄と重複し得るため文言は「上段／下段」で差別化。
  */
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-01-form-section-ribbons-v0.9.8';
+  const BUILD = '2026-05-01-form-section-ribbons-v0.9.9';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -408,7 +408,7 @@
     };
     const p = pal[variant] || pal.device;
     box.style.cssText =
-      'box-sizing:border-box;width:100%;max-width:100%;margin:14px 0 8px;padding:8px 12px 9px;' +
+      'box-sizing:border-box;width:100%;max-width:100%;margin:10px 0 6px;padding:8px 12px 9px;' +
       'background:' +
       p.bg +
       ';border:1px solid ' +
@@ -437,8 +437,8 @@
     insert674SectionRibbon(
       FC_PC_NAME,
       'device',
-      'PC・機器・ネットワーク',
-      'PC名・シリアル・型番・IP・購入日・在庫・備考など（機器まわりの情報）はこの付近にまとめて入力してください。',
+      'PC・機器・ネットワーク（上段）',
+      'このアプリのフォームでは、PC名・種別・日付のあとにアカウント欄が続き、そのさらに下にメーカー・型番・固定IP・備考などの機器欄があります。下まで一度スクロールしてから入力すると迷いにくいです。',
     );
     if (type === TYPE_SHARED || type === TYPE_JR) {
       insert674SectionRibbon(
@@ -460,7 +460,13 @@
         FC_LOGON_NAME,
         'account',
         'アカウント（ログイン・メール・クラウド）',
-        'Windows ID・パスワード・メール・M365 など。種別がサーバーNAS／その他のときはこの欄群は使いません。',
+        'Windows・メール・M365・VPN など。種別がサーバーNAS／その他のときはこの欄群は使いません（帯ごと非表示になります）。',
+      );
+      insert674SectionRibbon(
+        FC_MANUFACTURER,
+        'device',
+        'PC・機器・ネットワーク（下段）',
+        'メーカー・型番・製造番号・シリアル・固定IP・追加情報・備考など、機器とネットワークの続きはこの付近です（上段のPC名ブロックとセットで見てください）。',
       );
     }
   }
