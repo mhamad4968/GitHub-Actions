@@ -423,7 +423,7 @@ agent
 ### §4 フィールドコードの整合性
 推測禁止。`kintone-apps.md` または `npm run app:fields <ID>` の出力と一致するコードのみ使用する。
 
-**PC台帳スタック（594 / 595 / 626 / 627）を触る前後**は、`npm run kintone:test`（認証と各アプリ設定の読取疎通）と `npm run lint:customize`（`customize/` の ESLint）を通すことを推奨。運用メモは `kintone-apps.md` の「PC台帳まわり（594・595・626・627・668）の保守メモ」。
+**PC台帳スタック（594 / 595 / 626 / 627）を触る前後**は、`npm run kintone:test`（認証と各アプリ設定の読取疎通）と `npm run lint:customize`（`customize/` の ESLint）を通すことを推奨。`kintone:test` が実際に GET するアプリ ID は **`scripts/kintone-connection-test.js` の `PC_STACK_APPS`**（2026-05-02 時点: **594 / 595 / 627 / 670–674** の **8 件**。**626 は GAIA 上削除済みのため疎通リストに含めない**）。運用メモは `kintone-apps.md` の「PC台帳まわり（594・595・626・627・668）の保守メモ」。
 
 **本番データの作成・更新・削除やデプロイに直結する npm**（`deploy:*`、`ops-guide:publish`、`test:e2e:595`、`clear:*:apply`、sync / purge / reset 系など）は、**実行前に利用者・管理者と相談**すること。一覧は `kintone-apps.md` 内「実行前に相談が必要なコマンド」を参照。
 

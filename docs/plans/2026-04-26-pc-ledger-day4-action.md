@@ -62,7 +62,7 @@
 
 ### Layer A: 事前準備で 80% 排除（20:00 までに完了 / 本ファイル §3 で詳述）
 
-- [x] kintone:test 拡張（**9 apps** ＝ 594/595/626/627/670/671/672/673/**674** 全件疎通 OK / `scripts/kintone-connection-test.js` に 674 追加済 / 20:00 直前にも再実行推奨）
+- [x] kintone:test 拡張（**8 apps** ＝ 594/595/627/670/671/672/673/**674** 全件疎通 OK / 626 は本番削除（404）のためリスト除外・`kintone-connection-test.js` 2026-05-02 反映 / 20:00 直前にも再実行推奨）
 - [x] field-spec-diff.mjs で「仕様書 vs add-form-fields 引数」を機械照合（2026-04-27: `--spec=本書` vs `--actual=data/snapshots/674-step3-after-deploy-20260426-174110.json` → **当時 35 fields all match** exit 0。**2026-04-28**: 正本 **42 件**（594 HW 7 項目）— 実 kintone は **add-form-fields 未反映の間は diff に warn が出る**のが正常）
 - [x] customize 雛形 JS (lint:customize pass 済) を事前作成（`customize/new-pc-ledger-v1/desktop.js` / BUILD `2026-04-26-day4-skeleton-v0.2` / 2026-04-27 `npm run lint:customize` exit 0）
 - [x] revision-snapshot.mjs で deploy 直後の自動 backup 仕組み準備（スクリプト既存 / 2026-04-27 実走 `674-order2-layer-a-readiness-*` 生成・live revision=9・43 fields 確認）
@@ -176,7 +176,7 @@
 |---|---|---|---|
 | A0 | session-lock 取得 (holder=PC-ledger-day4-prep-2026-04-26) | ☑ 済 | 09:00 取得 |
 | A1 | 本ファイル作成 | ☑ 済 | 本ファイル |
-| A2 | kintone:test 拡張 (594-627 + 670-674 = **9 apps**) + 全件 OK 確認 | ☑ 済 | 09:00 初回 + **2026-04-27** 674 追加 |
+| A2 | kintone:test 拡張 (594/595/627 + 670-674 = **8 apps**・626 除外) + 全件 OK 確認 | ☑ 済 | 09:00 初回 + **2026-04-27** 674 追加 + **2026-05-02** 626 削除反映 |
 | A3 | scripts/field-spec-diff.mjs（仕様 vs 実フィールド機械照合） | ☑ 済 | 2026-04-27: step3 snapshot **35 match**／2026-04-28: 正本 **42**（kintone 反映は別 Tier B） |
 | A6 | scripts/revision-snapshot.mjs（deploy 前後 backup） | ☑ 済 | 2026-04-27 実走 `order2-layer-a-readiness` |
 | A4 | customize 雛形 JS 骨組み + lint:customize pass | ☑ 済 | **`customize/new-pc-ledger-v1/desktop.js`**（674 用・Day4 雛形） |
@@ -184,7 +184,7 @@
 | B1 | 20:00 直前: session-lock 切替（holder=PC-ledger-day4-2026-04-26） | ☐ | 旧 lock release → 新 lock acquire |
 | B2 | 20:00 直前: `npm run audit:parallel` = 0 点 | ☐ | 3 点以上で着手中止 |
 | B3 | 20:00 直前: `npm run smoke` = **9/9** ✅（`smoke:quiet`） | ☐ | NG なら着手中止 |
-| B4 | 20:00 直前: `npm run kintone:test` = **9/9** ✅ | ☐ | 674 含む疎通最終確認 |
+| B4 | 20:00 直前: `npm run kintone:test` = **8/8** ✅ | ☐ | 674 含む疎通最終確認（626 除外） |
 | B5 | 浜田に「準備 100% / 着手可」報告 → **GO 待ち** | ☐ | GO もらってから §4 に進む |
 
 ---

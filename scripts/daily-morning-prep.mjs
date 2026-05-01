@@ -81,7 +81,16 @@ function fence(lang, body) {
 
 function summary(label, result, { ok = '✅', ng = '❌', limit = 20 } = {}) {
   const head = `### ${result.ok ? ok : ng} ${label}`;
-  const lines = (result.stdout || result.stderr || '').split('\n').slice(0, limit);
+  // stdout のみ先に拾うと、先頭が [ok] だけで stderr のスタックが落ちる（誤解を招く）ため、
+  // 失敗時は stdout + stderr を結合してから切り詰める。
+  let combined;
+  if (result.ok) {
+    combined = (result.stdout || result.stderr || '').trim();
+  } else {
+    combined = [result.stdout, result.stderr].filter(Boolean).join('\n---\n').trim();
+  }
+  const cap = result.ok ? limit : Math.max(limit, 40);
+  const lines = combined.split('\n').slice(0, cap);
   return `${head}\n\n${fence('text', lines.join('\n'))}\n`;
 }
 

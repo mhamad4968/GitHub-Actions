@@ -1,8 +1,8 @@
 /**
- * Kintone 疎通確認（認証・594/595/626/627 + 670/671/672/673/674 のアプリ設定が読めるか）。
+ * Kintone 疎通確認（認証・594/595/627 + 670/671/672/673/674 のアプリ設定が読めるか）。
  * `npm run kintone:test` から実行。
  *
- * 旧 PC 台帳スタック: 594/595/626/627
+ * 旧 PC 台帳スタック: 594/595/627（626 は本番から削除済みのため対象外。採番後継は 672）
  * 新 PC 台帳スタック: 670 (環境設定) / 671 (M365 管理) / 672 (jbm 採番) / 673 (sjbm 採番) / 674 (新・PC台帳ver.1)
  */
 import 'dotenv/config';
@@ -27,7 +27,8 @@ if (process.env.KINTONE_BASIC_AUTH_USERNAME && process.env.KINTONE_BASIC_AUTH_PA
   headers.Authorization = `Basic ${Buffer.from(`${bu}:${bp}`, 'utf8').toString('base64')}`;
 }
 
-const PC_STACK_APPS = [594, 595, 626, 627, 670, 671, 672, 673, 674];
+/** 626 は GAIA 上削除済み（404）。kintone-apps.md の 672 が採番系の後継。 */
+const PC_STACK_APPS = [594, 595, 627, 670, 671, 672, 673, 674];
 
 async function fetchJson(url) {
   const res = await fetch(url, { method: 'GET', headers });
@@ -45,12 +46,25 @@ async function fetchJson(url) {
   return json;
 }
 
+let failures = 0;
+
 for (const app of PC_STACK_APPS) {
   const u = new URL(`${baseUrl}/k/v1/app.json`);
   u.searchParams.set('id', String(app));
-  const json = await fetchJson(u.toString());
-  const name = json?.name != null ? String(json.name) : '(no name)';
-  console.log(`[ok] app ${app}: ${name}`);
+  try {
+    const json = await fetchJson(u.toString());
+    const name = json?.name != null ? String(json.name) : '(no name)';
+    console.log(`[ok] app ${app}: ${name}`);
+  } catch (e) {
+    failures += 1;
+    const msg = e instanceof Error ? e.message : String(e);
+    console.log(`[ng] app ${app}: ${msg}`);
+  }
+}
+
+if (failures > 0) {
+  console.error(`[kintone:test] ${failures} app(s) failed (see [ng] lines above)`);
+  process.exit(1);
 }
 
 console.log('[kintone:test] PC台帳スタック疎通 OK');

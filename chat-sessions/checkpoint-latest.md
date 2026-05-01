@@ -362,7 +362,7 @@
 | wipe-guard | ✅ 21 ファイル健在 / 今日 wipe 0 件 |
 | emergency-backup | ✅ ミラー最新 (4/22 16:17) |
 | guard:check | ✅ 異常なし |
-| kintone:test | ✅ 594/595/626/627 全件疎通 |
+| kintone:test | ✅ 594/595/627 + 670–674 全件疎通（**8 apps**・626 は本番削除のため疎通リストから除外、`kintone-connection-test.js` 2026-05-02 反映） |
 | npm audit | ✅ 0 vulnerabilities |
 | MCP 疎通 | ✅ 13/16 (残 3 は Windows-side skip) |
 | cron | ✅ morning:prep 登録済 |
