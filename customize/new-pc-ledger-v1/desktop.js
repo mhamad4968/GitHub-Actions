@@ -16,11 +16,12 @@
  *
  * Day 5 残タスク:
  *   - （一覧）検索バー強化は §4.8a 対応済み。SKYSEA 状態フィルタ等は別途。
+ *   - 新規・編集: 入力ガイド帯・所属ヘルプ（編集は一覧折りたたみ）・操作ヒント。
  */
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-01-index-search-v0.9.6';
+  const BUILD = '2026-05-01-input-guide-v0.9.7';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -343,12 +344,15 @@
   // ===== §4.2.0b 所属名・所属グループ 常時ヘルプ帯 =====
 
   const DEPT_HELP_ID = 'new-pc-ledger-dept-help';
+  const INPUT_GUIDE_ID = 'new-pc-ledger-input-guide';
 
   const DEPT_HELP_SHOW_RECORD_EVENTS = new Set([
     'app.record.detail.show',
     'app.record.create.show',
+    'app.record.edit.show',
     'mobile.app.record.detail.show',
     'mobile.app.record.create.show',
+    'mobile.app.record.edit.show',
   ]);
 
   function removeDeptHelpBanner() {
@@ -356,11 +360,93 @@
     if (el) el.remove();
   }
 
+  function removeInputFlowGuide674() {
+    const el = document.getElementById(INPUT_GUIDE_ID);
+    if (el) el.remove();
+  }
+
   /**
-   * レコード画面ヘッダに所属ヘルプを出す（詳細・新規のみ。一覧・編集では remove を呼ぶ）。
+   * 新規・編集で「先に何をするか」を短く示す（種別ごとに文面切替）。
+   * @param {{ type?: string, record: object }} event
    */
-  function injectDeptHelpBanner() {
-    const space = kintone.app.record.getHeaderMenuSpaceElement();
+  function injectInputFlowGuide674(event) {
+    const t = String(event.type || '');
+    const onEditable =
+      /app\.record\.(create|edit)\.show$/.test(t) ||
+      /mobile\.app\.record\.(create|edit)\.show$/.test(t) ||
+      /app\.record\.(create|edit)\.change\./.test(t) ||
+      /mobile\.app\.record\.(create|edit)\.change\./.test(t);
+    if (!onEditable) {
+      removeInputFlowGuide674();
+      return;
+    }
+    const space = getHeaderSpace674();
+    if (!space) return;
+    removeInputFlowGuide674();
+
+    const type = event.record[FC_ACCOUNT_TYPE]?.value || '';
+    const stored = isPersonalStored(event.record);
+
+    const box = document.createElement('div');
+    box.id = INPUT_GUIDE_ID;
+    box.style.cssText =
+      'font-size:12px;line-height:1.5;padding:8px 12px;margin:0 0 6px 0;' +
+      'background:#ecfdf5;border:1px solid #6ee7b7;border-radius:6px;color:#064e3b;';
+
+    const h = document.createElement('div');
+    h.style.cssText = 'font-weight:700;margin-bottom:6px;';
+    h.textContent = '📝 入力の流れ（目安）';
+    box.appendChild(h);
+
+    const ol = document.createElement('ol');
+    ol.style.cssText = 'margin:0;padding-left:1.25em;';
+    const steps = [];
+    if (type === TYPE_PERSONAL && !stored) {
+      steps.push(
+        '「種別」で個人を選び、利用者名を入力するか「社員名を検索（595）」で氏名を確定します。',
+      );
+      steps.push('所属名・所属グループは595から自動反映されます（必要なら上書き）。');
+      steps.push(
+        '問題なければ「個人用 自動生成」で Windows / M365 などの空欄だけ埋め、保存前に内容を確認します。',
+      );
+    } else if (type === TYPE_PERSONAL && stored) {
+      steps.push('このレコードは保管状態（§4.1a）のため、アカウント欄は表示されません。');
+    } else if (type === TYPE_SHARED || type === TYPE_JR) {
+      steps.push(
+        '「共有端末名」と「所属名」「所属グループ」を先に入力します（青枠の一覧を参照）。',
+      );
+      steps.push(
+        '「共有用 自動生成」で Windows / M365 の空欄を埋めます。JR は AD 非参加のためローカル運用に注意してください。',
+      );
+    } else {
+      steps.push(
+        'サーバーNAS・その他ではアカウント情報欄は使いません。機器情報・備考など、種別に沿った項目を入力してください。',
+      );
+    }
+    for (let i = 0; i < steps.length; i++) {
+      const li = document.createElement('li');
+      li.style.cssText = 'margin-bottom:4px;';
+      li.textContent = steps[i];
+      ol.appendChild(li);
+    }
+    box.appendChild(ol);
+
+    const dept = document.getElementById(DEPT_HELP_ID);
+    if (dept) {
+      dept.after(box);
+    } else {
+      space.insertBefore(box, space.firstChild);
+    }
+  }
+
+  /**
+   * レコード画面ヘッダに所属ヘルプを出す（詳細・新規・編集。編集は一覧を折りたたみ）。
+   * @param {{ collapsed?: boolean }} [opts]
+   */
+  function injectDeptHelpBanner(opts) {
+    opts = opts || {};
+    const collapsed = !!opts.collapsed;
+    const space = getHeaderSpace674();
     if (!space) return;
 
     const prev = document.getElementById(DEPT_HELP_ID);
@@ -392,7 +478,6 @@
     const exLabel = document.createElement('div');
     exLabel.style.cssText = 'font-weight:bold;font-size:11px;margin:2px 0 2px;';
     exLabel.textContent = '所属名・所属グループ 一覧（上から順・コピー参照）';
-    box.appendChild(exLabel);
 
     const ta = document.createElement('textarea');
     ta.readOnly = true;
@@ -401,7 +486,20 @@
       'width:100%;max-width:720px;max-height:132px;font-size:11px;font-family:Consolas,monospace;' +
       'box-sizing:border-box;padding:6px;border:1px solid #86b7fe;border-radius:4px;resize:vertical;overflow-y:auto;';
     ta.value = DEPT_HELP_REFERENCE_TEXT;
-    box.appendChild(ta);
+
+    if (collapsed) {
+      const det = document.createElement('details');
+      const sum = document.createElement('summary');
+      sum.style.cssText = 'cursor:pointer;font-weight:700;font-size:11px;user-select:none;';
+      sum.textContent = '会社既定の所属一覧を表示（共有・JRでコピー参照）';
+      det.appendChild(sum);
+      det.appendChild(exLabel);
+      det.appendChild(ta);
+      box.appendChild(det);
+    } else {
+      box.appendChild(exLabel);
+      box.appendChild(ta);
+    }
 
     space.insertBefore(box, space.firstChild);
   }
@@ -2334,20 +2432,24 @@ ${bodyInner}\
 
     const wrapper = document.createElement('div');
     wrapper.id = 'new-pc-ledger-buttons';
-    wrapper.style.cssText = 'display:flex;flex-wrap:wrap;align-items:center;margin:8px 0;';
+    wrapper.style.cssText =
+      'display:flex;flex-direction:column;gap:6px;align-items:flex-start;margin:8px 0;';
+
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;flex-wrap:wrap;align-items:center;';
 
     const type = event.record[FC_ACCOUNT_TYPE]?.value || '';
     const stored = isPersonalStored(event.record);
 
     // 個人用 自動生成 (種別=個人 かつ §4.1a 保管以外のみ表示)
     if (type === TYPE_PERSONAL && !stored) {
-      wrapper.appendChild(createGenerateButton('🔵 個人用 自動生成', '#0d6efd', () => {
+      row.appendChild(createGenerateButton('🔵 個人用 自動生成', '#0d6efd', () => {
         runPersonalAutoGen().catch(function (e) {
           console.error(e);
           window.alert('自動生成でエラー: ' + (e && e.message ? e.message : String(e)));
         });
       }));
-      wrapper.appendChild(
+      row.appendChild(
         createGenerateButton('🔍 社員名を検索（595）', '#5c4d7d', function () {
           openEmployee595SearchModal674();
         }),
@@ -2356,7 +2458,7 @@ ${bodyInner}\
 
     // 共有用 自動生成 (種別=共有 または JR端末 — 仕様書 §4.4)
     if (type === TYPE_SHARED || type === TYPE_JR) {
-      wrapper.appendChild(createGenerateButton('🟢 共有用 自動生成', '#198754', () => {
+      row.appendChild(createGenerateButton('🟢 共有用 自動生成', '#198754', () => {
         runSharedAutoGen().catch(function (e) {
           console.error(e);
           window.alert('自動生成でエラー: ' + (e && e.message ? e.message : String(e)));
@@ -2365,7 +2467,7 @@ ${bodyInner}\
     }
 
     // 全フィールドリセット (全種別)
-    wrapper.appendChild(createGenerateButton('🔴 全フィールドリセット', '#dc3545', () => {
+    row.appendChild(createGenerateButton('🔴 全フィールドリセット', '#dc3545', () => {
       const ok = window.confirm(
         'PC名・シリアル・利用者名・所属・各種アカウント・SKYSEA・備考など、入力欄をまとめて空にします。種別・ステータス（利用中/保管/廃棄）・作成日時（JST）は変えません。続行しますか？',
       );
@@ -2374,12 +2476,12 @@ ${bodyInner}\
     }));
 
     // PC 買替 (全種別)
-    wrapper.appendChild(createGenerateButton('🔄 PC買替', '#6c757d', () => {
+    row.appendChild(createGenerateButton('🔄 PC買替', '#6c757d', () => {
       alert('🛠 Day 5 で実装予定: 既存 594 と同じ動作で継承');
     }));
 
     // 印刷 (全種別)
-    wrapper.appendChild(createGenerateButton('📄 印刷', '#0dcaf0', () => {
+    row.appendChild(createGenerateButton('📄 印刷', '#0dcaf0', () => {
       const rec = resolve674PrintRecord();
       if (!rec) {
         window.alert('レコードを取得できませんでした。画面を開き直すか、一覧から再度開いてください。');
@@ -2388,6 +2490,24 @@ ${bodyInner}\
       open674SystemInfoPrintWindow(rec);
     }));
 
+    const cap = document.createElement('div');
+    cap.style.cssText =
+      'font-size:11px;color:#475569;line-height:1.55;max-width:min(960px,100%);padding:0 2px 0 0;';
+    if (type === TYPE_PERSONAL && !stored) {
+      cap.textContent =
+        'ヒント: 自動生成はすでに値がある欄は上書きしません。595と氏名が一致しないときは利用者名を直してから再実行してください。';
+    } else if (type === TYPE_SHARED || type === TYPE_JR) {
+      cap.textContent =
+        'ヒント: 共有用自動生成も空欄のみ埋めます。先に共有端末名・所属を入れてから実行すると取り違えが減ります。';
+    } else if (type === TYPE_PERSONAL && stored) {
+      cap.textContent = 'ヒント: 保管中レコードはアカウント系ボタンを出していません。';
+    } else {
+      cap.textContent =
+        'ヒント: この種別ではアカウント自動生成はありません。リセット・印刷は利用できます。';
+    }
+
+    wrapper.appendChild(row);
+    wrapper.appendChild(cap);
     space.appendChild(wrapper);
   }
 
@@ -2458,10 +2578,13 @@ ${bodyInner}\
       if (rid) snapshotBeforeEdit674[String(rid)] = extractState674(event.record);
     }
     if (DEPT_HELP_SHOW_RECORD_EVENTS.has(event.type)) {
-      injectDeptHelpBanner();
+      const collapsed =
+        event.type === 'app.record.edit.show' || event.type === 'mobile.app.record.edit.show';
+      injectDeptHelpBanner({ collapsed });
     } else {
       removeDeptHelpBanner();
     }
+    injectInputFlowGuide674(event);
     const editable =
       event.type === 'app.record.create.show' ||
       event.type === 'app.record.edit.show' ||
@@ -2509,11 +2632,10 @@ ${bodyInner}\
       result = confirmTypeChangeIfNeeded(event);
     }
     result = showJrAlertIfNeeded(result);
-    if (result.type.indexOf('create.change') !== -1) {
-      injectDeptHelpBanner();
-    } else {
-      removeDeptHelpBanner();
-    }
+    injectDeptHelpBanner({
+      collapsed: result.type.indexOf('create.change') === -1,
+    });
+    injectInputFlowGuide674(result);
     applyInternalMetaFieldUi(result.record, 'editable');
     applySkyseaGroupUi(result.record, 'editable');
     applyVisibilityByType(result.record);
@@ -2894,6 +3016,7 @@ ${bodyInner}\
   // 一覧では所属ヘルプを出さない（§4.2.0b 詳細・新規のみ）
   function onRecordIndexShow674(event) {
     removeDeptHelpBanner();
+    removeInputFlowGuide674();
     schedule674IndexSearch();
     return event;
   }
