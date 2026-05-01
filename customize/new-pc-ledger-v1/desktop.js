@@ -16,13 +16,12 @@
  *
  * Day 5 残タスク:
  *   - （一覧）検索バー強化は §4.8a 対応済み。SKYSEA 状態フィルタ等は別途。
- *   - 新規・編集: 入力ガイド帯・所属ヘルプ（編集は一覧折りたたみ）・操作ヒント。
- *   - レコード画面: 区切り帯（getFieldElement 直前）。標準グループ pc_ledger_g_* があるときは帯を抑止（scripts/pc-ledger-674-*-ux-section-groups）。
+ *   - 新規・編集: 所属ヘルプ（編集ではコピー用一覧を details で折りたたみ）。説明用の JS 帯は撤去（フォームの標準グループに委譲）。
  */
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-01-ux-native-groups-v0.9.11';
+  const BUILD = '2026-05-01-remove-explanation-blocks-v0.9.12';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -155,8 +154,6 @@
   const FC_LATEST_INVENTORY_DATE = 'latest_inventory_date';
   const FC_VPN_ID = 'vpn_id';
   const FC_VPN_PW = 'vpn_pw';
-  /** フォームにあれば JS の区切り帯は出さない（`pc-ledger-674-*-ux-section-groups` で追加） */
-  const FC_UX_GROUP_IDENTITY = 'pc_ledger_g_identity';
   const FULL_RESET_FIELD_CODES_674 = [
     FC_PC_NAME,
     FC_SERIAL,
@@ -344,161 +341,9 @@
     }
   }
 
-  // ===== フォーム区切り帯（PC・機器 / 利用者・所属 / アカウント）=====
-  /** レイアウトは「PC名 → … → 利用者 → … → ログオン」の並びを想定（順が違うと帯の前後だけ入れ替わります）。 */
-  const NPL674_SECTION_RIBBON_CLASS = 'npl674-form-section-ribbon';
-
-  function remove674FormSectionRibbons() {
-    const nodes = document.querySelectorAll('.' + NPL674_SECTION_RIBBON_CLASS);
-    for (let i = 0; i < nodes.length; i++) {
-      try {
-        nodes[i].remove();
-      } catch (e) {
-        console.warn('[NEW-PC-LEDGER-V1] remove section ribbon', e);
-      }
-    }
-  }
-
-  function getFieldDom674(code) {
-    try {
-      if (kintone.app && kintone.app.record && typeof kintone.app.record.getFieldElement === 'function') {
-        const d = kintone.app.record.getFieldElement(code);
-        if (d) return d;
-      }
-    } catch (e) {
-      /* ignore */
-    }
-    try {
-      if (
-        typeof kintone.mobile !== 'undefined' &&
-        kintone.mobile.app &&
-        kintone.mobile.app.record &&
-        typeof kintone.mobile.app.record.getFieldElement === 'function'
-      ) {
-        const m = kintone.mobile.app.record.getFieldElement(code);
-        if (m) return m;
-      }
-    } catch (e2) {
-      /* ignore */
-    }
-    return null;
-  }
-
-  function ux674NativeSectionGroupsPresent() {
-    return !!getFieldDom674(FC_UX_GROUP_IDENTITY);
-  }
-
-  function shouldShow674AccountRibbon(record) {
-    if (isPersonalStored(record)) return false;
-    const type = record[FC_ACCOUNT_TYPE]?.value || '';
-    return type === TYPE_PERSONAL || type === TYPE_SHARED || type === TYPE_JR;
-  }
-
-  function shouldShow674AssignRibbon(record) {
-    if (isPersonalStored(record)) return false;
-    const type = record[FC_ACCOUNT_TYPE]?.value || '';
-    if (type === TYPE_SHARED || type === TYPE_JR) return false;
-    return true;
-  }
-
-  function insert674SectionRibbon(fieldCode, variant, title, subtitle) {
-    const anchor = getFieldDom674(fieldCode);
-    if (!anchor || !anchor.parentNode) return false;
-    const box = document.createElement('div');
-    box.className = NPL674_SECTION_RIBBON_CLASS;
-    box.setAttribute('data-npl-sec-for', fieldCode);
-    const pal = {
-      device: { bg: '#f1f5f9', edge: '#334155', line: '#94a3b8' },
-      assign: { bg: '#eff6ff', edge: '#1d4ed8', line: '#93c5fd' },
-      account: { bg: '#fffbeb', edge: '#b45309', line: '#fcd34d' },
-    };
-    const p = pal[variant] || pal.device;
-    box.style.cssText =
-      'box-sizing:border-box;width:100%;max-width:100%;margin:10px 0 6px;padding:8px 12px 9px;' +
-      'background:' +
-      p.bg +
-      ';border:1px solid ' +
-      p.line +
-      ';border-left:5px solid ' +
-      p.edge +
-      ';border-radius:6px;';
-    const h = document.createElement('div');
-    h.style.cssText = 'font-size:14px;font-weight:700;color:#0f172a;line-height:1.35;';
-    h.textContent = title;
-    box.appendChild(h);
-    if (subtitle) {
-      const s = document.createElement('div');
-      s.style.cssText = 'margin-top:4px;font-size:11px;line-height:1.5;color:#475569;';
-      s.textContent = subtitle;
-      box.appendChild(s);
-    }
-    anchor.parentNode.insertBefore(box, anchor);
-    return true;
-  }
-
-  function apply674FormSectionRibbons(record) {
-    if (!record) return;
-    remove674FormSectionRibbons();
-    if (ux674NativeSectionGroupsPresent()) {
-      return;
-    }
-    const type = record[FC_ACCOUNT_TYPE]?.value || '';
-    const hasAccountBlock = shouldShow674AccountRibbon(record);
-    const subTop = hasAccountBlock
-      ? 'PC名・共有端末名・種別・ステータス・所属／利用者名・購入日などはこの付近です。現行レイアウトではこのあとにアカウント欄が続き、さらに下にメーカー・型番・IP・備考などの機器欄があります。'
-      : 'PC名・種別・ステータス・利用者・日付などはこの付近です。アカウント欄を出さない種別では、この下に続けてメーカー・型番・IP・備考などの機器欄を入力します。';
-    insert674SectionRibbon(FC_PC_NAME, 'device', '識別・利用の基本（画面上部）', subTop);
-    if (type === TYPE_SHARED || type === TYPE_JR) {
-      insert674SectionRibbon(
-        FC_SHARED_TERMINAL_NAME,
-        'assign',
-        '共有端末・所属',
-        '共有端末名と所属名・所属グループを先にそろえてから、共有用自動生成を実行すると取り違えが減ります。',
-      );
-    } else if (shouldShow674AssignRibbon(record)) {
-      insert674SectionRibbon(
-        FC_USER_NAME,
-        'assign',
-        '利用者・所属',
-        '個人では氏名・所属が中心です。サーバーNAS／その他では、必要なときだけ担当や設置のメモに使ってください。',
-      );
-    }
-    if (hasAccountBlock) {
-      insert674SectionRibbon(
-        FC_LOGON_NAME,
-        'account',
-        'アカウント（ログイン・メール・クラウド）',
-        'Windows・メール・M365・VPN など。現行フォームでは画面の中段付近にまとまっています。',
-      );
-      insert674SectionRibbon(
-        FC_MANUFACTURER,
-        'device',
-        '機器スペック・ネットワーク・備考',
-        'メーカー・型番・シリアル・製造番号・固定IP・その他情報・備考などはこの付近です（アカウント欄の下に続くのが現行の並びです）。',
-      );
-    }
-  }
-
-  function schedule674FormSectionRibbons(seedRecord) {
-    function run() {
-      try {
-        const bag = getRecordFormHolder674();
-        const rec = (bag && bag.holder && bag.holder.record) || seedRecord;
-        if (rec) apply674FormSectionRibbons(rec);
-      } catch (e) {
-        console.warn('[NEW-PC-LEDGER-V1] form section ribbons', e);
-      }
-    }
-    run();
-    [400, 1200].forEach(function (ms) {
-      setTimeout(run, ms);
-    });
-  }
-
   // ===== §4.2.0b 所属名・所属グループ 常時ヘルプ帯 =====
 
   const DEPT_HELP_ID = 'new-pc-ledger-dept-help';
-  const INPUT_GUIDE_ID = 'new-pc-ledger-input-guide';
 
   const DEPT_HELP_SHOW_RECORD_EVENTS = new Set([
     'app.record.detail.show',
@@ -512,99 +357,6 @@
   function removeDeptHelpBanner() {
     const el = document.getElementById(DEPT_HELP_ID);
     if (el) el.remove();
-  }
-
-  function removeInputFlowGuide674() {
-    const el = document.getElementById(INPUT_GUIDE_ID);
-    if (el) el.remove();
-  }
-
-  /**
-   * 新規・編集で「先に何をするか」を短く示す（種別ごとに文面切替）。
-   * @param {{ type?: string, record: object }} event
-   */
-  function injectInputFlowGuide674(event) {
-    const t = String(event.type || '');
-    const onEditable =
-      /app\.record\.(create|edit)\.show$/.test(t) ||
-      /mobile\.app\.record\.(create|edit)\.show$/.test(t) ||
-      /app\.record\.(create|edit)\.change\./.test(t) ||
-      /mobile\.app\.record\.(create|edit)\.change\./.test(t);
-    if (!onEditable) {
-      removeInputFlowGuide674();
-      return;
-    }
-    const space = getHeaderSpace674();
-    if (!space) return;
-    removeInputFlowGuide674();
-
-    const type = event.record[FC_ACCOUNT_TYPE]?.value || '';
-    const stored = isPersonalStored(event.record);
-
-    const box = document.createElement('div');
-    box.id = INPUT_GUIDE_ID;
-    box.style.cssText =
-      'font-size:12px;line-height:1.5;padding:8px 12px;margin:0 0 6px 0;' +
-      'background:#ecfdf5;border:1px solid #6ee7b7;border-radius:6px;color:#064e3b;';
-
-    const h = document.createElement('div');
-    h.style.cssText = 'font-weight:700;margin-bottom:6px;';
-    h.textContent = '📝 入力の流れ（目安）';
-    box.appendChild(h);
-
-    const ol = document.createElement('ol');
-    ol.style.cssText = 'margin:0;padding-left:1.25em;';
-    const steps = [];
-    if (type === TYPE_PERSONAL && !stored) {
-      steps.push(
-        '「種別」で個人を選び、利用者名を入力するか「社員名を検索（595）」で氏名を確定します。',
-      );
-      steps.push('所属名・所属グループは595から自動反映されます（必要なら上書き）。');
-      steps.push(
-        '問題なければ「個人用 自動生成」で Windows / M365 などの空欄だけ埋め、保存前に内容を確認します。',
-      );
-    } else if (type === TYPE_PERSONAL && stored) {
-      steps.push('このレコードは保管状態（§4.1a）のため、アカウント欄は表示されません。');
-    } else if (type === TYPE_SHARED || type === TYPE_JR) {
-      steps.push(
-        '「共有端末名」と「所属名」「所属グループ」を先に入力します（青枠の一覧を参照）。',
-      );
-      steps.push(
-        '「共有用 自動生成」で Windows / M365 の空欄を埋めます。JR は AD 非参加のためローカル運用に注意してください。',
-      );
-    } else {
-      steps.push(
-        'サーバーNAS・その他ではアカウント情報欄は使いません。機器情報・備考など、種別に沿った項目を入力してください。',
-      );
-    }
-    for (let i = 0; i < steps.length; i++) {
-      const li = document.createElement('li');
-      li.style.cssText = 'margin-bottom:4px;';
-      li.textContent = steps[i];
-      ol.appendChild(li);
-    }
-    box.appendChild(ol);
-
-    const layoutNote = document.createElement('div');
-    layoutNote.style.cssText =
-      'margin-top:8px;padding-top:8px;border-top:1px solid #6ee7b7;font-size:11px;line-height:1.55;color:#047857;';
-    if (ux674NativeSectionGroupsPresent()) {
-      layoutNote.textContent =
-        'フォームは kintone の標準フィールドグループ（PC・利用の基本／アカウント／機器・ネットワーク・備考）で区切っています。並び替えやラベルはフォーム設定から調整してください。';
-    } else {
-      const hasAccLayout = shouldShow674AccountRibbon(event.record);
-      layoutNote.textContent = hasAccLayout
-        ? 'フォームの並び：現状は画面上部で「PC名・種別・利用者・日付」などを入力し、中段にアカウント欄、さらに下にメーカー・型番・IP・備考などの機器・ネットワーク欄が続きます。機器を先に入力したい場合は、kintone のフォーム設定でフィールドの並び替えをしてください（カスタマイズ JS では安全に入れ替えていません）。'
-        : 'フォームの並び：この種別ではアカウント欄を出さず、上で識別・利用の基本を入力したあと、下の方のメーカー・型番・IP・備考などの機器欄が続きます。並びを変えたい場合もフォーム設定での調整が必要です。';
-    }
-    box.appendChild(layoutNote);
-
-    const dept = document.getElementById(DEPT_HELP_ID);
-    if (dept) {
-      dept.after(box);
-    } else {
-      space.insertBefore(box, space.firstChild);
-    }
   }
 
   /**
@@ -2600,24 +2352,20 @@ ${bodyInner}\
 
     const wrapper = document.createElement('div');
     wrapper.id = 'new-pc-ledger-buttons';
-    wrapper.style.cssText =
-      'display:flex;flex-direction:column;gap:6px;align-items:flex-start;margin:8px 0;';
-
-    const row = document.createElement('div');
-    row.style.cssText = 'display:flex;flex-wrap:wrap;align-items:center;';
+    wrapper.style.cssText = 'display:flex;flex-wrap:wrap;align-items:center;margin:8px 0;';
 
     const type = event.record[FC_ACCOUNT_TYPE]?.value || '';
     const stored = isPersonalStored(event.record);
 
     // 個人用 自動生成 (種別=個人 かつ §4.1a 保管以外のみ表示)
     if (type === TYPE_PERSONAL && !stored) {
-      row.appendChild(createGenerateButton('🔵 個人用 自動生成', '#0d6efd', () => {
+      wrapper.appendChild(createGenerateButton('🔵 個人用 自動生成', '#0d6efd', () => {
         runPersonalAutoGen().catch(function (e) {
           console.error(e);
           window.alert('自動生成でエラー: ' + (e && e.message ? e.message : String(e)));
         });
       }));
-      row.appendChild(
+      wrapper.appendChild(
         createGenerateButton('🔍 社員名を検索（595）', '#5c4d7d', function () {
           openEmployee595SearchModal674();
         }),
@@ -2626,7 +2374,7 @@ ${bodyInner}\
 
     // 共有用 自動生成 (種別=共有 または JR端末 — 仕様書 §4.4)
     if (type === TYPE_SHARED || type === TYPE_JR) {
-      row.appendChild(createGenerateButton('🟢 共有用 自動生成', '#198754', () => {
+      wrapper.appendChild(createGenerateButton('🟢 共有用 自動生成', '#198754', () => {
         runSharedAutoGen().catch(function (e) {
           console.error(e);
           window.alert('自動生成でエラー: ' + (e && e.message ? e.message : String(e)));
@@ -2635,7 +2383,7 @@ ${bodyInner}\
     }
 
     // 全フィールドリセット (全種別)
-    row.appendChild(createGenerateButton('🔴 全フィールドリセット', '#dc3545', () => {
+    wrapper.appendChild(createGenerateButton('🔴 全フィールドリセット', '#dc3545', () => {
       const ok = window.confirm(
         'PC名・シリアル・利用者名・所属・各種アカウント・SKYSEA・備考など、入力欄をまとめて空にします。種別・ステータス（利用中/保管/廃棄）・作成日時（JST）は変えません。続行しますか？',
       );
@@ -2644,12 +2392,12 @@ ${bodyInner}\
     }));
 
     // PC 買替 (全種別)
-    row.appendChild(createGenerateButton('🔄 PC買替', '#6c757d', () => {
+    wrapper.appendChild(createGenerateButton('🔄 PC買替', '#6c757d', () => {
       alert('🛠 Day 5 で実装予定: 既存 594 と同じ動作で継承');
     }));
 
     // 印刷 (全種別)
-    row.appendChild(createGenerateButton('📄 印刷', '#0dcaf0', () => {
+    wrapper.appendChild(createGenerateButton('📄 印刷', '#0dcaf0', () => {
       const rec = resolve674PrintRecord();
       if (!rec) {
         window.alert('レコードを取得できませんでした。画面を開き直すか、一覧から再度開いてください。');
@@ -2658,24 +2406,6 @@ ${bodyInner}\
       open674SystemInfoPrintWindow(rec);
     }));
 
-    const cap = document.createElement('div');
-    cap.style.cssText =
-      'font-size:11px;color:#475569;line-height:1.55;max-width:min(960px,100%);padding:0 2px 0 0;';
-    if (type === TYPE_PERSONAL && !stored) {
-      cap.textContent =
-        'ヒント: 自動生成はすでに値がある欄は上書きしません。595と氏名が一致しないときは利用者名を直してから再実行してください。';
-    } else if (type === TYPE_SHARED || type === TYPE_JR) {
-      cap.textContent =
-        'ヒント: 共有用自動生成も空欄のみ埋めます。先に共有端末名・所属を入れてから実行すると取り違えが減ります。';
-    } else if (type === TYPE_PERSONAL && stored) {
-      cap.textContent = 'ヒント: 保管中レコードはアカウント系ボタンを出していません。';
-    } else {
-      cap.textContent =
-        'ヒント: この種別ではアカウント自動生成はありません。リセット・印刷は利用できます。';
-    }
-
-    wrapper.appendChild(row);
-    wrapper.appendChild(cap);
     space.appendChild(wrapper);
   }
 
@@ -2752,7 +2482,6 @@ ${bodyInner}\
     } else {
       removeDeptHelpBanner();
     }
-    injectInputFlowGuide674(event);
     const editable =
       event.type === 'app.record.create.show' ||
       event.type === 'app.record.edit.show' ||
@@ -2761,7 +2490,6 @@ ${bodyInner}\
     applyInternalMetaFieldUi(event.record, editable ? 'editable' : 'detail');
     applySkyseaGroupUi(event.record, editable ? 'editable' : 'detail');
     applyVisibilityByType(event.record);
-    schedule674FormSectionRibbons(event.record);
     showJrBannerIfNeeded(event.record);
     injectButtons(event);
     if (editable) {
@@ -2804,11 +2532,9 @@ ${bodyInner}\
     injectDeptHelpBanner({
       collapsed: result.type.indexOf('create.change') === -1,
     });
-    injectInputFlowGuide674(result);
     applyInternalMetaFieldUi(result.record, 'editable');
     applySkyseaGroupUi(result.record, 'editable');
     applyVisibilityByType(result.record);
-    schedule674FormSectionRibbons(result.record);
     showJrBannerIfNeeded(result.record);
     injectButtons(result);
     if (
@@ -3186,8 +2912,11 @@ ${bodyInner}\
   // 一覧では所属ヘルプを出さない（§4.2.0b 詳細・新規のみ）
   function onRecordIndexShow674(event) {
     removeDeptHelpBanner();
-    removeInputFlowGuide674();
-    remove674FormSectionRibbons();
+    const staleGuide = document.getElementById('new-pc-ledger-input-guide');
+    if (staleGuide) staleGuide.remove();
+    document.querySelectorAll('.npl674-form-section-ribbon').forEach(function (n) {
+      n.remove();
+    });
     schedule674IndexSearch();
     return event;
   }
