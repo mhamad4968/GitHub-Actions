@@ -675,3 +675,23 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 
 ---
 
+### 2026-05-01 (Thu) JST — 日締め・明日は部署予実（仕様確認デイ）・MCP markdownify 恒久化
+
+**浜田メモ（要約）**: 提案 A〜D **すべて対応**。セッション切替の引継ぎ準備。残り時間 **4h 壁時計**内に完了。
+
+**実施内容（CIO）**:
+- **予実・仕様確認デイ**: `chat-sessions/checkpoint-latest.md` に **運用表**（知恵袋→CIO→`handoff-log`・朝イチ verify）。`SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1c** に **読みのみデイ**の条件と **1c.6 の適用境界**を追記。`NEW-SESSION-STARTER.md` に **📋 仕様確認デイ** 1 節。`.cursor/rules/deepseek-cursor-spec-division.mdc` に **締め／明日朝チェックリスト**＋**§57 は改定キュー委譲**を明記。
+- **TSB**: `docs/troubleshooting.md` **TSB-029**（`@iflow-mcp/markdownify-mcp` の **`preinstall.js` 欠落 publish**＋対策: **`npm install -g --ignore-scripts @0.0.2`**＋**`node …/dist/index.js` 直起動**＋`UV_PATH`／NVM 替え時メンテ）。目次表に **TSB-028・TSB-029** 行、集計 **26 件**。`RULES-INDEX.md` に **TSB-029** 索引 1 行。
+- **MCP（ユーザー環境・リポ外）**: `C:\Users\mhamada202408224\.cursor\mcp.json` の `markdownify` は **WSL `node` 直実行**で **接続成功**まで確認済み（ログ `connected: true`）。再発時は **TSB-029**。
+- **憲法**: **`AGENTS.md` 本文は未改変**（§57 I の本文合流は **改定フロー待ち**）。
+
+**AI 補足**:
+- `次の1手`（明日）: 項番 **-0** で本題を **「部署予実・仕様確認デイ（SPEC のどの範囲か）」**に一文固定 → **フェーズ 1c + checkpoint 表** → 知恵袋 → CIO 突合（**§50-3-8**）→ **`handoff-log` 1 行**。
+- `GO待ち`: 読みのみデイでは **§41 三条件に該当するときのみ**。
+- `session-lock`: なし
+- `関連パス`: `docs/troubleshooting.md`（TSB-029）／`checkpoint-latest.md`（仕様確認デイ・Markdownify メンテ）／`.cursor/rules/deepseek-cursor-spec-division.mdc`
+
+**次セッションへの 1 行**: スターター貼付 → **verify:constitution-handoff / mandatory-read-gate 緑** → **-0** で予実仕様確認デイの範囲一文 → **知恵袋 → CIO 突合**（`[役割: CIO セカンドオピニオン / §50-3-8 突合]`）→ `handoff-log` 追記。
+
+---
+

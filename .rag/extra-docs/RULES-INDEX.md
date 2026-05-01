@@ -128,7 +128,7 @@
 |---|---|
 | §50 | MCP 想起儀式（タスク開始時 30 秒チェック / 16 シーン × MCP 対応表 / R24 早期適用）|
 | §50-2 | 死蔵 MCP 根絶ルール（過去 30/60/90 日 0 回判定 → 入替/削除 / TSB-015 教訓）|
-| §50-3 / **§50-3-8** / **§50-3-9** / **§50-3-10** | **CTO運用規定**（航海図・PlanB・§51 分離・CEO 差し替え・検収証跡・**§50-3-8 DeepSeek 盲点＋突合メモ**・**§50-3-9 kintone MCP→REST 迂回**・**§50-3-10 鏡像** / 2026-04-29–30）／**仕様確認分業（🎖️表の下位）**: `.cursor/rules/deepseek-cursor-spec-division.mdc`（知恵袋→CIO） |
+| §50-3 / **§50-3-8** / **§50-3-9** / **§50-3-10** | **CTO運用規定**（航海図・PlanB・§51 分離・CEO 差し替え・検収証跡・**§50-3-8 DeepSeek 盲点＋突合メモ**・**§50-3-9 kintone MCP→REST 迂回**・**§50-3-10 鏡像** / 2026-04-29–30）|
 | §51 | **並列処理禁止 / 1 タスク 1 操作原則**（最重要 / 浜田 22:05 指示 / 第15章 / Phase W batch 反省）|
 | §11-5 | 修復系の段階的検証 3 段階フレームワーク（直接実 call / 手動 script / cron 実 / TSB-013 v1+v2 教訓）|
 | §17-2 | mcp.json 編集の最小差分手順（TSB-015 ensure_ascii 副作用教訓 / 二重 backup + diff 取得）|
@@ -217,6 +217,7 @@
 |---|---|
 | `chat-sessions/checkpoint-latest.md` §「セッション切替後の自律復元」 | 新チャット初手の **索引・日付整合**（**-1** 貼付＝スターター全文。**v3.27+** 詳細手順の正本は `NEW-SESSION-STARTER.md` **「■ 貼付単独で完走」**／**貼付推奨**は verify 最終行 → **-0** … → **0** …）／**日終わり** sync→verify／**項番 5**＝本題別（**5A 部署予実** vs **5B 新・PC台帳**）で無関係 Read をしない |
 | `chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` | 引き継ぎ後の **全棚卸し**（経緯・法律相当・ルール・npm 機能・MCP・**必須機械検証**・チャット報告様式）／**フェーズ 1c**＝部署予実本題時の Read 正本 |
+| `chat-sessions/SESSION-READ-LADDER.md` | **`session:bootstrap` 後**の **A.共通五段階**（着手前・**ルール理解のみ**）→ **B.プロジェクト確認**（仕様の小出し・§41・GO）。**Read→完了報告テンプレ→次**。`checkpoint`・本チェックリストと併用 |
 | `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.2.0〜** | 新・PC台帳 ver.1 の **正本**（浜田認識・コア vs SKYSEA・フィールド・ボタン）。**実装・ラベル・674 customize を変える前に Read**（手順書のみで代替しない）。**画面ラベル**は `scripts/data/pc-ledger-v1-ui-display-labels.json`／検証は `npm run pc-ledger:verify-labels-spec`／引き継ぎは `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b** |
 | `npm run pc-ledger:verify-labels-spec` | 短文表示ラベル JSON + §4.2.2 マトリクス指紋 + 拡張 JSON を機械突合（セッション切替後のブレ止め） |
 | `docs/plans/2026-04-26-pc-ledger-label-spec-changelog.md` | 表示ラベル周りの **追加 vs 変更**（コミット別・全フィールド対照表） |
@@ -225,10 +226,12 @@
 | `docs/plans/2026-04-26-pc-ledger-day4-action.md` **「AI 引継ぎ: kintone-add-app 直後に…」** | **新・PC台帳**の **詳細**（REST 確認手順・`thread` 不可・`revision-snapshot`） |
 | `docs/troubleshooting.md` **TSB-023** | 「公開してない？」**先確認せず浜田へ聞かない**で済むようにした教訓（索引用 1 行 + 本文） |
 | `docs/troubleshooting.md` **TSB-024** | 憲法級アンチパターン（**デプロイ・適用・push を人に押し付けない**／禁句リスト／`npm run verify:constitution-handoff` ＋ **`npm run verify:mandatory-read-gate`**（必読ファイル構造）＋ **`npm run verify:session-clock-health`**（壁時計 hooks / crontab node）＋ **`SESSION-CLOCK.md` / `session:clock:set`**（§51-6-2 時間軸）で機械監視） |
+| `docs/troubleshooting.md` **TSB-029** | **`user-markdownify`** — `@iflow-mcp/markdownify-mcp` の **`preinstall.js` 欠落 publish バグ**で stdio 即死。対策: **`npm install -g --ignore-scripts @0.0.2`** ＋ **`node …/dist/index.js` 直起動**＋`UV_PATH`（詳細は本文） |
 | `.cursor/rules/constitution-handoff-gate.mdc` | **alwaysApply** — §35-1 / §56-1a / TSB-024 / §1-2-3-1 を毎ターン想起（Cursor 全チャット） |
 | `.cursor/rules/autonomous-with-mandatory-asks.mdc` | **alwaysApply** — **自律実行してよいが**、日取り矛盾・GO 境界・曖昧仕様など **聞くべきことは着手前に聞く**（浜田指示） |
 | `.cursor/rules/creation-timing-ask.mdc` | **alwaysApply** — **作成着手前**に浜田へ **「今すぐ作成／後日」** と **配置スペース（ID または名）** を §41 で確認。未決なら `kintone-add-app` の `space` 省略で進めない（浜田指示 2026-04-28） |
 | `.cursor/rules/session-handoff.mdc` | 人間 5 行＋AI の `handoff-log` 追記手順。**自律復元**の追記あり |
+| `.cursor/rules/session-read-ladder-two-phase.mdc` | **alwaysApply** — セッション復元の **二段階**（**A 事前準備**＝ルールのみ五段／**B 本題確認**＝仕様小出し）。**第0手**で `SESSION-READ-LADDER.md` を **Read 通読**。正本は `chat-sessions/SESSION-READ-LADDER.md`。**当面の目安**: 事前準備 **約1h**／本題 **約3h**（同ファイル「当面の時間目安」） |
 | `.cursor/rules/mcp-tool-discipline.mdc` | **alwaysApply** — `call_mcp_tool` 前の **descriptor 必読**・`mcp_auth` 順序・curl/gh と MCP の優先（自律ミス低減） |
 
 ---

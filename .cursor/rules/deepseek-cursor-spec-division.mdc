@@ -28,4 +28,12 @@ alwaysApply: true
 
 - `templates/yojitsu-budget-lite/SPEC.md` および `templates/yojitsu-budget-lite/docs/*.md`（Read 連鎖は `checkpoint-latest.md` 5A）。
 
-**§57**: 表題の「明日 §57 改定 I 案」は **starter 本文を正**とし、憲法へ吸収されたあとは **AGENTS.md の該当節**に従う。
+**§57（憲法への本文合流）**: **CIO×知恵袋・仕様確認デイ**を `AGENTS.md` に吸収するかは **§57 改定キュー（I 案等）と浜田 GO**に委ねる。それまでは **starter + 本条 + `checkpoint-latest.md`** で運用する。
+
+## セッション締め／明日朝イチ（チェックリスト）
+
+- [ ] **知恵袋**で網羅（または貼付）→ **CIO** が **`[役割: CIO セカンドオピニオン / §50-3-8 突合]`** ＋ **約 3 行突合メモ** → **確定／未確定／SPEC 未記載**を 1 段落で残す
+- [ ] **`handoff-log.md` 末尾**に **次セッション 1 行**＋本日の確定／未確定（仕様確認デイなら必須に近い）
+- [ ] **`npm run verify:constitution-handoff`** → **`npm run verify:mandatory-read-gate`**（明日の **項番 0 前後で緑**を再確認）
+- [ ] 可能なら **`npm run session-starter:sync-desktop`** → **`npm run verify:desktop-ai-emergency-sync`**
+- [ ] **Markdownify MCP**: NVM で Node を替えたら **`docs/troubleshooting.md` TSB-029** の **再 install + `mcp.json` の `node` フルパス更新**

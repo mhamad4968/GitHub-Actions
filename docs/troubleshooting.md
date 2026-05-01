@@ -6,7 +6,7 @@
 
 ---
 
-## 目次（2026-04-25 全件再構築 / 2026-04-26 TSB-022 / TSB-023 / TSB-024 追記 / F-2 自己改善目標 #2 = 真因 1 文 + root_cause_confirmed フラグ追加）
+## 目次（2026-04-25 全件再構築 / 2026-05-01 TSB-028・TSB-029 目次表追記 / F-2 自己改善目標 #2 = 真因 1 文 + root_cause_confirmed フラグ追加）
 
 > **真因 1 文ルール**: 各 TSB は **「真因を 1 文で説明できる」状態でなければ root_cause_confirmed = false** とする。false の TSB は再発監視優先。
 > **status 凡例**: ✅ Resolved（恒久対策済）/ 🟡 Mitigated（暫定対策のみ）/ 🔴 Open（未解決）/ ♻️ Recurring（同系列複数 episode）
@@ -37,9 +37,11 @@
 | TSB-023 | 2026-04-26 | kintone MCP `kintone-add-app` 直後に「未公開？」確認が冗長 | `add-app` は **プレビュー先行**でライブ `app.json` が 404 になりうるが、AI がドキュメント未読のまま浜田へ「まだ公開してない？」と聞き、セッション切替後も同質問が再発する構造だった | ✅ | true | kintone MCP / PC 台帳 Day4 |
 | TSB-024 | 2026-04-26 | AI がデプロイ等 Tier B 実行を浜田に委ねる禁句 | 会話要約で **§35-1 / §56-1a** が脱落し「コード=AI・反映=浜田」誤分担が再構築され「再デプロイしてください」「手動アップロードで OK」等が再発した | ✅ | true | kintone 反映 / 引き継ぎ |
 | TSB-026 | 2026-04-29 07:15 検出 / 07:25 解消 | 機械的書換による「人間注意書き」の構造的消失 | **NEW-SESSION-STARTER 冒頭の累積編集で hand 5200 needle が押し出され**、かつ **`session:clock:set` が HEADER 全置換で人間追記注意書きを上書き**して、要約耐性ガードが構造的に失われた（恒久対策: NEW-SESSION-STARTER 冒頭に `(7) 役割宣言` 永続追加 + `session-clock.mjs` HEADER 定数に注意書き永続化） | ✅ | true | 憲法級ハンドオフ / SESSION-CLOCK |
+| TSB-028 | 2026-05-01 | Windows Cursor の `mcp.json` が WSL 正本とズレて MCP 全赤化 | **Windows と WSL に二重の `mcp.json` があり片方だけ更新**される／同期スクリプトの **`command`/`args` 合成バグ**で `filesystem` が壊れる等、**パス体系の混在**で MCP 起動が失敗する | ✅ | true | Cursor MCP 全体 |
+| TSB-029 | 2026-05-01 | `user-markdownify`（`@iflow-mcp/markdownify-mcp`）stdio 即死 | **npm 公開 tarball に `preinstall.js` が含まれないのに `package.json` が `preinstall` を定義**しており、`npm install -g`（スクリプト有効）や **`npx` 展開のライフサイクルが失敗して子が即終了**する（副因として Windows `_npx` 掃除 EPERM ログも出うる） | ✅ | true | Cursor MCP `markdownify` |
 
-**集計** (2026-04-29 時点 / TSB-026 目次追記):
-- 全 **24** 件中 **root_cause_confirmed = true: 23 件 (~96%)** / **false (孤児): 1 件 (~4%)**
+**集計** (2026-05-01 時点 / TSB-028・029 目次表追記):
+- 全 **26** 件中 **root_cause_confirmed = true: 25 件 (~96%)** / **false (孤児): 1 件 (~4%)**
 - 5 月目標 (F-2 自己批判 §54-5) = カバレッジ 100% を TSB-019 真因確定 (Cursor IDE Agents 設定) で **95% 前後を維持**（分母は TSB セクション数に追随）
 - 残 false: **TSB-001 のみ** = 孤児 TSB（4/19 D1-proposal でも「詳細未記載」）= 真因不明のまま記録止まり
 
@@ -1293,3 +1295,33 @@ Windows 上の Cursor の MCP 一覧で **filesystem / kintone-space / markdowni
 
 - **`mcp.json` の `command` と `args` を合成するときは `server.command` を正本にする**（`args[0]` を command にしない）。
 - **WSL と Windows でパス体系が違う**ため、同期は **明示の変換関数**＋**検証スクリプト**のセットで持つ。
+
+---
+
+## TSB-029 — `user-markdownify`（`@iflow-mcp/markdownify-mcp`）が stdio で即終了（2026-05-01 検出 / 同日 恒久対策）
+
+### 事象
+
+Cursor の MCP ログで **`Connection failed: MCP error -32000: Connection closed`**。初期ログでは Windows の `npm-cache\_npx` 下で **`EPERM: operation not permitted, rmdir`**（掃除失敗）も混在した。
+
+### 根本原因（真因 1 文）
+
+**`package.json` に `"preinstall": "node preinstall.js"` がある一方、npm に公開されている tarball の `files` は `dist` のみで `preinstall.js` が同梱されておらず**、**ライフサイクルが必ず失敗するパッケージ状態**だった（`npm install -g` 既定・`npx` の展開経路で顕在化）。副因として **Windows ホストの `npx` とキャッシュロック**がログに出ることもある。
+
+### 恒久対策（WSL 起動・CIO 実装済み）
+
+1. **WSL 上で** `npm install -g --ignore-scripts @iflow-mcp/markdownify-mcp@0.0.2`（**`--ignore-scripts` 必須**）。
+2. **`mcp.json` の `markdownify`**: `npx` を使わず、**`wsl.exe` + `bash -lc` + `exec env -i … /path/to/node …/node_modules/@iflow-mcp/markdownify-mcp/dist/index.js`** で起動（**`UV_PATH`** を `~/.local/bin/uv` 等で明示。**`PATH` は `env -i` 内で Linux のみ**）。
+3. **NVM で Node を上げ替えたら**: グローバルパッケージの **`node` フルパス**が変わるため、**(a) 新 Node で `npm install -g --ignore-scripts …` を再実行**し、**(b) `mcp.json` の `node` パスを更新**（手順チェック: `checkpoint-latest.md` **「Markdownify MCP（NVM メンテ）」**）。
+
+### 教訓
+
+- **stdio が即死するときは「キャッシュ EPERM」だけに寄せず**、`npm pack` で ** tarball 中身と `package.json` scripts** を確認する。
+- **`npx` 依存をやめ `node` 直起動**にすると、Cursor↔WSL 間の **PATH 汚染の影響を減らせる**。
+- **Upstream の `preinstall` が直るまで `@latest` 追従は慎重に**（現状は **0.0.2 + ignore-scripts** を正とする）。
+
+### 関連
+
+- **TSB-028**（`mcp.json` 二重定義・同期）／`npm run verify:cursor-mcp-windows`／`npm run mcp:sync-cursor-windows`
+- 正本（ユーザー環境）: **`C:\Users\<user>\.cursor\mcp.json`** の `markdownify` ブロック（リポ外。秘密はコミットしない）
+

@@ -6,6 +6,24 @@
 
 **上位表**: `NEW-SESSION-STARTER.md` 冒頭 **🎖️ AI 内部の役割分担**（CIO / Kimi / 知恵袋=DeepSeek / …）＋ **🔥 実行と確認の分離**。**分業の手順詳細**は **`.cursor/rules/deepseek-cursor-spec-division.mdc`**（`alwaysApply: true`・**CIO の列を増やさず**「結果統合」に内包）。要約: **知恵袋 = 網羅・論理一次**、**CIO = 正本突合・セカンドオピニオン・§50-3-8 約 3 行突合メモ**（仕様の単独確定禁止）。**PC 台帳（674 等）を触らない日**は本題を **部署予実（677/678・`SPEC.md`）**に寄せ、正本を混読しない（本ファイル 5A/5B）。
 
+## 部署予実・仕様確認デイ（読み合わせのみ・kintone 書込なし）
+
+**いつ**: 本題が **677/678 の仕様読み・矛盾洗い・質問票**で、**Tier B（add-app / deploy / 本番書込）に入らない日**。**🎖️表**＋**`.cursor/rules/deepseek-cursor-spec-division.mdc`**＋**§50-3-8**が正本。
+
+| 順 | 誰 | すること |
+|----|-----|-----------|
+| 1 | 浜田＋知恵袋 | `SPEC.md`（＋必要なら `templates/yojitsu-budget-lite/docs/*.md`）を材料に **DeepSeek で網羅・質問票（A/B）**を取得（貼付可） |
+| 2 | CIO（本体 AI） | **`[役割: CIO セカンドオピニオン / §50-3-8 突合]`** を先頭に付け、知恵袋出力と **リポ正本を § 付きで突合** → **約 3 行突合メモ** → **確定／未確定／SPEC 未記載**の三区分を 1 段落で残す |
+| 3 | 浜田 | **GO が要るのは §41 三条件のみ**（破壊・高額・仕様判断）。読みの日は **多くは不要**。未確定は **次回の項番 -0** に持ち越し可 |
+| 4 | CIO | **`handoff-log.md` 末尾**に本デイの **確定／未確定 1 行**＋**次セッション 1 行**を追記（チャットだけで終わらない） |
+| 5 | CIO | 日終わりなら **`npm run session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync`**（可能なら `session:bootstrap`） |
+
+**朝イチ（明日）**: 新チャットで **`verify:constitution-handoff` → `verify:mandatory-read-gate`** を **項番 0 の前後で必ず緑**（本日合意のドキュ更新後のゲート）。
+
+## Markdownify MCP（NVM メンテ・ローカル `mcp.json`）
+
+- **Node を NVM で入れ替えたら**: WSL で `npm install -g --ignore-scripts @iflow-mcp/markdownify-mcp@0.0.2` を **新しい Node の上で再実行**し、**`C:\Users\<浜田>\.cursor\mcp.json`** の `markdownify` 内 **`node` のフルパス**を **新 prefix に合わせて編集**（詳細 **`docs/troubleshooting.md` TSB-029**）。
+
 ## 部署予実・kintone フィールド追加日の航海図テンプレ（§50-3-9）
 
 **本題が 677/678 のフィールド追加・deploy 等のとき、着手 1 ターン目に CIO がチャットへそのまま貼る短い表**（§50-3-2 / §50-3-9）。
@@ -84,7 +102,7 @@
 
 ---
 
-**最終更新**: 2026-05-01 (Thu) JST — **CIO×知恵袋分業を 🎖️表に接続（浜田指示）**: `.cursor/rules/deepseek-cursor-spec-division.mdc` を **NEW-SESSION-STARTER 冒頭の CIO 体制表**の下位手順に書き換え（**CIO の列は増やさない**／セカンドオピニオンは **結果統合**に内包）。`NEW-SESSION-STARTER.md`（＋`.rag` 鏡像）に **補足（2026-05-01）** 1 段落を追加。**§50-3-8** と併用。**次本題**: 部署予実は明日から仕様確認（PC 台帳は一旦停止）。
+**最終更新**: 2026-05-01 (Thu) JST — **日締め・明日引継ぎパック（浜田「すべて対応」指示）**: (1) **予実・仕様確認デイ**の運用表を `checkpoint-latest.md` に新設。(2) **`SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 1c** に同デイのチェック追記。(3) **`docs/troubleshooting.md` TSB-029**（markdownify `preinstall` 欠落＋`--ignore-scripts`＋`node` 直起動）＋目次表に **TSB-028/029** 行。(4) **`RULES-INDEX.md`** に TSB-029 索引 1 行。(5) **`handoff-log.md`** に本日締めブロック。(6) **`NEW-SESSION-STARTER.md`**（＋`.rag`）に仕様確認デイ 1 節。(7) **`.cursor/rules/deepseek-cursor-spec-division.mdc`** に同日チェックリスト。**憲法 `AGENTS.md` は未改変**（§57 I は改定キューに委譲）。**次本題（明日）**: 部署予実 **仕様確認デイ**（項番 -0 で範囲固定 → 知恵袋 → CIO 突合）。**朝イチ**: `verify:constitution-handoff` / `mandatory-read-gate` 緑。**MCP**: `user-markdownify` は **TSB-029** 手順で緑確認済み想定。
 
 **最終更新**: 2026-04-30 (Wed) JST — **セッション締め・翌日準備（CIO 一括）**: 本会話で合意した **A〜D 案の実装**（`595` 一覧検索の **全件上限2000件**＋**検索中UI**、`session-starter:sync-desktop` の **Desktop 上 `NEW-SESSION-STARTER_*` 非canonical削除**、`AGENTS.md` **§50-3-10** 鏡像、`.cursorrules` 検索用語、`docs/runbooks/dry-run-apply-checklist.md`）。**次チャット**: スターター貼付 → Read 通読 → §41 → `session:bootstrap`。**Desktop**: `npm run desktop:sync-and-verify` 済みなら当日 `NEW-SESSION-STARTER_yyyymmdd.txt` のみ残る運用。
 
