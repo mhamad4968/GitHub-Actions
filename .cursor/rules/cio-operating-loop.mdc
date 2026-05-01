@@ -13,8 +13,9 @@ alwaysApply: true
 ## 朝（cron 以外の手動でも同じ順）
 
 1. **`docs/reports/<JSTの今日>-morning-prep.md`** を Read（§46 Phase 0）。
-2. 追徴・不安があれば **`npm run cio:quick-health`**（疎通 + wipe 監視。数分以内）。
-3. フル棚卸しは既存どおり **`npm run session:bootstrap`**（項番 -0 OK 後）。
+2. **`chat-sessions/desktop-ai-emergency-read-pack/READ-07.txt`** を Read（**浜田 CEO のお願い**・Project Rules 厳守・壁時計・分業・GitHub Actions・健全性。短くてよいので **朝イチでも**）。
+3. 追徴・不安があれば **`npm run cio:quick-health`**（疎通 + wipe 監視。数分以内）。
+4. フル棚卸しは既存どおり **`npm run session:bootstrap`**（項番 -0 OK 後）。
 
 ## セッション切替・憲法ゲート
 

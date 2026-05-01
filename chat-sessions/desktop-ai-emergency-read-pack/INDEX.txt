@@ -1,0 +1,11 @@
+【読取順インデックス】CIO 準備済み（2026-05-02）
+
+READ-01.txt → 新セッション初日の実行順（-1 → -0 → bootstrap → 第0手 → A → B → 日終わり）
+READ-02.txt → 二段階の心・時間目安・テンプレ見出し
+READ-03.txt → A 共通五段階で Read するファイルパス一覧
+READ-04.txt → B 本題入口（5A / 5B の分岐・§50-3-8 リマインド）
+READ-05.txt → session-starter:sync-desktop と verify・Desktop パス
+READ-06.txt → 憲法・分業の核＋**【AI分業チェック】** テンプレ（READ 直後チャット必須）
+READ-07.txt → **浜田 CEO のお願い（思い）**／Project Rules・厳守・壁時計・分業・GitHub Actions・**健全性優先**（朝イチでも読む）
+
+（浜田追記用）ここにメモを足してよい。

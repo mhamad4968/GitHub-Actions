@@ -1,0 +1,27 @@
+【READ-01】新セッション初日 — やる順（CIO 用・2026-05-02 準備版）
+
+以下を **この順で** 実行し、各ブロックのあとチャットに短く残す。
+
+1) 項番 -1  
+   浜田が `Desktop\AI緊急用\NEW-SESSION-STARTER_yyyymmdd.txt` **全文**を貼ったあと、AI は `chat-sessions/NEW-SESSION-STARTER.md` を Read ツールで **通読**（offset 連鎖で抜けなし）。
+
+2) 項番 -0  
+   ティア宣言＋「次にやる **1 つ**」を **§41 一問だけ**浜田へ。OK が出るまで **verify / bootstrap / 本題に着手しない**。
+
+3) 項番 0  
+   リポルートで `npm run session:bootstrap` → **exit 0** を確認。
+
+4) 第0手（段階読解）  
+   **本パック** `READ-02.txt` から **`READ-07.txt` まで番号昇順**で Read（中身が「（未使用）」のみならその番号はスキップ可＋チャットに理由 1 行）。**`READ-06.txt` を Read した直後**、チャットに **`【AI分業チェック】`** を **1 回必ず**出す（項目・表は READ-06 先頭のテンプレどおり。**省略・「同上」禁止**）。**`READ-07.txt`（浜田 CEO のお願い）**を Read した直後、チャットに **`【READ-07 読了】`** と **1 行**（「Project Rules 厳守・壁時計・分業・GH Actions・健全性を再確認」等、自分の言葉で要約）を残す。  
+   続けて `chat-sessions/SESSION-READ-LADDER.md` を Read で **通読**。
+
+5) A. 共通五段階（第1〜5段）  
+   `SESSION-READ-LADDER.md` の表どおり。各段のあと **「事前準備用テンプレ」**（同ファイル内）。**ルール理解だけ**—仕様は書かない。
+
+6) B. プロジェクト確認  
+   項番 -0 の本題（5A / 5B）に合わせ B0 → B1 小出し。枝ごと **「プロジェクト確認用テンプレ」**。
+
+7) 日終わり  
+   `npm run session-starter:sync-desktop` → `npm run verify:desktop-ai-emergency-sync`（read-pack 含むバイト一致）。
+
+正本の更新: この READ 番号ファイルは `chat-sessions/desktop-ai-emergency-read-pack/`。編集後は必ず上記 sync。

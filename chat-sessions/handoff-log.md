@@ -706,3 +706,13 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 
 ---
 
+### 2026-05-02 (Sat) JST — READ-07（浜田 CEO のお願い）を read-pack に統合
+
+**実施内容（CIO）**:
+- Desktop の **`濱田からお願い（切実な・・・）.txt`** の思いを **`desktop-ai-emergency-read-pack/READ-07.txt`** に正本化（Project Rules 厳守・壁時計・🎖️分業・GitHub Actions 速修・健全性優先・承認不要の確認許可）。
+- **READ-01** 手順4を **〜07** に拡張（READ-07 直後 **`【READ-07 読了】` 1 行**）。**INDEX / README-read-pack / SESSION-READ-LADDER / `session-read-ladder-two-phase.mdc` / `cio-operating-loop.mdc` / AI緊急用-README / RULES-INDEX** を同期。
+
+**次セッションへの 1 行**: 朝は **morning-prep** のあと **READ-07** を Read（短くてよい）→ 第0手では **02〜07** 昇順の流れどおり。
+
+---
+
