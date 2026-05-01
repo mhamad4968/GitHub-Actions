@@ -17,11 +17,12 @@
  * Day 5 残タスク:
  *   - （一覧）検索バー強化は §4.8a 対応済み。SKYSEA 状態フィルタ等は別途。
  *   - 新規・編集: 入力ガイド帯・所属ヘルプ（編集は一覧折りたたみ）・操作ヒント。
+ *   - レコード画面: フォーム上にデバイス／利用者／アカウントの区切り帯（getFieldElement 直前挿入）。
  */
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-01-input-guide-v0.9.7';
+  const BUILD = '2026-05-01-form-section-ribbons-v0.9.8';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -339,6 +340,145 @@
       setFieldsVisibility(personalOnlyUserName, true);
       setFieldsVisibility([FC_EMP_ID], false);
     }
+  }
+
+  // ===== フォーム区切り帯（PC・機器 / 利用者・所属 / アカウント）=====
+  /** レイアウトは「PC名 → … → 利用者 → … → ログオン」の並びを想定（順が違うと帯の前後だけ入れ替わります）。 */
+  const NPL674_SECTION_RIBBON_CLASS = 'npl674-form-section-ribbon';
+
+  function remove674FormSectionRibbons() {
+    const nodes = document.querySelectorAll('.' + NPL674_SECTION_RIBBON_CLASS);
+    for (let i = 0; i < nodes.length; i++) {
+      try {
+        nodes[i].remove();
+      } catch (e) {
+        console.warn('[NEW-PC-LEDGER-V1] remove section ribbon', e);
+      }
+    }
+  }
+
+  function getFieldDom674(code) {
+    try {
+      if (kintone.app && kintone.app.record && typeof kintone.app.record.getFieldElement === 'function') {
+        const d = kintone.app.record.getFieldElement(code);
+        if (d) return d;
+      }
+    } catch (e) {
+      /* ignore */
+    }
+    try {
+      if (
+        typeof kintone.mobile !== 'undefined' &&
+        kintone.mobile.app &&
+        kintone.mobile.app.record &&
+        typeof kintone.mobile.app.record.getFieldElement === 'function'
+      ) {
+        const m = kintone.mobile.app.record.getFieldElement(code);
+        if (m) return m;
+      }
+    } catch (e2) {
+      /* ignore */
+    }
+    return null;
+  }
+
+  function shouldShow674AccountRibbon(record) {
+    if (isPersonalStored(record)) return false;
+    const type = record[FC_ACCOUNT_TYPE]?.value || '';
+    return type === TYPE_PERSONAL || type === TYPE_SHARED || type === TYPE_JR;
+  }
+
+  function shouldShow674AssignRibbon(record) {
+    if (isPersonalStored(record)) return false;
+    const type = record[FC_ACCOUNT_TYPE]?.value || '';
+    if (type === TYPE_SHARED || type === TYPE_JR) return false;
+    return true;
+  }
+
+  function insert674SectionRibbon(fieldCode, variant, title, subtitle) {
+    const anchor = getFieldDom674(fieldCode);
+    if (!anchor || !anchor.parentNode) return false;
+    const box = document.createElement('div');
+    box.className = NPL674_SECTION_RIBBON_CLASS;
+    box.setAttribute('data-npl-sec-for', fieldCode);
+    const pal = {
+      device: { bg: '#f1f5f9', edge: '#334155', line: '#94a3b8' },
+      assign: { bg: '#eff6ff', edge: '#1d4ed8', line: '#93c5fd' },
+      account: { bg: '#fffbeb', edge: '#b45309', line: '#fcd34d' },
+    };
+    const p = pal[variant] || pal.device;
+    box.style.cssText =
+      'box-sizing:border-box;width:100%;max-width:100%;margin:14px 0 8px;padding:8px 12px 9px;' +
+      'background:' +
+      p.bg +
+      ';border:1px solid ' +
+      p.line +
+      ';border-left:5px solid ' +
+      p.edge +
+      ';border-radius:6px;';
+    const h = document.createElement('div');
+    h.style.cssText = 'font-size:14px;font-weight:700;color:#0f172a;line-height:1.35;';
+    h.textContent = title;
+    box.appendChild(h);
+    if (subtitle) {
+      const s = document.createElement('div');
+      s.style.cssText = 'margin-top:4px;font-size:11px;line-height:1.5;color:#475569;';
+      s.textContent = subtitle;
+      box.appendChild(s);
+    }
+    anchor.parentNode.insertBefore(box, anchor);
+    return true;
+  }
+
+  function apply674FormSectionRibbons(record) {
+    if (!record) return;
+    remove674FormSectionRibbons();
+    const type = record[FC_ACCOUNT_TYPE]?.value || '';
+    insert674SectionRibbon(
+      FC_PC_NAME,
+      'device',
+      'PC・機器・ネットワーク',
+      'PC名・シリアル・型番・IP・購入日・在庫・備考など（機器まわりの情報）はこの付近にまとめて入力してください。',
+    );
+    if (type === TYPE_SHARED || type === TYPE_JR) {
+      insert674SectionRibbon(
+        FC_SHARED_TERMINAL_NAME,
+        'assign',
+        '共有端末・所属',
+        '共有端末名と所属名・所属グループを先にそろえてから、共有用自動生成を実行すると取り違えが減ります。',
+      );
+    } else if (shouldShow674AssignRibbon(record)) {
+      insert674SectionRibbon(
+        FC_USER_NAME,
+        'assign',
+        '利用者・所属',
+        '個人では氏名・所属が中心です。サーバーNAS／その他では、必要なときだけ担当や設置のメモに使ってください。',
+      );
+    }
+    if (shouldShow674AccountRibbon(record)) {
+      insert674SectionRibbon(
+        FC_LOGON_NAME,
+        'account',
+        'アカウント（ログイン・メール・クラウド）',
+        'Windows ID・パスワード・メール・M365 など。種別がサーバーNAS／その他のときはこの欄群は使いません。',
+      );
+    }
+  }
+
+  function schedule674FormSectionRibbons(seedRecord) {
+    function run() {
+      try {
+        const bag = getRecordFormHolder674();
+        const rec = (bag && bag.holder && bag.holder.record) || seedRecord;
+        if (rec) apply674FormSectionRibbons(rec);
+      } catch (e) {
+        console.warn('[NEW-PC-LEDGER-V1] form section ribbons', e);
+      }
+    }
+    run();
+    [400, 1200].forEach(function (ms) {
+      setTimeout(run, ms);
+    });
   }
 
   // ===== §4.2.0b 所属名・所属グループ 常時ヘルプ帯 =====
@@ -2593,6 +2733,7 @@ ${bodyInner}\
     applyInternalMetaFieldUi(event.record, editable ? 'editable' : 'detail');
     applySkyseaGroupUi(event.record, editable ? 'editable' : 'detail');
     applyVisibilityByType(event.record);
+    schedule674FormSectionRibbons(event.record);
     showJrBannerIfNeeded(event.record);
     injectButtons(event);
     if (editable) {
@@ -2639,6 +2780,7 @@ ${bodyInner}\
     applyInternalMetaFieldUi(result.record, 'editable');
     applySkyseaGroupUi(result.record, 'editable');
     applyVisibilityByType(result.record);
+    schedule674FormSectionRibbons(result.record);
     showJrBannerIfNeeded(result.record);
     injectButtons(result);
     if (
@@ -3017,6 +3159,7 @@ ${bodyInner}\
   function onRecordIndexShow674(event) {
     removeDeptHelpBanner();
     removeInputFlowGuide674();
+    remove674FormSectionRibbons();
     schedule674IndexSearch();
     return event;
   }
