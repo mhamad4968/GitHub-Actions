@@ -69,9 +69,35 @@ curl -sS -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.gi
 
 `404` なら **未設定**（この場合は §5 の UI で作成するのが確実）。
 
-### 6.2 自動 PUT はここでは行わない理由
+### 6.2 自動化（リポ同梱スクリプト）— **ベースラインのみ** API で適用可
 
-Classic branch protection の REST payload は **必須チェック名・enforce_admins・restrictions** 等の組み合わせで失敗しやすい。**必須 check 名はリポと Actions の履歴に依存**するため、AI 側でトークンも持たず一括適用すると **マージ不能** や **意図しない force-push 禁止** を招き得る。更新は **§5 の UI** か、管理者が **GET 結果を踏まえた PATCH/PUT** をローカルで試す。
+**難しいのは「認証が無いこと」**であり、REST 自体は公開 API なので、**PAT または `gh auth login` さえあれば**ローカルから PUT できます。必須 status check を機械決めすると事故りやすいため、リポには次だけ同梱する:
+
+- **`scripts/github-branch-protection-apply.mjs`**
+  - 引数なし: **GET** して現状表示（dry-run）。
+  - **`--baseline-apply`**: **必須チェック無し**の下限だけ PUT（`required_linear_history: true` / force-push・branch 削除禁止 / 他は null）。**マージ不能化を避ける**ため `required_status_checks` は付けない。
+  - **`--gh-cli`**: `GITHUB_TOKEN` の代わりに **`gh api`** を使う（**`gh auth login` 済み**の端末向け）。
+
+**npm scripts**:
+
+| コマンド | 内容 |
+|----------|------|
+| `npm run github:branch-protection:status` | PAT（`GITHUB_TOKEN` または `GH_TOKEN`）で GET |
+| `npm run github:branch-protection:status:gh` | `gh` 認証で GET |
+| `npm run github:branch-protection:apply-baseline` | PAT で baseline PUT |
+| `npm run github:branch-protection:apply-baseline:gh` | `gh` で baseline PUT |
+
+**Windows: `gh` を winget で入れた直後**は PATH が効いていないことがある。**新しい PowerShell を開く**か、`"C:\Program Files\GitHub CLI\gh.exe" auth login` のようにフルパスで実行する。
+
+**手順（管理者・1 回）**:
+
+1. `winget install GitHub.cli`（未導入なら）→ 新しいターミナル。
+2. `gh auth login`（ブラウザ or トークン貼付）— **対話 1 回**（AI 環境では代行不可）。
+3. `npm run github:branch-protection:status:gh` で 404 または既存設定を確認。
+4. `npm run github:branch-protection:apply-baseline:gh` でベースライン適用。
+5. **必須チェック**は §5 の UI で、**常に緑になる job 名だけ**を後から追加。
+
+PAT のみ使う場合: GitHub → Settings → Developer settings → **Fine-grained token** 推奨。対象リポに **Administration: Read and write**（または classic の **repo** フル）を付与し、**ターミナルでだけ** `set GH_TOKEN=...`（PowerShell は `$env:GH_TOKEN="..."`）してから `npm run github:branch-protection:apply-baseline`。
 
 ### 6.3 将来: CI で `main` に常時付く check を 1 本足す
 
