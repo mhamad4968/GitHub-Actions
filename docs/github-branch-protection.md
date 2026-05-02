@@ -93,11 +93,31 @@ curl -sS -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.gi
 
 1. `winget install GitHub.cli`（未導入なら）→ 新しいターミナル。
 2. `gh auth login`（ブラウザ or トークン貼付）— **対話 1 回**（AI 環境では代行不可）。
-3. `npm run github:branch-protection:status:gh` で 404 または既存設定を確認。
-4. `npm run github:branch-protection:apply-baseline:gh` でベースライン適用。
+3. `npm run github:branch-protection:status:gh`（PowerShell で npm がブロックされる場合は **`npm.cmd run …`**、§6.2.1）で 404 または既存設定を確認。
+4. `npm run github:branch-protection:apply-baseline:gh`（同様に `npm.cmd` 可）でベースライン適用。
 5. **必須チェック**は §5 の UI で、**常に緑になる job 名だけ**を後から追加。
 
 PAT のみ使う場合: GitHub → Settings → Developer settings → **Fine-grained token** 推奨。対象リポに **Administration: Read and write**（または classic の **repo** フル）を付与し、**ターミナルでだけ** `set GH_TOKEN=...`（PowerShell は `$env:GH_TOKEN="..."`）してから `npm run github:branch-protection:apply-baseline`。
+
+### 6.2.1 Windows PowerShell で `npm` が「スクリプトの実行が無効」になる場合
+
+`npm.ps1` が **ExecutionPolicy** に阻まれると出る。**いずれか一方**でよい。
+
+1. **推奨（広めの回避）**: `npm.cmd` を明示する（ポリシー対象外）。  
+   `cd` 先は **必ずリポジトリ**（例: `C:\Users\mhamada202408224\kintone-ai-lab`）。**`C:\WINDOWS\system32` では `git` / `npm run` は使わない**。
+
+   ```powershell
+   cd C:\Users\mhamada202408224\kintone-ai-lab
+   git pull
+   npm.cmd run github:branch-protection:status:gh
+   npm.cmd run github:branch-protection:apply-baseline:gh
+   ```
+
+2. **CurrentUser のみ緩める**（管理者不要）:  
+   `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned`  
+   のあと、通常どおり `npm run ...` 可。
+
+**コマンド順**: 先に **`cd` → `git pull`**。system32 で `git pull` すると `not a git repository` になる。
 
 ### 6.3 将来: CI で `main` に常時付く check を 1 本足す
 
