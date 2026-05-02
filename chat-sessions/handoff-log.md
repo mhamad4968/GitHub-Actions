@@ -749,3 +749,14 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 **batch2（DeepSeek合意）**: `monthly_breakdown` / `payment_breakdown` は **1 POST に内包フィールド全部 → deploy 1 回**。レコード直下 CALC はサブテーブル後。
 
 ---
+
+### 2026-05-02 JST（追記）— 677 batch2（月次内訳・支払内訳・変動費表示 CALC）
+
+<!-- handoff: 677-batch2-20260502 -->
+
+- **DeepSeek**: サブテーブル内 month_utilization の CALC 式（ゼロ除算回避）は有効。サブテーブルは **1 POST + deploy 1 回**。
+- **実行**: `scripts/yojitsu-677-add-batch2-preview.mjs` + `scripts/data/yojitsu-677-batch2-properties.json`、preview revision **4** → deploy **SUCCESS**。
+- **検証**: `npm run app:fields 677` → **24 フィールド**（`monthly_breakdown` / `payment_breakdown` / `variable_budget_total_display` 含む）。
+- **npm**: `yojitsu:677:batch2-preview` を `package.json` に追加。
+
+**次の 1 手**: フォームレイアウト（§6b）要否の判断。678 ダッシュ・保存時 JS ロールアップ・12 行初期データは未着手。batch3 があれば SPEC / backlog と突合。
