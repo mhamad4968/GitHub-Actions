@@ -45,6 +45,8 @@ npm run app:fields <アプリID>
 
 **FAQ（640）**: 社内 FAQ の **DB はアプリ 640**（[https://jbis-kintone.cybozu.com/k/640/](https://jbis-kintone.cybozu.com/k/640/)）で確定。運用ガイド（668）や PC 台帳系アプリとは **別アプリ**。
 
+**638 / 639**: 台帳上は **社内FAQDB** 同名だが **640 が正本**（638・639 は容量・件数がほぼ空の残骸と判断してよい。このリポからは未参照）。
+
 ### デイリーヘルスチェック（廃止）
 
 **2026-05 以降**: 全アプリの REST 定期診断（旧 `space-health-report` / GitHub Actions / `npm run report:space-health`）は **運用しない**。アプリの正は **社内アプリ台帳** と **`## アプリ一覧`** とする。
