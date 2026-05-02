@@ -3,25 +3,33 @@
 
   /**
    * 部署予実 ダッシュアプリ 678
-   * BUILD: 2026-05-02-678-dashboard-notes-column
-   * - 677 明細を kintone.api で一覧（備考 `notes` 列・閲覧・導線）
-   * - 表示順（display_order）のみ 677 へ PUT（SPEC §6e）
+   * BUILD: 2026-05-03-678-dashboard-milestone
+   * - 677 明細を kintone.api で一覧（備考 `notes`・定額/変動枠の参照列・閲覧導線）
+   * - 表示順（display_order）のみ 677 へ PUT（SPEC §6e・二重入力なし）
+   * - 費用種別はクライアント側フィルタ（取得は直近30件のまま §6e 段階導入）
    */
 
   var APP_INPUT = 677;
-  var BUILD = "2026-05-02-678-dashboard-api-errors";
+  var BUILD = "2026-05-03-678-dashboard-milestone";
   /** 旧 Excel 旧フォーマットの合計行（移行スクリプトで除外済み） */
   var DASHBOARD_NOTE =
     "【備考】旧 Excel「旧フォーマット」の 50 行目は合計（総計）行のため、kintone 677 への初回移行ではレコード化していません。" +
     "明細は 47 件（摘要のある行のみ）。下表の「備考」列は 677 の備考フィールド（移行時の起票・出納セルメモ等）です。";
+  /** v1 ダッシュは月次サブテーブル等は未表示。金額・月次の正は 677 のレコード画面で編集（§6e）。 */
+  var USAGE_NOTE =
+    "【利用上の注意】本画面は閲覧・表示順の更新用です。月次内訳・支払内訳は API で未取得のため表に出ません。" +
+    "定額/変動の列はレコード直下の参照値のみです。編集が必要な場合は 677 の該当レコードを開いてください。";
   var FETCH_FIELDS = [
     "$id",
+    "$revision",
     "Record_number",
     "work_type_name",
     "work_type_code",
     "cost_category",
     "summary_text",
     "partner_company",
+    "learning_fixed_budget",
+    "initial_variable_budget",
     "display_order",
     "notes",
   ];
@@ -92,11 +100,23 @@
     return { html: t.slice(0, maxLen) + "…", title: raw.slice(0, 800) };
   }
 
+  /** cost_category が一致する行のみ（「すべて」はそのまま） */
+  function filterRecordsByCostCategory(records, filterKey) {
+    if (filterKey === "all") return records.slice();
+    var out = [];
+    for (var i = 0; i < records.length; i++) {
+      if (fieldVal(records[i], "cost_category") === filterKey) out.push(records[i]);
+    }
+    return out;
+  }
+
   function renderTable(records) {
     var rows = [];
     rows.push(
       "<thead><tr>" +
-        "<th>レコード</th><th>工種</th><th>費用種別</th><th>摘要</th><th>会社</th>" +
+        "<th>レコード</th><th>工種</th><th>費用種別</th>" +
+        "<th>定額/変動(枠)</th>" +
+        "<th>摘要</th><th>会社</th>" +
         "<th>備考</th>" +
         "<th>表示順</th>" +
         "</tr></thead><tbody>"
@@ -113,6 +133,8 @@
       var noteRaw = fieldVal(r, "notes");
       var notePart = truncateNotes(noteRaw, 120);
       var doVal = esc(fieldVal(r, "display_order"));
+      var learn = esc(fieldVal(r, "learning_fixed_budget"));
+      var initv = esc(fieldVal(r, "initial_variable_budget"));
       var titleAttr = notePart.title ? " title=\"" + attrEsc(notePart.title) + "\"" : "";
       rows.push(
         "<tr>" +
@@ -126,6 +148,12 @@
           "</td>" +
           "<td>" +
           esc(fieldVal(r, "cost_category")) +
+          "</td>" +
+          "<td style=\"font-size:12px;color:#333;white-space:nowrap\">" +
+          "定:" +
+          (learn || "—") +
+          "<br/>変:" +
+          (initv || "—") +
           "</td>" +
           "<td>" +
           sum +
@@ -152,7 +180,7 @@
       );
     }
     if (!records.length) {
-      rows.push('<tr><td colspan="7" style="color:#666">677 にレコードがありません（または権限外）</td></tr>');
+      rows.push('<tr><td colspan="8" style="color:#666">該当する行がありません（677 にデータが無い・権限外・またはフィルタ条件に一致なし）</td></tr>');
     }
     rows.push("</tbody>");
     return rows.join("");
@@ -205,6 +233,47 @@
       "<button type=\"button\" id=\"y678-refresh\" style=\"font-size:12px;cursor:pointer\">再読み込み</button>";
     wrap.appendChild(head);
 
+    var linksRow = document.createElement("div");
+    linksRow.style.marginBottom = "8px";
+    linksRow.style.fontSize = "12px";
+    linksRow.style.lineHeight = "1.5";
+    linksRow.style.color = "#333";
+    linksRow.innerHTML =
+      "<strong>リンク</strong> · " +
+      "<a href=\"" +
+      esc(location.origin + "/k/#/space/54/thread/58") +
+      "\">スペース本件スレッド</a> · " +
+      "<a href=\"" +
+      esc(location.origin + "/k/" + kintone.app.getId() + "/") +
+      "\">このダッシュ(678) 一覧</a>";
+    wrap.appendChild(linksRow);
+
+    var opsRow = document.createElement("div");
+    opsRow.style.marginBottom = "8px";
+    opsRow.style.fontSize = "12px";
+    opsRow.style.padding = "6px 8px";
+    opsRow.style.background = "#eef6ff";
+    opsRow.style.border = "1px solid #c9daf8";
+    opsRow.style.borderRadius = "4px";
+    opsRow.style.color = "#1a3d66";
+    opsRow.textContent =
+      "【運用】表示順の保存は即時 677 に反映されます。他項目の変更は 677 のレコード画面で行い、必要なら本画面の「再読み込み」で最新化してください。";
+    wrap.appendChild(opsRow);
+
+    var filterRow = document.createElement("div");
+    filterRow.style.marginBottom = "8px";
+    filterRow.style.display = "flex";
+    filterRow.style.flexWrap = "wrap";
+    filterRow.style.alignItems = "center";
+    filterRow.style.gap = "6px 8px";
+    filterRow.innerHTML =
+      "<span style=\"color:#555;font-size:12px\">費用種別（直近30件のうち）:</span>" +
+      "<button type=\"button\" class=\"y678-filter\" data-y678-filter=\"all\" style=\"font-size:12px;cursor:pointer\">すべて</button>" +
+      "<button type=\"button\" class=\"y678-filter\" data-y678-filter=\"固定費\" style=\"font-size:12px;cursor:pointer\">固定費</button>" +
+      "<button type=\"button\" class=\"y678-filter\" data-y678-filter=\"変動費\" style=\"font-size:12px;cursor:pointer\">変動費</button>" +
+      "<button type=\"button\" class=\"y678-filter\" data-y678-filter=\"その他\" style=\"font-size:12px;cursor:pointer\">その他</button>";
+    wrap.appendChild(filterRow);
+
     var noteBox = document.createElement("div");
     noteBox.setAttribute("data-y678-dashboard-note", "1");
     noteBox.style.marginBottom = "10px";
@@ -218,6 +287,19 @@
     noteBox.textContent = DASHBOARD_NOTE;
     wrap.appendChild(noteBox);
 
+    var usageBox = document.createElement("div");
+    usageBox.setAttribute("data-y678-usage-note", "1");
+    usageBox.style.marginBottom = "10px";
+    usageBox.style.padding = "8px 10px";
+    usageBox.style.background = "#f5f5f5";
+    usageBox.style.border = "1px solid #ddd";
+    usageBox.style.borderRadius = "4px";
+    usageBox.style.fontSize = "12px";
+    usageBox.style.lineHeight = "1.45";
+    usageBox.style.color = "#333";
+    usageBox.textContent = USAGE_NOTE;
+    wrap.appendChild(usageBox);
+
     var status = document.createElement("div");
     status.style.marginBottom = "6px";
     status.style.color = "#555";
@@ -229,6 +311,59 @@
     wrap.appendChild(tblHost);
 
     el.appendChild(wrap);
+
+    var lastRawRecords = [];
+    var lastTotalCount = 0;
+    var currentCostFilter = "all";
+
+    function setFilterButtonsActive() {
+      var btns = filterRow.querySelectorAll(".y678-filter");
+      for (var b = 0; b < btns.length; b++) {
+        var fk = btns[b].getAttribute("data-y678-filter");
+        if (fk === currentCostFilter) {
+          btns[b].style.fontWeight = "700";
+          btns[b].style.textDecoration = "underline";
+        } else {
+          btns[b].style.fontWeight = "";
+          btns[b].style.textDecoration = "";
+        }
+      }
+    }
+
+    function paintTable(filtered) {
+      tblHost.innerHTML = "";
+      var t = document.createElement("table");
+      t.style.width = "100%";
+      t.style.borderCollapse = "collapse";
+      t.style.background = "#fff";
+      t.innerHTML = renderTable(filtered);
+      styleTable(t);
+      tblHost.appendChild(t);
+    }
+
+    function updateStatusLine() {
+      var filtered = filterRecordsByCostCategory(lastRawRecords, currentCostFilter);
+      var total = lastTotalCount || lastRawRecords.length;
+      var base =
+        "入力アプリ 677: 全 " +
+        total +
+        " 件 · API取得 " +
+        lastRawRecords.length +
+        " 件（新しい順・最大30）";
+      if (currentCostFilter !== "all") {
+        base += " · フィルタ後 " + filtered.length + " 件（" + String(currentCostFilter) + "）";
+      }
+      base += " · 表示順はここから 677 に保存可";
+      status.style.color = "#555";
+      status.textContent = base;
+      setFilterButtonsActive();
+    }
+
+    function applyFilterAndRedraw() {
+      var filtered = filterRecordsByCostCategory(lastRawRecords, currentCostFilter);
+      updateStatusLine();
+      paintTable(filtered);
+    }
 
     function load() {
       status.style.color = "#555";
@@ -243,18 +378,13 @@
         })
         .then(function (resp) {
           var list = (resp && resp.records) || [];
-          var total = resp && typeof resp.totalCount === "number" ? resp.totalCount : list.length;
-          status.textContent =
-            "入力アプリ 677: 全 " + total + " 件 · 表示 " + list.length + " 件（新しい順・最大30）· 表示順はここから 677 に保存可";
-          var t = document.createElement("table");
-          t.style.width = "100%";
-          t.style.borderCollapse = "collapse";
-          t.style.background = "#fff";
-          t.innerHTML = renderTable(list);
-          styleTable(t);
-          tblHost.appendChild(t);
+          lastRawRecords = list;
+          lastTotalCount = resp && typeof resp.totalCount === "number" ? resp.totalCount : list.length;
+          applyFilterAndRedraw();
         })
         .catch(function (e) {
+          lastRawRecords = [];
+          lastTotalCount = 0;
           status.style.color = "#b00020";
           status.textContent = formatApiError(e, "677 の一覧取得に失敗しました。");
         });
@@ -327,6 +457,16 @@
         load();
       });
     }
+
+    filterRow.addEventListener("click", function (ev) {
+      var fb = ev.target && ev.target.closest && ev.target.closest(".y678-filter");
+      if (!fb) return;
+      var fk = fb.getAttribute("data-y678-filter");
+      if (!fk) return;
+      currentCostFilter = fk;
+      if (lastRawRecords.length) applyFilterAndRedraw();
+      else setFilterButtonsActive();
+    });
 
     load();
   }

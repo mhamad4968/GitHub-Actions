@@ -20,9 +20,9 @@ npm run app:fields <アプリID>
 |-------------------|---------|----------------|------------------|
 | PC台帳 | 594 | `customize/594/desktop.js` | `npm run deploy:594` |
 | 社員マスタ（台帳・627 連携用） | 595 | `customize/595/desktop.js` | `npm run deploy:595` |
+| アカウント採番（プール） | 626 | `customize/626/desktop.js` | `npm run deploy:626` |
 | アカウント管理台帳 | 627 | `customize/627/desktop.js` | `npm run deploy:627` |
 | 出張精算アプリ | **629** | `customize/shucccho-seisan/desktop.js` | `npm run deploy:629` |
-| 社内FAQ（DB） | **640** | （**FAQ レコードの本番保管先**で確定。運用ガイド **668** とは別アプリ） | [https://jbis-kintone.cybozu.com/k/640/](https://jbis-kintone.cybozu.com/k/640/) ・UI 用 HTML の作業例: `scripts/faq-portal-full.html`（640 への反映は運用で実施） |
 | Security NEXT ニュース（収集） | **631** | `security-next-automation` | [https://jbis-kintone.cybozu.com/k/631/](https://jbis-kintone.cybozu.com/k/631/) ・`KINTONE_APP_ID` |
 | ニュース週次要約（週次LLM） | **632** | `security-next-automation` | [https://jbis-kintone.cybozu.com/k/632/](https://jbis-kintone.cybozu.com/k/632/) ・`KINTONE_REPORT_APP_ID` ・[設計CSV](security-next-automation/docs/security-next-weekly-report-app-design.csv) |
 | 運用ガイド（PC台帳・アカウント周りの操作手順） | **668** | `customize/ops-guide/desktop.js` | `npm run ops-guide:publish`（HTML レコード同期＋desktop.js デプロイ） |
@@ -31,8 +31,8 @@ npm run app:fields <アプリID>
 | 新個人WindowsID採番マスタ（新・PC台帳ver.1 用 / Day 3 / 旧 626 置換） | **672** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-25 作成 / 0 レコード（`^jbm\d{4}$` 厳格 / `jbm0001` から払出予定）|
 | 新共有WindowsID採番マスタ（新・PC台帳ver.1 用 / Day 3 / 旧 667 置換） | **673** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-25 作成 / 0 レコード（`^sjbm\d{4}$` 厳格 / `sjbm0001` から払出予定）|
 | 新・PC台帳ver.1（本体・674 customize **本実装進行中**・**運用開始前**） | **674** | `customize/new-pc-ledger-v1/desktop.js` | `npm run deploy:674` / Space **21** / thread **23** / customize **BUILD=`2026-05-02-pc-replace-mount-v0.9.14`**（PC買替 §4.10.3 含む・**627 は二重更新しない**）/ fileKey **`01d42a25-ddbe-4a03-a009-69034f7e1d6a`** / field-spec **44/44** / **運用開始予定 2026-05-13**（仕様書 §1） |
-| **部署予実・入力**（明細・`新フォーマット` 全列・`支払内訳` サブテーブル・月次 12 行） | **677** | `customize/677/desktop.js` \| `npm run deploy:677` | [https://jbis-kintone.cybozu.com/k/677/](https://jbis-kintone.cybozu.com/k/677/)・**配置**: Space **54** / thread **58**・ポータル [スペース 54（thread 58）](https://jbis-kintone.cybozu.com/k/#/space/54/thread/58)。**2026-04-29**: 枠作成 deploy **SUCCESS**。**2026-05-02**: customize（`monthly_breakdown` 12 行整形＋保存時 **`支払内訳`→月次「実績」ロールアップ**・暦月合算・**ロールアップ例外時は保存ブロック `event.error`**）deploy **SUCCESS** / fileKey **`69629015-73da-40b7-9507-18232966bcbc`** / preview revision **9** / **BUILD=`2026-05-02-677-submit-error-guard`**。**データ**: `C:\\tmp\\予算管理\\2026年度システム推進室_年間予算案20260123.xlsx` の **`旧フォーマット`** から **47 明細**を初回投入（`yojitsu-migration-kyu-to-kintone.md`・総計行除外・`npm run yojitsu:677:record-count`）。スペース内の旧アプリは **運用開始までに削除予定**（不要分）。`SPEC.md` §6–§6c |
-| **部署予実・ダッシュ**（**集計管理の主画面**・俯瞰・入力アプリ参照） | **678** | `customize/678/desktop.js` \| `npm run deploy:678` | [https://jbis-kintone.cybozu.com/k/678/](https://jbis-kintone.cybozu.com/k/678/)・入力と同スペース。**2026-04-29** 枠のみ deploy **SUCCESS**。**2026-05-02**: 677 明細表・備考・`display_order` PUT・**API 失敗時メッセージ（コード・ヒント）**・リビジョン未取得時の案内 deploy **SUCCESS** / fileKey **`5f992f52-5148-4b10-b7fb-e018ff0bf8bf`** / preview revision **7** / **BUILD=`2026-05-02-678-dashboard-api-errors`**。`SPEC.md` §6b・§6e |
+| **部署予実・入力**（明細・`新フォーマット` 全列・`支払内訳` サブテーブル・月次 12 行） | **677** | `customize/677/desktop.js` \| `npm run deploy:677` | [https://jbis-kintone.cybozu.com/k/677/](https://jbis-kintone.cybozu.com/k/677/)・**配置**: Space **54** / thread **58**。**2026-05-02**: customize deploy 済（**677** BUILD `2026-05-02-677-submit-error-guard`）。**2026-05-03**: **678** BUILD `2026-05-03-678-dashboard-milestone`（§10.1）。**データ**: 旧フォーマット xlsx **47 明細**。`SPEC.md` §6–§6c |
+| **部署予実・ダッシュ**（**集計管理の主画面**・俯瞰・入力アプリ参照） | **678** | `customize/678/desktop.js` \| `npm run deploy:678` | [https://jbis-kintone.cybozu.com/k/678/](https://jbis-kintone.cybozu.com/k/678/)・**2026-05-02**: 677 表・備考・API エラー表示・表示順 PUT / fileKey **`5f992f52-5148-4b10-b7fb-e018ff0bf8bf`** / rev **7**。**2026-05-03**（§10.1）: リンク・運用・利用注意・費用種別フィルタ・定額/変動枠・`$revision` / fileKey **`0e77462b-36e9-4406-8cc9-25ceb0581fdc`** / rev **8** / **BUILD=`2026-05-03-678-dashboard-milestone`**。`SPEC.md` §6b・§6e |
 
 ※ **631** … `collect` / `analyze` が読むニュース。**632** … `analyze` が書き込む週次要約のみ。`.env`: `KINTONE_APP_ID=631` , `KINTONE_REPORT_APP_ID=632`。API トークンに **両アプリ**を載せる。  
 ※ **権限**: 自動化の最低限は **レコード閲覧＋追加**。閲覧・追加・編集・削除・アプリ管理のフル付与でもスクリプトは動作するが、トークン漏えい時のリスク低減のため余分な権限は削るとよい（詳細は `security-next-automation/README.md`）。
@@ -43,25 +43,26 @@ npm run app:fields <アプリID>
 
 **Security NEXT 連携**: フィールドコードの正本は `security-next-automation/README.md` と `security-next-automation/src/lib/field-codes.ts`。アプリ新規なら `npm run setup:security-next-apps` も可。
 
-**FAQ（640）**: 社内 FAQ の **DB はアプリ 640**（[https://jbis-kintone.cybozu.com/k/640/](https://jbis-kintone.cybozu.com/k/640/)）で確定。運用ガイド（668）や PC 台帳系アプリとは **別アプリ**。
+### システムヘルスチェックレポート（全アプリ・案A）
 
-**638 / 639**: アプリ台帳上も論理名は **「社内FAQDB」** と同一だが、**容量・件数は実質空に近く**、**640 が運用中の正本**（台帳: 640 は DB 保管・日付・利用指標が立っている）。638・639 は **旧枠・未移行の残骸**の可能性が高い → ルックアップ等の依存なし確認済。**2026-05-20 頃**まで様子見のうえ **削除予定**（その前に CSV バックアップ推奨）。このリポのコードからは未参照。
+**運用方針（確定）**: 定期レポートは **毎朝 9:00 JST**（GitHub Actions のスケジュール。日本は夏時間なしのため UTC 0:00 = JST 9:00）。新規アプリは **`## アプリ一覧` 表に 1 行追記するだけで、次回実行から自動で検査対象に含まれる**（ワークフロー側の ID 手動追記は不要）。
 
-### デイリーヘルスチェック（廃止）
-
-**2026-05 以降**: 全アプリの REST 定期診断（旧 `space-health-report` / GitHub Actions / `npm run report:space-health`）は **運用しない**。アプリの正は **社内アプリ台帳** と **`## アプリ一覧`** とする。
-
-- **運用確認用 URL**  
+- **ポータル URL（運用確認用）**  
   - ニュース（収集）: [https://jbis-kintone.cybozu.com/k/631/](https://jbis-kintone.cybozu.com/k/631/)  
   - 週次要約: [https://jbis-kintone.cybozu.com/k/632/](https://jbis-kintone.cybozu.com/k/632/)
-
-- **メンテ手順の正本**: [`docs/maintenance-template.md`](docs/maintenance-template.md)。エージェント・開発の前提ルールは [`AGENTS.md`](AGENTS.md)。
-
+- **REST 診断**: ルートで `npm run report:space-health`。**認証はパスワード（`KINTONE_USERNAME` / `KINTONE_PASSWORD`）を推奨**（GitHub Environment `kintone-collect` に Secrets 追加）。外側 Basic 認証がある場合は `KINTONE_BASIC_AUTH_*` も設定。トークンのみでも可（従来どおり）。
+- **検査対象**: `SPACE_HEALTH_APP_IDS` 未指定かつパスワード認証ありのとき、**`kintone-apps.md` の「## アプリ一覧」表からアプリ ID を自動抽出**（594, 595, 626, 627, 629, 631, 632, 668 など）。手動で絞る場合は `SPACE_HEALTH_APP_IDS=631,632` のように指定。MD 抽出を止める場合は `SPACE_HEALTH_USE_KINTONE_APPS_MD=0`。
+- **フィールド検証**: 631 は設計どおり 11 フィールド。632 は本番フォームが Phase1 未移行の場合があるため、**`target_week` と `weekly_trend` の存在のみ**を検証（フォーム拡張後に期待セットを見直すこと）。
+- **GitHub Actions**: `.github/workflows/space-health-report.yml`（毎日 09:00 JST 前後・`workflow_dispatch` 可）。ジョブサマリーに Markdown 表が付く。
+- **スペース 48 ポータルへの自動反映（CI）**: 環境変数 `KINTONE_SPACE_HEALTH_SPACE_ID`（既定で Actions に **48** を渡す）が設定され、**マルチスレッド**のスペースであること。**実行ユーザー（Secrets の KINTONE_USERNAME）がスペース管理者**であること。本文に次の **いずれか 1 組**を**この順**で挿入する（間は空でよい。初回以降 CI がこの間を上書きする）:
+  - **A（HTML コメント）**: `<!-- JBIS_SPACE_HEALTH_AUTO_START -->` / `<!-- JBIS_SPACE_HEALTH_AUTO_END -->`
+  - **B（リッチテキストのみのとき）**: `[[JBIS-SPACE-HEALTH-AUTO-START]]` / `[[JBIS-SPACE-HEALTH-AUTO-END]]`（画面上に短く出るが、CI 後はブロック内に収まる）
+  - **シングルスレッド**では既定スレッド本文へ **GET/PUT `/k/v1/space/thread.json`**（マーカーもここ）。**マルチスレッド**では **PUT `/k/v1/space/body.json`**（ポータル本文）。長文は `SPACE_HEALTH_KINTONE_BODY_MAX_CHARS`（既定 62000）、再試行は `SPACE_HEALTH_KINTONE_PUSH_RETRIES`（既定 3）。
+- **メンテ手順の正本**: [`docs/maintenance-template.md`](docs/maintenance-template.md) の「一気通貫メンテ・プレイブック」。エージェント・開発の前提ルールは [`AGENTS.md`](AGENTS.md)。
 ### GitHub Actions デプロイ記録（自動）
 
 | 日時（UTC） | アプリID | customize パス |
 |-------------|----------|----------------|
-| 2026-05-02T01:14:56Z | 674 | `customize/new-pc-ledger-v1/desktop.js` |
 | 2026-05-01T09:46:20Z | 674 | `customize/new-pc-ledger-v1/desktop.js` |
 | 2026-05-01T08:13:34Z | 674 | `customize/new-pc-ledger-v1/desktop.js` |
 | 2026-05-01T08:06:32Z | 674 | `customize/new-pc-ledger-v1/desktop.js` |
@@ -239,9 +240,7 @@ user_name	SINGLE_LINE_TEXT	社員名
 
 ## 626（アカウント採番）
 
-**本番テナントではアプリ削除済（2026-05 確認）。** `## アプリ一覧` 表からは除外。個人 Windows ID 採番は **672** を参照。
-
-`npm run app:fields 626`（本番 2026-04-18 時点・削除前のスナップショット）:
+`npm run app:fields 626`（本番 2026-04-18 時点）:
 
 ```
 App 626 fields (16)
