@@ -8,6 +8,7 @@
 - **パス**: `C:\Users\mhamada202408224\Desktop\AI緊急用\`（**セッション切替・新チャット開始時**に浜田が開き、**`NEW-SESSION-STARTER_yyyymmdd.txt` 全文**を最初の 1 メッセージに貼る等で使う場所。同日の正は **日付 8 桁の 1 本**）。
 - このフォルダの **READ-01〜07・INDEX・README** は **リポの `desktop-ai-emergency-read-pack/` と同期された控え**。**切替直後はチャット貼付＋必要ならここをメモ帳で開く** → CIO は **`chat-sessions/NEW-SESSION-STARTER.md`** をツールで通読する運用（スターター「貼付単独で完走」節どおり）。
 - CIO は **Desktop だけ更新して放置しない**。**`npm run session-starter:sync-desktop`** は、正本（本 READ・`NEW-SESSION-STARTER.md`・`desktop-ai-emergency-read-pack/*.txt` 等）を変えた **同一ターンまたは直後のターンで CIO が自発実行**する（**浜田に「npm を実行して」と書かなくてよい**。チャットは **実行した事実 1 行**で足りる）。`/mnt/c` が無い等でスキップしたら **理由 1 行**。**可能なら**続けて **`npm run verify:desktop-ai-emergency-sync`**。依存順を揃えるなら **`npm run desktop:sync-and-verify`** を優先してよい（憲法 TSB-024）。
+- **毎回のメンテ時に正本と合わせる（2026-05-02 CEO 指示）**: **メンテ**＝`NEW-SESSION-STARTER.md`・read-pack・`HANDOFF-HUMAN.txt`・`SESSION-BOOTSTRAP-CHECKLIST.md`・`checkpoint-latest.md`・`handoff-log.md` など **Desktop 控えの元**をリポで触った**そのターンの締め**、**日終わり**、**push 直前**、**セッション締め**のいずれも含む。**`C:\Users\mhamada202408224\Desktop\AI緊急用\`** を **リポとバイト一致**まで更新する（上記 npm。**セッション切替時だけ**に限定しない）。
 
 ---
 

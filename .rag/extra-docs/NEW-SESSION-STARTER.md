@@ -349,6 +349,7 @@ v3.23 (2026-04-26) **Desktop `AI緊急用` の都度メンテ＋セッション�
 - **正本パス**: `C:\Users\mhamada202408224\Desktop\AI緊急用`（WSL: `/mnt/c/Users/mhamada202408224/Desktop/AI緊急用`）。**セッション切替のたび**に AI が **メンテ済みか確認**（`checkpoint-latest.md` **項番 0b**）。
 - **`npm run session-starter:sync-desktop`** で `.txt` 3 本をリポと揃え、**`npm run verify:desktop-ai-emergency-sync`** でバイト一致（フォルダ無し環境は SKIP＋チャット 1 行）。
 - **`npm run session:bootstrap`** に sync + verify を組込（憲法 verify の直後）。
+- **2026-05-02 CEO 追補**: **メンテをするたび**（儀式・read-pack・HANDOFF／BOOTSTRAP／checkpoint／handoff をリポで触った**ターンの締め**、**日終わり**、**push 前**）に **Desktop 控えをリポと同内容**にする。**セッション切替に限定しない**。まとめてよいときは **`npm run desktop:sync-and-verify`**。
 
 v3.22 (2026-04-26) **セッション切替＝先にスターター貼付（項番 -1/-0）**（浜田提案・採用）:
 - **推奨フロー**: 新チャット **1 通目**に `NEW-SESSION-STARTER_yyyymmdd.txt`（**JST・常にこのファイル名**）**全文** → AI と本題 **§41 一問**（**項番 -0**）→ **`verify` / `session:bootstrap`（項番 0）**
