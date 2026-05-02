@@ -3,14 +3,14 @@
 
   /**
    * 部署予実 ダッシュアプリ 678
-   * BUILD: 2026-05-04-678-load-guard
+   * BUILD: 2026-05-04-678-api-url-fix
    * - 677 を kintone.api で一覧。左キー列は `shin-format-excel-layout.md` 新フォーマット準拠＋12 月×四つ柱（`monthly_breakdown`）
    * - 表示順（display_order）のみ 677 へ PUT（SPEC §6e）
    * - 677 取得: タイムアウト・描画 try/catch・月次サブテーブル取得失敗時は左ブロックのみにフォールバック
    */
 
   var APP_INPUT = 677;
-  var BUILD = "2026-05-04-678-load-guard";
+  var BUILD = "2026-05-04-678-api-url-fix";
   /** 月次列を省略（677 API が `monthly_breakdown` を返せない場合のフォールバック） */
   var y678OmitMonthlyCols = false;
   /** 暦月ラベル（677 の `月度` と同一・5月〜翌年4月） */
@@ -636,10 +636,10 @@
     }
 
     function fetch677Records(fields) {
-      if (!kintone || !kintone.api || typeof kintone.api.url.get !== "function") {
-        return Promise.reject({ code: "Y678_NOAPI", message: "kintone.api が利用できません。" });
+      if (!kintone || !kintone.api || typeof kintone.api.url !== "function") {
+        return Promise.reject({ code: "Y678_NOAPI", message: "kintone.api.url が利用できません。" });
       }
-      return kintone.api(kintone.api.url.get("/k/v1/records.json", true), "GET", {
+      return kintone.api(kintone.api.url("/k/v1/records.json", true), "GET", {
         app: APP_INPUT,
         query: QUERY,
         fields: fields,
@@ -720,7 +720,7 @@
         body.record.display_order = { value: String(numVal) };
       }
       kintone
-        .api(kintone.api.url.put("/k/v1/record.json", true), "PUT", body)
+        .api(kintone.api.url("/k/v1/record.json", true), "PUT", body)
         .then(function () {
           status.style.color = "#0a6b0a";
           status.textContent = "表示順を保存しました。一覧を更新します。";
