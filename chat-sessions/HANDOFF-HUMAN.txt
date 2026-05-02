@@ -5,6 +5,12 @@ Windows から開きやすい控え: C:\Users\mhamada202408224\Desktop\AI緊急�
 
 推奨フロー（セッション切替）: ① **`NEW-SESSION-STARTER_yyyymmdd.txt`（JST・常にこのファイル名）全文**（**v3.27+**: **「■ 貼付単独で完走」** が **唯一の詳細正本**（項番 -1〜0・**v3.28** 以後の改定もここ優先）。checkpoint 重複貼付不要。貼付推奨は verify 最終行）② この 5 行（**任意**）③ **項番 -0** → ④ **`session:bootstrap` 一括**。**日終わり**: sync → verify。
 
+日時(JST): 2026-05-02（土）セッション終了引継ぎ（本日 07:00 頃〜）
+いま何してた（1行）: **部署予実** 677（月次・支払ロールアップ・**保存例外時 event.error**・本予算 **47 件** xlsx 投入スクリプト）／678（677 一覧・備考列・ダッシュ備考・**API エラー整形**・表示順 PUT）／`kintone-apps.md`・Git **`main` push**／スタッシュ方針（`wip: 2026-05-02 session mixed` 残あり）／631・632・656・658・659 **未対応（次セッション必須）**。
+次にやる1つ: **631/632/656/658/659** — ログイン後の症状と **GitHub Actions**・**Secrets（特に `KINTONE_APP` と 631/632 のトークン）** を切り分け（`chat-sessions/handoff-log.md` 2026-04-28 632 事故参照）。**15:00 以降または新チャット優先**でよい。
+GO待ち（なし／内容）: 上記 kintone 周り。予実ダッシュ本格 UI は合意スケジュール **5/3** 以降。
+触らないで（なし／内容）: 本番 kintone の **631〜659 直修正**は切り分けログ取りまで。二重投入は `yojitsu-import` の `--force` なしで抑止済み。
+
 日時(JST): 2026-04-29（水）16:25 — セッション終了引継ぎ（浜田 ~19:00 までシャットダウン）
 いま何してた（1行）: 憲法 **§50-3-8** 制定（v23.24）＋スターター **v3.32**（盲点ルーチン・切替後再実行・**CIO=sync-desktop** 明文化）＋1c/5A/session-handoff/RAG 同期。**CIO が `session-starter:sync-desktop`** 済（浜田へ npm 依頼なし）。
 次にやる1つ: **~19:00 JST 再開後** — `NEW-SESSION-STARTER_20260429.txt` **全文貼付** → 項番 -0（本題＝**部署予実 5A** 等 §41）→ `session:clock:set`（要時）→ **`npm run session:bootstrap`** → 予実/kintone/ロジック **着手直前**に **§50-3-8**（DeepSeek＋約3行突合・**新チャットでは必ず再実行**）。アプリ作成前は **スペース**（`creation-timing-ask`）。
