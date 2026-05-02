@@ -32,4 +32,5 @@ alwaysApply: true
 
 ## MCP と §51
 
+- **サーバの選び方（1 行トリガー）**: `.cursor/rules/mcp-server-use-triggers.mdc`。**descriptor 必読**は `.cursor/rules/mcp-tool-discipline.mdc`。
 - 航海図は複数行でもよいが、**実呼び出しは直列**（§50-3 と §51）。MCP を使ったターンは憲法どおり **`[実行経路: MCP …]`** を付ける。

@@ -1,0 +1,30 @@
+---
+description: MCP サーバー別「いつ使うか」1行トリガー（CIO×DeepSeek/Kimi/OpenRouter 相談反映）
+alwaysApply: true
+---
+
+# MCP サーバー選択トリガー（いつどれを使うか）
+
+**descriptor 必読は別紙**: `call_mcp_tool` の **直前に** `mcps/<server>/tools/*.json` を読む義務は **`.cursor/rules/mcp-tool-discipline.mdc`**。本条は **サーバ選択**のみを固定する。
+
+## サーバー別（1 行トリガー）
+
+- **user-github**: Actions Run / PR / Issue / ブランチ・リポ設定を **API で確かめる**とき（外部の正）。
+- **user-kintone**（本番系）: 本番アプリの **フィールド／レコード／権限**が主題、または本番 CRUD の前段調査。
+- **user-kintone-dev**: **開発・検証テナント**の同等操作（**本番と混同禁止**）。
+- **user-kintone-space**: **スペース／ポータル／スレッド**の設定・本文が主題のとき。
+- **user-fetch**: **単一 URL の生本文**（HTML/JSON）が正で、ブラウザ操作が不要なとき。
+- **user-tavily**: **要約付き横断 Web 調査**が必要で、Tavily が有効なとき（無効なら `user-duckduckgo-search` や WebFetch を検討）。
+- **user-duckduckgo-search**: **軽量 Web 検索**で足りるとき（キー不要運用の確認など）。
+- **user-playwright**: **ログイン後 UI・E2E・実画面 DOM**が必要なとき（kintone 画面・自社アプリ）。
+- **user-rag**: **`kintone-ai-lab` 内ドキュメント**の根拠検索（TSB / 手順 / spec）。憲法 §50 系と併用。
+- **user-cve-search** / **user-cyber-news**: **CVE 番号・脆弱性ニュース**が主題のとき（それ以外では使わない）。
+- **user-markdownify**: **長文 HTML → Markdown** の一括変換が目的のとき（小さな表は手直しでよい）。
+- **user-memory**: **セッション横断で再利用すべきユーザ設定**があるとき（乱用しない・機密を書かない）。
+- **user-sequential-thinking**: **分岐が多い設計判断**で段階化が有効なとき（短問には使わない）。
+- **user-openrouter**: **他 LLM（DeepSeek/Kimi）が失敗・未設定**の代替。**`model` を必ず指定**（MCP 側に既定が無い場合あり。運用では `OPENROUTER_DEFAULT_MODEL` の設定推奨）。
+
+## CIO 運用メモ（合意反映）
+
+1. **改善の実装順（合意）**: **(1) 本条の習慣化** → **(2) `kintone-apps.md` と `.rag/extra-docs/kintone-apps.md` の同一コミット同期** → **(3) `main` の branch protection / 必須チェック**（詳細は浜田 GO と §57 改定で確定）。
+2. **`kintone-apps.md` を編集したターン**は、**同一 PR / 同一コミット**で `.rag/extra-docs/kintone-apps.md` を揃える（漏れは CIO が指摘対象）。
