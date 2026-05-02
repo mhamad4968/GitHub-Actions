@@ -1,0 +1,13 @@
+{
+  "id": "V2",
+  "category": "V",
+  "type": "run_command",
+  "package": "globals",
+  "current_version": "17.5.0",
+  "target_version": "17.6.0",
+  "classification": "minor",
+  "command": "npm update globals",
+  "manual_only": false,
+  "created_at": "2026-05-02T22:17:31.279Z",
+  "note": "globals 17.5.0 → 17.6.0 (minor)"
+}

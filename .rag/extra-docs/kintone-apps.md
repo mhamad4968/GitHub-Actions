@@ -56,6 +56,7 @@ npm run app:fields <アプリID>
   - 週次要約: [https://jbis-kintone.cybozu.com/k/632/](https://jbis-kintone.cybozu.com/k/632/)
 
 - **メンテ手順の正本**: [`docs/maintenance-template.md`](docs/maintenance-template.md)。エージェント・開発の前提ルールは [`AGENTS.md`](AGENTS.md)。
+
 ### GitHub Actions デプロイ記録（自動）
 
 | 日時（UTC） | アプリID | customize パス |
