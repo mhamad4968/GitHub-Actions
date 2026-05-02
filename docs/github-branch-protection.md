@@ -40,3 +40,39 @@ GitHub のチェック名は **ワークフローの `name:` と job `id` の組
 
 - **例外ルール**（管理者バイパス・必須 check の一時解除）は **浜田裁定**。
 - 本ドキュメントの改定は **§57-10** のインフラ類に含め、憲法本文との矛盾があれば §57-2 で起案し直す。
+
+## 5. 管理者向け「最短 UI」手順（リポ `mhamad4968/GitHub-Actions`）
+
+1. ブラウザで `https://github.com/mhamad4968/GitHub-Actions` を開く（**リポジトリの Settings**。Organization の org Settings ではない）。
+2. **Settings** → 左サイドバー **Code and automation** 内の **Rules** → **Rulesets** を使う場合と、従来の **Branches**（**Branch protection rules**）を使う場合がある。**Rulesets** が表示されるなら新方式を推奨（GitHub の UI が優先）。
+3. **Branch protection rules**（従来）の場合: **Add branch protection rule** → **Branch name pattern** に `main`。
+4. **Require status checks to pass before merging** を ON → **Add checks** で検索。**直近に `main` で緑になったチェック名だけ**を追加（§3 の罠を再確認）。
+5. **Require a pull request before merging** は運用に合わせて（ソロなら OFF 可）。
+6. 画面下部 **Create** / **Save changes**。
+
+**設定前の確認**: Actions タブで `main` の直近ワークフローが **paths 外の commit でも**期待どおり走っているかを見る。走らない job 名を必須にしない。
+
+## 6. CLI / API（AI 端末に `gh` や `GITHUB_TOKEN` が無い場合）
+
+このリポを触る **管理者の PC**（`gh` 導入済み or PAT 保持）で実行する。**Cursor サンドボックスにトークンを置かない**こと。
+
+### 6.1 現状確認（読み取りのみ）
+
+- [GitHub CLI](https://cli.github.com/) 導入後: `gh auth login` →  
+  `gh api repos/mhamad4968/GitHub-Actions/branches/main/protection`
+- `curl` の例（`GITHUB_TOKEN` は fine-grained でも classic でも、**Branches: write** 相当が必要な操作は [公式の権限表](https://docs.github.com/en/rest/authentication/permissions-required-for-github-apps) に従う）:
+
+```bash
+curl -sS -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github+json" \
+  "https://api.github.com/repos/mhamad4968/GitHub-Actions/branches/main/protection"
+```
+
+`404` なら **未設定**（この場合は §5 の UI で作成するのが確実）。
+
+### 6.2 自動 PUT はここでは行わない理由
+
+Classic branch protection の REST payload は **必須チェック名・enforce_admins・restrictions** 等の組み合わせで失敗しやすい。**必須 check 名はリポと Actions の履歴に依存**するため、AI 側でトークンも持たず一括適用すると **マージ不能** や **意図しない force-push 禁止** を招き得る。更新は **§5 の UI** か、管理者が **GET 結果を踏まえた PATCH/PUT** をローカルで試す。
+
+### 6.3 将来: CI で `main` に常時付く check を 1 本足す
+
+§3 のとおり、**`pull_request` + `push` branches: [main]** で `npm run verify:agent-env`（または `verify:all` のみ）を走らせる workflow を追加してから、その **job 名を Rules に必須化**するのが安全な順序。
