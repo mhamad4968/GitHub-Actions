@@ -3,22 +3,42 @@
 
   /**
    * 部署予実 ダッシュアプリ 678
-   * BUILD: 2026-05-03-678-dashboard-milestone
-   * - 677 明細を kintone.api で一覧（備考 `notes`・定額/変動枠の参照列・閲覧導線）
-   * - 表示順（display_order）のみ 677 へ PUT（SPEC §6e・二重入力なし）
-   * - 費用種別はクライアント側フィルタ（取得は直近30件のまま §6e 段階導入）
+   * BUILD: 2026-05-03-678-dashboard-excel-grid
+   * - 677 を kintone.api で一覧。左キー列は `shin-format-excel-layout.md` 新フォーマット準拠＋12 月×四つ柱（`monthly_breakdown`）
+   * - 表示順（display_order）のみ 677 へ PUT（SPEC §6e）
+   * - 費用種別フィルタはクライアント側（取得は直近30件）
    */
 
   var APP_INPUT = 677;
-  var BUILD = "2026-05-03-678-dashboard-milestone";
-  /** 旧 Excel 旧フォーマットの合計行（移行スクリプトで除外済み） */
+  var BUILD = "2026-05-03-678-dashboard-excel-grid";
+  /** 暦月ラベル（677 の `月度` と同一・5月〜翌年4月） */
+  var FISCAL_ORDER = ["5", "6", "7", "8", "9", "10", "11", "12", "1", "2", "3", "4"];
+  /** ヘッダ表示用 */
+  var FISCAL_HEAD = {
+    "5": "5月",
+    "6": "6月",
+    "7": "7月",
+    "8": "8月",
+    "9": "9月",
+    "10": "10月",
+    "11": "11月",
+    "12": "12月",
+    "1": "1月",
+    "2": "2月",
+    "3": "3月",
+    "4": "4月",
+  };
+
+  var KEY_COL_COUNT = 10;
+  var MONTH_COLS = 4;
+
   var DASHBOARD_NOTE =
     "【備考】旧 Excel「旧フォーマット」の 50 行目は合計（総計）行のため、kintone 677 への初回移行ではレコード化していません。" +
     "明細は 47 件（摘要のある行のみ）。下表の「備考」列は 677 の備考フィールド（移行時の起票・出納セルメモ等）です。";
-  /** v1 ダッシュは月次サブテーブル等は未表示。金額・月次の正は 677 のレコード画面で編集（§6e）。 */
   var USAGE_NOTE =
-    "【利用上の注意】本画面は閲覧・表示順の更新用です。月次内訳・支払内訳は API で未取得のため表に出ません。" +
-    "定額/変動の列はレコード直下の参照値のみです。編集が必要な場合は 677 の該当レコードを開いてください。";
+    "【利用上の注意】月次の数値は 677 の「月次内訳」サブテーブルを表示しています（閲覧中心）。編集・支払内訳の追加は 677 のレコード画面から行い、保存後に本画面を再読み込みしてください。" +
+    "消費率は 677 の計算フィールド値を表示しています。";
+
   var FETCH_FIELDS = [
     "$id",
     "$revision",
@@ -30,12 +50,12 @@
     "partner_company",
     "learning_fixed_budget",
     "initial_variable_budget",
+    "monthly_breakdown",
     "display_order",
     "notes",
   ];
   var QUERY = "order by $id desc limit 30";
 
-  /** kintone.api の reject を画面向けに短く整形 */
   function formatApiError(e, jaPrefix) {
     var code = e && e.code ? String(e.code) : "";
     var msg = e && e.message != null ? String(e.message) : "";
@@ -100,7 +120,37 @@
     return { html: t.slice(0, maxLen) + "…", title: raw.slice(0, 800) };
   }
 
-  /** cost_category が一致する行のみ（「すべて」はそのまま） */
+  function subCellVal(rowVal, code) {
+    if (!rowVal || !rowVal[code]) return "";
+    var v = rowVal[code].value;
+    return v == null ? "" : v;
+  }
+
+  /** 月度ラベル → 月次行の表示用マップ */
+  function monthlyMapFromRecord(rec) {
+    var map = {};
+    var tbl = rec && rec.monthly_breakdown && rec.monthly_breakdown.value;
+    if (!Array.isArray(tbl)) return map;
+    for (var i = 0; i < tbl.length; i++) {
+      var row = tbl[i] && tbl[i].value;
+      if (!row || !row.fiscal_month) continue;
+      var lab = String(subCellVal(row, "fiscal_month") || "").trim();
+      if (!lab) continue;
+      map[lab] = {
+        budget: subCellVal(row, "month_budget"),
+        actual: subCellVal(row, "month_actual"),
+        revision: subCellVal(row, "month_budget_revision"),
+        utilization: subCellVal(row, "month_utilization"),
+      };
+    }
+    return map;
+  }
+
+  function escNumCell(v) {
+    if (v === "" || v == null) return "<span style=\"color:#bbb\">—</span>";
+    return esc(String(v));
+  }
+
   function filterRecordsByCostCategory(records, filterKey) {
     if (filterKey === "all") return records.slice();
     var out = [];
@@ -110,95 +160,197 @@
     return out;
   }
 
+  function theadHtml() {
+    var r1 = [];
+    var r2 = [];
+    r1.push(
+      "<th colspan=\"" +
+        KEY_COL_COUNT +
+        "\" class=\"y678-th-block y678-sk-head\" style=\"text-align:center;background:#e8eef9;border-bottom:2px solid #c5d0eb\">明細（677）</th>"
+    );
+    for (var m = 0; m < FISCAL_ORDER.length; m++) {
+      var lab = FISCAL_ORDER[m];
+      var band = m % 2 === 0 ? "y678-m-even" : "y678-m-odd";
+      r1.push(
+        "<th colspan=\"" +
+          MONTH_COLS +
+          "\" class=\"y678-th-block " +
+          band +
+          "\" style=\"text-align:center;font-size:11px;background:#f0f4ff;border-bottom:2px solid #c5d0eb\">" +
+          esc(FISCAL_HEAD[lab] || lab + "月") +
+          "</th>"
+      );
+    }
+    r2.push(
+      "<th class=\"y678-sk y678-sk1\">レコード</th>" +
+        "<th class=\"y678-sk y678-sk2\">工種名称</th>" +
+        "<th class=\"y678-sk y678-sk3\">工種コード</th>" +
+        "<th class=\"y678-sk y678-sk4\">費用種別</th>" +
+        "<th class=\"y678-sk y678-sk5\">摘要</th>" +
+        "<th class=\"y678-sk y678-sk6\">会社</th>" +
+        "<th class=\"y678-sk y678-sk7 y678-num\">ラーニング<br/>（定額）</th>" +
+        "<th class=\"y678-sk y678-sk8 y678-num\">イニシャル<br/>（変動）</th>" +
+        "<th class=\"y678-sk y678-sk9\">備考</th>" +
+        "<th class=\"y678-sk y678-sk10\">表示順</th>"
+    );
+    for (var n = 0; n < FISCAL_ORDER.length; n++) {
+      var band2 = n % 2 === 0 ? "y678-m-even" : "y678-m-odd";
+      r2.push(
+        "<th class=\"y678-num " +
+          band2 +
+          "\">予算</th><th class=\"y678-num " +
+          band2 +
+          "\">実績</th><th class=\"y678-num " +
+          band2 +
+          "\">消費率<br/><span style=\"font-weight:400;color:#555\">(%)</span></th><th class=\"y678-num " +
+          band2 +
+          "\">予算<br/>修正</th>"
+      );
+    }
+    return "<thead><tr>" + r1.join("") + "</tr><tr>" + r2.join("") + "</tr></thead>";
+  }
+
   function renderTable(records) {
     var rows = [];
-    rows.push(
-      "<thead><tr>" +
-        "<th>レコード</th><th>工種</th><th>費用種別</th>" +
-        "<th>定額/変動(枠)</th>" +
-        "<th>摘要</th><th>会社</th>" +
-        "<th>備考</th>" +
-        "<th>表示順</th>" +
-        "</tr></thead><tbody>"
-    );
+    rows.push(theadHtml());
+    rows.push("<tbody>");
+    var totalCols = KEY_COL_COUNT + FISCAL_ORDER.length * MONTH_COLS;
+
     for (var i = 0; i < records.length; i++) {
       var r = records[i];
       var id = fieldVal(r, "$id");
       var rev = revisionOf(r);
-      var wt =
-        esc(fieldVal(r, "work_type_name")) +
-        (fieldVal(r, "work_type_code") ? " <span style=\"color:#666\">(" + esc(fieldVal(r, "work_type_code")) + ")</span>" : "");
+      var mm = monthlyMapFromRecord(r);
       var sum = esc(fieldVal(r, "summary_text"));
-      if (sum.length > 80) sum = sum.slice(0, 80) + "…";
+      if (sum.length > 56) sum = sum.slice(0, 56) + "…";
       var noteRaw = fieldVal(r, "notes");
-      var notePart = truncateNotes(noteRaw, 120);
+      var notePart = truncateNotes(noteRaw, 72);
       var doVal = esc(fieldVal(r, "display_order"));
       var learn = esc(fieldVal(r, "learning_fixed_budget"));
       var initv = esc(fieldVal(r, "initial_variable_budget"));
       var titleAttr = notePart.title ? " title=\"" + attrEsc(notePart.title) + "\"" : "";
-      rows.push(
-        "<tr>" +
-          "<td><a href=\"" +
-          esc(recordShowHref(id)) +
-          "\">#" +
-          esc(fieldVal(r, "Record_number") || id) +
-          "</a></td>" +
-          "<td>" +
-          wt +
-          "</td>" +
-          "<td>" +
-          esc(fieldVal(r, "cost_category")) +
-          "</td>" +
-          "<td style=\"font-size:12px;color:#333;white-space:nowrap\">" +
-          "定:" +
-          (learn || "—") +
-          "<br/>変:" +
-          (initv || "—") +
-          "</td>" +
-          "<td>" +
-          sum +
-          "</td>" +
-          "<td>" +
-          esc(fieldVal(r, "partner_company")) +
-          "</td>" +
-          "<td style=\"max-width:14em;word-break:break-word;font-size:12px;color:#333\"" +
-          titleAttr +
-          ">" +
-          notePart.html +
-          "</td>" +
-          "<td data-y678-id=\"" +
+
+      var rowHtml = [];
+      rowHtml.push(
+        "<tr data-y678-id=\"" +
           esc(id) +
           "\" data-y678-rev=\"" +
           esc(rev) +
           "\">" +
-          "<input type=\"number\" class=\"y678-display-order-input\" style=\"width:5em;padding:2px 4px\" value=\"" +
-          doVal +
-          "\" step=\"any\" />" +
-          " <button type=\"button\" class=\"y678-display-order-save\" style=\"font-size:12px\">保存</button>" +
+          "<td class=\"y678-sk y678-sk1\"><a href=\"" +
+          esc(recordShowHref(id)) +
+          "\">#" +
+          esc(fieldVal(r, "Record_number") || id) +
+          "</a></td>" +
+          "<td class=\"y678-sk y678-sk2\">" +
+          esc(fieldVal(r, "work_type_name")) +
           "</td>" +
-          "</tr>"
+          "<td class=\"y678-sk y678-sk3\" style=\"color:#444\">" +
+          esc(fieldVal(r, "work_type_code")) +
+          "</td>" +
+          "<td class=\"y678-sk y678-sk4\">" +
+          esc(fieldVal(r, "cost_category")) +
+          "</td>" +
+          "<td class=\"y678-sk y678-sk5\" style=\"max-width:11em;word-break:break-word\">" +
+          sum +
+          "</td>" +
+          "<td class=\"y678-sk y678-sk6\">" +
+          esc(fieldVal(r, "partner_company")) +
+          "</td>" +
+          "<td class=\"y678-sk y678-sk7 y678-num\">" +
+          (learn || "—") +
+          "</td>" +
+          "<td class=\"y678-sk y678-sk8 y678-num\">" +
+          (initv || "—") +
+          "</td>" +
+          "<td class=\"y678-sk y678-sk9\" style=\"max-width:9em;word-break:break-word;font-size:11px;color:#333\"" +
+          titleAttr +
+          ">" +
+          notePart.html +
+          "</td>" +
+          "<td class=\"y678-sk y678-sk10\" data-y678-do-td=\"1\">" +
+          "<input type=\"number\" class=\"y678-display-order-input\" style=\"width:4.2em;padding:2px 4px;font-size:12px\" value=\"" +
+          doVal +
+          "\" step=\"any\" /> " +
+          "<button type=\"button\" class=\"y678-display-order-save\" style=\"font-size:11px;padding:2px 6px\">保存</button>" +
+          "</td>"
       );
+
+      for (var mi = 0; mi < FISCAL_ORDER.length; mi++) {
+        var fl = FISCAL_ORDER[mi];
+        var band = mi % 2 === 0 ? "y678-m-even" : "y678-m-odd";
+        var rowM = mm[fl] || {};
+        var util = rowM.utilization;
+        var utilStr = util === "" || util == null ? "—" : esc(String(util));
+        rowHtml.push(
+          "<td class=\"y678-num " +
+            band +
+            "\">" +
+            escNumCell(rowM.budget) +
+            "</td>" +
+            "<td class=\"y678-num " +
+            band +
+            "\">" +
+            escNumCell(rowM.actual) +
+            "</td>" +
+            "<td class=\"y678-num " +
+            band +
+            "\">" +
+            utilStr +
+            "</td>" +
+            "<td class=\"y678-num " +
+            band +
+            "\">" +
+            escNumCell(rowM.revision) +
+            "</td>"
+        );
+      }
+      rowHtml.push("</tr>");
+      rows.push(rowHtml.join(""));
     }
     if (!records.length) {
-      rows.push('<tr><td colspan="8" style="color:#666">該当する行がありません（677 にデータが無い・権限外・またはフィルタ条件に一致なし）</td></tr>');
+      rows.push(
+        "<tr><td colspan=\"" +
+          totalCols +
+          "\" style=\"color:#666;padding:10px\">該当する行がありません（677 にデータが無い・権限外・またはフィルタ条件に一致なし）</td></tr>"
+      );
     }
     rows.push("</tbody>");
     return rows.join("");
   }
 
+  function injectGridCss(wrap) {
+    if (wrap.querySelector("[data-y678-grid-css]")) return;
+    var st = document.createElement("style");
+    st.setAttribute("data-y678-grid-css", "1");
+    st.textContent =
+      "[data-yojitsu-678-shell] .y678-grid{font-variant-numeric:tabular-nums;border-collapse:separate;border-spacing:0;font-size:12px;}" +
+      "[data-yojitsu-678-shell] .y678-grid th,[data-yojitsu-678-shell] .y678-grid td{border:1px solid #d8dde8;padding:5px 6px;vertical-align:top;}" +
+      "[data-yojitsu-678-shell] .y678-grid .y678-num{text-align:right;white-space:nowrap;}" +
+      "[data-yojitsu-678-shell] .y678-grid .y678-m-even{background:#fafbff;}" +
+      "[data-yojitsu-678-shell] .y678-grid .y678-m-odd{background:#ffffff;}" +
+      "[data-yojitsu-678-shell] .y678-grid thead th{font-weight:600;color:#1a2744;}" +
+      "[data-yojitsu-678-shell] .y678-grid .y678-sk-head{position:sticky;left:0;z-index:5;}" +
+      "[data-yojitsu-678-shell] .y678-grid .y678-sk{position:sticky;background:#f4f7fc;box-shadow:2px 0 5px rgba(20,40,80,.08);z-index:3;}" +
+      "[data-yojitsu-678-shell] .y678-grid thead .y678-sk{background:#e8eef9;z-index:4;}" +
+      "[data-yojitsu-678-shell] .y678-grid .y678-sk1{left:0;min-width:3.2em;}" +
+      "[data-yojitsu-678-shell] .y678-grid .y678-sk2{left:3.6em;min-width:7.5em;max-width:9em;}" +
+      "[data-yojitsu-678-shell] .y678-grid .y678-sk3{left:12.2em;min-width:4em;}" +
+      "[data-yojitsu-678-shell] .y678-grid .y678-sk4{left:16.8em;min-width:4.5em;}" +
+      "[data-yojitsu-678-shell] .y678-grid .y678-sk5{left:21.8em;min-width:8em;max-width:11em;}" +
+      "[data-yojitsu-678-shell] .y678-grid .y678-sk6{left:30.2em;min-width:5em;max-width:7em;}" +
+      "[data-yojitsu-678-shell] .y678-grid .y678-sk7{left:36.2em;min-width:4.5em;}" +
+      "[data-yojitsu-678-shell] .y678-grid .y678-sk8{left:41.4em;min-width:4.5em;}" +
+      "[data-yojitsu-678-shell] .y678-grid .y678-sk9{left:46.6em;min-width:6em;max-width:9em;}" +
+      "[data-yojitsu-678-shell] .y678-grid .y678-sk10{left:53.2em;min-width:6.5em;}" +
+      "[data-yojitsu-678-shell] .y678-grid tbody tr:hover td{background:#f7fbff;}" +
+      "[data-yojitsu-678-shell] .y678-grid tbody tr:hover .y678-sk{background:#eef4fc;}" +
+      "[data-yojitsu-678-shell] .y678-grid a{color:#0b57d0;}";
+    wrap.appendChild(st);
+  }
+
   function styleTable(t) {
-    var thtd = t.querySelectorAll("th,td");
-    for (var j = 0; j < thtd.length; j++) {
-      thtd[j].style.border = "1px solid #ddd";
-      thtd[j].style.padding = "6px 8px";
-      thtd[j].style.textAlign = "left";
-      thtd[j].style.verticalAlign = "top";
-    }
-    var ths = t.querySelectorAll("th");
-    for (var k = 0; k < ths.length; k++) {
-      ths[k].style.background = "#eef1f6";
-      ths[k].style.fontWeight = "600";
-    }
+    t.className = "y678-grid";
   }
 
   function mount() {
@@ -213,6 +365,7 @@
     wrap.style.border = "1px solid #e3e7ef";
     wrap.style.borderRadius = "6px";
     wrap.style.fontSize = "13px";
+    injectGridCss(wrap);
 
     var head = document.createElement("div");
     head.style.marginBottom = "8px";
@@ -257,7 +410,7 @@
     opsRow.style.borderRadius = "4px";
     opsRow.style.color = "#1a3d66";
     opsRow.textContent =
-      "【運用】表示順の保存は即時 677 に反映されます。他項目の変更は 677 のレコード画面で行い、必要なら本画面の「再読み込み」で最新化してください。";
+      "【運用】表示順の保存のみ本画面から 677 に反映されます。月次・支払内訳の編集は 677 のレコード画面で行ってください。";
     wrap.appendChild(opsRow);
 
     var filterRow = document.createElement("div");
@@ -308,6 +461,10 @@
 
     var tblHost = document.createElement("div");
     tblHost.style.overflowX = "auto";
+    tblHost.style.maxWidth = "100%";
+    tblHost.style.borderRadius = "6px";
+    tblHost.style.border = "1px solid #dde4f0";
+    tblHost.style.background = "#fff";
     wrap.appendChild(tblHost);
 
     el.appendChild(wrap);
@@ -333,9 +490,7 @@
     function paintTable(filtered) {
       tblHost.innerHTML = "";
       var t = document.createElement("table");
-      t.style.width = "100%";
-      t.style.borderCollapse = "collapse";
-      t.style.background = "#fff";
+      t.style.minWidth = "max-content";
       t.innerHTML = renderTable(filtered);
       styleTable(t);
       tblHost.appendChild(t);
@@ -353,7 +508,7 @@
       if (currentCostFilter !== "all") {
         base += " · フィルタ後 " + filtered.length + " 件（" + String(currentCostFilter) + "）";
       }
-      base += " · 表示順はここから 677 に保存可";
+      base += " · 左列は横スクロール時に固定 · 表示順のみここから保存可";
       status.style.color = "#555";
       status.textContent = base;
       setFilterButtonsActive();
@@ -397,11 +552,11 @@
     tblHost.addEventListener("click", function (ev) {
       var btn = ev.target && ev.target.closest && ev.target.closest(".y678-display-order-save");
       if (!btn) return;
-      var td = btn.closest("td");
-      if (!td || !td.getAttribute) return;
-      var rid = td.getAttribute("data-y678-id");
-      var rev = td.getAttribute("data-y678-rev");
-      var inp = td.querySelector(".y678-display-order-input");
+      var tr = btn.closest("tr");
+      if (!tr || !tr.getAttribute) return;
+      var rid = tr.getAttribute("data-y678-id");
+      var rev = tr.getAttribute("data-y678-rev");
+      var inp = tr.querySelector(".y678-display-order-input");
       if (!rid || !inp) return;
       if (rev === "") {
         status.style.color = "#b00020";
