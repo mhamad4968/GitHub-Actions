@@ -84,8 +84,17 @@ if (!ksJoin.includes('KINTONE_PASSWORD') && !(ks.env && ks.env.KINTONE_PASSWORD)
 
 const md = servers.markdownify;
 const mdJoin = argsJoin(md);
-if (!mdJoin.includes('bash') || !mdJoin.includes('-lc') || !mdJoin.includes('markdownify')) {
-  fail('markdownify must run via wsl bash -lc + npx markdownify');
+if (!mdJoin.includes('bash') || !mdJoin.includes('-lc')) {
+  fail('markdownify must run via wsl bash -lc');
+}
+// TSB-029: npx @iflow-mcp/markdownify-mcp は tarball の preinstall 欠落で stdio 即死しうる — env -i + node …/dist/index.js を正とする
+if (!mdJoin.includes('env -i') || !mdJoin.includes('dist/index.js')) {
+  fail(
+    'markdownify must use TSB-029 node direct launch (env -i …/dist/index.js), not npx @iflow-mcp/markdownify-mcp',
+  );
+}
+if (/\bnpx\b.*@iflow-mcp\/markdownify-mcp/.test(mdJoin)) {
+  fail('markdownify must not use npx @iflow-mcp/markdownify-mcp (TSB-029 preinstall trap)');
 }
 
 console.log('[verify-cursor-mcp-windows] OK', winMcp);

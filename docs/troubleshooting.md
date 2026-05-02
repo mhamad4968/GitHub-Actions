@@ -1315,6 +1315,12 @@ Cursor の MCP ログで **`Connection failed: MCP error -32000: Connection clos
 2. **`mcp.json` の `markdownify`**: `npx` を使わず、**`wsl.exe` + `bash -lc` + `exec env -i … /path/to/node …/node_modules/@iflow-mcp/markdownify-mcp/dist/index.js`** で起動（**`UV_PATH`** を `~/.local/bin/uv` 等で明示。**`PATH` は `env -i` 内で Linux のみ**）。
 3. **NVM で Node を上げ替えたら**: グローバルパッケージの **`node` フルパス**が変わるため、**(a) 新 Node で `npm install -g --ignore-scripts …` を再実行**し、**(b) `mcp.json` の `node` パスを更新**（手順チェック: `checkpoint-latest.md` **「Markdownify MCP（NVM メンテ）」**）。
 
+### 2026-05-02 追補（再発と硬化）
+
+- **再発**: Cursor MCP ログで再度 **`MCP error -32000: Connection closed`**（`user-markdownify`）。**`C:\Users\<user>\.cursor\mcp.json`** の `markdownify` が **`npx -y @iflow-mcp/markdownify-mcp@latest` に戻っており**、本条の恒久対策と不一致だった。あわせて WSL 側で **グローバル `@iflow-mcp/markdownify-mcp` が未インストール**だと、`node …/dist/index.js` 直起動でも即死しうる。
+- **WSL 正本の穴**: **`~/.cursor/mcp.json` に `markdownify` サーバ定義が存在しなかった**（Windows 側だけ定義され、同期・手編集で片側化しやすい）。**TSB-028** の「WSL を正本」と整合させるため、**WSL 用も `node` + `dist/index.js` + `UV_PATH`** で追加した。
+- **リポ側の再発防止**: `scripts/sync-cursor-mcp-windows-from-wsl.mjs` が **`markdownify` を再び `npx` で生成**していたため **本条どおり `env -i` + `node` 直起動**に修正。`scripts/verify-cursor-mcp-windows.mjs` で **`npx @iflow-mcp/markdownify-mcp` を機械的に禁止**し、`env -i` と `dist/index.js` の存在を必須化した（`npm run verify:cursor-mcp-windows`）。
+
 ### 教訓
 
 - **stdio が即死するときは「キャッシュ EPERM」だけに寄せず**、`npm pack` で ** tarball 中身と `package.json` scripts** を確認する。

@@ -770,3 +770,14 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 
 **次の 1 手（本日残り）**: 知恵袋に **変動費中心行の `month_utilization` 最終式**と **12 行初期化**を質問票化 → CIO 突合 → Tier B に入る前に **項番 -0** で範囲固定。
 
+---
+
+### 2026-05-02 JST（追記）— `user-markdownify` -32000 再発と硬化（TSB-029）
+
+- **事象**: Cursor MCP `user-markdownify` が **`Connection closed`（-32000）**。
+- **対応**: WSL で **`npm install -g --ignore-scripts @iflow-mcp/markdownify-mcp@0.0.2`** を実施。Windows **`C:\Users\mhamada202408224\.cursor\mcp.json`** の `markdownify` を **`npx` 廃止 → `env -i` + `node …/dist/index.js` + `UV_PATH`** に復帰。WSL 正本 **`~/.cursor/mcp.json`** に **`markdownify` ブロックを新設**（従来欠落）。
+- **再発防止（リポ）**: `scripts/sync-cursor-mcp-windows-from-wsl.mjs` の生成文を TSB-029 形に修正。`scripts/verify-cursor-mcp-windows.mjs` で **`npx @iflow-mcp/markdownify-mcp` を NG** とし機械検知。`docs/troubleshooting.md` **TSB-029** に **2026-05-02 追補**節を追加。
+- **確認**: `node scripts/verify-cursor-mcp-windows.mjs`（WSL から `/mnt/c/.../mcp.json`）**OK**。Cursor は **Reload Window** 後、MCP ログで `markdownify` が緑になることを確認。
+
+**次の 1 手**: Cursor **Reload Window** → `user-markdownify` 接続確認。NVM を **24.14.1 以外**に上げ替えたらグローバル再インストール + 両 `mcp.json` の `node` フルパス更新。
+

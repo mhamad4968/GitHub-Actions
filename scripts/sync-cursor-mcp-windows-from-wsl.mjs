@@ -162,8 +162,10 @@ function buildWindowsMcp(S) {
     ...(S.openrouter?.env ? { env: { ...S.openrouter.env } } : {}),
   };
 
+  // TSB-029: @iflow-mcp/markdownify-mcp は npx 経由だと preinstall 欠落 tarball で即死しうる。
+  // WSL では `npm install -g --ignore-scripts @iflow-mcp/markdownify-mcp@0.0.2` のうえ node 直起動（NVM 替え時はパス更新）。
   out.mcpServers.markdownify = wslBash(
-    'export PATH=/home/mhamada202408224/.nvm/versions/node/v24.14.1/bin:$PATH && exec npx -y @iflow-mcp/markdownify-mcp@latest',
+    'exec env -i HOME=/home/mhamada202408224 PATH=/home/mhamada202408224/.local/bin:/usr/bin:/bin UV_PATH=/home/mhamada202408224/.local/bin/uv /home/mhamada202408224/.nvm/versions/node/v24.14.1/bin/node /home/mhamada202408224/.nvm/versions/node/v24.14.1/lib/node_modules/@iflow-mcp/markdownify-mcp/dist/index.js',
   );
 
   return out;
