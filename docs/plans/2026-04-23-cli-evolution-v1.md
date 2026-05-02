@@ -228,7 +228,7 @@ sudo add-apt-repository ppa:git-core/ppa -y && sudo apt update && sudo apt insta
 
 ### 自作 scripts 進化候補
 1. **TypeScript 化**: 29 .mjs → .ts (型安全性 + IDE 補完強化 / 大規模 refactor)
-2. **subroutine 分割**: 600 行 space-health-report.mjs 等を機能別ファイル化
+2. **subroutine 分割**: 大型 `*.mjs` を機能別ファイル化
 3. **lint:scripts 拡張**: 現状 customize/ のみ → scripts/ も lint 対象化
 
 ### CLI 進化候補

@@ -19,13 +19,11 @@ graph TB
     subgraph "GitHub Actions (CI/CD)"
         COLLECT["daily-collect.yml<br/>毎日 10:00/17:00 JST"]
         ANALYZE["main.yml → analyze<br/>毎週金曜 20:00 JST"]
-        HEALTH["space-health-report.yml<br/>毎日 09:00 JST"]
     end
 
     subgraph "実行スクリプト"
         CTS["collect.ts<br/>ニュース収集"]
         ATS["analyze.ts<br/>週次要約"]
-        HRS["space-health-report.mjs<br/>ヘルスチェック"]
     end
 
     subgraph "kintone (SaaS)"
@@ -49,11 +47,6 @@ graph TB
     ATS -->|"閲覧"| APP631
     ATS -->|"追加+編集"| APP632
     ATS --> GEMINI
-
-    HEALTH --> HRS
-    HRS -->|"閲覧+スキーマ検証"| APP631
-    HRS -->|"閲覧+スキーマ検証"| APP632
-    HRS -->|"PUT space/body または<br/>PUT space/thread"| SPACE48
 
     CTS --> WEBHOOK
     CTS --> EMAIL
@@ -157,18 +150,9 @@ flowchart TD
 
 ---
 
-## 5. ヘルスチェック検証フロー（§10）
+## 5. フォーム検証（§10・手動）
 
-```mermaid
-flowchart LR
-    A["space-health-report.mjs"] --> B["API接続確認<br/>app.json / records.json"]
-    B --> C["スキーマ検証<br/>form/fields.json"]
-    C --> D{全フィールド<br/>一致?}
-    D -->|Yes| E["OK (11/11)<br/>or OK (8/8)"]
-    D -->|No| F["欠落N件: field_a...<br/>exit 1"]
-    F --> G["AI提案:<br/>kintone-add-form-fields<br/>で自己修復"]
-    E --> H["Space 48<br/>ダッシュボード更新"]
-```
+定期の `space-health-report` 自動化は **廃止**。フィールドの正は **`npm run app:fields`** と `field-codes.ts` の突合、および `kintone-apps.md` のアプリ台帳で担保する。
 
 ---
 
@@ -234,10 +218,9 @@ GitHub-Actions/
 │   └── snyk-security.mdc
 ├── .github/workflows/
 │   ├── daily-collect.yml              ← 日次収集（10:00/17:00 JST）
-│   ├── main.yml                       ← 週次要約（金曜 20:00 JST）
-│   └── space-health-report.yml        ← ヘルスチェック（09:00 JST）
+│   └── main.yml                       ← 週次要約（金曜 20:00 JST）
 ├── scripts/
-│   └── space-health-report.mjs        ← API接続+スキーマ検証
+│   └── （各種メンテ・デプロイスクリプト）
 ├── docs/
 │   ├── final-architecture.md          ← 本ファイル
 │   ├── runbook-security-next.md       ← 運用ランブック（Phase 3）

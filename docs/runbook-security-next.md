@@ -89,25 +89,25 @@ analyze: KINTONE_API_TOKEN_ANALYZE → KINTONE_API_TOKEN
 
 ### 3-1. App 631（Security NEXT ニュース — 収集）
 
-| 操作 | collect.ts | analyze.ts | space-health-report | 管理者（手動） |
-|------|:---:|:---:|:---:|:---:|
-| **レコード閲覧** | **必須** (重複チェック) | **必須** (週次集約) | **必須** (件数・最終更新) | **必須** |
-| **レコード追加** | **必須** | — | — | 任意 |
-| **レコード編集** | — | — | — | 任意 |
-| **レコード削除** | — | — | — | 任意 |
-| **アプリ管理** | — | — | — | 任意 |
-| **フォーム閲覧** | — | — | **必須** (スキーマ検証) | — |
+| 操作 | collect.ts | analyze.ts | 管理者（手動） |
+|------|:---:|:---:|:---:|
+| **レコード閲覧** | **必須** (重複チェック) | **必須** (週次集約) | **必須** |
+| **レコード追加** | **必須** | — | 任意 |
+| **レコード編集** | — | — | 任意 |
+| **レコード削除** | — | — | 任意 |
+| **アプリ管理** | — | — | 任意 |
+| **フォーム閲覧** | — | — | — |
 
 ### 3-2. App 632（ニュース週次要約 — 週次 LLM）
 
-| 操作 | collect.ts | analyze.ts | space-health-report | 管理者（手動） |
-|------|:---:|:---:|:---:|:---:|
-| **レコード閲覧** | — | **必須** (Idempotency 確認) | **必須** (件数・最終更新) | **必須** |
-| **レコード追加** | — | **必須** (新規週) | — | 任意 |
-| **レコード編集** | — | **必須** (同一 target_week 更新) | — | 任意 |
-| **レコード削除** | — | — | — | 任意 |
-| **アプリ管理** | — | — | — | 任意 |
-| **フォーム閲覧** | — | — | **必須** (スキーマ検証) | — |
+| 操作 | collect.ts | analyze.ts | 管理者（手動） |
+|------|:---:|:---:|:---:|
+| **レコード閲覧** | — | **必須** (Idempotency 確認) | **必須** |
+| **レコード追加** | — | **必須** (新規週) | 任意 |
+| **レコード編集** | — | **必須** (同一 target_week 更新) | 任意 |
+| **レコード削除** | — | — | 任意 |
+| **アプリ管理** | — | — | 任意 |
+| **フォーム閲覧** | — | — | — |
 
 ### 3-3. 最小権限トークン構成（推奨）
 
@@ -119,11 +119,9 @@ Token B (KINTONE_API_TOKEN_ANALYZE):
   ├── App 631: 閲覧
   └── App 632: 閲覧 + 追加 + 編集
 
-Token C (KINTONE_API_TOKEN — health check 兼用):
+Token C (KINTONE_API_TOKEN — 任意の補助用):
   ├── App 631: 閲覧
   └── App 632: 閲覧
-  ※ space-health-report は form/fields.json もフェッチするため、
-    API トークンにアプリのフォーム閲覧権限が必要
 ```
 
 ---
@@ -174,17 +172,17 @@ Token C (KINTONE_API_TOKEN — health check 兼用):
 2. 一時的な場合: GitHub Actions を手動で Re-run
 3. 継続する場合: `KINTONE_DOMAIN` が正しいか確認
 
-### 4-5. フィールド欠落（ヘルスチェック NG）
+### 4-5. フィールド欠落（手動確認）
 
-**症状**: `space-health-report` が `**欠落N件**: field_a, field_b` を出力し exit 1
+**症状**: `collect` / `analyze` が kintone のフィールド不一致で失敗する、または設計と本番フォームがずれている。
 
 **対処**（AGENTS.md §10-3 準拠）:
 
 1. `field-codes.ts` で期待フィールドを確認
-2. kintone MCP `kintone-add-form-fields` で不足フィールドを追加
-3. `kintone-deploy-app` でデプロイ
-4. `kintone-get-app-deploy-status` で成功確認
-5. `npm run report:space-health` を再実行し全件 OK を確認
+2. `npm run app:fields 631` / `632` で本番フォームを取得して突合する
+3. kintone MCP `kintone-add-form-fields` で不足フィールドを追加
+4. `kintone-deploy-app` でデプロイ
+5. `kintone-get-app-deploy-status` で成功確認
 6. `kintone-apps.md` に変更を反映してコミット
 
 ---
@@ -211,15 +209,6 @@ Token C (KINTONE_API_TOKEN — health check 兼用):
 | Idempotency | 同一 `target_week` で再実行しても重複レコードなし |
 | エビデンス | `internal_ref_news_count`, `internal_ref_record_id_min/max`, `internal_analysis_run_at`, `internal_github_run_id` が非空 |
 
-### 5-3. space-health-report（ヘルスチェック）
-
-| チェック項目 | 成功条件 |
-|---|---|
-| プロセス終了 | exit code = 0 |
-| API 接続 | 全アプリで接続成功（`✅ 正常`） |
-| スキーマ検証 | 631: 11 フィールド全件一致、632: 8 フィールド全件一致 |
-| レポート出力 | Markdown テーブルが GitHub Actions Summary に書き出される |
-
 ---
 
 ## 6. Gemini モデルフォールバック構成（正本: `format-news-gemini.ts`）
@@ -245,4 +234,3 @@ Token C (KINTONE_API_TOKEN — health check 兼用):
 |---|---|---|---|
 | `daily-collect.yml` | `0 1 * * *`, `0 8 * * *` | 10:00, 17:00 | 毎日 2 回 |
 | `main.yml` (analyze) | `0 11 * * 5` | 金曜 20:00 | 毎週 1 回 |
-| `space-health-report.yml` | `0 0 * * *` | 09:00 | 毎日 1 回 |

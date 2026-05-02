@@ -12,12 +12,12 @@
 1. 型安全性向上 (引数 / 戻り値 / 内部状態の型保証)
 2. IDE 補完強化 (Cursor / VSCode で開発体験改善)
 3. リファクタ容易性 (型エラーで影響範囲一括特定)
-4. 大型 script (300-600 行 × 7 件) の保守性向上
+4. 大型 script (300-600 行 × 5 件前後) の保守性向上
 
 ## 📋 現状 (4/23 時点)
 
 - scripts/*.mjs 29 ファイル / 5985 行 / TODO 1 件のみ (品質良好)
-- 大型 script 7 件: health-check (363) / space-health-report (600) / ops-guide (305) / daily-morning-prep (388) / evening-reflect (323) / skysea-recon (361) / space-health-push-space-body (466)
+- 大型 script 5 件: health-check (363) / ops-guide (305) / daily-morning-prep (388) / evening-reflect (323) / skysea-recon (361)
 - 型なし = 引数ミスや戻り値の前提崩れが ランタイム まで発覚しない
 
 ## 🆕 段階導入 (6 ヶ月計画 / 急がない)
@@ -37,8 +37,6 @@
 - audit-rules.mjs / audit-rules-monthly.mjs (S15 適用後)
 
 ### Tier 3: kintone 連携 (8 月)
-- space-health-report.mjs (600 行)
-- space-health-push-space-body.mjs (466 行)
 - ops-guide-kintone.mjs (305 行)
 - skysea-recon.mjs (361 行)
 - kintone-connection-test.js

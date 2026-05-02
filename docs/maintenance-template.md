@@ -27,21 +27,14 @@
 
 ---
 
-## フェーズ 2 — ヘルスチェック（API）
+## フェーズ 2 — フォーム突合（手動）
 
-REST で **アプリ設定の取得**ができることを確認する（トークンに各アプリの「アプリ管理の閲覧」相当が含まれること）。
+定期の REST 全アプリヘルスチェックは **廃止**（`kintone-apps.md`「デイリーヘルスチェック（廃止）」参照）。631 / 632 については **`npm run app:fields`** で本番フォームを取得し、`field-codes.ts` と突合する。
 
 ```bash
-# ルート .env に KINTONE_DOMAIN と API トークン（COLLECT または TOKEN）を置いたうえで:
-npm run report:space-health
+npm run app:fields 631
+npm run app:fields 632
 ```
-
-- **既定の検査対象**: アプリ **631**・**632**（ポータル URL は `https://jbis-kintone.cybozu.com/k/631/` および `/k/632/`）。
-- 追加 ID を検査するとき: `SPACE_HEALTH_APP_IDS=631,632,594` のようにカンマ区切りで指定。
-
-**GitHub Actions**: ワークフロー `space-health-report.yml` が同スクリプトを実行し、ジョブサマリーに Markdown を出力する。
-
-**スペース 48 ポータル自動反映**: `KINTONE_SPACE_HEALTH_SPACE_ID` が設定され、HTML に `<!-- JBIS_SPACE_HEALTH_AUTO_START -->` … `END` マーカーがあるとき、ジョブ成功後に **マルチスレッドなら** [スペースの本文を更新する API](https://cybozu.dev/ja/kintone/docs/rest-api/spaces/update-space-body/) 、**シングルスレッドなら** [スレッド更新 API](https://cybozu.dev/ja/kintone/docs/rest-api/spaces/update-thread/) で上書きする。手順の細部は `kintone-apps.md` の「システムヘルスチェック」節。
 
 ---
 
@@ -64,8 +57,8 @@ npm run report:space-health
 
 ## フェーズ 5 — 動作検証・記録
 
-1. フェーズ 2 の `report:space-health` が **終了コード 0** であること。
-2. 必要なら Actions を `workflow_dispatch` で手動実行。
+1. フェーズ 2 の `app:fields` 出力とコード側の期待が一致していること。
+2. 必要なら `security-next-daily-collect` / `security-next-kintone` を `workflow_dispatch` で手動実行。
 3. **アプリ一覧・URL・フィールド変更があれば [`kintone-apps.md`](../kintone-apps.md) を更新**する。
 4. 大きな構成変更があれば本プレイブックまたは `security-next-automation/README.md` に一言追記する。
 
@@ -80,6 +73,6 @@ npm run report:space-health
 
 ## 実施記録（コピー用）
 
-| 日付 | 実施者 | 対象 | 結果（ヘルス / collect / analyze） | 備考 |
+| 日付 | 実施者 | 対象 | 結果（app:fields / collect / analyze） | 備考 |
 |------|--------|------|-------------------------------------|------|
 | YYYY-MM-DD | | 631,632 | | |
