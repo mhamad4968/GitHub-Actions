@@ -20,7 +20,6 @@ npm run app:fields <アプリID>
 |-------------------|---------|----------------|------------------|
 | PC台帳 | 594 | `customize/594/desktop.js` | `npm run deploy:594` |
 | 社員マスタ（台帳・627 連携用） | 595 | `customize/595/desktop.js` | `npm run deploy:595` |
-| アカウント採番（プール） | 626 | `customize/626/desktop.js` | `npm run deploy:626` |
 | アカウント管理台帳 | 627 | `customize/627/desktop.js` | `npm run deploy:627` |
 | 出張精算アプリ | **629** | `customize/shucccho-seisan/desktop.js` | `npm run deploy:629` |
 | Security NEXT ニュース（収集） | **631** | `security-next-automation` | [https://jbis-kintone.cybozu.com/k/631/](https://jbis-kintone.cybozu.com/k/631/) ・`KINTONE_APP_ID` |
@@ -51,7 +50,7 @@ npm run app:fields <アプリID>
   - ニュース（収集）: [https://jbis-kintone.cybozu.com/k/631/](https://jbis-kintone.cybozu.com/k/631/)  
   - 週次要約: [https://jbis-kintone.cybozu.com/k/632/](https://jbis-kintone.cybozu.com/k/632/)
 - **REST 診断**: ルートで `npm run report:space-health`。**認証はパスワード（`KINTONE_USERNAME` / `KINTONE_PASSWORD`）を推奨**（GitHub Environment `kintone-collect` に Secrets 追加）。外側 Basic 認証がある場合は `KINTONE_BASIC_AUTH_*` も設定。トークンのみでも可（従来どおり）。
-- **検査対象**: `SPACE_HEALTH_APP_IDS` 未指定かつパスワード認証ありのとき、**`kintone-apps.md` の「## アプリ一覧」表からアプリ ID を自動抽出**（594, 595, 626, 627, 629, 631, 632, 668 など）。手動で絞る場合は `SPACE_HEALTH_APP_IDS=631,632` のように指定。MD 抽出を止める場合は `SPACE_HEALTH_USE_KINTONE_APPS_MD=0`。
+- **検査対象**: `SPACE_HEALTH_APP_IDS` 未指定かつパスワード認証ありのとき、**`kintone-apps.md` の「## アプリ一覧」表からアプリ ID を自動抽出**（594, 595, 627, 629, 631, 632, 668 など）。手動で絞る場合は `SPACE_HEALTH_APP_IDS=631,632` のように指定。MD 抽出を止める場合は `SPACE_HEALTH_USE_KINTONE_APPS_MD=0`。
 - **フィールド検証**: 631 は設計どおり 11 フィールド。632 は本番フォームが Phase1 未移行の場合があるため、**`target_week` と `weekly_trend` の存在のみ**を検証（フォーム拡張後に期待セットを見直すこと）。
 - **GitHub Actions**: `.github/workflows/space-health-report.yml`（毎日 09:00 JST 前後・`workflow_dispatch` 可）。ジョブサマリーに Markdown 表が付く。
 - **スペース 48 ポータルへの自動反映（CI）**: 環境変数 `KINTONE_SPACE_HEALTH_SPACE_ID`（既定で Actions に **48** を渡す）が設定され、**マルチスレッド**のスペースであること。**実行ユーザー（Secrets の KINTONE_USERNAME）がスペース管理者**であること。本文に次の **いずれか 1 組**を**この順**で挿入する（間は空でよい。初回以降 CI がこの間を上書きする）:
@@ -241,7 +240,9 @@ user_name	SINGLE_LINE_TEXT	社員名
 
 ## 626（アカウント採番）
 
-`npm run app:fields 626`（本番 2026-04-18 時点）:
+**本番テナントではアプリ削除済（2026-05 確認）。** `## アプリ一覧` 表からは除外（`space-health-report` の対象外）。個人 Windows ID 採番は **672** を参照。
+
+`npm run app:fields 626`（本番 2026-04-18 時点・削除前のスナップショット）:
 
 ```
 App 626 fields (16)
