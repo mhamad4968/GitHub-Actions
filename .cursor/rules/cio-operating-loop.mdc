@@ -26,7 +26,8 @@ alwaysApply: true
 
 ## ドキュ・Desktop を触ったあと
 
-- **`npm run desktop:sync-and-verify`**（`session-starter:sync-desktop` 単体より **依存順が保証**されている方を優先）。
+- **`NEW-SESSION-STARTER.md` / `desktop-ai-emergency-read-pack/*.txt` / READ-07 正本**など Desktop 控えの元を編集したら、**浜田に npm を頼まず** CIO が **`npm run session-starter:sync-desktop`**（または **`npm run desktop:sync-and-verify`**）を **その場で実行**する。チャットは **OK / SKIP 理由 1 行**で足りる。
+- **`npm run desktop:sync-and-verify`** は sync のあと verify が **依存順保証**で走るため、迷ったらこちらを優先。
 
 ## MCP と §51
 

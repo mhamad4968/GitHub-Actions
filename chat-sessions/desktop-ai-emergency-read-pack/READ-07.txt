@@ -3,6 +3,12 @@
 > **正本**: 本ファイル（`chat-sessions/desktop-ai-emergency-read-pack/READ-07.txt`）。`npm run session-starter:sync-desktop` で Desktop `AI緊急用\READ-07.txt` に同名コピーされる。  
 > 以前 Desktop にあった **`濱田からお願い（切実な・・・）.txt`** の思いは **本 READ-07 に統合**した（内容は下記）。
 
+**Desktop `AI緊急用`（セッション切替で使う）**
+
+- **パス**: `C:\Users\mhamada202408224\Desktop\AI緊急用\`（**セッション切替・新チャット開始時**に浜田が開き、**`NEW-SESSION-STARTER_yyyymmdd.txt` 全文**を最初の 1 メッセージに貼る等で使う場所。同日の正は **日付 8 桁の 1 本**）。
+- このフォルダの **READ-01〜07・INDEX・README** は **リポの `desktop-ai-emergency-read-pack/` と同期された控え**。**切替直後はチャット貼付＋必要ならここをメモ帳で開く** → CIO は **`chat-sessions/NEW-SESSION-STARTER.md`** をツールで通読する運用（スターター「貼付単独で完走」節どおり）。
+- CIO は **Desktop だけ更新して放置しない**。**`npm run session-starter:sync-desktop`** は、正本（本 READ・`NEW-SESSION-STARTER.md`・`desktop-ai-emergency-read-pack/*.txt` 等）を変えた **同一ターンまたは直後のターンで CIO が自発実行**する（**浜田に「npm を実行して」と書かなくてよい**。チャットは **実行した事実 1 行**で足りる）。`/mnt/c` が無い等でスキップしたら **理由 1 行**。**可能なら**続けて **`npm run verify:desktop-ai-emergency-sync`**。依存順を揃えるなら **`npm run desktop:sync-and-verify`** を優先してよい（憲法 TSB-024）。
+
 ---
 
 ## 1. Project Rules と「理解しているか」
@@ -24,7 +30,7 @@
 
 ## 3. 🎖️ AI 内部の役割分担（2026-04-28 CEO 浜田指示 / CIO 体制）
 
-「**開発=AI**」をさらに細分化し、**CIO（指揮統制）が現場担当（外部 MCP）を直接指揮する**。**新セッション 1 ターン目**に必ず本ブロックを再認識する（忘れたら浜田に「役割は？」と指摘してよい）。
+「**開発=AI**」をさらに細分化し、**CIO（指揮統制）が現場担当（外部 MCP）を直接指揮する**。新セッション **1 ターン目の応答先頭**で **`[🎖️ 本セッション割当]`** を **1 行必須**（CIO=本体・DeepSeek/Kimi/OpenRouter の起用／`未使用` 明記）。**浜田が「役割は？」と聞く前に CIO が宣言する**（詳細は `NEW-SESSION-STARTER.md` の 🎖️ 節・「貼付単独で完走」頭出しと同文脈）。
 
 | 役割 | 担当 | 持ち場 |
 |---|---|---|
