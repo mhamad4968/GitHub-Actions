@@ -1,0 +1,76 @@
+#!/usr/bin/env node
+/**
+ * rag-mirror-canonical-docs.mjs — RAG ingest 用に正本を .rag/extra-docs へコピー（§2 正本主義 / §57-10）
+ *
+ * 対象: RULES-INDEX.md, kintone-apps.md, AGENTS.md, WORKFLOW.md（package.json の rag:ingest:rules と整合）
+ *
+ * 使い方:
+ *   node scripts/rag-mirror-canonical-docs.mjs           # ルート → .rag/extra-docs へ上書きコピー
+ *   node scripts/rag-mirror-canonical-docs.mjs --check   # 差分があれば exit 1（CI / verify:agent-env）
+ *   node scripts/rag-mirror-canonical-docs.mjs --dry-run # コピーせず差分のみ表示
+ */
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.resolve(__dirname, '..');
+const DEST_DIR = path.join(ROOT, '.rag', 'extra-docs');
+const FILES = ['RULES-INDEX.md', 'kintone-apps.md', 'AGENTS.md', 'WORKFLOW.md'];
+
+const argv = process.argv.slice(2);
+const CHECK = argv.includes('--check');
+const DRY = argv.includes('--dry-run');
+
+function readBuf(rel) {
+  const p = path.join(ROOT, rel);
+  return fs.readFileSync(p);
+}
+
+function readDest(name) {
+  const p = path.join(DEST_DIR, name);
+  if (!fs.existsSync(p)) return null;
+  return fs.readFileSync(p);
+}
+
+let exit = 0;
+const diffs = [];
+
+for (const name of FILES) {
+  const src = readBuf(name);
+  const dst = readDest(name);
+  if (dst === null || !src.equals(dst)) {
+    diffs.push(name);
+    if (CHECK) {
+      exit = 1;
+      continue;
+    }
+    if (!DRY) {
+      fs.mkdirSync(DEST_DIR, { recursive: true });
+      fs.copyFileSync(path.join(ROOT, name), path.join(DEST_DIR, name));
+    }
+  }
+}
+
+if (CHECK) {
+  if (exit !== 0) {
+    console.error('❌ rag-mirror-canonical-docs: 正本と .rag/extra-docs が一致しません:');
+    for (const n of diffs) console.error(`   - ${n}`);
+    console.error('   対応: npm run rag:mirror:canonical-docs');
+    process.exit(1);
+  }
+  console.log('✅ rag-mirror-canonical-docs: 4 ファイルとも .rag/extra-docs と一致');
+  process.exit(0);
+}
+
+if (DRY) {
+  if (diffs.length === 0) console.log('(dry-run) 差分なし');
+  else console.log('(dry-run) 更新対象:', diffs.join(', '));
+  process.exit(0);
+}
+
+if (diffs.length === 0) {
+  console.log('rag-mirror-canonical-docs: 既に一致（スキップ）');
+} else {
+  console.log('rag-mirror-canonical-docs: コピー完了 →', diffs.join(', '));
+}

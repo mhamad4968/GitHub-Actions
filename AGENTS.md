@@ -1983,6 +1983,7 @@ $ node scripts/parallel-session-detector.mjs --explain # 軸ごとの内訳を�
 - 改訂日: 2026-04-29（[FEAT] v23.23: **§1-2-3-3 CIO によるモデル最終判断**（浜田 CIO＝未指定時は §1-2-3-1/2、明示時は CIO 優先／§35-1 不変）。**§51-6 遵守事項 5**＝セッション切替直後の **`session:clock:set` 必須**＋**`session:clock:web` で URL をチャットに転記し浜田にブラウザで開くよう促す**。§51-6-2 に次セッション初手での同条項実行を追記。`NEW-SESSION-STARTER.md` / `SESSION-CLOCK.md` / `SESSION-SPLIT-REMINDER.md` / RULES-INDEX 同期。）
 - 改訂日: 2026-04-29（[FEAT] v23.24: **§50-3-8 盲点・セカンドオピニオン（DeepSeek）固定運用**。予実管理・計算ロジック・複雑な kintone カスタマイズ着手直前の **DeepSeek-V3 への 3 点盲点抽出（型 / SPEC 乖離 / 差異ロジック継承）** と、CIO による **正本突合・約 3 行の突合メモ** チャット記録を義務化。§50-3-4/5/51・プラン B との接続を明記。RULES-INDEX §N チェックリストに §50-3-8 追加。`.rag/extra-docs` 同期。）
 - 改訂日: 2026-04-30（[FEAT] v23.25: **§50-3-9 kintone MCP の自律的フォールバック**（浜田合意）。構造エラー時は同一 kintone MCP を再試行しない／通信エラーは 1 回のみ再試行し失敗時は即 REST へ／検知ターン先頭で「MCP エラーにより REST 手順へ移行」を明記／(a) `scripts/` 検証済みパターン改修 (b) `scripts/tmp-kintone-*.mjs` とタスク完了時の削除または正規名昇格＋**証跡（チャット or handoff 1 行）**／**期待値の言語化**（「今夜中」に依存せずタスク単位で完遂）。**§50-3-2** に航海図への手段(第2)併記義務を接続。§50-3 関連に §50-3-9 を追加。RULES-INDEX §N チェックリスト・`NEW-SESSION-STARTER.md` v3.33 同期。`checkpoint-latest.md` **航海図テンプレ**・`SESSION-BOOTSTRAP-CHECKLIST.md` 1c・`2026-04-26-pc-ledger-day4-action.md` §50-3-9 補足。`.rag/extra-docs/AGENTS.md` 同期。）
+- 改訂日: 2026-05-02（[FEAT] v23.26 / §57-10 I案: **インフラ運用条項**（浜田チャット GO）。RAG 正本 4 ファイルの `.rag/extra-docs` ミラー＝`scripts/rag-mirror-canonical-docs.mjs`・`npm run rag:mirror:canonical-docs` / `verify:rag-mirror-canonical`・`verify:agent-env` 連鎖追加。post-commit を `scripts/git-hook-post-commit.mjs` に集約し `npm run hooks:install` を Node コピー方式に統一（Windows spawn 対策）。`docs/github-branch-protection.md` 新設。`logs/autonomy-decisions/rule-amendment-2026-05-02-57-10-i.md`。RULES-INDEX §N チェックリストに §57-10。）
 
 ---
 
@@ -2491,6 +2492,28 @@ logs/autonomy-decisions/rule-amendment-YYYY-MM-DD-HHMM.md
 - **§47-D**: 浜田の短時間矛盾 → 矛盾即却下。改定したい場合は浜田が改めて §57-1 を起こす。
 - **§51 / §51-3**: §57 適用中も並列禁止。session-lock 取得後に §57-4 の編集順序を進める。
 - **§54-2 Negative Log**: 棄却された改定案も `synthesis-graveyard/` に保管（再提案時の参考に）。
+- **§57-10**: 副次インフラ運用（RAG ミラー・branch protection 手順・git hooks）を **本条の下位**として追補。**§57-1〜§57-9 の代替ではない**。
+
+#### §57-10 I案 — インフラ運用（RAG 副本文 / GitHub / git hooks）（2026-05-02 制定 / 浜田チャット GO / CIO×DeepSeek・Kimi・OpenRouter 合意反映）
+
+**位置づけ**: 第21章の **骨格手順（§57-1〜§57-9）を置き換えない**。本条は **RAG 用副本文**・**GitHub ブランチ保護**・**post-commit 等の git 資産**を、**§57-2 起案 + 浜田 GO + §54-1 ラベル**で改訂する **着地先**である（§50-3-8 の多モデル相談と実装順メモとも整合）。
+
+1. **RAG 正本ミラー（§2 正本主義）**  
+   - **正本**はリポジトリルートの `RULES-INDEX.md` / `kintone-apps.md` / `AGENTS.md` / `WORKFLOW.md`。  
+   - **RAG ingest 副本文**は `.rag/extra-docs/` 配下。内容は **`npm run rag:mirror:canonical-docs`** で正本から上書きコピーする（副本文の手編集は再発防止のため禁止＝差分は正本側で行う）。  
+   - **検証**: **`npm run verify:rag-mirror-canonical`**（**`npm run verify:agent-env`** 連鎖に含まれる）。  
+   - **編集ターンの義務**: 上記 4 ファイルのいずれかを変えた commit では、**同一 commit** に `.rag/extra-docs` を揃える（`npm run rag:mirror:canonical-docs` を pre-commit 相当の習慣とみなす）。
+
+2. **GitHub `main` branch protection**  
+   - **UI 設定**は管理者権限が前提。手順・必須 check の注意点は **`docs/github-branch-protection.md`** を正とする。  
+   - **paths 限定**のワークフローだけを必須 check に入れない（**マージ不能**の罠）。実在し **`main` の push で常に緑になる** check 名のみ採用する。
+
+3. **git post-commit（TSB-016 / TSB-024 / mandatory-read-gate）**  
+   - **実装**は `scripts/git-hook-post-commit.mjs`。`git-hooks/post-commit` は `#!/bin/sh` から Node へ委譲（Windows Git の `cannot spawn` / 空 hook を回避）。  
+   - **インストール**: **`npm run hooks:install`**（`.git/hooks/` へコピー。壊れた hook の上書き可）。
+
+4. **多モデル合意の取り扱い**  
+   - Kimi / DeepSeek / OpenRouter 等の見解は **参考入力**。**優先順位の確定と実装コミット責任**は CIO（本リポの統括 AI 手順・§1-2-3-3）が行う。
 
 ---
 

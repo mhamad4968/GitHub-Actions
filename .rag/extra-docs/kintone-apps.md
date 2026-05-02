@@ -31,8 +31,8 @@ npm run app:fields <アプリID>
 | 新個人WindowsID採番マスタ（新・PC台帳ver.1 用 / Day 3 / 旧 626 置換） | **672** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-25 作成 / 0 レコード（`^jbm\d{4}$` 厳格 / `jbm0001` から払出予定）|
 | 新共有WindowsID採番マスタ（新・PC台帳ver.1 用 / Day 3 / 旧 667 置換） | **673** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-25 作成 / 0 レコード（`^sjbm\d{4}$` 厳格 / `sjbm0001` から払出予定）|
 | 新・PC台帳ver.1（本体・674 customize **本実装進行中**・**運用開始前**） | **674** | `customize/new-pc-ledger-v1/desktop.js` | `npm run deploy:674` / Space **21** / thread **23** / customize **BUILD=`2026-05-02-pc-replace-mount-v0.9.14`**（PC買替 §4.10.3 含む・**627 は二重更新しない**）/ fileKey **`01d42a25-ddbe-4a03-a009-69034f7e1d6a`** / field-spec **44/44** / **運用開始予定 2026-05-13**（仕様書 §1） |
-| **部署予実・入力**（明細・`新フォーマット` 全列・`支払内訳` サブテーブル・月次 12 行） | **677** | `customize/677/desktop.js` \| `npm run deploy:677` | [https://jbis-kintone.cybozu.com/k/677/](https://jbis-kintone.cybozu.com/k/677/)・**配置**: Space **54** / thread **58**。**2026-05-02**: customize deploy 済（**677** BUILD `2026-05-02-677-submit-error-guard` / **678** `2026-05-02-678-dashboard-api-errors`）。**データ**: 旧フォーマット xlsx **47 明細**。`SPEC.md` §6–§6c |
-| **部署予実・ダッシュ**（**集計管理の主画面**・俯瞰・入力アプリ参照） | **678** | `customize/678/desktop.js` \| `npm run deploy:678` | [https://jbis-kintone.cybozu.com/k/678/](https://jbis-kintone.cybozu.com/k/678/)・**2026-05-02**: 677 表・備考・API エラー表示・表示順 PUT / fileKey **`5f992f52-5148-4b10-b7fb-e018ff0bf8bf`** / rev **7** / **BUILD=`2026-05-02-678-dashboard-api-errors`**。`SPEC.md` §6b・§6e |
+| **部署予実・入力**（明細・`新フォーマット` 全列・`支払内訳` サブテーブル・月次 12 行） | **677** | `customize/677/desktop.js` \| `npm run deploy:677` | [https://jbis-kintone.cybozu.com/k/677/](https://jbis-kintone.cybozu.com/k/677/)・**配置**: Space **54** / thread **58**・ポータル [スペース 54（thread 58）](https://jbis-kintone.cybozu.com/k/#/space/54/thread/58)。**2026-04-29**: 枠作成 deploy **SUCCESS**。**2026-05-02**: customize（`monthly_breakdown` 12 行整形＋保存時 **`支払内訳`→月次「実績」ロールアップ**・暦月合算・**ロールアップ例外時は保存ブロック `event.error`**）deploy **SUCCESS** / fileKey **`69629015-73da-40b7-9507-18232966bcbc`** / preview revision **9** / **BUILD=`2026-05-02-677-submit-error-guard`**。**データ**: `C:\\tmp\\予算管理\\2026年度システム推進室_年間予算案20260123.xlsx` の **`旧フォーマット`** から **47 明細**を初回投入（`yojitsu-migration-kyu-to-kintone.md`・総計行除外・`npm run yojitsu:677:record-count`）。スペース内の旧アプリは **運用開始までに削除予定**（不要分）。`SPEC.md` §6–§6c |
+| **部署予実・ダッシュ**（**集計管理の主画面**・俯瞰・入力アプリ参照） | **678** | `customize/678/desktop.js` \| `npm run deploy:678` | [https://jbis-kintone.cybozu.com/k/678/](https://jbis-kintone.cybozu.com/k/678/)・入力と同スペース。**2026-04-29** 枠のみ deploy **SUCCESS**。**2026-05-02**: 677 明細表・備考・`display_order` PUT・**API 失敗時メッセージ（コード・ヒント）**・リビジョン未取得時の案内 deploy **SUCCESS** / fileKey **`5f992f52-5148-4b10-b7fb-e018ff0bf8bf`** / preview revision **7** / **BUILD=`2026-05-02-678-dashboard-api-errors`**。`SPEC.md` §6b・§6e |
 
 ※ **631** … `collect` / `analyze` が読むニュース。**632** … `analyze` が書き込む週次要約のみ。`.env`: `KINTONE_APP_ID=631` , `KINTONE_REPORT_APP_ID=632`。API トークンに **両アプリ**を載せる。  
 ※ **権限**: 自動化の最低限は **レコード閲覧＋追加**。閲覧・追加・編集・削除・アプリ管理のフル付与でもスクリプトは動作するが、トークン漏えい時のリスク低減のため余分な権限は削るとよい（詳細は `security-next-automation/README.md`）。
@@ -45,7 +45,7 @@ npm run app:fields <アプリID>
 
 **FAQ（640）**: 社内 FAQ の **DB はアプリ 640**（[https://jbis-kintone.cybozu.com/k/640/](https://jbis-kintone.cybozu.com/k/640/)）で確定。運用ガイド（668）や PC 台帳系アプリとは **別アプリ**。
 
-**638 / 639**: 台帳上は **社内FAQDB** 同名だが **640 が正本**（638・639 はほぼ空の残骸）。依存なし確認済。**2026-05-20 頃**削除予定・事前 CSV バックアップ推奨。このリポからは未参照。
+**638 / 639**: アプリ台帳上も論理名は **「社内FAQDB」** と同一だが、**容量・件数は実質空に近く**、**640 が運用中の正本**（台帳: 640 は DB 保管・日付・利用指標が立っている）。638・639 は **旧枠・未移行の残骸**の可能性が高い → ルックアップ等の依存なし確認済。**2026-05-20 頃**まで様子見のうえ **削除予定**（その前に CSV バックアップ推奨）。このリポのコードからは未参照。
 
 ### デイリーヘルスチェック（廃止）
 
@@ -60,6 +60,7 @@ npm run app:fields <アプリID>
 
 | 日時（UTC） | アプリID | customize パス |
 |-------------|----------|----------------|
+| 2026-05-02T01:14:56Z | 674 | `customize/new-pc-ledger-v1/desktop.js` |
 | 2026-05-01T09:46:20Z | 674 | `customize/new-pc-ledger-v1/desktop.js` |
 | 2026-05-01T08:13:34Z | 674 | `customize/new-pc-ledger-v1/desktop.js` |
 | 2026-05-01T08:06:32Z | 674 | `customize/new-pc-ledger-v1/desktop.js` |
@@ -237,7 +238,9 @@ user_name	SINGLE_LINE_TEXT	社員名
 
 ## 626（アカウント採番）
 
-`npm run app:fields 626`（本番 2026-04-18 時点）:
+**本番テナントではアプリ削除済（2026-05 確認）。** `## アプリ一覧` 表からは除外。個人 Windows ID 採番は **672** を参照。
+
+`npm run app:fields 626`（本番 2026-04-18 時点・削除前のスナップショット）:
 
 ```
 App 626 fields (16)

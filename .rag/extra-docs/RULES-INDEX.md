@@ -10,7 +10,8 @@
 | ルール | 役割 |
 |---|---|
 | §0 | **RULES-INDEX 即答カード参照**（索引駆動の起点 / 「まず索引→該当 § を読む」を強制） |
-| （Cursor）**`mcp-server-use-triggers.mdc`** | **MCP サーバ選択（1 行トリガー）**（2026-05-02 / CIO×DeepSeek・Kimi・OpenRouter）— descriptor 必読は **`mcp-tool-discipline.mdc`** |
+| （Cursor）**`cio-operating-loop.mdc`** | **CIO 運用の一本線**（2026-05-02）— 正シェルは **`~/kintone-ai-lab`（WSL）**／朝は **`docs/reports/<JST日付>-morning-prep.md`** → **`desktop-ai-emergency-read-pack/READ-07.txt`**（浜田 CEO のお願い）→ 追徴なら **`npm run cio:quick-health`**／切替手順は **`constitution-handoff-gate.mdc`** + `NEW-SESSION-STARTER`「貼付単独で完走」／Read pack + `SESSION-READ-LADDER.md`／Desktop 更新後は **`npm run desktop:sync-and-verify`** を優先 |
+| （Cursor）**`mcp-server-use-triggers.mdc`** | **MCP サーバ選択（1 行トリガー）**（2026-05-02 / CIO×DeepSeek・Kimi・OpenRouter 相談反映）— GitHub・kintone 本番/開発/スペース・fetch・Tavily/DDG・Playwright・RAG・CVE/ニュース・markdownify・memory・sequential-thinking・OpenRouter（**`model` 必須**）。**descriptor 必読**は **`mcp-tool-discipline.mdc`** |
 | §1 / §1-2 / §1-2-2 / §1-2-3 / §1-2-3-1 / §1-2-3-2 / §1-2-3-3 / §1-2-4 | 役割定義 + **最適モデル原則 / Opus 4.7 デフォルト枠**（§1-2 / 2026-04-26 R-3 改定 = 「Opus 統一」を「最適モデル」に転換 / 浜田指示「絶対にこのモデルを使うというこだわりはしない」/ 別モデルへの常時切替・レビュー用サブエージェント禁止は維持 / 例外は §1-2）+ **API 制限到達時の自動フォールバック禁止**（§1-2-2 / N-3 / N-4 で 4 択 A-D 提示の枠組み + §1-2-2-1 Cursor IDE 必須設定 = Q1 で 4 → 8 項目 + Browser Protection ON + MCP Tools Protection ON + Monthly Limit $1000 / TSB-019 連動）+ **Opus 内モデル使い分け**（§1-2-3 / N-5 / 既定 Extra High / Max Thinking は §47-A 100% 証明・設計判断・複雑バグ修正のみ）+ **AI 自己宣言義務**（§1-2-3-1 / P5-5 / タスク冒頭で `[§1-2-3 ティア判定: Extra High/Max Thinking]` を 1 行明示 = 形骸化対策 / F-13 教訓）+ **AI 自律モデル選択原則**（§1-2-3-2 / R-3 / 3 段階 L1 Composer 2 / L2 Extra High / L3 Max Thinking / 1 秒判定フロー / 不可逆操作は L3 強制 / silent fallback と区別 = ティア宣言で証跡 / F-14 対策 = Max Thinking 59.4% → 20-30% 想定）+ **CIO によるモデル最終判断**（§1-2-3-3 / 2026-04-29 / 浜田 CIO が明示したティアは §1-2-3-2 に優先 / 未指定時は §1-2-3-1/2）+ **クレジット予算管理 改定**（§1-2-4 / P5-5 / 月予算 $200+$1000 引上げ / 3 系統 (Total/API/On-Demand) / 70-80-85-95% 4 段階自発警告 / Spending スクショ抽出 / 朝報 §0 統合 / TSB-018/TSB-021 連動）|
 | §51 / §51-3 / §51-6 / §51-6-2 | **並列禁止 + セッション分割推奨 + AI 自律セッション切り命令権**（§51-3 並列禁止 / §51-6 提案レベル + **遵守事項 5** = 2026-04-29 切替直後 **`session:clock:set` 必須** + **`session:clock:web` URL をチャットに転記し浜田にブラウザで開くよう促す** / **§51-6-2 命令権** = 2026-04-26 R-4 / 浜田 10:30「セッションを切ることは重要 / 命令指示権限を与える」/ 6 つの自律発動条件 (4h / 200 tool call / 重作業完了直後 / コスト 2x / Tier B 直前 / API 100%) / 浜田却下時は §47-D で逆却下 / 引き継ぎを checkpoint-latest.md へ追記義務 / **次チャット初手で遵守事項 5**）|
 | §51-6-2 運用 | **`npm run session:clock:set`**（切替毎・必須）／**`npm run session:clock:web`**（バックグラウンド・URL を浜田へ）／**`npm run session:clock:health`**（壁時計・hooks・crontab・watch pid ワンショット）／**`npm run verify:session-clock-health`**（`session:bootstrap` 内包・厳格）／`SESSION-SPLIT-REMINDER.md`／§**16-1** 個人端末のローカル前準備（`AGENTS.md`）|
@@ -105,7 +106,7 @@
 
 本セクションは未参照ルールが残らないよう全番号を 1 度ずつ参照する。
 
-§1 / §1-2 / §1-2-1 / §1-2-2 / §1-2-2-1 / §1-2-3 / §1-2-3-1 / §1-2-3-2 / §1-2-3-3 / §1-2-4 / §2 / §3 / §4 / §5 / §6 / §7 / §8 / §9 / §10 / §11 / §11-2 / §11-3 / §11-4 / §11-5 / §12 / §13 / §14 / §15 / §16 / §16-1 / §17 / §17-2 / §17-3 / §18 / §19 / §20 / §21 / §22 / §23 / §24 / §25 / §26 / §27 / §28 / §29 / §30 / §31 / §32 / §33 / §34 / §35 / §36 / §37 / §38 / §39 / §41 / §42 / §43 / §44 / §45 / §46 / §47 / §47-A / §47-B-2 / §47-C / §47-D / §47-E / §48 / §49 / §50 / §50-2 / §50-3 / §50-3-8 / §50-3-9 / §50-3-10 / §51 / §51-2 / §51-3 / §51-4 / §51-5 / §51-6 / session:clock:health / §52 / §52-1 / §52-2 / §52-3 / §52-4 / §52-5 / §52-6 / §52-7 / §52-8 / §52-8-1 / §54 / §54-1 / §54-2 / §54-3 / §54-4 / §54-5 / §55 / §55-1 / §55-2 / §55-3 / §55-4 / §55-5 / §55-6 / §55-7 / §56 / §56-1 / §56-1a / §56-2 / §56-3 / §56-4 / §57 / §57-1 / §57-2 / §57-3 / §57-4 / §57-5 / §57-6 / §57-7 / §57-8 / §57-9
+§1 / §1-2 / §1-2-1 / §1-2-2 / §1-2-2-1 / §1-2-3 / §1-2-3-1 / §1-2-3-2 / §1-2-3-3 / §1-2-4 / §2 / §3 / §4 / §5 / §6 / §7 / §8 / §9 / §10 / §11 / §11-2 / §11-3 / §11-4 / §11-5 / §12 / §13 / §14 / §15 / §16 / §16-1 / §17 / §17-2 / §17-3 / §18 / §19 / §20 / §21 / §22 / §23 / §24 / §25 / §26 / §27 / §28 / §29 / §30 / §31 / §32 / §33 / §34 / §35 / §36 / §37 / §38 / §39 / §41 / §42 / §43 / §44 / §45 / §46 / §47 / §47-A / §47-B-2 / §47-C / §47-D / §47-E / §48 / §49 / §50 / §50-2 / §50-3 / §50-3-8 / §50-3-9 / §50-3-10 / §51 / §51-2 / §51-3 / §51-4 / §51-5 / §51-6 / session:clock:health / §52 / §52-1 / §52-2 / §52-3 / §52-4 / §52-5 / §52-6 / §52-7 / §52-8 / §52-8-1 / §54 / §54-1 / §54-2 / §54-3 / §54-4 / §54-5 / §55 / §55-1 / §55-2 / §55-3 / §55-4 / §55-5 / §55-6 / §55-7 / §56 / §56-1 / §56-1a / §56-2 / §56-3 / §56-4 / §57 / §57-1 / §57-2 / §57-3 / §57-4 / §57-5 / §57-6 / §57-7 / §57-8 / §57-9 / §57-10
 
 （§40 は欠番。旧 §53 族・第17章第二意見は 2026-04-25 [BREAKING] v22 で撤去）
 
@@ -180,11 +181,12 @@
 | §57-2 | 起案・レビュー（diff + 影響範囲 + §54-1 ラベル候補 + ロールバック手順）|
 | §57-3 | ラベル決定（§54-1 3 質問判定フローチャートに接続）|
 | §57-4 | 適用（並列禁止 / ファイル編集順序: AGENTS → RULES-INDEX → WORKFLOW → scripts → chat-sessions → Desktop AI緊急用）|
-| §57-5 | 検証（audit-rules / audit-tsb / verify-breaking / audit-xref / health-check / smoke-test 全通過 / `.session-state/agents-md-hash.txt` 更新）／**`npm run verify:agent-env`**（Tier A・Desktop 同期なしの自律環境ワンショット＝憲法＋必読ゲート＋上記 4 audit 連鎖＋`smoke:quiet`／`.cursor/rules/mcp-tool-discipline.mdc` アイドル枠）|
+| §57-5 | 検証（audit-rules / audit-tsb / verify-breaking / audit-xref / health-check / smoke-test 全通過 / `.session-state/agents-md-hash.txt` 更新）／**`npm run verify:agent-env`**（Tier A・Desktop 同期なし＝憲法＋必読ゲート＋上記 4 audit 連鎖＋**`verify:rag-mirror-canonical`**＋`smoke:quiet`／`.cursor/rules/mcp-tool-discipline.mdc` アイドル枠）|
 | §57-6 | 周知（付則 changelog 1 行追記 / 重大改定は NEW-SESSION-STARTER + CURSOR-トラブル対応メモ + 浜田 Desktop AI緊急用 同期）|
 | §57-7 | §57 自身の改定（[BREAKING] 必須 / §47-E/§54-1/§51/§52 と矛盾なし確認 / 浜田明示 GO 必須）|
 | §57-8 | 記録様式（`logs/autonomy-decisions/rule-amendment-YYYY-MM-DD-HHMM.md`）|
 | §57-9 | §47-E/§47-D/§51/§51-3/§54-2 との接続（憲法違反却下→§57-1 / 矛盾即却下 / 並列禁止厳守 / 棄却案は graveyard）|
+| §57-10 | **I案 — インフラ運用**（2026-05-02）— RAG 副本文ミラー（`npm run rag:mirror:canonical-docs` / `verify:rag-mirror-canonical`）／GitHub `main` branch protection（`docs/github-branch-protection.md`）／`post-commit` の Node 化＋`npm run hooks:install`／多モデル合意は CIO が優先順位確定（§50-3-8 整合）|
 
 ---
 
