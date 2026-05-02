@@ -3,7 +3,7 @@
 
   /**
    * 部署予実 入力アプリ 677
-   * BUILD: 2026-05-02-677-payment-rollup-submit
+   * BUILD: 2026-05-02-677-submit-error-guard
    * - 新規・編集表示時: `monthly_breakdown` を **5月〜翌年4月の 12 行**に揃える（予算修正空は **0**）
    * - 保存直前: `支払内訳` の **支払日の暦月**ごとに `payment_amount` を合算し、該当 `月度` 行の **実績**へ書き戻す（`SPEC.md` §6c・§8）
    * - `month_utilization` は CALC のため触らない
@@ -138,7 +138,10 @@
       ensureMonthlyBreakdownForRecord(event.record);
       rollupPaymentsToMonthly(event.record);
     } catch (e) {
-      console.error("[677] payment rollup", e);
+      console.error("[677] payment rollup / monthly", e);
+      event.error =
+        "月次内訳または支払内訳の処理でエラーが発生したため保存できません。画面を再読み込みしてからやり直してください。" +
+        (e && e.message ? "（詳細: " + String(e.message).slice(0, 200) + "）" : "");
     }
     return event;
   });

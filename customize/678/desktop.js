@@ -9,7 +9,7 @@
    */
 
   var APP_INPUT = 677;
-  var BUILD = "2026-05-02-678-dashboard-notes-column";
+  var BUILD = "2026-05-02-678-dashboard-api-errors";
   /** 旧 Excel 旧フォーマットの合計行（移行スクリプトで除外済み） */
   var DASHBOARD_NOTE =
     "【備考】旧 Excel「旧フォーマット」の 50 行目は合計（総計）行のため、kintone 677 への初回移行ではレコード化していません。" +
@@ -26,6 +26,31 @@
     "notes",
   ];
   var QUERY = "order by $id desc limit 30";
+
+  /** kintone.api の reject を画面向けに短く整形 */
+  function formatApiError(e, jaPrefix) {
+    var code = e && e.code ? String(e.code) : "";
+    var msg = e && e.message != null ? String(e.message) : "";
+    var id = e && e.id ? String(e.id) : "";
+    var parts = [jaPrefix];
+    if (code) parts.push("コード:" + code);
+    if (id) parts.push("id:" + id);
+    if (msg) parts.push(msg.slice(0, 420));
+    var hint = "";
+    if (msg.indexOf("GAIA") !== -1 || msg.indexOf("permission") !== -1) {
+      hint = " ［ヒント: 677 の閲覧・編集権限とログイン状態を確認］";
+    }
+    if (code === "CB_NO02" || msg.indexOf("CB_NO02") !== -1) {
+      hint = " ［ヒント: アプリ ID またはレコード ID が無効］";
+    }
+    if (code === "CB_VA01" || msg.indexOf("CB_VA01") !== -1 || msg.indexOf("revision") !== -1) {
+      hint = " ［ヒント: 他ユーザーが更新した可能性 → 再読み込み］";
+    }
+    if (code === "GAIA_QU02" || msg.indexOf("limit") !== -1) {
+      hint = " ［ヒント: API 回数制限に達した可能性 → しばらく待って再読み込み］";
+    }
+    return (parts.join(" · ") + hint).trim().slice(0, 920);
+  }
 
   function esc(s) {
     if (s == null || s === "") return "";
@@ -231,9 +256,7 @@
         })
         .catch(function (e) {
           status.style.color = "#b00020";
-          status.textContent =
-            "677 のレコード取得に失敗しました（権限・ログイン・フィールドコードを確認）。 " +
-            (e && e.message ? String(e.message) : "");
+          status.textContent = formatApiError(e, "677 の一覧取得に失敗しました。");
         });
     }
 
@@ -249,7 +272,13 @@
       var rid = td.getAttribute("data-y678-id");
       var rev = td.getAttribute("data-y678-rev");
       var inp = td.querySelector(".y678-display-order-input");
-      if (!rid || rev === "" || !inp) return;
+      if (!rid || !inp) return;
+      if (rev === "") {
+        status.style.color = "#b00020";
+        status.textContent =
+          "レコードのリビジョンが取得できません。再読み込みしてから保存してください。（677 のフィールド取得権限も確認）";
+        return;
+      }
       var raw = inp.value;
       var numVal = raw === "" ? null : Number(raw);
       if (raw !== "" && (typeof numVal !== "number" || isNaN(numVal))) {
@@ -280,13 +309,7 @@
         })
         .catch(function (e) {
           status.style.color = "#b00020";
-          var msg = e && e.message ? String(e.message) : "";
-          if (msg.indexOf("CB_VA01") !== -1 || msg.indexOf("revision") !== -1) {
-            status.textContent =
-              "保存できませんでした（他で更新された可能性）。再読み込みしてからやり直してください。 " + msg;
-          } else {
-            status.textContent = "保存に失敗しました。 " + msg;
-          }
+          status.textContent = formatApiError(e, "表示順の保存に失敗しました。");
         })
         .then(
           function () {
