@@ -3,14 +3,14 @@
 
   /**
    * 部署予実 ダッシュアプリ 678
-   * BUILD: 2026-05-03-678-dashboard-excel-grid
+   * BUILD: 2026-05-04-678-mount-host
    * - 677 を kintone.api で一覧。左キー列は `shin-format-excel-layout.md` 新フォーマット準拠＋12 月×四つ柱（`monthly_breakdown`）
    * - 表示順（display_order）のみ 677 へ PUT（SPEC §6e）
    * - 費用種別フィルタはクライアント側（取得は直近30件）
    */
 
   var APP_INPUT = 677;
-  var BUILD = "2026-05-03-678-dashboard-excel-grid";
+  var BUILD = "2026-05-04-678-mount-host";
   /** 暦月ラベル（677 の `月度` と同一・5月〜翌年4月） */
   var FISCAL_ORDER = ["5", "6", "7", "8", "9", "10", "11", "12", "1", "2", "3", "4"];
   /** ヘッダ表示用 */
@@ -54,7 +54,7 @@
     "display_order",
     "notes",
   ];
-  var QUERY = "order by $id desc limit 30";
+  var QUERY = "order by $id desc limit 100";
 
   function formatApiError(e, jaPrefix) {
     var code = e && e.code ? String(e.code) : "";
@@ -126,6 +126,14 @@
     return v == null ? "" : v;
   }
 
+  /** 677 の月度ラベルを FISCAL_ORDER のキー（"5"…"4"）に寄せる */
+  function normalizeFiscalMonthLabel(s) {
+    var t = String(s == null ? "" : s).trim();
+    if (!t) return "";
+    if (/^\d+$/.test(t)) return String(parseInt(t, 10));
+    return t;
+  }
+
   /** 月度ラベル → 月次行の表示用マップ */
   function monthlyMapFromRecord(rec) {
     var map = {};
@@ -134,7 +142,7 @@
     for (var i = 0; i < tbl.length; i++) {
       var row = tbl[i] && tbl[i].value;
       if (!row || !row.fiscal_month) continue;
-      var lab = String(subCellVal(row, "fiscal_month") || "").trim();
+      var lab = normalizeFiscalMonthLabel(subCellVal(row, "fiscal_month"));
       if (!lab) continue;
       map[lab] = {
         budget: subCellVal(row, "month_budget"),
@@ -144,6 +152,55 @@
       };
     }
     return map;
+  }
+
+  /**
+   * 一覧にダッシュを載せる親ノード（UI 世代差で API が異なるため複数候補）
+   * @returns {{ parent: HTMLElement, before: HTMLElement|null }|null}
+   */
+  function resolve678MountHost() {
+    var slot = null;
+    try {
+      if (kintone.app && kintone.app.record && typeof kintone.app.record.getHeaderMenuSpaceElement === "function") {
+        slot = kintone.app.record.getHeaderMenuSpaceElement();
+      }
+    } catch (e0) {}
+    if (!slot) {
+      try {
+        if (kintone.app && typeof kintone.app.getHeaderMenuSpaceElement === "function") {
+          slot = kintone.app.getHeaderMenuSpaceElement();
+        }
+      } catch (e1) {}
+    }
+    if (slot) return { parent: slot, before: null };
+
+    try {
+      if (kintone.app && typeof kintone.app.getHeaderSpaceElement === "function") {
+        var hs = kintone.app.getHeaderSpaceElement();
+        if (hs) return { parent: hs, before: null };
+      }
+    } catch (e2) {}
+
+    var ocean = document.querySelector(".ocean-ui-app-index-head");
+    if (ocean) return { parent: ocean, before: ocean.firstChild };
+
+    var idxHead = document.querySelector(".gaia-argoui-app-index-head");
+    if (idxHead) return { parent: idxHead, before: idxHead.firstChild };
+
+    var rl = document.querySelector(".recordlist-gaia");
+    if (rl && rl.parentNode) return { parent: rl.parentNode, before: rl };
+
+    var layout = document.querySelector("#contents-body .layout-gaia");
+    if (layout) return { parent: layout, before: layout.firstChild };
+
+    return null;
+  }
+
+  function attach678Shell(dest, wrap) {
+    if (!dest || !dest.parent) return false;
+    if (dest.before) dest.parent.insertBefore(wrap, dest.before);
+    else dest.parent.appendChild(wrap);
+    return true;
   }
 
   function escNumCell(v) {
@@ -354,8 +411,10 @@
   }
 
   function mount() {
-    var el = kintone.app.getHeaderMenuSpaceElement();
-    if (!el || el.querySelector("[data-yojitsu-678-shell]")) return;
+    if (document.querySelector("[data-yojitsu-678-shell]")) return;
+
+    var dest = resolve678MountHost();
+    if (!dest) return;
 
     var wrap = document.createElement("div");
     wrap.setAttribute("data-yojitsu-678-shell", "1");
@@ -420,7 +479,7 @@
     filterRow.style.alignItems = "center";
     filterRow.style.gap = "6px 8px";
     filterRow.innerHTML =
-      "<span style=\"color:#555;font-size:12px\">費用種別（直近30件のうち）:</span>" +
+      "<span style=\"color:#555;font-size:12px\">費用種別（API取得件数のうち）:</span>" +
       "<button type=\"button\" class=\"y678-filter\" data-y678-filter=\"all\" style=\"font-size:12px;cursor:pointer\">すべて</button>" +
       "<button type=\"button\" class=\"y678-filter\" data-y678-filter=\"固定費\" style=\"font-size:12px;cursor:pointer\">固定費</button>" +
       "<button type=\"button\" class=\"y678-filter\" data-y678-filter=\"変動費\" style=\"font-size:12px;cursor:pointer\">変動費</button>" +
@@ -467,7 +526,7 @@
     tblHost.style.background = "#fff";
     wrap.appendChild(tblHost);
 
-    el.appendChild(wrap);
+    attach678Shell(dest, wrap);
 
     var lastRawRecords = [];
     var lastTotalCount = 0;
@@ -504,7 +563,7 @@
         total +
         " 件 · API取得 " +
         lastRawRecords.length +
-        " 件（新しい順・最大30）";
+        " 件（新しい順・最大100）";
       if (currentCostFilter !== "all") {
         base += " · フィルタ後 " + filtered.length + " 件（" + String(currentCostFilter) + "）";
       }
@@ -626,7 +685,21 @@
     load();
   }
 
+  function scheduleMount678() {
+    [0, 120, 400, 1000, 2200].forEach(function (ms) {
+      setTimeout(function () {
+        try {
+          if (!document.querySelector("[data-yojitsu-678-shell]")) mount();
+        } catch (err) {
+          if (typeof console !== "undefined" && console.warn) {
+            console.warn("[678]", err);
+          }
+        }
+      }, ms);
+    });
+  }
+
   kintone.events.on("app.record.index.show", function () {
-    mount();
+    scheduleMount678();
   });
 })();
