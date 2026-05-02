@@ -30,7 +30,7 @@
 
 ## 3b. マスタ・初回フィールド案（`SPEC.md` §6d）
 
-- [x] **浜田読了**: **`docs/yojitsu-master-and-field-plan.md`**（v1 は会社・工種・摘要を別マスタにしない／費用種別はドロップダウン／フィールドコード案）。**変更なしで確定**（2026-04-28 会話）。
+- [x] **浜田読了**: **`templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md`**（v1 は会社・工種・摘要を別マスタにしない／費用種別はドロップダウン／フィールドコード案）。**変更なしで確定**（2026-04-28 会話）。
 
 ## 3. kintone 化の範囲
 

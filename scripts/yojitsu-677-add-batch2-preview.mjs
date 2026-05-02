@@ -1,6 +1,6 @@
 /**
  * 部署予実 入力アプリ 677: batch2 — サブテーブル2本 + レコード直下 CALC（preview → deploy）。
- * 正本: docs/yojitsu-master-and-field-plan.md §4–§5 / SPEC §6c
+ * 正本: templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md §4–§5 / SPEC §6c
  * DeepSeek: サブテーブルは1 POST まとめ、消費率 CALC 式 IF((month_budget+month_budget_revision)=0,0,...) OK
  *
  *   node scripts/yojitsu-677-add-batch2-preview.mjs --dry-run

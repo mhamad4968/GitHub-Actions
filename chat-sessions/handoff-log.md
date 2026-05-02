@@ -219,7 +219,7 @@ AI は、セッション切替・終了・浜田さんが引き継ぎテンプ�
 **浜田メモ（要旨）**: 今日の作業をセッション切替後も分かるようまとめる。**Desktop\AI緊急用** は過去ファイルを削除し**最新版だけ**。**夜の反省会は約 20:00 JST** に再度入る（**セッションは変わる**）。
 
 **経緯（簡潔）**:
-- **部署予実（`templates/yojitsu-budget-lite/`）**: マイルストーン **4/29 アプリ作成（〜19:00 JST）**／4/30 項目確定／5/1 投入／5/2 機能／5/3 運用整理（`SPEC.md` §10.1）。**マスタ v1 は不要**（会社・工種・摘要は別アプリにしない。費用種別はドロップダウン）— `docs/yojitsu-master-and-field-plan.md`・`SPEC.md` §6d。チェックリスト **§3b 読了 [x]**。関連コミット例: `7ffe29c` `218e2d5` `405124a` `de45591`。**`main` → `origin` は push 済み**。
+- **部署予実（`templates/yojitsu-budget-lite/`）**: マイルストーン **4/29 アプリ作成（〜19:00 JST）**／4/30 項目確定／5/1 投入／5/2 機能／5/3 運用整理（`SPEC.md` §10.1）。**マスタ v1 は不要**（会社・工種・摘要は別アプリにしない。費用種別はドロップダウン）— `templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md`・`SPEC.md` §6d。チェックリスト **§3b 読了 [x]**。関連コミット例: `7ffe29c` `218e2d5` `405124a` `de45591`。**`main` → `origin` は push 済み**。
 - **Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用`**: `README.txt` / `HANDOFF-HUMAN.txt` / `SESSION-BOOTSTRAP-CHECKLIST.txt` / `NEW-SESSION-STARTER_20260428.txt` を削除。**残り 1 本**: `SESSION-HANDOFF-LATEST-2026-04-28.txt`（今日の全会話要約・20:00 再入場・儀式 4 ファイル復元手順・パス早見）。
 
 **AI 補足**:
@@ -719,7 +719,7 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 ### 2026-05-02 JST — 部署予実 SPEC（変動費・ダッシュ主操作・実装方針）
 
 **実施内容（CIO）**:
-- 	emplates/yojitsu-budget-lite/SPEC.md に **§6e** を新設（変動費中心明細＝月次「予算」非運用、monthly_breakdown の扱い、案Aの適用範囲、ダッシュ678＋APIで677永続化、段階導入、無理なら代替明示、監査UI）。
+- `templates/yojitsu-budget-lite/SPEC.md` に **§6e** を新設（変動費中心明細＝月次「予算」非運用、monthly_breakdown の扱い、案Aの適用範囲、ダッシュ678＋APIで677永続化、段階導入、無理なら代替明示、監査UI）。
 - **§6b** A+B 節、**§6c** 項3、冒頭**状態**、**§11** を §6e と整合。
 
 **次セッションへの 1 行**: yojitsu-master-and-field-plan.md と **§6e** を突合し、677 フィールド設計へ（着手直前 **§50-3-8**）。
@@ -730,7 +730,7 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 
 <!-- handoff: field-plan-6e-20260502 -->
 
-- `docs/yojitsu-master-and-field-plan.md`: **4.1** 費用種別×`monthly_breakdown`、**7** ダッシュ 678＋API→677。根拠に SPEC 6e・7。
+- `templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md`: **4.1** 費用種別×`monthly_breakdown`、**7** ダッシュ 678＋API→677。根拠に SPEC 6e・7。
 - `SPEC.md` **6d**: 上記ドキュメントへのポインタ。
 
 **次の 1 手**: 677 にレコード直下＋サブテーブル追加（着手直前 **50-3-8**）。
@@ -760,3 +760,13 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 - **npm**: `yojitsu:677:batch2-preview` を `package.json` に追加。
 
 **次の 1 手**: フォームレイアウト（§6b）要否の判断。678 ダッシュ・保存時 JS ロールアップ・12 行初期データは未着手。batch3 があれば SPEC / backlog と突合。
+
+---
+
+### 2026-05-02 JST（追記）— 仕様確認デイ（文書パス整合・677 突合メモ）
+
+- **§6d 正本パス**: `SPEC.md` §6d・チェックリスト・移行 md・batch2 スクリプトヘッダの誤参照を、リポ実体の **`templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md`** に統一（ルート `docs/` に同名ファイルは無し）。
+- **§50-3-8 突合（CIO・3 行）**: （1）固定費中心行は案A＋677 の `month_utilization` CALC で整合。（2）変動費中心行は **§4.1** どおり **月次 KPI は別定義** — 現 CALC は **暫定**（678 や JS 確定時に置換候補）。（3）`month_actual` は SPEC 上 **支払内訳ロールアップ派生** — **保存時 JS 未実装**の間は手入力と二系統になり得る旨を backlog／実装タスクへ。
+
+**次の 1 手（本日残り）**: 知恵袋に **変動費中心行の `month_utilization` 最終式**と **12 行初期化**を質問票化 → CIO 突合 → Tier B に入る前に **項番 -0** で範囲固定。
+
