@@ -113,6 +113,8 @@ PAT のみ使う場合: GitHub → Settings → Developer settings → **Fine-gr
    npm.cmd run github:branch-protection:apply-baseline:gh
    ```
 
+   **`gh` が PATH に無い**（winget 直後の同じ PowerShell など）でも、`github-branch-protection-apply.mjs` は **`%ProgramFiles%\GitHub CLI\gh.exe`** を自動試行する。別場所に入れた場合は `$env:GH_BINARY="D:\path\to\gh.exe"` をセット。
+
 2. **CurrentUser のみ緩める**（管理者不要）:  
    `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned`  
    のあと、通常どおり `npm run ...` 可。

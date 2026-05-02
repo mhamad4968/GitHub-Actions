@@ -18,6 +18,7 @@
  * @see https://docs.github.com/en/rest/branches/branch-protection#update-branch-protection
  */
 import { spawnSync } from 'node:child_process';
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -58,8 +59,29 @@ const headers = {
   'User-Agent': 'kintone-ai-lab-github-branch-protection-apply',
 };
 
-function ghApi(method, path, body = null) {
-  const args = ['api', '-X', method, path];
+/** `spawnSync` 第1引数（`gh` が PATH に無い Windows 向けに絶対パスへ解決） */
+let ghExecutable = 'gh';
+
+/**
+ * winget 既定: `%ProgramFiles%\GitHub CLI\gh.exe`。上書き: 環境変数 **GH_BINARY**。
+ */
+function resolveGhExecutable() {
+  const fromEnv = process.env.GH_BINARY?.trim();
+  if (fromEnv && fs.existsSync(fromEnv)) return fromEnv;
+  const onPath = spawnSync('gh', ['--version'], { encoding: 'utf8' });
+  if (onPath.status === 0) return 'gh';
+  if (process.platform === 'win32') {
+    const pf = process.env.ProgramFiles || 'C:\\Program Files';
+    const pfx86 = process.env['ProgramFiles(x86)'] || 'C:\\Program Files (x86)';
+    for (const p of [path.join(pf, 'GitHub CLI', 'gh.exe'), path.join(pfx86, 'GitHub CLI', 'gh.exe')]) {
+      if (fs.existsSync(p)) return p;
+    }
+  }
+  return null;
+}
+
+function ghApi(method, apiPath, body = null) {
+  const args = ['api', '-X', method, apiPath];
   const opts = {
     encoding: 'utf8',
     cwd: ROOT,
@@ -69,7 +91,7 @@ function ghApi(method, path, body = null) {
     args.push('--input', '-');
     opts.input = JSON.stringify(body);
   }
-  return spawnSync('gh', args, opts);
+  return spawnSync(ghExecutable, args, opts);
 }
 
 async function fetchJson(method, body) {
@@ -81,7 +103,11 @@ async function fetchJson(method, body) {
       return null;
     }
     if (r.status !== 0) {
-      throw new Error(`gh api failed (exit ${r.status}): ${r.stderr || r.stdout || '(no output)'}`);
+      const msg = r.stderr || r.stdout || '(no output)';
+      if (r.status === 4 && /gh auth login|GH_TOKEN/i.test(msg)) {
+        throw new Error('gh が未ログインです。この端末で `gh auth login` を実行するか、`GH_TOKEN` を設定してください。\n' + msg);
+      }
+      throw new Error(`gh api failed (exit ${r.status}): ${msg}`);
     }
     try {
       return r.stdout?.trim() ? JSON.parse(r.stdout) : null;
@@ -125,9 +151,22 @@ async function main() {
   console.log(`mode: ${APPLY ? 'PUT baseline' : 'GET only'} transport: ${USE_GH ? 'gh cli' : 'fetch + token'}\n`);
 
   if (USE_GH) {
-    const which = spawnSync('gh', ['--version'], { encoding: 'utf8' });
+    const resolved = resolveGhExecutable();
+    if (!resolved) {
+      console.error(
+        '❌ gh が見つかりません。winget で GitHub CLI を入れたあと、PATH を通すか、次のファイルがあるか確認してください:\n' +
+          '   "%ProgramFiles%\\GitHub CLI\\gh.exe"\n' +
+          '   別パスなら環境変数 GH_BINARY にフルパスを指定してください。',
+      );
+      process.exit(2);
+    }
+    ghExecutable = resolved;
+    if (resolved !== 'gh') {
+      console.log(`ℹ️  gh を PATH 外から使用: ${resolved}\n`);
+    }
+    const which = spawnSync(ghExecutable, ['--version'], { encoding: 'utf8' });
     if (which.status !== 0) {
-      console.error('❌ gh が PATH にありません。新しいターミナルを開くか、`Program Files\\GitHub CLI` を PATH に追加してください。');
+      console.error('❌ gh --version に失敗:', which.stderr || which.stdout);
       process.exit(2);
     }
     console.log(which.stdout.trim());
