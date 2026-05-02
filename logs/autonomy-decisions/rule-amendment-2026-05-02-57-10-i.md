@@ -10,5 +10,5 @@
   - post-commit を Node 実装にし、`hooks:install` を Windows 対応コピーに統一。
   - `main` branch protection は GitHub UI 前提の手順書を `docs/github-branch-protection.md` に追加。
 - **review_at**: 2026-05-02 (async)
-- **applied_commit**: （本 PR の merge commit を参照）
+- **applied_commit**: `aeb157d`（例: `[FEAT] §57-10 I案: RAGミラー検証・post-commit Node化・branch protection手順`）
 - **verify_result**: audit:rules ✅ / audit:tsb ✅ / verify:breaking ✅ / audit:xref ✅ / verify:rag-mirror-canonical ✅ / mandatory-read-gate ✅（Windows ローカルでは health-check が MCP 未接続で ❌ → WSL または Cursor 環境で再検）
