@@ -22,6 +22,7 @@
     "deploy:629": "npx dotenv -e .env -e .env.proxy -- node scripts/deploy-customization.js 629 customize/shucccho-seisan/desktop.js",
     "deploy:674": "npx dotenv -e .env -e .env.proxy -- node scripts/deploy-customization.js 674 customize/new-pc-ledger-v1/desktop.js",
     "deploy:677": "npx dotenv -e .env -e .env.proxy -- node scripts/deploy-customization.js 677 customize/677/desktop.js",
+    "deploy:678": "npx dotenv -e .env -e .env.proxy -- node scripts/deploy-customization.js 678 customize/678/desktop.js",
     "deploy:671": "npx dotenv -e .env -e .env.proxy -- node scripts/deploy-customization.js 671 customize/671/desktop.js",
     "pc-ledger:reconcile-671-from-674:dry-run": "npx dotenv -e .env -e .env.proxy -- node scripts/reconcile-m365-master-671-from-674.mjs --dry-run",
     "pc-ledger:reconcile-671-from-674:apply": "npx dotenv -e .env -e .env.proxy -- node scripts/reconcile-m365-master-671-from-674.mjs --apply",
