@@ -3,13 +3,17 @@
 
   /**
    * 部署予実 ダッシュアプリ 678
-   * BUILD: 2026-05-02-678-dashboard-display-order-put
-   * - 677 明細を kintone.api で一覧（閲覧・導線）
-   * - 表示順（display_order）のみ 677 へ PUT（SPEC §6e・段階導入の頻出操作）
+   * BUILD: 2026-05-02-678-dashboard-notes-column
+   * - 677 明細を kintone.api で一覧（備考 `notes` 列・閲覧・導線）
+   * - 表示順（display_order）のみ 677 へ PUT（SPEC §6e）
    */
 
   var APP_INPUT = 677;
-  var BUILD = "2026-05-02-678-dashboard-display-order-put";
+  var BUILD = "2026-05-02-678-dashboard-notes-column";
+  /** 旧 Excel 旧フォーマットの合計行（移行スクリプトで除外済み） */
+  var DASHBOARD_NOTE =
+    "【備考】旧 Excel「旧フォーマット」の 50 行目は合計（総計）行のため、kintone 677 への初回移行ではレコード化していません。" +
+    "明細は 47 件（摘要のある行のみ）。下表の「備考」列は 677 の備考フィールド（移行時の起票・出納セルメモ等）です。";
   var FETCH_FIELDS = [
     "$id",
     "Record_number",
@@ -19,6 +23,7 @@
     "summary_text",
     "partner_company",
     "display_order",
+    "notes",
   ];
   var QUERY = "order by $id desc limit 30";
 
@@ -46,11 +51,28 @@
     return location.origin + "/k/" + APP_INPUT + "/show#record=" + encodeURIComponent(String(id)) + "&mode=show";
   }
 
+  function attrEsc(s) {
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;")
+      .replace(/\n/g, " ");
+  }
+
+  function truncateNotes(s, maxLen) {
+    var raw = String(s == null ? "" : s).trim();
+    if (!raw) return { html: "<span style=\"color:#aaa\">—</span>", title: "" };
+    var t = esc(raw);
+    if (t.length <= maxLen) return { html: t, title: raw.slice(0, 800) };
+    return { html: t.slice(0, maxLen) + "…", title: raw.slice(0, 800) };
+  }
+
   function renderTable(records) {
     var rows = [];
     rows.push(
       "<thead><tr>" +
         "<th>レコード</th><th>工種</th><th>費用種別</th><th>摘要</th><th>会社</th>" +
+        "<th>備考</th>" +
         "<th>表示順</th>" +
         "</tr></thead><tbody>"
     );
@@ -63,7 +85,10 @@
         (fieldVal(r, "work_type_code") ? " <span style=\"color:#666\">(" + esc(fieldVal(r, "work_type_code")) + ")</span>" : "");
       var sum = esc(fieldVal(r, "summary_text"));
       if (sum.length > 80) sum = sum.slice(0, 80) + "…";
+      var noteRaw = fieldVal(r, "notes");
+      var notePart = truncateNotes(noteRaw, 120);
       var doVal = esc(fieldVal(r, "display_order"));
+      var titleAttr = notePart.title ? " title=\"" + attrEsc(notePart.title) + "\"" : "";
       rows.push(
         "<tr>" +
           "<td><a href=\"" +
@@ -83,6 +108,11 @@
           "<td>" +
           esc(fieldVal(r, "partner_company")) +
           "</td>" +
+          "<td style=\"max-width:14em;word-break:break-word;font-size:12px;color:#333\"" +
+          titleAttr +
+          ">" +
+          notePart.html +
+          "</td>" +
           "<td data-y678-id=\"" +
           esc(id) +
           "\" data-y678-rev=\"" +
@@ -97,7 +127,7 @@
       );
     }
     if (!records.length) {
-      rows.push('<tr><td colspan="6" style="color:#666">677 にレコードがありません（または権限外）</td></tr>');
+      rows.push('<tr><td colspan="7" style="color:#666">677 にレコードがありません（または権限外）</td></tr>');
     }
     rows.push("</tbody>");
     return rows.join("");
@@ -150,6 +180,19 @@
       "<button type=\"button\" id=\"y678-refresh\" style=\"font-size:12px;cursor:pointer\">再読み込み</button>";
     wrap.appendChild(head);
 
+    var noteBox = document.createElement("div");
+    noteBox.setAttribute("data-y678-dashboard-note", "1");
+    noteBox.style.marginBottom = "10px";
+    noteBox.style.padding = "8px 10px";
+    noteBox.style.background = "#fffbea";
+    noteBox.style.border = "1px solid #e8dc9a";
+    noteBox.style.borderRadius = "4px";
+    noteBox.style.fontSize = "12px";
+    noteBox.style.lineHeight = "1.45";
+    noteBox.style.color = "#4a4020";
+    noteBox.textContent = DASHBOARD_NOTE;
+    wrap.appendChild(noteBox);
+
     var status = document.createElement("div");
     status.style.marginBottom = "6px";
     status.style.color = "#555";
@@ -192,6 +235,10 @@
             "677 のレコード取得に失敗しました（権限・ログイン・フィールドコードを確認）。 " +
             (e && e.message ? String(e.message) : "");
         });
+    }
+
+    function doneEnable(btn) {
+      btn.disabled = false;
     }
 
     tblHost.addEventListener("click", function (ev) {
@@ -241,9 +288,14 @@
             status.textContent = "保存に失敗しました。 " + msg;
           }
         })
-        .finally(function () {
-          btn.disabled = false;
-        });
+        .then(
+          function () {
+            doneEnable(btn);
+          },
+          function () {
+            doneEnable(btn);
+          }
+        );
     });
 
     var refreshBtn = head.querySelector("#y678-refresh");
