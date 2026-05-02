@@ -61,6 +61,11 @@ const mcpNames = Object.keys(mcpServers);
 /** 憲法 CIO 体制（本体=Cursor / Kimi・DeepSeek・OpenRouter=補助）で、transcript ベースの 7 日窓に出ない運用が正となるサーバー */
 const CIO_STACK_DORMANCY_EXEMPT = new Set(['kimi', 'deepseek', 'openrouter']);
 
+/** health-check JSON に出る TSB-029 系: transcript に載らない低頻度でも留置きが設計上妥当な MCP */
+const DORMANCY_POLICY_EXEMPT_REASON = new Map([
+  ['markdownify', 'TSB-029: markdownify は低頻度・initialize 確認中心 (7d transcript=0 は許容)'],
+]);
+
 // ───── 2. agent transcripts grep ─────
 const projectsDir = path.join(os.homedir(), '.cursor', 'projects');
 const now = Date.now();
@@ -118,12 +123,16 @@ const results = mcpNames.map((name) => {
   const meta = mcpServers[name]._meta || {};
   const cioExempt = CIO_STACK_DORMANCY_EXEMPT.has(name);
   const metaExempt = !!meta.dormancy_exempt;
+  const policyReason = DORMANCY_POLICY_EXEMPT_REASON.get(name);
+  const policyExempt = !!policyReason;
   const exemptReason =
     meta.exempt_reason
-    || (cioExempt && shortCount === 0 ? 'CIO alternate LLM (transcript 7d 未出現は設計上可)' : null);
+    || (cioExempt && shortCount === 0 ? 'CIO alternate LLM (transcript 7d 未出現は設計上可)' : null)
+    || (policyExempt && shortCount === 0 ? policyReason : null);
   let status;
   if (metaExempt) status = 'exempt';
   else if (cioExempt && shortCount === 0) status = 'exempt';
+  else if (policyExempt && shortCount === 0) status = 'exempt';
   else if (disabled) status = 'disabled';
   else if (shortCount === 0 && ARG_STRICT && strictCount === 0) status = 'deletion-candidate';
   else if (shortCount === 0) status = 'dormant';
