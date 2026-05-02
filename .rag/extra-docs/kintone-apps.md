@@ -22,6 +22,7 @@ npm run app:fields <アプリID>
 | 社員マスタ（台帳・627 連携用） | 595 | `customize/595/desktop.js` | `npm run deploy:595` |
 | アカウント管理台帳 | 627 | `customize/627/desktop.js` | `npm run deploy:627` |
 | 出張精算アプリ | **629** | `customize/shucccho-seisan/desktop.js` | `npm run deploy:629` |
+| 社内FAQサイト | **640** | （本番は **640** で運用。運用ガイド **668** とは別アプリ） | [https://jbis-kintone.cybozu.com/k/640/](https://jbis-kintone.cybozu.com/k/640/) ・リポの HTML 正本例: `scripts/faq-portal-full.html`（640 との同期方針は運用で決める） |
 | Security NEXT ニュース（収集） | **631** | `security-next-automation` | [https://jbis-kintone.cybozu.com/k/631/](https://jbis-kintone.cybozu.com/k/631/) ・`KINTONE_APP_ID` |
 | ニュース週次要約（週次LLM） | **632** | `security-next-automation` | [https://jbis-kintone.cybozu.com/k/632/](https://jbis-kintone.cybozu.com/k/632/) ・`KINTONE_REPORT_APP_ID` ・[設計CSV](security-next-automation/docs/security-next-weekly-report-app-design.csv) |
 | 運用ガイド（PC台帳・アカウント周りの操作手順） | **668** | `customize/ops-guide/desktop.js` | `npm run ops-guide:publish`（HTML レコード同期＋desktop.js デプロイ） |
@@ -41,6 +42,8 @@ npm run app:fields <アプリID>
 **Security NEXT**: 収集 [631](https://jbis-kintone.cybozu.com/k/631/) ・週次要約 [632](https://jbis-kintone.cybozu.com/k/632/)（ユーザー確定）。630 は未使用なら無視可。トークンに **631 と 632** の権限を付与。シークレットは **Secrets / `.env` のみ**。**日次（10:00/17:00 JST）**: `collect.ts` がキーワード選別で最大3件を631へ（Gemini 不使用）。**金曜17:00 JST**: `analyze` が週次要約を632へ（Gemini 使用）。詳細は `security-next-automation/README.md` の「運用スケジュール」。
 
 **Security NEXT 連携**: フィールドコードの正本は `security-next-automation/README.md` と `security-next-automation/src/lib/field-codes.ts`。アプリ新規なら `npm run setup:security-next-apps` も可。
+
+**FAQ（640）**: 社内 FAQ サイトは **アプリ 640**（[本番 URL](https://jbis-kintone.cybozu.com/k/640/)）。運用ガイド（668）や PC 台帳系アプリとは **別アプリ**。
 
 ### デイリーヘルスチェック（廃止）
 
