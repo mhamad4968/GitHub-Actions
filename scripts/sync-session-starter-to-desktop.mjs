@@ -3,6 +3,7 @@
  * リポの儀式ファイルを Windows Desktop「AI緊急用」へコピーする。
  * NEW-SESSION-STARTER は **JST の NEW-SESSION-STARTER_yyyymmdd.txt** に常に同期（内容変更時のみ旧版を _2… に退避）。
  * README.txt（正本 chat-sessions/AI緊急用-README.txt）も同期する。
+ * `chat-sessions/desktop-ai-emergency-read-pack/*.txt`（番号付き貼付控え）も **同名で** Desktop へコピーする。
  *
  * @see chat-sessions/NEW-SESSION-STARTER.md 冒頭
  */
@@ -26,6 +27,28 @@ const otherFiles = [
   ['chat-sessions/AI緊急用-README.txt', 'README.txt'],
 ];
 
+const readPackRelDir = 'chat-sessions/desktop-ai-emergency-read-pack';
+
+/** 浜田貼付控え READ-*.txt / INDEX.txt / README-read-pack.txt を Desktop へ同名コピー */
+function syncReadPackToDesktop() {
+  const readPackDir = path.join(root, readPackRelDir);
+  if (!fs.existsSync(readPackDir)) {
+    console.log(`[sync-session-starter-to-desktop] read-pack スキップ: フォルダなし ${readPackRelDir}`);
+    return;
+  }
+  const names = fs
+    .readdirSync(readPackDir)
+    .filter((n) => n.endsWith('.txt'))
+    .sort();
+  for (const n of names) {
+    const src = path.join(readPackDir, n);
+    if (!fs.statSync(src).isFile()) continue;
+    const dest = path.join(destDir, n);
+    fs.copyFileSync(src, dest);
+    console.log(`[sync-session-starter-to-desktop] OK ${readPackRelDir}/${n} -> ${dest}`);
+  }
+}
+
 function main() {
   if (!fs.existsSync(destDir)) {
     console.log(
@@ -33,7 +56,8 @@ function main() {
         '  WSL 以外、または /mnt/c 未マウント。浜田の参照先 AI緊急用は未更新のまま。' +
         ' /mnt/c 復帰後に npm run session-starter:sync-desktop を再実行すること。'
     );
-    process.exit(0);
+    process.exitCode = 0;
+    return;
   }
 
   const starterSrc = path.join(root, 'chat-sessions/NEW-SESSION-STARTER.md');
@@ -65,7 +89,9 @@ function main() {
     fs.copyFileSync(src, dest);
     console.log(`[sync-session-starter-to-desktop] OK ${rel} -> ${dest}`);
   }
-  process.exit(0);
+  syncReadPackToDesktop();
+  // `process.exit(0)` は使わない: stdout の末尾が欠け read-pack 同期ログが見えず、未コピーと誤認され得る（自然終了で flush）
+  process.exitCode = 0;
 }
 
 main();
