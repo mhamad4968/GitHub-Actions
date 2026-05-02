@@ -3,14 +3,16 @@
 
   /**
    * 部署予実 ダッシュアプリ 678
-   * BUILD: 2026-05-04-678-mount-host
+   * BUILD: 2026-05-04-678-load-guard
    * - 677 を kintone.api で一覧。左キー列は `shin-format-excel-layout.md` 新フォーマット準拠＋12 月×四つ柱（`monthly_breakdown`）
    * - 表示順（display_order）のみ 677 へ PUT（SPEC §6e）
-   * - 費用種別フィルタはクライアント側（取得は直近30件）
+   * - 677 取得: タイムアウト・描画 try/catch・月次サブテーブル取得失敗時は左ブロックのみにフォールバック
    */
 
   var APP_INPUT = 677;
-  var BUILD = "2026-05-04-678-mount-host";
+  var BUILD = "2026-05-04-678-load-guard";
+  /** 月次列を省略（677 API が `monthly_breakdown` を返せない場合のフォールバック） */
+  var y678OmitMonthlyCols = false;
   /** 暦月ラベル（677 の `月度` と同一・5月〜翌年4月） */
   var FISCAL_ORDER = ["5", "6", "7", "8", "9", "10", "11", "12", "1", "2", "3", "4"];
   /** ヘッダ表示用 */
@@ -42,7 +44,6 @@
   var FETCH_FIELDS = [
     "$id",
     "$revision",
-    "Record_number",
     "work_type_name",
     "work_type_code",
     "cost_category",
@@ -54,7 +55,33 @@
     "display_order",
     "notes",
   ];
+  /** `monthly_breakdown` なし（API エラー時の再試行用） */
+  var FETCH_FIELDS_NO_MONTHLY = FETCH_FIELDS.filter(function (c) {
+    return c !== "monthly_breakdown";
+  });
   var QUERY = "order by $id desc limit 100";
+
+  function apiWithTimeout(promise, ms) {
+    return Promise.race([
+      promise,
+      new Promise(function (_, reject) {
+        setTimeout(function () {
+          reject({ code: "Y678_TIMEOUT", message: "677 への一覧取得が " + ms / 1000 + " 秒を超えました。ネットワーク・プロキシ・権限を確認してください。" });
+        }, ms);
+      }),
+    ]);
+  }
+
+  function isRetriable677FieldError(e) {
+    var m = e && e.message != null ? String(e.message) : "";
+    var c = e && e.code ? String(e.code) : "";
+    if (c === "Y678_TIMEOUT") return false;
+    if (c === "CB_IL02" || m.indexOf("CB_IL02") !== -1) return true;
+    if (m.indexOf("GAIA_IL02") !== -1) return true;
+    if (m.indexOf("不正なフィールド") !== -1) return true;
+    if (m.indexOf("Invalid field") !== -1) return true;
+    return false;
+  }
 
   function formatApiError(e, jaPrefix) {
     var code = e && e.code ? String(e.code) : "";
@@ -76,6 +103,9 @@
     }
     if (code === "GAIA_QU02" || msg.indexOf("limit") !== -1) {
       hint = " ［ヒント: API 回数制限に達した可能性 → しばらく待って再読み込み］";
+    }
+    if (code === "Y678_TIMEOUT" || msg.indexOf("秒を超えました") !== -1) {
+      hint = " ［ヒント: 再読み込み・別ブラウザ・プロキシ設定を確認］";
     }
     return (parts.join(" · ") + hint).trim().slice(0, 920);
   }
@@ -217,7 +247,12 @@
     return out;
   }
 
+  function activeMonthLabels() {
+    return y678OmitMonthlyCols ? [] : FISCAL_ORDER;
+  }
+
   function theadHtml() {
+    var months = activeMonthLabels();
     var r1 = [];
     var r2 = [];
     r1.push(
@@ -225,8 +260,8 @@
         KEY_COL_COUNT +
         "\" class=\"y678-th-block y678-sk-head\" style=\"text-align:center;background:#e8eef9;border-bottom:2px solid #c5d0eb\">明細（677）</th>"
     );
-    for (var m = 0; m < FISCAL_ORDER.length; m++) {
-      var lab = FISCAL_ORDER[m];
+    for (var m = 0; m < months.length; m++) {
+      var lab = months[m];
       var band = m % 2 === 0 ? "y678-m-even" : "y678-m-odd";
       r1.push(
         "<th colspan=\"" +
@@ -250,7 +285,7 @@
         "<th class=\"y678-sk y678-sk9\">備考</th>" +
         "<th class=\"y678-sk y678-sk10\">表示順</th>"
     );
-    for (var n = 0; n < FISCAL_ORDER.length; n++) {
+    for (var n = 0; n < months.length; n++) {
       var band2 = n % 2 === 0 ? "y678-m-even" : "y678-m-odd";
       r2.push(
         "<th class=\"y678-num " +
@@ -268,10 +303,11 @@
   }
 
   function renderTable(records) {
+    var months = activeMonthLabels();
     var rows = [];
     rows.push(theadHtml());
     rows.push("<tbody>");
-    var totalCols = KEY_COL_COUNT + FISCAL_ORDER.length * MONTH_COLS;
+    var totalCols = KEY_COL_COUNT + months.length * MONTH_COLS;
 
     for (var i = 0; i < records.length; i++) {
       var r = records[i];
@@ -297,7 +333,7 @@
           "<td class=\"y678-sk y678-sk1\"><a href=\"" +
           esc(recordShowHref(id)) +
           "\">#" +
-          esc(fieldVal(r, "Record_number") || id) +
+          esc(id) +
           "</a></td>" +
           "<td class=\"y678-sk y678-sk2\">" +
           esc(fieldVal(r, "work_type_name")) +
@@ -333,8 +369,8 @@
           "</td>"
       );
 
-      for (var mi = 0; mi < FISCAL_ORDER.length; mi++) {
-        var fl = FISCAL_ORDER[mi];
+      for (var mi = 0; mi < months.length; mi++) {
+        var fl = months[mi];
         var band = mi % 2 === 0 ? "y678-m-even" : "y678-m-odd";
         var rowM = mm[fl] || {};
         var util = rowM.utilization;
@@ -472,6 +508,15 @@
       "【運用】表示順の保存のみ本画面から 677 に反映されます。月次・支払内訳の編集は 677 のレコード画面で行ってください。";
     wrap.appendChild(opsRow);
 
+    var dash678ListHint = document.createElement("div");
+    dash678ListHint.style.fontSize = "11px";
+    dash678ListHint.style.color = "#666";
+    dash678ListHint.style.marginBottom = "6px";
+    dash678ListHint.style.lineHeight = "1.45";
+    dash678ListHint.textContent =
+      "※ 678 本体のレコード一覧に「データがありません」と出るのは想定内です（ダッシュ用に 678 に明細を持たない構成）。下のステータス行が「読み込み中」のままならブラウザ更新するか、開発者向けにコンソールのネットワーク／エラーを確認してください。";
+    wrap.appendChild(dash678ListHint);
+
     var filterRow = document.createElement("div");
     filterRow.style.marginBottom = "8px";
     filterRow.style.display = "flex";
@@ -574,27 +619,57 @@
     }
 
     function applyFilterAndRedraw() {
-      var filtered = filterRecordsByCostCategory(lastRawRecords, currentCostFilter);
-      updateStatusLine();
-      paintTable(filtered);
+      try {
+        var filtered = filterRecordsByCostCategory(lastRawRecords, currentCostFilter);
+        updateStatusLine();
+        paintTable(filtered);
+        if (y678OmitMonthlyCols) {
+          status.textContent =
+            status.textContent + " ［月次列: 677 API で取得できず省略。677 のレコード画面で月次を確認してください。］";
+        }
+      } catch (err) {
+        status.style.color = "#b00020";
+        status.textContent =
+          "表の描画に失敗しました: " + (err && err.message ? String(err.message).slice(0, 220) : String(err));
+        if (typeof console !== "undefined" && console.error) console.error("[678] render", err);
+      }
+    }
+
+    function fetch677Records(fields) {
+      if (!kintone || !kintone.api || typeof kintone.api.url.get !== "function") {
+        return Promise.reject({ code: "Y678_NOAPI", message: "kintone.api が利用できません。" });
+      }
+      return kintone.api(kintone.api.url.get("/k/v1/records.json", true), "GET", {
+        app: APP_INPUT,
+        query: QUERY,
+        fields: fields,
+        totalCount: false,
+      });
     }
 
     function load() {
       status.style.color = "#555";
       status.textContent = "677 から明細を読み込み中…";
       tblHost.innerHTML = "";
-      return kintone
-        .api(kintone.api.url.get("/k/v1/records.json", true), "GET", {
-          app: APP_INPUT,
-          query: QUERY,
-          fields: FETCH_FIELDS,
-          totalCount: true,
-        })
-        .then(function (resp) {
+      y678OmitMonthlyCols = false;
+      var timeoutMs = 70000;
+
+      function attempt(fields) {
+        return apiWithTimeout(fetch677Records(fields), timeoutMs).then(function (resp) {
           var list = (resp && resp.records) || [];
           lastRawRecords = list;
-          lastTotalCount = resp && typeof resp.totalCount === "number" ? resp.totalCount : list.length;
+          lastTotalCount = list.length;
           applyFilterAndRedraw();
+        });
+      }
+
+      return attempt(FETCH_FIELDS)
+        .catch(function (e) {
+          if (!y678OmitMonthlyCols && isRetriable677FieldError(e)) {
+            y678OmitMonthlyCols = true;
+            return attempt(FETCH_FIELDS_NO_MONTHLY);
+          }
+          return Promise.reject(e);
         })
         .catch(function (e) {
           lastRawRecords = [];
