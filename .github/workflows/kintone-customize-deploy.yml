@@ -16,7 +16,9 @@
 #   そのため同一の kintone REST API 手順（file.json → preview/app/customize → deploy）を
 #   X-Cybozu-API-Token で実行する scripts/deploy-customize-api-token.js を呼びます。
 #
-# ■ push: customize/** 等の変更時のみ（package.json のみでは走らせない = collect 用 KINTONE_APP と路径不整合で赤くなるのを防ぐ）
+# ■ push: customize/** 等の変更時のみ（package.json のみでは走らせない）
+# ■ push 時: Environment の KINTONE_APP（例: 631 collect）と変更された customize/<ID>/ が食い違うと路径が無く失敗する。
+#   その場合は git diff で変更された customize/<数字>/desktop.js から ID を推定しデプロイ先を切替（API トークンが当該アプリに権限を持つ前提）。
 
 name: kintone-customize-deploy
 
@@ -45,6 +47,8 @@ jobs:
     environment: kintone-collect
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v6
         with:
@@ -79,25 +83,46 @@ jobs:
             echo "::error::secrets.KINTONE_APP（→ KINTONE_APP_ID）が空です"
             exit 1
           fi
-          echo "KINTONE_DEPLOY_APP_ID=${APP_ID}" >> "${GITHUB_ENV}"
 
-          if [[ -n "${KINTONE_CUSTOMIZE_SRC:-}" ]]; then
-            SRC="$(printf '%s' "${KINTONE_CUSTOMIZE_SRC}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-            echo "使用するソース（KINTONE_CUSTOMIZE_SRC 上書き）: ${SRC}（app=${APP_ID}）"
-          elif [[ "${APP_ID}" == "629" ]]; then
-            SRC="customize/shucccho-seisan/desktop.js"
-          elif [[ "${APP_ID}" == "674" ]]; then
-            SRC="customize/new-pc-ledger-v1/desktop.js"
-          else
-            SRC="customize/${APP_ID}/desktop.js"
-          fi
+          set_src_for_app() {
+            local id="$1"
+            if [[ -n "${KINTONE_CUSTOMIZE_SRC:-}" ]]; then
+              SRC="$(printf '%s' "${KINTONE_CUSTOMIZE_SRC}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+              echo "使用するソース（KINTONE_CUSTOMIZE_SRC 上書き）: ${SRC}（app=${id}）"
+            elif [[ "${id}" == "629" ]]; then
+              SRC="customize/shucccho-seisan/desktop.js"
+            elif [[ "${id}" == "674" ]]; then
+              SRC="customize/new-pc-ledger-v1/desktop.js"
+            else
+              SRC="customize/${id}/desktop.js"
+            fi
+          }
+
+          set_src_for_app "${APP_ID}"
           echo "使用するソース: ${SRC}（app=${APP_ID}）"
-          echo "DEPLOY_REL_PATH=${SRC}" >> "${GITHUB_ENV}"
+
+          if [[ ! -f "${SRC}" ]] && [[ "${{ github.event_name }}" == "push" ]] && [[ -n "${{ github.event.before }}" ]]; then
+            while IFS= read -r f; do
+              [[ -n "${f}" ]] || continue
+              [[ -f "${f}" ]] || continue
+              [[ "${f}" =~ ^customize/([0-9]+)/desktop\.js$ ]] || continue
+              nid="${BASH_REMATCH[1]}"
+              echo "::notice::push 差分で ${f} が変更済み。Secret KINTONE_APP（${APP_ID}）では路径が無いため、デプロイ先アプリ ID を ${nid} に切替（API トークンが ${nid} に権限を持つこと）。"
+              APP_ID="${nid}"
+              set_src_for_app "${APP_ID}"
+              echo "使用するソース（差分推定後）: ${SRC}（app=${APP_ID}）"
+              break
+            done < <(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" 2>/dev/null | grep -E '^customize/[0-9]+/desktop\.js$' || true)
+          fi
+
           if [[ ! -f "${SRC}" ]]; then
             echo "::error::アップロード元がありません: ${SRC}（KINTONE_APP=${APP_ID}）。631 等で browser JS が無いと失敗します。対処: (A) KINTONE_APP を JS があるアプリ ID へ、(B) customize/${APP_ID}/desktop.js を追加、(C) 任意 Secret KINTONE_CUSTOMIZE_SRC でリポ内路径を明示。"
             ls -la customize/*/desktop.js 2>/dev/null || true
             exit 1
           fi
+
+          echo "KINTONE_DEPLOY_APP_ID=${APP_ID}" >> "${GITHUB_ENV}"
+          echo "DEPLOY_REL_PATH=${SRC}" >> "${GITHUB_ENV}"
 
           mkdir -p .kintone-deploy
           cp "${SRC}" .kintone-deploy/upload.js
