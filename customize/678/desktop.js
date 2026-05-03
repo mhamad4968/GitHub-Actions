@@ -3,7 +3,7 @@
 
   /**
    * 部署予実 ダッシュアプリ 678
-   * BUILD: 2026-05-07-678-tsudo-table-sync
+   * BUILD: 2026-05-04-678-gha-deploy-verify
    * - 677 を kintone.api で一覧。左キー列は `shin-format-excel-layout.md` 新フォーマット準拠＋12 月×四つ柱（`monthly_breakdown`）
    * - 一覧の既定 SORT は `display_order asc, $id asc`（SPEC §6e 準拠・2026-05-03 改修）
    * - 新規追加モーダルは「挿入位置」選択（一番下/一番上/○○の上/○○の下）＋中間値計算（floor((prev+next)/2)）
@@ -20,7 +20,7 @@
    */
 
   var APP_INPUT = 677;
-  var BUILD = "2026-05-07-678-tsudo-table-sync";
+  var BUILD = "2026-05-04-678-gha-deploy-verify";
   /** 月次列を省略（677 API が `monthly_breakdown` を返せない場合のフォールバック） */
   var y678OmitMonthlyCols = false;
   /** 暦月ラベル（677 の `月度` と同一・5月〜翌年4月） */
