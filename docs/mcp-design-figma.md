@@ -2,7 +2,25 @@
 
 **目的**: 表の色合い・余白・タイポ・コンポーネント階層など **視覚設計を構造化データとして AI に渡す**（スクリーンショット推測だけに頼らない）。kintone customize のダッシュや Excel 準拠レイアウトと **Figma 上の正**を突合するときに使う。
 
-**正本順位**: 接続設定の実体は **`~/.cursor/mcp.json`**（`docs/mcp-status.md` と同じ）。本書は **手順と選択肢**。
+**正本順位**: Cursor は **グローバル** `~/.cursor/mcp.json` と **プロジェクト** `.cursor/mcp.json` を読む（[Cursor MCP ドキュメント](https://cursor.com/docs/context/mcp)）。本リポでは **`.cursor/mcp.json` に Figma（remote）を追加済み**なので、**本フォルダをワークスペースのルートで開いたうえで Cursor を再起動**すると MCP に `figma` が載る想定です。
+
+---
+
+## 「MCP に出ない」とき（チェックリスト）
+
+1. **ワークスペースのルート**が `kintone-ai-lab`（本リポ）か。別フォルダや Temp だけ開いていると **プロジェクトの `.cursor/mcp.json` は読まれません**。
+2. **Cursor を完全終了して再起動**（リロードだけでは MCP が載らないことがあります）。
+3. **初回は OAuth**: `figma` を有効にしたあと、Features → MCP で **Connect / 認証**が求められないか確認する（[Figma MCP Server Guide · Cursor](https://github.com/figma/mcp-server-guide#cursor) の Manual setup と同じ URL）。
+4. **グローバルにだけ置きたい場合**: Cursor → **Settings → Cursor Settings → MCP** → **Add new global MCP server** に、次を **既存の `mcpServers` にマージ**して保存する（公式手順どおり）:
+   ```json
+   "figma": {
+     "url": "https://mcp.figma.com/mcp"
+   }
+   ```
+5. **プラグイン経路**（任意）: Agent チャットで **`/add-plugin figma`** と打つと、Figma 公式が案内する **プラグイン＋MCP 設定**が入る（[figma/mcp-server-guide](https://github.com/figma/mcp-server-guide)）。
+6. まだ無いときは **Output →「MCP Logs」** で接続エラーを確認する（[Cursor ドキュメント FAQ](https://cursor.com/docs/context/mcp)）。
+
+**プラン注意**: Figma 側で **Starter や View/Collab シート**だと、MCP の読み取りツールが **月 6 回まで**など制限される場合があります（[Figma MCP Server Guide](https://github.com/figma/mcp-server-guide) の Rate limits 注記）。Dev / Full シートの有無で挙動が変わり得ます。
 
 ---
 
