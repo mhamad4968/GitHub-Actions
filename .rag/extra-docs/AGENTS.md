@@ -1568,6 +1568,14 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 - **§51 との関係**: 本条のパイプラインは **航海図（計画の列挙）** に限る。実際のツール呼び出し・Shell・編集は **従来どおり §51（1 ターン 1 ツール call / 1 Shell 1 コマンド）** に従い、**一歩ずつ**実行する（計画を口実にした **複数ツールの同時発火** は禁止）。
 - **§50-3-9 との接続**: kintone 系 MCP を航海図の **手段(第1)** とするタスクでは、**同一ターンの航海図**に **手段(第2) = REST**（`scripts/` 内の検証済み Node パターンの応用、または `scripts/tmp-kintone-*.mjs` による一発実行）を**併記**する（失敗時の自律迂回・掃除の正本は **§50-3-9**）。
 
+#### §50-3-2a Markdown 駆動開発（MDD）の語彙と憲法上の位置づけ（2026-05-04 CIO 追補）
+
+本リポおよび Cursor IDE 運用で **MDD（Markdown 駆動開発）** と称する場合、次の **三点セット** を指す。**Cursor `.cursorrules` の「C. Markdown 駆動（MDD）と SPEC 正本」**と **本条 §50-3-2** を **同一義務**として読み替えてよい（IDE 側は短文化、憲法本文は本条が一次定義）。
+
+1. **着手 1 ターン目の航海図**: **Goal / Constraints / Acceptance criteria** をチャットに明示する（**§50-3-2** の「パイプライン可視化」と一体。ツール列挙だけにせず、**完了条件**まで書く）。
+2. **SPEC 正本の明示と md での進捗追跡**: ルート `docs/SPEC.md` は置かない。**当タスク領域の `SPEC.md`**（例: `templates/yojitsu-budget-lite/SPEC.md`）、`kintone-apps.md`、アプリ専用の `docs/**/*.md` のいずれかを **チャットで 1 行指定**し、合意・進捗は **その Markdown を更新**してコード非精読でも追える状態を保つ。
+3. **領域別の詳細**: 部署予実については **`templates/yojitsu-budget-lite/SPEC.md` §10.5・§11**（Markdown を正とする方針・決定直後の文書反映）を正とする。**リポ全体のドキュメントツリーを一発 scaffold する専用 npm** は未整備の間、**手動追随**に加え **`npm run rag:mirror:canonical-docs`** 等の既存自動化で正本ミラーを保つ。**ツリー自動構築の拡張設計**は `templates/yojitsu-budget-lite/docs/yojitsu-feature-backlog.md` の **B-MDFLOW**（状態はバックログで管理）。
+
 #### §50-3-3 浜田（CEO）による航海図の差し替え
 
 - パイプライン提示後でも、浜田は **CEO として最終決定権**を持つ。チャットで **「ステップ N を Opus で」「この MCP は使わない」**等と指示した場合、AI は **§41・§47-D・§47-E と矛盾しない範囲で**従い、**更新後の短い航海図を同ターンで再掲示**してから次の **1 歩**（§51）に進む。
@@ -1996,6 +2004,7 @@ $ node scripts/parallel-session-detector.mjs --explain # 軸ごとの内訳を�
 - 改訂日: 2026-05-03（[FEAT] v23.27: **§11-6 他系統 AI への検証依頼**（浜田指示）。**CIO（浜田）の最終検収・目視は不変**のまま、**MCP 等の別系統 AI へ査読・チェックリスト意見を依頼し要約を報告に添える**ことを義務化（C=Consulted、A の代替禁止・§18 秘密非露出）。**§56-1a** に同趣旨の補足。RULES-INDEX §N 一覧・MCP 節表に **§11-6** 追記。）
 - 改訂日: 2026-05-04（[FEAT] v23.28: **§35-6 セッション成果物の削除と「古い」整理のゲート**（Desktop 日報消失反省／浜田指示で日報 §5 から正本へ昇格）。独断削除禁止・正本は `chat-sessions/`＋コミット・Desktop は sync 控え／§41・§50-3-8 連動・手順に復元経路がある掃除のみ自律可。`RULES-INDEX.md` §35 行・§N 一覧に **§35-6**。**`NEW-SESSION-STARTER.md`** 憲法級ブロック直後に短文化。`chat-sessions/SESSION-DAILY-REPORT-20260504.txt` §5 と双方向参照。`.rag/extra-docs/AGENTS.md` 同期。）
 - 改訂日: 2026-05-04（[FEAT] v23.29: **§35-6 の機械検証＋TSB-031** — `verify-constitution-handoff.mjs` に `AGENTS`／スターター／bootstrap／**TSB-031 本文**／`constitution-handoff-gate.mdc`／`checkpoint-latest.md` needles 追加。**`docs/troubleshooting.md` TSB-031** 新設（目次表・集計更新）。**`SESSION-BOOTSTRAP-CHECKLIST.md`** フェーズ 2 に §35-6 チェック。**read-pack `READ-01.txt`**・**`SESSION-SPLIT-REMINDER.md`**・**`HANDOFF-HUMAN.txt`** 運用追補。**`RULES-INDEX.md`** TSB-031 索引 1 行。`.rag/extra-docs` は `npm run rag:mirror:canonical-docs` で同期。）
+- 改訂日: 2026-05-04（[FEAT] v23.30: **§50-3-2a MDD 語彙の憲法一次定義** — 「MDD」＝航海図（Goal/Constraints/Acceptance）＋SPEC/md 正本＋領域別 §10.5/§11 を **AGENTS 本文で明示**。`.cursorrules` C 節・`RULES-INDEX`・予実 **B-MDFLOW** メモと相互参照。scaffold 未整備は **B-MDFLOW** に残し、既存 `rag:mirror` で不足を補う旨を記載。`.rag/extra-docs` は mirror で同期。）
 
 ---
 

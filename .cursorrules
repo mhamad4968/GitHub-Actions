@@ -18,6 +18,7 @@
 - **フォールバック**: **§50-3-9** のとおり MCP 構造エラー時は **同一 MCP を再試行せず** `scripts/` 既存パターンまたは **`scripts/tmp-kintone-*.mjs`** 等の **REST で完遂**。謝罪に時間を使わず迂回してゴールへ。
 
 ### C. Markdown 駆動（MDD）と SPEC 正本
+- **用語の一次定義（憲法本文）**: **MDD** および航海図・SPEC 正本の対応は **`AGENTS.md` §50-3-2a** を正とする（本節は IDE 向け要約）。
 - **着手の実務 1 ターン目**に **航海図**を出す: **Goal / Constraints / Acceptance criteria**（§50-3-2）。
 - **SPEC 正本**: ルート **`docs/SPEC.md` は存在しない**。**当タスク領域の `SPEC.md`（例: `templates/yojitsu-budget-lite/SPEC.md`）または `kintone-apps.md` / アプリ専用仕様**を航海図で **1 行指定**し、進捗は **該当 Markdown を更新**してコードを読まなくても追える状態を維持する（無い領域は **作成を検討**し §41 が要る場合は一問）。
 - **検索・一致の用語**: kintone REST の **`like` は英数字の単語境界**があり **SQL の `%` 部分一致と同一視しない**。ブラウザ内の **substring / 正規表現** と併用する場合は **Acceptance にどちらでヒットさせるか**を書く（`docs/runbooks/dry-run-apply-checklist.md` 参照可）。
