@@ -10,6 +10,7 @@ Windows から開きやすい控え: C:\Users\mhamada202408224\Desktop\AI緊急�
 次にやる1つ: **2026-05-04 07:00 JST〜** — 予実管理の **クイックガイド**（**非技術者・中学生でも分かる文**）作成予定（浜田）。AI側は **構成案・用語チェック・図の下書き**まで応相談。
 GO待ち（なし／内容）: クイックガイドの **章立て・トーン・掲載場所**（678 上段／別 md／ポータル）が未確定なら朝イチで一文だけ決めると速い。
 触らないで（なし／内容）: **post-commit hook** が session-clock で警告を出す状態（`npm run session:clock:set` 未更新のまま長時間セッション）→ 新チャット時は憲法手順どおり **壁時計リセット**。**スタッシュ** `wip: unrelated before push 678` が **`git stash list` に残存**（必要なら `stash pop`／不要なら `drop`）。
+**改定メモ（明日以降・CEO／CIO）**: 他人事にせず **自分のミスとして反省**。操作前は **必ず確認**、事故後は **リカバリを先に相談**。**CIO 独断でファイル削除しない**。**他 AI に実行前チェック**（§50-3-8 等）。日報は **`chat-sessions/` コミット正本**→ Desktop は控え。詳細 **`SESSION-DAILY-REPORT-20260504.txt` §5**。
 
 日時(JST): 2026-05-02（土）夕方 — **リポ正本反映済**（read-pack READ-02〜06・`INDEX`・`NEW-SESSION-STARTER` **v3.34 §4 H/I**）。Desktop は **`npm run session-starter:sync-desktop`** 後に verify でバイト一致確認。
 いま何してた（1行）: **`SESSION-DAILY-REPORT-20260502.txt`**（Desktop）に CEO **§4 A〜I 承印**。**`READ-06.txt`** §10・【AI分業チェック】は read-pack 正本と Desktop 控えを揃え済み。**Loto7**・bat 等は前セッションまでの通り。
