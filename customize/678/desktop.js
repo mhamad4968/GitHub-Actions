@@ -450,13 +450,17 @@
       if (kintone.app && kintone.app.record && typeof kintone.app.record.getHeaderMenuSpaceElement === "function") {
         slot = kintone.app.record.getHeaderMenuSpaceElement();
       }
-    } catch (e0) {}
+    } catch (e0) {
+      /* ignore */
+    }
     if (!slot) {
       try {
         if (kintone.app && typeof kintone.app.getHeaderMenuSpaceElement === "function") {
           slot = kintone.app.getHeaderMenuSpaceElement();
         }
-      } catch (e1) {}
+      } catch (e1) {
+        /* ignore */
+      }
     }
     if (slot) return { parent: slot, before: null };
 
@@ -465,7 +469,9 @@
         var hs = kintone.app.getHeaderSpaceElement();
         if (hs) return { parent: hs, before: null };
       }
-    } catch (e2) {}
+    } catch (e2) {
+      /* ignore */
+    }
 
     var ocean = document.querySelector(".ocean-ui-app-index-head");
     if (ocean) return { parent: ocean, before: ocean.firstChild };
@@ -538,13 +544,17 @@
     y678InputMonthLabel = n;
     try {
       sessionStorage.setItem("y678-input-month", n);
-    } catch (eIm) {}
+    } catch (eIm) {
+      /* ignore */
+    }
   }
   try {
     var _im0 = sessionStorage.getItem("y678-input-month");
     var _n0 = normalizeFiscalMonthLabel(_im0);
     if (_n0 && FISCAL_ORDER.indexOf(_n0) >= 0) y678InputMonthLabel = _n0;
-  } catch (eImr) {}
+  } catch (eImr) {
+    /* ignore */
+  }
 
   /**
    * ナビ「都度費用」強調（変動費の実績・予算修正はこの集計列）。月ボタン選択で解除。
@@ -553,13 +563,17 @@
   var y678FocusTsudo = false;
   try {
     if (sessionStorage.getItem("y678-focus-tsudo") === "1") y678FocusTsudo = true;
-  } catch (eTsr) {}
+  } catch (eTsr) {
+    /* ignore */
+  }
   function setTsudoFocus(on) {
     y678FocusTsudo = !!on;
     try {
       if (on) sessionStorage.setItem("y678-focus-tsudo", "1");
       else sessionStorage.removeItem("y678-focus-tsudo");
-    } catch (eTsw) {}
+    } catch (eTsw) {
+      /* ignore */
+    }
     var shell = document.querySelector("[data-yojitsu-678-shell]");
     if (shell) {
       if (on) shell.setAttribute("data-y678-tsudo-focus", "1");
@@ -802,13 +816,10 @@
         /** §6e: 固定費＝暦月12列は「入力対象月」列のみ。変動費＝12列参照のみ（都度費用集計列）。入力対象月＝入力月へジャンプ（既定はカレンダー当月）。 */
         var allowMonthPayment = false;
         var allowMonthRevision = false;
-        if (costCat === "変動費") {
-          allowMonthPayment = false;
-          allowMonthRevision = false;
-        } else if (costCat === "固定費") {
+        if (costCat === "固定費") {
           allowMonthPayment = isCurC;
           allowMonthRevision = isCurC;
-        } else {
+        } else if (costCat !== "変動費") {
           allowMonthPayment = isCurC;
           allowMonthRevision = isCurC;
         }
@@ -2496,7 +2507,7 @@
       }
       return String(t || "")
         .toLowerCase()
-        .replace(/[\s\u3000・\.]/g, "")
+        .replace(/[\s\u3000・.]/g, "")
         .replace(/[（）()]/g, "");
     }
 
@@ -2776,8 +2787,8 @@
             "<th style=\"text-align:left;border:1px solid #cfd8d2;padding:4px 6px\">請求書番号</th>",
             "<th style=\"text-align:left;border:1px solid #cfd8d2;padding:4px 6px\">枠種別</th></tr></thead><tbody>",
           ];
-          for (var pi = 0; pi < prow.length; pi++) {
-            var pv = (prow[pi] || {}).value || {};
+          for (var px = 0; px < prow.length; px++) {
+            var pv = (prow[px] || {}).value || {};
             var pd = esc(String(((pv.payment_date || {}).value) || ""));
             var pa = esc(String(((pv.payment_amount || {}).value) || ""));
             var inv = esc(String(((pv.invoice_number || {}).value) || ""));
