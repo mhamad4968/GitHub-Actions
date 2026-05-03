@@ -20,9 +20,9 @@ npm run app:fields <アプリID>
 |-------------------|---------|----------------|------------------|
 | PC台帳 | 594 | `customize/594/desktop.js` | `npm run deploy:594` |
 | 社員マスタ（台帳・627 連携用） | 595 | `customize/595/desktop.js` | `npm run deploy:595` |
-| アカウント採番（プール） | 626 | `customize/626/desktop.js` | `npm run deploy:626` |
 | アカウント管理台帳 | 627 | `customize/627/desktop.js` | `npm run deploy:627` |
 | 出張精算アプリ | **629** | `customize/shucccho-seisan/desktop.js` | `npm run deploy:629` |
+| 社内FAQ（DB） | **640** | （**FAQ レコードの本番保管先**で確定。運用ガイド **668** とは別アプリ） | [https://jbis-kintone.cybozu.com/k/640/](https://jbis-kintone.cybozu.com/k/640/) ・UI 用 HTML の作業例: `scripts/faq-portal-full.html`（640 への反映は運用で実施） |
 | Security NEXT ニュース（収集） | **631** | `security-next-automation` | [https://jbis-kintone.cybozu.com/k/631/](https://jbis-kintone.cybozu.com/k/631/) ・`KINTONE_APP_ID` |
 | ニュース週次要約（週次LLM） | **632** | `security-next-automation` | [https://jbis-kintone.cybozu.com/k/632/](https://jbis-kintone.cybozu.com/k/632/) ・`KINTONE_REPORT_APP_ID` ・[設計CSV](security-next-automation/docs/security-next-weekly-report-app-design.csv) |
 | 運用ガイド（PC台帳・アカウント周りの操作手順） | **668** | `customize/ops-guide/desktop.js` | `npm run ops-guide:publish`（HTML レコード同期＋desktop.js デプロイ） |
@@ -31,8 +31,8 @@ npm run app:fields <アプリID>
 | 新個人WindowsID採番マスタ（新・PC台帳ver.1 用 / Day 3 / 旧 626 置換） | **672** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-25 作成 / 0 レコード（`^jbm\d{4}$` 厳格 / `jbm0001` から払出予定）|
 | 新共有WindowsID採番マスタ（新・PC台帳ver.1 用 / Day 3 / 旧 667 置換） | **673** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-25 作成 / 0 レコード（`^sjbm\d{4}$` 厳格 / `sjbm0001` から払出予定）|
 | 新・PC台帳ver.1（本体・674 customize **本実装進行中**・**運用開始前**） | **674** | `customize/new-pc-ledger-v1/desktop.js` | `npm run deploy:674` / Space **21** / thread **23** / customize **BUILD=`2026-05-02-pc-replace-mount-v0.9.14`**（PC買替 §4.10.3 含む・**627 は二重更新しない**）/ fileKey **`01d42a25-ddbe-4a03-a009-69034f7e1d6a`** / field-spec **44/44** / **運用開始予定 2026-05-13**（仕様書 §1） |
-| **部署予実・入力**（明細・`新フォーマット` 全列・`支払内訳` サブテーブル・月次 12 行） | **677** | `customize/677/desktop.js` \| `npm run deploy:677` | [https://jbis-kintone.cybozu.com/k/677/](https://jbis-kintone.cybozu.com/k/677/)・**配置**: Space **54** / thread **58**。**2026-05-02**: customize deploy 済（**677** BUILD `2026-05-02-677-submit-error-guard`）。**2026-05-03**: **678** BUILD `2026-05-03-678-dashboard-milestone`（§10.1）。**データ**: 旧フォーマット xlsx **47 明細**。`SPEC.md` §6–§6c |
-| **部署予実・ダッシュ**（**集計管理の主画面**・俯瞰・入力アプリ参照） | **678** | `customize/678/desktop.js` \| `npm run deploy:678` | [https://jbis-kintone.cybozu.com/k/678/](https://jbis-kintone.cybozu.com/k/678/)・**2026-05-02**: 677 表・備考・API エラー表示・表示順 PUT / rev **7**。**2026-05-03**: milestone **BUILD=`2026-05-03-678-dashboard-milestone`** / rev **8**。**続**: **Excel準拠グリッド**・**マウント**・**load-guard**・**api.url 修正**（BUILD **`2026-05-04-678-api-url-fix`** / rev **12** / fileKey **`6b091321-1f08-4b46-994c-7b7c8b0ad2bb`**）。`SPEC.md` §6b・§6e |
+| **部署予実・入力**（明細・`新フォーマット` 全列・`支払内訳` サブテーブル・月次 12 行） | **677** | `customize/677/desktop.js` \| `npm run deploy:677` | [https://jbis-kintone.cybozu.com/k/677/](https://jbis-kintone.cybozu.com/k/677/)・**配置**: Space **54** / thread **58**・ポータル [スペース 54（thread 58）](https://jbis-kintone.cybozu.com/k/#/space/54/thread/58)。**2026-04-29**: 枠作成 deploy **SUCCESS**。**2026-05-02**: customize（`monthly_breakdown` 12 行整形＋保存時 **`支払内訳`→月次「実績」ロールアップ**・暦月合算・**ロールアップ例外時は保存ブロック `event.error`**）deploy **SUCCESS** / fileKey **`69629015-73da-40b7-9507-18232966bcbc`** / preview revision **9** / **BUILD=`2026-05-02-677-submit-error-guard`**。**2026-05-03**: 費用種別に応じ **ランニング／イニシャル片方のみ表示**・**枠種別＋保存検証**・実績ロールアップの **枠フィルタ**（`BUILD=2026-05-03-677-cost-category-field-guard`）。customize deploy **SUCCESS** / fileKey **`38c2bfd1-b420-4b37-ac7a-d54f534914c4`** / preview revision **`12`**。**データ**: 旧フォーマット xlsx **47 明細**。`SPEC.md` §6–§6c |
+| **部署予実・ダッシュ**（**集計管理の主画面**・俯瞰・入力アプリ参照） | **678** | `customize/678/desktop.js` \| `npm run deploy:678` | [https://jbis-kintone.cybozu.com/k/678/](https://jbis-kintone.cybozu.com/k/678/)・入力と同スペース。**2026-04-29** 枠のみ deploy **SUCCESS**。**2026-05-02**: 677 明細表・備考・`display_order` PUT・**API 失敗時メッセージ（コード・ヒント）**・リビジョン未取得時の案内 deploy **SUCCESS** / fileKey **`5f992f52-5148-4b10-b7fb-e018ff0bf8bf`** / preview revision **7** / **BUILD=`2026-05-02-678-dashboard-api-errors`**。**2026-05-03**: 費用種別「固定費」行に **`monthly_breakdown` 定額月額**の **「翌月〜4月同額（はい）」「この月のみ（いいえ）」**から 677 へ PUT。**続き**: 「変動費」行は **`initial_variable_budget` PUT**＋**月次「予算修正」**の **はい／いいえ**（翌月〜4月同額／当月のみ）・保存前 **費用種別再確認**（`BUILD=2026-05-03-678-variable-revision-propagate` → **`2026-05-03-678-kintone-api-url-fix`**（`kintone.api.url`）→ **`2026-05-03-678-table-scroll-touch`**（表幅・横スク）→ **`2026-05-03-678-hide-native-list`**（**678 標準一覧を非表示**）→ **`2026-05-03-678-passive-touch-patch`**（**touchstart/touchmove** の `passive` 未指定を既定 **true**）→ **`2026-05-03-678-running-monthly-readout`**（固定費・**`monthly_breakdown` 12 ヶ月実効の表示**）。customize deploy **SUCCESS** / fileKey **`b20b6b36-4177-4f64-b0bc-a8180a6e6309`** / preview revision **`57`**。**続（再デプロイ）**: グリッド版 **SUCCESS** / fileKey **`ee4eda1c-bf83-450c-a284-a54ce0c3a347`** / preview revision **`58`** / **BUILD=`2026-05-04-678-hide-recordcount-mo`**。**続**: 費用種別に応じ **月次「予算」「消費率」— 表示**・集計列の抑止・**支払モーダルに既存支払一覧**・枠種別表記 **ランニング** 修正 deploy **SUCCESS** / fileKey **`337db535-633e-49d5-a7f8-88b8680796ee`** / preview revision **`60`** / **BUILD=`2026-05-04-678-dash-columns-payment-list`**。**続（2026-05-05）**: 固定費の「予算修正」**はい／いいえ**・§6e **クリック範囲**（固定費＝**入力対象月**列＝入力月へジャンプ／変動費＝都度列）・実績モーダル **会社を新規登録する**。**customize deploy SUCCESS** / fileKey **`f6a47dcc-1e1c-425e-8f15-5a8e73a6f518`** / revision **`63`** / **BUILD=`2026-05-05-678-input-month-from-jump`**。**続（2026-05-06）**: 会社名変更の**案内ボックス**。**deploy SUCCESS** / fileKey **`4ea59945-ce25-441a-bfaf-bbc0346ecd1d`** / revision **`64`** / **BUILD=`2026-05-06-678-company-change-hint`**。**続（2026-05-07）**: **入力月へジャンプ**の月ボタンで **target が Text ノード**でも反応するようクリック委譲を修正。月選択後の **横スクロール**は **requestAnimationFrame** で再描画直後に実行。**deploy SUCCESS** / fileKey **`5044d466-631e-4365-83ba-9f8a4336f792`** / revision **`65`** / **BUILD=`2026-05-07-678-month-jump-delegate-fix`**。**続（2026-05-07・表示名）**: ナビ・案内の **「月度ジャンプ」**を **「入力月へジャンプ」**に改称。**deploy SUCCESS** / fileKey **`d74060fa-b27c-41b1-8a8e-f3c6201cb69c`** / revision **`66`** / **BUILD=`2026-05-07-678-input-month-jump-label`**。**続（2026-05-07・会社）**: 実績モーダルで **FBJ・オフィスバスター・他のもの** 等を集合先判定に追加。**datalist** で候補選択＋入力可。保存時 **677 `partner_company` PUT**（集合先行はボタン未押下でも可）。**deploy SUCCESS** / fileKey **`9fb11414-6ae5-40d9-b0a8-532c53d07cf6`** / revision **`67`** / **BUILD=`2026-05-07-678-partner-preset-fbj-office`**。**続（2026-05-07・都度ナビ）**: ナビに **「都度費用」**ボタン（変動費の実績・予算修正列へジャンプ＋枠強調・`sessionStorage`）。**deploy SUCCESS** / fileKey **`a2e72bc6-3244-489e-87b7-398429288f8a`** / revision **`68`** / **BUILD=`2026-05-07-678-nav-tsudo-jump`**。**続**: 都度押下時は**月ナビの押下見た目のみ解除**（入力対象月は維持）。**deploy SUCCESS** / fileKey **`7b58fc4b-4147-4ce4-85aa-3c5d84a4d33e`** / revision **`69`** / **BUILD=`2026-05-07-678-nav-tsudo-clear-month-ui`**。**続（会社）**: 実績モーダルに **会社候補の `<select>`**＋**NFKC 表記ゆれ**で集合先判定を拡張。**deploy SUCCESS** / fileKey **`b1ce263d-0a2d-4848-ad35-fdd20b7b58e6`** / revision **`70`** / **BUILD=`2026-05-07-678-partner-select-nfkc`**。`SPEC.md` §6・§6b・§6c・§6e |
 
 ※ **631** … `collect` / `analyze` が読むニュース。**632** … `analyze` が書き込む週次要約のみ。`.env`: `KINTONE_APP_ID=631` , `KINTONE_REPORT_APP_ID=632`。API トークンに **両アプリ**を載せる。  
 ※ **権限**: 自動化の最低限は **レコード閲覧＋追加**。閲覧・追加・編集・削除・アプリ管理のフル付与でもスクリプトは動作するが、トークン漏えい時のリスク低減のため余分な権限は削るとよい（詳細は `security-next-automation/README.md`）。
@@ -43,22 +43,19 @@ npm run app:fields <アプリID>
 
 **Security NEXT 連携**: フィールドコードの正本は `security-next-automation/README.md` と `security-next-automation/src/lib/field-codes.ts`。アプリ新規なら `npm run setup:security-next-apps` も可。
 
-### システムヘルスチェックレポート（全アプリ・案A）
+**FAQ（640）**: 社内 FAQ の **DB はアプリ 640**（[https://jbis-kintone.cybozu.com/k/640/](https://jbis-kintone.cybozu.com/k/640/)）で確定。運用ガイド（668）や PC 台帳系アプリとは **別アプリ**。
 
-**運用方針（確定）**: 定期レポートは **毎朝 9:00 JST**（GitHub Actions のスケジュール。日本は夏時間なしのため UTC 0:00 = JST 9:00）。新規アプリは **`## アプリ一覧` 表に 1 行追記するだけで、次回実行から自動で検査対象に含まれる**（ワークフロー側の ID 手動追記は不要）。
+**638 / 639**: 台帳上は **社内FAQDB** 同名だが **640 が正本**（638・639 はほぼ空の残骸）。依存なし確認済。**2026-05-20 頃**削除予定・事前 CSV バックアップ推奨。このリポからは未参照。
 
-- **ポータル URL（運用確認用）**  
+### デイリーヘルスチェック（廃止）
+
+**2026-05 以降**: 全アプリの REST 定期診断（旧 `space-health-report` / GitHub Actions / `npm run report:space-health`）は **運用しない**。アプリの正は **社内アプリ台帳** と **`## アプリ一覧`** とする。
+
+- **運用確認用 URL**  
   - ニュース（収集）: [https://jbis-kintone.cybozu.com/k/631/](https://jbis-kintone.cybozu.com/k/631/)  
   - 週次要約: [https://jbis-kintone.cybozu.com/k/632/](https://jbis-kintone.cybozu.com/k/632/)
-- **REST 診断**: ルートで `npm run report:space-health`。**認証はパスワード（`KINTONE_USERNAME` / `KINTONE_PASSWORD`）を推奨**（GitHub Environment `kintone-collect` に Secrets 追加）。外側 Basic 認証がある場合は `KINTONE_BASIC_AUTH_*` も設定。トークンのみでも可（従来どおり）。
-- **検査対象**: `SPACE_HEALTH_APP_IDS` 未指定かつパスワード認証ありのとき、**`kintone-apps.md` の「## アプリ一覧」表からアプリ ID を自動抽出**（594, 595, 626, 627, 629, 631, 632, 668 など）。手動で絞る場合は `SPACE_HEALTH_APP_IDS=631,632` のように指定。MD 抽出を止める場合は `SPACE_HEALTH_USE_KINTONE_APPS_MD=0`。
-- **フィールド検証**: 631 は設計どおり 11 フィールド。632 は本番フォームが Phase1 未移行の場合があるため、**`target_week` と `weekly_trend` の存在のみ**を検証（フォーム拡張後に期待セットを見直すこと）。
-- **GitHub Actions**: `.github/workflows/space-health-report.yml`（毎日 09:00 JST 前後・`workflow_dispatch` 可）。ジョブサマリーに Markdown 表が付く。
-- **スペース 48 ポータルへの自動反映（CI）**: 環境変数 `KINTONE_SPACE_HEALTH_SPACE_ID`（既定で Actions に **48** を渡す）が設定され、**マルチスレッド**のスペースであること。**実行ユーザー（Secrets の KINTONE_USERNAME）がスペース管理者**であること。本文に次の **いずれか 1 組**を**この順**で挿入する（間は空でよい。初回以降 CI がこの間を上書きする）:
-  - **A（HTML コメント）**: `<!-- JBIS_SPACE_HEALTH_AUTO_START -->` / `<!-- JBIS_SPACE_HEALTH_AUTO_END -->`
-  - **B（リッチテキストのみのとき）**: `[[JBIS-SPACE-HEALTH-AUTO-START]]` / `[[JBIS-SPACE-HEALTH-AUTO-END]]`（画面上に短く出るが、CI 後はブロック内に収まる）
-  - **シングルスレッド**では既定スレッド本文へ **GET/PUT `/k/v1/space/thread.json`**（マーカーもここ）。**マルチスレッド**では **PUT `/k/v1/space/body.json`**（ポータル本文）。長文は `SPACE_HEALTH_KINTONE_BODY_MAX_CHARS`（既定 62000）、再試行は `SPACE_HEALTH_KINTONE_PUSH_RETRIES`（既定 3）。
-- **メンテ手順の正本**: [`docs/maintenance-template.md`](docs/maintenance-template.md) の「一気通貫メンテ・プレイブック」。エージェント・開発の前提ルールは [`AGENTS.md`](AGENTS.md)。
+
+- **メンテ手順の正本**: [`docs/maintenance-template.md`](docs/maintenance-template.md)。エージェント・開発の前提ルールは [`AGENTS.md`](AGENTS.md)。
 ### GitHub Actions デプロイ記録（自動）
 
 | 日時（UTC） | アプリID | customize パス |
@@ -487,6 +484,13 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 
 | 日付 | 変更内容 |
 |------|----------|
+| 2026-05-07 | **678 customize**：実績モーダル **会社** — **候補 `<select>`** を追加（datalist 併用）。**NFKC**＋集合先判定の拡張。**deploy SUCCESS** / fileKey **`b1ce263d-0a2d-4848-ad35-fdd20b7b58e6`** / revision **`70`** / **BUILD=`2026-05-07-678-partner-select-nfkc`** |
+| 2026-05-07 | **678 customize**：都度費用フォーカス中は**表の暦月「入力中」・暦月セルの編集可表示**もオフ（内部の入力対象月・都度列の集計は従来どおり）。**「都度費用」**押下で **再描画**、先頭／左右／末尾ナビで都度を抜けたときも **再描画**。**deploy SUCCESS** / fileKey **`8fcd9dd8-f43d-4d4a-a4e6-369e7e67336d`** / revision **`71`** / **BUILD=`2026-05-07-678-tsudo-table-sync`** |
+| 2026-05-07 | **678 customize**：都度費用フォーカス中は**月ジャンプボタンの押下見た目のみ解除**（`getInputMonthLabel` は維持）。**deploy SUCCESS** / fileKey **`7b58fc4b-4147-4ce4-85aa-3c5d84a4d33e`** / revision **`69`** / **BUILD=`2026-05-07-678-nav-tsudo-clear-month-ui`** |
+| 2026-05-07 | **678 customize**：ナビ **「都度費用」**ボタン — イニシャル集計の都度費用ブロックへ横スクロールし、**緑枠**で実績・予算修正セルを強調（`sessionStorage` `y678-focus-tsudo`）。月ボタン選択で解除。**deploy SUCCESS** / fileKey **`a2e72bc6-3244-489e-87b7-398429288f8a`** / revision **`68`** / **BUILD=`2026-05-07-678-nav-tsudo-jump`** |
+| 2026-05-07 | **678 customize**：実績モーダル **会社** — 集合先判定に **オフィスバスター・他のもの** 等を追加。**datalist** で **FBJ／オフィスバスター／その他／他／各社** 等を選択可。集合先行は **readonly 解除**＋保存で **`partner_company` PUT**（「会社を新規登録する」未押下でも変更反映）。**deploy SUCCESS** / fileKey **`9fb11414-6ae5-40d9-b0a8-532c53d07cf6`** / revision **`67`** / **BUILD=`2026-05-07-678-partner-preset-fbj-office`** |
+| 2026-05-07 | **678 customize**：ナビ・ヒント・案内の **「月度ジャンプ」**を **「入力月へジャンプ」**に改称（入力対象月の切替であることを明示）。**deploy SUCCESS** / fileKey **`d74060fa-b27c-41b1-8a8e-f3c6201cb69c`** / revision **`66`** / **BUILD=`2026-05-07-678-input-month-jump-label`** |
+| 2026-05-07 | **678 customize**：**入力月へジャンプ**の月ボタンで `click` の **`event.target` がテキストノード**のとき `closest` が使えず処理がスキップされていた件を修正（親要素へ上がってから `button[data-y678-jump]` を解決）。月選択後の **`jumpHorizontal`** は **再描画後**に **`requestAnimationFrame`** で実行。**deploy SUCCESS** / fileKey **`5044d466-631e-4365-83ba-9f8a4336f792`** / revision **`65`** / **BUILD=`2026-05-07-678-month-jump-delegate-fix`** |
 | 2026-05-02 | **674 行の正本整合**: 一覧表の **674** を **Day 4 雛形→Day 5** 表記から改め、**PC買替（§4.10.3）は customize 実装済**・**627 は二重更新しない**を明記。**BUILD** を手元正本 `2026-05-02-pc-replace-mount-v0.9.14` に更新。`docs/plans/2026-04-21-new-pc-ledger-spec.md` §4.4・§11・§13 と同趣旨 |
 | 2026-03-28 | 初版テンプレ。629 を `/k/v1/apps.json` で特定、594/595/626/627/629 の `app:fields` を本文へ反映、`npm run deploy:629` を `package.json` に追加 |
 | 2026-04-16 | App 668（運用ガイド）を一覧に追加。フィールドコードは `guide_slug` / `guide_body_html` / `guide_title`（推測しないこと）。`KINTONE_OPS_GUIDE_APP` が正本 ID |
