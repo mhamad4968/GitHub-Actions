@@ -60,7 +60,29 @@ jobs:
       - name: ESLint（customize の JS 構文・ルールチェック）
         run: npm run lint:customize
 
+      - name: デプロイ要否（push に customize/<app>/desktop.js が含まれるか）
+        id: deploy_gate
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "deploy_js=1" >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+          BEFORE="${{ github.event.before }}"
+          SHA="${{ github.sha }}"
+          if [[ -z "${BEFORE}" ]]; then
+            echo "deploy_js=1" >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+          if git diff --name-only "${BEFORE}" "${SHA}" 2>/dev/null | grep -qE '^customize/[0-9]+/desktop\.js$'; then
+            echo "deploy_js=1" >> "${GITHUB_OUTPUT}"
+          else
+            echo "::notice::この push には customize/<数字>/desktop.js が含まれないため kintone API デプロイをスキップします（ESLint のみ完了）。"
+            echo "deploy_js=0" >> "${GITHUB_OUTPUT}"
+          fi
+
       - name: ベース URL 正規化・アプリ ID に応じた路径解決・アップロード用 JS 配置
+        if: steps.deploy_gate.outputs.deploy_js == '1'
         env:
           KINTONE_DOMAIN: ${{ secrets.KINTONE_DOMAIN }}
           # Secret 名は KINTONE_APP（末尾 _ID なし）→ シェルでは KINTONE_APP_ID
@@ -128,6 +150,7 @@ jobs:
           cp "${SRC}" .kintone-deploy/upload.js
 
       - name: kintone へ反映（API トークン + パスワード・REST 手順）
+        if: steps.deploy_gate.outputs.deploy_js == '1'
         env:
           KINTONE_BASE_URL: ${{ env.KINTONE_BASE_URL }}
           KINTONE_API_TOKEN: ${{ secrets.KINTONE_API_TOKEN }}
@@ -152,7 +175,7 @@ jobs:
           node scripts/deploy-customize-api-token.js "${{ env.KINTONE_DEPLOY_APP_ID }}" .kintone-deploy/upload.js
 
       - name: kintone-apps.md にデプロイ記録（必要ならメイン表に 1 行追加）
-        if: success()
+        if: success() && steps.deploy_gate.outputs.deploy_js == '1'
         env:
           KINTONE_APP_ID: ${{ env.KINTONE_DEPLOY_APP_ID }}
           DEPLOY_REL_PATH: ${{ env.DEPLOY_REL_PATH }}
