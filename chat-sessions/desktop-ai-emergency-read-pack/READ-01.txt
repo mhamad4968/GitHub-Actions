@@ -5,6 +5,8 @@
 1) 項番 -1  
    浜田が `Desktop\AI緊急用\NEW-SESSION-STARTER_yyyymmdd.txt` **全文**を貼ったあと、AI は `chat-sessions/NEW-SESSION-STARTER.md` を Read ツールで **通読**（offset 連鎖で抜けなし）。
 
+**§35-6（憲法・2026-05-04）**: 日報・長文ログの **正本**は `chat-sessions/` に置き **Git コミット**。Desktop `AI緊急用` は **sync の控え**。「古い」整理と **削除**は **浜田確認または §41 一問のあと**（`AGENTS.md` §35-6・`docs/troubleshooting.md` **TSB-031**）。
+
 2) 項番 -0  
    ティア宣言＋「次にやる **1 つ**」を **§41 一問だけ**浜田へ。OK が出るまで **verify / bootstrap / 本題に着手しない**。
 

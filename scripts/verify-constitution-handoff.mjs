@@ -7,7 +7,7 @@
  *   `npm run session:bootstrap`（smoke-test）で即検知する。
  *
  * 正本:
- *   - docs/troubleshooting.md TSB-024
+ *   - docs/troubleshooting.md TSB-024 / TSB-031（§35-6 連動）
  *   - chat-sessions/NEW-SESSION-STARTER.md 冒頭 🚨 ブロック
  *   - chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md フェーズ 7 第 7 項
  *
@@ -49,6 +49,16 @@ const suites = [
       '🚫 AI が絶対に書いてはいけない禁句',
       '[§1-2-3 ティア判定',
       '§1-2-3-1',
+      '§35-6',
+      '独断で消さない',
+    ],
+  },
+  {
+    id: 'agents-35-6',
+    rel: 'AGENTS.md',
+    needles: [
+      'セッション成果物の削除と「古い」整理のゲート',
+      'セッション日報・長文ログの正本は `chat-sessions/` に置きコミット',
     ],
   },
   {
@@ -65,12 +75,19 @@ const suites = [
       '3b.',
       '貼付推奨',
       '日終わり',
+      '§35-6',
+      'TSB-031',
     ],
   },
   {
     id: 'tsb024-body',
     rel: 'docs/troubleshooting.md',
     needles: ['## TSB-024', '真因', '禁句'],
+  },
+  {
+    id: 'tsb031-body',
+    rel: 'docs/troubleshooting.md',
+    needles: ['## TSB-031', '§35-6', 'SESSION-DAILY-REPORT_20260503'],
   },
   {
     id: 'rules-index-tsb024',
@@ -109,6 +126,7 @@ const suites = [
       'SESSION-CLOCK-TICKER',
       'セッション切替で新チャット',
       'Desktop「AI緊急用」同期',
+      '§35-6',
     ],
   },
   {
@@ -144,6 +162,8 @@ const suites = [
       'session:clock:set',
       'session:split-check',
       'session:clock:watch',
+      '§35-6',
+      'TSB-031',
     ],
   },
 ];

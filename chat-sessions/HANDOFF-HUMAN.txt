@@ -42,3 +42,4 @@ GO待ち（なし／内容）: Tier B。**19:00 前後**の kintone 着手なら
 （2026-04-29 07:15 Phase B 完了）: `npm run desktop:sync-and-verify` 新設（sync→verify 直列保証）。次回からこれ必須・個別呼出禁止。詳細 `docs/reports/2026-04-29-morning-phase-b-completion.md`。
 （2026-04-29 07:30 TSB-026 解消）: 異常 2 件は**設計バグ**と判明。① NEW-SESSION-STARTER 冒頭肥大化 → 冒頭に `(7) 役割宣言` 要約永続追加。② `session-clock.mjs` HEADER 全置換 → HEADER 定数に注意書き永続化。TSB-026 起票・push `7581e00`。詳細 `docs/troubleshooting.md` TSB-026。
 （2026-04-29 13:18 引継ぎ）: 新チャット継続用に壁時計リセット（開始 13:17）→ constitution + mandatory-read-gate 両 exit 0。項番 0 前に必ず `session:clock:set`（§51-6-2）。
+（2026-05-04 運用）: **憲法改定・hooks 編集・§51-6-2 警告が続く長時間**のあとは **新チャット推奨** → **`session:clock:set`** → bootstrap。成果物削除・「古い」整理は **`AGENTS.md` §35-6**／**`docs/troubleshooting.md` TSB-031**（浜田確認または §41 一問のあと）。

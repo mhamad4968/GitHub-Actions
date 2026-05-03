@@ -6,7 +6,7 @@
 
 ---
 
-## 目次（2026-04-25 全件再構築 / 2026-05-01 TSB-028・TSB-029 目次表追記 / 2026-05-02 TSB-030 追記 / F-2 自己改善目標 #2 = 真因 1 文 + root_cause_confirmed フラグ追加）
+## 目次（2026-04-25 全件再構築 / 2026-05-01 TSB-028・TSB-029 目次表追記 / 2026-05-02 TSB-030 追記 / 2026-05-04 TSB-031 追記 / F-2 自己改善目標 #2 = 真因 1 文 + root_cause_confirmed フラグ追加）
 
 > **真因 1 文ルール**: 各 TSB は **「真因を 1 文で説明できる」状態でなければ root_cause_confirmed = false** とする。false の TSB は再発監視優先。
 > **status 凡例**: ✅ Resolved（恒久対策済）/ 🟡 Mitigated（暫定対策のみ）/ 🔴 Open（未解決）/ ♻️ Recurring（同系列複数 episode）
@@ -40,9 +40,10 @@
 | TSB-028 | 2026-05-01 | Windows Cursor の `mcp.json` が WSL 正本とズレて MCP 全赤化 | **Windows と WSL に二重の `mcp.json` があり片方だけ更新**される／同期スクリプトの **`command`/`args` 合成バグ**で `filesystem` が壊れる等、**パス体系の混在**で MCP 起動が失敗する | ✅ | true | Cursor MCP 全体 |
 | TSB-029 | 2026-05-01 | `user-markdownify`（`@iflow-mcp/markdownify-mcp`）stdio 即死 | **npm 公開 tarball に `preinstall.js` が含まれないのに `package.json` が `preinstall` を定義**しており、`npm install -g`（スクリプト有効）や **`npx` 展開のライフサイクルが失敗して子が即終了**する（副因として Windows `_npx` 掃除 EPERM ログも出うる） | ✅ | true | Cursor MCP `markdownify` |
 | TSB-030 | 2026-05-02 | GitHub Actions `security-next-*` が **GAIA_AP15**（403）で失敗 | **GitHub Environment `kintone-collect` の API トークン（`KINTONE_API_TOKEN_COLLECT` / `KINTONE_API_TOKEN_ANALYZE` 等）が、ワークフローが参照するアプリ ID（`KINTONE_APP`・`KINTONE_REPORT_APP_ID`）と kintone 上で一致しておらず** REST が **403 GAIA_AP15** を返している | 🟡 | true | `.github/workflows/main.yml` / `daily-collect.yml` / `security-next-automation/` |
+| TSB-031 | 2026-05-04 | Desktop のセッション日報を **Git 未収容のまま削除**しリポから復元不能にした | **正本を Desktop のみに置いた状態で「古い」整理とファイル削除を同一ターンに走らせ**、バックアップ・コミットなしで消したため **組織の履歴がチャット外に残らなかった** | ✅ | true | セッション日報・HANDOFF・read-pack・憲法 §35-6 |
 
-**集計** (2026-05-02 時点 / TSB-030 追記):
-- 全 **27** 件中 **root_cause_confirmed = true: 26 件** / **false (孤児): 1 件**
+**集計** (2026-05-04 時点 / TSB-031 追記):
+- 全 **28** 件中 **root_cause_confirmed = true: 27 件** / **false (孤児): 1 件**
 - 5 月目標 (F-2 自己批判 §54-5) = カバレッジ 100% を TSB-019 真因確定 (Cursor IDE Agents 設定) で **95% 前後を維持**（分母は TSB セクション数に追随）
 - 残 false: **TSB-001 のみ** = 孤児 TSB（4/19 D1-proposal でも「詳細未記載」）= 真因不明のまま記録止まり
 
@@ -1362,4 +1363,33 @@ Cursor の MCP ログで **`Connection failed: MCP error -32000: Connection clos
 ### 関連
 
 - `.github/workflows/main.yml` / `.github/workflows/daily-collect.yml` / `security-next-automation/`
+
+---
+
+## TSB-031 — Desktop 上のセッション日報を Git 未収容のまま削除しリポから復元不能にした（2026-05-04 検出 / 同日 恒久対策）
+
+### 事象
+
+`C:\Users\mhamada202408224\Desktop\AI緊急用\` にあった **`SESSION-DAILY-REPORT_20260503.txt`**（長文セッション日報）を、**リポジトリの `chat-sessions/` に一度もコミットしていない状態**で削除した。Git 履歴が無いため **リポからの復元は不可**（残るとすれば **端末のゴミ箱のみ**）。
+
+### 根本原因（真因 1 文）
+
+**正本を Desktop のみに置いた状態で「古い」「整理」とファイル削除を同一判断にし、復元経路（Git／バックアップ）を確認せず実行した**ため、組織の証跡がチャットとリポの両方から失われた。
+
+### 恒久対策（憲法・運用）
+
+- **`AGENTS.md` §35-6**（セッション成果物の削除と「古い」整理のゲート）を制定: 削除前に **対象パスと復元手段**を一文で述べ、**浜田の明示承認または §41 一問**。ミス発覚時は **リカバリを浜田と相談**。
+- **`SESSION-DAILY-REPORT_*.txt` の正本は `chat-sessions/` に置きコミット**し、Desktop は **`npm run session-starter:sync-desktop` による控え**とする。
+- **実行前チェック**: 削除・正本移動の前は **§50-3-8 または DeepSeek／Kimi** を原則スキップしない（手順に復元経路がある掃除のみ例外）。
+- **機械ガード**: `npm run verify:constitution-handoff` が **`AGENTS.md` 本文・`docs/troubleshooting.md` の本条・`SESSION-BOOTSTRAP-CHECKLIST.md`・スターター冒頭**に §35-6／TSB-031 のキーワードが残ることを検査する。
+
+### 教訓
+
+- **Desktop はバックアップ装置ではない**（同期スクリプトや手整理で消える）。
+- **「古い」は削除命令ではない**。長文ログ・日報・HANDOFF は **正本の置き場所を先に決めてから**整理する。
+
+### 関連
+
+- `chat-sessions/SESSION-DAILY-REPORT-20260504.txt` §5（経緯・反省の詳細）
+- `RULES-INDEX.md` §35 行（§35-6 索引）
 
