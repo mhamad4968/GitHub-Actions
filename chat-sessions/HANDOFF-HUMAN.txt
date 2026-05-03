@@ -5,10 +5,22 @@ Windows から開きやすい控え: C:\Users\mhamada202408224\Desktop\AI緊急�
 
 推奨フロー（セッション切替）: ① **`NEW-SESSION-STARTER_yyyymmdd.txt`（JST・常にこのファイル名）全文**（**v3.27+**: **「■ 貼付単独で完走」** が **唯一の詳細正本**（項番 -1〜0・**v3.28** 以後の改定もここ優先）。checkpoint 重複貼付不要。貼付推奨は verify 最終行）② この 5 行（**任意**）③ **項番 -0** → ④ **`session:bootstrap` 一括**。**日終わり**: sync → verify。
 
-日時(JST): 2026-05-02（土）セッション終了引継ぎ（本日 07:00 頃〜）
-いま何してた（1行）: **部署予実** 677（月次・支払ロールアップ・**保存例外時 event.error**・本予算 **47 件** xlsx 投入スクリプト）／678（677 一覧・備考列・ダッシュ備考・**API エラー整形**・表示順 PUT）／`kintone-apps.md`・Git **`main` push**／スタッシュ方針（`wip: 2026-05-02 session mixed` 残あり）／631・632・656・658・659 **未対応（次セッション必須）**。
-次にやる1つ: **631/632/656/658/659** — ログイン後の症状と **GitHub Actions**・**Secrets（特に `KINTONE_APP` と 631/632 のトークン）** を切り分け（`chat-sessions/handoff-log.md` 2026-04-28 632 事故参照）。**15:00 以降または新チャット優先**でよい。
-GO待ち（なし／内容）: 上記 kintone 周り。予実ダッシュ本格 UI は合意スケジュール **5/3** 以降。
+日時(JST): 2026-05-04（月）未明 — **678 都度ナビと表の整合**・SPEC・台帳追随・**Git `main` push 済**（`da023a7`・rebase 競合は SPEC を手マージ）。
+いま何してた（1行）: **都度費用**フォーカス中に暦月の「入力中」／編集可表示が残る不具合を **`monthCurUi` + `applyFilterAndRedraw`** で解消。**`templates/yojitsu-budget-lite/SPEC.md` §6e** と **`kintone-apps.md`**（revision **71**・`BUILD=2026-05-07-678-tsudo-table-sync`）を更新。浜田による挙動確認 **OK**。
+次にやる1つ: **2026-05-04 07:00 JST〜** — 予実管理の **クイックガイド**（**非技術者・中学生でも分かる文**）作成予定（浜田）。AI側は **構成案・用語チェック・図の下書き**まで応相談。
+GO待ち（なし／内容）: クイックガイドの **章立て・トーン・掲載場所**（678 上段／別 md／ポータル）が未確定なら朝イチで一文だけ決めると速い。
+触らないで（なし／内容）: **post-commit hook** が session-clock で警告を出す状態（`npm run session:clock:set` 未更新のまま長時間セッション）→ 新チャット時は憲法手順どおり **壁時計リセット**。**スタッシュ** `wip: unrelated before push 678` が **`git stash list` に残存**（必要なら `stash pop`／不要なら `drop`）。
+
+日時(JST): 2026-05-02（土）夕方 — **リポ正本反映済**（read-pack READ-02〜06・`INDEX`・`NEW-SESSION-STARTER` **v3.34 §4 H/I**）。Desktop は **`npm run session-starter:sync-desktop`** 後に verify でバイト一致確認。
+いま何してた（1行）: **`SESSION-DAILY-REPORT-20260502.txt`**（Desktop）に CEO **§4 A〜I 承印**。**`READ-06.txt`** §10・【AI分業チェック】は read-pack 正本と Desktop 控えを揃え済み。**Loto7**・bat 等は前セッションまでの通り。
+次にやる1つ: **kintone 本線** **631/632/656/658/659** 切り分け。**`AGENTS.md`** への §4 鏡像が必要なら §57 手順で。**新チャット**なら `NEW-SESSION-STARTER_20260502.txt` 全文 → 項番 -0 → **`npm run session:bootstrap`**。
+GO待ち（なし／内容）: **§4 Loto7 README（A）・bat 分離（B）等**は承認済＝**着手タイミングは次セッション CIO が判断**。予実ダッシュ本格 UI は合意 **5/3** 以降。
+触らないで（なし／内容）: 本番 kintone **631〜659 無切り分け直修正**。Loto7 **`app.py`（5007）**は `start_app.bat` 未対応。
+
+日時(JST): 2026-05-02（土）朝 — セッション引継ぎメモ（kintone 線・継続）
+いま何してた（1行）: **部署予実** 677（月次・支払ロールアップ・**保存例外時 event.error**・本予算 **47 件** xlsx 投入スクリプト）／678（677 一覧・備考列・ダッシュ備考・**API エラー整形**・表示順 PUT）／`kintone-apps.md`・Git **`main` push**／スタッシュ方針（`wip: 2026-05-02 session mixed` 残あり）／631・632・656・658・659 **未対応**。
+次にやる1つ: **631/632/656/658/659** — ログイン後の症状と **GitHub Actions**・**Secrets（特に `KINTONE_APP` と 631/632 のトークン）** を切り分け（`chat-sessions/handoff-log.md` 2026-04-28 632 事故参照）。
+GO待ち（なし／内容）: 上記 kintone 周り。
 触らないで（なし／内容）: 本番 kintone の **631〜659 直修正**は切り分けログ取りまで。二重投入は `yojitsu-import` の `--force` なしで抑止済み。
 
 日時(JST): 2026-04-29（水）16:25 — セッション終了引継ぎ（浜田 ~19:00 までシャットダウン）
