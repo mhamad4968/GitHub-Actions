@@ -2,7 +2,7 @@
 
 **初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-05-04（デザイン系 Figma MCP 追記）／表の詳細カウントは 2026-04-23 20:25 (Phase B レベルアップ反映) 時点
 **更新ルール**: mcp.json 変更時 / 月次 MCP 健康診断時 / 浜田判断あった時に必ず本ファイル更新
-**正本順位**: 本ファイル < `~/.cursor/mcp.json`（実際の設定が最終正本）
+**正本順位**: 本ファイル < **`~/.cursor/mcp.json` とワークスペース `.cursor/mcp.json` がマージ**（Cursor 仕様）。`kintone-ai-lab` ルートで開いたとき **Figma + colors-fonts** はリポ側 JSON にも記載（2026-05-04）。
 
 ---
 
@@ -11,6 +11,7 @@
 - リポに **`.cursor/rules/mcp-tool-discipline.mdc`**（フロントマタは **`alwaysApply: false`**。必要時にルール ON）を追加。`call_mcp_tool` 前の **descriptor（`mcps/<server>/tools/*.json`）必読**・`mcp_auth` を先に単独実行・同一目的では **MCP を curl より優先**する、を **リポ内でも固定**（再宣言として有効）。
 - **2026-05-02 追補**: **`.cursor/rules/mcp-server-use-triggers.mdc`（`alwaysApply: true`）** … **どの MCP サーバを選ぶか**の 1 行トリガー（CIO×DeepSeek/Kimi/OpenRouter 相談反映）。descriptor 必読は引き続き **mcp-tool-discipline**。
 - **2026-05-04 追補**: **デザイン系（Figma）** — 公式リモート MCP または `figma-developer-mcp` の導入手順・使い分けは **`docs/mcp-design-figma.md`**。`~/.cursor/mcp.json` へ追加後、下表に行を足す。
+- **2026-05-04 午前追補（CIO 依頼・Kimi/DeepSeek 相談）**: **配色・パレット**用に **`@colorsandfonts/mcp`**（サーバ名 `colors-fonts`）をグローバル＋リポ `.cursor/mcp.json` に追加。**kintone 表のトークン・コントラスト**手順は **`docs/mcp-design-kintone-tables.md`**。
 - **2026-05-02 §57-10 連動**: RAG 正本 4 ファイルの `.rag/extra-docs` ミラー＝`npm run rag:mirror:canonical-docs` / `verify:rag-mirror-canonical`（`verify:agent-env` 連鎖）。憲法・索引の実体はルート正本（§2）。
 
 ### 表の鮮度（2026-04-28）
@@ -39,8 +40,9 @@
 | 14 | cve-search | ✅ **active 化済** | **3 回** (4/23 早朝 db_status + 20:14 vul_last_cves + vul_cve_search) | CVE 脆弱性検索 | 5/1（月次セキュリティ巡回時 / S14）|
 | 15 | rag | ✅ **強化済** | **大量** (本日 ingest_file 8 回 + query_documents 3 回 + status 3 回) | LanceDB ローカル RAG (現在 76 docs / 3429 chunks) | **§50 + §21 強化（R24/R25）後再評価 / 4/30 判断** |
 | 16 | accessibility-scanner | ✅ active (4/23 21:30 同 Chrome で実 call 動作確認済) | 1 回 | アクセシビリティ検査 | 4/26 PC 台帳 customize 時 |
-| 17 | **figma（公式 remote MCP）** | **📋 導入手順のみ**（`~/.cursor/mcp.json` は各環境の正本） | — | 表・ダッシュの **配色・タイポ・間隔・レイアウト**を Figma から取得し実装に反映 | **`docs/mcp-design-figma.md`**／有効化後は **状態を本行で更新** |
+| 17 | **figma（公式 remote MCP）** | ✅ **global + リポ**に `url` 追記済（2026-05-04）／初回 OAuth | — | 表・ダッシュの **配色・タイポ・間隔・レイアウト**を Figma から取得し実装に反映 | **`docs/mcp-design-figma.md`**／Figma プランの rate limit に注意 |
 | 18 | **figma-developer-mcp**（任意） | **📋 PAT 要・stdio** | — | 上記の代替（npm `figma-developer-mcp`） | 同上／§17-3 で **npx 絶対 path** |
+| 19 | **colors-fonts**（`@colorsandfonts/mcp`） | ✅ **global + リポ**（Node v24 `npx` 絶対 path／pin `1.1.0`） | — | **パレット生成**・**WCAG/APCA コントラスト**・CSS/Tailwind/**Figma トークン JSON** 出力（Figma 無しでも表配色のたたき台） | **`docs/mcp-design-kintone-tables.md`**／`call_mcp_tool` 前は descriptor 必読 |
 
 ### 凡例
 - ✅ active: 正常稼働 / 利用可能

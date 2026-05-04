@@ -2,7 +2,7 @@
 
 **目的**: 表の色合い・余白・タイポ・コンポーネント階層など **視覚設計を構造化データとして AI に渡す**（スクリーンショット推測だけに頼らない）。kintone customize のダッシュや Excel 準拠レイアウトと **Figma 上の正**を突合するときに使う。
 
-**正本順位**: Cursor は **グローバル** `~/.cursor/mcp.json` と **プロジェクト** `.cursor/mcp.json` を読む（[Cursor MCP ドキュメント](https://cursor.com/docs/context/mcp)）。本リポでは **`.cursor/mcp.json` に Figma（remote）を追加済み**なので、**本フォルダをワークスペースのルートで開いたうえで Cursor を再起動**すると MCP に `figma` が載る想定です。
+**正本順位**: Cursor は **グローバル** `~/.cursor/mcp.json` と **プロジェクト** `.cursor/mcp.json` を **マージ**する（[Cursor MCP ドキュメント](https://cursor.com/docs/context/mcp)）。**2026-05-04**: **Figma（remote）** と **colors-fonts** を **グローバル＋本リポ `.cursor/mcp.json` の両方**に記載済み。**Cursor 完全再起動**後、MCP 一覧で接続を確認する。
 
 ---
 
@@ -87,8 +87,9 @@ Figma が提供する **remote MCP** を使う方法がデフォルト推奨（v
 | やりたいこと | 主に使うもの |
 |--------------|----------------|
 | Figma 上の正とコードを一致させたい | **Figma MCP**（本書） |
+| **表のパレット案・数値コントラスト・トークン JSON**（Figma 前でも可） | **`colors-fonts`（`@colorsandfonts/mcp`）** — 手順は **`docs/mcp-design-kintone-tables.md`** |
 | 本番 kintone 画面の DOM・実表示 | **Playwright MCP** |
-| WCAG・コントラストの機械チェック | **accessibility-scanner MCP** |
+| WCAG・コントラストの機械チェック | **accessibility-scanner MCP**（ページ監査）／パレット段階は **colors-fonts** も可 |
 | 長文 HTML の md 化 | **markdownify MCP** |
 
 ---
@@ -103,3 +104,4 @@ Figma が提供する **remote MCP** を使う方法がデフォルト推奨（v
 ## 変更履歴
 
 - 2026-05-04: 初版（デザイン系 MCP として Figma 公式／desktop／`figma-developer-mcp` を整理）。
+- 2026-05-04: **colors-fonts** との役割分担・kintone 表ワークフローを **`docs/mcp-design-kintone-tables.md`** に分離記載。
