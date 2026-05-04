@@ -42,6 +42,7 @@ Phase 5: 記録(kintone-apps / RAG / TSB)     AGENTS.md §19-§21
    - `Read` で `kintone-apps.md` の末尾（更新履歴）100 行
    - `Grep` で過去の `agent-transcripts/<uuid>/<uuid>.jsonl` を関連キーワードで検索
    - 過去に踏んだ落とし穴は `docs/troubleshooting.md` の TSB-XXX
+3. （任意）CLI / Node の版確認: `npm run dev:cli-versions`（一覧と更新目安は `docs/dev-cli-matrix.md`）
 
 ### 退場条件（宣言フォーマット）
 ```
