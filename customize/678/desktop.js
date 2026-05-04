@@ -3,7 +3,7 @@
 
   /**
    * 部署予実 ダッシュアプリ 678
-   * BUILD: 2026-05-04-678-manual-in-app-description
+   * BUILD: 2026-05-04-678-header-trim-selflink
    * - 677 を kintone.api で一覧。左キー列は `shin-format-excel-layout.md` 新フォーマット準拠＋12 月×四つ柱（`monthly_breakdown`）
    * - 一覧の既定 SORT は `display_order asc, $id asc`（SPEC §6e 準拠・2026-05-03 改修）
    * - 新規追加モーダルは「挿入位置」選択（一番下/一番上/○○の上/○○の下）＋中間値計算（floor((prev+next)/2)）
@@ -20,10 +20,11 @@
    */
 
   var APP_INPUT = 677;
-  var BUILD = "2026-05-04-678-manual-in-app-description";
+  /** クイックマニュアル専用アプリ（`window.YOJITSU_QUICK_MANUAL_APP_ID` があれば数値として優先） */
+  var YOJITSU_QUICK_MANUAL_APP_ID = 679;
+  var BUILD = "2026-05-04-678-header-trim-selflink";
   /**
-   * クイックマニュアル（kintone 678 の「アプリの説明」＋アンカー）。`window.Y678_QUICK_MANUAL_URL` が非空なら優先。
-   * 既定は同一アプリ URL の `#y678-quick-manual`（説明欄へジャンプ）。
+   * クイックマニュアル（専用アプリ 679）。`window.Y678_QUICK_MANUAL_URL` が非空なら最優先。
    */
   function resolveY678QuickManualUrl() {
     try {
@@ -34,20 +35,23 @@
     } catch (e) {
       void e;
     }
+    var mid = YOJITSU_QUICK_MANUAL_APP_ID;
+    try {
+      if (typeof window !== "undefined" && window.YOJITSU_QUICK_MANUAL_APP_ID != null) {
+        var ov = Number(window.YOJITSU_QUICK_MANUAL_APP_ID);
+        if (isFinite(ov) && ov > 0) mid = ov;
+      }
+    } catch (e1) {
+      void e1;
+    }
     try {
       if (typeof location !== "undefined" && location.origin) {
-        var aid =
-          typeof kintone !== "undefined" &&
-          kintone.app &&
-          typeof kintone.app.getId === "function"
-            ? kintone.app.getId()
-            : 678;
-        return location.origin + "/k/" + aid + "/#y678-quick-manual";
+        return location.origin + "/k/" + mid + "/";
       }
     } catch (e2) {
       void e2;
     }
-    return "https://jbis-kintone.cybozu.com/k/678/#y678-quick-manual";
+    return "https://jbis-kintone.cybozu.com/k/" + mid + "/";
   }
   /** 表の空欄・非該当（1 文字のダッシュより `---` で視認性を上げる） */
   var Y678_EMPTY_HTML = "<span class=\"y678-dim\">---</span>";
@@ -1285,7 +1289,9 @@
     manualBar.innerHTML =
       "<a href=\"" +
       esc(resolveY678QuickManualUrl()) +
-      "\">📘 クイックマニュアル（このアプリの説明欄へ）</a>";
+      "\" target=\"_blank\" rel=\"noopener noreferrer\">📘 クイックマニュアル（専用アプリ " +
+      esc(String(YOJITSU_QUICK_MANUAL_APP_ID)) +
+      "）</a>";
     wrap.appendChild(manualBar);
 
     var head = document.createElement("div");
@@ -1306,10 +1312,7 @@
       "<a href=\"" +
       esc(location.origin + "/k/#/space/54/thread/58") +
       "\">スレッド</a> · " +
-      "<a href=\"" +
-      esc(location.origin + "/k/" + kintone.app.getId() + "/") +
-      "\">678</a> · " +
-      "<button type=\"button\" id=\"y678-refresh\" style=\"font-size:12px;cursor:pointer\">再読み込み</button>";
+      "<button type=\"button\" id=\"y678-refresh\" style=\"font-size:12px;cursor:pointer\" title=\"677 の明細を API で取り直して表を再描画\">再読み込み</button>";
     wrap.appendChild(head);
 
     var filterRow = document.createElement("div");

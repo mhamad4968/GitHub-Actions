@@ -2,7 +2,7 @@
 
 **読む人**: システム推進室の担当者。**ここだけ読めば動ける**短さを目指した。
 
-**本番の掲載場所（kintone）**: アプリ **[678](https://jbis-kintone.cybozu.com/k/678/)** の **「アプリの説明」**（一覧上部・HTML 表）。再反映は `npm run yojitsu:678:publish-manual-description`。
+**本番の掲載場所（kintone）**: 専用アプリ **[679 部署予実クイックマニュアル](https://jbis-kintone.cybozu.com/k/679/)**（一覧カスタマイズで HTML 表示）。本文の再取り込みは `npm run yojitsu:679:sync-manual-js` のあと `npm run deploy:679`。678 の説明欄は 679 への短い案内のみ（`npm run yojitsu:678:set-manual-pointer`）。
 
 **正しい数字の置き場**: 日常の作業は **kintone だけ**。**Excel は開かない**（集計も入力もここ）。
 
