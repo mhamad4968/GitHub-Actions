@@ -797,3 +797,15 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 
 **次の 1 手**: PC 台帳レーン着手時は **項番 -0** で 5B 固定 → 1b オーダー。`session:clock:web` は別ターミナルで稼働中ならその URL を正とする。
 
+---
+
+### 2026-05-05 JST（追記）— 備わり機能・MCP 棚卸しと依存更新
+
+- **`session:bootstrap`**: exit **0**（本追記前に再実行済み）。
+- **`npm run health-check`**: 異常 **0**（MCP は WSL から疎通可のものは ✅／github・office-ppt・tavily・figma は設計どおりスキップ or disabled）。
+- **業務活用の目安**: `docs/mcp-status.md` 一覧＋`SESSION-CLOSE-REPORT` §6 優先表＋`READ-06` 実務チェックリストを正。**`call_mcp_tool` 前は descriptor Read**（§51 直列）。
+- **依存更新**: ルートで **`npm update`**（`npm audit fix --force` は **未実施** — `@kintone/cli` 経由 axios moderate は **公式修正待ち**、`docs/reports/2026-05-04-toolchain-cli-git-closeout.md` と同方針）。**`security-next-automation`** で **`npm update`**（nodemailer / openai 等、**audit 0**）。
+- **ドキュ**: `docs/mcp-status.md` 最終更新行を本日に。
+
+**次の 1 手**: 浜田さん本日の目的の **項番 -0 すり合わせ**。
+
