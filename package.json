@@ -188,5 +188,8 @@
     "eslint": "^10.3.0",
     "globals": "^17.6.0"
   },
+  "overrides": {
+    "@kintone/rest-api-client": "6.1.6"
+  },
   "description": ""
 }

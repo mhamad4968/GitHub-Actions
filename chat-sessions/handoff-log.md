@@ -817,7 +817,7 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 
 | ID | 状態 | リスク | 内容 | 次アクション |
 |----|------|--------|------|--------------|
-| **O-1** | OPEN | 中 | **`npm audit` moderate ×3**（`axios` ← `@kintone/rest-api-client` ← `@kintone/cli`）。**`npm audit fix --force` は禁止**（CLI ダウングレード等）。 | **`npm update @kintone/cli`** を月次 or リリースノート確認で試行。状況は **`npm audit`** で再確認。正本メモ: `docs/reports/2026-05-04-toolchain-cli-git-closeout.md`。 |
+| **O-1** | **CLOSED** 2026-05-05 | — | **`npm audit` moderate（axios）解消**: `@kintone/cli@1.19.2` は **既に npm latest** で `npm update` では解消不可。**`package.json` `overrides`** で **`@kintone/rest-api-client@6.1.6`**（公式が `axios@1.15.0`）を強制。**`npm audit` → 0**。**`npm audit fix --force` は未使用**。 | 将来 **CLI が 6.1.6+ を直依存**したら overrides を外して再 `npm install` 可否を確認。 |
 | **O-2** | **CLOSED** 2026-05-05 | — | **billing 実数反映済み**: Plan & Usage スクショで **Total 71%** → `npm run credit:set 71` + `data/credit-usage.json` **note** 追記（45% placeholder 解消）。 | 翌営業日以降も **1 日 1 回** `credit:set`（§1-2-4）。 |
 | **O-3** | OPEN | 低 | **グローバル MCP（`npx` / グローバル node パス）**は無断フル latest 化していない。TSB-029 等のピン優先。 | サーバ単位で更新する場合は **§17-2 / descriptor** 手順＋**verify-cursor-mcp-windows**。 |
 | **O-4** | CLOSED（参考） | — | ルート **`npm update`** + **`security-next-automation` `npm update`** は実施済み（`e1a74d9`）。smoke **緑**。 | 継続: 変更後は smoke + 必要なら bootstrap。 |
@@ -830,7 +830,7 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 ### 2026-05-05 JST（追記）— アップデート実施／残課題の GO 整理（浜田指示）
 
 - **実施済み（GO 範囲）**: ルート・`security-next-automation` の **`npm update`**、`docs/mcp-status.md` 更新、`rag:ingest:all`、`credit:set`（暫定）、関連 **git push**。
-- **残課題（リスクあり・OPEN 表に常設）**: **O-1 axios**、**O-3 グローバル MCP**、**O-5 API 枯渇 + On-Demand 金額**（**O-2 credit % は CLOSED**）。
+- **残課題（リスクあり・OPEN 表に常設）**: **O-3 グローバル MCP**、**O-5 API 枯渇 + On-Demand 金額**（**O-1 axios・O-2 credit % は CLOSED**）。
 - **確認は 1 件ずつ**: 次チャット以降、AI は **OPEN 表の上から**未確認項目を **§41 一問**で浜田に確認する。
 
 ### 2026-05-05 JST（追記）— クレジット確認（Plan & Usage スクショ）
@@ -842,4 +842,9 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 
 - **本番 customize** の `BUILD` **`2026-05-04-678-manual-app-guide-name`** と **`customize/678/desktop.js`** が一致することを確認済み。
 - **CIO**: 台帳運用について **「はい」で GO**（以降の追記・RAG ミラーはこの前提でよい）。**注意**: `kintone-apps.md` 678 行末に **5/5 以降の deploy 記述**があるが、**本番 JS の BUILD は上記のまま**のため、**後段は本番未反映の可能性** — 次回 `deploy:678` 後は **BUILD / fileKey / revision** を必ず突き合わせて台帳を更新すること。
+
+### 2026-05-05 JST（追記）— O-1 axios（浜田「いいえ」→ 調査・対応）
+
+- **調査**: `@kintone/cli` **1.19.2 = レジストリ latest**。CLI は **`@kintone/rest-api-client@6.1.4` を直依存固定**のため **`npm update @kintone/cli` では axios 未更新**。
+- **判断**: 公式 **`@kintone/rest-api-client@6.1.6`**（`axios@1.15.0`）へ **`package.json` `overrides`** で揃える（`npm audit fix --force` は未使用）。**`npm audit` 0**・**`smoke:quiet` 10/10** を確認。
 
