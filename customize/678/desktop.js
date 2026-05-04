@@ -3,24 +3,41 @@
 
   /**
    * 部署予実 ダッシュアプリ 678
-   * BUILD: 2026-05-04-678-gha-deploy-verify
+   * BUILD: 2026-05-04-678-quick-manual-bar-table-first
    * - 677 を kintone.api で一覧。左キー列は `shin-format-excel-layout.md` 新フォーマット準拠＋12 月×四つ柱（`monthly_breakdown`）
    * - 一覧の既定 SORT は `display_order asc, $id asc`（SPEC §6e 準拠・2026-05-03 改修）
    * - 新規追加モーダルは「挿入位置」選択（一番下/一番上/○○の上/○○の下）＋中間値計算（floor((prev+next)/2)）
    * - 表示順（display_order）の PUT は 677 へ（SPEC §6e）。インライン編集も可
    * - 677 取得: タイムアウト・描画 try/catch・月次サブテーブル取得失敗時は左ブロックのみにフォールバック
-   * - イニシャル費用（変動費）/ 都度費用の集計列: 実績・予算修正＝入力対象月（入力月へジャンプ・暦月ラベル）
-   * - 入力月へジャンプ: 横スクロール親を tblHost から辿り window / ラッパーの scrollLeft に反映（ページ内スクロール対応）
-   * - ナビ「都度費用」: イニシャル集計の都度費用ブロックへジャンプ＋枠強調（変動費の実績・予算修正の入力位置）
+   * - イニシャル費用（変動費）/ 都度費用の集計列: 実績・予算修正＝入力対象月（入力月の入力ボタン・暦月ラベル）
+   * - 入力月の入力ボタン: 横スクロール＋都度費用モード。都度ON時はランニングに「入力中」表示を出さず月ボタンは薄表示（クリックで都度解除＋その月へ）。当月列＝薄色、実績・予算修正＝入力スロット色
+   * - ナビ「都度費用」: イニシャル集計の都度費用ブロックへジャンプ（太枠は付けず、ボタンは太字＋ aria-pressed のみ）
    * - 一覧ツールバー右の標準「◯ - ◯（◯件中）」重複表示: 全角数字・括弧ゆれ対応＋領域走査＋MutationObserver で非表示
-   * - 固定費／変動費: 暦月ランニングは「実績・予算修正」を運用入力（予算・消費率は —）。変動費はイニシャル集計も同様。支払モーダルに既存支払内訳一覧（請求書単位の複数行）
+   * - 固定費: 暦月12列の「予算」「消費率」は 677 `monthly_breakdown` を表示。実績・予算修正は入力対象月のみ。変動費行は暦月12列＋ランニング集計＋固定費小計を `---`、都度・変動費小計のみ数値。固定費行は逆（都度・変動費小計は `---`）
    * - 固定費・当月の月次「予算修正」保存時: 翌月〜年度末（4月）へ同一値を反映するか **はい／いいえ**（SPEC §6・既定＝はいフォーカス）
-   * - 実績モーダル: 会社が集合先（FBJ・オフィスバスター・その他・他・他のもの・他や各社・各社・未設定系等）または費用種別「その他」のとき **datalist で選択可**＋**「会社を新規登録する」**→677 `partner_company` PUT（メインに案内）
-   * - 暦月12列: **固定費**は**入力対象月**（入力月へジャンプで選択・既定はカレンダー当月）の実績・予算修正のみ。**変動費**は12列参照のみ→**都度費用**列（同じ入力対象月）のみ（§6e）
+   * - 実績モーダル: 会社が集合先（FBJ・オフィスバスター・その他・他・他のもの・他や各社・各社・宅配の「クロネコヤマト、佐川急便」併記・未設定系等）のとき **datalist で選択可**＋**「会社を新規登録する」**→677 `partner_company` PUT（集合先「その他」と費用種別は別・費用種別は固定／変動のみ想定）
+   * - 暦月12列（§6e）: **固定費**＝各月の予算・率は表示、**実績・予算修正**は入力対象月のみクリック可。**変動費**＝暦月の予算・率は `---`、実績・予算修正は**都度費用**集計列（入力対象月）
    */
 
   var APP_INPUT = 677;
-  var BUILD = "2026-05-04-678-gha-deploy-verify";
+  var BUILD = "2026-05-04-678-quick-manual-bar-table-first";
+  /**
+   * クイックマニュアル（別ページ・新タブ）。`window.Y678_QUICK_MANUAL_URL` が非空なら優先。
+   * 既定はリポ同梱 Markdown（GitHub 閲覧）。HTML 版をスペース等に掲載したらその URL を上書き。
+   */
+  function resolveY678QuickManualUrl() {
+    try {
+      if (typeof window !== "undefined" && window.Y678_QUICK_MANUAL_URL) {
+        var w = String(window.Y678_QUICK_MANUAL_URL).trim();
+        if (w) return w;
+      }
+    } catch (e) {
+      void e;
+    }
+    return "https://github.com/mhamad4968/GitHub-Actions/blob/main/templates/yojitsu-budget-lite/docs/yojitsu-quick-manual.md";
+  }
+  /** 表の空欄・非該当（1 文字のダッシュより `---` で視認性を上げる） */
+  var Y678_EMPTY_HTML = "<span class=\"y678-dim\">---</span>";
   /** 月次列を省略（677 API が `monthly_breakdown` を返せない場合のフォールバック） */
   var y678OmitMonthlyCols = false;
   /** 暦月ラベル（677 の `月度` と同一・5月〜翌年4月） */
@@ -216,7 +233,7 @@
 
   function truncateNotes(s, maxLen) {
     var raw = sanitizeExcelNote(s);
-    if (!raw) return { html: "<span style=\"color:#bbb\">—</span>", title: "" };
+    if (!raw) return { html: "<span class=\"y678-dim\">---</span>", title: "" };
     var t = esc(raw);
     if (t.length <= maxLen) return { html: t, title: raw.slice(0, 800) };
     return { html: t.slice(0, maxLen) + "…", title: raw.slice(0, 800) };
@@ -261,9 +278,12 @@
     var cat = fieldVal(rec, "cost_category");
     var lb = toNum(fieldVal(rec, "learning_fixed_budget"));
     var iv = toNum(fieldVal(rec, "initial_variable_budget"));
+    /** 分母 0 のとき実績も 0 なら消費率 0（％表示は別途付与）。実績のみ正のときは null（表示は ---）。 */
     function pct(actual, base) {
-      if (!base || base === 0) return null;
-      return Math.round((actual / base) * 100);
+      var b = toNum(base);
+      var a = toNum(actual);
+      if (!b || b === 0) return a <= 0 ? 0 : null;
+      return Math.round((a / b) * 100);
     }
     return {
       running: {
@@ -284,7 +304,7 @@
           : null,
       variableSubtotal:
         cat === "変動費"
-          ? { budget: sumB, actual: sumA, util: pct(sumA, sumB + sumR), revision: sumR }
+          ? { budget: sumB, actual: sumA, util: pct(sumA, iv + sumR), revision: sumR }
           : null,
     };
   }
@@ -495,9 +515,9 @@
     return true;
   }
 
-  /** 円表示（カンマ付き・整数化）。空・非数値は「—」。負値は - を ¥ の前に置く。 */
+  /** 円表示（カンマ付き・整数化）。空・非数値は `---`（Y678_EMPTY_HTML）。負値は ASCII `-` を ¥ の前に置く。 */
   function formatYen(v) {
-    if (v === "" || v == null) return "<span class=\"y678-dim\">—</span>";
+    if (v === "" || v == null) return Y678_EMPTY_HTML;
     var s = String(v).replace(/[,\s]/g, "");
     var n = Number(s);
     if (!isFinite(n)) return esc(String(v));
@@ -508,6 +528,28 @@
   }
   function escNumCell(v) {
     return formatYen(v);
+  }
+
+  /** ランニング暦月「実績」: 未入力は 0 円として表示（固定費行のみ使用） */
+  function formatYenRunningActualFixed(v) {
+    if (v === "" || v == null) return formatYen(0);
+    return formatYen(v);
+  }
+
+  /** 月次「消費率」表示（kintone が数値のみの場合は末尾に % を付与） */
+  function formatCellUtilizationDisplay(raw) {
+    if (raw === "" || raw == null) return Y678_EMPTY_HTML;
+    var t = String(raw).trim();
+    if (/%\s*$/.test(t)) return esc(t);
+    var n = Number(String(t).replace(/,/g, "").replace(/%/g, ""));
+    if (!isFinite(n)) return esc(t);
+    return esc(String(n)) + "%";
+  }
+
+  /** 集計ブロックの消費率（数値は整数％、null は空欄マーク） */
+  function formatAggrUtilDisplay(u) {
+    if (u == null) return Y678_EMPTY_HTML;
+    return esc(String(u)) + "%";
   }
 
   function filterRecordsByCostCategory(records, filterKey) {
@@ -529,7 +571,7 @@
   }
 
   /**
-   * 実績・予算修正の対象暦月（入力月へジャンプの「5月」…で変更。未設定時はカレンダー当月）。
+   * 実績・予算修正の対象暦月（入力月の入力ボタンの「5月」…で変更。未設定時はカレンダー当月）。
    * sessionStorage に保持しリロード後も維持。
    */
   var y678InputMonthLabel = "";
@@ -557,8 +599,8 @@
   }
 
   /**
-   * ナビ「都度費用」強調（変動費の実績・予算修正はこの集計列）。月ボタン選択で解除。
-   * sessionStorage に保持しリロード後も維持。
+   * ナビ「都度費用」モード（変動費の実績・予算修正はこの集計列）。月ボタン選択で解除。
+   * sessionStorage に保持しリロード後も維持。暦月ヘッダの「入力中」ハイライトは都度時オフ（monthCurUi）。
    */
   var y678FocusTsudo = false;
   try {
@@ -573,11 +615,6 @@
       else sessionStorage.removeItem("y678-focus-tsudo");
     } catch (eTsw) {
       void eTsw;
-    }
-    var shell = document.querySelector("[data-yojitsu-678-shell]");
-    if (shell) {
-      if (on) shell.setAttribute("data-y678-tsudo-focus", "1");
-      else shell.removeAttribute("data-y678-tsudo-focus");
     }
   }
 
@@ -672,15 +709,20 @@
     for (var m = 0; m < months.length; m++) {
       var lab = months[m];
       var band = m % 2 === 0 ? "y678-m-even" : "y678-m-odd";
-      var curCls = monthCurUi != null && lab === monthCurUi ? " y678-cur y678-cur-block" : "";
-      var monthTag =
-        monthCurUi != null && lab === monthCurUi
-          ? lab === todayM
-            ? " <span class=\"y678-cur-tag\">入力中・今月</span>"
-            : " <span class=\"y678-cur-tag\">入力中</span>"
-          : lab === todayM
-            ? " <span class=\"y678-cur-tag\" style=\"opacity:.88;font-weight:600\">今月</span>"
-            : "";
+      var labN = normalizeFiscalMonthLabel(lab);
+      var todayN = normalizeFiscalMonthLabel(todayM);
+      var isFiscalToday = labN === todayN;
+      var fiscalTodayCls = isFiscalToday ? " y678-fiscal-today-col" : "";
+      var isRunningInputMonth = !y678FocusTsudo && monthCurUi != null && labN === normalizeFiscalMonthLabel(monthCurUi);
+      var monthTag = "";
+      if (isRunningInputMonth) {
+        monthTag =
+          isFiscalToday
+            ? " <span class=\"y678-input-target-tag\">入力中・今月</span>"
+            : " <span class=\"y678-input-target-tag\">入力中</span>";
+      } else if (isFiscalToday) {
+        monthTag = " <span class=\"y678-today-tag\">今月</span>";
+      }
       r2.push(
         "<th data-y678-month=\"" +
           esc(lab) +
@@ -688,7 +730,7 @@
           MONTH_COLS +
           "\" class=\"y678-th-month " +
           band +
-          curCls +
+          fiscalTodayCls +
           "\">" +
           esc(FISCAL_HEAD[lab] || lab + "月") +
           monthTag +
@@ -718,13 +760,13 @@
     for (var n = 0; n < months.length; n++) {
       var lab2 = months[n];
       var band2 = n % 2 === 0 ? "y678-m-even" : "y678-m-odd";
-      var isCur = monthCurUi != null && lab2 === monthCurUi;
+      var ft3 = normalizeFiscalMonthLabel(lab2) === normalizeFiscalMonthLabel(todayM) ? " y678-fiscal-today-col" : "";
       var clsBase = "y678-num y678-th-sub " + band2;
       r3.push(
-        "<th class=\"" + clsBase + (isCur ? " y678-cur y678-cur-first" : "") + "\">予算</th>" +
-          "<th class=\"" + clsBase + (isCur ? " y678-cur y678-cur-mid" : "") + "\">実績</th>" +
-          "<th class=\"" + clsBase + (isCur ? " y678-cur y678-cur-mid" : "") + "\">消費率<br/><span class=\"y678-sub\">(%)</span></th>" +
-          "<th class=\"" + clsBase + (isCur ? " y678-cur y678-cur-last" : "") + "\">予算<br/>修正</th>"
+        "<th class=\"" + clsBase + ft3 + "\">予算</th>" +
+          "<th class=\"" + clsBase + ft3 + "\">実績</th>" +
+          "<th class=\"" + clsBase + ft3 + "\">消費率<br/><span class=\"y678-sub\">(%)</span></th>" +
+          "<th class=\"" + clsBase + ft3 + "\">予算<br/>修正</th>"
       );
     }
     var aggrClasses = ["y678-aggr-running", "y678-aggr-initial", "y678-aggr-fixed", "y678-aggr-variable"];
@@ -790,30 +832,62 @@
           esc(fieldVal(r, "cost_category")) +
           "</td>" +
           "<td class=\"y678-sk y678-sk4\">" +
-          esc(fieldVal(r, "payment_type")) +
+          (String(fieldVal(r, "payment_type") || "").trim()
+            ? esc(fieldVal(r, "payment_type"))
+            : Y678_EMPTY_HTML) +
           "</td>" +
           "<td class=\"y678-sk y678-sk5 y678-summary\">" +
           sum +
           "</td>" +
           "<td class=\"y678-sk y678-sk6\">" +
-          esc(fieldVal(r, "partner_company")) +
+          (String(fieldVal(r, "partner_company") || "").trim()
+            ? esc(fieldVal(r, "partner_company"))
+            : Y678_EMPTY_HTML) +
           "</td>"
       );
 
       for (var mi = 0; mi < months.length; mi++) {
         var fl = months[mi];
         var band = mi % 2 === 0 ? "y678-m-even" : "y678-m-odd";
+        var flN = normalizeFiscalMonthLabel(fl);
+        var isFiscalTodayC = flN === normalizeFiscalMonthLabel(getCurrentMonthLabel());
+        var fiscalTodayCls = isFiscalTodayC ? " y678-fiscal-today-col" : "";
+        if (costCat === "変動費") {
+          rowHtml.push(
+            "<td class=\"y678-num " +
+              band +
+              fiscalTodayCls +
+              " y678-na-col\">" +
+              Y678_EMPTY_HTML +
+              "</td>" +
+              "<td class=\"y678-num " +
+              band +
+              fiscalTodayCls +
+              " y678-na-col\">" +
+              Y678_EMPTY_HTML +
+              "</td>" +
+              "<td class=\"y678-num " +
+              band +
+              fiscalTodayCls +
+              " y678-na-col\">" +
+              Y678_EMPTY_HTML +
+              "</td>" +
+              "<td class=\"y678-num " +
+              band +
+              fiscalTodayCls +
+              " y678-na-col\">" +
+              Y678_EMPTY_HTML +
+              "</td>"
+          );
+          continue;
+        }
         var rowM = mm[fl] || {};
         var util = rowM.utilization;
-        var utilStr = util === "" || util == null ? "<span class=\"y678-dim\">—</span>" : esc(String(util));
-        var dimMonthPair = costCat === "固定費" || costCat === "変動費";
+        var utilStr = formatCellUtilizationDisplay(util);
         var isCurC =
           monthCurUi != null &&
-          normalizeFiscalMonthLabel(fl) === normalizeFiscalMonthLabel(monthCurUi);
-        var curFirst = isCurC ? " y678-cur y678-cur-first" : "";
-        var curMid = isCurC ? " y678-cur y678-cur-mid" : "";
-        var curLast = isCurC ? " y678-cur y678-cur-last" : "";
-        /** §6e: 固定費＝暦月12列は「入力対象月」列のみ。変動費＝12列参照のみ（都度費用集計列）。入力対象月＝入力月へジャンプ（既定はカレンダー当月）。 */
+          flN === normalizeFiscalMonthLabel(monthCurUi);
+        /** §6e: 固定費＝暦月12列は「入力対象月」列のみ。変動費＝12列参照のみ（都度費用集計列）。入力対象月＝入力月の入力ボタン（既定はカレンダー当月）。 */
         var allowMonthPayment = false;
         var allowMonthRevision = false;
         if (costCat === "固定費") {
@@ -825,22 +899,24 @@
         }
         var payTitle = allowMonthPayment
           ? "クリックで支払（実績）を追加（請求書単位は行を分けて複数回保存可）"
-          : costCat === "変動費"
-            ? "変動費は「都度費用」集計列の実績セルから入力してください（暦月12列は参照のみ）"
-            : "上部「入力月へジャンプ」の 5月… 等で入力先の月を選んでから、当該月列をクリックしてください";
+          : "上部「入力月の入力ボタン」で入力先の月を選んでから、当該月列の実績セルをクリックしてください";
         var revTitle = allowMonthRevision
           ? "クリックで予算修正を編集（入力対象月の列）"
-          : costCat === "変動費"
-            ? "変動費は「都度費用」集計列の予算修正から編集してください"
-            : "入力月へジャンプで入力先の月を選んでから、当該月列をクリックしてください";
+          : "「入力月の入力ボタン」で入力先の月を選んでから、当該月列の予算修正セルをクリックしてください";
         var payCls =
-          "y678-num " + (allowMonthPayment ? "y678-edit-payment " : "") + band + curMid;
+          "y678-num " +
+          band +
+          fiscalTodayCls +
+          (allowMonthPayment ? " y678-edit-payment y678-input-slot-pay" : "");
         var payData =
           allowMonthPayment
             ? " data-y678-cell=\"payment\" data-y678-month=\"" + esc(fl) + "\""
             : "";
         var revCls =
-          "y678-num " + (allowMonthRevision ? "y678-edit " : "") + band + curLast;
+          "y678-num " +
+          band +
+          fiscalTodayCls +
+          (allowMonthRevision ? " y678-edit y678-input-slot-rev" : "");
         var revData =
           allowMonthRevision
             ? " data-y678-cell=\"month\" data-y678-month=\"" + esc(fl) + "\" data-y678-field=\"month_budget_revision\""
@@ -848,9 +924,9 @@
         rowHtml.push(
           "<td class=\"y678-num " +
             band +
-            curFirst +
+            fiscalTodayCls +
             "\">" +
-            (dimMonthPair ? "<span class=\"y678-dim\">—</span>" : escNumCell(rowM.budget)) +
+            escNumCell(rowM.budget) +
             "</td>" +
             "<td class=\"" +
             attrEsc(payCls) +
@@ -859,13 +935,13 @@
             " title=\"" +
             attrEsc(payTitle) +
             "\">" +
-            escNumCell(rowM.actual) +
+            (costCat === "固定費" ? formatYenRunningActualFixed(rowM.actual) : escNumCell(rowM.actual)) +
             "</td>" +
             "<td class=\"y678-num " +
             band +
-            curMid +
+            fiscalTodayCls +
             "\">" +
-            (dimMonthPair ? "<span class=\"y678-dim\">—</span>" : utilStr) +
+            utilStr +
             "</td>" +
             "<td class=\"" +
             attrEsc(revCls) +
@@ -882,16 +958,12 @@
       var ag = computeAggregates(r);
       function aggrCells(block, blockCls, isEditableBudget, editField, hotMonths, omitBudgetUtil) {
         if (!block) {
-          var dim = "<td class=\"y678-num " + blockCls + " y678-aggr-empty\"><span class=\"y678-dim\">—</span></td>";
+          var dim = "<td class=\"y678-num " + blockCls + " y678-aggr-empty\">" + Y678_EMPTY_HTML + "</td>";
           return dim + dim + dim + dim;
         }
-        var utilCell = omitBudgetUtil
-          ? "<span class=\"y678-dim\">—</span>"
-          : block.util == null
-            ? "<span class=\"y678-dim\">—</span>"
-            : esc(String(block.util));
+        var utilCell = omitBudgetUtil ? Y678_EMPTY_HTML : formatAggrUtilDisplay(block.util);
         var budgetCell = omitBudgetUtil
-          ? "<td class=\"y678-num " + blockCls + "\"><span class=\"y678-dim\">—</span></td>"
+          ? "<td class=\"y678-num " + blockCls + "\">" + Y678_EMPTY_HTML + "</td>"
           : isEditableBudget
           ? "<td class=\"y678-num " +
             blockCls +
@@ -905,9 +977,9 @@
           hotMonths && hotMonths.payment
             ? "<td class=\"y678-num " +
               blockCls +
-              " y678-edit-payment\" data-y678-cell=\"payment\" data-y678-month=\"" +
+              " y678-edit-payment y678-input-slot-pay\" data-y678-cell=\"payment\" data-y678-month=\"" +
               esc(hotMonths.payment) +
-              "\" title=\"クリックで支払（請求額）入力（都度費用・入力対象月は入力月へジャンプで変更）\">" +
+              "\" title=\"クリックで支払（請求額）入力（都度費用・対象月は入力月の入力ボタンで変更）\">" +
               formatYen(block.actual) +
               "</td>"
             : "<td class=\"y678-num " + blockCls + "\">" + formatYen(block.actual) + "</td>";
@@ -915,9 +987,9 @@
           hotMonths && hotMonths.revision
             ? "<td class=\"y678-num " +
               blockCls +
-              " y678-edit\" data-y678-cell=\"month\" data-y678-month=\"" +
+              " y678-edit y678-input-slot-rev\" data-y678-cell=\"month\" data-y678-month=\"" +
               esc(hotMonths.revision) +
-              "\" data-y678-field=\"month_budget_revision\" title=\"クリックで予算修正（都度費用・入力対象月は入力月へジャンプで変更）\">" +
+              "\" data-y678-field=\"month_budget_revision\" title=\"クリックで予算修正（都度費用・対象月は入力月の入力ボタンで変更）\">" +
               formatYen(block.revision) +
               "</td>"
             : "<td class=\"y678-num " + blockCls + "\">" + formatYen(block.revision) + "</td>";
@@ -931,10 +1003,20 @@
           : null;
 
       rowHtml.push(
-      aggrCells(ag.running, "y678-aggr-running", false, null, null, costCat === "固定費" || costCat === "変動費") +
-        aggrCells(ag.initial, "y678-aggr-initial", false, null, initialHotMonths, costCat === "変動費") +
-        aggrCells(ag.fixedSubtotal, "y678-aggr-fixed", false, null, null, false) +
-        aggrCells(ag.variableSubtotal, "y678-aggr-variable", false, null, null, false) +
+        /** ランニング集計: 変動費行は固定費系のため `---` 4 セル。固定費行は従来表示。 */
+        (costCat === "変動費"
+          ? aggrCells(null, "y678-aggr-running", false, null, null, true)
+          : aggrCells(ag.running, "y678-aggr-running", false, null, null, false)) +
+        /** イニシャル／都度: 固定費行は変動費系のため `---`。変動費行は従来。 */
+        (costCat === "固定費"
+          ? aggrCells(null, "y678-aggr-initial", false, null, null, true)
+          : aggrCells(ag.initial, "y678-aggr-initial", false, null, initialHotMonths, false)) +
+        (costCat === "変動費"
+          ? aggrCells(null, "y678-aggr-fixed", false, null, null, true)
+          : aggrCells(ag.fixedSubtotal, "y678-aggr-fixed", false, null, null, false)) +
+        (costCat === "固定費"
+          ? aggrCells(null, "y678-aggr-variable", false, null, null, true)
+          : aggrCells(ag.variableSubtotal, "y678-aggr-variable", false, null, null, false)) +
           "<td class=\"y678-tail-do y678-display-order\" data-y678-do-td=\"1\">" +
           "<input type=\"number\" class=\"y678-display-order-input\" value=\"" +
           doVal +
@@ -980,14 +1062,26 @@
         ".recordlist-header-gaia [class*='recordcount'],.recordlist-headerbar-gaia [class*='recordcount']," +
         ".recordlist-header-gaia [class*='pager'],.recordlist-headerbar-gaia [class*='pager']{display:none !important;}",
       "html,body{overflow-x:auto !important;}",
+      "[data-yojitsu-678-shell] .y678-manual-bar{margin:0 0 10px;padding:9px 14px;background:linear-gradient(180deg,#1a5c3a,#0f4a28);border:1px solid #064b24;border-radius:8px;font-size:13px;line-height:1.4;}",
+      "[data-yojitsu-678-shell] .y678-manual-bar a{color:#f4fff8;font-weight:700;text-decoration:none;letter-spacing:.02em;}",
+      "[data-yojitsu-678-shell] .y678-manual-bar a:hover{text-decoration:underline;color:#fff;}",
       "[data-yojitsu-678-shell] .y678-nav{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;margin-bottom:8px;padding:6px 8px;background:#eaf4ec;border:1px solid #b9d6bd;border-radius:6px;}",
       "[data-yojitsu-678-shell] .y678-nav-label{font-size:12px;color:#1f4d33;font-weight:600;margin-right:4px;}",
       "[data-yojitsu-678-shell] .y678-nav-btn{font-size:12px;padding:3px 9px;border:1px solid #b9d6bd;background:#fff;color:#1f4d33;border-radius:4px;cursor:pointer;line-height:1.4;}",
       "[data-yojitsu-678-shell] .y678-nav-btn:hover{background:#dfeee2;border-color:#7fb38c;}",
-      "[data-yojitsu-678-shell] .y678-nav-btn.y678-nav-month{background:#f4faf5;}",
-      "[data-yojitsu-678-shell] .y678-nav-btn.y678-nav-month:hover{background:#cfe5d2;}",
-      "[data-yojitsu-678-shell] .y678-nav-btn.y678-nav-tsudo{background:#e2f0e6;font-weight:600;border-color:#7fb38c;}",
-      "[data-yojitsu-678-shell] .y678-nav-btn.y678-nav-tsudo:hover{background:#cfe5d2;}",
+      "[data-yojitsu-678-shell] .y678-nav-btn.y678-nav-month{background:#c5d2cc;color:#2a3530;border-color:#8fa199;font-weight:500;}",
+      "[data-yojitsu-678-shell] .y678-nav-btn.y678-nav-month:hover{background:#b3c2bb;color:#121a16;border-color:#6f8378;}",
+      "[data-yojitsu-678-shell] .y678-nav-btn.y678-nav-month.y678-nav-month--active{background:linear-gradient(180deg,#198042,#0d5c2e);color:#fff;border-color:#064b24;font-weight:700;box-shadow:0 2px 8px rgba(6,75,36,.38);}",
+      "[data-yojitsu-678-shell] .y678-nav-btn.y678-nav-month.y678-nav-month--active:hover{background:linear-gradient(180deg,#156b38,#085524);color:#fff;border-color:#053d1a;}",
+      "[data-yojitsu-678-shell] .y678-nav-btn.y678-nav-month.y678-nav-month--muted{opacity:.5;color:#3d4a44;background:#cdd8d2;border-color:#97a8a0;}",
+      "[data-yojitsu-678-shell] .y678-nav-btn.y678-nav-tsudo," +
+        "[data-yojitsu-678-shell] .y678-nav-btn.y678-nav-tsudo.y678-nav-tsudo--inactive{background:#c5d2cc;color:#2a3530;border-color:#8fa199;font-weight:500;opacity:1;}",
+      "[data-yojitsu-678-shell] .y678-nav-btn.y678-nav-tsudo:hover," +
+        "[data-yojitsu-678-shell] .y678-nav-btn.y678-nav-tsudo.y678-nav-tsudo--inactive:hover{background:#b3c2bb;color:#121a16;border-color:#6f8378;}",
+      "[data-yojitsu-678-shell] .y678-nav-btn.y678-nav-tsudo.y678-nav-tsudo--active{background:linear-gradient(180deg,#198042,#0d5c2e);color:#fff;border-color:#064b24;font-weight:700;box-shadow:0 2px 8px rgba(6,75,36,.38);}",
+      "[data-yojitsu-678-shell] .y678-nav-btn.y678-nav-tsudo.y678-nav-tsudo--active:hover{background:linear-gradient(180deg,#156b38,#085524);color:#fff;border-color:#053d1a;}",
+      "[data-yojitsu-678-shell] .y678-nav-btn.y678-nav-clear{font-size:11.5px;color:#4a5a52;background:#f4f6f5;border-color:#c5d0cc;}",
+      "[data-yojitsu-678-shell] .y678-nav-btn.y678-nav-clear:hover{background:#e8eceb;border-color:#9aafaa;}",
       "[data-yojitsu-678-shell] .y678-nav-hint{font-size:10.5px;color:#5e7a64;margin-left:auto;}",
       "[data-yojitsu-678-shell] .y678-tbl-outer{position:relative;width:100%;max-width:100%;box-sizing:border-box;}",
       "[data-yojitsu-678-shell] .y678-tbl-host{position:relative;width:100%;max-width:100%;overflow:visible;box-sizing:border-box;border:1px solid #dee5e0;border-radius:10px;background:#fff;box-shadow:0 2px 6px rgba(40,90,60,.04);}",
@@ -1046,19 +1140,26 @@
       "[data-yojitsu-678-shell] .y678-grid tbody tr.y678-row-odd td.y678-aggr-fixed{background:#f7eada;}",
       "[data-yojitsu-678-shell] .y678-grid tbody tr.y678-row-odd td.y678-aggr-variable{background:#ede4f4;}",
       "[data-yojitsu-678-shell] .y678-grid tbody td.y678-aggr-empty{opacity:.6;}",
-      "[data-yojitsu-678-shell] .y678-grid tbody td.y678-cur{background:#dbe9fb !important;color:#0c2647 !important;}",
-      "[data-yojitsu-678-shell] .y678-grid tbody tr.y678-row-odd td.y678-cur{background:#c6d8f4 !important;color:#0c2647 !important;}",
-      "[data-yojitsu-678-shell][data-y678-tsudo-focus=\"1\"] .y678-grid thead th.y678-th-mid.y678-aggr-initial[data-y678-jump-anchor=\"tsudo\"]," +
-        "[data-yojitsu-678-shell][data-y678-tsudo-focus=\"1\"] .y678-grid thead th.y678-th-sub-aggr.y678-aggr-initial{box-shadow:inset 0 0 0 2px #1f6e3f;border-radius:4px;}",
-      "[data-yojitsu-678-shell][data-y678-tsudo-focus=\"1\"] .y678-grid tbody td.y678-aggr-initial.y678-edit," +
-        "[data-yojitsu-678-shell][data-y678-tsudo-focus=\"1\"] .y678-grid tbody td.y678-aggr-initial.y678-edit-payment{box-shadow:inset 0 0 0 2px #1f6e3f;border-radius:3px;}",
-      "[data-yojitsu-678-shell] .y678-grid thead tr:first-child th.y678-cur{background:#1d4f9e !important;color:#ffffff !important;font-weight:700;}",
-      "[data-yojitsu-678-shell] .y678-grid thead tr:nth-child(2) th.y678-cur{background:#a8c4e8 !important;color:#0c2647 !important;font-weight:700;}",
-      "[data-yojitsu-678-shell] .y678-grid .y678-cur-block{box-shadow:none;}",
-      "[data-yojitsu-678-shell] .y678-grid .y678-cur-first{box-shadow:none;}",
-      "[data-yojitsu-678-shell] .y678-grid .y678-cur-mid{box-shadow:none;}",
-      "[data-yojitsu-678-shell] .y678-grid .y678-cur-last{box-shadow:none;}",
-      "[data-yojitsu-678-shell] .y678-grid .y678-cur-tag{display:inline-block;margin-left:4px;padding:1px 6px;background:#b00020;color:#fff;font-size:9.5px;font-weight:700;border-radius:3px;letter-spacing:.04em;vertical-align:middle;box-shadow:0 0 0 1px #fff;}",
+      "[data-yojitsu-678-shell] .y678-grid tbody td.y678-na-col{background:#e6ebea !important;color:#7a8a82;}",
+      "[data-yojitsu-678-shell] .y678-grid tbody tr.y678-row-odd td.y678-na-col{background:#d9e0e3 !important;}",
+      "[data-yojitsu-678-shell] .y678-grid thead tr:nth-child(2) th.y678-th-month.y678-fiscal-today-col{background:#ebe3d4 !important;color:#2c2618 !important;}",
+      "[data-yojitsu-678-shell] .y678-grid thead tr:nth-child(3) th.y678-fiscal-today-col{background:#f0e9de !important;color:#2a3229 !important;border-right-color:#d8cfc2 !important;}",
+      "[data-yojitsu-678-shell] .y678-grid tbody td.y678-fiscal-today-col{background:#fbf6eb !important;color:#1c3a26;}",
+      "[data-yojitsu-678-shell] .y678-grid tbody tr.y678-row-odd td.y678-fiscal-today-col{background:#f4ece1 !important;}",
+      "[data-yojitsu-678-shell] .y678-grid tbody tr:hover td.y678-fiscal-today-col{background:#f2e8d8 !important;}",
+      "[data-yojitsu-678-shell] .y678-grid tbody tr.y678-row-odd:hover td.y678-fiscal-today-col{background:#eadfd0 !important;}",
+      "[data-yojitsu-678-shell] .y678-grid tbody td.y678-input-slot-pay{background:#ffefd6 !important;color:#3d2a0a !important;box-shadow:inset 0 0 0 1px rgba(212,140,40,.55);}",
+      "[data-yojitsu-678-shell] .y678-grid tbody td.y678-input-slot-rev{background:#dff2e6 !important;color:#0f291d !important;box-shadow:inset 0 0 0 1px rgba(70,140,100,.45);}",
+      "[data-yojitsu-678-shell] .y678-grid tbody tr.y678-row-odd td.y678-input-slot-pay{background:#ffe8c4 !important;}",
+      "[data-yojitsu-678-shell] .y678-grid tbody tr.y678-row-odd td.y678-input-slot-rev{background:#cfe9db !important;}",
+      "[data-yojitsu-678-shell] .y678-grid tbody tr:hover td.y678-input-slot-pay{background:#ffd9a8 !important;}",
+      "[data-yojitsu-678-shell] .y678-grid tbody tr:hover td.y678-input-slot-rev{background:#c5e8d4 !important;}",
+      "[data-yojitsu-678-shell] .y678-grid tbody td.y678-aggr-initial.y678-input-slot-pay{background:#ffefd6 !important;color:#3d2a0a !important;box-shadow:inset 0 0 0 1px rgba(212,140,40,.55);}",
+      "[data-yojitsu-678-shell] .y678-grid tbody td.y678-aggr-initial.y678-input-slot-rev{background:#dff2e6 !important;color:#0f291d !important;box-shadow:inset 0 0 0 1px rgba(70,140,100,.45);}",
+      "[data-yojitsu-678-shell] .y678-grid tbody tr.y678-row-odd td.y678-aggr-initial.y678-input-slot-pay{background:#ffe8c4 !important;}",
+      "[data-yojitsu-678-shell] .y678-grid tbody tr.y678-row-odd td.y678-aggr-initial.y678-input-slot-rev{background:#cfe9db !important;}",
+      "[data-yojitsu-678-shell] .y678-grid .y678-input-target-tag{display:inline-block;margin-left:4px;padding:1px 6px;background:#205c3e;color:#f6fffa;font-size:9.5px;font-weight:700;border-radius:3px;letter-spacing:.04em;vertical-align:middle;}",
+      "[data-yojitsu-678-shell] .y678-grid .y678-today-tag{display:inline-block;margin-left:4px;padding:1px 6px;background:#e8e4dc;color:#4a4a48;font-size:9px;font-weight:600;border-radius:3px;letter-spacing:.04em;vertical-align:middle;border:1px solid #d0ccc4;}",
       "[data-yojitsu-678-shell] .y678-grid .y678-m-even{background:#f8fbf9;}",
       "[data-yojitsu-678-shell] .y678-grid .y678-m-odd{background:#ffffff;}",
       "[data-yojitsu-678-shell] .y678-grid tbody tr.y678-row-odd td{background:#f9fcfa;}",
@@ -1069,6 +1170,12 @@
       "[data-yojitsu-678-shell] .y678-grid tbody tr.y678-row-odd td.y678-tail-do{background:#e3eee7;}",
       "[data-yojitsu-678-shell] .y678-grid tbody tr.y678-row-odd td.y678-tail-notes{background:#f5eed3;}",
       "[data-yojitsu-678-shell] .y678-grid tbody tr:hover td{background:#e8f3ea !important;}",
+      "[data-yojitsu-678-shell] .y678-grid tbody tr:hover td.y678-fiscal-today-col:not(.y678-input-slot-pay):not(.y678-input-slot-rev){background:#f2e8d8 !important;}",
+      "[data-yojitsu-678-shell] .y678-grid tbody tr:hover td.y678-input-slot-pay{background:#ffd9a8 !important;}",
+      "[data-yojitsu-678-shell] .y678-grid tbody tr:hover td.y678-input-slot-rev{background:#c5e8d4 !important;}",
+      "[data-yojitsu-678-shell] .y678-grid tbody tr:hover td.y678-aggr-initial.y678-input-slot-pay{background:#ffd9a8 !important;}",
+      "[data-yojitsu-678-shell] .y678-grid tbody tr:hover td.y678-aggr-initial.y678-input-slot-rev{background:#c5e8d4 !important;}",
+      "[data-yojitsu-678-shell] .y678-grid tbody tr:hover td.y678-na-col{background:#d8dfe3 !important;}",
       "[data-yojitsu-678-shell] .y678-grid tbody tr:hover .y678-sk{background:#c4d8c8 !important;}",
       "[data-yojitsu-678-shell] .y678-grid .y678-sk{position:sticky;z-index:5;}",
       "[data-yojitsu-678-shell] .y678-grid tbody .y678-sk{background:#dee9e0;color:#1f4030;}",
@@ -1098,10 +1205,6 @@
       "[data-yojitsu-678-shell] .y678-action-add{font-size:13px;font-weight:700;padding:6px 14px;border:1px solid #205c3e;background:linear-gradient(180deg,#3a8c4b,#2f7a52);color:#fff;border-radius:6px;cursor:pointer;box-shadow:0 1px 2px rgba(40,90,60,.2);}",
       "[data-yojitsu-678-shell] .y678-action-add:hover{background:linear-gradient(180deg,#2f7a52,#246340);}",
       "[data-yojitsu-678-shell] .y678-action-hint{font-size:11px;color:#5e7a64;}",
-      "[data-yojitsu-678-shell] .y678-company-guide{max-width:920px;margin:0 0 10px;padding:9px 12px;font-size:11.5px;line-height:1.55;color:#1f4030;background:#eef8f1;border:1px solid #b9d6bd;border-radius:6px;}",
-      "[data-yojitsu-678-shell] .y678-company-guide .y678-company-guide-body{font-weight:400;}",
-      "[data-yojitsu-678-shell] .y678-company-guide a{color:#1f6e3f;font-weight:700;text-decoration:none;}",
-      "[data-yojitsu-678-shell] .y678-company-guide a:hover{text-decoration:underline;}",
       "[data-yojitsu-678-shell] .y678-grid td.y678-edit{cursor:pointer;}",
       "[data-yojitsu-678-shell] .y678-grid td.y678-edit:hover{outline:2px solid #2f7a52;outline-offset:-2px;}",
       "[data-yojitsu-678-shell] .y678-grid td.y678-editing{padding:0 !important;outline:2px solid #2f7a52;outline-offset:-2px;}",
@@ -1164,37 +1267,37 @@
     ensure678PagingHideMutationObserver();
     schedule678PagingLabelHide();
 
+    var manualBar = document.createElement("div");
+    manualBar.className = "y678-manual-bar";
+    manualBar.innerHTML =
+      "<a href=\"" +
+      esc(resolveY678QuickManualUrl()) +
+      "\" target=\"_blank\" rel=\"noopener noreferrer\">📘 部署予実クイックマニュアル（別ページ）</a>";
+    wrap.appendChild(manualBar);
+
     var head = document.createElement("div");
     head.style.marginBottom = "8px";
     head.style.display = "flex";
     head.style.flexWrap = "wrap";
     head.style.alignItems = "center";
     head.style.gap = "8px 12px";
+    head.style.fontSize = "12px";
     head.innerHTML =
       "<strong>部署予実ダッシュ</strong> · " +
       "<a href=\"" +
       esc(location.origin + "/k/" + APP_INPUT + "/") +
-      "\">677 一覧</a> · " +
+      "\">677</a> · " +
       "<a href=\"" +
       esc(location.origin + "/k/" + APP_INPUT + "/edit") +
-      "\">677 で新規</a> · " +
-      "<button type=\"button\" id=\"y678-refresh\" style=\"font-size:12px;cursor:pointer\">再読み込み</button>";
-    wrap.appendChild(head);
-
-    var linksRow = document.createElement("div");
-    linksRow.style.marginBottom = "8px";
-    linksRow.style.fontSize = "12px";
-    linksRow.style.lineHeight = "1.5";
-    linksRow.style.color = "#333";
-    linksRow.innerHTML =
-      "<strong>リンク</strong> · " +
+      "\">677 新規</a> · " +
       "<a href=\"" +
       esc(location.origin + "/k/#/space/54/thread/58") +
-      "\">スペース本件スレッド</a> · " +
+      "\">スレッド</a> · " +
       "<a href=\"" +
       esc(location.origin + "/k/" + kintone.app.getId() + "/") +
-      "\">このダッシュ(678) 一覧</a>";
-    wrap.appendChild(linksRow);
+      "\">678</a> · " +
+      "<button type=\"button\" id=\"y678-refresh\" style=\"font-size:12px;cursor:pointer\">再読み込み</button>";
+    wrap.appendChild(head);
 
     var filterRow = document.createElement("div");
     filterRow.style.marginBottom = "8px";
@@ -1213,30 +1316,15 @@
     var actionRow = document.createElement("div");
     actionRow.className = "y678-actionrow";
     actionRow.innerHTML =
-      "<button type=\"button\" id=\"y678-add\" class=\"y678-action-add\">＋ 明細を追加</button>" +
-      "<span class=\"y678-action-hint\">予算修正・実績: <strong>入力月へジャンプ</strong>で対象月を選び、変動費は<strong>都度費用</strong>ボタンで入力列へ。緑枠付きセルをクリック</span>";
+      "<button type=\"button\" id=\"y678-add\" class=\"y678-action-add\">＋ 明細を追加</button>";
     wrap.appendChild(actionRow);
-
-    var companyGuide = document.createElement("div");
-    companyGuide.className = "y678-company-guide";
-    companyGuide.innerHTML =
-      "<strong>会社名をどこで変える？</strong> " +
-      "<span class=\"y678-company-guide-body\">" +
-      "① <strong>集合先</strong>（FBJ・オフィスバスター・その他・他・他のもの・他や各社・各社・空・未設定など）の行は、上の<strong>入力月へジャンプ</strong>で月を選び → その月の<strong>実績</strong>セルをクリックしてモーダルを開く → 会社欄で<strong>候補から選ぶか入力</strong>し「支払を追加」で保存すると、<strong>677 の会社欄</strong>が更新されます（「会社を新規登録する」は入力欄へのフォーカス用）。" +
-      " ② すでに<strong>確定取引先</strong>が入っている行は、表の<strong>工種名称</strong>リンクから " +
-      "<a href=\"" +
-      esc(location.origin + "/k/" + APP_INPUT + "/") +
-      "\">677 入力アプリ</a>で該当レコードを開き、会社欄を編集してください（678 の一覧からは触れません）。" +
-      "</span>";
-    wrap.appendChild(companyGuide);
 
     var navRow = document.createElement("div");
     navRow.className = "y678-nav";
     var navParts = [
       "<span class=\"y678-nav-label\">入力月へジャンプ:</span>",
-      "<button type=\"button\" data-y678-jump=\"tsudo\" class=\"y678-nav-btn y678-nav-tsudo\" title=\"変動費は都度費用ブロックで実績・予算修正（暦月12列は参照）。入力対象月は下の月ボタンで選択\">都度費用</button>",
-      "<button type=\"button\" data-y678-jump=\"start\" class=\"y678-nav-btn\">◀ 先頭</button>",
-      "<button type=\"button\" data-y678-jump=\"left\" class=\"y678-nav-btn\">◀ 1画面</button>",
+      "<button type=\"button\" data-y678-jump=\"tsudo\" class=\"y678-nav-btn y678-nav-tsudo\" title=\"変動費の実績・予算修正はここ（暦月12列は参照）。ONのときは月ボタンは薄表示（クリックで解除してその月へ切替可）\">都度費用</button>",
+      "<button type=\"button\" data-y678-jump-clear=\"1\" class=\"y678-nav-btn y678-nav-clear\" title=\"保存した入力月を解除し都度費用モードをオフ。対象月はカレンダー当月に戻して表を再描画\">選択クリア</button>",
     ];
     for (var jm = 0; jm < FISCAL_ORDER.length; jm++) {
       var jl = FISCAL_ORDER[jm];
@@ -1248,8 +1336,6 @@
           "</button>"
       );
     }
-    navParts.push("<button type=\"button\" data-y678-jump=\"right\" class=\"y678-nav-btn\">1画面 ▶</button>");
-    navParts.push("<button type=\"button\" data-y678-jump=\"end\" class=\"y678-nav-btn\">末尾 ▶</button>");
     navParts.push("<span class=\"y678-nav-hint\" title=\"Shift+ホイールで横スクロール\">横スクロール: Shift+ホイール</span>");
     navRow.innerHTML = navParts.join("");
     wrap.appendChild(navRow);
@@ -1508,10 +1594,12 @@
         var btnm = btns[bi];
         var bk = btnm.getAttribute("data-y678-jump");
         var on = !tsudoOn && normalizeFiscalMonthLabel(bk) === normalizeFiscalMonthLabel(im);
-        btnm.style.fontWeight = on ? "700" : "";
-        btnm.style.boxShadow = on ? "inset 0 0 0 2px #1f6e3f" : "";
-        btnm.style.borderRadius = on ? "4px" : "";
+        btnm.classList.toggle("y678-nav-month--active", on);
+        btnm.classList.toggle("y678-nav-month--muted", tsudoOn);
         btnm.setAttribute("aria-pressed", on ? "true" : "false");
+        btnm.title = tsudoOn
+          ? "都度費用モード中: クリックで解除し、この月をランニングの入力先にします"
+          : "";
       }
     }
 
@@ -1520,9 +1608,8 @@
       var tb = navRow.querySelector("button.y678-nav-tsudo[data-y678-jump=\"tsudo\"]");
       if (!tb) return;
       var on = y678FocusTsudo;
-      tb.style.fontWeight = on ? "700" : "";
-      tb.style.boxShadow = on ? "inset 0 0 0 2px #1f6e3f" : "";
-      tb.style.borderRadius = on ? "4px" : "";
+      tb.classList.toggle("y678-nav-tsudo--active", on);
+      tb.classList.toggle("y678-nav-tsudo--inactive", !on);
       tb.setAttribute("aria-pressed", on ? "true" : "false");
     }
 
@@ -1546,11 +1633,38 @@
       }
     }
 
+    /** 入力月の session 保存と都度モードを捨て、既定（カレンダー当月・暦月ハイライト）に戻す */
+    function clearInputJumpSelection() {
+      y678InputMonthLabel = "";
+      try {
+        sessionStorage.removeItem("y678-input-month");
+      } catch (eClr) {
+        void eClr;
+      }
+      setTsudoFocus(false);
+      applyFilterAndRedraw();
+      var toScroll = getInputMonthLabel();
+      if (typeof requestAnimationFrame === "function") {
+        requestAnimationFrame(function () {
+          jumpHorizontal(toScroll);
+        });
+      } else {
+        setTimeout(function () {
+          jumpHorizontal(toScroll);
+        }, 0);
+      }
+    }
+
     navRow.addEventListener("click", function (e) {
       /** ボタン内テキスト直撃時は target が Text ノードになり closest が無いブラウザがある */
       var raw = e.target;
       var el = raw && raw.nodeType === 1 ? raw : raw && raw.parentElement;
       if (!el || typeof el.closest !== "function") return;
+      var clr = el.closest("button[data-y678-jump-clear]");
+      if (clr && navRow.contains(clr)) {
+        clearInputJumpSelection();
+        return;
+      }
       var b = el.closest("button[data-y678-jump]");
       if (!b || !navRow.contains(b)) return;
       var jk = b.getAttribute("data-y678-jump") || "";
@@ -2196,7 +2310,7 @@
         "<label>工種名称 <span class=\"req\">*</span><input type=\"text\" name=\"work_type_name\" maxlength=\"255\" required /></label>",
         "<label>工種コード<input type=\"text\" name=\"work_type_code\" maxlength=\"255\" /></label>",
         "<label>費用種別 <span class=\"req\">*</span><select name=\"cost_category\" required><option value=\"\">（選択してください）</option><option value=\"固定費\">固定費</option><option value=\"変動費\">変動費</option></select></label>",
-        "<label>支払種別 <span class=\"req\">*</span><select name=\"payment_type\" required><option value=\"\">（選択してください）</option><option value=\"月額\">月額</option><option value=\"年額\">年額</option><option value=\"都度\">都度</option></select></label>",
+        "<label>支払種別 <span class=\"req\">*</span><select name=\"payment_type\" required><option value=\"\">（選択してください）</option><option value=\"月額\">月額</option><option value=\"年額\">年額</option><option value=\"都度\">都度</option></select><span class=\"y678-modal-sub\" style=\"display:block;margin-top:2px;font-weight:normal\">支払種別は <strong>月額</strong>（毎月定額）・<strong>年額</strong>（年に一度の計上）・<strong>都度</strong>（変動費の都度支払）のいずれか。費用種別に連動: 変動費→都度、固定費の既定は月額（年１セルだけの契約は年額へ変更）</span></label>",
         "<label class=\"y678-wide\">摘要 <span class=\"req\">*</span><input type=\"text\" name=\"summary_text\" maxlength=\"500\" required /></label>",
         "<label>会社<input type=\"text\" name=\"partner_company\" maxlength=\"255\" /></label>",
         "<label>ランニング（定額）<input type=\"number\" name=\"learning_fixed_budget\" step=\"1\" min=\"0\" /></label>",
@@ -2232,6 +2346,24 @@
       modalEl.addEventListener("keydown", function (e) {
         if (e.key === "Escape") closeModal();
       });
+      if (modalEl.dataset.paymentTypeSyncAttached !== "1") {
+        modalEl.dataset.paymentTypeSyncAttached = "1";
+        var ccSel = modalEl.querySelector("select[name='cost_category']");
+        if (ccSel) {
+          ccSel.addEventListener("change", function () {
+            var catEl = modalEl.querySelector("select[name='cost_category']");
+            var payEl = modalEl.querySelector("select[name='payment_type']");
+            if (!catEl || !payEl) return;
+            var c = catEl.value;
+            if (c === "変動費") payEl.value = "都度";
+            else if (c === "固定費") {
+              if (payEl.value === "都度" || payEl.value === "") payEl.value = "月額";
+            } else {
+              payEl.value = "";
+            }
+          });
+        }
+      }
       return modalEl;
     }
 
@@ -2336,6 +2468,12 @@
         return;
       }
       var payType = val("payment_type");
+      if (costCat === "変動費") payType = "都度";
+      else if (costCat === "固定費") {
+        if (!payType || payType === "都度") payType = "月額";
+      }
+      var paySelSync = modalEl.querySelector("select[name='payment_type']");
+      if (paySelSync) paySelSync.value = payType;
       if (payType !== "月額" && payType !== "年額" && payType !== "都度") {
         statusEl.style.color = "#b00020";
         statusEl.textContent = "「支払種別」は 月額 / 年額 / 都度 から選択してください。";
@@ -2486,6 +2624,9 @@
       "FBJ",
       "オフィスバスター",
       "オフィス・バスター",
+      "クロネコヤマト",
+      "佐川急便",
+      "クロネコヤマト、佐川急便",
       "その他",
       "他",
       "他のもの",
@@ -2522,12 +2663,11 @@
     })();
 
     /**
-     * 「会社を新規登録する」・候補 select・datalist・会社欄直接編集を出す条件（集合先・未確定・費用種別その他）。
+     * 「会社を新規登録する」・候補 select・datalist・会社欄直接編集を出す条件（集合先・未確定・会社欄の「その他」等）。
+     * 費用種別は固定費／変動費のみを想定し、費用種別「その他」ではここを開かない（会社の集合先「その他」と別物）。
      * 677 の表記ゆれ（全角英字・括弧付き）も拾う。
      */
     function showPartnerNewRegisterButton(rec) {
-      var cat = String(fieldVal(rec, "cost_category") || "").trim();
-      if (cat === "その他") return true;
       var p = normalizePartnerCompanyLabel(fieldVal(rec, "partner_company"));
       if (!p) return true;
       var nk = partnerCompanyNormKey(p);
@@ -2681,7 +2821,10 @@
       if (showNew) {
         pcEl.removeAttribute("readonly");
         pcEl.setAttribute("list", "y678-partner-datalist");
-        pcEl.setAttribute("placeholder", "上の候補で選ぶか、ここに直接入力（FBJ・オフィスバスター等）");
+        pcEl.setAttribute(
+          "placeholder",
+          "上の候補で選ぶか、ここに直接入力（宅配は表に「クロネコヤマト、佐川急便」併記／実績で片方に確定／FBJ 等）"
+        );
         pcEl.setAttribute(
           "title",
           "上の一覧で選ぶか入力。677 の会社がドロップダウンのときは **選択肢に無い文字列は保存エラー** になります。「会社を新規登録する」で入力欄にフォーカスできます。"
@@ -2689,7 +2832,7 @@
         if (presetW) {
           var curPc = normalizePartnerCompanyLabel(fieldVal(rec, "partner_company") || "");
           var optParts = [
-            "<option value=\"\">— 候補から選ぶ（FBJ・オフィスバスター・その他・各社ほか）—</option>",
+            "<option value=\"\">--- 候補から選ぶ（宅配：クロネコヤマト、佐川急便／各社／FBJ・その他ほか） ---</option>",
           ];
           for (var pi = 0; pi < PARTNER_DROPDOWN_PRESETS.length; pi++) {
             var labp = PARTNER_DROPDOWN_PRESETS[pi];
@@ -2749,8 +2892,15 @@
       if (pcHint) {
         if (showNew) {
           pcHint.style.display = "block";
-          pcHint.textContent =
+          var wnHint = String(fieldVal(rec, "work_type_name") || "");
+          var sumHint = String(fieldVal(rec, "summary_text") || "");
+          var ht =
             "集合先・プレースホルダ行では、**上の一覧**で FBJ・オフィスバスター等を選ぶか、下の欄に入力し「支払を追加」で 677 に保存します（677 がドロップダウンのときは **選択肢と完全一致** が必要です）。「会社を新規登録する」は入力欄へのフォーカス用です。";
+          if (/宅配/.test(wnHint) || /宅配/.test(sumHint)) {
+            ht +=
+              " **宅配便**は一覧に **クロネコヤマト、佐川急便** と併記しています。実績保存のときは **クロネコヤマト** か **佐川急便** のいずれか一方に差し替えてください。";
+          }
+          pcHint.textContent = ht;
         } else {
           pcHint.style.display = "none";
           pcHint.textContent = "";
