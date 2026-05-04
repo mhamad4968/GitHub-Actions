@@ -1,0 +1,15 @@
+# 677 向けローカル調査・一時スクリプト（共有しない・リモートに載せない）
+add-677-payment-type-and-supplement.mjs
+backfill-677-cost-category.py
+backfill-677-payment-type.mjs
+dump-payment-breakdown-schema.mjs
+find-677-by-code.mjs
+find-677-other-cost.mjs
+find-677-records.mjs
+fix-677-cost-category.mjs
+fix-677-id45-fixed.mjs
+fix-677-id6-ntt-monthly.mjs
+yojitsu-677-recalc-payment-type-from-xlsx.py
+yojitsu-677-reset-display-order.mjs
+yojitsu-677-spread-fixed-single-month-budget.py
+yojitsu-677-update-notes-from-xlsx.py
