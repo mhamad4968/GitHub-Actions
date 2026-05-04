@@ -66,3 +66,8 @@ data/snapshots/*-step*.json
 
 # Constitution 網羅統合版（`scripts/regenerate-constitution-rule.sh` でローカル生成・大容量のためリポ非追跡）
 .cursor/rules/constitution.mdc
+
+# ローカル生成・Python・Cursor（2026-05-04）
+**/__pycache__/
+.cursor/cursor-notifier.json
+docs/reports/*-morning-prep.md
