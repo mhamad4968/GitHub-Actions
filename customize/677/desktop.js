@@ -3,10 +3,10 @@
 
   /**
    * 部署予実 入力アプリ 677
-   * BUILD: 2026-05-02-677-submit-error-guard
+   * BUILD: 2026-05-04-677-monthly-calc-subrow
    * - 新規・編集表示時: `monthly_breakdown` を **5月〜翌年4月の 12 行**に揃える（予算修正空は **0**）
    * - 保存直前: `支払内訳` の **支払日の暦月**ごとに `payment_amount` を合算し、該当 `月度` 行の **実績**へ書き戻す（`SPEC.md` §6c・§8）
-   * - `month_utilization` は CALC のため触らない
+   * - `month_utilization` は CALC。サブテーブル行は **全列必須**のため、生成行にも `type: CALC` を置く（値はサーバ側で再計算）
    */
 
   var FC_MONTHLY = "monthly_breakdown";
@@ -15,6 +15,7 @@
   var FC_BUDGET = "month_budget";
   var FC_ACTUAL = "month_actual";
   var FC_REV = "month_budget_revision";
+  var FC_UTIL = "month_utilization";
   var FC_PDATE = "payment_date";
   var FC_PAMT = "payment_amount";
 
@@ -29,13 +30,31 @@
     return { type: "SINGLE_LINE_TEXT", value: String(value) };
   }
 
+  /** サブテーブル行に CALC 列が無いと kintone が「month_utilization が不正」と検証する */
+  function calcUtilCell() {
+    return { type: "CALC", value: "0" };
+  }
+
   function blankRow(label) {
     var v = {};
     v[FC_FISCAL] = textCell(label);
     v[FC_BUDGET] = numCell("");
     v[FC_ACTUAL] = numCell("");
     v[FC_REV] = numCell("0");
+    v[FC_UTIL] = calcUtilCell();
     return { value: v };
+  }
+
+  function ensureMonthlyUtilizationCell(row) {
+    if (!row || !row.value) return;
+    var u = row.value[FC_UTIL];
+    if (!u || typeof u !== "object" || u.type !== "CALC") {
+      row.value[FC_UTIL] = calcUtilCell();
+      return;
+    }
+    if (u.value === undefined || u.value === null || u.value === "") {
+      u.value = "0";
+    }
   }
 
   function revisionOrZero(row) {
@@ -69,6 +88,9 @@
       } else {
         next.push(blankRow(label));
       }
+    }
+    for (var t = 0; t < next.length; t++) {
+      ensureMonthlyUtilizationCell(next[t]);
     }
     rec[FC_MONTHLY].value = next;
   }

@@ -3,7 +3,7 @@
 
   /**
    * 部署予実 ダッシュアプリ 678
-   * BUILD: 2026-05-04-678-header-trim-selflink
+   * BUILD: 2026-05-04-678-manual-app-guide-name
    * - 677 を kintone.api で一覧。左キー列は `shin-format-excel-layout.md` 新フォーマット準拠＋12 月×四つ柱（`monthly_breakdown`）
    * - 一覧の既定 SORT は `display_order asc, $id asc`（SPEC §6e 準拠・2026-05-03 改修）
    * - 新規追加モーダルは「挿入位置」選択（一番下/一番上/○○の上/○○の下）＋中間値計算（floor((prev+next)/2)）
@@ -19,12 +19,20 @@
    * - 暦月12列（§6e）: **固定費**＝各月の予算・率は表示、**実績・予算修正**は入力対象月のみクリック可。**変動費**＝暦月の予算・率は `---`、実績・予算修正は**都度費用**集計列（入力対象月）
    */
 
+  /** 明細・月次の正（一覧・新規・編集） */
   var APP_INPUT = 677;
+  /** このカスタマイズが載るダッシュ（一覧表）アプリ */
+  var APP_DASH = 678;
   /** クイックマニュアル専用アプリ（`window.YOJITSU_QUICK_MANUAL_APP_ID` があれば数値として優先） */
   var YOJITSU_QUICK_MANUAL_APP_ID = 679;
-  var BUILD = "2026-05-04-678-header-trim-selflink";
+  /** 担当者向け（アプリ ID は出さない） */
+  var YOJITSU_LABEL_INPUT_APP = "システム推進室予実管理システム入力アプリ";
+  var YOJITSU_LABEL_INPUT_NEW = "システム推進室予実管理システム入力アプリの新規入力";
+  var YOJITSU_LABEL_DASH_APP = "システム推進室予実管理システム";
+  var YOJITSU_LABEL_MANUAL_APP = "システム推進室予実アプリガイド";
+  var BUILD = "2026-05-04-678-manual-app-guide-name";
   /**
-   * クイックマニュアル（専用アプリ 679）。`window.Y678_QUICK_MANUAL_URL` が非空なら最優先。
+   * マニュアル掲載アプリ（システム推進室予実アプリガイド・679）。`window.Y678_QUICK_MANUAL_URL` が非空なら最優先。
    */
   function resolveY678QuickManualUrl() {
     try {
@@ -111,7 +119,14 @@
       promise,
       new Promise(function (_, reject) {
         setTimeout(function () {
-          reject({ code: "Y678_TIMEOUT", message: "677 への一覧取得が " + ms / 1000 + " 秒を超えました。ネットワーク・プロキシ・権限を確認してください。" });
+          reject({
+            code: "Y678_TIMEOUT",
+            message:
+              YOJITSU_LABEL_INPUT_APP +
+              " への一覧取得が " +
+              ms / 1000 +
+              " 秒を超えました。ネットワーク・プロキシ・権限を確認してください。",
+          });
         }, ms);
       }),
     ]);
@@ -177,7 +192,7 @@
     if (msg) parts.push(msg.slice(0, 420));
     var hint = "";
     if (msg.indexOf("GAIA") !== -1 || msg.indexOf("permission") !== -1) {
-      hint = " ［ヒント: 677 の閲覧・編集権限とログイン状態を確認］";
+      hint = " ［ヒント: " + YOJITSU_LABEL_INPUT_APP + " の閲覧・編集権限とログイン状態を確認］";
     }
     if (code === "CB_NO02" || msg.indexOf("CB_NO02") !== -1) {
       hint = " ［ヒント: アプリ ID またはレコード ID が無効］";
@@ -1054,7 +1069,9 @@
       rows.push(
         "<tr><td colspan=\"" +
           totalCols +
-          "\" class=\"y678-empty\">該当する行がありません（677 にデータが無い・権限外・またはフィルタ条件に一致なし）</td></tr>"
+          "\" class=\"y678-empty\">該当する行がありません（" +
+          YOJITSU_LABEL_INPUT_APP +
+          " にデータが無い・権限外・またはフィルタ条件に一致なし）</td></tr>"
       );
     }
     rows.push("</tbody>");
@@ -1289,9 +1306,9 @@
     manualBar.innerHTML =
       "<a href=\"" +
       esc(resolveY678QuickManualUrl()) +
-      "\" target=\"_blank\" rel=\"noopener noreferrer\">📘 クイックマニュアル（専用アプリ " +
-      esc(String(YOJITSU_QUICK_MANUAL_APP_ID)) +
-      "）</a>";
+      "\" target=\"_blank\" rel=\"noopener noreferrer\">📘 " +
+      esc(YOJITSU_LABEL_MANUAL_APP) +
+      "</a>";
     wrap.appendChild(manualBar);
 
     var head = document.createElement("div");
@@ -1301,18 +1318,35 @@
     head.style.alignItems = "center";
     head.style.gap = "8px 12px";
     head.style.fontSize = "12px";
+    var dashAppId =
+      typeof kintone !== "undefined" && kintone.app && typeof kintone.app.getId === "function"
+        ? kintone.app.getId()
+        : APP_DASH;
     head.innerHTML =
-      "<strong>部署予実ダッシュ</strong> · " +
+      "<a href=\"" +
+      esc(location.origin + "/k/" + dashAppId + "/") +
+      "\" style=\"font-weight:700;color:inherit;text-decoration:none\" title=\"" +
+      esc(YOJITSU_LABEL_DASH_APP + "・一覧表（この画面）") +
+      "\">" +
+      esc(YOJITSU_LABEL_DASH_APP) +
+      "</a> · " +
       "<a href=\"" +
       esc(location.origin + "/k/" + APP_INPUT + "/") +
-      "\">677</a> · " +
+      "\" title=\"" +
+      esc(YOJITSU_LABEL_INPUT_APP + "・レコード一覧") +
+      "\">" +
+      esc(YOJITSU_LABEL_INPUT_APP) +
+      "</a> · " +
       "<a href=\"" +
       esc(location.origin + "/k/" + APP_INPUT + "/edit") +
-      "\">677 新規</a> · " +
-      "<a href=\"" +
-      esc(location.origin + "/k/#/space/54/thread/58") +
-      "\">スレッド</a> · " +
-      "<button type=\"button\" id=\"y678-refresh\" style=\"font-size:12px;cursor:pointer\" title=\"677 の明細を API で取り直して表を再描画\">再読み込み</button>";
+      "\" title=\"" +
+      esc(YOJITSU_LABEL_INPUT_NEW) +
+      "\">" +
+      esc(YOJITSU_LABEL_INPUT_NEW) +
+      "</a> · " +
+      "<button type=\"button\" id=\"y678-refresh\" style=\"font-size:12px;cursor:pointer\" title=\"" +
+      esc(YOJITSU_LABEL_INPUT_APP + "の明細を API で取り直して表を再描画") +
+      "\">再読み込み</button>";
     wrap.appendChild(head);
 
     var filterRow = document.createElement("div");
@@ -1359,7 +1393,7 @@
     var status = document.createElement("div");
     status.style.marginBottom = "6px";
     status.style.color = "#555";
-    status.textContent = "677 から明細を読み込み中…";
+    status.textContent = YOJITSU_LABEL_INPUT_APP + " から明細を読み込み中…";
     wrap.appendChild(status);
 
     var tblHostOuter = document.createElement("div");
@@ -1639,7 +1673,12 @@
         syncTsudoNavButton();
         if (y678OmitMonthlyCols) {
           status.textContent =
-            status.textContent + " ［月次列: 677 API で取得できず省略。677 のレコード画面で月次を確認してください。］";
+            status.textContent +
+            " ［月次列: " +
+            YOJITSU_LABEL_INPUT_APP +
+            " の API で取得できず省略。" +
+            YOJITSU_LABEL_INPUT_APP +
+            " のレコード画面で月次を確認してください。］";
         }
       } catch (err) {
         status.style.color = "#b00020";
@@ -1733,7 +1772,7 @@
 
     function load() {
       status.style.color = "#555";
-      status.textContent = "677 から明細を読み込み中…";
+      status.textContent = YOJITSU_LABEL_INPUT_APP + " から明細を読み込み中…";
       tblHost.innerHTML = "";
       y678OmitMonthlyCols = false;
       var timeoutMs = 70000;
@@ -1762,7 +1801,7 @@
           lastRawRecords = [];
           lastTotalCount = 0;
           status.style.color = "#b00020";
-          status.textContent = formatApiError(e, "677 の一覧取得に失敗しました。");
+          status.textContent = formatApiError(e, YOJITSU_LABEL_INPUT_APP + " の一覧取得に失敗しました。");
         });
     }
 
@@ -2145,7 +2184,9 @@
       if (rev === "") {
         status.style.color = "#b00020";
         status.textContent =
-          "レコードのリビジョンが取得できません。再読み込みしてから保存してください。（677 のフィールド取得権限も確認）";
+          "レコードのリビジョンが取得できません。再読み込みしてから保存してください。（" +
+          YOJITSU_LABEL_INPUT_APP +
+          " のフィールド取得権限も確認）";
         return;
       }
       var raw = inp.value;
@@ -2321,7 +2362,9 @@
       modalEl.innerHTML = [
         "<div class=\"y678-modal-mask\" data-y678-modal-close=\"1\"></div>",
         "<div class=\"y678-modal-card\" role=\"dialog\" aria-modal=\"true\">",
-        "<div class=\"y678-modal-head\">＋ 新規明細を追加 <span class=\"y678-modal-sub\">（677 にレコードを作成）</span></div>",
+        "<div class=\"y678-modal-head\">＋ 新規明細を追加 <span class=\"y678-modal-sub\">（" +
+          YOJITSU_LABEL_INPUT_APP +
+          " にレコードを作成）</span></div>",
         "<div class=\"y678-modal-body\">",
         "<label>工種名称 <span class=\"req\">*</span><input type=\"text\" name=\"work_type_name\" maxlength=\"255\" required /></label>",
         "<label>工種コード<input type=\"text\" name=\"work_type_code\" maxlength=\"255\" /></label>",
@@ -2500,7 +2543,12 @@
       var doRes = computeInsertDisplayOrder(insertMode, insertTargetId);
       if (doRes.conflict) {
         statusEl.style.color = "#b00020";
-        statusEl.textContent = "挿入位置エラー: " + doRes.message + "／display_order の再採番（scripts/yojitsu-677-reset-display-order.mjs --apply）後に再試行してください。";
+        statusEl.textContent =
+          "挿入位置エラー: " +
+          doRes.message +
+          "／" +
+          YOJITSU_LABEL_INPUT_APP +
+          " の display_order を再採番（管理者向け: scripts/yojitsu-677-reset-display-order.mjs --apply）後に再試行してください。";
         return;
       }
       if (doRes.value == null) {
@@ -2528,7 +2576,7 @@
       };
       saveBtn.disabled = true;
       statusEl.style.color = "#555";
-      statusEl.textContent = "677 にレコードを作成中…";
+      statusEl.textContent = YOJITSU_LABEL_INPUT_APP + " にレコードを作成中…";
       whenKintoneApiUrlReady(8000)
         .then(function () {
           return kintone.api(kintone.api.url("/k/v1/record.json", true), "POST", { app: APP_INPUT, record: rec });
@@ -2713,14 +2761,20 @@
       payModal.innerHTML = [
         "<div class=\"y678-modal-mask\" data-y678-modal-close=\"1\"></div>",
         "<div class=\"y678-modal-card\" role=\"dialog\" aria-modal=\"true\">",
-        "<div class=\"y678-modal-head\">実績入力 <span class=\"y678-modal-sub\">（677 の支払内訳に 1 行追加 → 月次実績を再集計。請求書単位は行を分けて複数回保存可）</span></div>",
+        "<div class=\"y678-modal-head\">実績入力 <span class=\"y678-modal-sub\">（" +
+          YOJITSU_LABEL_INPUT_APP +
+          " の支払内訳に 1 行追加 → 月次実績を再集計。請求書単位は行を分けて複数回保存可）</span></div>",
         "<div class=\"y678-modal-body\">",
         partnerDatalistHtml,
         "<div class=\"y678-wide y678-pay-existing-wrap\"></div>",
         "<label>支払日 <span class=\"req\">*</span><input type=\"date\" name=\"payment_date\" required /></label>",
         "<label>金額 <span class=\"req\">*</span><input type=\"number\" name=\"payment_amount\" step=\"1\" min=\"0\" required /></label>",
-        "<label class=\"y678-wide\">摘要 <span class=\"y678-pay-summary-hint\">（編集不可・親レコードの摘要・修正は親 677 で）</span><textarea name=\"summary_text\" rows=\"2\" readonly></textarea></label>",
-        "<label class=\"y678-wide\">摘要（補足）<span class=\"y678-pay-summary-hint\">（追加情報を書く欄。親 677 の summary_supplement に上書き保存）</span><textarea name=\"summary_supplement\" rows=\"3\" maxlength=\"10000\"></textarea></label>",
+        "<label class=\"y678-wide\">摘要 <span class=\"y678-pay-summary-hint\">（編集不可・親レコードの摘要・修正は " +
+          YOJITSU_LABEL_INPUT_APP +
+          " で）</span><textarea name=\"summary_text\" rows=\"2\" readonly></textarea></label>",
+        "<label class=\"y678-wide\">摘要（補足）<span class=\"y678-pay-summary-hint\">（追加情報を書く欄。" +
+          YOJITSU_LABEL_INPUT_APP +
+          " の「摘要（補足）」に上書き保存）</span><textarea name=\"summary_supplement\" rows=\"3\" maxlength=\"10000\"></textarea></label>",
         "<label class=\"y678-wide\">会社<span class=\"y678-pay-partner-hint y678-pay-summary-hint\"></span>" +
           "<select class=\"y678-pay-partner-preset\" aria-label=\"会社の候補から選択\" style=\"display:none\"></select>" +
           "<input type=\"text\" name=\"partner_company\" maxlength=\"255\" readonly /></label>",
@@ -2779,10 +2833,12 @@
           if (hint) {
             hint.style.display = "block";
             hint.textContent =
-              "正式名称を入力し「支払を追加」で保存すると、親レコード(677)の会社欄が更新されます。";
+              "正式名称を入力し「支払を追加」で保存すると、親レコード（" +
+              YOJITSU_LABEL_INPUT_APP +
+              "）の会社欄が更新されます。";
           }
           newPartnerBtn.disabled = true;
-          newPartnerBtn.textContent = "会社欄を編集できます（保存で677に反映）";
+          newPartnerBtn.textContent = "会社欄を編集できます（保存で " + YOJITSU_LABEL_INPUT_APP + " に反映）";
         });
       }
       return payModal;
@@ -2843,7 +2899,9 @@
         );
         pcEl.setAttribute(
           "title",
-          "上の一覧で選ぶか入力。677 の会社がドロップダウンのときは **選択肢に無い文字列は保存エラー** になります。「会社を新規登録する」で入力欄にフォーカスできます。"
+          "上の一覧で選ぶか入力。" +
+            YOJITSU_LABEL_INPUT_APP +
+            " の会社がドロップダウンのときは、選択肢に無い文字列は保存エラーになります。「会社を新規登録する」で入力欄にフォーカスできます。"
         );
         if (presetW) {
           var curPc = normalizePartnerCompanyLabel(fieldVal(rec, "partner_company") || "");
@@ -2891,7 +2949,7 @@
         pcEl.setAttribute("readonly", "readonly");
         pcEl.removeAttribute("list");
         pcEl.removeAttribute("placeholder");
-        pcEl.setAttribute("title", "確定取引先は親レコード(677)で変更してください");
+        pcEl.setAttribute("title", "確定取引先は親レコード（" + YOJITSU_LABEL_INPUT_APP + "）で変更してください");
         if (presetW) {
           presetW.style.display = "none";
           presetW.innerHTML = "";
@@ -2911,7 +2969,11 @@
           var wnHint = String(fieldVal(rec, "work_type_name") || "");
           var sumHint = String(fieldVal(rec, "summary_text") || "");
           var ht =
-            "集合先・プレースホルダ行では、**上の一覧**で FBJ・オフィスバスター等を選ぶか、下の欄に入力し「支払を追加」で 677 に保存します（677 がドロップダウンのときは **選択肢と完全一致** が必要です）。「会社を新規登録する」は入力欄へのフォーカス用です。";
+            "集合先・プレースホルダ行では、**上の一覧**で FBJ・オフィスバスター等を選ぶか、下の欄に入力し「支払を追加」で " +
+            YOJITSU_LABEL_INPUT_APP +
+            " に保存します（" +
+            YOJITSU_LABEL_INPUT_APP +
+            " の会社がドロップダウンのときは **選択肢と完全一致** が必要です）。「会社を新規登録する」は入力欄へのフォーカス用です。";
           if (/宅配/.test(wnHint) || /宅配/.test(sumHint)) {
             ht +=
               " **宅配便**は一覧に **クロネコヤマト、佐川急便** と併記しています。実績保存のときは **クロネコヤマト** か **佐川急便** のいずれか一方に差し替えてください。";
@@ -2931,9 +2993,11 @@
         linkBox.innerHTML =
           "<a href=\"" +
           esc(recordShowHref(rid)) +
-          "\" target=\"_blank\" rel=\"noopener\">親レコード(677 #" +
+          "\" target=\"_blank\" rel=\"noopener\">親レコード（" +
+          esc(YOJITSU_LABEL_INPUT_APP) +
+          "・#" +
           esc(rid) +
-          ")を新規タブで開く ↗</a>" +
+          "）を新規タブで開く ↗</a>" +
           "  <span class=\"y678-pay-summary-hint\">既存支払行 " +
           pcount +
           " 件</span>";
@@ -3058,7 +3122,7 @@
       saveBtn.disabled = true;
       st.style.color = "#555";
       st.textContent =
-        "677 に支払を追加し、月次実績を再集計中…" +
+        YOJITSU_LABEL_INPUT_APP + " に支払を追加し、月次実績を再集計中…" +
         (supplementChanged ? "（摘要(補足)も更新）" : "") +
         (partnerUpdate ? "（会社名も更新）" : "");
       whenKintoneApiUrlReady(8000)

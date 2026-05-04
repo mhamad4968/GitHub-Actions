@@ -31,7 +31,6 @@ const wrap =
   '.y679-manual-root a:hover{text-decoration:underline;}' +
   '.y679-manual-root .lead{margin:0 0 14px;font-size:13px;color:#3e514a;}' +
   '.y679-manual-root ul{margin:8px 0 0 1.1em;padding:0;}' +
-  '.y679-manual-root footer{margin-top:28px;font-size:12px;color:#5b6d62;}' +
   '</style>' +
   inner +
   '</div>';
@@ -39,7 +38,7 @@ const esc = JSON.stringify(wrap);
 
 const src = `(function () {
   "use strict";
-  var BUILD = "2026-05-04-679-yojitsu-quick-manual-page";
+  var BUILD = "2026-05-04-679-remove-footer-and-css";
   var MANUAL_HTML = ${esc};
 
   function injectCss() {
@@ -54,15 +53,64 @@ const src = `(function () {
     document.head.appendChild(st);
   }
 
-  function mount() {
-    if (document.querySelector("[data-y679-manual-shell]")) return;
+  /**
+   * 一覧の recordlist を display:none にしてもガイドが消えないよう、ヘッダー領域 or 一覧ブロックの外へ挿入（678 の resolve と同趣旨）
+   * @returns {{ parent: HTMLElement, before: ChildNode|null }|null}
+   */
+  function resolve679MountHost() {
+    var slot = null;
+    try {
+      if (kintone.app && typeof kintone.app.getHeaderMenuSpaceElement === "function") {
+        slot = kintone.app.getHeaderMenuSpaceElement();
+      }
+    } catch (e0) {
+      void e0;
+    }
+    if (slot) return { parent: slot, before: null };
+
+    try {
+      if (kintone.app && typeof kintone.app.getHeaderSpaceElement === "function") {
+        var hs = kintone.app.getHeaderSpaceElement();
+        if (hs) return { parent: hs, before: null };
+      }
+    } catch (e1) {
+      void e1;
+    }
+
+    var oceanHead = document.querySelector(".ocean-ui-app-index-head");
+    if (oceanHead) return { parent: oceanHead, before: oceanHead.firstChild };
+
+    var idxHead = document.querySelector(".gaia-argoui-app-index-head");
+    if (idxHead) return { parent: idxHead, before: idxHead.firstChild };
+
+    var rl = document.querySelector(".recordlist-gaia");
+    if (rl && rl.parentNode) return { parent: rl.parentNode, before: rl };
+
+    var oceanBody = document.querySelector(".ocean-ui-app-index-body");
+    if (oceanBody) return { parent: oceanBody, before: oceanBody.firstChild };
+
+    var layout = document.querySelector("#contents-body .layout-gaia");
+    if (layout) return { parent: layout, before: layout.firstChild };
+
+    return null;
+  }
+
+  function attach679Shell(dest, shell) {
+    if (!dest || !dest.parent) return false;
+    if (dest.before) dest.parent.insertBefore(shell, dest.before);
+    else dest.parent.appendChild(shell);
+    return true;
+  }
+
+  function mount679Once() {
+    if (document.querySelector("[data-y679-manual-shell]")) return true;
     injectCss();
-    var host =
-      document.querySelector(".ocean-ui-app-index-body") ||
-      document.querySelector("#recordlist-gaia") ||
-      document.querySelector(".recordlist-gaia") ||
-      document.body;
-    if (!host) return;
+    var dest = resolve679MountHost();
+    if (!dest || !dest.parent) {
+      var b = document.body;
+      if (!b) return false;
+      dest = { parent: b, before: b.firstChild };
+    }
     var origin = typeof location !== "undefined" && location.origin ? location.origin : "";
     var shell = document.createElement("div");
     shell.setAttribute("data-y679-manual-shell", "1");
@@ -71,27 +119,32 @@ const src = `(function () {
     shell.style.borderTop = "1px solid #dee5e0";
     var nav =
       '<div style="margin-bottom:10px;font-size:12px;color:#355a42;">' +
-      '<strong>部署予実クイックマニュアル</strong> · ' +
+      '<strong>システム推進室予実アプリガイド</strong> · ' +
       '<a href="' +
       origin +
-      '/k/679/">679 トップ</a> · ' +
+      '/k/678/">システム推進室予実管理システム</a> · ' +
       '<a href="' +
       origin +
-      '/k/678/">678 ダッシュ</a> · ' +
-      '<a href="' +
-      origin +
-      '/k/677/">677 入力</a>' +
+      '/k/677/">システム推進室予実管理システム入力アプリ</a>' +
       "</div>";
     shell.innerHTML = nav + MANUAL_HTML;
-    host.insertBefore(shell, host.firstChild);
+    return attach679Shell(dest, shell);
+  }
+
+  function scheduleMount679() {
+    [0, 120, 400, 1000, 2200].forEach(function (ms) {
+      setTimeout(function () {
+        try {
+          if (!document.querySelector("[data-y679-manual-shell]")) mount679Once();
+        } catch (err) {
+          if (typeof console !== "undefined" && console.warn) console.warn("[679 manual]", err);
+        }
+      }, ms);
+    });
   }
 
   kintone.events.on("app.record.index.show", function (e) {
-    try {
-      mount();
-    } catch (err) {
-      console.error("[679 manual]", err);
-    }
+    scheduleMount679();
     return e;
   });
 })();
@@ -100,3 +153,6 @@ const src = `(function () {
 mkdirSync(outDir, { recursive: true });
 writeFileSync(outPath, src, 'utf8');
 console.log('Wrote', outPath, '(' + src.length + ' bytes)');
+console.log(
+  '[679 ops] After `npm run deploy:679`: append deploy output **revision** + **fileKey** to `kintone-apps.md` (changelog row) and `SESSION-CLOSE-REPORT_yyyymmdd.txt`. BUILD = grep `var BUILD` in customize/679/desktop.js (must match this script).'
+);

@@ -55,12 +55,10 @@ const manualUrl = `${baseUrl}/k/${MANUAL_APP}/`;
 
 const description =
   '<div style="font-size:13px;line-height:1.55;color:#1a4030;">' +
-  '<p style="margin:0 0 8px;"><strong>クイックマニュアル</strong>は専用アプリ（<a href="' +
+  '<p style="margin:0 0 8px;">担当者向けの案内は <a href="' +
   manualUrl +
-  '"><strong>' +
-  MANUAL_APP +
-  ' 部署予実クイックマニュアル</strong></a>）にあります。</p>' +
-  '<p style="margin:0;">日々の集計・入力はこの画面の一覧（<strong>678 ダッシュ</strong>）をご利用ください。</p>' +
+  '"><strong>システム推進室予実アプリガイド</strong></a> にあります。</p>' +
+  '<p style="margin:0;">日々の集計・入力はこの画面の一覧（<strong>システム推進室予実管理システム</strong>）をご利用ください。</p>' +
   '</div>';
 
 async function main() {
