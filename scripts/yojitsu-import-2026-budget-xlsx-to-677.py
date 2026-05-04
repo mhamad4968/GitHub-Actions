@@ -6,6 +6,7 @@
 前提:
   - シート名「旧フォーマット」、ヘッダ行 2、データ行 3〜、月列 I〜T＝5月〜4月、U＝都度→イニシャル費用（変動費）
   - 月次「予算」のみ移行。実績・予算修正は 0／空。支払内訳は付けない（旧に無い）
+  - learning_fixed_budget: 月次予算（I〜T）の合計をミラー（678 running 表示用）。旧 U→initial_variable_budget
 
 使い方:
   python3 scripts/yojitsu-import-2026-budget-xlsx-to-677.py --dry-run
@@ -122,14 +123,24 @@ def build_record(
     legacy_b,
 ) -> dict:
     cc = cost_category_for_row(month_vals, uval)
+    msum = sum(num(x) for x in month_vals)
+    un = num(uval)
+    # 旧 I〜T は月次「予算」のみ。レコード直下の learning_fixed_budget は 678 の running 集計用に
+    # 「暦月予算の合計」をミラーする（旧シートにランニング専用列は無いが、ダッシュは lb を参照する）。
+    learning_str = ""
+    if msum > 0:
+        learning_str = str(int(msum)) if msum == int(msum) else str(msum)
+    initial_str = ""
+    if un > 0:
+        initial_str = str(int(un)) if un == int(un) else str(un)
     rec: dict = {
         "work_type_name": {"value": work_name[:255]},
         "work_type_code": {"value": (work_code or "")[:255]},
         "cost_category": {"value": cc},
         "summary_text": {"value": (summary or "").strip()[:10000]},
         "partner_company": {"value": (str(company).strip() if company else "")[:255]},
-        "initial_variable_budget": {"value": str(int(num(uval)))} if num(uval) else {"value": ""},
-        "learning_fixed_budget": {"value": ""},
+        "initial_variable_budget": {"value": initial_str} if initial_str else {"value": ""},
+        "learning_fixed_budget": {"value": learning_str} if learning_str else {"value": ""},
         "monthly_breakdown": {"value": build_monthly_rows(month_vals)},
         "display_order": {"value": str(int(legacy_b))} if legacy_b is not None else {"value": str(row_no)},
         "legacy_row_no": {"value": str(int(legacy_b))} if legacy_b is not None else {"value": ""},

@@ -139,6 +139,8 @@
     "yojitsu:677:import-2026-budget:apply": "python3 scripts/yojitsu-import-2026-budget-xlsx-to-677.py --apply",
     "yojitsu:677:import-2026-budget:apply-force": "python3 scripts/yojitsu-import-2026-budget-xlsx-to-677.py --apply --force",
     "yojitsu:677:record-count": "python3 scripts/yojitsu-677-record-count.py",
+    "yojitsu:677:backfill-learning-fixed:dry-run": "node scripts/yojitsu-677-backfill-learning-fixed-from-monthly.mjs",
+    "yojitsu:677:backfill-learning-fixed:apply": "node scripts/yojitsu-677-backfill-learning-fixed-from-monthly.mjs --apply",
     "evening:reflect": "node scripts/evening-reflect.mjs",
     "reports:archive": "node scripts/archive-reports.mjs --force",
     "reports:archive:dry-run": "node scripts/archive-reports.mjs --dry-run --force",
