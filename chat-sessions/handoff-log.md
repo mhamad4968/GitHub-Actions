@@ -809,3 +809,26 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 
 **次の 1 手**: 浜田さん本日の目的の **項番 -0 すり合わせ**。
 
+---
+
+## OPEN（アップデート・依存・計測）— AI が毎セッション先に読む課題リスト
+
+<!-- OPEN-TRACK: deps-credit-mcp-20260505 — 解消したら本節を更新 or 末尾に CLOSED 行 -->
+
+| ID | 状態 | リスク | 内容 | 次アクション |
+|----|------|--------|------|--------------|
+| **O-1** | OPEN | 中 | **`npm audit` moderate ×3**（`axios` ← `@kintone/rest-api-client` ← `@kintone/cli`）。**`npm audit fix --force` は禁止**（CLI ダウングレード等）。 | **`npm update @kintone/cli`** を月次 or リリースノート確認で試行。状況は **`npm audit`** で再確認。正本メモ: `docs/reports/2026-05-04-toolchain-cli-git-closeout.md`。 |
+| **O-2** | OPEN | 低〜中 | **`npm run credit:set 45`** は **billing 未確認の据え置き**（2026-05-05 JST 行）。予算警告・枯渇予測の精度に影響。 | 浜田が **cursor.com/billing の実数%** で `npm run credit:set <pct>` を上書き。 |
+| **O-3** | OPEN | 低 | **グローバル MCP（`npx` / グローバル node パス）**は無断フル latest 化していない。TSB-029 等のピン優先。 | サーバ単位で更新する場合は **§17-2 / descriptor** 手順＋**verify-cursor-mcp-windows**。 |
+| **O-4** | CLOSED（参考） | — | ルート **`npm update`** + **`security-next-automation` `npm update`** は実施済み（`e1a74d9`）。smoke **緑**。 | 継続: 変更後は smoke + 必要なら bootstrap。 |
+
+**CIO 判断で浜田 GO 済み（本メッセージ）**: **O-4** の方針継続、**`audit fix --force` しない**、**semver 内 `npm update`**、**RAG `rag:ingest:all` 実施済み**（別コミット・ログ参照）。
+
+---
+
+### 2026-05-05 JST（追記）— アップデート実施／残課題の GO 整理（浜田指示）
+
+- **実施済み（GO 範囲）**: ルート・`security-next-automation` の **`npm update`**、`docs/mcp-status.md` 更新、`rag:ingest:all`、`credit:set`（暫定）、関連 **git push**。
+- **残課題（リスクあり・OPEN 表に常設）**: **O-1 axios**、**O-2 credit 実数**、**O-3 グローバル MCP**。
+- **確認は 1 件ずつ**: 次チャット以降、AI は **OPEN 表の上から**未確認項目を **§41 一問**で浜田に確認する。
+
