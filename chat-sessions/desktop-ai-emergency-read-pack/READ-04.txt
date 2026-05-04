@@ -1,0 +1,17 @@
+【READ-04】B. プロジェクト確認 — 本題別の入り口（最初の 1 手だけ）
+
+■ 項番 -0 で「5A 部署予実」と合意している場合  
+1) B0: SESSION-BOOTSTRAP-CHECKLIST.md の **フェーズ 1c** 見出しブロックのみ Read → `【確認 B0 完了】`  
+2) B1-①: templates/yojitsu-budget-lite/SPEC.md の **§0・§3・§10.1** → `【確認 B1-① 完了】`  
+   （続きの § は SESSION-READ-LADDER.md の B1 表に従う）
+
+■ 項番 -0 で「5B 新・PC台帳」と合意している場合  
+1) B0: 同上 **フェーズ 1b** 見出しのみ → `【確認 B0 完了】`  
+2) B1-①: docs/plans/2026-04-21-new-pc-ledger-spec.md **§4.2.0〜§4.4**（1b-A）→ テンプレ  
+3) 1b-B 機械ゲート・1b-C 報告テンプレは BOOTSTRAP 本文に従う
+
+■ kintone アプリ新規・フィールド追加を触る直前  
+  .cursor/rules/creation-timing-ask.mdc を Read（スペース・着手タイミング §41）
+
+■ コード・複雑 customize に触る直前（憲法）  
+  §50-3-8: DeepSeek 盲点3点 + 約3行突合メモ（新セッションでは前回メモで代替しない）

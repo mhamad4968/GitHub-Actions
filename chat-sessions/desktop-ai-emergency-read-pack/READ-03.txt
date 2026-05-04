@@ -1,0 +1,19 @@
+【READ-03】A. 共通五段階 — 各段で Read するパス（リポルート相対）
+
+第1段・現在地  
+  chat-sessions/checkpoint-latest.md（冒頭〜「最終更新」行まで）
+
+第2段・直前の合意  
+  chat-sessions/handoff-log.md（末尾最大 3 ブロック）
+
+第3段・棚卸しの地図  
+  chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md（冒頭〜「フェーズ 1」表の直前まで。**1c/1b の本文はまだ読まない**）
+
+第4段・ルール索引  
+  RULES-INDEX.md の「セッション切替・文脈復元」の **表ブロックのみ**
+
+第5段・憲法境界  
+  chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md の「フェーズ 2 — ルール・憲法」の表（2.1 含む）  
+  + AGENTS.md の §35-1 / §41（見出し＋一問の意味が分かる量）/ §52 Tier A/B / §50-3-8（見出し＋1段落）
+
+各段の直後: 事前準備用テンプレをチャットへ（SESSION-READ-LADDER.md 内のフォーマット）。

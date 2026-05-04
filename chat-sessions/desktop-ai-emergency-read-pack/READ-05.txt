@@ -1,0 +1,23 @@
+【READ-05】日終わり・Desktop 同期（必ず通す）
+
+■ コマンド（リポルートで）  
+  npm run session-starter:sync-desktop  
+  npm run verify:desktop-ai-emergency-sync  
+
+■ コピー先（Windows）  
+  C:\Users\mhamada202408224\Desktop\AI緊急用\  
+
+■ 同期されるもの（例）  
+  NEW-SESSION-STARTER_yyyymmdd.txt  
+  SESSION-BOOTSTRAP-CHECKLIST.txt  
+  HANDOFF-HUMAN.txt  
+  README.txt  
+  README-read-pack.txt / INDEX.txt  
+  READ-01.txt …（本フォルダ内のすべての .txt）
+
+■ 正本  
+  リポ: chat-sessions/desktop-ai-emergency-read-pack\*.txt  
+  編集は **リポ側** → sync で Desktop へ（Desktop のみ直編集は verify 不一致の原因になる）。
+
+■ verify が NG のとき  
+  先に sync を再実行。/mnt/c が無い環境では SKIP になる — チャットに「AI緊急用未照合」1 行。
