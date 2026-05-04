@@ -157,13 +157,15 @@ const summary = {
   deletion_candidate: deletionCandidateCount,
   disabled: disabledCount,
   exempt: exemptCount,
-  status: dormantCount === 0 && deletionCandidateCount === 0 ? 'ok' : 'ng',
+  // 削除候補（30 日 strict で 0 回）のみ exit 1 / status ng。7 日死蔵のみは warn（朝 health / smoke を実害で止めない）
+  status:
+    deletionCandidateCount > 0 ? 'ng' : dormantCount === 0 ? 'ok' : 'warn',
   results,
 };
 
 if (ARG_JSON) {
   console.log(JSON.stringify(summary, null, 2));
-  process.exit(summary.status === 'ok' ? 0 : 1);
+  process.exit(summary.status === 'ng' ? 1 : 0);
 }
 
 // markdown 出力
@@ -195,4 +197,4 @@ if (dormantCount > 0 || deletionCandidateCount > 0) {
   out('');
 }
 
-process.exit(summary.status === 'ok' ? 0 : 1);
+process.exit(summary.status === 'ng' ? 1 : 0);

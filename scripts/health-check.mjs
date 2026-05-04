@@ -391,6 +391,14 @@ if (fs.existsSync(mcpDormancyScriptPath)) {
     if (j.status === 'ok') {
       const exemptNote = j.exempt > 0 ? ` (${j.exempt} exempt)` : '';
       mcpDormancyCheck = { status: 'ok', note: `${j.active}/${j.total} active${exemptNote} (過去 ${j.window_short_days} 日)` };
+    } else if (j.status === 'warn') {
+      const exemptNote = j.exempt > 0 ? ` (${j.exempt} exempt)` : '';
+      mcpDormancyCheck = {
+        status: 'warn',
+        note: `死蔵 ${j.dormant} / 削除候補 ${j.deletion_candidate} (過去 ${j.window_short_days} 日) — 参考のみ${exemptNote}`,
+      };
+    } else if (j.status === 'ng') {
+      mcpDormancyCheck = { status: 'ng', note: `死蔵 ${j.dormant} / 削除候補 ${j.deletion_candidate} (過去 ${j.window_short_days} 日)` };
     } else if (j.dormant > 0 || j.deletion_candidate > 0) {
       mcpDormancyCheck = { status: 'ng', note: `死蔵 ${j.dormant} / 削除候補 ${j.deletion_candidate} (過去 ${j.window_short_days} 日)` };
     } else {
@@ -412,6 +420,7 @@ const nodeModulesNgCount = nodeModulesCheck.status === 'ng' ? 1 : 0;
 const nodeModulesSkipCount = nodeModulesCheck.status === 'skip' ? 1 : 0;
 const mcpDormancyOkCount = mcpDormancyCheck.status === 'ok' ? 1 : 0;
 const mcpDormancyNgCount = mcpDormancyCheck.status === 'ng' ? 1 : 0;
+const mcpDormancyWarnCount = mcpDormancyCheck.status === 'warn' ? 1 : 0;
 const mcpDormancySkipCount = mcpDormancyCheck.status === 'skip' ? 1 : 0;
 const gitStatusOkCount = gitStatusCheck.status === 'ok' ? 1 : 0;
 const gitStatusNgCount = gitStatusCheck.status === 'ng' ? 1 : 0;
@@ -421,7 +430,7 @@ const ruleWatcherWarnCount = ruleWatcherCheck.status === 'warn' ? 1 : 0;
 const summary = {
   ok: mcpResults.filter((r) => r.status === 'ok').length + [node, disk, memory, cron, selfCheck].filter((s) => s.status === 'ok').length + ragDeepOkCount + nodeModulesOkCount + mcpDormancyOkCount + gitStatusOkCount + ruleWatcherOkCount,
   ng: mcpResults.filter((r) => r.status === 'ng').length + [node, cron, selfCheck].filter((s) => s.status === 'ng').length + ragDeepNgCount + nodeModulesNgCount + mcpDormancyNgCount + gitStatusNgCount,
-  warn: ruleWatcherWarnCount,
+  warn: ruleWatcherWarnCount + mcpDormancyWarnCount,
   skip: mcpResults.filter((r) => r.status === 'skip').length + nodeModulesSkipCount + mcpDormancySkipCount + gitStatusSkipCount,
 };
 
@@ -480,7 +489,7 @@ out('');
 {
   const nmIcon = { ok: '✅', ng: '❌', skip: '⏭' }[nodeModulesCheck.status] || '?';
   out(`- **node_modules 完全性 (S9)**: ${nmIcon} ${nodeModulesCheck.note}`);
-  const mdIcon = { ok: '✅', ng: '❌', skip: '⏭' }[mcpDormancyCheck.status] || '?';
+  const mdIcon = { ok: '✅', warn: '⚠️', ng: '❌', skip: '⏭' }[mcpDormancyCheck.status] || '?';
   out(`- **MCP 死蔵検知 (S12)**: ${mdIcon} ${mcpDormancyCheck.note}`);
   const gsIcon = { ok: '✅', ng: '❌', skip: '⏭' }[gitStatusCheck.status] || '?';
   out(`- **Git ahead/behind (S15)**: ${gsIcon} ${gitStatusCheck.note}`);

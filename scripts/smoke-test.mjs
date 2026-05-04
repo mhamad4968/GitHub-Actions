@@ -102,8 +102,11 @@ for (const c of checks) {
     } else if (/⚠️|warn:|status: warn|warning/i.test(text)) {
       // health-check の "警告 0" 系は誤検知なので、明示的 warn のみ
       if (/警告\s*[1-9]/.test(text) || /異常\s*[1-9]/.test(text)) {
-        status = 'ng';
-        note = '健康診断で警告/異常 検知';
+        // health-check が exit 0 のときはプロセス終了コードを正とする（S12 死蔵のみ warn で「警告 1」行が出ても異常ではない）
+        if (!(c.id === 'health-check' && exitCode === 0)) {
+          status = 'ng';
+          note = '健康診断で警告/異常 検知';
+        }
       }
     }
   }

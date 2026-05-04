@@ -417,7 +417,7 @@
         try {
           hide678NativeListPagingLabels();
         } catch (e4) {
-          /* ignore */
+          void e4;
         }
       }, 160);
     });
@@ -434,7 +434,7 @@
         try {
           hide678NativeListPagingLabels();
         } catch (e2) {
-          /* ignore */
+          void e2;
         }
       }, ms);
     });
@@ -451,7 +451,7 @@
         slot = kintone.app.record.getHeaderMenuSpaceElement();
       }
     } catch (e0) {
-      /* ignore */
+      void e0;
     }
     if (!slot) {
       try {
@@ -459,7 +459,7 @@
           slot = kintone.app.getHeaderMenuSpaceElement();
         }
       } catch (e1) {
-        /* ignore */
+        void e1;
       }
     }
     if (slot) return { parent: slot, before: null };
@@ -470,7 +470,7 @@
         if (hs) return { parent: hs, before: null };
       }
     } catch (e2) {
-      /* ignore */
+      void e2;
     }
 
     var ocean = document.querySelector(".ocean-ui-app-index-head");
@@ -545,7 +545,7 @@
     try {
       sessionStorage.setItem("y678-input-month", n);
     } catch (eIm) {
-      /* ignore */
+      void eIm;
     }
   }
   try {
@@ -553,7 +553,7 @@
     var _n0 = normalizeFiscalMonthLabel(_im0);
     if (_n0 && FISCAL_ORDER.indexOf(_n0) >= 0) y678InputMonthLabel = _n0;
   } catch (eImr) {
-    /* ignore */
+    void eImr;
   }
 
   /**
@@ -564,7 +564,7 @@
   try {
     if (sessionStorage.getItem("y678-focus-tsudo") === "1") y678FocusTsudo = true;
   } catch (eTsr) {
-    /* ignore */
+    void eTsr;
   }
   function setTsudoFocus(on) {
     y678FocusTsudo = !!on;
@@ -572,7 +572,7 @@
       if (on) sessionStorage.setItem("y678-focus-tsudo", "1");
       else sessionStorage.removeItem("y678-focus-tsudo");
     } catch (eTsw) {
-      /* ignore */
+      void eTsw;
     }
     var shell = document.querySelector("[data-yojitsu-678-shell]");
     if (shell) {
@@ -1291,7 +1291,7 @@
             }
           }
         } catch (e0) {
-          /* ignore */
+          void e0;
         }
         node = node.parentElement;
       }
@@ -2503,7 +2503,7 @@
       try {
         if (t && String.prototype.normalize) t = String(t).normalize("NFKC");
       } catch (eNfk) {
-        /* ignore */
+        void eNfk;
       }
       return String(t || "")
         .toLowerCase()
@@ -2605,7 +2605,7 @@
           try {
             pcIn.focus();
           } catch (ePf) {
-            /* ignore */
+            void ePf;
           }
         });
       }
