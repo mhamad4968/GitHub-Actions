@@ -20,6 +20,7 @@
 
 - [ ] **`npm run session-starter:sync-desktop`**（`NEW-SESSION-STARTER_yyyymmdd.txt` + `SESSION-BOOTSTRAP` + `HANDOFF-HUMAN` + **`README.txt`**）
 - [ ] **`npm run verify:desktop-ai-emergency-sync`**（成功時 **貼付推奨**行まで確認。チャットに 1 行要約してよい）
+- [ ] **今日のチャットを閉じる前**に指示があれば **`npm run session:clock:clear`**（`SESSION-CLOCK.md` の **開始:** を **未設定**／§51-6 遵守事項 7）＋**`session:clock:web` は Ctrl+C**
 - [ ] 時間があれば **`npm run session:bootstrap`** まで
 
 ---

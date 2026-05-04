@@ -4,6 +4,7 @@
  *
  *   npm run session:clock:set   — chat-sessions/SESSION-CLOCK.md の「開始」を現在の Asia/Tokyo に更新
  *   npm run session:split-check — 開始から 4 時間経過なら exit 2（未満なら 0）
+ *   npm run session:clock:clear — 「開始:」を **未設定** に戻し §51-6-2 の時間軸判定を止める（セッション終了時）
  *   node scripts/session-clock.mjs check-json — 1 行 JSON（watch 用・exit は check と同じ）
  *   node scripts/session-clock.mjs prompt-hook — 1 行 JSON（Cursor beforeSubmitPrompt 用・経過/残りを additional_context）
  *   node scripts/session-clock.mjs write-ticker — `SESSION-CLOCK-TICKER.md` を更新（人間がエディタで見る用）
@@ -57,6 +58,20 @@ function writeClock() {
   }
   console.log(`[session-clock] ✅ set → ${clockRel}`);
   console.log(`  開始: ${line} (Asia/Tokyo)`);
+  writeTickerFile(root);
+}
+
+/** §51-6-2 時間軸を止める（開始を未設定に。次チャットでは set から再開） */
+function clearClock() {
+  const body = `${HEADER}未設定\n`;
+  fs.mkdirSync(path.dirname(clockAbs), { recursive: true });
+  fs.writeFileSync(clockAbs, body, 'utf8');
+  try {
+    if (fs.existsSync(alertFlagAbs)) fs.unlinkSync(alertFlagAbs);
+  } catch {
+    /* noop */
+  }
+  console.log(`[session-clock] ✅ clear → ${clockRel}（開始: 未設定 / split-check は未検査）`);
   writeTickerFile(root);
 }
 
@@ -133,6 +148,15 @@ if (cmd === 'set') {
     process.exit(2);
   }
 }
+if (cmd === 'clear') {
+  try {
+    clearClock();
+    process.exit(0);
+  } catch (e) {
+    console.error('[session-clock] ❌', e.message);
+    process.exit(2);
+  }
+}
 if (cmd === 'check') {
   runCheck();
 }
@@ -152,5 +176,5 @@ if (cmd === 'write-ticker') {
   }
 }
 
-console.error('Usage: node scripts/session-clock.mjs set|check|check-json|prompt-hook|write-ticker');
+console.error('Usage: node scripts/session-clock.mjs set|clear|check|check-json|prompt-hook|write-ticker');
 process.exit(2);

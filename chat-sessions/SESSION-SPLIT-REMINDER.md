@@ -43,6 +43,9 @@
   `このチャット用に壁時計をいまの JST で取り直して（session:clock:set）`
 - **watch も欲しい**（通知プロセスが落ちたとき等）:  
   `壁時計をセットしたうえで、session:clock:watch もバックグラウンドで起動して`
+- **今日の作業を閉じる・§51-6-2 の時間軸だけ止める**（`AGENTS.md` §51-6 遵守事項 **7**）:  
+  `壁時計を止めて（npm run session:clock:clear）`  
+  AI は **`npm run session:clock:clear`** を実行し（`開始:` → **未設定**）、**`session:clock:web` を動かしているターミナルは Ctrl+C** で止める。次の新チャットでは従来どおり **`session:clock:set`**。
 
 AI は **`npm run session:clock:set`** を実行し、結果（`SESSION-CLOCK.md` の `開始:` 1 行）を短く報告すればよい。`npm run session:clock:prompt-hook` で表示確認できる。
 

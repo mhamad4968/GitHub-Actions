@@ -5,7 +5,9 @@
 1) 項番 -1  
    浜田が `Desktop\AI緊急用\NEW-SESSION-STARTER_yyyymmdd.txt` **全文**を貼ったあと、AI は `chat-sessions/NEW-SESSION-STARTER.md` を Read ツールで **通読**（offset 連鎖で抜けなし）。
 
-**§35-6（憲法・2026-05-04）**: 日報・長文ログの **正本**は `chat-sessions/` に置き **Git コミット**。Desktop `AI緊急用` は **sync の控え**。「古い」整理と **削除**は **浜田確認または §41 一問のあと**（`AGENTS.md` §35-6・`docs/troubleshooting.md` **TSB-031**）。
+**§35-6（憲法・2026-05-04）**: **締め報告**は **`SESSION-CLOSE-REPORT_yyyymmdd.txt` を 1 本**（正本 `chat-sessions/`＋コミット、Desktop は sync 控え）。**`/mnt/c/.../AI緊急用` に直書き**したら **リポへ即反映＋コミット**のあと **`npm run session-starter:sync-desktop`**。副次リポ（例 `~/toto-prediction`）は **コピーだけで終わらせず `git status`→必要なら commit+push**。「古い」整理と **削除**は **浜田確認または §41 一問のあと**（`AGENTS.md` §35-6・**TSB-031**）。**DeepSeek 1 問を省略**したら **`§50-3-8 スキップ理由:`** 付きで **理由 1 行**（`AGENTS.md` §50-3-8 補足）。
+
+1b) （任意）`chat-sessions/SESSION-CLOSE-REPORT_yyyymmdd.txt` があれば **項番 -0 前**に Read（無ければスキップ可）。
 
 2) 項番 -0  
    ティア宣言＋「次にやる **1 つ**」を **§41 一問だけ**浜田へ。OK が出るまで **verify / bootstrap / 本題に着手しない**。
@@ -24,6 +26,6 @@
    項番 -0 の本題（5A / 5B）に合わせ B0 → B1 小出し。枝ごと **「プロジェクト確認用テンプレ」**。
 
 7) 日終わり  
-   `npm run session-starter:sync-desktop` → `npm run verify:desktop-ai-emergency-sync`（read-pack 含むバイト一致）。
+   `npm run session-starter:sync-desktop` → `npm run verify:desktop-ai-emergency-sync`（read-pack 含むバイト一致）。**壁時計停止**が指示されていれば **`npm run session:clock:clear`**（`session:clock:web` は Ctrl+C）。
 
 正本の更新: この READ 番号ファイルは `chat-sessions/desktop-ai-emergency-read-pack/`。編集後は必ず上記 sync。

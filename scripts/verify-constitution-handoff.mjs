@@ -51,6 +51,7 @@ const suites = [
       '§1-2-3-1',
       '§35-6',
       '独断で消さない',
+      'session:clock:clear',
     ],
   },
   {

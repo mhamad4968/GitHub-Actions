@@ -58,6 +58,7 @@ alwaysApply: false
 - **`sessionStart` hook で既に JST が入っている**なら、この注意文は **毎ターン繰り返さない**（必要なら `Read` で確認してから黙って進める）。
 - **セッション切替で新チャットに繋いだ直後**: `chat-sessions/SESSION-CLOCK.md` の **`開始:` を早い段階で確認**（hook の `additional_context` でも可）。**未設定のまま**長く放置しない。**hook が効いていれば** `session:clock:set` は原則自動。**hook が無効・失敗**しているときは、浜田は **`SESSION-SPLIT-REMINDER.md` の浜田 → AI 依頼文を 1 行**忘れず送る（AI は本条どおり口頭＋同一ターン `set` でもよい）。
 - 依頼文のコピペ用は `chat-sessions/SESSION-SPLIT-REMINDER.md` **浜田 → AI 依頼文**。
+- **セッション終了で壁時計だけ止める**: 浜田が「壁時計を止めて」等と言ったとき、AI は **`npm run session:clock:clear`**（`AGENTS.md` §51-6 遵守事項 7）＋**`session:clock:web` ターミナルは Ctrl+C**。
 - **浜田がターミナル無しで経過を見る**: `chat-sessions/SESSION-CLOCK-TICKER.md` をエディタで開いて固定（自動更新・`SESSION-SPLIT-REMINDER.md`「人間向けタイマー」参照）。
 
 ## 機械ゲート
@@ -71,3 +72,4 @@ alwaysApply: false
 - **`chat-sessions/NEW-SESSION-STARTER.md`**、**`HANDOFF-HUMAN.txt`**、**`SESSION-BOOTSTRAP-CHECKLIST.md`**、**`AI緊急用-README.txt`** 等を AI が編集した **同一ターン**で、リポルートから **`npm run session-starter:sync-desktop`** を実行する（**push の前後どちらでもよいが、そのターン中に必ず**）。
 - 続けて可能なら **`npm run verify:desktop-ai-emergency-sync`**（バイト一致・**貼付推奨**行）。
 - **`/mnt/c` なし等で verify が SKIP** なら、チャットに **`AI緊急用は未照合（理由 1 語）`** と書き、復帰後に再実行。
+- **`/mnt/c/.../AI緊急用` に直書き**した場合は **`AGENTS.md` §35-6 追補**どおり、**リポ正本へ即反映＋コミット**のあと **`npm run session-starter:sync-desktop`**（verify が次回通る状態を正とする）。
