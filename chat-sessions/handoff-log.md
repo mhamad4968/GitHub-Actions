@@ -855,3 +855,8 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 - **`@modelcontextprotocol/server-{filesystem,memory,sequential-thinking}`**: 設定は **`npx -y` 非ピン**のため実行時に最新系へ解決。**ファイル上げのみ不要**。
 - **方針**: 以降 **AI が必要時に `npm view` と `docs/mcp-status.md` を更新**。浜田への **§41 一問は出さない**（OPEN 表 O-3 を **MONITOR（AI 担当）** に変更）。
 
+### 2026-05-05 JST（追記）— 678 台帳ずれ是正（浜田指示）／overrides 運用正本
+
+- **`kintone-apps.md`**: 表の直後に **「678 本番 customize の実効ビルド」**節を追加。**本番 BUILD = `2026-05-04-678-manual-app-guide-name`** と、**5/5〜5/7 の連記は本番未反映の先行ログ**を明示。**`npm run rag:mirror:canonical-docs`** で `.rag/extra-docs` に反映。
+- **`overrides`**: 除去条件・手順の正本を **`docs/reports/kintone-cli-rest-api-override.md`** に新設（**CLI が `rest-api-client` 6.1.6+ を直依存**したら overrides 削除 → install → audit → smoke）。
+
