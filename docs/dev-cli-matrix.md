@@ -1,5 +1,7 @@
 # 開発 CLI・ランタイム（確認用）
 
+> **2026-05-04 締めサマリ**（Git 回復・Node 22・`@kintone/cli` 等）: **`docs/reports/2026-05-04-toolchain-cli-git-closeout.md`**／**`chat-sessions/SESSION-CLOSE-REPORT-20260504.txt` §7**
+
 ## 一覧の出し方
 
 ```bash

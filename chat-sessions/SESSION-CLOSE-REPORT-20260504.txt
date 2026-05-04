@@ -29,6 +29,7 @@ SESSION CLOSE REPORT — 2026-05-04（JST）単一締め報告（1 本に集約�
 - **`AGENTS.md`** / **`.rag/extra-docs/AGENTS.md`**: 冒頭に **作業レーン切り替え**（677/678/679・Space 54 vs 594/674/668・Space 21）と **単独作業禁止**を追記。
 - **`README.md`**（yojitsu-budget-lite）、**`yojitsu-spec-session-checklist.md`**: HANDOFF・§10.6 追随。
 - **本チャット（Auto）**: kintone 本番 API を **MCP 経由ではなく** Shell の `deploy:679` で実行（`.env` 前提）。**MCP ツール記述子の事前読取**は一部スキップ（下記 §6 反省）。
+- **ツールチェーン・Git（終盤 GO）**: **Node 22（`.nvmrc` / `engines` / CI）**、**`@kintone/cli`**、**`npm run dev:cli-versions`**、**`docs/dev-cli-matrix.md`**、**rebase 回復完了**。**詳細は §7** と **`docs/reports/2026-05-04-toolchain-cli-git-closeout.md`**。
 
 --------------------------------------------------------------------------------
 §2 セッション反省と AI 役割分担（成果と課題を 1 本に）
@@ -118,5 +119,18 @@ SESSION CLOSE REPORT — 2026-05-04（JST）単一締め報告（1 本に集約�
 - **kintone／本番系ターン**: **そのターンで MCP を 1 回以上使ったか**（使わないなら **理由 1 行**）。
 - **仕様変更ターン**: **DeepSeek 1 問＋本体の約3行突合**（READ-06 の型）。
 - **週次**: `kintone-apps.md` 更新と **MCP 利用ログ**を **同一コミット**に寄せる（追跡しやすい）。
+
+--------------------------------------------------------------------------------
+§7 ツールチェーン・CLI・Git 回復（2026-05-04 終盤追記・GO 反映済）
+--------------------------------------------------------------------------------
+- **Git**: **`interactive rebase` 詰まり**は **`git rebase --quit`** 経路で解消し、**`stash` 層の復元・`kintone-apps` 追記コミット・`main` push まで完了**。手順の正本は **`docs/reports/GIT-REBASE-RECOVERY-20260504.md`**。**`node_modules` 配下の `.orig` 残骸**が `rebase --continue` を止めるケースあり（`grep '^<<<<<<<'` で探索）。
+- **Node / CI**: ルート **`.nvmrc` = `22`**、**`package.json` `engines.node` >=22.13.0**。GitHub Actions は **`node-version-file: ".nvmrc"`**（`main.yml` / `daily-collect` / `kintone-customize-deploy` / `ops-guide-kintone-publish`）。浜田 WSL は **`nvm use` → v22.22.2**・**`npm install`**・**`npm run lint:customize` OK** 確認済。
+- **kintone CLI**: **`@kintone/cli` ^1.19.2** を **`devDependencies`** に追加（レジストリの単体 **`cli-kintone` は deprecated**）。既存 npm スクリプトの **`cli-kintone` コマンド名は維持**。
+- **開発 CLI 確認**: **`npm run dev:cli-versions`**（`scripts/dev-cli-versions.mjs`）。更新目安・`npm audit` 注意は **`docs/dev-cli-matrix.md`**。
+- **npm audit**: **`@kintone/cli` → `@kintone/rest-api-client` → `axios` の moderate** が **間接依存で 3 件**出ることがある。**`npm audit fix --force` は禁止**（CLI ダウングレードの恐れ）。公式修正待ち → **`npm update @kintone/cli`**。
+- **Cursor IDE**: リポからは更新不可。**浜田がアプリから更新確認**。
+- **エージェント（Cursor）シェル**: 既定 Node が **20 のまま**でも作業可。**`EBADENGINE` は警告のみ**のことが多い。**本番相当の検証は浜田の Node 22 + CI** を正とする。
+- **ローカル専用 677 スクリプト**: **`scripts/.gitignore`** で **リポ非追跡**（共有しない方針）。**`__pycache__` / `.cursor/cursor-notifier.json` / `*-morning-prep.md`** はルート **`.gitignore`**。
+- **RAG ミラー**: **`.rag/extra-docs` の `RULES-INDEX.md` / `kintone-apps.md`** を正本に **追従コミット済み**（`npm run rag:mirror:canonical-docs`）。
 
 （EOF）
