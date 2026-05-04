@@ -14,8 +14,9 @@
     },
     {
       "date": "2026-05-05",
-      "percent": 45,
-      "recorded_at": "2026-05-05T08:18:42.269+09:00"
+      "percent": 71,
+      "recorded_at": "2026-05-05T08:23:51.575+09:00",
+      "note": "Plan & Usage スクショ (浜田提供): Ultra $200/月、次回リセット 5/15 残11日。Total Usage 71% (47% Auto + 100% API used)。On-Demand $388.51 / $1000 cap (Fixed)。前回 placeholder 45% を billing 実数で上書き。"
     }
   ]
 }

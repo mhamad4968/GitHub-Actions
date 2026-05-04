@@ -818,9 +818,10 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 | ID | 状態 | リスク | 内容 | 次アクション |
 |----|------|--------|------|--------------|
 | **O-1** | OPEN | 中 | **`npm audit` moderate ×3**（`axios` ← `@kintone/rest-api-client` ← `@kintone/cli`）。**`npm audit fix --force` は禁止**（CLI ダウングレード等）。 | **`npm update @kintone/cli`** を月次 or リリースノート確認で試行。状況は **`npm audit`** で再確認。正本メモ: `docs/reports/2026-05-04-toolchain-cli-git-closeout.md`。 |
-| **O-2** | OPEN | 低〜中 | **`npm run credit:set 45`** は **billing 未確認の据え置き**（2026-05-05 JST 行）。予算警告・枯渇予測の精度に影響。 | 浜田が **cursor.com/billing の実数%** で `npm run credit:set <pct>` を上書き。 |
+| **O-2** | **CLOSED** 2026-05-05 | — | **billing 実数反映済み**: Plan & Usage スクショで **Total 71%** → `npm run credit:set 71` + `data/credit-usage.json` **note** 追記（45% placeholder 解消）。 | 翌営業日以降も **1 日 1 回** `credit:set`（§1-2-4）。 |
 | **O-3** | OPEN | 低 | **グローバル MCP（`npx` / グローバル node パス）**は無断フル latest 化していない。TSB-029 等のピン優先。 | サーバ単位で更新する場合は **§17-2 / descriptor** 手順＋**verify-cursor-mcp-windows**。 |
 | **O-4** | CLOSED（参考） | — | ルート **`npm update`** + **`security-next-automation` `npm update`** は実施済み（`e1a74d9`）。smoke **緑**。 | 継続: 変更後は smoke + 必要なら bootstrap。 |
+| **O-5** | OPEN | **中〜高** | **Included API 100% 消化済み** → On-Demand 課金継続。**2026-05-05 時点 On-Demand $388.51 / $1,000 cap**、Ultra 次回リセット **5/15 まで残11日**。枯渇予測・§1-2-2/§1-2-3 の前提に直結。 | CIO が上限・モデル既定（Max Thinking 抑制等）を監視。`npm run credit:status` / morning-prep JSON を参照。TSB-021（On-Demand $ 正式追跡）は未実装のまま追跡。 |
 
 **CIO 判断で浜田 GO 済み（本メッセージ）**: **O-4** の方針継続、**`audit fix --force` しない**、**semver 内 `npm update`**、**RAG `rag:ingest:all` 実施済み**（別コミット・ログ参照）。
 
@@ -829,6 +830,11 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 ### 2026-05-05 JST（追記）— アップデート実施／残課題の GO 整理（浜田指示）
 
 - **実施済み（GO 範囲）**: ルート・`security-next-automation` の **`npm update`**、`docs/mcp-status.md` 更新、`rag:ingest:all`、`credit:set`（暫定）、関連 **git push**。
-- **残課題（リスクあり・OPEN 表に常設）**: **O-1 axios**、**O-2 credit 実数**、**O-3 グローバル MCP**。
+- **残課題（リスクあり・OPEN 表に常設）**: **O-1 axios**、**O-3 グローバル MCP**、**O-5 API 枯渇 + On-Demand 金額**（**O-2 credit % は CLOSED**）。
 - **確認は 1 件ずつ**: 次チャット以降、AI は **OPEN 表の上から**未確認項目を **§41 一問**で浜田に確認する。
+
+### 2026-05-05 JST（追記）— クレジット確認（Plan & Usage スクショ）
+
+- 浜田提供の **Settings → Plan & Usage** に基づき **71%** を記録（警告レベル **70% 到達** 🟡）。
+- **O-5** として **API 100% 使用済み + On-Demand $388.51** を OPEN 表に追加（課金・運用リスクの常時可視化）。
 
