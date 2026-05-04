@@ -3,7 +3,7 @@
 
   /**
    * 部署予実 ダッシュアプリ 678
-   * BUILD: 2026-05-04-678-quick-manual-bar-table-first
+   * BUILD: 2026-05-04-678-manual-in-app-description
    * - 677 を kintone.api で一覧。左キー列は `shin-format-excel-layout.md` 新フォーマット準拠＋12 月×四つ柱（`monthly_breakdown`）
    * - 一覧の既定 SORT は `display_order asc, $id asc`（SPEC §6e 準拠・2026-05-03 改修）
    * - 新規追加モーダルは「挿入位置」選択（一番下/一番上/○○の上/○○の下）＋中間値計算（floor((prev+next)/2)）
@@ -20,10 +20,10 @@
    */
 
   var APP_INPUT = 677;
-  var BUILD = "2026-05-04-678-quick-manual-bar-table-first";
+  var BUILD = "2026-05-04-678-manual-in-app-description";
   /**
-   * クイックマニュアル（別ページ・新タブ）。`window.Y678_QUICK_MANUAL_URL` が非空なら優先。
-   * 既定はリポ同梱 Markdown（GitHub 閲覧）。HTML 版をスペース等に掲載したらその URL を上書き。
+   * クイックマニュアル（kintone 678 の「アプリの説明」＋アンカー）。`window.Y678_QUICK_MANUAL_URL` が非空なら優先。
+   * 既定は同一アプリ URL の `#y678-quick-manual`（説明欄へジャンプ）。
    */
   function resolveY678QuickManualUrl() {
     try {
@@ -34,7 +34,20 @@
     } catch (e) {
       void e;
     }
-    return "https://github.com/mhamad4968/GitHub-Actions/blob/main/templates/yojitsu-budget-lite/docs/yojitsu-quick-manual.md";
+    try {
+      if (typeof location !== "undefined" && location.origin) {
+        var aid =
+          typeof kintone !== "undefined" &&
+          kintone.app &&
+          typeof kintone.app.getId === "function"
+            ? kintone.app.getId()
+            : 678;
+        return location.origin + "/k/" + aid + "/#y678-quick-manual";
+      }
+    } catch (e2) {
+      void e2;
+    }
+    return "https://jbis-kintone.cybozu.com/k/678/#y678-quick-manual";
   }
   /** 表の空欄・非該当（1 文字のダッシュより `---` で視認性を上げる） */
   var Y678_EMPTY_HTML = "<span class=\"y678-dim\">---</span>";
@@ -1272,7 +1285,7 @@
     manualBar.innerHTML =
       "<a href=\"" +
       esc(resolveY678QuickManualUrl()) +
-      "\" target=\"_blank\" rel=\"noopener noreferrer\">📘 部署予実クイックマニュアル（別ページ）</a>";
+      "\">📘 クイックマニュアル（このアプリの説明欄へ）</a>";
     wrap.appendChild(manualBar);
 
     var head = document.createElement("div");

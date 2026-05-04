@@ -2,6 +2,8 @@
 
 **読む人**: システム推進室の担当者。**ここだけ読めば動ける**短さを目指した。
 
+**本番の掲載場所（kintone）**: アプリ **[678](https://jbis-kintone.cybozu.com/k/678/)** の **「アプリの説明」**（一覧上部・HTML 表）。再反映は `npm run yojitsu:678:publish-manual-description`。
+
 **正しい数字の置き場**: 日常の作業は **kintone だけ**。**Excel は開かない**（集計も入力もここ）。
 
 ---
