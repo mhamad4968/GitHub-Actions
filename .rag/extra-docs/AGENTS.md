@@ -833,9 +833,11 @@ GitHub・npm・Stack Overflow 等から外部コードを参考にする際は�
 6. **セッション成果物の削除と「古い」整理のゲート（2026-05-04 制定 / Desktop 日報消失反省）**  
    - **AI 独断禁止**: 「古い」「整理」「同期」と **ファイル削除**が混ざる操作では、**対象パスと復元手段（Git に履歴があるか／ゴミ箱のみか）**を先に一文で述べ、**浜田の明示承認**または **§41 に従った 1 問の確認**を得てから実行する。CIO の効率判断だけで **長文ログ・日報・HANDOFF のみが正本のファイル**を消さない。  
    - **ミス発覚時**: 上書き・削除を続けず、**ゴミ箱・バックアップ・Git の有無**を正直に報告し、**リカバリ手順を浜田と相談**する（「済んだ」ように進めない）。  
-   - **正本の置き場所**: `SESSION-DAILY-REPORT_*.txt` 等の **セッション日報・長文ログの正本は `chat-sessions/` に置きコミット**し、Desktop の `AI緊急用` は **`npm run session-starter:sync-desktop` による控え**とする（Desktop のみが正本だと削除で組織が失う）。  
+   - **正本の置き場所**: **セッション日報・長文ログの正本は `chat-sessions/` に置きコミット**（**`SESSION-CLOSE-REPORT_yyyymmdd.txt`** を単一締めの既定とし、旧 **`SESSION-DAILY-REPORT_*`** は **CLOSE へ統合してから削除**してよい）。Desktop の `AI緊急用` は **`npm run session-starter:sync-desktop` による控え**とする（Desktop のみが正本だと削除で組織が失う）。  
+   - **Desktop `AI緊急用` の直書き（2026-05-04 追補）**: WSL から **`/mnt/c/Users/mhamada202408224/Desktop/AI緊急用/`** 等へ **`.txt` を直接編集**した場合、**リポ正本**（`chat-sessions/*.txt` または `chat-sessions/desktop-ai-emergency-read-pack/`）へ **同一内容を直ちに反映してコミット**し、その後 **`npm run session-starter:sync-desktop`** を実行する（**verify:desktop-ai-emergency-sync** が次回 **バイト一致**で通る状態を正とする）。**推奨経路**は **リポのみ編集 → sync**（直書きを避ける）。  
+   - **副次リポジトリ**（`~/toto-prediction` 等、`kintone-ai-lab` と別の Git ルート）: **Desktop へコピーしただけ**では他端末に伝播しない。コピーまたは編集を行ったら **当該リポで `git status`** を確認し、意図どおりなら **`git commit` + `git push`** まで CIO が実施する（§35-1）。  
    - **他モデルによる実行前チェック**: 上記の削除・正本移動・仕様の一本化の前には **§50-3-8（盲点 3 点＋約 3 行突合メモ）または DeepSeek／Kimi による抜け確認**を **原則スキップしない**（スキップする場合は **理由 1 行**を同一チャットに残す）。**例外**: リポと手順書が明示する **一時ファイル掃除**（例: `scripts/tmp-kintone-*.mjs` の削除／昇格）、**`sync-session-starter-to-desktop.mjs` が日付に応じて prune する `NEW-SESSION-STARTER_yyyymmdd.txt` の旧版**など、**復元経路が手順に書かれているもの**に限り自律可。  
-   - **経緯**: 2026-05-04、Git 未収容の Desktop 上 `SESSION-DAILY-REPORT_20260503.txt` をバックアップなしで削除した事案を教訓とする（詳細は `chat-sessions/SESSION-DAILY-REPORT-20260504.txt` の §5）。
+   - **経緯**: 2026-05-04、Git 未収容の Desktop 上 `SESSION-DAILY-REPORT_20260503.txt` をバックアップなしで削除した事案を教訓とする（運用の続き・締め 1 本化は **`chat-sessions/SESSION-CLOSE-REPORT-20260504.txt`** §4 等を参照）。
 
 ### §36 デュアルラン（キー移行の安全策）
 1. **二段ルックアップ**: `emp_id` へ移行する機能では、**`JBIS594_EMP_ID_QUERY_PRIMARY`（または同等の単一フラグ）が true のとき `emp_id` を先に検索し、0件または無効なら `mail` にフォールバック**する。
@@ -1615,6 +1617,8 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 
 **適用上の接続**: 本条の MCP 呼び出しは **§50-3-4（試行上限）**・**§50-3-5（サニタイズ）**・**§51（1 ターン 1 ツール call）**に従う。MCP が未到達の場合は **§50-3-1 プラン B**（ブラウザ版等のプロンプト提示）で同等の 3 点質問を満たす。**user-kintone** 等の kintone 系 MCP が **構造エラー**を返した場合の **再試行禁止・REST 移行・一時スクリプト掃除**は **§50-3-9** に従う。
 
+**補足（2026-05-04 / 軽微タスクでの省略と証跡）**: **予実・計算ロジック・複雑 kintone customize を触らない**説明-only の変更（例: 副次リポの `README.md` 追記・誤字修正・サンプル CSV 配置のみ）では、DeepSeek 1 問を **省略してよい**。その場合は同一チャットに **`§50-3-8 スキップ理由:`** を付けた **理由 1 行を必須**とする（省略したのに行が無い＝本条未遵守）。**`kintone-ai-lab` 内の `AGENTS.md`・`NEW-SESSION-STARTER.md`・憲法ゲート `.mdc`** の編集は **本条の省略対象外**（別途 §57・§50-3-8 フル手順）。
+
 #### §50-3-9 kintone MCP の自律的フォールバック原則（2026-04-30 制定 / 浜田合意）
 
 **再試行の制限（§50-3-4 を補足）**:
@@ -1881,6 +1885,7 @@ $ node scripts/parallel-session-detector.mjs --explain # 軸ごとの内訳を�
 4. **新セッション開始時**: NEW-SESSION-STARTER.md + `chat-sessions/checkpoint-latest.md` を必ず読み、文脈復元してから着手
 5. **本題スイッチ（2026-04-29 / 迷走防止）**: セッション切替後の **追加 Read** は、`checkpoint-latest.md` **「セッション切替後の自律復元」項番 5** に従い、**項番 -0 で合意した本題**（部署予実 vs 新・PC台帳等）に対応する正本だけを読む。**部署予実のみ**のときに PC 台帳 Day4・§4.2・フェーズ 1b を一括で読む必要はない（逆も同様）。詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1c / 1b**。
 6. **セッション切替直後の壁時計・WEB（2026-04-29 / 浜田 CIO 運用）**: **新規 chat session**（朝・昼・夜の帯切替、浜田の手動切替、§51-6-2 命令後の再起動を含む）において、AI が **シェルツールを使える最初のタイミング**で **`npm run session:clock:set` を必ず実行する**（`sessionStart` hook が先に `開始:` を更新していても **冪等に再実行してよい**。実行後 **`SESSION-CLOCK.md` の `開始:` 1 行をチャットに短く報告**する）。続けて **`npm run session:clock:web` をバックグラウンドで起動**し、ターミナルに出た **`[session-clock-web] 開く: http://127.0.0.1:…` のフル URL をチャットへ転記**し、浜田に **ブラウザで当該 URL を開く**よう促す（ローカルループバックのみ。**毎回ターミナルが示した URL を開く**／前回ブックマークのポートに固執しない — 詳細は `SESSION-SPLIT-REMINDER.md`）。**開発・コマンド実行は AI、目視の最終確認は浜田**（§35-1 / §56-1a）は不変。実行順序の正本は `NEW-SESSION-STARTER.md`（項番 0 前後で矛盾しないよう同期する）。
+7. **セッション終了時の壁時計停止（2026-05-04）**: 浜田が「**壁時計を止めて**」「**今日の作業を閉じる**」等と言ったとき、または **同一チャットの締め**で明示されたとき、AI は **`npm run session:clock:clear`** を実行する（`chat-sessions/SESSION-CLOCK.md` の **`開始:` を `未設定` に戻す**＝§51-6-2 の時間軸チェックは **未検査**扱い。**次の新チャット**では従来どおり **`npm run session:clock:set`** から再開）。**`session:clock:web`** を動かしているターミナルは **Ctrl+C** で停止する（プロセス残留時は `SESSION-SPLIT-REMINDER.md` のトラブル節）。
 
 **§51-3 並列禁止との関係**:
 
@@ -2002,7 +2007,8 @@ $ node scripts/parallel-session-detector.mjs --explain # 軸ごとの内訳を�
 - 改訂日: 2026-04-30（[FEAT] v23.25: **§50-3-9 kintone MCP の自律的フォールバック**（浜田合意）。構造エラー時は同一 kintone MCP を再試行しない／通信エラーは 1 回のみ再試行し失敗時は即 REST へ／検知ターン先頭で「MCP エラーにより REST 手順へ移行」を明記／(a) `scripts/` 検証済みパターン改修 (b) `scripts/tmp-kintone-*.mjs` とタスク完了時の削除または正規名昇格＋**証跡（チャット or handoff 1 行）**／**期待値の言語化**（「今夜中」に依存せずタスク単位で完遂）。**§50-3-2** に航海図への手段(第2)併記義務を接続。§50-3 関連に §50-3-9 を追加。RULES-INDEX §N チェックリスト・`NEW-SESSION-STARTER.md` v3.33 同期。`checkpoint-latest.md` **航海図テンプレ**・`SESSION-BOOTSTRAP-CHECKLIST.md` 1c・`2026-04-26-pc-ledger-day4-action.md` §50-3-9 補足。`.rag/extra-docs/AGENTS.md` 同期。）
 - 改訂日: 2026-05-02（[FEAT] v23.26 / §57-10 I案: **インフラ運用条項**（浜田チャット GO）。RAG 正本 4 ファイルの `.rag/extra-docs` ミラー＝`scripts/rag-mirror-canonical-docs.mjs`・`npm run rag:mirror:canonical-docs` / `verify:rag-mirror-canonical`・`verify:agent-env` 連鎖追加。post-commit を `scripts/git-hook-post-commit.mjs` に集約し `npm run hooks:install` を Node コピー方式に統一（Windows spawn 対策）。`docs/github-branch-protection.md` 新設。`logs/autonomy-decisions/rule-amendment-2026-05-02-57-10-i.md`。RULES-INDEX §N チェックリストに §57-10。）
 - 改訂日: 2026-05-03（[FEAT] v23.27: **§11-6 他系統 AI への検証依頼**（浜田指示）。**CIO（浜田）の最終検収・目視は不変**のまま、**MCP 等の別系統 AI へ査読・チェックリスト意見を依頼し要約を報告に添える**ことを義務化（C=Consulted、A の代替禁止・§18 秘密非露出）。**§56-1a** に同趣旨の補足。RULES-INDEX §N 一覧・MCP 節表に **§11-6** 追記。）
-- 改訂日: 2026-05-04（[FEAT] v23.28: **§35-6 セッション成果物の削除と「古い」整理のゲート**（Desktop 日報消失反省／浜田指示で日報 §5 から正本へ昇格）。独断削除禁止・正本は `chat-sessions/`＋コミット・Desktop は sync 控え／§41・§50-3-8 連動・手順に復元経路がある掃除のみ自律可。`RULES-INDEX.md` §35 行・§N 一覧に **§35-6**。**`NEW-SESSION-STARTER.md`** 憲法級ブロック直後に短文化。`chat-sessions/SESSION-DAILY-REPORT-20260504.txt` §5 と双方向参照。`.rag/extra-docs/AGENTS.md` 同期。）
+- 改訂日: 2026-05-04（[FEAT] v23.28: **§35-6 セッション成果物の削除と「古い」整理のゲート**（Desktop 日報消失反省／浜田指示で日報 §5 から正本へ昇格）。独断削除禁止・正本は `chat-sessions/`＋コミット・Desktop は sync 控え／§41・§50-3-8 連動・手順に復元経路がある掃除のみ自律可。`RULES-INDEX.md` §35 行・§N 一覧に **§35-6**。**`NEW-SESSION-STARTER.md`** 憲法級ブロック直後に短文化。締め 1 本化は **`SESSION-CLOSE-REPORT_yyyymmdd.txt`** と双方向参照。`.rag/extra-docs/AGENTS.md` 同期。）
+- 改訂日: 2026-05-04（[FEAT] v23.31: **§35-6 追補**（`AI緊急用` Desktop 直書き→リポ即反映＋sync／副次リポの `git status` 義務）／**§50-3-8 補足**（超軽微タスクで DeepSeek 省略可だが **`§50-3-8 スキップ理由:` 1 行必須**）／**§51-6 遵守事項 7**（**`npm run session:clock:clear`** で壁時計停止）／**`NEW-SESSION-STARTER`** 手順 **2b**（任意 `SESSION-CLOSE` Read）／**read-pack READ-01**・**SESSION-SPLIT-REMINDER**・**RULES-INDEX**・**verify-constitution-handoff** needles 同期。）
 - 改訂日: 2026-05-04（[FEAT] v23.29: **§35-6 の機械検証＋TSB-031** — `verify-constitution-handoff.mjs` に `AGENTS`／スターター／bootstrap／**TSB-031 本文**／`constitution-handoff-gate.mdc`／`checkpoint-latest.md` needles 追加。**`docs/troubleshooting.md` TSB-031** 新設（目次表・集計更新）。**`SESSION-BOOTSTRAP-CHECKLIST.md`** フェーズ 2 に §35-6 チェック。**read-pack `READ-01.txt`**・**`SESSION-SPLIT-REMINDER.md`**・**`HANDOFF-HUMAN.txt`** 運用追補。**`RULES-INDEX.md`** TSB-031 索引 1 行。`.rag/extra-docs` は `npm run rag:mirror:canonical-docs` で同期。）
 - 改訂日: 2026-05-04（[FEAT] v23.30: **§50-3-2a MDD 語彙の憲法一次定義** — 「MDD」＝航海図（Goal/Constraints/Acceptance）＋SPEC/md 正本＋領域別 §10.5/§11 を **AGENTS 本文で明示**。`.cursorrules` C 節・`RULES-INDEX`・予実 **B-MDFLOW** メモと相互参照。scaffold 未整備は **B-MDFLOW** に残し、既存 `rag:mirror` で不足を補う旨を記載。`.rag/extra-docs` は mirror で同期。）
 
