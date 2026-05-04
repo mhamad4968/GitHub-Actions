@@ -277,12 +277,15 @@
 | 旧 Excel→kintone 初回移行 | **`docs/yojitsu-migration-kyu-to-kintone.md`** |
 | 運用後に足す機能・フェーズ2 | **`docs/yojitsu-feature-backlog.md`** |
 | 列レイアウト（新フォーマット相当） | **`docs/shin-format-excel-layout.md`** |
+| MCP 実務（着手前チェック・タスク別優先） | **`chat-sessions/desktop-ai-emergency-read-pack/READ-06.txt`**（MCP 節）、**`chat-sessions/SESSION-CLOSE-REPORT-20260504.txt` §6**、**`AGENTS.md`** 冒頭 |
+| Git が **`(no branch, rebasing …)`** 等で止まったとき | **`docs/reports/GIT-REBASE-RECOVERY-20260504.md`**（**`rebase --continue`** は **Cursor 外**または **§52-8 GO**） |
 
 **679（クイックマニュアル）を直したあと kintone へ出す最短手順**
 
 1. `docs/yojitsu-quick-manual.html`（必要なら `.md`）を編集  
 2. `npm run yojitsu:679:sync-manual-js` → `npm run deploy:679`  
-3. 678 の短い案内や説明欄を合わせて変える場合は **`npm run yojitsu:678:set-manual-pointer`** 等（詳細は **`kintone-apps.md`** の 678 行）
+3. **`kintone-apps.md` 変更履歴**に、**`deploy:679` 成功行の revision / fileKey** を **その都度 1 行追記**（`sync-yojitsu-679-manual-desktop.mjs` 実行時もコンソールでリマインド）  
+4. 678 の短い案内や説明欄を合わせて変える場合は **`npm run yojitsu:678:set-manual-pointer`** 等（詳細は **`kintone-apps.md`** の 678 行）
 
 **新規チャット・後任向けの一文**: 「予実まわりは **`templates/yojitsu-budget-lite/HANDOFF.md`** を開き、そこから **`SPEC.md` §10.6 → §10.2** に進む」。
 
@@ -297,6 +300,7 @@
 
 ## 変更履歴
 
+- 2026-05-04（夜・運用追補）: **§10.6** — 参照マップに **MCP 実務**・**Git rebase 回復**を追加。**679 最短手順**に **`deploy:679` 成功行の revision / fileKey を `kintone-apps.md` 変更履歴へ都度追記**を明文化。
 - 2026-05-06: **678 customize** — **会社名の変更手順**をダッシュ表の上に常時表示（集合先は実績モーダル内「会社を新規登録する」／確定取引先は **677**）。**BUILD=`2026-05-06-678-company-change-hint`**（`kintone-apps.md` 追随）。
 - 2026-05-07（都度ナビ・表整合）: **678 customize** — ナビ **「都度費用」**（イニシャル集計へジャンプ・都度セル枠強調・`sessionStorage`）。**都度フォーカス中**は暦月の **ナビ押下見た目**および **表の「入力中」・暦月セルの編集可表示**をオフ（内部の入力対象月・都度集計の基準月は維持）。**都度費用**選択時・**先頭／左右／末尾**で都度を抜けるとき **再描画**。月ボタンで入力月変更＋都度解除。**BUILD=`2026-05-07-678-tsudo-table-sync`**（`kintone-apps.md` 追随。**先行**: ナビ見た目のみ **`2026-05-07-678-nav-tsudo-clear-month-ui`**）。
 - 2026-05-07（表示名）: **678 customize** — ナビ・案内の **「月度ジャンプ」**を **「入力月へジャンプ」**に改称（入力対象月の切替であることを明示）。**BUILD=`2026-05-07-678-input-month-jump-label`**（`kintone-apps.md` 追随）。

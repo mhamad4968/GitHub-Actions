@@ -5,10 +5,10 @@ Windows から開きやすい控え: C:\Users\mhamada202408224\Desktop\AI緊急�
 
 推奨フロー（セッション切替）: ① **`NEW-SESSION-STARTER_yyyymmdd.txt`（JST・常にこのファイル名）全文**（**v3.27+**: **「■ 貼付単独で完走」** が **唯一の詳細正本**（項番 -1〜0・**v3.28** 以後の改定もここ優先）。checkpoint 重複貼付不要。貼付推奨は verify 最終行）② この 5 行（**任意**）③ **項番 -0** → ④ **`session:bootstrap` 一括**。**日終わり**: sync → verify。
 
-日時(JST): 2026-05-04（月）夜 — **予実 679 クイックマニュアル**反映・`SPEC.md` **§10.6**／**`HANDOFF.md`**／**`AGENTS.md`** に CIO 引き継ぎ。**予実（677/678/679・Space54）と PC台帳（594/674/668・Space21等）のレーン分離**・**単独作業は原則禁止**を憲法レベルで明記。**明日から主戦場は PC 台帳**。**`SESSION-CLOSE-REPORT-20260504.txt`** に **【C】**と **§6 MCP 活用術（草案）**を追記。**READ-02〜05 は無断削除せず**（READ-03〜05 に 5A/5B パス残存・§35-6）。
+日時(JST): 2026-05-04（月）夜 — **予実 679 クイックマニュアル**反映・`SPEC.md` **§10.6**／**`HANDOFF.md`**／**`AGENTS.md`** に CIO 引き継ぎ。**予実（677/678/679・Space54）と PC台帳（594/674/668・Space21等）のレーン分離**・**単独作業は原則禁止**を憲法レベルで明記。**明日から主戦場は PC 台帳**。**`SESSION-CLOSE-REPORT-20260504.txt`** に **【C】**・**§6 MCP 活用術（承認済）**・**Git 回復／679 台帳追記**を追記。**`read-pack/READ-06.txt`** をリポ正本として追加（Desktop と同期）。**READ-02〜05 は無断削除せず**（READ-03〜05 に 5A/5B パス残存・§35-6）。
 いま何してた（1行）: 予実ドキュメント〆＋単一締めレポート更新（**MCP 深掘り案**まで 1 本化）。
 次にやる1つ: **PC 台帳レーン**へ。着手前に **レーン一言**＋**`kintone-apps.md` 照合**。MCP は **SESSION-CLOSE §6** を朝イチで一周（使わない項目は **理由 1 行**）。
-GO待ち（なし／内容）: **§6 MCP 表**の採用可否（スターター／READ-06 への 1 行リンクは GO 後）。
+GO待ち（なし／内容）: なし（§6・**READ-06** は反映済み。スターターへの 1 行リンクは **次 `session-starter:sync-desktop`** で追補可）。**Git**: `GIT-REBASE-RECOVERY-20260504.md`（**rebase --continue** は **Cursor 外**または **§52-8 GO**）。
 触らないで（なし／内容）: **READ-02〜05 独断削除**。**679 revision** の固定記載は **`kintone-apps.md` 679 行**を正とする。
 
 日時(JST): 2026-05-04（月）終了 — **AI緊急用整理**・**単一締め報告** `SESSION-CLOSE-REPORT-20260504.txt` 作成。**`SESSION-DAILY-REPORT-20260504.txt` は統合のうえ削除**（重複排除）。**toto-prediction**: README に CSV 手動準備節、`data/templates/` サンプル、README 誤字修正、Desktop **`TOTO予想`** に README・templates コピー。
