@@ -13,6 +13,7 @@
  *   - 自動生成ボタン: 個人 / 共有 / JR（M365 系）を §4.4 に沿ってフォームへ反映（空欄のみ上書き）
  *   - 5 台ライセンス警告雛形 (赤バナーは仕組みのみ)
  *   - リセット／PC買替（§4.10.3・596 採番・671 整合・595 個人リンク）／印刷（627 レイアウト移植済）
+ *   - **レコード閲覧（detail）**: 操作ボタンは **PC買替・印刷のみ**（自動生成・社員名検索・全フィールドリセットは新規・編集でのみ表示）
  *
  * Day 5 残タスク（未完了のみ）:
  *   - （一覧）SKYSEA 状態フィルタ等は別途（検索バー強化 §4.8a は対応済）。
@@ -22,7 +23,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-02-pc-replace-mount-v0.9.14';
+  const BUILD = '2026-05-05-pc-ledger-detail-two-buttons';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -2820,42 +2821,47 @@ ${bodyInner}\
       wrapper.style.cssText = 'display:flex;flex-wrap:wrap;align-items:center;margin:8px 0;';
     }
 
-    const type = event.record[FC_ACCOUNT_TYPE]?.value || '';
-    const stored = isPersonalStored(event.record);
+    const isRecordDetail674 =
+      event.type === 'app.record.detail.show' || event.type === 'mobile.app.record.detail.show';
 
-    // 個人用 自動生成 (種別=個人 かつ §4.1a 保管以外のみ表示)
-    if (type === TYPE_PERSONAL && !stored) {
-      wrapper.appendChild(createGenerateButton('🔵 個人用 自動生成', '#0d6efd', () => {
-        runPersonalAutoGen().catch(function (e) {
-          console.error(e);
-          window.alert('自動生成でエラー: ' + (e && e.message ? e.message : String(e)));
-        });
+    if (!isRecordDetail674) {
+      const type = event.record[FC_ACCOUNT_TYPE]?.value || '';
+      const stored = isPersonalStored(event.record);
+
+      // 個人用 自動生成 (種別=個人 かつ §4.1a 保管以外のみ表示)
+      if (type === TYPE_PERSONAL && !stored) {
+        wrapper.appendChild(createGenerateButton('🔵 個人用 自動生成', '#0d6efd', () => {
+          runPersonalAutoGen().catch(function (e) {
+            console.error(e);
+            window.alert('自動生成でエラー: ' + (e && e.message ? e.message : String(e)));
+          });
+        }));
+        wrapper.appendChild(
+          createGenerateButton('🔍 社員名を検索（595）', '#5c4d7d', function () {
+            openEmployee595SearchModal674();
+          }),
+        );
+      }
+
+      // 共有用 自動生成 (種別=共有 または JR端末 — 仕様書 §4.4)
+      if (type === TYPE_SHARED || type === TYPE_JR) {
+        wrapper.appendChild(createGenerateButton('🟢 共有用 自動生成', '#198754', () => {
+          runSharedAutoGen().catch(function (e) {
+            console.error(e);
+            window.alert('自動生成でエラー: ' + (e && e.message ? e.message : String(e)));
+          });
+        }));
+      }
+
+      // 全フィールドリセット (全種別)
+      wrapper.appendChild(createGenerateButton('🔴 全フィールドリセット', '#dc3545', () => {
+        const ok = window.confirm(
+          'PC名・シリアル・利用者名・所属・各種アカウント・SKYSEA・備考など、入力欄をまとめて空にします。種別・ステータス（利用中/保管/廃棄）・作成日時（JST）は変えません。続行しますか？',
+        );
+        if (!ok) return;
+        runClearAccountFields();
       }));
-      wrapper.appendChild(
-        createGenerateButton('🔍 社員名を検索（595）', '#5c4d7d', function () {
-          openEmployee595SearchModal674();
-        }),
-      );
     }
-
-    // 共有用 自動生成 (種別=共有 または JR端末 — 仕様書 §4.4)
-    if (type === TYPE_SHARED || type === TYPE_JR) {
-      wrapper.appendChild(createGenerateButton('🟢 共有用 自動生成', '#198754', () => {
-        runSharedAutoGen().catch(function (e) {
-          console.error(e);
-          window.alert('自動生成でエラー: ' + (e && e.message ? e.message : String(e)));
-        });
-      }));
-    }
-
-    // 全フィールドリセット (全種別)
-    wrapper.appendChild(createGenerateButton('🔴 全フィールドリセット', '#dc3545', () => {
-      const ok = window.confirm(
-        'PC名・シリアル・利用者名・所属・各種アカウント・SKYSEA・備考など、入力欄をまとめて空にします。種別・ステータス（利用中/保管/廃棄）・作成日時（JST）は変えません。続行しますか？',
-      );
-      if (!ok) return;
-      runClearAccountFields();
-    }));
 
     // PC 買替 (全種別 / §4.10.3)
     wrapper.appendChild(createGenerateButton('🔄 PC買替', '#6c757d', () => {
