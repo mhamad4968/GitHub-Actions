@@ -8,7 +8,7 @@
 
 ## Windows Server での補足（ファイルサーバが Windows のとき）
 
-- **Node.js**: [nodejs.org](https://nodejs.org/) の **LTS（20 以上）** を **.msi** で入れる。インストール後、**新しく開いた** PowerShell / cmd で `node -v` が通ることを確認。
+- **Node.js**: [nodejs.org](https://nodejs.org/) の **LTS（22 系推奨）** を **.msi** で入れる（リポ `package.json` の **`engines.node`** 以上）。インストール後、**新しく開いた** PowerShell / cmd で `node -v` が通ることを確認。
 - **フォルダ例**: `C:\kintone-app\faq-kintone-proxy` のように **パスを短く・英数字**にするとトラブルが減る（日本語パスは避け推奨）。
 - **`.env` 作成**: `faq-kintone-proxy` 内で `copy .env.example .env` のあと、メモ帳などで `.env` を編集（**UTF-8** で保存。BOM なし推奨）。
 - **npm**: プロキシフォルダで `npm install` → `npm start`。初回だけ `npm install` に時間がかかる。
@@ -31,7 +31,7 @@ New-NetFirewallRule -DisplayName "FAQ kintone proxy 3847" -Direction Inbound -Pr
 ### 1. ファイルサーバに用意するもの
 
 - **Windows または Linux** のいずれかのサーバ（常時起動できるマシン）
-- **Node.js 20 以上**（[nodejs.org](https://nodejs.org/) 等）
+- **Node.js 22 LTS 以上**（[nodejs.org](https://nodejs.org/) 等・リポ `engines` 準拠）
 - **インターネット外向き**（kintone `*.cybozu.com` へ HTTPS が出ること）
 - 管理者権限で **ファイアウォール** を開けられること
 

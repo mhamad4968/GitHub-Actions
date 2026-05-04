@@ -320,5 +320,5 @@ npm run analyze --prefix security-next-automation
 ## 補足
 
 - **トークン節約**: `analyze` は各記事の `summary` を約 320 文字に切り詰め、最大 45 件まで LLM に渡します。
-- **稼働条件**: Node.js **20.19+ または 22.12+** 推奨（Vite 8 と同水準の記述）。
+- **稼働条件**: Node.js **22.13+（LTS）** 推奨（リポルート `package.json` の `engines` と整合）。
 - **REST API クライアント**: [`@kintone/rest-api-client`](https://www.npmjs.com/package/@kintone/rest-api-client)（公式）。
