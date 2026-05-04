@@ -96,7 +96,17 @@ function resolveNodeBinForMcpProbe(requestedCmd) {
 }
 
 function probeMcp(name, server, opts = {}) {
+  if (!server || typeof server !== 'object') {
+    return { name, status: 'ng', note: 'server 定義がオブジェクトではありません' };
+  }
   if (server.disabled) return { name, status: 'skip', note: 'disabled:true' };
+  // Cursor が接続する URL/SSE 型（例: Figma 公式）は stdio の command が無い → ここでは疎通対象外
+  if (typeof server.url === 'string' && server.url.trim() && (typeof server.command !== 'string' || !server.command.trim())) {
+    return { name, status: 'skip', note: 'url-only MCP（stdio initialize 対象外・IDE 側で接続）' };
+  }
+  if (typeof server.command !== 'string' || !server.command.trim()) {
+    return { name, status: 'ng', note: 'server.command 未定義または空（mcp.json を修正）' };
+  }
   // Windows-only コマンドは WSL から実行不可なのでスキップ判定
   if (typeof server.command === 'string' && /\.exe$/i.test(server.command)) {
     return { name, status: 'skip', note: 'Windows-side / WSL から疎通不可' };
