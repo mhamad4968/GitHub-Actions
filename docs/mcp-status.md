@@ -1,6 +1,6 @@
 # 📊 MCP 状態管理台帳
 
-**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-05-05（CIO: `npm run health-check` で MCP 疎通・システム節を再確認／ルート・`security-next-automation` の `npm update` 反映）／表の詳細カウントは 2026-04-23 20:25 (Phase B レベルアップ反映) 時点
+**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-05-05（CIO: `npm run health-check` ほか／**グローバル MCP ピン** `@colorsandfonts/mcp@1.1.0`・`markdownify-mcp@0.0.2` を **`npm view` で確認 = いずれも registry latest** → mcp.json **変更なし**／ルート・`security-next-automation` の `npm update` 反映済）／表の詳細カウントは 2026-04-23 20:25 (Phase B レベルアップ反映) 時点
 **更新ルール**: mcp.json 変更時 / 月次 MCP 健康診断時 / 浜田判断あった時に必ず本ファイル更新
 **正本順位**: 本ファイル < **`~/.cursor/mcp.json` とワークスペース `.cursor/mcp.json` がマージ**（Cursor 仕様）。`kintone-ai-lab` ルートで開いたとき **Figma + colors-fonts** はリポ側 JSON にも記載（2026-05-04）。
 

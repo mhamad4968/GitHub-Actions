@@ -819,7 +819,7 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 |----|------|--------|------|--------------|
 | **O-1** | **CLOSED** 2026-05-05 | — | **`npm audit` moderate（axios）解消**: `@kintone/cli@1.19.2` は **既に npm latest** で `npm update` では解消不可。**`package.json` `overrides`** で **`@kintone/rest-api-client@6.1.6`**（公式が `axios@1.15.0`）を強制。**`npm audit` → 0**。**`npm audit fix --force` は未使用**。 | 将来 **CLI が 6.1.6+ を直依存**したら overrides を外して再 `npm install` 可否を確認。 |
 | **O-2** | **CLOSED** 2026-05-05 | — | **billing 実数反映済み**: Plan & Usage スクショで **Total 71%** → `npm run credit:set 71` + `data/credit-usage.json` **note** 追記（45% placeholder 解消）。 | 翌営業日以降も **1 日 1 回** `credit:set`（§1-2-4）。 |
-| **O-3** | OPEN | 低 | **グローバル MCP（`npx` / グローバル node パス）**は無断フル latest 化していない。TSB-029 等のピン優先。 | サーバ単位で更新する場合は **§17-2 / descriptor** 手順＋**verify-cursor-mcp-windows**。 |
+| **O-3** | **MONITOR（AI 担当）** | 低 | **グローバル MCP**（`~/.cursor/mcp.json`）— **2026-05-05**: `npm view` で **`@colorsandfonts/mcp@1.1.0` = registry latest**、`@iflow-mcp/markdownify-mcp` **グローバル 0.0.2 = latest**。`@modelcontextprotocol/server-*` は **非ピン `npx -y`** で都度解決。**本日の変更なし**（浜田への一問は不要・CIO 委任）。 | **AI**: 月次 or MCP 変更時に再 `npm view`。**ピン上げるとき**は §17-2・`docs/mcp-status.md`・TSB-029（markdownify は **node 直起動**維持）。 |
 | **O-4** | CLOSED（参考） | — | ルート **`npm update`** + **`security-next-automation` `npm update`** は実施済み（`e1a74d9`）。smoke **緑**。 | 継続: 変更後は smoke + 必要なら bootstrap。 |
 | **O-5** | OPEN | **中〜高** | **Included API 100% 消化済み** → On-Demand 課金継続。**2026-05-05 時点 On-Demand $388.51 / $1,000 cap**、Ultra 次回リセット **5/15 まで残11日**。枯渇予測・§1-2-2/§1-2-3 の前提に直結。 | CIO が上限・モデル既定（Max Thinking 抑制等）を監視。`npm run credit:status` / morning-prep JSON を参照。TSB-021（On-Demand $ 正式追跡）は未実装のまま追跡。 |
 
@@ -830,7 +830,7 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 ### 2026-05-05 JST（追記）— アップデート実施／残課題の GO 整理（浜田指示）
 
 - **実施済み（GO 範囲）**: ルート・`security-next-automation` の **`npm update`**、`docs/mcp-status.md` 更新、`rag:ingest:all`、`credit:set`（暫定）、関連 **git push**。
-- **残課題（リスクあり・OPEN 表に常設）**: **O-3 グローバル MCP**、**O-5 API 枯渇 + On-Demand 金額**（**O-1 axios・O-2 credit % は CLOSED**）。
+- **残課題・監視（OPEN 表）**: **O-3 グローバル MCP（MONITOR・AI 担当）**、**O-5 API 枯渇 + On-Demand 金額**（**O-1 axios・O-2 credit % は CLOSED**）。
 - **確認は 1 件ずつ**: 次チャット以降、AI は **OPEN 表の上から**未確認項目を **§41 一問**で浜田に確認する。
 
 ### 2026-05-05 JST（追記）— クレジット確認（Plan & Usage スクショ）
@@ -847,4 +847,11 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 
 - **調査**: `@kintone/cli` **1.19.2 = レジストリ latest**。CLI は **`@kintone/rest-api-client@6.1.4` を直依存固定**のため **`npm update @kintone/cli` では axios 未更新**。
 - **判断**: 公式 **`@kintone/rest-api-client@6.1.6`**（`axios@1.15.0`）へ **`package.json` `overrides`** で揃える（`npm audit fix --force` は未使用）。**`npm audit` 0**・**`smoke:quiet` 10/10** を確認。
+
+### 2026-05-05 JST（追記）— O-3 グローバル MCP（浜田「こちらで確認・必要なら上げて」）
+
+- **`npm view` 確認**: **`@colorsandfonts/mcp`** は **1.1.0 が latest**（`mcp.json` のピンと一致）→ **変更なし**。
+- **`@iflow-mcp/markdownify-mcp`**: グローバル実装 **0.0.2 = npm latest**（TSB-029 の **node 直起動**維持）→ **変更なし**。
+- **`@modelcontextprotocol/server-{filesystem,memory,sequential-thinking}`**: 設定は **`npx -y` 非ピン**のため実行時に最新系へ解決。**ファイル上げのみ不要**。
+- **方針**: 以降 **AI が必要時に `npm view` と `docs/mcp-status.md` を更新**。浜田への **§41 一問は出さない**（OPEN 表 O-3 を **MONITOR（AI 担当）** に変更）。
 
