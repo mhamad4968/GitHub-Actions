@@ -860,3 +860,8 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 - **`kintone-apps.md`**: 表の直後に **「678 本番 customize の実効ビルド」**節を追加。**本番 BUILD = `2026-05-04-678-manual-app-guide-name`** と、**5/5〜5/7 の連記は本番未反映の先行ログ**を明示。**`npm run rag:mirror:canonical-docs`** で `.rag/extra-docs` に反映。
 - **`overrides`**: 除去条件・手順の正本を **`docs/reports/kintone-cli-rest-api-override.md`** に新設（**CLI が `rest-api-client` 6.1.6+ を直依存**したら overrides 削除 → install → audit → smoke）。
 
+### 2026-05-05 JST（追記）— `deploy:678` 本番 live 同期（浜田 GO）
+
+- **`npm run deploy:678`**: **Deploy SUCCESS** / fileKey **`6074bbd9-62bf-4746-b522-ec4ebcdeba12`** / revision **`110`** / **BUILD=`2026-05-04-678-manual-app-guide-name`**（`customize/678/desktop.js` HEAD）。
+- **`kintone-apps.md`**: 表 678 行末に上記を追記。**「678 本番 customizeの実効ビルド」**節を **rev 110** に更新（5/5〜5/7 連記は **現行バンドルに無いメモ**と明記）。**`rag:mirror:canonical-docs`** 実施。
+
