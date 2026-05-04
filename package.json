@@ -126,6 +126,7 @@
     "session:clock:prompt-hook": "node scripts/session-clock.mjs prompt-hook",
     "session:clock:write-ticker": "node scripts/session-clock.mjs write-ticker",
     "session:clock:web": "node scripts/session-clock-web.mjs",
+    "session:clock:web-url": "node scripts/session-clock-web.mjs --print-url",
     "session:split-check": "node scripts/session-clock.mjs check",
     "session:clock:watch": "node scripts/session-clock-watch.mjs",
     "session:notify-selftest": "node scripts/session-notify-selftest.mjs",

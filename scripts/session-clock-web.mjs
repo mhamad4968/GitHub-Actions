@@ -176,6 +176,9 @@ function tryListenOnce(p) {
   });
 }
 
+const PRINT_URL_ONLY =
+  process.argv.includes('--print-url') || process.argv.includes('--url-only');
+
 async function main() {
   const base = Math.min(65535, Math.max(1024, Number(process.env.SESSION_CLOCK_WEB_PORT || 47931)));
   const max = Math.min(65535, base + PORT_RANGE - 1);
@@ -191,6 +194,13 @@ async function main() {
         if (BIND_HOST === '0.0.0.0') {
           const lan = firstNonInternalIPv4();
           if (lan) console.log(`  （同一 LAN の別端末用の例）http://${lan}:${p}/`);
+        }
+        if (PRINT_URL_ONLY) {
+          console.log(
+            '  ※ 別ターミナルで `session:clock:web` が既に動いているときは、そのターミナルの「開く:」行が正。ここは「いまから新規起動した場合」の URL です。',
+          );
+          server.close(() => process.exit(0));
+          return;
         }
         console.log('  止める: Ctrl+C');
         console.log('  ※ ERR_CONNECTION_REFUSED → サーバ未起動かポート違い。ターミナルを閉じると止まる。URL は毎回このログに合わせる。');

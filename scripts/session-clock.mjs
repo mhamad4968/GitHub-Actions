@@ -37,7 +37,9 @@ const HEADER =
   '**人間向けの経過表示（エディタ）**: **`SESSION-CLOCK-TICKER.md`** をタブで開いて固定（自動生成・git 追跡外）。`session:clock:watch` 稼働中は **既定 2 分ごと**に更新、`set` の直後も更新。`npm run session:clock:prompt-hook` は不要。\n\n' +
   '```bash\n' +
   'npm run session:clock:set\n' +
+  'npm run session:clock:web-url\n' +
   '```\n\n' +
+  '**ターミナルに URL だけ出す**（サーバは立てずポート試行のみ）: 上の `session:clock:web-url`。**実際にブラウザで見る**ときは `npm run session:clock:web` のログ先頭の「開く:」を正とする（既に Web が動いている別ターミナルがあればそちらの URL）。\n\n' +
   '## 開始（この1行だけを書き換えればよい）\n\n' +
   '開始: ';
 

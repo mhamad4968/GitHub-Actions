@@ -10,8 +10,11 @@
 
 ```bash
 npm run session:clock:set
+npm run session:clock:web-url
 ```
+
+**ターミナルに URL だけ出す**（サーバは立てずポート試行のみ）: 上の `session:clock:web-url`。**実際にブラウザで見る**ときは `npm run session:clock:web` のログ先頭の「開く:」を正とする（既に Web が動いている別ターミナルがあればそちらの URL）。
 
 ## 開始（この1行だけを書き換えればよい）
 
-開始: 未設定
+開始: 2026-05-04 09:14
