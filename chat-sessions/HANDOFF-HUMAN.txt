@@ -5,12 +5,19 @@ Windows から開きやすい控え: C:\Users\mhamada202408224\Desktop\AI緊急�
 
 推奨フロー（セッション切替）: ① **`NEW-SESSION-STARTER_yyyymmdd.txt`（JST・常にこのファイル名）全文**（**v3.27+**: **「■ 貼付単独で完走」** が **唯一の詳細正本**（項番 -1〜0・**v3.28** 以後の改定もここ優先）。checkpoint 重複貼付不要。貼付推奨は verify 最終行）② この 5 行（**任意**）③ **項番 -0** → ④ **`session:bootstrap` 一括**。**日終わり**: sync → verify。
 
+日時(JST): 2026-05-04（月）終了 — **AI緊急用整理**・**単一締め報告** `SESSION-CLOSE-REPORT-20260504.txt` 作成。**`SESSION-DAILY-REPORT-20260504.txt` は統合のうえ削除**（重複排除）。**toto-prediction**: README に CSV 手動準備節、`data/templates/` サンプル、README 誤字修正、Desktop **`TOTO予想`** に README・templates コピー。
+いま何してた（1行）: セッション切替前に **締め・反省・役割**を **1 ファイル**にまとめ、Desktop 日報の二重管理をやめた。
+次にやる1つ: 次チャットは **`NEW-SESSION-STARTER_20260504.txt`** 全文 → **項番 -0** → **`npm run session:bootstrap`**。本題が kintone／ロジックなら **§50-3-8 再実行**。**詳細は `SESSION-CLOSE-REPORT-20260504.txt`**。
+GO待ち（なし／内容）: 予実 **クイックガイド**の章立て・トーン・掲載場所（未確定なら朝イチ一文）。
+触らないで（なし／内容）: **post-commit** session-clock 警告が続くなら **壁時計リセット**または **新チャット**。**`git stash list`** に不要スタッシュが残っていないか確認。
+**改定メモ**: 削除・整理は **§35-6**。日次の Desktop 正本は **`SESSION-CLOSE-REPORT_yyyymmdd.txt` を 1 本**推奨。リポ正本は **`chat-sessions/` へコミット**が理想。
+
 日時(JST): 2026-05-04（月）未明 — **678 都度ナビと表の整合**・SPEC・台帳追随・**Git `main` push 済**（`da023a7`・rebase 競合は SPEC を手マージ）。
 いま何してた（1行）: **都度費用**フォーカス中に暦月の「入力中」／編集可表示が残る不具合を **`monthCurUi` + `applyFilterAndRedraw`** で解消。**`templates/yojitsu-budget-lite/SPEC.md` §6e** と **`kintone-apps.md`**（revision **71**・`BUILD=2026-05-07-678-tsudo-table-sync`）を更新。浜田による挙動確認 **OK**。
 次にやる1つ: **2026-05-04 07:00 JST〜** — 予実管理の **クイックガイド**（**非技術者・中学生でも分かる文**）作成予定（浜田）。AI側は **構成案・用語チェック・図の下書き**まで応相談。
 GO待ち（なし／内容）: クイックガイドの **章立て・トーン・掲載場所**（678 上段／別 md／ポータル）が未確定なら朝イチで一文だけ決めると速い。
 触らないで（なし／内容）: **post-commit hook** が session-clock で警告を出す状態（`npm run session:clock:set` 未更新のまま長時間セッション）→ 新チャット時は憲法手順どおり **壁時計リセット**。**スタッシュ** `wip: unrelated before push 678` が **`git stash list` に残存**（必要なら `stash pop`／不要なら `drop`）。
-**改定メモ（明日以降・CEO／CIO）**: 他人事にせず **自分のミスとして反省**。操作前は **必ず確認**、事故後は **リカバリを先に相談**。**CIO 独断でファイル削除しない**。**他 AI に実行前チェック**（§50-3-8 等）。日報は **`chat-sessions/` コミット正本**→ Desktop は控え。詳細 **`SESSION-DAILY-REPORT-20260504.txt` §5**。
+**改定メモ（明日以降・CEO／CIO）**: 他人事にせず **自分のミスとして反省**。操作前は **必ず確認**、事故後は **リカバリを先に相談**。**CIO 独断でファイル削除しない**。**他 AI に実行前チェック**（§50-3-8 等）。締め報告は **`SESSION-CLOSE-REPORT_yyyymmdd.txt`（1 本）**＋理想は **`chat-sessions/` コミット正本**→ Desktop は控え。詳細 **`SESSION-CLOSE-REPORT-20260504.txt` §4**。
 
 日時(JST): 2026-05-02（土）夕方 — **リポ正本反映済**（read-pack READ-02〜06・`INDEX`・`NEW-SESSION-STARTER` **v3.34 §4 H/I**）。Desktop は **`npm run session-starter:sync-desktop`** 後に verify でバイト一致確認。
 いま何してた（1行）: **`SESSION-DAILY-REPORT-20260502.txt`**（Desktop）に CEO **§4 A〜I 承印**。**`READ-06.txt`** §10・【AI分業チェック】は read-pack 正本と Desktop 控えを揃え済み。**Loto7**・bat 等は前セッションまでの通り。
