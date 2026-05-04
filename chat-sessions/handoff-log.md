@@ -781,3 +781,19 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 
 **次の 1 手**: Cursor **Reload Window** → `user-markdownify` 接続確認。NVM を **24.14.1 以外**に上げ替えたらグローバル再インストール + 両 `mcp.json` の `node` フルパス更新。
 
+---
+
+### 2026-05-05 JST（追記）— 朝ブリーフィング後の健全性・read-pack・GitHub
+
+<!-- handoff: health-briefing-20260505 -->
+
+- **DeepSeek**: morning-prep の前提ズレ・`smoke:quiet` の終了コード明示・ブランチ保護の罠を盲点として確認（CIO は `git fetch` 済・`echo EXIT=$?` で bootstrap/smoke を記録）。
+- **朝ブリーフィング**: `docs/reports/2026-05-05-morning-prep.md` — Phase 2 正常 27 / 異常 0 / 警告 1（MCP 死蔵参考）/ スキップ 4。§46 緑扱いで継続可。
+- **session:bootstrap**: exit **0**（憲法 verify・mandatory gate・**session-clock-health strict**・Desktop sync・smoke 10/10）。初回は **watch pid 無し** → **`npm run session:clock:watch`** をバックグラウンド起動 → health で **✅ process responds** に復帰。
+- **read-pack**: リポに **READ-02〜05 が欠落**していたため Desktop 控えから **`chat-sessions/desktop-ai-emergency-read-pack/`** へ復元。`session-starter:sync-desktop` で **READ-01〜07 全同期**を確認。
+- **kintone-apps / RAG**: 678 行に **再デプロイ rev 109 / BUILD manual-app-guide-name** 等を追記。`.rag/extra-docs/kintone-apps.md` と同内容。`rag:mirror:canonical-docs` は既に一致。
+- **GitHub Actions**: `gh run list` — **直近の失敗は 2026-05-03 の古い push**（以降 success 連鎖）。本 push `edbb5c0` は **paths フィルタ**により `kintone-customize-deploy` **未起動**（`customize/**` 非変更のため想定内）。
+- **コミット / push**: `edbb5c0` — `chore: restore read-pack READ-02..05, wall clock, 678 deploy log`。push 後 **sync-desktop + verify:desktop** 実施。
+
+**次の 1 手**: PC 台帳レーン着手時は **項番 -0** で 5B 固定 → 1b オーダー。`session:clock:web` は別ターミナルで稼働中ならその URL を正とする。
+
