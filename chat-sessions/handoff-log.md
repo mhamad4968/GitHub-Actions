@@ -944,3 +944,16 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
   - **session-lock**: なし
   - **関連パス**: `scripts/session-bootstrap-verify.mjs` / `chat-sessions/SESSION-CLOCK.md` / `docs/reports/2026-05-05-morning-prep.md`
 
+### 2026-05-06 08:13 JST（追記）— `2026-05-06-morning-prep.md` 詳細調査＋手動バックフィル（浜田指示）
+
+- **浜田メモ（原文）**: 「`docs/reports/2026-05-06-morning-prep.md` 未生成の記載について詳細を調べて実行して」
+- **AI 補足**:
+  - **調査**: 朝報の生成正本は **`scripts/daily-morning-prep.mjs`**（`AGENTS.md` 朝ブリーフィング節・`kintone-apps.md` cron 記述と整合）。通常は **WSL cron 06:00 JST**。出力先 **`docs/reports/<YYYY-MM-DD>-morning-prep.md`** は **`.gitignore` 行 73（`docs/reports/*-morning-prep.md`）により Git 非追跡**＝リポ clone には乗らず **各環境のローカル生成物**。
+  - **実行**: **`TZ=Asia/Tokyo node scripts/daily-morning-prep.mjs`**（所要 ~6 分）→ **`docs/reports/2026-05-06-morning-prep.md`** 生成・**ヘルス 13/13**・ログ `logs/morning-prep/2026-05-06.log`（`logs/*` も非追跡）。
+  - **リポに残った差分**: スクリプト内 **RAG ingest** により **`.rag/extra-docs/AGENTS.md` / `RULES-INDEX.md` / `kintone-apps.md` 更新**、**`docs/approved-changes/` の 2 提案を `docs/approved-changes/processed/2026-05-06/` へ移動**（朝報「昨夜承認分」処理）。
+  - **git**: **`25c70ff`** を **`main` に push 済み**（上記リポ差分のみ。morning-prep `.md` 本体は gitignore のためコミット対象外）。
+  - **次の1手**: 朝イチは **当日の `*-morning-prep.md` を Read**（無い場合は **同一 `node` コマンド**で手動生成）。
+  - **GO待ち**: なし
+  - **session-lock**: なし
+  - **関連パス**: `scripts/daily-morning-prep.mjs` / `.gitignore`（`docs/reports/*-morning-prep.md`）
+
