@@ -29,7 +29,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-05-pc-ledger-windowsname-bracket-noplus';
+  const BUILD = '2026-05-05-pc-ledger-shared-autogen-set-fix';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -304,21 +304,35 @@
    * @param {Record<string, object>} record
    * @param {function(): void} fn
    */
+  /**
+   * 内部メタ子は **disabled=true のときだけでなく**、`disabled` が未定義でも kintone 側が読み取り専用扱いする場合がある。
+   * いったん **必ず false** にしてから `set` し、元の状態（独自プロパティの有無・値）を復元する。
+   */
   function withWritableInternalMeta674(record, fn) {
     const restored = [];
     for (let i = 0; i < INTERNAL_CHILD_CODES.length; i++) {
       const code = INTERNAL_CHILD_CODES[i];
       const cell = record && record[code];
-      if (cell && Object.prototype.hasOwnProperty.call(cell, 'disabled') && cell.disabled) {
-        restored.push(cell);
-        cell.disabled = false;
-      }
+      if (!cell || typeof cell !== 'object' || !Object.prototype.hasOwnProperty.call(cell, 'value')) continue;
+      const hadOwn = Object.prototype.hasOwnProperty.call(cell, 'disabled');
+      const prev = hadOwn ? cell.disabled : undefined;
+      restored.push({ cell: cell, hadOwn: hadOwn, prev: prev });
+      cell.disabled = false;
     }
     try {
       fn();
     } finally {
       for (let j = 0; j < restored.length; j++) {
-        restored[j].disabled = true;
+        const s = restored[j];
+        if (s.hadOwn) {
+          s.cell.disabled = s.prev;
+        } else {
+          try {
+            delete s.cell.disabled;
+          } catch (_e) {
+            s.cell.disabled = true;
+          }
+        }
       }
     }
   }
@@ -2312,6 +2326,14 @@
       fetchMaxPcSerial674(),
     ])
       .then(function (results) {
+        const bagFresh = getRecordFormHolder674();
+        if (!bagFresh || !bagFresh.holder || !bagFresh.holder.record) {
+          window.alert('フォームの準備ができていません。少し待ってから再度お試しください。');
+          return;
+        }
+        const apiFresh = bagFresh.api;
+        const recNow = apiFresh.get();
+        const rec = recNow.record;
         const envMap = results[0];
         const emp = results[1];
         const nextJbm = results[2];
@@ -2357,7 +2379,7 @@
         });
 
         withWritableInternalMeta674(rec, function () {
-          api.set(recNow);
+          apiFresh.set(recNow);
         });
         applyM365MasterRecordIdFieldUi674(rec, 'editable');
         let msg = '個人用フィールドをフォームへ反映しました（空欄のみ）。保存は手動で行ってください。';
@@ -2372,71 +2394,89 @@
   }
 
   function runSharedAutoGen() {
-    const recNow = kintone.app.record.get();
-    const rec = recNow.record;
-    const type = (rec[FC_ACCOUNT_TYPE] && rec[FC_ACCOUNT_TYPE].value) || '';
+    const bagProbe = getRecordFormHolder674();
+    if (!bagProbe || !bagProbe.holder || !bagProbe.holder.record) {
+      window.alert('フォームの準備ができていません。少し待ってから再度お試しください。');
+      return Promise.resolve();
+    }
+
+    return Promise.all([
+      loadEnv670Map(),
+      fetchAssignableM365Record671(),
+      nextSjbmFrom673(),
+      fetchMaxPcSerial674(),
+    ])
+      .then(function (results) {
+        const bag = getRecordFormHolder674();
+        if (!bag || !bag.api || typeof bag.api.get !== 'function') {
+          window.alert('フォームの準備ができていません。少し待ってから再度お試しください。');
+          return;
+        }
+        const api = bag.api;
+        const recNow = api.get();
+        const rec = recNow.record;
+        const type = readAccountTypeLive674(rec);
+        if (type !== TYPE_SHARED && type !== TYPE_JR) {
+          window.alert('種別が「共有」または「JR端末」のときのみ、共有用／M365 自動生成を使えます。');
+          return;
+        }
+        runSharedAutoGenApply674(api, recNow, rec, type, results[0], results[1], results[2], results[3]);
+      });
+  }
+
+  /**
+   * 共有／JR の自動生成（REST 取得後に **必ず `api.get()` し直した** record へだけ反映する）。
+   * @param {object} api `kintone.app.record` または `kintone.mobile.app.record`
+   */
+  function runSharedAutoGenApply674(api, recNow, rec, type, envMap, m671, nextSjbm, maxPcSerial) {
+    if (!m671) {
+      window.alert(
+        'M365 アカウントの空きがありません。Microsoft 365 管理画面で作成し、M365管理マスタへ追加してから再度お試しください。',
+      );
+      return;
+    }
+
+    const m365Id = (m671.m365_id && m671.m365_id.value) || '';
+    const m365Pw = (m671.m365_pw && m671.m365_pw.value) || envMap.M365_PW_SHARED_FIXED || 'kent2511K#';
+    const m365RowId = m671.$id && m671.$id.value;
 
     const masterCell = rec[FC_M365_MASTER_RECORD_ID];
     const masterWasDisabled =
       !!(masterCell && Object.prototype.hasOwnProperty.call(masterCell, 'disabled') && masterCell.disabled);
 
-    return Promise.all([
-      loadEnv670Map(),
-      fetchAssignableM365Record671(),
-      type === TYPE_SHARED ? nextSjbmFrom673() : Promise.resolve(null),
-      type === TYPE_SHARED ? fetchMaxPcSerial674() : Promise.resolve(0),
-    ])
-      .then(function (results) {
-        const envMap = results[0];
-        const m671 = results[1];
-        const nextSjbm = results[2];
-        const maxPcSerial = results[3];
+    if (type === TYPE_SHARED && nextSjbm) {
+      mergePcNameSerialFromMax674(rec, envMap, maxPcSerial, 'shared');
+      mergeScalarField(rec, FC_LOGON_NAME, nextSjbm);
+      mergeScalarField(rec, FC_WINDOWS_NAME, nextSjbm);
+      const fixedPw = envMap.LOGON_PW_SHARED_FIXED || 'kent0000';
+      const lpw = rec[FC_LOGON_PW];
+      if (lpw && (!lpw.value || !String(lpw.value).trim())) lpw.value = fixedPw;
+    }
 
-        if (!m671) {
-          window.alert(
-            'M365 アカウントの空きがありません。Microsoft 365 管理画面で作成し、M365管理マスタへ追加してから再度お試しください。',
-          );
-          return;
-        }
+    mergeScalarField(rec, FC_M365_ID, m365Id);
+    mergeScalarField(rec, FC_M365_PW, m365Pw);
+    mergeNumberField(rec, FC_M365_MASTER_RECORD_ID, m365RowId);
 
-        const m365Id = (m671.m365_id && m671.m365_id.value) || '';
-        const m365Pw = (m671.m365_pw && m671.m365_pw.value) || envMap.M365_PW_SHARED_FIXED || 'kent2511K#';
-        const m365RowId = m671.$id && m671.$id.value;
-
-        if (type === TYPE_SHARED && nextSjbm) {
-          mergePcNameSerialFromMax674(rec, envMap, maxPcSerial, 'shared');
-          mergeScalarField(rec, FC_LOGON_NAME, nextSjbm);
-          mergeScalarField(rec, FC_WINDOWS_NAME, nextSjbm);
-          const fixedPw = envMap.LOGON_PW_SHARED_FIXED || 'kent0000';
-          const lpw = rec[FC_LOGON_PW];
-          if (lpw && (!lpw.value || !String(lpw.value).trim())) lpw.value = fixedPw;
-        }
-
-        mergeScalarField(rec, FC_M365_ID, m365Id);
-        mergeScalarField(rec, FC_M365_PW, m365Pw);
-        mergeNumberField(rec, FC_M365_MASTER_RECORD_ID, m365RowId);
-
-        if (masterCell && Object.prototype.hasOwnProperty.call(masterCell, 'disabled')) {
-          masterCell.disabled = false;
-        }
-        try {
-          withWritableInternalMeta674(rec, function () {
-            kintone.app.record.set(recNow);
-          });
-        } catch (err) {
-          if (masterWasDisabled && masterCell && Object.prototype.hasOwnProperty.call(masterCell, 'disabled')) {
-            masterCell.disabled = true;
-          }
-          console.error('[NEW-PC-LEDGER-V1] runSharedAutoGen record.set failed', err);
-          throw err;
-        }
-        applyM365MasterRecordIdFieldUi674(rec, 'editable');
-        window.alert(
-          type === TYPE_JR
-            ? 'M365 系のみフォームへ反映しました（空欄のみ）。Windows 系は手入力ください。保存は手動で行ってください。'
-            : '共有向け（Windows + M365）をフォームへ反映しました（空欄のみ）。保存は手動で行ってください。',
-        );
+    if (masterCell && Object.prototype.hasOwnProperty.call(masterCell, 'disabled')) {
+      masterCell.disabled = false;
+    }
+    try {
+      withWritableInternalMeta674(rec, function () {
+        api.set(recNow);
       });
+    } catch (err) {
+      if (masterWasDisabled && masterCell && Object.prototype.hasOwnProperty.call(masterCell, 'disabled')) {
+        masterCell.disabled = true;
+      }
+      console.error('[NEW-PC-LEDGER-V1] runSharedAutoGen record.set failed', err);
+      throw err;
+    }
+    applyM365MasterRecordIdFieldUi674(rec, 'editable');
+    window.alert(
+      type === TYPE_JR
+        ? 'M365 系のみフォームへ反映しました（空欄のみ）。Windows 系は手入力ください。保存は手動で行ってください。'
+        : '共有向け（Windows + M365）をフォームへ反映しました（空欄のみ）。保存は手動で行ってください。',
+    );
   }
 
   /** kintone レコードオブジェクトの 1 フィールドを「空」にする（型別） */
