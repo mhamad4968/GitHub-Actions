@@ -29,7 +29,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-06-pc-ledger-shared-autogen-internal-disabled-fix';
+  const BUILD = '2026-05-06-pc-ledger-personal-windowsname-validate';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -1005,6 +1005,33 @@
       mergeScalarField(rec, FC_GB_ID, mailLocal);
       mergeScalarField(rec, FC_SB_ID, mailLocal);
     }
+  }
+
+  /**
+   * 595 `mail` から @ より前を取り出す（`mail_acct` と同一ルール）。
+   * @param {string} mail
+   */
+  function extractMailLocalFrom595Mail674(mail) {
+    const m = String(mail || '').trim();
+    const at = m.indexOf('@');
+    return at > 0 ? m.slice(0, at).trim() : '';
+  }
+
+  /**
+   * §4.2.2（v2.1 浜田確認 2026-04-28）: 個人用自動生成の **`windows_name` 表示値**。
+   * `mail_acct` は **595 の @ より前をそのまま**（ハイフン等も仕様上そのまま。OS 実名と異なる場合は手入力で上書き可）。
+   * @param {string} logonName §4.3.2 新規発番の `^jbm\d{4}$`
+   * @param {string} mailLocalPart `mail_acct` 相当（空なら logon のみ）
+   */
+  function buildPersonalWindowsNameDisplay674(logonName, mailLocalPart) {
+    const j = String(logonName || '').trim();
+    const a = String(mailLocalPart || '').trim();
+    return a.length > 0 ? j + '+' + a : j;
+  }
+
+  /** §4.3.2 新規発番: 672 から返る個人ログオン名が厳格パターンか */
+  function isStrictNewPersonalJbmLogon674(s) {
+    return /^jbm\d{4}$/.test(String(s || '').trim());
   }
 
   /** §5.3: 利用可 かつ usage_count<5 の最古 serial（共有プール。JR も同一プール） */
@@ -2295,10 +2322,19 @@
           return;
         }
         const mail = (emp.mail && emp.mail.value) || '';
-        const at = mail.indexOf('@');
-        const mailLocal = at > 0 ? mail.slice(0, at) : '';
+        const mailLocal = extractMailLocalFrom595Mail674(mail);
         const m365Domain = envMap.M365_DOMAIN || '@kensetsutoso01.onmicrosoft.com';
         const m365PwSuffix = envMap.M365_PW_PERSONAL_SUFFIX || 'K#';
+
+        const nextJbmTrim = String(nextJbm || '').trim();
+        if (!isStrictNewPersonalJbmLogon674(nextJbmTrim)) {
+          window.alert(
+            '個人WindowsID採番（672）の値が仕様書 §4.3.2（新規発番・jbm＋4桁）と一致しません: 「' +
+              nextJbmTrim +
+              '」。672マスタのデータを確認してください。自動生成を中断します。',
+          );
+          return;
+        }
 
         mergePcNameSerialFromMax674(rec, envMap, maxPcSerial, 'personal');
 
@@ -2307,14 +2343,19 @@
         mergeScalarField(rec, FC_EMP_ID, (emp.emp_id && emp.emp_id.value) || '');
         mergeScalarField(rec, FC_MAIL, mail);
         mergeScalarField(rec, FC_MAIL_ACCT, mailLocal);
-        mergeScalarField(rec, FC_LOGON_NAME, nextJbm);
-        mergeScalarField(rec, FC_LOGON_PW, nextJbm);
-        const windowsDisplay =
-          mailLocal.length > 0 ? nextJbm + '+' + mailLocal : nextJbm;
+        mergeScalarField(rec, FC_LOGON_NAME, nextJbmTrim);
+        mergeScalarField(rec, FC_LOGON_PW, nextJbmTrim);
+        const windowsDisplay = buildPersonalWindowsNameDisplay674(nextJbmTrim, mailLocal);
         mergeScalarField(rec, FC_WINDOWS_NAME, windowsDisplay);
         if (mailLocal) mergeScalarField(rec, FC_M365_ID, mailLocal + m365Domain);
-        mergeScalarField(rec, FC_M365_PW, nextJbm + m365PwSuffix);
-        mergePersonalMailGbSb674(rec, envMap, nextJbm, mailLocal);
+        mergeScalarField(rec, FC_M365_PW, nextJbmTrim + m365PwSuffix);
+        mergePersonalMailGbSb674(rec, envMap, nextJbmTrim, mailLocal);
+
+        console.info('[NEW-PC-LEDGER-V1] personal autogen §4.2.2', {
+          logon_name: nextJbmTrim,
+          mail_acct: mailLocal || '(empty)',
+          windows_name: windowsDisplay,
+        });
 
         withWritableInternalMeta674(rec, function () {
           api.set(recNow);
@@ -2324,7 +2365,7 @@
         if (!mailLocal) {
           msg +=
             '\n\n※595の会社メール（@より前）が空のため、Windows アカウント名は「' +
-            nextJbm +
+            nextJbmTrim +
             '」のみです。サイボウズID・ガリバーID（=mail_acct）も空欄のままです。メールを登録後に再度自動生成するか、手入力で補完してください。';
         }
         window.alert(msg);

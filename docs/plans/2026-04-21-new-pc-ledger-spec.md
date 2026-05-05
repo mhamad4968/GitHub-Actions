@@ -232,7 +232,7 @@ PC レコード保存・廃棄時:
 | `vpn_pw` | SINGLE_LINE_TEXT | 手入力 | 手入力 | （不要）|
 
 - **`windows_name`（浜田認識・2026-04-28 確認）**:
-  - **個人（共有・JR と異なり要注意）**: 実運用の Windows アカウント名は **`jbm` + 4 桁（`****`）+ `mail`（595）の @ より前** すなわち **`jbm****[xxxx]` 型**（**`[xxxx]`＝`mail_acct`** と同一。浜田確認 2026-04-28）。kintone の `windows_name` には **OS 上の実名**を入れる。**個人用自動生成**では **`logon_name` + `+` + `mail_acct`**（例 `jbm0001+yamada`）でフォームへ出す（**674**）。メール空のときは **`logon_name` のみ**とし案内を出す。**既存は手入力を正**。
+  - **個人（共有・JR と異なり要注意）**: 実運用の Windows アカウント名は **`jbm` + 4 桁（`****`）+ `mail`（595）の @ より前** すなわち **`jbm****[xxxx]` 型**（**`[xxxx]`＝`mail_acct`** と同一。浜田確認 2026-04-28）。kintone の `windows_name` には **OS 上の実名**を入れる。**個人用自動生成**では **`logon_name` + `+` + `mail_acct`**（例 `jbm0001+yamada`。**`y-mikami` のように @ 前にハイフンが含まれる表記は 595 の値をそのまま反映**）でフォームへ出す（**674**）。**672 の `logon_name` は §4.3.2 新規発番どおり `jbm`＋4桁であることを自動生成時に検証**する。メール空のときは **`logon_name` のみ**とし案内を出す。**既存は手入力を正**。
   - **共有**: **`logon_name` と同じ**（例: `sjbm0001`）でよい。
   - **JR**: **手入力**。
 
@@ -980,6 +980,7 @@ snapshot: `data/snapshots/594-pre-migration-scan-2026-04-22.json`
 
 | 日付 | 版 | 改訂内容 |
 |---|---|---|
+| 2026-05-06 | v2.1 追記 | **§4.2.2 / 674**: **`windows_name`** の組み立てを **`buildPersonalWindowsNameDisplay674`** に集約。**672 `logon_name` を §4.3.2 新規発番（`jbm`＋4桁）で検証**（不一致時は自動生成中断）。§4.2.2 注に **595 @ 前のハイフン等はそのまま反映** を明記 |
 | 2026-05-06 | v2.1 追記 | **§4.2.1a / 674**: 共有・個人の **`record.set`（自動生成）**で **`pc_serial_no` 等内部メタ子が disabled のまま**だと kintone が **「入力内容が正しくありません」** となるため、**set 同期間だけ** disabled を外す |
 | 2026-05-06 | v2.1 追記 | **§4.2.2 / 674**: **個人用自動生成**に **`mail_pw`（MAIL_PW_PREFIX+4桁+MAIL_PW_SUFFIX）・`gb_id`/`sb_id`（=mail_acct）・`gb_pw`/`sb_pw`（=logon_name）** を追加 |
 | 2026-05-06 | v2.1 追記 | **§4.3.1 / §4.2.2 / 674**: **個人用自動生成**に **`pc_name`（JBIS####-YYYYMM）・`pc_serial_no`** を追加。**`windows_name`** を **`jbm####+mail_acct`** に変更。共有自動生成に **`S-JBIS####-YYYYMM`**（空欄時）を追加 |
