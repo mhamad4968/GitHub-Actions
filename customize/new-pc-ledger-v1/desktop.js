@@ -19,7 +19,7 @@
  *   - （一覧）**SKYSEA 状態**: 検索バーに **skysea_status チップ**（§4.8a）。**SKYSEA 計画立案・合意後に要件・UI を再検討予定**（現状は暫定）。
  *   - （一覧）**絞り込み URL**: `query` パラメータから **キーワード・種別・SKYSEA チップ**を復元（当バーが生成したクエリ形式に準拠）。
  *   - **PC買替は実装済**（§4.10.3）。594 同趣旨。**627 二重更新なし**。v0.9.14: ボタン掛け先フォールバック＋遅延再 inject、`import_source=PC_REPLACE_FROM_674:<旧$id>`・legacy 594 フィールドクリア。
- *   - 新規・編集: **所属ヘルプは既定で閉じた `<details>`**（必要時のみ開く・§4.2.0b）。**共有・JR（非保管）**: フィールド最小表示、**所属候補モーダル**（マスタ **680** または埋め込み）、保存前必須。**未入力時に所属名／所属グループへフォーカス**→共有・JR は **680 モーダルを自動表示**（§4.4 共有系）。**個人の 595 入力支援**は **`isPersonal595AssistEnabled674`**（非保管の個人のみ）。**595 モーダルはボタン押下のみ**。**`pc_status`=保管**のときは種別に関わらず **ヘッダは全フィールドリセットのみ**（閲覧ではカスタムバーなし）。VPN は個人のみ。NAS/その他は全表示。
+ *   - 新規・編集: **所属ヘルプは既定で閉じた `<details>`**（必要時のみ開く・§4.2.0b）。**共有・JR（非保管）**: フィールド最小表示、**所属候補モーダル**（マスタ **680** または埋め込み）、保存前必須。**所属名／所属グループをクリック**→確認（入力支援するか）→OK で **680**（§4.2.0b・§4.4）。**個人の 595 入力支援**は **`isPersonal595AssistEnabled674`**（非保管の個人のみ）。**利用者名・所属名・所属グループをクリック**→同様に確認→OK で **595 検索**。**ヘッダ／フィールド直下の明示ボタン**は確認省略（押下＝入力支援希望）。**フォーカスのみではモーダルは開かない**。**`pc_status`=保管**のときは種別に関わらず **ヘッダは全フィールドリセットのみ**（閲覧ではカスタムバーなし）。VPN は個人のみ。NAS/その他は全表示。
  *   - **備考（note）**: 全種別で任意（保存前チェックでは必須にしない）。
  *   - **モバイル**: 当面は利用想定なし（`kintone.mobile` 分岐は既存のまま残すが、専用UXは追わない）。
  *   - **M365管理マスタレコード番号（671 `$id`）**: 共有・JR は同一671行の **usage_count / 5 台**運用で紐づく。個人は表示するが多くは空（自動生成はメール由来M365中心）。**手入力不可**（自動生成・保存後同期のみ更新）。
@@ -29,7 +29,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-05-pc-ledger-storage-header-reset-only';
+  const BUILD = '2026-05-05-pc-ledger-input-assist-click-confirm';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -1049,6 +1049,16 @@
   const EMPLOYEE_SEARCH_MODAL_ID = 'new-pc-ledger-employee-search-modal';
   const DEPT_MASTER_MODAL_ID = 'new-pc-ledger-dept-master-modal';
 
+  /** §4.2.0b: フィールドクリック時の入力支援確認（window.confirm 文言） */
+  const NPL674_INPUT_ASSIST_CONFIRM_PERSONAL =
+    '利用者名・所属名・所属グループの入力支援を利用しますか？\n\n' +
+    '「OK」で社員マスタ（595）の検索画面を開きます。\n' +
+    '「キャンセル」では何もしません。';
+  const NPL674_INPUT_ASSIST_CONFIRM_SHARED_JR =
+    '所属名・所属グループの入力支援を利用しますか？\n\n' +
+    '「OK」で所属候補（680）の検索画面を開きます。\n' +
+    '「キャンセル」では何もしません。';
+
   /**
    * マスタ未整備時の所属候補（所属名|group_code をカンマ連結。所属マスタアプリ取得後は主に API）。
    * group_code は 674 の所属グループ入力値（例: honsya）と一致させる。
@@ -1804,14 +1814,15 @@
   }
 
   /**
-   * 未入力かつ該当フィールドにフォーカス／ポインタが乗ったとき、**共有・JR のみ** 680 所属候補を自動表示。
-   * 個人の 595 社員検索はフォーカスでは開かない（明示ボタンのみ）。
+   * 利用者名・所属名・所属グループを**クリック**したとき（§4.2.0b）: 入力支援の確認 → OK で 595（個人）または 680（共有・JR・所属欄）。
+   * フォーカス／pointerdown では起動しない。明示ボタンは openEmployee595SearchModal674 / openDeptMasterModal674 を直接呼ぶ。
    * @param {Event} ev
    * @param {'user'|'dept'|'grp'|null} forcedField null = document 上でターゲットから推定。各フィールド getFieldElement 直下は固定。
    * @param {number} [attempt] get() 未到達時の短いリトライ回数
    */
   function run674EmptyFieldAssistFromPointer674(ev, forcedField, attempt) {
     attempt = attempt || 0;
+    if (String(ev.type || '') !== 'click' || ev.button !== 0) return;
     if (Date.now() < npl674FocusAssistSuppressUntil674) return;
     const ae = ev.target;
     if (!ae || ae.nodeType !== 1) return;
@@ -1864,28 +1875,26 @@
 
     if (is674AssistModalVisible674()) return;
 
-    /* 共有・JR: §4.4 — 未入力の所属欄フォーカスで 680 所属候補を自動表示（595 とは別系統） */
+    if (isPcStatusStorage674(rec)) return;
+
+    /* 共有・JR: 所属欄クリック → 確認 → 未入力のとき 680（595 とは別系統） */
     if (type === TYPE_SHARED || type === TYPE_JR) {
       if (!inDept && !inGrp) return;
       const d = trimmedScalarLive674(rec, FC_DEPT_NAME);
       const g = trimmedScalarLive674(rec, FC_GROUP_NAME);
       if (d && g) return;
+      if (!window.confirm(NPL674_INPUT_ASSIST_CONFIRM_SHARED_JR)) return;
       npl674FocusAssistSuppressUntil674 = Date.now() + 400;
       openDeptMasterModal674();
       return;
     }
 
-    /* 個人: 595 は §4.1a・§4.4 の範囲内で明示ボタンのみ（本関数では 680 相当の自動起動はしない） */
-  }
-
-  function on674EmptyFieldFocusAssist674(ev) {
-    run674EmptyFieldAssistFromPointer674(ev, null, 0);
-  }
-
-  function on674EmptyFieldClickAssist674(ev) {
-    if (ev.type !== 'click' || ev.button !== 0) return;
-    if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
-    run674EmptyFieldAssistFromPointer674(ev, null, 0);
+    /* 個人（非保管）: 利用者名・所属のいずれかクリック → 確認 → 595 */
+    if (isPersonal595AssistEnabled674(rec)) {
+      if (!window.confirm(NPL674_INPUT_ASSIST_CONFIRM_PERSONAL)) return;
+      npl674FocusAssistSuppressUntil674 = Date.now() + 400;
+      openEmployee595SearchModal674();
+    }
   }
 
   /** getFieldElement ルートへ直接バインド（所属グループ等で document 判定が外れる対策） */
@@ -1906,12 +1915,10 @@
       const el = tryGetFieldElement674(code);
       if (!el) return;
       const fn = function (ev) {
-        if (ev.type === 'pointerdown' && typeof ev.button === 'number' && ev.button !== 0) return;
-        if (ev.type === 'click' && ev.button !== 0) return;
-        if ((ev.type === 'click' || ev.type === 'pointerdown') && (ev.ctrlKey || ev.metaKey || ev.altKey)) return;
+        if (ev.type !== 'click' || ev.button !== 0) return;
+        if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
         run674EmptyFieldAssistFromPointer674(ev, forced, 0);
       };
-      el.addEventListener('pointerdown', fn, { capture: true, signal: sig });
       el.addEventListener('click', fn, { capture: true, signal: sig });
     }
 
@@ -1923,14 +1930,13 @@
   function install674EmptyFieldFocusAssist674() {
     if (npl674FocusAssistDoc674) return;
     npl674FocusAssistDoc674 = true;
-    document.addEventListener('focusin', on674EmptyFieldFocusAssist674, true);
-    document.addEventListener('click', on674EmptyFieldClickAssist674, true);
+    /* show 側の遅延 wire と二重にならないよう即時 1 回のみ（クリック時の field 判定は wire が正本） */
     setTimeout(function () {
       wire674FieldAssistDirect674();
-    }, 2600);
+    }, 0);
   }
 
-  /** 個人（非保管）向け: 595 検索はボタン押下のみ。各フィールド直下＋ヘッダと同じ openEmployee595SearchModal674 */
+  /** 個人（非保管）向け: 595 はフィールドクリック＋確認、または明示ボタン。各フィールド直下＋ヘッダと同じ openEmployee595SearchModal674 */
   function remove595FieldAdjacentRows674() {
     try {
       const nodes = document.querySelectorAll('[data-npl-595-adj="1"]');
