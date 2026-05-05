@@ -19,11 +19,12 @@
  *   - （一覧）SKYSEA 状態フィルタ等は別途（検索バー強化 §4.8a は対応済）。
  *   - **PC買替は実装済**（§4.10.3）。594 同趣旨。**627 二重更新なし**。v0.9.14: ボタン掛け先フォールバック＋遅延再 inject、`import_source=PC_REPLACE_FROM_674:<旧$id>`・legacy 594 フィールドクリア。
  *   - 新規・編集: 所属ヘルプ（編集ではコピー用一覧を details で折りたたみ）。**共有・JR**: フィールド最小表示、**所属候補モーダル**（マスタ **680** または埋め込み）、保存前必須。個人＋保管は個人と同表示。VPN は個人のみ。NAS/その他は全表示。
+ *   - **備考（note）**: 全種別で任意（保存前チェックでは必須にしない）。
  */
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-05-pc-ledger-fixed-ip-nas-doc-note';
+  const BUILD = '2026-05-05-pc-ledger-note-optional-all-types';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -3715,7 +3716,7 @@ ${bodyInner}\
   kintone.events.on('app.record.index.show', onRecordIndexShow674);
   kintone.events.on('mobile.app.record.index.show', onRecordIndexShow674);
 
-  // 保存前バリデーション (仕様書 §4.7.1 + §5.3 6 台目ブロック)
+  // 保存前バリデーション (仕様書 §4.7.1 + §5.3 6 台目ブロック)。備考 note は全種別任意。
   const submitEvents674 = [
     'app.record.create.submit',
     'app.record.edit.submit',
