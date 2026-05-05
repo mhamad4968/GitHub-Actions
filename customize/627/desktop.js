@@ -8,6 +8,7 @@
  * BUILD: 2026-04-18-v3 (C-4: 印刷帳票で account_type 別テーマ＋全セル空段の自動省略)
  * BUILD: 2026-04-18-v3.1 (C-4 fix: ハイフン系 (---/----/ー/—/－等) も「実質空」と判定して段省略)
  * BUILD: 2026-04-18-v4 (関連アプリ横並び小ナビを画面上部に常駐: 668/595/594/627 へのテキストリンク)
+ * BUILD: 2026-05-05-v1 (627 自動入力: `windows_name` を `logon_name[mail@前]` に統一。`+` なし)
  */
 (function () {
   'use strict';
@@ -254,7 +255,7 @@
     setRec(rec, 'gb_id', lp);
     setRec(rec, 'mail_acct', lp);
     setRec(rec, 'm365_id', lp + M365_SUFFIX);
-    setRec(rec, 'windows_name', logonName ? `${logonName}+${lp}` : lp);
+    setRec(rec, 'windows_name', logonName ? `${logonName}[${lp}]` : lp);
     setRec(rec, 'sb_id', lp);
     setRec(rec, 'sb_pw', cybozuPasswordFrom626Row(r626));
   };

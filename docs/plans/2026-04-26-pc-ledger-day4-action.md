@@ -117,7 +117,7 @@
 |---|---|---|---|---|---|
 | 20 | `logon_name` | SINGLE_LINE_TEXT | false | false | jbm**** (個人) / sjbm**** (共有) / 手入力 (JR) |
 | 21 | `logon_pw` | SINGLE_LINE_TEXT | false | false | =logon_name |
-| 22 | `windows_name` | SINGLE_LINE_TEXT | false | false | 個人=§4.2.2【正本】（例 `jbm0065+[y-mikami]`）/ 共有=`logon_name` / JR=手入力 |
+| 22 | `windows_name` | SINGLE_LINE_TEXT | false | false | 個人=§4.2.2【正本】（例 `jbm0065[y-sasaki]`・`+` なし）/ 共有=`logon_name` / JR=手入力 |
 | 23 | `mail` | SINGLE_LINE_TEXT | false | false | 595 から（個人のみ） |
 | 24 | `mail_acct` | SINGLE_LINE_TEXT | false | false | mail の @ 前 |
 | 25 | `mail_pw` | SINGLE_LINE_TEXT | false | false | jb+ランダム4桁数字+K# |
