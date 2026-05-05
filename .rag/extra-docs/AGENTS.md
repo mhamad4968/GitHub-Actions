@@ -845,6 +845,15 @@ GitHub・npm・Stack Overflow 等から外部コードを参考にする際は�
    - **他モデルによる実行前チェック**: 上記の削除・正本移動・仕様の一本化の前には **§50-3-8（盲点 3 点＋約 3 行突合メモ）または DeepSeek／Kimi による抜け確認**を **原則スキップしない**（スキップする場合は **理由 1 行**を同一チャットに残す）。**例外**: リポと手順書が明示する **一時ファイル掃除**（例: `scripts/tmp-kintone-*.mjs` の削除／昇格）、**`sync-session-starter-to-desktop.mjs` が日付に応じて prune する `00-NEW-SESSION-STARTER_yyyymmdd.txt` の旧版**および **旧名 `NEW-SESSION-STARTER_*.txt`（`00-` なし）**など、**復元経路が手順に書かれているもの**に限り自律可。  
    - **経緯**: 2026-05-04、Git 未収容の Desktop 上 `SESSION-DAILY-REPORT_20260503.txt` をバックアップなしで削除した事案を教訓とする（運用の続き・締め 1 本化は **`chat-sessions/SESSION-CLOSE-REPORT-20260504.txt`** §4 等を参照）。
 
+7. **チャット上 CIO（本体 AI）の規律先行（2026-05-05 制定 / §50-3-8・🎖️・TSB-024 と接続）**  
+   - **用語**: 本条の **CIO** は `NEW-SESSION-STARTER.md` 🎖️表における **チャット上の本体 AI**（指揮・統合・規律）を指す。**浜田 CEO のモデル／ティア判断**（§1-2-3-3 の **CIO**）と混同しない（浜田の判断と、本体 AI の自己規律は別レイヤー）。  
+   - **禁止する誤解**: **CIO = 外部 MCP を省き実装・デプロイだけ最速**とみなすこと。**正しい定義**: **憲法で定めた着手前手順を、自分（本体）に最初に適用してから**、実装・lint・本番書き込み・報告を束ねる。  
+   - **本題の編集ツールまたは `npm run deploy:*` 等の本番系コマンドを実行する直前**に、同一チャットへ必ず残す:（a）**〔憲法 3 分〕**＝作業レーン 1 行＋`08-READ-06.txt`（または本文中の READ-06 節）または `NEW-SESSION-STARTER.md` からの **要約 1 行**。（b）**§50-3-8**（DeepSeek 1 問＋約 3 行突合）を実施するか、省略するなら **`§50-3-8 スキップ理由:`** 付きで **理由 1 行必須**。（c）**`[🎖️ 本セッション割当]`** を **1 行**（外部 MCP 未使用なら「未使用」と明記）。  
+   - **本番書き込み直前の 1 行**: 目的・主に変更するファイル・ロールバックの想像を **各デプロイ前に 1 行**。  
+   - **締め応答**: 技術完了と別に、**ルール順守の自己評価を 1 文**（できていなければそのまま記載）。  
+   - **引き継ぎの読み方（5 分割）**: **`chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md`** を索引とする（長文を一度に読まなくてよい）。
+   - **customize 本番 deploy の機械ゲート（2026-05-06 拡張）**: `package.json` の **`deploy:594` `595` `626` `627` `629` `671` `674` `677` `678` `679`** は、それぞれ **`logs/cio-preflight/<同じアプリID>.json`** に **45 分以内**のスタンプが無いと **`cio-deploy-preflight-guard.mjs` が exit 2** で拒否する。スタンプ: **`npm run cio:preflight:<app> -- --note "（チャット規律の一行要約・4文字以上）"`**（`scripts/cio-preflight-stamp.mjs`）。**任意**: ワーキングツリー要約の 1 行を JSON に載せるとき **`--with-git-diff-line`**（`git diff --shortstat HEAD` の先頭行。**差分なしなら `gitDiffLine: null`**）。**緊急脱出**: `SKIP_CIO_DEPLOY_GUARD=1`（**浜田 GO** とチャットに **理由 1 行**必須。濫用禁止）。**Cursor 常時想起**: `.cursor/rules/cio-discipline-always.mdc`（`alwaysApply: true`）。
+
 ### §36 デュアルラン（キー移行の安全策）
 1. **二段ルックアップ**: `emp_id` へ移行する機能では、**`JBIS594_EMP_ID_QUERY_PRIMARY`（または同等の単一フラグ）が true のとき `emp_id` を先に検索し、0件または無効なら `mail` にフォールバック**する。
 2. **即時復帰**: 本番で異常時は **フラグを false に変更してデプロイするだけ**で、従来の mail キー運用へ戻せること（コード分岐を残す）。
@@ -1053,15 +1062,16 @@ WSL cron が `scripts/daily-morning-prep.mjs` を実行し、ブリーフィン�
 ユーザーから「**まとめて / 反省 / 振り返って / お疲れ / 終わり**」等のキーワードを受領したら、即座に以下を実行する:
 
 1. **`node scripts/evening-reflect.mjs`** を呼んで雛形を生成
-2. 雛形の §2-§5（今日やったこと / うまくいったこと / 詰まったこと / 改善提案）を埋める
-3. 改善提案は ID 付き（#R1, #S1, #D1, #C1, #K1...）で表形式
-4. ユーザーに提示し、応答を待つ
+2. 雛形の **§1-N（毎夜必須議題・憲法運用レビュー）** を **浜田と必ず議論**する（**CIO 二人体制 / §1c 仕様・検証ラベル / MCP 先出し・MCPスキップ / 「直った」の検証不足 / ルールと実態のズレ**）。飛ばした日は **§44 未実施扱い**。結論は **§2 または §4 に 1 行以上** 残す
+3. 雛形の §2-§5（今日やったこと / うまくいったこと / 詰まったこと / 改善提案）を埋める
+4. 改善提案は ID 付き（#R1, #S1, #D1, #C1, #K1...）で表形式
+5. ユーザーに提示し、応答を待つ
 
 ユーザーから「**#R1 承認 / #S1 却下 / #D1 修正して: …**」等の応答を受けたら:
 
-1. 承認分を `docs/approved-changes/<明日の日付>/<id>.proposal.json` に書き出す（status=approved）
-2. 却下分を `docs/approved-changes/rejected/<日付>-<id>.proposal.json` に書き出す
-3. 修正要求は AI が修正して再提示 → 再承認を待つ
+- **承認**: `docs/approved-changes/<明日の日付>/<id>.proposal.json` に書き出す（status=approved）
+- **却下**: `docs/approved-changes/rejected/<日付>-<id>.proposal.json` に書き出す
+- **修正要求**: AI が修正して再提示 → 再承認を待つ
 
 翌朝 06:00 cron が `apply-approved-changes.mjs` で承認済みを実行し、結果を朝ブリーフィングの先頭に表示する。
 
@@ -2017,6 +2027,9 @@ $ node scripts/parallel-session-detector.mjs --explain # 軸ごとの内訳を�
 - 改訂日: 2026-05-04（[FEAT] v23.31: **§35-6 追補**（`AI緊急用` Desktop 直書き→リポ即反映＋sync／副次リポの `git status` 義務）／**§50-3-8 補足**（超軽微タスクで DeepSeek 省略可だが **`§50-3-8 スキップ理由:` 1 行必須**）／**§51-6 遵守事項 7**（**`npm run session:clock:clear`** で壁時計停止）／**`NEW-SESSION-STARTER`** 手順 **2b**（任意 `SESSION-CLOSE` Read）／**read-pack READ-01**・**SESSION-SPLIT-REMINDER**・**RULES-INDEX**・**verify-constitution-handoff** needles 同期。）
 - 改訂日: 2026-05-04（[FEAT] v23.29: **§35-6 の機械検証＋TSB-031** — `verify-constitution-handoff.mjs` に `AGENTS`／スターター／bootstrap／**TSB-031 本文**／`constitution-handoff-gate.mdc`／`checkpoint-latest.md` needles 追加。**`docs/troubleshooting.md` TSB-031** 新設（目次表・集計更新）。**`SESSION-BOOTSTRAP-CHECKLIST.md`** フェーズ 2 に §35-6 チェック。**read-pack `03-READ-01.txt`**・**`SESSION-SPLIT-REMINDER.md`**・**`HANDOFF-HUMAN.txt`** 運用追補。**`RULES-INDEX.md`** TSB-031 索引 1 行。`.rag/extra-docs` は `npm run rag:mirror:canonical-docs` で同期。）
 - 改訂日: 2026-05-04（[FEAT] v23.30: **§50-3-2a MDD 語彙の憲法一次定義** — 「MDD」＝航海図（Goal/Constraints/Acceptance）＋SPEC/md 正本＋領域別 §10.5/§11 を **AGENTS 本文で明示**。`.cursorrules` C 節・`RULES-INDEX`・予実 **B-MDFLOW** メモと相互参照。scaffold 未整備は **B-MDFLOW** に残し、既存 `rag:mirror` で不足を補う旨を記載。`.rag/extra-docs` は mirror で同期。）
+- 改訂日: 2026-05-05（[FEAT] v23.32: **§35-7 チャット上 CIO の規律先行**（本体 AI が実装より先に憲法 3 分・§50-3-8／スキップ理由・🎖️・デプロイ前 1 行・締め自己評価をチャットに残す。CIO≠省ゲート最速）。**`chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md`** 新設＝引き継ぎ 5 ブロック索引。`read-pack/02-INDEX.txt`・`03-READ-01.txt`・`NEW-SESSION-STARTER.md` バージョン行・`checkpoint-latest.md`・`constitution-handoff-gate.mdc` へ相互参照。）
+- 改訂日: 2026-05-05（[FEAT] v23.33: **§35-7 追補** — **`deploy:674` の preflight 機械ゲート**（45 分以内スタンプ・`SKIP_CIO_DEPLOY_GUARD` 緊急脱出）＋**`.cursor/rules/cio-discipline-always.mdc`（`alwaysApply: true`）**。`npm run cio:preflight:674`・`scripts/cio-preflight-stamp.mjs` / `cio-deploy-preflight-guard.mjs`。`package.json` の `deploy:674` 連鎖更新。）
+- 改訂日: 2026-05-06（[FEAT] v23.34: **§35-7 拡張** — **全 customize `deploy:*`（594/595/626/627/629/671/674/677/678/679）へ同一 preflight ゲート**横展開。`cio-preflight-stamp.mjs` に **`--with-git-diff-line`**（任意・`git diff --shortstat HEAD` 1 行を `gitDiffLine` に記録）。）
 
 ---
 

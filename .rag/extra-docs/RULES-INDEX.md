@@ -10,8 +10,14 @@
 | ルール | 役割 |
 |---|---|
 | §0 | **RULES-INDEX 即答カード参照**（索引駆動の起点 / 「まず索引→該当 § を読む」を強制） |
-| （Cursor）**`cio-operating-loop.mdc`** | **CIO 運用の一本線**（2026-05-02）— 正シェルは **`~/kintone-ai-lab`（WSL）**／朝は **`docs/reports/<JST日付>-morning-prep.md`** → **`desktop-ai-emergency-read-pack/09-READ-07.txt`**（浜田 CEO のお願い）→ 追徴なら **`npm run cio:quick-health`**／切替手順は **`constitution-handoff-gate.mdc`** + `NEW-SESSION-STARTER`「貼付単独で完走」／Read pack + `SESSION-READ-LADDER.md`／Desktop 更新後は **`npm run desktop:sync-and-verify`** を優先 |
-| （Cursor）**`mcp-server-use-triggers.mdc`** | **MCP サーバ選択（1 行トリガー）**（2026-05-02 / CIO×DeepSeek・Kimi・OpenRouter 相談反映）— GitHub・kintone 本番/開発/スペース・fetch・Tavily/DDG・Playwright・RAG・CVE/ニュース・markdownify・memory・sequential-thinking・OpenRouter（**`model` 必須**）。**descriptor 必読**は **`mcp-tool-discipline.mdc`** |
+| （Cursor）**`cio-operating-loop.mdc`** | **CIO 運用の一本線**（2026-05-02）— 正シェルは **`~/kintone-ai-lab`（WSL）**／朝は **`docs/reports/<JST日付>-morning-prep.md`** → **`desktop-ai-emergency-read-pack/READ-07.txt`**（浜田 CEO のお願い）→ 追徴なら **`npm run cio:quick-health`**／切替手順は **`constitution-handoff-gate.mdc`** + `NEW-SESSION-STARTER`「貼付単独で完走」／Read pack + `SESSION-READ-LADDER.md`／Desktop 更新後は **`npm run desktop:sync-and-verify`** を優先 |
+| （Cursor）**`constitution-brief-card.mdc`** | **憲法の薄型常時想起**（2026-05-06）— CIO 三角・**MCP/スクリプト先出し**（「できない」早取り禁止）／網羅版 `constitution.mdc` は **必要時 Read** |
+| （Cursor）**`constitution-enforcement-core.mdc`** | **違反＝失敗・ダブルチェック定義**（2026-05-06 / **alwaysApply: true**）— **本体 CIO ＋ DeepSeek または Kimi** を第 2 者とする。**1 人チェック禁止**。**検証の 2 者**（完了宣言）・**仕様の言い切り**（未決→確定と言い換え禁止）。末尾に CEO 指示の全文を保持 |
+| （Cursor）**`every-turn-rules-confirm.mdc`** | **毎ターン先頭** — **`[§1-2-3 ティア判定]`** → **`【適用憲法】` 1 行** → **`[🎖️]`** → **`[ルール確認]`**／**§1c**（該当時 **`[仕様状態:]`**・**`[検証2者:]`**）／**行動前チェック**（編集・deploy 直前の § リスト＋方針） |
+| （Cursor）**`constitutional-focus-kintone-customize.mdc`** | **glob: `customize/**`** — §35-7 §50-3-8 §52・`kintone-apps.md` の追加想起（**alwaysApply: false**） |
+| （Cursor）**`constitutional-focus-yojitsu.mdc`** | **glob: `templates/yojitsu-budget-lite/**`** — §50-3-8 §41 §2 の追加想起（**alwaysApply: false**） |
+| （Cursor）**`constitutional-focus-github-workflows.mdc`** | **glob: `.github/workflows/**`** — §18 §52-8 §35-1 の追加想起（**alwaysApply: false**） |
+| （Cursor）**`mcp-server-use-triggers.mdc`** | **MCP サーバ選択（1 行トリガー）**＋**標準ツールだけで足りる前提禁止**（2026-05-02 / 2026-05-06）— GitHub・kintone 本番/開発/スペース・fetch・Tavily/DDG・Playwright・RAG・CVE/ニュース・markdownify・memory・sequential-thinking・OpenRouter（**`model` 必須**）。**descriptor 必読**は **`mcp-tool-discipline.mdc`**／**`MCPスキップ: 未接続` 貼付1行**は **`npm run mcp:chat-stamp`** または **sessionStart hook の `additional_context`** |
 | §1 / §1-2 / §1-2-2 / §1-2-3 / §1-2-3-1 / §1-2-3-2 / §1-2-3-3 / §1-2-4 | 役割定義 + **最適モデル原則 / Opus 4.7 デフォルト枠**（§1-2 / 2026-04-26 R-3 改定 = 「Opus 統一」を「最適モデル」に転換 / 浜田指示「絶対にこのモデルを使うというこだわりはしない」/ 別モデルへの常時切替・レビュー用サブエージェント禁止は維持 / 例外は §1-2）+ **API 制限到達時の自動フォールバック禁止**（§1-2-2 / N-3 / N-4 で 4 択 A-D 提示の枠組み + §1-2-2-1 Cursor IDE 必須設定 = Q1 で 4 → 8 項目 + Browser Protection ON + MCP Tools Protection ON + Monthly Limit $1000 / TSB-019 連動）+ **Opus 内モデル使い分け**（§1-2-3 / N-5 / 既定 Extra High / Max Thinking は §47-A 100% 証明・設計判断・複雑バグ修正のみ）+ **AI 自己宣言義務**（§1-2-3-1 / P5-5 / タスク冒頭で `[§1-2-3 ティア判定: Extra High/Max Thinking]` を 1 行明示 = 形骸化対策 / F-13 教訓）+ **AI 自律モデル選択原則**（§1-2-3-2 / R-3 / 3 段階 L1 Composer 2 / L2 Extra High / L3 Max Thinking / 1 秒判定フロー / 不可逆操作は L3 強制 / silent fallback と区別 = ティア宣言で証跡 / F-14 対策 = Max Thinking 59.4% → 20-30% 想定）+ **CIO によるモデル最終判断**（§1-2-3-3 / 2026-04-29 / 浜田 CIO が明示したティアは §1-2-3-2 に優先 / 未指定時は §1-2-3-1/2）+ **クレジット予算管理 改定**（§1-2-4 / P5-5 / 月予算 $200+$1000 引上げ / 3 系統 (Total/API/On-Demand) / 70-80-85-95% 4 段階自発警告 / Spending スクショ抽出 / 朝報 §0 統合 / TSB-018/TSB-021 連動）|
 | §51 / §51-3 / §51-6 / §51-6-2 | **並列禁止 + セッション分割推奨 + AI 自律セッション切り命令権**（§51-3 並列禁止 / §51-6 提案レベル + **遵守事項 5** = 2026-04-29 切替直後 **`session:clock:set` 必須** + **`session:clock:web` URL をチャットに転記し浜田にブラウザで開くよう促す** / **§51-6-2 命令権** = 2026-04-26 R-4 / 浜田 10:30「セッションを切ることは重要 / 命令指示権限を与える」/ 6 つの自律発動条件 (4h / 200 tool call / 重作業完了直後 / コスト 2x / Tier B 直前 / API 100%) / 浜田却下時は §47-D で逆却下 / 引き継ぎを checkpoint-latest.md へ追記義務 / **次チャット初手で遵守事項 5**）|
 | §51-6-2 運用 | **`npm run session:clock:set`**（切替毎・必須）／**`npm run session:clock:clear`**（終了時・`開始:` を未設定）／**`npm run session:clock:web`**（バックグラウンド・URL を浜田へ・止めるは Ctrl+C）／**`npm run session:clock:health`**（壁時計・hooks・crontab・watch pid ワンショット）／**`npm run verify:session-clock-health`**（`session:bootstrap` 内包・厳格）／`SESSION-SPLIT-REMINDER.md`／§**16-1** 個人端末のローカル前準備（`AGENTS.md`）|
@@ -24,7 +30,7 @@
 | §55 | **異常時セーフモード (R13 / 2026-04-24)** = 浜田 #2 GO / 判断材料欠損時は Tier A 縮小・副作用は Tier B / 読取・診断は継続 / §42-2-7 AGENTS Read 失敗は即発動 / 解除は浜田明示 or health-check 手動完走 + 朝報整合（cron のみ不可） |
 | §56 / **§56-1a** | **責任の所在 RACI** + **開発=AI・確認=浜田（憲法級・変更禁止）**（R14 / 2026-04-25 + 2026-04-26 浜田宣言） |
 | §43 | WORKFLOW.md 遵守義務（Phase 0-5）|
-| §44 | 夕反省サイクル（手動トリガー）|
+| §44 | 夕反省サイクル（手動トリガー）— **`evening-reflect.mjs` 雛形 §1-N** を**毎夜浜田と必ず議論**（憲法運用: CIO 二人体制・§1c・MCP・検証・ルール実態）→ 結論を §2/§4 に 1 行以上 |
 
 ## 📚 文脈獲得・調査
 
@@ -232,12 +238,13 @@
 | `docs/troubleshooting.md` **TSB-023** | 「公開してない？」**先確認せず浜田へ聞かない**で済むようにした教訓（索引用 1 行 + 本文） |
 | `docs/troubleshooting.md` **TSB-024** | 憲法級アンチパターン（**デプロイ・適用・push を人に押し付けない**／禁句リスト／`npm run verify:constitution-handoff` ＋ **`npm run verify:mandatory-read-gate`**（必読ファイル構造）＋ **`npm run verify:session-clock-health`**（壁時計 hooks / crontab node）＋ **`SESSION-CLOCK.md` / `session:clock:set`**（§51-6-2 時間軸）で機械監視） |
 | `docs/troubleshooting.md` **TSB-031** | **Desktop 日報を Git 未収容で削除**した事案。**正本は `chat-sessions/`＋コミット**／Desktop は **sync の控え**／詳細は **`AGENTS.md` §35-6**（verify が本条見出しを監視） |
+| `docs/troubleshooting.md` **TSB-032** | **`constitution-gates` が `constitution.mdc` 欠落で赤** — **verify はファイル必須だが `.gitignore` でリポ非追跡**。対策: **workflow で `regenerate-constitution-rule.sh` を verify 前に実行**（本文・目次表・TSB 新設閾値と連動） |
 | `docs/troubleshooting.md` **TSB-029** | **`user-markdownify`** — `@iflow-mcp/markdownify-mcp` の **`preinstall.js` 欠落 publish バグ**で stdio 即死。対策: **`npm install -g --ignore-scripts @0.0.2`** ＋ **`node …/dist/index.js` 直起動**＋`UV_PATH`（詳細は本文） |
 | `.cursor/rules/constitution-handoff-gate.mdc` | **alwaysApply** — §35-1 / §56-1a / TSB-024 / §1-2-3-1 を毎ターン想起（Cursor 全チャット） |
 | `.cursor/rules/cio-discipline-always.mdc` | **alwaysApply: true** — §35-7＋**customize deploy 機械ゲート**（594/595/626/627/629/671/674/677/678/679・`cio:preflight:<app>` → `deploy:<app>`・45 分・任意 **`--with-git-diff-line`**・`SKIP_CIO_DEPLOY_GUARD` 緊急脱出）＋HANDOFF 先読み（`AGENTS.md` **v23.34**） |
 | `.cursor/rules/autonomous-with-mandatory-asks.mdc` | **alwaysApply** — **自律実行してよいが**、日取り矛盾・GO 境界・曖昧仕様など **聞くべきことは着手前に聞く**（浜田指示） |
 | `.cursor/rules/creation-timing-ask.mdc` | **alwaysApply** — **作成着手前**に浜田へ **「今すぐ作成／後日」** と **配置スペース（ID または名）** を §41 で確認。未決なら `kintone-add-app` の `space` 省略で進めない（浜田指示 2026-04-28） |
-| `.cursor/rules/session-handoff.mdc` | 人間 5 行＋AI の `handoff-log` 追記手順。**自律復元**の追記あり |
+| `.cursor/rules/session-handoff.mdc` | 人間 5 行＋AI の `handoff-log` 追記手順。**自律復元**の追記あり。**ハンドオフ深さ既定 L2**（リポ/CI/bootstrap/憲法 verify/kintone 反映/Tier B 近傍に触れたターンは標準ブロック）。**第 2 者ダブルチェック**は `constitution-enforcement-core.mdc` 正本 |
 | `.cursor/rules/session-read-ladder-two-phase.mdc` | **alwaysApply** — セッション復元の **二段階**（**A 事前準備**＝ルールのみ五段／**B 本題確認**＝仕様小出し）。**第0手**で `SESSION-READ-LADDER.md` を **Read 通読**。正本は `chat-sessions/SESSION-READ-LADDER.md`。**当面の目安**: 事前準備 **約1h**／本題 **約3h**（同ファイル「当面の時間目安」） |
 | `.cursor/rules/mcp-tool-discipline.mdc` | **alwaysApply** — `call_mcp_tool` 前の **descriptor 必読**・`mcp_auth` 順序・curl/gh と MCP の優先（自律ミス低減） |
 
