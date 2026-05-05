@@ -29,7 +29,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-05-pc-ledger-focus-assist-field-wire';
+  const BUILD = '2026-05-05-pc-ledger-focus-assist-bag-retry';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -1646,23 +1646,22 @@
   }
 
   /**
-   * 種別ドロップダウンは change 直後に record より UI が先行することがあるため、
-   * getFieldElement 内の select を優先して読む（多段シャドウ対応）。
+   * 種別: DOM の select が取れて値があればそれを優先、なければ record（UI 先行・未到達の両方を吸収）。
    */
   function readAccountTypeLive674(record) {
+    let fromDom = '';
     try {
       const el = tryGetFieldElement674(FC_ACCOUNT_TYPE);
       if (el) {
         const sel = findSelectUnderFieldRoot674(el);
-        if (sel) {
-          const v = String(sel.value != null ? sel.value : '').trim();
-          if (v) return v;
-        }
+        if (sel) fromDom = String(sel.value != null ? sel.value : '').trim();
       }
     } catch (_e) {
       /* ignore */
     }
-    return String((record && record[FC_ACCOUNT_TYPE] && record[FC_ACCOUNT_TYPE].value) || '').trim();
+    const fromRec = String((record && record[FC_ACCOUNT_TYPE] && record[FC_ACCOUNT_TYPE].value) || '').trim();
+    if (fromDom) return fromDom;
+    return fromRec;
   }
 
   function walkFromNodeTouchesFieldRoot674(fieldRoot, start) {
@@ -1767,8 +1766,10 @@
    * 未入力かつ該当フィールドにフォーカス／ポインタが乗ったとき、595／680 の入力支援を開く。
    * @param {Event} ev
    * @param {'user'|'dept'|'grp'|null} forcedField null = document 上でターゲットから推定。各フィールド getFieldElement 直下は固定。
+   * @param {number} [attempt] get() 未到達時の短いリトライ回数
    */
-  function run674EmptyFieldAssistFromPointer674(ev, forcedField) {
+  function run674EmptyFieldAssistFromPointer674(ev, forcedField, attempt) {
+    attempt = attempt || 0;
     if (Date.now() < npl674FocusAssistSuppressUntil674) return;
     const ae = ev.target;
     if (!ae || ae.nodeType !== 1) return;
@@ -1777,9 +1778,20 @@
     }
 
     const bag = getRecordFormHolder674();
-    if (!bag || !bag.holder || !bag.holder.record) return;
+    if (!bag || !bag.holder || !bag.holder.record) {
+      if (forcedField && attempt < 10) {
+        setTimeout(function () {
+          run674EmptyFieldAssistFromPointer674(ev, forcedField, attempt + 1);
+        }, 100);
+      }
+      return;
+    }
     const rec = bag.holder.record;
-    const type = readAccountTypeLive674(rec);
+    let type = readAccountTypeLive674(rec);
+    // 種別 UI がまだ空で、利用者名／所属欄を直接叩いたときは新規の既定（個人）に寄せる
+    if (!type && forcedField) {
+      type = TYPE_PERSONAL;
+    }
 
     const userEl = tryGetFieldElement674(FC_USER_NAME);
     const deptEl = tryGetFieldElement674(FC_DEPT_NAME);
@@ -1823,7 +1835,8 @@
     if (type === TYPE_PERSONAL) {
       if (isPersonalStored(rec)) return;
       if (inUser) {
-        const live = readUserNameLiveValue674(rec);
+        const live =
+          forcedField === 'user' ? trimmedScalarLive674(rec, FC_USER_NAME) : readUserNameLiveValue674(rec);
         if (live) return;
         npl674FocusAssistSuppressUntil674 = Date.now() + 400;
         openEmployee595SearchModal674();
@@ -1840,13 +1853,13 @@
   }
 
   function on674EmptyFieldFocusAssist674(ev) {
-    run674EmptyFieldAssistFromPointer674(ev, null);
+    run674EmptyFieldAssistFromPointer674(ev, null, 0);
   }
 
   function on674EmptyFieldClickAssist674(ev) {
     if (ev.type !== 'click' || ev.button !== 0) return;
     if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
-    run674EmptyFieldAssistFromPointer674(ev, null);
+    run674EmptyFieldAssistFromPointer674(ev, null, 0);
   }
 
   /** getFieldElement ルートへ直接バインド（所属グループ等で document 判定が外れる対策） */
@@ -1870,7 +1883,7 @@
         if (ev.type === 'pointerdown' && typeof ev.button === 'number' && ev.button !== 0) return;
         if (ev.type === 'click' && ev.button !== 0) return;
         if ((ev.type === 'click' || ev.type === 'pointerdown') && (ev.ctrlKey || ev.metaKey || ev.altKey)) return;
-        run674EmptyFieldAssistFromPointer674(ev, forced);
+        run674EmptyFieldAssistFromPointer674(ev, forced, 0);
       };
       el.addEventListener('pointerdown', fn, { capture: true, signal: sig });
       el.addEventListener('click', fn, { capture: true, signal: sig });
@@ -1886,6 +1899,9 @@
     npl674FocusAssistDoc674 = true;
     document.addEventListener('focusin', on674EmptyFieldFocusAssist674, true);
     document.addEventListener('click', on674EmptyFieldClickAssist674, true);
+    setTimeout(function () {
+      wire674FieldAssistDirect674();
+    }, 2600);
   }
 
   function mountUserSuggestDropdown674(rows) {
@@ -3821,6 +3837,15 @@ ${bodyInner}\
       setTimeout(function () {
         wire674FieldAssistDirect674();
       }, 400);
+      setTimeout(function () {
+        wire674FieldAssistDirect674();
+      }, 800);
+      setTimeout(function () {
+        wire674FieldAssistDirect674();
+      }, 1200);
+      setTimeout(function () {
+        wire674FieldAssistDirect674();
+      }, 2000);
     }
     return new kintone.Promise(function (resolve) {
       refreshLicenseBannerFrom671(event.record)
@@ -3881,6 +3906,9 @@ ${bodyInner}\
     setTimeout(function () {
       wire674FieldAssistDirect674();
     }, 400);
+    setTimeout(function () {
+      wire674FieldAssistDirect674();
+    }, 800);
     return result;
   }
 
