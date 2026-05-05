@@ -1,4 +1,4 @@
-# HANDOFF-AI-FIVE-BLOCKS — AI 引き継ぎ 5 ブロック構成（正本 / v1 / 2026-05-05）
+# HANDOFF-AI-FIVE-BLOCKS — AI 引き継ぎ 5 ブロック構成（正本 / v1.1 / 2026-05-05）
 
 **目的**: 長文を一度に読まなくてよいよう、**次 AI が同じ順で復元**できる骨格だけを固定する。詳細は各リンク先が正。
 
@@ -40,12 +40,22 @@
 
 ---
 
-## ブロック 4 — 機械検証（項番 0）
+## ブロック 4 — 機械検証（項番 0）＋ 674 deploy ゲート
 
 リポルートで **`npm run session:bootstrap`**（exit 0）。  
 単体で足りるとき: `verify:constitution-handoff` → `verify:mandatory-read-gate`。
 
-**参照**: `SESSION-BOOTSTRAP-CHECKLIST.md`、`constitution-handoff-gate.mdc`（Cursor ルール）。
+**674 本番 customize を反映するとき（追加・2026-05-05）**
+
+1. チャットで §35-7 の出力を済ませた **あと**、ターミナルで:
+
+   `npm run cio:preflight:674 -- --note "（規律の一行要約・4文字以上）"`
+
+2. **45 分以内**に `npm run deploy:674`（スタンプ無しは **失敗**）。
+
+**緊急**: `SKIP_CIO_DEPLOY_GUARD=1 npm run deploy:674`（浜田 GO＋チャットに理由 1 行）。
+
+**参照**: `SESSION-BOOTSTRAP-CHECKLIST.md`、`constitution-handoff-gate.mdc`、**`.cursor/rules/cio-discipline-always.mdc`**（常時注入）。
 
 ---
 
@@ -64,3 +74,4 @@
 | 日付 | 内容 |
 |------|------|
 | 2026-05-05 | 初版（674 セッション反省・CEO GO に基づく 5 分割構成） |
+| 2026-05-05 | v1.1 — **674 deploy 機械ゲート**（`cio:preflight:674`・45 分・`SKIP_CIO_DEPLOY_GUARD`）追記 |

@@ -36,6 +36,8 @@ alwaysApply: false
 
 **CIO ≠ 省ゲート最速**。編集・`deploy:*` の前に **〔憲法 3 分〕**・**§50-3-8 または `§50-3-8 スキップ理由:`**・**`[🎖️ 本セッション割当]`** をチャットに残す。**5 ブロック引き継ぎ索引**: `chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md`（全文は `AGENTS.md` §35-7）。
 
+**674 deploy**: `deploy:674` は **preflight スタンプ**（`npm run cio:preflight:674 -- --note "…"`）が **45 分以内**に無いと拒否。詳細は **`cio-discipline-always.mdc`**（`alwaysApply: true`）。
+
 ## モデル（§1-2-3-1）— 切替が分かる宣言
 
 **目的**: 浜田が **ルール遵守（特に最適モデル原則）** をチャット上で検証できるようにする。会話要約では落ちやすいので **毎ターン固定プレフィックス**にする。

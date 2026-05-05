@@ -1,0 +1,30 @@
+---
+description: §35-7 規律先行＋674 deploy 前スタンプ（条件付きではなく機械＋常時想起）
+alwaysApply: true
+---
+
+# CIO 規律（`kintone-ai-lab` 全チャット）
+
+## 必読の短い入口
+
+新セッションでコードに触る前: **`chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md`** を Read（5 ブロック）。
+
+## チャットに残す（編集ツール・本番 deploy の前）
+
+`customize/**/desktop.js` を **編集**するか **`npm run deploy:674`** を走らせる**同じ作業の流れの早い段階**で、チャットへ次を出す（`AGENTS.md` **§35-7**）。
+
+1. **〔憲法 3 分〕**（レーン 1 行＋要約 1 行）
+2. **`[🎖️ 本セッション割当]`** 1 行
+3. **§50-3-8** 実施、または **`§50-3-8 スキップ理由:`** 付きで理由 1 行
+
+## 674 本番 customize 反映（機械ゲート）
+
+`npm run deploy:674` は **スタンプ無しでは失敗**する。
+
+1. 上記チャット出力の**あと**、ターミナルで:
+
+   `npm run cio:preflight:674 -- --note "（上と同趣旨の一行）"`
+
+2. **45 分以内**に `npm run deploy:674` を実行する。
+
+**緊急のみ**: `SKIP_CIO_DEPLOY_GUARD=1 npm run deploy:674`（浜田 GO とチャットに理由 1 行必須）。

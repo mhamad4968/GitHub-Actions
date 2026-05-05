@@ -52,6 +52,8 @@ const suites = [
       '§35-6',
       '§35-7',
       'HANDOFF-AI-FIVE-BLOCKS',
+      'cio:preflight:674',
+      '674 本番 deploy 機械ゲート',
       '独断で消さない',
       'session:clock:clear',
     ],
@@ -60,6 +62,11 @@ const suites = [
     id: 'handoff-five-blocks',
     rel: 'chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md',
     needles: ['ブロック 1', 'ブロック 2', '規律ゲート', '§35-7', 'HANDOFF-AI-FIVE-BLOCKS', '改定履歴'],
+  },
+  {
+    id: 'package-deploy-674-preflight',
+    rel: 'package.json',
+    needles: ['cio-deploy-preflight-guard.mjs 674', 'cio:preflight:674'],
   },
   {
     id: 'agents-35-6',

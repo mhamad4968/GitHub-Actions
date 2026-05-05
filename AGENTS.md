@@ -852,6 +852,7 @@ GitHub・npm・Stack Overflow 等から外部コードを参考にする際は�
    - **本番書き込み直前の 1 行**: 目的・主に変更するファイル・ロールバックの想像を **各デプロイ前に 1 行**。  
    - **締め応答**: 技術完了と別に、**ルール順守の自己評価を 1 文**（できていなければそのまま記載）。  
    - **引き継ぎの読み方（5 分割）**: **`chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md`** を索引とする（長文を一度に読まなくてよい）。
+   - **674 本番 customize 反映の機械ゲート（2026-05-05 追補）**: **`npm run deploy:674`** は **`logs/cio-preflight/674.json`** に **45 分以内**の preflight スタンプが無いと **exit 2** で拒否する（`scripts/cio-deploy-preflight-guard.mjs`）。スタンプ: **`npm run cio:preflight:674 -- --note "（チャット規律の一行要約・4文字以上）"`**（`scripts/cio-preflight-stamp.mjs`）。**緊急脱出**: `SKIP_CIO_DEPLOY_GUARD=1`（**浜田 GO** とチャットに **理由 1 行**必須。濫用禁止）。**Cursor 常時想起**: `.cursor/rules/cio-discipline-always.mdc`（`alwaysApply: true`）。
 
 ### §36 デュアルラン（キー移行の安全策）
 1. **二段ルックアップ**: `emp_id` へ移行する機能では、**`JBIS594_EMP_ID_QUERY_PRIMARY`（または同等の単一フラグ）が true のとき `emp_id` を先に検索し、0件または無効なら `mail` にフォールバック**する。
@@ -2026,6 +2027,7 @@ $ node scripts/parallel-session-detector.mjs --explain # 軸ごとの内訳を�
 - 改訂日: 2026-05-04（[FEAT] v23.29: **§35-6 の機械検証＋TSB-031** — `verify-constitution-handoff.mjs` に `AGENTS`／スターター／bootstrap／**TSB-031 本文**／`constitution-handoff-gate.mdc`／`checkpoint-latest.md` needles 追加。**`docs/troubleshooting.md` TSB-031** 新設（目次表・集計更新）。**`SESSION-BOOTSTRAP-CHECKLIST.md`** フェーズ 2 に §35-6 チェック。**read-pack `READ-01.txt`**・**`SESSION-SPLIT-REMINDER.md`**・**`HANDOFF-HUMAN.txt`** 運用追補。**`RULES-INDEX.md`** TSB-031 索引 1 行。`.rag/extra-docs` は `npm run rag:mirror:canonical-docs` で同期。）
 - 改訂日: 2026-05-04（[FEAT] v23.30: **§50-3-2a MDD 語彙の憲法一次定義** — 「MDD」＝航海図（Goal/Constraints/Acceptance）＋SPEC/md 正本＋領域別 §10.5/§11 を **AGENTS 本文で明示**。`.cursorrules` C 節・`RULES-INDEX`・予実 **B-MDFLOW** メモと相互参照。scaffold 未整備は **B-MDFLOW** に残し、既存 `rag:mirror` で不足を補う旨を記載。`.rag/extra-docs` は mirror で同期。）
 - 改訂日: 2026-05-05（[FEAT] v23.32: **§35-7 チャット上 CIO の規律先行**（本体 AI が実装より先に憲法 3 分・§50-3-8／スキップ理由・🎖️・デプロイ前 1 行・締め自己評価をチャットに残す。CIO≠省ゲート最速）。**`chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md`** 新設＝引き継ぎ 5 ブロック索引。`read-pack/INDEX.txt`・`READ-01.txt`・`NEW-SESSION-STARTER.md` バージョン行・`checkpoint-latest.md`・`constitution-handoff-gate.mdc` へ相互参照。）
+- 改訂日: 2026-05-05（[FEAT] v23.33: **§35-7 追補** — **`deploy:674` の preflight 機械ゲート**（45 分以内スタンプ・`SKIP_CIO_DEPLOY_GUARD` 緊急脱出）＋**`.cursor/rules/cio-discipline-always.mdc`（`alwaysApply: true`）**。`npm run cio:preflight:674`・`scripts/cio-preflight-stamp.mjs` / `cio-deploy-preflight-guard.mjs`。`package.json` の `deploy:674` 連鎖更新。）
 
 ---
 
