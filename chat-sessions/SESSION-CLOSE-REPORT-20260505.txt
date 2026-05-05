@@ -93,6 +93,7 @@ SESSION CLOSE REPORT — 2026-05-05（JST）単一締め報告（1 本に集約�
 - **日次締め**: **`SESSION-CLOSE-REPORT-yyyymmdd.txt` を 1 本**（本形式）。INDEX の先頭行を **最新日に更新**。
 - **Desktop 直書きしたら**: リポ **`chat-sessions/` 等へ反映＋コミット** → **`npm run session-starter:sync-desktop`**（憲法 §35-6 系の運用と整合）。
 - **壁時計**: **`npm run session:clock:clear`**（終了時）。
+- **憲法 v23.32（2026-05-05）**: **`AGENTS.md` §35-7**（チャット上 CIO の規律先行）＋**`HANDOFF-AI-FIVE-BLOCKS.md`**（引き継ぎ 5 ブロック）。Desktop 控えは **`npm run session-starter:sync-desktop`** で `HANDOFF-AI-FIVE-BLOCKS.md` もコピーされる。
 
 --------------------------------------------------------------------------------
 §5 次アクション（浜田・次 AI）

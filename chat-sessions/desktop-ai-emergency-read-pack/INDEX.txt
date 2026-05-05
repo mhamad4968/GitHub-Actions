@@ -1,12 +1,13 @@
-【読取順インデックス】CIO 準備済み（2026-05-04）
+【読取順インデックス】CIO 準備済み（2026-05-05 夜更新・v23.32 / 引き継ぎ再構成）
 
-SESSION-CLOSE-REPORT-20260504.txt → **その日の締め報告（1 本）**・日報の代わり（**§6 MCP 活用術草案**・【C】679 予実含む・2026-05-04 夜更新）
+HANDOFF-AI-FIVE-BLOCKS.md → **引き継ぎの骨格（5 ブロック・長文を分割）** — 次 AI は **ここを最初に Read** してから read-pack へ進む
+SESSION-CLOSE-REPORT-20260505.txt → **その日の締め報告（1 本）**・674 リスト一覧 UX・§3.1–3.3 反省・CIO 補正（Desktop 控えは sync で整合）
 READ-01.txt → 新セッション初日の実行順（-1 → -0 → bootstrap → 第0手 → A → B → 日終わり）
 READ-02.txt → 二段階の心・時間目安・テンプレ見出し
 READ-03.txt → A 共通五段階で Read するファイルパス一覧
 READ-04.txt → B 本題入口（5A / 5B の分岐・§50-3-8 リマインド）
 READ-05.txt → session-starter:sync-desktop と verify・Desktop パス
-READ-06.txt → 憲法・分業の核＋**【AI分業チェック】** テンプレ（READ 直後チャット必須）
+READ-06.txt → 憲法・分業の核＋**【AI分業チェック】** テンプレ（READ 直後チャット必須）＋**§35-7 規律先行**の想起
 READ-07.txt → **浜田 CEO のお願い（思い）**／Project Rules・厳守・壁時計・分業・GitHub Actions・**健全性優先**（朝イチでも読む）
 
 （浜田追記用）ここにメモを足してよい。

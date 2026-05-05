@@ -50,9 +50,16 @@ const suites = [
       '[§1-2-3 ティア判定',
       '§1-2-3-1',
       '§35-6',
+      '§35-7',
+      'HANDOFF-AI-FIVE-BLOCKS',
       '独断で消さない',
       'session:clock:clear',
     ],
+  },
+  {
+    id: 'handoff-five-blocks',
+    rel: 'chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md',
+    needles: ['ブロック 1', 'ブロック 2', '規律ゲート', '§35-7', 'HANDOFF-AI-FIVE-BLOCKS', '改定履歴'],
   },
   {
     id: 'agents-35-6',
@@ -60,6 +67,8 @@ const suites = [
     needles: [
       'セッション成果物の削除と「古い」整理のゲート',
       'セッション日報・長文ログの正本は `chat-sessions/` に置きコミット',
+      '§35-7',
+      '規律先行',
     ],
   },
   {
@@ -164,6 +173,8 @@ const suites = [
       'session:split-check',
       'session:clock:watch',
       '§35-6',
+      '§35-7',
+      'HANDOFF-AI-FIVE-BLOCKS',
       'TSB-031',
     ],
   },

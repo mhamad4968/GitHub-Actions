@@ -21,6 +21,7 @@ const destDir =
 const otherFiles = [
   ['chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md', 'SESSION-BOOTSTRAP-CHECKLIST.txt'],
   ['chat-sessions/HANDOFF-HUMAN.txt', 'HANDOFF-HUMAN.txt'],
+  ['chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md', 'HANDOFF-AI-FIVE-BLOCKS.md'],
   ['chat-sessions/AI緊急用-README.txt', 'README.txt'],
 ];
 
