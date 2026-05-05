@@ -169,6 +169,7 @@
     "yojitsu:677:spread-fixed-monthly:dry-run": "npx dotenv -e .env -e .env.proxy -- python3 scripts/yojitsu-677-spread-fixed-single-month-budget.py --dry-run",
     "yojitsu:677:spread-fixed-monthly:apply": "npx dotenv -e .env -e .env.proxy -- python3 scripts/yojitsu-677-spread-fixed-single-month-budget.py --apply",
     "evening:reflect": "node scripts/evening-reflect.mjs",
+    "evening:reflect:check": "node --check scripts/evening-reflect.mjs",
     "reports:archive": "node scripts/archive-reports.mjs --force",
     "reports:archive:dry-run": "node scripts/archive-reports.mjs --dry-run --force",
     "session:bootstrap": "node scripts/session-bootstrap-verify.mjs",

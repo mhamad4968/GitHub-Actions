@@ -1,0 +1,9 @@
+{
+  "id": "D1",
+  "category": "D",
+  "type": "run_command",
+  "command": "node scripts/evening-reflect.mjs --version",
+  "manual_only": true,
+  "note": "2026-05-05 浜田「全て承認」#D1: evening-reflect-queue.md に上書き防止＋チャット貼付方針を追記済み（command はダミー・適用済みの記録のみ）。",
+  "created_at": "2026-05-05T15:30:00.000Z"
+}

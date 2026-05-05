@@ -1,0 +1,9 @@
+{
+  "id": "S1",
+  "category": "S",
+  "type": "run_command",
+  "command": "node scripts/evening-reflect.mjs",
+  "manual_only": true,
+  "note": "2026-05-05 浜田「全て承認」#S1: §1-N を EVENING_SECTION_1N 定数に切り出し済み。`npm run evening:reflect:check`（`node --check`）追加済み。`command` は allowlist 整合のため `node scripts/evening-reflect.mjs`（`manual_only` のため cron では実行されない）。",
+  "created_at": "2026-05-05T15:30:00.000Z"
+}
