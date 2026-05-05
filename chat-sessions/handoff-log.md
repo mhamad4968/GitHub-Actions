@@ -970,3 +970,17 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
   - **session-lock**: なし
   - **関連パス**: `docs/plans/2026-04-21-new-pc-ledger-spec.md` / `templates/yojitsu-budget-lite/SPEC.md` / `chat-sessions/checkpoint-latest.md`
 
+### 2026-05-06 JST（追記）— リポ断捨離（誤コミットの npm キャッシュ等・浜田依頼）
+
+- **浜田メモ（原文）**: `C:\Users\mhamada202408224\kintone-ai-lab` 配下の不要ファイル断捨離（何が不要か判断できない）
+- **AI 補足**:
+  - **実施場所**: **正本は WSL `~/kintone-ai-lab`**（`git push` 先）。**Windows 側 `C:\Users\…\kintone-ai-lab` は別クローン**で **HEAD が古い**ため、**`git pull` 後**に同様の掃除を推奨
+  - **Git から外したもの**: **`.npm-cache/`**（48 ファイルが誤って追跡されていた）→ **`git rm -r --cached`**＋**`.gitignore` に追加**。**`cron-sync595.log`**（リポルートの作業ログが追跡されていた）→ **index から削除**＋**`/cron-sync*.log` を ignore**
+  - **ディスクから削除（再生成可）**: **`.npm-cache/`** ディレクトリ本体、`data/snapshots/*-step*.json` 4 件（中間スナップショット・`.gitignore` 対象）、**`collect_log.txt`**（ignore 済みの小ファイル）
+  - **触れていないもの**: **`node_modules/`**・**`customize/`**・**`.cursor/`（ローカル設定）**・**`backups/`**（ignore 正本）・**未追跡の `scripts/_*.sh`（Windows 側にのみ存在する可能性）** — 用途不明のため **削除せず**（浜田がファイル名を見て判断）
+  - **git**: push 予定（本ブロック同バッチ）
+  - **次の1手**: Windows クローンで **`git pull`** → **`.npm-cache` フォルダが残っていれば手動削除**（エクスプローラー可）
+  - **GO待ち**: なし
+  - **session-lock**: なし
+  - **関連パス**: `.gitignore` / `data/snapshots/`
+

@@ -5,6 +5,10 @@
 
 # 依存キャッシュ
 node_modules/
+.npm-cache/
+
+# リポルートに置かれた ad-hoc cron ログ（誤コミット防止）
+/cron-sync*.log
 
 # OS / エディタ
 .DS_Store
