@@ -277,7 +277,7 @@
 | 旧 Excel→kintone 初回移行 | **`docs/yojitsu-migration-kyu-to-kintone.md`** |
 | 運用後に足す機能・フェーズ2 | **`docs/yojitsu-feature-backlog.md`** |
 | 列レイアウト（新フォーマット相当） | **`docs/shin-format-excel-layout.md`** |
-| MCP 実務（着手前チェック・タスク別優先） | **`chat-sessions/desktop-ai-emergency-read-pack/READ-06.txt`**（MCP 節）、**`chat-sessions/SESSION-CLOSE-REPORT-20260504.txt` §6**、**`AGENTS.md`** 冒頭 |
+| MCP 実務（着手前チェック・タスク別優先） | **`chat-sessions/desktop-ai-emergency-read-pack/08-READ-06.txt`**（MCP 節）、**`chat-sessions/SESSION-CLOSE-REPORT-20260504.txt` §6**、**`AGENTS.md`** 冒頭 |
 | Git が **`(no branch, rebasing …)`** 等で止まったとき | **`docs/reports/GIT-REBASE-RECOVERY-20260504.md`**（**`rebase --continue`** は **Cursor 外**または **§52-8 GO**） |
 
 **679（クイックマニュアル）を直したあと kintone へ出す最短手順**

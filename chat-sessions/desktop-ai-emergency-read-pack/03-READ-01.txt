@@ -6,7 +6,7 @@
 以下を **この順で** 実行し、各ブロックのあとチャットに短く残す。
 
 1) 項番 -1  
-   浜田が `Desktop\AI緊急用\NEW-SESSION-STARTER_yyyymmdd.txt` **全文**を貼ったあと、AI は `chat-sessions/NEW-SESSION-STARTER.md` を Read ツールで **通読**（offset 連鎖で抜けなし）。
+   浜田が `Desktop\AI緊急用\00-NEW-SESSION-STARTER_yyyymmdd.txt` **全文**を貼ったあと、AI は `chat-sessions/NEW-SESSION-STARTER.md` を Read ツールで **通読**（offset 連鎖で抜けなし）。
 
 **§35-6（憲法・2026-05-04）**: **締め報告**は **`SESSION-CLOSE-REPORT_yyyymmdd.txt` を 1 本**（正本 `chat-sessions/`＋コミット、Desktop は sync 控え）。**`/mnt/c/.../AI緊急用` に直書き**したら **リポへ即反映＋コミット**のあと **`npm run session-starter:sync-desktop`**。副次リポ（例 `~/toto-prediction`）は **コピーだけで終わらせず `git status`→必要なら commit+push**。「古い」整理と **削除**は **浜田確認または §41 一問のあと**（`AGENTS.md` §35-6・**TSB-031**）。**DeepSeek 1 問を省略**したら **`§50-3-8 スキップ理由:`** 付きで **理由 1 行**（`AGENTS.md` §50-3-8 補足）。
 
@@ -19,7 +19,7 @@
    リポルートで `npm run session:bootstrap` → **exit 0** を確認。
 
 4) 第0手（段階読解）  
-   **本パック** `READ-02.txt` から **`READ-07.txt` まで番号昇順**で Read（中身が「（未使用）」のみならその番号はスキップ可＋チャットに理由 1 行）。**`READ-06.txt` を Read した直後**、チャットに **`【AI分業チェック】`** を **1 回必ず**出す（項目・表は READ-06 先頭のテンプレどおり。**省略・「同上」禁止**）。**`READ-07.txt`（浜田 CEO のお願い）**を Read した直後、チャットに **`【READ-07 読了】`** と **1 行**（「Project Rules 厳守・壁時計・分業・GH Actions・健全性を再確認」等、自分の言葉で要約）を残す。  
+   **本パック** `04-READ-02.txt` から **`09-READ-07.txt` までファイル名の番号昇順**で Read（中身が「（未使用）」のみならその番号はスキップ可＋チャットに理由 1 行）。**`08-READ-06.txt` を Read した直後**、チャットに **`【AI分業チェック】`** を **1 回必ず**出す（項目・表は READ-06 先頭のテンプレどおり。**省略・「同上」禁止**）。**`09-READ-07.txt`（浜田 CEO のお願い）**を Read した直後、チャットに **`【READ-07 読了】`** と **1 行**（「Project Rules 厳守・壁時計・分業・GH Actions・健全性を再確認」等、自分の言葉で要約）を残す。  
    続けて `chat-sessions/SESSION-READ-LADDER.md` を Read で **通読**。
 
 5) A. 共通五段階（第1〜5段）  

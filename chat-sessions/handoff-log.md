@@ -1,6 +1,6 @@
 # 引き継ぎログ（短縮）
 
-浜田さんはセッション切替時 **`NEW-SESSION-STARTER_yyyymmdd.txt` 全文**を貼る（v3.27+ 正本）。`HANDOFF-HUMAN.txt` 5 行は **任意**。  
+浜田さんはセッション切替時 **`00-NEW-SESSION-STARTER_yyyymmdd.txt` 全文**を貼る（v3.27+ 正本）。`12-HANDOFF-HUMAN.txt` 5 行は **任意**。  
 AI は、セッション切替・終了・浜田さんが引き継ぎテンプレを貼ったタイミングで **必ずこのファイルの末尾に新しいブロックを追記**する（追記のみ。過去ブロックは消さない）。
 
 <!-- verify-constitution-handoff-anchor: TSB-024 v1 — DO NOT REMOVE (scripts/verify-constitution-handoff.mjs) -->
@@ -709,7 +709,7 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 ### 2026-05-02 (Sat) JST — READ-07（浜田 CEO のお願い）を read-pack に統合
 
 **実施内容（CIO）**:
-- Desktop の **`濱田からお願い（切実な・・・）.txt`** の思いを **`desktop-ai-emergency-read-pack/READ-07.txt`** に正本化（Project Rules 厳守・壁時計・🎖️分業・GitHub Actions 速修・健全性優先・承認不要の確認許可）。
+- Desktop の **`濱田からお願い（切実な・・・）.txt`** の思いを **`desktop-ai-emergency-read-pack/09-READ-07.txt`** に正本化（Project Rules 厳守・壁時計・🎖️分業・GitHub Actions 速修・健全性優先・承認不要の確認許可）。
 - **READ-01** 手順4を **〜07** に拡張（READ-07 直後 **`【READ-07 読了】` 1 行**）。**INDEX / README-read-pack / SESSION-READ-LADDER / `session-read-ladder-two-phase.mdc` / `cio-operating-loop.mdc` / AI緊急用-README / RULES-INDEX** を同期。
 
 **次セッションへの 1 行**: 朝は **morning-prep** のあと **READ-07** を Read（短くてよい）→ 第0手では **02〜07** 昇順の流れどおり。

@@ -4,7 +4,7 @@
 
 **Cursor Project Rules**: `.cursor/rules/session-read-ladder-two-phase.mdc`（**alwaysApply: true**）が、新セッションで **第0手＝本ファイル通読**と **二段階（A→B）** を毎回想起する。
 
-**浜田貼付の番号控え**: チャットで渡す本文の控えは **`chat-sessions/desktop-ai-emergency-read-pack/READ-01.txt` から昇順**（リポ正本）。セッション終了時に `npm run session-starter:sync-desktop` で **`C:\Users\mhamada202408224\Desktop\AI緊急用\`** に同名コピーされる。AI は **READ-01 手順 4** のとおり **02→…→07** を先に Readし、**READ-06 直後に `【AI分業チェック】`**、**READ-07 直後に `【READ-07 読了】` 1 行**を出してから本ファイルを通読する（未使用ファイルはスキップ可＋**読んだ番号・理由**を 1 行）。
+**浜田貼付の番号控え**: チャットで渡す本文の控えは **`chat-sessions/desktop-ai-emergency-read-pack/03-READ-01.txt` からファイル名の番号昇順**（リポ正本。Desktop でも **名前順＝読取順**）。セッション終了時に `npm run session-starter:sync-desktop` で **`C:\Users\mhamada202408224\Desktop\AI緊急用\`** に同名コピーされる。AI は **03-READ-01（見出し READ-01）手順 4** のとおり **04→…→09** を先に Readし、**08-READ-06（READ-06）直後に `【AI分業チェック】`**、**09-READ-07 直後に `【READ-07 読了】` 1 行**を出してから本ファイルを通読する（未使用ファイルはスキップ可＋**読んだ番号・理由**を 1 行）。
 
 **憲法・ゲートとの関係**: `checkpoint-latest.md`「セッション切替後の自律復元」の **項番 -1 / -0** と **`npm run session:bootstrap`（項番 0）**は **従来どおり先**に通す（機械ゲート・憲法整合）。**本ファイルの「共通五段階」は bootstrap 成功の直後から開始**する。**矛盾時は checkpoint を優先**する。
 
@@ -145,7 +145,7 @@
 
 - 2026-05-02（午後追補）: **READ-07**（浜田 CEO のお願い・Project Rules 厳守・壁時計・分業・GitHub Actions・健全性優先・朝イチ推奨）を read-pack に追加。**READ-01** 手順4を **〜07** に拡張。INDEX / README-read-pack / 本節の「02→…→07」表記を同期。
 - 2026-05-02: **READ-06**（憲法・分業要約）追加。**【AI分業チェック】** テンプレ・早見表。**READ-01** は番号パック→READ-06 直後チェック→**SESSION-READ-LADDER** の順に変更。**READ-02**・第5段・`session-read-ladder-two-phase.mdc` に分業の再釘付け。INDEX 更新。
-- 2026-05-01: **desktop-ai-emergency-read-pack**（`READ-01.txt`…）を追加し、`session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync` で Desktop に同期・検証。
+- 2026-05-01: **desktop-ai-emergency-read-pack**（`03-READ-01.txt`…）を追加し、`session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync` で Desktop に同期・検証。
 - 2026-05-01: **当面の時間目安**（事前準備 **約1h**／本題 **約3h**）を追記。
 - 2026-05-01: **`.cursor/rules/session-read-ladder-two-phase.mdc`**（alwaysApply）を追加し、本ファイルを **Project Rules から二段階想起**するよう連携。
 - 2026-05-01: **事前準備用テンプレ**を分離（**ルールで理解したこと**を必須化／仕様は B へ）。良い例・悪い例を追記。

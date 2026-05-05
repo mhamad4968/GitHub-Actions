@@ -13,7 +13,7 @@ alwaysApply: true
 ## 朝（cron 以外の手動でも同じ順）
 
 1. **`docs/reports/<JSTの今日>-morning-prep.md`** を Read（§46 Phase 0）。
-2. **`chat-sessions/desktop-ai-emergency-read-pack/READ-07.txt`** を Read（**浜田 CEO のお願い**・Project Rules 厳守・壁時計・分業・GitHub Actions・健全性。短くてよいので **朝イチでも**）。
+2. **`chat-sessions/desktop-ai-emergency-read-pack/09-READ-07.txt`** を Read（**浜田 CEO のお願い**・Project Rules 厳守・壁時計・分業・GitHub Actions・健全性。短くてよいので **朝イチでも**）。
 3. 追徴・不安があれば **`npm run cio:quick-health`**（疎通 + wipe 監視。数分以内）。
 4. フル棚卸しは既存どおり **`npm run session:bootstrap`**（項番 -0 OK 後）。
 
@@ -29,7 +29,7 @@ alwaysApply: true
 
 - **`NEW-SESSION-STARTER.md` / `desktop-ai-emergency-read-pack/*.txt` / READ-07 正本**など Desktop 控えの元を編集したら、**浜田に npm を頼まず** CIO が **`npm run session-starter:sync-desktop`**（または **`npm run desktop:sync-and-verify`**）を **その場で実行**する。チャットは **OK / SKIP 理由 1 行**で足りる。
 - **`npm run desktop:sync-and-verify`** は sync のあと verify が **依存順保証**で走るため、迷ったらこちらを優先。
-- **Desktop「AI緊急用」**（`C:\Users\mhamada202408224\Desktop\AI緊急用`）: **メンテのたび**（上記ドキュ改修の締め・日終わり・push 前・セッション締めを含む）に **リポ正本と揃える**。切替時だけに限定しない（**CEO 2026-05-02**／`READ-07.txt`・`checkpoint-latest.md` 項番 0b と同旨）。
+- **Desktop「AI緊急用」**（`C:\Users\mhamada202408224\Desktop\AI緊急用`）: **メンテのたび**（上記ドキュ改修の締め・日終わり・push 前・セッション締めを含む）に **リポ正本と揃える**。切替時だけに限定しない（**CEO 2026-05-02**／`09-READ-07.txt`・`checkpoint-latest.md` 項番 0b と同旨）。
 
 ## MCP と §51
 

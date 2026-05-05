@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * リポの儀式ファイルを Windows Desktop「AI緊急用」へコピーする。
- * NEW-SESSION-STARTER は **JST の NEW-SESSION-STARTER_yyyymmdd.txt** に常に同期（内容変更時のみ旧版を _2… に退避）。
+ * NEW-SESSION-STARTER は **JST の 00-NEW-SESSION-STARTER_yyyymmdd.txt** に常に同期（内容変更時のみ旧版を _2… に退避）。
  * README.txt（正本 chat-sessions/AI緊急用-README.txt）も同期する。
  * `chat-sessions/desktop-ai-emergency-read-pack/*.txt`（番号付き貼付控え）も **同名で** Desktop へコピーする。
  *
@@ -22,15 +22,15 @@ const destDir =
   '/mnt/c/Users/mhamada202408224/Desktop/AI緊急用';
 
 const otherFiles = [
-  ['chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md', 'SESSION-BOOTSTRAP-CHECKLIST.txt'],
-  ['chat-sessions/HANDOFF-HUMAN.txt', 'HANDOFF-HUMAN.txt'],
-  ['chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md', 'HANDOFF-AI-FIVE-BLOCKS.md'],
-  ['chat-sessions/AI緊急用-README.txt', 'README.txt'],
+  ['chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md', '01-HANDOFF-AI-FIVE-BLOCKS.md'],
+  ['chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md', '11-SESSION-BOOTSTRAP-CHECKLIST.txt'],
+  ['chat-sessions/HANDOFF-HUMAN.txt', '12-HANDOFF-HUMAN.txt'],
+  ['chat-sessions/AI緊急用-README.txt', '13-README.txt'],
 ];
 
 const readPackRelDir = 'chat-sessions/desktop-ai-emergency-read-pack';
 
-/** 浜田貼付控え READ-*.txt / INDEX.txt / README-read-pack.txt を Desktop へ同名コピー */
+/** read-pack の *.txt（ファイル名先頭 2 桁＝Explorer での読取順）を Desktop へ同名コピー */
 function syncReadPackToDesktop() {
   const readPackDir = path.join(root, readPackRelDir);
   if (!fs.existsSync(readPackDir)) {

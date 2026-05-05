@@ -258,7 +258,7 @@ WSL ターミナルで:
 
 ━━━ ⑤ 新しいチャットを開いた / 文脈が分からなくなった ━━━
 
-C:\Users\mhamada202408224\Desktop\AI緊急用\NEW-SESSION-STARTER_yyyymmdd.txt（JST・常にこのファイル名）を開いて
+C:\Users\mhamada202408224\Desktop\AI緊急用\00-NEW-SESSION-STARTER_yyyymmdd.txt（JST・常にこのファイル名）を開いて
 中身（フル版）を新チャットにコピペするだけ。
 
 → AI が文脈・関係性・優先順位・主タスク・新ルール（R1-R9）を全部復元する
@@ -269,7 +269,7 @@ C:\Users\mhamada202408224\Desktop\AI緊急用\NEW-SESSION-STARTER_yyyymmdd.txt�
 
   1. 該当のチャットウィンドウを閉じる
   2. Cursor アプリを再起動（タスクトレイから完全終了 → 再起動）
-  3. 新チャット起動 + NEW-SESSION-STARTER_yyyymmdd.txt（verify 最終行の貼付推奨）を貼る
+  3. 新チャット起動 + 00-NEW-SESSION-STARTER_yyyymmdd.txt（verify 最終行の貼付推奨）を貼る
 
 
 ━━━ ⑦ AI が「忘れた？」みたいな反応をした ━━━━━━━━━━━

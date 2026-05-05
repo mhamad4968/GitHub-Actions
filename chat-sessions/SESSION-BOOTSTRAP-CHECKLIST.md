@@ -2,7 +2,7 @@
 
 > **目的**: 経緯・「法律」に相当する制約・ルール・備わっている機能・MCP を **読み飛ばさず** 再確認し、浜田が気づかないまま **逆方向に進む事故** を防ぐ。  
 > **憲法**: **開発は AI・確認は浜田**（`AGENTS.md` §35-1 / §56-1a）。本リストは **AI が実行・報告**する（浜田に全文チェックを押し付けない）。  
-> **浜田運用の最優先**: `C:\Users\mhamada202408224\Desktop\AI緊急用\` の **儀式用 `.txt`**（`NEW-SESSION-STARTER_yyyymmdd.txt` / `SESSION-BOOTSTRAP-CHECKLIST.txt` / `HANDOFF-HUMAN.txt` / **`README.txt`**）。本ファイルを更新したコミットでは **`npm run session-starter:sync-desktop`** を同一ターンで実行し、上記を必ず揃える（`/mnt/c` が無いときだけスキップ＋チャット 1 行）。
+> **浜田運用の最優先**: `C:\Users\mhamada202408224\Desktop\AI緊急用\` の **儀式・read-pack**（**ファイル名の先頭番号＝読取順**）。例: `00-NEW-SESSION-STARTER_yyyymmdd.txt` / `01-HANDOFF-AI-FIVE-BLOCKS.md` / `02-INDEX.txt` … `13-README.txt`。本ファイルを更新したコミットでは **`npm run session-starter:sync-desktop`** を同一ターンで実行し、上記を必ず揃える（`/mnt/c` が無いときだけスキップ＋チャット 1 行）。
 >
 > **v3.27+ 恒久**: セッション初手の **項番 -1〜0（機械）と実行順**の**詳細正本**は **`NEW-SESSION-STARTER.md` 冒頭「■ 貼付単独で完走」** のみ。本チェックリストの下表は **鏡像**（追従）。**浜田の貼付はスターター全文＋任意 HANDOFF** に固定し増やさない。
 
@@ -18,7 +18,7 @@
 
 > 正本: `chat-sessions/checkpoint-latest.md`「**日終わり（推奨）**」。
 
-- [ ] **`npm run session-starter:sync-desktop`**（`NEW-SESSION-STARTER_yyyymmdd.txt` + `SESSION-BOOTSTRAP` + `HANDOFF-HUMAN` + **`README.txt`**）
+- [ ] **`npm run session-starter:sync-desktop`**（`00-`〜`13-` 番号付き儀式・read-pack 一式。詳細は `checkpoint-latest.md` 項番 0b）
 - [ ] **`npm run verify:desktop-ai-emergency-sync`**（成功時 **貼付推奨**行まで確認。チャットに 1 行要約してよい）
 - [ ] **今日のチャットを閉じる前**に指示があれば **`npm run session:clock:clear`**（`SESSION-CLOCK.md` の **開始:** を **未設定**／§51-6 遵守事項 7）＋**`session:clock:web` は Ctrl+C**
 - [ ] 時間があれば **`npm run session:bootstrap`** まで
@@ -31,7 +31,7 @@
 
 | 順 | 誰 | すること |
 |---|-----|----------|
-| **-1** | **浜田** | 新チャット **1 通目**に **`AI緊急用\NEW-SESSION-STARTER_yyyymmdd.txt`（JST・常にこの 1 ファイル名）** の **全文**を貼る（**必須級・これだけで項番 -1 素材は足りる**）。**貼付推奨**は verify の最終行。`HANDOFF-HUMAN.txt` 5 行は **任意**（メモ用）。checkpoint をチャットに **重ねて貼らなくてよい**（v3.27）。 |
+| **-1** | **浜田** | 新チャット **1 通目**に **`AI緊急用\00-NEW-SESSION-STARTER_yyyymmdd.txt`（JST・常にこの 1 ファイル名）** の **全文**を貼る（**必須級・これだけで項番 -1 素材は足りる**）。**貼付推奨**は verify の最終行。`12-HANDOFF-HUMAN.txt` 5 行は **任意**（メモ用）。checkpoint をチャットに **重ねて貼らなくてよい**（v3.27）。 |
 | **-0** | **浜田＋AI** | AI: ティア宣言＋スターター受領＋**次に着手すること**を **§41 一問だけ**確認。**浜田 OK が出るまで項番 0（verify/bootstrap）に着手しない**。詳細はスターター内 **「■ 貼付単独で完走」**。 |
 | **0** | **AI** | **`npm run session:bootstrap`**（内包順: `verify:constitution-handoff` → **`verify:mandatory-read-gate`**（必読ファイル構造）→ **`verify:session-clock-health`**（§51-6-2 hooks / crontab node）→ **`session-starter:sync-desktop`**（`C:\Users\mhamada202408224\Desktop\AI緊急用` 都度メンテ）→ **`verify:desktop-ai-emergency-sync`**（バイト一致）→ `smoke:quiet`）。**全文貼付済みなら -0 OK 直後に実行**し、棚卸し Read（フェーズ 1）は **bootstrap 通過後**でよい。激短のみ verify だけは非推奨。 |
 
@@ -216,7 +216,7 @@ AI は上記を終えたら **このターン内**で、次を **箇条書きで
 8. **§1-2-3-1 ティア宣言（モデル可視化 / 2026-04-26 追加）**: **各ターン**、チャット応答の **先頭 1〜3 行以内**に必ず 1 行貼る（浜田がルール遵守を確認するための **目印**）。  
    形式: `[§1-2-3 ティア判定: L1|L2|L3] <根拠 1 行>`（`AGENTS.md` §1-2-3-1）。**Cursor でモデル切替したら**、切替後 **最初の発話で再宣言**（「IDE で L2→L3 に変更」等 1 語）。  
    **浜田**: この行が無い → §1-2-3-1 未遵守として指摘可。Tier B なのに先頭が L1/L2 だけ → L3 必須か確認可（§1-2-3-2）。
-8b. **🎖️ 本セッション割当（新チャット 1 ターン目 / CEO・CIO 運用）**: **新セッションの AI 第 1 応答**では、`NEW-SESSION-STARTER.md` に従い **`[§1-2-3 ティア判定: …]` の直後**に **`[🎖️ 本セッション割当] CIO=… | DeepSeek=… | Kimi=… | OpenRouter=…`** を **1 行必須**（未起用は `未使用`）。CIO が外部 MCP の割当を先に宣言し、浜田が「役割は？」と聞く必要をなくす。**軽量相談の既定**（タスク単位 DeepSeek 1 問・**コード変更は編集前**・スキップ時理由 1 行等）は同スターター **SESSION-DAILY §4 H** と **read-pack `READ-06.txt` §10**。
+8b. **🎖️ 本セッション割当（新チャット 1 ターン目 / CEO・CIO 運用）**: **新セッションの AI 第 1 応答**では、`NEW-SESSION-STARTER.md` に従い **`[§1-2-3 ティア判定: …]` の直後**に **`[🎖️ 本セッション割当] CIO=… | DeepSeek=… | Kimi=… | OpenRouter=…`** を **1 行必須**（未起用は `未使用`）。CIO が外部 MCP の割当を先に宣言し、浜田が「役割は？」と聞く必要をなくす。**軽量相談の既定**（タスク単位 DeepSeek 1 問・**コード変更は編集前**・スキップ時理由 1 行等）は同スターター **SESSION-DAILY §4 H** と **read-pack `08-READ-06.txt` §10**。
 
 ---
 
@@ -225,4 +225,4 @@ AI は上記を終えたら **このターン内**で、次を **箇条書きで
 - **`npm run verify:agent-env`** の中身（`package.json` の連鎖）を変えたら **フェーズ 6 の該当箇条書き**と **`RULES-INDEX.md` §57-5 行**を同期する。
 - 新しい「必須検査」が `smoke-test.mjs` に入ったら **本ファイルフェーズ 6 の説明を同期**する。  
 - 新しい永続ドキュが「引き継ぎ必読」になったら **フェーズ 1–2 の表に 1 行追加**する。
-- **`NEW-SESSION-STARTER.md` / 本ファイルを編集して push した AI** は、**同一ターンで `npm run session-starter:sync-desktop` を必須**とし、続けて **`npm run verify:desktop-ai-emergency-sync`** で浜田が開く `AI緊急用\`（`NEW-SESSION-STARTER_yyyymmdd.txt` / `README.txt` 等）をリポと揃えたことを確認する（§57-6）。WSL で `/mnt/c` が無い等のときだけ省略可＋チャットに理由 1 行。
+- **`NEW-SESSION-STARTER.md` / 本ファイルを編集して push した AI** は、**同一ターンで `npm run session-starter:sync-desktop` を必須**とし、続けて **`npm run verify:desktop-ai-emergency-sync`** で浜田が開く `AI緊急用\`（`00-NEW-SESSION-STARTER_yyyymmdd.txt` / `13-README.txt` 等）をリポと揃えたことを確認する（§57-6）。WSL で `/mnt/c` が無い等のときだけ省略可＋チャットに理由 1 行。

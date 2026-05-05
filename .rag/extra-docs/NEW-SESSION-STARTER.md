@@ -134,7 +134,7 @@ CEO 浜田 4/29 朝指示（「Claude Code v2.1.111 準拠」）を、Cursor + �
 ■ 貼付単独で完走（checkpoint 項番 -1 〜 項番 0 機械部分・本文内正本）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-**方針**: 浜田が **下記「■ フル版」からファイル末尾まで**（Desktop の **`NEW-SESSION-STARTER_yyyymmdd.txt` 全文** と同内容）を **新チャットの最初の 1 メッセージに貼れば**、`checkpoint-latest.md` の **項番 -1** に相当する素材は **これだけで足りる**（同内容を二重に貼る必要はない）。`HANDOFF-HUMAN.txt` 5 行は **任意**（当日メモ・状況共有用。無くても項番 0 は実行可）。
+**方針**: 浜田が **下記「■ フル版」からファイル末尾まで**（Desktop の **`00-NEW-SESSION-STARTER_yyyymmdd.txt` 全文** と同内容）を **新チャットの最初の 1 メッセージに貼れば**、`checkpoint-latest.md` の **項番 -1** に相当する素材は **これだけで足りる**（同内容を二重に貼る必要はない）。`12-HANDOFF-HUMAN.txt` 5 行は **任意**（当日メモ・状況共有用。無くても項番 0 は実行可）。
 
 **AI がこのチャット内だけで守る順序（checkpoint 項番 -0 〜 0 と同値）**:
 
@@ -156,10 +156,10 @@ CEO 浜田 4/29 朝指示（「Claude Code v2.1.111 準拠」）を、Cursor + �
 
 **単独貼付の範囲**: 上記 **■ 貼付単独で完走** が **項番 -1〜項番 0（機械）**の正本。チャットに `checkpoint-latest.md` を **別添しなくてよい**（AI はツールで読む）。続く **@ Read** で文脈を厚くしてから本題へ。
 
-**浜田が毎回最初に開く場所（運用上いちばん大事）**: `C:\Users\mhamada202408224\Desktop\AI緊急用\NEW-SESSION-STARTER_yyyymmdd.txt`（**JST の日付 8 桁**。**常にこのファイル名だけ**が正本。同日に内容が変わった sync では旧版が **`_2` `_3`…** に退避するが、**貼るのは常に `yyyymmdd.txt`**。メモ帳）。**貼付推奨**は **`npm run verify:desktop-ai-emergency-sync` の最終行**（または `session-starter:sync-desktop` の「貼付推奨」行）。フォルダの説明は同梱の **`README.txt`**。**セッション切替時は、この控えの全文を新チャットの最初の 1 メッセージに貼ることを強く推奨**（`checkpoint-latest.md` **項番 -1** と同値の素材は **本文冒頭「■ 貼付単独で完走」までに内包**）。貼ったあと **本日やること（次の一手）** を AI と **1 問だけ**確認し、**浜田の OK が出てから**項番 0（**`npm run session:bootstrap`**＝憲法 verify・mandatory gate・**(1c) session-clock-health**・Desktop sync・smoke を内包）へ（**項番 -0** = **OK まで着手しない開始ゲート**）。ここが **最優先で最新**になるよう、**CIO（AI）は**本ファイルを編集して **push する同一ターン**で必ず **`npm run session-starter:sync-desktop`** を実行する（**CIO 義務**／§35-1・TSB-024＝**Desktop 反映を浜田へコマンド実行依頼しない**）。**リポだけ更新して Desktop を古いままにしない**。**日終わり**にも **CIO が** sync → verify（`checkpoint-latest.md`「日終わり」）。
+**浜田が毎回最初に開く場所（運用上いちばん大事）**: `C:\Users\mhamada202408224\Desktop\AI緊急用\00-NEW-SESSION-STARTER_yyyymmdd.txt`（**JST の日付 8 桁**。**常にこのファイル名だけ**が正本。同日に内容が変わった sync では旧版が **`_2` `_3`…** に退避するが、**貼るのは常に `yyyymmdd.txt`**。メモ帳）。**貼付推奨**は **`npm run verify:desktop-ai-emergency-sync` の最終行**（または `session-starter:sync-desktop` の「貼付推奨」行）。フォルダの説明は同梱の **`13-README.txt`**。**セッション切替時は、この控えの全文を新チャットの最初の 1 メッセージに貼ることを強く推奨**（`checkpoint-latest.md` **項番 -1** と同値の素材は **本文冒頭「■ 貼付単独で完走」までに内包**）。貼ったあと **本日やること（次の一手）** を AI と **1 問だけ**確認し、**浜田の OK が出てから**項番 0（**`npm run session:bootstrap`**＝憲法 verify・mandatory gate・**(1c) session-clock-health**・Desktop sync・smoke を内包）へ（**項番 -0** = **OK まで着手しない開始ゲート**）。ここが **最優先で最新**になるよう、**CIO（AI）は**本ファイルを編集して **push する同一ターン**で必ず **`npm run session-starter:sync-desktop`** を実行する（**CIO 義務**／§35-1・TSB-024＝**Desktop 反映を浜田へコマンド実行依頼しない**）。**リポだけ更新して Desktop を古いままにしない**。**日終わり**にも **CIO が** sync → verify（`checkpoint-latest.md`「日終わり」）。
 
-**補足（2026-04-28）**: 同日に **Desktop に `SESSION-HANDOFF-LATEST-2026-04-28.txt` のみ**置いた場合でも、**先に `npm run session-starter:sync-desktop` を CIO が実行**して **`NEW-SESSION-STARTER_yyyymmdd.txt` 等 4 本を復元**してから、上記どおり **スターター全文貼付 → 項番 -0 → bootstrap** でよい。**集約 txt だけ貼る**場合は **項番 -0** で本題を合意したうえで、**直後に CIO が sync → bootstrap**（`verify:desktop-ai-emergency-sync` は **sync 後**に意味がある）。
-Git 上の編集正本: `kintone-ai-lab/chat-sessions/NEW-SESSION-STARTER.md`（差分・履歴用。`.md` と `.txt` は自動同期しないため、上記 npm が橋渡し）。`/mnt/c` が無くコピーできないときは **CIO が**チャットに「AI緊急用の NEW-SESSION-STARTER_yyyymmdd.txt は未更新（理由）」と 1 行書き、環境復帰後に **CIO が** npm を再実行する。
+**補足（2026-04-28）**: 同日に **Desktop に `SESSION-HANDOFF-LATEST-2026-04-28.txt` のみ**置いた場合でも、**先に `npm run session-starter:sync-desktop` を CIO が実行**して **`00-NEW-SESSION-STARTER_yyyymmdd.txt` 等 4 本を復元**してから、上記どおり **スターター全文貼付 → 項番 -0 → bootstrap** でよい。**集約 txt だけ貼る**場合は **項番 -0** で本題を合意したうえで、**直後に CIO が sync → bootstrap**（`verify:desktop-ai-emergency-sync` は **sync 後**に意味がある）。
+Git 上の編集正本: `kintone-ai-lab/chat-sessions/NEW-SESSION-STARTER.md`（差分・履歴用。`.md` と `.txt` は自動同期しないため、上記 npm が橋渡し）。`/mnt/c` が無くコピーできないときは **CIO が**チャットに「AI緊急用の 00-NEW-SESSION-STARTER_yyyymmdd.txt は未更新（理由）」と 1 行書き、環境復帰後に **CIO が** npm を再実行する。
 
 v2 (2026-04-19) からの主な強化:
 - 主タスク: SKYSEA → 新・PC 台帳 ver.1 (4/24 環境設定マスタ Day 1)
@@ -293,9 +293,9 @@ v3.12 (2026-04-26) 人間5行引き継ぎ + AI 追記義務:
 - **checkpoint-latest.md** に手順リンク済み
 
 v3.26 (2026-04-26) **canonical 固定 + 貼付推奨ログ + README + 日終わり**（浜田「案 A〜D 全部」）:
-- **案 C**: 常に **`NEW-SESSION-STARTER_yyyymmdd.txt`** に正本を書く。内容が変わる sync のときだけ旧 **`yyyymmdd.txt`** を **`_2`…** に退避してから上書き。
+- **案 C**: 常に **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** に正本を書く。内容が変わる sync のときだけ旧 **`yyyymmdd.txt`** を **`_2`…** に退避してから上書き。
 - **案 D**: **`verify:desktop-ai-emergency-sync`** の **成功時最終行**に **`貼付推奨（項番-1）:`** を出す。`session-starter:sync-desktop` にも **貼付推奨**行。
-- **案 B**: リポ `chat-sessions/AI緊急用-README.txt` → Desktop **`README.txt`** を sync/verify 対象に追加。
+- **案 B**: リポ `chat-sessions/AI緊急用-README.txt` → Desktop **`13-README.txt`** を sync/verify 対象に追加。
 - **案 A**: `checkpoint-latest.md` に **「日終わり（推奨）」**（sync → verify または bootstrap）。
 
 v3.27 (2026-04-27) **貼付単独で完走**（浜田指示）:
@@ -352,7 +352,7 @@ v3.23 (2026-04-26) **Desktop `AI緊急用` の都度メンテ＋セッション�
 - **2026-05-02 CEO 追補**: **メンテをするたび**（儀式・read-pack・HANDOFF／BOOTSTRAP／checkpoint／handoff をリポで触った**ターンの締め**、**日終わり**、**push 前**）に **Desktop 控えをリポと同内容**にする。**セッション切替に限定しない**。まとめてよいときは **`npm run desktop:sync-and-verify`**。
 
 v3.22 (2026-04-26) **セッション切替＝先にスターター貼付（項番 -1/-0）**（浜田提案・採用）:
-- **推奨フロー**: 新チャット **1 通目**に `NEW-SESSION-STARTER_yyyymmdd.txt`（**JST・常にこのファイル名**）**全文** → AI と本題 **§41 一問**（**項番 -0**）→ **`verify` / `session:bootstrap`（項番 0）**
+- **推奨フロー**: 新チャット **1 通目**に `00-NEW-SESSION-STARTER_yyyymmdd.txt`（**JST・常にこのファイル名**）**全文** → AI と本題 **§41 一問**（**項番 -0**）→ **`verify` / `session:bootstrap`（項番 0）**
 - **`checkpoint-latest.md`** に **項番 -1 / -0** を追記（機械検査 `verify-constitution-handoff` にも必須フレーズとして組込）
 - **`HANDOFF-HUMAN.txt`** / **`SESSION-BOOTSTRAP-CHECKLIST`** / **`session-handoff.mdc`** / **`constitution-handoff-gate.mdc`** を同期
 
@@ -395,7 +395,7 @@ v3.15 (2026-04-27) 新・PC台帳は **仕様書を読んでから**:
 v3.14 (2026-04-26) 引き継ぎ後の安心 — 経緯・法律相当・ルール・機能・MCP を棚卸し:
 - **必読**: `chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md`（フェーズ 0–7）。**Read だけで終わらせない**。
 - **必実行**: `npm run session:bootstrap`（= `smoke:quiet` / **9 連検査**）。結果をチャットに **短く要約**（チェックリスト フェーズ 7）。
-- **Desktop（最優先）**: 浜田が参照する `AI緊急用\` の **`NEW-SESSION-STARTER_yyyymmdd.txt`**（儀式・**canonical**）および **`HANDOFF-HUMAN.txt` / `SESSION-BOOTSTRAP-CHECKLIST.txt` / `README.txt`** を、本ファイルをコミットした **同一ターン**で **`npm run session-starter:sync-desktop`** により必ず更新する。未マウント時はスキップ＋チャット 1 行（後で再実行）。
+- **Desktop（最優先）**: 浜田が参照する `AI緊急用\` の **`00-NEW-SESSION-STARTER_yyyymmdd.txt`**（儀式・**canonical**）および **`01-HANDOFF-AI-FIVE-BLOCKS.md` / `11-SESSION-BOOTSTRAP-CHECKLIST.txt` / `12-HANDOFF-HUMAN.txt` / `13-README.txt`**（＋ read-pack `02`〜`10`）を、本ファイルをコミットした **同一ターン**で **`npm run session-starter:sync-desktop`** により必ず更新する。未マウント時はスキップ＋チャット 1 行（後で再実行）。
 - **目的**: 浜田が気づかないまま逆方向に進む事故を減らす（確認負荷は人に押し付けない）。
 
 v3.13 (2026-04-26) PC 台帳仕様の正本固定 + セッション切替後もブレない管理:
@@ -472,7 +472,7 @@ v3.13 (2026-04-26) PC 台帳仕様の正本固定 + セッション切替後も�
 
 【次セッション優先（2026-04-28 JST 以降・項番 -0 の本題候補）】
 - **部署予実（実装フェーズ）**: **4/29（水）約 19:00 JST〜** **kintone アプリ作成**（**スペース決定**後に `kintone-add-app`）。続けて **4/30** 項目確定 → **5/1** 初回投入 → **5/2–5/3** 機能・運用（`SPEC.md` §10.1）。仕様正本は **`SPEC.md`**・**`yojitsu-master-and-field-plan.md`**・**`yojitsu-migration-kyu-to-kintone.md`**。
-- **夜・約 20:00 JST 再入場**（反省会など）: **新セッション**— Desktop の **`SESSION-HANDOFF-LATEST-2026-04-28.txt`** または **`checkpoint-latest.md` 最終更新** を開いてから **項番 -0**。控えが古い／欠けるときは **CIO が先に `session-starter:sync-desktop`** で **NEW-SESSION-STARTER_yyyymmdd.txt** を復元（浜田へ npm 依頼しない）。
+- **夜・約 20:00 JST 再入場**（反省会など）: **新セッション**— Desktop の **`SESSION-HANDOFF-LATEST-2026-04-28.txt`** または **`checkpoint-latest.md` 最終更新** を開いてから **項番 -0**。控えが古い／欠けるときは **CIO が先に `session-starter:sync-desktop`** で **00-NEW-SESSION-STARTER_yyyymmdd.txt** を復元（浜田へ npm 依頼しない）。
 - **PC 台帳**: **B-1**＝**4/28–29** は §9 表どおりの準備のみ（**前倒し禁止**・`2026-04-21-new-pc-ledger-spec.md` **§9.0**）／**4/30–5/2** 本番 import。**B-2（共有+JR）**＝**5/13 本番以降**に旧台帳確認のうえ **1 件ずつ手登録**（同仕様書 **§7.4.6**）。予実等其他タスクとの **優先順は当日に合意**。
 
 【今やってる主タスク（2026-04-23 22:40 時点・歴史参照。当日の一手は上の「次セッション優先」と checkpoint を優先）】

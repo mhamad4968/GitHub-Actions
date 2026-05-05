@@ -1010,7 +1010,7 @@ Cursor IDE の既定挙動:
 3. **RULES-INDEX 更新**: §1-2-2 を「タスク開始時に必ず参照」表に統合。
 4. **CURSOR-トラブル対応メモ.md 更新**: Composer 2 検知時の浜田復旧手順を追加（IDE 設定 → Models で Auto OFF + Opus 4.7 単独 ON）。
 5. **NEW-SESSION-STARTER.md 更新**: §1-2-2 を冒頭の「最重要 5 件」リストに追加。
-6. **浜田 Desktop 同期**: AI緊急用フォルダの **`NEW-SESSION-STARTER_yyyymmdd.txt`（canonical）** / `SESSION-BOOTSTRAP` / `HANDOFF-HUMAN` / **`README.txt`** を `npm run session-starter:sync-desktop` で反映（§57-6）。**貼付推奨**は `verify:desktop-ai-emergency-sync` 成功時の最終行。
+6. **浜田 Desktop 同期**: AI緊急用フォルダの **`00-NEW-SESSION-STARTER_yyyymmdd.txt`（canonical）** / `01-HANDOFF-AI-FIVE-BLOCKS.md` / read-pack **`02-`〜`10-`** / `11-SESSION-BOOTSTRAP-CHECKLIST.txt` / `12-HANDOFF-HUMAN.txt` / **`13-README.txt`** を `npm run session-starter:sync-desktop` で反映（§57-6）。**貼付推奨**は `verify:desktop-ai-emergency-sync` 成功時の最終行。
 
 ### 浜田復旧手順（IDE 側 / 30 秒）
 

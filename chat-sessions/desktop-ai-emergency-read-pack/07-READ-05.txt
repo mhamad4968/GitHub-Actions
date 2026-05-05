@@ -7,13 +7,14 @@
 ■ コピー先（Windows）  
   C:\Users\mhamada202408224\Desktop\AI緊急用\  
 
-■ 同期されるもの（例）  
-  NEW-SESSION-STARTER_yyyymmdd.txt  
-  SESSION-BOOTSTRAP-CHECKLIST.txt  
-  HANDOFF-HUMAN.txt  
-  README.txt  
-  README-read-pack.txt / INDEX.txt  
-  READ-01.txt …（本フォルダ内のすべての .txt）
+■ 同期されるもの（例・**ファイル名の先頭番号＝Explorer での読取順**）  
+  00-NEW-SESSION-STARTER_yyyymmdd.txt  
+  01-HANDOFF-AI-FIVE-BLOCKS.md  
+  02-INDEX.txt … 09-READ-07.txt / 10-README-read-pack.txt  
+  11-SESSION-BOOTSTRAP-CHECKLIST.txt  
+  12-HANDOFF-HUMAN.txt  
+  13-README.txt  
+  （read-pack は上記 02〜10 の **リポと同名**でコピー）
 
 ■ 正本  
   リポ: chat-sessions/desktop-ai-emergency-read-pack\*.txt  

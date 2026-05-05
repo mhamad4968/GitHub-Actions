@@ -1,0 +1,22 @@
+【読取順インデックス】CIO 準備済み（2026-05-06 更新・v23.32+ / ファイル名＝読取順）
+
+**Desktop「AI緊急用」**では Explorer の **名前順＝推奨読取順**（先頭 2 桁＋ハイフン）。リポ正本は **`chat-sessions/desktop-ai-emergency-read-pack/`** の **同名**。
+
+00-NEW-SESSION-STARTER_yyyymmdd.txt … 項番 -1 貼付（浜田・JST 8 桁・verify 最終行と一致）
+01-HANDOFF-AI-FIVE-BLOCKS.md … 引き継ぎ骨格（5 ブロック）
+02-INDEX.txt … 本ファイル（索引）
+03-READ-01.txt … 新セッション初日の実行順（-1 → -0 → bootstrap → 第0手 → A → B → 日終わり）
+04-READ-02.txt … 二段階の心・時間目安・テンプレ見出し
+05-READ-03.txt … A 共通五段階で Read するファイルパス一覧
+06-READ-04.txt … B 本題入口（5A / 5B の分岐・§50-3-8 リマインド）
+07-READ-05.txt … session-starter:sync-desktop と verify・Desktop パス
+08-READ-06.txt … 憲法・分業の核＋**【AI分業チェック】** テンプレ（READ 直後チャット必須）＋**§35-7 規律先行**の想起
+09-READ-07.txt … **浜田 CEO のお願い（思い）**／Project Rules・厳守・壁時計・分業・GitHub Actions・**健全性優先**（朝イチでも読む）
+10-README-read-pack.txt … 本パックの使い方
+11-SESSION-BOOTSTRAP-CHECKLIST.txt … 項番 0 チェックリスト
+12-HANDOFF-HUMAN.txt … 任意メモ（5 行）
+13-README.txt … フォルダ全体の説明（AI緊急用）
+
+SESSION-CLOSE-REPORT_yyyymmdd.txt … **リポ**の同日締め報告（INDEX 外。必要なら手動で Desktop に置いてもよい）
+
+（浜田追記用）ここにメモを足してよい。

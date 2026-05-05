@@ -20,11 +20,11 @@
 
 **編集ツールや `deploy:*` を走らせる直前**にチャットへ残す（**§35-7**）。
 
-1. **〔憲法 3 分〕** — レーン 1 行 + `READ-06.txt` または `NEW-SESSION-STARTER.md` から **要約 1 行**。
+1. **〔憲法 3 分〕** — レーン 1 行 + `08-READ-06.txt`（または本文中の READ-06 節）または `NEW-SESSION-STARTER.md` から **要約 1 行**。
 2. **§50-3-8** — DeepSeek 1 問 + 約 3 行突合、**または** `§50-3-8 スキップ理由:` **1 行必須**。
 3. **`[🎖️ 本セッション割当]`** — 1 行（未使用は「未使用」と明記）。
 
-**参照**: `AGENTS.md` §35-7、§50-3-8、`desktop-ai-emergency-read-pack/READ-06.txt`。
+**参照**: `AGENTS.md` §35-7、§50-3-8、`desktop-ai-emergency-read-pack/08-READ-06.txt`。
 
 ---
 
@@ -32,8 +32,8 @@
 
 **INDEX の順だけ**でよい（中身は必要な番号だけ深読み）。
 
-1. `desktop-ai-emergency-read-pack/INDEX.txt`（**読取順**）
-2. `READ-01.txt` → … → `READ-07.txt`（**番号昇順**）。`READ-06` の直後は **【AI分業チェック】** 1 回必須。
+1. `desktop-ai-emergency-read-pack/02-INDEX.txt`（**読取順**）
+2. `desktop-ai-emergency-read-pack/03-READ-01.txt` → … → `09-READ-07.txt`（**ファイル名の番号昇順**）。`08-READ-06`（本文見出し **READ-06**）の直後は **【AI分業チェック】** 1 回必須。
 
 **正本フォルダ**: `chat-sessions/desktop-ai-emergency-read-pack/`  
 **Desktop 控え**: `C:\Users\mhamada202408224\Desktop\AI緊急用\`（`npm run session-starter:sync-desktop`）

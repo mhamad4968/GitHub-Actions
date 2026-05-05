@@ -1,10 +1,11 @@
 /**
  * Desktop「AI緊急用」の NEW-SESSION-STARTER 控え（メンテ日ベース）。
  *
- * 方針（案 C 確定版）:
- * - **常に** `NEW-SESSION-STARTER_yyyymmdd.txt`（JST）へ正本を書く＝**貼付推奨もこの 1 名だけ**（案 D）。
+ * 方針（案 C 確定版 + 読取順プレフィックス）:
+ * - **常に** `00-NEW-SESSION-STARTER_yyyymmdd.txt`（JST）へ正本を書く＝**貼付推奨もこの 1 名だけ**（Explorer 名前順で先頭）。
  * - 同日に**内容が変わる** sync のときだけ、上書き前の旧 `yyyymmdd.txt` を **`_2` `_3`…** に退避（枝番＝履歴）。
  * - `_N` はアーカイブのみ。検証は **当日の yyyymmdd.txt が正本と一致**すれば OK。
+ * - **移行**: 旧名 `NEW-SESSION-STARTER_*.txt`（`00-` なし）は prune で削除（重複表示防止）。
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -15,17 +16,21 @@ export function getJstYyyymmdd(now = new Date()) {
   return iso.replace(/-/g, '');
 }
 
-export const STARTER_DESKTOP_RE = /^NEW-SESSION-STARTER_(\d{8})(?:_(\d+))?\.txt$/;
+/** 当日 canonical + 当日アーカイブ（00- プレフィックス） */
+export const STARTER_DESKTOP_RE = /^00-NEW-SESSION-STARTER_(\d{8})(?:_(\d+))?\.txt$/;
+
+/** 旧 Desktop 名（sync 時に掃除） */
+export const LEGACY_STARTER_DESKTOP_RE = /^NEW-SESSION-STARTER_(\d{8})(?:_(\d+))?\.txt$/;
 
 /**
- * 次に使うアーカイブファイル名（`NEW-SESSION-STARTER_${d}_N.txt`、N>=2）。
+ * 次に使うアーカイブファイル名（`00-NEW-SESSION-STARTER_${d}_N.txt`、N>=2）。
  * @param {string} destDir
  * @param {string} d yyyymmdd
  */
 export function nextStarterArchiveFilename(destDir, d) {
   let k = 2;
   while (k < 100000) {
-    const name = `NEW-SESSION-STARTER_${d}_${k}.txt`;
+    const name = `00-NEW-SESSION-STARTER_${d}_${k}.txt`;
     if (!fs.existsSync(path.join(destDir, name))) {
       return name;
     }
@@ -42,7 +47,7 @@ export function nextStarterArchiveFilename(destDir, d) {
  */
 export function syncStarterToDesktopCanonical(destDir, srcPath) {
   const ymd = getJstYyyymmdd();
-  const basePath = path.join(destDir, `NEW-SESSION-STARTER_${ymd}.txt`);
+  const basePath = path.join(destDir, `00-NEW-SESSION-STARTER_${ymd}.txt`);
   const srcBuf = fs.readFileSync(srcPath);
 
   let archived = null;
@@ -75,13 +80,13 @@ export function listStarterDesktopFiles(destDir) {
  * 指定 JST 日の **canonical** パス（ファイルが無ければ null）。
  */
 export function starterCanonicalPath(destDir, ymd = getJstYyyymmdd()) {
-  const p = path.join(destDir, `NEW-SESSION-STARTER_${ymd}.txt`);
+  const p = path.join(destDir, `00-NEW-SESSION-STARTER_${ymd}.txt`);
   return fs.existsSync(p) ? p : null;
 }
 
 /** 項番 -1 用のファイル名（当日 JST） */
 export function recommendedStarterPasteFilename(ymd = getJstYyyymmdd()) {
-  return `NEW-SESSION-STARTER_${ymd}.txt`;
+  return `00-NEW-SESSION-STARTER_${ymd}.txt`;
 }
 
 /**
@@ -95,7 +100,7 @@ export function pickLatestStarterDesktopPathForDate(destDir, ymd = getJstYyyymmd
  * 当日 canonical が正本と一致するか（アーカイブは検証しない）。
  */
 export function starterCanonicalMatchesRepo(destDir, srcBuf, ymd = getJstYyyymmdd()) {
-  const p = path.join(destDir, `NEW-SESSION-STARTER_${ymd}.txt`);
+  const p = path.join(destDir, `00-NEW-SESSION-STARTER_${ymd}.txt`);
   if (!fs.existsSync(p)) {
     return { ok: false, path: p, reason: 'missing' };
   }
@@ -107,8 +112,9 @@ export function starterCanonicalMatchesRepo(destDir, srcBuf, ymd = getJstYyyymmd
 }
 
 /**
- * Desktop 上の `NEW-SESSION-STARTER_*.txt` のうち、**当日 canonical 以外を削除**する。
+ * Desktop 上の `00-NEW-SESSION-STARTER_*.txt` のうち、**当日 canonical 以外を削除**する。
  * 他日付の退避ファイル・当日の `_2` `_3`… アーカイブも削除し、**貼付推奨は常に 1 本**に揃える。
+ * 併せて **旧名** `NEW-SESSION-STARTER_*.txt`（`00-` なし）をすべて削除する（移行・重複防止）。
  * @param {string} destDir
  * @param {string} ymd JST yyyymmdd
  * @returns {string[]} 削除したファイル名
@@ -117,13 +123,20 @@ export function pruneNonCanonicalStarterDesktopFiles(destDir, ymd) {
   if (!fs.existsSync(destDir)) {
     return [];
   }
-  const keepName = `NEW-SESSION-STARTER_${ymd}.txt`;
+  const keepName = `00-NEW-SESSION-STARTER_${ymd}.txt`;
   const removed = [];
   for (const name of fs.readdirSync(destDir)) {
     if (!STARTER_DESKTOP_RE.test(name)) {
       continue;
     }
     if (name === keepName) {
+      continue;
+    }
+    fs.unlinkSync(path.join(destDir, name));
+    removed.push(name);
+  }
+  for (const name of fs.readdirSync(destDir)) {
+    if (!LEGACY_STARTER_DESKTOP_RE.test(name)) {
       continue;
     }
     fs.unlinkSync(path.join(destDir, name));

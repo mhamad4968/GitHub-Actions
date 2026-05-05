@@ -108,7 +108,7 @@ SESSION CLOSE REPORT — 2026-05-05（JST）単一締め報告（1 本に集約�
 以下は **提案**。浜田の **承認後**にだけ実施する。
 
 **A. チェックリストの常設化（軽量）**  
-　`READ-06.txt` か **本リポの `chat-sessions/checkpoint-latest.md`** に **「674 customize 着手 5 行チェック」**を追記する案（§50-3-8・grep `window.open`・BUILD・deploy ログ・仕様一行）。
+　`08-READ-06.txt` か **本リポの `chat-sessions/checkpoint-latest.md`** に **「674 customize 着手 5 行チェック」**を追記する案（§50-3-8・grep `window.open`・BUILD・deploy ログ・仕様一行）。
 
 **B. 種別・所属条件の拡張（要仕様）**  
 　所属／グループを **空のまま種別だけ**で出したい需要があるなら **仕様決め**の上、クエリとバリデーションを変える案。
