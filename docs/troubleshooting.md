@@ -6,7 +6,7 @@
 
 ---
 
-## 目次（2026-04-25 全件再構築 / 2026-05-01 TSB-028・TSB-029 目次表追記 / 2026-05-02 TSB-030 追記 / 2026-05-04 TSB-031 追記 / F-2 自己改善目標 #2 = 真因 1 文 + root_cause_confirmed フラグ追加）
+## 目次（2026-04-25 全件再構築 / 2026-05-01 TSB-028・TSB-029 目次表追記 / 2026-05-02 TSB-030 追記 / 2026-05-04 TSB-031 追記 / 2026-05-06 TSB-032 追記 / F-2 自己改善目標 #2 = 真因 1 文 + root_cause_confirmed フラグ追加）
 
 > **真因 1 文ルール**: 各 TSB は **「真因を 1 文で説明できる」状態でなければ root_cause_confirmed = false** とする。false の TSB は再発監視優先。
 > **status 凡例**: ✅ Resolved（恒久対策済）/ 🟡 Mitigated（暫定対策のみ）/ 🔴 Open（未解決）/ ♻️ Recurring（同系列複数 episode）
@@ -41,13 +41,24 @@
 | TSB-029 | 2026-05-01 | `user-markdownify`（`@iflow-mcp/markdownify-mcp`）stdio 即死 | **npm 公開 tarball に `preinstall.js` が含まれないのに `package.json` が `preinstall` を定義**しており、`npm install -g`（スクリプト有効）や **`npx` 展開のライフサイクルが失敗して子が即終了**する（副因として Windows `_npx` 掃除 EPERM ログも出うる） | ✅ | true | Cursor MCP `markdownify` |
 | TSB-030 | 2026-05-02 | GitHub Actions `security-next-*` が **GAIA_AP15**（403）で失敗 | **GitHub Environment `kintone-collect` の API トークン（`KINTONE_API_TOKEN_COLLECT` / `KINTONE_API_TOKEN_ANALYZE` 等）が、ワークフローが参照するアプリ ID（`KINTONE_APP`・`KINTONE_REPORT_APP_ID`）と kintone 上で一致しておらず** REST が **403 GAIA_AP15** を返している | 🟡 | true | `.github/workflows/main.yml` / `daily-collect.yml` / `security-next-automation/` |
 | TSB-031 | 2026-05-04 | Desktop のセッション日報を **Git 未収容のまま削除**しリポから復元不能にした | **正本を Desktop のみに置いた状態で「古い」整理とファイル削除を同一ターンに走らせ**、バックアップ・コミットなしで消したため **組織の履歴がチャット外に残らなかった** | ✅ | true | セッション日報・HANDOFF・read-pack・憲法 §35-6 |
+| TSB-032 | 2026-05-06 | **`constitution-gates` CI が `constitution.mdc` 欠落で連続 failure** | **`verify-constitution-handoff.mjs` が `.cursor/rules/constitution.mdc` の存在を要求する一方、同ファイルが `.gitignore` でリポ非追跡**のため、GitHub checkout 上にファイルが来ず needle 検査が即 NG になった | ✅ | true | `.github/workflows/constitution-gates.yml` / `verify-constitution-handoff` |
 
-**集計** (2026-05-04 時点 / TSB-031 追記):
-- 全 **28** 件中 **root_cause_confirmed = true: 27 件** / **false (孤児): 1 件**
+**集計** (2026-05-06 時点 / TSB-032 追記):
+- 全 **29** 件中 **root_cause_confirmed = true: 28 件** / **false (孤児): 1 件**
 - 5 月目標 (F-2 自己批判 §54-5) = カバレッジ 100% を TSB-019 真因確定 (Cursor IDE Agents 設定) で **95% 前後を維持**（分母は TSB セクション数に追随）
 - 残 false: **TSB-001 のみ** = 孤児 TSB（4/19 D1-proposal でも「詳細未記載」）= 真因不明のまま記録止まり
 
 > **注**: TSB-002, TSB-003, TSB-008 はファイル不在時の記載漏れ。発見次第追記。
+
+### TSB 新設の閾値（運用・2026-05-06 追補）
+
+**CIO 起案・浜田承認（チャット）に基づく**。外部 MCP への丸投げではなく、**本文の編集と索引更新は本体 AI**。
+
+| 状況 | 記録の置き場 |
+|------|----------------|
+| **単発・手順が自明・再発見込み低** | **新規 TSB にしない**。既存 TSB へ **1 行追記**、または **`handoff-log.md` のみ**（重複長文は避ける）。 |
+| **再発しうる／CI・憲法ゲート／複数セッションで同じ穴** | **新規 TSB**（**真因 1 文**＋事象・対策・検証コマンド・関連リンク）。**本文は短く**、詳細はコミット・workflow へ委ねる。 |
+| **handoff と TSB の両方** | **同じ長文を二重に貼らない**。正本は **TSB**、handoff は **`TSB-0xx` 参照 + 事実 1〜3 行**で足りる。 |
 
 ---
 
@@ -1392,4 +1403,37 @@ Cursor の MCP ログで **`Connection failed: MCP error -32000: Connection clos
 
 - `chat-sessions/SESSION-DAILY-REPORT-20260504.txt` §5（経緯・反省の詳細）
 - `RULES-INDEX.md` §35 行（§35-6 索引）
+
+---
+
+## TSB-032 — `constitution-gates` CI が `.cursor/rules/constitution.mdc` 欠落で `verify-constitution-handoff` 連続 failure（2026-05-06 検出 / 同日 恒久対策）
+
+### 事象
+
+`mhamad4968/GitHub-Actions` の **`constitution-gates`** workflow（`push` → `main`）が **`node scripts/verify-constitution-handoff.mjs`** で **exit 2**。ログ例: **`constitution-mdc-thin-policy: missing file: .cursor/rules/constitution.mdc`**。
+
+### 根本原因（真因 1 文）
+
+**`verify-constitution-handoff.mjs` は網羅版 `.cursor/rules/constitution.mdc` の存在と先頭 needle を要求するが、同パスは `.gitignore` によりリポに含まれず checkout では常に欠落する**ため、runner 上では検査が成立しない。
+
+### 恒久対策
+
+1. **`.github/workflows/constitution-gates.yml`** の **`verify-constitution-handoff` 直前**に **`bash scripts/regenerate-constitution-rule.sh`** を追加し、**runner 内のみ** `constitution.mdc` を生成してから検証する（**常時想起の正は `constitution-brief-card.mdc`**。網羅版は **必要時 Read / ローカル regen** の運用は不変）。
+2. **`on.push.paths`** に **`scripts/regenerate-constitution-rule.sh`** を追加し、スクリプト変更時も workflow が走るようにする。
+
+### 検証
+
+- ローカル: **`rm -f .cursor/rules/constitution.mdc && bash scripts/regenerate-constitution-rule.sh && node scripts/verify-constitution-handoff.mjs`** → **exit 0**。
+- GitHub: push **`ad14c15`** 後の run が **`completed` / `success`**（`constitution-gates`）。
+
+### 教訓
+
+- **gitignore された生成物を verify が前提にする場合、CI では生成ステップを明示する**（「ローカルではあるが CI では無い」系の落とし穴）。
+- **薄型カードと網羅版の役割分担**（`NEW-SESSION-STARTER.md` 冒頭記載）を崩さず、**CI だけ生成コストを払う**のが安全。
+
+### 関連
+
+- `.gitignore`（`.cursor/rules/constitution.mdc` 行）
+- `scripts/regenerate-constitution-rule.sh`
+- `commit ad14c15`（workflow 変更）
 

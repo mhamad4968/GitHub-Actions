@@ -936,9 +936,11 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
   - **`NEW-SESSION-STARTER.md`**: Read ツールで **1〜656 行通読**（offset/limit 連鎖・抜けなし）
   - **`SESSION-READ-LADDER.md`**: 冒頭〜運用手順を Read（第0手・A/B 再確認）
   - **checkpoint / handoff**: 先頭 **最終更新**行（`mandatory-read-gate` 抜粋）＋ **handoff 末尾 3 ブロック**（2026-05-05 系）を確認
-  - **git**: 追って **`session-bootstrap-verify.mjs` + `SESSION-CLOCK.md`** を commit/push 予定（未コミット時点では `## main...origin/main` + 2 ファイル変更）
-  - **次の1手**: **GitHub-Actions** 側 **`constitution-gates` 緑化**（`.cursor/rules/constitution.mdc` をリポに含める or verify 針の CI 専用緩和を §57 で検討）／または **本題（674 入力支援の現場再現など）**は checkpoint・§41 で固定
-  - **GO待ち**: **GitHub CI 修正方針**（リポに `constitution.mdc` を追加するか）— 未提示なら次ターン **§41 一問**
+  - **git**: **`633721f`**（bootstrap 修正）＋**`ad14c15`**（`constitution-gates.yml` に regen 前ステップ）を **`main` に push 済み**
+  - **constitution-gates**: **workflow で `bash scripts/regenerate-constitution-rule.sh` を verify 前に実行**し **CI 緑**（詳細 **`docs/troubleshooting.md` TSB-032**）
+  - **TSB / 運用閾値**: **TSB-032** 新設＋目次直後 **「TSB 新設の閾値」表**を追記（浜田チャットで 2・3 承認）
+  - **次の1手**: **674 本題**等は checkpoint・§41。**CI** は TSB-032 参照で再発監視のみ
+  - **GO待ち**: なし（CI 方針は実装済み）
   - **session-lock**: なし
   - **関連パス**: `scripts/session-bootstrap-verify.mjs` / `chat-sessions/SESSION-CLOCK.md` / `docs/reports/2026-05-05-morning-prep.md`
 
