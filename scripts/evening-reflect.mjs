@@ -12,6 +12,7 @@
  *   5. agent-transcripts/ の本日 .jsonl のサイズ（参考値）
  *   6. 既存の保留改善提案（docs/approved-changes/pending/*.json）
  *   7. chat-sessions/evening-reflect-queue.md（昼→夕の固定引き継ぎ正本）
+ *   8. 雛形 §1-N（毎夜必須議題・憲法運用レビュー・§44 で浜田と必ず議論）
  *
  * 出力:
  *   - docs/reports/<日付>-evening-reflection.md（雛形）
@@ -296,6 +297,16 @@ ${pendingSection}
 
 ${eveningQueueSection}
 
+### 1-N. 毎夜必須議題（憲法運用レビュー・浜田と必ず議論）
+
+> **2026-05-06 明文化（CEO 指示）**: 夜の反省会（**§44**）で **毎回** 次を **口頭または同一チャットで扱う**（飛ばさない）。議論したら **§2 または §4 に「今日の結論」1 行以上** 残す（形骸化防止）。
+
+- [ ] **CIO 二人体制**: その日 **第2者（DeepSeek/Kimi）** を実際に挟んだか／**§50-3-8 スキップ理由**は妥当か／**本体だけで締めていないか**
+- [ ] **§1c（仕様・検証）**: **`[仕様状態:]`** / **`[検証2者:]`** を出すべき場面で出しているか／**未決・仮決を確定と言い換えていないか**
+- [ ] **MCP**: **`mcp-server-use-triggers.mdc`** を Read してから止まっているか／**`MCPスキップ:`** は理由付きか／**`npm run mcp:chat-stamp`** を使う場面で使ったか
+- [ ] **「直った」検証不足**: 再発の芽がないか（具体例 0〜1 件でよい）
+- [ ] **ルールと実態のズレ**: **`constitution-brief-card.mdc`** / **`every-turn-rules-confirm.mdc`** について、今日 **ほつれた点があれば 1 点** だけメモしたか
+
 ### 1-G. 直近 TSB（参考）
 ${tsbSection}
 
@@ -352,4 +363,4 @@ ${checkpointFreshness}
 
 fs.writeFileSync(REPORT_PATH, out, 'utf8');
 console.log(`✅ 反省レポート雛形を生成: ${path.relative(REPO_ROOT, REPORT_PATH)}`);
-console.log(`   AI はこの内容を読み、§2-§5 を埋めてユーザーへ提示してください。`);
+console.log(`   AI は §1-N（毎夜必須議題）を浜田と議論し、§2-§5 を埋めてユーザーへ提示してください。`);

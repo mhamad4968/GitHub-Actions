@@ -140,7 +140,26 @@ const suites = [
   {
     id: 'rules-index-tsb024',
     rel: 'RULES-INDEX.md',
-    needles: ['TSB-024', 'verify:constitution-handoff'],
+    needles: ['TSB-024', 'verify:constitution-handoff', '§1-N'],
+  },
+  {
+    id: 'agents-44-evening-1n',
+    rel: 'AGENTS.md',
+    needles: [
+      '§1-N（毎夜必須議題・憲法運用レビュー）',
+      '§44 未実施扱い',
+      'evening-reflect.mjs',
+    ],
+  },
+  {
+    id: 'evening-reflect-scaffold-1n',
+    rel: 'scripts/evening-reflect.mjs',
+    needles: ['### 1-N.', '毎夜必須議題', '憲法運用レビュー'],
+  },
+  {
+    id: 'evening-reflect-queue-1n',
+    rel: 'chat-sessions/evening-reflect-queue.md',
+    needles: ['毎夜固定', '§1-N', '§44'],
   },
   {
     id: 'handoff-anchor',
