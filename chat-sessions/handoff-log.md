@@ -921,3 +921,24 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 - **内容**: ヘッダの **「入れ方」** 個人文言・共有・JR の **コピー参照 textarea** および **`DEPT_HELP_REFERENCE_TEXT`** を **削除**。`injectDeptHelpBanner` を廃止し、表示済みの `#new-pc-ledger-dept-help` は **常に除去**。仕様書 §4.2.0b の共有・JR／NAS の「ヘルプ帯」記述を **674 非表示**に整合。
 - **`npm run deploy:674`**: **SUCCESS** / fileKey **`d7dde324-e07d-486c-b7f3-2ff888729016`** / revision **`116`** / **BUILD=`2026-05-05-pc-ledger-remove-dept-help-banner`**。
 
+### 2026-05-06 07:47 JST — 朝イチ: ブリーフィング・健康・GitHub・壁時計・項番0（浜田チャット承認）
+
+- **浜田メモ（原文）**: 「本日のブリーフィングと健康状態、githubのエラー確認後壁時計起動→URLを私に教えるまで行ったあとこのチャットでまだ「運用上」していないことについて１個ずつ確認し実行をお願いします（承認します）」
+- **AI 補足**:
+  - **日時根拠**: `date` → **2026-05-06 07:46 (Wed) JST**（§39）
+  - **朝ブリーフィング**: `docs/reports/2026-05-06-morning-prep.md` **未生成**（直近は **`2026-05-05-morning-prep.md`** を参照。§0a クレジット 71% 警告・kintone:test 緑 等）
+  - **健康**: `npm run health-check` → **正常 27 / 異常 0 / 警告 1**（S12 MCP 死蔵 11・参考）、MCP 疎通は主要サーバ ✅
+  - **GitHub**: `mhamad4968/GitHub-Actions` の **`constitution-gates`** が直近 push で **連続 failure**。ログ先頭: **`verify-constitution-handoff` NG — `constitution-mdc-thin-policy: missing file: .cursor/rules/constitution.mdc`**（CI 作業ツリー側。**ローカル `kintone-ai-lab` には同ファイル存在**）。`security-next-daily-collect` / `kintone-customize-deploy` は **success** 混在
+  - **壁時計**: `npm run session:clock:set` → **`SESSION-CLOCK.md` 開始: 2026-05-06 07:47 (Asia/Tokyo)`** / `session:clock:web` 起動 URL はチャット報告
+  - **項番 -0**: 上記メッセージを **OK** とみなし **項番 0 着手**
+  - **`session:bootstrap`**: 初回 **`session-bootstrap-verify.mjs`** がテンプレ内 **バッククォートで `ReferenceError: rules is not defined`** → **内側バッククォート除去で修正**のうえ **再実行し exit 0**（verify / mandatory / clock-health / sync-desktop / verify-desktop / mcp-windows / smoke **11/11 OK**）
+  - **Desktop sync**: `00-NEW-SESSION-STARTER_20260506.txt` へ更新（旧 **`20260505`** は prune）。**貼付推奨**は verify 最終行どおり **`00-NEW-SESSION-STARTER_20260506.txt`**
+  - **`NEW-SESSION-STARTER.md`**: Read ツールで **1〜656 行通読**（offset/limit 連鎖・抜けなし）
+  - **`SESSION-READ-LADDER.md`**: 冒頭〜運用手順を Read（第0手・A/B 再確認）
+  - **checkpoint / handoff**: 先頭 **最終更新**行（`mandatory-read-gate` 抜粋）＋ **handoff 末尾 3 ブロック**（2026-05-05 系）を確認
+  - **git**: 追って **`session-bootstrap-verify.mjs` + `SESSION-CLOCK.md`** を commit/push 予定（未コミット時点では `## main...origin/main` + 2 ファイル変更）
+  - **次の1手**: **GitHub-Actions** 側 **`constitution-gates` 緑化**（`.cursor/rules/constitution.mdc` をリポに含める or verify 針の CI 専用緩和を §57 で検討）／または **本題（674 入力支援の現場再現など）**は checkpoint・§41 で固定
+  - **GO待ち**: **GitHub CI 修正方針**（リポに `constitution.mdc` を追加するか）— 未提示なら次ターン **§41 一問**
+  - **session-lock**: なし
+  - **関連パス**: `scripts/session-bootstrap-verify.mjs` / `chat-sessions/SESSION-CLOCK.md` / `docs/reports/2026-05-05-morning-prep.md`
+
