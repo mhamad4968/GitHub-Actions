@@ -19,7 +19,7 @@
  *   - （一覧）**SKYSEA 状態**: 検索バーに **skysea_status チップ**（§4.8a）。**SKYSEA 計画立案・合意後に要件・UI を再検討予定**（現状は暫定）。
  *   - （一覧）**絞り込み URL**: `query` パラメータから **キーワード・種別・SKYSEA チップ**を復元（当バーが生成したクエリ形式に準拠）。
  *   - **PC買替は実装済**（§4.10.3）。594 同趣旨。**627 二重更新なし**。v0.9.14: ボタン掛け先フォールバック＋遅延再 inject、`import_source=PC_REPLACE_FROM_674:<旧$id>`・legacy 594 フィールドクリア。
- *   - 新規・編集: **所属ヘルプは既定で閉じた `<details>`**（必要時のみ開く・§4.2.0b）。**共有・JR（非保管）**: フィールド最小表示、**所属候補モーダル**（マスタ **680** または埋め込み）、保存前必須。**所属名／所属グループをクリック**→確認（入力支援するか）→OK で **680**（§4.2.0b・§4.4）。**個人の 595 入力支援**は **`isPersonal595AssistEnabled674`**（非保管の個人のみ）。**利用者名・所属名・所属グループをクリック**→同様に確認→OK で **595 検索**。**ヘッダ／フィールド直下の明示ボタン**は確認省略（押下＝入力支援希望）。**フォーカスのみではモーダルは開かない**。**`pc_status`=保管**のときは種別に関わらず **ヘッダは全フィールドリセットのみ**（閲覧ではカスタムバーなし）。VPN は個人のみ。NAS/その他は全表示。
+ *   - 新規・編集: **所属ヘルプは既定で閉じた `<details>`**（必要時のみ開く・§4.2.0b）。**共有・JR（非保管）**: 共有PCのため**利用者の入力支援は対象外**。**所属名／所属グループをクリック**→カスタム確認（**はい／いいえ**）→はいで **680**。**個人**は **利用者名・所属名・所属グループ**をクリック→同様に **はい／いいえ**→はいで **595**（`isPersonal595AssistEnabled674`）。**ヘッダ／フィールド直下の明示ボタン**は確認省略。**フォーカスのみではモーダルは開かない**。**`pc_status`=保管**のときは種別に関わらず **ヘッダは全フィールドリセットのみ**（閲覧ではカスタムバーなし）。VPN は個人のみ。NAS/その他は全表示。
  *   - **備考（note）**: 全種別で任意（保存前チェックでは必須にしない）。
  *   - **モバイル**: 当面は利用想定なし（`kintone.mobile` 分岐は既存のまま残すが、専用UXは追わない）。
  *   - **M365管理マスタレコード番号（671 `$id`）**: 共有・JR は同一671行の **usage_count / 5 台**運用で紐づく。個人は表示するが多くは空（自動生成はメール由来M365中心）。**手入力不可**（自動生成・保存後同期のみ更新）。
@@ -29,7 +29,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-05-pc-ledger-input-assist-click-confirm';
+  const BUILD = '2026-05-05-pc-ledger-input-assist-hai-iie-modal';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -1048,16 +1048,119 @@
   const USER_SUGGEST_BOX_ID = 'new-pc-ledger-user-suggest';
   const EMPLOYEE_SEARCH_MODAL_ID = 'new-pc-ledger-employee-search-modal';
   const DEPT_MASTER_MODAL_ID = 'new-pc-ledger-dept-master-modal';
+  const INPUT_ASSIST_CONFIRM_MODAL_ID = 'new-pc-ledger-input-assist-confirm';
 
-  /** §4.2.0b: フィールドクリック時の入力支援確認（window.confirm 文言） */
-  const NPL674_INPUT_ASSIST_CONFIRM_PERSONAL =
-    '利用者名・所属名・所属グループの入力支援を利用しますか？\n\n' +
-    '「OK」で社員マスタ（595）の検索画面を開きます。\n' +
-    '「キャンセル」では何もしません。';
-  const NPL674_INPUT_ASSIST_CONFIRM_SHARED_JR =
-    '所属名・所属グループの入力支援を利用しますか？\n\n' +
-    '「OK」で所属候補（680）の検索画面を開きます。\n' +
-    '「キャンセル」では何もしません。';
+  /** §4.2.0b: カスタム確認モーダル本文（はい／いいえボタン） */
+  const NPL674_INPUT_ASSIST_MSG_PERSONAL =
+    '入力支援を利用しますか？\n\n' +
+    '個人PCのため、利用者名・所属名・所属グループを社員マスタ（595）で検索し、フォームへ反映できます。';
+  const NPL674_INPUT_ASSIST_MSG_SHARED_JR =
+    '入力支援を利用しますか？\n\n' +
+    '共有PC／JR端末のため、所属名・所属グループを所属候補（680）で検索し、フォームへ反映できます。';
+
+  let inputAssistConfirmResolve674 = null;
+  let inputAssistConfirmEsc674 = false;
+
+  function closeInputAssistConfirmModal674(result) {
+    const el = document.getElementById(INPUT_ASSIST_CONFIRM_MODAL_ID);
+    if (el) el.style.display = 'none';
+    const fn = inputAssistConfirmResolve674;
+    inputAssistConfirmResolve674 = null;
+    if (typeof fn === 'function') fn(!!result);
+  }
+
+  function ensureInputAssistConfirmModal674() {
+    let backdrop = document.getElementById(INPUT_ASSIST_CONFIRM_MODAL_ID);
+    if (backdrop) return backdrop;
+
+    backdrop = document.createElement('div');
+    backdrop.id = INPUT_ASSIST_CONFIRM_MODAL_ID;
+    backdrop.style.cssText =
+      'display:none;position:fixed;inset:0;z-index:100010;align-items:center;justify-content:center;' +
+      'padding:16px;box-sizing:border-box;background:rgba(33,37,41,.48);';
+    backdrop.setAttribute('role', 'dialog');
+    backdrop.setAttribute('aria-modal', 'true');
+    backdrop.addEventListener('click', function (e) {
+      if (e.target === backdrop) closeInputAssistConfirmModal674(false);
+    });
+
+    const panel = document.createElement('div');
+    panel.style.cssText =
+      'background:#fff;border-radius:8px;max-width:440px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,.2);' +
+      'padding:18px 20px 16px;box-sizing:border-box;';
+    panel.addEventListener('click', function (e) {
+      e.stopPropagation();
+    });
+
+    const title = document.createElement('div');
+    title.style.cssText = 'font-weight:bold;font-size:16px;color:#052c65;margin-bottom:10px;';
+    title.textContent = '入力支援の確認';
+    panel.appendChild(title);
+
+    const msg = document.createElement('div');
+    msg.setAttribute('data-npl674-iac-msg', '1');
+    msg.style.cssText = 'font-size:14px;color:#212529;line-height:1.65;white-space:pre-wrap;margin-bottom:18px;';
+    panel.appendChild(msg);
+
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;';
+
+    const btnNo = document.createElement('button');
+    btnNo.type = 'button';
+    btnNo.textContent = 'いいえ';
+    btnNo.style.cssText =
+      'padding:8px 18px;font-size:14px;border:1px solid #6c757d;background:#fff;border-radius:4px;cursor:pointer;color:#212529;';
+    btnNo.addEventListener('click', function () {
+      closeInputAssistConfirmModal674(false);
+    });
+
+    const btnYes = document.createElement('button');
+    btnYes.type = 'button';
+    btnYes.textContent = 'はい';
+    btnYes.style.cssText =
+      'padding:8px 18px;font-size:14px;border:none;background:#0d6efd;color:#fff;border-radius:4px;cursor:pointer;font-weight:600;';
+    btnYes.addEventListener('click', function () {
+      closeInputAssistConfirmModal674(true);
+    });
+
+    row.appendChild(btnNo);
+    row.appendChild(btnYes);
+    panel.appendChild(row);
+    backdrop.appendChild(panel);
+    document.body.appendChild(backdrop);
+
+    if (!inputAssistConfirmEsc674) {
+      inputAssistConfirmEsc674 = true;
+      document.addEventListener(
+        'keydown',
+        function nplInputAssistConfirmEsc674(ev) {
+          const m = document.getElementById(INPUT_ASSIST_CONFIRM_MODAL_ID);
+          if (!m || m.style.display === 'none') return;
+          if (ev.key === 'Escape') closeInputAssistConfirmModal674(false);
+        },
+        true,
+      );
+    }
+    return backdrop;
+  }
+
+  /**
+   * @param {string} messageText
+   * @returns {Promise<boolean>}
+   */
+  function promise674InputAssistConfirm674(messageText) {
+    return new Promise(function (resolve) {
+      if (inputAssistConfirmResolve674) {
+        resolve(false);
+        return;
+      }
+      const backdrop = ensureInputAssistConfirmModal674();
+      const msgEl = backdrop.querySelector('[data-npl674-iac-msg]');
+      if (msgEl) msgEl.textContent = messageText || '';
+      inputAssistConfirmResolve674 = resolve;
+      backdrop.style.display = 'flex';
+    });
+  }
 
   /**
    * マスタ未整備時の所属候補（所属名|group_code をカンマ連結。所属マスタアプリ取得後は主に API）。
@@ -1800,6 +1903,11 @@
   let npl674FieldAssistAbort674 = null;
 
   function is674AssistModalVisible674() {
+    const c = document.getElementById(INPUT_ASSIST_CONFIRM_MODAL_ID);
+    if (c) {
+      const cs = String(c.style.display || '').trim();
+      if (cs && cs !== 'none') return true;
+    }
     const d = document.getElementById(DEPT_MASTER_MODAL_ID);
     if (d) {
       const ds = String(d.style.display || '').trim();
@@ -1814,8 +1922,9 @@
   }
 
   /**
-   * 利用者名・所属名・所属グループを**クリック**したとき（§4.2.0b）: 入力支援の確認 → OK で 595（個人）または 680（共有・JR・所属欄）。
-   * フォーカス／pointerdown では起動しない。明示ボタンは openEmployee595SearchModal674 / openDeptMasterModal674 を直接呼ぶ。
+   * §4.2.0b: **個人** — 利用者名・所属名・所属グループをクリック →「入力支援を利用しますか？」（はい／いいえ）→ はいで 595。
+   * **共有・JR** — 共有PCのため利用者の概念はなく、**所属名・所属グループ**のみ同様に確認 → はいで 680。
+   * フォーカスでは起動しない。明示ボタンは確認を挟まず openEmployee595SearchModal674 / openDeptMasterModal674。
    * @param {Event} ev
    * @param {'user'|'dept'|'grp'|null} forcedField null = document 上でターゲットから推定。各フィールド getFieldElement 直下は固定。
    * @param {number} [attempt] get() 未到達時の短いリトライ回数
@@ -1877,23 +1986,27 @@
 
     if (isPcStatusStorage674(rec)) return;
 
-    /* 共有・JR: 所属欄クリック → 確認 → 未入力のとき 680（595 とは別系統） */
+    /* 共有・JR: 所属欄のみ（利用者の概念なし）。クリック → はい／いいえ → 680 */
     if (type === TYPE_SHARED || type === TYPE_JR) {
       if (!inDept && !inGrp) return;
       const d = trimmedScalarLive674(rec, FC_DEPT_NAME);
       const g = trimmedScalarLive674(rec, FC_GROUP_NAME);
       if (d && g) return;
-      if (!window.confirm(NPL674_INPUT_ASSIST_CONFIRM_SHARED_JR)) return;
-      npl674FocusAssistSuppressUntil674 = Date.now() + 400;
-      openDeptMasterModal674();
+      promise674InputAssistConfirm674(NPL674_INPUT_ASSIST_MSG_SHARED_JR).then(function (yes) {
+        if (!yes) return;
+        npl674FocusAssistSuppressUntil674 = Date.now() + 400;
+        openDeptMasterModal674();
+      });
       return;
     }
 
-    /* 個人（非保管）: 利用者名・所属のいずれかクリック → 確認 → 595 */
+    /* 個人（非保管）: 利用者名・所属クリック → はい／いいえ → 595 */
     if (isPersonal595AssistEnabled674(rec)) {
-      if (!window.confirm(NPL674_INPUT_ASSIST_CONFIRM_PERSONAL)) return;
-      npl674FocusAssistSuppressUntil674 = Date.now() + 400;
-      openEmployee595SearchModal674();
+      promise674InputAssistConfirm674(NPL674_INPUT_ASSIST_MSG_PERSONAL).then(function (yes) {
+        if (!yes) return;
+        npl674FocusAssistSuppressUntil674 = Date.now() + 400;
+        openEmployee595SearchModal674();
+      });
     }
   }
 
@@ -1922,9 +2035,14 @@
       el.addEventListener('click', fn, { capture: true, signal: sig });
     }
 
-    bindField674(FC_USER_NAME, 'user');
     bindField674(FC_DEPT_NAME, 'dept');
     bindField674(FC_GROUP_NAME, 'grp');
+    /* 共有・JR は共有PCのため「利用者」入力支援の対象外（所属名・所属グループのみ） */
+    const bagW = getRecordFormHolder674();
+    const tw = bagW && bagW.holder && bagW.holder.record ? readAccountTypeLive674(bagW.holder.record) : '';
+    if (tw !== TYPE_SHARED && tw !== TYPE_JR) {
+      bindField674(FC_USER_NAME, 'user');
+    }
   }
 
   function install674EmptyFieldFocusAssist674() {
