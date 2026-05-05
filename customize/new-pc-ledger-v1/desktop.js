@@ -19,7 +19,7 @@
  *   - （一覧）**SKYSEA 状態**: 検索バーに **skysea_status チップ**（§4.8a）。**SKYSEA 計画立案・合意後に要件・UI を再検討予定**（現状は暫定）。
  *   - （一覧）**絞り込み URL**: `query` パラメータから **キーワード・種別・SKYSEA チップ**を復元（当バーが生成したクエリ形式に準拠）。
  *   - **PC買替は実装済**（§4.10.3）。594 同趣旨。**627 二重更新なし**。v0.9.14: ボタン掛け先フォールバック＋遅延再 inject、`import_source=PC_REPLACE_FROM_674:<旧$id>`・legacy 594 フィールドクリア。
- *   - 新規・編集: **所属ヘルプは既定で閉じた `<details>`**（必要時のみ開く・§4.2.0b）。**入力支援**: `document` **capture** でフィールド内クリックを捕捉（kintone 内側の `stopPropagation` より先に実行）。**はい／いいえ** 確認の z-index は kintone ヘッダより上。**個人**＝利用者名・所属名・所属グループのクリックまたは直下 **入力支援（595で検索）**。**共有・JR**＝所属名・所属グループのみ＋直下 **入力支援（所属候補）**。ヘッダの旧「社員名検索／所属候補」ボタンは**廃止**。**`pc_status`=保管**のときは種別横断で **ヘッダは全フィールドリセットのみ**（閲覧ではカスタムバーなし）。VPN は個人のみ。NAS/その他は全表示。
+ *   - 新規・編集: **所属ヘルプ `<details>`（入れ方・コピー一覧）は表示しない**（2026-05-05 浜田指示・680／フィールド直下「入力支援」で代替）。**入力支援**: `document` **capture** でフィールド内クリックを捕捉（kintone 内側の `stopPropagation` より先に実行）。**はい／いいえ** 確認の z-index は kintone ヘッダより上。**個人**＝利用者名・所属名・所属グループのクリックまたは直下 **入力支援（595で検索）**。**共有・JR**＝所属名・所属グループのみ＋直下 **入力支援（所属候補）**。ヘッダの旧「社員名検索／所属候補」ボタンは**廃止**。**`pc_status`=保管**のときは種別横断で **ヘッダは全フィールドリセットのみ**（閲覧ではカスタムバーなし）。VPN は個人のみ。NAS/その他は全表示。
  *   - **備考（note）**: 全種別で任意（保存前チェックでは必須にしない）。
  *   - **モバイル**: 当面は利用想定なし（`kintone.mobile` 分岐は既存のまま残すが、専用UXは追わない）。
  *   - **M365管理マスタレコード番号（671 `$id`）**: 共有・JR は同一671行の **usage_count / 5 台**運用で紐づく。個人は表示するが多くは空（自動生成はメール由来M365中心）。**手入力不可**（自動生成・保存後同期のみ更新）。
@@ -29,58 +29,11 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-05-pc-ledger-input-assist-doc-delegate';
+  const BUILD = '2026-05-05-pc-ledger-remove-dept-help-banner';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
   let jb674PrintRecordSnapshot = null;
-
-  /** 共有・JR 等の手入力時の参照用（浜田提供・順序固定） */
-  const DEPT_HELP_REFERENCE_TEXT =
-    '【所属名】\n' +
-    '　◆本社\n' +
-    '　　役員室\n' +
-    '　　顧問室\n' +
-    '　　総務部\n' +
-    '　　経理部\n' +
-    '　　経営企画部\n' +
-    '　　人事研修部\n' +
-    '　　安全推進部\n' +
-    '　　施工推進部\n' +
-    '　　メンテナンス技術部\n' +
-    '　　塗装技術部\n' +
-    '　　品質管理部\n' +
-    '　◆支店・営業所\n' +
-    '　　東北支店\n' +
-    '　　　秋田営業所\n' +
-    '　　　盛岡営業所\n' +
-    '　　　仙台営業所\n' +
-    '　　関越支店\n' +
-    '　　　新潟営業所\n' +
-    '　　　長野営業所\n' +
-    '　　　高崎営業所\n' +
-    '　　東京支店\n' +
-    '　　　千葉営業所\n' +
-    '　　　水戸営業所\n' +
-    '　　東海支店\n' +
-    '　　　東京営業所\n' +
-    '　　　静岡営業所\n' +
-    '　　　名古屋営業所\n' +
-    '　　　関西営業所\n' +
-    '　　札幌支店\n' +
-    '　　首都圏支店\n' +
-    '　　鉄構支店\n' +
-    '　　湾岸工事所\n' +
-    '\n' +
-    '【所属グループ】\n' +
-    '　honsya\n' +
-    '　tohoku\n' +
-    '　kan-etsu\n' +
-    '　tokyo\n' +
-    '　tokai\n' +
-    '　reform\n' +
-    '　tekko\n' +
-    '　wangan\n';
 
   // ===== 関連アプリ ID (kintone-apps.md 参照) =====
   const APP_ENV_MASTER = '670';     // 環境設定マスタ
@@ -449,87 +402,13 @@
     }
   }
 
-  // ===== §4.2.0b 所属名・所属グループ ヘルプ（既定は閉じる・必要時のみ開く）=====
+  // ===== §4.2.0b 所属ヘルプ（2026-05-05 撤去: 旧 `<details>` ブロックの DOM のみ除去）=====
 
   const DEPT_HELP_ID = 'new-pc-ledger-dept-help';
-
-  const DEPT_HELP_SHOW_RECORD_EVENTS = new Set([
-    'app.record.detail.show',
-    'app.record.create.show',
-    'app.record.edit.show',
-    'mobile.app.record.detail.show',
-    'mobile.app.record.create.show',
-    'mobile.app.record.edit.show',
-  ]);
 
   function removeDeptHelpBanner() {
     const el = document.getElementById(DEPT_HELP_ID);
     if (el) el.remove();
-  }
-
-  /**
-   * レコード画面ヘッダに所属ヘルプを出す（詳細・新規・編集）。**既定は閉じた `<details>`** で縦スペースを抑える。
-   */
-  function injectDeptHelpBanner() {
-    const space = getHeaderSpace674();
-    if (!space) return;
-
-    const prev = document.getElementById(DEPT_HELP_ID);
-    if (prev) prev.remove();
-
-    const box = document.createElement('div');
-    box.id = DEPT_HELP_ID;
-    box.style.cssText = 'font-size:12px;line-height:1.45;margin:4px 0 6px;color:#052c65;';
-
-    const det = document.createElement('details');
-    det.style.cssText =
-      'background:#e8f4fd;border:1px solid #9ec5fe;border-radius:4px;padding:6px 10px 8px;';
-
-    const sum = document.createElement('summary');
-    sum.style.cssText = 'cursor:pointer;font-weight:700;user-select:none;outline:none;';
-    sum.textContent =
-      '📋 所属名・所属グループのヘルプを表示（個人＝595／利用者名、共有・JR＝手入力＋コピー一覧）';
-
-    const inner = document.createElement('div');
-    inner.style.cssText = 'padding-top:8px;margin-top:6px;border-top:1px solid #9ec5fe;';
-
-    const title = document.createElement('div');
-    title.style.cssText = 'font-weight:bold;margin-bottom:4px;';
-    title.textContent = '入れ方';
-    inner.appendChild(title);
-
-    const ul = document.createElement('ul');
-    ul.style.cssText = 'margin:0 0 8px 1.1em;padding:0;';
-    const li1 = document.createElement('li');
-    li1.textContent =
-      '個人：595の入力支援は、種別「個人」かつステータスが「保管」以外のときだけ使えます（仕様書 §4.1a・§4.4）。利用者名・所属名・所属グループをクリックするか、各欄直下の「入力支援（595で検索）」から開いてください。利用者名欄に入力するとドロップダウン候補が出る場合があります。';
-    const li2 = document.createElement('li');
-    li2.textContent =
-      '共有・JR：`所属名` と `所属グループ` は別フィールド。下表は会社既定の候補を**この順**で記載（必要な行だけコピーして入力）。';
-    ul.appendChild(li1);
-    ul.appendChild(li2);
-    inner.appendChild(ul);
-
-    const exLabel = document.createElement('div');
-    exLabel.style.cssText = 'font-weight:bold;font-size:11px;margin:2px 0 4px;';
-    exLabel.textContent = '所属名・所属グループ 一覧（上から順・コピー参照）';
-
-    const ta = document.createElement('textarea');
-    ta.readOnly = true;
-    ta.rows = 6;
-    ta.style.cssText =
-      'width:100%;max-width:720px;max-height:132px;font-size:11px;font-family:Consolas,monospace;' +
-      'box-sizing:border-box;padding:6px;border:1px solid #86b7fe;border-radius:4px;resize:vertical;overflow-y:auto;';
-    ta.value = DEPT_HELP_REFERENCE_TEXT;
-
-    inner.appendChild(exLabel);
-    inner.appendChild(ta);
-
-    det.appendChild(sum);
-    det.appendChild(inner);
-    box.appendChild(det);
-
-    space.insertBefore(box, space.firstChild);
   }
 
   // ===== ヘッダスペース (PC / モバイル) =====
@@ -4038,11 +3917,7 @@ ${bodyInner}\
       const rid = event.record.$id && event.record.$id.value;
       if (rid) snapshotBeforeEdit674[String(rid)] = extractState674(event.record);
     }
-    if (DEPT_HELP_SHOW_RECORD_EVENTS.has(event.type)) {
-      injectDeptHelpBanner();
-    } else {
-      removeDeptHelpBanner();
-    }
+    removeDeptHelpBanner();
     const editable =
       event.type === 'app.record.create.show' ||
       event.type === 'app.record.edit.show' ||
@@ -4112,7 +3987,7 @@ ${bodyInner}\
       result = confirmTypeChangeIfNeeded(event);
     }
     result = showJrAlertIfNeeded(result);
-    injectDeptHelpBanner();
+    removeDeptHelpBanner();
     applyInternalMetaFieldUi(result.record, 'editable');
     applySkyseaGroupUi(result.record, 'editable');
     applyVisibilityByType(result.record);
