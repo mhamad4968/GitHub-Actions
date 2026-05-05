@@ -22,11 +22,12 @@
  *   - **備考（note）**: 全種別で任意（保存前チェックでは必須にしない）。
  *   - **モバイル**: 当面は利用想定なし（`kintone.mobile` 分岐は既存のまま残すが、専用UXは追わない）。
  *   - **M365管理マスタレコード番号（671 `$id`）**: 共有・JR は同一671行の **usage_count / 5 台**運用で紐づく。個人は表示するが多くは空（自動生成はメール由来M365中心）。**手入力不可**（自動生成・保存後同期のみ更新）。
+ *   - **PC名（`pc_name`）**: 全種別で **保存必須**（運用: **PCの管理番号＝PC名**）。
  */
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-05-pc-ledger-m365master-readonly';
+  const BUILD = '2026-05-05-pc-ledger-pc-name-required-all-types';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -3745,6 +3746,12 @@ ${bodyInner}\
       const type = event.record[FC_ACCOUNT_TYPE]?.value || '';
       const errors = [];
 
+      if (!trimmedScalarValue674(event.record, FC_PC_NAME)) {
+        const pm = 'PC名を入力してください（PCの管理番号＝PC名として運用します）。';
+        errors.push(pm);
+        event.errors = Object.assign(event.errors || {}, { [FC_PC_NAME]: pm });
+      }
+
       if (
         type === TYPE_PERSONAL &&
         !isPersonalStored(event.record) &&
@@ -3763,7 +3770,6 @@ ${bodyInner}\
         const reqPairsSharedJr = [
           [FC_DEPT_NAME, '所属名'],
           [FC_GROUP_NAME, '所属グループ'],
-          [FC_PC_NAME, 'PC名'],
           [FC_M365_ID, 'M365 ID'],
           [FC_M365_PW, 'M365 パスワード'],
           [FC_WINDOWS_NAME, 'Windows名'],
