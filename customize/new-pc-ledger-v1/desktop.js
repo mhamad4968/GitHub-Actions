@@ -23,7 +23,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-05-pc-ledger-dept-master-app-680';
+  const BUILD = '2026-05-05-pc-ledger-fixed-ip-nas-only';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -330,6 +330,7 @@
 
   /**
    * 種別に応じたフォーム表示制御（2026-05 GO: 共有・JR は最小セット、NAS/その他は全表示、個人＋保管は同一）
+   * 固定IP1/2 はサーバーNASのみ（他種別は DHCP のため非表示）。
    */
   function applyVisibilityByType(record) {
     const type = record[FC_ACCOUNT_TYPE]?.value || '';
@@ -399,8 +400,6 @@
         FC_MANUFACTURER,
         FC_MANUFACTURING_NO,
         FC_MODEL_NAME,
-        FC_FIXED_IP_1,
-        FC_FIXED_IP_2,
         FC_EXTRA_INFO_1,
         FC_EXTRA_INFO_2,
         FC_EMP_ID,
@@ -420,12 +419,16 @@
 
     if (type === TYPE_PERSONAL) {
       setFieldsVisibility([FC_SHARED_TERMINAL_NAME], false);
+      setFieldsVisibility([FC_FIXED_IP_1, FC_FIXED_IP_2], false);
       setFieldsVisibility(VPN_FIELDS, true);
       setFieldsVisibility(MAIL_CYBOZU, true);
       return;
     }
 
     setFieldsVisibility(VPN_FIELDS, false);
+    if (type !== TYPE_SERVER) {
+      setFieldsVisibility([FC_FIXED_IP_1, FC_FIXED_IP_2], false);
+    }
   }
 
   // ===== §4.2.0b 所属名・所属グループ 常時ヘルプ帯 =====
@@ -3752,8 +3755,6 @@ ${bodyInner}\
           [FC_MANUFACTURER, 'メーカー'],
           [FC_MANUFACTURING_NO, '製造番号'],
           [FC_MODEL_NAME, 'モデル名／型式'],
-          [FC_FIXED_IP_1, '固定IPアドレス1'],
-          [FC_FIXED_IP_2, '固定IPアドレス2'],
           [FC_EXTRA_INFO_1, 'その他情報1'],
           [FC_EXTRA_INFO_2, 'その他情報2'],
         ];
