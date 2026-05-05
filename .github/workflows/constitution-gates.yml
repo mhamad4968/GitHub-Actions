@@ -14,6 +14,7 @@ on:
       - '.cursor/rules/**'
       - '.github/workflows/constitution-gates.yml'
       - 'scripts/verify-constitution-handoff.mjs'
+      - 'scripts/regenerate-constitution-rule.sh'
       - 'scripts/verify-ci-rule-integrity.mjs'
       - 'scripts/smoke-test.mjs'
       - 'scripts/session-bootstrap-verify.mjs'
@@ -39,6 +40,11 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version-file: '.nvmrc'
+
+      # `.cursor/rules/constitution.mdc` は `.gitignore` によりリポに含めない（大容量の網羅結合版）。
+      # verify は先頭 needle のみ検査するため、CI 上で再生成してから走らせる。
+      - name: Generate constitution.mdc（runner 内のみ・常時想起は constitution-brief-card.mdc）
+        run: bash scripts/regenerate-constitution-rule.sh
 
       - name: verify-constitution-handoff（needle 生存）
         run: node scripts/verify-constitution-handoff.mjs
