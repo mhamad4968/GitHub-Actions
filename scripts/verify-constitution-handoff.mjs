@@ -59,7 +59,15 @@ const suites = [
       'session:clock:clear',
       '【適用憲法】',
       'every-turn-rules-confirm.mdc',
+      'constitution-brief-card.mdc',
+      '網羅結合版',
     ],
+  },
+  {
+    id: 'constitution-mdc-thin-policy',
+    rel: '.cursor/rules/constitution.mdc',
+    headChars: 900,
+    needles: ['alwaysApply: false', 'constitution-brief-card.mdc', '網羅統合版'],
   },
   {
     id: 'handoff-five-blocks',

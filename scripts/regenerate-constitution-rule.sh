@@ -11,15 +11,15 @@ trap rm_on_fail ERR
 
 {
   printf '%s\n' '---' \
-    'description: 網羅統合版 — 憲法・索引・WORKFLOW・全mdc・予実・plans・chat・handoff・docs全（plans除く重複）・security-next・yojitsu README等（再生成=本スクリプト）' \
-    'alwaysApply: true' \
+    'description: 網羅統合版 — 憲法・索引・WORKFLOW・全mdc・予実・plans・chat・handoff・docs全（plans除く重複）・security-next・yojitsu README等（再生成=本スクリプト）。常時想起は constitution-brief-card.mdc、本ファイルは必要時 Read' \
+    'alwaysApply: false' \
     '---' \
     '' \
     '# kintone-ai-lab — Constitution（網羅統合版）' \
     '' \
     '> **読み方**: 本ファイルはリポ内の正本を**物理的に結合**したもの。編集の正本は各元ファイル。**差分・条文番号の最終解釈は `AGENTS.md`**。Cursor の制約で分割が必要な場合は `AGENTS.md` を直接 Read する。' \
     '' \
-    '> **トークン重複の注意**: 個別 `.mdc` は原則 `alwaysApply: false`。**常時想起は本ファイル + `auto-read-by-topic.mdc`**。個別ルールを常時に戻すと二重になる。' \
+    '> **常時想起（薄型カード）**: **`.cursor/rules/constitution-brief-card.mdc`**。本網羅ファイルは **`alwaysApply: false`** — **必要時のみ Read**。**常時想起は `constitution-brief-card.mdc` + `auto-read-by-topic.mdc`**（＋ `constitution-enforcement-core.mdc` 等）。個別 `.mdc` を常時に戻すと二重になる。' \
     '' \
     '> **再生成**: `bash scripts/regenerate-constitution-rule.sh`' \
     '' \

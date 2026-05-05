@@ -141,6 +141,7 @@
     "smoke:json": "node scripts/smoke-test.mjs --json",
     "smoke:quiet": "node scripts/smoke-test.mjs --quiet",
     "verify:constitution-handoff": "node scripts/verify-constitution-handoff.mjs",
+    "verify:ci-rule-integrity": "node scripts/verify-ci-rule-integrity.mjs",
     "rules:regenerate-constitution": "bash scripts/regenerate-constitution-rule.sh",
     "verify:mandatory-read-gate": "node scripts/mandatory-read-gate.mjs",
     "verify:agent-env": "node scripts/verify-agent-env.mjs",

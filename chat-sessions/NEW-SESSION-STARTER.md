@@ -2,6 +2,8 @@
 🚨 憲法級（要約耐性ブロック） / 2026-05-06 **v3.34**（AGENTS **v23.34**・§35-7・**全 customize `deploy:*` preflight ゲート**・**HANDOFF-AI-FIVE-BLOCKS**）/ TSB-024
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+**■ 憲法の読み方（2026-05-06）**: Cursor の常時想起は **`.cursor/rules/constitution-brief-card.mdc`**（**薄型カード**）。**網羅結合版** **`.cursor/rules/constitution.mdc`** は **`alwaysApply: false`** — **必要なときだけ Read ツールで全文**（再生成: `bash scripts/regenerate-constitution-rule.sh`）。
+
 **■ 引き継ぎ 5 ブロック（長文を分割して読む）**: 次 AI は先に **`chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md`** を Read し、ブロック 1→5 の順で復元する（本文のどこかに埋もれた手順と**同じ内容を索引化**したもの）。
 
 **■ customize 本番 deploy 機械ゲート（v23.34）**: `package.json` の **`deploy:594` `595` `626` `627` `629` `671` `674` `677` `678` `679`** は、いずれも **同じ番号の `cio:preflight:<app> -- --note "…"`**（45 分以内・`logs/cio-preflight/<app>.json`）が無いと **拒否**。任意でスタンプに **`git diff --shortstat HEAD` の 1 行**を載せるときは **`--with-git-diff-line`** を付ける。例: **`npm run cio:preflight:674 -- --note "…"`** → **`npm run deploy:674`**。**緊急**: `SKIP_CIO_DEPLOY_GUARD=1`（浜田 GO＋理由 1 行）。常時想起: **`.cursor/rules/cio-discipline-always.mdc`**（`alwaysApply: true`）。詳細 **`AGENTS.md` §35-7**。
@@ -150,7 +152,7 @@ CEO 浜田 4/29 朝指示（「Claude Code v2.1.111 準拠」）を、Cursor + �
 2. **スターター正本の通読（必須・読み飛ばし禁止）**: 浜田がチャットに全文貼っていても、**チャット貼付だけを「読んだ」とみなさない**。必ず **`chat-sessions/NEW-SESSION-STARTER.md`** を **Read ツールで冒頭から末尾まで**取り込む（1 回の行数上限を超えるときは **`offset` / `limit` を繰り返し**、行番号が途切れないようにし、**抜け・重複を残さない**）。**要約や記憶だけで手順 3 以降に進まない**。
 2b. **前日の締め報告（任意・2026-05-04）**: 同じ JST 日付または直前の営業日に **`chat-sessions/SESSION-CLOSE-REPORT_yyyymmdd.txt`**（または Desktop 同名）があれば、**項番 -0 の前**に **Read ツールで通読**（反省・次アクションの取りこぼし防止。無ければスキップ可＋チャットに「CLOSE 無し」1 語でよい）。
 3. **項番 -0（開始ゲート）**: 手順 2（および任意 2b）完了後、ツールで `chat-sessions/checkpoint-latest.md` の **「最終更新」先頭 1 行**と `chat-sessions/handoff-log.md` の **末尾見出し 1 ブロック**を読む。浜田が `HANDOFF-HUMAN` を貼っていればその **「次にやる1つ」** も採用。**§41 で一問だけ**: 「本日の本題（これから着手する次の一手）は ○○で合っていますか？」**浜田の OK**（はい／OK／進めて／1 行の修正指示）が返るまで、`verify:*`・**`npm run session:bootstrap`**・本題の **副作用**（Tier B・deploy・kintone 本番書込等）に **着手しない**。
-4. **項番 0（機械ゲート一括）**: リポルートで **`npm run session:bootstrap` を 1 回実行**するだけでよい。内部の直列は **`(1)`** `verify:constitution-handoff` → **`(1b)`** `verify:mandatory-read-gate`（必読構造＋ `session:split-check` 等）→ **`(1c)`** `verify:session-clock-health --strict`（**hooks・crontab の session-split 行・`logs/.session-clock-install-node` と cron 行の node 整合**）→ **`npm run session-starter:sync-desktop`** → **`verify:desktop-ai-emergency-sync`** → **`(4)`** `smoke:quiet`（10 連）。終了コードと WARN/NG をチャットに **短く要約**（詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 7）。
+4. **項番 0（機械ゲート一括）**: リポルートで **`npm run session:bootstrap` を 1 回実行**するだけでよい。内部の直列は **`(1)`** `verify:constitution-handoff` → **`(1b)`** `verify:mandatory-read-gate`（必読構造＋ `session:split-check` 等）→ **`(1c)`** `verify:session-clock-health --strict`（**hooks・crontab の session-split 行・`logs/.session-clock-install-node` と cron 行の node 整合**）→ **`npm run session-starter:sync-desktop`** → **`verify:desktop-ai-emergency-sync`** → **`(4)`** `smoke:quiet`（11 連）。終了コードと WARN/NG をチャットに **短く要約**（詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 7）。
 5. **壁時計（客観起点・2026-04-29 CIO 運用 / `AGENTS.md` §51-6 遵守事項 6）**: **新チャット（セッション切替）ごとに、AI は `npm run session:clock:set` を必ず実行する**（hook が先に走っていても再実行してよい。実行後 **`SESSION-CLOCK.md` の `開始:` をチャットに 1 行報告**）。続けて **`npm run session:clock:web` をバックグラウンド起動**し、ターミナルに出た **`[session-clock-web] 開く: http://127.0.0.1:…` をチャットへ転記**し、浜田に **ブラウザで開く**よう促す（**毎回表示 URL を正とする**／`SESSION-SPLIT-REMINDER.md`）。**実行タイミング**: 項番 0（`session:bootstrap`）の **直後**が既定（health が壁時計を読む流れと両立）。bootstrap 前に set する必要がある特殊環境は §41 一問。**セッション終了時**は遵守事項 **7** に従い **`npm run session:clock:clear`**（**開始:** を **未設定**）＋ **`session:clock:web` ターミナルは Ctrl+C**。
 
 **文脈復元（@ Read）**: **項番 0 が通ったあと**、本題に入る前に **下記「■ フル版」内の @ リスト**を読む（パスはファイル内の通り。PC 台帳を触らない日は仕様書の @ はスキップ可）。**Read だけで終わらず**、合意した本題へ進む。
@@ -437,7 +439,7 @@ v3.13 (2026-04-26) PC 台帳仕様の正本固定 + セッション切替後も�
 `[§1-2-3 ティア判定: L2 Extra High] 引き継ぎ直後`
 `(7) 役割宣言: deploy / apply / push / 検証は AI が実行する。浜田には GO と目視のみ依頼（§35-1 / §56-1a / TSB-024）。`
 
-**（項番 -0 で浜田 OK のあと）機械ゲート**: リポルートで **`npm run session:bootstrap` を 1 回**実行する（詳細は **本文冒頭「■ 貼付単独で完走」項番 0**＝憲法 verify → mandatory-read-gate → **(1c) verify:session-clock-health strict** → Desktop sync → verify:desktop → **smoke:quiet 10 連**）。結果をチャットに短く要約（`SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 7）。
+**（項番 -0 で浜田 OK のあと）機械ゲート**: リポルートで **`npm run session:bootstrap` を 1 回**実行する（詳細は **本文冒頭「■ 貼付単独で完走」項番 0**＝憲法 verify → mandatory-read-gate → **(1c) verify:session-clock-health strict** → Desktop sync → verify:desktop → **smoke:quiet 11 連**）。結果をチャットに短く要約（`SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 7）。
 
 **bootstrap 通過後**、文脈を厚くしてから本題へ（**先に全部 Read してから bootstrap は不要**。不足していれば本題の副作用は開始しない）:
 

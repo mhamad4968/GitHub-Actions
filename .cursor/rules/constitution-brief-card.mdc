@@ -1,0 +1,33 @@
+---
+description: AGENTS.md §0 §3 — 憲法の常時想起は薄型カード（網羅版は Read で取り込む）
+alwaysApply: true
+---
+
+# 憲法カード（常時・短い）
+
+## 正本の優先順位
+
+1. **`AGENTS.md`** — 条文の最終解釈。長いときは `RULES-INDEX.md` から § へジャンプ。
+2. **`RULES-INDEX.md`** — いつどの § を読むかの索引（§0）。
+3. **`.cursor/rules/constitution-enforcement-core.mdc`** — 違反＝失敗・**CIO＋ DeepSeek/Kimi** の 2 者チェック定義。
+4. **`.cursor/rules/constitution.mdc`** — 網羅結合版。**常時コンテキストには載せない**。**必要なときだけ Read ツールで**取り込む（再生成: `bash scripts/regenerate-constitution-rule.sh`）。
+
+## 毎ターンの型（チャット先頭）
+
+**`.cursor/rules/every-turn-rules-confirm.mdc`** に従う: **`[§1-2-3 ティア判定]`** → **`【適用憲法】`** → **`[🎖️]`** → **`[ルール確認]`**。
+
+## 新セッション・二段階読解
+
+- **`chat-sessions/NEW-SESSION-STARTER.md`**（「■ 貼付単独で完走」）
+- **`chat-sessions/SESSION-READ-LADDER.md`**（A/B・第0手）
+- **`.cursor/rules/session-read-ladder-two-phase.mdc`**（Project Rules 側の要約）
+
+## ジャンル別（glob）
+
+- **`constitutional-focus-kintone-customize.mdc`** — `customize/**`
+- **`constitutional-focus-yojitsu.mdc`** — `templates/yojitsu-budget-lite/**`
+- **`constitutional-focus-github-workflows.mdc`** — `.github/workflows/**`
+
+## 運用メモ
+
+- **網羅版を常時に戻さない**（トークン圧迫 → 見落とし増のため）。憲法改定後は **再生成スクリプト**で `constitution.mdc` を更新し、**本カードのこの文面**は必要なら追記。

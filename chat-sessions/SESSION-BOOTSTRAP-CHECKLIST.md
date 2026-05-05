@@ -194,7 +194,7 @@ cd /path/to/kintone-ai-lab && npm run session:bootstrap
 - [ ] **Desktop が無い環境・余剰時間の自律健全性**（Tier A）: **`npm run verify:agent-env`**（憲法→必読ゲート→`verify:all`→`smoke:quiet`。**Desktop 同期・`verify:session-clock-health` は含まない**＝`session:bootstrap` の代替ではない）。warn/ng があれば **1 件**だけ直す。
 - [ ] **v3.27+・スターター全文貼付済み**: **項番 -0 で浜田 OK 後**に本フェーズの **`session:bootstrap` を最優先**。フェーズ 1 の棚卸し Read は **bootstrap 成功後**でよい（実行順の正本は `NEW-SESSION-STARTER.md` **「■ 貼付単独で完走」**）。
 
-`session:bootstrap` は内部で **(A)** `verify-constitution-handoff.mjs`（**先頭・光速**）→ **(A2)** `mandatory-read-gate.mjs`（**必読ファイル構造**）→ **(A3)** `session-clock-health.mjs --strict`（**§51-6-2 壁時計** hooks / crontab node 整合）→ **(B)** `session-starter:sync-desktop`（浜田 Desktop **AI緊急用**）→ **(C)** `verify-desktop-ai-emergency-sync.mjs`（`.txt` とリポ正本のバイト一致）→ **(D)** **`npm run smoke:quiet`**（guard + 4 audit + verify:breaking + xref + health + rule-watcher + parallel + **verify:constitution-handoff** + **verify:mandatory-read-gate** の **10 検査**）の順で実行する。
+`session:bootstrap` は内部で **(A)** `verify-constitution-handoff.mjs`（**先頭・光速**）→ **(A2)** `mandatory-read-gate.mjs`（**必読ファイル構造**）→ **(A3)** `session-clock-health.mjs --strict`（**§51-6-2 壁時計** hooks / crontab node 整合）→ **(B)** `session-starter:sync-desktop`（浜田 Desktop **AI緊急用**）→ **(C)** `verify-desktop-ai-emergency-sync.mjs`（`.txt` とリポ正本のバイト一致）→ **(D)** **`npm run smoke:quiet`**（guard + 4 audit + verify:breaking + xref + health + rule-watcher + parallel + **verify:constitution-handoff** + **verify:mandatory-read-gate** + **verify:ci-rule-integrity** の **11 検査**）の順で実行する。
 
 ---
 

@@ -5,7 +5,7 @@ alwaysApply: true
 
 # 自動読取プロトコル（ツール Read 必須）
 
-常時注入の **`.cursor/rules/constitution.mdc`** に多くの正本が**全文結合**されているが、**モデルが結合版の一部しか見えない**ことがある。**実装・仕様判断・Tier B 直前**では、次を守る。
+常時注入の **`.cursor/rules/constitution-brief-card.mdc`** が **憲法の入口**（網羅版 **`.cursor/rules/constitution.mdc`** は **`alwaysApply: false`** — **必要なら Read ツールで全文**）。**実装・仕様判断・Tier B 直前**では、次を守る。
 
 ## 確認の可視化（「昨日まったく見てない」と言わせない）
 
