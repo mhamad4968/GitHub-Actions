@@ -19,7 +19,7 @@
  *   - （一覧）**SKYSEA 状態**: 検索バーに **skysea_status チップ**（§4.8a）。**SKYSEA 計画立案・合意後に要件・UI を再検討予定**（現状は暫定）。
  *   - （一覧）**絞り込み URL**: `query` パラメータから **キーワード・種別・SKYSEA チップ**を復元（当バーが生成したクエリ形式に準拠）。
  *   - **PC買替は実装済**（§4.10.3）。594 同趣旨。**627 二重更新なし**。v0.9.14: ボタン掛け先フォールバック＋遅延再 inject、`import_source=PC_REPLACE_FROM_674:<旧$id>`・legacy 594 フィールドクリア。
- *   - 新規・編集: **所属ヘルプは既定で閉じた `<details>`**（必要時のみ開く・§4.2.0b）。**共有・JR**: フィールド最小表示、**所属候補モーダル**（マスタ **680** または埋め込み）、保存前必須。**未入力時に所属名／所属グループへフォーカス**→共有・JR は **680 モーダル**、個人（非保管）は **595 社員検索**を自動表示。個人の **利用者名** 未入力フォーカス時も 595。**個人＋保管**はフォーカス自動起動なし。VPN は個人のみ。NAS/その他は全表示。
+ *   - 新規・編集: **所属ヘルプは既定で閉じた `<details>`**（必要時のみ開く・§4.2.0b）。**共有・JR**: フィールド最小表示、**所属候補モーダル**（マスタ **680** または埋め込み）、保存前必須。**未入力時に所属名／所属グループへフォーカス**→共有・JR は **680 モーダル**、個人（非保管）は **595 社員検索**を自動表示。個人の **利用者名** 未入力フォーカス時も 595。**個人＋保管**はフォーカス自動起動なし。**個人（非保管）**は利用者名・所属名・所属グループ各フィールド直下にも **595 検索の明示ボタン**（ヘッダの「社員名を検索」と同処理）を出し、DOM 取りこぼし時の代替導線とする。VPN は個人のみ。NAS/その他は全表示。
  *   - **備考（note）**: 全種別で任意（保存前チェックでは必須にしない）。
  *   - **モバイル**: 当面は利用想定なし（`kintone.mobile` 分岐は既存のまま残すが、専用UXは追わない）。
  *   - **M365管理マスタレコード番号（671 `$id`）**: 共有・JR は同一671行の **usage_count / 5 台**運用で紐づく。個人は表示するが多くは空（自動生成はメール由来M365中心）。**手入力不可**（自動生成・保存後同期のみ更新）。
@@ -29,7 +29,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-05-pc-ledger-focus-assist-bag-retry';
+  const BUILD = '2026-05-05-pc-ledger-595-field-adjacent-btn';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -502,7 +502,7 @@
     ul.style.cssText = 'margin:0 0 8px 1.1em;padding:0;';
     const li1 = document.createElement('li');
     li1.textContent =
-      '個人：画面上部の「社員名を検索（595）」で氏名を選ぶか、利用者名欄に入力すると候補が出ます。確定後、所属名・所属グループは595の内容で自動反映されます。';
+      '個人：画面上部の「社員名を検索（595）」または、利用者名・所属名・所属グループの直下の「595で氏名・所属を検索」で氏名を選べます。利用者名欄に入力すると候補が出る場合もあります。確定後、所属名・所属グループは595の内容で自動反映されます。';
     const li2 = document.createElement('li');
     li2.textContent =
       '共有・JR：`所属名` と `所属グループ` は別フィールド。下表は会社既定の候補を**この順**で記載（必要な行だけコピーして入力）。';
@@ -1902,6 +1902,78 @@
     setTimeout(function () {
       wire674FieldAssistDirect674();
     }, 2600);
+  }
+
+  /** 個人（非保管）向け: 595 検索の明示ボタンを各フィールド直下へ（ヘッダと同じ openEmployee595SearchModal674） */
+  function remove595FieldAdjacentRows674() {
+    try {
+      const nodes = document.querySelectorAll('[data-npl-595-adj="1"]');
+      for (let i = 0; i < nodes.length; i++) {
+        try {
+          const p = nodes[i].parentNode;
+          if (p) p.removeChild(nodes[i]);
+        } catch (_e) {
+          /* ignore */
+        }
+      }
+    } catch (_e2) {
+      /* ignore */
+    }
+  }
+
+  function append595AdjacentRow674(fieldRoot, label) {
+    if (!fieldRoot || typeof fieldRoot.appendChild !== 'function') return;
+    if (fieldRoot.querySelector('[data-npl-595-adj="1"]')) return;
+    const row = document.createElement('div');
+    row.setAttribute('data-npl-595-adj', '1');
+    row.style.cssText =
+      'margin:4px 0 8px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12px;line-height:1.4;';
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = label;
+    btn.setAttribute('aria-label', '社員マスタ595で氏名と所属を検索して反映');
+    btn.style.cssText =
+      'padding:4px 12px;font-size:12px;cursor:pointer;border:1px solid #5c4d7d;background:#f3f0ff;border-radius:4px;color:#392e56;font-weight:600;';
+    btn.addEventListener('click', function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      openEmployee595SearchModal674();
+    });
+    row.appendChild(btn);
+    fieldRoot.appendChild(row);
+  }
+
+  function inject595FieldAdjacentRows674(rec) {
+    remove595FieldAdjacentRows674();
+    if (!rec) return;
+    const type = String((rec[FC_ACCOUNT_TYPE] && rec[FC_ACCOUNT_TYPE].value) || '').trim();
+    if (type !== TYPE_PERSONAL || isPersonalStored(rec)) return;
+    const label = '595で氏名・所属を検索';
+    append595AdjacentRow674(tryGetFieldElement674(FC_USER_NAME), label);
+    append595AdjacentRow674(tryGetFieldElement674(FC_DEPT_NAME), label);
+    append595AdjacentRow674(tryGetFieldElement674(FC_GROUP_NAME), label);
+  }
+
+  /**
+   * フィールド DOM が遅延マウントされるため複数回試行。閲覧（detail）では付けない。
+   * @param {object} rec
+   * @param {boolean} editable
+   */
+  function scheduleInject595FieldAdjacent674(rec, editable) {
+    if (!editable) {
+      remove595FieldAdjacentRows674();
+      return;
+    }
+    const delays = [180, 700, 1600, 3200];
+    for (let i = 0; i < delays.length; i++) {
+      (function (ms) {
+        setTimeout(function () {
+          const live = getRecord674ForInject674() || rec;
+          if (!live) return;
+          inject595FieldAdjacentRows674(live);
+        }, ms);
+      })(delays[i]);
+    }
   }
 
   function mountUserSuggestDropdown674(rows) {
@@ -3820,6 +3892,7 @@ ${bodyInner}\
     applyM365MasterRecordIdFieldUi674(event.record, editable ? 'editable' : 'detail');
     showJrBannerIfNeeded(event.record);
     scheduleInjectButtons674(event);
+    scheduleInject595FieldAdjacent674(event.record, editable);
     if (editable) {
       ensureUserNameInputDelegate674();
       const ac = event.record[FC_ACCOUNT_TYPE]?.value || '';
@@ -3885,6 +3958,7 @@ ${bodyInner}\
     applyM365MasterRecordIdFieldUi674(result.record, 'editable');
     showJrBannerIfNeeded(result.record);
     scheduleInjectButtons674(result);
+    scheduleInject595FieldAdjacent674(result.record, true);
     if (
       (result.record[FC_ACCOUNT_TYPE] && result.record[FC_ACCOUNT_TYPE].value) === TYPE_PERSONAL &&
       !isPersonalStored(result.record)

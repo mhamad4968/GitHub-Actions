@@ -865,3 +865,9 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 - **`npm run deploy:678`**: **Deploy SUCCESS** / fileKey **`6074bbd9-62bf-4746-b522-ec4ebcdeba12`** / revision **`110`** / **BUILD=`2026-05-04-678-manual-app-guide-name`**（`customize/678/desktop.js` HEAD）。
 - **`kintone-apps.md`**: 表 678 行末に上記を追記。**「678 本番 customizeの実効ビルド」**節を **rev 110** に更新（5/5〜5/7 連記は **現行バンドルに無いメモ**と明記）。**`rag:mirror:canonical-docs`** 実施。
 
+### 2026-05-05 JST（追記）— 674: 595 検索フィールド直下ボタン（セッション継続）
+
+- **本題**: フォーカス自動起動の取りこぼし代替として、**個人（非保管）**の **user_name / dept_name / group_name** 各 `getFieldElement` ルート末尾に **「595で氏名・所属を検索」**（`openEmployee595SearchModal674`）を **遅延 4 回**マウント。閲覧（detail）では除去のみ。
+- **`npm run deploy:674`**: **SUCCESS** / fileKey **`09d55a9b-ebe6-4450-a065-2bd5fc669160`** / preview revision **`107`** / **BUILD=`2026-05-05-pc-ledger-595-field-adjacent-btn`**。
+- **`kintone-apps.md`**: 674 行・Actions 表を更新。`session:bootstrap` 緑。
+
