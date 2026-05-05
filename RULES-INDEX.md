@@ -244,7 +244,7 @@
 | `.cursor/rules/cio-discipline-always.mdc` | **alwaysApply: true** — §35-7＋**customize deploy 機械ゲート**（594/595/626/627/629/671/674/677/678/679・`cio:preflight:<app>` → `deploy:<app>`・45 分・任意 **`--with-git-diff-line`**・`SKIP_CIO_DEPLOY_GUARD` 緊急脱出）＋HANDOFF 先読み（`AGENTS.md` **v23.34**） |
 | `.cursor/rules/autonomous-with-mandatory-asks.mdc` | **alwaysApply** — **自律実行してよいが**、日取り矛盾・GO 境界・曖昧仕様など **聞くべきことは着手前に聞く**（浜田指示） |
 | `.cursor/rules/creation-timing-ask.mdc` | **alwaysApply** — **作成着手前**に浜田へ **「今すぐ作成／後日」** と **配置スペース（ID または名）** を §41 で確認。未決なら `kintone-add-app` の `space` 省略で進めない（浜田指示 2026-04-28） |
-| `.cursor/rules/session-handoff.mdc` | 人間 5 行＋AI の `handoff-log` 追記手順。**自律復元**の追記あり |
+| `.cursor/rules/session-handoff.mdc` | 人間 5 行＋AI の `handoff-log` 追記手順。**自律復元**の追記あり。**ハンドオフ深さ既定 L2**（リポ/CI/bootstrap/憲法 verify/kintone 反映/Tier B 近傍に触れたターンは標準ブロック）。**第 2 者ダブルチェック**は `constitution-enforcement-core.mdc` 正本 |
 | `.cursor/rules/session-read-ladder-two-phase.mdc` | **alwaysApply** — セッション復元の **二段階**（**A 事前準備**＝ルールのみ五段／**B 本題確認**＝仕様小出し）。**第0手**で `SESSION-READ-LADDER.md` を **Read 通読**。正本は `chat-sessions/SESSION-READ-LADDER.md`。**当面の目安**: 事前準備 **約1h**／本題 **約3h**（同ファイル「当面の時間目安」） |
 | `.cursor/rules/mcp-tool-discipline.mdc` | **alwaysApply** — `call_mcp_tool` 前の **descriptor 必読**・`mcp_auth` 順序・curl/gh と MCP の優先（自律ミス低減） |
 
