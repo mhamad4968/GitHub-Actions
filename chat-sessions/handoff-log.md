@@ -992,7 +992,7 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
   - **実施コマンド**: **`git stash push -u -m "pre-pull Windows 2026-05-06: safety stash before origin/main sync"`** → 結果が **`stash@{0}`**（**未コミット変更＋未追跡**を含む **pull 直前のスナップショット**）
   - **その後**: **`git pull origin main`** で **`origin/main`**（当時先端 **`684c057`** 系）に fast-forward 済み。**`git stash pop` は未実施**（浜田「そのままで OK」）
   - **確認**: `git stash list` の **先頭**が上記メッセージであること
-  - **git**: **`0c9eb59`** を **`main` に push 済み**（本ブロック追記）
+  - **git**: 本ブロックを **`main` に push 済み**（`git log -1 --oneline -- chat-sessions/handoff-log.md` で当該コミットを確認可能）
   - **次の1手**: 退避内容を戻す必要が出たら **`git stash show -p stash@{0}`** で確認のうえ **`git stash pop`**（競合の可能性あり）
   - **GO待ち**: なし
   - **session-lock**: なし
