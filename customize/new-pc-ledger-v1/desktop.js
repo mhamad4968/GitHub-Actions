@@ -23,7 +23,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-05-pc-ledger-fixed-ip-nas-only';
+  const BUILD = '2026-05-05-pc-ledger-fixed-ip-nas-doc-note';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
