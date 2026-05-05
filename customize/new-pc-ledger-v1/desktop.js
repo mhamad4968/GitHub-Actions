@@ -10,7 +10,7 @@
  *   - 種別 (account_type) による表示制御 (show/hide)
  *   - §4.2.1a: 内部メタは kintone 標準グループ `internal_system_meta` に収容（レイアウトは `npm run pc-ledger:674:layout-internal-group`）。表示時はグループを閉じる・新規・編集では子を disabled
  *   - §4.2.3a: SKYSEA 4 件は `skysea_system_meta`（表示名 SKYSEA処理用）に収容。アカウント部領域のため **権限のあるユーザーは編集可能**。運用で触るのは浜田のみと **周知**（customize ではログインによる非表示はしない）。通常はグループを閉じた初期表示
- *   - 自動生成ボタン: 個人 / 共有（Windows+M365）/ JR（**M365 のみ**・**PC名は手入力のまま**）を §4.4 に沿ってフォームへ反映（空欄のみ上書き）。**個人**: §4.3.1 **`pc_name`/`pc_serial_no`**・§4.2.2 **`windows_name`・`mail_pw`（jb+乱数4桁+K#）・`gb_id`/`sb_id`=mail_acct・`gb_pw`/`sb_pw`=logon_name**（メール空時は ID 系は案内のみ）。**共有**: **`S-JBIS####-YYYYMM`** と Windows 採番。**JR**: PC 名・Windows は自動で触らない
+ *   - 自動生成ボタン: 個人 / 共有（Windows+M365）/ JR（**M365 のみ**・**PC名は手入力のまま**）を §4.4 に沿ってフォームへ反映（空欄のみ上書き）。**個人**: §4.3.1 **`pc_name`/`pc_serial_no`**・§4.2.2 **`windows_name`=`jbm####+[mailの@前]`**・`mail_pw`（jb+乱数4桁+K#）・`gb_id`/`sb_id`=mail_acct・`gb_pw`/`sb_pw`=logon_name**（メール空時は ID 系は案内のみ）。**共有**: **`S-JBIS####-YYYYMM`** と Windows 採番。**JR**: PC 名・Windows は自動で触らない
  *   - 5 台ライセンス警告雛形 (赤バナーは仕組みのみ)
  *   - リセット／PC買替（§4.10.3・596 採番・671 整合・595 個人リンク）／印刷（627 レイアウト移植済）
  *   - **レコード閲覧（detail）**: **ステータス≠保管**のとき操作ボタンは **PC買替・印刷のみ**。**保管の閲覧**ではカスタムヘッダを付けない（余計なボタンなし）。**新規・編集かつ保管**（個人/共有/JR いずれも）: ヘッダは **全フィールドリセットのみ**。**利用中**等の非保管は従来の種別別ボタン＋PC買替・印刷。
@@ -29,7 +29,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-06-pc-ledger-personal-windowsname-validate';
+  const BUILD = '2026-05-06-pc-ledger-windowsname-bracket-mail';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -1018,15 +1018,14 @@
   }
 
   /**
-   * §4.2.2（v2.1 浜田確認 2026-04-28）: 個人用自動生成の **`windows_name` 表示値**。
-   * `mail_acct` は **595 の @ より前をそのまま**（ハイフン等も仕様上そのまま。OS 実名と異なる場合は手入力で上書き可）。
+   * §4.2.2: 個人用自動生成の **`windows_name`**。運用合意どおり **`jbm`＋4桁＋`+`＋`[`＋メール@前＋`]`**（例 `jbm0065+[y-mikami]`）。`[` `]` 内は 595 `mail` の @ より前をそのまま。
    * @param {string} logonName §4.3.2 新規発番の `^jbm\d{4}$`
    * @param {string} mailLocalPart `mail_acct` 相当（空なら logon のみ）
    */
   function buildPersonalWindowsNameDisplay674(logonName, mailLocalPart) {
     const j = String(logonName || '').trim();
     const a = String(mailLocalPart || '').trim();
-    return a.length > 0 ? j + '+' + a : j;
+    return a.length > 0 ? j + '+[' + a + ']' : j;
   }
 
   /** §4.3.2 新規発番: 672 から返る個人ログオン名が厳格パターンか */

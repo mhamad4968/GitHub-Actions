@@ -147,7 +147,7 @@ PC レコード保存・廃棄時:
 | 共有 WindowsID | `sjbm` + 4 桁（**新共有WindowsID採番マスタ**・§2） | `logon_name` |
 | JR WindowsID | 手入力 | `logon_name` |
 | WindowsPW | **個人・新規:** = `logon_name`。**共有・新規:** `kent0000` 固定（§4.7.3・`LOGON_PW_SHARED_FIXED`）。**JR:** 手入力（自動で既定値を埋めない）。**既存（全種別）:** 手入力を正 | `logon_pw` |
-| Windows アカウント名 | **個人:** §4.2.2 直後の注（**`jbm****[xxxx]`**／`*`=4桁・**`[xxxx]`=595 `mail` の @ より前**＝`mail_acct` と同一）。**共有:** `=logon_name`（例 `sjbm0001`）。**JR:** 手入力 | `windows_name` |
+| Windows アカウント名 | **個人:** **`jbm`＋4桁＋`+`＋`[`＋595 `mail` の @ より前＋`]`**（例 `jbm0065+[y-mikami]`・§4.2.2 注）。**共有:** `=logon_name`（例 `sjbm0001`）。**JR:** 手入力 | `windows_name` |
 | メールパスワード | `jb` + ランダム 4 桁数字 + `K#`（個人用ボタン 1 回生成） | `mail_pw` |
 | 個人 M365 PW | `WindowsID` + `K#`（例: `jbm0001K#`） | `m365_pw` |
 | 共有/JR M365 PW | `kent2511K#` 固定（環境設定マスタ由来） | `m365_pw` |
@@ -218,7 +218,7 @@ PC レコード保存・廃棄時:
 |---|---|---|---|---|
 | `logon_name` | SINGLE_LINE_TEXT | jbm****（**新個人WindowsID採番マスタ**・§2／旧626は5/13以降参照のみ） | sjbm****（**新共有WindowsID採番マスタ**・§2／旧667は5/13以降参照のみ） | 手入力 |
 | `logon_pw` | SINGLE_LINE_TEXT | **新規:** =`logon_name`。**既存:** 手入力を正 | **新規:** `kent0000` 固定（§4.7.3）。**既存:** 手入力を正 | **手入力**（新規・既存とも。自動生成で **Windows 系は埋めない**）|
-| `windows_name` | SINGLE_LINE_TEXT | **実名**（運用で **`jbm****[xxxx]`** 型・`*`=4桁・**`[xxxx]`=595 `mail` の @ より前**＝`mail_acct`。全体は `logon_name`＋`mail_acct` の連結イメージ・§4.2.2 注） | `=logon_name`（メールなし・共有 PC） | 手入力 |
+| `windows_name` | SINGLE_LINE_TEXT | **実名**（個人・運用: **`jbm`＋4桁＋`+`＋`[`＋595 `mail` の @ より前＋`]`** 例 `jbm0065+[y-mikami]`。§4.2.2 注） | `=logon_name`（メールなし・共有 PC） | 手入力 |
 | `mail` | SINGLE_LINE_TEXT | 595 から | （不要）| （不要）|
 | `mail_acct` | SINGLE_LINE_TEXT | mail の @ 前 | （不要）| （不要）|
 | `mail_pw` | SINGLE_LINE_TEXT | `jb`+ランダム4桁数字+`K#` | （不要）| （不要）|
@@ -232,7 +232,7 @@ PC レコード保存・廃棄時:
 | `vpn_pw` | SINGLE_LINE_TEXT | 手入力 | 手入力 | （不要）|
 
 - **`windows_name`（浜田認識・2026-04-28 確認）**:
-  - **個人（共有・JR と異なり要注意）**: 実運用の Windows アカウント名は **`jbm` + 4 桁（`****`）+ `mail`（595）の @ より前** すなわち **`jbm****[xxxx]` 型**（**`[xxxx]`＝`mail_acct`** と同一。浜田確認 2026-04-28）。kintone の `windows_name` には **OS 上の実名**を入れる。**個人用自動生成**では **`logon_name` + `+` + `mail_acct`**（例 `jbm0001+yamada`。**`y-mikami` のように @ 前にハイフンが含まれる表記は 595 の値をそのまま反映**）でフォームへ出す（**674**）。**672 の `logon_name` は §4.3.2 新規発番どおり `jbm`＋4桁であることを自動生成時に検証**する。メール空のときは **`logon_name` のみ**とし案内を出す。**既存は手入力を正**。
+  - **個人（共有・JR と異なり要注意）**: 実運用の Windows アカウント名は **`jbm` + 4 桁 + `+` + `[` + `mail`（595）の @ より前 + `]`**（例 **`jbm0065+[y-mikami]`**。**`[...]` 内＝`mail_acct`** と同一・浜田合意）。kintone の `windows_name` には **OS 上の実名**を入れる。**個人用自動生成**でも同形式（**674**）。**672 の `logon_name` は §4.3.2 新規発番どおり `jbm`＋4桁であることを自動生成時に検証**する。メール空のときは **`logon_name` のみ**とし案内を出す。**既存は手入力を正**。
   - **共有**: **`logon_name` と同じ**（例: `sjbm0001`）でよい。
   - **JR**: **手入力**。
 
@@ -869,7 +869,7 @@ snapshot: `data/snapshots/594-pre-migration-scan-2026-04-22.json`
 | 共有 WindowsID | sjbm+4桁（**新共有WindowsID採番マスタ**・§2／旧667は5/13以降参照のみ）|
 | JR WindowsID | 手入力 |
 | WindowsPW | 個人=WindowsID／共有新規=`kent0000` 固定／JR=手入力／既存は手入力を正（§4.7.3）|
-| Windows アカウント名 | 個人=`jbm****[xxxx]`（`[xxxx]`=mail @前）/ 共有=`logon_name`（例 sjbm0001）/ JR=手入力|
+| Windows アカウント名 | 個人=`jbm####+[mail@前]`（例 `jbm0065+[y-mikami]`）/ 共有=`logon_name`（例 sjbm0001）/ JR=手入力|
 | メールパスワード | jb+ランダム4桁数字+K#（個人用ボタン押下時 1 回生成）|
 | 個人 M365 PW | WindowsID + K#（例: jbm0001K#）|
 | 共有/JR M365 PW | kent2511K# 固定 |
@@ -980,10 +980,11 @@ snapshot: `data/snapshots/594-pre-migration-scan-2026-04-22.json`
 
 | 日付 | 版 | 改訂内容 |
 |---|---|---|
+| 2026-05-06 | v2.1 追記 | **§4.2.2 / 674**: **`windows_name`** を **`jbm####+[mailの@前]`**（角括弧で囲む）に修正（合意どおり `jbm0065+[y-mikami]` 型） |
 | 2026-05-06 | v2.1 追記 | **§4.2.2 / 674**: **`windows_name`** の組み立てを **`buildPersonalWindowsNameDisplay674`** に集約。**672 `logon_name` を §4.3.2 新規発番（`jbm`＋4桁）で検証**（不一致時は自動生成中断）。§4.2.2 注に **595 @ 前のハイフン等はそのまま反映** を明記 |
 | 2026-05-06 | v2.1 追記 | **§4.2.1a / 674**: 共有・個人の **`record.set`（自動生成）**で **`pc_serial_no` 等内部メタ子が disabled のまま**だと kintone が **「入力内容が正しくありません」** となるため、**set 同期間だけ** disabled を外す |
 | 2026-05-06 | v2.1 追記 | **§4.2.2 / 674**: **個人用自動生成**に **`mail_pw`（MAIL_PW_PREFIX+4桁+MAIL_PW_SUFFIX）・`gb_id`/`sb_id`（=mail_acct）・`gb_pw`/`sb_pw`（=logon_name）** を追加 |
-| 2026-05-06 | v2.1 追記 | **§4.3.1 / §4.2.2 / 674**: **個人用自動生成**に **`pc_name`（JBIS####-YYYYMM）・`pc_serial_no`** を追加。**`windows_name`** を **`jbm####+mail_acct`** に変更。共有自動生成に **`S-JBIS####-YYYYMM`**（空欄時）を追加 |
+| 2026-05-06 | v2.1 追記 | **§4.3.1 / §4.2.2 / 674**: **個人用自動生成**に **`pc_name`（JBIS####-YYYYMM）・`pc_serial_no`** を追加。**`windows_name`** を **`jbm####+[mail_acct]`** 形式へ（角括弧は後続改訂で確定）。共有自動生成に **`S-JBIS####-YYYYMM`**（空欄時）を追加 |
 | 2026-05-06 | v2.1 追記 | **§4.2.0b / 674**: 帯の入力支援ボタン表記を **「入力支援利用」** に統一（595／680 は **`aria-label`** で区別）。配色をインディゴ系グラデに変更 |
 | 2026-05-06 | v2.1 追記 | **§4.2.0b / 674**: **入力支援**を **`#new-pc-ledger-buttons`** に集約（フィールド直下挿入は廃止） |
 | 2026-05-06 | v2.1 追記 | **§4.2.0b / 674**: **新規（create.show）**でヘッダ API が null のとき **`layout-gaia` 先頭**＋**`kintone.app.getHeaderMenuSpaceElement`** フォールバック。ヘッダの種別は **`readAccountTypeLive674`** |
