@@ -9,6 +9,7 @@ AI緊急用 フォルダ（Desktop）— 使い方メモ（正本はリポ chat-
 
 【その他の控え（ファイル名先頭が読取順）】
   01-HANDOFF-AI-FIVE-BLOCKS.md / 11-SESSION-BOOTSTRAP-CHECKLIST.txt / 12-HANDOFF-HUMAN.txt … リポと同名で上書き同期。
+  14-evening-reflection-YYYY-MM-DD.md … **当日 JST** の夕反省 `docs/reports/YYYY-MM-DD-evening-reflection.md` がリポにあるときだけ sync でコピー（Windows メモ帳・Cursor で開きやすい）。無い日はスキップ。
 
 【番号付き読み取り（浜田貼付の控え）】
   02-INDEX.txt / 03-READ-01.txt … 09-READ-07.txt（**09＝浜田 CEO のお願い・朝イチ推奨**）/ 10-README-read-pack.txt

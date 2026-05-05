@@ -61,6 +61,32 @@ function main() {
     }
   }
 
+  const isoEvening = `${ymd.slice(0, 4)}-${ymd.slice(4, 6)}-${ymd.slice(6, 8)}`;
+  const eveningSrc = path.join(root, 'docs/reports', `${isoEvening}-evening-reflection.md`);
+  const eveningDestName = `14-evening-reflection-${isoEvening}.md`;
+  const eveningDest = path.join(destDir, eveningDestName);
+  if (fs.existsSync(eveningSrc)) {
+    if (!fs.existsSync(eveningDest)) {
+      console.warn(
+        `[verify-desktop-ai-emergency-sync] NG: Desktop に ${eveningDestName} が無い（夕反省レポートはリポに存在）\n` +
+          '  先に: npm run session-starter:sync-desktop'
+      );
+      bad = true;
+    } else {
+      const a = fs.readFileSync(eveningSrc);
+      const b = fs.readFileSync(eveningDest);
+      if (!a.equals(b)) {
+        console.warn(
+          `[verify-desktop-ai-emergency-sync] NG: 不一致 docs/reports/${isoEvening}-evening-reflection.md ↔ ${eveningDestName}\n` +
+            '  先に: npm run session-starter:sync-desktop'
+        );
+        bad = true;
+      } else {
+        console.log(`[verify-desktop-ai-emergency-sync] OK ${eveningDestName}（夕反省レポート一致）`);
+      }
+    }
+  }
+
   for (const [rel, outName] of otherFiles) {
     const src = path.join(root, rel);
     const dest = path.join(destDir, outName);

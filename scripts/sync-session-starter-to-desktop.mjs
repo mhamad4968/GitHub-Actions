@@ -4,6 +4,7 @@
  * NEW-SESSION-STARTER は **JST の 00-NEW-SESSION-STARTER_yyyymmdd.txt** に常に同期（内容変更時のみ旧版を _2… に退避）。
  * README.txt（正本 chat-sessions/AI緊急用-README.txt）も同期する。
  * `chat-sessions/desktop-ai-emergency-read-pack/*.txt`（番号付き貼付控え）も **同名で** Desktop へコピーする。
+ * **当日 JST** の `docs/reports/YYYY-MM-DD-evening-reflection.md` があれば **`14-evening-reflection-YYYY-MM-DD.md`** として Desktop へコピー（Windows から開きやすくする）。
  *
  * @see chat-sessions/NEW-SESSION-STARTER.md 冒頭
  */
@@ -11,6 +12,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
+  getJstYyyymmdd,
   pruneNonCanonicalStarterDesktopFiles,
   recommendedStarterPasteFilename,
   syncStarterToDesktopCanonical,
@@ -31,6 +33,31 @@ const otherFiles = [
 const readPackRelDir = 'chat-sessions/desktop-ai-emergency-read-pack';
 
 /** read-pack の *.txt（ファイル名先頭 2 桁＝Explorer での読取順）を Desktop へ同名コピー */
+/** @param {string} ymd 例 20260505 */
+function jstYmdToIso(ymd) {
+  return `${ymd.slice(0, 4)}-${ymd.slice(4, 6)}-${ymd.slice(6, 8)}`;
+}
+
+/** 当日の夕反省レポートを Desktop へ（存在時のみ） */
+function syncEveningReflectionToDesktop() {
+  const ymd = getJstYyyymmdd();
+  const iso = jstYmdToIso(ymd);
+  const src = path.join(root, 'docs/reports', `${iso}-evening-reflection.md`);
+  if (!fs.existsSync(src)) {
+    console.log(
+      `[sync-session-starter-to-desktop] 夕反省レポートなし（スキップ）: docs/reports/${iso}-evening-reflection.md`
+    );
+    return;
+  }
+  const destName = `14-evening-reflection-${iso}.md`;
+  const dest = path.join(destDir, destName);
+  fs.copyFileSync(src, dest);
+  console.log(`[sync-session-starter-to-desktop] OK docs/reports/${iso}-evening-reflection.md -> ${dest}`);
+  console.log(
+    `[sync-session-starter-to-desktop] Windows: C:\\Users\\mhamada202408224\\Desktop\\AI緊急用\\${destName}`
+  );
+}
+
 function syncReadPackToDesktop() {
   const readPackDir = path.join(root, readPackRelDir);
   if (!fs.existsSync(readPackDir)) {
@@ -91,6 +118,7 @@ function main() {
     console.log(`[sync-session-starter-to-desktop] OK ${rel} -> ${dest}`);
   }
   syncReadPackToDesktop();
+  syncEveningReflectionToDesktop();
   // `process.exit(0)` は使わない: stdout の末尾が欠け read-pack 同期ログが見えず、未コピーと誤認され得る（自然終了で flush）
   process.exitCode = 0;
 }
