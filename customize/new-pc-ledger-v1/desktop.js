@@ -16,7 +16,8 @@
  *   - **レコード閲覧（detail）**: 操作ボタンは **PC買替・印刷のみ**（自動生成・社員名検索・全フィールドリセットは新規・編集でのみ表示）
  *
  * Day 5 残タスク（未完了のみ）:
- *   - （一覧）**SKYSEA 状態**: 検索バーに **skysea_status チップ**（複数選択可・キーワード・種別と AND）を追加済（§4.8a）。
+ *   - （一覧）**SKYSEA 状態**: 検索バーに **skysea_status チップ**（§4.8a）。**SKYSEA 計画立案・合意後に要件・UI を再検討予定**（現状は暫定）。
+ *   - （一覧）**絞り込み URL**: `query` パラメータから **キーワード・種別・SKYSEA チップ**を復元（当バーが生成したクエリ形式に準拠）。
  *   - **PC買替は実装済**（§4.10.3）。594 同趣旨。**627 二重更新なし**。v0.9.14: ボタン掛け先フォールバック＋遅延再 inject、`import_source=PC_REPLACE_FROM_674:<旧$id>`・legacy 594 フィールドクリア。
  *   - 新規・編集: 所属ヘルプ（編集ではコピー用一覧を details で折りたたみ）。**共有・JR**: フィールド最小表示、**所属候補モーダル**（マスタ **680** または埋め込み）、保存前必須。個人＋保管は個人と同表示。VPN は個人のみ。NAS/その他は全表示。
  *   - **備考（note）**: 全種別で任意（保存前チェックでは必須にしない）。
@@ -28,7 +29,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-05-pc-ledger-index-skysea-chips';
+  const BUILD = '2026-05-05-pc-ledger-index-query-hydrate';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -3615,7 +3616,7 @@ ${bodyInner}\
 
   // --- 一覧：§4.8a 検索（キーワード + 種別チップ + SKYSEA チップ、datalist オートコンプリート） ---
   const SEARCH674_WRAP_ID = 'new-pc-ledger-674-index-search';
-  const SEARCH674_WRAP_VER = '2026-05-05-v2-skysea';
+  const SEARCH674_WRAP_VER = '2026-05-05-v3-url-hydrate';
   const SEARCH674_DL_ID = 'new-pc-ledger-674-search-datalist';
 
   const SEARCH674_HINT_FIELDS = [
@@ -3657,6 +3658,137 @@ ${bodyInner}\
 
   function escape674QueryLike(s) {
     return String(s).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+  }
+
+  /** `escape674QueryLike` の逆（一覧 query 内の like / in 用） */
+  function unescape674QueryLike674(s) {
+    const BS_PLACE = '@@NPL674_BS@@';
+    return String(s || '')
+      .replace(/\\\\/g, BS_PLACE)
+      .replace(/\\"/g, '"')
+      .split(BS_PLACE)
+      .join('\\');
+  }
+
+  /** `field in ("a","b")` の括弧内から引用符で囲まれた値を列挙 */
+  function parse674QuotedListInner674(inner) {
+    const out = [];
+    const str = String(inner || '');
+    let i = 0;
+    while (i < str.length) {
+      while (i < str.length && (str[i] === ' ' || str[i] === ',')) i++;
+      if (i >= str.length) break;
+      if (str[i] !== '"') {
+        i++;
+        continue;
+      }
+      i++;
+      let buf = '';
+      while (i < str.length) {
+        if (str[i] === '\\' && i + 1 < str.length) {
+          buf += str[i + 1];
+          i += 2;
+          continue;
+        }
+        if (str[i] === '"') {
+          i++;
+          break;
+        }
+        buf += str[i];
+        i++;
+      }
+      out.push(unescape674QueryLike674(buf));
+    }
+    return out;
+  }
+
+  /**
+   * 一覧 URL の `query` を、検索バーの状態に分解（当バーが build した形式を想定。手編集 query は部分一致のみ反映）。
+   * @returns {{ keyword: string, types: string[], skysea: string[] }}
+   */
+  function parse674ListQueryToBarState674(listQuery) {
+    const raw = String(listQuery || '').trim();
+    const out = { keyword: '', types: [], skysea: [] };
+    if (!raw) return out;
+
+    const typeRe = new RegExp('\\(\\s*' + FC_ACCOUNT_TYPE + '\\s+in\\s*\\(([^)]*)\\)\\s*\\)');
+    const tm = typeRe.exec(raw);
+    if (tm) {
+      const cand = parse674QuotedListInner674(tm[1]);
+      const allowed = new Set(SEARCH674_TYPE_CHIPS.map(function (c) {
+        return c.value;
+      }));
+      for (let ti = 0; ti < cand.length; ti++) {
+        if (allowed.has(cand[ti])) out.types.push(cand[ti]);
+      }
+    }
+
+    const skyRe = new RegExp('\\(\\s*' + FC_SKYSEA_STATUS + '\\s+in\\s*\\(([^)]*)\\)\\s*\\)');
+    const sm = skyRe.exec(raw);
+    if (sm) {
+      const candS = parse674QuotedListInner674(sm[1]);
+      const allowedS = new Set(SEARCH674_SKYSEA_CHIPS.map(function (c) {
+        return c.value;
+      }));
+      for (let si = 0; si < candS.length; si++) {
+        if (allowedS.has(candS[si])) out.skysea.push(candS[si]);
+      }
+    }
+
+    const likeNeedle = FC_PC_NAME + ' like "';
+    const li = raw.indexOf(likeNeedle);
+    if (li !== -1) {
+      let j = li + likeNeedle.length;
+      let buf = '';
+      while (j < raw.length) {
+        if (raw[j] === '\\' && j + 1 < raw.length) {
+          buf += raw[j + 1];
+          j += 2;
+          continue;
+        }
+        if (raw[j] === '"') break;
+        buf += raw[j];
+        j++;
+      }
+      out.keyword = unescape674QueryLike674(buf);
+    }
+
+    return out;
+  }
+
+  /** 一覧 URL の `query` と検索バー UI を同期（同一 VER の再描画スケジュール時も呼ぶ） */
+  function hydrate674IndexSearchBarFromUrl674() {
+    const wrap = document.getElementById(SEARCH674_WRAP_ID);
+    if (!wrap || !wrap.__npl674) return;
+    let urlQuery = '';
+    try {
+      urlQuery = new URL(location.href).searchParams.get('query') || '';
+    } catch (_e) {
+      /* 不正 URL 時は urlQuery のまま空 */
+    }
+    if (wrap.getAttribute('data-npl-synced-query') === urlQuery) return;
+
+    const st = parse674ListQueryToBarState674(urlQuery);
+    const ref = wrap.__npl674;
+    ref.inp.value = st.keyword;
+    ref.selectedTypes.clear();
+    for (let ti = 0; ti < st.types.length; ti++) ref.selectedTypes.add(st.types[ti]);
+    ref.selectedSkysea.clear();
+    for (let si = 0; si < st.skysea.length; si++) ref.selectedSkysea.add(st.skysea[si]);
+    ref.syncChips();
+
+    wrap.setAttribute('data-npl-synced-query', urlQuery);
+
+    if (typeof ref.ensure674SearchCache === 'function') {
+      ref
+        .ensure674SearchCache()
+        .then(function (recs) {
+          update674SearchDatalist(recs, ref.inp.value);
+        })
+        .catch(function (e) {
+          console.warn('[NEW-PC-LEDGER-V1] hydrate datalist', e);
+        });
+    }
   }
 
   function build674IndexListQuery(keyword, selectedTypes, selectedSkysea) {
@@ -3812,6 +3944,7 @@ ${bodyInner}\
   function render674IndexSearchBar() {
     const existing = document.getElementById(SEARCH674_WRAP_ID);
     if (existing && existing.getAttribute('data-npl-ver') === SEARCH674_WRAP_VER) {
+      hydrate674IndexSearchBarFromUrl674();
       return;
     }
     if (existing) {
@@ -3840,6 +3973,7 @@ ${bodyInner}\
 
     const inpKw = document.createElement('input');
     inpKw.type = 'text';
+    inpKw.id = 'npl674-index-search-kw';
     inpKw.setAttribute('list', SEARCH674_DL_ID);
     inpKw.setAttribute('autocomplete', 'off');
     inpKw.placeholder = '例: jb ／ KS0 ／ メールの一部';
@@ -3935,7 +4069,25 @@ ${bodyInner}\
     const hint = document.createElement('div');
     hint.style.cssText = 'font-size:11px;color:#475569;line-height:1.45;';
     hint.textContent =
-      'Enter または「絞り込み」で一覧を更新します。種別・SKYSEA は複数選択可（各 in）、キーワードは上記フィールドへの部分一致（OR）と AND です。';
+      'Enter または「絞り込み」で一覧を更新します。種別・SKYSEA は複数選択可（各 in）、キーワードは上記フィールドへの部分一致（OR）と AND です。' +
+      ' URL の query から条件を復元します（当バーが生成した query 形式に準拠）。';
+
+    function syncChips674() {
+      chipRow.querySelectorAll('button[data-type-value]').forEach(function (b) {
+        const val = b.dataset.typeValue || '';
+        const on = selectedTypes.has(val);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        b.style.background = on ? '#cffafe' : '#fff';
+        b.style.borderColor = on ? '#0e7490' : '#94a3b8';
+      });
+      skyChipRow.querySelectorAll('button[data-skysea-value]').forEach(function (b) {
+        const val = b.dataset.skyseaValue || '';
+        const on = selectedSkysea.has(val);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        b.style.background = on ? '#ede9fe' : '#fff';
+        b.style.borderColor = on ? '#6d28d9' : '#94a3b8';
+      });
+    }
 
     wrap.appendChild(title);
     wrap.appendChild(row);
@@ -3955,11 +4107,8 @@ ${bodyInner}\
       inpKw.value = '';
       selectedTypes.clear();
       selectedSkysea.clear();
-      Array.prototype.forEach.call(wrap.querySelectorAll('button.npl674-index-chip'), function (b) {
-        b.setAttribute('aria-pressed', 'false');
-        b.style.background = '#fff';
-        b.style.borderColor = '#94a3b8';
-      });
+      syncChips674();
+      wrap.setAttribute('data-npl-synced-query', '');
       navigate674ListWithQuery('');
     });
     inpKw.addEventListener('keydown', function (ev) {
@@ -3976,6 +4125,15 @@ ${bodyInner}\
       }
       return cachePromise;
     }
+
+    wrap.__npl674 = {
+      inp: inpKw,
+      selectedTypes: selectedTypes,
+      selectedSkysea: selectedSkysea,
+      syncChips: syncChips674,
+      ensure674SearchCache: ensure674SearchCache,
+    };
+    wrap.setAttribute('data-npl-synced-query', '');
 
     inpKw.addEventListener('input', function () {
       ensure674SearchCache()
@@ -3998,6 +4156,9 @@ ${bodyInner}\
       })
       .catch(function (e) {
         console.warn('[NEW-PC-LEDGER-V1] initial search cache', e);
+      })
+      .then(function () {
+        hydrate674IndexSearchBarFromUrl674();
       });
   }
 
