@@ -29,7 +29,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-06-pc-ledger-shared-autogen-m365-disabled-fix';
+  const BUILD = '2026-05-06-pc-ledger-create-show-mount-fallback';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -426,14 +426,33 @@
   }
 
   /**
-   * ヘッダメニュースペースが未配置の環境でもボタンを出す（594 側の遅延マウントと同趣旨）。
-   * @returns {{ el: HTMLElement, mode: 'header' | 'toolbar' | 'body' } | null}
+   * ヘッダメニュースペースが未配置の環境でもボタンを出す（594 / 678 と同趣旨の複数候補）。
+   * **新規作成（create.show）**では `getHeaderMenuSpaceElement` が一瞬 null のことがあり、ツールバーより先に **フォーム `.layout-gaia` 先頭**へ載せる。
+   * @returns {{ el: HTMLElement, mode: 'header' | 'toolbar' | 'body' | 'form', prepend?: boolean } | null}
    */
   function resolveButtonMountSpace674() {
     const h = getHeaderSpace674();
     if (h) return { el: h, mode: 'header' };
+    try {
+      if (kintone.app && typeof kintone.app.getHeaderMenuSpaceElement === 'function') {
+        const g = kintone.app.getHeaderMenuSpaceElement();
+        if (g) return { el: g, mode: 'header' };
+      }
+    } catch (_e) {
+      /* ignore */
+    }
+    try {
+      if (kintone.app && typeof kintone.app.getHeaderSpaceElement === 'function') {
+        const hs = kintone.app.getHeaderSpaceElement();
+        if (hs) return { el: hs, mode: 'header' };
+      }
+    } catch (_e2) {
+      /* ignore */
+    }
     const toolbar = document.querySelector('.gaia-argoui-app-toolbar');
     if (toolbar) return { el: toolbar, mode: 'toolbar' };
+    const layout = document.querySelector('#contents-body .layout-gaia') || document.querySelector('.layout-gaia');
+    if (layout) return { el: layout, mode: 'form', prepend: true };
     if (document.body) return { el: document.body, mode: 'body' };
     return null;
   }
@@ -459,7 +478,7 @@
 
   function scheduleInjectButtons674(event) {
     injectButtons(event);
-    const delays = [150, 400, 900, 2000, 3500, 5500, 8500];
+    const delays = [120, 300, 600, 1500, 3500, 5500, 8500, 12000];
     for (let i = 0; i < delays.length; i++) {
       (function (ms) {
         setTimeout(function () {
@@ -2065,7 +2084,7 @@
       remove595FieldAdjacentRows674();
       return;
     }
-    const delays = [180, 700, 1600, 3200, 5200, 8800];
+    const delays = [0, 40, 120, 280, 700, 1600, 3200, 5200, 8800];
     for (let i = 0; i < delays.length; i++) {
       (function (ms) {
         setTimeout(function () {
@@ -3849,8 +3868,12 @@ ${bodyInner}\
     if (mount.mode === 'body') {
       wrapper.style.cssText =
         'display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:0;padding:10px 12px;' +
-        'position:fixed;top:0;left:0;right:0;z-index:100000;background:#f8fafc;border-bottom:1px solid #cbd5e1;' +
+        'position:fixed;top:0;left:0;right:0;z-index:2000000;background:#f8fafc;border-bottom:1px solid #cbd5e1;' +
         'box-shadow:0 2px 6px rgba(15,23,42,.12);';
+    } else if (mount.mode === 'form') {
+      wrapper.style.cssText =
+        'display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 12px;padding:10px 12px;' +
+        'background:#f8fafc;border:1px solid #cbd5e1;border-radius:6px;box-shadow:0 1px 3px rgba(15,23,42,.08);';
     } else {
       wrapper.style.cssText = 'display:flex;flex-wrap:wrap;align-items:center;margin:8px 0;';
     }
@@ -3862,7 +3885,8 @@ ${bodyInner}\
     const inStorage674 = isPcStatusStorage674(event.record);
 
     if (!isRecordDetail674) {
-      const type = event.record[FC_ACCOUNT_TYPE]?.value || '';
+      /** 新規 create では event.record の種別が空のまま・DOM だけ先に 個人/共有 等のことがある */
+      const type = readAccountTypeLive674(event.record);
 
       if (!inStorage674) {
         // 利用中 等: セッション前に固めた条件（非保管のみ自動生成・595 等）
@@ -3933,7 +3957,12 @@ ${bodyInner}\
     }
 
     if (!wrapper.firstChild) return;
-    mount.el.appendChild(wrapper);
+    if (mount.prepend) {
+      if (mount.el.firstChild) mount.el.insertBefore(wrapper, mount.el.firstChild);
+      else mount.el.appendChild(wrapper);
+    } else {
+      mount.el.appendChild(wrapper);
+    }
   }
 
   // ===== 種別変更時の確認ダイアログ (仕様書 §4.6.1) =====
