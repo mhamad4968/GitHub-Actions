@@ -980,6 +980,7 @@ snapshot: `data/snapshots/594-pre-migration-scan-2026-04-22.json`
 
 | 日付 | 版 | 改訂内容 |
 |---|---|---|
+| 2026-05-06 | v2.1 追記 | **§4.2.1a / 674**: 共有・個人の **`record.set`（自動生成）**で **`pc_serial_no` 等内部メタ子が disabled のまま**だと kintone が **「入力内容が正しくありません」** となるため、**set 同期間だけ** disabled を外す |
 | 2026-05-06 | v2.1 追記 | **§4.2.2 / 674**: **個人用自動生成**に **`mail_pw`（MAIL_PW_PREFIX+4桁+MAIL_PW_SUFFIX）・`gb_id`/`sb_id`（=mail_acct）・`gb_pw`/`sb_pw`（=logon_name）** を追加 |
 | 2026-05-06 | v2.1 追記 | **§4.3.1 / §4.2.2 / 674**: **個人用自動生成**に **`pc_name`（JBIS####-YYYYMM）・`pc_serial_no`** を追加。**`windows_name`** を **`jbm####+mail_acct`** に変更。共有自動生成に **`S-JBIS####-YYYYMM`**（空欄時）を追加 |
 | 2026-05-06 | v2.1 追記 | **§4.2.0b / 674**: 帯の入力支援ボタン表記を **「入力支援利用」** に統一（595／680 は **`aria-label`** で区別）。配色をインディゴ系グラデに変更 |

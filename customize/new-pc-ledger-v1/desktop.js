@@ -19,7 +19,7 @@
  *   - （一覧）**SKYSEA 状態**: 検索バーに **skysea_status チップ**（§4.8a）。**SKYSEA 計画立案・合意後に要件・UI を再検討予定**（現状は暫定）。
  *   - （一覧）**絞り込み URL**: `query` パラメータから **キーワード・種別・SKYSEA チップ**を復元（当バーが生成したクエリ形式に準拠）。
  *   - **PC買替は実装済**（§4.10.3）。594 同趣旨。**627 二重更新なし**。v0.9.14: ボタン掛け先フォールバック＋遅延再 inject、`import_source=PC_REPLACE_FROM_674:<旧$id>`・legacy 594 フィールドクリア。
- *   - 新規・編集: **所属ヘルプ `<details>`（入れ方・コピー一覧）は表示しない**（2026-05-05 浜田指示）。**入力支援**: `document` **capture** でフィールド内クリックを捕捉（kintone 内側の `stopPropagation` より先）。**はい／いいえ** の z-index は kintone ヘッダより上。**明示ボタン**は **`#new-pc-ledger-buttons` 帯**に **「入力支援利用」**（個人・非保管→595／共有・JR→680。表示名は同一、`aria-label` で区別）（フィールド直下 DOM 挿入は廃止）。ヘッダの旧「社員名検索／所属候補」ボタンは**廃止**。**`pc_status`=保管**のときは種別横断で **ヘッダは全フィールドリセットのみ**。**種別／ステータス**は record を DOM と突合。**共有用自動生成**: `m365_master_record_id` は **set 前に disabled 解除**。
+ *   - 新規・編集: **所属ヘルプ `<details>`（入れ方・コピー一覧）は表示しない**（2026-05-05 浜田指示）。**入力支援**: `document` **capture** でフィールド内クリックを捕捉（kintone 内側の `stopPropagation` より先）。**はい／いいえ** の z-index は kintone ヘッダより上。**明示ボタン**は **`#new-pc-ledger-buttons` 帯**に **「入力支援利用」**（個人・非保管→595／共有・JR→680。表示名は同一、`aria-label` で区別）（フィールド直下 DOM 挿入は廃止）。ヘッダの旧「社員名検索／所属候補」ボタンは**廃止**。**`pc_status`=保管**のときは種別横断で **ヘッダは全フィールドリセットのみ**。**種別／ステータス**は record を DOM と突合。**共有・個人の自動生成**: `m365_master_record_id` は **set 前に disabled 解除**。**`pc_serial_no` 等内部メタ子**（§4.2.1a）も **`record.set` 同期間だけ** disabled 解除してから反映。
  *   - **備考（note）**: 全種別で任意（保存前チェックでは必須にしない）。
  *   - **モバイル**: 当面は利用想定なし（`kintone.mobile` 分岐は既存のまま残すが、専用UXは追わない）。
  *   - **M365管理マスタレコード番号（671 `$id`）**: 共有・JR は同一671行の **usage_count / 5 台**運用で紐づく。個人は表示するが多くは空（自動生成はメール由来M365中心）。**手入力不可**（自動生成・保存後同期のみ更新）。
@@ -29,7 +29,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-06-pc-ledger-personal-autogen-mail-gb-sb';
+  const BUILD = '2026-05-06-pc-ledger-shared-autogen-internal-disabled-fix';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -297,6 +297,30 @@
     const cell = record && record[FC_M365_MASTER_RECORD_ID];
     if (!cell || !Object.prototype.hasOwnProperty.call(cell, 'disabled')) return;
     cell.disabled = mode === 'editable';
+  }
+
+  /**
+   * §4.2.1a: `internal_system_meta` の子は編集時 **disabled**。そのまま値を書き換えて `record.set` すると **「入力内容が正しくありません」** になるため、**set 同期間だけ** disabled を外し終了後に戻す。
+   * @param {Record<string, object>} record
+   * @param {function(): void} fn
+   */
+  function withWritableInternalMeta674(record, fn) {
+    const restored = [];
+    for (let i = 0; i < INTERNAL_CHILD_CODES.length; i++) {
+      const code = INTERNAL_CHILD_CODES[i];
+      const cell = record && record[code];
+      if (cell && Object.prototype.hasOwnProperty.call(cell, 'disabled') && cell.disabled) {
+        restored.push(cell);
+        cell.disabled = false;
+      }
+    }
+    try {
+      fn();
+    } finally {
+      for (let j = 0; j < restored.length; j++) {
+        restored[j].disabled = true;
+      }
+    }
   }
 
   /**
@@ -2292,7 +2316,9 @@
         mergeScalarField(rec, FC_M365_PW, nextJbm + m365PwSuffix);
         mergePersonalMailGbSb674(rec, envMap, nextJbm, mailLocal);
 
-        api.set(recNow);
+        withWritableInternalMeta674(rec, function () {
+          api.set(recNow);
+        });
         applyM365MasterRecordIdFieldUi674(rec, 'editable');
         let msg = '個人用フィールドをフォームへ反映しました（空欄のみ）。保存は手動で行ってください。';
         if (!mailLocal) {
@@ -2354,7 +2380,9 @@
           masterCell.disabled = false;
         }
         try {
-          kintone.app.record.set(recNow);
+          withWritableInternalMeta674(rec, function () {
+            kintone.app.record.set(recNow);
+          });
         } catch (err) {
           if (masterWasDisabled && masterCell && Object.prototype.hasOwnProperty.call(masterCell, 'disabled')) {
             masterCell.disabled = true;
