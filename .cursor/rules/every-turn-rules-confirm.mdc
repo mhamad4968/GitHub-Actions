@@ -7,6 +7,16 @@ alwaysApply: true
 
 **正本との関係**: `constitution-enforcement-core.mdc`（**違反＝失敗・2 者チェックの定義**）、`chat-sessions/NEW-SESSION-STARTER.md`、`deepseek-cursor-spec-division.mdc`、`cio-operating-loop.mdc`、`session-read-ladder-two-phase.mdc`。**「毎回」と「ターン先頭での確認」を同義**として運用する。
 
+## 0. 役割が曖昧になったら（CIO の三角・先にこれ）
+
+| 呼び方 | 誰か | このチャットでやること |
+| --- | --- | --- |
+| **第1者（CIO 実行）** | 本体 AI | 方針・ツール・実装・報告。**単独で「憲法 OK」と締めない。** |
+| **第2者** | **DeepSeek または Kimi** | 着手前の短問と回答（§50-3-8）。**いないターンは `§50-3-8 スキップ理由:` 1 行必須。** |
+| **CEO** | 浜田 | GO・仕様判断・検収。**第2者の代わりではない。** |
+
+**コード変更・deploy 級**で **第2者の入力もスキップ理由も無い**まま編集／Shell／deploy に入ったら **憲法違反扱い**（`constitution-enforcement-core.mdc`）。
+
 ## 1. ターン先頭（応答の最初のブロック）
 
 **ユーザー メッセージを受け取ったあとの、CIO の最初の返答ブロック**に、次を **この順序で省略しない**。
