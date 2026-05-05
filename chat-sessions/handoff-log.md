@@ -978,7 +978,7 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
   - **Git から外したもの**: **`.npm-cache/`**（48 ファイルが誤って追跡されていた）→ **`git rm -r --cached`**＋**`.gitignore` に追加**。**`cron-sync595.log`**（リポルートの作業ログが追跡されていた）→ **index から削除**＋**`/cron-sync*.log` を ignore**
   - **ディスクから削除（再生成可）**: **`.npm-cache/`** ディレクトリ本体、`data/snapshots/*-step*.json` 4 件（中間スナップショット・`.gitignore` 対象）、**`collect_log.txt`**（ignore 済みの小ファイル）
   - **触れていないもの**: **`node_modules/`**・**`customize/`**・**`.cursor/`（ローカル設定）**・**`backups/`**（ignore 正本）・**未追跡の `scripts/_*.sh`（Windows 側にのみ存在する可能性）** — 用途不明のため **削除せず**（浜田がファイル名を見て判断）
-  - **git**: push 予定（本ブロック同バッチ）
+  - **git**: **`87124a0`** を **`main` に push 済み**
   - **次の1手**: Windows クローンで **`git pull`** → **`.npm-cache` フォルダが残っていれば手動削除**（エクスプローラー可）
   - **GO待ち**: なし
   - **session-lock**: なし
