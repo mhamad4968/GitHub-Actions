@@ -83,7 +83,7 @@ PC台帳(594) 詳細画面
 
 | 627 フィールド | 生成ルール |
 |---------------|-----------|
-| windows_name | `logon_name + "[" + mail@前 + "]"` 例: `jbm00009[m-kondo]` |
+| windows_name | `logon_name` + `"+"` + `"["` + `mail@前` + `"]"`（674・仕様 §4.2.2【正本】）。例: `jbm0009+[m-kondo]` |
 | m365_id | `mail@前 + "@kensetsutoso01.onmicrosoft.com"` 例: `m-kondo@kensetsutoso01.onmicrosoft.com` |
 | account_type | 固定: "個人アカウント" |
 | account_state | 固定: "有効" |

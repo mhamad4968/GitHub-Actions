@@ -31,7 +31,7 @@ erDiagram
         string emp_id FK "社員管理番号（新設）"
         string account_type "個人アカウント/共有アカウント"
         string logon_name "ADログオン名"
-        string windows_name "WindowsID[mail@前]"
+        string windows_name "個人: logon_name+[mail@前]（§4.2.2【正本】）"
         string m365_id "mail@前@kensetsutoso01..."
         string pc_594_record_id "→594のレコード番号"
         subtable pc_ledger_links "PC台帳紐づけ（複数）"

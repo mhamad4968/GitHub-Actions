@@ -877,7 +877,7 @@ snapshot: `data/snapshots/594-pre-migration-scan-2026-04-22.json`
 | 共有 WindowsID | sjbm+4桁（**新共有WindowsID採番マスタ**・§2／旧667は5/13以降参照のみ）|
 | JR WindowsID | 手入力 |
 | WindowsPW | 個人=WindowsID／共有新規=`kent0000` 固定／JR=手入力／既存は手入力を正（§4.7.3）|
-| Windows アカウント名 | 個人=`jbm####+[mail@前]`（例 `jbm0065+[y-mikami]`）/ 共有=`logon_name`（例 sjbm0001）/ JR=手入力|
+| Windows アカウント名 | **個人:** §4.2.2 **【正本】**（節冒頭・例 `jbm0065+[y-mikami]`）。**共有:** `=logon_name`（例 sjbm0001）。**JR:** 手入力 |
 | メールパスワード | jb+ランダム4桁数字+K#（個人用ボタン押下時 1 回生成）|
 | 個人 M365 PW | WindowsID + K#（例: jbm0001K#）|
 | 共有/JR M365 PW | kent2511K# 固定 |
@@ -988,7 +988,7 @@ snapshot: `data/snapshots/594-pre-migration-scan-2026-04-22.json`
 
 | 日付 | 版 | 改訂内容 |
 |---|---|---|
-| 2026-05-07 | v2.1 追記 | **§4.2.2**: 個人 **`windows_name`** を **【正本】**1 ブロックに集約（式は文字連結の明示）。マトリクス行・種別表・注釈を【正本】参照に一本化。**§3** 要約表の Windows アカウント名行も【正本】参照に統一 |
+| 2026-05-07 | v2.1 追記 | **§4.2.2**: 個人 **`windows_name`** を **【正本】**1 ブロックに集約（式は文字連結の明示）。マトリクス行・種別表・注釈を【正本】参照に一本化。**§3** 要約表・**付録 §C** の Windows アカウント名行も【正本】参照に統一。補助ドキュメント（`asset-management-logic.md`・`emp-id-js-account-design.md`・`2026-04-26-pc-ledger-day4-action.md`）の旧式表記を是正 |
 | 2026-05-06 | v2.1 追記 | **§4.2.2 / 674**: **`windows_name`** を **`jbm####+[mailの@前]`**（角括弧で囲む）に修正（合意どおり `jbm0065+[y-mikami]` 型） |
 | 2026-05-06 | v2.1 追記 | **§4.2.2 / 674**: **`windows_name`** の組み立てを **`buildPersonalWindowsNameDisplay674`** に集約。**672 `logon_name` を §4.3.2 新規発番（`jbm`＋4桁）で検証**（不一致時は自動生成中断）。§4.2.2 注に **595 @ 前のハイフン等はそのまま反映** を明記 |
 | 2026-05-06 | v2.1 追記 | **§4.2.1a / 674**: 共有・個人の **`record.set`（自動生成）**で **`pc_serial_no` 等内部メタ子が disabled のまま**だと kintone が **「入力内容が正しくありません」** となるため、**set 同期間だけ** disabled を外す |
