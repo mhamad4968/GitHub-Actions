@@ -886,3 +886,8 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 - **目的**: 余計なボタンを出さない。**新規・編集**かつ **`isPersonalStored`** のとき **`injectButtons`** で **PC買替・印刷を出さない**（**閲覧 detail** は従来どおり PC買替・印刷のみ）。
 - **`npm run deploy:674`**: **SUCCESS** / fileKey **`659b0f75-1710-4afc-bd8a-f748a7e7efe0`** / revision **`110`** / **BUILD=`2026-05-05-pc-ledger-personal-stored-header-min`**。
 
+### 2026-05-05 JST（追記）— 674: 保管ヘッダは種別横断で一律（浜田整理）
+
+- **`isPcStatusStorage674`**: `readPcStatusLive674 === 保管`。**新規・編集×保管**（個人/共有/JR）→ ヘッダは **全フィールドリセットのみ**（共有自動生成・595 も出さない）。**閲覧×保管**→ カスタムバー **非表示**（空なら `appendChild` しない）。**非保管**→ 従来（種別別＋PC買替・印刷／閲覧は PC買替・印刷）。
+- **`npm run deploy:674`**: **SUCCESS** / fileKey **`754231f0-c513-448e-b0dc-858c5200734a`** / revision **`111`** / **BUILD=`2026-05-05-pc-ledger-storage-header-reset-only`**。
+
