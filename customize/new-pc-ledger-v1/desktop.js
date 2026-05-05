@@ -10,7 +10,7 @@
  *   - 種別 (account_type) による表示制御 (show/hide)
  *   - §4.2.1a: 内部メタは kintone 標準グループ `internal_system_meta` に収容（レイアウトは `npm run pc-ledger:674:layout-internal-group`）。表示時はグループを閉じる・新規・編集では子を disabled
  *   - §4.2.3a: SKYSEA 4 件は `skysea_system_meta`（表示名 SKYSEA処理用）に収容。アカウント部領域のため **権限のあるユーザーは編集可能**。運用で触るのは浜田のみと **周知**（customize ではログインによる非表示はしない）。通常はグループを閉じた初期表示
- *   - 自動生成ボタン: 個人 / 共有 / JR（M365 系）を §4.4 に沿ってフォームへ反映（空欄のみ上書き）
+ *   - 自動生成ボタン: 個人 / 共有（Windows+M365）/ JR（**M365 のみ**・**PC名は手入力のまま**）を §4.4 に沿ってフォームへ反映（空欄のみ上書き）
  *   - 5 台ライセンス警告雛形 (赤バナーは仕組みのみ)
  *   - リセット／PC買替（§4.10.3・596 採番・671 整合・595 個人リンク）／印刷（627 レイアウト移植済）
  *   - **レコード閲覧（detail）**: **ステータス≠保管**のとき操作ボタンは **PC買替・印刷のみ**。**保管の閲覧**ではカスタムヘッダを付けない（余計なボタンなし）。**新規・編集かつ保管**（個人/共有/JR いずれも）: ヘッダは **全フィールドリセットのみ**。**利用中**等の非保管は従来の種別別ボタン＋PC買替・印刷。
@@ -29,7 +29,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-05-pc-ledger-remove-dept-help-banner';
+  const BUILD = '2026-05-06-pc-ledger-jr-m365-button-no-pc-name-autogen';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -2232,7 +2232,11 @@
     const rec = recNow.record;
     const type = (rec[FC_ACCOUNT_TYPE] && rec[FC_ACCOUNT_TYPE].value) || '';
 
-    return Promise.all([loadEnv670Map(), fetchAssignableM365Record671(), nextSjbmFrom673()])
+    return Promise.all([
+      loadEnv670Map(),
+      fetchAssignableM365Record671(),
+      type === TYPE_SHARED ? nextSjbmFrom673() : Promise.resolve(null),
+    ])
       .then(function (results) {
         const envMap = results[0];
         const m671 = results[1];
@@ -2249,7 +2253,7 @@
         const m365Pw = (m671.m365_pw && m671.m365_pw.value) || envMap.M365_PW_SHARED_FIXED || 'kent2511K#';
         const m365RowId = m671.$id && m671.$id.value;
 
-        if (type === TYPE_SHARED) {
+        if (type === TYPE_SHARED && nextSjbm) {
           mergeScalarField(rec, FC_LOGON_NAME, nextSjbm);
           mergeScalarField(rec, FC_WINDOWS_NAME, nextSjbm);
           const fixedPw = envMap.LOGON_PW_SHARED_FIXED || 'kent0000';
@@ -3794,12 +3798,16 @@ ${bodyInner}\
         }
 
         if (type === TYPE_SHARED || type === TYPE_JR) {
-          wrapper.appendChild(createGenerateButton('🟢 共有用 自動生成', '#198754', () => {
-            runSharedAutoGen().catch(function (e) {
-              console.error(e);
-              window.alert('自動生成でエラー: ' + (e && e.message ? e.message : String(e)));
-            });
-          }));
+          const sharedGenLabel =
+            type === TYPE_JR ? '🟢 M365 を自動反映（JR）' : '🟢 共有用 自動生成';
+          wrapper.appendChild(
+            createGenerateButton(sharedGenLabel, '#198754', () => {
+              runSharedAutoGen().catch(function (e) {
+                console.error(e);
+                window.alert('自動生成でエラー: ' + (e && e.message ? e.message : String(e)));
+              });
+            }),
+          );
         }
       }
 
