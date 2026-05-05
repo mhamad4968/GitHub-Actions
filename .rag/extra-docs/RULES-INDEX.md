@@ -234,7 +234,7 @@
 | `docs/troubleshooting.md` **TSB-031** | **Desktop 日報を Git 未収容で削除**した事案。**正本は `chat-sessions/`＋コミット**／Desktop は **sync の控え**／詳細は **`AGENTS.md` §35-6**（verify が本条見出しを監視） |
 | `docs/troubleshooting.md` **TSB-029** | **`user-markdownify`** — `@iflow-mcp/markdownify-mcp` の **`preinstall.js` 欠落 publish バグ**で stdio 即死。対策: **`npm install -g --ignore-scripts @0.0.2`** ＋ **`node …/dist/index.js` 直起動**＋`UV_PATH`（詳細は本文） |
 | `.cursor/rules/constitution-handoff-gate.mdc` | **alwaysApply** — §35-1 / §56-1a / TSB-024 / §1-2-3-1 を毎ターン想起（Cursor 全チャット） |
-| `.cursor/rules/cio-discipline-always.mdc` | **alwaysApply: true** — §35-7＋**674 deploy 機械ゲート**（`cio:preflight:674` → `deploy:674`・45 分・`SKIP_CIO_DEPLOY_GUARD` 緊急脱出）＋HANDOFF 先読み（`AGENTS.md` **v23.33**） |
+| `.cursor/rules/cio-discipline-always.mdc` | **alwaysApply: true** — §35-7＋**customize deploy 機械ゲート**（594/595/626/627/629/671/674/677/678/679・`cio:preflight:<app>` → `deploy:<app>`・45 分・任意 **`--with-git-diff-line`**・`SKIP_CIO_DEPLOY_GUARD` 緊急脱出）＋HANDOFF 先読み（`AGENTS.md` **v23.34**） |
 | `.cursor/rules/autonomous-with-mandatory-asks.mdc` | **alwaysApply** — **自律実行してよいが**、日取り矛盾・GO 境界・曖昧仕様など **聞くべきことは着手前に聞く**（浜田指示） |
 | `.cursor/rules/creation-timing-ask.mdc` | **alwaysApply** — **作成着手前**に浜田へ **「今すぐ作成／後日」** と **配置スペース（ID または名）** を §41 で確認。未決なら `kintone-add-app` の `space` 省略で進めない（浜田指示 2026-04-28） |
 | `.cursor/rules/session-handoff.mdc` | 人間 5 行＋AI の `handoff-log` 追記手順。**自律復元**の追記あり |

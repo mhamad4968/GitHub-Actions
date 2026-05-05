@@ -1,10 +1,10 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🚨 憲法級（要約耐性ブロック） / 2026-05-05 **v3.33**（AGENTS **v23.33**・§35-7・674 **preflight ゲート**・**HANDOFF-AI-FIVE-BLOCKS**）/ TSB-024
+🚨 憲法級（要約耐性ブロック） / 2026-05-06 **v3.34**（AGENTS **v23.34**・§35-7・**全 customize `deploy:*` preflight ゲート**・**HANDOFF-AI-FIVE-BLOCKS**）/ TSB-024
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 **■ 引き継ぎ 5 ブロック（長文を分割して読む）**: 次 AI は先に **`chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md`** を Read し、ブロック 1→5 の順で復元する（本文のどこかに埋もれた手順と**同じ内容を索引化**したもの）。
 
-**■ 674 本番 deploy 機械ゲート（v23.33）**: `npm run deploy:674` の **直前**（45 分以内）に **`npm run cio:preflight:674 -- --note "…"`** が必要。常時想起: **`.cursor/rules/cio-discipline-always.mdc`**（`alwaysApply: true`）。詳細 **`AGENTS.md` §35-7**。
+**■ customize 本番 deploy 機械ゲート（v23.34）**: `package.json` の **`deploy:594` `595` `626` `627` `629` `671` `674` `677` `678` `679`** は、いずれも **同じ番号の `cio:preflight:<app> -- --note "…"`**（45 分以内・`logs/cio-preflight/<app>.json`）が無いと **拒否**。任意でスタンプに **`git diff --shortstat HEAD` の 1 行**を載せるときは **`--with-git-diff-line`** を付ける。例: **`npm run cio:preflight:674 -- --note "…"`** → **`npm run deploy:674`**。**緊急**: `SKIP_CIO_DEPLOY_GUARD=1`（浜田 GO＋理由 1 行）。常時想起: **`.cursor/rules/cio-discipline-always.mdc`**（`alwaysApply: true`）。詳細 **`AGENTS.md` §35-7**。
 
 **🔱 自律型 CTO「完全覚醒」プロトコル（2026-05-01 CEO 追補）**: 詳細・最高位の行動規範は **`.cursorrules` の `## 🔱 自律型 CTO「完全覚醒」プロトコル`** を正とする（本ファイルと併記。矛盾時は **憲法・浜田 GO・§52-8** を優先）。
 

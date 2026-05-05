@@ -22,7 +22,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 console.log(`
 === session-bootstrap ===
 手動チェックリスト: chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md
-憲法: AGENTS.md §35-1 / §56-1a（開発=AI・確認=浜田）／§35-7＋674 deploy は **cio:preflight:674** → **deploy:674**（`.cursor/rules/cio-discipline-always.mdc`）
+憲法: AGENTS.md §35-1 / §56-1a（開発=AI・確認=浜田）／§35-7＋customize **deploy:594/595/626/627/629/671/674/677/678/679** は **cio:preflight:<app>** → **deploy:<app>**（`.cursor/rules/cio-discipline-always.mdc`）
 (1) node scripts/verify-constitution-handoff.mjs  ← 先頭（数十 ms〜2 秒）
 (1b) node scripts/mandatory-read-gate.mjs  ← 必読ファイル構造（議論抜け対策）
 (1c) node scripts/session-clock-health.mjs --strict  ← 壁時計 hooks / crontab node 整合

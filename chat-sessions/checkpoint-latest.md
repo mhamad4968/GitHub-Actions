@@ -6,7 +6,7 @@
 
 **引き継ぎ 5 ブロック（2026-05-05 / v23.32）**: **`chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md`** — レーン宣言 → 規律ゲート → read-pack → bootstrap → 締め、の **短い正本**。長文を一度に読めないときの **入口**。
 
-**674 deploy 機械ゲート（v23.33）**: `deploy:674` は **`npm run cio:preflight:674 -- --note "…"`**（45 分以内）が無いと **拒否**。Cursor 常時: **`.cursor/rules/cio-discipline-always.mdc`**（`alwaysApply: true`）。
+**customize deploy 機械ゲート（v23.34）**: **`deploy:594` `595` `626` `627` `629` `671` `674` `677` `678` `679`** は **`npm run cio:preflight:<app> -- --note "…"`**（45 分以内）が無いと **拒否**。preflight に **任意**で **`--with-git-diff-line`**（`git diff --shortstat HEAD` 1 行）。Cursor 常時: **`.cursor/rules/cio-discipline-always.mdc`**（`alwaysApply: true`）。
 
 **上位表**: `NEW-SESSION-STARTER.md` 冒頭 **🎖️ AI 内部の役割分担**（CIO / Kimi / 知恵袋=DeepSeek / …）＋ **🔥 実行と確認の分離**。**チャット上の本体 AI（CIO）**は **§35-7** どおり、実装より先に **憲法 3 分・§50-3-8／スキップ理由・🎖️** をチャットに残す（**CIO ≠ 省ゲート最速**）。**分業の手順詳細**は **`.cursor/rules/deepseek-cursor-spec-division.mdc`**（`alwaysApply: true`・**CIO の列を増やさず**「結果統合」に内包）。要約: **知恵袋 = 網羅・論理一次**、**CIO = 正本突合・セカンドオピニオン・§50-3-8 約 3 行突合メモ**（仕様の単独確定禁止）。**PC 台帳（674 等）を触らない日**は本題を **部署予実（677/678・`SPEC.md`）**に寄せ、正本を混読しない（本ファイル 5A/5B）。
 

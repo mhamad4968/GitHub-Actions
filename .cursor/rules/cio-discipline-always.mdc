@@ -1,5 +1,5 @@
 ---
-description: §35-7 規律先行＋674 deploy 前スタンプ（条件付きではなく機械＋常時想起）
+description: §35-7 規律先行＋各 customize deploy 前スタンプ（条件付きではなく機械＋常時想起）
 alwaysApply: true
 ---
 
@@ -11,20 +11,22 @@ alwaysApply: true
 
 ## チャットに残す（編集ツール・本番 deploy の前）
 
-`customize/**/desktop.js` を **編集**するか **`npm run deploy:674`** を走らせる**同じ作業の流れの早い段階**で、チャットへ次を出す（`AGENTS.md` **§35-7**）。
+`customize/**/desktop.js` を **編集**するか **`npm run deploy:<3桁>`**（`package.json` の customize 路線）を走らせる**同じ作業の流れの早い段階**で、チャットへ次を出す（`AGENTS.md` **§35-7**）。
 
 1. **〔憲法 3 分〕**（レーン 1 行＋要約 1 行）
 2. **`[🎖️ 本セッション割当]`** 1 行
 3. **§50-3-8** 実施、または **`§50-3-8 スキップ理由:`** 付きで理由 1 行
 
-## 674 本番 customize 反映（機械ゲート）
+## customize 本番反映（機械ゲート）
 
-`npm run deploy:674` は **スタンプ無しでは失敗**する。
+**`deploy:594` `595` `626` `627` `629` `671` `674` `677` `678` `679`** は **スタンプ無しでは失敗**する（`cio-deploy-preflight-guard.mjs`）。
 
-1. 上記チャット出力の**あと**、ターミナルで:
+1. 上記チャット出力の**あと**、ターミナルで（`<app>` を対象 ID に置換）:
 
-   `npm run cio:preflight:674 -- --note "（上と同趣旨の一行）"`
+   `npm run cio:preflight:<app> -- --note "（上と同趣旨の一行）"`
 
-2. **45 分以内**に `npm run deploy:674` を実行する。
+   **任意**: スタンプ JSON に **`git diff --shortstat HEAD` の 1 行**を載せる → 末尾に **`--with-git-diff-line`**。
 
-**緊急のみ**: `SKIP_CIO_DEPLOY_GUARD=1 npm run deploy:674`（浜田 GO とチャットに理由 1 行必須）。
+2. **45 分以内**に `npm run deploy:<app>` を実行する。
+
+**緊急のみ**: `SKIP_CIO_DEPLOY_GUARD=1 npm run deploy:<app>`（浜田 GO とチャットに理由 1 行必須）。
