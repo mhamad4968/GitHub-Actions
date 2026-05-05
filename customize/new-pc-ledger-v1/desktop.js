@@ -23,11 +23,12 @@
  *   - **モバイル**: 当面は利用想定なし（`kintone.mobile` 分岐は既存のまま残すが、専用UXは追わない）。
  *   - **M365管理マスタレコード番号（671 `$id`）**: 共有・JR は同一671行の **usage_count / 5 台**運用で紐づく。個人は表示するが多くは空（自動生成はメール由来M365中心）。**手入力不可**（自動生成・保存後同期のみ更新）。
  *   - **PC名（`pc_name`）**: 全種別で **保存必須**（運用: **PCの管理番号＝PC名**）。
+ *   - **個人の JBIS+4桁**: 他の個人レコード（廃棄以外）と **同一 JBISxxxx** のとき保存前に室長確認の警告（赤）＋はい/いいえ。詳細・編集でも赤バナー表示。
  */
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-05-pc-ledger-pc-name-required-all-types';
+  const BUILD = '2026-05-05-pc-ledger-jbis-dup-warn';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -657,6 +658,217 @@
 
   function escapeQueryValue(str) {
     return String(str || '').replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+  }
+
+  /** 個人 PC 名の先頭 JBIS+4桁（例 JBIS0349）。§4.3.1 形式外は null */
+  function extractPersonalJbisCore674(pcName) {
+    const m = /^JBIS(\d{4})/i.exec(String(pcName || '').trim());
+    if (!m) return null;
+    return 'JBIS' + m[1];
+  }
+
+  /**
+   * 同一 JBIS コアの **他** 個人レコード（廃棄以外）。`excludeId` は編集時に自分自身の $id。
+   * @returns {Promise<Array<{id:string,pc_name:string,user_name:string}>>}
+   */
+  function fetchOtherPersonalSameJbisCore674(jbisCore, excludeId) {
+    const core = String(jbisCore || '').trim();
+    if (!core) return Promise.resolve([]);
+    const escU = escapeQueryValue(core.toUpperCase());
+    const escL = escapeQueryValue(core.toLowerCase());
+    const q =
+      'account_type = "' +
+      escapeQueryValue(TYPE_PERSONAL) +
+      '" and pc_status not in ("廃棄") and ' +
+      '(pc_name like "' +
+      escU +
+      '%" or pc_name like "' +
+      escL +
+      '%") limit 500';
+    const ex = excludeId != null && String(excludeId).trim() !== '' ? String(excludeId).trim() : '';
+    return kintoneApiGet('/k/v1/records.json', {
+      app: kintone.app.getId(),
+      query: q,
+      fields: ['$id', FC_PC_NAME, FC_USER_NAME],
+    }).then(function (resp) {
+      const out = [];
+      for (const row of resp.records || []) {
+        const idStr = row.$id != null && row.$id.value != null ? String(row.$id.value) : '';
+        if (ex && idStr === ex) continue;
+        const pn = String((row[FC_PC_NAME] && row[FC_PC_NAME].value) || '').trim();
+        const rowCore = extractPersonalJbisCore674(pn);
+        if (!rowCore || rowCore !== core) continue;
+        out.push({
+          id: idStr,
+          pc_name: pn,
+          user_name: String((row[FC_USER_NAME] && row[FC_USER_NAME].value) || '').trim(),
+        });
+      }
+      return out;
+    });
+  }
+
+  function removePcNameDupBanner674() {
+    const n = document.getElementById('jb674-pc-name-dup-banner');
+    if (n) n.remove();
+  }
+
+  /**
+   * 個人・JBIS 形式で他レコードとコア重複時、ヘッダに赤バナー（詳細・新規・編集）。
+   * @returns {Promise<void>}
+   */
+  function refreshPcNameDupBanner674(record) {
+    removePcNameDupBanner674();
+    if (!record) return Promise.resolve();
+    const type = record[FC_ACCOUNT_TYPE]?.value || '';
+    const st = String(record[FC_PC_STATUS]?.value || '').trim();
+    if (type !== TYPE_PERSONAL || st === '廃棄') return Promise.resolve();
+    const pcn = trimmedScalarValue674(record, FC_PC_NAME);
+    const core = extractPersonalJbisCore674(pcn);
+    if (!core) return Promise.resolve();
+    const rid = record.$id && record.$id.value != null ? String(record.$id.value) : '';
+    const space = getHeaderSpace674();
+    if (!space) return Promise.resolve();
+    return fetchOtherPersonalSameJbisCore674(core, rid).then(function (others) {
+      if (!others.length) return;
+      const banner = document.createElement('div');
+      banner.id = 'jb674-pc-name-dup-banner';
+      banner.style.cssText =
+        'background:#f8d7da;border:1px solid #f5c2c7;border-radius:4px;padding:10px 12px;margin:6px 0;' +
+        'font-size:13px;line-height:1.45;color:#842029;';
+      const title = document.createElement('div');
+      title.style.cssText = 'color:#b02a37;font-weight:bold;font-size:14px;margin-bottom:6px;';
+      title.textContent = 'PC名重複';
+      banner.appendChild(title);
+      const lead = document.createElement('div');
+      lead.style.marginBottom = '6px';
+      lead.innerHTML =
+        '個人のPC名の <strong style="color:#b02a37;">' +
+        core +
+        '</strong>（JBIS+4桁の管理番号部分）が、他の利用中・保管レコードと重複しています。室長へ確認してください。';
+      banner.appendChild(lead);
+      const ul = document.createElement('ul');
+      ul.style.cssText = 'margin:4px 0 0 18px;padding:0;color:#b02a37;';
+      const max = 12;
+      for (let i = 0; i < others.length && i < max; i++) {
+        const o = others[i];
+        const li = document.createElement('li');
+        li.style.marginBottom = '2px';
+        li.textContent =
+          'レコード番号 ' + o.id + '／PC名「' + o.pc_name + '」' + (o.user_name ? '／利用者「' + o.user_name + '」' : '');
+        ul.appendChild(li);
+      }
+      if (others.length > max) {
+        const li = document.createElement('li');
+        li.textContent = '…他 ' + (others.length - max) + ' 件';
+        ul.appendChild(li);
+      }
+      banner.appendChild(ul);
+      space.insertBefore(banner, space.firstChild);
+    });
+  }
+
+  function removeJbisDupConfirmModal674() {
+    const n = document.getElementById('jb674-jbis-dup-modal');
+    if (n) n.remove();
+  }
+
+  /**
+   * JBIS コア重複時の室長確認ダイアログ（赤文字・はい／いいえ）。
+   * @returns {kintone.Promise<boolean>} true=保存続行
+   */
+  function confirmJbisDuplicateWithChief674(jbisCore, others) {
+    return new kintone.Promise(function (resolve) {
+      removeJbisDupConfirmModal674();
+      const overlay = document.createElement('div');
+      overlay.id = 'jb674-jbis-dup-modal';
+      overlay.style.cssText =
+        'position:fixed;inset:0;z-index:200000;background:rgba(15,23,42,.45);' +
+        'display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;';
+      const box = document.createElement('div');
+      box.style.cssText =
+        'background:#fff;max-width:520px;width:100%;border-radius:8px;padding:20px 22px;' +
+        'box-shadow:0 12px 40px rgba(0,0,0,.2);font-family:inherit;';
+      const redTitle = document.createElement('div');
+      redTitle.style.cssText = 'color:#b02a37;font-weight:bold;font-size:16px;margin-bottom:10px;';
+      redTitle.textContent = 'PC名（JBIS+4桁）が重複しています';
+      box.appendChild(redTitle);
+      const msg = document.createElement('div');
+      msg.style.cssText = 'color:#b02a37;font-size:14px;line-height:1.55;margin-bottom:12px;';
+      msg.innerHTML =
+        '<strong>' +
+        jbisCore +
+        '</strong> が他レコードと重複しています。このまま登録してよいか<strong>室長へ確認</strong>してください。';
+      box.appendChild(msg);
+      const sub = document.createElement('div');
+      sub.style.cssText = 'color:#495057;font-size:13px;margin-bottom:10px;';
+      sub.textContent = '問題なく登録してよい場合は「はい」、取りやめる場合は「いいえ」を選んでください。';
+      box.appendChild(sub);
+      const ul = document.createElement('ul');
+      ul.style.cssText = 'margin:0 0 14px 18px;padding:0;font-size:13px;color:#842029;max-height:160px;overflow:auto;';
+      for (let i = 0; i < others.length && i < 10; i++) {
+        const o = others[i];
+        const li = document.createElement('li');
+        li.style.marginBottom = '3px';
+        li.textContent = 'No.' + o.id + ' ／ 「' + o.pc_name + '」' + (o.user_name ? '（' + o.user_name + '）' : '');
+        ul.appendChild(li);
+      }
+      if (others.length > 10) {
+        const li = document.createElement('li');
+        li.textContent = '…他 ' + (others.length - 10) + ' 件';
+        ul.appendChild(li);
+      }
+      box.appendChild(ul);
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;';
+      const btnNo = document.createElement('button');
+      btnNo.type = 'button';
+      btnNo.textContent = 'いいえ';
+      btnNo.style.cssText =
+        'padding:8px 18px;border:1px solid #ced4da;border-radius:4px;background:#fff;cursor:pointer;font-weight:bold;';
+      const btnYes = document.createElement('button');
+      btnYes.type = 'button';
+      btnYes.textContent = 'はい';
+      btnYes.style.cssText =
+        'padding:8px 18px;border:none;border-radius:4px;background:#0d6efd;color:#fff;cursor:pointer;font-weight:bold;';
+      function done(ok) {
+        removeJbisDupConfirmModal674();
+        resolve(ok);
+      }
+      btnNo.addEventListener('click', function () {
+        done(false);
+      });
+      btnYes.addEventListener('click', function () {
+        done(true);
+      });
+      row.appendChild(btnNo);
+      row.appendChild(btnYes);
+      box.appendChild(row);
+      overlay.appendChild(box);
+      overlay.addEventListener('click', function (ev) {
+        if (ev.target === overlay) done(false);
+      });
+      document.body.appendChild(overlay);
+    });
+  }
+
+  /**
+   * 個人・JBIS 形式で他レコードとコア重複時、室長確認モーダル。
+   * @returns {Promise<'ok'|'cancelled'>}
+   */
+  function checkPersonalJbisDuplicateBeforeSave674(event) {
+    const type = event.record[FC_ACCOUNT_TYPE]?.value || '';
+    if (type !== TYPE_PERSONAL) return Promise.resolve('ok');
+    const pcn = trimmedScalarValue674(event.record, FC_PC_NAME);
+    const core = extractPersonalJbisCore674(pcn);
+    if (!core) return Promise.resolve('ok');
+    const rid = event.record.$id && event.record.$id.value != null ? String(event.record.$id.value) : '';
+    return fetchOtherPersonalSameJbisCore674(core, rid).then(function (others) {
+      if (!others.length) return 'ok';
+      return confirmJbisDuplicateWithChief674(core, others).then(function (yes) {
+        return yes ? 'ok' : 'cancelled';
+      });
+    });
   }
 
   /** 保存前照合・自動生成用: 595 user_name と入力の表記ゆれ（全角スペース・ゼロ幅・互換文字）を吸収 */
@@ -3321,6 +3533,12 @@ ${bodyInner}\
           console.warn('[NEW-PC-LEDGER-V1] license banner', e);
         })
         .then(function () {
+          return refreshPcNameDupBanner674(event.record);
+        })
+        .catch(function (e) {
+          console.warn('[NEW-PC-LEDGER-V1] pc_name dup banner', e);
+        })
+        .then(function () {
           resolve(event);
         });
     });
@@ -3361,10 +3579,31 @@ ${bodyInner}\
     refreshLicenseBannerFrom671(result.record).catch(function (e) {
       console.warn('[NEW-PC-LEDGER-V1] license banner', e);
     });
+    refreshPcNameDupBanner674(result.record).catch(function (e) {
+      console.warn('[NEW-PC-LEDGER-V1] pc_name dup banner', e);
+    });
     return result;
   }
 
   kintone.events.on(typeChangeEvents, onAccountTypeOrPcStatusChange674);
+
+  const pcNameChangeEvents674 = [
+    'app.record.create.change.pc_name',
+    'app.record.edit.change.pc_name',
+  ];
+  function onPcNameChangeDupBanner674(event) {
+    refreshPcNameDupBanner674(event.record).catch(function (e) {
+      console.warn('[NEW-PC-LEDGER-V1] pc_name dup banner', e);
+    });
+    return event;
+  }
+  kintone.events.on(pcNameChangeEvents674, onPcNameChangeDupBanner674);
+  if (typeof kintone.mobile !== 'undefined') {
+    kintone.events.on(
+      ['mobile.app.record.create.change.pc_name', 'mobile.app.record.edit.change.pc_name'],
+      onPcNameChangeDupBanner674,
+    );
+  }
 
   const pcStatusChangeEvents = [
     'app.record.create.change.pc_status',
@@ -3816,6 +4055,18 @@ ${bodyInner}\
             event.error = m671Msg;
             event.errors = Object.assign(event.errors || {}, {
               [FC_M365_MASTER_RECORD_ID]: m671Msg,
+            });
+            return null;
+          }
+          return checkPersonalJbisDuplicateBeforeSave674(event);
+        })
+        .then(function (dupRes) {
+          if (dupRes === 'cancelled') {
+            const dm =
+              'JBIS+4桁の管理番号が他レコードと重複しています。室長へ確認のうえ、登録してよい場合は再度「保存」し「はい」を選んでください。';
+            event.error = dm;
+            event.errors = Object.assign(event.errors || {}, {
+              [FC_PC_NAME]: dm,
             });
           }
         })
