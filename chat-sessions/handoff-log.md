@@ -871,3 +871,8 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 - **`npm run deploy:674`**: **SUCCESS** / fileKey **`09d55a9b-ebe6-4450-a065-2bd5fc669160`** / preview revision **`107`** / **BUILD=`2026-05-05-pc-ledger-595-field-adjacent-btn`**。
 - **`kintone-apps.md`**: 674 行・Actions 表を更新。`session:bootstrap` 緑。
 
+### 2026-05-05 JST（追記）— 674: 595 はボタン押下のみ（浜田仕様）
+
+- **方針**: 社員名検索（595）は **登録担当者が望んだときだけ**＝**明示ボタンのみ**。`run674EmptyFieldAssistFromPointer674` から **個人の自動 `openEmployee595SearchModal674` を削除**。共有・JR の **680** フォーカス自動は据え置き。
+- **`npm run deploy:674`**: **SUCCESS** / fileKey **`18c7d9cd-f01c-44b1-bc04-3bd4611910b1`** / revision **`108`** / **BUILD=`2026-05-05-pc-ledger-595-on-demand-only`**。
+

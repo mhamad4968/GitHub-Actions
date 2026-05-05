@@ -19,7 +19,7 @@
  *   - （一覧）**SKYSEA 状態**: 検索バーに **skysea_status チップ**（§4.8a）。**SKYSEA 計画立案・合意後に要件・UI を再検討予定**（現状は暫定）。
  *   - （一覧）**絞り込み URL**: `query` パラメータから **キーワード・種別・SKYSEA チップ**を復元（当バーが生成したクエリ形式に準拠）。
  *   - **PC買替は実装済**（§4.10.3）。594 同趣旨。**627 二重更新なし**。v0.9.14: ボタン掛け先フォールバック＋遅延再 inject、`import_source=PC_REPLACE_FROM_674:<旧$id>`・legacy 594 フィールドクリア。
- *   - 新規・編集: **所属ヘルプは既定で閉じた `<details>`**（必要時のみ開く・§4.2.0b）。**共有・JR**: フィールド最小表示、**所属候補モーダル**（マスタ **680** または埋め込み）、保存前必須。**未入力時に所属名／所属グループへフォーカス**→共有・JR は **680 モーダル**、個人（非保管）は **595 社員検索**を自動表示。個人の **利用者名** 未入力フォーカス時も 595。**個人＋保管**はフォーカス自動起動なし。**個人（非保管）**は利用者名・所属名・所属グループ各フィールド直下にも **595 検索の明示ボタン**（ヘッダの「社員名を検索」と同処理）を出し、DOM 取りこぼし時の代替導線とする。VPN は個人のみ。NAS/その他は全表示。
+ *   - 新規・編集: **所属ヘルプは既定で閉じた `<details>`**（必要時のみ開く・§4.2.0b）。**共有・JR**: フィールド最小表示、**所属候補モーダル**（マスタ **680** または埋め込み）、保存前必須。**未入力時に所属名／所属グループへフォーカス**→共有・JR は **680 モーダルを自動表示**。**個人の 595 社員検索**はフォーカスでは開かず、**登録担当者が明示ボタンを押したときだけ**（画面上部「社員名を検索（595）」または利用者名・所属名・所属グループ直下の「595で氏名・所属を検索」＝いずれも `openEmployee595SearchModal674`）。**個人＋保管**も 595 自動なし。利用者名の **入力中ドロップダウン候補**は従来どおり。VPN は個人のみ。NAS/その他は全表示。
  *   - **備考（note）**: 全種別で任意（保存前チェックでは必須にしない）。
  *   - **モバイル**: 当面は利用想定なし（`kintone.mobile` 分岐は既存のまま残すが、専用UXは追わない）。
  *   - **M365管理マスタレコード番号（671 `$id`）**: 共有・JR は同一671行の **usage_count / 5 台**運用で紐づく。個人は表示するが多くは空（自動生成はメール由来M365中心）。**手入力不可**（自動生成・保存後同期のみ更新）。
@@ -29,7 +29,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-05-pc-ledger-595-field-adjacent-btn';
+  const BUILD = '2026-05-05-pc-ledger-595-on-demand-only';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -502,7 +502,7 @@
     ul.style.cssText = 'margin:0 0 8px 1.1em;padding:0;';
     const li1 = document.createElement('li');
     li1.textContent =
-      '個人：画面上部の「社員名を検索（595）」または、利用者名・所属名・所属グループの直下の「595で氏名・所属を検索」で氏名を選べます。利用者名欄に入力すると候補が出る場合もあります。確定後、所属名・所属グループは595の内容で自動反映されます。';
+      '個人：595の社員名検索は、必要なときだけ「社員名を検索（595）」または各フィールド直下の「595で氏名・所属を検索」を押して開いてください（フォーカスだけでは開きません）。利用者名欄に入力するとドロップダウン候補が出る場合があります。確定後、所属名・所属グループは595の内容で自動反映されます。';
     const li2 = document.createElement('li');
     li2.textContent =
       '共有・JR：`所属名` と `所属グループ` は別フィールド。下表は会社既定の候補を**この順**で記載（必要な行だけコピーして入力）。';
@@ -1763,7 +1763,8 @@
   }
 
   /**
-   * 未入力かつ該当フィールドにフォーカス／ポインタが乗ったとき、595／680 の入力支援を開く。
+   * 未入力かつ該当フィールドにフォーカス／ポインタが乗ったとき、**共有・JR のみ** 680 所属候補を自動表示。
+   * 個人の 595 社員検索はフォーカスでは開かない（明示ボタンのみ）。
    * @param {Event} ev
    * @param {'user'|'dept'|'grp'|null} forcedField null = document 上でターゲットから推定。各フィールド getFieldElement 直下は固定。
    * @param {number} [attempt] get() 未到達時の短いリトライ回数
@@ -1832,24 +1833,7 @@
       return;
     }
 
-    if (type === TYPE_PERSONAL) {
-      if (isPersonalStored(rec)) return;
-      if (inUser) {
-        const live =
-          forcedField === 'user' ? trimmedScalarLive674(rec, FC_USER_NAME) : readUserNameLiveValue674(rec);
-        if (live) return;
-        npl674FocusAssistSuppressUntil674 = Date.now() + 400;
-        openEmployee595SearchModal674();
-        return;
-      }
-      if (inDept || inGrp) {
-        const d = trimmedScalarLive674(rec, FC_DEPT_NAME);
-        const g = trimmedScalarLive674(rec, FC_GROUP_NAME);
-        if (d && g) return;
-        npl674FocusAssistSuppressUntil674 = Date.now() + 400;
-        openEmployee595SearchModal674();
-      }
-    }
+    /* 個人: 595 は登録担当者がボタンを押したときのみ（フォーカス／クリックの自動起動はしない） */
   }
 
   function on674EmptyFieldFocusAssist674(ev) {
@@ -1904,7 +1888,7 @@
     }, 2600);
   }
 
-  /** 個人（非保管）向け: 595 検索の明示ボタンを各フィールド直下へ（ヘッダと同じ openEmployee595SearchModal674） */
+  /** 個人（非保管）向け: 595 検索はボタン押下のみ。各フィールド直下＋ヘッダと同じ openEmployee595SearchModal674 */
   function remove595FieldAdjacentRows674() {
     try {
       const nodes = document.querySelectorAll('[data-npl-595-adj="1"]');
