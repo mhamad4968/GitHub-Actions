@@ -68,6 +68,7 @@ npm run app:fields <アプリID>
 
 | 日時（UTC） | アプリID | customize パス |
 |-------------|----------|----------------|
+| 2026-05-05T05:00:30Z | 594 | `customize/594/desktop.js` |
 | 2026-05-05T04:54:42Z | 594 | `customize/594/desktop.js` |
 | 2026-05-05T12:00:00Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（**個人 `windows_name`**: **`jbm####[mail@前]`**・`logon_name` と `[` の間の **`+` 廃止**・**BUILD** `2026-05-05-pc-ledger-windowsname-bracket-noplus`・**リポ HEAD**／本番反映は **`npm run deploy:674`**） |
 | 2026-05-05T12:00:00Z | 627 | `customize/627/desktop.js`（595/626 自動入力の **`windows_name`**: **`logon_name[mail@前]`**・`+` 廃止・**BUILD** 注記 `2026-05-05-v1`・**リポ HEAD**／本番反映は **`npm run deploy:627`**） |
