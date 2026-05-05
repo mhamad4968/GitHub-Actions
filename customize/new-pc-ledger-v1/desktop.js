@@ -16,7 +16,7 @@
  *   - **レコード閲覧（detail）**: 操作ボタンは **PC買替・印刷のみ**（自動生成・社員名検索・全フィールドリセットは新規・編集でのみ表示）
  *
  * Day 5 残タスク（未完了のみ）:
- *   - （一覧）SKYSEA 状態フィルタ等は別途（検索バー強化 §4.8a は対応済）。
+ *   - （一覧）**SKYSEA 状態**: 検索バーに **skysea_status チップ**（複数選択可・キーワード・種別と AND）を追加済（§4.8a）。
  *   - **PC買替は実装済**（§4.10.3）。594 同趣旨。**627 二重更新なし**。v0.9.14: ボタン掛け先フォールバック＋遅延再 inject、`import_source=PC_REPLACE_FROM_674:<旧$id>`・legacy 594 フィールドクリア。
  *   - 新規・編集: 所属ヘルプ（編集ではコピー用一覧を details で折りたたみ）。**共有・JR**: フィールド最小表示、**所属候補モーダル**（マスタ **680** または埋め込み）、保存前必須。個人＋保管は個人と同表示。VPN は個人のみ。NAS/その他は全表示。
  *   - **備考（note）**: 全種別で任意（保存前チェックでは必須にしない）。
@@ -28,7 +28,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-05-pc-ledger-jbis-dup-warn';
+  const BUILD = '2026-05-05-pc-ledger-index-skysea-chips';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -3613,9 +3613,9 @@ ${bodyInner}\
   ];
   kintone.events.on(pcStatusChangeEvents, onAccountTypeOrPcStatusChange674);
 
-  // --- 一覧：§4.8a 検索（キーワード + 種別チップ、datalist オートコンプリート） ---
+  // --- 一覧：§4.8a 検索（キーワード + 種別チップ + SKYSEA チップ、datalist オートコンプリート） ---
   const SEARCH674_WRAP_ID = 'new-pc-ledger-674-index-search';
-  const SEARCH674_WRAP_VER = '2026-05-01-v1';
+  const SEARCH674_WRAP_VER = '2026-05-05-v2-skysea';
   const SEARCH674_DL_ID = 'new-pc-ledger-674-search-datalist';
 
   const SEARCH674_HINT_FIELDS = [
@@ -3636,6 +3636,14 @@ ${bodyInner}\
     { value: TYPE_OTHER, label: '📦 その他' },
   ];
 
+  /** §4.2.3a / 仕様ドロップダウンと一致 */
+  const SEARCH674_SKYSEA_CHIPS = [
+    { value: '未確認', label: 'SKYSEA: 未確認' },
+    { value: 'インストール済', label: 'SKYSEA: 済' },
+    { value: '未インストール', label: 'SKYSEA: 未Inst' },
+    { value: 'インストール対象外', label: 'SKYSEA: 対象外' },
+  ];
+
   const cache674IndexSearch = { key: '', records: [], ts: 0 };
 
   function cell674PlainForSearch(rec, code) {
@@ -3651,7 +3659,7 @@ ${bodyInner}\
     return String(s).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
   }
 
-  function build674IndexListQuery(keyword, selectedTypes) {
+  function build674IndexListQuery(keyword, selectedTypes, selectedSkysea) {
     const parts = [];
     const types = selectedTypes instanceof Set ? [...selectedTypes] : [];
     if (types.length) {
@@ -3661,6 +3669,15 @@ ${bodyInner}\
         })
         .join(', ');
       parts.push('(' + FC_ACCOUNT_TYPE + ' in (' + quoted + '))');
+    }
+    const skies = selectedSkysea instanceof Set ? [...selectedSkysea] : [];
+    if (skies.length) {
+      const quotedS = skies
+        .map(function (t) {
+          return '"' + escape674QueryLike(t) + '"';
+        })
+        .join(', ');
+      parts.push('(' + FC_SKYSEA_STATUS + ' in (' + quotedS + '))');
     }
     let kw = String(keyword || '').trim();
     if (kw.length > 80) {
@@ -3816,7 +3833,7 @@ ${bodyInner}\
     const title = document.createElement('div');
     title.style.cssText = 'font-size:12px;font-weight:700;color:#0f172a;margin-bottom:8px;';
     title.textContent =
-      'キーワード検索（PC名・WindowsID・M365・利用者名・所属・グループ・共有端末名）／種別チップ';
+      'キーワード検索（PC名・WindowsID・M365・利用者名・所属・グループ・共有端末名）／種別チップ／SKYSEA 状態';
 
     const row = document.createElement('div');
     row.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px;';
@@ -3860,6 +3877,7 @@ ${bodyInner}\
       b.type = 'button';
       b.textContent = def.label;
       b.dataset.typeValue = def.value;
+      b.className = 'npl674-index-chip';
       b.style.cssText =
         'padding:4px 10px;border-radius:999px;border:1px solid #94a3b8;background:#fff;' +
         'font-size:12px;font-weight:700;cursor:pointer;color:#0f172a;';
@@ -3881,18 +3899,52 @@ ${bodyInner}\
       chipRow.appendChild(b);
     });
 
+    const skyChipRow = document.createElement('div');
+    skyChipRow.style.cssText =
+      'display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px;';
+
+    const selectedSkysea = new Set();
+
+    SEARCH674_SKYSEA_CHIPS.forEach(function (def) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = def.label;
+      b.dataset.skyseaValue = def.value;
+      b.className = 'npl674-index-chip';
+      b.style.cssText =
+        'padding:4px 10px;border-radius:999px;border:1px solid #94a3b8;background:#fff;' +
+        'font-size:12px;font-weight:700;cursor:pointer;color:#0f172a;';
+      b.setAttribute('aria-pressed', 'false');
+      b.addEventListener('click', function () {
+        const val = b.dataset.skyseaValue || '';
+        if (selectedSkysea.has(val)) {
+          selectedSkysea.delete(val);
+          b.setAttribute('aria-pressed', 'false');
+          b.style.background = '#fff';
+          b.style.borderColor = '#94a3b8';
+        } else {
+          selectedSkysea.add(val);
+          b.setAttribute('aria-pressed', 'true');
+          b.style.background = '#ede9fe';
+          b.style.borderColor = '#6d28d9';
+        }
+      });
+      skyChipRow.appendChild(b);
+    });
+
     const hint = document.createElement('div');
     hint.style.cssText = 'font-size:11px;color:#475569;line-height:1.45;';
     hint.textContent =
-      'Enter または「絞り込み」で一覧を更新します。種別チップは複数選択可（account_type in）、キーワードは上記フィールドに対する部分一致（OR）と AND です。';
+      'Enter または「絞り込み」で一覧を更新します。種別・SKYSEA は複数選択可（各 in）、キーワードは上記フィールドへの部分一致（OR）と AND です。';
 
     wrap.appendChild(title);
     wrap.appendChild(row);
     wrap.appendChild(chipRow);
+    wrap.appendChild(skyChipRow);
     wrap.appendChild(hint);
 
     const apply674 = function () {
-      const q = build674IndexListQuery(inpKw.value, selectedTypes);
+      const q = build674IndexListQuery(inpKw.value, selectedTypes, selectedSkysea);
       navigate674ListWithQuery(q);
     };
 
@@ -3902,7 +3954,8 @@ ${bodyInner}\
     btnClr.addEventListener('click', function () {
       inpKw.value = '';
       selectedTypes.clear();
-      Array.prototype.forEach.call(chipRow.querySelectorAll('button'), function (b) {
+      selectedSkysea.clear();
+      Array.prototype.forEach.call(wrap.querySelectorAll('button.npl674-index-chip'), function (b) {
         b.setAttribute('aria-pressed', 'false');
         b.style.background = '#fff';
         b.style.borderColor = '#94a3b8';
