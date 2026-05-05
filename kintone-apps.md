@@ -68,6 +68,7 @@ npm run app:fields <アプリID>
 
 | 日時（UTC） | アプリID | customize パス |
 |-------------|----------|----------------|
+| 2026-05-05T04:54:42Z | 594 | `customize/594/desktop.js` |
 | 2026-05-07T06:00:00Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（**個人 `windows_name`** **`jbm####+[mail@前]`** 角括弧・**BUILD** `windowsname-bracket-mail`・**deploy SUCCESS** / fileKey **`51b8d33f-b4e0-468e-9c78-760876e87eb9`** / rev **`127`**） |
 | 2026-05-07T04:00:00Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（**個人 `windows_name`** §4.2.2 組み立て関数化・**672 jbm4桁検証**・`console.info` 監査ログ・**BUILD** `personal-windowsname-validate`・**deploy SUCCESS** / fileKey **`a7365f2a-a573-42c2-802f-e5b947f2ea79`** / rev **`126`**） |
 | 2026-05-07T02:30:00Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（**共有・個人自動生成** `record.set` 前 **内部メタ子 disabled 一時解除**・**BUILD** `shared-autogen-internal-disabled-fix`・**deploy SUCCESS** / fileKey **`42d601e1-c163-4b4b-ab09-522c6d0c8dc0`** / rev **`125`**） |
