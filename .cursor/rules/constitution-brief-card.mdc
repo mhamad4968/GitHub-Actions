@@ -1,5 +1,5 @@
 ---
-description: AGENTS.md §0 §3 — 憲法の常時想起は薄型カード（網羅版は Read で取り込む）
+description: AGENTS.md §0 §3 §50 — 憲法薄型カード＋CIO三角＋MCP先出し（網羅版は Read）
 alwaysApply: true
 ---
 
@@ -11,6 +11,12 @@ alwaysApply: true
 - **第2者をスキップするターン**は **`§50-3-8 スキップ理由:`** を **1 行必須**（README 誤字のみ等も同様）。**本体だけで「確認済み」は禁止**。
 - **浜田（CEO）**は **GO・仕様・検収**。**CEO を第2者の代わりにしない**（`constitution-enforcement-core.mdc`）。
 - **毎ターン先頭 4 行**（順固定）: **`[§1-2-3 ティア判定]`** → **`【適用憲法】`** → **`[🎖️ 本セッション割当]`** → **`[ルール確認]`**（詳細は `every-turn-rules-confirm.mdc`）。
+
+## MCP・ツール — 「できるのにやらない」「できないと思い込む」禁止
+
+- **先にスキャン**: 依頼が **外部の正**（GitHub・kintone・Web・社内ドキュ・ブラウザ UI・CVE 等）に触れるなら、**着手前に** **`mcp-server-use-triggers.mdc`** を **Read** し、該当 1 行トリガーがあれば **その MCP を優先**（呼ぶ直前の descriptor 義務は **`mcp-tool-discipline.mdc`**）。
+- **「AI（このチャット）ではできません」**は、上記スキャンに加え **Read / Grep / Shell（リポに既にある `npm run …` や `scripts/`）** で代替不能と言い切れる場合に限る。**根拠なしの早取り禁止**。
+- **ユーザーが MCP・npm script・hooks を入れている**話題では、**人間の手作業へ逃げる前に** `package.json`・`docs/mcp-status.md`・該当ワークフローを **事実確認**する（憲法 **§50** 系・死蔵防止の精神）。
 
 ## 正本の優先順位
 

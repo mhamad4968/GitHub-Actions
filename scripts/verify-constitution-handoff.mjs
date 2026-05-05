@@ -198,6 +198,18 @@ const suites = [
       '行動前チェック',
       'RULES-INDEX.md',
       'constitution-enforcement-core.mdc',
+      'mcp-server-use-triggers.mdc',
+      'MCPスキップ:',
+    ],
+  },
+  {
+    id: 'mcp-triggers-bias-guard',
+    rel: '.cursor/rules/mcp-server-use-triggers.mdc',
+    headChars: 900,
+    needles: [
+      '標準だけで足りる',
+      'バイアス',
+      'mcp-tool-discipline.mdc',
     ],
   },
   {
