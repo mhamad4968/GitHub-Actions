@@ -881,3 +881,8 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 - **正本**: `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.1a・§4.4・§4.2.0**。実装は **`isPersonal595AssistEnabled674(record)`**（`readAccountTypeLive674`＋`readPcStatusLive674` で **個人かつ pc_status≠保管**）に **595 モーダル・ヘッダ／直下ボタン・利用者名候補・個人用自動生成・保存前 user_name 595 検証・595 双方向リンク eligible** を統一。
 - **`npm run deploy:674`**: **SUCCESS** / fileKey **`e6374d94-049d-4714-a79c-e31e041178a3`** / revision **`109`** / **BUILD=`2026-05-05-pc-ledger-595-assist-spec-gate`**。
 
+### 2026-05-05 JST（追記）— 674: 個人×保管はヘッダ「全フィールドリセット」のみ（浜田）
+
+- **目的**: 余計なボタンを出さない。**新規・編集**かつ **`isPersonalStored`** のとき **`injectButtons`** で **PC買替・印刷を出さない**（**閲覧 detail** は従来どおり PC買替・印刷のみ）。
+- **`npm run deploy:674`**: **SUCCESS** / fileKey **`659b0f75-1710-4afc-bd8a-f748a7e7efe0`** / revision **`110`** / **BUILD=`2026-05-05-pc-ledger-personal-stored-header-min`**。
+

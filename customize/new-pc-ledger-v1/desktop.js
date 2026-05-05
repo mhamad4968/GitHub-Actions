@@ -13,13 +13,13 @@
  *   - 自動生成ボタン: 個人 / 共有 / JR（M365 系）を §4.4 に沿ってフォームへ反映（空欄のみ上書き）
  *   - 5 台ライセンス警告雛形 (赤バナーは仕組みのみ)
  *   - リセット／PC買替（§4.10.3・596 採番・671 整合・595 個人リンク）／印刷（627 レイアウト移植済）
- *   - **レコード閲覧（detail）**: 操作ボタンは **PC買替・印刷のみ**（自動生成・社員名検索・全フィールドリセットは新規・編集でのみ表示）
+ *   - **レコード閲覧（detail）**: 操作ボタンは **PC買替・印刷のみ**（自動生成・社員名検索・全フィールドリセットは新規・編集でのみ表示）。**個人×保管の新規・編集**: ヘッダ操作は **全フィールドリセットのみ**（§4.1a 最小 UI・余計なボタン抑止）。
  *
  * Day 5 残タスク（未完了のみ）:
  *   - （一覧）**SKYSEA 状態**: 検索バーに **skysea_status チップ**（§4.8a）。**SKYSEA 計画立案・合意後に要件・UI を再検討予定**（現状は暫定）。
  *   - （一覧）**絞り込み URL**: `query` パラメータから **キーワード・種別・SKYSEA チップ**を復元（当バーが生成したクエリ形式に準拠）。
  *   - **PC買替は実装済**（§4.10.3）。594 同趣旨。**627 二重更新なし**。v0.9.14: ボタン掛け先フォールバック＋遅延再 inject、`import_source=PC_REPLACE_FROM_674:<旧$id>`・legacy 594 フィールドクリア。
- *   - 新規・編集: **所属ヘルプは既定で閉じた `<details>`**（必要時のみ開く・§4.2.0b）。**共有・JR**: フィールド最小表示、**所属候補モーダル**（マスタ **680** または埋め込み）、保存前必須。**未入力時に所属名／所属グループへフォーカス**→共有・JR は **680 モーダルを自動表示**（§4.4 共有系）。**個人の 595 入力支援**は **`isPersonal595AssistEnabled674`** が真のときだけ（§4.1a **個人×保管は対象外**・§4.4 **pc_status≠保管**・§4.2.0）。**595 モーダル／ヘッダ・フィールド下ボタン／利用者名の 595 候補**はいずれも同関数で判定。**595 モーダルはボタン押下のみ**（フォーカス自動なし）。VPN は個人のみ。NAS/その他は全表示。
+ *   - 新規・編集: **所属ヘルプは既定で閉じた `<details>`**（必要時のみ開く・§4.2.0b）。**共有・JR**: フィールド最小表示、**所属候補モーダル**（マスタ **680** または埋め込み）、保存前必須。**未入力時に所属名／所属グループへフォーカス**→共有・JR は **680 モーダルを自動表示**（§4.4 共有系）。**個人の 595 入力支援**は **`isPersonal595AssistEnabled674`** が真のときだけ（§4.1a **個人×保管は対象外**・§4.4 **pc_status≠保管**・§4.2.0）。**595 モーダル／ヘッダ・フィールド下ボタン／利用者名の 595 候補**はいずれも同関数で判定。**595 モーダルはボタン押下のみ**（フォーカス自動なし）。**個人×保管の新規・編集**ではヘッダに **全フィールドリセット以外の操作ボタンを出さない**（PC買替・印刷も非表示）。VPN は個人のみ。NAS/その他は全表示。
  *   - **備考（note）**: 全種別で任意（保存前チェックでは必須にしない）。
  *   - **モバイル**: 当面は利用想定なし（`kintone.mobile` 分岐は既存のまま残すが、専用UXは追わない）。
  *   - **M365管理マスタレコード番号（671 `$id`）**: 共有・JR は同一671行の **usage_count / 5 台**運用で紐づく。個人は表示するが多くは空（自動生成はメール由来M365中心）。**手入力不可**（自動生成・保存後同期のみ更新）。
@@ -29,7 +29,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-05-pc-ledger-595-assist-spec-gate';
+  const BUILD = '2026-05-05-pc-ledger-personal-stored-header-min';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -3758,6 +3758,9 @@ ${bodyInner}\
     const isRecordDetail674 =
       event.type === 'app.record.detail.show' || event.type === 'mobile.app.record.detail.show';
 
+    /** §4.1a: 個人×保管の編集画面はヘッダを全フィールドリセットのみに抑える */
+    const personalStoredHeaderMinimal674 = !isRecordDetail674 && isPersonalStored(event.record);
+
     if (!isRecordDetail674) {
       const type = event.record[FC_ACCOUNT_TYPE]?.value || '';
 
@@ -3801,23 +3804,25 @@ ${bodyInner}\
       }));
     }
 
-    // PC 買替 (全種別 / §4.10.3)
-    wrapper.appendChild(createGenerateButton('🔄 PC買替', '#6c757d', () => {
-      runPcReplacementFlow674().catch(function (e) {
-        console.error('[NEW-PC-LEDGER-V1] PC買替', e);
-        window.alert('PC買替でエラー: ' + (e && e.message ? e.message : String(e)));
-      });
-    }));
+    if (!personalStoredHeaderMinimal674) {
+      // PC 買替 (全種別 / §4.10.3) — 個人×保管の新規・編集では非表示
+      wrapper.appendChild(createGenerateButton('🔄 PC買替', '#6c757d', () => {
+        runPcReplacementFlow674().catch(function (e) {
+          console.error('[NEW-PC-LEDGER-V1] PC買替', e);
+          window.alert('PC買替でエラー: ' + (e && e.message ? e.message : String(e)));
+        });
+      }));
 
-    // 印刷 (全種別)
-    wrapper.appendChild(createGenerateButton('📄 印刷', '#0dcaf0', () => {
-      const rec = resolve674PrintRecord();
-      if (!rec) {
-        window.alert('レコードを取得できませんでした。画面を開き直すか、一覧から再度開いてください。');
-        return;
-      }
-      open674SystemInfoPrintWindow(rec);
-    }));
+      // 印刷 (全種別) — 個人×保管の新規・編集では非表示（閲覧 detail では従来どおり表示）
+      wrapper.appendChild(createGenerateButton('📄 印刷', '#0dcaf0', () => {
+        const rec = resolve674PrintRecord();
+        if (!rec) {
+          window.alert('レコードを取得できませんでした。画面を開き直すか、一覧から再度開いてください。');
+          return;
+        }
+        open674SystemInfoPrintWindow(rec);
+      }));
+    }
 
     mount.el.appendChild(wrapper);
   }
