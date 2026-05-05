@@ -18,12 +18,12 @@
  * Day 5 残タスク（未完了のみ）:
  *   - （一覧）SKYSEA 状態フィルタ等は別途（検索バー強化 §4.8a は対応済）。
  *   - **PC買替は実装済**（§4.10.3）。594 同趣旨。**627 二重更新なし**。v0.9.14: ボタン掛け先フォールバック＋遅延再 inject、`import_source=PC_REPLACE_FROM_674:<旧$id>`・legacy 594 フィールドクリア。
- *   - 新規・編集: 所属ヘルプ（編集ではコピー用一覧を details で折りたたみ）。説明用の JS 帯は撤去（フォームの標準グループに委譲）。
+ *   - 新規・編集: 所属ヘルプ（編集ではコピー用一覧を details で折りたたみ）。**共有・JR**: フィールド最小表示、**所属候補モーダル**（マスタ **675** または埋め込み）、保存前必須。個人＋保管は個人と同表示。VPN は個人のみ。NAS/その他は全表示。
  */
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-05-pc-ledger-detail-two-buttons';
+  const BUILD = '2026-05-05-pc-ledger-shared-jr-visibility-dept-modal';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -82,6 +82,8 @@
   const APP_JBM_NUMBER = '672';     // 新個人WindowsID採番マスタ (jbm)
   const APP_SJBM_NUMBER = '673';    // 新共有WindowsID採番マスタ (sjbm)
   const APP_EMPLOYEE = '595';       // 社員情報マスタ
+  /** 674 用 所属名／所属グループ候補マスタ（未作成・権限なし時は埋め込み一覧にフォールバック） */
+  const APP_DEPT_MASTER_674 = '675';
   /** PC 採番マスタ（594 買替と同一。596 の in_code に 〇 で占有） */
   const APP_PC_NUMBER_596 = '596';
   const FC_596_PREFIX = 'number_top';
@@ -327,50 +329,103 @@
   }
 
   /**
-   * 種別に応じてアカウント情報セクションの表示制御
-   * (仕様書 §4.5 UI 出し分け)
+   * 種別に応じたフォーム表示制御（2026-05 GO: 共有・JR は最小セット、NAS/その他は全表示、個人＋保管は同一）
    */
   function applyVisibilityByType(record) {
     const type = record[FC_ACCOUNT_TYPE]?.value || '';
 
-    const accountFields = [
-      FC_LOGON_NAME, FC_LOGON_PW, FC_WINDOWS_NAME,
-      FC_MAIL, FC_MAIL_ACCT, FC_MAIL_PW,
-      FC_M365_ID, FC_M365_PW,
-      FC_GB_ID, FC_GB_PW, FC_SB_ID, FC_SB_PW,
-      FC_VPN_ID, FC_VPN_PW,
-    ];
-    /** 個人のみ。共有/JR は Windows + M365 のみ（メール・サイボウズ等は非表示） */
-    const personalOnlyFields = [
-      FC_MAIL, FC_MAIL_ACCT, FC_MAIL_PW,
-      FC_GB_ID, FC_GB_PW, FC_SB_ID, FC_SB_PW,
-    ];
-    /** 共有/JR では利用者名は使わないため非表示（共有端末名を使う） */
-    const personalOnlyUserName = [FC_USER_NAME];
+    const VPN_FIELDS = [FC_VPN_ID, FC_VPN_PW];
+    const MAIL_CYBOZU = [FC_MAIL, FC_MAIL_ACCT, FC_MAIL_PW, FC_GB_ID, FC_GB_PW, FC_SB_ID, FC_SB_PW];
 
-    if (isPersonalStored(record)) {
-      setFieldsVisibility(accountFields, false);
-      setFieldsVisibility(personalOnlyFields, false);
-      setFieldsVisibility(personalOnlyUserName, false);
-      setFieldsVisibility([FC_EMP_ID], false);
+    const ALL_SCALAR_FOR_VISIBILITY = [
+      FC_ACCOUNT_TYPE,
+      FC_PC_STATUS,
+      FC_PC_NAME,
+      FC_SERIAL,
+      FC_PC_SERIAL_NO,
+      FC_USER_NAME,
+      FC_DEPT_NAME,
+      FC_GROUP_NAME,
+      FC_SHARED_TERMINAL_NAME,
+      FC_EXTRA_INFO_1,
+      FC_EXTRA_INFO_2,
+      FC_FIXED_IP_1,
+      FC_FIXED_IP_2,
+      FC_MANUFACTURER,
+      FC_MANUFACTURING_NO,
+      FC_MODEL_NAME,
+      FC_NOTE,
+      FC_PURCHASE_DATE,
+      FC_LATEST_INVENTORY_DATE,
+      FC_LOGON_NAME,
+      FC_LOGON_PW,
+      FC_WINDOWS_NAME,
+      FC_MAIL,
+      FC_MAIL_ACCT,
+      FC_MAIL_PW,
+      FC_M365_ID,
+      FC_M365_PW,
+      FC_GB_ID,
+      FC_GB_PW,
+      FC_SB_ID,
+      FC_SB_PW,
+      FC_VPN_ID,
+      FC_VPN_PW,
+      FC_EMP_ID,
+      FC_M365_MASTER_RECORD_ID,
+    ];
+
+    const GROUP_FIELD_CODES = [FC_INTERNAL_GROUP, FC_SKYSEA_GROUP];
+
+    if (type === TYPE_SHARED || type === TYPE_JR) {
+      const allow = new Set([
+        FC_ACCOUNT_TYPE,
+        FC_PC_STATUS,
+        FC_DEPT_NAME,
+        FC_GROUP_NAME,
+        FC_PURCHASE_DATE,
+        FC_LATEST_INVENTORY_DATE,
+        FC_NOTE,
+        FC_PC_NAME,
+        FC_SHARED_TERMINAL_NAME,
+        FC_M365_ID,
+        FC_M365_PW,
+        FC_M365_MASTER_RECORD_ID,
+        FC_WINDOWS_NAME,
+        FC_LOGON_NAME,
+        FC_LOGON_PW,
+        FC_SERIAL,
+        FC_PC_SERIAL_NO,
+        FC_MANUFACTURER,
+        FC_MANUFACTURING_NO,
+        FC_MODEL_NAME,
+        FC_FIXED_IP_1,
+        FC_FIXED_IP_2,
+        FC_EXTRA_INFO_1,
+        FC_EXTRA_INFO_2,
+        FC_EMP_ID,
+      ]);
+      for (let i = 0; i < ALL_SCALAR_FOR_VISIBILITY.length; i++) {
+        const c = ALL_SCALAR_FOR_VISIBILITY[i];
+        setFieldsVisibility([c], allow.has(c));
+      }
+      setFieldsVisibility(VPN_FIELDS, false);
+      setFieldsVisibility(MAIL_CYBOZU, false);
+      setFieldsVisibility(GROUP_FIELD_CODES, true);
       return;
     }
 
+    setFieldsVisibility(ALL_SCALAR_FOR_VISIBILITY, true);
+    setFieldsVisibility(GROUP_FIELD_CODES, true);
+
     if (type === TYPE_PERSONAL) {
-      setFieldsVisibility(accountFields, true);
-      setFieldsVisibility(personalOnlyUserName, true);
-      setFieldsVisibility([FC_EMP_ID], true);
-    } else if (type === TYPE_SHARED || type === TYPE_JR) {
-      setFieldsVisibility(accountFields, true);
-      setFieldsVisibility(personalOnlyFields, false);
-      setFieldsVisibility(personalOnlyUserName, false);
-      setFieldsVisibility([FC_EMP_ID], false);
-    } else {
-      // サーバーNAS / その他 → アカウント情報全体を非表示
-      setFieldsVisibility(accountFields, false);
-      setFieldsVisibility(personalOnlyUserName, true);
-      setFieldsVisibility([FC_EMP_ID], false);
+      setFieldsVisibility([FC_SHARED_TERMINAL_NAME], false);
+      setFieldsVisibility(VPN_FIELDS, true);
+      setFieldsVisibility(MAIL_CYBOZU, true);
+      return;
     }
+
+    setFieldsVisibility(VPN_FIELDS, false);
   }
 
   // ===== §4.2.0b 所属名・所属グループ 常時ヘルプ帯 =====
@@ -758,6 +813,259 @@
 
   const USER_SUGGEST_BOX_ID = 'new-pc-ledger-user-suggest';
   const EMPLOYEE_SEARCH_MODAL_ID = 'new-pc-ledger-employee-search-modal';
+  const DEPT_MASTER_MODAL_ID = 'new-pc-ledger-dept-master-modal';
+
+  /**
+   * 675 未整備時の所属候補（所属名|group_code をカンマ連結。675 に移行後は主に API）。
+   * group_code は 674 の所属グループ入力値（例: honsya）と一致させる。
+   */
+  const DEPT_MASTER_FALLBACK_INLINE =
+    '役員室|honsya,顧問室|honsya,総務部|honsya,経理部|honsya,経営企画部|honsya,人事研修部|honsya,安全推進部|honsya,施工推進部|honsya,メンテナンス技術部|honsya,塗装技術部|honsya,品質管理部|honsya,' +
+    '東北支店|tohoku,秋田営業所|tohoku,盛岡営業所|tohoku,仙台営業所|tohoku,' +
+    '関越支店|kan-etsu,新潟営業所|kan-etsu,長野営業所|kan-etsu,高崎営業所|kan-etsu,' +
+    '東京支店|tokyo,千葉営業所|tokyo,水戸営業所|tokyo,' +
+    '東海支店|tokai,東京営業所|tokai,静岡営業所|tokai,名古屋営業所|tokai,関西営業所|tokai,' +
+    '札幌支店|tokyo,首都圏支店|tokyo,鉄構支店|tekko,湾岸工事所|wangan';
+
+  let deptMasterRowsCache674 = null;
+
+  function parseDeptMasterFallbackRows674() {
+    const out = [];
+    const parts = String(DEPT_MASTER_FALLBACK_INLINE || '').split(',');
+    for (let i = 0; i < parts.length; i++) {
+      const seg = String(parts[i] || '').trim();
+      if (!seg) continue;
+      const bar = seg.indexOf('|');
+      const dept = (bar === -1 ? seg : seg.slice(0, bar)).trim();
+      const grp = (bar === -1 ? '' : seg.slice(bar + 1)).trim();
+      if (dept) out.push({ dept_name: dept, group_name: grp });
+    }
+    return out;
+  }
+
+  /**
+   * @returns {Promise<{ dept_name: string, group_name: string }[]>}
+   */
+  function fetchDeptMasterRows674() {
+    if (deptMasterRowsCache674 && deptMasterRowsCache674.length) {
+      return Promise.resolve(deptMasterRowsCache674);
+    }
+    const app = String(APP_DEPT_MASTER_674 || '').trim();
+    if (!app || app === '0') {
+      deptMasterRowsCache674 = parseDeptMasterFallbackRows674();
+      return Promise.resolve(deptMasterRowsCache674);
+    }
+    return kintoneApiGet('/k/v1/records.json', {
+      app: app,
+      query: 'order by $id asc limit 500',
+      fields: ['dept_name', 'group_name'],
+    })
+      .then(function (resp) {
+        const rows = [];
+        for (let i = 0; i < (resp.records || []).length; i++) {
+          const r = resp.records[i];
+          const d = (r.dept_name && r.dept_name.value) || '';
+          const g = (r.group_name && r.group_name.value) || '';
+          if (String(d).trim()) rows.push({ dept_name: String(d).trim(), group_name: String(g).trim() });
+        }
+        deptMasterRowsCache674 = rows.length ? rows : parseDeptMasterFallbackRows674();
+        return deptMasterRowsCache674;
+      })
+      .catch(function (e) {
+        console.warn('[NEW-PC-LEDGER-V1] 所属マスタ取得失敗、埋め込みへ', e);
+        deptMasterRowsCache674 = parseDeptMasterFallbackRows674();
+        return deptMasterRowsCache674;
+      });
+  }
+
+  function applyDeptMasterPick674(dept, grp) {
+    const bag = getRecordFormHolder674();
+    if (!bag || !bag.holder || !bag.holder.record) return;
+    const rec = bag.holder.record;
+    setScalarFieldValue674(rec, FC_DEPT_NAME, dept);
+    setScalarFieldValue674(rec, FC_GROUP_NAME, grp);
+    bag.api.set(bag.holder);
+  }
+
+  function closeDeptMasterModal674() {
+    const m = document.getElementById(DEPT_MASTER_MODAL_ID);
+    if (m) m.style.display = 'none';
+  }
+
+  function renderDeptMasterResults674(container, rows, kw) {
+    container.textContent = '';
+    const k = String(kw || '')
+      .trim()
+      .toLowerCase();
+    const filtered = !k
+      ? rows.slice()
+      : rows.filter(function (r) {
+          const a = (r.dept_name + ' ' + r.group_name).toLowerCase();
+          return a.indexOf(k) !== -1;
+        });
+    if (!filtered.length) {
+      const p = document.createElement('p');
+      p.style.cssText = 'margin:8px 0;color:#6c757d;font-size:13px;line-height:1.5;';
+      p.textContent = '該当する行がありません。キーワードを変えるか、一覧をそのままスクロールしてください。';
+      container.appendChild(p);
+      return;
+    }
+    for (let i = 0; i < filtered.length; i++) {
+      const r = filtered[i];
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.style.cssText =
+        'display:block;width:100%;text-align:left;padding:10px 12px;margin:0 0 6px;border:1px solid #dee2e6;border-radius:4px;background:#fff;cursor:pointer;font-size:14px;line-height:1.4;';
+      item.textContent = r.dept_name + (r.group_name ? '　／　' + r.group_name : '');
+      (function (dept, grp) {
+        item.addEventListener('mousedown', function (ev) {
+          ev.preventDefault();
+          applyDeptMasterPick674(dept, grp);
+          closeDeptMasterModal674();
+        });
+      })(r.dept_name, r.group_name);
+      container.appendChild(item);
+    }
+  }
+
+  function runDeptMasterModalFilter674() {
+    const modal = document.getElementById(DEPT_MASTER_MODAL_ID);
+    if (!modal) return;
+    const input = modal.querySelector('[data-npl-dept-q]');
+    const container = modal.querySelector('[data-npl-dept-results]');
+    if (!input || !container) return;
+    const kw = String(input.value || '').trim();
+    fetchDeptMasterRows674().then(function (rows) {
+      renderDeptMasterResults674(container, rows, kw);
+    });
+  }
+
+  function ensureDeptMasterModal674() {
+    let backdrop = document.getElementById(DEPT_MASTER_MODAL_ID);
+    if (backdrop) return backdrop;
+
+    backdrop = document.createElement('div');
+    backdrop.id = DEPT_MASTER_MODAL_ID;
+    backdrop.style.cssText =
+      'display:none;position:fixed;inset:0;z-index:100001;align-items:center;justify-content:center;' +
+      'padding:16px;box-sizing:border-box;background:rgba(33,37,41,.48);';
+    backdrop.setAttribute('role', 'dialog');
+    backdrop.setAttribute('aria-modal', 'true');
+    backdrop.addEventListener('click', function (e) {
+      if (e.target === backdrop) closeDeptMasterModal674();
+    });
+
+    const panel = document.createElement('div');
+    panel.style.cssText =
+      'background:#fff;border-radius:8px;max-width:560px;width:100%;max-height:88vh;overflow:hidden;display:flex;' +
+      'flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.2);';
+    panel.addEventListener('click', function (e) {
+      e.stopPropagation();
+    });
+
+    const head = document.createElement('div');
+    head.style.cssText = 'padding:14px 16px;border-bottom:1px solid #dee2e6;';
+    const h = document.createElement('div');
+    h.style.cssText = 'font-weight:bold;font-size:16px;color:#052c65;';
+    h.textContent = '所属候補（共有・JR）';
+    head.appendChild(h);
+    const sub = document.createElement('div');
+    sub.style.cssText = 'font-size:12px;color:#495057;margin-top:6px;line-height:1.5;';
+    sub.textContent =
+      '行を押すと「所属名」「所属グループ」に反映されます（空欄でも上書きします）。マスタ675が未作成のときは組み込み候補を表示します。';
+    head.appendChild(sub);
+
+    const body = document.createElement('div');
+    body.style.cssText = 'padding:12px 16px;flex:1;min-height:0;display:flex;flex-direction:column;gap:10px;';
+
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;align-items:center;';
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.setAttribute('data-npl-dept-q', '1');
+    inp.placeholder = '所属名・グループの一部で絞り込み';
+    inp.style.cssText =
+      'flex:1;min-width:160px;padding:8px 10px;font-size:14px;border:1px solid #ced4da;border-radius:4px;box-sizing:border-box;';
+    const filterBtn = document.createElement('button');
+    filterBtn.type = 'button';
+    filterBtn.textContent = '絞り込み';
+    filterBtn.style.cssText =
+      'padding:8px 16px;font-weight:bold;background:#198754;color:#fff;border:none;border-radius:4px;cursor:pointer;';
+    filterBtn.addEventListener('click', function () {
+      runDeptMasterModalFilter674();
+    });
+    inp.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter') {
+        ev.preventDefault();
+        runDeptMasterModalFilter674();
+      }
+    });
+    row.appendChild(inp);
+    row.appendChild(filterBtn);
+    body.appendChild(row);
+
+    const results = document.createElement('div');
+    results.setAttribute('data-npl-dept-results', '1');
+    results.style.cssText =
+      'overflow-y:auto;flex:1;min-height:120px;max-height:46vh;border:1px solid #e9ecef;border-radius:4px;padding:8px;background:#f8f9fa;';
+    body.appendChild(results);
+
+    const foot = document.createElement('div');
+    foot.style.cssText = 'padding:12px 16px;border-top:1px solid #dee2e6;display:flex;justify-content:flex-end;gap:8px;';
+    const closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.textContent = '閉じる';
+    closeBtn.style.cssText =
+      'padding:6px 14px;border:1px solid #6c757d;background:#fff;border-radius:4px;cursor:pointer;font-size:13px;';
+    closeBtn.addEventListener('click', function () {
+      closeDeptMasterModal674();
+    });
+    foot.appendChild(closeBtn);
+
+    panel.appendChild(head);
+    panel.appendChild(body);
+    panel.appendChild(foot);
+    backdrop.appendChild(panel);
+    document.body.appendChild(backdrop);
+
+    document.addEventListener(
+      'keydown',
+      function nplDeptModalEsc674(ev) {
+        const m = document.getElementById(DEPT_MASTER_MODAL_ID);
+        if (!m || m.style.display === 'none') return;
+        if (ev.key === 'Escape') closeDeptMasterModal674();
+      },
+      true,
+    );
+    return backdrop;
+  }
+
+  function openDeptMasterModal674() {
+    const bag = getRecordFormHolder674();
+    if (!bag || !bag.holder || !bag.holder.record) {
+      window.alert('フォームの準備ができていません。画面を開き直してからお試しください。');
+      return;
+    }
+    const type = (bag.holder.record[FC_ACCOUNT_TYPE] && bag.holder.record[FC_ACCOUNT_TYPE].value) || '';
+    if (type !== TYPE_SHARED && type !== TYPE_JR) {
+      window.alert('所属候補は種別が「共有」または「JR端末」のときのみ使えます。');
+      return;
+    }
+    const backdrop = ensureDeptMasterModal674();
+    const input = backdrop.querySelector('[data-npl-dept-q]');
+    const container = backdrop.querySelector('[data-npl-dept-results]');
+    if (input) input.value = '';
+    backdrop.style.display = 'flex';
+    fetchDeptMasterRows674()
+      .then(function (rows) {
+        if (container) renderDeptMasterResults674(container, rows, '');
+      })
+      .catch(function (e) {
+        console.warn('[NEW-PC-LEDGER-V1] dept modal load', e);
+        if (container) renderDeptMasterResults674(container, parseDeptMasterFallbackRows674(), '');
+      });
+  }
+
   let userSuggestTimer674 = null;
   let userSuggestReq674 = 0;
   let userSuggestDocClick674 = false;
@@ -2851,6 +3159,11 @@ ${bodyInner}\
             window.alert('自動生成でエラー: ' + (e && e.message ? e.message : String(e)));
           });
         }));
+        wrapper.appendChild(
+          createGenerateButton('🏢 所属候補から入力', '#0f5132', function () {
+            openDeptMasterModal674();
+          }),
+        );
       }
 
       // 全フィールドリセット (全種別)
@@ -3419,10 +3732,40 @@ ${bodyInner}\
         errors.push(um);
         event.errors = Object.assign(event.errors || {}, { [FC_USER_NAME]: um });
       }
-      if ((type === TYPE_SHARED || type === TYPE_JR) && !String(event.record[FC_SHARED_TERMINAL_NAME]?.value || '').trim()) {
-        const sm = '共有端末名を入力してください。';
-        errors.push(sm);
-        event.errors = Object.assign(event.errors || {}, { [FC_SHARED_TERMINAL_NAME]: sm });
+      if (type === TYPE_SHARED || type === TYPE_JR) {
+        if (!String(event.record[FC_SHARED_TERMINAL_NAME]?.value || '').trim()) {
+          const sm = '共有端末名を入力してください。';
+          errors.push(sm);
+          event.errors = Object.assign(event.errors || {}, { [FC_SHARED_TERMINAL_NAME]: sm });
+        }
+        const reqPairsSharedJr = [
+          [FC_DEPT_NAME, '所属名'],
+          [FC_GROUP_NAME, '所属グループ'],
+          [FC_PC_NAME, 'PC名'],
+          [FC_M365_ID, 'M365 ID'],
+          [FC_M365_PW, 'M365 パスワード'],
+          [FC_WINDOWS_NAME, 'Windows名'],
+          [FC_LOGON_NAME, 'ログオン名'],
+          [FC_LOGON_PW, 'ログオン パスワード'],
+          [FC_SERIAL, 'シリアル'],
+          [FC_PC_SERIAL_NO, 'シリアル番号（PC）'],
+          [FC_MANUFACTURER, 'メーカー'],
+          [FC_MANUFACTURING_NO, '製造番号'],
+          [FC_MODEL_NAME, 'モデル名／型式'],
+          [FC_FIXED_IP_1, '固定IPアドレス1'],
+          [FC_FIXED_IP_2, '固定IPアドレス2'],
+          [FC_EXTRA_INFO_1, 'その他情報1'],
+          [FC_EXTRA_INFO_2, 'その他情報2'],
+        ];
+        for (let ri = 0; ri < reqPairsSharedJr.length; ri++) {
+          const code = reqPairsSharedJr[ri][0];
+          const label = reqPairsSharedJr[ri][1];
+          if (!trimmedScalarValue674(event.record, code)) {
+            const m = '種別が「' + type + '」のときは「' + label + '」を入力してください。';
+            errors.push(m);
+            event.errors = Object.assign(event.errors || {}, { [code]: m });
+          }
+        }
       }
 
       if (errors.length > 0) {
