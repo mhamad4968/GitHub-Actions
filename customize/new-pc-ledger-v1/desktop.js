@@ -29,7 +29,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-05-pc-ledger-jbis-dup-query-dropdown-in';
+  const BUILD = '2026-05-05-pc-ledger-focus-assist-shadow-dom-type';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -1280,7 +1280,7 @@
       window.alert('フォームの準備ができていません。画面を開き直してからお試しください。');
       return;
     }
-    const type = (bag.holder.record[FC_ACCOUNT_TYPE] && bag.holder.record[FC_ACCOUNT_TYPE].value) || '';
+    const type = readAccountTypeLive674(bag.holder.record);
     if (type !== TYPE_SHARED && type !== TYPE_JR) {
       window.alert('所属候補は種別が「共有」または「JR端末」のときのみ使えます。');
       return;
@@ -1559,7 +1559,7 @@
       window.alert('フォームの準備ができていません。画面を開き直してからお試しください。');
       return;
     }
-    const type = (bag.holder.record[FC_ACCOUNT_TYPE] && bag.holder.record[FC_ACCOUNT_TYPE].value) || '';
+    const type = readAccountTypeLive674(bag.holder.record);
     if (type !== TYPE_PERSONAL) {
       window.alert('社員名検索は種別が「個人」のときのみ使えます。');
       return;
@@ -1621,6 +1621,59 @@
     return null;
   }
 
+  /**
+   * 種別ドロップダウンは change 直後に record より UI が先行することがあるため、
+   * getFieldElement 内の select を優先して読む。
+   */
+  function readAccountTypeLive674(record) {
+    try {
+      const el = tryGetFieldElement674(FC_ACCOUNT_TYPE);
+      if (el) {
+        let sel = el.querySelector('select');
+        if (!sel) {
+          const all = el.querySelectorAll('*');
+          for (let i = 0; i < all.length; i++) {
+            const node = all[i];
+            if (node.shadowRoot) {
+              sel = node.shadowRoot.querySelector('select');
+              if (sel) break;
+            }
+          }
+        }
+        if (sel) {
+          const v = String(sel.value != null ? sel.value : '').trim();
+          if (v) return v;
+        }
+      }
+    } catch (_e) {
+      /* ignore */
+    }
+    return String((record && record[FC_ACCOUNT_TYPE] && record[FC_ACCOUNT_TYPE].value) || '').trim();
+  }
+
+  /**
+   * getFieldElement の外枠と、Shadow DOM 内にフォーカスした子の対応付け（contains はシャドウをまたがない）。
+   */
+  function isActiveTargetWithinFieldRoot674(fieldRoot, activeTarget) {
+    if (!fieldRoot || !activeTarget || activeTarget.nodeType !== 1) return false;
+    let n = activeTarget;
+    for (let hop = 0; hop < 90 && n; hop++) {
+      try {
+        if (n === fieldRoot) return true;
+        if (fieldRoot.contains(n)) return true;
+      } catch (_e) {
+        /* ignore */
+      }
+      const rn = n.getRootNode && n.getRootNode();
+      if (rn && rn instanceof ShadowRoot) {
+        n = rn.host;
+      } else {
+        n = n.parentElement;
+      }
+    }
+    return false;
+  }
+
   let npl674FocusAssistDoc674 = false;
   let npl674FocusAssistSuppressUntil674 = 0;
 
@@ -1640,26 +1693,29 @@
 
   /**
    * 未入力かつ該当フィールドにフォーカスしたとき、595／680 の入力支援を開く（編集・新規のフォーム上のみ）。
+   * Shadow DOM 内の実入力・種別 UI 先行時の record ズレに対応する。
    */
   function on674EmptyFieldFocusAssist674(ev) {
     if (Date.now() < npl674FocusAssistSuppressUntil674) return;
     const ae = ev.target;
-    if (!ae || (ae.tagName !== 'INPUT' && ae.tagName !== 'TEXTAREA')) return;
-    if (ae.disabled || ae.readOnly) return;
+    if (!ae || ae.nodeType !== 1) return;
+    if (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA') {
+      if (ae.disabled || ae.readOnly) return;
+    }
 
     const bag = getRecordFormHolder674();
     if (!bag || !bag.holder || !bag.holder.record) return;
     const rec = bag.holder.record;
-    const type = (rec[FC_ACCOUNT_TYPE] && rec[FC_ACCOUNT_TYPE].value) || '';
+    const type = readAccountTypeLive674(rec);
 
     const userEl = tryGetFieldElement674(FC_USER_NAME);
     const deptEl = tryGetFieldElement674(FC_DEPT_NAME);
     const grpEl = tryGetFieldElement674(FC_GROUP_NAME);
     if (!userEl && !deptEl && !grpEl) return;
 
-    const inUser = userEl && userEl.contains(ae);
-    const inDept = deptEl && deptEl.contains(ae);
-    const inGrp = grpEl && grpEl.contains(ae);
+    const inUser = userEl && isActiveTargetWithinFieldRoot674(userEl, ae);
+    const inDept = deptEl && isActiveTargetWithinFieldRoot674(deptEl, ae);
+    const inGrp = grpEl && isActiveTargetWithinFieldRoot674(grpEl, ae);
     if (!inUser && !inDept && !inGrp) return;
 
     if (is674AssistModalVisible674()) return;
