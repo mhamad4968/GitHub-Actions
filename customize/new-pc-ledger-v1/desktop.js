@@ -19,7 +19,7 @@
  *   - （一覧）**SKYSEA 状態**: 検索バーに **skysea_status チップ**（§4.8a）。**SKYSEA 計画立案・合意後に要件・UI を再検討予定**（現状は暫定）。
  *   - （一覧）**絞り込み URL**: `query` パラメータから **キーワード・種別・SKYSEA チップ**を復元（当バーが生成したクエリ形式に準拠）。
  *   - **PC買替は実装済**（§4.10.3）。594 同趣旨。**627 二重更新なし**。v0.9.14: ボタン掛け先フォールバック＋遅延再 inject、`import_source=PC_REPLACE_FROM_674:<旧$id>`・legacy 594 フィールドクリア。
- *   - 新規・編集: **所属ヘルプ `<details>`（入れ方・コピー一覧）は表示しない**（2026-05-05 浜田指示）。**入力支援**: `document` **capture** でフィールド内クリックを捕捉（kintone 内側の `stopPropagation` より先）。**はい／いいえ** の z-index は kintone ヘッダより上。**明示ボタン**は **`#new-pc-ledger-buttons` 帯**に **「📋 入力支援（595で検索）」**（個人・非保管）／**「📋 所属候補を開く（680）」**（共有・JR）を表示（フィールド直下 DOM 挿入は kintone UI 世代差で見えない環境があるため廃止）。ヘッダの旧「社員名検索／所属候補」ボタンは**廃止**。**`pc_status`=保管**のときは種別横断で **ヘッダは全フィールドリセットのみ**。**種別／ステータス**は record を DOM と突合。**共有用自動生成**: `m365_master_record_id` は **set 前に disabled 解除**。
+ *   - 新規・編集: **所属ヘルプ `<details>`（入れ方・コピー一覧）は表示しない**（2026-05-05 浜田指示）。**入力支援**: `document` **capture** でフィールド内クリックを捕捉（kintone 内側の `stopPropagation` より先）。**はい／いいえ** の z-index は kintone ヘッダより上。**明示ボタン**は **`#new-pc-ledger-buttons` 帯**に **「入力支援利用」**（個人・非保管→595／共有・JR→680。表示名は同一、`aria-label` で区別）（フィールド直下 DOM 挿入は廃止）。ヘッダの旧「社員名検索／所属候補」ボタンは**廃止**。**`pc_status`=保管**のときは種別横断で **ヘッダは全フィールドリセットのみ**。**種別／ステータス**は record を DOM と突合。**共有用自動生成**: `m365_master_record_id` は **set 前に disabled 解除**。
  *   - **備考（note）**: 全種別で任意（保存前チェックでは必須にしない）。
  *   - **モバイル**: 当面は利用想定なし（`kintone.mobile` 分岐は既存のまま残すが、専用UXは追わない）。
  *   - **M365管理マスタレコード番号（671 `$id`）**: 共有・JR は同一671行の **usage_count / 5 台**運用で紐づく。個人は表示するが多くは空（自動生成はメール由来M365中心）。**手入力不可**（自動生成・保存後同期のみ更新）。
@@ -29,7 +29,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-06-pc-ledger-input-assist-in-header-strip';
+  const BUILD = '2026-05-06-pc-ledger-input-assist-label-style';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -3732,22 +3732,21 @@ ${bodyInner}\
     return btn;
   }
 
+  const NPL674_INPUT_ASSIST_BTN_LABEL = '入力支援利用';
+
   /**
    * 入力支援（はい／いいえのあと 595 または 680）。自動生成ボタンと並べて `#new-pc-ledger-buttons` に載せる。
+   * @param {string} ariaSuffix aria-label 用（例: 595 社員マスタ / 680 所属候補）
    */
-  function createInputAssistHeaderButton674(label, borderColor, bg, fg, confirmMsg, onYesOpen) {
+  function createInputAssistHeaderButton674(ariaSuffix, confirmMsg, onYesOpen) {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.textContent = label;
-    btn.setAttribute('aria-label', label);
+    btn.textContent = NPL674_INPUT_ASSIST_BTN_LABEL;
+    btn.setAttribute('aria-label', NPL674_INPUT_ASSIST_BTN_LABEL + '（' + ariaSuffix + '）');
     btn.style.cssText =
-      'margin:4px 8px 4px 0;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;border-radius:4px;border:1px solid ' +
-      borderColor +
-      ';background:' +
-      bg +
-      ';color:' +
-      fg +
-      ';';
+      'margin:4px 8px 4px 0;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer;border-radius:6px;' +
+      'border:1px solid #4338ca;background:linear-gradient(165deg,#818cf8 0%,#4f46e5 55%,#4338ca 100%);color:#fff;' +
+      'box-shadow:0 2px 8px rgba(67,56,202,.38);letter-spacing:.02em;';
     btn.addEventListener('click', function (ev) {
       ev.preventDefault();
       ev.stopPropagation();
@@ -3821,10 +3820,7 @@ ${bodyInner}\
         if (isPersonal595AssistEnabled674(event.record)) {
           wrapper.appendChild(
             createInputAssistHeaderButton674(
-              '📋 入力支援（595で検索）',
-              '#5c4d7d',
-              '#f3f0ff',
-              '#392e56',
+              '595 社員マスタ',
               NPL674_INPUT_ASSIST_MSG_PERSONAL,
               openEmployee595SearchModal674,
             ),
@@ -3833,10 +3829,7 @@ ${bodyInner}\
         if (type === TYPE_SHARED || type === TYPE_JR) {
           wrapper.appendChild(
             createInputAssistHeaderButton674(
-              '📋 所属候補を開く（680）',
-              '#0f5132',
-              '#d1e7dd',
-              '#0a3622',
+              '680 所属候補',
               NPL674_INPUT_ASSIST_MSG_SHARED_JR,
               openDeptMasterModal674,
             ),
