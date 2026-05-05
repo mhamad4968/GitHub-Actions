@@ -19,7 +19,7 @@
  *   - （一覧）**SKYSEA 状態**: 検索バーに **skysea_status チップ**（§4.8a）。**SKYSEA 計画立案・合意後に要件・UI を再検討予定**（現状は暫定）。
  *   - （一覧）**絞り込み URL**: `query` パラメータから **キーワード・種別・SKYSEA チップ**を復元（当バーが生成したクエリ形式に準拠）。
  *   - **PC買替は実装済**（§4.10.3）。594 同趣旨。**627 二重更新なし**。v0.9.14: ボタン掛け先フォールバック＋遅延再 inject、`import_source=PC_REPLACE_FROM_674:<旧$id>`・legacy 594 フィールドクリア。
- *   - 新規・編集: **所属ヘルプ `<details>`（入れ方・コピー一覧）は表示しない**（2026-05-05 浜田指示・680／フィールド直下「入力支援」で代替）。**入力支援**: `document` **capture** でフィールド内クリックを捕捉（kintone 内側の `stopPropagation` より先に実行）。**はい／いいえ** 確認の z-index は kintone ヘッダより上。**個人**＝利用者名・所属名・所属グループのクリックまたは直下 **入力支援（595で検索）**。**共有・JR**＝所属名・所属グループのみ＋直下 **入力支援（所属候補）**＋**M365 欄直下の「マスタから取り込む」ボタン**（クリック依存を減らす）。ヘッダの旧「社員名検索／所属候補」ボタンは**廃止**。**`pc_status`=保管**のときは種別横断で **ヘッダは全フィールドリセットのみ**（閲覧ではカスタムバーなし）。VPN は個人のみ。NAS/その他は全表示。**種別／ステータス**は `kintone.app.record.get()` の値を **DOM より優先**（隣接ボタン付与の取りこぼし防止）。
+ *   - 新規・編集: **所属ヘルプ `<details>`（入れ方・コピー一覧）は表示しない**（2026-05-05 浜田指示・680／フィールド直下「入力支援」で代替）。**入力支援**: `document` **capture** でフィールド内クリックを捕捉（kintone 内側の `stopPropagation` より先に実行）。**はい／いいえ** 確認の z-index は kintone ヘッダより上。**個人**＝利用者名・所属名・所属グループのクリックまたは直下 **入力支援（595で検索）**。**共有・JR**＝**所属名フィールドの直前**に **「M365 をマスタから取り込む」「所属候補を開く（680）」** のボタン帯（クリック委譲に依存しない）。ヘッダの旧「社員名検索／所属候補」ボタンは**廃止**。**`pc_status`=保管**のときは種別横断で **ヘッダは全フィールドリセットのみ**（閲覧ではカスタムバーなし）。VPN は個人のみ。NAS/その他は全表示。**種別／ステータス**は `kintone.app.record.get()` の値を **DOM より優先**。**共有用自動生成**: `m365_master_record_id` が disabled のまま `record.set` すると kintone が拒否するため、**set 直前に一時的に disabled を外す**。
  *   - **備考（note）**: 全種別で任意（保存前チェックでは必須にしない）。
  *   - **モバイル**: 当面は利用想定なし（`kintone.mobile` 分岐は既存のまま残すが、専用UXは追わない）。
  *   - **M365管理マスタレコード番号（671 `$id`）**: 共有・JR は同一671行の **usage_count / 5 台**運用で紐づく。個人は表示するが多くは空（自動生成はメール由来M365中心）。**手入力不可**（自動生成・保存後同期のみ更新）。
@@ -29,7 +29,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-06-pc-ledger-input-assist-buttons-sibling-m365';
+  const BUILD = '2026-05-06-pc-ledger-shared-autogen-m365-disabled-fix';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -289,7 +289,7 @@
 
   /**
    * 671 行番号（`m365_master_record_id`）は **編集画面で手入力させない**（権限に頼らず誤変更を防ぐ）。
-   * 共有・JR: 自動生成・保存後の 671 同期が値を持つ。個人: 表示のみで空のことが多い。`kintone.app.record.set` によるプログラム更新は可。
+   * 共有・JR: 自動生成・保存後の 671 同期が値を持つ。個人: 表示のみで空のことが多い。**編集で disabled=true のまま `kintone.app.record.set` に値を載せると検証エラーになる**ため、`runSharedAutoGen` 等では **set の直前だけ disabled=false** にしてから反映する。
    * @param {Record<string, object>} record
    * @param {'detail'|'editable'} mode
    */
@@ -1824,7 +1824,7 @@
       if (ae.closest('#' + EMPLOYEE_SEARCH_MODAL_ID)) return;
       if (ae.closest('#' + DEPT_MASTER_MODAL_ID)) return;
       if (ae.closest('[data-npl-input-assist-adj="1"]')) return;
-      if (ae.closest('[data-npl-m365-pull-adj="1"]')) return;
+      if (ae.closest('[data-npl-dept-cluster-adj="1"]')) return;
       if (ae.closest('#' + USER_SUGGEST_BOX_ID)) return;
     }
     if (!forcedField && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA')) {
@@ -1924,7 +1924,7 @@
   /** 個人（非保管）向け: 595 はフィールドクリック＋確認、または明示ボタン。各フィールド直下＋ヘッダと同じ openEmployee595SearchModal674 */
   function remove595FieldAdjacentRows674() {
     try {
-      const sel = '[data-npl-input-assist-adj="1"],[data-npl-595-adj="1"],[data-npl-m365-pull-adj="1"]';
+      const sel = '[data-npl-input-assist-adj="1"],[data-npl-595-adj="1"],[data-npl-dept-cluster-adj="1"]';
       const nodes = document.querySelectorAll(sel);
       for (let i = 0; i < nodes.length; i++) {
         try {
@@ -1974,24 +1974,38 @@
     fieldRoot.insertAdjacentElement('afterend', row);
   }
 
+  function detachStaleDeptCluster674() {
+    try {
+      const n = document.querySelector('[data-npl-dept-cluster-adj="1"]');
+      if (n && n.parentNode) n.parentNode.removeChild(n);
+    } catch (_e) {
+      /* ignore */
+    }
+  }
+
   /**
-   * 共有・JR: ヘッダの緑ボタンと同じ `runSharedAutoGen` を、M365 欄付近の明示ボタンからも実行（Edge/Chrome 等でクリック委譲に依存しない）。
+   * 共有・JR: **所属名**（なければ所属グループ）フィールドの **直前** に、M365 取込・680 を並べたボタン帯を置く（所属欄の上・ブラウザ共通）。
    */
-  function appendM365PullAdjacent674(fieldRoot, type) {
-    if (!fieldRoot || !fieldRoot.parentNode) return;
-    if (fieldRoot.nextElementSibling && fieldRoot.nextElementSibling.getAttribute('data-npl-m365-pull-adj') === '1') return;
-    const row = document.createElement('div');
-    row.setAttribute('data-npl-m365-pull-adj', '1');
-    row.style.cssText =
-      'margin:4px 0 8px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12px;line-height:1.4;';
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.textContent =
+  function appendSharedJrAssistClusterAboveDept674(type) {
+    detachStaleDeptCluster674();
+    let anchor = tryGetFieldElement674(FC_DEPT_NAME);
+    if (!anchor) anchor = tryGetFieldElement674(FC_GROUP_NAME);
+    if (!anchor || !anchor.parentNode) return;
+
+    const wrap = document.createElement('div');
+    wrap.setAttribute('data-npl-dept-cluster-adj', '1');
+    wrap.style.cssText =
+      'margin:6px 0 12px;padding:8px 10px;border:1px solid #94d3a2;background:#f0fdf4;border-radius:6px;' +
+      'display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:12px;line-height:1.45;';
+
+    const btnM = document.createElement('button');
+    btnM.type = 'button';
+    btnM.textContent =
       type === TYPE_JR ? 'M365 をマスタから取り込む（JR）' : 'M365 をマスタから取り込む（共有）';
-    btn.setAttribute('aria-label', btn.textContent);
-    btn.style.cssText =
-      'padding:4px 12px;font-size:12px;cursor:pointer;border:1px solid #0d6efd;background:#cfe2ff;border-radius:4px;color:#084298;font-weight:600;';
-    btn.addEventListener('click', function (ev) {
+    btnM.setAttribute('aria-label', btnM.textContent);
+    btnM.style.cssText =
+      'padding:5px 12px;font-size:12px;cursor:pointer;border:1px solid #0d6efd;background:#cfe2ff;border-radius:4px;color:#084298;font-weight:600;';
+    btnM.addEventListener('click', function (ev) {
       ev.preventDefault();
       ev.stopPropagation();
       runSharedAutoGen().catch(function (e) {
@@ -1999,8 +2013,27 @@
         window.alert('M365 の取り込みでエラー: ' + (e && e.message ? e.message : String(e)));
       });
     });
-    row.appendChild(btn);
-    fieldRoot.insertAdjacentElement('afterend', row);
+
+    const btn680 = document.createElement('button');
+    btn680.type = 'button';
+    btn680.textContent = '所属候補を開く（680）';
+    btn680.setAttribute('aria-label', btn680.textContent);
+    btn680.style.cssText =
+      'padding:5px 12px;font-size:12px;cursor:pointer;border:1px solid #0f5132;background:#d1e7dd;border-radius:4px;color:#0a3622;font-weight:600;';
+    const msg680 = NPL674_INPUT_ASSIST_MSG_SHARED_JR;
+    btn680.addEventListener('click', function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      promise674InputAssistConfirm674(msg680).then(function (yes) {
+        if (!yes) return;
+        npl674FocusAssistSuppressUntil674 = Date.now() + 400;
+        openDeptMasterModal674();
+      });
+    });
+
+    wrap.appendChild(btnM);
+    wrap.appendChild(btn680);
+    anchor.insertAdjacentElement('beforebegin', wrap);
   }
 
   function inject595FieldAdjacentRows674(rec) {
@@ -2018,15 +2051,7 @@
       return;
     }
     if (type === TYPE_SHARED || type === TYPE_JR) {
-      const msg = NPL674_INPUT_ASSIST_MSG_SHARED_JR;
-      const accG =
-        'padding:4px 12px;font-size:12px;cursor:pointer;border:1px solid #0f5132;background:#d1e7dd;border-radius:4px;color:#0a3622;font-weight:600;';
-      appendInputAssistAdjacentRow674(tryGetFieldElement674(FC_DEPT_NAME), '入力支援（所属候補）', msg, openDeptMasterModal674, accG);
-      appendInputAssistAdjacentRow674(tryGetFieldElement674(FC_GROUP_NAME), '入力支援（所属候補）', msg, openDeptMasterModal674, accG);
-      let m365Anchor = tryGetFieldElement674(FC_M365_ID);
-      if (!m365Anchor) m365Anchor = tryGetFieldElement674(FC_SHARED_TERMINAL_NAME);
-      if (!m365Anchor) m365Anchor = tryGetFieldElement674(FC_DEPT_NAME);
-      appendM365PullAdjacent674(m365Anchor, type);
+      appendSharedJrAssistClusterAboveDept674(type);
     }
   }
 
@@ -2270,6 +2295,10 @@
     const rec = recNow.record;
     const type = (rec[FC_ACCOUNT_TYPE] && rec[FC_ACCOUNT_TYPE].value) || '';
 
+    const masterCell = rec[FC_M365_MASTER_RECORD_ID];
+    const masterWasDisabled =
+      !!(masterCell && Object.prototype.hasOwnProperty.call(masterCell, 'disabled') && masterCell.disabled);
+
     return Promise.all([
       loadEnv670Map(),
       fetchAssignableM365Record671(),
@@ -2303,7 +2332,18 @@
         mergeScalarField(rec, FC_M365_PW, m365Pw);
         mergeNumberField(rec, FC_M365_MASTER_RECORD_ID, m365RowId);
 
-        kintone.app.record.set(recNow);
+        if (masterCell && Object.prototype.hasOwnProperty.call(masterCell, 'disabled')) {
+          masterCell.disabled = false;
+        }
+        try {
+          kintone.app.record.set(recNow);
+        } catch (err) {
+          if (masterWasDisabled && masterCell && Object.prototype.hasOwnProperty.call(masterCell, 'disabled')) {
+            masterCell.disabled = true;
+          }
+          console.error('[NEW-PC-LEDGER-V1] runSharedAutoGen record.set failed', err);
+          throw err;
+        }
         applyM365MasterRecordIdFieldUi674(rec, 'editable');
         window.alert(
           type === TYPE_JR
