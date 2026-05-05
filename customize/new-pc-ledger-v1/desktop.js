@@ -19,7 +19,7 @@
  *   - （一覧）**SKYSEA 状態**: 検索バーに **skysea_status チップ**（§4.8a）。**SKYSEA 計画立案・合意後に要件・UI を再検討予定**（現状は暫定）。
  *   - （一覧）**絞り込み URL**: `query` パラメータから **キーワード・種別・SKYSEA チップ**を復元（当バーが生成したクエリ形式に準拠）。
  *   - **PC買替は実装済**（§4.10.3）。594 同趣旨。**627 二重更新なし**。v0.9.14: ボタン掛け先フォールバック＋遅延再 inject、`import_source=PC_REPLACE_FROM_674:<旧$id>`・legacy 594 フィールドクリア。
- *   - 新規・編集: **所属ヘルプ `<details>`（入れ方・コピー一覧）は表示しない**（2026-05-05 浜田指示・680／フィールド直下「入力支援」で代替）。**入力支援**: `document` **capture** でフィールド内クリックを捕捉（kintone 内側の `stopPropagation` より先に実行）。**はい／いいえ** 確認の z-index は kintone ヘッダより上。**個人**＝利用者名・所属名・所属グループのクリックまたは直下 **入力支援（595で検索）**。**共有・JR**＝所属名・所属グループのみ＋直下 **入力支援（所属候補）**。ヘッダの旧「社員名検索／所属候補」ボタンは**廃止**。**`pc_status`=保管**のときは種別横断で **ヘッダは全フィールドリセットのみ**（閲覧ではカスタムバーなし）。VPN は個人のみ。NAS/その他は全表示。
+ *   - 新規・編集: **所属ヘルプ `<details>`（入れ方・コピー一覧）は表示しない**（2026-05-05 浜田指示・680／フィールド直下「入力支援」で代替）。**入力支援**: `document` **capture** でフィールド内クリックを捕捉（kintone 内側の `stopPropagation` より先に実行）。**はい／いいえ** 確認の z-index は kintone ヘッダより上。**個人**＝利用者名・所属名・所属グループのクリックまたは直下 **入力支援（595で検索）**。**共有・JR**＝所属名・所属グループのみ＋直下 **入力支援（所属候補）**＋**M365 欄直下の「マスタから取り込む」ボタン**（クリック依存を減らす）。ヘッダの旧「社員名検索／所属候補」ボタンは**廃止**。**`pc_status`=保管**のときは種別横断で **ヘッダは全フィールドリセットのみ**（閲覧ではカスタムバーなし）。VPN は個人のみ。NAS/その他は全表示。**種別／ステータス**は `kintone.app.record.get()` の値を **DOM より優先**（隣接ボタン付与の取りこぼし防止）。
  *   - **備考（note）**: 全種別で任意（保存前チェックでは必須にしない）。
  *   - **モバイル**: 当面は利用想定なし（`kintone.mobile` 分岐は既存のまま残すが、専用UXは追わない）。
  *   - **M365管理マスタレコード番号（671 `$id`）**: 共有・JR は同一671行の **usage_count / 5 台**運用で紐づく。個人は表示するが多くは空（自動生成はメール由来M365中心）。**手入力不可**（自動生成・保存後同期のみ更新）。
@@ -29,7 +29,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-06-pc-ledger-jr-m365-button-no-pc-name-autogen';
+  const BUILD = '2026-05-06-pc-ledger-input-assist-buttons-sibling-m365';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -459,7 +459,7 @@
 
   function scheduleInjectButtons674(event) {
     injectButtons(event);
-    const delays = [150, 400, 900, 2000, 3500];
+    const delays = [150, 400, 900, 2000, 3500, 5500, 8500];
     for (let i = 0; i < delays.length; i++) {
       (function (ms) {
         setTimeout(function () {
@@ -1653,8 +1653,10 @@
       /* ignore */
     }
     const fromRec = String((record && record[FC_ACCOUNT_TYPE] && record[FC_ACCOUNT_TYPE].value) || '').trim();
+    /** record を優先（DOM の select が一瞬古いと共有・JR の直下ボタンが付かない） */
+    if (fromRec) return fromRec;
     if (fromDom) return fromDom;
-    return fromRec;
+    return '';
   }
 
   /**
@@ -1674,8 +1676,9 @@
       /* ignore */
     }
     const fromRec = String((record && record[FC_PC_STATUS] && record[FC_PC_STATUS].value) || '').trim();
+    if (fromRec) return fromRec;
     if (fromDom) return fromDom;
-    return fromRec;
+    return '';
   }
 
   /** `pc_status` が保管（個人/共有/JR 横断・ヘッダ最小 UI のゲート） */
@@ -1821,6 +1824,7 @@
       if (ae.closest('#' + EMPLOYEE_SEARCH_MODAL_ID)) return;
       if (ae.closest('#' + DEPT_MASTER_MODAL_ID)) return;
       if (ae.closest('[data-npl-input-assist-adj="1"]')) return;
+      if (ae.closest('[data-npl-m365-pull-adj="1"]')) return;
       if (ae.closest('#' + USER_SUGGEST_BOX_ID)) return;
     }
     if (!forcedField && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA')) {
@@ -1920,7 +1924,7 @@
   /** 個人（非保管）向け: 595 はフィールドクリック＋確認、または明示ボタン。各フィールド直下＋ヘッダと同じ openEmployee595SearchModal674 */
   function remove595FieldAdjacentRows674() {
     try {
-      const sel = '[data-npl-input-assist-adj="1"],[data-npl-595-adj="1"]';
+      const sel = '[data-npl-input-assist-adj="1"],[data-npl-595-adj="1"],[data-npl-m365-pull-adj="1"]';
       const nodes = document.querySelectorAll(sel);
       for (let i = 0; i < nodes.length; i++) {
         try {
@@ -1943,8 +1947,8 @@
    * @param {string} accentCss border+background 系（共有は緑系）
    */
   function appendInputAssistAdjacentRow674(fieldRoot, label, confirmMsg, onYesOpen, accentCss) {
-    if (!fieldRoot || typeof fieldRoot.appendChild !== 'function') return;
-    if (fieldRoot.querySelector('[data-npl-input-assist-adj="1"]')) return;
+    if (!fieldRoot || !fieldRoot.parentNode) return;
+    if (fieldRoot.nextElementSibling && fieldRoot.nextElementSibling.getAttribute('data-npl-input-assist-adj') === '1') return;
     const row = document.createElement('div');
     row.setAttribute('data-npl-input-assist-adj', '1');
     row.style.cssText =
@@ -1966,7 +1970,37 @@
       });
     });
     row.appendChild(btn);
-    fieldRoot.appendChild(row);
+    /** フィールド内 append は kintone 再描画で消えやすいため、フィールド直後（兄弟）へ挿入 */
+    fieldRoot.insertAdjacentElement('afterend', row);
+  }
+
+  /**
+   * 共有・JR: ヘッダの緑ボタンと同じ `runSharedAutoGen` を、M365 欄付近の明示ボタンからも実行（Edge/Chrome 等でクリック委譲に依存しない）。
+   */
+  function appendM365PullAdjacent674(fieldRoot, type) {
+    if (!fieldRoot || !fieldRoot.parentNode) return;
+    if (fieldRoot.nextElementSibling && fieldRoot.nextElementSibling.getAttribute('data-npl-m365-pull-adj') === '1') return;
+    const row = document.createElement('div');
+    row.setAttribute('data-npl-m365-pull-adj', '1');
+    row.style.cssText =
+      'margin:4px 0 8px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12px;line-height:1.4;';
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent =
+      type === TYPE_JR ? 'M365 をマスタから取り込む（JR）' : 'M365 をマスタから取り込む（共有）';
+    btn.setAttribute('aria-label', btn.textContent);
+    btn.style.cssText =
+      'padding:4px 12px;font-size:12px;cursor:pointer;border:1px solid #0d6efd;background:#cfe2ff;border-radius:4px;color:#084298;font-weight:600;';
+    btn.addEventListener('click', function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      runSharedAutoGen().catch(function (e) {
+        console.error(e);
+        window.alert('M365 の取り込みでエラー: ' + (e && e.message ? e.message : String(e)));
+      });
+    });
+    row.appendChild(btn);
+    fieldRoot.insertAdjacentElement('afterend', row);
   }
 
   function inject595FieldAdjacentRows674(rec) {
@@ -1989,6 +2023,10 @@
         'padding:4px 12px;font-size:12px;cursor:pointer;border:1px solid #0f5132;background:#d1e7dd;border-radius:4px;color:#0a3622;font-weight:600;';
       appendInputAssistAdjacentRow674(tryGetFieldElement674(FC_DEPT_NAME), '入力支援（所属候補）', msg, openDeptMasterModal674, accG);
       appendInputAssistAdjacentRow674(tryGetFieldElement674(FC_GROUP_NAME), '入力支援（所属候補）', msg, openDeptMasterModal674, accG);
+      let m365Anchor = tryGetFieldElement674(FC_M365_ID);
+      if (!m365Anchor) m365Anchor = tryGetFieldElement674(FC_SHARED_TERMINAL_NAME);
+      if (!m365Anchor) m365Anchor = tryGetFieldElement674(FC_DEPT_NAME);
+      appendM365PullAdjacent674(m365Anchor, type);
     }
   }
 
@@ -2002,7 +2040,7 @@
       remove595FieldAdjacentRows674();
       return;
     }
-    const delays = [180, 700, 1600, 3200];
+    const delays = [180, 700, 1600, 3200, 5200, 8800];
     for (let i = 0; i < delays.length; i++) {
       (function (ms) {
         setTimeout(function () {
