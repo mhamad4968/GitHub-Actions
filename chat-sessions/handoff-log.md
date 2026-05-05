@@ -984,3 +984,17 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
   - **session-lock**: なし
   - **関連パス**: `.gitignore` / `data/snapshots/`
 
+### 2026-05-06 08:40 JST（追記）— Windows クローン: `git pull` 前作業ツリーの **`stash@{0}`** 退避（履歴記録）
+
+- **浜田メモ（原文）**: 「`stash@{0}` へ退避したことだけ履歴に残しておいてほしい」
+- **AI 補足**:
+  - **対象**: **`C:\Users\mhamada202408224\kintone-ai-lab`**（WSL では **`/mnt/c/Users/mhamada202408224/kintone-ai-lab`**）
+  - **実施コマンド**: **`git stash push -u -m "pre-pull Windows 2026-05-06: safety stash before origin/main sync"`** → 結果が **`stash@{0}`**（**未コミット変更＋未追跡**を含む **pull 直前のスナップショット**）
+  - **その後**: **`git pull origin main`** で **`origin/main`**（当時先端 **`684c057`** 系）に fast-forward 済み。**`git stash pop` は未実施**（浜田「そのままで OK」）
+  - **確認**: `git stash list` の **先頭**が上記メッセージであること
+  - **git**: **`d9dabcd`**（本ブロック追記）
+  - **次の1手**: 退避内容を戻す必要が出たら **`git stash show -p stash@{0}`** で確認のうえ **`git stash pop`**（競合の可能性あり）
+  - **GO待ち**: なし
+  - **session-lock**: なし
+  - **関連パス**: （Windows ローカルのみ・リポルート外の記述なし）
+
