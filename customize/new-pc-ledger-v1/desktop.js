@@ -10,7 +10,7 @@
  *   - 種別 (account_type) による表示制御 (show/hide)
  *   - §4.2.1a: 内部メタは kintone 標準グループ `internal_system_meta` に収容（レイアウトは `npm run pc-ledger:674:layout-internal-group`）。表示時はグループを閉じる・新規・編集では子を disabled
  *   - §4.2.3a: SKYSEA 4 件は `skysea_system_meta`（表示名 SKYSEA処理用）に収容。アカウント部領域のため **権限のあるユーザーは編集可能**。運用で触るのは浜田のみと **周知**（customize ではログインによる非表示はしない）。通常はグループを閉じた初期表示
- *   - 自動生成ボタン: 個人 / 共有（Windows+M365）/ JR（**M365 のみ**・**PC名は手入力のまま**）を §4.4 に沿ってフォームへ反映（空欄のみ上書き）
+ *   - 自動生成ボタン: 個人 / 共有（Windows+M365）/ JR（**M365 のみ**・**PC名は手入力のまま**）を §4.4 に沿ってフォームへ反映（空欄のみ上書き）。**個人**: §4.3.1 で **`pc_name` / `pc_serial_no`**、§4.2.2 で **`windows_name` = `jbm####+` + メール@前**（メール空時は `jbm####` のみ＋案内）。**共有**: **`S-JBIS####-YYYYMM`** と Windows 採番。**JR**: PC 名・Windows は自動で触らない
  *   - 5 台ライセンス警告雛形 (赤バナーは仕組みのみ)
  *   - リセット／PC買替（§4.10.3・596 採番・671 整合・595 個人リンク）／印刷（627 レイアウト移植済）
  *   - **レコード閲覧（detail）**: **ステータス≠保管**のとき操作ボタンは **PC買替・印刷のみ**。**保管の閲覧**ではカスタムヘッダを付けない（余計なボタンなし）。**新規・編集かつ保管**（個人/共有/JR いずれも）: ヘッダは **全フィールドリセットのみ**。**利用中**等の非保管は従来の種別別ボタン＋PC買替・印刷。
@@ -29,7 +29,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-06-pc-ledger-input-assist-label-style';
+  const BUILD = '2026-05-06-pc-ledger-personal-autogen-pcname-windowsfmt';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -881,6 +881,76 @@
       }
       return 'sjbm' + String(max + 1).padStart(4, '0');
     });
+  }
+
+  /** §4.3.1: 674 内の `pc_serial_no` 最大値（>0 のみ）。無い・失敗時は 0 */
+  function fetchMaxPcSerial674() {
+    const appId = kintone.app.getId();
+    return kintoneApiGet('/k/v1/records.json', {
+      app: appId,
+      query: 'pc_serial_no > 0 order by pc_serial_no desc limit 1',
+      fields: [FC_PC_SERIAL_NO],
+    })
+      .then(function (resp) {
+        const row = (resp.records && resp.records[0]) || null;
+        if (!row || !row[FC_PC_SERIAL_NO]) return 0;
+        const n = parseInt(String(row[FC_PC_SERIAL_NO].value), 10);
+        return Number.isFinite(n) && n > 0 ? n : 0;
+      })
+      .catch(function (e) {
+        console.warn('[NEW-PC-LEDGER-V1] fetchMaxPcSerial674', e);
+        return 0;
+      });
+  }
+
+  /** Asia/Tokyo の YYYYMM（§4.3.1 PC 名サフィックス） */
+  function formatYYYYMMJst674() {
+    const parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Tokyo',
+      year: 'numeric',
+      month: '2-digit',
+    }).formatToParts(new Date());
+    let y = '';
+    let mo = '';
+    for (let i = 0; i < parts.length; i++) {
+      if (parts[i].type === 'year') y = parts[i].value;
+      if (parts[i].type === 'month') mo = parts[i].value.padStart(2, '0');
+    }
+    return y && mo ? y + mo : '';
+  }
+
+  /**
+   * `pc_name` が空のとき §4.3.1 で `pc_serial_no`（空または 0 なら MAX+1）と `pc_name` を埋める。
+   * @param {'personal'|'shared'} kind
+   */
+  function mergePcNameSerialFromMax674(rec, envMap, maxSerial, kind) {
+    const pcNameCur = trimmedScalarValue674(rec, FC_PC_NAME);
+    if (pcNameCur) return;
+    const yyyymm = formatYYYYMMJst674();
+    if (!yyyymm) return;
+    const prefix =
+      kind === 'shared'
+        ? String(envMap.PC_NAME_PREFIX_SHARED || 'S-JBIS').trim() || 'S-JBIS'
+        : String(envMap.PC_NAME_PREFIX_PERSONAL || 'JBIS').trim() || 'JBIS';
+    const cellSer = rec[FC_PC_SERIAL_NO];
+    let serialNum;
+    const rawSer =
+      cellSer && cellSer.value != null && cellSer.value !== ''
+        ? parseInt(String(cellSer.value), 10)
+        : NaN;
+    if (Number.isFinite(rawSer) && rawSer > 0) {
+      serialNum = rawSer;
+    } else {
+      serialNum = maxSerial + 1;
+      if (cellSer && typeof cellSer === 'object' && Object.prototype.hasOwnProperty.call(cellSer, 'value')) {
+        const curStr = cellSer.value == null || cellSer.value === '' ? '' : String(cellSer.value).trim();
+        if (!curStr || curStr === '0') {
+          cellSer.value = String(serialNum);
+        }
+      }
+    }
+    const built = prefix + String(serialNum).padStart(4, '0') + '-' + yyyymm;
+    mergeScalarField(rec, FC_PC_NAME, built);
   }
 
   /** §5.3: 利用可 かつ usage_count<5 の最古 serial（共有プール。JR も同一プール） */
@@ -2155,11 +2225,17 @@
       window.alert('種別=個人 の自動生成には「利用者名」を先に入力してください。');
       return Promise.resolve();
     }
-    return Promise.all([loadEnv670Map(), findEmployee595ByUserName(userName.trim()), nextJbmFrom672()])
+    return Promise.all([
+      loadEnv670Map(),
+      findEmployee595ByUserName(userName.trim()),
+      nextJbmFrom672(),
+      fetchMaxPcSerial674(),
+    ])
       .then(function (results) {
         const envMap = results[0];
         const emp = results[1];
         const nextJbm = results[2];
+        const maxPcSerial = results[3];
         if (!emp) {
           window.alert('社員マスタ（595）に user_name が一致するレコードが見つかりません: ' + userName);
           return;
@@ -2170,6 +2246,8 @@
         const m365Domain = envMap.M365_DOMAIN || '@kensetsutoso01.onmicrosoft.com';
         const m365PwSuffix = envMap.M365_PW_PERSONAL_SUFFIX || 'K#';
 
+        mergePcNameSerialFromMax674(rec, envMap, maxPcSerial, 'personal');
+
         mergeScalarField(rec, FC_DEPT_NAME, (emp.dept_name && emp.dept_name.value) || '');
         mergeScalarField(rec, FC_GROUP_NAME, (emp.group_name && emp.group_name.value) || '');
         mergeScalarField(rec, FC_EMP_ID, (emp.emp_id && emp.emp_id.value) || '');
@@ -2177,13 +2255,22 @@
         mergeScalarField(rec, FC_MAIL_ACCT, mailLocal);
         mergeScalarField(rec, FC_LOGON_NAME, nextJbm);
         mergeScalarField(rec, FC_LOGON_PW, nextJbm);
-        mergeScalarField(rec, FC_WINDOWS_NAME, nextJbm + mailLocal);
+        const windowsDisplay =
+          mailLocal.length > 0 ? nextJbm + '+' + mailLocal : nextJbm;
+        mergeScalarField(rec, FC_WINDOWS_NAME, windowsDisplay);
         if (mailLocal) mergeScalarField(rec, FC_M365_ID, mailLocal + m365Domain);
         mergeScalarField(rec, FC_M365_PW, nextJbm + m365PwSuffix);
 
         api.set(recNow);
         applyM365MasterRecordIdFieldUi674(rec, 'editable');
-        window.alert('個人用フィールドをフォームへ反映しました（空欄のみ）。保存は手動で行ってください。');
+        let msg = '個人用フィールドをフォームへ反映しました（空欄のみ）。保存は手動で行ってください。';
+        if (!mailLocal) {
+          msg +=
+            '\n\n※595の会社メール（@より前）が空のため、Windows アカウント名は「' +
+            nextJbm +
+            '」のみです。メールを登録後に再度自動生成するか、手入力で補完してください。';
+        }
+        window.alert(msg);
       });
   }
 
@@ -2200,11 +2287,13 @@
       loadEnv670Map(),
       fetchAssignableM365Record671(),
       type === TYPE_SHARED ? nextSjbmFrom673() : Promise.resolve(null),
+      type === TYPE_SHARED ? fetchMaxPcSerial674() : Promise.resolve(0),
     ])
       .then(function (results) {
         const envMap = results[0];
         const m671 = results[1];
         const nextSjbm = results[2];
+        const maxPcSerial = results[3];
 
         if (!m671) {
           window.alert(
@@ -2218,6 +2307,7 @@
         const m365RowId = m671.$id && m671.$id.value;
 
         if (type === TYPE_SHARED && nextSjbm) {
+          mergePcNameSerialFromMax674(rec, envMap, maxPcSerial, 'shared');
           mergeScalarField(rec, FC_LOGON_NAME, nextSjbm);
           mergeScalarField(rec, FC_WINDOWS_NAME, nextSjbm);
           const fixedPw = envMap.LOGON_PW_SHARED_FIXED || 'kent0000';
