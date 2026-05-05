@@ -330,7 +330,7 @@
 
   /**
    * 種別に応じたフォーム表示制御（2026-05 GO: 共有・JR は最小セット、NAS/その他は全表示、個人＋保管は同一）
-   * 固定IP1/2 はサーバーNASのみ（他種別は DHCP のため非表示）。
+   * 固定IP1/2 はサーバーNASのみ表示・**必須にしない**（必要時のみ濱田手入力の任意項目。他種別は DHCP のため非表示）。
    */
   function applyVisibilityByType(record) {
     const type = record[FC_ACCOUNT_TYPE]?.value || '';
