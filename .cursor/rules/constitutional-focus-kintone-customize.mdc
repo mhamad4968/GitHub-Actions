@@ -1,0 +1,16 @@
+---
+description: AGENTS.md §35-7 §50-3-8 §52 — customize 編集・本番 deploy 時の追加想起（glob）
+globs: customize/**/*
+alwaysApply: false
+---
+
+# kintone customize — ジャンル別憲法チェック
+
+`customize/**` を編集するターンでは、**常時注入**の **`constitution-enforcement-core.mdc`** に加え、次を **行動前に** 意識する。
+
+- **§35-7** — チャット上の規律先行（`HANDOFF-AI-FIVE-BLOCKS` ブロック 2、`cio-discipline-always.mdc`）。
+- **§50-3-8** — DeepSeek ＋ 約 3 行突合、または **`§50-3-8 スキップ理由:`** 1 行。
+- **§52 / Tier B** — 本番書込・`deploy:*` は **浜田 GO** 後も **実行は AI**（TSB-024）。
+- **`kintone-apps.md`** — 触るアプリ ID の単一の真（§2）。
+
+**違反・2 者チェックの定義**は **`constitution-enforcement-core.mdc`**（末尾の全文）を正とする。

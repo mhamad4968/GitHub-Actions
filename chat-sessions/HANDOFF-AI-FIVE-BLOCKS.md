@@ -1,4 +1,4 @@
-# HANDOFF-AI-FIVE-BLOCKS — AI 引き継ぎ 5 ブロック構成（正本 / v1.2 / 2026-05-06）
+# HANDOFF-AI-FIVE-BLOCKS — AI 引き継ぎ 5 ブロック構成（正本 / v1.3 / 2026-05-06）
 
 **目的**: 長文を一度に読まなくてよいよう、**次 AI が同じ順で復元**できる骨格だけを固定する。詳細は各リンク先が正。
 
@@ -18,13 +18,14 @@
 
 ## ブロック 2 — 規律ゲート（着手前・必須）
 
-**編集ツールや `deploy:*` を走らせる直前**にチャットへ残す（**§35-7**）。
+**編集ツールや `deploy:*` を走らせる直前**にチャットへ残す（**§35-7**）。**ターン先頭**の **`【適用憲法】` 1 行**は `.cursor/rules/every-turn-rules-confirm.mdc` §1（ティアの直後）で **既に出している**なら、ここでは **〔憲法 3 分〕以降だけ**でよい（重複コピーは不要）。
 
+0. **関連憲法のリストアップ** — **`RULES-INDEX.md`** を起点に、本依頼に関係する **`AGENTS.md` の §** をチャットに **箇条書き**（最低 1 件。**純雑談**のみなら **`§なし`** と明記可）。
 1. **〔憲法 3 分〕** — レーン 1 行 + `08-READ-06.txt`（または本文中の READ-06 節）または `NEW-SESSION-STARTER.md` から **要約 1 行**。
-2. **§50-3-8** — DeepSeek 1 問 + 約 3 行突合、**または** `§50-3-8 スキップ理由:` **1 行必須**。
+2. **§50-3-8** — DeepSeek 1 問 + 約 3 行突合、**または** `§50-3-8 スキップ理由:` **1 行必須**（**本体のみチェック禁止**＝`constitution-enforcement-core.mdc`）。
 3. **`[🎖️ 本セッション割当]`** — 1 行（未使用は「未使用」と明記）。
 
-**参照**: `AGENTS.md` §35-7、§50-3-8、`desktop-ai-emergency-read-pack/08-READ-06.txt`。
+**参照**: `AGENTS.md` §35-7、§50-3-8、`desktop-ai-emergency-read-pack/08-READ-06.txt`、`.cursor/rules/constitution-enforcement-core.mdc`。
 
 ---
 
@@ -77,4 +78,5 @@
 |------|------|
 | 2026-05-05 | 初版（674 セッション反省・CEO GO に基づく 5 分割構成） |
 | 2026-05-05 | v1.1 — **674 deploy 機械ゲート**（`cio:preflight:674`・45 分・`SKIP_CIO_DEPLOY_GUARD`）追記 |
+| 2026-05-06 | v1.3 — ブロック 2 に **関連§リスト**・`constitution-enforcement-core.mdc` 参照（2 者チェック） |
 | 2026-05-06 | v1.2 — **全 customize deploy へゲート横展開**＋preflight **`--with-git-diff-line`**（任意） |

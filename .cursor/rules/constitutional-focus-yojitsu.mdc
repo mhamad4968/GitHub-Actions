@@ -1,0 +1,16 @@
+---
+description: AGENTS.md §50-3-8 §41 §2 — 部署予実（yojitsu）テンプレ・SPEC 変更時の追加想起（glob）
+globs: templates/yojitsu-budget-lite/**/*
+alwaysApply: false
+---
+
+# 部署予実（yojitsu-budget-lite）— ジャンル別憲法チェック
+
+`templates/yojitsu-budget-lite/**` を仕様変更・投入スクリプト・フィールド設計として触れるターンでは、**常時注入**の **`constitution-enforcement-core.mdc`** に加え、次を **行動前に** 意識する。
+
+- **§50-3-8** — 計算ロジック・複雑 customize・仕様変更の **着手直前**（DeepSeek ＋ 本体突合メモ）。
+- **§41** — 浜田への確認は **1 ターン 1 問**。
+- **§2** — `SPEC.md` / `kintone-apps.md` 正本主義。
+- **`creation-timing-ask.mdc`** — アプリ作成・スペース着手前（該当時）。
+
+**違反・2 者チェックの定義**は **`constitution-enforcement-core.mdc`**（末尾の全文）を正とする。

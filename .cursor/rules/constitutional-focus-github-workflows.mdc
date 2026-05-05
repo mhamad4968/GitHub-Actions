@@ -1,0 +1,15 @@
+---
+description: AGENTS.md §18 §52-8 §35-1 — GitHub Actions / workflow 変更時の追加想起（glob）
+globs: .github/workflows/**/*
+alwaysApply: false
+---
+
+# GitHub Actions — ジャンル別憲法チェック
+
+`.github/workflows/**` を編集するターンでは、**常時注入**の **`constitution-enforcement-core.mdc`** に加え、次を **行動前に** 意識する。
+
+- **§18** — シークレット・トークンの非露出。
+- **§52-8** — 高リスク操作に該当する変更は **事前報告 → 浜田 GO**（該当時）。
+- **§35-1** — ワークフロー修正・検証コマンドの実行は **AI 側**（禁句は TSB-024）。
+
+**違反・2 者チェックの定義**は **`constitution-enforcement-core.mdc`**（末尾の全文）を正とする。

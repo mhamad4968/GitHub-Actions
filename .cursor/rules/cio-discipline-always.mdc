@@ -30,3 +30,5 @@ alwaysApply: true
 2. **45 分以内**に `npm run deploy:<app>` を実行する。
 
 **緊急のみ**: `SKIP_CIO_DEPLOY_GUARD=1 npm run deploy:<app>`（浜田 GO とチャットに理由 1 行必須）。
+
+**違反＝失敗・2 者チェック（本体＋ DeepSeek/Kimi）の定義全文**: `.cursor/rules/constitution-enforcement-core.mdc`（**`alwaysApply: true`** と同一ファイル）。
