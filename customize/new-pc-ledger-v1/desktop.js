@@ -21,11 +21,12 @@
  *   - 新規・編集: 所属ヘルプ（編集ではコピー用一覧を details で折りたたみ）。**共有・JR**: フィールド最小表示、**所属候補モーダル**（マスタ **680** または埋め込み）、保存前必須。個人＋保管は個人と同表示。VPN は個人のみ。NAS/その他は全表示。
  *   - **備考（note）**: 全種別で任意（保存前チェックでは必須にしない）。
  *   - **モバイル**: 当面は利用想定なし（`kintone.mobile` 分岐は既存のまま残すが、専用UXは追わない）。
+ *   - **M365管理マスタレコード番号（671 `$id`）**: 共有・JR は同一671行の **usage_count / 5 台**運用で紐づく。個人は表示するが多くは空（自動生成はメール由来M365中心）。**手入力不可**（自動生成・保存後同期のみ更新）。
  */
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-05-pc-ledger-mobile-out-of-scope';
+  const BUILD = '2026-05-05-pc-ledger-m365master-readonly';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -328,6 +329,18 @@
         }
       }
     }
+  }
+
+  /**
+   * 671 行番号（`m365_master_record_id`）は **編集画面で手入力させない**（権限に頼らず誤変更を防ぐ）。
+   * 共有・JR: 自動生成・保存後の 671 同期が値を持つ。個人: 表示のみで空のことが多い。`kintone.app.record.set` によるプログラム更新は可。
+   * @param {Record<string, object>} record
+   * @param {'detail'|'editable'} mode
+   */
+  function applyM365MasterRecordIdFieldUi674(record, mode) {
+    const cell = record && record[FC_M365_MASTER_RECORD_ID];
+    if (!cell || !Object.prototype.hasOwnProperty.call(cell, 'disabled')) return;
+    cell.disabled = mode === 'editable';
   }
 
   /**
@@ -1584,6 +1597,7 @@
         mergeScalarField(rec, FC_M365_PW, nextJbm + m365PwSuffix);
 
         api.set(recNow);
+        applyM365MasterRecordIdFieldUi674(rec, 'editable');
         window.alert('個人用フィールドをフォームへ反映しました（空欄のみ）。保存は手動で行ってください。');
       });
   }
@@ -1623,6 +1637,7 @@
         mergeNumberField(rec, FC_M365_MASTER_RECORD_ID, m365RowId);
 
         kintone.app.record.set(recNow);
+        applyM365MasterRecordIdFieldUi674(rec, 'editable');
         window.alert(
           type === TYPE_JR
             ? 'M365 系のみフォームへ反映しました（空欄のみ）。Windows 系は手入力ください。保存は手動で行ってください。'
@@ -3284,6 +3299,7 @@ ${bodyInner}\
     applyInternalMetaFieldUi(event.record, editable ? 'editable' : 'detail');
     applySkyseaGroupUi(event.record, editable ? 'editable' : 'detail');
     applyVisibilityByType(event.record);
+    applyM365MasterRecordIdFieldUi674(event.record, editable ? 'editable' : 'detail');
     showJrBannerIfNeeded(event.record);
     scheduleInjectButtons674(event);
     if (editable) {
@@ -3329,6 +3345,7 @@ ${bodyInner}\
     applyInternalMetaFieldUi(result.record, 'editable');
     applySkyseaGroupUi(result.record, 'editable');
     applyVisibilityByType(result.record);
+    applyM365MasterRecordIdFieldUi674(result.record, 'editable');
     showJrBannerIfNeeded(result.record);
     scheduleInjectButtons674(result);
     if (
