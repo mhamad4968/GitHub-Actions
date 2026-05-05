@@ -19,7 +19,7 @@
  *   - （一覧）**SKYSEA 状態**: 検索バーに **skysea_status チップ**（§4.8a）。**SKYSEA 計画立案・合意後に要件・UI を再検討予定**（現状は暫定）。
  *   - （一覧）**絞り込み URL**: `query` パラメータから **キーワード・種別・SKYSEA チップ**を復元（当バーが生成したクエリ形式に準拠）。
  *   - **PC買替は実装済**（§4.10.3）。594 同趣旨。**627 二重更新なし**。v0.9.14: ボタン掛け先フォールバック＋遅延再 inject、`import_source=PC_REPLACE_FROM_674:<旧$id>`・legacy 594 フィールドクリア。
- *   - 新規・編集: **所属ヘルプは既定で閉じた `<details>`**（必要時のみ開く・§4.2.0b）。**共有・JR**: フィールド最小表示、**所属候補モーダル**（マスタ **680** または埋め込み）、保存前必須。個人＋保管は個人と同表示。VPN は個人のみ。NAS/その他は全表示。
+ *   - 新規・編集: **所属ヘルプは既定で閉じた `<details>`**（必要時のみ開く・§4.2.0b）。**共有・JR**: フィールド最小表示、**所属候補モーダル**（マスタ **680** または埋め込み）、保存前必須。**未入力時に所属名／所属グループへフォーカス**→共有・JR は **680 モーダル**、個人（非保管）は **595 社員検索**を自動表示。個人の **利用者名** 未入力フォーカス時も 595。**個人＋保管**はフォーカス自動起動なし。VPN は個人のみ。NAS/その他は全表示。
  *   - **備考（note）**: 全種別で任意（保存前チェックでは必須にしない）。
  *   - **モバイル**: 当面は利用想定なし（`kintone.mobile` 分岐は既存のまま残すが、専用UXは追わない）。
  *   - **M365管理マスタレコード番号（671 `$id`）**: 共有・JR は同一671行の **usage_count / 5 台**運用で紐づく。個人は表示するが多くは空（自動生成はメール由来M365中心）。**手入力不可**（自動生成・保存後同期のみ更新）。
@@ -29,7 +29,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-05-pc-ledger-dept-help-on-demand';
+  const BUILD = '2026-05-05-pc-ledger-field-focus-assist';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -1596,6 +1596,105 @@
     mergeScalarField(rec, FC_GROUP_NAME, (emp.group_name && emp.group_name.value) || '');
     api.set(holder);
     hideUserSuggest674();
+  }
+
+  /** 所属名・所属グループ・利用者名のフィールド DOM（PC / モバイル） */
+  function tryGetFieldElement674(code) {
+    try {
+      if (kintone.app && kintone.app.record && typeof kintone.app.record.getFieldElement === 'function') {
+        const el = kintone.app.record.getFieldElement(code);
+        if (el) return el;
+      }
+    } catch (_e) {
+      /* ignore */
+    }
+    try {
+      if (typeof kintone.mobile !== 'undefined' && kintone.mobile.app && kintone.mobile.app.record) {
+        const el2 = kintone.mobile.app.record.getFieldElement(code);
+        if (el2) return el2;
+      }
+    } catch (_e2) {
+      /* ignore */
+    }
+    return null;
+  }
+
+  let npl674FocusAssistDoc674 = false;
+  let npl674FocusAssistSuppressUntil674 = 0;
+
+  function is674AssistModalVisible674() {
+    const d = document.getElementById(DEPT_MASTER_MODAL_ID);
+    if (d) {
+      const ds = String(d.style.display || '').trim();
+      if (ds && ds !== 'none') return true;
+    }
+    const e = document.getElementById(EMPLOYEE_SEARCH_MODAL_ID);
+    if (e) {
+      const es = String(e.style.display || '').trim();
+      if (es && es !== 'none') return true;
+    }
+    return false;
+  }
+
+  /**
+   * 未入力かつ該当フィールドにフォーカスしたとき、595／680 の入力支援を開く（編集・新規のフォーム上のみ）。
+   */
+  function on674EmptyFieldFocusAssist674(ev) {
+    if (Date.now() < npl674FocusAssistSuppressUntil674) return;
+    const ae = ev.target;
+    if (!ae || (ae.tagName !== 'INPUT' && ae.tagName !== 'TEXTAREA')) return;
+    if (ae.disabled || ae.readOnly) return;
+
+    const bag = getRecordFormHolder674();
+    if (!bag || !bag.holder || !bag.holder.record) return;
+    const rec = bag.holder.record;
+    const type = (rec[FC_ACCOUNT_TYPE] && rec[FC_ACCOUNT_TYPE].value) || '';
+
+    const userEl = tryGetFieldElement674(FC_USER_NAME);
+    const deptEl = tryGetFieldElement674(FC_DEPT_NAME);
+    const grpEl = tryGetFieldElement674(FC_GROUP_NAME);
+    if (!userEl && !deptEl && !grpEl) return;
+
+    const inUser = userEl && userEl.contains(ae);
+    const inDept = deptEl && deptEl.contains(ae);
+    const inGrp = grpEl && grpEl.contains(ae);
+    if (!inUser && !inDept && !inGrp) return;
+
+    if (is674AssistModalVisible674()) return;
+
+    if (type === TYPE_SHARED || type === TYPE_JR) {
+      if (!inDept && !inGrp) return;
+      const d = trimmedScalarValue674(rec, FC_DEPT_NAME);
+      const g = trimmedScalarValue674(rec, FC_GROUP_NAME);
+      if (d && g) return;
+      npl674FocusAssistSuppressUntil674 = Date.now() + 400;
+      openDeptMasterModal674();
+      return;
+    }
+
+    if (type === TYPE_PERSONAL) {
+      if (isPersonalStored(rec)) return;
+      if (inUser) {
+        const live = readUserNameLiveValue674(rec);
+        if (live) return;
+        npl674FocusAssistSuppressUntil674 = Date.now() + 400;
+        openEmployee595SearchModal674();
+        return;
+      }
+      if (inDept || inGrp) {
+        const d = trimmedScalarValue674(rec, FC_DEPT_NAME);
+        const g = trimmedScalarValue674(rec, FC_GROUP_NAME);
+        if (d && g) return;
+        npl674FocusAssistSuppressUntil674 = Date.now() + 400;
+        openEmployee595SearchModal674();
+      }
+    }
+  }
+
+  function install674EmptyFieldFocusAssist674() {
+    if (npl674FocusAssistDoc674) return;
+    npl674FocusAssistDoc674 = true;
+    document.addEventListener('focusin', on674EmptyFieldFocusAssist674, true);
   }
 
   function mountUserSuggestDropdown674(rows) {
@@ -4325,6 +4424,8 @@ ${bodyInner}\
       onSubmitSuccess674,
     );
   }
+
+  install674EmptyFieldFocusAssist674();
 
   console.log(`[NEW-PC-LEDGER-V1] customize loaded BUILD=${BUILD}`);
   console.log(`[NEW-PC-LEDGER-V1] 関連アプリ: env=${APP_ENV_MASTER} m365=${APP_M365_MASTER} jbm=${APP_JBM_NUMBER} sjbm=${APP_SJBM_NUMBER} employee=${APP_EMPLOYEE}`);
