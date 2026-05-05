@@ -34,7 +34,8 @@ alwaysApply: true
 
 ## セッション締め／明日朝イチ（チェックリスト）
 
-- [ ] **知恵袋**で網羅（または貼付）→ **CIO** が **`[役割: CIO セカンドオピニオン / §50-3-8 突合]`** ＋ **約 3 行突合メモ** → **確定／未確定／SPEC 未記載**を 1 段落で残す
+- [ ] **修正・不具合クローズ前**: 知恵袋へ **「検証で抜けやすい点 3 つ」** を 1 問 → **CIO** が **コマンド結果（exit）と突合 1〜3 行** → そのうえで **`[検証2者: …]`**（`every-turn-rules-confirm.mdc` §1c）
+- [ ] **知恵袋**で網羅（または貼付）→ **CIO** が **`[役割: CIO セカンドオピニオン / §50-3-8 突合]`** ＋ **約 3 行突合メモ** → **`[仕様状態: …]`** と **確定／未確定／SPEC 未記載**を 1 段落で残す（**未決を確定と言い換えない**）
 - [ ] **`handoff-log.md` 末尾**に **次セッション 1 行**＋本日の確定／未確定（仕様確認デイなら必須に近い）
 - [ ] **`npm run verify:constitution-handoff`** → **`npm run verify:mandatory-read-gate`**（明日の **項番 0 前後で緑**を再確認）
 - [ ] 可能なら **`npm run session-starter:sync-desktop`** → **`npm run verify:desktop-ai-emergency-sync`**

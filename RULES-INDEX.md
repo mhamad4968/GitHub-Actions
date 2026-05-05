@@ -12,8 +12,8 @@
 | §0 | **RULES-INDEX 即答カード参照**（索引駆動の起点 / 「まず索引→該当 § を読む」を強制） |
 | （Cursor）**`cio-operating-loop.mdc`** | **CIO 運用の一本線**（2026-05-02）— 正シェルは **`~/kintone-ai-lab`（WSL）**／朝は **`docs/reports/<JST日付>-morning-prep.md`** → **`desktop-ai-emergency-read-pack/READ-07.txt`**（浜田 CEO のお願い）→ 追徴なら **`npm run cio:quick-health`**／切替手順は **`constitution-handoff-gate.mdc`** + `NEW-SESSION-STARTER`「貼付単独で完走」／Read pack + `SESSION-READ-LADDER.md`／Desktop 更新後は **`npm run desktop:sync-and-verify`** を優先 |
 | （Cursor）**`constitution-brief-card.mdc`** | **憲法の薄型常時想起**（2026-05-06）— CIO 三角・**MCP/スクリプト先出し**（「できない」早取り禁止）／網羅版 `constitution.mdc` は **必要時 Read** |
-| （Cursor）**`constitution-enforcement-core.mdc`** | **違反＝失敗・ダブルチェック定義**（2026-05-06 / **alwaysApply: true**）— **本体 CIO ＋ DeepSeek または Kimi** を第 2 者とする。**1 人チェック禁止**。末尾に CEO 指示の全文を保持 |
-| （Cursor）**`every-turn-rules-confirm.mdc`** | **毎ターン先頭** — **`[§1-2-3 ティア判定]`** → **`【適用憲法】` 1 行** → **`[🎖️]`** → **`[ルール確認]`**／**行動前チェック**（編集・deploy 直前の § リスト＋方針） |
+| （Cursor）**`constitution-enforcement-core.mdc`** | **違反＝失敗・ダブルチェック定義**（2026-05-06 / **alwaysApply: true**）— **本体 CIO ＋ DeepSeek または Kimi** を第 2 者とする。**1 人チェック禁止**。**検証の 2 者**（完了宣言）・**仕様の言い切り**（未決→確定と言い換え禁止）。末尾に CEO 指示の全文を保持 |
+| （Cursor）**`every-turn-rules-confirm.mdc`** | **毎ターン先頭** — **`[§1-2-3 ティア判定]`** → **`【適用憲法】` 1 行** → **`[🎖️]`** → **`[ルール確認]`**／**§1c**（該当時 **`[仕様状態:]`**・**`[検証2者:]`**）／**行動前チェック**（編集・deploy 直前の § リスト＋方針） |
 | （Cursor）**`constitutional-focus-kintone-customize.mdc`** | **glob: `customize/**`** — §35-7 §50-3-8 §52・`kintone-apps.md` の追加想起（**alwaysApply: false**） |
 | （Cursor）**`constitutional-focus-yojitsu.mdc`** | **glob: `templates/yojitsu-budget-lite/**`** — §50-3-8 §41 §2 の追加想起（**alwaysApply: false**） |
 | （Cursor）**`constitutional-focus-github-workflows.mdc`** | **glob: `.github/workflows/**`** — §18 §52-8 §35-1 の追加想起（**alwaysApply: false**） |

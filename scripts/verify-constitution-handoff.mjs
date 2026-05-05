@@ -193,6 +193,8 @@ const suites = [
       '【適用憲法】',
       'RULES-INDEX.md',
       '§50-3-8 スキップ理由',
+      '検証の 2 者',
+      '[仕様状態:',
     ],
   },
   {
@@ -207,6 +209,8 @@ const suites = [
       'mcp-server-use-triggers.mdc',
       'MCPスキップ:',
       'mcp:chat-stamp',
+      '[仕様状態:',
+      '[検証2者:',
     ],
   },
   {
