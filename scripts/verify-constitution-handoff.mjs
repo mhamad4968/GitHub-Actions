@@ -91,7 +91,13 @@ const suites = [
       'cio-deploy-preflight-guard.mjs 677',
       'cio:preflight:677',
       'cio:preflight:679',
+      'mcp:chat-stamp',
     ],
+  },
+  {
+    id: 'session-start-autopilot-mcp-stamp',
+    rel: '.cursor/hooks/session-start-autopilot.mjs',
+    needles: ['mcp-chat-stamp.mjs', 'MCP貼付1行', 'mcp:chat-stamp'],
   },
   {
     id: 'agents-35-6',
@@ -200,6 +206,7 @@ const suites = [
       'constitution-enforcement-core.mdc',
       'mcp-server-use-triggers.mdc',
       'MCPスキップ:',
+      'mcp:chat-stamp',
     ],
   },
   {

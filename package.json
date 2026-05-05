@@ -145,6 +145,7 @@
     "rules:regenerate-constitution": "bash scripts/regenerate-constitution-rule.sh",
     "verify:mandatory-read-gate": "node scripts/mandatory-read-gate.mjs",
     "verify:agent-env": "node scripts/verify-agent-env.mjs",
+    "mcp:chat-stamp": "node scripts/mcp-chat-stamp.mjs",
     "session:clock:set": "node scripts/session-clock.mjs set",
     "session:clock:clear": "node scripts/session-clock.mjs clear",
     "session:clock:prompt-hook": "node scripts/session-clock.mjs prompt-hook",

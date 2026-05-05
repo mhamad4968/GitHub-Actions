@@ -94,11 +94,33 @@ function main() {
     watchMsg = '`session:clock:watch` をバックグラウンド起動した（ログ: `logs/session-clock-watch.log`）。';
   }
 
+  let mcpStamp = '';
+  try {
+    const stampScript = path.join(root, 'scripts', 'mcp-chat-stamp.mjs');
+    const st = spawnSync(process.execPath, [stampScript], {
+      cwd: root,
+      encoding: 'utf8',
+      shell: false,
+    });
+    mcpStamp = (st.stdout || '').trim().split('\n')[0] || '';
+    if (st.status !== 0) {
+      logLine(`mcp-chat-stamp.mjs exit=${st.status} stderr=${(st.stderr || '').slice(0, 200)}`);
+    }
+  } catch (e) {
+    logLine(`mcp-chat-stamp spawn error ${e?.message || e}`);
+    mcpStamp = 'MCPスキップ: 未接続（stamp 実行例外・チャット経路は未検証）';
+  }
+
+  const mcpBlock = mcpStamp
+    ? ` 【MCP貼付1行・sessionStart】\`${mcpStamp}\`（外部正ターンの [ルール確認] にそのまま追記可。実際に MCP を呼べたら本行はそのターンで置換。手動再発行: \`npm run mcp:chat-stamp\`）`
+    : '';
+
   const additional_context =
     '【自動・Cursor sessionStart hook】' +
     '`npm run session:clock:set` を実行済み（`chat-sessions/SESSION-CLOCK.md` の `開始:` を JST で更新）。' +
     watchMsg +
-    ' 浜田が手で 1・2 を打つ必要は原則ありません（hook 無効時のみ手動）。';
+    ' 浜田が手で 1・2 を打つ必要は原則ありません（hook 無効時のみ手動）。' +
+    mcpBlock;
 
   process.stdout.write(`${JSON.stringify({ additional_context })}\n`);
   process.exit(0);

@@ -17,6 +17,7 @@ alwaysApply: true
 - **先にスキャン**: 依頼が **外部の正**（GitHub・kintone・Web・社内ドキュ・ブラウザ UI・CVE 等）に触れるなら、**着手前に** **`mcp-server-use-triggers.mdc`** を **Read** し、該当 1 行トリガーがあれば **その MCP を優先**（呼ぶ直前の descriptor 義務は **`mcp-tool-discipline.mdc`**）。
 - **「AI（このチャット）ではできません」**は、上記スキャンに加え **Read / Grep / Shell（リポに既にある `npm run …` や `scripts/`）** で代替不能と言い切れる場合に限る。**根拠なしの早取り禁止**。
 - **ユーザーが MCP・npm script・hooks を入れている**話題では、**人間の手作業へ逃げる前に** `package.json`・`docs/mcp-status.md`・該当ワークフローを **事実確認**する（憲法 **§50** 系・死蔵防止の精神）。
+- **貼付用1行の機械出力**: **`npm run mcp:chat-stamp`**（`MCPスキップ: 未接続（…）` 形式を stdout＋`logs/mcp-chat-stamp-latest.txt`）。**新 Composer セッション**では `sessionStart` hook の `additional_context` にも同趣旨が注入される。
 
 ## 正本の優先順位
 
