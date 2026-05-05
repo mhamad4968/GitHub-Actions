@@ -29,7 +29,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-05-pc-ledger-focus-assist-composed-click';
+  const BUILD = '2026-05-05-pc-ledger-focus-assist-field-wire';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -1621,25 +1621,39 @@
     return null;
   }
 
+  /** account_type フィールド内の select をシャドウをまたいで探索 */
+  function findSelectUnderFieldRoot674(root) {
+    if (!root || !root.querySelector) return null;
+    try {
+      const direct = root.querySelector('select');
+      if (direct) return direct;
+    } catch (_e) {
+      return null;
+    }
+    let w;
+    try {
+      w = root.querySelectorAll('*');
+    } catch (_e2) {
+      return null;
+    }
+    for (let i = 0; i < w.length; i++) {
+      if (w[i].shadowRoot) {
+        const inner = findSelectUnderFieldRoot674(w[i].shadowRoot);
+        if (inner) return inner;
+      }
+    }
+    return null;
+  }
+
   /**
    * 種別ドロップダウンは change 直後に record より UI が先行することがあるため、
-   * getFieldElement 内の select を優先して読む。
+   * getFieldElement 内の select を優先して読む（多段シャドウ対応）。
    */
   function readAccountTypeLive674(record) {
     try {
       const el = tryGetFieldElement674(FC_ACCOUNT_TYPE);
       if (el) {
-        let sel = el.querySelector('select');
-        if (!sel) {
-          const all = el.querySelectorAll('*');
-          for (let i = 0; i < all.length; i++) {
-            const node = all[i];
-            if (node.shadowRoot) {
-              sel = node.shadowRoot.querySelector('select');
-              if (sel) break;
-            }
-          }
-        }
+        const sel = findSelectUnderFieldRoot674(el);
         if (sel) {
           const v = String(sel.value != null ? sel.value : '').trim();
           if (v) return v;
@@ -1733,6 +1747,7 @@
 
   let npl674FocusAssistDoc674 = false;
   let npl674FocusAssistSuppressUntil674 = 0;
+  let npl674FieldAssistAbort674 = null;
 
   function is674AssistModalVisible674() {
     const d = document.getElementById(DEPT_MASTER_MODAL_ID);
@@ -1749,14 +1764,15 @@
   }
 
   /**
-   * 未入力かつ該当フィールドにフォーカスしたとき、595／680 の入力支援を開く（編集・新規のフォーム上のみ）。
-   * Shadow DOM 内の実入力・種別 UI 先行時の record ズレに対応する。
+   * 未入力かつ該当フィールドにフォーカス／ポインタが乗ったとき、595／680 の入力支援を開く。
+   * @param {Event} ev
+   * @param {'user'|'dept'|'grp'|null} forcedField null = document 上でターゲットから推定。各フィールド getFieldElement 直下は固定。
    */
-  function on674EmptyFieldFocusAssist674(ev) {
+  function run674EmptyFieldAssistFromPointer674(ev, forcedField) {
     if (Date.now() < npl674FocusAssistSuppressUntil674) return;
     const ae = ev.target;
     if (!ae || ae.nodeType !== 1) return;
-    if (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA') {
+    if (!forcedField && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA')) {
       if (ae.disabled || ae.readOnly) return;
     }
 
@@ -1770,9 +1786,26 @@
     const grpEl = tryGetFieldElement674(FC_GROUP_NAME);
     if (!userEl && !deptEl && !grpEl) return;
 
-    const inUser = userEl && isActiveTargetWithinFieldRoot674(userEl, ev);
-    const inDept = deptEl && isActiveTargetWithinFieldRoot674(deptEl, ev);
-    const inGrp = grpEl && isActiveTargetWithinFieldRoot674(grpEl, ev);
+    let inUser;
+    let inDept;
+    let inGrp;
+    if (forcedField === 'user') {
+      inUser = true;
+      inDept = false;
+      inGrp = false;
+    } else if (forcedField === 'dept') {
+      inUser = false;
+      inDept = true;
+      inGrp = false;
+    } else if (forcedField === 'grp') {
+      inUser = false;
+      inDept = false;
+      inGrp = true;
+    } else {
+      inUser = userEl && isActiveTargetWithinFieldRoot674(userEl, ev);
+      inDept = deptEl && isActiveTargetWithinFieldRoot674(deptEl, ev);
+      inGrp = grpEl && isActiveTargetWithinFieldRoot674(grpEl, ev);
+    }
     if (!inUser && !inDept && !inGrp) return;
 
     if (is674AssistModalVisible674()) return;
@@ -1806,10 +1839,46 @@
     }
   }
 
+  function on674EmptyFieldFocusAssist674(ev) {
+    run674EmptyFieldAssistFromPointer674(ev, null);
+  }
+
   function on674EmptyFieldClickAssist674(ev) {
     if (ev.type !== 'click' || ev.button !== 0) return;
     if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
-    on674EmptyFieldFocusAssist674(ev);
+    run674EmptyFieldAssistFromPointer674(ev, null);
+  }
+
+  /** getFieldElement ルートへ直接バインド（所属グループ等で document 判定が外れる対策） */
+  function wire674FieldAssistDirect674() {
+    if (typeof AbortController === 'undefined') return;
+    if (npl674FieldAssistAbort674) {
+      try {
+        npl674FieldAssistAbort674.abort();
+      } catch (_ab) {
+        /* ignore */
+      }
+      npl674FieldAssistAbort674 = null;
+    }
+    npl674FieldAssistAbort674 = new AbortController();
+    const sig = npl674FieldAssistAbort674.signal;
+
+    function bindField674(code, forced) {
+      const el = tryGetFieldElement674(code);
+      if (!el) return;
+      const fn = function (ev) {
+        if (ev.type === 'pointerdown' && typeof ev.button === 'number' && ev.button !== 0) return;
+        if (ev.type === 'click' && ev.button !== 0) return;
+        if ((ev.type === 'click' || ev.type === 'pointerdown') && (ev.ctrlKey || ev.metaKey || ev.altKey)) return;
+        run674EmptyFieldAssistFromPointer674(ev, forced);
+      };
+      el.addEventListener('pointerdown', fn, { capture: true, signal: sig });
+      el.addEventListener('click', fn, { capture: true, signal: sig });
+    }
+
+    bindField674(FC_USER_NAME, 'user');
+    bindField674(FC_DEPT_NAME, 'dept');
+    bindField674(FC_GROUP_NAME, 'grp');
   }
 
   function install674EmptyFieldFocusAssist674() {
@@ -3746,6 +3815,12 @@ ${bodyInner}\
           scheduleUserNameSuggest674();
         }, 600);
       }
+      setTimeout(function () {
+        wire674FieldAssistDirect674();
+      }, 0);
+      setTimeout(function () {
+        wire674FieldAssistDirect674();
+      }, 400);
     }
     return new kintone.Promise(function (resolve) {
       refreshLicenseBannerFrom671(event.record)
@@ -3800,6 +3875,12 @@ ${bodyInner}\
     refreshPcNameDupBanner674(result.record).catch(function (e) {
       console.warn('[NEW-PC-LEDGER-V1] pc_name dup banner', e);
     });
+    setTimeout(function () {
+      wire674FieldAssistDirect674();
+    }, 0);
+    setTimeout(function () {
+      wire674FieldAssistDirect674();
+    }, 400);
     return result;
   }
 
