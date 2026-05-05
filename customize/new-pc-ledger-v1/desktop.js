@@ -18,12 +18,12 @@
  * Day 5 残タスク（未完了のみ）:
  *   - （一覧）SKYSEA 状態フィルタ等は別途（検索バー強化 §4.8a は対応済）。
  *   - **PC買替は実装済**（§4.10.3）。594 同趣旨。**627 二重更新なし**。v0.9.14: ボタン掛け先フォールバック＋遅延再 inject、`import_source=PC_REPLACE_FROM_674:<旧$id>`・legacy 594 フィールドクリア。
- *   - 新規・編集: 所属ヘルプ（編集ではコピー用一覧を details で折りたたみ）。**共有・JR**: フィールド最小表示、**所属候補モーダル**（マスタ **675** または埋め込み）、保存前必須。個人＋保管は個人と同表示。VPN は個人のみ。NAS/その他は全表示。
+ *   - 新規・編集: 所属ヘルプ（編集ではコピー用一覧を details で折りたたみ）。**共有・JR**: フィールド最小表示、**所属候補モーダル**（マスタ **680** または埋め込み）、保存前必須。個人＋保管は個人と同表示。VPN は個人のみ。NAS/その他は全表示。
  */
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-05-pc-ledger-shared-jr-visibility-dept-modal';
+  const BUILD = '2026-05-05-pc-ledger-dept-master-app-680';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -82,8 +82,8 @@
   const APP_JBM_NUMBER = '672';     // 新個人WindowsID採番マスタ (jbm)
   const APP_SJBM_NUMBER = '673';    // 新共有WindowsID採番マスタ (sjbm)
   const APP_EMPLOYEE = '595';       // 社員情報マスタ
-  /** 674 用 所属名／所属グループ候補マスタ（未作成・権限なし時は埋め込み一覧にフォールバック） */
-  const APP_DEPT_MASTER_674 = '675';
+  /** 674 用 所属名／所属グループ候補マスタ（Space 21。未作成・権限なし時は埋め込み一覧にフォールバック） */
+  const APP_DEPT_MASTER_674 = '680';
   /** PC 採番マスタ（594 買替と同一。596 の in_code に 〇 で占有） */
   const APP_PC_NUMBER_596 = '596';
   const FC_596_PREFIX = 'number_top';
@@ -816,7 +816,7 @@
   const DEPT_MASTER_MODAL_ID = 'new-pc-ledger-dept-master-modal';
 
   /**
-   * 675 未整備時の所属候補（所属名|group_code をカンマ連結。675 に移行後は主に API）。
+   * マスタ未整備時の所属候補（所属名|group_code をカンマ連結。所属マスタアプリ取得後は主に API）。
    * group_code は 674 の所属グループ入力値（例: honsya）と一致させる。
    */
   const DEPT_MASTER_FALLBACK_INLINE =
@@ -972,7 +972,7 @@
     const sub = document.createElement('div');
     sub.style.cssText = 'font-size:12px;color:#495057;margin-top:6px;line-height:1.5;';
     sub.textContent =
-      '行を押すと「所属名」「所属グループ」に反映されます（空欄でも上書きします）。マスタ675が未作成のときは組み込み候補を表示します。';
+      '行を押すと「所属名」「所属グループ」に反映されます（空欄でも上書きします）。マスタ取得に失敗したときは組み込み候補を表示します。';
     head.appendChild(sub);
 
     const body = document.createElement('div');

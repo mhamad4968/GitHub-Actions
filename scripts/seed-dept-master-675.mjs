@@ -1,8 +1,9 @@
 /**
- * アプリ 675 に所属候補レコードを一括投入する（674 モーダル用）。
+ * 所属候補マスタ（既定アプリ 680）にレコードを一括投入する（674 モーダル用）。
  *
- * 前提: アプリ 675 を作成済みで、フィールド `dept_name`・`group_name`（SINGLE_LINE_TEXT）が存在すること。
+ * 前提: `create-pc-ledger-dept-master-app.mjs` 済み、フィールド `dept_name`・`group_name`・任意 `sort_no` が存在すること。
  *
+ *   PC_LEDGER_DEPT_MASTER_APP=680 npm run pc-ledger:dept-master:seed-records
  *   npm run pc-ledger:675:seed-records
  *   npm run pc-ledger:675:seed-records -- --dry-run
  */
@@ -11,7 +12,7 @@ import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-const APP = 675;
+const APP = Number(process.env.PC_LEDGER_DEPT_MASTER_APP || 680);
 const dryRun = process.argv.includes('--dry-run');
 
 function requireEnv(key) {
