@@ -19,7 +19,7 @@
  *   - （一覧）**SKYSEA 状態**: 検索バーに **skysea_status チップ**（§4.8a）。**SKYSEA 計画立案・合意後に要件・UI を再検討予定**（現状は暫定）。
  *   - （一覧）**絞り込み URL**: `query` パラメータから **キーワード・種別・SKYSEA チップ**を復元（当バーが生成したクエリ形式に準拠）。
  *   - **PC買替は実装済**（§4.10.3）。594 同趣旨。**627 二重更新なし**。v0.9.14: ボタン掛け先フォールバック＋遅延再 inject、`import_source=PC_REPLACE_FROM_674:<旧$id>`・legacy 594 フィールドクリア。
- *   - 新規・編集: **所属ヘルプは既定で閉じた `<details>`**（必要時のみ開く・§4.2.0b）。**共有・JR**: フィールド最小表示、**所属候補モーダル**（マスタ **680** または埋め込み）、保存前必須。**未入力時に所属名／所属グループへフォーカス**→共有・JR は **680 モーダルを自動表示**。**個人の 595 社員検索**はフォーカスでは開かず、**登録担当者が明示ボタンを押したときだけ**（画面上部「社員名を検索（595）」または利用者名・所属名・所属グループ直下の「595で氏名・所属を検索」＝いずれも `openEmployee595SearchModal674`）。**個人＋保管**も 595 自動なし。利用者名の **入力中ドロップダウン候補**は従来どおり。VPN は個人のみ。NAS/その他は全表示。
+ *   - 新規・編集: **所属ヘルプは既定で閉じた `<details>`**（必要時のみ開く・§4.2.0b）。**共有・JR**: フィールド最小表示、**所属候補モーダル**（マスタ **680** または埋め込み）、保存前必須。**未入力時に所属名／所属グループへフォーカス**→共有・JR は **680 モーダルを自動表示**（§4.4 共有系）。**個人の 595 入力支援**は **`isPersonal595AssistEnabled674`** が真のときだけ（§4.1a **個人×保管は対象外**・§4.4 **pc_status≠保管**・§4.2.0）。**595 モーダル／ヘッダ・フィールド下ボタン／利用者名の 595 候補**はいずれも同関数で判定。**595 モーダルはボタン押下のみ**（フォーカス自動なし）。VPN は個人のみ。NAS/その他は全表示。
  *   - **備考（note）**: 全種別で任意（保存前チェックでは必須にしない）。
  *   - **モバイル**: 当面は利用想定なし（`kintone.mobile` 分岐は既存のまま残すが、専用UXは追わない）。
  *   - **M365管理マスタレコード番号（671 `$id`）**: 共有・JR は同一671行の **usage_count / 5 台**運用で紐づく。個人は表示するが多くは空（自動生成はメール由来M365中心）。**手入力不可**（自動生成・保存後同期のみ更新）。
@@ -29,7 +29,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-05-pc-ledger-595-on-demand-only';
+  const BUILD = '2026-05-05-pc-ledger-595-assist-spec-gate';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -502,7 +502,7 @@
     ul.style.cssText = 'margin:0 0 8px 1.1em;padding:0;';
     const li1 = document.createElement('li');
     li1.textContent =
-      '個人：595の社員名検索は、必要なときだけ「社員名を検索（595）」または各フィールド直下の「595で氏名・所属を検索」を押して開いてください（フォーカスだけでは開きません）。利用者名欄に入力するとドロップダウン候補が出る場合があります。確定後、所属名・所属グループは595の内容で自動反映されます。';
+      '個人：595の入力支援は、種別「個人」かつステータスが「保管」以外のときだけ使えます（仕様書 §4.1a・§4.4）。社員名検索は必要なときだけ「社員名を検索（595）」または各フィールド直下の「595で氏名・所属を検索」を押して開いてください。利用者名欄に入力するとドロップダウン候補が出る場合があります。';
     const li2 = document.createElement('li');
     li2.textContent =
       '共有・JR：`所属名` と `所属グループ` は別フィールド。下表は会社既定の候補を**この順**で記載（必要な行だけコピーして入力）。';
@@ -1559,9 +1559,10 @@
       window.alert('フォームの準備ができていません。画面を開き直してからお試しください。');
       return;
     }
-    const type = readAccountTypeLive674(bag.holder.record);
-    if (type !== TYPE_PERSONAL) {
-      window.alert('社員名検索は種別が「個人」のときのみ使えます。');
+    if (!isPersonal595AssistEnabled674(bag.holder.record)) {
+      window.alert(
+        '社員名検索（595）は、種別が「個人」かつステータスが「保管」以外のときのみ使えます（仕様書 §4.1a・§4.4）。',
+      );
       return;
     }
     const backdrop = ensureEmployee595SearchModal674();
@@ -1662,6 +1663,41 @@
     const fromRec = String((record && record[FC_ACCOUNT_TYPE] && record[FC_ACCOUNT_TYPE].value) || '').trim();
     if (fromDom) return fromDom;
     return fromRec;
+  }
+
+  /**
+   * pc_status: DOM の select が取れて値があればそれを優先（readAccountTypeLive674 と同趣旨）。
+   * @param {object} record
+   * @returns {string}
+   */
+  function readPcStatusLive674(record) {
+    let fromDom = '';
+    try {
+      const el = tryGetFieldElement674(FC_PC_STATUS);
+      if (el) {
+        const sel = findSelectUnderFieldRoot674(el);
+        if (sel) fromDom = String(sel.value != null ? sel.value : '').trim();
+      }
+    } catch (_e) {
+      /* ignore */
+    }
+    const fromRec = String((record && record[FC_PC_STATUS] && record[FC_PC_STATUS].value) || '').trim();
+    if (fromDom) return fromDom;
+    return fromRec;
+  }
+
+  /**
+   * 595 入力支援（モーダル・明示ボタン・利用者名の 595 候補ドロップダウン）が有効な条件の単一正本。
+   * `docs/plans/2026-04-21-new-pc-ledger-spec.md` §4.1a（個人×保管は 595 連携不要）・§4.4（個人用自動生成は pc_status≠保管）・§4.2.0。
+   * CIO 運用: 仕様乖離時は本関数とコメントを先に直し、分岐はここに集約する。
+   * @param {object} record kintone record（`get()` の holder.record を想定）
+   * @returns {boolean}
+   */
+  function isPersonal595AssistEnabled674(record) {
+    if (!record) return false;
+    if (readAccountTypeLive674(record) !== TYPE_PERSONAL) return false;
+    if (readPcStatusLive674(record) === PC_STATUS_STORAGE) return false;
+    return true;
   }
 
   function walkFromNodeTouchesFieldRoot674(fieldRoot, start) {
@@ -1823,6 +1859,7 @@
 
     if (is674AssistModalVisible674()) return;
 
+    /* 共有・JR: §4.4 — 未入力の所属欄フォーカスで 680 所属候補を自動表示（595 とは別系統） */
     if (type === TYPE_SHARED || type === TYPE_JR) {
       if (!inDept && !inGrp) return;
       const d = trimmedScalarLive674(rec, FC_DEPT_NAME);
@@ -1833,7 +1870,7 @@
       return;
     }
 
-    /* 個人: 595 は登録担当者がボタンを押したときのみ（フォーカス／クリックの自動起動はしない） */
+    /* 個人: 595 は §4.1a・§4.4 の範囲内で明示ボタンのみ（本関数では 680 相当の自動起動はしない） */
   }
 
   function on674EmptyFieldFocusAssist674(ev) {
@@ -1930,8 +1967,7 @@
   function inject595FieldAdjacentRows674(rec) {
     remove595FieldAdjacentRows674();
     if (!rec) return;
-    const type = String((rec[FC_ACCOUNT_TYPE] && rec[FC_ACCOUNT_TYPE].value) || '').trim();
-    if (type !== TYPE_PERSONAL || isPersonalStored(rec)) return;
+    if (!isPersonal595AssistEnabled674(rec)) return;
     const label = '595で氏名・所属を検索';
     append595AdjacentRow674(tryGetFieldElement674(FC_USER_NAME), label);
     append595AdjacentRow674(tryGetFieldElement674(FC_DEPT_NAME), label);
@@ -2033,8 +2069,7 @@
       const bag = getRecordFormHolder674();
       if (!bag || !bag.holder || !bag.holder.record) return;
       const rec = bag.holder.record;
-      const type = (rec[FC_ACCOUNT_TYPE] && rec[FC_ACCOUNT_TYPE].value) || '';
-      if (type !== TYPE_PERSONAL || isPersonalStored(rec)) {
+      if (!isPersonal595AssistEnabled674(rec)) {
         hideUserSuggest674();
         return;
       }
@@ -2058,8 +2093,7 @@
   }
 
   function onUserNameFieldChange674(event) {
-    const type = (event.record[FC_ACCOUNT_TYPE] && event.record[FC_ACCOUNT_TYPE].value) || '';
-    if (type !== TYPE_PERSONAL || isPersonalStored(event.record)) {
+    if (!isPersonal595AssistEnabled674(event.record)) {
       hideUserSuggest674();
       return event;
     }
@@ -2084,9 +2118,7 @@
           const bag = getRecordFormHolder674();
           if (!bag || !bag.holder || !bag.holder.record) return;
           const rec = bag.holder.record;
-      const type = (rec[FC_ACCOUNT_TYPE] && rec[FC_ACCOUNT_TYPE].value) || '';
-      if (type !== TYPE_PERSONAL) return;
-      if (isPersonalStored(rec)) return;
+          if (!isPersonal595AssistEnabled674(rec)) return;
           ensureUserSuggestDocClick674();
           scheduleUserNameSuggest674();
         } catch (err) {
@@ -2118,8 +2150,7 @@
   }
 
   function validateUserNameIn595ForPersonal674(event) {
-    const type = event.record[FC_ACCOUNT_TYPE]?.value || '';
-    if (type !== TYPE_PERSONAL || isPersonalStored(event.record)) return Promise.resolve(null);
+    if (!isPersonal595AssistEnabled674(event.record)) return Promise.resolve(null);
     const un = String(event.record[FC_USER_NAME]?.value || '').trim();
     if (!un) return Promise.resolve(null);
     return findEmployee595ByUserName(un).then(function (emp) {
@@ -2137,8 +2168,8 @@
     const api = bag.api;
     const recNow = bag.holder;
     const rec = recNow.record;
-    if (isPersonalStored(rec)) {
-      window.alert('種別=個人かつステータス=保管のレコードでは、自動生成は使いません（§4.1a）。');
+    if (!isPersonal595AssistEnabled674(rec)) {
+      window.alert('個人用自動生成は、種別が「個人」かつステータスが「保管」以外のときのみ使えます（仕様書 §4.1a・§4.4）。');
       return Promise.resolve();
     }
     const userName = (rec[FC_USER_NAME] && rec[FC_USER_NAME].value) || '';
@@ -2924,8 +2955,7 @@
     const empId =
       (rec[FC_EMP_ID] && rec[FC_EMP_ID].value && String(rec[FC_EMP_ID].value).trim()) || '';
 
-    const eligible =
-      !isPersonalStored(rec) && type === TYPE_PERSONAL && (!!mail || !!empId);
+    const eligible = isPersonal595AssistEnabled674(rec) && (!!mail || !!empId);
 
     if (!eligible) {
       if (type === TYPE_SHARED || type === TYPE_JR) {
@@ -3730,10 +3760,9 @@ ${bodyInner}\
 
     if (!isRecordDetail674) {
       const type = event.record[FC_ACCOUNT_TYPE]?.value || '';
-      const stored = isPersonalStored(event.record);
 
-      // 個人用 自動生成 (種別=個人 かつ §4.1a 保管以外のみ表示)
-      if (type === TYPE_PERSONAL && !stored) {
+      // 個人用 自動生成・595（§4.4 / isPersonal595AssistEnabled674）
+      if (isPersonal595AssistEnabled674(event.record)) {
         wrapper.appendChild(createGenerateButton('🔵 個人用 自動生成', '#0d6efd', () => {
           runPersonalAutoGen().catch(function (e) {
             console.error(e);
@@ -3879,8 +3908,7 @@ ${bodyInner}\
     scheduleInject595FieldAdjacent674(event.record, editable);
     if (editable) {
       ensureUserNameInputDelegate674();
-      const ac = event.record[FC_ACCOUNT_TYPE]?.value || '';
-      if (ac === TYPE_PERSONAL && !isPersonalStored(event.record)) {
+      if (isPersonal595AssistEnabled674(event.record)) {
         setTimeout(function () {
           scheduleUserNameSuggest674();
         }, 120);
@@ -3943,10 +3971,7 @@ ${bodyInner}\
     showJrBannerIfNeeded(result.record);
     scheduleInjectButtons674(result);
     scheduleInject595FieldAdjacent674(result.record, true);
-    if (
-      (result.record[FC_ACCOUNT_TYPE] && result.record[FC_ACCOUNT_TYPE].value) === TYPE_PERSONAL &&
-      !isPersonalStored(result.record)
-    ) {
+    if (isPersonal595AssistEnabled674(result.record)) {
       ensureUserNameInputDelegate674();
       setTimeout(function () {
         scheduleUserNameSuggest674();
@@ -4589,11 +4614,7 @@ ${bodyInner}\
         event.errors = Object.assign(event.errors || {}, { [FC_PC_NAME]: pm });
       }
 
-      if (
-        type === TYPE_PERSONAL &&
-        !isPersonalStored(event.record) &&
-        !String(event.record[FC_USER_NAME]?.value || '').trim()
-      ) {
+      if (type === TYPE_PERSONAL && isPersonal595AssistEnabled674(event.record) && !String(event.record[FC_USER_NAME]?.value || '').trim()) {
         const um = '種別が「個人」のときは「利用者名」を入力してください。';
         errors.push(um);
         event.errors = Object.assign(event.errors || {}, { [FC_USER_NAME]: um });

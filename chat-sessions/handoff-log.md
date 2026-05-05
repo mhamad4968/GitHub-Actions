@@ -876,3 +876,8 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 - **方針**: 社員名検索（595）は **登録担当者が望んだときだけ**＝**明示ボタンのみ**。`run674EmptyFieldAssistFromPointer674` から **個人の自動 `openEmployee595SearchModal674` を削除**。共有・JR の **680** フォーカス自動は据え置き。
 - **`npm run deploy:674`**: **SUCCESS** / fileKey **`18c7d9cd-f01c-44b1-bc04-3bd4611910b1`** / revision **`108`** / **BUILD=`2026-05-05-pc-ledger-595-on-demand-only`**。
 
+### 2026-05-05 JST（追記）— 674: 595 入力支援の条件を仕様正本に集約（CIO）
+
+- **正本**: `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.1a・§4.4・§4.2.0**。実装は **`isPersonal595AssistEnabled674(record)`**（`readAccountTypeLive674`＋`readPcStatusLive674` で **個人かつ pc_status≠保管**）に **595 モーダル・ヘッダ／直下ボタン・利用者名候補・個人用自動生成・保存前 user_name 595 検証・595 双方向リンク eligible** を統一。
+- **`npm run deploy:674`**: **SUCCESS** / fileKey **`e6374d94-049d-4714-a79c-e31e041178a3`** / revision **`109`** / **BUILD=`2026-05-05-pc-ledger-595-assist-spec-gate`**。
+
