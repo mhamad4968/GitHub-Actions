@@ -7,6 +7,8 @@ alwaysApply: true
 
 **上位正本（必ず先）**: `chat-sessions/NEW-SESSION-STARTER.md` 冒頭の **🎖️ AI 内部の役割分担**（CIO / Kimi / **知恵袋=DeepSeek** / OpenRouter / 浜田）および **🔥 実行と確認の分離**。本条はその **CIO 行の「結果統合」**と **知恵袋行**にだけ追加の手順を書く（**新しい役割列を増やさない**）。
 
+**毎ターン**: `.cursor/rules/every-turn-rules-confirm.mdc`（ターン先頭の **`[ルール確認]`** と、コード変更前の **DeepSeek 1 問 / §50-3-8**）。
+
 **憲法**: `AGENTS.md` **§50-3-8**（着手直前の盲点 3 点＋**約 3 行の突合メモ**）。CIO が突合メモを書く。
 
 ## 仕様確認デーでの分業（必須）

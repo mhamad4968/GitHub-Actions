@@ -19,6 +19,7 @@ alwaysApply: true
 
 ## セッション切替・憲法ゲート
 
+- **毎ターン先頭**: `.cursor/rules/every-turn-rules-confirm.mdc`（**`[🎖️ 本セッション割当]`** と **`[ルール確認]`** を応答の最初のブロックに必須。コード変更は Read＋§50-3-8 前倒し）。
 - **詳細正本**: `chat-sessions/NEW-SESSION-STARTER.md` の **「■ 貼付単独で完走」**。
 - **想起**: `constitution-handoff-gate.mdc`（-1 / スターター Read / -0 / 0）。
 - **段階読解**: `chat-sessions/SESSION-READ-LADDER.md` + `chat-sessions/desktop-ai-emergency-read-pack/READ-*.txt`（READ-06 直後は **【AI分業チェック】** 必須）。
