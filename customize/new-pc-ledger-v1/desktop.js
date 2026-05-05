@@ -29,7 +29,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-05-pc-ledger-field-focus-assist';
+  const BUILD = '2026-05-05-pc-ledger-jbis-dup-query-dropdown-in';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -677,15 +677,17 @@
     if (!core) return Promise.resolve([]);
     const escU = escapeQueryValue(core.toUpperCase());
     const escL = escapeQueryValue(core.toLowerCase());
+    // DROP_DOWN は REST クエリで = 不可 → in ("…") を使う（GAIA_IQ03）。
+    // like は部分文字列のみ（SQL の % は不可・400 になる）。
     const q =
-      'account_type = "' +
+      'account_type in ("' +
       escapeQueryValue(TYPE_PERSONAL) +
-      '" and pc_status not in ("廃棄") and ' +
+      '") and pc_status not in ("廃棄") and ' +
       '(pc_name like "' +
       escU +
-      '%" or pc_name like "' +
+      '" or pc_name like "' +
       escL +
-      '%") limit 500';
+      '") limit 500';
     const ex = excludeId != null && String(excludeId).trim() !== '' ? String(excludeId).trim() : '';
     return kintoneApiGet('/k/v1/records.json', {
       app: kintone.app.getId(),
