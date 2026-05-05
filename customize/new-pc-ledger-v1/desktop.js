@@ -19,7 +19,7 @@
  *   - （一覧）**SKYSEA 状態**: 検索バーに **skysea_status チップ**（§4.8a）。**SKYSEA 計画立案・合意後に要件・UI を再検討予定**（現状は暫定）。
  *   - （一覧）**絞り込み URL**: `query` パラメータから **キーワード・種別・SKYSEA チップ**を復元（当バーが生成したクエリ形式に準拠）。
  *   - **PC買替は実装済**（§4.10.3）。594 同趣旨。**627 二重更新なし**。v0.9.14: ボタン掛け先フォールバック＋遅延再 inject、`import_source=PC_REPLACE_FROM_674:<旧$id>`・legacy 594 フィールドクリア。
- *   - 新規・編集: 所属ヘルプ（編集ではコピー用一覧を details で折りたたみ）。**共有・JR**: フィールド最小表示、**所属候補モーダル**（マスタ **680** または埋め込み）、保存前必須。個人＋保管は個人と同表示。VPN は個人のみ。NAS/その他は全表示。
+ *   - 新規・編集: **所属ヘルプは既定で閉じた `<details>`**（必要時のみ開く・§4.2.0b）。**共有・JR**: フィールド最小表示、**所属候補モーダル**（マスタ **680** または埋め込み）、保存前必須。個人＋保管は個人と同表示。VPN は個人のみ。NAS/その他は全表示。
  *   - **備考（note）**: 全種別で任意（保存前チェックでは必須にしない）。
  *   - **モバイル**: 当面は利用想定なし（`kintone.mobile` 分岐は既存のまま残すが、専用UXは追わない）。
  *   - **M365管理マスタレコード番号（671 `$id`）**: 共有・JR は同一671行の **usage_count / 5 台**運用で紐づく。個人は表示するが多くは空（自動生成はメール由来M365中心）。**手入力不可**（自動生成・保存後同期のみ更新）。
@@ -29,7 +29,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-05-pc-ledger-index-query-hydrate';
+  const BUILD = '2026-05-05-pc-ledger-dept-help-on-demand';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -449,7 +449,7 @@
     }
   }
 
-  // ===== §4.2.0b 所属名・所属グループ 常時ヘルプ帯 =====
+  // ===== §4.2.0b 所属名・所属グループ ヘルプ（既定は閉じる・必要時のみ開く）=====
 
   const DEPT_HELP_ID = 'new-pc-ledger-dept-help';
 
@@ -468,12 +468,9 @@
   }
 
   /**
-   * レコード画面ヘッダに所属ヘルプを出す（詳細・新規・編集。編集は一覧を折りたたみ）。
-   * @param {{ collapsed?: boolean }} [opts]
+   * レコード画面ヘッダに所属ヘルプを出す（詳細・新規・編集）。**既定は閉じた `<details>`** で縦スペースを抑える。
    */
-  function injectDeptHelpBanner(opts) {
-    opts = opts || {};
-    const collapsed = !!opts.collapsed;
+  function injectDeptHelpBanner() {
     const space = getHeaderSpace674();
     if (!space) return;
 
@@ -482,17 +479,27 @@
 
     const box = document.createElement('div');
     box.id = DEPT_HELP_ID;
-    box.style.cssText =
-      'font-size:12px;line-height:1.45;padding:8px 12px;margin:4px 0 8px;' +
-      'background:#e8f4fd;border:1px solid #9ec5fe;border-radius:4px;color:#052c65;';
+    box.style.cssText = 'font-size:12px;line-height:1.45;margin:4px 0 6px;color:#052c65;';
+
+    const det = document.createElement('details');
+    det.style.cssText =
+      'background:#e8f4fd;border:1px solid #9ec5fe;border-radius:4px;padding:6px 10px 8px;';
+
+    const sum = document.createElement('summary');
+    sum.style.cssText = 'cursor:pointer;font-weight:700;user-select:none;outline:none;';
+    sum.textContent =
+      '📋 所属名・所属グループのヘルプを表示（個人＝595／利用者名、共有・JR＝手入力＋コピー一覧）';
+
+    const inner = document.createElement('div');
+    inner.style.cssText = 'padding-top:8px;margin-top:6px;border-top:1px solid #9ec5fe;';
 
     const title = document.createElement('div');
     title.style.cssText = 'font-weight:bold;margin-bottom:4px;';
-    title.textContent = '📌 所属名・所属グループの入れ方';
-    box.appendChild(title);
+    title.textContent = '入れ方';
+    inner.appendChild(title);
 
     const ul = document.createElement('ul');
-    ul.style.cssText = 'margin:0 0 6px 1.1em;padding:0;';
+    ul.style.cssText = 'margin:0 0 8px 1.1em;padding:0;';
     const li1 = document.createElement('li');
     li1.textContent =
       '個人：画面上部の「社員名を検索（595）」で氏名を選ぶか、利用者名欄に入力すると候補が出ます。確定後、所属名・所属グループは595の内容で自動反映されます。';
@@ -501,10 +508,10 @@
       '共有・JR：`所属名` と `所属グループ` は別フィールド。下表は会社既定の候補を**この順**で記載（必要な行だけコピーして入力）。';
     ul.appendChild(li1);
     ul.appendChild(li2);
-    box.appendChild(ul);
+    inner.appendChild(ul);
 
     const exLabel = document.createElement('div');
-    exLabel.style.cssText = 'font-weight:bold;font-size:11px;margin:2px 0 2px;';
+    exLabel.style.cssText = 'font-weight:bold;font-size:11px;margin:2px 0 4px;';
     exLabel.textContent = '所属名・所属グループ 一覧（上から順・コピー参照）';
 
     const ta = document.createElement('textarea');
@@ -515,19 +522,12 @@
       'box-sizing:border-box;padding:6px;border:1px solid #86b7fe;border-radius:4px;resize:vertical;overflow-y:auto;';
     ta.value = DEPT_HELP_REFERENCE_TEXT;
 
-    if (collapsed) {
-      const det = document.createElement('details');
-      const sum = document.createElement('summary');
-      sum.style.cssText = 'cursor:pointer;font-weight:700;font-size:11px;user-select:none;';
-      sum.textContent = '会社既定の所属一覧を表示（共有・JRでコピー参照）';
-      det.appendChild(sum);
-      det.appendChild(exLabel);
-      det.appendChild(ta);
-      box.appendChild(det);
-    } else {
-      box.appendChild(exLabel);
-      box.appendChild(ta);
-    }
+    inner.appendChild(exLabel);
+    inner.appendChild(ta);
+
+    det.appendChild(sum);
+    det.appendChild(inner);
+    box.appendChild(det);
 
     space.insertBefore(box, space.firstChild);
   }
@@ -3499,9 +3499,7 @@ ${bodyInner}\
       if (rid) snapshotBeforeEdit674[String(rid)] = extractState674(event.record);
     }
     if (DEPT_HELP_SHOW_RECORD_EVENTS.has(event.type)) {
-      const collapsed =
-        event.type === 'app.record.edit.show' || event.type === 'mobile.app.record.edit.show';
-      injectDeptHelpBanner({ collapsed });
+      injectDeptHelpBanner();
     } else {
       removeDeptHelpBanner();
     }
@@ -3559,9 +3557,7 @@ ${bodyInner}\
       result = confirmTypeChangeIfNeeded(event);
     }
     result = showJrAlertIfNeeded(result);
-    injectDeptHelpBanner({
-      collapsed: result.type.indexOf('create.change') === -1,
-    });
+    injectDeptHelpBanner();
     applyInternalMetaFieldUi(result.record, 'editable');
     applySkyseaGroupUi(result.record, 'editable');
     applyVisibilityByType(result.record);
