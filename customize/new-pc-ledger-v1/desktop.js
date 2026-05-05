@@ -10,7 +10,7 @@
  *   - 種別 (account_type) による表示制御 (show/hide)
  *   - §4.2.1a: 内部メタは kintone 標準グループ `internal_system_meta` に収容（レイアウトは `npm run pc-ledger:674:layout-internal-group`）。表示時はグループを閉じる・新規・編集では子を disabled
  *   - §4.2.3a: SKYSEA 4 件は `skysea_system_meta`（表示名 SKYSEA処理用）に収容。アカウント部領域のため **権限のあるユーザーは編集可能**。運用で触るのは浜田のみと **周知**（customize ではログインによる非表示はしない）。通常はグループを閉じた初期表示
- *   - 自動生成ボタン: 個人 / 共有（Windows+M365）/ JR（**M365 のみ**・**PC名は手入力のまま**）を §4.4 に沿ってフォームへ反映（空欄のみ上書き）。**個人**: §4.3.1 で **`pc_name` / `pc_serial_no`**、§4.2.2 で **`windows_name` = `jbm####+` + メール@前**（メール空時は `jbm####` のみ＋案内）。**共有**: **`S-JBIS####-YYYYMM`** と Windows 採番。**JR**: PC 名・Windows は自動で触らない
+ *   - 自動生成ボタン: 個人 / 共有（Windows+M365）/ JR（**M365 のみ**・**PC名は手入力のまま**）を §4.4 に沿ってフォームへ反映（空欄のみ上書き）。**個人**: §4.3.1 **`pc_name`/`pc_serial_no`**・§4.2.2 **`windows_name`・`mail_pw`（jb+乱数4桁+K#）・`gb_id`/`sb_id`=mail_acct・`gb_pw`/`sb_pw`=logon_name**（メール空時は ID 系は案内のみ）。**共有**: **`S-JBIS####-YYYYMM`** と Windows 採番。**JR**: PC 名・Windows は自動で触らない
  *   - 5 台ライセンス警告雛形 (赤バナーは仕組みのみ)
  *   - リセット／PC買替（§4.10.3・596 採番・671 整合・595 個人リンク）／印刷（627 レイアウト移植済）
  *   - **レコード閲覧（detail）**: **ステータス≠保管**のとき操作ボタンは **PC買替・印刷のみ**。**保管の閲覧**ではカスタムヘッダを付けない（余計なボタンなし）。**新規・編集かつ保管**（個人/共有/JR いずれも）: ヘッダは **全フィールドリセットのみ**。**利用中**等の非保管は従来の種別別ボタン＋PC買替・印刷。
@@ -29,7 +29,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-06-pc-ledger-personal-autogen-pcname-windowsfmt';
+  const BUILD = '2026-05-06-pc-ledger-personal-autogen-mail-gb-sb';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -951,6 +951,36 @@
     }
     const built = prefix + String(serialNum).padStart(4, '0') + '-' + yyyymm;
     mergeScalarField(rec, FC_PC_NAME, built);
+  }
+
+  /** §4.2.2 メールPW: `MAIL_PW_PREFIX` + 乱数4桁 + `MAIL_PW_SUFFIX`（既定 `jb`+`K#`） */
+  function randomFourDigits674() {
+    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+      const u = new Uint32Array(1);
+      crypto.getRandomValues(u);
+      return String(u[0] % 10000).padStart(4, '0');
+    }
+    return String(1000 + Math.floor(Math.random() * 9000));
+  }
+
+  function buildPersonalMailPassword674(envMap) {
+    const prefix = String(envMap.MAIL_PW_PREFIX || 'jb').trim() || 'jb';
+    const suffix = String(envMap.MAIL_PW_SUFFIX || 'K#').trim() || 'K#';
+    return prefix + randomFourDigits674() + suffix;
+  }
+
+  /**
+   * §4.2.2 個人: `mail_pw`・サイボウズ／ガリバー ID・PW（空欄のみ）
+   * @param {string} mailLocal 595 mail の @ より前（`mail_acct` と同一想定）
+   */
+  function mergePersonalMailGbSb674(rec, envMap, nextJbm, mailLocal) {
+    mergeScalarField(rec, FC_MAIL_PW, buildPersonalMailPassword674(envMap));
+    mergeScalarField(rec, FC_GB_PW, nextJbm);
+    mergeScalarField(rec, FC_SB_PW, nextJbm);
+    if (mailLocal) {
+      mergeScalarField(rec, FC_GB_ID, mailLocal);
+      mergeScalarField(rec, FC_SB_ID, mailLocal);
+    }
   }
 
   /** §5.3: 利用可 かつ usage_count<5 の最古 serial（共有プール。JR も同一プール） */
@@ -2260,6 +2290,7 @@
         mergeScalarField(rec, FC_WINDOWS_NAME, windowsDisplay);
         if (mailLocal) mergeScalarField(rec, FC_M365_ID, mailLocal + m365Domain);
         mergeScalarField(rec, FC_M365_PW, nextJbm + m365PwSuffix);
+        mergePersonalMailGbSb674(rec, envMap, nextJbm, mailLocal);
 
         api.set(recNow);
         applyM365MasterRecordIdFieldUi674(rec, 'editable');
@@ -2268,7 +2299,7 @@
           msg +=
             '\n\n※595の会社メール（@より前）が空のため、Windows アカウント名は「' +
             nextJbm +
-            '」のみです。メールを登録後に再度自動生成するか、手入力で補完してください。';
+            '」のみです。サイボウズID・ガリバーID（=mail_acct）も空欄のままです。メールを登録後に再度自動生成するか、手入力で補完してください。';
         }
         window.alert(msg);
       });
