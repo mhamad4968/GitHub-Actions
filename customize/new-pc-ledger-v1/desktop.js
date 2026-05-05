@@ -29,7 +29,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-05-pc-ledger-focus-assist-shadow-dom-type';
+  const BUILD = '2026-05-05-pc-ledger-focus-assist-composed-click';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -1651,12 +1651,9 @@
     return String((record && record[FC_ACCOUNT_TYPE] && record[FC_ACCOUNT_TYPE].value) || '').trim();
   }
 
-  /**
-   * getFieldElement の外枠と、Shadow DOM 内にフォーカスした子の対応付け（contains はシャドウをまたがない）。
-   */
-  function isActiveTargetWithinFieldRoot674(fieldRoot, activeTarget) {
-    if (!fieldRoot || !activeTarget || activeTarget.nodeType !== 1) return false;
-    let n = activeTarget;
+  function walkFromNodeTouchesFieldRoot674(fieldRoot, start) {
+    if (!fieldRoot || !start || start.nodeType !== 1) return false;
+    let n = start;
     for (let hop = 0; hop < 90 && n; hop++) {
       try {
         if (n === fieldRoot) return true;
@@ -1672,6 +1669,66 @@
       }
     }
     return false;
+  }
+
+  /**
+   * getFieldElement の外枠と、Shadow DOM 内の実入力の対応付け。
+   * composedPath を併用（ev.target だけでは所属グループ等で取りこぼす環境がある）。
+   */
+  function isActiveTargetWithinFieldRoot674(fieldRoot, ev) {
+    if (!fieldRoot || !ev) return false;
+    const seen = [];
+    const pushCand = function (node) {
+      if (!node || node.nodeType !== 1) return;
+      if (seen.indexOf(node) !== -1) return;
+      seen.push(node);
+    };
+    pushCand(ev.target);
+    if (typeof ev.composedPath === 'function') {
+      try {
+        const path = ev.composedPath();
+        for (let i = 0; i < path.length; i++) {
+          pushCand(path[i]);
+        }
+      } catch (_e) {
+        /* ignore */
+      }
+    }
+    for (let i = 0; i < seen.length; i++) {
+      if (walkFromNodeTouchesFieldRoot674(fieldRoot, seen[i])) return true;
+    }
+    return false;
+  }
+
+  /** record またはフィールド DOM 上のテキスト値（空欄判定用・1 段シャドウまで探索） */
+  function trimmedScalarLive674(rec, code) {
+    const fromRec = trimmedScalarValue674(rec, code);
+    if (fromRec) return fromRec;
+    const root = tryGetFieldElement674(code);
+    if (!root) return '';
+    let inp = root.querySelector(
+      'textarea, input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="button"])',
+    );
+    if (!inp) {
+      try {
+        const all = root.querySelectorAll('*');
+        for (let j = 0; j < all.length; j++) {
+          const node = all[j];
+          if (node.shadowRoot) {
+            inp = node.shadowRoot.querySelector(
+              'textarea, input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="button"])',
+            );
+            if (inp) break;
+          }
+        }
+      } catch (_e2) {
+        /* ignore */
+      }
+    }
+    if (inp && (inp.tagName === 'INPUT' || inp.tagName === 'TEXTAREA')) {
+      return String(inp.value != null ? inp.value : '').trim();
+    }
+    return '';
   }
 
   let npl674FocusAssistDoc674 = false;
@@ -1713,17 +1770,17 @@
     const grpEl = tryGetFieldElement674(FC_GROUP_NAME);
     if (!userEl && !deptEl && !grpEl) return;
 
-    const inUser = userEl && isActiveTargetWithinFieldRoot674(userEl, ae);
-    const inDept = deptEl && isActiveTargetWithinFieldRoot674(deptEl, ae);
-    const inGrp = grpEl && isActiveTargetWithinFieldRoot674(grpEl, ae);
+    const inUser = userEl && isActiveTargetWithinFieldRoot674(userEl, ev);
+    const inDept = deptEl && isActiveTargetWithinFieldRoot674(deptEl, ev);
+    const inGrp = grpEl && isActiveTargetWithinFieldRoot674(grpEl, ev);
     if (!inUser && !inDept && !inGrp) return;
 
     if (is674AssistModalVisible674()) return;
 
     if (type === TYPE_SHARED || type === TYPE_JR) {
       if (!inDept && !inGrp) return;
-      const d = trimmedScalarValue674(rec, FC_DEPT_NAME);
-      const g = trimmedScalarValue674(rec, FC_GROUP_NAME);
+      const d = trimmedScalarLive674(rec, FC_DEPT_NAME);
+      const g = trimmedScalarLive674(rec, FC_GROUP_NAME);
       if (d && g) return;
       npl674FocusAssistSuppressUntil674 = Date.now() + 400;
       openDeptMasterModal674();
@@ -1740,8 +1797,8 @@
         return;
       }
       if (inDept || inGrp) {
-        const d = trimmedScalarValue674(rec, FC_DEPT_NAME);
-        const g = trimmedScalarValue674(rec, FC_GROUP_NAME);
+        const d = trimmedScalarLive674(rec, FC_DEPT_NAME);
+        const g = trimmedScalarLive674(rec, FC_GROUP_NAME);
         if (d && g) return;
         npl674FocusAssistSuppressUntil674 = Date.now() + 400;
         openEmployee595SearchModal674();
@@ -1749,10 +1806,17 @@
     }
   }
 
+  function on674EmptyFieldClickAssist674(ev) {
+    if (ev.type !== 'click' || ev.button !== 0) return;
+    if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
+    on674EmptyFieldFocusAssist674(ev);
+  }
+
   function install674EmptyFieldFocusAssist674() {
     if (npl674FocusAssistDoc674) return;
     npl674FocusAssistDoc674 = true;
     document.addEventListener('focusin', on674EmptyFieldFocusAssist674, true);
+    document.addEventListener('click', on674EmptyFieldClickAssist674, true);
   }
 
   function mountUserSuggestDropdown674(rows) {
