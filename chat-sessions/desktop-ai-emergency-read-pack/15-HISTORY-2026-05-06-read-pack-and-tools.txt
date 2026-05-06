@@ -45,3 +45,8 @@
 ## 2026-05-06（追記）報告チェックリストと CEO ゲートの整合
 
 - **CEO 定義**: 報告に **ティア・【適用憲法】・`[🎖️ 本セッション割当]`** が無いものは認めない。**順守根拠**は **`[ルール確認]`＋§1b**。**検証2者**は **AI 側**（浜田 CEO の代替ではない）。`19` / `docs/session-report-checklist.md` を追従。
+
+## 2026-05-06（追記）報告チェックシート hooks 厳格化
+
+- **`hooks.json`**: `beforeSubmitPrompt` / `afterAgentResponse` / `stop` に **`report-checksheet-*.mjs`** を追加。報告意図で **機械フッタ 3 行**欠落時 **`stop` が自動ユーザメッセージ**（`loop_limit` 付き）。
+- **`every-turn-rules-confirm.mdc` §1e** / **`constitution-enforcement-core.mdc`** / **`docs/session-report-checklist.md` §M** / **`19-…`** / **`RULES-INDEX.md`** / **`.gitignore`**（`.cursor/hooks/state/`）を追従。

@@ -28,6 +28,9 @@ chat-sessions/SESSION-CLOCK-TICKER.md
 security-next-automation/collect_log.txt
 collect_log.txt
 
+# Cursor hooks 実行時状態（pending / フォローアップフラグ）
+.cursor/hooks/state/
+
 # 生成物・ログ・バックアップ（2026-04-20 追加）
 .rag/lancedb/
 .rag/models/

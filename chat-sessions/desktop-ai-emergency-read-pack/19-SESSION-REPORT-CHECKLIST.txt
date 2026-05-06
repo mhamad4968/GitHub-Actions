@@ -1,6 +1,12 @@
 【セッション報告チェックリスト】AI が自己点検→必要ならチャットに貼付
 詳細版: リポ docs/session-report-checklist.md
 
+■ hooks 自動（厳格）報告ターンで応答末尾に次の3行必須（欠落→stopで自動フォロー）
+  【セッション報告チェックシート】
+  CHECKSHEET_VERSION: 1
+  CHECKSHEET_OK: yes
+  実装: .cursor/hooks/report-checksheet-*.mjs + hooks.json
+
 ■ 体制の理解（要約）
   ・実行後のダブルチェック（検証の2者）= AI側（本体＋DeepSeek/Kimi等）。CEOは第2者の代わりにしない。
   ・確認・GO・検収 = 浜田CEO（技術実装の代替ではない）。
@@ -33,7 +39,7 @@
 
 □ E〜I 実績・不可逆・次手・Desktop・handoff（CIOが足した補助項目）
 
---- 貼付用ミニ骨格（CEO報告ゲート＋憲法4行）---
+--- 貼付用ミニ骨格（CEO報告ゲート＋憲法4行＋hooksフッタ）---
 [§1-2-3 ティア判定: L?]（根拠: …）
 【適用憲法】…
 [🎖️ 本セッション割当] …
@@ -44,3 +50,6 @@
 実績:
 不可逆:
 次 / 浜田GO待ち:
+【セッション報告チェックシート】
+CHECKSHEET_VERSION: 1
+CHECKSHEET_OK: yes

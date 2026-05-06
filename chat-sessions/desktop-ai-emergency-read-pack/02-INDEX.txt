@@ -19,7 +19,7 @@
 15-HISTORY-2026-05-06-read-pack-and-tools.txt … **変更履歴控え**（read-pack・ツール憲法・Desktop 同期のメモ。任意で追記可）
 16-重要確認.txt … **浜田 Desktop 専用**（read-pack 正本外）。重要事項の短い確認メモ。**15 のあと**に読む想定
 18-SESSION-ONE-REPORT-2026-05-06.md … **当日セッションの「1 本報告」**（まとめ・反省・役割・明日の案・ルール案。**16 の直後**に読む。旧 **14** / **17** は 2026-05-06 整理で削除済み）
-19-SESSION-REPORT-CHECKLIST.txt … **報告用チェックリスト**（§1・§50-3-8・破壊系 GO・実績・次手。**チャット貼付用**。詳細はリポ `docs/session-report-checklist.md`）
+19-SESSION-REPORT-CHECKLIST.txt … **報告用チェックリスト**（§1・§50-3-8・破壊系 GO・実績・次手。**末尾フッタ 3 行は hooks 自動検証**。詳細はリポ `docs/session-report-checklist.md`）
 
 **`memo（削除禁止）/` フォルダ** … **浜田個人メモ専用**。**番号付け・read-pack・`session-starter:sync-desktop` の対象外**（CIO は **中身を読まず編集しない**）。
 
