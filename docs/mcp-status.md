@@ -1,8 +1,14 @@
 # 📊 MCP 状態管理台帳
 
-**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-05-05（CIO: `npm run health-check` ほか／**グローバル MCP ピン** `@colorsandfonts/mcp@1.1.0`・`markdownify-mcp@0.0.2` を **`npm view` で確認 = いずれも registry latest** → mcp.json **変更なし**／ルート・`security-next-automation` の `npm update` 反映済）／表の詳細カウントは 2026-04-23 20:25 (Phase B レベルアップ反映) 時点
+**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-05-06（CIO: `npm run health-check` 突合・Cursor `mcps/*/tools` 索引確認／**§Cursor 可用性 2026-05-06** 追記。グローバル MCP ピン・表の過去30日カウントは前回 2026-05-05 記述のまま＝**行ごとの数値は未再集計**）
 **更新ルール**: mcp.json 変更時 / 月次 MCP 健康診断時 / 浜田判断あった時に必ず本ファイル更新
 **正本順位**: 本ファイル < **`~/.cursor/mcp.json` とワークスペース `.cursor/mcp.json` がマージ**（Cursor 仕様）。`kintone-ai-lab` ルートで開いたとき **Figma + colors-fonts** はリポ側 JSON にも記載（2026-05-04）。
+
+### §Cursor 可用性メモ（2026-05-06 JST / WSL `kintone-ai-lab`）
+
+- **`npm run health-check`（MCP initialize 系）**: `github`・`office-powerpoint` は **WSL から ⏭（Windows 側想定）**、`tavily` は **disabled**、`figma` は **url-only（stdio 対象外）**、それ以外は **✅ initialize OK**（`markdownify`・`deepseek`・`kimi`・`openrouter`・`kintone` 系・`playwright`・`rag` 等）。
+- **Cursor チャットからの `call_mcp_tool`**: ワークスペース配下の **descriptor**（`~/.cursor/projects/<id>/mcps/<server>/tools/*.json`）に従う。**本番 kintone 書込・長文生成・CVE/ニュース・RAG** はここ経由で起用可。**PR/Issue 操作の `user-github`** は WSL セッションでは使えない設計のため、同種は **`gh` CLI**（認証済）か **Windows 上の Cursor** を使い分ける。
+- **S12 死蔵警告**: 下表の「過去30日」欄は自動更新していない。**月次またはイベント時**に行更新する（本条で運用鮮度のみ更新）。
 
 ---
 
