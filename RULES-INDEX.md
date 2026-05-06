@@ -33,6 +33,13 @@
 | §43 | WORKFLOW.md 遵守義務（Phase 0-5）|
 | §44 | 夕反省サイクル（手動トリガー）— **`evening-reflect.mjs` 雛形 §1-N** を**毎夜浜田と必ず議論**（憲法運用: CIO 二人体制・§1c・MCP・検証・ルール実態）→ 結論を §2/§4 に 1 行以上 |
 
+## 📋 セッション報告（チャット貼付・自己点検）
+
+| 文書 | 役割 |
+|---|---|
+| **`docs/session-report-checklist.md`** | **報告用チェックリスト（詳細）** — §1・§1d・§1c・§50-3-8・kintone 破壊系 GO・実績・不可逆・次手・Desktop 同期 |
+| Desktop **`19-SESSION-REPORT-CHECKLIST.txt`** | 上記の短縮版（`chat-sessions/desktop-ai-emergency-read-pack/` 正本・**`npm run session-starter:sync-desktop`** で同期） |
+
 ## 📚 文脈獲得・調査
 
 | ルール | 役割 |

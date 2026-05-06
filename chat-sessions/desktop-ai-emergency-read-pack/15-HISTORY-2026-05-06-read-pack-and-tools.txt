@@ -37,3 +37,7 @@
 - **追加**: `18-SESSION-ONE-REPORT-2026-05-06.md`（当日の **1 本報告**）。
 - **削除**: `14-evening-reflection-2026-05-05.md`・`17-SESSION-CLOSE-REPORT-20260505.txt`（内容は Git 履歴・新 18 を正に可）。
 - **`02-INDEX.txt` / `16-重要確認.txt`** を上記に合わせて更新。
+
+## 2026-05-06（追記）報告用チェックリスト
+
+- **追加**: `19-SESSION-REPORT-CHECKLIST.txt`（read-pack）／詳細 **`docs/session-report-checklist.md`**。`02-INDEX.txt`・`RULES-INDEX.md`・`18-…md` §7・`10-README-read-pack.txt`（00〜99 表記）を追従。

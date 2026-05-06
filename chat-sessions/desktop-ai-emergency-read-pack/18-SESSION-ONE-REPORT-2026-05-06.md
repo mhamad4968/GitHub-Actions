@@ -94,6 +94,8 @@
 
 ## 7. 次セッション AI 向けチェックリスト（開幕 3 分）
 
+**報告の型（全タスク共通）**: **`19-SESSION-REPORT-CHECKLIST.txt`**（Desktop 同期）／詳細は **`docs/session-report-checklist.md`**。中間・終了・GO 依頼の直前に **自己点検してチャットへ貼付**可。
+
 1. **`kintone-apps.md` の 681 行末尾**で **fileKey / revision / BUILD** を確認してから `desktop.js` を読む。  
 2. **`npm run lint:customize`** と **`deploy:681`** の有無を確認（preflight ゲート）。  
 3. **681 のデータ変更**をするときは **§2 の手順**を先に満たす。
