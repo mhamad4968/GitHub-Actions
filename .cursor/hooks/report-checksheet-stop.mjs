@@ -20,7 +20,7 @@ const FOLLOWUP = `【hooks 自動フォロー】直前のユーザ発話は「�
 CHECKSHEET_VERSION: 1
 CHECKSHEET_OK: yes
 
-その上に §1 四行（ティア・【適用憲法】・[🎖️ 本セッション割当]・[ルール確認]）と、チェックシート本文（□を [x]/[ ]）を付けてください。`;
+その上に §1 四行（ティア・【適用憲法】・[🎖️ 本セッション割当]・[ルール確認]）と、**チェックシート本文（`19-SESSION-REPORT-CHECKLIST.txt` 相当の □ 全文）をチャットに貼付**（□を [x]/[ ]）してください。`;
 
 function main() {
   let input = {};

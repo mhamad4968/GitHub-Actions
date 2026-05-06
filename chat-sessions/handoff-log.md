@@ -1065,3 +1065,12 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 - **session-lock**: なし
 - **関連パス**: `~/.cursor/mcp.json` / `C:\Users\mhamada202408224\.cursor\mcp.json` / `docs/mcp-status.md` / `docs/session-report-checklist.md` / `scripts/sync-cursor-mcp-windows-from-wsl.mjs`
 
+### 2026-05-06 JST（追記）— 報告時チェックシートの **チャット全文貼付**＋§41 議論残件の状況
+
+- **CEO 指示**: 報告の際、チェックシート **□ 本文をチャットに貼付**（画面だけで検収）。`every-turn-rules-confirm.mdc` §1e-2・`docs/session-report-checklist.md`・`19-…`・`RULES-INDEX.md`・`15-HISTORY` を追従。
+- **§41 議論残件（1 問）の状況**: 前ターンで CIO が出した **1 問**は「**hooks のユーザ発話トリガー語を増やすか／現状のままか**」。**浜田からの回答は未着**（判断保留）。**実装変更（`report-checksheet-pending.mjs`）は未着手**。
+- **次の1手**: 浜田が **語句追加 or 現状維持**を一言返したら、`report-checksheet-pending.mjs` を必要なら更新して commit。
+- **GO待ち**: §41 1 問への回答（上記）
+- **session-lock**: なし
+- **関連パス**: `.cursor/rules/every-turn-rules-confirm.mdc` / `chat-sessions/desktop-ai-emergency-read-pack/19-SESSION-REPORT-CHECKLIST.txt` / `.cursor/hooks/report-checksheet-pending.mjs`
+

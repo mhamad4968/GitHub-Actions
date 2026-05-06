@@ -37,7 +37,7 @@
 
 | 文書 | 役割 |
 |---|---|
-| **`docs/session-report-checklist.md`** | **報告用チェックリスト（詳細）** — **CEO 報告ゲート**（ティア・【適用憲法】・`[🎖️ 本セッション割当]`）／**順守根拠**（`[ルール確認]`・§1b）／**AI 側検証 2 者**（§1c・CEO 代替禁止）／§1d・§50-3-8・破壊系 GO・実績等／**§M 機械フッタ**（hooks 検証） |
+| **`docs/session-report-checklist.md`** | **報告用チェックリスト（詳細）** — **報告時は □ 本文をチャットに貼付**（CEO 目視）／**CEO 報告ゲート**（ティア・【適用憲法】・`[🎖️ 本セッション割当]`）／**順守根拠**／**AI 側検証 2 者**／§M **機械フッタ**（hooks） |
 | Desktop **`19-SESSION-REPORT-CHECKLIST.txt`** | 上記の短縮版（`chat-sessions/desktop-ai-emergency-read-pack/` 正本・**`npm run session-starter:sync-desktop`** で同期） |
 | **`.cursor/hooks.json`** + **`report-checksheet-*.mjs`** | **報告ターン厳格化** — `beforeSubmitPrompt`→`afterAgentResponse`→`stop` でチェックシート欠落時 **自動フォロー**（`every-turn-rules-confirm.mdc` **§1e**） |
 
