@@ -1071,6 +1071,14 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 - **§41 議論残件（1 問）の状況**: 前ターンで CIO が出した **1 問**は「**hooks のユーザ発話トリガー語を増やすか／現状のままか**」。**浜田からの回答は未着**（判断保留）。**実装変更（`report-checksheet-pending.mjs`）は未着手**。
 - **次の1手**: 浜田が **語句追加 or 現状維持**を一言返したら、`report-checksheet-pending.mjs` を必要なら更新して commit。
 - **GO待ち**: §41 1 問への回答（上記）
+
+### 2026-05-06 JST（追記）— §41 hooks キーワード **現状維持で確定**（浜田 CEO）
+
+- **決定**: 報告チェックシート用 **hooks のユーザ発話トリガー**は **このまま**でよい（語句追加なし）。**`report-checksheet-pending.mjs` は変更しない**。**直前ブロックの §41 GO待ちは本節で解消**。
+- **GO待ち**: なし（本件クローズ）
+- **session-lock**: なし
+- **関連パス**: `.cursor/hooks/report-checksheet-pending.mjs`（据え置き）
+
 - **session-lock**: なし
 - **関連パス**: `.cursor/rules/every-turn-rules-confirm.mdc` / `chat-sessions/desktop-ai-emergency-read-pack/19-SESSION-REPORT-CHECKLIST.txt` / `.cursor/hooks/report-checksheet-pending.mjs`
 

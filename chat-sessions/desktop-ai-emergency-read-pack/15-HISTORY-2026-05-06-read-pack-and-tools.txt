@@ -51,6 +51,10 @@
 - **`hooks.json`**: `beforeSubmitPrompt` / `afterAgentResponse` / `stop` に **`report-checksheet-*.mjs`** を追加。報告意図で **機械フッタ 3 行**欠落時 **`stop` が自動ユーザメッセージ**（`loop_limit` 付き）。
 - **`every-turn-rules-confirm.mdc` §1e** / **`constitution-enforcement-core.mdc`** / **`docs/session-report-checklist.md` §M** / **`19-…`** / **`RULES-INDEX.md`** / **`.gitignore`**（`.cursor/hooks/state/`）を追従。
 
+## 2026-05-06（追記）§41 hooks キーワードは現状維持（浜田 CEO）
+
+- **決定**: `report-checksheet-pending.mjs` のトリガー語は **増やさない**（`handoff-log.md` に記録）。
+
 ## 2026-05-06（追記）報告時はチェックシートをチャット全文貼付
 
 - **CEO 指示**: 報告の際 **□ 本文をチャットに貼付**（画面だけで検収）。`every-turn-rules-confirm.mdc` §1e-2・`docs/session-report-checklist.md`・`19-…` を追従。
