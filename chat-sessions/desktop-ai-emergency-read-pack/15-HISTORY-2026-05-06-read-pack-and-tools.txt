@@ -55,9 +55,13 @@
 
 - **決定**: `report-checksheet-pending.mjs` のトリガー語は **増やさない**（`handoff-log.md` に記録）。
 
-## 2026-05-06（追記）報告時はチェックシートをチャット全文貼付
+## 2026-05-06（追記）報告時はチェックシートをチャットに貼付（§P・部分可）
 
-- **CEO 指示**: 報告の際 **□ 本文をチャットに貼付**（画面だけで検収）。`every-turn-rules-confirm.mdc` §1e-2・`docs/session-report-checklist.md`・`19-…` を追従。
+- **CEO 指示**: 報告の際 **□ 本文をチャットに貼付**（画面だけで検収）。**`□ A` は常時**／**A2・B〜I は該当節のみ**＋`（該当なし: …）` 推奨（**`docs/session-report-checklist.md` §P**）。`every-turn-rules-confirm.mdc` §1e-2・`19-…`・`report-checksheet-stop.mjs` を追従。
+
+## 2026-05-06（追記）PC 台帳 681 クイックガイド撤回・金曜 MCP 定例
+
+- **CEO**: kintone **681** は **アプリ削除**方針（別案検討）。**`mcp-status:refresh-usage` 毎週金曜**は **差分あれば commit＋push で進めて OK**。
 
 ## 2026-05-06（追記）チェックシート運用開始＋MCP 整理
 

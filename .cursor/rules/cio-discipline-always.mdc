@@ -35,4 +35,4 @@ alwaysApply: true
 
 ## kintone レコード DELETE・破壊級 REST
 
-**`.cursor/rules/kintone-destructive-rest-guard.mdc`** を常時想起と併読する。要点: **dry-run 結果をチャットに貼る →「この一覧で削除 GO」まで `--apply` しない**（681 `prune-meta` 等）。
+**`.cursor/rules/kintone-destructive-rest-guard.mdc`** を常時想起と併読する。要点: **dry-run 結果をチャットに貼る →「この一覧で削除 GO」まで `--apply` しない**（例: `pc-ledger:quick-guide:prune-meta` 等）。

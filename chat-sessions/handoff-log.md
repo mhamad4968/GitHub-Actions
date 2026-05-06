@@ -1085,7 +1085,15 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 ### 2026-05-06 JST（追記）— `origin/main` 同期: rebase 競合解消＋ **push 済**
 
 - **経緯**: WSL `main` が `origin/main` より先行していた状態で **`git push`** → **reject**（リモートに `02d6a03` 以降あり）。**`git pull --rebase origin main`** 実施。**`kintone-apps.md`** のデプロイ記録表で競合（リモート側 **681** 2 行 vs ローカル側の空差分）→ **681 の 2 行を維持**して解消。**rebase 完走**後 **`git push origin main` 成功**（先端 **`20f41bc`**）。
-- **次の1手**: 引継ぎどおり **PC 台帳クイックガイド**（夜の反省で掲載場所確定 → 主筆／CIO 並走）／**毎週金曜** `mcp-status:refresh-usage` 定例。
+- **次の1手**: **毎週金曜** `npm run mcp-status:refresh-usage`（差分あれば commit＋push）。**PC 台帳クイックガイド（681）計画は 2026-05-06 CEO 方針で撤回**（`checkpoint-latest`・`2026-04-21-new-pc-ledger-spec.md` v2.2）。
 - **GO待ち**: なし（本件は git 同期のみ）
+- **session-lock**: なし
+
+### 2026-05-06 JST（追記）— PC 台帳 **681 クイックガイド撤回**＋報告チェックシート **部分貼付 OK** ＋金曜 MCP 定例
+
+- **CEO 指示（要約）**: **「夜の反省で掲載場所確定→主筆/CIO 並走」手順は一旦削除**。別案のため **kintone アプリ 681 は削除**（**スペース管理画面でアプリ削除**を実施。**REST のアプリ本体削除は本ターン未実施**）。**毎週金曜 `npm run mcp-status:refresh-usage` → 差分あれば commit＋push**は **進めて OK**（本ターン実行: **差分 0**）。**報告チェックシート**は **該当する □ 節だけ**チャット貼付でよい（**□ A＝§1 四行相当は常時**・他節は **該当時のみ**／未該当は **`（該当なし: B, C, …）` 1 行**推奨）。**hooks** は引き続き **末尾 3 行のみ**機械検証。
+- **リポ変更**: `kintone-apps.md`（681 行を運用終了に）／`.rag/extra-docs/kintone-apps.md` 同期／`package.json` から **`cio:preflight:681`・`deploy:681` 削除**／`docs/plans/2026-04-21-new-pc-ledger-spec.md` **v2.2**／`checkpoint-latest.md`／`every-turn-rules-confirm.mdc` §1e／`docs/session-report-checklist.md`／`19-SESSION-REPORT-CHECKLIST.txt`／`report-checksheet-stop.mjs`／`docs/plans/2026-05-06-681-bulk-image-upload.md`（凍結注記）／`docs/kintone-destructive-operations.md`（681 節に歴史注記）／`cio-discipline-always.mdc`（例示を一般化）。
+- **次の1手**: 金曜定例どおり **`mcp-status:refresh-usage`**。PC 台帳の担当者案内は **新方針が決まり次第** SPEC／台帳へ追記。
+- **GO待ち**: なし
 - **session-lock**: なし
 
