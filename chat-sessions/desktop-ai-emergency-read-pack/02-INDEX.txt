@@ -1,4 +1,4 @@
-【読取順インデックス】CIO 準備済み（2026-05-06・ツール憲法＋16/17 番号付与 / ファイル名＝読取順）
+【読取順インデックス】CIO 準備済み（2026-05-06・ツール憲法＋16〜18 番号付与 / ファイル名＝読取順）
 
 **Desktop「AI緊急用」**では Explorer の **名前順＝推奨読取順**（先頭 2 桁＋ハイフン）。リポ正本は **`chat-sessions/desktop-ai-emergency-read-pack/`** の **同名**。
 
@@ -16,10 +16,9 @@
 11-SESSION-BOOTSTRAP-CHECKLIST.txt … 項番 0 チェックリスト
 12-HANDOFF-HUMAN.txt … 任意メモ（5 行）
 13-README.txt … フォルダ全体の説明（AI緊急用）
-14-evening-reflection-YYYY-MM-DD.md … 夕反省（当日分がリポにあるときのみ sync）
 15-HISTORY-2026-05-06-read-pack-and-tools.txt … **変更履歴控え**（read-pack・ツール憲法・Desktop 同期のメモ。任意で追記可）
 16-重要確認.txt … **浜田 Desktop 専用**（read-pack 正本外）。重要事項の短い確認メモ。**15 のあと**に読む想定
-17-SESSION-CLOSE-REPORT_yyyymmdd.txt … **前回セッション締め**の控え（read-pack 正本外。**16 のあと**に読む想定。日付はファイル名の yyyymmdd）
+18-SESSION-ONE-REPORT-2026-05-06.md … **当日セッションの「1 本報告」**（まとめ・反省・役割・明日の案・ルール案。**16 の直後**に読む。旧 **14** / **17** は 2026-05-06 整理で削除済み）
 
 **`memo（削除禁止）/` フォルダ** … **浜田個人メモ専用**。**番号付け・read-pack・`session-starter:sync-desktop` の対象外**（CIO は **中身を読まず編集しない**）。
 

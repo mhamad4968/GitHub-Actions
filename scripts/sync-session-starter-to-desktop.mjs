@@ -4,6 +4,7 @@
  * NEW-SESSION-STARTER は **JST の 00-NEW-SESSION-STARTER_yyyymmdd.txt** に常に同期（内容変更時のみ旧版を _2… に退避）。
  * README.txt（正本 chat-sessions/AI緊急用-README.txt）も同期する。
  * `chat-sessions/desktop-ai-emergency-read-pack/*.txt`（番号付き貼付控え）も **同名で** Desktop へコピーする。
+ * 同フォルダの **`NN-*.md`（N は数字 2 桁）** も **同名で** Desktop へコピーする（例: **一本報告** `18-SESSION-ONE-REPORT-2026-05-06.md`）。
  * **当日 JST** の `docs/reports/YYYY-MM-DD-evening-reflection.md` があれば **`14-evening-reflection-YYYY-MM-DD.md`** として Desktop へコピー（Windows から開きやすくする）。
  *
  * @see chat-sessions/NEW-SESSION-STARTER.md 冒頭
@@ -33,6 +34,15 @@ const otherFiles = [
 const readPackRelDir = 'chat-sessions/desktop-ai-emergency-read-pack';
 
 /** read-pack の *.txt（ファイル名先頭 2 桁＝Explorer での読取順）を Desktop へ同名コピー */
+/** @param {string} ymd 例 20260505 */
+function copyReadPackFileToDesktop(readPackDir, name) {
+  const src = path.join(readPackDir, name);
+  if (!fs.statSync(src).isFile()) return;
+  const dest = path.join(destDir, name);
+  fs.copyFileSync(src, dest);
+  console.log(`[sync-session-starter-to-desktop] OK ${readPackRelDir}/${name} -> ${dest}`);
+}
+
 /** @param {string} ymd 例 20260505 */
 function jstYmdToIso(ymd) {
   return `${ymd.slice(0, 4)}-${ymd.slice(4, 6)}-${ymd.slice(6, 8)}`;
@@ -64,16 +74,16 @@ function syncReadPackToDesktop() {
     console.log(`[sync-session-starter-to-desktop] read-pack スキップ: フォルダなし ${readPackRelDir}`);
     return;
   }
-  const names = fs
+  const txtNames = fs.readdirSync(readPackDir).filter((n) => n.endsWith('.txt')).sort();
+  for (const n of txtNames) {
+    copyReadPackFileToDesktop(readPackDir, n);
+  }
+  const mdNames = fs
     .readdirSync(readPackDir)
-    .filter((n) => n.endsWith('.txt'))
+    .filter((n) => /^\d{2}-.+\.md$/.test(n))
     .sort();
-  for (const n of names) {
-    const src = path.join(readPackDir, n);
-    if (!fs.statSync(src).isFile()) continue;
-    const dest = path.join(destDir, n);
-    fs.copyFileSync(src, dest);
-    console.log(`[sync-session-starter-to-desktop] OK ${readPackRelDir}/${n} -> ${dest}`);
+  for (const n of mdNames) {
+    copyReadPackFileToDesktop(readPackDir, n);
   }
 }
 
