@@ -2,6 +2,7 @@
 /**
  * temp/mcp_keys.env の KEY=value だけを読み、mcp.json の
  * exa / brave-search / firecrawl / harness の env に反映する（構造は触らない）。
+ * **空の値（= の右が空または空白のみ）はスキップ**し、mcp.json の既存値を消さない（誤実行での赤化防止）。
  *
  * 既定ターゲット（--target 省略時）:
  *   1) ~/.cursor/mcp.json（WSL ネイティブ Cursor 等）
@@ -79,13 +80,16 @@ function applyToFile(mcpJson, vars) {
   }
 
   let applied = 0;
-  let emptyCount = 0;
+  let skippedEmpty = 0;
   for (const [varName, [serverName, envKey]] of Object.entries(MAP)) {
     if (!(varName in vars)) continue;
     const val = vars[varName];
     if (typeof val === 'string' && val.trim() === '') {
-      emptyCount++;
-      console.warn(`[mcp:apply-keys] ⚠️ ${varName} が空です（Cursor で該当 MCP が赤のままになります）`);
+      skippedEmpty++;
+      console.warn(
+        `[mcp:apply-keys] ⏭ ${varName} は空のためスキップ（mcp.json の既存値を消しません）。同期する場合は env の = の右を埋めてから再実行。`,
+      );
+      continue;
     }
     const srv = cfg.mcpServers[serverName];
     if (!srv) {
@@ -97,11 +101,15 @@ function applyToFile(mcpJson, vars) {
     applied++;
   }
 
-  fs.writeFileSync(mcpJson, `${JSON.stringify(cfg, null, 2)}\n`, 'utf8');
-  console.log(`[mcp:apply-keys] ✅ ${mcpJson} に ${applied} 件の env を反映`);
-  if (emptyCount > 0) {
+  if (applied === 0) {
+    console.log(`[mcp:apply-keys] ${mcpJson} は変更なし（反映 0 件、ファイルは書き込みません）`);
+  } else {
+    fs.writeFileSync(mcpJson, `${JSON.stringify(cfg, null, 2)}\n`, 'utf8');
+    console.log(`[mcp:apply-keys] ✅ ${mcpJson} に ${applied} 件の env を反映`);
+  }
+  if (skippedEmpty > 0) {
     console.warn(
-      `[mcp:apply-keys] ${emptyCount} 件のキーが空です。temp/mcp_keys.env の = の右を埋めてから再実行してください。`,
+      `[mcp:apply-keys] ${skippedEmpty} 件は env 空のため未反映（推奨: 災害復旧用に mcp.json と同値を temp/mcp_keys.env にコピーしておく）。`,
     );
   }
 }
