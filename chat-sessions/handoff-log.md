@@ -1082,3 +1082,10 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 - **session-lock**: なし
 - **関連パス**: `.cursor/rules/every-turn-rules-confirm.mdc` / `chat-sessions/desktop-ai-emergency-read-pack/19-SESSION-REPORT-CHECKLIST.txt` / `.cursor/hooks/report-checksheet-pending.mjs`
 
+### 2026-05-06 JST（追記）— `origin/main` 同期: rebase 競合解消＋ **push 済**
+
+- **経緯**: WSL `main` が `origin/main` より先行していた状態で **`git push`** → **reject**（リモートに `02d6a03` 以降あり）。**`git pull --rebase origin main`** 実施。**`kintone-apps.md`** のデプロイ記録表で競合（リモート側 **681** 2 行 vs ローカル側の空差分）→ **681 の 2 行を維持**して解消。**rebase 完走**後 **`git push origin main` 成功**（先端 **`20f41bc`**）。
+- **次の1手**: 引継ぎどおり **PC 台帳クイックガイド**（夜の反省で掲載場所確定 → 主筆／CIO 並走）／**毎週金曜** `mcp-status:refresh-usage` 定例。
+- **GO待ち**: なし（本件は git 同期のみ）
+- **session-lock**: なし
+
