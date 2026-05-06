@@ -70,7 +70,7 @@ Phase 5: 記録(kintone-apps / RAG / TSB)     AGENTS.md §19-§21
 | **Web UI への DOM 挿入**（kintone カスタマイズで `getHeaderSpaceElement` 等のスロットに要素を追加する場合）| **必須** | **`scripts/check-dom-injection.mjs <URL> <selector>` または Playwright MCP で対象 URL を開き DOM を確認** |
 
 1. **公式ドキュメント** — `WebFetch` または `user-fetch` MCP / Cybozu Developer Network
-2. **既知事例 / GitHub Issue** — `user-tavily` MCP / `user-google-search` MCP / `user-github` MCP
+2. **既知事例 / GitHub Issue** — `user-duckduckgo-search` MCP / `user-github` MCP（WSL では **`gh`** を優先）
 3. **社内ナレッジ** — `user-rag` MCP（`mcp-local-rag`）/ `docs/troubleshooting.md`
 
 ### 退場条件（宣言フォーマット）

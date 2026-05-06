@@ -1007,3 +1007,21 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 - **session-lock**: なし
 - **関連パス**: `docs/mcp-status.md`
 
+### 2026-05-06 JST（追記）— 浜田回答（依頼事項 2–5）＋ Tavily 削除＋課金スナップショット反映
+
+- **浜田回答（要約）**:
+  - **(2)** WSL の GitHub 操作は **`gh` CLI** に任せる（`user-github` MCP は使わない前提を台帳・ルールに固定）。
+  - **(3)** **`docs/mcp-status.md` 表の「過去30日」欄**の見直しは **毎週金曜夜・週次反省の後**に **毎週**実施で合意。
+  - **(4)** Cursor 使用状況（スクリーンショット）: Total **76%**／Auto+Composer **56%**／API **100%**／On-demand **$388.51 / $1000**（Fixed）。
+  - **(5)** **Tavily は削除で OK**。
+- **実施**:
+  - **`~/.cursor/mcp.json`** および **`C:\Users\mhamada202408224\.cursor\mcp.json`** から **`tavily` ブロックを除去**（JSON 検証済み）。
+  - **`scripts/sync-cursor-mcp-windows-from-wsl.mjs`** から **`tavily` コピー行を削除**。
+  - **`docs/mcp-status.md`**・**`docs/mcp-dormancy-exempt.md`**・**`.cursor/rules/mcp-server-use-triggers.mdc`**・**`chat-sessions/NEW-SESSION-STARTER.md`**・**憲法 4 正本＋ミラー**（`AGENTS.md` / `WORKFLOW.md` / `.rag/extra-docs/*` / `preflight-checklist`）を **Tavily 削除・`gh` 優先・金曜運用**に整合。
+  - **`npm run credit:set 76`**（スクリーンショットの Total 76% に合わせ `data/credit-usage.json` 更新）。
+  - **`npm run health-check`**: exit **0**（MCP 一覧に tavily なし）。
+- **次の1手**: 金曜の反省フローに **「mcp-status 過去30日行の見直し」** を 1 チェックとして組み込む（カレンダーは浜田側）。
+- **GO待ち**: なし
+- **session-lock**: なし
+- **関連パス**: `docs/mcp-status.md` / `~/.cursor/mcp.json` / Windows `.cursor/mcp.json`
+

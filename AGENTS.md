@@ -789,9 +789,9 @@ UI を変更したら、**Playwright MCP** で以下の検証を行い、結果�
 - **kintone API の特殊仕様（2026-04-20 追加 / TSB 教訓）**: `change.<field>` イベントが Promise/Thenable を return できない / lookup フィールドへの API 書き込み制約 / サブテーブル更新時の id 必須 / kintone クエリの演算子制約（type/RADIO_BUTTON は in/not in のみ）/ ルックアップと計算フィールドは API 更新で即時反映されない 等 → **実装前に公式または既存コードで 1 ステップ確認**してからコード書く。2026-04-19 の `change.user_name` で async 書いて Thenable エラーで止まった事例が教訓
 
 **調査ステップ（最低 3 つ実施してから着手）:**
-1. **公式ドキュメント**: cybozu developer network、MDN、RFC、各 API 公式リファレンス（`fetch` MCP / `tavily` / `WebFetch`）
-2. **既知事例**: GitHub の同等実装を検索（`github` MCP の code search）。ライセンス確認も同時に
-3. **失敗事例 / 既知の落とし穴**: Stack Overflow / Zenn / Qiita / Cybozu Developer Network フォーラムを `tavily` / `google-search` で検索（「issue」「workaround」「limitation」「does not work」を組み合わせる）
+1. **公式ドキュメント**: cybozu developer network、MDN、RFC、各 API 公式リファレンス（`fetch` MCP / `WebFetch`）
+2. **既知事例**: GitHub の同等実装を検索（`github` MCP の code search。WSL では **`gh`** を優先）。ライセンス確認も同時に
+3. **失敗事例 / 既知の落とし穴**: Stack Overflow / Zenn / Qiita / Cybozu Developer Network フォーラムを **`duckduckgo-search` MCP** で検索（「issue」「workaround」「limitation」「does not work」を組み合わせる）
 4. **社内ナレッジ**: `kintone-ai-lab/docs/troubleshooting.md`（TSB-XXX）と RAG（`rag` MCP）を検索。過去の自分の教訓が最大のヒント
 
 **結果の活用:**
@@ -815,10 +815,9 @@ GitHub・npm・Stack Overflow 等から外部コードを参考にする際は�
 #### 利用ツール（優先順位）
 1. `rag` MCP — 社内ナレッジ（最速・最も信頼）
 2. `fetch` MCP / `WebFetch` — 公式ドキュメント直接取得
-3. `tavily` MCP — 高品質 Web 検索（要約付き）
-4. `google-search` MCP — 補助的な Web 検索
-5. `github` MCP — 実装事例・Issue 検索
-6. `cve-search` MCP / `cyber-news` MCP — セキュリティ関連時のみ
+3. `duckduckgo-search` MCP — Web 検索（**`tavily` は 2026-05-06 削除済**／`docs/mcp-status.md`）
+4. `github` MCP — 実装事例・Issue 検索（WSL では **`gh`** を優先）
+5. `cve-search` MCP / `cyber-news` MCP — セキュリティ関連時のみ
 
 ---
 
@@ -1496,13 +1495,13 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 |---|---|---|
 | 重要設計判断 / 不具合調査初動 / リファクタ前 | **rag** | §20 で既に義務化済（強化）|
 | URL 取得・ HTTP API 叩く | fetch | Cursor 標準 WebFetch で十分なら不要 |
-| Web 検索（公式 docs / 仕様確認）| google-search / tavily | tavily は disabled / google-search 優先 |
+| Web 検索（公式 docs / 仕様確認）| **duckduckgo-search** | **`tavily` は 2026-05-06 削除済**（`docs/mcp-status.md`） |
 | アクセシビリティ検査 | accessibility-scanner | UI 改修時必須 |
 | ブラウザ自動操作 / E2E テスト | playwright | customize 動作確認時 |
 | CVE 脆弱性確認 | cve-search | 月次 + 依存追加時 |
 | サイバーセキュリティニュース | cyber-news | 週次セキュリティ巡回時 |
 | PowerPoint 自動生成 | office-powerpoint | Win 起動必要 / 月次レポート時 |
-| GitHub Issue/PR 操作 | github | Win 起動必要 / WSL 側は gh CLI 代替 |
+| GitHub Issue/PR 操作 | github（Win）／**`gh`（WSL 第一選択）** | WSL では **`gh`** を優先（浜田合意 2026-05-06） |
 | 段階的思考（複雑判断分解）| sequential-thinking | 大型設計判断時 |
 | セッション横断記憶 | memory | 確定決定事項保存時 |
 | ファイル操作 | filesystem | **原則使わない**（Cursor 標準で代替）|

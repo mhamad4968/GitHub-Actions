@@ -1,14 +1,23 @@
 # 📊 MCP 状態管理台帳
 
-**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-05-06（CIO: `npm run health-check` 突合・Cursor `mcps/*/tools` 索引確認／**§Cursor 可用性 2026-05-06** 追記。グローバル MCP ピン・表の過去30日カウントは前回 2026-05-05 記述のまま＝**行ごとの数値は未再集計**）
+**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-05-06（浜田回答反映: **Tavily 削除**・**金曜夜＝表「過去30日」見直しタイミング**・**WSL は `gh`**・**課金スナップショット**／`npm run health-check` 突合・**§Cursor 可用性** 更新。表の過去30日カウント自体は**未再集計**）
 **更新ルール**: mcp.json 変更時 / 月次 MCP 健康診断時 / 浜田判断あった時に必ず本ファイル更新
 **正本順位**: 本ファイル < **`~/.cursor/mcp.json` とワークスペース `.cursor/mcp.json` がマージ**（Cursor 仕様）。`kintone-ai-lab` ルートで開いたとき **Figma + colors-fonts** はリポ側 JSON にも記載（2026-05-04）。
 
 ### §Cursor 可用性メモ（2026-05-06 JST / WSL `kintone-ai-lab`）
 
-- **`npm run health-check`（MCP initialize 系）**: `github`・`office-powerpoint` は **WSL から ⏭（Windows 側想定）**、`tavily` は **disabled**、`figma` は **url-only（stdio 対象外）**、それ以外は **✅ initialize OK**（`markdownify`・`deepseek`・`kimi`・`openrouter`・`kintone` 系・`playwright`・`rag` 等）。
-- **Cursor チャットからの `call_mcp_tool`**: ワークスペース配下の **descriptor**（`~/.cursor/projects/<id>/mcps/<server>/tools/*.json`）に従う。**本番 kintone 書込・長文生成・CVE/ニュース・RAG** はここ経由で起用可。**PR/Issue 操作の `user-github`** は WSL セッションでは使えない設計のため、同種は **`gh` CLI**（認証済）か **Windows 上の Cursor** を使い分ける。
-- **S12 死蔵警告**: 下表の「過去30日」欄は自動更新していない。**月次またはイベント時**に行更新する（本条で運用鮮度のみ更新）。
+- **`npm run health-check`（MCP initialize 系）**: `github`・`office-powerpoint` は **WSL から ⏭（Windows 側想定）**、`figma` は **url-only（stdio 対象外）**、それ以外は **✅ initialize OK**（`markdownify`・`deepseek`・`kimi`・`openrouter`・`kintone` 系・`playwright`・`rag` 等）。**`tavily` は 2026-05-06 に mcp.json から除去済**。
+- **Cursor チャットからの `call_mcp_tool`**: ワークスペース配下の **descriptor**（`~/.cursor/projects/<id>/mcps/<server>/tools/*.json`）に従う。**本番 kintone 書込・長文生成・CVE/ニュース・RAG** はここ経由で起用可。**PR/Issue 操作の `user-github`** は WSL セッションでは使えない設計のため、同種は **`gh` CLI**（認証済）を **第一選択**（浜田合意 2026-05-06）。Windows 上の Cursor は補助。
+- **S12 死蔵警告**: 下表の「過去30日」欄は自動更新していない。**毎週金曜夜・週次反省の後**に行を見直す（浜田合意 2026-05-06）。**月次健康診断**や **MCP 追加・削除時**も併せて更新する。
+
+### 浜田回答メモ（依頼事項 2026-05-06）
+
+| # | 内容 | 決定 |
+|---|------|------|
+| 2 | WSL での GitHub 操作 | **`gh` CLI** に任せる（`user-github` MCP は WSL では使わない前提を上記に固定） |
+| 3 | 「過去30日」欄・鮮度 | **毎週金曜夜の反省の後**に **毎週** 見直しで合意 |
+| 4 | Cursor 課金ダッシュボード（スクリーンショット） | **Total 76%**／Auto+Composer **56%**／API **100%**（同梱枠枯渇）／On-demand **$388.51 / $1000**（上限 Fixed **$1000 USD**）— `npm run credit:set 76` で日次記録に反映可（§1-2-4） |
+| 5 | Tavily | **削除で OK** → 同日 **`~/.cursor/mcp.json`** および **`C:\Users\…\.cursor\mcp.json`** から除去。`scripts/sync-cursor-mcp-windows-from-wsl.mjs` から **tavily コピー行を削除** |
 
 ---
 
@@ -41,7 +50,7 @@
 | 9 | **kintone (公式)** | ✅ active | **40 回+** | kintone API CRUD | 5/13 後（本番運用後）|
 | 10 | **kintone-dev (自作)** | ✅ active | 0 回 | API 仕様参照 (アプリ作成 MCP ではない / 4/23 早朝訂正済) | **4/26 PC 台帳 Day 4 後判断** |
 | 11 | **kintone-space (自作)** | ✅ active | 0 回 | kintone スペース操作 | **4/24 環境設定マスタ作成時に実戦投入予定** |
-| 12 | tavily | ⏸ disabled | 0 回 | Tavily Web 検索 | **5/16 削除 or 再有効化判断** |
+| 12 | ~~tavily~~ | 🗑 **削除済 2026-05-06** | 0 回 | （除去）Web 検索は **duckduckgo-search** | — |
 | 13 | playwright | ✅ active (4/23 21:30 Chrome 147.0.7727.116 install + 実 call 動作確認済) | 3 回 | ブラウザ自動操作 / E2E | 4/26 PC 台帳 customize テスト時 |
 | 14 | cve-search | ✅ **active 化済** | **3 回** (4/23 早朝 db_status + 20:14 vul_last_cves + vul_cve_search) | CVE 脆弱性検索 | 5/1（月次セキュリティ巡回時 / S14）|
 | 15 | rag | ✅ **強化済** | **大量** (本日 ingest_file 8 回 + query_documents 3 回 + status 3 回) | LanceDB ローカル RAG (現在 76 docs / 3429 chunks) | **§50 + §21 強化（R24/R25）後再評価 / 4/30 判断** |
@@ -66,12 +75,9 @@
 
 ## ⏸ disabled の経緯記録
 
-### tavily（disabled / 2026-04-23 時点 / 浜田確認済 = 2026-04-23 02:30）
-- 状態: `disabled: true`
-- 経緯: **課金が必要だったため google-search を代替として採用し disabled 化**（浜田回答 / 2026-04-23 02:30）
-- **判断**: tavily は今後も有償化リスク継続 = google-search 安定運用前提なら **削除候補昇格**
-- **次回再評価**: 2026-05-16（サブエージェント PoC 再議論時に併せて判断）
-- **再評価項目**: 完全削除 (mcp.json から除去) / google-search の月 100 回境界に達するまで現状維持
+### tavily（**削除済 2026-05-06** / 浜田合意）
+- **最終状態**: `mcp.json` から **エントリ除去**（WSL グローバル + Windows 同期先の両方）。`sync-cursor-mcp-windows-from-wsl.mjs` は **tavily を出力しない**。
+- **経緯要約**: 2026-04-23 時点で `disabled: true`（課金回避・duckduckgo-search 代替）→ 2026-05-06 **完全削除**で確定。
 
 ---
 
@@ -89,14 +95,14 @@
 
 ### Tier 3: 即時活性化トリガー (R24 §50 で義務化)
 - **fetch**: cybozu.dev 等の公式 docs 取得時 (Cursor 標準 WebFetch で十分なら省略可)
-- **google-search**: Web 検索 (tavily disabled の代替 / 「○○ 仕様」「○○ 既知バグ」検索時)
+- **duckduckgo-search**: Web 検索（「○○ 仕様」「○○ 既知バグ」検索時）
 - **sequential-thinking**: 大型設計判断時 (例: 4/26 PC 台帳 customize 設計の分解)
 - **memory**: 重要決定 / TSB 検出時に entities + relations 追加
 
 ### Tier 4: 削除候補
 - **filesystem**: Cursor 標準で代替可 / 4/30 判断
 - **fetch**: 同上 / 4/30 判断
-- **tavily**: 5/16 サブエージェント PoC 再議論時に削除判断
+- ~~**tavily**~~: **2026-05-06 削除済**（上記）
 - **github / office-powerpoint**: WSL 側では使えない / 削除可だが Win 側で使う日のため残置
 
 ---

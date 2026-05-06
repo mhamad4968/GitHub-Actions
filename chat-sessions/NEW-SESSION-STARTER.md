@@ -524,9 +524,9 @@ v3.13 (2026-04-26) PC 台帳仕様の正本固定 + セッション切替後も�
 - backup-mcp (00:00 daily cron): mcp.json + MCP サーバ自作コードを backups/mcp/ に世代保存
 - npm run guard:check / restore:wiped / watcher:status / guard:mirror で確認可能
 
-【MCP 構成（2026-04-23 22:40 時点 / 16 件 / active 13 + skip 3）】
+【MCP 構成（2026-05-06 更新 / 15 件 / active 13 + skip 2）】
 active (13): rag (76+ docs / hybrid mode) / kintone (公式) / kintone-dev (自作 / API 仕様参照) / kintone-space (自作 / 4/24 で実戦投入) / cve-search / cyber-news / fetch / playwright (Chrome 147 install 済) / accessibility-scanner / sequential-thinking / memory (10+ entities + 11+ relations) / filesystem / duckduckgo-search (4/23 google-search から入替 / API key 不要)
-skip (3): github (Win) / office-powerpoint (Win) / tavily (disabled / 課金回避)
+skip (2): github (Win) / office-powerpoint (Win)（WSL では **`gh`** を GitHub 操作の第一選択）
 
 【新ツール導入済（2026-04-23）】
 - jq 1.7 (kintone API JSON 整形)

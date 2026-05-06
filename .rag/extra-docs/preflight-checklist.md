@@ -14,9 +14,9 @@ alwaysApply: true
 ワークスペース直下の **`RULES-INDEX.md` の「即答カード」と「随時メモ」** を該当範囲だけ読む。長セッションでは途中でも戻る。
 
 ## 2️⃣ §33-A 事前調査（最低3ステップ・新領域/失敗領域/iframe・sandbox・CSP・セキュリティで必須）
-- ① 公式ドキュメント（`fetch` / `tavily` / `WebFetch`）
-- ② 既知事例（`github` MCP code search）
-- ③ 失敗事例 / workaround（`tavily` / `google-search` で「issue / limitation / does not work」）
+- ① 公式ドキュメント（`fetch` / `WebFetch`）
+- ② 既知事例（`github` MCP code search／WSL では **`gh`**）
+- ③ 失敗事例 / workaround（**`duckduckgo-search` MCP** で「issue / limitation / does not work」）
 - ④ 社内ナレッジ（`rag` MCP / `troubleshooting.md`）
 
 着手前に **「調査の要点 1-3 行」をユーザーへ要約報告**する。

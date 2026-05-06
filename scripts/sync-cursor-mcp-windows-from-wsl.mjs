@@ -111,7 +111,6 @@ function buildWindowsMcp(S) {
     ...(ks?.env ? { env: { ...ks.env } } : {}),
   };
 
-  out.mcpServers.tavily = { ...S.tavily };
   out.mcpServers.playwright = { ...S.playwright };
 
   out.mcpServers['cve-search'] = wslBash(
