@@ -1,26 +1,26 @@
 ---
-description: Shadcn UI MCP を UI 正とする・Chrome DevTools で FE を事実確認・不明点は関連 MCP で先に取る
+description: Shadcn UI MCP を必ず参照・Chrome DevTools MCP で事実確認・不明時は関連 MCP で先に調査（mcp.json 同期手順付き）
 alwaysApply: true
 ---
 
-# フロント向け MCP（Shadcn / Chrome DevTools）
+# フロント向け MCP（Shadcn UI / Google Chrome DevTools）
 
-## 義務（本題が UI／フロントのとき）
+## 義務
 
-1. **Shadcn／Radix 系の UI コンポーネント**を新規・改修するときは **`shadcn-ui` MCP**（`@jpisnice/shadcn-ui-mcp-server`）を参照し、**現行に近い import・props** に寄せる。学習データだけでの確定は避ける。
-2. **フロントの修正・不具合調査**では **`chrome-devtools` MCP**（`chrome-devtools-mcp`）を**積極的に**使い、**レンダリング・コンソール・ネットワーク**など**ブラウザ上の事実**を確認してから結論を書く。
-3. **実装がリポやチャットだけでは不明**なとき、fetch／Web 検索を**待たず**、利用可能な **関連 MCP**（上記・RAG・kintone 等）で情報を取りに行く。**`call_mcp_tool` 直前は** `.cursor/rules/mcp-tool-discipline.mdc`（descriptor 必読）。
+1. **Shadcn UI の優先利用**: **UI コンポーネントを作成・改修するときは、必ず `shadcn-ui` MCP**（`@jpisnice/shadcn-ui-mcp-server`）を参照し、**最新のベストプラクティス**（import・props・構成）に従う。学習データだけで API を確定しない。
+2. **Chrome での検証**: **フロントエンドの修正やバグ調査**では、**積極的に `chrome-devtools` MCP**（**Google Chrome DevTools MCP** / `chrome-devtools-mcp`）を使い、**実際のレンダリング・コンソールエラー・ネットワーク**など**ブラウザ上の事実**を確認してから回答・修正方針を書く。
+3. **自律的なリサーチ**: **ドキュメント不足で実装が不明確**なとき、**fetch や Web 検索を待たず**、利用可能な **関連 MCP**（上記・RAG・kintone・Exa 等、主題に応じて `mcp-server-use-triggers.mdc` をスキャン）で**自律的に**情報を取りに行く。**`call_mcp_tool` 直前**は `.cursor/rules/mcp-tool-discipline.mdc`（**descriptor 必読**）。
+
+## ルールを入れておくメリット（運用のなぜ）
+
+- **「Shadcn UI」の書き間違いを防ぐ**: 古い学習データに基づく **古い props や旧パターン**を避け、**MCP とルールの組み合わせ**で **公式に近い現行ドキュメント**に沿ったコードに寄せる。
+- **デバッグの精度が上がる**: 「たぶんこう直せば動く」ではなく、**ブラウザでエラーを確認したうえで**「こう直した」と書ける。
+- **「丸投げ」の質が上がる**: 細かく指示しなくても、**ブラウザ確認が要る案件**と判断して **DevTools MCP を先に動かす**習慣にする。
 
 ## `mcp.json` 同期（浜田作業・TSB-028）
 
-WSL 正本 `~/.cursor/mcp.json` を直したあと Windows Cursor と揃える:
+WSL 正本 `~/.cursor/mcp.json` を変更したあと、**Windows 側 Cursor** と単一ソースで揃える:
 
 ```bash
 cd ~/kintone-ai-lab && npm run mcp:sync-cursor-windows
 ```
-
-## 運用メリット（短く）
-
-- **Shadcn**: 古い props や書き間違いを減らし、**MCP が返す情報**を優先する。
-- **Chrome DevTools**: 「たぶん直る」ではなく**実機で見た事実**に基づく修正へ寄せる。
-- **自律**: 細かい指示がなくても**ブラウザ確認が要る案件**と判断しやすい。

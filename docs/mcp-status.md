@@ -1,6 +1,6 @@
 # 📊 MCP 状態管理台帳
 
-**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-05-06（**`filesystem`・`fetch` を `~/.cursor/mcp.json` から除去**・`sync-cursor-mcp-windows-from-wsl.mjs`／`verify-cursor-mcp-windows.mjs` を **無 filesystem 運用**に追従。**O-3 監視スナップ**・憲法系 MCP キー運用メモ。浜田回答反映: **Tavily 削除**・**金曜夜＝表「過去30日」見直し**・**WSL は `gh`**・**課金スナップショット**／`npm run health-check` 突合・**§Cursor 可用性** 更新。表の「過去30日」欄は **2026-05-06** `npm run mcp-status:refresh-usage` で再集計済）
+**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-05-06（**`shadcn-ui`・`chrome-devtools` 運用を `mcp-frontend-shadcn-chrome.mdc` と本条に追記**／**`filesystem`・`fetch` を `~/.cursor/mcp.json` から除去**・`sync-cursor-mcp-windows-from-wsl.mjs`／`verify-cursor-mcp-windows.mjs` を **無 filesystem 運用**に追従。**O-3 監視スナップ**・憲法系 MCP キー運用メモ。浜田回答反映: **Tavily 削除**・**金曜夜＝表「過去30日」見直し**・**WSL は `gh`**・**課金スナップショット**／`npm run health-check` 突合・**§Cursor 可用性** 更新。表の「過去30日」欄は **2026-05-06** `npm run mcp-status:refresh-usage` で再集計済）
 **更新ルール**: mcp.json 変更時 / 月次 MCP 健康診断時 / 浜田判断あった時に必ず本ファイル更新
 **正本順位**: 本ファイル < **`~/.cursor/mcp.json` とワークスペース `.cursor/mcp.json` がマージ**（Cursor 仕様）。`kintone-ai-lab` ルートで開いたとき **Figma + colors-fonts** はリポ側 JSON にも記載（2026-05-04）。
 
@@ -33,6 +33,7 @@
 - **2026-05-04 午前追補（CIO 依頼・Kimi/DeepSeek 相談）**: **配色・パレット**用に **`@colorsandfonts/mcp`**（サーバ名 `colors-fonts`）をグローバル＋リポ `.cursor/mcp.json` に追加。**kintone 表のトークン・コントラスト**手順は **`docs/mcp-design-kintone-tables.md`**。
 - **2026-05-06 施行**: **`.cursor/rules/ai-agent-tools-constitution.mdc`**（**`alwaysApply: true`**）— Exa/Brave/Firecrawl・Linear 相当の課題管理・Puppeteer・Mintlify/Harness・秘密禁止・有料大量取得前の確認。**§7** — PR/deploy 前など区切りで **`[憲法適合]`** 1 行の自己宣言。**`mcp-server-use-triggers.mdc`** に調査系 1 行トリガーを追補。
 - **2026-05-06 追補（多AI）**: 同憲法 **§0.5** — **CIO 体制の中**で第1者が第2視点を補強するため、他AI（DeepSeek/Kimi/OpenRouter 等）との**協議を積極推奨**（第2者・GO の憲法定義は不変）。**`constitution-brief-card.mdc`** の CIO 2 者の直後にポインタを追加。
+- **2026-05-06 追補（フロント MCP）**: **`shadcn-ui`**（`@jpisnice/shadcn-ui-mcp-server`）— UI コンポーネント時は **必ず参照**。**`chrome-devtools`**（`chrome-devtools-mcp`）— FE 修正・バグ調査で **実レンダリング／コンソール**の事実確認。運用正本 **`.cursor/rules/mcp-frontend-shadcn-chrome.mdc`**（`alwaysApply: true`）。WSL `~/.cursor/mcp.json` 変更後は **`cd ~/kintone-ai-lab && npm run mcp:sync-cursor-windows`**（TSB-028）。
 - **2026-05-02 §57-10 連動**: RAG 正本 4 ファイルの `.rag/extra-docs` ミラー＝`npm run rag:mirror:canonical-docs` / `verify:rag-mirror-canonical`（`verify:agent-env` 連鎖）。憲法・索引の実体はルート正本（§2）。
 
 ### 表の鮮度（2026-04-28）
