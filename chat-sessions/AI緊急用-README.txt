@@ -12,7 +12,7 @@ AI緊急用 フォルダ（Desktop）— 使い方メモ（正本はリポ chat-
   14-evening-reflection-YYYY-MM-DD.md … **当日 JST** の夕反省 `docs/reports/YYYY-MM-DD-evening-reflection.md` がリポにあるときだけ sync でコピー（Windows メモ帳・Cursor で開きやすい）。無い日はスキップ。
 
 【番号付き読み取り（浜田貼付の控え）】
-  02-INDEX.txt / 03-READ-01.txt … 09-READ-07.txt（**09＝浜田 CEO のお願い・朝イチ推奨**＋ツール憲法 §6）/ 10-README-read-pack.txt / **15-HISTORY-…＝read-pack・ツール憲法の変更履歴控え（任意追記可）**
+  02-INDEX.txt / 03-READ-01.txt … 09-READ-07.txt（**09＝浜田 CEO のお願い・朝イチ推奨**＋ツール憲法 §6）/ 10-README-read-pack.txt … 15-HISTORY-… / **16-重要確認.txt** / **17-SESSION-CLOSE-REPORT_yyyymmdd.txt**（**16・17＝Desktop 専用・read-pack 正本外**。名前順＝読取順）
   正本: リポ chat-sessions/desktop-ai-emergency-read-pack/ 内の同名ファイル。
   セッション終了時: npm run session-starter:sync-desktop で本フォルダへコピー。verify でバイト一致確認。
   運用: 10-README-read-pack.txt を参照。
