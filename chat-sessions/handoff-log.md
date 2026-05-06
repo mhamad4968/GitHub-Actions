@@ -998,3 +998,12 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
   - **session-lock**: なし
   - **関連パス**: （Windows ローカルのみ・リポルート外の記述なし）
 
+### 2026-05-06 JST（追記）— MCP 台帳: Cursor 可用性メモ（浜田依頼・体制整備）
+
+- **目的**: 「備わっている機能・MCP の理解確認」と「依頼時にフル活用できるよう体制整備」— **`docs/mcp-status.md`** に **§Cursor 可用性 2026-05-06** を追記（`health-check` 突合・WSL で ⏭ の `github`/`office-powerpoint`・`gh` 代替・descriptor 正本の明示）。
+- **git**: **`f8f4b31`** を **ローカル `main` に commit 済み**（**push は未実施**—必要なら CIO が `git push origin main`）。
+- **次の1手**: `git push` / RAG mirror（憲法どおり AGENTS 改訂時）／依頼タスクに応じ **§50 想起**＋**mcp-server-use-triggers** で MCP 選択
+- **GO待ち**: なし
+- **session-lock**: なし
+- **関連パス**: `docs/mcp-status.md`
+
