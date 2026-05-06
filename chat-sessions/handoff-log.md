@@ -819,11 +819,18 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 |----|------|--------|------|--------------|
 | **O-1** | **CLOSED** 2026-05-05 | — | **`npm audit` moderate（axios）解消**: `@kintone/cli@1.19.2` は **既に npm latest** で `npm update` では解消不可。**`package.json` `overrides`** で **`@kintone/rest-api-client@6.1.6`**（公式が `axios@1.15.0`）を強制。**`npm audit` → 0**。**`npm audit fix --force` は未使用**。 | 将来 **CLI が 6.1.6+ を直依存**したら overrides を外して再 `npm install` 可否を確認。 |
 | **O-2** | **CLOSED** 2026-05-05 | — | **billing 実数反映済み**: Plan & Usage スクショで **Total 71%** → `npm run credit:set 71` + `data/credit-usage.json` **note** 追記（45% placeholder 解消）。 | 翌営業日以降も **1 日 1 回** `credit:set`（§1-2-4）。 |
-| **O-3** | **MONITOR（AI 担当）** | 低 | **グローバル MCP**（`~/.cursor/mcp.json`）— **2026-05-05**: `npm view` で **`@colorsandfonts/mcp@1.1.0` = registry latest**、`@iflow-mcp/markdownify-mcp` **グローバル 0.0.2 = latest**。`@modelcontextprotocol/server-*` は **非ピン `npx -y`** で都度解決。**本日の変更なし**（浜田への一問は不要・CIO 委任）。 | **AI**: 月次 or MCP 変更時に再 `npm view`。**ピン上げるとき**は §17-2・`docs/mcp-status.md`・TSB-029（markdownify は **node 直起動**維持）。 |
+| **O-3** | **MONITOR（AI 担当）** | 低 | **グローバル MCP**（`~/.cursor/mcp.json`）— **2026-05-05**: `npm view` で **`@colorsandfonts/mcp@1.1.0` = registry latest**、`@iflow-mcp/markdownify-mcp` **0.0.2 = latest**。**2026-05-06 再確認**: `npm view` 同値。**TSB-029**: `~/.nvm/.../v24.14.1/bin/node` → `.../markdownify-mcp/dist/index.js` **存在確認 OK**。`@modelcontextprotocol/server-*` は **非ピン `npx -y`**。浜田への一問は不要（CIO 委任）。 | **AI**: 月次 or MCP 変更時に再 `npm view`。**ピン上げるとき**は §17-2・`docs/mcp-status.md`・TSB-029（markdownify は **node 直起動**維持）。 |
 | **O-4** | CLOSED（参考） | — | ルート **`npm update`** + **`security-next-automation` `npm update`** は実施済み（`e1a74d9`）。smoke **緑**。 | 継続: 変更後は smoke + 必要なら bootstrap。 |
-| **O-5** | OPEN | **中〜高** | **Included API 100% 消化済み** → On-Demand 課金継続。**2026-05-05 時点 On-Demand $388.51 / $1,000 cap**、Ultra 次回リセット **5/15 まで残11日**。枯渇予測・§1-2-2/§1-2-3 の前提に直結。 | CIO が上限・モデル既定（Max Thinking 抑制等）を監視。`npm run credit:status` / morning-prep JSON を参照。TSB-021（On-Demand $ 正式追跡）は未実装のまま追跡。 |
+| **O-5** | OPEN | **中〜高** | **Included API 100% 消化済み** → On-Demand 課金継続。**On-Demand $** の最新スクショ値は **未更新**（**2026-05-05 時点 $388.51 / $1,000 cap** を `data/credit-usage.json` note 参照）。**2026-05-06**: `npm run credit:status` — **直近消費 76%**（🟡 70% 到達）、**次回 Ultra リセット 2026-05-14 JST（残 8 日）**、線形予測枯渇日 OK。枯渇予測・§1-2-2/§1-2-3 の前提に直結。 | CIO が上限・モデル既定を監視。`credit:set` は Plan & Usage と突合。**TSB-021**（On-Demand $ 自動追跡）は未実装。 |
 
 **CIO 判断で浜田 GO 済み（本メッセージ）**: **O-4** の方針継続、**`audit fix --force` しない**、**semver 内 `npm update`**、**RAG `rag:ingest:all` 実施済み**（別コミット・ログ参照）。
+
+### 2026-05-06 JST（追記）— O-3 / O-5 セッション監視・(3) MCP（浜田指示）
+
+- **O-3**: `npm view` 再確認（変更なし）。markdownify **node 直起動**パス・`dist/index.js` 存在 OK。
+- **憲法系キー**: `temp/mcp_keys.env` は **空のまま** — **`mcp:apply-keys` は未実行**（空上書き防止）。`~/.cursor/mcp.json` 側は **Exa / Brave / Firecrawl / Harness にキー設定済み**。
+- **O-5**: `npm run credit:status` — **76%**（🟡）、**次回リセット 2026-05-14**（残 8 日）。On-Demand **$** は前回スクショ（**$388.51**）を `data/credit-usage.json` に保持、`credit:set` は本日未実施。
+- **(1)(2)**: 壁時計・`[憲法適合]` 運用および朝報未生成日の扱いは **`evening-reflect-queue.md` に積み**、夜の反省会で議題化（本チャットでは実施しない）。
 
 ---
 

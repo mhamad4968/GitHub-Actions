@@ -1,6 +1,6 @@
 # 📊 MCP 状態管理台帳
 
-**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-05-06（浜田回答反映: **Tavily 削除**・**金曜夜＝表「過去30日」見直しタイミング**・**WSL は `gh`**・**課金スナップショット**／`npm run health-check` 突合・**§Cursor 可用性** 更新。表の「過去30日」欄は **2026-05-06** CIO `npm run mcp-status:refresh-usage` で再集計済）
+**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-05-06（**O-3 監視スナップ**・憲法系 MCP キー運用メモ追記。浜田回答反映: **Tavily 削除**・**金曜夜＝表「過去30日」見直しタイミング**・**WSL は `gh`**・**課金スナップショット**／`npm run health-check` 突合・**§Cursor 可用性** 更新。表の「過去30日」欄は **2026-05-06** CIO `npm run mcp-status:refresh-usage` で再集計済）
 **更新ルール**: mcp.json 変更時 / 月次 MCP 健康診断時 / 浜田判断あった時に必ず本ファイル更新
 **正本順位**: 本ファイル < **`~/.cursor/mcp.json` とワークスペース `.cursor/mcp.json` がマージ**（Cursor 仕様）。`kintone-ai-lab` ルートで開いたとき **Figma + colors-fonts** はリポ側 JSON にも記載（2026-05-04）。
 
@@ -9,6 +9,8 @@
 - **`npm run health-check`（MCP initialize 系）**: `github`・`office-powerpoint` は **WSL から ⏭（Windows 側想定）**、`figma` は **url-only（stdio 対象外）**、それ以外は **✅ initialize OK**（`markdownify`・`deepseek`・`kimi`・`openrouter`・`kintone` 系・`playwright`・`rag` 等）。**`tavily` は 2026-05-06 に mcp.json から除去済**。
 - **Cursor チャットからの `call_mcp_tool`**: ワークスペース配下の **descriptor**（`~/.cursor/projects/<id>/mcps/<server>/tools/*.json`）に従う。**本番 kintone 書込・長文生成・CVE/ニュース・RAG** はここ経由で起用可。**PR/Issue 操作の `user-github`** は WSL セッションでは使えない設計のため、同種は **`gh` CLI**（認証済）を **第一選択**（浜田合意 2026-05-06）。Windows 上の Cursor は補助。
 - **S12 死蔵警告**: 下表の「過去 30 日使用」列は **`npm run mcp-status:refresh-usage`**（`check-mcp-dormancy.mjs` 30 日 JSON）で更新する。**毎週金曜夜・週次反省の直後**の Cursor セッションで **CIO（AI）が定例実行**し、差分があれば **`docs/mcp-status.md` を commit + push** まで行う（浜田合意 2026-05-06／運用確定）。**月次健康診断**・**MCP 追加・削除時**も CIO が表を見直す。
+- **O-3 監視スナップ（2026-05-06 JST）**: `npm view` — **`@colorsandfonts/mcp` 1.1.0**、**`@iflow-mcp/markdownify-mcp` 0.0.2**（いずれも registry latest と一致）。**TSB-029**: `mcp.json` の **node フルパス** → `markdownify-mcp/dist/index.js` の **存在確認 OK**（NVM 変更時は TSB-029・`docs/troubleshooting.md` に従い global 再導入＋パス更新）。
+- **憲法系 MCP キー（Exa / Brave / Firecrawl / Harness）**: 正本 `~/.cursor/mcp.json` に **各 `*_API_KEY` が設定済み**の状態を確認。**`temp/mcp_keys.env` の値が空のまま `npm run mcp:apply-keys` を実行しない**（空で上書きしサーバが赤化する）。災害復旧用に env を同期する場合のみ値を埋めてから `mcp:apply-keys`（`scripts/apply-mcp-keys-from-env.mjs` 参照）。
 
 ### 浜田回答メモ（依頼事項 2026-05-06）
 
