@@ -1,7 +1,7 @@
 (function () {
   "use strict";
   /** @type {string} */
-  var BUILD = "2026-05-06-681-web-reader-copyfix";
+  var BUILD = "2026-05-06-681-reader-hide-list-toggle";
 
   var FIELDS = ["Record_number", "sort_no", "midashi", "honbun", "gazou_1", "gazou_2", "gazou_3"];
 
@@ -62,8 +62,19 @@
     var st = document.createElement("style");
     st.setAttribute("data-pcqg-css", "1");
     st.textContent =
+      "body:not(.pcqg-list-visible) .gaia-argoui-app-index-recordlist,body:not(.pcqg-list-visible) .gaia-argoui-app-index-norecord,body:not(.pcqg-list-visible) .recordlist-gaia,body:not(.pcqg-list-visible) .recordlist-norecord-gaia," +
+      "body:not(.pcqg-list-visible) .gaia-argoui-list-norecord,body:not(.pcqg-list-visible) .recordlist-paging-gaia,body:not(.pcqg-list-visible) div[class*=\"recordlist-norecord\"]{display:none !important;}" +
+      "body:not(.pcqg-list-visible) .gaia-argoui-app-index-paging,body:not(.pcqg-list-visible) .gaia-argoui-app-index-recordcount,body:not(.pcqg-list-visible) .gaia-argoui-app-recordcount,body:not(.pcqg-list-visible) .gaia-argoui-paging," +
+      "body:not(.pcqg-list-visible) div[class*=\"paging-gaia\"],body:not(.pcqg-list-visible) div[class*=\"recordlist-paging\"],body:not(.pcqg-list-visible) div[class*=\"recordcount-gaia\"]{display:none !important;}" +
+      "body.pcqg-list-visible .gaia-argoui-app-index-recordlist,body.pcqg-list-visible .gaia-argoui-app-index-norecord,body.pcqg-list-visible .recordlist-gaia,body.pcqg-list-visible .recordlist-norecord-gaia," +
+      "body.pcqg-list-visible .gaia-argoui-list-norecord,body.pcqg-list-visible .recordlist-paging-gaia,body.pcqg-list-visible div[class*=\"recordlist-norecord\"]{display:revert !important;}" +
+      "body.pcqg-list-visible .gaia-argoui-app-index-paging,body.pcqg-list-visible .gaia-argoui-app-index-recordcount,body.pcqg-list-visible .gaia-argoui-app-recordcount,body.pcqg-list-visible .gaia-argoui-paging," +
+      "body.pcqg-list-visible div[class*=\"paging-gaia\"],body.pcqg-list-visible div[class*=\"recordlist-paging\"],body.pcqg-list-visible div[class*=\"recordcount-gaia\"]{display:revert !important;}" +
       ".pcqg-root{font-family:'Hiragino Sans','Yu Gothic UI','Meiryo',sans-serif;font-size:15px;line-height:1.65;color:#1e293b;background:linear-gradient(180deg,#f0f6ff 0%,#f8fafc 28%);border-bottom:1px solid #cbd5e1;padding:20px 16px 22px;margin:0 0 16px;}" +
       ".pcqg-inner{max-width:860px;margin:0 auto;}" +
+      ".pcqg-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 14px;}" +
+      ".pcqg-list-toggle{cursor:pointer;font:inherit;padding:8px 14px;border-radius:999px;border:1px solid #0ea5e9;background:#fff;color:#0369a1;font-weight:600;}" +
+      ".pcqg-list-toggle:hover{background:#e0f2fe;}" +
       ".pcqg-title{margin:0 0 6px;font-size:1.35rem;font-weight:700;color:#0f172a;letter-spacing:0.02em;}" +
       ".pcqg-sub{margin:0 0 18px;font-size:0.92rem;color:#475569;}" +
       ".pcqg-cards{display:flex;flex-direction:column;gap:14px;}" +
@@ -91,9 +102,29 @@
     h1.textContent = "PC台帳簡単ガイドライン";
     var sub = document.createElement("p");
     sub.className = "pcqg-sub";
-    sub.textContent = "事務の方向けの読み物です。下の一覧から、章を開いて直したり、絵を足したりできます。";
+    sub.textContent =
+      "事務の方向けの読み物です。章を直したり絵を足したりするときは、下の「一覧を表示（編集・追加）」を押してください。";
     inner.appendChild(h1);
     inner.appendChild(sub);
+
+    var tb = document.createElement("div");
+    tb.className = "pcqg-toolbar";
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "pcqg-list-toggle";
+    btn.setAttribute("aria-pressed", "false");
+    function syncToggleLabel() {
+      var on = document.body.classList.contains("pcqg-list-visible");
+      btn.textContent = on ? "一覧を隠す（読み物モード）" : "一覧を表示（編集・追加）";
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+    }
+    syncToggleLabel();
+    btn.addEventListener("click", function () {
+      document.body.classList.toggle("pcqg-list-visible");
+      syncToggleLabel();
+    });
+    tb.appendChild(btn);
+    inner.appendChild(tb);
 
     var stack = document.createElement("div");
     stack.className = "pcqg-cards";
@@ -137,7 +168,7 @@
     var foot = document.createElement("p");
     foot.className = "pcqg-foot";
     foot.textContent =
-      "※ 表示は自動で作っています。文言の正本は各レコードの「見出し」「本文」です。絵は「イラスト・図」の欄に入れてください。";
+      "※ 表示は自動で作っています。文言の正本は各レコードの「見出し」「本文」です。絵は「イラスト・図」の欄に入れてください。編集が終わったら「一覧を隠す」で読み物だけの画面に戻せます。";
     inner.appendChild(foot);
 
     var root = document.createElement("div");
@@ -181,7 +212,7 @@
       if (!records.length && !err) {
         var empty = document.createElement("p");
         empty.style.cssText = "color:#64748b;margin:0 0 12px;";
-        empty.textContent = "まだ章がありません。下の一覧から「追加」で章を作れます。";
+        empty.textContent = "まだ章がありません。「一覧を表示（編集・追加）」を押してから「追加」で章を作れます。";
         shell.querySelector(".pcqg-inner").insertBefore(empty, shell.querySelector(".pcqg-cards"));
       }
       if (dest.before) dest.parent.insertBefore(shell, dest.before);
@@ -189,16 +220,17 @@
     });
   }
 
+  var pcqgMountTimer = null;
   function scheduleMount() {
-    [0, 500, 1200].forEach(function (ms) {
-      setTimeout(function () {
-        try {
-          mountReader();
-        } catch (e) {
-          if (typeof console !== "undefined" && console.warn) console.warn("[681 pcqg]", e);
-        }
-      }, ms);
-    });
+    if (pcqgMountTimer) clearTimeout(pcqgMountTimer);
+    pcqgMountTimer = setTimeout(function () {
+      pcqgMountTimer = null;
+      try {
+        mountReader();
+      } catch (e) {
+        if (typeof console !== "undefined" && console.warn) console.warn("[681 pcqg]", e);
+      }
+    }, 350);
   }
 
   kintone.events.on("app.record.index.show", function (e) {
