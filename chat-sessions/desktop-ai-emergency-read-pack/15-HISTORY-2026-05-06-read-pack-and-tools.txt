@@ -1,0 +1,23 @@
+【15-HISTORY】read-pack / ツール憲法 — 変更履歴控え（2026-05-06 JST 起票・CIO メンテ）
+
+正本: `chat-sessions/desktop-ai-emergency-read-pack/本ファイル`。Desktop は `npm run session-starter:sync-desktop` で同名コピー。
+
+---
+
+## 2026-05-06（ツール活用憲法＋read-pack 追補）
+
+1. **新規 Project Rule**: `.cursor/rules/ai-agent-tools-constitution.mdc`（`alwaysApply: true`）
+   - Exa / Brave / Firecrawl（実装前調査）、Linear 相当の課題記録、Puppeteer、Mintlify/Harness、禁止事項。
+   - **CIO 体制の範囲内**での他AI協議（§0.5）。第2者（DeepSeek/Kimi）の置き換え禁止・GO は CEO。
+   - **§7** 作業区切りで **`[憲法適合]`** 1 行（毎ターン4行の補完）。
+2. **既存 Rule 更新**: `constitution-brief-card.mdc`（多AI・`[憲法適合]` ポインタ）、`mcp-server-use-triggers.mdc`（exa/brave/firecrawl/puppeteer/mintlify/harness の 1 行トリガー）。
+3. **台帳**: `docs/mcp-status.md` に施行・§7・多AIのメモ追記。
+4. **スクリプト**: `scripts/apply-mcp-keys-from-env.mjs` — 空キー時に警告ログ。
+5. **read-pack 本文**: `02-INDEX.txt` / `08-READ-06.txt` / `09-READ-07.txt`（§6 新設）を更新。本 **15-** で履歴を固定。
+
+---
+
+## 追記ルール（浜田・CIO 用）
+
+- 同種のメンテをした日は、**このファイル末尾に日付＋1〜3 行**で足してよい（長文化は `docs/reports/` へ）。
+- 正本は常に **リポ**。Desktop のみ編集した場合は **§35-6** どおりリポへ戻してから sync。

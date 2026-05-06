@@ -11,6 +11,7 @@
   3. 使わない番号は「（未使用）」1 行にしてよい。
   4. 日終わりで `npm run session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync`。
   5. 新セッションでは AI に **02-INDEX** → **03〜09 をファイル名昇順**で Read ツールをかけさせる（`SESSION-READ-LADDER.md` も参照）。
+  6. **変更履歴**を短く知りたいときは **15-HISTORY-2026-05-06-read-pack-and-tools.txt**（以降、同日系はこのファイルに追記してよい）。
 
 02-INDEX.txt
   各ファイルの役割を **1 行ずつ**索引化（任意追記可）。

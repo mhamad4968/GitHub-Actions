@@ -1,4 +1,4 @@
-【読取順インデックス】CIO 準備済み（2026-05-06 更新・v23.32+ / ファイル名＝読取順）
+【読取順インデックス】CIO 準備済み（2026-05-06 夕更新・ツール憲法＋履歴控え / ファイル名＝読取順）
 
 **Desktop「AI緊急用」**では Explorer の **名前順＝推奨読取順**（先頭 2 桁＋ハイフン）。リポ正本は **`chat-sessions/desktop-ai-emergency-read-pack/`** の **同名**。
 
@@ -11,8 +11,9 @@
 06-READ-04.txt … B 本題入口（5A / 5B の分岐・§50-3-8 リマインド）
 07-READ-05.txt … session-starter:sync-desktop と verify・Desktop パス
 08-READ-06.txt … 憲法・分業の核＋**【AI分業チェック】** テンプレ（READ 直後チャット必須）＋**§35-7 規律先行**の想起
-09-READ-07.txt … **浜田 CEO のお願い（思い）**／Project Rules・厳守・壁時計・分業・GitHub Actions・**健全性優先**（朝イチでも読む）
+09-READ-07.txt … **浜田 CEO のお願い（思い）**／Project Rules・厳守・壁時計・分業・GitHub Actions・**健全性優先**（朝イチでも読む）／**§6＝ツール活用憲法・`[憲法適合]`**
 10-README-read-pack.txt … 本パックの使い方
+15-HISTORY-2026-05-06-read-pack-and-tools.txt … **変更履歴控え**（read-pack・ツール憲法・Desktop 同期のメモ。任意で追記可）
 11-SESSION-BOOTSTRAP-CHECKLIST.txt … 項番 0 チェックリスト
 12-HANDOFF-HUMAN.txt … 任意メモ（5 行）
 13-README.txt … フォルダ全体の説明（AI緊急用）

@@ -54,3 +54,11 @@
 ## 5. 依頼事項より「あなた（AI 側・実行環境）の健全さ」
 
 **依頼事項より、あなたの健康状態（＝実行の健全さ・エラー・歪み）が大事**。妥協せず、**エラーや問題があれば速やかに対応**する。対応の最中でも **おかしいと思ったらこまめに確認**してよい。**浜田の承認は不要**（ただし憲法上 **Tier B / §52-8 等で GO が要る境界**は従来どおり）。
+
+---
+
+## 6. ツール活用憲法・憲法適合の記録（2026-05-06 CIO 追補・**朝イチでも可**）
+
+- **正本**: **`.cursor/rules/ai-agent-tools-constitution.mdc`**（`alwaysApply: true`）。**CIO 体制の役割のまま**、Exa/Brave/Firecrawl・Linear 相当・Puppeteer・Mintlify/Harness・秘密禁止・**CIO 内での他AI協議（§0.5）**・**作業区切りの `[憲法適合]` 1 行（§7）**を固定した。
+- **毎ターン先頭の 4 行**（`every-turn-rules-confirm.mdc`）は **そのまま**。**PR 前・deploy 前・一段落・完了前**に **`[憲法適合]`** で Tier・触れた §・第2者/MCP・§52-8 を **自己宣言**（詳細は同ファイル §7）。**憲法カード**（`constitution-brief-card.mdc`）にも 1 行追記済み。
+- **変更履歴の控え**: Desktop 同フォルダの **`15-HISTORY-2026-05-06-read-pack-and-tools.txt`**（read-pack 正本と同名。`npm run session-starter:sync-desktop` でコピー）。

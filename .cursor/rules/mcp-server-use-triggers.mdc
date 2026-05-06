@@ -31,6 +31,15 @@ alwaysApply: true
 - **user-sequential-thinking**: **分岐が多い設計判断**で段階化が有効なとき（短問には使わない）。
 - **user-openrouter**: **他 LLM（DeepSeek/Kimi）が失敗・未設定**の代替。**`model` を必ず指定**（MCP 側に既定が無い場合あり。運用では `OPENROUTER_DEFAULT_MODEL` の設定推奨）。
 
+## 調査・ドキュ・ブラウザ・パイプライン（ツール活用憲法・詳細は `ai-agent-tools-constitution.mdc`）
+
+- **exa**（`exa-mcp-server`）: **実装前**の最新ベストプラクティス・ライブラリ仕様の **セマンティック検索**が主題のとき（Brave と二重に掛けない。**根拠を短く残す**）。
+- **brave-search**: **Web 横断**の最新仕様・事例・リリース情報が主題のとき（Exa と併用する場合は役割分担を 1 行で明示）。
+- **firecrawl**（`firecrawl-mcp`）: **公式ドキュサイトの本文・構造取得**が主題で、軽量 fetch では足りないとき。
+- **puppeteer**（`@modelcontextprotocol/server-puppeteer`）: **Web UI の DOM 実検証**・**ログイン後画面**が主題のとき（**user-playwright** と重なる場合は descriptor 読みのうえ **どちらか＋理由 1 行**）。
+- **mintlify**（`https://mcp.mintlify.com`）: **連携 Mintlify プロジェクトのドキュ更新**が主題のとき（checkout / PR フローに従う）。
+- **harness**（`harness-mcp-v2`）: **Harness / CI/CD パイプライン**の事実確認・設定整合が主題のとき。
+
 ## CIO 運用メモ（合意反映）
 
 0. **金曜・週次反省の直後（定例）**: **`npm run mcp-status:refresh-usage`** を実行し、`docs/mcp-status.md` の **「過去 30 日使用」** を更新 → 差分があれば **commit + push**（浜田さんはカレンダーでタイミングのみ）。`--dry-run` で確認のみも可。

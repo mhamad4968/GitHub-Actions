@@ -137,6 +137,7 @@
     "verify:all": "node scripts/audit-rules.mjs && echo --- && node scripts/audit-tsb-confirmed.mjs && echo --- && node scripts/verify-breaking-deletions.mjs --since=50 && echo --- && node scripts/audit-cross-references.mjs",
     "health-check": "node scripts/health-check.mjs",
     "mcp-status:refresh-usage": "node scripts/refresh-mcp-status-usage.mjs",
+    "mcp:apply-keys": "node scripts/apply-mcp-keys-from-env.mjs",
     "smoke": "node scripts/smoke-test.mjs",
     "smoke-test": "node scripts/smoke-test.mjs",
     "smoke:json": "node scripts/smoke-test.mjs --json",

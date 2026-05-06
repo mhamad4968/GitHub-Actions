@@ -3,6 +3,7 @@
 正本は常にリポ内の全文。**本ファイルは緊急用の要約**。矛盾したら `AGENTS.md`・`RULES-INDEX.md`・`docs/troubleshooting.md` を Read して優先する。
 
 **2026-05-06 追補（CIO・チェック強化）**: 毎ターン先頭は **`every-turn-rules-confirm.mdc`** — **`[§1-2-3 ティア判定]`** → **`【適用憲法】` 1 行** → 🎖️ → ルール確認。**編集・deploy 直前**は **関連 § を `RULES-INDEX` 起点でリスト** → 方針 1 文 → **本体＋ DeepSeek/Kimi の 2 者**（`constitution-enforcement-core.mdc`）。
+**同日 追補（ツール憲法）**: **`.cursor/rules/ai-agent-tools-constitution.mdc`** — 実装前調査（Exa/Brave/Firecrawl）・**CIO の範囲内**での他AI協議（§0.5）・区切りの **`[憲法適合]`**（§7）。MCP 先出し表は **`mcp-server-use-triggers.mdc`** に exa/brave/firecrawl/puppeteer/mintlify/harness を追記。**READ-07 §6** と **15-HISTORY-…** に履歴控え。
 
 ■■ 抜け防止 — 本ファイルを Read した直後にチャットへ 1 回必ず書く ■■
 （READ-01 手順 4 と整合。**コピーして空欄を埋め、省略しない**）

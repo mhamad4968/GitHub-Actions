@@ -9,6 +9,9 @@
       "env": {
         "PATH": "/home/mhamada202408224/.nvm/versions/node/v24.14.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
       }
+    },
+    "mintlify": {
+      "url": "https://mcp.mintlify.com"
     }
   }
 }
