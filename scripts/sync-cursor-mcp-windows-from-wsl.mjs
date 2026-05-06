@@ -168,6 +168,18 @@ function buildWindowsMcp(S) {
     'exec env -i HOME=/home/mhamada202408224 PATH=/home/mhamada202408224/.local/bin:/usr/bin:/bin UV_PATH=/home/mhamada202408224/.local/bin/uv /home/mhamada202408224/.nvm/versions/node/v24.14.1/bin/node /home/mhamada202408224/.nvm/versions/node/v24.14.1/lib/node_modules/@iflow-mcp/markdownify-mcp/dist/index.js',
   );
 
+  // chrome-devtools-mcp は Node 20+ 必須。Windows 正本は WSL の nvm Node 24 で npx 実行（Linux パスを command に置けない）。
+  if (S['chrome-devtools'] && typeof S['chrome-devtools'] === 'object') {
+    out.mcpServers['chrome-devtools'] = wslBash(
+      'export PATH=/home/mhamada202408224/.nvm/versions/node/v24.14.1/bin:$PATH && exec npx -y chrome-devtools-mcp@latest',
+    );
+  }
+  if (S['shadcn-ui'] && typeof S['shadcn-ui'] === 'object') {
+    out.mcpServers['shadcn-ui'] = wslBash(
+      'export PATH=/home/mhamada202408224/.nvm/versions/node/v24.14.1/bin:$PATH && exec npx -y @jpisnice/shadcn-ui-mcp-server',
+    );
+  }
+
   return out;
 }
 
