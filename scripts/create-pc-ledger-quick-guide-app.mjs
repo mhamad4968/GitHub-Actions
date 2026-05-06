@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 新・PC台帳「かんたん案内」用 kintone アプリ（Space 21 / 一般向け短文＋図複数）
+ * 「PC台帳簡単ガイドライン」用 kintone アプリ（Space 21 / 一般向け短文＋図複数）
  * — MCP 不通時の REST 手順に準拠。preview 作成 → フィールド → deploy。
  *
  *   npx dotenv -e .env -e .env.proxy -- node scripts/create-pc-ledger-quick-guide-app.mjs
@@ -11,7 +11,9 @@
  */
 import 'dotenv/config';
 
-const APP_NAME = '新しいPC台帳 かんたん案内';
+const APP_NAME = 'PC台帳簡単ガイドライン';
+/** 旧表示名で作られたアプリを「既存」とみなす（改名後の二重作成防止） */
+const LEGACY_APP_NAME = '新しいPC台帳 かんたん案内';
 const SPACE_ID = Number(process.env.PC_LEDGER_QUICK_GUIDE_SPACE_ID || 21);
 
 function requireEnv(key) {
@@ -134,16 +136,21 @@ const FIELD_DEFS = {
   },
 };
 
+async function findExistingByName(name) {
+  const found = await fetchJson(new URL(`${baseUrl}/k/v1/apps.json`), {
+    method: 'POST',
+    headers: { ...headers, 'X-HTTP-Method-Override': 'GET', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name }),
+  });
+  return (found.apps || []).filter((a) => a.name === name);
+}
+
 async function main() {
   const threadId = await resolveThreadId(SPACE_ID);
   console.log(`[quick-guide] space=${SPACE_ID} thread=${threadId} name="${APP_NAME}"`);
 
-  const found = await fetchJson(new URL(`${baseUrl}/k/v1/apps.json`), {
-    method: 'POST',
-    headers: { ...headers, 'X-HTTP-Method-Override': 'GET', 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: APP_NAME }),
-  });
-  const apps = (found.apps || []).filter((a) => a.name === APP_NAME);
+  let apps = await findExistingByName(APP_NAME);
+  if (!apps.length) apps = await findExistingByName(LEGACY_APP_NAME);
   if (apps.length) {
     const id = apps[0].appId;
     console.log(`[quick-guide] 既存アプリあり appId=${id} — 追加作業は手動で。URL ${baseUrl}/k/${id}/`);
