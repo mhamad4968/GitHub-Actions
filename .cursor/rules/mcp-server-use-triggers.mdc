@@ -33,5 +33,6 @@ alwaysApply: true
 
 ## CIO 運用メモ（合意反映）
 
+0. **金曜・週次反省の直後（定例）**: **`npm run mcp-status:refresh-usage`** を実行し、`docs/mcp-status.md` の **「過去 30 日使用」** を更新 → 差分があれば **commit + push**（浜田さんはカレンダーでタイミングのみ）。`--dry-run` で確認のみも可。
 1. **改善の実装順（合意）**: **(1) 本条の習慣化** → **(2) `npm run rag:mirror:canonical-docs`（4 正本 → `.rag/extra-docs`）＋`verify:rag-mirror-canonical`** → **(3) `main` の branch protection**（手順は `docs/github-branch-protection.md`／UI は管理者権限／§57-10）。
 2. **正本 4 ファイル**（`RULES-INDEX.md` / `kintone-apps.md` / `AGENTS.md` / `WORKFLOW.md`）を編集したターンは、**同一 PR / 同一コミット**で `.rag/extra-docs` を揃える（漏れは CIO が指摘対象）。

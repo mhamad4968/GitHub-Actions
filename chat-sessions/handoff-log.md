@@ -1025,3 +1025,16 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 - **session-lock**: なし
 - **関連パス**: `docs/mcp-status.md` / `~/.cursor/mcp.json` / Windows `.cursor/mcp.json`
 
+### 2026-05-06 JST（追記）— 「過去30日」週次更新を **CIO 定型**化（浜田依頼）
+
+- **依頼**: 週次の再集計は **そちら（CIO）で定型実施**。
+- **実施**:
+  - **`scripts/refresh-mcp-status-usage.mjs`** 新設（`check-mcp-dormancy.mjs --days=30 --strict --json` を読み、`docs/mcp-status.md` の一覧表「過去 30 日使用」列＋冒頭 **最終更新** 脚注を更新）。
+  - **`package.json`**: **`npm run mcp-status:refresh-usage`** を追加。
+  - **`docs/mcp-status.md`**: S12 節・表の鮮度・浜田回答下の **CIO 定例** blockquote を追記。**初回 `npm run mcp-status:refresh-usage` 実行済**（transcript 30 日集計を表に反映）。
+  - **`.cursor/rules/mcp-server-use-triggers.mdc`**: CIO 運用メモ **項 0** として金曜定例を明記。
+- **次の1手**: **毎週金曜・週次反省の直後**のセッション初手で CIO が **`npm run mcp-status:refresh-usage`** → **差分あれば commit + push**（浜田はカレンダーのみ）。
+- **GO待ち**: なし
+- **session-lock**: なし
+- **関連パス**: `scripts/refresh-mcp-status-usage.mjs` / `package.json` / `docs/mcp-status.md` / `.cursor/rules/mcp-server-use-triggers.mdc`
+
