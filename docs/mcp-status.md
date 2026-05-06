@@ -1,12 +1,12 @@
 # 📊 MCP 状態管理台帳
 
-**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-05-06（**O-3 監視スナップ**・憲法系 MCP キー運用メモ追記。浜田回答反映: **Tavily 削除**・**金曜夜＝表「過去30日」見直しタイミング**・**WSL は `gh`**・**課金スナップショット**／`npm run health-check` 突合・**§Cursor 可用性** 更新。表の「過去30日」欄は **2026-05-06** CIO `npm run mcp-status:refresh-usage` で再集計済）
+**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-05-06（**`filesystem`・`fetch` を `~/.cursor/mcp.json` から除去**・`sync-cursor-mcp-windows-from-wsl.mjs`／`verify-cursor-mcp-windows.mjs` を **無 filesystem 運用**に追従。**O-3 監視スナップ**・憲法系 MCP キー運用メモ。浜田回答反映: **Tavily 削除**・**金曜夜＝表「過去30日」見直し**・**WSL は `gh`**・**課金スナップショット**／`npm run health-check` 突合・**§Cursor 可用性** 更新。表の「過去30日」欄は **2026-05-06** `npm run mcp-status:refresh-usage` で再集計済）
 **更新ルール**: mcp.json 変更時 / 月次 MCP 健康診断時 / 浜田判断あった時に必ず本ファイル更新
 **正本順位**: 本ファイル < **`~/.cursor/mcp.json` とワークスペース `.cursor/mcp.json` がマージ**（Cursor 仕様）。`kintone-ai-lab` ルートで開いたとき **Figma + colors-fonts** はリポ側 JSON にも記載（2026-05-04）。
 
 ### §Cursor 可用性メモ（2026-05-06 JST / WSL `kintone-ai-lab`）
 
-- **`npm run health-check`（MCP initialize 系）**: `github`・`office-powerpoint` は **WSL から ⏭（Windows 側想定）**、`figma` は **url-only（stdio 対象外）**、それ以外は **✅ initialize OK**（`markdownify`・`deepseek`・`kimi`・`openrouter`・`kintone` 系・`playwright`・`rag` 等）。**`tavily` は 2026-05-06 に mcp.json から除去済**。
+- **`npm run health-check`（MCP initialize 系）**: `github`・`office-powerpoint` は **WSL から ⏭（Windows 側想定）**、`figma` は **url-only（stdio 対象外）**、それ以外は **✅ initialize OK**（`markdownify`・`deepseek`・`kimi`・`openrouter`・`kintone` 系・`playwright`・`rag` 等）。**`tavily`・`filesystem`・`fetch` は 2026-05-06 に `~/.cursor/mcp.json` から除去済**（`filesystem`／`fetch` は Cursor 標準ツールで代替）。
 - **Cursor チャットからの `call_mcp_tool`**: ワークスペース配下の **descriptor**（`~/.cursor/projects/<id>/mcps/<server>/tools/*.json`）に従う。**本番 kintone 書込・長文生成・CVE/ニュース・RAG** はここ経由で起用可。**PR/Issue 操作の `user-github`** は WSL セッションでは使えない設計のため、同種は **`gh` CLI**（認証済）を **第一選択**（浜田合意 2026-05-06）。Windows 上の Cursor は補助。
 - **S12 死蔵警告**: 下表の「過去 30 日使用」列は **`npm run mcp-status:refresh-usage`**（`check-mcp-dormancy.mjs` 30 日 JSON）で更新する。**毎週金曜夜・週次反省の直後**の Cursor セッションで **CIO（AI）が定例実行**し、差分があれば **`docs/mcp-status.md` を commit + push** まで行う（浜田合意 2026-05-06／運用確定）。**月次健康診断**・**MCP 追加・削除時**も CIO が表を見直す。
 - **O-3 監視スナップ（2026-05-06 JST）**: `npm view` — **`@colorsandfonts/mcp` 1.1.0**、**`@iflow-mcp/markdownify-mcp` 0.0.2**（いずれも registry latest と一致）。**TSB-029**: `mcp.json` の **node フルパス** → `markdownify-mcp/dist/index.js` の **存在確認 OK**（NVM 変更時は TSB-029・`docs/troubleshooting.md` に従い global 再導入＋パス更新）。
@@ -50,9 +50,9 @@
 | 2 | cyber-news | ✅ active | **6 回** | サイバーセキュリティニュース取得 | 5/1（月次健康診断）|
 | 3 | office-powerpoint | ⏭ Win-skip | 0 回（exempt） | PPT 自動生成 (Win 起動必要) | 5/13 後（本番運用後の月次レポート用検討）|
 | 4 | ~~google-search~~ → **duckduckgo-search** | ✅ active (4/23 21:35 入替 / TSB-015 解消) | **2 回** | DuckDuckGo Web 検索 (uvx duckduckgo-mcp-server / Bing ベース / DDG_REGION=jp-ja / API key 不要 / bot 検知緩) | 5/1 月次巡回 + 必要時随時 |
-| 5 | filesystem | ✅ active | **9 回** | ローカルファイル操作 (Cursor 標準で代替可) | **削除候補 / 4/30 判断** |
+| 5 | ~~filesystem~~ | 🗑 **削除済 2026-05-06** | — | （除去）`~/.cursor/mcp.json` から除去・Cursor 標準 Read／WSL で代替 | — |
 | 6 | memory | ✅ **active 化済** | **32 回** | セッション横断記憶 (現在 10 entities + 11 relations) | PC 台帳 PJ で実戦投入後判断（5/13 頃）|
-| 7 | fetch | ✅ active | **2 回** | URL fetch (Cursor 標準 WebFetch で代替可) | **削除候補 / 4/30 判断** |
+| 7 | ~~fetch~~ | 🗑 **削除済 2026-05-06** | — | （除去）Cursor **WebFetch**／`user-fetch` で代替 | — |
 | 8 | sequential-thinking | ✅ active | **13 回** | 段階的思考 | PC 台帳 PJ で実戦投入後判断 |
 | 9 | **kintone (公式)** | ✅ active | **286 回** | kintone API CRUD | 5/13 後（本番運用後）|
 | 10 | **kintone-dev (自作)** | ✅ active | **13 回** | API 仕様参照 (アプリ作成 MCP ではない / 4/23 早朝訂正済) | **4/26 PC 台帳 Day 4 後判断** |
@@ -62,7 +62,7 @@
 | 14 | cve-search | ✅ **active 化済** | **11 回** | CVE 脆弱性検索 | 5/1（月次セキュリティ巡回時 / S14）|
 | 15 | rag | ✅ **強化済** | **46 回** | LanceDB ローカル RAG (現在 76 docs / 3429 chunks) | **§50 + §21 強化（R24/R25）後再評価 / 4/30 判断** |
 | 16 | accessibility-scanner | ✅ active (4/23 21:30 同 Chrome で実 call 動作確認済) | **4 回** | アクセシビリティ検査 | 4/26 PC 台帳 customize 時 |
-| 17 | **figma（公式 remote MCP）** | ✅ **global + リポ**に `url` 追記済（2026-05-04）／初回 OAuth | **1 回** | 表・ダッシュの **配色・タイポ・間隔・レイアウト**を Figma から取得し実装に反映 | **`docs/mcp-design-figma.md`**／Figma プランの rate limit に注意 |
+| 17 | **figma（公式 remote MCP）** | ✅ **global + リポ**に `url` 追記済（2026-05-04）／初回 OAuth | **2 回** | 表・ダッシュの **配色・タイポ・間隔・レイアウト**を Figma から取得し実装に反映 | **`docs/mcp-design-figma.md`**／Figma プランの rate limit に注意 |
 | 18 | **figma-developer-mcp**（任意） | **📋 PAT 要・stdio** | — | 上記の代替（npm `figma-developer-mcp`） | 同上／§17-3 で **npx 絶対 path** |
 | 19 | **colors-fonts**（`@colorsandfonts/mcp`） | ✅ **global + リポ**（Node v24 `npx` 絶対 path／pin `1.1.0`） | **1 回** | **パレット生成**・**WCAG/APCA コントラスト**・CSS/Tailwind/**Figma トークン JSON** 出力（Figma 無しでも表配色のたたき台） | **`docs/mcp-design-kintone-tables.md`**／`call_mcp_tool` 前は descriptor 必読 |
 
@@ -101,14 +101,14 @@
 - **rag**: 朝 cron で再 ingest + R25/R26 で ingest 儀式強化 (4/24 朝 cron 適用)
 
 ### Tier 3: 即時活性化トリガー (R24 §50 で義務化)
-- **fetch**: cybozu.dev 等の公式 docs 取得時 (Cursor 標準 WebFetch で十分なら省略可)
+- **（旧 fetch MCP）**: 公式 docs 取得は **Cursor 標準 WebFetch**／`user-fetch`（MCP）で代替
 - **duckduckgo-search**: Web 検索（「○○ 仕様」「○○ 既知バグ」検索時）
 - **sequential-thinking**: 大型設計判断時 (例: 4/26 PC 台帳 customize 設計の分解)
 - **memory**: 重要決定 / TSB 検出時に entities + relations 追加
 
 ### Tier 4: 削除候補
-- **filesystem**: Cursor 標準で代替可 / 4/30 判断
-- **fetch**: 同上 / 4/30 判断
+- ~~**filesystem**~~: **2026-05-06 削除済**（`~/.cursor/mcp.json` から除去・Windows 同期スクリプト追従）
+- ~~**fetch**~~: **2026-05-06 削除済**（同上）
 - ~~**tavily**~~: **2026-05-06 削除済**（上記）
 - **github / office-powerpoint**: WSL 側では使えない / 削除可だが Win 側で使う日のため残置
 

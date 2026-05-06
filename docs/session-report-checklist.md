@@ -1,5 +1,6 @@
 # セッション報告用チェックリスト（AI → 浜田）
 
+> **運用開始**: **2026-05-06 JST** — 本チェックリスト＋**`every-turn-rules-confirm.mdc` §1e**＋**hooks 自動検証**を、報告・日終わり・状況まとめのターンから **常時適用**（浜田 CEO 指示）。
 > **目的**: チャット上の報告を **毎回同じ骨格**にし、**§1 欠落・破壊系先走り・確認不足**を防ぐ。  
 > **厳格化（自動）**: **報告ターン**で応答末尾に **機械可読 3 行**（下記 **§M**）が無いと **hooks が `stop` で自動フォロー**（再回答を投入）。実装は **`.cursor/hooks/report-checksheet-*.mjs`** と **`hooks.json`**（`beforeSubmitPrompt` / `afterAgentResponse` / `stop`）。  
 > **正本**: 本ファイル。Desktop 用の短縮版は **`chat-sessions/desktop-ai-emergency-read-pack/19-SESSION-REPORT-CHECKLIST.txt`**（`npm run session-starter:sync-desktop` で同期）。  

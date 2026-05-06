@@ -1055,3 +1055,13 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 - **session-lock**: なし
 - **関連パス**: `NEW-SESSION-STARTER.md` / `2026-04-21-new-pc-ledger-spec.md` §9 §10.2 §12 / `checkpoint-latest.md`
 
+### 2026-05-06 JST（追記）— チェックシート運用開始＋MCP 全対応（浜田指示）
+
+- **チェックシート**: **運用開始 2026-05-06 JST** を `docs/session-report-checklist.md`・`19-SESSION-REPORT-CHECKLIST.txt` に明記（§1e＋hooks と常時併用）。
+- **MCP（WSL 正本 `~/.cursor/mcp.json`）**: **`filesystem`・`fetch` エントリを削除**（台帳 Tier4 の削除候補を実行）。**`npm run mcp:apply-keys`**: `temp/mcp_keys.env` の Exa/Brave/Firecrawl/Harness は **空のためスキップ**（既存 `mcp.json` のキーは維持）。**`npm run health-check`**: exit **0**（filesystem/fetch 除く一覧 OK）。**`npm run mcp-status:refresh-usage`**: `docs/mcp-status.md` 表更新済み。**`npm run mcp:sync-cursor-windows`**: `sync-cursor-mcp-windows-from-wsl.mjs` を **filesystem 任意**に直したうえで **Windows `mcp.json` 再生成 OK**（バックアップ `.bak-*`）。**`verify:cursor-mcp-windows`**: OK。
+- **リポ変更**: `scripts/sync-cursor-mcp-windows-from-wsl.mjs`・`scripts/verify-cursor-mcp-windows.mjs`・`docs/mcp-status.md`・read-pack `15`・`19`・`session-report-checklist.md`。
+- **次の1手**: 議論残件は **§41 一問ずつ**（別メッセージ）。**`main` ahead の push** は浜田タイミングで。
+- **GO待ち**: なし（本ターンは指示どおり実施済み）
+- **session-lock**: なし
+- **関連パス**: `~/.cursor/mcp.json` / `C:\Users\mhamada202408224\.cursor\mcp.json` / `docs/mcp-status.md` / `docs/session-report-checklist.md` / `scripts/sync-cursor-mcp-windows-from-wsl.mjs`
+

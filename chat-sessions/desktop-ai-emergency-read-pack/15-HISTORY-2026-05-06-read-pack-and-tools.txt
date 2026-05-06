@@ -50,3 +50,8 @@
 
 - **`hooks.json`**: `beforeSubmitPrompt` / `afterAgentResponse` / `stop` に **`report-checksheet-*.mjs`** を追加。報告意図で **機械フッタ 3 行**欠落時 **`stop` が自動ユーザメッセージ**（`loop_limit` 付き）。
 - **`every-turn-rules-confirm.mdc` §1e** / **`constitution-enforcement-core.mdc`** / **`docs/session-report-checklist.md` §M** / **`19-…`** / **`RULES-INDEX.md`** / **`.gitignore`**（`.cursor/hooks/state/`）を追従。
+
+## 2026-05-06（追記）チェックシート運用開始＋MCP 整理
+
+- **チェックシート**: `docs/session-report-checklist.md`・`19-…` に **運用開始 2026-05-06 JST** を明記。
+- **MCP**: `~/.cursor/mcp.json` から **`filesystem`・`fetch` 除去**・`npm run health-check` / `mcp-status:refresh-usage` / `mcp:apply-keys`（env 空はスキップ）/ **`mcp:sync-cursor-windows`** 成功。`sync-cursor-mcp-windows-from-wsl.mjs`・`verify-cursor-mcp-windows.mjs` を **filesystem 任意**に変更。`docs/mcp-status.md` 表・Tier 追従。

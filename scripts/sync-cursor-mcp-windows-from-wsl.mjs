@@ -74,21 +74,22 @@ function buildWindowsMcp(S) {
   };
 
   const fsSrv = S.filesystem;
-  if (!fsSrv || typeof fsSrv.command !== 'string' || !Array.isArray(fsSrv.args)) {
-    throw new Error('sync-cursor-mcp: WSL mcp.json filesystem block invalid');
+  if (fsSrv && typeof fsSrv.command === 'string' && Array.isArray(fsSrv.args) && fsSrv.args.length >= 2) {
+    const fsArgs = fsSrv.args;
+    out.mcpServers.filesystem = {
+      command: fsSrv.command,
+      args: [
+        fsArgs[0],
+        fsArgs[1],
+        ...fsArgs.slice(2).map((p) => winPathFromMnt(p)),
+      ],
+    };
   }
-  const fsArgs = fsSrv.args;
-  out.mcpServers.filesystem = {
-    command: fsSrv.command,
-    args: [
-      fsArgs[0],
-      fsArgs[1],
-      ...fsArgs.slice(2).map((p) => winPathFromMnt(p)),
-    ],
-  };
 
   out.mcpServers.memory = { ...S.memory };
-  out.mcpServers.fetch = { command: 'python', args: ['-m', 'mcp_server_fetch'] };
+  if (S.fetch && typeof S.fetch.command === 'string') {
+    out.mcpServers.fetch = { command: 'python', args: ['-m', 'mcp_server_fetch'] };
+  }
   out.mcpServers['sequential-thinking'] = { ...S['sequential-thinking'] };
   out.mcpServers.kintone = { ...S.kintone };
 

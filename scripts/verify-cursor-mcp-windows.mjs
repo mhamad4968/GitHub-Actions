@@ -29,7 +29,6 @@ try {
 
 const servers = cfg.mcpServers || {};
 const names = [
-  'filesystem',
   'kintone-space',
   'markdownify',
   'kimi',
@@ -44,22 +43,24 @@ for (const n of names) {
 }
 
 const fsSrv = servers.filesystem;
-if (fsSrv.command !== 'npx') {
-  fail(`filesystem.command must be "npx" (got ${JSON.stringify(fsSrv.command)})`);
-}
-if (!Array.isArray(fsSrv.args) || fsSrv.args[0] !== '-y') {
-  fail('filesystem.args must start with ["-y", ...]');
-}
-if (!String(fsSrv.args[1] || '').includes('server-filesystem')) {
-  fail('filesystem.args[1] must be @modelcontextprotocol/server-filesystem');
-}
-for (const p of fsSrv.args.slice(2)) {
-  if (typeof p !== 'string') fail('filesystem path args must be strings');
-  if (p.startsWith('/') || p.startsWith('\\')) {
-    fail(`filesystem path must be Windows drive path, not: ${p.slice(0, 40)}...`);
+if (fsSrv) {
+  if (fsSrv.command !== 'npx') {
+    fail(`filesystem.command must be "npx" (got ${JSON.stringify(fsSrv.command)})`);
   }
-  if (!/^[A-Za-z]:\\\\/.test(p) && !/^C:\\\\/.test(p)) {
-    fail(`filesystem path must look like C:\\\\... got: ${p.slice(0, 60)}`);
+  if (!Array.isArray(fsSrv.args) || fsSrv.args[0] !== '-y') {
+    fail('filesystem.args must start with ["-y", ...]');
+  }
+  if (!String(fsSrv.args[1] || '').includes('server-filesystem')) {
+    fail('filesystem.args[1] must be @modelcontextprotocol/server-filesystem');
+  }
+  for (const p of fsSrv.args.slice(2)) {
+    if (typeof p !== 'string') fail('filesystem path args must be strings');
+    if (p.startsWith('/') || p.startsWith('\\')) {
+      fail(`filesystem path must be Windows drive path, not: ${p.slice(0, 40)}...`);
+    }
+    if (!/^[A-Za-z]:\\\\/.test(p) && !/^C:\\\\/.test(p)) {
+      fail(`filesystem path must look like C:\\\\... got: ${p.slice(0, 60)}`);
+    }
   }
 }
 
