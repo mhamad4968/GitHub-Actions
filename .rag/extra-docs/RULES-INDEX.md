@@ -237,7 +237,7 @@
 | 正本 | 役割 |
 |---|---|
 | `chat-sessions/checkpoint-latest.md` §「セッション切替後の自律復元」 | 新チャット初手の **索引・日付整合**（**-1** 貼付＝スターター全文。**v3.27+** 詳細手順の正本は `NEW-SESSION-STARTER.md` **「■ 貼付単独で完走」**／**貼付推奨**は verify 最終行 → **-0** … → **0** …）／**日終わり** sync→verify／**項番 5**＝本題別（**5A 部署予実** vs **5B 新・PC台帳**）で無関係 Read をしない |
-| `chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` | 引き継ぎ後の **全棚卸し**（経緯・法律相当・ルール・npm 機能・MCP・**必須機械検証**・チャット報告様式）／**フェーズ 1c**＝部署予実本題時の Read 正本／**フェーズ 7**＝`session:bootstrap` 後・棚卸し報告の **唯一の認められる体裁**（**1〜8・4a 欠落禁止**・浜田 CEO 厳守） |
+| `chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` | 引き継ぎ後の **全棚卸し**（経緯・法律相当・ルール・npm 機能・MCP・**必須機械検証**・チャット報告様式）／**フェーズ 1c**＝部署予実本題時の Read 正本／**フェーズ 7**＝`session:bootstrap` 後・棚卸し報告の **唯一の認められる体裁**（**§1 先頭4行＝ティア・適用憲法・🎖️・ルール確認 を最上段に必置**＋**1〜8・4a 欠落禁止**・浜田 CEO 厳守） |
 | `chat-sessions/SESSION-READ-LADDER.md` | **`session:bootstrap` 後**の **A.共通五段階**（着手前・**ルール理解のみ**）→ **B.プロジェクト確認**（仕様の小出し・§41・GO）。**Read→完了報告テンプレ→次**。`checkpoint`・本チェックリストと併用 |
 | `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.2.0〜** | 新・PC台帳 ver.1 の **正本**（浜田認識・コア vs SKYSEA・フィールド・ボタン）。**実装・ラベル・674 customize を変える前に Read**（手順書のみで代替しない）。**画面ラベル**は `scripts/data/pc-ledger-v1-ui-display-labels.json`／検証は `npm run pc-ledger:verify-labels-spec`／引き継ぎは `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b** |
 | `npm run pc-ledger:verify-labels-spec` | 短文表示ラベル JSON + §4.2.2 マトリクス指紋 + 拡張 JSON を機械突合（セッション切替後のブレ止め） |
