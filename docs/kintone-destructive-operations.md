@@ -11,7 +11,7 @@
 
 ## 681 メタ章削除（実装済み・**アプリは 2026-05-06 CEO 方針で運用終了**）
 
-- **2026-05-06 追記**: kintone **アプリ 681** は **削除方針**（台帳・deploy 対象外）。下記 npm は **歴史的手順**としてリポに残る。
+- **2026-05-06 追記**: kintone **アプリ 681** は **テナント上削除済**（台帳・deploy 対象外）。下記 npm は **歴史的手順**としてリポに残る。
 - **一覧表示のみ**: `npm run pc-ledger:quick-guide:prune-meta`（DELETE しない）
 - **本番 DELETE**: `npm run pc-ledger:quick-guide:prune-meta:apply`（**GO 後**）
 

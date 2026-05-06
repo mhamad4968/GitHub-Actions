@@ -63,6 +63,10 @@
 
 - **CEO**: kintone **681** は **アプリ削除**方針（別案検討）。**`mcp-status:refresh-usage` 毎週金曜**は **差分あれば commit＋push で進めて OK**。
 
+## 2026-05-06（追記）681 テナント削除完了
+
+- **浜田**: `https://jbis-kintone.cybozu.com/k/681/` **削除済**。台帳・`kintone-destructive-operations.md` を **削除済**表記に同期（CIO）。
+
 ## 2026-05-06（追記）チェックシート運用開始＋MCP 整理
 
 - **チェックシート**: `docs/session-report-checklist.md`・`19-…` に **運用開始 2026-05-06 JST** を明記。
