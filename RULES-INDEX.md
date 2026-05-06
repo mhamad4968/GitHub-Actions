@@ -37,7 +37,7 @@
 
 | 文書 | 役割 |
 |---|---|
-| **`docs/session-report-checklist.md`** | **報告用チェックリスト（詳細）** — §1・§1d・§1c・§50-3-8・kintone 破壊系 GO・実績・不可逆・次手・Desktop 同期 |
+| **`docs/session-report-checklist.md`** | **報告用チェックリスト（詳細）** — **CEO 報告ゲート**（ティア・【適用憲法】・`[🎖️ 本セッション割当]`）／**順守根拠**（`[ルール確認]`・§1b）／**AI 側検証 2 者**（§1c・CEO 代替禁止）／§1d・§50-3-8・破壊系 GO・実績等 |
 | Desktop **`19-SESSION-REPORT-CHECKLIST.txt`** | 上記の短縮版（`chat-sessions/desktop-ai-emergency-read-pack/` 正本・**`npm run session-starter:sync-desktop`** で同期） |
 
 ## 📚 文脈獲得・調査
