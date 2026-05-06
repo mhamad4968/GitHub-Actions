@@ -13,7 +13,8 @@
 | （Cursor）**`cio-operating-loop.mdc`** | **CIO 運用の一本線**（2026-05-02）— 正シェルは **`~/kintone-ai-lab`（WSL）**／朝は **`docs/reports/<JST日付>-morning-prep.md`** → **`desktop-ai-emergency-read-pack/READ-07.txt`**（浜田 CEO のお願い）→ 追徴なら **`npm run cio:quick-health`**／切替手順は **`constitution-handoff-gate.mdc`** + `NEW-SESSION-STARTER`「貼付単独で完走」／Read pack + `SESSION-READ-LADDER.md`／Desktop 更新後は **`npm run desktop:sync-and-verify`** を優先 |
 | （Cursor）**`constitution-brief-card.mdc`** | **憲法の薄型常時想起**（2026-05-06）— CIO 三角・**MCP/スクリプト先出し**（「できない」早取り禁止）／網羅版 `constitution.mdc` は **必要時 Read** |
 | （Cursor）**`constitution-enforcement-core.mdc`** | **違反＝失敗・ダブルチェック定義**（2026-05-06 / **alwaysApply: true**）— **本体 CIO ＋ DeepSeek または Kimi** を第 2 者とする。**1 人チェック禁止**。**検証の 2 者**（完了宣言）・**仕様の言い切り**（未決→確定と言い換え禁止）。末尾に CEO 指示の全文を保持 |
-| （Cursor）**`every-turn-rules-confirm.mdc`** | **毎ターン先頭** — **`[§1-2-3 ティア判定]`** → **`【適用憲法】` 1 行** → **`[🎖️]`** → **`[ルール確認]`**／**§1c**（該当時 **`[仕様状態:]`**・**`[検証2者:]`**）／**行動前チェック**（編集・deploy 直前の § リスト＋方針） |
+| （Cursor）**`every-turn-rules-confirm.mdc`** | **毎ターン先頭** — **`[§1-2-3 ティア判定]`** → **`【適用憲法】` 1 行** → **`[🎖️]`** → **`[ルール確認]`**／**§1c**（該当時 **`[仕様状態:]`**・**`[検証2者:]`**）／**§1d**（先頭ブロック欠落の自己回復）／**行動前チェック**（編集・deploy 直前の § リスト＋方針） |
+| （Cursor）**`kintone-destructive-rest-guard.mdc`** | **kintone DELETE・破壊級 REST**（2026-05-06 浜田承認）— **dry-run→チャット貼付→「この一覧で削除 GO」→`--apply`**。**`alwaysApply: true`**。手順 **`docs/kintone-destructive-operations.md`** |
 | （Cursor）**`constitutional-focus-kintone-customize.mdc`** | **glob: `customize/**`** — §35-7 §50-3-8 §52・`kintone-apps.md` の追加想起（**alwaysApply: false**） |
 | （Cursor）**`constitutional-focus-yojitsu.mdc`** | **glob: `templates/yojitsu-budget-lite/**`** — §50-3-8 §41 §2 の追加想起（**alwaysApply: false**） |
 | （Cursor）**`constitutional-focus-github-workflows.mdc`** | **glob: `.github/workflows/**`** — §18 §52-8 §35-1 の追加想起（**alwaysApply: false**） |
@@ -32,6 +33,14 @@
 | §56 / **§56-1a** | **責任の所在 RACI** + **開発=AI・確認=浜田（憲法級・変更禁止）**（R14 / 2026-04-25 + 2026-04-26 浜田宣言） |
 | §43 | WORKFLOW.md 遵守義務（Phase 0-5）|
 | §44 | 夕反省サイクル（手動トリガー）— **`evening-reflect.mjs` 雛形 §1-N** を**毎夜浜田と必ず議論**（憲法運用: CIO 二人体制・§1c・MCP・検証・ルール実態）→ 結論を §2/§4 に 1 行以上 |
+
+## 📋 セッション報告（チャット貼付・自己点検）
+
+| 文書 | 役割 |
+|---|---|
+| **`docs/session-report-checklist.md`** | **報告用チェックリスト（詳細）** — **報告時は □ 本文をチャットに貼付**（CEO 目視）／**CEO 報告ゲート**（ティア・【適用憲法】・`[🎖️ 本セッション割当]`）／**順守根拠**／**AI 側検証 2 者**／§M **機械フッタ**（hooks） |
+| Desktop **`19-SESSION-REPORT-CHECKLIST.txt`** | 上記の短縮版（`chat-sessions/desktop-ai-emergency-read-pack/` 正本・**`npm run session-starter:sync-desktop`** で同期） |
+| **`.cursor/hooks.json`** + **`report-checksheet-*.mjs`** | **報告ターン厳格化** — `beforeSubmitPrompt`→`afterAgentResponse`→`stop` でチェックシート欠落時 **自動フォロー**（`every-turn-rules-confirm.mdc` **§1e**） |
 
 ## 📚 文脈獲得・調査
 
@@ -228,7 +237,7 @@
 | 正本 | 役割 |
 |---|---|
 | `chat-sessions/checkpoint-latest.md` §「セッション切替後の自律復元」 | 新チャット初手の **索引・日付整合**（**-1** 貼付＝スターター全文。**v3.27+** 詳細手順の正本は `NEW-SESSION-STARTER.md` **「■ 貼付単独で完走」**／**貼付推奨**は verify 最終行 → **-0** … → **0** …）／**日終わり** sync→verify／**項番 5**＝本題別（**5A 部署予実** vs **5B 新・PC台帳**）で無関係 Read をしない |
-| `chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` | 引き継ぎ後の **全棚卸し**（経緯・法律相当・ルール・npm 機能・MCP・**必須機械検証**・チャット報告様式）／**フェーズ 1c**＝部署予実本題時の Read 正本 |
+| `chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` | 引き継ぎ後の **全棚卸し**（経緯・法律相当・ルール・npm 機能・MCP・**必須機械検証**・チャット報告様式）／**フェーズ 1c**＝部署予実本題時の Read 正本／**フェーズ 7**＝`session:bootstrap` 後・棚卸し報告の **唯一の認められる体裁**（**1〜8・4a 欠落禁止**・浜田 CEO 厳守） |
 | `chat-sessions/SESSION-READ-LADDER.md` | **`session:bootstrap` 後**の **A.共通五段階**（着手前・**ルール理解のみ**）→ **B.プロジェクト確認**（仕様の小出し・§41・GO）。**Read→完了報告テンプレ→次**。`checkpoint`・本チェックリストと併用 |
 | `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.2.0〜** | 新・PC台帳 ver.1 の **正本**（浜田認識・コア vs SKYSEA・フィールド・ボタン）。**実装・ラベル・674 customize を変える前に Read**（手順書のみで代替しない）。**画面ラベル**は `scripts/data/pc-ledger-v1-ui-display-labels.json`／検証は `npm run pc-ledger:verify-labels-spec`／引き継ぎは `SESSION-BOOTSTRAP-CHECKLIST.md` **フェーズ 1b** |
 | `npm run pc-ledger:verify-labels-spec` | 短文表示ラベル JSON + §4.2.2 マトリクス指紋 + 拡張 JSON を機械突合（セッション切替後のブレ止め） |

@@ -38,6 +38,11 @@ alwaysApply: true
 
 **目的**: 浜田 CEO が **「報告」として検収できる形**を **毎回強制**する（口頭省略・「心の中で確認済み」禁止）。
 
+### 1e-0. 二種類のチェックシート（どちらも欠かさない）
+
+1. **報告ターン一般**（完了・日終わり・状況まとめ等）: 本条 **1e-1 以降**＋**`docs/session-report-checklist.md`**（**□ 本文をチャットに貼付**＋応答末尾 **§M の 3 行**）。**これが無い報告は浜田が認めない**（`constitution-enforcement-core.mdc`）。
+2. **`session:bootstrap`／引き継ぎ棚卸し直後のチャット報告**: **`chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 7** の **1〜8 および 4a を番号付きで全項目**（対象外でも **「対象外」と明記**して省略しない）。**フェーズ 7 なしの経緯報告は認めない**（浜田 CEO 厳守）。
+
 ### 1e-1. 「報告ターン」の定義（いずれか）
 
 - ユーザーの発話に **報告・完了報告・日終わり・セッション終了・本日のまとめ／成果・中間報告・CHECKSHEET／チェックシート** 等が含まれる（**正本**: `beforeSubmitPrompt` と同趣旨の `report-checksheet-pending.mjs`）。

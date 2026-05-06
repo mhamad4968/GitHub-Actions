@@ -12,7 +12,7 @@ alwaysApply: true
 
 ## 違反＝失敗（CEO／CIO 運用）
 
-**憲法やルールに違反した対応は、成果が出ていても失敗とみなす。** 禁句・役割逆転・§41 多重質問・§51 違反・Tier B の無 GO 実行などは **`AGENTS.md`** と **`docs/troubleshooting.md`（TSB-024 等）** に従う。**報告ターン**で **`every-turn-rules-confirm.mdc` §1e**（**【セッション報告チェックシート】**＋**CHECKSHEET_VERSION: 1**＋**CHECKSHEET_OK: yes**）を欠いた応答も **失敗**（**hooks 自動フォロー**）。
+**憲法やルールに違反した対応は、成果が出ていても失敗とみなす。** 禁句・役割逆転・§41 多重質問・§51 違反・Tier B の無 GO 実行などは **`AGENTS.md`** と **`docs/troubleshooting.md`（TSB-024 等）** に従う。**報告ターン**で **`every-turn-rules-confirm.mdc` §1e**（**【セッション報告チェックシート】**＋**CHECKSHEET_VERSION: 1**＋**CHECKSHEET_OK: yes**）を欠いた応答も **失敗**（**hooks 自動フォロー**）。**`session:bootstrap` 完了後や引き継ぎ棚卸し直後に「経緯・棚卸し」をチャットで報告するとき**は **`SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 7（1〜8・4a）を欠かさず埋めたもの**のみを正とし、**チェックシートのないその種の報告は認めない**（浜田 CEO 厳守・§1e **1e-0**）。
 
 ## ダブルチェック（1 人厳禁）の定義
 
