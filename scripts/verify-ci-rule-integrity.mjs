@@ -42,7 +42,8 @@ for (const f of mdcFiles) {
   if (/alwaysApply:\s*true/.test(fm)) alwaysTrue.push(f);
 }
 
-const MAX_ALWAYS = 10;
+// 2026-05-06: constitution-handoff-gate を alwaysApply:true に統一したため 11 件へ
+const MAX_ALWAYS = 11;
 if (alwaysTrue.length > MAX_ALWAYS) {
   fail(`alwaysApply:true が ${alwaysTrue.length} 件（上限 ${MAX_ALWAYS}）。一覧: ${alwaysTrue.join(', ')}`);
 }
