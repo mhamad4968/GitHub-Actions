@@ -185,7 +185,7 @@ const suites = [
       'TSB-024',
       '§35-1',
       '§1-2-3-1',
-      'alwaysApply: false',
+      'alwaysApply: true',
       '[§1-2-3 ティア判定:',
       '浜田（確認）',
       '§51-6-2 壁時計',
@@ -220,6 +220,7 @@ const suites = [
     id: 'every-turn-applicable-constitution',
     rel: '.cursor/rules/every-turn-rules-confirm.mdc',
     needles: [
+      'alwaysApply: true',
       '【適用憲法】',
       '[§1-2-3 ティア判定',
       '行動前チェック',
