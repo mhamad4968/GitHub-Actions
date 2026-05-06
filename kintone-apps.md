@@ -69,6 +69,7 @@ npm run app:fields <アプリID>
 
 | 日時（UTC） | アプリID | customize パス |
 |-------------|----------|----------------|
+| 2026-05-06T14:00:55Z | 681 | `customize/681/desktop.js` |
 | 2026-05-06T11:30:55Z | 681 | `customize/681/desktop.js` |
 | 2026-05-06T11:24:07Z | 681 | `customize/681/desktop.js` |
 | 2026-05-05T05:04:19Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（**共有自動生成**「入力内容が正しくありません」対策:**`api.get()` 直後 `set`**・**内部メタ disabled 解除の強化**・**BUILD** `2026-05-05-pc-ledger-shared-autogen-set-fix`・**deploy SUCCESS** / fileKey **`6589b3b7-1b3a-4082-8e2e-09c95008700b`** / rev **`128`**） |
