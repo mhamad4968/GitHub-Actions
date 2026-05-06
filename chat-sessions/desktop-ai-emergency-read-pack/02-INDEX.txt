@@ -21,4 +21,6 @@
 16-重要確認.txt … **浜田 Desktop 専用**（read-pack 正本外）。重要事項の短い確認メモ。**15 のあと**に読む想定
 17-SESSION-CLOSE-REPORT_yyyymmdd.txt … **前回セッション締め**の控え（read-pack 正本外。**16 のあと**に読む想定。日付はファイル名の yyyymmdd）
 
+**`memo（削除禁止）/` フォルダ** … **浜田個人メモ専用**。**番号付け・read-pack・`session-starter:sync-desktop` の対象外**（CIO は **中身を読まず編集しない**）。
+
 （浜田追記用）ここにメモを足してよい。

@@ -17,6 +17,9 @@ AI緊急用 フォルダ（Desktop）— 使い方メモ（正本はリポ chat-
   セッション終了時: npm run session-starter:sync-desktop で本フォルダへコピー。verify でバイト一致確認。
   運用: 10-README-read-pack.txt を参照。
 
+【個人メモ（運用対象外）】
+  **`memo（削除禁止）/`** … **浜田個人メモ**。read-pack・sync・番号付けの **対象外**（AI は触らない）。
+
 【旧名（移行）】
   `NEW-SESSION-STARTER_yyyymmdd.txt`（**00-** なし）は廃止。sync の prune で削除される。残っていれば一度 **`npm run session-starter:sync-desktop`** を実行。
 
