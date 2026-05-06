@@ -108,6 +108,8 @@ SESSION CLOSE REPORT — 2026-05-04（JST）単一締め報告（1 本に集約�
 | **Figma URL が添付された UI** | `user-figma` | **get_design_context** 前に descriptor。デザイン→コードは **プロジェクト規約に翻訳** |
 | **複雑な分岐の思考ログ** | `user-sequential-thinking` | 長いトレードオフを **人に見せる形**にするときのみ（乱発しない） |
 | **長期メモ（ユーザー嗜好）** | `user-memory` | **本当に跨ぎたい前提だけ**（ノイズ増に注意） |
+| **Shadcn／Radix 系 UI コンポーネント** | **`shadcn-ui`**（`@jpisnice/shadcn-ui-mcp-server`） | **現行の import・props** を正にする。**bootstrap フェーズ 7 の 4a** と **締め §1** に **使用有無＋1 行事実**を残す |
+| **フロントのバグ・表示・コンソールの事実確認** | **`chrome-devtools`**（`chrome-devtools-mcp`） | **実ブラウザのエラー・レンダリング**を見てから修正案を書く。**同上** |
 
 【6.3 アンチパターン（やらない／注意）】
 - **descriptor を読まずに `call_mcp_tool`** → 引数ミス・無駄リトライ。

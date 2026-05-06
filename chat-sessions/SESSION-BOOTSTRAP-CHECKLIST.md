@@ -173,6 +173,8 @@
 | 5.2 | `AGENTS.md` **§50 / §50-2** | どのタスクでどの MCP を使うか・死蔵判定 |
 | 5.3 | `~/.cursor/mcp.json` を変更する予定がある場合のみ **§17-2 手順** | 破壊的操作の禁止 |
 | 5.4 | 新しくツールを呼ぶ前に **該当 `tools/*.json` を Read**（MCP FileSystem 規約） | 引数ミス・認証漏れ防止 |
+| 5.5 | `.cursor/rules/mcp-frontend-shadcn-chrome.mdc` ＋ **`mcp-server-use-triggers.mdc`** の **shadcn-ui / chrome-devtools** 行 | UI・FE デバッグ時の MCP 先出し（**descriptor** は `mcp-tool-discipline.mdc`） |
+| 5.6 | WSL の `~/.cursor/mcp.json` を更新したら **`cd ~/kintone-ai-lab && npm run mcp:sync-cursor-windows`**（Windows 側と単一ソース） | TSB-028 再発防止 |
 
 ---
 
@@ -208,6 +210,7 @@ AI は上記を終えたら **このターン内**で、次を **箇条書きで
 3. **session:bootstrap**: ok / warn / ng（ng ならどれか）  
 3b. **Desktop AI緊急用**: `verify:desktop-ai-emergency-sync` が **OK 全行**か **SKIP（フォルダ無し）**かを 1 行（セッション切替のメンテ確認）。**成功時は最終行の `貼付推奨（項番-1）:` をそのままチャットに貼ってよい**（案 D）  
 4. **MCP**: health-check 上の active / 注意（1 行）  
+4a. **フロント MCP（2026-05-06）**: 本題が **UI コンポーネント（Shadcn 等）**または **フロント不具合・表示確認**に該当する場合、**`shadcn-ui` / `chrome-devtools` を使った事実**を **1 行**（例: 「Shadcn で Button の import 確認」「DevTools で console の TypeError 1 件確認後に修正」）。**本題がフロントに関わらない**ときは **`フロントMCP: 対象外`** と明記。**フロント本題なのに未使用**なら **`フロントMCP未使用`＋理由 1 行**（例: 「MCP 赤・オフライン」）。**日次締め**を書くセッションでは、同趣旨の 1 行を **`SESSION-CLOSE-REPORT_yyyymmdd.txt` の §0 要約または §1 表**にも入れる（監査用・`SESSION-CLOSE-REPORT-20260504.txt` §6 と整合）。  
 5. **次の 1 手**: 何をするか（Tier B なら GO 待ちと明記）  
 6. **新・PC台帳を触る場合**: フェーズ **1b-C テンプレ**を貼ったうえで **1b 完了**と書く（テンプレ無しの「仕様確認しました」は不可。**未完了なら Tier B に進まない**）  
 6b. **部署予実を触る場合**: フェーズ **1c** の Read をした旨を 1 行（**1c 対象外**なら「予実本題なし」と明記）  

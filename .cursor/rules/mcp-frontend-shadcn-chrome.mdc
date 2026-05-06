@@ -1,0 +1,26 @@
+---
+description: Shadcn UI MCP を UI 正とする・Chrome DevTools で FE を事実確認・不明点は関連 MCP で先に取る
+alwaysApply: true
+---
+
+# フロント向け MCP（Shadcn / Chrome DevTools）
+
+## 義務（本題が UI／フロントのとき）
+
+1. **Shadcn／Radix 系の UI コンポーネント**を新規・改修するときは **`shadcn-ui` MCP**（`@jpisnice/shadcn-ui-mcp-server`）を参照し、**現行に近い import・props** に寄せる。学習データだけでの確定は避ける。
+2. **フロントの修正・不具合調査**では **`chrome-devtools` MCP**（`chrome-devtools-mcp`）を**積極的に**使い、**レンダリング・コンソール・ネットワーク**など**ブラウザ上の事実**を確認してから結論を書く。
+3. **実装がリポやチャットだけでは不明**なとき、fetch／Web 検索を**待たず**、利用可能な **関連 MCP**（上記・RAG・kintone 等）で情報を取りに行く。**`call_mcp_tool` 直前は** `.cursor/rules/mcp-tool-discipline.mdc`（descriptor 必読）。
+
+## `mcp.json` 同期（浜田作業・TSB-028）
+
+WSL 正本 `~/.cursor/mcp.json` を直したあと Windows Cursor と揃える:
+
+```bash
+cd ~/kintone-ai-lab && npm run mcp:sync-cursor-windows
+```
+
+## 運用メリット（短く）
+
+- **Shadcn**: 古い props や書き間違いを減らし、**MCP が返す情報**を優先する。
+- **Chrome DevTools**: 「たぶん直る」ではなく**実機で見た事実**に基づく修正へ寄せる。
+- **自律**: 細かい指示がなくても**ブラウザ確認が要る案件**と判断しやすい。

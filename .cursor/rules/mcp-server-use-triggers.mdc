@@ -22,6 +22,8 @@ alwaysApply: true
 - **user-fetch**: **単一 URL の生本文**（HTML/JSON）が正で、ブラウザ操作が不要なとき。
 - **user-duckduckgo-search**: **Web 検索**（横断調査・仕様確認・既知バグ調査）。**Tavily MCP は 2026-05-06 に mcp.json から削除済**（浜田合意）。要約付き検索が必要なら WebFetch＋モデル要約や別経路を検討。
 - **user-playwright**: **ログイン後 UI・E2E・実画面 DOM**が必要なとき（kintone 画面・自社アプリ）。
+- **shadcn-ui**（`@jpisnice/shadcn-ui-mcp-server`）: **Shadcn／Radix 系コンポーネント**の追加・変更で、**現行の使い方・API**を正にしたいとき（詳細運用は **`mcp-frontend-shadcn-chrome.mdc`**）。
+- **chrome-devtools**（`chrome-devtools-mcp`）: **フロントのバグ調査・表示・コンソール**が主題のとき。**実ブラウザの事実**を取る（Playwright との使い分け: E2E／ログイン後画面なら Playwright、DevTools プロトコルで深掘りするなら本サーバも検討）。
 - **user-rag**: **`kintone-ai-lab` 内ドキュメント**の根拠検索（TSB / 手順 / spec）。憲法 §50 系と併用。
 - **user-cve-search** / **user-cyber-news**: **CVE 番号・脆弱性ニュース**が主題のとき（それ以外では使わない）。
 - **user-markdownify**: **長文 HTML → Markdown** の一括変換が目的のとき（小さな表は手直しでよい）。
