@@ -1045,3 +1045,13 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 - **session-lock**: なし
 - **関連パス**: `scripts/refresh-mcp-status-usage.mjs` / `package.json` / `docs/mcp-status.md` / `.cursor/rules/mcp-server-use-triggers.mdc`
 
+### 2026-05-06 JST（追記）— NEW-SESSION-STARTER.md 全行通読（offset 連鎖）＋ PC 台帳クイックガイド・予定表の突合
+
+- **実施**: `chat-sessions/NEW-SESSION-STARTER.md`（**656 行**）を Read ツールで **limit+offset 連鎖**（1–30 / 31–180 / 181–330 / 331–480 / 481–630 / 631–656）し、**抜け・重複なしで通読**（項番 -1 手順 2 の運用どおり）。
+- **文書突合**: `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§9 表**・**§10.2**・**§12 チェックリスト** と `chat-sessions/checkpoint-latest.md` **最終更新（2026-05-06 CEO 文脈）**を参照。**クイックガイドライン**は **5/6 夜に浜田+CIO で作成予定**（準備完了で一旦完了目標）。**5/7–5/10** 試運用・調整・ガイド整備、**5/11** 担当者本運用+お披露目、**5/13** システム本番切替（旧アプリ書込ロック等・**前倒し禁止 §9.0**）。
+- **次の1手（クイックガイド）**: 夜の反省会で **章立て・トーン・掲載場所**（678 上段／別 md／ポータル等）を **§41 一問または短文で確定** → 中学生でも通る文量の目安は仕様書・過去 HANDOFF の「非技術者向け」合意に沿う。**CIO**は構成案・用語チェック・図の下書きまで応相談可（浜田主筆のまま並走してよい旨は handoff 過去条参照）。
+- **git**: 本ブロック追記のみ（この後 `handoff-log.md` を commit）
+- **GO待ち**: クイックガイドの**掲載場所**のみ未確定なら夜イチで一文
+- **session-lock**: なし
+- **関連パス**: `NEW-SESSION-STARTER.md` / `2026-04-21-new-pc-ledger-spec.md` §9 §10.2 §12 / `checkpoint-latest.md`
+
