@@ -67,6 +67,11 @@
 
 - **浜田**: `https://jbis-kintone.cybozu.com/k/681/` **削除済**。台帳・`kintone-destructive-operations.md` を **削除済**表記に同期（CIO）。
 
+## 2026-05-06（追記）定常 GO ＋担当者案内は 5/16 まで保留
+
+- **CEO GO**: 金曜 **`mcp-status:refresh-usage`**（差分あれば commit＋push）／任意 **`session-starter:sync-desktop`**（`mcp-server-use-triggers.mdc` 項 0）。
+- **681 代替案内**: **2026-05-16 まで保留**・SPEC **§12.5** プレースホルダのみ（策確定後に浜田指示）。
+
 ## 2026-05-06（追記）チェックシート運用開始＋MCP 整理
 
 - **チェックシート**: `docs/session-report-checklist.md`・`19-…` に **運用開始 2026-05-06 JST** を明記。

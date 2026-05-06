@@ -107,7 +107,7 @@
 
 ---
 
-**最終更新**: 2026-05-06 (Wed) JST — **CEO 文脈の文書化（予実・PC台帳）**: **予実**＝部内レビュー後の修正要否は浜田判断・CIO 恒常ウォッチ外（**`templates/yojitsu-budget-lite/SPEC.md`** 状態欄）。**PC 台帳**＝**5/11** 担当者本運用+お披露目は据え置き。**~~5/6 夜のクイックガイドライン（681）~~** は **撤回**（アプリ削除・別手段は後日・**`2026-04-21-new-pc-ledger-spec.md` v2.2**）。**5/13** 旧アプリ書込ロックは前倒し禁止のまま（**同仕様書 §9・§10・§12・§13**）。本ファイル「現在のゴール」「4/27〜」タイムラインを §9 に整合。
+**最終更新**: 2026-05-06 (Wed) JST — **CEO 文脈の文書化（予実・PC台帳）**: **予実**＝部内レビュー後の修正要否は浜田判断・CIO 恒常ウォッチ外（**`templates/yojitsu-budget-lite/SPEC.md`** 状態欄）。**PC 台帳**＝**5/11** 担当者本運用+お披露目は据え置き。**~~5/6 夜のクイックガイドライン（681）~~** は **撤回**（アプリ削除・**`2026-04-21-new-pc-ledger-spec.md` v2.2**）。**担当者案内の別手段**は **2026-05-16 まで保留**（**§12.5** プレースホルダ・浜田策確定後に指示）。**定常 GO**: 毎週金曜 **`mcp-status:refresh-usage`**（差分あれば commit＋push）／任意 **`session-starter:sync-desktop`**（**`mcp-server-use-triggers.mdc` 項 0**・CEO GO 2026-05-06）。**5/13** 旧アプリ書込ロックは前倒し禁止のまま（**同仕様書 §9・§10・§12・§13**）。本ファイル「現在のゴール」「4/27〜」タイムラインを §9 に整合。
 
 **最終更新**: 2026-05-01 (Thu) JST — **日締め・明日引継ぎパック（浜田「すべて対応」指示）**: (1) **予実・仕様確認デイ**の運用表を `checkpoint-latest.md` に新設。(2) **`SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 1c** に同デイのチェック追記。(3) **`docs/troubleshooting.md` TSB-029**（markdownify `preinstall` 欠落＋`--ignore-scripts`＋`node` 直起動）＋目次表に **TSB-028/029** 行。(4) **`RULES-INDEX.md`** に TSB-029 索引 1 行。(5) **`handoff-log.md`** に本日締めブロック。(6) **`NEW-SESSION-STARTER.md`**（＋`.rag`）に仕様確認デイ 1 節。(7) **`.cursor/rules/deepseek-cursor-spec-division.mdc`** に同日チェックリスト。**憲法 `AGENTS.md` は未改変**（§57 I は改定キューに委譲）。**次本題（明日）**: 部署予実 **仕様確認デイ**（項番 -0 で範囲固定 → 知恵袋 → CIO 突合）。**朝イチ**: `verify:constitution-handoff` / `mandatory-read-gate` 緑。**MCP**: `user-markdownify` は **TSB-029** 手順で緑確認済み想定。
 

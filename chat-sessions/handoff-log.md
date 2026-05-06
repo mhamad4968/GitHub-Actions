@@ -1100,8 +1100,13 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 ### 2026-05-06 JST（追記）— kintone **681** テナント削除 **完了**（浜田 CEO）
 
 - **事実**: `https://jbis-kintone.cybozu.com/k/681/` は **削除済**（浜田報告）。リポは **`kintone-apps.md`** / **`.rag/extra-docs/kintone-apps.md`** / **`docs/kintone-destructive-operations.md`** を **「削除済」表記**に同期（本コミット）。
-- **残件（次の論点）**: 担当者向け案内の **別手段**（掲載場所・媒体・674 内案内の要否）は **未決** → 決まり次第 **`2026-04-21-new-pc-ledger-spec.md`** §9〜§10 と台帳へ反映。
-- **次の1手（定常）**: **毎週金曜** `npm run mcp-status:refresh-usage`（差分あれば commit＋push）。任意: **`npm run session-starter:sync-desktop`**（read-pack 差分がある環境のみ）。
-- **GO待ち**: なし（681 削除は完了）
+- **残件（次の論点）**: 担当者向け案内の **別手段**は **2026-05-16 まで判断保留**（**`2026-04-21-new-pc-ledger-spec.md` §12.5**）。策確定後に **浜田がチャットで指示** → CIO は **§9〜§10・台帳へ反映**のみ。
+
+### 2026-05-06 JST（追記）— **定常 GO**（金曜 MCP ＋任意 Desktop sync）／§12.5 **保留**
+
+- **CEO GO**: **毎週金曜** **`npm run mcp-status:refresh-usage`**（差分あれば **commit＋push**）。**任意** **`npm run session-starter:sync-desktop`**（read-pack を Desktop に揃えるとき）。**`mcp-server-use-triggers.mdc` 項 0** に **GO 日付明記**。
+- **担当者案内（681 代替）**: **2026-05-16 まで保留**・**タスクのみ** SPEC **§12.5**＋§13 **v2.3**＋`checkpoint-latest` に記録。策確定後は **浜田から指示**。
+- **次の1手**: 上記定常を運用。**681 代替**は **指示まで着手しない**。
+- **GO待ち**: なし（定常・保留の線引きは本節で完了）
 - **session-lock**: なし
 
