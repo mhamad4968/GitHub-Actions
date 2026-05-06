@@ -32,6 +32,7 @@
     "pc-ledger:dept-master:create-app:seed": "npx dotenv -e .env -e .env.proxy -- node scripts/create-pc-ledger-dept-master-app.mjs --seed",
     "pc-ledger:dept-master:seed-records": "npx dotenv -e .env -e .env.proxy -- node scripts/seed-dept-master-675.mjs",
     "pc-ledger:dept-master:seed-records:dry-run": "npx dotenv -e .env -e .env.proxy -- node scripts/seed-dept-master-675.mjs --dry-run",
+    "pc-ledger:quick-guide:create-app": "npx dotenv -e .env -e .env.proxy -- node scripts/create-pc-ledger-quick-guide-app.mjs",
     "pc-ledger:675:seed-records": "npx dotenv -e .env -e .env.proxy -- node scripts/seed-dept-master-675.mjs",
     "pc-ledger:675:seed-records:dry-run": "npx dotenv -e .env -e .env.proxy -- node scripts/seed-dept-master-675.mjs --dry-run",
     "cio:preflight:677": "node scripts/cio-preflight-stamp.mjs --app 677",
