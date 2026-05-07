@@ -70,6 +70,7 @@ npm run app:fields <アプリID>
 
 | 日時（UTC） | アプリID | customize パス |
 |-------------|----------|----------------|
+| 2026-05-07T12:14:21Z | 678 | `customize/678/desktop.js` |
 | 2026-05-05T05:04:19Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（**共有自動生成**「入力内容が正しくありません」対策:**`api.get()` 直後 `set`**・**内部メタ disabled 解除の強化**・**BUILD** `2026-05-05-pc-ledger-shared-autogen-set-fix`・**deploy SUCCESS** / fileKey **`6589b3b7-1b3a-4082-8e2e-09c95008700b`** / rev **`128`**） |
 | 2026-05-05T12:00:00Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（**個人 `windows_name`**: **`jbm####[mail@前]`**・`logon_name` と `[` の間の **`+` 廃止**・**BUILD** `2026-05-05-pc-ledger-windowsname-bracket-noplus`・**リポ HEAD**／本番反映は **`npm run deploy:674`**） |
 | 2026-05-05T12:00:00Z | 627 | `customize/627/desktop.js`（595/626 自動入力の **`windows_name`**: **`logon_name[mail@前]`**・`+` 廃止・**BUILD** 注記 `2026-05-05-v1`・**リポ HEAD**／本番反映は **`npm run deploy:627`**） |
