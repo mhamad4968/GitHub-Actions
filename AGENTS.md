@@ -984,6 +984,8 @@ AIエージェント自身および開発環境のすべてのツール・ライ
 - **健康診断は `npm run cio:health` （`bash scripts/cio-health-check.sh`）で実行**。観点は壁時計（URL は `/tmp/session-clock-web.log` から **動的取得**）／session-lock／Node・npm／MCP 4 サーバ probe（`scripts/cio-mcp-quickprobe.mjs`）／git status／GitHub Actions 直近 30 件 failure 集計／EOL 維持。
 - **記憶違いを構造的排除**: 壁時計 URL を変数・記憶に頼らず、毎回ログから動的取得する。
 - **既存スクリプトを再利用**: `health-check.mjs`／`session-clock-health.mjs`／`cio:quick-health` を Orchestrator が呼び出す（重複実装しない）。
+- **`session:bootstrap` への組み込み**（**2026-05-07 22:46 JST CEO 判断 Q34=B+α**）: `scripts/session-bootstrap-verify.mjs` の末尾（smoke:quiet 直前）で `bash scripts/cio-health-check.sh` を **非ブロック実行**する。`exit !== 0`（WARN/RED 検出）でも bootstrap は続行（自走復元を止めないため）。
+- **WARN/RED 報告義務**: bootstrap 中に `cio:health` で WARN/RED が表示された場合、CIO は **次の §1/§2 報告で必ずその旨と内訳を明記し、対処方針を提示する**。**「気付いたが報告しない」は §1 報告ルール違反として扱う**（健康最優先・浜田 2026-05-07）。
 
 ---
 

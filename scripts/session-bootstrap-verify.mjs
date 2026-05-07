@@ -82,6 +82,19 @@ if (mcpWin.status !== 0) {
   process.exit(typeof mcpWin.status === 'number' && mcpWin.status !== 0 ? mcpWin.status : 2);
 }
 
+// 健康チェック（非ブロック・cio-health-check.sh 出力をそのまま表示・2026-05-07 浜田承認 Q34=B+α）
+console.log('\n=== [bootstrap] 健康チェック (cio:health 非ブロック) ===');
+const health = spawnSync('bash', ['scripts/cio-health-check.sh'], {
+  cwd: root,
+  stdio: 'inherit',
+});
+if (health.status !== 0) {
+  console.log('\n[bootstrap] ⚠️  cio:health で WARN/RED 検出 — 上記を確認（非ブロック・続行）');
+  console.log('  CIO は §1/§2 報告で必ず明記すること（AGENTS.md §41-7）');
+} else {
+  console.log('[bootstrap] cio:health GREEN');
+}
+
 const r = spawnSync('npm', ['run', 'smoke:quiet'], {
   cwd: root,
   stdio: 'inherit',
