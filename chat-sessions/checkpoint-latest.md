@@ -48,17 +48,28 @@ CIO 推奨を事前準備済。明日朝のフロー（§ 後述）の Step 4 �
 | **6** | 5A 予実カードの運用者向け簡易マニュアル化（5C 化） | **A: 5C カード化**: 業務担当向けの「PC 購入時はこう入力」「定額月額・年額・変動費の使い分け」「partner_company 入力ルール」を 1 枚マニュアル化。`templates/yojitsu-budget-lite/docs/yojitsu-quick-manual.md` に追加 |
 | **7** | Cursor trailer 自動付加への構造的対応（本ターン副次発見） | **A: 標準運用化**: 「`git commit` を含むコマンドは PowerShell 直書きせず `scripts/tmp-*.sh` 経由 + 絶対パス cd」を AGENTS.md §41-3 に追加（既に書いてあるが明示的に commit コマンド固有のルールとして強化） |
 
-### 明日朝のフロー（CEO 確定・2026-05-07 22:53 JST）
+### 🔴 追加論点 8〜11（22:58 JST 自己監査由来・本日違反の遡及是正）
+
+CEO 提示の最低基準 §M-1〜§M-3 に対し本日 3 項目とも違反（または部分違反）を発見。本日違反の根本原因に対応する追加論点を 4 件追加。**論点 8〜11 を明日朝の最優先**とする（CEO 22:59 JST 「需要名ルールなので守ってもらわないと困る」発言）。
+
+| 論点 | 内容 | CIO 推奨 |
+|---|---|---|
+| **8** | A1〜A6 / AGENTS.md §41-2〜§41-7 / Q33 / Q34 に DeepSeek **遡及適用**（本日着手前 §50-3-8 なしで commit したため） | **A: 即実行**。`chat-sessions/audit-2026-05-07-retroactive.md`（新規）に DeepSeek 突合結果を記録。問題発見時は即 revert または fix-up commit |
+| **9** | §1 先頭 4 行「ティア／適用憲法／🎖️／ルール確認」フォーマット統一 | **A: 機械検証化**。`scripts/cio-report-format-check.mjs` ＋ `.cursor/rules/cio-report-min-format.mdc`（alwaysApply: true）で静的ルール化＋ post-message 監査 |
+| **10** | §M-2 V2「4 新フィールド」の正典定義（CIO は 2/4 しか把握できていない・**ドキュメント側にも穴**） | **A: AGENTS.md / RULES-INDEX.md に明文化**。CEO に 4 フィールドの正典名・記載粒度を確認した上で正典化 |
+| **11** | A1 pre-commit hook 拡張: `SPEC_TOUCHED: yes` なら commit message に `Reviewed-by: deepseek\|kimi\|openrouter` trailer 必須 | **A: 機械強制**。`scripts/cio-eol-check.sh` 的な独立 script（`cio-second-reviewer-check.sh`）として pre-commit hook に追加。物理的に第2者抜けを防ぐ |
+
+### 明日朝のフロー（CEO 確定・2026-05-07 22:59 JST 更新版）
 
 | 順 | 工程 | コマンド／ファイル |
 |---|---|---|
 | 1 | **ブリーフィング**（`AI緊急用` 00-23 + 主要ファイル精読） | `C:\Users\mhamada202408224\Desktop\AI緊急用\00-NEW-SESSION-STARTER_yyyymmdd.txt` から 23 まで |
 | 2 | **健康状態確認** | `npm run cio:health` |
 | 3 | **GitHub 状態確認** | `cio:health` 内蔵（または `gh run list --limit 10`） |
-| 4 | **残り議論 3〜7（5 件）の方針決定** | §41 1問1答で順次。CIO 推奨は本表のとおり事前準備済 |
+| 4 | **残り議論 3〜11（9 件）の方針決定** | §41 1問1答で順次。**論点 8〜11 を最優先**（本日の最低基準違反の遡及是正・CEO 22:59 JST「需要名ルールなので守ってもらわないと困る」発言由来）。CIO 推奨は本表のとおり事前準備済 |
 | 5 | **「今日の予定」ヒアリング** | 通常運用 |
 
-**注**: §51-6-2 の 4 時間軸はリセット（新チャット）。Step 4 で論点 5（IDE files.eol 固定）が承認されたら、`.vscode/settings.json` または `.cursor/settings.json` の追加が発生する点に留意。
+**注**: §51-6-2 の 4 時間軸はリセット（新チャット）。Step 4 で論点 5（IDE files.eol 固定）が承認されたら `.vscode/settings.json`／`.cursor/settings.json` の追加が発生。論点 8 で DeepSeek 遡及監査により問題発見時は **追加 commit／revert** が発生する可能性あり。
 
 ---
 
