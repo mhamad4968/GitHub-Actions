@@ -1175,3 +1175,29 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 - **GO待ち**: 次タスク選定
 - **session-lock**: なし
 
+
+### 2026-05-07 21:23 JST（追記）— §50-3-9 整理 完了（一時 REST スクリプト 13 本＋インベントリ補助 1 本 削除）
+
+- **CEO 指示**: Q23 で **A**（§50-3-9 整理）選択（21:22 JST）。
+- **整理方針**: 全 13 本は今回の 5A 予実 ⑦／⑥／⑤+③ で REST 監査用に使い切ったもの（GET 系: 分布／フィールド定義／検索／PUT 系: 1 件・3 件・26 件・1 件 / MCP JSON 是正）。表記揺れ自体は SPEC §6g + `submitPayment` 内 NFKC 自動正規化で根本抑止済のため再利用価値ほぼゼロと判断 → **全 13 本削除**（`git log` で復元可能）。
+- **削除済み（13 本＋インベントリ補助 1 本＝計 14 本）**:
+  - `scripts/tmp-fix-mcp-json-kintone-baseurl.py` （MCP `user-kintone` URL 是正・1 回限り）
+  - `scripts/tmp-kintone-677-fixed-paytype-distribution.py` （`cost_category × payment_type` 分布）
+  - `scripts/tmp-kintone-677-get-cost-category-field.py` （`cost_category`/`payment_type` フィールド定義 GET）
+  - `scripts/tmp-kintone-677-get-haisen-records.py` （配線工事レコード検索）
+  - `scripts/tmp-kintone-677-get-other-like-partners.py` （`他`/`各社` 検索）
+  - `scripts/tmp-kintone-677-get-pc-records.py` （PC購入費 $id=70 GET）
+  - `scripts/tmp-kintone-677-list-partner-values.py` （`partner_company` 値分布）
+  - `scripts/tmp-kintone-677-partner-batch-plan.py` （26 件正規化計画 dry-run）
+  - `scripts/tmp-kintone-677-partner-batch-put.py` （26 件 atomic PUT 本番）
+  - `scripts/tmp-kintone-677-partner-distribution.py` （`partner_company` 分布＋警告フラグ）
+  - `scripts/tmp-kintone-677-put-partner-haisen.py` （配線工事 $id=56 PUT）
+  - `scripts/tmp-kintone-677-put-partner-other-batch.py` （`他`/`各社` 3 件 → `その他` batch PUT）
+  - `scripts/tmp-kintone-677-put-payment-type.py` （PC購入費 $id=70 `payment_type` PUT）
+  - `scripts/tmp-inventory-tmp-scripts.sh` （本ターン作成のインベントリ補助・整理直前に役目終了）
+- **昇格**: なし（全件削除）。
+- **検証**: `ls scripts/ | grep -E '^tmp-'` → `NO_TMP_REMAINING`。`git status --porcelain` も `??` ゼロ。
+- **次の1手**: 残積み 2 件（② `initial_variable_budget` 仕様判断 / B Cursor MCP リロード後疎通）から §41 で選定。
+- **GO待ち**: 次タスク選定
+- **session-lock**: なし
+- **関連パス**: 削除対象 14 本（上記）／`AGENTS.md` §50-3-9（証跡 1 行ルール）
