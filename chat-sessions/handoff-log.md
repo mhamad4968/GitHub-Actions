@@ -1242,3 +1242,16 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 - **GO待ち**: 浜田 §41 — 次のタスクの提示（または休憩）。
 - **session-lock**: なし
 - **関連パス**: `C:\\Users\\mhamada202408224\\.cursor\\mcp.json`（kintone/kintone-space ブロック・bc64d80 状態維持）／`scripts/tmp-mcp-kintone-probe.mjs`／`scripts/tmp-mcp-vs-rest-apps.mjs`（§50-3-9 整理対象・本クローズで削除）
+
+### 2026-05-07 22:55 JST（追記・本セッション終了サマリ）— 18:19 開始 / 4h36m / §51-6-2 で新チャット切替へ
+
+- **本日の累積成果**: ① $id=70 PC購入費 payment_type 月→都度 ✅／② initial_variable_budget v1 既定運用＋ 678 表示分岐（rev=128 / BUILD=2026-05-07-678-ivb-empty-as-dim・CEO 21:56 OK）✅／③ partner_company 表記揺れ整理 26 件（atomic batch PUT）✅／④ $id=56 配線工事 partner_company その他化 ✅／⑤ partner_company 16 社正典化＋B3 確認＋NFKC 自動正規化（rev=126・CEO OKです）✅／⑥ 業務 3 区分（イニシャル‐月額／‐年額／変動費）正典化（SPEC §6f / field-plan §3・§4.1）✅／⑦ 678 ダッシュ 固定費フィルタ 月額・年額 分割（rev=124 / BUILD=2026-05-07-678-cost-category-filter-split）✅／§50-3-9 一時 REST スクリプト 14 本＋本日生成分 全削除（scripts/tmp-* 残 0）✅／B Cursor MCP リロード後 user-kintone 疎通確認（mcp.json bc64d80 ＋ Cursor リロード ＋ JSON-RPC 直 spawn 検証で ECONNRESET 完全解消）✅。**5A 予実カード = 7/7 完了 ＋ B 残積み = 1/1 完了**。
+- **反省点是正パッケージ A1〜A6（commit 8fc973d）**: A1 EOL 規律自動化（.gitattributes 拡張・git-hooks/pre-commit・cio-eol-check.sh）／A2 健康診断オーケストレータ（cio-health-check.sh・cio-mcp-quickprobe.mjs・npm run cio:health）／A3 WSL$ ファイルキャッシュ事故防衛（cio-wsl-cache-defense.sh・.cio/cache-sensitive-files.txt 8 件登録）／A4 §41-2 B 階段事前カード化（4 基準明文化）／A5 §41-3 シェル quoting 事故の構造的回避（cio-shell-quoting-helpers.sh）／A6 §41-4 重要タスククローズ時の checkpoint 更新義務／+ §41-5/6/7 の関連ルール明文化。**初回 push protection で API key fallback 検出 → 即時 amend で secret-free 化**（盲点点検漏れの教訓）。
+- **議論論点 1・2 クローズ**: Q33=C（全 .md CRLF 統一・5fc95ee → 6aff792 で 214 ファイル sed 一括変換）／Q34=B+α（cio:health を session:bootstrap 末尾に**非ブロック組み込み**・f20a82d）。AGENTS.md §41-7 に「bootstrap 中の WARN/RED 報告義務」追記（健康最優先）。
+- **§41-7 初回適用**: bootstrap 動作テストで `[session-clock] ❌ §51-6-2 時間軸: 同一セッション開始から 4 時間以上経過` を検出 → CEO へ §1/§2 で報告 → Q35 で「明日朝に議論を回す」決定 → Q36=A（引き継ぎ準備 4 件を今ターンで実施）。
+- **副次発見（議論論点 7 として明日へ持ち越し）**: Cursor が私のシェルコマンドに `--trailer "Co-authored-by: Cursor <cursoragent>"` を自動付加 → PowerShell が `<` を redirection と誤解釈する事象が頻発。回避策確立（**スクリプトファイル経由＋絶対パス cd**）が AGENTS.md §41-3 で標準化済。
+- **commit 履歴（本ターン後半）**: 3f8a41c → 7b95a6e (Actions auto) → eca2b1b → 24ad3f7 → 9d84b50 → c0e39d2 → ad12e77 → 8fc973d → 5fc95ee → 6aff792 → f20a82d。**全 push 成功**（HEAD = f20a82d ＋ 本クローズ commit 1 件追加予定）。
+- **未着手の議論**（明日朝に持ち越し・5 件）: 論点 3 WSL$ キャッシュ根本回避／4 B 階段事前カード化発動条件／5 EOL Cursor IDE files.eol 固定／6 5A 予実カード 5C 化（運用者向けマニュアル）／7 Cursor trailer 構造対応。**CIO 推奨は checkpoint-latest.md 上部の表に事前準備済**。明日朝のフロー: ① ブリーフィング → ② cio:health → ③ GitHub 状態 → ④ §41 で論点 3〜7 を 5 連続消化 → ⑤ 「今日の予定」ヒアリング。
+- **session-lock**: なし（クローズ後）／**scripts/tmp-* 残**: 0 本／**git status**: clean（HEAD = f20a82d）／**壁時計**: http://localhost:47931/（HTTP 200）／**MCP 4 サーバ**: SUMMARY OK 1/4 SKIP=3 NG=0（kintone のみ env 注入で probe 済・他 3 つは .env に key 無く SKIP）。
+- **GO待ち**: なし（明日朝の新チャット起動を浜田が実施）。
+- **関連パス**: `chat-sessions/checkpoint-latest.md` 上部「🟢 本ターン末状態」ブロック（本クローズで追記）／`AGENTS.md` §41-2/-3/-4/-5/-6/-7／`scripts/cio-*.{sh,mjs}`／`.gitattributes`／`.cio/cache-sensitive-files.txt`／`git-hooks/pre-commit`。
