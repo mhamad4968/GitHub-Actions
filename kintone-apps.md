@@ -39,7 +39,7 @@ npm run app:fields <アプリID>
 
 ### 678 本番 customize の実効ビルド（台帳ずれの正）
 
-- **本番 live**（**2026-05-07T21:46+09:00** `npm run deploy:678` SUCCESS 時点・rev=127・以後 GitHub Actions `kintone-customize-deploy` 自動再デプロイあり）: fileKey **`9f15408b-bfca-46ab-bcde-a39f86c7e801`** / preview revision **`127`** / **`var BUILD`** = **`2026-05-07-678-ivb-empty-as-dim`**（リポ **`customize/678/desktop.js` HEAD** と一致）。**変更内容**: `computeAggregates()` の `initial_variable_budget` 取得を **`ivRaw` 元値保持＋ `iv = toNum(ivRaw)` 数値化**の 2 変数に分離し、表示用に **`ivBudgetForDisplay = ivRaw === "" || ivRaw == null ? "" : iv`** を追加。`initial.budget` を `ivBudgetForDisplay` に差し替え、空のとき `formatYen("")` → `Y678_EMPTY_HTML="---"` を返す挙動に。消費率（`pct(sumA, iv + sumR)`）は数値 `iv` のままで影響なし。**実機影響**: 変動費 9 件中 EMPTY 1 件（$id=70 PC購入費）の予算セルが `¥0` → `---` に変化。POSITIVE 8 件は表示変化なし。`SPEC.md` §6f 「`initial_variable_budget` の v1 既定運用」新節および §6f 業務 3 区分テーブルの変動費行を更新。`yojitsu-master-and-field-plan.md` §3 に SPEC §6f 参照を追記。
+- **本番 live**（**2026-05-07T12:51:15Z** GitHub Actions `kintone-customize-deploy` SUCCESS 時点・直前の **`npm run deploy:678` rev=127** から自動再デプロイで **rev=128** に更新）: fileKey **`202605071251158BEA7DFC8E174812AD1FFD6CEEF183F6265`** / preview revision **`128`** / **`var BUILD`** = **`2026-05-07-678-ivb-empty-as-dim`**（リポ **`customize/678/desktop.js` HEAD** と一致）。**変更内容**: `computeAggregates()` の `initial_variable_budget` 取得を **`ivRaw` 元値保持＋ `iv = toNum(ivRaw)` 数値化**の 2 変数に分離し、表示用に **`ivBudgetForDisplay = ivRaw === "" || ivRaw == null ? "" : iv`** を追加。`initial.budget` を `ivBudgetForDisplay` に差し替え、空のとき `formatYen("")` → `Y678_EMPTY_HTML="---"` を返す挙動に。消費率（`pct(sumA, iv + sumR)`）は数値 `iv` のままで影響なし。**実機影響**: 変動費 9 件中 EMPTY 1 件（$id=70 PC購入費）の予算セルが `¥0` → `---` に変化。POSITIVE 8 件は表示変化なし。`SPEC.md` §6f 「`initial_variable_budget` の v1 既定運用」新節および §6f 業務 3 区分テーブルの変動費行を更新。`yojitsu-master-and-field-plan.md` §3 に SPEC §6f 参照を追記。
 - **直前**（2026-05-07T12:14:21Z GitHub Actions 自動再デプロイ）: fileKey **`20260507121419E8BC8237900E4FF883E1A9D0E0E9EA3F041`** / preview revision **`126`** / **`var BUILD`** = **`2026-05-07-678-partner-presets-canonical-confirm`**（取引先 16 社・表記揺れ整理・B3 確認・NFKC 自動正規化）。
 - **直前**（2026-05-07T11:08Z GitHub Actions 自動再デプロイ）: fileKey **`d2a0feb8-c1ae-4ac0-9545-5cbad4e4d115`** / preview revision **`124`** / **`var BUILD`** = **`2026-05-07-678-cost-category-filter-split`**（費用種別フィルタを 4 ボタン化）。
 - **上表 678 行の `2026-05-05`〜`05-07` 風の連記**は、**現行 `desktop.js`（上記 BUILD）のバンドルには含まれない**メモ行である（当該機能を載せるときは **ソース改修＋`BUILD` 更新**のうえ **deploy:678**）。
@@ -71,7 +71,6 @@ npm run app:fields <アプリID>
 
 | 日時（UTC） | アプリID | customize パス |
 |-------------|----------|----------------|
-| 2026-05-07T12:51:16Z | 678 | `customize/678/desktop.js` |
 | 2026-05-07T12:14:21Z | 678 | `customize/678/desktop.js` |
 | 2026-05-05T05:04:19Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（**共有自動生成**「入力内容が正しくありません」対策:**`api.get()` 直後 `set`**・**内部メタ disabled 解除の強化**・**BUILD** `2026-05-05-pc-ledger-shared-autogen-set-fix`・**deploy SUCCESS** / fileKey **`6589b3b7-1b3a-4082-8e2e-09c95008700b`** / rev **`128`**） |
 | 2026-05-05T12:00:00Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（**個人 `windows_name`**: **`jbm####[mail@前]`**・`logon_name` と `[` の間の **`+` 廃止**・**BUILD** `2026-05-05-pc-ledger-windowsname-bracket-noplus`・**リポ HEAD**／本番反映は **`npm run deploy:674`**） |
