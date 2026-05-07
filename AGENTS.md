@@ -906,6 +906,85 @@ AIエージェント自身および開発環境のすべてのツール・ライ
 
 **自己検査**: 送信直前に「このメッセージにユーザーが答えるべき問いが 2 つ以上ないか？」を確認し、あれば分割するか、最優先の 1 問だけを残して送る。
 
+#### §41-2 B 階段の事前カード化（2026-05-07 制定 / 浜田承認 A4）
+
+**背景**: 2026-05-07 の 5A 予実カード対応で「PC購入費 1 修正」依頼から **7 連鎖タスク化**（①→②③④⑤⑥⑦＋B）し、§41 一問一答が機能した結果ではあったが、**初手で依存タスク全洗い出し → 順序設計**を行っていれば計画外連鎖の時間延伸（推定 +30 分）を抑制できた。
+
+**ルール**: 浜田からの依頼が以下 4 基準のいずれかに該当する可能性がある場合、CIO は **§41 で 1 問目を投げる前に「カード化提案」を行う**。
+
+1. **2 アプリ以上を触る可能性**（kintone 入力 677 ↔ ダッシュ 678 等）
+2. **`SPEC.md` / `field-plan.md` 等の正典ドキュメント編集が必要**になる可能性
+3. **Live customize 修正（`deploy:NNN`）が必要**になる可能性
+4. **DeepSeek §50-3-8 盲点点検が事前に必要**になる可能性（破壊的・データ移行・正規化等）
+
+**カード化提案の様式**: 「この依頼は 5A/5B/B3 等のカードとして並列計画した方が良い候補があります（理由: ◯◯）。① § で進めますか？ ② カード化（5C/5D 等）して全体計画を出しますか？」と **§41 で 1 問だけ投げる**。
+
+**例外**: 「軽微な 1 行修正」「目視確認のみ」「健康チェック」など、上記 4 基準に明らかに当たらない場合はカード化提案不要。
+
+#### §41-3 シェル quoting 事故の構造的回避（2026-05-07 制定 / 浜田承認 A5）
+
+**背景**: 2026-05-07 の健康チェック中、`wsl ... bash -lc "..."` の中に複雑な `\"\\(.field)\"` 形式の jq/python 引数を直書きし、Windows 側 PowerShell が外側で `.field` を解釈する事故が発生した。
+
+**ルール**: **複雑な引用が必要な処理（jq クエリ／python -c の多段引用／sed 多段／heredoc 内のエスケープ）は、Windows 側から呼ぶ場合に限り、必ず別ファイル（`scripts/tmp-*.sh` または `scripts/cio-*.sh`）に切り出してから `wsl bash <script>` で実行する**。
+
+- `scripts/cio-shell-quoting-helpers.sh` に `cio_run_one_off` / `cio_gh_runs_failures` / `cio_kintone_get_apps` の helper を提供（`source` で読み込む）。
+- 既存の `scripts/tmp-*.sh` パターンは本 helper の前身（後方互換）。一時用途は `tmp-*.sh`、永続化したものは `cio-*.sh` へ昇格。
+- WSL 内（Linux のみ）で完結する場合は本ルールは緩和（複雑引用も可）。Windows 経由（PowerShell `wsl ... bash -lc`）で **\"\\(...)\"・\\$(...)・heredoc 等を含む場合は強制ファイル化**。
+
+**自己検査**: PowerShell 経由で wsl コマンドを送る前に「この `bash -lc \"...\"` 内に `\\\"\\\\(`・`heredoc EOF`・3 重以上のエスケープが含まれていないか？」を確認し、含まれていれば必ずファイル化してから実行。
+
+#### §41-4 重要タスククローズ時の checkpoint 更新義務（2026-05-07 制定 / 浜田承認 A6）
+
+**背景**: 2026-05-07 の 5A 予実カード 7 件連鎖完了時、`chat-sessions/checkpoint-latest.md` の更新がまばらで、**セッション切替時の自走復元の信頼性が低下**するリスクが顕在化した。
+
+**ルール**: 以下の **「重要タスク」のクローズ時は `chat-sessions/checkpoint-latest.md` の更新を必須**とする（CEO の OK 受領＋ §1/§2 報告と同タイミングで commit に含める）。
+
+| 種別 | 例 |
+|---|---|
+| カード化されたタスク | 5A 予実カード／5B PC 台帳カード／5C/5D 等 |
+| Live customize の rev/BUILD 更新 | `deploy:678` 等で rev が進んだ場合 |
+| 憲法・SPEC・field-plan の追加・改訂 | `AGENTS.md` §xx 追加／`SPEC.md` §6f 追加 等 |
+| 高 Tier B/C オペ完了 | REST atomic batch PUT・MCP 設定変更・ブランチ保護変更 等 |
+
+**最低限の更新内容**: ① タスク名／② 完了日時 JST／③ 関連 commit hash（最後の 1 つ）／④ 関連 LIVE rev/BUILD（あれば）／⑤ 「次セッションでの再開ヒント 1 行」。
+
+**例外**: 「軽微な 1 行修正」「健康チェック」「報告のみ・コード変更なし」は更新不要。
+
+**スクリプト化**: 将来 `scripts/cio-checkpoint-update.mjs` を新設予定（v1 は手動編集で運用・StrReplace で十分）。
+
+#### §41-5 EOL 維持規律（2026-05-07 制定 / 浜田承認 A1）
+
+**背景**: 2026-05-07 の Cursor リロード時、IDE の auto-normalize 疑いで `chat-sessions/handoff-log.md`（CRLF→LF 全 1244 行変換）と `customize/678/desktop.js`（CRLF→LF 全 3222 行変換）の 2 件で EOL 事故が発生。
+
+**ルール**:
+
+- **CRLF 維持必須ファイル**は `.gitattributes` に **明示**（個別パス指定）。現状: `customize/678/desktop.js`／`chat-sessions/handoff-log.md`／`RULES-INDEX.md`／`package.json`。
+- **`.husky` ではなく `git-hooks/pre-commit` ＋ `npm run hooks:install`** で全端末同期（既存 post-commit パターン踏襲）。**初回端末セットアップ時に必ず実行**。
+- **commit 前自動チェック**: `pre-commit` hook が `bash scripts/cio-eol-check.sh --staged` を呼び、staged ファイルの EOL 違反を検出して commit を中断する。バイパスは `git commit --no-verify`（**浜田承認下のみ**）。
+- **手動チェック**: `npm run cio:eol:check`（全リポ）／`npm run cio:eol:check:staged`（staged のみ）。
+- **是正手順**: CRLF 期待だが LF → `sed -i 's/$/\r/' <FILE>`／LF 期待だが CRLF → `sed -i 's/\r$//' <FILE>`。
+
+#### §41-6 WSL$ ファイルキャッシュ事故防衛（2026-05-07 制定 / 浜田承認 A3）
+
+**背景**: 2026-05-07 のタスク中、Actions auto-commit `7b95a6e` で追加された `kintone-apps.md` のデプロイ記録行が、Windows 側 SMB キャッシュ越しの `StrReplace` で古い view から上書きされ消失する事故が **2 回**発生（即時復元）。
+
+**ルール**:
+
+- **キャッシュ事故が起きやすいファイル**は `.cio/cache-sensitive-files.txt` に登録（現状 8 件）。
+- **書き込み前チェック**: 該当ファイルを編集する前に `npm run cio:wsl:cache:check` を実行し、① 直近 60 秒以内の origin/main 新規 commit の有無、② ローカル HEAD の origin/main からの遅れ（behind）を確認する。warn が出たら `git pull --rebase` を実行してから書き込みに進む。
+- **自動 pull はしない**（衝突リスク回避）。
+- **追加運用**: `StrReplace` を WSL ファイル経由（`\\wsl$\...`）で行う場合、特に `kintone-apps.md` 等のリスト記載ファイルは **書き込み直後に `git status` で diff を目視**し、Actions が追加した行が消えていないかを必ず確認する。
+
+#### §41-7 健康診断の自動化と URL 動的取得（2026-05-07 制定 / 浜田承認 A2）
+
+**背景**: 2026-05-07 の健康チェックで、私（CIO）が壁時計 URL を `7311`（過去セッションの値）と記憶違いし、実際は `47931`（毎回 random）であることに気付くのに時間を要した。
+
+**ルール**:
+
+- **健康診断は `npm run cio:health` （`bash scripts/cio-health-check.sh`）で実行**。観点は壁時計（URL は `/tmp/session-clock-web.log` から **動的取得**）／session-lock／Node・npm／MCP 4 サーバ probe（`scripts/cio-mcp-quickprobe.mjs`）／git status／GitHub Actions 直近 30 件 failure 集計／EOL 維持。
+- **記憶違いを構造的排除**: 壁時計 URL を変数・記憶に頼らず、毎回ログから動的取得する。
+- **既存スクリプトを再利用**: `health-check.mjs`／`session-clock-health.mjs`／`cio:quick-health` を Orchestrator が呼び出す（重複実装しない）。
+
 ---
 
 ## 第12章 セッション運用 OS（2026-04-18 制定 / 最重要）

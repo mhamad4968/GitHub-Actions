@@ -1,0 +1,20 @@
+# cache-sensitive-files.txt — WSL$ ファイルキャッシュ事故対策（A3・2026-05-07 浜田承認）
+#
+# このリストに記載されたファイルは「GitHub Actions auto-commit が走り得る」または
+# 「複数 commit が短時間で連続する」性質があり、Windows 側 SMB キャッシュ越しの
+# StrReplace で古い view を上書きする事故が発生しやすい。
+#
+# scripts/cio-wsl-cache-defense.sh が書き込み前にこのリストを参照し、直前 60 秒
+# 以内に origin/main に新規 commit が無いか・WSL 側のファイル mtime が HEAD と
+# 整合しているかをチェックする（自動 pull はしない・警告のみ）。
+#
+# 形式: 1 行 1 ファイル（リポルート相対パス・# はコメント）
+
+kintone-apps.md
+.rag/extra-docs/kintone-apps.md
+chat-sessions/handoff-log.md
+chat-sessions/checkpoint-latest.md
+customize/678/desktop.js
+customize/677/desktop.js
+templates/yojitsu-budget-lite/SPEC.md
+templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md

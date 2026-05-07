@@ -1,0 +1,22 @@
+#!/bin/sh
+# pre-commit — staged ファイルの EOL 維持チェック（A1・2026-05-07 浜田承認）
+# インストール: npm run hooks:install
+# バイパス（緊急時のみ・破壊的でない場合・浜田承認下のみ）: git commit --no-verify
+
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+cd "$REPO_ROOT" || exit 0
+
+if [ ! -f scripts/cio-eol-check.sh ]; then
+  exit 0
+fi
+
+bash scripts/cio-eol-check.sh --staged
+status=$?
+if [ "$status" -ne 0 ]; then
+  echo "" >&2
+  echo "[pre-commit] EOL 維持違反のため commit 中断（A1・2026-05-07 浜田承認）" >&2
+  echo "  対処: 上記の sed コマンドで該当ファイルを修正 → git add → 再コミット" >&2
+  echo "  バイパス: git commit --no-verify（浜田承認下のみ）" >&2
+  exit 1
+fi
+exit 0
