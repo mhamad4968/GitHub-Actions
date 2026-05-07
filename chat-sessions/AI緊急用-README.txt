@@ -1,8 +1,9 @@
 AI緊急用 フォルダ（Desktop）— 使い方メモ（正本はリポ chat-sessions/ 配下。本ファイルは npm run session-starter:sync-desktop で **13-README.txt** 名でコピーされる）
 
 【新チャットで貼るファイル（項番 -1）】
-  00-NEW-SESSION-STARTER_yyyymmdd.txt  … yyyymmdd は JST の日付 8 桁。sync のたびにこの名前で上書きされる。
+  00-NEW-SESSION-STARTER_yyyymmdd.txt  … **ハブ（短縮版）**。yyyymmdd は JST の日付 8 桁。sync のたびにこの名前で上書きされる。
   貼付推奨ファイル名は verify:desktop-ai-emergency-sync の最後の行にも出る。
+  00p01〜00p06-STARTER-part-*.txt … **スターター詳細 6 分割**（憲法・手順・フル版相当・チェックリスト等）。浜田は任意で開く。AI はチャットにハブだけでも **Part A→F をリポ側で順 Read**（運用はハブ内表記）。
 
 【履歴ファイル（同日にスターター内容が変わったときだけ増える）】
   00-NEW-SESSION-STARTER_yyyymmdd_2.txt, _3.txt … ＝直前版の退避。開くのは基本不要。

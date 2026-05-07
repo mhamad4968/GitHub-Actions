@@ -99,12 +99,13 @@ if (!index.includes('verify:mandatory-read-gate')) {
   fail(`${indexRel}: missing "verify:mandatory-read-gate"`);
 }
 
-// --- NEW-SESSION-STARTER.md（冒頭ブロックの最低限）---
+// --- NEW-SESSION-STARTER（ハブ + Part A 連結・v3.36 分割）---
 const starterRel = 'chat-sessions/NEW-SESSION-STARTER.md';
-const starter = read(starterRel);
-const starterHead = starter.slice(0, 9000);
+const starterPartA = 'chat-sessions/session-starter-parts/part-A-constitution-kernel.md';
+const starter = read(starterRel) + '\n' + read(starterPartA);
+const starterHead = starter.slice(0, 12000);
 for (const n of ['TSB-024', '§35-1', '§56-1a']) {
-  if (!starterHead.includes(n)) fail(`${starterRel} (head): missing "${n}"`);
+  if (!starterHead.includes(n)) fail(`${starterRel}+${starterPartA} (head): missing "${n}"`);
 }
 
 // --- post-commit hook（リポ正本にゲートが配線されているか）---

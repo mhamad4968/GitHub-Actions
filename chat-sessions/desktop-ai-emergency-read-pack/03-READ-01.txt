@@ -6,7 +6,7 @@
 以下を **この順で** 実行し、各ブロックのあとチャットに短く残す。
 
 1) 項番 -1  
-   浜田が `Desktop\AI緊急用\00-NEW-SESSION-STARTER_yyyymmdd.txt` **全文**を貼ったあと、AI は `chat-sessions/NEW-SESSION-STARTER.md` を Read ツールで **通読**（offset 連鎖で抜けなし）。
+   浜田が `Desktop\AI緊急用\00-NEW-SESSION-STARTER_yyyymmdd.txt`（**ハブ**）を貼ったあと、AI は `chat-sessions/session-starter-parts/part-A`〜`part-F` を **この順で** Read ツールで通読（offset 連鎖で抜けなし）。**ハブ単体**でも Part 通読は必須。
 
 **§35-6（憲法・2026-05-04）**: **締め報告**は **`SESSION-CLOSE-REPORT_yyyymmdd.txt` を 1 本**（正本 `chat-sessions/`＋コミット、Desktop は sync 控え）。**`/mnt/c/.../AI緊急用` に直書き**したら **リポへ即反映＋コミット**のあと **`npm run session-starter:sync-desktop`**。副次リポ（例 `~/toto-prediction`）は **コピーだけで終わらせず `git status`→必要なら commit+push**。「古い」整理と **削除**は **浜田確認または §41 一問のあと**（`AGENTS.md` §35-6・**TSB-031**）。**DeepSeek 1 問を省略**したら **`§50-3-8 スキップ理由:`** 付きで **理由 1 行**（`AGENTS.md` §50-3-8 補足）。
 

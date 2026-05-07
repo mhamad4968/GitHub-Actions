@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
  * 浜田 Desktop「AI緊急用」の .txt がリポ正本と一致するか検証する。
- * NEW-SESSION-STARTER: **当日 JST の 00-NEW-SESSION-STARTER_yyyymmdd.txt** のみ正とする（アーカイブ _2… は未検査）。
+ * NEW-SESSION-STARTER ハブ: **当日 JST の 00-NEW-SESSION-STARTER_yyyymmdd.txt**（アーカイブ _2… は未検査）。
+ * 分割 6 本: **00p01〜00p06** の .txt をリポ `session-starter-parts/*.md` とバイト一致検査。
  * 成功時、**貼付推奨ファイル名**を 1 行で出す（項番 -1 / 案 D）。
  */
 import fs from 'node:fs';
@@ -12,6 +13,7 @@ import {
   recommendedStarterPasteFilename,
   starterCanonicalMatchesRepo,
 } from './lib/session-starter-desktop.mjs';
+import { SESSION_STARTER_PART_SYNC } from './lib/session-starter-parts.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const destDir =
@@ -84,6 +86,32 @@ function main() {
       } else {
         console.log(`[verify-desktop-ai-emergency-sync] OK ${eveningDestName}（夕反省レポート一致）`);
       }
+    }
+  }
+
+  for (const [rel, outName] of SESSION_STARTER_PART_SYNC) {
+    const src = path.join(root, rel);
+    const dest = path.join(destDir, outName);
+    if (!fs.existsSync(src)) {
+      console.warn(`[verify-desktop-ai-emergency-sync] NG: リポ側なし ${rel}`);
+      bad = true;
+      continue;
+    }
+    if (!fs.existsSync(dest)) {
+      console.warn(`[verify-desktop-ai-emergency-sync] NG: Desktop に ${outName} が無い`);
+      bad = true;
+      continue;
+    }
+    const a = fs.readFileSync(src);
+    const b = fs.readFileSync(dest);
+    if (!a.equals(b)) {
+      console.warn(
+        `[verify-desktop-ai-emergency-sync] NG: 不一致 ${rel} ↔ ${outName}\n` +
+          '  先に: npm run session-starter:sync-desktop'
+      );
+      bad = true;
+    } else {
+      console.log(`[verify-desktop-ai-emergency-sync] OK ${outName}`);
     }
   }
 

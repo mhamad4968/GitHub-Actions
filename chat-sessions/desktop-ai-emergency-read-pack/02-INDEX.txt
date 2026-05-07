@@ -2,7 +2,8 @@
 
 **Desktop「AI緊急用」**では Explorer の **名前順＝推奨読取順**（先頭 2 桁＋ハイフン）。リポ正本は **`chat-sessions/desktop-ai-emergency-read-pack/`** の **同名**。
 
-00-NEW-SESSION-STARTER_yyyymmdd.txt … 項番 -1 貼付（浜田・JST 8 桁・verify 最終行と一致）
+00-NEW-SESSION-STARTER_yyyymmdd.txt … 項番 -1 貼付・**ハブ短縮版**（浜田・JST 8 桁・verify 最終行と一致）
+00p01〜00p06-STARTER-part-*.txt … スターター詳細 6 分割（任意・AI はリポ `session-starter-parts/*.md` で順 Read）
 01-HANDOFF-AI-FIVE-BLOCKS.md … 引き継ぎ骨格（5 ブロック）
 02-INDEX.txt … 本ファイル（索引）
 03-READ-01.txt … 新セッション初日の実行順（-1 → -0 → bootstrap → 第0手 → A → B → 日終わり）

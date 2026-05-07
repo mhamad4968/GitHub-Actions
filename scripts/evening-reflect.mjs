@@ -26,6 +26,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { pickLatestStarterDesktopPathForDate } from './lib/session-starter-desktop.mjs';
+import {
+  SESSION_STARTER_EVENING_UPDATE_REL,
+  SESSION_STARTER_PART_C_DESKTOP,
+} from './lib/session-starter-parts.mjs';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
@@ -203,21 +207,32 @@ function updateNewSessionStarter() {
 
   const newBlock = `【今やってる主タスク（${today.iso} 自動更新）】\n${summary.join('\n')}`;
 
-  // NEW-SESSION-STARTER.md (リポ正本)
-  const nss1 = path.join(REPO_ROOT, 'chat-sessions', 'NEW-SESSION-STARTER.md');
-  if (fs.existsSync(nss1)) {
-    let txt = fs.readFileSync(nss1, 'utf8');
+  // Part C（フル版相当・「今やってる主タスク」ブロックの正本 / v3.36 分割）
+  const partCRepo = path.join(REPO_ROOT, SESSION_STARTER_EVENING_UPDATE_REL);
+  if (fs.existsSync(partCRepo)) {
+    let txt = fs.readFileSync(partCRepo, 'utf8');
     txt = txt.replace(/【今やってる主タスク[^】]*】[\s\S]*?(?=\n\n【|\n\n##|\n```|$)/, newBlock);
-    fs.writeFileSync(nss1, txt, 'utf8');
+    fs.writeFileSync(partCRepo, txt, 'utf8');
   }
-  // Windows メモ帳版（浜田 Desktop AI緊急用・メンテ日ファイル名）
+  // Windows メモ帳版（浜田 Desktop AI緊急用・Part C 同期名）
   const aiDesk = '/mnt/c/Users/mhamada202408224/Desktop/AI緊急用';
+  const partCDesk = path.join(aiDesk, SESSION_STARTER_PART_C_DESKTOP);
+  try {
+    if (fs.existsSync(partCDesk)) {
+      let txt = fs.readFileSync(partCDesk, 'utf8');
+      txt = txt.replace(/【今やってる主タスク[^】]*】[\s\S]*?(?=\n\n【|\n\n━|$)/, newBlock);
+      fs.writeFileSync(partCDesk, txt, 'utf8');
+    }
+  } catch (_) { /* mnt 不可 */ }
+  // レガシー: 当日ハブのみ置いてある環境（ブロック無しならスキップ）
   const nssDesk = pickLatestStarterDesktopPathForDate(aiDesk);
   try {
     if (nssDesk && fs.existsSync(nssDesk)) {
       let txt = fs.readFileSync(nssDesk, 'utf8');
-      txt = txt.replace(/【今やってる主タスク[^】]*】[\s\S]*?(?=\n\n【|\n\n━|$)/, newBlock);
-      fs.writeFileSync(nssDesk, txt, 'utf8');
+      if (txt.includes('【今やってる主タスク')) {
+        txt = txt.replace(/【今やってる主タスク[^】]*】[\s\S]*?(?=\n\n【|\n\n━|$)/, newBlock);
+        fs.writeFileSync(nssDesk, txt, 'utf8');
+      }
     }
   } catch (_) { /* mnt 不可 */ }
   const nssLegacy = '/mnt/c/Claudeとの会話メモ/NEW-SESSION-STARTER.txt';

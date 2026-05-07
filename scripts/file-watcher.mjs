@@ -87,6 +87,12 @@ const CRITICAL_FILES = [
   'docs/approved-changes/README.md',
   'chat-sessions/checkpoint-latest.md',
   'chat-sessions/NEW-SESSION-STARTER.md',
+  'chat-sessions/session-starter-parts/part-A-constitution-kernel.md',
+  'chat-sessions/session-starter-parts/part-B-ritual-and-changelog.md',
+  'chat-sessions/session-starter-parts/part-C-full-paste-core.md',
+  'chat-sessions/session-starter-parts/part-D-checklists-and-one-liners.md',
+  'chat-sessions/session-starter-parts/part-E-proofs-and-incidents.md',
+  'chat-sessions/session-starter-parts/part-F-path-table-footer.md',
 ];
 
 function today() {

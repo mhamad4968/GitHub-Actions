@@ -10,7 +10,7 @@
  * 動作:
  *   - chat-sessions/checkpoint-latest.md を必ずコピー
  *   - chat-sessions/YYYY-MM-DD.md のうち最新 N 日分をコピー (default: 7)
- *   - chat-sessions/NEW-SESSION-STARTER.md / CURSOR-トラブル対応メモ.md もコピー (常駐 doc)
+ *   - chat-sessions/NEW-SESSION-STARTER.md / session-starter-parts/*.md / CURSOR-トラブル対応メモ.md もコピー (常駐 doc)
  *   - .rag/extra-docs/sessions/ ディレクトリを ensure
  *   - 古いコピーは削除 (sync-style)
  */
@@ -63,5 +63,15 @@ for (const f of filesToCopy) {
   copied++;
 }
 
-console.log(`✅ ${copied} files copied to .rag/extra-docs/sessions/ (latest ${DAYS} dated + ${persistFiles.length} persistent)`);
+const starterPartsDir = path.join(SESSIONS_SRC, 'session-starter-parts');
+if (fs.existsSync(starterPartsDir)) {
+  for (const pf of fs.readdirSync(starterPartsDir).filter((x) => x.endsWith('.md'))) {
+    const src = path.join(starterPartsDir, pf);
+    const dst = path.join(SESSIONS_DST, `session-starter__${pf}`);
+    fs.copyFileSync(src, dst);
+    copied++;
+  }
+}
+
+console.log(`✅ ${copied} files copied to .rag/extra-docs/sessions/ (latest ${DAYS} dated + persistent + starter-parts)`);
 console.log(`   files: ${filesToCopy.join(', ')}`);

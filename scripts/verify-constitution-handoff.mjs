@@ -24,13 +24,21 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 /**
  * @param {string} rel
  * @param {number} [headChars] 先頭 N 文字のみ検査（大ファイル向け）
+ * @param {string} [concatAfterRel] 先に読んだ本文の **後ろに連結** してから headChars を適用（スターター分割用）
  */
-function readSlice(rel, headChars) {
+function readSlice(rel, headChars, concatAfterRel) {
   const abs = path.join(root, rel);
   if (!fs.existsSync(abs)) {
     return { ok: false, text: '', err: `missing file: ${rel}` };
   }
-  const raw = fs.readFileSync(abs, 'utf8');
+  let raw = fs.readFileSync(abs, 'utf8');
+  if (concatAfterRel) {
+    const abs2 = path.join(root, concatAfterRel);
+    if (!fs.existsSync(abs2)) {
+      return { ok: false, text: '', err: `missing file: ${concatAfterRel}` };
+    }
+    raw += `\n${fs.readFileSync(abs2, 'utf8')}`;
+  }
   const text = typeof headChars === 'number' ? raw.slice(0, headChars) : raw;
   return { ok: true, text, err: '' };
 }
@@ -39,7 +47,9 @@ const suites = [
   {
     id: 'starter-head',
     rel: 'chat-sessions/NEW-SESSION-STARTER.md',
-    headChars: 5200,
+    /** ハブ短縮後も憲法 needles を維持するため Part A 全文を連結して検査 */
+    concatAfter: 'chat-sessions/session-starter-parts/part-A-constitution-kernel.md',
+    headChars: 12000,
     needles: [
       'TSB-024',
       '§35-1',
@@ -282,14 +292,15 @@ const suites = [
 const failures = [];
 
 for (const s of suites) {
-  const slice = readSlice(s.rel, s.headChars);
+  const slice = readSlice(s.rel, s.headChars, s.concatAfter);
   if (!slice.ok) {
     failures.push(`${s.id}: ${slice.err}`);
     continue;
   }
+  const loc = s.concatAfter ? `${s.rel} + ${s.concatAfter}` : s.rel;
   for (const n of s.needles) {
     if (!slice.text.includes(n)) {
-      failures.push(`${s.id}: "${n}" not found in ${s.rel}${s.headChars ? ` (head ${s.headChars} chars)` : ''}`);
+      failures.push(`${s.id}: "${n}" not found in ${loc}${s.headChars ? ` (head ${s.headChars} chars)` : ''}`);
     }
   }
 }
@@ -298,7 +309,9 @@ if (failures.length > 0) {
   console.error('[verify-constitution-handoff] ❌ NG');
   for (const f of failures) console.error(`  - ${f}`);
   console.error('');
-  console.error('修正ヒント: docs/troubleshooting.md TSB-024 と chat-sessions/NEW-SESSION-STARTER.md 冒頭 🚨 を復元する。');
+  console.error(
+    '修正ヒント: docs/troubleshooting.md TSB-024 と chat-sessions/NEW-SESSION-STARTER.md（ハブ）および session-starter-parts/part-A を復元する。',
+  );
   process.exit(2);
 }
 
