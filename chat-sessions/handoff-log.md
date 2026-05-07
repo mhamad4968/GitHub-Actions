@@ -1163,7 +1163,15 @@ pm run deploy:678** **SUCCESS** / fileKey **28df40c5-774d-4c3e-b4e6-8ec8be3ba779
 ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→KDDI ×10／㈱大塚商会→大塚商会 ×8／KCS㈱→KCS ×2／あさかわｼｽﾃﾑｽﾞ㈱→あさかわシステムズ ×2／ｿﾌﾄﾊﾞﾝｸ㈱→ソフトバンク ×1／NTTﾌｧｲﾅﾝｽ→NTTファイナンス ×1／NTT・TCリース株式会社→NTT・TCリース ×1／NTTｺﾐｭﾆｹｰｼｮﾝｽﾞ㈱→NTTコミュニケーションズ ×1）。**検証 GET**: 全 47 件で CHANGE 0 ／ UNCHANGED 44 ／ KEEP 3（KEEP 3 = クロネコヤマト、佐川急便 ×1／FBJ、その他 ×1／オフィスバスター、その他 ×1）。
 - **同期**: `templates/yojitsu-budget-lite/SPEC.md` に **§6g 新節**（取引先 16 社正典・正規化規則・B3 確認・NFKC 自動正規化）を §6f と §6c の間に挿入＋変更履歴先頭追記。`templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md` §3 `partner_company` 行に SPEC §6g 参照を追記＋変更履歴先頭追記。`kintone-apps.md` § 678 本番 live を **rev=125 / fileKey 28df40c5… / BUILD `2026-05-07-678-partner-presets-canonical-confirm`** に更新。`.rag/extra-docs/kintone-apps.md` を canonical と MATCH 同期。
 - **次の1手**: 浜田 目視確認（678 実績モーダル: ① datalist 16 件・並び順／② 候補にない会社で「会社を新規登録する」→ B3 確認ダイアログ／③ 入力後保存で 677 partner_company 反映 ＋ NFKC 正規化）→ OK で ⑤+③ 完全クローズ。GitHub Actions kintone-customize-deploy 自動再デプロイ後の rev 反映追記は別ターンでも可。
-- **GO待ち**: 浜田 目視確認結果（OK／NG／追加指示）
+- **GO待ち**: なし（クローズ）
 - **session-lock**: なし
 - **関連パス**: `customize/678/desktop.js` L33 var BUILD・L6 ヘッダ・L18 集合先列挙整理・L2695-2722 PARTNER_DROPDOWN_PRESETS・L2830-2862 confirm dialog・L2906/L2917 placeholder／`templates/yojitsu-budget-lite/SPEC.md` §6g（160-208 周辺）・変更履歴／`templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md` §3／`kintone-apps.md` 本番 live 行／`scripts/tmp-kintone-677-partner-batch-plan.py`・`tmp-kintone-677-partner-batch-put.py`（一時・§50-3-9 整理対象）
+
+### 2026-05-07 21:20 JST（追記）— 5A 予実⑤+③ クローズ確認（浜田 画面目視 OK）
+
+- **CEO 受領**: 「OKです」（21:20 JST・Q22 への回答）。datalist 16 件・並び順／B3 確認ダイアログ／NFKC 正規化保存の 3 点を画面目視 OK。
+- **状態**: 5A 予実⑤+③ 完全クローズ。本番 live は 678 rev=126 / fileKey `20260507121419E8BC…` / BUILD `2026-05-07-678-partner-presets-canonical-confirm`。今後の浜田／部内入力で `partner_company` の表記揺れが再混入しても、保存時 NFKC 自動正規化で吸収する設計。
+- **残積み**: ② `initial_variable_budget` 運用値（仕様判断待ち）／ B Cursor MCP リロード後の疎通確認（浜田リロード後 AI 自走で `kintone-get-apps` 軽量 GET）／ §50-3-9 `scripts/tmp-*` 13 本の整理（独立タスク）。次の §41 で浜田から選択。
+- **GO待ち**: 次タスク選定
+- **session-lock**: なし
 
