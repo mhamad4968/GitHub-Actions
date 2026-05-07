@@ -3,7 +3,7 @@
 > **運用開始**: **2026-05-06 JST** — 本チェックリスト＋**`every-turn-rules-confirm.mdc` §1e**＋**hooks 自動検証**を、報告・日終わり・状況まとめのターンから **常時適用**（浜田 CEO 指示）。**報告時は □ 本文をチャットに貼付**し、CEO が **チャットだけで目視検収**できるようにする（ファイル参照のみ禁止）。**§P（2026-05-06 追補）**: **該当節のみ**貼ってよい。
 > **目的**: チャット上の報告を **毎回同じ骨格**にし、**§1 欠落・破壊系先走り・確認不足**を防ぐ。  
 > **厳格化（自動）**: **報告ターン**で応答末尾に **機械可読 3 行**（下記 **§M**）が無いと **hooks が `stop` で自動フォロー**（再回答を投入）。実装は **`.cursor/hooks/report-checksheet-*.mjs`** と **`hooks.json`**（`beforeSubmitPrompt` / `afterAgentResponse` / `stop`）。  
-> **正本**: 本ファイル。Desktop 用の短縮版は **`chat-sessions/desktop-ai-emergency-read-pack/19-SESSION-REPORT-CHECKLIST.txt`**（`npm run session-starter:sync-desktop` で同期）。  
+> **正本**: 本ファイル。Desktop 用の短縮版は **`chat-sessions/desktop-ai-emergency-read-pack/23-SESSION-REPORT-CHECKLIST.txt`**（`npm run session-starter:sync-desktop` で同期）。  
 > **憲法**: 開発＝AI・**仕様確認・GO・検収＝浜田 CEO**（`AGENTS.md` §35-1 / §56-1a）。**実行後のダブルチェック（検証の 2 者）は AI 側**（本体＋ DeepSeek / Kimi 等の第 2 入力、または憲法が許す客体検証＋突合の組み合わせ。CEO は第 2 者の代わりにならない）— `every-turn-rules-confirm.mdc` §0・§1c、`constitution-enforcement-core.mdc`。  
 > **CEO 受付ゲート（報告の認否）**: **ティア判定・【適用憲法】・`[🎖️ 本セッション割当]` の 3 つが欠けるものは「報告」として認めない**（浜田 CEO 定義）。**順守根拠の実務最小**は **`[ルール確認]` 1 行**（どの正本に従ったか）— `every-turn-rules-confirm.mdc` §1 では **上記に加え第 4 行として必須**のため、**チャット運用は 4 行フル**を推奨する。  
 > **`session:bootstrap`／棚卸し直後の経緯報告**は **`chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 7** — **応答最上段の §1 先頭4行（`[§1-2-3 ティア判定]`・`【適用憲法】`・`[🎖️ 本セッション割当]`・`[ルール確認]`）＋（1〜8・4a）** を **別途フル充填** — **そのチェックシートのない経緯報告も認めない**（浜田 CEO 厳守・`every-turn-rules-confirm.mdc` §1e **1e-0**）。  

@@ -74,7 +74,7 @@
 
 【次セッション優先（2026-04-28 JST 以降・項番 -0 の本題候補）】
 - **部署予実（実装フェーズ）**: **4/29（水）約 19:00 JST〜** **kintone アプリ作成**（**スペース決定**後に `kintone-add-app`）。続けて **4/30** 項目確定 → **5/1** 初回投入 → **5/2–5/3** 機能・運用（`SPEC.md` §10.1）。仕様正本は **`SPEC.md`**・**`yojitsu-master-and-field-plan.md`**・**`yojitsu-migration-kyu-to-kintone.md`**。
-- **夜・約 20:00 JST 再入場**（反省会など）: **新セッション**— Desktop の **`SESSION-HANDOFF-LATEST-2026-04-28.txt`** または **`checkpoint-latest.md` 最終更新** を開いてから **項番 -0**。控えが古い／欠けるときは **CIO が先に `session-starter:sync-desktop`** で **ハブ** `00-NEW-SESSION-STARTER_yyyymmdd.txt` と **00p01〜00p06** を復元（浜田へ npm 依頼しない）。
+- **夜・約 20:00 JST 再入場**（反省会など）: **新セッション**— Desktop の **`SESSION-HANDOFF-LATEST-2026-04-28.txt`** または **`checkpoint-latest.md` 最終更新** を開いてから **項番 -0**。控えが古い／欠けるときは **CIO が先に `session-starter:sync-desktop`** で **ハブ** `00-NEW-SESSION-STARTER_yyyymmdd.txt` と **`01`〜`06`-STARTER-part-*.txt** を復元（浜田へ npm 依頼しない）。
 - **PC 台帳**: **B-1**＝**4/28–29** は §9 表どおりの準備のみ（**前倒し禁止**・`2026-04-21-new-pc-ledger-spec.md` **§9.0**）／**4/30–5/2** 本番 import。**B-2（共有+JR）**＝**5/13 本番以降**に旧台帳確認のうえ **1 件ずつ手登録**（同仕様書 **§7.4.6**）。予実等其他タスクとの **優先順は当日に合意**。
 
 【今やってる主タスク（2026-04-23 22:40 時点・歴史参照。当日の一手は上の「次セッション優先」と checkpoint を優先）】

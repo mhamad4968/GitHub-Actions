@@ -9,7 +9,7 @@ alwaysApply: false
 
 ## 人間（浜田さん）
 
-- **セッション切替（v3.27+ 恒久）**: 新チャット **最初**に Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用\00-NEW-SESSION-STARTER_yyyymmdd.txt`（**JST・常にこのファイル名**）の **全文**を貼る（`checkpoint-latest.md` **項番 -1** と同値。**詳細正本**はリポ `chat-sessions/NEW-SESSION-STARTER.md` **「■ 貼付単独で完走」**。チャットに checkpoint を **重ねて貼らなくてよい**）。**貼付推奨**は verify 最終行。`12-HANDOFF-HUMAN.txt` **5行は任意**（メモ用）。**項番 -0**: AI が「次にやること」を **一問だけ**確認し、**浜田の OK が出るまで** verify・bootstrap・本題に **着手しない**。**§51-6-2 時間軸の客観起点**は **`sessionStart` hook**（`.cursor/hooks/session-start-autopilot.mjs`）が **`session:clock:set`** を原則自動実行（`SESSION-CLOCK.md` の `開始:` を JST のいまにする）。hook が無いときだけ **`npm run session:clock:set`** を手動。
+- **セッション切替（v3.27+ 恒久）**: 新チャット **最初**に Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用\00-NEW-SESSION-STARTER_yyyymmdd.txt`（**JST・常にこのファイル名**）の **全文**を貼る（`checkpoint-latest.md` **項番 -1** と同値。**詳細正本**はリポ `chat-sessions/NEW-SESSION-STARTER.md` **「■ 貼付単独で完走」**。チャットに checkpoint を **重ねて貼らなくてよい**）。**貼付推奨**は verify 最終行。`18-HANDOFF-HUMAN.txt` **5行は任意**（メモ用）。**項番 -0**: AI が「次にやること」を **一問だけ**確認し、**浜田の OK が出るまで** verify・bootstrap・本題に **着手しない**。**§51-6-2 時間軸の客観起点**は **`sessionStart` hook**（`.cursor/hooks/session-start-autopilot.mjs`）が **`session:clock:set`** を原則自動実行（`SESSION-CLOCK.md` の `開始:` を JST のいまにする）。hook が無いときだけ **`npm run session:clock:set`** を手動。
 - `HANDOFF-HUMAN.txt` を使う場合: **5行だけ**埋めて貼る。それ以上書かなくてよい（**必須ではない**）。
 
 ## AI（必須・省略禁止）

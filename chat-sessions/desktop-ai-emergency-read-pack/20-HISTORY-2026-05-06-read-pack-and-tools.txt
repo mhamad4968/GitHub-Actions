@@ -1,8 +1,15 @@
-【15-HISTORY】read-pack / ツール憲法 — 変更履歴控え（2026-05-06 JST 起票・CIO メンテ）
+【20-HISTORY】read-pack / ツール憲法 — 変更履歴控え（2026-05-06 JST 起票・CIO メンテ）
 
 正本: `chat-sessions/desktop-ai-emergency-read-pack/本ファイル`。Desktop は `npm run session-starter:sync-desktop` で同名コピー。
 
 ---
+
+## 2026-05-07（追記）Desktop「AI緊急用」**00〜24 連番詰め**（CIO）
+
+- **スターター分割**: Desktop **`01`〜`06`-STARTER-part-*.txt**（旧 **00p01〜06** および旧短名は **`session-starter:sync-desktop` の末尾 prune** で削除）。
+- **儀式**: **07-HANDOFF** / **17-SESSION-BOOTSTRAP** / **18-HANDOFF-HUMAN** / **19-AI緊急用-README.txt**（旧 **13-README.txt**）。
+- **read-pack**: **08-INDEX.txt** 〜 **23-SESSION-REPORT-CHECKLIST.txt**（旧 **02〜19** 番号帯のファイルは prune）。索引・手順の正本は **08-INDEX.txt**。
+- **夕反省**: **24-evening-reflection-YYYY-MM-DD.md**（旧 **14-evening-…** は prune）。
 
 ## 2026-05-06（ツール活用憲法＋read-pack 追補）
 
@@ -40,16 +47,16 @@
 
 ## 2026-05-06（追記）報告用チェックリスト
 
-- **追加**: `19-SESSION-REPORT-CHECKLIST.txt`（read-pack）／詳細 **`docs/session-report-checklist.md`**。`02-INDEX.txt`・`RULES-INDEX.md`・`18-…md` §7・`10-README-read-pack.txt`（00〜99 表記）を追従。
+- **追加**: `23-SESSION-REPORT-CHECKLIST.txt`（read-pack・**2026-05-07** 連番化で現在名。当時は `19-SESSION-REPORT-CHECKLIST.txt`）／詳細 **`docs/session-report-checklist.md`**。`02-INDEX.txt`（現 **`08-INDEX.txt`**）・`RULES-INDEX.md`・`18-…md`（現 **`22-…md`**）§7・`10-README-read-pack.txt`（現 **`16-README-read-pack.txt`**）（00〜99 表記）を追従。
 
 ## 2026-05-06（追記）報告チェックリストと CEO ゲートの整合
 
-- **CEO 定義**: 報告に **ティア・【適用憲法】・`[🎖️ 本セッション割当]`** が無いものは認めない。**順守根拠**は **`[ルール確認]`＋§1b**。**検証2者**は **AI 側**（浜田 CEO の代替ではない）。`19` / `docs/session-report-checklist.md` を追従。
+- **CEO 定義**: 報告に **ティア・【適用憲法】・`[🎖️ 本セッション割当]`** が無いものは認めない。**順守根拠**は **`[ルール確認]`＋§1b**。**検証2者**は **AI 側**（浜田 CEO の代替ではない）。`23-SESSION-REPORT-CHECKLIST.txt`（当時 read-pack 短縮名 `19`） / `docs/session-report-checklist.md` を追従。
 
 ## 2026-05-06（追記）報告チェックシート hooks 厳格化
 
 - **`hooks.json`**: `beforeSubmitPrompt` / `afterAgentResponse` / `stop` に **`report-checksheet-*.mjs`** を追加。報告意図で **機械フッタ 3 行**欠落時 **`stop` が自動ユーザメッセージ**（`loop_limit` 付き）。
-- **`every-turn-rules-confirm.mdc` §1e** / **`constitution-enforcement-core.mdc`** / **`docs/session-report-checklist.md` §M** / **`19-…`** / **`RULES-INDEX.md`** / **`.gitignore`**（`.cursor/hooks/state/`）を追従。
+- **`every-turn-rules-confirm.mdc` §1e** / **`constitution-enforcement-core.mdc`** / **`docs/session-report-checklist.md` §M** / **`23-SESSION-REPORT-CHECKLIST.txt`**（当時 `19-…`） / **`RULES-INDEX.md`** / **`.gitignore`**（`.cursor/hooks/state/`）を追従。
 
 ## 2026-05-06（追記）§41 hooks キーワードは現状維持（浜田 CEO）
 
@@ -57,7 +64,7 @@
 
 ## 2026-05-06（追記）報告時はチェックシートをチャットに貼付（§P・部分可）
 
-- **CEO 指示**: 報告の際 **□ 本文をチャットに貼付**（画面だけで検収）。**`□ A` は常時**／**A2・B〜I は該当節のみ**＋`（該当なし: …）` 推奨（**`docs/session-report-checklist.md` §P**）。`every-turn-rules-confirm.mdc` §1e-2・`19-…`・`report-checksheet-stop.mjs` を追従。
+- **CEO 指示**: 報告の際 **□ 本文をチャットに貼付**（画面だけで検収）。**`□ A` は常時**／**A2・B〜I は該当節のみ**＋`（該当なし: …）` 推奨（**`docs/session-report-checklist.md` §P**）。`every-turn-rules-confirm.mdc` §1e-2・`23-SESSION-REPORT-CHECKLIST.txt`（当時 `19-…`）・`report-checksheet-stop.mjs` を追従。
 
 ## 2026-05-06（追記）PC 台帳 681 クイックガイド撤回・金曜 MCP 定例
 
@@ -74,5 +81,5 @@
 
 ## 2026-05-06（追記）チェックシート運用開始＋MCP 整理
 
-- **チェックシート**: `docs/session-report-checklist.md`・`19-…` に **運用開始 2026-05-06 JST** を明記。
+- **チェックシート**: `docs/session-report-checklist.md`・`23-SESSION-REPORT-CHECKLIST.txt`（当時 `19-…`）に **運用開始 2026-05-06 JST** を明記。
 - **MCP**: `~/.cursor/mcp.json` から **`filesystem`・`fetch` 除去**・`npm run health-check` / `mcp-status:refresh-usage` / `mcp:apply-keys`（env 空はスキップ）/ **`mcp:sync-cursor-windows`** 成功。`sync-cursor-mcp-windows-from-wsl.mjs`・`verify-cursor-mcp-windows.mjs` を **filesystem 任意**に変更。`docs/mcp-status.md` 表・Tier 追従。

@@ -17,7 +17,7 @@ Desktop「AI緊急用」の **貼付用テキストを読みやすい長さ**に
 
 **■ 浜田（Desktop `AI緊急用`）**  
 - **貼付推奨（項番 -1）**: 従来どおり **`00-NEW-SESSION-STARTER_yyyymmdd.txt`**（= 本ハブ）  
-- **参照用（任意）**: **`00p01`〜`00p06`** の 6 本（`npm run session-starter:sync-desktop` でリポと同期）
+- **参照用（任意）**: **`01`〜`06`-STARTER-part-*.txt** の 6 本（`npm run session-starter:sync-desktop` でリポと同期）
 
 **■ 項番 -1〜0 の極要約（詳細は Part B）**  
 - **-0**: `checkpoint-latest.md` 先頭 1 行＋`handoff-log.md` 末尾＋§41 一問 → **浜田 OK まで** `verify:*` / **`npm run session:bootstrap`** / 本題の副作用に着手しない。  

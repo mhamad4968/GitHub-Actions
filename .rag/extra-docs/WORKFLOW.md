@@ -35,8 +35,8 @@ Phase 5: 記録(kintone-apps / RAG / TSB)     AGENTS.md §19-§21
 - ユーザーから新しい依頼を受領した
 
 ### 必須アクション
-1. **朝のブリーフィングを最優先で読む**: `docs/reports/<今日の日付>-morning-prep.md` が存在すれば最初に読む（毎朝 06:00 cron 自動生成）
-2. ブリーフィングが無い場合のみ以下を手動実行:
+1. **朝のブリーフィングを最優先で読む**: `docs/reports/<今日 JST>-morning-prep.md` を最初に読む。無い・明らかに空なら **WSL で** CIO が **`npm run morning:ensure`**（`daily-morning-prep.mjs` 実行＋生成物検証）を先に走らせ、その後 Read する。軽い確認のみなら **`npm run morning:verify-today`**（生成しない）。
+2. ブリーフィングが無く **かつ** `morning:ensure` も実行しない方針のときのみ、以下を手動実行:
    - `Glob` で `docs/plans/*.md` をリストし、関連しそうなものを `Read`
    - `Glob` で `docs/reports/*.md` の直近 3 件を `Read`
    - `Read` で `kintone-apps.md` の末尾（更新履歴）100 行

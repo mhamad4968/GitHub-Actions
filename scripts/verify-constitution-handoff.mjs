@@ -273,7 +273,7 @@ const suites = [
       '着手しない',
       '貼付推奨',
       '日終わり',
-      '13-README.txt',
+      '19-AI緊急用-README.txt',
       'mandatory-read-gate.mjs',
       'verify:session-clock-health',
       'SESSION-SPLIT-REMINDER.md',

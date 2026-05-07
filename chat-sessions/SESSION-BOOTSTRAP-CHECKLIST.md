@@ -2,7 +2,7 @@
 
 > **目的**: 経緯・「法律」に相当する制約・ルール・備わっている機能・MCP を **読み飛ばさず** 再確認し、浜田が気づかないまま **逆方向に進む事故** を防ぐ。  
 > **憲法**: **開発は AI・確認は浜田**（`AGENTS.md` §35-1 / §56-1a）。本リストは **AI が実行・報告**する（浜田に全文チェックを押し付けない）。  
-> **浜田運用の最優先**: `C:\Users\mhamada202408224\Desktop\AI緊急用\` の **儀式・read-pack**（**ファイル名の先頭番号＝読取順**）。例: `00-NEW-SESSION-STARTER_yyyymmdd.txt` / `01-HANDOFF-AI-FIVE-BLOCKS.md` / `02-INDEX.txt` … `13-README.txt`。本ファイルを更新したコミットでは **`npm run session-starter:sync-desktop`** を同一ターンで実行し、上記を必ず揃える（`/mnt/c` が無いときだけスキップ＋チャット 1 行）。
+> **浜田運用の最優先**: `C:\Users\mhamada202408224\Desktop\AI緊急用\` の **儀式・read-pack**（**ファイル名の先頭番号＝読取順・00〜24 で抜けなし**）。例: `00-NEW-SESSION-STARTER_yyyymmdd.txt` / **`01`〜`06`-STARTER-…txt** / `07-HANDOFF-AI-FIVE-BLOCKS.md` / `08-INDEX.txt` … `23-SESSION-REPORT-CHECKLIST.txt` / `17-SESSION-BOOTSTRAP-CHECKLIST.txt` / `18-HANDOFF-HUMAN.txt` / `19-AI緊急用-README.txt`（＋当日のみ `24-evening-reflection-*.md`）。本ファイルを更新したコミットでは **`npm run session-starter:sync-desktop`** を同一ターンで実行し、上記を必ず揃える（`/mnt/c` が無いときだけスキップ＋チャット 1 行）。
 >
 > **v3.27+ 恒久**: セッション初手の **項番 -1〜0（機械）と実行順**の**詳細正本**は **`NEW-SESSION-STARTER.md` 冒頭「■ 貼付単独で完走」** のみ。本チェックリストの下表は **鏡像**（追従）。**浜田の貼付はスターター全文＋任意 HANDOFF** に固定し増やさない。
 
@@ -18,8 +18,8 @@
 
 > 正本: `chat-sessions/checkpoint-latest.md`「**日終わり（推奨）**」。
 
-- [ ] **セッション報告**: `docs/session-report-checklist.md`（詳細）または Desktop **`19-SESSION-REPORT-CHECKLIST.txt`** で自己点検し、必要ならチャットに貼付（2026-05-06 起票）
-- [ ] **`npm run session-starter:sync-desktop`**（`00-`〜`13-` 番号付き儀式・read-pack 一式。詳細は `checkpoint-latest.md` 項番 0b）
+- [ ] **セッション報告**: `docs/session-report-checklist.md`（詳細）または Desktop **`23-SESSION-REPORT-CHECKLIST.txt`** で自己点検し、必要ならチャットに貼付（2026-05-06 起票）
+- [ ] **`npm run session-starter:sync-desktop`**（`00`〜`24` 連番の儀式・read-pack 一式。詳細は `checkpoint-latest.md` 項番 0b）
 - [ ] **`npm run verify:desktop-ai-emergency-sync`**（成功時 **貼付推奨**行まで確認。チャットに 1 行要約してよい）
 - [ ] **今日のチャットを閉じる前**に指示があれば **`npm run session:clock:clear`**（`SESSION-CLOCK.md` の **開始:** を **未設定**／§51-6 遵守事項 7）＋**`session:clock:web` は Ctrl+C**
 - [ ] 時間があれば **`npm run session:bootstrap`** まで
@@ -32,7 +32,7 @@
 
 | 順 | 誰 | すること |
 |---|-----|----------|
-| **-1** | **浜田** | 新チャット **1 通目**に **`AI緊急用\00-NEW-SESSION-STARTER_yyyymmdd.txt`（JST・常にこの 1 ファイル名）** の **全文**を貼る（**必須級・これだけで項番 -1 素材は足りる**）。**貼付推奨**は verify の最終行。`12-HANDOFF-HUMAN.txt` 5 行は **任意**（メモ用）。checkpoint をチャットに **重ねて貼らなくてよい**（v3.27）。 |
+| **-1** | **浜田** | 新チャット **1 通目**に **`AI緊急用\00-NEW-SESSION-STARTER_yyyymmdd.txt`（JST・常にこの 1 ファイル名）** の **全文**を貼る（**必須級・これだけで項番 -1 素材は足りる**）。**貼付推奨**は verify の最終行。`18-HANDOFF-HUMAN.txt` 5 行は **任意**（メモ用）。checkpoint をチャットに **重ねて貼らなくてよい**（v3.27）。 |
 | **-0** | **浜田＋AI** | AI: ティア宣言＋スターター受領＋**次に着手すること**を **§41 一問だけ**確認。**浜田 OK が出るまで項番 0（verify/bootstrap）に着手しない**。詳細はスターター内 **「■ 貼付単独で完走」**。 |
 | **0** | **AI** | **`npm run session:bootstrap`**（内包順: `verify:constitution-handoff` → **`verify:mandatory-read-gate`**（必読ファイル構造）→ **`verify:session-clock-health`**（§51-6-2 hooks / crontab node）→ **`session-starter:sync-desktop`**（`C:\Users\mhamada202408224\Desktop\AI緊急用` 都度メンテ）→ **`verify:desktop-ai-emergency-sync`**（バイト一致）→ `smoke:quiet`）。**全文貼付済みなら -0 OK 直後に実行**し、棚卸し Read（フェーズ 1）は **bootstrap 通過後**でよい。激短のみ verify だけは非推奨。 |
 
@@ -236,4 +236,4 @@ AI は上記を終えたら **このターン内**で、次を **箇条書きで
 - **`npm run verify:agent-env`** の中身（`package.json` の連鎖）を変えたら **フェーズ 6 の該当箇条書き**と **`RULES-INDEX.md` §57-5 行**を同期する。
 - 新しい「必須検査」が `smoke-test.mjs` に入ったら **本ファイルフェーズ 6 の説明を同期**する。  
 - 新しい永続ドキュが「引き継ぎ必読」になったら **フェーズ 1–2 の表に 1 行追加**する。
-- **`NEW-SESSION-STARTER.md` / 本ファイルを編集して push した AI** は、**同一ターンで `npm run session-starter:sync-desktop` を必須**とし、続けて **`npm run verify:desktop-ai-emergency-sync`** で浜田が開く `AI緊急用\`（`00-NEW-SESSION-STARTER_yyyymmdd.txt` / `13-README.txt` 等）をリポと揃えたことを確認する（§57-6）。WSL で `/mnt/c` が無い等のときだけ省略可＋チャットに理由 1 行。
+- **`NEW-SESSION-STARTER.md` / 本ファイルを編集して push した AI** は、**同一ターンで `npm run session-starter:sync-desktop` を必須**とし、続けて **`npm run verify:desktop-ai-emergency-sync`** で浜田が開く `AI緊急用\`（`00-NEW-SESSION-STARTER_yyyymmdd.txt` / `19-AI緊急用-README.txt` 等）をリポと揃えたことを確認する（§57-6）。WSL で `/mnt/c` が無い等のときだけ省略可＋チャットに理由 1 行。

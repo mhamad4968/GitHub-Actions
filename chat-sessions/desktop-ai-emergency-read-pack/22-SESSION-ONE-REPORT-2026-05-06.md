@@ -1,6 +1,6 @@
 # セッション一本報告（2026-05-06 JST）— 681 PC台帳簡単ガイドラインほか
 
-**正本の置き場**: 本ファイル。チャット本文は要約に過ぎない。**次 AI は本ファイルを `16-重要確認.txt` の直後に読む。**
+**正本の置き場**: 本ファイル。チャット本文は要約に過ぎない。**次 AI は本ファイルを `21-重要確認.txt` の直後に読む。**
 
 ---
 
@@ -78,7 +78,7 @@
 
 - **破壊系 REST**: ルール常時想起＋手順ドキュメント＋`prune-meta` スクリプトの **既定安全化**。
 - **§1 欠落**: `every-turn-rules-confirm.mdc` に **§1d**（同一応答内で即補完）。
-- **役割分担**: `kintone-destructive-rest-guard.mdc` で **GO 前に apply 禁止**を機械化し、`08-READ-06.txt` に **1 行早見**を追加。
+- **役割分担**: `kintone-destructive-rest-guard.mdc` で **GO 前に apply 禁止**を機械化し、`14-READ-06.txt` に **1 行早見**を追加。
 
 ---
 
@@ -94,7 +94,7 @@
 
 ## 7. 次セッション AI 向けチェックリスト（開幕 3 分）
 
-**報告の型（全タスク共通）**: **`19-SESSION-REPORT-CHECKLIST.txt`**（Desktop 同期）／詳細は **`docs/session-report-checklist.md`**。中間・終了・GO 依頼の直前に **自己点検してチャットへ貼付**可。
+**報告の型（全タスク共通）**: **`23-SESSION-REPORT-CHECKLIST.txt`**（Desktop 同期）／詳細は **`docs/session-report-checklist.md`**。中間・終了・GO 依頼の直前に **自己点検してチャットへ貼付**可。
 
 1. **`kintone-apps.md` の 681 行末尾**で **fileKey / revision / BUILD** を確認してから `desktop.js` を読む。  
 2. **`npm run lint:customize`** と **`deploy:681`** の有無を確認（preflight ゲート）。  
@@ -104,10 +104,10 @@
 
 ## 8. Desktop / read-pack の整理（2026-05-06 実施）
 
-- **追加**: 本ファイル **`18-SESSION-ONE-REPORT-2026-05-06.md`**（本日の **1 本の報告**に集約）。  
-- **削除**: **`14-evening-reflection-2026-05-05.md`**（前日分・内容はリポや Git 履歴を正に可）、**`17-SESSION-CLOSE-REPORT-20260505.txt`**（2026-05-05 の 674 締め・**18 に置き換え**）。  
-- **`02-INDEX.txt`**: 上記に合わせて **18 を追記**し、14/17 の説明を整理。  
-- **`15-HISTORY-…`**: 本整理の **1〜3 行を末尾追記**。  
+- **追加**: 本ファイル（当時 **`18-SESSION-ONE-REPORT-2026-05-06.md`**。**2026-05-07** に **`22-SESSION-ONE-REPORT-2026-05-06.md`** へ番号のみ変更）で本日の **1 本の報告**に集約。  
+- **削除**: **`14-evening-reflection-2026-05-05.md`**（前日分・内容はリポや Git 履歴を正に可）、**`17-SESSION-CLOSE-REPORT-20260505.txt`**（2026-05-05 の 674 締め・**本ファイルに置き換え**）。  
+- **索引**: 当時 **`02-INDEX.txt`**（**2026-05-07 現在は `08-INDEX.txt`**）を上記に合わせて追記。  
+- **履歴控え**: 当時 **`15-HISTORY-…`**（**現在 `20-HISTORY-…`**）末尾に本整理を **1〜3 行**追記。  
 - **リポ正本**: `chat-sessions/desktop-ai-emergency-read-pack/` に **同名でコピー**し、**`npm run session-starter:sync-desktop`** で Desktop と双方向同期（運用は `00-…` §35-6）。
 
 ---

@@ -2029,6 +2029,7 @@ $ node scripts/parallel-session-detector.mjs --explain # 軸ごとの内訳を�
 - 改訂日: 2026-05-05（[FEAT] v23.32: **§35-7 チャット上 CIO の規律先行**（本体 AI が実装より先に憲法 3 分・§50-3-8／スキップ理由・🎖️・デプロイ前 1 行・締め自己評価をチャットに残す。CIO≠省ゲート最速）。**`chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md`** 新設＝引き継ぎ 5 ブロック索引。`read-pack/02-INDEX.txt`・`03-READ-01.txt`・`NEW-SESSION-STARTER.md` バージョン行・`checkpoint-latest.md`・`constitution-handoff-gate.mdc` へ相互参照。）
 - 改訂日: 2026-05-05（[FEAT] v23.33: **§35-7 追補** — **`deploy:674` の preflight 機械ゲート**（45 分以内スタンプ・`SKIP_CIO_DEPLOY_GUARD` 緊急脱出）＋**`.cursor/rules/cio-discipline-always.mdc`（`alwaysApply: true`）**。`npm run cio:preflight:674`・`scripts/cio-preflight-stamp.mjs` / `cio-deploy-preflight-guard.mjs`。`package.json` の `deploy:674` 連鎖更新。）
 - 改訂日: 2026-05-06（[FEAT] v23.34: **§35-7 拡張** — **全 customize `deploy:*`（594/595/626/627/629/671/674/677/678/679）へ同一 preflight ゲート**横展開。`cio-preflight-stamp.mjs` に **`--with-git-diff-line`**（任意・`git diff --shortstat HEAD` 1 行を `gitDiffLine` に記録）。）
+- 改訂日: 2026-05-07（[FEAT] v23.35: **Desktop「AI緊急用」00〜24 連番詰め** — スターター分割 **`01`〜`06`-STARTER-…txt**、HANDOFF 等 **07/17/18/19**、read-pack **08〜23**、夕反省 **24**。`session-starter:sync-desktop` が旧 **00p**・**02〜14 帯**・**13-README**・**14-evening-** を Desktop から削除。`verify-desktop-ai-emergency-sync`／`verify-constitution-handoff`／checkpoint／read-pack 本文の相互参照を整合。）
 
 ---
 

@@ -37,5 +37,5 @@
 | セッション集約メモ（任意・2026-04-28） | Desktop `SESSION-HANDOFF-LATEST-2026-04-28.txt`（スターター未配置時の要約。sync で 4 本復元） |
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-最終更新: 2026-05-07 JST — **v3.36**（スターター **6+1 分割**／Desktop は `00-NEW-SESSION-STARTER_yyyymmdd.txt`＋`00p01`〜`00p06`／S14 cron は `bash scripts/install-morning-cron.sh` で `.nvmrc` 追随）
+最終更新: 2026-05-07 JST — **v3.36**（スターター **6+1 分割**／Desktop は `00-NEW-SESSION-STARTER_yyyymmdd.txt`＋**`01`〜`06`-STARTER-part-*.txt**（**00 からの連番**）／S14 cron は `bash scripts/install-morning-cron.sh` で `.nvmrc` 追随）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

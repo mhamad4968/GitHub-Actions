@@ -33,8 +33,8 @@
 
 **INDEX の順だけ**でよい（中身は必要な番号だけ深読み）。
 
-1. `desktop-ai-emergency-read-pack/02-INDEX.txt`（**読取順**）
-2. `desktop-ai-emergency-read-pack/03-READ-01.txt` → … → `09-READ-07.txt`（**ファイル名の番号昇順**）。`08-READ-06`（本文見出し **READ-06**）の直後は **【AI分業チェック】** 1 回必須。
+1. `desktop-ai-emergency-read-pack/08-INDEX.txt`（**読取順**）
+2. `desktop-ai-emergency-read-pack/09-READ-01.txt` → … → `15-READ-07.txt`（**ファイル名の番号昇順**）。`14-READ-06`（本文見出し **READ-06**）の直後は **【AI分業チェック】** 1 回必須。
 
 **正本フォルダ**: `chat-sessions/desktop-ai-emergency-read-pack/`  
 **Desktop 控え**: `C:\Users\mhamada202408224\Desktop\AI緊急用\`（`npm run session-starter:sync-desktop`）

@@ -2,7 +2,7 @@
 /**
  * 浜田 Desktop「AI緊急用」の .txt がリポ正本と一致するか検証する。
  * NEW-SESSION-STARTER ハブ: **当日 JST の 00-NEW-SESSION-STARTER_yyyymmdd.txt**（アーカイブ _2… は未検査）。
- * 分割 6 本: **00p01〜00p06** の .txt をリポ `session-starter-parts/*.md` とバイト一致検査。
+ * 分割 6 本: **`01`〜`06`-STARTER-…txt** をリポ `session-starter-parts/*.md` とバイト一致検査。
  * 成功時、**貼付推奨ファイル名**を 1 行で出す（項番 -1 / 案 D）。
  */
 import fs from 'node:fs';
@@ -21,10 +21,10 @@ const destDir =
   '/mnt/c/Users/mhamada202408224/Desktop/AI緊急用';
 
 const otherFiles = [
-  ['chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md', '01-HANDOFF-AI-FIVE-BLOCKS.md'],
-  ['chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md', '11-SESSION-BOOTSTRAP-CHECKLIST.txt'],
-  ['chat-sessions/HANDOFF-HUMAN.txt', '12-HANDOFF-HUMAN.txt'],
-  ['chat-sessions/AI緊急用-README.txt', '13-README.txt'],
+  ['chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md', '07-HANDOFF-AI-FIVE-BLOCKS.md'],
+  ['chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md', '17-SESSION-BOOTSTRAP-CHECKLIST.txt'],
+  ['chat-sessions/HANDOFF-HUMAN.txt', '18-HANDOFF-HUMAN.txt'],
+  ['chat-sessions/AI緊急用-README.txt', '19-AI緊急用-README.txt'],
 ];
 
 function main() {
@@ -65,7 +65,7 @@ function main() {
 
   const isoEvening = `${ymd.slice(0, 4)}-${ymd.slice(4, 6)}-${ymd.slice(6, 8)}`;
   const eveningSrc = path.join(root, 'docs/reports', `${isoEvening}-evening-reflection.md`);
-  const eveningDestName = `14-evening-reflection-${isoEvening}.md`;
+  const eveningDestName = `24-evening-reflection-${isoEvening}.md`;
   const eveningDest = path.join(destDir, eveningDestName);
   if (fs.existsSync(eveningSrc)) {
     if (!fs.existsSync(eveningDest)) {

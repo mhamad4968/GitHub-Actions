@@ -12,9 +12,9 @@ alwaysApply: false
 
 ## 第0手（仕組みの取り込み・新セッションで 1 回）
 
-**順序は `desktop-ai-emergency-read-pack/03-READ-01.txt` 手順 4 と同じ**（ラダー全文より **先に**番号パックを読むと分業が抜けにくい）。
+**順序は `desktop-ai-emergency-read-pack/09-READ-01.txt` 手順 4 と同じ**（ラダー全文より **先に**番号パックを読むと分業が抜けにくい）。
 
-- **`chat-sessions/desktop-ai-emergency-read-pack/04-READ-02.txt` から `09-READ-07.txt` までファイル名の番号昇順**に各 `.txt` を Read する（**03-READ-01.txt** は手順書なのでチャットに無ければリポから Read してよい。**（未使用）のみ**ならその番号はスキップ可＋理由 1 行）。
+- **`chat-sessions/desktop-ai-emergency-read-pack/10-READ-02.txt` から `15-READ-07.txt` までファイル名の番号昇順**に各 `.txt` を Read する（**09-READ-01.txt** は手順書なのでチャットに無ければリポから Read してよい。**（未使用）のみ**ならその番号はスキップ可＋理由 1 行）。
 - **`08-READ-06.txt` を Read した直後**、チャットに **`【AI分業チェック】`** を **1 回必ず**出す（READ-06 先頭テンプレ。**省略禁止**）。
 - **`09-READ-07.txt` を Read した直後**、チャットに **`【READ-07 読了】`** を **1 行**（浜田 CEO のお願い・厳守・壁時計・分業・GitHub Actions・健全性の再確認を自分の言葉で）。
 - 続けて **Read ツール**で `chat-sessions/SESSION-READ-LADDER.md` を **通読**する（断片や要約で代替しない。長文は `offset` / `limit` を連続して **抜けなし**）。
