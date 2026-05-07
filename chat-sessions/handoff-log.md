@@ -1226,3 +1226,19 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 - **GO待ち**: 浜田 §41 — B 残積み実施可否（はい／後で／別タスク）
 - **session-lock**: なし
 - **関連パス**: `customize/678/desktop.js`（rev=128 LIVE 同期済）／`templates/yojitsu-budget-lite/SPEC.md` §6f／`templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md` §3／`kintone-apps.md` 本番 live＋Actions 記録／`chat-sessions/handoff-log.md`（本追記）
+
+### 2026-05-07 22:02 JST（追記）— B 残積み: Cursor リロード後の `user-kintone` MCP 疎通確認 → 完全 GREEN クローズ
+
+- **CEO 操作**: 21:59 JST `Ctrl+Shift+P → Developer: Reload Window` 方式 1 でリロード → 22:00 JST 「リロード完了」報告。
+- **DeepSeek §50-3-8 盲点点検（CIO 単独・5/5）**: ① BASE_URL 末尾スラッシュ無し（公式準拠 GREEN）／② Basic 認証ヘッダ未要求（テナント不要 GREEN）／③ `npx -y` 初回 cold install タイムアウト（WSL 側 spawn 経路で迂回 GREEN）／④ apps.json 大量返却 stdout 詰まり（preview 500 文字＋ ID-only 比較で軽量化 GREEN）／⑤ tools/list の名称未知 → 実行で確定（kintone-get-apps 存在 GREEN）。**5/5 GREEN**。
+- **mcp.json 再検証**: `kintone` ブロック `KINTONE_BASE_URL=https://jbis-kintone.cybozu.com`（末尾スラッシュ無し・正テナント）／`KINTONE_USERNAME=admin`／`KINTONE_PASSWORD` 設定済。`kintone-space` ブロックも同値で整合。`bc64d80`（baseurl 修正）以降の状態が維持されている。
+- **WSL 側 JSON-RPC 直 spawn 検証（`scripts/tmp-mcp-kintone-probe.mjs`・`Node v24.14.1`）**: 
+  - `initialize` OK / serverInfo=`{name:'@kintone/mcp-server', version:'1.3.12'}` / protocol=`2024-11-05`
+  - `tools/list` OK / **count=20**（`kintone-get-app`, `kintone-get-apps`, `kintone-get-records`, `kintone-update-records`, `kintone-deploy-app`, `kintone-download-file` 等を網羅）
+  - `tools/call kintone-get-apps args={}` OK / `apps[0]={ appId:'11', name:'Kintone基本マニュアル', spaceId:'18', ... }` を取得 / **elapsed=1643ms** （cold start 含む）
+- **MCP vs REST 突合（`scripts/tmp-mcp-vs-rest-apps.mjs`）**: MCP 100 件（既定 `limit=100`）／REST ページング 203 件全取得 → **`ONLY_MCP=[]`**（MCP 限定で誤検出されたアプリなし）。`ONLY_REST` には `appId>=349` のページ 2 以降のみが並び、これは **kintone REST `apps.json` の既定 limit=100 仕様**そのもの（`offset=100` 指定で取得可能）。**MCP の挙動は REST と整合・差異は仕様通り**。
+- **判定**: **B 完全 GREEN クローズ**。`bc64d80` の `mcp.json` 修正＋ Cursor リロードで `ECONNRESET` の根本原因（旧 BASE_URL `https://cybozu.com` 直撃）を完全解消。今後 Cursor 内 MCP からの疎通も同等に動作する見込み（同じバイナリ・同じ env を使うため）。
+- **残積み**: **0 件**。5A 予実カード 7/7 完了 ＋ B 残積み 1/1 完了。
+- **GO待ち**: 浜田 §41 — 次のタスクの提示（または休憩）。
+- **session-lock**: なし
+- **関連パス**: `C:\\Users\\mhamada202408224\\.cursor\\mcp.json`（kintone/kintone-space ブロック・bc64d80 状態維持）／`scripts/tmp-mcp-kintone-probe.mjs`／`scripts/tmp-mcp-vs-rest-apps.mjs`（§50-3-9 整理対象・本クローズで削除）
