@@ -1132,10 +1132,19 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 
 - **CEO 指示（直前）**: 「費用種別: すべて／固定費／変動費 があるが固定費は **固定費（月額）** と **固定費（年額）** に分けて」→ A 案（4 ボタン化・`payment_type` 併用）合意 → **GO**。
 - **事前点検**: DeepSeek §50-3-8 盲点 5 件（フィルタキー命名重複／既存ボタン状態保持／`payment_type` 欠損 record 取扱／`変動費` 行へのトグル副作用／legacy `var BUILD` 文字列比較箇所）すべて GREEN 処置済。677 全レコードの `cost_category × payment_type` 分布も確認し、`固定費`×`月額`/`年額` 以外の漏れケースなし。
-- **実施（CIO 単独・§35-1）**: `customize/678/desktop.js` 2 箇所 StrReplace（`filterRecordsByCostCategory` 多条件化／フィルタ HTML 4 ボタン化）＋ `var BUILD`／コメントヘッダ BUILD を **`2026-05-07-678-cost-category-filter-split`** に更新 → `eslint -f json` errors=0 warnings=0（途中で `no-useless-assignment` を 1 件検出 → 三項演算子化で解消）→ **`npm run cio:preflight:678`** → **`npm run deploy:678`** **SUCCESS** / fileKey **`263c81ee-2e19-4e8c-b551-2985a59082dd`** / **revision=123**。LIVE/PREVIEW 双方を `app/customize.json` で確認＋ live JS 本体を `file.json` で取得して文字列実検（新文言 6/6 OK・旧 `data-y678-filter="固定費"` ボタン・旧 BUILD 文字列が GONE）。
-- **同期**: `kintone-apps.md`（§678 本番 live・変更履歴行）／`.rag/extra-docs/kintone-apps.md` を MATCH 同期。`templates/yojitsu-budget-lite/SPEC.md` 変更履歴に 1 行追記（仕様自体の正典化は §10.6 配下で別タスク）。
-- **次の1手**: 浜田 Step 8（画面目視）— 678 ダッシュ上部の **費用種別: すべて／固定費（月額）／固定費（年額）／変動費** の 4 ボタンが押下→各々で行集合が想定どおり切り替わるかご確認のうえ、「OK」または不具合一言を返信ください。OK 後は ②③⑤⑥ から §41 1 問 1 答で次タスク選定。
-- **GO待ち**: Step 8 目視結果（OK／NG 一言）
+- **実施（CIO 単独・§35-1）**: `customize/678/desktop.js` 2 箇所 StrReplace（`filterRecordsByCostCategory` 多条件化／フィルタ HTML 4 ボタン化）＋ `var BUILD`／コメントヘッダ BUILD を **`2026-05-07-678-cost-category-filter-split`** に更新 → `eslint -f json` errors=0 warnings=0（途中で `no-useless-assignment` を 1 件検出 → 三項演算子化で解消）→ **`npm run cio:preflight:678`** → **`npm run deploy:678`** **SUCCESS** / fileKey **`263c81ee-2e19-4e8c-b551-2985a59082dd`** / **revision=123**。LIVE/PREVIEW 双方を `app/customize.json` で確認＋ live JS 本体を `file.json` で取得して文字列実検（新文言 6/6 OK・旧 `data-y678-filter="固定費"` ボタン・旧 BUILD 文字列が GONE）。push 後 GitHub Actions `kintone-customize-deploy` が自動再デプロイ → **rev=124** / fileKey **`d2a0feb8-c1ae-4ac0-9545-5cbad4e4d115`** に更新（`kintone-apps.md` §678 本番 live を追随同期・[skip ci] commit `3a545c6`）。
+- **同期**: `kintone-apps.md`（§678 本番 live・変更履歴行）／`.rag/extra-docs/kintone-apps.md` を MATCH 同期。`templates/yojitsu-budget-lite/SPEC.md` 変更履歴に 1 行追記。**Step 8 浜田画面目視 OK 受領**（2026-05-07 20:13 JST）→ ⑦ 完全クローズ。
+- **GO待ち**: なし（クローズ）
 - **session-lock**: なし
 - **関連パス**: `customize/678/desktop.js`（L587-600 多条件フィルタ／L1358-1364 4 ボタン HTML／L33 `var BUILD`／L6 ヘッダ BUILD）／`kintone-apps.md` L42・L540 周辺／`.rag/extra-docs/kintone-apps.md` 同／`templates/yojitsu-budget-lite/SPEC.md` 変更履歴先頭
+
+### 2026-05-07 JST（追記・夜）— 5A 予実⑥: 業務ルール 3 区分 正典化 完了（SPEC §6f 新設＋ field-plan §3/§4.1 拡張）
+
+- **CEO 指示（直前）**: ⑦ 完了後の §41 で「⑥ SPEC.md / yojitsu-master-and-field-plan.md 業務ルール 3 区分 正典化」選択 → 進め方 A（一括ドラフト→GO→StrReplace 一気通貫）→ ドラフト全採用 GO。
+- **事前点検（DeepSeek §50-3-8）**: 5 件すべて GREEN 化。① payment_type が field-plan §3 未記載 → 改修案で追加。② 677 で payment_type 未実装の懸念 → 既存フィールド存在＋PUT 成功実績あり（前ターン $id=70）。③ 変動費 0 月の集計表示 → SPEC §6e に既存記述あり、§6f 新節で再明示。④ 「イニシャル‐月額」と「固定費（月額）」用語混在 → §6f 対応表で統一。⑤ payment_type 空レコード → REST GET 47 件全数で空 0 件確認（固定費×月額 28／固定費×年額 10／変動費×都度 9）、§6f に「v1 必須・空は判定不能扱い」明記。
+- **実施（CIO 単独・§35-1・Tier A）**: `templates/yojitsu-budget-lite/SPEC.md` に **§6f 新節**（業務 3 区分の正典化・対応表＋運用ルール 5 項）を §6e と §6c の間に挿入＋変更履歴先頭追記。`templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md` §3 フィールド表に **`payment_type` 行**追加・§4.1 マトリクスを **2 → 3 区分**（イニシャル‐月額／イニシャル‐年額／変動費）に拡張・変更履歴先頭追記。ReadLints クリーン。canonical/mirror 関係: SPEC・field-plan は `rag-mirror-canonical-docs.mjs` の対象外（FILES = RULES-INDEX/kintone-apps/AGENTS/WORKFLOW のみ）のため mirror 同期不要。
+- **次の1手**: 浜田 目視確認（SPEC.md §6f 新節・field-plan §3/§4.1 拡張）→ OK で commit/push 進行（このターン後半）または NG 修正指示。
+- **GO待ち**: 浜田 目視確認結果（OK／NG／追加指示）
+- **session-lock**: なし
+- **関連パス**: `templates/yojitsu-budget-lite/SPEC.md` L145-160（§6f 本体）・L321 周辺（変更履歴）／`templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md` L43（payment_type 行）・L71-78（§4.1 拡張）・L124（変更履歴）
 
