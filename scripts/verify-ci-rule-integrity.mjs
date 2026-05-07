@@ -43,7 +43,8 @@ for (const f of mdcFiles) {
 }
 
 // 2026-05-06: constitution-handoff-gate を alwaysApply:true に統一したため 11 件へ
-const MAX_ALWAYS = 11;
+// 2026-05-07: ツール憲法・shadcn 等の常時想起追加により実数 13 件 — 上限を実態に合わせる（薄型方針は constitution.mdc=false で維持）
+const MAX_ALWAYS = 13;
 if (alwaysTrue.length > MAX_ALWAYS) {
   fail(`alwaysApply:true が ${alwaysTrue.length} 件（上限 ${MAX_ALWAYS}）。一覧: ${alwaysTrue.join(', ')}`);
 }
