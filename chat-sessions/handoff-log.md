@@ -1214,3 +1214,15 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 - **GO待ち**: 浜田 画面目視確認結果（OK／NG／追加指示）
 - **session-lock**: なし
 - **関連パス**: `customize/678/desktop.js` L33 var BUILD・L6 ヘッダ・L312-321 `ivRaw`/`iv`/`ivBudgetForDisplay` 分岐・L328 `initial.budget`／`templates/yojitsu-budget-lite/SPEC.md` §6f（145-160 周辺・新節）・変更履歴／`templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md` §3／`kintone-apps.md` 本番 live 行／`scripts/tmp-kintone-677-ivb-distribution.py`（一時・§50-3-9 整理対象・本タスク完了時削除）
+
+### 2026-05-07 21:56 JST（追記）— 5A 予実②: CEO 画面目視 OK 受領 → ② 完全クローズ
+
+- **CEO 画面目視（21:55 JST 報告 → 21:56 JST 受領）**: 678 ダッシュ変動費ブロック $id=70 PC購入費 のイニシャル予算セルが **`¥0` → `---`** に変化したことを確認 → **OK** 受領（21:56 JST）。POSITIVE 8 件（$id=48/49/50/56/72/73/74/92）の表示・消費率・実績・予算修正の数値は不変であることも確認済。
+- **② 完全クローズ**: `initial_variable_budget` v1 既定運用（**業者から見積取得済の金額のみ入れる／見積未取得・新規行追加時は空のまま保存可・678 ダッシュは `---` 表示／過去実績・前年同期は参考にしない／支払発生時は当該月 `monthly_breakdown.month_budget_revision` に増額入力／0 は使わない**）と 678 customize 表示分岐（`computeAggregates()` の `ivRaw`/`iv`/`ivBudgetForDisplay` 分岐・**BUILD=`2026-05-07-678-ivb-empty-as-dim`**・rev=128）を **正典化済**。`SPEC.md` §6f 新節＋業務 3 区分テーブル変動費行更新／`yojitsu-master-and-field-plan.md` §3 SPEC §6f 参照／`kintone-apps.md` 本番 live rev=128 ＋直前 rev=127/126 ＋ Actions デプロイ記録テーブル `2026-05-07T12:51:15Z`／`.rag/extra-docs` ミラー canonical と MATCH。
+- **commit/push 履歴**: `3f8a41c`（本体・5A 予実②）→ Actions `7b95a6e` [skip ci]（rev=128 デプロイ記録）→ `eca2b1b` [skip ci]（kintone-apps 本番 live 追随）→ `24ad3f7` [skip ci]（WSL$ キャッシュ起因 Actions 行欠落の即時復元）→ 本クローズ追記コミット。
+- **§50-3-9 補足**: 本タスクで生成した `scripts/tmp-*` 5 本（`tmp-handoff-task2.py`／`tmp-eol-fix-task2.sh`／`tmp-eslint-678-summary.mjs`／`tmp-verify-678-ivb.mjs`／`tmp-kintone-677-ivb-distribution.py`）は完了時に削除済。commit-helper 3 本（`tmp-commit-task2*.sh` ＋ `.git/COMMITMSG_TASK2*.txt`）も削除済。`scripts/tmp-*` 残 0。
+- **5A 予実カード 進捗**（2026-05-07 時点・累積）: ① $id=70 payment_type 月→都度 ✅／② initial_variable_budget v1 既定運用＋表示分岐 ✅（本クローズ）／③ partner_company 表記揺れ整理 26 件 ✅／④ $id=56 配線工事 partner その他 ✅／⑤ partner_company 16 社正典化＋B3 確認＋NFKC 自動正規化 ✅／⑥ 業務 3 区分（イニシャル-月額／イニシャル-年額／変動費）正典化 ✅／⑦ 678 ダッシュ 固定費フィルタ 月額・年額 分割 ✅。
+- **次の一手候補**（残積み 1 件）: **B Cursor MCP リロード後の `user-kintone` 疎通確認**（`mcp.json` 既に修正済・浜田の Cursor リロード／再起動操作待ち→操作後に AI 自走で `kintone-get-apps` 軽量 GET）。
+- **GO待ち**: 浜田 §41 — B 残積み実施可否（はい／後で／別タスク）
+- **session-lock**: なし
+- **関連パス**: `customize/678/desktop.js`（rev=128 LIVE 同期済）／`templates/yojitsu-budget-lite/SPEC.md` §6f／`templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md` §3／`kintone-apps.md` 本番 live＋Actions 記録／`chat-sessions/handoff-log.md`（本追記）
