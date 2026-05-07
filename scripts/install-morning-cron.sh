@@ -43,7 +43,7 @@ echo "  - emergency-mirror (4 時間ごと・~/.cursor-emergency-backup/ にミ�
 echo "  - monthly-security-rounds (毎月 1 日 06:30 JST / .nvmrc の node)"
 echo ""
 echo "確認: crontab -l"
-echo "削除: crontab -l | grep -vE 'daily-morning-prep|wipe-guard|emergency-mirror' | crontab -"
+echo "削除: crontab -l | grep -vE 'daily-morning-prep|wipe-guard|emergency-mirror|health-check-4h|auto-heal-4h|monthly-security-rounds' | crontab -"
 echo ""
 echo "file-watcher (常駐型) は別途起動が必要:"
 echo "  npm run watcher:start"
