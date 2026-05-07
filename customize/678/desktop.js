@@ -3,7 +3,7 @@
 
   /**
    * 部署予実 ダッシュアプリ 678
-   * BUILD: 2026-05-07-678-partner-presets-canonical-confirm
+   * BUILD: 2026-05-07-678-ivb-empty-as-dim
    * - 677 を kintone.api で一覧。左キー列は `shin-format-excel-layout.md` 新フォーマット準拠＋12 月×四つ柱（`monthly_breakdown`）
    * - 一覧の既定 SORT は `display_order asc, $id asc`（SPEC §6e 準拠・2026-05-03 改修）
    * - 新規追加モーダルは「挿入位置」選択（一番下/一番上/○○の上/○○の下）＋中間値計算（floor((prev+next)/2)）
@@ -30,7 +30,7 @@
   var YOJITSU_LABEL_INPUT_NEW = "システム推進室予実管理システム入力アプリの新規入力";
   var YOJITSU_LABEL_DASH_APP = "システム推進室予実管理システム";
   var YOJITSU_LABEL_MANUAL_APP = "システム推進室予実アプリガイド";
-  var BUILD = "2026-05-07-678-partner-presets-canonical-confirm";
+  var BUILD = "2026-05-07-678-ivb-empty-as-dim";
   /**
    * マニュアル掲載アプリ（システム推進室予実アプリガイド・679）。`window.Y678_QUICK_MANUAL_URL` が非空なら最優先。
    */
@@ -309,7 +309,10 @@
     var sumR = sumMonthly(rec, "month_budget_revision");
     var cat = fieldVal(rec, "cost_category");
     var lb = toNum(fieldVal(rec, "learning_fixed_budget"));
-    var iv = toNum(fieldVal(rec, "initial_variable_budget"));
+    var ivRaw = fieldVal(rec, "initial_variable_budget");
+    var iv = toNum(ivRaw);
+    /** 表示用: 空のとき "" を保持し formatYen で `---` を返させる（浜田・SPEC §6f 「見積取得済の金額のみ／空＝---」確定・2026-05-07）。 */
+    var ivBudgetForDisplay = ivRaw === "" || ivRaw == null ? "" : iv;
     /** 分母 0 のとき実績も 0 なら消費率 0（％表示は別途付与）。実績のみ正のときは null（表示は ---）。 */
     function pct(actual, base) {
       var b = toNum(base);
@@ -325,7 +328,7 @@
         revision: sumR,
       },
       initial: {
-        budget: iv,
+        budget: ivBudgetForDisplay,
         actual: sumA,
         util: pct(sumA, iv + sumR),
         revision: sumR,

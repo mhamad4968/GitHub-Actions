@@ -1201,3 +1201,16 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 - **GO待ち**: 次タスク選定
 - **session-lock**: なし
 - **関連パス**: 削除対象 14 本（上記）／`AGENTS.md` §50-3-9（証跡 1 行ルール）
+
+### 2026-05-07 21:48 JST（追記）— 5A 予実②: `initial_variable_budget` v1 既定運用 確定＋ 678 表示分岐 完了
+
+- **CEO 指示**: §50-3-9 整理クローズ後の §41 → Q24 で **A**（②）選択 → Q25/Q26/Q27 で運用ルール翻訳を反復確認（過去実績は参考外・**見積取得済の金額のみ**入れる／**見積未取得・新規行追加時は空**）→ Q28/Q29 で **GO** 受領（21:45 JST）。
+- **事前点検（DeepSeek §50-3-8）**: 5/5 GREEN（① 空保存と未入力区別フラグは過剰設計→却下／② 月次予算修正との整合は §6f 既存仕様で吸収／③ 支払内訳自動補完は浜田案矛盾→却下／④ インポータ空文字 vs 0 混在は実機 47 件 GET で 0 件確認・GREEN／⑤ 消費率分母 0 問題は L313-319 `pct()` で既に `b===0 && a>0 → null（→ ---）` 分岐済・GREEN）。CIO 視点 5 件と統合し 7 件 unique 化。
+- **47 件 REST GET 結果**: `cost_category=固定費` × EMPTY 38 件（無関係）／`cost_category=変動費` × EMPTY **1 件**（$id=70 PC購入費・前ターン payment_type 月→都度 化）／`cost_category=変動費` × POSITIVE **8 件**（$id=48/49/50/56/72/73/74/92 — 旧 Excel 「都度」列から見積額移行済）／`cost_category=変動費` × ZERO **0 件**。**意図しない 0 ゼロ確定 → 0→空 PUT 是正は不要**。
+- **実装（CIO 単独・§35-1）**: `customize/678/desktop.js` を 3 箇所 StrReplace（① `var BUILD` → `2026-05-07-678-ivb-empty-as-dim` ② L6 ヘッダ BUILD ③ `computeAggregates()` で `ivRaw` 元値保持＋ `iv = toNum(ivRaw)` 数値化＋ `ivBudgetForDisplay = ivRaw === "" || ivRaw == null ? "" : iv` 追加＋ `initial.budget` を `ivBudgetForDisplay` に差し替え）。`util` 計算は数値 `iv` のまま影響なし。`eslint -f json` errors=0 warnings=0 → `cio:preflight:678` → `deploy:678` SUCCESS / fileKey **`9f15408b-bfca-46ab-bcde-a39f86c7e801`** / **revision=127**。LIVE JS 文字列実検 7/7 OK（BUILD 新／旧 GONE／`ivRaw` 宣言／`iv = toNum(ivRaw)`／`ivBudgetForDisplay` 分岐／`initial.budget = ivBudgetForDisplay`／`util: pct(sumA, iv + sumR)` の数値整合）。
+- **同期**: `templates/yojitsu-budget-lite/SPEC.md` §6f に「**`initial_variable_budget` の v1 既定運用**」段落と「**678 customize の表示分岐**」段落を追記。§6f 業務 3 区分テーブルの **変動費**行を「事前予算は 0 でも可」→「**空（推奨）または見積取得済の金額・0 は使わない**」に置換。変更履歴先頭にも 1 行追記。`templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md` §3 `initial_variable_budget` 行に SPEC §6f 参照を追記＋変更履歴先頭追記。`kintone-apps.md` §678 本番 live を **rev=127 / fileKey 9f15408b… / BUILD `2026-05-07-678-ivb-empty-as-dim`** に更新。`.rag/extra-docs/kintone-apps.md` を canonical と MATCH 同期。
+- **実機影響（要 浜田画面目視）**: 678 ダッシュ ⇒ 変動費行の **$id=70 PC購入費** の **イニシャル予算セル**が **`¥0` → `---`** に変化。POSITIVE 8 件は表示変化なし。消費率・実績・予算修正の数値計算は不変。
+- **次の1手**: GitHub Actions `kintone-customize-deploy` 自動再デプロイ後の rev 反映（rev=127 → 128 想定）を `kintone-apps.md` に追随＋ [skip ci] commit／浜田画面目視で OK 受領 → ② 完全クローズ／残積み 1 件（B Cursor MCP リロード後疎通）から §41 で選定。
+- **GO待ち**: 浜田 画面目視確認結果（OK／NG／追加指示）
+- **session-lock**: なし
+- **関連パス**: `customize/678/desktop.js` L33 var BUILD・L6 ヘッダ・L312-321 `ivRaw`/`iv`/`ivBudgetForDisplay` 分岐・L328 `initial.budget`／`templates/yojitsu-budget-lite/SPEC.md` §6f（145-160 周辺・新節）・変更履歴／`templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md` §3／`kintone-apps.md` 本番 live 行／`scripts/tmp-kintone-677-ivb-distribution.py`（一時・§50-3-9 整理対象・本タスク完了時削除）
