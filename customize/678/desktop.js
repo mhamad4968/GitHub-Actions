@@ -3,7 +3,7 @@
 
   /**
    * 部署予実 ダッシュアプリ 678
-   * BUILD: 2026-05-07-678-cost-category-filter-split
+   * BUILD: 2026-05-07-678-partner-presets-canonical-confirm
    * - 677 を kintone.api で一覧。左キー列は `shin-format-excel-layout.md` 新フォーマット準拠＋12 月×四つ柱（`monthly_breakdown`）
    * - 一覧の既定 SORT は `display_order asc, $id asc`（SPEC §6e 準拠・2026-05-03 改修）
    * - 新規追加モーダルは「挿入位置」選択（一番下/一番上/○○の上/○○の下）＋中間値計算（floor((prev+next)/2)）
@@ -15,7 +15,7 @@
    * - 一覧ツールバー右の標準「◯ - ◯（◯件中）」重複表示: 全角数字・括弧ゆれ対応＋領域走査＋MutationObserver で非表示
    * - 固定費: 暦月12列の「予算」「消費率」は 677 `monthly_breakdown` を表示。実績・予算修正は入力対象月のみ。変動費行は暦月12列＋ランニング集計＋固定費小計を `---`、都度・変動費小計のみ数値。固定費行は逆（都度・変動費小計は `---`）
    * - 固定費・当月の月次「予算修正」保存時: 翌月〜年度末（4月）へ同一値を反映するか **はい／いいえ**（SPEC §6・既定＝はいフォーカス）
-   * - 実績モーダル: 会社が集合先（FBJ・オフィスバスター・その他・他・他のもの・他や各社・各社・宅配の「クロネコヤマト、佐川急便」併記・未設定系等）のとき **datalist で選択可**＋**「会社を新規登録する」**→677 `partner_company` PUT（集合先「その他」と費用種別は別・費用種別は固定／変動のみ想定）
+   * - 実績モーダル 会社欄: 正典 16 社（大塚商会・FBJ・KDDI・その他・あさかわシステムズ・KCS・NTTコミュニケーションズ・NTTファイナンス・NTT・TCリース・NTT東日本・ソフトバンク・三菱HCビジネスリース・蔵衛門・オフィスバスター・クロネコヤマト・佐川急便）の datalist。「その他」または既存「主候補＋その他」表記等の集合先・未確定行のときに **「会社を新規登録する」** ボタン → **B3 確認ダイアログ**（株式会社・㈱は付けず／全角カタカナ・漢字・半角アルファベット混在可）→ OK で readonly 解除 → 保存時 NFKC 自動正規化（㈱／株式会社／（株）削除）→ 677 `partner_company` PUT（集合先「その他」と費用種別は別・費用種別は固定／変動のみ想定）
    * - 暦月12列（§6e）: **固定費**＝各月の予算・率は表示、**実績・予算修正**は入力対象月のみクリック可。**変動費**＝暦月の予算・率は `---`、実績・予算修正は**都度費用**集計列（入力対象月）
    */
 
@@ -30,7 +30,7 @@
   var YOJITSU_LABEL_INPUT_NEW = "システム推進室予実管理システム入力アプリの新規入力";
   var YOJITSU_LABEL_DASH_APP = "システム推進室予実管理システム";
   var YOJITSU_LABEL_MANUAL_APP = "システム推進室予実アプリガイド";
-  var BUILD = "2026-05-07-678-cost-category-filter-split";
+  var BUILD = "2026-05-07-678-partner-presets-canonical-confirm";
   /**
    * マニュアル掲載アプリ（システム推進室予実アプリガイド・679）。`window.Y678_QUICK_MANUAL_URL` が非空なら最優先。
    */
@@ -2689,26 +2689,31 @@
     }
 
     /**
-     * 677 の会社ドロップダウン想定の集合先・プレースホルダ（datalist と「新規登録」導線の共通正）。
-     * 表記ゆれ（中点・全角空白）は比較時に無視する。
+     * 677 の会社ドロップダウン想定の正典リスト（浜田・2026-05-07）。
+     * 表記揺れ（㈱／株式会社／半角カナ）は事前 PUT 正規化で吸収済（kintone-apps.md / SPEC §6f）。
+     * 並び順は浜田指定の主候補 4 件（大塚商会・FBJ・KDDI・その他）を先頭、以下既存 12 社。
+     * 「その他」を選んだ場合は B3 確認ダイアログ → 新規登録フロー（既存実装）。
+     * 集合先（他／他のもの／他や各社／各社／他社）と未設定系プレースホルダは
+     * datalist から削除（実データは前ターンで「その他」に正規化済・showPartnerNewRegisterButton
+     * の正規表現フォールバックは future-proof として保持）。
      */
     var PARTNER_DROPDOWN_PRESETS = [
+      "大塚商会",
       "FBJ",
+      "KDDI",
+      "その他",
+      "あさかわシステムズ",
+      "KCS",
+      "NTTコミュニケーションズ",
+      "NTTファイナンス",
+      "NTT・TCリース",
+      "NTT東日本",
+      "ソフトバンク",
+      "三菱HCビジネスリース",
+      "蔵衛門",
       "オフィスバスター",
-      "オフィス・バスター",
       "クロネコヤマト",
       "佐川急便",
-      "クロネコヤマト、佐川急便",
-      "その他",
-      "他",
-      "他のもの",
-      "他や各社",
-      "各社",
-      "他社",
-      "（未設定）",
-      "購入先未定",
-      "未設定",
-      "未定",
     ];
 
     function partnerCompanyNormKey(s) {
@@ -2833,6 +2838,16 @@
           var pcEl = payModal.querySelector("[name='partner_company']");
           var hint = payModal.querySelector(".y678-pay-partner-hint");
           if (!pcEl) return;
+          var ok;
+          try {
+            ok = window.confirm(
+              "新規会社として登録します。\n正式名称を入力してください\n（株式会社・㈱は付けず、全角カタカナ・漢字・半角アルファベット混在可）。\n続行しますか？"
+            );
+          } catch (eCnf) {
+            ok = true;
+            void eCnf;
+          }
+          if (!ok) return;
           payModal.setAttribute("data-y678-partner-unlocked", "1");
           pcEl.removeAttribute("readonly");
           pcEl.removeAttribute("title");
@@ -2903,7 +2918,7 @@
         pcEl.setAttribute("list", "y678-partner-datalist");
         pcEl.setAttribute(
           "placeholder",
-          "上の候補で選ぶか、ここに直接入力（宅配は表に「クロネコヤマト、佐川急便」併記／実績で片方に確定／FBJ 等）"
+          "上の候補で選ぶか、ここに直接入力（候補にない会社は「その他」→「会社を新規登録する」で入力）"
         );
         pcEl.setAttribute(
           "title",
@@ -2914,7 +2929,7 @@
         if (presetW) {
           var curPc = normalizePartnerCompanyLabel(fieldVal(rec, "partner_company") || "");
           var optParts = [
-            "<option value=\"\">--- 候補から選ぶ（宅配：クロネコヤマト、佐川急便／各社／FBJ・その他ほか） ---</option>",
+            "<option value=\"\">--- 候補から選ぶ（先頭：大塚商会・FBJ・KDDI・その他／2026-05-07 整理） ---</option>",
           ];
           for (var pi = 0; pi < PARTNER_DROPDOWN_PRESETS.length; pi++) {
             var labp = PARTNER_DROPDOWN_PRESETS[pi];
@@ -3111,7 +3126,23 @@
 
       var pcField = qs("partner_company");
       var origPc = String(fieldVal(rec, "partner_company") || "").trim();
-      var newPc = String((pcField && pcField.value) || "").trim().slice(0, 255);
+      var newPcRaw = String((pcField && pcField.value) || "").trim().slice(0, 255);
+      var newPc = newPcRaw;
+      try {
+        if (newPc && String.prototype.normalize) {
+          newPc = String(newPc).normalize("NFKC")
+            .replace(/㈱/g, "")
+            .replace(/（株）|\(株\)/g, "")
+            .replace(/株式会社/g, "")
+            .replace(/[\u3000\s]+/g, " ")
+            .trim();
+          if (newPc !== newPcRaw && pcField) {
+            pcField.value = newPc;
+          }
+        }
+      } catch (eNorm) {
+        void eNorm;
+      }
       var partnerUnlocked = payModal.getAttribute("data-y678-partner-unlocked") === "1";
       var allowPartnerAggregateEdit = showPartnerNewRegisterButton(rec);
       var partnerUpdate = !!(pcField && newPc !== origPc && (partnerUnlocked || allowPartnerAggregateEdit));

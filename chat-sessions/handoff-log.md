@@ -1148,3 +1148,22 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 - **session-lock**: なし
 - **関連パス**: `templates/yojitsu-budget-lite/SPEC.md` L145-160（§6f 本体）・L321 周辺（変更履歴）／`templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md` L43（payment_type 行）・L71-78（§4.1 拡張）・L124（変更履歴）
 
+
+### 2026-05-07 JST（追記・夜2）— 5A 予実⑤+③: 取引先 16 社正典化 ＋ 表記揺れ整理 ＋ B3 確認ダイアログ ＋ NFKC 自動正規化 完了
+
+- **CEO 指示（直前）**: ⑥ 完了後の §41 で「⑤ B3 + B-Aux3 UX 実装＋③ partner_company 表記揺れ整理を同時」選択 → 16 社プリセット浜田指定（大塚商会・FBJ・KDDI・その他＋既存 12 社）→ ドラフト全採用「AでOK」GO。
+- **事前点検（DeepSeek §50-3-8）**: 5 件すべて GREEN 化。① プリセット縮小で PARTNER_AGGREGATE_KEY（既存集合先判定）が壊れる懸念 → showPartnerNewRegisterButton の正規表現フォールバックを保持する設計で回避。② 既存「主候補＋未確定」3 件（クロネコヤマト、佐川急便／FBJ、その他／オフィスバスター、その他）の扱い → 浜田明示「予測表記であり実発生時に再確定」→ datalist には載せず自由文として維持（PUT 対象外）。③ 26 件一括 PUT 中の revision 競合 → 
+ecords.json 1 リクエスト atomic ＋ 各 record 
+evision ロックで担保。④ 「会社を新規登録する」誤押下 → window.confirm B3 確認ダイアログ（株式会社・㈱付けない／全角カタカナ・漢字・半角アルファ混在可／続行確認）追加・Cancel で UI 状態保持。⑤ 表記揺れ再混入 → submitPayment 内で NFKC＋㈱／株式会社／（株）削除＋空白圧縮を保存時自動適用。
+- **実施（CIO 単独・§35-1）**: customize/678/desktop.js を 8 箇所 StrReplace（① ar BUILD ② ヘッダコメント BUILD ③ PARTNER_DROPDOWN_PRESETS 16 件入替 ④ 新規登録 handler に confirm 追加 ⑤ datalist プレースホルダ option 文言 ⑥ pcEl placeholder 文言 ⑦ submitPayment 内 NFKC 正規化 ⑧ ヘッダコメント L18 集合先列挙整理）→ eslint -f json errors=0 warnings=0（途中 
+o-useless-assignment 1 件は ar ok = false → ar ok で解消）→ **
+pm run cio:preflight:678** → **
+pm run deploy:678** **SUCCESS** / fileKey **28df40c5-774d-4c3e-b4e6-8ec8be3ba779** / **revision=125** / **ar BUILD** = **2026-05-07-678-partner-presets-canonical-confirm**。LIVE JS 本体を ile.json で取得して文字列実検（preset 16 件全 OK／旧 preset 他のもの／他や各社／購入先未定／オフィス・バスター／（未設定） の preset 配列内 GONE／confirm dialog／NFKC normalize／placeholder 新文言すべて OK）。
+- **実データ正規化（REST 
+ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→KDDI ×10／㈱大塚商会→大塚商会 ×8／KCS㈱→KCS ×2／あさかわｼｽﾃﾑｽﾞ㈱→あさかわシステムズ ×2／ｿﾌﾄﾊﾞﾝｸ㈱→ソフトバンク ×1／NTTﾌｧｲﾅﾝｽ→NTTファイナンス ×1／NTT・TCリース株式会社→NTT・TCリース ×1／NTTｺﾐｭﾆｹｰｼｮﾝｽﾞ㈱→NTTコミュニケーションズ ×1）。**検証 GET**: 全 47 件で CHANGE 0 ／ UNCHANGED 44 ／ KEEP 3（KEEP 3 = クロネコヤマト、佐川急便 ×1／FBJ、その他 ×1／オフィスバスター、その他 ×1）。
+- **同期**: `templates/yojitsu-budget-lite/SPEC.md` に **§6g 新節**（取引先 16 社正典・正規化規則・B3 確認・NFKC 自動正規化）を §6f と §6c の間に挿入＋変更履歴先頭追記。`templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md` §3 `partner_company` 行に SPEC §6g 参照を追記＋変更履歴先頭追記。`kintone-apps.md` § 678 本番 live を **rev=125 / fileKey 28df40c5… / BUILD `2026-05-07-678-partner-presets-canonical-confirm`** に更新。`.rag/extra-docs/kintone-apps.md` を canonical と MATCH 同期。
+- **次の1手**: 浜田 目視確認（678 実績モーダル: ① datalist 16 件・並び順／② 候補にない会社で「会社を新規登録する」→ B3 確認ダイアログ／③ 入力後保存で 677 partner_company 反映 ＋ NFKC 正規化）→ OK で ⑤+③ 完全クローズ。GitHub Actions kintone-customize-deploy 自動再デプロイ後の rev 反映追記は別ターンでも可。
+- **GO待ち**: 浜田 目視確認結果（OK／NG／追加指示）
+- **session-lock**: なし
+- **関連パス**: `customize/678/desktop.js` L33 var BUILD・L6 ヘッダ・L18 集合先列挙整理・L2695-2722 PARTNER_DROPDOWN_PRESETS・L2830-2862 confirm dialog・L2906/L2917 placeholder／`templates/yojitsu-budget-lite/SPEC.md` §6g（160-208 周辺）・変更履歴／`templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md` §3／`kintone-apps.md` 本番 live 行／`scripts/tmp-kintone-677-partner-batch-plan.py`・`tmp-kintone-677-partner-batch-put.py`（一時・§50-3-9 整理対象）
+
