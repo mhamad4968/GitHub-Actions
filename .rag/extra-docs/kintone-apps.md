@@ -39,7 +39,7 @@ npm run app:fields <アプリID>
 
 ### 678 本番 customize の実効ビルド（台帳ずれの正）
 
-- **本番 live**（**2026-05-07** `npm run deploy:678` **SUCCESS** 時点）: fileKey **`263c81ee-2e19-4e8c-b551-2985a59082dd`** / preview revision **`123`** / **`var BUILD`** = **`2026-05-07-678-cost-category-filter-split`**（リポ **`customize/678/desktop.js` HEAD** と一致）。
+- **本番 live**（**2026-05-07T11:08Z** GitHub Actions `kintone-customize-deploy` SUCCESS 時点・直前の **`npm run deploy:678` rev=123** から自動再デプロイで **rev=124** に更新）: fileKey **`d2a0feb8-c1ae-4ac0-9545-5cbad4e4d115`** / preview revision **`124`** / **`var BUILD`** = **`2026-05-07-678-cost-category-filter-split`**（リポ **`customize/678/desktop.js` HEAD** と一致）。
 - **上表 678 行の `2026-05-05`〜`05-07` 風の連記**は、**現行 `desktop.js`（上記 BUILD）のバンドルには含まれない**メモ行である（当該機能を載せるときは **ソース改修＋`BUILD` 更新**のうえ **deploy:678**）。
 - **再デプロイ手順**: **`npm run deploy:678`** → 成功したら **fileKey / revision** を本節および表の末尾へ追記する。
 
