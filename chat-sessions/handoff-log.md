@@ -1110,3 +1110,11 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 - **GO待ち**: なし（定常・保留の線引きは本節で完了）
 - **session-lock**: なし
 
+### 2026-05-07 JST（追記）— 新セッション開幕・bootstrap 緑・GitHub constitution-gates 是正
+
+- **実施**: Desktop `AI緊急用` **00〜19（14 欠番・memo 対象外は未読）**精読相当。**`constitution.mdc`** 欠落を **`bash scripts/regenerate-constitution-rule.sh`** で復元。**`session:clock:set`**（開始 2026-05-07 10:59 JST）→ **WSL** で **`npm run session:bootstrap`** 完走（Windows 単体は crontab 無しで clock-health strict NG のため WSL 実行が必須）。**`npm install`** で S9 node_modules 整合。**`scripts/verify-ci-rule-integrity.mjs`** の **MAX_ALWAYS を 13** に更新し **`main` push** → **`constitution-gates`** 実行 **success**（`https://github.com/mhamad4968/GitHub-Actions/actions/runs/25471933532`）。**`session:clock:web`** 起動 URL **`http://127.0.0.1:47932/`**（WSL→Windows ブラウザは環境により `SESSION_CLOCK_WEB_HOST=0.0.0.0` が必要な場合あり）。
+- **次の1手**: 浜田 CEO の **項番 -0 本題**（5A 予実 / 5B PC 台帳 / その他）の **§41 確定**後、ラダー **A→B** へ。
+- **GO待ち**: 項番 -0 の本題一言（チャット返信）
+- **session-lock**: なし
+- **関連パス**: `scripts/verify-ci-rule-integrity.mjs` / `chat-sessions/SESSION-CLOCK.md` / `.github/workflows/constitution-gates.yml`
+
