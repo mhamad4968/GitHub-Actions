@@ -23,6 +23,9 @@ on:
       - 'chat-sessions/NEW-SESSION-STARTER.md'
       - 'chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md'
       - 'package.json'
+      - 'scripts/morning-prep-ensure.mjs'
+      - 'scripts/print-nvm-node-bin.sh'
+      - 'scripts/install-morning-cron.sh'
 
 permissions:
   contents: read

@@ -1,6 +1,7 @@
 ---
 description: CIO 運用の一本線（正シェル・朝ブリーフィング・軽検査・Desktop 同期の判断）
-alwaysApply: true
+globs: chat-sessions/**/*, docs/reports/**/*
+alwaysApply: false
 ---
 
 # CIO 運用ループ（仕組み・判断の正）
@@ -12,7 +13,7 @@ alwaysApply: true
 
 ## 朝（cron 以外の手動でも同じ順）
 
-1. **`docs/reports/<JSTの今日>-morning-prep.md`** を Read（§46 Phase 0）。
+1. **`docs/reports/<JSTの今日>-morning-prep.md`** を Read（§46 Phase 0）。**ファイルが無い／明らかに空**なら、CIO が先に **`npm run morning:ensure`**（生成＋検証）を実行してから Read する。
 2. **`chat-sessions/desktop-ai-emergency-read-pack/09-READ-07.txt`** を Read（**浜田 CEO のお願い**・Project Rules 厳守・壁時計・分業・GitHub Actions・健全性。短くてよいので **朝イチでも**）。
 3. 追徴・不安があれば **`npm run cio:quick-health`**（疎通 + wipe 監視。数分以内）。
 4. フル棚卸しは既存どおり **`npm run session:bootstrap`**（項番 -0 OK 後）。

@@ -33,6 +33,16 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
 
+/** NVM `bin` dir matching `.nvmrc` (same logic as `scripts/print-nvm-node-bin.sh`). */
+function resolveNvmNodeBinDir() {
+  try {
+    const sh = path.join(__dirname, 'print-nvm-node-bin.sh');
+    return execSync(`bash "${sh}"`, { cwd: REPO_ROOT, encoding: 'utf8' }).trim();
+  } catch {
+    return path.dirname(process.execPath);
+  }
+}
+
 // ── ユーティリティ ──────────────────────────────────
 const today = (() => {
   const d = new Date();
@@ -395,16 +405,16 @@ sections.push(r6.stdout || '_該当なし_');
 sections.push('');
 
 // 7. RAG 再 ingest（任意）
-// (#5 修正) Cursor 内蔵 Node v20 が PATH 先頭にいると npx が古い jsdom (CJS) を引き ERR_REQUIRE_ESM。
-// → コマンドに export PATH=NVM_v24/bin:$PATH を強制
+// (#5 修正) Cursor 内蔵 Node 等が PATH 先頭にいると npx が古い jsdom (CJS) を引き ERR_REQUIRE_ESM。
+// → `.nvmrc` に合う NVM の bin を PATH 先頭に強制（`scripts/print-nvm-node-bin.sh` と同値）
 sections.push('## 7. RAG 知識ベース更新');
 sections.push('');
-const NVM_V24_BIN = '/home/mhamada202408224/.nvm/versions/node/v24.14.1/bin';
+const NVM_NODE_BIN = resolveNvmNodeBinDir();
 const ragCmd = [
-  `export PATH=${NVM_V24_BIN}:$PATH`,
+  `export PATH=${NVM_NODE_BIN}:$PATH`,
   'cp RULES-INDEX.md kintone-apps.md AGENTS.md WORKFLOW.md .rag/extra-docs/ 2>/dev/null || true',
-  `${NVM_V24_BIN}/npx --yes mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest .rag/extra-docs/ 2>&1 | tail -10 || true`,
-  `${NVM_V24_BIN}/npx --yes mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest docs/ 2>&1 | tail -10 || true`,
+  `${NVM_NODE_BIN}/npx --yes mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest .rag/extra-docs/ 2>&1 | tail -10 || true`,
+  `${NVM_NODE_BIN}/npx --yes mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest docs/ 2>&1 | tail -10 || true`,
 ].join(' && ');
 const r7 = runCmd('rag-ingest', ragCmd, { timeoutMs: 300_000 });
 // 内側エラー検知: stdout/stderr に Error/ERR_/Exception を含む場合は ⚠ 降格 (#S1)

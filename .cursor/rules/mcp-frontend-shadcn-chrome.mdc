@@ -1,6 +1,7 @@
 ---
 description: Shadcn UI MCP を必ず参照・Chrome DevTools MCP で事実確認・不明時は関連 MCP で先に調査（mcp.json 同期手順付き）
-alwaysApply: true
+globs: customize/**/*, **/*.tsx, **/*.jsx
+alwaysApply: false
 ---
 
 # フロント向け MCP（Shadcn UI / Google Chrome DevTools）

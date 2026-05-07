@@ -43,10 +43,18 @@ for (const f of mdcFiles) {
 }
 
 // 2026-05-06: constitution-handoff-gate を alwaysApply:true に統一したため 11 件へ
-// 2026-05-07: ツール憲法・shadcn 等の常時想起追加により実数 13 件 — 上限を実態に合わせる（薄型方針は constitution.mdc=false で維持）
-const MAX_ALWAYS = 13;
+// 2026-05-07 CEO: 常時想起は **10 件上限**（Cursor 負荷・注入競合の抑止）。11 件目を足す場合は **既存のどれかを `alwaysApply: false` + `globs` へ降ろす**か統合してから追加すること。
+// 2026-05-07 夕: 3 ルールを glob 化し実数 10 に戻した（cio-operating-loop / mcp-frontend-shadcn-chrome / session-read-ladder-two-phase）。
+const MAX_ALWAYS = 10;
 if (alwaysTrue.length > MAX_ALWAYS) {
-  fail(`alwaysApply:true が ${alwaysTrue.length} 件（上限 ${MAX_ALWAYS}）。一覧: ${alwaysTrue.join(', ')}`);
+  fail(
+    `alwaysApply:true が ${alwaysTrue.length} 件（上限 ${MAX_ALWAYS}）。新規 .mdc は既定 false + globs。一覧: ${alwaysTrue.join(', ')}`,
+  );
+}
+if (alwaysTrue.length === MAX_ALWAYS) {
+  console.warn(
+    `[verify-ci-rule-integrity] ⚠ alwaysApply:true が上限 ${MAX_ALWAYS} 件ぴったり。追加する前に既存を glob 化または統合してください。`,
+  );
 }
 
 const brief = firstYamlFrontmatter('.cursor/rules/constitution-brief-card.mdc');

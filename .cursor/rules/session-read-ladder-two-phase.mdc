@@ -1,6 +1,7 @@
 ---
-description: セッション復元は二段階（事前準備A→本題確認B）＋ラダー正本を Read で取り込む（alwaysApply）
-alwaysApply: true
+description: セッション復元は二段階（事前準備A→本題確認B）＋ラダー正本を Read で取り込む（glob・常時想起は憲法カード等に委譲）
+globs: chat-sessions/**/*
+alwaysApply: false
 ---
 
 # セッション読解 — 二段階（Project Rules）

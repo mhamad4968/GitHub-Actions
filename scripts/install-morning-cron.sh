@@ -2,7 +2,7 @@
 # install-morning-cron.sh — 毎朝 06:00 (JST) cron に daily-morning-prep を登録
 #
 # 安全装置:
-#   - Cursor 内蔵 Node v20 の干渉を避けるため NVM v24 絶対パスで登録
+#   - Cursor 内蔵 Node 等の干渉を避けるため、`.nvmrc` に合う NVM の絶対パスで登録
 #   - 既存の同名エントリがあれば置換
 #
 # 実行: bash scripts/install-morning-cron.sh
@@ -11,22 +11,21 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-NODE_V24_BIN="${HOME}/.nvm/versions/node/v24.14.1/bin"
+NODE_BIN_DIR="$(bash "${REPO_ROOT}/scripts/print-nvm-node-bin.sh")"
 
-if [ ! -x "${NODE_V24_BIN}/node" ]; then
-  echo "ERROR: NVM v24 not found at ${NODE_V24_BIN}/node" >&2
-  echo "  → run: nvm install 24" >&2
+if [ ! -x "${NODE_BIN_DIR}/node" ]; then
+  echo "ERROR: NVM node not executable at ${NODE_BIN_DIR}/node" >&2
   exit 1
 fi
 
-CRON_LINE="0 6 * * * cd ${REPO_ROOT} && PATH=${NODE_V24_BIN}:${NODE_V24_BIN}:/usr/bin:/bin ${NODE_V24_BIN}/node scripts/daily-morning-prep.mjs >> ${REPO_ROOT}/logs/morning-prep/cron.log 2>&1 # kintone-ai-lab daily-morning-prep"
+CRON_LINE="0 6 * * * cd ${REPO_ROOT} && PATH=${NODE_BIN_DIR}:${NODE_BIN_DIR}:/usr/bin:/bin ${NODE_BIN_DIR}/node scripts/daily-morning-prep.mjs >> ${REPO_ROOT}/logs/morning-prep/cron.log 2>&1 # kintone-ai-lab daily-morning-prep"
 
 # wipe-guard (15 分ごと) と emergency-mirror (4 時間ごと) も同時に登録
-WIPE_GUARD_LINE="*/15 * * * * cd ${REPO_ROOT} && PATH=${NODE_V24_BIN}:/usr/bin:/bin ${NODE_V24_BIN}/node scripts/wipe-guard.mjs >> ${REPO_ROOT}/logs/wipe-guard/cron.log 2>&1 # wipe-guard"
-MIRROR_LINE="17 */4 * * * cd ${REPO_ROOT} && PATH=${NODE_V24_BIN}:/usr/bin:/bin ${NODE_V24_BIN}/node scripts/emergency-mirror.mjs >> ${REPO_ROOT}/logs/wipe-guard/mirror.log 2>&1 # emergency-mirror"
+WIPE_GUARD_LINE="*/15 * * * * cd ${REPO_ROOT} && PATH=${NODE_BIN_DIR}:/usr/bin:/bin ${NODE_BIN_DIR}/node scripts/wipe-guard.mjs >> ${REPO_ROOT}/logs/wipe-guard/cron.log 2>&1 # wipe-guard"
+MIRROR_LINE="17 */4 * * * cd ${REPO_ROOT} && PATH=${NODE_BIN_DIR}:/usr/bin:/bin ${NODE_BIN_DIR}/node scripts/emergency-mirror.mjs >> ${REPO_ROOT}/logs/wipe-guard/mirror.log 2>&1 # emergency-mirror"
 # 2026-04-21 制定 #R12: 健康状態こまめに自動チェック + 自動修復 (浜田指示)
-HEALTH_CHECK_LINE="33 */4 * * * cd ${REPO_ROOT} && PATH=${NODE_V24_BIN}:/usr/bin:/bin ${NODE_V24_BIN}/node scripts/health-check.mjs >> ${REPO_ROOT}/logs/health/cron.log 2>&1 # health-check-4h"
-AUTO_HEAL_LINE="43 */4 * * * cd ${REPO_ROOT} && PATH=${NODE_V24_BIN}:/usr/bin:/bin ${NODE_V24_BIN}/node scripts/auto-heal.mjs >> ${REPO_ROOT}/logs/heal/cron.log 2>&1 # auto-heal-4h"
+HEALTH_CHECK_LINE="33 */4 * * * cd ${REPO_ROOT} && PATH=${NODE_BIN_DIR}:/usr/bin:/bin ${NODE_BIN_DIR}/node scripts/health-check.mjs >> ${REPO_ROOT}/logs/health/cron.log 2>&1 # health-check-4h"
+AUTO_HEAL_LINE="43 */4 * * * cd ${REPO_ROOT} && PATH=${NODE_BIN_DIR}:/usr/bin:/bin ${NODE_BIN_DIR}/node scripts/auto-heal.mjs >> ${REPO_ROOT}/logs/heal/cron.log 2>&1 # auto-heal-4h"
 
 mkdir -p "${REPO_ROOT}/logs/morning-prep" "${REPO_ROOT}/logs/wipe-guard" "${REPO_ROOT}/logs/file-watcher"
 
