@@ -39,7 +39,7 @@ npm run app:fields <アプリID>
 
 ### 678 本番 customize の実効ビルド（台帳ずれの正）
 
-- **本番 live**（**2026-05-05** `npm run deploy:678` **SUCCESS** 時点）: fileKey **`6074bbd9-62bf-4746-b522-ec4ebcdeba12`** / preview revision **`110`** / **`var BUILD`** = **`2026-05-04-678-manual-app-guide-name`**（リポ **`customize/678/desktop.js` HEAD** と一致）。
+- **本番 live**（**2026-05-07** `npm run deploy:678` **SUCCESS** 時点）: fileKey **`263c81ee-2e19-4e8c-b551-2985a59082dd`** / preview revision **`123`** / **`var BUILD`** = **`2026-05-07-678-cost-category-filter-split`**（リポ **`customize/678/desktop.js` HEAD** と一致）。
 - **上表 678 行の `2026-05-05`〜`05-07` 風の連記**は、**現行 `desktop.js`（上記 BUILD）のバンドルには含まれない**メモ行である（当該機能を載せるときは **ソース改修＋`BUILD` 更新**のうえ **deploy:678**）。
 - **再デプロイ手順**: **`npm run deploy:678`** → 成功したら **fileKey / revision** を本節および表の末尾へ追記する。
 
@@ -537,6 +537,7 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 | 2026-05-04 | **678 アプリ設定**：**クイックマニュアル**を **「アプリの説明」**（HTML・一覧上部）に掲載。再反映 `npm run yojitsu:678:publish-manual-description`（`scripts/yojitsu-678-publish-quick-manual-app-description.mjs`）。**deploy SUCCESS**（general settings） |
 | 2026-05-04 | **678 customize**：**クイックマニュアル**リンクを **同一アプリの説明欄**（`#y678-quick-manual`）へ。ダッシュ本文は表・ナビ中心維持。**deploy SUCCESS** / fileKey **`f53d40ea-5d60-4d8e-8442-775a0d744a9b`** / revision **`90`** / **BUILD=`2026-05-04-678-manual-in-app-description`** |
 | 2026-05-04 | **678 customize**：**クイックマニュアル（別ページ）**をシェル**最上段**にリンク（既定 GitHub `yojitsu-quick-manual.md`・`window.Y678_QUICK_MANUAL_URL` で URL 上書き可）。ダッシュ本文の**長文案内を削除**（表・ナビ中心）。**HTML** 同梱 `templates/yojitsu-budget-lite/docs/yojitsu-quick-manual.html`。**deploy SUCCESS** / fileKey **`b5e8b981-d050-44ca-98e5-eda0430bf756`** / revision **`87`** / **BUILD=`2026-05-04-678-quick-manual-bar-table-first`** |
+| 2026-05-07 | **678 customize**：費用種別フィルタ **3 → 4 ボタン化** — `すべて／固定費／変動費` を `すべて／固定費（月額）／固定費（年額）／変動費` に分割。`filterRecordsByCostCategory` を `cost_category` × `payment_type` の多条件化（`固定費_月額`／`固定費_年額` は `cost_category="固定費"` かつ `payment_type` 一致、その他は従来 1 条件）。後方互換あり（`変動費`／`all` は無変更）。事前に DeepSeek §50-3-8 盲点点検 5/5 GREEN・既存 677 データの分布も確認（漏れケースなし）。**deploy SUCCESS** / fileKey **`263c81ee-2e19-4e8c-b551-2985a59082dd`** / revision **`123`** / **BUILD=`2026-05-07-678-cost-category-filter-split`** |
 | 2026-05-07 | **678 customize**：実績モーダル **会社** — **候補 `<select>`** を追加（datalist 併用）。**NFKC**＋**「他」派生・FBJ 表記ゆれ**で「新規登録」導線を拡張。677 ドロップダウン時は **選択肢一致** の注記。**deploy SUCCESS** / fileKey **`b1ce263d-0a2d-4848-ad35-fdd20b7b58e6`** / revision **`70`** / **BUILD=`2026-05-07-678-partner-select-nfkc`** |
 | 2026-05-07 | **678 customize**：都度費用フォーカス中は**表の暦月「入力中」・暦月セルの編集可表示**もオフ（内部の入力対象月・都度列の集計は従来どおり）。**「都度費用」**押下で **再描画**、先頭／左右／末尾ナビで都度を抜けたときも **再描画**。**deploy SUCCESS** / fileKey **`8fcd9dd8-f43d-4d4a-a4e6-369e7e67336d`** / revision **`71`** / **BUILD=`2026-05-07-678-tsudo-table-sync`** |
 | 2026-05-07 | **678 customize**：都度費用フォーカス中は**月ジャンプボタンの押下見た目のみ解除**（`getInputMonthLabel` は維持）。**deploy SUCCESS** / fileKey **`7b58fc4b-4147-4ce4-85aa-3c5d84a4d33e`** / revision **`69`** / **BUILD=`2026-05-07-678-nav-tsudo-clear-month-ui`** |

@@ -1118,3 +1118,24 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 - **session-lock**: なし
 - **関連パス**: `scripts/verify-ci-rule-integrity.mjs` / `chat-sessions/SESSION-CLOCK.md` / `.github/workflows/constitution-gates.yml`
 
+### 2026-05-07 JST（追記・午後）— 5A 予実: PC購入費 `payment_type` 訂正完了 ＋ MCP `user-kintone` URL 是正
+
+- **CEO 指示**: 「予実管理で 1 つ修正してほしい。PC購入費が変動費なのに月額となっている。…会社は大塚商会、FBJ、KDDI、その他（…新規登録ボタン…）」「**MCP 通信が連続失敗の原因もしらべてほしい。異常だと思う**」。続けて業務ルール 3 区分（イニシャル‐月額／イニシャル‐年額／変動費）を提示。**Option A（MCP URL 是正）GO**、続いて **Q4 シーケンス GO（DeepSeek →Tier B GO →PUT →目視）**、Q5 Tier B GO、Step (d) 目視 OK を順次受領。
+- **実施 1（健康・MCP URL 是正）**: `C:\Users\…\.cursor\mcp.json` の `kintone.env.KINTONE_BASE_URL` / `kintone-space.args` 内 export / `kintone-space.env.KINTONE_BASE_URL` の **3 箇所**を `https://cybozu.com`（汎用 LP）→ 正規テナント URL（**§3.6 配慮で REDACTED**）に置換。バックアップ **`mcp.json.bak.20260507-191101`** 同フォルダ保存・JSON parse OK。**Cursor 側のリロードは未確認のため次セッションで疎通テスト**（`kintone-get-apps` 軽量 GET）。
+- **実施 2（5A 予実・PC購入費 $id=70）**: 全フィールド GET（DeepSeek §50-3-8 盲点 5 件すべて GREEN 処置済 — `learning_fixed_budget=''` `legacy_*` 影響なし／677 customize submit は REST バイパス／678 line 2417 はモーダル限定／`summary_text` 連動なし／`payment_breakdown` 0 行）→ REST PUT で **`payment_type`: '月額' → '都度'**（revision=5→6・単一フィールド・他フィールド完全保持・検証 GET ALL GREEN）。Step (d) 浜田画面目視 OK。**業務ルール（イニシャル‐月額／年額／変動費）は既存 `cost_category × payment_type` 2 軸で表現可能と確認・SPEC 拡張は当面不要**（記録）。
+- **次の1手**: 残積み（②`initial_variable_budget` 運用値 ／ ③`partner_company` 表記揺れ ／ ④配線工事レコードの `partner_company` を「その他」化 — GO 済 ／ ⑤B3 + B-Aux3 UX 実装 — GO 済・着手前 DeepSeek §50-3-8 必須 ／ ⑥SPEC.md / `yojitsu-master-and-field-plan.md` 業務ルール正典化 — Tier A）から **§41 1 問 1 答**で 1 件ずつ着手。Cursor リロード後の MCP 疎通確認も忘れない。
+- **GO待ち**: 次タスク選定（Q7）
+- **session-lock**: なし
+- **関連パス**: `scripts/tmp-fix-mcp-json-kintone-baseurl.py`（一時・§50-3-9 整理対象）／`scripts/tmp-kintone-677-get-pc-records.py`（一時）／`scripts/tmp-kintone-677-get-cost-category-field.py`（一時）／`scripts/tmp-kintone-677-put-payment-type.py`（一時・PUT 監査）／`customize/678/desktop.js` line 2410-2425 / 2504-2540（業務ルールの正規実装側）／`templates/yojitsu-budget-lite/SPEC.md` §6c §6e（仕様の正典）
+
+### 2026-05-07 JST（追記・夕）— 5A 予実⑦: 678 費用種別フィルタ分割（3 → 4 ボタン）完了
+
+- **CEO 指示（直前）**: 「費用種別: すべて／固定費／変動費 があるが固定費は **固定費（月額）** と **固定費（年額）** に分けて」→ A 案（4 ボタン化・`payment_type` 併用）合意 → **GO**。
+- **事前点検**: DeepSeek §50-3-8 盲点 5 件（フィルタキー命名重複／既存ボタン状態保持／`payment_type` 欠損 record 取扱／`変動費` 行へのトグル副作用／legacy `var BUILD` 文字列比較箇所）すべて GREEN 処置済。677 全レコードの `cost_category × payment_type` 分布も確認し、`固定費`×`月額`/`年額` 以外の漏れケースなし。
+- **実施（CIO 単独・§35-1）**: `customize/678/desktop.js` 2 箇所 StrReplace（`filterRecordsByCostCategory` 多条件化／フィルタ HTML 4 ボタン化）＋ `var BUILD`／コメントヘッダ BUILD を **`2026-05-07-678-cost-category-filter-split`** に更新 → `eslint -f json` errors=0 warnings=0（途中で `no-useless-assignment` を 1 件検出 → 三項演算子化で解消）→ **`npm run cio:preflight:678`** → **`npm run deploy:678`** **SUCCESS** / fileKey **`263c81ee-2e19-4e8c-b551-2985a59082dd`** / **revision=123**。LIVE/PREVIEW 双方を `app/customize.json` で確認＋ live JS 本体を `file.json` で取得して文字列実検（新文言 6/6 OK・旧 `data-y678-filter="固定費"` ボタン・旧 BUILD 文字列が GONE）。
+- **同期**: `kintone-apps.md`（§678 本番 live・変更履歴行）／`.rag/extra-docs/kintone-apps.md` を MATCH 同期。`templates/yojitsu-budget-lite/SPEC.md` 変更履歴に 1 行追記（仕様自体の正典化は §10.6 配下で別タスク）。
+- **次の1手**: 浜田 Step 8（画面目視）— 678 ダッシュ上部の **費用種別: すべて／固定費（月額）／固定費（年額）／変動費** の 4 ボタンが押下→各々で行集合が想定どおり切り替わるかご確認のうえ、「OK」または不具合一言を返信ください。OK 後は ②③⑤⑥ から §41 1 問 1 答で次タスク選定。
+- **GO待ち**: Step 8 目視結果（OK／NG 一言）
+- **session-lock**: なし
+- **関連パス**: `customize/678/desktop.js`（L587-600 多条件フィルタ／L1358-1364 4 ボタン HTML／L33 `var BUILD`／L6 ヘッダ BUILD）／`kintone-apps.md` L42・L540 周辺／`.rag/extra-docs/kintone-apps.md` 同／`templates/yojitsu-budget-lite/SPEC.md` 変更履歴先頭
+

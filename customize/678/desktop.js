@@ -3,7 +3,7 @@
 
   /**
    * 部署予実 ダッシュアプリ 678
-   * BUILD: 2026-05-04-678-manual-app-guide-name
+   * BUILD: 2026-05-07-678-cost-category-filter-split
    * - 677 を kintone.api で一覧。左キー列は `shin-format-excel-layout.md` 新フォーマット準拠＋12 月×四つ柱（`monthly_breakdown`）
    * - 一覧の既定 SORT は `display_order asc, $id asc`（SPEC §6e 準拠・2026-05-03 改修）
    * - 新規追加モーダルは「挿入位置」選択（一番下/一番上/○○の上/○○の下）＋中間値計算（floor((prev+next)/2)）
@@ -30,7 +30,7 @@
   var YOJITSU_LABEL_INPUT_NEW = "システム推進室予実管理システム入力アプリの新規入力";
   var YOJITSU_LABEL_DASH_APP = "システム推進室予実管理システム";
   var YOJITSU_LABEL_MANUAL_APP = "システム推進室予実アプリガイド";
-  var BUILD = "2026-05-04-678-manual-app-guide-name";
+  var BUILD = "2026-05-07-678-cost-category-filter-split";
   /**
    * マニュアル掲載アプリ（システム推進室予実アプリガイド・679）。`window.Y678_QUICK_MANUAL_URL` が非空なら最優先。
    */
@@ -588,7 +588,14 @@
     if (filterKey === "all") return records.slice();
     var out = [];
     for (var i = 0; i < records.length; i++) {
-      if (fieldVal(records[i], "cost_category") === filterKey) out.push(records[i]);
+      var rec = records[i];
+      var cat = fieldVal(rec, "cost_category");
+      var pay = fieldVal(rec, "payment_type");
+      var hit =
+        filterKey === "固定費_月額" ? (cat === "固定費" && pay === "月額") :
+        filterKey === "固定費_年額" ? (cat === "固定費" && pay === "年額") :
+        (cat === filterKey);
+      if (hit) out.push(rec);
     }
     return out;
   }
@@ -1358,7 +1365,8 @@
     filterRow.innerHTML =
       "<span style=\"color:#555;font-size:12px\">費用種別:</span>" +
       "<button type=\"button\" class=\"y678-filter\" data-y678-filter=\"all\" style=\"font-size:12px;cursor:pointer\">すべて</button>" +
-      "<button type=\"button\" class=\"y678-filter\" data-y678-filter=\"固定費\" style=\"font-size:12px;cursor:pointer\">固定費</button>" +
+      "<button type=\"button\" class=\"y678-filter\" data-y678-filter=\"固定費_月額\" style=\"font-size:12px;cursor:pointer\">固定費（月額）</button>" +
+      "<button type=\"button\" class=\"y678-filter\" data-y678-filter=\"固定費_年額\" style=\"font-size:12px;cursor:pointer\">固定費（年額）</button>" +
       "<button type=\"button\" class=\"y678-filter\" data-y678-filter=\"変動費\" style=\"font-size:12px;cursor:pointer\">変動費</button>" +
       "";
     wrap.appendChild(filterRow);
