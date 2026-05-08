@@ -39,7 +39,7 @@
 
 | 文書 | 役割 |
 |---|---|
-| **`docs/session-report-checklist.md`** | **報告用チェックリスト（詳細）** — **報告時は □ 本文をチャットに貼付**（CEO 目視）／**CEO 報告ゲート**（ティア・【適用憲法】・`[🎖️ 本セッション割当]`）／**順守根拠**／**AI 側検証 2 者**／§M **機械フッタ**（hooks） |
+| **`docs/session-report-checklist.md`** | **報告用チェックリスト（詳細）** — **報告時は □ 本文をチャットに貼付**（CEO 目視）／**CEO 報告ゲート**（ティア・【適用憲法】・`[🎖️ 本セッション割当]`）／**順守根拠**／**§P A1**（誰とダブルチェック・結果・`ダブルチェック要約:` 常時）／**AI 側検証 2 者**／§M **機械フッタ**（hooks） |
 | Desktop **`19-SESSION-REPORT-CHECKLIST.txt`** | 上記の短縮版（`chat-sessions/desktop-ai-emergency-read-pack/` 正本・**`npm run session-starter:sync-desktop`** で同期） |
 | **`.cursor/hooks.json`** + **`report-checksheet-*.mjs`** + **`report-pipeline-audit.mjs`** | **報告ターン厳格化（2026-05-08 CEO 命令）** — 欠落・**V1 のみ**・**V2 四キー矛盾**は **`stop` 自動フォロー**＋パイプライン `FAILED_*`（`npm run report:pipeline-status`）。正本 **`every-turn-rules-confirm.mdc` §1e**／`docs/session-report-checklist.md` §M |
 | **§1f / §P A3** | **複数回自己見直し（CEO 命令）** — 送信・報告確定・push 直前に **最低 2 回**（事実→形式）。**Tier B・不可逆・報告・憲法／hooks 改定**は **3 回目**（CEO 検収視点）必須。**`every-turn-rules-confirm.mdc` §1f**／**`docs/session-report-checklist.md` §P A3** |
