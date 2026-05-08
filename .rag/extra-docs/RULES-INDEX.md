@@ -44,6 +44,7 @@
 | **`.cursor/hooks.json`** + **`report-checksheet-*.mjs`** + **`report-pipeline-audit.mjs`** | **報告ターン厳格化（2026-05-08 CEO 命令）** — 欠落・**V1 のみ**・**V2 四キー矛盾**は **`stop` 自動フォロー**＋パイプライン `FAILED_*`（`npm run report:pipeline-status`）。正本 **`every-turn-rules-confirm.mdc` §1e**／`docs/session-report-checklist.md` §M |
 | **§1f / §P A3** | **複数回自己見直し（CEO 命令）** — 送信・報告確定・push 直前に **最低 2 回**（事実→形式）。**Tier B・不可逆・報告・憲法／hooks 改定**は **3 回目**（CEO 検収視点）必須。**`every-turn-rules-confirm.mdc` §1f**／**`docs/session-report-checklist.md` §P A3** |
 | **§1e-4 / `report-checksheet-pending.mjs`** | **報告前自動判定** — `session-clock.mjs check` ＋ `report:pipeline-status`。**NG** 時は **チェックシート通読** または **Desktop `AI緊急用` 全ファイル Read**（**推奨: 両方**）。`logs/report-precheck.log` |
+| **CEO 命令（2026-05-08・hooks 本番）** | **`hooks.json`／`report-checksheet-*`／`report-pipeline-*` の変更と every-turn の hooks 連動 § 本番改定**は **`main` 反映前**に **DeepSeek と Kimi の双方**へ同一短問 → **回答をチャットに各要約** → **本体 CIO 突合「問題なし」**。**抜けゼロは断言せず監視継続**（`every-turn-rules-confirm.mdc` 冒頭 CEO 節） |
 | **§37-1（`AGENTS.md`）** | **報告ターン末・機械フッタ V2 の正典キー** — `SECOND_REVIEWER` / `SPEC_TOUCHED` / `DESTRUCTIVE_OPS` / `DRY_RUN_TO_APPLY_GAP`（スペル固定・7 行全体の順序は **every-turn-rules-confirm.mdc §1e-2**） |
 | **`git-hooks/commit-msg`** + **`cio-commit-msg-second-reviewer.mjs`** | **論点11** — `SPEC_TOUCHED: yes` 行がある、または正本 **SPEC 2 パス**がステージに含まれるコミットでは、message に **`Reviewed-by: deepseek｜kimi｜openrouter`** 必須（`AGENTS.md` §37-1） |
 
