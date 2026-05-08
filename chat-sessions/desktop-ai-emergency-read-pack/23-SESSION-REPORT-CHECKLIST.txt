@@ -3,6 +3,7 @@
 詳細版: リポ docs/session-report-checklist.md
 
 ■ 複数回看直し（CEO命令）送信・報告確定・push直前に最低2回（事実→形式）。TierB・不可逆・報告・憲法/hooks改定は3回目（CEO検収視点）必須。各ラウンド【見直し1】〜を1行ずつ残す（正本 docs/session-report-checklist.md §P A3・every-turn §1f）
+■ 報告前自動判定（beforeSubmitPrompt）session-clock check + npm run report:pipeline-status。NG時は additional_context で (A) docs/session-report-checklist.md 通読 または (B) C:/Users/mhamada202408224/Desktop/AI緊急用 全ファイルRead（推奨両方）。SKIP_REPORT_PRECHECK=1 は浜田承認下のみ。logs/report-precheck.log
 ■ hooks 自動（厳格）報告ターンで応答末尾の機械可読フッタが必須（欠落・V1のみ・V2矛盾→stopで自動フォロー）
   ▽ V2（必須・2026-05-08 CEO命令）— SPEC_TOUCHED:yes＋SECOND_REVIEWER:none(reason空) 等の矛盾は warn 止まりにせず stop＋パイプライン FAILED
     【セッション報告チェックシート】

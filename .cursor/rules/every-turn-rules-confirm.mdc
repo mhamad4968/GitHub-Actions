@@ -76,7 +76,11 @@ DRY_RUN_TO_APPLY_GAP: same-turn|>=1-turn|n/a
 - **`stop` と `completed`**: Cursor が **`status !== completed`** で `stop` を呼ぶことがある。**そのときはフォロー用フラグを消さず**、**`completed` の `stop` まで保持**する（誤って自動フォローを捨てない・2026-05-07 改修。正本: `report-checksheet-stop.mjs`）。
 - **`pending` の TTL**: 長時間タスクでも検証が効くよう **8 時間**。TTL 切れは **`logs/report-checksheet-violations.log` に `PENDING_EXPIRED_TTL` として記録**（黙捨て禁止・正本: `report-checksheet-validate.mjs`）。
 - **報告後の手立てを踏んだかの自動判定**: `beforeSubmitPrompt` → `afterAgentResponse` → `stop` の各段で **`.cursor/hooks/report-pipeline-audit.mjs`** が **`logs/report-pipeline-audit.log`**（追記・1 行 1 JSON）と **`.cursor/hooks/state/report-pipeline-current.json`**（`outcome`: `in_progress` / `SUCCESS` / `FAILED_TTL` / `FAILED_MAX_LOOPS` / `FAILED_V2_CONSTRAINTS` / `FAILED_STRICT_V1` / `SUPERSEDED`）を更新する。**確認コマンド**: `npm run report:pipeline-status`（終了コード **0**＝`SUCCESS` または **記録なし**／**1**＝`FAILED_*`／**2**＝`in_progress`／**4**＝`SUPERSEDED`）。**V2 矛盾は `SUCCESS` にならず** `FAILED_V2_CONSTRAINTS` または **`stop` 再応答後の `SUCCESS`** を経る。
-- **状態ファイル**（`.cursor/hooks/state/`）と **`logs/report-checksheet-violations.log`**（欠落ログ）、**`logs/report-pipeline-audit.log`** は **git 対象外**。
+- **状態ファイル**（`.cursor/hooks/state/`）と **`logs/report-checksheet-violations.log`**（欠落ログ）、**`logs/report-pipeline-audit.log`** は **git 対象外**）。
+
+### 1e-4. 報告前自動判定（beforeSubmitPrompt・2026-05-08 CEO）
+
+**`report-checksheet-pending.mjs`** が、**報告意図のユーザ送信直前**に **`node scripts/session-clock.mjs check`** と **`npm run report:pipeline-status`** を実行する。**NG** のとき、Cursor へ **`additional_context`** が注入され、**(A) `docs/session-report-checklist.md` を Read 通読** または **(B) `C:\Users\mhamada202408224\Desktop\AI緊急用` 配下の全ファイルを名前昇順で Read** の **いずれか一方以上**（**推奨: 両方**）を **省略なく**実施してから報告を続けること。**バイパス**: 環境変数 **`SKIP_REPORT_PRECHECK=1`**（浜田承認下のみ）。**ログ**: `logs/report-precheck.log`／**直近結果 JSON**: `.cursor/hooks/state/report-precheck-last.json`。
 
 ## 1c. 仕様ラベル・検証 2 者（§1 の直後・該当ターンは省略禁止）
 

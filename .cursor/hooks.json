@@ -22,7 +22,7 @@
     "beforeSubmitPrompt": [
       {
         "command": "node .cursor/hooks/report-checksheet-pending.mjs",
-        "timeout": 8
+        "timeout": 35
       }
     ],
     "afterAgentResponse": [

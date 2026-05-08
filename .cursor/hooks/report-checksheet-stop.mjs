@@ -39,7 +39,7 @@ const FOLLOWUP_V2 = `【hooks 自動フォロー】**V2 チェックシートの
 function main() {
   let input = {};
   try {
-    const raw = fs.readFileSync(0, 'utf8');
+    const raw = (fs.readFileSync(0, 'utf8') || '').replace(/^\uFEFF/, '');
     input = JSON.parse(raw || '{}');
   } catch {
     input = {};
