@@ -1271,3 +1271,13 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
   - **論点 11**: A1 pre-commit hook を拡張し **「SPEC_TOUCHED: yes なら commit message に `Reviewed-by: deepseek|kimi|openrouter` trailer 必須」** を機械検証。物理的に第2者抜けを防ぐ。
 - **明日朝のフロー（更新版）**: ① ブリーフィング → ② cio:health → ③ GitHub 状態 → ④ 残議論 **9 件**（論点 3〜11）を §41 1問1答で順次決定 → ⑤「今日の予定」ヒアリング。論点 8〜11 を最優先（本日の違反是正に直結）。
 - **関連**: AGENTS.md §M-1〜§M-3（本日 CEO 提示の最低基準・要正典化）／§41-3／§57／本日 commit `8fc973d`（A1〜A6）／`5fc95ee` `6aff792`（Q33）／`f20a82d`（Q34）／`df2a73b`（クローズドキュ）。
+
+### 2026-05-08 10:38 JST（追記）— **論点 8 クローズ**（DeepSeek 遡及監査・案 A）
+
+- **CEO GO**: チャット「**A で OK**」— DeepSeek MCP `chat` を **3 バッチ直列**で実施し、各バッチ後に **§50-3-8 突合メモ（約3行）**を `chat-sessions/audit-2026-05-07-retroactive.md` に記録。
+- **成果物**: `chat-sessions/audit-2026-05-07-retroactive.md`（`8fc973d`／`5fc95ee`+`6aff792`／`f20a82d`+`df2a73b`+`28066c5` の突合サマリ・§57 ギャップの事実記載）。
+- **結論**: **revert / fix-up commit 不要**（`cio-mcp-quickprobe.mjs` は spawn+argv 固定で (a) 指摘は過大評価寄り。§57 未踏は**記録し今後遵守**）。
+- **session-lock**: `cio-2026-05-08-am` を **release 済**（論点 8 作業後）。
+- **次の1手**: **論点 9**（§1 先頭4行の機械検証）— 浜田 **§41 一問**でスコープ確定。
+- **GO待ち**: 論点 9 の方針（チャット）。
+- **関連パス**: `chat-sessions/audit-2026-05-07-retroactive.md`
