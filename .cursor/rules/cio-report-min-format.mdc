@@ -1,6 +1,10 @@
 ---
 description: 論点9 — §1 先頭4行のリポ／PR 向け機械検証（B スコープ）とチャット先頭ブロックの正本参照
-alwaysApply: true
+alwaysApply: false
+globs:
+  - "chat-sessions/**"
+  - ".github/**"
+  - "docs/session-report-checklist.md"
 ---
 
 # §1 先頭4行 — リポ・PR での検証（論点9）
