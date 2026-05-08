@@ -43,6 +43,7 @@
 | Desktop **`19-SESSION-REPORT-CHECKLIST.txt`** | 上記の短縮版（`chat-sessions/desktop-ai-emergency-read-pack/` 正本・**`npm run session-starter:sync-desktop`** で同期） |
 | **`.cursor/hooks.json`** + **`report-checksheet-*.mjs`** | **報告ターン厳格化** — `beforeSubmitPrompt`→`afterAgentResponse`→`stop` でチェックシート欠落時 **自動フォロー**（`every-turn-rules-confirm.mdc` **§1e**） |
 | **§37-1（`AGENTS.md`）** | **報告ターン末・機械フッタ V2 の正典キー** — `SECOND_REVIEWER` / `SPEC_TOUCHED` / `DESTRUCTIVE_OPS` / `DRY_RUN_TO_APPLY_GAP`（スペル固定・7 行全体の順序は **every-turn-rules-confirm.mdc §1e-2**） |
+| **`git-hooks/commit-msg`** + **`cio-commit-msg-second-reviewer.mjs`** | **論点11** — `SPEC_TOUCHED: yes` 行がある、または正本 **SPEC 2 パス**がステージに含まれるコミットでは、message に **`Reviewed-by: deepseek｜kimi｜openrouter`** 必須（`AGENTS.md` §37-1） |
 
 ## 📚 文脈獲得・調査
 

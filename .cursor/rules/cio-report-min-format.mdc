@@ -10,6 +10,7 @@ alwaysApply: true
 ## コミット前（`chat-sessions/`）
 
 - **`git commit`** 時、`pre-commit` が **`node scripts/cio-report-format-check.mjs --staged`** を実行する。
+- **論点11（別 hook）**: `commit-msg` が **`scripts/cio-commit-msg-second-reviewer.mjs`** を実行する（`SPEC_TOUCHED: yes` または正本 SPEC 2 パスがステージのとき **`Reviewed-by: deepseek｜kimi｜openrouter`** 必須。正本は `AGENTS.md` §37-1）。
 - **対象**: ステージ済みの `chat-sessions/**/*.md` / `.txt`（`desktop-ai-emergency-read-pack/`・`session-starter-parts/` は除外）。
 - **先頭非空行が `[§1-2-3 ティア判定` で含まれるファイルだけ**が厳格検査される。それ以外（`#` 見出し、`===` バナー、handoff 先頭など）は **検査スキップ**。
 

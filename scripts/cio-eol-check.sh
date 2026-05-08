@@ -39,7 +39,9 @@ while IFS= read -r f; do
     continue
   fi
   has_cr=0
-  if head -c 65536 "$f" | grep -q $'\r'; then has_cr=1; fi
+  # Git for Windows の grep はパイプ経由の CR をテキスト正規化で落とすため、grep ではなくバイト数で判定する
+  cr_count=$(head -c 65536 "$f" | tr -cd '\r' | wc -c | awk '{print $1+0}')
+  if [ "${cr_count:-0}" -gt 0 ]; then has_cr=1; fi
   checked=$((checked + 1))
   if [ "$attr" = "crlf" ] && [ "$has_cr" -eq 0 ]; then
     crlf_lf_violations="$crlf_lf_violations\n  $f"

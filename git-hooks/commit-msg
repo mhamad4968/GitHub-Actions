@@ -1,0 +1,17 @@
+#!/bin/sh
+# commit-msg — SPEC 触手相当のとき Reviewed-by trailer 必須（論点11）
+# インストール: npm run hooks:install
+# バイパス: git commit --no-verify（浜田承認下のみ）
+
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+cd "$REPO_ROOT" || exit 0
+
+if [ ! -f scripts/cio-commit-msg-second-reviewer.mjs ]; then
+  exit 0
+fi
+
+if command -v node >/dev/null 2>&1; then
+  node scripts/cio-commit-msg-second-reviewer.mjs "$1"
+  exit $?
+fi
+exit 0

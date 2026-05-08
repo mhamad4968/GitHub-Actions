@@ -2,77 +2,6 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-## 🟢 本ターン末状態（2026-05-07 22:55 JST・セッション 4h36m 経過・§51-6-2 で新チャット切替）
-
-### 完了タスク（時系列）
-
-| # | タスク | rev/commit | クローズ時刻 |
-|---|---|---|---|
-| ① | $id=70 PC購入費 `payment_type` 月→都度 | 677 直接 PUT | 2026-05-07 ~12:00 JST |
-| ⑦ | 678 ダッシュ 固定費フィルタ 月額／年額 分割 | rev=124 / `BUILD=2026-05-07-678-cost-category-filter-split` | 2026-05-07 ~12:00 JST |
-| ⑥ | 業務 3 区分（イニシャル‐月額／‐年額／変動費）正典化 | `SPEC.md` §6f / `field-plan.md` §3・§4.1 | 2026-05-07 ~12:30 JST |
-| ③ | `partner_company` 表記揺れ整理（atomic batch PUT 26 件） | – | 2026-05-07 ~12:30 JST |
-| ④ | $id=56 配線工事 `partner_company` その他化 | – | 2026-05-07 ~12:30 JST |
-| ⑤ | `partner_company` 16 社正典化＋ B3 確認＋ NFKC 自動正規化 | rev=126 / `BUILD=2026-05-07-678-partner-presets-canonical-confirm` | 2026-05-07 ~12:14 JST |
-| §50-3-9 | 一時 REST スクリプト 14 本＋本日生成分 全削除 | scripts/tmp-* 残 0 | – |
-| ② | `initial_variable_budget` v1 既定運用＋ 678 表示分岐 | rev=128 / `BUILD=2026-05-07-678-ivb-empty-as-dim` / 47 件全数調査 | 2026-05-07 21:56 JST CEO OK |
-| B | `user-kintone` MCP 疎通確認（`ECONNRESET` 完全解消） | mcp.json `bc64d80` ＋ Cursor リロード ＋ JSON-RPC 直 spawn 検証 | 2026-05-07 22:02 JST |
-| **A1〜A6** | **反省点是正パッケージ**（EOL 規律・健康診断・WSL$ 防衛・§41 拡張・quoting helper・checkpoint 必須化） | `8fc973d` (push 成功・amend で secret-free 化) | 2026-05-07 22:35 JST |
-| **Q33=C** | 全 .md CRLF 統一（`*.md text eol=crlf` ＋ 214 件 sed 一括変換） | `5fc95ee` → `6aff792` (tmp cleanup) | 2026-05-07 22:46 JST |
-| **Q34=B+α** | `cio:health` を `session:bootstrap` 末尾に**非ブロック組込**＋ AGENTS.md §41-7 拡張（WARN/RED 報告義務） | `f20a82d` | 2026-05-07 22:50 JST |
-
-**5A 予実カード = 7/7 完了**／**B 残積み = 1/1 完了**／**反省点是正 = A1〜A6 全実装＋ Q33/Q34 議論 2 件方針確定**／**残積み 0 件**。
-
-### 本日新設の自動化資産
-
-| 資産 | 役割 |
-|---|---|
-| `scripts/cio-health-check.sh` ＋ `npm run cio:health` | 壁時計（URL 動的取得）／session-lock／Node・npm／MCP 4 サーバ probe／git status／GitHub Actions failure 集計／EOL 維持 — 30 秒で全観点 |
-| `scripts/cio-mcp-quickprobe.mjs` ＋ `npm run cio:mcp:probe` | 4 MCP 並列 probe（kintone/deepseek/kimi/openrouter）・env 経由・SKIP_NO_KEY 対応 |
-| `scripts/cio-eol-check.sh` ＋ `npm run cio:eol:check[:staged]` | `.gitattributes` の `eol=crlf/lf` 違反検出 |
-| `git-hooks/pre-commit` ＋ `npm run hooks:install` | commit 時 staged ファイルの EOL 違反を検出して中断（バイパス: `--no-verify` 浜田承認下のみ） |
-| `scripts/cio-wsl-cache-defense.sh` ＋ `npm run cio:wsl:cache:check` | `.cio/cache-sensitive-files.txt`（8 件登録）の origin/main 遅れ検出（自動 pull はせず警告のみ） |
-| `scripts/cio-shell-quoting-helpers.sh` | `cio_run_one_off`／`cio_gh_runs_failures`／`cio_kintone_get_apps`（PowerShell quoting 事故回避） |
-| `.gitattributes` 拡張 | `*.sh eol=lf` ＋ `*.md eol=crlf` ＋ `/customize/678/desktop.js`／`/package.json eol=crlf` |
-| `AGENTS.md` §41-2／-3／-4／-5／-6／-7 | B 階段事前カード化／quoting 事故回避／checkpoint 必須化／EOL 規律／WSL$ 防衛／健康診断自動化＋ WARN/RED 報告義務 |
-
-### 未着手の議論（明日朝に持ち越し・5 件）
-
-CIO 推奨を事前準備済。明日朝のフロー（§ 後述）の Step 4 で §41 1問1答により順次決定。
-
-| 論点 | 内容 | CIO 推奨 |
-|---|---|---|
-| **3** | WSL$ キャッシュ事故の根本回避（StrReplace WSL 直接 vs Shell 経由 sed/python） | **B+α**: WSL 直接は維持しつつ、`.cio/cache-sensitive-files.txt` 記載のファイル書き込み前に **必ず `cio:wsl:cache:check` を実行＋ `git pull --rebase`** を強制（既に A3 で警告のみ実装済 → これを規律として AGENTS.md §41-6 に明文化追加） |
-| **4** | B 階段事前カード化の発動条件（§41-2 の 4 基準） | **そのまま採用**: 2 アプリ以上／SPEC 編集／Live deploy／DeepSeek 必要 — 本ターンで既に明文化済（§41-2）ので追加調整は不要。新基準の追加は今後の運用で実例を集めてから |
-| **5** | EOL 事故の連鎖（Cursor IDE `files.eol` 固定の可否） | **A: ワークスペース設定で `"files.eol": "\r\n"` 固定**（`.vscode/settings.json` か `.cursor/settings.json`）。`.gitattributes` ＋ pre-commit hook で機械保証は完成しているが、IDE レベルでも auto-normalize を抑止すれば二重防衛 |
-| **6** | 5A 予実カードの運用者向け簡易マニュアル化（5C 化） | **A: 5C カード化**: 業務担当向けの「PC 購入時はこう入力」「定額月額・年額・変動費の使い分け」「partner_company 入力ルール」を 1 枚マニュアル化。`templates/yojitsu-budget-lite/docs/yojitsu-quick-manual.md` に追加 |
-| **7** | Cursor trailer 自動付加への構造的対応（本ターン副次発見） | **A: 標準運用化**: 「`git commit` を含むコマンドは PowerShell 直書きせず `scripts/tmp-*.sh` 経由 + 絶対パス cd」を AGENTS.md §41-3 に追加（既に書いてあるが明示的に commit コマンド固有のルールとして強化） |
-
-### 🔴 追加論点 8〜11（22:58 JST 自己監査由来・本日違反の遡及是正）
-
-CEO 提示の最低基準 §M-1〜§M-3 に対し本日 3 項目とも違反（または部分違反）を発見。本日違反の根本原因に対応する追加論点を 4 件追加。**論点 8〜11 を明日朝の最優先**とする（CEO 22:59 JST 「需要名ルールなので守ってもらわないと困る」発言）。
-
-| 論点 | 内容 | CIO 推奨 |
-|---|---|---|
-| **8** | A1〜A6 / AGENTS.md §41-2〜§41-7 / Q33 / Q34 に DeepSeek **遡及適用**（本日着手前 §50-3-8 なしで commit したため） | **A: 即実行**。`chat-sessions/audit-2026-05-07-retroactive.md`（新規）に DeepSeek 突合結果を記録。問題発見時は即 revert または fix-up commit |
-| **9** | §1 先頭 4 行「ティア／適用憲法／🎖️／ルール確認」フォーマット統一 | **B 実装済（2026-05-08 CEO GO）**: `scripts/cio-report-format-check.mjs`（`--staged` / `--file` / `--stdin`）＋ `git-hooks/pre-commit`。`chat-sessions/**` の .md/.txt で**先頭非空行がティア行のファイルのみ**4行連続を検査。PR は `npm run cio:report-format-check -- --file …`。`.cursor/rules/cio-report-min-format.mdc` |
-| **10** | §M-2 V2「4 新フィールド」の正典定義（CIO は 2/4 しか把握できていない・**ドキュメント側にも穴**） | **実装済（2026-05-08 CEO GO＝CIO 推奨）**: `AGENTS.md` **§37-1** ＋ `RULES-INDEX.md`（ルート＋`.rag/extra-docs`）に `SECOND_REVIEWER` / `SPEC_TOUCHED` / `DESTRUCTIVE_OPS` / `DRY_RUN_TO_APPLY_GAP` を正典キーとして明文化。7 行ブロックの順序・検証は **every-turn-rules-confirm.mdc §1e-2** を正とする |
-| **11** | A1 pre-commit hook 拡張: `SPEC_TOUCHED: yes` なら commit message に `Reviewed-by: deepseek\|kimi\|openrouter` trailer 必須 | **A: 機械強制**。`scripts/cio-eol-check.sh` 的な独立 script（`cio-second-reviewer-check.sh`）として pre-commit hook に追加。物理的に第2者抜けを防ぐ |
-
-### 明日朝のフロー（CEO 確定・2026-05-07 22:59 JST 更新版）
-
-| 順 | 工程 | コマンド／ファイル |
-|---|---|---|
-| 1 | **ブリーフィング**（`AI緊急用` 00-23 + 主要ファイル精読） | `C:\Users\mhamada202408224\Desktop\AI緊急用\00-NEW-SESSION-STARTER_yyyymmdd.txt` から 23 まで |
-| 2 | **健康状態確認** | `npm run cio:health` |
-| 3 | **GitHub 状態確認** | `cio:health` 内蔵（または `gh run list --limit 10`） |
-| 4 | **残り議論 3〜11（9 件）の方針決定** | §41 1問1答で順次。**論点 8〜11 を最優先**（本日の最低基準違反の遡及是正・CEO 22:59 JST「需要名ルールなので守ってもらわないと困る」発言由来）。CIO 推奨は本表のとおり事前準備済 |
-| 5 | **「今日の予定」ヒアリング** | 通常運用 |
-
-**注**: §51-6-2 の 4 時間軸はリセット（新チャット）。Step 4 で論点 5（IDE files.eol 固定）が承認されたら `.vscode/settings.json`／`.cursor/settings.json` の追加が発生。論点 8 で DeepSeek 遡及監査により問題発見時は **追加 commit／revert** が発生する可能性あり。
-
----
-
 ## CIO × 知恵袋（仕様確認分業・2026-05-01 浜田確定・全セッション継承）
 
 **引き継ぎ 5 ブロック（2026-05-05 / v23.32）**: **`chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md`** — レーン宣言 → 規律ゲート → read-pack → bootstrap → 締め、の **短い正本**。長文を一度に読めないときの **入口**。
@@ -177,6 +106,8 @@ CEO 提示の最低基準 §M-1〜§M-3 に対し本日 3 項目とも違反（�
 - **次チャット初手**: 本ファイルの **「セッション切替後の自律復元」** の Read 順に従う（**SESSION-BOOTSTRAP-CHECKLIST** ＋ `npm run session:bootstrap` 必須）。**§51-6-2（セッション切替時刻）**の壁時計・目印は `chat-sessions/SESSION-SPLIT-REMINDER.md`。
 
 ---
+
+**最終更新**: 2026-05-08 (Fri) JST — **論点11（`commit-msg` 第2者 trailer）**: `git-hooks/commit-msg` + `scripts/cio-commit-msg-second-reviewer.mjs` を追加。`SPEC_TOUCHED: yes` 行がある、またはステージに **`templates/yojitsu-budget-lite/SPEC.md`** / **`docs/plans/2026-04-21-new-pc-ledger-spec.md`** が含まれるコミットでは、メッセージに **`Reviewed-by: deepseek` / `kimi` / `openrouter`** のいずれか必須（Merge 先頭行はスキップ・`--no-verify` は浜田承認下のみ）。`package.json` に **`npm run cio:commit-msg-second-reviewer`**（手動検査用）。`AGENTS.md` §37-1 にコミットメッセージ段落追記。**反映**: リポルートで **`npm run hooks:install`**。
 
 **最終更新**: 2026-05-06 (Wed) JST — **CEO 文脈の文書化（予実・PC台帳）**: **予実**＝部内レビュー後の修正要否は浜田判断・CIO 恒常ウォッチ外（**`templates/yojitsu-budget-lite/SPEC.md`** 状態欄）。**PC 台帳**＝**5/11** 担当者本運用+お披露目は据え置き。**~~5/6 夜のクイックガイドライン（681）~~** は **撤回**（アプリ削除・**`2026-04-21-new-pc-ledger-spec.md` v2.2**）。**担当者案内の別手段**は **2026-05-16 まで保留**（**§12.5** プレースホルダ・浜田策確定後に指示）。**定常 GO**: 毎週金曜 **`mcp-status:refresh-usage`**（差分あれば commit＋push）／任意 **`session-starter:sync-desktop`**（**`mcp-server-use-triggers.mdc` 項 0**・CEO GO 2026-05-06）。**5/13** 旧アプリ書込ロックは前倒し禁止のまま（**同仕様書 §9・§10・§12・§13**）。本ファイル「現在のゴール」「4/27〜」タイムラインを §9 に整合。
 

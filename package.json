@@ -154,6 +154,7 @@
     "rules:regenerate-constitution": "bash scripts/regenerate-constitution-rule.sh",
     "verify:mandatory-read-gate": "node scripts/mandatory-read-gate.mjs",
     "cio:report-format-check": "node scripts/cio-report-format-check.mjs",
+    "cio:commit-msg-second-reviewer": "node scripts/cio-commit-msg-second-reviewer.mjs",
     "verify:agent-env": "node scripts/verify-agent-env.mjs",
     "mcp:chat-stamp": "node scripts/mcp-chat-stamp.mjs",
     "session:clock:set": "node scripts/session-clock.mjs set",
