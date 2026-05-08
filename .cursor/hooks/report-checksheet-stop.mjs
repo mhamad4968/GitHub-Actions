@@ -36,6 +36,17 @@ const FOLLOWUP_V2 = `【hooks 自動フォロー】**V2 チェックシートの
 
 **事実と整合する値**に直し、**矛盾ゼロ**になったら \`CHECKSHEET_OK: yes\` にしてください。同一応答内で §1・§P・末尾 7 行を**まとめて**再出力してください。`;
 
+const FOLLOWUP_TURN_HEAD = `【hooks 自動フォロー】**報告ターン厳格モード**: 応答**先頭付近**（機械検査ウィンドウ）に **§1 四行**のいずれかが欠けていました（\`every-turn-rules-confirm.mdc\` §1・浜田 CEO 受付ゲート）。
+
+**同一応答の最上段付近**に、次を **この順で各 1 行**（省略なし）で出してから、§P の □ 本文と末尾 **V2 七行**を再出力してください:
+
+1. \`[§1-2-3 ティア判定: L1|L2|L3]\`（根拠 1 語以上）
+2. \`【適用憲法】\`（§ 列挙の 1 行）
+3. \`[🎖️ 本セッション割当]\`（割当の 1 行）
+4. \`[ルール確認]\`（Read 済みパス等の 1 行）
+
+**判定ログ**: 各検証で \`logs/report-turn-head-audit.log\` に 1 行 JSON が追記されます（抜けコード: TIER_LINE / CONSTITUTION_LINE / ASSIGN_LINE / RULES_CONFIRM_LINE）。`;
+
 function main() {
   let input = {};
   try {
@@ -104,6 +115,8 @@ function main() {
     out.followup_message = FOLLOWUP_V1;
   } else if (reason === 'V2_VIOLATION') {
     out.followup_message = FOLLOWUP_V2;
+  } else if (reason === 'TURN_HEAD_VIOLATION') {
+    out.followup_message = FOLLOWUP_TURN_HEAD;
   } else {
     out.followup_message = FOLLOWUP_MISSING;
   }

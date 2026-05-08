@@ -76,11 +76,12 @@ DRY_RUN_TO_APPLY_GAP: same-turn|>=1-turn|n/a
 
 ### 1e-3. 自動化（厳格化）
 
-- **`.cursor/hooks.json`**: `beforeSubmitPrompt` → `afterAgentResponse` → `stop` が連携し、**報告意図があるのに V2 七行が無い・V1 のみ・V2 矛盾**の応答に対して **`stop` が自動ユーザメッセージ**を投入（再回答を強制。`loop_limit` 上限あり）。
+- **`.cursor/hooks.json`**: `beforeSubmitPrompt` → `afterAgentResponse` → `stop` が連携し、**報告意図があるのに V2 七行が無い・V1 のみ・V2 矛盾・§1 四行欠落（厳格）**の応答に対して **`stop` が自動ユーザメッセージ**を投入（再回答を強制。`loop_limit` 上限あり）。
 - **`stop` と `completed`**: Cursor が **`status !== completed`** で `stop` を呼ぶことがある。**そのときはフォロー用フラグを消さず**、**`completed` の `stop` まで保持**する（誤って自動フォローを捨てない・2026-05-07 改修。正本: `report-checksheet-stop.mjs`）。
 - **`pending` の TTL**: 長時間タスクでも検証が効くよう **8 時間**。TTL 切れは **`logs/report-checksheet-violations.log` に `PENDING_EXPIRED_TTL` として記録**（黙捨て禁止・正本: `report-checksheet-validate.mjs`）。
-- **報告後の手立てを踏んだかの自動判定**: `beforeSubmitPrompt` → `afterAgentResponse` → `stop` の各段で **`.cursor/hooks/report-pipeline-audit.mjs`** が **`logs/report-pipeline-audit.log`**（追記・1 行 1 JSON）と **`.cursor/hooks/state/report-pipeline-current.json`**（`outcome`: `in_progress` / `SUCCESS` / `FAILED_TTL` / `FAILED_MAX_LOOPS` / `FAILED_V2_CONSTRAINTS` / `FAILED_STRICT_V1` / `SUPERSEDED`）を更新する。**確認コマンド**: `npm run report:pipeline-status`（終了コード **0**＝`SUCCESS` または **記録なし**／**1**＝`FAILED_*`／**2**＝`in_progress`／**4**＝`SUPERSEDED`）。**V2 矛盾は `SUCCESS` にならず** `FAILED_V2_CONSTRAINTS` または **`stop` 再応答後の `SUCCESS`** を経る。
-- **状態ファイル**（`.cursor/hooks/state/`）と **`logs/report-checksheet-violations.log`**（欠落ログ）、**`logs/report-pipeline-audit.log`** は **git 対象外**）。
+- **報告後の手立てを踏んだかの自動判定**: `beforeSubmitPrompt` → `afterAgentResponse` → `stop` の各段で **`.cursor/hooks/report-pipeline-audit.mjs`** が **`logs/report-pipeline-audit.log`**（追記・1 行 1 JSON）と **`.cursor/hooks/state/report-pipeline-current.json`**（`outcome`: `in_progress` / `SUCCESS` / `FAILED_TTL` / `FAILED_MAX_LOOPS` / `FAILED_V2_CONSTRAINTS` / `FAILED_STRICT_V1` / **`FAILED_STRICT_TURN_HEAD`**（§1 四行欠落）／`SUPERSEDED`）を更新する。**確認コマンド**: `npm run report:pipeline-status`（終了コード **0**＝`SUCCESS` または **記録なし**／**1**＝`FAILED_*`／**2**＝`in_progress`／**4**＝`SUPERSEDED`）。**V2 矛盾は `SUCCESS` にならず** `FAILED_V2_CONSTRAINTS` または **`stop` 再応答後の `SUCCESS`** を経る。
+- **§1 四行の厳格自動判定と保管（2026-05-08 追補）**: **`report-checksheet-validate.mjs`** が、**V2 四キー矛盾なし**のあと **応答先頭約 6500 文字**に **`[§1-2-3 ティア判定:`**・**`【適用憲法】`**・**`[🎖️ 本セッション割当]`**（Unicode U+1F396 ＋「本セッション割当」）・**`[ルール確認]`** の **4 要素すべて**を検査し、欠けると **`FAILED_STRICT_TURN_HEAD`**＋`stop` フォロー（`TURN_HEAD_VIOLATION`）。**各検証の結果**を **`logs/report-turn-head-audit.log`** に **1 行 1 JSON** で追記（成功・V2 失敗・チェックシート欠落・TTL 含む）。
+- **状態ファイル**（`.cursor/hooks/state/`）と **`logs/report-checksheet-violations.log`**（欠落ログ）、**`logs/report-pipeline-audit.log`**、**`logs/report-turn-head-audit.log`** は **git 対象外**）。
 
 ### 1e-4. 報告前自動判定（beforeSubmitPrompt・2026-05-08 CEO）
 

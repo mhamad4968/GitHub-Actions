@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
  * afterAgentResponse — 報告意図が直前にあるとき、応答に機械可読チェックシートがあるか検証。
- * 欠落・V1 のみ・V2 矛盾のいずれかで stop フォロー用フラグを立てる（stdout は空 JSON）。
+ * 欠落・V1 のみ・V2 矛盾・§1 四行（応答先頭ウィンドウ厳格）のいずれかで stop フォロー用フラグを立てる（stdout は空 JSON）。
+ * 各判定を logs/report-turn-head-audit.log に 1 行 JSON で追記（git 対象外）。
  *
  * @see every-turn-rules-confirm.mdc §1e（CEO 命令: 報告ターンは V2 厳格・矛盾は警告止まりにしない）
  */
@@ -16,6 +17,47 @@ const pendingPath = path.join(stateDir, 'pending-report-checksheet.json');
 const followPath = path.join(stateDir, 'checksheet-followup-needed.json');
 const logDir = path.join(root, 'logs');
 const violationLog = path.join(logDir, 'report-checksheet-violations.log');
+/** §1 四行厳格判定の監査ログ（1 行 1 JSON・git 対象外の logs/） */
+const turnHeadAuditLog = path.join(logDir, 'report-turn-head-audit.log');
+
+/** 応答先頭付近のみを対象（本文途中の偶然一致を避ける） */
+const TURN_HEAD_WINDOW = 6500;
+
+/**
+ * every-turn-rules-confirm.mdc §1 — ティア・【適用憲法】・[🎖️ 本セッション割当]・[ルール確認]
+ * @returns {{ ok: boolean, missing: string[] }}
+ */
+function detectStrictTurnHead(text) {
+  const head = String(text || '').slice(0, TURN_HEAD_WINDOW);
+  const missing = [];
+  if (!/\[\s*§1-2-3\s*ティア判定\s*:/.test(head)) {
+    missing.push('TIER_LINE');
+  }
+  if (!/【\s*適用憲法\s*】/.test(head)) {
+    missing.push('CONSTITUTION_LINE');
+  }
+  const hasAssignBracket = /\[\s*\u{1F396}\uFE0F?\s*本セッション割当\s*\]/u.test(head);
+  if (!hasAssignBracket) {
+    missing.push('ASSIGN_LINE');
+  }
+  if (!/\[ルール確認\]/.test(head)) {
+    missing.push('RULES_CONFIRM_LINE');
+  }
+  return { ok: missing.length === 0, missing };
+}
+
+function appendTurnHeadAudit(payload) {
+  try {
+    fs.mkdirSync(logDir, { recursive: true });
+    const rec = {
+      iso: new Date().toISOString(),
+      ...payload,
+    };
+    fs.appendFileSync(turnHeadAuditLog, `${JSON.stringify(rec)}\n`, 'utf8');
+  } catch {
+    /* noop */
+  }
+}
 
 /**
  * V1（最小 3 行）または V2（7 行）を受理。`CHECKSHEET_VERSION` と `CHECKSHEET_OK: yes` が揃えば「有効」。
@@ -134,7 +176,15 @@ function main() {
   /** 長時間タスクでも pending が生きるよう 8 時間。TTL 切れは監査ログに残す（黙って消さない） */
   const pendingTtlMs = 8 * 60 * 60 * 1000;
   const ageMs = Date.now() - (pending.ts ?? 0);
+  const turnHead = detectStrictTurnHead(text);
+
   if (ageMs > pendingTtlMs) {
+    appendTurnHeadAudit({
+      correlationId,
+      event: 'PENDING_TTL',
+      turnHead,
+      ageMs,
+    });
     logViolation('PENDING_EXPIRED_TTL', `age_ms=${ageMs}`);
     setOutcome(correlationId, 'FAILED_TTL', { ageMs });
     try {
@@ -156,6 +206,12 @@ function main() {
 
     /** CEO 命令（2026-05-08）: 報告ターンは V2 七行を正とし、矛盾は警告止まりにしない */
     if (evalRes.version === 1) {
+      appendTurnHeadAudit({
+        correlationId,
+        event: 'FAILED_STRICT_V1',
+        turnHead,
+        responseChars: text.length,
+      });
       logViolation('V1_DISALLOWED_STRICT_MODE', text.slice(0, 800));
       pipelineStep(correlationId, 'V1_REJECTED_REQUIRE_V2', {
         responseChars: text.length,
@@ -187,6 +243,13 @@ function main() {
         logViolation(`V2_${w}`, JSON.stringify(v2Fields));
       }
       if (v2Warnings.length > 0) {
+        appendTurnHeadAudit({
+          correlationId,
+          event: 'FAILED_V2_CONSTRAINTS',
+          turnHead,
+          warnings: v2Warnings,
+          v2Fields,
+        });
         pipelineStep(correlationId, 'V2_CHECKSHEET_HARD_FAIL', {
           warnings: v2Warnings,
           fields: v2Fields,
@@ -220,21 +283,75 @@ function main() {
       }
     }
 
+    if (evalRes.version === 2) {
+      if (!turnHead.ok) {
+        appendTurnHeadAudit({
+          correlationId,
+          event: 'FAILED_STRICT_TURN_HEAD',
+          turnHead,
+          v2Fields,
+        });
+        for (const m of turnHead.missing) {
+          logViolation(`STRICT_TURN_HEAD_${m}`, text.slice(0, 900));
+        }
+        pipelineStep(correlationId, 'TURN_HEAD_STRICT_FAIL', {
+          missing: turnHead.missing,
+        });
+        try {
+          fs.writeFileSync(
+            followPath,
+            JSON.stringify(
+              {
+                ts: Date.now(),
+                reason: 'TURN_HEAD_VIOLATION',
+                correlationId,
+                missing: turnHead.missing,
+              },
+              null,
+              2
+            ),
+            'utf8'
+          );
+        } catch {
+          /* noop */
+        }
+        setOutcome(correlationId, 'FAILED_STRICT_TURN_HEAD', {
+          missing: turnHead.missing,
+        });
+        process.stdout.write('{}\n');
+        return;
+      }
+    }
+
     try {
       if (fs.existsSync(followPath)) fs.unlinkSync(followPath);
     } catch {
       /* noop */
     }
+    appendTurnHeadAudit({
+      correlationId,
+      event: 'SUCCESS',
+      turnHead,
+      v2Fields,
+      checksheetVersion: evalRes.version,
+    });
     setOutcome(correlationId, 'SUCCESS', {
       checksheet: true,
       version: evalRes.version,
       v2Warnings,
       v2Fields,
+      strictTurnHead: true,
     });
     process.stdout.write('{}\n');
     return;
   }
 
+  appendTurnHeadAudit({
+    correlationId,
+    event: 'MISSING_CHECKSHEET',
+    turnHead,
+    responseChars: text.length,
+  });
   logViolation('MISSING_CHECKSHEET', text.slice(0, 800));
   pipelineStep(correlationId, 'AGENT_RESPONSE_MISSING_CHECKSHEET', {
     responseChars: text.length,
