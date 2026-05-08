@@ -18,7 +18,9 @@ alwaysApply: true
 - チャットや PR 用に一時ファイルへ貼ったあと:  
   `npm run cio:report-format-check -- --file path/to/body.md`  
   または  
-  `node scripts/cio-report-format-check.mjs --stdin < body.md`
+  `node scripts/cio-report-format-check.mjs --stdin < body.md`（bash/WSL）
+- **PowerShell**: 実行ポリシーで `npm.ps1` が止まるときは **`npm.cmd`**。stdin は **`Get-Content -Raw path\to\body.md | node scripts/cio-report-format-check.mjs --stdin`**。リダイレクト `<` は使わない。
+- **動作確認用の例文**（リポ同梱）: `scripts/pr-body-check-example.md` — `cmd /c "cd /d <リポルート> && type scripts\pr-body-check-example.md | node scripts\cio-report-format-check.mjs --stdin"`
 
 ## チャット（Cursor）
 
