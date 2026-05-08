@@ -1,0 +1,25 @@
+---
+description: 論点9 — §1 先頭4行のリポ／PR 向け機械検証（B スコープ）とチャット先頭ブロックの正本参照
+alwaysApply: true
+---
+
+# §1 先頭4行 — リポ・PR での検証（論点9）
+
+**正本**: `every-turn-rules-confirm.mdc` §1（ティア → 【適用憲法】 → 🎖️割当 → ルール確認）。**MCP 使用ターン**はティア直後に **`[実行経路: MCP …]`** 1 行可（同 md §1）。
+
+## コミット前（`chat-sessions/`）
+
+- **`git commit`** 時、`pre-commit` が **`node scripts/cio-report-format-check.mjs --staged`** を実行する。
+- **対象**: ステージ済みの `chat-sessions/**/*.md` / `.txt`（`desktop-ai-emergency-read-pack/`・`session-starter-parts/` は除外）。
+- **先頭非空行が `[§1-2-3 ティア判定` で含まれるファイルだけ**が厳格検査される。それ以外（`#` 見出し、`===` バナー、handoff 先頭など）は **検査スキップ**。
+
+## PR 説明・貼付バッファ
+
+- チャットや PR 用に一時ファイルへ貼ったあと:  
+  `npm run cio:report-format-check -- --file path/to/body.md`  
+  または  
+  `node scripts/cio-report-format-check.mjs --stdin < body.md`
+
+## チャット（Cursor）
+
+- 各ターン先頭の **4 行ブロック**は本条の正本どおり。**省略時は同一応答内で即補完**（`every-turn-rules-confirm.mdc` §1d）。

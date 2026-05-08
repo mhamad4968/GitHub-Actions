@@ -19,4 +19,16 @@ if [ "$status" -ne 0 ]; then
   echo "  バイパス: git commit --no-verify（浜田承認下のみ）" >&2
   exit 1
 fi
+
+if command -v node >/dev/null 2>&1; then
+  node scripts/cio-report-format-check.mjs --staged
+  status=$?
+  if [ "$status" -ne 0 ]; then
+    echo "" >&2
+    echo "[pre-commit] §1 先頭4行（ティア→適用憲法→🎖️→ルール確認）検証 NG（論点9・chat-sessions で先頭がティア行のファイルのみ）" >&2
+    echo "  PR 貼付: npm run cio:report-format-check -- --file path/to/pr-body.md" >&2
+    echo "  バイパス: git commit --no-verify（浜田承認下のみ）" >&2
+    exit 1
+  fi
+fi
 exit 0
