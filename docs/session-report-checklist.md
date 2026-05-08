@@ -2,7 +2,7 @@
 
 > **運用開始**: **2026-05-06 JST** — 本チェックリスト＋**`every-turn-rules-confirm.mdc` §1e**＋**hooks 自動検証**を、報告・日終わり・状況まとめのターンから **常時適用**（浜田 CEO 指示）。**報告時は □ 本文をチャットに貼付**し、CEO が **チャットだけで目視検収**できるようにする（ファイル参照のみ禁止）。**§P（2026-05-06 追補）**: **該当節のみ**貼ってよい。
 > **目的**: チャット上の報告を **毎回同じ骨格**にし、**§1 欠落・破壊系先走り・確認不足**を防ぐ。  
-> **厳格化（自動）**: **報告ターン**で応答末尾に **機械可読 3 行**（下記 **§M**）が無いと **hooks が `stop` で自動フォロー**（再回答を投入）。実装は **`.cursor/hooks/report-checksheet-*.mjs`** と **`hooks.json`**（`beforeSubmitPrompt` / `afterAgentResponse` / `stop`）。  
+> **厳格化（自動）**: **報告ターン**で応答末尾に **§M-2 の機械可読 7 行（V2）**が無い、**V1 のみ**、または **V2 四キー矛盾**があると **hooks が `stop` で自動フォロー**（再回答を投入）。実装は **`.cursor/hooks/report-checksheet-*.mjs`** と **`hooks.json`**（`beforeSubmitPrompt` / `afterAgentResponse` / `stop`）。**2026-05-08 CEO 命令**: 警告ログだけで済ませず **必ずフォロー**する。  
 > **正本**: 本ファイル。Desktop 用の短縮版は **`chat-sessions/desktop-ai-emergency-read-pack/23-SESSION-REPORT-CHECKLIST.txt`**（`npm run session-starter:sync-desktop` で同期）。  
 > **憲法**: 開発＝AI・**仕様確認・GO・検収＝浜田 CEO**（`AGENTS.md` §35-1 / §56-1a）。**実行後のダブルチェック（検証の 2 者）は AI 側**（本体＋ DeepSeek / Kimi 等の第 2 入力、または憲法が許す客体検証＋突合の組み合わせ。CEO は第 2 者の代わりにならない）— `every-turn-rules-confirm.mdc` §0・§1c、`constitution-enforcement-core.mdc`。  
 > **CEO 受付ゲート（報告の認否）**: **ティア判定・【適用憲法】・`[🎖️ 本セッション割当]` の 3 つが欠けるものは「報告」として認めない**（浜田 CEO 定義）。**順守根拠の実務最小**は **`[ルール確認]` 1 行**（どの正本に従ったか）— `every-turn-rules-confirm.mdc` §1 では **上記に加え第 4 行として必須**のため、**チャット運用は 4 行フル**を推奨する。  
@@ -13,7 +13,32 @@
 
 ## §M. hooks 検証用フッタ（報告ターン・応答末尾に必須）
 
-**次の 3 行をこの順でそのまま含める**（`afterAgentResponse` が正規表現検証）。
+**応答末尾に必須**（**V2 七行**）。`afterAgentResponse` フックが正規表現で検証し、欠落・V1 のみ・V2 矛盾のいずれかで `stop` で自動フォロー。
+
+### §M-2. **VERSION: 2（推奨・2026-05-07 拡張）**
+
+**4 新フィールドで、私が黙って §1c・§50-3-8・破壊級ガードを飛ばすのを物理的に検出する**。**`CHECKSHEET_VERSION: 2` のときは下記 7 行すべて必須**。各フィールドの値は **本ターンで実際に行ったこと**を書く（虚偽は §1e／`constitution-enforcement-core.mdc` 違反）。
+
+```text
+【セッション報告チェックシート】
+CHECKSHEET_VERSION: 2
+CHECKSHEET_OK: yes
+SECOND_REVIEWER: deepseek|kimi|openrouter|none(reason=...)
+SPEC_TOUCHED: yes|no
+DESTRUCTIVE_OPS: none|<簡潔な列挙 例: kintone-PUT(2), deploy:678(1), file-delete(0)>
+DRY_RUN_TO_APPLY_GAP: same-turn|>=1-turn|n/a
+```
+
+**矛盾検出（`report-checksheet-validate.mjs`）**:
+
+- `SPEC_TOUCHED: yes` かつ `SECOND_REVIEWER: none(...)` で **`reason=` が空**または **「軽微」のみ** → **§1c・§50-3-8 違反**として **`stop` 自動フォロー**＋`logs/report-checksheet-violations.log` 記録＋パイプライン `FAILED_V2_CONSTRAINTS`
+- `DESTRUCTIVE_OPS != none` かつ `DRY_RUN_TO_APPLY_GAP: same-turn` で **理由付帯なし** → **`kintone-destructive-rest-guard.mdc` 違反候補**として同様に **フォロー必須**
+- **四キーのいずれか欠落**も **フォロー必須**（`MISSING_FIELD_*`）
+- **`CHECKSHEET_VERSION: 1` のみ（3 行）**は受理せず **`V1_REQUIRE_V2` でフォロー**（パイプライン `FAILED_STRICT_V1`）
+
+### §M-1. **VERSION: 1（後方互換・最小 3 行）**
+
+旧形式。**hooks 厳格モード（2026-05-08〜）では報告ターンの `afterAgentResponse` 検証で受理されず**、**V2 七行への差し替えを `stop` が要求**する。チャット外のメモや **git commit メッセージのみ**など、hooks 対象外の用途に限定する。
 
 ```text
 【セッション報告チェックシート】

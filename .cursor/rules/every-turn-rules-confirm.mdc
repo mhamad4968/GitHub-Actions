@@ -52,21 +52,31 @@ alwaysApply: true
 
 **報告ターン**では、浜田 CEO が **同じチャット画面だけで検収できる**ように、**チェックシート本文（□ 付きの可読ブロック）をチャット本文に必ず貼付**する（**正本**: `docs/session-report-checklist.md` **§P** — **`□ A`（§1 四行相当）は常時**、**A2・B〜I はそのターンで該当する節のみ**。未該当は **`（該当なし: …）` 1 行**で明示してよい。`23-SESSION-REPORT-CHECKLIST.txt` と **見出しラベル・□ の体裁は同等**であること。**ファイル名だけ／「Read 済み」だけ**は不可）。**§1 四行**はその **直前**に置く。
 
-**本文の最後**（脚注・署名の直前でもよいが **最終ブロック**）に、次の **3 行をこの順でそのまま**含める（**hooks が正規表現で検証**）。
+**本文の最後**（脚注・署名の直前でもよいが **最終ブロック**）に、**VERSION: 2（推奨・2026-05-07 拡張）**として次の **7 行をこの順でそのまま**含める（**hooks が正規表現で検証**。V1 = 3 行は **後方互換**で受理するが常用は V2）。
 
 ```text
 【セッション報告チェックシート】
-CHECKSHEET_VERSION: 1
+CHECKSHEET_VERSION: 2
 CHECKSHEET_OK: yes
+SECOND_REVIEWER: deepseek|kimi|openrouter|none(reason=...)
+SPEC_TOUCHED: yes|no
+DESTRUCTIVE_OPS: none|<簡潔な列挙 例: kintone-PUT(2), deploy:678(1)>
+DRY_RUN_TO_APPLY_GAP: same-turn|>=1-turn|n/a
 ```
 
 - **`CHECKSHEET_OK: yes`** は **自己判定が yes のときのみ**（未充足なら `no` にし、**同一応答内で §1・チェックシートを補完してから** `yes` に直す。`yes` と虚偽は **憲法違反**）。
-- **直後に**（同じ末尾ブロック内でよい）**人間可読のチェックリスト**を出す — 正本 **`docs/session-report-checklist.md`**／短縮 **`chat-sessions/desktop-ai-emergency-read-pack/23-SESSION-REPORT-CHECKLIST.txt`**（`[ルール確認]` に **いずれかを Read 済み**と書く）。
+- **`SECOND_REVIEWER: none(reason=...)`** で reason が **空または「軽微/minor/なし」など実質空**かつ **`SPEC_TOUCHED: yes`** のとき、hooks が **`stop` 自動フォロー**＋`logs/report-checksheet-violations.log` に記録＋パイプライン **`FAILED_V2_CONSTRAINTS`**（**§1c・§50-3-8**。CEO 命令 2026-05-08: 警告止まり禁止）。
+- **`DESTRUCTIVE_OPS != none`** かつ **`DRY_RUN_TO_APPLY_GAP: same-turn`** も同様に **フォロー必須**（**`kintone-destructive-rest-guard.mdc` 違反候補**）。
+- **`CHECKSHEET_VERSION: 1`（3 行のみ）**は報告ターンでは **受理せず**、hooks が **V2 七行を要求**（`FAILED_STRICT_V1`）。
+- **直後に**（同じ末尾ブロック内でよい）**人間可読のチェックリスト**を出す — 正本 **`docs/session-report-checklist.md` §M-2**／短縮 **`chat-sessions/desktop-ai-emergency-read-pack/23-SESSION-REPORT-CHECKLIST.txt`**（`[ルール確認]` に **いずれかを Read 済み**と書く）。
 
 ### 1e-3. 自動化（厳格化）
 
-- **`.cursor/hooks.json`**: `beforeSubmitPrompt` → `afterAgentResponse` → `stop` が連携し、**報告意図があるのに上記 3 行が無い**応答に対して **`stop` が自動ユーザメッセージ**を 1 回投入（再回答を強制。`loop_limit` 上限あり）。
-- **状態ファイル**（`.cursor/hooks/state/`）と **`logs/report-checksheet-violations.log`**（欠落ログ）は **git 対象外**。
+- **`.cursor/hooks.json`**: `beforeSubmitPrompt` → `afterAgentResponse` → `stop` が連携し、**報告意図があるのに V2 七行が無い・V1 のみ・V2 矛盾**の応答に対して **`stop` が自動ユーザメッセージ**を投入（再回答を強制。`loop_limit` 上限あり）。
+- **`stop` と `completed`**: Cursor が **`status !== completed`** で `stop` を呼ぶことがある。**そのときはフォロー用フラグを消さず**、**`completed` の `stop` まで保持**する（誤って自動フォローを捨てない・2026-05-07 改修。正本: `report-checksheet-stop.mjs`）。
+- **`pending` の TTL**: 長時間タスクでも検証が効くよう **8 時間**。TTL 切れは **`logs/report-checksheet-violations.log` に `PENDING_EXPIRED_TTL` として記録**（黙捨て禁止・正本: `report-checksheet-validate.mjs`）。
+- **報告後の手立てを踏んだかの自動判定**: `beforeSubmitPrompt` → `afterAgentResponse` → `stop` の各段で **`.cursor/hooks/report-pipeline-audit.mjs`** が **`logs/report-pipeline-audit.log`**（追記・1 行 1 JSON）と **`.cursor/hooks/state/report-pipeline-current.json`**（`outcome`: `in_progress` / `SUCCESS` / `FAILED_TTL` / `FAILED_MAX_LOOPS` / `FAILED_V2_CONSTRAINTS` / `FAILED_STRICT_V1` / `SUPERSEDED`）を更新する。**確認コマンド**: `npm run report:pipeline-status`（終了コード **0**＝`SUCCESS` または **記録なし**／**1**＝`FAILED_*`／**2**＝`in_progress`／**4**＝`SUPERSEDED`）。**V2 矛盾は `SUCCESS` にならず** `FAILED_V2_CONSTRAINTS` または **`stop` 再応答後の `SUCCESS`** を経る。
+- **状態ファイル**（`.cursor/hooks/state/`）と **`logs/report-checksheet-violations.log`**（欠落ログ）、**`logs/report-pipeline-audit.log`** は **git 対象外**。
 
 ## 1c. 仕様ラベル・検証 2 者（§1 の直後・該当ターンは省略禁止）
 

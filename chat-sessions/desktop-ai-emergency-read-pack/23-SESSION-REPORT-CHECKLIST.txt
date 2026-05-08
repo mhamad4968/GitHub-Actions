@@ -2,11 +2,21 @@
 運用開始: 2026-05-06 JST（浜田CEO指示・hooks厳格化と同時）
 詳細版: リポ docs/session-report-checklist.md
 
-■ hooks 自動（厳格）報告ターンで応答末尾に次の3行必須（欠落→stopで自動フォロー）
-  【セッション報告チェックシート】
-  CHECKSHEET_VERSION: 1
-  CHECKSHEET_OK: yes
+■ hooks 自動（厳格）報告ターンで応答末尾の機械可読フッタが必須（欠落・V1のみ・V2矛盾→stopで自動フォロー）
+  ▽ V2（必須・2026-05-08 CEO命令）— SPEC_TOUCHED:yes＋SECOND_REVIEWER:none(reason空) 等の矛盾は warn 止まりにせず stop＋パイプライン FAILED
+    【セッション報告チェックシート】
+    CHECKSHEET_VERSION: 2
+    CHECKSHEET_OK: yes
+    SECOND_REVIEWER: deepseek|kimi|openrouter|none(reason=...)
+    SPEC_TOUCHED: yes|no
+    DESTRUCTIVE_OPS: none|<例: kintone-PUT(2), deploy:678(1)>
+    DRY_RUN_TO_APPLY_GAP: same-turn|>=1-turn|n/a
+  ▽ V1（後方互換・最小3行・緊急時の逃げ道）
+    【セッション報告チェックシート】
+    CHECKSHEET_VERSION: 1
+    CHECKSHEET_OK: yes
   実装: .cursor/hooks/report-checksheet-*.mjs + hooks.json
+  確認: npm run report:pipeline-status / logs/report-checksheet-violations.log（V2_*）
 
 ■ 体制の理解（要約）
   ・実行後のダブルチェック（検証の2者）= AI側（本体＋DeepSeek/Kimi等）。CEOは第2者の代わりにしない。
@@ -41,7 +51,7 @@
 
 □ E〜I 実績・不可逆・次手・Desktop・handoff（CIOが足した補助項目）
 
---- 貼付用ミニ骨格（CEO報告ゲート＋憲法4行＋hooksフッタ）---
+--- 貼付用ミニ骨格（CEO報告ゲート＋憲法4行＋hooksフッタ V2）---
 [§1-2-3 ティア判定: L?]（根拠: …）
 【適用憲法】…
 [🎖️ 本セッション割当] …
@@ -53,5 +63,9 @@
 不可逆:
 次 / 浜田GO待ち:
 【セッション報告チェックシート】
-CHECKSHEET_VERSION: 1
+CHECKSHEET_VERSION: 2
 CHECKSHEET_OK: yes
+SECOND_REVIEWER: deepseek|kimi|openrouter|none(reason=...)
+SPEC_TOUCHED: yes|no
+DESTRUCTIVE_OPS: none|<例: kintone-PUT(2), deploy:678(1)>
+DRY_RUN_TO_APPLY_GAP: same-turn|>=1-turn|n/a
