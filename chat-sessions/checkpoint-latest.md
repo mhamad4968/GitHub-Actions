@@ -56,7 +56,7 @@ CEO 提示の最低基準 §M-1〜§M-3 に対し本日 3 項目とも違反（�
 |---|---|---|
 | **8** | A1〜A6 / AGENTS.md §41-2〜§41-7 / Q33 / Q34 に DeepSeek **遡及適用**（本日着手前 §50-3-8 なしで commit したため） | **A: 即実行**。`chat-sessions/audit-2026-05-07-retroactive.md`（新規）に DeepSeek 突合結果を記録。問題発見時は即 revert または fix-up commit |
 | **9** | §1 先頭 4 行「ティア／適用憲法／🎖️／ルール確認」フォーマット統一 | **B 実装済（2026-05-08 CEO GO）**: `scripts/cio-report-format-check.mjs`（`--staged` / `--file` / `--stdin`）＋ `git-hooks/pre-commit`。`chat-sessions/**` の .md/.txt で**先頭非空行がティア行のファイルのみ**4行連続を検査。PR は `npm run cio:report-format-check -- --file …`。`.cursor/rules/cio-report-min-format.mdc` |
-| **10** | §M-2 V2「4 新フィールド」の正典定義（CIO は 2/4 しか把握できていない・**ドキュメント側にも穴**） | **A: AGENTS.md / RULES-INDEX.md に明文化**。CEO に 4 フィールドの正典名・記載粒度を確認した上で正典化 |
+| **10** | §M-2 V2「4 新フィールド」の正典定義（CIO は 2/4 しか把握できていない・**ドキュメント側にも穴**） | **実装済（2026-05-08 CEO GO＝CIO 推奨）**: `AGENTS.md` **§37-1** ＋ `RULES-INDEX.md`（ルート＋`.rag/extra-docs`）に `SECOND_REVIEWER` / `SPEC_TOUCHED` / `DESTRUCTIVE_OPS` / `DRY_RUN_TO_APPLY_GAP` を正典キーとして明文化。7 行ブロックの順序・検証は **every-turn-rules-confirm.mdc §1e-2** を正とする |
 | **11** | A1 pre-commit hook 拡張: `SPEC_TOUCHED: yes` なら commit message に `Reviewed-by: deepseek\|kimi\|openrouter` trailer 必須 | **A: 機械強制**。`scripts/cio-eol-check.sh` 的な独立 script（`cio-second-reviewer-check.sh`）として pre-commit hook に追加。物理的に第2者抜けを防ぐ |
 
 ### 明日朝のフロー（CEO 確定・2026-05-07 22:59 JST 更新版）

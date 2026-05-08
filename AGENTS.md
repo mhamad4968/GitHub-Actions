@@ -860,6 +860,25 @@ GitHub・npm・Stack Overflow 等から外部コードを参考にする際は�
 ### §37 簡潔報告プロトコル
 報告は原則 **[結果]・[テスト証拠]・[納品パス]** の3要素に絞り、長文の説明・経緯の羅列を避ける。ユーザーは開発ができないため、技術的な経緯より「何が変わったか」「正しく動くか」「どこにあるか」だけを簡潔に伝える。
 
+### §37-1 報告ターン末・機械フッタ VERSION 2（正典キー・2026-05-08 / 論点10）
+
+**目的**: 報告ターン末尾の **機械可読フッタ**について、チャット・hooks・ドキュ間で **キー表記のブレ**をなくす。
+
+**操作正本（一次定義・行順・正規表現検証）**: **`.cursor/rules/every-turn-rules-confirm.mdc` §1e-2** の fenced `text` ブロック（**7 行**）に従う。本条は **索引と意味の固定**のみを担い、**文言の追徴は every-turn を正とする**。
+
+**VERSION 2 末尾ブロック（この順・7 行）**:
+1. `【セッション報告チェックシート】`
+2. `CHECKSHEET_VERSION: 2`（V1 の 3 行のみは後方互換。**常用は 2**）
+3. `CHECKSHEET_OK: yes|no`
+4. **`SECOND_REVIEWER: deepseek|kimi|openrouter|none(reason=...)`** — 第 2 者（`constitution-enforcement-core.mdc` と同義）。`none` のときは **reason= を実質空にしない**。
+5. **`SPEC_TOUCHED: yes|no`** — 当ターンで `SPEC.md` 級の正本仕様・受入に触れたか。
+6. **`DESTRUCTIVE_OPS: none|…`** — kintone DELETE / deploy / 本番書込など **不可逆・破壊級**の有無（無ければ **none**）。
+7. **`DRY_RUN_TO_APPLY_GAP: same-turn|>=1-turn|n/a`** — 破壊級で dry-run と apply のターン関係。**`same-turn`** はガード違反候補になり得る（詳細は every-turn §1e-2）。
+
+**四キー正典（checkpoint 論点10・CIO 推奨で CEO GO）**: hooks の追加観測で「4 新フィールド」と呼ばれる **キー名は次の 4 つに固定**する（別名・日本語キー・独自略称を増やさない）: **`SECOND_REVIEWER`** / **`SPEC_TOUCHED`** / **`DESTRUCTIVE_OPS`** / **`DRY_RUN_TO_APPLY_GAP`**。
+
+**人間可読チェックリスト**（□ 形式）は **同一末尾ブロック内で続けてよい**。正本は **`docs/session-report-checklist.md` §M-2**／短縮は **`chat-sessions/desktop-ai-emergency-read-pack/23-SESSION-REPORT-CHECKLIST.txt`**。
+
 ### §38 ツール・依存関係の自律保守（セルフ・アップデート義務）
 AIエージェント自身および開発環境のすべてのツール・ライブラリは、常に最新かつ安全な状態を維持する。
 1. **定期確認**: セッション開始時に `npm audit` と主要パッケージのバージョンを確認する。セキュリティ脆弱性（high/critical）があれば即対応する。

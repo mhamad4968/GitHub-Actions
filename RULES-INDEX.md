@@ -42,6 +42,7 @@
 | **`docs/session-report-checklist.md`** | **報告用チェックリスト（詳細）** — **報告時は □ 本文をチャットに貼付**（CEO 目視）／**CEO 報告ゲート**（ティア・【適用憲法】・`[🎖️ 本セッション割当]`）／**順守根拠**／**AI 側検証 2 者**／§M **機械フッタ**（hooks） |
 | Desktop **`19-SESSION-REPORT-CHECKLIST.txt`** | 上記の短縮版（`chat-sessions/desktop-ai-emergency-read-pack/` 正本・**`npm run session-starter:sync-desktop`** で同期） |
 | **`.cursor/hooks.json`** + **`report-checksheet-*.mjs`** | **報告ターン厳格化** — `beforeSubmitPrompt`→`afterAgentResponse`→`stop` でチェックシート欠落時 **自動フォロー**（`every-turn-rules-confirm.mdc` **§1e**） |
+| **§37-1（`AGENTS.md`）** | **報告ターン末・機械フッタ V2 の正典キー** — `SECOND_REVIEWER` / `SPEC_TOUCHED` / `DESTRUCTIVE_OPS` / `DRY_RUN_TO_APPLY_GAP`（スペル固定・7 行全体の順序は **every-turn-rules-confirm.mdc §1e-2**） |
 
 ## 📚 文脈獲得・調査
 
