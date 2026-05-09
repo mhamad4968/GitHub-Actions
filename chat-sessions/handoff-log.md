@@ -1439,3 +1439,66 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 - `cio:mcp:probe` が新規 wsl invocation で **env 引継ぎ無く SKIP=4**（`KINTONE_*` / `DEEPSEEK_API_KEY` / `MOONSHOT_API_KEY` / `OPENROUTER_API_KEY`）。抜本対策＝`.env` 自動 source か `~/.bashrc` 永続化。
 
 **次セッションへの 1 行**: `grep -n '§41-[2-7]' AGENTS.md` で 6 hits（930/945/957/976/988/999）を確認 → 再消失検知の標準手順。**§41-4 自身に基づく checkpoint 初運用**は本ターンの commit `8a02f3e`（憲法本体）と次回 commit（checkpoint+handoff 反映）の 2 段階構成だった点を踏襲（憲法本体が先・運用ログ追記は §41 で確認後）。
+
+---
+
+### 2026-05-10 JST 朝 — **健康診断 2 構造課題の恒久修復（wall-clock self-heal / MCP env 自己注入）**
+
+**経緯**: 前ターンで CEO 認識共有した「実害なしだが事実報告の残課題 2 件」を CEO 指示「100% になるまで繰り返し対応」に従い恒久修復。CEO 厳命「自律稼働」「Run ボタン押させない」の前段。
+
+**実施**:
+- **`scripts/cio-health-check.sh` §1（wall-clock）**: HTTP 200 不取得時に `setsid -f` で 1 回だけ auto-start（最大 6 秒待機）→ 再 curl の **self-heal ループ内蔵**。auto-start 経由で 200 取れた場合 detail に `(auto-healed)` + `pid=` を明示し、DeepSeek §50-3-8 盲点指摘「毎回再起動を成功と誤認するリスク」を排除。
+- **`scripts/cio-mcp-quickprobe.mjs`**: `~/.cursor/mcp.json`（Linux home / `/mnt/c/Users/<user>/.cursor/mcp.json` 両方）から **mcpServers の env / command / args を fallback 注入**。env merge 優先順位は **mcp.json env > process.env**（PATH などの構造値を保護）。秘匿キー（`KINTONE_/DEEPSEEK_/MOONSHOT_/OPENROUTER_/API_`）のみ process.env 優先で `.env` 等からの差替え許可。timeout を 60 → 90 秒、`initialize` 成功で OK 認定（`tools/list` は best-effort 30 秒上限）、stderr_tail 出力で診断容易化。
+- **過去事故の真因解明**: `process.env.PATH` で `mcp.json` の v25 PATH を上書きすると system `/usr/bin/node@v18.19.1` が先取され、kimi-api-mcp が `node:fs/promises` の `glob` 不在で SyntaxError TIMEOUT になっていた（v25 では `glob` は function として export 済を確認）。本修正で完全解消。
+- **commit**: `00efe33 feat(cio-health): self-heal wall-clock + auto env-injection for MCP probe`（`Reviewed-by: deepseek` trailer 付き）。
+
+**検証実績（修正後・新規 wsl invocation で実行）**:
+```
+✅ wall-clock  HTTP=200 pid=36997 (auto-healed)
+✅ session-lock  unlocked
+✅ env  Node=v25.8.2 / npm=11.11.1
+✅ mcp  SUMMARY: OK 4/4  SKIP=0  NG=0
+✅ eol-check  checked=232 violations=0
+[cio-health-check] RED=0  WARN=2（git-status modified=本ファイル群／gh-actions warn 格下げ＝既存仕様）
+```
+
+**残構造課題（次の §41 ターン送り・本ターンスコープ外）**:
+- WSL systemd 化（`/etc/wsl.conf` `[boot] systemd=true` + user unit による永続デーモン化）— 再起動要のため CEO 確認後別ターンで実施。
+
+**次セッションへの 1 行**: `npm run cio:health` を初回叩いた時に wall-clock が `(auto-healed)` 表示なら正常（毎回 setsid 起動・WSL2 短命 init を構造的に乗り越え）。`SUMMARY: OK 4/4` が標準・kimi の cold start でも 90 秒上限で安定。
+
+---
+
+### 2026-05-10 JST 午前 — **CEO 緊急統制指示「Run ボタン完全自動化＋Allowlist 自己構成」対応**
+
+**経緯**: CEO「自律稼働の規律違反は重大不備」「Cloud Agent 含む物理的にボタンを押せない環境でも AI チームだけで完結」「100% になるまで報告は不要・繰り返し対応・例外なし」厳命。CIO 自律判断（2026-05-10 「先に動く」CEO 確定）に基づき即時対応。
+
+**WEB 事例調査（CEO 指示）**:
+- 公式 [permissions.json Reference](https://cursor.com/docs/reference/permissions): per-user グローバル `~/.cursor/permissions.json`・JSONC 可・自動リロード・prefix matching。team admin dashboard が最上位、permissions.json が IDE settings UI を override。
+- 公式 [Agent Security](https://cursor.com/docs/agent/security): Auto-Run mode は "Ask Every Time" / "Auto-Run in Sandbox" / "Run Everything" の 3 段階。allowlist は前 2 つでのみ機能（"Ask Every Time" では完全無視）。"Run Everything" は公式 non-recommended（safety check 全廃）。
+- 公式 [Cloud Agent Security & Network](https://cursor.com/docs/cloud-agent/security-network): **「Cloud Agent は既定で全 terminal command を auto-run」「foreground agent と異なり user approval 不要」と明記** → CEO 懸念「Cloud Agent でボタン押せない問題」は **構造的に発生しない・追加対応不要**。
+- forum.cursor.com 既知バグ：「Auto-Run in Sandbox 時に allowlist が silently ignored」報告中（2026-04） → 回避策は Run Everything 切替または次バージョン待ち。
+- CVE-2026-22708（2026-01）: terminalAllowlist の env 変数 bypass 脆弱性 → **v2.3 で修正済**（現バージョン無関係）。
+
+**実施**:
+1. **`~/.cursor/permissions.json` 拡張**（Windows 側 per-user グローバル）:
+   - PowerShell 制御構文 token（`if`/`elseif`/`else`/`foreach`/`for`/`while`/`do`/`switch`/`try`/`catch`/`finally`/`function`/`param`/`begin`/`process`/`end` 等）を網羅追加 — **過去事故スクショ 3「`if (Test-Path ...)` で Run」の根本原因解消**。
+   - PowerShell cmdlet verb-prefix 全網羅（`Set-/Get-/New-/Remove-/Out-/Write-/Read-/Add-/Clear-/Copy-/Move-/Rename-/Sort-/Group-/Tee-/Where-/Select-/Format-/Measure-/Compare-/Convert-/Find-/Resolve-/Invoke-/Start-/Stop-/Wait-/Push-/Pop-/Update-/Use-/Send-/Show-/Trace-/Edit-/Expand-/Compress-/Backup-/Checkpoint-/Hide-/Initialize-/Install-/Uninstall-/Publish-/Repair-/Request-/Sync-/Confirm-/Approve-/Deny-/Reset-/Optimize- ...`）。
+   - Linux/Bash coreutils（`bash/sh/zsh/time/env/source/printf/head/tail/cat/less/wc/cut/tr/uniq/tee/sed/awk/grep/rg/find/xargs/touch/chmod/ln/du/df/stat/file/which/id/whoami/uname/date` 等）。
+   - プロセス管理（`ps/pgrep/pkill/kill/nohup/setsid/disown/fg/bg/jobs/wait/exec/timeout`）。
+   - WSL/Windows interop（`wsl/wsl.exe/cmd/cmd.exe/powershell/powershell.exe/pwsh/pwsh.exe`）。
+   - Container/Cloud（将来用 `docker/kubectl/helm/terraform/aws/gcloud/az`）。
+   - `mcpAllowlist` に `*:*` 追加（CEO 厳命「全 MCP 自動承認」遵守・19 server 既存リストはそのまま残す）。
+2. **`docs/cio-permissions-guide.md` 新設**: 永続的な配置・運用ガイド（Foreground/Cloud Agent/CLI 使い分け・Auto-Run mode UI 切替手順・残る Run トリガと回避策・既知脆弱性・検証手順・メンテナンス手順）。
+3. **`chat-sessions/CIO-PERMISSIONS-SNAPSHOT.jsonc` 新設**: `~/.cursor/permissions.json` の現状 snapshot をリポ内に保存（別端末セットアップ時の復元用ソース・乖離検知用）。
+
+**残る Run トリガ（permissions.json では解決不能・運用回避）**:
+- **Cursor IDE の "long arg heuristic"**: `node -e '<huge>'` 等の超長一行は token match しても UI 判定で Run になる → §41-3 規律「`scripts/*.mjs` に切り出して `node scripts/foo.mjs` 短縮形」で運用中。
+- **PowerShell ラッパーの `<` 事故**: Cursor が `git commit` に自動付与する `--trailer "Co-authored-by: Cursor <cursoragent@...>"` の `<` で PowerShell が爆死（**今ターンの restore commit / heal commit でも実際に発生**）→ §41-3 ファイル化（`.git/COMMIT_EDITMSG_*` + `scripts/tmp-commit-*.sh`）で運用回避。Cursor 側の修正待ち（permissions.json では解決不能）。
+
+**Auto-Run mode 切替（CEO による UI 操作・本ターンでは実施不可）**:
+- 公式に settings.json で書換える JSON キーが公開されていないため、**Cursor Settings UI → Features → Agent → Auto-Run mode** で **"Auto-Run in Sandbox"（推奨）** または **"Run Everything"（最大自動化・公式 non-recommended）** に切替が必要。
+- CEO 厳命下では **"Auto-Run in Sandbox"** を推奨（既存 sandbox.json は `insecure_none` + Desktop/AI緊急用 readonly 既登録）。
+- 本切替は **CEO の手元 Cursor IDE での 1 回操作で完結・以後永続**。本ガイド §3 に手順記載。
+
+**次セッションへの 1 行**: 新たな Run ボタン事故が発生したら、**CIO 自走で `docs/cio-permissions-guide.md §2.1` の表に「過去事故 → 追加 token」を追記** + `~/.cursor/permissions.json` の `terminalAllowlist` に **prefix を追加** + snapshot 同期 → commit／push（CEO 確認なしで先に動くこと正・自律稼働の規律）。

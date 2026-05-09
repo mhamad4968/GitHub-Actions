@@ -52,6 +52,47 @@
 
 **次セッションへの 1 行**: `grep -n '§41-[2-7]' AGENTS.md` で 6 行検知 → 全件存在確認、**§41-4 自身に従い重要憲法改訂のクローズ時 checkpoint 更新を本節で初運用**したことを認識（このパターンが今後の標準）。
 
+## §41-4 健康診断 2 構造課題 恒久修復記録（2026-05-10 朝）
+
+| 項目 | 値 |
+|---|---|
+| ① タスク名 | `cio:health` 2 構造課題（wall-clock RED ／ MCP probe SKIP=4）の恒久修復 |
+| ② 完了日時 JST | 2026-05-10 08:5X JST（朝のブリーフィング枠 → 緊急統制指示の前段） |
+| ③ commit hash | `00efe33` (`feat(cio-health): self-heal wall-clock + auto env-injection for MCP probe`) |
+| ④ LIVE rev/BUILD | 該当なし（scripts のみ・customize 触らず） |
+| ⑤ 再開ヒント | `npm run cio:health` で wall-clock が `(auto-healed)` 表示なら正常／`SUMMARY: OK 4/4` が標準。新規 wsl invocation でも env 引継ぎ無く動作 |
+
+**経緯**: 前ターンで CEO に認識共有していた「実害なしだが事実報告の残課題 2 件」を、CEO 指示「100% になるまで繰り返し対応・妥協なし」に従い恒久修復。`scripts/cio-health-check.sh` の wall-clock §1 に self-heal（setsid -f auto-start + 6 秒待機 + 再 curl + `(auto-healed)` ラベル）を内蔵し、`scripts/cio-mcp-quickprobe.mjs` を `~/.cursor/mcp.json` から env / command / args を fallback 注入する形に改修。**過去事故 真因解明: `process.env.PATH` で mcp.json の v25 PATH を上書きすると system `/usr/bin/node@v18.19.1` が先取され kimi-api-mcp が `node:fs/promises.glob` 不在 SyntaxError TIMEOUT になっていた**（v25 では `glob` は function として export 済を確認）→ env merge 優先順位を **mcp.json env > process.env**（秘匿キーのみ process.env 優先）に修正で完全解消。`SUMMARY: OK 4/4 SKIP=0 NG=0` を 2.1 秒で取得・wall-clock も `pid=36997 (auto-healed)` で 200 取得を確認。
+
+**残構造課題（次の §41 ターン送り）**: WSL systemd 化（`/etc/wsl.conf` `[boot] systemd=true` + user unit）は再起動要のため CEO 確認後別ターン。
+
+## §41-4 Run ボタン緊急統制対応記録（2026-05-10 午前）
+
+| 項目 | 値 |
+|---|---|
+| ① タスク名 | CEO 厳命「Run ボタン完全自動化＋Allowlist 自己構成」緊急統制対応 |
+| ② 完了日時 JST | 2026-05-10 09:1X JST |
+| ③ commit hash | （本 commit で確定。push 後に書込） |
+| ④ LIVE rev/BUILD | 該当なし（permissions.json は per-user グローバル / リポ snapshot は配布用） |
+| ⑤ 再開ヒント | 新たな Run ボタン事故 → `docs/cio-permissions-guide.md §2.1` に「過去事故 → 追加 token」追記 + `~/.cursor/permissions.json` 反映 + `chat-sessions/CIO-PERMISSIONS-SNAPSHOT.jsonc` 同期。CEO 確認なしで CIO 自走（自律稼働の規律） |
+
+**実施**:
+- **`~/.cursor/permissions.json` 拡張**: PowerShell 制御構文（`if`/`foreach`/`try` 等）+ verb-prefix 網羅 + Linux coreutils + プロセス管理 + WSL/Windows interop + Container/Cloud + `mcpAllowlist` に `*:*` 追加。426 行・全 token 列挙。
+- **`docs/cio-permissions-guide.md` 新設**: Foreground IDE / Cloud Agent / CLI 使い分け・Auto-Run mode UI 切替手順（CEO 1 回操作）・残る Run トリガと回避策・既知脆弱性・検証手順・メンテナンス手順。
+- **`chat-sessions/CIO-PERMISSIONS-SNAPSHOT.jsonc` 新設**: 別端末復元・乖離検知用の snapshot（リポ内ソース）。
+
+**WEB 事例調査結果（CEO 指示「WEB サイト確認」）**:
+- 公式 [permissions.json Reference](https://cursor.com/docs/reference/permissions): per-user・JSONC・自動リロード・prefix matching・team admin > permissions.json > IDE settings 優先。
+- 公式 [Cloud Agent Security](https://cursor.com/docs/cloud-agent/security-network): **Cloud Agent は既定で全 terminal command auto-run・追加対応不要**（CEO 懸念「物理的にボタンを押せない環境」は構造的に発生しない）。
+- forum.cursor.com 既知バグ「Auto-Run in Sandbox で allowlist silently ignored」（2026-04・回避＝Run Everything 切替）。
+- CVE-2026-22708（2026-01・terminalAllowlist env-var bypass・**v2.3 で修正済**・現バージョン無関係）。
+
+**残る Run トリガ（permissions.json 解決不能・運用回避）**:
+- Cursor "long arg heuristic"（`node -e '<huge>'` 超長一行）→ §41-3 で `scripts/*.mjs` 切り出し運用中。
+- Cursor IDE の `git commit --trailer "Co-authored-by: Cursor <cursoragent@...>"` 自動付与による PowerShell `<` 爆死 → §41-3 ファイル化で運用回避（**今ターン中も実発生・対応済**）。Cursor 側修正待ち。
+
+**CEO 操作待ち（残 1 手）**: Cursor Settings UI → Features → Agent → **Auto-Run mode** を **"Auto-Run in Sandbox"（推奨）** または **"Run Everything"** に切替（**CEO の手元 1 回操作で永続**）。手順は `docs/cio-permissions-guide.md §3`。
+
 ## Markdownify MCP（NVM メンテ・ローカル `mcp.json`）
 
 - **Node を NVM で入れ替えたら**: WSL で `npm install -g --ignore-scripts @iflow-mcp/markdownify-mcp@0.0.2` を **新しい Node の上で再実行**し、**`C:\Users\<浜田>\.cursor\mcp.json`** の `markdownify` 内 **`node` のフルパス**を **新 prefix に合わせて編集**（詳細 **`docs/troubleshooting.md` TSB-029**）。
