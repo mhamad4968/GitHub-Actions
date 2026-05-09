@@ -1419,3 +1419,23 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 **次セッションへの 1 行**: **`npm run session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync`** で read-pack 変更を Desktop に反映（read-pack を触ったターンは **同一ターンで sync**）。
 
 **訂正（同一日内）**: 上記コミット **`75f1573`** は作業ツリー汚染により **`constitution-gates.yml` が意図せず `node scripts/regenerate-constitution-rule.mjs` 化**し、**リポに無い `.mjs` を CI が参照して失敗**した。**訂正コミット**（`fix(ci): restore bash regenerate in constitution-gates; undo stray mjs step`）で **`bash scripts/regenerate-constitution-rule.sh` に復帰**し、paths は **`e9defde` 相当＋`read-pack/**` のみ**に戻した（**CIO consensus seal 追加ステップは撤回**）。**続けて `52c0b05`**: `verify-constitution-handoff.mjs` の針 **`19-AI緊急用-README.txt`→`23-`**（checkpoint 本文と read-pack 番号の正に整合）。**`gh run list`**: constitution-gates **success**（`fix(verify): checkpoint needle…`）。
+
+---
+
+### 2026-05-10 JST 朝 — **AGENTS.md §41-2〜§41-7 復元（消失分 79 行 6 節を 8fc973d そのまま回復）**
+
+**経緯**: 朝のブリーフィングで AGENTS.md を読み合わせた際、**8fc973d (2026-05-07 "A1-A6 反省点是正パッケージ")** で追加された **§41-2〜§41-7**（B 階段事前カード化 / シェル quoting 構造的回避 / checkpoint 更新義務 / EOL 維持規律 / WSL$ キャッシュ防衛 / 健康診断自動化＝計 79 行 6 節）が **痕跡なく現 HEAD から消失**していることを発見（rebase / revert / 手動削除いずれかは追跡不能）。CEO 浜田 restore GO 受領（§41 一問一答）。
+
+**実施**:
+- **`AGENTS.md`**: §41-1 直後（930 行〜999 行）に 8fc973d 差分の 79 行をそのまま StrReplace 復元（制定日 2026-05-07 表記も維持＝新規制定でなく本来あるべき状態への回復）。
+- **`.rag/extra-docs/AGENTS.md`**: `npm run rag:mirror:canonical-docs` で再同期（4 files all sync GREEN）。
+- **DeepSeek §50-3-8 盲点点検（1 問）**: 指摘「依存スクリプト存在確認」→ `scripts/cio-eol-check.sh` / `cio-health-check.sh` / `cio-mcp-quickprobe.mjs` / `cio-wsl-cache-defense.sh` / `cio-shell-quoting-helpers.sh` / `.cio/cache-sensitive-files.txt` / `git-hooks/pre-commit` / `package.json` 行 201-205（cio:health/cio:eol:check/cio:eol:check:staged/cio:wsl:cache:check/cio:mcp:probe）すべて HEAD 存在を確認、整合性破壊なし。
+- **session-lock**: `cio-restore-§41-2-7` で acquire→release（§51-3 憲法 5 ファイル編集規律遵守）。
+- **commit**: `8a02f3e fix(agents): restore §41-2〜§41-7 to AGENTS.md (lost from HEAD)`（`Reviewed-by: deepseek` trailer 付き / commit-msg hook 通過 / EOL staged check GREEN）。
+- **§41-4 自身を初運用**: `chat-sessions/checkpoint-latest.md` に §41-4 規定 5 項目（タスク名／完了日時／commit hash／LIVE rev＝該当なし／再開ヒント）を追記。本 handoff-log 末尾エントリも同タイミングで追加（CEO `apply_with_handoff` 選択）。
+
+**残構造課題（次回以降の §41 で判断・本ターンスコープ外）**:
+- `cio:health` の wall-clock が **WSL2 短命セッションで毎回 RED**（PowerShell 経由 `wsl.exe` 起動の background server が次の wsl 呼出に永続しない／server 自体は機能・別 wsl 呼出で curl 200 取得済）。抜本対策＝Cursor `sessionStart` hook で WSL 永続デーモン化。
+- `cio:mcp:probe` が新規 wsl invocation で **env 引継ぎ無く SKIP=4**（`KINTONE_*` / `DEEPSEEK_API_KEY` / `MOONSHOT_API_KEY` / `OPENROUTER_API_KEY`）。抜本対策＝`.env` 自動 source か `~/.bashrc` 永続化。
+
+**次セッションへの 1 行**: `grep -n '§41-[2-7]' AGENTS.md` で 6 hits（930/945/957/976/988/999）を確認 → 再消失検知の標準手順。**§41-4 自身に基づく checkpoint 初運用**は本ターンの commit `8a02f3e`（憲法本体）と次回 commit（checkpoint+handoff 反映）の 2 段階構成だった点を踏襲（憲法本体が先・運用ログ追記は §41 で確認後）。

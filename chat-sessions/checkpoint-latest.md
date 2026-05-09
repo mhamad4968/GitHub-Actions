@@ -36,6 +36,22 @@
 - **682 月次グラフの目視**: 浜田 CEO の**依頼があれば**実施（CIO は証跡・手順を先に用意）。
 - **`SHOW_ROLLING_7M_ON_APP682=false` へ戻す**: **Space 48 ダッシュ**で一覧・グラフと**同等表示**を確認したうえで、SPEC／Runbook の **`preflight` → `deploy:682`** 手順で反映（**先に false だけ**は禁止）。
 
+## §41-4 復元タスク完了記録（2026-05-10 朝・§41-4 自身に基づく初運用）
+
+| 項目 | 値 |
+|---|---|
+| ① タスク名 | AGENTS.md §41-2〜§41-7 復元（A1-A6 反省点是正パッケージ消失分・8fc973d 完全一致・79 行 6 セクション） |
+| ② 完了日時 JST | 2026-05-10 08:0X JST（朝のブリーフィング枠） |
+| ③ commit hash | `8a02f3e` (`fix(agents): restore §41-2〜§41-7 to AGENTS.md (lost from HEAD)`) |
+| ④ LIVE rev/BUILD | 該当なし（憲法 AGENTS.md のみ・kintone customize 触らず） |
+| ⑤ 再開ヒント | 再消失検知は `grep -n '§41-[2-7]' AGENTS.md` で 6 hits（行番号 930/945/957/976/988/999）を確認。元コミットは 8fc973d。RAG mirror 同期は `npm run rag:mirror:canonical-docs:check` |
+
+**経緯**: 2026-05-07 の 8fc973d で AGENTS.md に追加された §41-2〜§41-7（B 階段事前カード化／シェル quoting 構造的回避／checkpoint 更新義務／EOL 維持規律／WSL$ キャッシュ防衛／健康診断自動化）が、**いつかの commit で痕跡なく消失**していた（rebase か revert か手動削除か特定不能）。CEO 浜田 restore GO（2026-05-10 朝・§41 一問一答）受領のうえ、8fc973d そのままの 79 行を §41-1 直後（930 行〜）に StrReplace 復元。DeepSeek §50-3-8 盲点点検「依存スクリプト存在確認」(`cio-eol-check.sh` / `cio-health-check.sh` / `cio-mcp-quickprobe.mjs` / `cio-wsl-cache-defense.sh` / `cio-shell-quoting-helpers.sh` / `.cio/cache-sensitive-files.txt` / `git-hooks/pre-commit` / `package.json` 行 201-205) を全件 GREEN 確認。
+
+**残構造課題（要対応）**: ① `cio:health` の wall-clock 検査が WSL2 短命セッションで毎回 RED（Cursor `sessionStart` hook で WSL 永続デーモン化が抜本対策）／② MCP probe が新規 wsl invocation で env 引継ぎ無く SKIP=4（`.env` 自動 source か `~/.bashrc` 永続化が抜本対策）。両件は今回のスコープ外、別 §41 ターンで判断。
+
+**次セッションへの 1 行**: `grep -n '§41-[2-7]' AGENTS.md` で 6 行検知 → 全件存在確認、**§41-4 自身に従い重要憲法改訂のクローズ時 checkpoint 更新を本節で初運用**したことを認識（このパターンが今後の標準）。
+
 ## Markdownify MCP（NVM メンテ・ローカル `mcp.json`）
 
 - **Node を NVM で入れ替えたら**: WSL で `npm install -g --ignore-scripts @iflow-mcp/markdownify-mcp@0.0.2` を **新しい Node の上で再実行**し、**`C:\Users\<浜田>\.cursor\mcp.json`** の `markdownify` 内 **`node` のフルパス**を **新 prefix に合わせて編集**（詳細 **`docs/troubleshooting.md` TSB-029**）。
