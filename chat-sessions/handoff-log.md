@@ -1402,3 +1402,18 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 **記録正本**: `chat-sessions/checkpoint-latest.md` に **「明日 CEO 固定リング（2026-05-10 JST・浜田承認済み）」**節を追加済み（**GHA 同単位**／**`SESSION_STARTER_DESKTOP_DIR`**／**`HEALTH_CHECK_STRICT_WIN=1`＋実行環境 1 行**／ダッシュ必須／AI 要約は保留）。
 
 **次セッションへの 1 行**: スターター貼付 → **`checkpoint-latest.md` の「明日 CEO 固定リング」**を Read → **682 Space 48 ダッシュ（Runbook §2）**から着手（**AI 要約は触れない**）。
+
+---
+
+### 2026-05-09 JST — **constitution-gates 再発防止・read-pack Windows ミラー（CEO OK 実行）**
+
+**経緯**: 2026-05-08 の `constitution-gates` 連続失敗の主因は **`verify-ci-rule-integrity`（alwaysApply:true が上限 10 を超過）**（当時ログで確認済み）。**現在の `main` は緑**。
+
+**実施**:
+- **`.github/workflows/constitution-gates.yml`**: `paths` に **`chat-sessions/desktop-ai-emergency-read-pack/**`** を追加し、read-pack 単体の改変でも **同一 workflow が必ず走る**ようにした。冒頭コメントに **2026-05-08 失敗の正体**を 1 行で残した。
+- **`chat-sessions/desktop-ai-emergency-read-pack/13-READ-05.txt`**: **`SESSION_STARTER_DESKTOP_DIR`** による **Windows ネイティブ**手順を **`AI緊急用-README.txt` 項目 6 へのポインタ付き**でミラー。
+- **`chat-sessions/checkpoint-latest.md`**: 「明日 CEO 固定」に **682 月次グラフの浜田目視（依頼時）**と **`SHOW_ROLLING_7M_ON_APP682=false` はダッシュ同等確認後に preflight→deploy** を追記。
+
+**検証**: `node scripts/regenerate-constitution-rule.mjs` → `node scripts/verify-constitution-handoff.mjs` → `node scripts/verify-ci-rule-integrity.mjs` は **いずれも exit 0**（ローカル）。
+
+**次セッションへの 1 行**: **`npm run session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync`** で read-pack 変更を Desktop に反映（read-pack を触ったターンは **同一ターンで sync**）。

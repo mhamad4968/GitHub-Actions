@@ -1,5 +1,6 @@
 # 憲法・Cursor ルールの機械検査（PR / ルール変更 push）
 # mandatory-read-gate は session-clock 等でローカル向けのため CI では走らせない
+# 2026-05-08 失敗群の主因: verify-ci-rule-integrity が alwaysApply:true 上限超過（当時 11/10）→ cio-constitution 集約後は緑。read-pack 改変で針がズレないよう paths に read-pack を含める。
 
 name: constitution-gates
 
@@ -15,8 +16,14 @@ on:
       - '.github/workflows/constitution-gates.yml'
       - 'scripts/verify-constitution-handoff.mjs'
       - 'scripts/regenerate-constitution-rule.sh'
+      - 'scripts/regenerate-constitution-rule.mjs'
+      - 'scripts/cio-consensus-seal.mjs'
+      - 'scripts/cio-cloud-handoff-stamp.mjs'
+      - 'chat-sessions/cio-consensus-seal.example.json'
+      - 'chat-sessions/CLOUD-AGENT-HANDOFF-TEMPLATE.md'
       - 'scripts/verify-ci-rule-integrity.mjs'
       - 'scripts/smoke-test.mjs'
+      - 'scripts/health-check.mjs'
       - 'scripts/session-bootstrap-verify.mjs'
       - 'AGENTS.md'
       - 'RULES-INDEX.md'
@@ -28,6 +35,10 @@ on:
       - 'scripts/verify-desktop-ai-emergency-sync.mjs'
       - 'scripts/mandatory-read-gate.mjs'
       - 'scripts/evening-reflect.mjs'
+      - 'docs/troubleshooting.md'
+      - 'chat-sessions/README.md'
+      - 'chat-sessions/desktop-ai-emergency-read-pack/**'
+      - '.gitignore'
       - 'package.json'
       - 'scripts/morning-prep-ensure.mjs'
       - 'scripts/print-nvm-node-bin.sh'
@@ -53,10 +64,13 @@ jobs:
       # `.cursor/rules/constitution.mdc` は `.gitignore` によりリポに含めない（大容量の網羅結合版）。
       # verify は先頭 needle のみ検査するため、CI 上で再生成してから走らせる。
       - name: Generate constitution.mdc（runner 内のみ・常時想起は constitution-brief-card.mdc）
-        run: bash scripts/regenerate-constitution-rule.sh
+        run: node scripts/regenerate-constitution-rule.mjs
 
       - name: verify-constitution-handoff（needle 生存）
         run: node scripts/verify-constitution-handoff.mjs
 
       - name: verify-ci-rule-integrity（薄型憲法・alwaysApply 上限）
         run: node scripts/verify-ci-rule-integrity.mjs
+
+      - name: CIO consensus seal（追跡 JSON があるときのみ厳格 verify）
+        run: npm run cio:consensus-seal:verify-ci

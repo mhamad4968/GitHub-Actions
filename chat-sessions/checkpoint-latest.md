@@ -33,6 +33,8 @@
   2. **Desktop「AI緊急用」**: **Windows ネイティブ Node** では **`SESSION_STARTER_DESKTOP_DIR=C:\Users\mhamada202408224\Desktop\AI緊急用`** を渡してから **`npm run session-starter:sync-desktop` → `npm run verify:desktop-ai-emergency-sync`**（`/mnt/c` 未マウントで skip しない）。
   3. **厳格ヘルス**: **`HEALTH_CHECK_STRICT_WIN=1`** を付けて **`npm run health-check`** を回す **実行環境（Cursor 統合ターミナル vs WSL）をチャットで 1 行固定**してから実行（CLI 既定の MCP skip に蓋をしない）。
 - **明日やらない（整理）**: **AI 要約レポート**（**週次・月次**を分けた外部 LLM 系）は **仕様未決定のためコードも kintone 設定も着手しない**（§9.1 **E** は **SPEC で方針決め → §41** の後）。
+- **682 月次グラフの目視**: 浜田 CEO の**依頼があれば**実施（CIO は証跡・手順を先に用意）。
+- **`SHOW_ROLLING_7M_ON_APP682=false` へ戻す**: **Space 48 ダッシュ**で一覧・グラフと**同等表示**を確認したうえで、SPEC／Runbook の **`preflight` → `deploy:682`** 手順で反映（**先に false だけ**は禁止）。
 
 ## Markdownify MCP（NVM メンテ・ローカル `mcp.json`）
 
@@ -116,6 +118,8 @@
 - **次チャット初手**: 本ファイルの **「セッション切替後の自律復元」** の Read 順に従う（**SESSION-BOOTSTRAP-CHECKLIST** ＋ `npm run session:bootstrap` 必須）。**§51-6-2（セッション切替時刻）**の壁時計・目印は `chat-sessions/SESSION-SPLIT-REMINDER.md`。
 
 ---
+
+**最終更新**: 2026-05-09 (Sat) JST — **constitution-gates 再発防止＋ read-pack ミラー**: workflow の `paths` に **`chat-sessions/desktop-ai-emergency-read-pack/**`** を追加（read-pack 単体改変でも針検査が走る）。**`13-READ-05.txt`** に **Windows `SESSION_STARTER_DESKTOP_DIR`** 手順を短くミラー。checkpoint「明日 CEO 固定」に **682 目視**・**`SHOW_ROLLING_7M_ON_APP682=false` 条件**を追記。
 
 **最終更新**: 2026-05-09 (Sat) JST 終盤 — **CEO 承認パック**: 「明日 CEO 固定リング」節を新設（**682 ダッシュ D 必須**／**GHA＝YAML＋npm scripts＋依存 scripts 同単位**／**Windows は `SESSION_STARTER_DESKTOP_DIR`**／**`HEALTH_CHECK_STRICT_WIN=1`＋実行環境 1 行固定**／**AI 要約（週次・月次）は仕様決定まで着手禁止**）。品質目標 **90 点台**。
 

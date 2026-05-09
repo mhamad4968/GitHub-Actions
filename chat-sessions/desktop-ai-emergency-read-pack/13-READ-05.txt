@@ -4,19 +4,32 @@
   npm run session-starter:sync-desktop  
   npm run verify:desktop-ai-emergency-sync  
 
+■ Windows ネイティブ Node（WSL で /mnt/c が無く verify が skip しがちなとき）  
+  正本の詳細はリポ **`chat-sessions/AI緊急用-README.txt` 項目 6** と同旨。要旨だけここにミラーする。  
+  PowerShell（1 セッション）:  
+    $env:SESSION_STARTER_DESKTOP_DIR = 'C:\Users\mhamada202408224\Desktop\AI緊急用'  
+    npm run session-starter:sync-desktop  
+    npm run verify:desktop-ai-emergency-sync  
+  cmd（1 セッション）:  
+    set "SESSION_STARTER_DESKTOP_DIR=C:\Users\mhamada202408224\Desktop\AI緊急用"  
+    npm run session-starter:sync-desktop  
+    npm run verify:desktop-ai-emergency-sync  
+  ※パスは実環境に合わせてよいが、**Desktop の `AI緊急用` 実体**と一致させる。WSL から `/mnt/c/...` で動かす場合は **マウント済み**を前提にする。
+
 ■ コピー先（Windows）  
   C:\Users\mhamada202408224\Desktop\AI緊急用\  
 
-■ 同期されるもの（例・**ファイル名の先頭番号＝Explorer での読取順・00〜24 で抜けなし**）  
+■ 同期されるもの（例・**ファイル名の先頭番号＝Explorer での読取順**）  
   00-NEW-SESSION-STARTER_yyyymmdd.txt  
   01〜06-STARTER-part-*.txt（スターター分割 6 本）  
   07-HANDOFF-AI-FIVE-BLOCKS.md  
-  08-INDEX.txt … 15-READ-07.txt / 16-README-read-pack.txt … 23-SESSION-REPORT-CHECKLIST.txt  
-  17-SESSION-BOOTSTRAP-CHECKLIST.txt  
-  18-HANDOFF-HUMAN.txt  
-  19-AI緊急用-README.txt  
-  （当日のみ）24-evening-reflection-YYYY-MM-DD.md  
-  （read-pack は **08〜23** の **リポと同名**でコピー。番号付き **.md** も同梱）
+  08-INDEX.txt … 15-READ-07.txt / 16-README-read-pack.txt … 20-SESSION-REPORT-CHECKLIST.txt  
+  21-SESSION-BOOTSTRAP-CHECKLIST.txt  
+  22-HANDOFF-HUMAN.txt  
+  23-AI緊急用-README.txt  
+  **24-handoff-log.md**（リポ `chat-sessions/handoff-log.md`）／**25-checkpoint-latest.md**（リポ `chat-sessions/checkpoint-latest.md`）… **常時**バイト同期  
+  （当日のみ）**26-evening-reflection-YYYY-MM-DD.md**（旧 **24-evening-…** は prune）  
+  （read-pack は **08〜20** の **リポと同名**でコピー。番号付き **.md** も同梱）
 
 ■ 正本  
   リポ: chat-sessions/desktop-ai-emergency-read-pack\*.txt  
