@@ -121,6 +121,8 @@
 
 **最終更新**: 2026-05-09 (Sat) JST — **constitution-gates 再発防止＋ read-pack ミラー**: workflow の `paths` に **`chat-sessions/desktop-ai-emergency-read-pack/**`** を追加（read-pack 単体改変でも針検査が走る）。**`13-READ-05.txt`** に **Windows `SESSION_STARTER_DESKTOP_DIR`** 手順を短くミラー。checkpoint「明日 CEO 固定」に **682 目視**・**`SHOW_ROLLING_7M_ON_APP682=false` 条件**を追記。
 
+**最終更新**: 2026-05-09 (Sat) JST — **訂正**: **`75f1573`** の workflow が誤って **`regenerate-constitution-rule.mjs`（未追跡）** を参照し **CI 失敗**。**訂正コミット**（`fix(ci): restore bash regenerate in constitution-gates; undo stray mjs step`）で **`bash scripts/regenerate-constitution-rule.sh` に復帰**し paths を **`e9defde` 相当＋read-pack のみ**に整理（**教訓**: `git add` 前に **`git diff --cached`** で意図外の hunks を除去）。
+
 **最終更新**: 2026-05-09 (Sat) JST 終盤 — **CEO 承認パック**: 「明日 CEO 固定リング」節を新設（**682 ダッシュ D 必須**／**GHA＝YAML＋npm scripts＋依存 scripts 同単位**／**Windows は `SESSION_STARTER_DESKTOP_DIR`**／**`HEALTH_CHECK_STRICT_WIN=1`＋実行環境 1 行固定**／**AI 要約（週次・月次）は仕様決定まで着手禁止**）。品質目標 **90 点台**。
 
 **最終更新**: 2026-05-09 (Sat) JST — **682 月次グラフ（フェーズ C 追補）**: キー **`682_day_total_monthly`** を **`COLUMN`（縦棒）**＋**JST 直近 7 暦月**の **`filterCond`** に変更。`npm run 682:graph-monthly` で **PUT revision 13**・deploy SUCCESS（窓は **月次でスクリプト再実行**で更新）。**自動**: GitHub Actions **`682-graph-monthly-refresh.yml`**＋`682:graph-monthly:scheduled`（Secrets・承認ゲートは Runbook §1.0）。**7 暦月 0 埋め棒**: `desktop.js` **BUILD=`2026-05-09-682-rolling-7m-zero-fill-v1`**（一覧＋グラフ画面）— **`deploy:682` SUCCESS** / fileKey **`aac388ca-b9c5-464d-8f71-68c632635d0f`** / preview rev **`14`**。**GHA 682-graph**: **Repository secrets のみ**（`environment` 削除済）。**目視**は浜田依頼時。

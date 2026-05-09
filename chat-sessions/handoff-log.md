@@ -1417,3 +1417,5 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 **検証**: `node scripts/regenerate-constitution-rule.mjs` → `node scripts/verify-constitution-handoff.mjs` → `node scripts/verify-ci-rule-integrity.mjs` は **いずれも exit 0**（ローカル）。
 
 **次セッションへの 1 行**: **`npm run session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync`** で read-pack 変更を Desktop に反映（read-pack を触ったターンは **同一ターンで sync**）。
+
+**訂正（同一日内）**: 上記コミット **`75f1573`** は作業ツリー汚染により **`constitution-gates.yml` が意図せず `node scripts/regenerate-constitution-rule.mjs` 化**し、**リポに無い `.mjs` を CI が参照して失敗**した。**訂正コミット**（`fix(ci): restore bash regenerate in constitution-gates; undo stray mjs step`）で **`bash scripts/regenerate-constitution-rule.sh` に復帰**し、paths は **`e9defde` 相当＋`read-pack/**` のみ**に戻した（**CIO consensus seal 追加ステップは撤回**）。
