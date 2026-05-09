@@ -1391,4 +1391,14 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 - **Desktop「AI緊急用」**: 既定 `/mnt/c/...` は未マウントのため **`SESSION_STARTER_DESKTOP_DIR=C:\Users\mhamada202408224\Desktop\AI緊急用`** で **`npm run session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync` とも exit 0**（旧ファイル prune は sync スクリプト任せ）。
 - **`npm run health-check`**: 正常 9 / 異常 0 / 警告 1（MCP 死蔵参考）/ スキップ 19（Windows CLI では MCP 疎通 skip が既定）。**`main` = `origin/main` 同期**。
 
-**次セッションへの 1 行**: **682 グラフの目視**は依頼時のみ。**GHA 追加時は workflow と npm scripts＋依存スクリプトを同一 PR で**載せる（再発防止）。**Windows 直**で Desktop sync するなら **`SESSION_STARTER_DESKTOP_DIR`** を README／read-pack に明記検討。
+**次セッションへの 1 行**: **682 グラフの目視**は依頼時のみ。**GHA 追加時は workflow と npm scripts＋依存スクリプトを同一 PR で**載せる（再発防止）。**Windows 直**で Desktop sync するなら **`SESSION_STARTER_DESKTOP_DIR`** を README／read-packに明記検討。
+
+---
+
+### 2026-05-09 JST（締め）— **CEO 承認・明日固定リング**
+
+**浜田 CEO**: 反省 5 案 **すべて承認**。自己採点 **79/100** は約 8 割でよい。**明日は 9 割（90 点台）を目指す**。**明日必須**: **682 ダッシュボード（Space 48・Runbook §2）**。**明日やらない**: **AI 要約レポート（週次・月次別）**は仕様未決のため着手しない。
+
+**記録正本**: `chat-sessions/checkpoint-latest.md` に **「明日 CEO 固定リング（2026-05-10 JST・浜田承認済み）」**節を追加済み（**GHA 同単位**／**`SESSION_STARTER_DESKTOP_DIR`**／**`HEALTH_CHECK_STRICT_WIN=1`＋実行環境 1 行**／ダッシュ必須／AI 要約は保留）。
+
+**次セッションへの 1 行**: スターター貼付 → **`checkpoint-latest.md` の「明日 CEO 固定リング」**を Read → **682 Space 48 ダッシュ（Runbook §2）**から着手（**AI 要約は触れない**）。

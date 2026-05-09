@@ -6,9 +6,9 @@
 
 **引き継ぎ 5 ブロック（2026-05-05 / v23.32）**: **`chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md`** — レーン宣言 → 規律ゲート → read-pack → bootstrap → 締め、の **短い正本**。長文を一度に読めないときの **入口**。
 
-**customize deploy 機械ゲート（v23.34）**: **`deploy:594` `595` `626` `627` `629` `671` `674` `677` `678` `679`** は **`npm run cio:preflight:<app> -- --note "…"`**（45 分以内）が無いと **拒否**。preflight に **任意**で **`--with-git-diff-line`**（`git diff --shortstat HEAD` 1 行）。Cursor 常時: **`.cursor/rules/cio-discipline-always.mdc`**（`alwaysApply: true`）。
+**customize deploy 機械ゲート（v23.34）**: **`deploy:594` `595` `626` `627` `629` `671` `674` `677` `678` `679`** は **`npm run cio:preflight:<app> -- --note "…"`**（45 分以内）が無いと **拒否**。preflight に **任意**で **`--with-git-diff-line`**（`git diff --shortstat HEAD` 1 行）。**deploy 規律の想起**: **`.cursor/rules/cio-discipline-always.mdc`**（**`alwaysApply: false` + `globs`**）。**常時 true 核は `cio-constitution.mdc` のみ**。
 
-**上位表**: `NEW-SESSION-STARTER.md` 冒頭 **🎖️ AI 内部の役割分担**（CIO / Kimi / 知恵袋=DeepSeek / …）＋ **🔥 実行と確認の分離**。**チャット上の本体 AI（CIO）**は **§35-7** どおり、実装より先に **憲法 3 分・§50-3-8／スキップ理由・🎖️** をチャットに残す（**CIO ≠ 省ゲート最速**）。**分業の手順詳細**は **`.cursor/rules/deepseek-cursor-spec-division.mdc`**（`alwaysApply: true`・**CIO の列を増やさず**「結果統合」に内包）。要約: **知恵袋 = 網羅・論理一次**、**CIO = 正本突合・セカンドオピニオン・§50-3-8 約 3 行突合メモ**（仕様の単独確定禁止）。**PC 台帳（674 等）を触らない日**は本題を **部署予実（677/678・`SPEC.md`）**に寄せ、正本を混読しない（本ファイル 5A/5B）。
+**上位表**: `NEW-SESSION-STARTER.md` 冒頭 **🎖️ AI 内部の役割分担**（CIO / Kimi / 知恵袋=DeepSeek / …）＋ **🔥 実行と確認の分離**。**チャット上の本体 AI（CIO）**は **§35-7** どおり、実装より先に **憲法 3 分・§50-3-8／スキップ理由・🎖️** をチャットに残す（**CIO ≠ 省ゲート最速**）。**分業の手順詳細**は **`.cursor/rules/deepseek-cursor-spec-division.mdc`**（**`alwaysApply: false` + `globs`**・**CIO の列を増やさず**「結果統合」に内包）。要約: **知恵袋 = 網羅・論理一次**、**CIO = 正本突合・セカンドオピニオン・§50-3-8 約 3 行突合メモ**（仕様の単独確定禁止）。**PC 台帳（674 等）を触らない日**は本題を **部署予実（677/678・`SPEC.md`）**に寄せ、正本を混読しない（本ファイル 5A/5B）。
 
 ## 部署予実・仕様確認デイ（読み合わせのみ・kintone 書込なし）
 
@@ -23,6 +23,16 @@
 | 5 | CIO | 日終わりなら **`npm run session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync`**（可能なら `session:bootstrap`） |
 
 **朝イチ（明日）**: 新チャットで **`verify:constitution-handoff` → `verify:mandatory-read-gate`** を **項番 0 の前後で必ず緑**（本日合意のドキュ更新後のゲート）。
+
+## 明日 CEO 固定リング（2026-05-10 JST・浜田承認済み）
+
+- **品質目標**: 最低基準自己採点を **約 9 割（90 点台）**へ上げる（前日 ~79 を更新）。
+- **本題（必須）**: **682 ユーザサポート件数日次のダッシュボード**＝**Space 48** で **`docs/runbooks/user-support-682-phase-c-and-space48-phase-d.md` §2** に沿った **ポータル骨組み（埋め込み優先）**まで **当日中に実施**（浜田操作＋CIO 指示・証跡 1 行）。
+- **明日の最初のオペレーション（承認済み反省の実装）**:
+  1. **GHA**: 新規 **`.github/workflows/*.yml`** は **`package.json` の `npm run …` と依存 `scripts/*.mjs` を同一 PR／同一コミット単位**で載せる（「YAML だけ先行」を禁止）。
+  2. **Desktop「AI緊急用」**: **Windows ネイティブ Node** では **`SESSION_STARTER_DESKTOP_DIR=C:\Users\mhamada202408224\Desktop\AI緊急用`** を渡してから **`npm run session-starter:sync-desktop` → `npm run verify:desktop-ai-emergency-sync`**（`/mnt/c` 未マウントで skip しない）。
+  3. **厳格ヘルス**: **`HEALTH_CHECK_STRICT_WIN=1`** を付けて **`npm run health-check`** を回す **実行環境（Cursor 統合ターミナル vs WSL）をチャットで 1 行固定**してから実行（CLI 既定の MCP skip に蓋をしない）。
+- **明日やらない（整理）**: **AI 要約レポート**（**週次・月次**を分けた外部 LLM 系）は **仕様未決定のためコードも kintone 設定も着手しない**（§9.1 **E** は **SPEC で方針決め → §41** の後）。
 
 ## Markdownify MCP（NVM メンテ・ローカル `mcp.json`）
 
@@ -58,7 +68,7 @@
 
 **新チャット初手（実行順・上から）**:
 
-**項番 -1（人間・強く推奨）**: 新チャットの **ユーザー最初の 1 メッセージ** に、Desktop の **`00-NEW-SESSION-STARTER_yyyymmdd.txt` 全文**（**JST の日付 8 桁**＝ファイル名にそのまま入る。**常にこの 1 ファイル名だけ**が正本コピー先。同日に内容が変わった sync では旧版が **`_2` `_3`…** に退避するが、**貼るのは常に `yyyymmdd.txt` 側**）を **そのまま貼る**（= リポ `chat-sessions/NEW-SESSION-STARTER.md` の **■ フル版**と同内容。**v3.27**: 本文冒頭の **「■ 貼付単独で完走」** に **項番 -1〜項番 0（機械）と同値の手順**を内包するため、**チャットへ `checkpoint-latest.md` を重ねて貼らなくてよい**。AI はツールで本ファイル／checkpoint を読む）。**貼付推奨**は **`npm run verify:desktop-ai-emergency-sync` の最終行**（または `session-starter:sync-desktop` の「貼付推奨」行）でも確認できる。🚨憲法ブロック・`@` 参照リスト・bootstrap 手順が一括で入り、**要約脱落に強い**。続けて **`18-HANDOFF-HUMAN.txt` 5 行**でもよい。
+**項番 -1（人間・強く推奨）**: 新チャットの **ユーザー最初の 1 メッセージ** に、Desktop の **`00-NEW-SESSION-STARTER_yyyymmdd.txt` 全文**（**JST の日付 8 桁**＝ファイル名にそのまま入る。**常にこの 1 ファイル名だけ**が正本コピー先。同日に内容が変わった sync では旧版が **`_2` `_3`…** に退避するが、**貼るのは常に `yyyymmdd.txt` 側**）を **そのまま貼る**（= リポ `chat-sessions/NEW-SESSION-STARTER.md` の **■ フル版**と同内容。**v3.27**: 本文冒頭の **「■ 貼付単独で完走」** に **項番 -1〜項番 0（機械）と同値の手順**を内包するため、**チャットへ `checkpoint-latest.md` を重ねて貼らなくてよい**。AI はツールで本ファイル／checkpoint を読む）。**貼付推奨**は **`npm run verify:desktop-ai-emergency-sync` の最終行**（または `session-starter:sync-desktop` の「貼付推奨」行）でも確認できる。🚨憲法ブロック・`@` 参照リスト・bootstrap 手順が一括で入り、**要約脱落に強い**。続けて **`22-HANDOFF-HUMAN.txt` 5 行**でもよい。
 
 **項番 -0（人間＋AI・合意・1 往復・開始ゲート）**: AI は **先頭に `[§1-2-3 ティア判定: …]`** を付け、スターター **受領**を一言言い、**続けて** `chat-sessions/NEW-SESSION-STARTER.md` を **Read ツールで全文通読**（チャット貼付だけに頼らない／長文は `offset`/`limit` 連続で **抜けなし**。`NEW-SESSION-STARTER.md`「■ 貼付単独で完走」手順 2 と同じ）。そのうえで `checkpoint` 最終更新＋`handoff` 末尾＋`HANDOFF-HUMAN` の **「次にやる1つ」** を要約して **「本日の本題（これから着手する次の一手）は ○○で合っていますか？」と §41 一問だけ**浜田へ確認する。**浜田から OK が返るまで**（「はい」「OK」「進めて」または **1 行の修正指示**で合意が取れた状態）、**項番 0（`verify` / `session:bootstrap` / 以降の Read 連鎖・本題の実行）に着手しない**。OK のあと **項番 0** へ進む。**新チャットの「いま」**は **Cursor `sessionStart` hook**（`.cursor/hooks/session-start-autopilot.mjs`）が **`session:clock:set`** と **`session:clock:watch`** を原則自動実行する（`SESSION-CLOCK.md` の客観起点・§51-6-2）。hook が無い環境のみ **`npm run session:clock:set`** を手で打つ（項番 0 の verify より前でも可）。
 
@@ -66,7 +76,7 @@
    - **0a 憲法ガード**: リポルートで **`npm run verify:constitution-handoff`** → **exit 0**（TSB-024 物理ガード）。**ng のまま Read・Tier B・本題に進まない**（憲法ドキュ修復のみ）。
    - **0a2 必読構造ゲート**: 続けて **`npm run verify:mandatory-read-gate`** → **exit 0**（`scripts/mandatory-read-gate.mjs`）。checkpoint の **最終更新** 行・`handoff-log` の見出し・`HANDOFF-HUMAN` テンプレ・`SESSION-BOOTSTRAP` 冒頭・`AGENTS.md` 最小サイズを機械検査。**内包**: **`chat-sessions/SESSION-CLOCK.md`** ＋ **`npm run session:split-check`**（§51-6-2 **時間軸**／`開始:` から **4 時間超**で exit 2）。**議論だけで抜けた未読了前提を exit 2 で止める**。**`npm run session:bootstrap` 単体**なら 0a→0a2 は内包済み。
    - **0a3 §35-6（成果物削除・「古い」整理）**: 削除・正本移動を含む操作の前に **`AGENTS.md` §35-6** と **`docs/troubleshooting.md` TSB-031** を想起する。日報・長文ログの **正本は `chat-sessions/`＋コミット**、Desktop `AI緊急用` は **`session-starter:sync-desktop` の控え**。**浜田確認または §41 一問**なしの独断削除は禁止。
-   - **0b Desktop「AI緊急用」都度メンテ（浜田指示＋2026-05-02 CEO 追補）**: 浜田が毎回開く **`C:\Users\mhamada202408224\Desktop\AI緊急用`**（WSL: `/mnt/c/Users/mhamada202408224/Desktop/AI緊急用`）を、**セッション切替のたび**に加え、**メンテのたびに**リポ正本と **同内容**に揃える（**メンテ**＝儀式系・read-pack・`HANDOFF`／`SESSION-BOOTSTRAP`／`checkpoint`／`handoff-log` 等の元をリポで触った**ターンの締め**・**日終わり**・**push 前**を含む。CIO が **確認だけでなく sync を実行**する）。手順: **`npm run session-starter:sync-desktop`**（`00-NEW-SESSION-STARTER_yyyymmdd.txt` + **`01`〜`06`-STARTER-…txt** + `07-HANDOFF-AI-FIVE-BLOCKS.md` + **`desktop-ai-emergency-read-pack/*.txt`** + **同梱 `NN-*.md`** + `17-SESSION-BOOTSTRAP-CHECKLIST.txt` + `18-HANDOFF-HUMAN.txt` + **`19-AI緊急用-README.txt`** + **（当日のみ）`24-evening-reflection-*.md`** を Desktop へコピー）→ 続けて **`npm run verify:desktop-ai-emergency-sync`**（フォルダがある環境では **バイト一致**で機械確認。**貼付推奨ファイル名を最終行に表示**）。まとめてよいときは **`npm run desktop:sync-and-verify`**。**控えフォルダが無い**ときは verify が SKIP のみ → チャットに **「AI緊急用は未照合（/mnt/c なし等）」と 1 行**（環境復帰後に sync + verify を再実行）。
+   - **0b Desktop「AI緊急用」都度メンテ（浜田指示＋2026-05-02 CEO 追補）**: 浜田が毎回開く **`C:\Users\mhamada202408224\Desktop\AI緊急用`**（WSL: `/mnt/c/Users/mhamada202408224/Desktop/AI緊急用`）を、**セッション切替のたび**に加え、**メンテのたびに**リポ正本と **同内容**に揃える（**メンテ**＝儀式系・read-pack・`HANDOFF`／`SESSION-BOOTSTRAP`／`checkpoint`／`handoff-log` 等の元をリポで触った**ターンの締め**・**日終わり**・**push 前**を含む。CIO が **確認だけでなく sync を実行**する）。手順: **`npm run session-starter:sync-desktop`**（`00-NEW-SESSION-STARTER_yyyymmdd.txt` + **`01`〜`06`-STARTER-…txt** + `07-HANDOFF-AI-FIVE-BLOCKS.md` + **`desktop-ai-emergency-read-pack/*.txt`** + **同梱 `NN-*.md`** + `21-SESSION-BOOTSTRAP-CHECKLIST.txt` + `22-HANDOFF-HUMAN.txt` + **`23-AI緊急用-README.txt`** + **`24-handoff-log.md`**（`chat-sessions/handoff-log.md`）+ **`25-checkpoint-latest.md`**（本ファイルのリポ正本）+ **（当日のみ）`26-evening-reflection-*.md`** を Desktop へコピー）→ 続けて **`npm run verify:desktop-ai-emergency-sync`**（フォルダがある環境では **バイト一致**で機械確認。**貼付推奨ファイル名を最終行に表示**）。まとめてよいときは **`npm run desktop:sync-and-verify`**。**控えフォルダが無い**ときは verify が SKIP のみ → チャットに **「AI緊急用は未照合（/mnt/c なし等）」と 1 行**（環境復帰後に sync + verify を再実行）。**Windows ネイティブの Node** では **`SESSION_STARTER_DESKTOP_DIR`** に **`C:\Users\mhamada202408224\Desktop\AI緊急用`** を渡す（既定 `/mnt/c/...` だとスキップされ得る）。
 1. 本ファイル `chat-sessions/checkpoint-latest.md`（先頭〜直近の **最終更新** 1 行）
 2. **`chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` を通読**（経緯・法律相当・ルール・機能・MCP の棚卸し表）。**着手前にルールだけ五段階、その後に本題の確認を小出し**したいときは、`chat-sessions/SESSION-READ-LADDER.md` の **A→B** に従ってよい（本項番 1〜5 と併用可）。
    - **`SESSION-READ-LADDER.md` を併用するとき（第0手・AI 分業の抜け防止）**: 先に **`chat-sessions/desktop-ai-emergency-read-pack/10-READ-02.txt`〜`14-READ-06.txt` をファイル名の番号昇順で Read**（未使用のみのファイルはスキップ可＋理由 1 行）。**`14-READ-06.txt` を Read した直後**にチャットへ **`【AI分業チェック】`** を **1 回必ず**出す（テンプレは `READ-06` 先頭。「省略」「同上」禁止）。続けて **`SESSION-READ-LADDER.md` を通読**してから **A・第1段**へ。手順の正本は **`chat-sessions/desktop-ai-emergency-read-pack/09-READ-01.txt` 項番 4** および `.cursor/rules/session-read-ladder-two-phase.mdc`（**ラダー全文より先に番号パック**）。
@@ -90,7 +100,7 @@
 
 ### 日終わり（推奨・案 A）
 
-作業を閉じる前（またはその日の最後の push 直後）に、AI は **`npm run session-starter:sync-desktop` → `npm run verify:desktop-ai-emergency-sync`** を実行し、**貼付推奨行**まで含めて結果をチャットに 1 行要約する（時間があれば **`npm run session:bootstrap`** まで）。浜田は **`19-AI緊急用-README.txt`**（Desktop）でフォルダの意味を再確認できる。
+作業を閉じる前（またはその日の最後の push 直後）に、AI は **`npm run session-starter:sync-desktop` → `npm run verify:desktop-ai-emergency-sync`** を実行し、**貼付推奨行**まで含めて結果をチャットに 1 行要約する（時間があれば **`npm run session:bootstrap`** まで）。浜田は **`23-AI緊急用-README.txt`**（Desktop）でフォルダの意味を再確認できる。
 
 ### 正本主義（PC 台帳 ver.1 フィールド・表示ラベル）
 
@@ -101,11 +111,21 @@
 
 ## 引き継ぎ（短縮・人間5行）
 
-- **浜田さん**: セッション切替の **必須貼付は `00-NEW-SESSION-STARTER_yyyymmdd.txt` 全文**（v3.27+・詳細はスターター **「■ 貼付単独で完走」**）。`18-HANDOFF-HUMAN.txt` 5 行は **任意**（状況メモ）。
+- **浜田さん**: セッション切替の **必須貼付は `00-NEW-SESSION-STARTER_yyyymmdd.txt` 全文**（v3.27+・詳細はスターター **「■ 貼付単独で完走」**）。`22-HANDOFF-HUMAN.txt` 5 行は **任意**（状況メモ）。
 - **AI（必須）**: **追記の前に**チャットで確定前ドラフトを出し、浜田の OK（または1行修正）を受けてから `chat-sessions/handoff-log.md` **末尾に追記**する。チャットだけで終わらせない（詳細は `.cursor/rules/session-handoff.mdc`）。
 - **次チャット初手**: 本ファイルの **「セッション切替後の自律復元」** の Read 順に従う（**SESSION-BOOTSTRAP-CHECKLIST** ＋ `npm run session:bootstrap` 必須）。**§51-6-2（セッション切替時刻）**の壁時計・目印は `chat-sessions/SESSION-SPLIT-REMINDER.md`。
 
 ---
+
+**最終更新**: 2026-05-09 (Sat) JST 終盤 — **CEO 承認パック**: 「明日 CEO 固定リング」節を新設（**682 ダッシュ D 必須**／**GHA＝YAML＋npm scripts＋依存 scripts 同単位**／**Windows は `SESSION_STARTER_DESKTOP_DIR`**／**`HEALTH_CHECK_STRICT_WIN=1`＋実行環境 1 行固定**／**AI 要約（週次・月次）は仕様決定まで着手禁止**）。品質目標 **90 点台**。
+
+**最終更新**: 2026-05-09 (Sat) JST — **682 月次グラフ（フェーズ C 追補）**: キー **`682_day_total_monthly`** を **`COLUMN`（縦棒）**＋**JST 直近 7 暦月**の **`filterCond`** に変更。`npm run 682:graph-monthly` で **PUT revision 13**・deploy SUCCESS（窓は **月次でスクリプト再実行**で更新）。**自動**: GitHub Actions **`682-graph-monthly-refresh.yml`**＋`682:graph-monthly:scheduled`（Secrets・承認ゲートは Runbook §1.0）。**7 暦月 0 埋め棒**: `desktop.js` **BUILD=`2026-05-09-682-rolling-7m-zero-fill-v1`**（一覧＋グラフ画面）— **`deploy:682` SUCCESS** / fileKey **`aac388ca-b9c5-464d-8f71-68c632635d0f`** / preview rev **`14`**。**GHA 682-graph**: **Repository secrets のみ**（`environment` 削除済）。**目視**は浜田依頼時。
+
+**最終更新**: 2026-05-10 (Sun) JST — **682・CEO GO 実行**: **フェーズ C 完了** — `npm run 682:graph-monthly` で **§5.1 相当の月次棒**（キー **`682_day_total_monthly`**・`day_total` SUM・`record_date` MONTH）を **REST で追加し app settings deploy SUCCESS**（**revision 12** 時点）。**フェーズ D（Space 48 ポータル）** は **本ターン未着手**（手動／Runbook §2）。**裁量**: 浜田 CEO「CIO 判断に任せる／AI チームで相談／完了報告は聞く」＋ **4 月実データ前提で B 前倒し可**。**Runbook**: `docs/runbooks/user-support-682-phase-c-and-space48-phase-d.md`。**次手**: **D（Space 48）** — Runbook **`docs/runbooks/user-support-682-phase-c-and-space48-phase-d.md` §2.0** に **2026-05-10 着手用スケジュール案**を追記済み。682 一覧の 7 暦月棒は **D 完了後にポータル寄せ＋一覧重複解消**を検討。
+
+**最終更新**: 2026-05-09 (Sat) JST — **682 ユーザサポート件数日次・SPEC §6.1／§7 確定（CEO GO）＋次ゲート明記**: `docs/plans/2026-05-08-user-support-daily-counts-spec.md` に **Space 48 主画面・MoM 色・A4 二枚印刷・ページ2＝ルールベースのみ（B案）・§7.2 ガード**を反映。`kintone-apps.md` 682 行を **§6.1・§7** 参照に更新。**§9.1 ゲート（2026-05-09 時点）**: **B＝浜田による 682 実データ投入**が未完了の間、**C（グラフ公開）以降は着手しない**（目視確認は浜田依頼時のみ）。**※2026-05-10**: 上記ゲートは **CEO 裁量**により **実データありなら前倒し可**（本ブロックは履歴として残す）。**CIO 定常**: `npm run verify:cio-mcp-registry` → `npm run cio:mcp:env` を必要時実行し `handoff-log` に 1 行。
+
+**最終更新**: 2026-05-08 (Fri) JST 終盤 — **セッション締め（682 ユーザサポート日次＋hooks 厳格化）**: **kintone アプリ 682** MVP（対応内容フィールド・`customize/682/desktop.js`・`deploy:682`）まで反映済み。**hooks**: 全ターン `head-only` §1 検証・報告 `full`・**`ng-recovery-gate.mjs`**（NG＝Desktop `AI緊急用` 全件再Read＋細分化パック・`npm run hooks:gate-clear`）・`sessionStart` に **憲法先読みパック**注入。**Desktop**: 本ターン末に **`npm run session-starter:sync-desktop`** 実施予定（read-pack `17-HISTORY` 追記あり）。**次セッション**: 浜田が **4月分データ入力**後、**グラフ／ダッシュ／AI（自動 vs ボタン）**の方針決定（SPEC §5–§6）。**Git**: 本セッションの hooks／SPEC／682 関連は **未 push の可能性**—次チャットで `git status`→commit 方針。
 
 **最終更新**: 2026-05-08 (Fri) JST — **論点11（`commit-msg` 第2者 trailer）**: `git-hooks/commit-msg` + `scripts/cio-commit-msg-second-reviewer.mjs` を追加。`SPEC_TOUCHED: yes` 行がある、またはステージに **`templates/yojitsu-budget-lite/SPEC.md`** / **`docs/plans/2026-04-21-new-pc-ledger-spec.md`** が含まれるコミットでは、メッセージに **`Reviewed-by: deepseek` / `kimi` / `openrouter`** のいずれか必須（Merge 先頭行はスキップ・`--no-verify` は浜田承認下のみ）。`package.json` に **`npm run cio:commit-msg-second-reviewer`**（手動検査用）。`AGENTS.md` §37-1 にコミットメッセージ段落追記。**反映**: リポルートで **`npm run hooks:install`**。
 
@@ -161,7 +181,7 @@
 
 **前回更新**: 2026-04-27 (Mon) JST — **App 674 浜田 GO**: `npm run pc-ledger:apply-labels`（差分なし）→ `npm run deploy:674` **Deploy SUCCESS**（preview **revision=10**）→ `revision:snapshot` `go-post-apply-labels` / `go-post-deploy-674` → `field-spec:diff` **35/35 match** → `npm run kintone:test` **9/9** → `npm run smoke:quiet` **9/9**。
 
-**前回更新**: 2026-04-26 (Sun) 深夜 JST — **スターター常に `yyyymmdd.txt` へ同期**（変更時のみ旧版を `_2`…退避）**+ verify 最終行に貼付推奨**（案 C/D）**+ `19-AI緊急用-README.txt` 同期 + 日終わり手順**（案 A/B）。**前回**: 枝番最大を貼る運用。**2026-05-06**: Desktop 儀式・read-pack に読取順プレフィックス。**2026-05-07**: **`00`〜`24` 連番詰め**（スターター分割 `01`〜`06`・夕反省 `24`・旧 **00p**／**02〜14 帯**は sync で削除）。
+**前回更新**: 2026-04-26 (Sun) 深夜 JST — **スターター常に `yyyymmdd.txt` へ同期**（変更時のみ旧版を `_2`…退避）**+ verify 最終行に貼付推奨**（案 C/D）**+ `23-AI緊急用-README.txt` 同期 + 日終わり手順**（案 A/B）。**前回**: 枝番最大を貼る運用。**2026-05-06**: Desktop 儀式・read-pack に読取順プレフィックス。**2026-05-07**: **`00`〜`24` 連番詰め**（スターター分割 `01`〜`06`・夕反省 `24`・旧 **00p**／**02〜14 帯**は sync で削除）。
 
 **前回更新**: 2026-04-26 (Sun) 12:30 — **再開** ✅。**本日 2026-04-26 完了サマリ**: 朝 06:00 ブリーフィング → API 100% 枯渇発覚 → 甲フル実装 (Monthly Limit $300→$1000 / S1-S5 5 措置) → S2 CLAUDE.md 480→73 行 thin 化 (`046ec2d`) → P5-3 Rules/Skills/Subagents 監査 7 件発見 → P5-4 Indexing 監査 3 件発見 → P5-5 Plan&Usage 監査 7 件発見 (F-14 Max Thinking 59.4% 確定) → **R-3** 「最適モデル原則」+ §1-2-3-2 新設 (`92b89d5`) → **R-4 §51-6-2 + R-5 §52-9 新設 + Day 4 時刻 13:00→20:00 + RAG/Desktop 同期 + §52-9 即日 2 件発動** (`01d18e5`) → **P5-1 Hooks 監査 完了** / **P5-2 Tools&MCPs 監査 完了** / **TSB-022 起票 + 恒久案 (docs) + `~/.cursor/hooks/dangerous-shell-blocker.sh` heredoc 本文 strip 実装 + `artifacts/cursor-hooks/dangerous-shell-blocker.sh` スナップショット** ✅。**Day 4 (PC 台帳) は 20:00 開始予定** (浜田指示 / 慎重進行優先)。**文書化コミット**: `b201232`（§0/TSB-022/日次/スターター追記 + hook スナップショット）。**次**: `git push`（**任意** / いま `main` は `origin/main` より ahead 1）→ Day4 は 20:00 開始予定。**並列禁止 §51 100% 遵守 / 不可逆操作ゼロ**。
 
