@@ -1,6 +1,6 @@
 # 引き継ぎログ（短縮）
 
-浜田さんはセッション切替時 **`00-NEW-SESSION-STARTER_yyyymmdd.txt` 全文**を貼る（v3.27+ 正本）。`18-HANDOFF-HUMAN.txt` 5 行は **任意**。  
+浜田さんはセッション切替時 **`00-NEW-SESSION-STARTER_yyyymmdd.txt` 全文**を貼る（v3.27+ 正本）。`22-HANDOFF-HUMAN.txt` 5 行は **任意**。  
 AI は、セッション切替・終了・浜田さんが引き継ぎテンプレを貼ったタイミングで **必ずこのファイルの末尾に新しいブロックを追記**する（追記のみ。過去ブロックは消さない）。
 
 <!-- verify-constitution-handoff-anchor: TSB-024 v1 — DO NOT REMOVE (scripts/verify-constitution-handoff.mjs) -->
@@ -42,7 +42,7 @@ AI は、セッション切替・終了・浜田さんが引き継ぎテンプ�
 **経緯（簡潔 / §37）**:
 - **PC 台帳コード・674 には未着手**（明日へ保留 / 本ターンは憲法・引き継ぎの **機械ゲートのみ**）
 - `scripts/verify-constitution-handoff.mjs` 新設 + `npm run verify:constitution-handoff` + **smoke 第 9 検査**組込 + `session:bootstrap` 文言 9 連へ
-- `.cursor/rules/constitution-handoff-gate.mdc`（`alwaysApply: true`）新設 + `session-handoff.mdc` に TSB-024 逆転禁止を追記
+- `.cursor/rules/constitution-handoff-gate.mdc` 新設（**2026-05-09 現在**: **`alwaysApply: false` + `globs`**。常時核は `cio-constitution.mdc`）+ `session-handoff.mdc` に TSB-024 逆転禁止を追記
 - `handoff-log.md` に **HTML アンカー**（`verify-constitution-handoff-anchor`）を恒久挿入
 - `RULES-INDEX.md` セッション切替表に **TSB-024** 行追加、`docs/troubleshooting.md` TSB-024 の対策に **機械ゲート**追記
 - `npm run smoke:quiet` = **ok 9 / warn 0 / ng 0**
@@ -698,7 +698,7 @@ CIO 自律で「実行と確認の分離」を適用し、調査 → 復元 → 
 ### 2026-05-02 (Sat) JST — CIO 運用ループ（常時想起）+ 軽検査 npm 一本化
 
 **実施内容（CIO）**:
-- **`.cursor/rules/cio-operating-loop.mdc`** を新設（`alwaysApply: true`）。正シェルは **`~/kintone-ai-lab`（WSL）**、朝は **`docs/reports/<JST>-morning-prep.md`**、追徴は **`npm run cio:quick-health`**、Desktop 更新後は **`npm run desktop:sync-and-verify`** を優先する旨を固定。
+- **`.cursor/rules/cio-operating-loop.mdc`** を新設（**2026-05-09 現在**: **`alwaysApply: false` + `globs`**）。正シェルは **`~/kintone-ai-lab`（WSL）**、朝は **`docs/reports/<JST>-morning-prep.md`**、追徴は **`npm run cio:quick-health`**、Desktop 更新後は **`npm run desktop:sync-and-verify`** を優先する旨を固定。
 - **`package.json`**: `cio:quick-health` = `kintone:test` && `guard:check`。
 - **`RULES-INDEX.md`**: §0 直後の表に **（Cursor）`cio-operating-loop.mdc`** 行を追加（索引から辿れるようにする）。
 
@@ -1281,3 +1281,114 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 - **次の1手**: **論点 9**（§1 先頭4行の機械検証）— 浜田 **§41 一問**でスコープ確定。
 - **GO待ち**: 論点 9 の方針（チャット）。
 - **関連パス**: `chat-sessions/audit-2026-05-07-retroactive.md`
+
+### 2026-05-08（追記）— **ユーザサポート件数日次 kintone アプリ GO 完了**
+
+- **CEO GO**: 浜田「GO」— CIO ルール（第2者・§1 等）前提で **本番アプリ作成**まで実施。
+- **成果**: **アプリ ID [682](https://jbis-kintone.cybozu.com/k/682/)**（名: **ユーザサポート件数日次**）・**Space 48 / thread 52**・フィールド `record_date`・`am_count`・`pm_count`・`day_total`（CALC `am_count + pm_count`）。**Excel 旧データは移行なし**（SPEC どおり）。
+- **技術メモ**: MCP `user-kintone` の `kintone-add-app` は **ECONNRESET** → **§50-3-9** で **REST**（`preview/app.json` → `form/fields` → `deploy`）。スペース作成時 **`thread` 必須**（`GET /k/v1/space.json?id=48` → `defaultThread` = 52）。
+- **リポ更新**: `kintone-apps.md` 1 行追加、`docs/plans/2026-05-08-user-support-daily-counts-spec.md` を **MVP 本番反映済み**に更新、**一時スクリプト削除**（重複アプリ作成防止・手順は SPEC＋本ログに集約）、SPEC 写しを `C:\tmp\問い合わせ\2026-05-08-user-support-daily-counts-spec.md` に **再コピー**。
+- **未着手（次フェーズ）**: 月次グラフ（**日合計のみ**）、ダッシュボード、AI 週次・月次コメント、運用 1 行（§3.1 空欄 vs 0）。
+- **関連パス**: `docs/plans/2026-05-08-user-support-daily-counts-spec.md`・`kintone-apps.md`
+
+### 2026-05-08 JST 夕 — **セッション締め（682・hooks・AI緊急用同期）**
+
+**浜田メモ（依頼要旨）**: 終了にあたり **まとめ**（よかった／悪かった）・**次セッション引継ぎ**・**Desktop `AI緊急用` ファイル更新**。
+
+**経緯（簡潔）**:
+- **682 ユーザサポート件数日次**: 本番運用準備まで（フィールド・JS・SPEC・`kintone-apps.md`）。明日 **4月分実入力**で動作確認予定。その後 **グラフ／ダッシュ／AI** は「自動 vs ボタン等」で方針決定予定（合意済み）。
+- **hooks 強化**: `report-checksheet-pending.mjs`（全ターン pending）／`validate`（`head-only` / `full`）／`ng-recovery-gate.mjs`（NG 時 **AI緊急用 全件＋`constitution-first-read-pack` 必須**・SUCCESS で解除・`npm run hooks:gate-clear`）／`stop`（回復 suffix 付与）／`session-start-autopilot.mjs`（先読みパック注入）。`every-turn-rules-confirm.mdc` §1e-3 追記。`package.json` に **`hooks:gate-clear`**。
+- **Desktop 精読**: 浜田指示で `C:\Users\mhamada202408224\Desktop\AI緊急用` **所蔵の番号付きファイル（00〜26 帯・`08-INDEX` 準拠）**を再通読し、アプリ報告・仕組み有効性を再確認。テスト用 `report-pipeline-current.json` は **削除済み**（`report:pipeline-status` 記録なしに復帰）。
+
+**よかったこと**:
+- 682 の **MVP を本番まで一気通貫**（REST・thread 52・Excel 非移行どおり）。
+- **規律まわりをコード化**（全ターン §1 機械検査、NG 回復ゲート、先読みパックの単一入口 `chat-sessions/constitution-first-read-pack/00-ORDER.txt`）。
+- **CI 直近は緑**（`gh run list` 先頭 success）。壁時計 **`session-clock.mjs set`** 実施済み（**http://127.0.0.1:47933/** 系・環境により既存 watch の URL を優先）。
+
+**悪かったこと／反省**:
+- **preflight より先に deploy が走った事例**（PowerShell `;`）— **`&&` または `npm run deploy:682` 単体**が正。憲法ゲートの **意味を損なう**ので再発禁止。
+- **第2者・§50-3-8** をすべてのターンで機械強制はできない（Cursor フック依存）。**自前の DeepSeek 呼び**は重いターンで継続。
+- **本セッションのリポ変更**は **未コミットのまま**の可能性—次チャット初手で **`git status`**。
+
+**次セッションへの 1 行**: 項番 -1 貼付 → **682 に 4月分入力**→目視 OK なら **§41 で「グラフ＝`day_total` のみ」等を固定**→（Tier B なら）ダッシュ／AI は **案2つ以上＋§18** で着手。
+
+**GO待ち**: 682 の **実データ確認**（明日・浜田）。AI 分析の **自動／手動**は次回 §41 または合意1行で可。
+
+**関連パス**: `.cursor/hooks/`・`chat-sessions/constitution-first-read-pack/`・`docs/plans/2026-05-08-user-support-daily-counts-spec.md`・`customize/682/desktop.js`・`chat-sessions/desktop-ai-emergency-read-pack/17-HISTORY-2026-05-06-read-pack-and-tools.txt`（本ターン追記）
+
+### 2026-05-09 13:58 JST — **682 ユーザサポート件数日次・本セッション終了（アプリ修正は AI チーム継続）**
+
+**浜田メモ（原文 / チャット合意を handoff 正本に転記）**:
+> 今日は https://jbis-kintone.cybozu.com/k/682/ ユーザサポート件数日次の続きですが、アプリ修正を AI チームへ依頼対応してたら本セッションは終了としたい。その後こちらでアプリへデータを入れてまた別セッションで内容を確認（夜になる）→ダッシュボード要件議論→ダッシュボード作成（AIチーム）→機能回り議論→追加→出来栄え確認で終わり。まだ依頼対応中に RUN 等が出るがこちらは出ないようにしてほしい。AI の役割分担（体制）は実行後のダブルチェックは AI 側で 2 人以上で行うルールがあるが理解してるか？行動を起こすうえでルール違反はしていない根拠（どのルールに従ってやっているか明確する）というルールも理解しているか？報告にはティア判定、【適用憲法】、【🎖️ 本セッション割当】が必要（欠落は報告として認めない）。CEO 最低基準ブロックをチャットに貼付。
+
+**経緯（簡潔）**:
+- **本セッション**: 682 続きだが **アプリ修正は AI チームへ依頼中**のため **ここで区切り**。浜田は **データ投入 → 夜に別セッションで内容確認** → ダッシュ要件 → AI 作成 → 機能議論 → 追加 → 出来栄え確認、のロードマップを宣言。
+- **RUN 非表示要望**: 浜田側 IDE で **エージェントのシェル承認（Run）が出ない**よう希望。**CIO 側から CEO の Cursor UI を直接変更は不可**—運用は `23-AI緊急用-README`・Desktop「＃重要確認事項」**CIO の自律判断**節に沿い、**(a)** 修正作業用チャットは **浜田が開かない／別プロファイル・別端末・Cloud Agent** に分離、**(b)** Cursor **Agents → Auto-Run = Run in Sandbox** と **`%USERPROFILE%\.cursor\permissions.json`** の terminalAllowlist（`Sort-` / `Rename-` 等）整備、**(c)** サンドボックス `additionalReadonlyPaths` に Desktop を入れて一覧のみ、等を推奨（正本 README）。
+
+**AI 補足（漏れ防止）**:
+- `git`: `## main...origin/main` ＋作業ツリー **多数変更あり**（未コミット。682・hooks・憲法・read-pack 再編など。次チャット初手 **`git status -sb`**）。
+- `次の1手`: **AI チーム**: 依頼中の **682 アプリ修正を完遂**（deploy・SPEC・`kintone-apps.md` 追随は CIO 規律どおり）。**浜田**: 682 に **実データ投入** → **夜・新セッション**で表示・集計確認 → **§41 一問ずつ**ダッシュ要件→実装依頼。
+- `GO待ち`: 682 **実データ投入後の見え方 OK**、ダッシュボードの **集計軸・更新頻度・閲覧権限**（次回 §41）。
+- `session-lock`: なし（本ターンで未取得）。
+- `関連パス`: `docs/plans/2026-05-08-user-support-daily-counts-spec.md`・`kintone-apps.md`（682 行）・`customize/682/desktop.js`・`chat-sessions/desktop-ai-emergency-read-pack/23-AI緊急用-README.txt`（控え同期後）。
+
+**次セッションへの 1 行**: `00` 貼付 → 項番 **-0** で本題＝**682 夜確認 or ダッシュ要件**を一文固定 → **`npm run session:bootstrap`** → SPEC＋682 正本 Read → Tier B 前 **§50-3-8**。
+
+**CIO 回答（チャット要約と同一）**:
+- **ダブルチェック 2 名**: **理解済み**。`constitution-enforcement-core.mdc`・`14-READ-06.txt`・CEO 最低基準 **§M-3** — **検証の第 2 者は AI 側**（DeepSeek/Kimi/OpenRouter）、CEO の目視は **検収・GO** の枠で第 2 者の代替にならない。
+- **ルール遵守の根拠明示**: **理解済み**。【適用憲法】＋**`[ルール確認]`**（Read 済み正本パス）＋**§1b**（編集前の関連 §＋方針 1 文）。報告ターンは **§M-2 V2 七行**。
+
+---
+
+### 2026-05-09 JST — **682 ユーザサポート件数日次・SPEC 追記 GO 済み／§9.1-B が次ゲート**
+
+**浜田メモ（原文 / チャット）**:
+> OK　では次へ
+
+**経緯（簡潔 / §37）**:
+- **CEO GO**（チャット「次へ」）に基づき、`docs/plans/2026-05-08-user-support-daily-counts-spec.md` に **§6.1**（Space 48 ダッシュ主画面・当月合計・MoM 赤青・任意年度レンジ）および **§7**（A4 二枚・ページ2 **非LLM（B案）**・要約＋件数＋§7.2 ガード付き「多め」1行・ダッシュ AI との経路分離）を **正本反映済み**（変更履歴 §10 追記）。
+- `kintone-apps.md` **682 行**を **§6.1・§7** 参照に追随。
+- **CIO 自律（定常）**: リポルートで **`npm run verify:cio-mcp-registry`** および **`npm run cio:mcp:env`** を実行（結果は下記 **MCP 検証 1 行**）。
+- **§50-3-8**: 着手前に DeepSeek 短問（B スキップ時のグラフ検証破綻・手入力タイムスタンプ・再検証漏れ）を実施し、**B をゲートとして固定**することを checkpoint／本ログに明記。
+
+**§9.1-B チェックリスト（浜田・手入力ゲート）**:
+1. **記録日**（`record_date`）が **意図した暦日**（JST・業務日）になっているか（新規既定は Asia/Tokyo 当日だが、過去日入力時は取り違え注意）。
+2. **1 日 1 行**（同一記録日の重複が無いか）。
+3. **午前・午後の対応内容**は **1 行＝1 件**で、**空なら 0**・保存後 **`am_count`/`pm_count` が disabled 経由で期待通り**か一覧で確認。
+4. **`day_total`** が **午前＋午後**と一致するか（計算フィールドの再計算のため、一覧再表示／再保存で確認）。
+5. **B 完了**をチャットに **1 行**残したうえで、次セッションは **§5.1**（月次棒・**`day_total` のみ**）→ **§6** ダッシュ配置へ（**CIO＋浜田**、§9.1 表どおり）。
+
+**MCP 検証 1 行（本ターン・Windows・`C:\\Users\\mhamada202408224\\kintone-ai-lab`）**: `npm run verify:cio-mcp-registry` **exit 0**（required CIO MCP names present）→ `npm run cio:mcp:env` **exit 0**・**`SUMMARY: OK 6/6 NG=0`**（kintone / deepseek / kimi / openrouter / memory / sequential-thinking 各 OK）。**失敗時**は `docs/mcp-status.md` と **`npm run mcp:sync-cursor-windows`** を CIO が自律実施。
+
+**AI 補足（漏れ防止）**:
+- `git`: 本ブロック＋SPEC／checkpoint 更新は **未コミットの可能性**—次手で **`git status -sb`** → 682 関連を **1 commit**（`SPEC_TOUCHED` なら **Reviewed-by** 遵守）。
+- `次の1手`: **浜田**: §9.1-**B**（上チェックリスト）完了。**CIO**: B 完了確認後、**§5.1** 手順でグラフ公開支援（kintone UI・**本番データは触らない**）。
+- `GO待ち`: **B 完了の事実**（チャット 1 行で可）。**印刷 customize（§7）**は §9.1 **F** まで **コード着手しない**（SPEC 正本のみ先行済み）。
+- `session-lock`: なし。
+- `関連パス`: `docs/plans/2026-05-08-user-support-daily-counts-spec.md`（§6.1・§7・§9.1）・`kintone-apps.md`・`chat-sessions/checkpoint-latest.md`（**最終更新**先頭行）。
+
+**次セッションへの 1 行**: **682 §9.1-B 実データ投入**が済んだら一言 → CIO は **§5.1** で月次棒（`day_total` のみ）→ **§6** ダッシュ骨組み（Space 48）へ進む。**B を飛ばすと C の検証が空振り**するためゲート厳守。
+
+---
+
+### 2026-05-10 JST — 682 §9.1 **CEO 裁量**（CIO 自律・前倒し）
+
+**浜田 CEO**: 「そこは **CIO 判断に任せる**」「**AI チームで相談し対応**」「**完了報告は聞く**」。
+
+**CIO 判断**: **4 月分実データあり**を前提に **§9.1 B は満たしたものとして C→D を前倒し実行**する。**手順正本**: `docs/runbooks/user-support-682-phase-c-and-space48-phase-d.md`。**SPEC 補足**: `docs/plans/2026-05-08-user-support-daily-counts-spec.md` §9.1（2026-05-10 追記）。**完了報告**に含める項目は runbook §4 参照。**本番 kintone PUT** は従来どおり preflight・台帳・第2者を欠かさない。
+
+**次セッションへの 1 行（更新）**: CIO は **§5.1（C）** で 682 月次棒グラフ公開 → **Space 48（D）** でポータル骨組み（埋め込み優先）→ **handoff 1 行＋浜田向け完了報告**。
+
+**2026-05-10 追記（CEO GO 実行）**: **フェーズ C 完了（REST）** — `npm run 682:graph-monthly` でグラフ **`682_day_total_monthly`** を追加し **preview app deploy SUCCESS**（PUT 後 revision **12**）。**フェーズ D**: 本ターンは **Space 48 ポータル UI 未操作**（次: Runbook §2 手動または別セッション）。
+
+---
+
+### 2026-05-09 JST（終盤）— **682 GHA・Repo secrets・Desktop 同期・日次クローズ**
+
+**経緯（簡潔）**:
+- **GitHub-Actions** リポに **`682-graph-monthly-refresh.yml`** を初 push したが **`package.json` に `cio:preflight:682` 等が無く Run #1 failure** → **`main` に 682 用 npm 5 本＋`scripts/user-support-682-ensure-monthly-bar-graph.mjs` を最小コミットで追補**（`4de1d4a`）→ **Run #2 success**（`gh run watch` で確認）。
+- 浜田: **Repository secrets**（`KINTONE_BASE_URL` / `USERNAME` / `PASSWORD`）登録・手動 `workflow_dispatch` 実施。
+- **Desktop「AI緊急用」**: 既定 `/mnt/c/...` は未マウントのため **`SESSION_STARTER_DESKTOP_DIR=C:\Users\mhamada202408224\Desktop\AI緊急用`** で **`npm run session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync` とも exit 0**（旧ファイル prune は sync スクリプト任せ）。
+- **`npm run health-check`**: 正常 9 / 異常 0 / 警告 1（MCP 死蔵参考）/ スキップ 19（Windows CLI では MCP 疎通 skip が既定）。**`main` = `origin/main` 同期**。
+
+**次セッションへの 1 行**: **682 グラフの目視**は依頼時のみ。**GHA 追加時は workflow と npm scripts＋依存スクリプトを同一 PR で**載せる（再発防止）。**Windows 直**で Desktop sync するなら **`SESSION_STARTER_DESKTOP_DIR`** を README／read-pack に明記検討。
