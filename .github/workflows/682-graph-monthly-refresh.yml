@@ -1,0 +1,56 @@
+# アプリ 682: 月次グラフの 7 暦月 filterCond を JST 基準で更新（preview reports PUT + deploy）
+#
+# ■ スケジュール: 毎月 1 日 14:00 UTC ≈ 同日 23:00 JST（GitHub cron は UTC 固定のため近似）
+# ■ 手動: Actions タブから workflow_dispatch 可
+#
+# ■ Secrets（**Repository secrets のみ** — 本ジョブは `environment:` を付けない）
+#   Settings → Secrets and variables → Actions に登録: KINTONE_BASE_URL / KINTONE_USERNAME / KINTONE_PASSWORD
+#   （682 グラフ REST・ローカル `.env` と同じ名前）。任意: KINTONE_BASIC_AUTH_* 。
+#   ※ `environment: kintone-collect` + Required reviewers だと **スケジュールが承認待ちで止まる**ため、
+#     月初の無人実行は **Repo secrets 直参照**に固定（`ops-guide-kintone-publish` 等の別ワークフローは従来どおり Environment 可）。
+#
+# ■ 運用上の注意（CIO / 浜田側）
+# - 同一ジョブ内で `cio:preflight:682` を直後に実行し、cio-deploy-preflight-guard の 45 分窓を満たす。
+# - `schedule` は **デフォルトブランチ**のみ。検証は **workflow_dispatch**。
+# - ログにパスワードを echo しない（スクリプトは認証ヘッダのみ生成）。
+
+name: 682-graph-monthly-refresh
+
+on:
+  schedule:
+    - cron: "0 14 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: 682-graph-monthly-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      KINTONE_BASE_URL: ${{ secrets.KINTONE_BASE_URL }}
+      KINTONE_USERNAME: ${{ secrets.KINTONE_USERNAME }}
+      KINTONE_PASSWORD: ${{ secrets.KINTONE_PASSWORD }}
+      KINTONE_BASIC_AUTH_USERNAME: ${{ secrets.KINTONE_BASIC_AUTH_USERNAME }}
+      KINTONE_BASIC_AUTH_PASSWORD: ${{ secrets.KINTONE_BASIC_AUTH_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: ".nvmrc"
+          cache: npm
+
+      - name: npm ci
+        run: npm ci
+
+      - name: Preflight stamp (682)
+        run: npm run cio:preflight:682 -- --note "GHA schedule 682 graph monthly refresh"
+
+      - name: Refresh graph (COLUMN + 7-month filter) + deploy
+        run: npm run 682:graph-monthly:scheduled
