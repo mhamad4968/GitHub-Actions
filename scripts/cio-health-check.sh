@@ -37,21 +37,53 @@ ck() {
 echo "[cio-health-check] start"
 echo
 
-# 1. 壁時計
-clock_url=""
-if [ -f /tmp/session-clock-web.log ]; then
-  clock_url=$(grep -oE 'http://[0-9a-zA-Z.]+:[0-9]+/' /tmp/session-clock-web.log | head -1)
-fi
-if [ -n "$clock_url" ]; then
-  if curl -sS --max-time 3 -o /dev/null -w '%{http_code}' "$clock_url" 2>/dev/null | grep -q '^200$'; then
-    report+=$'\n'"  ✅ wall-clock  url=$clock_url HTTP=200"
-  else
-    report+=$'\n'"  ❌ wall-clock  url=$clock_url HTTP!=200 — 起動: setsid -f bash -c 'SESSION_CLOCK_WEB_HOST=0.0.0.0 npm run session:clock:web > /tmp/session-clock-web.log 2>&1' < /dev/null"
-    red_count=$((red_count + 1))
+# 1. 壁時計（self-heal 内蔵 / 2026-05-10: WSL2 短命 init 構造課題への自律対応）
+# 仕様:
+#   - /tmp/session-clock-web.log の URL から HTTP 200 が取れれば GREEN
+#   - 取れない場合は setsid -f で 1 回だけ auto-start 試行（最大 6 秒待機）
+#   - 再 curl で 200 取れたら GREEN (auto-healed) と detail に明示（DeepSeek 指摘の「毎回再起動隠蔽」対策）
+#   - それでも 200 取れなければ RED（手動再起動コマンドを detail に提示）
+clock_get_url() {
+  if [ -f /tmp/session-clock-web.log ]; then
+    grep -oE 'http://[0-9a-zA-Z.]+:[0-9]+/' /tmp/session-clock-web.log | head -1
   fi
+}
+clock_http_status() {
+  local url="$1"
+  if [ -z "$url" ]; then echo "000"; return; fi
+  curl -sS --max-time 3 -o /dev/null -w '%{http_code}' "$url" 2>/dev/null || echo "000"
+}
+clock_pid() {
+  pgrep -f 'session-clock-web' 2>/dev/null | head -1
+}
+clock_auto_start() {
+  rm -f /tmp/session-clock-web.log
+  setsid -f bash -c "SESSION_CLOCK_WEB_HOST=0.0.0.0 npm run session:clock:web > /tmp/session-clock-web.log 2>&1" </dev/null >/dev/null 2>&1 || true
+  local i
+  for i in 1 2 3 4 5 6; do
+    sleep 1
+    if [ -f /tmp/session-clock-web.log ] && grep -qE 'http://[0-9a-zA-Z.]+:[0-9]+/' /tmp/session-clock-web.log; then
+      return 0
+    fi
+  done
+  return 1
+}
+clock_url=$(clock_get_url)
+clock_status=$(clock_http_status "$clock_url")
+clock_healed=""
+if [ "$clock_status" != "200" ]; then
+  if clock_auto_start; then
+    clock_url=$(clock_get_url)
+    clock_status=$(clock_http_status "$clock_url")
+    clock_healed=" (auto-healed)"
+  fi
+fi
+clock_pid_now=$(clock_pid)
+if [ "$clock_status" = "200" ]; then
+  report+=$'\n'"  ✅ wall-clock  url=$clock_url HTTP=200 pid=${clock_pid_now:-?}$clock_healed"
 else
-  report+=$'\n'"  ⚠️  wall-clock  /tmp/session-clock-web.log not found — npm run session:clock:web を再起動してください"
-  warn_count=$((warn_count + 1))
+  report+=$'\n'"  ❌ wall-clock  url=${clock_url:-no_url} HTTP=$clock_status — auto-start failed; manual: setsid -f bash -c 'SESSION_CLOCK_WEB_HOST=0.0.0.0 npm run session:clock:web > /tmp/session-clock-web.log 2>&1'"
+  red_count=$((red_count + 1))
 fi
 
 # 2. session-lock
