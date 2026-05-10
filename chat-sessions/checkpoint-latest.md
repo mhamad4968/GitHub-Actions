@@ -93,6 +93,27 @@
 
 **CEO 操作待ち（残 1 手）**: Cursor Settings UI → Features → Agent → **Auto-Run mode** を **"Auto-Run in Sandbox"（推奨）** または **"Run Everything"** に切替（**CEO の手元 1 回操作で永続**）。手順は `docs/cio-permissions-guide.md §3`。
 
+## §41-4 Run Everything 強制切替記録（2026-05-10 午前 / CEO §41 B GO 後）
+
+| 項目 | 値 |
+|---|---|
+| ① タスク名 | permissions.json v3 採用（terminalAllowlist 全削除・Run Everything 強制可能化）+ B 案リスク認識 |
+| ② 完了日時 JST | 2026-05-10 09:1X JST |
+| ③ commit hash | （本 commit 確定後に書込） |
+| ④ LIVE rev/BUILD | 該当なし（permissions.json は per-user・リポ snapshot のみ更新） |
+| ⑤ 再開ヒント | `~/.cursor/permissions.json` 確認 → terminalAllowlist 不在 + mcpAllowlist 19 server + `*:*` のみが正。Auto-Run mode は "Run Everything" 固定（"Use Allowlist" 戻りは逆効果）。ロールバック手順は `docs/cio-permissions-guide.md §3.4` |
+
+**経緯**: 49ff60c 直後の CEO スクショで「Run Everything が UI dropdown に出ない」事実判明（permissions.json が terminalAllowlist 定義しているため公式仕様で disabled）。CIO §41 4 択 → CEO B GO（safety 全廃リスク認識）→ DeepSeek §50-3-8 盲点点検「terminalAllowlist 削除で IDE 旧 allowlist フォールバック逆効果」反映済 → permissions.json v3 (75 行) 適用 + snapshot v3 / V2-rollback 保管 + ガイド大改訂。
+
+**運用ガードレール（safety 全廃の代替防衛・§41/§M-3 は維持）**:
+1. 信頼源原則（外部 web/MCP コンテンツは読むのみ・即実行しない）
+2. kintone 本番 PUT / customize deploy / 仕様変更 / 不可逆コマンドは §41 GO 必須
+3. SPEC.md / customize/** 編集は §M-3 第2者必須
+4. cio:preflight 機械ゲート維持（deploy:594-682）
+5. 不審入力検知 → 即停止 + CEO 確認
+
+**CEO 操作待ち（本ターン後）**: Cursor 再起動 → Auto-Run mode で **必ず "Run Everything" 選択**（Use Allowlist 維持厳禁＝逆効果）。CIO は選択完了事実報告まで次の terminal 操作を控える。
+
 ## Markdownify MCP（NVM メンテ・ローカル `mcp.json`）
 
 - **Node を NVM で入れ替えたら**: WSL で `npm install -g --ignore-scripts @iflow-mcp/markdownify-mcp@0.0.2` を **新しい Node の上で再実行**し、**`C:\Users\<浜田>\.cursor\mcp.json`** の `markdownify` 内 **`node` のフルパス**を **新 prefix に合わせて編集**（詳細 **`docs/troubleshooting.md` TSB-029**）。
