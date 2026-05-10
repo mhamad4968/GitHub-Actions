@@ -1,14 +1,22 @@
 # 📊 MCP 状態管理台帳
 
-**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-05-06（**`shadcn-ui`・`chrome-devtools` 運用を `mcp-frontend-shadcn-chrome.mdc` と本条に追記**／**`filesystem`・`fetch` を `~/.cursor/mcp.json` から除去**・`sync-cursor-mcp-windows-from-wsl.mjs`／`verify-cursor-mcp-windows.mjs` を **無 filesystem 運用**に追従。**O-3 監視スナップ**・憲法系 MCP キー運用メモ。浜田回答反映: **Tavily 削除**・**金曜夜＝表「過去30日」見直し**・**WSL は `gh`**・**課金スナップショット**／`npm run health-check` 突合・**§Cursor 可用性** 更新。表の「過去30日」欄は **2026-05-06** `npm run mcp-status:refresh-usage` で再集計済）
+**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-05-11（**CIO／マルチエージェント**: `npm run verify:cio-mcp-registry` で **必須 MCP 名**が `%USERPROFILE%\.cursor\mcp.json`＋リポ `.cursor/mcp.json` マージに存在するか機械検査。実プロセス疎通は `npm run cio:mcp:env`（registry 後に **`npx dotenv … cio-mcp-quickprobe`**）。**2026-05-06** 以前分: **`shadcn-ui`・`chrome-devtools`**／`filesystem`・`fetch` 除去・Windows 同期スクリプト追従・表「過去30日」は `mcp-status:refresh-usage` で再集計済）
 **更新ルール**: mcp.json 変更時 / 月次 MCP 健康診断時 / 浜田判断あった時に必ず本ファイル更新
 **正本順位**: 本ファイル < **`~/.cursor/mcp.json` とワークスペース `.cursor/mcp.json` がマージ**（Cursor 仕様）。`kintone-ai-lab` ルートで開いたとき **Figma + colors-fonts** はリポ側 JSON にも記載（2026-05-04）。
+
+### §CIO マルチエージェント — MCP 名チェック（2026-05-10）
+
+- **`npm run verify:cio-mcp-registry`** … **deepseek / kimi / openrouter / memory / sequential-thinking / rag / markdownify / kintone / playwright / duckduckgo-search** が **レジストリに存在**すること（`disabled: true` は除外）。秘密は出さない。
+- **`npm run cio:mcp:env`** … 上記のあと **`.env`＋`.env.proxy` 注入**で `cio-mcp-quickprobe`（kintone + 3AI + memory + sequential-thinking）を **JSON-RPC initialize** まで実測。**CIO 合格線**: **3AI・kintone のキーは `.env` が空でも `%USERPROFILE%\.cursor\mcp.json`（＋リポ `.cursor/mcp.json`）の `server.env` を自動補完**し、**SKIP なしで全件 OK**（不足なら **exit 2**＝未整備）。
+- **実行経路（2026-05-11 CEO 合意）**: **日常の健康ゲートは Windows ネイティブ**で `Set-Location C:\Users\<you>\kintone-ai-lab; npm run cio:mcp:env`（**`SUMMARY: OK 6/6`** を正）。**WSL の `/mnt/c/...` は月次のベストエフォート**（drvfs ＋並列 `npx` で **kimi のみ TIMEOUT** になり得る）。**WSL で kimi だけ落ちるとき**は **`CIO_MCP_PROBE_KIMI_TIMEOUT_MS`**（`scripts/cio-mcp-quickprobe.mjs`）と **ネット（VPN／FW／mirrored）**を先に切り分ける。
+- **監査メモ（2026-05-11）**: **`npm run health-check`** は Windows の **非 IDE CLI** では多くの MCP が **意図的に ⏭**（`HEALTH_CHECK_STRICT_WIN=1` で厳格化可）。**実 initialize の正**は引き続き **`cio:mcp:env`**。**S12 死蔵 WARN** は週次 `mcp-status:refresh-usage` で是正判断。**`main` が `origin/main` より遅れ**ているときは `git fetch` / `git pull` で正本を揃えてから再検証。**Node DEP0190**（`spawn`+`shell:true`+args）— `cio-mcp-quickprobe` は Windows で **`npx` が ENOENT になるため `shell:true` を維持**（警告のみ・コマンド列は固定）。
+- **WSL 正本** `~/.cursor/mcp.json` を編集したら Windows へ **`npm run mcp:sync-cursor-windows`**（TSB-028）。
 
 ### §Cursor 可用性メモ（2026-05-06 JST / WSL `kintone-ai-lab`）
 
 - **`npm run health-check`（MCP initialize 系）**: `github`・`office-powerpoint` は **WSL から ⏭（Windows 側想定）**、`figma` は **url-only（stdio 対象外）**、それ以外は **✅ initialize OK**（`markdownify`・`deepseek`・`kimi`・`openrouter`・`kintone` 系・`playwright`・`rag` 等）。**`tavily`・`filesystem`・`fetch` は 2026-05-06 に `~/.cursor/mcp.json` から除去済**（`filesystem`／`fetch` は Cursor 標準ツールで代替）。
 - **Cursor チャットからの `call_mcp_tool`**: ワークスペース配下の **descriptor**（`~/.cursor/projects/<id>/mcps/<server>/tools/*.json`）に従う。**本番 kintone 書込・長文生成・CVE/ニュース・RAG** はここ経由で起用可。**PR/Issue 操作の `user-github`** は WSL セッションでは使えない設計のため、同種は **`gh` CLI**（認証済）を **第一選択**（浜田合意 2026-05-06）。Windows 上の Cursor は補助。
-- **S12 死蔵警告**: 下表の「過去 30 日使用」列は **`npm run mcp-status:refresh-usage`**（`check-mcp-dormancy.mjs` 30 日 JSON）で更新する。**毎週金曜夜・週次反省の直後**の Cursor セッションで **CIO（AI）が定例実行**し、差分があれば **`docs/mcp-status.md` を commit + push** まで行う（浜田合意 2026-05-06／運用確定）。**月次健康診断**・**MCP 追加・削除時**も CIO が表を見直す。
+- **S12 死蔵警告**: 下表の「過去 30 日使用」列は **`npm run mcp-status:refresh-usage`**（`check-mcp-dormancy.mjs` 30 日 JSON）で更新する。**毎週金曜夜・週次反省の直後**の Cursor セッションで **CIO（AI）が定例実行**し、差分があれば **`docs/mcp-status.md` を commit + push** まで行う（浜田合意 2026-05-06／運用確定）。**月次健康診断**・**MCP 追加・削除時**も CIO が表を見直す。**浜田に「npm を実行して」と依頼しない**（Desktop **`＃重要確認事項.txt`**・**READ-07**・**`npm run verify:agent-env`** が **registry 検査まで連鎖**）。
 - **O-3 監視スナップ（2026-05-06 JST）**: `npm view` — **`@colorsandfonts/mcp` 1.1.0**、**`@iflow-mcp/markdownify-mcp` 0.0.2**（いずれも registry latest と一致）。**TSB-029**: `mcp.json` の **node フルパス** → `markdownify-mcp/dist/index.js` の **存在確認 OK**（NVM 変更時は TSB-029・`docs/troubleshooting.md` に従い global 再導入＋パス更新）。
 - **憲法系 MCP キー（Exa / Brave / Firecrawl / Harness）**: **理想**は **`temp/mcp_keys.env` と `mcp.json` を同値**にしておくこと（新 PC・WSL/Windows 二重正本の復旧用。値は手元でコピーし **git に載せない**）。**`npm run mcp:apply-keys`**（`scripts/apply-mcp-keys-from-env.mjs`）は **env 側が空のキーは上書きしない**（2026-05-06 変更）— 空プレースホルダのまま実行しても **既存の `mcp.json` は消えない**。新規セットアップで env だけ埋めて初回反映、という流れも可。
 
@@ -28,12 +36,12 @@
 ## 2026-04-28 — 自律エージェント向けルール
 
 - リポに **`.cursor/rules/mcp-tool-discipline.mdc`**（フロントマタは **`alwaysApply: false`**。必要時にルール ON）を追加。`call_mcp_tool` 前の **descriptor（`mcps/<server>/tools/*.json`）必読**・`mcp_auth` を先に単独実行・同一目的では **MCP を curl より優先**する、を **リポ内でも固定**（再宣言として有効）。
-- **2026-05-02 追補**: **`.cursor/rules/mcp-server-use-triggers.mdc`（`alwaysApply: true`）** … **どの MCP サーバを選ぶか**の 1 行トリガー（CIO×DeepSeek/Kimi/OpenRouter 相談反映）。descriptor 必読は引き続き **mcp-tool-discipline**。
+- **2026-05-02 追補**: **`.cursor/rules/mcp-server-use-triggers.mdc`（`alwaysApply: false` + `globs`）** … **どの MCP サーバを選ぶか**の 1 行トリガー（CIO×DeepSeek/Kimi/OpenRouter 相談反映）。descriptor 必読は引き続き **mcp-tool-discipline**。
 - **2026-05-04 追補**: **デザイン系（Figma）** — 公式リモート MCP または `figma-developer-mcp` の導入手順・使い分けは **`docs/mcp-design-figma.md`**。`~/.cursor/mcp.json` へ追加後、下表に行を足す。
 - **2026-05-04 午前追補（CIO 依頼・Kimi/DeepSeek 相談）**: **配色・パレット**用に **`@colorsandfonts/mcp`**（サーバ名 `colors-fonts`）をグローバル＋リポ `.cursor/mcp.json` に追加。**kintone 表のトークン・コントラスト**手順は **`docs/mcp-design-kintone-tables.md`**。
-- **2026-05-06 施行**: **`.cursor/rules/ai-agent-tools-constitution.mdc`**（**`alwaysApply: true`**）— Exa/Brave/Firecrawl・Linear 相当の課題管理・Puppeteer・Mintlify/Harness・秘密禁止・有料大量取得前の確認。**§7** — PR/deploy 前など区切りで **`[憲法適合]`** 1 行の自己宣言。**`mcp-server-use-triggers.mdc`** に調査系 1 行トリガーを追補。
+- **2026-05-06 施行**: **`.cursor/rules/ai-agent-tools-constitution.mdc`**（**`alwaysApply: false` + `globs`**）— Exa/Brave/Firecrawl・Linear 相当の課題管理・Puppeteer・Mintlify/Harness・秘密禁止・有料大量取得前の確認。**§7** — PR/deploy 前など区切りで **`[憲法適合]`** 1 行の自己宣言。**`mcp-server-use-triggers.mdc`** に調査系 1 行トリガーを追補。
 - **2026-05-06 追補（多AI）**: 同憲法 **§0.5** — **CIO 体制の中**で第1者が第2視点を補強するため、他AI（DeepSeek/Kimi/OpenRouter 等）との**協議を積極推奨**（第2者・GO の憲法定義は不変）。**`constitution-brief-card.mdc`** の CIO 2 者の直後にポインタを追加。
-- **2026-05-06 追補（フロント MCP）**: **`shadcn-ui`**（`@jpisnice/shadcn-ui-mcp-server`）— UI コンポーネント時は **必ず参照**。**`chrome-devtools`**（`chrome-devtools-mcp`）— FE 修正・バグ調査で **実レンダリング／コンソール**の事実確認。運用正本 **`.cursor/rules/mcp-frontend-shadcn-chrome.mdc`**（`alwaysApply: true`）。WSL `~/.cursor/mcp.json` 変更後は **`cd ~/kintone-ai-lab && npm run mcp:sync-cursor-windows`**（TSB-028）。
+- **2026-05-06 追補（フロント MCP）**: **`shadcn-ui`**（`@jpisnice/shadcn-ui-mcp-server`）— UI コンポーネント時は **必ず参照**。**`chrome-devtools`**（`chrome-devtools-mcp`）— FE 修正・バグ調査で **実レンダリング／コンソール**の事実確認。運用正本 **`.cursor/rules/mcp-frontend-shadcn-chrome.mdc`**（**`alwaysApply: false` + FE 系 `globs`**）。WSL `~/.cursor/mcp.json` 変更後は **`cd ~/kintone-ai-lab && npm run mcp:sync-cursor-windows`**（TSB-028）。
 - **2026-05-02 §57-10 連動**: RAG 正本 4 ファイルの `.rag/extra-docs` ミラー＝`npm run rag:mirror:canonical-docs` / `verify:rag-mirror-canonical`（`verify:agent-env` 連鎖）。憲法・索引の実体はルート正本（§2）。
 
 ### 表の鮮度（2026-04-28）
@@ -48,24 +56,24 @@
 | # | MCP | 状態 | 過去 30 日使用 | 主役割 | 次回再評価 |
 |---|---|---|---|---|---|
 | 1 | github | ⏭ Win-skip | 0 回（exempt） | GitHub Issue/PR 操作 (Win 起動必要) | 5/16（サブエージェント PoC 再議論時）|
-| 2 | cyber-news | ✅ active | **6 回** | サイバーセキュリティニュース取得 | 5/1（月次健康診断）|
+| 2 | cyber-news | ✅ active | **4 回** | サイバーセキュリティニュース取得 | 5/1（月次健康診断）|
 | 3 | office-powerpoint | ⏭ Win-skip | 0 回（exempt） | PPT 自動生成 (Win 起動必要) | 5/13 後（本番運用後の月次レポート用検討）|
-| 4 | ~~google-search~~ → **duckduckgo-search** | ✅ active (4/23 21:35 入替 / TSB-015 解消) | **2 回** | DuckDuckGo Web 検索 (uvx duckduckgo-mcp-server / Bing ベース / DDG_REGION=jp-ja / API key 不要 / bot 検知緩) | 5/1 月次巡回 + 必要時随時 |
+| 4 | ~~google-search~~ → **duckduckgo-search** | ✅ active (4/23 21:35 入替 / TSB-015 解消) | **0 回** | DuckDuckGo Web 検索 (uvx duckduckgo-mcp-server / Bing ベース / DDG_REGION=jp-ja / API key 不要 / bot 検知緩) | 5/1 月次巡回 + 必要時随時 |
 | 5 | ~~filesystem~~ | 🗑 **削除済 2026-05-06** | — | （除去）`~/.cursor/mcp.json` から除去・Cursor 標準 Read／WSL で代替 | — |
-| 6 | memory | ✅ **active 化済** | **32 回** | セッション横断記憶 (現在 10 entities + 11 relations) | PC 台帳 PJ で実戦投入後判断（5/13 頃）|
+| 6 | memory | ✅ **active 化済** | **2 回** | セッション横断記憶 (現在 10 entities + 11 relations) | PC 台帳 PJ で実戦投入後判断（5/13 頃）|
 | 7 | ~~fetch~~ | 🗑 **削除済 2026-05-06** | — | （除去）Cursor **WebFetch**／`user-fetch` で代替 | — |
-| 8 | sequential-thinking | ✅ active | **13 回** | 段階的思考 | PC 台帳 PJ で実戦投入後判断 |
-| 9 | **kintone (公式)** | ✅ active | **286 回** | kintone API CRUD | 5/13 後（本番運用後）|
-| 10 | **kintone-dev (自作)** | ✅ active | **13 回** | API 仕様参照 (アプリ作成 MCP ではない / 4/23 早朝訂正済) | **4/26 PC 台帳 Day 4 後判断** |
-| 11 | **kintone-space (自作)** | ✅ active | **16 回** | kintone スペース操作 | **4/24 環境設定マスタ作成時に実戦投入予定** |
+| 8 | sequential-thinking | ✅ active | **1 回** | 段階的思考 | PC 台帳 PJ で実戦投入後判断 |
+| 9 | **kintone (公式)** | ✅ active | **16 回** | kintone API CRUD | 5/13 後（本番運用後）|
+| 10 | **kintone-dev (自作)** | ✅ active | **0 回** | API 仕様参照 (アプリ作成 MCP ではない / 4/23 早朝訂正済) | **4/26 PC 台帳 Day 4 後判断** |
+| 11 | **kintone-space (自作)** | ✅ active | **0 回** | kintone スペース操作 | **4/24 環境設定マスタ作成時に実戦投入予定** |
 | 12 | ~~tavily~~ | 🗑 **削除済 2026-05-06** | 0 回（削除済） | （除去）Web 検索は **duckduckgo-search** | — |
-| 13 | playwright | ✅ active (4/23 21:30 Chrome 147.0.7727.116 install + 実 call 動作確認済) | **14 回** | ブラウザ自動操作 / E2E | 4/26 PC 台帳 customize テスト時 |
-| 14 | cve-search | ✅ **active 化済** | **11 回** | CVE 脆弱性検索 | 5/1（月次セキュリティ巡回時 / S14）|
-| 15 | rag | ✅ **強化済** | **46 回** | LanceDB ローカル RAG (現在 76 docs / 3429 chunks) | **§50 + §21 強化（R24/R25）後再評価 / 4/30 判断** |
-| 16 | accessibility-scanner | ✅ active (4/23 21:30 同 Chrome で実 call 動作確認済) | **4 回** | アクセシビリティ検査 | 4/26 PC 台帳 customize 時 |
-| 17 | **figma（公式 remote MCP）** | ✅ **global + リポ**に `url` 追記済（2026-05-04）／初回 OAuth | **2 回** | 表・ダッシュの **配色・タイポ・間隔・レイアウト**を Figma から取得し実装に反映 | **`docs/mcp-design-figma.md`**／Figma プランの rate limit に注意 |
+| 13 | playwright | ✅ active (4/23 21:30 Chrome 147.0.7727.116 install + 実 call 動作確認済) | **0 回** | ブラウザ自動操作 / E2E | 4/26 PC 台帳 customize テスト時 |
+| 14 | cve-search | ✅ **active 化済** | **0 回** | CVE 脆弱性検索 | 5/1（月次セキュリティ巡回時 / S14）|
+| 15 | rag | ✅ **強化済** | **1 回** | LanceDB ローカル RAG (現在 76 docs / 3429 chunks) | **§50 + §21 強化（R24/R25）後再評価 / 4/30 判断** |
+| 16 | accessibility-scanner | ✅ active (4/23 21:30 同 Chrome で実 call 動作確認済) | **0 回** | アクセシビリティ検査 | 4/26 PC 台帳 customize 時 |
+| 17 | **figma（公式 remote MCP）** | ✅ **global + リポ**に `url` 追記済（2026-05-04）／初回 OAuth | — | 表・ダッシュの **配色・タイポ・間隔・レイアウト**を Figma から取得し実装に反映 | **`docs/mcp-design-figma.md`**／Figma プランの rate limit に注意 |
 | 18 | **figma-developer-mcp**（任意） | **📋 PAT 要・stdio** | — | 上記の代替（npm `figma-developer-mcp`） | 同上／§17-3 で **npx 絶対 path** |
-| 19 | **colors-fonts**（`@colorsandfonts/mcp`） | ✅ **global + リポ**（Node v24 `npx` 絶対 path／pin `1.1.0`） | **1 回** | **パレット生成**・**WCAG/APCA コントラスト**・CSS/Tailwind/**Figma トークン JSON** 出力（Figma 無しでも表配色のたたき台） | **`docs/mcp-design-kintone-tables.md`**／`call_mcp_tool` 前は descriptor 必読 |
+| 19 | **colors-fonts**（`@colorsandfonts/mcp`） | ✅ **global + リポ**（Node v24 `npx` 絶対 path／pin `1.1.0`） | — | **パレット生成**・**WCAG/APCA コントラスト**・CSS/Tailwind/**Figma トークン JSON** 出力（Figma 無しでも表配色のたたき台） | **`docs/mcp-design-kintone-tables.md`**／`call_mcp_tool` 前は descriptor 必読 |
 
 ### 凡例
 - ✅ active: 正常稼働 / 利用可能

@@ -195,7 +195,8 @@ const suites = [
       'TSB-024',
       '§35-1',
       '§1-2-3-1',
-      'alwaysApply: true',
+      // 薄型憲法: 常時 true は cio-constitution.mdc のみ（handoff-gate は globs 想起）
+      'alwaysApply: false',
       '[§1-2-3 ティア判定:',
       '浜田（確認）',
       '§51-6-2 壁時計',
@@ -230,7 +231,8 @@ const suites = [
     id: 'every-turn-applicable-constitution',
     rel: '.cursor/rules/every-turn-rules-confirm.mdc',
     needles: [
-      'alwaysApply: true',
+      // 薄型憲法: every-turn は globs 想起（常時核は cio-constitution.mdc）
+      'alwaysApply: false',
       '【適用憲法】',
       '[§1-2-3 ティア判定',
       '行動前チェック',
@@ -242,6 +244,12 @@ const suites = [
       '[仕様状態:',
       '[検証2者:',
     ],
+  },
+  {
+    id: 'cio-constitution-always-core',
+    rel: '.cursor/rules/cio-constitution.mdc',
+    headChars: 1200,
+    needles: ['alwaysApply: true', 'CIO 統合憲法', 'verify:cio-mcp-registry', 'cio:mcp:env'],
   },
   {
     id: 'mcp-triggers-bias-guard',
