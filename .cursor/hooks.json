@@ -14,6 +14,11 @@
     ],
     "beforeShellExecution": [
       {
+        "command": "node .cursor/hooks/cio-block-destructive.mjs",
+        "failClosed": true,
+        "timeout": 5
+      },
+      {
         "command": "node .cursor/hooks/l3-guard.mjs",
         "failClosed": true,
         "timeout": 3
