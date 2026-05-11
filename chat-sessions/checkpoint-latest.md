@@ -10,6 +10,12 @@
 
 **上位表**: `NEW-SESSION-STARTER.md` 冒頭 **🎖️ AI 内部の役割分担**（CIO / Kimi / 知恵袋=DeepSeek / …）＋ **🔥 実行と確認の分離**。**チャット上の本体 AI（CIO）**は **§35-7** どおり、実装より先に **憲法 3 分・§50-3-8／スキップ理由・🎖️** をチャットに残す（**CIO ≠ 省ゲート最速**）。**分業の手順詳細**は **`.cursor/rules/deepseek-cursor-spec-division.mdc`**（**`alwaysApply: false` + `globs`**・**CIO の列を増やさず**「結果統合」に内包）。要約: **知恵袋 = 網羅・論理一次**、**CIO = 正本突合・セカンドオピニオン・§50-3-8 約 3 行突合メモ**（仕様の単独確定禁止）。**PC 台帳（674 等）を触らない日**は本題を **部署予実（677/678・`SPEC.md`）**に寄せ、正本を混読しない（本ファイル 5A/5B）。
 
+## 2026-05-11 JST 夕・674 一覧検索（追記）
+
+- **状況**: 一覧 URL の **`?q=`**（標準）と **`query`/`npl674kw`（カスタム）**の差が原因で条件クリアが不整合に見えた件を **JS 側で吸収**し、浜田 CEO 確認 **クリア OK**。
+- **本番**: `customize/new-pc-ledger-v1/desktop.js` の **`BUILD=2026-05-11-pc-ledger-index-search-native-q-param`**・preview revision **176**（詳細は `kintone-apps.md` 674 行）。
+- **夕反省正本**: `docs/reports/2026-05-11-evening-reflection.md`（`npm run session-starter:sync-desktop` で Desktop **`26-evening-reflection-2026-05-11.md`** へ）。
+
 ## 部署予実・仕様確認デイ（読み合わせのみ・kintone 書込なし）
 
 **いつ**: 本題が **677/678 の仕様読み・矛盾洗い・質問票**で、**Tier B（add-app / deploy / 本番書込）に入らない日**。**🎖️表**＋**`.cursor/rules/deepseek-cursor-spec-division.mdc`**＋**§50-3-8**が正本。
@@ -27,7 +33,7 @@
 ## 明日 CEO 固定リング（2026-05-10 JST・浜田承認済み）
 
 - **品質目標**: 最低基準自己採点を **約 9 割（90 点台）**へ上げる（前日 ~79 を更新）。
-- **本題（必須）**: **682 ユーザサポート件数日次のダッシュボード**＝**Space 48** で **`docs/runbooks/user-support-682-phase-c-and-space48-phase-d.md` §2** に沿った **ポータル骨組み（埋め込み優先）**まで **当日中に実施**（浜田操作＋CIO 指示・証跡 1 行）。
+- **本題（必須）**: **682 ユーザサポート件数日次のダッシュボード**＝**Space 48** で **`docs/runbooks/user-support-682-phase-c-and-space48-phase-d.md` §2** に沿った **ポータル骨組み（埋め込み優先）**まで **当日中に実施**（**CIO が実装・証跡**／**浜田 CEO は目視確認のみ**＝動作確認は依頼時に浜田責任。実装は **API／MCP／リポ `scripts`／必要なら Playwright** で **チャット単体に依存しない**）。
 - **明日の最初のオペレーション（承認済み反省の実装）**:
   1. **GHA**: 新規 **`.github/workflows/*.yml`** は **`package.json` の `npm run …` と依存 `scripts/*.mjs` を同一 PR／同一コミット単位**で載せる（「YAML だけ先行」を禁止）。
   2. **Desktop「AI緊急用」**: **Windows ネイティブ Node** では **`SESSION_STARTER_DESKTOP_DIR=C:\Users\mhamada202408224\Desktop\AI緊急用`** を渡してから **`npm run session-starter:sync-desktop` → `npm run verify:desktop-ai-emergency-sync`**（`/mnt/c` 未マウントで skip しない）。
@@ -264,7 +270,7 @@
 
 **最終更新**: 2026-05-10 (Sun) JST — **682・CEO GO 実行**: **フェーズ C 完了** — `npm run 682:graph-monthly` で **§5.1 相当の月次棒**（キー **`682_day_total_monthly`**・`day_total` SUM・`record_date` MONTH）を **REST で追加し app settings deploy SUCCESS**（**revision 12** 時点）。**フェーズ D（Space 48 ポータル）** は **本ターン未着手**（手動／Runbook §2）。**裁量**: 浜田 CEO「CIO 判断に任せる／AI チームで相談／完了報告は聞く」＋ **4 月実データ前提で B 前倒し可**。**Runbook**: `docs/runbooks/user-support-682-phase-c-and-space48-phase-d.md`。**次手**: **D（Space 48）** — Runbook **`docs/runbooks/user-support-682-phase-c-and-space48-phase-d.md` §2.0** に **2026-05-10 着手用スケジュール案**を追記済み。682 一覧の 7 暦月棒は **D 完了後にポータル寄せ＋一覧重複解消**を検討。
 
-**最終更新**: 2026-05-09 (Sat) JST — **682 ユーザサポート件数日次・SPEC §6.1／§7 確定（CEO GO）＋次ゲート明記**: `docs/plans/2026-05-08-user-support-daily-counts-spec.md` に **Space 48 主画面・MoM 色・A4 二枚印刷・ページ2＝ルールベースのみ（B案）・§7.2 ガード**を反映。`kintone-apps.md` 682 行を **§6.1・§7** 参照に更新。**§9.1 ゲート（2026-05-09 時点）**: **B＝浜田による 682 実データ投入**が未完了の間、**C（グラフ公開）以降は着手しない**（目視確認は浜田依頼時のみ）。**※2026-05-10**: 上記ゲートは **CEO 裁量**により **実データありなら前倒し可**（本ブロックは履歴として残す）。**CIO 定常**: `npm run verify:cio-mcp-registry` → `npm run cio:mcp:env` を必要時実行し `handoff-log` に 1 行。
+**最終更新**: 2026-05-09 (Sat) JST — **682 ユーザサポート件数日次・SPEC §6.1／§7 確定（CEO GO）＋次ゲート明記**: `docs/plans/2026-05-08-user-support-daily-counts-spec.md` に **Space 48 主画面・MoM 色・A4 二枚印刷・ページ2＝ルールベースのみ（B案）・§7.2 ガード**を反映。`kintone-apps.md` 682 行を **§6.1・§7** 参照に更新。**§9.1 ゲート（2026-05-09 時点）**: **B＝浜田による 682 実データ投入**が未完了の間、**C（グラフ公開）以降は着手しない**（目視確認は浜田依頼時のみ）。**※2026-05-10**: 上記ゲートは **CEO 裁量**により **実データありなら前倒し可**（本ブロックは履歴として残す）。**CIO 定常**: `npm run verify:cio-mcp-registry` → `npm run cio:mcp:env` を必要時実行し `handoff-log` に 1 行（**`cio:mcp:env` は Windows ネイティブで `SUMMARY: OK 6/6` を正**／WSL `/mnt/c/...` は月次・kimi のみ失敗時は `CIO_MCP_PROBE_KIMI_TIMEOUT_MS`＋ネット — `docs/mcp-status.md` §CIO）。
 
 **最終更新**: 2026-05-08 (Fri) JST 終盤 — **セッション締め（682 ユーザサポート日次＋hooks 厳格化）**: **kintone アプリ 682** MVP（対応内容フィールド・`customize/682/desktop.js`・`deploy:682`）まで反映済み。**hooks**: 全ターン `head-only` §1 検証・報告 `full`・**`ng-recovery-gate.mjs`**（NG＝Desktop `AI緊急用` 全件再Read＋細分化パック・`npm run hooks:gate-clear`）・`sessionStart` に **憲法先読みパック**注入。**Desktop**: 本ターン末に **`npm run session-starter:sync-desktop`** 実施予定（read-pack `17-HISTORY` 追記あり）。**次セッション**: 浜田が **4月分データ入力**後、**グラフ／ダッシュ／AI（自動 vs ボタン）**の方針決定（SPEC §5–§6）。**Git**: 本セッションの hooks／SPEC／682 関連は **未 push の可能性**—次チャットで `git status`→commit 方針。
 
