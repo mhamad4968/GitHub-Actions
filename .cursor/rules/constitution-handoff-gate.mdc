@@ -1,6 +1,7 @@
 ---
-description: §35-1 / §56-1a / TSB-024 / §1-2-3-1（TSB-024 ゲート・毎チャット常時注入。網羅条文は AGENTS.md / constitution.mdc を Read）
-alwaysApply: true
+description: §35-1 / §56-1a / TSB-024 / §1-2-3-1（TSB-024 ゲート・`globs` 全リポ注入。常時 YAML true は cio-constitution.mdc のみ。網羅条文は AGENTS.md / constitution.mdc を Read）
+alwaysApply: false
+globs: "**/*"
 ---
 
 # 憲法級ハンドオフ・実行ゲート（TSB-024）
@@ -36,7 +37,7 @@ alwaysApply: true
 
 **CIO ≠ 省ゲート最速**。編集・`deploy:*` の前に **〔憲法 3 分〕**・**§50-3-8 または `§50-3-8 スキップ理由:`**・**`[🎖️ 本セッション割当]`** をチャットに残す。**5 ブロック引き継ぎ索引**: `chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md`（全文は `AGENTS.md` §35-7）。
 
-**customize deploy**: **`deploy:594` `595` `626` `627` `629` `671` `674` `677` `678` `679`** は **preflight スタンプ**（`npm run cio:preflight:<app> -- --note "…"`）が **45 分以内**に無いと拒否。**任意**: **`--with-git-diff-line`**（`git diff --shortstat HEAD` 1 行を JSON に）。詳細は **`cio-discipline-always.mdc`**（`alwaysApply: true`）。
+**customize deploy**: **`deploy:594` `595` `626` `627` `629` `671` `674` `677` `678` `679`** は **preflight スタンプ**（`npm run cio:preflight:<app> -- --note "…"`）が **45 分以内**に無いと拒否。**任意**: **`--with-git-diff-line`**（`git diff --shortstat HEAD` 1 行を JSON に）。詳細は **`cio-discipline-always.mdc`**（**`alwaysApply: false` + `globs`**）。
 
 ## モデル（§1-2-3-1）— 切替が分かる宣言
 
