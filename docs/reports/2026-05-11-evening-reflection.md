@@ -4,7 +4,7 @@
 
 - **新・PC台帳 674** 一覧カスタム検索まわり: **GAIA／revision**・**転用廃棄後 soft refresh**・**`npl_disposed_pc_copy` 表示**・**一覧「条件クリア」**を段階的に修正。
 - **決定打**: kintone 標準 URL の **`?q=`**（ヘッダー検索）が **`query` / `npl674kw` と別系**だったため、`read674`／`navigate674`／hash strip／**`getQueryCondition` 同期**に **`q` の読取・削除・キーワード復元（`like "…"` 抽出）**を追加。浜田 CEO 目視で **クリア可能を確認**。
-- **本番**: `BUILD` **`2026-05-11-pc-ledger-index-search-native-q-param`** ほか、最終 **fileKey `33be4da4-036c-4279-92d6-a30808e9061a`** / preview revision **176**。`kintone-apps.md` 674 行・GitHub Actions 記録を追随。
+- **本番（当日中）**: `BUILD` **`2026-05-11-pc-ledger-index-search-native-q-param`** → **fileKey `33be4da4-036c-4279-92d6-a30808e9061a`** / rev **176**（`q` 対応）。**夜間追記**: **`2026-05-11-pc-ledger-index-search-debug-localstorage`** → **fileKey `8804a8a8-7512-475c-a2f9-5fcfc084a21b`** / rev **177**（`npl674debug`）。`kintone-apps.md` 追随済み。
 - **規律**: `cio:preflight:674 -- --note "…"` → `deploy:674`・`eslint customize/new-pc-ledger-v1/desktop.js`。
 
 ## マルチエージェント・CIO 体制の成果と反省
@@ -53,4 +53,4 @@
 
 ## 1 本の報告（CEO 向け一行）
 
-**674 一覧条件クリアは、標準 `q` URL 対応と `getQueryCondition` 同期まで入れ本番 176 で解消；明日は §1 先頭固定と SPEC 1 行追記で再発予防。**
+**674 一覧は `q` 対応まで本番 176 で解消、CEO 承認7案を夜間にリポ反映・177 で `npl674debug` 追加；朝は `2026-05-12-briefing-prep-CIO.md` と TOTO 改修。**
