@@ -1833,3 +1833,13 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 
 **次の1手**: SPEC または `kintone-apps.md` に **`q` と `query` の二系**を 1 行記載（再発防止）。新セッション先頭で **§1 四行＋🎖️** 固定。
 
+---
+
+### 2026-05-11（JST）CEO 承認 — アップデート案＋改善案の正本化
+
+**承認**: 夕 **`docs/reports/2026-05-11-evening-reflection.md`** の **アップデート案 4 点すべて**。**反省 2 項目**向けの **明日以降の改善案**は同ファイルの **§「明日以降の改善案」**に記載。
+
+**実施**: `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.8c** 新設（`q`/`query`/`npl674kw`・`getQueryCondition` 注意）。`kintone-apps.md` 674 行に **§4.8c 参照**追記。
+
+**次の1手**: `session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync`。read-pack **14-READ-06** への **§4.8c ポインタ**は **次回**（任意タスク A3）。
+
