@@ -3,8 +3,13 @@
 正本は常にリポ内の全文。**本ファイルは緊急用の要約**。矛盾したら `AGENTS.md`・`RULES-INDEX.md`・`docs/troubleshooting.md` を Read して優先する。
 
 **2026-05-06 追補（CIO・チェック強化）**: 毎ターン先頭は **`every-turn-rules-confirm.mdc`** — **`[§1-2-3 ティア判定]`** → **`【適用憲法】` 1 行** → 🎖️ → ルール確認。**編集・deploy 直前**は **関連 § を `RULES-INDEX` 起点でリスト** → 方針 1 文 → **本体＋ DeepSeek/Kimi の 2 者**（`constitution-enforcement-core.mdc`）。
-**同日 追補（ツール憲法）**: **`.cursor/rules/ai-agent-tools-constitution.mdc`** — 実装前調査（Exa/Brave/Firecrawl）・**CIO の範囲内**での他AI協議（§0.5）・区切りの **`[憲法適合]`**（§7）。MCP 先出し表は **`mcp-server-use-triggers.mdc`** に exa/brave/firecrawl/puppeteer/mintlify/harness を追記。**READ-07 §6** と **20-HISTORY-…** に履歴控え。
+**同日 追補（ツール憲法）**: **`.cursor/rules/ai-agent-tools-constitution.mdc`** — 実装前調査（Exa/Brave/Firecrawl）・**CIO の範囲内**での他AI協議（§0.5）・区切りの **`[憲法適合]`**（§7）。MCP 先出し表は **`mcp-server-use-triggers.mdc`** に exa/brave/firecrawl/puppeteer/mintlify/harness を追記。**READ-07 §6** と **17-HISTORY-…** に履歴控え。
 **同日 追補（kintone DELETE ゲート・浜田承認）**: **`.cursor/rules/kintone-destructive-rest-guard.mdc`**（`alwaysApply`）— **DELETE / 破壊級 REST** は **dry-run 結果をチャットに貼る** → **「この一覧で削除 GO」** → **`--apply`**（681 例: `npm run pc-ledger:quick-guide:prune-meta` は既定 dry-run のみ／本削除は **`prune-meta:apply`**）。手順 **`docs/kintone-destructive-operations.md`**。
+
+**2026-05-11 CEO 承認（674 一覧 URL・CIO 運用）**:
+- **正本**: `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.8c** — kintone 標準は **`q`**、674 customize は **`query`／`npl674kw`**（hash 内も）。切り分けで **`query` だけ**見ない。
+- **「変わらない／効かない」**の報告 → **次ターン最初**に CIO が **`location.href` 全文**（または **`?` 以降**）を依頼（浜田待ち禁止）。
+- **一覧検索デバッグ（任意）**: ブラウザ **`localStorage.npl674debug = '1'`** または URL hash に **`npl674debug=1`** → コンソールに **`read674`／`getQueryCondition` 抜粋**（`customize/new-pc-ledger-v1/desktop.js`）。
 
 ■■ 抜け防止 — 本ファイルを Read した直後にチャットへ 1 回必ず書く ■■
 （READ-01 手順 4 と整合。**コピーして空欄を埋め、省略しない**）

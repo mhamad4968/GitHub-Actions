@@ -16,6 +16,7 @@
 - **本番**: `customize/new-pc-ledger-v1/desktop.js` の **`BUILD=2026-05-11-pc-ledger-index-search-native-q-param`**・preview revision **176**（詳細は `kintone-apps.md` 674 行）。
 - **夕反省正本**: `docs/reports/2026-05-11-evening-reflection.md`（`npm run session-starter:sync-desktop` で Desktop **`26-evening-reflection-2026-05-11.md`** へ）。
 - **CEO 承認（2026-05-11）**: 夕の **「明日からのアップデート案」4 点すべて承認**。加え、**反省 2 項目**（URL 発見の遅れ・§1 毎ターン未追随）向けの **「明日以降の改善案」**を **同一夕ファイル**に表形式で追記済み（**§4.8c**・`cio:report-verify-response`・read-pack 追補など）。
+- **CEO 全件承認（2026-05-11 夜）**: 改善 **A1〜B4** をリポ反映（**`14-READ-06.txt`**・**`session-handoff.mdc`**・**674 `npl674debug` ログ**）。**朝ブリーフィング**: **`docs/reports/2026-05-12-briefing-prep-CIO.md`**。**次本題**: **TOTO 予想**（`Desktop\TOTO予想`・`totoアプリ改修案.txt`）。
 
 ## 部署予実・仕様確認デイ（読み合わせのみ・kintone 書込なし）
 

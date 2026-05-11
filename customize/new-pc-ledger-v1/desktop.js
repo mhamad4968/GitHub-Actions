@@ -16,8 +16,8 @@
  *   - **レコード閲覧（detail）**: **ステータス≠保管**のとき操作ボタンは **PC買替・印刷のみ**。**保管の閲覧**ではカスタムヘッダを付けない（余計なボタンなし）。**新規・編集かつ保管**（個人/共有/JR いずれも）: ヘッダは **全フィールドリセットのみ**。**利用中**等の非保管は従来の種別別ボタン＋PC買替・印刷。
  *
  * Day 5 残タスク（未完了のみ）:
- *   - （一覧）**SKYSEA 状態**: 検索バーに **skysea_status チップ**（§4.8a）。**SKYSEA 計画立案・合意後に要件・UI を再検討予定**（現状は暫定）。
- *   - （一覧）**絞り込み URL**: `query` パラメータから **キーワード・種別・SKYSEA チップ**を復元（当バーが生成したクエリ形式に準拠）。
+ *   - （一覧）**SKYSEA 状態チップ**: **当面 UI 非表示**（§4.8a）。`query` 内の `skysea_status in (...)` は **引き続き解釈**（旧 URL 互換）。再表示は SKYSEA 計画後。
+ *   - （一覧）**絞り込み URL**: `query` と `npl674kw` から **キーワード・種別（・SKYSEA in）**を復元（当バーが生成した形式に準拠）。
  *   - **PC買替は実装済**（§4.10.3）。594 同趣旨。**627 二重更新なし**。v0.9.14: ボタン掛け先フォールバック＋遅延再 inject、`import_source=PC_REPLACE_FROM_674:<旧$id>`・legacy 594 フィールドクリア。
  *   - 新規・編集: **所属ヘルプ `<details>`（入れ方・コピー一覧）は表示しない**（2026-05-05 浜田指示）。**入力支援**: `document` **capture** でフィールド内クリックを捕捉（kintone 内側の `stopPropagation` より先）。**はい／いいえ** の z-index は kintone ヘッダより上。**明示ボタン**は **`#new-pc-ledger-buttons` 帯**に **「入力支援利用」**（個人・非保管→595／共有・JR→680。表示名は同一、`aria-label` で区別）（フィールド直下 DOM 挿入は廃止）。ヘッダの旧「社員名検索／所属候補」ボタンは**廃止**。**`pc_status`=保管**のときは種別横断で **ヘッダは全フィールドリセットのみ**。**種別／ステータス**は record を DOM と突合。**共有・個人の自動生成**: `m365_master_record_id` は **set 前に disabled 解除**。**`pc_serial_no` 等内部メタ子**（§4.2.1a）も **`record.set` 同期間だけ** disabled 解除してから反映。
  *   - **備考（note）**: 全種別で任意（保存前チェックでは必須にしない）。
@@ -25,15 +25,27 @@
  *   - **M365管理マスタレコード番号（671 `$id`）**: 共有・JR は同一671行の **usage_count / 5 台**運用で紐づく。個人は表示するが多くは空（自動生成はメール由来M365中心）。**手入力不可**（自動生成・保存後同期のみ更新）。
  *   - **PC名（`pc_name`）**: 全種別で **保存必須**（運用: **PCの管理番号＝PC名**）。
  *   - **個人の JBIS+4桁**: 他の個人レコード（廃棄以外）と **同一 JBISxxxx** のとき保存前に室長確認の警告（赤）＋はい/いいえ。詳細・編集でも赤バナー表示。
+ *
+ * **674 本番**: `npl_disposed_pc_copy` を一覧キーワード検索に含める。**フィールド未追加のまま本 BUILD の JS だけ載せると一覧 REST が失敗し得る**ため、先に **`npm run pc-ledger:674:add-npl-disposed-pc-field-preview`**（`kintone-apps.md` 674 行の反映順）。
  */
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-05-pc-ledger-shared-autogen-set-fix';
+  const BUILD = '2026-05-11-pc-ledger-index-search-debug-localstorage';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
   let jb674PrintRecordSnapshot = null;
+
+  /** `getFieldElement` の戻りを短時間再利用（クリック委譲ごとの再探索を抑止） */
+  let npl674FieldElCacheEntries674 = Object.create(null);
+
+  function bumpNpl674FieldElementCache674() {
+    npl674FieldElCacheEntries674 = Object.create(null);
+  }
+
+  /** `findSelectUnderFieldRoot674` の結果（フィールドルートごと） */
+  const npl674SelectUnderRootMap674 = new WeakMap();
 
   // ===== 関連アプリ ID (kintone-apps.md 参照) =====
   const APP_ENV_MASTER = '670';     // 環境設定マスタ
@@ -124,6 +136,15 @@
   const FC_MANUFACTURING_NO = 'manufacturing_no';
   const FC_MODEL_NAME = 'model_name';
   const FC_NOTE = 'note';
+  /** 部署レビュー（2026-05-11）: 転用フロー A — チェック後にヘッダから「元PC廃棄」を確定（`npm run pc-ledger:674:add-transfer-manual-preview`） */
+  const FC_NPL_TRANSFER_MANUAL = 'npl_transfer_manual';
+  const FC_NPL_TRANSFER_MANUAL_OPT = '転用';
+  /** 転用ウィザードで廃棄した旧 PC の識別子を転記（§4.10.6・一覧キーワード検索対象） */
+  const FC_NPL_DISPOSED_PC_COPY = 'npl_disposed_pc_copy';
+  /** 編集画面で転用チェックの直前状態（外すときの確認用） */
+  let npl674PrevTransferManualChecked674 = false;
+  /** `change` / `show` で同期した「転用」ON（`setTimeout` 内の `get()` 遅れ・重い DOM 全走査を避ける） */
+  let npl674TransferManualMirror674 = false;
   const FC_PURCHASE_DATE = 'purchase_date';
   const FC_LATEST_INVENTORY_DATE = 'latest_inventory_date';
   const FC_VPN_ID = 'vpn_id';
@@ -510,6 +531,27 @@
       }
     } catch (_e2) {
       /* noop */
+    }
+    return null;
+  }
+
+  /** `kintone.app.record.get()` の **`record` 本体**（ウィザード等で holder を誤って渡さない） */
+  function get674EditRecordOrNull674() {
+    try {
+      const bag = getRecordFormHolder674();
+      if (bag && bag.holder && bag.holder.record) return bag.holder.record;
+      const h = kintone.app.record.get();
+      if (h && h.record) return h.record;
+    } catch (_e) {
+      /* ignore */
+    }
+    try {
+      if (typeof kintone.mobile !== 'undefined' && kintone.mobile.app && kintone.mobile.app.record) {
+        const hm = kintone.mobile.app.record.get();
+        if (hm && hm.record) return hm.record;
+      }
+    } catch (_e2) {
+      /* ignore */
     }
     return null;
   }
@@ -1554,6 +1596,38 @@
       const v = String(inputs[i].value != null ? inputs[i].value : '').trim();
       if (v) return v;
     }
+    let inp;
+    try {
+      inp = fieldEl.querySelector(
+        'textarea, input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="button"])',
+      );
+    } catch (_e0) {
+      inp = null;
+    }
+    if (!inp) {
+      try {
+        const all = fieldEl.querySelectorAll('*');
+        const lim = Math.min(all.length, 120);
+        for (let j = 0; j < lim; j++) {
+          const node = all[j];
+          if (!node.shadowRoot) continue;
+          try {
+            inp = node.shadowRoot.querySelector(
+              'textarea, input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="button"])',
+            );
+          } catch (_e1) {
+            inp = null;
+          }
+          if (inp) break;
+        }
+      } catch (_e2) {
+        /* ignore */
+      }
+    }
+    if (inp && (inp.tagName === 'INPUT' || inp.tagName === 'TEXTAREA')) {
+      const v2 = String(inp.value != null ? inp.value : '').trim();
+      if (v2) return v2;
+    }
     return fromRec;
   }
 
@@ -1778,10 +1852,16 @@
 
   /** 所属名・所属グループ・利用者名のフィールド DOM（PC / モバイル） */
   function tryGetFieldElement674(code) {
+    const cached = npl674FieldElCacheEntries674[code];
+    if (cached && cached.isConnected) return cached;
+
     try {
       if (kintone.app && kintone.app.record && typeof kintone.app.record.getFieldElement === 'function') {
         const el = kintone.app.record.getFieldElement(code);
-        if (el) return el;
+        if (el) {
+          if (el.isConnected) npl674FieldElCacheEntries674[code] = el;
+          return el;
+        }
       }
     } catch (_e) {
       /* ignore */
@@ -1789,6 +1869,7 @@
     try {
       if (typeof kintone.mobile !== 'undefined' && kintone.mobile.app && kintone.mobile.app.record) {
         const el2 = kintone.mobile.app.record.getFieldElement(code);
+        if (el2 && el2.isConnected) npl674FieldElCacheEntries674[code] = el2;
         if (el2) return el2;
       }
     } catch (_e2) {
@@ -1800,9 +1881,21 @@
   /** account_type フィールド内の select をシャドウをまたいで探索 */
   function findSelectUnderFieldRoot674(root) {
     if (!root || !root.querySelector) return null;
+    if (root.isConnected && npl674SelectUnderRootMap674.has(root)) {
+      const cached = npl674SelectUnderRootMap674.get(root);
+      if (cached && cached.isConnected) return cached;
+      try {
+        npl674SelectUnderRootMap674.delete(root);
+      } catch (_d0) {
+        /* ignore */
+      }
+    }
     try {
       const direct = root.querySelector('select');
-      if (direct) return direct;
+      if (direct) {
+        if (root.isConnected) npl674SelectUnderRootMap674.set(root, direct);
+        return direct;
+      }
     } catch (_e) {
       return null;
     }
@@ -1815,7 +1908,10 @@
     for (let i = 0; i < w.length; i++) {
       if (w[i].shadowRoot) {
         const inner = findSelectUnderFieldRoot674(w[i].shadowRoot);
-        if (inner) return inner;
+        if (inner) {
+          if (root.isConnected) npl674SelectUnderRootMap674.set(root, inner);
+          return inner;
+        }
       }
     }
     return null;
@@ -2014,47 +2110,52 @@
       if (ae.disabled || ae.readOnly) return;
     }
 
-    const bag = getRecordFormHolder674();
-    if (!bag || !bag.holder || !bag.holder.record) {
-      if (forcedField && attempt < 10) {
-        setTimeout(function () {
-          run674EmptyFieldAssistFromPointer674(ev, forcedField, attempt + 1);
-        }, 100);
+    let bag;
+    let rec;
+    let type;
+    let inUser = false;
+    let inDept = false;
+    let inGrp = false;
+
+    if (forcedField === 'user' || forcedField === 'dept' || forcedField === 'grp') {
+      bag = getRecordFormHolder674();
+      if (!bag || !bag.holder || !bag.holder.record) {
+        if (attempt < 10) {
+          setTimeout(function () {
+            run674EmptyFieldAssistFromPointer674(ev, forcedField, attempt + 1);
+          }, 100);
+        }
+        return;
       }
-      return;
-    }
-    const rec = bag.holder.record;
-    let type = readAccountTypeLive674(rec);
-    // 種別 UI がまだ空で、利用者名／所属欄を直接叩いたときは新規の既定（個人）に寄せる
-    if (!type && forcedField) {
-      type = TYPE_PERSONAL;
-    }
-
-    const userEl = tryGetFieldElement674(FC_USER_NAME);
-    const deptEl = tryGetFieldElement674(FC_DEPT_NAME);
-    const grpEl = tryGetFieldElement674(FC_GROUP_NAME);
-    if (!userEl && !deptEl && !grpEl) return;
-
-    let inUser;
-    let inDept;
-    let inGrp;
-    if (forcedField === 'user') {
-      inUser = true;
-      inDept = false;
-      inGrp = false;
-    } else if (forcedField === 'dept') {
-      inUser = false;
-      inDept = true;
-      inGrp = false;
-    } else if (forcedField === 'grp') {
-      inUser = false;
-      inDept = false;
-      inGrp = true;
+      rec = bag.holder.record;
+      type = readAccountTypeLive674(rec);
+      if (!type && forcedField) {
+        type = TYPE_PERSONAL;
+      }
+      if (forcedField === 'user') {
+        inUser = true;
+      } else if (forcedField === 'dept') {
+        inDept = true;
+      } else {
+        inGrp = true;
+      }
     } else {
-      inUser = userEl && isActiveTargetWithinFieldRoot674(userEl, ev);
-      inDept = deptEl && isActiveTargetWithinFieldRoot674(deptEl, ev);
-      inGrp = grpEl && isActiveTargetWithinFieldRoot674(grpEl, ev);
+      const userEl = tryGetFieldElement674(FC_USER_NAME);
+      const deptEl = tryGetFieldElement674(FC_DEPT_NAME);
+      const grpEl = tryGetFieldElement674(FC_GROUP_NAME);
+      if (!userEl && !deptEl && !grpEl) return;
+
+      inUser = !!(userEl && isActiveTargetWithinFieldRoot674(userEl, ev));
+      inDept = !inUser && !!(deptEl && isActiveTargetWithinFieldRoot674(deptEl, ev));
+      inGrp = !inUser && !inDept && !!(grpEl && isActiveTargetWithinFieldRoot674(grpEl, ev));
+      if (!inUser && !inDept && !inGrp) return;
+
+      bag = getRecordFormHolder674();
+      if (!bag || !bag.holder || !bag.holder.record) return;
+      rec = bag.holder.record;
+      type = readAccountTypeLive674(rec);
     }
+
     if (!inUser && !inDept && !inGrp) return;
 
     if (is674AssistModalVisible674()) return;
@@ -2089,7 +2190,10 @@
     document.addEventListener(
       'click',
       function npl674DocInputAssistClickHandler674(ev) {
-        run674EmptyFieldAssistFromPointer674(ev, null, 0);
+        /* メインスレッドの click 計測を短くし、[Violation] handler took Nms を抑える */
+        requestAnimationFrame(function () {
+          run674EmptyFieldAssistFromPointer674(ev, null, 0);
+        });
       },
       true,
     );
@@ -2277,15 +2381,17 @@
     document.addEventListener(
       'click',
       function (ev) {
-        const box = document.getElementById(USER_SUGGEST_BOX_ID);
-        if (!box) return;
-        const t = ev.target;
-        const fieldEl = getUserNameFieldEl674();
-        if (fieldEl && fieldEl.contains(t)) return;
-        if (box.contains(t)) return;
-        if (t.closest && t.closest('[data-npl-user-anchor="1"]')) return;
-        if (t.closest && t.closest('[data-npl-user-suggest-fallback="1"]')) return;
-        hideUserSuggest674();
+        requestAnimationFrame(function () {
+          const box = document.getElementById(USER_SUGGEST_BOX_ID);
+          if (!box) return;
+          const t = ev.target;
+          const fieldEl = getUserNameFieldEl674();
+          if (fieldEl && fieldEl.contains(t)) return;
+          if (box.contains(t)) return;
+          if (t.closest && t.closest('[data-npl-user-anchor="1"]')) return;
+          if (t.closest && t.closest('[data-npl-user-suggest-fallback="1"]')) return;
+          hideUserSuggest674();
+        });
       },
       true,
     );
@@ -2297,6 +2403,9 @@
     if (!un) return Promise.resolve(null);
     return findEmployee595ByUserName(un).then(function (emp) {
       if (emp) return null;
+      if (readNplTransferManualChecked674(event.record)) {
+        return '該当なし（社員マスタ595に在籍として一致する氏名がありません）。新入社員の場合は先に595へ登録してから保存してください。';
+      }
       return 'この「利用者名」は社員マスタ（在籍）の氏名と一致しません。595の user_name と同じ表記（多くは苗字＋名のフルネーム）にするか、入力中にフィールド下へ出る候補から選んでください。名前の一部分だけでは保存できません。';
     });
   }
@@ -3241,6 +3350,30 @@
     });
   }
 
+  /**
+   * 転用 ON かつ「転用で廃棄した PC」空のまま保存したとき、ウィザード誘導を **同一レコード・同一ブラウザセッションで 1 回だけ** alert（仕様どおり保存のみでは転記しない旨の周知）。
+   */
+  function maybeAlertTransferDisposedEmptyAfterSave674(event) {
+    try {
+      if (!/record\.(edit|create)\.submit\.success$/.test(String(event.type || ''))) return;
+      const rec = event.record;
+      if (!rec || !readNplTransferManualChecked674(rec)) return;
+      if (!event.record[FC_NPL_DISPOSED_PC_COPY]) return;
+      if (trimmedScalarValue674(rec, FC_NPL_DISPOSED_PC_COPY)) return;
+      const rid = String((event.recordId || (rec.$id && rec.$id.value) || '')).trim();
+      if (!rid) return;
+      if (typeof sessionStorage === 'undefined') return;
+      const key = 'npl674-transfer-disposed-hint-' + rid;
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, '1');
+      window.alert(
+        '「転用」にチェックが入っていますが、「転用で廃棄した PC」は **保存だけでは入りません**。\n\n画面上部の **「転用: 元PCを廃棄…」** を実行し、廃棄する旧 PC を選ぶと、この欄に **自動転記**されます（**空欄のときのみ**。すでに手入力がある場合は手入力を正とします）。',
+      );
+    } catch (_e) {
+      /* sessionStorage 不可環境では案内スキップ */
+    }
+  }
+
   // ===== PC買替（§4.10.3・594 と同趣旨: 596 採番・旧=廃棄・新=アカウント継承・671 / 595 整合）=====
 
   function yyyymmTokyo674(d) {
@@ -3279,11 +3412,539 @@
       app: kintone.app.getId(),
       id: String(recordId),
     }).then(function (res) {
+      const rec = res.record || {};
+      /** GET /k/v1/record.json は **トップレベル revision ではなく** `record.$revision.value`（公式サンプル準拠） */
+      let rev = '';
+      if (res.revision != null && String(res.revision).trim() !== '') {
+        rev = String(res.revision).trim();
+      } else {
+        const rv = rec.$revision && rec.$revision.value != null ? String(rec.$revision.value).trim() : '';
+        if (rv) rev = rv;
+      }
       return {
-        record: res.record || {},
-        revision: res.revision != null ? String(res.revision) : '',
+        record: rec,
+        revision: rev,
       };
     });
+  }
+
+  /** kintone REST の revision 不整合（他人更新・自動処理・別タブ）。PUT 失敗時の再 GET 用 */
+  function is674KintoneRevisionConflictError674(err) {
+    let msg = String((err && err.message) || '');
+    if (err && Array.isArray(err.errors)) {
+      for (let ei = 0; ei < err.errors.length; ei++) {
+        const it = err.errors[ei];
+        msg += ' ' + String((it && it.message) || '');
+      }
+    }
+    const code = String((err && err.code) || '');
+    const blob = msg + ' ' + code;
+    return (
+      /GAIA_UN03|CB_VA02/i.test(blob) ||
+      /再読み込みしてください|ほかのユーザーがレコードを更新/i.test(msg)
+    );
+  }
+
+  function readNplTransferManualChecked674(rec) {
+    const f = rec && rec[FC_NPL_TRANSFER_MANUAL];
+    if (!f || !Array.isArray(f.value)) return false;
+    return f.value.indexOf(FC_NPL_TRANSFER_MANUAL_OPT) !== -1;
+  }
+
+  /**
+   * 「転用」チェックのみ DOM を軽く見る（`querySelectorAll('*')` 全展開は DevTools の **`setTimeout` handler took Nms`** の原因になり得るため上限付き）。
+   */
+  function readNplTransferManualCheckedFromDomQuick674() {
+    const root = tryGetFieldElement674(FC_NPL_TRANSFER_MANUAL);
+    if (!root) return false;
+    const OPT = FC_NPL_TRANSFER_MANUAL_OPT;
+    const MAX_DEPTH = 5;
+    const MAX_HOSTS = 64;
+
+    function boxesHit(r) {
+      if (!r || !r.querySelectorAll) return false;
+      try {
+        const boxes = r.querySelectorAll('input[type="checkbox"]');
+        for (let i = 0; i < boxes.length; i++) {
+          const el = boxes[i];
+          if (el && el.checked && String(el.value || '').trim() === OPT) return true;
+        }
+      } catch (_e) {
+        /* ignore */
+      }
+      return false;
+    }
+
+    function scan(r, depth) {
+      if (!r || depth > MAX_DEPTH) return false;
+      if (boxesHit(r)) return true;
+      if (depth >= MAX_DEPTH) return false;
+      try {
+        const all = r.querySelectorAll('*');
+        const lim = Math.min(all.length, MAX_HOSTS);
+        for (let j = 0; j < lim; j++) {
+          const n = all[j];
+          if (n.shadowRoot && scan(n.shadowRoot, depth + 1)) return true;
+        }
+      } catch (_e2) {
+        /* ignore */
+      }
+      return false;
+    }
+
+    try {
+      return scan(root, 0);
+    } catch (_e3) {
+      return false;
+    }
+  }
+
+  /** `record.get()`・**ミラー**・必要時のみ **上限付き DOM**（`setTimeout` 内の同期コストを抑える） */
+  function readNplTransferManualCheckedLive674(rec) {
+    if (readNplTransferManualChecked674(rec)) return true;
+    if (npl674TransferManualMirror674 === true) return true;
+    return readNplTransferManualCheckedFromDomQuick674();
+  }
+
+  /**
+   * 転用廃棄ウィザード用: API 1 ページ分を候補形へ（`excludeId` は転用先自身を除く）。
+   * @returns {Array<{id:string,pc_name:string,user_name:string,mail:string,emp_id:string}>}
+   */
+  function mapRecordsToTransferDisposeCandidates674(resp, excludeId) {
+    const ex = excludeId != null && String(excludeId).trim() !== '' ? String(excludeId).trim() : '';
+    const out = [];
+    for (const row of resp.records || []) {
+      const idStr = row.$id != null && row.$id.value != null ? String(row.$id.value) : '';
+      if (!idStr || (ex && idStr === ex)) continue;
+      out.push({
+        id: idStr,
+        pc_name: String((row[FC_PC_NAME] && row[FC_PC_NAME].value) || '').trim(),
+        user_name: String((row[FC_USER_NAME] && row[FC_USER_NAME].value) || '').trim(),
+        mail: String((row[FC_MAIL] && row[FC_MAIL].value) || '').trim(),
+        emp_id: String((row[FC_EMP_ID] && row[FC_EMP_ID].value) || '').trim(),
+      });
+    }
+    return out;
+  }
+
+  /**
+   * 同一利用者の個人PC（廃棄以外）。転用先の **現在編集中レコード** を除く。
+   * 1) `user_name` 完全一致。0 件かつ転用先に **`emp_id` 非空**なら 2) **`emp_id` 一致**で再検索（595 入力支援後の表記ゆれ対策）。
+   * @returns {Promise<Array<{id:string,pc_name:string,user_name:string,mail:string,emp_id:string}>>}
+   */
+  function fetchTransferDisposeCandidates674(userNameRaw, excludeId, empIdRaw) {
+    const u = String(userNameRaw || '').trim();
+    if (!u) return Promise.resolve([]);
+    const esc = escapeQueryValue(u);
+    const ex = excludeId != null && String(excludeId).trim() !== '' ? String(excludeId).trim() : '';
+    const emp = String(empIdRaw || '').trim();
+    const base =
+      'account_type in ("' +
+      escapeQueryValue(TYPE_PERSONAL) +
+      '") and pc_status not in ("廃棄")';
+    const qUser =
+      base + ' and user_name = "' + esc + '" order by $id desc limit 20';
+    const fields = ['$id', FC_PC_NAME, FC_USER_NAME, FC_MAIL, FC_EMP_ID];
+    return kintoneApiGet('/k/v1/records.json', {
+      app: kintone.app.getId(),
+      query: qUser,
+      fields: fields,
+    }).then(function (resp) {
+      const out = mapRecordsToTransferDisposeCandidates674(resp, ex);
+      if (out.length || !emp) return out;
+      const qEmp = base + ' and emp_id = "' + escapeQueryValue(emp) + '" order by $id desc limit 20';
+      return kintoneApiGet('/k/v1/records.json', {
+        app: kintone.app.getId(),
+        query: qEmp,
+        fields: fields,
+      }).then(function (resp2) {
+        return mapRecordsToTransferDisposeCandidates674(resp2, ex);
+      });
+    });
+  }
+
+  function jstampTransferDisposeNote674() {
+    try {
+      const d = new Date();
+      const p = function (n) {
+        return String(n).padStart(2, '0');
+      };
+      return (
+        d.getFullYear() +
+        '-' +
+        p(d.getMonth() + 1) +
+        '-' +
+        p(d.getDate()) +
+        'T' +
+        p(d.getHours()) +
+        ':' +
+        p(d.getMinutes())
+      );
+    } catch (_e) {
+      return String(Date.now());
+    }
+  }
+
+  function runTransferDisposePut674(targetId, operatorRecordId) {
+    const tid = String(targetId || '').trim();
+    const opId = String(operatorRecordId || '').trim();
+    if (!tid) return Promise.reject(new Error('廃棄対象のレコード番号がありません。'));
+    const maxAttempts = 3;
+
+    function attemptDisposal674(attemptNum) {
+      return get674RecordPayloadById674(tid).then(function (payload) {
+        const rev = payload.revision;
+        const tr = payload.record || {};
+        if (!rev) throw new Error('廃棄対象の revision を取得できませんでした。');
+        const mail = String((tr[FC_MAIL] && tr[FC_MAIL].value) || '').trim();
+        const empId = String((tr[FC_EMP_ID] && tr[FC_EMP_ID].value) || '').trim();
+        const prevNote = String((tr[FC_NOTE] && tr[FC_NOTE].value) || '').trim();
+        const stamp =
+          '[転用廃棄 ' +
+          jstampTransferDisposeNote674() +
+          '] 操作元674レコード番号 ' +
+          (opId || '（未保存）') +
+          ' により本PCを廃棄扱いに変更';
+        const nextNote = prevNote ? prevNote + '\n' + stamp : stamp;
+        return kintoneApiPut('/k/v1/record.json', {
+          app: kintone.app.getId(),
+          id: tid,
+          revision: rev,
+          record: {
+            [FC_PC_STATUS]: { value: STATUS_AFTER_REPLACE_OLD_674 },
+            [FC_NOTE]: { value: nextNote },
+          },
+        })
+          .catch(function (e) {
+            if (attemptNum < maxAttempts && is674KintoneRevisionConflictError674(e)) {
+              console.warn(
+                '[NEW-PC-LEDGER-V1] 廃棄対象674 PUT revision 競合、再試行 ' +
+                  String(attemptNum + 1) +
+                  '/' +
+                  String(maxAttempts),
+                e && (e.message || e.code),
+              );
+              return attemptDisposal674(attemptNum + 1);
+            }
+            throw e;
+          })
+          .then(function () {
+            return remove674From595Matches674(mail, empId, tid).catch(function (eRm) {
+              console.warn('[NEW-PC-LEDGER-V1] 595 リンク解除（転用廃棄・続行）', eRm);
+            });
+          });
+      });
+    }
+    return attemptDisposal674(1);
+  }
+
+  /**
+   * `npl_disposed_pc_copy` 自動転記用の要約。**旧 PC 名のみ**（運用上レコード番号の括弧は付けない）。PC 名が取れないときだけ `674#<旧$id>` にフォールバック。
+   * @param {{ id?: string, pc_name?: string }} chosen 廃棄した旧レコード
+   * @returns {string} 空のときは ''（`id` も `pc_name` も欠落時）
+   */
+  function formatNplDisposedPcSummary674(chosen) {
+    const idPart = String((chosen && chosen.id) || '').trim();
+    const namePart = String((chosen && chosen.pc_name) || '').trim();
+    if (namePart) return namePart;
+    if (idPart) return '674#' + idPart;
+    return '';
+  }
+
+  /** PUT 応答の revision を編集フォームの **`$revision.value` 型**（number / string）に合わせる */
+  function assign674FormRevisionFromServer674(rec, revStr) {
+    const s = String(revStr || '').trim();
+    if (!s || !rec || !rec.$revision || rec.$revision.value == null) return;
+    const prev = rec.$revision.value;
+    if (typeof prev === 'number') {
+      const n = parseInt(s, 10);
+      rec.$revision.value = Number.isNaN(n) ? s : n;
+    } else {
+      rec.$revision.value = s;
+    }
+  }
+
+  /**
+   * 転用廃棄で REST 済みの `npl_disposed_pc_copy` を編集画面へ反映し、**`$revision` をサーバ最新**に合わせる。
+   * **PUT 直後の `revision`（`putRevisionOpt`）を優先**し、GET とのズレによる保存時 GAIA_UN03 を避ける。
+   * 全ページ `location.reload()` は **未保存の編集があるとブラウザの再読み込み確認**が出るため避ける。
+   * @param {string|undefined} putRevisionOpt `kintoneApiPut` 応答の `revision`（文字列化済みでなくてよい）
+   * @returns {Promise<boolean>} 同期できたら true（呼び出し側で `location.reload` のフォールバック可）
+   */
+  function trySoftRefresh674EditAfterNplDisposedCopy674(rid, chosen, putRevisionOpt) {
+    const summary = formatNplDisposedPcSummary674(chosen);
+    if (!summary) return Promise.resolve(false);
+
+    function apply674SoftSync674(rev) {
+      const bag = getRecordFormHolder674();
+      if (!bag || !bag.api || !bag.holder || !bag.holder.record) return false;
+      const rec = bag.holder.record;
+      const curId = String((rec.$id && rec.$id.value) || '').trim();
+      if (curId !== String(rid || '').trim()) return false;
+      const revStr = String(rev || '').trim();
+      if (rec[FC_NPL_DISPOSED_PC_COPY]) {
+        rec[FC_NPL_DISPOSED_PC_COPY].value = summary;
+      }
+      if (revStr) {
+        assign674FormRevisionFromServer674(rec, revStr);
+      }
+      if (!rec[FC_NPL_DISPOSED_PC_COPY] && !revStr) {
+        return false;
+      }
+      if (!rec[FC_NPL_DISPOSED_PC_COPY] && !(revStr && rec.$revision && rec.$revision.value != null)) {
+        return false;
+      }
+      try {
+        bag.api.set(bag.holder);
+        return true;
+      } catch (e) {
+        console.warn('[NEW-PC-LEDGER-V1] 転用廃棄後の編集同期（record.set）に失敗', e);
+        return false;
+      }
+    }
+
+    const pr = String(putRevisionOpt != null ? putRevisionOpt : '').trim();
+    if (pr) {
+      return Promise.resolve(apply674SoftSync674(pr));
+    }
+    return get674RecordPayloadById674(rid).then(function (payload) {
+      return apply674SoftSync674(payload.revision);
+    });
+  }
+
+  /**
+   * 転用操作元レコードへ、廃棄した旧 PC の要約を `npl_disposed_pc_copy` に書き込む。
+   * **REST のみ**で行う（`getFieldElement` が null でも **レイアウトに無いフィールドは GET に含まれる**ため、DOM ゲートは付けない）。
+   * §4.10.6: **手入力が空でないときは手入力を正**—自動転記は行わず `{ skippedDueToManual674: true }` を返す。
+   * @param {string} operatorRecordId 転用先（操作中）674 の $id
+   * @param {{ id: string, pc_name: string }} chosen 廃棄した旧レコード
+   * @returns {Promise<{ skippedDueToManual674?: boolean, noFieldInApp674?: boolean, putRevision?: string }|void>}
+   */
+  function updateOperatorNplDisposedPcCopy674(operatorRecordId, chosen) {
+    const oid = String(operatorRecordId || '').trim();
+    if (!oid || !chosen) return Promise.resolve();
+    const summary = formatNplDisposedPcSummary674(chosen);
+    if (!summary) return Promise.resolve();
+    const maxAttempts = 3;
+
+    function attemptOperatorNplCopy674(attemptNum) {
+      return get674RecordPayloadById674(oid).then(function (payload) {
+        const rev = payload.revision;
+        if (!rev) throw new Error('転用先レコードの revision を取得できませんでした。');
+        const tr = payload.record || {};
+        const ex = tr[FC_NPL_DISPOSED_PC_COPY];
+        if (!ex || typeof ex !== 'object') {
+          console.warn(
+            '[NEW-PC-LEDGER-V1] GET に ' +
+              FC_NPL_DISPOSED_PC_COPY +
+              ' が無い（アプリ未追加の可能性）。REST 転記をスキップ',
+          );
+          return { noFieldInApp674: true };
+        }
+        const existingVal = ex.value != null ? String(ex.value).trim() : '';
+        if (existingVal) {
+          console.info(
+            '[NEW-PC-LEDGER-V1] npl_disposed_pc_copy 手入力優先のため自動転記スキップ（先頭: ' +
+              existingVal.slice(0, 72) +
+              '）',
+          );
+          return { skippedDueToManual674: true };
+        }
+        return kintoneApiPut('/k/v1/record.json', {
+          app: kintone.app.getId(),
+          id: oid,
+          revision: rev,
+          record: {
+            [FC_NPL_DISPOSED_PC_COPY]: { value: summary },
+          },
+        })
+          .catch(function (e) {
+            if (attemptNum < maxAttempts && is674KintoneRevisionConflictError674(e)) {
+              console.warn(
+                '[NEW-PC-LEDGER-V1] npl_disposed_pc_copy PUT revision 競合、再試行 ' +
+                  String(attemptNum + 1) +
+                  '/' +
+                  String(maxAttempts),
+                e && (e.message || e.code),
+              );
+              return attemptOperatorNplCopy674(attemptNum + 1);
+            }
+            throw e;
+          })
+          .then(function (putRes) {
+            const pr = putRes && putRes.revision != null ? String(putRes.revision).trim() : '';
+            return { skippedDueToManual674: false, putRevision: pr };
+          });
+      });
+    }
+    return attemptOperatorNplCopy674(1);
+  }
+
+  function openTransferDisposeWizard674() {
+    const rid = getCurrent674RecordId674();
+    if (!rid) {
+      window.alert('転用の元PC廃棄は、保存済みのレコード（編集画面）でのみ実行できます。先に保存してください。');
+      return;
+    }
+    let rec = get674EditRecordOrNull674();
+    if (!rec) {
+      window.alert('フォームの取得に失敗しました。画面を再読み込みしてください。');
+      return;
+    }
+    if (!readNplTransferManualCheckedLive674(rec)) {
+      const ok = window.confirm(
+        '「転用」にチェックが入っていません。**転用として扱い、廃棄候補を検索**しますか？\n\n' +
+          '「OK」でチェックを付けて続行します（内容は保存で確定）。「キャンセル」で中止します。',
+      );
+      if (!ok) return;
+      const bag = getRecordFormHolder674();
+      if (!bag || !bag.api || !bag.holder || !bag.holder.record) {
+        window.alert('フォームの取得に失敗しました。手で「転用」にチェックしてから再度お試しください。');
+        return;
+      }
+      rec = bag.holder.record;
+      if (!rec[FC_NPL_TRANSFER_MANUAL]) {
+        window.alert('この画面に転用フィールド（npl_transfer_manual）がありません。アプリ設定を確認してください。');
+        return;
+      }
+      try {
+        rec[FC_NPL_TRANSFER_MANUAL].value = [FC_NPL_TRANSFER_MANUAL_OPT];
+        npl674TransferManualMirror674 = true;
+        npl674PrevTransferManualChecked674 = true;
+        bag.api.set(bag.holder);
+      } catch (eSet) {
+        window.alert(
+          '転用チェックの自動設定に失敗しました。手で「転用」にチェックしてください。\n' +
+            (eSet && eSet.message ? eSet.message : String(eSet)),
+        );
+        return;
+      }
+    }
+    const un = (readUserNameLiveValue674(rec) || trimmedScalarLive674(rec, FC_USER_NAME) || '').trim();
+    if (!un) {
+      window.alert('利用者名が空です。転用先の氏名を入力してから実行してください。');
+      return;
+    }
+    const empForCand = (trimmedScalarLive674(rec, FC_EMP_ID) || trimmedScalarValue674(rec, FC_EMP_ID) || '').trim();
+    fetchTransferDisposeCandidates674(un, rid, empForCand).then(function (cands) {
+      if (!cands.length) {
+        window.alert(
+          '廃棄候補の個人PCレコードが見つかりません（個人・廃棄以外・このレコード以外）。\n' +
+            'まず **利用者名の完全一致**で探し、0 件のときは **社員番号（emp_id）の一致**でも探します。\n' +
+            '旧 PC 側の利用者名・社員番号を転用先と揃えるか、595 の入力支援で旧レコードにも同じ氏名・番号を入れて保存してから再度お試しください。',
+        );
+        return;
+      }
+      let chosen = cands.length === 1 ? cands[0] : null;
+      if (cands.length >= 2) {
+        const lines = cands
+          .map(function (c, i) {
+            return String(i + 1) + '. レコード ' + c.id + '／PC名「' + c.pc_name + '」';
+          })
+          .join('\n');
+        const ans = window.prompt(
+          '廃棄にする **1台** を選んでください。番号を入力（1〜' +
+            cands.length +
+            '）。キャンセルは空欄で閉じる。\n\n' +
+            lines,
+        );
+        const n = parseInt(String(ans || '').trim(), 10);
+        if (!ans || !ans.trim() || Number.isNaN(n) || n < 1 || n > cands.length) {
+          window.alert('キャンセルしました。');
+          return;
+        }
+        chosen = cands[n - 1];
+      }
+      if (!chosen) return;
+      const ok = window.confirm(
+        '次のレコードを **廃棄** にします。よろしいですか？\n\n' +
+          'レコード番号 ' +
+          chosen.id +
+          '\nPC名「' +
+          chosen.pc_name +
+          '」\n利用者名「' +
+          chosen.user_name +
+          '」',
+      );
+      if (!ok) return;
+      return runTransferDisposePut674(chosen.id, rid).then(
+        function () {
+          return updateOperatorNplDisposedPcCopy674(rid, chosen).then(
+            function (copyRes) {
+              const skipped = !!(copyRes && copyRes.skippedDueToManual674);
+              const noField = !!(copyRes && copyRes.noFieldInApp674);
+              let msg;
+              if (noField) {
+                msg =
+                  '廃棄へ更新しました（レコード番号 ' +
+                  chosen.id +
+                  '）。ただし **アプリに「転用で廃棄したPC」フィールド（' +
+                  FC_NPL_DISPOSED_PC_COPY +
+                  '）が無い**ため自動転記できませんでした。\n' +
+                  '`npm run pc-ledger:674:add-npl-disposed-pc-field-preview` 等でフィールド追加後、手入力するかウィザードを再実行してください。一覧を確認してください。';
+              } else if (skipped) {
+                msg =
+                  '廃棄へ更新しました（レコード番号 ' +
+                  chosen.id +
+                  '）。転用先の「転用で廃棄したPC」は既に手入力があるため自動転記しませんでした（手入力を正）。一覧を確認してください。';
+              } else {
+                msg =
+                  '廃棄へ更新しました（レコード番号 ' +
+                  chosen.id +
+                  '）。転用先レコードに廃棄したPCを転記しました。一覧を確認してください。';
+              }
+              window.alert(msg);
+              if (skipped || noField) return undefined;
+              return trySoftRefresh674EditAfterNplDisposedCopy674(rid, chosen, copyRes && copyRes.putRevision).then(
+                function (synced) {
+                  if (!synced) {
+                    try {
+                      location.reload();
+                    } catch (_e2) {
+                      /* noop */
+                    }
+                  }
+                },
+              );
+            },
+            function (eCopy) {
+              console.warn('[NEW-PC-LEDGER-V1] 転用先への廃棄PC転記', eCopy);
+              window.alert(
+                '旧レコードは廃棄へ更新しましたが、転用先レコードの「転用で廃棄したPC」への自動転記に失敗しました。\n手で「' +
+                  FC_NPL_DISPOSED_PC_COPY +
+                  '」に次を入力してください: ' +
+                  formatNplDisposedPcSummary674(chosen) +
+                  '\n\n' +
+                  (eCopy && eCopy.message ? eCopy.message : String(eCopy)),
+              );
+            },
+          );
+        },
+        function (e) {
+          console.error('[NEW-PC-LEDGER-V1] 転用廃棄', e);
+          window.alert('更新に失敗しました。\n' + (e && e.message ? e.message : String(e)));
+        },
+      );
+    });
+  }
+
+  function createTransferDisposeHeaderButton674() {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = '転用: 元PCを廃棄…';
+    btn.setAttribute('aria-label', '転用に伴い同一利用者名の別PCレコードを廃棄する');
+    btn.style.cssText =
+      'margin:4px 8px 4px 0;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer;border-radius:6px;' +
+      'border:1px solid #9a3412;background:linear-gradient(165deg,#fb923c 0%,#ea580c 55%,#c2410c 100%);color:#fff;' +
+      'box-shadow:0 2px 8px rgba(234,88,12,.35);letter-spacing:.02em;';
+    btn.addEventListener('click', function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      setTimeout(function () {
+        openTransferDisposeWizard674();
+      }, 0);
+    });
+    return btn;
   }
 
   function getOneRecordApp674(app, query, fields) {
@@ -3634,6 +4295,7 @@
         })
         .then(function () {
           if (isEdit && rid) delete snapshotBeforeEdit674[rid];
+          maybeAlertTransferDisposedEmptyAfterSave674(event);
           resolve(event);
         });
     });
@@ -3957,7 +4619,14 @@ ${bodyInner}\
     const btn = document.createElement('button');
     btn.textContent = label;
     btn.style.cssText = `margin:4px 8px 4px 0;padding:6px 14px;background:${color};color:#fff;border:none;border-radius:4px;cursor:pointer;font-weight:bold;`;
-    btn.addEventListener('click', onClick);
+    btn.addEventListener('click', function (ev) {
+      if (ev.preventDefault) ev.preventDefault();
+      if (ev.stopPropagation) ev.stopPropagation();
+      /* record.get() 等の重い同期処理を click 計測から外す */
+      setTimeout(function () {
+        onClick(ev);
+      }, 0);
+    });
     return btn;
   }
 
@@ -3979,11 +4648,13 @@ ${bodyInner}\
     btn.addEventListener('click', function (ev) {
       ev.preventDefault();
       ev.stopPropagation();
-      promise674InputAssistConfirm674(confirmMsg).then(function (yes) {
-        if (!yes) return;
-        npl674FocusAssistSuppressUntil674 = Date.now() + 400;
-        onYesOpen();
-      });
+      setTimeout(function () {
+        promise674InputAssistConfirm674(confirmMsg).then(function (yes) {
+          if (!yes) return;
+          npl674FocusAssistSuppressUntil674 = Date.now() + 400;
+          onYesOpen();
+        });
+      }, 0);
     });
     return btn;
   }
@@ -4054,6 +4725,10 @@ ${bodyInner}\
               openEmployee595SearchModal674,
             ),
           );
+        }
+        /** 転用廃棄ボタン: `getFieldElement` ではなく **record に `npl_transfer_manual` があるか**で出す（レイアウトで DOM が遅延／グループ内でも帯に出す）。 */
+        if (isPersonal595AssistEnabled674(event.record) && event.record && event.record[FC_NPL_TRANSFER_MANUAL]) {
+          wrapper.appendChild(createTransferDisposeHeaderButton674());
         }
         if (type === TYPE_SHARED || type === TYPE_JR) {
           wrapper.appendChild(
@@ -4175,8 +4850,12 @@ ${bodyInner}\
     'mobile.app.record.edit.show',
   ];
   kintone.events.on(showEvents, (event) => {
+    bumpNpl674FieldElementCache674();
     hideUserSuggest674();
     maybeShow674ReplacementNoticeFromStorage674();
+    npl674TransferManualMirror674 =
+      !!(event.record && event.record[FC_NPL_TRANSFER_MANUAL]) &&
+      readNplTransferManualChecked674(event.record);
     console.log(`[NEW-PC-LEDGER-V1] BUILD=${BUILD} event=${event.type}`);
     if (
       event.type === 'app.record.edit.show' ||
@@ -4200,6 +4879,7 @@ ${bodyInner}\
     scheduleInject595FieldAdjacent674(event.record, editable);
     if (editable) {
       ensureUserNameInputDelegate674();
+      npl674PrevTransferManualChecked674 = readNplTransferManualChecked674(event.record);
       if (isPersonal595AssistEnabled674(event.record)) {
         setTimeout(function () {
           scheduleUserNameSuggest674();
@@ -4249,6 +4929,7 @@ ${bodyInner}\
     'mobile.app.record.edit.change.account_type',
   ];
   function onAccountTypeOrPcStatusChange674(event) {
+    bumpNpl674FieldElementCache674();
     hideUserSuggest674();
     let result = event;
     if (String(event.type || '').indexOf('account_type') !== -1) {
@@ -4315,10 +4996,34 @@ ${bodyInner}\
   ];
   kintone.events.on(pcStatusChangeEvents, onAccountTypeOrPcStatusChange674);
 
-  // --- 一覧：§4.8a 検索（キーワード + 種別チップ + SKYSEA チップ、datalist オートコンプリート） ---
+  // --- 一覧：§4.8a 検索（キーワード + 種別チップ + 転用PCチップ + datalist。SKYSEA チップは当面非表示・query 互換は維持） ---
   const SEARCH674_WRAP_ID = 'new-pc-ledger-674-index-search';
-  const SEARCH674_WRAP_VER = '2026-05-05-v3-url-hydrate';
+  const SEARCH674_WRAP_VER = '2026-05-11-v12-index-search-debug-flag';
   const SEARCH674_DL_ID = 'new-pc-ledger-674-search-datalist';
+  /** 一覧 URL: キーワード原文（空白区切り AND 用）を query と併せて復元する */
+  const SEARCH674_URL_KW_PARAM = 'npl674kw';
+  /** kintone 標準ヘッダー検索・一覧 URL が載せる **`?q=`**（当 customize の **`query`** とは別名） */
+  const SEARCH674_KINTONE_NATIVE_Q_PARAM = 'q';
+
+  /** `localStorage.npl674debug=1` または hash に `npl674debug=1` のとき一覧検索同期でコンソールログ */
+  function is674IndexSearchDebug674() {
+    try {
+      if (typeof localStorage !== 'undefined' && localStorage.getItem('npl674debug') === '1') return true;
+      if (String(location.hash || '').indexOf('npl674debug=1') !== -1) return true;
+    } catch (_e) {
+      return false;
+    }
+    return false;
+  }
+
+  function log674IndexSearchDebug674(label, payload) {
+    if (!is674IndexSearchDebug674()) return;
+    try {
+      console.info('[NEW-PC-LEDGER-V1][674-index-debug]', label, payload);
+    } catch (_e2) {
+      /* noop */
+    }
+  }
 
   const SEARCH674_HINT_FIELDS = [
     FC_PC_NAME,
@@ -4328,6 +5033,8 @@ ${bodyInner}\
     FC_DEPT_NAME,
     FC_GROUP_NAME,
     FC_SHARED_TERMINAL_NAME,
+    FC_NOTE,
+    FC_NPL_DISPOSED_PC_COPY,
   ];
 
   const SEARCH674_TYPE_CHIPS = [
@@ -4405,11 +5112,11 @@ ${bodyInner}\
 
   /**
    * 一覧 URL の `query` を、検索バーの状態に分解（当バーが build した形式を想定。手編集 query は部分一致のみ反映）。
-   * @returns {{ keyword: string, types: string[], skysea: string[] }}
+   * @returns {{ keyword: string, types: string[], skysea: string[], transferOnly: boolean }}
    */
   function parse674ListQueryToBarState674(listQuery) {
     const raw = String(listQuery || '').trim();
-    const out = { keyword: '', types: [], skysea: [] };
+    const out = { keyword: '', types: [], skysea: [], transferOnly: false };
     if (!raw) return out;
 
     const typeRe = new RegExp('\\(\\s*' + FC_ACCOUNT_TYPE + '\\s+in\\s*\\(([^)]*)\\)\\s*\\)');
@@ -4436,6 +5143,12 @@ ${bodyInner}\
       }
     }
 
+    const optEscForTransferRe = escape674QueryLike(FC_NPL_TRANSFER_MANUAL_OPT).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const transferRe = new RegExp(
+      '\\(\\s*' + FC_NPL_TRANSFER_MANUAL + '\\s+in\\s*\\(\\s*"' + optEscForTransferRe + '"\\s*\\)\\s*\\)',
+    );
+    out.transferOnly = transferRe.test(raw);
+
     const likeNeedle = FC_PC_NAME + ' like "';
     const li = raw.indexOf(likeNeedle);
     if (li !== -1) {
@@ -4457,28 +5170,66 @@ ${bodyInner}\
     return out;
   }
 
+  /**
+   * 標準一覧の **`q`**（フィールドコード可変）から **`like "…"`** のリテラルを拾い、キーワード欄の表示用にする。
+   */
+  function extract674KeywordFromNativeQ674(nativeQ) {
+    const raw = String(nativeQ || '');
+    if (!raw) return '';
+    const re = /\blike\s+"((?:\\.|[^"\\])*)"/gi;
+    let m;
+    const parts = [];
+    const seen = new Set();
+    while ((m = re.exec(raw)) !== null) {
+      let inner = m[1] || '';
+      try {
+        inner = unescape674QueryLike674(inner);
+      } catch (_e) {
+        /* noop */
+      }
+      inner = String(inner || '').trim();
+      if (!inner || seen.has(inner)) continue;
+      seen.add(inner);
+      parts.push(inner);
+    }
+    return parts.join(' ');
+  }
+
   /** 一覧 URL の `query` と検索バー UI を同期（同一 VER の再描画スケジュール時も呼ぶ） */
   function hydrate674IndexSearchBarFromUrl674() {
     const wrap = document.getElementById(SEARCH674_WRAP_ID);
     if (!wrap || !wrap.__npl674) return;
-    let urlQuery = '';
-    try {
-      urlQuery = new URL(location.href).searchParams.get('query') || '';
-    } catch (_e) {
-      /* 不正 URL 時は urlQuery のまま空 */
+    const read = read674IndexSearchQueryAndKw674();
+    const urlQuery = read.urlQuery;
+    const urlKwParam = read.urlKwParam;
+    const urlNativeQ = read.urlNativeQ || '';
+    let urlKwDecoded = '';
+    if (urlKwParam) {
+      try {
+        urlKwDecoded = decodeURIComponent(urlKwParam);
+      } catch (_e2) {
+        urlKwDecoded = urlKwParam;
+      }
     }
-    if (wrap.getAttribute('data-npl-synced-query') === urlQuery) return;
+    const syncKey = urlQuery + '\n' + urlKwDecoded + '\n' + urlNativeQ;
+    if (wrap.getAttribute('data-npl-synced-query') === syncKey) return;
 
-    const st = parse674ListQueryToBarState674(urlQuery);
+    const effectiveListQuery = urlQuery || urlNativeQ;
+    const st = parse674ListQueryToBarState674(effectiveListQuery);
+    let kw = urlKwDecoded || st.keyword;
+    if (!kw && urlNativeQ && !urlQuery) {
+      kw = extract674KeywordFromNativeQ674(urlNativeQ);
+    }
     const ref = wrap.__npl674;
-    ref.inp.value = st.keyword;
+    ref.inp.value = kw;
     ref.selectedTypes.clear();
     for (let ti = 0; ti < st.types.length; ti++) ref.selectedTypes.add(st.types[ti]);
     ref.selectedSkysea.clear();
     for (let si = 0; si < st.skysea.length; si++) ref.selectedSkysea.add(st.skysea[si]);
+    if (ref.transferBox) ref.transferBox.v = !!st.transferOnly;
     ref.syncChips();
 
-    wrap.setAttribute('data-npl-synced-query', urlQuery);
+    wrap.setAttribute('data-npl-synced-query', syncKey);
 
     if (typeof ref.ensure674SearchCache === 'function') {
       ref
@@ -4492,7 +5243,18 @@ ${bodyInner}\
     }
   }
 
-  function build674IndexListQuery(keyword, selectedTypes, selectedSkysea) {
+  /** 半角・全角スペースで分割（備考の複合検索: 各トークンは部分一致 OR 横断、トークン間は AND） */
+  function split674IndexKeywords674(raw) {
+    return String(raw || '')
+      .trim()
+      .split(/[\s\u3000]+/)
+      .map(function (t) {
+        return t.trim();
+      })
+      .filter(Boolean);
+  }
+
+  function build674IndexListQuery(keyword, selectedTypes, selectedSkysea, transferOnly674) {
     const parts = [];
     const types = selectedTypes instanceof Set ? [...selectedTypes] : [];
     if (types.length) {
@@ -4512,34 +5274,254 @@ ${bodyInner}\
         .join(', ');
       parts.push('(' + FC_SKYSEA_STATUS + ' in (' + quotedS + '))');
     }
-    let kw = String(keyword || '').trim();
-    if (kw.length > 80) {
-      kw = kw.slice(0, 80);
+    if (transferOnly674) {
+      parts.push('(' + FC_NPL_TRANSFER_MANUAL + ' in ("' + escape674QueryLike(FC_NPL_TRANSFER_MANUAL_OPT) + '"))');
     }
-    if (kw) {
-      const e = escape674QueryLike(kw);
-      const ors = SEARCH674_HINT_FIELDS.map(function (c) {
-        return '(' + c + ' like "' + e + '")';
+    let kwRaw = String(keyword || '').trim();
+    if (kwRaw.length > 200) {
+      kwRaw = kwRaw.slice(0, 200);
+    }
+    const tokens = split674IndexKeywords674(kwRaw)
+      .slice(0, 10)
+      .map(function (t) {
+        return t.length > 40 ? t.slice(0, 40) : t;
       });
-      parts.push('(' + ors.join(' or ') + ')');
+    if (tokens.length) {
+      const tokenParts = tokens.map(function (tok) {
+        const e = escape674QueryLike(tok);
+        const ors = SEARCH674_HINT_FIELDS.map(function (c) {
+          return '(' + c + ' like "' + e + '")';
+        });
+        return '(' + ors.join(' or ') + ')';
+      });
+      parts.push('(' + tokenParts.join(' and ') + ')');
     }
     if (!parts.length) return '';
     return parts.join(' and ');
   }
 
-  function navigate674ListWithQuery(queryStr) {
+  /**
+   * Ocean 等で一覧条件が **`#...?query=...`** や **`#...?q=...`** に載る場合、`searchParams` だけ消しても絞り込みが残る。
+   */
+  function strip674ListFilterParamsFromUrlHash674(u) {
+    try {
+      const h = u.hash;
+      if (!h || h.indexOf('?') === -1) return;
+      const qm = h.indexOf('?');
+      const path = h.slice(0, qm);
+      const qs = h.slice(qm + 1);
+      if (!qs) return;
+      const hp = new URLSearchParams(qs);
+      if (!hp.has('query') && !hp.has(SEARCH674_URL_KW_PARAM) && !hp.has(SEARCH674_KINTONE_NATIVE_Q_PARAM)) return;
+      hp.delete('query');
+      hp.delete(SEARCH674_URL_KW_PARAM);
+      hp.delete(SEARCH674_KINTONE_NATIVE_Q_PARAM);
+      const next = hp.toString();
+      u.hash = next ? path + '?' + next : path;
+    } catch (_e) {
+      /* noop */
+    }
+  }
+
+  /** `#/...?query=...` のクエリ部分を返す（無ければ ''） */
+  function get674HashQueryString674(hash) {
+    const h = String(hash || '');
+    const qi = h.indexOf('?');
+    if (qi === -1) return '';
+    return h.slice(qi + 1);
+  }
+
+  /**
+   * 一覧の **`query` / `npl674kw` / 標準 `q`** を **search と hash の両方**から読む（閲覧→戻る・絞り込み UI で片方だけ変わる場合のずれ対策）。
+   * @returns {{ urlQuery: string, urlKwParam: string, urlNativeQ: string }}
+   */
+  function read674IndexSearchQueryAndKw674() {
+    let u;
+    try {
+      u = new URL(location.href);
+    } catch (_e) {
+      return { urlQuery: '', urlKwParam: '', urlNativeQ: '' };
+    }
+    let urlQuery = String(u.searchParams.get('query') || '').trim();
+    let urlKwParam = String(u.searchParams.get(SEARCH674_URL_KW_PARAM) || '').trim();
+    let urlNativeQ = String(u.searchParams.get(SEARCH674_KINTONE_NATIVE_Q_PARAM) || '').trim();
+    const qh = get674HashQueryString674(u.hash);
+    if (qh) {
+      try {
+        const hp = new URLSearchParams(qh);
+        if (!urlQuery) urlQuery = String(hp.get('query') || '').trim();
+        if (!urlKwParam) urlKwParam = String(hp.get(SEARCH674_URL_KW_PARAM) || '').trim();
+        if (!urlNativeQ) urlNativeQ = String(hp.get(SEARCH674_KINTONE_NATIVE_Q_PARAM) || '').trim();
+      } catch (_e2) {
+        /* noop */
+      }
+    }
+    return { urlQuery: urlQuery, urlKwParam: urlKwParam, urlNativeQ: urlNativeQ };
+  }
+
+  /** カスタム検索バーの入力・チップのみ空にする（一覧の実効条件は触らない） */
+  function clear674IndexSearchBarUi674(wrap) {
+    const ref = wrap.__npl674;
+    if (!ref) return;
+    ref.inp.value = '';
+    ref.selectedTypes.clear();
+    ref.selectedSkysea.clear();
+    if (ref.transferBox) ref.transferBox.v = false;
+    ref.syncChips();
+    wrap.setAttribute('data-npl-synced-query', '\n');
+    if (typeof ref.ensure674SearchCache === 'function') {
+      ref
+        .ensure674SearchCache()
+        .then(function (recs) {
+          update674SearchDatalist(recs, '');
+        })
+        .catch(function () {
+          /* noop */
+        });
+    }
+  }
+
+  /**
+   * 一覧の **実効絞り込み**（`kintone.app.getQueryCondition`）を正とし、**空ならバーを空＋URL の query / npl674kw / 標準 `q` 残骸を除去**。
+   * ネイティブ「条件クリア」は URL より先にここが空になることがある（Ocean SPA）。
+   * @returns {boolean|undefined} **true** のとき `hydrate674IndexSearchBarFromUrl674` は呼ばないでよい
+   */
+  function sync674IndexSearchBarFromKintoneListCondition674() {
+    const wrap = document.getElementById(SEARCH674_WRAP_ID);
+    if (!wrap || !wrap.__npl674) return undefined;
+
+    let cond = null;
+    try {
+      if (kintone.app && typeof kintone.app.getQueryCondition === 'function') {
+        cond = kintone.app.getQueryCondition();
+      } else if (
+        typeof kintone.mobile !== 'undefined' &&
+        kintone.mobile.app &&
+        typeof kintone.mobile.app.getQueryCondition === 'function'
+      ) {
+        cond = kintone.mobile.app.getQueryCondition();
+      }
+    } catch (_e) {
+      return undefined;
+    }
+    if (cond === null) return undefined;
+
+    const condTrim = String(cond || '').trim();
+    const readSnap = read674IndexSearchQueryAndKw674();
+    log674IndexSearchDebug674('sync674IndexSearchBarFromKintoneListCondition674', {
+      condTrim: condTrim,
+      condHead: String(cond || '').slice(0, 120),
+      read: readSnap,
+    });
+    if (!condTrim) {
+      clear674IndexSearchBarUi674(wrap);
+      if (readSnap.urlQuery || readSnap.urlKwParam || readSnap.urlNativeQ) {
+        navigate674ListWithQuery('', '');
+      }
+      return true;
+    }
+    return false;
+  }
+
+  let npl674IndexHydrateDebounce674 = null;
+  /** 閲覧から戻る・ネイティブ条件クリア等で URL ／実効条件が変わったとき、カスタム検索バーを追従させる */
+  function request674IndexSearchHydrateFromUrl674() {
+    if (npl674IndexHydrateDebounce674) {
+      clearTimeout(npl674IndexHydrateDebounce674);
+    }
+    npl674IndexHydrateDebounce674 = setTimeout(function () {
+      npl674IndexHydrateDebounce674 = null;
+      const w = document.getElementById(SEARCH674_WRAP_ID);
+      if (w) w.removeAttribute('data-npl-synced-query');
+      let skipHydrate = false;
+      try {
+        skipHydrate = sync674IndexSearchBarFromKintoneListCondition674() === true;
+      } catch (_e) {
+        /* noop */
+      }
+      if (!skipHydrate) {
+        try {
+          hydrate674IndexSearchBarFromUrl674();
+        } catch (_e2) {
+          /* noop */
+        }
+      }
+    }, 80);
+  }
+
+  let npl674IndexUrlListeners674 = false;
+  function ensure674IndexSearchUrlListeners674() {
+    if (npl674IndexUrlListeners674) return;
+    npl674IndexUrlListeners674 = true;
+    window.addEventListener('popstate', request674IndexSearchHydrateFromUrl674);
+    window.addEventListener('hashchange', request674IndexSearchHydrateFromUrl674);
+  }
+
+  /** 絞り込みパネルの「条件クリア」系クリック後に `getQueryCondition` が更新されるまで再同期 */
+  let npl674NativeClearListen674 = false;
+  function ensure674IndexSearchNativeClearListener674() {
+    if (npl674NativeClearListen674) return;
+    npl674NativeClearListen674 = true;
+    document.addEventListener(
+      'click',
+      function (ev) {
+        const t = ev.target;
+        if (!t || !t.closest) return;
+        const el = t.closest('button, a, [role="button"]');
+        if (!el) return;
+        const blob =
+          String(el.textContent || '') +
+          ' ' +
+          String(el.getAttribute('aria-label') || '') +
+          ' ' +
+          String(el.getAttribute('title') || '');
+        const hasClear = blob.indexOf('クリア') !== -1 || /\bclear\b/i.test(blob);
+        const hasCondWord =
+          blob.indexOf('条件') !== -1 ||
+          blob.indexOf('絞り込み') !== -1 ||
+          blob.indexOf('フィルタ') !== -1 ||
+          /\bfilter\b/i.test(blob);
+        if (!hasClear || !hasCondWord) return;
+        [120, 400, 900].forEach(function (ms) {
+          setTimeout(request674IndexSearchHydrateFromUrl674, ms);
+        });
+      },
+      true,
+    );
+  }
+
+  function navigate674ListWithQuery(queryStr, rawKeywordForUrl) {
     let u;
     try {
       u = new URL(location.href);
     } catch (e) {
       return;
     }
-    if (queryStr) {
-      u.searchParams.set('query', queryStr);
+    const qTrim = String(queryStr != null ? queryStr : '').trim();
+    if (qTrim) {
+      u.searchParams.set('query', qTrim);
     } else {
       u.searchParams.delete('query');
     }
-    location.href = u.toString();
+    const kwPlain = String(rawKeywordForUrl != null ? rawKeywordForUrl : '').trim();
+    if (kwPlain) {
+      /* searchParams.set が UTF-8 エンコードするため encodeURIComponent は不要（二重エンコード回避） */
+      u.searchParams.set(SEARCH674_URL_KW_PARAM, kwPlain.slice(0, 200));
+    } else {
+      u.searchParams.delete(SEARCH674_URL_KW_PARAM);
+    }
+    if (qTrim || kwPlain) {
+      /* カスタム `query`／`npl674kw` と標準 `?q=` が併存すると二重絞り込みになるため除去 */
+      u.searchParams.delete(SEARCH674_KINTONE_NATIVE_Q_PARAM);
+    } else {
+      u.searchParams.delete(SEARCH674_KINTONE_NATIVE_Q_PARAM);
+      strip674ListFilterParamsFromUrlHash674(u);
+    }
+    try {
+      location.replace(u.toString());
+    } catch (_e2) {
+      location.href = u.toString();
+    }
   }
 
   function resolve674ListSearchMount() {
@@ -4666,8 +5648,7 @@ ${bodyInner}\
 
     const title = document.createElement('div');
     title.style.cssText = 'font-size:12px;font-weight:700;color:#0f172a;margin-bottom:8px;';
-    title.textContent =
-      'キーワード検索（PC名・WindowsID・M365・利用者名・所属・グループ・共有端末名）／種別チップ／SKYSEA 状態';
+    title.textContent = 'キーワードと種別で絞り込み';
 
     const row = document.createElement('div');
     row.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px;';
@@ -4677,7 +5658,7 @@ ${bodyInner}\
     inpKw.id = 'npl674-index-search-kw';
     inpKw.setAttribute('list', SEARCH674_DL_ID);
     inpKw.setAttribute('autocomplete', 'off');
-    inpKw.placeholder = '例: jb ／ KS0 ／ メールの一部';
+    inpKw.placeholder = '例: 674#123';
     inpKw.style.cssText =
       'min-width:220px;flex:1;max-width:420px;padding:6px 10px;border:1px solid #94a3b8;border-radius:6px;';
 
@@ -4734,44 +5715,28 @@ ${bodyInner}\
       chipRow.appendChild(b);
     });
 
+    const transferBox = { v: false };
+    const btnTransferChip = document.createElement('button');
+    btnTransferChip.type = 'button';
+    btnTransferChip.textContent = '転用PC';
+    btnTransferChip.dataset.nplTransferChip = '1';
+    btnTransferChip.className = 'npl674-index-chip';
+    btnTransferChip.setAttribute('aria-pressed', 'false');
+    btnTransferChip.setAttribute('aria-label', '転用チェックが付いたレコードのみに絞り込み');
+    btnTransferChip.style.cssText =
+      'padding:4px 10px;border-radius:999px;border:1px solid #94a3b8;background:#fff;' +
+      'font-size:12px;font-weight:700;cursor:pointer;color:#0f172a;';
+    btnTransferChip.addEventListener('click', function () {
+      transferBox.v = !transferBox.v;
+      syncChips674();
+    });
+    chipRow.appendChild(btnTransferChip);
+
     const skyChipRow = document.createElement('div');
-    skyChipRow.style.cssText =
-      'display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px;';
+    /** SKYSEA チップは当面出さないが、`selectedSkysea` と syncChips は URL 互換のため残す */
+    skyChipRow.style.cssText = 'display:none;';
 
     const selectedSkysea = new Set();
-
-    SEARCH674_SKYSEA_CHIPS.forEach(function (def) {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.textContent = def.label;
-      b.dataset.skyseaValue = def.value;
-      b.className = 'npl674-index-chip';
-      b.style.cssText =
-        'padding:4px 10px;border-radius:999px;border:1px solid #94a3b8;background:#fff;' +
-        'font-size:12px;font-weight:700;cursor:pointer;color:#0f172a;';
-      b.setAttribute('aria-pressed', 'false');
-      b.addEventListener('click', function () {
-        const val = b.dataset.skyseaValue || '';
-        if (selectedSkysea.has(val)) {
-          selectedSkysea.delete(val);
-          b.setAttribute('aria-pressed', 'false');
-          b.style.background = '#fff';
-          b.style.borderColor = '#94a3b8';
-        } else {
-          selectedSkysea.add(val);
-          b.setAttribute('aria-pressed', 'true');
-          b.style.background = '#ede9fe';
-          b.style.borderColor = '#6d28d9';
-        }
-      });
-      skyChipRow.appendChild(b);
-    });
-
-    const hint = document.createElement('div');
-    hint.style.cssText = 'font-size:11px;color:#475569;line-height:1.45;';
-    hint.textContent =
-      'Enter または「絞り込み」で一覧を更新します。種別・SKYSEA は複数選択可（各 in）、キーワードは上記フィールドへの部分一致（OR）と AND です。' +
-      ' URL の query から条件を復元します（当バーが生成した query 形式に準拠）。';
 
     function syncChips674() {
       chipRow.querySelectorAll('button[data-type-value]').forEach(function (b) {
@@ -4788,17 +5753,22 @@ ${bodyInner}\
         b.style.background = on ? '#ede9fe' : '#fff';
         b.style.borderColor = on ? '#6d28d9' : '#94a3b8';
       });
+      const tb = chipRow.querySelector('button[data-npl-transfer-chip]');
+      if (tb) {
+        const on = transferBox.v;
+        tb.setAttribute('aria-pressed', on ? 'true' : 'false');
+        tb.style.background = on ? '#ffedd5' : '#fff';
+        tb.style.borderColor = on ? '#c2410c' : '#94a3b8';
+      }
     }
 
     wrap.appendChild(title);
     wrap.appendChild(row);
     wrap.appendChild(chipRow);
-    wrap.appendChild(skyChipRow);
-    wrap.appendChild(hint);
 
     const apply674 = function () {
-      const q = build674IndexListQuery(inpKw.value, selectedTypes, selectedSkysea);
-      navigate674ListWithQuery(q);
+      const q = build674IndexListQuery(inpKw.value, selectedTypes, selectedSkysea, transferBox.v);
+      navigate674ListWithQuery(q, inpKw.value);
     };
 
     btnGo.addEventListener('click', function () {
@@ -4808,9 +5778,10 @@ ${bodyInner}\
       inpKw.value = '';
       selectedTypes.clear();
       selectedSkysea.clear();
+      transferBox.v = false;
       syncChips674();
       wrap.setAttribute('data-npl-synced-query', '');
-      navigate674ListWithQuery('');
+      navigate674ListWithQuery('', '');
     });
     inpKw.addEventListener('keydown', function (ev) {
       if (ev.key === 'Enter') {
@@ -4831,6 +5802,7 @@ ${bodyInner}\
       inp: inpKw,
       selectedTypes: selectedTypes,
       selectedSkysea: selectedSkysea,
+      transferBox: transferBox,
       syncChips: syncChips674,
       ensure674SearchCache: ensure674SearchCache,
     };
@@ -4883,7 +5855,12 @@ ${bodyInner}\
     document.querySelectorAll('.npl674-form-section-ribbon').forEach(function (n) {
       n.remove();
     });
+    ensure674IndexSearchUrlListeners674();
+    ensure674IndexSearchNativeClearListener674();
+    const wSearch = document.getElementById(SEARCH674_WRAP_ID);
+    if (wSearch) wSearch.removeAttribute('data-npl-synced-query');
     schedule674IndexSearch();
+    setTimeout(request674IndexSearchHydrateFromUrl674, 200);
     return event;
   }
   kintone.events.on('app.record.index.show', onRecordIndexShow674);
@@ -5012,6 +5989,42 @@ ${bodyInner}\
         'mobile.app.record.edit.change.user_name',
       ],
       onUserNameFieldChange674,
+    );
+  }
+
+  function onNplTransferManualFieldChange674(event) {
+    /** `getFieldElement` はレイアウト・描画タイミングで一時的に null になり得る。確認ダイアログは **record 上のフィールド**があれば必ず評価する。 */
+    if (!event.record || !event.record[FC_NPL_TRANSFER_MANUAL]) {
+      return event;
+    }
+    const was = npl674PrevTransferManualChecked674;
+    const now = readNplTransferManualChecked674(event.record);
+    if (was && !now) {
+      const ok = window.confirm(
+        '転用フラグを本当に外してもよいですか？\n\n「OK」でチェックを外す／「キャンセル」でチェックを維持します。',
+      );
+      if (!ok && event.record[FC_NPL_TRANSFER_MANUAL]) {
+        event.record[FC_NPL_TRANSFER_MANUAL].value = [FC_NPL_TRANSFER_MANUAL_OPT];
+      }
+    }
+    const curTm = readNplTransferManualChecked674(event.record);
+    npl674PrevTransferManualChecked674 = curTm;
+    npl674TransferManualMirror674 = curTm;
+    return event;
+  }
+
+  const nplTransferManualChangeEvents674 = [
+    'app.record.edit.change.npl_transfer_manual',
+    'app.record.create.change.npl_transfer_manual',
+  ];
+  kintone.events.on(nplTransferManualChangeEvents674, onNplTransferManualFieldChange674);
+  if (typeof kintone.mobile !== 'undefined') {
+    kintone.events.on(
+      [
+        'mobile.app.record.edit.change.npl_transfer_manual',
+        'mobile.app.record.create.change.npl_transfer_manual',
+      ],
+      onNplTransferManualFieldChange674,
     );
   }
 

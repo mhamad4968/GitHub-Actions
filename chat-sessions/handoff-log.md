@@ -1841,5 +1841,13 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 
 **実施**: `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§4.8c** 新設（`q`/`query`/`npl674kw`・`getQueryCondition` 注意）。`kintone-apps.md` 674 行に **§4.8c 参照**追記。
 
-**次の1手**: `session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync`。read-pack **14-READ-06** への **§4.8c ポインタ**は **次回**（任意タスク A3）。
+**次の1手**: 下記「CEO 全件承認」ブロック参照。
+
+---
+
+### 2026-05-11（JST）CEO 全件承認 — 改善7案のリポ反映＋明日 TOTO
+
+**承認**: 反省 **A1〜A3・B1〜B4** すべて。**実施**: `14-READ-06.txt`（§4.8c・「変わらない」時の URL 依頼・`npl674debug`）、`session-handoff.mdc`（§1 自書き）、`desktop.js`（デバッグログ・BUILD **`2026-05-11-pc-ledger-index-search-debug-localstorage`**）。**朝**: `docs/reports/2026-05-12-briefing-prep-CIO.md`。**674 deploy** は朝任意。
+
+**明日本題**: **TOTO 予想**改修 — `Desktop\TOTO予想\`＋`Desktop\totoアプリ改修案.txt` を正本。段階実装・§50-3-8・動作確認は浜田依頼時。
 

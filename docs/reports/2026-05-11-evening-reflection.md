@@ -26,6 +26,12 @@
 3. **検証の二重化**: **報告・締め・GO 仰ぎ**のドラフトに、利用可能な環境では **`npm run cio:report-verify-response -- --file <path>`** を通し **exit 0** を証跡に残す（`docs/session-report-checklist.md` §M-2 参照）。
 4. **回帰観点**: **§4.8c** に沿い、手動確認に **「`q` のみ」「`query` のみ」「併存」「ビュー既定ありで `getQueryCondition` 非空」**をチェックリスト化（自動化は任意・CIO が手順書にリンクでよい）。
 
+## 承認済み改善案 — 実施記録（2026-05-11 夜・CEO 全件承認）
+
+- **A1・A3・B2**: `chat-sessions/desktop-ai-emergency-read-pack/14-READ-06.txt`（§4.8c・URL 質問・デバッグ手順）、**`.cursor/rules/session-handoff.mdc`**（IDE §1 自書き義務＋§M-2 末尾）。
+- **A2**: `customize/new-pc-ledger-v1/desktop.js` に **`npl674debug`** ログ・**本番 deploy 済**（**`BUILD`** **`2026-05-11-pc-ledger-index-search-debug-localstorage`**・rev **177**）。検証後 **`localStorage.removeItem('npl674debug')`** 推奨。
+- **B1・B3・B4**: 運用（朝ブリーフィングで **CIO が自発**）。正本 **`docs/reports/2026-05-12-briefing-prep-CIO.md`**。
+
 ## 明日以降の改善案（反省 2 項目に直結）
 
 ### A. 「根本原因の発見が遅れた」（`q` vs `query`）
