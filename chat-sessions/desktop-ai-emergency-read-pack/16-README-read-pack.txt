@@ -3,15 +3,15 @@
 目的
   浜田がチャットに貼る「読ませたい本文」を、**ファイル名の先頭 2 桁（00〜99）＋ハイフン**で並べ、Explorer の **名前順＝推奨読取順**にする。
   セッション終了時に `npm run session-starter:sync-desktop` を実行すると、
-  **このフォルダ内の .txt** と、スターター・HANDOFF 等が **`C:\Users\mhamada202408224\Desktop\AI緊急用\`** にコピーされる（**リポと同名**）。
+  **このフォルダ内の .txt** と、**先頭 2 桁が数字の `NN-*.md`（例: 当日 1 本報告）**、スターター・HANDOFF 等・**`24-handoff-log.md` / `25-checkpoint-latest.md`**（リポ `chat-sessions/` 正本）・**（任意）`26-evening-reflection-*.md`** が **`C:\Users\mhamada202408224\Desktop\AI緊急用\`** にコピーされる（read-pack は **リポと同名**）。
 
 運用（推奨）
   1. **09〜15-READ-… は CIO が初回用に文面準備済み**（本文見出しは従来どおり **【READ-01】…【READ-07】**。**ファイル名の 15＝READ-07**＝浜田 CEO のお願い・朝イチ推奨）。浜田の追記・差し替えはそのまま上書きしてよい。
   2. チャットに貼った追加内容を、**同じ番号帯の READ-NN にリポ側で保存**する（CIO が代筆してよい）。
   3. 使わない番号は「（未使用）」1 行にしてよい。
   4. 日終わりで `npm run session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync`。
-  5. 新セッションでは AI に **08-INDEX** → **09〜15 をファイル名昇順**で Read ツールをかけさせる（`SESSION-READ-LADDER.md` も参照）。
-  6. **変更履歴**を短く知りたいときは **20-HISTORY-2026-05-06-read-pack-and-tools.txt**（以降、同日系はこのファイルに追記してよい）。
+  5. 新セッションでは AI に **08-INDEX** → **09〜16** → **17〜20**（read-pack 末尾）を **ファイル名昇順**で Read ツールをかけさせる（**21〜23** は索引どおり **20 の次**。`SESSION-READ-LADDER.md` も参照）。
+  6. **変更履歴**を短く知りたいときは **17-HISTORY-2026-05-06-read-pack-and-tools.txt**（以降、同日系はこのファイルに追記してよい）。
 
 08-INDEX.txt
   各ファイルの役割を **1 行ずつ**索引化（任意追記可）。

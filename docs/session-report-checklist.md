@@ -4,9 +4,15 @@
 > **目的**: チャット上の報告を **毎回同じ骨格**にし、**§1 欠落・破壊系先走り・確認不足**を防ぐ。  
 > **厳格化（自動）**: **報告ターン**で応答末尾に **§M-2 の機械可読 7 行（V2）**が無い、**V1 のみ**、または **V2 四キー矛盾**があると **hooks が `stop` で自動フォロー**（再回答を投入）。実装は **`.cursor/hooks/report-checksheet-*.mjs`** と **`hooks.json`**（`beforeSubmitPrompt` / `afterAgentResponse` / `stop`）。**2026-05-08 CEO 命令**: 警告ログだけで済ませず **必ずフォロー**する。  
 > **報告前自動判定（`report-checksheet-pending.mjs`）**: ユーザが「報告」意図のプロンプトを送る **直前**に **`session-clock.mjs check`** と **`npm run report:pipeline-status`** を実行。**NG** のとき Cursor の **`additional_context`** で **(A) 本チェックリスト通読** または **(B) `C:\\Users\\mhamada202408224\\Desktop\\AI緊急用` 配下の全ファイル Read**（どちらか一方以上・**推奨は両方**）を指示する。バイパス: 環境変数 **`SKIP_REPORT_PRECHECK=1`**（浜田承認下のみ）。ログ: **`logs/report-precheck.log`**／状態: **`.cursor/hooks/state/report-precheck-last.json`**。  
-> **正本**: 本ファイル。Desktop 用の短縮版は **`chat-sessions/desktop-ai-emergency-read-pack/23-SESSION-REPORT-CHECKLIST.txt`**（`npm run session-starter:sync-desktop` で同期）。  
+> **正本**: 本ファイル。Desktop 用の短縮版は **`chat-sessions/desktop-ai-emergency-read-pack/20-SESSION-REPORT-CHECKLIST.txt`**（`npm run session-starter:sync-desktop` で同期）。  
 > **憲法**: 開発＝AI・**仕様確認・GO・検収＝浜田 CEO**（`AGENTS.md` §35-1 / §56-1a）。**実行後のダブルチェック（検証の 2 者）は AI 側**（本体＋ DeepSeek / Kimi 等の第 2 入力、または憲法が許す客体検証＋突合の組み合わせ。CEO は第 2 者の代わりにならない）— `every-turn-rules-confirm.mdc` §0・§1c、`constitution-enforcement-core.mdc`。  
-> **CEO 受付ゲート（報告の認否）**: **ティア判定・【適用憲法】・`[🎖️ 本セッション割当]` の 3 つが欠けるものは「報告」として認めない**（浜田 CEO 定義）。**順守根拠の実務最小**は **`[ルール確認]` 1 行**（どの正本に従ったか）— `every-turn-rules-confirm.mdc` §1 では **上記に加え第 4 行として必須**のため、**チャット運用は 4 行フル**を推奨する。  
+> **CEO 受付ゲート（報告の認否）**: **ティア判定・【適用憲法】・`[🎖️ 本セッション割当]` の 3 つが欠けるものは「報告」として認めない**（浜田 CEO 定義）。**順守根拠の実務最小**は **`[ルール確認]` 1 行**（どの正本に従ったか）— `every-turn-rules-confirm.mdc` §1 では **上記に加え第 4 行として必須**のため、**チャット運用は 4 行フル**を推奨する。
+>
+> **健康表記（2026-05-09 CEO／CIO 追補）**: 報告の「健康状態確認」＝ **`npm run health-check`**（`scripts/health-check.mjs`）の **事実サマリ**。**§1 先頭4行を「心身の健康」と題さない**。**`TSB-001` を健康節に結び付けない**（`docs/troubleshooting.md` の TSB-001 は fileKey 孤児ラベルで、実行診断とは無関係）。**hooks が IDE に届かない経路**では、確定前に **`npm run cio:chat-report-selfcheck`**（`--stdin` / `--file`、必要なら `--strict-head` / `--require-v2`）で **禁止語と体裁を CLI 二重化**する。
+>
+> **報告・締め・GO 前の一発ゲート（2026-05-09 抜本）**: 下書き全文に対し **`npm run cio:report-verify-response -- --file <path>`** を実行し **exit 0**（**CEO 最低基準の全行含有**＋**§1 四行先頭ウィンドウ**＋**V2**＋**□A1 最小**＋**禁止語**）。hooks は **Cursor が `.cursor/hooks.json` を起動した経路に限り**機械検証するため、**本 npm を hooks と独立に必須**とする（`CEO-MINIMUM-ABSOLUTE-BASELINE.txt` §1 報告違反ゼロ 節）。
+>
+> **依頼に CEO 最低基準全文が含まれる場合（2026-05-09）**: ユーザメッセージに **`chat-sessions/CEO-MINIMUM-ABSOLUTE-BASELINE.txt` の非空行と同一の全文**が含まれるとき、**当該応答にも同一文字列を行単位で欠かさず再掲**する（省略・要約・「依頼を読んだので省略」禁止）。**「チャットに入っているから抜けてよい」は不存在**（正本 `CEO-MINIMUM-ABSOLUTE-BASELINE.txt` 最終行）。  
 > **`session:bootstrap`／棚卸し直後の経緯報告**は **`chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 7** — **応答最上段の §1 先頭4行（`[§1-2-3 ティア判定]`・`【適用憲法】`・`[🎖️ 本セッション割当]`・`[ルール確認]`）＋（1〜8・4a）** を **別途フル充填** — **そのチェックシートのない経緯報告も認めない**（浜田 CEO 厳守・`every-turn-rules-confirm.mdc` §1e **1e-0**）。  
 > **順守根拠**: 行動に入る前は **§1b**（関連 § の列挙＋方針 1 文）。報告では **`【適用憲法】`＋`[ルール確認]`** で **どの正本・どの § に従ったか**を残し、**ルール違反をしていないことの根拠**とする（空宣言禁止）。
 

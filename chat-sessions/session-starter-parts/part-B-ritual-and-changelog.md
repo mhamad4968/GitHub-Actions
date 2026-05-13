@@ -13,7 +13,7 @@
 ■ 貼付単独で完走（checkpoint 項番 -1 〜 項番 0 機械部分・本文内正本）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-**方針（v3.36）**: 浜田は **ハブ**（Desktop の **`00-NEW-SESSION-STARTER_yyyymmdd.txt`**）を **新チャット 1 通目**に貼れば **項番 -1 の入口**は足りる（短く読める）。**旧「単一ファイル全文」と同値の細則**は **Part A〜F**（`session-starter-parts/*.md`／Desktop **`01`〜`06`-STARTER-part-*.txt**）にあり、**AI が順に Read** して復元する（下記手順 2）。任意で **Part C「■ フル版」ブロック**を追加貼付してもよい。`18-HANDOFF-HUMAN.txt` 5 行は **任意**。
+**方針（v3.36）**: 浜田は **ハブ**（Desktop の **`00-NEW-SESSION-STARTER_yyyymmdd.txt`**）を **新チャット 1 通目**に貼れば **項番 -1 の入口**は足りる（短く読める）。**旧「単一ファイル全文」と同値の細則**は **Part A〜F**（`session-starter-parts/*.md`／Desktop **`01`〜`06`-STARTER-part-*.txt**）にあり、**AI が順に Read** して復元する（下記手順 2）。任意で **Part C「■ フル版」ブロック**を追加貼付してもよい。`22-HANDOFF-HUMAN.txt` 5 行は **任意**。
 
 **AI がこのチャット内だけで守る順序（checkpoint 項番 -0 〜 0 と同値）**:
 
@@ -36,7 +36,7 @@
 
 **単独貼付の範囲**: 上記 **■ 貼付単独で完走** が **項番 -1〜項番 0（機械）**の正本。チャットに `checkpoint-latest.md` を **別添しなくてよい**（AI はツールで読む）。続く **@ Read** で文脈を厚くしてから本題へ。
 
-**浜田が毎回最初に開く場所（運用上いちばん大事）**: `C:\Users\mhamada202408224\Desktop\AI緊急用\` の **`00-NEW-SESSION-STARTER_yyyymmdd.txt`**（**JST 8 桁・ハブ正本**。旧名 `NEW-SESSION-STARTER_*.txt` は同期で掃除）。**貼付推奨**は **`npm run verify:desktop-ai-emergency-sync` の最終行**（または `session-starter:sync-desktop` の「貼付推奨」行）。フォルダ説明は **`19-AI緊急用-README.txt`**。**セッション切替時はハブを 1 通目に貼る**（細則は AI が Part A〜F で Read）。貼ったあと **本日の一手**を **§41 一問**で確認し、**浜田 OK 後**に項番 0（**`npm run session:bootstrap`**）。**CIO 義務**: スターター系をリポで触った **同一ターン**で **`npm run session-starter:sync-desktop`**（§35-1・TSB-024）。**日終わり**にも sync → verify。
+**浜田が毎回最初に開く場所（運用上いちばん大事）**: `C:\Users\mhamada202408224\Desktop\AI緊急用\` の **`00-NEW-SESSION-STARTER_yyyymmdd.txt`**（**JST 8 桁・ハブ正本**。旧名 `NEW-SESSION-STARTER_*.txt` は同期で掃除）。**貼付推奨**は **`npm run verify:desktop-ai-emergency-sync` の最終行**（または `session-starter:sync-desktop` の「貼付推奨」行）。フォルダ説明は **`23-AI緊急用-README.txt`**。**セッション切替時はハブを 1 通目に貼る**（細則は AI が Part A〜F で Read）。貼ったあと **本日の一手**を **§41 一問**で確認し、**浜田 OK 後**に項番 0（**`npm run session:bootstrap`**）。**CIO 義務**: スターター系をリポで触った **同一ターン**で **`npm run session-starter:sync-desktop`**（§35-1・TSB-024）。**日終わり**にも sync → verify。
 
 **補足（2026-04-28 / v3.36 で追補）**: Desktop に集約 txt のみある場合も、**先に `session-starter:sync-desktop`** で **ハブ＋`01`〜`06`-STARTER-…txt＋儀式（07/17/18/19）＋ read-pack** を復元してから **ハブ貼付 → 項番 -0 → bootstrap**。Git 正本: **ハブ** `chat-sessions/NEW-SESSION-STARTER.md` と **Part** `chat-sessions/session-starter-parts/part-*.md`。`/mnt/c` 不可時は CIO がチャットに 1 行（復帰後に npm 再実行）。
 
@@ -174,7 +174,7 @@ v3.12 (2026-04-26) 人間5行引き継ぎ + AI 追記義務:
 v3.26 (2026-04-26) **canonical 固定 + 貼付推奨ログ + README + 日終わり**（浜田「案 A〜D 全部」）:
 - **案 C**: 常に **`NEW-SESSION-STARTER_yyyymmdd.txt`** に正本を書く。内容が変わる sync のときだけ旧 **`yyyymmdd.txt`** を **`_2`…** に退避してから上書き。
 - **案 D**: **`verify:desktop-ai-emergency-sync`** の **成功時最終行**に **`貼付推奨（項番-1）:`** を出す。`session-starter:sync-desktop` にも **貼付推奨**行。
-- **案 B**: リポ `chat-sessions/AI緊急用-README.txt` → Desktop **`19-AI緊急用-README.txt`** を sync/verify 対象に追加。
+- **案 B**: リポ `chat-sessions/AI緊急用-README.txt` → Desktop **`23-AI緊急用-README.txt`** を sync/verify 対象に追加。
 - **案 A**: `checkpoint-latest.md` に **「日終わり（推奨）」**（sync → verify または bootstrap）。
 
 v3.27 (2026-04-27) **貼付単独で完走**（浜田指示）:
@@ -259,7 +259,7 @@ v3.20 (2026-04-26 深夜) **セッション切替の考慮漏れ潰し**（浜�
 v3.19 (2026-04-26 19:37) **機械ゲート**（迷走再発防止 / 浜田「仕組みを今日作って」）:
 - **`scripts/verify-constitution-handoff.mjs`** + `npm run verify:constitution-handoff` — 必須フレーズ（TSB-024 / §35-1 / 役割宣言テンプレ等）が欠けたら **即 exit 2**
 - **`npm run smoke:quiet` 第 9 検査**に組込 → `npm run session:bootstrap` でも自動実行
-- **`.cursor/rules/constitution-handoff-gate.mdc`**（`alwaysApply: true`）— 毎チャット想起（禁句・§1-2-3-1）
+- **`.cursor/rules/constitution-handoff-gate.mdc`**（**`alwaysApply: false` + `globs`**）— TSB-024 系想起（禁句・§1-2-3-1）。**常時 true 核は `cio-constitution.mdc` のみ**（2026-05-09 薄型化追記）
 - **`handoff-log.md` HTML アンカー** — 要約で消えにくい固定子
 - `RULES-INDEX.md` セッション切替表に TSB-024 行追加
 
@@ -282,7 +282,7 @@ v3.15 (2026-04-27) 新・PC台帳は **仕様書を読んでから**:
 v3.14 (2026-04-26) 引き継ぎ後の安心 — 経緯・法律相当・ルール・機能・MCP を棚卸し:
 - **必読**: `chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md`（フェーズ 0–7）。**Read だけで終わらせない**。
 - **必実行**: `npm run session:bootstrap`（= `smoke:quiet` / **9 連検査**）。結果をチャットに **短く要約**（チェックリスト フェーズ 7）。
-- **Desktop（最優先）**: 浜田が参照する `AI緊急用\` の **`00-NEW-SESSION-STARTER_yyyymmdd.txt`**（儀式・**canonical**）および **`01`〜`06`-STARTER-…txt** / **`07-HANDOFF-AI-FIVE-BLOCKS.md` / `17-SESSION-BOOTSTRAP-CHECKLIST.txt` / `18-HANDOFF-HUMAN.txt` / `19-AI緊急用-README.txt`**（＋ read-pack **`08`〜`23`**・当日のみ **`24-evening-…md`**）を、本ファイルをコミットした **同一ターン**で **`npm run session-starter:sync-desktop`** により必ず更新する。未マウント時はスキップ＋チャット 1 行（後で再実行）。
+- **Desktop（最優先）**: 浜田が参照する `AI緊急用\` の **`00-NEW-SESSION-STARTER_yyyymmdd.txt`**（儀式・**canonical**）および **`01`〜`06`-STARTER-…txt** / **`07-HANDOFF-AI-FIVE-BLOCKS.md` / `21-SESSION-BOOTSTRAP-CHECKLIST.txt` / `22-HANDOFF-HUMAN.txt` / `23-AI緊急用-README.txt`**（＋ read-pack **`08`〜`20`**・儀式同期 **`21`〜`23`**・鏡 **`24-handoff-log.md` / `25-checkpoint-latest.md`**・当日のみ **`26-evening-…md`**）を、本ファイルをコミットした **同一ターン**で **`npm run session-starter:sync-desktop`** により必ず更新する。未マウント時はスキップ＋チャット 1 行（後で再実行）。
 - **目的**: 浜田が気づかないまま逆方向に進む事故を減らす（確認負荷は人に押し付けない）。
 
 v3.13 (2026-04-26) PC 台帳仕様の正本固定 + セッション切替後もブレない管理:

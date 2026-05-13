@@ -34,10 +34,10 @@
 | 内容 | 674 フィールド | 値 |
 |---|---|---|
 | 移行識別子 | `internal_system_meta.import_source` | `B1_IMPORT_SCRIPT_v0`（スクリプト内定数） |
-| 旧 594 `$id` | `internal_system_meta.legacy_record_id_594` | 数値 |
-| 旧 PC 名の控え | `internal_system_meta.legacy_pc_name_594` | 594 `PC_name` と同値で開始（§4.3.1） |
 | 既存移行カウンタ | `internal_system_meta.pc_serial_no` | `0`（§4.2.1a） |
 | 作成日時 JST | `internal_system_meta.created_at_jst` | 空（取込後に運用で可） |
+
+**注（2026-05-12）**: 旧 **`legacy_pc_name_594` / `legacy_record_id_594`** は kintone 定義から削除済み。594 の `$id` や旧 PC 名の追跡は **`extra_info_2` の `[594:record_id]`** および **`pc_name`** / **`import_source`** に寄せる。
 
 ## 4. 627 結合（G4 / G5）
 
@@ -59,7 +59,7 @@
 | `location` | `extra_info_1` 先頭ブロック | `[594:location] 値` |
 | `etc_1` | `extra_info_1` | `[594:etc_1] 値`（location と改行で連結可） |
 | `etc_2` | `extra_info_1` | `[594:etc_2] 値` |
-| `record_id`（文字管理番号） | `extra_info_2` | `[594:record_id] 値`（`legacy_record_id_594` の数値と重複させない） |
+| `record_id`（文字管理番号） | `extra_info_2` | `[594:record_id] 値`（594 の数値 `$id` と同じ値を重複して載せない） |
 
 ## 6. 取り込まない（674 に出さない）旧列
 

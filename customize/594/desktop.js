@@ -1,7 +1,10 @@
 (() => {
   'use strict';
 
-  // BUILD: 2026-05-05-v1 (コメントのみ: 674 正本 `windows_name` 例を `jbm0001[tanaka]` に更新・+なし)
+  // BUILD: 2026-05-12-v492 (594 PC_name 596 判定を種別 type のみに: 個人/共有。カテゴリ DROP_DOWN に依存しない)
+  // BUILD: 2026-05-12-v491 (594 個人: 空の PC_name に 596 または record_id を自動投入・保存後PATCH整合)
+  // BUILD: 2026-05-12-v490 (594 個人 record_id: フィールド補完・596同型誤値クリア・保存後PATCHフォールバック)
+  // BUILD: 2026-05-12-v489 (594 種別=個人の管理番号 record_id を JBIS0067〜自動採番・モバイル create 同梱)
   // BUILD: 2026-04-18-v480 (相関ダッシュ: 台帳番号列・ミラー取り残し一括クリア)
   // BUILD: 2026-04-20-v488 (個人/共有アカウント紐付け解除時に 627.PC_name の正確一致削除を追加: 取り残し修正)
   // BUILD: 2026-04-19-v487 (PC検索: 所属名と所属グループを別フィールドに分離・自動展開廃止で混同防止)
@@ -33,6 +36,11 @@
   const FC_594_ABOLISHED_FLAG = 'abolished_flag';
   const FC_594_TYPE = 'type';
   const FC_594_SHARED = 'shared_terminal_name';
+  /** 管理番号（種別=個人のとき JBIS0067 形式で自動採番） */
+  const FC_594_RECORD_ID = 'record_id';
+  /** 種別=個人の管理番号プレフィックス・連番の下限（0067 = 数値 67） */
+  const PERSONAL_RECORD_ID_PREFIX = 'JBIS';
+  const PERSONAL_RECORD_ID_FIRST_NUM = 67;
   const ABOLISHED_LABEL = '廃止';
   /** PC買替完了後、新規レコード詳細で赤バナーを出す（627 の sessionStorage パターンに合わせる） */
   const STORAGE_KEY_594_REPLACE_NOTICE = 'jbis594_replace_notice_v1';
@@ -1228,6 +1236,114 @@
     return res.records && res.records.length ? res.records[0] : null;
   };
 
+  /** 既存 DB の最大連番用。厳密 JBIS+digits のほか、誤って入った JBIS+digits-yyyymm 先頭ブロックも数値化する */
+  const parseJbisTokenForMax594 = (raw) => {
+    const s = String(raw || '').trim();
+    const strict = new RegExp(`^${PERSONAL_RECORD_ID_PREFIX}(\\d+)$`, 'i').exec(s);
+    if (strict) {
+      const n = parseInt(strict[1], 10);
+      return Number.isFinite(n) ? n : null;
+    }
+    const loose = new RegExp(`^${PERSONAL_RECORD_ID_PREFIX}(\\d+)[\\-_]`, 'i').exec(s);
+    if (loose) {
+      const n = parseInt(loose[1], 10);
+      return Number.isFinite(n) ? n : null;
+    }
+    return null;
+  };
+
+  const formatJbisPersonalRecordId = (num) => {
+    return `${PERSONAL_RECORD_ID_PREFIX}${String(num).padStart(4, '0')}`;
+  };
+
+  /**
+   * 種別=個人かつ record_id が JBIS+digits の最大数値を返す（該当なしは null）。
+   */
+  const fetchMaxPersonalJbisRecordIdSuffix594 = async () => {
+    const app = kintone.app.getId();
+    let maxN = null;
+    let offset = 0;
+    for (;;) {
+      const res = await kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', {
+        app,
+        query:
+          `${FC_594_TYPE} in ("個人") and ${FC_594_RECORD_ID} like "${PERSONAL_RECORD_ID_PREFIX}%" order by $id asc limit 500 offset ${offset}`,
+        fields: [FC_594_RECORD_ID],
+      });
+      const rows = res.records || [];
+      for (let i = 0; i < rows.length; i += 1) {
+        const p = parseJbisTokenForMax594(rows[i][FC_594_RECORD_ID]?.value);
+        if (p != null) maxN = maxN == null ? p : Math.max(maxN, p);
+      }
+      if (rows.length < 500) break;
+      offset += rows.length;
+    }
+    return maxN;
+  };
+
+  /**
+   * 種別=個人で record_id が空なら JBIS0067 起点の次番号を代入（手入力は尊重）。
+   */
+  /** 596 の PC_name と同型（プレフィックス-暦月6桁）を record_id に誤って入れた値とみなす */
+  const looksLike596PcNameInRecordId594 = (v) => /^JBIS\d+-\d{6}$/i.test(String(v || '').trim());
+
+  const assignPersonalRecordIdIfEmpty594 = async (rec) => {
+    if (!rec || !rec[FC_594_TYPE]) return;
+    const typeVal = String(rec[FC_594_TYPE].value || '').trim();
+    if (typeVal !== '個人') return;
+    if (!rec[FC_594_RECORD_ID]) {
+      rec[FC_594_RECORD_ID] = { type: 'SINGLE_LINE_TEXT', value: '' };
+    }
+    let cur = String(rec[FC_594_RECORD_ID].value || '').trim();
+    if (looksLike596PcNameInRecordId594(cur)) {
+      cur = '';
+      rec[FC_594_RECORD_ID].value = '';
+    }
+    if (cur) return;
+    const maxSeen = await fetchMaxPersonalJbisRecordIdSuffix594();
+    const floorBefore = PERSONAL_RECORD_ID_FIRST_NUM - 1;
+    const base = Math.max(floorBefore, maxSeen == null ? 0 : maxSeen);
+    const nextNum = base + 1;
+    rec[FC_594_RECORD_ID].value = formatJbisPersonalRecordId(nextNum);
+  };
+
+  /**
+   * 画面に record_id が無い等で submit 時に採番できなかった場合の保険: 保存直後に GET し空または596同型なら PUT。
+   */
+  const maybePatchPersonalRecordId594AfterSave = async (ev) => {
+    try {
+      const id = ev.recordId;
+      if (!id) return;
+      const app = kintone.app.getId();
+      const getRes = await kintone.api(kintone.api.url('/k/v1/record.json', true), 'GET', { app, id });
+      const rec = getRes.record || {};
+      if (String(rec[FC_594_TYPE]?.value || '').trim() !== '個人') return;
+      const rid = String(rec[FC_594_RECORD_ID]?.value || '').trim();
+      if (rid && !looksLike596PcNameInRecordId594(rid)) return;
+      const fakeRec = {
+        [FC_594_TYPE]: { value: '個人' },
+        [FC_594_RECORD_ID]: { type: 'SINGLE_LINE_TEXT', value: '' },
+      };
+      await assignPersonalRecordIdIfEmpty594(fakeRec);
+      const newVal = String(fakeRec[FC_594_RECORD_ID]?.value || '').trim();
+      if (!newVal) return;
+      const pcNow = String(rec[FC_594_PC_NAME]?.value || '').trim();
+      const recordPatch = { [FC_594_RECORD_ID]: { value: newVal } };
+      if (!pcNow) {
+        const nm = await claimPcNumberFrom596();
+        if (nm) recordPatch[FC_594_PC_NAME] = { value: nm };
+      }
+      await kintone.api(kintone.api.url('/k/v1/record', true), 'PUT', {
+        app,
+        id,
+        revision: getRes.revision,
+        record: recordPatch,
+      });
+    } catch (e) {
+      console.error('[JBIS-594] after-save personal record_id patch', e);
+    }
+  };
+
   const claimPcNumberFrom596 = async () => {
     // Oldest unused record first
     const rec = await getOneRecord(
@@ -1251,6 +1367,33 @@
     });
 
     return `${prefix}-${yyyymm()}`;
+  };
+
+  /** 596 で PC_name を自動付与する種別（RADIO 種別のみ参照。カテゴリ DROP_DOWN は使わない） */
+  const wants596FromType594 = (typeTrim) =>
+    typeTrim === '個人' || typeTrim === '共有';
+
+  /**
+   * 種別=個人で PC_name が空のときに 596（例: JBIS0001-202605）を付与。
+   * @returns {Promise<boolean>} 596 枯渇時 false（eventForError があるとき event.error を設定）
+   */
+  const ensurePersonalPcName594 = async (rec, eventForError) => {
+    if (!rec || !rec[FC_594_TYPE]) return true;
+    if (String(rec[FC_594_TYPE].value || '').trim() !== '個人') return true;
+    const pcTrim = String(rec[FC_594_PC_NAME]?.value || '').trim();
+    if (pcTrim) return true;
+    if (!rec[FC_594_PC_NAME]) {
+      rec[FC_594_PC_NAME] = { type: 'SINGLE_LINE_TEXT', value: '' };
+    }
+    const newPcName = await claimPcNumberFrom596();
+    if (!newPcName) {
+      if (eventForError) {
+        eventForError.error = 'PC採番マスタ(596)に未使用の番号がありません。管理者へ連絡してください。';
+      }
+      return false;
+    }
+    rec[FC_594_PC_NAME].value = newPcName;
+    return true;
   };
 
   const peek596HasUnused = async () => {
@@ -2278,21 +2421,32 @@
     return event;
   });
 
-  // 594 new record: auto-generate PC_name for ノートPC / デスクトップPC from app 596 pool.
-  kintone.events.on('app.record.create.submit', async (event) => {
+  // 594 new record: 種別=個人は record_id（JBIS0067〜）+ 空なら PC_name を 596／種別=共有も空なら 596（カテゴリ DROP_DOWN は判定に使わない）
+  kintone.events.on(['app.record.create.submit', 'mobile.app.record.create.submit'], async (event) => {
     try {
       const rec = event.record || {};
-      const category = (rec[FC_594_CATEGORY]?.value || '').trim();
-      const currentPc = (rec[FC_594_PC_NAME]?.value || '').trim();
-      const status = (rec[FC_594_STATUS]?.value || '').trim();
+      await assignPersonalRecordIdIfEmpty594(rec);
 
-      // 廃止ステータスなら廃止フラグを自動ON（フィールドがある場合のみ）
+      const currentPc = String(rec[FC_594_PC_NAME]?.value || '').trim();
+      const status = (rec[FC_594_STATUS]?.value || '').trim();
+      const typeVal = String(rec[FC_594_TYPE]?.value || '').trim();
+
       if (rec[FC_594_ABOLISHED_FLAG]) {
         rec[FC_594_ABOLISHED_FLAG].value = shouldBeAbolished(status) ? [ABOLISHED_LABEL] : [];
       }
-      if (currentPc) return event; // do not override manual value
-      if (!(category === 'ノートPC' || category === 'デスクトップPC')) return event;
+      if (currentPc) return event;
 
+      if (typeVal === '個人') {
+        const ok = await ensurePersonalPcName594(rec, event);
+        if (!ok) return event;
+        return event;
+      }
+
+      if (!wants596FromType594(typeVal)) return event;
+
+      if (!rec[FC_594_PC_NAME]) {
+        rec[FC_594_PC_NAME] = { type: 'SINGLE_LINE_TEXT', value: '' };
+      }
       const newPcName = await claimPcNumberFrom596();
       if (!newPcName) {
         event.error = 'PC採番マスタ(596)に未使用の番号がありません。管理者へ連絡してください。';
@@ -2301,18 +2455,28 @@
       rec[FC_594_PC_NAME].value = newPcName;
       return event;
     } catch (e) {
-      event.error = `PC自動採番でエラー: ${e?.message || String(e)}`;
+      event.error = `PC台帳の保存前処理でエラー: ${e?.message || String(e)}`;
       return event;
     }
   });
 
-  // 594 edit record: keep abolished flag in sync with status.
-  kintone.events.on('app.record.edit.submit', (event) => {
-    const rec = event.record || {};
-    if (!rec[FC_594_ABOLISHED_FLAG]) return event;
-    const status = (rec[FC_594_STATUS]?.value || '').trim();
-    rec[FC_594_ABOLISHED_FLAG].value = shouldBeAbolished(status) ? [ABOLISHED_LABEL] : [];
-    return event;
+  // 594 edit record: 廃止フラグ同期 + 種別=個人の record_id 採番 + 空の PC_name を 596 で補完
+  kintone.events.on(['app.record.edit.submit', 'mobile.app.record.edit.submit'], async (event) => {
+    try {
+      const rec = event.record || {};
+      if (rec[FC_594_ABOLISHED_FLAG]) {
+        const status = (rec[FC_594_STATUS]?.value || '').trim();
+        rec[FC_594_ABOLISHED_FLAG].value = shouldBeAbolished(status) ? [ABOLISHED_LABEL] : [];
+      }
+      await assignPersonalRecordIdIfEmpty594(rec);
+      const ok = await ensurePersonalPcName594(rec, event);
+      if (!ok) return event;
+      return event;
+    } catch (e) {
+      console.error('[JBIS-594] edit.submit', e);
+      event.error = `管理番号の自動採番でエラー: ${e?.message || String(e)}`;
+      return event;
+    }
   });
 
   // ── Shared PC → 627 account link ─────────────────────────────
@@ -4108,14 +4272,15 @@
       if (recId) sessionStorage.setItem(STORAGE_KEY_594_SHARED_LINK, JSON.stringify({ id: recId, pcName }));
     } catch (_e) { console.warn('[JBIS-594] shared link storage error', _e); }
   };
-  kintone.events.on('app.record.create.submit.success', (event) => {
+  const on594RecordSaveSuccess = (event) => {
     maybeSetSharedLinkStorage(event);
+    void maybePatchPersonalRecordId594AfterSave(event);
     return event;
-  });
-  kintone.events.on('app.record.edit.submit.success', (event) => {
-    maybeSetSharedLinkStorage(event);
-    return event;
-  });
+  };
+  kintone.events.on(
+    ['app.record.create.submit.success', 'mobile.app.record.create.submit.success', 'app.record.edit.submit.success', 'mobile.app.record.edit.submit.success'],
+    on594RecordSaveSuccess
+  );
 
   // ─────────────────────────────────────────────────────────────────
   // 関連アプリへの横並び小ナビ（一覧／詳細／作成／編集 すべての画面に常駐）

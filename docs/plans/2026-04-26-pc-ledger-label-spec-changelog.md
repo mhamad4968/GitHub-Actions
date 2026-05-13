@@ -185,8 +185,6 @@
 | `skysea_target_flag` | SKYSEA配信対象 | 配信対象フラグ | 同上 |
 | `m365_master_record_id` | M365管理マスタ レコード番号 | 紐付き M365管理マスタ レコード番号（共有/JR のみ） | §4.2.4 原文 |
 | `import_source` | 取込元 | 取込元 | 変更なし（拡張 JSON 管理） |
-| `legacy_pc_name_594` | 旧PC名（594） | 旧PC名（594） | 同上 |
-| `legacy_record_id_594` | 旧レコードID（594） | 旧レコードID（594） | 同上 |
 | `created_at_jst` | 作成日時（JST） | 作成日時（JST） | 同上 |
 
 ---

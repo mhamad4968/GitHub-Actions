@@ -27,6 +27,10 @@ Cursor の会話全文の自動保存はありません。**要点メモ**を置
 
 **「忘れた」防止**: チャットを閉じる前に **「チェックポイントと INDEX 残して」** と一言入れるか、**`checkpoint-latest.md` 末尾の締めチェック**を実行する。**いつファイルへ書くか**のトリガーと **セッション締め 3 点**は **`docs/agent-restore-checkpoint.md`**「『忘れた』を防ぐ」。
 
+## Cloud 長回し（Cmd+E 等）—「再開可能」SLO と放置の区別
+
+クラウドの SLO は **「必ず完走」ではなく、同一完了定義で再開できること**（`cio-constitution.mdc`・CEO 承認済み）。**「未完のまま放置」**と誤読されないよう、**証跡で必ず次アクションを残す**。**`npm run cio:cloud-handoff -- end --status partial`**（および **`blocked`**）は **`--note "…"` 必須**（脚本が exit 2）。`note` には **次セッションが読めば再開できる具体**（コマンド名・ファイルパス・PR 番号・誰が CI を見るか等）を書く。**`done`** のときは `note` 任意。**合意シール**: タスク単位で `seal` → 第2者 `add` → **プッシュ前に PR 作者（CIO）が `npm run cio:consensus-seal -- verify`**（厳格。ファイル無しは失敗）。**GitHub Actions** は **`npm run cio:consensus-seal:verify-ci`**（`--if-present`）を実行し、**PR に合意 JSON を意図的に載せたときだけ** CI が不足を赤にする。状態ファイル **`chat-sessions/cio-consensus-seal.json`** は **既定で `.gitignore`**（ローカル作業）。ゲートを CI で通す PR では **`git add -f chat-sessions/cio-consensus-seal.json`** で追跡を上書きしてよい。**マージ後**は **`npm run cio:consensus-seal -- clear`** か次タスク冒頭の **`seal`** で状態を畳み、**古い合意 JSON を次 PR に持ち越さない**。型の参考は **`cio-consensus-seal.example.json`**。
+
 ## リポジトリ内のファイル
 
 - `TEMPLATE.md` … ひな形（コミット用）。Windows 側にも初回コピーされます。

@@ -10,7 +10,18 @@
 - **`npm run cio:mcp:env`** … 上記のあと **`.env`＋`.env.proxy` 注入**で `cio-mcp-quickprobe`（kintone + 3AI + memory + sequential-thinking）を **JSON-RPC initialize** まで実測。**CIO 合格線**: **3AI・kintone のキーは `.env` が空でも `%USERPROFILE%\.cursor\mcp.json`（＋リポ `.cursor/mcp.json`）の `server.env` を自動補完**し、**SKIP なしで全件 OK**（不足なら **exit 2**＝未整備）。
 - **実行経路（2026-05-11 CEO 合意）**: **日常の健康ゲートは Windows ネイティブ**で `Set-Location C:\Users\<you>\kintone-ai-lab; npm run cio:mcp:env`（**`SUMMARY: OK 6/6`** を正）。**WSL の `/mnt/c/...` は月次のベストエフォート**（drvfs ＋並列 `npx` で **kimi のみ TIMEOUT** になり得る）。**WSL で kimi だけ落ちるとき**は **`CIO_MCP_PROBE_KIMI_TIMEOUT_MS`**（`scripts/cio-mcp-quickprobe.mjs`）と **ネット（VPN／FW／mirrored）**を先に切り分ける。
 - **監査メモ（2026-05-11）**: **`npm run health-check`** は Windows の **非 IDE CLI** では多くの MCP が **意図的に ⏭**（`HEALTH_CHECK_STRICT_WIN=1` で厳格化可）。**実 initialize の正**は引き続き **`cio:mcp:env`**。**S12 死蔵 WARN** は週次 `mcp-status:refresh-usage` で是正判断。**`main` が `origin/main` より遅れ**ているときは `git fetch` / `git pull` で正本を揃えてから再検証。**Node DEP0190**（`spawn`+`shell:true`+args）— `cio-mcp-quickprobe` は Windows で **`npx` が ENOENT になるため `shell:true` を維持**（警告のみ・コマンド列は固定）。
+- **`kintone-space`（自作・WSL）— 2026-05-11 CIO**: **`KINTONE_BASE_URL` が `https://cybozu.com`（汎用 LP）のまま**だと API が **HTML** を返し、MCP が **`Unexpected token <`** になる。**本番テナント**（例: `https://<tenant>.cybozu.com`、**末尾スラッシュ無し**）へ **`~/.cursor/mcp.json` の `kintone` と `kintone-space`（bash `-lc` 内の export 含む）**を揃える。加えて **`~/.cursor/kintone-space-mcp/index.mjs`** の GET で **`Content-Type: application/json` を付けない**修正（`CB_IL02` 回避）— リポ **`npm run kintone:patch-space-mcp-get-headers`**（WSL・`HOME` 固定）。疎通は **`npm run kintone:probe-space -- 48`**（`.env`）。**Cursor は MCP 子プロセスを再起動**（ウィンドウ再読み込み等）するまで旧コードが残る場合あり。
 - **WSL 正本** `~/.cursor/mcp.json` を編集したら Windows へ **`npm run mcp:sync-cursor-windows`**（TSB-028）。
+
+### §RCA — `kintone-space` が HTML／`CB_IL02` になった要因連鎖（2026-05-11 CEO 向け）
+
+1. **二重正本と同期経路の欠落（組織・運用）**: `scripts/sync-cursor-mcp-windows-from-wsl.mjs` は **WSL `~/.cursor/mcp.json` を正本**とし Windows を再生成するが、**`/mnt/c` 非マウント・WSL 未起動**等で **`mcp:sync-cursor-windows` が SKIP**になり得る（`handoff-log` 2026-05-11 追記と同旨）。その状態で **Windows `%USERPROFILE%\.cursor\mcp.json` だけ手編集**すると、**WSL 正本が旧プレースホルダのまま**という **ズレが再発**する（TSB-028 違反パターン）。
+2. **プレースホルダ URL の温床（技術）**: 初期例・ドキュの **`https://cybozu.com`** は **JSON として正しいがテナントではない**。REST が **HTML（LP／ログイン）** を返し、MCP が **`Unexpected token <`** と誤解する。**5/7 健康是正**（`handoff-log` §「実施 1」）で **Windows 側 3 箇所は jbis に直した記録**がある一方、**2026-05-11 時点の実ファイルでは再び `cybozu.com` が残存**していた → **その後の復元・別端末コピー・正本未同期のいずれか**で **リグレッション**（証跡は `handoff-log` 1124 vs 実測の矛盾）。
+3. **検知ゲートの穴（プロセス）**: **`npm run cio:mcp:env`** の `cio-mcp-quickprobe` は **2026-05-11 まで公式 `@kintone/mcp-server` の initialize のみ**で、**`kintone-space` の実 API（`GET /k/v1/space.json`）は叩いていなかった**。よって **`KINTONE_BASE_URL` 誤りでも SUMMARY 6/6 が緑**になり、**Space 系だけ劣化して長期潜伏**しうる（是正: **`kintone-space.env` のマージ**＋**`kintone:probe-space`** を台帳手順に固定）。
+4. **自作 MCP の実装バグ（技術）**: `kintone-space-mcp` が **GET にも `Content-Type: application/json`** を付与 → Cybozu **`CB_IL02`**。利用頻度が低く **本番系結合試験に乗らなかった**ため顕在化が遅れた（是正: リポ **`npm run kintone:patch-space-mcp-get-headers`**）。
+5. **IDE プロセス寿命（運用）**: `mcp.json` やサーバー JS を直しても **Cursor が子 MCP を握り直すまで旧挙動**が残る → **Reload Window** 前提（憲法の「実機確認ラベル」と整合）。
+
+**再発防止（最小）**: **WSL と Windows の `KINTONE_BASE_URL` を同一値で突合**（`diff` 相当）→ **`mcp:sync-cursor-windows` が SKIP なら理由をチャット 1 行**→ **`cio:mcp:env` 後に週次またはタスク完了時に `kintone:probe-space -- 48`**（または軽量 `GET /k/v1/app.json`）を **ゲートに追加検討**。
 
 ### §Cursor 可用性メモ（2026-05-06 JST / WSL `kintone-ai-lab`）
 

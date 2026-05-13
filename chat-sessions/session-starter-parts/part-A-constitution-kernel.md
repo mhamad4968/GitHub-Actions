@@ -9,11 +9,11 @@
 🚨 憲法級（要約耐性ブロック） / 2026-05-06 **v3.34**（AGENTS **v23.34**・§35-7・**全 customize `deploy:*` preflight ゲート**・**HANDOFF-AI-FIVE-BLOCKS**）/ TSB-024
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-**■ 憲法の読み方（2026-05-06）**: Cursor の常時想起は **`.cursor/rules/constitution-brief-card.mdc`**（**薄型カード**）。**網羅結合版** **`.cursor/rules/constitution.mdc`** は **`alwaysApply: false`** — **必要なときだけ Read ツールで全文**（再生成: `bash scripts/regenerate-constitution-rule.sh`）。
+**■ 憲法の読み方（2026-05-06 / 2026-05-09 追補）**: Cursor の **`alwaysApply: true` は `.cursor/rules/cio-constitution.mdc` のみ**。補助想起は **`constitution-brief-card.mdc`** 等（**`false` + `globs`**）。**網羅結合版** **`.cursor/rules/constitution.mdc`** は **`alwaysApply: false`** — **必要なときだけ Read ツールで全文**（再生成: **`npm run rules:regenerate-constitution`** または `npm run rules:regenerate-constitution:bash`）。
 
 **■ 引き継ぎ 5 ブロック（長文を分割して読む）**: 次 AI は先に **`chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md`** を Read し、ブロック 1→5 の順で復元する（本文のどこかに埋もれた手順と**同じ内容を索引化**したもの）。
 
-**■ customize 本番 deploy 機械ゲート（v23.34）**: `package.json` の **`deploy:594` `595` `626` `627` `629` `671` `674` `677` `678` `679`** は、いずれも **同じ番号の `cio:preflight:<app> -- --note "…"`**（45 分以内・`logs/cio-preflight/<app>.json`）が無いと **拒否**。任意でスタンプに **`git diff --shortstat HEAD` の 1 行**を載せるときは **`--with-git-diff-line`** を付ける。例: **`npm run cio:preflight:674 -- --note "…"`** → **`npm run deploy:674`**。**緊急**: `SKIP_CIO_DEPLOY_GUARD=1`（浜田 GO＋理由 1 行）。常時想起: **`.cursor/rules/cio-discipline-always.mdc`**（`alwaysApply: true`）。詳細 **`AGENTS.md` §35-7**。
+**■ customize 本番 deploy 機械ゲート（v23.34）**: `package.json` の **`deploy:594` `595` `626` `627` `629` `671` `674` `677` `678` `679`** は、いずれも **同じ番号の `cio:preflight:<app> -- --note "…"`**（45 分以内・`logs/cio-preflight/<app>.json`）が無いと **拒否**。任意でスタンプに **`git diff --shortstat HEAD` の 1 行**を載せるときは **`--with-git-diff-line`** を付ける。例: **`npm run cio:preflight:674 -- --note "…"`** → **`npm run deploy:674`**。**緊急**: `SKIP_CIO_DEPLOY_GUARD=1`（浜田 GO＋理由 1 行）。**deploy 規律の想起**: **`.cursor/rules/cio-discipline-always.mdc`**（**`alwaysApply: false` + `globs`**）。詳細 **`AGENTS.md` §35-7**。
 
 **🔱 自律型 CTO「完全覚醒」プロトコル（2026-05-01 CEO 追補）**: 詳細・最高位の行動規範は **`.cursorrules` の `## 🔱 自律型 CTO「完全覚醒」プロトコル`** を正とする（本ファイルと併記。矛盾時は **憲法・浜田 GO・§52-8** を優先）。
 
@@ -54,7 +54,7 @@
 | **バックアップ** | **OpenRouter**（`mcp_user-openrouter_chat_completion`） | 上記失敗時の代替（`provider.sort=price, allow_fallbacks=true`） |
 | **依頼者・確認者** | **浜田**（CEO） | 仕様提示・GO/NO-GO・kintone 画面の目視 |
 
-**補足（2026-05-01 / CIO 統合に内包）**: 仕様確認を **知恵袋で網羅 → CIO が正本と突合（セカンドオピニオン）**と固定する運用の手順書は **`.cursor/rules/deepseek-cursor-spec-division.mdc`**（`alwaysApply: true`）。**CIO の表の職分は増えない**（「結果統合」に収まる）。**憲法 §50-3-8**（盲点 3 点＋約 3 行突合メモ）と併用。
+**補足（2026-05-01 / CIO 統合に内包）**: 仕様確認を **知恵袋で網羅 → CIO が正本と突合（セカンドオピニオン）**と固定する運用の手順書は **`.cursor/rules/deepseek-cursor-spec-division.mdc`**（**`alwaysApply: false` + `globs`**）。**CIO の表の職分は増えない**（「結果統合」に収まる）。**憲法 §50-3-8**（盲点 3 点＋約 3 行突合メモ）と併用。
 
 **🎖️ 軽量相談の既定（2026-05-02 CEO 承認・SESSION-DAILY §4 H）**: CIO がコードを自ら書いてよい場合でも、**タスク単位で DeepSeek に 1 問**（盲点・反例・仕様乖離の疑い）を投げることを**既定とする**。**コード変更**（リポ内のソース・設定・ワークフロー等を **追加・削除・書き換え**する作業）では、**編集ツールを走らせる前**、または **同一ターンの十分早い段階**でその 1 問を済ませる（**先に手を動かしてから相談だけ形式**にしない）。スキップする場合は **理由 1 行**をチャットに残す（**`§50-3-8 スキップ理由:`** 付き推奨）。**README 誤字のみ等の超軽微**で §50-3-8 省略する場合も **同じく理由 1 行必須**（`AGENTS.md` §50-3-8 補足）。Kimi は **長文差分が 80 行超**などのときだけ **レビュー観点 1 問**（任意）。OpenRouter は上記失敗・タイムアウト時の **フォールバック**。**「相談のみ」のターン**の 🎖️ 表示例: `[🎖️ 本セッション割当] CIO=実装 | DeepSeek=タスク冒頭に盲点1問のみ実施済 | Kimi=未使用 | OpenRouter=未使用`（`08-READ-06.txt` §10 と整合）。
 

@@ -6,7 +6,7 @@
 
 ### 作業レーンの切り替え（CIO メモ・2026-05-04）
 
-- **部署予実**（kintone **677／678／679**・主に **Space 54**）と **PC台帳系**（**594**・**674**・**668** 等・**Space 21** ほど）は **別案件**。着手前に **いまどちらのレーンか**を明示し、**アプリ ID・URL は `kintone-apps.md` で照合**する（混同防止）。
+- **部署予実**（kintone **677／678／679**・主に **Space 54**）と **PC台帳系**（**674（新・正）**・**旧594（削除予定・新規禁止）**・**668** 等・**Space 21** ほど）は **別案件**。着手前に **いまどちらのレーンか**を明示し、**アプリ ID・URL は `kintone-apps.md` で照合**する（混同防止）。**594 を前提にした新仕様は採用しない**（`docs/plans/2026-04-21-new-pc-ledger-spec.md` **§1.5**）。**本番に594を参照専用で恒久的に残す前提はない**。
 - **単独作業は原則禁止**（チーム運用）: 本番デプロイ・仕様確定・一括変更を **一人で完結させない**。レビュー・ペア・声かけ・承認を挟む。予実の索引は **`templates/yojitsu-budget-lite/HANDOFF.md`**。
 - **MCP 実務**: 着手前チェック・タスク別優先表の **要点**は **`chat-sessions/desktop-ai-emergency-read-pack/08-READ-06.txt`**（MCP 節）と **`chat-sessions/SESSION-CLOSE-REPORT-20260504.txt` §6**。
 
@@ -429,7 +429,7 @@ agent
 ### §4 フィールドコードの整合性
 推測禁止。`kintone-apps.md` または `npm run app:fields <ID>` の出力と一致するコードのみ使用する。
 
-**PC台帳スタック（594 / 595 / 626 / 627）を触る前後**は、`npm run kintone:test`（認証と各アプリ設定の読取疎通）と `npm run lint:customize`（`customize/` の ESLint）を通すことを推奨。`kintone:test` が実際に GET するアプリ ID は **`scripts/kintone-connection-test.js` の `PC_STACK_APPS`**（2026-05-02 時点: **594 / 595 / 627 / 670–674** の **8 件**。**626 は GAIA 上削除済みのため疎通リストに含めない**）。運用メモは `kintone-apps.md` の「PC台帳まわり（594・595・626・627・668）の保守メモ」。
+**PC台帳スタック（594 / 595 / 626 / 627）を触る前後**は、`npm run kintone:test`（認証と各アプリ設定の読取疎通）と `npm run lint:customize`（`customize/` の ESLint）を通すことを推奨。`kintone:test` が実際に GET するアプリ ID は **`scripts/kintone-connection-test.js` の `PC_STACK_APPS`**（**既定: 595 / 627 / 670–674**。**594 は除外**・移行時のみ **`INCLUDE_LEGACY_APP_594=1`**）。**626 は GAIA 上削除済みのため疎通リストに含めない**。**594 は削除予定**（SPEC §1.5）— `PC_STACK_APPS` への再追加は **環境変数による一時的なみ**とし、リストから恒久的に戻す必要は **浜田 GO・移行方針に従う**。運用メモは `kintone-apps.md` の「PC台帳まわり（594・595・626・627・668）の保守メモ」。
 
 **本番データの作成・更新・削除やデプロイに直結する npm**（`deploy:*`、`ops-guide:publish`、`test:e2e:595`、`clear:*:apply`、sync / purge / reset 系など）は、**実行前に利用者・管理者と相談**すること。一覧は `kintone-apps.md` 内「実行前に相談が必要なコマンド」を参照。
 
@@ -851,7 +851,7 @@ GitHub・npm・Stack Overflow 等から外部コードを参考にする際は�
    - **本番書き込み直前の 1 行**: 目的・主に変更するファイル・ロールバックの想像を **各デプロイ前に 1 行**。  
    - **締め応答**: 技術完了と別に、**ルール順守の自己評価を 1 文**（できていなければそのまま記載）。  
    - **引き継ぎの読み方（5 分割）**: **`chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md`** を索引とする（長文を一度に読まなくてよい）。
-   - **customize 本番 deploy の機械ゲート（2026-05-06 拡張）**: `package.json` の **`deploy:594` `595` `626` `627` `629` `671` `674` `677` `678` `679`** は、それぞれ **`logs/cio-preflight/<同じアプリID>.json`** に **45 分以内**のスタンプが無いと **`cio-deploy-preflight-guard.mjs` が exit 2** で拒否する。スタンプ: **`npm run cio:preflight:<app> -- --note "（チャット規律の一行要約・4文字以上）"`**（`scripts/cio-preflight-stamp.mjs`）。**任意**: ワーキングツリー要約の 1 行を JSON に載せるとき **`--with-git-diff-line`**（`git diff --shortstat HEAD` の先頭行。**差分なしなら `gitDiffLine: null`**）。**緊急脱出**: `SKIP_CIO_DEPLOY_GUARD=1`（**浜田 GO** とチャットに **理由 1 行**必須。濫用禁止）。**Cursor 常時想起**: `.cursor/rules/cio-discipline-always.mdc`（`alwaysApply: true`）。
+   - **customize 本番 deploy の機械ゲート（2026-05-06 拡張）**: `package.json` の **`deploy:595` `626` `627` `629` `671` `674` `677` `678` `679`** および **移行専用の `deploy:594`** は、それぞれ **`logs/cio-preflight/<同じアプリID>.json`** に **45 分以内**のスタンプが無いと **`cio-deploy-preflight-guard.mjs` が exit 2** で拒否する。スタンプ: **`npm run cio:preflight:<app> -- --note "（チャット規律の一行要約・4文字以上）"`**（`scripts/cio-preflight-stamp.mjs`）。**任意**: ワーキングツリー要約の 1 行を JSON に載せるとき **`--with-git-diff-line`**（`git diff --shortstat HEAD` の先頭行。**差分なしなら `gitDiffLine: null`**）。**緊急脱出**: `SKIP_CIO_DEPLOY_GUARD=1`（**浜田 GO** とチャットに **理由 1 行**必須。濫用禁止）。**Cursor 想起（glob 注入）**: `.cursor/rules/cio-discipline-always.mdc`（**`alwaysApply: false` + `globs`**）。**常時 true 核は `cio-constitution.mdc` のみ**。
 
 ### §36 デュアルラン（キー移行の安全策）
 1. **二段ルックアップ**: `emp_id` へ移行する機能では、**`JBIS594_EMP_ID_QUERY_PRIMARY`（または同等の単一フラグ）が true のとき `emp_id` を先に検索し、0件または無効なら `mail` にフォールバック**する。
@@ -877,7 +877,7 @@ GitHub・npm・Stack Overflow 等から外部コードを参考にする際は�
 
 **四キー正典（checkpoint 論点10・CIO 推奨で CEO GO）**: hooks の追加観測で「4 新フィールド」と呼ばれる **キー名は次の 4 つに固定**する（別名・日本語キー・独自略称を増やさない）: **`SECOND_REVIEWER`** / **`SPEC_TOUCHED`** / **`DESTRUCTIVE_OPS`** / **`DRY_RUN_TO_APPLY_GAP`**。
 
-**人間可読チェックリスト**（□ 形式）は **同一末尾ブロック内で続けてよい**。正本は **`docs/session-report-checklist.md` §M-2**／短縮は **`chat-sessions/desktop-ai-emergency-read-pack/23-SESSION-REPORT-CHECKLIST.txt`**。
+**人間可読チェックリスト**（□ 形式）は **同一末尾ブロック内で続けてよい**。正本は **`docs/session-report-checklist.md` §M-2**／短縮は **`chat-sessions/desktop-ai-emergency-read-pack/20-SESSION-REPORT-CHECKLIST.txt`**。
 
 **コミットメッセージ（論点11・`git-hooks/commit-msg`）**: 次のいずれかに該当するときは、コミット本文に **`Reviewed-by: deepseek`** / **`Reviewed-by: kimi`** / **`Reviewed-by: openrouter`** のいずれか **1 行**を含める（`constitution-enforcement-core.mdc` の第2者と整合）。**(1)** メッセージに **`SPEC_TOUCHED: yes`** 行がある（V2 フッタからのコピー想定）。**(2)** ステージに **`templates/yojitsu-budget-lite/SPEC.md`** または **`docs/plans/2026-04-21-new-pc-ledger-spec.md`** が含まれる。**Merge commit 先頭行**は検査スキップ。**バイパス**は `git commit --no-verify`（浜田承認下のみ）。
 
@@ -2152,9 +2152,11 @@ $ node scripts/parallel-session-detector.mjs --explain # 軸ごとの内訳を�
 - 改訂日: 2026-05-04（[FEAT] v23.29: **§35-6 の機械検証＋TSB-031** — `verify-constitution-handoff.mjs` に `AGENTS`／スターター／bootstrap／**TSB-031 本文**／`constitution-handoff-gate.mdc`／`checkpoint-latest.md` needles 追加。**`docs/troubleshooting.md` TSB-031** 新設（目次表・集計更新）。**`SESSION-BOOTSTRAP-CHECKLIST.md`** フェーズ 2 に §35-6 チェック。**read-pack `03-READ-01.txt`**・**`SESSION-SPLIT-REMINDER.md`**・**`HANDOFF-HUMAN.txt`** 運用追補。**`RULES-INDEX.md`** TSB-031 索引 1 行。`.rag/extra-docs` は `npm run rag:mirror:canonical-docs` で同期。）
 - 改訂日: 2026-05-04（[FEAT] v23.30: **§50-3-2a MDD 語彙の憲法一次定義** — 「MDD」＝航海図（Goal/Constraints/Acceptance）＋SPEC/md 正本＋領域別 §10.5/§11 を **AGENTS 本文で明示**。`.cursorrules` C 節・`RULES-INDEX`・予実 **B-MDFLOW** メモと相互参照。scaffold 未整備は **B-MDFLOW** に残し、既存 `rag:mirror` で不足を補う旨を記載。`.rag/extra-docs` は mirror で同期。）
 - 改訂日: 2026-05-05（[FEAT] v23.32: **§35-7 チャット上 CIO の規律先行**（本体 AI が実装より先に憲法 3 分・§50-3-8／スキップ理由・🎖️・デプロイ前 1 行・締め自己評価をチャットに残す。CIO≠省ゲート最速）。**`chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md`** 新設＝引き継ぎ 5 ブロック索引。`read-pack/02-INDEX.txt`・`03-READ-01.txt`・`NEW-SESSION-STARTER.md` バージョン行・`checkpoint-latest.md`・`constitution-handoff-gate.mdc` へ相互参照。）
-- 改訂日: 2026-05-05（[FEAT] v23.33: **§35-7 追補** — **`deploy:674` の preflight 機械ゲート**（45 分以内スタンプ・`SKIP_CIO_DEPLOY_GUARD` 緊急脱出）＋**`.cursor/rules/cio-discipline-always.mdc`（`alwaysApply: true`）**。`npm run cio:preflight:674`・`scripts/cio-preflight-stamp.mjs` / `cio-deploy-preflight-guard.mjs`。`package.json` の `deploy:674` 連鎖更新。）
+- 改訂日: 2026-05-05（[FEAT] v23.33: **§35-7 追補** — **`deploy:674` の preflight 機械ゲート**（45 分以内スタンプ・`SKIP_CIO_DEPLOY_GUARD` 緊急脱出）＋**`.cursor/rules/cio-discipline-always.mdc`（`alwaysApply: false` + `globs`）**。`npm run cio:preflight:674`・`scripts/cio-preflight-stamp.mjs` / `cio-deploy-preflight-guard.mjs`。`package.json` の `deploy:674` 連鎖更新。）
 - 改訂日: 2026-05-06（[FEAT] v23.34: **§35-7 拡張** — **全 customize `deploy:*`（594/595/626/627/629/671/674/677/678/679）へ同一 preflight ゲート**横展開。`cio-preflight-stamp.mjs` に **`--with-git-diff-line`**（任意・`git diff --shortstat HEAD` 1 行を `gitDiffLine` に記録）。）
 - 改訂日: 2026-05-07（[FEAT] v23.35: **Desktop「AI緊急用」00〜24 連番詰め** — スターター分割 **`01`〜`06`-STARTER-…txt**、HANDOFF 等 **07/17/18/19**、read-pack **08〜23**、夕反省 **24**。`session-starter:sync-desktop` が旧 **00p**・**02〜14 帯**・**13-README**・**14-evening-** を Desktop から削除。`verify-desktop-ai-emergency-sync`／`verify-constitution-handoff`／checkpoint／read-pack 本文の相互参照を整合。）
+- 改訂日: 2026-05-09（[FEAT] v23.36 相当: read-pack **17〜20**（HISTORY／重要確認／1 本報告／報告チェック）＋儀式 **21〜23**（bootstrap／HANDOFF 人間／README）へ再採番。旧 **20〜23** 名は `LEGACY_DESKTOP_AI_EMERGENCY_FILES` で prune。）
+- 改訂日: 2026-05-10（[FEAT] Desktop「AI緊急用」**鏡 24/25・夕反省 26**: **`25-handoff`→`24-handoff`**、**`26-checkpoint`→`25-checkpoint`**、**`24-evening`→`26-evening`**。夕反省無し日の Explorer **欠番 24** を解消。`SESSION_DESKTOP_MIRROR_FILES`・sync・verify・prune・`08-INDEX` を整合。）
 
 ---
 

@@ -6,7 +6,7 @@
 
 ---
 
-## 目次（2026-04-25 全件再構築 / 2026-05-01 TSB-028・TSB-029 目次表追記 / 2026-05-02 TSB-030 追記 / 2026-05-04 TSB-031 追記 / 2026-05-06 TSB-032 追記 / F-2 自己改善目標 #2 = 真因 1 文 + root_cause_confirmed フラグ追加）
+## 目次（2026-04-25 全件再構築 / 2026-05-01 TSB-028・TSB-029 目次表追記 / 2026-05-02 TSB-030 追記 / 2026-05-04 TSB-031 追記 / 2026-05-06 TSB-032 追記 / 2026-05-09 TSB-033・TSB-034 目次表追記 / F-2 自己改善目標 #2 = 真因 1 文 + root_cause_confirmed フラグ追加）
 
 > **真因 1 文ルール**: 各 TSB は **「真因を 1 文で説明できる」状態でなければ root_cause_confirmed = false** とする。false の TSB は再発監視優先。
 > **status 凡例**: ✅ Resolved（恒久対策済）/ 🟡 Mitigated（暫定対策のみ）/ 🔴 Open（未解決）/ ♻️ Recurring（同系列複数 episode）
@@ -42,9 +42,11 @@
 | TSB-030 | 2026-05-02 | GitHub Actions `security-next-*` が **GAIA_AP15**（403）で失敗 | **GitHub Environment `kintone-collect` の API トークン（`KINTONE_API_TOKEN_COLLECT` / `KINTONE_API_TOKEN_ANALYZE` 等）が、ワークフローが参照するアプリ ID（`KINTONE_APP`・`KINTONE_REPORT_APP_ID`）と kintone 上で一致しておらず** REST が **403 GAIA_AP15** を返している | 🟡 | true | `.github/workflows/main.yml` / `daily-collect.yml` / `security-next-automation/` |
 | TSB-031 | 2026-05-04 | Desktop のセッション日報を **Git 未収容のまま削除**しリポから復元不能にした | **正本を Desktop のみに置いた状態で「古い」整理とファイル削除を同一ターンに走らせ**、バックアップ・コミットなしで消したため **組織の履歴がチャット外に残らなかった** | ✅ | true | セッション日報・HANDOFF・read-pack・憲法 §35-6 |
 | TSB-032 | 2026-05-06 | **`constitution-gates` CI が `constitution.mdc` 欠落で連続 failure** | **`verify-constitution-handoff.mjs` が `.cursor/rules/constitution.mdc` の存在を要求する一方、同ファイルが `.gitignore` でリポ非追跡**のため、GitHub checkout 上にファイルが来ず needle 検査が即 NG になった | ✅ | true | `.github/workflows/constitution-gates.yml` / `verify-constitution-handoff` |
+| TSB-033 | 2026-05-09 | Cloud「再開可能」SLO を「未完放置」と誤読しない | 「再開可能」と言語化した結果、**黙って中断＝放置**と運用で読まれるリスク | ✅ | true | Cloud handoff / `cio-consensus-seal` / CI |
+| TSB-034 | 2026-05-09 | Windows で `health-check` の stdio MCP が偽陰性／`permissions.json` で RUN 省略 | **IDE 外 CLI** と **Cursor IDE 内**で MCP 疎通が食い違い `smoke` 連鎖 NG 等 | ✅ | true | `health-check.mjs` / `permissions.json` / MCP env |
 
-**集計** (2026-05-06 時点 / TSB-032 追記):
-- 全 **29** 件中 **root_cause_confirmed = true: 28 件** / **false (孤児): 1 件**
+**集計** (2026-05-11 時点 / TSB-033・TSB-034 目次追記):
+- 全 **31** 件中 **root_cause_confirmed = true: 30 件** / **false (孤児): 1 件**
 - 5 月目標 (F-2 自己批判 §54-5) = カバレッジ 100% を TSB-019 真因確定 (Cursor IDE Agents 設定) で **95% 前後を維持**（分母は TSB セクション数に追随）
 - 残 false: **TSB-001 のみ** = 孤児 TSB（4/19 D1-proposal でも「詳細未記載」）= 真因不明のまま記録止まり
 
@@ -1021,7 +1023,7 @@ Cursor IDE の既定挙動:
 3. **RULES-INDEX 更新**: §1-2-2 を「タスク開始時に必ず参照」表に統合。
 4. **CURSOR-トラブル対応メモ.md 更新**: Composer 2 検知時の浜田復旧手順を追加（IDE 設定 → Models で Auto OFF + Opus 4.7 単独 ON）。
 5. **NEW-SESSION-STARTER.md 更新**: §1-2-2 を冒頭の「最重要 5 件」リストに追加。
-6. **浜田 Desktop 同期**: AI緊急用フォルダの **`00-NEW-SESSION-STARTER_yyyymmdd.txt`（canonical）** / **`01`〜`06`-STARTER-…txt** / `07-HANDOFF-AI-FIVE-BLOCKS.md` / read-pack **`08-`〜`23-`** / `17-SESSION-BOOTSTRAP-CHECKLIST.txt` / `18-HANDOFF-HUMAN.txt` / **`19-AI緊急用-README.txt`** / **（当日のみ）`24-evening-reflection-*.md`** を `npm run session-starter:sync-desktop` で反映（§57-6）。**貼付推奨**は `verify:desktop-ai-emergency-sync` 成功時の最終行。
+6. **浜田 Desktop 同期**: AI緊急用フォルダの **`00-NEW-SESSION-STARTER_yyyymmdd.txt`（canonical）** / **`01`〜`06`-STARTER-…txt** / `07-HANDOFF-AI-FIVE-BLOCKS.md` / read-pack **`08-`〜`20-`** / `21-SESSION-BOOTSTRAP-CHECKLIST.txt` / `22-HANDOFF-HUMAN.txt` / **`23-AI緊急用-README.txt`** / **`24-handoff-log.md`** / **`25-checkpoint-latest.md`** / **（当日のみ）`26-evening-reflection-*.md`** を `npm run session-starter:sync-desktop` で反映（§57-6）。**貼付推奨**は `verify:desktop-ai-emergency-sync` 成功時の最終行。
 
 ### 浜田復旧手順（IDE 側 / 30 秒）
 
@@ -1212,7 +1214,7 @@ PC 台帳 Day4 Step1 で MCP `kintone-add-app` 実行後、ブラウザの **`/k
 2. **NEW-SESSION-STARTER v3.18**: 文書の **最上段**（v 番号より上）に **🚨 憲法級ブロック**を新設し、`AGENTS.md §35-1 / §56-1a` を 5 行で再宣言＋禁句サンプル（「再デプロイしてください」「手動アップロードで問題ありません」「`npm run xxx` を実行してください」）を列挙。Desktop 緊急用 `.txt` も `npm run session-starter:sync-desktop` で同期。
 3. **SESSION-BOOTSTRAP-CHECKLIST.md フェーズ 7**: チャット報告 6 項目に **「(7) 役割宣言: deploy / apply / push / 検証は AI 自身が実行する。浜田には GO と目視確認のみ依頼する」** を追記。AI は新セッション 1 ターン目でこれを声に出して引き継ぎ完了の証跡にする。
 4. **handoff-log.md**: 本件を「禁句アンチパターン」として記録（次の AI が末尾 3 件読みで必ず触れる）。
-5. **機械ゲート（2026-04-26 夜追補 + 2026-04-28）**: `scripts/verify-constitution-handoff.mjs` → `npm run smoke:quiet` **第 9 検査**（必須フレーズ欠落で即 ng）。`handoff-log.md` に HTML コメント **アンカー**（要約で消えにくい）。`.cursor/rules/constitution-handoff-gate.mdc`（`alwaysApply: true`）で毎ターン想起。**加えて** `scripts/mandatory-read-gate.mjs` を **`npm run verify:mandatory-read-gate`** および `session:bootstrap` の憲法 verify **直後**に組込（**第 10 検査**／checkpoint **最終更新**・handoff 見出し・`HANDOFF-HUMAN` テンプレ・`SESSION-BOOTSTRAP` 冒頭・`AGENTS.md` 最小サイズで、議論だけでは防げない **未読了進行を exit 2**）。
+5. **機械ゲート（2026-04-26 夜追補 + 2026-04-28）**: `scripts/verify-constitution-handoff.mjs` → `npm run smoke:quiet` **第 9 検査**（必須フレーズ欠落で即 ng）。`handoff-log.md` に HTML コメント **アンカー**（要約で消えにくい）。`.cursor/rules/constitution-handoff-gate.mdc`（**`alwaysApply: false` + `globs`**）で TSB-024 系を想起。**常時 true 核は `cio-constitution.mdc` のみ**。**加えて** `scripts/mandatory-read-gate.mjs` を **`npm run verify:mandatory-read-gate`** および `session:bootstrap` の憲法 verify **直後**に組込（**第 10 検査**／checkpoint **最終更新**・handoff 見出し・`HANDOFF-HUMAN` テンプレ・`SESSION-BOOTSTRAP` 冒頭・`AGENTS.md` 最小サイズで、議論だけでは防げない **未読了進行を exit 2**）。
 6. **光速 + commit 後（2026-04-26 深夜追補）**: `session-bootstrap-verify.mjs` が **smoke の前に** `verify-constitution-handoff` → **`mandatory-read-gate`** を単独実行（長い smoke を待たずに憲法欠落・必読正本欠落を即検知）。`git-hooks/post-commit` が **commit 直後**にも同スクリプトを実行しログ追記（憲法ドキュを誤削除して push する前にローカルで気づく）。
 
 ### 教訓
@@ -1418,8 +1420,8 @@ Cursor の MCP ログで **`Connection failed: MCP error -32000: Connection clos
 
 ### 恒久対策
 
-1. **`.github/workflows/constitution-gates.yml`** の **`verify-constitution-handoff` 直前**に **`bash scripts/regenerate-constitution-rule.sh`** を追加し、**runner 内のみ** `constitution.mdc` を生成してから検証する（**常時想起の正は `constitution-brief-card.mdc`**。網羅版は **必要時 Read / ローカル regen** の運用は不変）。
-2. **`on.push.paths`** に **`scripts/regenerate-constitution-rule.sh`** を追加し、スクリプト変更時も workflow が走るようにする。
+1. **`.github/workflows/constitution-gates.yml`** の **`verify-constitution-handoff` 直前**に **`node scripts/regenerate-constitution-rule.mjs`**（または **`bash scripts/regenerate-constitution-rule.sh`**）を追加し、**runner 内のみ** `constitution.mdc` を生成してから検証する（**常時想起の正は `constitution-brief-card.mdc`**。網羅版は **必要時 Read / ローカル regen** の運用は不変）。
+2. **`on.push.paths`** に **`scripts/regenerate-constitution-rule.mjs`** / **`scripts/regenerate-constitution-rule.sh`** を追加し、スクリプト変更時も workflow が走るようにする。
 
 ### 検証
 
@@ -1436,4 +1438,45 @@ Cursor の MCP ログで **`Connection failed: MCP error -32000: Connection clos
 - `.gitignore`（`.cursor/rules/constitution.mdc` 行）
 - `scripts/regenerate-constitution-rule.sh`
 - `commit ad14c15`（workflow 変更）
+
+---
+
+## TSB-033 — Cloud「再開可能」SLO を「未完放置」と誤読しない／合意シールと CI（2026-05-09 制定）
+
+### 事象
+
+「完走保証ではなく再開可能」と言語化した結果、**黙って中断＝放置**と運用で読まれるリスク。
+
+### 恒久対策
+
+1. **`cio:cloud-handoff end`**: **`--status partial` および `blocked` は `--note` 必須**（脚本 `cio-cloud-handoff-stamp.mjs` が **exit 2**）。`note` に **次セッションの再開手順**を書く。
+2. **合意シール**: **`npm run cio:consensus-seal -- verify`** は **PR 作者（CIO）がプッシュ前**に実行（厳格）。**CI** は **`npm run cio:consensus-seal:verify-ci`**（`verify --if-present`）で、**追跡された** `chat-sessions/cio-consensus-seal.json` がある PR だけ不足を赤にする。
+3. **Git**: **`chat-sessions/cio-consensus-seal.json` は `.gitignore` 既定**（ローカル）。ゲート PR のみ **`git add -f`**。運用の正本段落は **`chat-sessions/README.md`** と **`CLOUD-AGENT-HANDOFF-TEMPLATE.md`**。
+
+### 関連
+
+- `.cursor/rules/cio-constitution.mdc`（Cloud 節）
+- `scripts/cio-consensus-seal.mjs` / `scripts/cio-cloud-handoff-stamp.mjs`
+
+---
+
+## TSB-034 — Windows で `health-check` の stdio MCP が偽陰性／`permissions.json` で RUN 省略（2026-05-09 制定）
+
+### 事象
+
+`npm run health-check` が **IDE 外（CLI）**で **MCP initialize に失敗**し続け、`smoke:quiet` が連鎖 NG。一方 **Cursor IDE 内の MCP は正常**。
+
+### 恒久対策
+
+1. **`scripts/health-check.mjs`**: **Windows**（`process.platform === 'win32'`）かつ **`HEALTH_CHECK_STRICT_WIN` 未設定**のとき、MCP 行の **`応答なし` NG を skip に降格**（**Linux CI は従来どおり厳格**）。
+2. **`~/.cursor/mcp.json` の `rag`**: **`env.DB_PATH` / `env.CACHE_DIR` / `env.BASE_DIR`** を明示（**TSB-012** の静的検査通過・`documentCount` 確認）。
+3. **`%USERPROFILE%\.cursor\permissions.json`**: **`terminalAllowlist`** を CIO が維持し、**RUN クリック待ちを減らす**（[公式](https://cursor.com/docs/reference/permissions)）。**Auto-Run が Ask Every Time では allowlist 無効**。
+4. **PowerShell の先頭が `Set-Location` の複合行**: 例 `Set-Location "…"; git status -sb` は **先頭プレフィックスが `git` に一致しない**ため、allowlist に **`git` だけ**では Run が残る。**対策**: **`terminalAllowlist` に `Set-Location`（および必要なら `Push-Location`）を追加**するか、エージェントは **リポルートで `npm run …` 単体**（`cd` なし）を優先する。
+5. **`terminalAllowlist` を `permissions.json` に置くと IDE のタグが無効化される**（**完全置換**）。以前 IDE にだけあった **`cli-kintone` / `ls` / `curl`** 等がファイル側に無いと、**別コマンドで再び Run**になる。**CIO**: ファイルへ **IDE に表示されていた許可＋ CEO 指定の `Sort-`〜`Copy-`** をまとめて書く（正本 `%USERPROFILE%\.cursor\permissions.json`）。
+6. **`node_modules`**: **`npm ci`** で S9 完全性を回復。
+
+### 関連
+
+- `.cursor/rules/cio-constitution.mdc`（MCP / ターミナル Allowlist 節）
+- `scripts/health-check.mjs`
 

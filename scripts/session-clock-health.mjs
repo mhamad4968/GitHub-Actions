@@ -68,15 +68,27 @@ let expectedNodeSource = 'resolve';
 try {
   if (fs.existsSync(pinPath)) {
     const p = fs.readFileSync(pinPath, 'utf8').trim().split('\n')[0]?.trim();
-    if (p && fs.existsSync(p)) {
-      expectedNode = path.resolve(p);
-      expectedNodeSource = 'install-pin';
+    if (p) {
+      if (process.platform === 'win32' && p.startsWith('/')) {
+        expectedNode = p;
+        expectedNodeSource = 'install-pin';
+      } else if (fs.existsSync(p)) {
+        expectedNode = path.resolve(p);
+        expectedNodeSource = 'install-pin';
+      }
     }
   }
 } catch {
   /* noop */
 }
-const cronNodeResolved = cronNode ? path.resolve(cronNode) : null;
+/** WSL crontab の POSIX node パスを Windows の path.resolve で壊さない */
+function normalizeCronNodeForCompare(nodePath) {
+  if (!nodePath) return null;
+  const trimmed = String(nodePath).trim();
+  if (process.platform === 'win32' && trimmed.startsWith('/')) return trimmed;
+  return path.resolve(trimmed);
+}
+const cronNodeResolved = cronNode ? normalizeCronNodeForCompare(cronNode) : null;
 const drift =
   cronLine && cronNodeResolved
     ? cronNodeResolved !== expectedNode

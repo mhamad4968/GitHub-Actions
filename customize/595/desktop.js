@@ -4,13 +4,12 @@
   /**
    * 595 社員マスタ
    * BUILD: 2026-04-30-595-index-search-totalcap-loading
+   * BUILD: 2026-05-12-595-no594-rest（旧594への REST・リンク廃止・674同期のみ）
    * - 一覧: 所属グループ・所属名・社員名のいずれかに部分一致する検索窓（ヘッダスペース）
-   * - 詳細・編集: サブテーブル（旧594／新674）とアカウント台帳番号からレコードへのリンクをヘッダ下に表示
-   * - 保存成功後: 594 note／627／674 所属同期（従来どおり）
+   * - 詳細・編集: サブテーブル（新674）とアカウント台帳番号からレコードへのリンクをヘッダ下に表示
+   * - 保存成功後: 627／674 所属同期（旧594アプリへの REST は行わない）
    */
 
-  /** PC台帳（594） */
-  var APP594 = "594";
   /** アカウント管理台帳（627） */
   var APP627 = "627";
   /** 新・PC台帳 ver.1（674） */
@@ -43,12 +42,7 @@
   var TYPE_PERSONAL = "個人";
   var PC_STATUS_STORAGE = "保管";
 
-  var FC594_MAIL = "mail";
-  var FC594_NAME = "user_name";
-  var FC594_DEPT = "dept_name";
-  var FC594_GROUP = "group_name";
-
-  /** 595 上の PC 台帳紐づけ（旧594） */
+  /** 595 上の PC 台帳紐づけ（旧594由来の列。リンクは出さず674のみ） */
   var FC595_PC594_SUB = "pc_ledger_list";
   var FC595_PC594_ID = "pc_594_record_id";
   /** 595 上の 新・PC台帳（674） */
@@ -396,7 +390,6 @@
   function mountPcLedgerLinkBox595(record) {
     removePcLedgerLinkBox595();
 
-    var ids594 = collectSubtableNumericIds(record, FC595_PC594_SUB, FC595_PC594_ID);
     var ids674 = collectSubtableNumericIds(record, FC595_PC674_SUB, FC595_PC674_ID);
     var id627 = scalarFrom595(record, FC595_LEDGER_ID).trim();
 
@@ -424,7 +417,7 @@
     title.textContent = "PC台帳へのリンク";
     box.appendChild(title);
 
-    var hasAny = ids594.length > 0 || ids674.length > 0 || !!id627;
+    var hasAny = ids674.length > 0 || !!id627;
 
     function addLinkRow(label, appId, rid) {
       var row = document.createElement("div");
@@ -438,9 +431,6 @@
       box.appendChild(row);
     }
 
-    for (var a = 0; a < ids594.length; a++) {
-      addLinkRow("旧 PC台帳（594）", APP594, ids594[a]);
-    }
     for (var b = 0; b < ids674.length; b++) {
       addLinkRow("新・PC台帳（674）", APP674, ids674[b]);
     }
@@ -453,8 +443,6 @@
       empty.style.cssText = "color:#6c757d;font-size:12px;";
       empty.textContent =
         "「" +
-        FC595_PC594_SUB +
-        "」「" +
         FC595_PC674_SUB +
         "」に番号が入るか、アカウント台帳番号が入ると、ここにリンクが表示されます。";
       box.appendChild(empty);
@@ -509,17 +497,6 @@
     return String(f.value);
   }
 
-  /**
-   * @param {string} dateStr kintone 日付 "YYYY-MM-DD"
-   * @returns {string} 例: 2026年04
-   */
-  function toYearMonthJa(dateStr) {
-    if (!dateStr) return "";
-    var parts = String(dateStr).split("-");
-    if (parts.length < 2) return "";
-    return parts[0] + "年" + parts[1] + "月";
-  }
-
   function chunk(arr, size) {
     var out = [];
     for (var i = 0; i < arr.length; i += size) {
@@ -528,63 +505,9 @@
     return out;
   }
 
+  /** 旧594の note 追記は廃止（594アプリ非使用）。 */
   function appendRetireNoteToPcLedger(record) {
-    var mail = record.mail && record.mail.value;
-    var retiredRaw = record.retired_date && record.retired_date.value;
-    var userName = (record.user_name && record.user_name.value) || "";
-
-    if (!mail || !retiredRaw) {
-      return Promise.resolve();
-    }
-
-    var ym = toYearMonthJa(retiredRaw);
-    if (!ym) {
-      return Promise.resolve();
-    }
-
-    var displayName = userName || String(mail).split("@")[0];
-    var newLine = ym + "　" + displayName + "（退職者）利用分";
-
-    var urlGet = kintone.api.url("/k/v1/records.json", true);
-    return kintone
-      .api(urlGet, "GET", {
-        app: APP594,
-        query: 'mail = "' + escapeForQuery(mail) + '"',
-        fields: ["$id", "$revision", "note"]
-      })
-      .then(function (resp) {
-        var list = resp.records || [];
-        var updates = [];
-        for (var i = 0; i < list.length; i++) {
-          var r = list[i];
-          var cur = (r.note && r.note.value) || "";
-          if (cur.indexOf(newLine) !== -1) {
-            continue;
-          }
-          var next = cur ? cur + "\n" + newLine : newLine;
-          var row = {
-            id: r.$id.value,
-            record: { note: { value: next } }
-          };
-          if (r.$revision && r.$revision.value !== undefined && r.$revision.value !== null) {
-            row.revision = r.$revision.value;
-          }
-          updates.push(row);
-        }
-        if (updates.length === 0) {
-          return;
-        }
-        var urlPut = kintone.api.url("/k/v1/records.json", true);
-        var parts = chunk(updates, 100);
-        return parts.reduce(function (chain, part) {
-          return chain.then(function () {
-            return kintone.api(urlPut, "PUT", {
-              app: APP594,
-              records: part
-            });
-          });
-        }, Promise.resolve());
-      });
+    return Promise.resolve();
   }
 
   function get627RecordById(id627) {
@@ -707,69 +630,6 @@
     return updates;
   }
 
-  function putRecordBatches594(updates) {
-    if (!updates.length) {
-      return Promise.resolve();
-    }
-    var urlPut = kintone.api.url("/k/v1/records.json", true);
-    var parts = chunk(updates, 100);
-    return parts.reduce(function (chain, part) {
-      return chain.then(function () {
-        return kintone.api(urlPut, "PUT", { app: APP594, records: part });
-      });
-    }, Promise.resolve());
-  }
-
-  function fetchAll594ByMail(mail, name, dept, grp) {
-    if (!mail) {
-      return Promise.resolve();
-    }
-    var name595 = name;
-    var dept595 = dept;
-    var grp595 = grp;
-    var offset = 0;
-    var limit = 500;
-    var urlGet = kintone.api.url("/k/v1/records.json", true);
-
-    function page() {
-      var q =
-        FC594_MAIL +
-        ' = "' +
-        escapeForQuery(mail) +
-        '" order by $id asc limit ' +
-        limit +
-        " offset " +
-        offset;
-      return kintone
-        .api(urlGet, "GET", {
-          app: APP594,
-          query: q,
-          fields: ["$id", "$revision", FC594_NAME, FC594_DEPT, FC594_GROUP]
-        })
-        .then(function (resp) {
-          var list = resp.records || [];
-          var updates = recordsNeedingMirror(
-            list,
-            name595,
-            dept595,
-            grp595,
-            FC594_NAME,
-            FC594_DEPT,
-            FC594_GROUP
-          );
-          return putRecordBatches594(updates).then(function () {
-            if (list.length < limit) {
-              return;
-            }
-            offset += limit;
-            return page();
-          });
-        });
-    }
-
-    return page();
-  }
-
   function fetch674PersonalTargets(mail, name, dept, grp) {
     if (!mail) {
       return Promise.resolve();
@@ -833,7 +693,7 @@
     return page();
   }
 
-  function sync594And674MirrorFrom595(record) {
+  function sync674MirrorFrom595(record) {
     var mail = scalarFrom595(record, FC595_MAIL).trim();
     if (!mail) {
       return Promise.resolve();
@@ -841,9 +701,7 @@
     var name = scalarFrom595(record, FC595_NAME);
     var dept = scalarFrom595(record, FC595_DEPT);
     var grp = scalarFrom595(record, FC595_GROUP);
-    return fetchAll594ByMail(mail, name, dept, grp).then(function () {
-      return fetch674PersonalTargets(mail, name, dept, grp);
-    });
+    return fetch674PersonalTargets(mail, name, dept, grp);
   }
 
   function run595DownstreamSync(record) {
@@ -852,7 +710,7 @@
         return sync627From595(record);
       })
       .then(function () {
-        return sync594And674MirrorFrom595(record);
+        return sync674MirrorFrom595(record);
       });
   }
 
@@ -871,7 +729,7 @@
       .catch(function (e) {
         console.error("[jbis 595 downstream]", e);
         var msg =
-          "社員マスタ保存後の連携（594／627／674）の一部に失敗しました。権限・ネットワークを確認し、必要なら手動で台帳を更新してください。";
+          "社員マスタ保存後の連携（627／674）の一部に失敗しました。権限・ネットワークを確認し、必要なら手動で台帳を更新してください。";
         if (e && e.message) {
           msg += "\n" + e.message;
         }

@@ -2,7 +2,7 @@
 
 **目的**: **プロジェクトに着手する前**に、**ルールと運用境界を五段階で理解**する。その**後**に、**プロジェクトごとに確認（仕様の小出し・§41・GO）**を積み、いきなり実装に入らないようにする。
 
-**Cursor Project Rules**: `.cursor/rules/session-read-ladder-two-phase.mdc`（**alwaysApply: true**）が、新セッションで **第0手＝本ファイル通読**と **二段階（A→B）** を毎回想起する。
+**Cursor Project Rules**: `.cursor/rules/session-read-ladder-two-phase.mdc`（**`alwaysApply: false` + `globs: chat-sessions/**/*`**）が、該当パス編集時に **第0手＝本ファイル通読**と **二段階（A→B）** を想起する。**常時 true 核は `cio-constitution.mdc` のみ**。
 
 **浜田貼付の番号控え**: チャットで渡す本文の控えは **`chat-sessions/desktop-ai-emergency-read-pack/09-READ-01.txt` からファイル名の番号昇順**（リポ正本。Desktop でも **名前順＝読取順**）。セッション終了時に `npm run session-starter:sync-desktop` で **`C:\Users\mhamada202408224\Desktop\AI緊急用\`** に同名コピーされる。AI は **09-READ-01（見出し READ-01）手順 4** のとおり **10→…→15** を先に Readし、**14-READ-06（READ-06）直後に `【AI分業チェック】`**、**15-READ-07 直後に `【READ-07 読了】` 1 行**を出してから本ファイルを通読する（未使用ファイルはスキップ可＋**読んだ番号・理由**を 1 行）。
 

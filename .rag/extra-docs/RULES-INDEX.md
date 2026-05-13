@@ -11,11 +11,12 @@
 |---|---|
 | §0 | **RULES-INDEX 即答カード参照**（索引駆動の起点 / 「まず索引→該当 § を読む」を強制） |
 | （Cursor）**`cio-operating-loop.mdc`** | **CIO 運用の一本線**（2026-05-02 / **2026-05-07: glob 化**）— **`chat-sessions/**` と `docs/reports/**` を編集・閲覧するターンで想起。正シェルは **`~/kintone-ai-lab`（WSL）**／朝は **`docs/reports/<JST日付>-morning-prep.md`**（無ければ先に **`npm run morning:ensure`**）→ **`desktop-ai-emergency-read-pack/09-READ-07.txt`** → 追徴なら **`npm run cio:quick-health`**（朝報検証同梱）／切替は **`constitution-handoff-gate.mdc`** + `NEW-SESSION-STARTER`「貼付単独で完走」／Read pack + `SESSION-READ-LADDER.md`／Desktop 後は **`npm run desktop:sync-and-verify`** |
-| **`verify-ci-rule-integrity.mjs`** | **Cursor `alwaysApply: true` は最大 10 ファイル**（2026-05-07 CEO）。超過は CI **exit 2**。新規 `.mdc` は既定 **`alwaysApply: false` + `globs`**。11 枚目が要る場合は **既存のどれかを glob 化または統合**してから追加。 |
-| （Cursor）**`constitution-brief-card.mdc`** | **憲法の薄型常時想起**（2026-05-06）— CIO 三角・**MCP/スクリプト先出し**（「できない」早取り禁止）／網羅版 `constitution.mdc` は **必要時 Read** |
-| （Cursor）**`constitution-enforcement-core.mdc`** | **違反＝失敗・ダブルチェック定義**（2026-05-06 / **alwaysApply: true**）— **本体 CIO ＋ DeepSeek または Kimi** を第 2 者とする。**1 人チェック禁止**。**検証の 2 者**（完了宣言）・**仕様の言い切り**（未決→確定と言い換え禁止）。末尾に CEO 指示の全文を保持 |
+| **`verify-ci-rule-integrity.mjs`** | **`alwaysApply: true` は最大 10 件**＋**`cio-constitution.mdc` が必ず常時 true**（2026-05-09 CIO 統合）。超過は CI **exit 2**。新規 `.mdc` は既定 **`alwaysApply: false` + `globs`**。 |
+| （Cursor）**`cio-constitution.mdc`** | **CIO 統合憲法（唯一の `alwaysApply: true` 核・2026-05-09）** — デスクトップ正本・Multi-Agent 役割・§1 四行・§M-2・三重 hooks へのポインタ |
+| （Cursor）**`constitution-brief-card.mdc`** | **薄型想起（glob 注入）**（2026-05-06）— CIO 三角・**MCP/スクリプト先出し**／網羅版 `constitution.mdc` は **必要時 Read**（常時枠は `cio-constitution.mdc` に集約） |
+| （Cursor）**`constitution-enforcement-core.mdc`** | **違反＝失敗・ダブルチェック定義**（2026-05-06 / **glob 注入**）— **本体 CIO ＋ DeepSeek または Kimi** を第 2 者とする。**1 人チェック禁止**。**検証の 2 者**（完了宣言）・**仕様の言い切り**（未決→確定と言い換え禁止）。末尾に CEO 指示の全文を保持 |
 | （Cursor）**`every-turn-rules-confirm.mdc`** | **毎ターン先頭** — **`[§1-2-3 ティア判定]`** → **`【適用憲法】` 1 行** → **`[🎖️]`** → **`[ルール確認]`**／**§1c**（該当時 **`[仕様状態:]`**・**`[検証2者:]`**）／**§1d**（先頭ブロック欠落の自己回復）／**行動前チェック**（編集・deploy 直前の § リスト＋方針） |
-| （Cursor）**`kintone-destructive-rest-guard.mdc`** | **kintone DELETE・破壊級 REST**（2026-05-06 浜田承認）— **dry-run→チャット貼付→「この一覧で削除 GO」→`--apply`**。**`alwaysApply: true`**。手順 **`docs/kintone-destructive-operations.md`** |
+| （Cursor）**`kintone-destructive-rest-guard.mdc`** | **kintone DELETE・破壊級 REST**（2026-05-06 浜田承認）— **dry-run→チャット貼付→「この一覧で削除 GO」→`--apply`**。**`alwaysApply: false` + `globs`**。手順 **`docs/kintone-destructive-operations.md`** |
 | （Cursor）**`constitutional-focus-kintone-customize.mdc`** | **glob: `customize/**`** — §35-7 §50-3-8 §52・`kintone-apps.md` の追加想起（**alwaysApply: false**） |
 | （Cursor）**`constitutional-focus-yojitsu.mdc`** | **glob: `templates/yojitsu-budget-lite/**`** — §50-3-8 §41 §2 の追加想起（**alwaysApply: false**） |
 | （Cursor）**`constitutional-focus-github-workflows.mdc`** | **glob: `.github/workflows/**`** — §18 §52-8 §35-1 の追加想起（**alwaysApply: false**） |
@@ -44,6 +45,9 @@
 | **`.cursor/hooks.json`** + **`report-checksheet-*.mjs`** + **`report-pipeline-audit.mjs`** | **報告ターン厳格化（2026-05-08 CEO 命令）** — 欠落・**V1 のみ**・**V2 四キー矛盾**は **`stop` 自動フォロー**＋パイプライン `FAILED_*`（`npm run report:pipeline-status`）。正本 **`every-turn-rules-confirm.mdc` §1e**／`docs/session-report-checklist.md` §M |
 | **§1f / §P A3** | **複数回自己見直し（CEO 命令）** — 送信・報告確定・push 直前に **最低 2 回**（事実→形式）。**Tier B・不可逆・報告・憲法／hooks 改定**は **3 回目**（CEO 検収視点）必須。**`every-turn-rules-confirm.mdc` §1f**／**`docs/session-report-checklist.md` §P A3** |
 | **§1e-4 / `report-checksheet-pending.mjs`** | **報告前自動判定** — `session-clock.mjs check` ＋ `report:pipeline-status`。**NG** 時は **チェックシート通読** または **Desktop `AI緊急用` 全ファイル Read**（**推奨: 両方**）。`logs/report-precheck.log` |
+| **`npm run cio:chat-report-selfcheck`** | **hooks 未経路の二重化（2026-05-09）** — 下書きを `--stdin` / `--file` で渡し **禁止語** 等。任意 **`--strict-head`**／**`--require-v2`**／**`--require-ceo-block`**／**`--require-a1`**。正本 `scripts/cio-chat-report-selfcheck.mjs` |
+| **`npm run cio:report-verify-response`** | **報告・締め・GO 前の一発ゲート** — 上記の **`--require-ceo-block` `--strict-head` `--require-v2` `--require-a1`** を既定で実行（送信前に **exit 0** 必須）。`CEO-MINIMUM-ABSOLUTE-BASELINE.txt` 追記の **hooks 起動経路限定**＋**CLI 二重化**と整合 |
+| **`npm run cio:selfcheck:test`** | **Run 承認 UI 回避用** — `cio-chat-report-selfcheck` の回帰を **パイプなし 1 コマンド**で実行（`terminalAllowlist` の先頭プレフィックス問題を避ける）。`every-turn-rules-confirm.mdc`（Agent シェルと Run）参照 |
 | **CEO 命令（2026-05-08・hooks 本番）** | **`hooks.json`／`report-checksheet-*`／`report-pipeline-*` の変更と every-turn の hooks 連動 § 本番改定**は **`main` 反映前**に **DeepSeek と Kimi の双方**へ同一短問 → **回答をチャットに各要約** → **本体 CIO 突合「問題なし」**。**抜けゼロは断言せず監視継続**。**追補**: 条件付きGO解消（範囲・遡及・相違点／盲点・障害後補完・停滞時CEO裁定・分担責任）— `every-turn-rules-confirm.mdc` **CEO 追補節** |
 | **§37-1（`AGENTS.md`）** | **報告ターン末・機械フッタ V2 の正典キー** — `SECOND_REVIEWER` / `SPEC_TOUCHED` / `DESTRUCTIVE_OPS` / `DRY_RUN_TO_APPLY_GAP`（スペル固定・7 行全体の順序は **every-turn-rules-confirm.mdc §1e-2**） |
 | **`git-hooks/commit-msg`** + **`cio-commit-msg-second-reviewer.mjs`** | **論点11** — `SPEC_TOUCHED: yes` 行がある、または正本 **SPEC 2 パス**がステージに含まれるコミットでは、message に **`Reviewed-by: deepseek｜kimi｜openrouter`** 必須（`AGENTS.md` §37-1） |
@@ -254,15 +258,17 @@
 | `docs/troubleshooting.md` **TSB-023** | 「公開してない？」**先確認せず浜田へ聞かない**で済むようにした教訓（索引用 1 行 + 本文） |
 | `docs/troubleshooting.md` **TSB-024** | 憲法級アンチパターン（**デプロイ・適用・push を人に押し付けない**／禁句リスト／`npm run verify:constitution-handoff` ＋ **`npm run verify:mandatory-read-gate`**（必読ファイル構造）＋ **`npm run verify:session-clock-health`**（壁時計 hooks / crontab node）＋ **`SESSION-CLOCK.md` / `session:clock:set`**（§51-6-2 時間軸）で機械監視） |
 | `docs/troubleshooting.md` **TSB-031** | **Desktop 日報を Git 未収容で削除**した事案。**正本は `chat-sessions/`＋コミット**／Desktop は **sync の控え**／詳細は **`AGENTS.md` §35-6**（verify が本条見出しを監視） |
-| `docs/troubleshooting.md` **TSB-032** | **`constitution-gates` が `constitution.mdc` 欠落で赤** — **verify はファイル必須だが `.gitignore` でリポ非追跡**。対策: **workflow で `regenerate-constitution-rule.sh` を verify 前に実行**（本文・目次表・TSB 新設閾値と連動） |
+| `docs/troubleshooting.md` **TSB-032** | **`constitution-gates` が `constitution.mdc` 欠落で赤** — **verify はファイル必須だが `.gitignore` でリポ非追跡**。対策: **workflow / ローカルで `npm run rules:regenerate-constitution`（Node・Windows 可）または `npm run rules:regenerate-constitution:bash`（WSL）を verify 前に実行**（本文・目次表・TSB 新設閾値と連動） |
+| `docs/troubleshooting.md` **TSB-033** | **Cloud「再開可能」≠ 未完放置** — **`cio:cloud-handoff end` の partial/blocked は `--note` 必須**／合意シールは **プッシュ前 `verify`** ＋ **CI `cio:consensus-seal:verify-ci`**／`cio-consensus-seal.json` **既定 gitignore**（ゲート PR のみ `git add -f`）。詳細は **`chat-sessions/README.md`** |
+| `docs/troubleshooting.md` **TSB-034** | **Windows `health-check` の MCP 偽陰性** — CLI では **skip 降格**（`HEALTH_CHECK_STRICT_WIN=1` で厳格）／**rag `env.DB_PATH`**／**`permissions.json` の `terminalAllowlist`**／**`npm ci`（S9）**。詳細 **TSB-034 本文** |
 | `docs/troubleshooting.md` **TSB-029** | **`user-markdownify`** — `@iflow-mcp/markdownify-mcp` の **`preinstall.js` 欠落 publish バグ**で stdio 即死。対策: **`npm install -g --ignore-scripts @0.0.2`** ＋ **`node …/dist/index.js` 直起動**＋`UV_PATH`（詳細は本文） |
-| `.cursor/rules/constitution-handoff-gate.mdc` | **alwaysApply** — §35-1 / §56-1a / TSB-024 / §1-2-3-1 を毎ターン想起（Cursor 全チャット） |
-| `.cursor/rules/cio-discipline-always.mdc` | **alwaysApply: true** — §35-7＋**customize deploy 機械ゲート**（594/595/626/627/629/671/674/677/678/679・`cio:preflight:<app>` → `deploy:<app>`・45 分・任意 **`--with-git-diff-line`**・`SKIP_CIO_DEPLOY_GUARD` 緊急脱出）＋HANDOFF 先読み（`AGENTS.md` **v23.34**） |
-| `.cursor/rules/autonomous-with-mandatory-asks.mdc` | **alwaysApply** — **自律実行してよいが**、日取り矛盾・GO 境界・曖昧仕様など **聞くべきことは着手前に聞く**（浜田指示） |
-| `.cursor/rules/creation-timing-ask.mdc` | **alwaysApply** — **作成着手前**に浜田へ **「今すぐ作成／後日」** と **配置スペース（ID または名）** を §41 で確認。未決なら `kintone-add-app` の `space` 省略で進めない（浜田指示 2026-04-28） |
+| `.cursor/rules/constitution-handoff-gate.mdc` | **`alwaysApply: false` + `globs`** — §35-1 / §56-1a / TSB-024 / §1-2-3-1 を想起（**常時 true 枠は `cio-constitution.mdc` のみ**） |
+| `.cursor/rules/cio-discipline-always.mdc` | **`alwaysApply: false` + `globs`** — §35-7＋**customize deploy 機械ゲート**（594/595/626/627/629/671/674/677/678/679・`cio:preflight:<app>` → `deploy:<app>`・45 分・任意 **`--with-git-diff-line`**・`SKIP_CIO_DEPLOY_GUARD` 緊急脱出）＋HANDOFF 先読み（`AGENTS.md` **v23.34**） |
+| `.cursor/rules/autonomous-with-mandatory-asks.mdc` | **`alwaysApply: false`**（glob なし・必要ターンで `@` または Read）— **自律実行してよいが**、日取り矛盾・GO 境界・曖昧仕様など **聞くべきことは着手前に聞く**（浜田指示） |
+| `.cursor/rules/creation-timing-ask.mdc` | **`alwaysApply: false`**（glob なし・必要ターンで `@` または Read）— **作成着手前**に浜田へ **「今すぐ作成／後日」** と **配置スペース（ID または名）** を §41 で確認。未決なら `kintone-add-app` の `space` 省略で進めない（浜田指示 2026-04-28） |
 | `.cursor/rules/session-handoff.mdc` | 人間 5 行＋AI の `handoff-log` 追記手順。**自律復元**の追記あり。**ハンドオフ深さ既定 L2**（リポ/CI/bootstrap/憲法 verify/kintone 反映/Tier B 近傍に触れたターンは標準ブロック）。**第 2 者ダブルチェック**は `constitution-enforcement-core.mdc` 正本 |
 | `.cursor/rules/session-read-ladder-two-phase.mdc` | **glob: `chat-sessions/**`**（2026-05-07）— セッション復元の **二段階**（**A 事前準備**／**B 本題確認**）。**第0手**で `SESSION-READ-LADDER.md` を **Read 通読**。正本は `chat-sessions/SESSION-READ-LADDER.md` |
-| `.cursor/rules/mcp-tool-discipline.mdc` | **alwaysApply** — `call_mcp_tool` 前の **descriptor 必読**・`mcp_auth` 順序・curl/gh と MCP の優先（自律ミス低減） |
+| `.cursor/rules/mcp-tool-discipline.mdc` | **`alwaysApply: false`**（glob なし・必要ターンで Read）— `call_mcp_tool` 前の **descriptor 必読**・`mcp_auth` 順序・curl/gh と MCP の優先（自律ミス低減） |
 
 ---
 

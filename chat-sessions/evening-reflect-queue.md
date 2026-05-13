@@ -12,7 +12,7 @@
 
 - [ ] **§51-6-2 壁時計**・**`[憲法適合]`** の運用（朝の習慣・区切り宣言）— **夜の反省会で議題化**（2026-05-06 浜田指示）。
 - [ ] **朝報** `docs/reports/YYYY-MM-DD-morning-prep.md` **未生成日の扱い**（自動生成の要否・手動時のルール）— **夜の反省会で議題化**（2026-05-06 浜田指示）。
-- [ ] **`verify-ci-rule-integrity` の `alwaysApply:true` 上限（10→11）と圧力弁**: 当初は「常時ルールを10枚超で増やさない」運用だったが、`constitution-handoff-gate` 常時化で11枚になり **`MAX_ALWAYS=11` に引き上げ済み**（2026-05-06）。夜の反省会で **(a) 11を暫定とするか (b) 上限10に戻し別ルールを `false`+glob か統合で落とすか** を決める。
+- [x] **薄型憲法・常時枠（2026-05-09 CIO）**: **YAML 常時注入は `cio-constitution.mdc` のみ**へ集約。分割 `.mdc` は **`false` + `globs`（または glob なし）**。`npm run verify:thin-rule-messaging` を smoke に追加。旧「10→11 枚」議題は **方針転換によりクローズ**（履歴議論は `handoff-log.md` 等に残存しうるが **現行正本は `cio-constitution` + verify**）。
 
 ## 完了（参照用・削除してよい）
 

@@ -1,6 +1,6 @@
 # kintone 破壊系操作（DELETE・全件入替）— 運用メモ
 
-**2026-05-06**: 浜田 CEO 承認。Cursor 常時想起: **`.cursor/rules/kintone-destructive-rest-guard.mdc`**（`alwaysApply: true`）。
+**2026-05-06**: 浜田 CEO 承認。Cursor ルール: **`.cursor/rules/kintone-destructive-rest-guard.mdc`**（**`alwaysApply: false` + `globs`**）。**常時 true 核は `cio-constitution.mdc` のみ**。
 
 ## 手順（省略禁止）
 

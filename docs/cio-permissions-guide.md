@@ -56,6 +56,8 @@ CEO 厳命「Run ボタンが出ない自律稼働環境を AI チームだけ�
 
 **重要**: `~/.cursor/permissions.json` から **`terminalAllowlist` key 全削除**済（v3 / 2026-05-10）。これにより Cursor Settings UI で **"Run Everything" が dropdown に出現** する。
 
+**2026-05-11 実機注記（Windows / CEO スクショ）**: Agents の注記に **`Run Everything is disabled while that file defines allowlists`** とあり、**`terminalAllowlist` だけ削除して `mcpAllowlist` をファイルに残した場合でも「Run Everything」がドロップダウンに出ない**ことがある（公式 docs の「MCP のみ定義なら terminal は IDE」と UI 文言が一致しない挙動）。**CIO v9 対応**: **`~/.cursor/permissions.json` を一旦退避（バックアップ）し、ファイル自体を削除**して allowlist を IDE 側に戻す → 再起動後に **Run Everything** を選択。旧 `mcpAllowlist` は **`%USERPROFILE%\.cursor\permissions.backup-20260511-v8-mcp-only.json`** に退避（復旧用）。
+
 **★ DeepSeek §50-3-8 盲点指摘（2026-05-10）**: `terminalAllowlist` 削除直後は **Cursor が IDE settings UI の旧 allowlist にフォールバック**する。CEO が Auto-Run mode で **必ず "Run Everything" を選択しないと、Use Allowlist のままで IDE 空 allowlist と化し、全コマンドで Run ボタンが出る逆効果**に陥る。**Use Allowlist のまま放置厳禁**。
 
 ### 3.1 CEO 必須手順（1 回操作・以後永続）
@@ -63,13 +65,13 @@ CEO 厳命「Run ボタンが出ない自律稼働環境を AI チームだけ�
 公式に **settings.json で書き換える JSON キーは公開されていない**（2026-05 時点）。**Cursor Settings UI** から手動切替が必要：
 
 1. **Cursor を一度 quit して再起動**（または Settings 画面を一度閉じて再オープン）
-   → permissions.json v3 (`terminalAllowlist` key 不在) のリロードを確実化。
+   → `permissions.json` が **無い**、または **allowlist キーを一切含まない**状態のリロードを確実化（**2026-05-11**: `mcpAllowlist` だけでも Run Everything が出ない場合は **ファイル削除**）。
 2. **Cmd+Shift+J**（Mac）/ **Ctrl+Shift+J**（Windows）または **歯車 → Settings**。
 3. 左ペイン **Features** → **Agent** セクション。
 4. **Auto-Run mode** dropdown を **必ず "Run Everything" に変更**。
    - "Ask Every Time" / "Use Allowlist" / **"Run Everything"** の 3 択が出るはず（旧 v2 では Run Everything が disabled だった）。
    - **"Use Allowlist" のまま放置すると逆効果**（IDE 空 allowlist で全 Run ボタン化）。
-5. 切替後、Cursor は permissions.json の `mcpAllowlist` のみを参照（terminalAllowlist は無関係に全 auto-run）。
+5. 切替後、**`permissions.json` を使わない運用**なら IDE 側 allowlist ＋ **Run Everything** が正本（MCP もターミナルもモードに従う）。ファイル方式に戻すときはバックアップから復元し、**UI と公式 docs の差**に注意。
 
 ### 3.2 採用リスク（CEO 認識のうえ GO・2026-05-10）
 

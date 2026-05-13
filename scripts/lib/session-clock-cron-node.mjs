@@ -35,8 +35,12 @@ function pickLatestNvmNode() {
   return fs.existsSync(p) ? p : null;
 }
 
-/** crontab -l（失敗・空は ''） */
+/** crontab -l（失敗・空は ''）。Windows では WSL ユーザー crontab を優先。 */
 export function readCrontabText() {
+  if (process.platform === 'win32') {
+    const wsl = spawnSync('wsl', ['-e', 'bash', '-lc', 'crontab -l'], { encoding: 'utf8' });
+    if (wsl.status === 0) return wsl.stdout || '';
+  }
   const r = spawnSync('crontab', ['-l'], { encoding: 'utf8' });
   if (r.status !== 0) {
     const err = `${r.stderr || ''}`.toLowerCase();
