@@ -10,7 +10,15 @@
 
 **上位表**: `NEW-SESSION-STARTER.md` 冒頭 **🎖️ AI 内部の役割分担**（CIO / Kimi / 知恵袋=DeepSeek / …）＋ **🔥 実行と確認の分離**。**チャット上の本体 AI（CIO）**は **§35-7** どおり、実装より先に **憲法 3 分・§50-3-8／スキップ理由・🎖️** をチャットに残す（**CIO ≠ 省ゲート最速**）。**分業の手順詳細**は **`.cursor/rules/deepseek-cursor-spec-division.mdc`**（**`alwaysApply: false` + `globs`**・**CIO の列を増やさず**「結果統合」に内包）。要約: **知恵袋 = 網羅・論理一次**、**CIO = 正本突合・セカンドオピニオン・§50-3-8 約 3 行突合メモ**（仕様の単独確定禁止）。**PC 台帳（674 等）を触らない日**は本題を **部署予実（677/678・`SPEC.md`）**に寄せ、正本を混読しない（本ファイル 5A/5B）。
 
-## 2026-05-11 JST 夕・674 一覧検索（追記）
+## 2026-05-13 JST 本題＝PC台帳（674）再開（浜田 CEO）
+
+- **状況**: **TOTO 予想**（`Desktop\TOTO予想`）は **一旦完了**・引き継ぎは **`docs/AI_HANDOFF.md`**（Git `948d97e` 付近）。**本セッション本題は PC 台帳**（**正本 674**・594 は移行・清掃のみ・新機能は積まない）。
+- **正本読取順**: `docs/plans/2026-04-21-new-pc-ledger-spec.md` → `kintone-apps.md`（674/680/595/627 行）→ `customize/new-pc-ledger-v1/desktop.js` → 直近 `docs/plans/2026-04-26-pc-ledger-day4-action.md` 等。
+- **674 直近 LIVE（2026-05-11）**: 一覧検索 **`?q=`** 吸収・**BUILD** `2026-05-11-pc-ledger-index-search-debug-localstorage`・rev **177**（`kintone-apps.md` 履歴表）。**浜田 CEO 一覧クリア OK**。
+- **未完了候補（次 AI が自律着手）**: §9 本番運用・旧 594/627 書込ロック／B-1 CSV 移行検収／B-2 共有・JR 手登録／595・627 の 594 結合整理／`npm run verify:constitution-handoff` 等ゲート緑確認 → **Tier B 差分は preflight → deploy:674**。
+- **動作確認**: **依頼があれば浜田 CEO 目視**（CIO は証跡・手順を先に用意）。
+- **TOTO 混読禁止**: 資産突合は **別プロジェクト**。PC 台帳仕様に無いキーは **SPEC 追記＋GO** まで実装しない。
+
 
 - **状況**: 一覧 URL の **`?q=`**（標準）と **`query`/`npl674kw`（カスタム）**の差が原因で条件クリアが不整合に見えた件を **JS 側で吸収**し、浜田 CEO 確認 **クリア OK**。
 - **本番**: `customize/new-pc-ledger-v1/desktop.js` の **`BUILD=2026-05-11-pc-ledger-index-search-native-q-param`**・preview revision **176**（詳細は `kintone-apps.md` 674 行）。
