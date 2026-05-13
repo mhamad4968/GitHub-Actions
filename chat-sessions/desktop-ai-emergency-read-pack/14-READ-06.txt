@@ -129,4 +129,9 @@
   `[🎖️ 本セッション割当] CIO=実装 | DeepSeek=タスク冒頭に盲点1問のみ実施済 | Kimi=未使用 | OpenRouter=未使用`
 - **§4 J（トークン上限の数値化）**は CEO 任意採用。採用するなら `AGENTS.md` 補足＋ verify 針を **リポ側**で後追い。
 
+**2026-05-14 追補（CEO 承認 A3・A4・A5）**:
+- **A3**: `customize/new-pc-ledger-v1/desktop.js` または 674 フォーム REST を **編集する前**に DeepSeek へ **盲点 1 問** → 戻りを **約3行**チャットに残してから Edit/Shell。**省略時は理由 1 行**。
+- **A4**: IDE チャット **全ターン**先頭に **§1 四行**（`[§1-2-3 ティア判定]`・`【適用憲法】`・`[🎖️ 本セッション割当]`・`[ルール確認]`）。**報告・締め・GO 仰ぎ**は **`docs/session-report-checklist.md` §M-2 V2 七行**を応答末尾に付す。
+- **A5**: 浜田 CEO **依頼時のみ** `docs/runbooks/pc-ledger-674-hamada-ui-verify-jbis-purchase.md`（個人 JBIS 空き番・共有 S-JBIS・購入3欄）。
+
 （以上。詳細条文は `AGENTS.md` の **§50-3 全文**と該当 § を Read すること。）

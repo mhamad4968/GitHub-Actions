@@ -20,6 +20,9 @@
     "group_name": "所属グループ",
     "shared_terminal_name": "共有端末名",
     "purchase_date": "購入日",
+    "purchase_amount": "購入金額",
+    "purchase_vendor": "購入先",
+    "purchase_vendor_other": "購入先（手入力）",
     "latest_inventory_date": "最新棚卸日",
     "note": "備考",
     "logon_name": "WindowsID",
@@ -42,8 +45,6 @@
     "skysea_target_flag": "SKYSEA配信対象",
     "m365_master_record_id": "M365管理マスタ レコード番号",
     "import_source": "取込元",
-    "legacy_pc_name_594": "旧PC名（594）",
-    "legacy_record_id_594": "旧レコードID（594）",
     "created_at_jst": "作成日時（JST）"
   }
 }

@@ -1851,3 +1851,17 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 
 **明日本題**: **TOTO 予想**改修 — `Desktop\TOTO予想\`＋`Desktop\totoアプリ改修案.txt` を正本。段階実装・§50-3-8・動作確認は浜田依頼時。
 
+---
+
+### 2026-05-14（JST）PC台帳 674 — JBIS/S-JBIS 空き若番・購入フィールド
+
+**経緯**: 個人 JBIS 自動採番（空き若番）・共有 S-JBIS 同様・共有自動生成エラー（671 クエリ `order by` 誤り）修正・購入金額／購入先（プルダウン＋手入力）追加。浜田 CEO **購入欄 OK**・**本日終了**。
+
+**確定**: 廃棄以外の `pc_name` から **1 から最小空き番**（`pc_name` 空のみ・登録済み名は不変更）。**JR** PC 名は手入力。**671** 共有 M365 取得クエリ修正。**購入** `purchase_amount` / `purchase_vendor` / `purchase_vendor_other`、フォーム rev **197**。
+
+**674 customize**: BUILD `2026-05-14-purchase-fields-visibility`（rev **196** 付近）。
+
+**未確定 / 次**: 浜田目視（依頼時）・674 追加改修があれば preflight→deploy。
+
+**次の1手**: 新チャットで read-pack **09→** → `checkpoint-latest` / `handoff-log` / `26-evening-reflection-2026-05-14.md` / `2026-05-14-briefing-prep-CIO.md`。**A1〜A6 は 2026-05-14 夜に実施済**。
+

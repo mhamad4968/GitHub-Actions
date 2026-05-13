@@ -10,7 +10,7 @@
  *   - 種別 (account_type) による表示制御 (show/hide)
  *   - §4.2.1a: 内部メタは kintone 標準グループ `internal_system_meta` に収容（レイアウトは `npm run pc-ledger:674:layout-internal-group`）。表示時はグループを閉じる・新規・編集では子を disabled
  *   - §4.2.3a: SKYSEA 4 件は `skysea_system_meta`（表示名 SKYSEA処理用）に収容。アカウント部領域のため **権限のあるユーザーは編集可能**。運用で触るのは浜田のみと **周知**（customize ではログインによる非表示はしない）。通常はグループを閉じた初期表示
- *   - 自動生成ボタン: 個人 / 共有（Windows+M365）/ JR（**M365 のみ**・**PC名は手入力のまま**）を §4.4 に沿ってフォームへ反映（空欄のみ上書き）。**個人**: §4.3.1 **`pc_name`/`pc_serial_no`**・§4.2.2 **`windows_name`=`jbm####[mailの@前]`**（`logon_name` と `[` の間に **`+` は付けない**）・`mail_pw`（jb+乱数4桁+K#）・`gb_id`/`sb_id`=mail_acct・`gb_pw`/`sb_pw`=logon_name**（メール空時は ID 系は案内のみ）。**共有**: **`S-JBIS####-YYYYMM`** と Windows 採番。**JR**: PC 名・Windows は自動で触らない
+ *   - 自動生成ボタン: 個人 / 共有（Windows+M365）/ JR（**M365 のみ**・**PC名は手入力のまま**）を §4.4 に沿ってフォームへ反映（空欄のみ上書き）。**個人**: §4.3.1 **`pc_name`/`pc_serial_no`**（次番採番は **674 台帳内の `JBIS`＋連番の最大**＝`pc_serial_no>0` の最大と **全 `pc_name` の JBIS 形式のみ**から読んだ連番の **いずれか大きい方 +1**。**自動採番時は 670 `PC_SERIAL_MIN_PERSONAL_JBIS`（未設定時 67＝JBIS0067）未満にしない**。共有の **S-JBIS は個人採番に含めない**）。§4.2.2 **`windows_name`=`jbm####[mailの@前]`**（`logon_name` と `[` の間に **`+` は付けない**）・`mail_pw`（jb+乱数4桁+K#）・`gb_id`/`sb_id`=mail_acct・`gb_pw`/`sb_pw`=logon_name**（メール空時は ID 系は案内のみ）。**共有**: **`S-JBIS####-YYYYMM`**（`pc_serial_no>0` の最大と台帳内 **`S-JBIS####` の `pc_name` のみ**から読んだ 4 桁の **いずれか大きい方 +1**。個人の **JBIS は共有採番に含めない**）と Windows 採番。**JR**: PC 名・Windows は自動で触らない
  *   - 5 台ライセンス警告雛形 (赤バナーは仕組みのみ)
  *   - リセット／PC買替（§4.10.3・596 採番・671 整合・595 個人リンク）／印刷（627 レイアウト移植済）
  *   - **レコード閲覧（detail）**: **ステータス≠保管**のとき操作ボタンは **PC買替・印刷のみ**。**保管の閲覧**ではカスタムヘッダを付けない（余計なボタンなし）。**新規・編集かつ保管**（個人/共有/JR いずれも）: ヘッダは **全フィールドリセットのみ**。**利用中**等の非保管は従来の種別別ボタン＋PC買替・印刷。
@@ -18,7 +18,7 @@
  * Day 5 残タスク（未完了のみ）:
  *   - （一覧）**SKYSEA 状態チップ**: **当面 UI 非表示**（§4.8a）。`query` 内の `skysea_status in (...)` は **引き続き解釈**（旧 URL 互換）。再表示は SKYSEA 計画後。
  *   - （一覧）**絞り込み URL**: `query` と `npl674kw` から **キーワード・種別（・SKYSEA in）**を復元（当バーが生成した形式に準拠）。
- *   - **PC買替は実装済**（§4.10.3）。594 同趣旨。**627 二重更新なし**。v0.9.14: ボタン掛け先フォールバック＋遅延再 inject、`import_source=PC_REPLACE_FROM_674:<旧$id>`・legacy 594 フィールドクリア。
+ *   - **PC買替は実装済**（§4.10.3）。594 同趣旨。**627 二重更新なし**。v0.9.14: ボタン掛け先フォールバック＋遅延再 inject、`import_source=PC_REPLACE_FROM_674:<旧$id>`。
  *   - 新規・編集: **所属ヘルプ `<details>`（入れ方・コピー一覧）は表示しない**（2026-05-05 浜田指示）。**入力支援**: `document` **capture** でフィールド内クリックを捕捉（kintone 内側の `stopPropagation` より先）。**はい／いいえ** の z-index は kintone ヘッダより上。**明示ボタン**は **`#new-pc-ledger-buttons` 帯**に **「入力支援利用」**（個人・非保管→595／共有・JR→680。表示名は同一、`aria-label` で区別）（フィールド直下 DOM 挿入は廃止）。ヘッダの旧「社員名検索／所属候補」ボタンは**廃止**。**`pc_status`=保管**のときは種別横断で **ヘッダは全フィールドリセットのみ**。**種別／ステータス**は record を DOM と突合。**共有・個人の自動生成**: `m365_master_record_id` は **set 前に disabled 解除**。**`pc_serial_no` 等内部メタ子**（§4.2.1a）も **`record.set` 同期間だけ** disabled 解除してから反映。
  *   - **備考（note）**: 全種別で任意（保存前チェックでは必須にしない）。
  *   - **モバイル**: 当面は利用想定なし（`kintone.mobile` 分岐は既存のまま残すが、専用UXは追わない）。
@@ -31,7 +31,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-11-pc-ledger-index-search-debug-localstorage';
+  const BUILD = '2026-05-14-purchase-fields-visibility';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -103,14 +103,10 @@
   /** §4.2.1a 内部メタ（フィールドグループ内・新規・編集では編集不可） */
   const FC_INTERNAL_GROUP = 'internal_system_meta';
   const FC_IMPORT_SOURCE = 'import_source';
-  const FC_LEGACY_PC_NAME_594 = 'legacy_pc_name_594';
-  const FC_LEGACY_RECORD_ID_594 = 'legacy_record_id_594';
   const FC_CREATED_AT_JST = 'created_at_jst';
   const INTERNAL_CHILD_CODES = [
     FC_PC_SERIAL_NO,
     FC_IMPORT_SOURCE,
-    FC_LEGACY_PC_NAME_594,
-    FC_LEGACY_RECORD_ID_594,
     FC_CREATED_AT_JST,
   ];
 
@@ -146,6 +142,9 @@
   /** `change` / `show` で同期した「転用」ON（`setTimeout` 内の `get()` 遅れ・重い DOM 全走査を避ける） */
   let npl674TransferManualMirror674 = false;
   const FC_PURCHASE_DATE = 'purchase_date';
+  const FC_PURCHASE_AMOUNT = 'purchase_amount';
+  const FC_PURCHASE_VENDOR = 'purchase_vendor';
+  const FC_PURCHASE_VENDOR_OTHER = 'purchase_vendor_other';
   const FC_LATEST_INVENTORY_DATE = 'latest_inventory_date';
   const FC_VPN_ID = 'vpn_id';
   const FC_VPN_PW = 'vpn_pw';
@@ -166,6 +165,9 @@
     FC_MODEL_NAME,
     FC_NOTE,
     FC_PURCHASE_DATE,
+    FC_PURCHASE_AMOUNT,
+    FC_PURCHASE_VENDOR,
+    FC_PURCHASE_VENDOR_OTHER,
     FC_LATEST_INVENTORY_DATE,
     FC_VPN_ID,
     FC_VPN_PW,
@@ -183,8 +185,6 @@
     FC_SB_PW,
     FC_M365_MASTER_RECORD_ID,
     FC_IMPORT_SOURCE,
-    FC_LEGACY_PC_NAME_594,
-    FC_LEGACY_RECORD_ID_594,
   ].concat(SKYSEA_CHILD_CODES);
 
   /** PC買替で新レコード側から空にする項目（アカウント・種別・所属は継承。§4.10.3） */
@@ -196,14 +196,14 @@
     FC_MODEL_NAME,
     FC_NOTE,
     FC_PURCHASE_DATE,
+    FC_PURCHASE_AMOUNT,
+    FC_PURCHASE_VENDOR,
+    FC_PURCHASE_VENDOR_OTHER,
     FC_LATEST_INVENTORY_DATE,
     FC_EXTRA_INFO_1,
     FC_EXTRA_INFO_2,
     FC_FIXED_IP_1,
     FC_FIXED_IP_2,
-    /** 新機は旧 594 行と 1:1 ではないため、買替起点の追跡は import_source に寄せる */
-    FC_LEGACY_RECORD_ID_594,
-    FC_LEGACY_PC_NAME_594,
   ].concat(SKYSEA_CHILD_CODES);
 
   // ===== 種別 (account_type) のオプション =====
@@ -387,6 +387,9 @@
       FC_MODEL_NAME,
       FC_NOTE,
       FC_PURCHASE_DATE,
+      FC_PURCHASE_AMOUNT,
+      FC_PURCHASE_VENDOR,
+      FC_PURCHASE_VENDOR_OTHER,
       FC_LATEST_INVENTORY_DATE,
       FC_LOGON_NAME,
       FC_LOGON_PW,
@@ -415,6 +418,9 @@
         FC_DEPT_NAME,
         FC_GROUP_NAME,
         FC_PURCHASE_DATE,
+        FC_PURCHASE_AMOUNT,
+        FC_PURCHASE_VENDOR,
+        FC_PURCHASE_VENDOR_OTHER,
         FC_LATEST_INVENTORY_DATE,
         FC_NOTE,
         FC_PC_NAME,
@@ -639,9 +645,30 @@
     return String(str || '').replace(/\\/g, '\\\\').replace(/"/g, '\\"');
   }
 
-  /** 個人 PC 名の先頭 JBIS+4桁（例 JBIS0349）。§4.3.1 形式外は null */
+  /** REST／フォーム由来の値を正の整数に正規化（数値中のカンマのみ除去）。 */
+  function toPositiveInt674(v) {
+    const s = String(v == null ? '' : v)
+      .replace(/,/g, '')
+      .trim();
+    if (!s) return 0;
+    const n = parseInt(s, 10);
+    return Number.isFinite(n) && n > 0 ? n : 0;
+  }
+
+  /**
+   * §4.3.1 `pc_name` の接頭辞直後の連番文字列。
+   * 1〜9999 は 4 桁ゼロ埋め。**10000 以上は桁そのまま**（`9999` の次は **`10000`** → `JBIS10000-…`。先頭4桁だけ取ると `1000` になる誤りを避ける）。
+   */
+  function formatPcNameJbisSerialDigits674(n) {
+    const k = Math.floor(Number(n));
+    if (!Number.isFinite(k) || k < 1) return '0001';
+    if (k <= 9999) return String(k).padStart(4, '0');
+    return String(k);
+  }
+
+  /** 個人 PC 名の先頭 JBIS＋連番（例 JBIS0349、JBIS10000）。`-YYYYMM` の前まで。§4.3.1 形式外は null */
   function extractPersonalJbisCore674(pcName) {
-    const m = /^JBIS(\d{4})/i.exec(String(pcName || '').trim());
+    const m = /^JBIS(\d+)(?=-|$)/i.exec(String(pcName || '').trim());
     if (!m) return null;
     return 'JBIS' + m[1];
   }
@@ -726,7 +753,7 @@
       lead.innerHTML =
         '個人のPC名の <strong style="color:#b02a37;">' +
         core +
-        '</strong>（JBIS+4桁の管理番号部分）が、他の利用中・保管レコードと重複しています。室長へ確認してください。';
+        '</strong>（JBIS＋連番の管理番号部分）が、他の利用中・保管レコードと重複しています。室長へ確認してください。';
       banner.appendChild(lead);
       const ul = document.createElement('ul');
       ul.style.cssText = 'margin:4px 0 0 18px;padding:0;color:#b02a37;';
@@ -963,24 +990,207 @@
     });
   }
 
-  /** §4.3.1: 674 内の `pc_serial_no` 最大値（>0 のみ）。無い・失敗時は 0 */
-  function fetchMaxPcSerial674() {
+  /**
+   * 個人 PC 名の先頭 `JBIS`＋連番から数値（`-YYYYMM` の前まで）。共有の S-JBIS は **含めない**。
+   */
+  function extractJbisFourDigitFromPcName674(pcName) {
+    const m = /^JBIS(\d+)(?=-|$)/i.exec(String(pcName || '').trim());
+    if (!m) return null;
+    const n = Number(m[1]);
+    return Number.isFinite(n) && n > 0 && n <= Number.MAX_SAFE_INTEGER ? Math.floor(n) : null;
+  }
+
+  /**
+   * 共有 PC 名の先頭 `S-JBIS`＋連番から数値（`-YYYYMM` の前まで）。個人の JBIS は **含めない**。
+   */
+  function extractSjbisFourDigitFromPcName674(pcName) {
+    const m = /^S-JBIS(\d+)(?=-|$)/i.exec(String(pcName || '').trim());
+    if (!m) return null;
+    const n = Number(m[1]);
+    return Number.isFinite(n) && n > 0 && n <= Number.MAX_SAFE_INTEGER ? Math.floor(n) : null;
+  }
+
+  /**
+   * 互換: 同一 `pc_name` に S-JBIS を先に判定し、無ければ JBIS（他用途・旧ロジック用）。
+   */
+  function extractFourDigitSerialFromPcName674(pcName) {
+    const sj = extractSjbisFourDigitFromPcName674(pcName);
+    if (sj != null) return sj;
+    return extractJbisFourDigitFromPcName674(pcName);
+  }
+
+  /**
+   * §4.3.1: 次の PC 名連番用の「参照用最大連番」（数値）。
+   * - **個人**: **廃棄以外・個人行の `pc_name` から JBIS 連番だけ**走査した最大（**`pc_serial_no` の最大は使わない**）。  
+   *   `pc_serial_no` が 10000 など **PC 名の JBIS と無関係に大きい**と `max+1` が `JBIS10000-…` に飛ぶため。
+   * - **共有**: **廃棄以外・共有行**の `pc_serial_no>0` の最大と、同条件の **`pc_name` の S-JBIS 連番**の最大の **いずれか大きい方**。
+   * （**廃棄**の `JBIS9999` 等は max に含めない。）
+   * （`JBIS`／S-JBIS 連番は **可変桁**で読む。）
+   * 無い・失敗時は 0。`mergePcNameSerialFromMax674` では **これ +1**（個人は **670 下限**と併用）→ 利用中の末尾が **66** なら **67、次の台帳は 68** …と **1 台ずつ足していく**のと同じになる。
+   * @param {'personal'|'shared'} kind
+   */
+  function fetchMaxPcSerial674(kind) {
     const appId = kintone.app.getId();
-    return kintoneApiGet('/k/v1/records.json', {
-      app: appId,
-      query: 'pc_serial_no > 0 order by pc_serial_no desc limit 1',
-      fields: [FC_PC_SERIAL_NO],
-    })
-      .then(function (resp) {
-        const row = (resp.records && resp.records[0]) || null;
-        if (!row || !row[FC_PC_SERIAL_NO]) return 0;
-        const n = parseInt(String(row[FC_PC_SERIAL_NO].value), 10);
-        return Number.isFinite(n) && n > 0 ? n : 0;
+    const notDisposed = 'pc_status not in ("' + escapeQueryValue(STATUS_AFTER_REPLACE_OLD_674) + '") and ';
+    const serialScope =
+      (kind === 'personal'
+        ? 'account_type in ("' + escapeQueryValue(TYPE_PERSONAL) + '") and '
+        : 'account_type in ("' + escapeQueryValue(TYPE_SHARED) + '") and ') + notDisposed;
+    const fromField =
+      kind === 'personal'
+        ? Promise.resolve(0)
+        : kintoneApiGet('/k/v1/records.json', {
+            app: appId,
+            query: serialScope + 'pc_serial_no > 0 order by pc_serial_no desc limit 1',
+            fields: [FC_PC_SERIAL_NO],
+          })
+              .then(function (resp) {
+                const row = (resp.records && resp.records[0]) || null;
+                if (!row || !row[FC_PC_SERIAL_NO]) return 0;
+                return toPositiveInt674(row[FC_PC_SERIAL_NO].value);
+              })
+              .catch(function (e) {
+                console.warn('[NEW-PC-LEDGER-V1] fetchMaxPcSerial674(' + kind + ') field', e);
+                return 0;
+              });
+
+    function scanPcNames674(offset, accMax) {
+      const nameScope =
+        (kind === 'personal'
+          ? 'account_type in ("' + escapeQueryValue(TYPE_PERSONAL) + '") and '
+          : 'account_type in ("' + escapeQueryValue(TYPE_SHARED) + '") and ') + notDisposed;
+      const qOr = nameScope + FC_PC_NAME + ' != "" order by $id asc limit 500 offset ' + String(offset);
+      return kintoneApiGet('/k/v1/records.json', {
+        app: appId,
+        query: qOr,
+        fields: [FC_PC_NAME],
+      }).then(function (resp) {
+        const rows = resp.records || [];
+        let m = accMax;
+        for (let i = 0; i < rows.length; i += 1) {
+          const pn = String((rows[i][FC_PC_NAME] && rows[i][FC_PC_NAME].value) || '').trim();
+          const dig =
+            kind === 'personal' ? extractJbisFourDigitFromPcName674(pn) : extractSjbisFourDigitFromPcName674(pn);
+          if (dig != null) m = Math.max(m, dig);
+        }
+        if (rows.length < 500) return m;
+        const nextOff = offset + rows.length;
+        if (nextOff > 100000) {
+          console.warn('[NEW-PC-LEDGER-V1] fetchMaxPcSerial674(' + kind + ') name scan capped at 100000 rows');
+          return m;
+        }
+        return scanPcNames674(nextOff, m);
+      });
+    }
+
+    const fromNames = scanPcNames674(0, 0).catch(function (e) {
+      console.warn('[NEW-PC-LEDGER-V1] fetchMaxPcSerial674(' + kind + ') pc_name scan', e);
+      return 0;
+    });
+
+    return Promise.all([fromField, fromNames]).then(function (pair) {
+      return Math.max(toPositiveInt674(pair[0]), toPositiveInt674(pair[1]));
+    });
+  }
+
+  /**
+   * 個人 JBIS: 廃棄以外の `pc_name` から使用中連番を集め、**1 からの最小空き番**を返す（登録済みは変更しない・新規採番のみ）。
+   */
+  function fetchNextFreePersonalJbisSerial674() {
+    const appId = kintone.app.getId();
+    const notDisposed = 'pc_status not in ("' + escapeQueryValue(STATUS_AFTER_REPLACE_OLD_674) + '") and ';
+    const nameScope =
+      'account_type in ("' + escapeQueryValue(TYPE_PERSONAL) + '") and ' + notDisposed;
+
+    function scanUsed(offset, used) {
+      const qOr = nameScope + FC_PC_NAME + ' != "" order by $id asc limit 500 offset ' + String(offset);
+      return kintoneApiGet('/k/v1/records.json', {
+        app: appId,
+        query: qOr,
+        fields: [FC_PC_NAME],
+      }).then(function (resp) {
+        const rows = resp.records || [];
+        for (let i = 0; i < rows.length; i += 1) {
+          const pn = String((rows[i][FC_PC_NAME] && rows[i][FC_PC_NAME].value) || '').trim();
+          const dig = extractJbisFourDigitFromPcName674(pn);
+          if (dig != null) used.add(dig);
+        }
+        if (rows.length < 500) return used;
+        const nextOff = offset + rows.length;
+        if (nextOff > 100000) {
+          console.warn('[NEW-PC-LEDGER-V1] fetchNextFreePersonalJbisSerial674 scan capped at 100000 rows');
+          return used;
+        }
+        return scanUsed(nextOff, used);
+      });
+    }
+
+    return scanUsed(0, new Set())
+      .then(function (used) {
+        let n = 1;
+        while (used.has(n)) n += 1;
+        return n;
       })
       .catch(function (e) {
-        console.warn('[NEW-PC-LEDGER-V1] fetchMaxPcSerial674', e);
-        return 0;
+        console.warn('[NEW-PC-LEDGER-V1] fetchNextFreePersonalJbisSerial674', e);
+        return 1;
       });
+  }
+
+  /**
+   * 共有 S-JBIS: 廃棄以外の `pc_name` から使用中連番を集め、**1 からの最小空き番**を返す（登録済みは変更しない・新規採番のみ）。
+   */
+  function fetchNextFreeSharedSjbisSerial674() {
+    const appId = kintone.app.getId();
+    const notDisposed = 'pc_status not in ("' + escapeQueryValue(STATUS_AFTER_REPLACE_OLD_674) + '") and ';
+    const nameScope =
+      'account_type in ("' + escapeQueryValue(TYPE_SHARED) + '") and ' + notDisposed;
+
+    function scanUsed(offset, used) {
+      const qOr = nameScope + FC_PC_NAME + ' != "" order by $id asc limit 500 offset ' + String(offset);
+      return kintoneApiGet('/k/v1/records.json', {
+        app: appId,
+        query: qOr,
+        fields: [FC_PC_NAME],
+      }).then(function (resp) {
+        const rows = resp.records || [];
+        for (let i = 0; i < rows.length; i += 1) {
+          const pn = String((rows[i][FC_PC_NAME] && rows[i][FC_PC_NAME].value) || '').trim();
+          const dig = extractSjbisFourDigitFromPcName674(pn);
+          if (dig != null) used.add(dig);
+        }
+        if (rows.length < 500) return used;
+        const nextOff = offset + rows.length;
+        if (nextOff > 100000) {
+          console.warn('[NEW-PC-LEDGER-V1] fetchNextFreeSharedSjbisSerial674 scan capped at 100000 rows');
+          return used;
+        }
+        return scanUsed(nextOff, used);
+      });
+    }
+
+    return scanUsed(0, new Set())
+      .then(function (used) {
+        let n = 1;
+        while (used.has(n)) n += 1;
+        return n;
+      })
+      .catch(function (e) {
+        console.warn('[NEW-PC-LEDGER-V1] fetchNextFreeSharedSjbisSerial674', e);
+        return 1;
+      });
+  }
+
+  /**
+   * 個人 JBIS の **自動**採番で使う最小連番（数値）。670 `PC_SERIAL_MIN_PERSONAL_JBIS`（1 〜 99999）。
+   * 未設定・不正時は **67**（**JBIS0067**）。`mergePcNameSerialFromMax674`（個人・`pc_name` 空）では **台帳 JBIS max+1** とこの下限の **max** だけで決め、**フォームの `pc_serial_no` は参照しない**（上書きする）。
+   */
+  function parsePersonalJbisSerialFloor674(envMap) {
+    const raw = String((envMap && envMap.PC_SERIAL_MIN_PERSONAL_JBIS) || '').trim();
+    if (!raw) return 67;
+    const n = parseInt(raw, 10);
+    if (!Number.isFinite(n)) return 67;
+    return Math.min(Math.max(Math.floor(n), 1), 99999);
   }
 
   /** Asia/Tokyo の YYYYMM（§4.3.1 PC 名サフィックス） */
@@ -1000,12 +1210,20 @@
   }
 
   /**
-   * `pc_name` が空のとき §4.3.1 で `pc_serial_no`（空または 0 なら MAX+1）と `pc_name` を埋める。
+   * `pc_name` が空のとき §4.3.1 で `pc_serial_no` と `pc_name` を埋める。
+   * **個人**: **`pc_serial_no` のフォーム値は使わない**（レイアウト既定・複写で 10000 等が入っていても、**台帳の JBIS 連番 max +1** と **670 下限**だけで決める。さもないと `JBIS10000-…` のままになる）。
+   * **共有**: 自動生成時は台帳の **S-JBIS 空き若番**（`pc_name` 空のみ）。`pc_serial_no` のフォーム値は参照しない。
    * @param {'personal'|'shared'} kind
+   * @param {{ forcePersonalPc?: boolean, forceSharedPc?: boolean }} [opts] **個人の自動生成**は `forcePersonalPc: true`。**共有の自動生成**は `forceSharedPc: true`。
    */
-  function mergePcNameSerialFromMax674(rec, envMap, maxSerial, kind) {
+  function mergePcNameSerialFromMax674(rec, envMap, maxSerial, kind, opts) {
+    opts = opts || {};
     const pcNameCur = trimmedScalarValue674(rec, FC_PC_NAME);
-    if (pcNameCur) return;
+    const forcePersonalPc = !!(opts.forcePersonalPc && kind === 'personal');
+    const forceSharedPc = !!(opts.forceSharedPc && kind === 'shared');
+    const forceOverwritePcName = forcePersonalPc && !pcNameCur;
+    const forceOverwriteSharedPcName = forceSharedPc && !pcNameCur;
+    if (!forceOverwritePcName && !forceOverwriteSharedPcName && pcNameCur) return;
     const yyyymm = formatYYYYMMJst674();
     if (!yyyymm) return;
     const prefix =
@@ -1014,23 +1232,40 @@
         : String(envMap.PC_NAME_PREFIX_PERSONAL || 'JBIS').trim() || 'JBIS';
     const cellSer = rec[FC_PC_SERIAL_NO];
     let serialNum;
-    const rawSer =
-      cellSer && cellSer.value != null && cellSer.value !== ''
-        ? parseInt(String(cellSer.value), 10)
-        : NaN;
-    if (Number.isFinite(rawSer) && rawSer > 0) {
-      serialNum = rawSer;
-    } else {
-      serialNum = maxSerial + 1;
+    const maxBase = toPositiveInt674(maxSerial);
+    if (kind === 'personal') {
+      serialNum = maxBase > 0 ? maxBase : parsePersonalJbisSerialFloor674(envMap);
       if (cellSer && typeof cellSer === 'object' && Object.prototype.hasOwnProperty.call(cellSer, 'value')) {
-        const curStr = cellSer.value == null || cellSer.value === '' ? '' : String(cellSer.value).trim();
-        if (!curStr || curStr === '0') {
-          cellSer.value = String(serialNum);
+        cellSer.value = String(serialNum);
+      }
+    } else if (forceSharedPc) {
+      serialNum = maxBase > 0 ? maxBase : 1;
+      if (cellSer && typeof cellSer === 'object' && Object.prototype.hasOwnProperty.call(cellSer, 'value')) {
+        cellSer.value = String(serialNum);
+      }
+    } else {
+      const rawSer =
+        cellSer && cellSer.value != null && cellSer.value !== ''
+          ? toPositiveInt674(cellSer.value)
+          : 0;
+      if (rawSer > 0) {
+        serialNum = rawSer;
+      } else {
+        serialNum = maxBase + 1;
+        if (cellSer && typeof cellSer === 'object' && Object.prototype.hasOwnProperty.call(cellSer, 'value')) {
+          const curStr = cellSer.value == null || cellSer.value === '' ? '' : String(cellSer.value).trim();
+          if (!curStr || curStr === '0') {
+            cellSer.value = String(serialNum);
+          }
         }
       }
     }
-    const built = prefix + String(serialNum).padStart(4, '0') + '-' + yyyymm;
-    mergeScalarField(rec, FC_PC_NAME, built);
+    const built = prefix + formatPcNameJbisSerialDigits674(serialNum) + '-' + yyyymm;
+    if (forceOverwritePcName || forceOverwriteSharedPcName) {
+      setScalarFieldValue674(rec, FC_PC_NAME, built);
+    } else {
+      mergeScalarField(rec, FC_PC_NAME, built);
+    }
   }
 
   /** §4.2.2 メールPW: `MAIL_PW_PREFIX` + 乱数4桁 + `MAIL_PW_SUFFIX`（既定 `jb`+`K#`） */
@@ -1091,13 +1326,8 @@
 
   /** §5.3: 利用可 かつ usage_count<5 の最古 serial（共有プール。JR も同一プール） */
   function fetchAssignableM365Record671() {
-    const q = [
-      'status in ("利用可")',
-      'usage_count < 5',
-      'account_type in ("共有")',
-      'order by serial_no asc',
-      'limit 1',
-    ].join(' and ');
+    const q =
+      'status in ("利用可") and usage_count < 5 and account_type in ("共有") order by serial_no asc limit 1';
     return kintoneApiGet('/k/v1/records.json', {
       app: APP_M365_MASTER,
       query: q,
@@ -2432,7 +2662,7 @@
       loadEnv670Map(),
       findEmployee595ByUserName(userName.trim()),
       nextJbmFrom672(),
-      fetchMaxPcSerial674(),
+      fetchNextFreePersonalJbisSerial674(),
     ])
       .then(function (results) {
         const bagFresh = getRecordFormHolder674();
@@ -2466,8 +2696,10 @@
           return;
         }
 
-        mergePcNameSerialFromMax674(rec, envMap, maxPcSerial, 'personal');
+        mergePcNameSerialFromMax674(rec, envMap, maxPcSerial, 'personal', { forcePersonalPc: true });
 
+        const pcAfterMerge = trimmedScalarValue674(rec, FC_PC_NAME);
+        const serAfterMerge = trimmedScalarValue674(rec, FC_PC_SERIAL_NO);
         mergeScalarField(rec, FC_DEPT_NAME, (emp.dept_name && emp.dept_name.value) || '');
         mergeScalarField(rec, FC_GROUP_NAME, (emp.group_name && emp.group_name.value) || '');
         mergeScalarField(rec, FC_EMP_ID, (emp.emp_id && emp.emp_id.value) || '');
@@ -2482,6 +2714,9 @@
         mergePersonalMailGbSb674(rec, envMap, nextJbmTrim, mailLocal);
 
         console.info('[NEW-PC-LEDGER-V1] personal autogen §4.2.2', {
+          next_free_jbis_serial_674: maxPcSerial,
+          pc_name_after_pc_serial_merge: pcAfterMerge || '(unchanged)',
+          pc_serial_no_after_pc_serial_merge: serAfterMerge || '(unchanged)',
           logon_name: nextJbmTrim,
           mail_acct: mailLocal || '(empty)',
           windows_name: windowsDisplay,
@@ -2491,7 +2726,8 @@
           apiFresh.set(recNow);
         });
         applyM365MasterRecordIdFieldUi674(rec, 'editable');
-        let msg = '個人用フィールドをフォームへ反映しました（空欄のみ）。保存は手動で行ってください。';
+        let msg =
+          '個人用フィールドをフォームへ反映しました。**PC名が空のときだけ**、台帳の JBIS 空き若番で **PC名・シリアル（PC）**を採番します（登録済み PC 名は変更しません）。その他の欄は空欄のみ上書きです。保存は手動で行ってください。';
         if (!mailLocal) {
           msg +=
             '\n\n※595の会社メール（@より前）が空のため、Windows アカウント名は「' +
@@ -2513,7 +2749,7 @@
       loadEnv670Map(),
       fetchAssignableM365Record671(),
       nextSjbmFrom673(),
-      fetchMaxPcSerial674(),
+      fetchNextFreeSharedSjbisSerial674(),
     ])
       .then(function (results) {
         const bag = getRecordFormHolder674();
@@ -2550,33 +2786,26 @@
     const m365RowId = m671.$id && m671.$id.value;
 
     const masterCell = rec[FC_M365_MASTER_RECORD_ID];
-    const masterWasDisabled =
-      !!(masterCell && Object.prototype.hasOwnProperty.call(masterCell, 'disabled') && masterCell.disabled);
 
-    if (type === TYPE_SHARED && nextSjbm) {
-      mergePcNameSerialFromMax674(rec, envMap, maxPcSerial, 'shared');
-      mergeScalarField(rec, FC_LOGON_NAME, nextSjbm);
-      mergeScalarField(rec, FC_WINDOWS_NAME, nextSjbm);
-      const fixedPw = envMap.LOGON_PW_SHARED_FIXED || 'kent0000';
-      const lpw = rec[FC_LOGON_PW];
-      if (lpw && (!lpw.value || !String(lpw.value).trim())) lpw.value = fixedPw;
-    }
-
-    mergeScalarField(rec, FC_M365_ID, m365Id);
-    mergeScalarField(rec, FC_M365_PW, m365Pw);
-    mergeNumberField(rec, FC_M365_MASTER_RECORD_ID, m365RowId);
-
-    if (masterCell && Object.prototype.hasOwnProperty.call(masterCell, 'disabled')) {
-      masterCell.disabled = false;
-    }
     try {
       withWritableInternalMeta674(rec, function () {
+        if (masterCell && Object.prototype.hasOwnProperty.call(masterCell, 'disabled')) {
+          masterCell.disabled = false;
+        }
+        if (type === TYPE_SHARED && nextSjbm) {
+          mergePcNameSerialFromMax674(rec, envMap, maxPcSerial, 'shared', { forceSharedPc: true });
+          mergeScalarField(rec, FC_LOGON_NAME, nextSjbm);
+          mergeScalarField(rec, FC_WINDOWS_NAME, nextSjbm);
+          const fixedPw = envMap.LOGON_PW_SHARED_FIXED || 'kent0000';
+          const lpw = rec[FC_LOGON_PW];
+          if (lpw && (!lpw.value || !String(lpw.value).trim())) lpw.value = fixedPw;
+        }
+        mergeScalarField(rec, FC_M365_ID, m365Id);
+        mergeScalarField(rec, FC_M365_PW, m365Pw);
+        mergeNumberField(rec, FC_M365_MASTER_RECORD_ID, m365RowId);
         api.set(recNow);
       });
     } catch (err) {
-      if (masterWasDisabled && masterCell && Object.prototype.hasOwnProperty.call(masterCell, 'disabled')) {
-        masterCell.disabled = true;
-      }
       console.error('[NEW-PC-LEDGER-V1] runSharedAutoGen record.set failed', err);
       throw err;
     }

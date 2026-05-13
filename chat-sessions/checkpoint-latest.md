@@ -2,6 +2,17 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
+## 2026-05-14 JST 本題＝PC台帳（674）採番・購入フィールド
+
+- **状況**: **674** の個人 **JBIS**／共有 **S-JBIS** を **廃棄以外の `pc_name` から空き若番**（1 から最小）。**登録済み PC 名は自動で上書きしない**（`pc_name` 空のみ）。**JR** は従来どおり **PC 名手入力**。
+- **自動生成**: 共有は **671 M365 取得クエリ**（`status in ("利用可") and usage_count < 5 and account_type in ("共有") order by serial_no asc limit 1`）修正済。**内部メタ**は `record.set` 前に **disabled 一時解除**。
+- **購入**: **`purchase_amount`**（円）・**`purchase_vendor`**（大塚商会／ＦＢＪ／ＫＤＤＩ）・**`purchase_vendor_other`**（手入力）。購入日直後。CEO **OK**。
+- **674 LIVE**: customize **BUILD** `2026-05-14-purchase-fields-visibility`（rev **196**）。フォーム **rev 197**（購入レイアウト）。**`kintone-apps.md` 674 行**は **2026-05-14 夜に追記済**。
+- **危険スクリプト**: `scripts/pc-ledger-674-refill-personal-jbis-serials.mjs` は **既存 JBIS 一括振り直し**用。**`--ack-rebatch-existing-jbis-names` 無しでは `--apply` 不可**（復元ログ: `logs/pc-ledger-674-jbis-refill-2026-05-13T14-55-44-512Z.json`）。
+- **動作確認**: **依頼があれば浜田 CEO 目視**（`docs/runbooks/pc-ledger-674-hamada-ui-verify-jbis-purchase.md`）。
+- **規律**: 本セッションは **§1 毎ターン・§M-2・第2者**が不十分。**次セッションはフル規律を先に**（`14-READ-06.txt` **2026-05-14 追補**）。
+
+
 ## CIO × 知恵袋（仕様確認分業・2026-05-01 浜田確定・全セッション継承）
 
 **引き継ぎ 5 ブロック（2026-05-05 / v23.32）**: **`chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md`** — レーン宣言 → 規律ゲート → read-pack → bootstrap → 締め、の **短い正本**。長文を一度に読めないときの **入口**。

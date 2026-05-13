@@ -1,0 +1,45 @@
+{
+  "properties": {
+    "purchase_amount": {
+      "type": "NUMBER",
+      "code": "purchase_amount",
+      "label": "購入金額",
+      "required": false,
+      "minValue": "",
+      "maxValue": "",
+      "digit": false,
+      "unique": false,
+      "defaultValue": "",
+      "displayScale": "",
+      "unit": "円",
+      "unitPosition": "AFTER"
+    },
+    "purchase_vendor": {
+      "type": "DROP_DOWN",
+      "code": "purchase_vendor",
+      "label": "購入先",
+      "required": false,
+      "options": {
+        "大塚商会": {
+          "label": "大塚商会",
+          "index": "0"
+        },
+        "ＦＢＪ": {
+          "label": "ＦＢＪ",
+          "index": "1"
+        },
+        "ＫＤＤＩ": {
+          "label": "ＫＤＤＩ",
+          "index": "2"
+        }
+      },
+      "defaultValue": ""
+    },
+    "purchase_vendor_other": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "purchase_vendor_other",
+      "label": "購入先（手入力）",
+      "required": false
+    }
+  }
+}
