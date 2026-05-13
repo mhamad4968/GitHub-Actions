@@ -74,6 +74,7 @@ npm run app:fields <アプリID>
 
 | 日時（UTC） | アプリID | customize パス |
 |-------------|----------|----------------|
+| 2026-05-13T13:54:59Z | 594 | `customize/594/desktop.js` |
 | 2026-05-12T12:30:00Z | 678 | `customize/678/desktop.js`（実績 **Enter／修正・削除／固定費プリフィル**・新規明細 **Enter**・**BUILD** `2026-05-12-678-enter-editdelete-prefill`・**deploy SUCCESS** / fileKey **`f0902f20-8cc8-4a94-844e-d58f335cbe11`** / rev **`129`**・`cio:preflight:678` note **678実績Enter修正削除プリfill本番反映**） |
 | 2026-05-11T15:30:00Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（一覧 **`npl674debug`** コンソールログ・read-pack/session-handoff 反映・**BUILD** `2026-05-11-pc-ledger-index-search-debug-localstorage`・**deploy SUCCESS** / fileKey **`8804a8a8-7512-475c-a2f9-5fcfc084a21b`** / rev **`177`**） |
 | 2026-05-11T14:25:00Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（一覧 URL **標準 `?q=`** 読取・除去・**BUILD** `2026-05-11-pc-ledger-index-search-native-q-param`・**deploy SUCCESS** / fileKey **`33be4da4-036c-4279-92d6-a30808e9061a`** / rev **`176`**） |
