@@ -31,7 +31,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-14-m365-shared-jr-assist';
+  const BUILD = '2026-05-14-m365-assist-new-when-empty-only';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -1857,6 +1857,7 @@
   const M365_ASSIST_NEW_ISSUED_MODAL_ID = 'new-pc-ledger-m365-assist-new-issued';
 
   let m365AssistLastEnvMap674 = null;
+  let m365AssistOfferNewIssue674 = false;
   let m365AssistChoiceEsc674 = false;
   let m365AssistPickerEsc674 = false;
   let m365AssistNewIssuedEsc674 = false;
@@ -2122,6 +2123,22 @@
     return backdrop;
   }
 
+  function refreshM365AssistChoiceModal674(hasAssignableSlot671) {
+    m365AssistOfferNewIssue674 = !hasAssignableSlot671;
+    const backdrop = document.getElementById(M365_ASSIST_CHOICE_MODAL_ID);
+    if (!backdrop) return;
+    const btnNew = backdrop.querySelector('[data-npl-m365-choice-new="1"]');
+    const msgEl = backdrop.querySelector('[data-npl-m365-choice-msg="1"]');
+    if (btnNew) {
+      btnNew.style.display = m365AssistOfferNewIssue674 ? '' : 'none';
+    }
+    if (msgEl) {
+      msgEl.textContent = m365AssistOfferNewIssue674
+        ? '手入力・既存の共有割当の利用、または 671 に空き割当がないときの新規採番から選べます。'
+        : '手入力・既存の共有割当の利用から選べます（空き割当があるため新規採番は選べません）。';
+    }
+  }
+
   function ensureM365AssistChoiceModal674() {
     let backdrop = document.getElementById(M365_ASSIST_CHOICE_MODAL_ID);
     if (backdrop) return backdrop;
@@ -2151,8 +2168,9 @@
     panel.appendChild(title);
 
     const msg = document.createElement('div');
+    msg.setAttribute('data-npl-m365-choice-msg', '1');
     msg.style.cssText = 'font-size:14px;color:#212529;line-height:1.65;margin-bottom:16px;';
-    msg.textContent = '手入力・既存の共有割当の利用・671 への新規採番から選べます。';
+    msg.textContent = '手入力・既存の共有割当の利用から選べます。';
     panel.appendChild(msg);
 
     const btnRow = document.createElement('div');
@@ -2190,7 +2208,9 @@
       openM365AssistPickerModal674();
     });
 
-    const btnNew = mkChoiceBtn('新規採番（671 から払い出し）', '#0d6efd', '#0a58ca');
+    const btnNew = mkChoiceBtn('新規採番（671 に行を追加）', '#0d6efd', '#0a58ca');
+    btnNew.setAttribute('data-npl-m365-choice-new', '1');
+    btnNew.style.display = 'none';
     btnNew.addEventListener('click', function () {
       const envMap = m365AssistLastEnvMap674;
       closeM365AssistChoiceModal674();
@@ -2198,14 +2218,19 @@
         window.alert('環境マップが未取得です。しばらくしてから再度お試しください。');
         return;
       }
+      if (!m365AssistOfferNewIssue674) {
+        window.alert(
+          '利用可能な M365 割当がまだあります。「既存の共有割当を利用」から選ぶか、M365 ID を手入力してください。',
+        );
+        return;
+      }
       const bag = getRecordFormHolder674();
       if (!bag || !bag.api || typeof bag.api.get !== 'function') {
         window.alert('フォームの準備ができていません。画面を開き直してからお試しください。');
         return;
       }
-      provisionM365Master671ForNew674(envMap)
-        .then(function (pack) {
-          const row = pack.record;
+      postNewM365Master671FromEnv674(envMap)
+        .then(function (row) {
           const holder = bag.api.get();
           const rec = holder.record;
           const mid = (row.m365_id && row.m365_id.value) || '';
@@ -2218,11 +2243,11 @@
             m365SharedJrFormPassword674(envMap),
             rid,
           );
-          showM365NewIssuedDialog674(mid, !!pack.created671);
+          showM365NewIssuedDialog674(mid, true);
         })
         .catch(function (e) {
           console.error('[NEW-PC-LEDGER-V1] M365 新規採番', e);
-          window.alert('M365 管理マスタの払い出しに失敗しました。権限・通信・マスタ設定を確認してください。');
+          window.alert('M365 管理マスタへの追加に失敗しました。権限・通信・マスタ設定を確認してください。');
         });
     });
 
@@ -2286,15 +2311,16 @@
       return;
     }
     npl674FocusAssistSuppressUntil674 = Date.now() + 400;
-    loadEnv670Map()
-      .then(function (envMap) {
-        m365AssistLastEnvMap674 = envMap;
+    Promise.all([loadEnv670Map(), fetchAssignableM365Record671()])
+      .then(function (results) {
+        m365AssistLastEnvMap674 = results[0];
         const backdrop = ensureM365AssistChoiceModal674();
+        refreshM365AssistChoiceModal674(!!results[1]);
         backdrop.style.display = 'flex';
       })
       .catch(function (e) {
-        console.warn('[NEW-PC-LEDGER-V1] M365 assist env', e);
-        window.alert('環境設定（670）の取得に失敗しました。通信を確認して再度お試しください。');
+        console.warn('[NEW-PC-LEDGER-V1] M365 assist env/671', e);
+        window.alert('環境設定（670）または M365 管理マスタ（671）の取得に失敗しました。通信を確認して再度お試しください。');
       });
   }
 
