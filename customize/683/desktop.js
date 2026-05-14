@@ -13,7 +13,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-14-683-sixmo-fetch-pagination';
+  const BUILD = '2026-05-14-683-fetch-pagination-safe';
   /** `false`: AI要約ブロック（週次・月次・Ollama ボタン）を非表示。再表示するときは `true` にして deploy:683。 */
   const USER683_SHOW_AI_SUMMARY_UI = false;
   /** データ正本アプリ（REST の app は常にここを指定） */
@@ -677,20 +677,17 @@
     return { query: query, slots: slots };
   }
 
-  function shouldFetchMoreKintoneRecords(batchLen, pageLimit, offset, totalCount) {
-    if (!batchLen) return false;
-    if (batchLen === pageLimit) return true;
-    if (totalCount != null && totalCount !== '') {
-      const t = Number(totalCount);
-      if (Number.isFinite(t) && offset < t) return true;
-    }
-    return false;
+  /** 満ページのときだけ次 offset を取る（totalCount だけで継続しない） */
+  function shouldFetchMoreKintoneRecords(batchLen, pageLimit) {
+    return batchLen > 0 && batchLen === pageLimit;
   }
 
   function fetchRecordsFieldsForQuery(appId, query, fields) {
     const all = [];
     let offset = 0;
-    const limit = 100;
+    const limit = 500;
+    let pageCount = 0;
+    const maxPages = 50;
 
     function step() {
       return kintone
@@ -708,7 +705,11 @@
             all.push(batch[i]);
           }
           offset += batch.length;
-          if (shouldFetchMoreKintoneRecords(batch.length, limit, offset, resp.totalCount)) {
+          pageCount += 1;
+          if (pageCount >= maxPages) {
+            return all;
+          }
+          if (shouldFetchMoreKintoneRecords(batch.length, limit)) {
             return step();
           }
           return all;
@@ -1188,7 +1189,9 @@
   function fetchAllRecordDatesForQuery(appId, query) {
     const all = [];
     let offset = 0;
-    const limit = 100;
+    const limit = 500;
+    let pageCount = 0;
+    const maxPages = 50;
 
     function step() {
       return kintone
@@ -1206,7 +1209,15 @@
             all.push(batch[i]);
           }
           offset += batch.length;
-          if (shouldFetchMoreKintoneRecords(batch.length, limit, offset, resp.totalCount)) {
+          pageCount += 1;
+          if (pageCount >= maxPages) {
+            const total =
+              resp.totalCount != null && resp.totalCount !== ''
+                ? Number(resp.totalCount)
+                : all.length;
+            return { records: all, totalCount: total };
+          }
+          if (shouldFetchMoreKintoneRecords(batch.length, limit)) {
             return step();
           }
           const total =

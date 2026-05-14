@@ -216,4 +216,5 @@
 | 2026-05-12 | **§5.1 / 682 REST 7 暦月棒（CEO 重要確認）**: 月次傾向の閲覧は **[683 ダッシュ](https://jbis-kintone.cybozu.com/k/683/)** を正とし、682 の **`SHOW_ROLLING_7M_ON_APP682=false`**・`deploy:682`・**BUILD** `2026-05-12-682-hide-rolling7m-dashboard683`。 |
 | 2026-05-12 | **§6.1.1 / 683**: ダッシュ（**[683](https://jbis-kintone.cybozu.com/k/683/)**）の **月次・当月合計**で **同一 `record_date` の `day_total` を二重に足さない**（暦日ごと max → 暦月合計）。`customize/683/desktop.js` **BUILD** `2026-05-12-683-month-chart-dedupe-day-total`・`deploy:683`。 |
 | 2026-05-14 | **§6.1.1 / 683**: **直近6暦月** REST 取得を **100 件ページング**で全件化し、**右端暦月棒＝ヒーロー月合計**を一致させる（先頭100件打切りで月合計が欠落する不具合の是正）。**BUILD** `2026-05-14-683-sixmo-fetch-pagination`・`deploy:683` rev **25**。 |
+| 2026-05-14 | **§6.1.1 / 683**: **読み込み中で停止**するページングを **満ページのみ継続＋最大50ページ（limit 500）** に是正。**BUILD** `2026-05-14-683-fetch-pagination-safe`・`deploy:683` rev **26**。 |
 | 2026-05-12 | **§3・§6.2（CEO 重要確認）**: **同一暦日は 1 レコードのみ** — `customize/682/desktop.js` が **新規・編集・モバイル**の `submit` で **REST 重複検査**し、既存日付があれば **保存拒否**（同時保存の競合は SPEC §3 に注記）。**BUILD** `2026-05-12-682-unique-record-date-submit`。 |
