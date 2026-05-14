@@ -31,7 +31,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-14-purchase-fields-visibility';
+  const BUILD = '2026-05-14-shared-jr-submit-validation-fix';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -6124,20 +6124,10 @@ ${bodyInner}\
           event.errors = Object.assign(event.errors || {}, { [FC_SHARED_TERMINAL_NAME]: sm });
         }
         const reqPairsSharedJr = [
-          [FC_DEPT_NAME, '所属名'],
-          [FC_GROUP_NAME, '所属グループ'],
+          [FC_LOGON_NAME, 'WindowsID'],
+          [FC_LOGON_PW, 'ログオン パスワード'],
           [FC_M365_ID, 'M365 ID'],
           [FC_M365_PW, 'M365 パスワード'],
-          [FC_WINDOWS_NAME, 'Windows名'],
-          [FC_LOGON_NAME, 'ログオン名'],
-          [FC_LOGON_PW, 'ログオン パスワード'],
-          [FC_SERIAL, 'シリアル'],
-          [FC_PC_SERIAL_NO, 'シリアル番号（PC）'],
-          [FC_MANUFACTURER, 'メーカー'],
-          [FC_MANUFACTURING_NO, '製造番号'],
-          [FC_MODEL_NAME, 'モデル名／型式'],
-          [FC_EXTRA_INFO_1, 'その他情報1'],
-          [FC_EXTRA_INFO_2, 'その他情報2'],
         ];
         for (let ri = 0; ri < reqPairsSharedJr.length; ri++) {
           const code = reqPairsSharedJr[ri][0];
