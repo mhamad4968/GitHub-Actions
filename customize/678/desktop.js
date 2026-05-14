@@ -3,7 +3,7 @@
 
   /**
    * 部署予実 ダッシュアプリ 678
-   * BUILD: 2026-05-12-678-enter-editdelete-prefill
+   * BUILD: 2026-05-14-678-running-actual-month-status
    * - 677 を kintone.api で一覧。左キー列は `shin-format-excel-layout.md` 新フォーマット準拠＋12 月×四つ柱（`monthly_breakdown`）
    * - 一覧の既定 SORT は `display_order asc, $id asc`（SPEC §6e 準拠・2026-05-03 改修）
    * - 新規追加モーダルは「挿入位置」選択（一番下/一番上/○○の上/○○の下）＋中間値計算（floor((prev+next)/2)）
@@ -33,7 +33,7 @@
   var YOJITSU_LABEL_INPUT_NEW = "システム推進室予実管理システム入力アプリの新規入力";
   var YOJITSU_LABEL_DASH_APP = "システム推進室予実管理システム";
   var YOJITSU_LABEL_MANUAL_APP = "システム推進室予実アプリガイド";
-  var BUILD = "2026-05-12-678-enter-editdelete-prefill";
+  var BUILD = "2026-05-14-678-running-actual-month-status";
   /**
    * マニュアル掲載アプリ（システム推進室予実アプリガイド・679）。`window.Y678_QUICK_MANUAL_URL` が非空なら最優先。
    */
@@ -316,6 +316,40 @@
       return n > 0 ? n : null;
     }
     return null;
+  }
+
+  /** 固定費ランニング: 当該暦月に月予算（予算＋予算修正 effective）があるか（`---` 相当は false） */
+  function fixedRunningMonthRequiresActual678(rec, monthLabel) {
+    return fixedBudgetPrefillYen(rec, monthLabel) != null;
+  }
+
+  /** 支払内訳のランニング行が当該暦月に 1 件以上あるか（実績入力済みの目安） */
+  function hasRunningPaymentInFiscalMonth678(rec, monthLabel) {
+    var lab = normalizeFiscalMonthLabel(monthLabel);
+    if (!lab) return false;
+    var rows = (rec.payment_breakdown && rec.payment_breakdown.value) || [];
+    for (var i = 0; i < rows.length; i++) {
+      var v = (rows[i] || {}).value || {};
+      var bucket = String((v.budget_bucket || {}).value || "").trim();
+      if (bucket.indexOf("ランニング") < 0) continue;
+      var d = String((v.payment_date || {}).value || "");
+      var m = d.match(/^\d+-(\d{2})-/);
+      if (!m) continue;
+      if (normalizeFiscalMonthLabel(String(parseInt(m[1], 10))) !== lab) continue;
+      return true;
+    }
+    return false;
+  }
+
+  /** 当月暦月のランニング実績セル用クラス（固定費・要入力のみ） */
+  function runningActualStatusClass678(rec, monthLabel) {
+    if (!rec || fieldVal(rec, "cost_category") !== "固定費") return "";
+    var lab = normalizeFiscalMonthLabel(monthLabel);
+    if (lab !== normalizeFiscalMonthLabel(getCurrentMonthLabel())) return "";
+    if (!fixedRunningMonthRequiresActual678(rec, monthLabel)) return "";
+    return hasRunningPaymentInFiscalMonth678(rec, monthLabel)
+      ? " y678-run-actual-done"
+      : " y678-run-actual-pending";
   }
 
   /** monthly_breakdown の合計（field=month_budget|month_actual|month_budget_revision） */
@@ -976,7 +1010,8 @@
           "y678-num " +
           band +
           fiscalTodayCls +
-          (allowMonthPayment ? " y678-edit-payment y678-input-slot-pay" : "");
+          (allowMonthPayment ? " y678-edit-payment y678-input-slot-pay" : "") +
+          runningActualStatusClass678(r, fl);
         var payData =
           allowMonthPayment
             ? " data-y678-cell=\"payment\" data-y678-month=\"" + esc(fl) + "\""
@@ -1220,6 +1255,11 @@
       "[data-yojitsu-678-shell] .y678-grid tbody tr:hover td.y678-fiscal-today-col{background:#f2e8d8 !important;}",
       "[data-yojitsu-678-shell] .y678-grid tbody tr.y678-row-odd:hover td.y678-fiscal-today-col{background:#eadfd0 !important;}",
       "[data-yojitsu-678-shell] .y678-grid tbody td.y678-input-slot-pay{background:#ffefd6 !important;color:#3d2a0a !important;box-shadow:inset 0 0 0 1px rgba(212,140,40,.55);}",
+      "[data-yojitsu-678-shell] .y678-grid tbody td.y678-run-actual-pending{background:#ffefd6 !important;color:#7a3e00 !important;font-weight:600;box-shadow:inset 0 0 0 1px rgba(212,140,40,.55);}",
+      "[data-yojitsu-678-shell] .y678-grid tbody tr.y678-row-odd td.y678-run-actual-pending{background:#ffe8c4 !important;}",
+      "[data-yojitsu-678-shell] .y678-grid tbody td.y678-run-actual-done{background:#e2f5e8 !important;color:#0f5132 !important;font-weight:600;box-shadow:inset 0 0 0 1px rgba(25,128,66,.35);}",
+      "[data-yojitsu-678-shell] .y678-grid tbody tr.y678-row-odd td.y678-run-actual-done{background:#d8f0df !important;}",
+      "[data-yojitsu-678-shell] .y678-grid tbody td.y678-run-actual-done.y678-input-slot-pay{background:#e2f5e8 !important;color:#0f5132 !important;font-weight:600;box-shadow:inset 0 0 0 1px rgba(25,128,66,.35);}",
       "[data-yojitsu-678-shell] .y678-grid tbody td.y678-input-slot-rev{background:#dff2e6 !important;color:#0f291d !important;box-shadow:inset 0 0 0 1px rgba(70,140,100,.45);}",
       "[data-yojitsu-678-shell] .y678-grid tbody tr.y678-row-odd td.y678-input-slot-pay{background:#ffe8c4 !important;}",
       "[data-yojitsu-678-shell] .y678-grid tbody tr.y678-row-odd td.y678-input-slot-rev{background:#cfe9db !important;}",
