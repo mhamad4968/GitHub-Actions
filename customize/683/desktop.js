@@ -13,9 +13,11 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-14-683-fetch-pagination-safe';
-  /** `false`: AI要約ブロック（週次・月次・Ollama ボタン）を非表示。再表示するときは `true` にして deploy:683。 */
-  const USER683_SHOW_AI_SUMMARY_UI = false;
+  const BUILD = '2026-05-14-683-summary-comments-edit-save';
+  /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
+  const USER683_SHOW_AI_SUMMARY_UI = true;
+  /** `true` のときのみ Ollama 生成ボタンを出す（中継 URL 要）。 */
+  const USER683_SHOW_OLLAMA_GENERATE_BTN = false;
   /** データ正本アプリ（REST の app は常にここを指定） */
   const APP682 = 682;
   /** 683 一覧用（682 の `user_support_682_banner_cal_ym_v1` と衝突させない） */
@@ -35,6 +37,12 @@
   const RELAY_URL_STORAGE_KEY = 'user_support_683_ollama_relay_url';
   /** `user683:sync-summaries:*` が書き込む要約キャッシュを読むアプリ（`window.USER683_SUMMARY_CACHE_APP` で上書き可） */
   const SUMMARY_CACHE_APP_DEFAULT = 683;
+  const FC_SUMMARY_YM = 'user683_dash_ym';
+  const FC_SUMMARY_W1 = 'user683_week_1';
+  const FC_SUMMARY_W2 = 'user683_week_2';
+  const FC_SUMMARY_W3 = 'user683_week_3';
+  const FC_SUMMARY_W4 = 'user683_week_4';
+  const FC_SUMMARY_MONTH = 'user683_month';
 
   /**
    * 国民の祝日（JST の暦日）。振替・特例は年ごとに内閣府公布と突合して更新すること。
@@ -253,25 +261,41 @@
     }
   }
 
+  function summaryCacheAppId() {
+    return typeof window !== 'undefined' && window.USER683_SUMMARY_CACHE_APP != null
+      ? String(window.USER683_SUMMARY_CACHE_APP)
+      : String(SUMMARY_CACHE_APP_DEFAULT);
+  }
+
+  function summaryRecordBody(ymKey, weeks, monthText) {
+  var body = {};
+  body[FC_SUMMARY_YM] = { value: ymKey };
+  body[FC_SUMMARY_W1] = { value: weeks[0] != null ? String(weeks[0]) : '' };
+  body[FC_SUMMARY_W2] = { value: weeks[1] != null ? String(weeks[1]) : '' };
+  body[FC_SUMMARY_W3] = { value: weeks[2] != null ? String(weeks[2]) : '' };
+  body[FC_SUMMARY_W4] = { value: weeks[3] != null ? String(weeks[3]) : '' };
+  body[FC_SUMMARY_MONTH] = { value: monthText != null ? String(monthText) : '' };
+  return body;
+  }
+
   /** フィールドコードは `docs/runbooks/user683-summary-job.md` と `user683-sync-summaries-to-kintone.mjs` と一致させる */
   function fetchSummaryCacheFromKintone(ym) {
-    var appId =
-      typeof window !== 'undefined' && window.USER683_SUMMARY_CACHE_APP != null
-        ? String(window.USER683_SUMMARY_CACHE_APP)
-        : String(SUMMARY_CACHE_APP_DEFAULT);
+    var appId = summaryCacheAppId();
     var ymk = ym.y + '-' + pad2(ym.m);
-    var q = 'user683_dash_ym = "' + ymk + '" limit 1';
+    var q = FC_SUMMARY_YM + ' = "' + ymk + '" limit 1';
     return kintone
       .api(kintone.api.url('/k/v1/records.json', true), 'GET', {
         app: appId,
         query: q,
         fields: [
-          'user683_dash_ym',
-          'user683_week_1',
-          'user683_week_2',
-          'user683_week_3',
-          'user683_week_4',
-          'user683_month',
+          FC_SUMMARY_YM,
+          FC_SUMMARY_W1,
+          FC_SUMMARY_W2,
+          FC_SUMMARY_W3,
+          FC_SUMMARY_W4,
+          FC_SUMMARY_MONTH,
+          '$id',
+          '$revision',
         ],
       })
       .then(function (resp) {
@@ -282,8 +306,11 @@
           return r[code] && r[code].value != null ? String(r[code].value) : '';
         }
         return {
-          weeks: [gv('user683_week_1'), gv('user683_week_2'), gv('user683_week_3'), gv('user683_week_4')],
-          month: gv('user683_month'),
+          id: r.$id && r.$id.value != null ? String(r.$id.value) : '',
+          revision:
+            r.$revision && r.$revision.value != null ? String(r.$revision.value) : '',
+          weeks: [gv(FC_SUMMARY_W1), gv(FC_SUMMARY_W2), gv(FC_SUMMARY_W3), gv(FC_SUMMARY_W4)],
+          month: gv(FC_SUMMARY_MONTH),
         };
       })
       .catch(function (e) {
@@ -292,36 +319,140 @@
       });
   }
 
+  function readSummaryTextsFromDom() {
+    var weeks = [];
+    for (var i = 0; i < 4; i += 1) {
+      var ta = document.getElementById('user683-week-note-' + i);
+      weeks.push(ta ? String(ta.value || '') : '');
+    }
+    var mta = document.getElementById('user683-month-note');
+    return { weeks: weeks, month: mta ? String(mta.value || '') : '' };
+  }
+
+  function putSummaryCacheToKintone(ym, weeks, monthText, meta) {
+    var appId = summaryCacheAppId();
+    var ymKey = ym.y + '-' + pad2(ym.m);
+    var record = summaryRecordBody(ymKey, weeks, monthText);
+    if (meta && meta.id) {
+      var putBody = { app: appId, id: meta.id, record: record };
+      if (meta.revision != null && meta.revision !== '') {
+        putBody.revision = meta.revision;
+      }
+      return kintone.api(kintone.api.url('/k/v1/record.json', true), 'PUT', putBody);
+    }
+    return kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', {
+      app: appId,
+      record: record,
+    });
+  }
+
+  function setSummaryCacheMetaOnWrap(sc) {
+    var wrap = document.getElementById('user683-ai-summary-placeholder');
+    if (!wrap) return;
+    if (sc && sc.id) {
+      wrap.setAttribute('data-user683-summary-id', sc.id);
+    } else {
+      wrap.removeAttribute('data-user683-summary-id');
+    }
+    if (sc && sc.revision != null && sc.revision !== '') {
+      wrap.setAttribute('data-user683-summary-revision', String(sc.revision));
+    } else {
+      wrap.removeAttribute('data-user683-summary-revision');
+    }
+  }
+
+  function readSummaryCacheMetaFromWrap() {
+    var wrap = document.getElementById('user683-ai-summary-placeholder');
+    if (!wrap) return null;
+    var id = wrap.getAttribute('data-user683-summary-id');
+    if (!id) return null;
+    return {
+      id: id,
+      revision: wrap.getAttribute('data-user683-summary-revision') || '',
+    };
+  }
+
   function hydrate683SummaryTextareasFromServer(ym, sc) {
-    if (!sc || !sc.weeks) return;
-    var changed = false;
+    if (!sc) return;
+    setSummaryCacheMetaOnWrap(sc);
     for (var i = 0; i < 4; i += 1) {
       var ta = document.getElementById('user683-week-note-' + i);
       if (!ta) continue;
-      var localTrim = String(ta.value || '').trim();
-      var sv = sc.weeks[i] != null ? String(sc.weeks[i]).trim() : '';
-      if (sv && !localTrim) {
+      if (sc.weeks && sc.weeks[i] != null) {
         ta.value = String(sc.weeks[i]);
-        changed = true;
       }
     }
     var mta = document.getElementById('user683-month-note');
     if (mta && sc.month != null) {
-      var msv = String(sc.month).trim();
-      if (msv && !String(mta.value || '').trim()) {
-        mta.value = String(sc.month);
-        changed = true;
-      }
+      mta.value = String(sc.month);
     }
-    if (changed) {
-      var nextW = [];
-      for (var j = 0; j < 4; j += 1) {
-        var t2 = document.getElementById('user683-week-note-' + j);
-        nextW.push(t2 ? t2.value : '');
-      }
-      writeWeekNotes(ym, nextW);
-      writeMonthNote(ym, mta ? mta.value : '');
-    }
+    var texts = readSummaryTextsFromDom();
+    writeWeekNotes(ym, texts.weeks);
+    writeMonthNote(ym, texts.month);
+  }
+
+  function attachSummarySaveControls(ym) {
+    var wrap = document.getElementById('user683-ai-summary-placeholder');
+    if (!wrap || wrap.querySelector('#user683-summary-save-btn')) return;
+    var foot = document.createElement('div');
+    foot.style.marginTop = '12px';
+    foot.style.display = 'flex';
+    foot.style.flexWrap = 'wrap';
+    foot.style.alignItems = 'center';
+    foot.style.gap = '10px';
+    var btn = document.createElement('button');
+    btn.id = 'user683-summary-save-btn';
+    btn.type = 'button';
+    btn.textContent = 'コメントを保存';
+    btn.style.cssText =
+      'cursor:pointer;padding:8px 14px;font-size:13px;font-weight:700;border-radius:6px;border:1px solid #1d4ed8;background:#2563eb;color:#fff;';
+    var st = document.createElement('div');
+    st.id = 'user683-summary-save-status';
+    st.style.cssText = 'font-size:12px;color:#64748b;';
+    st.textContent = 'AI生成文を修正したら保存してください（要約キャッシュを kintone に反映）。';
+    foot.appendChild(btn);
+    foot.appendChild(st);
+    wrap.appendChild(foot);
+    btn.onclick = function () {
+      var texts = readSummaryTextsFromDom();
+      var meta = readSummaryCacheMetaFromWrap();
+      btn.disabled = true;
+      st.style.color = '#64748b';
+      st.textContent = '保存中…';
+      putSummaryCacheToKintone(ym, texts.weeks, texts.month, meta)
+        .then(function (resp) {
+          writeWeekNotes(ym, texts.weeks);
+          writeMonthNote(ym, texts.month);
+          var nextMeta = meta ? { id: meta.id, revision: meta.revision } : null;
+          if (resp && resp.id != null) {
+            nextMeta = { id: String(resp.id), revision: resp.revision != null ? String(resp.revision) : '' };
+          } else if (meta && resp && resp.revision != null) {
+            nextMeta = { id: meta.id, revision: String(resp.revision) };
+          }
+          if (!nextMeta || !nextMeta.id) {
+            return fetchSummaryCacheFromKintone(ym);
+          }
+          return nextMeta;
+        })
+        .then(function (metaOrCache) {
+          if (metaOrCache && metaOrCache.weeks) {
+            setSummaryCacheMetaOnWrap(metaOrCache);
+          } else if (metaOrCache) {
+            setSummaryCacheMetaOnWrap(metaOrCache);
+          }
+          st.style.color = '#0f766e';
+          st.textContent = '保存しました。';
+        })
+        .catch(function (e) {
+          console.error(BUILD, e);
+          st.style.color = '#b91c1c';
+          st.textContent =
+            '保存に失敗しました（権限・フィールド・revision を確認して再読込してください）。';
+        })
+        .then(function () {
+          btn.disabled = false;
+        });
+    };
   }
 
   /**
@@ -944,7 +1075,7 @@
 
   /**
    * 週次は「1〜7 / 8〜14 / 15〜21 / 22〜月末」ブロックに含まれる週の月曜（JST）をラベルに使用。
-   * 初期値は sessionStorage。kintone キャッシュは **欄が空のときだけ** hydrate で補完（Ollama 直後の再描画でサーバ古値に潰さない）。
+   * 初期表示は sessionStorage。読込後は kintone 要約キャッシュで上書き。
    */
   function buildAiSummaryPlaceholderEl(ym) {
     const wrap = document.createElement('div');
@@ -959,8 +1090,34 @@
     h.style.fontWeight = '700';
     h.style.fontSize = '15px';
     h.style.marginBottom = '10px';
-    h.textContent = 'AI分析結果（要約）';
+    h.textContent = 'AI分析コメント（月次・週次）';
     wrap.appendChild(h);
+
+    const monthNote = readMonthNote(ym);
+    const mBlock = document.createElement('div');
+    mBlock.style.marginBottom = '14px';
+    const mTitle = document.createElement('div');
+    mTitle.style.fontWeight = '600';
+    mTitle.style.fontSize = '13px';
+    mTitle.style.marginBottom = '6px';
+    mTitle.textContent = '月次要約';
+    mBlock.appendChild(mTitle);
+    const mta = document.createElement('textarea');
+    mta.id = 'user683-month-note';
+    mta.rows = 4;
+    mta.style.width = '100%';
+    mta.style.boxSizing = 'border-box';
+    mta.style.padding = '8px';
+    mta.style.fontSize = '13px';
+    mta.style.border = '1px solid #cbd5e1';
+    mta.style.borderRadius = '6px';
+    mta.style.resize = 'vertical';
+    mta.value = monthNote;
+    mta.addEventListener('input', function (ev) {
+      writeMonthNote(ym, ev.target.value);
+    });
+    mBlock.appendChild(mta);
+    wrap.appendChild(mBlock);
 
     const anchors = [1, 8, 15, 22];
     const mondays = anchors.map(function (ad) {
@@ -1016,30 +1173,6 @@
     }
     wrap.appendChild(weekBlock);
 
-    const mBlock = document.createElement('div');
-    const mTitle = document.createElement('div');
-    mTitle.style.fontWeight = '600';
-    mTitle.style.fontSize = '13px';
-    mTitle.style.marginBottom = '6px';
-    mTitle.textContent = '月次要約';
-    mBlock.appendChild(mTitle);
-    const mta = document.createElement('textarea');
-    mta.id = 'user683-month-note';
-    mta.rows = 4;
-    mta.style.width = '100%';
-    mta.style.boxSizing = 'border-box';
-    mta.style.padding = '8px';
-    mta.style.fontSize = '13px';
-    mta.style.border = '1px solid #cbd5e1';
-    mta.style.borderRadius = '6px';
-    mta.style.resize = 'vertical';
-    mta.value = readMonthNote(ym);
-    mta.addEventListener('input', function (ev) {
-      writeMonthNote(ym, ev.target.value);
-    });
-    mBlock.appendChild(mta);
-    wrap.appendChild(mBlock);
-
     return wrap;
   }
 
@@ -1093,8 +1226,8 @@
       ym.m +
       '月度 — 日別の本文は 682 で確認。' +
       (USER683_SHOW_AI_SUMMARY_UI
-        ? '週次・月次要約は下の欄（手入力または Ollama 生成）'
-        : '週次・月次要約（AI）欄は一時非表示。再開は開発で USER683_SHOW_AI_SUMMARY_UI を true にし deploy。');
+        ? '月次・週次コメントはグラフ直下（保存で kintone 要約キャッシュに反映）'
+        : '月次・週次コメント欄は非表示。');
     wrap.appendChild(t0);
 
     const tbl = document.createElement('table');
@@ -1582,8 +1715,11 @@
         tableHost.appendChild(buildMonthTableEl(ym, range.dim, byDay));
 
         if (USER683_SHOW_AI_SUMMARY_UI) {
-          attachOllamaGenerateControls(ym, range.dim, byDay);
           hydrate683SummaryTextareasFromServer(ym, summaryCache);
+          attachSummarySaveControls(ym);
+          if (USER683_SHOW_OLLAMA_GENERATE_BTN) {
+            attachOllamaGenerateControls(ym, range.dim, byDay);
+          }
         }
       })
       .catch(function (e) {
