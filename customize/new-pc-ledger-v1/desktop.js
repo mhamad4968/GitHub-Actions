@@ -31,7 +31,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-14-shared-jr-submit-validation-fix';
+  const BUILD = '2026-05-14-m365-shared-jr-assist';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -1324,6 +1324,11 @@
     return /^jbm\d{4}$/.test(String(s || '').trim());
   }
 
+  /** §4.7.4: 共有/JR の 671 連動経路でフォームへ出す M365 PW（`logon_pw` の `kent0000` とは別） */
+  function m365SharedJrFormPassword674(_envMap) {
+    return 'kent0000K#';
+  }
+
   /** §5.3: 利用可 かつ usage_count<5 の最古 serial（共有プール。JR も同一プール） */
   function fetchAssignableM365Record671() {
     const q =
@@ -1335,6 +1340,106 @@
     }).then(function (resp) {
       return (resp.records && resp.records[0]) || null;
     });
+  }
+
+  function fetchAssignableM365Records671List674(limit) {
+    const lim = Math.min(Math.max(parseInt(String(limit || '40'), 10) || 40, 1), 100);
+    const q =
+      'status in ("利用可") and usage_count < 5 and account_type in ("共有") order by serial_no asc limit ' +
+      lim;
+    return kintoneApiGet('/k/v1/records.json', {
+      app: APP_M365_MASTER,
+      query: q,
+      fields: ['$id', 'm365_id', 'm365_pw', 'usage_count', 'status', 'serial_no', 'account_type'],
+    }).then(function (resp) {
+      return resp.records || [];
+    });
+  }
+
+  function fetchMaxM365SerialNo671() {
+    return kintoneApiGet('/k/v1/records.json', {
+      app: APP_M365_MASTER,
+      query: 'order by serial_no desc limit 1',
+      fields: ['serial_no', 'm365_id'],
+    }).then(function (resp) {
+      return (resp.records && resp.records[0]) || null;
+    });
+  }
+
+  function formatNextSjmM365Id674(envMap, serialNo) {
+    const prefix = String((envMap && envMap.M365_SHARED_ID_PREFIX) || 'sjm-').trim();
+    const digits = parseInt(String((envMap && envMap.M365_SHARED_ID_DIGITS) || '3'), 10) || 3;
+    let domain = String((envMap && envMap.M365_DOMAIN) || '@kensetsutoso01.onmicrosoft.com').trim();
+    if (domain && domain.charAt(0) !== '@') domain = '@' + domain;
+    const n = String(serialNo).padStart(digits, '0');
+    return prefix + n + domain;
+  }
+
+  function postNewM365Master671FromEnv674(envMap) {
+    return fetchMaxM365SerialNo671().then(function (maxRow) {
+      let nextSerial = 1;
+      if (maxRow) {
+        const sn = parseInt((maxRow.serial_no && maxRow.serial_no.value) || '0', 10);
+        if (sn > 0) nextSerial = sn + 1;
+      }
+      const m365Id = formatNextSjmM365Id674(envMap, nextSerial);
+      const masterPw = (envMap && envMap.M365_PW_SHARED_FIXED) || 'kent2511K#';
+      return kintoneApiPost('/k/v1/record.json', {
+        app: APP_M365_MASTER,
+        record: {
+          m365_id: { value: m365Id },
+          serial_no: { value: String(nextSerial) },
+          m365_pw: { value: masterPw },
+          account_type: { value: '共有' },
+          status: { value: '利用可' },
+          usage_count: { value: '0' },
+          linked_pcs: { value: '' },
+        },
+      }).then(function (postResp) {
+        return kintoneApiGet('/k/v1/record.json', {
+          app: APP_M365_MASTER,
+          id: postResp.id,
+          fields: ['$id', 'm365_id', 'm365_pw', 'usage_count', 'status', 'serial_no', 'account_type'],
+        }).then(function (getResp) {
+          return getResp.record;
+        });
+      });
+    });
+  }
+
+  function provisionM365Master671ForNew674(envMap) {
+    return fetchAssignableM365Record671().then(function (existing) {
+      if (existing) return { record: existing, created671: false };
+      return postNewM365Master671FromEnv674(envMap).then(function (created) {
+        return { record: created, created671: true };
+      });
+    });
+  }
+
+  function applyM365LinkedToForm674(api, recNow, rec, m365Id, m365Pw, masterId) {
+    withWritableInternalMeta674(rec, function () {
+      const masterCell = rec[FC_M365_MASTER_RECORD_ID];
+      if (masterCell && Object.prototype.hasOwnProperty.call(masterCell, 'disabled')) {
+        masterCell.disabled = false;
+      }
+      setScalarFieldValue674(rec, FC_M365_ID, m365Id);
+      setScalarFieldValue674(rec, FC_M365_PW, m365Pw);
+      setNumberFieldValue674(rec, FC_M365_MASTER_RECORD_ID, masterId);
+      api.set(recNow);
+    });
+    applyM365MasterRecordIdFieldUi674(rec, 'editable');
+  }
+
+  function applyM365ManualPathToForm674(api, recNow, rec) {
+    withWritableInternalMeta674(rec, function () {
+      const masterCell = rec[FC_M365_MASTER_RECORD_ID];
+      if (masterCell && Object.prototype.hasOwnProperty.call(masterCell, 'disabled')) {
+        masterCell.disabled = false;
+      }
+      setNumberFieldValue674(rec, FC_M365_MASTER_RECORD_ID, null);
+      api.set(recNow);
+    });
+    applyM365MasterRecordIdFieldUi674(rec, 'editable');
   }
 
   function trimmedScalarValue674(rec, code) {
@@ -1744,6 +1849,452 @@
       .catch(function (e) {
         console.warn('[NEW-PC-LEDGER-V1] dept modal load', e);
         if (container) renderDeptMasterResults674(container, parseDeptMasterFallbackRows674(), '');
+      });
+  }
+
+  const M365_ASSIST_CHOICE_MODAL_ID = 'new-pc-ledger-m365-assist-choice';
+  const M365_ASSIST_PICKER_MODAL_ID = 'new-pc-ledger-m365-assist-picker';
+  const M365_ASSIST_NEW_ISSUED_MODAL_ID = 'new-pc-ledger-m365-assist-new-issued';
+
+  let m365AssistLastEnvMap674 = null;
+  let m365AssistChoiceEsc674 = false;
+  let m365AssistPickerEsc674 = false;
+  let m365AssistNewIssuedEsc674 = false;
+
+  function closeM365AssistNewIssuedDialog674() {
+    const m = document.getElementById(M365_ASSIST_NEW_ISSUED_MODAL_ID);
+    if (m) m.style.display = 'none';
+  }
+
+  function ensureM365AssistNewIssuedModal674() {
+    let backdrop = document.getElementById(M365_ASSIST_NEW_ISSUED_MODAL_ID);
+    if (backdrop) return backdrop;
+
+    backdrop = document.createElement('div');
+    backdrop.id = M365_ASSIST_NEW_ISSUED_MODAL_ID;
+    backdrop.style.cssText =
+      'display:none;position:fixed;inset:0;z-index:2000000;align-items:center;justify-content:center;' +
+      'padding:16px;box-sizing:border-box;background:rgba(33,37,41,.48);';
+    backdrop.setAttribute('role', 'dialog');
+    backdrop.setAttribute('aria-modal', 'true');
+    backdrop.addEventListener('click', function (e) {
+      if (e.target === backdrop) closeM365AssistNewIssuedDialog674();
+    });
+
+    const panel = document.createElement('div');
+    panel.style.cssText =
+      'background:#fff;border-radius:8px;max-width:460px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,.2);' +
+      'padding:18px 20px 16px;box-sizing:border-box;';
+    panel.addEventListener('click', function (e) {
+      e.stopPropagation();
+    });
+
+    const title = document.createElement('div');
+    title.style.cssText = 'font-weight:bold;font-size:16px;color:#052c65;margin-bottom:10px;';
+    title.textContent = 'M365 を新規採番しました';
+    panel.appendChild(title);
+
+    const msg = document.createElement('div');
+    msg.setAttribute('data-npl-m365-new-body', '1');
+    msg.style.cssText = 'font-size:14px;color:#212529;line-height:1.65;white-space:pre-wrap;margin-bottom:18px;';
+    panel.appendChild(msg);
+
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;';
+
+    const btnOk = document.createElement('button');
+    btnOk.type = 'button';
+    btnOk.textContent = 'OK';
+    btnOk.style.cssText =
+      'padding:8px 18px;font-size:14px;border:none;background:#6d28d9;color:#fff;border-radius:4px;cursor:pointer;font-weight:600;';
+    btnOk.addEventListener('click', function () {
+      closeM365AssistNewIssuedDialog674();
+    });
+    row.appendChild(btnOk);
+    panel.appendChild(row);
+    backdrop.appendChild(panel);
+    document.body.appendChild(backdrop);
+
+    if (!m365AssistNewIssuedEsc674) {
+      m365AssistNewIssuedEsc674 = true;
+      document.addEventListener(
+        'keydown',
+        function nplM365NewIssuedEsc674(ev) {
+          const m = document.getElementById(M365_ASSIST_NEW_ISSUED_MODAL_ID);
+          if (!m || m.style.display === 'none') return;
+          if (ev.key === 'Escape') closeM365AssistNewIssuedDialog674();
+        },
+        true,
+      );
+    }
+    return backdrop;
+  }
+
+  /**
+   * §4.6.6 新規採番パス: 671 投入後の確認のみ（フォーム反映は呼び出し側）。
+   * @param {string} m365Id
+   */
+  function showM365NewIssuedDialog674(m365Id, created671) {
+    const backdrop = ensureM365AssistNewIssuedModal674();
+    const msgEl = backdrop.querySelector('[data-npl-m365-new-body]');
+    const idStr = String(m365Id || '').trim();
+    const lead = created671
+      ? 'M365 管理マスタ（671）へ新しい行を追加し、フォームへ反映しました。'
+      : 'M365 管理マスタ（671）の空き行を払い出し、フォームへ反映しました。';
+    if (msgEl) {
+      msgEl.textContent =
+        lead +
+        (idStr ? '\n\nM365 ID: ' + idStr : '') +
+        '\n\n内容を確認のうえ、必ず本レコード（674）を保存してください。' +
+        'Microsoft 365 管理画面では、担当者手順でアカウントを作成してください。';
+    }
+    backdrop.style.display = 'flex';
+  }
+
+  function closeM365AssistChoiceModal674() {
+    const el = document.getElementById(M365_ASSIST_CHOICE_MODAL_ID);
+    if (el) el.style.display = 'none';
+  }
+
+  function closeM365AssistPickerModal674() {
+    const el = document.getElementById(M365_ASSIST_PICKER_MODAL_ID);
+    if (el) el.style.display = 'none';
+  }
+
+  function renderM365AssistPickerRows674(container, rows, envMap) {
+    container.textContent = '';
+    const formPw = m365SharedJrFormPassword674(envMap);
+    if (!rows || !rows.length) {
+      const p = document.createElement('div');
+      p.style.cssText = 'margin:8px 0;color:#6c757d;font-size:13px;line-height:1.5;';
+      p.textContent =
+        '利用可能な割当（共有・usage_count<5・利用可）がありません。Microsoft 365 管理画面と M365 管理マスタを確認するか、「新規採番」をお試しください。';
+      container.appendChild(p);
+      return;
+    }
+    for (let i = 0; i < rows.length; i++) {
+      const r = rows[i];
+      const idVal = (r.m365_id && r.m365_id.value) || '';
+      const sn = (r.serial_no && r.serial_no.value) || '';
+      const us = (r.usage_count && r.usage_count.value) || '';
+      const rowId = r.$id && r.$id.value;
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.style.cssText =
+        'display:block;width:100%;text-align:left;padding:10px 12px;margin:0 0 6px;border:1px solid #dee2e6;border-radius:4px;background:#fff;cursor:pointer;font-size:14px;line-height:1.4;';
+      item.textContent =
+        'serial ' +
+        String(sn) +
+        '　／　' +
+        String(idVal) +
+        (us !== '' ? '　（利用 ' + String(us) + '）' : '');
+      item.addEventListener('mousedown', function (ev) {
+        ev.preventDefault();
+        const bag = getRecordFormHolder674();
+        if (!bag || !bag.api || typeof bag.api.get !== 'function') {
+          window.alert('フォームの準備ができていません。画面を開き直してからお試しください。');
+          return;
+        }
+        const holder = bag.api.get();
+        const rec = holder.record;
+        applyM365LinkedToForm674(bag.api, holder, rec, String(idVal).trim(), formPw, rowId);
+        closeM365AssistPickerModal674();
+      });
+      container.appendChild(item);
+    }
+  }
+
+  function reloadM365AssistPickerList674() {
+    const modal = document.getElementById(M365_ASSIST_PICKER_MODAL_ID);
+    if (!modal) return;
+    const container = modal.querySelector('[data-npl-m365-pick-results]');
+    if (!container) return;
+    const envMap = m365AssistLastEnvMap674 || {};
+    container.textContent = '';
+    const loading = document.createElement('div');
+    loading.style.cssText = 'margin:8px;color:#495057;font-size:13px;';
+    loading.textContent = '読み込み中…';
+    container.appendChild(loading);
+    fetchAssignableM365Records671List674(40)
+      .then(function (rows) {
+        container.textContent = '';
+        renderM365AssistPickerRows674(container, rows, envMap);
+      })
+      .catch(function (e) {
+        console.warn('[NEW-PC-LEDGER-V1] M365 picker load', e);
+        container.textContent = '';
+        const p = document.createElement('div');
+        p.style.cssText = 'margin:8px 0;color:#842029;font-size:13px;';
+        p.textContent = '一覧の取得に失敗しました。通信を確認して再度お試しください。';
+        container.appendChild(p);
+      });
+  }
+
+  function openM365AssistPickerModal674() {
+    const backdrop = ensureM365AssistPickerModal674();
+    backdrop.style.display = 'flex';
+    reloadM365AssistPickerList674();
+  }
+
+  function ensureM365AssistPickerModal674() {
+    let backdrop = document.getElementById(M365_ASSIST_PICKER_MODAL_ID);
+    if (backdrop) return backdrop;
+
+    backdrop = document.createElement('div');
+    backdrop.id = M365_ASSIST_PICKER_MODAL_ID;
+    backdrop.style.cssText =
+      'display:none;position:fixed;inset:0;z-index:2000000;align-items:center;justify-content:center;' +
+      'padding:16px;box-sizing:border-box;background:rgba(33,37,41,.48);';
+    backdrop.setAttribute('role', 'dialog');
+    backdrop.setAttribute('aria-modal', 'true');
+    backdrop.addEventListener('click', function (e) {
+      if (e.target === backdrop) closeM365AssistPickerModal674();
+    });
+
+    const panel = document.createElement('div');
+    panel.style.cssText =
+      'background:#fff;border-radius:8px;max-width:600px;width:100%;max-height:88vh;overflow:hidden;display:flex;' +
+      'flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.2);';
+    panel.addEventListener('click', function (e) {
+      e.stopPropagation();
+    });
+
+    const head = document.createElement('div');
+    head.style.cssText = 'padding:14px 16px;border-bottom:1px solid #dee2e6;';
+    const h = document.createElement('div');
+    h.style.cssText = 'font-weight:bold;font-size:16px;color:#052c65;';
+    h.textContent = '利用可能な M365 割当を選択';
+    head.appendChild(h);
+    const sub = document.createElement('div');
+    sub.style.cssText = 'font-size:12px;color:#495057;margin-top:6px;line-height:1.5;';
+    sub.textContent =
+      'M365 管理マスタ（671）の共有アカウントのうち、空きがある行のみ表示します。行を押すと M365 ID・パスワード（フォーム表示用）・マスタレコード番号を反映します。';
+    head.appendChild(sub);
+
+    const body = document.createElement('div');
+    body.style.cssText = 'padding:12px 16px;flex:1;min-height:0;display:flex;flex-direction:column;gap:10px;';
+
+    const results = document.createElement('div');
+    results.setAttribute('data-npl-m365-pick-results', '1');
+    results.style.cssText =
+      'overflow-y:auto;flex:1;min-height:120px;max-height:46vh;border:1px solid #e9ecef;border-radius:4px;padding:8px;background:#f8f9fa;';
+    body.appendChild(results);
+
+    const foot = document.createElement('div');
+    foot.style.cssText = 'padding:12px 16px;border-top:1px solid #dee2e6;display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;';
+    const refreshBtn = document.createElement('button');
+    refreshBtn.type = 'button';
+    refreshBtn.textContent = '再読み込み';
+    refreshBtn.style.cssText =
+      'padding:6px 14px;font-weight:600;background:#6d28d9;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:13px;';
+    refreshBtn.addEventListener('click', function () {
+      reloadM365AssistPickerList674();
+    });
+    const closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.textContent = '閉じる';
+    closeBtn.style.cssText =
+      'padding:6px 14px;border:1px solid #6c757d;background:#fff;border-radius:4px;cursor:pointer;font-size:13px;';
+    closeBtn.addEventListener('click', function () {
+      closeM365AssistPickerModal674();
+    });
+    foot.appendChild(refreshBtn);
+    foot.appendChild(closeBtn);
+
+    panel.appendChild(head);
+    panel.appendChild(body);
+    panel.appendChild(foot);
+    backdrop.appendChild(panel);
+    document.body.appendChild(backdrop);
+
+    if (!m365AssistPickerEsc674) {
+      m365AssistPickerEsc674 = true;
+      document.addEventListener(
+        'keydown',
+        function nplM365PickerEsc674(ev) {
+          const m = document.getElementById(M365_ASSIST_PICKER_MODAL_ID);
+          if (!m || m.style.display === 'none') return;
+          if (ev.key === 'Escape') closeM365AssistPickerModal674();
+        },
+        true,
+      );
+    }
+    return backdrop;
+  }
+
+  function ensureM365AssistChoiceModal674() {
+    let backdrop = document.getElementById(M365_ASSIST_CHOICE_MODAL_ID);
+    if (backdrop) return backdrop;
+
+    backdrop = document.createElement('div');
+    backdrop.id = M365_ASSIST_CHOICE_MODAL_ID;
+    backdrop.style.cssText =
+      'display:none;position:fixed;inset:0;z-index:2000000;align-items:center;justify-content:center;' +
+      'padding:16px;box-sizing:border-box;background:rgba(33,37,41,.48);';
+    backdrop.setAttribute('role', 'dialog');
+    backdrop.setAttribute('aria-modal', 'true');
+    backdrop.addEventListener('click', function (e) {
+      if (e.target === backdrop) closeM365AssistChoiceModal674();
+    });
+
+    const panel = document.createElement('div');
+    panel.style.cssText =
+      'background:#fff;border-radius:8px;max-width:480px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,.2);' +
+      'padding:18px 20px 16px;box-sizing:border-box;';
+    panel.addEventListener('click', function (e) {
+      e.stopPropagation();
+    });
+
+    const title = document.createElement('div');
+    title.style.cssText = 'font-weight:bold;font-size:16px;color:#052c65;margin-bottom:10px;';
+    title.textContent = 'M365 の設定方法';
+    panel.appendChild(title);
+
+    const msg = document.createElement('div');
+    msg.style.cssText = 'font-size:14px;color:#212529;line-height:1.65;margin-bottom:16px;';
+    msg.textContent = '手入力・既存の共有割当の利用・671 への新規採番から選べます。';
+    panel.appendChild(msg);
+
+    const btnRow = document.createElement('div');
+    btnRow.style.cssText = 'display:flex;flex-direction:column;gap:10px;margin-bottom:14px;';
+
+    const mkChoiceBtn = function (label, bg, border) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = label;
+      b.style.cssText =
+        'width:100%;padding:10px 14px;font-size:14px;font-weight:600;border-radius:6px;cursor:pointer;border:1px solid ' +
+        border +
+        ';background:' +
+        bg +
+        ';color:#fff;';
+      return b;
+    };
+
+    const btnManual = mkChoiceBtn('手入力（マスタと連動しない）', '#495057', '#343a40');
+    btnManual.addEventListener('click', function () {
+      const bag = getRecordFormHolder674();
+      if (!bag || !bag.api || typeof bag.api.get !== 'function') {
+        window.alert('フォームの準備ができていません。画面を開き直してからお試しください。');
+        closeM365AssistChoiceModal674();
+        return;
+      }
+      const holder = bag.api.get();
+      applyM365ManualPathToForm674(bag.api, holder, holder.record);
+      closeM365AssistChoiceModal674();
+    });
+
+    const btnExisting = mkChoiceBtn('既存の共有割当を利用（671 から選択）', '#7c3aed', '#6d28d9');
+    btnExisting.addEventListener('click', function () {
+      closeM365AssistChoiceModal674();
+      openM365AssistPickerModal674();
+    });
+
+    const btnNew = mkChoiceBtn('新規採番（671 から払い出し）', '#0d6efd', '#0a58ca');
+    btnNew.addEventListener('click', function () {
+      const envMap = m365AssistLastEnvMap674;
+      closeM365AssistChoiceModal674();
+      if (!envMap) {
+        window.alert('環境マップが未取得です。しばらくしてから再度お試しください。');
+        return;
+      }
+      const bag = getRecordFormHolder674();
+      if (!bag || !bag.api || typeof bag.api.get !== 'function') {
+        window.alert('フォームの準備ができていません。画面を開き直してからお試しください。');
+        return;
+      }
+      provisionM365Master671ForNew674(envMap)
+        .then(function (pack) {
+          const row = pack.record;
+          const holder = bag.api.get();
+          const rec = holder.record;
+          const mid = (row.m365_id && row.m365_id.value) || '';
+          const rid = row.$id && row.$id.value;
+          applyM365LinkedToForm674(
+            bag.api,
+            holder,
+            rec,
+            String(mid).trim(),
+            m365SharedJrFormPassword674(envMap),
+            rid,
+          );
+          showM365NewIssuedDialog674(mid, !!pack.created671);
+        })
+        .catch(function (e) {
+          console.error('[NEW-PC-LEDGER-V1] M365 新規採番', e);
+          window.alert('M365 管理マスタの払い出しに失敗しました。権限・通信・マスタ設定を確認してください。');
+        });
+    });
+
+    btnRow.appendChild(btnManual);
+    btnRow.appendChild(btnExisting);
+    btnRow.appendChild(btnNew);
+    panel.appendChild(btnRow);
+
+    const foot = document.createElement('div');
+    foot.style.cssText = 'display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;';
+    const btnCancel = document.createElement('button');
+    btnCancel.type = 'button';
+    btnCancel.textContent = 'キャンセル';
+    btnCancel.style.cssText =
+      'padding:8px 18px;font-size:14px;border:1px solid #6c757d;background:#fff;border-radius:4px;cursor:pointer;color:#212529;';
+    btnCancel.addEventListener('click', function () {
+      closeM365AssistChoiceModal674();
+    });
+    foot.appendChild(btnCancel);
+    panel.appendChild(foot);
+
+    backdrop.appendChild(panel);
+    document.body.appendChild(backdrop);
+
+    if (!m365AssistChoiceEsc674) {
+      m365AssistChoiceEsc674 = true;
+      document.addEventListener(
+        'keydown',
+        function nplM365ChoiceEsc674(ev) {
+          const m = document.getElementById(M365_ASSIST_CHOICE_MODAL_ID);
+          if (!m || m.style.display === 'none') return;
+          if (ev.key === 'Escape') closeM365AssistChoiceModal674();
+        },
+        true,
+      );
+    }
+    return backdrop;
+  }
+
+  /**
+   * §4.6.6 M365 入力（ツールバー・m365_id フィールドクリック）。
+   * @param {'header'|'field-click'} source
+   */
+  function runM365AssistEntry674(source) {
+    const bag = getRecordFormHolder674();
+    if (!bag || !bag.holder || !bag.holder.record) {
+      window.alert('フォームの準備ができていません。画面を開き直してからお試しください。');
+      return;
+    }
+    const rec = bag.holder.record;
+    const type = readAccountTypeLive674(rec);
+    if (type !== TYPE_SHARED && type !== TYPE_JR) {
+      window.alert('M365 入力は種別が「共有」または「JR端末」のときのみ使えます。');
+      return;
+    }
+    if (isPcStatusStorage674(rec)) {
+      window.alert('保管中のレコードでは M365 入力は利用できません。');
+      return;
+    }
+    if (is674AssistModalVisible674()) {
+      return;
+    }
+    npl674FocusAssistSuppressUntil674 = Date.now() + 400;
+    loadEnv670Map()
+      .then(function (envMap) {
+        m365AssistLastEnvMap674 = envMap;
+        const backdrop = ensureM365AssistChoiceModal674();
+        backdrop.style.display = 'flex';
+      })
+      .catch(function (e) {
+        console.warn('[NEW-PC-LEDGER-V1] M365 assist env', e);
+        window.alert('環境設定（670）の取得に失敗しました。通信を確認して再度お試しください。');
       });
   }
 
@@ -2310,6 +2861,21 @@
       const es = String(e.style.display || '').trim();
       if (es && es !== 'none') return true;
     }
+    const m365c = document.getElementById(M365_ASSIST_CHOICE_MODAL_ID);
+    if (m365c) {
+      const m365cs = String(m365c.style.display || '').trim();
+      if (m365cs && m365cs !== 'none') return true;
+    }
+    const m365p = document.getElementById(M365_ASSIST_PICKER_MODAL_ID);
+    if (m365p) {
+      const m365ps = String(m365p.style.display || '').trim();
+      if (m365ps && m365ps !== 'none') return true;
+    }
+    const m365n = document.getElementById(M365_ASSIST_NEW_ISSUED_MODAL_ID);
+    if (m365n) {
+      const m365ns = String(m365n.style.display || '').trim();
+      if (m365ns && m365ns !== 'none') return true;
+    }
     return false;
   }
 
@@ -2332,6 +2898,9 @@
       if (ae.closest('#' + INPUT_ASSIST_CONFIRM_MODAL_ID)) return;
       if (ae.closest('#' + EMPLOYEE_SEARCH_MODAL_ID)) return;
       if (ae.closest('#' + DEPT_MASTER_MODAL_ID)) return;
+      if (ae.closest('#' + M365_ASSIST_CHOICE_MODAL_ID)) return;
+      if (ae.closest('#' + M365_ASSIST_PICKER_MODAL_ID)) return;
+      if (ae.closest('#' + M365_ASSIST_NEW_ISSUED_MODAL_ID)) return;
       if (ae.closest('[data-npl-input-assist-adj="1"]')) return;
       if (ae.closest('[data-npl-dept-cluster-adj="1"]')) return;
       if (ae.closest('#' + USER_SUGGEST_BOX_ID)) return;
@@ -2344,6 +2913,7 @@
     let rec;
     let type;
     let inUser = false;
+    let inM365 = false;
     let inDept = false;
     let inGrp = false;
 
@@ -2371,14 +2941,16 @@
       }
     } else {
       const userEl = tryGetFieldElement674(FC_USER_NAME);
+      const m365El = tryGetFieldElement674(FC_M365_ID);
       const deptEl = tryGetFieldElement674(FC_DEPT_NAME);
       const grpEl = tryGetFieldElement674(FC_GROUP_NAME);
-      if (!userEl && !deptEl && !grpEl) return;
+      if (!userEl && !m365El && !deptEl && !grpEl) return;
 
       inUser = !!(userEl && isActiveTargetWithinFieldRoot674(userEl, ev));
-      inDept = !inUser && !!(deptEl && isActiveTargetWithinFieldRoot674(deptEl, ev));
-      inGrp = !inUser && !inDept && !!(grpEl && isActiveTargetWithinFieldRoot674(grpEl, ev));
-      if (!inUser && !inDept && !inGrp) return;
+      inM365 = !inUser && !!(m365El && isActiveTargetWithinFieldRoot674(m365El, ev));
+      inDept = !inUser && !inM365 && !!(deptEl && isActiveTargetWithinFieldRoot674(deptEl, ev));
+      inGrp = !inUser && !inM365 && !inDept && !!(grpEl && isActiveTargetWithinFieldRoot674(grpEl, ev));
+      if (!inUser && !inM365 && !inDept && !inGrp) return;
 
       bag = getRecordFormHolder674();
       if (!bag || !bag.holder || !bag.holder.record) return;
@@ -2386,11 +2958,19 @@
       type = readAccountTypeLive674(rec);
     }
 
-    if (!inUser && !inDept && !inGrp) return;
+    if (!inUser && !inM365 && !inDept && !inGrp) return;
 
     if (is674AssistModalVisible674()) return;
 
     if (isPcStatusStorage674(rec)) return;
+
+    if (inM365 && type !== TYPE_SHARED && type !== TYPE_JR) return;
+
+    /* 共有・JR: M365 ID 欄は §4.6.6 の M365 入力へ（680 より先） */
+    if ((type === TYPE_SHARED || type === TYPE_JR) && inM365) {
+      runM365AssistEntry674('field-click');
+      return;
+    }
 
     /* 共有・JR: 所属欄のみ（利用者の概念なし）。クリック → はい／いいえ → 680（所属は再検索可） */
     if (type === TYPE_SHARED || type === TYPE_JR) {
@@ -2744,14 +3324,16 @@
       window.alert('フォームの準備ができていません。少し待ってから再度お試しください。');
       return Promise.resolve();
     }
+    const typeEarly = readAccountTypeLive674(bagProbe.holder.record);
+    if (typeEarly !== TYPE_SHARED) {
+      window.alert(
+        '共有向けの自動生成は種別が「共有」のときのみ使えます。JR端末で M365 を設定するときは、ツールバーの「M365 入力」ボタンをご利用ください。',
+      );
+      return Promise.resolve();
+    }
 
-    return Promise.all([
-      loadEnv670Map(),
-      fetchAssignableM365Record671(),
-      nextSjbmFrom673(),
-      fetchNextFreeSharedSjbisSerial674(),
-    ])
-      .then(function (results) {
+    return Promise.all([loadEnv670Map(), nextSjbmFrom673(), fetchNextFreeSharedSjbisSerial674()]).then(
+      function (results) {
         const bag = getRecordFormHolder674();
         if (!bag || !bag.api || typeof bag.api.get !== 'function') {
           window.alert('フォームの準備ができていません。少し待ってから再度お試しください。');
@@ -2761,38 +3343,25 @@
         const recNow = api.get();
         const rec = recNow.record;
         const type = readAccountTypeLive674(rec);
-        if (type !== TYPE_SHARED && type !== TYPE_JR) {
-          window.alert('種別が「共有」または「JR端末」のときのみ、共有用／M365 自動生成を使えます。');
+        if (type !== TYPE_SHARED) {
+          window.alert(
+            '種別が「共有」でないため自動生成を中止しました。M365 はツールバーの「M365 入力」ボタンから設定できます。',
+          );
           return;
         }
-        runSharedAutoGenApply674(api, recNow, rec, type, results[0], results[1], results[2], results[3]);
-      });
+        runSharedAutoGenApply674(api, recNow, rec, results[0], results[1], results[2]);
+      },
+    );
   }
 
   /**
-   * 共有／JR の自動生成（REST 取得後に **必ず `api.get()` し直した** record へだけ反映する）。
+   * 共有の Windows 系自動生成（REST 取得後に **必ず `api.get()` し直した** record へだけ反映する）。M365 は §4.6.6「M365 入力」で行う。
    * @param {object} api `kintone.app.record` または `kintone.mobile.app.record`
    */
-  function runSharedAutoGenApply674(api, recNow, rec, type, envMap, m671, nextSjbm, maxPcSerial) {
-    if (!m671) {
-      window.alert(
-        'M365 アカウントの空きがありません。Microsoft 365 管理画面で作成し、M365管理マスタへ追加してから再度お試しください。',
-      );
-      return;
-    }
-
-    const m365Id = (m671.m365_id && m671.m365_id.value) || '';
-    const m365Pw = (m671.m365_pw && m671.m365_pw.value) || envMap.M365_PW_SHARED_FIXED || 'kent2511K#';
-    const m365RowId = m671.$id && m671.$id.value;
-
-    const masterCell = rec[FC_M365_MASTER_RECORD_ID];
-
+  function runSharedAutoGenApply674(api, recNow, rec, envMap, nextSjbm, maxPcSerial) {
     try {
       withWritableInternalMeta674(rec, function () {
-        if (masterCell && Object.prototype.hasOwnProperty.call(masterCell, 'disabled')) {
-          masterCell.disabled = false;
-        }
-        if (type === TYPE_SHARED && nextSjbm) {
+        if (nextSjbm) {
           mergePcNameSerialFromMax674(rec, envMap, maxPcSerial, 'shared', { forceSharedPc: true });
           mergeScalarField(rec, FC_LOGON_NAME, nextSjbm);
           mergeScalarField(rec, FC_WINDOWS_NAME, nextSjbm);
@@ -2800,9 +3369,6 @@
           const lpw = rec[FC_LOGON_PW];
           if (lpw && (!lpw.value || !String(lpw.value).trim())) lpw.value = fixedPw;
         }
-        mergeScalarField(rec, FC_M365_ID, m365Id);
-        mergeScalarField(rec, FC_M365_PW, m365Pw);
-        mergeNumberField(rec, FC_M365_MASTER_RECORD_ID, m365RowId);
         api.set(recNow);
       });
     } catch (err) {
@@ -2811,9 +3377,7 @@
     }
     applyM365MasterRecordIdFieldUi674(rec, 'editable');
     window.alert(
-      type === TYPE_JR
-        ? 'M365 系のみフォームへ反映しました（空欄のみ）。Windows 系は手入力ください。保存は手動で行ってください。'
-        : '共有向け（Windows + M365）をフォームへ反映しました（空欄のみ）。保存は手動で行ってください。',
+      '共有向け Windows 関連フィールドをフォームへ反映しました（空欄のみ）。M365 はツールバーの「M365 入力」ボタンから設定してください。保存は手動で行ってください。',
     );
   }
 
@@ -3189,8 +3753,7 @@
             );
           }
           const m365Id = (m671.m365_id && m671.m365_id.value) || '';
-          const m365Pw =
-            (m671.m365_pw && m671.m365_pw.value) || envMap.M365_PW_SHARED_FIXED || 'kent2511K#';
+          const formPw = m365SharedJrFormPassword674(envMap);
           if (trimmedScalarValue674(event.record, FC_M365_ID) || trimmedScalarValue674(event.record, FC_M365_PW)) {
             return (
               '共有のメール（Microsoft 365）は付けられる PC が ' +
@@ -3199,7 +3762,7 @@
             );
           }
           setScalarFieldValue674(event.record, FC_M365_ID, m365Id);
-          setScalarFieldValue674(event.record, FC_M365_PW, m365Pw);
+          setScalarFieldValue674(event.record, FC_M365_PW, formPw);
           setNumberFieldValue674(event.record, FC_M365_MASTER_RECORD_ID, newRowId);
           try {
             window.alert(
@@ -4888,6 +5451,26 @@ ${bodyInner}\
     return btn;
   }
 
+  /** §4.6.6 ツールバー: 共有／JR の M365 入力（手入力・671 既存・新規採番） */
+  function createM365InputHeaderButton674() {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = 'M365 入力';
+    btn.setAttribute('aria-label', 'M365 入力（共有・JR）');
+    btn.style.cssText =
+      'margin:4px 8px 4px 0;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer;border-radius:6px;' +
+      'border:1px solid #6d28d9;background:linear-gradient(165deg,#c084fc 0%,#9333ea 55%,#6d28d9 100%);color:#fff;' +
+      'box-shadow:0 2px 8px rgba(109,40,217,.38);letter-spacing:.02em;';
+    btn.addEventListener('click', function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      setTimeout(function () {
+        runM365AssistEntry674('header');
+      }, 0);
+    });
+    return btn;
+  }
+
   function injectButtons(event) {
     jb674PrintRecordSnapshot = event.record;
     const mount = resolveButtonMountSpace674();
@@ -4933,17 +5516,19 @@ ${bodyInner}\
           }));
         }
 
-        if (type === TYPE_SHARED || type === TYPE_JR) {
-          const sharedGenLabel =
-            type === TYPE_JR ? '🟢 M365 を自動反映（JR）' : '🟢 共有用 自動生成';
+        if (type === TYPE_SHARED) {
           wrapper.appendChild(
-            createGenerateButton(sharedGenLabel, '#198754', () => {
+            createGenerateButton('🟢 共有用 自動生成', '#198754', () => {
               runSharedAutoGen().catch(function (e) {
                 console.error(e);
                 window.alert('自動生成でエラー: ' + (e && e.message ? e.message : String(e)));
               });
             }),
           );
+        }
+
+        if (type === TYPE_SHARED || type === TYPE_JR) {
+          wrapper.appendChild(createM365InputHeaderButton674());
         }
 
         if (isPersonal595AssistEnabled674(event.record)) {
