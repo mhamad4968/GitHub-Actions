@@ -41,7 +41,7 @@ npm run app:fields <アプリID>
 
 ### 678 本番 customize の実効ビルド（台帳ずれの正）
 
-- **本番 live**（**2026-05-14** `npm run cio:preflight:678 -- --note "固定費ランニング当月実績色分け"` → `npm run deploy:678` **Deploy SUCCESS**）: fileKey **`62e46652-2c1b-421b-8b16-a98ab2d7e9ba`** / preview revision **`130`** / **`var BUILD`** = **`2026-05-14-678-running-actual-month-status`**（**暦当月**の **固定費**ランニング実績セルで **月予算あり**行を **支払内訳（ランニング）**の有無で **未入力（橙）／入力済み（緑）**色分け）。
+- **本番 live**（**2026-05-14** `npm run cio:preflight:678 -- --note "固定費ランニング当月実績色分け bucket修正"` → `npm run deploy:678` **Deploy SUCCESS**）: fileKey **`c9c5dba1-652b-47f6-9226-2bbf0f8e878a`** / preview revision **`131`** / **`var BUILD`** = **`2026-05-14-678-running-actual-bucket-fix`**（**暦当月**の **固定費**ランニング実績セルで **月予算あり**行を **支払内訳（ランニング／枠未選択）**の有無で **未入力（橙）／入力済み（緑）**色分け）。
 - **直前**（**2026-05-12** `npm run cio:preflight:678 -- --note "678実績Enter修正削除プリfill本番反映"` → `npm run deploy:678` **Deploy SUCCESS**）: fileKey **`f0902f20-8cc8-4a94-844e-d58f335cbe11`** / preview revision **`129`** / **`var BUILD`** = **`2026-05-12-678-enter-editdelete-prefill`**
 - **直前**（**2026-05-07T12:51:15Z** GitHub Actions `kintone-customize-deploy` SUCCESS 時点・直前の **`npm run deploy:678` rev=127** から自動再デプロイで **rev=128** に更新）: fileKey **`202605071251158BEA7DFC8E174812AD1FFD6CEEF183F6265`** / preview revision **`128`** / **`var BUILD`** = **`2026-05-07-678-ivb-empty-as-dim`**。**変更内容**: `computeAggregates()` の `initial_variable_budget` 取得を **`ivRaw` 元値保持＋ `iv = toNum(ivRaw)` 数値化**の 2 変数に分離し、表示用に **`ivBudgetForDisplay = ivRaw === "" || ivRaw == null ? "" : iv`** を追加。`initial.budget` を `ivBudgetForDisplay` に差し替え、空のとき `formatYen("")` → `Y678_EMPTY_HTML="---"` を返す挙動に。消費率（`pct(sumA, iv + sumR)`）は数値 `iv` のままで影響なし。**実機影響**: 変動費 9 件中 EMPTY 1 件（$id=70 PC購入費）の予算セルが `¥0` → `---` に変化。POSITIVE 8 件は表示変化なし。`SPEC.md` §6f 「`initial_variable_budget` の v1 既定運用」新節および §6f 業務 3 区分テーブルの変動費行を更新。`yojitsu-master-and-field-plan.md` §3 に SPEC §6f 参照を追記。
 - **直前**（2026-05-07T12:14:21Z GitHub Actions 自動再デプロイ）: fileKey **`20260507121419E8BC8237900E4FF883E1A9D0E0E9EA3F041`** / preview revision **`126`** / **`var BUILD`** = **`2026-05-07-678-partner-presets-canonical-confirm`**（取引先 16 社・表記揺れ整理・B3 確認・NFKC 自動正規化）。
@@ -75,6 +75,7 @@ npm run app:fields <アプリID>
 
 | 日時（UTC） | アプリID | customize パス |
 |-------------|----------|----------------|
+| 2026-05-14T15:30:00Z | 678 | `customize/678/desktop.js`（**固定費ランニング当月実績色分け bucket修正**・**BUILD** `2026-05-14-678-running-actual-bucket-fix`・**deploy SUCCESS** / fileKey **`c9c5dba1-652b-47f6-9226-2bbf0f8e878a`** / rev **`131`**） |
 | 2026-05-14T12:00:00Z | 678 | `customize/678/desktop.js`（**固定費ランニング当月実績色分け**・**BUILD** `2026-05-14-678-running-actual-month-status`・**deploy SUCCESS** / fileKey **`62e46652-2c1b-421b-8b16-a98ab2d7e9ba`** / rev **`130`**） |
 | 2026-05-12T12:30:00Z | 678 | `customize/678/desktop.js`（実績 **Enter／修正・削除／固定費プリフィル**・新規明細 **Enter**・**BUILD** `2026-05-12-678-enter-editdelete-prefill`・**deploy SUCCESS** / fileKey **`f0902f20-8cc8-4a94-844e-d58f335cbe11`** / rev **`129`**・`cio:preflight:678` note **678実績Enter修正削除プリfill本番反映**） |
 | 2026-05-14T11:00:00Z | 674 | `customize/new-pc-ledger-v1/desktop.js`（**新規採番は671空き0件時のみ**・**BUILD** `2026-05-14-m365-assist-new-when-empty-only`・**deploy SUCCESS** / fileKey **`e68fe492-57e3-4330-ac2a-245de69fbf95`** / preview revision **`206`**） |

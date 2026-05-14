@@ -3,7 +3,7 @@
 
   /**
    * 部署予実 ダッシュアプリ 678
-   * BUILD: 2026-05-14-678-running-actual-month-status
+   * BUILD: 2026-05-14-678-running-actual-bucket-fix
    * - 677 を kintone.api で一覧。左キー列は `shin-format-excel-layout.md` 新フォーマット準拠＋12 月×四つ柱（`monthly_breakdown`）
    * - 一覧の既定 SORT は `display_order asc, $id asc`（SPEC §6e 準拠・2026-05-03 改修）
    * - 新規追加モーダルは「挿入位置」選択（一番下/一番上/○○の上/○○の下）＋中間値計算（floor((prev+next)/2)）
@@ -323,6 +323,14 @@
     return fixedBudgetPrefillYen(rec, monthLabel) != null;
   }
 
+  /** 固定費ランニング実績の支払枠（イニシャル明示は除外。未選択はランニング扱い） */
+  function isRunningPaymentBucket678(bucket) {
+    var b = String(bucket == null ? "" : bucket).trim();
+    if (b.indexOf("イニシャル") >= 0) return false;
+    if (b.indexOf("ランニング") >= 0) return true;
+    return !b;
+  }
+
   /** 支払内訳のランニング行が当該暦月に 1 件以上あるか（実績入力済みの目安） */
   function hasRunningPaymentInFiscalMonth678(rec, monthLabel) {
     var lab = normalizeFiscalMonthLabel(monthLabel);
@@ -330,8 +338,7 @@
     var rows = (rec.payment_breakdown && rec.payment_breakdown.value) || [];
     for (var i = 0; i < rows.length; i++) {
       var v = (rows[i] || {}).value || {};
-      var bucket = String((v.budget_bucket || {}).value || "").trim();
-      if (bucket.indexOf("ランニング") < 0) continue;
+      if (!isRunningPaymentBucket678(String((v.budget_bucket || {}).value || "").trim())) continue;
       var d = String((v.payment_date || {}).value || "");
       var m = d.match(/^\d+-(\d{2})-/);
       if (!m) continue;
@@ -3252,7 +3259,8 @@
           pcHint.textContent = "";
         }
       }
-      qs("budget_bucket").value = "";
+      qs("budget_bucket").value =
+        fieldVal(rec, "cost_category") === "固定費" ? "ランニング費用（定額費）" : "";
       qs("invoice_number").value = "";
       qs("payment_memo").value = "";
       var pcount = ((rec.payment_breakdown || {}).value || []).length;
@@ -3340,6 +3348,9 @@
       }
       var pamt = String(Math.trunc(pamtN));
       var bucket = qs("budget_bucket").value;
+      if (!bucket && fieldVal(rec, "cost_category") === "固定費") {
+        bucket = "ランニング費用（定額費）";
+      }
       var invoice = qs("invoice_number").value.trim().slice(0, 255);
       var memo = qs("payment_memo").value.trim().slice(0, 10000);
       var newSupplement = qs("summary_supplement").value.slice(0, 10000);
