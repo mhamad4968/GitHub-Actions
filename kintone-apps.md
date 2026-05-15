@@ -75,6 +75,7 @@ npm run app:fields <アプリID>
 
 | 日時（UTC） | アプリID | customize パス |
 |-------------|----------|----------------|
+| 2026-05-15T23:14:26Z | 678 | `customize/678/desktop.js` |
 | 2026-05-14T15:30:00Z | 678 | `customize/678/desktop.js`（**固定費ランニング当月実績色分け bucket修正**・**BUILD** `2026-05-14-678-running-actual-bucket-fix`・**deploy SUCCESS** / fileKey **`c9c5dba1-652b-47f6-9226-2bbf0f8e878a`** / rev **`131`**） |
 | 2026-05-14T12:00:00Z | 678 | `customize/678/desktop.js`（**固定費ランニング当月実績色分け**・**BUILD** `2026-05-14-678-running-actual-month-status`・**deploy SUCCESS** / fileKey **`62e46652-2c1b-421b-8b16-a98ab2d7e9ba`** / rev **`130`**） |
 | 2026-05-12T12:30:00Z | 678 | `customize/678/desktop.js`（実績 **Enter／修正・削除／固定費プリフィル**・新規明細 **Enter**・**BUILD** `2026-05-12-678-enter-editdelete-prefill`・**deploy SUCCESS** / fileKey **`f0902f20-8cc8-4a94-844e-d58f335cbe11`** / rev **`129`**・`cio:preflight:678` note **678実績Enter修正削除プリfill本番反映**） |
