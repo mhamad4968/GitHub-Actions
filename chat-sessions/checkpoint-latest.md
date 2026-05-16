@@ -6,7 +6,8 @@
 
 - **CEO**: **683 PDF serve は使用しない** → **`user683:monthly-pdf:serve` を package.json から削除**・Runbook／台帳／local-servers を **window.print 正**に更新。`scripts/user683-monthly-pdf-serve.mjs` は **@deprecated 残置**。
 - **同コミット**: credit **4%**・RAG ingest クロスプラットフォーム（`scripts/rag-ingest-path.mjs`）・`mcp-status` 更新・session clock **2026-05-17 07:43**。
-- **次**: 683 **印刷目視**は **依頼があれば浜田 CEO**（serve 確認タスクは **クローズ**）。
+- **683 印刷目視**: **CEO 2026-05-17 対応完了として OK**（`window.print` 運用でクローズ）。
+- **次**: **`git push`** 後 **constitution-gates** 監視・黄残は本ターン CIO チーム対応。
 
 ## 2026-05-16 JST — セッション終了・678 先祖返り復旧・ガバナンス・ICT・Git
 
