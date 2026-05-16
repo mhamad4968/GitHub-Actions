@@ -1,80 +1,222 @@
 # 最新ICT情報掲示板 — 仕様正本
 
 > **CEO GO**: 2026-05-16  
+> **最終更新**: 2026-05-16（CIO）  
 > **Space**: [Space 48](https://jbis-kintone.cybozu.com/k/#/space/48)  
-> **台帳**: `kintone-apps.md`
+> **台帳**: `kintone-apps.md`  
+> **コード正本**: `ict-tech-digest-automation/`・`customize/686/desktop.js`
+
+---
+
+## 0. 目的（業務で何ができるか）
+
+**20本以上の RSS を横断**し、Gemini が **「今日、自社のインフラ・PC 管理において最重要」** なニュースを **1日最大5件** だけ選び、kintone に要約して蓄積する。
+
+| 利用者のメリット |
+|------------------|
+| 朝・夕に掲示板を開くだけで、パッチ判断・確認タスクの優先度が分かる |
+| 各記事が **【事象】【影響】【推奨】** の3行で整理され、社内周知・対応検討にそのまま使える |
+| 過去分はカテゴリ・日付・キーワードで検索可能 |
+
+**Security NEXT（631）とは別ライン**。631＝セキュリティインシデント専用。本掲示板＝インフラ・PC・ネットワーク・Microsoft 系の **日次ダイジェスト**。
+
+---
 
 ## 1. アーキテクチャ（682/683 分離型）
 
-| 役割 | アプリ名 | アプリ ID | 利用者 |
-|------|----------|-----------|--------|
-| 正本（蓄積・自動登録） | 最新ICT情報掲示板（収集用） | **685** | GHA / CIO のみ |
-| ダッシュ（閲覧・過去検索） | 最新ICT情報掲示板 | **686** | 部員（Space 48 入口） |
+| 役割 | アプリ名 | アプリ ID | URL | 利用者 |
+|------|----------|-----------|-----|--------|
+| 正本（蓄積・自動登録） | 最新ICT情報掲示板（収集用） | **685** | https://jbis-kintone.cybozu.com/k/685/ | GHA / CIO のみ（部員は非掲載） |
+| ダッシュ（閲覧・過去検索） | 最新ICT情報掲示板 | **686** | https://jbis-kintone.cybozu.com/k/686/ | 部員（Space 48 入口） |
 
-- データ連携: **レコードコピーなし**。686 の `customize` が **685 を REST 読取**。
-- ポータル: **686 の URL のみ**掲載。685 は非掲載。
+- データ連携: **レコードコピーなし**。686 の JavaScript が **685 を REST 読取**（`kintone.api`・ログインユーザー権限）。
+- 686 利用者は **685 のレコード閲覧権限** が必要（未付与だと「取得に失敗」表示）。
 
-## 2. 自動収集
+---
 
-- **実行**: 1日2回（10:00 / 20:00 JST）= GitHub Actions cron `0 1 * * *` / `0 11 * * *` UTC
-- **パッケージ**: `ict-tech-digest-automation/`
-- **1日上限**: `published_at` = JST 当日 の件数 ≤ **5**。超過時はログのみで終了。
-- **URL**: 全期間で一意（再登録しない）。
-- **優先**: 未登録 URL → RSS 新しい順 → OpenAI 重要度スコア → 残枠ぶん登録。
-- **AI**: **Gemini**（`GEMINI_API_KEY`・モデルは `GEMINI_MODEL` または flash 系フォールバック）。**20本以上の RSS を横断**し「今日、自社インフラ・PC 管理で最重要」を最大5件選定。overview は **【事象】【影響】【推奨】** の3行＋カテゴリ（日本語）。
+## 2. 自動収集の流れ
 
-### 2.1 デフォルト RSS
+```
+[RSS 20本+] → 重複URL排除・直近記事に絞り込み
+    → Gemini 厳選（重要度スコア・最大5件）
+    → kintone 685 登録（overview 3行・カテゴリ付き）
+    → 686 ダッシュで表示
+```
 
-| 区分 | ソース | URL |
-|------|--------|-----|
-| 開発トレンド | Qiita / Zenn / はてな IT / ITmedia AIT | 従来どおり |
-| Microsoft | MSRC Blog / **MSRC Update Guide（CVE・月例パッチ）** / Windows Blog 等 | `api.msrc.microsoft.com/update-guide/rss` 等 |
-| エンタープライズ IT | **ASCII.jp TECH** / ZDNet Japan | `ascii.jp/tech/rss.xml` 等 |
-| セキュリティ公式 | IPA 注意喚起 / JPCERT/CC 統合 RSS | `ipa.go.jp/security/rss/alert.rdf` 等 |
-| PC・通信・製品 | PC Watch / INTERNET Watch / Forest Watch | impress.co.jp 系 RSS |
-| Microsoft・PC・サーバー | ZDNet Japan / ITmedia PC USER / @IT Server&Storage | `feeds.japan.zdnet.com/.../all.rdf` 等 |
-| ネットワーク・通信 | @IT Master of IP Network / ITmedia NETWORK / 日経 xTECH IT | `ait_network.xml` / `nw.xml` / `xtech-it.rdf` |
+| 項目 | 内容 |
+|------|------|
+| **実行** | 1日2回 **10:00 / 20:00 JST**（GHA cron UTC 1:00 / 11:00） |
+| **手動実行** | GitHub Actions `ict-tech-digest-collect` → `workflow_dispatch` |
+| **1日上限** | `published_at` = **JST 当日** の件数 ≤ **5**（超過時はログのみで終了） |
+| **URL** | 全期間で一意（同一 URL は再登録しない） |
+| **厳選** | 未登録 URL → 直近7日（不足時14日）の候補 → Gemini 重要度 → 残枠ぶん登録 |
+| **AI** | **Gemini**（`GEMINI_API_KEY`）。モデルは `GEMINI_MODEL` または flash 系フォールバック |
 
-**棲み分け**: Security NEXT（アプリ **631**）は別ライン。ICT 掲示板（685）は公式・製品系を厚くし、メディア解説の重複は Gemini 厳選で抑える。
+### 2.1 Gemini 選定・要約ルール
 
-**注**: トップページ URL（`zdnet.com` 等）ではなく **RSS 配信 URL** をコードに登録する。日経クロステックにネットワーク単独 RSS は無く **IT 分野 RSS**（`xtech-it.rdf`）を使用。
+**選ぶもの（スコアを上げる）**
+
+- Windows / Office 月例パッチ・緊急 CVE（MSRC Update Guide 等）
+- 社内 PC・サーバー・ネットワーク機器（ルーター / UTM / VPN）への実害リスク
+- 大規模障害・ゼロデイ・ベンダー必須対応
+
+**下げるもの**
+
+- 開発トレンドのみで運用影響が薄い記事
+
+**overview（概要欄）の必須フォーマット**
+
+```
+【事象】（1文）
+【影響】自社のインフラ・PC・セキュリティ運用への影響（1文）
+【推奨】情シスが今日取るべきアクション（1文）
+```
+
+英語記事も日本語要約。CVE 番号・製品名・バージョンは原文表記可。
+
+### 2.2 デフォルト RSS 一覧（コード正本: `config.ts` の `DEFAULT_RSS`）
+
+| # | 区分 | ソース | RSS URL |
+|---|------|--------|---------|
+| 1 | 開発 | Qiita 人気 | `https://qiita.com/popular-items/feed` |
+| 2 | 開発 | Zenn | `https://zenn.dev/feed` |
+| 3 | 開発 | はてな IT | `https://b.hatena.ne.jp/hotentry/it.rss` |
+| 4 | 開発 | ITmedia @IT 全フォーラム | `https://rss.itmedia.co.jp/rss/2.0/ait.xml` |
+| 5 | Microsoft | MSRC Blog | `https://msrc.microsoft.com/blog/rss/` |
+| 6 | Microsoft | **MSRC Update Guide（パッチ・CVE）** | `https://api.msrc.microsoft.com/update-guide/rss` |
+| 7 | Microsoft | Windows Blog | `https://blogs.windows.com/feed/` |
+| 8 | Microsoft | Microsoft Security Blog | `https://www.microsoft.com/en-us/security/blog/feed/` |
+| 9 | セキュリティ公式 | IPA 注意喚起 | `https://www.ipa.go.jp/security/rss/alert.rdf` |
+| 10 | セキュリティ公式 | JPCERT/CC 統合 | `https://www.jpcert.or.jp/rss/jpcert.rdf` |
+| 11 | PC・製品 | PC Watch | `https://pc.watch.impress.co.jp/data/rss/1.0/pcw/feed.rdf` |
+| 12 | PC・製品 | INTERNET Watch | `https://internet.watch.impress.co.jp/data/rss/1.0/iw/feed.rdf` |
+| 13 | PC・製品 | Forest Watch | `https://forest.watch.impress.co.jp/data/rss/1.0/wf/feed.rdf` |
+| 14 | エンタープライズ | ASCII.jp TECH | `https://ascii.jp/tech/rss.xml` |
+| 15 | サーバー・DC | ZDNet Japan | `https://feeds.japan.zdnet.com/rss/zdnet/all.rdf` |
+| 16 | 法人 PC | ITmedia PC USER | `https://rss.itmedia.co.jp/rss/2.0/pcuser.xml` |
+| 17 | ネットワーク | @IT Master of IP Network | `https://rss.itmedia.co.jp/rss/2.0/ait_network.xml` |
+| 18 | サーバー | @IT Server & Storage | `https://rss.itmedia.co.jp/rss/2.0/ait_server.xml` |
+| 19 | ネットワーク | ITmedia NETWORK | `https://rss.itmedia.co.jp/rss/2.0/nw.xml` |
+| 20 | エンタープライズ | 日経クロステック IT | `https://xtech.nikkei.com/rss/xtech-it.rdf` |
+
+**RSS の追加・変更**
+
+- リポの `ict-tech-digest-automation/src/lib/config.ts` の `DEFAULT_RSS` を編集して push
+- または GitHub Environment `kintone-collect` の Variable **`ICT_RSS_FEED_URLS`**（カンマ区切り）で上書き（設定時はこちらが優先）
+
+**注意**
+
+- メディアのトップページ URL ではなく **RSS 配信 URL** を登録すること
+- 日経クロステックにネットワーク単独 RSS は無いため **IT 分野 RSS**（`xtech-it.rdf`）を使用
+
+---
 
 ## 3. 正本アプリ（685）フィールド
 
-| フィールドコード | 型 | ラベル |
-|------------------|-----|--------|
-| `title` | 文字列1行 | タイトル |
-| `url` | リンク | URL（**アプリ側**で全期間一意。kintone の重複禁止は LINK 64 文字制限のためオフ） |
-| `published_at` | 日付 | 公開日 |
-| `overview` | 文字列複数行 | 概要 |
-| `category` | ドロップダウン | カテゴリ |
+| フィールドコード | 型 | ラベル | 備考 |
+|------------------|-----|--------|------|
+| `title` | 文字列1行 | タイトル | |
+| `url` | リンク | URL | 最大512文字。重複はアプリ側ロジックで排除（kintone unique はオフ） |
+| `published_at` | 日付 | 公開日 | **掲載日（JST 当日）**。厳選ダイジェストの「本日」枠 |
+| `overview` | 文字列複数行 | 概要 | 【事象】【影響】【推奨】 |
+| `category` | ドロップダウン | カテゴリ | 下記5択 |
 
-### カテゴリ選択肢（API 値 = 表示名）
+### カテゴリ（API 値 = 表示名）
 
 `AI・LLM` / `インフラ・クラウド` / `開発トレンド` / `ITツール・ガジェット` / `その他`
 
-## 4. ダッシュ（686）閲覧要件
+---
 
-- 上部: 本日・直近7日のヒーロー
-- 絞り込み: カテゴリ、公開日 From–To
-- 検索: タイトル＋概要（部分一致）
-- 一覧: `published_at` 降順、ページング（100件単位）
-- 正本アプリ ID: `window.ICT_DIGEST_STORE_APP` または定数 **685**
+## 4. ダッシュ（686）— 部員向け操作
 
-## 5. 環境変数（collect）
+| 画面要素 | 内容 |
+|----------|------|
+| ヘッダー | サービス説明（横断厳選・最大5件） |
+| **今日の厳選（最大5件）** | 当日 `published_at` の記事（無ければ直近7日から最大6件表示） |
+| 検索パネル（上部） | キーワード・カテゴリ・公開日 From–To |
+| 記事一覧 | 全期間・ページング（50件/ページ） |
+| BUILD 表示 | フッター（例: `2026-05-16-686-ict-digest-board-v4`） |
 
-| 変数 | 説明 |
+**カスタマイズ**
+
+- ファイル: `customize/686/desktop.js`
+- 正本アプリ ID: 定数 `685` または `window.ICT_DIGEST_STORE_APP`
+
+---
+
+## 5. 環境変数・シークレット
+
+### GitHub Actions（Environment: `kintone-collect`）
+
+| 変数 / Secret | 必須 | 説明 |
+|---------------|------|------|
+| `KINTONE_DOMAIN` | ○ | 例 `jbis-kintone.cybozu.com` |
+| `ICT_DIGEST_STORE_APP_ID` または `KINTONE_APP_ID` | ○ | **685** |
+| `KINTONE_API_TOKEN_ICT_COLLECT` | ○ | 685 **書込**トークン |
+| `GEMINI_API_KEY` | ○ | Gemini（Security NEXT と共有可能） |
+| `GEMINI_MODEL` | — | 任意 |
+| `ICT_RSS_FEED_URLS` / `RSS_FEED_URLS` | — | RSS 上書き（カンマ・改行可） |
+| `ICT_DIGEST_BOARD_APP_ID` | — | 686（ログ用・任意） |
+| `NOTIFY_WEBHOOK_URL` | — | 失敗時通知（任意） |
+
+**触らないもの**: `KINTONE_APP=631`（Security NEXT）、631/632 用トークン
+
+### ローカル実行
+
+```bash
+cd ict-tech-digest-automation
+cp .env.example .env
+# .env を編集
+npm ci
+npm run collect
+```
+
+---
+
+## 6. 運用・デプロイ（CIO 実施）
+
+| 操作 | コマンド |
+|------|----------|
+| 収集（手動） | `npm run ict-digest:collect` |
+| 掲示板デプロイ | `npm run cio:preflight:686 -- --note "…"` → `npm run deploy:686` |
+| GHA ワークフロー | `.github/workflows/ict-tech-digest-collect.yml` |
+| リポ | `https://github.com/mhamad4968/GitHub-Actions`（`kintone-ai-lab` と同期） |
+
+---
+
+## 7. トラブルシュート
+
+| 症状 | 確認 |
 |------|------|
-| `KINTONE_DOMAIN` | 例 `jbis-kintone.cybozu.com` |
-| `KINTONE_APP_ID` | **685** |
-| `KINTONE_API_TOKEN_COLLECT` | 685 書込トークン |
-| `GEMINI_API_KEY` | Gemini（Security NEXT と同じ Secret 名で可） |
-| `GEMINI_MODEL` | 任意（未設定時は flash 系を順次試行） |
-| `ICT_DIGEST_BOARD_APP_ID` | **686**（ダッシュ・任意・ログ用） |
-| `RSS_FEED_URLS` | 複数 URL（改行・カンマ区切り） |
+| GHA が `GEMINI_API_KEY` で失敗 | `kintone-collect` Environment に Secret 設定 |
+| GHA が kintone `CB_VA01` | 685 の `url` フィールド長・必須項目 |
+| 掲示板が「データがありません」とカード二重 | 686 customize 未デプロイ or 旧 BUILD。Ctrl+F5 |
+| 掲示板「取得に失敗」 | ログインユーザーに **685 閲覧権限** があるか |
+| 本日5件あるのに追加されない | 仕様どおりスキップ。翌日 10:00 まで待つか翌枠を待つ |
+| RSS 取得失敗（ログ） | 該当 URL が 404 の場合は `config.ts` から差し替え |
 
-## 6. デプロイ
+---
 
-- collect: `npm --prefix ict-tech-digest-automation run collect`
-- ダッシュ: `npm run cio:preflight:686 -- --note "…"` → `npm run deploy:686`
-- GHA: `.github/workflows/ict-tech-digest-collect.yml`
+## 8. 変更・相談時の参照
+
+| 変更したい内容 | 主な編集先 |
+|----------------|------------|
+| RSS ソース追加 | `ict-tech-digest-automation/src/lib/config.ts` |
+| 厳選基準・要約形式 | `ict-tech-digest-automation/src/lib/gemini-curate.ts` |
+| 1日件数・日付ロジック | `ict-tech-digest-automation/src/index.ts`・`kintone-store.ts` |
+| 掲示板 UI | `customize/686/desktop.js` |
+| スケジュール | `.github/workflows/ict-tech-digest-collect.yml` |
+
+追加のメディア・選定基準の変更は、本書を更新したうえで CIO に相談。
+
+---
+
+## 9. 変更履歴（抜粋）
+
+| 日付 | 内容 |
+|------|------|
+| 2026-05-16 | 初版・CEO GO。685/686 分離、Gemini 厳選、GHA 2回/日 |
+| 2026-05-16 | OpenAI → Gemini。URL 64文字制限対応（685 url unique オフ） |
+| 2026-05-16 | 掲示板 v2–v4（全幅UI・検索上部・業務向け文言） |
+| 2026-05-16 | RSS 20本化（MSRC Update Guide・ASCII・ZDNet・日経 xTECH 等） |
+| 2026-05-16 | 厳選プロンプト【事象】【影響】【推奨】・「今日のインフラ・PC最重要」 |
