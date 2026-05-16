@@ -29,7 +29,7 @@
 |--------|-----|
 | Qiita | `https://qiita.com/popular-items/feed` |
 | Zenn | `https://zenn.dev/feed` |
-| はてなテクノロジー | `https://b.hatena.ne.jp/hotentry/technology.rss` |
+| はてな IT 人気 | `https://b.hatena.ne.jp/hotentry/it.rss` |
 | ITmedia AIT | `https://rss.itmedia.co.jp/rss/2.0/ait.xml` |
 
 ## 3. 正本アプリ（685）フィールド
@@ -37,7 +37,7 @@
 | フィールドコード | 型 | ラベル |
 |------------------|-----|--------|
 | `title` | 文字列1行 | タイトル |
-| `url` | リンク | URL（重複禁止） |
+| `url` | リンク | URL（**アプリ側**で全期間一意。kintone の重複禁止は LINK 64 文字制限のためオフ） |
 | `published_at` | 日付 | 公開日 |
 | `overview` | 文字列複数行 | 概要 |
 | `category` | ドロップダウン | カテゴリ |

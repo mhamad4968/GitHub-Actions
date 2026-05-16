@@ -55,6 +55,17 @@ export type CuratedArticle = {
   category: IctCategory;
 };
 
+/** kintone LINK: unique 有効時は最大 64 文字。正本は unique オフ＋アプリ側で重複排除。 */
+export const KINTONE_URL_MAX_LEN = 512;
+
+export function assertUrlFitsKintone(url: string): void {
+  if (url.length > KINTONE_URL_MAX_LEN) {
+    throw new Error(
+      `URL が長すぎます（${url.length} 文字 > ${KINTONE_URL_MAX_LEN}）: ${url.slice(0, 80)}…`,
+    );
+  }
+}
+
 export async function addCuratedRecords(
   client: KintoneRestAPIClient,
   cfg: IctConfig,
@@ -62,6 +73,7 @@ export async function addCuratedRecords(
   items: CuratedArticle[],
 ): Promise<number[]> {
   if (items.length === 0) return [];
+  for (const item of items) assertUrlFitsKintone(item.url);
   const records = items.map((item) => ({
     [ICT_FIELDS.title]: { value: item.title },
     [ICT_FIELDS.url]: { value: item.url },

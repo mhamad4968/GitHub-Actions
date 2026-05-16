@@ -35,7 +35,7 @@ export type IctConfig = {
 const DEFAULT_RSS = [
   "https://qiita.com/popular-items/feed",
   "https://zenn.dev/feed",
-  "https://b.hatena.ne.jp/hotentry/technology.rss",
+  "https://b.hatena.ne.jp/hotentry/it.rss",
   "https://rss.itmedia.co.jp/rss/2.0/ait.xml",
 ];
 
