@@ -10,6 +10,7 @@
 - **環境**: MCP **6/6 OK**・smoke **14/14**・portfolio **8/8**・`cio:mcp:env` OK。eslint **10.4.0**（patch）。axios audit は **localtunnel  transitive**（`--force` 非適用）。
 - **683 行間・印刷レイアウト**: **CEO 2026-05-17 #1 OK**（課題管理不要・後日依頼時のみ調整可）。
 - **683 定時ジョブ**: **CEO #2** — Windows タスク **`kintone-ai-lab-user683-sync-prev-month`**（毎月1日 **08:00 JST**）登録済。`npm run user683:sync-summaries:register-windows-task`。
+- **683 要約 2026-04**: **CEO #3 完了**（前日 AI 指示コマンドで投入済み）。
 - **次（依頼行へ）**: **682/683** 本題継続。動作確認は **依頼時 CEO**。
 
 ## 2026-05-16 JST — セッション終了・678 先祖返り復旧・ガバナンス・ICT・Git
