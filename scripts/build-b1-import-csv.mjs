@@ -371,9 +371,6 @@ function buildFlat674Row({
 
   flat['internal_system_meta.pc_serial_no'] = '0';
   flat['internal_system_meta.import_source'] = IMPORT_SOURCE;
-  flat['internal_system_meta.legacy_pc_name_594'] = val(r594, 'PC_name').trim();
-  const n594 = Number.parseInt(id594, 10);
-  flat['internal_system_meta.legacy_record_id_594'] = Number.isFinite(n594) ? String(n594) : '';
   flat['internal_system_meta.created_at_jst'] = '';
 
   flat['skysea_system_meta.skysea_status'] = '未確認';

@@ -1,0 +1,75 @@
+【新セッション／セッション切替後に必ず読む】kintone **683** × Claude 中継（2026-05-15 追補）
+
+目的: チャットが変わっても **「何をどの順でやるか」** が一発で分かるようにする。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+■ 固定パス
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  リポルート:
+    C:\Users\mhamada202408224\kintone-ai-lab
+
+  Runbook（手順の正本）:
+    docs\runbooks\user683-claude-relay.md
+
+  中継実装（PC で動かす Python）:
+    scripts\user683_claude_relay.py
+
+  683 一覧のカスタマイズ（kintone に deploy する JS）:
+    customize\683\desktop.js
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+■ セッションが変わったら（AI／浜田 共通・最短）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  1) リポルートへ移動:
+       cd C:\Users\mhamada202408224\kintone-ai-lab
+
+  2) 683 で Claude 要約を使う日の「PC 側」:
+       npm run user683:claude-relay:public
+     （中継＋HTTPS トンネル。表示に従う。終了時はターミナルで Ctrl+C）
+
+     すでに別ターミナルで中継だけ動かしているなら:
+       npm run user683:claude-relay:public -- --no-spawn
+
+  3) kintone **683 一覧**で URL を渡す（コンソール不要の優先順）:
+     A) ターミナルに出た「?user683_claude_relay=…」を **アドレス欄末尾に貼って Enter**
+     B) 従来どおり F12 → Console に window.USER683_CLAUDE_RELAY_URL の 1 行
+
+  4) 683 の JS を直近で直した／pull したあとなら、kintone へ反映:
+       npm run cio:preflight:683 -- --note "（4文字以上の要約）"
+       npm run deploy:683
+
+  5) ブラウザは 683 を **強制再読込**（古い desktop.js を掴まない）
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+■ トラブル早見（ここまで来たら）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  「ループバック」「PNA」「127.0.0.1」
+    → HTTPS の cybozu からは **http://127.0.0.1 直は不可**。必ず **トンネルの https URL**。
+
+  「CORS」「preflight」「Access-Control-Allow-Origin」
+    → 中継は **RELAY_BUILD cors-v3** 以降を **PC で再起動**（古い Python プロセスを止める）。
+    → 683 側は **Content-Type: text/plain** で POST（プリフライト回避）。deploy 済みか確認。
+
+  「中継 URL 未設定」アラート
+    → 手順 3 のクエリ or window 変数が未適用。アドレス欄貼り付け後にもう一度 683 を開き直す。
+
+  疎通（PowerShell）:
+       Test-NetConnection -ComputerName 127.0.0.1 -Port 17884
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+■ 任意（.env）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  USER683_KINTONE_683_URL=https://（ドメイン）/k/683
+    → public スクリプトが「そのまま開ける URL」を出しやすくなる。
+
+  USER683_CORS_ORIGIN=https://jbis-kintone.cybozu.com
+    → 中継の Allow-Origin を固定したいとき（通常は未設定で Origin 反射で可）。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+■ Desktop 更新の儀式（リポ正本を Desktop に揃える）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  npm run session-starter:sync-desktop
+  npm run verify:desktop-ai-emergency-sync
+
+（Windows ネイティブ Node では SESSION_STARTER_DESKTOP_DIR に
+ C:\Users\mhamada202408224\Desktop\AI緊急用 を渡す運用）

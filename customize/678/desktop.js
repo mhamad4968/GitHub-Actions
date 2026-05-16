@@ -3,8 +3,25 @@
 
   /**
    * 部署予実 ダッシュアプリ 678
-   * BUILD: 2026-05-14-678-running-actual-bucket-fix
-   * - 677 を kintone.api で一覧。左キー列は `shin-format-excel-layout.md` 新フォーマット準拠＋12 月×四つ柱（`monthly_breakdown`）
+   * BUILD: 2026-05-15-678-hide-native-pager-zero-label
+   * - **2026-05-15（続21）**: 標準一覧の **「0 - 0 （0件中）」**等が残るケースに対し、**件数テキスト正規化**（各種ハイフン・ゼロ幅文字）と **MutationObserver はアプリ 678 のとき常時**走査、**一覧表示直後に即時 1 回** `hide678NativeListPagingLabels`。**CSS** に **`.gaia-argoui-app-index-pager`** を追加。
+   * - **2026-05-15（続20）**: 表本体の **`vertical-align`** — **予算見通し**列（`y678-sk7`・`y678-outlook-td`）を **上下中央**（`middle`）に変更（従来 `top`）。
+   * - **2026-05-15（続19）**: ダッシュシェル **ヘッダ行**から **677 一覧 URL**・**677 新規入力（/edit）URL** の **2 リンクを削除**（明細の追加・保存は **678 のみ**・`SPEC.md` §6b）。**再読み込み**・**管理システム（678）自リンク**・マニュアル（679）リンクは維持。
+   * - **2026-05-15（続18）**: **数値正本バナー削除** — シェル上段の **677＝678 長文説明**を撤去（**再読み込み**は従来どおりヘッダ行）。**予算見通し**セルを **コメント風**（左罫・地色・内側ラップ）に整形。
+   * - **2026-05-15（続17）**: **予算見通し列** — **固定費・月額**のみ左ブロックに **「予算見通し」**列。暦月順の **累積（予算＋予算修正）対累積実績**で **枯渇目安**（累積実績が累積予算を超えた最初の月度）・**余力大**（今月度までの累積で予算対比実績が低い）を **短文アラート**（LLM なし）。他区分は **`---`** または **順調**。
+   * - **2026-05-15（続16）**: **固定費・年額** — `monthly_breakdown` で **予算＋予算修正が正となる暦月が一意**に決まるとき、**それ以外の暦月列**の **予算・実績・消費率・予算修正** は **`---`**（677 が他月に 0 を持つ場合も **678 の見せ方**を仕様どおりに）。**該当列は実績・予算修正クリック不可**。0 件・複数正月はデータ不整合のため **従来どおり数値表示**（誤マスク回避）。
+   * - **2026-05-15（続15）**: **暦当月の実績未入力（¥0）のみ** — 費用種別フィルタに加え **トグルボタン**で、**固定費・月額／年額**かつ **リアル暦の今月**に **月次予算＋予算修正が正**で **`month_actual` 合算が 0** かつ **該暦月のランニング枠支払なし**の明細だけ表示（旧 **実績セル緑／橙** と同じ判定）。**セル着色（`y678-run-actual-*`）は廃止**（確実に一覧で漏れ確認するため）。
+   * - **2026-05-15（続14）**: **`monthlyMapFromRecord`** — 同一暦月の **複数行を数値合算**。**`cost_category`／`payment_type` は trim**。
+   * - **2026-05-15（続13）**: **`normalizeFiscalMonthLabel`** — `fiscal_month` が **`2026-05-07T12:00:00` 形式**（日付＋`T`）のとき、従来の **`$` 終端付き `YYYY-MM(-DD)?` 正規表現**に合わず **列キー `"5"` と不一致**。**`T` より前の暦日部分だけ**を残してから暦月へ正規化。
+   * - **2026-05-15（続12）**: **`normalizeFiscalMonthLabel`** — 677 月次の `fiscal_month` が **`2026-05` 形式**（`yojitsu-master-and-field-plan.md` 値例）のとき、表列キー **`5`** とずれ **`month_actual` が常に 0 扱い**→**緑にならない**行が出る。**`YYYY-MM`／`YYYY-M-D`（`-` `/`）**を暦月 **`1`…`12`** に寄せて **他行と同じキー**で突合。
+   * - **2026-05-15（続11）**: **`paymentDateFiscalMonthKey678`** — 支払日の **全角数字**・**`YYYY年M月D日`**・**`.` 区切り**を正規化して暦月一致。**`normalizeFiscalMonthLabel`** に **全角数字→半角**を入れ、月次 `fiscal_month` が **`５`** のときも **`5`** 列と突合可能に。
+   * - **2026-05-15（続10）**: `hasRunningPaymentInFiscalMonth678` — 支払日が **`YYYY/MM/DD`** や **月日1桁**でも暦月一致判定できるよう **`paymentDateFiscalMonthKey678`** を追加（従来は **`YYYY-MM-DD` のみ**で一致失敗→常に橙になり得た）。
+   * - **2026-05-15**: 677 は **フォーム／一覧一括編集からの保存不可**（入力は本ダッシュのみ）。677 閲覧・678 の `kintone.api` PUT は従来どおり。
+   * - **2026-05-15（続）**: 実績（支払）保存の **CB_VA01** — 変動費で **枠種別が空**のまま PUT され得た不具合をデフォルト **イニシャル費用（変動費）** で回避。VA01 再試行 **6 回**＋再 GET 前の短い遅延。エラー文字列突合で競合判定を強化。
+   * - **2026-05-15（続2）**: 実績モーダル表示時に **単票 GET で `支払内訳` を 677 と同期**（一覧キャッシュとのズレ対策）。保存時は **サブテーブル行 id** で編集行を突合。
+   * - **2026-05-15（続3）**: 孤児月次（`month_actual` あり・`支払内訳` 0 件）の説明を **「月次列と支払内訳ブロックは別」**と明確化（`SPEC.md` §6e 追記）。
+   * - **2026-05-15（続4）**: **677 一覧 API** の `limit` を **100→500**（kintone 上限）に拡大し取りこぼしを低減。上限到達時はステータスに警告。**（2026-05-15 続18）** シェル上段の **677＝678 長文バナー**は撤去（正本説明は `SPEC.md` §6e およびヘッダの **再読み込み**で担保）。
+   * - **2026-05-15（続5）**: 実績モーダル **`budget_bucket`** — 677 の DROP_DOWN 実値は **「ラーニング費用（定額費）」**（長音）。678 が **「ランニング…」** を送っていたため **CB_VA01**（検証不一致）。**value を 677 と完全一致**に修正（表示ラベルは「ランニング」のまま）。旧誤値の読み取りは正規値へマップ。
    * - 一覧の既定 SORT は `display_order asc, $id asc`（SPEC §6e 準拠・2026-05-03 改修）
    * - 新規追加モーダルは「挿入位置」選択（一番下/一番上/○○の上/○○の下）＋中間値計算（floor((prev+next)/2)）
    * - 表示順（display_order）の PUT は 677 へ（SPEC §6e）。インライン編集も可
@@ -12,7 +29,7 @@
    * - イニシャル費用（変動費）/ 都度費用の集計列: 実績・予算修正＝入力対象月（入力月の入力ボタン・暦月ラベル）
    * - 入力月の入力ボタン: 横スクロール＋都度費用モード。都度ON時はランニングに「入力中」表示を出さず月ボタンは薄表示（クリックで都度解除＋その月へ）。当月列＝薄色、実績・予算修正＝入力スロット色
    * - ナビ「都度費用」: イニシャル集計の都度費用ブロックへジャンプ（太枠は付けず、ボタンは太字＋ aria-pressed のみ）
-   * - 一覧ツールバー右の標準「◯ - ◯（◯件中）」重複表示: 全角数字・括弧ゆれ対応＋領域走査＋MutationObserver で非表示
+   * - 一覧ツールバー右の標準「◯ - ◯（◯件中）」重複表示: 全角数字・括弧・各種ハイフン・ゼロ幅・**`.gaia-argoui-app-index-pager`** 等 CSS ＋領域走査＋MutationObserver（**678 常時**）で非表示
    * - 固定費: 暦月12列の「予算」「消費率」は 677 `monthly_breakdown` を表示。実績・予算修正は入力対象月のみ。変動費行は暦月12列＋ランニング集計＋固定費小計を `---`、都度・変動費小計のみ数値。固定費行は逆（都度・変動費小計は `---`）
    * - 固定費・当月の月次「予算修正」保存時: 翌月〜年度末（4月）へ同一値を反映するか **はい／いいえ**（SPEC §6・既定＝はいフォーカス）
    * - 実績モーダル 会社欄: 正典 16 社（大塚商会・FBJ・KDDI・その他・あさかわシステムズ・KCS・NTTコミュニケーションズ・NTTファイナンス・NTT・TCリース・NTT東日本・ソフトバンク・三菱HCビジネスリース・蔵衛門・オフィスバスター・クロネコヤマト・佐川急便）の datalist。「その他」または既存「主候補＋その他」表記等の集合先・未確定行のときに **「会社を新規登録する」** ボタン → **B3 確認ダイアログ**（株式会社・㈱は付けず／全角カタカナ・漢字・半角アルファベット混在可）→ OK で readonly 解除 → 保存時 NFKC 自動正規化（㈱／株式会社／（株）削除）→ 677 `partner_company` PUT（集合先「その他」と費用種別は別・費用種別は固定／変動のみ想定）
@@ -30,10 +47,24 @@
   var YOJITSU_QUICK_MANUAL_APP_ID = 679;
   /** 担当者向け（アプリ ID は出さない） */
   var YOJITSU_LABEL_INPUT_APP = "システム推進室予実管理システム入力アプリ";
-  var YOJITSU_LABEL_INPUT_NEW = "システム推進室予実管理システム入力アプリの新規入力";
   var YOJITSU_LABEL_DASH_APP = "システム推進室予実管理システム";
   var YOJITSU_LABEL_MANUAL_APP = "システム推進室予実アプリガイド";
-  var BUILD = "2026-05-14-678-running-actual-month-status";
+  /**
+   * 677 `payment_breakdown.budget_bucket` の DROP_DOWN 実値（`GET /k/v1/app/form/fields.json?app=677` のキーと一致）。
+   * 678 の UI 表記は SPEC どおり「ランニング」だが、REST に送る value は kintone 登録の「ラーニング」表記を使う（不一致で CB_VA01）。
+   */
+  var Y678_BUCKET_RUNNING_VALUE = "ラーニング費用（定額費）";
+  var Y678_BUCKET_INITIAL_VALUE = "イニシャル費用（変動費）";
+  /** 旧 customize が誤って送っていた値（677 に存在しない選択肢）— モーダル再表示時に正規値へ寄せる */
+  var Y678_BUCKET_RUNNING_LEGACY_WRONG = "ランニング費用（定額費）";
+
+  function normalizeBudgetBucketForPut678(s) {
+    var t = String(s == null ? "" : s).trim();
+    if (t === Y678_BUCKET_RUNNING_LEGACY_WRONG) return Y678_BUCKET_RUNNING_VALUE;
+    return t;
+  }
+
+  var BUILD = "2026-05-15-678-hide-native-pager-zero-label";
   /**
    * マニュアル掲載アプリ（システム推進室予実アプリガイド・679）。`window.Y678_QUICK_MANUAL_URL` が非空なら最優先。
    */
@@ -86,8 +117,8 @@
     "4": "4月",
   };
 
-  /** 左キー列（工種名称・工種コード・費用種別・支払種別・摘要・会社） */
-  var KEY_COL_COUNT = 6;
+  /** 左キー列（工種名称・工種コード・費用種別・支払種別・摘要・会社・予算見通し＝固定費月額のみ） */
+  var KEY_COL_COUNT = 7;
   /** 月度ブロックの右側に並ぶ集計ブロック（各 4 列：予算/実績/消費率/予算修正） */
   var AGGR_BLOCK_COUNT = 4;
   /** 末尾列（表示順・備考） */
@@ -115,7 +146,9 @@
   var FETCH_FIELDS_NO_MONTHLY = FETCH_FIELDS.filter(function (c) {
     return c !== "monthly_breakdown";
   });
-  var QUERY = "order by display_order asc, $id asc limit 100";
+  /** 678 一覧が 677 から読み込む最大件数（kintone `records` GET の上限に合わせる） */
+  var Y678_RECORDS_QUERY_LIMIT = 500;
+  var QUERY = "order by display_order asc, $id asc limit " + String(Y678_RECORDS_QUERY_LIMIT);
 
   function apiWithTimeout(promise, ms) {
     return Promise.race([
@@ -133,6 +166,47 @@
         }, ms);
       }),
     ]);
+  }
+
+  /** 支払保存・削除の CB_VA01 再試行上限（GET→再構成→再 PUT の回数） */
+  var MAX_RECORD_PUT_VA01_RETRIES = 6;
+
+  function y678DelayMs(ms) {
+    ms = Math.max(0, ms | 0);
+    return new Promise(function (resolve) {
+      setTimeout(resolve, ms);
+    });
+  }
+
+  /** kintone.api の reject がネストしている場合も拾う */
+  function stringifyKintone678ErrForMatch(e) {
+    if (e == null) return "";
+    var parts = [];
+    try {
+      if (e.code != null) parts.push(String(e.code));
+      if (e.message != null) parts.push(String(e.message));
+      if (e.id != null) parts.push(String(e.id));
+    } catch (x0) {
+      void x0;
+    }
+    try {
+      parts.push(JSON.stringify(e));
+    } catch (x1) {
+      parts.push("{...}");
+      void x1;
+    }
+    return parts.join("|");
+  }
+
+  /** CB_VA01 は検証エラーでも出るが、リビジョン競合時は再 GET→再 PUT で収束し得る */
+  function isRevisionConflictError678(e) {
+    var s = stringifyKintone678ErrForMatch(e);
+    if (s.indexOf("CB_VA01") !== -1) return true;
+    if (s.indexOf("GAIA_CO02") !== -1) return true;
+    if (s.indexOf("リビジョン") !== -1) return true;
+    var sl = s.toLowerCase();
+    if (sl.indexOf("revision") !== -1) return true;
+    return false;
   }
 
   /**
@@ -200,7 +274,14 @@
     if (code === "CB_NO02" || msg.indexOf("CB_NO02") !== -1) {
       hint = " ［ヒント: アプリ ID またはレコード ID が無効］";
     }
-    if (code === "CB_VA01" || msg.indexOf("CB_VA01") !== -1 || msg.indexOf("revision") !== -1) {
+    if (code === "CB_VA01" || msg.indexOf("CB_VA01") !== -1) {
+      hint = " ［ヒント: 他ユーザーが更新した可能性 → 再読み込み］";
+      var mlow = msg.toLowerCase();
+      if (mlow.indexOf("revision") < 0 && msg.indexOf("リビジョン") < 0 && mlow.indexOf("not up to date") < 0) {
+        hint +=
+          " 同コードは**入力検証エラー**（ドロップダウン不一致・必須未入力等）でも出ます。**枠種別（ランニング／イニシャル）未選択**に注意。";
+      }
+    } else if (msg.indexOf("revision") !== -1 || msg.indexOf("リビジョン") !== -1) {
       hint = " ［ヒント: 他ユーザーが更新した可能性 → 再読み込み］";
     }
     if (code === "GAIA_QU02" || msg.indexOf("limit") !== -1) {
@@ -280,10 +361,17 @@
     return v == null ? "" : v;
   }
 
-  /** 677 の月度ラベルを FISCAL_ORDER のキー（"5"…"4"）に寄せる */
+  /** 677 の月度ラベルを FISCAL_ORDER のキー（"5"…"4"）に寄せる。`2026-05`・`2026-05-07`・`2026-05-07T…`（API の DATETIME 文字列）・全角数字のみの月も暦月 1〜12 に正規化。 */
   function normalizeFiscalMonthLabel(s) {
-    var t = String(s == null ? "" : s).trim();
+    var t = String(s == null ? "" : s)
+      .replace(/[０-９]/g, function (c) {
+        return String.fromCharCode(c.charCodeAt(0) - 0xff10 + 48);
+      })
+      .trim();
     if (!t) return "";
+    if (t.indexOf("T") >= 0) t = t.split("T")[0].trim();
+    var ym = t.match(/^(\d{4})[-/](\d{1,2})(?:[-/](\d{1,2}))?$/);
+    if (ym) return String(parseInt(ym[2], 10));
     if (/^\d+$/.test(t)) return String(parseInt(t, 10));
     return t;
   }
@@ -299,8 +387,8 @@
    * 0 以下・該当行なしは null（自動入力しない）。
    */
   function fixedBudgetPrefillYen(rec, monthLabel) {
-    if (!rec || fieldVal(rec, "cost_category") !== "固定費") return null;
-    var pt = fieldVal(rec, "payment_type");
+    if (!rec || String(fieldVal(rec, "cost_category") || "").trim() !== "固定費") return null;
+    var pt = String(fieldVal(rec, "payment_type") || "").trim();
     if (pt !== "月額" && pt !== "年額") return null;
     var lab = normalizeFiscalMonthLabel(monthLabel);
     if (!lab) return null;
@@ -327,8 +415,27 @@
   function isRunningPaymentBucket678(bucket) {
     var b = String(bucket == null ? "" : bucket).trim();
     if (b.indexOf("イニシャル") >= 0) return false;
-    if (b.indexOf("ランニング") >= 0) return true;
+    if (b === Y678_BUCKET_RUNNING_VALUE || b === Y678_BUCKET_RUNNING_LEGACY_WRONG) return true;
+    if (b.indexOf("ランニング") >= 0 || b.indexOf("ラーニング") >= 0) return true;
     return !b;
+  }
+
+  /** 支払日（`payment_date`）から暦月ラベル（`1`…`12`）を得る。全角数字・`YYYY年M月D日`・`-` `/` `.` 区切り・日 1 桁・ISO `T` 先頭を解釈。 */
+  function paymentDateFiscalMonthKey678(dateStr) {
+    var s = String(dateStr == null ? "" : dateStr)
+      .replace(/[０-９]/g, function (c) {
+        return String.fromCharCode(c.charCodeAt(0) - 0xff10 + 48);
+      })
+      .replace(/\u2212/g, "-")
+      .trim();
+    if (!s) return "";
+    var m = s.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
+    if (m) return normalizeFiscalMonthLabel(String(parseInt(m[2], 10)));
+    m = s.match(/^(\d{4})年(\d{1,2})月(\d{1,2})日?/);
+    if (m) return normalizeFiscalMonthLabel(String(parseInt(m[2], 10)));
+    m = s.match(/^(\d{4})-(\d{2})-(\d{2})T/);
+    if (m) return normalizeFiscalMonthLabel(String(parseInt(m[2], 10)));
+    return "";
   }
 
   /** 支払内訳のランニング行が当該暦月に 1 件以上あるか（実績入力済みの目安） */
@@ -340,23 +447,24 @@
       var v = (rows[i] || {}).value || {};
       if (!isRunningPaymentBucket678(String((v.budget_bucket || {}).value || "").trim())) continue;
       var d = String((v.payment_date || {}).value || "");
-      var m = d.match(/^\d+-(\d{2})-/);
-      if (!m) continue;
-      if (normalizeFiscalMonthLabel(String(parseInt(m[1], 10))) !== lab) continue;
+      var pm = paymentDateFiscalMonthKey678(d);
+      if (!pm || pm !== lab) continue;
       return true;
     }
     return false;
   }
 
-  /** 当月暦月のランニング実績セル用クラス（固定費・要入力のみ） */
-  function runningActualStatusClass678(rec, monthLabel) {
-    if (!rec || fieldVal(rec, "cost_category") !== "固定費") return "";
-    var lab = normalizeFiscalMonthLabel(monthLabel);
-    if (lab !== normalizeFiscalMonthLabel(getCurrentMonthLabel())) return "";
-    if (!fixedRunningMonthRequiresActual678(rec, monthLabel)) return "";
-    return hasRunningPaymentInFiscalMonth678(rec, monthLabel)
-      ? " y678-run-actual-done"
-      : " y678-run-actual-pending";
+  /**
+   * **リアル暦の今月**について、固定費・月額／年額で **月次に予算対象があり**、**実績が未入力（合算 0）**かつ **該暦月のランニング枠支払が無い**明細か（旧セル橙「要入力」と同条件。都度費用モードは判定に含めない）。
+   */
+  function recordIsRunningActualUnfilledCalendarMonth678(rec) {
+    if (!rec || String(fieldVal(rec, "cost_category") || "").trim() !== "固定費") return false;
+    var monthLab = normalizeFiscalMonthLabel(getCurrentMonthLabel());
+    if (!monthLab) return false;
+    if (!fixedRunningMonthRequiresActual678(rec, monthLab)) return false;
+    if (hasRunningPaymentInFiscalMonth678(rec, monthLab)) return false;
+    if (monthActualInMonthlyBreakdown678(rec, monthLab) > 0) return false;
+    return true;
   }
 
   /** monthly_breakdown の合計（field=month_budget|month_actual|month_budget_revision） */
@@ -375,7 +483,7 @@
     var sumB = sumMonthly(rec, "month_budget");
     var sumA = sumMonthly(rec, "month_actual");
     var sumR = sumMonthly(rec, "month_budget_revision");
-    var cat = fieldVal(rec, "cost_category");
+    var cat = String(fieldVal(rec, "cost_category") || "").trim();
     var lb = toNum(fieldVal(rec, "learning_fixed_budget"));
     var ivRaw = fieldVal(rec, "initial_variable_budget");
     var iv = toNum(ivRaw);
@@ -412,7 +520,7 @@
     };
   }
 
-  /** 月度ラベル → 月次行の表示用マップ */
+  /** 月度ラベル → 月次行の表示用マップ（同一 `lab` が複数行のとき **予算・実績・予算修正を数値合算**。消費率は後行の非空を優先）。 */
   function monthlyMapFromRecord(rec) {
     var map = {};
     var tbl = rec && rec.monthly_breakdown && rec.monthly_breakdown.value;
@@ -422,27 +530,156 @@
       if (!row || !row.fiscal_month) continue;
       var lab = normalizeFiscalMonthLabel(subCellVal(row, "fiscal_month"));
       if (!lab) continue;
-      map[lab] = {
-        budget: subCellVal(row, "month_budget"),
-        actual: subCellVal(row, "month_actual"),
-        revision: subCellVal(row, "month_budget_revision"),
-        utilization: subCellVal(row, "month_utilization"),
-      };
+      var b = subCellVal(row, "month_budget");
+      var a = subCellVal(row, "month_actual");
+      var r = subCellVal(row, "month_budget_revision");
+      var util = subCellVal(row, "month_utilization");
+      if (!map[lab]) {
+        map[lab] = {
+          budget: b,
+          actual: a,
+          revision: r,
+          utilization: util,
+        };
+      } else {
+        var ex = map[lab];
+        map[lab] = {
+          budget: String(toNum(ex.budget) + toNum(b)),
+          actual: String(toNum(ex.actual) + toNum(a)),
+          revision: String(toNum(ex.revision) + toNum(r)),
+          utilization: util !== "" && util != null ? util : ex.utilization,
+        };
+      }
     }
     return map;
   }
 
-  /** 件数表示の表記ゆれ（全角数字・全角括弧・空白）を寄せて比較用に正規化 */
+  /**
+   * 固定費・年額: `monthlyMapFromRecord` 上で **各暦月の `month_budget`＋`month_budget_revision` の合算が正**となる月が **ちょうど 1 つ**のとき、その暦月ラベル（`1`…`12`）。
+   * 0 件・複数件のときは空文字（678 は **従来どおり** 677 の数値を列に出し、誤って全年 `---` にしない）。
+   */
+  function annualFixedPayFiscalMonthLabel678(rec) {
+    if (!rec || String(fieldVal(rec, "cost_category") || "").trim() !== "固定費") return "";
+    if (String(fieldVal(rec, "payment_type") || "").trim() !== "年額") return "";
+    var mm = monthlyMapFromRecord(rec);
+    var found = "";
+    var count = 0;
+    for (var lab in mm) {
+      if (!Object.prototype.hasOwnProperty.call(mm, lab)) continue;
+      var rowM = mm[lab];
+      if (!rowM) continue;
+      if (toNum(rowM.budget) + toNum(rowM.revision) > 0) {
+        found = normalizeFiscalMonthLabel(lab);
+        count++;
+      }
+    }
+    if (count !== 1 || !found) return "";
+    return found;
+  }
+
+  /**
+   * **固定費・月額**のみ: `monthlyMapFromRecord` ベースで累積 effective 予算と累積実績を暦月順（5→4）に比較。
+   * - **枯渇目安**: 累積実績が累積（予算＋予算修正）を **上回った最初の月度**（前倒し請求等で起こり得る）。
+   * - **余力大**: 枯渇が無く、**リアル暦の今月度**までの累積で **(累積予算−累積実績)／累積予算 ≥ 0.45** かつ実績あり・今月が年度3ヶ月目以降（閾値は実装定数）。
+   * それ以外は **順調**（薄色）。年額・変動費等は **`---`**。
+   */
+  function fixedMonthlyBudgetOutlookHtml678(rec) {
+    if (!rec || String(fieldVal(rec, "cost_category") || "").trim() !== "固定費") return Y678_EMPTY_HTML;
+    if (String(fieldVal(rec, "payment_type") || "").trim() !== "月額") return Y678_EMPTY_HTML;
+    var mm = monthlyMapFromRecord(rec);
+    var cumB = 0;
+    var cumA = 0;
+    var firstDepleteLab = "";
+    var di;
+    for (di = 0; di < FISCAL_ORDER.length; di++) {
+      var labD = FISCAL_ORDER[di];
+      var rowD = mm[labD] || {};
+      var eff = toNum(rowD.budget) + toNum(rowD.revision);
+      var act = toNum(rowD.actual);
+      cumB += eff;
+      cumA += act;
+      if (!firstDepleteLab && cumA > cumB) {
+        firstDepleteLab = labD;
+        break;
+      }
+    }
+    if (firstDepleteLab) {
+      var headD = FISCAL_HEAD[firstDepleteLab] || firstDepleteLab + "月";
+      return (
+        "<span class=\"y678-outlook y678-outlook--deplete\" title=\"累積実績が累積（予算＋予算修正）を上回った最初の月度。前倒し請求・予算修正の要否を確認してください。\">" +
+        "<strong>枯渇目安</strong> " +
+        esc(headD) +
+        " 累積超過</span>"
+      );
+    }
+    var fullB = 0;
+    for (var fj = 0; fj < FISCAL_ORDER.length; fj++) {
+      var rowJ = mm[FISCAL_ORDER[fj]] || {};
+      fullB += toNum(rowJ.budget) + toNum(rowJ.revision);
+    }
+    if (fullB <= 0) return Y678_EMPTY_HTML;
+    var curLab = normalizeFiscalMonthLabel(getCurrentMonthLabel());
+    var idxCur = -1;
+    for (var fk = 0; fk < FISCAL_ORDER.length; fk++) {
+      if (FISCAL_ORDER[fk] === curLab) {
+        idxCur = fk;
+        break;
+      }
+    }
+    if (idxCur < 0) return "<span class=\"y678-dim\">順調</span>";
+    cumB = 0;
+    cumA = 0;
+    for (var fm = 0; fm <= idxCur; fm++) {
+      var rowM = mm[FISCAL_ORDER[fm]] || {};
+      cumB += toNum(rowM.budget) + toNum(rowM.revision);
+      cumA += toNum(rowM.actual);
+    }
+    if (cumB <= 0) return "<span class=\"y678-dim\">順調</span>";
+    var slackRatio = (cumB - cumA) / cumB;
+    var surplusRatioMin = 0.45;
+    var minMonthIdxForSurplus = 2;
+    if (slackRatio >= surplusRatioMin && cumA > 0 && idxCur >= minMonthIdxForSurplus) {
+      return (
+        "<span class=\"y678-outlook y678-outlook--surplus\" title=\"リアル暦の今月度までの累積で、予算（＋修正）に対し実績が小さく据え置き予算の余力が大きい状況です。\">" +
+        "<strong>余力大</strong> 据置予算が実績ペースより大きい見込み</span>"
+      );
+    }
+    return "<span class=\"y678-dim\">順調</span>";
+  }
+
+  /**
+   * 表の実績セルと同じく、`monthly_breakdown` の当該暦月行の `month_actual` を数値化（空・非数は 0）。
+   * `payment_breakdown` が 0 件でも月次だけ値が入っているケース（移行・677 直接編集等）の突合用。
+   */
+  function monthActualInMonthlyBreakdown678(rec, monthLabel) {
+    var lab = normalizeFiscalMonthLabel(monthLabel);
+    if (!lab || !rec) return 0;
+    var mm = monthlyMapFromRecord(rec);
+    return toNum((mm[lab] || {}).actual);
+  }
+
+  /** 件数表示の表記ゆれ（全角数字・全角括弧・各種ハイフン・空白・ゼロ幅）を寄せて比較用に正規化 */
   function normalize678PagingLabelText(s) {
     return String(s || "")
+      .replace(/[\u200B-\u200D\uFEFF]/g, "")
       .replace(/[０-９]/g, function (c) {
         return String.fromCharCode(c.charCodeAt(0) - 0xff10 + 48);
       })
+      .replace(/[\u2010-\u2015\u2212\uFE63\uFF0D]/g, "-")
       .replace(/\u3000/g, " ")
       .replace(/\s+/g, " ")
       .replace(/\uFF08/g, "(")
       .replace(/\uFF09/g, ")")
+      .replace(/[\s·•･．.]+$/g, "")
       .trim();
+  }
+
+  /** 「1 - 20 (47件中)」「0 - 0 (0件中)」等（生テキスト・表記ゆれ可） */
+  function is678PagingCountLabelText(raw) {
+    var s0 = String(raw || "");
+    if (s0.length > 160) return false;
+    var s = normalize678PagingLabelText(s0.replace(/^[^\d\uFF10-\uFF19]+/, ""));
+    return s.length <= 96 && /^\d+\s*-\s*\d+\s*\(\s*\d+\s*件中\s*\)$/.test(s);
   }
 
   /**
@@ -450,21 +687,22 @@
    * ① ツールバー系コンテナ内 ② 画面上部の短文ノード（クラス不明・再描画後）の二段で掛ける。
    */
   function hide678NativeListPagingLabels() {
-    var lineRe = /^\d+\s*-\s*\d+\s*\(\s*\d+\s*件中\s*\)$/;
     var tagSel = "div,span,p,li,a,button,label,strong,em,b,i";
 
     function hideIfLeafMatch(el) {
       if (!el || !el.getAttribute) return;
       if (el.closest && el.closest("[data-yojitsu-678-shell]")) return;
-      var tc = normalize678PagingLabelText(el.textContent || "");
-      if (tc.length > 96 || !lineRe.test(tc)) return;
+      var raw = el.textContent || "";
+      if (!is678PagingCountLabelText(raw)) return;
+      var tc = normalize678PagingLabelText(raw);
+      if (tc.length > 96) return;
       var hasInner = false;
       var kids = el.querySelectorAll(tagSel);
       var j, inner;
       for (j = 0; j < kids.length; j++) {
         if (kids[j] === el) continue;
-        inner = normalize678PagingLabelText(kids[j].textContent || "");
-        if (inner.length <= 96 && lineRe.test(inner)) {
+        inner = kids[j].textContent || "";
+        if (is678PagingCountLabelText(inner)) {
           hasInner = true;
           break;
         }
@@ -509,14 +747,16 @@
     } catch (e3) {
       nodes = [];
     }
-    var topMax = 340;
-    var wMax = 520;
+    var topMax = 420;
+    var wMax = 640;
     for (i = 0; i < nodes.length; i++) {
       el = nodes[i];
       if (!el || !el.getBoundingClientRect) continue;
       if (el.closest && el.closest("[data-yojitsu-678-shell]")) continue;
-      var tc2 = normalize678PagingLabelText(el.textContent || "");
-      if (!lineRe.test(tc2) || tc2.length > 64) continue;
+      var raw2 = el.textContent || "";
+      if (!is678PagingCountLabelText(raw2)) continue;
+      var tc2 = normalize678PagingLabelText(raw2);
+      if (tc2.length > 64) continue;
       var br = el.getBoundingClientRect();
       if (!br || br.width <= 0 || br.height <= 0) continue;
       if (br.top > topMax || br.width > wMax || br.height > 80) continue;
@@ -534,7 +774,12 @@
       document.body;
     if (!root) return;
     y678PagingHideMo = new MutationObserver(function () {
-      if (!document.querySelector("[data-yojitsu-678-shell]")) return;
+      try {
+        if (typeof kintone === "undefined" || !kintone.app || typeof kintone.app.getId !== "function") return;
+        if (kintone.app.getId() !== APP_DASH) return;
+      } catch (e0) {
+        return;
+      }
       clearTimeout(y678PagingHideMoTimer);
       y678PagingHideMoTimer = setTimeout(function () {
         try {
@@ -552,7 +797,7 @@
   }
 
   function schedule678PagingLabelHide() {
-    [0, 50, 150, 400, 900, 2000, 4000].forEach(function (ms) {
+    [0, 50, 150, 400, 900, 2000, 4000, 6500].forEach(function (ms) {
       setTimeout(function () {
         try {
           hide678NativeListPagingLabels();
@@ -660,8 +905,8 @@
     var out = [];
     for (var i = 0; i < records.length; i++) {
       var rec = records[i];
-      var cat = fieldVal(rec, "cost_category");
-      var pay = fieldVal(rec, "payment_type");
+      var cat = String(fieldVal(rec, "cost_category") || "").trim();
+      var pay = String(fieldVal(rec, "payment_type") || "").trim();
       var hit =
         filterKey === "固定費_月額" ? (cat === "固定費" && pay === "月額") :
         filterKey === "固定費_年額" ? (cat === "固定費" && pay === "年額") :
@@ -777,14 +1022,15 @@
     /** 都度ナビオン時は暦月の「入力中」枠のみ外す（内部の入力対象月は維持・都度列の集計は同じ月） */
     var monthCurUi = y678FocusTsudo ? null : inputM;
 
-    // === Sticky keys (rowspan=3) — 左固定 6 列 ===
+    // === Sticky keys (rowspan=3) — 左固定 7 列 ===
     r1.push(
       "<th rowspan=\"3\" class=\"y678-sk y678-sk1 y678-th-key y678-sortable\" data-y678-sort=\"work_type_name\" title=\"クリックでソート\">工種名称" + sortArrowHtml("work_type_name") + "</th>" +
         "<th rowspan=\"3\" class=\"y678-sk y678-sk2 y678-th-key y678-sortable\" data-y678-sort=\"work_type_code\" title=\"クリックでソート\">工種<br/>コード" + sortArrowHtml("work_type_code") + "</th>" +
         "<th rowspan=\"3\" class=\"y678-sk y678-sk3 y678-th-key y678-sortable\" data-y678-sort=\"cost_category\" title=\"クリックでソート\">費用種別" + sortArrowHtml("cost_category") + "</th>" +
         "<th rowspan=\"3\" class=\"y678-sk y678-sk4 y678-th-key y678-sortable\" data-y678-sort=\"payment_type\" title=\"クリックでソート\">支払<br/>種別" + sortArrowHtml("payment_type") + "</th>" +
         "<th rowspan=\"3\" class=\"y678-sk y678-sk5 y678-th-key y678-sortable\" data-y678-sort=\"summary_text\" title=\"クリックでソート\">摘要" + sortArrowHtml("summary_text") + "</th>" +
-        "<th rowspan=\"3\" class=\"y678-sk y678-sk6 y678-th-key y678-sortable\" data-y678-sort=\"partner_company\" title=\"クリックでソート\">会社" + sortArrowHtml("partner_company") + "</th>"
+        "<th rowspan=\"3\" class=\"y678-sk y678-sk6 y678-th-key y678-sortable\" data-y678-sort=\"partner_company\" title=\"クリックでソート\">会社" + sortArrowHtml("partner_company") + "</th>" +
+        "<th rowspan=\"3\" class=\"y678-sk y678-sk7 y678-th-key\" title=\"固定費・月額のみ。累積予算（＋修正）と累積実績の比較をコメント風に表示（LLM なし）\">予算<br/>見通し</th>"
     );
 
     // === 大区分 r1 ===
@@ -910,7 +1156,7 @@
       var r = records[i];
       var id = fieldVal(r, "$id");
       var rev = revisionOf(r);
-      var costCat = fieldVal(r, "cost_category");
+      var costCat = String(fieldVal(r, "cost_category") || "").trim();
       var mm = monthlyMapFromRecord(r);
       var sum = esc(fieldVal(r, "summary_text"));
       if (sum.length > 56) sum = sum.slice(0, 56) + "…";
@@ -953,8 +1199,17 @@
           (String(fieldVal(r, "partner_company") || "").trim()
             ? esc(fieldVal(r, "partner_company"))
             : Y678_EMPTY_HTML) +
-          "</td>"
+          "</td>" +
+          "<td class=\"y678-sk y678-sk7 y678-outlook-td\"><div class=\"y678-outlook-wrap\">" +
+          fixedMonthlyBudgetOutlookHtml678(r) +
+          "</div></td>"
       );
+
+      var payTypeTrimRow = String(fieldVal(r, "payment_type") || "").trim();
+      var annualFixedPayLab678 =
+        costCat === "固定費" && payTypeTrimRow === "年額"
+          ? annualFixedPayFiscalMonthLabel678(r)
+          : "";
 
       for (var mi = 0; mi < months.length; mi++) {
         var fl = months[mi];
@@ -994,6 +1249,8 @@
         var rowM = mm[fl] || {};
         var util = rowM.utilization;
         var utilStr = formatCellUtilizationDisplay(util);
+        var annSkipCol =
+          annualFixedPayLab678 && flN !== annualFixedPayLab678;
         var isCurC =
           monthCurUi != null &&
           flN === normalizeFiscalMonthLabel(monthCurUi);
@@ -1001,8 +1258,8 @@
         var allowMonthPayment = false;
         var allowMonthRevision = false;
         if (costCat === "固定費") {
-          allowMonthPayment = isCurC;
-          allowMonthRevision = isCurC;
+          allowMonthPayment = isCurC && !annSkipCol;
+          allowMonthRevision = isCurC && !annSkipCol;
         } else if (costCat !== "変動費") {
           allowMonthPayment = isCurC;
           allowMonthRevision = isCurC;
@@ -1017,8 +1274,7 @@
           "y678-num " +
           band +
           fiscalTodayCls +
-          (allowMonthPayment ? " y678-edit-payment y678-input-slot-pay" : "") +
-          runningActualStatusClass678(r, fl);
+          (allowMonthPayment ? " y678-edit-payment y678-input-slot-pay" : "");
         var payData =
           allowMonthPayment
             ? " data-y678-cell=\"payment\" data-y678-month=\"" + esc(fl) + "\""
@@ -1032,12 +1288,20 @@
           allowMonthRevision
             ? " data-y678-cell=\"month\" data-y678-month=\"" + esc(fl) + "\" data-y678-field=\"month_budget_revision\""
             : "";
+        var budgetCellHtml = annSkipCol ? Y678_EMPTY_HTML : escNumCell(rowM.budget);
+        var actualCellHtml = annSkipCol
+          ? Y678_EMPTY_HTML
+          : costCat === "固定費"
+            ? formatYenRunningActualFixed(rowM.actual)
+            : escNumCell(rowM.actual);
+        var utilCellHtml = annSkipCol ? Y678_EMPTY_HTML : utilStr;
+        var revCellHtml = annSkipCol ? Y678_EMPTY_HTML : escNumCell(rowM.revision);
         rowHtml.push(
           "<td class=\"y678-num " +
             band +
             fiscalTodayCls +
             "\">" +
-            escNumCell(rowM.budget) +
+            budgetCellHtml +
             "</td>" +
             "<td class=\"" +
             attrEsc(payCls) +
@@ -1046,13 +1310,13 @@
             " title=\"" +
             attrEsc(payTitle) +
             "\">" +
-            (costCat === "固定費" ? formatYenRunningActualFixed(rowM.actual) : escNumCell(rowM.actual)) +
+            actualCellHtml +
             "</td>" +
             "<td class=\"y678-num " +
             band +
             fiscalTodayCls +
             "\">" +
-            utilStr +
+            utilCellHtml +
             "</td>" +
             "<td class=\"" +
             attrEsc(revCls) +
@@ -1061,7 +1325,7 @@
             " title=\"" +
             attrEsc(revTitle) +
             "\">" +
-            escNumCell(rowM.revision) +
+            revCellHtml +
             "</td>"
         );
       }
@@ -1164,12 +1428,13 @@
     st.textContent = [
       ".gaia-argoui-app-index-recordlist,.gaia-argoui-app-index-norecord,.recordlist-gaia,.recordlist-norecord-gaia,.gaia-argoui-list-norecord,.recordlist-paging-gaia,div[class*='recordlist-norecord']{display:none !important;}",
       // kintone ネイティブのページング・件数表示（「0 - 0 （0件中）」等・上下／重複）を完全に隠す（JS で補完）
-      ".gaia-argoui-app-index-paging,.gaia-argoui-app-index-recordcount,.gaia-argoui-app-recordcount,.gaia-argoui-paging," +
+      ".gaia-argoui-app-index-paging,.gaia-argoui-app-index-pager,.gaia-argoui-app-index-recordcount,.gaia-argoui-app-recordcount,.gaia-argoui-paging," +
         "div[class*='paging-gaia'],div[class*='recordlist-paging'],div[class*='recordcount-gaia']," +
         "[class*='recordcount-gaia'],[class*='Recordcount-gaia'],[class*='recordlist-paging']," +
         ".gaia-argoui-app-index-toolbar [class*='pager'],.gaia-argoui-app-index-toolbar [class*='Pager']," +
         ".gaia-argoui-app-index-toolbar [class*='recordcount'],.gaia-argoui-app-index-toolbar [class*='RecordCount']," +
         ".ocean-ui-app-index-header [class*='pager'],.ocean-ui-app-index-header [class*='Pager']," +
+        "[class*='ocean-ui'][class*='index-header'] [class*='recordcount'],[class*='ocean-ui'][class*='index-header'] [class*='RecordCount']," +
         ".ocean-ui-app-index-header [class*='recordcount'],.ocean-ui-app-index-header [class*='RecordCount']," +
         "[class*='index-toolbar'] [class*='recordcount'],[class*='index-toolbar'] [class*='RecordCount']," +
         ".recordlist-header-gaia [class*='recordcount'],.recordlist-headerbar-gaia [class*='recordcount']," +
@@ -1262,11 +1527,6 @@
       "[data-yojitsu-678-shell] .y678-grid tbody tr:hover td.y678-fiscal-today-col{background:#f2e8d8 !important;}",
       "[data-yojitsu-678-shell] .y678-grid tbody tr.y678-row-odd:hover td.y678-fiscal-today-col{background:#eadfd0 !important;}",
       "[data-yojitsu-678-shell] .y678-grid tbody td.y678-input-slot-pay{background:#ffefd6 !important;color:#3d2a0a !important;box-shadow:inset 0 0 0 1px rgba(212,140,40,.55);}",
-      "[data-yojitsu-678-shell] .y678-grid tbody td.y678-run-actual-pending{background:#ffefd6 !important;color:#7a3e00 !important;font-weight:600;box-shadow:inset 0 0 0 1px rgba(212,140,40,.55);}",
-      "[data-yojitsu-678-shell] .y678-grid tbody tr.y678-row-odd td.y678-run-actual-pending{background:#ffe8c4 !important;}",
-      "[data-yojitsu-678-shell] .y678-grid tbody td.y678-run-actual-done{background:#e2f5e8 !important;color:#0f5132 !important;font-weight:600;box-shadow:inset 0 0 0 1px rgba(25,128,66,.35);}",
-      "[data-yojitsu-678-shell] .y678-grid tbody tr.y678-row-odd td.y678-run-actual-done{background:#d8f0df !important;}",
-      "[data-yojitsu-678-shell] .y678-grid tbody td.y678-run-actual-done.y678-input-slot-pay{background:#e2f5e8 !important;color:#0f5132 !important;font-weight:600;box-shadow:inset 0 0 0 1px rgba(25,128,66,.35);}",
       "[data-yojitsu-678-shell] .y678-grid tbody td.y678-input-slot-rev{background:#dff2e6 !important;color:#0f291d !important;box-shadow:inset 0 0 0 1px rgba(70,140,100,.45);}",
       "[data-yojitsu-678-shell] .y678-grid tbody tr.y678-row-odd td.y678-input-slot-pay{background:#ffe8c4 !important;}",
       "[data-yojitsu-678-shell] .y678-grid tbody tr.y678-row-odd td.y678-input-slot-rev{background:#cfe9db !important;}",
@@ -1304,7 +1564,14 @@
       "[data-yojitsu-678-shell] .y678-grid .y678-sk3{left:184px;width:72px;min-width:72px;max-width:72px;}",
       "[data-yojitsu-678-shell] .y678-grid .y678-sk4{left:256px;width:60px;min-width:60px;max-width:60px;text-align:center;}",
       "[data-yojitsu-678-shell] .y678-grid .y678-sk5{left:316px;width:130px;min-width:130px;max-width:130px;}",
-      "[data-yojitsu-678-shell] .y678-grid .y678-sk6{left:446px;width:96px;min-width:96px;max-width:96px;border-right:1px solid #b6d3c0;box-shadow:4px 0 6px rgba(40,90,60,.06);}",
+      "[data-yojitsu-678-shell] .y678-grid .y678-sk6{left:446px;width:96px;min-width:96px;max-width:96px;border-right:1px solid #dce8df;}",
+      "[data-yojitsu-678-shell] .y678-grid .y678-sk7{left:542px;width:158px;min-width:158px;max-width:168px;border-right:1px solid #b6d3c0;box-shadow:4px 0 6px rgba(40,90,60,.06);font-size:11px;line-height:1.35;vertical-align:middle;}",
+      "[data-yojitsu-678-shell] .y678-grid .y678-outlook-td{white-space:normal;word-break:break-word;vertical-align:middle;}",
+      "[data-yojitsu-678-shell] .y678-grid .y678-outlook-wrap{padding:6px 8px 7px;margin:1px 0;background:#faf8f3;border-left:3px solid #9eb89e;border-radius:4px;font-size:11px;line-height:1.4;color:#2a3d30;}",
+      "[data-yojitsu-678-shell] .y678-grid .y678-outlook-wrap .y678-dim{font-style:italic;color:#5a6b5e;}",
+      "[data-yojitsu-678-shell] .y678-grid .y678-outlook{display:block;}",
+      "[data-yojitsu-678-shell] .y678-grid .y678-outlook--deplete{color:#8b2a14;font-weight:600;font-style:normal;}",
+      "[data-yojitsu-678-shell] .y678-grid .y678-outlook--surplus{color:#1a5080;font-weight:600;font-style:normal;}",
       "[data-yojitsu-678-shell] .y678-grid tbody .y678-sk1 a{color:#2f6f4d !important;font-weight:700;}",
       "[data-yojitsu-678-shell] .y678-grid tbody .y678-sk1 a:hover{color:#194a2c !important;text-decoration:underline;}",
       "[data-yojitsu-678-shell] .y678-grid .y678-display-order{min-width:7em;}",
@@ -1419,20 +1686,6 @@
       "\">" +
       esc(YOJITSU_LABEL_DASH_APP) +
       "</a> · " +
-      "<a href=\"" +
-      esc(location.origin + "/k/" + APP_INPUT + "/") +
-      "\" title=\"" +
-      esc(YOJITSU_LABEL_INPUT_APP + "・レコード一覧") +
-      "\">" +
-      esc(YOJITSU_LABEL_INPUT_APP) +
-      "</a> · " +
-      "<a href=\"" +
-      esc(location.origin + "/k/" + APP_INPUT + "/edit") +
-      "\" title=\"" +
-      esc(YOJITSU_LABEL_INPUT_NEW) +
-      "\">" +
-      esc(YOJITSU_LABEL_INPUT_NEW) +
-      "</a> · " +
       "<button type=\"button\" id=\"y678-refresh\" style=\"font-size:12px;cursor:pointer\" title=\"" +
       esc(YOJITSU_LABEL_INPUT_APP + "の明細を API で取り直して表を再描画") +
       "\">再読み込み</button>";
@@ -1450,6 +1703,8 @@
       "<button type=\"button\" class=\"y678-filter\" data-y678-filter=\"固定費_月額\" style=\"font-size:12px;cursor:pointer\">固定費（月額）</button>" +
       "<button type=\"button\" class=\"y678-filter\" data-y678-filter=\"固定費_年額\" style=\"font-size:12px;cursor:pointer\">固定費（年額）</button>" +
       "<button type=\"button\" class=\"y678-filter\" data-y678-filter=\"変動費\" style=\"font-size:12px;cursor:pointer\">変動費</button>" +
+      "<span style=\"color:#555;font-size:12px;margin-left:10px\">今月:</span>" +
+      "<button type=\"button\" class=\"y678-filter-pending\" aria-pressed=\"false\" style=\"font-size:12px;cursor:pointer\" title=\"固定費・月額または年額で、リアル暦の今月に月次予算があり、実績が¥0かつ該月のランニング枠支払が無い明細だけ（再クリックで解除）\">今月の実績未入力（¥0）のみ</button>" +
       "";
     wrap.appendChild(filterRow);
 
@@ -1619,6 +1874,8 @@
     var lastRawRecords = [];
     var lastTotalCount = 0;
     var currentCostFilter = "all";
+    /** 「今月の実績未入力（¥0）のみ」トグル（費用種別フィルタの後に AND 適用） */
+    var y678PendingMonthOnly = false;
 
     function setFilterButtonsActive() {
       var btns = filterRow.querySelectorAll(".y678-filter");
@@ -1630,6 +1887,18 @@
         } else {
           btns[b].style.fontWeight = "";
           btns[b].style.textDecoration = "";
+        }
+      }
+      var pb = filterRow.querySelector(".y678-filter-pending");
+      if (pb) {
+        if (y678PendingMonthOnly) {
+          pb.style.fontWeight = "700";
+          pb.style.textDecoration = "underline";
+          pb.setAttribute("aria-pressed", "true");
+        } else {
+          pb.style.fontWeight = "";
+          pb.style.textDecoration = "";
+          pb.setAttribute("aria-pressed", "false");
         }
       }
     }
@@ -1756,7 +2025,20 @@
     function applyFilterAndRedraw() {
       try {
         var filtered = filterRecordsByCostCategory(lastRawRecords, currentCostFilter);
+        if (y678PendingMonthOnly) {
+          var onlyP = [];
+          for (var pi = 0; pi < filtered.length; pi++) {
+            if (recordIsRunningActualUnfilledCalendarMonth678(filtered[pi])) onlyP.push(filtered[pi]);
+          }
+          filtered = onlyP;
+        }
         filtered = applyKeySort(filtered);
+        var pbLabel = filterRow.querySelector(".y678-filter-pending");
+        if (pbLabel && y678PendingMonthOnly) {
+          pbLabel.textContent = "今月の実績未入力（¥0）のみ（" + String(filtered.length) + "件）";
+        } else if (pbLabel) {
+          pbLabel.textContent = "今月の実績未入力（¥0）のみ";
+        }
         updateStatusLine();
         paintTable(filtered);
         syncMonthJumpNavActive();
@@ -1873,6 +2155,19 @@
           lastRawRecords = list;
           lastTotalCount = list.length;
           applyFilterAndRedraw();
+          if (list.length >= Y678_RECORDS_QUERY_LIMIT) {
+            status.style.display = "block";
+            status.style.color = "#6b4a12";
+            status.textContent =
+              YOJITSU_LABEL_INPUT_APP +
+              " から " +
+              String(list.length) +
+              " 件を表示しました（取得上限 " +
+              String(Y678_RECORDS_QUERY_LIMIT) +
+              " 件に達している可能性があります。以降の明細は " +
+              YOJITSU_LABEL_INPUT_APP +
+              " 一覧で確認してください）。";
+          }
         });
       }
 
@@ -1905,6 +2200,33 @@
         if (r && r.$id && String(r.$id.value) === String(rid)) return r;
       }
       return null;
+    }
+
+    /** 単票 GET の結果で一覧キャッシュを置換（連続保存時の revision ズレ低減） */
+    function merge677RecordIntoLastRaw(rid, freshRec) {
+      if (!freshRec || !lastRawRecords || !lastRawRecords.length) return;
+      var idStr = String(rid);
+      for (var mi = 0; mi < lastRawRecords.length; mi++) {
+        var row = lastRawRecords[mi];
+        if (row && row.$id && String(row.$id.value) === idStr) {
+          lastRawRecords[mi] = freshRec;
+          return;
+        }
+      }
+    }
+
+    /** 一覧キャッシュが古いとき用に単票 GET で最新 revision を取得 */
+    function fetch677RecordById(rid) {
+      return whenKintoneApiUrlReady(8000).then(function () {
+        return kintone.api(kintone.api.url("/k/v1/record.json", true), "GET", {
+          app: APP_INPUT,
+          id: rid,
+        });
+      }).then(function (resp) {
+        var fr = (resp && resp.record) || null;
+        if (fr) merge677RecordIntoLastRaw(rid, fr);
+        return fr;
+      });
     }
 
     /** 暦月ラベル（正規化済）の直後から FISCAL_ORDER 末尾までの月ラベル一覧 */
@@ -2866,10 +3188,17 @@
       };
       qsE("payment_date").value = String((pv.payment_date && pv.payment_date.value) || "").trim();
       qsE("payment_amount").value = String((pv.payment_amount && pv.payment_amount.value) || "").trim();
-      qsE("budget_bucket").value = String((pv.budget_bucket && pv.budget_bucket.value) || "");
+      var rawBk = String((pv.budget_bucket && pv.budget_bucket.value) || "");
+      if (rawBk === Y678_BUCKET_RUNNING_LEGACY_WRONG) rawBk = Y678_BUCKET_RUNNING_VALUE;
+      qsE("budget_bucket").value = rawBk;
       qsE("invoice_number").value = String((pv.invoice_number && pv.invoice_number.value) || "");
       qsE("payment_memo").value = String((pv.payment_memo && pv.payment_memo.value) || "");
       payModal.setAttribute("data-y678-pay-edit-index", String(rowIndex));
+      if ((prow[rowIndex] || {}).id != null) {
+        payModal.setAttribute("data-y678-pay-edit-row-id", String(prow[rowIndex].id));
+      } else {
+        payModal.removeAttribute("data-y678-pay-edit-row-id");
+      }
       var stE = payModal.querySelector(".y678-modal-status");
       if (stE) {
         stE.style.color = "#0a4a6b";
@@ -2917,42 +3246,115 @@
       if (!okDel) return;
       var stD = payModal.querySelector(".y678-modal-status");
       var saveBtnD = payModal.querySelector(".y678-pay-save");
-      var newRowsD = [];
-      for (var di = 0; di < prow.length; di++) {
-        if (di === rowIndex) continue;
-        var rowD = prow[di] || {};
-        var vD = rowD.value || {};
-        var copyD = {
-          value: {
-            payment_date: { value: ((vD.payment_date || {}).value) || "" },
-            payment_amount: { value: ((vD.payment_amount || {}).value) || "" },
-            budget_bucket: { value: ((vD.budget_bucket || {}).value) || "" },
-            invoice_number: { value: ((vD.invoice_number || {}).value) || "" },
-            payment_memo: { value: ((vD.payment_memo || {}).value) || "" },
+      var delRowStableId = (prow[rowIndex] || {}).id != null ? (prow[rowIndex] || {}).id : null;
+
+      function buildDeletePutBody(recSnap) {
+        var prowSnap = (recSnap.payment_breakdown && recSnap.payment_breakdown.value) || [];
+        var newRowsD = [];
+        var skipped = false;
+        for (var di = 0; di < prowSnap.length; di++) {
+          var rowD = prowSnap[di] || {};
+          if (delRowStableId != null) {
+            if (rowD.id === delRowStableId) {
+              skipped = true;
+              continue;
+            }
+          } else if (di === rowIndex) {
+            skipped = true;
+            continue;
+          }
+          var vD = rowD.value || {};
+          var copyD = {
+            value: {
+              payment_date: { value: ((vD.payment_date || {}).value) || "" },
+              payment_amount: { value: ((vD.payment_amount || {}).value) || "" },
+              budget_bucket: { value: normalizeBudgetBucketForPut678(((vD.budget_bucket || {}).value) || "") },
+              invoice_number: { value: ((vD.invoice_number || {}).value) || "" },
+              payment_memo: { value: ((vD.payment_memo || {}).value) || "" },
+            },
+          };
+          if (rowD.id) copyD.id = rowD.id;
+          newRowsD.push(copyD);
+        }
+        if (delRowStableId != null && !skipped) {
+          return {
+            err:
+              "削除対象の行がサーバー上で見つかりません（他画面で変更された可能性）。モーダルを閉じて再読み込みしてください。",
+          };
+        }
+        var sumsD = rollupActualByMonth(newRowsD);
+        var newMonthlyD = buildMonthlyTableForPayments(recSnap, sumsD);
+        return {
+          body: {
+            app: APP_INPUT,
+            id: rid,
+            revision: recSnap.$revision ? recSnap.$revision.value : null,
+            record: {
+              payment_breakdown: { value: newRowsD },
+              monthly_breakdown: { value: newMonthlyD },
+            },
           },
         };
-        if (rowD.id) copyD.id = rowD.id;
-        newRowsD.push(copyD);
       }
-      var sumsD = rollupActualByMonth(newRowsD);
-      var newMonthlyD = buildMonthlyTableForPayments(rec, sumsD);
-      var bodyD = {
-        app: APP_INPUT,
-        id: rid,
-        revision: rec.$revision ? rec.$revision.value : null,
-        record: {
-          payment_breakdown: { value: newRowsD },
-          monthly_breakdown: { value: newMonthlyD },
-        },
-      };
+
+      function putDeleteForSnap(recSnap) {
+        var built = buildDeletePutBody(recSnap);
+        if (built.err) return Promise.reject({ message: built.err, __y678User: true });
+        return whenKintoneApiUrlReady(8000).then(function () {
+          return kintone.api(kintone.api.url("/k/v1/record.json", true), "PUT", built.body);
+        });
+      }
+
+      function putDeleteWithVa01Retry(recSnap, depth) {
+        return putDeleteForSnap(recSnap).catch(function (e) {
+          if (e && e.__y678User) return Promise.reject(e);
+          if (!isRevisionConflictError678(e)) return Promise.reject(e);
+          if (depth + 1 >= MAX_RECORD_PUT_VA01_RETRIES) return Promise.reject(e);
+          if (stD) {
+            stD.textContent =
+              "他の更新と競合しました。" +
+              YOJITSU_LABEL_INPUT_APP +
+              " から最新を取得し、削除を再試行します（" +
+              String(depth + 2) +
+              "/" +
+              String(MAX_RECORD_PUT_VA01_RETRIES) +
+              "）…";
+          }
+          var waitMsD = 35 + depth * 55;
+          return y678DelayMs(waitMsD)
+            .then(function () {
+              return fetch677RecordById(rid);
+            })
+            .then(function (fresh) {
+              if (!fresh) return Promise.reject(e);
+              return putDeleteWithVa01Retry(fresh, depth + 1);
+            });
+        });
+      }
+
       if (saveBtnD) saveBtnD.disabled = true;
       if (stD) {
         stD.style.color = "#555";
-        stD.textContent = "支払行を削除し、月次実績を再集計中…";
+        stD.textContent = YOJITSU_LABEL_INPUT_APP + " から最新を取得しています…";
       }
-      whenKintoneApiUrlReady(8000)
-        .then(function () {
-          return kintone.api(kintone.api.url("/k/v1/record.json", true), "PUT", bodyD);
+      fetch677RecordById(rid)
+        .catch(function () {
+          return null;
+        })
+        .then(function (fr0) {
+          var snap0 = fr0 || findRawRecord(rid);
+          if (!snap0) {
+            if (stD) {
+              stD.style.color = "#b00020";
+              stD.textContent = "レコードが見つかりません。再読み込みしてください。";
+            }
+            return Promise.reject({ message: "no record", __y678User: true });
+          }
+          if (stD) {
+            stD.style.color = "#555";
+            stD.textContent = "支払行を削除し、月次実績を再集計中…";
+          }
+          return putDeleteWithVa01Retry(snap0, 0);
         })
         .then(function () {
           if (stD) {
@@ -2967,7 +3369,11 @@
         .catch(function (e) {
           if (stD) {
             stD.style.color = "#b00020";
-            stD.textContent = formatApiError(e, "削除に失敗しました。");
+            if (e && e.__y678User && e.message) {
+              stD.textContent = String(e.message);
+            } else {
+              stD.textContent = formatApiError(e, "削除に失敗しました。");
+            }
           }
         })
         .then(
@@ -3016,7 +3422,11 @@
         "<button type=\"button\" class=\"y678-pay-partner-newbtn\">会社を新規登録する</button>",
         "</div>",
         "<div class=\"y678-wide y678-pay-link\" data-y678-pay-parentlink></div>",
-        "<label>枠種別<select name=\"budget_bucket\"><option value=\"\">（未選択）</option><option value=\"ランニング費用（定額費）\">ランニング費用（定額費）</option><option value=\"イニシャル費用（変動費）\">イニシャル費用（変動費）</option></select></label>",
+        "<label>枠種別<select name=\"budget_bucket\"><option value=\"\">（未選択）</option><option value=\"" +
+          esc(Y678_BUCKET_RUNNING_VALUE) +
+          "\">ランニング費用（定額費）</option><option value=\"" +
+          esc(Y678_BUCKET_INITIAL_VALUE) +
+          "\">イニシャル費用（変動費）</option></select></label>",
         "<label>請求書番号<input type=\"text\" name=\"invoice_number\" maxlength=\"255\" /></label>",
         "<label class=\"y678-wide\">メモ<textarea name=\"payment_memo\" rows=\"2\" maxlength=\"10000\"></textarea></label>",
         "<p class=\"y678-pay-keyhint\">ショートカット: 金額・日付・一行欄は <strong>Enter</strong> で保存。メモ欄は改行のため <strong>Ctrl+Enter</strong> のみ保存。既存行は右の <strong>修正</strong>／<strong>削除</strong>（削除は確認あり）。</p>",
@@ -3116,6 +3526,7 @@
       payModal.removeAttribute("data-y678-rid");
       payModal.removeAttribute("data-y678-input-month");
       payModal.removeAttribute("data-y678-pay-edit-index");
+      payModal.removeAttribute("data-y678-pay-edit-row-id");
       payModal.removeAttribute("data-y678-partner-unlocked");
       var saveBtnClose = payModal.querySelector(".y678-pay-save");
       if (saveBtnClose) saveBtnClose.textContent = "支払を追加";
@@ -3137,18 +3548,14 @@
       }
     }
 
-    function openPaymentModal(rid, monthLabel) {
-      var rec = findRawRecord(rid);
-      if (!rec) {
-        status.style.color = "#b00020";
-        status.textContent = "対象レコードが見つかりません。再読み込みしてください。";
-        return;
-      }
-      ensurePaymentModal();
-      payModal.style.display = "flex";
-      payModal.setAttribute("data-y678-rid", String(rid));
-      payModal.removeAttribute("data-y678-pay-edit-index");
-      payModal.setAttribute("data-y678-input-month", monthLabel == null ? "" : String(monthLabel));
+    /**
+     * 支払モーダルの中身を 1 件のレコードオブジェクトから構築（単票 GET 後に呼ぶ想定）。
+     * @param {object} rec 677 レコード
+     * @param {string|number} rid
+     * @param {string} monthLabel
+     */
+    function populatePaymentModalFromRecord(rec, rid, monthLabel) {
+      if (!payModal || !rec) return;
       var saveBtnOpen = payModal.querySelector(".y678-pay-save");
       if (saveBtnOpen) saveBtnOpen.textContent = "支払を追加";
       var st = payModal.querySelector(".y678-modal-status");
@@ -3259,8 +3666,14 @@
           pcHint.textContent = "";
         }
       }
-      qs("budget_bucket").value =
-        fieldVal(rec, "cost_category") === "固定費" ? "ランニング費用（定額費）" : "";
+      var ccOpen = fieldVal(rec, "cost_category");
+      if (ccOpen === "固定費") {
+        qs("budget_bucket").value = Y678_BUCKET_RUNNING_VALUE;
+      } else if (ccOpen === "変動費") {
+        qs("budget_bucket").value = Y678_BUCKET_INITIAL_VALUE;
+      } else {
+        qs("budget_bucket").value = "";
+      }
       qs("invoice_number").value = "";
       qs("payment_memo").value = "";
       var pcount = ((rec.payment_breakdown || {}).value || []).length;
@@ -3282,8 +3695,29 @@
       if (existWrap) {
         var prow = (rec.payment_breakdown && rec.payment_breakdown.value) || [];
         if (!prow.length) {
+          var mlOr = normalizeFiscalMonthLabel(monthLabel || getInputMonthLabel()) || "";
+          var maOr = monthActualInMonthlyBreakdown678(rec, mlOr || monthLabel);
+          var orphanHtml = "";
+          if (maOr > 0 && mlOr) {
+            orphanHtml =
+              "<p class=\"y678-pay-summary-hint\" style=\"margin:10px 0 0;line-height:1.55;color:#6b4a12\">" +
+              "※ <strong>月次実績（" +
+              esc(mlOr) +
+              "月）</strong> には " +
+              formatYen(maOr) +
+              " が入っていますが、<strong>支払内訳の行は 0 件</strong>です。" +
+              " <strong>677 詳細で見えている「" +
+              esc(mlOr) +
+              "月・" +
+              formatYen(maOr) +
+              "」は `monthly_breakdown` の月次列</strong>であり、<strong>画面下部の「支払内訳」サブテーブルの行数とは別</strong>です（一覧の月額列も同様）。Excel 移行や " +
+              esc(YOJITSU_LABEL_INPUT_APP) +
+              " で <code>month_actual</code> だけ先に入った可能性があります。677 で<strong>支払内訳ブロックを確認</strong>し、行が本当に 0 かを見てください。" +
+              " <strong>初めてここから支払を保存</strong>すると、この月の <code>month_actual</code> は支払の合算で<strong>置き換え</strong>られます（他月は従来どおり維持されます）。</p>";
+          }
           existWrap.innerHTML =
-            "<p class=\"y678-pay-summary-hint\" style=\"margin:0 0 8px\">既存の支払内訳：<strong>0 件</strong>（請求書が別なら行を分けて追加）</p>";
+            "<p class=\"y678-pay-summary-hint\" style=\"margin:0 0 8px\">既存の支払内訳：<strong>0 件</strong>（請求書が別なら行を分けて追加）</p>" +
+            orphanHtml;
         } else {
           var tb = [
             "<p style=\"margin:0 0 6px;font-weight:600\">既存の支払内訳（" + prow.length + " 件）</p>",
@@ -3325,11 +3759,48 @@
       setTimeout(function () { qs("payment_amount").focus(); }, 0);
     }
 
+    function openPaymentModal(rid, monthLabel) {
+      var recLocal = findRawRecord(rid);
+      if (!recLocal) {
+        status.style.color = "#b00020";
+        status.textContent =
+          "対象レコードが一覧にありません。「一覧を再読み込み」を押すかフィルタを確認してください（一覧は最大 100 件のみ読み込み）。677 確認: " +
+          recordShowHref(rid);
+        return;
+      }
+      ensurePaymentModal();
+      payModal.style.display = "flex";
+      payModal.setAttribute("data-y678-rid", String(rid));
+      payModal.removeAttribute("data-y678-pay-edit-index");
+      payModal.removeAttribute("data-y678-pay-edit-row-id");
+      payModal.setAttribute("data-y678-input-month", monthLabel == null ? "" : String(monthLabel));
+      var saveBtnSync = payModal.querySelector(".y678-pay-save");
+      var stSync = payModal.querySelector(".y678-modal-status");
+      if (saveBtnSync) {
+        saveBtnSync.textContent = "支払を追加";
+        saveBtnSync.disabled = true;
+      }
+      if (stSync) {
+        stSync.style.color = "#555";
+        stSync.textContent =
+          YOJITSU_LABEL_INPUT_APP +
+          " から支払内訳を同期しています…（678 一覧はキャッシュのため、677 の詳細と件数が違う場合があります）";
+      }
+      fetch677RecordById(rid)
+        .catch(function () {
+          return null;
+        })
+        .then(function (fr) {
+          if (!payModal || payModal.getAttribute("data-y678-rid") !== String(rid)) return;
+          var rec = fr || recLocal;
+          populatePaymentModalFromRecord(rec, rid, monthLabel);
+          if (saveBtnSync) saveBtnSync.disabled = false;
+        });
+    }
+
     function submitPayment() {
       var rid = payModal.getAttribute("data-y678-rid");
       if (!rid) return;
-      var rec = findRawRecord(rid);
-      if (!rec) return;
       var st = payModal.querySelector(".y678-modal-status");
       var saveBtn = payModal.querySelector(".y678-pay-save");
       var qs = function (n) { return payModal.querySelector("[name='" + n + "']"); };
@@ -3347,61 +3818,15 @@
         return;
       }
       var pamt = String(Math.trunc(pamtN));
-      var bucket = qs("budget_bucket").value;
-      if (!bucket && fieldVal(rec, "cost_category") === "固定費") {
-        bucket = "ランニング費用（定額費）";
-      }
+      var bucket;
+      var wasEdit;
+      var editIdx;
+      var editRowStableId;
       var invoice = qs("invoice_number").value.trim().slice(0, 255);
       var memo = qs("payment_memo").value.trim().slice(0, 10000);
       var newSupplement = qs("summary_supplement").value.slice(0, 10000);
-      var origSupplement = String(fieldVal(rec, "summary_supplement") || "");
-      var supplementChanged = newSupplement !== origSupplement;
-
-      var existing = (rec.payment_breakdown && rec.payment_breakdown.value) || [];
-      var editIdxStr = payModal.getAttribute("data-y678-pay-edit-index");
-      var editIdx =
-        editIdxStr != null && editIdxStr !== "" && !isNaN(parseInt(editIdxStr, 10))
-          ? parseInt(editIdxStr, 10)
-          : -1;
-      if (editIdx < 0 || editIdx >= existing.length) editIdx = -1;
-      var wasEdit = editIdx >= 0;
-      var newRows = [];
-      for (var i = 0; i < existing.length; i++) {
-        var row = existing[i] || {};
-        var v = row.value || {};
-        var copy = {
-          value: {
-            payment_date: { value: ((v.payment_date || {}).value) || "" },
-            payment_amount: { value: ((v.payment_amount || {}).value) || "" },
-            budget_bucket: { value: ((v.budget_bucket || {}).value) || "" },
-            invoice_number: { value: ((v.invoice_number || {}).value) || "" },
-            payment_memo: { value: ((v.payment_memo || {}).value) || "" },
-          },
-        };
-        if (row.id) copy.id = row.id;
-        newRows.push(copy);
-      }
-      var newPayVal = {
-        value: {
-          payment_date: { value: pdate },
-          payment_amount: { value: pamt },
-          budget_bucket: { value: bucket },
-          invoice_number: { value: invoice },
-          payment_memo: { value: memo },
-        },
-      };
-      if (wasEdit) {
-        newPayVal.id = (existing[editIdx] || {}).id;
-        newRows[editIdx] = newPayVal;
-      } else {
-        newRows.push(newPayVal);
-      }
-
-      var sums = rollupActualByMonth(newRows);
-      var newMonthly = buildMonthlyTableForPayments(rec, sums);
 
       var pcField = qs("partner_company");
-      var origPc = String(fieldVal(rec, "partner_company") || "").trim();
       var newPcRaw = String((pcField && pcField.value) || "").trim().slice(0, 255);
       var newPc = newPcRaw;
       try {
@@ -3420,31 +3845,194 @@
         void eNorm;
       }
       var partnerUnlocked = payModal.getAttribute("data-y678-partner-unlocked") === "1";
-      var allowPartnerAggregateEdit = showPartnerNewRegisterButton(rec);
-      var partnerUpdate = !!(pcField && newPc !== origPc && (partnerUnlocked || allowPartnerAggregateEdit));
 
-      var body = {
-        app: APP_INPUT,
-        id: rid,
-        revision: rec.$revision ? rec.$revision.value : null,
-        record: {
-          payment_breakdown: { value: newRows },
-          monthly_breakdown: { value: newMonthly },
-        },
-      };
-      if (supplementChanged) body.record.summary_supplement = { value: newSupplement };
-      if (partnerUpdate) body.record.partner_company = { value: newPc };
+      function composePaymentPutBody(recSnap) {
+        if (!recSnap) return { err: "レコードを再取得できませんでした。画面を再読み込みしてください。" };
+        if (!recSnap.$revision || recSnap.$revision.value == null) {
+          return { err: "リビジョン情報がありません。画面を再読み込みしてください。" };
+        }
+        var existingS = (recSnap.payment_breakdown && recSnap.payment_breakdown.value) || [];
+        var useEditIdx = -1;
+        if (wasEdit) {
+          if (editRowStableId != null) {
+            for (var si = 0; si < existingS.length; si++) {
+              if ((existingS[si] || {}).id === editRowStableId) {
+                useEditIdx = si;
+                break;
+              }
+            }
+            if (useEditIdx < 0) {
+              return {
+                err:
+                  "修正対象の支払行が他の操作で変更されました。モーダルを閉じて一覧を再読み込みしてください。",
+              };
+            }
+          } else {
+            useEditIdx = editIdx;
+            if (useEditIdx < 0 || useEditIdx >= existingS.length) {
+              return { err: "修正対象の支払行が見つかりません。モーダルを閉じてください。" };
+            }
+          }
+        }
+        var newRowsS = [];
+        for (var i2 = 0; i2 < existingS.length; i2++) {
+          var row2 = existingS[i2] || {};
+          var v2 = row2.value || {};
+          var copy2 = {
+            value: {
+              payment_date: { value: ((v2.payment_date || {}).value) || "" },
+              payment_amount: { value: ((v2.payment_amount || {}).value) || "" },
+              budget_bucket: { value: normalizeBudgetBucketForPut678(((v2.budget_bucket || {}).value) || "") },
+              invoice_number: { value: ((v2.invoice_number || {}).value) || "" },
+              payment_memo: { value: ((v2.payment_memo || {}).value) || "" },
+            },
+          };
+          if (row2.id) copy2.id = row2.id;
+          newRowsS.push(copy2);
+        }
+        var newPayVal2 = {
+          value: {
+            payment_date: { value: pdate },
+            payment_amount: { value: pamt },
+            budget_bucket: { value: bucket },
+            invoice_number: { value: invoice },
+            payment_memo: { value: memo },
+          },
+        };
+        if (wasEdit) {
+          newPayVal2.id = (existingS[useEditIdx] || {}).id;
+          newRowsS[useEditIdx] = newPayVal2;
+        } else {
+          newRowsS.push(newPayVal2);
+        }
+        var sumsS = rollupActualByMonth(newRowsS);
+        var newMonthlyS = buildMonthlyTableForPayments(recSnap, sumsS);
+        var origPcS = String(fieldVal(recSnap, "partner_company") || "").trim();
+        var allowPartnerAggregateEditS = showPartnerNewRegisterButton(recSnap);
+        var partnerUpdateS = !!(pcField && newPc !== origPcS && (partnerUnlocked || allowPartnerAggregateEditS));
+        var supplementChangedS = newSupplement !== String(fieldVal(recSnap, "summary_supplement") || "");
+        var bodyS = {
+          app: APP_INPUT,
+          id: rid,
+          revision: recSnap.$revision.value,
+          record: {
+            payment_breakdown: { value: newRowsS },
+            monthly_breakdown: { value: newMonthlyS },
+          },
+        };
+        if (supplementChangedS) bodyS.record.summary_supplement = { value: newSupplement };
+        if (partnerUpdateS) bodyS.record.partner_company = { value: newPc };
+        return { body: bodyS, supplementChangedS: supplementChangedS, partnerUpdateS: partnerUpdateS };
+      }
+
+      function putPaymentBodyForSnap(recSnap) {
+        var c = composePaymentPutBody(recSnap);
+        if (c.err) {
+          return Promise.reject({ message: c.err, __y678User: true });
+        }
+        return whenKintoneApiUrlReady(8000).then(function () {
+          return kintone.api(kintone.api.url("/k/v1/record.json", true), "PUT", c.body);
+        });
+      }
+
+      /** CB_VA01 時に GET→再 PUT を複数回（競合・高負荷時の収束用） */
+      function savePaymentAfterVa01Retry(recSnap, depth) {
+        return putPaymentBodyForSnap(recSnap).catch(function (e) {
+          if (e && e.__y678User) return Promise.reject(e);
+          if (!isRevisionConflictError678(e)) return Promise.reject(e);
+          if (depth + 1 >= MAX_RECORD_PUT_VA01_RETRIES) return Promise.reject(e);
+          st.textContent =
+            "他の更新と競合しました。" +
+            YOJITSU_LABEL_INPUT_APP +
+            " から最新を取得し、再保存します（" +
+            String(depth + 2) +
+            "/" +
+            String(MAX_RECORD_PUT_VA01_RETRIES) +
+            "）…";
+          var waitMs = 35 + depth * 55;
+          return y678DelayMs(waitMs)
+            .then(function () {
+              return fetch677RecordById(rid);
+            })
+            .then(function (fresh) {
+              if (!fresh) return Promise.reject(e);
+              return savePaymentAfterVa01Retry(fresh, depth + 1);
+            });
+        });
+      }
+
       saveBtn.disabled = true;
       st.style.color = "#555";
-      st.textContent =
-        (wasEdit
-          ? YOJITSU_LABEL_INPUT_APP + " の支払行を更新し、月次実績を再集計中…"
-          : YOJITSU_LABEL_INPUT_APP + " に支払を追加し、月次実績を再集計中…") +
-        (supplementChanged ? "（摘要(補足)も更新）" : "") +
-        (partnerUpdate ? "（会社名も更新）" : "");
-      whenKintoneApiUrlReady(8000)
-        .then(function () {
-          return kintone.api(kintone.api.url("/k/v1/record.json", true), "PUT", body);
+      st.textContent = YOJITSU_LABEL_INPUT_APP + " から最新を取得しています…";
+
+      fetch677RecordById(rid)
+        .catch(function () {
+          return null;
+        })
+        .then(function (fr0) {
+          var snap0 = fr0 || findRawRecord(rid);
+          if (!snap0) {
+            st.style.color = "#b00020";
+            st.textContent = "レコードが見つかりません。一覧を再読み込みしてください。";
+            return Promise.reject({ message: "no record", __y678User: true });
+          }
+          bucket = normalizeBudgetBucketForPut678(String(qs("budget_bucket").value || "").trim());
+          var ccPay = fieldVal(snap0, "cost_category");
+          if (!bucket && ccPay === "固定費") {
+            bucket = Y678_BUCKET_RUNNING_VALUE;
+          }
+          if (!bucket && ccPay === "変動費") {
+            bucket = Y678_BUCKET_INITIAL_VALUE;
+          }
+          if (!bucket && ccPay && ccPay !== "固定費" && ccPay !== "変動費") {
+            st.style.color = "#b00020";
+            st.textContent =
+              "費用種別が「" +
+              esc(ccPay) +
+              "」のときは、枠種別（ランニング費用（定額費）／イニシャル費用（変動費））を選択してください。";
+            return Promise.reject({ message: "bucket required", __y678User: true });
+          }
+          var exSnap = (snap0.payment_breakdown && snap0.payment_breakdown.value) || [];
+          var stableEd = payModal.getAttribute("data-y678-pay-edit-row-id");
+          var editIdxStr0 = payModal.getAttribute("data-y678-pay-edit-index");
+          if (stableEd != null && stableEd !== "") {
+            editIdx = -1;
+            for (var ri = 0; ri < exSnap.length; ri++) {
+              if (exSnap[ri] && String(exSnap[ri].id) === String(stableEd)) {
+                editIdx = ri;
+                break;
+              }
+            }
+            wasEdit = editIdx >= 0;
+            editRowStableId =
+              wasEdit && exSnap[editIdx] && exSnap[editIdx].id != null ? exSnap[editIdx].id : null;
+          } else {
+            var eIx0 =
+              editIdxStr0 != null && editIdxStr0 !== "" && !isNaN(parseInt(editIdxStr0, 10))
+                ? parseInt(editIdxStr0, 10)
+                : -1;
+            if (eIx0 < 0 || eIx0 >= exSnap.length) eIx0 = -1;
+            editIdx = eIx0;
+            wasEdit = editIdx >= 0;
+            editRowStableId =
+              wasEdit && exSnap[editIdx] && exSnap[editIdx].id != null ? exSnap[editIdx].id : null;
+          }
+          var cf = composePaymentPutBody(snap0);
+          if (cf.err) {
+            st.style.color = "#b00020";
+            st.textContent = cf.err;
+            return Promise.reject({ message: cf.err, __y678User: true });
+          }
+          var supplementChanged = cf.supplementChangedS;
+          var partnerUpdate = cf.partnerUpdateS;
+          st.style.color = "#555";
+          st.textContent =
+            (wasEdit
+              ? YOJITSU_LABEL_INPUT_APP + " の支払行を更新し、月次実績を再集計中…"
+              : YOJITSU_LABEL_INPUT_APP + " に支払を追加し、月次実績を再集計中…") +
+            (supplementChanged ? "（摘要(補足)も更新）" : "") +
+            (partnerUpdate ? "（会社名も更新）" : "");
+          return savePaymentAfterVa01Retry(snap0, 0);
         })
         .then(function () {
           st.style.color = "#0a6b0a";
@@ -3456,7 +4044,11 @@
         })
         .catch(function (e) {
           st.style.color = "#b00020";
-          st.textContent = formatApiError(e, "実績の保存に失敗しました。");
+          if (e && e.__y678User && e.message) {
+            st.textContent = String(e.message);
+          } else {
+            st.textContent = formatApiError(e, "実績の保存に失敗しました。");
+          }
         })
         .then(
           function () { saveBtn.disabled = false; },
@@ -3465,7 +4057,17 @@
     }
 
     filterRow.addEventListener("click", function (ev) {
-      var fb = ev.target && ev.target.closest && ev.target.closest(".y678-filter");
+      var raw = ev.target;
+      var el = raw && raw.nodeType === 1 ? raw : raw && raw.parentElement;
+      if (!el || typeof el.closest !== "function") return;
+      var pb = el.closest(".y678-filter-pending");
+      if (pb && filterRow.contains(pb)) {
+        y678PendingMonthOnly = !y678PendingMonthOnly;
+        if (lastRawRecords.length) applyFilterAndRedraw();
+        else setFilterButtonsActive();
+        return;
+      }
+      var fb = el.closest(".y678-filter");
       if (!fb) return;
       var fk = fb.getAttribute("data-y678-filter");
       if (!fk) return;
@@ -3493,6 +4095,11 @@
 
   kintone.events.on("app.record.index.show", function () {
     ensure678PagingHideMutationObserver();
+    try {
+      hide678NativeListPagingLabels();
+    } catch (eImmediate) {
+      void eImmediate;
+    }
     scheduleMount678();
     schedule678PagingLabelHide();
   });

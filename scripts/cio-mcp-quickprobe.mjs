@@ -1,106 +1,198 @@
 #!/usr/bin/env node
 /**
- * cio-mcp-quickprobe.mjs — 4 MCP server 並列軽量 probe（A2・2026-05-07 浜田承認）
+ * cio-mcp-quickprobe.mjs — CIO／マルチエージェント向け MCP 軽量 probe（initialize + tools/list）
  *
  * 使い方:
- *   node scripts/cio-mcp-quickprobe.mjs           # 4 サーバ全件
+ *   node scripts/cio-mcp-quickprobe.mjs           # 全ターゲット
  *   node scripts/cio-mcp-quickprobe.mjs kintone   # 単独
  *
- * 各 server を spawn → JSON-RPC で initialize → tools/list を取り、tools 数とサーバ名のみ報告。
- * Promise.all 並列で 60s timeout / cold start 含めて 5 秒程度で完了想定（warm 時）。
+ * **CIO 判断（2026-05-10）**: 3AI・kintone の資格情報は **process.env を正**とするが、
+ * **未設定なら `%USERPROFILE%\.cursor\mcp.json` とリポ `.cursor/mcp.json` の server.env をマージ**（値は **ログに出さない**）。
+ * マージ後も不足なら **SKIP せず exit 2**（自律マルチエージェント運用として未整備とみなす）。
  *
- * 終了コード: 0=全て OK / 1=1 件以上 NG
+ * 終了コード: 0=全て OK / 1=initialize 等の失敗 / 2=必須 env 欠落
+ *
+ * **WSL + `/mnt/...`（drvfs）**: `npx` が **リポの cwd（drvfs）** だと極端に遅い。**`cwd=$HOME`（ext4）** ＋ **`NPM_CONFIG_CACHE=$HOME/.npm`** で I/O を Linux 側へ寄せる（DeepSeek §50-3-8 突合）。
+ * - 既定: drvfs 検出時 **全ターゲット +60s**（合計 120s）に加え、**kimi のみ WSL+drvfs で最低 480s**（並列 npx 競合・API 遅延の余裕。`CIO_MCP_PROBE_KIMI_TIMEOUT_MS` で上書き）
+ * - drvfs 時は **Promise.all ではなく直列 probe**（帯域・npm レジストリの同時叩きを避ける）
+ * - 上書き: **`CIO_MCP_PROBE_TIMEOUT_MS`**、**`CIO_MCP_PROBE_KIMI_TIMEOUT_MS`**
+ * - 再試行: **`CIO_MCP_PROBE_RETRY_ON_TIMEOUT=1`**（既定）で TIMEOUT 時 **1 回だけ**再 probe。`0` で無効
  */
 import { spawn } from "node:child_process";
-import { readFileSync, existsSync, readdirSync } from "node:fs";
-import { homedir } from "node:os";
-import { join } from "node:path";
+import fs from "node:fs";
+import path from "node:path";
 import process from "node:process";
+import { fileURLToPath } from "node:url";
 
-// 資格情報・API キーは process.env からのみ取得（ハードコード禁止・GitHub Push Protection 準拠）。
-// 旧経路: `npx dotenv -e .env -e .env.proxy -- node scripts/cio-mcp-quickprobe.mjs`。
-// 2026-05-10 追加 (CEO 厳命「自律稼働」/ §41-7 健康診断構造化):
-//   process.env が未設定の場合は ~/.cursor/mcp.json の mcpServers[name].env を fallback で注入。
-//   これにより新規 wsl invocation でも env 引継ぎ無く OK 4/4 を取得可能（永続化対応）。
-function* candidateMcpJsonPaths() {
-  yield join(homedir(), ".cursor", "mcp.json");
-  if (process.env.CURSOR_MCP_JSON) yield process.env.CURSOR_MCP_JSON;
-  if (existsSync("/mnt/c/Users")) {
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+
+/** dotenv のあと、未設定キーを mcp.json の server.env で埋める（**先: ユーザ → 次: リポ**。平文は stdout に出さない） */
+function applyCioEnvFromMcpJson() {
+  const setIf = (envKey, val) => {
+    if (val != null && String(val) !== "" && !process.env[envKey]) process.env[envKey] = String(val);
+  };
+  const files = [
+    path.join(process.env.USERPROFILE || process.env.HOME || "", ".cursor", "mcp.json"),
+    path.join(root, ".cursor", "mcp.json"),
+  ];
+  for (const f of files) {
+    if (!f || !fs.existsSync(f)) continue;
     try {
-      for (const u of readdirSync("/mnt/c/Users")) {
-        if (["Public", "Default", "Default User", "All Users", "WDAGUtilityAccount"].includes(u)) continue;
-        const p = join("/mnt/c/Users", u, ".cursor", "mcp.json");
-        if (existsSync(p)) yield p;
+      const j = JSON.parse(fs.readFileSync(f, "utf8"));
+      const s = j.mcpServers || {};
+      const ke = s.kintone?.env;
+      if (ke) {
+        setIf("KINTONE_BASE_URL", ke.KINTONE_BASE_URL);
+        setIf("KINTONE_USERNAME", ke.KINTONE_USERNAME);
+        setIf("KINTONE_PASSWORD", ke.KINTONE_PASSWORD);
       }
-    } catch {}
-  }
-}
-function loadCursorMcpServers() {
-  // 複数の mcp.json から merge（最初に見つけたものを優先・後発は補完のみ）
-  const merged = {};
-  const sources = [];
-  for (const p of candidateMcpJsonPaths()) {
-    try {
-      const data = JSON.parse(readFileSync(p, "utf8"));
-      if (data?.mcpServers) {
-        sources.push(p);
-        for (const [n, spec] of Object.entries(data.mcpServers)) {
-          if (!merged[n]) merged[n] = spec;
-        }
+      const kse = s["kintone-space"]?.env;
+      if (kse) {
+        setIf("KINTONE_BASE_URL", kse.KINTONE_BASE_URL);
+        setIf("KINTONE_USERNAME", kse.KINTONE_USERNAME);
+        setIf("KINTONE_PASSWORD", kse.KINTONE_PASSWORD);
       }
-    } catch {}
-  }
-  return { servers: merged, sources };
-}
-const { servers: CURSOR_MCP, sources: CURSOR_MCP_SRC } = loadCursorMcpServers();
-
-// WSL から起動できない server は除外（Windows 経由 wrapper 等）
-function isWslLaunchable(spec) {
-  const c = spec?.command || "";
-  if (/^[A-Za-z]:[\\\/]/i.test(c)) return false;
-  if (/^\/mnt\/c\/Windows\//i.test(c)) return false;
-  if (spec?._meta?.dormancy_exempt === true && /Windows-side/i.test(spec?._meta?.exempt_reason || "")) return false;
-  return true;
-}
-
-const PROBE_LIST = ["kintone", "deepseek", "kimi", "openrouter"];
-// 優先順位: mcp.json env > process.env （mcp.json は意図的設定なので構造値 PATH を上書きしない）
-// ただし mcp.json env が空("")のキーは process.env で補完する
-// 注: 過去事故 — PATH を process.env で上書きすると /usr/bin/node@v18 が先取され kimi が SyntaxError(node:fs/promises.glob)
-const SECRET_OVERRIDE = /^(KINTONE_|DEEPSEEK_|MOONSHOT_|OPENROUTER_|API_)/;
-function buildSpec(name) {
-  const m = CURSOR_MCP[name];
-  if (!m || !isWslLaunchable(m)) return null;
-  const env = { ...(m.env || {}) };
-  for (const k of Object.keys(env)) {
-    // 秘匿キーだけ process.env に優先権を与える（運用で .env 等から差し替え可能にする）
-    if (SECRET_OVERRIDE.test(k) && process.env[k]) {
-      env[k] = process.env[k];
-    } else if (!env[k] && process.env[k]) {
-      env[k] = process.env[k];
+      setIf("MOONSHOT_API_KEY", s.kimi?.env?.MOONSHOT_API_KEY);
+      setIf("DEEPSEEK_API_KEY", s.deepseek?.env?.DEEPSEEK_API_KEY);
+      setIf("OPENROUTER_API_KEY", s.openrouter?.env?.OPENROUTER_API_KEY);
+    } catch {
+      /* ignore */
     }
   }
-  return { cmd: m.command, args: Array.isArray(m.args) ? m.args : [], env };
-}
-const TARGETS = {};
-for (const n of PROBE_LIST) {
-  const s = buildSpec(n);
-  if (s) TARGETS[n] = s;
-}
-if (CURSOR_MCP_SRC.length > 0) {
-  console.error(`[cio-mcp-quickprobe] mcp.json sources: ${CURSOR_MCP_SRC.join(", ")}`);
 }
 
-function probe(name, spec, timeoutMs = 90000) {
+applyCioEnvFromMcpJson();
+
+/** `/mnt/c/...` 等 drvfs 上のリポで、WSL 上の Node から実行されているか */
+function isWslDrvfsRepo(repoRoot) {
+  if (process.platform !== "linux") return false;
+  const norm = path.resolve(repoRoot);
+  if (!norm.startsWith("/mnt/")) return false;
+  try {
+    const v = fs.readFileSync("/proc/version", "utf8");
+    return /Microsoft|WSL/i.test(v);
+  } catch {
+    return false;
+  }
+}
+
+/** 1 サーバーあたりの probe タイムアウト（ms） */
+function getProbeTimeoutMs() {
+  const raw = process.env.CIO_MCP_PROBE_TIMEOUT_MS;
+  if (raw != null && String(raw).trim() !== "") {
+    const n = Number(raw);
+    if (Number.isFinite(n) && n >= 5000) return Math.floor(n);
+  }
+  let ms = 60000;
+  if (isWslDrvfsRepo(root)) ms += 60000;
+  return ms;
+}
+
+function retryOnTimeoutEnabled() {
+  const v = process.env.CIO_MCP_PROBE_RETRY_ON_TIMEOUT;
+  if (v == null || String(v).trim() === "") return true;
+  return !/^(0|false|no)$/i.test(String(v).trim());
+}
+
+/** drvfs 上のリポから実行するとき、子プロセスの cwd / npm キャッシュを ext4 へ */
+function wslDrvfsSpawnTuning() {
+  if (!isWslDrvfsRepo(root)) return {};
+  const home = process.env.HOME;
+  if (home && fs.existsSync(home)) {
+    return {
+      cwd: home,
+      extraEnv: { NPM_CONFIG_CACHE: path.join(home, ".npm") },
+    };
+  }
+  return {
+    cwd: "/tmp",
+    extraEnv: { NPM_CONFIG_CACHE: "/tmp/.npm-cio-mcp-probe" },
+  };
+}
+
+/** ターゲット別（WSL+drvfs の kimi だけ長め） */
+function timeoutMsForTarget(name, baseMs) {
+  if (name !== "kimi") return baseMs;
+  const kRaw = process.env.CIO_MCP_PROBE_KIMI_TIMEOUT_MS;
+  if (kRaw != null && String(kRaw).trim() !== "") {
+    const kn = Number(kRaw);
+    if (Number.isFinite(kn) && kn >= 5000) return Math.floor(kn);
+  }
+  if (isWslDrvfsRepo(root)) return Math.max(baseMs, 480000);
+  return baseMs;
+}
+
+/** kimi 向け DNS（WSL 経路の IPv6 不調時の切り分け） */
+function extraEnvForTarget(name) {
+  if (name === "kimi" && isWslDrvfsRepo(root)) {
+    const prev = process.env.NODE_OPTIONS || "";
+    const add = "--dns-result-order=ipv4first";
+    return {
+      NODE_OPTIONS: prev.includes("dns-result-order") ? prev : `${prev} ${add}`.trim(),
+    };
+  }
+  return {};
+}
+
+const TARGETS = {
+  kintone: {
+    cmd: "npx",
+    args: ["-y", "@kintone/mcp-server@latest"],
+    env: {
+      KINTONE_BASE_URL: process.env.KINTONE_BASE_URL,
+      KINTONE_USERNAME: process.env.KINTONE_USERNAME,
+      KINTONE_PASSWORD: process.env.KINTONE_PASSWORD,
+    },
+  },
+  deepseek: {
+    cmd: "npx",
+    args: ["-y", "mcp-deepseek@latest"],
+    env: { DEEPSEEK_API_KEY: process.env.DEEPSEEK_API_KEY },
+  },
+  kimi: {
+    cmd: "npx",
+    args: ["-y", "kimi-api-mcp@latest"],
+    env: { MOONSHOT_API_KEY: process.env.MOONSHOT_API_KEY },
+  },
+  openrouter: {
+    cmd: "npx",
+    args: ["-y", "@mcpservers/openrouterai@latest"],
+    env: { OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY },
+  },
+  memory: {
+    cmd: "npx",
+    args: ["-y", "@modelcontextprotocol/server-memory"],
+    env: {},
+  },
+  "sequential-thinking": {
+    cmd: "npx",
+    args: ["-y", "@modelcontextprotocol/server-sequential-thinking"],
+    env: {},
+  },
+};
+
+function probeOnce(name, spec, timeoutMs) {
   const t0 = Date.now();
-  // 認証必要キー（PATH 等のシステム値ではなく秘匿情報）が空なら SKIP として扱う
-  const SECRET_KEYS = /^(KINTONE_|DEEPSEEK_|MOONSHOT_|OPENROUTER_|API_)/;
-  const missing = Object.entries(spec.env).filter(([k, v]) => SECRET_KEYS.test(k) && !v).map(([k]) => k);
+  const missing = Object.entries(spec.env).filter(([, v]) => !v).map(([k]) => k);
   if (missing.length > 0) {
-    return Promise.resolve({ name, status: "SKIP_NO_KEY", detail: `missing env: ${missing.join(",")}`, elapsed: 0 });
+    return Promise.resolve({
+      name,
+      status: "NG",
+      detail: `missing env after mcp.json merge: ${missing.join(",")}`,
+      elapsed: 0,
+    });
   }
   return new Promise((resolve) => {
-    const proc = spawn(spec.cmd, spec.args, { env: { ...process.env, ...spec.env }, stdio: ["pipe", "pipe", "pipe"] });
+    const tune = wslDrvfsSpawnTuning();
+    const spawnOpts = {
+      env: { ...process.env, ...spec.env, ...tune.extraEnv, ...extraEnvForTarget(name) },
+      stdio: ["pipe", "pipe", "pipe"],
+      // Windows: `npx` は多くの環境で `.cmd` ラッパーのため **shell 必須**（`shell:false` は ENOENT）。
+      // Node DEP0190 警告は出るが、引数は固定配列のため実運用リスクは低い。
+      shell: process.platform === "win32",
+    };
+    if (tune.cwd) spawnOpts.cwd = tune.cwd;
+    const proc = spawn(spec.cmd, spec.args, spawnOpts);
     let buf = "";
     const pending = new Map();
     let nextId = 1;
@@ -118,15 +210,9 @@ function probe(name, spec, timeoutMs = 90000) {
       }, 500);
       resolve({ name, status, detail, elapsed: Date.now() - t0 });
     };
-    const to = setTimeout(() => {
-      const hint = stderrTail ? ` | stderr_tail=${stderrTail.replace(/\s+/g, " ").slice(0, 240)}` : "";
-      finish("TIMEOUT", `over ${timeoutMs}ms${hint}`);
-    }, timeoutMs);
+    const to = setTimeout(() => finish("TIMEOUT", `over ${timeoutMs}ms`), timeoutMs);
     proc.on("error", (e) => finish("PROC_ERROR", e.message));
-    let stderrTail = "";
-    proc.stderr.on("data", (b) => {
-      stderrTail = (stderrTail + b.toString()).slice(-512);
-    });
+    proc.stderr.on("data", () => {});
     proc.stdout.on("data", (b) => {
       buf += b.toString();
       let nl;
@@ -158,39 +244,46 @@ function probe(name, spec, timeoutMs = 90000) {
     }
     (async () => {
       try {
-        // initialize は global timeout の半分を上限に確保、tools/list は best-effort（30s 上限）
-        const initRace = await Promise.race([
-          send("initialize", {
-            protocolVersion: "2024-11-05",
-            capabilities: {},
-            clientInfo: { name: "cio-quickprobe", version: "1.0.0" },
-          }),
-          new Promise((_, rej) => setTimeout(() => rej(new Error("initialize timeout")), Math.min(timeoutMs - 5000, 75000))),
-        ]);
-        if (!initRace.result) {
-          finish("INIT_FAIL", JSON.stringify(initRace).slice(0, 200));
+        const init = await send("initialize", {
+          protocolVersion: "2024-11-05",
+          capabilities: {},
+          clientInfo: { name: "cio-quickprobe", version: "1.0.0" },
+        });
+        if (!init.result) {
+          finish("INIT_FAIL", JSON.stringify(init).slice(0, 200));
           return;
         }
         notify("notifications/initialized");
-        let count = -1;
-        try {
-          const tl = await Promise.race([
-            send("tools/list", {}),
-            new Promise((_, rej) => setTimeout(() => rej(new Error("tools/list timeout")), 30000)),
-          ]);
-          count = tl.result?.tools?.length ?? -1;
-        } catch {
-          // tools/list 失敗でも initialize 成功なら OK 認定（serverInfo 取得済）
-        }
+        const tl = await send("tools/list", {});
+        const count = tl.result?.tools?.length ?? -1;
         clearTimeout(to);
-        const tag = count >= 0 ? `tools=${count}` : `init=ok(tools/list skipped)`;
-        finish("OK", `${tag} server=${initRace.result?.serverInfo?.name || "?"}`);
+        finish("OK", `tools=${count} server=${init.result?.serverInfo?.name || "?"}`);
       } catch (e) {
-        const detail = `${e.message}${stderrTail ? ` | stderr_tail=${stderrTail.replace(/\s+/g, " ").slice(0, 240)}` : ""}`;
-        finish("ERR", detail);
+        finish("ERR", e.message);
       }
     })();
   });
+}
+
+async function probe(name, spec, timeoutMs) {
+  let r = await probeOnce(name, spec, timeoutMs);
+  if (r.status === "TIMEOUT" && retryOnTimeoutEnabled()) {
+    console.error(
+      `[cio-mcp-quickprobe] WARN target=${name} TIMEOUT first=${r.elapsed}ms → single retry (timeoutMs=${timeoutMs})`,
+    );
+    const r2 = await probeOnce(name, spec, timeoutMs);
+    if (r2.status === "OK") {
+      return {
+        ...r2,
+        detail: `${r2.detail || ""} (retry-after-timeout; first=${r.elapsed}ms)`,
+      };
+    }
+    return {
+      ...r2,
+      detail: `${r2.detail || ""} (retry-after-timeout-failed; first=${r.elapsed}ms)`,
+    };
+  }
+  return r;
 }
 
 const filter = process.argv[2];
@@ -199,14 +292,29 @@ if (entries.length === 0) {
   console.error("unknown target: " + filter + "  (available: " + Object.keys(TARGETS).join(", ") + ")");
   process.exit(2);
 }
-const TIMEOUT_MS = parseInt(process.env.CIO_MCP_PROBE_TIMEOUT_MS || "90000", 10);
-const results = await Promise.all(entries.map(([n, s]) => probe(n, s, TIMEOUT_MS)));
+
+const timeoutMs = getProbeTimeoutMs();
+if (isWslDrvfsRepo(root) && !process.env.CIO_MCP_PROBE_TIMEOUT_MS) {
+  const t = wslDrvfsSpawnTuning();
+  console.error(
+    `[cio-mcp-quickprobe] WSL+drvfs detected → cwd=${t.cwd || "(default)"} NPM_CONFIG_CACHE=${t.extraEnv?.NPM_CONFIG_CACHE || ""} baseTimeoutMs=${timeoutMs} kimiFloorMs=480000 serialProbes=true`,
+  );
+}
+const results = isWslDrvfsRepo(root)
+  ? await (async () => {
+      const acc = [];
+      for (const [n, s] of entries) {
+        acc.push(await probe(n, s, timeoutMsForTarget(n, timeoutMs)));
+      }
+      return acc;
+    })()
+  : await Promise.all(entries.map(([n, s]) => probe(n, s, timeoutMsForTarget(n, timeoutMs))));
 console.log("name        status       elapsed_ms  detail");
 for (const r of results) {
   console.log(`${r.name.padEnd(11)} ${r.status.padEnd(12)} ${String(r.elapsed).padStart(8)}  ${r.detail || ""}`);
 }
 const ok = results.filter((r) => r.status === "OK").length;
-const skip = results.filter((r) => r.status === "SKIP_NO_KEY").length;
-const ng = results.length - ok - skip;
-console.log(`SUMMARY: OK ${ok}/${results.length}  SKIP=${skip}  NG=${ng}`);
-process.exit(ng === 0 ? 0 : 1);
+const ng = results.filter((r) => r.status !== "OK").length;
+console.log(`SUMMARY: OK ${ok}/${results.length}  NG=${ng}`);
+const exitMissing = results.some((r) => r.status === "NG" && r.detail?.includes("missing env"));
+process.exit(ng === 0 ? 0 : exitMissing ? 2 : 1);

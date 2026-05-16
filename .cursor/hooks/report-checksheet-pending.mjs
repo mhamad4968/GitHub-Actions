@@ -1,10 +1,16 @@
 #!/usr/bin/env node
 /**
- * beforeSubmitPrompt — 「報告」系ユーザ発話のとき:
- *  1) 報告前自動判定（session-clock / report-pipeline）
- *  2) afterAgentResponse 用 pending を立てる
- * NG 時は `additional_context` でチェックシート通読 **または** Desktop AI緊急用 全件 Read を指示（推奨: 両方）。
+ * beforeSubmitPrompt — ユーザ送信ごとに afterAgentResponse 用 pending を立てる（既定）。
+ * - **報告意図** (`isReportIntentPrompt`): `mode: full` — 報告前自動判定（session-clock / report-pipeline）＋ V2 厳格（validate 側）。
+ * - **その他の全ターン**: `mode: head-only` — **§1 先頭4行**に加え **`CEO-MINIMUM-ABSOLUTE-BASELINE.txt` 全文（非空行すべて）**を機械検証（V2・§P は不要）。CEO 最低基準は **全応答の条件**。
+ *
+ * 緊急で従来（報告意図ターンのみ pending）へ戻す: 環境変数 **`HOOKS_STRICT_HEAD_EVERY_TURN=0`**
+ *
  * ユーザ送信はブロックしない（continue: true 固定）。
+ *
+ * **手元テスト（stdin）**: PowerShell の `echo '{...}' | node 本スクリプト` だけだと stdin が空扱いになり
+ * `additional_context` が付かないことがある。**Cursor 本番 hooks は stdin 正常想定**。
+ * 確実に試す: `npm run hook:smoke:report-pending` または Node の `spawnSync(..., { input: JSON.stringify({prompt})+'\\n' })`。
  *
  * @see every-turn-rules-confirm.mdc §1e
  */
@@ -18,6 +24,12 @@ import {
   readCurrent,
   setOutcome,
 } from './report-pipeline-audit.mjs';
+import {
+  buildNgGateActivePendingPrefix,
+  buildNgRecoverySuffix,
+  setNgGate,
+} from './ng-recovery-gate.mjs';
+import { verifyCioDesktopPaths } from './cio-desktop-path-guard.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const stateDir = path.join(root, '.cursor/hooks/state');
@@ -58,6 +70,11 @@ function runReportPrecheck() {
     violations.push('§51-6-2（session-clock: 4 時間超または時計異常）');
   }
 
+  const desk = verifyCioDesktopPaths();
+  if (!desk.ok) {
+    violations.push(`CIO Desktop 正本: ${desk.missing.join(' | ')}`);
+  }
+
   const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
   const pipe = spawnSync(npmCmd, ['run', 'report:pipeline-status'], {
     cwd: root,
@@ -75,6 +92,19 @@ function runReportPrecheck() {
     violations.push(`report-pipeline: report:pipeline-status が異常終了 (exit ${st})`);
   }
 
+  const ceo = spawnSync(process.execPath, ['scripts/verify-ceo-minimum-baseline.mjs'], {
+    cwd: root,
+    encoding: 'utf8',
+    stdio: ['pipe', 'pipe', 'pipe'],
+    timeout: 12_000,
+    env: { ...process.env },
+  });
+  if (ceo.status !== 0 && ceo.status !== null) {
+    violations.push(
+      'CEO 最低基準ブロック（`chat-sessions/CEO-MINIMUM-ABSOLUTE-BASELINE.txt` と Desktop `＃重要確認事項.txt` の一致）不整合 — `npm run verify:ceo-minimum-baseline`'
+    );
+  }
+
   const ok = violations.length === 0;
   logPrecheck(ok ? `OK violations=0` : `NG ${violations.join(' | ')}`);
   return { ok, violations, skipped: false };
@@ -83,18 +113,24 @@ function runReportPrecheck() {
 function buildPrecheckAdditionalContext(violations) {
   const checklist = '`docs/session-report-checklist.md`（§P を含む正本。**Read ツールで通読**し、抜けと自己矛盾を潰す）';
   const desktop = `\`${DESKTOP_AI_EMERGENCY_WIN.replace(/\\/g, '/')}\`（**配下の全ファイル**を **名前昇順**で Read。**.txt** / **.md** を含む。フォルダが無いときはチャットに **「AI緊急用フォルダ不在」** とパスを 1 行）`;
+  const pack = '`chat-sessions/constitution-first-read-pack/00-ORDER.txt` に従い **細分化パックを順に** Read';
   return (
-    '【報告前自動判定】**NG** — ' +
+    '【報告前自動判定】**NG（不合格＝失敗）** — ' +
     violations.join('／') +
     '\n\n' +
-    '**CEO 指示**: 次の **(A) チェックシート通読** または **(B) Desktop AI緊急用フォルダ全件 Read** の **どちらか一方以上を完遂**し、問題が解消したら **再度**「報告」意図のメッセージから送ること。**推奨: (A) と (B) の両方**。\n' +
+    '**CEO 指示（省略禁止・「どちらか一方」不可）**: 次を **すべて** 実施するまで **報告を続けない**（同一メッセージの追記で逃げない）。完了後に **新規**「報告」意図メッセージからやり直す。\n' +
     '- (A) ' +
     checklist +
-    '\n' +
+    ' — **必須**\n' +
     '- (B) ' +
     desktop +
+    ' — **必須**\n' +
+    '- (C) ' +
+    pack +
+    ' — **必須**\n' +
+    buildNgRecoverySuffix() +
     '\n\n' +
-    '完了したら `[ルール確認]` 行に **どちらを Read したか**（ファイルパス列挙）を必ず残す。'
+    '完了したら `[ルール確認]` 行に **(A)(B)(C) それぞれ**で Read したパスを列挙する。'
   );
 }
 
@@ -104,6 +140,8 @@ function isReportIntentPrompt(prompt) {
   if (/CHECKSHEET|チェックシート|完了報告|日終わり|セッション終了|本日のまとめ|本日の成果|本日の報告/i.test(p)) return true;
   /** 運用で頻出する「報告」文脈（pending 未発火＝検証スキップの再発防止） */
   if (/報告未了|報告なし|報告ルール|セッション報告(?!チェックシート)/i.test(p)) return true;
+  /** CEO 最低基準・Desktop 正本への言及は報告厳格モード（V2 強制・自動判定対象） */
+  if (/最低基準|絶対条件|重要確認事項|＃重要確認|CEO.?最低|例外は[み見]とめない/i.test(p)) return true;
   /** 「報告違反」単体では「報告を」にマッチしないため明示（§1e hooks 未発火の再発防止） */
   if (/報告違反|§\s*1e|セッション報告チェックシート.*(欠|無)/i.test(p)) return true;
   if (/(§\s*1e|チェックシート).{0,40}(欠落|違反|ない|不足|出して|入れて)/i.test(p)) return true;
@@ -112,6 +150,36 @@ function isReportIntentPrompt(prompt) {
   if (/中間報告|締めくくり|成果.*反省|状況.*まとめ/i.test(p)) return true;
   if (/まとめ/.test(p) && /(セッション|本日|今日)/.test(p)) return true;
   return false;
+}
+
+function writePendingFile(prompt, mode) {
+  const prev = readCurrent();
+  if (prev && prev.correlationId && prev.outcome === 'in_progress') {
+    setOutcome(prev.correlationId, 'SUPERSEDED', {
+      reason: mode === 'full' ? 'new_user_report_intent_pending' : 'new_user_turn_pending_head_only',
+    });
+  }
+  const correlationId = newCorrelationId();
+  const ts = Date.now();
+  fs.mkdirSync(stateDir, { recursive: true });
+  fs.writeFileSync(
+    pendingPath,
+    JSON.stringify(
+      {
+        ts,
+        correlationId,
+        mode,
+        promptPreview: String(prompt).slice(0, 400),
+      },
+      null,
+      2
+    ),
+    'utf8'
+  );
+  pipelineStep(correlationId, 'PENDING_SET', {
+    promptPreview: String(prompt).slice(0, 200),
+    mode,
+  });
 }
 
 function main() {
@@ -125,8 +193,24 @@ function main() {
 
   const prompt = input.prompt ?? '';
   const out = { continue: true };
+  const gatePrefix = buildNgGateActivePendingPrefix();
 
-  if (!isReportIntentPrompt(prompt)) {
+  const strictEveryTurn = process.env.HOOKS_STRICT_HEAD_EVERY_TURN !== '0';
+  const report = isReportIntentPrompt(prompt);
+
+  if (!report && !strictEveryTurn) {
+    if (gatePrefix) out.additional_context = gatePrefix;
+    process.stdout.write(`${JSON.stringify(out)}\n`);
+    return;
+  }
+
+  if (!report && strictEveryTurn) {
+    try {
+      writePendingFile(prompt, 'head-only');
+    } catch {
+      /* noop */
+    }
+    if (gatePrefix) out.additional_context = gatePrefix;
     process.stdout.write(`${JSON.stringify(out)}\n`);
     return;
   }
@@ -147,38 +231,18 @@ function main() {
     /* noop */
   }
   if (!pre.ok) {
-    out.additional_context = buildPrecheckAdditionalContext(pre.violations);
+    setNgGate('PRECHECK_NG', { violations: pre.violations });
+    out.additional_context = (gatePrefix || '') + buildPrecheckAdditionalContext(pre.violations);
   } else if (!pre.skipped) {
     out.additional_context =
+      (gatePrefix || '') +
       '【報告前自動判定】**OK** — `session-clock.mjs check` および `npm run report:pipeline-status` は通過。続けて §1e（§P・§M-2）に従って報告を出力してください。';
+  } else if (gatePrefix) {
+    out.additional_context = gatePrefix;
   }
 
   try {
-    const prev = readCurrent();
-    if (prev && prev.correlationId && prev.outcome === 'in_progress') {
-      setOutcome(prev.correlationId, 'SUPERSEDED', {
-        reason: 'new_user_report_intent_pending',
-      });
-    }
-    const correlationId = newCorrelationId();
-    const ts = Date.now();
-    fs.mkdirSync(stateDir, { recursive: true });
-    fs.writeFileSync(
-      pendingPath,
-      JSON.stringify(
-        {
-          ts,
-          correlationId,
-          promptPreview: String(prompt).slice(0, 400),
-        },
-        null,
-        2
-      ),
-      'utf8'
-    );
-    pipelineStep(correlationId, 'PENDING_SET', {
-      promptPreview: String(prompt).slice(0, 200),
-    });
+    writePendingFile(prompt, 'full');
   } catch {
     /* noop */
   }

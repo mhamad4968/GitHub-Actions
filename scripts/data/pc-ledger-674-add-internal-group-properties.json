@@ -1,5 +1,5 @@
 {
-  "_comment": "674 に追加するフィールドグループのみ（Tier B / add-form-fields）。続けて `npm run pc-ledger:674:layout-internal-group` で子 5 件をレイアウト上グループ内へ移動し preview deploy。",
+  "_comment": "674 に追加するフィールドグループのみ（Tier B / add-form-fields）。続けて `npm run pc-ledger:674:layout-internal-group` で子 3 件（pc_serial_no / import_source / created_at_jst）をレイアウト上グループ内へ移動し preview deploy。",
   "properties": {
     "internal_system_meta": {
       "type": "GROUP",

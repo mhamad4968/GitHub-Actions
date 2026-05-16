@@ -1,0 +1,12 @@
+{
+  "_comment": "674 npl_transfer_manual: フィールドラベル・選択肢を「転用」に統一（オプション key === label 必須）",
+  "fieldPatch": {
+    "label": "転用",
+    "options": {
+      "転用": {
+        "label": "転用",
+        "index": "0"
+      }
+    }
+  }
+}

@@ -1,6 +1,7 @@
 ---
 description: §35-7 規律先行＋各 customize deploy 前スタンプ（条件付きではなく機械＋常時想起）
-alwaysApply: true
+alwaysApply: false
+globs: "**/*"
 ---
 
 # CIO 規律（`kintone-ai-lab` 全チャット）
@@ -31,7 +32,7 @@ alwaysApply: true
 
 **緊急のみ**: `SKIP_CIO_DEPLOY_GUARD=1 npm run deploy:<app>`（浜田 GO とチャットに理由 1 行必須）。
 
-**違反＝失敗・2 者チェック（本体＋ DeepSeek/Kimi）の定義全文**: `.cursor/rules/constitution-enforcement-core.mdc`（**`alwaysApply: true`** と同一ファイル）。
+**違反＝失敗・2 者チェック（本体＋ DeepSeek/Kimi）の定義全文**: `.cursor/rules/constitution-enforcement-core.mdc`（**`alwaysApply: false` + `globs`**・薄型想起）。
 
 ## kintone レコード DELETE・破壊級 REST
 

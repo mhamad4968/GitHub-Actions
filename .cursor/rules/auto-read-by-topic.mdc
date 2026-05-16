@@ -1,6 +1,7 @@
 ---
 description: 確認ログ+マルチAI・CIOレポート毎ターン+§41一問+Read義務+役割分担（alwaysApply）
-alwaysApply: true
+alwaysApply: false
+globs: "**/*"
 ---
 
 # 自動読取プロトコル（ツール Read 必須）

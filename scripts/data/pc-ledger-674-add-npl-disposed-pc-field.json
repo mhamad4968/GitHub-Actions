@@ -1,0 +1,10 @@
+{
+  "properties": {
+    "npl_disposed_pc_copy": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "npl_disposed_pc_copy",
+      "label": "転用で廃棄したPC",
+      "required": false
+    }
+  }
+}

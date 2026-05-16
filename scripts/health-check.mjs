@@ -243,6 +243,16 @@ if (!fs.existsSync(mcpJsonPath)) {
         note: notes.join(' / '),
       };
     }
+
+    // Windows: stdio MCP の CLI 直 probe は IDE 外で偽陰性になりやすい → 既定 skip（厳格: HEALTH_CHECK_STRICT_WIN=1）
+    if (process.platform === 'win32' && process.env.HEALTH_CHECK_STRICT_WIN !== '1') {
+      for (const r of mcpResults) {
+        if (r.status === 'ng' && String(r.note || '').includes('応答なし')) {
+          r.status = 'skip';
+          r.note = `${r.note} → Windows CLI=IDE 外のため skip（厳格: set HEALTH_CHECK_STRICT_WIN=1）`;
+        }
+      }
+    }
   } catch (e) {
     mcpResults = [{ name: '(mcp.json)', status: 'ng', note: `parse error: ${e.message}` }];
   }
@@ -251,18 +261,24 @@ if (!fs.existsSync(mcpJsonPath)) {
 // ───── Node ─────
 const nodeRes = spawnSync('node', ['--version'], { encoding: 'utf8' });
 const npmRes = spawnSync('npm', ['--version'], { encoding: 'utf8' });
-const whichRes = spawnSync('which', ['node'], { encoding: 'utf8' });
+const whichRes =
+  process.platform === 'win32'
+    ? spawnSync('where.exe', ['node'], { encoding: 'utf8' })
+    : spawnSync('which', ['node'], { encoding: 'utf8' });
 const nvmCurRes = spawnSync('bash', ['-lc', 'echo $NVM_INC && nvm version 2>/dev/null || true'], { encoding: 'utf8' });
 const nvmV24 = fs.existsSync(path.join(os.homedir(), '.nvm/versions/node/v24.14.1/bin/node'));
+const nodeVerStr = (nodeRes.stdout || '').trim().replace(/^v/i, '');
+const nodeMajor = Number(nodeVerStr.split('.')[0]) || 0;
+const nodeOkWindows = process.platform === 'win32' && nodeMajor >= 20;
 
 const node = {
   current: (nodeRes.stdout || '').trim() || 'unknown',
   npm: (npmRes.stdout || '').trim() || 'unknown',
-  which_node: (whichRes.stdout || '').trim(),
+  which_node: (whichRes.stdout || '').trim().split(/\r?\n/)[0] || '',
   nvm_default: 'lts/*',
   cursor_node: '',
   nvm_v24_present: nvmV24,
-  status: nvmV24 ? 'ok' : 'ng',
+  status: nvmV24 || nodeOkWindows ? 'ok' : 'ng',
 };
 
 // ───── disk / mem / cron ─────

@@ -13,6 +13,8 @@ import { spawn, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { buildSessionStartConstitutionReadBlock } from './ng-recovery-gate.mjs';
+import { buildCioDesktopPathGuardBlock } from './cio-desktop-path-guard.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const logDir = path.join(root, 'logs');
@@ -115,12 +117,26 @@ function main() {
     ? ` 【MCP貼付1行・sessionStart】\`${mcpStamp}\`（外部正ターンの [ルール確認] にそのまま追記可。実際に MCP を呼べたら本行はそのターンで置換。手動再発行: \`npm run mcp:chat-stamp\`）`
     : '';
 
+  const capPath = path.join(root, 'chat-sessions', 'cloud-agent-last-intent.json');
+  let cloudHandoffHint = '';
+  try {
+    if (fs.existsSync(capPath)) {
+      cloudHandoffHint =
+        ' 【Cloud handoff】`chat-sessions/cloud-agent-last-intent.json` あり — 先頭ターンで Read し、`closeStatus` 未設定なら続行または `npm run cio:cloud-handoff -- status`。';
+    }
+  } catch {
+    /* noop */
+  }
+
   const additional_context =
     '【自動・Cursor sessionStart hook】' +
     '`npm run session:clock:set` を実行済み（`chat-sessions/SESSION-CLOCK.md` の `開始:` を JST で更新）。' +
     watchMsg +
     ' 浜田が手で 1・2 を打つ必要は原則ありません（hook 無効時のみ手動）。' +
-    mcpBlock;
+    mcpBlock +
+    cloudHandoffHint +
+    buildCioDesktopPathGuardBlock() +
+    buildSessionStartConstitutionReadBlock();
 
   process.stdout.write(`${JSON.stringify({ additional_context })}\n`);
   process.exit(0);

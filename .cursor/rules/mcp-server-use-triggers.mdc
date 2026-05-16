@@ -1,6 +1,7 @@
 ---
 description: MCP §50 — 先出し義務・1行トリガー表（descriptor は mcp-tool-discipline）
-alwaysApply: true
+alwaysApply: false
+globs: "**/*"
 ---
 
 # MCP サーバー選択トリガー（いつどれを使うか）

@@ -416,7 +416,7 @@ const ragCmd = [
   `${NVM_NODE_BIN}/npx --yes mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest .rag/extra-docs/ 2>&1 | tail -10 || true`,
   `${NVM_NODE_BIN}/npx --yes mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest docs/ 2>&1 | tail -10 || true`,
 ].join(' && ');
-const r7 = runCmd('rag-ingest', ragCmd, { timeoutMs: 300_000 });
+const r7 = runCmd('rag-ingest', ragCmd, { timeoutMs: 900_000 });
 // 内側エラー検知: stdout/stderr に Error/ERR_/Exception を含む場合は ⚠ 降格 (#S1)
 const ragOutput = `${r7.stdout}\n${r7.stderr}`;
 const ragHasInnerError = /\b(?:Error|ERR_[A-Z_]+|Exception|Traceback)\b/.test(ragOutput);

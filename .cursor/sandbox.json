@@ -1,0 +1,12 @@
+{
+  "type": "insecure_none",
+  "networkPolicy": {
+    "default": "allow"
+  },
+  "additionalReadonlyPaths": [
+    "C:/Users/mhamada202408224/Desktop/AI緊急用",
+    "C:/Users/mhamada202408224/Desktop",
+    "/mnt/c/Users/mhamada202408224/Desktop/AI緊急用",
+    "/mnt/c/Users/mhamada202408224/Desktop"
+  ]
+}

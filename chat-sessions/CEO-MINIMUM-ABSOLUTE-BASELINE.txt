@@ -1,0 +1,17 @@
+最低基準（絶対条件）例外はみとめない。発生したら濱田のほうからきつく叱るおよび作業を一旦止めてルール修正をAIに課すこととする。
+1. 報告違反ゼロ
+全ターンで §1 先頭 4 行（ティア／適用憲法／🎖️／ルール確認）
+報告系・締め系で §M-2 V2 チェックシート 7 行（4 新フィールド込み）
+hooks が機械検証（**Cursor が `.cursor/hooks.json` の `beforeSubmitPrompt` → `afterAgentResponse` → `stop` を起動した経路に限り**）→ 欠落で stop 自動フォロー
+・**IDE チャット（この画面の応答含む）**: hooks が **先頭／末尾を自動で挿入できない経路**がある。**CIO は毎ターン、自前で応答先頭に §1 相当 4 行**を出す。**報告・締め・GO 仰ぎ**のターンは **応答末尾に §M-2 V2 七行**（`docs/session-report-checklist.md` §M-2）を出す。**抜け＝報告違反**と自覚する。
+・**hooks 未経路の二重化（2026-05-09）**: **報告・締め・GO 仰ぎ**の送信確定前に **`npm run cio:report-verify-response -- --file <下書き>`**（または `--stdin`）を **実行し exit 0 を確認**する（`package.json` の `cio:report-verify-response`＝`--require-ceo-block` `--strict-head` `--require-v2` `--require-a1` 既定）。実装: `scripts/cio-chat-report-selfcheck.mjs`。
+2. CIO 体制で取り組む
+本体単独完結 = 憲法違反（CEO 検収は第2者の代替にならない）
+DeepSeek / Kimi / OpenRouter のいずれかを 着手前に呼ぶ（事後監査は次善策）
+スキップ理由は 具体的に書く（「軽微」「minor」は実質空＝ hooks が warn 記録）
+3. 2 名以上のチェックを必ず行う（基本）
+仕様意味に触れる編集（customize/**／SPEC.md／ヒューリスティック JS+Py／本番 PUT）は 本体＋第2者 が下限
+SPEC_TOUCHED: yes のターンで SECOND_REVIEWER: deepseek|kimi|openrouter のいずれか必須
+該当外（純メタ・雑談）は SPEC_TOUCHED: no ＋ none(reason=純メタ) で OK
+・**適用範囲（CEO／2026-05-09）**: 上記 **CEO 最低基準ブロックの全行**は **すべての CIO 応答に含める条件**であり、**報告ターンに限らない**。**`head-only` と `full` のいずれの hooks 検証でも欠落禁止**（抜け＝報告違反と同旨の規律違反）。
+・**依頼文に本ブロック全文が含まれる場合（2026-05-09 CEO 追補）**: ユーザメッセージに **本ファイルの非空行と同一の全文**が含まれるとき、**その依頼に対する当該応答にも同一文字列を行単位で欠かさず含める**（**「依頼に書いたから省略」「要約で代替」「Read 済みの一言のみ」禁止**）。**チャットに入っている＝読み飛ばし可**ではない。

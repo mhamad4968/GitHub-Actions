@@ -9,6 +9,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pipelineStep, setOutcome } from './report-pipeline-audit.mjs';
+import { buildNgRecoverySuffix, setNgGate } from './ng-recovery-gate.mjs';
+
+function withNgRecovery(msg) {
+  return msg + buildNgRecoverySuffix();
+}
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const stateDir = path.join(root, '.cursor/hooks/state');
@@ -36,6 +41,18 @@ const FOLLOWUP_V2 = `【hooks 自動フォロー】**V2 チェックシートの
 
 **事実と整合する値**に直し、**矛盾ゼロ**になったら \`CHECKSHEET_OK: yes\` にしてください。同一応答内で §1・§P（**□A1 ダブルチェック誰と結果**を含む）・末尾 7 行を**まとめて**再出力してください。`;
 
+const FOLLOWUP_CEO_MINIMUM = `【hooks 自動フォロー】**CEO 最低基準ブロック全文**が応答本文に **一行も欠けず**検出されませんでした（\`chat-sessions/CEO-MINIMUM-ABSOLUTE-BASELINE.txt\` ＝ Desktop \`＃重要確認事項.txt\` L7〜L20 と同一）。
+
+**同一応答内**に、\`CEO-MINIMUM-ABSOLUTE-BASELINE.txt\` の **非空行すべて**を **そのままの文字列**で含めてください（要約・「同上」・一部省略は **すべて NG**）。§P の前後どこでもよいが **V2 七行・§1 四行と同じターンの応答本文に必須**。
+
+そのうえで §1 四行・§P（□A1 含む）・末尾 **V2 七行**を **まとめて**再出力してください。`;
+
+const FOLLOWUP_DOUBLE_CHECK = `【hooks 自動フォロー】**§P □A1（ダブルチェック：誰と・結果）**または **\`ダブルチェック要約:\` 行**が不足しているか、**誰が**第2者チェックしたか（または **無／非該当／スキップ**）が機械検査に通りませんでした（\`docs/session-report-checklist.md\` §P A1）。
+
+**必須**: \`□ A1\` 見出し行に **\`ダブルチェック（誰と・結果）\`** を含める。**別行**に \`ダブルチェック要約:\` を付け、**DeepSeek／Kimi／OpenRouter／両名／第2者／無（…）／非該当／§50-3-8 スキップ**のいずれかを **要約本文に明示**する（**曖昧な一行のみ禁止**）。
+
+§1 四行・CEO 最低基準全文・§P（□A 含む）・末尾 **V2 七行**を **まとめて**再出力してください。`;
+
 const FOLLOWUP_TURN_HEAD = `【hooks 自動フォロー】**報告ターン厳格モード**: 応答**先頭付近**（機械検査ウィンドウ）に **§1 四行**のいずれかが欠けていました（\`every-turn-rules-confirm.mdc\` §1・浜田 CEO 受付ゲート）。
 
 **同一応答の最上段付近**に、次を **この順で各 1 行**（省略なし）で出してから、§P の □ 本文と末尾 **V2 七行**を再出力してください:
@@ -48,6 +65,20 @@ const FOLLOWUP_TURN_HEAD = `【hooks 自動フォロー】**報告ターン厳�
 そのうえで **§P の □ 本文**に **□A1（ダブルチェック：誰と・結果）** と **\`ダブルチェック要約:\` 1 行**を含めてください（\`docs/session-report-checklist.md\` §P A1）。
 
 **判定ログ**: 各検証で \`logs/report-turn-head-audit.log\` に 1 行 JSON が追記されます（抜けコード: TIER_LINE / CONSTITUTION_LINE / ASSIGN_LINE / RULES_CONFIRM_LINE）。`;
+
+/** 非報告ターン（head-only）: §1 四行のみ再出力。V2・§P 本文は不要。 */
+const FOLLOWUP_TURN_HEAD_ONLY = `【hooks 自動フォロー】**全ターン検証（head-only）**: 応答**先頭付近**に **§1 四行**のいずれかが欠けている、**または** \`chat-sessions/CEO-MINIMUM-ABSOLUTE-BASELINE.txt\` の **CEO 最低基準ブロック全文（非空行すべて）**が本文に欠けていました。
+
+**同一応答の最上段**（ツール結果や長文の**前**）に、次を **この順で各 1 行**で出し直してください（**V2 七行・チェックシート本文はこのフォローでは不要**）:
+
+1. \`[§1-2-3 ティア判定: L1|L2|L3]\`（根拠 1 語以上）
+2. \`【適用憲法】\`（§ 列挙の 1 行）
+3. \`[🎖️ 本セッション割当]\`（割当の 1 行）
+4. \`[ルール確認]\`（Read 済みパス等の 1 行）
+
+**CEO 最低基準（絶対条件）**: 続けて \`CEO-MINIMUM-ABSOLUTE-BASELINE.txt\` と **同一の非空行すべて**を **省略せず**本文に含める（**全応答の条件**。**判否一行のみ禁止**）。
+
+**埋もれ対策**: 長いログやコードを出す場合でも、**最初のブロックを §1 四行にすること**（ウィンドウ先頭のみ機械検査）。`;
 
 function main() {
   let input = {};
@@ -82,6 +113,7 @@ function main() {
     if (correlationId) {
       setOutcome(correlationId, 'FAILED_MAX_LOOPS', { loopCount });
     }
+    setNgGate('FAILED_MAX_LOOPS', { loopCount });
     try {
       fs.unlinkSync(followPath);
     } catch {
@@ -114,13 +146,19 @@ function main() {
 
   const reason = typeof followMeta.reason === 'string' ? followMeta.reason : 'MISSING_CHECKSHEET';
   if (reason === 'V1_REQUIRE_V2') {
-    out.followup_message = FOLLOWUP_V1;
+    out.followup_message = withNgRecovery(FOLLOWUP_V1);
   } else if (reason === 'V2_VIOLATION') {
-    out.followup_message = FOLLOWUP_V2;
+    out.followup_message = withNgRecovery(FOLLOWUP_V2);
+  } else if (reason === 'CEO_MINIMUM_BLOCK' || reason === 'CEO_MINIMUM_ACK') {
+    out.followup_message = withNgRecovery(FOLLOWUP_CEO_MINIMUM);
+  } else if (reason === 'DOUBLE_CHECK_ATTRIBUTION') {
+    out.followup_message = withNgRecovery(FOLLOWUP_DOUBLE_CHECK);
+  } else if (reason === 'TURN_HEAD_ONLY') {
+    out.followup_message = withNgRecovery(FOLLOWUP_TURN_HEAD_ONLY);
   } else if (reason === 'TURN_HEAD_VIOLATION') {
-    out.followup_message = FOLLOWUP_TURN_HEAD;
+    out.followup_message = withNgRecovery(FOLLOWUP_TURN_HEAD);
   } else {
-    out.followup_message = FOLLOWUP_MISSING;
+    out.followup_message = withNgRecovery(FOLLOWUP_MISSING);
   }
   process.stdout.write(`${JSON.stringify(out)}\n`);
 }

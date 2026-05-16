@@ -19,6 +19,9 @@
  *   9. verify:constitution-handoff — verify-constitution-handoff.mjs (TSB-024 物理ガード)
  *  10. verify:mandatory-read-gate — mandatory-read-gate.mjs（必読ファイル構造）
  *  11. verify:ci-rule-integrity — verify-ci-rule-integrity.mjs（Cursor ルール薄型憲法・alwaysApply 上限）
+ *  12. verify:thin-rule-messaging — verify-thin-rule-messaging.mjs（本文の常時 true 誤表記検出）
+ *  13. verify:ceo-minimum-baseline — verify-ceo-minimum-baseline.mjs（CEO 最低基準・Desktop 同期）
+ *  14. verify:ceo-report-hooks-e2e — verify-ceo-report-hooks-e2e.mjs（head-only/full 自動判定スモーク）
  *
  * 出力: markdown サマリ + 各検査の status (ok / warn / ng / skip)
  *
@@ -53,6 +56,9 @@ const checks = [
   { id: 'verify:constitution-handoff', cmd: 'node', args: ['scripts/verify-constitution-handoff.mjs'], label: '憲法級ハンドオフ物理ガード (TSB-024 / 第9検査)' },
   { id: 'verify:mandatory-read-gate', cmd: 'node', args: ['scripts/mandatory-read-gate.mjs'], label: '必読ファイル構造ゲート (mandatory-read-gate / 第10検査)' },
   { id: 'verify:ci-rule-integrity', cmd: 'node', args: ['scripts/verify-ci-rule-integrity.mjs'], label: 'Cursor ルール整合 (薄型憲法・第11検査)' },
+  { id: 'verify:thin-rule-messaging', cmd: 'node', args: ['scripts/verify-thin-rule-messaging.mjs'], label: '薄型憲法メッセージ整合 (第12検査)' },
+  { id: 'verify:ceo-minimum-baseline', cmd: 'node', args: ['scripts/verify-ceo-minimum-baseline.mjs'], label: 'CEO 最低基準・ミラー／Desktop 同期 (第13検査)' },
+  { id: 'verify:ceo-report-hooks-e2e', cmd: 'node', args: ['scripts/verify-ceo-report-hooks-e2e.mjs'], label: 'CEO hooks head-only/full E2E (第14検査)' },
 ];
 
 const results = [];

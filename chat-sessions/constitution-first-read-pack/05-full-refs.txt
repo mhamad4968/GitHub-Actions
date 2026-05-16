@@ -1,0 +1,8 @@
+【05 全文参照（時間があるとき・改定確認）】
+
+- AGENTS.md（リポ直下・憲法級の集約）
+- .cursor/rules/every-turn-rules-confirm.mdc（毎ターン・報告形式）
+- docs/session-report-checklist.md（§P・§M-2 正本）
+- chat-sessions/desktop-ai-emergency-read-pack/20-SESSION-REPORT-CHECKLIST.txt（短縮チェックリスト）
+
+先読みパックは要約層。矛盾がある場合は **上記全文が勝つ**。

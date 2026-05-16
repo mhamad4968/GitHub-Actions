@@ -16,7 +16,22 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const verifyOnly = process.argv.includes('--verify-only');
 
+/** Windows 絶対パス → WSL /mnt/<drive>/...（bash 内で使用） */
+function win32ToWslPath(absWin) {
+  const resolved = path.resolve(absWin);
+  const m = /^([a-zA-Z]):[/\\](.*)$/.exec(resolved);
+  if (!m) return resolved.replace(/\\/g, '/');
+  return `/mnt/${m[1].toLowerCase()}/${m[2].replace(/\\/g, '/')}`;
+}
+
 function jstYmd() {
+  const ymdIntl = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Tokyo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date());
+  if (/^\d{4}-\d{2}-\d{2}$/.test(ymdIntl)) return ymdIntl;
   const r = spawnSync('bash', ['-lc', 'TZ=Asia/Tokyo date +%F'], { encoding: 'utf8', cwd: root });
   if (r.status !== 0) {
     console.error('[morning-prep-ensure] ❌ date command failed (bash/WSL required for TZ=Asia/Tokyo)');
@@ -63,14 +78,21 @@ const ymd = jstYmd();
 if (!verifyOnly) {
   console.log(`[morning-prep-ensure] generating (JST ${ymd}) …`);
   const printSh = path.join(root, 'scripts', 'print-nvm-node-bin.sh');
-  const gen = spawnSync(
-    'bash',
-    [
-      '-lc',
-      `NVMN="$(bash "${printSh}")" && export PATH="$NVMN:$PATH" && cd "${root}" && TZ=Asia/Tokyo node scripts/daily-morning-prep.mjs`,
-    ],
-    { stdio: 'inherit', cwd: root, env: { ...process.env, TZ: 'Asia/Tokyo' } },
-  );
+  const isWin = process.platform === 'win32';
+  const wslRoot = isWin ? win32ToWslPath(root) : root;
+  const printShBash = isWin ? win32ToWslPath(printSh) : printSh;
+  const inner = `NVMN="$(bash '${printShBash}')" && export PATH="$NVMN:$PATH" && cd '${wslRoot}' && TZ=Asia/Tokyo node scripts/daily-morning-prep.mjs`;
+  const gen = isWin
+    ? spawnSync('wsl', ['-e', 'bash', '-lc', inner], {
+        stdio: 'inherit',
+        cwd: root,
+        env: { ...process.env, TZ: 'Asia/Tokyo' },
+      })
+    : spawnSync('bash', ['-lc', inner], {
+        stdio: 'inherit',
+        cwd: root,
+        env: { ...process.env, TZ: 'Asia/Tokyo' },
+      });
   if (gen.status !== 0 && gen.status != null) {
     console.error(`[morning-prep-ensure] ❌ daily-morning-prep exit ${gen.status}`);
     process.exit(typeof gen.status === 'number' ? gen.status : 2);

@@ -9,35 +9,24 @@
  * BUILD: 2026-04-18-v3.1 (C-4 fix: ハイフン系 (---/----/ー/—/－等) も「実質空」と判定して段省略)
  * BUILD: 2026-04-18-v4 (関連アプリ横並び小ナビを画面上部に常駐: 668/595/594/627 へのテキストリンク)
  * BUILD: 2026-05-05-v1 (627 自動入力: `windows_name` を `logon_name[mail@前]` に統一。`+` なし)
+ * BUILD: 2026-05-12-no594-rest（旧594アプリへの REST・ナビ・ミラー停止。正は674）
  */
 (function () {
   'use strict';
 
   const APP595 = '595';
-  /** PC 台帳（594）。627 保存成功時に、単一・サブテーブル両方の 594 ID へ ledger_record_id をミラー */
-  const APP594 = '594';
+  /** 新・PC台帳（674）。旧594へのリンクは出さない */
+  const APP674_PC = '674';
   /** アカウント採番（プール）。627の実体の多くはここ起点 */
   const APP626 = '626';
-  /** 594 側: アカウント台帳（627）レコード番号 */
-  const FC594_LEDGER_RID = 'ledger_record_id';
-  /** 627 側: PC 台帳（594）レコード番号（単一・代表） */
+  /** 627 側: 旧PC台帳から移行した参照（フィールドコード名はスキーマ互換のまま） */
   const FC627_PC594 = 'pc_594_record_id';
-  /** 627 側: 複数 PC（594）用サブテーブル（setup-627-pc-ledger-links-subtable.js） */
+  /** 627 側: 複数 PC 用サブテーブル（setup-627-pc-ledger-links-subtable.js） */
   const FC627_PC_SUBTABLE = 'pc_ledger_links';
-  /** サブテーブル内の 594 レコード番号（トップの pc_594_record_id とフィールドコード重複不可） */
+  /** サブテーブル内の旧台帳レコード番号（トップの pc_594_record_id とフィールドコード重複不可） */
   const FC627_PC_SUB_594 = 'pc_ledger_link_594_id';
-  /** 627 のカテゴリー（app:fields と一致） */
-  const FC627_CATEGORY = 'カテゴリー';
   /** 627: アカウント種別（ラジオ想定。未作成でも動くように optional 扱い） */
   const FC627_ACCOUNT_TYPE = 'account_type';
-  /**
-   * PC 自動結線スキップ: カテゴリーのいずれかのチップに部分一致する文字列
-   * （`scripts/lib/kintone-627-pc-autolink-skip.js` の既定と揃える）。
-   * 空配列にするとカテゴリーではスキップしない。
-   */
-  const JBIS627_SKIP_PC_AUTOLINK_CATEGORY_SUBSTR = ['管理者'];
-  /** mail に部分一致（大小無視）。スクリプトの KINTONE_627_PC_AUTOLINK_SKIP_MAIL_SUBSTR と揃えて使う */
-  const JBIS627_SKIP_PC_AUTOLINK_MAIL_SUBSTR = [];
   /** 626 の M365 パスワード（半角大文字 M・sync595.js と同一） */
   const F626_M365_PW = 'M365_pw';
   /** 626・627 共通: サイボウズパスワードのフィールドコードは sb_pw */
@@ -774,16 +763,6 @@
     return ids;
   };
 
-  /** 594 の ledger と 627 の $id の突き合わせ用（数値・文字列の揺れを吸収） */
-  const recordIdsEqual = (a, b) => {
-    const sa = String(a ?? '').trim();
-    const sb = String(b ?? '').trim();
-    if (!sa || !sb) return false;
-    if (sa === sb) return true;
-    if (/^\d+$/.test(sa) && /^\d+$/.test(sb) && Number(sa) === Number(sb)) return true;
-    return false;
-  };
-
   /**
    * 627 レコードから PC 台帳（594）への参照をすべて外す PATCH（他フィールドは触れない）。
    * @param {Record<string, unknown>} rec627
@@ -800,11 +779,10 @@
   };
 
   /**
-   * 627 詳細から: まずこの 627 の pc_594 / サブテーブル参照をすべて外し、続けて各 594 で
-   * ledger_record_id がこの 627 の $id と一致する場合のみ空にする。
-   * 627・594 のレコード削除や氏名・パスワード等は変更しない。
+   * 627 詳細から: この 627 の pc_594 / サブテーブル参照をすべて外す。
+   * 旧594アプリには REST しない（方針: 594 非使用）。
    * @param {string} ledger627Id 627 の $id
-   * @param {string[]} pc594Ids 画面表示時点の PC台帳（594）番号一覧
+   * @param {string[]} pc594Ids 画面表示時点の旧台帳レコード番号一覧（627フィールドに保持されている値）
    */
   const unlink627PcRefsAndMirror594Ledgers = async (ledger627Id, pc594Ids) => {
     const lid = String(ledger627Id || '').trim();
@@ -846,45 +824,10 @@
       };
     }
 
-    let touched594 = 0;
-    const errors = /** @type {string[]} */ ([]);
-    for (const pcId of uniq) {
-      try {
-        const r594 = await kintone.api(kintone.api.url('/k/v1/record', true), 'GET', {
-          app: APP594,
-          id: pcId,
-        });
-        const rec594 = r594.record || {};
-        const curLed = String(rec594[FC594_LEDGER_RID]?.value ?? '').trim();
-        if (!curLed || !recordIdsEqual(curLed, lid)) continue;
-        await kintone.api(kintone.api.url('/k/v1/record', true), 'PUT', {
-          app: APP594,
-          id: pcId,
-          revision: rec594.$revision?.value,
-          record: { [FC594_LEDGER_RID]: { value: null } },
-        });
-        touched594++;
-      } catch (e) {
-        errors.push(`594 #${pcId}: ${e instanceof Error ? e.message : String(e)}`);
-      }
-    }
-
-    if (errors.length) {
-      return {
-        ok: false,
-        message:
-          `627 側の PC参照は外しましたが、594 の台帳番号クリアで失敗がありました:\n${errors.join('\n')}`,
-        touched594,
-      };
-    }
-    return { ok: true, message: '', touched594 };
+    return { ok: true, message: '', touched594: 0 };
   };
 
-  const build594RecordUrl = (id) => {
-    const u = new URL(`${location.origin}/k/${APP594}/show`);
-    u.searchParams.set('record', String(id));
-    return u.toString();
-  };
+  const build674PcLedgerIndexUrl = () => `${location.origin}/k/${APP674_PC}/`;
 
   const mount627PcLedgerBanner = (rec) => {
     if (document.getElementById(JBIS627_PC_LEDGER_BANNER_ID)) return true;
@@ -968,10 +911,10 @@
       const hint = document.createElement('span');
       hint.style.cssText = 'font-size:11px;color:#64748b;flex:1;min-width:200px;line-height:1.45;';
       hint.innerHTML =
-        '<b>紐付けを外すと…</b>：このアカウント側の「PC欄」をすべて空にし、' +
-        '紐付いていた各PC側の「アカウント台帳番号」のうち、このアカウントを指しているものだけを空にします。' +
+        '<b>紐付けを外すと…</b>：このアカウント側の「PC欄」（旧台帳番号の参照）をすべて空にします。' +
         '<b>アカウントの登録自体は消えません</b>（氏名・パスワード等もそのまま）。' +
-        '共有アカウントの場合は<b>紐付いていた複数のPCが一度に外れます</b>。';
+        '共有アカウントの場合は<b>紐付いていた複数の参照が一度に外れます</b>。' +
+        '<span style="color:#b45309;font-weight:800;">旧594アプリには接続しません（674が正本）。</span>';
       const btn = document.createElement('button');
       btn.type = 'button';
       const BTN_LABEL_627 = 'このアカウントからPCの紐付けを外す…';
@@ -984,13 +927,13 @@
         const msg =
           '【このアカウントから「PCの紐付け」を外します】\n\n' +
           `対象アカウント: アカウント台帳(627) レコード番号 ${rid627}\n` +
-          `対象PC(${pcSnap.length}件): PC台帳(594) 番号 ${pcSnap.join(' / ')}\n\n` +
+          `対象の旧台帳参照番号(${pcSnap.length}件): ${pcSnap.join(' / ')}\n\n` +
           '▼ どうなりますか?\n' +
-          '・このアカウント側の「PC欄」から、上記PCへの参照をすべて外します\n' +
-          '・上記の各PC側の「アカウント台帳番号」のうち、このアカウントを指しているものを空にします\n' +
+          '・このアカウント側の「PC欄」から、上記の参照をすべて外します\n' +
+          '・旧PC台帳(594)アプリにはアクセスしません（方針: 594 非使用）\n' +
           '・アカウント自体(氏名・パスワード・WindowsID等)は削除しません\n\n' +
           '▼ 元に戻すには\n' +
-          '・もう一度紐付け直す操作が必要です(自動では戻りません)\n\n' +
+          '・新・PC台帳(674)で正しいPCを選び、再度紐付けが必要です\n\n' +
           '実行しますか?';
         if (!confirm(msg)) return;
         btn.disabled = true;
@@ -1004,7 +947,7 @@
             return;
           }
           alert(
-            `PCの紐付けを外しました(更新したPC台帳: ${res.touched594} 件)。画面を再読み込みします。`,
+            '627 の PC 参照を外しました（旧594アプリは更新していません）。画面を再読み込みします。',
           );
           location.reload();
         } catch (e) {
@@ -1018,12 +961,12 @@
       wrap.appendChild(tb);
     }
 
-    // 共有アカウントで多数を想定: 折り返し＋詳細展開（PCリンク）
+    // 旧台帳番号の表示（594 へはリンクしない）
     if (ids.length) {
       const details = document.createElement('details');
       details.style.cssText = 'flex-basis:100%;';
       const sum = document.createElement('summary');
-      sum.textContent = `PC台帳を開く（${ids.length}件）`;
+      sum.textContent = `保持している旧台帳参照番号（${ids.length}件）`;
       sum.style.cssText =
         'cursor:pointer;color:#1d4ed8;font-weight:800;font-size:12px;user-select:none;';
       details.appendChild(sum);
@@ -1032,16 +975,22 @@
       list.style.cssText =
         'margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;';
       ids.forEach((id) => {
-        const a = document.createElement('a');
-        a.href = build594RecordUrl(id);
-        a.target = '_blank';
-        a.rel = 'noopener noreferrer';
-        a.textContent = String(id);
-        a.style.cssText =
+        const sp = document.createElement('span');
+        sp.textContent = String(id);
+        sp.style.cssText =
           'display:inline-block;padding:2px 8px;border-radius:999px;' +
-          'border:1px solid #93c5fd;background:#eff6ff;color:#1d4ed8;font-weight:800;font-size:12px;text-decoration:none;';
-        list.appendChild(a);
+          'border:1px solid #e2e8f0;background:#f8fafc;color:#334155;font-weight:800;font-size:12px;';
+        list.appendChild(sp);
       });
+      const open674 = document.createElement('a');
+      open674.href = build674PcLedgerIndexUrl();
+      open674.target = '_blank';
+      open674.rel = 'noopener noreferrer';
+      open674.textContent = '新・PC台帳(674)を開く';
+      open674.style.cssText =
+        'display:inline-block;margin-left:8px;padding:2px 8px;border-radius:6px;border:1px solid #15803d;' +
+        'background:#ecfdf5;color:#166534;font-weight:800;font-size:12px;text-decoration:none;';
+      list.appendChild(open674);
       details.appendChild(list);
       wrap.appendChild(details);
     }
@@ -1459,50 +1408,8 @@ ${bodyInner}\
     );
   }
 
-  /** 管理者など: 627→594 の ledger ミラーを自動では行わない（共有 PC は手で紐づけ） */
-  const shouldSkip627AutolinkPcMirror = (rec) => {
-    const mail = String(rec.mail?.value ?? '').trim().toLowerCase();
-    if (JBIS627_SKIP_PC_AUTOLINK_MAIL_SUBSTR.some((sub) => {
-      const s = String(sub ?? '').toLowerCase();
-      return s && mail.includes(s);
-    })) return true;
-
-    let chips = rec[FC627_CATEGORY]?.value ?? [];
-    if (!Array.isArray(chips)) {
-      chips = (chips != null && String(chips).trim() !== '') ? [String(chips)] : [];
-    }
-    return chips.some((chip) => {
-      const c = String(chip ?? '').toLowerCase();
-      return JBIS627_SKIP_PC_AUTOLINK_CATEGORY_SUBSTR.some((sub) => {
-        const s = String(sub ?? '').toLowerCase();
-        return s && c.includes(s);
-      });
-    });
-  };
-
-  /** 627 レコードから、594 へ書き戻すべき PC 台帳（594）のレコード番号を重複なく集める */
-  const collectPc594IdsFor627Mirror = (rec) => {
-    const seen = new Set();
-    const list = [];
-    const pushOne = (raw) => {
-      const s = String(raw ?? '').trim();
-      if (!s || seen.has(s)) return;
-      seen.add(s);
-      list.push(s);
-    };
-    pushOne(rec[FC627_PC594]?.value);
-    const sub = rec[FC627_PC_SUBTABLE]?.value;
-    if (Array.isArray(sub)) {
-      sub.forEach((row) => pushOne(row?.value?.[FC627_PC_SUB_594]?.value));
-    }
-    return list;
-  };
-
   /**
-   * 627 create.submit.success: 595/626 連携 + 594 ledger ミラーを単一ハンドラで実行。
-   * 二つの旧ハンドラ（onCreateSubmitSuccess, mirror594LedgerFrom627Save）を統合し
-   * race condition を排除。独立した API 呼び出しは Promise.all で並列化。
-   * 594 は bulk API（/k/v1/records.json PUT）で一括更新。
+   * 627 create.submit.success: 595/626 連携のみ（旧594 ledger ミラーは廃止）。
    */
   const onCreateSubmitSuccess = (event) => new kintone.Promise(async (resolve) => {
     const rid627 = String(event.recordId || event.record?.$id?.value || '');
@@ -1542,24 +1449,6 @@ ${bodyInner}\
       }
     }
 
-    // 594 ledger ミラー（失敗しても alert しない、ログのみ — 旧 mirror594LedgerFrom627Save と同挙動）
-    const rec = event.record ?? {};
-    if (!shouldSkip627AutolinkPcMirror(rec)) {
-      const ids594 = collectPc594IdsFor627Mirror(rec);
-      if (ids594.length > 0) {
-        const records = ids594.map((id) => ({
-          id,
-          record: { [FC594_LEDGER_RID]: { value: rid627 } },
-        }));
-        tasks.push(
-          kintone.api(
-            kintone.api.url('/k/v1/records.json', true), 'PUT',
-            { app: APP594, records }
-          ).catch((e) => { console.error('[jbis 627→594 ledger link]', e); })
-        );
-      }
-    }
-
     try {
       if (tasks.length > 0) await Promise.all(tasks);
     } catch (e) {
@@ -1580,29 +1469,9 @@ ${bodyInner}\
   }
 
   /**
-   * 627 edit.submit.success: 594 ledger ミラーのみ（595/626 連携は create のみ）。
-   * bulk API（/k/v1/records.json PUT）で一括更新。
+   * 627 edit.submit.success: 旧594ミラー廃止（何もしない）。
    */
   const onEditSubmitSuccess = (event) => new kintone.Promise(async (resolve) => {
-    const rid627 = String(event.recordId || event.record?.$id?.value || '');
-    const rec = event.record ?? {};
-    try {
-      if (!shouldSkip627AutolinkPcMirror(rec)) {
-        const ids594 = collectPc594IdsFor627Mirror(rec);
-        if (rid627 && ids594.length > 0) {
-          const records = ids594.map((id) => ({
-            id,
-            record: { [FC594_LEDGER_RID]: { value: rid627 } },
-          }));
-          await kintone.api(
-            kintone.api.url('/k/v1/records.json', true), 'PUT',
-            { app: APP594, records }
-          );
-        }
-      }
-    } catch (e) {
-      console.error('[jbis 627→594 ledger link]', e);
-    }
     resolve(event);
   });
 
@@ -2509,7 +2378,6 @@ box-shadow:0 -4px 24px rgba(15,23,42,.18);}\
     { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
   ));
   const dupLink627 = (id) => `${location.origin}/k/627/show#record=${encodeURIComponent(id)}`;
-  const dupLink594 = (id) => `${location.origin}/k/594/show#record=${encodeURIComponent(id)}`;
 
   const dupFetchAll627 = async () => {
     const url = kintone.api.url('/k/v1/records', true);
@@ -2529,25 +2397,13 @@ box-shadow:0 -4px 24px rgba(15,23,42,.18);}\
     return all;
   };
 
+  /** 627 に保持されている旧台帳 $id は 674 の $id と一致しないため、594 REST は行わずラベルのみ付与 */
   const dupFetchPcMap = async (pcIds) => {
     const map = new Map();
-    if (pcIds.length === 0) return map;
-    const url = kintone.api.url('/k/v1/records', true);
-    const chunks = [];
-    for (let i = 0; i < pcIds.length; i += 100) chunks.push(pcIds.slice(i, i + 100));
-    for (const chunk of chunks) {
-      const inExpr = chunk.map((id) => `"${String(id).replace(/"/g, '\\"')}"`).join(',');
-      const res = await kintone.api(url, 'GET', {
-        app: 594,
-        query: `$id in (${inExpr}) limit 500`,
-        fields: ['$id', 'PC_name', 'shared_terminal_name', 'type'],
-      });
-      for (const r of (res.records || [])) {
-        const id = String(r.$id?.value || '');
-        const name = String(r.PC_name?.value || r.shared_terminal_name?.value || '').trim();
-        const type = String(r.type?.value || '').trim();
-        if (id) map.set(id, { name, type });
-      }
+    for (const raw of pcIds || []) {
+      const id = String(raw || '').trim();
+      if (!id) continue;
+      map.set(id, { name: `旧台帳参照番号:${id}（674でPCを検索）`, type: '' });
     }
     return map;
   };
@@ -2703,8 +2559,10 @@ box-shadow:0 -4px 24px rgba(15,23,42,.18);}\
       if (ids.size === 0) return '<span style="color:#9ca3af;">— 未紐付け —</span>';
       return [...ids].map((id) => {
         const pc = pcMap.get(id);
-        const lbl = pc ? `${dupEsc(pc.name)}${pc.type ? ` <span style="color:#64748b;">[${dupEsc(pc.type)}]</span>` : ''}` : `(594 #${dupEsc(id)})`;
-        return `<a href="${dupLink594(id)}" target="_blank" rel="noopener" style="color:#1d4ed8;text-decoration:none;font-weight:600;">${lbl}</a>`;
+        const lbl = pc
+          ? `${dupEsc(pc.name)}${pc.type ? ` <span style="color:#64748b;">[${dupEsc(pc.type)}]</span>` : ''}`
+          : dupEsc(id);
+        return `<span style="color:#334155;font-weight:600;">${lbl}</span>`;
       }).join('<br>');
     };
 
@@ -2841,7 +2699,7 @@ box-shadow:0 -4px 24px rgba(15,23,42,.18);}\
             }
             const pcLabels = [...ids].map((id) => {
               const pc = pcMap.get(id);
-              return pc ? `${pc.name}${pc.type ? `[${pc.type}]` : ''}` : `594#${id}`;
+              return pc ? `${pc.name}${pc.type ? `[${pc.type}]` : ''}` : `旧台帳#${id}`;
             }).join(' / ');
             lines.push([
               g.display, g.records.length,
@@ -2957,7 +2815,7 @@ box-shadow:0 -4px 24px rgba(15,23,42,.18);}\
   const JBIS_RELATED_APPS = [
     { id: '668', label: '利用ガイド' },
     { id: '595', label: '社員情報マスタ' },
-    { id: '594', label: 'PC管理台帳' },
+    { id: '674', label: '新・PC台帳' },
     { id: '627', label: 'アカウント管理台帳' },
   ];
   const JBIS_RELATED_NAV_ID = 'jbis-related-apps-nav';

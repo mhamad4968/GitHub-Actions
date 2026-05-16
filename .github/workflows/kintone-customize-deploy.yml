@@ -19,6 +19,13 @@
 # ■ push: customize/** 等の変更時のみ（package.json のみでは走らせない）
 # ■ push 時: Environment の KINTONE_APP（例: 631 collect）と変更された customize/<ID>/ が食い違うと路径が無く失敗する。
 #   その場合は git diff で変更された customize/<数字>/desktop.js から ID を推定しデプロイ先を切替（API トークンが当該アプリに権限を持つ前提）。
+#
+# ■ push での kintone API デプロイ安全策（2026-05-16 CIO）
+#   - Repository variables: **KINTONE_PUSH_AUTO_DEPLOY** が文字列 **true** のときだけ、push で API デプロイ（deploy ジョブ後段）を許可。
+#     未設定・その他の値 → **ESLint のみ**（意図しない本番 JS 投入を抑止）。
+#   - 同一 push 差分に **異なる 2 アプリ以上**の `customize/<数字>/desktop.js` が含まれる → **API デプロイ拒否**（先頭 1 件だけ拾う誤爆防止）。
+#   - **workflow_dispatch** は従来どおり **手動で API デプロイ可**（運用者が対象を確認して実行）。
+#   - 正本: `docs/runbooks/kintone-ci-push-deploy-guard.md`
 
 name: kintone-customize-deploy
 
@@ -60,7 +67,7 @@ jobs:
       - name: ESLint（customize の JS 構文・ルールチェック）
         run: npm run lint:customize
 
-      - name: デプロイ要否（push に customize/<app>/desktop.js が含まれるか）
+      - name: デプロイ要否（push は変数 + 単一アプリ差分のみ／dispatch は常に可）
         id: deploy_gate
         run: |
           set -euo pipefail
@@ -68,18 +75,36 @@ jobs:
             echo "deploy_js=1" >> "${GITHUB_OUTPUT}"
             exit 0
           fi
+          AUTO='${{ vars.KINTONE_PUSH_AUTO_DEPLOY }}'
           BEFORE="${{ github.event.before }}"
           SHA="${{ github.sha }}"
           if [[ -z "${BEFORE}" ]]; then
-            echo "deploy_js=1" >> "${GITHUB_OUTPUT}"
+            if [[ "${AUTO}" == "true" ]]; then
+              echo "::notice::push: before SHA なし（初回等）だが KINTONE_PUSH_AUTO_DEPLOY=true のため API デプロイを許可します。"
+              echo "deploy_js=1" >> "${GITHUB_OUTPUT}"
+            else
+              echo "::notice::push: before SHA なしのため kintone API デプロイをスキップ（Repository variable KINTONE_PUSH_AUTO_DEPLOY=true で再有効化）。"
+              echo "deploy_js=0" >> "${GITHUB_OUTPUT}"
+            fi
             exit 0
           fi
-          if git diff --name-only "${BEFORE}" "${SHA}" 2>/dev/null | grep -qE '^customize/[0-9]+/desktop\.js$'; then
-            echo "deploy_js=1" >> "${GITHUB_OUTPUT}"
-          else
+          if ! git diff --name-only "${BEFORE}" "${SHA}" 2>/dev/null | grep -qE '^customize/[0-9]+/desktop\.js$'; then
             echo "::notice::この push には customize/<数字>/desktop.js が含まれないため kintone API デプロイをスキップします（ESLint のみ完了）。"
             echo "deploy_js=0" >> "${GITHUB_OUTPUT}"
+            exit 0
           fi
+          UNIQ_N="$(git diff --name-only "${BEFORE}" "${SHA}" 2>/dev/null | grep -E '^customize/[0-9]+/desktop\.js$' | sed -E 's#^customize/([0-9]+)/desktop\.js$#\1#' | sort -u | wc -l | tr -d ' ')"
+          if [[ -z "${UNIQ_N}" || "${UNIQ_N}" != "1" ]]; then
+            echo "::notice::push 差分に異なる複数アプリの customize/<数字>/desktop.js が含まれる（または件数判定不能: uniq=${UNIQ_N:-?}）ため kintone API デプロイをスキップします。1 アプリずつ push するか workflow_dispatch を使用してください。"
+            echo "deploy_js=0" >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+          if [[ "${AUTO}" != "true" ]]; then
+            echo "::notice::Repository variable KINTONE_PUSH_AUTO_DEPLOY が true でないため push では kintone API デプロイをスキップします（ESLint のみ）。再有効: GitHub → Settings → Secrets and variables → Actions → Variables → KINTONE_PUSH_AUTO_DEPLOY = true。詳細: docs/runbooks/kintone-ci-push-deploy-guard.md"
+            echo "deploy_js=0" >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+          echo "deploy_js=1" >> "${GITHUB_OUTPUT}"
 
       - name: ベース URL 正規化・アプリ ID に応じた路径解決・アップロード用 JS 配置
         if: steps.deploy_gate.outputs.deploy_js == '1'

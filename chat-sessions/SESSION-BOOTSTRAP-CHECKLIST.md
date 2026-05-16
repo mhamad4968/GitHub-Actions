@@ -2,7 +2,7 @@
 
 > **目的**: 経緯・「法律」に相当する制約・ルール・備わっている機能・MCP を **読み飛ばさず** 再確認し、浜田が気づかないまま **逆方向に進む事故** を防ぐ。  
 > **憲法**: **開発は AI・確認は浜田**（`AGENTS.md` §35-1 / §56-1a）。本リストは **AI が実行・報告**する（浜田に全文チェックを押し付けない）。  
-> **浜田運用の最優先**: `C:\Users\mhamada202408224\Desktop\AI緊急用\` の **儀式・read-pack**（**ファイル名の先頭番号＝読取順**）。例: `00-NEW-SESSION-STARTER_yyyymmdd.txt` / **`01`〜`06`-STARTER-…txt** / `07-HANDOFF-AI-FIVE-BLOCKS.md` / `08-INDEX.txt` … `20-SESSION-REPORT-CHECKLIST.txt` / `21-SESSION-BOOTSTRAP-CHECKLIST.txt` / `22-HANDOFF-HUMAN.txt` / `23-AI緊急用-README.txt` / **`24-handoff-log.md`** / **`25-checkpoint-latest.md`**（＋当日のみ `26-evening-reflection-*.md`）。本ファイルを更新したコミットでは **`npm run session-starter:sync-desktop`** を同一ターンで実行し、上記を必ず揃える（`/mnt/c` が無いときだけスキップ＋チャット 1 行。Windows ネイティブ Node では **`SESSION_STARTER_DESKTOP_DIR`** に実 Desktop パスを渡す）。
+> **浜田運用の最優先**: `C:\Users\mhamada202408224\Desktop\AI緊急用\` の **儀式・read-pack**（**ファイル名の先頭番号＝読取順**）。例: `00-NEW-SESSION-STARTER_yyyymmdd.txt` / **`01`〜`06`-STARTER-…txt** / `07-HANDOFF-AI-FIVE-BLOCKS.md` / `08-INDEX.txt` … `20-SESSION-REPORT-CHECKLIST.txt` / **`27-USER683-CLAUDE-RELAY-SESSION.txt`（kintone 683・Claude 中継・セッション切替後の最短手順）** / `21-SESSION-BOOTSTRAP-CHECKLIST.txt` / `22-HANDOFF-HUMAN.txt` / `23-AI緊急用-README.txt` / **`24-handoff-log.md`** / **`25-checkpoint-latest.md`**（＋当日のみ `26-evening-reflection-*.md`）。本ファイルを更新したコミットでは **`npm run session-starter:sync-desktop`** を同一ターンで実行し、上記を必ず揃える（`/mnt/c` が無いときだけスキップ＋チャット 1 行。Windows ネイティブ Node では **`SESSION_STARTER_DESKTOP_DIR`** に実 Desktop パスを渡す）。
 >
 > **v3.27+ 恒久**: セッション初手の **項番 -1〜0（機械）と実行順**の**詳細正本**は **`NEW-SESSION-STARTER.md` 冒頭「■ 貼付単独で完走」** のみ。本チェックリストの下表は **鏡像**（追従）。**浜田の貼付はスターター全文＋任意 HANDOFF** に固定し増やさない。
 

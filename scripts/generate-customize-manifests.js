@@ -4,6 +4,7 @@
  *
  * 実行: npm run generate:customize-manifests
  * 正本の対応表は kintone-apps.md の customize 列と .github/workflows/kintone-customize-deploy.yml の 629 分岐に合わせる。
+ * **594 は targets に含めない**（廃止予定・`customize/594/customize-manifest.json` は既存ファイルを手元維持）。
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -11,9 +12,10 @@ import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-/** アプリ ID と customize ディレクトリ（ルートからの相対）、desktop JS のファイル名 */
+/** アプリ ID と customize ディレクトリ（ルートからの相対）、desktop JS のファイル名
+ * 594 は廃止予定のため **マニフェスト自動生成の対象外**（`customize/594/customize-manifest.json` は手元・`deploy:594` で維持）。
+ */
 const targets = [
-  { appId: "594", relDir: "customize/594", desktopJs: "desktop.js" },
   { appId: "595", relDir: "customize/595", desktopJs: "desktop.js" },
   { appId: "626", relDir: "customize/626", desktopJs: "desktop.js" },
   { appId: "627", relDir: "customize/627", desktopJs: "desktop.js" },

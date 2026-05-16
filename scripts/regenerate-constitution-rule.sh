@@ -11,7 +11,7 @@ trap rm_on_fail ERR
 
 {
   printf '%s\n' '---' \
-    'description: 網羅統合版 — 憲法・索引・WORKFLOW・全mdc・予実・plans・chat・handoff・docs全（plans除く重複）・security-next・yojitsu README等（再生成=本スクリプト）。常時想起は constitution-brief-card.mdc、本ファイルは必要時 Read' \
+    'description: 網羅統合版 — 憲法・索引・WORKFLOW・全mdc・予実・plans・chat・handoff・docs全（plans除く重複）・security-next・yojitsu README等（再生成=本スクリプト）。Cursor 常時枠の正は cio-constitution.mdc、本ファイルは必要時 Read' \
     'alwaysApply: false' \
     '---' \
     '' \
@@ -19,9 +19,9 @@ trap rm_on_fail ERR
     '' \
     '> **読み方**: 本ファイルはリポ内の正本を**物理的に結合**したもの。編集の正本は各元ファイル。**差分・条文番号の最終解釈は `AGENTS.md`**。Cursor の制約で分割が必要な場合は `AGENTS.md` を直接 Read する。' \
     '' \
-    '> **常時想起（薄型カード）**: **`.cursor/rules/constitution-brief-card.mdc`**。本網羅ファイルは **`alwaysApply: false`** — **必要時のみ Read**。**常時想起は `constitution-brief-card.mdc` + `auto-read-by-topic.mdc`**（＋ `constitution-enforcement-core.mdc` 等）。個別 `.mdc` を常時に戻すと二重になる。' \
+    '> **Cursor 常時想起の正（2026-05-09 CIO 統合）**: **`.cursor/rules/cio-constitution.mdc`**（**`alwaysApply: true` 唯一核**）。補助想起は **`constitution-brief-card.mdc` / `auto-read-by-topic.mdc` 等（`globs` 注入）**。本網羅ファイルは **`alwaysApply: false`** — **必要時のみ Read**。結合内の旧「alwaysApply: true」表記はミラー遅延の可能性あり—**実行時は分割 `.mdc` と `cio-constitution.mdc` を正とする**。' \
     '' \
-    '> **再生成**: `bash scripts/regenerate-constitution-rule.sh`' \
+    '> **再生成**: `npm run rules:regenerate-constitution`（Node・Windows 可）／`bash scripts/regenerate-constitution-rule.sh`（WSL）' \
     '' \
     '> **結合に含めない（意図）**: `.rag/extra-docs/**`（正本のミラー）・`logs/**` の自動生成ログ・`node_modules`・ビルド生成物。必要なら都度 Read。' \
     '' \
@@ -31,6 +31,9 @@ trap rm_on_fail ERR
   cat .cursorrules
   printf '\n%s\n' '---' '## PART C — WORKFLOW.md（全文）' '---' ''
   cat WORKFLOW.md
+
+  printf '\n%s\n' '---' '## PART C0 — cio-constitution.mdc（CIO 統合憲法・全文）' '---' ''
+  cat .cursor/rules/cio-constitution.mdc
 
   for f in \
     .cursor/rules/autonomous-with-mandatory-asks.mdc \

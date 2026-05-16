@@ -1,0 +1,9 @@
+{
+  "_comment": "正本: %USERPROFILE%\\.cursor\\permissions.json。mcpAllowlist の server は ~/.cursor/mcp.json のキー（例 github）が公式。IDE が user-github 形式のときは両方併記。https://cursor.com/docs/reference/permissions — `terminalAllowlist` を置くと IDE 側ターミナル許可を**完全置換**する。**PowerShell で `Set-Location …; git …` と先頭が cd/set-location のとき**は `git` だけでは Run が残るため **`Set-Location` を配列に含める**（実機: troubleshooting TSB-034 項4）。",
+  "mcpAllowlist": [
+    "github:*",
+    "user-github:*",
+    "deepseek:*",
+    "user-deepseek:*"
+  ]
+}

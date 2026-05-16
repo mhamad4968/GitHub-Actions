@@ -2,6 +2,42 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
+## 2026-05-16 JST — セッション終了・683 印刷・引継ぎ / Desktop / GitHub
+
+- **状況**: **683** — **印刷報告用**の `@media print` を追加詰め（**2 枚前後**を目標、**月次要約は切らず**フォント・余白・表・グラフ縮小）。**「提出用 PDF」一覧ボタン**および別タブ起動コードは**削除済み**。**`ensureUser683PrintReportStyles`** は `#user683-print-report-style` を毎回上書き。**BUILD** `2026-05-16-683-print-2page-tight-v2`。**LIVE revision 74**・fileKey `4bb662aa-b47a-40c5-b1f7-2ba4dffa8f63`（**preflight→deploy は CIO 自律**）。
+- **次**: **浜田 CEO（依頼時）** — 683 で **印刷プレビュー**（まだ **3 枚**ならチャットで共有→**scale / 構成**の次案）。**GitHub** — **`kintone-customize-deploy`** は **push では変数 `KINTONE_PUSH_AUTO_DEPLOY=true` かつ単一アプリ差分のときだけ** API デプロイ（詳細 **`docs/runbooks/kintone-ci-push-deploy-guard.md`**）。**push で自動デプロイを続けるなら** GitHub Actions **Variables** に **`KINTONE_PUSH_AUTO_DEPLOY=true`** を設定。
+- **Desktop「AI緊急用」**: 正本はリポ（**`chat-sessions/desktop-ai-emergency-read-pack/`**・`08-INDEX.txt`）。**`npm run session-starter:sync-desktop` → `npm run verify:desktop-ai-emergency-sync`**（**`SESSION_STARTER_DESKTOP_DIR=C:\Users\mhamada202408224\Desktop\AI緊急用`** 等）。**過去ファイル**は sync の **prune** を正とし、手削除は verify 通過後に**余剰のみ**（README の番号ルール: **23 の次は 24・25、夕反省のみ 26**）。
+- **動作確認**: **依頼があれば浜田 CEO**（印刷・683 一覧）。
+
+## 2026-05-15 JST（続行）— 683 提出用 PDF ルート
+
+- **状況**: **683** を **ブラウザ `window.print()` 中心の月次印刷から外し**、**提出用 ReportLab PDF** へ寄せた。**`npm run user683:monthly-pdf:serve`**（`scripts/user683-monthly-pdf-serve.mjs`）＋一覧 **「提出用PDF」**は **`window.open`**（https kintone → http localhost は fetch 不可）。**`deploy:683` SUCCESS**。**BUILD** `2026-05-15-683-monthly-pdf-open-serve`・**preview revision 41**・fileKey `c4d70af6-018b-4c6b-946b-2e5be9cbcda7`。Runbook に **ERR_CONNECTION_REFUSED**（serve 未起動）の節を追記。683 ツールチップに接続拒否の説明を追記。
+- **次**: **浜田 CEO** — 別ターミナルで **`npm run user683:monthly-pdf:serve`** を起動したうえで 683 で **「提出用PDF」**→ PDF 取得・ポップアップ許可を確認。
+- **動作確認**: **依頼があれば浜田 CEO**（serve 未起動時は別タブで 500／接続失敗になり得る）。
+
+## 2026-05-15 JST（続行）— CEO 承認 U1〜U5・683 §7 印刷
+
+- **状況**: 夕反省 **U1〜U5** を **CEO 承認**。**U1**: `09-READ-01.txt` 項番 0 に **`verify:constitution-handoff`** を明記（本ターン **exit 0**）。**U2**: `docs/runbooks/user683-weekly-summary-and-print.md`（682/683/**632 別レーン**・保存・§7 印刷）。**U3**: **`customize/683/desktop.js`** — **§7 月次印刷**ボタン・ページ2 非LLM 日別・§7.2 ガード。**BUILD** `2026-05-15-683-print-spec7-page2`・**preview revision 39**・fileKey `6bbdaf5b-d5d6-4d24-b6e7-d4cb607da19e`（`deploy:683` SUCCESS）。**U4/U5**: 憲法上 §1 維持・日終わりは `npm run desktop:sync-and-verify` 等を handoff に 1 行。
+- **次**: **浜田 CEO 目視**（683 で **印刷プレビュー**・ページ分割・§7.2 文言）。**行間**は 2026-05-14 handoff の未取得のままなら **別ターンで依頼時確認**。read-pack 変更後は **`session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync`**。
+- **動作確認**: **依頼があれば浜田 CEO**（印刷はブラウザ UI 依存）。
+
+## 2026-05-15 JST 本題＝部署予実（678/679）クローズ・明日ユーザサポート
+
+- **状況**: **予実管理の依頼事項は本日区切り**（CEO）。**678** 本番: バナー撤去・予算見通し・677 ヘッダリンク撤去・件数表示強化・縦中央など（**実効ビルド**は `kintone-apps.md` 先頭・最終 **BUILD** `2026-05-15-678-hide-native-pager-zero-label`・**rev 153** 付近）。**679** マニュアルから **677 URL** 除去・**BUILD** `2026-05-15-679-manual-no-677-nav`。**SPEC** §10.2 追記。**npm** `yojitsu:679:sync-manual-js:check` 追加。
+- **規律**: **品質は落とさず憲法・ルール優先**（CEO）。**§1／§M-2** は締めターンで実施。**自己評価 7.8/10**・詳細は **`docs/reports/2026-05-15-evening-reflection.md`**。
+- **次（明日）**: **ユーザサポート 682/683** — **週次要約**・**月報印刷（§7 仕様 → ボタン・レイアウト）**。683 は **rev 39** 前提・**P1→P2**（2026-05-14 夕反省承認済み案）。**read-pack 09→**・**`verify:constitution-handoff`** を項番 0 で。
+- **動作確認**: **依頼があれば浜田 CEO**（678 件数ラベルはロジック強化済み・目視は任意）。
+- **Desktop**: 本ターンで **`docs/reports/2026-05-15-evening-reflection.md`** 作成 → **`SESSION_STARTER_DESKTOP_DIR`** 付き **`session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync`**（**`26-evening-reflection-2026-05-15.md`** 含む）。
+
+## 2026-05-14 JST 本題＝ユーザサポート 683 ダッシュ（CEO 本日区切り）
+
+- **状況**: **682 正本**・**683 Space 48 閲覧ダッシュ**。グラフ直下 **月次・週次コメント**（表示・編集・**保存**）。**週次**は暦月 **第1〜4 ブロック**＋**日別 dt 合計件数**ラベル。
+- **683 LIVE**: `customize/683/desktop.js` **BUILD** `2026-05-15-683-print-spec7-page2`・**revision 39**（§7 **月次印刷**・ページ2 非LLM）。共通 CSS（寸法・行間・`@media print`）。**印刷ボタン**＝本 BUILD で実装済（CEO 承認 U3 の一部）。
+- **Claude 中継**: `npm run user683:claude-relay`（**127.0.0.1:17884**）・Runbook `docs/runbooks/user683-claude-relay.md`。**単一プロセス**・HTTPS kintone の **混在コンテンツ**に注意。
+- **動作確認**: **依頼があれば浜田 CEO 目視**（保存・件数・**行間・印刷プレビュー**は **2026-05-14 時点で最終 OK 未取得**）。
+- **次**: **レポート印刷仕様**確定 → **印刷ボタン**。**Python バッチ**は UI／印刷後。
+- **同日別枠**: **PC台帳 674**（JBIS／購入フィールド）は **下記 2026-05-14 PC台帳 節**を参照。
+
 ## 2026-05-14 JST 本題＝PC台帳（674）採番・購入フィールド
 
 - **状況**: **674** の個人 **JBIS**／共有 **S-JBIS** を **廃棄以外の `pc_name` から空き若番**（1 から最小）。**登録済み PC 名は自動で上書きしない**（`pc_name` 空のみ）。**JR** は従来どおり **PC 名手入力**。

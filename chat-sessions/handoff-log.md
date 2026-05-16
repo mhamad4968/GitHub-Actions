@@ -1878,3 +1878,101 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 - `次の1手`: 朝 **read-pack 09→**・**`credit:status` 再確認**・674 改修は **preflight→deploy（GO 後）**・浜田 **目視は依頼時のみ**（runbook 準備済）。
 - `GO待ち`: **674 本番 deploy**・**kintone REST `--apply`**・**JBIS 一括 `--apply`**・**浜田目視**。
 
+---
+
+### 2026-05-14 夜 JST — ユーザサポート 682/683（CEO 本日区切り）
+
+**経緯**: **683** ダッシュで **月次・週次コメント UI**・**682 日別対応抜粋**・**週次件数ラベル**・**Claude 中継（自宅 17884）**・**保存 PUT**・**週次生成タイミング**・**ラベル／寸法／行間／印刷 CSS** を反復反映。**印刷ボタン**は **仕様未決のため未着手**（後日 CEO 相談）。
+
+**確定**: **683** BUILD `2026-05-14-683-summary-line-height`・**revision 37**。**混在コンテンツ**・**17884 単一プロセス**は Runbook／handoff に明記。
+
+**未確定 / 次**: **行間・印刷の CEO 最終 OK**（依頼時目視）。**レポート印刷仕様** → **印刷ボタン**。**Python バッチ**は UI 確定後。
+
+**AI 補足**:
+- `次の1手`: read-pack **09→**・`docs/reports/2026-05-14-evening-reflection.md`・本ブロック・`25-checkpoint-latest.md` を Desktop 同期済み前提で再開。
+- `GO待ち`: **印刷仕様・印刷ボタン**（CEO 承認後）。**683 追加 deploy** は preflight→deploy。
+
+**次セッションへの 1 行**: **683 rev 37** まで。**印刷は仕様から**。**行間 OK は未取得**。
+
+---
+
+### 2026-05-14 夜 JST — CEO 承認（ユーザサポート 明日案 P1〜P7）
+
+**浜田メモ（要約）**: 提案事項 **承認**。大きな反省点はなく依頼対応は **順調**。
+
+**確定**: 夕反省 **P1〜P7** を **承認済**として正本更新。次回は **P1 印刷仕様**から着手（**P2 印刷ボタン**は仕様後）。
+
+**次セッションへの 1 行**: read-pack **09→**・**P1 印刷仕様**・683 **rev 37** 前提。
+
+---
+
+### 2026-05-15 JST — 部署予実（678/679）依頼区切り・夕反省・Desktop 同期
+
+**浜田メモ（要約）**: 予実の依頼は **本日まで**。明日は **ユーザサポート**（週次要約・月報印刷）。**ルール・憲法の範囲で品質は落とさない**。**本日のまとめ・反省・自己評価・明日案**を出し **Desktop「AI緊急用」を更新し古いファイルは削除**（sync の prune に委ねる）。**報告は 1 個**にまとめる。
+
+**経緯（簡潔）**:
+- **678**: 正本バナー撤去・予算見通しコメント風・**677 クイックリンク削除**・**`vertical-align: middle`**・**標準件数「0-0」非表示**の強化（normalize／`is678PagingCountLabelText`／MO を **getId()===678** で常時／**index.show 即時 hide**／**`.gaia-argoui-app-index-pager`** CSS 等）。**preflight→deploy** 複数回・`kintone-apps.md` 追随。
+- **679**: `yojitsu-quick-manual.html` / `.md` と **sync スクリプト**から **677 リンク**除去・`node scripts/sync-yojitsu-679-manual-desktop.mjs` 再生成・**deploy**・台帳。
+- **SPEC**: §10.2 に **リンク撤去**の 1 文。
+- **DX**: `package.json` に **`yojitsu:679:sync-manual-js:check`**（PowerShell **`&&` 非対応**の回避用）。
+- **夕反省正本**: `docs/reports/2026-05-15-evening-reflection.md`（**自己評価 7.8/10**・明日案 **U1〜U5**・役割分担表）。
+- **Desktop**: `SESSION_STARTER_DESKTOP_DIR=C:\Users\mhamada202408224\Desktop\AI緊急用` で **`npm run session-starter:sync-desktop`** → **`npm run verify:desktop-ai-emergency-sync`**（**prune で旧ファイル名削除**）。
+
+**AI 補足（漏れ防止）**:
+- `git`: 本ターンの **リポ変更**は **未コミット**の可能性（`package.json`・`docs/reports/…`・`chat-sessions/*`・`SPEC.md` 等）。**浜田の commit 方針**に従う。
+- `次の1手`: **明日** read-pack **09→**・**683 週次／印刷 P1**・**`verify:constitution-handoff`**。
+- `GO待ち`: **印刷仕様の追加 CEO 合意**（§7 範囲の変更が出る場合）。
+- `関連パス`: `customize/678/desktop.js`・`customize/679/desktop.js`・`templates/yojitsu-budget-lite/docs/yojitsu-quick-manual.html`・`scripts/sync-yojitsu-679-manual-desktop.mjs`・`docs/reports/2026-05-15-evening-reflection.md`・`docs/plans/2026-05-08-user-support-daily-counts-spec.md` §7。
+
+**次セッションへの 1 行**: **予実は区切り済**。**683 rev 37**・**週次／P1 印刷仕様**から。**§1 毎ターン**と **handoff 同時更新**を意識。
+
+---
+
+### 2026-05-15 JST（続行）— CEO 承認 U1〜U5 実装・683 §7 印刷 deploy
+
+**浜田メモ（要約）**: 夕反省の **提案事項・反省改善（U1〜U5）を承認**。**残課題があれば本日中に進める**。
+
+**経緯（簡潔）**:
+- **U1**: `chat-sessions/desktop-ai-emergency-read-pack/09-READ-01.txt` — 項番 0 を **`verify:constitution-handoff` → `session:bootstrap`** の順に更新。**本ターン `npm run verify:constitution-handoff` → exit 0**。
+- **U2**: **`docs/runbooks/user683-weekly-summary-and-print.md`** 新設（**682 / 683 / 632 別レーン**・保存経路・§7 印刷の運用要約）。
+- **U3**: `customize/683/desktop.js` — **§7 月次印刷**（`window.print`）・**ページ2** 日別ブロック（**非LLM**・§7.2 中央値ガード・**未来日は非表示**）。**`npm run cio:preflight:683`** → **`npm run deploy:683` SUCCESS**・revision **38**・fileKey **`92014455-3384-43cd-80af-8fb3486aac05`**。**BUILD** `2026-05-15-683-print-spec7-page2`。**`kintone-apps.md`**・**`docs/plans/2026-05-08-user-support-daily-counts-spec.md`** 変更履歴を追随。**夕反省正本**に「CEO 承認後の実装」節を追記。
+- **U4/U5**: §1 短文化禁止は運用どおり。**日終わり 1 コマンド例**: `npm run desktop:sync-and-verify`（`SESSION_STARTER_DESKTOP_DIR` 等は環境に合わせる）。
+
+**AI 補足**:
+- `次の1手`: **683** で **印刷プレビュー**（2 枚目の有無・§7.2 文言）を **依頼があれば浜田 CEO 目視**。read-pack 変更後は **`npm run session-starter:sync-desktop` → `npm run verify:desktop-ai-emergency-sync`**。
+- `GO待ち`: **§7 のレイアウト微調整**が要る場合のみ CEO。
+- `関連パス`: `customize/683/desktop.js`・`docs/runbooks/user683-weekly-summary-and-print.md`・`chat-sessions/checkpoint-latest.md`・`docs/reports/2026-05-15-evening-reflection.md`。
+
+**次セッションへの 1 行**: **683 rev 38**・§7 印刷 **目視確認**・632 混同しない（新 Runbook 先頭表）。
+
+---
+
+### 2026-05-16 JST — 683 印刷 2 枚化・提出用 PDF ボタン撤去・セッション終了（handoff / Desktop / GitHub）
+
+**浜田メモ（要約）**: **終了**。引継ぎ準備、**GitHub のエラー確認と改善**、**Desktop「AI緊急用」**のメンテ・過去／不要ファイル・フォルダ削除。**デプロイは濱田に頼らない**。**動作確認は依頼があれば濱田**。
+
+**経緯（簡潔）**:
+- **683 `customize/683/desktop.js`**: **「提出用 PDF」ボタン**および別タブ PDF 起動経路を削除。**印刷報告用**の `@media print` を多段で縮小（`@page` **5mm**・基準 **8pt**・ヒーロー／要約／見出し／2 枚目表・グラフ **`scale(0.68)`** 等）。**`ensureUser683PrintReportStyles`** は毎回 `textContent` 上書き（デプロイ後の古い印刷 CSS 残留防止）。**BUILD** `2026-05-16-683-print-2page-tight-v2`。**preflight → `deploy:683` SUCCESS**・**revision 74**・fileKey **`4bb662aa-b47a-40c5-b1f7-2ba4dffa8f63`**（以降の微調整も **CIO が preflight→deploy**）。
+- **引継ぎ**: 本ブロック追記・**`checkpoint-latest.md`** 先頭に **2026-05-16** 節を追加。
+- **Desktop「AI緊急用」**: **`SESSION_STARTER_DESKTOP_DIR`** 前提で **`npm run session-starter:sync-desktop`** → **`npm run verify:desktop-ai-emergency-sync`**。sync 内 **prune** で旧番号名を削除（手動削除は verify 不一致リスクのため、**正本はリポ・余剰は sync 後に一覧してから**）。
+
+**AI 補足（漏れ防止）**:
+- `次の1手`: **683 印刷プレビュー**がまだ **3 枚**なら **scale か構成**の追加検討（依頼時目視）。**`gh run list` / `gh pr checks`** で GitHub 側の失敗があれば次ターンで修正。
+- `GO待ち`: なし（本ターンは UI/CSS と運用メンテ中心）。
+- `関連パス**: `customize/683/desktop.js`・`scripts/sync-session-starter-to-desktop.mjs`・`scripts/verify-desktop-ai-emergency-sync.mjs`・`chat-sessions/desktop-ai-emergency-read-pack/`。
+
+**次セッションへの 1 行**: **683 rev 74**・**印刷 2 枚前後の目視**（依頼時）・**read-pack 変更後は sync→verify**・**GitHub CI 赤なら優先トリアージ**。
+
+---
+
+### 2026-05-16 JST — GitHub Actions: push 連動 kintone デプロイの安全ゲート
+
+**経緯**: **main** push 時に **意図しない kintone JS 反映**があり得るため、CIO が **仕組みで抑止**。
+
+**実装**:
+- `.github/workflows/kintone-customize-deploy.yml` — **push** では **Repository variable `KINTONE_PUSH_AUTO_DEPLOY=true`** かつ **単一アプリ**（`customize/<数字>/desktop.js` の uniq が 1）のときだけ **`deploy_js=1`**。**`workflow_dispatch`** は従来どおり手動デプロイ可。
+- **`docs/runbooks/kintone-ci-push-deploy-guard.md`** — 設定手順・チェックリスト。
+
+**運用**: **push で自動デプロイを続ける場合**は GitHub → **Actions Variables** に **`KINTONE_PUSH_AUTO_DEPLOY=true`** を設定。**未設定なら ESLint のみ**（本番 JS は上がらない）。
+
+**次セッションへの 1 行**: Runbook **`kintone-ci-push-deploy-guard.md`** を読み、**変数を true にするか**は方針に合わせて決める。

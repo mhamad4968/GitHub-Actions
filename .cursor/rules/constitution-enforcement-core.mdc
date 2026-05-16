@@ -1,6 +1,7 @@
 ---
 description: AGENTS.md §35-1 §56-1a（TSB-024）— 違反＝失敗・CIO体制2者ダブルチェックの定義正本（常時想起）
-alwaysApply: true
+alwaysApply: false
+globs: "**/*"
 ---
 
 # 憲法遵守・失敗の定義（CIO 体制・正本）

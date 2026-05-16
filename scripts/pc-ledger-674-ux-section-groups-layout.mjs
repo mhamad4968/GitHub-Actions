@@ -27,6 +27,9 @@ const LAYOUT_FIELD_ORDER = {
     'dept_name',
     'group_name',
     'purchase_date',
+    'purchase_amount',
+    'purchase_vendor',
+    'purchase_vendor_other',
     'latest_inventory_date',
   ],
   pc_ledger_g_account: [

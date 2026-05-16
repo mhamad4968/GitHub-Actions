@@ -7,17 +7,22 @@
  *   npm run cio:preflight:683 -- --note "…"
  *   npm run deploy:683
  *
- * Ollama 要約（ブラウザ）: `npm run user683:ollama-relay`（中継）＋`docs/runbooks/user683-ollama-relay.md`。
- * 自動投入（推奨）: `npm run user683:sync-summaries:apply` → `docs/runbooks/user683-summary-job.md`（682→Ollama→kintone、683 は GET で表示）。
+ * 中継ゼロ（閲覧・手修正・保存のみ）: `USER683_RELAY_ZERO_MODE = true`（既定）でブラウザの AI 生成ボタンを出さない。要約投入は **`npm run user683:sync-summaries:apply`**。
+ * ブラウザから AI 生成する場合: `USER683_RELAY_ZERO_MODE = false` にして deploy し、`docs/runbooks/user683-claude-relay.md`（`USER683_CLAUDE_RELAY_ORG_DEFAULT` 等）。
+ * 印刷報告用: 一覧「印刷報告用」→ブラウザ印刷（2枚構成・`@media print`）。
  */
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-14-683-summary-comments-edit-save';
+  const BUILD = '2026-05-16-683-print-2page-tight-v2';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
-  /** `true` のときのみ Ollama 生成ボタンを出す（中継 URL 要）。 */
-  const USER683_SHOW_OLLAMA_GENERATE_BTN = false;
+  /**
+   * **中継ゼロ運用**（`true`）: 一覧では要約の閲覧・手修正・「コメントを保存」のみ。ブラウザから Claude 中継へはアクセスしない（生成ボタン非表示）。
+   * 要約の投入・更新は `npm run user683:sync-summaries:apply`（タスクスケジューラ等）が kintone 要約キャッシュへ書き込む。`false` にすると週次・月次の AI 生成ボタンが出る（社内 HTTPS 中継 URL が必要）。
+   */
+  const USER683_RELAY_ZERO_MODE = true;
+  const USER683_SHOW_CLAUDE_GENERATE_BTN = !USER683_RELAY_ZERO_MODE;
   /** データ正本アプリ（REST の app は常にここを指定） */
   const APP682 = 682;
   /** 683 一覧用（682 の `user_support_682_banner_cal_ym_v1` と衝突させない） */
@@ -28,13 +33,23 @@
   const FC_PM = 'pm_count';
   const FC_AM_TEXT = 'am_correspondence';
   const FC_PM_TEXT = 'pm_correspondence';
-  /** Ollama 中継 JSON 肥大防止のため日次コーパス上限（表には出さない） */
+  /** 中継 POST の JSON 肥大防止のため日次コーパス上限 */
   const RELAY_DAY_CORPUS_MAX_LEN = 3200;
+  /** 日別表「主な対応内容」列の最大表示文字数 */
+  const TABLE_DAY_SUMMARY_MAX_LEN = 320;
   /** 週次メモ（683 のみ・sessionStorage。682 正本とは未連携） */
   const WEEK_NOTE_KEY = 'user_support_683_week_notes_v1';
   const MONTH_NOTE_KEY = 'user_support_683_month_note_v1';
-  /** 中継の POST 先（フル URL。例: https://社内ホスト/user683/summarize）。sessionStorage 優先。 */
-  const RELAY_URL_STORAGE_KEY = 'user_support_683_ollama_relay_url';
+  /** Claude 中継 POST 先（フル URL）。sessionStorage 優先。 */
+  const CLAUDE_RELAY_URL_STORAGE_KEY = 'user_support_683_claude_relay_url';
+  /** HTTP の kintone／ローカル検証向け: sessionStorage 未設定時の既定 POST 先（`npm run user683:claude-relay`）。HTTPS の本番オリジンでは Chromium がループバック fetch を拒否するため使わない。`window.USER683_CLAUDE_RELAY_USE_FALLBACK === false` で無効化。 */
+  const USER683_CLAUDE_RELAY_FALLBACK = 'http://127.0.0.1:17884/user683/summarize';
+  /**
+   * 組織共通の Claude 中継 URL（**HTTPS** のフル URL、`…/user683/summarize`）。空なら未使用。
+   * 1 行だけ埋めて deploy すれば、各ユーザが `?user683_claude_relay=` を貼らなくてよい。
+   * 優先順: `window.USER683_CLAUDE_RELAY_URL` → sessionStorage → **本定数** → `window.USER683_ORG_CLAUDE_RELAY_URL`
+   */
+  var USER683_CLAUDE_RELAY_ORG_DEFAULT = '';
   /** `user683:sync-summaries:*` が書き込む要約キャッシュを読むアプリ（`window.USER683_SUMMARY_CACHE_APP` で上書き可） */
   const SUMMARY_CACHE_APP_DEFAULT = 683;
   const FC_SUMMARY_YM = 'user683_dash_ym';
@@ -42,6 +57,18 @@
   const FC_SUMMARY_W2 = 'user683_week_2';
   const FC_SUMMARY_W3 = 'user683_week_3';
   const FC_SUMMARY_W4 = 'user683_week_4';
+  const FC_SUMMARY_W5 = 'user683_week_5';
+  const FC_SUMMARY_W6 = 'user683_week_6';
+  /** 日曜〜土曜の暦週を当月 1 日〜末日でクリップしたときの最大ブロック数（例: 2026-05 は 6） */
+  const USER683_SUMMARY_WEEK_SLOTS = 6;
+  const FC_SUMMARY_WEEK_CODES = [
+    FC_SUMMARY_W1,
+    FC_SUMMARY_W2,
+    FC_SUMMARY_W3,
+    FC_SUMMARY_W4,
+    FC_SUMMARY_W5,
+    FC_SUMMARY_W6,
+  ];
   const FC_SUMMARY_MONTH = 'user683_month';
 
   /**
@@ -122,7 +149,7 @@
     return m[1] + '/' + m[2] + '/' + m[3] + '(' + wd + ')';
   }
 
-  /** Ollama 中継コーパス用の日付ラベル（月日の先頭ゼロ省略） */
+  /** 中継コーパス用の日付ラベル（月日の先頭ゼロ省略） */
   function formatYmdShortWday(isoYmd) {
     const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(isoYmd);
     if (!m) return isoYmd;
@@ -136,8 +163,25 @@
     return m[1] + '/' + mo + '/' + day + '(' + wd + ')';
   }
 
-  const COLOR_DAY_LABEL_WEEKEND_HOLIDAY = '#92400e';
-  const COLOR_DAY_LABEL_WEEKDAY = '#0f172a';
+  const COLOR_DAY_LABEL_WEEKEND_HOLIDAY = '#a67c52';
+  const COLOR_DAY_LABEL_WEEKDAY = '#475569';
+
+  /** 683 棒グラフ（彩度を抑えたトーン） */
+  const CH683_BAR_DAY = '#6ba89f';
+  /** 月次（直近6暦月）— 茶系（週次の青と差別化） */
+  const CH683_BAR_MONTH = '#8f735f';
+  /** 週次積み上げ（午前／午後）— 青系2トーン（スレート＋ソフトスカイ） */
+  const CH683_WEEK_AM = '#a8c8e6';
+  const CH683_WEEK_PM = '#4a6785';
+  const CH683_WEEK_SINGLE = '#6d8cad';
+  const CH683_BAR_ZERO = '#cad8e8';
+
+  /**
+   * 月次 `buildBarCardGrid`（compact + chartBoost）と週次積み上げの**棒の描画高さ**を揃える。
+   * `buildBarCardGrid` 内の式 `boost ? (compact ? … : …)` と同値を維持すること。
+   */
+  const CH683_CHART_BOOST_COMPACT_BAR_H = 208;
+  const CH683_CHART_BOOST_COMPACT_ROW_MIN_H = 236;
 
   function jstYmdToUtcNoonMs(year, month1to12, day) {
     return Date.UTC(year, month1to12 - 1, day, 12, 0, 0);
@@ -181,13 +225,6 @@
     return { y: yy, m: mo, d: da };
   }
 
-  /** 当該暦日を含む週の月曜（JST） */
-  function jstMondayOfWeekContaining(year, month1to12, anchorDay) {
-    const w = jstWeekdaySun0(year, month1to12, anchorDay);
-    const delta = (w + 6) % 7;
-    return jstCalendarAddDays(year, month1to12, anchorDay, -delta);
-  }
-
   function jstWeekdayNarrowJa(year, month1to12, day) {
     return new Intl.DateTimeFormat('ja-JP', {
       timeZone: 'Asia/Tokyo',
@@ -212,27 +249,32 @@
   }
 
   function readWeekNotes(ym) {
+    const need = weekSlotCountForYm(ym);
+    const empty = [];
+    for (let i = 0; i < need; i += 1) empty.push('');
     try {
       const raw = window.sessionStorage.getItem(WEEK_NOTE_KEY);
-      if (!raw) return ['', '', '', ''];
+      if (!raw) return empty;
       const o = JSON.parse(raw);
-      if (o && o.y === ym.y && o.m === ym.m && Array.isArray(o.w) && o.w.length === 4) {
-        return o.w.map(function (x) {
+      if (o && o.y === ym.y && o.m === ym.m && Array.isArray(o.w)) {
+        const w = o.w.map(function (x) {
           return String(x);
         });
+        while (w.length < need) w.push('');
+        return w.slice(0, need);
       }
     } catch (e) {
       console.warn(BUILD, e);
     }
-    return ['', '', '', ''];
+    return empty;
   }
 
   function writeWeekNotes(ym, arr) {
     try {
-      window.sessionStorage.setItem(
-        WEEK_NOTE_KEY,
-        JSON.stringify({ y: ym.y, m: ym.m, w: arr.slice(0, 4) }),
-      );
+      const need = weekSlotCountForYm(ym);
+      const w = arr.slice(0, need);
+      while (w.length < need) w.push('');
+      window.sessionStorage.setItem(WEEK_NOTE_KEY, JSON.stringify({ y: ym.y, m: ym.m, w: w }));
     } catch (e) {
       console.warn(BUILD, e);
     }
@@ -268,14 +310,13 @@
   }
 
   function summaryRecordBody(ymKey, weeks, monthText) {
-  var body = {};
-  body[FC_SUMMARY_YM] = { value: ymKey };
-  body[FC_SUMMARY_W1] = { value: weeks[0] != null ? String(weeks[0]) : '' };
-  body[FC_SUMMARY_W2] = { value: weeks[1] != null ? String(weeks[1]) : '' };
-  body[FC_SUMMARY_W3] = { value: weeks[2] != null ? String(weeks[2]) : '' };
-  body[FC_SUMMARY_W4] = { value: weeks[3] != null ? String(weeks[3]) : '' };
-  body[FC_SUMMARY_MONTH] = { value: monthText != null ? String(monthText) : '' };
-  return body;
+    var body = {};
+    body[FC_SUMMARY_YM] = { value: ymKey };
+    for (var wi = 0; wi < FC_SUMMARY_WEEK_CODES.length; wi += 1) {
+      body[FC_SUMMARY_WEEK_CODES[wi]] = { value: weeks[wi] != null ? String(weeks[wi]) : '' };
+    }
+    body[FC_SUMMARY_MONTH] = { value: monthText != null ? String(monthText) : '' };
+    return body;
   }
 
   /** フィールドコードは `docs/runbooks/user683-summary-job.md` と `user683-sync-summaries-to-kintone.mjs` と一致させる */
@@ -287,16 +328,7 @@
       .api(kintone.api.url('/k/v1/records.json', true), 'GET', {
         app: appId,
         query: q,
-        fields: [
-          FC_SUMMARY_YM,
-          FC_SUMMARY_W1,
-          FC_SUMMARY_W2,
-          FC_SUMMARY_W3,
-          FC_SUMMARY_W4,
-          FC_SUMMARY_MONTH,
-          '$id',
-          '$revision',
-        ],
+        fields: [FC_SUMMARY_YM].concat(FC_SUMMARY_WEEK_CODES.slice(), [FC_SUMMARY_MONTH, '$id', '$revision']),
       })
       .then(function (resp) {
         var recs = resp.records || [];
@@ -309,7 +341,9 @@
           id: r.$id && r.$id.value != null ? String(r.$id.value) : '',
           revision:
             r.$revision && r.$revision.value != null ? String(r.$revision.value) : '',
-          weeks: [gv(FC_SUMMARY_W1), gv(FC_SUMMARY_W2), gv(FC_SUMMARY_W3), gv(FC_SUMMARY_W4)],
+          weeks: FC_SUMMARY_WEEK_CODES.map(function (code) {
+            return gv(code);
+          }),
           month: gv(FC_SUMMARY_MONTH),
         };
       })
@@ -319,9 +353,10 @@
       });
   }
 
-  function readSummaryTextsFromDom() {
+  function readSummaryTextsFromDom(ym) {
     var weeks = [];
-    for (var i = 0; i < 4; i += 1) {
+    var need = weekSlotCountForYm(ym);
+    for (var i = 0; i < need; i += 1) {
       var ta = document.getElementById('user683-week-note-' + i);
       weeks.push(ta ? String(ta.value || '') : '');
     }
@@ -375,7 +410,8 @@
   function hydrate683SummaryTextareasFromServer(ym, sc) {
     if (!sc) return;
     setSummaryCacheMetaOnWrap(sc);
-    for (var i = 0; i < 4; i += 1) {
+    var need = weekSlotCountForYm(ym);
+    for (var i = 0; i < need; i += 1) {
       var ta = document.getElementById('user683-week-note-' + i);
       if (!ta) continue;
       if (sc.weeks && sc.weeks[i] != null) {
@@ -385,8 +421,9 @@
     var mta = document.getElementById('user683-month-note');
     if (mta && sc.month != null) {
       mta.value = String(sc.month);
+      scheduleAutosizeMonthSummaryTextarea();
     }
-    var texts = readSummaryTextsFromDom();
+    var texts = readSummaryTextsFromDom(ym);
     writeWeekNotes(ym, texts.weeks);
     writeMonthNote(ym, texts.month);
   }
@@ -414,7 +451,7 @@
     foot.appendChild(st);
     wrap.appendChild(foot);
     btn.onclick = function () {
-      var texts = readSummaryTextsFromDom();
+      var texts = readSummaryTextsFromDom(ym);
       var meta = readSummaryCacheMetaFromWrap();
       btn.disabled = true;
       st.style.color = '#64748b';
@@ -456,13 +493,12 @@
   }
 
   /**
-   * 683 中継 POST 先の文字列を正規化する。
+   * Claude 中継 POST 先の文字列を正規化する。
    * 例: 先頭に数字が付いた `20http//127.0.0.1:11434/...` → `http://127.0.0.1:11434/...` を抽出し、
    * `http//` を `http://` に直す。`https:// http://127.0.0.1/...` のような **二重スキーム**は先頭を剥がす。
-   * 11434 は Ollama 本体で `/user683/summarize` は載らないため、
-   * localhost 系かつパスが中継のときだけ **17883** に寄せる（`npm run user683:ollama-relay` の待受）。
+   * localhost 系かつパスが `/user683/summarize` のとき、誤って **11434**（別用途）を入れた場合は **17884**（Claude 中継）に寄せる。
    */
-  function normalizeOllamaRelaySummarizeUrl(raw) {
+  function normalizeClaudeRelaySummarizeUrl(raw) {
     if (raw == null) return '';
     var s = String(raw).trim();
     if (!s) return '';
@@ -495,7 +531,7 @@
       u.hostname === '[::1]' ||
       u.hostname === '0.0.0.0';
     if (pathIsRelay && loopHost && u.port === '11434') {
-      u.port = '17883';
+      u.port = '17884';
     }
     var out = u.href;
     if (out.endsWith('/')) {
@@ -504,18 +540,40 @@
     return out;
   }
 
-  function getOllamaRelaySummarizeUrl() {
+  function isTopWindowHttps() {
+    try {
+      return typeof window !== 'undefined' && window.location && window.location.protocol === 'https:';
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /** `http://127.0.0.1` 等。HTTPS の公開ページから fetch すると Chromium の PNA（ループバック禁止）で失敗する。 */
+  function isPrivateLoopbackHttpUrl(urlStr) {
+    if (!urlStr) return false;
+    var u;
+    try {
+      u = new URL(urlStr);
+    } catch (e0) {
+      return false;
+    }
+    if (u.protocol !== 'http:') return false;
+    var h = String(u.hostname || '').toLowerCase();
+    return h === '127.0.0.1' || h === 'localhost' || h === '[::1]' || h === '0.0.0.0';
+  }
+
+  function getClaudeRelaySummarizeUrl() {
     var fromWin = '';
     var fromSess = '';
     try {
-      if (typeof window !== 'undefined' && window.USER683_OLLAMA_RELAY_URL) {
-        fromWin = String(window.USER683_OLLAMA_RELAY_URL).trim();
+      if (typeof window !== 'undefined' && window.USER683_CLAUDE_RELAY_URL) {
+        fromWin = String(window.USER683_CLAUDE_RELAY_URL).trim();
       }
     } catch (e) {
       console.warn(BUILD, e);
     }
     try {
-      var s0 = window.sessionStorage.getItem(RELAY_URL_STORAGE_KEY);
+      var s0 = window.sessionStorage.getItem(CLAUDE_RELAY_URL_STORAGE_KEY);
       if (s0 && String(s0).trim()) {
         fromSess = String(s0).trim();
       }
@@ -523,20 +581,165 @@
       console.warn(BUILD, e2);
     }
     var raw = fromWin || fromSess;
-    if (!raw) return '';
-    var norm = normalizeOllamaRelaySummarizeUrl(raw);
+    if (!raw) {
+      var fromOrgConst = String(USER683_CLAUDE_RELAY_ORG_DEFAULT || '').trim();
+      if (fromOrgConst) {
+        raw = fromOrgConst;
+      }
+    }
+    if (!raw) {
+      var fromOrgWin = '';
+      try {
+        if (typeof window !== 'undefined' && window.USER683_ORG_CLAUDE_RELAY_URL) {
+          fromOrgWin = String(window.USER683_ORG_CLAUDE_RELAY_URL).trim();
+        }
+      } catch (eOrg) {
+        console.warn(BUILD, eOrg);
+      }
+      if (fromOrgWin) {
+        raw = fromOrgWin;
+      }
+    }
+    if (!raw) {
+      try {
+        if (typeof window !== 'undefined' && window.USER683_CLAUDE_RELAY_USE_FALLBACK === false) {
+          return '';
+        }
+      } catch (e4) {
+        console.warn(BUILD, e4);
+      }
+      if (isTopWindowHttps()) {
+        return '';
+      }
+      raw = USER683_CLAUDE_RELAY_FALLBACK;
+    }
+    var norm = normalizeClaudeRelaySummarizeUrl(raw);
     if (!norm) return '';
+    if (isTopWindowHttps() && isPrivateLoopbackHttpUrl(norm)) {
+      console.warn(
+        BUILD,
+        'Claude relay URL is loopback http; Chromium blocks fetch from https public origins (Private Network Access). Set window.USER683_CLAUDE_RELAY_URL to an HTTPS tunnel or relay.',
+        { url: norm },
+      );
+      return '';
+    }
     if (norm !== raw) {
-      console.info(BUILD, 'ollama relay URL normalized', { from: raw, to: norm });
+      console.info(BUILD, 'claude relay URL normalized', { from: raw, to: norm });
     }
     if (norm !== raw) {
       try {
-        window.sessionStorage.setItem(RELAY_URL_STORAGE_KEY, norm);
+        window.sessionStorage.setItem(CLAUDE_RELAY_URL_STORAGE_KEY, norm);
       } catch (e3) {
         console.warn(BUILD, e3);
       }
     }
     return norm;
+  }
+
+  function stripClaudeRelayQueryParams() {
+    try {
+      if (typeof window === 'undefined' || !window.location || !window.history || !window.history.replaceState) {
+        return;
+      }
+      var u = new URL(window.location.href);
+      if (!u.searchParams.has('user683_claude_relay') && !u.searchParams.has('u683cr')) {
+        return;
+      }
+      u.searchParams.delete('user683_claude_relay');
+      u.searchParams.delete('u683cr');
+      window.history.replaceState(null, '', u.pathname + u.search + u.hash);
+    } catch (e) {
+      console.warn(BUILD, e);
+    }
+  }
+
+  /**
+   * 683 一覧 URL のクエリから中継 URL を取り込む（コンソール不要）。
+   * `?user683_claude_relay=` または短縮 `?u683cr=`（値はフル URL。HTTPS トンネル想定）
+   */
+  function applyClaudeRelayFromQuery() {
+    try {
+      if (typeof window === 'undefined' || !window.location) {
+        return;
+      }
+      var u = new URL(window.location.href);
+      var raw = String(u.searchParams.get('user683_claude_relay') || u.searchParams.get('u683cr') || '').trim();
+      if (!raw) {
+        return;
+      }
+      var norm = normalizeClaudeRelaySummarizeUrl(raw);
+      if (!norm) {
+        console.warn(BUILD, 'ignored invalid user683_claude_relay / u683cr query');
+        stripClaudeRelayQueryParams();
+        return;
+      }
+      if (isTopWindowHttps() && isPrivateLoopbackHttpUrl(norm)) {
+        console.warn(BUILD, 'ignored loopback http relay in query on https page');
+        stripClaudeRelayQueryParams();
+        return;
+      }
+      window.USER683_CLAUDE_RELAY_URL = norm;
+      try {
+        window.sessionStorage.setItem(CLAUDE_RELAY_URL_STORAGE_KEY, norm);
+      } catch (e0) {
+        console.warn(BUILD, e0);
+      }
+      stripClaudeRelayQueryParams();
+      console.info(BUILD, 'Claude relay URL applied from URL query');
+    } catch (e1) {
+      console.warn(BUILD, e1);
+    }
+  }
+
+  /** Claude 生成ボタン押下時、中継 URL が無効なときの案内（月次・週次で共通） */
+  function alertClaudeRelayUrlUnset() {
+    var isHttps;
+    try {
+      isHttps =
+        typeof window !== 'undefined' && window.location && window.location.protocol === 'https:';
+    } catch (e0) {
+      isHttps = false;
+    }
+    var msg =
+      '【中継なしでも可】要約の表示・手編集・保存だけなら、定時ジョブの「npm run user683:sync-summaries:apply」が kintone に書き込んだ内容がそのまま使えます（この PC で中継を立てる必要はありません）。詳細: docs/runbooks/user683-summary-job.md\n\n' +
+      '【以下は「ブラウザから AI で新規生成」するときだけ】\n' +
+      'Claude 中継 URL が未設定か、このページから使えない値です。\n\n' +
+      '【いちばん簡単（コンソール不要）】\n' +
+      'ターミナルで npm run user683:claude-relay:public を実行し、表示された「?user683_claude_relay=…」の行をコピー。\n' +
+      '683 一覧を開いたブラウザのアドレス欄の末尾に貼り付けて Enter（アドレスからクエリは自動で外れます）。その後「生成」を押す。\n\n' +
+      '【従来（コンソール）】\n' +
+      '1) npm run user683:claude-relay:public\n' +
+      '2) 表示された window.USER683_CLAUDE_RELAY_URL の 1 行を F12 → Console に貼り付け → Enter → 再読込\n' +
+      '3) 終わったらターミナルで Ctrl+C\n\n' +
+      '【組織一括】全員同じ HTTPS 中継を使うなら、customize の USER683_CLAUDE_RELAY_ORG_DEFAULT に 1 行だけ書いて deploy（各ユーザの貼付が不要）。\n' +
+      '【補足】127.0.0.1 直は HTTPS kintone では使えません。詳細: docs/runbooks/user683-claude-relay.md\n\n' +
+      '【HTTP の kintone またはローカル検証】\n' +
+      'PC で npm run user683:claude-relay を起動し、http://127.0.0.1:17884/user683/summarize を sessionStorage または window 変数で設定できます。';
+    if (!isHttps) {
+      msg =
+        '【中継なしでも可】要約の表示・手編集・保存だけなら、定時ジョブの「npm run user683:sync-summaries:apply」で kintone に入った内容をそのまま使えます。詳細: docs/runbooks/user683-summary-job.md\n\n' +
+        '【以下は「ブラウザから AI で新規生成」するとき】\n' +
+        'Claude 中継 URL が未設定か無効です。\n\n' +
+        '【手順】\n' +
+        '1) 別ターミナル: npm run user683:claude-relay（127.0.0.1:17884）\n' +
+        '2) このページが HTTP のときは、未設定なら既定で http://127.0.0.1:17884/user683/summarize を使います。貼り付けた sessionStorage が壊れている場合は DevTools で確認。\n' +
+        '3) `window.USER683_CLAUDE_RELAY_USE_FALLBACK === false` のときは上記既定は使いません。\n' +
+        '4) 組織一括: customize の USER683_CLAUDE_RELAY_ORG_DEFAULT に HTTPS 中継を 1 行だけ書いて deploy。\n\n' +
+        '詳細: docs/runbooks/user683-claude-relay.md';
+    }
+    window.alert(msg);
+  }
+
+  function isWeekGenerateReady(ym, endDayInMonth) {
+    var endYmd = ym.y + '-' + pad2(ym.m) + '-' + pad2(endDayInMonth);
+    return todayJstYmd() >= endYmd;
+  }
+
+  function setSummaryGenStatus(text, color) {
+    var st = document.getElementById('user683-summary-status');
+    if (!st) return;
+    st.style.color = color || '#64748b';
+    st.textContent = text || '';
   }
 
   function collectCorpusForDayRange(ym, dim, d0, d1, byDay) {
@@ -553,21 +756,13 @@
   }
 
   function buildRelayPayload(ym, dim, byDay) {
-    const anchors = [1, 8, 15, 22];
-    const mondays = anchors.map(function (ad) {
-      return jstMondayOfWeekContaining(ym.y, ym.m, ad);
-    });
-    const ranges = [
-      [1, 7],
-      [8, 14],
-      [15, 21],
-      [22, dim],
-    ];
+    const ranges = weekBlockRangesSunSatInMonth(ym);
     const weeks = [];
-    for (let wi = 0; wi < 4; wi += 1) {
-      const mon = mondays[wi];
-      const label = String(mon.m) + '/' + String(mon.d) + '週次';
-      const corpus = collectCorpusForDayRange(ym, dim, ranges[wi][0], ranges[wi][1], byDay);
+    for (let wi = 0; wi < ranges.length; wi += 1) {
+      const d0 = ranges[wi][0];
+      const d1 = ranges[wi][1];
+      const label = String(ym.m) + '/' + String(d0) + '〜' + String(ym.m) + '/' + String(d1) + '週次';
+      const corpus = collectCorpusForDayRange(ym, dim, d0, d1, byDay);
       weeks.push({ label: label, corpus: corpus });
     }
     const monthParts = [];
@@ -586,126 +781,150 @@
     };
   }
 
-  function attachOllamaGenerateControls(ym, dim, byDay) {
-    const wrap = document.getElementById('user683-ai-summary-placeholder');
-    if (!wrap || wrap.querySelector('#user683-ollama-generate-btn')) {
-      return;
-    }
-    const first = wrap.firstElementChild;
-    if (!first) {
-      return;
-    }
-    const headerRow = document.createElement('div');
-    headerRow.id = 'user683-ai-header-row';
-    headerRow.style.cssText =
-      'display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;';
-    wrap.insertBefore(headerRow, first);
-    headerRow.appendChild(first);
-
-    const btn = document.createElement('button');
-    btn.id = 'user683-ollama-generate-btn';
-    btn.type = 'button';
-    btn.textContent = 'Ollamaで週次・月次要約を生成';
-    btn.style.cssText =
-      'cursor:pointer;padding:8px 14px;font-size:13px;font-weight:700;border-radius:6px;border:1px solid #0f766e;background:#14b8a6;color:#fff;';
-    headerRow.appendChild(btn);
-
-    const st = document.createElement('div');
-    st.id = 'user683-ollama-gen-status';
-    st.style.cssText = 'width:100%;font-size:12px;color:#64748b;margin-top:4px;';
-    st.textContent = '';
-    headerRow.appendChild(st);
-
-    btn.onclick = function () {
-      const url = getOllamaRelaySummarizeUrl();
+  function attachClaudeGenerateControls(ym, dim, byDay) {
+    if (!USER683_SHOW_CLAUDE_GENERATE_BTN) return;
+    var ranges = weekBlockRangesSunSatInMonth(ym);
+    var monthBtn = document.getElementById('user683-month-gen-btn');
+    if (monthBtn && !monthBtn.getAttribute('data-user683-claude-bound')) {
+      monthBtn.setAttribute('data-user683-claude-bound', '1');
+      monthBtn.onclick = function () {
+        var url = getClaudeRelaySummarizeUrl();
         if (!url) {
-        window.alert(
-          '中継 URL が未設定です（sessionStorage または window.USER683_OLLAMA_RELAY_URL）。\n' +
-            '自動投入なら PC で: npm run user683:sync-summaries:apply（Runbook docs/runbooks/user683-summary-job.md）。\n' +
-            '\n' +
-            '【この PC で中継を 17883 で動かしているとき・コンソール例】\n' +
-            "sessionStorage.setItem('" +
-            RELAY_URL_STORAGE_KEY +
-            "', 'http://127.0.0.1:17883/user683/summarize');\n" +
-            'location.reload();\n' +
-            '\n' +
-            '※ kintone が **HTTPS**（cybozu.com）のとき、**http://127.0.0.1** はブラウザの **混在コンテンツ**でブロックされることがあります。その場合は **HTTPS の社内中継 URL** を設定してください（Runbook docs/runbooks/user683-ollama-relay.md）。\n' +
-            '（**11434** は Ollama 本体。**`http//`** のコロン欠けは ERR_NAME_NOT_RESOLVED の原因になります。）',
-        );
-        return;
-      }
-      btn.disabled = true;
-      st.textContent = '生成中…（数分かかることがあります）';
-      const payload = buildRelayPayload(ym, dim, byDay);
-      const ac = new AbortController();
-      const to = window.setTimeout(function () {
-        ac.abort();
-      }, 300000);
-      fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-        signal: ac.signal,
-        credentials: 'omit',
-      })
-        .then(function (res) {
-          if (!res.ok) {
-            throw new Error('HTTP ' + res.status);
-          }
-          return res.json();
-        })
-        .then(function (data) {
-          const ws = data.weekSummaries;
-          if (!ws || !Array.isArray(ws)) {
-            throw new Error('invalid response');
-          }
-          for (let i = 0; i < 4; i += 1) {
-            const ta = document.getElementById('user683-week-note-' + i);
-            if (ta) {
-              ta.value = ws[i] != null ? String(ws[i]) : '';
+          alertClaudeRelayUrlUnset();
+          return;
+        }
+        var ac = new AbortController();
+        var to = window.setTimeout(function () {
+          ac.abort();
+        }, 180000);
+        var payload = buildRelayPayload(ym, dim, byDay);
+        monthBtn.disabled = true;
+        var py = prevCalendarMonthYm(ym.y, ym.m);
+        setSummaryGenStatus('前月要約を取得中…', '#64748b');
+        fetchSummaryCacheFromKintone(py)
+          .then(function (prevCache) {
+            var prevSummary =
+              prevCache && prevCache.month != null ? String(prevCache.month) : '';
+            setSummaryGenStatus('月次要約を生成中…', '#64748b');
+            return fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+              body: JSON.stringify({
+                action: 'month',
+                month: {
+                  corpus: payload.month.corpus,
+                  prevYmKey: py.y + '-' + pad2(py.m),
+                  prevMonthSummary: prevSummary,
+                  currentYmKey: ym.y + '-' + pad2(ym.m),
+                },
+              }),
+              signal: ac.signal,
+              credentials: 'omit',
+            });
+          })
+          .then(function (res) {
+            if (!res.ok) {
+              throw new Error('HTTP ' + res.status);
             }
-          }
-          const mta = document.getElementById('user683-month-note');
-          if (mta) {
-            mta.value = data.monthSummary != null ? String(data.monthSummary) : '';
-          }
-          const nextW = [];
-          for (let j = 0; j < 4; j += 1) {
-            const t2 = document.getElementById('user683-week-note-' + j);
-            nextW.push(t2 ? t2.value : '');
-          }
-          writeWeekNotes(ym, nextW);
-          writeMonthNote(ym, mta ? mta.value : '');
-          st.textContent = '完了しました。一覧を更新しています…';
-          window.setTimeout(function () {
+            return res.json();
+          })
+          .then(function (data) {
+            var mta = document.getElementById('user683-month-note');
+            if (mta) {
+              mta.value = data.monthSummary != null ? String(data.monthSummary) : '';
+              writeMonthNote(ym, mta.value);
+              scheduleAutosizeMonthSummaryTextarea();
+            }
+            setSummaryGenStatus('月次要約を生成しました。必要なら「コメントを保存」してください。', '#0f766e');
+          })
+          .catch(function (e) {
+            console.error(BUILD, e);
+            setSummaryGenStatus(
+              '月次生成失敗: ' + (e && e.message ? e.message : String(e)),
+              '#b91c1c',
+            );
+          })
+          .finally(function () {
             try {
-              refresh683Dash();
-            } catch (e4) {
-              console.error(BUILD, e4);
-              window.location.reload();
+              window.clearTimeout(to);
+            } catch (e3) {
+              console.warn(BUILD, e3);
             }
-          }, 80);
-        })
-        .catch(function (e) {
-          console.error(BUILD, e);
-          st.textContent =
-            '失敗: ' +
-            (e && e.message ? e.message : String(e)) +
-            '（中継・Ollama・HTTPS/CORS を確認）';
-          window.alert(
-            '要約の取得に失敗しました。中継が起動しているか、URL が HTTPS で届くか、Ollama が応答するかを確認してください。\n' +
-              String(e && e.message ? e.message : e),
-          );
-        })
-        .finally(function () {
-          try {
-            window.clearTimeout(to);
-          } catch (e3) {
-            console.warn(BUILD, e3);
+            monthBtn.disabled = false;
+          });
+      };
+    }
+    for (var wi = 0; wi < ranges.length; wi += 1) {
+      (function (weekIdx) {
+        var btn = document.getElementById('user683-week-gen-' + weekIdx);
+        if (!btn || btn.getAttribute('data-user683-claude-bound')) return;
+        btn.setAttribute('data-user683-claude-bound', '1');
+        var endDay = ranges[weekIdx][1];
+        if (!isWeekGenerateReady(ym, endDay)) {
+          btn.disabled = true;
+          btn.title = '当該週の最終日（JST）以降に生成できます';
+          return;
+        }
+        btn.disabled = false;
+        btn.title = '';
+        btn.onclick = function () {
+          var url = getClaudeRelaySummarizeUrl();
+          if (!url) {
+            alertClaudeRelayUrlUnset();
+            return;
           }
-          btn.disabled = false;
-        });
-    };
+          var corpus = collectCorpusForDayRange(ym, dim, ranges[weekIdx][0], ranges[weekIdx][1], byDay);
+          btn.disabled = true;
+          setSummaryGenStatus('週次' + String(weekIdx + 1) + 'を生成中…', '#64748b');
+          var ac = new AbortController();
+          var to = window.setTimeout(function () {
+            ac.abort();
+          }, 180000);
+          fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+            body: JSON.stringify({ action: 'week', week: { corpus: corpus } }),
+            signal: ac.signal,
+            credentials: 'omit',
+          })
+            .then(function (res) {
+              if (!res.ok) {
+                throw new Error('HTTP ' + res.status);
+              }
+              return res.json();
+            })
+            .then(function (data) {
+              var ta = document.getElementById('user683-week-note-' + weekIdx);
+              if (ta) {
+                ta.value = data.weekSummary != null ? String(data.weekSummary) : '';
+              }
+              var nextW = readWeekNotes(ym).slice(0, weekSlotCountForYm(ym));
+              while (nextW.length < weekSlotCountForYm(ym)) nextW.push('');
+              if (ta) nextW[weekIdx] = ta.value;
+              writeWeekNotes(ym, nextW);
+              setSummaryGenStatus(
+                '週次' + String(weekIdx + 1) + 'を生成しました。必要なら「コメントを保存」してください。',
+                '#0f766e',
+              );
+            })
+            .catch(function (e) {
+              console.error(BUILD, e);
+              setSummaryGenStatus(
+                '週次生成失敗: ' + (e && e.message ? e.message : String(e)),
+                '#b91c1c',
+              );
+            })
+            .finally(function () {
+              try {
+                window.clearTimeout(to);
+              } catch (e3) {
+                console.warn(BUILD, e3);
+              }
+              btn.disabled = false;
+            });
+        };
+      })(wi);
+    }
   }
 
   function jstCalYearMonth() {
@@ -780,6 +999,328 @@
 
   function calendarDaysInMonth(year, month1to12) {
     return new Date(year, month1to12, 0).getDate();
+  }
+
+  /**
+   * 当月 1 日〜末日を、日曜始まり・土曜終わりの暦週で分割（月外は含めない）。
+   * 例: 2026-05 は 1(金)2(土) が第1ブロックのみ、3(日)から第2ブロック。
+   */
+  function weekBlockRangesSunSatInMonth(ym) {
+    const dim = calendarDaysInMonth(ym.y, ym.m);
+    const ranges = [];
+    let curD = 1;
+    while (curD <= dim) {
+      const sun0 = jstWeekdaySun0(ym.y, ym.m, curD);
+      const weekStartD = curD - sun0;
+      const weekEndD = weekStartD + 6;
+      const seg0 = weekStartD < 1 ? 1 : weekStartD;
+      const seg1 = weekEndD > dim ? dim : weekEndD;
+      ranges.push([seg0, seg1]);
+      curD = seg1 + 1;
+    }
+    if (ranges.length > USER683_SUMMARY_WEEK_SLOTS) {
+      console.warn(BUILD, 'weekBlockRangesSunSatInMonth: truncating', ranges.length);
+      return ranges.slice(0, USER683_SUMMARY_WEEK_SLOTS);
+    }
+    return ranges;
+  }
+
+  function weekSlotCountForYm(ym) {
+    return weekBlockRangesSunSatInMonth(ym).length;
+  }
+
+  function nextCalendarMonthYm(y, m) {
+    if (m >= 12) {
+      return { y: y + 1, m: 1 };
+    }
+    return { y: y, m: m + 1 };
+  }
+
+  /** 直前の暦月（JST 表示中 ym から） */
+  function prevCalendarMonthYm(y, m) {
+    if (m <= 1) {
+      return { y: y - 1, m: 12 };
+    }
+    return { y: y, m: m - 1 };
+  }
+
+  /** 表示中暦月の AI 要約（週次・月次）自動投入の目安（翌暦月 1 日・JST）。定時ジョブの実時刻と異なる場合は目安のみ。 */
+  function formatAiSummaryUpdateEstimateLine(ym) {
+    const nx = nextCalendarMonthYm(ym.y, ym.m);
+    return '更新予定: ' + nx.y + '/' + nx.m + '/1頃（翌暦月1日・JST）';
+  }
+
+  function formatWeekBlockLabel(ym, wi) {
+    const ranges = weekBlockRangesSunSatInMonth(ym);
+    if (wi < 0 || wi >= ranges.length) {
+      return { title: '', genBtn: '', d0: 1, d1: 1 };
+    }
+    const d0 = ranges[wi][0];
+    const d1 = ranges[wi][1];
+    const start = String(ym.m) + '/' + String(d0);
+    const end = String(ym.m) + '/' + String(d1);
+    return {
+      title: '第' + String(wi + 1) + '週（' + start + '〜' + end + '）',
+      genBtn: '第' + String(wi + 1) + '週（' + start + '〜' + end + '）AI要約を生成',
+      d0: d0,
+      d1: d1,
+    };
+  }
+
+  function sumDayTotalInWeekBlock(ym, byDay, wi) {
+    const ranges = weekBlockRangesSunSatInMonth(ym);
+    if (wi < 0 || wi >= ranges.length) return 0;
+    const d0 = ranges[wi][0];
+    const d1 = ranges[wi][1];
+    let sum = 0;
+    for (let d = d0; d <= d1; d += 1) {
+      const ymd = ym.y + '-' + pad2(ym.m) + '-' + pad2(d);
+      const x = byDay && byDay[ymd];
+      if (x && x.dt != null) {
+        sum += x.dt;
+      }
+    }
+    return sum;
+  }
+
+  function sumAmPmInWeekBlock(ym, byDay, wi) {
+    const ranges = weekBlockRangesSunSatInMonth(ym);
+    if (wi < 0 || wi >= ranges.length) return { am: 0, pm: 0 };
+    const d0 = ranges[wi][0];
+    const d1 = ranges[wi][1];
+    let am = 0;
+    let pm = 0;
+    for (let d = d0; d <= d1; d += 1) {
+      const ymd = ym.y + '-' + pad2(ym.m) + '-' + pad2(d);
+      const x = byDay && byDay[ymd];
+      if (x) {
+        am += x.am != null ? x.am : 0;
+        pm += x.pm != null ? x.pm : 0;
+      }
+    }
+    return { am: am, pm: pm };
+  }
+
+  /**
+   * 当月の暦週（日曜始まり・682 と同じ区切り）ごとの縦棒。**積み上げは午前／午後件数の週合計**。
+   * インフラ／サポート／システム等の区分は 682 に無いため、当該3系統の積み上げは描画しない（SPEC §4「カテゴリ等は原則不要」）。
+   */
+  function buildWeekStackedAmPmBarGrid(ym, byDay, opt) {
+    const compact = opt && opt.compactThreeColumn;
+    const ranges = weekBlockRangesSunSatInMonth(ym);
+    const n = ranges.length;
+    const weeks = [];
+    let maxDt = 1;
+    for (let wi = 0; wi < n; wi += 1) {
+      const dt = sumDayTotalInWeekBlock(ym, byDay, wi);
+      const ap = sumAmPmInWeekBlock(ym, byDay, wi);
+      if (dt > maxDt) maxDt = dt;
+      const d0 = ranges[wi][0];
+      const d1 = ranges[wi][1];
+      weeks.push({
+        wi: wi,
+        dt: dt,
+        am: ap.am,
+        pm: ap.pm,
+        labLine1: '第' + String(wi + 1) + '週',
+        labLine2: String(ym.m) + '/' + String(d0) + '〜' + String(ym.m) + '/' + String(d1),
+      });
+    }
+
+    const wrap = document.createElement('div');
+    wrap.style.margin = compact ? '0' : '4px 0 10px';
+    wrap.style.padding = compact ? '10px 8px 10px' : '12px 14px 14px';
+    wrap.style.border = '1px solid #ccc';
+    wrap.style.borderRadius = '6px';
+    wrap.style.background = '#fafafa';
+    wrap.style.width = '100%';
+    wrap.style.boxSizing = 'border-box';
+    wrap.style.overflow = 'hidden';
+    /** `height:100%`＋下段 flex の stretch で中身が縦にはみ出し、週次カード内にスクロールバーが出るのを避ける */
+    wrap.style.minHeight = '0';
+
+    const subLong =
+      '棒の高さは週内の日合計（day_total）の合算。積み上げ色は午前件数・午後件数の週合算（インフラ／サポート／システム別は 682 に区分フィールドが無いため未表示）。';
+
+    const t = document.createElement('div');
+    t.style.fontWeight = 'bold';
+    t.style.marginBottom = compact ? '4px' : '6px';
+    t.style.fontSize = compact ? '13px' : '15px';
+    t.textContent = compact
+      ? ym.y + '年' + ym.m + '月・週次（件）'
+      : ym.y + '年' + ym.m + '月・週次対応件数（暦週・日曜始まり）';
+    if (compact) {
+      wrap.title = subLong;
+    }
+    wrap.appendChild(t);
+
+    if (!compact) {
+      const sub = document.createElement('div');
+      sub.style.fontSize = '11px';
+      sub.style.color = '#64748b';
+      sub.style.marginBottom = '10px';
+      sub.style.lineHeight = '1.45';
+      sub.textContent = subLong;
+      wrap.appendChild(sub);
+    }
+
+    const legend = document.createElement('div');
+    legend.style.display = 'flex';
+    legend.style.flexWrap = 'wrap';
+    legend.style.gap = compact ? '8px' : '12px';
+    legend.style.marginBottom = compact ? '4px' : '8px';
+    legend.style.fontSize = compact ? '9px' : '11px';
+    legend.style.color = '#334155';
+    function legItem(color, text) {
+      const sp = document.createElement('span');
+      sp.style.display = 'inline-flex';
+      sp.style.alignItems = 'center';
+      sp.style.gap = '6px';
+      const sw = document.createElement('span');
+      sw.style.width = '12px';
+      sw.style.height = '12px';
+      sw.style.borderRadius = '2px';
+      sw.style.background = color;
+      sp.appendChild(sw);
+      sp.appendChild(document.createTextNode(text));
+      return sp;
+    }
+    legend.appendChild(legItem(CH683_WEEK_AM, '午前（週合算）'));
+    legend.appendChild(legItem(CH683_WEEK_PM, '午後（週合算）'));
+    wrap.appendChild(legend);
+
+    const barH = compact ? CH683_CHART_BOOST_COMPACT_BAR_H : 200;
+    const row = document.createElement('div');
+    row.style.display = 'flex';
+    row.style.alignItems = 'flex-end';
+    row.style.justifyContent = compact ? 'flex-start' : 'space-between';
+    row.style.gap = compact ? '4px' : '8px';
+    row.style.minHeight = compact ? CH683_CHART_BOOST_COMPACT_ROW_MIN_H + 'px' : '248px';
+    row.style.overflow = 'hidden';
+
+    const colMinW = compact ? '0' : '72px';
+    const colorAm = CH683_WEEK_AM;
+    const colorPm = CH683_WEEK_PM;
+    const colorFull = CH683_WEEK_SINGLE;
+
+    for (let i = 0; i < weeks.length; i += 1) {
+      const w = weeks[i];
+      const col = document.createElement('div');
+      col.style.flex = compact ? '1 1 0%' : '1';
+      col.style.display = 'flex';
+      col.style.flexDirection = 'column';
+      col.style.alignItems = 'center';
+      col.style.minWidth = colMinW;
+      if (compact) {
+        col.style.maxWidth = '100%';
+        col.style.overflow = 'hidden';
+      }
+      const stackOuter = document.createElement('div');
+      stackOuter.style.width = '100%';
+      stackOuter.style.maxWidth = compact ? '100%' : '36px';
+      stackOuter.style.margin = '0 auto';
+      stackOuter.style.display = 'flex';
+      stackOuter.style.flexDirection = 'column';
+      stackOuter.style.justifyContent = 'flex-end';
+      stackOuter.style.height = barH + 'px';
+      const apSum = w.am + w.pm;
+      let hAm = 0;
+      let hPm = 0;
+      const scaleH = Math.max(2, Math.round((barH * w.dt) / maxDt));
+      if (w.dt > 0 && apSum > 0) {
+        hAm = w.am > 0 ? Math.round((scaleH * w.am) / apSum) : 0;
+        hPm = w.pm > 0 ? Math.round((scaleH * w.pm) / apSum) : 0;
+        let tot = hAm + hPm;
+        if (tot === 0) {
+          hAm = scaleH;
+        } else {
+          let fix = tot - scaleH;
+          while (fix > 0 && (hAm > 0 || hPm > 0)) {
+            if (hPm >= hAm && hPm > 0) hPm -= 1;
+            else if (hAm > 0) hAm -= 1;
+            fix -= 1;
+          }
+          while (fix < 0) {
+            if (w.pm >= w.am) hPm += 1;
+            else hAm += 1;
+            fix += 1;
+          }
+        }
+      } else if (w.dt > 0) {
+        hAm = scaleH;
+      }
+
+      if (hPm > 0) {
+        const segPm = document.createElement('div');
+        segPm.style.width = '100%';
+        segPm.style.height = hPm + 'px';
+        segPm.style.background = colorPm;
+        segPm.style.borderRadius = '2px 2px 0 0';
+        segPm.title = w.labLine1 + ': 合計' + w.dt + '件（午前' + w.am + '・午後' + w.pm + '）';
+        stackOuter.appendChild(segPm);
+      }
+      if (hAm > 0) {
+        const segAm = document.createElement('div');
+        segAm.style.width = '100%';
+        segAm.style.height = hAm + 'px';
+        segAm.style.background = w.dt > 0 && apSum === 0 ? colorFull : colorAm;
+        segAm.style.borderRadius = hPm > 0 ? '0 0 0 0' : '2px 2px 0 0';
+        segAm.title = w.labLine1 + ': 合計' + w.dt + '件（午前' + w.am + '・午後' + w.pm + '）';
+        stackOuter.appendChild(segAm);
+      }
+      if (w.dt === 0) {
+        const z = document.createElement('div');
+        z.style.width = '100%';
+        z.style.height = '2px';
+        z.style.background = CH683_BAR_ZERO;
+        z.title = w.labLine1 + ': 0件';
+        stackOuter.appendChild(z);
+      }
+
+      col.appendChild(stackOuter);
+
+      const num = document.createElement('div');
+      num.style.marginTop = compact ? '4px' : '6px';
+      num.style.fontSize = compact ? '12px' : '14px';
+      num.style.fontWeight = '700';
+      num.style.color = '#0f172a';
+      num.textContent = String(w.dt);
+      col.appendChild(num);
+
+      const lab = document.createElement('div');
+      lab.style.marginTop = compact ? '2px' : '4px';
+      lab.style.fontSize = compact ? '9px' : '10px';
+      lab.style.fontWeight = '600';
+      lab.style.color = '#0f172a';
+      lab.style.textAlign = 'center';
+      lab.style.lineHeight = '1.2';
+      if (compact) {
+        lab.style.maxWidth = '100%';
+        lab.style.overflow = 'hidden';
+        lab.style.wordBreak = 'break-all';
+      }
+      lab.innerHTML = w.labLine1 + '<br>' + w.labLine2;
+      col.appendChild(lab);
+
+      row.appendChild(col);
+    }
+    wrap.appendChild(row);
+    return wrap;
+  }
+
+  function formatWeekBlockLabelWithCount(spec, total) {
+    return spec.title + '・' + String(total) + '件';
+  }
+
+  function updateWeekBlockCountLabels(ym, byDay) {
+    const n = weekSlotCountForYm(ym);
+    for (let wi = 0; wi < n; wi += 1) {
+      const lab = document.getElementById('user683-week-label-' + wi);
+      if (!lab) continue;
+      const spec = formatWeekBlockLabel(ym, wi);
+      const total = sumDayTotalInWeekBlock(ym, byDay, wi);
+      lab.textContent = formatWeekBlockLabelWithCount(spec, total);
+    }
   }
 
   function monthQueryRange(year, month1to12) {
@@ -858,9 +1399,8 @@
     const byYmd = {};
     for (let i = 0; i < records.length; i += 1) {
       const rec = records[i];
-      const dv = rec[FC_DATE] && rec[FC_DATE].value;
-      if (!dv) continue;
-      const ymd = String(dv).slice(0, 10);
+      const ymd = recordDateYmd(rec);
+      if (!ymd) continue;
       const cell = rec[FC_DAY_TOTAL];
       let n = 0;
       if (cell && cell.value != null && String(cell.value).trim() !== '') {
@@ -906,7 +1446,7 @@
   }
 
   /**
-   * 中継→Ollama 用。682 の午前／午後対応文を連結（表には表示しない）。
+   * 週次・月次生成用コーパス。682 の午前／午後対応文を連結（表には表示しない）。
    * 長文は RELAY_DAY_CORPUS_MAX_LEN で切る（個人情報は中継経路に載る点は 682 正本と同程度）。
    */
   function mergeCorrespondenceForRelay(amRaw, pmRaw) {
@@ -969,14 +1509,16 @@
     const tall = opt && opt.tall;
     const boost = opt && opt.chartBoost;
     const chartTight = opt && opt.chartTight;
+    const fitNoScroll = opt && opt.chartFitNoScroll;
     const labelColors = (opt && opt.labelColors) || null;
-    const barColor = (opt && opt.barColor) || '#2563eb';
+    const barColor = (opt && opt.barColor) || CH683_BAR_DAY;
     const wrap = document.createElement('div');
     wrap.style.margin = boost ? '4px 0 10px' : '8px 0';
     wrap.style.padding = boost ? '12px 14px 14px' : compact ? '8px 10px' : '10px 12px';
     wrap.style.border = '1px solid #ccc';
     wrap.style.borderRadius = '6px';
     wrap.style.background = '#fafafa';
+    wrap.style.overflowX = 'hidden';
     const t = document.createElement('div');
     t.style.fontWeight = 'bold';
     t.style.marginBottom = boost ? '10px' : '6px';
@@ -989,18 +1531,20 @@
       if (values[j] > maxVal) maxVal = values[j];
     }
 
-    const barH = boost ? (compact ? 208 : 248) : tall ? (compact ? 112 : 144) : compact ? 72 : 96;
+    const barH = boost ? (compact ? CH683_CHART_BOOST_COMPACT_BAR_H : 248) : tall ? (compact ? 112 : 144) : compact ? 72 : 96;
     const row = document.createElement('div');
     row.style.display = 'flex';
     row.style.alignItems = 'flex-end';
-    row.style.justifyContent = 'space-between';
+    /** `space-between` は列間に余白を広げがち。日次のように本数が多いときは `chartPackColumnsTight` で詰める */
+    row.style.justifyContent = opt && opt.chartPackColumnsTight ? 'flex-start' : 'space-between';
     var gapStr = chartTight ? '0px' : boost ? '4px' : compact ? '2px' : '4px';
     if (opt && opt.chartRowGapPx != null && !isNaN(Number(opt.chartRowGapPx))) {
       gapStr = String(Number(opt.chartRowGapPx)) + 'px';
     }
     row.style.gap = gapStr;
-    row.style.minHeight = boost ? (compact ? 236 : 276) : tall ? (compact ? 132 : 172) : compact ? 92 : 120;
-    row.style.overflowX = 'auto';
+    row.style.minHeight = boost ? (compact ? CH683_CHART_BOOST_COMPACT_ROW_MIN_H : 276) : tall ? (compact ? 132 : 172) : compact ? 92 : 120;
+    /** 683 ではグラフ内の横スクロールを出さない（一覧内の見た目優先） */
+    row.style.overflowX = 'hidden';
 
     const bigLab = opt && opt.chartBigLabels;
     const narrowBars = opt && opt.chartNarrowBars;
@@ -1016,8 +1560,8 @@
       colMinW = '9px';
       barMaxW = compact ? '13px' : '15px';
     }
-    /** 日別など「1(水)」が列幅より広いとき、横スクロールで読めるよう列の最小幅を確保 */
-    if (opt && opt.chartColMinW) {
+    /** 日別など「1(水)」が列幅より広いとき、横スクロールで読めるよう列の最小幅を確保（`chartFitNoScroll` 時は列を縮めて親幅に収める） */
+    if (opt && opt.chartColMinW && !fitNoScroll) {
       colMinW = String(opt.chartColMinW);
     }
     if (opt && opt.chartLabFontPx) {
@@ -1027,18 +1571,27 @@
       fsNum = String(opt.chartNumFontPx);
     }
 
+    /** `chartFitNoScroll` 時、各列内で棒の最大幅を列幅の何％にするか（日次の横幅節約用。既定 100）。 */
+    let barMaxWhenFitScroll = '100%';
+    if (fitNoScroll) {
+      const pRaw = opt && opt.chartBarMaxColumnPct;
+      const p = pRaw != null && !isNaN(Number(pRaw)) ? Number(pRaw) : 100;
+      const clamped = Math.min(100, Math.max(10, p));
+      barMaxWhenFitScroll = clamped + '%';
+    }
+
     for (let i = 0; i < labels.length; i += 1) {
       const val = values[i];
       const col = document.createElement('div');
-      col.style.flex = '1';
+      col.style.flex = fitNoScroll ? '1 1 0%' : '1';
       col.style.display = 'flex';
       col.style.flexDirection = 'column';
       col.style.alignItems = 'center';
-      col.style.minWidth = colMinW;
+      col.style.minWidth = fitNoScroll ? '0' : colMinW;
 
       const bar = document.createElement('div');
       bar.style.width = '100%';
-      bar.style.maxWidth = barMaxW;
+      bar.style.maxWidth = fitNoScroll ? barMaxWhenFitScroll : barMaxW;
       bar.style.margin = '0 auto';
       bar.style.height = Math.max(2, Math.round((barH * val) / maxVal)) + 'px';
       bar.style.background = barColor;
@@ -1061,7 +1614,12 @@
       lab.style.color = lc;
       lab.style.lineHeight = chartTight ? '1.05' : '1.2';
       lab.style.textAlign = 'center';
-      lab.style.whiteSpace = 'nowrap';
+      lab.style.whiteSpace = fitNoScroll ? 'normal' : 'nowrap';
+      if (fitNoScroll) {
+        lab.style.maxWidth = '100%';
+        lab.style.overflow = 'hidden';
+        lab.style.textOverflow = 'ellipsis';
+      }
       lab.textContent = labStr;
 
       col.appendChild(bar);
@@ -1073,11 +1631,78 @@
     return wrap;
   }
 
+  const USER683_MONTH_SUMMARY_LINE_PX = 21;
+  const USER683_MONTH_SUMMARY_PAD_PX = 20;
+  const USER683_MONTH_SUMMARY_MIN_ROWS = 4;
+
   /**
-   * 週次は「1〜7 / 8〜14 / 15〜21 / 22〜月末」ブロックに含まれる週の月曜（JST）をラベルに使用。
-   * 初期表示は sessionStorage。読込後は kintone 要約キャッシュで上書き。
+   * 月次要約欄のみ: 内容に合わせて高さを伸ばし、内側スクロールを避ける（週次は固定4行のまま）。
+   */
+  function autosizeMonthSummaryTextarea() {
+    var ta = document.getElementById('user683-month-note');
+    if (!ta) return;
+    var minPx = USER683_MONTH_SUMMARY_LINE_PX * USER683_MONTH_SUMMARY_MIN_ROWS + USER683_MONTH_SUMMARY_PAD_PX;
+    ta.style.overflowY = 'hidden';
+    ta.style.height = '0px';
+    var h = ta.scrollHeight;
+    if (h < minPx) {
+      h = minPx;
+    }
+    ta.style.height = h + 2 + 'px';
+  }
+
+  function scheduleAutosizeMonthSummaryTextarea() {
+    window.requestAnimationFrame(function () {
+      window.requestAnimationFrame(function () {
+        autosizeMonthSummaryTextarea();
+      });
+    });
+  }
+
+  /**
+   * 月次・週次コメント欄の寸法・行間・印刷見た目を共通化する。
+   */
+  function ensureUser683AiSummaryStyles() {
+    if (document.getElementById('user683-ai-summary-style')) {
+      return;
+    }
+    const style = document.createElement('style');
+    style.id = 'user683-ai-summary-style';
+    style.textContent =
+      '#user683-ai-summary-placeholder .user683-summary-subtitle{' +
+      'font-weight:600;font-size:13px;margin:0 0 6px;color:#334155;}' +
+      '#user683-ai-summary-placeholder .user683-summary-week-row{' +
+      'margin:0 0 12px;display:flex;flex-direction:column;gap:8px;}' +
+      '#user683-ai-summary-placeholder .user683-summary-week-row:last-child{' +
+      'margin-bottom:0;}' +
+      '#user683-ai-summary-placeholder .user683-summary-week-label{' +
+      'display:block;font-weight:600;font-size:12px;line-height:1.5;margin:0;color:#334155;}' +
+      '#user683-ai-summary-placeholder textarea.user683-summary-field{' +
+      'display:block;width:100%;box-sizing:border-box;margin:0;padding:10px 8px;' +
+      'font-size:13px;line-height:21px;font-family:inherit;color:#0f172a;white-space:pre-wrap;' +
+      'min-height:calc(21px * 4 + 20px);height:calc(21px * 4 + 20px);' +
+      'border:1px solid #cbd5e1;border-radius:6px;resize:vertical;background:#fff;overflow:auto;}' +
+      '#user683-ai-summary-placeholder textarea#user683-month-note.user683-summary-field{' +
+      'height:auto;min-height:calc(21px * 4 + 20px);max-height:none;' +
+      'overflow-y:hidden;overflow-x:hidden;resize:vertical;}' +
+      '#user683-ai-summary-placeholder .user683-summary-generate-btn{' +
+      'margin:0;cursor:pointer;padding:6px 12px;font-size:12px;font-weight:700;' +
+      'border-radius:6px;border:1px solid #0f766e;background:#14b8a6;color:#fff;}' +
+      '#user683-ai-summary-placeholder .user683-summary-update-note{' +
+      'margin:0 0 10px;font-size:11px;line-height:1.35;color:#64748b;}';
+    document.head.appendChild(style);
+  }
+
+  function configureUser683SummaryTextarea(ta, isMonthNote) {
+    ta.rows = isMonthNote ? 2 : 4;
+    ta.className = isMonthNote ? 'user683-summary-field user683-summary-field-month' : 'user683-summary-field';
+  }
+
+  /**
+   * 週次は当月内の「日曜〜土曜」暦週をクリップしたブロック（最大6）。初期表示は sessionStorage。読込後は kintone 要約キャッシュで上書き。
    */
   function buildAiSummaryPlaceholderEl(ym) {
+    ensureUser683AiSummaryStyles();
     const wrap = document.createElement('div');
     wrap.id = 'user683-ai-summary-placeholder';
     wrap.style.margin = '0 12px 12px';
@@ -1093,85 +1718,90 @@
     h.textContent = 'AI分析コメント（月次・週次）';
     wrap.appendChild(h);
 
+    const upd = document.createElement('div');
+    upd.className = 'user683-summary-update-note';
+    upd.textContent = formatAiSummaryUpdateEstimateLine(ym);
+    wrap.appendChild(upd);
+
     const monthNote = readMonthNote(ym);
     const mBlock = document.createElement('div');
-    mBlock.style.marginBottom = '14px';
+    mBlock.className = 'user683-summary-week-row';
     const mTitle = document.createElement('div');
-    mTitle.style.fontWeight = '600';
-    mTitle.style.fontSize = '13px';
-    mTitle.style.marginBottom = '6px';
+    mTitle.className = 'user683-summary-subtitle';
     mTitle.textContent = '月次要約';
     mBlock.appendChild(mTitle);
     const mta = document.createElement('textarea');
     mta.id = 'user683-month-note';
-    mta.rows = 4;
-    mta.style.width = '100%';
-    mta.style.boxSizing = 'border-box';
-    mta.style.padding = '8px';
-    mta.style.fontSize = '13px';
-    mta.style.border = '1px solid #cbd5e1';
-    mta.style.borderRadius = '6px';
-    mta.style.resize = 'vertical';
+    configureUser683SummaryTextarea(mta, true);
     mta.value = monthNote;
     mta.addEventListener('input', function (ev) {
       writeMonthNote(ym, ev.target.value);
+      scheduleAutosizeMonthSummaryTextarea();
     });
     mBlock.appendChild(mta);
+    if (USER683_SHOW_CLAUDE_GENERATE_BTN) {
+      const mGen = document.createElement('button');
+      mGen.id = 'user683-month-gen-btn';
+      mGen.type = 'button';
+      mGen.textContent = '月次 AI 要約を生成';
+      mGen.className = 'user683-summary-generate-btn';
+      mBlock.appendChild(mGen);
+    }
     wrap.appendChild(mBlock);
 
-    const anchors = [1, 8, 15, 22];
-    const mondays = anchors.map(function (ad) {
-      return jstMondayOfWeekContaining(ym.y, ym.m, ad);
-    });
     const weekNotes = readWeekNotes(ym);
+    const nWeek = weekSlotCountForYm(ym);
 
     const weekBlock = document.createElement('div');
     weekBlock.style.marginBottom = '12px';
     const wTitle = document.createElement('div');
-    wTitle.style.fontWeight = '600';
-    wTitle.style.fontSize = '13px';
-    wTitle.style.marginBottom = '8px';
-    wTitle.textContent = '週次要約（週初め月曜の月/日＋週次）';
+    wTitle.className = 'user683-summary-subtitle';
+    wTitle.textContent = '週次要約';
     weekBlock.appendChild(wTitle);
 
-    for (let wi = 0; wi < 4; wi += 1) {
-      const mon = mondays[wi];
-      const labelText = String(mon.m) + '/' + String(mon.d) + '週次';
+    for (let wi = 0; wi < nWeek; wi += 1) {
+      const spec = formatWeekBlockLabel(ym, wi);
       const row = document.createElement('div');
-      row.style.marginBottom = '8px';
+      row.className = 'user683-summary-week-row';
       const lab = document.createElement('label');
-      lab.style.display = 'block';
-      lab.style.fontWeight = '600';
-      lab.style.fontSize = '12px';
-      lab.style.marginBottom = '4px';
-      lab.style.color = '#334155';
-      lab.textContent = labelText;
+      lab.id = 'user683-week-label-' + wi;
+      lab.className = 'user683-summary-week-label';
+      lab.textContent = formatWeekBlockLabelWithCount(spec, 0);
       lab.setAttribute('for', 'user683-week-note-' + wi);
       row.appendChild(lab);
       const ta = document.createElement('textarea');
       ta.id = 'user683-week-note-' + wi;
-      ta.rows = 3;
-      ta.style.width = '100%';
-      ta.style.boxSizing = 'border-box';
-      ta.style.padding = '8px';
-      ta.style.fontSize = '13px';
-      ta.style.border = '1px solid #cbd5e1';
-      ta.style.borderRadius = '6px';
-      ta.style.resize = 'vertical';
+      configureUser683SummaryTextarea(ta);
       ta.value = weekNotes[wi] || '';
       (function (idx) {
         ta.addEventListener('input', function (ev) {
+          const need = weekSlotCountForYm(ym);
           const cur = readWeekNotes(ym);
-          const next = cur.slice(0, 4);
-          while (next.length < 4) next.push('');
+          const next = cur.slice(0, need);
+          while (next.length < need) next.push('');
           next[idx] = ev.target.value;
           writeWeekNotes(ym, next);
         });
       })(wi);
       row.appendChild(ta);
+      if (USER683_SHOW_CLAUDE_GENERATE_BTN) {
+        const wGen = document.createElement('button');
+        wGen.id = 'user683-week-gen-' + wi;
+        wGen.type = 'button';
+        wGen.textContent = spec.genBtn;
+        wGen.className = 'user683-summary-generate-btn';
+        row.appendChild(wGen);
+      }
       weekBlock.appendChild(row);
     }
     wrap.appendChild(weekBlock);
+
+    const st = document.createElement('div');
+    st.id = 'user683-summary-status';
+    st.style.cssText = 'margin-top:8px;font-size:12px;color:#64748b;min-height:1.2em;';
+    wrap.appendChild(st);
+
+    scheduleAutosizeMonthSummaryTextarea();
 
     return wrap;
   }
@@ -1211,6 +1841,17 @@
     return wrap;
   }
 
+  function formatDaySummaryForTable(x) {
+    if (!x) return '';
+    var line = normalizeSummaryWhitespace(x.relayLine || '');
+    if (!line) {
+      line = normalizeSummaryWhitespace(
+        [x.amRaw, x.pmRaw].filter(Boolean).join(' '),
+      );
+    }
+    return truncateOneLine(line, TABLE_DAY_SUMMARY_MAX_LEN);
+  }
+
   function buildMonthTableEl(ym, dim, byDay) {
     const wrap = document.createElement('div');
     wrap.style.margin = '8px 12px 14px';
@@ -1219,15 +1860,7 @@
     t0.style.marginBottom = '6px';
     t0.style.fontSize = '12px';
     t0.style.color = '#475569';
-    t0.textContent =
-      '対応案件一覧（サマリー）・' +
-      ym.y +
-      '年' +
-      ym.m +
-      '月度 — 日別の本文は 682 で確認。' +
-      (USER683_SHOW_AI_SUMMARY_UI
-        ? '月次・週次コメントはグラフ直下（保存で kintone 要約キャッシュに反映）'
-        : '月次・週次コメント欄は非表示。');
+    t0.textContent = '対応案件一覧（サマリー）・' + ym.y + '年' + ym.m + '月度';
     wrap.appendChild(t0);
 
     const tbl = document.createElement('table');
@@ -1296,12 +1929,13 @@
         bodyTd.style.color = '#666';
       } else {
         dtTd.textContent = String(x.dt);
-        const hasText = Boolean(x.relayLine);
-        bodyTd.textContent = hasText ? '（682 の対応文で確認）' : '（対応文なし・件数のみ）';
+        const summaryLine = formatDaySummaryForTable(x);
+        const hasText = Boolean(summaryLine);
+        bodyTd.textContent = hasText ? summaryLine : '（対応文なし・件数のみ）';
         bodyTd.title = hasText
           ? x.rows > 1
-            ? '同一日 ' + x.rows + ' 行を合算済み。本文は 682 で確認してください。'
-            : '本文は 682 の該当日レコードを開いてください。'
+            ? '同一日 ' + x.rows + ' 行を合算済み。全文は 682 で確認してください。'
+            : '全文は 682 の該当日レコードを開いてください。'
           : '';
       }
       tr.appendChild(dtTd);
@@ -1492,6 +2126,195 @@
     });
   }
 
+  var USER683_PRINT_AFTERPRINT_BOUND = false;
+
+  function ensureUser683PrintReportStyles() {
+    var id = 'user683-print-report-style';
+    var st = document.getElementById(id);
+    if (!st) {
+      st = document.createElement('style');
+      st.id = id;
+      document.head.appendChild(st);
+    }
+    st.setAttribute('data-build', BUILD);
+    st.textContent =
+      '@media screen{' +
+      '#user683-print-report-portal{display:none;}' +
+      '}' +
+      '@media print{' +
+      '@page{size:A4;margin:5mm;}' +
+      'body *{visibility:hidden!important;}' +
+      '#user683-print-report-portal,#user683-print-report-portal *{visibility:visible!important;}' +
+      '#user683-print-report-portal{' +
+      'display:block!important;position:absolute!important;left:0!important;top:0!important;width:100%!important;' +
+      'background:#fff!important;color:#000!important;font-family:Meiryo,"Yu Gothic",system-ui,sans-serif;font-size:8pt;' +
+      '-webkit-print-color-adjust:exact;print-color-adjust:exact;' +
+      '}' +
+      '.us683-print-page1{page-break-after:always;}' +
+      '.us683-print-page2{page-break-before:auto;}' +
+      '.us683-print-block{margin-bottom:3px;}' +
+      '.us683-print-block.us683-print-hero-wrap{break-inside:avoid-page;}' +
+      '.us683-print-h2{font-size:8.5pt;font-weight:700;margin:3px 0 2px;border-bottom:1px solid #222;padding-bottom:0;}' +
+      '.us683-print-month-summary{white-space:pre-wrap;border:1px solid #999;padding:4px;min-height:1.2em;background:#fafafa;font-size:7.5pt;line-height:1.22;}' +
+      '.us683-print-hero-wrap{border:1px solid #333;border-radius:2px;padding:4px!important;margin:0 0 4px!important;}' +
+      '.us683-print-hero-wrap .us683-print-hero-inner{background:transparent!important;color:#000!important;' +
+      'box-shadow:none!important;text-align:left!important;padding:0!important;margin:0!important;border-radius:0!important;}' +
+      '.us683-print-hero-inner>div:nth-child(1){font-size:12pt!important;line-height:1.2!important;font-weight:800!important;}' +
+      '.us683-print-hero-inner>div:nth-child(2){font-size:9pt!important;margin-top:2px!important;font-weight:700!important;}' +
+      '.us683-print-hero-wrap .us683-print-hero-inner *{color:#000!important;background:transparent!important;}' +
+      '#user683-print-report-portal .us683-print-chart-slot{' +
+      'transform:scale(0.68);transform-origin:top left;width:147.1%;margin-bottom:0;' +
+      '}' +
+      '.us683-print-page2-note{font-size:7pt;color:#333;margin:0 0 2px;line-height:1.2;}' +
+      '.us683-print-p2-wrap{font-size:6.5pt;line-height:1.08;}' +
+      '.us683-print-p2-wrap table{font-size:inherit!important;width:100%!important;border-collapse:collapse!important;}' +
+      '.us683-print-p2-wrap th,.us683-print-p2-wrap td{padding:0 2px!important;border:1px solid #999!important;vertical-align:top!important;}' +
+      '.us683-print-p2-wrap td{word-break:break-word;}' +
+      '}';
+  }
+
+  function getOrCreateUser683PrintPortal() {
+    var el = document.getElementById('user683-print-report-portal');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'user683-print-report-portal';
+      el.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(el);
+    }
+    return el;
+  }
+
+  function user683StripAllIds(root) {
+    if (!root) {
+      return;
+    }
+    if (root.getAttribute && root.getAttribute('id')) {
+      root.removeAttribute('id');
+    }
+    var n = root.querySelectorAll('[id]');
+    for (var i = 0; i < n.length; i += 1) {
+      n[i].removeAttribute('id');
+    }
+  }
+
+  function user683CloneHostFirstChild(hostId) {
+    var host = document.getElementById(hostId);
+    if (!host || !host.firstElementChild) {
+      return null;
+    }
+    var c = host.firstElementChild.cloneNode(true);
+    user683StripAllIds(c);
+    return c;
+  }
+
+  function openUser683PrintReport() {
+    if (!document.getElementById('user683-hero')) {
+      window.alert('ダッシュの読み込み完了後に「印刷報告用」を押してください。');
+      return;
+    }
+    var ym = effectiveViewYm();
+    ensureUser683PrintReportStyles();
+    var portal = getOrCreateUser683PrintPortal();
+    portal.innerHTML = '';
+
+    var p1 = document.createElement('div');
+    p1.className = 'us683-print-page1';
+
+    var heroSrc = document.getElementById('user683-hero');
+    var hw = document.createElement('div');
+    hw.className = 'us683-print-hero-wrap us683-print-block';
+    var hi = document.createElement('div');
+    hi.className = 'us683-print-hero-inner';
+    var hc = heroSrc.cloneNode(true);
+    user683StripAllIds(hc);
+    hi.appendChild(hc);
+    hw.appendChild(hi);
+    p1.appendChild(hw);
+
+    var h2m = document.createElement('h2');
+    h2m.className = 'us683-print-h2';
+    h2m.textContent = '月次要約';
+    p1.appendChild(h2m);
+    var ms = document.createElement('div');
+    ms.className = 'us683-print-month-summary us683-print-block';
+    var mta = document.getElementById('user683-month-note');
+    ms.textContent = mta ? String(mta.value || '') : '（月次要約フィールドなし）';
+    p1.appendChild(ms);
+
+    function addChartBlock(title, hostId) {
+      var h2 = document.createElement('h2');
+      h2.className = 'us683-print-h2';
+      h2.textContent = title;
+      p1.appendChild(h2);
+      var slot = document.createElement('div');
+      slot.className = 'us683-print-block us683-print-chart-slot';
+      var cloned = user683CloneHostFirstChild(hostId);
+      if (cloned) {
+        slot.appendChild(cloned);
+      } else {
+        slot.textContent = '（グラフを取得できませんでした）';
+      }
+      p1.appendChild(slot);
+    }
+
+    addChartBlock('日次グラフ', 'user683-chart-day');
+    addChartBlock('週次グラフ', 'user683-chart-week');
+    addChartBlock('年次推移グラフ（直近6暦月の月合計）', 'user683-chart-year');
+
+    portal.appendChild(p1);
+
+    var p2 = document.createElement('div');
+    p2.className = 'us683-print-page2';
+    var h2t = document.createElement('h2');
+    h2t.className = 'us683-print-h2';
+    h2t.textContent = '対応案件一覧（サマリー）※参考';
+    p2.appendChild(h2t);
+    var pn = document.createElement('p');
+    pn.className = 'us683-print-page2-note';
+    pn.textContent =
+      ym.y +
+      '年' +
+      ym.m +
+      '月度。2枚目は参考用に小さめの字体で1枚に収めやすくしています（詳細はアプリの一覧を参照）。';
+    p2.appendChild(pn);
+    var wrap2 = document.createElement('div');
+    wrap2.className = 'us683-print-p2-wrap';
+    var th = document.getElementById('user683-table-host');
+    if (th && th.firstElementChild) {
+      var tclone = th.firstElementChild.cloneNode(true);
+      user683StripAllIds(tclone);
+      wrap2.appendChild(tclone);
+    } else {
+      wrap2.textContent = '（一覧表がまだありません）';
+    }
+    p2.appendChild(wrap2);
+    portal.appendChild(p2);
+
+    if (!USER683_PRINT_AFTERPRINT_BOUND) {
+      USER683_PRINT_AFTERPRINT_BOUND = true;
+      window.addEventListener(
+        'afterprint',
+        function () {
+          var p = document.getElementById('user683-print-report-portal');
+          if (p) {
+            p.innerHTML = '';
+          }
+        },
+        false,
+      );
+    }
+
+    window.requestAnimationFrame(function () {
+      window.requestAnimationFrame(function () {
+        try {
+          window.print();
+        } catch (ePrint) {
+          console.warn(BUILD, ePrint);
+        }
+      });
+    });
+  }
+
   function refresh683Dash() {
     const header = kintone.app.getHeaderSpaceElement();
     if (!header) {
@@ -1524,6 +2347,7 @@
     root.appendChild(intro);
 
     const tool = document.createElement('div');
+    tool.className = 'us683-dash-toolbar';
     tool.style.display = 'flex';
     tool.style.alignItems = 'center';
     tool.style.flexWrap = 'wrap';
@@ -1568,32 +2392,75 @@
     };
     tool.appendChild(resetBtn);
 
+    const printReportBtn = document.createElement('button');
+    printReportBtn.type = 'button';
+    printReportBtn.textContent = '印刷報告用';
+    printReportBtn.title =
+      'ブラウザの印刷ダイアログを開きます（2枚構成・1枚目:件名・前月比・月次要約・各グラフ、2枚目:対応一覧サマリー）。PDF保存は印刷先で「PDFに保存」を選んでください。';
+    printReportBtn.style.cursor = 'pointer';
+    printReportBtn.onclick = function () {
+      openUser683PrintReport();
+    };
+    tool.appendChild(printReportBtn);
+
     root.appendChild(tool);
 
     const msgHost = document.createElement('div');
     msgHost.id = 'user683-dash-messages';
     root.appendChild(msgHost);
 
-    const chartsRow = document.createElement('div');
-    chartsRow.style.display = 'flex';
-    chartsRow.style.flexWrap = 'wrap';
-    chartsRow.style.gap = '16px';
-    chartsRow.style.margin = '12px 12px 8px';
-    chartsRow.style.alignItems = 'stretch';
+    const chartsOuter = document.createElement('div');
+    chartsOuter.id = 'user683-charts-wrap';
+    chartsOuter.style.margin = '12px 12px 8px';
+    chartsOuter.style.boxSizing = 'border-box';
+    chartsOuter.style.width = '100%';
+    chartsOuter.style.overflowX = 'hidden';
+
+    /** 1段目: 日次のみ（横幅いっぱい）。2段目: 週次＋月次。 */
+    const chartsRowDay = document.createElement('div');
+    chartsRowDay.style.display = 'flex';
+    chartsRowDay.style.width = '100%';
+    chartsRowDay.style.overflowX = 'hidden';
+    chartsRowDay.style.minWidth = '0';
+
+    const chartsRowWeekMonth = document.createElement('div');
+    chartsRowWeekMonth.style.display = 'flex';
+    chartsRowWeekMonth.style.flexWrap = 'wrap';
+    chartsRowWeekMonth.style.gap = '16px';
+    chartsRowWeekMonth.style.marginTop = '12px';
+    chartsRowWeekMonth.style.alignItems = 'flex-start';
+    chartsRowWeekMonth.style.width = '100%';
+    chartsRowWeekMonth.style.overflowX = 'hidden';
+    chartsRowWeekMonth.style.minWidth = '0';
 
     const chartDayHost = document.createElement('div');
     chartDayHost.id = 'user683-chart-day';
-    chartDayHost.style.flex = '1.15';
-    chartDayHost.style.minWidth = '260px';
+    chartDayHost.style.flex = '1';
+    chartDayHost.style.minWidth = '0';
+    chartDayHost.style.width = '100%';
+    chartDayHost.style.boxSizing = 'border-box';
+    chartDayHost.style.overflowX = 'hidden';
+
+    const chartWeekHost = document.createElement('div');
+    chartWeekHost.id = 'user683-chart-week';
+    chartWeekHost.style.flex = '1';
+    chartWeekHost.style.minWidth = '200px';
+    chartWeekHost.style.boxSizing = 'border-box';
+    chartWeekHost.style.overflow = 'hidden';
 
     const chartYearHost = document.createElement('div');
     chartYearHost.id = 'user683-chart-year';
     chartYearHost.style.flex = '1';
-    chartYearHost.style.minWidth = '300px';
+    chartYearHost.style.minWidth = '220px';
+    chartYearHost.style.boxSizing = 'border-box';
+    chartYearHost.style.overflow = 'hidden';
 
-    chartsRow.appendChild(chartDayHost);
-    chartsRow.appendChild(chartYearHost);
-    root.appendChild(chartsRow);
+    chartsRowDay.appendChild(chartDayHost);
+    chartsRowWeekMonth.appendChild(chartWeekHost);
+    chartsRowWeekMonth.appendChild(chartYearHost);
+    chartsOuter.appendChild(chartsRowDay);
+    chartsOuter.appendChild(chartsRowWeekMonth);
+    root.appendChild(chartsOuter);
 
     if (USER683_SHOW_AI_SUMMARY_UI) {
       root.appendChild(buildAiSummaryPlaceholderEl(ym));
@@ -1670,21 +2537,23 @@
         chartDayHost.innerHTML = '';
         chartDayHost.appendChild(
           buildBarCardGrid(
-            ym.y + '年' + ym.m + '月・日別（件）',
+            ym.y + '年' + ym.m + '月・日次（件）',
             dayLabels,
             dayVals,
             {
               compact: true,
-              barColor: '#0d9488',
+              barColor: CH683_BAR_DAY,
               tall: true,
               chartBoost: true,
               chartTight: false,
               chartBigLabels: false,
               chartNarrowBars: true,
-              chartColMinW: '26px',
-              chartRowGapPx: 8,
-              chartLabFontPx: '9px',
-              chartNumFontPx: '12px',
+              chartFitNoScroll: true,
+              chartBarMaxColumnPct: 50,
+              chartPackColumnsTight: true,
+              chartRowGapPx: 0,
+              chartLabFontPx: range.dim >= 31 ? '8px' : '9px',
+              chartNumFontPx: '11px',
               labelColors: dayLabelColors,
             },
           ),
@@ -1692,7 +2561,11 @@
 
         const ysums = sumDayTotalByYearMonth(sixRec);
         const ymBarKey = ym.y + '-' + pad2(ym.m);
+        /** 右端＝当月は詳細取得の合計に揃える */
         ysums[ymBarKey] = curTotal;
+        /** 前月は「前月比」用の専用クエリ集計（`sumDayTotalInRange`）に揃える。6 暦月一括取得と件数がずれるのを防ぐ */
+        const prevYmBarKey = prevYm.y + '-' + pad2(prevYm.m);
+        ysums[prevYmBarKey] = prevTotal;
         const yLabels = [];
         const yVals = [];
         for (let si = 0; si < six.slots.length; si += 1) {
@@ -1704,21 +2577,32 @@
         chartYearHost.innerHTML = '';
         chartYearHost.appendChild(
           buildBarCardGrid(
-            '直近6暦月の月合計（右端＝' + ym.y + '年' + ym.m + '月・各月の日合計合算）',
+            '月次・直近6暦月の合計（右端＝' + ym.y + '年' + ym.m + '月・各月の日合計合算）',
             yLabels,
             yVals,
-            { compact: true, barColor: '#4f46e5', tall: true, chartBoost: true },
+            {
+              compact: true,
+              barColor: CH683_BAR_MONTH,
+              tall: true,
+              chartBoost: true,
+              chartFitNoScroll: true,
+              chartRowGapPx: 6,
+            },
           ),
         );
+
+        chartWeekHost.innerHTML = '';
+        chartWeekHost.appendChild(buildWeekStackedAmPmBarGrid(ym, byDay, { compactThreeColumn: true }));
 
         tableHost.innerHTML = '';
         tableHost.appendChild(buildMonthTableEl(ym, range.dim, byDay));
 
         if (USER683_SHOW_AI_SUMMARY_UI) {
           hydrate683SummaryTextareasFromServer(ym, summaryCache);
+          updateWeekBlockCountLabels(ym, byDay);
           attachSummarySaveControls(ym);
-          if (USER683_SHOW_OLLAMA_GENERATE_BTN) {
-            attachOllamaGenerateControls(ym, range.dim, byDay);
+          if (USER683_SHOW_CLAUDE_GENERATE_BTN) {
+            attachClaudeGenerateControls(ym, range.dim, byDay);
           }
         }
       })
@@ -1737,11 +2621,23 @@
         });
         chartDayHost.textContent = '';
         chartYearHost.textContent = '';
+        chartWeekHost.textContent = '';
         tableHost.textContent = '';
       });
   }
 
+  try {
+    applyClaudeRelayFromQuery();
+  } catch (eApply) {
+    console.warn(BUILD, eApply);
+  }
+
   kintone.events.on('app.record.index.show', function (ev) {
+    try {
+      applyClaudeRelayFromQuery();
+    } catch (eApply2) {
+      console.warn(BUILD, eApply2);
+    }
     try {
       refresh683Dash();
     } catch (e) {

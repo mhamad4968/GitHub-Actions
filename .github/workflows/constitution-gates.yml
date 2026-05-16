@@ -1,4 +1,5 @@
 # 憲法・Cursor ルールの機械検査（PR / ルール変更 push）
+# `npm run cio:mcp:env` は **Windows ローカル＋ユーザー `~/.cursor/mcp.json` 秘密**が前提のため **本 workflow では実行しない**（日常ゲートは浜田 PC で Windows ネイティブ実行・WSL `/mnt/c` は月次ベストエフォート — `docs/mcp-status.md` §CIO）。
 # mandatory-read-gate は session-clock 等でローカル向けのため CI では走らせない
 # 2026-05-08 失敗群の主因: verify-ci-rule-integrity が alwaysApply:true 上限超過（当時 11/10）→ cio-constitution 集約後は緑。read-pack 改変で針がズレないよう paths に read-pack を含める。
 

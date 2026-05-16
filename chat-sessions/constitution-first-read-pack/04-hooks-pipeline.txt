@@ -1,0 +1,5 @@
+【04 hooks・パイプライン】（正本: .cursor/hooks.json + every-turn-rules-confirm.mdc §1e-3）
+
+- beforeSubmitPrompt → afterAgentResponse → stop が連携。NG は **失敗**扱いでフォローまたはゲート。
+- 全ターン既定: head-only（§1 先頭4行のみ厳格）。報告意図: full（V2＋precheck）。
+- 状態確認: `npm run report:pipeline-status`。ログ: `logs/report-turn-head-audit.log` / `logs/report-checksheet-violations.log`。

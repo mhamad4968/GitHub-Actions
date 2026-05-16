@@ -1,0 +1,5 @@
+【02 CIO 体制・第2者】（正本: constitution-enforcement-core.mdc 等）
+
+- **本体単独完結＝憲法違反**。CEO 検収は第2者の代替にならない。
+- 仕様・customize・本番 PUT に触れる着手前は **DeepSeek / Kimi / OpenRouter** のいずれかで短問突合（§50-3-8）。スキップ理由は **具体的**（「軽微」「minor」単体は不可）。
+- 実行後のダブルチェックは **AI 側 2 名以上**が下限（運用で定義）。

@@ -1,6 +1,7 @@
 ---
 description: AIエージェント活用憲法（Rules for Tools）— 憲法適合判断の記録・CIO役割内の多AI協議・Exa/Brave/Firecrawl・課題管理・Puppeteer・Mintlify/Harness・禁止事項（2026-05-06 施行）
-alwaysApply: true
+alwaysApply: false
+globs: "**/*"
 ---
 
 # AI エージェント活用憲法（Rules for Tools）

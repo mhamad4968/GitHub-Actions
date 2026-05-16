@@ -11,7 +11,7 @@ import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
-/** generate-customize-manifests.js と同じ対応（マニフェストの実体パス） */
+/** generate-customize-manifests.js と同じ対応（マニフェストの実体パス）。594 は廃止予定だが `disable:594:browserjs` 等のためエントリ維持。 */
 const manifestByApp = {
   594: join(root, "customize/594/customize-manifest.json"),
   595: join(root, "customize/595/customize-manifest.json"),

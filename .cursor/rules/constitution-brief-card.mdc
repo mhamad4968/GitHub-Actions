@@ -1,9 +1,12 @@
 ---
 description: AGENTS.md §0 §3 §50 — 憲法薄型カード＋CIO三角＋MCP先出し（網羅版は Read）
-alwaysApply: true
+alwaysApply: false
+globs: "**/*"
 ---
 
 # 憲法カード（常時・短い）
+
+> **2026-05-09**: Cursor の **`alwaysApply: true` 枠は `cio-constitution.mdc` に集約**。本ファイルは **`globs: "**/*"` で編集ターンに注入**。重複記述は徐々に `cio-constitution` へ寄せる。
 
 ## CIO を忘れない（役割の三角）
 
@@ -17,7 +20,7 @@ alwaysApply: true
 
 ## MCP・ツール — 「できるのにやらない」「できないと思い込む」禁止
 
-- **先にスキャン**: 依頼が **外部の正**（GitHub・kintone・Web・社内ドキュ・ブラウザ UI・CVE 等）に触れるなら、**着手前に** **`mcp-server-use-triggers.mdc`** を **Read** し、該当 1 行トリガーがあれば **その MCP を優先**（呼ぶ直前の descriptor 義務は **`mcp-tool-discipline.mdc`**）。**実装前調査・Linear・Mintlify/Harness・有料大量取得・`[憲法適合]` 記録**は **`.cursor/rules/ai-agent-tools-constitution.mdc`**（**alwaysApply: true**・2026-05-06 施行）。
+- **先にスキャン**: 依頼が **外部の正**（GitHub・kintone・Web・社内ドキュ・ブラウザ UI・CVE 等）に触れるなら、**着手前に** **`mcp-server-use-triggers.mdc`** を **Read** し、該当 1 行トリガーがあれば **その MCP を優先**（呼ぶ直前の descriptor 義務は **`mcp-tool-discipline.mdc`**）。**実装前調査・Linear・Mintlify/Harness・有料大量取得・`[憲法適合]` 記録**は **`.cursor/rules/ai-agent-tools-constitution.mdc`**（**`alwaysApply: false` + `globs`**・2026-05-06 施行）。
 - **「AI（このチャット）ではできません」**は、上記スキャンに加え **Read / Grep / Shell（リポに既にある `npm run …` や `scripts/`）** で代替不能と言い切れる場合に限る。**根拠なしの早取り禁止**。
 - **ユーザーが MCP・npm script・hooks を入れている**話題では、**人間の手作業へ逃げる前に** `package.json`・`docs/mcp-status.md`・該当ワークフローを **事実確認**する（憲法 **§50** 系・死蔵防止の精神）。
 - **貼付用1行の機械出力**: **`npm run mcp:chat-stamp`**（`MCPスキップ: 未接続（…）` 形式を stdout＋`logs/mcp-chat-stamp-latest.txt`）。**新 Composer セッション**では `sessionStart` hook の `additional_context` にも同趣旨が注入される。
@@ -27,7 +30,7 @@ alwaysApply: true
 1. **`AGENTS.md`** — 条文の最終解釈。長いときは `RULES-INDEX.md` から § へジャンプ。
 2. **`RULES-INDEX.md`** — いつどの § を読むかの索引（§0）。
 3. **`.cursor/rules/constitution-enforcement-core.mdc`** — 違反＝失敗・**CIO＋ DeepSeek/Kimi** の 2 者チェック定義。
-4. **`.cursor/rules/constitution.mdc`** — 網羅結合版。**常時コンテキストには載せない**。**必要なときだけ Read ツールで**取り込む（再生成: `bash scripts/regenerate-constitution-rule.sh`）。
+4. **`.cursor/rules/constitution.mdc`** — 網羅結合版。**常時コンテキストには載せない**。**必要なときだけ Read ツールで**取り込む（再生成: **`npm run rules:regenerate-constitution`** または `npm run rules:regenerate-constitution:bash`）。
 
 ## 毎ターンの型（チャット先頭）
 

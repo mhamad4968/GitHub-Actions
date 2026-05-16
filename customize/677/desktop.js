@@ -3,9 +3,10 @@
 
   /**
    * 部署予実 入力アプリ 677
-   * BUILD: 2026-05-04-677-monthly-calc-subrow
-   * - 新規・編集表示時: `monthly_breakdown` を **5月〜翌年4月の 12 行**に揃える（予算修正空は **0**）
-   * - 保存直前: `支払内訳` の **支払日の暦月**ごとに `payment_amount` を合算し、該当 `月度` 行の **実績**へ書き戻す（`SPEC.md` §6c・§8）
+   * BUILD: 2026-05-15-677-block-all-ui-mutations-dash678-only
+   * - **2026-05-15 浜田 GO**: 本アプリ（677）の **標準 UI からの追加・保存・削除・プロセス進行（ステータス更新）は受け付けない**（`app.record.*.submit` / `*.delete.submit` / `*.process.proceed` 等で `event.error`。**PC＋モバイル**）。
+   *   **入力・更新・削除の正**は **ダッシュボード（678）** からの `kintone.api`／REST のみ。閲覧・677 上のリンクは可。
+   * - 新規・編集表示時: `monthly_breakdown` を **5月〜翌年4月の 12 行**に揃える（予算修正空は **0**）— **表示用のみ**（保存はブロック）
    * - `month_utilization` は CALC。サブテーブル行は **全列必須**のため、生成行にも `type: CALC` を置く（値はサーバ側で再計算）
    */
 
@@ -146,24 +147,45 @@
     }
   }
 
+  /**
+   * 678 ダッシュへ誘導（677 画面での追加・保存・削除・プロセス進行ブロック用）
+   * 公式イベント一覧: https://kintone.dev/en/docs/kintone/js-api/events/event-handling/
+   */
+  var BLOCK677_UI_MUTATION_EVENTS = [
+    "app.record.create.submit",
+    "app.record.edit.submit",
+    "app.record.index.edit.submit",
+    "app.record.detail.delete.submit",
+    "app.record.index.delete.submit",
+    "app.record.detail.process.proceed",
+    "mobile.app.record.create.submit",
+    "mobile.app.record.edit.submit",
+    "mobile.app.record.detail.delete.submit",
+    "mobile.app.record.detail.process.proceed",
+  ];
+
+  function block677DirectMutationMessage() {
+    var dash =
+      typeof location !== "undefined" && location.origin
+        ? location.origin + "/k/678/"
+        : "/k/678/";
+    return (
+      "このアプリ（677）の画面からの追加・保存・削除・プロセス（ステータス更新）はできません。部署予実の入力・変更・削除はダッシュボード（アプリ 678）から行ってください。 " +
+      dash +
+      " （閲覧・確認のみは本アプリで可。表示順や実績の変更も 678 の表から行ってください。）"
+    );
+  }
+
+  kintone.events.on(BLOCK677_UI_MUTATION_EVENTS, function (event) {
+    event.error = block677DirectMutationMessage();
+    return event;
+  });
+
   kintone.events.on(["app.record.create.show", "app.record.edit.show"], function (event) {
     try {
       ensureMonthlyBreakdownForRecord(event.record);
     } catch (e) {
       console.error("[677] monthly_breakdown normalize", e);
-    }
-    return event;
-  });
-
-  kintone.events.on(["app.record.create.submit", "app.record.edit.submit"], function (event) {
-    try {
-      ensureMonthlyBreakdownForRecord(event.record);
-      rollupPaymentsToMonthly(event.record);
-    } catch (e) {
-      console.error("[677] payment rollup / monthly", e);
-      event.error =
-        "月次内訳または支払内訳の処理でエラーが発生したため保存できません。画面を再読み込みしてからやり直してください。" +
-        (e && e.message ? "（詳細: " + String(e.message).slice(0, 200) + "）" : "");
     }
     return event;
   });

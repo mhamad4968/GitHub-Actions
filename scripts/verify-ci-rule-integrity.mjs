@@ -4,10 +4,10 @@
  *
  * - 各 *.mdc に description: があること
  * - constitution.mdc の第 1 frontmatter が alwaysApply: false であること（網羅版は常時オフ）
- * - constitution-brief-card.mdc が存在し alwaysApply: true であること
+ * - cio-constitution.mdc が存在し alwaysApply: true であること（CIO 統合核・2026-05-09）
  * - alwaysApply: true のファイル数が上限を超えないこと（運用上限・調整は本スクリプト）
  *
- * @see .cursor/rules/constitution-brief-card.mdc
+ * @see .cursor/rules/cio-constitution.mdc
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -42,9 +42,8 @@ for (const f of mdcFiles) {
   if (/alwaysApply:\s*true/.test(fm)) alwaysTrue.push(f);
 }
 
-// 2026-05-06: constitution-handoff-gate を alwaysApply:true に統一したため 11 件へ
-// 2026-05-07 CEO: 常時想起は **10 件上限**（Cursor 負荷・注入競合の抑止）。11 件目を足す場合は **既存のどれかを `alwaysApply: false` + `globs` へ降ろす**か統合してから追加すること。
-// 2026-05-07 夕: 3 ルールを glob 化し実数 10 に戻した（cio-operating-loop / mcp-frontend-shadcn-chrome / session-read-ladder-two-phase）。
+// 2026-05-09 CIO: **`alwaysApply: true` は `cio-constitution.mdc` のみ**（他は `false` + `globs` 等）。上限 10 は将来の余白。
+// 2026-05-07 夕: 複数ルールを glob 化し常時枠を圧縮（後に CIO 核へ集約）。
 const MAX_ALWAYS = 10;
 if (alwaysTrue.length > MAX_ALWAYS) {
   fail(
@@ -57,9 +56,9 @@ if (alwaysTrue.length === MAX_ALWAYS) {
   );
 }
 
-const brief = firstYamlFrontmatter('.cursor/rules/constitution-brief-card.mdc');
-if (!brief) fail('constitution-brief-card.mdc: missing');
-if (!/alwaysApply:\s*true/.test(brief)) fail('constitution-brief-card.mdc: must be alwaysApply: true');
+const cio = firstYamlFrontmatter('.cursor/rules/cio-constitution.mdc');
+if (!cio) fail('cio-constitution.mdc: missing');
+if (!/alwaysApply:\s*true/.test(cio)) fail('cio-constitution.mdc: must be alwaysApply: true (CIO unified kernel)');
 
 const conFm = firstYamlFrontmatter('.cursor/rules/constitution.mdc');
 if (!conFm) fail('constitution.mdc: missing frontmatter');

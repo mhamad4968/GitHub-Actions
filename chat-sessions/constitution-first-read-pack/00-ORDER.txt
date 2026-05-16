@@ -1,0 +1,8 @@
+# 憲法・最重要ルール — 先読み順（細分化・必ずこの順で Read）
+# セッション初手・hooks NG 回復後の再開前に実施。省略禁止。
+
+chat-sessions/constitution-first-read-pack/01-report-gate.txt
+chat-sessions/constitution-first-read-pack/02-cio-second-reviewer.txt
+chat-sessions/constitution-first-read-pack/03-minimum-m-baseline.txt
+chat-sessions/constitution-first-read-pack/04-hooks-pipeline.txt
+chat-sessions/constitution-first-read-pack/05-full-refs.txt

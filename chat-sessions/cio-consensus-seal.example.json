@@ -1,0 +1,9 @@
+{
+  "_comment": "型の参考のみ。実状態は gitignore の cio-consensus-seal.json（seal で生成）。ゲート PR では verify 済みを git add -f で載せる。",
+  "topic": "例: Cloud-SLO",
+  "cioHypothesis": "CIO 仮説 1 行",
+  "deepseek": "第2者要約 1 行以上",
+  "kimi": "第2者要約 1 行以上",
+  "ceoLine": "緊急時のみ CEO 一行でも verify 可",
+  "updatedAt": "2026-05-09T12:00:00.000Z"
+}

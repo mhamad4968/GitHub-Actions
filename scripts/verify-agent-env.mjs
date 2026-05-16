@@ -3,7 +3,7 @@
  * verify-agent-env.mjs — 自律エージェント向け Tier A 環境ワンショット
  *
  * Desktop 同期・session-clock strict は含まない（`session:bootstrap` の代替ではない）。
- * 連鎖: 憲法 → mandatory-read-gate → verify:all → verify:rag-mirror-canonical → smoke:quiet
+ * 連鎖: 憲法 → mandatory-read-gate → CEO 最低基準 → verify:all → verify:rag-mirror-canonical → smoke:quiet → verify:cio-mcp-registry
  *
  * 終了コード: 憲法 / gate / verify:all が非 0 ならそのまま終了。
  * smoke は smoke-test.mjs に委譲（0=全 ok / 1=warn / 2=ng）。
@@ -38,6 +38,9 @@ if (st !== 0) process.exit(st);
 st = runNode('scripts/mandatory-read-gate.mjs');
 if (st !== 0) process.exit(st);
 
+st = runNode('scripts/verify-ceo-minimum-baseline.mjs');
+if (st !== 0) process.exit(st);
+
 st = runNpm('verify:all');
 if (st !== 0) process.exit(st);
 
@@ -45,4 +48,7 @@ st = runNpm('verify:rag-mirror-canonical');
 if (st !== 0) process.exit(st);
 
 st = runNpm('smoke:quiet');
+if (st !== 0) process.exit(st);
+
+st = runNpm('verify:cio-mcp-registry');
 process.exit(st);

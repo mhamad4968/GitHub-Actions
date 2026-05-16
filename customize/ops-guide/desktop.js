@@ -129,7 +129,7 @@
 
   // 主要アプリへのワンクリック遷移メニュー（iframe外＝Kintone DOMに直接配置するためクリッピングしない）
   var QUICK_LINKS = [
-    { emoji: '💻', label: 'PC管理台帳', url: 'https://jbis-kintone.cybozu.com/k/594/' },
+    { emoji: '💻', label: '新・PC台帳', url: 'https://jbis-kintone.cybozu.com/k/674/' },
     { emoji: '🔑', label: 'アカウント台帳', url: 'https://jbis-kintone.cybozu.com/k/627/' },
     { emoji: '👤', label: '社員マスタ', url: 'https://jbis-kintone.cybozu.com/k/595/' },
     { emoji: '🏢', label: '共有採番', url: 'https://jbis-kintone.cybozu.com/k/667/' },
@@ -137,7 +137,7 @@
     { emoji: '📋', label: 'エラーログ', url: 'https://jbis-kintone.cybozu.com/k/656/' },
   ];
   var DASHBOARD_LINKS = [
-    { emoji: '📊', label: 'PC↔アカウント相関ダッシュボード', url: 'https://jbis-kintone.cybozu.com/k/594/?view=13459660' },
+    { emoji: '📊', label: 'WindowsID重複（627）', url: 'https://jbis-kintone.cybozu.com/k/627/?view=13459662' },
     { emoji: '🪪', label: 'WindowsID重複ダッシュボード', url: 'https://jbis-kintone.cybozu.com/k/627/?view=13459662' },
     { emoji: '📧', label: 'M365管理台帳', url: 'https://jbis-kintone.cybozu.com/k/627/?view=13459663' },
     { emoji: '⚠', label: 'Office5台超過アカウント', url: 'https://jbis-kintone.cybozu.com/k/627/?view=13459688' },

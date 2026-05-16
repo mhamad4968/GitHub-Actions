@@ -3,13 +3,15 @@
  * リポの儀式ファイルを Windows Desktop「AI緊急用」へコピーする。
  * NEW-SESSION-STARTER **ハブ**は **JST の 00-NEW-SESSION-STARTER_yyyymmdd.txt** に常に同期（内容変更時のみ旧版を _2… に退避）。
  * **分割 6 本**（`session-starter-parts/part-*.md`）は **`01`〜`06`-STARTER-…txt** へ同名バイト同期（**00 からの連番**、抜けなし）。
- * README（正本 `chat-sessions/AI緊急用-README.txt`）は Desktop **`19-AI緊急用-README.txt`** に同期。
+ * README（正本 `chat-sessions/AI緊急用-README.txt`）は Desktop **`23-AI緊急用-README.txt`** に同期。
  * `chat-sessions/desktop-ai-emergency-read-pack/*.txt`（番号付き貼付控え）も **同名で** Desktop へコピーする。
- * 同フォルダの **`NN-*.md`（先頭 2 桁が数字）** も **同名で** Desktop へコピーする（例: **`22-SESSION-ONE-REPORT-…md`**）。
- * **当日 JST** の `docs/reports/YYYY-MM-DD-evening-reflection.md` があれば **`24-evening-reflection-YYYY-MM-DD.md`** として Desktop へコピーする。
+ * 同フォルダの **`NN-*.md`（先頭 2 桁が数字）** も **同名で** Desktop へコピーする（例: **`19-SESSION-ONE-REPORT-…md`**）。
+ * **`SESSION_DESKTOP_MIRROR_FILES`**（`handoff-log.md`→**`24-handoff-log.md`**、`checkpoint-latest.md`→**`25-checkpoint-latest.md`**）も Desktop へコピーする。
+ * **当日 JST** の `docs/reports/YYYY-MM-DD-evening-reflection.md` があれば **`26-evening-reflection-YYYY-MM-DD.md`** として Desktop へコピーする。
  * 同期の最後に **旧番号ファイル**（`00p01`〜、旧 read-pack `02`〜`19` 帯、旧 **`14-evening-…`** 等）を Desktop から削除する。
  *
  * @see chat-sessions/NEW-SESSION-STARTER.md 冒頭
+ * @see scripts/lib/session-starter-desktop-dir.mjs（Desktop 同期先の解決・Windows ネイティブ対応）
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -21,11 +23,13 @@ import {
   syncStarterToDesktopCanonical,
 } from './lib/session-starter-desktop.mjs';
 import { SESSION_STARTER_PART_SYNC } from './lib/session-starter-parts.mjs';
+import { SESSION_DESKTOP_MIRROR_FILES } from './lib/desktop-ai-emergency-session-docs.mjs';
+import { resolveSessionStarterDesktopDir } from './lib/session-starter-desktop-dir.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const destDir =
-  process.env.SESSION_STARTER_DESKTOP_DIR ||
-  '/mnt/c/Users/mhamada202408224/Desktop/AI緊急用';
+
+/** `main()` で解決後にセット（ヘルパーが参照） */
+let destDir = '';
 
 /** Desktop に残ると verify 混乱の原因になる旧ファイル名（2026-05-07 連番化以前） */
 const LEGACY_DESKTOP_AI_EMERGENCY_FILES = [
@@ -48,17 +52,27 @@ const LEGACY_DESKTOP_AI_EMERGENCY_FILES = [
   '11-SESSION-BOOTSTRAP-CHECKLIST.txt',
   '12-HANDOFF-HUMAN.txt',
   '13-README.txt',
+  '17-SESSION-BOOTSTRAP-CHECKLIST.txt',
+  '18-HANDOFF-HUMAN.txt',
+  '19-AI緊急用-README.txt',
+  '20-HISTORY-2026-05-06-read-pack-and-tools.txt',
+  '21-重要確認.txt',
+  '22-SESSION-ONE-REPORT-2026-05-06.md',
+  '23-SESSION-REPORT-CHECKLIST.txt',
   '15-HISTORY-2026-05-06-read-pack-and-tools.txt',
   '16-重要確認.txt',
   '18-SESSION-ONE-REPORT-2026-05-06.md',
   '19-SESSION-REPORT-CHECKLIST.txt',
+  '25-handoff-log.md',
+  '26-checkpoint-latest.md',
 ];
 
 const otherFiles = [
   ['chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md', '07-HANDOFF-AI-FIVE-BLOCKS.md'],
-  ['chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md', '17-SESSION-BOOTSTRAP-CHECKLIST.txt'],
-  ['chat-sessions/HANDOFF-HUMAN.txt', '18-HANDOFF-HUMAN.txt'],
-  ['chat-sessions/AI緊急用-README.txt', '19-AI緊急用-README.txt'],
+  ['chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md', '21-SESSION-BOOTSTRAP-CHECKLIST.txt'],
+  ['chat-sessions/HANDOFF-HUMAN.txt', '22-HANDOFF-HUMAN.txt'],
+  ['chat-sessions/AI緊急用-README.txt', '23-AI緊急用-README.txt'],
+  ...SESSION_DESKTOP_MIRROR_FILES,
 ];
 
 const readPackRelDir = 'chat-sessions/desktop-ai-emergency-read-pack';
@@ -89,13 +103,11 @@ function syncEveningReflectionToDesktop() {
     );
     return;
   }
-  const destName = `24-evening-reflection-${iso}.md`;
+  const destName = `26-evening-reflection-${iso}.md`;
   const dest = path.join(destDir, destName);
   fs.copyFileSync(src, dest);
   console.log(`[sync-session-starter-to-desktop] OK docs/reports/${iso}-evening-reflection.md -> ${dest}`);
-  console.log(
-    `[sync-session-starter-to-desktop] Windows: C:\\Users\\mhamada202408224\\Desktop\\AI緊急用\\${destName}`
-  );
+  console.log(`[sync-session-starter-to-desktop] 夕反省 Desktop パス: ${path.join(destDir, destName)}`);
 }
 
 function syncReadPackToDesktop() {
@@ -136,6 +148,10 @@ function pruneLegacyDesktopAiEmergency(dir) {
         fs.unlinkSync(path.join(dir, n));
         console.log(`[sync-session-starter-to-desktop] 旧夕反省削除: ${n}`);
       }
+      if (/^24-evening-reflection-.+\.md$/i.test(n)) {
+        fs.unlinkSync(path.join(dir, n));
+        console.log(`[sync-session-starter-to-desktop] 旧夕反省番号削除(24→26): ${n}`);
+      }
     }
   } catch (_) {
     /* ignore */
@@ -143,11 +159,30 @@ function pruneLegacyDesktopAiEmergency(dir) {
 }
 
 function main() {
-  if (!fs.existsSync(destDir)) {
+  let destDirExists;
+  let destDirSource;
+  let destDirTried;
+  try {
+    const r = resolveSessionStarterDesktopDir();
+    destDir = r.dir;
+    destDirExists = r.exists;
+    destDirSource = r.source;
+    destDirTried = r.tried;
+  } catch (e) {
+    console.error(`[sync-session-starter-to-desktop] 同期先解決エラー: ${e.message}`);
+    process.exitCode = 2;
+    return;
+  }
+  if (!destDirExists) {
+    const srcHint =
+      destDirSource === 'env'
+        ? 'SESSION_STARTER_DESKTOP_DIR を指すフォルダを作成するか、正しい絶対パスに修正してください。'
+        : 'Windows では %USERPROFILE%\\Desktop\\AI緊急用（または OneDrive\\Desktop・Public\\Desktop）を作成するか、SESSION_STARTER_DESKTOP_DIR で明示してください。';
     console.log(
       `[sync-session-starter-to-desktop] スキップ: 控えフォルダが無い (${destDir})\n` +
-        '  WSL 以外、または /mnt/c 未マウント。浜田の参照先 AI緊急用は未更新のまま。' +
-        ' /mnt/c 復帰後に npm run session-starter:sync-desktop を再実行すること。'
+        `  解決元: ${destDirSource === 'env' ? 'SESSION_STARTER_DESKTOP_DIR' : '既定候補の列挙'}\n` +
+        `  試行パス:\n${destDirTried.map((p) => `    - ${p}`).join('\n')}\n` +
+        `  ${srcHint}`
     );
     process.exitCode = 0;
     return;
@@ -167,9 +202,7 @@ function main() {
     for (const n of pruned) {
       console.log(`[sync-session-starter-to-desktop] 旧ファイル削除: ${n}`);
     }
-    console.log(
-      `[sync-session-starter-to-desktop] 貼付推奨（項番-1）: ${paste}（Windows: C:\\Users\\mhamada202408224\\Desktop\\AI緊急用\\${paste}）`
-    );
+    console.log(`[sync-session-starter-to-desktop] 貼付推奨（項番-1）: ${paste}（フルパス: ${path.join(destDir, paste)}）`);
   }
 
   for (const [rel, outName] of SESSION_STARTER_PART_SYNC) {

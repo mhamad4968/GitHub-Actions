@@ -38,7 +38,7 @@ const esc = JSON.stringify(wrap);
 
 const src = `(function () {
   "use strict";
-  var BUILD = "2026-05-04-679-remove-footer-and-css";
+  var BUILD = "2026-05-15-679-manual-no-677-nav";
   var MANUAL_HTML = ${esc};
 
   function injectCss() {
@@ -122,10 +122,7 @@ const src = `(function () {
       '<strong>システム推進室予実アプリガイド</strong> · ' +
       '<a href="' +
       origin +
-      '/k/678/">システム推進室予実管理システム</a> · ' +
-      '<a href="' +
-      origin +
-      '/k/677/">システム推進室予実管理システム入力アプリ</a>' +
+      '/k/678/">システム推進室予実管理システム</a>' +
       "</div>";
     shell.innerHTML = nav + MANUAL_HTML;
     return attach679Shell(dest, shell);

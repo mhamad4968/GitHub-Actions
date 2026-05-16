@@ -30,6 +30,7 @@ import {
   SESSION_STARTER_EVENING_UPDATE_REL,
   SESSION_STARTER_PART_C_DESKTOP,
 } from './lib/session-starter-parts.mjs';
+import { resolveSessionStarterDesktopDir } from './lib/session-starter-desktop-dir.mjs';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
@@ -215,26 +216,34 @@ function updateNewSessionStarter() {
     fs.writeFileSync(partCRepo, txt, 'utf8');
   }
   // Windows メモ帳版（浜田 Desktop AI緊急用・Part C 同期名）
-  const aiDesk = '/mnt/c/Users/mhamada202408224/Desktop/AI緊急用';
-  const partCDesk = path.join(aiDesk, SESSION_STARTER_PART_C_DESKTOP);
+  let aiDesk = null;
   try {
-    if (fs.existsSync(partCDesk)) {
-      let txt = fs.readFileSync(partCDesk, 'utf8');
-      txt = txt.replace(/【今やってる主タスク[^】]*】[\s\S]*?(?=\n\n【|\n\n━|$)/, newBlock);
-      fs.writeFileSync(partCDesk, txt, 'utf8');
-    }
-  } catch (_) { /* mnt 不可 */ }
-  // レガシー: 当日ハブのみ置いてある環境（ブロック無しならスキップ）
-  const nssDesk = pickLatestStarterDesktopPathForDate(aiDesk);
-  try {
-    if (nssDesk && fs.existsSync(nssDesk)) {
-      let txt = fs.readFileSync(nssDesk, 'utf8');
-      if (txt.includes('【今やってる主タスク')) {
+    const deskRes = resolveSessionStarterDesktopDir({ requireExists: true });
+    if (deskRes.exists) aiDesk = deskRes.dir;
+  } catch (e) {
+    console.warn('[evening-reflect] Desktop AI緊急用パス解決スキップ:', e.message);
+  }
+  if (aiDesk) {
+    const partCDesk = path.join(aiDesk, SESSION_STARTER_PART_C_DESKTOP);
+    try {
+      if (fs.existsSync(partCDesk)) {
+        let txt = fs.readFileSync(partCDesk, 'utf8');
         txt = txt.replace(/【今やってる主タスク[^】]*】[\s\S]*?(?=\n\n【|\n\n━|$)/, newBlock);
-        fs.writeFileSync(nssDesk, txt, 'utf8');
+        fs.writeFileSync(partCDesk, txt, 'utf8');
       }
-    }
-  } catch (_) { /* mnt 不可 */ }
+    } catch (_) { /* Desktop 不可 */ }
+    // レガシー: 当日ハブのみ置いてある環境（ブロック無しならスキップ）
+    const nssDesk = pickLatestStarterDesktopPathForDate(aiDesk);
+    try {
+      if (nssDesk && fs.existsSync(nssDesk)) {
+        let txt = fs.readFileSync(nssDesk, 'utf8');
+        if (txt.includes('【今やってる主タスク')) {
+          txt = txt.replace(/【今やってる主タスク[^】]*】[\s\S]*?(?=\n\n【|\n\n━|$)/, newBlock);
+          fs.writeFileSync(nssDesk, txt, 'utf8');
+        }
+      }
+    } catch (_) { /* Desktop 不可 */ }
+  }
   const nssLegacy = '/mnt/c/Claudeとの会話メモ/NEW-SESSION-STARTER.txt';
   try {
     if (fs.existsSync(nssLegacy)) {

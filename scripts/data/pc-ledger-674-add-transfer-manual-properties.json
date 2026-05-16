@@ -1,0 +1,17 @@
+{
+  "properties": {
+    "npl_transfer_manual": {
+      "type": "CHECK_BOX",
+      "code": "npl_transfer_manual",
+      "label": "転用",
+      "options": {
+        "転用": {
+          "label": "転用",
+          "index": "0"
+        }
+      },
+      "defaultValue": [],
+      "align": "HORIZONTAL"
+    }
+  }
+}

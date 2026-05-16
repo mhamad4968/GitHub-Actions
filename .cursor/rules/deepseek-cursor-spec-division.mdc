@@ -1,6 +1,7 @@
 ---
 description: CIO×知恵袋の仕様確認分業（🎖️表の下位・予実など）
-alwaysApply: true
+alwaysApply: false
+globs: "**/*"
 ---
 
 # CIO × 知恵袋（仕様確認時のセカンドオピニオン）
