@@ -55,6 +55,9 @@ jobs:
       - name: 依存関係インストール
         run: npm ci --prefix ict-tech-digest-automation
 
+      - name: TypeScript 検査
+        run: npm --prefix ict-tech-digest-automation run typecheck
+
       - name: ICT 情報収集実行
         env:
           KINTONE_DOMAIN: ${{ secrets.KINTONE_DOMAIN }}

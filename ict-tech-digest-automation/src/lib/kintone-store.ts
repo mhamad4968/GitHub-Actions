@@ -68,6 +68,24 @@ export function assertUrlFitsKintone(url: string): void {
   }
 }
 
+function formatKintoneError(e: unknown): string {
+  if (e && typeof e === "object") {
+    const o = e as Record<string, unknown>;
+    const code = o.code ?? (Array.isArray(o.errors) ? (o.errors[0] as Record<string, unknown>)?.code : undefined);
+    const message =
+      o.message ?? (Array.isArray(o.errors) ? (o.errors[0] as Record<string, unknown>)?.message : undefined);
+    return [code, message].filter(Boolean).join(" ") || JSON.stringify(o);
+  }
+  return String(e);
+}
+
+function logCuratedRecordContext(item: CuratedArticle, index: number): void {
+  console.error(
+    `[ICT収集] レコード context index=${index} urlLen=${item.url.length} category=${JSON.stringify(item.category)} title=${item.title.slice(0, 80)} url=${item.url.slice(0, 200)}`,
+  );
+}
+
+/** 一括 addRecords 失敗時のみ 1 件ずつ切り分け（最大 5 件・CB_VA01 診断用。通常は一括のまま） */
 export async function addCuratedRecords(
   client: KintoneRestAPIClient,
   cfg: IctConfig,
@@ -83,8 +101,36 @@ export async function addCuratedRecords(
     [ICT_FIELDS.overview]: { value: item.overview },
     [ICT_FIELDS.category]: { value: item.category },
   }));
-  const res = await client.record.addRecords({ app: cfg.storeAppId, records });
-  return (res.ids ?? []).map((id) => Number(id));
+  try {
+    const res = await client.record.addRecords({ app: cfg.storeAppId, records });
+    return (res.ids ?? []).map((id) => Number(id));
+  } catch (e) {
+    const detail = formatKintoneError(e);
+    const isCbVa01 = detail.includes("CB_VA01");
+    if (!isCbVa01 || records.length <= 1) {
+      logCuratedRecordContext(items[0]!, 0);
+      throw new Error(`[ICT収集] kintone addRecords 失敗: ${detail}`);
+    }
+    console.warn(
+      `[ICT収集] 一括登録が CB_VA01 で拒否されました。${records.length} 件を 1 件ずつ切り分けます。`,
+    );
+    const ids: number[] = [];
+    for (let i = 0; i < records.length; i++) {
+      try {
+        const res = await client.record.addRecords({
+          app: cfg.storeAppId,
+          records: [records[i]!],
+        });
+        ids.push(Number(res.ids?.[0]));
+      } catch (inner) {
+        logCuratedRecordContext(items[i]!, i);
+        throw new Error(
+          `[ICT収集] kintone addRecords 失敗 index=${i}: ${formatKintoneError(inner)}`,
+        );
+      }
+    }
+    return ids;
+  }
 }
 
 /** 単一 URL が存在するか（保険） */

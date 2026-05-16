@@ -211,7 +211,7 @@ npm run collect
 | 症状 | 確認 |
 |------|------|
 | GHA が `GEMINI_API_KEY` で失敗 | `kintone-collect` Environment に Secret 設定 |
-| GHA が kintone `CB_VA01` | 685 の `url` フィールド長・必須項目 |
+| GHA が kintone `CB_VA01` | 685 の `url` **unique オフ・最大 512**（MSRC 長 URL は **NVD 差し替え**）。ログに **index / urlLen / category**。一括失敗時は **1 件ずつ切り分け**（`kintone-store.ts`） |
 | 掲示板が「データがありません」とカード二重 | 686 customize 未デプロイ or 旧 BUILD。Ctrl+F5 |
 | 掲示板「取得に失敗」 | ログインユーザーに **685 閲覧権限** があるか |
 | 本日5件あるのに追加されない | 仕様どおりスキップ。翌日 10:00 まで待つか翌枠を待つ |

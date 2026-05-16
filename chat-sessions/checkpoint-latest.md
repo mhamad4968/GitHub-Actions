@@ -2,12 +2,13 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-## 2026-05-17 JST — 683 月次 PDF serve 廃止・朝セッション CIO 実施分
+## 2026-05-17 JST — 683 月次 PDF serve 廃止・ICT GHA 硬化・環境 100% 準備
 
-- **CEO**: **683 PDF serve は使用しない** → **`user683:monthly-pdf:serve` を package.json から削除**・Runbook／台帳／local-servers を **window.print 正**に更新。`scripts/user683-monthly-pdf-serve.mjs` は **@deprecated 残置**。
-- **同コミット**: credit **4%**・RAG ingest クロスプラットフォーム（`scripts/rag-ingest-path.mjs`）・`mcp-status` 更新・session clock **2026-05-17 07:43**。
-- **683 印刷目視**: **CEO 2026-05-17 対応完了として OK**（`window.print` 運用でクローズ）。
-- **次**: **`git push`** 後 **constitution-gates** 監視・黄残は本ターン CIO チーム対応。
+- **683 PDF serve 廃止**・**印刷目視 CEO OK**（`window.print`）— コミット `3a3d856` / `6be1456` push 済。
+- **ICT dispatch 過去失敗**: 主因 **685 url 64字 unique**（`30859c8` 済）。**追加硬化**: `kintone-store.ts` CB_VA01 時 1 件切り分けログ・GHA **typecheck** ステップ・SPEC トラブルシュート更新。
+- **GitHub**: **constitution-gates** 緑・**ict-tech-digest-collect** dispatch 再検証（本ターン push 後）。
+- **環境**: MCP **6/6 OK**・smoke **14/14**・portfolio **8/8**・`cio:mcp:env` OK。eslint **10.4.0**（patch）。axios audit は **localtunnel  transitive**（`--force` 非適用）。
+- **次（依頼行へ）**: CEO **§41 一問**後、**682/683 ユーザサポート**本題（夕反省・checkpoint 参照）。動作確認は **依頼時 CEO**。
 
 ## 2026-05-16 JST — セッション終了・678 先祖返り復旧・ガバナンス・ICT・Git
 
