@@ -8,7 +8,9 @@
 - **ICT dispatch 過去失敗**: 主因 **685 url 64字 unique**（`30859c8` 済）。**追加硬化**: `kintone-store.ts` CB_VA01 時 1 件切り分けログ・GHA **typecheck** ステップ・SPEC トラブルシュート更新。
 - **GitHub**: **constitution-gates** 緑・**ict-tech-digest-collect** dispatch 再検証（本ターン push 後）。
 - **環境**: MCP **6/6 OK**・smoke **14/14**・portfolio **8/8**・`cio:mcp:env` OK。eslint **10.4.0**（patch）。axios audit は **localtunnel  transitive**（`--force` 非適用）。
-- **次（依頼行へ）**: CEO **§41 一問**後、**682/683 ユーザサポート**本題（夕反省・checkpoint 参照）。動作確認は **依頼時 CEO**。
+- **683 行間・印刷レイアウト**: **CEO 2026-05-17 #1 OK**（課題管理不要・後日依頼時のみ調整可）。
+- **683 定時ジョブ**: **CEO #2** — Windows タスク **`kintone-ai-lab-user683-sync-prev-month`**（毎月1日 **08:00 JST**）登録済。`npm run user683:sync-summaries:register-windows-task`。
+- **次（依頼行へ）**: **682/683** 本題継続。動作確認は **依頼時 CEO**。
 
 ## 2026-05-16 JST — セッション終了・678 先祖返り復旧・ガバナンス・ICT・Git
 

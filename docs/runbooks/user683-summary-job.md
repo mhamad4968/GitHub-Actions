@@ -113,16 +113,26 @@ npm run user683:sync-summaries:apply-prev-month
 
 ## 自動化の例（Windows）
 
-**月1回・先月分を締める（推奨）** — タスク スケジューラで **毎月 1 日**（JST。開始時刻は運用に合わせて可）:
+**月1回・先月分を締める（推奨・CEO 2026-05-17 登録）** — リポから **1 コマンド**でタスク登録（**毎月 1 日 08:00 ローカル時刻**＝PC が JST なら JST 8:00）:
 
-- **プログラム**: `powershell.exe`
-- **引数の例**: `-NoProfile -Command "Set-Location 'C:\Users\…\kintone-ai-lab'; npm run user683:sync-summaries:apply-prev-month"`
+```powershell
+cd C:\Users\mhamada202408224\kintone-ai-lab
+npm run user683:sync-summaries:register-windows-task
+```
 
-**当月分だけを同月内に更新**する場合（任意の頻度）:
+- **タスク名**: `kintone-ai-lab-user683-sync-prev-month`
+- **本体**: `scripts/windows/user683-sync-summaries-prev-month-run.ps1` → `npm run user683:sync-summaries:apply-prev-month`
+- **ログ**: `logs/user683-sync-scheduled-*.log`
+- **削除**: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/windows/register-user683-sync-summaries-monthly-task.ps1 -Unregister`
+- **時刻変更**: スクリプトを `-Time "09:00"` 付きで再実行（既存タスクは先に `-Unregister`）
 
-- **引数の例**: `-NoProfile -Command "Set-Location 'C:\Users\…\kintone-ai-lab'; npm run user683:sync-summaries:apply"`
+**当月分だけを同月内に更新**する場合（任意の頻度・手動または別タスク）:
 
-（`Set-Location` のパスは環境に合わせて置き換え。手動で特定月だけ入れるときは `npm run user683:sync-summaries:apply -- --year 2026 --month 4`。）
+```powershell
+npm run user683:sync-summaries:apply
+```
+
+（手動で特定月だけ入れるときは `npm run user683:sync-summaries:apply -- --year 2026 --month 4`。）
 
 ## トラブルシュート
 

@@ -83,6 +83,7 @@
     "user683:sync-summaries:dry-run-prev-month": "npx dotenv -e .env -e .env.proxy -- node scripts/user683-sync-summaries-to-kintone.mjs --dry-run --prev-month",
     "user683:sync-summaries:apply": "npx dotenv -e .env -e .env.proxy -- node scripts/user683-sync-summaries-to-kintone.mjs --apply",
     "user683:sync-summaries:apply-prev-month": "npx dotenv -e .env -e .env.proxy -- node scripts/user683-sync-summaries-to-kintone.mjs --apply --prev-month",
+    "user683:sync-summaries:register-windows-task": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/windows/register-user683-sync-summaries-monthly-task.ps1",
     "user683:monthly-pdf": "python scripts/user683-monthly-pdf/generate_monthly_pdf.py",
     "user683:monthly-pdf:demo": "python scripts/user683-monthly-pdf/generate_monthly_pdf.py --demo --out C:\\tmp\\user683-monthly-demo.pdf",
     "user683:local-servers": "node scripts/user683-start-local-servers.mjs",
