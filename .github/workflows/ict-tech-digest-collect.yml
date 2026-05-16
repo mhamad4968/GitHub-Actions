@@ -1,0 +1,70 @@
+# 最新ICT情報掲示板（収集用 685）へ RSS × OpenAI で自動登録
+# スケジュール: 毎日 10:00 / 20:00（日本標準時 JST）= UTC 01:00 / 11:00
+#
+# Environment: kintone-collect（security-next と共有可能）
+# Secrets: KINTONE_DOMAIN, KINTONE_APP（=685）, KINTONE_API_TOKEN_COLLECT, OPENAI_API_KEY
+# 任意: RSS_FEED_URLS, ICT_DIGEST_BOARD_APP_ID（686）, NOTIFY_WEBHOOK_URL
+
+name: ict-tech-digest-collect
+
+on:
+  schedule:
+    - cron: "0 1 * * *"
+    - cron: "0 11 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ict-tech-digest-collect-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    environment: kintone-collect
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: kintone / OpenAI シークレット確認（値は出さない）
+        run: |
+          echo "KINTONE_DOMAIN_defined=${{ secrets.KINTONE_DOMAIN != '' }}"
+          echo "KINTONE_APP_defined=${{ secrets.KINTONE_APP != '' }}"
+          echo "KINTONE_API_TOKEN_COLLECT_defined=${{ secrets.KINTONE_API_TOKEN_COLLECT != '' }}"
+          echo "OPENAI_API_KEY_defined=${{ secrets.OPENAI_API_KEY != '' }}"
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: ".nvmrc"
+          cache: npm
+          cache-dependency-path: ict-tech-digest-automation/package-lock.json
+
+      - name: 依存関係インストール
+        run: npm ci --prefix ict-tech-digest-automation
+
+      - name: ICT 情報収集実行
+        env:
+          KINTONE_DOMAIN: ${{ secrets.KINTONE_DOMAIN }}
+          KINTONE_APP_ID: ${{ secrets.ICT_DIGEST_STORE_APP_ID || secrets.KINTONE_APP }}
+          KINTONE_API_TOKEN_COLLECT: ${{ secrets.KINTONE_API_TOKEN_ICT_COLLECT || secrets.KINTONE_API_TOKEN_COLLECT }}
+          KINTONE_API_TOKEN: ${{ secrets.KINTONE_API_TOKEN_ICT_COLLECT || secrets.KINTONE_API_TOKEN_COLLECT }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL }}
+          RSS_FEED_URLS: ${{ vars.ICT_RSS_FEED_URLS }}
+          ICT_DIGEST_BOARD_APP_ID: ${{ vars.ICT_DIGEST_BOARD_APP_ID }}
+          NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
+        run: npm --prefix ict-tech-digest-automation run collect
+
+      - name: 失敗時通知（任意 Webhook）
+        if: failure()
+        env:
+          NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
+        run: |
+          if [ -z "$NOTIFY_WEBHOOK_URL" ]; then
+            echo "NOTIFY_WEBHOOK_URL 未設定のため通知スキップ"
+            exit 0
+          fi
+          curl -sS -X POST "$NOTIFY_WEBHOOK_URL" \
+            -H 'Content-Type: application/json' \
+            -d '{"text":"❌ ict-tech-digest-collect 失敗: ${{ github.repository }} run ${{ github.run_id }}"}'
