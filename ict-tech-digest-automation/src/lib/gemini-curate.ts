@@ -114,6 +114,7 @@ export async function curateWithGemini(
 - category は次のいずれか1つ（記事内容に最も近いもの）: ${ICT_CATEGORIES.join(" / ")}
   - 目安: パッチ/CVE → Microsoft・Windows または セキュリティ・脆弱性 / Box・Teams・Workspace → SaaS・文書管理 / 試験・AWS資格・リスキリング → 資格・リスキリング / 内製化・DX人材・組織改革 → DX人材・組織 / 情シス部長・法改正対応 → 情シス・IT部門 / IPA調査・DX指標 → IPA・政策調査 / SIer・買収 → ITベンダー・DX
 - importanceScore は 1〜100（上記基準で「今日の業務優先度」）
+- url は候補リストの url を**そのまま**使う（捏造禁止）。タイトル・概要の製品名と url のドメインが明らかに矛盾する候補は選ばない（例: PostgreSQL / NGINX の記事に msrc.microsoft.com の CVE 個別 URL は不適切）
 
 候補:
 ${listText}`;

@@ -14,6 +14,23 @@ cd /home/mhamada202408224/kintone-ai-lab
 npm run app:fields <アプリID>
 ```
 
+## ポートフォリオ customize 本番 BUILD（機械台帳）
+
+**正**: `data/cio-live-builds.json`（deploy 成功時に自動更新）。**照合**: `npm run cio:audit:portfolio:strict`（リポ `var BUILD` ↔ 台帳 ↔ kintone 本番 JS）。**復旧 Runbook**: `docs/runbooks/customize-deploy-recovery.md`。
+
+| app | BUILD（本番） | revision | fileKey | 更新 |
+|-----|---------------|----------|---------|------|
+| 627 | `2026-05-12-627-no594-rest` | 150 | `9fc3efc8-2a22-4585-881f-0ee3c2a0fbf2` | 2026-05-16 portfolio 拡張（6b3d370 同期） |
+| 668 | `2026-05-16-668-ops-guide-portfolio-audit` | 42 | `106126f5-7249-4104-8b43-405c85ddfa51` | 2026-05-16 portfolio 拡張・`deploy:668` |
+| 677 | `2026-05-15-677-block-all-ui-mutations-dash678-only` | 20 | `6eb02e6f-4319-4bed-97ee-245ee0869a01` | 2026-05-16 registry 整合 |
+| 678 | `2026-05-15-678-hide-native-pager-zero-label` | **157** | `33343967-1f61-4981-88fe-924a090918b3` | 2026-05-16 registry 整合 |
+| 679 | `2026-05-15-679-manual-no-677-nav` | 32 | `3c757dfa-9704-47d5-b607-66ae78a423ef` | 2026-05-16 registry 整合 |
+| 682 | `2026-05-12-682-hide-rolling7m-dashboard683` | 24 | `c183e358-0f6a-4d1c-ad70-cfb4543197e6` | 2026-05-16 registry 整合 |
+| 683 | `2026-05-16-683-print-2page-tight-v2` | **76** | `ba2066bb-0cb1-4c8f-98e9-d93b9b881166` | 2026-05-16 registry 整合 |
+| 686 | `2026-05-16-686-ict-digest-board-v8` | **17** | `8d260fda-762d-482c-9fe9-4086f423f1cb` | 2026-05-16 MSRC→NVD リンク修正 |
+
+**revision スナップショット**（フィールド構成）: `data/snapshots/*-portfolio-2026-05-16-*`（`npm run cio:snapshot:portfolio`）。
+
 ## アプリ一覧
 
 | アプリ名（論理名） | アプリID | customize パス | デプロイ例（npm） |
@@ -43,6 +60,7 @@ npm run app:fields <アプリID>
 
 ### 678 本番 customize の実効ビルド（台帳ずれの正）
 
+- **現在の本番 live**（**2026-05-16** 先祖返り復旧＋registry 整合・`npm run cio:preflight:678` → `deploy:678` **SUCCESS**）: fileKey **`33343967-1f61-4981-88fe-924a090918b3`** / preview revision **`157`** / **`var BUILD`** = **`2026-05-15-678-hide-native-pager-zero-label`**（`cio:audit:portfolio:strict` **8/8 OK**・CEO 検収済み）。
 - **本番 live**（**2026-05-15** `npm run cio:preflight:678 -- --note "hide 0-0 paging label MO pager css"` → `npm run deploy:678` **Deploy SUCCESS**）: fileKey **`9e451b68-3771-4df5-ae61-69864dbdf6f1`** / preview revision **`153`** / **`var BUILD`** = **`2026-05-15-678-hide-native-pager-zero-label`**（**「0 - 0 （0件中）」**等の **非表示強化**：正規化・**MO は 678 のみ常時**・**一覧 show 直後に即時**・**`.gaia-argoui-app-index-pager`** CSS）。
 - **本番 live**（**2026-05-15** `npm run cio:preflight:678 -- --note "outlook column vertical-align middle"` → `npm run deploy:678` **Deploy SUCCESS**）: fileKey **`dd77e2ea-fc48-433d-94c7-7027c9e3ec0b`** / preview revision **`152`** / **`var BUILD`** = **`2026-05-15-678-cell-vertical-middle`**（**予算見通し**列 **`vertical-align:middle`**（従来 `top`））。
 - **本番 live**（**2026-05-15** `npm run cio:preflight:678 -- --note "header remove 677 list and new links"` → `npm run deploy:678` **Deploy SUCCESS**）: fileKey **`021a12e9-fb11-4eb5-90f5-c39ad79a1753`** / preview revision **`151`** / **`var BUILD`** = **`2026-05-15-678-header-remove-677-quicklinks`**（**シェルヘッダ**から **677 一覧・677 新規（/edit）リンク**を削除。**再読み込み**・678 自リンク・679 マニュアルは維持）。

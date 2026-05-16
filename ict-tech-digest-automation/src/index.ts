@@ -12,6 +12,7 @@ import {
   fetchExistingUrls,
   urlExists,
 } from "./lib/kintone-store.js";
+import { resolveArticleUrl } from "./lib/article-url.js";
 import { curateWithGemini } from "./lib/gemini-curate.js";
 import { dedupeAndSort, fetchAllFeeds, getLastRssFetchReport } from "./lib/rss.js";
 
@@ -62,7 +63,10 @@ async function main(): Promise<void> {
   }
   const merged = dedupeAndSort(rawArticles);
   const unregistered = merged.filter((a) => !existingUrls.has(a.url));
-  const candidates = filterRecentForCuration(unregistered, today);
+  const candidates = filterRecentForCuration(unregistered, today).map((a) => {
+    const url = resolveArticleUrl(a.url, a.title, a.snippet);
+    return url === a.url ? a : { ...a, url };
+  });
   console.log(
     `[ICT収集] RSS 横断 ${cfg.rssFeedUrls.length} 本 → 未登録 ${unregistered.length} 件 → 厳選候補（直近） ${candidates.length} 件`,
   );
@@ -93,9 +97,13 @@ async function main(): Promise<void> {
       console.log(`[ICT収集] 重複のためスキップ: ${p.url}`);
       continue;
     }
+    const url = resolveArticleUrl(p.url, p.title, p.overview);
+    if (url !== p.url.trim()) {
+      console.log(`[ICT収集] URL を NVD に差し替え: ${p.url} → ${url}`);
+    }
     toRegister.push({
       title: p.title,
-      url: p.url,
+      url,
       overview: p.overview,
       category: p.category,
       publishedAt: today,

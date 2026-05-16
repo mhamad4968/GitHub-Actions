@@ -7,7 +7,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-16-686-ict-digest-board-v7';
+  const BUILD = '2026-05-16-686-ict-digest-board-v8';
   const STORE_APP_ID =
     typeof window.ICT_DIGEST_STORE_APP === 'number' ? window.ICT_DIGEST_STORE_APP : 685;
 
@@ -112,6 +112,38 @@
       .replace(/"/g, '&quot;');
   }
 
+  var MSRC_VULN_PAGE_RE =
+    /^https?:\/\/msrc\.microsoft\.com\/update-guide\/vulnerability\/(CVE-\d{4}-\d+)\/?$/i;
+  var NON_MS_PRODUCT_RE =
+    /postgresql|postgres\b|nginx\b|linux\s+kernel|apache\s+http|openssl\b|mariadb|mysql\b|openssh|docker\b|kubernetes|vmware|fortinet|ivanti|wordpress|tomcat\b|jetty|jenkins|gitlab|jira\b/i;
+
+  function nvdDetailUrl(cveId) {
+    return 'https://nvd.nist.gov/vuln/detail/' + String(cveId).toUpperCase();
+  }
+
+  function shouldPreferNvdOverMsrc(title, overview) {
+    return NON_MS_PRODUCT_RE.test(String(title) + '\n' + String(overview));
+  }
+
+  /** MSRC 個別 CVE ページは Microsoft 製品のみ。PostgreSQL / NGINX 等は SPA が 404 */
+  function resolveArticleUrl(url, title, overview) {
+    var u = String(url || '').trim();
+    if (!u) return u;
+    var m = MSRC_VULN_PAGE_RE.exec(u);
+    if (!m) return u;
+    if (shouldPreferNvdOverMsrc(title, overview)) {
+      return nvdDetailUrl(m[1]);
+    }
+    return u;
+  }
+
+  function linkResolutionNote(url, title, overview) {
+    var raw = String(url || '').trim();
+    var resolved = resolveArticleUrl(raw, title, overview);
+    if (resolved === raw || !MSRC_VULN_PAGE_RE.test(raw)) return '';
+    return 'MSRC 個別ページは当該 CVE が掲載されないため NVD を表示しています';
+  }
+
   function fetchAllRecords(query) {
     const limit = 500;
     var offset = 0;
@@ -171,7 +203,9 @@
     var pub = (rec[FC.published_at] && rec[FC.published_at].value) || '';
     var cat = recordCategory(rec);
     var overview = (rec[FC.overview] && rec[FC.overview].value) || '';
-    var url = recordUrl(rec);
+    var rawUrl = recordUrl(rec);
+    var url = resolveArticleUrl(rawUrl, title, overview);
+    var linkNote = linkResolutionNote(rawUrl, title, overview);
     var ovHtml = overview
       .split('\n')
       .filter(Boolean)
@@ -210,6 +244,9 @@
       '<h3 class="ict-card-title">' +
       titleHtml +
       '</h3>' +
+      (linkNote
+        ? '<p class="ict-link-note">' + escapeHtml(linkNote) + '</p>'
+        : '') +
       (ovHtml ? '<div class="ict-overview">' + ovHtml + '</div>' : '') +
       '</article>'
     );
@@ -278,6 +315,7 @@
       '.ict-card-title{margin:0 0 8px;font-size:1rem;line-height:1.4;font-weight:600}',
       '.ict-card-link{color:#0369a1;text-decoration:none}',
       '.ict-card-link:hover{text-decoration:underline}',
+      '.ict-link-note{margin:4px 0 0;font-size:11px;color:#64748b;line-height:1.35}',
       '.ict-overview{font-size:13px;line-height:1.55;color:#334155}',
       '.ict-ov-line{margin:0 0 4px}',
       '.ict-ov-line--label{font-weight:600;color:#0f172a}',
