@@ -9,7 +9,7 @@ import { ICT_CATEGORIES, type IctCategory } from "./field-codes.js";
 import type { RssArticle } from "./rss.js";
 
 const SYSTEM_PROMPT =
-  "あなたは最新のIT技術トレンドやモダンな開発手法、インフラ技術に精通した、企業情報システム部門（情シス）のテックリードです。";
+  "あなたは企業情報システム部門（情シス）のテックリードです。Microsoft/Windows/M365、PC・端末、セキュリティパッチ・脆弱性、通信機器・ネットワーク製品の動向に強いです。";
 
 const GEMINI_MODEL_FALLBACKS = [
   "gemini-flash-latest",
@@ -86,7 +86,7 @@ export async function curateWithGemini(
   if (slots <= 0 || candidates.length === 0) return [];
 
   const listText = candidates
-    .slice(0, 40)
+    .slice(0, 50)
     .map(
       (c, i) =>
         `[${i + 1}] url=${c.url}\ntitle=${c.title}\nsnippet=${c.snippet.slice(0, 300)}`,
@@ -97,9 +97,14 @@ export async function curateWithGemini(
 
 以下は IT 技術 RSS の候補記事です。情シスが知っておくべき、重要度・実用性の高いものを **ちょうど ${slots} 件**（候補が少ない場合はその数だけ）選んでください。
 
+優先テーマ（スコアを上げる）:
+- Microsoft / Windows / M365 / Azure の更新・脆弱性・ベストプラクティス
+- PC・端末・ハードウェア、業務利用に関わる製品情報
+- セキュリティ対策、パッチ、CVE、通信機器・ネットワーク機器の注意喚起
+
 要件:
 - 重複テーマは避ける
-- overview は **日本語で3行**（改行区切り）。技術的に具体的に
+- overview は **日本語で3行**（改行区切り）。英語記事でも日本語で要約。CVE番号・製品名・バージョンは原文表記を残す
 - category は次のいずれか1つ: ${ICT_CATEGORIES.join(" / ")}
 - importanceScore は 1〜100 の整数
 

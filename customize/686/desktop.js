@@ -7,7 +7,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-16-686-ict-digest-board-v1';
+  const BUILD = '2026-05-16-686-ict-digest-board-v3';
   const STORE_APP_ID =
     typeof window.ICT_DIGEST_STORE_APP === 'number' ? window.ICT_DIGEST_STORE_APP : 685;
 
@@ -26,6 +26,14 @@
     'ITツール・ガジェット',
     'その他',
   ];
+
+  const CAT_CLASS = {
+    'AI・LLM': 'ict-cat--ai',
+    'インフラ・クラウド': 'ict-cat--infra',
+    '開発トレンド': 'ict-cat--dev',
+    'ITツール・ガジェット': 'ict-cat--tool',
+    'その他': 'ict-cat--other',
+  };
 
   const PAGE_SIZE = 50;
 
@@ -128,7 +136,12 @@
     return true;
   }
 
-  function renderCard(rec) {
+  function catClass(cat) {
+    return CAT_CLASS[cat] || 'ict-cat--other';
+  }
+
+  function renderCard(rec, opts) {
+    opts = opts || {};
     var title = (rec[FC.title] && rec[FC.title].value) || '（無題）';
     var pub = (rec[FC.published_at] && rec[FC.published_at].value) || '';
     var cat = recordCategory(rec);
@@ -138,54 +151,108 @@
       .split('\n')
       .filter(Boolean)
       .map(function (line) {
-        return '<div class="ict-ov-line">' + escapeHtml(line) + '</' + 'div>';
+        return '<p class="ict-ov-line">' + escapeHtml(line) + '</p>';
       })
       .join('');
 
     var titleHtml = url
-      ? '<a href="' +
+      ? '<a class="ict-card-link" href="' +
         escapeHtml(url) +
         '" target="_blank" rel="noopener noreferrer">' +
         escapeHtml(title) +
         '</a>'
       : escapeHtml(title);
 
+    var heroCls = opts.hero ? ' ict-card--hero' : '';
+
     return (
-      '<article class="ict-card">' +
-      '<div class="ict-card-meta"><span class="ict-cat">' +
-      escapeHtml(cat) +
-      '</span><span class="ict-date">' +
+      '<article class="ict-card' +
+      heroCls +
+      '">' +
+      '<div class="ict-card-head">' +
+      '<span class="ict-cat ' +
+      catClass(cat) +
+      '">' +
+      escapeHtml(cat || '未分類') +
+      '</span>' +
+      '<time class="ict-date" datetime="' +
       escapeHtml(pub) +
-      '</span></div>' +
+      '">' +
+      escapeHtml(pub) +
+      '</time>' +
+      '</div>' +
       '<h3 class="ict-card-title">' +
       titleHtml +
       '</h3>' +
-      '<div class="ict-overview">' +
-      ovHtml +
-      '</div>' +
+      (ovHtml ? '<div class="ict-overview">' + ovHtml + '</div>' : '') +
       '</article>'
     );
+  }
+
+  function injectNativeHideStyles() {
+    if (document.getElementById('ict-digest-hide-native')) return;
+    var style = document.createElement('style');
+    style.id = 'ict-digest-hide-native';
+    style.textContent = [
+      '.gaia-argoui-app-index-recordlist,.gaia-argoui-app-index-norecord,.recordlist-gaia,.recordlist-norecord-gaia,.gaia-argoui-list-norecord,.recordlist-paging-gaia,div[class*="recordlist-norecord"]{display:none !important;}',
+      '.gaia-argoui-app-index-paging,.gaia-argoui-app-index-pager,.gaia-argoui-app-index-recordcount,.gaia-argoui-app-recordcount,.gaia-argoui-paging,',
+      'div[class*="paging-gaia"],div[class*="recordlist-paging"],div[class*="recordcount-gaia"],',
+      '[class*="recordcount-gaia"],[class*="Recordcount-gaia"],[class*="recordlist-paging"]{display:none !important;}',
+    ].join('');
+    document.head.appendChild(style);
   }
 
   function injectStyles() {
     if (document.getElementById('ict-digest-board-style')) return;
     var style = document.createElement('style');
     style.id = 'ict-digest-board-style';
-    style.textContent =
-      '#ict-digest-root{font-family:system-ui,sans-serif;max-width:960px;margin:0 auto 2rem;padding:0 12px}' +
-      '#ict-digest-root h2{font-size:1.25rem;margin:1rem 0 .5rem}' +
-      '.ict-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}' +
-      '.ict-toolbar input,.ict-toolbar select{padding:6px 8px;font-size:14px}' +
-      '.ict-hero{background:#f0f7ff;border:1px solid #c5d9f0;border-radius:8px;padding:12px 16px;margin-bottom:16px}' +
-      '.ict-card{border:1px solid #ddd;border-radius:8px;padding:12px 16px;margin-bottom:10px;background:#fff}' +
-      '.ict-card-meta{font-size:12px;color:#555;margin-bottom:6px}' +
-      '.ict-cat{background:#e8eef5;padding:2px 8px;border-radius:4px;margin-right:8px}' +
-      '.ict-card-title{font-size:1rem;margin:0 0 8px}' +
-      '.ict-card-title a{color:#0366d6;text-decoration:none}' +
-      '.ict-overview{font-size:14px;line-height:1.5;color:#333}' +
-      '.ict-status{font-size:13px;color:#666;margin:8px 0}' +
-      '.ict-pager{margin-top:12px}' +
-      '.ict-pager button{margin-right:8px;padding:6px 12px}';
+    style.textContent = [
+      '[data-ict-digest-board]{font-family:"Segoe UI",system-ui,sans-serif;color:#0f172a;max-width:1100px;margin:0 auto;padding:0 16px 32px;box-sizing:border-box}',
+      '[data-ict-digest-board] *{box-sizing:border-box}',
+      '.ict-top{margin:0 -16px 0;padding:20px 20px 18px;background:linear-gradient(135deg,#0c4a6e 0%,#0369a1 55%,#0ea5e9 100%);color:#f8fafc;border-radius:0 0 12px 12px;box-shadow:0 4px 14px rgba(2,132,199,.25)}',
+      '.ict-top h1{margin:0 0 6px;font-size:1.35rem;font-weight:700;letter-spacing:.02em}',
+      '.ict-top-lead{margin:0;font-size:.9rem;opacity:.92;line-height:1.45}',
+      '.ict-search-panel{position:sticky;top:0;z-index:5;margin:16px 0 20px;padding:14px 16px;background:#fff;border:1px solid #e2e8f0;border-radius:10px;box-shadow:0 2px 12px rgba(15,23,42,.06)}',
+      '.ict-search-row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}',
+      '.ict-search-row--main{margin-bottom:10px}',
+      '.ict-field{display:flex;flex-direction:column;gap:4px;min-width:0}',
+      '.ict-field--grow{flex:1 1 220px}',
+      '.ict-field label{font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.04em}',
+      '.ict-field input,.ict-field select{width:100%;padding:8px 10px;font-size:14px;border:1px solid #cbd5e1;border-radius:6px;background:#f8fafc}',
+      '.ict-field input:focus,.ict-field select:focus{outline:2px solid #38bdf8;border-color:#0ea5e9;background:#fff}',
+      '.ict-btn-search{padding:9px 20px;font-size:14px;font-weight:600;color:#fff;background:linear-gradient(180deg,#0284c7,#0369a1);border:none;border-radius:6px;cursor:pointer;white-space:nowrap}',
+      '.ict-btn-search:hover{background:linear-gradient(180deg,#0ea5e9,#0284c7)}',
+      '.ict-btn-ghost{padding:8px 14px;font-size:13px;color:#475569;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;cursor:pointer}',
+      '.ict-section{margin-bottom:24px}',
+      '.ict-section-title{margin:0 0 12px;font-size:1.05rem;font-weight:700;color:#0f172a;display:flex;align-items:center;gap:8px}',
+      '.ict-section-title::before{content:"";display:inline-block;width:4px;height:1.1em;background:#0ea5e9;border-radius:2px}',
+      '.ict-hero-panel{padding:14px 16px;background:linear-gradient(180deg,#f0f9ff,#e0f2fe);border:1px solid #bae6fd;border-radius:10px}',
+      '.ict-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}',
+      '.ict-card{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px 16px;transition:box-shadow .15s,border-color .15s}',
+      '.ict-card:hover{border-color:#7dd3fc;box-shadow:0 4px 16px rgba(14,165,233,.12)}',
+      '.ict-card--hero{border-color:#7dd3fc;background:#fff}',
+      '.ict-card-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:8px}',
+      '.ict-cat{font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;line-height:1.3}',
+      '.ict-cat--ai{background:#ede9fe;color:#5b21b6}',
+      '.ict-cat--infra{background:#dbeafe;color:#1d4ed8}',
+      '.ict-cat--dev{background:#d1fae5;color:#047857}',
+      '.ict-cat--tool{background:#ffedd5;color:#c2410c}',
+      '.ict-cat--other{background:#f1f5f9;color:#475569}',
+      '.ict-date{font-size:12px;color:#64748b;margin-left:auto}',
+      '.ict-card-title{margin:0 0 8px;font-size:1rem;line-height:1.4;font-weight:600}',
+      '.ict-card-link{color:#0369a1;text-decoration:none}',
+      '.ict-card-link:hover{text-decoration:underline}',
+      '.ict-overview{font-size:13px;line-height:1.55;color:#334155}',
+      '.ict-ov-line{margin:0 0 4px}',
+      '.ict-ov-line:last-child{margin-bottom:0}',
+      '.ict-status{font-size:13px;color:#64748b;margin:0 0 10px}',
+      '.ict-empty{padding:24px;text-align:center;color:#64748b;background:#f8fafc;border-radius:8px;border:1px dashed #cbd5e1}',
+      '.ict-pager{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px}',
+      '.ict-pager button{padding:7px 14px;font-size:13px;border:1px solid #cbd5e1;background:#fff;border-radius:6px;cursor:pointer}',
+      '.ict-pager button:disabled{opacity:.45;cursor:not-allowed}',
+      '.ict-foot{margin-top:20px;padding-top:12px;border-top:1px solid #e2e8f0;font-size:11px;color:#94a3b8}',
+      '@media(max-width:640px){.ict-search-row--filters .ict-field{flex:1 1 100%}.ict-date{margin-left:0}}',
+    ].join('');
     document.head.appendChild(style);
   }
 
@@ -197,31 +264,48 @@
     }).join('');
 
     container.innerHTML =
-      '<div id="ict-digest-root">' +
-      '<p class="ict-status">BUILD ' +
-      BUILD +
-      ' · 正本アプリ ' +
-      STORE_APP_ID +
-      '</p>' +
-      '<section class="ict-hero"><h2>本日・直近の ICT 情報</h2><div id="ict-hero-list">読込中…</div></section>' +
-      '<section><h2>過去の ICT 情報を探す</h2>' +
-      '<div class="ict-toolbar">' +
-      '<label>カテゴリ <select id="ict-filter-cat"><option value="">すべて</option>' +
-      catOptions +
-      '</select></label>' +
-      '<label>公開日 From <input type="date" id="ict-filter-from" /></label>' +
-      '<label>To <input type="date" id="ict-filter-to" /></label>' +
-      '<label>キーワード <input type="text" id="ict-filter-kw" placeholder="タイトル・概要" /></label>' +
-      '<button type="button" id="ict-btn-search" class="kintoneplugin-button-normal">検索</button>' +
+      '<div id="ict-digest-root" data-ict-digest-board>' +
+      '<header class="ict-top">' +
+      '<h1>最新 ICT 情報掲示板</h1>' +
+      '<p class="ict-top-lead">RSS × AI で厳選した ICT・Microsoft・PC・セキュリティ情報を一覧・検索</p>' +
+      '</header>' +
+      '<div class="ict-search-panel">' +
+      '<div class="ict-search-row ict-search-row--main">' +
+      '<div class="ict-field ict-field--grow"><label for="ict-filter-kw">キーワード</label>' +
+      '<input type="search" id="ict-filter-kw" placeholder="タイトル・概要で検索…" autocomplete="off" /></div>' +
+      '<button type="button" id="ict-btn-search" class="ict-btn-search">検索</button>' +
+      '<button type="button" id="ict-btn-reset" class="ict-btn-ghost">条件クリア</button>' +
       '</div>' +
+      '<div class="ict-search-row ict-search-row--filters">' +
+      '<div class="ict-field"><label for="ict-filter-cat">カテゴリ</label>' +
+      '<select id="ict-filter-cat"><option value="">すべて</option>' +
+      catOptions +
+      '</select></div>' +
+      '<div class="ict-field"><label for="ict-filter-from">公開日 From</label>' +
+      '<input type="date" id="ict-filter-from" /></div>' +
+      '<div class="ict-field"><label for="ict-filter-to">To</label>' +
+      '<input type="date" id="ict-filter-to" /></div>' +
+      '</div>' +
+      '</div>' +
+      '<section class="ict-section ict-hero-wrap">' +
+      '<h2 class="ict-section-title">本日・直近 7 日</h2>' +
+      '<div class="ict-hero-panel"><div id="ict-hero-list" class="ict-grid">読込中…</div></div>' +
+      '</section>' +
+      '<section class="ict-section">' +
+      '<h2 class="ict-section-title">記事一覧</h2>' +
       '<div id="ict-list-status" class="ict-status"></div>' +
-      '<div id="ict-list"></div>' +
-      '<div class="ict-pager"><button type="button" id="ict-btn-prev">前へ</button><button type="button" id="ict-btn-next">次へ</button></div>' +
-      '</section></div>';
-
-    container.innerHTML = container.innerHTML.replace(/<\/?motion\.div/gi, function (tag) {
-      return tag.replace('motion.', '');
-    });
+      '<div id="ict-list" class="ict-grid"></div>' +
+      '<div class="ict-pager">' +
+      '<button type="button" id="ict-btn-prev">前へ</button>' +
+      '<button type="button" id="ict-btn-next">次へ</button>' +
+      '</div>' +
+      '</section>' +
+      '<footer class="ict-foot">BUILD ' +
+      BUILD +
+      ' · 正本 ' +
+      STORE_APP_ID +
+      '</footer>' +
+      '</div>';
 
     injectStyles();
 
@@ -247,10 +331,16 @@
       if (state.page < 0) state.page = 0;
       var slice = filtered.slice(state.page * PAGE_SIZE, (state.page + 1) * PAGE_SIZE);
       document.getElementById('ict-list-status').textContent =
-        '該当 ' + filtered.length + ' 件（' + (state.page + 1) + '/' + totalPages + ' ページ）';
+        '該当 ' + filtered.length + ' 件（' + (state.page + 1) + ' / ' + totalPages + ' ページ）';
       document.getElementById('ict-list').innerHTML = slice.length
-        ? slice.map(renderCard).join('')
-        : '<p class="ict-status">該当する記事がありません。</p>';
+        ? slice
+            .map(function (r) {
+              return renderCard(r);
+            })
+            .join('')
+        : '<p class="ict-empty">該当する記事がありません。検索条件を変えてください。</p>';
+      document.getElementById('ict-btn-prev').disabled = state.page <= 0;
+      document.getElementById('ict-btn-next').disabled = state.page >= totalPages - 1;
     }
 
     function renderHero() {
@@ -261,15 +351,31 @@
         var d = r[FC.published_at] && r[FC.published_at].value;
         return d && d >= weekAgo && d <= today;
       });
-      var show = todayRecs.length ? todayRecs : weekRecs.slice(0, 5);
+      var show = todayRecs.length ? todayRecs : weekRecs.slice(0, 6);
       document.getElementById('ict-hero-list').innerHTML = show.length
-        ? show.map(renderCard).join('')
-        : '<p class="ict-status">本日・直近7日の記事はまだありません。</p>';
+        ? show
+            .map(function (r) {
+              return renderCard(r, { hero: true });
+            })
+            .join('')
+        : '<p class="ict-empty">本日・直近 7 日の記事はまだありません。</p>';
     }
 
-    document.getElementById('ict-btn-search').addEventListener('click', function () {
+    function runSearch() {
       state.page = 0;
       renderList();
+    }
+
+    document.getElementById('ict-btn-search').addEventListener('click', runSearch);
+    document.getElementById('ict-btn-reset').addEventListener('click', function () {
+      document.getElementById('ict-filter-cat').value = '';
+      document.getElementById('ict-filter-from').value = '';
+      document.getElementById('ict-filter-to').value = '';
+      document.getElementById('ict-filter-kw').value = '';
+      runSearch();
+    });
+    document.getElementById('ict-filter-kw').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') runSearch();
     });
     document.getElementById('ict-btn-prev').addEventListener('click', function () {
       state.page--;
@@ -280,7 +386,7 @@
       renderList();
     });
 
-    document.getElementById('ict-list-status').textContent = '正本アプリから読込中…';
+    document.getElementById('ict-list-status').textContent = '記事を読込中…';
     return fetchAllRecords('order by ' + FC.published_at + ' desc').then(function (records) {
       state.all = records;
       renderHero();
@@ -289,18 +395,28 @@
   }
 
   kintone.events.on('app.record.index.show', function (event) {
-    var header = kintone.app.getHeaderMenuSpaceElement();
-    if (!header) return event;
+    injectNativeHideStyles();
+
+    var header = kintone.app.getHeaderSpaceElement && kintone.app.getHeaderSpaceElement();
+    if (!header) {
+      console.warn(BUILD, 'getHeaderSpaceElement is null');
+      return event;
+    }
+
+    if (header.querySelector('[data-ict-digest-board]')) return event;
+
+    header.innerHTML = '';
     var wrap = document.createElement('div');
     wrap.id = 'ict-digest-board-wrap';
     header.appendChild(wrap);
+
     buildUi(wrap).catch(function (err) {
       wrap.innerHTML =
-        '<p style="color:#c00">ICT 情報の取得に失敗しました。正本アプリ ' +
+        '<div data-ict-digest-board><p style="color:#b91c1c;padding:16px">ICT 情報の取得に失敗しました。正本アプリ ' +
         STORE_APP_ID +
-        ' の閲覧権限を確認してください。 ' +
+        ' の閲覧権限を確認してください。<br>' +
         escapeHtml(err && err.message ? err.message : String(err)) +
-        '</p>';
+        '</p></div>';
     });
     return event;
   });

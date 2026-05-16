@@ -25,12 +25,14 @@
 
 ### 2.1 デフォルト RSS
 
-| ソース | URL |
-|--------|-----|
-| Qiita | `https://qiita.com/popular-items/feed` |
-| Zenn | `https://zenn.dev/feed` |
-| はてな IT 人気 | `https://b.hatena.ne.jp/hotentry/it.rss` |
-| ITmedia AIT | `https://rss.itmedia.co.jp/rss/2.0/ait.xml` |
+| 区分 | ソース | URL |
+|------|--------|-----|
+| 開発トレンド | Qiita / Zenn / はてな IT / ITmedia AIT | 従来どおり |
+| Microsoft | MSRC / Windows Blog / Microsoft Security Blog | `msrc.microsoft.com/blog/rss/` 等 |
+| セキュリティ公式 | IPA 注意喚起 / JPCERT/CC 統合 RSS | `ipa.go.jp/security/rss/alert.rdf` 等 |
+| PC・通信・製品 | PC Watch / INTERNET Watch / Forest Watch | impress.co.jp 系 RSS |
+
+**棲み分け**: Security NEXT（アプリ **631**）は別ライン。ICT 掲示板（685）は公式・製品系を厚くし、メディア解説の重複は Gemini 厳選で抑える。
 
 ## 3. 正本アプリ（685）フィールド
 

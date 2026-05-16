@@ -32,11 +32,20 @@ export type IctConfig = {
   notifyWebhookUrl: string | undefined;
 };
 
+/** 情シス向け: 開発トレンド + Microsoft/PC + セキュリティ公式（631 Security NEXT とは別系統） */
 const DEFAULT_RSS = [
   "https://qiita.com/popular-items/feed",
   "https://zenn.dev/feed",
   "https://b.hatena.ne.jp/hotentry/it.rss",
   "https://rss.itmedia.co.jp/rss/2.0/ait.xml",
+  "https://msrc.microsoft.com/blog/rss/",
+  "https://blogs.windows.com/feed/",
+  "https://www.microsoft.com/en-us/security/blog/feed/",
+  "https://www.ipa.go.jp/security/rss/alert.rdf",
+  "https://www.jpcert.or.jp/rss/jpcert.rdf",
+  "https://pc.watch.impress.co.jp/data/rss/1.0/pcw/feed.rdf",
+  "https://internet.watch.impress.co.jp/data/rss/1.0/iw/feed.rdf",
+  "https://forest.watch.impress.co.jp/data/rss/1.0/wf/feed.rdf",
 ];
 
 function requireEnv(name: string): string {
