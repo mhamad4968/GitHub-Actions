@@ -1990,3 +1990,16 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 **Desktop**: `npm run session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync` **OK**（`26-evening-reflection-2026-05-16.md`＝夕反省正本）。
 
 **次セッションへの 1 行**: Read 夕反省 §5（R-17 実装済）→ `npm run cio:audit:portfolio:strict` → 本題は CEO 指示（682/683 等）。
+
+---
+
+### 2026-05-17 JST — ICT dispatch 硬化・環境 100% 準備・依頼行直前
+
+**CEO**: ICT dispatch 過去 2 失敗は **対応 OK**。印刷確認 **完了**。**報告は準備 100% 後**。
+
+**経緯**:
+- **ICT CB_VA01**（run 25958019729）: 既修正 **30859c8**（685 url unique オフ・512）。**追加**: `kintone-store.ts` 一括失敗時 **1 件切り分け＋診断ログ**、GHA **`typecheck`**、SPEC §7 更新。`workflow_dispatch` 再実行で検証。
+- **683**: serve 廃止・印刷 CEO OK（`3a3d856`/`6be1456`）。
+- **環境**: MCP 6/6・smoke 14/14・portfolio 8/8・bootstrap OK・push `ce2b1e3`。
+
+**次セッションへの 1 行**: **§41 一問** → **682/683 ユーザサポート本題**（CEO 依頼行）。動作確認は **依頼時 CEO**。
