@@ -23,6 +23,6 @@ if (process.platform === 'win32' && fs.existsSync(bat)) {
 
 console.error('[user683:local-servers] この OS では .bat を使えません。次を別ターミナルで起動してください:');
 console.error('  npm run user683:claude-relay');
-console.error('  npm run user683:monthly-pdf:serve');
+console.error('  （月次 PDF serve は廃止。印刷は 683 の window.print）');
 console.error('  docs/runbooks/user683-claude-relay.md も参照。');
 process.exit(1);

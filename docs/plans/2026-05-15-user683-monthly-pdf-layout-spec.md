@@ -92,6 +92,7 @@
 
 | 日付 | 内容 |
 |------|------|
+| 2026-05-17 | **`user683:monthly-pdf:serve` 廃止**（CEO）。kintone 683 は **`window.print()`** のみ。本仕様の CLI 生成は任意。 |
 | 2026-05-15 | **出力場所（Windows）**: `npm run user683:monthly-pdf:demo` → **`C:\tmp\user683-monthly-demo.pdf`**。`user683-monthly-pdf-serve` の一時生成 → **`C:\tmp\_user683-monthly-serve-temp.pdf`**（`USER683_MONTHLY_PDF_SERVE_TEMP` で上書き可）。 |
 | 2026-05-15 | **PDF 脚注**: ページ末の **出典・注釈・キャンバス英語フッター**を **出力しない**。683「提出用PDF」は **`effectiveViewYm()` をクリック時に再評価**し、**前月／次月切替後の暦月**で `year`/`month` を渡す。 |
 | 2026-05-15 | **提出物**: PDF は **2 ページ**だが **印刷は両面1枚（A4）**想定に明記。**表面**＝大きめグラフ2（縦積み既定）→**月次要約**→**週次（第1〜4週）**。**裏面**＝**対応案件一覧（サマリー）のみ**（章立て月次詳細は削除）。 |

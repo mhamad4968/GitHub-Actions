@@ -153,7 +153,7 @@
 ### 7.3 実装メモ（683 ダッシュ・2026-05-15）
 
 - **閲覧の正本 UI**: **[683](https://jbis-kintone.cybozu.com/k/683/)** の `customize/683/desktop.js`（グラフ・表・要約キャッシュの編集・保存）。
-- **提出用月次 PDF**: 一覧の **「提出用PDF」**から **`window.open`** で **`npm run user683:monthly-pdf:serve`**（`scripts/user683-monthly-pdf-serve.mjs`・既定 `http://127.0.0.1:17886/user683/monthly.pdf`）を叩き、**ReportLab 生成 PDF**を取得する（**https の kintone から http localhost への `fetch` は不可**のため `open` 方針）。**§7.1〜7.2 に相当する「ブラウザ印刷用ページ2」**は **683 からは撤去**（日別の件数比較文言等は **月報 PDF の裏面・対応一覧サマリー**側で扱う）。
+- **月次印刷（正・2026-05-17）**: **683 一覧**から **`window.print()`**（`@media print`・**2 枚前後**目標）。**「提出用PDF」ボタン**および **`user683:monthly-pdf:serve` は廃止**（旧 2026-05-15 ルートは履歴のみ）。**オフライン ReportLab PDF** は CLI `user683:monthly-pdf` のみ任意。
 - **運用**: **詳細**: `docs/runbooks/user683-weekly-summary-and-print.md`。
 
 ### 7.4 月報 PDF（新レイアウト・2026-05-15）
@@ -229,6 +229,7 @@
 | 2026-05-14 | **§6.1.1 / 683**: **直近6暦月** REST 取得を **100 件ページング**で全件化し、**右端暦月棒＝ヒーロー月合計**を一致させる（先頭100件打切りで月合計が欠落する不具合の是正）。**BUILD** `2026-05-14-683-sixmo-fetch-pagination`・`deploy:683` rev **25**。 |
 | 2026-05-14 | **§6.1.1 / 683**: **読み込み中で停止**するページングを **満ページのみ継続＋最大50ページ（limit 500）** に是正。**BUILD** `2026-05-14-683-fetch-pagination-safe`・`deploy:683` rev **26**。 |
 | 2026-05-14 | **§6.1.1 / 683**: **グラフ直下**に **月次→週次4**の AI コメント欄を表示し、**683 一覧上で修正して要約キャッシュへ保存**（`user683_month`／`user683_week_1`〜`4`）。**BUILD** `2026-05-14-683-summary-comments-edit-save`・`deploy:683` rev **27**。 |
-| 2026-05-15 | **§7.3 / 683**: **「提出用PDF」**＋**`user683:monthly-pdf:serve`**（`window.open`）。ブラウザ **`window.print()` 用ページ2**は撤去。**BUILD** `2026-05-15-683-monthly-pdf-open-serve`・`deploy:683` rev **40**。 |
+| 2026-05-17 | **§7.3 / 683**: **`user683:monthly-pdf:serve` 廃止**（CEO）。運用の正は **`window.print()`**（**BUILD** `2026-05-16-683-print-2page-tight-v2` 継続）。 |
+| 2026-05-15 | **§7.3 / 683**: **「提出用PDF」**＋**`user683:monthly-pdf:serve`**（`window.open`）— **2026-05-17 廃止**。ブラウザ **`window.print()` 用ページ2**は撤去。**BUILD** `2026-05-15-683-monthly-pdf-open-serve`・`deploy:683` rev **40**。 |
 | 2026-05-15 | **§7.4 / 月報 PDF**: **2 ページ PDF（表面＝大きめグラフ2→月次→週次、裏面＝対応一覧サマリーのみ）**・**印刷は両面1枚 A4 想定**。仕様 `docs/plans/2026-05-15-user683-monthly-pdf-layout-spec.md`・`scripts/user683-monthly-pdf/`。 |
 | 2026-05-12 | **§3・§6.2（CEO 重要確認）**: **同一暦日は 1 レコードのみ** — `customize/682/desktop.js` が **新規・編集・モバイル**の `submit` で **REST 重複検査**し、既存日付があれば **保存拒否**（同時保存の競合は SPEC §3 に注記）。**BUILD** `2026-05-12-682-unique-record-date-submit`。 |

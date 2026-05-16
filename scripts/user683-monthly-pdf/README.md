@@ -38,14 +38,8 @@ npm run user683:monthly-pdf:demo
 
 `user683:monthly-pdf:demo` の出力先は **`C:\tmp\user683-monthly-demo.pdf`**（`C:\tmp` が無い場合は事前に作成）。
 
-## 683 一覧から取得（ローカル配信）
+## 683 一覧からの取得（廃止）
 
-別ターミナルで **`.env` を読み込んだまま** HTTP サーバを立て、683 の **「提出用PDF」**から `window.open` で叩く（**https → http は fetch 不可**のため）。
+**2026-05-17 CEO**: **`npm run user683:monthly-pdf:serve`**（HTTP ローカル配信）は **廃止**。683 の月次印刷は **`window.print()`**（Runbook: **`docs/runbooks/user683-weekly-summary-and-print.md`**）。`scripts/user683-monthly-pdf-serve.mjs` は履歴参照用に残置。
 
-```bash
-npm run user683:monthly-pdf:serve
-```
-
-**Windows** で **Claude 中継（17884）と同時に**立ち上げる場合はリポルートで `npm run user683:local-servers`（`scripts/windows/user683-start-local-servers.bat` と同等）。
-
-既定は **`http://127.0.0.1:17886/user683/monthly.pdf?year=YYYY&month=M`**。生成時の一時ファイルは **Windows では `C:\tmp\_user683-monthly-serve-temp.pdf`**（`USER683_MONTHLY_PDF_SERVE_TEMP` で変更可）。実装はリポルートの **`scripts/user683-monthly-pdf-serve.mjs`**。
+**`npm run user683:local-servers`**: **Claude 中継のみ**（PDF 配信ウィンドウは起動しない）。

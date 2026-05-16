@@ -33,10 +33,9 @@ if not exist "package.json" (
 )
 
 echo [user683] REPO=%CD%
-echo [user683] 別ウィンドウで起動: Claude 中継 ^(既定 17884^) + 月次 PDF 配信 ^(既定 17886^)
-echo [user683] 各ウィンドウを閉じるとそのサーバのみ停止します。
+echo [user683] 別ウィンドウで起動: Claude 中継 ^(既定 17884^) のみ（月次 PDF serve は 2026-05-17 廃止）
+echo [user683] 月次印刷は kintone 683 のブラウザ印刷（window.print）を正とする。
 start "user683 Claude relay" /D "%CD%" cmd /k npm run user683:claude-relay
-start "user683 monthly PDF serve" /D "%CD%" cmd /k npm run user683:monthly-pdf:serve
 
 timeout /t 2 /nobreak >nul
 echo.

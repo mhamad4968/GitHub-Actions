@@ -14,12 +14,31 @@ cd /home/mhamada202408224/kintone-ai-lab
 npm run app:fields <アプリID>
 ```
 
+## ポートフォリオ customize 本番 BUILD（機械台帳）
+
+**正**: `data/cio-live-builds.json`（deploy 成功時に自動更新）。**照合**: `npm run cio:audit:portfolio:strict`（リポ `var BUILD` ↔ 台帳 ↔ kintone 本番 JS）。**復旧 Runbook**: `docs/runbooks/customize-deploy-recovery.md`。**定期運用（忘れ防止）**: `docs/runbooks/cio-periodic-ops-schedule.md`（月次・四半期・金曜 MCP）。
+
+| app | BUILD（本番） | revision | fileKey | 更新 |
+|-----|---------------|----------|---------|------|
+| 627 | `2026-05-12-627-no594-rest` | 150 | `9fc3efc8-2a22-4585-881f-0ee3c2a0fbf2` | 2026-05-16 portfolio 拡張（6b3d370 同期） |
+| 668 | `2026-05-16-668-ops-guide-portfolio-audit` | 42 | `106126f5-7249-4104-8b43-405c85ddfa51` | 2026-05-16 portfolio 拡張・`deploy:668` |
+| 677 | `2026-05-15-677-block-all-ui-mutations-dash678-only` | 20 | `6eb02e6f-4319-4bed-97ee-245ee0869a01` | 2026-05-16 registry 整合 |
+| 678 | `2026-05-15-678-hide-native-pager-zero-label` | **157** | `33343967-1f61-4981-88fe-924a090918b3` | 2026-05-16 registry 整合 |
+| 679 | `2026-05-15-679-manual-no-677-nav` | 32 | `3c757dfa-9704-47d5-b607-66ae78a423ef` | 2026-05-16 registry 整合 |
+| 682 | `2026-05-12-682-hide-rolling7m-dashboard683` | 24 | `c183e358-0f6a-4d1c-ad70-cfb4543197e6` | 2026-05-16 registry 整合 |
+| 683 | `2026-05-16-683-print-2page-tight-v2` | **76** | `ba2066bb-0cb1-4c8f-98e9-d93b9b881166` | 2026-05-16 registry 整合 |
+| 686 | `2026-05-16-686-ict-digest-board-v8` | **17** | `8d260fda-762d-482c-9fe9-4086f423f1cb` | 2026-05-16 MSRC→NVD リンク修正 |
+
+**revision スナップショット**（フィールド構成）: `data/snapshots/*-portfolio-2026-05-16-*`（`npm run cio:snapshot:portfolio`）。
+
 ## アプリ一覧
 
 | アプリ名（論理名） | アプリID | customize パス | デプロイ例（npm） |
 |-------------------|---------|----------------|------------------|
 | **ユーザサポート件数日次**（記録日・午前/午後件数・日合計 CALC・**対応内容→件数 JS**） | **682** | `customize/682/desktop.js`（**グラフ／ダッシュ／AI／§7 二枚印刷** は §9.1 C〜F） | [https://jbis-kintone.cybozu.com/k/682/](https://jbis-kintone.cybozu.com/k/682/) **Space 48 / thread 52**。`npm run cio:preflight:682 -- --note "…"` → `npm run deploy:682`。初回のみ `node --env-file=.env scripts/user-support-682-add-correspondence-fields.mjs`（`am_correspondence` / `pm_correspondence` 追加）。**月次欠日・重複の機械確認**: `npm run 682:audit-month -- --year 2026 --month 4`（`.env`）。**2026-05-12 deploy SUCCESS** / fileKey **`50783c0f-1aed-4dbe-a183-84e78b121e05`** / preview revision **`21`** / **BUILD=`2026-05-12-682-hide-rolling7m-dashboard683`**（**同一暦日は 1 レコード**・REST 重複検査。**7 暦月 REST 棒は非表示**・月次は **[683 ダッシュ](https://jbis-kintone.cybozu.com/k/683/)** を正。欠日バナー等 **§6.2.1** は従来どおり）（一覧 **§6.2.1**: 欠日は **JST 昨日まで**（**当月**）・**ヘッダで対象暦月を前月／次月／今月に戻す**・`sessionStorage` 保持・欠日列挙 **`yyyy/mm/dd(曜)`**・重複は暦月フル・offset ループ。**対応日セル**も **`yyyy/mm/dd(曜)`**・詳細・新規編集は補助行）。`npm run cio:preflight:682 -- --note "…"` → `npm run deploy:682`。**Runbook（§9.1 フェーズ C–D）**: `docs/runbooks/user-support-682-phase-c-and-space48-phase-d.md`。**フェーズ C（REST）**: `npm run 682:graph-monthly` — グラフ **`682_day_total_monthly`**（`day_total` SUM・`record_date` MONTH・**COLUMN 縦棒**・**JST 直近 7 暦月** `filterCond`）を維持（初回 **2026-05-10** revision **12**、以降は再実行で窓更新）。**自動窓更新**: GitHub Actions **`682-graph-monthly-refresh.yml`**（月初・**Repository secrets**・Runbook §1.0）。**7 暦月 0 埋め棒**: `customize/682/desktop.js`（**BUILD** 行参照・`deploy:682`）。**仕様** §4.1・§6.1・§6.2・§6.2.1・§7: `docs/plans/2026-05-08-user-support-daily-counts-spec.md` |
-| **ユーザサポート682ダッシュ**（682 の REST 参照・閲覧／集約 UI・**入力は 682 のみ**） | **683** | `customize/683/desktop.js` | [https://jbis-kintone.cybozu.com/k/683/](https://jbis-kintone.cybozu.com/k/683/) **Space 48**（**2026-05-11** `kintone-add-app` → **`deploy:683` SUCCESS**・SPEC **§6.1.1**・Runbook **`docs/runbooks/user683-weekly-summary-and-print.md`**）。`npm run cio:preflight:683 -- --note "…"` → `npm run deploy:683`。**2026-05-15 deploy SUCCESS** / **BUILD**: `2026-05-15-683-claude-fetch-textplain-cors` / fileKey **`f1431e8d-a929-4848-9710-337e5fbabfd1`** / preview revision **`50`**（**Claude 中継**: `?user683_claude_relay=`・`text/plain` POST で CORS プリフライト回避。中継 Python は `user683_claude_relay.py` RELAY_BUILD cors-v3 をローカルで再起動。**提出用PDF**＝`npm run user683:monthly-pdf:serve`＋`window.open`・**グラフ直下 月次→週次4**・要約キャッシュ PUT/POST／`USER683_SHOW_OLLAMA_GENERATE_BTN=false`）。 |
+| **最新ICT情報掲示板（収集用）**（RSS×Gemini 自動登録・正本 DB） | **685** | `ict-tech-digest-automation/` | [https://jbis-kintone.cybozu.com/k/685/](https://jbis-kintone.cybozu.com/k/685/) **Space 48**・仕様正本 **`docs/plans/2026-05-16-ict-tech-digest-spec.md`**・GHA `ict-tech-digest-collect.yml`・1日最大5件・**RSS 28 本**横断厳選・**2026-05-16 残件完了**（`1ef78c1`・685 本日5件・`KINTONE_API_TOKEN_ICT_COLLECT` GHA/ローカル済） |
+| **最新ICT情報掲示板**（685 REST 閲覧・過去検索ダッシュ） | **686** | `customize/686/desktop.js` | [https://jbis-kintone.cybozu.com/k/686/](https://jbis-kintone.cybozu.com/k/686/) **Space 48** 入口・`npm run deploy:686` **BUILD** `2026-05-16-686-ict-digest-board-v7` |
+| **ユーザサポート682ダッシュ**（682 の REST 参照・閲覧／集約 UI・**入力は 682 のみ**） | **683** | `customize/683/desktop.js` | [https://jbis-kintone.cybozu.com/k/683/](https://jbis-kintone.cybozu.com/k/683/) **Space 48**（**2026-05-11** `kintone-add-app` → **`deploy:683` SUCCESS**・SPEC **§6.1.1**・Runbook **`docs/runbooks/user683-weekly-summary-and-print.md`**）。`npm run cio:preflight:683 -- --note "…"` → `npm run deploy:683`。**2026-05-16 deploy SUCCESS** / **BUILD**: `2026-05-16-683-print-2page-tight-v2` / fileKey **`4bb662aa-b47a-40c5-b1f7-2ba4dffa8f63`** / preview revision **`74`**（**印刷報告用**・`@media print` で **2 枚前後**を目標にレイアウト縮小。**一覧の「提出用PDF」ボタンは撤去**（**月次 PDF HTTP serve 廃止** 2026-05-17・印刷は **window.print** のみ）。**Claude 中継**: `?user683_claude_relay=`・`text/plain` POST。**グラフ直下 月次→週次4**・要約キャッシュ PUT/POST／`USER683_SHOW_OLLAMA_GENERATE_BTN=false`）。 |
 | **PC台帳 ver.2（旧・削除予定／正は674）** | **594** | `customize/594/desktop.js` | `npm run deploy:594`（**新機能は674**。594は移行・清掃・監査コードが残る間のみ。本番に恒久的に残す前提なし） |
 | 社員マスタ（台帳・627 連携用） | 595 | `customize/595/desktop.js` | `npm run deploy:595` |
 | アカウント管理台帳 | 627 | `customize/627/desktop.js` | `npm run deploy:627` |
@@ -41,6 +60,7 @@ npm run app:fields <アプリID>
 
 ### 678 本番 customize の実効ビルド（台帳ずれの正）
 
+- **現在の本番 live**（**2026-05-16** 先祖返り復旧＋registry 整合・`npm run cio:preflight:678` → `deploy:678` **SUCCESS**）: fileKey **`33343967-1f61-4981-88fe-924a090918b3`** / preview revision **`157`** / **`var BUILD`** = **`2026-05-15-678-hide-native-pager-zero-label`**（`cio:audit:portfolio:strict` **8/8 OK**・CEO 検収済み）。
 - **本番 live**（**2026-05-15** `npm run cio:preflight:678 -- --note "hide 0-0 paging label MO pager css"` → `npm run deploy:678` **Deploy SUCCESS**）: fileKey **`9e451b68-3771-4df5-ae61-69864dbdf6f1`** / preview revision **`153`** / **`var BUILD`** = **`2026-05-15-678-hide-native-pager-zero-label`**（**「0 - 0 （0件中）」**等の **非表示強化**：正規化・**MO は 678 のみ常時**・**一覧 show 直後に即時**・**`.gaia-argoui-app-index-pager`** CSS）。
 - **本番 live**（**2026-05-15** `npm run cio:preflight:678 -- --note "outlook column vertical-align middle"` → `npm run deploy:678` **Deploy SUCCESS**）: fileKey **`dd77e2ea-fc48-433d-94c7-7027c9e3ec0b`** / preview revision **`152`** / **`var BUILD`** = **`2026-05-15-678-cell-vertical-middle`**（**予算見通し**列 **`vertical-align:middle`**（従来 `top`））。
 - **本番 live**（**2026-05-15** `npm run cio:preflight:678 -- --note "header remove 677 list and new links"` → `npm run deploy:678` **Deploy SUCCESS**）: fileKey **`021a12e9-fb11-4eb5-90f5-c39ad79a1753`** / preview revision **`151`** / **`var BUILD`** = **`2026-05-15-678-header-remove-677-quicklinks`**（**シェルヘッダ**から **677 一覧・677 新規（/edit）リンク**を削除。**再読み込み**・678 自リンク・679 マニュアルは維持）。
@@ -91,6 +111,10 @@ npm run app:fields <アプリID>
 
 | 日時（UTC） | アプリID | customize パス |
 |-------------|----------|----------------|
+| 2026-05-16T10:59:47Z | 686 | `customize/686/desktop.js` |
+| 2026-05-16T10:59:47Z | 677 | `customize/677/desktop.js` |
+| 2026-05-16T10:59:47Z | 627 | `customize/627/desktop.js` |
+| 2026-05-15T23:14:26Z | 678 | `customize/678/desktop.js` |
 | 2026-05-15T12:35:00Z | 678 | `customize/678/desktop.js`（**今月実績未入力のみトグル・実績セル着色廃止**・**BUILD** `2026-05-15-678-pending-month-filter-no-cell-color`・**deploy SUCCESS** / fileKey **`9a93aca4-687e-4919-bb7d-a90aad3701f5`** / rev **`147`**・`cio:preflight:678` note **pending month filter toggle remove run-actual cell CSS**） |
 | 2026-05-15T12:25:00Z | 678 | `customize/678/desktop.js`（**月次同一暦月合算・cost trim・y678DbgRun**・**BUILD** `2026-05-15-678-running-actual-monthly-merge-dbg`・**deploy SUCCESS** / fileKey **`aad75d6d-0903-430d-89ba-5f2c5973efaa`** / rev **`146`**・`cio:preflight:678` note **monthly duplicate lab merge act sum cost trim y678DbgRun**） |
 | 2026-05-15T12:15:00Z | 678 | `customize/678/desktop.js`（**fiscal_month `…T…` を日付幹に**・**BUILD** `2026-05-15-678-fiscal-month-iso-date-stem`・**deploy SUCCESS** / fileKey **`9a8fd1a3-972e-4a16-8eac-33ce5d9d771a`** / rev **`145`**・`cio:preflight:678` note **fiscal_month strip T before YYYY-MM-DD normalize**） |
@@ -592,6 +616,8 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 | 2026-05-04 | **678 アプリ設定**：**クイックマニュアル**を **「アプリの説明」**（HTML・一覧上部）に掲載。再反映 `npm run yojitsu:678:publish-manual-description`（`scripts/yojitsu-678-publish-quick-manual-app-description.mjs`）。**deploy SUCCESS**（general settings） |
 | 2026-05-04 | **678 customize**：**クイックマニュアル**リンクを **同一アプリの説明欄**（`#y678-quick-manual`）へ。ダッシュ本文は表・ナビ中心維持。**deploy SUCCESS** / fileKey **`f53d40ea-5d60-4d8e-8442-775a0d744a9b`** / revision **`90`** / **BUILD=`2026-05-04-678-manual-in-app-description`** |
 | 2026-05-04 | **678 customize**：**クイックマニュアル（別ページ）**をシェル**最上段**にリンク（既定 GitHub `yojitsu-quick-manual.md`・`window.Y678_QUICK_MANUAL_URL` で URL 上書き可）。ダッシュ本文の**長文案内を削除**（表・ナビ中心）。**HTML** 同梱 `templates/yojitsu-budget-lite/docs/yojitsu-quick-manual.html`。**deploy SUCCESS** / fileKey **`b5e8b981-d050-44ca-98e5-eda0430bf756`** / revision **`87`** / **BUILD=`2026-05-04-678-quick-manual-bar-table-first`** |
+| 2026-05-16 | **678 customize 復旧**（**先祖返り対応**）: `6b3d370` push で **customize 6 アプリ同時変更** → GHA `kintone-customize-deploy` が **uniq=6 で API デプロイスキップ** → 本番が旧 JS のまま（ヘッダに 677 新規リンク等）。**手動** `cio:preflight:678` → `deploy:678` **SUCCESS** / fileKey **`3760eaf8-5361-4437-b14a-935603258151`** / revision **`155`** / **BUILD=`2026-05-15-678-hide-native-pager-zero-label`** |
+| 2026-05-16 | **685/686 ICT掲示板 残件片付け完了**: **686** `deploy:686` rev **14** / **BUILD=`** `2026-05-16-686-ict-digest-board-v7`（検索↔今日の厳選連動）・**685** 本日 **5/5**・overview **【事象】【影響】【推奨】**・RSS **28 本**＋`rss-fetch` 耐障害・**git** `1ef78c1` push・GHA `KINTONE_API_TOKEN_ICT_COLLECT` / `ICT_DIGEST_STORE_APP_ID` 済・`ICT_RSS_FEED_URLS` **未設定＝DEFAULT**・`session:clock:set` 済 |
 | 2026-05-12 | **678 customize**：実績モーダル **Enter 保存**（textarea は Ctrl+Enter）・既存支払 **修正／削除**（行 `id` 維持）・固定費×月額／年額で **金額プリフィル**（`month_budget`+`month_budget_revision`）。新規明細モーダルも Enter 保存。**deploy SUCCESS** / fileKey **`f0902f20-8cc8-4a94-844e-d58f335cbe11`** / revision **`129`** / **BUILD=`2026-05-12-678-enter-editdelete-prefill`**（`cio:preflight:678` 済） |
 | 2026-05-07 | **678 customize**：費用種別フィルタ **3 → 4 ボタン化** — `すべて／固定費／変動費` を `すべて／固定費（月額）／固定費（年額）／変動費` に分割。`filterRecordsByCostCategory` を `cost_category` × `payment_type` の多条件化（`固定費_月額`／`固定費_年額` は `cost_category="固定費"` かつ `payment_type` 一致、その他は従来 1 条件）。後方互換あり（`変動費`／`all` は無変更）。事前に DeepSeek §50-3-8 盲点点検 5/5 GREEN・既存 677 データの分布も確認（漏れケースなし）。**deploy SUCCESS** / fileKey **`263c81ee-2e19-4e8c-b551-2985a59082dd`** / revision **`123`** / **BUILD=`2026-05-07-678-cost-category-filter-split`** |
 | 2026-05-07 | **678 customize**：実績モーダル **会社** — **候補 `<select>`** を追加（datalist 併用）。**NFKC**＋**「他」派生・FBJ 表記ゆれ**で「新規登録」導線を拡張。677 ドロップダウン時は **選択肢一致** の注記。**deploy SUCCESS** / fileKey **`b1ce263d-0a2d-4848-ad35-fdd20b7b58e6`** / revision **`70`** / **BUILD=`2026-05-07-678-partner-select-nfkc`** |

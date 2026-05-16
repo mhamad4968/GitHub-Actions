@@ -15,35 +15,15 @@
 1. **手動（ブラウザ）**: 683 一覧 → グラフ直下のテキスト → **コメントを保存** → 683 レコードへ反映。`sessionStorage`（`WEEK_NOTE_KEY` 等）と **GET で読み戻した kintone 値**の優先順は `customize/683/desktop.js` 内コメントどおり。
 2. **自動（Node）**: `npm run user683:sync-summaries:*`（**先月締め**: `user683:sync-summaries:apply-prev-month`）→ **`docs/runbooks/user683-summary-job.md`**（定時の目安は **翌暦月 1 日・JST**）。Claude 用に **`ANTHROPIC_API_KEY`**（および任意で **`ANTHROPIC_MODEL`**）を `.env` に設定。
 
-## 提出用月次 PDF（正）と 683 の「提出用PDF」ボタン
+## 月次印刷（正）— 683 ブラウザ `window.print()`
 
-- **納品物の体裁**は **ReportLab 生成の 2 ページ PDF（両面1枚 A4 想定）**（レイアウト正本: **`docs/plans/2026-05-15-user683-monthly-pdf-layout-spec.md`**）。CLI: `npm run user683:monthly-pdf -- --year YYYY --month M --out path.pdf` または **`scripts/user683-monthly-pdf/README.md`**。
-- **683 一覧**では **別ターミナルで `npm run user683:monthly-pdf:serve` を起動**（Windows では **`npm run user683:local-servers`** で PDF 配信と Claude 中継をまとめて別ウィンドウ起動可）したうえで **「提出用PDF」**を押す。**serve** が Python に渡す一時 PDF は **Windows 既定で `C:\tmp\_user683-monthly-serve-temp.pdf`**（`C:\tmp` は自動作成を試みる。別パスは `USER683_MONTHLY_PDF_SERVE_TEMP`）。**ブラウザは https の kintone から http の localhost へ `fetch` できない**ため、683 は **`window.open('http://127.0.0.1:17886/user683/monthly.pdf?year=…&month=…')`** で取得する（既定 URL は `window.USER683_MONTHLY_PDF_SERVE_URL` で上書き可）。ポートは環境変数 **`USER683_MONTHLY_PDF_PORT`**（serve スクリプト側）で変更する。
+- **運用の正（CEO 2026-05-17）**: **683 一覧**から **ブラウザ印刷**（`window.print()`・`@media print` で **2 枚前後**を目標）。**一覧の「提出用PDF」ボタンは撤去済み**（2026-05-16）。**`npm run user683:monthly-pdf:serve` は廃止**（`package.json` から削除。`scripts/user683-monthly-pdf-serve.mjs` は履歴用に残置）。
+- **`npm run user683:local-servers`**: **Claude 中継のみ**別ウィンドウ起動（PDF 配信は含まない）。
+- **オフライン ReportLab PDF（任意）**: 提出物をファイルで欲しいときのみ CLI — `npm run user683:monthly-pdf -- --year YYYY --month M --out path.pdf`（レイアウト: **`docs/plans/2026-05-15-user683-monthly-pdf-layout-spec.md`**・手順: **`scripts/user683-monthly-pdf/README.md`**）。**kintone UI からは叩かない**。
 
-### 別タブで「このサイトにアクセスできません」「127.0.0.1 で接続が拒否されました」（`ERR_CONNECTION_REFUSED`）
+### 旧運用（廃止・参照用）
 
-1. **原因**: その PC 上で **`npm run user683:monthly-pdf:serve` が動いていない**（またはポートが違う／ファイアウォールでブロック）ため、`127.0.0.1:17886` に **待ち受けプロセスがいない**状態です。
-2. **対処**: **リポジトリのルート**（`package.json` があるディレクトリ）で PowerShell を開き、次のいずれかを実行した **まま** ウィンドウを閉じずに 683 で「提出用PDF」を押す。
-   ```powershell
-   cd C:\Users\mhamada202408224\kintone-ai-lab
-   npm run user683:local-servers
-   ```
-   （`user683:local-servers` は Claude 中継と PDF を別ウィンドウで同時起動。PDF のみなら `npm run user683:monthly-pdf:serve` のみでよい。）
-   PDF 用のウィンドウに `[user683-monthly-pdf-serve] listening http://127.0.0.1:17886/...` と出れば配信 OK。
-3. **動作確認**: ブラウザのアドレスバーに直接  
-   `http://127.0.0.1:17886/user683/monthly.pdf?year=2026&month=5`  
-   を開き、**PDF が返るか**（または Python／kintone 認証エラーがテキストで返るか）を見る。ここでも接続拒否なら **serve が起動していない**か **ポート番号の不一致**です（`.env` の有無は PDF 生成失敗時のメッセージ用で、**接続拒否そのもの**はサーバー未起動が主因）。
-4. **ポートを変えた場合**: 起動前に `USER683_MONTHLY_PDF_PORT` を設定するか、kintone のコンソール等で **`window.USER683_MONTHLY_PDF_SERVE_URL`** を実際の URL に合わせる（683 の `desktop.js` 既定は **17886**）。
-
-### ターミナルで `EADDRINUSE: address already in use 127.0.0.1:17886`
-
-- **原因**: **17886 は既に別プロセスが使用中**（多くは **以前開いたままの `user683:monthly-pdf:serve` のターミナル**）。
-- **対処 A**: そのターミナルに切り替え **Ctrl+C** で止めてから、もう一度 `npm run user683:monthly-pdf:serve`。
-- **対処 B**: 止めずにそのまま使う（**二重起動は不要**。既に listening なら 683 の「提出用PDF」はそちらに届く）。
-- **対処 C（別ポート）**: PowerShell で  
-  `$env:USER683_MONTHLY_PDF_PORT=17887; npm run user683:monthly-pdf:serve`  
-  とし、kintone 側で **`window.USER683_MONTHLY_PDF_SERVE_URL = 'http://127.0.0.1:17887/user683/monthly.pdf'`** を合わせる。
-- **占有 PID の調査（任意）**: `netstat -ano | findstr :17886` の末尾列が PID。`taskkill /PID <pid> /F` は **自分が止めてよいプロセスか確認のうえ**で。
+2026-05-15〜16 にあった **localhost HTTP 配信＋`window.open` 提出用 PDF** は **使用しない**。接続拒否（`ERR_CONNECTION_REFUSED`）や **17886 `EADDRINUSE`** のトラブルシュート節は **不要**（serve 未起動が原因だったため）。
 
 ## デプロイ
 

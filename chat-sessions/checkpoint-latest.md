@@ -2,6 +2,12 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
+## 2026-05-17 JST — 683 月次 PDF serve 廃止・朝セッション CIO 実施分
+
+- **CEO**: **683 PDF serve は使用しない** → **`user683:monthly-pdf:serve` を package.json から削除**・Runbook／台帳／local-servers を **window.print 正**に更新。`scripts/user683-monthly-pdf-serve.mjs` は **@deprecated 残置**。
+- **同コミット**: credit **4%**・RAG ingest クロスプラットフォーム（`scripts/rag-ingest-path.mjs`）・`mcp-status` 更新・session clock **2026-05-17 07:43**。
+- **次**: 683 **印刷目視**は **依頼があれば浜田 CEO**（serve 確認タスクは **クローズ**）。
+
 ## 2026-05-16 JST — セッション終了・678 先祖返り復旧・ガバナンス・ICT・Git
 
 - **重大（復旧済）**: **678** 本番 customize が **GHA 複数アプリ push で deploy スキップ**によりリポより古くなった（先祖返り）。**対策**: workflow **順次 deploy**・`data/cio-live-builds.json`・**`cio:audit:portfolio:strict` 8/8**・浜田画面 OK。

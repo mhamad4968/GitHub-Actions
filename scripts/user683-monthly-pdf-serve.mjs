@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 /**
- * 提出用月次 PDF を HTTP で返す（683 一覧「提出用PDF」ボタン用）。
+ * @deprecated 2026-05-17 — package.json から `user683:monthly-pdf:serve` を削除。683 は window.print のみ。
+ * 提出用月次 PDF を HTTP で返す（旧: 683 一覧「提出用PDF」ボタン用）。
  *
- *   npm run user683:monthly-pdf:serve
+ *   node scripts/user683-monthly-pdf-serve.mjs  （npm script なし）
  *
  * ブラウザは https の kintone から http localhost への fetch がブロックされるため、
- * 683 側は window.open で本 URL を開き、PDF をダウンロード／表示する。
+ * 旧 683 側は window.open で本 URL を開いていた。
  *
  * 環境: `USER683_MONTHLY_PDF_PORT`（既定 17886）、`USER683_MONTHLY_PDF_SERVE_TEMP`（生成一時 PDF のパス。未設定時 **Windows は `C:\\tmp\\_user683-monthly-serve-temp.pdf`**、それ以外は OS 一時ディレクトリ）、`.env` の kintone 認証（generate_monthly_pdf.py と同型）。
  */
