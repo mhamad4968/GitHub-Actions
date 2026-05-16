@@ -38,6 +38,12 @@ const DEFAULT_RSS = [
   "https://zenn.dev/feed",
   "https://b.hatena.ne.jp/hotentry/it.rss",
   "https://rss.itmedia.co.jp/rss/2.0/ait.xml",
+  // @IT Coding Edge（モダン開発・内製化）
+  "https://rss.itmedia.co.jp/rss/2.0/ait_coding.xml",
+  // CodeZine（プログラム・開発手法）
+  "https://codezine.jp/rss/new/index.xml",
+  // CNET Japan（企業・ITベンダー動向）
+  "https://feeds.japan.cnet.com/rss/cnet/all.rdf",
   "https://msrc.microsoft.com/blog/rss/",
   // MSRC Update Guide（月例パッチ・CVE 公式フィード）
   "https://api.msrc.microsoft.com/update-guide/rss",

@@ -110,7 +110,8 @@ export async function curateWithGemini(
   【事象】何が起きたか（1文・CVE/製品名/バージョンは原文表記可）
   【影響】自社のインフラ・PC・セキュリティ運用への影響（1文）
   【推奨】情シスが今日取るべきアクション（パッチ判断・確認・周知など1文で具体に）
-- category は次のいずれか1つ: ${ICT_CATEGORIES.join(" / ")}
+- category は次のいずれか1つ（記事内容に最も近いもの）: ${ICT_CATEGORIES.join(" / ")}
+  - 目安: パッチ/CVE/Windows → Microsoft・Windows または セキュリティ・脆弱性 / PC・Win11 → PC・端末 / サーバー・DC → サーバー・インフラ / ルーター・VPN → ネットワーク・通信 / 言語・アジャイル → プログラム・開発 / SIer・買収・DX → ITベンダー・DX
 - importanceScore は 1〜100（上記基準で「今日の業務優先度」）
 
 候補:

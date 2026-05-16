@@ -7,7 +7,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-16-686-ict-digest-board-v4';
+  const BUILD = '2026-05-16-686-ict-digest-board-v5';
   const STORE_APP_ID =
     typeof window.ICT_DIGEST_STORE_APP === 'number' ? window.ICT_DIGEST_STORE_APP : 685;
 
@@ -19,7 +19,15 @@
     category: 'category',
   };
 
+  /** field-codes.ts ICT_CATEGORIES と同期 */
   const CATEGORIES = [
+    'Microsoft・Windows',
+    'PC・端末',
+    'サーバー・インフラ',
+    'ネットワーク・通信',
+    'セキュリティ・脆弱性',
+    'プログラム・開発',
+    'ITベンダー・DX',
     'AI・LLM',
     'インフラ・クラウド',
     '開発トレンド',
@@ -28,6 +36,13 @@
   ];
 
   const CAT_CLASS = {
+    'Microsoft・Windows': 'ict-cat--ms',
+    'PC・端末': 'ict-cat--pc',
+    'サーバー・インフラ': 'ict-cat--infra',
+    'ネットワーク・通信': 'ict-cat--net',
+    'セキュリティ・脆弱性': 'ict-cat--sec',
+    'プログラム・開発': 'ict-cat--dev',
+    'ITベンダー・DX': 'ict-cat--vendor',
     'AI・LLM': 'ict-cat--ai',
     'インフラ・クラウド': 'ict-cat--infra',
     '開発トレンド': 'ict-cat--dev',
@@ -233,9 +248,14 @@
       '.ict-card--hero{border-color:#7dd3fc;background:#fff}',
       '.ict-card-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:8px}',
       '.ict-cat{font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;line-height:1.3}',
-      '.ict-cat--ai{background:#ede9fe;color:#5b21b6}',
+      '.ict-cat--ms{background:#e0e7ff;color:#3730a3}',
+      '.ict-cat--pc{background:#fce7f3;color:#9d174d}',
       '.ict-cat--infra{background:#dbeafe;color:#1d4ed8}',
+      '.ict-cat--net{background:#cffafe;color:#0e7490}',
+      '.ict-cat--sec{background:#fee2e2;color:#b91c1c}',
       '.ict-cat--dev{background:#d1fae5;color:#047857}',
+      '.ict-cat--vendor{background:#fef3c7;color:#b45309}',
+      '.ict-cat--ai{background:#ede9fe;color:#5b21b6}',
       '.ict-cat--tool{background:#ffedd5;color:#c2410c}',
       '.ict-cat--other{background:#f1f5f9;color:#475569}',
       '.ict-date{font-size:12px;color:#64748b;margin-left:auto}',

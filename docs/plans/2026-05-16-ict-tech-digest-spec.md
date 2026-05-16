@@ -82,6 +82,9 @@
 | 2 | 開発 | Zenn | `https://zenn.dev/feed` |
 | 3 | 開発 | はてな IT | `https://b.hatena.ne.jp/hotentry/it.rss` |
 | 4 | 開発 | ITmedia @IT 全フォーラム | `https://rss.itmedia.co.jp/rss/2.0/ait.xml` |
+| 4b | 開発 | @IT Coding Edge | `https://rss.itmedia.co.jp/rss/2.0/ait_coding.xml` |
+| 4c | 開発 | CodeZine | `https://codezine.jp/rss/new/index.xml` |
+| 4d | ITベンダー | CNET Japan | `https://feeds.japan.cnet.com/rss/cnet/all.rdf` |
 | 5 | Microsoft | MSRC Blog | `https://msrc.microsoft.com/blog/rss/` |
 | 6 | Microsoft | **MSRC Update Guide（パッチ・CVE）** | `https://api.msrc.microsoft.com/update-guide/rss` |
 | 7 | Microsoft | Windows Blog | `https://blogs.windows.com/feed/` |
@@ -119,11 +122,15 @@
 | `url` | リンク | URL | 最大512文字。重複はアプリ側ロジックで排除（kintone unique はオフ） |
 | `published_at` | 日付 | 公開日 | **掲載日（JST 当日）**。厳選ダイジェストの「本日」枠 |
 | `overview` | 文字列複数行 | 概要 | 【事象】【影響】【推奨】 |
-| `category` | ドロップダウン | カテゴリ | 下記5択 |
+| `category` | ドロップダウン | カテゴリ | 下記12択（掲示板686のフィルタと同期） |
 
 ### カテゴリ（API 値 = 表示名）
 
-`AI・LLM` / `インフラ・クラウド` / `開発トレンド` / `ITツール・ガジェット` / `その他`
+**新ジャンル（検索・厳選の主分類）:**  
+`Microsoft・Windows` / `PC・端末` / `サーバー・インフラ` / `ネットワーク・通信` / `セキュリティ・脆弱性` / `プログラム・開発` / `ITベンダー・DX` / `AI・LLM`
+
+**互換（既存レコード用・新規は上記を優先）:**  
+`インフラ・クラウド` / `開発トレンド` / `ITツール・ガジェット` / `その他`
 
 ---
 
