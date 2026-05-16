@@ -53,6 +53,8 @@ export type CuratedArticle = {
   url: string;
   overview: string;
   category: IctCategory;
+  /** RSS 公開日（YYYY-MM-DD）。無い場合は収集日 */
+  publishedAt: string;
 };
 
 /** kintone LINK: unique 有効時は最大 64 文字。正本は unique オフ＋アプリ側で重複排除。 */
@@ -69,7 +71,7 @@ export function assertUrlFitsKintone(url: string): void {
 export async function addCuratedRecords(
   client: KintoneRestAPIClient,
   cfg: IctConfig,
-  todayYmd: string,
+  fallbackYmd: string,
   items: CuratedArticle[],
 ): Promise<number[]> {
   if (items.length === 0) return [];
@@ -77,7 +79,7 @@ export async function addCuratedRecords(
   const records = items.map((item) => ({
     [ICT_FIELDS.title]: { value: item.title },
     [ICT_FIELDS.url]: { value: item.url },
-    [ICT_FIELDS.published_at]: { value: todayYmd },
+    [ICT_FIELDS.published_at]: { value: item.publishedAt || fallbackYmd },
     [ICT_FIELDS.overview]: { value: item.overview },
     [ICT_FIELDS.category]: { value: item.category },
   }));

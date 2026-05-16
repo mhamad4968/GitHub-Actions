@@ -4,7 +4,8 @@
  */
 import { loadConfig } from "./lib/config.js";
 import { createKintoneClient } from "./lib/kintone-client.js";
-import { todayJstYmd } from "./lib/jst-date.js";
+import { addDaysJstYmd, todayJstYmd } from "./lib/jst-date.js";
+import type { RssArticle } from "./lib/rss.js";
 import {
   addCuratedRecords,
   countTodayRecords,
@@ -14,13 +15,24 @@ import {
 import { curateWithGemini } from "./lib/gemini-curate.js";
 import { dedupeAndSort, fetchAllFeeds } from "./lib/rss.js";
 
+/** 厳選候補は直近の記事に絞る（「今日一番」の精度向上） */
+function filterRecentForCuration(articles: RssArticle[], today: string): RssArticle[] {
+  const cutoff7 = addDaysJstYmd(today, -7);
+  const recent = articles.filter((a) => !a.publishedAt || a.publishedAt >= cutoff7);
+  if (recent.length >= 15) return recent;
+  const cutoff14 = addDaysJstYmd(today, -14);
+  return articles.filter((a) => !a.publishedAt || a.publishedAt >= cutoff14);
+}
+
 async function main(): Promise<void> {
   console.log("[ICT収集] 処理開始");
   const cfg = loadConfig();
   const client = createKintoneClient(cfg);
   const today = todayJstYmd();
 
-  console.log(`[ICT収集] 正本アプリ=${cfg.storeAppId} 今日(JST)=${today}`);
+  console.log(
+    `[ICT収集] 正本アプリ=${cfg.storeAppId} 今日(JST)=${today} RSSフィード数=${cfg.rssFeedUrls.length}`,
+  );
   if (cfg.boardAppId) {
     console.log(`[ICT収集] ダッシュアプリ=${cfg.boardAppId}`);
   }
@@ -43,8 +55,11 @@ async function main(): Promise<void> {
 
   const rawArticles = await fetchAllFeeds(cfg.rssFeedUrls);
   const merged = dedupeAndSort(rawArticles);
-  const candidates = merged.filter((a) => !existingUrls.has(a.url));
-  console.log(`[ICT収集] RSS 候補（未登録 URL）: ${candidates.length} 件`);
+  const unregistered = merged.filter((a) => !existingUrls.has(a.url));
+  const candidates = filterRecentForCuration(unregistered, today);
+  console.log(
+    `[ICT収集] RSS 横断 ${cfg.rssFeedUrls.length} 本 → 未登録 ${unregistered.length} 件 → 厳選候補（直近） ${candidates.length} 件`,
+  );
 
   if (candidates.length === 0) {
     console.log("[ICT収集] 新規候補がないため終了します。");
@@ -77,6 +92,7 @@ async function main(): Promise<void> {
       url: p.url,
       overview: p.overview,
       category: p.category,
+      publishedAt: today,
     });
   }
 

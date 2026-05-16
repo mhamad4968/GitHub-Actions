@@ -9,7 +9,7 @@ import { ICT_CATEGORIES, type IctCategory } from "./field-codes.js";
 import type { RssArticle } from "./rss.js";
 
 const SYSTEM_PROMPT =
-  "あなたは企業情報システム部門（情シス）のテックリードです。Microsoft/Windows/M365、PC・端末、セキュリティパッチ・脆弱性、通信機器・ネットワーク製品の動向に強いです。";
+  "あなたは企業情報システム部門（情シス）のテックリードです。複数メディアの RSS を横断し、「今日、自社のインフラ・PC 管理で最も重要なニュース」だけを選び、業務で即使える形に要約します。";
 
 const GEMINI_MODEL_FALLBACKS = [
   "gemini-flash-latest",
@@ -95,18 +95,23 @@ export async function curateWithGemini(
 
   const userPrompt = `${SYSTEM_PROMPT}
 
-以下は IT 技術 RSS の候補記事です。情シスが知っておくべき、重要度・実用性の高いものを **ちょうど ${slots} 件**（候補が少ない場合はその数だけ）選んでください。
+以下は **20以上の RSS フィードを横断**して集めた候補記事です。
+**「今日、自社のインフラ・PC 管理において最も重要なニュース」** を重要度で比較し、**ちょうど ${slots} 件**（候補が少ない場合はその数だけ）だけ選んでください。
 
-優先テーマ（スコアを上げる）:
-- Microsoft / Windows / M365 / Azure の更新・脆弱性・ベストプラクティス
-- PC・端末・ハードウェア、業務利用に関わる製品情報
-- セキュリティ対策、パッチ、CVE、通信機器・ネットワーク機器の注意喚起
+選定基準（importanceScore が高い順のイメージ）:
+- Windows / Office の月例パッチ・緊急 CVE（MSRC Update Guide 等）→ パッチ適用判断に直結
+- 社内 PC・サーバー・ネットワーク機器（ルーター/UTM/VPN）への実害リスク
+- 大規模障害・ゼロデイ・野外悪用・ベンダー必須対応
+- 開発トレンドのみで運用影響が薄い記事は下げる
 
 要件:
-- 重複テーマは避ける
-- overview は **日本語で3行**（改行区切り）。英語記事でも日本語で要約。CVE番号・製品名・バージョンは原文表記を残す
+- 重複テーマは避ける（同じ CVE / 同じ Patch Tuesday は1件に集約）
+- overview は **必ず次の3行**（改行区切り・行頭ラベル付き）。英語記事も日本語で:
+  【事象】何が起きたか（1文・CVE/製品名/バージョンは原文表記可）
+  【影響】自社のインフラ・PC・セキュリティ運用への影響（1文）
+  【推奨】情シスが今日取るべきアクション（パッチ判断・確認・周知など1文で具体に）
 - category は次のいずれか1つ: ${ICT_CATEGORIES.join(" / ")}
-- importanceScore は 1〜100 の整数
+- importanceScore は 1〜100（上記基準で「今日の業務優先度」）
 
 候補:
 ${listText}`;

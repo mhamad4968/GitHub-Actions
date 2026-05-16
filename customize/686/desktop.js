@@ -7,7 +7,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-16-686-ict-digest-board-v3';
+  const BUILD = '2026-05-16-686-ict-digest-board-v4';
   const STORE_APP_ID =
     typeof window.ICT_DIGEST_STORE_APP === 'number' ? window.ICT_DIGEST_STORE_APP : 685;
 
@@ -267,7 +267,7 @@
       '<div id="ict-digest-root" data-ict-digest-board>' +
       '<header class="ict-top">' +
       '<h1>最新 ICT 情報掲示板</h1>' +
-      '<p class="ict-top-lead">RSS × AI で厳選した ICT・Microsoft・PC・セキュリティ情報を一覧・検索</p>' +
+      '<p class="ict-top-lead">20以上の RSS を横断し、Gemini が「今日、インフラ・PC 管理で最重要」のニュースを1日最大5件に要約（【事象】【影響】【推奨】）</p>' +
       '</header>' +
       '<div class="ict-search-panel">' +
       '<div class="ict-search-row ict-search-row--main">' +
@@ -288,7 +288,7 @@
       '</div>' +
       '</div>' +
       '<section class="ict-section ict-hero-wrap">' +
-      '<h2 class="ict-section-title">本日・直近 7 日</h2>' +
+      '<h2 class="ict-section-title">今日の厳選（最大5件）</h2>' +
       '<div class="ict-hero-panel"><div id="ict-hero-list" class="ict-grid">読込中…</div></div>' +
       '</section>' +
       '<section class="ict-section">' +
