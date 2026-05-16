@@ -3,10 +3,10 @@
   "apps": {
     "627": {
       "build": "2026-05-12-627-no594-rest",
-      "fileKey": "9fc3efc8-2a22-4585-881f-0ee3c2a0fbf2",
-      "revision": "150",
-      "relPath": "customize/627/desktop.js",
-      "deployedAt": "2026-05-16T10:46:22.285Z",
+      "fileKey": "963fb9e0-e591-4033-a990-3cbc5c0ca2a2",
+      "revision": "151",
+      "relPath": ".kintone-deploy/upload-627.js",
+      "deployedAt": "2026-05-16T10:59:42.410Z",
       "note": null
     },
     "668": {
@@ -19,10 +19,10 @@
     },
     "677": {
       "build": "2026-05-15-677-block-all-ui-mutations-dash678-only",
-      "fileKey": "6eb02e6f-4319-4bed-97ee-245ee0869a01",
-      "revision": "20",
-      "relPath": "customize/677/desktop.js",
-      "deployedAt": "2026-05-16T10:47:07.998Z",
+      "fileKey": "eb3bbf90-5149-435d-9425-93b7473c396d",
+      "revision": "21",
+      "relPath": ".kintone-deploy/upload-677.js",
+      "deployedAt": "2026-05-16T10:59:44.944Z",
       "note": null
     },
     "678": {
@@ -59,10 +59,10 @@
     },
     "686": {
       "build": "2026-05-16-686-ict-digest-board-v8",
-      "fileKey": "8d260fda-762d-482c-9fe9-4086f423f1cb",
-      "revision": "17",
-      "relPath": "customize/686/desktop.js",
-      "deployedAt": "2026-05-16T10:54:47.866Z",
+      "fileKey": "b39de477-094b-4650-bf82-5714f48a62cb",
+      "revision": "18",
+      "relPath": ".kintone-deploy/upload-686.js",
+      "deployedAt": "2026-05-16T10:59:47.589Z",
       "note": null
     }
   }
