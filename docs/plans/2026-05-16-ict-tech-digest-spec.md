@@ -111,9 +111,11 @@
 
 **RSS 取得の耐障害（2026-05-16）**
 
-- `src/lib/rss-fetch.ts`: **3回リトライ**（指数バックオフ）・**HTML 誤応答検知**・**XML サニタイズ**後に `rss-parser` で解析
-- 旧 URL 互換: `blog/rss/` → `/feed/`、`nw.xml` → `news_nettopics.xml`（`FEED_URL_ALIASES`）
-- 検証: `npm run rss:verify`（`ict-tech-digest-automation` 配下）
+- `src/lib/rss-fetch.ts`: **4回リトライ**・**HTML 誤応答検知**・**XML サニタイズ**・旧 URL エイリアス
+- `src/lib/overview-format.ts`: 登録時に **【事象】【影響】【推奨】** へ正規化
+- `config.ts`: リポルート `.env` 読込・**685 専用トークン**（631 用 COLLECT 誤流用防止）
+- 686 v7: 検索条件を **今日の厳選** にも反映
+- 検証: `npm run ict-digest:rss:verify`
 
 **RSS の追加・変更**
 

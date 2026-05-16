@@ -9,7 +9,8 @@
   "scripts": {
     "collect": "tsx src/index.ts",
     "typecheck": "tsc --noEmit",
-    "rss:verify": "tsx scripts/verify-rss-feeds.mjs"
+    "rss:verify": "tsx scripts/verify-rss-feeds.mjs",
+    "backfill:overview": "tsx scripts/backfill-overview-labels.mjs"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

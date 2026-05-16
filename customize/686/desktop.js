@@ -7,7 +7,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-16-686-ict-digest-board-v6';
+  const BUILD = '2026-05-16-686-ict-digest-board-v7';
   const STORE_APP_ID =
     typeof window.ICT_DIGEST_STORE_APP === 'number' ? window.ICT_DIGEST_STORE_APP : 685;
 
@@ -176,7 +176,8 @@
       .split('\n')
       .filter(Boolean)
       .map(function (line) {
-        return '<p class="ict-ov-line">' + escapeHtml(line) + '</p>';
+        var cls = /^【/.test(line) ? 'ict-ov-line ict-ov-line--label' : 'ict-ov-line';
+        return '<p class="' + cls + '">' + escapeHtml(line) + '</p>';
       })
       .join('');
 
@@ -279,6 +280,7 @@
       '.ict-card-link:hover{text-decoration:underline}',
       '.ict-overview{font-size:13px;line-height:1.55;color:#334155}',
       '.ict-ov-line{margin:0 0 4px}',
+      '.ict-ov-line--label{font-weight:600;color:#0f172a}',
       '.ict-ov-line:last-child{margin-bottom:0}',
       '.ict-status{font-size:13px;color:#64748b;margin:0 0 10px}',
       '.ict-empty{padding:24px;text-align:center;color:#64748b;background:#f8fafc;border-radius:8px;border:1px dashed #cbd5e1}',
@@ -379,10 +381,11 @@
     }
 
     function renderHero() {
-      var todayRecs = state.all.filter(function (r) {
+      var filtered = applyFilters();
+      var todayRecs = filtered.filter(function (r) {
         return r[FC.published_at] && r[FC.published_at].value === today;
       });
-      var weekRecs = state.all.filter(function (r) {
+      var weekRecs = filtered.filter(function (r) {
         var d = r[FC.published_at] && r[FC.published_at].value;
         return d && d >= weekAgo && d <= today;
       });
@@ -398,6 +401,7 @@
 
     function runSearch() {
       state.page = 0;
+      renderHero();
       renderList();
     }
 
@@ -412,6 +416,7 @@
     document.getElementById('ict-filter-kw').addEventListener('keydown', function (e) {
       if (e.key === 'Enter') runSearch();
     });
+    document.getElementById('ict-filter-cat').addEventListener('change', runSearch);
     document.getElementById('ict-btn-prev').addEventListener('click', function () {
       state.page--;
       renderList();

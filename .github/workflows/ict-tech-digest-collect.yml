@@ -41,8 +41,8 @@ jobs:
             echo "::error::ICT_DIGEST_STORE_APP_ID（685）が未設定です。"
             exit 1
           fi
-          if [ "${{ secrets.KINTONE_API_TOKEN_ICT_COLLECT }}" = "" ] && [ "${{ secrets.KINTONE_API_TOKEN_COLLECT }}" = "" ]; then
-            echo "::error::KINTONE_API_TOKEN_ICT_COLLECT（685 用）が未設定です。"
+          if [ "${{ secrets.KINTONE_API_TOKEN_ICT_COLLECT }}" = "" ]; then
+            echo "::error::KINTONE_API_TOKEN_ICT_COLLECT（685 専用）が未設定です。631 用 KINTONE_API_TOKEN_COLLECT は流用しません。"
             exit 1
           fi
 
@@ -60,12 +60,12 @@ jobs:
           KINTONE_DOMAIN: ${{ secrets.KINTONE_DOMAIN }}
           KINTONE_APP_ID: ${{ secrets.ICT_DIGEST_STORE_APP_ID || secrets.KINTONE_APP }}
           KINTONE_API_TOKEN_ICT_COLLECT: ${{ secrets.KINTONE_API_TOKEN_ICT_COLLECT }}
-          KINTONE_API_TOKEN_COLLECT: ${{ secrets.KINTONE_API_TOKEN_ICT_COLLECT || secrets.KINTONE_API_TOKEN_COLLECT }}
-          KINTONE_API_TOKEN: ${{ secrets.KINTONE_API_TOKEN_ICT_COLLECT || secrets.KINTONE_API_TOKEN_COLLECT }}
+          ICT_DIGEST_STORE_APP_ID: ${{ secrets.ICT_DIGEST_STORE_APP_ID || secrets.KINTONE_APP }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          ICT_RSS_FEED_URLS: ${{ vars.ICT_RSS_FEED_URLS }}
           RSS_FEED_URLS: ${{ vars.ICT_RSS_FEED_URLS }}
-          ICT_DIGEST_BOARD_APP_ID: ${{ vars.ICT_DIGEST_BOARD_APP_ID }}
+          ICT_DIGEST_BOARD_APP_ID: ${{ vars.ICT_DIGEST_BOARD_APP_ID || '686' }}
           NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
         run: npm --prefix ict-tech-digest-automation run collect
 

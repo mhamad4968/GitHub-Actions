@@ -6,6 +6,7 @@ import type { ObjectSchema } from "@google/generative-ai";
 
 import type { IctConfig } from "./config.js";
 import { ICT_CATEGORIES, type IctCategory } from "./field-codes.js";
+import { normalizeOverview } from "./overview-format.js";
 import type { RssArticle } from "./rss.js";
 
 const SYSTEM_PROMPT =
@@ -154,7 +155,7 @@ ${listText}`;
         picks.push({
           url,
           title: String(row.title || src.title).trim(),
-          overview: String(row.overview ?? "").trim(),
+          overview: normalizeOverview(String(row.overview ?? "")),
           category: cat,
           importanceScore: Number(row.importanceScore) || 50,
         });

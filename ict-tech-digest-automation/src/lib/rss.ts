@@ -12,12 +12,24 @@ export type RssArticle = {
   feedUrl: string;
 };
 
+export type RssFetchReport = {
+  ok: number;
+  fail: number;
+  failedUrls: string[];
+};
+
 const parser = new Parser({
   timeout: 30000,
   headers: {
     "User-Agent": "ict-tech-digest-automation/1.0 (J-BIS internal)",
   },
 });
+
+let lastFetchReport: RssFetchReport = { ok: 0, fail: 0, failedUrls: [] };
+
+export function getLastRssFetchReport(): RssFetchReport {
+  return { ...lastFetchReport, failedUrls: [...lastFetchReport.failedUrls] };
+}
 
 function parsePubMs(item: Parser.Item): number {
   const raw = item.isoDate || item.pubDate;
@@ -69,6 +81,8 @@ function mapFeedItems(feed: Parser.Output<unknown>, feedUrl: string): RssArticle
  */
 export async function fetchAllFeeds(feedUrls: string[]): Promise<RssArticle[]> {
   const rows: RssArticle[] = [];
+  const report: RssFetchReport = { ok: 0, fail: 0, failedUrls: [] };
+
   for (const feedUrl of feedUrls) {
     const canonical = resolveFeedUrl(feedUrl);
     try {
@@ -76,11 +90,21 @@ export async function fetchAllFeeds(feedUrls: string[]): Promise<RssArticle[]> {
       const xml = await fetchFeedXml(feedUrl);
       const feed = await parser.parseString(xml);
       rows.push(...mapFeedItems(feed, canonical));
+      report.ok++;
       console.log(`[RSS] 取得完了: ${canonical}（${feed.items.length} 件）`);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
+      report.fail++;
+      report.failedUrls.push(canonical);
       console.error(`[RSS] 取得失敗: ${canonical} — ${msg}`);
     }
+  }
+
+  lastFetchReport = report;
+  if (report.fail > 0) {
+    console.warn(
+      `[RSS] サマリ: 成功 ${report.ok} / 失敗 ${report.fail} — ${report.failedUrls.join(", ")}`,
+    );
   }
   return rows;
 }

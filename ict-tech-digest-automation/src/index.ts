@@ -13,7 +13,7 @@ import {
   urlExists,
 } from "./lib/kintone-store.js";
 import { curateWithGemini } from "./lib/gemini-curate.js";
-import { dedupeAndSort, fetchAllFeeds } from "./lib/rss.js";
+import { dedupeAndSort, fetchAllFeeds, getLastRssFetchReport } from "./lib/rss.js";
 
 /** 厳選候補は直近の記事に絞る（「今日一番」の精度向上） */
 function filterRecentForCuration(articles: RssArticle[], today: string): RssArticle[] {
@@ -54,6 +54,12 @@ async function main(): Promise<void> {
   console.log(`[ICT収集] 登録済み URL 数（全期間）: ${existingUrls.size}`);
 
   const rawArticles = await fetchAllFeeds(cfg.rssFeedUrls);
+  const rssReport = getLastRssFetchReport();
+  if (rssReport.fail > 0) {
+    console.warn(
+      `[ICT収集] RSS 一部失敗: 成功 ${rssReport.ok} / 失敗 ${rssReport.fail}`,
+    );
+  }
   const merged = dedupeAndSort(rawArticles);
   const unregistered = merged.filter((a) => !existingUrls.has(a.url));
   const candidates = filterRecentForCuration(unregistered, today);
