@@ -55,6 +55,17 @@ npm run cio:snapshot:portfolio
 | ICT 掲示板 | 685 | `KINTONE_API_TOKEN_ICT_COLLECT`（**631 用を流用しない**） |
 | customize デプロイ | 各 app | `KINTONE_USERNAME` + `KINTONE_PASSWORD`（プレビュー反映必須） |
 
+## R-17 運用規律（浜田 CEO 2026-05-16 全承認）
+
+| ID | 内容 | コマンド |
+|----|------|----------|
+| R-17-1 | 2 アプリ以上 customize 変更後 | `npm run cio:guard:multi-customize` |
+| R-17-2 | 編集前 DeepSeek §50-3-8 | `.cursor/rules/constitutional-focus-kintone-customize.mdc` |
+| R-17-3 | 教訓 | **TSB-035** |
+| R-17-4 | ICT MSRC 個別 URL | 収集時 `resolveArticleUrl`（OSS→NVD） |
+| R-17-5 | customize 80 行超 | Kimi 1 問 or スキップ理由 |
+
 ## 変更履歴
 
+- **2026-05-16**: R-17 承認反映・`cio:guard:multi-customize`
 - **2026-05-16**: 初版（678 先祖返り教訓・live-build registry・portfolio 監査）

@@ -11,5 +11,6 @@ alwaysApply: false
 - **§18** — シークレット・トークンの非露出。
 - **§52-8** — 高リスク操作に該当する変更は **事前報告 → 浜田 GO**（該当時）。
 - **§35-1** — ワークフロー修正・検証コマンドの実行は **AI 側**（禁句は TSB-024）。
+- **TSB-035** — 複数アプリ `customize/**` 変更時は **アプリごと直列 deploy**（旧「uniq≥2 で全スキップ」禁止）。push 成功だけでは本番反映を信じない。CIO は **`npm run cio:guard:multi-customize`**（R-17-1）。
 
 **違反・2 者チェックの定義**は **`constitution-enforcement-core.mdc`**（末尾の全文）を正とする。

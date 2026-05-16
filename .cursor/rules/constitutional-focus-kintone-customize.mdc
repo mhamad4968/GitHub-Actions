@@ -13,4 +13,12 @@ alwaysApply: false
 - **§52 / Tier B** — 本番書込・`deploy:*` は **浜田 GO** 後も **実行は AI**（TSB-024）。
 - **`kintone-apps.md`** — 触るアプリ ID の単一の真（§2）。
 
+## R-17（浜田 CEO 2026-05-16 全承認 GO）
+
+- **§50-3-8（着手前）**: `customize/**` 編集の**最初の Write/StrReplace の前**に DeepSeek 1 問（盲点・反例）。省略は **`§50-3-8 スキップ理由:`** 1 行のみ。
+- **Kimi（80 行超）**: 同一タスクで `customize/**` の累積差分が **80 行超**なら Kimi レビュー 1 問。未実施はスキップ理由必須。
+- **複数アプリ変更（R-17-1）**: 同一セッションで **`customize/` 配下を 2 アプリ以上**触ったら、**commit/push/handoff の前**に必ず  
+  `npm run cio:guard:multi-customize`（実体は `cio:audit:portfolio:strict`）を **exit 0** で通す。handoff に **1 行**（例: `portfolio audit 8/8 @ rev …`）を残す。
+- **教訓**: **TSB-035**（GHA 複数アプリ push で deploy スキップ → 678 先祖返り）。「push 成功 ≠ 本番反映」を信じない。
+
 **違反・2 者チェックの定義**は **`constitution-enforcement-core.mdc`**（末尾の全文）を正とする。

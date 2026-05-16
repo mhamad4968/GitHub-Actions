@@ -134,7 +134,7 @@
 | フィールドコード | 型 | ラベル | 備考 |
 |------------------|-----|--------|------|
 | `title` | 文字列1行 | タイトル | |
-| `url` | リンク | URL | 最大512文字。重複はアプリ側ロジックで排除（kintone unique はオフ） |
+| `url` | リンク | URL | 最大512文字。重複はアプリ側ロジックで排除（kintone unique はオフ）。**MSRC Update Guide の個別 CVE URL（`…/vulnerability/CVE-…`）は Microsoft 製品のみ**（PostgreSQL / NGINX 等は **NVD** `https://nvd.nist.gov/vuln/detail/CVE-…`）。実装: `ict-tech-digest-automation/src/lib/article-url.ts` の `resolveArticleUrl()` |
 | `published_at` | 日付 | 公開日 | **掲載日（JST 当日）**。厳選ダイジェストの「本日」枠 |
 | `overview` | 文字列複数行 | 概要 | 【事象】【影響】【推奨】 |
 | `category` | ドロップダウン | カテゴリ | 下記17択（掲示板686のフィルタと同期） |

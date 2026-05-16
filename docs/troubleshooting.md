@@ -44,8 +44,9 @@
 | TSB-032 | 2026-05-06 | **`constitution-gates` CI が `constitution.mdc` 欠落で連続 failure** | **`verify-constitution-handoff.mjs` が `.cursor/rules/constitution.mdc` の存在を要求する一方、同ファイルが `.gitignore` でリポ非追跡**のため、GitHub checkout 上にファイルが来ず needle 検査が即 NG になった | ✅ | true | `.github/workflows/constitution-gates.yml` / `verify-constitution-handoff` |
 | TSB-033 | 2026-05-09 | Cloud「再開可能」SLO を「未完放置」と誤読しない | 「再開可能」と言語化した結果、**黙って中断＝放置**と運用で読まれるリスク | ✅ | true | Cloud handoff / `cio-consensus-seal` / CI |
 | TSB-034 | 2026-05-09 | Windows で `health-check` の stdio MCP が偽陰性／`permissions.json` で RUN 省略 | **IDE 外 CLI** と **Cursor IDE 内**で MCP 疎通が食い違い `smoke` 連鎖 NG 等 | ✅ | true | `health-check.mjs` / `permissions.json` / MCP env |
+| TSB-035 | 2026-05-16 | 複数アプリ `customize/**` push で GHA deploy スキップ → 本番先祖返り（678） | **1 push で複数アプリ変更時に旧 GHA が API deploy を全スキップ**し CI 緑でも本番 JS が更新されない | ✅ | true | `kintone-customize-deploy` / R-17 / `cio-live-builds.json` |
 
-**集計** (2026-05-11 時点 / TSB-033・TSB-034 目次追記):
+**集計** (2026-05-16 時点 / TSB-035 目次追記):
 - 全 **31** 件中 **root_cause_confirmed = true: 30 件** / **false (孤児): 1 件**
 - 5 月目標 (F-2 自己批判 §54-5) = カバレッジ 100% を TSB-019 真因確定 (Cursor IDE Agents 設定) で **95% 前後を維持**（分母は TSB セクション数に追随）
 - 残 false: **TSB-001 のみ** = 孤児 TSB（4/19 D1-proposal でも「詳細未記載」）= 真因不明のまま記録止まり
@@ -1479,4 +1480,31 @@ Cursor の MCP ログで **`Connection failed: MCP error -32000: Connection clos
 
 - `.cursor/rules/cio-constitution.mdc`（MCP / ターミナル Allowlist 節）
 - `scripts/health-check.mjs`
+
+---
+
+## TSB-035 — 複数アプリ `customize/**` push で GHA deploy スキップ → 本番先祖返り（678・2026-05-16 制定）
+
+### 事象
+
+1 コミットで **627 / 677 / 678 / 679 / 682 / 683 / ops-guide** など **複数アプリ**の `customize/**` を変更して push したところ、GHA **`kintone-customize-deploy`** が変更アプリ数 **`uniq≥2`** を検知し **API デプロイをスキップ**（ESLint のみ）。リポ・CI は緑だが **本番 678 は旧 JS のまま**（ダッシュボード回帰）となり、CEO 報告まで未検知。
+
+### 原因
+
+- 旧ワークフロー: **1 push あたりデプロイ対象を 1 アプリに限定**する安全策が、**複数アプリ同時変更時に「全スキップ」**になっていた。
+- **BUILD 台帳**（`data/cio-live-builds.json`）・**portfolio 監査**が無く、**「CI 成功＝本番反映」**と誤認しやすかった。
+
+### 恒久対策
+
+1. **GHA**: 変更アプリごとに **直列 deploy**（スキップしない）。成功後 **`cio:audit:portfolio:strict`**。
+2. **台帳**: deploy 成功で `data/cio-live-builds.json` 自動更新（`scripts/cio-live-build-registry.mjs`）。
+3. **CIO 手動ガード（R-17-1）**: 同一セッションで **2 アプリ以上** `customize/` を触ったら **commit/push/handoff 前**に  
+   `npm run cio:guard:multi-customize`（内部で `cio:audit:portfolio:strict`）を **exit 0**。
+4. **ルール**: `.cursor/rules/constitutional-focus-kintone-customize.mdc` **R-17**、`docs/runbooks/customize-deploy-recovery.md`。
+
+### 関連
+
+- `docs/runbooks/customize-deploy-recovery.md`
+- `scripts/cio-after-customize-change.mjs`
+- コミット `6b3d370`（事象）／`d5181d1`（恒久対策）
 

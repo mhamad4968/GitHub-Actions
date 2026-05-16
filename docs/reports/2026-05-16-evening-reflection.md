@@ -93,17 +93,17 @@
 
 ---
 
-## 5. 明日以降のアップデート案（浜田承認待ち）
+## 5. 明日以降のアップデート案 — **浜田 CEO 2026-05-16 全承認済（GO）・CIO 反映完了**
 
-### A. ルール／フック（推奨）
+### A. ルール／フック（実装済）
 
-| ID | 案 | 目的 | 優先 |
-|----|-----|------|------|
-| **R-2026-05-17-1** | **`customize/**` を2アプリ以上変更した push の同一セッションで、CIO は必ず `npm run cio:audit:portfolio:strict` を実行し結果を handoff に1行残す** | 678 系再発の手動ガード | **高** |
-| **R-2026-05-17-2** | **§50-3-8**: customize/SPEC 変更ターンは **編集前** DeepSeek 1 問（事後のみは「次善策」明記必須） | Kimi/DeepSeek タイミング | **高** |
-| **R-2026-05-17-3** | **TSB 起票**: 「複数アプリ customize push で GHA deploy スキップ」教訓を `docs/troubleshooting-session-blocks.md` または TSB に1節 | 引き継ぎ AI 向け | **中** |
-| **R-2026-05-17-4** | **ICT 収集**: `resolveArticleUrl` は実装済み → SPEC に「MSRC 個別 URL は MS 製品のみ」1行追記 | 仕様正本 | **低** |
-| **R-2026-05-17-5** | **Kimi**: `customize/**` 差分 **80行超**で `kimi_review` 1 問、未実施は `§50-3-8 スキップ理由:` 必須 | 第2者幅 | **中** |
+| ID | 案 | 反映先 |
+|----|-----|--------|
+| **R-17-1** | 2 アプリ以上 customize → `npm run cio:guard:multi-customize` + handoff 1 行 | `scripts/cio-after-customize-change.mjs`, `package.json`, runbook |
+| **R-17-2** | §50-3-8 **編集前** | `constitutional-focus-kintone-customize.mdc`, `cio-discipline-always.mdc` |
+| **R-17-3** | 教訓 TSB | **TSB-035** `docs/troubleshooting.md` |
+| **R-17-4** | ICT SPEC MSRC/NVD | `docs/plans/2026-05-16-ict-tech-digest-spec.md` §3 `url` |
+| **R-17-5** | Kimi 80 行超 | 上記 `.mdc` R-17 節 |
 
 ### B. 運用（承認不要・既に正本化済み）
 
@@ -136,4 +136,5 @@
 
 | 日付 | 内容 |
 |------|------|
+| 2026-05-16 | R-17 全承認 GO・CIO ルール/TSB/スクリプト反映 |
 | 2026-05-16 | 初版（678 教訓・自己採点 7.0・明日ルール案 A1〜A5） |

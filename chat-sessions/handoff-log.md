@@ -1983,8 +1983,10 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 
 **経緯**: **678** 本番が **GHA 複数アプリ push で deploy スキップ**により先祖返り → **復旧**・**再発防止**（順次 deploy・`cio-live-builds.json`・portfolio audit 8/8）・**686 MSRC→NVD**・**Git push**（`d5181d1`/`7089411`/`ec1ad1e`）・**定期運用** `cio-periodic-ops-schedule.md`。
 
-**夕反省正本**: `docs/reports/2026-05-16-evening-reflection.md`（**自己採点 7.0/10**・明日ルール案 **R-17-1〜5 承認待ち**）。
+**夕反省正本**: `docs/reports/2026-05-16-evening-reflection.md`（**自己採点 7.0/10**）。
+
+**R-17（浜田 GO 2026-05-16）**: **R-17-1〜5 全承認・CIO 反映済** — TSB-035、`.mdc` R-17、`npm run cio:guard:multi-customize`、ICT SPEC MSRC/NVD 注記。
 
 **Desktop**: `npm run session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync` **OK**（`26-evening-reflection-2026-05-16.md`＝夕反省正本）。
 
-**次セッションへの 1 行**: Read 夕反省 → `npm run cio:audit:portfolio:strict` → 本題は CEO 指示（682/683 等）。
+**次セッションへの 1 行**: Read 夕反省 §5（R-17 実装済）→ `npm run cio:audit:portfolio:strict` → 本題は CEO 指示（682/683 等）。
