@@ -39,6 +39,8 @@ const DEFAULT_RSS = [
   "https://b.hatena.ne.jp/hotentry/it.rss",
   "https://rss.itmedia.co.jp/rss/2.0/ait.xml",
   "https://msrc.microsoft.com/blog/rss/",
+  // MSRC Update Guide（月例パッチ・CVE 公式フィード）
+  "https://api.msrc.microsoft.com/update-guide/rss",
   "https://blogs.windows.com/feed/",
   "https://www.microsoft.com/en-us/security/blog/feed/",
   "https://www.ipa.go.jp/security/rss/alert.rdf",
@@ -46,6 +48,8 @@ const DEFAULT_RSS = [
   "https://pc.watch.impress.co.jp/data/rss/1.0/pcw/feed.rdf",
   "https://internet.watch.impress.co.jp/data/rss/1.0/iw/feed.rdf",
   "https://forest.watch.impress.co.jp/data/rss/1.0/wf/feed.rdf",
+  // ASCII.jp TECH（エンタープライズ IT・製品動向）
+  "https://ascii.jp/tech/rss.xml",
   // ZDNet Japan（サーバー・ストレージ・仮想化・DC）
   "https://feeds.japan.zdnet.com/rss/zdnet/all.rdf",
   // ITmedia PC USER（法人向け PC・Windows）

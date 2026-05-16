@@ -28,7 +28,8 @@
 | 区分 | ソース | URL |
 |------|--------|-----|
 | 開発トレンド | Qiita / Zenn / はてな IT / ITmedia AIT | 従来どおり |
-| Microsoft | MSRC / Windows Blog / Microsoft Security Blog | `msrc.microsoft.com/blog/rss/` 等 |
+| Microsoft | MSRC Blog / **MSRC Update Guide（CVE・月例パッチ）** / Windows Blog 等 | `api.msrc.microsoft.com/update-guide/rss` 等 |
+| エンタープライズ IT | **ASCII.jp TECH** / ZDNet Japan | `ascii.jp/tech/rss.xml` 等 |
 | セキュリティ公式 | IPA 注意喚起 / JPCERT/CC 統合 RSS | `ipa.go.jp/security/rss/alert.rdf` 等 |
 | PC・通信・製品 | PC Watch / INTERNET Watch / Forest Watch | impress.co.jp 系 RSS |
 | Microsoft・PC・サーバー | ZDNet Japan / ITmedia PC USER / @IT Server&Storage | `feeds.japan.zdnet.com/.../all.rdf` 等 |
