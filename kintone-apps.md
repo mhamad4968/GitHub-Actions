@@ -93,6 +93,7 @@ npm run app:fields <アプリID>
 
 | 日時（UTC） | アプリID | customize パス |
 |-------------|----------|----------------|
+| 2026-05-16T10:16:09Z | 686 | `customize/686/desktop.js` |
 | 2026-05-15T23:14:26Z | 678 | `customize/678/desktop.js` |
 | 2026-05-15T12:35:00Z | 678 | `customize/678/desktop.js`（**今月実績未入力のみトグル・実績セル着色廃止**・**BUILD** `2026-05-15-678-pending-month-filter-no-cell-color`・**deploy SUCCESS** / fileKey **`9a93aca4-687e-4919-bb7d-a90aad3701f5`** / rev **`147`**・`cio:preflight:678` note **pending month filter toggle remove run-actual cell CSS**） |
 | 2026-05-15T12:25:00Z | 678 | `customize/678/desktop.js`（**月次同一暦月合算・cost trim・y678DbgRun**・**BUILD** `2026-05-15-678-running-actual-monthly-merge-dbg`・**deploy SUCCESS** / fileKey **`aad75d6d-0903-430d-89ba-5f2c5973efaa`** / rev **`146`**・`cio:preflight:678` note **monthly duplicate lab merge act sum cost trim y678DbgRun**） |
