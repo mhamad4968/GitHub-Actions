@@ -30,9 +30,23 @@ jobs:
       - name: kintone / OpenAI シークレット確認（値は出さない）
         run: |
           echo "KINTONE_DOMAIN_defined=${{ secrets.KINTONE_DOMAIN != '' }}"
+          echo "ICT_DIGEST_STORE_APP_ID_defined=${{ secrets.ICT_DIGEST_STORE_APP_ID != '' }}"
           echo "KINTONE_APP_defined=${{ secrets.KINTONE_APP != '' }}"
+          echo "KINTONE_API_TOKEN_ICT_COLLECT_defined=${{ secrets.KINTONE_API_TOKEN_ICT_COLLECT != '' }}"
           echo "KINTONE_API_TOKEN_COLLECT_defined=${{ secrets.KINTONE_API_TOKEN_COLLECT != '' }}"
           echo "OPENAI_API_KEY_defined=${{ secrets.OPENAI_API_KEY != '' }}"
+          if [ "${{ secrets.OPENAI_API_KEY }}" = "" ]; then
+            echo "::error::OPENAI_API_KEY が kintone-collect Environment に未設定です。Security NEXT と同様に追加してください。"
+            exit 1
+          fi
+          if [ "${{ secrets.ICT_DIGEST_STORE_APP_ID }}" = "" ] && [ "${{ secrets.KINTONE_APP }}" = "" ]; then
+            echo "::error::ICT_DIGEST_STORE_APP_ID（685）または KINTONE_APP のいずれかが必要です。"
+            exit 1
+          fi
+          if [ "${{ secrets.KINTONE_API_TOKEN_ICT_COLLECT }}" = "" ] && [ "${{ secrets.KINTONE_API_TOKEN_COLLECT }}" = "" ]; then
+            echo "::error::KINTONE_API_TOKEN_ICT_COLLECT（685 用）が未設定です。"
+            exit 1
+          fi
 
       - uses: actions/setup-node@v6
         with:
