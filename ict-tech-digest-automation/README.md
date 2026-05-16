@@ -1,13 +1,13 @@
 # 最新ICT情報掲示板 — 自動収集
 
-情シス向け IT 技術情報を RSS から収集し、OpenAI で厳選・要約して kintone 正本アプリ（**685**）へ登録します。
+情シス向け IT 技術情報を RSS から収集し、**Gemini** で厳選・要約して kintone 正本アプリ（**685**）へ登録します。
 
 ## セットアップ
 
 ```bash
 cd ict-tech-digest-automation
 cp .env.example .env
-# .env を編集（KINTONE_DOMAIN, KINTONE_APP_ID=685, トークン, OPENAI_API_KEY）
+# .env を編集（KINTONE_DOMAIN, KINTONE_APP_ID=685, トークン, GEMINI_API_KEY）
 npm ci
 ```
 

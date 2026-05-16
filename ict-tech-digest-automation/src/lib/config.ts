@@ -25,8 +25,8 @@ export type IctConfig = {
   storeAppId: string;
   boardAppId: string | undefined;
   kintoneApiToken: string;
-  openaiApiKey: string;
-  openaiModel: string;
+  geminiApiKey: string;
+  geminiModel: string | undefined;
   rssFeedUrls: string[];
   dailyMaxRecords: number;
   notifyWebhookUrl: string | undefined;
@@ -80,10 +80,13 @@ export function loadConfig(): IctConfig {
   }
 
   const token =
+    process.env.KINTONE_API_TOKEN_ICT_COLLECT?.trim() ||
     process.env.KINTONE_API_TOKEN_COLLECT?.trim() ||
     process.env.KINTONE_API_TOKEN?.trim();
   if (!token) {
-    throw new Error("KINTONE_API_TOKEN_COLLECT または KINTONE_API_TOKEN が必要です。");
+    throw new Error(
+      "KINTONE_API_TOKEN_ICT_COLLECT / KINTONE_API_TOKEN_COLLECT / KINTONE_API_TOKEN のいずれかが必要です。",
+    );
   }
 
   return {
@@ -91,8 +94,8 @@ export function loadConfig(): IctConfig {
     storeAppId,
     boardAppId: process.env.ICT_DIGEST_BOARD_APP_ID?.trim() || undefined,
     kintoneApiToken: token,
-    openaiApiKey: requireEnv("OPENAI_API_KEY"),
-    openaiModel: process.env.OPENAI_MODEL?.trim() || "gpt-4o-mini",
+    geminiApiKey: requireEnv("GEMINI_API_KEY"),
+    geminiModel: process.env.GEMINI_MODEL?.trim() || undefined,
     rssFeedUrls: resolveRssUrls(),
     dailyMaxRecords: 5,
     notifyWebhookUrl: process.env.NOTIFY_WEBHOOK_URL?.trim() || undefined,

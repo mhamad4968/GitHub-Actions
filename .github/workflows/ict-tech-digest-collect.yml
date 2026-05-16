@@ -1,9 +1,9 @@
-# 最新ICT情報掲示板（収集用 685）へ RSS × OpenAI で自動登録
+# 最新ICT情報掲示板（収集用 685）へ RSS × Gemini で自動登録
 # スケジュール: 毎日 10:00 / 20:00（日本標準時 JST）= UTC 01:00 / 11:00
 #
-# Environment: kintone-collect（security-next と共有可能）
-# Secrets: KINTONE_DOMAIN, KINTONE_APP（=685）, KINTONE_API_TOKEN_COLLECT, OPENAI_API_KEY
-# 任意: RSS_FEED_URLS, ICT_DIGEST_BOARD_APP_ID（686）, NOTIFY_WEBHOOK_URL
+# Environment: kintone-collect（Security NEXT と共有可能）
+# Secrets: KINTONE_DOMAIN, ICT_DIGEST_STORE_APP_ID, KINTONE_API_TOKEN_ICT_COLLECT, GEMINI_API_KEY
+# 任意: GEMINI_MODEL, ICT_RSS_FEED_URLS, NOTIFY_WEBHOOK_URL
 
 name: ict-tech-digest-collect
 
@@ -27,20 +27,18 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: kintone / OpenAI シークレット確認（値は出さない）
+      - name: kintone / Gemini シークレット確認（値は出さない）
         run: |
           echo "KINTONE_DOMAIN_defined=${{ secrets.KINTONE_DOMAIN != '' }}"
           echo "ICT_DIGEST_STORE_APP_ID_defined=${{ secrets.ICT_DIGEST_STORE_APP_ID != '' }}"
-          echo "KINTONE_APP_defined=${{ secrets.KINTONE_APP != '' }}"
           echo "KINTONE_API_TOKEN_ICT_COLLECT_defined=${{ secrets.KINTONE_API_TOKEN_ICT_COLLECT != '' }}"
-          echo "KINTONE_API_TOKEN_COLLECT_defined=${{ secrets.KINTONE_API_TOKEN_COLLECT != '' }}"
-          echo "OPENAI_API_KEY_defined=${{ secrets.OPENAI_API_KEY != '' }}"
-          if [ "${{ secrets.OPENAI_API_KEY }}" = "" ]; then
-            echo "::error::OPENAI_API_KEY が kintone-collect Environment に未設定です。Security NEXT と同様に追加してください。"
+          echo "GEMINI_API_KEY_defined=${{ secrets.GEMINI_API_KEY != '' }}"
+          if [ "${{ secrets.GEMINI_API_KEY }}" = "" ]; then
+            echo "::error::GEMINI_API_KEY が kintone-collect Environment に未設定です（Security NEXT と同じ Secret 名）。"
             exit 1
           fi
           if [ "${{ secrets.ICT_DIGEST_STORE_APP_ID }}" = "" ] && [ "${{ secrets.KINTONE_APP }}" = "" ]; then
-            echo "::error::ICT_DIGEST_STORE_APP_ID（685）または KINTONE_APP のいずれかが必要です。"
+            echo "::error::ICT_DIGEST_STORE_APP_ID（685）が未設定です。"
             exit 1
           fi
           if [ "${{ secrets.KINTONE_API_TOKEN_ICT_COLLECT }}" = "" ] && [ "${{ secrets.KINTONE_API_TOKEN_COLLECT }}" = "" ]; then
@@ -61,10 +59,11 @@ jobs:
         env:
           KINTONE_DOMAIN: ${{ secrets.KINTONE_DOMAIN }}
           KINTONE_APP_ID: ${{ secrets.ICT_DIGEST_STORE_APP_ID || secrets.KINTONE_APP }}
+          KINTONE_API_TOKEN_ICT_COLLECT: ${{ secrets.KINTONE_API_TOKEN_ICT_COLLECT }}
           KINTONE_API_TOKEN_COLLECT: ${{ secrets.KINTONE_API_TOKEN_ICT_COLLECT || secrets.KINTONE_API_TOKEN_COLLECT }}
           KINTONE_API_TOKEN: ${{ secrets.KINTONE_API_TOKEN_ICT_COLLECT || secrets.KINTONE_API_TOKEN_COLLECT }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: ${{ vars.OPENAI_MODEL }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
           RSS_FEED_URLS: ${{ vars.ICT_RSS_FEED_URLS }}
           ICT_DIGEST_BOARD_APP_ID: ${{ vars.ICT_DIGEST_BOARD_APP_ID }}
           NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}

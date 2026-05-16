@@ -1,5 +1,5 @@
 /**
- * 最新ICT情報掲示板（収集用アプリ）へ RSS × OpenAI で自動登録する。
+ * 最新ICT情報掲示板（収集用アプリ）へ RSS × Gemini で自動登録する。
  * 1日最大5件（JST・published_at 基準）。URL は全期間で一意。
  */
 import { loadConfig } from "./lib/config.js";
@@ -11,7 +11,7 @@ import {
   fetchExistingUrls,
   urlExists,
 } from "./lib/kintone-store.js";
-import { curateWithOpenAi } from "./lib/openai-curate.js";
+import { curateWithGemini } from "./lib/gemini-curate.js";
 import { dedupeAndSort, fetchAllFeeds } from "./lib/rss.js";
 
 async function main(): Promise<void> {
@@ -53,16 +53,16 @@ async function main(): Promise<void> {
 
   let picks;
   try {
-    picks = await curateWithOpenAi(cfg, candidates, slots);
+    picks = await curateWithGemini(cfg, candidates, slots);
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    console.error(`[ICT収集] OpenAI 厳選に失敗しました。登録は行いません: ${msg}`);
+    console.error(`[ICT収集] Gemini 厳選に失敗しました。登録は行いません: ${msg}`);
     process.exitCode = 1;
     return;
   }
 
   if (picks.length === 0) {
-    console.log("[ICT収集] OpenAI が登録対象を返さなかったため終了します。");
+    console.log("[ICT収集] Gemini が登録対象を返さなかったため終了します。");
     return;
   }
 

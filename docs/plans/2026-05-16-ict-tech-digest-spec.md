@@ -21,7 +21,7 @@
 - **1日上限**: `published_at` = JST 当日 の件数 ≤ **5**。超過時はログのみで終了。
 - **URL**: 全期間で一意（再登録しない）。
 - **優先**: 未登録 URL → RSS 新しい順 → OpenAI 重要度スコア → 残枠ぶん登録。
-- **AI**: OpenAI `gpt-4o-mini`、要約3行＋カテゴリ（日本語）。
+- **AI**: **Gemini**（`GEMINI_API_KEY`・モデルは `GEMINI_MODEL` または flash 系フォールバック）、要約3行＋カテゴリ（日本語）。
 
 ### 2.1 デフォルト RSS
 
@@ -61,7 +61,8 @@
 | `KINTONE_DOMAIN` | 例 `jbis-kintone.cybozu.com` |
 | `KINTONE_APP_ID` | **685** |
 | `KINTONE_API_TOKEN_COLLECT` | 685 書込トークン |
-| `OPENAI_API_KEY` | OpenAI |
+| `GEMINI_API_KEY` | Gemini（Security NEXT と同じ Secret 名で可） |
+| `GEMINI_MODEL` | 任意（未設定時は flash 系を順次試行） |
 | `ICT_DIGEST_BOARD_APP_ID` | **686**（ダッシュ・任意・ログ用） |
 | `RSS_FEED_URLS` | 複数 URL（改行・カンマ区切り） |
 
