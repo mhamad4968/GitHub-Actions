@@ -16,7 +16,7 @@ npm run app:fields <アプリID>
 
 ## ポートフォリオ customize 本番 BUILD（機械台帳）
 
-**正**: `data/cio-live-builds.json`（deploy 成功時に自動更新）。**照合**: `npm run cio:audit:portfolio:strict`（リポ `var BUILD` ↔ 台帳 ↔ kintone 本番 JS）。**復旧 Runbook**: `docs/runbooks/customize-deploy-recovery.md`。
+**正**: `data/cio-live-builds.json`（deploy 成功時に自動更新）。**照合**: `npm run cio:audit:portfolio:strict`（リポ `var BUILD` ↔ 台帳 ↔ kintone 本番 JS）。**復旧 Runbook**: `docs/runbooks/customize-deploy-recovery.md`。**定期運用（忘れ防止）**: `docs/runbooks/cio-periodic-ops-schedule.md`（月次・四半期・金曜 MCP）。
 
 | app | BUILD（本番） | revision | fileKey | 更新 |
 |-----|---------------|----------|---------|------|

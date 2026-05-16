@@ -66,6 +66,8 @@
     "ict-digest:backfill:overview": "npm --prefix ict-tech-digest-automation run backfill:overview",
     "cio:audit:portfolio": "npx dotenv -e .env -e .env.proxy -- node scripts/cio-audit-customize-portfolio.mjs",
     "cio:audit:portfolio:strict": "npx dotenv -e .env -e .env.proxy -- node scripts/cio-audit-customize-portfolio.mjs --strict",
+    "cio:periodic:monthly": "npm run cio:audit:portfolio:strict",
+    "cio:periodic:quarterly": "npm run cio:snapshot:portfolio",
     "cio:snapshot:portfolio": "npx dotenv -e .env -e .env.proxy -- node scripts/cio-snapshot-portfolio-apps.mjs",
     "cio:sync:portfolio-deploy": "node scripts/cio-sync-portfolio-deploy.mjs",
     "user683:ollama-relay": "npx dotenv -e .env -e .env.proxy -- node scripts/user683-ollama-relay.mjs",

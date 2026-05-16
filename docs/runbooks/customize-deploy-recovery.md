@@ -1,7 +1,8 @@
 # customize デプロイ・先祖返り復旧 Runbook
 
 **正本台帳**: `kintone-apps.md`（人間向け）＋ `data/cio-live-builds.json`（機械照合）  
-**監査**: `npm run cio:audit:portfolio`（`--strict` で CI 同等）
+**監査**: `npm run cio:audit:portfolio`（`--strict` で CI 同等）  
+**定期運用（カレンダー）**: `docs/runbooks/cio-periodic-ops-schedule.md`（月次監査・四半期スナップショット・金曜 MCP）
 
 ## 症状
 
