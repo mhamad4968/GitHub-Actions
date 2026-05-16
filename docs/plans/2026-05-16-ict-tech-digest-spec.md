@@ -177,7 +177,7 @@
 | `KINTONE_API_TOKEN_ICT_COLLECT` | ○ | 685 **書込**トークン |
 | `GEMINI_API_KEY` | ○ | Gemini（Security NEXT と共有可能） |
 | `GEMINI_MODEL` | — | 任意 |
-| `ICT_RSS_FEED_URLS` / `RSS_FEED_URLS` | — | RSS 上書き（カンマ・改行可） |
+| `ICT_RSS_FEED_URLS` / `RSS_FEED_URLS` | — | **未設定時は `config.ts` の DEFAULT 28 本**（旧 URL は `rss-fetch` が自動正規化）。Variable 設定時のみ上書き |
 | `ICT_DIGEST_BOARD_APP_ID` | — | 686（ログ用・任意） |
 | `NOTIFY_WEBHOOK_URL` | — | 失敗時通知（任意） |
 
@@ -242,3 +242,5 @@ npm run collect
 | 2026-05-16 | 掲示板 v2–v4（全幅UI・検索上部・業務向け文言） |
 | 2026-05-16 | RSS 20本化（MSRC Update Guide・ASCII・ZDNet・日経 xTECH 等） |
 | 2026-05-16 | 厳選プロンプト【事象】【影響】【推奨】・「今日のインフラ・PC最重要」 |
+| 2026-05-16 | **完了**: 686 v7（検索↔今日の厳選連動）・`overview-format`・685 専用トークンガード・RSS 耐障害・`1ef78c1` push |
+| 2026-05-16 | GHA Secrets: `KINTONE_API_TOKEN_ICT_COLLECT` / `ICT_DIGEST_STORE_APP_ID` 設定済。`ICT_RSS_FEED_URLS` は未設定＝DEFAULT 28 本 |
