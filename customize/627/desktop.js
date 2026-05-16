@@ -14,6 +14,8 @@
 (function () {
   'use strict';
 
+  var BUILD = '2026-05-12-627-no594-rest';
+
   const APP595 = '595';
   /** 新・PC台帳（674）。旧594へのリンクは出さない */
   const APP674_PC = '674';

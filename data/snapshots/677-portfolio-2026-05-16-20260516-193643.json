@@ -1,0 +1,873 @@
+{
+  "snapshot_timestamp_jst": "20260516-193643",
+  "snapshot_label": "portfolio-2026-05-16",
+  "app_id": 677,
+  "preview_environment_only": false,
+  "app": {
+    "appId": "677",
+    "code": "",
+    "name": "システム推進室予実管理システム入力アプリ",
+    "description": "",
+    "createdAt": "2026-04-29T10:09:55.000Z",
+    "creator": {
+      "code": "admin",
+      "name": "管理者"
+    },
+    "modifiedAt": "2026-05-16T10:36:12.000Z",
+    "modifier": {
+      "code": "admin",
+      "name": "管理者"
+    },
+    "spaceId": "54",
+    "threadId": "58"
+  },
+  "settings": {
+    "name": "システム推進室予実管理システム入力アプリ",
+    "description": "",
+    "icon": {
+      "type": "PRESET",
+      "key": "APP39"
+    },
+    "theme": "WHITE",
+    "titleField": {
+      "selectionMode": "AUTO",
+      "code": "work_type_name"
+    },
+    "enableThumbnails": true,
+    "enableBulkDeletion": false,
+    "enableComments": true,
+    "enableDuplicateRecord": true,
+    "enableInlineRecordEditing": true,
+    "numberPrecision": {
+      "digits": "16",
+      "decimalPlaces": "4",
+      "roundingMode": "HALF_EVEN"
+    },
+    "firstMonthOfFiscalYear": "4",
+    "revision": "19"
+  },
+  "form_fields_live": {
+    "revision": "19",
+    "properties": {
+      "notes": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "notes",
+        "label": "備考",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "attachments": {
+        "type": "FILE",
+        "code": "attachments",
+        "label": "添付ファイル",
+        "noLabel": false,
+        "required": false,
+        "thumbnailSize": "50"
+      },
+      "variable_budget_total_display": {
+        "type": "CALC",
+        "code": "variable_budget_total_display",
+        "label": "変動費の工種予算（表示用）",
+        "noLabel": false,
+        "required": false,
+        "expression": "learning_fixed_budget+initial_variable_budget",
+        "format": "NUMBER",
+        "displayScale": "",
+        "hideExpression": false,
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "partner_company": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "partner_company",
+        "label": "会社",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "display_order": {
+        "type": "NUMBER",
+        "code": "display_order",
+        "label": "表示順",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "summary_supplement": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "summary_supplement",
+        "label": "摘要（補足）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "Updated_by": {
+        "type": "MODIFIER",
+        "code": "Updated_by",
+        "label": "Updated by",
+        "noLabel": false
+      },
+      "work_type_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "work_type_name",
+        "label": "工種名称",
+        "noLabel": false,
+        "required": true,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "Created_datetime": {
+        "type": "CREATED_TIME",
+        "code": "Created_datetime",
+        "label": "Created datetime",
+        "noLabel": false
+      },
+      "issue_date": {
+        "type": "DATE",
+        "code": "issue_date",
+        "label": "起票日",
+        "noLabel": false,
+        "required": false,
+        "unique": false,
+        "defaultValue": "",
+        "defaultNowValue": false
+      },
+      "initial_variable_budget": {
+        "type": "NUMBER",
+        "code": "initial_variable_budget",
+        "label": "イニシャル費用（変動費）",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": true,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "Record_number": {
+        "type": "RECORD_NUMBER",
+        "code": "Record_number",
+        "label": "Record number",
+        "noLabel": false
+      },
+      "summary_text": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "summary_text",
+        "label": "摘要",
+        "noLabel": false,
+        "required": true,
+        "defaultValue": ""
+      },
+      "legacy_row_no": {
+        "type": "NUMBER",
+        "code": "legacy_row_no",
+        "label": "旧通番",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "Created_by": {
+        "type": "CREATOR",
+        "code": "Created_by",
+        "label": "Created by",
+        "noLabel": false
+      },
+      "legacy_cash_date": {
+        "type": "DATE",
+        "code": "legacy_cash_date",
+        "label": "出納日（参照用）",
+        "noLabel": false,
+        "required": false,
+        "unique": false,
+        "defaultValue": "",
+        "defaultNowValue": false
+      },
+      "Status": {
+        "type": "STATUS",
+        "code": "Status",
+        "label": "Status",
+        "enabled": false
+      },
+      "Assignee": {
+        "type": "STATUS_ASSIGNEE",
+        "code": "Assignee",
+        "label": "Assignee",
+        "enabled": false
+      },
+      "payment_breakdown": {
+        "type": "SUBTABLE",
+        "code": "payment_breakdown",
+        "noLabel": false,
+        "label": "支払内訳",
+        "fields": {
+          "payment_amount": {
+            "type": "NUMBER",
+            "code": "payment_amount",
+            "label": "金額",
+            "noLabel": false,
+            "required": true,
+            "minValue": "",
+            "maxValue": "",
+            "digit": true,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "budget_bucket": {
+            "type": "DROP_DOWN",
+            "code": "budget_bucket",
+            "label": "枠種別",
+            "noLabel": false,
+            "required": false,
+            "options": {
+              "ラーニング費用（定額費）": {
+                "label": "ラーニング費用（定額費）",
+                "index": "0"
+              },
+              "イニシャル費用（変動費）": {
+                "label": "イニシャル費用（変動費）",
+                "index": "1"
+              }
+            },
+            "defaultValue": ""
+          },
+          "invoice_number": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "invoice_number",
+            "label": "請求書番号",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "payment_date": {
+            "type": "DATE",
+            "code": "payment_date",
+            "label": "支払日",
+            "noLabel": false,
+            "required": true,
+            "unique": false,
+            "defaultValue": "",
+            "defaultNowValue": false
+          },
+          "payment_memo": {
+            "type": "MULTI_LINE_TEXT",
+            "code": "payment_memo",
+            "label": "メモ",
+            "noLabel": false,
+            "required": false,
+            "defaultValue": ""
+          }
+        }
+      },
+      "Categories": {
+        "type": "CATEGORY",
+        "code": "Categories",
+        "label": "Categories",
+        "enabled": false
+      },
+      "monthly_breakdown": {
+        "type": "SUBTABLE",
+        "code": "monthly_breakdown",
+        "noLabel": false,
+        "label": "月次内訳",
+        "fields": {
+          "fiscal_month": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "fiscal_month",
+            "label": "月度",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "month_budget": {
+            "type": "NUMBER",
+            "code": "month_budget",
+            "label": "予算",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": true,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "month_budget_revision": {
+            "type": "NUMBER",
+            "code": "month_budget_revision",
+            "label": "予算修正",
+            "noLabel": false,
+            "required": true,
+            "minValue": "",
+            "maxValue": "",
+            "digit": true,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "month_actual": {
+            "type": "NUMBER",
+            "code": "month_actual",
+            "label": "実績",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": true,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "month_utilization": {
+            "type": "CALC",
+            "code": "month_utilization",
+            "label": "消費率",
+            "noLabel": false,
+            "required": false,
+            "expression": "IF((month_budget+month_budget_revision)=0, 0, month_actual/(month_budget+month_budget_revision)*100)",
+            "format": "NUMBER",
+            "displayScale": "2",
+            "hideExpression": false,
+            "unit": "",
+            "unitPosition": "BEFORE"
+          }
+        }
+      },
+      "learning_fixed_budget": {
+        "type": "NUMBER",
+        "code": "learning_fixed_budget",
+        "label": "ラーニング費用（定額費）",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": true,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "work_type_code": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "work_type_code",
+        "label": "工種コード",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "cost_category": {
+        "type": "DROP_DOWN",
+        "code": "cost_category",
+        "label": "費用種別",
+        "noLabel": false,
+        "required": true,
+        "options": {
+          "変動費": {
+            "label": "変動費",
+            "index": "0"
+          },
+          "固定費": {
+            "label": "固定費",
+            "index": "1"
+          },
+          "その他": {
+            "label": "その他",
+            "index": "2"
+          }
+        },
+        "defaultValue": ""
+      },
+      "Updated_datetime": {
+        "type": "UPDATED_TIME",
+        "code": "Updated_datetime",
+        "label": "Updated datetime",
+        "noLabel": false
+      },
+      "payment_type": {
+        "type": "DROP_DOWN",
+        "code": "payment_type",
+        "label": "支払種別",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "年額": {
+            "label": "年額",
+            "index": "1"
+          },
+          "月額": {
+            "label": "月額",
+            "index": "0"
+          },
+          "都度": {
+            "label": "都度",
+            "index": "2"
+          }
+        },
+        "defaultValue": ""
+      }
+    }
+  },
+  "form_fields_preview": {
+    "revision": "19",
+    "properties": {
+      "notes": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "notes",
+        "label": "備考",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "attachments": {
+        "type": "FILE",
+        "code": "attachments",
+        "label": "添付ファイル",
+        "noLabel": false,
+        "required": false,
+        "thumbnailSize": "50"
+      },
+      "variable_budget_total_display": {
+        "type": "CALC",
+        "code": "variable_budget_total_display",
+        "label": "変動費の工種予算（表示用）",
+        "noLabel": false,
+        "required": false,
+        "expression": "learning_fixed_budget+initial_variable_budget",
+        "format": "NUMBER",
+        "displayScale": "",
+        "hideExpression": false,
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "partner_company": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "partner_company",
+        "label": "会社",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "display_order": {
+        "type": "NUMBER",
+        "code": "display_order",
+        "label": "表示順",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "summary_supplement": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "summary_supplement",
+        "label": "摘要（補足）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "Updated_by": {
+        "type": "MODIFIER",
+        "code": "Updated_by",
+        "label": "Updated by",
+        "noLabel": false
+      },
+      "work_type_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "work_type_name",
+        "label": "工種名称",
+        "noLabel": false,
+        "required": true,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "Created_datetime": {
+        "type": "CREATED_TIME",
+        "code": "Created_datetime",
+        "label": "Created datetime",
+        "noLabel": false
+      },
+      "issue_date": {
+        "type": "DATE",
+        "code": "issue_date",
+        "label": "起票日",
+        "noLabel": false,
+        "required": false,
+        "unique": false,
+        "defaultValue": "",
+        "defaultNowValue": false
+      },
+      "initial_variable_budget": {
+        "type": "NUMBER",
+        "code": "initial_variable_budget",
+        "label": "イニシャル費用（変動費）",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": true,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "Record_number": {
+        "type": "RECORD_NUMBER",
+        "code": "Record_number",
+        "label": "Record number",
+        "noLabel": false
+      },
+      "summary_text": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "summary_text",
+        "label": "摘要",
+        "noLabel": false,
+        "required": true,
+        "defaultValue": ""
+      },
+      "legacy_row_no": {
+        "type": "NUMBER",
+        "code": "legacy_row_no",
+        "label": "旧通番",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "Created_by": {
+        "type": "CREATOR",
+        "code": "Created_by",
+        "label": "Created by",
+        "noLabel": false
+      },
+      "legacy_cash_date": {
+        "type": "DATE",
+        "code": "legacy_cash_date",
+        "label": "出納日（参照用）",
+        "noLabel": false,
+        "required": false,
+        "unique": false,
+        "defaultValue": "",
+        "defaultNowValue": false
+      },
+      "Status": {
+        "type": "STATUS",
+        "code": "Status",
+        "label": "Status",
+        "enabled": false
+      },
+      "Assignee": {
+        "type": "STATUS_ASSIGNEE",
+        "code": "Assignee",
+        "label": "Assignee",
+        "enabled": false
+      },
+      "payment_breakdown": {
+        "type": "SUBTABLE",
+        "code": "payment_breakdown",
+        "noLabel": false,
+        "label": "支払内訳",
+        "fields": {
+          "payment_amount": {
+            "type": "NUMBER",
+            "code": "payment_amount",
+            "label": "金額",
+            "noLabel": false,
+            "required": true,
+            "minValue": "",
+            "maxValue": "",
+            "digit": true,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "budget_bucket": {
+            "type": "DROP_DOWN",
+            "code": "budget_bucket",
+            "label": "枠種別",
+            "noLabel": false,
+            "required": false,
+            "options": {
+              "ラーニング費用（定額費）": {
+                "label": "ラーニング費用（定額費）",
+                "index": "0"
+              },
+              "イニシャル費用（変動費）": {
+                "label": "イニシャル費用（変動費）",
+                "index": "1"
+              }
+            },
+            "defaultValue": ""
+          },
+          "invoice_number": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "invoice_number",
+            "label": "請求書番号",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "payment_date": {
+            "type": "DATE",
+            "code": "payment_date",
+            "label": "支払日",
+            "noLabel": false,
+            "required": true,
+            "unique": false,
+            "defaultValue": "",
+            "defaultNowValue": false
+          },
+          "payment_memo": {
+            "type": "MULTI_LINE_TEXT",
+            "code": "payment_memo",
+            "label": "メモ",
+            "noLabel": false,
+            "required": false,
+            "defaultValue": ""
+          }
+        }
+      },
+      "Categories": {
+        "type": "CATEGORY",
+        "code": "Categories",
+        "label": "Categories",
+        "enabled": false
+      },
+      "monthly_breakdown": {
+        "type": "SUBTABLE",
+        "code": "monthly_breakdown",
+        "noLabel": false,
+        "label": "月次内訳",
+        "fields": {
+          "fiscal_month": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "fiscal_month",
+            "label": "月度",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "month_budget": {
+            "type": "NUMBER",
+            "code": "month_budget",
+            "label": "予算",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": true,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "month_budget_revision": {
+            "type": "NUMBER",
+            "code": "month_budget_revision",
+            "label": "予算修正",
+            "noLabel": false,
+            "required": true,
+            "minValue": "",
+            "maxValue": "",
+            "digit": true,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "month_actual": {
+            "type": "NUMBER",
+            "code": "month_actual",
+            "label": "実績",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": true,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "month_utilization": {
+            "type": "CALC",
+            "code": "month_utilization",
+            "label": "消費率",
+            "noLabel": false,
+            "required": false,
+            "expression": "IF((month_budget+month_budget_revision)=0, 0, month_actual/(month_budget+month_budget_revision)*100)",
+            "format": "NUMBER",
+            "displayScale": "2",
+            "hideExpression": false,
+            "unit": "",
+            "unitPosition": "BEFORE"
+          }
+        }
+      },
+      "learning_fixed_budget": {
+        "type": "NUMBER",
+        "code": "learning_fixed_budget",
+        "label": "ラーニング費用（定額費）",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": true,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "work_type_code": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "work_type_code",
+        "label": "工種コード",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "cost_category": {
+        "type": "DROP_DOWN",
+        "code": "cost_category",
+        "label": "費用種別",
+        "noLabel": false,
+        "required": true,
+        "options": {
+          "変動費": {
+            "label": "変動費",
+            "index": "0"
+          },
+          "固定費": {
+            "label": "固定費",
+            "index": "1"
+          },
+          "その他": {
+            "label": "その他",
+            "index": "2"
+          }
+        },
+        "defaultValue": ""
+      },
+      "Updated_datetime": {
+        "type": "UPDATED_TIME",
+        "code": "Updated_datetime",
+        "label": "Updated datetime",
+        "noLabel": false
+      },
+      "payment_type": {
+        "type": "DROP_DOWN",
+        "code": "payment_type",
+        "label": "支払種別",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "年額": {
+            "label": "年額",
+            "index": "1"
+          },
+          "月額": {
+            "label": "月額",
+            "index": "0"
+          },
+          "都度": {
+            "label": "都度",
+            "index": "2"
+          }
+        },
+        "defaultValue": ""
+      }
+    }
+  }
+}

@@ -1,0 +1,293 @@
+{
+  "snapshot_timestamp_jst": "20260516-193644",
+  "snapshot_label": "portfolio-2026-05-16",
+  "app_id": 682,
+  "preview_environment_only": false,
+  "app": {
+    "appId": "682",
+    "code": "",
+    "name": "ユーザサポート件数日次",
+    "description": "",
+    "createdAt": "2026-05-08T07:35:36.000Z",
+    "creator": {
+      "code": "admin",
+      "name": "管理者"
+    },
+    "modifiedAt": "2026-05-16T10:36:19.000Z",
+    "modifier": {
+      "code": "admin",
+      "name": "管理者"
+    },
+    "spaceId": "48",
+    "threadId": "52"
+  },
+  "settings": {
+    "name": "ユーザサポート件数日次",
+    "description": "",
+    "icon": {
+      "type": "PRESET",
+      "key": "APP39"
+    },
+    "theme": "WHITE",
+    "titleField": {
+      "selectionMode": "AUTO",
+      "code": "Record_number"
+    },
+    "enableThumbnails": true,
+    "enableBulkDeletion": false,
+    "enableComments": true,
+    "enableDuplicateRecord": true,
+    "enableInlineRecordEditing": true,
+    "numberPrecision": {
+      "digits": "16",
+      "decimalPlaces": "4",
+      "roundingMode": "HALF_EVEN"
+    },
+    "firstMonthOfFiscalYear": "4",
+    "revision": "23"
+  },
+  "form_fields_live": {
+    "revision": "23",
+    "properties": {
+      "Status": {
+        "type": "STATUS",
+        "code": "Status",
+        "label": "Status",
+        "enabled": false
+      },
+      "am_count": {
+        "type": "NUMBER",
+        "code": "am_count",
+        "label": "午前件数",
+        "noLabel": false,
+        "required": true,
+        "minValue": "0",
+        "maxValue": "9999",
+        "digit": true,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "Assignee": {
+        "type": "STATUS_ASSIGNEE",
+        "code": "Assignee",
+        "label": "Assignee",
+        "enabled": false
+      },
+      "record_date": {
+        "type": "DATE",
+        "code": "record_date",
+        "label": "対応日",
+        "noLabel": false,
+        "required": true,
+        "unique": true,
+        "defaultValue": "",
+        "defaultNowValue": false
+      },
+      "pm_count": {
+        "type": "NUMBER",
+        "code": "pm_count",
+        "label": "午後件数",
+        "noLabel": false,
+        "required": true,
+        "minValue": "0",
+        "maxValue": "9999",
+        "digit": true,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "Categories": {
+        "type": "CATEGORY",
+        "code": "Categories",
+        "label": "Categories",
+        "enabled": false
+      },
+      "pm_correspondence": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "pm_correspondence",
+        "label": "午後の対応内容",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "am_correspondence": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "am_correspondence",
+        "label": "午前の対応内容",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "Updated_by": {
+        "type": "MODIFIER",
+        "code": "Updated_by",
+        "label": "Updated by",
+        "noLabel": false
+      },
+      "Updated_datetime": {
+        "type": "UPDATED_TIME",
+        "code": "Updated_datetime",
+        "label": "Updated datetime",
+        "noLabel": false
+      },
+      "Created_datetime": {
+        "type": "CREATED_TIME",
+        "code": "Created_datetime",
+        "label": "Created datetime",
+        "noLabel": false
+      },
+      "day_total": {
+        "type": "CALC",
+        "code": "day_total",
+        "label": "日合計",
+        "noLabel": false,
+        "required": false,
+        "expression": "am_count + pm_count",
+        "format": "NUMBER",
+        "displayScale": "0",
+        "hideExpression": false,
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "Record_number": {
+        "type": "RECORD_NUMBER",
+        "code": "Record_number",
+        "label": "Record number",
+        "noLabel": false
+      },
+      "Created_by": {
+        "type": "CREATOR",
+        "code": "Created_by",
+        "label": "Created by",
+        "noLabel": false
+      }
+    }
+  },
+  "form_fields_preview": {
+    "revision": "23",
+    "properties": {
+      "Status": {
+        "type": "STATUS",
+        "code": "Status",
+        "label": "Status",
+        "enabled": false
+      },
+      "am_count": {
+        "type": "NUMBER",
+        "code": "am_count",
+        "label": "午前件数",
+        "noLabel": false,
+        "required": true,
+        "minValue": "0",
+        "maxValue": "9999",
+        "digit": true,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "Assignee": {
+        "type": "STATUS_ASSIGNEE",
+        "code": "Assignee",
+        "label": "Assignee",
+        "enabled": false
+      },
+      "record_date": {
+        "type": "DATE",
+        "code": "record_date",
+        "label": "対応日",
+        "noLabel": false,
+        "required": true,
+        "unique": true,
+        "defaultValue": "",
+        "defaultNowValue": false
+      },
+      "pm_count": {
+        "type": "NUMBER",
+        "code": "pm_count",
+        "label": "午後件数",
+        "noLabel": false,
+        "required": true,
+        "minValue": "0",
+        "maxValue": "9999",
+        "digit": true,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "Categories": {
+        "type": "CATEGORY",
+        "code": "Categories",
+        "label": "Categories",
+        "enabled": false
+      },
+      "pm_correspondence": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "pm_correspondence",
+        "label": "午後の対応内容",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "am_correspondence": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "am_correspondence",
+        "label": "午前の対応内容",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "Updated_by": {
+        "type": "MODIFIER",
+        "code": "Updated_by",
+        "label": "Updated by",
+        "noLabel": false
+      },
+      "Updated_datetime": {
+        "type": "UPDATED_TIME",
+        "code": "Updated_datetime",
+        "label": "Updated datetime",
+        "noLabel": false
+      },
+      "Created_datetime": {
+        "type": "CREATED_TIME",
+        "code": "Created_datetime",
+        "label": "Created datetime",
+        "noLabel": false
+      },
+      "day_total": {
+        "type": "CALC",
+        "code": "day_total",
+        "label": "日合計",
+        "noLabel": false,
+        "required": false,
+        "expression": "am_count + pm_count",
+        "format": "NUMBER",
+        "displayScale": "0",
+        "hideExpression": false,
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "Record_number": {
+        "type": "RECORD_NUMBER",
+        "code": "Record_number",
+        "label": "Record number",
+        "noLabel": false
+      },
+      "Created_by": {
+        "type": "CREATOR",
+        "code": "Created_by",
+        "label": "Created by",
+        "noLabel": false
+      }
+    }
+  }
+}

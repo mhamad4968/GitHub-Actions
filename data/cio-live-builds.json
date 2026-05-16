@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "apps": {
+    "627": {
+      "build": "2026-05-12-627-no594-rest",
+      "fileKey": "9fc3efc8-2a22-4585-881f-0ee3c2a0fbf2",
+      "revision": "150",
+      "relPath": "customize/627/desktop.js",
+      "deployedAt": "2026-05-16T10:46:22.285Z",
+      "note": null
+    },
+    "668": {
+      "build": "2026-05-16-668-ops-guide-portfolio-audit",
+      "fileKey": "106126f5-7249-4104-8b43-405c85ddfa51",
+      "revision": "42",
+      "relPath": "C:\\Users\\mhamada202408224\\kintone-ai-lab\\customize\\ops-guide\\desktop.js",
+      "deployedAt": "2026-05-16T10:46:25.910Z",
+      "note": null
+    },
+    "677": {
+      "build": "2026-05-15-677-block-all-ui-mutations-dash678-only",
+      "fileKey": "6eb02e6f-4319-4bed-97ee-245ee0869a01",
+      "revision": "20",
+      "relPath": "customize/677/desktop.js",
+      "deployedAt": "2026-05-16T10:47:07.998Z",
+      "note": null
+    },
+    "678": {
+      "build": "2026-05-15-678-hide-native-pager-zero-label",
+      "fileKey": "33343967-1f61-4981-88fe-924a090918b3",
+      "revision": "157",
+      "relPath": "customize/678/desktop.js",
+      "deployedAt": "2026-05-16T10:47:36.297Z",
+      "note": null
+    },
+    "679": {
+      "build": "2026-05-15-679-manual-no-677-nav",
+      "fileKey": "3c757dfa-9704-47d5-b607-66ae78a423ef",
+      "revision": "32",
+      "relPath": "customize/679/desktop.js",
+      "deployedAt": "2026-05-16T10:47:12.862Z",
+      "note": null
+    },
+    "682": {
+      "build": "2026-05-12-682-hide-rolling7m-dashboard683",
+      "fileKey": "c183e358-0f6a-4d1c-ad70-cfb4543197e6",
+      "revision": "24",
+      "relPath": "customize/682/desktop.js",
+      "deployedAt": "2026-05-16T10:47:16.371Z",
+      "note": null
+    },
+    "683": {
+      "build": "2026-05-16-683-print-2page-tight-v2",
+      "fileKey": "ba2066bb-0cb1-4c8f-98e9-d93b9b881166",
+      "revision": "76",
+      "relPath": "customize/683/desktop.js",
+      "deployedAt": "2026-05-16T10:47:21.012Z",
+      "note": null
+    },
+    "686": {
+      "build": "2026-05-16-686-ict-digest-board-v8",
+      "fileKey": "8d260fda-762d-482c-9fe9-4086f423f1cb",
+      "revision": "17",
+      "relPath": "customize/686/desktop.js",
+      "deployedAt": "2026-05-16T10:54:47.866Z",
+      "note": null
+    }
+  }
+}

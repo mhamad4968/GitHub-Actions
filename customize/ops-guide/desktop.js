@@ -5,6 +5,8 @@
 (function () {
   'use strict';
 
+  var BUILD = '2026-05-16-668-ops-guide-portfolio-audit';
+
   var TAB_ORDER = ['hub', 'pc', 'personal', 'shared', 'employee', 'lifecycle'];
   var TAB_LABELS = {
     hub: 'トップ',

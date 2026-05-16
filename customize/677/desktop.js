@@ -1,6 +1,9 @@
 (function () {
   "use strict";
 
+  /** 監査・台帳照合用（リポ正本）。掲示板 UI は 678 が主。 */
+  var BUILD = "2026-05-15-677-block-all-ui-mutations-dash678-only";
+
   /**
    * 部署予実 入力アプリ 677
    * BUILD: 2026-05-15-677-block-all-ui-mutations-dash678-only

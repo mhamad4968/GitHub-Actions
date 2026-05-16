@@ -1,0 +1,1853 @@
+{
+  "snapshot_timestamp_jst": "20260516-193645",
+  "snapshot_label": "portfolio-2026-05-16",
+  "app_id": 683,
+  "preview_environment_only": false,
+  "app": {
+    "appId": "683",
+    "code": "",
+    "name": "ユーザサポート682ダッシュ",
+    "description": "",
+    "createdAt": "2026-05-10T08:11:13.000Z",
+    "creator": {
+      "code": "admin",
+      "name": "管理者"
+    },
+    "modifiedAt": "2026-05-16T10:36:22.000Z",
+    "modifier": {
+      "code": "admin",
+      "name": "管理者"
+    },
+    "spaceId": "48",
+    "threadId": "52"
+  },
+  "settings": {
+    "name": "ユーザサポート682ダッシュ",
+    "description": "",
+    "icon": {
+      "type": "PRESET",
+      "key": "APP39"
+    },
+    "theme": "WHITE",
+    "titleField": {
+      "selectionMode": "AUTO",
+      "code": "user683_dash_ym"
+    },
+    "enableThumbnails": true,
+    "enableBulkDeletion": false,
+    "enableComments": true,
+    "enableDuplicateRecord": true,
+    "enableInlineRecordEditing": true,
+    "numberPrecision": {
+      "digits": "16",
+      "decimalPlaces": "4",
+      "roundingMode": "HALF_EVEN"
+    },
+    "firstMonthOfFiscalYear": "4",
+    "revision": "75"
+  },
+  "form_fields_live": {
+    "revision": "75",
+    "properties": {
+      "user683_day_22": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_22",
+        "label": "日次要約（22日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_day_23": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_23",
+        "label": "日次要約（23日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_day_24": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_24",
+        "label": "日次要約（24日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "レコード番号": {
+        "type": "RECORD_NUMBER",
+        "code": "レコード番号",
+        "label": "レコード番号",
+        "noLabel": false
+      },
+      "user683_day_25": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_25",
+        "label": "日次要約（25日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_31": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_31",
+        "label": "日次手修正保護（31日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_day_30": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_30",
+        "label": "日次手修正保護（30日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_day_20": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_20",
+        "label": "日次要約（20日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_day_21": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_21",
+        "label": "日次要約（21日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "ステータス": {
+        "type": "STATUS",
+        "code": "ステータス",
+        "label": "ステータス",
+        "enabled": false
+      },
+      "カテゴリー": {
+        "type": "CATEGORY",
+        "code": "カテゴリー",
+        "label": "カテゴリー",
+        "enabled": false
+      },
+      "user683_day_19": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_19",
+        "label": "日次要約（19日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_dash_ym": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "user683_dash_ym",
+        "label": "ダッシュ対象暦月（YYYY-MM・ジョブがキーに使用）",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_29": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_29",
+        "label": "日次手修正保護（29日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_day_28": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_28",
+        "label": "日次手修正保護（28日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_day_15": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_15",
+        "label": "日次要約（15日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_27": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_27",
+        "label": "日次手修正保護（27日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_day_16": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_16",
+        "label": "日次要約（16日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_26": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_26",
+        "label": "日次手修正保護（26日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_day_17": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_17",
+        "label": "日次要約（17日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_25": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_25",
+        "label": "日次手修正保護（25日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_day_18": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_18",
+        "label": "日次要約（18日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_24": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_24",
+        "label": "日次手修正保護（24日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_day_23": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_23",
+        "label": "日次手修正保護（23日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_day_22": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_22",
+        "label": "日次手修正保護（22日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_day_21": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_21",
+        "label": "日次手修正保護（21日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "作業者": {
+        "type": "STATUS_ASSIGNEE",
+        "code": "作業者",
+        "label": "作業者",
+        "enabled": false
+      },
+      "user683_lock_day_20": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_20",
+        "label": "日次手修正保護（20日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_day_30": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_30",
+        "label": "日次要約（30日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_day_31": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_31",
+        "label": "日次要約（31日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_week_2": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_week_2",
+        "label": "週次要約（第2ブロック）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_week_3": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_week_3",
+        "label": "週次要約（第3ブロック）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_19": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_19",
+        "label": "日次手修正保護（19日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_week_4": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_week_4",
+        "label": "週次要約（第4ブロック）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_18": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_18",
+        "label": "日次手修正保護（18日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_day_17": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_17",
+        "label": "日次手修正保護（17日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_week_5": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_week_5",
+        "label": "週次要約（第5ブロック）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_16": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_16",
+        "label": "日次手修正保護（16日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_day_26": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_26",
+        "label": "日次要約（26日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_15": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_15",
+        "label": "日次手修正保護（15日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_day_27": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_27",
+        "label": "日次要約（27日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "作成日時": {
+        "type": "CREATED_TIME",
+        "code": "作成日時",
+        "label": "作成日時",
+        "noLabel": false
+      },
+      "user683_lock_day_14": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_14",
+        "label": "日次手修正保護（14日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_day_28": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_28",
+        "label": "日次要約（28日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_13": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_13",
+        "label": "日次手修正保護（13日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_day_29": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_29",
+        "label": "日次要約（29日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_12": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_12",
+        "label": "日次手修正保護（12日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_day_01": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_01",
+        "label": "日次要約（1日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_11": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_11",
+        "label": "日次手修正保護（11日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_day_02": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_02",
+        "label": "日次要約（2日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_10": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_10",
+        "label": "日次手修正保護（10日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_day_03": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_03",
+        "label": "日次要約（3日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "更新者": {
+        "type": "MODIFIER",
+        "code": "更新者",
+        "label": "更新者",
+        "noLabel": false
+      },
+      "user683_week_1": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_week_1",
+        "label": "週次要約（第1ブロック）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_09": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_09",
+        "label": "日次手修正保護（9日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_week_3": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_week_3",
+        "label": "週次手修正保護（第3週）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_day_08": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_08",
+        "label": "日次手修正保護（8日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_week_2": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_week_2",
+        "label": "週次手修正保護（第2週）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_day_07": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_07",
+        "label": "日次手修正保護（7日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_week_1": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_week_1",
+        "label": "週次手修正保護（第1週）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_day_06": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_06",
+        "label": "日次手修正保護（6日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_day_05": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_05",
+        "label": "日次手修正保護（5日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_day_04": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_04",
+        "label": "日次手修正保護（4日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_day_03": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_03",
+        "label": "日次手修正保護（3日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_week_5": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_week_5",
+        "label": "週次手修正保護（第5週）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_day_02": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_02",
+        "label": "日次手修正保護（2日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_week_4": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_week_4",
+        "label": "週次手修正保護（第4週）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_day_01": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_01",
+        "label": "日次手修正保護（1日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_day_11": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_11",
+        "label": "日次要約（11日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_day_12": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_12",
+        "label": "日次要約（12日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_day_13": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_13",
+        "label": "日次要約（13日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_day_14": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_14",
+        "label": "日次要約（14日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "作成者": {
+        "type": "CREATOR",
+        "code": "作成者",
+        "label": "作成者",
+        "noLabel": false
+      },
+      "user683_day_10": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_10",
+        "label": "日次要約（10日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "更新日時": {
+        "type": "UPDATED_TIME",
+        "code": "更新日時",
+        "label": "更新日時",
+        "noLabel": false
+      },
+      "user683_day_08": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_08",
+        "label": "日次要約（8日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_day_09": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_09",
+        "label": "日次要約（9日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_month": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_month",
+        "label": "月次要約",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_day_04": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_04",
+        "label": "日次要約（4日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_day_05": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_05",
+        "label": "日次要約（5日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_day_06": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_06",
+        "label": "日次要約（6日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_day_07": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_07",
+        "label": "日次要約（7日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      }
+    }
+  },
+  "form_fields_preview": {
+    "revision": "75",
+    "properties": {
+      "user683_day_22": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_22",
+        "label": "日次要約（22日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_day_23": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_23",
+        "label": "日次要約（23日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_day_24": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_24",
+        "label": "日次要約（24日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "レコード番号": {
+        "type": "RECORD_NUMBER",
+        "code": "レコード番号",
+        "label": "レコード番号",
+        "noLabel": false
+      },
+      "user683_day_25": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_25",
+        "label": "日次要約（25日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_31": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_31",
+        "label": "日次手修正保護（31日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_day_30": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_30",
+        "label": "日次手修正保護（30日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_day_20": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_20",
+        "label": "日次要約（20日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_day_21": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_21",
+        "label": "日次要約（21日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "ステータス": {
+        "type": "STATUS",
+        "code": "ステータス",
+        "label": "ステータス",
+        "enabled": false
+      },
+      "カテゴリー": {
+        "type": "CATEGORY",
+        "code": "カテゴリー",
+        "label": "カテゴリー",
+        "enabled": false
+      },
+      "user683_day_19": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_19",
+        "label": "日次要約（19日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_dash_ym": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "user683_dash_ym",
+        "label": "ダッシュ対象暦月（YYYY-MM・ジョブがキーに使用）",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_29": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_29",
+        "label": "日次手修正保護（29日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_day_28": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_28",
+        "label": "日次手修正保護（28日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_day_15": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_15",
+        "label": "日次要約（15日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_27": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_27",
+        "label": "日次手修正保護（27日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_day_16": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_16",
+        "label": "日次要約（16日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_26": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_26",
+        "label": "日次手修正保護（26日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_day_17": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_17",
+        "label": "日次要約（17日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_25": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_25",
+        "label": "日次手修正保護（25日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_day_18": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_18",
+        "label": "日次要約（18日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_24": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_24",
+        "label": "日次手修正保護（24日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_day_23": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_23",
+        "label": "日次手修正保護（23日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_day_22": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_22",
+        "label": "日次手修正保護（22日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_day_21": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_21",
+        "label": "日次手修正保護（21日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "作業者": {
+        "type": "STATUS_ASSIGNEE",
+        "code": "作業者",
+        "label": "作業者",
+        "enabled": false
+      },
+      "user683_lock_day_20": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_20",
+        "label": "日次手修正保護（20日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_day_30": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_30",
+        "label": "日次要約（30日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_day_31": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_31",
+        "label": "日次要約（31日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_week_2": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_week_2",
+        "label": "週次要約（第2ブロック）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_week_3": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_week_3",
+        "label": "週次要約（第3ブロック）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_19": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_19",
+        "label": "日次手修正保護（19日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_week_4": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_week_4",
+        "label": "週次要約（第4ブロック）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_18": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_18",
+        "label": "日次手修正保護（18日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_day_17": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_17",
+        "label": "日次手修正保護（17日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_week_5": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_week_5",
+        "label": "週次要約（第5ブロック）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_16": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_16",
+        "label": "日次手修正保護（16日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_day_26": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_26",
+        "label": "日次要約（26日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_15": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_15",
+        "label": "日次手修正保護（15日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_day_27": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_27",
+        "label": "日次要約（27日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "作成日時": {
+        "type": "CREATED_TIME",
+        "code": "作成日時",
+        "label": "作成日時",
+        "noLabel": false
+      },
+      "user683_lock_day_14": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_14",
+        "label": "日次手修正保護（14日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_day_28": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_28",
+        "label": "日次要約（28日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_13": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_13",
+        "label": "日次手修正保護（13日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_day_29": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_29",
+        "label": "日次要約（29日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_12": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_12",
+        "label": "日次手修正保護（12日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_day_01": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_01",
+        "label": "日次要約（1日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_11": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_11",
+        "label": "日次手修正保護（11日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_day_02": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_02",
+        "label": "日次要約（2日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_10": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_10",
+        "label": "日次手修正保護（10日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_day_03": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_03",
+        "label": "日次要約（3日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "更新者": {
+        "type": "MODIFIER",
+        "code": "更新者",
+        "label": "更新者",
+        "noLabel": false
+      },
+      "user683_week_1": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_week_1",
+        "label": "週次要約（第1ブロック）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_lock_day_09": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_09",
+        "label": "日次手修正保護（9日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_week_3": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_week_3",
+        "label": "週次手修正保護（第3週）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_day_08": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_08",
+        "label": "日次手修正保護（8日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_week_2": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_week_2",
+        "label": "週次手修正保護（第2週）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_day_07": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_07",
+        "label": "日次手修正保護（7日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_week_1": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_week_1",
+        "label": "週次手修正保護（第1週）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_day_06": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_06",
+        "label": "日次手修正保護（6日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_day_05": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_05",
+        "label": "日次手修正保護（5日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_day_04": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_04",
+        "label": "日次手修正保護（4日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_day_03": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_03",
+        "label": "日次手修正保護（3日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_week_5": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_week_5",
+        "label": "週次手修正保護（第5週）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_day_02": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_02",
+        "label": "日次手修正保護（2日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_week_4": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_week_4",
+        "label": "週次手修正保護（第4週）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_lock_day_01": {
+        "type": "CHECK_BOX",
+        "code": "user683_lock_day_01",
+        "label": "日次手修正保護（1日）",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手修正済み": {
+            "label": "手修正済み",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "user683_day_11": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_11",
+        "label": "日次要約（11日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_day_12": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_12",
+        "label": "日次要約（12日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_day_13": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_13",
+        "label": "日次要約（13日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_day_14": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_14",
+        "label": "日次要約（14日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "作成者": {
+        "type": "CREATOR",
+        "code": "作成者",
+        "label": "作成者",
+        "noLabel": false
+      },
+      "user683_day_10": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_10",
+        "label": "日次要約（10日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "更新日時": {
+        "type": "UPDATED_TIME",
+        "code": "更新日時",
+        "label": "更新日時",
+        "noLabel": false
+      },
+      "user683_day_08": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_08",
+        "label": "日次要約（8日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_day_09": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_09",
+        "label": "日次要約（9日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_month": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_month",
+        "label": "月次要約",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_day_04": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_04",
+        "label": "日次要約（4日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_day_05": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_05",
+        "label": "日次要約（5日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_day_06": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_06",
+        "label": "日次要約（6日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "user683_day_07": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "user683_day_07",
+        "label": "日次要約（7日）",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      }
+    }
+  }
+}

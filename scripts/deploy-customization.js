@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { readFile } from 'node:fs/promises';
+import { extractBuildFromSource, recordLiveBuild } from './cio-live-build-registry.mjs';
 
 function requireEnv(key) {
   const v = process.env[key];
@@ -97,7 +98,9 @@ async function getDeployStatus(app) {
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const appNum = Number(appId);
-console.log(`Uploading JS: ${jsPath}`);
+const jsContent = await readFile(jsPath, 'utf8');
+const buildTag = extractBuildFromSource(jsContent);
+console.log(`Uploading JS: ${jsPath}${buildTag ? ` (BUILD=${buildTag})` : ''}`);
 const fileKey = await uploadFile(jsPath);
 console.log(`Uploaded. fileKey=${fileKey}`);
 
@@ -111,7 +114,15 @@ await deployAppSettings(appNum, revision);
 for (let i = 0; i < 60; i++) {
   const st = await getDeployStatus(appNum);
   if (st === 'SUCCESS') {
+    recordLiveBuild({
+      appId: appNum,
+      build: buildTag,
+      fileKey,
+      revision,
+      relPath: jsPath,
+    });
     console.log('Deploy SUCCESS');
+    if (buildTag) console.log(`[live-build-registry] recorded BUILD=${buildTag} app=${appNum}`);
     process.exit(0);
   }
   if (st === 'FAIL' || st === 'CANCEL') {
