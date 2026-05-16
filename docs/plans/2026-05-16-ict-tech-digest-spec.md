@@ -85,7 +85,7 @@
 | 4b | 開発 | @IT Coding Edge | `https://rss.itmedia.co.jp/rss/2.0/ait_coding.xml` |
 | 4c | 開発 | CodeZine | `https://codezine.jp/rss/new/index.xml` |
 | 4d | ITベンダー | CNET Japan | `https://feeds.japan.cnet.com/rss/cnet/all.rdf` |
-| 5 | Microsoft | MSRC Blog | `https://msrc.microsoft.com/blog/rss/` |
+| 5 | Microsoft | MSRC Blog | `https://msrc.microsoft.com/feed/`（旧 `/blog/rss/` は HTML のため廃止） |
 | 6 | Microsoft | **MSRC Update Guide（パッチ・CVE）** | `https://api.msrc.microsoft.com/update-guide/rss` |
 | 7 | Microsoft | Windows Blog | `https://blogs.windows.com/feed/` |
 | 8 | Microsoft | Microsoft Security Blog | `https://www.microsoft.com/en-us/security/blog/feed/` |
@@ -99,7 +99,7 @@
 | 16 | 法人 PC | ITmedia PC USER | `https://rss.itmedia.co.jp/rss/2.0/pcuser.xml` |
 | 17 | ネットワーク | @IT Master of IP Network | `https://rss.itmedia.co.jp/rss/2.0/ait_network.xml` |
 | 18 | サーバー | @IT Server & Storage | `https://rss.itmedia.co.jp/rss/2.0/ait_server.xml` |
-| 19 | ネットワーク | ITmedia NETWORK | `https://rss.itmedia.co.jp/rss/2.0/nw.xml` |
+| 19 | ネットワーク | ITmedia ネットトピックス | `https://rss.itmedia.co.jp/rss/2.0/news_nettopics.xml`（旧 `nw.xml` は 404 HTML） |
 | 20 | エンタープライズ | 日経クロステック IT | `https://xtech.nikkei.com/rss/xtech-it.rdf` |
 | 21 | 経営・資格 | 日経クロステック 全記事 | `https://xtech.nikkei.com/rss/index.rdf` |
 | 22 | 公式 | IPA 新着（DX・人材等） | `https://www.ipa.go.jp/about/newsonly-rss.rdf` |
@@ -108,6 +108,12 @@
 | 25 | 情シス速報 | ITmedia EP ショートニュース | `https://rss.itmedia.co.jp/rss/2.0/ep_snews.xml` |
 
 **ZDNet Japan（SaaS・コラボ）**: カテゴリ別 RSS は公開されていないため、既存の `feeds.japan.zdnet.com/rss/zdnet/all.rdf` で Box / Teams / クラウド文書管理記事を取り込む。
+
+**RSS 取得の耐障害（2026-05-16）**
+
+- `src/lib/rss-fetch.ts`: **3回リトライ**（指数バックオフ）・**HTML 誤応答検知**・**XML サニタイズ**後に `rss-parser` で解析
+- 旧 URL 互換: `blog/rss/` → `/feed/`、`nw.xml` → `news_nettopics.xml`（`FEED_URL_ALIASES`）
+- 検証: `npm run rss:verify`（`ict-tech-digest-automation` 配下）
 
 **RSS の追加・変更**
 

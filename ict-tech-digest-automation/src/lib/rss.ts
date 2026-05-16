@@ -1,5 +1,6 @@
 import Parser from "rss-parser";
 
+import { fetchFeedXml, resolveFeedUrl } from "./rss-fetch.js";
 import { stripHtmlToPlain } from "./text.js";
 
 export type RssArticle = {
@@ -12,8 +13,10 @@ export type RssArticle = {
 };
 
 const parser = new Parser({
-  timeout: 20000,
-  headers: { "User-Agent": "ict-tech-digest-automation/1.0 (J-BIS internal)" },
+  timeout: 30000,
+  headers: {
+    "User-Agent": "ict-tech-digest-automation/1.0 (J-BIS internal)",
+  },
 });
 
 function parsePubMs(item: Parser.Item): number {
@@ -30,45 +33,53 @@ function itemUrl(item: Parser.Item): string {
   return guid.startsWith("http") ? guid : "";
 }
 
+function mapFeedItems(feed: Parser.Output<unknown>, feedUrl: string): RssArticle[] {
+  const rows: RssArticle[] = [];
+  for (const item of feed.items) {
+    const url = itemUrl(item);
+    const title = (item.title || "").trim();
+    if (!url || !title) continue;
+    const snippet = stripHtmlToPlain(
+      item.contentSnippet || item.summary || item.content || "",
+    ).slice(0, 800);
+    const ms = parsePubMs(item);
+    const publishedAt =
+      ms > 0
+        ? new Intl.DateTimeFormat("en-CA", {
+            timeZone: "Asia/Tokyo",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          }).format(new Date(ms))
+        : "";
+    rows.push({
+      title,
+      url,
+      publishedAt,
+      snippet,
+      sortTimeMs: ms,
+      feedUrl,
+    });
+  }
+  return rows;
+}
+
 /**
- * 複数 RSS フィードを取得し正規化する
+ * 複数 RSS フィードを取得し正規化する（1本失敗しても他は継続）
  */
 export async function fetchAllFeeds(feedUrls: string[]): Promise<RssArticle[]> {
   const rows: RssArticle[] = [];
   for (const feedUrl of feedUrls) {
+    const canonical = resolveFeedUrl(feedUrl);
     try {
       console.log(`[RSS] 取得開始: ${feedUrl}`);
-      const feed = await parser.parseURL(feedUrl);
-      for (const item of feed.items) {
-        const url = itemUrl(item);
-        const title = (item.title || "").trim();
-        if (!url || !title) continue;
-        const snippet = stripHtmlToPlain(
-          item.contentSnippet || item.summary || item.content || "",
-        ).slice(0, 800);
-        const ms = parsePubMs(item);
-        const publishedAt =
-          ms > 0
-            ? new Intl.DateTimeFormat("en-CA", {
-                timeZone: "Asia/Tokyo",
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-              }).format(new Date(ms))
-            : "";
-        rows.push({
-          title,
-          url,
-          publishedAt,
-          snippet,
-          sortTimeMs: ms,
-          feedUrl,
-        });
-      }
-      console.log(`[RSS] 取得完了: ${feedUrl}（${feed.items.length} 件）`);
+      const xml = await fetchFeedXml(feedUrl);
+      const feed = await parser.parseString(xml);
+      rows.push(...mapFeedItems(feed, canonical));
+      console.log(`[RSS] 取得完了: ${canonical}（${feed.items.length} 件）`);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
-      console.error(`[RSS] 取得失敗: ${feedUrl} — ${msg}`);
+      console.error(`[RSS] 取得失敗: ${canonical} — ${msg}`);
     }
   }
   return rows;

@@ -8,7 +8,8 @@
   },
   "scripts": {
     "collect": "tsx src/index.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "rss:verify": "tsx scripts/verify-rss-feeds.mjs"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

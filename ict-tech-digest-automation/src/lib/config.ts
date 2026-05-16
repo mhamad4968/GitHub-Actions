@@ -44,7 +44,8 @@ const DEFAULT_RSS = [
   "https://codezine.jp/rss/new/index.xml",
   // CNET Japan（企業・ITベンダー動向）
   "https://feeds.japan.cnet.com/rss/cnet/all.rdf",
-  "https://msrc.microsoft.com/blog/rss/",
+  // MSRC Blog（/blog/rss/ は HTML。公式 XML は /feed/）
+  "https://msrc.microsoft.com/feed/",
   // MSRC Update Guide（月例パッチ・CVE 公式フィード）
   "https://api.msrc.microsoft.com/update-guide/rss",
   "https://blogs.windows.com/feed/",
@@ -66,8 +67,8 @@ const DEFAULT_RSS = [
   "https://rss.itmedia.co.jp/rss/2.0/ait_network.xml",
   // @IT Server & Storage（ブレード・仮想化基盤の補完）
   "https://rss.itmedia.co.jp/rss/2.0/ait_server.xml",
-  // ITmedia NETWORK
-  "https://rss.itmedia.co.jp/rss/2.0/nw.xml",
+  // ITmedia ネットワーク（nw.xml は 404 HTML。公式は news_nettopics）
+  "https://rss.itmedia.co.jp/rss/2.0/news_nettopics.xml",
   // 日経クロステック IT（通信回線・5G・キャリア等）
   "https://xtech.nikkei.com/rss/xtech-it.rdf",
   // 日経クロステック 全記事（スキル・資格・IT経営・DX人材は IT 分野と併用）
