@@ -2,12 +2,19 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-## 2026-05-16 JST — セッション終了・683 印刷・引継ぎ / Desktop / GitHub
+## 2026-05-16 JST — セッション終了・678 先祖返り復旧・ガバナンス・ICT・Git
 
-- **状況**: **683** — **印刷報告用**の `@media print` を追加詰め（**2 枚前後**を目標、**月次要約は切らず**フォント・余白・表・グラフ縮小）。**「提出用 PDF」一覧ボタン**および別タブ起動コードは**削除済み**。**`ensureUser683PrintReportStyles`** は `#user683-print-report-style` を毎回上書き。**BUILD** `2026-05-16-683-print-2page-tight-v2`。**LIVE revision 74**・fileKey `4bb662aa-b47a-40c5-b1f7-2ba4dffa8f63`（**preflight→deploy は CIO 自律**）。
-- **次**: **浜田 CEO（依頼時）** — 683 で **印刷プレビュー**（まだ **3 枚**ならチャットで共有→**scale / 構成**の次案）。**GitHub** — **`kintone-customize-deploy`** は **push では変数 `KINTONE_PUSH_AUTO_DEPLOY=true` かつ単一アプリ差分のときだけ** API デプロイ（詳細 **`docs/runbooks/kintone-ci-push-deploy-guard.md`**）。**push で自動デプロイを続けるなら** GitHub Actions **Variables** に **`KINTONE_PUSH_AUTO_DEPLOY=true`** を設定。
-- **Desktop「AI緊急用」**: 正本はリポ（**`chat-sessions/desktop-ai-emergency-read-pack/`**・`08-INDEX.txt`）。**`npm run session-starter:sync-desktop` → `npm run verify:desktop-ai-emergency-sync`**（**`SESSION_STARTER_DESKTOP_DIR=C:\Users\mhamada202408224\Desktop\AI緊急用`** 等）。**過去ファイル**は sync の **prune** を正とし、手削除は verify 通過後に**余剰のみ**（README の番号ルール: **23 の次は 24・25、夕反省のみ 26**）。
-- **動作確認**: **依頼があれば浜田 CEO**（印刷・683 一覧）。
+- **重大（復旧済）**: **678** 本番 customize が **GHA 複数アプリ push で deploy スキップ**によりリポより古くなった（先祖返り）。**対策**: workflow **順次 deploy**・`data/cio-live-builds.json`・**`cio:audit:portfolio:strict` 8/8**・浜田画面 OK。
+- **本日完了**: portfolio sync（677–683, 627, 668, 686 v8）、ICT **MSRC→NVD**（685 id 7/8）、Git **`d5181d1`/`7089411`/`ec1ad1e`**、定期運用 **`docs/runbooks/cio-periodic-ops-schedule.md`**。
+- **夕反省正本**: **`docs/reports/2026-05-16-evening-reflection.md`**（自己採点 **7.0/10**・明日ルール案 **R-17-1〜5 承認待ち**）。
+- **次セッション初手**: Read 夕反省 → **`npm run cio:audit:portfolio:strict`**（異常なければ1行）→ 本題は CEO 指示（682/683 印刷残など）。
+- **Desktop**: **`npm run session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync`**（**`26-evening-reflection-2026-05-16.md`** 含む）。
+- **動作確認**: **依頼があれば浜田 CEO**（本日 678・686 は検収済み）。
+
+## 2026-05-16 JST（午後〜）— 683 印刷・引継ぎ / GitHub（参考）
+
+- **683** **BUILD** `2026-05-16-683-print-2page-tight-v2`・rev **76**（portfolio 整合 deploy 後）。印刷は **依頼時 CEO 確認**。
+- **GHA customize**: **`KINTONE_PUSH_AUTO_DEPLOY=true`** 時は **変更アプリすべて順次 deploy**（`docs/runbooks/kintone-ci-push-deploy-guard.md` 更新済）。
 
 ## 2026-05-15 JST（続行）— 683 提出用 PDF ルート
 
