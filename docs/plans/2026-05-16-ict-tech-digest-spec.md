@@ -101,6 +101,13 @@
 | 18 | サーバー | @IT Server & Storage | `https://rss.itmedia.co.jp/rss/2.0/ait_server.xml` |
 | 19 | ネットワーク | ITmedia NETWORK | `https://rss.itmedia.co.jp/rss/2.0/nw.xml` |
 | 20 | エンタープライズ | 日経クロステック IT | `https://xtech.nikkei.com/rss/xtech-it.rdf` |
+| 21 | 経営・資格 | 日経クロステック 全記事 | `https://xtech.nikkei.com/rss/index.rdf` |
+| 22 | 公式 | IPA 新着（DX・人材等） | `https://www.ipa.go.jp/about/newsonly-rss.rdf` |
+| 23 | 情シス | ITmedia エンタープライズ | `https://rss.itmedia.co.jp/rss/2.0/enterprise.xml` |
+| 24 | DX事例 | ITmedia EP 事例 | `https://rss.itmedia.co.jp/rss/2.0/ep_casestudy.xml` |
+| 25 | 情シス速報 | ITmedia EP ショートニュース | `https://rss.itmedia.co.jp/rss/2.0/ep_snews.xml` |
+
+**ZDNet Japan（SaaS・コラボ）**: カテゴリ別 RSS は公開されていないため、既存の `feeds.japan.zdnet.com/rss/zdnet/all.rdf` で Box / Teams / クラウド文書管理記事を取り込む。
 
 **RSS の追加・変更**
 
@@ -122,14 +129,14 @@
 | `url` | リンク | URL | 最大512文字。重複はアプリ側ロジックで排除（kintone unique はオフ） |
 | `published_at` | 日付 | 公開日 | **掲載日（JST 当日）**。厳選ダイジェストの「本日」枠 |
 | `overview` | 文字列複数行 | 概要 | 【事象】【影響】【推奨】 |
-| `category` | ドロップダウン | カテゴリ | 下記12択（掲示板686のフィルタと同期） |
+| `category` | ドロップダウン | カテゴリ | 下記17択（掲示板686のフィルタと同期） |
 
 ### カテゴリ（API 値 = 表示名）
 
-**新ジャンル（検索・厳選の主分類）:**  
-`Microsoft・Windows` / `PC・端末` / `サーバー・インフラ` / `ネットワーク・通信` / `セキュリティ・脆弱性` / `プログラム・開発` / `ITベンダー・DX` / `AI・LLM`
+**運用・経営向け（主分類）:**  
+`Microsoft・Windows` / `PC・端末` / `サーバー・インフラ` / `ネットワーク・通信` / `セキュリティ・脆弱性` / `プログラム・開発` / `ITベンダー・DX` / `SaaS・文書管理` / `資格・リスキリング` / `DX人材・組織` / `情シス・IT部門` / `IPA・政策調査` / `AI・LLM`
 
-**互換（既存レコード用・新規は上記を優先）:**  
+**互換（既存レコード用）:**  
 `インフラ・クラウド` / `開発トレンド` / `ITツール・ガジェット` / `その他`
 
 ---

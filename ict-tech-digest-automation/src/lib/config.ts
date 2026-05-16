@@ -50,6 +50,8 @@ const DEFAULT_RSS = [
   "https://blogs.windows.com/feed/",
   "https://www.microsoft.com/en-us/security/blog/feed/",
   "https://www.ipa.go.jp/security/rss/alert.rdf",
+  // IPA 新着（DX・人材・調査等・セキュリティ以外の公式告知）
+  "https://www.ipa.go.jp/about/newsonly-rss.rdf",
   "https://www.jpcert.or.jp/rss/jpcert.rdf",
   "https://pc.watch.impress.co.jp/data/rss/1.0/pcw/feed.rdf",
   "https://internet.watch.impress.co.jp/data/rss/1.0/iw/feed.rdf",
@@ -68,6 +70,12 @@ const DEFAULT_RSS = [
   "https://rss.itmedia.co.jp/rss/2.0/nw.xml",
   // 日経クロステック IT（通信回線・5G・キャリア等）
   "https://xtech.nikkei.com/rss/xtech-it.rdf",
+  // 日経クロステック 全記事（スキル・資格・IT経営・DX人材は IT 分野と併用）
+  "https://xtech.nikkei.com/rss/index.rdf",
+  // ITmedia エンタープライズ（情シス・資格・IT部門）
+  "https://rss.itmedia.co.jp/rss/2.0/enterprise.xml",
+  "https://rss.itmedia.co.jp/rss/2.0/ep_casestudy.xml",
+  "https://rss.itmedia.co.jp/rss/2.0/ep_snews.xml",
 ];
 
 function requireEnv(name: string): string {

@@ -7,7 +7,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-16-686-ict-digest-board-v5';
+  const BUILD = '2026-05-16-686-ict-digest-board-v6';
   const STORE_APP_ID =
     typeof window.ICT_DIGEST_STORE_APP === 'number' ? window.ICT_DIGEST_STORE_APP : 685;
 
@@ -28,6 +28,11 @@
     'セキュリティ・脆弱性',
     'プログラム・開発',
     'ITベンダー・DX',
+    'SaaS・文書管理',
+    '資格・リスキリング',
+    'DX人材・組織',
+    '情シス・IT部門',
+    'IPA・政策調査',
     'AI・LLM',
     'インフラ・クラウド',
     '開発トレンド',
@@ -43,6 +48,11 @@
     'セキュリティ・脆弱性': 'ict-cat--sec',
     'プログラム・開発': 'ict-cat--dev',
     'ITベンダー・DX': 'ict-cat--vendor',
+    'SaaS・文書管理': 'ict-cat--saas',
+    '資格・リスキリング': 'ict-cat--cert',
+    'DX人材・組織': 'ict-cat--dxhr',
+    '情シス・IT部門': 'ict-cat--is',
+    'IPA・政策調査': 'ict-cat--ipa',
     'AI・LLM': 'ict-cat--ai',
     'インフラ・クラウド': 'ict-cat--infra',
     '開発トレンド': 'ict-cat--dev',
@@ -255,6 +265,11 @@
       '.ict-cat--sec{background:#fee2e2;color:#b91c1c}',
       '.ict-cat--dev{background:#d1fae5;color:#047857}',
       '.ict-cat--vendor{background:#fef3c7;color:#b45309}',
+      '.ict-cat--saas{background:#e0f2fe;color:#0369a1}',
+      '.ict-cat--cert{background:#f3e8ff;color:#7e22ce}',
+      '.ict-cat--dxhr{background:#ecfccb;color:#3f6212}',
+      '.ict-cat--is{background:#fae8ff;color:#86198f}',
+      '.ict-cat--ipa{background:#f5f5f4;color:#44403c}',
       '.ict-cat--ai{background:#ede9fe;color:#5b21b6}',
       '.ict-cat--tool{background:#ffedd5;color:#c2410c}',
       '.ict-cat--other{background:#f1f5f9;color:#475569}',
