@@ -48,7 +48,12 @@ function watchPidStatus() {
     process.kill(pid, 0);
     return { alive: true, pid, detail: 'process responds' };
   } catch {
-    return { alive: false, pid, detail: 'stale pid' };
+    try {
+      fs.unlinkSync(pidPath);
+    } catch {
+      /* noop */
+    }
+    return { alive: false, pid, detail: 'stale pid (pid file removed)' };
   }
 }
 

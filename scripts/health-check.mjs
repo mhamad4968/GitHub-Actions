@@ -244,8 +244,27 @@ if (!fs.existsSync(mcpJsonPath)) {
       };
     }
 
-    // Windows: stdio MCP の CLI 直 probe は IDE 外で偽陰性になりやすい → 既定 skip（厳格: HEALTH_CHECK_STRICT_WIN=1）
-    if (process.platform === 'win32' && process.env.HEALTH_CHECK_STRICT_WIN !== '1') {
+    // Windows: stdio MCP の CLI 直 probe は IDE 外で偽陰性になりやすい
+    if (process.platform === 'win32' && process.env.HEALTH_CHECK_STRICT_WIN === '1') {
+      const probeMjs = path.join(REPO_ROOT, 'scripts', 'cio-mcp-quickprobe.mjs');
+      const dotenvArgs = ['dotenv', '-e', '.env'];
+      if (fs.existsSync(path.join(REPO_ROOT, '.env.proxy'))) dotenvArgs.push('-e', '.env.proxy');
+      dotenvArgs.push('--', 'node', probeMjs);
+      const pr = fs.existsSync(path.join(REPO_ROOT, '.env'))
+        ? spawnSync('npx', dotenvArgs, { cwd: REPO_ROOT, encoding: 'utf8', timeout: 120_000, shell: true })
+        : spawnSync('node', [probeMjs], { cwd: REPO_ROOT, encoding: 'utf8', timeout: 120_000 });
+      const probeOut = `${pr.stdout || ''}\n${pr.stderr || ''}`;
+      const summaryLine = (probeOut.match(/^SUMMARY:\s*(.+)$/m) || [])[1] || '';
+      const quickOk = pr.status === 0 && /NG=0/.test(summaryLine);
+      if (quickOk) {
+        for (const r of mcpResults) {
+          if (r.status === 'ng' && String(r.note || '').includes('応答なし')) {
+            r.status = 'ok';
+            r.note = `Windows STRICT: ${summaryLine.trim()}（cio-mcp-quickprobe 代替・IDE 外 CLI 偽陰性回避）`;
+          }
+        }
+      }
+    } else if (process.platform === 'win32') {
       for (const r of mcpResults) {
         if (r.status === 'ng' && String(r.note || '').includes('応答なし')) {
           r.status = 'skip';

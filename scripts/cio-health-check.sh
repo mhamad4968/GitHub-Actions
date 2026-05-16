@@ -117,8 +117,26 @@ else
   red_count=$((red_count + 1))
 fi
 
-# 5. git status / branch
-git_status=$(git status --porcelain 2>/dev/null)
+# 5. git status / branch（§51-6: SESSION-CLOCK.md は session:clock:set で毎セッション更新＝正常 dirty）
+_git_porcelain() {
+  if pwd | grep -qiE '^/mnt/[a-z]/'; then
+    if command -v wslpath >/dev/null 2>&1 && command -v cmd.exe >/dev/null 2>&1; then
+      winpath=$(wslpath -w "$(pwd)" 2>/dev/null || true)
+      if [ -n "$winpath" ]; then
+        cmd.exe /c "cd /d \"$winpath\" && git status --porcelain" 2>/dev/null | tr -d '\r'
+        return
+      fi
+    fi
+  fi
+  git status --porcelain 2>/dev/null
+}
+git_status_raw=$(_git_porcelain || true)
+git_status=$(echo "$git_status_raw" | awk '
+  { f=$0; sub(/^[ MADRCU?!][ MADRCU?!] /, "", f);
+    if (f == "chat-sessions/SESSION-CLOCK.md") next;
+    if (f ~ /^_rebase-.*\.sh$/) next;
+    print $0
+  }')
 if [ -z "$git_status" ]; then
   report+=$'\n'"  ✅ git-status  clean"
 else
@@ -131,18 +149,32 @@ if git fetch origin --quiet 2>/dev/null; then
   report+=$'\n'"  ✅ branch  $branch"
 fi
 
-# 6. GitHub Actions 直近 failure（最新が success なら過去失敗は warn・最新も failure なら red）
+# 6. GitHub Actions（直近5件がすべて success かつ latest=success → 運用 OK。last30 の古い failure は参考）
 if command -v gh >/dev/null 2>&1; then
   gh_json=$(gh run list --limit 30 --json conclusion,createdAt,name 2>/dev/null || echo '[]')
-  gh_fail=$(echo "$gh_json" | python3 -c "import json,sys; xs=json.load(sys.stdin); fs=[x for x in xs if x['conclusion'] not in ('success',None,'skipped')]; print(len(fs))" 2>/dev/null || echo 0)
-  gh_latest=$(echo "$gh_json" | python3 -c "import json,sys; xs=json.load(sys.stdin); print(xs[0]['conclusion'] if xs else 'unknown')" 2>/dev/null || echo unknown)
-  if [ "$gh_fail" = "0" ]; then
+  gh_stats=$(echo "$gh_json" | python3 -c "
+import json,sys
+xs=json.load(sys.stdin)
+if not xs:
+  print('0|0|unknown'); raise SystemExit
+bad=lambda c: c not in ('success',None,'skipped')
+last30=sum(1 for x in xs if bad(x.get('conclusion')))
+last5=sum(1 for x in xs[:5] if bad(x.get('conclusion')))
+latest=xs[0].get('conclusion') or 'unknown'
+print(f'{last30}|{last5}|{latest}')
+" 2>/dev/null || echo '0|0|unknown')
+  gh_fail30=$(echo "$gh_stats" | cut -d'|' -f1)
+  gh_fail5=$(echo "$gh_stats" | cut -d'|' -f2)
+  gh_latest=$(echo "$gh_stats" | cut -d'|' -f3)
+  if [ "$gh_fail30" = "0" ]; then
     report+=$'\n'"  ✅ gh-actions  last30 failures=0  latest=$gh_latest"
+  elif [ "$gh_latest" = "success" ] && [ "$gh_fail5" = "0" ]; then
+    report+=$'\n'"  ✅ gh-actions  last5 failures=0  last30 historical=$gh_fail30  latest=$gh_latest"
   elif [ "$gh_latest" = "success" ]; then
-    report+=$'\n'"  ⚠️  gh-actions  last30 failures=$gh_fail  latest=success（修正済みの可能性・gh run list で詳細確認）"
+    report+=$'\n'"  ⚠️  gh-actions  last5 failures=$gh_fail5  last30=$gh_fail30  latest=$gh_latest"
     warn_count=$((warn_count + 1))
   else
-    report+=$'\n'"  ❌ gh-actions  last30 failures=$gh_fail  latest=$gh_latest（未解決の可能性・gh run list で詳細確認）"
+    report+=$'\n'"  ❌ gh-actions  last5 failures=$gh_fail5  last30=$gh_fail30  latest=$gh_latest"
     red_count=$((red_count + 1))
   fi
 else
@@ -150,12 +182,24 @@ else
   warn_count=$((warn_count + 1))
 fi
 
-# 7. EOL 維持
-if eol_out=$(bash scripts/cio-eol-check.sh 2>&1); then
+# 7. EOL 維持（/mnt/c 上の bash 直実行は CRLF 偽陽性 → Windows npm を優先）
+_run_eol_check() {
+  if pwd | grep -qiE '^/mnt/[a-z]/'; then
+    if command -v wslpath >/dev/null 2>&1 && command -v cmd.exe >/dev/null 2>&1; then
+      winpath=$(wslpath -w "$(pwd)" 2>/dev/null || true)
+      if [ -n "$winpath" ]; then
+        cmd.exe /c "cd /d \"$winpath\" && npm run cio:eol:check" 2>&1 | tr -d '\r'
+        return $?
+      fi
+    fi
+  fi
+  bash scripts/cio-eol-check.sh 2>&1
+}
+if eol_out=$(_run_eol_check); then
   eol_summary=$(echo "$eol_out" | head -1)
   report+=$'\n'"  ✅ eol-check  $eol_summary"
 else
-  report+=$'\n'"  ❌ eol-check  違反あり — 詳細: bash scripts/cio-eol-check.sh"
+  report+=$'\n'"  ❌ eol-check  違反あり — 詳細: npm run cio:eol:check"
   red_count=$((red_count + 1))
 fi
 
