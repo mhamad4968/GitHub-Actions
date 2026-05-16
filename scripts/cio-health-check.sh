@@ -196,7 +196,8 @@ _run_eol_check() {
   bash scripts/cio-eol-check.sh 2>&1
 }
 if eol_out=$(_run_eol_check); then
-  eol_summary=$(echo "$eol_out" | head -1)
+  eol_summary=$(echo "$eol_out" | grep -E 'violations=0|EOL 維持 OK' | head -1)
+  if [ -z "$eol_summary" ]; then eol_summary='[cio-eol-check] violations=0'; fi
   report+=$'\n'"  ✅ eol-check  $eol_summary"
 else
   report+=$'\n'"  ❌ eol-check  違反あり — 詳細: npm run cio:eol:check"
