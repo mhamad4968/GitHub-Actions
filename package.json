@@ -60,6 +60,7 @@
     "deploy:686": "node scripts/cio-deploy-preflight-guard.mjs 686 && npx dotenv -e .env -e .env.proxy -- node scripts/deploy-customization.js 686 customize/686/desktop.js",
     "ict-digest:collect": "npm --prefix ict-tech-digest-automation run collect",
     "ict-digest:typecheck": "npm --prefix ict-tech-digest-automation run typecheck",
+    "ict-digest:rss:verify": "npm --prefix ict-tech-digest-automation run rss:verify",
     "user683:ollama-relay": "npx dotenv -e .env -e .env.proxy -- node scripts/user683-ollama-relay.mjs",
     "user683:claude-relay": "npx dotenv -e .env -e .env.proxy -- python scripts/user683_claude_relay.py",
     "user683:claude-relay:preflight": "npx dotenv -e .env -e .env.proxy -- node scripts/user683-claude-relay-preflight.mjs",
