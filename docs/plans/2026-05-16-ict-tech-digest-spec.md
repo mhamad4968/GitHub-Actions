@@ -31,8 +31,12 @@
 | Microsoft | MSRC / Windows Blog / Microsoft Security Blog | `msrc.microsoft.com/blog/rss/` 等 |
 | セキュリティ公式 | IPA 注意喚起 / JPCERT/CC 統合 RSS | `ipa.go.jp/security/rss/alert.rdf` 等 |
 | PC・通信・製品 | PC Watch / INTERNET Watch / Forest Watch | impress.co.jp 系 RSS |
+| Microsoft・PC・サーバー | ZDNet Japan / ITmedia PC USER / @IT Server&Storage | `feeds.japan.zdnet.com/.../all.rdf` 等 |
+| ネットワーク・通信 | @IT Master of IP Network / ITmedia NETWORK / 日経 xTECH IT | `ait_network.xml` / `nw.xml` / `xtech-it.rdf` |
 
 **棲み分け**: Security NEXT（アプリ **631**）は別ライン。ICT 掲示板（685）は公式・製品系を厚くし、メディア解説の重複は Gemini 厳選で抑える。
+
+**注**: トップページ URL（`zdnet.com` 等）ではなく **RSS 配信 URL** をコードに登録する。日経クロステックにネットワーク単独 RSS は無く **IT 分野 RSS**（`xtech-it.rdf`）を使用。
 
 ## 3. 正本アプリ（685）フィールド
 

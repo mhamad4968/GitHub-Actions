@@ -86,7 +86,7 @@ export async function curateWithGemini(
   if (slots <= 0 || candidates.length === 0) return [];
 
   const listText = candidates
-    .slice(0, 50)
+    .slice(0, 60)
     .map(
       (c, i) =>
         `[${i + 1}] url=${c.url}\ntitle=${c.title}\nsnippet=${c.snippet.slice(0, 300)}`,

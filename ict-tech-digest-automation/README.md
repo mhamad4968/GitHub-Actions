@@ -2,7 +2,7 @@
 
 情シス向け IT 技術情報を RSS から収集し、**Gemini** で厳選・要約して kintone 正本アプリ（**685**）へ登録します。
 
-**収集範囲（デフォルト）**: 開発系（Qiita/Zenn 等）に加え、**Microsoft 公式**・**IPA/JPCERT**・**PC Watch / INTERNET Watch / Forest** など。Security NEXT（631）とは別ラインです。
+**収集範囲（デフォルト）**: 開発系（Qiita/Zenn 等）、**Microsoft 公式**、**IPA/JPCERT**、**ZDNet Japan**、**ITmedia PC USER**、**@IT ネットワーク**、**日経クロステック IT**、Watch 系など。Security NEXT（631）とは別ラインです。
 
 ## セットアップ
 

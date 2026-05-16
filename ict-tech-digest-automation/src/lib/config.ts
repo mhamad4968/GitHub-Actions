@@ -46,6 +46,18 @@ const DEFAULT_RSS = [
   "https://pc.watch.impress.co.jp/data/rss/1.0/pcw/feed.rdf",
   "https://internet.watch.impress.co.jp/data/rss/1.0/iw/feed.rdf",
   "https://forest.watch.impress.co.jp/data/rss/1.0/wf/feed.rdf",
+  // ZDNet Japan（サーバー・ストレージ・仮想化・DC）
+  "https://feeds.japan.zdnet.com/rss/zdnet/all.rdf",
+  // ITmedia PC USER（法人向け PC・Windows）
+  "https://rss.itmedia.co.jp/rss/2.0/pcuser.xml",
+  // @IT Master of IP Network（ルーター・VPN・Wi-Fi 等）
+  "https://rss.itmedia.co.jp/rss/2.0/ait_network.xml",
+  // @IT Server & Storage（ブレード・仮想化基盤の補完）
+  "https://rss.itmedia.co.jp/rss/2.0/ait_server.xml",
+  // ITmedia NETWORK
+  "https://rss.itmedia.co.jp/rss/2.0/nw.xml",
+  // 日経クロステック IT（通信回線・5G・キャリア等）
+  "https://xtech.nikkei.com/rss/xtech-it.rdf",
 ];
 
 function requireEnv(name: string): string {
