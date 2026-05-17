@@ -1,0 +1,23 @@
+{
+  "generatedAt": "2026-05-17T01:27:35.094Z",
+  "source": "AGENTS.md",
+  "files": [
+    "00-preamble.md",
+    "01-fundamentals.md",
+    "02-kintone-development.md",
+    "03-quality-engineering.md",
+    "04-environment-security.md",
+    "05-knowledge-rag.md",
+    "06-mcp-disaster-recovery.md",
+    "07-frontend-web-quality.md",
+    "08-deliverables-architecture.md",
+    "09-human-autonomy-reporting.md",
+    "10-session-operations.md",
+    "11-professional-judgment.md",
+    "12-mcp-usage.md",
+    "13-parallel-session.md",
+    "14-self-governance-safemode.md",
+    "15-raci-responsibility.md",
+    "16-amendment-process.md"
+  ]
+}

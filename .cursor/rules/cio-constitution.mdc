@@ -28,6 +28,7 @@ alwaysApply: true
 4. **違反定義・2 者** — 仕様・完了宣言に触れるとき **`constitution-enforcement-core.mdc`** を Read。
 5. **トピック別** — `globs` が当たった分割ルール（MCP・kintone・ワークフロー等）を Cursor が注入したら従う。**足りなければ能動的に Read**。
 6. **網羅版** — **`constitution.mdc`** は **必要時のみ Read**（結合ミラー。更新は **`npm run rules:regenerate-constitution`**）。
+7. **ジャンル分割読本（2026-05-17）** — **`docs/constitution/README.md`** → タスクに応じ **1〜2 本**（`AGENTS.md` 全文通読は避ける。再生成: **`npm run constitution:extract-genres`**）。
 
 **誤読禁止**: 分割 `.mdc` を **YAML の常時注入の第二正本** のように書かない（**`npm run verify:thin-rule-messaging`** が `alwaysApply` 表記を検査）。
 
