@@ -2,10 +2,14 @@ import type { KintoneRestAPIClient } from "@kintone/rest-api-client";
 
 import type { IctConfig } from "./config.js";
 import { ICT_FIELDS, type IctCategory } from "./field-codes.js";
+import { addDaysJstYmd, todayJstYmd } from "./jst-date.js";
 import { escapeKintoneQueryString } from "./text.js";
-import { todayJstYmd } from "./jst-date.js";
 
 const PAGE = 500;
+
+/** 類似除外用: 過去12ヶ月のタイトル（最新150件） */
+export const DEDUP_TITLE_LOOKBACK_DAYS = 365;
+export const DEDUP_TITLE_MAX = 150;
 
 /** 当日（JST）の登録件数 */
 export async function countTodayRecords(
@@ -23,6 +27,27 @@ export async function countTodayRecords(
   const total = res.totalCount;
   if (typeof total === "string") return parseInt(total, 10) || 0;
   return typeof total === "number" ? total : (res.records?.length ?? 0);
+}
+
+/** 過去12ヶ月以内の登録済みタイトル（新しい順・最大150件） */
+export async function fetchRecentTitlesForDedup(
+  client: KintoneRestAPIClient,
+  cfg: IctConfig,
+  todayYmd: string = todayJstYmd(),
+): Promise<string[]> {
+  const since = addDaysJstYmd(todayYmd, -DEDUP_TITLE_LOOKBACK_DAYS);
+  const q = `${ICT_FIELDS.published_at} >= "${since}" order by ${ICT_FIELDS.published_at} desc, $id desc limit ${DEDUP_TITLE_MAX}`;
+  const res = await client.record.getRecords({
+    app: cfg.storeAppId,
+    query: q,
+    fields: [ICT_FIELDS.title],
+  });
+  const titles: string[] = [];
+  for (const rec of res.records ?? []) {
+    const v = rec[ICT_FIELDS.title]?.value;
+    if (typeof v === "string" && v.trim()) titles.push(v.trim());
+  }
+  return titles;
 }
 
 /** 登録済み URL 一覧（全期間・ページング） */

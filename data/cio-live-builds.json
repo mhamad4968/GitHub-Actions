@@ -58,11 +58,11 @@
       "note": null
     },
     "686": {
-      "build": "2026-05-16-686-ict-digest-board-v8",
-      "fileKey": "b39de477-094b-4650-bf82-5714f48a62cb",
-      "revision": "18",
-      "relPath": ".kintone-deploy/upload-686.js",
-      "deployedAt": "2026-05-16T10:59:47.589Z",
+      "build": "2026-05-17-686-ict-digest-board-v9",
+      "fileKey": "f65a5d6a-4e21-4d58-b8d1-92753684c03d",
+      "revision": "20",
+      "relPath": "customize/686/desktop.js",
+      "deployedAt": "2026-05-17T00:35:30.049Z",
       "note": null
     }
   }

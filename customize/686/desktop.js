@@ -7,7 +7,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-16-686-ict-digest-board-v8';
+  const BUILD = '2026-05-17-686-ict-digest-board-v9';
   const STORE_APP_ID =
     typeof window.ICT_DIGEST_STORE_APP === 'number' ? window.ICT_DIGEST_STORE_APP : 685;
 
@@ -19,45 +19,46 @@
     category: 'category',
   };
 
-  /** field-codes.ts ICT_CATEGORIES と同期 */
+  /** field-codes.ts ICT_CATEGORIES と同期（新7種） */
   const CATEGORIES = [
-    'Microsoft・Windows',
-    'PC・端末',
-    'サーバー・インフラ',
-    'ネットワーク・通信',
-    'セキュリティ・脆弱性',
-    'プログラム・開発',
-    'ITベンダー・DX',
-    'SaaS・文書管理',
-    '資格・リスキリング',
-    'DX人材・組織',
-    '情シス・IT部門',
-    'IPA・政策調査',
     'AI・LLM',
-    'インフラ・クラウド',
+    'インフラ・通信・端末',
     '開発トレンド',
-    'ITツール・ガジェット',
+    'Box・SaaS・文書管理',
+    'DX人材・IT資格・組織',
+    'セキュリティ製品・技術',
     'その他',
   ];
 
+  /** 旧17種 → 新7種（685 既存レコード用・field-codes LEGACY_CATEGORY_TO_NEW と同期） */
+  const LEGACY_TO_NEW = {
+    'Microsoft・Windows': 'インフラ・通信・端末',
+    'PC・端末': 'インフラ・通信・端末',
+    'サーバー・インフラ': 'インフラ・通信・端末',
+    'ネットワーク・通信': 'インフラ・通信・端末',
+    'インフラ・クラウド': 'インフラ・通信・端末',
+    'セキュリティ・脆弱性': 'セキュリティ製品・技術',
+    'プログラム・開発': '開発トレンド',
+    '開発トレンド': '開発トレンド',
+    'ITツール・ガジェット': '開発トレンド',
+    'SaaS・文書管理': 'Box・SaaS・文書管理',
+    '資格・リスキリング': 'DX人材・IT資格・組織',
+    'DX人材・組織': 'DX人材・IT資格・組織',
+    '情シス・IT部門': 'DX人材・IT資格・組織',
+    'AI・LLM': 'AI・LLM',
+    'ITベンダー・DX': 'その他',
+    'IPA・政策調査': 'その他',
+    その他: 'その他',
+  };
+
   const CAT_CLASS = {
-    'Microsoft・Windows': 'ict-cat--ms',
-    'PC・端末': 'ict-cat--pc',
-    'サーバー・インフラ': 'ict-cat--infra',
-    'ネットワーク・通信': 'ict-cat--net',
-    'セキュリティ・脆弱性': 'ict-cat--sec',
-    'プログラム・開発': 'ict-cat--dev',
-    'ITベンダー・DX': 'ict-cat--vendor',
-    'SaaS・文書管理': 'ict-cat--saas',
-    '資格・リスキリング': 'ict-cat--cert',
-    'DX人材・組織': 'ict-cat--dxhr',
-    '情シス・IT部門': 'ict-cat--is',
-    'IPA・政策調査': 'ict-cat--ipa',
     'AI・LLM': 'ict-cat--ai',
-    'インフラ・クラウド': 'ict-cat--infra',
+    'インフラ・通信・端末': 'ict-cat--infra',
     '開発トレンド': 'ict-cat--dev',
-    'ITツール・ガジェット': 'ict-cat--tool',
-    'その他': 'ict-cat--other',
+    'Box・SaaS・文書管理': 'ict-cat--saas',
+    'DX人材・IT資格・組織': 'ict-cat--dxhr',
+    'セキュリティ製品・技術': 'ict-cat--sec',
+    その他: 'ict-cat--other',
   };
 
   const PAGE_SIZE = 50;
@@ -178,6 +179,18 @@
     return v && v.value ? String(v.value) : '';
   }
 
+  /** 表示・フィルタ用（旧カテゴリは新7種へ読み替え） */
+  function displayCategory(rec) {
+    var raw = recordCategory(rec);
+    if (!raw) return '';
+    return LEGACY_TO_NEW[raw] || raw;
+  }
+
+  function matchesCategoryFilter(rec, filterCat) {
+    if (!filterCat) return true;
+    return displayCategory(rec) === filterCat;
+  }
+
   function matchesKeyword(rec, kw) {
     if (!kw) return true;
     var t = (rec[FC.title] && rec[FC.title].value) || '';
@@ -201,7 +214,7 @@
     opts = opts || {};
     var title = (rec[FC.title] && rec[FC.title].value) || '（無題）';
     var pub = (rec[FC.published_at] && rec[FC.published_at].value) || '';
-    var cat = recordCategory(rec);
+    var cat = displayCategory(rec);
     var overview = (rec[FC.overview] && rec[FC.overview].value) || '';
     var rawUrl = recordUrl(rec);
     var url = resolveArticleUrl(rawUrl, title, overview);
@@ -275,6 +288,7 @@
       '.ict-top{margin:0 -16px 0;padding:20px 20px 18px;background:linear-gradient(135deg,#0c4a6e 0%,#0369a1 55%,#0ea5e9 100%);color:#f8fafc;border-radius:0 0 12px 12px;box-shadow:0 4px 14px rgba(2,132,199,.25)}',
       '.ict-top h1{margin:0 0 6px;font-size:1.35rem;font-weight:700;letter-spacing:.02em}',
       '.ict-top-lead{margin:0;font-size:.9rem;opacity:.92;line-height:1.45}',
+      '.ict-top-note{margin:.35rem 0 0;font-size:.82rem;opacity:.85;font-weight:600}',
       '.ict-search-panel{position:sticky;top:0;z-index:5;margin:16px 0 20px;padding:14px 16px;background:#fff;border:1px solid #e2e8f0;border-radius:10px;box-shadow:0 2px 12px rgba(15,23,42,.06)}',
       '.ict-search-row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}',
       '.ict-search-row--main{margin-bottom:10px}',
@@ -343,6 +357,7 @@
       '<header class="ict-top">' +
       '<h1>最新 ICT 情報掲示板</h1>' +
       '<p class="ict-top-lead">20以上の RSS を横断し、Gemini が「今日、インフラ・PC 管理で最重要」のニュースを1日最大5件に要約（【事象】【影響】【推奨】）</p>' +
+      '<p class="ict-top-note">本日の新着は最大5件まで（厳選）</p>' +
       '</header>' +
       '<div class="ict-search-panel">' +
       '<div class="ict-search-row ict-search-row--main">' +
@@ -392,7 +407,7 @@
       var to = document.getElementById('ict-filter-to').value;
       var kw = document.getElementById('ict-filter-kw').value.trim();
       return state.all.filter(function (rec) {
-        if (cat && recordCategory(rec) !== cat) return false;
+        if (!matchesCategoryFilter(rec, cat)) return false;
         if (!inDateRange(rec, from || null, to || null)) return false;
         if (!matchesKeyword(rec, kw)) return false;
         return true;

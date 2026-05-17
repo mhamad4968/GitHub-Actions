@@ -3,7 +3,7 @@
 #
 # Environment: kintone-collect（Security NEXT と共有可能）
 # Secrets: KINTONE_DOMAIN, ICT_DIGEST_STORE_APP_ID, KINTONE_API_TOKEN_ICT_COLLECT, GEMINI_API_KEY
-# 任意: GEMINI_MODEL, ICT_RSS_FEED_URLS, NOTIFY_WEBHOOK_URL
+# 任意: GEMINI_MODEL, ICT_RSS_FEED_URLS, ICT_DRY_RUN, ICT_DAILY_MAX_RECORDS, NOTIFY_WEBHOOK_URL
 
 name: ict-tech-digest-collect
 
@@ -69,6 +69,8 @@ jobs:
           ICT_RSS_FEED_URLS: ${{ vars.ICT_RSS_FEED_URLS }}
           RSS_FEED_URLS: ${{ vars.ICT_RSS_FEED_URLS }}
           ICT_DIGEST_BOARD_APP_ID: ${{ vars.ICT_DIGEST_BOARD_APP_ID || '686' }}
+          ICT_DRY_RUN: ${{ vars.ICT_DRY_RUN || 'false' }}
+          ICT_DAILY_MAX_RECORDS: ${{ vars.ICT_DAILY_MAX_RECORDS || '' }}
           NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
         run: npm --prefix ict-tech-digest-automation run collect
 

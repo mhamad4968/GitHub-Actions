@@ -2,6 +2,58 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
+## 2026-05-17 JST — ICT 掲示板（685/686）改修 — 仕様合意済・実装 GO 待ち
+
+### CEO 合意（#1〜#10）
+
+- **#1 類似除外**: **Gemini 一本**（OpenAI 不使用）。登録済みタイトル **過去12ヶ月を kintone 全件取得**、Gemini プロンプトには **直近150件**。任意ローカル前処理は CIO 実装時に付与。
+- **#5 日次上限**: **最大5件維持**（CEO A）。`ICT_DAILY_MAX_RECORDS`（1〜20・既定5）・686「本日の新着は最大5件まで（厳選）」。
+- **#6 セキュリティ**: **B** — JPCERT/IPA 注意喚起・攻撃手法除外。MSRC 月次パッチ・ベンダ製品は残す。**パッチ深度（CEO A + 補足 2026-05-17）**: 月次まとめ1本／個別は Critical・野外悪用・CVSS9+ のみ。Important 単体は不採用。`gemini-curate.ts` の **`PATCH_AND_CVE_POLICY`** に厳格明文化済。
+- **#7 日本語**: すべて日本語（固有名詞・CVE ID 可）。
+- **#8 RSS**: **A 確定（CEO 再確認 2026-05-17）** — 現行 **約28本ベース**（JPCERT/IPA alert 除外 + `scan.netsecurity.ne.jp/rss/index.rdf` 追加）。整理の11ドメイン意図は既存フィードでカバー。**11本のみにはしない**。
+- **#9 カテゴリ**: **A** — 7種。685 ドロップダウン差替え（**実装 GO 後・収集開始前に CIO**）。686 は旧→新マッピング、既存685は旧値維持。
+- **#10**: 現行スタック維持 OK。**Gemini SDK**: **`@google/generative-ai` 維持**（CEO A 2026-05-17）。モデル既定 **`gemini-2.5-flash`**。**GHA**: 既存 **`ict-tech-digest-collect.yml` 更新のみ**（`cron.yml` 新規なし・CEO A 2026-05-17）。
+
+### GO 前3点 — AI チームで確定（CEO 確認不要）
+
+| 論点 | 結論 |
+|------|------|
+| **GHA `ICT_RSS_FEED_URLS`** | `kintone-collect` Environment **variables 0 件**（2026-05-17 `gh api`）。**未設定＝`config.ts` DEFAULT 正** — 変更不要。 |
+| **685 カテゴリ7種** | **実装 GO 後・本番収集前**に **CIO** が kintone 685 管理画面で差替（手順 SPEC v2 に記載予定）。現時点は旧17種のまま（収集ロジック未改修のため）。 |
+| **初回本番収集** | 実装完了 → **`ICT_DRY_RUN` 検証** → **`workflow_dispatch` 1回監視** → 問題なければ cron 任せ。 |
+
+### 本ターン実施済（実装バッチは未着手）
+
+- **686 deploy**: `BUILD=2026-05-16-686-ict-digest-board-v8` **rev 19** LIVE（`ict-top-note` 含む）。CEO 目視は任意。
+- **netsecurity RSS 先行 verify**: `https://scan.netsecurity.ne.jp/rss/index.rdf` **OK**（`www.netsecurity.ne.jp` 直は fetch 失敗）。#8 実装時の正本 URL 候補。#6 B と併用し脆弱性速報はプロンプト/前処理で除外。
+
+### 将来課題（バックログ・優先度低〜中）
+
+| ID | 課題 | 優先度 |
+|----|------|--------|
+| ICT-BL-01 | 部員フィードバックの収集ループ（運用改善） | 中（別チケット可） |
+| ICT-BL-02 | 685/686 閲覧権限・Space 48 権限の定期確認 | 低（今後検討） |
+| ICT-BL-03 | 12ヶ月超の類似記事再登録（URL 別）— 現方針（12ヶ月+150件）で当面許容 | 低 |
+
+### 実装 GO 後の実施順（CIO 正本）
+
+1. SPEC v2 追記（第二レビュー後）  
+2. 685 ドロップダウン 7種（CIO・kintone 管理画面）  
+3. コード（#1/#6/#7/#8/#9 + `ICT_DRY_RUN`）  
+4. `ict-digest:rss:verify`（ScanNetSecurity URL 含む）  
+5. dry-run → GHA dispatch  
+6. commit / push（未 push の 686v8・config 等）
+
+**齟齬解消（2026-05-17）**: RSS/Gemini SDK/GHA/パッチ深度 すべて **A（CIO 推奨）**。
+
+### 実装バッチ（2026-05-17 CIO）
+
+- **収集**: `ICT_DRY_RUN`・12ヶ月タイトル150件・Gemini プロンプト（#6 B・7カテゴリ）・RSS（JPCERT/IPA alert 除外 + scan.netsecurity）・`gemini-2.5-flash` 既定。
+- **GHA**: `ict-tech-digest-collect.yml` に `ICT_DRY_RUN` / `ICT_DAILY_MAX_RECORDS`。
+- **686**: v9 deploy（7種フィルタ + 旧→新マッピング）— BUILD `2026-05-17-686-ict-digest-board-v9`。
+- **未実施（本番収集前必須）**: kintone **685 ドロップダウン7種**（CIO 管理画面）・`ICT_DRY_RUN=true` でローカル/GHA 検証 → 685 更新後 `ICT_DRY_RUN=false`。
+- **git**: ローカル変更あり（push は CEO 指示時）。
+
 ## 2026-05-17 JST — 683 月次 PDF serve 廃止・ICT GHA 硬化・環境 100% 準備
 
 - **683 PDF serve 廃止**・**印刷目視 CEO OK**（`window.print`）— コミット `3a3d856` / `6be1456` push 済。

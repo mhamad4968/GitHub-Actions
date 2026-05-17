@@ -44,6 +44,8 @@ export type IctConfig = {
   geminiModel: string | undefined;
   rssFeedUrls: string[];
   dailyMaxRecords: number;
+  /** true のとき kintone へ登録せず登録予定のみログ出力 */
+  dryRun: boolean;
   notifyWebhookUrl: string | undefined;
 };
 
@@ -60,9 +62,8 @@ const DEFAULT_RSS = [
   "https://api.msrc.microsoft.com/update-guide/rss",
   "https://blogs.windows.com/feed/",
   "https://www.microsoft.com/en-us/security/blog/feed/",
-  "https://www.ipa.go.jp/security/rss/alert.rdf",
   "https://www.ipa.go.jp/about/newsonly-rss.rdf",
-  "https://www.jpcert.or.jp/rss/jpcert.rdf",
+  "https://scan.netsecurity.ne.jp/rss/index.rdf",
   "https://pc.watch.impress.co.jp/data/rss/1.0/pcw/feed.rdf",
   "https://internet.watch.impress.co.jp/data/rss/1.0/iw/feed.rdf",
   "https://forest.watch.impress.co.jp/data/rss/1.0/wf/feed.rdf",
@@ -158,9 +159,30 @@ export function loadConfig(): IctConfig {
     boardAppId: process.env.ICT_DIGEST_BOARD_APP_ID?.trim() || "686",
     kintoneApiToken: resolveStoreApiToken(storeAppId),
     geminiApiKey: requireEnv("GEMINI_API_KEY"),
-    geminiModel: process.env.GEMINI_MODEL?.trim() || undefined,
+    geminiModel: process.env.GEMINI_MODEL?.trim() || "gemini-2.5-flash",
     rssFeedUrls: resolveRssUrls(),
-    dailyMaxRecords: 5,
+    dailyMaxRecords: resolveDailyMaxRecords(),
+    dryRun: resolveDryRun(),
     notifyWebhookUrl: process.env.NOTIFY_WEBHOOK_URL?.trim() || undefined,
   };
+}
+
+/** ICT_DRY_RUN=true のとき本番登録を行わない */
+function resolveDryRun(): boolean {
+  const v = process.env.ICT_DRY_RUN?.trim().toLowerCase();
+  return v === "true" || v === "1" || v === "yes";
+}
+
+/** 1日あたり登録上限（既定 5）。環境変数 ICT_DAILY_MAX_RECORDS で 1〜20 に変更可。 */
+function resolveDailyMaxRecords(): number {
+  const raw = process.env.ICT_DAILY_MAX_RECORDS?.trim();
+  if (!raw) return 5;
+  const n = Number.parseInt(raw, 10);
+  if (!Number.isFinite(n) || n < 1 || n > 20) {
+    console.warn(
+      `[設定] ICT_DAILY_MAX_RECORDS=${raw} は無効です。1〜20 の整数を指定してください。既定 5 を使用します。`,
+    );
+    return 5;
+  }
+  return n;
 }

@@ -1,6 +1,7 @@
 /**
  * 最新ICT情報掲示板（収集用アプリ）へ RSS × Gemini で自動登録する。
  * 1日最大5件（JST・published_at 基準）。URL は全期間で一意。
+ * ICT_DRY_RUN=true のとき kintone への登録は行わない。
  */
 import { loadConfig } from "./lib/config.js";
 import { createKintoneClient } from "./lib/kintone-client.js";
@@ -10,6 +11,7 @@ import {
   addCuratedRecords,
   countTodayRecords,
   fetchExistingUrls,
+  fetchRecentTitlesForDedup,
   urlExists,
 } from "./lib/kintone-store.js";
 import { resolveArticleUrl } from "./lib/article-url.js";
@@ -25,14 +27,36 @@ function filterRecentForCuration(articles: RssArticle[], today: string): RssArti
   return articles.filter((a) => !a.publishedAt || a.publishedAt >= cutoff14);
 }
 
+function logDryRunPayload(
+  items: Array<{
+    title: string;
+    url: string;
+    overview: string;
+    category: string;
+    publishedAt: string;
+  }>,
+): void {
+  console.log("[ICT収集] ドライラン: 以下を登録予定でした（kintone POST は未実行）:");
+  for (const [i, item] of items.entries()) {
+    console.log(
+      `[ICT収集] ドライラン [${i + 1}/${items.length}]`,
+      JSON.stringify(item, null, 2),
+    );
+  }
+}
+
 async function main(): Promise<void> {
   console.log("[ICT収集] 処理開始");
   const cfg = loadConfig();
   const client = createKintoneClient(cfg);
   const today = todayJstYmd();
 
+  if (cfg.dryRun) {
+    console.log("[ICT収集] ドライランモード（ICT_DRY_RUN=true）: kintone への登録は行いません。");
+  }
+
   console.log(
-    `[ICT収集] 正本アプリ=${cfg.storeAppId} 今日(JST)=${today} RSSフィード数=${cfg.rssFeedUrls.length}`,
+    `[ICT収集] 正本アプリ=${cfg.storeAppId} 今日(JST)=${today} RSSフィード数=${cfg.rssFeedUrls.length} モデル=${cfg.geminiModel}`,
   );
   if (cfg.boardAppId) {
     console.log(`[ICT収集] ダッシュアプリ=${cfg.boardAppId}`);
@@ -50,6 +74,19 @@ async function main(): Promise<void> {
 
   const slots = cfg.dailyMaxRecords - todayCount;
   console.log(`[ICT収集] 残り登録枠: ${slots} 件`);
+
+  let registeredTitles: string[];
+  try {
+    registeredTitles = await fetchRecentTitlesForDedup(client, cfg, today);
+    console.log(
+      `[ICT収集] 類似除外用タイトル: 過去12ヶ月から ${registeredTitles.length} 件取得（プロンプト最大150件）`,
+    );
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error(`[ICT収集] 登録済みタイトル取得に失敗しました。登録は行いません: ${msg}`);
+    process.exitCode = 1;
+    return;
+  }
 
   const existingUrls = await fetchExistingUrls(client, cfg);
   console.log(`[ICT収集] 登録済み URL 数（全期間）: ${existingUrls.size}`);
@@ -78,7 +115,7 @@ async function main(): Promise<void> {
 
   let picks;
   try {
-    picks = await curateWithGemini(cfg, candidates, slots);
+    picks = await curateWithGemini(cfg, candidates, slots, registeredTitles);
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     console.error(`[ICT収集] Gemini 厳選に失敗しました。登録は行いません: ${msg}`);
@@ -115,7 +152,23 @@ async function main(): Promise<void> {
     return;
   }
 
-  const ids = await addCuratedRecords(client, cfg, today, toRegister);
+  if (cfg.dryRun) {
+    logDryRunPayload(toRegister);
+    console.log("[ICT収集] ドライランのため正常終了（登録件数=0）");
+    console.log("[ICT収集] 処理終了");
+    return;
+  }
+
+  let ids: number[];
+  try {
+    ids = await addCuratedRecords(client, cfg, today, toRegister);
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error(`[ICT収集] kintone 登録に失敗しました: ${msg}`);
+    process.exitCode = 1;
+    return;
+  }
+
   console.log(`[ICT収集] 登録完了: ${ids.length} 件（レコード ID: ${ids.join(", ")}）`);
   console.log("[ICT収集] 処理終了");
 }
