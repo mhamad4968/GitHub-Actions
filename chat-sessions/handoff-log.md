@@ -2003,3 +2003,26 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 - **環境**: MCP 6/6・smoke 14/14・portfolio 8/8・bootstrap OK・push `ce2b1e3`。
 
 **次セッションへの 1 行**: **§41 一問** → **682/683 ユーザサポート本題**（CEO 依頼行）。動作確認は **依頼時 CEO**。
+
+---
+
+### 2026-05-17 JST — セッション締め（688 稼働日数・ICT v2.1 国内優先）
+
+**CEO 整理（優先度）**:
+- **工事稼働日数（687/688）**: **後日まで待機**（再開まで CIO は能動着手しない）
+- **ICT 掲示板（685/686）**: **2026-05-18〜運用開始**。実利用後の **カスタマイズ依頼** を待つ
+- **東京サンプル・ゴールデンテスト（稼働日数）**: サンプル入手 or アプリ目視依頼まで保留
+
+**経緯**:
+- **688**: `buildDashboard` 余分 `});` → `;` 修正・BUILD `2026-05-17-688-workdays-dash-v4-syntax-fix` deploy rev9・CEO 動作 OK
+- **687/688**: Space56 導線・Everyone ACL 完了（CEO）
+- **ICT v2.1**: 仕様 §2.3 国内優先・DX国内限定・`source-region.ts`・`gemini-curate`・試験 OK・push `567ed2c`
+- **ICT 試験**: `ict-digest:test:source-region`（Gemini 3→1 件・DX 海外 URL 除外確認）
+
+**夕反省正本**: `chat-sessions/26-evening-reflection-2026-05-17.md`
+
+**DeepSeek §50-3-8（締め）**: §1/§M-2 欠落リスク・保留期限曖昧・RSS 国内のみの柔軟性（U2 で要判断）
+
+**Desktop**: `session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync`（本ターン）
+
+**次セッションへの 1 行**: **ICT 運用フィードバック待ち**（686）。**稼働日数は CEO 再開指示まで触らない**。報告は **§1 四行＋§M-2 V2 毎ターン**。
