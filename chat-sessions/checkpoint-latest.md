@@ -2,7 +2,9 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-## 2026-05-17 JST — ICT 掲示板（685/686）v2 — **完了（実装・本番・仕様・CEO目視）**
+## 2026-05-17 JST — ICT 掲示板（685/686）v2 — **クローズ（CEO 宣言・相談があるまで話題に出さない）**
+
+> **運用メモ**: 本レーンは **完了・クローズ**。CEO から相談があるまで、セッションで ICT 685/686 を能動的に提案・再開しない（障害・依頼時のみ対応）。
 
 ### CEO 合意（#1〜#10）
 
@@ -38,7 +40,7 @@
 - **本番切替（2026-05-17 CIO）完了**: ① 685 category 新7種 deploy ② ローカル dry-run OK ③ git **`84c4f77`** push ④ GHA dry-run [25977185203](https://github.com/mhamad4968/GitHub-Actions/actions/runs/25977185203) SUCCESS ⑤ `ICT_DRY_RUN=false` ⑥ 本番 dispatch [25977217452](https://github.com/mhamad4968/GitHub-Actions/actions/runs/25977217452) SUCCESS — **新仕様で本番登録開始**。cron 10:00/20:00 JST 継続。
 - **CEO 目視（2026-05-17）**: 686/685 — **問題なし**。
 - **ドキュメント（2026-05-17）**: `docs/plans/2026-05-16-ict-tech-digest-spec.md` **全文 v2 同期**（§2 フロー・RSS27本表・§7/§8）・`kintone-apps.md`・`npm run ict-digest:update-685-categories`。
-- **残タスク**: **なし**（将来改善のみ §9 バックログ ICT-BL-01〜03）。
+- **残タスク**: **なし**（将来改善のみ §9 バックログ ICT-BL-01〜03・**CEO 相談時まで着手しない**）。
 - **git**: 実装 `84c4f77` + docs **`6ce9c97`**（`origin/main`）。
 
 ## 2026-05-17 JST — 683 月次 PDF serve 廃止・ICT GHA 硬化・環境 100% 準備
