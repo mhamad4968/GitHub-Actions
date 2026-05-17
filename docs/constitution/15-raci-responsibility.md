@@ -2,15 +2,21 @@
 
 > **条文番号の正本**: `AGENTS.md`（本ファイルは読みやすい分割コピー）  
 > **いつ読む**: Tier A/B・自律レベル  
-> **索引**: `RULES-INDEX.md` → `docs/constitution/README.md`
+> **索引**: `RULES-INDEX.md` → `docs/constitution/README.md`---
 
----
+## 30秒要約（Phase 2）
 
-## 要約
+Tier A/B・§52-8 shell・§56 RACI・開発=AI/確認=浜田。
 
-このジャンルに属する § は、下記本文どおり `AGENTS.md` から抽出したものです。解釈の最終正本は `AGENTS.md` の同一 § です。
+## いつ読む（チェックリスト）
 
----
+- Tier 判定
+- 破壊的操作
+- 自律修正
+
+## 条文本文（AGENTS 抽出・削除禁止）
+
+> 以下は `AGENTS.md` からの抽出コピー。**省略・削除しない**。解釈疑義は `AGENTS.md` 正本。
 
 ## 第20章 責任の所在透明化（2026-04-25 制定 / 浜田 #3「すべて承認」バッチ / R14 / [FEAT]）
 
@@ -313,12 +319,14 @@ AI 自己診断で「待つと被害拡大」と判断 → Tier A 強制実行�
 
 ---
 
+---
+
 ## 関連ファイル
 
 | 種別 | パス |
 |------|------|
 | 正本 | `AGENTS.md` |
 | 索引 | `RULES-INDEX.md` |
-| Cursor 常時 | `.cursor/rules/cio-constitution.mdc` |
-| 手順 | `WORKFLOW.md` |
+| 読本目次 | `docs/constitution/README.md` |
+| 検証 | `npm run constitution:verify-coverage` |
 

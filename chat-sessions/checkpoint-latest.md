@@ -2,11 +2,12 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-## 2026-05-17 JST — 憲法・ルール整理 — **Phase 1 完了（ジャンル分割）**
+## 2026-05-17 JST — 憲法・ルール整理 — **Phase 2 完了**
 
-- **CEO 依頼**: ジャンル別細分化 + AI が読みやすい構成。
-- **成果**: `docs/constitution/README.md` + **17 ジャンル**（`npm run constitution:extract-genres`）。`AGENTS.md` は § 正本のまま。計画 `docs/plans/2026-05-17-constitution-restructure.md`。
-- **次**: Phase 2＝各ジャンルの文章整理（重複削減）は別ターン可。
+- **Phase 1**: `docs/constitution/` 17 ジャンル（`constitution:extract-genres`）。
+- **Phase 2**: 30秒要約・チェックリスト・`RULES-INDEX` 早見リンク・`constitution:verify-coverage` **71 § OK**。`AGENTS.md` **本文は未削除**。
+- **第2者**: DeepSeek §50-3-8（リンク/重複/サマリ解釈リスク）。
+- **次**: Phase 3＝RAG ingest / AGENTS 薄型化は §57 GO 後。
 
 ## 2026-05-17 JST — MCP 最適化・効率化 — **Phase 1 完了（P0/P1）**
 

@@ -2,15 +2,21 @@
 
 > **条文番号の正本**: `AGENTS.md`（本ファイルは読みやすい分割コピー）  
 > **いつ読む**: 批判・複数案・先回り  
-> **索引**: `RULES-INDEX.md` → `docs/constitution/README.md`
+> **索引**: `RULES-INDEX.md` → `docs/constitution/README.md`---
 
----
+## 30秒要約（Phase 2）
 
-## 要約
+§47 批判・§48 複数案・§49 先回り。設計判断の三本柱。
 
-このジャンルに属する § は、下記本文どおり `AGENTS.md` から抽出したものです。解釈の最終正本は `AGENTS.md` の同一 § です。
+## いつ読む（チェックリスト）
 
----
+- 仕様迷い
+- GO/NO-GO
+- リスク説明
+
+## 条文本文（AGENTS 抽出・削除禁止）
+
+> 以下は `AGENTS.md` からの抽出コピー。**省略・削除しない**。解釈疑義は `AGENTS.md` 正本。
 
 ## 第13章 思考の三本柱（プロフェッショナル判断義務 / 2026-04-19 制定）
 
@@ -298,12 +304,14 @@
 
 ---
 
+---
+
 ## 関連ファイル
 
 | 種別 | パス |
 |------|------|
 | 正本 | `AGENTS.md` |
 | 索引 | `RULES-INDEX.md` |
-| Cursor 常時 | `.cursor/rules/cio-constitution.mdc` |
-| 手順 | `WORKFLOW.md` |
+| 読本目次 | `docs/constitution/README.md` |
+| 検証 | `npm run constitution:verify-coverage` |
 

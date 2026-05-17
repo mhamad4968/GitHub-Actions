@@ -3,7 +3,33 @@
 > 目的: AGENTS.md §1〜§44 を「いつ / どんな状況で参照するか」で素早く引けるようにする。
 > 更新ルール: AGENTS.md にルールを追加・改訂したら本ファイルも同時に更新する（§43 WORKFLOW.md Phase 5 で記録）。
 >
-> **ジャンル別読本（2026-05-17）**: 長文回避用の分割版は **`docs/constitution/README.md`**（17 ジャンル）。索引で § を特定 → 該当ジャンル `.md` を Read → 必要時のみ `AGENTS.md` 正本。
+> **ジャンル別読本（2026-05-17）**: 長文回避用の分割版は **`docs/constitution/README.md`**（17 ジャンル）。索引で § を特定 → 該当ジャンル `.md` を Read → 必要時のみ `AGENTS.md` 正本。Phase 2: 各読本に **30秒要約・チェックリスト** 付き（`npm run constitution:enhance-phase2`）。
+
+---
+
+## ジャンル読本 早見（§ → ファイル）
+
+| § の目安 | 読本（`docs/constitution/`） |
+|----------|------------------------------|
+| 体系図・レーン | [00-preamble.md](docs/constitution/00-preamble.md) |
+| §0〜§3・モデル | [01-fundamentals.md](docs/constitution/01-fundamentals.md) |
+| §4〜§8 | [02-kintone-development.md](docs/constitution/02-kintone-development.md) |
+| §9〜§15 | [03-quality-engineering.md](docs/constitution/03-quality-engineering.md) |
+| §16〜§18 | [04-environment-security.md](docs/constitution/04-environment-security.md) |
+| §19〜§21・RAG | [05-knowledge-rag.md](docs/constitution/05-knowledge-rag.md) |
+| §22〜§25 | [06-mcp-disaster-recovery.md](docs/constitution/06-mcp-disaster-recovery.md) |
+| §26〜§30 | [07-frontend-web-quality.md](docs/constitution/07-frontend-web-quality.md) |
+| §31〜§33 | [08-deliverables-architecture.md](docs/constitution/08-deliverables-architecture.md) |
+| §34〜§41 | [09-human-autonomy-reporting.md](docs/constitution/09-human-autonomy-reporting.md) |
+| §42〜§46 | [10-session-operations.md](docs/constitution/10-session-operations.md) |
+| §47〜§49 | [11-professional-judgment.md](docs/constitution/11-professional-judgment.md) |
+| §50 系 | [12-mcp-usage.md](docs/constitution/12-mcp-usage.md) |
+| §51 系 | [13-parallel-session.md](docs/constitution/13-parallel-session.md) |
+| §55・第18〜19章 | [14-self-governance-safemode.md](docs/constitution/14-self-governance-safemode.md) |
+| §52・§56・Tier | [15-raci-responsibility.md](docs/constitution/15-raci-responsibility.md) |
+| §57 | [16-amendment-process.md](docs/constitution/16-amendment-process.md) |
+
+検証: `npm run constitution:verify-coverage`（全 § 見出しが読本合併に存在）
 
 ---
 

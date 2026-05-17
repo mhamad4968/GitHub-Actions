@@ -2,15 +2,21 @@
 
 > **条文番号の正本**: `AGENTS.md`（本ファイルは読みやすい分割コピー）  
 > **いつ読む**: 異常時・セーフモード  
-> **索引**: `RULES-INDEX.md` → `docs/constitution/README.md`
+> **索引**: `RULES-INDEX.md` → `docs/constitution/README.md`---
 
----
+## 30秒要約（Phase 2）
 
-## 要約
+第18〜19章: 自己統治・§55 セーフモード。判断材料欠損時。
 
-このジャンルに属する § は、下記本文どおり `AGENTS.md` から抽出したものです。解釈の最終正本は `AGENTS.md` の同一 § です。
+## いつ読む（チェックリスト）
 
----
+- health-check 赤
+- Read 失敗
+- 縮小運転
+
+## 条文本文（AGENTS 抽出・削除禁止）
+
+> 以下は `AGENTS.md` からの抽出コピー。**省略・削除しない**。解釈疑義は `AGENTS.md` 正本。
 
 ## 第18章 自己統治能力（2026-04-24 制定 / 浜田指示「3つの深層ルール」/ R12 / [FEAT]）
 
@@ -368,12 +374,14 @@ docs/archives/synthesis-graveyard/
 
 ---
 
+---
+
 ## 関連ファイル
 
 | 種別 | パス |
 |------|------|
 | 正本 | `AGENTS.md` |
 | 索引 | `RULES-INDEX.md` |
-| Cursor 常時 | `.cursor/rules/cio-constitution.mdc` |
-| 手順 | `WORKFLOW.md` |
+| 読本目次 | `docs/constitution/README.md` |
+| 検証 | `npm run constitution:verify-coverage` |
 

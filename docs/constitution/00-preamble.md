@@ -2,23 +2,22 @@
 
 > **条文番号の正本**: `AGENTS.md`（本ファイルは読みやすい分割コピー）  
 > **いつ読む**: 初回着手・全体像の把握  
-> **索引**: `RULES-INDEX.md` → `docs/constitution/README.md`
+> **索引**: `RULES-INDEX.md` → `docs/constitution/README.md`---
 
----
+## 30秒要約（Phase 2）
 
-## 要約
+憲法の地図・mermaid フロー・予実/PC台帳レーン分離。全文通読の代わりにここで全体像だけ掴む。
 
-このジャンルに属する § は、下記本文どおり `AGENTS.md` から抽出したものです。解釈の最終正本は `AGENTS.md` の同一 § です。
+## いつ読む（チェックリスト）
 
----
+- 新規タスク
+- レーン混同の不安があるとき
 
-# AGENTS.md — 開発憲法（kintone-ai-lab）
+## 条文本文（AGENTS 抽出・削除禁止）
 
-本ファイルはプロジェクト全体を統治する開発規範（憲法）である。
-**Cursor 上の本リポジトリ作業**は **§1-2** の単一モデル前提に従う。Claude Code / Codex 等の別環境は、利用時も本ファイルの手前に **§1-2 を読み、Opus 4.7 単一会話に相当する運用**に寄せる。
-個別の詳細ルールは `.cursorrules` および `.cursor/rules/*.mdc` に委任する。
+> 以下は `AGENTS.md` からの抽出コピー。**省略・削除しない**。解釈疑義は `AGENTS.md` 正本。
 
-### 作業レーンの切り替え（CIO メモ・2026-05-04）
+## 作業レーンの切り替え（CIO メモ・2026-05-04）
 
 - **部署予実**（kintone **677／678／679**・主に **Space 54**）と **PC台帳系**（**674（新・正）**・**旧594（削除予定・新規禁止）**・**668** 等・**Space 21** ほど）は **別案件**。着手前に **いまどちらのレーンか**を明示し、**アプリ ID・URL は `kintone-apps.md` で照合**する（混同防止）。**594 を前提にした新仕様は採用しない**（`docs/plans/2026-04-21-new-pc-ledger-spec.md` **§1.5**）。**本番に594を参照専用で恒久的に残す前提はない**。
 - **単独作業は原則禁止**（チーム運用）: 本番デプロイ・仕様確定・一括変更を **一人で完結させない**。レビュー・ペア・声かけ・承認を挟む。予実の索引は **`templates/yojitsu-budget-lite/HANDOFF.md`**。
@@ -78,12 +77,14 @@ flowchart TD
 
 ---
 
+---
+
 ## 関連ファイル
 
 | 種別 | パス |
 |------|------|
 | 正本 | `AGENTS.md` |
 | 索引 | `RULES-INDEX.md` |
-| Cursor 常時 | `.cursor/rules/cio-constitution.mdc` |
-| 手順 | `WORKFLOW.md` |
+| 読本目次 | `docs/constitution/README.md` |
+| 検証 | `npm run constitution:verify-coverage` |
 

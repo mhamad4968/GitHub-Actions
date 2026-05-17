@@ -205,6 +205,8 @@
     "rules:regenerate-constitution": "node scripts/regenerate-constitution-rule.mjs",
     "rules:regenerate-constitution:bash": "bash scripts/regenerate-constitution-rule.sh",
     "constitution:extract-genres": "node scripts/extract-constitution-by-genre.mjs",
+    "constitution:enhance-phase2": "node scripts/enhance-constitution-genres-phase2.mjs",
+    "constitution:verify-coverage": "node scripts/verify-constitution-genre-coverage.mjs",
     "cio:consensus-seal": "node scripts/cio-consensus-seal.mjs",
     "cio:consensus-seal:verify-ci": "node scripts/cio-consensus-seal.mjs verify --if-present",
     "verify:mandatory-read-gate": "node scripts/mandatory-read-gate.mjs",

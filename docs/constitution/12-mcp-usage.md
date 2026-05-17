@@ -2,15 +2,21 @@
 
 > **条文番号の正本**: `AGENTS.md`（本ファイルは読みやすい分割コピー）  
 > **いつ読む**: MCP 選択・想起儀式・CTO 規定  
-> **索引**: `RULES-INDEX.md` → `docs/constitution/README.md`
+> **索引**: `RULES-INDEX.md` → `docs/constitution/README.md`---
 
----
+## 30秒要約（Phase 2）
 
-## 要約
+§50 想起儀式・死蔵根絶・§50-3 CTO規定・§50-3-8 DeepSeek突合。
 
-このジャンルに属する § は、下記本文どおり `AGENTS.md` から抽出したものです。解釈の最終正本は `AGENTS.md` の同一 § です。
+## いつ読む（チェックリスト）
 
----
+- MCP 選択
+- コード変更前
+- コスト
+
+## 条文本文（AGENTS 抽出・削除禁止）
+
+> 以下は `AGENTS.md` からの抽出コピー。**省略・削除しない**。解釈疑義は `AGENTS.md` 正本。
 
 ## 第14章 MCP 活用（2026-04-23 制定 / MCP 強化戦略 v1.0 / 死蔵 14/16 MCP 解消）
 
@@ -193,12 +199,14 @@
 
 ---
 
+---
+
 ## 関連ファイル
 
 | 種別 | パス |
 |------|------|
 | 正本 | `AGENTS.md` |
 | 索引 | `RULES-INDEX.md` |
-| Cursor 常時 | `.cursor/rules/cio-constitution.mdc` |
-| 手順 | `WORKFLOW.md` |
+| 読本目次 | `docs/constitution/README.md` |
+| 検証 | `npm run constitution:verify-coverage` |
 

@@ -2,15 +2,21 @@
 
 > **条文番号の正本**: `AGENTS.md`（本ファイルは読みやすい分割コピー）  
 > **いつ読む**: AGENTS.md 改変・[BREAKING]  
-> **索引**: `RULES-INDEX.md` → `docs/constitution/README.md`
+> **索引**: `RULES-INDEX.md` → `docs/constitution/README.md`---
 
----
+## 30秒要約（Phase 2）
 
-## 要約
+§57 憲法改定・[BREAKING]・改定キュー。AGENTS 改変はここを先に読む。
 
-このジャンルに属する § は、下記本文どおり `AGENTS.md` から抽出したものです。解釈の最終正本は `AGENTS.md` の同一 § です。
+## いつ読む（チェックリスト）
 
----
+- AGENTS 改定
+- ルール追加
+- §57 GO
+
+## 条文本文（AGENTS 抽出・削除禁止）
+
+> 以下は `AGENTS.md` からの抽出コピー。**省略・削除しない**。解釈疑義は `AGENTS.md` 正本。
 
 ## 第21章 憲法改定プロセス（2026-04-26 制定 / 浜田 「§57 案 1」朝ブリーフィング / R15 / [FEAT]）
 
@@ -148,12 +154,14 @@ logs/autonomy-decisions/rule-amendment-YYYY-MM-DD-HHMM.md
 
 ---
 
+---
+
 ## 関連ファイル
 
 | 種別 | パス |
 |------|------|
 | 正本 | `AGENTS.md` |
 | 索引 | `RULES-INDEX.md` |
-| Cursor 常時 | `.cursor/rules/cio-constitution.mdc` |
-| 手順 | `WORKFLOW.md` |
+| 読本目次 | `docs/constitution/README.md` |
+| 検証 | `npm run constitution:verify-coverage` |
 

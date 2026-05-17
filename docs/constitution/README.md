@@ -70,8 +70,10 @@
 ## メンテナンス
 
 ```powershell
-# AGENTS.md 改定後に分割ファイルを再生成
+# AGENTS.md 改定後: 再抽出 → Phase2 要約付与 → 検証
 npm run constitution:extract-genres
+npm run constitution:enhance-phase2
+npm run constitution:verify-coverage
 
 # 4 正本ミラー（任意）
 npm run rag:mirror:canonical-docs
