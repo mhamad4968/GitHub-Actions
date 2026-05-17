@@ -1,7 +1,7 @@
 # 憲法・ルール整理計画（ジャンル分割）
 
 **起票**: 2026-05-17（CEO 依頼）  
-**状態**: Phase 2 完了（要約・索引リンク・カバレッジ検証）
+**状態**: Phase 2 完了（要約・索引リンク・カバレッジ検証・ヘッダ改行修正）
 
 ---
 
@@ -31,6 +31,8 @@
 | CR-03 | `RULES-INDEX` ジャンル早見表 | §→ファイル直リンク |
 | CR-02b | § カバレッジ検証 | `constitution:verify-coverage`（71 § OK） |
 | — | DeepSeek §50-3-8 突合 | リンク検証・重複定義・サマリ上書きリスクを注意 |
+| CR-02c | `README.md`--- 改行欠落修正 | `scripts/fix-constitution-genre-header-newline.mjs`（UTF-8 安全） |
+| — | **教訓** | PowerShell `Set-Content` で日本語破損 → **revert `a4d999d` 相当を Node で再修正** |
 
 ## Phase 3（今後・§57 GO 後）
 

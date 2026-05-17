@@ -98,7 +98,7 @@ function enhance(file, meta) {
     console.warn("[phase2] WARN unexpected structure:", file);
     return;
   }
-  const preamble = text.slice(0, text.indexOf("---", 20)).trimEnd();
+  const preamble = `${text.slice(0, text.indexOf("---", 20)).trimEnd()}\n`;
 
   const bodyMarkers = ["## 第", "## 🗺️", "## 作業レーン"];
   let bodyStart = -1;
