@@ -2,11 +2,12 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-## 2026-05-17 JST — 憲法・ルール整理 — **Phase 2 完了**
+## 2026-05-17 JST — 憲法・ルール整理 — **Phase 2 完了（ヘッダ修正済）**
 
 - **Phase 1**: `docs/constitution/` 17 ジャンル（`constitution:extract-genres`）。
 - **Phase 2**: 30秒要約・チェックリスト・`RULES-INDEX` 早見リンク・`constitution:verify-coverage` **71 § OK**。`AGENTS.md` **本文は未削除**。
-- **第2者**: DeepSeek §50-3-8（リンク/重複/サマリ解釈リスク）。
+- **修正**: `README.md`--- 改行欠落 → `constitution:fix-genre-header-newline`（UTF-8 安全）。誤コミット `a4d999d`（PowerShell 文字化け）を `7360dd9` で是正。
+- **第2者**: DeepSeek §50-3-8（境界条文・薄化基準・RAG 重み）。
 - **次**: Phase 3＝RAG ingest / AGENTS 薄型化は §57 GO 後。
 
 ## 2026-05-17 JST — MCP 最適化・効率化 — **Phase 1 完了（P0/P1）**
