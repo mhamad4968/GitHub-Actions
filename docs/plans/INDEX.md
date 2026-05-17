@@ -28,6 +28,7 @@ docs/plans/
 | [`2026-04-21-new-pc-ledger-spec.md`](2026-04-21-new-pc-ledger-spec.md) | **新・PC 台帳 ver.1 仕様書 v2.1（770 行 / 正本）** | 実装中（Day 3/n 完了） |
 | [`2026-04-23-cli-evolution-v1.md`](2026-04-23-cli-evolution-v1.md) | Cursor Agent CLI 進化ロードマップ v1 | 設計フェーズ |
 | [`2026-04-23-mcp-strategy-v1.md`](2026-04-23-mcp-strategy-v1.md) | MCP 強化戦略 v1（cyber-news/cve-search の死蔵対策含む） | 段階 1 監査 〜 S14 月次巡回まで実装済 |
+| [`2026-05-17-mcp-optimization-plan.md`](2026-05-17-mcp-optimization-plan.md) | MCP 最適化 Phase 1（`cio:mcp:gate`・BASE_URL 整合） | **P0/P1 完了**・P3 は Tier B 待ち |
 | [`2026-04-25-pc-ledger-day3-action.md`](2026-04-25-pc-ledger-day3-action.md) | PC 台帳 Day 3: 採番マスタ 2 アプリ作成（**完了**） | ✅ 完了 / Day 4 着手後 archive 予定 |
 | [`2026-04-25-raci-transparency.md`](2026-04-25-raci-transparency.md) | §56 RACI 透明性確保プラン | 実装済（ハッシュ生成・週次照合） |
 

@@ -254,6 +254,8 @@
     "mcp:sync-cursor-windows": "node scripts/sync-cursor-mcp-windows-from-wsl.mjs",
     "verify:cio-mcp-registry": "node scripts/verify-cio-mcp-registry.mjs",
     "cio:mcp:env": "node scripts/verify-cio-mcp-registry.mjs && npx dotenv -e .env -e .env.proxy -- node scripts/cio-mcp-quickprobe.mjs",
+    "verify:mcp:kintone-base-url": "npx dotenv -e .env -e .env.proxy -- node scripts/verify-mcp-kintone-base-url.mjs",
+    "cio:mcp:gate": "node scripts/verify-cio-mcp-registry.mjs && npx dotenv -e .env -e .env.proxy -- node scripts/verify-mcp-kintone-base-url.mjs && npx dotenv -e .env -e .env.proxy -- node scripts/cio-mcp-quickprobe.mjs && npx dotenv -e .env -e .env.proxy -- node scripts/probe-kintone-space-json.mjs 48",
     "verify:cursor-mcp-windows": "node scripts/verify-cursor-mcp-windows.mjs",
     "desktop:sync-and-verify": "npm run session-starter:sync-desktop && npm run verify:desktop-ai-emergency-sync && npm run mcp:sync-cursor-windows && npm run verify:cursor-mcp-windows",
     "cio:quick-health": "npm run morning:verify-today && npm run kintone:test && npm run guard:check",

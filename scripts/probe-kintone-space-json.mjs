@@ -23,3 +23,13 @@ const res = await fetch(url, {
 const text = await res.text();
 console.log("status", res.status);
 console.log(text.slice(0, 500));
+if (!res.ok) {
+  console.error("[probe-kintone-space] NG HTTP status (expected 200 JSON)");
+  process.exit(1);
+}
+try {
+  JSON.parse(text);
+} catch {
+  console.error("[probe-kintone-space] NG body is not JSON (HTML LP/login?)");
+  process.exit(1);
+}
