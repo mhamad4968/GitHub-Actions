@@ -51,8 +51,8 @@
 - **収集**: `ICT_DRY_RUN`・12ヶ月タイトル150件・Gemini プロンプト（#6 B・7カテゴリ）・RSS（JPCERT/IPA alert 除外 + scan.netsecurity）・`gemini-2.5-flash` 既定。
 - **GHA**: `ict-tech-digest-collect.yml` に `ICT_DRY_RUN` / `ICT_DAILY_MAX_RECORDS`。
 - **686**: v9 deploy（7種フィルタ + 旧→新マッピング）— BUILD `2026-05-17-686-ict-digest-board-v9`。
-- **未実施（本番収集前必須）**: kintone **685 ドロップダウン7種**（CIO 管理画面）・`ICT_DRY_RUN=true` でローカル/GHA 検証 → 685 更新後 `ICT_DRY_RUN=false`。
-- **git**: ローカル変更あり（push は CEO 指示時）。
+- **本番切替（2026-05-17 CIO）完了**: ① 685 category 新7種 deploy ② ローカル dry-run OK ③ git **`84c4f77`** push ④ GHA dry-run [25977185203](https://github.com/mhamad4968/GitHub-Actions/actions/runs/25977185203) SUCCESS ⑤ `ICT_DRY_RUN=false` ⑥ 本番 dispatch [25977217452](https://github.com/mhamad4968/GitHub-Actions/actions/runs/25977217452) SUCCESS — **新仕様で本番登録開始**。cron 10:00/20:00 JST 継続。
+- **git**: `84c4f77` on `origin/main`。
 
 ## 2026-05-17 JST — 683 月次 PDF serve 廃止・ICT GHA 硬化・環境 100% 準備
 
