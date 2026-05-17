@@ -39,7 +39,7 @@
 - **CEO 目視（2026-05-17）**: 686/685 — **問題なし**。
 - **ドキュメント（2026-05-17）**: `docs/plans/2026-05-16-ict-tech-digest-spec.md` **全文 v2 同期**（§2 フロー・RSS27本表・§7/§8）・`kintone-apps.md`・`npm run ict-digest:update-685-categories`。
 - **残タスク**: **なし**（将来改善のみ §9 バックログ ICT-BL-01〜03）。
-- **git**: 実装 `84c4f77` + 本ターン docs/sync コミット済。
+- **git**: 実装 `84c4f77` + docs **`6ce9c97`**（`origin/main`）。
 
 ## 2026-05-17 JST — 683 月次 PDF serve 廃止・ICT GHA 硬化・環境 100% 準備
 
