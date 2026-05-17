@@ -10,7 +10,7 @@
 - **AIチーム**: sequential-thinking で P0〜P4 優先度合意。
 - **Tier B CEO GO（2026-05-17）**: ① rag/cyber-news/cve-search **残置+exempt** ② 日常 `cio:mcp:env` 維持 ③ **AI 専用ユーザ** Runbook + `kintone:ai-user:*`。
 - **CEO 決定（追記）**: **`cio_ai` は使わない** → **部署管理権限アカウント**（`.env` の `KINTONE_*`）を MCP と共有。627/668 は権限付与対象外。
-- **CIO**: `kintone:sync-credentials-to-mcp` 実施済。**`.env` がまだ `admin` の場合は部署アカウント名に差替後に再実行** → `kintone:ai-user:finish`。
+- **完了（2026-05-17）**: 部署管理アカウント（`.env`・ログイン名 `admin`）で `sync-credentials-to-mcp`・`verify`・`cio:mcp:gate` **すべて OK**。`cio_ai` は無視。
 
 ## 2026-05-17 JST — ICT 掲示板（685/686）v2 — **クローズ（CEO 宣言・相談があるまで話題に出さない）**
 

@@ -6,8 +6,9 @@
  */
 import "dotenv/config";
 
+/** 既定は Cybozu.com スーパー管理者相当のみ。テナントの `admin` ログイン名は部署管理で使う場合あり（CEO 2026-05-17） */
 const DENY_CODES = new Set(
-  (process.env.KINTONE_AI_DENY_CODES || "admin,Administrator,administrator")
+  (process.env.KINTONE_AI_DENY_CODES || "Administrator,administrator")
     .split(/[,;\s]+/)
     .map((s) => s.trim())
     .filter(Boolean),
@@ -26,8 +27,8 @@ if (!base || !user || !pass) {
 
 let fail = 0;
 
-if (DENY_CODES.has(user) || /^admin$/i.test(user)) {
-  console.error("[verify-kintone-ai-user] NG: still using admin-class login:", user);
+if (DENY_CODES.has(user)) {
+  console.error("[verify-kintone-ai-user] NG: denied login code:", user);
   fail++;
 } else if (expect && user !== expect) {
   console.warn(
@@ -39,6 +40,11 @@ if (DENY_CODES.has(user) || /^admin$/i.test(user)) {
   );
 } else {
   console.log("[verify-kintone-ai-user] OK login code:", user);
+  if (/^admin$/i.test(user)) {
+    console.log(
+      "[verify-kintone-ai-user] note: ログイン名 admin = 当テナントの部署管理アカウント（CEO 確認済み）",
+    );
+  }
 }
 
 const auth = Buffer.from(`${user}:${pass}`).toString("base64");
