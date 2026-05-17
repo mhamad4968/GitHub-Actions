@@ -20,6 +20,9 @@ export const ICT_CATEGORIES = [
 
 export type IctCategory = (typeof ICT_CATEGORIES)[number];
 
+/** v2.1: このカテゴリは国内ソースの記事のみ採用可 */
+export const DX_DOMESTIC_ONLY_CATEGORY: IctCategory = "DX人材・IT資格・組織";
+
 /** 旧17種 → 新7種（686 表示・フィルタ用。685 既存レコードは旧値のまま） */
 export const LEGACY_CATEGORY_TO_NEW: Record<string, IctCategory> = {
   "Microsoft・Windows": "インフラ・通信・端末",

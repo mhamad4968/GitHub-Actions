@@ -8,6 +8,10 @@ import type { IctConfig } from "./config.js";
 import { ICT_CATEGORIES, type IctCategory } from "./field-codes.js";
 import { normalizeOverview } from "./overview-format.js";
 import type { RssArticle } from "./rss.js";
+import {
+  applyDomesticScoreBoost,
+  filterPicksBySourceRegion,
+} from "./source-region.js";
 
 const SYSTEM_PROMPT =
   "あなたは最新のIT技術トレンド、モダンな開発手法、インフラ、SaaS（Box等）、IT資格・DX人材育成、および最新のセキュリティ製品動向に精通した、企業情報システム部門（情シス）のテックリードです。運用ノイズ（アラート・注意喚起の過多）を避け、真に重要なインフラ対策情報だけを厳選します。パッチ・CVE は下記の重要度ルールを絶対条件とし、境界が曖昧な記事は選ばないでください。";
@@ -38,6 +42,14 @@ const PATCH_AND_CVE_POLICY = `
 
 ■ 採用してよいセキュリティ系（パッチ以外）
 - セキュリティ **製品のリリース**、**技術動向**、情シス運用に役立つ **製品ニュース**（脆弱性アラートではないもの）
+`;
+
+/** 情報源の地域（v2.1・CEO 指示） */
+export const SOURCE_REGION_POLICY = `
+【情報源の地域（国内優先・DXカテゴリは国内のみ）】
+- **全体**: 同等の重要度では **日本向け・国内メディア・国内公式**（.jp / .go.jp、Qiita/Zenn/ITmedia/日経 xTECH/IPA 等）を優先する。海外メディア単体の一般 IT ニュースは下げる
+- **カテゴリ「DX人材・IT資格・組織」**: **国内のみ採用可**。日本の IT 資格・リスキリング・DX 人材・組織・働き方・政府/業界団体の国内発表に限る。海外資格制度のみ・海外組織論のみの記事は **選ばない**
+- **Microsoft / MSRC / NVD 等の海外 URL**: パッチ・CVE・セキュリティ製品として **他カテゴリ**（例: セキュリティ製品・技術、インフラ・通信・端末）で採用し、**DX人材・IT資格・組織には付けない**
 `;
 
 const GEMINI_MODEL_FALLBACKS = [
@@ -145,8 +157,11 @@ ${titlesBlock}
 
 ${PATCH_AND_CVE_POLICY}
 
+${SOURCE_REGION_POLICY}
+
 【選定の優先（importanceScore が高い順のイメージ）】
 - インフラ・PC・SaaS・開発トレンド・DX 人材など、情シス実務に直結する話題
+- **国内ソースを同等以上に優先**（海外と迷ったら国内を上げる）
 - 開発トレンドのみで運用影響が薄い記事は下げる
 
 【出力要件】
@@ -208,8 +223,16 @@ ${listText}`;
         });
       }
 
-      picks.sort((a, b) => b.importanceScore - a.importanceScore);
-      return picks.slice(0, slots);
+      const boosted = applyDomesticScoreBoost(picks);
+      const filtered = filterPicksBySourceRegion(boosted);
+      filtered.sort((a, b) => b.importanceScore - a.importanceScore);
+      const finalPicks = filtered.slice(0, slots);
+      if (finalPicks.length < picks.length) {
+        console.log(
+          `[Gemini厳選] 地域フィルタ後: ${picks.length} → ${filtered.length} 件（登録 ${finalPicks.length} 件）`,
+        );
+      }
+      return finalPicks;
     } catch (e) {
       lastErr = e;
       if (isGeminiModelNotFoundError(e)) {

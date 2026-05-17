@@ -1,7 +1,7 @@
 # 最新ICT情報掲示板 — 仕様正本
 
 > **CEO GO**: 2026-05-16（v1）／**v2 本番**: 2026-05-17  
-> **最終更新**: 2026-05-17（CIO）— **本文は v2 に同期済**（§2〜§8）。将来改善のみ §9 バックログ。  
+> **最終更新**: 2026-05-17（CIO）— **v2.1** 情報源の国内優先・DXカテゴリ国内限定（§2.3）。将来改善のみ §9 バックログ。  
 > **Space**: [Space 48](https://jbis-kintone.cybozu.com/k/#/space/48)  
 > **台帳**: `kintone-apps.md`  
 > **コード正本**: `ict-tech-digest-automation/`・`customize/686/desktop.js`
@@ -94,6 +94,21 @@
 - **685**: ドロップダウンは上記7種（`scripts/update-685-category-dropdown.mjs` で更新可）
 - **686**: 旧17種レコードは **表示・フィルタのみ** 新7種へマッピング（`field-codes.ts` の `LEGACY_CATEGORY_TO_NEW`・`desktop.js`）
 - **686 BUILD**: `2026-05-17-686-ict-digest-board-v9`
+
+**情報源の地域（v2.1・2026-05-17）**
+
+| 対象 | ルール |
+|------|--------|
+| **全体（厳選）** | 同等の重要度では **国内ソースを優先**（`importanceScore` の加点・Gemini プロンプト）。国内＝日本向けメディア・`.jp` / `.go.jp` 公式・日本語情シス/DX 文脈に直結する記事 |
+| **`DX人材・IT資格・組織` のみ** | **国内ソースのみ採用可**。日本の IT 資格・リスキリング・DX 人材・組織論・政府/業界団体の国内発表に限定。海外メディア・海外資格制度のみの記事は **選ばない** |
+| **例外（海外可）** | Microsoft パッチ/CVE・セキュリティ製品など、**他カテゴリ**として採用する記事（`セキュリティ製品・技術` 等）。MSRC / NVD 等の URL は DX カテゴリには付けない |
+| **実装** | `source-region.ts` の `isDomesticArticleUrl()`・`gemini-curate.ts` の `SOURCE_REGION_POLICY` と事後フィルタ |
+
+**判定の目安（実装）**
+
+- **国内とみなす例**: `*.go.jp` / `*.jp`、Qiita・Zenn・はてな IT、ITmedia・日経 xTECH・Impress 系・ASCII・CNET/ZDNet **Japan**・IPA・ScanNetSecurity 等
+- **海外とみなす例**: `microsoft.com` / `blogs.windows.com` / `msrc.microsoft.com`、その他 `.com` 系で日本向けでない一般 IT 海外メディア
+- **DX カテゴリ**: 上記で国内と判定できない URL は **登録しない**（ログにスキップ理由を出力）
 
 **本番切替（2026-05-17 実施済）**
 
@@ -274,6 +289,7 @@ cd ict-tech-digest-automation && cp .env.example .env && npm ci && npm run colle
 |----------------|------------|
 | RSS ソース追加・除外 | `ict-tech-digest-automation/src/lib/config.ts`・本書 §2.2 |
 | 厳選・類似除外・パッチ深度 | `gemini-curate.ts`（`PATCH_AND_CVE_POLICY`） |
+| 国内優先・DX 国内限定 | `source-region.ts`・`gemini-curate.ts`（`SOURCE_REGION_POLICY`） |
 | ドライラン・収集フロー | `index.ts`・`config.ts`（`ICT_DRY_RUN`） |
 | 類似除外タイトル取得 | `kintone-store.ts`（`fetchRecentTitlesForDedup`） |
 | カテゴリ定義・旧→新 | `field-codes.ts`・685 ドロップダウン・`686/desktop.js` |
@@ -311,3 +327,4 @@ cd ict-tech-digest-automation && cp .env.example .env && npm ci && npm run colle
 | 2026-05-17 | 実装・本番切替完了（`84c4f77`）。685 7種・GHA dry-run/本番 SUCCESS・686 v9・**§2.3 追記** |
 | 2026-05-17 | CEO 目視 OK — **v2 レーンクローズ** |
 | 2026-05-17 | 仕様正本フル同期: §2 フロー・§2.2 RSS27本表・§7/§8・kintone-apps・npm スクリプト |
+| 2026-05-17 | **v2.1**: 情報源の国内優先（全体）・`DX人材・IT資格・組織` は国内のみ（`source-region.ts` / `gemini-curate.ts`） |
