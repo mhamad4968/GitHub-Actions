@@ -9,8 +9,8 @@
 - **実装（Tier A）**: `npm run cio:mcp:gate`（BASE_URL 整合 + quickprobe + Space 48 実 API）・`verify-mcp-kintone-base-url.mjs`・計画書 **`docs/plans/2026-05-17-mcp-optimization-plan.md`**。
 - **AIチーム**: sequential-thinking で P0〜P4 優先度合意。
 - **Tier B CEO GO（2026-05-17）**: ① rag/cyber-news/cve-search **残置+exempt** ② 日常 `cio:mcp:env` 維持 ③ **AI 専用ユーザ** Runbook + `kintone:ai-user:*`。
-- **実施済**: `cio_ai` 作成・`~/.cursor/mcp.json` 反映済。
-- **CEO 残 1 件**: cybozu.com 管理画面で **`cio_ai` に §2 アプリ権限** → 完了後 CIO が `npm run kintone:ai-user:finish`。
+- **CEO 決定（追記）**: **`cio_ai` は使わない** → **部署管理権限アカウント**（`.env` の `KINTONE_*`）を MCP と共有。627/668 は権限付与対象外。
+- **CIO**: `kintone:sync-credentials-to-mcp` 実施済。**`.env` がまだ `admin` の場合は部署アカウント名に差替後に再実行** → `kintone:ai-user:finish`。
 
 ## 2026-05-17 JST — ICT 掲示板（685/686）v2 — **クローズ（CEO 宣言・相談があるまで話題に出さない）**
 

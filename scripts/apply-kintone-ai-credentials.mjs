@@ -2,9 +2,11 @@
 /**
  * AI 専用 kintone 資格情報を mcp.json（kintone / kintone-space）へ反映（値はログに出さない）
  *
- * 読み込み元（優先）: temp/kintone_ai_user.env → process.env KINTONE_AI_*
- * 用法: npm run kintone:ai-user:apply-mcp
- * 任意: --sync-dotenv  … リポ .env の KINTONE_USERNAME/PASSWORD も同値に（CEO GO 後）
+ * 読み込み元:
+ *   --from-env … 現在の KINTONE_USERNAME/PASSWORD（部署管理アカウント等・.env 注入後）
+ *   既定 … temp/kintone_ai_user.env / KINTONE_AI_*
+ * 用法: npm run kintone:sync-credentials-to-mcp
+ * 任意: --sync-dotenv  … リポ .env の KINTONE_USERNAME/PASSWORD も同値に
  */
 import fs from "node:fs";
 import os from "node:os";
@@ -15,6 +17,7 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ENV_FILE = path.join(root, "temp", "kintone_ai_user.env");
 const SYNC_DOTENV = process.argv.includes("--sync-dotenv");
+const FROM_ENV = process.argv.includes("--from-env");
 const WINDOWS_FALLBACK = "/mnt/c/Users/mhamada202408224/.cursor/mcp.json";
 
 function loadVars() {
@@ -88,13 +91,24 @@ function syncDotenv(username, password) {
   console.log("[apply-kintone-ai] OK .env KINTONE_USERNAME/PASSWORD synced");
 }
 
-const vars = loadVars();
-const username = vars.KINTONE_AI_USERNAME;
-const password = vars.KINTONE_AI_PASSWORD;
+let username;
+let password;
 const baseUrl = (process.env.KINTONE_BASE_URL || "").replace(/\/$/, "");
 
+if (FROM_ENV) {
+  username = process.env.KINTONE_USERNAME;
+  password = process.env.KINTONE_PASSWORD;
+  console.log("[apply-kintone-ai] mode: --from-env (部署管理アカウント等)");
+} else {
+  const vars = loadVars();
+  username = vars.KINTONE_AI_USERNAME;
+  password = vars.KINTONE_AI_PASSWORD;
+}
+
 if (!username || !password) {
-  console.error("[apply-kintone-ai] NG: KINTONE_AI_USERNAME/PASSWORD が未設定（temp/kintone_ai_user.env）");
+  console.error(
+    "[apply-kintone-ai] NG: 資格情報未設定（--from-env なら .env の KINTONE_* / そうでなければ temp/kintone_ai_user.env）",
+  );
   process.exit(2);
 }
 

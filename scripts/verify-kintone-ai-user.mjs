@@ -16,7 +16,8 @@ const DENY_CODES = new Set(
 const base = (process.env.KINTONE_BASE_URL || "").replace(/\/$/, "");
 const user = process.env.KINTONE_AI_USERNAME || process.env.KINTONE_USERNAME;
 const pass = process.env.KINTONE_AI_PASSWORD || process.env.KINTONE_PASSWORD;
-const expect = (process.env.KINTONE_AI_USER_CODE || "cio_ai").trim();
+/** 未設定ならログイン名の強制一致はしない（部署管理アカウント運用） */
+const expect = (process.env.KINTONE_AI_USER_CODE || "").trim();
 
 if (!base || !user || !pass) {
   console.error("[verify-kintone-ai-user] NG: KINTONE_* env missing");

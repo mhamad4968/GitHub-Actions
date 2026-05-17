@@ -1,13 +1,24 @@
-# kintone AI 専用ユーザ — 移行 Runbook
+# kintone MCP 認証 — 移行 Runbook
 
 **CEO GO**: 2026-05-17（MCP 最適化 Tier B #3）  
 **正本**: `docs/cio-permissions-guide.md` §3.3.4
 
 ---
 
-## 目的
+## CEO 決定（2026-05-17 追記）— **採用ルート B**
 
-`~/.cursor/mcp.json` および `.env` の kintone 認証を **admin から AI 専用ユーザへ分離**し、漏洩時の影響を必要アプリの権限内に限定する。
+- **`cio_ai` は使わない**（管理画面に見えない／不要）。
+- **既存の部署管理権限アカウント**（`.env` の `KINTONE_USERNAME` / `PASSWORD`）を MCP も共有する。
+- **627・668** は今月末削除予定のため **権限付与対象外**。
+- 部署内利用のみのため、admin 分離より **実運用アカウント統一**を優先。
+
+**CIO 実行**: `npm run kintone:sync-credentials-to-mcp` → Cursor Reload → `npm run kintone:ai-user:finish`
+
+---
+
+## 目的（ルート A: cio_ai — 参考・未採用）
+
+`~/.cursor/mcp.json` の kintone 認証を **admin 以外**に寄せ、漏洩時の影響を限定する。ルート B では **部署管理アカウント＝既存 .env** で同趣旨を満たす。
 
 ---
 
@@ -30,7 +41,7 @@ npm run kintone:ai-user:create
 
 | アプリ ID | 用途 |
 |-----------|------|
-| 627, 668, 677–683 | customize ポートフォolio |
+| 677–683 | customize ポートフォolio（**627・668 は月末削除予定のため対象外**） |
 | 685, 686 | ICT 掲示板 |
 | 631, 632 | 収集・分析（利用時のみ） |
 | Space **48** | システム推進室ポータル |
