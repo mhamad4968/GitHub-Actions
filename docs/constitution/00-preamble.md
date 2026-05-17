@@ -1,64 +1,66 @@
 # 前文・体系図・読み方
 
-> **条文番号の正本**: `AGENTS.md`（本ファイルは読みやすい分割コピー）  
-> **いつ読む**: 初回着手・全体像の把握  
-> **索引**: `RULES-INDEX.md` → `docs/constitution/README.md`---
+> **条斁E��号の正本**: `AGENTS.md`�E�本ファイルは読みめE��ぁE�E割コピ�E�E�E 
+> **ぁE��読む**: 初回着手�E全体像の把握  
+> **索弁E*: `RULES-INDEX.md` ↁE`docs/constitution/README.md\\
+\\
+---
 
-## 30秒要約（Phase 2）
+## 30秒要紁E��Ehase 2�E�E
 
-憲法の地図・mermaid フロー・予実/PC台帳レーン分離。全文通読の代わりにここで全体像だけ掴む。
+憲法�E地図・mermaid フロー・予宁EPC台帳レーン刁E��。�E斁E��読の代わりにここで全体像だけ掴む、E
 
-## いつ読む（チェックリスト）
+## ぁE��読む�E�チェチE��リスト！E
 
 - 新規タスク
-- レーン混同の不安があるとき
+- レーン混同�E不安があるとぁE
 
-## 条文本文（AGENTS 抽出・削除禁止）
+## 条斁E��斁E��EGENTS 抽出・削除禁止�E�E
 
-> 以下は `AGENTS.md` からの抽出コピー。**省略・削除しない**。解釈疑義は `AGENTS.md` 正本。
+> 以下�E `AGENTS.md` からの抽出コピ�E、E*省略・削除しなぁE*。解釈疑義は `AGENTS.md` 正本、E
 
-## 作業レーンの切り替え（CIO メモ・2026-05-04）
+## 作業レーンの刁E��替え！EIO メモ・2026-05-04�E�E
 
-- **部署予実**（kintone **677／678／679**・主に **Space 54**）と **PC台帳系**（**674（新・正）**・**旧594（削除予定・新規禁止）**・**668** 等・**Space 21** ほど）は **別案件**。着手前に **いまどちらのレーンか**を明示し、**アプリ ID・URL は `kintone-apps.md` で照合**する（混同防止）。**594 を前提にした新仕様は採用しない**（`docs/plans/2026-04-21-new-pc-ledger-spec.md` **§1.5**）。**本番に594を参照専用で恒久的に残す前提はない**。
-- **単独作業は原則禁止**（チーム運用）: 本番デプロイ・仕様確定・一括変更を **一人で完結させない**。レビュー・ペア・声かけ・承認を挟む。予実の索引は **`templates/yojitsu-budget-lite/HANDOFF.md`**。
-- **MCP 実務**: 着手前チェック・タスク別優先表の **要点**は **`chat-sessions/desktop-ai-emergency-read-pack/08-READ-06.txt`**（MCP 節）と **`chat-sessions/SESSION-CLOSE-REPORT-20260504.txt` §6**。
+- **部署予宁E*�E�Eintone **677�E�E78�E�E79**・主に **Space 54**�E�と **PC台帳系**�E�E*674�E�新・正�E�E*・**旧594�E�削除予定�E新規禁止�E�E*・**668** 等�E**Space 21** ほど�E��E **別案件**。着手前に **ぁE��どちら�EレーンぁE*を�E示し、E*アプリ ID・URL は `kintone-apps.md` で照吁E*する�E�混同防止�E�、E*594 を前提にした新仕様�E採用しなぁE*�E�Edocs/plans/2026-04-21-new-pc-ledger-spec.md` **§1.5**�E�、E*本番に594を参照専用で恒乁E��に残す前提はなぁE*、E
+- **単独作業は原則禁止**�E�チーム運用�E�E 本番チE�Eロイ・仕様確定�E一括変更めE**一人で完結させなぁE*。レビュー・ペア・声かけ・承認を挟�E。予実�E索引�E **`templates/yojitsu-budget-lite/HANDOFF.md`**、E
+- **MCP 実務**: 着手前チェチE��・タスク別優先表の **要点**は **`chat-sessions/desktop-ai-emergency-read-pack/08-READ-06.txt`**�E�ECP 節�E�と **`chat-sessions/SESSION-CLOSE-REPORT-20260504.txt` §6**、E
 
 ---
 
-## 🗺️ ルール体系図（一目で全体像を把握）
+## 🗺�E�Eルール体系図�E�一目で全体像を把握�E�E
 
 ```mermaid
 flowchart TD
-  Start([🚀 タスク受領]) --> Preflight[🛫 プリフライトチェック<br/>~/.cursor/rules/preflight-checklist.mdc<br/>alwaysApply]
+  Start([🚀 タスク受領]) --> Preflight[🛫 プリフライトチェチE��<br/>~/.cursor/rules/preflight-checklist.mdc<br/>alwaysApply]
 
-  Preflight --> Time[0️⃣ §34 時刻認識]
-  Time --> Index[1️⃣ §0 RULES-INDEX 即答カード参照]
-  Index --> Research{2️⃣ §33-A<br/>事前調査済み？}
+  Preflight --> Time[0�E�⃣ §34 時刻認識]
+  Time --> Index[1�E�⃣ §0 RULES-INDEX 即答カード参照]
+  Index --> Research{2�E�⃣ §33-A<br/>事前調査済み�E�}
 
-  Research -->|No| DoResearch[公式Doc / GitHub / Tavily / RAG<br/>最低3ステップ + ユーザーへ要約報告]
+  Research -->|No| DoResearch[公式Doc / GitHub / Tavily / RAG<br/>最佁EスチE��チE+ ユーザーへ要紁E��告]
   DoResearch --> SameFail
-  Research -->|Yes| SameFail{3️⃣ §14<br/>同じ失敗を<br/>繰り返してない？}
+  Research -->|Yes| SameFail{3�E�⃣ §14<br/>同じ失敗を<br/>繰り返してなぁE��}
 
-  SameFail -->|繰り返し| Pivot[戦略転換 / 代替案2件以上 提示]
+  SameFail -->|繰り返し| Pivot[戦略転揁E/ 代替桁E件以丁E提示]
   Pivot --> Quality
-  SameFail -->|OK| Quality[4️⃣ §15 完成度4要件設計<br/>ルール / 日本語コメント / エラーハンドリング / 検証可能性]
+  SameFail -->|OK| Quality[4�E�⃣ §15 完�E度4要件設訁Ebr/>ルール / 日本語コメンチE/ エラーハンドリング / 検証可能性]
 
-  Quality --> Declare[5️⃣ 一言宣言]
-  Declare --> Build[💻 実装]
+  Quality --> Declare[5�E�⃣ 一言宣言]
+  Declare --> Build[💻 実裁E
 
-  Build --> Native{§13<br/>ネイティブ/標準<br/>優先？}
-  Native --> Sec{§18<br/>秘密情報<br/>非露出？}
-  Sec --> KAPI{§4-§8<br/>kintone規約<br/>準拠？}
+  Build --> Native{§13<br/>ネイチE��チE標溁Ebr/>優先？}
+  Native --> Sec{§18<br/>秘寁E��報<br/>非露出�E�}
+  Sec --> KAPI{§4-§8<br/>kintone規紁Ebr/>準拠�E�}
   KAPI --> Verify[§9-§12 検証]
 
-  Verify --> WebUI{Web UI<br/>変更？}
+  Verify --> WebUI{Web UI<br/>変更�E�}
   WebUI -->|Yes| WebQ[§26-§30<br/>視覚検診 / a11y / 性能 / レスポンシブ]
   WebUI -->|No| Deliver
   WebQ --> Deliver[§31 C:\tmp 世代納品]
 
   Deliver --> Report[§37 簡潔報告]
   Report --> KB[📚 §19-§21<br/>RAG / troubleshooting.md / RULES-INDEX 更新]
-  KB --> End([✅ 完了])
+  KB --> End([✁E完亁E)
 
   style Preflight fill:#fff3cd,stroke:#856404,stroke-width:3px
   style Research fill:#d1ecf1,stroke:#0c5460,stroke-width:2px
@@ -68,9 +70,9 @@ flowchart TD
 ```
 
 **読み方**:
-- 黄色 = 必ず最初に通る関門（プリフライト）
-- 水色 = 判断分岐（事前調査）
-- 赤色 = 危険サイン（同一失敗繰り返し）→ 戦略転換必須
+- 黁E�� = 忁E��最初に通る関門�E��Eリフライト！E
+- 水色 = 判断刁E��（事前調査�E�E
+- 赤色 = 危険サイン�E�同一失敗繰り返し�E��E 戦略転換忁E��E
 - 緑色 = 健全な行動
 
 ---
@@ -84,7 +86,7 @@ flowchart TD
 | 種別 | パス |
 |------|------|
 | 正本 | `AGENTS.md` |
-| 索引 | `RULES-INDEX.md` |
+| 索弁E| `RULES-INDEX.md` |
 | 読本目次 | `docs/constitution/README.md` |
 | 検証 | `npm run constitution:verify-coverage` |
 

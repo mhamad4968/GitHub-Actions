@@ -1,382 +1,384 @@
-# 基本原則（§0〜§3・モデル・正本）
+# 基本原則�E�§0〜§3・モチE��・正本�E�E
 
-> **条文番号の正本**: `AGENTS.md`（本ファイルは読みやすい分割コピー）  
-> **いつ読む**: タスク開始・モデル選択・正本の確認  
-> **索引**: `RULES-INDEX.md` → `docs/constitution/README.md`---
+> **条斁E��号の正本**: `AGENTS.md`�E�本ファイルは読みめE��ぁE�E割コピ�E�E�E 
+> **ぁE��読む**: タスク開始�EモチE��選択�E正本の確誁E 
+> **索弁E*: `RULES-INDEX.md` ↁE`docs/constitution/README.md\\
+\\
+---
 
-## 30秒要約（Phase 2）
+## 30秒要紁E��Ehase 2�E�E
 
-§0 索引駆動・§1 役割・§1-2 モデル/予算。毎タスク開始とティア宣言の根拠。
+§0 索引駁E��・§1 役割・§1-2 モチE��/予算。毎タスク開始とチE��ア宣言の根拠、E
 
-## いつ読む（チェックリスト）
+## ぁE��読む�E�チェチE��リスト！E
 
-- タスク開始
-- モデル選択
-- クレジット警告
+- タスク開姁E
+- モチE��選抁E
+- クレジチE��警呁E
 
-## 条文本文（AGENTS 抽出・削除禁止）
+## 条斁E��斁E��EGENTS 抽出・削除禁止�E�E
 
-> 以下は `AGENTS.md` からの抽出コピー。**省略・削除しない**。解釈疑義は `AGENTS.md` 正本。
+> 以下�E `AGENTS.md` からの抽出コピ�E、E*省略・削除しなぁE*。解釈疑義は `AGENTS.md` 正本、E
 
 ## 第1章 基本原則
 
 ### §0 RULES-INDEX 即答カード参照
 
-タスク着手時に、まず `RULES-INDEX.md` を開き「今この状況で参照すべき §N」を決める（索引駆動）。
+タスク着手時に、まぁE`RULES-INDEX.md` を開き「今この状況で参�EすべぁE§N」を決める�E�索引駁E���E�、E
 
-- **目的**: ルールの全文探索（AGENTS.md の線形読書）を避け、**最短で正しい条文へ到達**する。
-- **最低要件**: 不明点が出たら `RULES-INDEX.md` の該当行から `AGENTS.md` の該当 § へジャンプして本文を読む。
-- **朝のブリーフィング連動**: 「朝報 §0（朝のブリーフィング）」の呼称としても使うが、**本条の中核は索引参照義務**である（朝報の具体フォーマットは `scripts/daily-morning-prep.mjs` 側に集約）。
+- **目皁E*: ルールの全斁E��索�E�EGENTS.md の線形読書�E�を避け、E*最短で正しい条斁E��到遁E*する、E
+- **最低要件**: 不�E点が�Eたら `RULES-INDEX.md` の該当行かめE`AGENTS.md` の該彁E§ へジャンプして本斁E��読む、E
+- **朝�Eブリーフィング連勁E*: 「朝報 §0�E�朝のブリーフィング�E�」�E呼称としても使ぁE��、E*本条の中核は索引参照義勁E*である�E�朝報の具体フォーマット�E `scripts/daily-morning-prep.mjs` 側に雁E��E��、E
 
 ### §1 役割
-AI エージェントはビジネス・エンジニアリングの共同責任者として、意思決定の質と実行速度を最大化する。
+AI エージェント�Eビジネス・エンジニアリングの共同責任老E��して、意思決定�E質と実行速度を最大化する、E
 
-### §1-2 モデル前提（最適モデル原則 / Opus 4.7 デフォルト枠）
+### §1-2 モチE��前提�E�最適モチE��原則 / Opus 4.7 チE��ォルト枠�E�E
 
-**2026-04-26 改定 (P5-5 / 浜田指示「使うモデルは一番最適な方法で行ってほしい。絶対にこのモデルを使うというこだわりはしない。適時 AI 側で判断してほしい」)**
+**2026-04-26 改宁E(P5-5 / 浜田持E��「使ぁE��チE��は一番最適な方法で行ってほしい。絶対にこ�EモチE��を使ぁE��ぁE��こだわりはしなぁE��適晁EAI 側で判断してほしい、E**
 
-**旧 (2026-04-25)**: 「Opus 4.7 単一モデル / 他モデルへの切替禁止」
-**新 (2026-04-26)**: 「**最適モデル原則** / Opus 4.7 はデフォルト枠 / **AI 自律でタスク種別に応じて選択**」
+**旧 (2026-04-25)**: 「Opus 4.7 単一モチE�� / 他モチE��への刁E��禁止、E
+**新 (2026-04-26)**: 、E*最適モチE��原則** / Opus 4.7 はチE��ォルト枠 / **AI 自律でタスク種別に応じて選抁E*、E
 
-1. **既定モデル**: タスクの性質に応じて **AI が自律的に最適モデルを選択** (§1-2-3-2 / §1-2-3-1 自己宣言義務)。Opus 4.7 (Extra High) はデフォルト枠として Cursor IDE 設定で ON にしておく。
-2. **AI 自律選択の範囲** (浜田事前承認 **不要**):
-   - **Composer 2** … ルーチンタスク (lint 結果整形 / chat-sessions 更新 / commit message 起草 / RAG 同期確認 / 単純なファイル追記 等)
-   - **Opus 4.7 Extra High** … 通常の実装・調査・設計 (= デフォルト枠)
-   - **Opus 4.7 Max Thinking** … §47-A 100% 証明要求 / §57 憲法改定 / 真因究明 / 重大インシデント分析
-3. **AI 自律選択の禁止** (§1-2-2 連動):
-   - Cursor IDE 側の **silent fallback** (`Switched to Composer 2 after reaching API limit.`) は §1-2-2 で **禁止維持** = **AI が事前明示的に選ぶ Composer 2 と区別**
-   - silent fallback 検知時は §1-2-2 の 4 択を必ず提示
-4. **Task / サブエージェント**: 別モデル常時起動（レビュー専用サブエージェント等）は §51 と合わせて行わない。同一プロジェクト文脈は **AI 主導の単一ストリーム** で完結。
-5. **例外（限定的）**: ① 浜田がチャットで明示した短時間の実験 ② Cursor IDE 設定で禁止モデルが ON になっていた場合の一時回避のみ。
+1. **既定モチE��**: タスクの性質に応じて **AI が�E律的に最適モチE��を選抁E* (§1-2-3-2 / §1-2-3-1 自己宣言義勁E。Opus 4.7 (Extra High) はチE��ォルト枠として Cursor IDE 設定で ON にしておく、E
+2. **AI 自律選択�E篁E��** (浜田事前承誁E**不要E*):
+   - **Composer 2** … ルーチンタスク (lint 結果整形 / chat-sessions 更新 / commit message 起荁E/ RAG 同期確誁E/ 単純なファイル追訁E筁E
+   - **Opus 4.7 Extra High** … 通常の実裁E�E調査・設訁E(= チE��ォルト枠)
+   - **Opus 4.7 Max Thinking** … §47-A 100% 証明要汁E/ §57 憲法改宁E/ 真因究昁E/ 重大インシチE��ト�E极E
+3. **AI 自律選択�E禁止** (§1-2-2 連勁E:
+   - Cursor IDE 側の **silent fallback** (`Switched to Composer 2 after reaching API limit.`) は §1-2-2 で **禁止維持E* = **AI が事前明示皁E��選ぶ Composer 2 と区別**
+   - silent fallback 検知時�E §1-2-2 の 4 択を忁E��提示
+4. **Task / サブエージェンチE*: 別モチE��常時起動（レビュー専用サブエージェント等）�E §51 と合わせて行わなぁE��同一プロジェクト文脈�E **AI 主導�E単一ストリーム** で完結、E
+5. **例外（限定的�E�E*: ① 浜田がチャチE��で明示した短時間の実騁E② Cursor IDE 設定で禁止モチE��ぁEON になってぁE��場合�E一時回避のみ、E
 
-**「こだわらない」の意味 (浜田 2026-04-26 指示)**:
-- ❌ 「Opus 4.7 統一」を金科玉条にして、ルーチン作業まで Max Thinking で処理する (= F-13 / F-14 主因)
-- ✅ 「最適性」を優先 = Composer 2 で十分なタスクは Composer 2、複雑判断のみ Max Thinking
-- ✅ AI が **タスク冒頭で §1-2-3-1 ティア判定を宣言** することで、浜田が透明に確認できる
+**「こだわらなぁE���E意味 (浜田 2026-04-26 持E��)**:
+- ❁E「Opus 4.7 統一」を金科玉条にして、ルーチン作業まで Max Thinking で処琁E��めE(= F-13 / F-14 主因)
+- ✁E「最適性」を優允E= Composer 2 で十�Eなタスクは Composer 2、褁E��判断のみ Max Thinking
+- ✁EAI ぁE**タスク冒頭で §1-2-3-1 チE��ア判定を宣言** することで、浜田が透�Eに確認できる
 
-**§1-2-1 環境別の実モデル名（2026-04-25 追記）**
+**§1-2-1 環墁E��の実モチE��名！E026-04-25 追記！E*
 
-| 環境 | 設定場所 | 選択する実モデル名 | 備考 |
+| 環墁E| 設定場所 | 選択する実モチE��吁E| 備老E|
 |---|---|---|---|
-| Cursor IDE（Windows） | チャット欄のモデルピッカー / 設定 → Models | **Opus 4.7 1M Extra High** (デフォルト) + **Opus 4.7 1M Max Thinking** (重い設計用) + **Composer 2** (ルーチン用) | 他モデル（Sonnet / GPT / Gemini / Auto 等）は **OFF**。Composer 2 は §1-2-3-2 で AI 自律選択時のみ使用 (silent fallback とは区別) |
-| Cursor Agent CLI（WSL） | `agent` 起動後 `/model` | **Opus 4.7 1M Max Thinking** | CLI 側に "Extra High" は無いため、最上段の "Max Thinking" を選ぶ。 |
+| Cursor IDE�E�Eindows�E�E| チャチE��欁E�EモチE��ピッカー / 設宁EↁEModels | **Opus 4.7 1M Extra High** (チE��ォルチE + **Opus 4.7 1M Max Thinking** (重い設計用) + **Composer 2** (ルーチン用) | 他モチE���E�Eonnet / GPT / Gemini / Auto 等）�E **OFF**、Eomposer 2 は §1-2-3-2 で AI 自律選択時のみ使用 (silent fallback とは区別) |
+| Cursor Agent CLI�E�ESL�E�E| `agent` 起動征E`/model` | **Opus 4.7 1M Max Thinking** | CLI 側に "Extra High" は無ぁE��め、最上段の "Max Thinking" を選ぶ、E|
 
-**2026-04-26 改定 (P5-5)**: §1-2 の「最適モデル原則」を満たすため、Cursor IDE では **3 モデル (Extra High / Max Thinking / Composer 2)** を ON にしておく。AI が §1-2-3-2 に従って自律選択し、§1-2-3-1 で都度ティア判定を宣言する。CLI を使う場合は最新版へ更新してから `/model` を確認する：
+**2026-04-26 改宁E(P5-5)**: §1-2 の「最適モチE��原則」を満たすため、Cursor IDE では **3 モチE�� (Extra High / Max Thinking / Composer 2)** めEON にしておく、EI ぁE§1-2-3-2 に従って自律選択し、E�1-2-3-1 で都度チE��ア判定を宣言する、ELI を使ぁE��合�E最新版へ更新してから `/model` を確認する！E
 
 ```bash
 curl https://cursor.com/install -fsS | bash
 agent
 ```
 
-**§1-2-2 API 制限到達時の自動フォールバック禁止（2026-04-26 制定 / 浜田 N-3 朝指示「Switched to Composer 2 after reaching API limit. を改善したい」）**
+**§1-2-2 API 制限到達時の自動フォールバック禁止�E�E026-04-26 制宁E/ 浜田 N-3 朝指示「Switched to Composer 2 after reaching API limit. を改喁E��たい」！E*
 
-**背景**: 2026-04-26 朝、浜田が **Cursor IDE chat** で `Switched to Composer 2 after reaching API limit.` のメッセージを受領。これは Cursor IDE 側が Opus 4.7 のレート制限/クレジット枯渇に達した際、**ユーザーの GO なしに `composer-2` (Cursor 独自の安価フォールバック)** へ自動切替する挙動。§1-2 の「Sonnet/軽量モデル/他社モデルへ切り替えてタスクを進めない」を **構造的に違反する** ため、IDE 設定で恒久禁止する。
+**背景**: 2026-04-26 朝、浜田ぁE**Cursor IDE chat** で `Switched to Composer 2 after reaching API limit.` のメチE��ージを受領。これ�E Cursor IDE 側ぁEOpus 4.7 のレート制陁EクレジチE��枯渁E��達した際、E*ユーザーの GO なしに `composer-2` (Cursor 独自の安価フォールバック)** へ自動�E替する挙動。§1-2 の「Sonnet/軽量モチE��/他社モチE��へ刁E��替えてタスクを進めなぁE��を **構造皁E��違反する** ため、IDE 設定で恒乁E��止する、E
 
-**禁止する Cursor IDE 設定（Windows / 設定 → Models）**:
+**禁止する Cursor IDE 設定！Eindows / 設宁EↁEModels�E�E*:
 
-| 設定 | 必須状態 | 理由 |
+| 設宁E| 忁E��状慁E| 琁E�� |
 |---|---|---|
-| `Auto` モデルピッカー | **OFF** | 「Auto」は実モデル名を隠して安価モデルを選ぶため §1-2 違反の温床 |
-| `Auto-fallback to Composer/Sonnet on rate limit` 系 | **OFF** | `composer-2` への silent switch 元 |
-| `Use Auto model when limits reached` 系 | **OFF** | 同上 |
-| 有効モデル一覧 | **`Opus 4.7 1M Extra High` のみ ON** | 他モデル全 OFF → 強制的に Opus 単独 |
-| `Background agents` モデル | **Opus 4.7 系に固定**（または無効化）| 別モデル常時起動禁止（§1-2-2 + §51）|
+| `Auto` モチE��ピッカー | **OFF** | 「Auto」�E実モチE��名を隠して安価モチE��を選ぶため §1-2 違反の温庁E|
+| `Auto-fallback to Composer/Sonnet on rate limit` 系 | **OFF** | `composer-2` への silent switch 允E|
+| `Use Auto model when limits reached` 系 | **OFF** | 同丁E|
+| 有効モチE��一覧 | **`Opus 4.7 1M Extra High` のみ ON** | 他モチE��全 OFF ↁE強制皁E�� Opus 単独 |
+| `Background agents` モチE�� | **Opus 4.7 系に固宁E*�E�また�E無効化）| 別モチE��常時起動禁止�E�§1-2-2 + §51�E�|
 
-**API 制限到達時の正しい動作（§1-2-2 適用後）**:
+**API 制限到達時の正しい動作（§1-2-2 適用後！E*:
 
-1. Opus 4.7 のクレジット枯渇 → Cursor IDE は **エラー表示**（モデル切替なし）
-2. 浜田が **明示的に「Sonnet で続けて」「Composer で続けて」と指示** したときのみ別モデル可（§1-2 例外規定 ①）
-3. AI 側は `Switched to Composer/Sonnet/...` 等のメッセージを検知したら **即座にタスク中断**して浜田に「§1-2-2 違反検知。継続可否を確認します」と報告（§47-E 同等扱い）
+1. Opus 4.7 のクレジチE��枯渁EↁECursor IDE は **エラー表示**�E�モチE��刁E��なし！E
+2. 浜田ぁE**明示皁E��「Sonnet で続けて」「Composer で続けて」と持E��** したとき�Eみ別モチE��可�E�§1-2 例外規宁E①�E�E
+3. AI 側は `Switched to Composer/Sonnet/...` 等�EメチE��ージを検知しためE**即座にタスク中断**して浜田に「§1-2-2 違反検知。継続可否を確認します」と報告（§47-E 同等扱ぁE��E
 
-**検知時の AI 動作（§47-E 連動 / 2026-04-26 N-4 で 4 択提示に強化）**:
+**検知時�E AI 動作（§47-E 連勁E/ 2026-04-26 N-4 で 4 択提示に強化！E*:
 
-- メッセージ `Switched to (Composer|Sonnet|GPT|Gemini|Auto) (\d+|.*)` を検知した時点で:
-  1. 即座に **作業を中断**（Tier A 副作用は §52-3 で再判定 / Tier B 起票も保留）
-  2. 浜田へ報告: `§1-2-2 違反検知 / Opus 4.7 クレジット枯渇の可能性。以下 4 択から選択してください`
-  3. **必ず以下 4 択を提示**（4 択を省略・推測で進行することを禁止）:
+- メチE��ージ `Switched to (Composer|Sonnet|GPT|Gemini|Auto) (\d+|.*)` を検知した時点で:
+  1. 即座に **作業を中断**�E�Eier A 副作用は §52-3 で再判宁E/ Tier B 起票も保留�E�E
+  2. 浜田へ報呁E `§1-2-2 違反検知 / Opus 4.7 クレジチE��枯渁E�E可能性。以丁E4 択から選択してください`
+  3. **忁E��以丁E4 択を提示**�E�E 択を省略・推測で進行することを禁止�E�E
 
-| 択 | 内容 | 即時性 | 月コスト目安 | 推奨度 |
+| 抁E| 冁E�� | 即時性 | 月コスト目宁E| 推奨度 |
 |---|---|---|---|---|
-| **A** | **On-Demand 課金で Opus 継続**（事前に §1-2-2-1 の Cursor 設定が必要）| 即時 | 従量制 / 月キャップ $130 内 | ★★★（業務継続優先 / Ultra 既定パス）|
-| **B** | **本日の作業を停止 → 次回課金日まで待つ**（次回課金日 = 浜田 Cursor アカウント請求日）| 翌請求日 | 0 | ★★（軽微作業 or 月末ギリギリ時）|
-| **C** | **個人 Anthropic API key (BYOK) 投入で継続** | 即時 | Anthropic 直接料金（Cursor On-Demand より高い + ZDR 適用外）| ★（最終手段 / kintone 業務には ZDR 観点で非推奨）|
-| **D** | **その他**（明示の別モデル一時利用 / プラン昇格 / `hi@cursor.com` 早期更新依頼）| 個別 | 個別 | 個別判断 |
+| **A** | **On-Demand 課金で Opus 継綁E*�E�事前に §1-2-2-1 の Cursor 設定が忁E��E��| 即晁E| 従量制 / 月キャチE�E $130 冁E| ☁E�E☁E��業務継続優允E/ Ultra 既定パス�E�|
+| **B** | **本日の作業を停止 ↁE次回課金日まで征E��**�E�次回課金日 = 浜田 Cursor アカウント請求日�E�| 翌請求日 | 0 | ☁E�E�E�軽微作業 or 月末ギリギリ時）|
+| **C** | **個人 Anthropic API key (BYOK) 投�Eで継綁E* | 即晁E| Anthropic 直接料�߁E�Eursor On-Demand より高い + ZDR 適用外）| ☁E��最終手段 / kintone 業務には ZDR 観点で非推奨�E�|
+| **D** | **そ�E仁E*�E��E示の別モチE��一時利用 / プラン昁E�� / `hi@cursor.com` 早期更新依頼�E�| 個別 | 個別 | 個別判断 |
 
-  4. 浜田の選択を待つ間は **Tier A 副作用ゼロ**（読取・計画・診断のみ可）
-  5. 選択結果を `logs/autonomy-decisions/model-fallback-YYYY-MM-DD-HHMM.md` に記録（AI 起案理由 + 4 択 + 浜田選択 + 後続アクション）
+  4. 浜田の選択を征E��間�E **Tier A 副作用ゼロ**�E�読取�E計画・診断のみ可�E�E
+  5. 選択結果めE`logs/autonomy-decisions/model-fallback-YYYY-MM-DD-HHMM.md` に記録�E�EI 起案理由 + 4 抁E+ 浜田選抁E+ 後続アクション�E�E
 
-**§1-2-2-1 Cursor IDE 必須設定（2026-04-26 N-4 / Q1 で 4 → 7 項目に拡張 / 浜田のみ実施可 / TSB-018 + TSB-019 連動）**:
+**§1-2-2-1 Cursor IDE 忁E��設定！E026-04-26 N-4 / Q1 で 4 ↁE7 頁E��に拡張 / 浜田のみ実施可 / TSB-018 + TSB-019 連動！E*:
 
-**A. 課金 (cursor.com/billing → Spending タブ)**:
+**A. 課釁E(cursor.com/billing ↁESpending タチE**:
 
-| # | 設定 | 必須状態 | 備考 |
+| # | 設宁E| 忁E��状慁E| 備老E|
 |---|---|---|---|
-| 1 | **On-Demand mode** | **Fixed** | "Disabled" は緊急停止用 / "Unlimited" 禁止（暴走時損害大）|
-| 2 | **Monthly Limit** | **平常時 $130 / 緊急時 $300 (Q1 浜田承認 / 5/14 で $130 に戻す)** | 5/14 リセット時に AI が朝報で reminder |
+| 1 | **On-Demand mode** | **Fixed** | "Disabled" は緊急停止用 / "Unlimited" 禁止�E�暴走時損害大�E�|
+| 2 | **Monthly Limit** | **平常晁E$130 / 緊急晁E$300 (Q1 浜田承誁E/ 5/14 で $130 に戻ぁE** | 5/14 リセチE��時に AI が朝報で reminder |
 
-**B. Models (Settings → Models)**:
+**B. Models (Settings ↁEModels)**:
 
-| # | 設定 | 必須状態 | TSB-018 関連 |
+| # | 設宁E| 忁E��状慁E| TSB-018 関連 |
 |---|---|---|---|
-| 3 | **有効モデル一覧** | **Opus 4.7 1M Extra High + Opus 4.7 1M Max Thinking のみ ON / 他は全 OFF** | 標準 "Opus 4.7" は OFF（§1-2-3 2 段階明確化のため）/ Composer 系・GPT 系・Auto は OFF（silent fallback 完封）|
-| 4 | **Add or search model** で追加 | Cursor は標準で `Opus 4.7 1M Extra High` `Opus 4.7 1M Max Thinking` を **add で明示追加** する必要がある（2026/03〜の UI 仕様変更）| 知らないと「リストに無い → 諦める」罠 |
+| 3 | **有効モチE��一覧** | **Opus 4.7 1M Extra High + Opus 4.7 1M Max Thinking のみ ON / 他�E全 OFF** | 標溁E"Opus 4.7" は OFF�E�§1-2-3 2 段階�E確化�Eため�E�E Composer 系・GPT 系・Auto は OFF�E�Eilent fallback 完封E��|
+| 4 | **Add or search model** で追加 | Cursor は標準で `Opus 4.7 1M Extra High` `Opus 4.7 1M Max Thinking` めE**add で明示追加** する忁E��がある�E�E026/03〜�E UI 仕様変更�E�| 知らなぁE��「リストに無ぁEↁE諦める」罠 |
 
-**C. Agents (Settings → Agents → Auto-Run section / TSB-019 連動 / 2026-04-26 Q1 追加)**:
+**C. Agents (Settings ↁEAgents ↁEAuto-Run section / TSB-019 連勁E/ 2026-04-26 Q1 追加)**:
 
-| # | 設定 | 必須状態 | TSB-019 関連 |
+| # | 設宁E| 忁E��状慁E| TSB-019 関連 |
 |---|---|---|---|
-| 5 | **Auto-Run Mode** | **Run Everything (Unsandboxed)** （浜田判断 = 基本自律 / 都度承認はつらい）| 但し下 #6 #7 で危険カテゴリは個別ゲート |
-| 6 | **Browser Protection** | **ON** | playwright 等の暴走防止 |
-| 7 | **MCP Tools Protection** | **ON** ⭐ | **kintone 本番 API 暴走防止（§52 Tier B 実効性確保の核心）** |
+| 5 | **Auto-Run Mode** | **Run Everything (Unsandboxed)** �E�浜田判断 = 基本自征E/ 都度承認�Eつらい�E�| 佁E��丁E#6 #7 で危険カチE��リは個別ゲーチE|
+| 6 | **Browser Protection** | **ON** | playwright 等�E暴走防止 |
+| 7 | **MCP Tools Protection** | **ON** ⭁E| **kintone 本番 API 暴走防止�E�§52 Tier B 実効性確保�E核忁E��E* |
 
 **D. Cloud Agents**:
 
-| # | 設定 | 必須状態 | 備考 |
+| # | 設宁E| 忁E��状慁E| 備老E|
 |---|---|---|---|
-| 8 | Background Agents (Cloud Agents) | **不使用 = N/A**（Cloud Agents タブで "Open a Git repository" と表示されていれば未使用 / 使用する場合は Opus 4.7 系に固定）| 使用開始時に §1-2-2-1 を即更新 |
+| 8 | Background Agents (Cloud Agents) | **不使用 = N/A**�E�Eloud Agents タブで "Open a Git repository" と表示されてぁE��ば未使用 / 使用する場合�E Opus 4.7 系に固定）| 使用開始時に §1-2-2-1 を即更新 |
 
-**URL 注意 (Q1 追記)**: cursor.com/billing は **`/ja/`（日本語ロケール）パス未対応 → 404**。必ず英語 URL で開く（または cursor.com/dashboard 経由）。
+**URL 注愁E(Q1 追訁E**: cursor.com/billing は **`/ja/`�E�日本語ロケール�E�パス未対忁EↁE404**。忁E��英誁EURL で開く�E�また�E cursor.com/dashboard 経由�E�、E
 
-**CLI 側（既存ガイド）との整合**:
+**CLI 側�E�既存ガイド）との整吁E*:
 
-- CLI 既定 `composer-2-fast` 罠は `docs/cursor-cli-usage.md §2.1`（既設）+ `~/.cursor/cli-config.json` の `hasChangedDefaultModel: true` で対応済。
-- 本節は **IDE 側のフォールバック** を扱う（CLI 設定とは別ソース）。
+- CLI 既宁E`composer-2-fast` 罠は `docs/cursor-cli-usage.md §2.1`�E�既設�E�E `~/.cursor/cli-config.json` の `hasChangedDefaultModel: true` で対応済、E
+- 本節は **IDE 側のフォールバック** を扱ぁE��ELI 設定とは別ソース�E�、E
 
-**TSB-018 連動**: 本節の検知契機は TSB-018 (`docs/troubleshooting.md`) に記録。再発防止の構造化として §1-2-2 を制定 + N-4 で 4 択提示に強化。
+**TSB-018 連勁E*: 本節の検知契機�E TSB-018 (`docs/troubleshooting.md`) に記録。�E発防止の構造化として §1-2-2 を制宁E+ N-4 で 4 択提示に強化、E
 
 **正パターン**:
-- ✅ 「§1-2-2 検知: Composer 2 へ自動切替されました。A/B/C/D の 4 択をご提示します（表で）」
-- ✅ 「Opus 4.7 のクレジット枯渇 → On-Demand 残額 $X / 残日数 Y 日 → A 推奨（§1-2-4 の予測ロジック）」
+- ✁E「§1-2-2 検知: Composer 2 へ自動�E替されました、E/B/C/D の 4 択をご提示します（表で�E�、E
+- ✁E「Opus 4.7 のクレジチE��枯渁EↁEOn-Demand 残顁E$X / 残日数 Y 日 ↁEA 推奨�E�§1-2-4 の予測ロジチE���E�、E
 
-**反パターン（本節で禁止）**:
-- ❌ Composer/Sonnet へ自動切替されたまま黙って続行（= §1-2 silent breach）
-- ❌ 4 択を省略して「とりあえず継続しますね」と続ける（= 浜田選択権の剥奪）
-- ❌ 「Auto モードに戻したほうが楽です」と提案する（= §1-2 を浜田の意思より下に置く）
+**反パターン�E�本節で禁止�E�E*:
+- ❁EComposer/Sonnet へ自動�E替されたまま黙って続行！E §1-2 silent breach�E�E
+- ❁E4 択を省略して「とりあえず継続します�E」と続ける！E 浜田選択権の剥奪�E�E
+- ❁E「Auto モードに戻したほぁE��楽です」と提案する！E §1-2 を浜田の意思より下に置く！E
 
-### §1-2-3 Opus 内モデル使い分け（2026-04-26 制定 / N-5 / Ultra プラン枯渇傾向対策）
+### §1-2-3 Opus 冁E��チE��使ぁE�Eけ！E026-04-26 制宁E/ N-5 / Ultra プラン枯渁E��向対策！E
 
-**背景**: 2026-04-26 浜田指示「Ultra プランで枯渇再発傾向 / 月 ¥20,000 追加可」を受け、§1-2 (Opus 単一モデル) の枠内で **「Max Thinking」と「Extra High」を使い分け** ることを正式化。Opus 4.6 / 4.7 の `thinking=ON` は token 消費が **3-5 倍**（output $25/1M tokens でレバレッジが効くため、節約効果が大きい）。
+**背景**: 2026-04-26 浜田持E��「Ultra プランで枯渁E�E発傾吁E/ 朁E¥20,000 追加可」を受け、E�1-2 (Opus 単一モチE��) の枠冁E�� **「Max Thinking」と「Extra High」を使ぁE�EぁE* ることを正式化。Opus 4.6 / 4.7 の `thinking=ON` は token 消費ぁE**3-5 倁E*�E�Eutput $25/1M tokens でレバレチE��が効くため、節紁E��果が大きい�E�、E
 
-**原則**: 「Opus 系最高段を 1 本に固定」(§1-2) は維持しつつ、**Opus ファミリー内の 2 段階** で使い分ける。
+**原則**: 「Opus 系最高段めE1 本に固定、E§1-2) は維持しつつ、E*Opus ファミリー冁E�E 2 段隁E* で使ぁE�Eける、E
 
-| タスク種別 | 推奨モデル | 理由 |
+| タスク種別 | 推奨モチE�� | 琁E�� |
 |---|---|---|
-| **Max Thinking 必須**（Opus 4.7 1M Max Thinking）| §47-A 100% 証明要求 / 設計判断（§48 Best Options 起案）/ 複雑バグ修正（§47-B-2 段階的批判）/ TSB 真因究明 / 憲法改定 §57 起案 / 重大インシデント分析 | 推論深度が結果品質を左右する |
-| **Extra High 推奨**（Opus 4.7 1M Extra High / no-thinking）| lint / refactor / 既知パターン kintone deploy / commit message 起草 / RAG 同期 / chat-sessions 更新 / 朝報整形 / npm script 別名追加 / ファイルコピー検証 | thinking 不要 / コスト 1/3〜1/5 |
+| **Max Thinking 忁E��E*�E�Epus 4.7 1M Max Thinking�E�| §47-A 100% 証明要汁E/ 設計判断�E�§48 Best Options 起案！E 褁E��バグ修正�E�§47-B-2 段階的批判�E�E TSB 真因究昁E/ 憲法改宁E§57 起桁E/ 重大インシチE��ト�E极E| 推論深度が結果品質を左右する |
+| **Extra High 推奨**�E�Epus 4.7 1M Extra High / no-thinking�E�| lint / refactor / 既知パターン kintone deploy / commit message 起荁E/ RAG 同期 / chat-sessions 更新 / 朝報整形 / npm script 別名追加 / ファイルコピ�E検証 | thinking 不要E/ コスチE1/3、E/5 |
 
 **運用ルール**:
 
-1. **既定は Extra High**（CLI / IDE とも）。タスク開始時に AI が判定し、Max Thinking が必要なら「§1-2-3 で Max Thinking に切替えて再実行をお願いします」と浜田に明示要求
-2. **Max Thinking 切替の証跡**: AI が要求した場合は理由を 1 行で添える（例: 「§57 改定 起案のため Max Thinking 必須」）
-3. **Extra High でも品質低下が観察される場合**: §47-B-2 信頼度ラベル 🟡 90% 上限とし、Max Thinking 再実行を提案
-4. **既存 §1-2 / §1-2-1 との整合**: IDE 「Opus 4.7 1M Extra High」 + CLI 「Opus 4.7 1M Max Thinking」 の両方を **有効モデル一覧で ON** にしておき、用途で切替（他モデルは引き続き OFF）
+1. **既定�E Extra High**�E�ELI / IDE とも）。タスク開始時に AI が判定し、Max Thinking が忁E��なら「§1-2-3 で Max Thinking に刁E��えて再実行をお願いします」と浜田に明示要汁E
+2. **Max Thinking 刁E��の証跡**: AI が要求した場合�E琁E��めE1 行で添える�E�侁E 「§57 改宁E起案�Eため Max Thinking 忁E��」！E
+3. **Extra High でも品質低下が観察される場吁E*: §47-B-2 信頼度ラベル 🟡 90% 上限とし、Max Thinking 再実行を提桁E
+4. **既孁E§1-2 / §1-2-1 との整吁E*: IDE 「Opus 4.7 1M Extra High、E+ CLI 「Opus 4.7 1M Max Thinking、Eの両方めE**有効モチE��一覧で ON** にしておき、用途で刁E���E�他モチE��は引き続き OFF�E�E
 
-**§1-2-3-1 AI 自己宣言義務（2026-04-26 P5-5 追加 / Max Thinking 形骸化対策）**:
+**§1-2-3-1 AI 自己宣言義務！E026-04-26 P5-5 追加 / Max Thinking 形骸化対策！E*:
 
-**背景**: 2026-04-26 P5-5 監査で「§1-2-3 制定後も全タスクが Max Thinking で処理されており、ルールが形骸化していた」ことが判明 (= F-13 / API token 12 日完全枯渇の主因)。本節を追加し、AI が **タスク冒頭で必ず使用モデル ティアを 1 行宣言** することを義務化する。
+**背景**: 2026-04-26 P5-5 監査で「§1-2-3 制定後も全タスクぁEMax Thinking で処琁E��れており、ルールが形骸化してぁE��」ことが判昁E(= F-13 / API token 12 日完�E枯渁E�E主因)。本節を追加し、AI ぁE**タスク冒頭で忁E��使用モチE�� チE��アめE1 行宣言** することを義務化する、E
 
-**必須**:
+**忁E��E*:
 
-1. **タスク冒頭 (浜田の指示受領直後 / 「思考」内 もしくは応答開始時)** に **モデル ティア判定** を 1 行明示する
-   - 例 1: `[§1-2-3 ティア判定: Extra High] 朝のブリーフィング読み上げ = ルーチン作業`
-   - 例 2: `[§1-2-3 ティア判定: Max Thinking] kintone Day 4 deploy 実行 = §47-A 100% 証明要求`
-   - 例 3: `[§1-2-3 ティア判定: Extra High → Max Thinking 要請] §57 改定起案のため切替を要請`
+1. **タスク冒頭 (浜田の持E��受領直征E/ 「思老E���E もしく�E応答開始時)** に **モチE�� チE��ア判宁E* めE1 行�E示する
+   - 侁E1: `[§1-2-3 チE��ア判宁E Extra High] 朝�Eブリーフィング読み上げ = ルーチン作業`
+   - 侁E2: `[§1-2-3 チE��ア判宁E Max Thinking] kintone Day 4 deploy 実衁E= §47-A 100% 証明要求`
+   - 侁E3: `[§1-2-3 チE��ア判宁E Extra High ↁEMax Thinking 要請] §57 改定起案�Eため刁E��を要請`
 
-2. **判定の妥当性**: 表 (§1-2-3 上段) の「タスク種別」と一致する根拠を 1 行で添える
+2. **判定�E妥当性**: 表 (§1-2-3 上段) の「タスク種別」と一致する根拠めE1 行で添える
 
 3. **Max Thinking で実行中 と気付いたら**:
-   - ルーチン作業なら **「§1-2-3 違反検知。Extra High に切替えて再実行をお願いします」** と浜田に通知 (= 自発的な節約勧告)
-   - 浜田から「Max Thinking のままで良い」と GO が出たら継続 (= §1-2 例外規定 ① 浜田明示指示)
+   - ルーチン作業なめE**「§1-2-3 違反検知、Extra High に刁E��えて再実行をお願いします、E* と浜田に通知 (= 自発皁E��節紁E��呁E
+   - 浜田から「Max Thinking のままで良ぁE��と GO が�Eたら継綁E(= §1-2 例外規宁E① 浜田明示持E��)
 
-**ティア判定の実例 (P5-5 観察値ベース)**:
+**チE��ア判定�E実侁E(P5-5 観察値ベ�Eス)**:
 
-| 浜田指示の典型 | 判定 | 理由 |
+| 浜田持E��の典垁E| 判宁E| 琁E�� |
 |---|---|---|
-| 「朝のブリーフィングお願い」 | Extra High | 既知パターン定型作業 |
-| 「健康診断して」 | Extra High | smoke-test / lint / npm run の集計 |
-| 「PC 台帳 Day N 進めて」 | Max Thinking | §47-A 100% 証明要求 + 不可逆操作 |
-| 「TSB-XXX 起票して」 | Max Thinking | 真因究明 / 設計判断 |
-| 「§XX 改定起案して」 | Max Thinking | 憲法改定 §57 |
-| 「commit & push して」 | Extra High | 既知の commit message 起草 |
-| 「lint pass か確認して」 | Extra High | 結果整形のみ |
-| 「並列セッション detector 結果確認」 | Extra High | 既知出力の解釈 |
-| 「F-N 発見の対応案を考えて」 | Max Thinking | 設計判断 |
-| 「.cursorignore に X を追加して」 | Extra High | 単一ファイル追記 |
+| 「朝のブリーフィングお願い、E| Extra High | 既知パターン定型作業 |
+| 「健康診断して、E| Extra High | smoke-test / lint / npm run の雁E��E|
+| 「PC 台帳 Day N 進めて、E| Max Thinking | §47-A 100% 証明要汁E+ 不可送E��佁E|
+| 「TSB-XXX 起票して、E| Max Thinking | 真因究昁E/ 設計判断 |
+| 「§XX 改定起案して、E| Max Thinking | 憲法改宁E§57 |
+| 「commit & push して、E| Extra High | 既知の commit message 起荁E|
+| 「lint pass か確認して、E| Extra High | 結果整形のみ |
+| 「並列セチE��ョン detector 結果確認、E| Extra High | 既知出力�E解釁E|
+| 「F-N 発見�E対応案を老E��て、E| Max Thinking | 設計判断 |
+| 、Ecursorignore に X を追加して、E| Extra High | 単一ファイル追訁E|
 
-**統合**: 朝のブリーフィング §0 でその日の予定タスクを列挙したとき、各々に [Extra High] / [Max Thinking] のラベルを付与し、Max Thinking 比率が 30% を超えるなら「本日は重い設計タスクが多いです。クレジット消費に注意」と自発警告 (§1-2-4 70% 連動)。
+**統吁E*: 朝�Eブリーフィング §0 でそ�E日の予定タスクを�E挙したとき、各、E�� [Extra High] / [Max Thinking] のラベルを付与し、Max Thinking 比率ぁE30% を趁E��るなら「本日は重い設計タスクが多いです。クレジチE��消費に注意」と自発警呁E(§1-2-4 70% 連勁E、E
 
 **反パターン**:
-- ❌ 全てのタスクを Max Thinking で処理する（コスト過剰 / Ultra 月次クレジット枯渇の主因 / **F-13 観察済**）
-- ❌ Extra High で複雑バグ修正を進めて「動くはず」宣言（§11-2 信頼度ラベル違反相当）
-- ❌ ティア判定を **省略** して作業に入る（= 形骸化の温床 / §1-2-3-1 違反）
+- ❁E全てのタスクめEMax Thinking で処琁E��る（コスト過剰 / Ultra 月次クレジチE��枯渁E�E主因 / **F-13 観察渁E*�E�E
+- ❁EExtra High で褁E��バグ修正を進めて「動く�Eず」宣言�E�§11-2 信頼度ラベル違反相当！E
+- ❁EチE��ア判定を **省略** して作業に入る！E 形骸化�E温庁E/ §1-2-3-1 違反�E�E
 
-**§1-2-2 / §1-2-4 との関係**: §1-2-3 = 通常時のコスト最適化 / §1-2-2 = 枯渇検知時の選択 / §1-2-4 = 予算予測。三本柱で Ultra プラン内に収める。**§1-2-3-1 (自己宣言義務) は §1-2-3 の遵守徹底機構**。
+**§1-2-2 / §1-2-4 との関俁E*: §1-2-3 = 通常時�Eコスト最適匁E/ §1-2-2 = 枯渁E��知時�E選抁E/ §1-2-4 = 予算予測。三本柱で Ultra プラン冁E��収める、E*§1-2-3-1 (自己宣言義勁E は §1-2-3 の遵守徹底機槁E*、E
 
-**§1-2-3-2 AI 自律モデル選択原則（2026-04-26 P5-5 追加 / 浜田指示「最適モデル / こだわらない / 適時 AI 判断」)**:
+**§1-2-3-2 AI 自律モチE��選択原剁E��E026-04-26 P5-5 追加 / 浜田持E��「最適モチE�� / こだわらなぁE/ 適晁EAI 判断、E**:
 
-**背景**: 2026-04-26 P5-5 監査で **F-14 (Max Thinking が API 消費の 59.4% / Extra High 40.8% / Composer 2 等 0.6%)** が判明。§1-2-3-1 (自己宣言義務) を制定したが、それだけでは **「Composer 2 を使えるはずのルーチンタスクも Max Thinking で処理する」傾向が残る** ため、本節で **Composer 2 を含む 3 段階自律選択** を正式化。浜田の指示「絶対にこのモデルを使うというこだわりはしない / 適時 AI 側で判断してほしい」を実装する。
+**背景**: 2026-04-26 P5-5 監査で **F-14 (Max Thinking ぁEAPI 消費の 59.4% / Extra High 40.8% / Composer 2 筁E0.6%)** が判明。§1-2-3-1 (自己宣言義勁E を制定したが、それだけでは **「Composer 2 を使えるはず�EルーチンタスクめEMax Thinking で処琁E��る」傾向が残る** ため、本節で **Composer 2 を含む 3 段階�E律選抁E* を正式化。浜田の持E��「絶対にこ�EモチE��を使ぁE��ぁE��こだわりはしなぁE/ 適晁EAI 側で判断してほしい」を実裁E��る、E
 
-**3 段階の自律選択基準** (AI が §1-2-3-1 のティア判定で 1 行宣言):
+**3 段階�E自律選択基溁E* (AI ぁE§1-2-3-1 のチE��ア判定で 1 行宣言):
 
-| ティア | 実モデル名 | 適用条件 (AI 判断基準) | 月コスト目安 |
+| チE��ア | 実モチE��吁E| 適用条件 (AI 判断基溁E | 月コスト目宁E|
 |---|---|---|---|
-| **L1: Composer 2** | composer-2 (Cursor 独自) | ① 既知の定型タスク (lint 結果整形 / RAG 同期確認 / chat-sessions 記録更新 / commit message 起草 / 単純ファイル追記 / 朝報整形 / npm script 別名追加) ② 浜田の指示が **2-3 文以下の短いタスク** ③ 創造的判断不要 | 最安 (~1/10) |
-| **L2: Extra High** | claude-opus-4-7-thinking-xhigh | ① 通常の実装・調査・設計 ② kintone Day N の **Tier A 範囲** ③ §57 改定の文章編集 (起案ではない) ④ TSB 整形 | 中 (基準) |
-| **L3: Max Thinking** | claude-opus-4-7-max-thinking | ① §47-A 100% 証明要求 ② §57 改定 **起案** ③ TSB 真因究明 ④ 重大インシデント分析 ⑤ kintone Day N の **Tier B / 不可逆操作前** ⑥ §48 Best Options 起案 ⑦ 複雑な抽象設計 | 高 (~1.5x) |
+| **L1: Composer 2** | composer-2 (Cursor 独自) | ① 既知の定型タスク (lint 結果整形 / RAG 同期確誁E/ chat-sessions 記録更新 / commit message 起荁E/ 単純ファイル追訁E/ 朝報整形 / npm script 別名追加) ② 浜田の持E��ぁE**2-3 斁E��下�E短ぁE��スク** ③ 創造皁E��断不要E| 最宁E(~1/10) |
+| **L2: Extra High** | claude-opus-4-7-thinking-xhigh | ① 通常の実裁E�E調査・設訁E② kintone Day N の **Tier A 篁E��** ③ §57 改定�E斁E��編雁E(起案ではなぁE ④ TSB 整形 | 中 (基溁E |
+| **L3: Max Thinking** | claude-opus-4-7-max-thinking | ① §47-A 100% 証明要汁E② §57 改宁E**起桁E* ③ TSB 真因究昁E④ 重大インシチE��ト�E极E⑤ kintone Day N の **Tier B / 不可送E��作前** ⑥ §48 Best Options 起桁E⑦ 褁E��な抽象設訁E| 髁E(~1.5x) |
 
-**判定フロー (AI 思考内 / 1 秒判定)**:
+**判定フロー (AI 思老E�E / 1 秒判宁E**:
 
 ```
-浜田の指示を受領
-  ↓
-1. 「単純な追記 / 整形 / 確認 / 既知定型」か？
-   YES → L1 Composer 2  (例: 「commit して」「ログ確認」)
-   NO ↓
-2. 「Tier B / 100% 証明要求 / 真因究明 / 改定起案」か？
-   YES → L3 Max Thinking (例: 「PC 台帳 Day 4 進めて」「TSB 起票」)
-   NO ↓
-3. デフォルト → L2 Extra High (例: 「実装お願い」「監査して」)
+浜田の持E��を受頁E
+  ↁE
+1. 「単純な追訁E/ 整形 / 確誁E/ 既知定型」か�E�E
+   YES ↁEL1 Composer 2  (侁E 「commit して」「ログ確認、E
+   NO ↁE
+2. 「Tier B / 100% 証明要汁E/ 真因究昁E/ 改定起案」か�E�E
+   YES ↁEL3 Max Thinking (侁E 「PC 台帳 Day 4 進めて」「TSB 起票、E
+   NO ↁE
+3. チE��ォルチEↁEL2 Extra High (侁E 「実裁E��願い」「監査して、E
 ```
 
-**自律判断の安全弁**:
+**自律判断の安�E弁E*:
 
-1. **不可逆操作 (Tier B / kintone API write / git push --force / rm -rf) は L3 Max Thinking 強制** = 浜田の §47-A 100% 証明要求と整合
-2. **判断に迷ったら L3 にフォールバック** ではなく **L2 (Extra High) にフォールバック** (= F-14 防止 / コスト過剰回避)
-3. **Composer 2 → Extra High 昇格**: タスク途中で複雑性発覚 → 「§1-2-3-2 ティア昇格: L1 → L2」と宣言して継続
-4. **silent fallback との区別 (§1-2-2 連動)**: Cursor IDE が裏で `Switched to Composer 2 after reaching API limit.` を出した場合は §1-2-2 で 4 択提示が必要。**AI が事前明示的に Composer 2 を選んだ場合は §1-2-2 対象外** = ティア宣言が両者を区別する証跡
+1. **不可送E��佁E(Tier B / kintone API write / git push --force / rm -rf) は L3 Max Thinking 強制** = 浜田の §47-A 100% 証明要求と整吁E
+2. **判断に迷ったら L3 にフォールバック** ではなぁE**L2 (Extra High) にフォールバック** (= F-14 防止 / コスト過剰回避)
+3. **Composer 2 ↁEExtra High 昁E��**: タスク途中で褁E��性発要EↁE「§1-2-3-2 チE��ア昁E��: L1 ↁEL2」と宣言して継綁E
+4. **silent fallback との区別 (§1-2-2 連勁E**: Cursor IDE が裏で `Switched to Composer 2 after reaching API limit.` を�Eした場合�E §1-2-2 で 4 択提示が忁E��、E*AI が事前明示皁E�� Composer 2 を選んだ場合�E §1-2-2 対象夁E* = チE��ア宣言が両老E��区別する証跡
 
-**運用例 (2026-04-26 観察値ベース)**:
+**運用侁E(2026-04-26 観察値ベ�Eス)**:
 
-| 浜田指示 | 旧 (今朝まで) | 新 (本節適用後) |
+| 浜田持E�� | 旧 (今朝まで) | 新 (本節適用征E |
 |---|---|---|
-| 「commit して push して」 | L3 Max Thinking | **L1 Composer 2** |
-| 「smoke-test 結果を見せて」 | L3 Max Thinking | **L1 Composer 2** |
-| 「.cursorignore に追記」 | L3 Max Thinking | **L1 Composer 2** |
-| 「P5-5 監査の続き」 | L3 Max Thinking | **L2 Extra High** |
-| 「PC 台帳 Day 4 deploy」 | L3 Max Thinking | **L3 Max Thinking** (維持) |
-| 「§1-2-3 改定起案」 | L3 Max Thinking | **L3 Max Thinking** (維持) |
+| 「commit して push して、E| L3 Max Thinking | **L1 Composer 2** |
+| 「smoke-test 結果を見せて、E| L3 Max Thinking | **L1 Composer 2** |
+| 、Ecursorignore に追記、E| L3 Max Thinking | **L1 Composer 2** |
+| 「P5-5 監査の続き、E| L3 Max Thinking | **L2 Extra High** |
+| 「PC 台帳 Day 4 deploy、E| L3 Max Thinking | **L3 Max Thinking** (維持E |
+| 「§1-2-3 改定起案、E| L3 Max Thinking | **L3 Max Thinking** (維持E |
 
-**期待効果**:
+**期征E��极E*:
 
-- **Max Thinking 比率 59.4% → 20-30% 想定** (= 重い設計タスク時のみ)
-- **Composer 2 比率 0.6% → 30-40% 想定** (= ルーチンタスク全般)
-- API token 消費 1/2 〜 1/3 (= F-13 / 12 日枯渇 → 30 日以上に延伸見込み)
+- **Max Thinking 比率 59.4% ↁE20-30% 想宁E* (= 重い設計タスク時�Eみ)
+- **Composer 2 比率 0.6% ↁE30-40% 想宁E* (= ルーチンタスク全般)
+- API token 消費 1/2 、E1/3 (= F-13 / 12 日枯渁EↁE30 日以上に延伸見込み)
 
 **反パターン (本節で禁止)**:
 
-- ❌ ルーチンタスクを L3 Max Thinking で処理する (= F-14 主因 / 「最適モデル原則」違反)
-- ❌ 不可逆操作を L1 Composer 2 で処理する (= §47-A 違反)
-- ❌ ティア宣言を省略して作業に入る (= §1-2-3-1 違反 / 浜田の透明性確認権剥奪)
+- ❁EルーチンタスクめEL3 Max Thinking で処琁E��めE(= F-14 主因 / 「最適モチE��原則」違叁E
+- ❁E不可送E��作を L1 Composer 2 で処琁E��めE(= §47-A 違反)
+- ❁EチE��ア宣言を省略して作業に入めE(= §1-2-3-1 違反 / 浜田の透�E性確認権剥奪)
 
 **§1-2-2 との明確な区別**:
-- 本節 (§1-2-3-2) = **AI が事前明示で Composer 2 等を選択** (= 健全な最適化)
-- §1-2-2 = **Cursor IDE が silent fallback で勝手に切替** (= 浜田選択権剥奪 / 4 択提示必須)
+- 本節 (§1-2-3-2) = **AI が事前明示で Composer 2 等を選抁E* (= 健全な最適匁E
+- §1-2-2 = **Cursor IDE ぁEsilent fallback で勝手に刁E��** (= 浜田選択権剥奪 / 4 択提示忁E��E
 
-ティア宣言で両者を区別する証跡を残すことで、§1-2-2 違反検知の精度も維持する。
+チE��ア宣言で両老E��区別する証跡を残すことで、E�1-2-2 違反検知の精度も維持する、E
 
-**§1-2-3-3 CIO によるモデル最終判断（2026-04-29 制定 / 浜田 CIO 運用）**:
+**§1-2-3-3 CIO によるモチE��最終判断�E�E026-04-29 制宁E/ 浜田 CIO 運用�E�E*:
 
-**背景**: 2026-04-29 浜田指示「**モデル選択は CIO で判断でよい**」を受け、§1-2-3-2（AI 自律モデル選択）と **衝突しない形**で **最終判断権**を明文化する。運用上の **CIO = 浜田**（チャット上の相談・GO も同一人物。§50-3-7 の CEO 最終決定と併せて読む）。
+**背景**: 2026-04-29 浜田持E��、E*モチE��選択�E CIO で判断でよい**」を受け、E�1-2-3-2�E�EI 自律モチE��選択）と **衝突しなぁE��**で **最終判断権**を�E斁E��する。運用上�E **CIO = 浜田**�E�チャチE��上�E相諁E�EGO も同一人物。§50-3-7 の CEO 最終決定と併せて読む�E�、E
 
-**規定**:
+**規宁E*:
 
-1. **AI の義務**: 引き続き §1-2-3-1 でティアを宣言し、§1-2-3-2 に基づき **推奨（L1/L2/L3 または Extra High / Max Thinking）と理由を提示**する。
-2. **CIO（浜田）が当該タスクについてモデル・チャット欄のティアを明示した場合**、AI は **それに従う**。§1-2-3-2 の自律選択と矛盾する場合は **CIO 指示を優先**する（§1-2 例外規定 ① と整合）。
-3. **CIO が未指定のとき**は §1-2-3-1 / §1-2-3-2 のとおり（AI が最適と判断したティアで進める）。
-4. **§35-1 / §56-1a / TSB-024**（開発・コマンド・検証実行は AI、**仕様の最終判断・GO・画面の目視確認は浜田**）は **不変**（本条はモデル選択の帰属のみを追加する）。
+1. **AI の義勁E*: 引き続き §1-2-3-1 でチE��アを宣言し、E�1-2-3-2 に基づぁE**推奨�E�E1/L2/L3 また�E Extra High / Max Thinking�E�と琁E��を提示**する、E
+2. **CIO�E�浜田�E�が当該タスクにつぁE��モチE��・チャチE��欁E�EチE��アを�E示した場吁E*、AI は **それに従う**。§1-2-3-2 の自律選択と矛盾する場合�E **CIO 持E��を優允E*する�E�§1-2 例外規宁E① と整合）、E
+3. **CIO が未持E���EとぁE*は §1-2-3-1 / §1-2-3-2 のとおり�E�EI が最適と判断したチE��アで進める�E�、E
+4. **§35-1 / §56-1a / TSB-024**�E�開発・コマンド�E検証実行�E AI、E*仕様�E最終判断・GO・画面の目視確認�E浜田**�E��E **不夁E*�E�本条はモチE��選択�E帰属�Eみを追加する�E�、E
 
-### §1-2-4 クレジット予算管理（2026-04-26 制定 / N-6 / 朝ブリーフィング §0 統合）
+### §1-2-4 クレジチE��予算管琁E��E026-04-26 制宁E/ N-6 / 朝ブリーフィング §0 統合！E
 
-**背景**: 2026-04-26 浜田指示「枯渇再発傾向 / 月 ¥20,000 追加可 / AI 側で管理してほしい」を受け、月次クレジット消費の **可視化 + 自発警告 + 超過予測** を構造化。Cursor は公開課金 API を提供していないため、**浜田が 1 日 1 回 30 秒で % を貼付 + AI が予測・記録** のハイブリッド運用とする。
+**背景**: 2026-04-26 浜田持E��「枯渁E�E発傾吁E/ 朁E¥20,000 追加可 / AI 側で管琁E��てほしい」を受け、月次クレジチE��消費の **可視化 + 自発警呁E+ 趁E��予測** を構造化、Eursor は公開課釁EAPI を提供してぁE��ぁE��め、E*浜田ぁE1 日 1 囁E30 秒で % を貼仁E+ AI が予測・記録** のハイブリチE��運用とする、E
 
-**月次予算（2026-04-26 浜田承認 / P5-5 改定）**:
+**月次予算！E026-04-26 浜田承誁E/ P5-5 改定！E*:
 
-| 区分 | 金額 (USD) | 円換算 (¥155/$) | 用途 |
+| 区刁E| 金顁E(USD) | 冁E��箁E(¥155/$) | 用送E|
 |---|---|---|---|
-| Cursor Ultra 月額 | $200 | ¥31,000 | 通常運用 (L1) / 基本 API + Composer + Auto |
-| On-Demand Monthly Limit (4/26 引上げ) | **$1000** | ¥155,000 | 月次クレジット枯渇後の業務継続 (L2) |
+| Cursor Ultra 月顁E| $200 | ¥31,000 | 通常運用 (L1) / 基本 API + Composer + Auto |
+| On-Demand Monthly Limit (4/26 引上げ) | **$1000** | ¥155,000 | 月次クレジチE��枯渁E���E業務継綁E(L2) |
 | **合算最大** | **$1200** | **¥186,000** | Worst case |
-| **節約適用後 見込** | **$430-500** | **¥66,000-78,000** | S1-S5 節約パッケージ実施時 |
+| **節紁E��用征E見込** | **$430-500** | **¥66,000-78,000** | S1-S5 節紁E��チE��ージ実施晁E|
 
 **4/26 P5-5 履歴**:
-- 旧: On-Demand Spend Cap **$130** (≈ ¥20,000 / 浜田当初想定)
-- 新: On-Demand Monthly Limit **$1000** (Worst ¥186,000 / 節約後 ¥66,000-78,000 想定)
-- 引上げ理由: 4/15-4/26 (12 日) で On-Demand $235.94 既消費 = $300 旧上限を 4/29-5/3 突破見込み (= F-12)
-- 制約: 引上げと並行で **S1-S5 節約パッケージ全実施** (CLAUDE.md 整理 / Extra High 既定徹底 / .cursorignore 強化 / session 区切り 等) を §1-2-3 / §51 に反映
-- 5/15 リセット時に振り返り → 節約効果次第で次月 $500 戻す可能性
+- 旧: On-Demand Spend Cap **$130** (≁E¥20,000 / 浜田当�E想宁E
+- 新: On-Demand Monthly Limit **$1000** (Worst ¥186,000 / 節紁E��E¥66,000-78,000 想宁E
+- 引上げ琁E��: 4/15-4/26 (12 日) で On-Demand $235.94 既消費 = $300 旧上限めE4/29-5/3 突破見込み (= F-12)
+- 制紁E 引上げと並行で **S1-S5 節紁E��チE��ージ全実施** (CLAUDE.md 整琁E/ Extra High 既定徹庁E/ .cursorignore 強匁E/ session 区刁E�� 筁E めE§1-2-3 / §51 に反映
+- 5/15 リセチE��時に振り返り ↁE節紁E��果次第で次朁E$500 戻す可能性
 
-**毎日 1 回の貼付フロー（朝ブリーフィング §0 統合 / P5-5 強化）**:
+**毎日 1 回�E貼付フロー�E�朝ブリーフィング §0 統吁E/ P5-5 強化！E*:
 
-1. **浜田の作業 (30 秒 / 旧プロセス)**:
-   - cursor.com/billing or アカウント設定の "Usage" を開いて **「今月のクレジット消費 X%」** を 1 行コピー
-   - AI に「今月 X%」とだけ伝える（または `npm run credit:set 65` で直接記録）
+1. **浜田の作業 (30 私E/ 旧プロセス)**:
+   - cursor.com/billing or アカウント設定�E "Usage" を開ぁE�� **「今月のクレジチE��消費 X%、E* めE1 行コピ�E
+   - AI に「今月 X%」とだけ伝える（また�E `npm run credit:set 65` で直接記録�E�E
 
-2. **浜田の作業 (60 秒 / 新プロセス / P5-5 追加)**:
-   - 上記に加え **Cursor IDE Settings → Plan & Usage → Spending タブ** をスクショ送付
-   - スクショ内 4 値 = (a) Total% (b) API% (c) On-Demand $X / $1000 (d) Monthly Limit を AI が抽出 → JSON 記録
-   - これにより API token 単独枯渇 (= TSB-018 トリガ / F-13) を事前検知可能になる
+2. **浜田の作業 (60 私E/ 新プロセス / P5-5 追加)**:
+   - 上記に加ぁE**Cursor IDE Settings ↁEPlan & Usage ↁESpending タチE* をスクショ送仁E
+   - スクショ冁E4 値 = (a) Total% (b) API% (c) On-Demand $X / $1000 (d) Monthly Limit めEAI が抽出 ↁEJSON 記録
+   - これにより API token 単独枯渁E(= TSB-018 トリガ / F-13) を事前検知可能になめE
 
-3. AI が `data/credit-usage.json` に {date, total_pct, api_pct, on_demand_usd, monthly_limit_usd} を append
-4. AI が予測ロジックで **「想定枯渇日 / 残日数 / 月末予測 (Total% / API% / On-Demand $)」** を 3 系統計算
-5. 翌朝のブリーフィング §0 に 3 系統表示 (どれかが 70% 超なら警告)
+3. AI ぁE`data/credit-usage.json` に {date, total_pct, api_pct, on_demand_usd, monthly_limit_usd} めEappend
+4. AI が予測ロジチE��で **「想定枯渁E�� / 残日数 / 月末予測 (Total% / API% / On-Demand $)、E* めE3 系統計箁E
+5. 翌朝のブリーフィング §0 に 3 系統表示 (どれかぁE70% 趁E��ら警呁E
 
-**TSB-021 候補 (Day 5-6 起票予定)**: `scripts/credit-budget.mjs` に **`--input-on-demand <USD> --input-api <PCT>`** オプション追加 → 浜田スクショ抽出値を AI が自動投入 → 旧来の % 単一系統から 3 系統に拡張
+**TSB-021 候裁E(Day 5-6 起票予宁E**: `scripts/credit-budget.mjs` に **`--input-on-demand <USD> --input-api <PCT>`** オプション追加 ↁE浜田スクショ抽出値めEAI が�E動投入 ↁE旧来の % 単一系統から 3 系統に拡張
 
-**自発警告 閾値（P5-5 改定 / 3 系統対応）**:
+**自発警呁E閾値�E�E5-5 改宁E/ 3 系統対応！E*:
 
-3 系統 (Total% / API% / On-Demand $) のいずれかが閾値を超えたら警告発火。
+3 系統 (Total% / API% / On-Demand $) のぁE��れかが閾値を趁E��たら警告発火、E
 
-| 消費率 | AI 動作 |
+| 消費玁E| AI 動佁E|
 |---|---|
-| **70%** | 朝報 §0 に「⚠️ 70% 到達 (系統名) / Max Thinking タスクは要選択」と表示。AI 側で §1-2-3 / §1-2-3-1 適用を強化（Max Thinking 要求時に「節約のため Extra High で代替可能か」と問い返し）|
-| **80%** **(P5-5 新設)** | 朝報 §0 + AI 開口一番に **「80% 到達 (系統名 = ○○)。本日中の重い設計タスクをどうするかご判断を」**と提示。On-Demand $ なら「上限引上げ or 節約強化 or タスク繰延」の 3 択提示 |
-| **85%** | 朝報 §0 + AI 開口一番に **「85% 到達 (系統名)。本日中に On-Demand 引上げ or タスク絞り込みのご判断を」**と提示 |
-| **95%** | AI が **タスク開始前に必ず**「95% 超過 (系統名)、§1-2-2 4 択提示しますか? それとも軽微作業のみ続行しますか?」と確認。重い設計タスク・PC 台帳本番は要 GO |
-| **100%** | §1-2-2 検知挙動と完全一体化（4 択提示 → 浜田選択待ち）|
+| **70%** | 朝報 §0 に「⚠�E�E70% 到遁E(系統吁E / Max Thinking タスクは要E��択」と表示、EI 側で §1-2-3 / §1-2-3-1 適用を強化！Eax Thinking 要求時に「節紁E�Eため Extra High で代替可能か」と問い返し�E�|
+| **80%** **(P5-5 新設)** | 朝報 §0 + AI 開口一番に **、E0% 到遁E(系統吁E= ○○)。本日中の重い設計タスクをどぁE��るかご判断を、E*と提示。On-Demand $ なら「上限引上げ or 節紁E��匁Eor タスク繰延」�E 3 択提示 |
+| **85%** | 朝報 §0 + AI 開口一番に **、E5% 到遁E(系統吁E。本日中に On-Demand 引上げ or タスク絞り込みのご判断を、E*と提示 |
+| **95%** | AI ぁE**タスク開始前に忁E��**、E5% 趁E�� (系統吁E、E�1-2-2 4 択提示しますか? それとも軽微作業のみ続行しますか?」と確認。重ぁE��計タスク・PC 台帳本番は要EGO |
+| **100%** | §1-2-2 検知挙動と完�E一体化�E�E 択提示 ↁE浜田選択征E���E�|
 
-**API 系統 100% 単独到達時の特例 (P5-5 / F-13 教訓)**:
+**API 系統 100% 単独到達時の特侁E(P5-5 / F-13 教訁E**:
 
-- API 系統だけ 100% に達した場合 (= Total/On-Demand は余裕)、Cursor IDE は **Composer 2 fallback (TSB-018)** を発動する
-- AI は § 1-2-2 検知挙動を発動 = 即座に作業中断 + 浜田に「§1-2-2 違反検知 / API 系統枯渇 = Composer 2 fallback 発生」と報告
-- 浜田 GO 後、Extra High (API 不要) で継続するか、On-Demand 余裕で Max Thinking 継続するかの 2 択提示
+- API 系統だぁE100% に達した場吁E(= Total/On-Demand は余裁E、Cursor IDE は **Composer 2 fallback (TSB-018)** を発動すめE
+- AI は § 1-2-2 検知挙動を発勁E= 即座に作業中断 + 浜田に「§1-2-2 違反検知 / API 系統枯渁E= Composer 2 fallback 発生」と報呁E
+- 浜田 GO 後、Extra High (API 不要E で継続するか、On-Demand 余裕で Max Thinking 継続するかの 2 択提示
 
-**月次リセット**:
+**月次リセチE��**:
 
-- 浜田 Cursor 課金日（例: 毎月 14 日 → 浜田が初回設定時に `npm run credit:reset -- --day=14` で記録）
-- リセット日に AI が `data/credit-usage.json` の月次集計を `data/credit-usage-history.jsonl` に append → 当月分 reset
+- 浜田 Cursor 課金日�E�侁E 毎月 14 日 ↁE浜田が�E回設定時に `npm run credit:reset -- --day=14` で記録�E�E
+- リセチE��日に AI ぁE`data/credit-usage.json` の月次雁E��を `data/credit-usage-history.jsonl` に append ↁE当月刁Ereset
 
 **タイムゾーン (P1 / 2026-04-26 / off-by-one バグ修正)**:
 
-- **全ての日付計算は JST (UTC+9) 基準**。`scripts/credit-budget.mjs` の `todayJstIso()` / `nowJstIso()` / `dateToJstIsoDate()` を使用
-- 旧実装 (UTC `toISOString()`) では JST 0:00-8:59 に記録すると前日扱いになる off-by-one バグがあった (実例: O-series 制定日 2026-04-26 07:16 JST の浜田報告が `2026-04-25` として記録された)
-- 修正後: cursor.com/billing が表示する日付（JST 表記）と一致する。データ保存も `recorded_at` が `+09:00` 付き ISO 8601
+- **全ての日付計算�E JST (UTC+9) 基溁E*。`scripts/credit-budget.mjs` の `todayJstIso()` / `nowJstIso()` / `dateToJstIsoDate()` を使用
+- 旧実裁E(UTC `toISOString()`) では JST 0:00-8:59 に記録すると前日扱ぁE��なめEoff-by-one バグがあっぁE(実侁E O-series 制定日 2026-04-26 07:16 JST の浜田報告が `2026-04-25` として記録されぁE
+- 修正征E cursor.com/billing が表示する日付！EST 表記）と一致する。データ保存も `recorded_at` ぁE`+09:00` 付き ISO 8601
 
-**AI 管理範囲（§1-2-4 の役割分担）**:
+**AI 管琁E��E���E�§1-2-4 の役割刁E���E�E*:
 
-| 項目 | AI | 浜田 |
+| 頁E�� | AI | 浜田 |
 |---|---|---|
-| ルール維持・改訂 | ✅ | (§57 改定 GO のみ) |
-| % 入力フォーム提供 (`npm run credit:set <pct>`)| ✅ | 入力 30 秒 / 1 日 1 回 |
-| 予測計算・JSON 保存 | ✅ | - |
-| 朝報 §0 表示 | ✅ | 朝チェック |
-| 70/85/95% 自発警告 | ✅ | 判断 |
-| Cursor 設定変更 (On-Demand / Spend Cap) | ❌ | ✅（月 1 回 + 必要時）|
-| 支払い・プラン変更 | ❌ | ✅ |
+| ルール維持�E改訁E| ✁E| (§57 改宁EGO のみ) |
+| % 入力フォーム提侁E(`npm run credit:set <pct>`)| ✁E| 入劁E30 私E/ 1 日 1 囁E|
+| 予測計算�EJSON 保孁E| ✁E| - |
+| 朝報 §0 表示 | ✁E| 朝チェチE�� |
+| 70/85/95% 自発警呁E| ✁E| 判断 |
+| Cursor 設定変更 (On-Demand / Spend Cap) | ❁E| ✁E��月 1 囁E+ 忁E��時�E�|
+| 支払い・プラン変更 | ❁E| ✁E|
 
-**実装ファイル**:
+**実裁E��ァイル**:
 
-- `scripts/credit-budget.mjs` — 入力・記録・予測ロジック (npm run credit:set / credit:status / credit:reset)
-- `data/credit-usage.json` — 当月の日次 % 履歴
-- `data/credit-usage-history.jsonl` — 月次集計の永続化
-- `scripts/daily-morning-prep.mjs §0` — 朝報統合（残日数 / 想定枯渇日 / 警告レベル）
+- `scripts/credit-budget.mjs`  E入力�E記録・予測ロジチE�� (npm run credit:set / credit:status / credit:reset)
+- `data/credit-usage.json`  E当月の日次 % 履歴
+- `data/credit-usage-history.jsonl`  E月次雁E���E永続化
+- `scripts/daily-morning-prep.mjs §0`  E朝報統合（残日数 / 想定枯渁E�� / 警告レベル�E�E
 
-**§1-2-2 / §1-2-3 との関係**: §1-2-4 = **予算予測（事前防御）**、§1-2-2 = **枯渇検知時の選択（事後対応）**、§1-2-3 = **通常時のコスト最適化**。3 つで枯渇シーケンスを完全カバー。
+**§1-2-2 / §1-2-3 との関俁E*: §1-2-4 = **予算予測�E�事前防御�E�E*、E�1-2-2 = **枯渁E��知時�E選択（事後対応！E*、E�1-2-3 = **通常時�Eコスト最適匁E*、E つで枯渁E��ーケンスを完�Eカバ�E、E
 
 ### §2 正本主義
-すべての設計判断・フィールド定義・運用ルールは **ファイルに記録されたものを正本** とする。チャットだけで完結させない。
+すべての設計判断・フィールド定義・運用ルールは **ファイルに記録されたものを正本** とする。チャチE��だけで完結させなぁE��E
 
-### §3 索引駆動
-作業着手前に `RULES-INDEX.md` を読み、該当するルールファイルへ辿る。索引の複製・長文マージはしない。
+### §3 索引駁E��
+作業着手前に `RULES-INDEX.md` を読み、該当するルールファイルへ辿る。索引�E褁E��・長斁E�EージはしなぁE��E
 
 ---
 
@@ -389,7 +391,7 @@ agent
 | 種別 | パス |
 |------|------|
 | 正本 | `AGENTS.md` |
-| 索引 | `RULES-INDEX.md` |
+| 索弁E| `RULES-INDEX.md` |
 | 読本目次 | `docs/constitution/README.md` |
 | 検証 | `npm run constitution:verify-coverage` |
 
