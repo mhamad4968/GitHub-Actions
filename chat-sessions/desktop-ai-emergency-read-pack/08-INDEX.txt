@@ -16,7 +16,7 @@
 11-READ-03.txt … A 共通五段階で Read するファイルパス一覧
 12-READ-04.txt … B 本題入口（5A / 5B の分岐・§50-3-8 リマインド）
 13-READ-05.txt … session-starter:sync-desktop と verify・Desktop パス
-14-READ-06.txt … 憲法・分業の核＋**【AI分業チェック】**（READ 直後チャット必須）＋**§35-7 規律先行**
+14-READ-06.txt … 憲法・分業の核＋**`docs/constitution/` ジャンル読本**＋**【AI分業チェック】**（READ 直後チャット必須）＋**§35-7 規律先行**
 15-READ-07.txt … **浜田 CEO のお願い**／Project Rules・壁時計・分業・GitHub Actions・**健全性**／**§6＝ツール活用憲法**
 16-README-read-pack.txt … 本パックの使い方
 17-HISTORY-2026-05-06-read-pack-and-tools.txt … **変更履歴控え**（任意追記）

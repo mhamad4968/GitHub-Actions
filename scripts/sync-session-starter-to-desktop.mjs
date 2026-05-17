@@ -153,8 +153,36 @@ function pruneLegacyDesktopAiEmergency(dir) {
         console.log(`[sync-session-starter-to-desktop] 旧夕反省番号削除(24→26): ${n}`);
       }
     }
+    pruneStaleEveningReflectionOnDesktop(dir);
   } catch (_) {
     /* ignore */
+  }
+}
+
+/**
+ * 当日 JST の夕反省が無い日は Desktop に 26 を置かない（24〜25 で終わり）。
+ * ある日は当日分の 26 のみ残す。
+ */
+function pruneStaleEveningReflectionOnDesktop(dir) {
+  const ymd = getJstYyyymmdd();
+  const iso = jstYmdToIso(ymd);
+  const todaySrc = path.join(root, 'docs/reports', `${iso}-evening-reflection.md`);
+  const keepName = `26-evening-reflection-${iso}.md`;
+  try {
+    for (const n of fs.readdirSync(dir)) {
+      if (!/^26-evening-reflection-.+\.md$/i.test(n)) continue;
+      if (!fs.existsSync(todaySrc)) {
+        fs.unlinkSync(path.join(dir, n));
+        console.log(`[sync-session-starter-to-desktop] 夕反省なし日のため削除: ${n}`);
+        continue;
+      }
+      if (n !== keepName) {
+        fs.unlinkSync(path.join(dir, n));
+        console.log(`[sync-session-starter-to-desktop] 旧夕反省削除（当日以外）: ${n}`);
+      }
+    }
+  } catch (e) {
+    console.warn(`[sync-session-starter-to-desktop] 夕反省 prune 失敗: ${e.message}`);
   }
 }
 
