@@ -64,6 +64,7 @@
     "ict-digest:typecheck": "npm --prefix ict-tech-digest-automation run typecheck",
     "ict-digest:rss:verify": "npm --prefix ict-tech-digest-automation run rss:verify",
     "ict-digest:backfill:overview": "npm --prefix ict-tech-digest-automation run backfill:overview",
+    "ict-digest:update-685-categories": "npx dotenv -e .env -e .env.proxy -- node ict-tech-digest-automation/scripts/update-685-category-dropdown.mjs",
     "cio:audit:portfolio": "npx dotenv -e .env -e .env.proxy -- node scripts/cio-audit-customize-portfolio.mjs",
     "cio:audit:portfolio:strict": "npx dotenv -e .env -e .env.proxy -- node scripts/cio-audit-customize-portfolio.mjs --strict",
     "cio:guard:multi-customize": "node scripts/cio-after-customize-change.mjs",

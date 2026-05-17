@@ -1,7 +1,7 @@
 # 最新ICT情報掲示板 — 仕様正本
 
 > **CEO GO**: 2026-05-16（v1）／**v2 本番**: 2026-05-17  
-> **最終更新**: 2026-05-17（CIO）— **収集・カテゴリ・セキュリティの正本は §2.3**  
+> **最終更新**: 2026-05-17（CIO）— **本文は v2 に同期済**（§2〜§8）。将来改善のみ §9 バックログ。  
 > **Space**: [Space 48](https://jbis-kintone.cybozu.com/k/#/space/48)  
 > **台帳**: `kintone-apps.md`  
 > **コード正本**: `ict-tech-digest-automation/`・`customize/686/desktop.js`
@@ -10,7 +10,7 @@
 
 ## 0. 目的（業務で何ができるか）
 
-**20本以上の RSS を横断**し、Gemini が **「今日、自社のインフラ・PC 管理において最重要」** なニュースを **1日最大5件** だけ選び、kintone に要約して蓄積する。
+**約27本の RSS を横断**し、Gemini が **「今日、自社のインフラ・PC 管理・情シス実務において最重要」** なニュースを **1日最大5件** だけ選び、kintone に要約して蓄積する（v2 本番: 2026-05-17）。
 
 | 利用者のメリット |
 |------------------|
@@ -34,37 +34,28 @@
 
 ---
 
-## 2. 自動収集の流れ
+## 2. 自動収集の流れ（v2）
 
 ```
-[RSS 20本+] → 重複URL排除・直近記事に絞り込み
-    → Gemini 厳選（重要度スコア・最大5件）
-    → kintone 685 登録（overview 3行・カテゴリ付き）
-    → 686 ダッシュで表示
+[RSS 27本] → URL重複排除 → 直近7日/14日候補
+    → 過去12ヶ月タイトル150件を取得
+    → Gemini 厳選（類似除外・パッチ深度ルール・残枠ぶん）
+    → kintone 685 登録（ICT_DRY_RUN=true 時はログのみ）
+    → 686 ダッシュで表示（旧カテゴリは新7種へマッピング）
 ```
 
 | 項目 | 内容 |
 |------|------|
 | **実行** | 1日2回 **10:00 / 20:00 JST**（GHA cron UTC 1:00 / 11:00） |
 | **手動実行** | GitHub Actions `ict-tech-digest-collect` → `workflow_dispatch` |
-| **1日上限** | `published_at` = **JST 当日** の件数 ≤ **5**（超過時はログのみで終了） |
+| **1日上限** | `published_at` = **JST 当日** の件数 ≤ **5**（`ICT_DAILY_MAX_RECORDS` で変更可） |
 | **URL** | 全期間で一意（同一 URL は再登録しない） |
-| **厳選** | 未登録 URL → 直近7日（不足時14日）の候補 → Gemini 重要度 → 残枠ぶん登録 |
-| **AI** | **Gemini**（`GEMINI_API_KEY`）。モデルは `GEMINI_MODEL` または flash 系フォールバック |
+| **類似除外** | 過去12ヶ月 `title` 最新150件を Gemini に渡し酷似テーマを除外 |
+| **厳選** | 未登録 URL → 直近7日（不足時14日）の候補 → Gemini → 残枠ぶん登録 |
+| **AI** | `@google/generative-ai`・既定 **`gemini-2.5-flash`**（`GEMINI_MODEL` で上書き可） |
+| **ドライラン** | `ICT_DRY_RUN=true` → POST なし・登録予定をログ出力 |
 
-### 2.1 Gemini 選定・要約ルール
-
-**選ぶもの（スコアを上げる）**
-
-- Windows / Office 月例パッチ・緊急 CVE（MSRC Update Guide 等）
-- 社内 PC・サーバー・ネットワーク機器（ルーター / UTM / VPN）への実害リスク
-- 大規模障害・ゼロデイ・ベンダー必須対応
-
-**下げるもの**
-
-- 開発トレンドのみで運用影響が薄い記事
-
-**overview（概要欄）の必須フォーマット**
+### 2.1 要約フォーマット（overview）
 
 ```
 【事象】（1文）
@@ -72,9 +63,9 @@
 【推奨】情シスが今日取るべきアクション（1文）
 ```
 
-英語記事も日本語要約。CVE 番号・製品名・バージョンは原文表記可。
+英語記事も日本語要約。CVE 番号・製品名・バージョンは原文表記可。登録時は `overview-format.ts` でラベル正規化。
 
-> **注意（v2）**: 上記 §2.1 は v1 時代の記述。**2026-05-17 以降の選定・セキュリティ・類似除外は §2.3 が正本**。
+**選定・セキュリティ・カテゴリ・RSS の正本** → **§2.3** および **§2.2**
 
 ### 2.3 v2 収集仕様（2026-05-17 正本・本番稼働）
 
@@ -96,12 +87,6 @@
 - **不可**: Important のみ・情報提供レベルのパッチ単体  
 - 実装: `gemini-curate.ts` の `PATCH_AND_CVE_POLICY`
 
-**RSS（v2・コード正本 `config.ts`）**
-
-- **約27本**（`ICT_RSS_FEED_URLS` 未設定時）。v1 から **除外**: `jpcert.or.jp` 統合・`ipa.go.jp/security/rss/alert`
-- **追加**: `https://scan.netsecurity.ne.jp/rss/index.rdf`（`www.netsecurity.ne.jp` 直 RSS は不可）
-- 11 ドメイン意図は既存フィードでカバー（CEO 合意 A）
-
 **カテゴリ（新7種）**
 
 `AI・LLM` / `インフラ・通信・端末` / `開発トレンド` / `Box・SaaS・文書管理` / `DX人材・IT資格・組織` / `セキュリティ製品・技術` / `その他`
@@ -118,38 +103,44 @@
 4. GHA `ICT_DRY_RUN=false`・本番 dispatch  
 5. CEO 目視 OK  
 
-### 2.2 デフォルト RSS 一覧（コード正本: `config.ts` の `DEFAULT_RSS`）
+### 2.2 デフォルト RSS 一覧（v2・27本・`config.ts` の `DEFAULT_RSS` と同期）
 
 | # | 区分 | ソース | RSS URL |
 |---|------|--------|---------|
 | 1 | 開発 | Qiita 人気 | `https://qiita.com/popular-items/feed` |
 | 2 | 開発 | Zenn | `https://zenn.dev/feed` |
 | 3 | 開発 | はてな IT | `https://b.hatena.ne.jp/hotentry/it.rss` |
-| 4 | 開発 | ITmedia @IT 全フォーラム | `https://rss.itmedia.co.jp/rss/2.0/ait.xml` |
-| 4b | 開発 | @IT Coding Edge | `https://rss.itmedia.co.jp/rss/2.0/ait_coding.xml` |
-| 4c | 開発 | CodeZine | `https://codezine.jp/rss/new/index.xml` |
-| 4d | ITベンダー | CNET Japan | `https://feeds.japan.cnet.com/rss/cnet/all.rdf` |
-| 5 | Microsoft | MSRC Blog | `https://msrc.microsoft.com/feed/`（旧 `/blog/rss/` は HTML のため廃止） |
-| 6 | Microsoft | **MSRC Update Guide（パッチ・CVE）** | `https://api.msrc.microsoft.com/update-guide/rss` |
-| 7 | Microsoft | Windows Blog | `https://blogs.windows.com/feed/` |
-| 8 | Microsoft | Microsoft Security Blog | `https://www.microsoft.com/en-us/security/blog/feed/` |
-| 9 | セキュリティ公式 | IPA 注意喚起 | `https://www.ipa.go.jp/security/rss/alert.rdf` |
-| 10 | セキュリティ公式 | JPCERT/CC 統合 | `https://www.jpcert.or.jp/rss/jpcert.rdf` |
-| 11 | PC・製品 | PC Watch | `https://pc.watch.impress.co.jp/data/rss/1.0/pcw/feed.rdf` |
-| 12 | PC・製品 | INTERNET Watch | `https://internet.watch.impress.co.jp/data/rss/1.0/iw/feed.rdf` |
-| 13 | PC・製品 | Forest Watch | `https://forest.watch.impress.co.jp/data/rss/1.0/wf/feed.rdf` |
-| 14 | エンタープライズ | ASCII.jp TECH | `https://ascii.jp/tech/rss.xml` |
-| 15 | サーバー・DC | ZDNet Japan | `https://feeds.japan.zdnet.com/rss/zdnet/all.rdf` |
-| 16 | 法人 PC | ITmedia PC USER | `https://rss.itmedia.co.jp/rss/2.0/pcuser.xml` |
-| 17 | ネットワーク | @IT Master of IP Network | `https://rss.itmedia.co.jp/rss/2.0/ait_network.xml` |
-| 18 | サーバー | @IT Server & Storage | `https://rss.itmedia.co.jp/rss/2.0/ait_server.xml` |
-| 19 | ネットワーク | ITmedia ネットトピックス | `https://rss.itmedia.co.jp/rss/2.0/news_nettopics.xml`（旧 `nw.xml` は 404 HTML） |
-| 20 | エンタープライズ | 日経クロステック IT | `https://xtech.nikkei.com/rss/xtech-it.rdf` |
-| 21 | 経営・資格 | 日経クロステック 全記事 | `https://xtech.nikkei.com/rss/index.rdf` |
-| 22 | 公式 | IPA 新着（DX・人材等） | `https://www.ipa.go.jp/about/newsonly-rss.rdf` |
-| 23 | 情シス | ITmedia エンタープライズ | `https://rss.itmedia.co.jp/rss/2.0/enterprise.xml` |
-| 24 | DX事例 | ITmedia EP 事例 | `https://rss.itmedia.co.jp/rss/2.0/ep_casestudy.xml` |
-| 25 | 情シス速報 | ITmedia EP ショートニュース | `https://rss.itmedia.co.jp/rss/2.0/ep_snews.xml` |
+| 4 | 開発 | ITmedia @IT | `https://rss.itmedia.co.jp/rss/2.0/ait.xml` |
+| 5 | 開発 | @IT Coding Edge | `https://rss.itmedia.co.jp/rss/2.0/ait_coding.xml` |
+| 6 | 開発 | CodeZine | `https://codezine.jp/rss/new/index.xml` |
+| 7 | ITベンダー | CNET Japan | `https://feeds.japan.cnet.com/rss/cnet/all.rdf` |
+| 8 | Microsoft | MSRC Blog | `https://msrc.microsoft.com/feed/` |
+| 9 | Microsoft | MSRC Update Guide | `https://api.msrc.microsoft.com/update-guide/rss` |
+| 10 | Microsoft | Windows Blog | `https://blogs.windows.com/feed/` |
+| 11 | Microsoft | Microsoft Security Blog | `https://www.microsoft.com/en-us/security/blog/feed/` |
+| 12 | 公式 | IPA 新着（DX・人材） | `https://www.ipa.go.jp/about/newsonly-rss.rdf` |
+| 13 | セキュリティ | ScanNetSecurity | `https://scan.netsecurity.ne.jp/rss/index.rdf` |
+| 14 | PC・製品 | PC Watch | `https://pc.watch.impress.co.jp/data/rss/1.0/pcw/feed.rdf` |
+| 15 | PC・製品 | INTERNET Watch | `https://internet.watch.impress.co.jp/data/rss/1.0/iw/feed.rdf` |
+| 16 | PC・製品 | Forest Watch | `https://forest.watch.impress.co.jp/data/rss/1.0/wf/feed.rdf` |
+| 17 | エンタープライズ | ASCII.jp TECH | `https://ascii.jp/tech/rss.xml` |
+| 18 | サーバー・SaaS | ZDNet Japan | `https://feeds.japan.zdnet.com/rss/zdnet/all.rdf` |
+| 19 | 法人 PC | ITmedia PC USER | `https://rss.itmedia.co.jp/rss/2.0/pcuser.xml` |
+| 20 | ネットワーク | @IT ネットワーク | `https://rss.itmedia.co.jp/rss/2.0/ait_network.xml` |
+| 21 | サーバー | @IT Server & Storage | `https://rss.itmedia.co.jp/rss/2.0/ait_server.xml` |
+| 22 | ネットワーク | ITmedia ネットトピックス | `https://rss.itmedia.co.jp/rss/2.0/news_nettopics.xml` |
+| 23 | エンタープライズ | 日経 xTECH IT | `https://xtech.nikkei.com/rss/xtech-it.rdf` |
+| 24 | 経営・資格 | 日経 xTECH 全記事 | `https://xtech.nikkei.com/rss/index.rdf` |
+| 25 | 情シス | ITmedia エンタープライズ | `https://rss.itmedia.co.jp/rss/2.0/enterprise.xml` |
+| 26 | DX事例 | ITmedia EP 事例 | `https://rss.itmedia.co.jp/rss/2.0/ep_casestudy.xml` |
+| 27 | 情シス速報 | ITmedia EP ショートニュース | `https://rss.itmedia.co.jp/rss/2.0/ep_snews.xml` |
+
+**v2 で DEFAULT から除外したフィード（注意喚起系）**
+
+| ソース | 除外 URL | 理由 |
+|--------|----------|------|
+| IPA 注意喚起 | `https://www.ipa.go.jp/security/rss/alert.rdf` | 運用ノイズ抑制（§2.3） |
+| JPCERT/CC | `https://www.jpcert.or.jp/rss/jpcert.rdf` | 同上 |
 
 **ZDNet Japan（SaaS・コラボ）**: カテゴリ別 RSS は公開されていないため、既存の `feeds.japan.zdnet.com/rss/zdnet/all.rdf` で Box / Teams / クラウド文書管理記事を取り込む。
 
@@ -158,8 +149,8 @@
 - `src/lib/rss-fetch.ts`: **4回リトライ**・**HTML 誤応答検知**・**XML サニタイズ**・旧 URL エイリアス
 - `src/lib/overview-format.ts`: 登録時に **【事象】【影響】【推奨】** へ正規化
 - `config.ts`: リポルート `.env` 読込・**685 専用トークン**（631 用 COLLECT 誤流用防止）
-- 686 v7: 検索条件を **今日の厳選** にも反映
-- 検証: `npm run ict-digest:rss:verify`
+- 686 v9: カテゴリ7種・旧17種マッピング・「本日最大5件」注記
+- 検証: `npm run ict-digest:rss:verify`（リポルート）
 
 **RSS の追加・変更**
 
@@ -237,11 +228,13 @@ Microsoft・Windows / PC・端末 / サーバー・インフラ / ネットワ�
 ### ローカル実行
 
 ```bash
-cd ict-tech-digest-automation
-cp .env.example .env
-# .env を編集
-npm ci
-npm run collect
+# リポルート推奨（monorepo .env を読む）
+export ICT_DIGEST_STORE_APP_ID=685
+export ICT_DRY_RUN=true   # 本番登録前の検証
+npm run ict-digest:collect
+
+# またはパッケージ直下
+cd ict-tech-digest-automation && cp .env.example .env && npm ci && npm run collect
 ```
 
 ---
@@ -252,7 +245,7 @@ npm run collect
 |------|----------|
 | 収集（手動） | `npm run ict-digest:collect`（ローカルは **`ICT_DIGEST_STORE_APP_ID=685`** 推奨） |
 | ドライラン | `ICT_DRY_RUN=true` + 上記 collect |
-| 685 カテゴリ7種 | `npx dotenv -e ../.env -e ../.env.proxy -- node scripts/update-685-category-dropdown.mjs`（`ict-tech-digest-automation/` 内） |
+| 685 カテゴリ7種 | `npm run ict-digest:update-685-categories`（リポルート） |
 | 掲示板デプロイ | `npm run cio:preflight:686 -- --note "…"` → `npm run deploy:686` |
 | GHA ワークフロー | `.github/workflows/ict-tech-digest-collect.yml` |
 | リポ | `https://github.com/mhamad4968/GitHub-Actions`（`kintone-ai-lab` と同期） |
@@ -268,7 +261,10 @@ npm run collect
 | 掲示板が「データがありません」とカード二重 | 686 customize 未デプロイ or 旧 BUILD。Ctrl+F5 |
 | 掲示板「取得に失敗」 | ログインユーザーに **685 閲覧権限** があるか |
 | 本日5件あるのに追加されない | 仕様どおりスキップ。翌日 10:00 まで待つか翌枠を待つ |
-| RSS 取得失敗（ログ） | 該当 URL が 404 の場合は `config.ts` から差し替え |
+| ローカルで `KINTONE_APP_ID` エラー | **`ICT_DIGEST_STORE_APP_ID=685`** を設定（631 用 `KINTONE_APP` と混同しない） |
+| `ICT_DRY_RUN` なのに登録された | 環境変数が `false` / 未設定か確認。GHA は Environment Variable を確認 |
+| カテゴリが CB_VA01 | 685 ドロップダウンが新7種か（`update-685-category-dropdown.mjs`） |
+| RSS 取得失敗（ログ） | 該当 URL が 404 の場合は `config.ts` から差し替え。`npm run ict-digest:rss:verify` |
 
 ---
 
@@ -276,11 +272,14 @@ npm run collect
 
 | 変更したい内容 | 主な編集先 |
 |----------------|------------|
-| RSS ソース追加 | `ict-tech-digest-automation/src/lib/config.ts` |
-| 厳選基準・要約形式 | `ict-tech-digest-automation/src/lib/gemini-curate.ts` |
-| 1日件数・日付ロジック | `ict-tech-digest-automation/src/index.ts`・`kintone-store.ts` |
+| RSS ソース追加・除外 | `ict-tech-digest-automation/src/lib/config.ts`・本書 §2.2 |
+| 厳選・類似除外・パッチ深度 | `gemini-curate.ts`（`PATCH_AND_CVE_POLICY`） |
+| ドライラン・収集フロー | `index.ts`・`config.ts`（`ICT_DRY_RUN`） |
+| 類似除外タイトル取得 | `kintone-store.ts`（`fetchRecentTitlesForDedup`） |
+| カテゴリ定義・旧→新 | `field-codes.ts`・685 ドロップダウン・`686/desktop.js` |
+| 1日件数 | `config.ts`（`ICT_DAILY_MAX_RECORDS`） |
 | 掲示板 UI | `customize/686/desktop.js` |
-| スケジュール | `.github/workflows/ict-tech-digest-collect.yml` |
+| スケジュール・GHA env | `.github/workflows/ict-tech-digest-collect.yml` |
 
 追加のメディア・選定基準の変更は、本書を更新したうえで CIO に相談。
 
@@ -306,7 +305,9 @@ npm run collect
 | 2026-05-16 | RSS 20本化（MSRC Update Guide・ASCII・ZDNet・日経 xTECH 等） |
 | 2026-05-16 | 厳選プロンプト【事象】【影響】【推奨】・「今日のインフラ・PC最重要」 |
 | 2026-05-16 | **完了**: 686 v7（検索↔今日の厳選連動）・`overview-format`・685 専用トークンガード・RSS 耐障害・`1ef78c1` push |
-| 2026-05-16 | GHA Secrets: `KINTONE_API_TOKEN_ICT_COLLECT` / `ICT_DIGEST_STORE_APP_ID` 設定済。`ICT_RSS_FEED_URLS` は未設定＝DEFAULT 28 本 |
+| 2026-05-16 | GHA Secrets: `KINTONE_API_TOKEN_ICT_COLLECT` / `ICT_DIGEST_STORE_APP_ID` 設定済。`ICT_RSS_FEED_URLS` は未設定＝コード既定 RSS |
+| 2026-05-17 | v2: DEFAULT **27 本**（JPCERT/IPA alert 除外・ScanNetSecurity 追加） |
 | 2026-05-17 | CEO 仕様合意 #1〜#10 完了。686 v8 deploy（本日最大5件注記）。GO 前3点は AI チーム確定。netsecurity RSS 候補: `scan.netsecurity.ne.jp/rss/index.rdf` |
 | 2026-05-17 | 実装・本番切替完了（`84c4f77`）。685 7種・GHA dry-run/本番 SUCCESS・686 v9・**§2.3 追記** |
 | 2026-05-17 | CEO 目視 OK — **v2 レーンクローズ** |
+| 2026-05-17 | 仕様正本フル同期: §2 フロー・§2.2 RSS27本表・§7/§8・kintone-apps・npm スクリプト |

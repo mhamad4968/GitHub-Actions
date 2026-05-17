@@ -10,7 +10,8 @@
     "collect": "tsx src/index.ts",
     "typecheck": "tsc --noEmit",
     "rss:verify": "tsx scripts/verify-rss-feeds.mjs",
-    "backfill:overview": "tsx scripts/backfill-overview-labels.mjs"
+    "backfill:overview": "tsx scripts/backfill-overview-labels.mjs",
+    "update-685-categories": "node scripts/update-685-category-dropdown.mjs"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
