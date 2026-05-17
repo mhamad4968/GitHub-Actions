@@ -1,0 +1,28 @@
+---
+description: U4 — customize/SPEC/本番PUT の編集前に DeepSeek 1 問必須（CEO 2026-05-17）
+globs:
+  - customize/**
+  - docs/plans/**/*
+  - "**/*spec*.md"
+alwaysApply: false
+---
+
+# DeepSeek 着手前ゲート（U4）
+
+正本: `docs/runbooks/deepseek-pre-edit-gate.md`
+
+## 必須（編集ツールの前）
+
+`customize/**`・仕様書（`*-spec.md` / `SPEC*.md`）・本番 kintone PUT / `deploy:*` に触れるターンでは、**最初の Write/StrReplace の前**に:
+
+1. **DeepSeek 1 問**（盲点・反例・仕様乖離）
+2. チャットに **1 行**: `[§50-3-8] 実施済: deepseek` **または** `[§50-3-8] スキップ理由: <具体>`
+3. **約 3 行突合メモ**
+
+## スキップ
+
+README 誤字のみ・handoff/checkpoint 追記のみ等は **スキップ可** — **`§50-3-8 スキップ理由:`** 1 行必須（「軽微」のみは不可）。
+
+## 報告
+
+報告ターンの □C・□A1 と `SECOND_REVIEWER:` を矛盾させない。

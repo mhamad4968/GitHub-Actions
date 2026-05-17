@@ -12,6 +12,8 @@
 
 **次の 1 手**: ICT 運用後フィードバック。稼働日数は CEO 再開まで着手しない。
 
+**CEO 承認（2026-05-17 夕）**: 自律3件（U4・月次audit・ICT GHA監視）・**#6 Phase3** 承認。**#4 #5** は `docs/backlog/cio-open-issues-2026-05-17.md` に課題残置。U4 実装: `deepseek-pre-edit-gate.md` + `.mdc`。
+
 ---
 
 ## 2026-05-17 JST — 憲法・ルール整理 — **Phase 2 完了（ヘッダ修正済）**

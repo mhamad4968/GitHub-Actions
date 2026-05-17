@@ -2026,3 +2026,16 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 **Desktop**: `session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync`（本ターン）
 
 **次セッションへの 1 行**: **ICT 運用フィードバック待ち**（686）。**稼働日数は CEO 再開指示まで触らない**。報告は **§1 四行＋§M-2 V2 毎ターン**。
+
+---
+
+### 2026-05-17 JST — CEO 優先度承認・U4 完了
+
+**CEO 承認**: 自律3件（U4・`cio:periodic:monthly`・ICT GHA監視）・#6 憲法 Phase3。**#4 #5** 課題残置（`docs/backlog/cio-open-issues-2026-05-17.md`）。U1/U3 保留。
+
+**実施**:
+- **U4**: `docs/runbooks/deepseek-pre-edit-gate.md` + `.cursor/rules/deepseek-pre-edit-gate.mdc` + `20-SESSION-REPORT-CHECKLIST.txt` §C
+- **月次 audit**: `cio:audit:portfolio:strict` **8/8 OK**
+- DeepSeek §50-3-8（U4 設計の盲点照会）実施済
+
+**次セッションへの 1 行**: **ICT 運用監視**＋**#6 Phase3 計画**（#4/#5 は CEO 本題指定まで触らない）。

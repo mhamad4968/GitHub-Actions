@@ -56,8 +56,10 @@
   □ [仕様状態: …]
   □ [検証2者: …] ← AI側2者。完了・デプロイOK等で必須。CEO確認の代替にしない。
 
-□ C §50-3-8
-  □ DeepSeek1問＋突合 または §50-3-8 スキップ理由: 1行
+□ C §50-3-8（U4正本 docs/runbooks/deepseek-pre-edit-gate.md）
+  □ customize/**・SPEC・本番PUTの編集前: DeepSeek1問＋突合（編集ツールの前）
+  □ チャット必須1行: [§50-3-8] 実施済: deepseek または [§50-3-8] スキップ理由: <具体>
+  □ 非該当ターンのみ §50-3-8 スキップ理由: 1行
 
 □ D kintone 破壊級
   □ dry-run一覧チャット貼付／GOまで--applyしない／UI先行を推奨
