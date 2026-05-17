@@ -64,6 +64,9 @@ const CIO_STACK_DORMANCY_EXEMPT = new Set(['kimi', 'deepseek', 'openrouter']);
 /** health-check JSON に出る TSB-029 系: transcript に載らない低頻度でも留置きが設計上妥当な MCP */
 const DORMANCY_POLICY_EXEMPT_REASON = new Map([
   ['markdownify', 'TSB-029: markdownify は低頻度・initialize 確認中心 (7d transcript=0 は許容)'],
+  ['rag', 'CEO 2026-05-17: 憲法・社内 RAG 検索用に留置（7d dormant 許容）'],
+  ['cyber-news', 'CEO 2026-05-17: セキュリティ巡回用に留置（7d dormant 許容）'],
+  ['cve-search', 'CEO 2026-05-17: CVE 調査用に留置（7d dormant 許容）'],
 ]);
 
 // ───── 2. agent transcripts grep ─────

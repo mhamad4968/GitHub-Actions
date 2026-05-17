@@ -134,7 +134,7 @@ CIO 自身が以下を厳守 + 2026-05-10 に **all_4 構造的緩和策**（CEO
   4. `~/.cursor/mcp.json` の `KINTONE_USERNAME` / `KINTONE_PASSWORD` を新規 AI ユーザのものに差替 + Cursor 再起動。
   5. 旧 `kent2511` パスワードは **CEO のみが手元で保持**（AI には渡さない）。
 - **効果**: API キー漏洩時の **影響範囲を AI 専用ユーザの権限内に限定**できる。`kent2511`（admin）が AI 経路から流出しなくなる。
-- **本セッション内では未実施**: kintone 管理 UI 操作は CEO の手元操作のため。CEO 都合のよい時に実施し、`~/.cursor/mcp.json` 更新は CEO の手で行う。
+- **CEO GO（2026-05-17）**: Tier B #3 承認。**Runbook** `docs/runbooks/kintone-ai-dedicated-user.md`。**CIO 自動化**: `npm run kintone:ai-user:create` → 管理画面で権限付与 → `kintone:ai-user:apply-mcp:sync-env` → `kintone:ai-user:verify` → `cio:mcp:gate`。
 
 ### 3.4 ロールバック手順
 

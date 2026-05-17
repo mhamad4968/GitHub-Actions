@@ -90,13 +90,15 @@ WSL 編集後       npm run mcp:sync-cursor-windows
 
 ---
 
-## 5. CEO に判断いただくこと（Tier B のみ）
+## 5. CEO 判断（Tier B）— **2026-05-17 全件 GO**
 
-| # | 質問 | CIO 推奨 |
-|---|------|----------|
-| 1 | 7日 dormant の **rag / cyber-news** を mcp.json に残すか | **残す**（憲法・セキュリティ巡回で必要） |
-| 2 | `cio:mcp:env` を gate 同等に **常時重くするか** | **否** — 日常は env、週次・大きな kintone 変更前は gate |
-| 3 | AI 専用 kintone ユーザへの切替 | **GO 後**に実施（`docs/cio-permissions-guide.md`） |
+| # | 決定 | 実施 |
+|---|------|------|
+| 1 | **rag / cyber-news / cve-search** を mcp.json に **残す** | `check-mcp-dormancy.mjs` に **policy exempt** 追加 |
+| 2 | 日常は **`cio:mcp:env` のまま**（gate は週次・kintone 作業前） | 計画書・ルールで固定（変更なし） |
+| 3 | **AI 専用 kintone ユーザ**へ切替 | Runbook + `kintone:ai-user:*` スクリプト群 |
+
+**移行手順正本**: `docs/runbooks/kintone-ai-dedicated-user.md`
 
 ---
 
@@ -105,3 +107,4 @@ WSL 編集後       npm run mcp:sync-cursor-windows
 | 日付 | 内容 |
 |------|------|
 | 2026-05-17 | 初版・P0/P1 実装・ベースライン記録 |
+| 2026-05-17 | Tier B CEO GO 1〜3 反映・AI ユーザ Runbook・死蔵 exempt |
