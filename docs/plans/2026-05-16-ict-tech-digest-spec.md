@@ -1,7 +1,7 @@
 # 最新ICT情報掲示板 — 仕様正本
 
-> **CEO GO**: 2026-05-16  
-> **最終更新**: 2026-05-16（CIO）  
+> **CEO GO**: 2026-05-16（v1）／**v2 本番**: 2026-05-17  
+> **最終更新**: 2026-05-17（CIO）— **収集・カテゴリ・セキュリティの正本は §2.3**  
 > **Space**: [Space 48](https://jbis-kintone.cybozu.com/k/#/space/48)  
 > **台帳**: `kintone-apps.md`  
 > **コード正本**: `ict-tech-digest-automation/`・`customize/686/desktop.js`
@@ -74,6 +74,50 @@
 
 英語記事も日本語要約。CVE 番号・製品名・バージョンは原文表記可。
 
+> **注意（v2）**: 上記 §2.1 は v1 時代の記述。**2026-05-17 以降の選定・セキュリティ・類似除外は §2.3 が正本**。
+
+### 2.3 v2 収集仕様（2026-05-17 正本・本番稼働）
+
+| 項目 | 内容 |
+|------|------|
+| **類似除外** | URL 完全一致に加え、**過去12ヶ月**の `title` を kintone から取得（最新 **150件**）→ Gemini プロンプトで酷似テーマを除外。OpenAI は不使用（Gemini 一本） |
+| **1日上限** | JST 当日 `published_at` で **最大5件**（`ICT_DAILY_MAX_RECORDS` で 1〜20 に変更可） |
+| **ドライラン** | `ICT_DRY_RUN=true` のとき **kintone POST なし**（登録予定をログ出力して正常終了）。Gemini / kintone 失敗時は **登録せず exit 1** |
+| **AI** | `@google/generative-ai`・既定モデル **`gemini-2.5-flash`**・`responseSchema` 構造化 JSON |
+| **ログ・データ** | コメント・ログ・登録データは **日本語**（CVE ID・製品名の英数字は可） |
+| **GHA** | `.github/workflows/ict-tech-digest-collect.yml`（`cron.yml` は作らない）10:00/20:00 JST・`workflow_dispatch` |
+
+**セキュリティ・パッチ（運用ノイズ抑制）**
+
+- **除外**: JPCERT/IPA 型の注意喚起・攻撃速報・脆弱性アラート単体
+- **可**: セキュリティ製品リリース・技術動向ニュース
+- **MSRC 月次まとめ**: 同月 **最大1本**
+- **個別 CVE**: **Critical** / **野外悪用** / **CVSS 9.0+** のみ
+- **不可**: Important のみ・情報提供レベルのパッチ単体  
+- 実装: `gemini-curate.ts` の `PATCH_AND_CVE_POLICY`
+
+**RSS（v2・コード正本 `config.ts`）**
+
+- **約27本**（`ICT_RSS_FEED_URLS` 未設定時）。v1 から **除外**: `jpcert.or.jp` 統合・`ipa.go.jp/security/rss/alert`
+- **追加**: `https://scan.netsecurity.ne.jp/rss/index.rdf`（`www.netsecurity.ne.jp` 直 RSS は不可）
+- 11 ドメイン意図は既存フィードでカバー（CEO 合意 A）
+
+**カテゴリ（新7種）**
+
+`AI・LLM` / `インフラ・通信・端末` / `開発トレンド` / `Box・SaaS・文書管理` / `DX人材・IT資格・組織` / `セキュリティ製品・技術` / `その他`
+
+- **685**: ドロップダウンは上記7種（`scripts/update-685-category-dropdown.mjs` で更新可）
+- **686**: 旧17種レコードは **表示・フィルタのみ** 新7種へマッピング（`field-codes.ts` の `LEGACY_CATEGORY_TO_NEW`・`desktop.js`）
+- **686 BUILD**: `2026-05-17-686-ict-digest-board-v9`
+
+**本番切替（2026-05-17 実施済）**
+
+1. 685 カテゴリ7種 deploy  
+2. `ICT_DRY_RUN=true` でローカル/GHA 検証  
+3. git push（`84c4f77` 以降）  
+4. GHA `ICT_DRY_RUN=false`・本番 dispatch  
+5. CEO 目視 OK  
+
 ### 2.2 デフォルト RSS 一覧（コード正本: `config.ts` の `DEFAULT_RSS`）
 
 | # | 区分 | ソース | RSS URL |
@@ -137,15 +181,19 @@
 | `url` | リンク | URL | 最大512文字。重複はアプリ側ロジックで排除（kintone unique はオフ）。**MSRC Update Guide の個別 CVE URL（`…/vulnerability/CVE-…`）は Microsoft 製品のみ**（PostgreSQL / NGINX 等は **NVD** `https://nvd.nist.gov/vuln/detail/CVE-…`）。実装: `ict-tech-digest-automation/src/lib/article-url.ts` の `resolveArticleUrl()` |
 | `published_at` | 日付 | 公開日 | **掲載日（JST 当日）**。厳選ダイジェストの「本日」枠 |
 | `overview` | 文字列複数行 | 概要 | 【事象】【影響】【推奨】 |
-| `category` | ドロップダウン | カテゴリ | 下記17択（掲示板686のフィルタと同期） |
+| `category` | ドロップダウン | カテゴリ | **v2: 下記7択**（`field-codes.ts` と同期） |
 
-### カテゴリ（API 値 = 表示名）
+### カテゴリ（API 値 = 表示名）— v2（2026-05-17）
 
-**運用・経営向け（主分類）:**  
-`Microsoft・Windows` / `PC・端末` / `サーバー・インフラ` / `ネットワーク・通信` / `セキュリティ・脆弱性` / `プログラム・開発` / `ITベンダー・DX` / `SaaS・文書管理` / `資格・リスキリング` / `DX人材・組織` / `情シス・IT部門` / `IPA・政策調査` / `AI・LLM`
+`AI・LLM` / `インフラ・通信・端末` / `開発トレンド` / `Box・SaaS・文書管理` / `DX人材・IT資格・組織` / `セキュリティ製品・技術` / `その他`
 
-**互換（既存レコード用）:**  
-`インフラ・クラウド` / `開発トレンド` / `ITツール・ガジェット` / `その他`
+**旧17種の既存レコード**: kintone 上は旧値のまま。686 は `LEGACY_CATEGORY_TO_NEW` で表示・フィルタを新7種に読み替え（§2.3）。
+
+<details><summary>v1 カテゴリ（参照・2026-05-17 以前のレコード）</summary>
+
+Microsoft・Windows / PC・端末 / サーバー・インフラ / ネットワーク・通信 / セキュリティ・脆弱性 / プログラム・開発 / ITベンダー・DX / SaaS・文書管理 / 資格・リスキリング / DX人材・組織 / 情シス・IT部門 / IPA・政策調査 / AI・LLM / インフラ・クラウド / 開発トレンド / ITツール・ガジェット / その他
+
+</details>
 
 ---
 
@@ -157,7 +205,8 @@
 | **今日の厳選（最大5件）** | 当日 `published_at` の記事（無ければ直近7日から最大6件表示） |
 | 検索パネル（上部） | キーワード・カテゴリ・公開日 From–To |
 | 記事一覧 | 全期間・ページング（50件/ページ） |
-| BUILD 表示 | フッター（例: `2026-05-16-686-ict-digest-board-v4`） |
+| BUILD 表示 | フッター（正: `2026-05-17-686-ict-digest-board-v9`） |
+| 本日上限の注記 | 「本日の新着は最大5件まで（厳選）」 |
 
 **カスタマイズ**
 
@@ -176,8 +225,10 @@
 | `ICT_DIGEST_STORE_APP_ID` または `KINTONE_APP_ID` | ○ | **685** |
 | `KINTONE_API_TOKEN_ICT_COLLECT` | ○ | 685 **書込**トークン |
 | `GEMINI_API_KEY` | ○ | Gemini（Security NEXT と共有可能） |
-| `GEMINI_MODEL` | — | 任意 |
-| `ICT_RSS_FEED_URLS` / `RSS_FEED_URLS` | — | **未設定時は `config.ts` の DEFAULT 28 本**（旧 URL は `rss-fetch` が自動正規化）。Variable 設定時のみ上書き |
+| `GEMINI_MODEL` | — | 未設定時 **`gemini-2.5-flash`** |
+| `ICT_DRY_RUN` | — | **`true`** で kintone 登録なし（検証用）。本番は **`false`** または未設定 |
+| `ICT_DAILY_MAX_RECORDS` | — | 既定 **5**（1〜20） |
+| `ICT_RSS_FEED_URLS` / `RSS_FEED_URLS` | — | **未設定時は `config.ts` の DEFAULT（v2 約27本）**。Variable 設定時のみ上書き |
 | `ICT_DIGEST_BOARD_APP_ID` | — | 686（ログ用・任意） |
 | `NOTIFY_WEBHOOK_URL` | — | 失敗時通知（任意） |
 
@@ -199,7 +250,9 @@ npm run collect
 
 | 操作 | コマンド |
 |------|----------|
-| 収集（手動） | `npm run ict-digest:collect` |
+| 収集（手動） | `npm run ict-digest:collect`（ローカルは **`ICT_DIGEST_STORE_APP_ID=685`** 推奨） |
+| ドライラン | `ICT_DRY_RUN=true` + 上記 collect |
+| 685 カテゴリ7種 | `npx dotenv -e ../.env -e ../.env.proxy -- node scripts/update-685-category-dropdown.mjs`（`ict-tech-digest-automation/` 内） |
 | 掲示板デプロイ | `npm run cio:preflight:686 -- --note "…"` → `npm run deploy:686` |
 | GHA ワークフロー | `.github/workflows/ict-tech-digest-collect.yml` |
 | リポ | `https://github.com/mhamad4968/GitHub-Actions`（`kintone-ai-lab` と同期） |
@@ -255,4 +308,5 @@ npm run collect
 | 2026-05-16 | **完了**: 686 v7（検索↔今日の厳選連動）・`overview-format`・685 専用トークンガード・RSS 耐障害・`1ef78c1` push |
 | 2026-05-16 | GHA Secrets: `KINTONE_API_TOKEN_ICT_COLLECT` / `ICT_DIGEST_STORE_APP_ID` 設定済。`ICT_RSS_FEED_URLS` は未設定＝DEFAULT 28 本 |
 | 2026-05-17 | CEO 仕様合意 #1〜#10 完了。686 v8 deploy（本日最大5件注記）。GO 前3点は AI チーム確定。netsecurity RSS 候補: `scan.netsecurity.ne.jp/rss/index.rdf` |
-| 2026-05-17 | 実装: `ICT_DRY_RUN`・12ヶ月タイトル150・7カテゴリ・RSS 調整・686 v9。本番収集前に **685 ドロップダウン7種**（CIO）必須 |
+| 2026-05-17 | 実装・本番切替完了（`84c4f77`）。685 7種・GHA dry-run/本番 SUCCESS・686 v9・**§2.3 追記** |
+| 2026-05-17 | CEO 目視 OK — **v2 レーンクローズ** |

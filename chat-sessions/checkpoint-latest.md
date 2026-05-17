@@ -52,6 +52,7 @@
 - **GHA**: `ict-tech-digest-collect.yml` に `ICT_DRY_RUN` / `ICT_DAILY_MAX_RECORDS`。
 - **686**: v9 deploy（7種フィルタ + 旧→新マッピング）— BUILD `2026-05-17-686-ict-digest-board-v9`。
 - **本番切替（2026-05-17 CIO）完了**: ① 685 category 新7種 deploy ② ローカル dry-run OK ③ git **`84c4f77`** push ④ GHA dry-run [25977185203](https://github.com/mhamad4968/GitHub-Actions/actions/runs/25977185203) SUCCESS ⑤ `ICT_DRY_RUN=false` ⑥ 本番 dispatch [25977217452](https://github.com/mhamad4968/GitHub-Actions/actions/runs/25977217452) SUCCESS — **新仕様で本番登録開始**。cron 10:00/20:00 JST 継続。
+- **CEO 目視（2026-05-17）**: 686/685 — **問題なし**。**ICT v2 改修レーン クローズ**（バックログ ICT-BL-01〜03 は別途）。
 - **git**: `84c4f77` on `origin/main`。
 
 ## 2026-05-17 JST — 683 月次 PDF serve 廃止・ICT GHA 硬化・環境 100% 準備
