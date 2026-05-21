@@ -34,11 +34,11 @@
       "note": null
     },
     "678": {
-      "build": "2026-05-15-678-hide-native-pager-zero-label",
-      "fileKey": "33343967-1f61-4981-88fe-924a090918b3",
-      "revision": "157",
+      "build": "2026-05-21-678-insert-order-auto-rebalance",
+      "fileKey": "4df5a3ae-f6bc-4ea3-8213-9addb7eb5f03",
+      "revision": "161",
       "relPath": "customize/678/desktop.js",
-      "deployedAt": "2026-05-16T10:47:36.297Z",
+      "deployedAt": "2026-05-21T09:23:27.474Z",
       "note": null
     },
     "679": {

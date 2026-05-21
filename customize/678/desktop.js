@@ -37,6 +37,9 @@
    * - 実績モーダル: Enter で「支払を追加／更新」（textarea は改行のため Ctrl+Enter のみ同効果）。新規明細モーダルも同様（備考 textarea は Ctrl+Enter）。
    * - 実績モーダル内の既存支払一覧から **修正／削除**（サブテーブル行 id 維持・REST PUT）。削除は確認ダイアログ必須。
    * - 固定費かつ支払種別が月額／年額のとき、実績金額の初期値に当該月の month_budget + month_budget_revision（>0 のときのみ）をベストeffortでセット（開き直しで再セット。ユーザーが変更した値は保存時まで尊重）。
+   * - **2026-05-21**: 実績モーダルは **税込（入力）／税抜（表示のみ）を縦2段**。677 保存・表の実績は **税抜**。税率 **10%／8%**・端数 **切り捨て／四捨五入／切り上げ**（前回値は localStorage 記憶）。
+   * - **2026-05-21（続）**: 実績モーダルの **備考**はレコード直下 **`notes`**（明細単位）。**支払行メモ・摘要（補足）への引継ぎ・保存は廃止**。
+   * - **2026-05-21（続2）**: 新規明細の挿入位置で **display_order の隙間が無い**ときは **保存時に既存行を自動再採番**してから挿入（ブロックしない）。
    */
 
   /** 明細・月次の正（一覧・新規・編集） */
@@ -64,7 +67,7 @@
     return t;
   }
 
-  var BUILD = "2026-05-15-678-hide-native-pager-zero-label";
+  var BUILD = "2026-05-21-678-insert-order-auto-rebalance";
   /**
    * マニュアル掲載アプリ（システム推進室予実アプリガイド・679）。`window.Y678_QUICK_MANUAL_URL` が非空なら最優先。
    */
@@ -1629,6 +1632,11 @@
       ".y678-pay-partner-newbtn:disabled{cursor:default;opacity:.88;}",
       ".y678-modal-body textarea[name='summary_text']{min-height:60px;resize:vertical;}",
       ".y678-modal-body textarea[readonly], .y678-modal-body input[readonly]{background:#f4f5f7;color:#3a4a3f;cursor:not-allowed;border-color:#dde2dd;}",
+      ".y678-modal-body .y678-tax-amount-stack{display:flex;flex-direction:column;gap:10px;}",
+      ".y678-modal-body .y678-tax-row{display:flex;flex-direction:column;gap:4px;}",
+      ".y678-modal-body .y678-tax-lbl{font-weight:600;font-size:12px;color:#1f4d33;}",
+      ".y678-modal-body .y678-tax-lbl-sub{font-weight:400;font-size:11px;color:#5a6f5e;}",
+      ".y678-modal-body .y678-tax-ex-display{padding:6px 8px;border:1px solid #c5d4c8;border-radius:4px;background:#f0f6f2;color:#0a5a32;font-weight:700;font-size:15px;min-height:34px;line-height:1.4;box-sizing:border-box;}",
     ].join("");
     wrap.appendChild(st);
   }
@@ -2698,35 +2706,117 @@
       return max + DISPLAY_ORDER_STEP;
     }
 
+    /** 挿入位置モードから sorted 配列上の挿入インデックス（0..length）を求める。見つからないとき -1 */
+    function resolveInsertIndex678(sorted, mode, targetId) {
+      if (!sorted.length) return 0;
+      if (mode === "bottom") return sorted.length;
+      if (mode === "top") return 0;
+      var tid = String(targetId || "");
+      var idx = -1;
+      for (var i = 0; i < sorted.length; i++) {
+        if (String((sorted[i].$id || {}).value) === tid) {
+          idx = i;
+          break;
+        }
+      }
+      if (idx === -1) return -1;
+      if (mode === "after") return idx + 1;
+      if (mode === "before") return idx;
+      return -1;
+    }
+
+    /**
+     * 隙間不足時: 一覧キャッシュ内の全明細を 100 刻みで振り直し、挿入スロットを空ける。
+     * @returns {{ value: number, updates: Array<{id:string,revision:string,display_order:number}>, autoRebalanced: boolean, conflict: boolean, message: string }}
+     */
+    function planInsertDisplayOrderRebalance678(mode, targetId) {
+      var sorted = getSortedRecordsByDisplayOrder();
+      var insertIdx = resolveInsertIndex678(sorted, mode, targetId);
+      if (insertIdx < 0) {
+        return {
+          value: null,
+          conflict: false,
+          autoRebalanced: false,
+          updates: [],
+          message: "基準行が見つかりません（targetId=" + String(targetId || "") + "）",
+        };
+      }
+      var newOrder = (insertIdx + 1) * DISPLAY_ORDER_STEP;
+      var updates = [];
+      for (var j = 0; j < sorted.length; j++) {
+        var desired = j < insertIdx ? (j + 1) * DISPLAY_ORDER_STEP : (j + 2) * DISPLAY_ORDER_STEP;
+        var old = Number((sorted[j].display_order || {}).value || 0) || 0;
+        if (desired === old) continue;
+        var rid = sorted[j].$id && sorted[j].$id.value;
+        var rev = revisionOf(sorted[j]);
+        if (rid == null || rev === "") continue;
+        updates.push({ id: String(rid), revision: String(rev), display_order: desired });
+      }
+      var posLabel =
+        mode === "bottom"
+          ? "一番下"
+          : mode === "top"
+            ? "一番上"
+            : mode === "after"
+              ? "id=" + targetId + " の下"
+              : "id=" + targetId + " の上";
+      return {
+        value: newOrder,
+        conflict: false,
+        autoRebalanced: true,
+        updates: updates,
+        message:
+          posLabel +
+          ": display_order=" +
+          newOrder +
+          "（既存 " +
+          updates.length +
+          " 件の表示順を自動調整）",
+      };
+    }
+
     /**
      * モーダルでの「挿入位置」指定から保存する display_order を計算する。
-     * @param {"bottom"|"top"|"after"|"before"} mode
-     * @param {string|number} targetId  mode=after/before のときの基準レコード $id
-     * @returns {{ value: number|null, conflict: boolean, message: string }}
-     *   conflict=true は隣接行と display_order の差が 1 で中間値が取れない状態。
-     *   その場合は呼び出し側で再採番を促す（v1 では再採番スクリプトの再実行を案内）。
+     * 中間値が取れないときは planInsertDisplayOrderRebalance678 で自動再採番案を返す。
      */
     function computeInsertDisplayOrder(mode, targetId) {
       var sorted = getSortedRecordsByDisplayOrder();
       if (sorted.length === 0) {
-        return { value: DISPLAY_ORDER_STEP, conflict: false, message: "初回追加: " + DISPLAY_ORDER_STEP };
+        return {
+          value: DISPLAY_ORDER_STEP,
+          conflict: false,
+          autoRebalanced: false,
+          updates: [],
+          message: "初回追加: " + DISPLAY_ORDER_STEP,
+        };
       }
       function doVal(r) {
         return Number((r.display_order || {}).value || 0) || 0;
       }
       if (mode === "bottom") {
         var last = sorted[sorted.length - 1];
-        return { value: doVal(last) + DISPLAY_ORDER_STEP, conflict: false, message: "一番下: " + (doVal(last) + DISPLAY_ORDER_STEP) };
+        return {
+          value: doVal(last) + DISPLAY_ORDER_STEP,
+          conflict: false,
+          autoRebalanced: false,
+          updates: [],
+          message: "一番下: " + (doVal(last) + DISPLAY_ORDER_STEP),
+        };
       }
       if (mode === "top") {
         var first = sorted[0];
         var firstDo = doVal(first);
         if (firstDo >= 2) {
-          return { value: Math.floor(firstDo / 2), conflict: false, message: "一番上: " + Math.floor(firstDo / 2) };
+          return {
+            value: Math.floor(firstDo / 2),
+            conflict: false,
+            autoRebalanced: false,
+            updates: [],
+            message: "一番上: " + Math.floor(firstDo / 2),
+          };
         }
-        return { value: null, conflict: true, message: "一番上に追加するには再採番が必要です（先頭行の display_order=" + firstDo + "）" };
+        return planInsertDisplayOrderRebalance678(mode, targetId);
       }
-      // after / before: targetId 検索
       var idx = -1;
       var tid = String(targetId || "");
       for (var i = 0; i < sorted.length; i++) {
@@ -2736,25 +2826,72 @@
         }
       }
       if (idx === -1) {
-        return { value: null, conflict: false, message: "基準行が見つかりません（targetId=" + tid + "）" };
+        return {
+          value: null,
+          conflict: false,
+          autoRebalanced: false,
+          updates: [],
+          message: "基準行が見つかりません（targetId=" + tid + "）",
+        };
       }
       if (mode === "after") {
         var cur = doVal(sorted[idx]);
         var next = idx + 1 < sorted.length ? doVal(sorted[idx + 1]) : cur + DISPLAY_ORDER_STEP * 2;
         if (next - cur >= 2) {
-          return { value: Math.floor((cur + next) / 2), conflict: false, message: "id=" + tid + " の下: " + Math.floor((cur + next) / 2) };
+          return {
+            value: Math.floor((cur + next) / 2),
+            conflict: false,
+            autoRebalanced: false,
+            updates: [],
+            message: "id=" + tid + " の下: " + Math.floor((cur + next) / 2),
+          };
         }
-        return { value: null, conflict: true, message: "id=" + tid + " の下は隣接行（" + next + "）と隙間がなく、再採番が必要です" };
+        return planInsertDisplayOrderRebalance678(mode, targetId);
       }
       if (mode === "before") {
         var c2 = doVal(sorted[idx]);
         var prev = idx - 1 >= 0 ? doVal(sorted[idx - 1]) : 0;
         if (c2 - prev >= 2) {
-          return { value: Math.floor((prev + c2) / 2), conflict: false, message: "id=" + tid + " の上: " + Math.floor((prev + c2) / 2) };
+          return {
+            value: Math.floor((prev + c2) / 2),
+            conflict: false,
+            autoRebalanced: false,
+            updates: [],
+            message: "id=" + tid + " の上: " + Math.floor((prev + c2) / 2),
+          };
         }
-        return { value: null, conflict: true, message: "id=" + tid + " の上は隣接行（" + prev + "）と隙間がなく、再採番が必要です" };
+        return planInsertDisplayOrderRebalance678(mode, targetId);
       }
-      return { value: null, conflict: false, message: "不明なモード: " + mode };
+      return { value: null, conflict: false, autoRebalanced: false, updates: [], message: "不明なモード: " + mode };
+    }
+
+    /** display_order 一括更新（100 件ずつ） */
+    function bulkPutDisplayOrderUpdates678(updates) {
+      var list = updates || [];
+      if (!list.length) return Promise.resolve();
+      var CHUNK = 100;
+      function runChunk(start) {
+        if (start >= list.length) return Promise.resolve();
+        var slice = list.slice(start, start + CHUNK);
+        var body = {
+          app: APP_INPUT,
+          records: slice.map(function (u) {
+            return {
+              id: u.id,
+              revision: u.revision,
+              record: { display_order: { value: String(u.display_order) } },
+            };
+          }),
+        };
+        return whenKintoneApiUrlReady(8000)
+          .then(function () {
+            return kintone.api(kintone.api.url("/k/v1/records.json", true), "PUT", body);
+          })
+          .then(function () {
+            return runChunk(start + CHUNK);
+          });
+      }
+      return runChunk(0);
     }
 
     /** ドロップダウン用ラベル: "工種名称 / 摘要先頭40字 (id=N)" */
@@ -2857,11 +2994,11 @@
       if (tgtWrap) tgtWrap.style.display = needTarget ? "" : "none";
       var targetId = needTarget && tgtEl ? tgtEl.value : "";
       var r = computeInsertDisplayOrder(mode, targetId);
-      if (r.conflict) {
-        preview.style.background = "#fff3cd";
+      if (r.autoRebalanced) {
+        preview.style.background = "#fff8e6";
         preview.style.borderColor = "#ffd966";
         preview.style.color = "#7a5800";
-        preview.textContent = "⚠ " + r.message + "（このまま保存できません）";
+        preview.textContent = "⚠ " + r.message + "（保存時に自動で表示順を調整して挿入できます）";
       } else if (r.value == null) {
         preview.style.background = "#fde2e2";
         preview.style.borderColor = "#f0a3a3";
@@ -2960,16 +3097,6 @@
       var insertMode = val("insert_mode") || "bottom";
       var insertTargetId = val("insert_target_id");
       var doRes = computeInsertDisplayOrder(insertMode, insertTargetId);
-      if (doRes.conflict) {
-        statusEl.style.color = "#b00020";
-        statusEl.textContent =
-          "挿入位置エラー: " +
-          doRes.message +
-          "／" +
-          YOJITSU_LABEL_INPUT_APP +
-          " の display_order を再採番（管理者向け: scripts/yojitsu-677-reset-display-order.mjs --apply）後に再試行してください。";
-        return;
-      }
       if (doRes.value == null) {
         statusEl.style.color = "#b00020";
         statusEl.textContent = "挿入位置エラー: " + doRes.message;
@@ -2995,9 +3122,18 @@
       };
       saveBtn.disabled = true;
       statusEl.style.color = "#555";
-      statusEl.textContent = YOJITSU_LABEL_INPUT_APP + " にレコードを作成中…";
+      statusEl.textContent = doRes.autoRebalanced
+        ? YOJITSU_LABEL_INPUT_APP + " の表示順を調整中（" + (doRes.updates ? doRes.updates.length : 0) + " 件）…"
+        : YOJITSU_LABEL_INPUT_APP + " にレコードを作成中…";
+      var updatesFirst = doRes.updates && doRes.updates.length ? doRes.updates : [];
       whenKintoneApiUrlReady(8000)
         .then(function () {
+          return bulkPutDisplayOrderUpdates678(updatesFirst);
+        })
+        .then(function () {
+          if (updatesFirst.length) {
+            statusEl.textContent = YOJITSU_LABEL_INPUT_APP + " に新規明細を作成中…";
+          }
           return kintone.api(kintone.api.url("/k/v1/record.json", true), "POST", { app: APP_INPUT, record: rec });
         })
         .then(function (resp) {
@@ -3024,6 +3160,113 @@
     if (addBtn) addBtn.addEventListener("click", openModal);
 
     /* ===== 実績入力モーダル（payment_breakdown 行追加 + 月次実績ロールアップ） ===== */
+    var Y678_TAX_LS_RATE = "y678_payment_tax_rate_pct";
+    var Y678_TAX_LS_ROUND = "y678_payment_tax_round_mode";
+
+    function y678ReadTaxPrefsFromStorage() {
+      var rate = 10;
+      var round = "floor";
+      try {
+        var r = localStorage.getItem(Y678_TAX_LS_RATE);
+        if (r === "8" || r === "10") rate = Number(r);
+        var m = localStorage.getItem(Y678_TAX_LS_ROUND);
+        if (m === "floor" || m === "round" || m === "ceil") round = m;
+      } catch (eLs) {
+        void eLs;
+      }
+      return { ratePct: rate, roundMode: round };
+    }
+
+    function y678SaveTaxPrefsToStorage(ratePct, roundMode) {
+      try {
+        localStorage.setItem(Y678_TAX_LS_RATE, String(ratePct));
+        localStorage.setItem(Y678_TAX_LS_ROUND, String(roundMode));
+      } catch (eLs2) {
+        void eLs2;
+      }
+    }
+
+    function y678TaxDivisor(ratePct) {
+      return 1 + Number(ratePct) / 100;
+    }
+
+    /** 税込 → 税抜（677・表の実績に保存する値） */
+    function y678TaxExclusiveFromInclusive(inclusiveYen, ratePct, roundMode) {
+      var inc = Math.trunc(Number(inclusiveYen));
+      if (!isFinite(inc) || inc < 0) return 0;
+      var d = y678TaxDivisor(ratePct);
+      if (roundMode === "round") return Math.round(inc / d);
+      if (roundMode === "ceil") return Math.ceil(inc / d);
+      return Math.floor(inc / d);
+    }
+
+    /** 登録済み税抜 → 修正フォーム用の税込目安（端数処理の逆算） */
+    function y678TaxInclusiveHintFromExclusive(exclusiveYen, ratePct, roundMode) {
+      var ex = Math.trunc(Number(exclusiveYen));
+      if (!isFinite(ex) || ex < 0) return 0;
+      var d = y678TaxDivisor(ratePct);
+      if (roundMode === "floor") return Math.ceil(ex * d);
+      if (roundMode === "ceil") return Math.floor(ex * d);
+      return Math.round(ex * d);
+    }
+
+    function y678PaymentModalField(modal, name) {
+      return modal.querySelector("[name='" + name + "']");
+    }
+
+    function y678ApplyTaxPrefsToPaymentModal(modal) {
+      var prefs = y678ReadTaxPrefsFromStorage();
+      var selR = y678PaymentModalField(modal, "payment_tax_rate_pct");
+      var selM = y678PaymentModalField(modal, "payment_tax_round_mode");
+      if (selR) selR.value = String(prefs.ratePct);
+      if (selM) selM.value = prefs.roundMode;
+      return prefs;
+    }
+
+    function y678UpdatePaymentTaxExPreview(modal) {
+      var incEl = y678PaymentModalField(modal, "payment_amount_tax_in");
+      var span = modal.querySelector("[data-y678-tax-ex-preview]");
+      if (!span) return;
+      var prefs = y678ReadTaxPrefsFromStorage();
+      var selR = y678PaymentModalField(modal, "payment_tax_rate_pct");
+      var selM = y678PaymentModalField(modal, "payment_tax_round_mode");
+      if (selR && selR.value) prefs.ratePct = Number(selR.value);
+      if (selM && selM.value) prefs.roundMode = selM.value;
+      if (!incEl || String(incEl.value || "").trim() === "") {
+        span.textContent = "—";
+        return;
+      }
+      var incN = Number(String(incEl.value).replace(/[,\s¥￥]/g, ""));
+      if (!isFinite(incN) || incN < 0) {
+        span.textContent = "—";
+        return;
+      }
+      var ex = y678TaxExclusiveFromInclusive(incN, prefs.ratePct, prefs.roundMode);
+      span.textContent = formatYenPlainForDialog(ex);
+    }
+
+    function y678BindPaymentTaxControls(modal) {
+      if (modal.getAttribute("data-y678-tax-bound") === "1") return;
+      modal.setAttribute("data-y678-tax-bound", "1");
+      function onTaxUiChange() {
+        var selR = y678PaymentModalField(modal, "payment_tax_rate_pct");
+        var selM = y678PaymentModalField(modal, "payment_tax_round_mode");
+        var rate = selR && selR.value ? Number(selR.value) : 10;
+        var mode = selM && selM.value ? selM.value : "floor";
+        y678SaveTaxPrefsToStorage(rate, mode);
+        y678UpdatePaymentTaxExPreview(modal);
+      }
+      var incIn = y678PaymentModalField(modal, "payment_amount_tax_in");
+      if (incIn) {
+        incIn.addEventListener("input", onTaxUiChange);
+        incIn.addEventListener("change", onTaxUiChange);
+      }
+      var selR2 = y678PaymentModalField(modal, "payment_tax_rate_pct");
+      var selM2 = y678PaymentModalField(modal, "payment_tax_round_mode");
+      if (selR2) selR2.addEventListener("change", onTaxUiChange);
+      if (selM2) selM2.addEventListener("change", onTaxUiChange);
+    }
+
     function defaultPaymentDate(monthLabel) {
       var today = new Date();
       var ny = today.getFullYear();
@@ -3187,12 +3430,20 @@
         return payModal.querySelector("[name='" + n + "']");
       };
       qsE("payment_date").value = String((pv.payment_date && pv.payment_date.value) || "").trim();
-      qsE("payment_amount").value = String((pv.payment_amount && pv.payment_amount.value) || "").trim();
+      var taxPrefsEd = y678ApplyTaxPrefsToPaymentModal(payModal);
+      var storedExEd = toNum((pv.payment_amount && pv.payment_amount.value) || "");
+      var incEd = y678PaymentModalField(payModal, "payment_amount_tax_in");
+      if (incEd) {
+        incEd.value =
+          storedExEd > 0
+            ? String(y678TaxInclusiveHintFromExclusive(storedExEd, taxPrefsEd.ratePct, taxPrefsEd.roundMode))
+            : "";
+      }
+      y678UpdatePaymentTaxExPreview(payModal);
       var rawBk = String((pv.budget_bucket && pv.budget_bucket.value) || "");
       if (rawBk === Y678_BUCKET_RUNNING_LEGACY_WRONG) rawBk = Y678_BUCKET_RUNNING_VALUE;
       qsE("budget_bucket").value = rawBk;
       qsE("invoice_number").value = String((pv.invoice_number && pv.invoice_number.value) || "");
-      qsE("payment_memo").value = String((pv.payment_memo && pv.payment_memo.value) || "");
       payModal.setAttribute("data-y678-pay-edit-index", String(rowIndex));
       if ((prow[rowIndex] || {}).id != null) {
         payModal.setAttribute("data-y678-pay-edit-row-id", String(prow[rowIndex].id));
@@ -3211,8 +3462,11 @@
       if (sbE) sbE.textContent = "支払を更新";
       setTimeout(function () {
         try {
-          qsE("payment_amount").focus();
-          qsE("payment_amount").select();
+          var incF = y678PaymentModalField(payModal, "payment_amount_tax_in");
+          if (incF) {
+            incF.focus();
+            incF.select();
+          }
         } catch (eEd) {
           void eEd;
         }
@@ -3229,14 +3483,14 @@
       if (rowIndex < 0 || rowIndex >= prow.length) return;
       var pvDel = (prow[rowIndex] || {}).value || {};
       var pdd = String((pvDel.payment_date && pvDel.payment_date.value) || "");
-      var pam = String((pvDel.payment_amount && pvDel.payment_amount.value) || "");
+      var pam = toNum((pvDel.payment_amount && pvDel.payment_amount.value) || "");
       var okDel;
       try {
         okDel = window.confirm(
           "この支払行を削除しますか？\n支払日: " +
             pdd +
-            "\n金額: ¥" +
-            pam +
+            "\n金額（税抜）: " +
+            formatYenPlainForDialog(pam) +
             "\n\n（取り消し不可。必要ならあとから再入力してください。）"
         );
       } catch (eCd) {
@@ -3408,13 +3662,24 @@
         partnerDatalistHtml,
         "<div class=\"y678-wide y678-pay-existing-wrap\"></div>",
         "<label>支払日 <span class=\"req\">*</span><input type=\"date\" name=\"payment_date\" required /></label>",
-        "<label>金額 <span class=\"req\">*</span><input type=\"number\" name=\"payment_amount\" step=\"1\" min=\"0\" required /></label>",
+        "<div class=\"y678-wide y678-tax-amount-stack\" style=\"grid-column:1 / -1\">",
+        "<label class=\"y678-tax-row y678-tax-row-in\">",
+        "<span class=\"y678-tax-lbl\">税込 <span class=\"req\">*</span></span>",
+        "<input type=\"number\" name=\"payment_amount_tax_in\" step=\"1\" min=\"0\" required />",
+        "</label>",
+        "<div class=\"y678-tax-row y678-tax-row-ex\" aria-live=\"polite\">",
+        "<span class=\"y678-tax-lbl\">税抜 <span class=\"y678-tax-lbl-sub\">（表に表示・保存する金額・入力不要）</span></span>",
+        "<div class=\"y678-tax-ex-display\" data-y678-tax-ex-preview>—</div>",
+        "</div>",
+        "</div>",
+        "<label>消費税率<select name=\"payment_tax_rate_pct\"><option value=\"10\">10%（標準）</option><option value=\"8\">8%（軽減）</option></select></label>",
+        "<label>税抜の端数<select name=\"payment_tax_round_mode\"><option value=\"floor\">切り捨て</option><option value=\"round\">四捨五入</option><option value=\"ceil\">切り上げ</option></select></label>",
         "<label class=\"y678-wide\">摘要 <span class=\"y678-pay-summary-hint\">（編集不可・親レコードの摘要・修正は " +
           YOJITSU_LABEL_INPUT_APP +
           " で）</span><textarea name=\"summary_text\" rows=\"2\" readonly></textarea></label>",
-        "<label class=\"y678-wide\">摘要（補足）<span class=\"y678-pay-summary-hint\">（追加情報を書く欄。" +
+        "<label class=\"y678-wide\">備考<span class=\"y678-pay-summary-hint\">（この明細レコード単位。" +
           YOJITSU_LABEL_INPUT_APP +
-          " の「摘要（補足）」に上書き保存）</span><textarea name=\"summary_supplement\" rows=\"3\" maxlength=\"10000\"></textarea></label>",
+          " の「備考」に保存。支払行ごとの引継ぎはしません）</span><textarea name=\"record_notes\" rows=\"3\" maxlength=\"10000\"></textarea></label>",
         "<label class=\"y678-wide\">会社<span class=\"y678-pay-partner-hint y678-pay-summary-hint\"></span>" +
           "<select class=\"y678-pay-partner-preset\" aria-label=\"会社の候補から選択\" style=\"display:none\"></select>" +
           "<input type=\"text\" name=\"partner_company\" maxlength=\"255\" readonly /></label>",
@@ -3428,8 +3693,7 @@
           esc(Y678_BUCKET_INITIAL_VALUE) +
           "\">イニシャル費用（変動費）</option></select></label>",
         "<label>請求書番号<input type=\"text\" name=\"invoice_number\" maxlength=\"255\" /></label>",
-        "<label class=\"y678-wide\">メモ<textarea name=\"payment_memo\" rows=\"2\" maxlength=\"10000\"></textarea></label>",
-        "<p class=\"y678-pay-keyhint\">ショートカット: 金額・日付・一行欄は <strong>Enter</strong> で保存。メモ欄は改行のため <strong>Ctrl+Enter</strong> のみ保存。既存行は右の <strong>修正</strong>／<strong>削除</strong>（削除は確認あり）。</p>",
+        "<p class=\"y678-pay-keyhint\">上段「税込」に入力 → 下段「税抜」が自動表示されます。税率・端数は前回の選択を記憶します。<strong>Enter</strong> で保存（備考欄は <strong>Ctrl+Enter</strong>）。</p>",
         "</div>",
         "<div class=\"y678-modal-status\"></div>",
         "<div class=\"y678-modal-foot\">",
@@ -3439,6 +3703,8 @@
         "</div>",
       ].join("");
       document.body.appendChild(payModal);
+      y678BindPaymentTaxControls(payModal);
+      y678ApplyTaxPrefsToPaymentModal(payModal);
       payModal.addEventListener("click", function (e) {
         if (e.target && e.target.getAttribute && e.target.getAttribute("data-y678-modal-close") === "1") {
           closePaymentModal();
@@ -3563,10 +3829,19 @@
       st.style.color = "#555";
       var qs = function (n) { return payModal.querySelector("[name='" + n + "']"); };
       qs("payment_date").value = defaultPaymentDate(monthLabel);
-      var prefillYen = fixedBudgetPrefillYen(rec, monthLabel);
-      qs("payment_amount").value = prefillYen != null ? String(prefillYen) : "";
+      var taxPrefsOpen = y678ApplyTaxPrefsToPaymentModal(payModal);
+      var prefillEx = fixedBudgetPrefillYen(rec, monthLabel);
+      var incOpen = y678PaymentModalField(payModal, "payment_amount_tax_in");
+      if (incOpen) {
+        incOpen.value =
+          prefillEx != null
+            ? String(y678TaxInclusiveHintFromExclusive(prefillEx, taxPrefsOpen.ratePct, taxPrefsOpen.roundMode))
+            : "";
+      }
+      y678UpdatePaymentTaxExPreview(payModal);
       qs("summary_text").value = fieldVal(rec, "summary_text") || "";
-      qs("summary_supplement").value = fieldVal(rec, "summary_supplement") || "";
+      var notesEl = qs("record_notes");
+      if (notesEl) notesEl.value = fieldVal(rec, "notes") || "";
       payModal.removeAttribute("data-y678-partner-unlocked");
       var pcEl = qs("partner_company");
       pcEl.value = fieldVal(rec, "partner_company") || "";
@@ -3675,7 +3950,6 @@
         qs("budget_bucket").value = "";
       }
       qs("invoice_number").value = "";
-      qs("payment_memo").value = "";
       var pcount = ((rec.payment_breakdown || {}).value || []).length;
       var linkBox = payModal.querySelector("[data-y678-pay-parentlink]");
       if (linkBox) {
@@ -3723,7 +3997,7 @@
             "<p style=\"margin:0 0 6px;font-weight:600\">既存の支払内訳（" + prow.length + " 件）</p>",
             "<table class=\"y678-pay-existing-tbl\" style=\"width:100%;font-size:12px;border-collapse:collapse;margin-bottom:8px\">",
             "<thead><tr><th style=\"text-align:left;border:1px solid #cfd8d2;padding:4px 6px\">支払日</th>",
-            "<th style=\"text-align:right;border:1px solid #cfd8d2;padding:4px 6px\">金額</th>",
+            "<th style=\"text-align:right;border:1px solid #cfd8d2;padding:4px 6px\">金額（税抜）</th>",
             "<th style=\"text-align:left;border:1px solid #cfd8d2;padding:4px 6px\">請求書番号</th>",
             "<th style=\"text-align:left;border:1px solid #cfd8d2;padding:4px 6px\">枠種別</th>",
             "<th style=\"text-align:center;border:1px solid #cfd8d2;padding:4px 6px;white-space:nowrap\">操作</th></tr></thead><tbody>",
@@ -3731,7 +4005,8 @@
           for (var px = 0; px < prow.length; px++) {
             var pv = (prow[px] || {}).value || {};
             var pd = esc(String(((pv.payment_date || {}).value) || ""));
-            var pa = esc(String(((pv.payment_amount || {}).value) || ""));
+            var paNum = toNum((pv.payment_amount || {}).value);
+            var pa = esc(formatYenPlainForDialog(paNum));
             var inv = esc(String(((pv.invoice_number || {}).value) || ""));
             var bk = esc(String(((pv.budget_bucket || {}).value) || ""));
             tb.push(
@@ -3756,7 +4031,10 @@
           existWrap.innerHTML = tb.join("");
         }
       }
-      setTimeout(function () { qs("payment_amount").focus(); }, 0);
+      setTimeout(function () {
+        var incFocus = y678PaymentModalField(payModal, "payment_amount_tax_in");
+        if (incFocus) incFocus.focus();
+      }, 0);
     }
 
     function openPaymentModal(rid, monthLabel) {
@@ -3805,7 +4083,7 @@
       var saveBtn = payModal.querySelector(".y678-pay-save");
       var qs = function (n) { return payModal.querySelector("[name='" + n + "']"); };
       var pdate = qs("payment_date").value.trim();
-      var pamtRaw = qs("payment_amount").value.trim();
+      var pamtRaw = String((y678PaymentModalField(payModal, "payment_amount_tax_in") || {}).value || "").trim();
       if (!/^\d{4}-\d{2}-\d{2}$/.test(pdate)) {
         st.style.color = "#b00020";
         st.textContent = "支払日は YYYY-MM-DD 形式で入力してください。";
@@ -3814,17 +4092,23 @@
       var pamtN = Number(String(pamtRaw).replace(/[,\s¥￥]/g, ""));
       if (!isFinite(pamtN) || pamtN < 0) {
         st.style.color = "#b00020";
-        st.textContent = "金額は 0 以上の数値で入力してください。";
+        st.textContent = "金額（税込）は 0 以上の数値で入力してください。";
         return;
       }
-      var pamt = String(Math.trunc(pamtN));
+      var taxPrefsSave = y678ReadTaxPrefsFromStorage();
+      var selRate = y678PaymentModalField(payModal, "payment_tax_rate_pct");
+      var selRound = y678PaymentModalField(payModal, "payment_tax_round_mode");
+      if (selRate && selRate.value) taxPrefsSave.ratePct = Number(selRate.value);
+      if (selRound && selRound.value) taxPrefsSave.roundMode = selRound.value;
+      y678SaveTaxPrefsToStorage(taxPrefsSave.ratePct, taxPrefsSave.roundMode);
+      var pamt = String(y678TaxExclusiveFromInclusive(pamtN, taxPrefsSave.ratePct, taxPrefsSave.roundMode));
       var bucket;
       var wasEdit;
       var editIdx;
       var editRowStableId;
       var invoice = qs("invoice_number").value.trim().slice(0, 255);
-      var memo = qs("payment_memo").value.trim().slice(0, 10000);
-      var newSupplement = qs("summary_supplement").value.slice(0, 10000);
+      var notesField = qs("record_notes");
+      var newNotes = notesField ? String(notesField.value || "").slice(0, 10000) : "";
 
       var pcField = qs("partner_company");
       var newPcRaw = String((pcField && pcField.value) || "").trim().slice(0, 255);
@@ -3890,13 +4174,18 @@
           if (row2.id) copy2.id = row2.id;
           newRowsS.push(copy2);
         }
+        var preservedMemo = "";
+        if (wasEdit && useEditIdx >= 0 && existingS[useEditIdx]) {
+          var evEdit = (existingS[useEditIdx].value || {});
+          preservedMemo = String((evEdit.payment_memo || {}).value || "");
+        }
         var newPayVal2 = {
           value: {
             payment_date: { value: pdate },
             payment_amount: { value: pamt },
             budget_bucket: { value: bucket },
             invoice_number: { value: invoice },
-            payment_memo: { value: memo },
+            payment_memo: { value: preservedMemo },
           },
         };
         if (wasEdit) {
@@ -3910,7 +4199,7 @@
         var origPcS = String(fieldVal(recSnap, "partner_company") || "").trim();
         var allowPartnerAggregateEditS = showPartnerNewRegisterButton(recSnap);
         var partnerUpdateS = !!(pcField && newPc !== origPcS && (partnerUnlocked || allowPartnerAggregateEditS));
-        var supplementChangedS = newSupplement !== String(fieldVal(recSnap, "summary_supplement") || "");
+        var notesChangedS = newNotes !== String(fieldVal(recSnap, "notes") || "");
         var bodyS = {
           app: APP_INPUT,
           id: rid,
@@ -3920,9 +4209,9 @@
             monthly_breakdown: { value: newMonthlyS },
           },
         };
-        if (supplementChangedS) bodyS.record.summary_supplement = { value: newSupplement };
+        if (notesChangedS) bodyS.record.notes = { value: newNotes };
         if (partnerUpdateS) bodyS.record.partner_company = { value: newPc };
-        return { body: bodyS, supplementChangedS: supplementChangedS, partnerUpdateS: partnerUpdateS };
+        return { body: bodyS, notesChangedS: notesChangedS, partnerUpdateS: partnerUpdateS };
       }
 
       function putPaymentBodyForSnap(recSnap) {
@@ -4023,22 +4312,22 @@
             st.textContent = cf.err;
             return Promise.reject({ message: cf.err, __y678User: true });
           }
-          var supplementChanged = cf.supplementChangedS;
+          var notesChanged = cf.notesChangedS;
           var partnerUpdate = cf.partnerUpdateS;
           st.style.color = "#555";
           st.textContent =
             (wasEdit
               ? YOJITSU_LABEL_INPUT_APP + " の支払行を更新し、月次実績を再集計中…"
               : YOJITSU_LABEL_INPUT_APP + " に支払を追加し、月次実績を再集計中…") +
-            (supplementChanged ? "（摘要(補足)も更新）" : "") +
+            (notesChanged ? "（備考も更新）" : "") +
             (partnerUpdate ? "（会社名も更新）" : "");
           return savePaymentAfterVa01Retry(snap0, 0);
         })
         .then(function () {
           st.style.color = "#0a6b0a";
           st.textContent = wasEdit
-            ? "更新しました（" + pdate + " / ¥" + pamt + "）。一覧を更新します。"
-            : "保存しました（" + pdate + " / ¥" + pamt + "）。一覧を更新します。";
+            ? "更新しました（" + pdate + " / 税抜 " + formatYenPlainForDialog(pamt) + "）。一覧を更新します。"
+            : "保存しました（" + pdate + " / 税抜 " + formatYenPlainForDialog(pamt) + "）。一覧を更新します。";
           setTimeout(closePaymentModal, 600);
           return load();
         })
