@@ -12,7 +12,8 @@
 
 2. **複数アプリ同一 push**（**2026-05-16 変更**）  
    - 同一 push の `git diff` に **複数アプリ ID** の `customize/<数字>/desktop.js` が含まれる → **各 ID を順に API デプロイ**（旧仕様の「スキップ」は廃止。`6b3d370` 系で 678 が本番未反映になった教訓）。  
-   - **同一アプリのみ**の差分は従来どおり 1 回デプロイ。
+   - **同一アプリのみ**の差分は従来どおり 1 回デプロイ。  
+   - **別名パス**（2026-05-21）: `customize/new-pc-ledger-v1/desktop.js` → **674**、`customize/shucccho-seisan/desktop.js` → **629** も差分判定に含める（workflow 内 `collect_deploy_app_ids_from_diff`）。
 
 3. **`workflow_dispatch`（手動実行）**  
    - **常に API デプロイ経路へ進める**（運用者が Actions UI で対象 run を確認して実行する前提）。  
@@ -26,7 +27,7 @@
 - [ ] GitHub リポジトリ → **Settings** → **Secrets and variables** → **Actions** → **Variables** タブ  
 - [ ] **`KINTONE_PUSH_AUTO_DEPLOY`** を **`true`** にする（**push で自動デプロイを継続したい場合のみ**）。  
 - [ ] **複数アプリを 1 push したあと**、Actions ログで **各 app ID の deploy group** が成功したか確認（失敗時は `npm run deploy:<app>` で個別復旧）。  
-- [ ] **674（`customize/new-pc-ledger-v1/`）・629（`customize/shucccho-seisan/`）** など **パスが `customize/<数字>/` 以外**の変更は、本ゲートの **「複数アプリ判定」対象外**（従来どおり diff に `customize/<数字>/desktop.js` が無ければデプロイはスキップ）。必要なら **workflow_dispatch** でデプロイ。
+- [ ] **674 / 629** は **別名パス**（`customize/new-pc-ledger-v1/desktop.js` / `shucccho-seisan/desktop.js`）変更でも push 差分に載る（**`KINTONE_PUSH_AUTO_DEPLOY=true`** 時は API デプロイ対象）。それ以外の非数字パスは従来どおり対象外。
 
 ## 参考: ローカル preflight デプロイ
 

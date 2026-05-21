@@ -71,6 +71,22 @@ jobs:
         id: deploy_gate
         run: |
           set -euo pipefail
+          # customize/<id>/desktop.js に加え 674・629 の別名パスをアプリ ID に解決
+          collect_deploy_app_ids_from_diff() {
+            local before="$1" sha="$2"
+            local ids="" f
+            while IFS= read -r f; do
+              [[ -n "${f}" ]] || continue
+              if [[ "${f}" =~ ^customize/([0-9]+)/desktop\.js$ ]]; then
+                ids="${ids} ${BASH_REMATCH[1]}"
+              elif [[ "${f}" == "customize/new-pc-ledger-v1/desktop.js" ]]; then
+                ids="${ids} 674"
+              elif [[ "${f}" == "customize/shucccho-seisan/desktop.js" ]]; then
+                ids="${ids} 629"
+              fi
+            done < <(git diff --name-only "${before}" "${sha}" 2>/dev/null || true)
+            printf '%s\n' ${ids} | grep -E '^[0-9]+$' | sort -u | tr '\n' ' ' | sed -e 's/[[:space:]]*$//'
+          }
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "deploy_js=1" >> "${GITHUB_OUTPUT}"
             exit 0
@@ -88,12 +104,12 @@ jobs:
             fi
             exit 0
           fi
-          if ! git diff --name-only "${BEFORE}" "${SHA}" 2>/dev/null | grep -qE '^customize/[0-9]+/desktop\.js$'; then
-            echo "::notice::この push には customize/<数字>/desktop.js が含まれないため kintone API デプロイをスキップします（ESLint のみ完了）。"
+          DEPLOY_APP_IDS="$(collect_deploy_app_ids_from_diff "${BEFORE}" "${SHA}")"
+          if [[ -z "${DEPLOY_APP_IDS}" ]]; then
+            echo "::notice::この push には customize の desktop.js（674/629 別名パス含む）が含まれないため kintone API デプロイをスキップします（ESLint のみ完了）。"
             echo "deploy_js=0" >> "${GITHUB_OUTPUT}"
             exit 0
           fi
-          DEPLOY_APP_IDS="$(git diff --name-only "${BEFORE}" "${SHA}" 2>/dev/null | grep -E '^customize/[0-9]+/desktop\.js$' | sed -E 's#^customize/([0-9]+)/desktop\.js$#\1#' | sort -u | tr '\n' ' ' | sed -e 's/[[:space:]]*$//')"
           UNIQ_N="$(printf '%s\n' ${DEPLOY_APP_IDS} | grep -c . || true)"
           if [[ -z "${DEPLOY_APP_IDS}" || "${UNIQ_N}" -lt 1 ]]; then
             echo "::notice::push 差分からデプロイ対象アプリ ID を判定できません（uniq=${UNIQ_N:-0}）。kintone API デプロイをスキップします。"
@@ -159,10 +175,19 @@ jobs:
               while IFS= read -r f; do
                 [[ -n "${f}" ]] || continue
                 [[ -f "${f}" ]] || continue
-                [[ "${f}" =~ ^customize/([0-9]+)/desktop\.js$ ]] || continue
-                echo "${BASH_REMATCH[1]}"
-                return
-              done < <(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" 2>/dev/null | grep -E '^customize/[0-9]+/desktop\.js$' || true)
+                if [[ "${f}" =~ ^customize/([0-9]+)/desktop\.js$ ]]; then
+                  echo "${BASH_REMATCH[1]}"
+                  return
+                fi
+                if [[ "${f}" == "customize/new-pc-ledger-v1/desktop.js" ]]; then
+                  echo "674"
+                  return
+                fi
+                if [[ "${f}" == "customize/shucccho-seisan/desktop.js" ]]; then
+                  echo "629"
+                  return
+                fi
+              done < <(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" 2>/dev/null || true)
             fi
             printf '%s' "${APP_ID}"
           }
