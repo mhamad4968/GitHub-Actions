@@ -2151,3 +2151,12 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 **タスク2**: `2026-05-17-constitution-restructure.md` → `docs/plans/_archive/` — `verify:rule-hierarchy-prune` / `cio:archive:rule-orphans`  
 **タスク3**: `verify:mode-b-turn-head-canonical`（全 `.mdc` が `mode-b-canonical` 参照・4行フェンス重複禁止）— `verify:cio-four-ai-governance` に連動  
 **その他**: `.cursorrules` 方式B誘導・`00-rule-hierarchy.md` 第2階層追記・Desktop sync 済み。
+
+---
+
+### 2026-05-21 JST — コミット + Phase 2 細分化（多AIレビュー）
+
+**§50-3-8**: DeepSeek 盲点3点 → CIO 突合3行（`2026-05-21-constitution-phase2-safe-subdivision.md` 内）→ `cio:guard:5038 --stamp`  
+**Phase 2-A**: `docs/constitution/18-ai-team-read-map.md`（4AI役割別ナビ）— **AGENTS 本文は未変更**  
+**git**: `ce836a9` feat(cio): Mode B governance, MCP ledger sync, and constitution Phase 2 nav（53 files）  
+**検証**: `verify:cio-four-ai-governance` exit 0（commit 前）
