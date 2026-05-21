@@ -1,7 +1,7 @@
 # 憲法・ルール Phase 2 — 安全な細分化・体系化
 
 **起票**: 2026-05-21（CEO: コミット + AIチーム見やすい体系化 + **1人作業禁止**）  
-**状態**: 進行中（索引・読本追加のみ。**AGENTS.md 本文の意味変更は Phase 2-B で CEO GO 後**）
+**状態**: **Phase 2-B 完了**（2026-05-21）— 論理分類・RULES-INDEX 自動節・RAG constitution ミラー。**AGENTS.md § 本文は未変更**。
 
 ---
 
@@ -36,11 +36,20 @@
 
 ---
 
-## Phase 2-B（将来・CEO GO 待ち）
+## Phase 2-B（完了・2026-05-21）
 
-- `.mdc` を **トピック別サブフォルダ**へ整理（パス変更は `verify:rule-hierarchy-prune` 許可リスト更新必須）
-- `RULES-INDEX` の §→mdc 双方向リンク自動生成
-- RAG ミラーへの `18-ai-team-read-map` 反映（`rag:mirror:canonical-docs`）
+| 成果 | コマンド |
+|------|----------|
+| `.cursor/rules/README.md` + `data/cursor-rules-topic-index.json`（**物理移動なし**） | `verify:cursor-rules-index` |
+| `RULES-INDEX` Cursor ルール逆引き（自動節） | `npm run rules:sync-mdc-index` |
+| RAG `.rag/extra-docs/constitution/` ミラー（00/17/18） | `npm run rag:mirror:canonical-docs` |
+
+**DeepSeek 判断**: サブフォルダへ `.mdc` 移動は **非推奨**（Cursor 互換）。論理索引で代替。
+
+## Phase 2-C（将来・CEO GO）
+
+- `RULES-INDEX` § 番号 ↔ mdc の **双方向**（AGENTS パース連動）
+- `constitution.mdc` ミラーは `rules:regenerate-constitution` のみ（手編集禁止の機械化強化）
 
 ---
 

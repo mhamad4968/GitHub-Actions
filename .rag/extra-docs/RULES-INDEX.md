@@ -3,9 +3,69 @@
 > 目的: AGENTS.md §1〜§44 を「いつ / どんな状況で参照するか」で素早く引けるようにする。
 > 更新ルール: AGENTS.md にルールを追加・改訂したら本ファイルも同時に更新する（§43 WORKFLOW.md Phase 5 で記録）。
 >
-> **ジャンル別読本（2026-05-17）**: 長文回避用の分割版は **`docs/constitution/README.md`**（17 ジャンル）。索引で § を特定 → 該当ジャンル `.md` を Read → 必要時のみ `AGENTS.md` 正本。Phase 2: 各読本に **30秒要約・チェックリスト** 付き（`npm run constitution:enhance-phase2`）。
+> **3階層（2026-05-21）**: **[`docs/constitution/00-rule-hierarchy.md`](docs/constitution/00-rule-hierarchy.md)** — 第1憲法 / 第2機械検証 / 第3 runbook。  
+> **方式B 用語の単一窓**: **`.cursor/rules/mode-b-canonical.mdc`**（4AI定義・先頭4行テンプレ）。
+>
+> **ジャンル別読本（2026-05-17）**: 長文回避用の分割版は **`docs/constitution/README.md`**（17 ジャンル+階層索引）。索引で § を特定 → 該当ジャンル `.md` を Read → 必要時のみ `AGENTS.md` 正本。
 
 ---
+
+## 3階層クイック表（2026-05-21）
+
+| 階層 | 代表ファイル | いつ |
+|------|--------------|------|
+| **第1 憲法** | `AGENTS.md` §1-2-3-4 §50-3-8 §50-3-11 / `part-A` 🎖️ / `mode-b-canonical.mdc` | 毎ターン・役割・報告 |
+| **第2 機械** | `cio-four-ai-governance.mjs` / `cio:guard:*` / `verify:mode-b-zombie-docs` / `verify:mcp-four-ai-alignment` / `verify:mode-b-turn-head-canonical` / `verify:rule-hierarchy-prune` | commit・deploy・CI |
+| **第3 runbook** | `docs/runbooks/cio-four-ai-governance.md` / `deepseek-pre-edit-gate.md` | コマンド手順 |
+
+---
+
+<!-- RULES-INDEX:CURSOR-RULES-AUTO:BEGIN -->
+
+## Cursor ルール逆引き（自動生成・編集禁止）
+
+**更新**: `npm run rules:sync-mdc-index`（2026-05-21 JST）
+
+| トピック | ファイル | description（frontmatter） |
+|----------|----------|---------------------------|
+| CIO核・方式B・毎ターン | [`cio-constitution.mdc`](.cursor/rules/cio-constitution.mdc) | >- |
+| CIO核・方式B・毎ターン | [`mode-b-canonical.mdc`](.cursor/rules/mode-b-canonical.mdc) | 方式B・固定4AI — 用語・四行テンプレ・役割の単一窓（重複記述は本ファイルへ集約） |
+| CIO核・方式B・毎ターン | [`every-turn-rules-confirm.mdc`](.cursor/rules/every-turn-rules-confirm.mdc) | AGENTS.md §1-2-3-1 §35-7 §50-3-11 — 毎ターン先頭4行（正テンプレは mode-b-canonical.mdc）＋§1e |
+| CIO核・方式B・毎ターン | [`constitution-enforcement-core.mdc`](.cursor/rules/constitution-enforcement-core.mdc) | AGENTS.md §35-1 §56-1a（TSB-024）— 違反＝失敗・CIO体制2者ダブルチェックの定義正本（常時想起） |
+| CIO核・方式B・毎ターン | [`constitution-brief-card.mdc`](.cursor/rules/constitution-brief-card.mdc) | AGENTS.md §0 §3 §50 — 憲法薄型カード＋CIO三角＋MCP先出し（網羅版は Read） |
+| CIO核・方式B・毎ターン | [`cio-discipline-always.mdc`](.cursor/rules/cio-discipline-always.mdc) | §35-7 規律先行＋各 customize deploy 前スタンプ（条件付きではなく機械＋常時想起） |
+| CIO核・方式B・毎ターン | [`cio-report-min-format.mdc`](.cursor/rules/cio-report-min-format.mdc) | 論点9 — §1 先頭4行のリポ／PR 向け機械検証（B スコープ）とチャット先頭ブロックの正本参照 |
+| セッション・引き継ぎ | [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) | セッション切替時の引き継ぎ（人間5行テンプレ＋AIが handoff-log へ必ず追記して漏れ防止） |
+| セッション・引き継ぎ | [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) | §35-1 / §56-1a / TSB-024 / §1-2-3-1（TSB-024 ゲート・`globs` 全リポ注入。常時 YAML true は cio-constitution.mdc のみ。網羅条文は AGENTS.md / c |
+| セッション・引き継ぎ | [`session-read-ladder-two-phase.mdc`](.cursor/rules/session-read-ladder-two-phase.mdc) | セッション復元は二段階（事前準備A→本題確認B）＋ラダー正本を Read で取り込む（glob・常時想起は憲法カード等に委譲） |
+| セッション・引き継ぎ | [`cio-operating-loop.mdc`](.cursor/rules/cio-operating-loop.mdc) | CIO 運用の一本線（正シェル・朝ブリーフィング・軽検査・Desktop 同期の判断） |
+| セッション・引き継ぎ | [`auto-read-by-topic.mdc`](.cursor/rules/auto-read-by-topic.mdc) | 確認ログ+マルチAI・CIOレポート毎ターン+§41一問+Read義務+役割分担（alwaysApply） |
+| 4AI・DeepSeek・§50-3-8 | [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) | CIO×知恵袋の仕様確認分業（🎖️表の下位・予実など） |
+| 4AI・DeepSeek・§50-3-8 | [`deepseek-pre-edit-gate.mdc`](.cursor/rules/deepseek-pre-edit-gate.mdc) | U4 — customize/SPEC/本番PUT の編集前に DeepSeek 1 問必須（CEO 2026-05-17） |
+| MCP・ツール | [`mcp-server-use-triggers.mdc`](.cursor/rules/mcp-server-use-triggers.mdc) | MCP §50 — 先出し義務・1行トリガー表（descriptor は mcp-tool-discipline） |
+| MCP・ツール | [`mcp-tool-discipline.mdc`](.cursor/rules/mcp-tool-discipline.mdc) | MCP descriptor 必読・認証順序・curl 優先度 + アイドル時間の有効活用（メンテ枠） |
+| MCP・ツール | [`mcp-frontend-shadcn-chrome.mdc`](.cursor/rules/mcp-frontend-shadcn-chrome.mdc) | Shadcn UI MCP を必ず参照・Chrome DevTools MCP で事実確認・不明時は関連 MCP で先に調査（mcp.json 同期手順付き） |
+| MCP・ツール | [`ai-agent-tools-constitution.mdc`](.cursor/rules/ai-agent-tools-constitution.mdc) | AIエージェント活用憲法（Rules for Tools）— 憲法適合判断の記録・CIO役割内の多AI協議・Exa/Brave/Firecrawl・課題管理・Puppeteer・Mintlify/Harness・禁止事項（2026-05-0 |
+| MCP・ツール | [`cursor-generate-image-assets.mdc`](.cursor/rules/cursor-generate-image-assets.mdc) | Cursor 内蔵 GenerateImage と assets/images/（画像 MCP 見送り・2026-05-21） |
+| kintone・customize | [`kintone.mdc`](.cursor/rules/kintone.mdc) | kintone 周辺・ニュース収集・LLM 連係の補足（重要度判定・フィールド等） |
+| kintone・customize | [`kintone-javascript.mdc`](.cursor/rules/kintone-javascript.mdc) | kintone の JS カスタマイズ・API 連係（フィールド・保存先・レート制限・uploader・コマンド） |
+| kintone・customize | [`kintone-schema-trust.mdc`](.cursor/rules/kintone-schema-trust.mdc) | フィールド正本の優先順位・kintone.events.on 前の確認（迷子防止） |
+| kintone・customize | [`kintone-destructive-rest-guard.mdc`](.cursor/rules/kintone-destructive-rest-guard.mdc) | kintone REST の DELETE・全件入替・本番アプリ破壊級の前に dry-run＋CEO GO（2026-05-06 浜田承認） |
+| kintone・customize | [`constitutional-focus-kintone-customize.mdc`](.cursor/rules/constitutional-focus-kintone-customize.mdc) | AGENTS.md §35-7 §50-3-8 §52 — customize 編集・本番 deploy 時の追加想起（glob） |
+| kintone・customize | [`creation-timing-ask.mdc`](.cursor/rules/creation-timing-ask.mdc) | アプリ新規作成前に「今すぐ／後日」と配置先スペースを浜田へ確認。未決なら作成に着手しない（浜田指示 2026-04-28） |
+| ドメイン特化（glob） | [`constitutional-focus-yojitsu.mdc`](.cursor/rules/constitutional-focus-yojitsu.mdc) | AGENTS.md §50-3-8 §41 §2 — 部署予実（yojitsu）テンプレ・SPEC 変更時の追加想起（glob） |
+| ドメイン特化（glob） | [`constitutional-focus-github-workflows.mdc`](.cursor/rules/constitutional-focus-github-workflows.mdc) | AGENTS.md §18 §52-8 §35-1 — GitHub Actions / workflow 変更時の追加想起（glob） |
+| ドメイン特化（glob） | [`security-news-response.mdc`](.cursor/rules/security-news-response.mdc) | セキュリティニュースの説明・要約・整理を依頼されたときの出力形式と CVE 時の調査 |
+| ドメイン特化（glob） | [`modern-web-official-docs.mdc`](.cursor/rules/modern-web-official-docs.mdc) | Next.js・React・Tailwind・TypeScript・Supabase・Prisma・Firebase・OpenAI・LangChain・Lucide・Notion API のコード生成・設計時に、公式ドキュメント索引へ誘導す |
+| ドメイン特化（glob） | [`next-session-jbis-followups.mdc`](.cursor/rules/next-session-jbis-followups.mdc) | 595・経理FAQまわりの次回フォロー（ユーザー依頼で次回に生かす提案） |
+| その他・運用補助 | [`file-copy-exact-path.mdc`](.cursor/rules/file-copy-exact-path.mdc) | ユーザーが指定したフォルダへファイルをコピーするときはその直下に置く |
+| その他・運用補助 | [`autonomous-with-mandatory-asks.mdc`](.cursor/rules/autonomous-with-mandatory-asks.mdc) | 開発は自律実行するが、確認が必要なら着手前に浜田へ聞く（浜田指示） |
+| その他・運用補助 | [`snyk-security.mdc`](.cursor/rules/snyk-security.mdc) | Snyk で生成・変更コードをスキャンする（Secure at Inception 相当） |
+| その他・運用補助 | [`constitution.mdc`](.cursor/rules/constitution.mdc) | 網羅統合版 — 憲法・索引・WORKFLOW・全mdc・予実・plans・chat・handoff・docs全（plans除く重複）・security-next・yojitsu README等（再生成=本スクリプト）。Cursor 常時枠の |
+
+索引: [`.cursor/rules/README.md`](.cursor/rules/README.md) / [`data/cursor-rules-topic-index.json`](data/cursor-rules-topic-index.json)
+
+<!-- RULES-INDEX:CURSOR-RULES-AUTO:END -->
 
 ## ジャンル読本 早見（§ → ファイル）
 
@@ -28,8 +88,10 @@
 | §55・第18〜19章 | [14-self-governance-safemode.md](docs/constitution/14-self-governance-safemode.md) |
 | §52・§56・Tier | [15-raci-responsibility.md](docs/constitution/15-raci-responsibility.md) |
 | §57 | [16-amendment-process.md](docs/constitution/16-amendment-process.md) |
+| （階層） | [00-rule-hierarchy.md](docs/constitution/00-rule-hierarchy.md) |
+| §1-2-3-4・§50-3-11 | [17-four-ai-mode-b.md](docs/constitution/17-four-ai-mode-b.md) |
 
-検証: `npm run constitution:verify-coverage`（全 § 見出しが読本合併に存在）
+検証: `npm run constitution:verify-coverage` / `npm run verify:cio-four-ai-governance`
 
 ---
 
@@ -40,6 +102,7 @@
 | §0 | **RULES-INDEX 即答カード参照**（索引駆動の起点 / 「まず索引→該当 § を読む」を強制） |
 | （Cursor）**`cio-operating-loop.mdc`** | **CIO 運用の一本線**（2026-05-02 / **2026-05-07: glob 化**）— **`chat-sessions/**` と `docs/reports/**` を編集・閲覧するターンで想起。正シェルは **`~/kintone-ai-lab`（WSL）**／朝は **`docs/reports/<JST日付>-morning-prep.md`**（無ければ先に **`npm run morning:ensure`**）→ **`desktop-ai-emergency-read-pack/09-READ-07.txt`** → 追徴なら **`npm run cio:quick-health`**（朝報検証同梱）／切替は **`constitution-handoff-gate.mdc`** + `NEW-SESSION-STARTER`「貼付単独で完走」／Read pack + `SESSION-READ-LADDER.md`／Desktop 後は **`npm run desktop:sync-and-verify`** |
 | **`verify-ci-rule-integrity.mjs`** | **`alwaysApply: true` は最大 10 件**＋**`cio-constitution.mdc` が必ず常時 true**（2026-05-09 CIO 統合）。超過は CI **exit 2**。新規 `.mdc` は既定 **`alwaysApply: false` + `globs`**。 |
+| （Cursor）**`mode-b-canonical.mdc`** | **方式B・4AI用語・先頭4行テンプレの単一窓**（2026-05-21）— 他 mdc はコピーせず参照 |
 | （Cursor）**`cio-constitution.mdc`** | **CIO 統合憲法（唯一の `alwaysApply: true` 核・2026-05-09）** — デスクトップ正本・Multi-Agent 役割・§1 四行・§M-2・三重 hooks へのポインタ |
 | （Cursor）**`constitution-brief-card.mdc`** | **薄型想起（glob 注入）**（2026-05-06）— CIO 三角・**MCP/スクリプト先出し**／網羅版 `constitution.mdc` は **必要時 Read**（常時枠は `cio-constitution.mdc` に集約） |
 | （Cursor）**`constitution-enforcement-core.mdc`** | **違反＝失敗・ダブルチェック定義**（2026-05-06 / **glob 注入**）— **本体 CIO ＋ DeepSeek または Kimi** を第 2 者とする。**1 人チェック禁止**。**検証の 2 者**（完了宣言）・**仕様の言い切り**（未決→確定と言い換え禁止）。末尾に CEO 指示の全文を保持 |
@@ -53,7 +116,8 @@
 | §1 / §1-2 / §1-2-2 / §1-2-3 / §1-2-3-1 / §1-2-3-2 / §1-2-3-3 / §1-2-4 | 役割定義 + **最適モデル原則 / Opus 4.7 デフォルト枠**（§1-2 / 2026-04-26 R-3 改定 = 「Opus 統一」を「最適モデル」に転換 / 浜田指示「絶対にこのモデルを使うというこだわりはしない」/ 別モデルへの常時切替・レビュー用サブエージェント禁止は維持 / 例外は §1-2）+ **API 制限到達時の自動フォールバック禁止**（§1-2-2 / N-3 / N-4 で 4 択 A-D 提示の枠組み + §1-2-2-1 Cursor IDE 必須設定 = Q1 で 4 → 8 項目 + Browser Protection ON + MCP Tools Protection ON + Monthly Limit $1000 / TSB-019 連動）+ **Opus 内モデル使い分け**（§1-2-3 / N-5 / 既定 Extra High / Max Thinking は §47-A 100% 証明・設計判断・複雑バグ修正のみ）+ **AI 自己宣言義務**（§1-2-3-1 / P5-5 / タスク冒頭で `[§1-2-3 ティア判定: Extra High/Max Thinking]` を 1 行明示 = 形骸化対策 / F-13 教訓）+ **AI 自律モデル選択原則**（§1-2-3-2 / R-3 / 3 段階 L1 Composer 2 / L2 Extra High / L3 Max Thinking / 1 秒判定フロー / 不可逆操作は L3 強制 / silent fallback と区別 = ティア宣言で証跡 / F-14 対策 = Max Thinking 59.4% → 20-30% 想定）+ **CIO によるモデル最終判断**（§1-2-3-3 / 2026-04-29 / 浜田 CIO が明示したティアは §1-2-3-2 に優先 / 未指定時は §1-2-3-1/2）+ **クレジット予算管理 改定**（§1-2-4 / P5-5 / 月予算 $200+$1000 引上げ / 3 系統 (Total/API/On-Demand) / 70-80-85-95% 4 段階自発警告 / Spending スクショ抽出 / 朝報 §0 統合 / TSB-018/TSB-021 連動）|
 | §51 / §51-3 / §51-6 / §51-6-2 | **並列禁止 + セッション分割推奨 + AI 自律セッション切り命令権**（§51-3 並列禁止 / §51-6 提案レベル + **遵守事項 5** = 2026-04-29 切替直後 **`session:clock:set` 必須** + **`session:clock:web` URL をチャットに転記し浜田にブラウザで開くよう促す** / **§51-6-2 命令権** = 2026-04-26 R-4 / 浜田 10:30「セッションを切ることは重要 / 命令指示権限を与える」/ 6 つの自律発動条件 (4h / 200 tool call / 重作業完了直後 / コスト 2x / Tier B 直前 / API 100%) / 浜田却下時は §47-D で逆却下 / 引き継ぎを checkpoint-latest.md へ追記義務 / **次チャット初手で遵守事項 5**）|
 | §51-6-2 運用 | **`npm run session:clock:set`**（切替毎・必須）／**`npm run session:clock:clear`**（終了時・`開始:` を未設定）／**`npm run session:clock:web`**（バックグラウンド・URL を浜田へ・止めるは Ctrl+C）／**`npm run session:clock:health`**（壁時計・hooks・crontab・watch pid ワンショット）／**`npm run verify:session-clock-health`**（`session:bootstrap` 内包・厳格）／`SESSION-SPLIT-REMINDER.md`／§**16-1** 個人端末のローカル前準備（`AGENTS.md`）|
-| §50-3 / **§50-3-2a** / **§50-3-8** / **§50-3-9** / **§50-3-10** | **CTO運用規定**（コスト・自律・安全 / PlanB / **航海図 vs §51** / **CEO 差し替え** / **§50-3-2a MDD 語彙＝航海図＋SPEC/md 正本**（一次定義）/ 安価MCP 3回or5分 / サニタイズ / 憲法適合＋コマンド併記 / §41 相談 / **§50-3-8 盲点・DeepSeek 着手前＋突合メモ** / **§50-3-9 kintone MCP 失敗時の REST 自律迂回**（構造エラー再試行禁止・通信1回・`tmp-kintone-*` 掃除）/ **§50-3-10 `.cursorrules` 鏡像** / 2026-04-29–30）／**仕様確認分業（🎖️表の下位）**: `.cursor/rules/deepseek-cursor-spec-division.mdc`（知恵袋→CIO 突合・2026-05-01）|
+| §1-2-3-4 | **4AI方式B・CIOセッション特例**（2026-05-21）— Opus4.7固定 / Composer2.5 Subagent diffのみ / Kimi長文 / DeepSeek §50-3-8 / `mode-b-canonical.mdc` |
+| §50-3 / **§50-3-2a** / **§50-3-8** / **§50-3-9** / **§50-3-10** / **§50-3-11** | **CTO運用規定** + **§50-3-11 4AI開発プロトコル**（DeepSeek1問→突合3行→`cio:guard:5038` / Composer interlock / ゾンビ検査 / `00-rule-hierarchy.md`）／**仕様分業**: `deepseek-cursor-spec-division.mdc` |
 | §52 / §52-3 / §52-8 / §52-8-1 / §52-9 | **RACI Tier A/B 自律レベル**（§52-3 6 問自己診断）+ **§52-8 高リスク shell 暴走防止**（Q1 / TSB-019 連動 / rm -rf・git push --force・npm install (新規)・chmod -R・sudo・.env 編集 等は事前報告 → 浜田 GO 待ち）+ **§52-8-1 物理 block 層**（P5-1/R1 / TSB-019 構造的根本対策 / `~/.cursor/hooks/dangerous-shell-blocker.sh` で OS レベル deny / 三層防御確立）+ **§52-9 Tier A 範囲ミス発見時の自律修正権**（2026-04-26 R-5 / 浜田「ミスや発見があれば即座にこちらに確認しないで進めてよい」/ §52-4 Conservative Default の能動的反対側補完 / Tier A のみ即修正可 / Tier B / §52-8 / §57 / scope 外 / Cursor IDE 設定変更 は適用外 / 完了報告 + logs/autonomy-decisions/auto-fix-*.md 事後トレース義務）|
 | §39 | 発言前の日時確認（絶対遵守）|
 | §34 | 人間尊重プロトコル |

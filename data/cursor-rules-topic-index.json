@@ -1,0 +1,82 @@
+{
+  "version": "2026-05-21-phase2b",
+  "note": "Cursor は .cursor/rules/*.mdc 直下のみ読む。サブフォルダ移動はしない。",
+  "topics": [
+    {
+      "id": "cio-core",
+      "label": "CIO核・方式B・毎ターン",
+      "files": [
+        "cio-constitution.mdc",
+        "mode-b-canonical.mdc",
+        "every-turn-rules-confirm.mdc",
+        "constitution-enforcement-core.mdc",
+        "constitution-brief-card.mdc",
+        "cio-discipline-always.mdc",
+        "cio-report-min-format.mdc"
+      ]
+    },
+    {
+      "id": "session-handoff",
+      "label": "セッション・引き継ぎ",
+      "files": [
+        "session-handoff.mdc",
+        "constitution-handoff-gate.mdc",
+        "session-read-ladder-two-phase.mdc",
+        "cio-operating-loop.mdc",
+        "auto-read-by-topic.mdc"
+      ]
+    },
+    {
+      "id": "four-ai-deepseek",
+      "label": "4AI・DeepSeek・§50-3-8",
+      "files": [
+        "deepseek-cursor-spec-division.mdc",
+        "deepseek-pre-edit-gate.mdc"
+      ]
+    },
+    {
+      "id": "mcp",
+      "label": "MCP・ツール",
+      "files": [
+        "mcp-server-use-triggers.mdc",
+        "mcp-tool-discipline.mdc",
+        "mcp-frontend-shadcn-chrome.mdc",
+        "ai-agent-tools-constitution.mdc",
+        "cursor-generate-image-assets.mdc"
+      ]
+    },
+    {
+      "id": "kintone",
+      "label": "kintone・customize",
+      "files": [
+        "kintone.mdc",
+        "kintone-javascript.mdc",
+        "kintone-schema-trust.mdc",
+        "kintone-destructive-rest-guard.mdc",
+        "constitutional-focus-kintone-customize.mdc",
+        "creation-timing-ask.mdc"
+      ]
+    },
+    {
+      "id": "domain-focus",
+      "label": "ドメイン特化（glob）",
+      "files": [
+        "constitutional-focus-yojitsu.mdc",
+        "constitutional-focus-github-workflows.mdc",
+        "security-news-response.mdc",
+        "modern-web-official-docs.mdc",
+        "next-session-jbis-followups.mdc"
+      ]
+    },
+    {
+      "id": "misc",
+      "label": "その他・運用補助",
+      "files": [
+        "file-copy-exact-path.mdc",
+        "autonomous-with-mandatory-asks.mdc",
+        "snyk-security.mdc",
+        "constitution.mdc"
+      ]
+    }
+  ]
+}

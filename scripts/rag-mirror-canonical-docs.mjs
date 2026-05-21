@@ -18,6 +18,13 @@ const ROOT = path.resolve(__dirname, '..');
 const DEST_DIR = path.join(ROOT, '.rag', 'extra-docs');
 const FILES = ['RULES-INDEX.md', 'kintone-apps.md', 'AGENTS.md', 'WORKFLOW.md'];
 
+/** Phase 2-B: 憲法ナビ（正本4の追加ではなく .rag/extra-docs/constitution/ へミラー） */
+const CONSTITUTION_MIRROR = [
+  { src: 'docs/constitution/00-rule-hierarchy.md', dest: 'constitution/00-rule-hierarchy.md' },
+  { src: 'docs/constitution/17-four-ai-mode-b.md', dest: 'constitution/17-four-ai-mode-b.md' },
+  { src: 'docs/constitution/18-ai-team-read-map.md', dest: 'constitution/18-ai-team-read-map.md' },
+];
+
 const argv = process.argv.slice(2);
 const CHECK = argv.includes('--check');
 const DRY = argv.includes('--dry-run');
@@ -52,14 +59,39 @@ for (const name of FILES) {
   }
 }
 
+const constitutionDiffs = [];
+for (const { src, dest } of CONSTITUTION_MIRROR) {
+  const srcPath = path.join(ROOT, src);
+  const destPath = path.join(DEST_DIR, dest);
+  if (!fs.existsSync(srcPath)) {
+    constitutionDiffs.push(`${src} (missing source)`);
+    exit = 1;
+    continue;
+  }
+  const srcBuf = fs.readFileSync(srcPath);
+  const dstBuf = fs.existsSync(destPath) ? fs.readFileSync(destPath) : null;
+  if (dstBuf === null || !srcBuf.equals(dstBuf)) {
+    constitutionDiffs.push(dest);
+    if (CHECK) {
+      exit = 1;
+      continue;
+    }
+    if (!DRY) {
+      fs.mkdirSync(path.dirname(destPath), { recursive: true });
+      fs.copyFileSync(srcPath, destPath);
+    }
+  }
+}
+
 if (CHECK) {
   if (exit !== 0) {
     console.error('❌ rag-mirror-canonical-docs: 正本と .rag/extra-docs が一致しません:');
     for (const n of diffs) console.error(`   - ${n}`);
+    for (const n of constitutionDiffs) console.error(`   - constitution/${n}`);
     console.error('   対応: npm run rag:mirror:canonical-docs');
     process.exit(1);
   }
-  console.log('✅ rag-mirror-canonical-docs: 4 ファイルとも .rag/extra-docs と一致');
+  console.log('✅ rag-mirror-canonical-docs: 4 正本 + constitution ミラー一致');
   process.exit(0);
 }
 
@@ -69,8 +101,11 @@ if (DRY) {
   process.exit(0);
 }
 
-if (diffs.length === 0) {
+if (diffs.length === 0 && constitutionDiffs.length === 0) {
   console.log('rag-mirror-canonical-docs: 既に一致（スキップ）');
 } else {
-  console.log('rag-mirror-canonical-docs: コピー完了 →', diffs.join(', '));
+  if (diffs.length) console.log('rag-mirror-canonical-docs: コピー完了 →', diffs.join(', '));
+  if (constitutionDiffs.length) {
+    console.log('rag-mirror-canonical-docs: constitution ミラー →', constitutionDiffs.join(', '));
+  }
 }

@@ -50,6 +50,13 @@
 - **単一窓**: `.cursor/rules/mode-b-canonical.mdc`
 - **検証**: `npm run verify:mode-b-turn-head-canonical`（`.mdc` が4行フェンスをコピーしていないか）
 
+## Phase 2-B — ルール論理分類（完了）
+
+- **索引**: `.cursor/rules/README.md` + `data/cursor-rules-topic-index.json`
+- **逆引き**: `npm run rules:sync-mdc-index`
+- **RAG**: `npm run rag:mirror:canonical-docs`（`.rag/extra-docs/constitution/`）
+- **検証**: `npm run verify:cursor-rules-index`
+
 ## 一括検証
 
 ```bash
