@@ -35,10 +35,10 @@
     },
     "678": {
       "build": "2026-05-21-678-insert-order-auto-rebalance",
-      "fileKey": "4df5a3ae-f6bc-4ea3-8213-9addb7eb5f03",
-      "revision": "161",
-      "relPath": "customize/678/desktop.js",
-      "deployedAt": "2026-05-21T09:23:27.474Z",
+      "fileKey": "a3afff52-50d8-47a1-9668-21aec0589144",
+      "revision": "162",
+      "relPath": ".kintone-deploy/upload-678.js",
+      "deployedAt": "2026-05-21T09:28:18.286Z",
       "note": null
     },
     "679": {
