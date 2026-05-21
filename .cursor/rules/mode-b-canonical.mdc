@@ -68,6 +68,13 @@ globs: "**/*"
 3. 監査を通った仕様に基づき、【コード実務（Composer 2.5）】が安全に実装・Diffを打つ。
 4. 成果物を【Kimi】が精査（レビュー）し、最終結果を【CIO】が浜田へ1行要約して報告する。
 
+## 実装日ゲート（CEO承認 2026-05-21・即時施行）
+
+- **着手前（A1）**: DeepSeek §50-3-8 → 突合3行 → `cio:guard:5038`（`customize/**`・SPEC・`deploy:*`・80行超の前）
+- **Composer（B3）**: 80行超 or `customize/**` → **Subagent のみ**（🎖️ `Composer=Subagent実施済`）
+- **定例**: 金曜 `mcp-status:refresh-usage`（A2）／週次 `cio:env:enhance`（A3）
+- **19番報告（B1）**: read-pack・Desktop は **当日 `19-SESSION-ONE-REPORT-YYYY-MM-DD.md` 1本**。過去は `docs/reports/archive/`
+
 ## 毎ターン先頭4行（共通テンプレ・機械検査と一致）
 
 順序固定。欠落＝浜田は報告を受け付けない（`every-turn-rules-confirm.mdc` §1）。

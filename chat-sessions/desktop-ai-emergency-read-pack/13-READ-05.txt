@@ -32,11 +32,22 @@
   **27-USER683-CLAUDE-RELAY-SESSION.txt**（read-pack）  
   （read-pack は **08〜20・26・27** をリポと同名コピー。番号付き **.md** も同梱）
 
-■ MCP・環境増強（2026-05-21）  
+■ 実装日冒頭（CEO承認 A1・必須）  
+  DeepSeek 1 問（§50-3-8）→ 突合3行 → npm run cio:guard:5038 -- --stamp  
+  （customize/** / SPEC / deploy / 80行超 Diff の前。スキップは §50-3-8 スキップ理由: 1行）
+
+■ Composer（CEO承認 B3）  
+  80行超 or customize/** → Composer 2.5 Subagent（🎖️ Composer=Subagent実施済）
+
+■ MCP・環境増強  
   npm run cio:mcp:env … 日常（SUMMARY OK 6/6）  
-  npm run cio:mcp:gate … kintone 作業前・週次（Space 48 実 API まで）  
-  npm run cio:mcp:env:extended … Composer 向け playwright / markdownify / DDG 追加 probe  
-  npm run cio:env:enhance … health + gate + figma/colors-fonts overlay + 4AI 台帳一括  
+  npm run cio:mcp:gate … kintone 作業前・週次  
+  npm run cio:mcp:env:extended … Composer 前の FE 系 probe  
+  npm run cio:env:enhance … 週次（CEO承認 A3）  
+  npm run mcp-status:refresh-usage … 金曜反省後（CEO承認 A2）
+
+■ 19 番セッション報告（B1）  
+  read-pack は **当日 19-SESSION-ONE-REPORT-YYYY-MM-DD.md の 1 本のみ**。過去は docs/reports/archive/
 
 ■ ルール索引メンテ（憲法細分化後・必要時）  
   npm run rules:sync-index-all  

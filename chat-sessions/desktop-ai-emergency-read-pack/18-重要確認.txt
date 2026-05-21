@@ -19,6 +19,20 @@
 
 機械ゲート: npm run cio:guard:5038 / verify:cio-four-ai-governance
 
+【実装日の冒頭チェック（CEO承認 A1・2026-05-21 即時施行）】
+  1. DeepSeek 1 問（§50-3-8・盲点3点）→ 2. CIO 突合3行 → 3. npm run cio:guard:5038 -- --stamp
+  customize/**・SPEC.md・deploy:*・80行超 Diff の前に必須。スキップ時は §50-3-8 スキップ理由: を1行。
+
+【Composer 起用（CEO承認 B3）】
+  変更 80 行超 or customize/** → [🎖️] に Composer=Subagent実施済。CIO 本体が大量 Diff しない。
+
+【定例（CEO承認 A2/A3）】
+  金曜反省後: npm run mcp-status:refresh-usage（差分あれば commit）
+  週次: npm run cio:env:enhance（大変更時 --full）
+
+【19 番（B1・CIO自律）】
+  Desktop の 19 は **当日 JST の 1 本のみ**。過去分は docs/reports/archive/YYYY-MM/ へ退避（read-pack に置かない）。
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 【チェック項目（従来）】
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -52,4 +66,4 @@ SPEC_TOUCHED: yes のターンで SECOND_REVIEWER: deepseek|kimi|openrouter の�
 【2026-05-10 追記・IDE チャット】hooks が届かない経路がある。**毎ターン先頭に §1 相当 4 行**、**報告・締め・GO 仰ぎでは応答末尾に §M-2 V2 七行**（`docs/session-report-checklist.md` §M-2）。抜け＝報告違反とする。**全文の正本**は Desktop **`＃重要確認事項.txt`**。
 【2026-05-09 追補・CIO】**統合統制・マルチエージェントは厳格**／**自律を進めることが正**。**動作確認を依頼されたら濱田が責任**— 詳細は Desktop 正本「＃CIO の自律判断」節。**補足の追記場所は CIO 判断**（浜田に判断を返さない）。**浜田に作業手順を仰ぐ禁止**（CIO が AI チームを指揮して自動実行）。**pending hook 手元試験**は **`npm run hook:smoke:report-pending`**（PowerShell の `echo … | node` だけだと stdin 空になり得る）。**抜けの是正も CIO が今すぐ**／**AIチーム全体で責任をもって改善**— Desktop 同節「即応・AIチーム責任」。
 
-【2026-05-06 追記】当日の「まとめ・反省・明日の案・ルール案」は **1 ファイル**に集約。**本日（JST）の締め**は **`19-SESSION-ONE-REPORT-YYYY-MM-DD.md` の当日版**（例: **2026-05-21**）。**履歴**（例: **`19-SESSION-ONE-REPORT-2026-05-19.md`**）は **削除せず**残す— **20 の前**で読む。
+【2026-05-06 追記】当日の「まとめ・反省・明日の案・ルール案」は **1 ファイル**に集約。**本日（JST）の締め**は read-pack の **`19-SESSION-ONE-REPORT-YYYY-MM-DD.md` 1 本**（**20 の前**）。**過去分**は **`docs/reports/archive/YYYY-MM/`**（Desktop には出さない）。

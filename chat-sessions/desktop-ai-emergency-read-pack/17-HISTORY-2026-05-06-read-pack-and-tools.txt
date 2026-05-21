@@ -105,6 +105,13 @@
 - **索引**: `RULES-INDEX.md` ジャンル早見表。計画: `docs/plans/2026-05-17-constitution-restructure.md`（Phase 3＝RAG ingest・AGENTS 薄型化は §57 GO 後）。
 - **read-pack**: `14-READ-06.txt` に `docs/constitution/README.md` ポインタ追記。Desktop は **`session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync`** で同期（**夕反省なし日は `26-evening-*` を Desktop から prune**）。
 
+## 2026-05-21（追記）CEO承認・即時施行（A1〜C1・B1）
+
+- **A1**: 実装日冒頭 DeepSeek→5038 を `18-重要確認`・`13-READ-05`・`mode-b-canonical` に固定。
+- **A2/A3**: 金曜 `mcp-status:refresh-usage`／週次 `cio:env:enhance` を read-pack に明記。
+- **B3**: 80行超・customize/** は Composer Subagent 必須（🎖️ 明記）。
+- **B1（CIO自律）**: `19-SESSION-ONE-REPORT-2026-05-19.md` → `docs/reports/archive/2026-05/`。Desktop 19 は **当日 1 本**。
+
 ## 2026-05-21（追記）Desktop AI緊急用・番号 00〜27 連続化
 
 - **26 番**: 夕反省未作成日は **`26-evening-reflection-SLOT.txt`**（read-pack 正本）を Desktop へ。レポート作成日は **`26-evening-reflection-YYYY-MM-DD.md`** に差し替え（SLOT は prune）。

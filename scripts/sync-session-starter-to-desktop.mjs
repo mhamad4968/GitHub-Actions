@@ -70,6 +70,7 @@ const LEGACY_DESKTOP_AI_EMERGENCY_FILES = [
   '18-SESSION-ONE-REPORT-2026-05-06.md',
   '19-SESSION-REPORT-CHECKLIST.txt',
   '19-SESSION-ONE-REPORT-2026-05-19.txt',
+  '19-SESSION-ONE-REPORT-2026-05-19.md',
   '25-handoff-log.md',
   '26-checkpoint-latest.md',
 ];

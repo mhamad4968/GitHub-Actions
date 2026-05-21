@@ -59,6 +59,8 @@
 
 **極限明文化（2026-05-21 CEO 厳命）**: 職権境界の全文は **`AGENTS.md` §1-2-3-4-A**（4AI担当明文化マトリクス）＝ **`mode-b-canonical.mdc`**（単一窓）＝ Desktop **`18-重要確認.txt`**。連携順序 4 段は **§50-3-11**（CIO→DeepSeek→Composer→Kimi→CIO 要約）と **同一**。
 
+**即時改善（2026-05-21 CEO 全提案承認）**: 実装日冒頭 **DeepSeek→5038（A1）**／**Composer Subagent（B3）**／金曜 **mcp-status:refresh-usage（A2）**／週次 **cio:env:enhance（A3）**／**19番は当日1本・過去は archive（B1）** — 詳細は **`18-重要確認.txt`** 先頭ブロック。
+
 **画像（MCP 見送り・2026-05-21）**: **画像生成 MCP は導入しない**。図解が必要なときのみ **Cursor 内蔵 GenerateImage**（ユーザー明示依頼時）→ 保存先 **`assets/images/`**（`.cursor/rules/cursor-generate-image-assets.mdc`）。
 
 **補足（2026-05-01 / CIO 統合に内包）**: 仕様確認を **知恵袋で網羅 → CIO が正本と突合（セカンドオピニオン）**と固定する運用の手順書は **`.cursor/rules/deepseek-cursor-spec-division.mdc`**（**`alwaysApply: false` + `globs`**）。**CIO の表の職分は増えない**（「結果統合」に収まる）。**憲法 §50-3-8**（盲点 3 点＋約 3 行突合メモ）と併用。
