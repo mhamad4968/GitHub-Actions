@@ -1,7 +1,7 @@
 # 憲法・ルール Phase 2 — 安全な細分化・体系化
 
 **起票**: 2026-05-21（CEO: コミット + AIチーム見やすい体系化 + **1人作業禁止**）  
-**状態**: **Phase 2-B 完了**（2026-05-21）— 論理分類・RULES-INDEX 自動節・RAG constitution ミラー。**AGENTS.md § 本文は未変更**。
+**状態**: **Phase 2-C 完了**（2026-05-21）— §↔mdc 双方向・`constitution.mdc` 再生成ゲート。**AGENTS.md § 本文は未変更**。
 
 ---
 
@@ -46,10 +46,24 @@
 
 **DeepSeek 判断**: サブフォルダへ `.mdc` 移動は **非推奨**（Cursor 互換）。論理索引で代替。
 
-## Phase 2-C（将来・CEO GO）
+## Phase 2-C（完了・2026-05-21）
 
-- `RULES-INDEX` § 番号 ↔ mdc の **双方向**（AGENTS パース連動）
-- `constitution.mdc` ミラーは `rules:regenerate-constitution` のみ（手編集禁止の機械化強化）
+| 成果 | コマンド |
+|------|----------|
+| §↔mdc 双方向（RULES-INDEX 自動節 + JSON） | `npm run rules:sync-section-mdc` / `verify:rules-index-section-mdc` |
+| 一括索引更新 | `npm run rules:sync-index-all` |
+| `constitution.mdc` 手編集禁止 + 鮮度検査 | `rules:regenerate-constitution` / `verify:constitution-mdc-freshness` |
+| リポ追跡スタンプ（本体は gitignore） | `data/constitution-mdc-freshness-stamp.json` |
+| pre-commit | staged `constitution.mdc` 時に鮮度ゲート |
+
+**§50-3-8 突合3行（Phase 2-C）**:
+1. パースは索引専用 — **AGENTS 解釈は変わらない**（矛盾時 AGENTS 正）。
+2. `constitution.mdc` は **4.8MB ミラー** — 編集は元ファイル + 再生成のみ。
+3. 自動節は **マーカー間のみ**上書き（手編集はマーカー外）。
+
+## Phase 2-D（将来）
+
+- AGENTS § 見出しとジャンル読本の **機械リンク**（extract-constitution 連動）
 
 ---
 

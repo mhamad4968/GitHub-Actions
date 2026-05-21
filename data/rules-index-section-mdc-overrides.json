@@ -1,0 +1,22 @@
+{
+  "version": "2026-05-21-phase2c",
+  "note": "パース漏れ補完。意味変更は AGENTS.md 正本 → 本ファイルは索引のみ。",
+  "sectionToMdc": {
+    "§1-2-3-4": ["mode-b-canonical.mdc", "cio-constitution.mdc"],
+    "§50-3-8": ["deepseek-cursor-spec-division.mdc", "deepseek-pre-edit-gate.mdc"],
+    "§50-3-11": ["deepseek-cursor-spec-division.mdc", "mode-b-canonical.mdc"],
+    "§35-7": ["cio-discipline-always.mdc", "constitution-handoff-gate.mdc"],
+    "§35-1": ["constitution-enforcement-core.mdc", "cio-constitution.mdc"],
+    "§56-1a": ["constitution-enforcement-core.mdc"],
+    "§41": ["constitution-enforcement-core.mdc", "creation-timing-ask.mdc"],
+    "§51-6-2": ["session-handoff.mdc", "constitution-handoff-gate.mdc"],
+    "§52-8": ["constitutional-focus-github-workflows.mdc", "kintone-destructive-rest-guard.mdc"]
+  },
+  "mdcToSection": {
+    "mode-b-canonical.mdc": ["§1-2-3-4", "§1-2-3-1", "§50-3-11"],
+    "cio-constitution.mdc": ["§1-2-3-4", "§35-1", "§1-2-3-1"],
+    "deepseek-cursor-spec-division.mdc": ["§50-3-8", "§50-3-11"],
+    "mcp-server-use-triggers.mdc": ["§50", "§57-10"],
+    "constitutional-focus-kintone-customize.mdc": ["§35-7", "§50-3-8", "§52"]
+  }
+}

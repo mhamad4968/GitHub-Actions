@@ -7,9 +7,36 @@
  *
  * @see scripts/regenerate-constitution-rule.sh（WSL 用レガシー）
  */
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+const STAMP_PATH = path.join(
+  path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'),
+  'data',
+  'constitution-mdc-freshness-stamp.json',
+);
+
+function normalizeForHash(text) {
+  return String(text)
+    .replace(/\r\n/g, '\n')
+    .replace(/^> \*\*CONSTITUTION_MDC_GENERATED_AT\*\*:.*\n/gm, '');
+}
+
+function writeFreshnessStamp(body) {
+  const norm = normalizeForHash(body);
+  const sha256 = crypto.createHash('sha256').update(norm, 'utf8').digest('hex');
+  const stamp = {
+    sha256,
+    bytes: Buffer.byteLength(body, 'utf8'),
+    generatedAt: new Date().toISOString(),
+    note: 'gitignore された constitution.mdc の正規化ハッシュ（Phase 2-C）',
+  };
+  fs.mkdirSync(path.dirname(STAMP_PATH), { recursive: true });
+  fs.writeFileSync(STAMP_PATH, `${JSON.stringify(stamp, null, 2)}\r\n`, 'utf8');
+  return stamp;
+}
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const outPath = path.join(root, '.cursor', 'rules', 'constitution.mdc');
@@ -94,7 +121,7 @@ function globTopMd(dirRel, patternYear) {
     .sort((a, b) => a.localeCompare(b));
 }
 
-function main() {
+export function buildConstitutionLines() {
   const lines = [];
 
   const header = `${'---'}
@@ -111,6 +138,10 @@ alwaysApply: false
 > **再生成**: \`npm run rules:regenerate-constitution\`（本スクリプト・Windows 可）／従来: \`bash scripts/regenerate-constitution-rule.sh\`（WSL）
 
 > **結合に含めない（意図）**: \`.rag/extra-docs/**\`（正本のミラー）・\`logs/**\` の自動生成ログ・\`node_modules\`・ビルド生成物。必要なら都度 Read。
+
+> **⚠️ 手編集禁止（Phase 2-C）**: 本 \`constitution.mdc\` への **直接編集は禁止**。変更は **各元ファイル** を直し \`npm run rules:regenerate-constitution\` → \`npm run verify:constitution-mdc-freshness\`。
+
+> **CONSTITUTION_MDC_GENERATED_AT**: ${new Date().toISOString()}
 
 `;
   lines.push(header);
@@ -269,12 +300,46 @@ alwaysApply: false
     }
   }
 
+  return lines;
+}
+
+function main() {
+  const CHECK = process.argv.includes('--check');
+  const lines = buildConstitutionLines();
   const body = lines.join('');
+
+  if (CHECK) {
+    if (!fs.existsSync(outPath)) {
+      console.error('[regenerate-constitution-rule] NG missing', outPath);
+      console.error('  → npm run rules:regenerate-constitution');
+      process.exit(2);
+    }
+    const actual = fs.readFileSync(outPath, 'utf8');
+    if (normalizeForHash(body) !== normalizeForHash(actual)) {
+      console.error('[regenerate-constitution-rule] NG constitution.mdc is stale or hand-edited');
+      console.error('  → npm run rules:regenerate-constitution');
+      console.error('  → npm run verify:constitution-mdc-freshness');
+      process.exit(1);
+    }
+    if (!/手編集禁止（Phase 2-C）/.test(actual)) {
+      console.error('[regenerate-constitution-rule] NG missing Phase 2-C hand-edit banner — regenerate');
+      process.exit(1);
+    }
+    console.log('[regenerate-constitution-rule] OK (--check fresh)', actual.length, 'bytes');
+    process.exit(0);
+  }
+
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
   fs.writeFileSync(outPath, body, 'utf8');
+  const stamp = writeFreshnessStamp(body);
   const st = fs.statSync(outPath);
   // eslint-disable-next-line no-console
   console.log('[regenerate-constitution-rule]', st.size, 'bytes', outPath);
+  // eslint-disable-next-line no-console
+  console.log('[regenerate-constitution-rule] stamp', stamp.sha256.slice(0, 12) + '…', STAMP_PATH);
 }
 
-main();
+const isMain =
+  process.argv[1] &&
+  path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url));
+if (isMain) main();

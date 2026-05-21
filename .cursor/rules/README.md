@@ -2,7 +2,9 @@
 
 **機械正本**: `data/cursor-rules-topic-index.json`  
 **逆引き（自動）**: `RULES-INDEX.md` の「Cursor ルール逆引き」節 — `npm run rules:sync-mdc-index`  
-**検証**: `npm run verify:cursor-rules-index`
+**検証**: `npm run verify:cursor-rules-index` / `npm run verify:rules-index-section-mdc`  
+**§↔mdc**: `npm run rules:sync-section-mdc`（`RULES-INDEX` 双方向節）  
+**網羅版**: `constitution.mdc` は `npm run rules:regenerate-constitution` のみ（`verify:constitution-mdc-freshness`）
 
 > **重要**: Cursor は **このディレクトリ直下の `*.mdc` のみ**をルールとして読み込む。**サブフォルダへ移動しない**（無効化リスク）。
 

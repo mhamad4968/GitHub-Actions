@@ -46,5 +46,16 @@ if command -v node >/dev/null 2>&1; then
     echo "[pre-commit] §50-3-8 証跡なし（customize/SPEC staged）— npm run cio:guard:5038 -- --stamp を先に" >&2
     exit 1
   fi
+
+  if git diff --cached --name-only | grep -qE '^\.cursor/rules/constitution\.mdc$'; then
+    node scripts/verify-constitution-mdc-freshness.mjs
+    status=$?
+    if [ "$status" -ne 0 ]; then
+      echo "" >&2
+      echo "[pre-commit] constitution.mdc が再生成出力と不一致（手編集禁止）" >&2
+      echo "  → npm run rules:regenerate-constitution && npm run verify:constitution-mdc-freshness" >&2
+      exit 1
+    fi
+  fi
 fi
 exit 0

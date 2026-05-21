@@ -36,9 +36,11 @@
 | 7 | **`npm run verify:rule-hierarchy-prune`** | タスク2: 索引外ゾンビ文書検出 |
 | 8 | **`npm run rules:sync-mdc-index`** | Phase 2-B: RULES-INDEX ← .mdc 逆引き |
 | 9 | **`npm run verify:cursor-rules-index`** | Phase 2-B: topic-index ↔ 実ファイル |
-| 10 | **`npm run verify:cio-four-ai-governance`** | 一括（上記 + turn-head + MCP） |
-| 11 | **`.cursor/hooks/cio-four-ai-interlock.mjs`** | deploy / commit 前の deny |
-| 12 | **`git-hooks/pre-commit`** | staged 時の 5038 + Composer 検査 |
+| 10 | **`npm run rules:sync-index-all`** | Phase 2-C: mdc 逆引き + §↔mdc 双方向 |
+| 11 | **`npm run verify:constitution-mdc-freshness`** | Phase 2-C: `constitution.mdc` 手編集検知 |
+| 12 | **`npm run verify:cio-four-ai-governance`** | 一括（上記 + turn-head + MCP + section-mdc） |
+| 13 | **`.cursor/hooks/cio-four-ai-interlock.mjs`** | deploy / commit 前の deny |
+| 14 | **`git-hooks/pre-commit`** | staged: 5038 + Composer + constitution 鮮度 |
 
 条文対応: **`AGENTS.md` §50-3-11**。
 

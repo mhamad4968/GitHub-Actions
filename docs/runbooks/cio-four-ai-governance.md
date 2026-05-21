@@ -57,6 +57,12 @@
 - **RAG**: `npm run rag:mirror:canonical-docs`（`.rag/extra-docs/constitution/`）
 - **検証**: `npm run verify:cursor-rules-index`
 
+## Phase 2-C — §↔mdc 双方向 + constitution ゲート（完了）
+
+- **双方向**: `npm run rules:sync-section-mdc` → `RULES-INDEX` + `data/rules-index-section-mdc-map.json`
+- **一括**: `npm run rules:sync-index-all`
+- **constitution.mdc**: `npm run rules:regenerate-constitution` のみ（`verify:constitution-mdc-freshness` / pre-commit）
+
 ## 一括検証
 
 ```bash
