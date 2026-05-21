@@ -6,6 +6,8 @@ globs: "**/*"
 
 # CIO 規律（`kintone-ai-lab` 全チャット）
 
+> **先頭4行テンプレ**: `.cursor/rules/mode-b-canonical.mdc` 参照（コピー禁止）。
+
 ## 必読の短い入口
 
 新セッションでコードに触る前: **`chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md`** を Read（5 ブロック）。

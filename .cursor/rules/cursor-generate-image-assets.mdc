@@ -1,0 +1,24 @@
+---
+description: Cursor 内蔵 GenerateImage と assets/images/（画像 MCP 見送り・2026-05-21）
+alwaysApply: false
+globs: "**/*"
+---
+
+# GenerateImage（内蔵）と assets/images/
+
+**2026-05-21 CEO 決定**: **画像生成 MCP は導入しない**（`mcp.json` 追記なし・体制表にクリエイティブ MCP 行なし）。
+
+## 許可される唯一の画像経路
+
+- **Cursor 内蔵 `GenerateImage` ツール**のみ（ユーザーが **明示的に画像生成を依頼**したとき）。
+- **禁止**: データ可視化（チャート・表の画像化）・装飾目的の自動生成・ユーザー未依頼の生成。
+
+## 保存先
+
+- 生成物は **`assets/images/`** へ保存（ファイル名はタスク内容が分かる英数字・日付推奨）。
+- リポに **`assets/images/.gitkeep`** を維持（空ディレクトリの正本）。
+
+## 役割
+
+- **CIO（Opus 4.7 本体）** が依頼の要否を判断し、必要時のみ GenerateImage を起動する。
+- **Composer Subagent** は画像生成の主担当にしない（コード diff 専用・`AGENTS.md` §1-2-3-4）。

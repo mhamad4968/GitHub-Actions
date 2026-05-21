@@ -29,7 +29,9 @@ docs/plans/
 | [`2026-04-23-cli-evolution-v1.md`](2026-04-23-cli-evolution-v1.md) | Cursor Agent CLI 進化ロードマップ v1 | 設計フェーズ |
 | [`2026-04-23-mcp-strategy-v1.md`](2026-04-23-mcp-strategy-v1.md) | MCP 強化戦略 v1（cyber-news/cve-search の死蔵対策含む） | 段階 1 監査 〜 S14 月次巡回まで実装済 |
 | [`2026-05-17-mcp-optimization-plan.md`](2026-05-17-mcp-optimization-plan.md) | MCP 最適化 Phase 1（`cio:mcp:gate`・BASE_URL 整合） | **P0/P1 完了**・P3 は Tier B 待ち |
-| [`2026-05-17-constitution-restructure.md`](2026-05-17-constitution-restructure.md) | 憲法ジャンル分割（`docs/constitution/`） | Phase 1 完了 |
+| [`2026-05-21-constitution-phase2-safe-subdivision.md`](2026-05-21-constitution-phase2-safe-subdivision.md) | 憲法 Phase 2（役割別ナビ・1人作業禁止） | **2-A 進行中**（索引のみ） |
+| [`2026-05-21-cio-session-model-override.md`](2026-05-21-cio-session-model-override.md) | 方式B 決定メモ | 確定 |
+| ~~2026-05-17-constitution-restructure~~ | 憲法ジャンル分割 | **→ `_archive/`**（方式B 階層索引 `00-rule-hierarchy.md` に移行 2026-05-21） |
 | [`2026-04-25-pc-ledger-day3-action.md`](2026-04-25-pc-ledger-day3-action.md) | PC 台帳 Day 3: 採番マスタ 2 アプリ作成（**完了**） | ✅ 完了 / Day 4 着手後 archive 予定 |
 | [`2026-04-25-raci-transparency.md`](2026-04-25-raci-transparency.md) | §56 RACI 透明性確保プラン | 実装済（ハッシュ生成・週次照合） |
 
@@ -66,6 +68,7 @@ docs/plans/
 | ファイル | 完了日 | 概要 |
 |----------|--------|------|
 | [`_archive/2026-04-24-pc-ledger-day1-day2-action.md`](_archive/2026-04-24-pc-ledger-day1-day2-action.md) | 2026-04-24 | PC 台帳 Day 1+2: 環境設定マスタ (670 / 12 件) + M365管理マスタ (671 / 10 件) 作成 |
+| [`_archive/2026-05-17-constitution-restructure.md`](_archive/2026-05-17-constitution-restructure.md) | 2026-05-21 | 憲法ジャンル分割 Phase 1–2（正本は `00-rule-hierarchy.md` + `docs/constitution/`） |
 
 ---
 

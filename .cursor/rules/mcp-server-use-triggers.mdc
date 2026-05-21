@@ -14,7 +14,23 @@ globs: "**/*"
 
 **descriptor 必読は別紙**: `call_mcp_tool` の **直前に** `mcps/<server>/tools/*.json` を読む義務は **`.cursor/rules/mcp-tool-discipline.mdc`**。本条は **サーバ選択**を固定する。
 
+## §4AI MCP（方式B・2026-05-21 — 台帳と同期）
+
+正本: **`data/cio-mcp-four-ai-matrix.json`** ＋ **`docs/mcp-status.md`** §方式B。検証: **`npm run verify:mcp-four-ai-alignment`**。
+
+| 役割 | 主 MCP キー（mcp.json） |
+|------|-------------------------|
+| **CIO（Opus 4.7）** | 下表すべて＋統合判断。**画像生成 MCP は使わない**（内蔵 GenerateImage のみ・`cursor-generate-image-assets.mdc`） |
+| **Composer 2.5** | `kintone`, `playwright`, `rag`, `markdownify`, `shadcn-ui`, `chrome-devtools`, `duckduckgo-search`, `memory` |
+| **Kimi** | `kimi`, `openrouter`, `markdownify`, `rag`, `memory` |
+| **DeepSeek** | `deepseek`, `openrouter`, `memory`, `sequential-thinking` |
+
+**registry 必須10**: `deepseek`, `kimi`, `openrouter`, `memory`, `sequential-thinking`, `rag`, `markdownify`, `kintone`, `playwright`, `duckduckgo-search`（`npm run verify:cio-mcp-registry`）
+
 ## サーバー別（1 行トリガー）
+
+- **deepseek** / **user-deepseek**: **§50-3-8**・着手前盲点3点・仕様乖離の第2視点（方式B ④）。
+- **kimi** / **user-kimi**: **長文・大差分レビュー**・`kimi_review`（方式B ③）。**コード diff の主担当ではない**（② Composer 2.5）。
 
 - **user-github**: Actions Run / PR / Issue / ブランチ・リポ設定を **API で確かめる**とき（外部の正）。
 - **user-kintone**（本番系）: 本番アプリの **フィールド／レコード／権限**が主題、または本番 CRUD の前段調査。

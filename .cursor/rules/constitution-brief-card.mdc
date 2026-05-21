@@ -32,9 +32,13 @@ globs: "**/*"
 3. **`.cursor/rules/constitution-enforcement-core.mdc`** — 違反＝失敗・**CIO＋ DeepSeek/Kimi** の 2 者チェック定義。
 4. **`.cursor/rules/constitution.mdc`** — 網羅結合版。**常時コンテキストには載せない**。**必要なときだけ Read ツールで**取り込む（再生成: **`npm run rules:regenerate-constitution`** または `npm run rules:regenerate-constitution:bash`）。
 
+## 方式B・4AI（2026-05-21）
+
+**用語・先頭4行テンプレの正**: **`.cursor/rules/mode-b-canonical.mdc`**（CIO＝Opus4.7固定 / Composer2.5＝diff / Kimi＝長文 / DeepSeek＝§50-3-8）。開発3ステップ: **`AGENTS.md` §50-3-11**。
+
 ## 毎ターンの型（チャット先頭）
 
-**`.cursor/rules/every-turn-rules-confirm.mdc`** に従う: **`[§1-2-3 ティア判定]`** → **`【適用憲法】`** → **`[🎖️]`** → **`[ルール確認]`**。
+**`.cursor/rules/mode-b-canonical.mdc`**（テンプレ）＋ **`every-turn-rules-confirm.mdc`**（検査・§1e）: **`[§1-2-3 ティア判定]`** → **`【適用憲法】`** → **`[🎖️ 本セッション割当]`**（**Composer=** 必須）→ **`[ルール確認]`**。
 
 ## 新セッション・二段階読解
 

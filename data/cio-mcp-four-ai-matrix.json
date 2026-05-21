@@ -1,0 +1,75 @@
+{
+  "version": "2026-05-21",
+  "mode": "B",
+  "imageGenerationMcp": {
+    "status": "deferred",
+    "note": "CEO 2026-05-21 見送り。画像生成 MCP は mcp.json に追加しない。Cursor 内蔵 GenerateImage のみ → assets/images/（cursor-generate-image-assets.mdc）"
+  },
+  "registryRequired": [
+    "deepseek",
+    "kimi",
+    "openrouter",
+    "memory",
+    "sequential-thinking",
+    "rag",
+    "markdownify",
+    "kintone",
+    "playwright",
+    "duckduckgo-search"
+  ],
+  "roles": {
+    "cio": {
+      "model": "Claude Opus 4.7",
+      "mcpAllow": [
+        "deepseek",
+        "kimi",
+        "openrouter",
+        "memory",
+        "sequential-thinking",
+        "rag",
+        "markdownify",
+        "kintone",
+        "kintone-dev",
+        "kintone-space",
+        "playwright",
+        "duckduckgo-search",
+        "github",
+        "cyber-news",
+        "cve-search",
+        "figma",
+        "colors-fonts",
+        "chrome-devtools",
+        "shadcn-ui",
+        "accessibility-scanner",
+        "mintlify"
+      ],
+      "mcpDeny": ["image-generation-mcp"],
+      "builtinAllow": ["GenerateImage"]
+    },
+    "composer": {
+      "model": "Composer 2.5 Subagent",
+      "mcpAllow": [
+        "kintone",
+        "kintone-dev",
+        "playwright",
+        "rag",
+        "markdownify",
+        "shadcn-ui",
+        "chrome-devtools",
+        "duckduckgo-search",
+        "memory"
+      ],
+      "note": "diff のみ。単独 GO なし save/deploy"
+    },
+    "kimi": {
+      "model": "Kimi",
+      "mcpAllow": ["kimi", "openrouter", "markdownify", "rag", "memory"],
+      "note": "長文・大差分 kimi_review"
+    },
+    "deepseek": {
+      "model": "DeepSeek",
+      "mcpAllow": ["deepseek", "openrouter", "memory", "sequential-thinking"],
+      "note": "§50-3-8 着手前・盲点3点"
+    }
+  }
+}

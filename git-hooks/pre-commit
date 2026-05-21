@@ -30,5 +30,21 @@ if command -v node >/dev/null 2>&1; then
     echo "  バイパス: git commit --no-verify（浜田承認下のみ）" >&2
     exit 1
   fi
+
+  node scripts/cio-composer-silent-fallback-guard.mjs
+  status=$?
+  if [ "$status" -ne 0 ]; then
+    echo "" >&2
+    echo "[pre-commit] 方式B Composer silent-fallback インターロック NG" >&2
+    exit 1
+  fi
+
+  node scripts/cio-deepseek-5038-evidence-guard.mjs --staged
+  status=$?
+  if [ "$status" -ne 0 ]; then
+    echo "" >&2
+    echo "[pre-commit] §50-3-8 証跡なし（customize/SPEC staged）— npm run cio:guard:5038 -- --stamp を先に" >&2
+    exit 1
+  fi
 fi
 exit 0

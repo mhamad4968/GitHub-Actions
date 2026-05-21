@@ -9,6 +9,8 @@ globs:
 
 # §1 先頭4行 — リポ・PR での検証（論点9）
 
+> **4行テンプレの単一窓**: `.cursor/rules/mode-b-canonical.mdc`（コピー禁止）。
+
 **正本**: `every-turn-rules-confirm.mdc` §1（ティア → 【適用憲法】 → 🎖️割当 → ルール確認）。**MCP 使用ターン**はティア直後に **`[実行経路: MCP …]`** 1 行可（同 md §1）。
 
 ## コミット前（`chat-sessions/`）

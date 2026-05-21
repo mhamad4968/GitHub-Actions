@@ -1,3 +1,6 @@
+> **ARCHIVED** 2026-05-21 — superseded by docs/constitution/00-rule-hierarchy.md (2026-05-21)
+> 正本: `docs/constitution/00-rule-hierarchy.md`
+
 # 憲法・ルール整理計画（ジャンル分割）
 
 **起票**: 2026-05-17（CEO 依頼）  

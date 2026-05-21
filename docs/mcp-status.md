@@ -1,6 +1,28 @@
 # 📊 MCP 状態管理台帳
 
-**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-05-11（**CIO／マルチエージェント**: `npm run verify:cio-mcp-registry` で **必須 MCP 名**が `%USERPROFILE%\.cursor\mcp.json`＋リポ `.cursor/mcp.json` マージに存在するか機械検査。実プロセス疎通は `npm run cio:mcp:env`（registry 後に **`npx dotenv … cio-mcp-quickprobe`**）。**2026-05-06** 以前分: **`shadcn-ui`・`chrome-devtools`**／`filesystem`・`fetch` 除去・Windows 同期スクリプト追従・表「過去30日」は `mcp-status:refresh-usage` で再集計済）
+**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-05-21（**方式B・4AI MCP 台帳同期** — `data/cio-mcp-four-ai-matrix.json`・`npm run verify:mcp-four-ai-alignment`・`.cursor/rules/mcp-server-use-triggers.mdc` §4AI と **一字ズレなし**。2026-05-11 以前分:
+
+### §見送り — 画像生成 MCP（CEO 2026-05-21・変更禁止）
+
+| 項目 | 状態 |
+|------|------|
+| **DALL·E / Stable Diffusion / 画像生成専用 MCP** | **見送り** — `mcp.json` に **追加しない**・下表に行を足さない |
+| **許可のみ** | Cursor 内蔵 **`GenerateImage`** → **`assets/images/`**（`.cursor/rules/cursor-generate-image-assets.mdc`） |
+| **4AI 表** | 🎖️ 体制表にクリエイティブ MCP 行なし（`part-A-constitution-kernel.md`） |
+
+### §方式B — 固定4AI と MCP アクセス（正本マトリクス）
+
+機械正本: **`data/cio-mcp-four-ai-matrix.json`**。ルール側: **`.cursor/rules/mcp-server-use-triggers.mdc`** §4AI。
+
+| 役割 | モデル | MCP（呼び出し可・代表） |
+|------|--------|-------------------------|
+| **① CIO** | Opus 4.7 固定 | **registry 必須10** + kintone-dev/space・figma・colors-fonts・CVE/ニュース・GitHub（Win）・FE 検証系 |
+| **② Composer** | 2.5 Subagent | kintone・playwright・rag・markdownify・shadcn-ui・chrome-devtools・duckduckgo-search・memory（**diff のみ**） |
+| **③ Kimi** | Kimi | kimi・openrouter・markdownify・rag・memory（**長文**） |
+| **④ DeepSeek** | DeepSeek | deepseek・openrouter・memory・sequential-thinking（**§50-3-8**） |
+
+**registry 必須（`verify:cio-mcp-registry`）**: `deepseek`, `kimi`, `openrouter`, `memory`, `sequential-thinking`, `rag`, `markdownify`, `kintone`, `playwright`, `duckduckgo-search`
+
 **更新ルール**: mcp.json 変更時 / 月次 MCP 健康診断時 / 浜田判断あった時に必ず本ファイル更新
 **正本順位**: 本ファイル < **`~/.cursor/mcp.json` とワークスペース `.cursor/mcp.json` がマージ**（Cursor 仕様）。`kintone-ai-lab` ルートで開いたとき **Figma + colors-fonts** はリポ側 JSON にも記載（2026-05-04）。
 

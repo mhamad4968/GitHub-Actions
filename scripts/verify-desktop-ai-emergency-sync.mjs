@@ -9,6 +9,7 @@
  *
  * @see scripts/lib/session-starter-desktop-dir.mjs（同期先パス解決）
  */
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -198,6 +199,18 @@ function main() {
   if (bad) {
     process.exit(2);
   }
+
+  // タスクC — 方式B ゾンビ文書（Desktop 同期後の正本整合）
+  const zombieScript = path.join(root, 'scripts/verify-mode-b-zombie-docs.mjs');
+  if (fs.existsSync(zombieScript)) {
+    const z = spawnSync(process.execPath, [zombieScript], { cwd: root, encoding: 'utf8' });
+    if (z.status !== 0) {
+      console.warn(z.stdout || z.stderr || '[verify-desktop-ai-emergency-sync] mode-b zombie NG');
+      process.exit(2);
+    }
+    console.log('[verify-desktop-ai-emergency-sync] OK verify:mode-b-zombie-docs');
+  }
+
   console.log('[verify-desktop-ai-emergency-sync] ✅ 全ファイル一致（AI緊急用メンテ確認済）');
   console.log(`[verify-desktop-ai-emergency-sync] 貼付推奨（項番-1）: ${pasteName}`);
   process.exit(0);

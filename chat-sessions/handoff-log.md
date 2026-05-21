@@ -2112,3 +2112,42 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 **締め正本**: `chat-sessions/SESSION-CLOSE-REPORT-20260519.txt`  
 **実施**: `session:clock:clear` / `session-starter:sync-desktop` / Desktop `19-SESSION-ONE-REPORT-2026-05-19.md` 更新  
 **未 push**: lab + TOTO（明日ブリーフィング後・AI 確認報告付きで実施）
+
+---
+
+### 2026-05-21 JST — Phase 1（方式B・体制正本）
+
+**CEO 最終決定**: 画像生成MCP見送り／CIO=Opus4.7固定／コード=Composer2.5 Subagent（diffのみ）／「単独GOなしsave・deploy禁止」= CIO/DeepSeek経由後のみ。
+
+**実施**: `part-A-constitution-kernel.md`・`AGENTS.md` §1-2-3-4・`.cursor/rules/*`・`assets/images/.gitkeep`・`docs/plans/2026-05-21-cio-session-model-override.md`・`session-starter:sync-desktop`・本ブロック。
+
+**次の 1 手**: 方針検討（Phase 2 以降は浜田 GO）。kintone 実装は別指示まで待機。
+
+---
+
+### 2026-05-21 JST — 4AI自律統制インフラ（タスクA・B・C）
+
+**実施**:
+- **A**: `scripts/cio-composer-silent-fallback-guard.mjs` + `verify:cio-mcp-registry` 連動 + `.cursor/hooks/cio-four-ai-interlock.mjs`
+- **B**: `scripts/cio-deepseek-5038-evidence-guard.mjs` + pre-commit + deploy preflight + `deepseek-cursor-spec-division.mdc` 機械ゲート節
+- **C**: `verify:mode-b-zombie-docs` + `cio-prune:mode-b-zombie-docs` + desktop sync verify 連動
+- **検証**: `verify:cio-mcp-registry` / `cio:mcp:env` / `verify:cio-four-ai-governance` すべて exit 0
+
+**次の 1 手**: CEO と航海図合意（本チャット）。customize 着手時は `npm run cio:guard:5038 -- --stamp` を deploy 前に実行。
+
+---
+
+### 2026-05-21 JST — 憲法・ルール構造整理（Phase 1）
+
+**実施**: 3階層索引（`00-rule-hierarchy.md`）・`mode-b-canonical.mdc`・`AGENTS.md` §50-3-11（開発プロトコル3ステップ・上位条文非置換）・RULES-INDEX/README 更新・mdc 重複を参照化。  
+**トリプルチェック**: `phase1-essence-preservation-checklist.md`（DeepSeek: 暗黙上書きリスク→§50-3-11 追補）。  
+**検証**: `verify:cio-mcp-registry` / `verify:cio-four-ai-governance` OK。Desktop sync 済み。
+
+---
+
+### 2026-05-21 JST — MCP台帳・階層prune・四行バリデータ（タスク1/2/3）
+
+**タスク1**: `docs/mcp-status.md` §見送り（画像生成MCP）・§4AI / `data/cio-mcp-four-ai-matrix.json` / `mcp-server-use-triggers.mdc` §4AI — `verify:mcp-four-ai-alignment`  
+**タスク2**: `2026-05-17-constitution-restructure.md` → `docs/plans/_archive/` — `verify:rule-hierarchy-prune` / `cio:archive:rule-orphans`  
+**タスク3**: `verify:mode-b-turn-head-canonical`（全 `.mdc` が `mode-b-canonical` 参照・4行フェンス重複禁止）— `verify:cio-four-ai-governance` に連動  
+**その他**: `.cursorrules` 方式B誘導・`00-rule-hierarchy.md` 第2階層追記・Desktop sync 済み。

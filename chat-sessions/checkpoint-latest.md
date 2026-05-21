@@ -2,6 +2,59 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
+## 2026-05-21 JST — MCP台帳同期・階層prune・四行バリデータ（タスク1/2/3）
+
+| タスク | 成果 | 検証 |
+|--------|------|------|
+| **1 MCP** | `docs/mcp-status.md` §見送り・§4AI / `data/cio-mcp-four-ai-matrix.json` / `mcp-server-use-triggers.mdc` §4AI | `verify:mcp-four-ai-alignment` |
+| **2 Prune** | `2026-05-17-constitution-restructure.md` → `docs/plans/_archive/` | `verify:rule-hierarchy-prune`・`cio:archive:rule-orphans` |
+| **3 四行** | `verify:mode-b-turn-head-canonical`（`.mdc`→`mode-b-canonical` 参照） | `verify:cio-four-ai-governance` 一括に連動 |
+
+**次の 1 手**: 方針検討継続。実装は浜田 GO 後。
+
+---
+
+## 2026-05-21 JST — 憲法・ルール構造整理（Phase 1）
+
+| 項目 | 内容 |
+|------|------|
+| **統合** | `mode-b-canonical.mdc`（4AI・四行テンプレ）・`AGENTS.md` §50-3-11・`00-rule-hierarchy.md` |
+| **索引** | `RULES-INDEX.md` 3階層表・`docs/constitution/17-four-ai-mode-b.md` |
+| **継承** | `phase1-essence-preservation-checklist.md`・DeepSeek突合（上位条文非置換追補） |
+| **検証** | `verify:cio-four-ai-governance` / `verify:cio-mcp-registry` exit 0 |
+
+**次の 1 手**: 方針検討継続。実装は浜田 GO 後。
+
+---
+
+## 2026-05-21 JST — 4AI自律統制インフラ（タスクA/B/C）完了
+
+| タスク | 内容 | 検証 |
+|--------|------|------|
+| **A** | Composer silent fallback インターロック | `cio:guard:composer-interlock`・`verify:cio-mcp-registry` 連動・`cio-four-ai-interlock` hook |
+| **B** | §50-3-8 証跡ゲート | `cio:guard:5038`・pre-commit・`cio-deploy-preflight-guard` |
+| **C** | 方式Bゾンビ文書検査 | `verify:mode-b-zombie-docs`・`verify:desktop-ai-emergency-sync` 連動 |
+
+**正本**: `docs/runbooks/cio-four-ai-governance.md`・`scripts/lib/cio-four-ai-governance.mjs`  
+**継承確認**: Phase 1 正本（§1-2-3-4・🎖️表）は **削除なし**（diff で追記のみ）。
+
+**次の 1 手**: 方針検討継続。実装レーンは浜田 GO 後（674/678 以外の指示待ち）。
+
+---
+
+## 2026-05-21 JST — Phase 1 完了（方式B・画像MCP見送り）
+
+| 項目 | 状態 |
+|------|------|
+| **CEO 決定** | 方式B exit 0・画像生成MCP見送り・GenerateImage+`assets/images/` のみ許可 |
+| **正本** | `part-A-constitution-kernel.md`・`AGENTS.md` §1-2-3-4・`deepseek-cursor-spec-division.mdc`・`cursor-generate-image-assets.mdc`・`docs/plans/2026-05-21-cio-session-model-override.md` |
+| **検証** | `verify:cio-mcp-registry` / `cio:mcp:env` / `session-starter:sync-desktop`（本セッション実施） |
+| **678 予実** | 浜田確認済み完了（本件は体制正本のみ） |
+
+**次の 1 手**: 方針検討継続（Phase 2: §1-2-2 正規表現の機械検証拡張は CEO 指示待ち）。実装タスクは浜田 GO 後。
+
+---
+
 ## 2026-05-19 JST — 是正追補（恒久ゲート承認・685 追加削除）
 
 | レーン | 状態 |

@@ -1,0 +1,49 @@
+---
+description: 方式B・固定4AI — 用語・四行テンプレ・役割の単一窓（重複記述は本ファイルへ集約）
+alwaysApply: false
+globs: "**/*"
+---
+
+# 方式B — 固定4AI（正規用語・2026-05-21）
+
+> **上位**: `AGENTS.md` **§1-2-3-4**・**§50-3-11**／`part-A-constitution-kernel.md` 🎖️表／`docs/constitution/00-rule-hierarchy.md`  
+> **他 `.mdc` は本節をコピーせず「`mode-b-canonical.mdc` 参照」と書く。**
+
+## 4AI 定義（表記ゆれ禁止）
+
+| # | 役割 | 担当 | 持ち場 |
+|---|------|------|--------|
+| ① | **CIO（指揮・判断・統合）** | **Claude Opus 4.7 固定**（ピッカー上書き・本チャット本体） | 割振・統合・GO前確定・規律 |
+| ② | **実務担当（コード）** | **Composer 2.5**（Subagent / L1） | **diff のみ** |
+| ③ | **実務担当（長文・レビュー）** | **Kimi** | 長文・大差分 `kimi_review` |
+| ④ | **知恵袋** | **DeepSeek** | §50-3-8・盲点3点 |
+
+**禁止の言い換え**: Composer の **単独 GO なし save/deploy** — **CIO 本体または DeepSeek（§50-3-8）経由後**に限る。
+
+**§1-2 一般セッション**: 最適モデル原則（§1-2-3-2）は **維持**。本条は **CEO 主導 lab チャット（CIOセッション特例）** に上乗せ。
+
+## 毎ターン先頭4行（共通テンプレ・機械検査と一致）
+
+順序固定。欠落＝浜田は報告を受け付けない（`every-turn-rules-confirm.mdc` §1）。
+
+```text
+[§1-2-3 ティア判定: L2 Extra High] <根拠1語以上>
+【適用憲法】§35-1 §50-3-11 §50-3-8
+[🎖️ 本セッション割当] CIO=Opus4.7本体 | Composer=Subagent未使用 | DeepSeek=未使用 | Kimi=未使用 | OpenRouter=未使用
+[ルール確認] mode-b-canonical.mdc / AGENTS.md §1-2-3-4
+```
+
+- **L1** = Composer 2.5 Subagent 級（diff のみ）
+- **L2** = Opus Extra High（CIO 本体・通常）
+- **L3** = Opus Max Thinking（不可逆・§47-A 直前）
+- **🎖️** の **Composer=** は必須（`Subagent利用可` / `実施済` / `未使用`）
+
+## 開発プロトコル3ステップ（憲法 §50-3-11）
+
+仕様意味に触れる編集の **前**（`customize/**`・`*SPEC.md`・`deploy:*`）:
+
+1. **DeepSeek 1問**（盲点・反例・仕様乖離）
+2. **突合3行**（CIO が正本と照合・チャットに記録）
+3. **`npm run cio:guard:5038 -- --stamp --text "…"`** または `--skip "具体理由"`
+
+詳細: `docs/runbooks/cio-four-ai-governance.md`

@@ -6,6 +6,8 @@ globs: "**/*"
 
 # AI エージェント活用憲法（Rules for Tools）
 
+> **先頭4行テンプレ**: `.cursor/rules/mode-b-canonical.mdc` 参照（コピー禁止）。
+
 **施行**: 2026-05-06（JST）より。**上位法**: `AGENTS.md`・`constitution-enforcement-core.mdc`（2 者検証・§52-8 等）。本条は **CIO 体制の役割分担のもとで**、**ツール選択・外部調査・第2視点の補強**に特化する（**責任・GO・検収の所在は憲法の CIO 定義から動かさない**）。
 
 ## 0. CIO 体制との関係

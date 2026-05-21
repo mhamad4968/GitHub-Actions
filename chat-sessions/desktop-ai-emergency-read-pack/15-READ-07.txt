@@ -30,19 +30,22 @@
 
 ---
 
-## 3. 🎖️ AI 内部の役割分担（2026-04-28 CEO 浜田指示 / CIO 体制）
+## 3. 🎖️ AI 内部の役割分担（2026-05-21 方式B / `AGENTS.md` §1-2-3-4）
 
-「**開発=AI**」をさらに細分化し、**CIO（指揮統制）が現場担当（外部 MCP）を直接指揮する**。新セッション **1 ターン目の応答先頭**で **`[🎖️ 本セッション割当]`** を **1 行必須**（CIO=本体・DeepSeek/Kimi/OpenRouter の起用／`未使用` 明記）。**浜田が「役割は？」と聞く前に CIO が宣言する**（詳細は `NEW-SESSION-STARTER.md` の 🎖️ 節・「貼付単独で完走」頭出しと同文脈）。
+「**開発=AI**」をさらに細分化。**CIO=Opus 4.7 本体固定**・**コード=Composer 2.5 Subagent（diff のみ）**・長文=Kimi・論理=DeepSeek。新セッション **1 ターン目**で **`[🎖️ 本セッション割当]`** 1 行必須（**Composer=** 含む）。正本: `part-A-constitution-kernel.md` / `NEW-SESSION-STARTER.md`。
 
 | 役割 | 担当 | 持ち場 |
 |---|---|---|
-| **CIO（指揮・判断・統合）** | チャット上の本体 AI（Cursor / Claude Opus 4.7 等） | 仮説立案・役割割振・結果統合・浜田向け要約・規律統制 |
-| **実務担当** | **Kimi**（Moonshot / `mcp_user-kimi_*`） | コード/長文の書き出し・`kimi_review`・`kimi_think` |
-| **知恵袋** | **DeepSeek**（`mcp_user-deepseek_chat`） | 軽量論理チェック・盲点列挙・**憲法 §50-3-8**（予実／計算ロジック／複雑 customize 着手直前の盲点3点＋**約3行突合メモ**） |
-| **バックアップ** | **OpenRouter**（`mcp_user-openrouter_chat_completion`） | 上記失敗時の代替（`provider.sort=price, allow_fallbacks=true`） |
-| **依頼者・確認者** | **浜田**（CEO） | 仕様提示・GO/NO-GO・kintone 画面の目視 |
+| **CIO** | Opus 4.7 固定（ピッカー上書き） | 判断・統合・規律 |
+| **実務（コード）** | **Composer 2.5** Subagent | diff のみ・GO なし save/deploy 禁止 |
+| **実務（長文）** | **Kimi** | 長文・`kimi_review` |
+| **知恵袋** | **DeepSeek** | §50-3-8 |
+| **バックアップ** | **OpenRouter** | 失敗時 |
+| **浜田** | CEO | GO・目視 |
 
-**補足（2026-05-01 / CIO 統合に内包）**: 仕様確認を **知恵袋で網羅 → CIO が正本と突合（セカンドオピニオン）**と固定する運用の手順書は **`.cursor/rules/deepseek-cursor-spec-division.mdc`**（`alwaysApply: true`）。**CIO の表の職分は増えない**（「結果統合」に収まる）。**憲法 §50-3-8** と併用。
+**画像 MCP 見送り**。内蔵 GenerateImage のみ → `assets/images/`（`cursor-generate-image-assets.mdc`）。
+
+**補足**: 仕様確認 **知恵袋→CIO 突合** = **`.cursor/rules/deepseek-cursor-spec-division.mdc`**。
 
 ---
 

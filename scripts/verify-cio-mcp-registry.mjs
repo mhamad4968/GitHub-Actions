@@ -8,6 +8,7 @@
  *
  * @see docs/mcp-status.md
  */
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
@@ -98,4 +99,16 @@ if (missingRec.length) {
 }
 
 console.log('[verify-cio-mcp-registry] OK (required CIO MCP names present)');
+
+// タスクA — 方式B Composer silent fallback インターロック（ログ横断）
+const guardScript = path.join(root, 'scripts', 'cio-composer-silent-fallback-guard.mjs');
+if (fs.existsSync(guardScript)) {
+  const g = spawnSync(process.execPath, [guardScript], { cwd: root, encoding: 'utf8' });
+  if (g.status !== 0) {
+    process.stderr.write(g.stderr || g.stdout || '');
+    process.exit(1);
+  }
+  console.log('[verify-cio-mcp-registry] OK (composer silent-fallback interlock)');
+}
+
 process.exit(0);

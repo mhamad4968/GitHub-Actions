@@ -6,6 +6,8 @@ globs: "**/*"
 
 # 憲法遵守・失敗の定義（CIO 体制・正本）
 
+> **先頭4行テンプレ**: `.cursor/rules/mode-b-canonical.mdc` 参照（コピー禁止）。
+
 ## 適用範囲
 
 - **正本条文**: `AGENTS.md`（§ 表記）および **`RULES-INDEX.md`** の該当行。

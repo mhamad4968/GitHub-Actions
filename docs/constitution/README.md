@@ -7,10 +7,11 @@
 
 ## AI の読み方（推奨順）
 
-1. **入口（常時）** — `.cursor/rules/cio-constitution.mdc`（薄型・毎ターン四行）
-2. **状況索引** — `RULES-INDEX.md`（「今どの §？」を 1 行で特定）
-3. **ジャンル本文** — 下表のファイルを **1〜2 本だけ** Read（全文通読しない）
-4. **正本確認** — 疑問・Tier B・[BREAKING] 時は `AGENTS.md` の該当 § を Read
+1. **階層** — [`00-rule-hierarchy.md`](00-rule-hierarchy.md)（第1憲法 / 第2機械 / 第3 runbook）
+2. **入口（常時）** — `.cursor/rules/cio-constitution.mdc` + **`.cursor/rules/mode-b-canonical.mdc`**（4AI・四行テンプレ）
+3. **状況索引** — `RULES-INDEX.md`
+4. **ジャンル本文** — 下表を **1〜2 本だけ** Read
+5. **正本確認** — `AGENTS.md` 該当 §（§1-2-3-4・§50-3-11 含む）
 
 ```text
 タスク受領
@@ -42,6 +43,9 @@
 | [14-self-governance-safemode.md](14-self-governance-safemode.md) | 第18〜19章 | セーフモード |
 | [15-raci-responsibility.md](15-raci-responsibility.md) | 第20・16章 Tier/RACI | **Tier A/B** |
 | [16-amendment-process.md](16-amendment-process.md) | 第21章 §57 | 憲法改定 |
+| [00-rule-hierarchy.md](00-rule-hierarchy.md) | 3階層索引 | **迷ったら最初** |
+| [17-four-ai-mode-b.md](17-four-ai-mode-b.md) | §1-2-3-4・§50-3-11 | 4AI・開発プロトコル |
+| [18-ai-team-read-map.md](18-ai-team-read-map.md) | 役割別ナビ | **どの AI が何を読むか**（Phase 2） |
 
 ---
 
@@ -50,7 +54,8 @@
 | 層 | 役割 |
 |----|------|
 | `cio-constitution.mdc` | **唯一の alwaysApply 核**（四行・Desktop 正本） |
-| `every-turn-rules-confirm.mdc` | 毎ターン儀式の全文 |
+| **`mode-b-canonical.mdc`** | **方式B用語・四行テンプレ単一窓**（重複記述はここへ集約） |
+| `every-turn-rules-confirm.mdc` | 毎ターン儀式の全文（四行は mode-b テンプレ参照） |
 | `mcp-server-use-triggers.mdc` 等 | **glob 別**の追加想起 |
 | `docs/constitution/*.md` | **AGENTS の分割読本**（長文を減らす） |
 

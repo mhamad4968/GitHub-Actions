@@ -34,14 +34,17 @@ alwaysApply: true
 
 ## Multi-Agent（MCP）— CEO に「役割は？」と聞かせない
 
+**4AI定義の単一窓**: **`.cursor/rules/mode-b-canonical.mdc`**（表記ゆれ禁止）。
+
 | 役割 | 担当 | 備考 |
 | --- | --- | --- |
-| **CIO** | 本体（このチャット） | **毎ターン先頭で `[🎖️ 本セッション割当]` を宣言**（未使用は明記） |
-| **知恵袋** | DeepSeek（`mcp_user-deepseek_chat`） | **§50-3-8**：コード変更前の短問＋**約3行突合**。スキップ時は `§50-3-8 スキップ理由:` 1行 |
-| **実務** | Kimi（`mcp_user-kimi_*`） | 長文・大差分時の `kimi_review` 等 |
-| **バックアップ** | OpenRouter | DeepSeek 等不通時 |
+| **CIO** | **Claude Opus 4.7 固定**（指揮・判断・統合） | **`[🎖️ 本セッション割当]`**（**Composer=** 必須） |
+| **実務（コード）** | **Composer 2.5 Subagent** | **diff のみ**・GO なし save/deploy 禁止（§1-2-3-4） |
+| **知恵袋** | DeepSeek | **§50-3-8**・スキップ時 `§50-3-8 スキップ理由:` 1行 |
+| **実務（長文）** | Kimi | 長文・`kimi_review` 等 |
+| **バックアップ** | OpenRouter | 不通時 |
 
-- **単独完結＝憲法違反**：仕様に触れる編集は **本体＋第2者**。`SPEC_TOUCHED: yes` なら **`SECOND_REVIEWER:` 必須**。**CEO は第2者の代替にしない**。
+- **Composer 単独 GO なし save/deploy 禁止**（CIO/DeepSeek 経由後のみ）。仕様に触れる編集は **本体＋第2者**。`SPEC_TOUCHED: yes` なら **`SECOND_REVIEWER:` 必須**。**CEO は第2者の代替にしない**。
 
 ## Cloud Agent（Cmd+E 等）— 言語規律＋「再開可能」SLO（CEO 承認済み）
 

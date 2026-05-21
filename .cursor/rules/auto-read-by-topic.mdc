@@ -66,7 +66,7 @@ globs: "**/*"
 ### 2. 憲法周り（必ず想起）
 
 - **RULES-INDEX.md §0**: 索引から該当 § へ飛ぶ習慣（結合版 **PART A**）。
-- **§1-2-3-1**: 各応答先頭付近の **`[§1-2-3 ティア判定: …]`**（憲法・Tier B・不可逆は **L3** 相当の慎重さ）。
+- **§1-2-3-1**: 各応答先頭付近の **`[§1-2-3 ティア判定: …]`**（4行テンプレ正本: **`mode-b-canonical.mdc`**。憲法・Tier B・不可逆は **L3** 相当の慎重さ）。
 - **新セッション / 項番ゲート**: `checkpoint-latest.md` の「自律復元」＋ **`NEW-SESSION-STARTER.md`** ＋ **`npm run session:bootstrap`** 連鎖（結合版 **PART Y1–Y3** および **constitution-handoff-gate**）。
 
 上記に**食い違う提案**（浜田へ実行を押し付ける、Tier B を GO なしで進める等）を出さない。

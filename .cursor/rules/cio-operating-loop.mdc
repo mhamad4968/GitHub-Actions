@@ -6,6 +6,8 @@ alwaysApply: false
 
 # CIO 運用ループ（仕組み・判断の正）
 
+> **先頭4行テンプレ**: `.cursor/rules/mode-b-canonical.mdc` 参照（コピー禁止）。
+
 ## 正シェル（混同防止）
 
 - **npm / git / 憲法 verify / `session:bootstrap` / Desktop sync** は **`$HOME/kintone-ai-lab`（WSL）** をカレントに実行する。

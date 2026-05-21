@@ -25,6 +25,11 @@
         "timeout": 5
       },
       {
+        "command": "node .cursor/hooks/cio-four-ai-interlock.mjs",
+        "failClosed": true,
+        "timeout": 12
+      },
+      {
         "command": "node .cursor/hooks/l3-guard.mjs",
         "failClosed": true,
         "timeout": 3

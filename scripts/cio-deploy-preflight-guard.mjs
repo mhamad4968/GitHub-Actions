@@ -5,6 +5,7 @@
  *
  * 緊急脱出: SKIP_CIO_DEPLOY_GUARD=1（浜田 GO とチャットに理由 1 行を残すこと）
  */
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -54,6 +55,20 @@ function main() {
     );
     console.error(`  最終: ${data.stampedAt}`);
     process.exit(2);
+  }
+
+  if (process.env.SKIP_CIO_MODE_B_INTERLOCK !== '1') {
+    for (const [script, args] of [
+      ['cio-composer-silent-fallback-guard.mjs', []],
+      ['cio-deepseek-5038-evidence-guard.mjs', ['--force-check']],
+    ]) {
+      const abs = path.join(root, 'scripts', script);
+      const r = spawnSync(process.execPath, [abs, ...args], { cwd: root, encoding: 'utf8' });
+      if (r.status !== 0) {
+        process.stderr.write(r.stderr || r.stdout || '');
+        process.exit(1);
+      }
+    }
   }
 
   console.log(`[cio-deploy-preflight-guard] OK app=${app} age=${Math.round(age / 1000)}s note=${JSON.stringify((data.note || '').slice(0, 80))}`);

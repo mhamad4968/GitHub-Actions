@@ -46,6 +46,14 @@
 ## 4. 関連コマンド
 
 ```bash
+# §50-3-8 機械ゲート（2026-05-21・方式B）
+npm run cio:guard:5038 -- --staged
+npm run cio:guard:5038 -- --stamp --text "盲点3点要約…"
+npm run cio:guard:5038 -- --skip "README誤字のみ"
+
+# 4AI統制一式
+npm run verify:cio-four-ai-governance
+
 # 月次 BUILD 監査（別レーン・CEO 2026-05-17 承認）
 npm run cio:periodic:monthly
 
