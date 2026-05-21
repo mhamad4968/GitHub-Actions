@@ -31,7 +31,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-19-inventory-period-v1';
+  const BUILD = '2026-05-21-inventory-bulk-row-ui-save';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -1289,8 +1289,28 @@
     });
   }
 
+  /** 行上書きが空文字のときは共通値にフォールバック（共通のみ入力したのに履歴が空になる不具合対策） */
+  function effectiveBulkField674(overrideVal, defaultVal) {
+    if (overrideVal != null && String(overrideVal).trim() !== '') {
+      return String(overrideVal).trim();
+    }
+    return String(defaultVal || '').trim();
+  }
+
+  /** 保存時は画面上の行入力を正とする（共通欄だけ変更して行欄が古い「管理者」のまま残る不具合対策） */
+  function resolveBulkRowFields674(recordId, defaultPerson, defaultLocation, overrides, rowUiById) {
+    const id = String(recordId);
+    const ov = overrides[id] || {};
+    const ui = rowUiById && rowUiById[id];
+    let per = ui ? String(ui.inpP.value || '').trim() : '';
+    let loc = ui ? String(ui.inpL.value || '').trim() : '';
+    if (!per) per = effectiveBulkField674(ov.person, defaultPerson);
+    if (!loc) loc = effectiveBulkField674(ov.location, defaultLocation);
+    return { per: per, loc: loc };
+  }
+
   /** 一括棚卸は既存履歴に追記するため、PUT 前に各レコードのサブテーブルを取得してマージ */
-  function saveBulkInventoryMerged674(records, defaultPerson, defaultLocation, checkedIds, rowOverrides) {
+  function saveBulkInventoryMerged674(records, defaultPerson, defaultLocation, checkedIds, rowOverrides, rowUiById) {
     const checked = checkedIds instanceof Set ? checkedIds : new Set();
     const ids = [];
     records.forEach(function (rec) {
@@ -1315,9 +1335,9 @@
         const rec = fullRecs[i];
         const id = rec.$id && rec.$id.value;
         if (!id || !isInventoryTargetPcStatus674(rec)) continue;
-        const ov = overrides[String(id)] || {};
-        const per = String(ov.person != null ? ov.person : defPer).trim() || defPer;
-        const loc = String(ov.location != null ? ov.location : defLoc).trim();
+        const resolved = resolveBulkRowFields674(id, defPer, defLoc, overrides, rowUiById);
+        const per = resolved.per || defPer;
+        const loc = resolved.loc;
         const hist = rec[FC_INVENTORY_HISTORY] || { type: 'SUBTABLE', value: [] };
         appendInventoryHistoryRow674(hist, today, per, loc, INV_METHOD_BULK);
         puts.push({
@@ -1376,15 +1396,37 @@
     opt0.textContent = '所属名を選択…';
     selDept.appendChild(opt0);
 
+    const hintCommon = document.createElement('p');
+    hintCommon.style.cssText = 'margin:0 0 6px;font-size:12px;color:#475569;';
+    hintCommon.textContent =
+      '※ 棚卸者・設置場所は下の2欄に入力すると一覧の全行に反映されます（各行は個別に上書き可）。';
+
     const inpDefPer = document.createElement('input');
     inpDefPer.type = 'text';
-    inpDefPer.placeholder = '棚卸者（共通）';
-    inpDefPer.value = getLoginUserDisplayName674();
+    inpDefPer.placeholder = '棚卸者（全行共通）';
+    inpDefPer.value = '';
     inpDefPer.style.cssText = 'flex:1;min-width:140px;padding:6px;border-radius:6px;border:1px solid #cbd5e1;';
     const inpDefLoc = document.createElement('input');
     inpDefLoc.type = 'text';
-    inpDefLoc.placeholder = '設置場所（共通）';
+    inpDefLoc.placeholder = '設置場所（全行共通）';
     inpDefLoc.style.cssText = 'flex:1;min-width:140px;padding:6px;border-radius:6px;border:1px solid #cbd5e1;';
+
+    const btnFillLogin = document.createElement('button');
+    btnFillLogin.type = 'button';
+    btnFillLogin.textContent = 'ログイン名を共通欄へ';
+    btnFillLogin.title = 'kintone ログインユーザ表示名を棚卸者（共通）に入れる';
+    btnFillLogin.style.cssText =
+      'padding:6px 10px;border-radius:6px;border:1px solid #cbd5e1;background:#fff;cursor:pointer;font-size:12px;';
+    btnFillLogin.addEventListener('click', function () {
+      inpDefPer.value = getLoginUserDisplayName674();
+      applyCommonToRowInputs674();
+    });
+
+    const btnApplyCommon = document.createElement('button');
+    btnApplyCommon.type = 'button';
+    btnApplyCommon.textContent = '共通を全行に反映';
+    btnApplyCommon.style.cssText =
+      'padding:6px 10px;border-radius:6px;border:1px solid #4f46e5;background:#eef2ff;color:#312e81;cursor:pointer;font-size:12px;font-weight:700;';
 
     const btnLoad = document.createElement('button');
     btnLoad.type = 'button';
@@ -1395,6 +1437,8 @@
     topRow.appendChild(selDept);
     topRow.appendChild(inpDefPer);
     topRow.appendChild(inpDefLoc);
+    topRow.appendChild(btnFillLogin);
+    topRow.appendChild(btnApplyCommon);
     topRow.appendChild(btnLoad);
 
     const scroll = document.createElement('div');
@@ -1402,7 +1446,46 @@
 
     const checkedIds = new Set();
     const rowOverrides = Object.create(null);
+    const rowUiById = Object.create(null);
     let loadedRecords = [];
+
+    function applyCommonToRowInputs674() {
+      const defP = inpDefPer.value;
+      const defL = inpDefLoc.value;
+      Object.keys(rowUiById).forEach(function (rid) {
+        const ui = rowUiById[rid];
+        if (!ui) return;
+        ui.inpP.value = defP;
+        ui.inpL.value = defL;
+        if (rowOverrides[rid]) {
+          delete rowOverrides[rid].person;
+          delete rowOverrides[rid].location;
+          if (Object.keys(rowOverrides[rid]).length === 0) delete rowOverrides[rid];
+        }
+      });
+    }
+
+    function syncRowOverride674(rid, field, value) {
+      const common = field === 'person' ? inpDefPer.value : inpDefLoc.value;
+      if (String(value) === String(common)) {
+        if (rowOverrides[rid]) {
+          delete rowOverrides[rid][field];
+          if (Object.keys(rowOverrides[rid]).length === 0) delete rowOverrides[rid];
+        }
+        return;
+      }
+      if (!rowOverrides[rid]) rowOverrides[rid] = {};
+      rowOverrides[rid][field] = value;
+    }
+
+    function bindCommonSync674() {
+      applyCommonToRowInputs674();
+    }
+    inpDefPer.addEventListener('input', bindCommonSync674);
+    inpDefPer.addEventListener('change', bindCommonSync674);
+    inpDefLoc.addEventListener('input', bindCommonSync674);
+    inpDefLoc.addEventListener('change', bindCommonSync674);
+    btnApplyCommon.addEventListener('click', bindCommonSync674);
 
     function renderTable() {
       scroll.innerHTML = '';
@@ -1441,19 +1524,20 @@
         inpP.type = 'text';
         inpP.placeholder = '上書き可';
         inpP.style.cssText = 'width:100%;box-sizing:border-box;padding:4px;';
+        inpP.value = inpDefPer.value;
         inpP.addEventListener('input', function () {
-          if (!rowOverrides[id]) rowOverrides[id] = {};
-          rowOverrides[id].person = inpP.value;
+          syncRowOverride674(id, 'person', inpP.value);
         });
         const td4 = document.createElement('td');
         const inpL = document.createElement('input');
         inpL.type = 'text';
         inpL.placeholder = '上書き可';
         inpL.style.cssText = 'width:100%;box-sizing:border-box;padding:4px;';
+        inpL.value = inpDefLoc.value;
         inpL.addEventListener('input', function () {
-          if (!rowOverrides[id]) rowOverrides[id] = {};
-          rowOverrides[id].location = inpL.value;
+          syncRowOverride674(id, 'location', inpL.value);
         });
+        rowUiById[id] = { inpP: inpP, inpL: inpL };
         td3.appendChild(inpP);
         td4.appendChild(inpL);
         tr.appendChild(td0);
@@ -1465,6 +1549,7 @@
       });
       table.appendChild(tbody);
       scroll.appendChild(table);
+      applyCommonToRowInputs674();
     }
 
     btnLoad.addEventListener('click', function () {
@@ -1485,6 +1570,9 @@
         .then(function (recs) {
           loadedRecords = recs;
           checkedIds.clear();
+          Object.keys(rowUiById).forEach(function (k) {
+            delete rowUiById[k];
+          });
           renderTable();
         })
         .catch(function (e) {
@@ -1524,7 +1612,14 @@
     });
     btnSave.addEventListener('click', function () {
       btnSave.disabled = true;
-      saveBulkInventoryMerged674(loadedRecords, inpDefPer.value, inpDefLoc.value, checkedIds, rowOverrides)
+      saveBulkInventoryMerged674(
+        loadedRecords,
+        inpDefPer.value,
+        inpDefLoc.value,
+        checkedIds,
+        rowOverrides,
+        rowUiById
+      )
         .then(function () {
           showInventoryLoading674(false);
           modal.remove();
@@ -1540,6 +1635,7 @@
     btnRow.appendChild(btnCancel);
     btnRow.appendChild(btnSave);
     box.appendChild(h);
+    box.appendChild(hintCommon);
     box.appendChild(topRow);
     box.appendChild(scroll);
     box.appendChild(btnRow);
