@@ -31,7 +31,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-21-inventory-bulk-row-ui-save';
+  const BUILD = '2026-05-21-list-create-modal-clear-btn';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -6741,7 +6741,14 @@ ${bodyInner}\
     ld.style.display = 'flex';
   }
 
-  function buildList674Query674(deptName, groupName, selectedTypes, includeCurrentListQuery) {
+  /** リスト一覧作成: 単一フィールドの部分一致（kintone `like`） */
+  function appendList674LikeField674(parts, fieldCode, raw) {
+    const v = String(raw || '').trim();
+    if (!v) return;
+    parts.push('(' + fieldCode + ' like "' + escape674QueryLike(v) + '")');
+  }
+
+  function buildList674Query674(deptName, groupName, userName, selectedTypes, includeCurrentListQuery) {
     const parts = [];
     if (includeCurrentListQuery) {
       let cur = '';
@@ -6767,10 +6774,9 @@ ${bodyInner}\
         .join(', ');
       parts.push('(' + FC_ACCOUNT_TYPE + ' in (' + quoted + '))');
     }
-    const dept = String(deptName || '').trim();
-    if (dept) parts.push('(' + FC_DEPT_NAME + ' = "' + escape674QueryLike(dept) + '")');
-    const grp = String(groupName || '').trim();
-    if (grp) parts.push('(' + FC_GROUP_NAME + ' = "' + escape674QueryLike(grp) + '")');
+    appendList674LikeField674(parts, FC_DEPT_NAME, deptName);
+    appendList674LikeField674(parts, FC_GROUP_NAME, groupName);
+    appendList674LikeField674(parts, FC_USER_NAME, userName);
     if (!parts.length) return '';
     return parts.join(' and ');
   }
@@ -6891,6 +6897,24 @@ ${bodyInner}\
     document.body.appendChild(panel);
   }
 
+  /** リスト一覧作成モーダルの入力を初期状態に戻す */
+  function resetList674CreateForm674() {
+    const u = document.getElementById('npl674-list-user');
+    const d = document.getElementById('npl674-list-dept');
+    const g = document.getElementById('npl674-list-group');
+    const m = document.getElementById('npl674-list-merge-current');
+    if (u) u.value = '';
+    if (d) d.value = '';
+    if (g) g.value = '';
+    if (m) m.checked = true;
+    const typeRow = document.getElementById('npl674-list-type-row');
+    if (typeRow) {
+      typeRow.querySelectorAll('input[type=checkbox][data-npl-list-type]').forEach(function (cb) {
+        cb.checked = true;
+      });
+    }
+  }
+
   function openList674CreateModal674() {
     let modal = document.getElementById(LIST674_MODAL_ID);
     if (!modal) {
@@ -6917,25 +6941,37 @@ ${bodyInner}\
 
       const intro = document.createElement('p');
       intro.style.cssText = 'margin:0 0 14px;font-size:13px;line-height:1.55;color:#475569;';
-      intro.textContent = '条件に合うレコードをこの画面内に表で表示します（別ウィンドウは開きません）。';
+      intro.textContent =
+        '条件に合うレコードをこの画面内に表で表示します（別ウィンドウは開きません）。' +
+        '所属名・所属グループ・利用者名は部分一致で検索します。';
+
+      const lblUser = document.createElement('label');
+      lblUser.style.cssText = 'display:block;font-size:12px;font-weight:700;margin-bottom:4px;color:#334155;';
+      lblUser.textContent = '利用者名（任意・部分一致）';
+      const inpUser = document.createElement('input');
+      inpUser.type = 'text';
+      inpUser.id = 'npl674-list-user';
+      inpUser.placeholder = '例: 山田（姓の一部でも可）';
+      inpUser.style.cssText =
+        'width:100%;box-sizing:border-box;margin-bottom:12px;padding:8px 10px;border:1px solid #94a3b8;border-radius:6px;';
 
       const lblDept = document.createElement('label');
       lblDept.style.cssText = 'display:block;font-size:12px;font-weight:700;margin-bottom:4px;color:#334155;';
-      lblDept.textContent = '所属名（任意）';
+      lblDept.textContent = '所属名（任意・部分一致）';
       const inpDept = document.createElement('input');
       inpDept.type = 'text';
       inpDept.id = 'npl674-list-dept';
-      inpDept.placeholder = '例: 首都圏支店';
+      inpDept.placeholder = '例: 首都圏（支店名の一部でも可）';
       inpDept.style.cssText =
         'width:100%;box-sizing:border-box;margin-bottom:12px;padding:8px 10px;border:1px solid #94a3b8;border-radius:6px;';
 
       const lblGrp = document.createElement('label');
       lblGrp.style.cssText = 'display:block;font-size:12px;font-weight:700;margin-bottom:4px;color:#334155;';
-      lblGrp.textContent = '所属グループ（任意）';
+      lblGrp.textContent = '所属グループ（任意・部分一致）';
       const inpGrp = document.createElement('input');
       inpGrp.type = 'text';
       inpGrp.id = 'npl674-list-group';
-      inpGrp.placeholder = '例: reform';
+      inpGrp.placeholder = '例: reform（一部でも可）';
       inpGrp.style.cssText =
         'width:100%;box-sizing:border-box;margin-bottom:12px;padding:8px 10px;border:1px solid #94a3b8;border-radius:6px;';
 
@@ -6971,7 +7007,17 @@ ${bodyInner}\
       );
 
       const btnRow = document.createElement('div');
-      btnRow.style.cssText = 'display:flex;justify-content:flex-end;gap:8px;';
+      btnRow.style.cssText =
+        'display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;align-items:center;';
+
+      const btnClear = document.createElement('button');
+      btnClear.type = 'button';
+      btnClear.textContent = 'クリア';
+      btnClear.setAttribute('aria-label', 'リスト作成の条件をクリア');
+      btnClear.style.cssText =
+        'margin-right:auto;padding:8px 14px;border-radius:6px;border:1px solid #64748b;background:#fff;color:#334155;cursor:pointer;font-weight:700;';
+      btnClear.addEventListener('click', resetList674CreateForm674);
+
       const btnCancel = document.createElement('button');
       btnCancel.type = 'button';
       btnCancel.textContent = 'キャンセル';
@@ -6996,11 +7042,14 @@ ${bodyInner}\
         const q = buildList674Query674(
           inpDept.value,
           inpGrp.value,
+          inpUser.value,
           selected,
           cbMerge.checked
         );
         const summary =
-          '所属: ' +
+          '利用者: ' +
+          (String(inpUser.value || '').trim() || '（指定なし）') +
+          '　／　所属: ' +
           (String(inpDept.value || '').trim() || '（指定なし）') +
           '　／　グループ: ' +
           (String(inpGrp.value || '').trim() || '（指定なし）') +
@@ -7019,10 +7068,13 @@ ${bodyInner}\
           });
       });
 
+      btnRow.appendChild(btnClear);
       btnRow.appendChild(btnCancel);
       btnRow.appendChild(btnGo);
       box.appendChild(h);
       box.appendChild(intro);
+      box.appendChild(lblUser);
+      box.appendChild(inpUser);
       box.appendChild(lblDept);
       box.appendChild(inpDept);
       box.appendChild(lblGrp);
