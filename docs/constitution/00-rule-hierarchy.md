@@ -9,10 +9,10 @@
 
 | 優先 | ファイル | 内容 |
 |:---:|----------|------|
-| 1 | **`AGENTS.md`** | 全 § の最終解釈。**§1-2-3-4**（4AI方式B）・**§50-3-8**・**§50-3-11**（開発プロトコル） |
+| 1 | **`AGENTS.md`** | 全 § の最終解釈。**§1-2-3-4**・**§1-2-3-4-A**（4AI担当明文化マトリクス・CEO 2026-05-21）・**§50-3-8**・**§50-3-11**（連携プロトコル＋機械ゲート） |
 | 2 | **`chat-sessions/session-starter-parts/part-A-constitution-kernel.md`** | 🎖️ 役割表・実行/確認分離・ティア（スターター正本） |
 | 3 | **`RULES-INDEX.md`** | § 逆引き・タスク開始時の索引 |
-| 4 | **`.cursor/rules/mode-b-canonical.mdc`** | **用語・四行テンプレ・4AI定義の単一窓**（重複禁止の参照先） |
+| 4 | **`.cursor/rules/mode-b-canonical.mdc`** | **用語・四行テンプレ・4AI担当明文化マトリクスの単一窓**（`AGENTS.md` §1-2-3-4-A と同一・重複コピー禁止） |
 | 4b | **`.cursor/rules/mcp-server-use-triggers.mdc`** | MCP 選択・**§4AI**（`data/cio-mcp-four-ai-matrix.json` と同期） |
 | 4c | **`.cursor/rules/cursor-generate-image-assets.mdc`** | 画像 MCP 見送り・内蔵 GenerateImage のみ |
 | 5 | **`.cursor/rules/cio-constitution.mdc`** | 唯一 `alwaysApply: true` 核（四行・Multi-Agent 要約） |

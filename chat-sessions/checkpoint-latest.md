@@ -2,6 +2,19 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
+## 2026-05-21 JST — 4AI担当範囲の完全明文化完了
+
+| 項目 | 内容 |
+|------|------|
+| **正本** | `AGENTS.md` §1-2-3-4-A（担当マトリクス）・§50-3-11（連携プロトコル追補）・`mode-b-canonical.mdc`・`00-rule-hierarchy.md`・`part-A`・`18-重要確認.txt` |
+| **原則** | §50-3-11 等の過去条文は **非置換追補のみ** |
+| **検証** | `verify:cio-mcp-registry` / `verify:cio-four-ai-governance` exit 0 |
+| **Desktop** | `session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync` |
+
+**次の 1 手**: 方針検討継続。実装は浜田 GO 後。
+
+---
+
 ## 2026-05-21 JST — MCP台帳同期・階層prune・四行バリデータ（タスク1/2/3）
 
 | タスク | 成果 | 検証 |

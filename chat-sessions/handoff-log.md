@@ -2160,3 +2160,11 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 **Phase 2-A**: `docs/constitution/18-ai-team-read-map.md`（4AI役割別ナビ）— **AGENTS 本文は未変更**  
 **git**: `ce836a9` feat(cio): Mode B governance, MCP ledger sync, and constitution Phase 2 nav（53 files）  
 **検証**: `verify:cio-four-ai-governance` exit 0（commit 前）
+
+---
+
+### 2026-05-21 JST — 4AI担当範囲の完全明文化（CEO 厳命）
+
+**正本追補**: `AGENTS.md` §1-2-3-4-A（4AI担当明文化マトリクス・連携プロトコル）・§50-3-11 連携4段追記・`mode-b-canonical.mdc`・`00-rule-hierarchy.md`・`part-A-constitution-kernel.md`・read-pack **`18-重要確認.txt`**（浜田視認用分担表）。**§50-3-11 非置換**。  
+**検証**: `npm run verify:cio-mcp-registry` / `npm run verify:cio-four-ai-governance` exit 0。  
+**Desktop**: `session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync`。

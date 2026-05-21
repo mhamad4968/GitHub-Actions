@@ -1,7 +1,7 @@
 # 第18読本 — 4AI 役割別ナビ（誰が何を読むか）
 
 **制定**: 2026-05-21（Phase 2・細分化）  
-**正本**: `AGENTS.md` §1-2-3-4・§50-3-11 ／ 用語は **`mode-b-canonical.mdc`** のみ  
+**正本**: `AGENTS.md` §1-2-3-4・**§1-2-3-4-A**（担当明文化マトリクス）・§50-3-11 ／ 用語・マトリクス全文は **`mode-b-canonical.mdc`** のみ ／ 浜田視認: Desktop **`18-重要確認.txt`**  
 **機械検証**: `npm run verify:cio-four-ai-governance`  
 **迷ったら**: [`00-rule-hierarchy.md`](00-rule-hierarchy.md) → `AGENTS.md` 該当 §（本表はショートカットであり正本の置換ではない）
 

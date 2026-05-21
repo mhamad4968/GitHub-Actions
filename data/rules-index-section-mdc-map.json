@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-21T11:05:27.524Z",
+  "generatedAt": "2026-05-21T11:24:58.747Z",
   "sectionToMdc": {
     "§0": [
       "constitution-brief-card.mdc",
@@ -14,7 +14,8 @@
     ],
     "§1-2-2": [
       "cursor-generate-image-assets.mdc",
-      "deepseek-cursor-spec-division.mdc"
+      "deepseek-cursor-spec-division.mdc",
+      "mode-b-canonical.mdc"
     ],
     "§1-2-3": [
       "every-turn-rules-confirm.mdc"
@@ -31,6 +32,11 @@
     ],
     "§1-2-3-4": [
       "cio-constitution.mdc",
+      "mode-b-canonical.mdc"
+    ],
+    "§1-2-3-4-A": [
+      "cursor-generate-image-assets.mdc",
+      "deepseek-cursor-spec-division.mdc",
       "mode-b-canonical.mdc"
     ],
     "§1-2-4": [
@@ -137,6 +143,7 @@
       "deepseek-cursor-spec-division.mdc"
     ],
     "§50-3-11": [
+      "cursor-generate-image-assets.mdc",
       "deepseek-cursor-spec-division.mdc",
       "every-turn-rules-confirm.mdc",
       "mode-b-canonical.mdc"
@@ -302,11 +309,14 @@
       "§(RULES-INDEX行)",
       "§0",
       "§1-2-2",
-      "§1-2-4"
+      "§1-2-3-4-A",
+      "§1-2-4",
+      "§50-3-11"
     ],
     "deepseek-cursor-spec-division.mdc": [
       "§0",
       "§1-2-2",
+      "§1-2-3-4-A",
       "§1-2-4",
       "§50-3",
       "§50-3-10",
@@ -360,8 +370,10 @@
     "mode-b-canonical.mdc": [
       "§(RULES-INDEX行)",
       "§1",
+      "§1-2-2",
       "§1-2-3-1",
       "§1-2-3-4",
+      "§1-2-3-4-A",
       "§35-7",
       "§50-3-11",
       "§50-3-8"
