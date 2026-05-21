@@ -2186,3 +2186,12 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 **承認**: A1/A2/A3/B2/B3/C1 全件 GO。B1 は CIO 自律 OK。  
 **施行**: 18・13-READ-05・mode-b-canonical 更新／`19-2026-05-19` → `docs/reports/archive/2026-05/`／Desktop sync+prune。  
 **次**: 次の customize/deploy 前に **§50-3-8 実施**（形骸化防止）。
+
+---
+
+### 2026-05-21 JST — 最終締め（674リスト・CI）
+
+**674**: リスト一覧作成＝所属・グループ・利用者名 **部分一致**、**クリア**ボタン。本番 rev **224**（`837410a`）。  
+**CI**: `kintone-customize-deploy` 674/629 別名パス・空 diff pipefail 修正（`4f7b875`）。pending 手順 `docs/runbooks/github-commit-checks-pending.md`。  
+**報告**: `19-SESSION-ONE-REPORT-2026-05-21.md` 最終更新・夕反省・Desktop sync。  
+**次の 1 手（2026-05-22）**: **A1** → PC台帳要件確認／4-27予定。GitHub pending は Cursor/Mintlify App 見直し。

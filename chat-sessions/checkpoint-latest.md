@@ -2,6 +2,19 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
+## 2026-05-21 JST — 最終締め（674リスト・CI・Desktop同期）
+
+| 項目 | 内容 |
+|------|------|
+| **674** | リスト一覧＝部分検索・利用者名・クリア（rev **224**） |
+| **CI** | 674/629 別名パス・pipefail 修正・pending runbook（`4f7b875`） |
+| **報告** | `19-SESSION-ONE-REPORT-2026-05-21.md`・夕反省更新・sync+verify |
+| **Git** | `837410a` / `36b2336` / `4f7b875` push 済み |
+
+**次の 1 手**: **A1**（DeepSeek→5038）→ 本題（PC台帳要件確認 or 4/27予定）。GitHub pending は Cursor/Mintlify 見直し。
+
+---
+
 ## 2026-05-21 JST — CEO承認・即時改善（A1〜C1・B1）
 
 | 項目 | 内容 |

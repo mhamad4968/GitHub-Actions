@@ -10,9 +10,10 @@ SESSION CLOSE REPORT — 2026-05-21（JST）単一締め報告（1 本に集約�
 - **Desktop AI緊急用**: 番号 **00〜27 連続**（26=SLOT／夕反省 md あり日は差し替え）。重複・旧番号は sync prune 済み。
 - **MCP 環境増強**: `cio:env:enhance` / `cio:mcp:env:extended` / figma・colors-fonts・mintlify の Win overlay。
 - **4AI 担当明文化**: `AGENTS.md` §1-2-3-4-A・§50-3-11 連携追補・`mode-b-canonical.mdc`・`18-重要確認.txt`（浜田視認用表）。
-- **Git**: `ca45e9d`（Desktop+MCP）→ `f427245`（4AIマトリクス）→ `28702e9`（18の19番日付整合）— **origin/main 反映済み**。
-- **検証**: `verify:desktop-ai-emergency-sync` / `verify:cio-mcp-registry` / `verify:cio-four-ai-governance` exit 0。
-- **§50-3-8**: 本セッションは **憲法・read-pack・スクリプト中心** — DeepSeek MCP 実呼び出しは **未実施**（§2 参照）。
+- **674**: リスト一覧作成＝**部分検索**（所属・グループ・利用者名）＋**クリア**（本番 BUILD `2026-05-21-list-create-modal-clear-btn` / rev **224**）。
+- **Git**: `ca45e9d` … → `14e91da`（A1-C1）→ `837410a`（674リスト）→ `4f7b875`（CI修正）— **origin/main 反映済み**。
+- **検証**: desktop-sync / governance / **kintone-customize-deploy Actions success**（`4f7b875`）。
+- **§50-3-8**: 憲法・read-pack・674 customize あり — **DeepSeek 実呼び出しは未実施**（次実装ターンで A1 必須）。
 
 --------------------------------------------------------------------------------
 §1 本日の成果（事実）
@@ -24,6 +25,8 @@ SESSION CLOSE REPORT — 2026-05-21（JST）単一締め報告（1 本に集約�
 | **MCP** | `cio:env:enhance`・extended probe（playwright/DDG OK、markdownify=Win SKIP）・repo overlay | `cio:mcp:gate` / registry OK |
 | **4AI体制** | §1-2-3-4-A マトリクス全文・連携5段・18 分担表 | governance OK |
 | **引継ぎ** | handoff-log / checkpoint 更新・Desktop バイト同期 | sync OK |
+| **674 リスト一覧** | 部分一致・利用者名・クリア・本番 deploy | rev 224 |
+| **GitHub CI** | 674/629 別名パス・pipefail 修正・pending runbook | Actions OK |
 
 --------------------------------------------------------------------------------
 §2 反省（深掘り）
@@ -67,8 +70,10 @@ SESSION CLOSE REPORT — 2026-05-21（JST）単一締め報告（1 本に集約�
 --------------------------------------------------------------------------------
 1. 実装タスク着手時は **A1 チェックリスト**（DeepSeek→5038）を **最初に**実行。  
 2. **4AI 連携プロトコル 1→2→3→4→5** ＋ **B3**（Composer Subagent）を厳守。  
-3. 金曜は **A2**、週次は **A3**（`cio:env:enhance`）。
+3. 金曜は **A2**、週次は **A3**（`cio:env:enhance`）。  
+4. GitHub でコミットが **pending** のときは **Cursor/Mintlify** App 設定（`docs/runbooks/github-commit-checks-pending.md`）。  
+5. **PC台帳**: リスト一覧の運用確認（部分検索・利用者名・クリア）。
 
 ================================================================================
-（以上・2026-05-21 締め）
+（以上・2026-05-21 最終締め）
 ================================================================================
