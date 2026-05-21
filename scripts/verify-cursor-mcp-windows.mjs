@@ -6,9 +6,15 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const winMcp =
-  process.env.CURSOR_MCP_WINDOWS_JSON ||
-  '/mnt/c/Users/mhamada202408224/.cursor/mcp.json';
+function defaultWinMcpPath() {
+  if (process.env.CURSOR_MCP_WINDOWS_JSON) return process.env.CURSOR_MCP_WINDOWS_JSON;
+  if (process.platform === 'win32' && process.env.USERPROFILE) {
+    return path.join(process.env.USERPROFILE, '.cursor', 'mcp.json');
+  }
+  return '/mnt/c/Users/mhamada202408224/.cursor/mcp.json';
+}
+
+const winMcp = defaultWinMcpPath();
 
 function fail(msg) {
   console.error('[verify-cursor-mcp-windows] NG:', msg);
@@ -96,6 +102,12 @@ if (!mdJoin.includes('env -i') || !mdJoin.includes('dist/index.js')) {
 }
 if (/\bnpx\b.*@iflow-mcp\/markdownify-mcp/.test(mdJoin)) {
   fail('markdownify must not use npx @iflow-mcp/markdownify-mcp (TSB-029 preinstall trap)');
+}
+
+for (const overlay of ['figma', 'colors-fonts', 'mintlify']) {
+  if (!servers[overlay]) {
+    console.warn(`[verify-cursor-mcp-windows] WARN: missing overlay ${overlay} (npm run mcp:apply-repo-overlays-windows)`);
+  }
 }
 
 console.log('[verify-cursor-mcp-windows] OK', winMcp);

@@ -78,9 +78,11 @@
 
 ```text
 日常（速い）     npm run cio:mcp:env
+Composer 前      npm run cio:mcp:env:extended   # playwright / markdownify / DDG 追加 probe
 タスク前・週次   npm run cio:mcp:gate
+環境増強まとめ   npm run cio:env:enhance        # gate + overlay + 4AI 台帳（--full / --desktop 可）
 金曜反省後       npm run mcp-status:refresh-usage  → docs/mcp-status.md 更新
-WSL 編集後       npm run mcp:sync-cursor-windows
+WSL 編集後       npm run mcp:sync-cursor-windows  # figma/colors-fonts/mintlify overlay 同梱
 ```
 
 **合格線**

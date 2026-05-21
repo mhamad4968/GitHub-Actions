@@ -9,6 +9,7 @@ AI緊急用 フォルダ（Desktop）— 使い方メモ（正本はリポ `chat
 4. **運用推奨（CIO）**: JST 1 行は **`npm run time:jst`**。コマンドは **`npm run …` / `node scripts/…`** に寄せる（超長い `node -e` は Run が出やすい）。
 5. **Desktop はワークスペース外**のため、**`%USERPROFILE%\.cursor\sandbox.json`** と **リポ `.cursor/sandbox.json`** の **`additionalReadonlyPaths`** に **`…/Desktop/AI緊急用`** と **`…/Desktop`**（WSL なら **`/mnt/c/...`** 併記）を入れておくと一覧しやすい（**強い自動実行を併用する場合はサンドボックス境界を再確認**）。
 6. **Windows ネイティブ Node（`/mnt/c` なし）**: **`npm run session-starter:sync-desktop` → `npm run verify:desktop-ai-emergency-sync`** は、**`SESSION_STARTER_DESKTOP_DIR` 未設定でも** `%USERPROFILE%\Desktop\AI緊急用`（および **OneDrive 配下の Desktop**・**`%PUBLIC%\Desktop`** 等の既定候補）を **自動検出**する（2026-05-16 CIO）。**`verify:desktop-ai-emergency-sync`** は **read-pack（`desktop-ai-emergency-read-pack` の .txt と `NN-*.md`）もバイト一致**まで検査する（2026-05-16 追補）。**任意パス**を使うときだけ **`SESSION_STARTER_DESKTOP_DIR`** に **`…\Desktop\AI緊急用`** の **絶対パス**をセット（**Desktop／デスクトップ直下の「AI緊急用」のみ**許可・実装は `scripts/lib/session-starter-desktop-dir.mjs`）。
+7. **MCP 環境増強（2026-05-21）**: **`npm run cio:env:enhance`**（health + gate + figma/colors-fonts overlay + 4AI 台帳）。日常は **`cio:mcp:env`**、Composer 前は **`cio:mcp:env:extended`**。WSL 編集後は **`mcp:sync-cursor-windows`**（overlay 同梱）。
 
 【新チャットで貼るファイル（項番 -1）】
 
@@ -32,7 +33,7 @@ AI緊急用 フォルダ（Desktop）— 使い方メモ（正本はリポ `chat
 
   24-handoff-log.md / 25-checkpoint-latest.md … リポ **`chat-sessions/handoff-log.md`** と **`chat-sessions/checkpoint-latest.md`** を **常に**同名バイトで Desktop へ同期（verify も検査）。
 
-  26-evening-reflection-YYYY-MM-DD.md … **当日 JST** の夕反省 `docs/reports/YYYY-MM-DD-evening-reflection.md` がリポにあるときだけ sync でコピー。無い日は **24〜25 のみ**（Explorer で歯抜けなし）。
+  26-evening-reflection-YYYY-MM-DD.md … 当日夕反省がリポにあるとき。無い日は **26-evening-reflection-SLOT.txt**（プレースホルダ）で **00〜27 の番号を連続**に保つ。
 
 
 

@@ -1,0 +1,12 @@
+【26 スロット】夕反省レポート（当日分・プレースホルダ）
+
+本日（JST）の `docs/reports/YYYY-MM-DD-evening-reflection.md` はリポにまだ無い。
+夕反省を書いた日は `npm run session-starter:sync-desktop` が
+`26-evening-reflection-YYYY-MM-DD.md` に差し替え、本ファイル（SLOT）は Desktop から削除される。
+
+今すぐ読むべき最新状態:
+  25-checkpoint-latest.md … 最終更新・次の 1 手
+  24-handoff-log.md … セッション締めログ
+
+夕反省を書くとき:
+  リポ `docs/reports/` に `YYYY-MM-DD-evening-reflection.md` を追加 → sync → verify

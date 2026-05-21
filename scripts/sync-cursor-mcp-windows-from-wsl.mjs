@@ -9,6 +9,10 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { mergeRepoMcpOverlays, readRepoMcpOverlays } from './lib/repo-mcp-overlays.mjs';
+
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 const wslMcp = path.join(os.homedir(), '.cursor', 'mcp.json');
 const winMcp =
@@ -195,6 +199,8 @@ if (!fs.existsSync(path.dirname(winMcp))) {
 
 const src = JSON.parse(fs.readFileSync(wslMcp, 'utf8'));
 const built = buildWindowsMcp(src.mcpServers || {});
+const overlays = readRepoMcpOverlays(repoRoot);
+mergeRepoMcpOverlays(built, overlays);
 
 const bak = `${winMcp}.bak-${new Date().toISOString().replace(/[:.]/g, '-')}`;
 if (fs.existsSync(winMcp)) {

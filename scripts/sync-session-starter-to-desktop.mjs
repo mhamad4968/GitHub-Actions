@@ -7,7 +7,7 @@
  * `chat-sessions/desktop-ai-emergency-read-pack/*.txt`（番号付き貼付控え）も **同名で** Desktop へコピーする。
  * 同フォルダの **`NN-*.md`（先頭 2 桁が数字）** も **同名で** Desktop へコピーする（例: **`19-SESSION-ONE-REPORT-…md`**）。
  * **`SESSION_DESKTOP_MIRROR_FILES`**（`handoff-log.md`→**`24-handoff-log.md`**、`checkpoint-latest.md`→**`25-checkpoint-latest.md`**）も Desktop へコピーする。
- * **当日 JST** の `docs/reports/YYYY-MM-DD-evening-reflection.md` があれば **`26-evening-reflection-YYYY-MM-DD.md`** として Desktop へコピーする。
+ * **26**: 当日夕反省 `docs/reports/YYYY-MM-DD-evening-reflection.md` があれば **`26-evening-reflection-YYYY-MM-DD.md`**。無い日は **`26-evening-reflection-SLOT.txt`**（read-pack 正本）で **25→27 の歯抜けを防ぐ**。
  * 同期の最後に **旧番号ファイル**（`00p01`〜、旧 read-pack `02`〜`19` 帯、旧 **`14-evening-…`** 等）を Desktop から削除する。
  *
  * @see chat-sessions/NEW-SESSION-STARTER.md 冒頭
@@ -25,6 +25,12 @@ import {
 import { SESSION_STARTER_PART_SYNC } from './lib/session-starter-parts.mjs';
 import { SESSION_DESKTOP_MIRROR_FILES } from './lib/desktop-ai-emergency-session-docs.mjs';
 import { resolveSessionStarterDesktopDir } from './lib/session-starter-desktop-dir.mjs';
+import {
+  EVENING_REFLECTION_SLOT_NAME,
+  buildExpectedDesktopAiEmergencyFilenames,
+  jstYmdToIso,
+  pruneUnexpectedNumberedDesktopFiles,
+} from './lib/desktop-ai-emergency-expected-files.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -63,6 +69,7 @@ const LEGACY_DESKTOP_AI_EMERGENCY_FILES = [
   '16-重要確認.txt',
   '18-SESSION-ONE-REPORT-2026-05-06.md',
   '19-SESSION-REPORT-CHECKLIST.txt',
+  '19-SESSION-ONE-REPORT-2026-05-19.txt',
   '25-handoff-log.md',
   '26-checkpoint-latest.md',
 ];
@@ -87,27 +94,35 @@ function copyReadPackFileToDesktop(readPackDir, name) {
   console.log(`[sync-session-starter-to-desktop] OK ${readPackRelDir}/${name} -> ${dest}`);
 }
 
-/** @param {string} ymd 例 20260505 */
-function jstYmdToIso(ymd) {
-  return `${ymd.slice(0, 4)}-${ymd.slice(4, 6)}-${ymd.slice(6, 8)}`;
-}
-
-/** 当日の夕反省レポートを Desktop へ（存在時のみ） */
+/** 26 番: 夕反省 md または SLOT プレースホルダ（歯抜けなし） */
 function syncEveningReflectionToDesktop() {
   const ymd = getJstYyyymmdd();
   const iso = jstYmdToIso(ymd);
-  const src = path.join(root, 'docs/reports', `${iso}-evening-reflection.md`);
-  if (!fs.existsSync(src)) {
-    console.log(
-      `[sync-session-starter-to-desktop] 夕反省レポートなし（スキップ）: docs/reports/${iso}-evening-reflection.md`
+  const eveningSrc = path.join(root, 'docs/reports', `${iso}-evening-reflection.md`);
+  const slotSrc = path.join(root, readPackRelDir, EVENING_REFLECTION_SLOT_NAME);
+  if (fs.existsSync(eveningSrc)) {
+    const destName = `26-evening-reflection-${iso}.md`;
+    const dest = path.join(destDir, destName);
+    fs.copyFileSync(eveningSrc, dest);
+    console.log(`[sync-session-starter-to-desktop] OK docs/reports/${iso}-evening-reflection.md -> ${dest}`);
+    const slotDest = path.join(destDir, EVENING_REFLECTION_SLOT_NAME);
+    if (fs.existsSync(slotDest)) {
+      fs.unlinkSync(slotDest);
+      console.log(`[sync-session-starter-to-desktop] 夕反省ありのため SLOT 削除: ${EVENING_REFLECTION_SLOT_NAME}`);
+    }
+    return;
+  }
+  if (!fs.existsSync(slotSrc)) {
+    console.warn(
+      `[sync-session-starter-to-desktop] 夕反省 SLOT 正本なし: ${readPackRelDir}/${EVENING_REFLECTION_SLOT_NAME}`
     );
     return;
   }
-  const destName = `26-evening-reflection-${iso}.md`;
-  const dest = path.join(destDir, destName);
-  fs.copyFileSync(src, dest);
-  console.log(`[sync-session-starter-to-desktop] OK docs/reports/${iso}-evening-reflection.md -> ${dest}`);
-  console.log(`[sync-session-starter-to-desktop] 夕反省 Desktop パス: ${path.join(destDir, destName)}`);
+  const dest = path.join(destDir, EVENING_REFLECTION_SLOT_NAME);
+  fs.copyFileSync(slotSrc, dest);
+  console.log(
+    `[sync-session-starter-to-desktop] OK ${readPackRelDir}/${EVENING_REFLECTION_SLOT_NAME} -> ${dest}（夕反省未作成日）`
+  );
 }
 
 function syncReadPackToDesktop() {
@@ -159,26 +174,19 @@ function pruneLegacyDesktopAiEmergency(dir) {
   }
 }
 
-/**
- * 当日 JST の夕反省が無い日は Desktop に 26 を置かない（24〜25 で終わり）。
- * ある日は当日分の 26 のみ残す。
- */
+/** 26 番: 当日以外の夕反省 md を削除。夕反省なし日は md を全削除（SLOT は sync が配置）。 */
 function pruneStaleEveningReflectionOnDesktop(dir) {
   const ymd = getJstYyyymmdd();
   const iso = jstYmdToIso(ymd);
   const todaySrc = path.join(root, 'docs/reports', `${iso}-evening-reflection.md`);
-  const keepName = `26-evening-reflection-${iso}.md`;
+  const keepMd = `26-evening-reflection-${iso}.md`;
   try {
     for (const n of fs.readdirSync(dir)) {
-      if (!/^26-evening-reflection-.+\.md$/i.test(n)) continue;
-      if (!fs.existsSync(todaySrc)) {
-        fs.unlinkSync(path.join(dir, n));
-        console.log(`[sync-session-starter-to-desktop] 夕反省なし日のため削除: ${n}`);
-        continue;
-      }
-      if (n !== keepName) {
-        fs.unlinkSync(path.join(dir, n));
-        console.log(`[sync-session-starter-to-desktop] 旧夕反省削除（当日以外）: ${n}`);
+      if (/^26-evening-reflection-.+\.md$/i.test(n)) {
+        if (!fs.existsSync(todaySrc) || n !== keepMd) {
+          fs.unlinkSync(path.join(dir, n));
+          console.log(`[sync-session-starter-to-desktop] 旧夕反省 md 削除: ${n}`);
+        }
       }
     }
   } catch (e) {
@@ -257,6 +265,10 @@ function main() {
   syncReadPackToDesktop();
   syncEveningReflectionToDesktop();
   pruneLegacyDesktopAiEmergency(destDir);
+  const expected = buildExpectedDesktopAiEmergencyFilenames(root);
+  for (const n of pruneUnexpectedNumberedDesktopFiles(destDir, expected)) {
+    console.log(`[sync-session-starter-to-desktop] 期待外番号ファイル削除: ${n}`);
+  }
   // `process.exit(0)` は使わない: stdout の末尾が欠け read-pack 同期ログが見えず、未コピーと誤認され得る（自然終了で flush）
   process.exitCode = 0;
 }

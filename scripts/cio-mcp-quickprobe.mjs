@@ -134,6 +134,25 @@ function extraEnvForTarget(name) {
   return {};
 }
 
+/** `--extended` 時のみ（Composer 実務系・registry 必須10 のうち未 probe 分） */
+const EXTENDED_TARGETS = {
+  playwright: {
+    cmd: "npx",
+    args: ["-y", "@playwright/mcp@latest"],
+    env: {},
+  },
+  markdownify: {
+    cmd: "npx",
+    args: ["-y", "@iflow-mcp/markdownify-mcp@0.0.2"],
+    env: {},
+  },
+  "duckduckgo-search": {
+    cmd: "npx",
+    args: ["-y", "duckduckgo-mcp-server"],
+    env: { DDG_REGION: process.env.DDG_REGION || "jp-ja" },
+  },
+};
+
 const TARGETS = {
   kintone: {
     cmd: "npx",
@@ -265,7 +284,23 @@ function probeOnce(name, spec, timeoutMs) {
   });
 }
 
+/** Windows では markdownify は WSL 直起動が正（TSB-029）。npx 拡張 probe は SKIP。 */
+function maybeSkipExtendedOnWindows(name) {
+  if (process.platform !== "win32") return null;
+  if (name === "markdownify") {
+    return {
+      name,
+      status: "SKIP",
+      detail: "Windows: WSL mcp.json TSB-029 node launch (npx @iflow-mcp unsafe here)",
+      elapsed: 0,
+    };
+  }
+  return null;
+}
+
 async function probe(name, spec, timeoutMs) {
+  const skip = maybeSkipExtendedOnWindows(name);
+  if (skip) return skip;
   let r = await probeOnce(name, spec, timeoutMs);
   if (r.status === "TIMEOUT" && retryOnTimeoutEnabled()) {
     console.error(
@@ -286,10 +321,20 @@ async function probe(name, spec, timeoutMs) {
   return r;
 }
 
-const filter = process.argv[2];
-const entries = Object.entries(TARGETS).filter(([n]) => !filter || n === filter);
+const useExtended = process.argv.includes("--extended");
+const probeMap = useExtended ? { ...TARGETS, ...EXTENDED_TARGETS } : TARGETS;
+const filter = process.argv.find(
+  (a) =>
+    a !== "--extended" &&
+    !a.startsWith("-") &&
+    !/[\\/]/.test(a) &&
+    Object.prototype.hasOwnProperty.call(probeMap, a),
+);
+const entries = Object.entries(probeMap).filter(([n]) => !filter || n === filter);
 if (entries.length === 0) {
-  console.error("unknown target: " + filter + "  (available: " + Object.keys(TARGETS).join(", ") + ")");
+  console.error(
+    "unknown target: " + filter + "  (available: " + Object.keys(probeMap).join(", ") + ")",
+  );
   process.exit(2);
 }
 
@@ -314,7 +359,8 @@ for (const r of results) {
   console.log(`${r.name.padEnd(11)} ${r.status.padEnd(12)} ${String(r.elapsed).padStart(8)}  ${r.detail || ""}`);
 }
 const ok = results.filter((r) => r.status === "OK").length;
-const ng = results.filter((r) => r.status !== "OK").length;
-console.log(`SUMMARY: OK ${ok}/${results.length}  NG=${ng}`);
+const skip = results.filter((r) => r.status === "SKIP").length;
+const ng = results.filter((r) => r.status !== "OK" && r.status !== "SKIP").length;
+console.log(`SUMMARY: OK ${ok}/${results.length}  SKIP=${skip}  NG=${ng}`);
 const exitMissing = results.some((r) => r.status === "NG" && r.detail?.includes("missing env"));
 process.exit(ng === 0 ? 0 : exitMissing ? 2 : 1);

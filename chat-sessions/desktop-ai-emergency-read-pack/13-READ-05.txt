@@ -28,8 +28,21 @@
   22-HANDOFF-HUMAN.txt  
   23-AI緊急用-README.txt  
   **24-handoff-log.md**（リポ `chat-sessions/handoff-log.md`）／**25-checkpoint-latest.md**（リポ `chat-sessions/checkpoint-latest.md`）… **常時**バイト同期  
-  （当日のみ）**26-evening-reflection-YYYY-MM-DD.md**（旧 **24-evening-…** は prune）  
-  （read-pack は **08〜20** の **リポと同名**でコピー。番号付き **.md** も同梱）
+  **26** … 夕反省 **`26-evening-reflection-YYYY-MM-DD.md`**（リポにレポートがある日）または **`26-evening-reflection-SLOT.txt`**（未作成日・歯抜け防止）  
+  **27-USER683-CLAUDE-RELAY-SESSION.txt**（read-pack）  
+  （read-pack は **08〜20・26・27** をリポと同名コピー。番号付き **.md** も同梱）
+
+■ MCP・環境増強（2026-05-21）  
+  npm run cio:mcp:env … 日常（SUMMARY OK 6/6）  
+  npm run cio:mcp:gate … kintone 作業前・週次（Space 48 実 API まで）  
+  npm run cio:mcp:env:extended … Composer 向け playwright / markdownify / DDG 追加 probe  
+  npm run cio:env:enhance … health + gate + figma/colors-fonts overlay + 4AI 台帳一括  
+
+■ ルール索引メンテ（憲法細分化後・必要時）  
+  npm run rules:sync-index-all  
+  npm run rules:regenerate-constitution  
+  npm run verify:constitution-mdc-freshness  
+  npm run verify:cio-four-ai-governance  
 
 ■ 正本  
   リポ: chat-sessions/desktop-ai-emergency-read-pack\*.txt  

@@ -4,11 +4,8 @@
       "url": "https://mcp.figma.com/mcp"
     },
     "colors-fonts": {
-      "command": "/home/mhamada202408224/.nvm/versions/node/v24.14.1/bin/npx",
-      "args": ["-y", "@colorsandfonts/mcp@1.1.0"],
-      "env": {
-        "PATH": "/home/mhamada202408224/.nvm/versions/node/v24.14.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-      }
+      "command": "npx",
+      "args": ["-y", "@colorsandfonts/mcp@1.1.0"]
     },
     "mintlify": {
       "url": "https://mcp.mintlify.com"
