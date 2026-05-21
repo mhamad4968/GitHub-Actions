@@ -1,5 +1,5 @@
 /**
- * 685 正本アプリ: category ドロップダウンを新7種に差し替え → preview deploy。
+ * 685 正本アプリ: category ドロップダウンを現行6種に差し替え → preview deploy。
  *
  *   npx dotenv -e ../../.env -e ../../.env.proxy -- node scripts/update-685-category-dropdown.mjs --dry-run
  *   npx dotenv -e ../../.env -e ../../.env.proxy -- node scripts/update-685-category-dropdown.mjs
@@ -10,7 +10,6 @@ const APP = Number(process.env.ICT_DIGEST_STORE_APP_ID || "685");
 const FIELD = "category";
 
 const NEW_OPTIONS = [
-  "AI・LLM",
   "インフラ・通信・端末",
   "開発トレンド",
   "Box・SaaS・文書管理",
@@ -98,7 +97,7 @@ async function main() {
   }
 
   if (optionsMatch(def, NEW_OPTIONS)) {
-    console.log(`[685] ${FIELD} は既に新7種です。PUT スキップ。`);
+    console.log(`[685] ${FIELD} は既に現行カテゴリです。PUT スキップ。`);
     return;
   }
 
@@ -139,7 +138,7 @@ async function main() {
   }
 
   await waitDeploy(getHeaders);
-  console.log("[685] deploy SUCCESS — category ドロップダウンを新7種に反映しました。");
+  console.log("[685] deploy SUCCESS — category ドロップダウンを現行6種に反映しました。");
 }
 
 main().catch((e) => {

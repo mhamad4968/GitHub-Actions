@@ -1,0 +1,67 @@
+{
+  "_comment": "674 棚卸履歴サブテーブル。preview POST 後 deploy。続けて customize で棚卸 UI。",
+  "properties": {
+    "inventory_history": {
+      "type": "SUBTABLE",
+      "code": "inventory_history",
+      "label": "棚卸履歴",
+      "noLabel": false,
+      "fields": {
+        "inventory_hist_date": {
+          "type": "DATE",
+          "code": "inventory_hist_date",
+          "label": "棚卸日",
+          "noLabel": false,
+          "required": false,
+          "unique": false,
+          "defaultValue": "",
+          "defaultNowValue": false
+        },
+        "inventory_hist_person": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "inventory_hist_person",
+          "label": "棚卸者",
+          "noLabel": false,
+          "required": false,
+          "minLength": "",
+          "maxLength": "",
+          "expression": "",
+          "hideExpression": false,
+          "unique": false,
+          "defaultValue": ""
+        },
+        "inventory_hist_location": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "inventory_hist_location",
+          "label": "設置場所",
+          "noLabel": false,
+          "required": false,
+          "minLength": "",
+          "maxLength": "",
+          "expression": "",
+          "hideExpression": false,
+          "unique": false,
+          "defaultValue": ""
+        },
+        "inventory_hist_method": {
+          "type": "DROP_DOWN",
+          "code": "inventory_hist_method",
+          "label": "実施区分",
+          "noLabel": false,
+          "required": false,
+          "options": {
+            "個別": {
+              "label": "個別",
+              "index": "0"
+            },
+            "一括": {
+              "label": "一括",
+              "index": "1"
+            }
+          },
+          "defaultValue": ""
+        }
+      }
+    }
+  }
+}

@@ -11,7 +11,9 @@
     "typecheck": "tsc --noEmit",
     "rss:verify": "tsx scripts/verify-rss-feeds.mjs",
     "backfill:overview": "tsx scripts/backfill-overview-labels.mjs",
-    "update-685-categories": "node scripts/update-685-category-dropdown.mjs"
+    "update-685-categories": "node scripts/update-685-category-dropdown.mjs",
+    "delete-685-ai:dry-run": "tsx scripts/delete-685-ai-llm-records.mjs --dry-run",
+    "delete-685-ai:apply": "tsx scripts/delete-685-ai-llm-records.mjs --apply"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

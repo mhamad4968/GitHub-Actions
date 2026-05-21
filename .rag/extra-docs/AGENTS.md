@@ -4,6 +4,8 @@
 **Cursor 上の本リポジトリ作業**は **§1-2** の単一モデル前提に従う。Claude Code / Codex 等の別環境は、利用時も本ファイルの手前に **§1-2 を読み、Opus 4.7 単一会話に相当する運用**に寄せる。
 個別の詳細ルールは `.cursorrules` および `.cursor/rules/*.mdc` に委任する。
 
+> **AI 向け（2026-05-17）**: 全文通読は不要。**`RULES-INDEX.md` → `docs/constitution/README.md`** でジャンル別に読む。§ 番号の解釈正本は **本ファイル**。再分割は `npm run constitution:extract-genres`。
+
 ### 作業レーンの切り替え（CIO メモ・2026-05-04）
 
 - **部署予実**（kintone **677／678／679**・主に **Space 54**）と **PC台帳系**（**674（新・正）**・**旧594（削除予定・新規禁止）**・**668** 等・**Space 21** ほど）は **別案件**。着手前に **いまどちらのレーンか**を明示し、**アプリ ID・URL は `kintone-apps.md` で照合**する（混同防止）。**594 を前提にした新仕様は採用しない**（`docs/plans/2026-04-21-new-pc-ledger-spec.md` **§1.5**）。**本番に594を参照専用で恒久的に残す前提はない**。
@@ -2941,4 +2943,3 @@ AI 自己診断で「待つと被害拡大」と判断 → Tier A 強制実行�
 - 制定日: 2026-04-26 10:35 JST
 - 完全運用開始: 即時 (本 commit reflect 直後から)
 - ログディレクトリ: `logs/autonomy-decisions/auto-fix-*.md` (R-5 commit と同時に `.gitkeep` 検討 = 別 commit / 必要時に AI が自律生成)
-

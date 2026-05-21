@@ -3,7 +3,16 @@ import js from "@eslint/js";
 import globals from "globals";
 
 export default [
-  { ignores: ["**/node_modules/**", "security-next-automation/**", "vite-kintone-list-button/**"] },
+  {
+    ignores: [
+      "**/node_modules/**",
+      "security-next-automation/**",
+      "vite-kintone-list-button/**",
+      // workdays 687/688: deploy 対象は desktop.js のみ（ui*.js は build 用断片）
+      "customize/**/desktop.ui.js",
+      "customize/**/desktop.ui.slim.js",
+    ],
+  },
   {
     files: ["customize/**/*.js"],
     languageOptions: {

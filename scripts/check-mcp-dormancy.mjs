@@ -68,6 +68,7 @@ const DORMANCY_POLICY_EXEMPT_REASON = new Map([
   ['cyber-news', 'CEO 2026-05-17: セキュリティ巡回用に留置（7d dormant 許容）'],
   ['cve-search', 'CEO 2026-05-17: CVE 調査用に留置（7d dormant 許容）'],
   ['kintone-dev', 'CEO 2026-05-17: kintone API 仕様参照（IDE 経由・低頻度・7d dormant 許容）'],
+  ['kintone-space', 'CEO 2026-05-19: Space API・新規アプリ配置時のみ（7d dormant 許容）'],
   ['accessibility-scanner', 'CEO 2026-05-17: a11y スキャンは customize 検収時のみ（7d dormant 許容）'],
   ['chrome-devtools', 'CEO 2026-05-17: ブラウザ DevTools は障害切り分け時のみ（7d dormant 許容）'],
   ['shadcn-ui', 'CEO 2026-05-17: UI コンポーネント参照は必要時のみ（7d dormant 許容）'],

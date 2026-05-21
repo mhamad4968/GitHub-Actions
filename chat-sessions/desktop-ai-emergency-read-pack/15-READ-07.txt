@@ -26,7 +26,7 @@
 対応するときは次を **例外なし**で守る。
 
 - **憲法・ルールを厳守**（例外や「知らなかった」はない前提で動く）。
-- **壁時計**: **`npm run session:clock:set`** と、**`npm run session:clock:web` の URL をチャットに提示**し、浜田がブラウザで開けるようにする（スターター・§51-6-2 運用どおり）。
+- **壁時計（2026-05-17 CEO）**: **Cursor を閉じる → 自動停止**（`sessionEnd` hook）。**Cursor を開く → 自動で set + watch + web 起動**（Windows は **ブラウザも自動で開く** ＋ チャットに URL）。手動停止: `npm run session:clock:stop`。Runbook: `docs/runbooks/session-clock-cursor-lifecycle.md`。
 
 ---
 

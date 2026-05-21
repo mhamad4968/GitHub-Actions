@@ -8,13 +8,22 @@ import type { IctConfig } from "./config.js";
 import { ICT_CATEGORIES, type IctCategory } from "./field-codes.js";
 import { normalizeOverview } from "./overview-format.js";
 import type { RssArticle } from "./rss.js";
+import { filterOutAiLlmPicks } from "./ai-exclusion.js";
 import {
   applyDomesticScoreBoost,
   filterPicksBySourceRegion,
 } from "./source-region.js";
 
 const SYSTEM_PROMPT =
-  "あなたは最新のIT技術トレンド、モダンな開発手法、インフラ、SaaS（Box等）、IT資格・DX人材育成、および最新のセキュリティ製品動向に精通した、企業情報システム部門（情シス）のテックリードです。運用ノイズ（アラート・注意喚起の過多）を避け、真に重要なインフラ対策情報だけを厳選します。パッチ・CVE は下記の重要度ルールを絶対条件とし、境界が曖昧な記事は選ばないでください。";
+  "あなたはインフラ、PC・端末、ネットワーク、SaaS（Box等）、開発トレンド（AI・LLM を除く）、IT資格・DX人材育成、およびセキュリティ製品動向に精通した、企業情報システム部門（情シス）のテックリードです。運用ノイズ（アラート・注意喚起の過多）を避け、真に重要なインフラ対策情報だけを厳選します。パッチ・CVE は下記の重要度ルールを絶対条件とし、境界が曖昧な記事は選ばないでください。";
+
+/** CEO 2026-05-19: AI・LLM は掲示板の収集対象外 */
+export const AI_LLM_EXCLUSION_POLICY = `
+【AI・LLM は採用しない（絶対条件）】
+- **生成AI / LLM / ChatGPT / Copilot / 基盤モデル / AIエージェント** など、AI・大規模言語モデルが主題の記事は **1件も選ばない**
+- Microsoft 365 Copilot の紹介、AI スタートアップ資金調達、AI 規制ニュース、モデル API 更新なども **すべて除外**
+- 開発トレンドとして紹介されていても、**本題が AI・LLM なら除外**（従来型の言語・フレームワーク・インフラ運用が主題のものだけ採用可）
+`;
 
 /** 情シス向けパッチ・CVE 採用基準（CEO 合意・厳格運用） */
 const PATCH_AND_CVE_POLICY = `
@@ -159,6 +168,8 @@ ${PATCH_AND_CVE_POLICY}
 
 ${SOURCE_REGION_POLICY}
 
+${AI_LLM_EXCLUSION_POLICY}
+
 【選定の優先（importanceScore が高い順のイメージ）】
 - インフラ・PC・SaaS・開発トレンド・DX 人材など、情シス実務に直結する話題
 - **国内ソースを同等以上に優先**（海外と迷ったら国内を上げる）
@@ -223,7 +234,8 @@ ${listText}`;
         });
       }
 
-      const boosted = applyDomesticScoreBoost(picks);
+      const withoutAi = filterOutAiLlmPicks(picks);
+      const boosted = applyDomesticScoreBoost(withoutAi);
       const filtered = filterPicksBySourceRegion(boosted);
       filtered.sort((a, b) => b.importanceScore - a.importanceScore);
       const finalPicks = filtered.slice(0, slots);

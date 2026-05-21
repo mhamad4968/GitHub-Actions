@@ -31,11 +31,14 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-14-m365-assist-new-when-empty-only';
+  const BUILD = '2026-05-19-inventory-period-v1';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
   let jb674PrintRecordSnapshot = null;
+  /** 670 棚卸期間（一覧・詳細の棚卸ボタン表示ゲート） */
+  let npl674InventoryPeriodActive674 = false;
+  let npl674InventoryEnvMap674 = null;
 
   /** `getFieldElement` の戻りを短時間再利用（クリック委譲ごとの再探索を抑止） */
   let npl674FieldElCacheEntries674 = Object.create(null);
@@ -146,6 +149,18 @@
   const FC_PURCHASE_VENDOR = 'purchase_vendor';
   const FC_PURCHASE_VENDOR_OTHER = 'purchase_vendor_other';
   const FC_LATEST_INVENTORY_DATE = 'latest_inventory_date';
+  /** 棚卸履歴サブテーブル（`npm run pc-ledger:674:add-inventory-history-subtable-preview`） */
+  const FC_INVENTORY_HISTORY = 'inventory_history';
+  const FC_INV_HIST_DATE = 'inventory_hist_date';
+  const FC_INV_HIST_PERSON = 'inventory_hist_person';
+  const FC_INV_HIST_LOCATION = 'inventory_hist_location';
+  const FC_INV_HIST_METHOD = 'inventory_hist_method';
+  const INV_METHOD_INDIVIDUAL = '個別';
+  const INV_METHOD_BULK = '一括';
+  const ENV_PC_INV_PERIOD_START = 'PC_INVENTORY_PERIOD_START';
+  const ENV_PC_INV_PERIOD_END = 'PC_INVENTORY_PERIOD_END';
+  const PC_STATUS_DISPOSED_674 = '廃棄';
+  const PC_STATUS_IN_USE_674 = '利用中';
   const FC_VPN_ID = 'vpn_id';
   const FC_VPN_PW = 'vpn_pw';
   const FULL_RESET_FIELD_CODES_674 = [
@@ -916,6 +931,706 @@
     });
   }
 
+  function todayYmd674() {
+    const d = new Date();
+    return (
+      d.getFullYear() +
+      '-' +
+      String(d.getMonth() + 1).padStart(2, '0') +
+      '-' +
+      String(d.getDate()).padStart(2, '0')
+    );
+  }
+
+  function parseYmd674(s) {
+    const t = String(s || '').trim();
+    return /^\d{4}-\d{2}-\d{2}$/.test(t) ? t : null;
+  }
+
+  function isInventoryPeriodActive674(envMap) {
+    const start = parseYmd674((envMap && envMap[ENV_PC_INV_PERIOD_START]) || '');
+    const end = parseYmd674((envMap && envMap[ENV_PC_INV_PERIOD_END]) || '');
+    if (!start || !end) return false;
+    const today = todayYmd674();
+    return today >= start && today <= end;
+  }
+
+  function inventoryPeriodStartYmd674(envMap) {
+    return parseYmd674((envMap && envMap[ENV_PC_INV_PERIOD_START]) || '') || '';
+  }
+
+  function ensureInventoryPeriodLoaded674() {
+    return loadEnv670Map()
+      .then(function (map) {
+        npl674InventoryEnvMap674 = map;
+        npl674InventoryPeriodActive674 = isInventoryPeriodActive674(map);
+        return npl674InventoryPeriodActive674;
+      })
+      .catch(function (e) {
+        console.warn('[NEW-PC-LEDGER-V1] inventory period', e);
+        npl674InventoryPeriodActive674 = false;
+        return false;
+      });
+  }
+
+  function isInventoryTargetPcStatus674(record) {
+    const st = String((record && record[FC_PC_STATUS] && record[FC_PC_STATUS].value) || '').trim();
+    return st === PC_STATUS_IN_USE_674 || st === PC_STATUS_STORAGE;
+  }
+
+  function getLoginUserDisplayName674() {
+    try {
+      const u = kintone.getLoginUser();
+      return String((u && (u.name || u.code)) || '').trim();
+    } catch (_e) {
+      return '';
+    }
+  }
+
+  function cloneSubtableRows674(subField) {
+    const rows = (subField && subField.value) || [];
+    return rows.map(function (row) {
+      const v = row.value || {};
+      const nv = {};
+      Object.keys(v).forEach(function (code) {
+        const cell = v[code];
+        if (cell && typeof cell === 'object' && Object.prototype.hasOwnProperty.call(cell, 'value')) {
+          nv[code] = { value: cell.value };
+        }
+      });
+      return { value: nv };
+    });
+  }
+
+  function appendInventoryHistoryRow674(subField, dateYmd, person, location, method) {
+    const rows = cloneSubtableRows674(subField);
+    rows.push({
+      value: {
+        [FC_INV_HIST_DATE]: { value: dateYmd },
+        [FC_INV_HIST_PERSON]: { value: String(person || '').trim() },
+        [FC_INV_HIST_LOCATION]: { value: String(location || '').trim() },
+        [FC_INV_HIST_METHOD]: { value: method },
+      },
+    });
+    subField.value = rows;
+  }
+
+  function buildInventoryTargetStatusQueryPart674() {
+    return (
+      '(' +
+      FC_PC_STATUS +
+      ' in ("' +
+      escapeQueryValue(PC_STATUS_IN_USE_674) +
+      '", "' +
+      escapeQueryValue(PC_STATUS_STORAGE) +
+      '"))'
+    );
+  }
+
+  function buildUninventoriedQuery674(envMap) {
+    const start = inventoryPeriodStartYmd674(envMap || npl674InventoryEnvMap674);
+    const parts = [buildInventoryTargetStatusQueryPart674()];
+    if (start) {
+      parts.push(
+        '(' +
+          FC_LATEST_INVENTORY_DATE +
+          ' = "" or ' +
+          FC_LATEST_INVENTORY_DATE +
+          ' < "' +
+          escapeQueryValue(start) +
+          '")',
+      );
+    } else {
+      parts.push('(' + FC_LATEST_INVENTORY_DATE + ' = "")');
+    }
+    return parts.join(' and ');
+  }
+
+  function fetchRecord674ById674(recordId, fields) {
+    return kintoneApiGet('/k/v1/record.json', {
+      app: kintone.app.getId(),
+      id: recordId,
+      fields: fields,
+    }).then(function (res) {
+      return res.record;
+    });
+  }
+
+  function saveInventoryToRecord674(recordId, person, location, method, opts) {
+    const app = kintone.app.getId();
+    const today = todayYmd674();
+    const fields = [FC_INVENTORY_HISTORY, FC_LATEST_INVENTORY_DATE, FC_PC_STATUS, FC_USER_NAME];
+    return fetchRecord674ById674(recordId, fields).then(function (rec) {
+      if (!isInventoryTargetPcStatus674(rec)) {
+        throw new Error('棚卸対象外です（利用中・保管のみ）。');
+      }
+      const hist = rec[FC_INVENTORY_HISTORY] || { type: 'SUBTABLE', value: [] };
+      let loc = String(location || '').trim();
+      let per = String(person || '').trim();
+      if (opts && opts.takeout) {
+        loc = loc ? loc + '（持ち出し）' : '（持ち出し）';
+      }
+      if (opts && opts.selfConfirm) {
+        const un = String((rec[FC_USER_NAME] && rec[FC_USER_NAME].value) || '').trim();
+        if (un) per = un;
+      }
+      if (!per) throw new Error('棚卸者を入力してください。');
+      appendInventoryHistoryRow674(hist, today, per, loc, method);
+      return kintoneApiPut('/k/v1/record.json', {
+        app: app,
+        id: recordId,
+        record: {
+          [FC_INVENTORY_HISTORY]: hist,
+          [FC_LATEST_INVENTORY_DATE]: { value: today },
+        },
+      });
+    });
+  }
+
+  function showInventoryLoading674(show, text) {
+    const id = 'npl674-inventory-loading-overlay';
+    let ld = document.getElementById(id);
+    if (!show) {
+      if (ld) ld.remove();
+      return;
+    }
+    if (!ld) {
+      ld = document.createElement('div');
+      ld.id = id;
+      ld.style.cssText =
+        'position:fixed;inset:0;z-index:2147483100;background:rgba(15,23,42,.45);' +
+        'display:flex;align-items:center;justify-content:center;font:600 15px system-ui,sans-serif;color:#fff;';
+      document.body.appendChild(ld);
+    }
+    ld.textContent = text || '処理中…';
+    ld.style.display = 'flex';
+  }
+
+  function openInventoryIndividualModal674(record) {
+    const rid = record && record.$id && record.$id.value;
+    if (!rid) {
+      window.alert('レコード ID を取得できません。');
+      return;
+    }
+    const modalId = 'npl674-inventory-individual-modal';
+    let modal = document.getElementById(modalId);
+    if (modal) modal.remove();
+
+    modal = document.createElement('div');
+    modal.id = modalId;
+    modal.style.cssText =
+      'position:fixed;inset:0;z-index:2147483050;background:rgba(15,23,42,.5);' +
+      'display:flex;align-items:center;justify-content:center;padding:16px;';
+
+    const box = document.createElement('div');
+    box.style.cssText =
+      'background:#fff;border-radius:10px;padding:20px 22px;max-width:440px;width:100%;' +
+      'box-shadow:0 12px 40px rgba(15,23,42,.25);font-family:system-ui,sans-serif;';
+
+    const h = document.createElement('h3');
+    h.style.cssText = 'margin:0 0 12px;font-size:16px;color:#0f172a;';
+    h.textContent = '個別棚卸 — ' + String((record[FC_PC_NAME] && record[FC_PC_NAME].value) || '');
+
+    const lblPerson = document.createElement('label');
+    lblPerson.style.cssText = 'display:block;font-size:12px;font-weight:700;margin:8px 0 4px;';
+    lblPerson.textContent = '棚卸者';
+    const inpPerson = document.createElement('input');
+    inpPerson.type = 'text';
+    inpPerson.value = getLoginUserDisplayName674();
+    inpPerson.style.cssText = 'width:100%;box-sizing:border-box;padding:6px 8px;border:1px solid #cbd5e1;border-radius:6px;';
+
+    const lblLoc = document.createElement('label');
+    lblLoc.style.cssText = 'display:block;font-size:12px;font-weight:700;margin:12px 0 4px;';
+    lblLoc.textContent = '設置場所';
+    const inpLoc = document.createElement('input');
+    inpLoc.type = 'text';
+    inpLoc.style.cssText = 'width:100%;box-sizing:border-box;padding:6px 8px;border:1px solid #cbd5e1;border-radius:6px;';
+
+    const rowChk = document.createElement('div');
+    rowChk.style.cssText = 'margin:12px 0;font-size:13px;';
+    const lineSelf = document.createElement('div');
+    lineSelf.style.marginBottom = '6px';
+    const chkSelf = document.createElement('input');
+    chkSelf.type = 'checkbox';
+    chkSelf.id = 'npl674-inv-self';
+    const lblSelf = document.createElement('label');
+    lblSelf.htmlFor = 'npl674-inv-self';
+    lblSelf.textContent = ' 本人確認（棚卸者＝利用者名）';
+    lineSelf.appendChild(chkSelf);
+    lineSelf.appendChild(lblSelf);
+    const lineTake = document.createElement('div');
+    const chkTake = document.createElement('input');
+    chkTake.type = 'checkbox';
+    chkTake.id = 'npl674-inv-takeout';
+    const lblTake = document.createElement('label');
+    lblTake.htmlFor = 'npl674-inv-takeout';
+    lblTake.textContent = ' 持ち出し';
+    lineTake.appendChild(chkTake);
+    lineTake.appendChild(lblTake);
+    rowChk.appendChild(lineSelf);
+    rowChk.appendChild(lineTake);
+
+    const btnRow = document.createElement('div');
+    btnRow.style.cssText = 'display:flex;gap:8px;justify-content:flex-end;margin-top:16px;';
+    const btnCancel = document.createElement('button');
+    btnCancel.type = 'button';
+    btnCancel.textContent = 'キャンセル';
+    btnCancel.style.cssText = 'padding:6px 14px;border-radius:6px;border:1px solid #94a3b8;background:#fff;cursor:pointer;';
+    const btnOk = document.createElement('button');
+    btnOk.type = 'button';
+    btnOk.textContent = '棚卸を記録';
+    btnOk.style.cssText =
+      'padding:6px 14px;border-radius:6px;border:none;background:#059669;color:#fff;font-weight:700;cursor:pointer;';
+
+    btnCancel.addEventListener('click', function () {
+      modal.remove();
+    });
+    btnOk.addEventListener('click', function () {
+      btnOk.disabled = true;
+      showInventoryLoading674(true, '保存中…');
+      saveInventoryToRecord674(rid, inpPerson.value, inpLoc.value, INV_METHOD_INDIVIDUAL, {
+        takeout: chkTake.checked,
+        selfConfirm: chkSelf.checked,
+      })
+        .then(function () {
+          showInventoryLoading674(false);
+          modal.remove();
+          window.alert('棚卸を記録しました。');
+          location.reload();
+        })
+        .catch(function (e) {
+          showInventoryLoading674(false);
+          btnOk.disabled = false;
+          window.alert('棚卸の保存に失敗: ' + (e && e.message ? e.message : String(e)));
+        });
+    });
+
+    btnRow.appendChild(btnCancel);
+    btnRow.appendChild(btnOk);
+    box.appendChild(h);
+    box.appendChild(lblPerson);
+    box.appendChild(inpPerson);
+    box.appendChild(lblLoc);
+    box.appendChild(inpLoc);
+    box.appendChild(rowChk);
+    box.appendChild(btnRow);
+    modal.appendChild(box);
+    modal.addEventListener('click', function (ev) {
+      if (ev.target === modal) modal.remove();
+    });
+    document.body.appendChild(modal);
+  }
+
+  function createInventoryIndividualButton674(record) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = '📋 棚卸';
+    btn.setAttribute('aria-label', '個別棚卸');
+    btn.style.cssText =
+      'margin:4px 8px 4px 0;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer;border-radius:6px;' +
+      'border:1px solid #047857;background:linear-gradient(165deg,#34d399 0%,#059669 55%,#047857 100%);color:#fff;';
+    btn.addEventListener('click', function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      openInventoryIndividualModal674(record);
+    });
+    return btn;
+  }
+
+  function fetchInventoryRecordsPaged674(queryCond, fields) {
+    const app = kintone.app.getId();
+    const all = [];
+    const flds = fields || [
+      '$id',
+      FC_PC_NAME,
+      FC_USER_NAME,
+      FC_DEPT_NAME,
+      FC_PC_STATUS,
+      FC_LATEST_INVENTORY_DATE,
+    ];
+    return new Promise(function (resolve, reject) {
+      function page(off) {
+        const order = ' order by ' + FC_DEPT_NAME + ' asc, ' + FC_PC_NAME + ' asc limit 500 offset ' + off;
+        const q = (String(queryCond || '').trim() || buildInventoryTargetStatusQueryPart674()) + order;
+        kintone
+          .api(kintone.api.url('/k/v1/records', true), 'GET', { app: app, query: q, fields: flds })
+          .then(function (res) {
+            const recs = res.records || [];
+            for (let i = 0; i < recs.length; i++) all.push(recs[i]);
+            if (recs.length < 500) resolve(all);
+            else page(off + 500);
+          })
+          .catch(reject);
+      }
+      page(0);
+    });
+  }
+
+  function putInventoryRecordsBulk674(updates) {
+    const app = kintone.app.getId();
+    const chunk = 100;
+    let idx = 0;
+    return new Promise(function (resolve, reject) {
+      function next() {
+        if (idx >= updates.length) {
+          resolve();
+          return;
+        }
+        const slice = updates.slice(idx, idx + chunk);
+        idx += chunk;
+        kintone
+          .api(kintone.api.url('/k/v1/records', true), 'PUT', { app: app, records: slice })
+          .then(function () {
+            next();
+          })
+          .catch(reject);
+      }
+      next();
+    });
+  }
+
+  /** 一括棚卸は既存履歴に追記するため、PUT 前に各レコードのサブテーブルを取得してマージ */
+  function saveBulkInventoryMerged674(records, defaultPerson, defaultLocation, checkedIds, rowOverrides) {
+    const checked = checkedIds instanceof Set ? checkedIds : new Set();
+    const ids = [];
+    records.forEach(function (rec) {
+      const id = rec.$id && rec.$id.value;
+      if (id && checked.has(String(id))) ids.push(id);
+    });
+    if (!ids.length) throw new Error('棚卸する行にチェックを付けてください。');
+    showInventoryLoading674(true, '棚卸を保存中…');
+    const fields = [FC_INVENTORY_HISTORY, FC_PC_STATUS];
+    return Promise.all(
+      ids.map(function (id) {
+        return fetchRecord674ById674(id, fields);
+      }),
+    ).then(function (fullRecs) {
+      const today = todayYmd674();
+      const defPer = String(defaultPerson || '').trim();
+      const defLoc = String(defaultLocation || '').trim();
+      if (!defPer) throw new Error('一括棚卸の棚卸者を入力してください。');
+      const overrides = rowOverrides || Object.create(null);
+      const puts = [];
+      for (let i = 0; i < fullRecs.length; i++) {
+        const rec = fullRecs[i];
+        const id = rec.$id && rec.$id.value;
+        if (!id || !isInventoryTargetPcStatus674(rec)) continue;
+        const ov = overrides[String(id)] || {};
+        const per = String(ov.person != null ? ov.person : defPer).trim() || defPer;
+        const loc = String(ov.location != null ? ov.location : defLoc).trim();
+        const hist = rec[FC_INVENTORY_HISTORY] || { type: 'SUBTABLE', value: [] };
+        appendInventoryHistoryRow674(hist, today, per, loc, INV_METHOD_BULK);
+        puts.push({
+          id: id,
+          record: {
+            [FC_INVENTORY_HISTORY]: hist,
+            [FC_LATEST_INVENTORY_DATE]: { value: today },
+          },
+        });
+      }
+      return putInventoryRecordsBulk674(puts);
+    });
+  }
+
+  function fetchDistinctDeptNames674() {
+    return fetchInventoryRecordsPaged674(buildInventoryTargetStatusQueryPart674(), [FC_DEPT_NAME]).then(
+      function (recs) {
+        const set = new Set();
+        recs.forEach(function (r) {
+          const d = String((r[FC_DEPT_NAME] && r[FC_DEPT_NAME].value) || '').trim();
+          if (d) set.add(d);
+        });
+        return [...set].sort(function (a, b) {
+          return a.localeCompare(b, 'ja');
+        });
+      },
+    );
+  }
+
+  function openInventoryBulkModal674() {
+    const modalId = 'npl674-inventory-bulk-modal';
+    let modal = document.getElementById(modalId);
+    if (modal) modal.remove();
+
+    modal = document.createElement('div');
+    modal.id = modalId;
+    modal.style.cssText =
+      'position:fixed;inset:0;z-index:2147483050;background:rgba(15,23,42,.5);' +
+      'display:flex;align-items:center;justify-content:center;padding:12px;';
+
+    const box = document.createElement('div');
+    box.style.cssText =
+      'background:#fff;border-radius:10px;padding:16px 18px;max-width:920px;width:100%;max-height:90vh;' +
+      'display:flex;flex-direction:column;font-family:system-ui,sans-serif;';
+
+    const h = document.createElement('h3');
+    h.style.cssText = 'margin:0 0 10px;font-size:16px;';
+    h.textContent = '一括棚卸（所属名で対象を表示）';
+
+    const topRow = document.createElement('div');
+    topRow.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px;';
+    const selDept = document.createElement('select');
+    selDept.style.cssText = 'min-width:200px;padding:6px;border-radius:6px;border:1px solid #cbd5e1;';
+    const opt0 = document.createElement('option');
+    opt0.value = '';
+    opt0.textContent = '所属名を選択…';
+    selDept.appendChild(opt0);
+
+    const inpDefPer = document.createElement('input');
+    inpDefPer.type = 'text';
+    inpDefPer.placeholder = '棚卸者（共通）';
+    inpDefPer.value = getLoginUserDisplayName674();
+    inpDefPer.style.cssText = 'flex:1;min-width:140px;padding:6px;border-radius:6px;border:1px solid #cbd5e1;';
+    const inpDefLoc = document.createElement('input');
+    inpDefLoc.type = 'text';
+    inpDefLoc.placeholder = '設置場所（共通）';
+    inpDefLoc.style.cssText = 'flex:1;min-width:140px;padding:6px;border-radius:6px;border:1px solid #cbd5e1;';
+
+    const btnLoad = document.createElement('button');
+    btnLoad.type = 'button';
+    btnLoad.textContent = '一覧取得';
+    btnLoad.style.cssText =
+      'padding:6px 12px;border-radius:6px;border:none;background:#4f46e5;color:#fff;font-weight:700;cursor:pointer;';
+
+    topRow.appendChild(selDept);
+    topRow.appendChild(inpDefPer);
+    topRow.appendChild(inpDefLoc);
+    topRow.appendChild(btnLoad);
+
+    const scroll = document.createElement('div');
+    scroll.style.cssText = 'flex:1;overflow:auto;border:1px solid #e2e8f0;border-radius:6px;min-height:200px;';
+
+    const checkedIds = new Set();
+    const rowOverrides = Object.create(null);
+    let loadedRecords = [];
+
+    function renderTable() {
+      scroll.innerHTML = '';
+      if (!loadedRecords.length) {
+        scroll.textContent = '所属を選び「一覧取得」を押してください。';
+        scroll.style.padding = '12px';
+        return;
+      }
+      const table = document.createElement('table');
+      table.style.cssText = 'width:100%;border-collapse:collapse;font-size:12px;';
+      const thead = document.createElement('thead');
+      thead.innerHTML =
+        '<tr style="background:#f1f5f9;"><th></th><th>PC名</th><th>利用者</th><th>棚卸者</th><th>設置場所</th></tr>';
+      table.appendChild(thead);
+      const tbody = document.createElement('tbody');
+      loadedRecords.forEach(function (rec) {
+        const id = String((rec.$id && rec.$id.value) || '');
+        const tr = document.createElement('tr');
+        tr.style.borderTop = '1px solid #e2e8f0';
+        const td0 = document.createElement('td');
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = true;
+        checkedIds.add(id);
+        cb.addEventListener('change', function () {
+          if (cb.checked) checkedIds.add(id);
+          else checkedIds.delete(id);
+        });
+        td0.appendChild(cb);
+        const td1 = document.createElement('td');
+        td1.textContent = (rec[FC_PC_NAME] && rec[FC_PC_NAME].value) || '';
+        const td2 = document.createElement('td');
+        td2.textContent = (rec[FC_USER_NAME] && rec[FC_USER_NAME].value) || '';
+        const td3 = document.createElement('td');
+        const inpP = document.createElement('input');
+        inpP.type = 'text';
+        inpP.placeholder = '上書き可';
+        inpP.style.cssText = 'width:100%;box-sizing:border-box;padding:4px;';
+        inpP.addEventListener('input', function () {
+          if (!rowOverrides[id]) rowOverrides[id] = {};
+          rowOverrides[id].person = inpP.value;
+        });
+        const td4 = document.createElement('td');
+        const inpL = document.createElement('input');
+        inpL.type = 'text';
+        inpL.placeholder = '上書き可';
+        inpL.style.cssText = 'width:100%;box-sizing:border-box;padding:4px;';
+        inpL.addEventListener('input', function () {
+          if (!rowOverrides[id]) rowOverrides[id] = {};
+          rowOverrides[id].location = inpL.value;
+        });
+        td3.appendChild(inpP);
+        td4.appendChild(inpL);
+        tr.appendChild(td0);
+        tr.appendChild(td1);
+        tr.appendChild(td2);
+        tr.appendChild(td3);
+        tr.appendChild(td4);
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      scroll.appendChild(table);
+    }
+
+    btnLoad.addEventListener('click', function () {
+      const dept = String(selDept.value || '').trim();
+      if (!dept) {
+        window.alert('所属名を選択してください。');
+        return;
+      }
+      btnLoad.disabled = true;
+      const q =
+        buildInventoryTargetStatusQueryPart674() +
+        ' and (' +
+        FC_DEPT_NAME +
+        ' = "' +
+        escapeQueryValue(dept) +
+        '")';
+      fetchInventoryRecordsPaged674(q)
+        .then(function (recs) {
+          loadedRecords = recs;
+          checkedIds.clear();
+          renderTable();
+        })
+        .catch(function (e) {
+          window.alert('取得失敗: ' + (e && e.message ? e.message : String(e)));
+        })
+        .then(function () {
+          btnLoad.disabled = false;
+        });
+    });
+
+    fetchDistinctDeptNames674()
+      .then(function (names) {
+        names.forEach(function (n) {
+          const o = document.createElement('option');
+          o.value = n;
+          o.textContent = n;
+          selDept.appendChild(o);
+        });
+      })
+      .catch(function (e) {
+        console.warn('[NEW-PC-LEDGER-V1] dept list', e);
+      });
+
+    const btnRow = document.createElement('div');
+    btnRow.style.cssText = 'display:flex;gap:8px;justify-content:flex-end;margin-top:10px;';
+    const btnCancel = document.createElement('button');
+    btnCancel.type = 'button';
+    btnCancel.textContent = '閉じる';
+    const btnSave = document.createElement('button');
+    btnSave.type = 'button';
+    btnSave.textContent = 'チェック行を棚卸済にする';
+    btnSave.style.cssText =
+      'padding:6px 14px;border-radius:6px;border:none;background:#059669;color:#fff;font-weight:700;cursor:pointer;';
+
+    btnCancel.addEventListener('click', function () {
+      modal.remove();
+    });
+    btnSave.addEventListener('click', function () {
+      btnSave.disabled = true;
+      saveBulkInventoryMerged674(loadedRecords, inpDefPer.value, inpDefLoc.value, checkedIds, rowOverrides)
+        .then(function () {
+          showInventoryLoading674(false);
+          modal.remove();
+          window.alert('一括棚卸を記録しました。');
+        })
+        .catch(function (e) {
+          showInventoryLoading674(false);
+          btnSave.disabled = false;
+          window.alert('保存失敗: ' + (e && e.message ? e.message : String(e)));
+        });
+    });
+
+    btnRow.appendChild(btnCancel);
+    btnRow.appendChild(btnSave);
+    box.appendChild(h);
+    box.appendChild(topRow);
+    box.appendChild(scroll);
+    box.appendChild(btnRow);
+    modal.appendChild(box);
+    modal.addEventListener('click', function (ev) {
+      if (ev.target === modal) modal.remove();
+    });
+    document.body.appendChild(modal);
+    renderTable();
+  }
+
+  function renderUninventoriedPanel674(records) {
+    const panelId = 'npl674-inventory-uninv-panel';
+    const old = document.getElementById(panelId);
+    if (old) old.remove();
+
+    const panel = document.createElement('div');
+    panel.id = panelId;
+    panel.style.cssText =
+      'position:fixed;inset:0;z-index:2147482900;background:#f8fafc;display:flex;flex-direction:column;' +
+      'font-family:system-ui,sans-serif;';
+
+    const toolbar = document.createElement('div');
+    toolbar.style.cssText =
+      'flex:0 0 auto;display:flex;gap:8px;align-items:center;padding:12px 16px;background:#0f172a;color:#fff;';
+    const title = document.createElement('div');
+    title.style.cssText = 'flex:1;font-weight:700;';
+    title.textContent = '未棚卸一覧（' + records.length + '件）';
+    const btnClose = document.createElement('button');
+    btnClose.type = 'button';
+    btnClose.textContent = '閉じる';
+    btnClose.style.cssText = 'padding:6px 12px;border-radius:6px;border:none;cursor:pointer;';
+    btnClose.addEventListener('click', function () {
+      panel.remove();
+    });
+    toolbar.appendChild(title);
+    toolbar.appendChild(btnClose);
+
+    const scroll = document.createElement('div');
+    scroll.style.cssText = 'flex:1;overflow:auto;padding:12px 16px;';
+    const table = document.createElement('table');
+    table.style.cssText = 'width:100%;border-collapse:collapse;font-size:13px;background:#fff;';
+    table.innerHTML =
+      '<thead><tr style="background:#e2e8f0;"><th>PC名</th><th>所属</th><th>利用者</th><th>状態</th><th>最新棚卸日</th></tr></thead>';
+    const tbody = document.createElement('tbody');
+    records.forEach(function (rec) {
+      const tr = document.createElement('tr');
+      tr.style.borderTop = '1px solid #e2e8f0';
+      function td(txt) {
+        const c = document.createElement('td');
+        c.style.padding = '6px 8px';
+        c.textContent = txt || '';
+        return c;
+      }
+      tr.appendChild(td((rec[FC_PC_NAME] && rec[FC_PC_NAME].value) || ''));
+      tr.appendChild(td((rec[FC_DEPT_NAME] && rec[FC_DEPT_NAME].value) || ''));
+      tr.appendChild(td((rec[FC_USER_NAME] && rec[FC_USER_NAME].value) || ''));
+      tr.appendChild(td((rec[FC_PC_STATUS] && rec[FC_PC_STATUS].value) || ''));
+      tr.appendChild(td((rec[FC_LATEST_INVENTORY_DATE] && rec[FC_LATEST_INVENTORY_DATE].value) || '—'));
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    scroll.appendChild(table);
+    panel.appendChild(toolbar);
+    panel.appendChild(scroll);
+    document.body.appendChild(panel);
+  }
+
+  function openUninventoriedList674() {
+    ensureInventoryPeriodLoaded674().then(function () {
+      const q = buildUninventoriedQuery674(npl674InventoryEnvMap674);
+      showInventoryLoading674(true, '未棚卸を取得中…');
+      return fetchInventoryRecordsPaged674(q).then(function (recs) {
+        showInventoryLoading674(false);
+        renderUninventoriedPanel674(recs);
+      });
+    }).catch(function (e) {
+      showInventoryLoading674(false);
+      window.alert('取得失敗: ' + (e && e.message ? e.message : String(e)));
+    });
+  }
+
+  function wire674IndexInventoryButtons674() {
+    ensureInventoryPeriodLoaded674().then(function (active) {
+      const btnBulk = document.getElementById('npl674-btn-inventory-bulk');
+      const btnUninv = document.getElementById('npl674-btn-inventory-uninv');
+      if (btnBulk) btnBulk.style.display = active ? '' : 'none';
+      if (btnUninv) btnUninv.style.display = active ? '' : 'none';
+    });
+  }
+
   function findEmployee595ByUserName(userName) {
     const raw = String(userName || '').trim();
     if (!raw) return Promise.resolve(null);
@@ -1611,7 +2326,7 @@
     '関越支店|kan-etsu,新潟営業所|kan-etsu,長野営業所|kan-etsu,高崎営業所|kan-etsu,' +
     '東京支店|tokyo,千葉営業所|tokyo,水戸営業所|tokyo,' +
     '東海支店|tokai,東京営業所|tokai,静岡営業所|tokai,名古屋営業所|tokai,関西営業所|tokai,' +
-    '札幌支店|tokyo,首都圏支店|tokyo,鉄構支店|tekko,湾岸工事所|wangan';
+    '札幌支店|reform,首都圏支店|reform,鉄構支店|tekko,湾岸工事所|wangan';
 
   let deptMasterRowsCache674 = null;
 
@@ -5590,6 +6305,16 @@ ${bodyInner}\
       }));
     }
 
+    if (
+      isRecordDetail674 &&
+      npl674InventoryPeriodActive674 &&
+      isInventoryTargetPcStatus674(event.record) &&
+      event.record &&
+      event.record[FC_INVENTORY_HISTORY]
+    ) {
+      wrapper.appendChild(createInventoryIndividualButton674(event.record));
+    }
+
     if (isRecordDetail674) {
       if (!inStorage674) {
         wrapper.appendChild(createGenerateButton('🔄 PC買替', '#6c757d', () => {
@@ -5756,6 +6481,15 @@ ${bodyInner}\
           console.warn('[NEW-PC-LEDGER-V1] pc_name dup banner', e);
         })
         .then(function () {
+          return ensureInventoryPeriodLoaded674();
+        })
+        .then(function () {
+          scheduleInjectButtons674(event);
+        })
+        .catch(function (e) {
+          console.warn('[NEW-PC-LEDGER-V1] inventory period', e);
+        })
+        .then(function () {
           resolve(event);
         });
     });
@@ -5835,6 +6569,377 @@ ${bodyInner}\
     'mobile.app.record.edit.change.pc_status',
   ];
   kintone.events.on(pcStatusChangeEvents, onAccountTypeOrPcStatusChange674);
+
+  // --- 一覧：リスト一覧作成（同ページ全画面パネル・印刷横向き） ---
+  const LIST674_MODAL_ID = 'npl674-list-create-modal';
+  const LIST674_PANEL_ID = 'npl674-list-result-panel';
+  const LIST674_LOADING_ID = 'npl674-list-loading-overlay';
+  const LIST674_PRINT_STYLE_ID = 'npl674-list-print-style';
+  const LIST674_TYPE_OPTIONS = [
+    { value: TYPE_PERSONAL, label: '個人' },
+    { value: TYPE_SHARED, label: '共有' },
+    { value: TYPE_JR, label: 'JR端末' },
+  ];
+  const LIST674_TABLE_COLS = [
+    { label: 'PC名', code: FC_PC_NAME },
+    { label: '種別', code: FC_ACCOUNT_TYPE },
+    { label: '利用者', code: FC_USER_NAME },
+    { label: '所属', code: FC_DEPT_NAME },
+    { label: 'グループ', code: FC_GROUP_NAME },
+    { label: '状態', code: FC_PC_STATUS },
+    { label: 'Windows名', code: FC_WINDOWS_NAME },
+    { label: 'メール', code: FC_MAIL },
+  ];
+
+  function ensureList674PrintStyles674() {
+    if (document.getElementById(LIST674_PRINT_STYLE_ID)) return;
+    const st = document.createElement('style');
+    st.id = LIST674_PRINT_STYLE_ID;
+    st.textContent =
+      '@media print{@page{size:landscape;margin:10mm;}' +
+      'body *{visibility:hidden !important;}' +
+      '#' +
+      LIST674_PANEL_ID +
+      ',#' +
+      LIST674_PANEL_ID +
+      ' *{visibility:visible !important;}' +
+      '#' +
+      LIST674_PANEL_ID +
+      '{position:absolute !important;left:0 !important;top:0 !important;width:100% !important;' +
+      'max-height:none !important;background:#fff !important;}' +
+      '#' +
+      LIST674_PANEL_ID +
+      ' .npl674-list-toolbar{display:none !important;}' +
+      '#' +
+      LIST674_PANEL_ID +
+      ' .npl674-list-scroll{overflow:visible !important;max-height:none !important;}}';
+    document.head.appendChild(st);
+  }
+
+  function closeList674Modal674() {
+    const m = document.getElementById(LIST674_MODAL_ID);
+    if (m) m.style.display = 'none';
+  }
+
+  function closeList674ResultPanel674() {
+    const p = document.getElementById(LIST674_PANEL_ID);
+    if (p) p.remove();
+    showList674Loading674(false);
+  }
+
+  function showList674Loading674(show) {
+    let ld = document.getElementById(LIST674_LOADING_ID);
+    if (!show) {
+      if (ld) ld.remove();
+      return;
+    }
+    if (!ld) {
+      ld = document.createElement('div');
+      ld.id = LIST674_LOADING_ID;
+      ld.style.cssText =
+        'position:fixed;inset:0;z-index:2147483000;background:rgba(15,23,42,.45);' +
+        'display:flex;align-items:center;justify-content:center;font:600 15px system-ui,sans-serif;color:#fff;';
+      ld.textContent = '一覧を取得しています…';
+      document.body.appendChild(ld);
+    }
+    ld.style.display = 'flex';
+  }
+
+  function buildList674Query674(deptName, groupName, selectedTypes, includeCurrentListQuery) {
+    const parts = [];
+    if (includeCurrentListQuery) {
+      let cur = '';
+      try {
+        if (typeof kintone.app.getQueryCondition === 'function') {
+          cur = String(kintone.app.getQueryCondition() || '').trim();
+        }
+      } catch (_e) {
+        /* noop */
+      }
+      if (!cur) {
+        const read = read674IndexSearchQueryAndKw674();
+        cur = String(read.urlQuery || read.urlNativeQ || '').trim();
+      }
+      if (cur) parts.push('(' + cur + ')');
+    }
+    const types = selectedTypes instanceof Set ? [...selectedTypes] : [];
+    if (types.length) {
+      const quoted = types
+        .map(function (t) {
+          return '"' + escape674QueryLike(t) + '"';
+        })
+        .join(', ');
+      parts.push('(' + FC_ACCOUNT_TYPE + ' in (' + quoted + '))');
+    }
+    const dept = String(deptName || '').trim();
+    if (dept) parts.push('(' + FC_DEPT_NAME + ' = "' + escape674QueryLike(dept) + '")');
+    const grp = String(groupName || '').trim();
+    if (grp) parts.push('(' + FC_GROUP_NAME + ' = "' + escape674QueryLike(grp) + '")');
+    if (!parts.length) return '';
+    return parts.join(' and ');
+  }
+
+  function fetchList674Records674(queryCond) {
+    const app = kintone.app.getId();
+    const fields = ['$id'].concat(
+      LIST674_TABLE_COLS.map(function (c) {
+        return c.code;
+      })
+    );
+    const base = String(queryCond || '').trim();
+    const all = [];
+    return new Promise(function (resolve, reject) {
+      function page(off) {
+        const order =
+          ' order by ' + FC_DEPT_NAME + ' asc, ' + FC_PC_NAME + ' asc limit 500 offset ' + off;
+        const q = (base ? base : '$id > 0') + order;
+        kintone
+          .api(kintone.api.url('/k/v1/records', true), 'GET', { app: app, query: q, fields: fields })
+          .then(function (res) {
+            const recs = res.records || [];
+            for (let i = 0; i < recs.length; i++) all.push(recs[i]);
+            if (recs.length < 500) resolve(all);
+            else page(off + 500);
+          })
+          .catch(reject);
+      }
+      page(0);
+    });
+  }
+
+  function renderList674ResultPanel674(records, summaryText) {
+    closeList674ResultPanel674();
+    ensureList674PrintStyles674();
+    const panel = document.createElement('div');
+    panel.id = LIST674_PANEL_ID;
+    panel.style.cssText =
+      'position:fixed;inset:0;z-index:2147482900;background:#f8fafc;display:flex;flex-direction:column;' +
+      'font-family:system-ui,sans-serif;color:#0f172a;';
+
+    const toolbar = document.createElement('div');
+    toolbar.className = 'npl674-list-toolbar';
+    toolbar.style.cssText =
+      'flex:0 0 auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 16px;' +
+      'background:#0f172a;color:#fff;';
+
+    const titleWrap = document.createElement('div');
+    titleWrap.style.cssText = 'flex:1;min-width:200px;';
+    const title = document.createElement('div');
+    title.style.cssText = 'font-size:15px;font-weight:700;';
+    title.textContent = 'リスト一覧（' + records.length + '件）';
+    titleWrap.appendChild(title);
+    if (summaryText) {
+      const sub = document.createElement('div');
+      sub.style.cssText = 'font-size:12px;font-weight:500;opacity:.9;margin-top:4px;';
+      sub.textContent = summaryText;
+      titleWrap.appendChild(sub);
+    }
+
+    const btnPrint = document.createElement('button');
+    btnPrint.type = 'button';
+    btnPrint.textContent = '印刷';
+    btnPrint.style.cssText =
+      'padding:6px 14px;border-radius:6px;border:none;background:#0d9488;color:#fff;font-weight:700;cursor:pointer;';
+    btnPrint.addEventListener('click', function () {
+      window.print();
+    });
+
+    const btnClose = document.createElement('button');
+    btnClose.type = 'button';
+    btnClose.textContent = '閉じる';
+    btnClose.style.cssText =
+      'padding:6px 14px;border-radius:6px;border:1px solid #94a3b8;background:#fff;color:#0f172a;font-weight:700;cursor:pointer;';
+    btnClose.addEventListener('click', closeList674ResultPanel674);
+
+    toolbar.appendChild(titleWrap);
+    toolbar.appendChild(btnPrint);
+    toolbar.appendChild(btnClose);
+
+    const scroll = document.createElement('div');
+    scroll.className = 'npl674-list-scroll';
+    scroll.style.cssText = 'flex:1 1 auto;overflow:auto;padding:12px 16px 24px;';
+
+    const table = document.createElement('table');
+    table.style.cssText =
+      'width:100%;border-collapse:collapse;background:#fff;font-size:13px;box-shadow:0 1px 3px rgba(0,0,0,.08);';
+    const thead = document.createElement('thead');
+    const hr = document.createElement('tr');
+    LIST674_TABLE_COLS.forEach(function (col) {
+      const th = document.createElement('th');
+      th.textContent = col.label;
+      th.style.cssText =
+        'position:sticky;top:0;background:#e2e8f0;border:1px solid #cbd5e1;padding:8px 10px;text-align:left;white-space:nowrap;';
+      hr.appendChild(th);
+    });
+    thead.appendChild(hr);
+    table.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
+    for (let ri = 0; ri < records.length; ri++) {
+      const rec = records[ri];
+      const tr = document.createElement('tr');
+      tr.style.background = ri % 2 ? '#f8fafc' : '#fff';
+      LIST674_TABLE_COLS.forEach(function (col) {
+        const td = document.createElement('td');
+        td.textContent = cell674PlainForSearch(rec, col.code);
+        td.style.cssText =
+          'border:1px solid #e2e8f0;padding:6px 10px;vertical-align:top;word-break:break-word;';
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    }
+    table.appendChild(tbody);
+    scroll.appendChild(table);
+    panel.appendChild(toolbar);
+    panel.appendChild(scroll);
+    document.body.appendChild(panel);
+  }
+
+  function openList674CreateModal674() {
+    let modal = document.getElementById(LIST674_MODAL_ID);
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = LIST674_MODAL_ID;
+      modal.style.cssText =
+        'position:fixed;inset:0;z-index:2147482800;background:rgba(15,23,42,.5);display:flex;' +
+        'align-items:center;justify-content:center;padding:16px;';
+      modal.addEventListener('click', function (ev) {
+        if (ev.target === modal) closeList674Modal674();
+      });
+
+      const box = document.createElement('div');
+      box.style.cssText =
+        'background:#fff;border-radius:10px;max-width:480px;width:100%;padding:20px 22px;' +
+        'box-shadow:0 20px 50px rgba(0,0,0,.25);font-family:system-ui,sans-serif;';
+      box.addEventListener('click', function (ev) {
+        ev.stopPropagation();
+      });
+
+      const h = document.createElement('h2');
+      h.style.cssText = 'margin:0 0 12px;font-size:17px;font-weight:700;color:#0f172a;';
+      h.textContent = 'リスト一覧を作成';
+
+      const intro = document.createElement('p');
+      intro.style.cssText = 'margin:0 0 14px;font-size:13px;line-height:1.55;color:#475569;';
+      intro.textContent = '条件に合うレコードをこの画面内に表で表示します（別ウィンドウは開きません）。';
+
+      const lblDept = document.createElement('label');
+      lblDept.style.cssText = 'display:block;font-size:12px;font-weight:700;margin-bottom:4px;color:#334155;';
+      lblDept.textContent = '所属名（任意）';
+      const inpDept = document.createElement('input');
+      inpDept.type = 'text';
+      inpDept.id = 'npl674-list-dept';
+      inpDept.placeholder = '例: 首都圏支店';
+      inpDept.style.cssText =
+        'width:100%;box-sizing:border-box;margin-bottom:12px;padding:8px 10px;border:1px solid #94a3b8;border-radius:6px;';
+
+      const lblGrp = document.createElement('label');
+      lblGrp.style.cssText = 'display:block;font-size:12px;font-weight:700;margin-bottom:4px;color:#334155;';
+      lblGrp.textContent = '所属グループ（任意）';
+      const inpGrp = document.createElement('input');
+      inpGrp.type = 'text';
+      inpGrp.id = 'npl674-list-group';
+      inpGrp.placeholder = '例: reform';
+      inpGrp.style.cssText =
+        'width:100%;box-sizing:border-box;margin-bottom:12px;padding:8px 10px;border:1px solid #94a3b8;border-radius:6px;';
+
+      const lblTypes = document.createElement('div');
+      lblTypes.style.cssText = 'font-size:12px;font-weight:700;margin-bottom:6px;color:#334155;';
+      lblTypes.textContent = '種別（1つ以上必須）';
+      const typeRow = document.createElement('div');
+      typeRow.id = 'npl674-list-type-row';
+      typeRow.style.cssText = 'display:flex;flex-wrap:wrap;gap:12px 16px;margin-bottom:12px;';
+      LIST674_TYPE_OPTIONS.forEach(function (opt) {
+        const lab = document.createElement('label');
+        lab.style.cssText = 'display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer;';
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.value = opt.value;
+        cb.checked = true;
+        cb.dataset.nplListType = '1';
+        lab.appendChild(cb);
+        lab.appendChild(document.createTextNode(opt.label));
+        typeRow.appendChild(lab);
+      });
+
+      const lblMerge = document.createElement('label');
+      lblMerge.style.cssText =
+        'display:flex;align-items:flex-start;gap:8px;font-size:13px;margin-bottom:16px;cursor:pointer;line-height:1.45;';
+      const cbMerge = document.createElement('input');
+      cbMerge.type = 'checkbox';
+      cbMerge.id = 'npl674-list-merge-current';
+      cbMerge.checked = true;
+      lblMerge.appendChild(cbMerge);
+      lblMerge.appendChild(
+        document.createTextNode('いまの一覧の絞り込み条件も含める（キーワード・種別チップ等）')
+      );
+
+      const btnRow = document.createElement('div');
+      btnRow.style.cssText = 'display:flex;justify-content:flex-end;gap:8px;';
+      const btnCancel = document.createElement('button');
+      btnCancel.type = 'button';
+      btnCancel.textContent = 'キャンセル';
+      btnCancel.style.cssText =
+        'padding:8px 16px;border-radius:6px;border:1px solid #94a3b8;background:#fff;cursor:pointer;font-weight:600;';
+      btnCancel.addEventListener('click', closeList674Modal674);
+
+      const btnGo = document.createElement('button');
+      btnGo.type = 'button';
+      btnGo.textContent = '一覧を表示';
+      btnGo.style.cssText =
+        'padding:8px 18px;border-radius:6px;border:none;background:#4f46e5;color:#fff;cursor:pointer;font-weight:700;';
+      btnGo.addEventListener('click', function () {
+        const selected = new Set();
+        typeRow.querySelectorAll('input[type=checkbox][data-npl-list-type]').forEach(function (cb) {
+          if (cb.checked) selected.add(cb.value);
+        });
+        if (!selected.size) {
+          window.alert('種別を1つ以上選んでください。');
+          return;
+        }
+        const q = buildList674Query674(
+          inpDept.value,
+          inpGrp.value,
+          selected,
+          cbMerge.checked
+        );
+        const summary =
+          '所属: ' +
+          (String(inpDept.value || '').trim() || '（指定なし）') +
+          '　／　グループ: ' +
+          (String(inpGrp.value || '').trim() || '（指定なし）') +
+          (cbMerge.checked ? '　／　現在の一覧条件を含む' : '');
+        closeList674Modal674();
+        showList674Loading674(true);
+        fetchList674Records674(q)
+          .then(function (recs) {
+            showList674Loading674(false);
+            renderList674ResultPanel674(recs, summary);
+          })
+          .catch(function (e) {
+            showList674Loading674(false);
+            console.warn('[NEW-PC-LEDGER-V1] list create', e);
+            window.alert('一覧の取得に失敗しました。条件を変えて再度お試しください。');
+          });
+      });
+
+      btnRow.appendChild(btnCancel);
+      btnRow.appendChild(btnGo);
+      box.appendChild(h);
+      box.appendChild(intro);
+      box.appendChild(lblDept);
+      box.appendChild(inpDept);
+      box.appendChild(lblGrp);
+      box.appendChild(inpGrp);
+      box.appendChild(lblTypes);
+      box.appendChild(typeRow);
+      box.appendChild(lblMerge);
+      box.appendChild(btnRow);
+      modal.appendChild(box);
+      document.body.appendChild(modal);
+    }
+    modal.style.display = 'flex';
+  }
 
   // --- 一覧：§4.8a 検索（キーワード + 種別チップ + 転用PCチップ + datalist。SKYSEA チップは当面非表示・query 互換は維持） ---
   const SEARCH674_WRAP_ID = 'new-pc-ledger-674-index-search';
@@ -6517,10 +7622,37 @@ ${bodyInner}\
     btnClr.style.cssText =
       'padding:6px 12px;border-radius:6px;border:1px solid #64748b;background:#fff;color:#334155;font-weight:700;cursor:pointer;';
 
+    const btnList = document.createElement('button');
+    btnList.type = 'button';
+    btnList.textContent = 'リスト一覧作成';
+    btnList.setAttribute('aria-label', '条件を指定してリスト一覧を表示');
+    btnList.style.cssText =
+      'padding:6px 12px;border-radius:6px;border:none;background:#4f46e5;color:#fff;font-weight:700;cursor:pointer;';
+    btnList.addEventListener('click', openList674CreateModal674);
+
+    const btnInvBulk = document.createElement('button');
+    btnInvBulk.type = 'button';
+    btnInvBulk.id = 'npl674-btn-inventory-bulk';
+    btnInvBulk.textContent = '一括棚卸';
+    btnInvBulk.style.cssText =
+      'display:none;padding:6px 12px;border-radius:6px;border:none;background:#059669;color:#fff;font-weight:700;cursor:pointer;';
+    btnInvBulk.addEventListener('click', openInventoryBulkModal674);
+
+    const btnInvUninv = document.createElement('button');
+    btnInvUninv.type = 'button';
+    btnInvUninv.id = 'npl674-btn-inventory-uninv';
+    btnInvUninv.textContent = '未棚卸一覧';
+    btnInvUninv.style.cssText =
+      'display:none;padding:6px 12px;border-radius:6px;border:1px solid #047857;background:#ecfdf5;color:#047857;font-weight:700;cursor:pointer;';
+    btnInvUninv.addEventListener('click', openUninventoriedList674);
+
     row.appendChild(inpKw);
     row.appendChild(dl);
     row.appendChild(btnGo);
     row.appendChild(btnClr);
+    row.appendChild(btnList);
+    row.appendChild(btnInvBulk);
+    row.appendChild(btnInvUninv);
 
     const chipRow = document.createElement('div');
     chipRow.style.cssText =
@@ -6672,6 +7804,9 @@ ${bodyInner}\
       })
       .then(function () {
         hydrate674IndexSearchBarFromUrl674();
+      })
+      .then(function () {
+        wire674IndexInventoryButtons674();
       });
   }
 
@@ -6700,6 +7835,7 @@ ${bodyInner}\
     const wSearch = document.getElementById(SEARCH674_WRAP_ID);
     if (wSearch) wSearch.removeAttribute('data-npl-synced-query');
     schedule674IndexSearch();
+    wire674IndexInventoryButtons674();
     setTimeout(request674IndexSearchHydrateFromUrl674, 200);
     return event;
   }

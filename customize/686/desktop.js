@@ -7,7 +7,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-17-686-ict-digest-board-v9';
+  const BUILD = '2026-05-19-686-ict-digest-no-ai-llm';
   const STORE_APP_ID =
     typeof window.ICT_DIGEST_STORE_APP === 'number' ? window.ICT_DIGEST_STORE_APP : 685;
 
@@ -19,9 +19,8 @@
     category: 'category',
   };
 
-  /** field-codes.ts ICT_CATEGORIES と同期（新7種） */
+  /** field-codes.ts ICT_CATEGORIES と同期（6種・AI・LLM は収集対象外） */
   const CATEGORIES = [
-    'AI・LLM',
     'インフラ・通信・端末',
     '開発トレンド',
     'Box・SaaS・文書管理',
@@ -45,14 +44,13 @@
     '資格・リスキリング': 'DX人材・IT資格・組織',
     'DX人材・組織': 'DX人材・IT資格・組織',
     '情シス・IT部門': 'DX人材・IT資格・組織',
-    'AI・LLM': 'AI・LLM',
+    'AI・LLM': 'その他',
     'ITベンダー・DX': 'その他',
     'IPA・政策調査': 'その他',
     その他: 'その他',
   };
 
   const CAT_CLASS = {
-    'AI・LLM': 'ict-cat--ai',
     'インフラ・通信・端末': 'ict-cat--infra',
     '開発トレンド': 'ict-cat--dev',
     'Box・SaaS・文書管理': 'ict-cat--saas',

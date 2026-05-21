@@ -1,0 +1,227 @@
+{
+  "properties": {
+    "project_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "project_name",
+      "label": "工事名",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "start_date": {
+      "type": "DATE",
+      "code": "start_date",
+      "label": "着工日",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "end_date": {
+      "type": "DATE",
+      "code": "end_date",
+      "label": "完工日",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "obs_location": {
+      "type": "DROP_DOWN",
+      "code": "obs_location",
+      "label": "観測地点",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "東京": { "label": "東京", "index": "0" },
+        "さいたま": { "label": "さいたま", "index": "1" },
+        "熊谷": { "label": "熊谷", "index": "2" },
+        "宇都宮": { "label": "宇都宮", "index": "3" },
+        "前橋": { "label": "前橋", "index": "4" },
+        "横浜": { "label": "横浜", "index": "5" },
+        "千葉": { "label": "千葉", "index": "6" },
+        "その他": { "label": "その他", "index": "7" }
+      }
+    },
+    "obs_location_note": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "obs_location_note",
+      "label": "地点備考",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "threshold_wind_ms": {
+      "type": "NUMBER",
+      "code": "threshold_wind_ms",
+      "label": "風速閾値(m/s)",
+      "required": true,
+      "noLabel": false,
+      "digit": false,
+      "defaultValue": "10",
+      "displayScale": "1",
+      "unit": "",
+      "unitPosition": "BEFORE"
+    },
+    "threshold_rain_mm": {
+      "type": "NUMBER",
+      "code": "threshold_rain_mm",
+      "label": "降雨閾値(mm)",
+      "required": true,
+      "noLabel": false,
+      "digit": false,
+      "defaultValue": "10",
+      "displayScale": "1",
+      "unit": "",
+      "unitPosition": "BEFORE"
+    },
+    "threshold_humidity_pct": {
+      "type": "NUMBER",
+      "code": "threshold_humidity_pct",
+      "label": "湿度閾値(%)",
+      "required": true,
+      "noLabel": false,
+      "digit": false,
+      "defaultValue": "85",
+      "displayScale": "0",
+      "unit": "",
+      "unitPosition": "BEFORE"
+    },
+    "holiday_fiscal_year": {
+      "type": "NUMBER",
+      "code": "holiday_fiscal_year",
+      "label": "休日基準年度",
+      "required": false,
+      "noLabel": false,
+      "digit": false,
+      "defaultValue": "",
+      "displayScale": "0",
+      "unit": "",
+      "unitPosition": "BEFORE"
+    },
+    "wind_data": {
+      "type": "SUBTABLE",
+      "code": "wind_data",
+      "label": "風速データ(日別)",
+      "noLabel": false,
+      "fields": {
+        "wind_obs_date": {
+          "type": "DATE",
+          "code": "wind_obs_date",
+          "label": "日付",
+          "required": false,
+          "noLabel": false,
+          "defaultValue": ""
+        },
+        "wind_max_ms": {
+          "type": "NUMBER",
+          "code": "wind_max_ms",
+          "label": "日最大風速(m/s)",
+          "required": false,
+          "noLabel": false,
+          "digit": false,
+          "defaultValue": "",
+          "displayScale": "1",
+          "unit": "",
+          "unitPosition": "BEFORE"
+        }
+      }
+    },
+    "rain_data": {
+      "type": "SUBTABLE",
+      "code": "rain_data",
+      "label": "降雨データ(日別)",
+      "noLabel": false,
+      "fields": {
+        "rain_obs_date": {
+          "type": "DATE",
+          "code": "rain_obs_date",
+          "label": "日付",
+          "required": false,
+          "noLabel": false,
+          "defaultValue": ""
+        },
+        "rain_mm": {
+          "type": "NUMBER",
+          "code": "rain_mm",
+          "label": "降水量(mm)",
+          "required": false,
+          "noLabel": false,
+          "digit": false,
+          "defaultValue": "",
+          "displayScale": "1",
+          "unit": "",
+          "unitPosition": "BEFORE"
+        }
+      }
+    },
+    "humidity_data": {
+      "type": "SUBTABLE",
+      "code": "humidity_data",
+      "label": "湿度データ(日別)",
+      "noLabel": false,
+      "fields": {
+        "humidity_obs_date": {
+          "type": "DATE",
+          "code": "humidity_obs_date",
+          "label": "日付",
+          "required": false,
+          "noLabel": false,
+          "defaultValue": ""
+        },
+        "humidity_pct": {
+          "type": "NUMBER",
+          "code": "humidity_pct",
+          "label": "平均湿度(%)",
+          "required": false,
+          "noLabel": false,
+          "digit": false,
+          "defaultValue": "",
+          "displayScale": "0",
+          "unit": "",
+          "unitPosition": "BEFORE"
+        }
+      }
+    },
+    "result_scaffold_days": {
+      "type": "NUMBER",
+      "code": "result_scaffold_days",
+      "label": "足場 稼働可能日数",
+      "required": false,
+      "noLabel": false,
+      "digit": false,
+      "defaultValue": "",
+      "displayScale": "2",
+      "unit": "",
+      "unitPosition": "BEFORE"
+    },
+    "result_paint_days": {
+      "type": "NUMBER",
+      "code": "result_paint_days",
+      "label": "塗装 稼働可能日数",
+      "required": false,
+      "noLabel": false,
+      "digit": false,
+      "defaultValue": "",
+      "displayScale": "2",
+      "unit": "",
+      "unitPosition": "BEFORE"
+    },
+    "calculated_at": {
+      "type": "DATETIME",
+      "code": "calculated_at",
+      "label": "算出日時",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": "",
+      "defaultNowValue": false
+    },
+    "calc_note": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "calc_note",
+      "label": "算出メモ",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    }
+  }
+}

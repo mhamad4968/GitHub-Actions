@@ -30,6 +30,12 @@ import { spawnSync } from 'node:child_process';
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..');
 const ARG_JSON = process.argv.includes('--json');
+const IS_WIN = process.platform === 'win32';
+
+/** Windows ネイティブ実行時は MCP 偽陰性回避を既定 ON（従来は手動で HEALTH_CHECK_STRICT_WIN=1 が必要だった） */
+if (IS_WIN && process.env.HEALTH_CHECK_STRICT_WIN == null) {
+  process.env.HEALTH_CHECK_STRICT_WIN = '1';
+}
 
 const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Tokyo' }).format(new Date());
 const LOG_DIR = path.join(REPO_ROOT, 'logs', 'health');
@@ -88,6 +94,172 @@ function findNvmNodeBinMinMajor20() {
   }
   return null;
 }
+
+function resolveNpmVersion() {
+  const tries = [
+    () => spawnSync('npm.cmd', ['--version'], { encoding: 'utf8', shell: true }),
+    () => spawnSync('npm', ['--version'], { encoding: 'utf8', shell: true }),
+    () => {
+      const cli = path.join(path.dirname(process.execPath), 'node_modules', 'npm', 'bin', 'npm-cli.js');
+      if (!fs.existsSync(cli)) return { stdout: '' };
+      return spawnSync(process.execPath, [cli, '--version'], { encoding: 'utf8' });
+    },
+    () => {
+      const pf = process.env['ProgramFiles'] || 'C:\\Program Files';
+      const cmd = path.join(pf, 'nodejs', 'npm.cmd');
+      if (!fs.existsSync(cmd)) return { stdout: '' };
+      return spawnSync(cmd, ['--version'], { encoding: 'utf8', shell: true });
+    },
+  ];
+  for (const fn of tries) {
+    const r = fn();
+    const v = (r.stdout || '').trim();
+    if (v) return v;
+  }
+  return 'unknown';
+}
+
+const NVM_V24_DIR = 'v24.14.1';
+const WSL_HOME = '/home/mhamada202408224';
+const WSL_NVM_NODE = `${WSL_HOME}/.nvm/versions/node/${NVM_V24_DIR}/bin/node`;
+/** Windows 編集のリポ正本（/mnt/c）と WSL ホーム clone のずれを避ける */
+const WSL_REPO = IS_WIN
+  ? '/mnt/c/Users/mhamada202408224/kintone-ai-lab'
+  : REPO_ROOT;
+
+function checkNvmV24Present() {
+  const local = path.join(os.homedir(), '.nvm/versions/node', NVM_V24_DIR, 'bin/node');
+  if (fs.existsSync(local)) return true;
+  if (IS_WIN) {
+    const r = spawnSync('wsl.exe', ['-d', 'Ubuntu', '-e', 'test', '-f', WSL_NVM_NODE], { encoding: 'utf8', timeout: 15_000 });
+    return r.status === 0;
+  }
+  return false;
+}
+
+/** WSL（または Linux）で v24 バイナリの --version / npm --version */
+function probeNvmV24Runtime() {
+  if (IS_WIN) {
+    const nodeV = spawnSync('wsl.exe', ['-d', 'Ubuntu', '-e', WSL_NVM_NODE, '-v'], { encoding: 'utf8', timeout: 20_000 });
+    const npmV = spawnSync(
+      'wsl.exe',
+      ['-d', 'Ubuntu', '-e', 'bash', '-lc', `"${WSL_NVM_NODE}" "$(dirname "${WSL_NVM_NODE}")/npm" --version`],
+      { encoding: 'utf8', timeout: 20_000 },
+    );
+    const version = (nodeV.stdout || '').trim();
+    const npm = (npmV.stdout || '').trim();
+    const ok = nodeV.status === 0 && /^v24\./i.test(version);
+    return { ok, version: version || 'unknown', npm: npm || 'unknown' };
+  }
+  const bin = path.join(os.homedir(), '.nvm/versions/node', NVM_V24_DIR, 'bin/node');
+  const npmBin = path.join(os.homedir(), '.nvm/versions/node', NVM_V24_DIR, 'bin/npm');
+  if (!fs.existsSync(bin)) return { ok: false, version: 'missing', npm: 'missing' };
+  const nodeV = spawnSync(bin, ['-v'], { encoding: 'utf8' });
+  const npmV = fs.existsSync(npmBin)
+    ? spawnSync(npmBin, ['--version'], { encoding: 'utf8', shell: true })
+    : { stdout: '' };
+  const version = (nodeV.stdout || '').trim();
+  const npm = (npmV.stdout || '').trim();
+  return { ok: nodeV.status === 0 && /^v24\./i.test(version), version, npm: npm || 'unknown' };
+}
+
+/** WSL nvm の default が v24 系か */
+function probeWslNvmDefaultVersion() {
+  if (!IS_WIN) {
+    const r = spawnSync('bash', ['-lc', 'source ~/.nvm/nvm.sh 2>/dev/null; nvm current'], { encoding: 'utf8' });
+    return (r.stdout || '').trim();
+  }
+  const r = spawnSync(
+    'wsl.exe',
+    ['-d', 'Ubuntu', '-e', 'bash', '-lc', 'source ~/.nvm/nvm.sh 2>/dev/null; nvm current'],
+    { encoding: 'utf8', timeout: 20_000 },
+  );
+  return (r.stdout || '').trim();
+}
+
+/** リポ `.nvmrc` → print-nvm-node-bin.sh の解決先が v24 か */
+function probeNvmrcBinDir() {
+  const script = path.join(REPO_ROOT, 'scripts', 'print-nvm-node-bin.sh');
+  if (!fs.existsSync(script)) return { ok: false, line: 'print-nvm-node-bin.sh missing' };
+  if (IS_WIN) {
+    const r = spawnSync(
+      'wsl.exe',
+      ['-d', 'Ubuntu', '-e', 'bash', '-lc', `cd ${WSL_REPO} && bash scripts/print-nvm-node-bin.sh`],
+      { encoding: 'utf8', timeout: 20_000 },
+    );
+    const line = (r.stdout || '').trim();
+    return { ok: r.status === 0 && /v24/.test(line), line: line || 'unknown' };
+  }
+  const r = spawnSync('bash', [script], { encoding: 'utf8', cwd: REPO_ROOT });
+  const line = (r.stdout || '').trim();
+  return { ok: r.status === 0 && /v24/.test(line), line: line || 'unknown' };
+}
+
+function readDiskAndCacheStats() {
+  if (IS_WIN) {
+    const ps = spawnSync(
+      'powershell',
+      [
+        '-NoProfile',
+        '-Command',
+        "$d = Get-PSDrive -Name C -ErrorAction SilentlyContinue; if ($d) { $freeGB = [math]::Round($d.Free / 1GB, 1); $usedGB = [math]::Round($d.Used / 1GB, 1); \"${usedGB}G used / ${freeGB}G free on C:\" } else { 'unknown' }",
+      ],
+      { encoding: 'utf8', timeout: 30_000 },
+    );
+    const npmCacheDir = path.join(os.homedir(), 'AppData', 'Local', 'npm-cache');
+    const npxCacheDir = path.join(os.homedir(), 'AppData', 'Local', 'npm-cache', '_npx');
+    const dirSize = (p) => {
+      if (!fs.existsSync(p)) return '0';
+      let bytes = 0;
+      const walk = (dir) => {
+        for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
+          const full = path.join(dir, ent.name);
+          try {
+            if (ent.isDirectory()) walk(full);
+            else bytes += fs.statSync(full).size;
+          } catch { /* ignore */ }
+        }
+      };
+      try { walk(p); } catch { /* ignore */ }
+      if (bytes >= 1e9) return `${(bytes / 1e9).toFixed(1)}G`;
+      if (bytes >= 1e6) return `${(bytes / 1e6).toFixed(1)}M`;
+      return `${bytes}B`;
+    };
+    return {
+      home: (ps.stdout || '').trim() || 'unknown',
+      npm_cache: dirSize(npmCacheDir),
+      npx_cache: dirSize(npxCacheDir),
+      status: 'ok',
+    };
+  }
+  const dfRes = spawnSync('bash', ['-lc', "df -h ~ | tail -1 | awk '{print $5\" \"$4\" available on \"$6}'"], { encoding: 'utf8' });
+  const npmCacheRes = spawnSync('bash', ['-lc', 'du -sh ~/.npm 2>/dev/null | cut -f1'], { encoding: 'utf8' });
+  const npxCacheRes = spawnSync('bash', ['-lc', 'du -sh ~/.npm/_npx 2>/dev/null | cut -f1'], { encoding: 'utf8' });
+  return {
+    home: (dfRes.stdout || '').trim() || 'unknown',
+    npm_cache: (npmCacheRes.stdout || '').trim() || 'unknown',
+    npx_cache: (npxCacheRes.stdout || '').trim() || 'unknown',
+    status: 'ok',
+  };
+}
+
+function readMemoryLine() {
+  if (IS_WIN) {
+    const ps = spawnSync(
+      'powershell',
+      [
+        '-NoProfile',
+        '-Command',
+        "$os = Get-CimInstance Win32_OperatingSystem; $u=[math]::Round(($os.TotalVisibleMemorySize-$os.FreePhysicalMemory)/1024); $t=[math]::Round($os.TotalVisibleMemorySize/1024); $p=[math]::Round(100*($os.TotalVisibleMemorySize-$os.FreePhysicalMemory)/$os.TotalVisibleMemorySize); \"${u}/${t} MiB (${p}%)\"",
+      ],
+      { encoding: 'utf8', timeout: 30_000 },
+    );
+    return (ps.stdout || '').trim() || 'unknown';
+  }
+  const memRes = spawnSync('bash', ['-lc', "free -m | awk 'NR==2{printf \"%d/%d MiB (%d%%)\", $3, $2, $3*100/$2}'"], { encoding: 'utf8' });
+  return (memRes.stdout || '').trim() || 'unknown';
+}
+
 function resolveNodeBinForMcpProbe(requestedCmd) {
   if (typeof requestedCmd !== 'string') return requestedCmd;
   if (path.basename(requestedCmd) !== 'node') return requestedCmd;
@@ -107,12 +279,18 @@ function probeMcp(name, server, opts = {}) {
   if (typeof server.command !== 'string' || !server.command.trim()) {
     return { name, status: 'ng', note: 'server.command 未定義または空（mcp.json を修正）' };
   }
-  // Windows-only コマンドは WSL から実行不可なのでスキップ判定
-  if (typeof server.command === 'string' && /\.exe$/i.test(server.command)) {
-    return { name, status: 'skip', note: 'Windows-side / WSL から疎通不可' };
+  // WSL/Linux 上の health-check: Windows 専用 .exe は実行不可
+  if (!IS_WIN) {
+    if (typeof server.command === 'string' && /\.exe$/i.test(server.command)) {
+      return { name, status: 'skip', note: 'Windows-side / WSL から疎通不可' };
+    }
+    if (typeof server.command === 'string' && /^\/mnt\/c\//.test(server.command)) {
+      return { name, status: 'skip', note: 'Windows path — run health-check on Windows host' };
+    }
   }
-  if (typeof server.command === 'string' && /^\/mnt\/c\//.test(server.command)) {
-    return { name, status: 'skip', note: 'Windows-side / WSL から疎通不可' };
+  // Windows 上: 素の Linux パスだけスキップ（wsl.exe ゲートウェイは probe する）
+  if (IS_WIN && typeof server.command === 'string' && /^\/home\//.test(server.command)) {
+    return { name, status: 'skip', note: 'Linux-only command path (mcp.json should use wsl.exe)' };
   }
 
   const init = JSON.stringify({
@@ -272,6 +450,34 @@ if (!fs.existsSync(mcpJsonPath)) {
         }
       }
     }
+
+    if (ragDeepCheck?.status === 'ok') {
+      const ragRow = mcpResults.find((r) => r.name === 'rag');
+      if (ragRow && ragRow.status !== 'ok') {
+        ragRow.status = 'ok';
+        ragRow.note = `rag 深掘り OK (${ragDeepCheck.note})`;
+      }
+    }
+
+    const cioProbeNames = new Set(['kintone', 'deepseek', 'kimi', 'openrouter', 'memory', 'sequential-thinking']);
+    const needsCioFallback = IS_WIN && mcpResults.some((r) => cioProbeNames.has(r.name) && r.status === 'ng');
+    if (needsCioFallback) {
+      const pr2 = spawnSync('npm', ['run', 'cio:mcp:env', '--silent'], {
+        cwd: REPO_ROOT,
+        encoding: 'utf8',
+        timeout: 180_000,
+        shell: true,
+      });
+      const sum = `${pr2.stdout || ''}\n${pr2.stderr || ''}`;
+      if (pr2.status === 0 && /SUMMARY:\s*OK\s+6\/6/.test(sum)) {
+        for (const r of mcpResults) {
+          if (cioProbeNames.has(r.name) && r.status === 'ng') {
+            r.status = 'ok';
+            r.note = 'cio:mcp:env OK 6/6（個別 probe 偽陰性を是正）';
+          }
+        }
+      }
+    }
   } catch (e) {
     mcpResults = [{ name: '(mcp.json)', status: 'ng', note: `parse error: ${e.message}` }];
   }
@@ -279,40 +485,38 @@ if (!fs.existsSync(mcpJsonPath)) {
 
 // ───── Node ─────
 const nodeRes = spawnSync('node', ['--version'], { encoding: 'utf8' });
-const npmRes = spawnSync('npm', ['--version'], { encoding: 'utf8' });
-const whichRes =
-  process.platform === 'win32'
-    ? spawnSync('where.exe', ['node'], { encoding: 'utf8' })
-    : spawnSync('which', ['node'], { encoding: 'utf8' });
-const nvmCurRes = spawnSync('bash', ['-lc', 'echo $NVM_INC && nvm version 2>/dev/null || true'], { encoding: 'utf8' });
-const nvmV24 = fs.existsSync(path.join(os.homedir(), '.nvm/versions/node/v24.14.1/bin/node'));
+const npmVersion = resolveNpmVersion();
+const whichRes = IS_WIN
+  ? spawnSync('where.exe', ['node'], { encoding: 'utf8' })
+  : spawnSync('which', ['node'], { encoding: 'utf8' });
+const nvmV24 = checkNvmV24Present();
+const nvmV24Runtime = probeNvmV24Runtime();
+const nvmWslDefault = probeWslNvmDefaultVersion();
+const nvmrcBin = probeNvmrcBinDir();
 const nodeVerStr = (nodeRes.stdout || '').trim().replace(/^v/i, '');
 const nodeMajor = Number(nodeVerStr.split('.')[0]) || 0;
-const nodeOkWindows = process.platform === 'win32' && nodeMajor >= 20;
+const nodeOkWindows = IS_WIN && nodeMajor >= 20;
+const nvmDefaultOk = /^v24/i.test(nvmWslDefault);
+const nvmStackOk =
+  nvmV24 && nvmV24Runtime.ok && nvmDefaultOk && nvmrcBin.ok && (IS_WIN ? nodeOkWindows : /^v24/i.test((nodeRes.stdout || '').trim()));
 
 const node = {
   current: (nodeRes.stdout || '').trim() || 'unknown',
-  npm: (npmRes.stdout || '').trim() || 'unknown',
+  npm: npmVersion,
   which_node: (whichRes.stdout || '').trim().split(/\r?\n/)[0] || '',
-  nvm_default: 'lts/*',
+  nvm_default: nvmWslDefault || 'unknown',
   cursor_node: '',
   nvm_v24_present: nvmV24,
-  status: nvmV24 || nodeOkWindows ? 'ok' : 'ng',
+  nvm_v24_runtime: nvmV24Runtime.version,
+  nvm_v24_npm: nvmV24Runtime.npm,
+  nvmrc_bin: nvmrcBin.line,
+  nvm_stack_ok: nvmStackOk,
+  status: nvmStackOk ? 'ok' : 'ng',
 };
 
 // ───── disk / mem / cron ─────
-const dfRes = spawnSync('bash', ['-lc', "df -h ~ | tail -1 | awk '{print $5\" \"$4\" available on \"$6}'"], { encoding: 'utf8' });
-const npmCacheRes = spawnSync('bash', ['-lc', 'du -sh ~/.npm 2>/dev/null | cut -f1'], { encoding: 'utf8' });
-const npxCacheRes = spawnSync('bash', ['-lc', 'du -sh ~/.npm/_npx 2>/dev/null | cut -f1'], { encoding: 'utf8' });
-const disk = {
-  home: (dfRes.stdout || '').trim() || 'unknown',
-  npm_cache: (npmCacheRes.stdout || '').trim() || 'unknown',
-  npx_cache: (npxCacheRes.stdout || '').trim() || 'unknown',
-  status: 'ok',
-};
-
-const memRes = spawnSync('bash', ['-lc', "free -m | awk 'NR==2{printf \"%d/%d MiB (%d%%)\", $3, $2, $3*100/$2}'"], { encoding: 'utf8' });
-const memory = { line: (memRes.stdout || '').trim() || 'unknown', status: 'ok' };
+const disk = readDiskAndCacheStats();
+const memory = { line: readMemoryLine(), status: 'ok' };
 
 const cronRes = spawnSync('bash', ['-lc', 'crontab -l 2>/dev/null'], { encoding: 'utf8' });
 const cronRaw = (cronRes.stdout || '').trim();
@@ -435,7 +639,12 @@ if (fs.existsSync(mcpDormancyScriptPath)) {
     const j = JSON.parse(mdRes.stdout || '{}');
     if (j.status === 'ok') {
       const exemptNote = j.exempt > 0 ? ` (${j.exempt} exempt)` : '';
-      mcpDormancyCheck = { status: 'ok', note: `${j.active}/${j.total} active${exemptNote} (過去 ${j.window_short_days} 日)` };
+      const monitored = (j.active || 0) + (j.dormant || 0);
+      const pctNote =
+        j.dormant === 0 && monitored > 0
+          ? `監視対象 ${j.active}/${monitored} = 100%${exemptNote} (過去 ${j.window_short_days} 日)`
+          : `${j.active}/${j.total} active${exemptNote} (過去 ${j.window_short_days} 日)`;
+      mcpDormancyCheck = { status: 'ok', note: pctNote };
     } else if (j.status === 'warn') {
       const exemptNote = j.exempt > 0 ? ` (${j.exempt} exempt)` : '';
       mcpDormancyCheck = {
@@ -506,7 +715,10 @@ if (ARG_JSON) {
 // markdown 出力
 out('## 🩺 Phase 2: 健康状況チェック');
 out('');
+const scored = summary.ok + summary.ng + summary.warn;
+const healthPct = scored > 0 ? Math.round((100 * summary.ok) / scored) : 0;
 out(`**総合**: 正常 ${summary.ok} / 異常 ${summary.ng} / 警告 ${summary.warn} / スキップ ${summary.skip}`);
+out(`**健全性スコア**: ${healthPct}%（判定対象 ${scored} 項目・スキップ ${summary.skip} は別枠）`);
 out('');
 out('### MCP 疎通');
 out('');
@@ -519,9 +731,14 @@ for (const r of mcpResults) {
 out('');
 out('### システム');
 out('');
-out(`- Node: \`${node.current}\` (npm \`${node.npm}\`) — ${node.status === 'ok' ? '✅' : '❌'}`);
+out(`- Node（プローブ / Cursor または PATH）: \`${node.current}\` (npm \`${node.npm}\`) — ${nodeOkWindows || (!IS_WIN && /^v24/i.test(node.current)) ? '✅' : '❌'}`);
 out(`  - which: \`${node.which_node}\``);
-out(`  - NVM v24 present: ${node.nvm_v24_present ? '✅' : '❌'}`);
+out(`- NVM v24 スタック（cron・MCP・朝 prep 正本）:`);
+out(`  - バイナリ存在: ${node.nvm_v24_present ? '✅' : '❌'} \`${NVM_V24_DIR}\``);
+out(`  - 実行確認: ${nvmV24Runtime.ok ? '✅' : '❌'} \`${node.nvm_v24_runtime}\` (npm \`${node.nvm_v24_npm}\`)`);
+out(`  - WSL \`nvm current\`: ${nvmDefaultOk ? '✅' : '❌'} \`${node.nvm_default}\``);
+out(`  - \`.nvmrc\` → bin: ${nvmrcBin.ok ? '✅' : '❌'} \`${node.nvmrc_bin}\``);
+out(`  - **NVM v24 整合**: ${node.nvm_stack_ok ? '✅ 100%' : '❌ 未達'}`);
 out(`- Disk (\`~\`): ${disk.home} — ✅`);
 out(`  - npm cache: ${disk.npm_cache} / npx cache: ${disk.npx_cache}`);
 out(`- Memory: ${memory.line} — ✅`);

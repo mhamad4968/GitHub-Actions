@@ -2039,3 +2039,76 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 - DeepSeek §50-3-8（U4 設計の盲点照会）実施済
 
 **次セッションへの 1 行**: **ICT 運用監視**＋**#6 Phase3 計画**（#4/#5 は CEO 本題指定まで触らない）。
+
+---
+
+### 2026-05-17 JST — 最終締め（壁時計 Cursor ライフサイクル）
+
+**実施**:
+- `sessionEnd` / `sessionStart` hook で壁時計 **停止／自動起動＋URL 表示**（Windows はブラウザ自動オープン）
+- `scripts/lib/session-clock-process.mjs`・`session:clock:stop`・Runbook 追加
+- ポート枯渇対策: hook は `SESSION_CLOCK_WEB_PORT` 無視・OS 割当フォールバック
+- 本締め: `npm run session:clock:stop` 実行済
+
+**未 commit**: 上記 hook 一式（次回 `git status` で確認 → commit/push）
+
+**次セッションへの 1 行**: **ICT フィードバック**優先。壁時計は **Cursor 開くだけ**（手動 set/web 不要）。稼働日数は CEO 再開まで保留。
+
+---
+
+### 2026-05-19 JST — セッション締め（674 棚卸・ICT AI 除外・TOTO 今治）
+
+**実施**:
+- **674 棚卸 v1**: `inventory_history`・670 期間・個別／一括／未棚卸 UI → `deploy:674`（BUILD `2026-05-19-inventory-period-v1` rev 216）
+- **#5a**: 棚卸運用検証・更新不具合は **相談待ち**（`docs/backlog/cio-open-issues-2026-05-17.md`）
+- **ICT v2.2**: AI・LLM 除外・686 deploy・685 カテゴリ6種・AI 記事 1 件削除
+- **TOTO**: `fc-imabari`（今治）を `Desktop\TOTO予想\data\team_master\` に追記
+
+**未 push / 要確認**:
+- `kintone-ai-lab`: 棚卸・ICT・締めドキュメント
+- `Desktop\TOTO予想`: 今治マスタ（`git status` 要確認）
+
+**§50-3-8**: 未実施（複数レーン実装連続）。次回 674 検収前は実施推奨。
+
+**締め正本**: `chat-sessions/SESSION-CLOSE-REPORT-20260519.txt`
+
+**次セッションへの 1 手**: 浜田 **§3 A/B 承認** → 674 棚卸 1 回試験 + **git push**。
+
+---
+
+### 2026-05-19 夜 JST — 是正追補（CEO 承認）
+
+**浜田指示**:
+- DeepSeek #1（一括棚卸ステータス検収）→ **明日**
+- #2・#3 → **本日実施**
+- 恒久是正 §3 → **承認**
+- 685 `--include-topic` 追加削除 → **実施**
+
+**実施**:
+- `delete-685-ai-llm-records.mjs --apply --include-topic` → **5 件削除**（$id=20,23,28,29,33）。累計 **6 件**（初回 $id=31 含む）
+- トレーサ: `docs/reports/2026-05-19-post-deploy-traceability.md`
+- 是正正本更新: `chat-sessions/2026-05-19-cio-rule-remediation-plan.md`（§3 承認済マーク）
+
+**次セッションへの 1 手**: **明日** 浜田＝674 **一括棚卸** 1 所属試験 / CIO＝**git push**（lab+TOTO）+ ICT GHA 後 685 新規 AI 0 件確認。
+
+---
+
+### 2026-05-19 夜 JST — CEO 厳命（ブリーフィング後・AI 確認必須）
+
+**浜田指示（原文趣旨）**:
+> 明日やることはブリーフィング後必ず実施する。**確認を AI チームから必ず出す**こと。
+
+**AI 対応**:
+- 正本: `chat-sessions/2026-05-20-post-briefing-mandatory-confirm.md`
+- フロー: **朝ブリーフィング完了後** → 必須タスク 5 行すべて実施 → チャットに **「AIチーム確認報告」** ブロックを **全文貼付**（要約・口頭のみ禁止）
+- 未完了が 1 行でもあれば理由・次の一手を併記し、浜田 GO まで次本題に入らない
+
+**必須タスク**: ① 674 一括棚卸（浜田）② push lab ③ push TOTO ④ GHA 後 685 AI 0 件 ⑤ 恒久是正 §3 遵守
+
+---
+
+### 2026-05-19 夜 JST — セッション終了
+
+**締め正本**: `chat-sessions/SESSION-CLOSE-REPORT-20260519.txt`  
+**実施**: `session:clock:clear` / `session-starter:sync-desktop` / Desktop `19-SESSION-ONE-REPORT-2026-05-19.md` 更新  
+**未 push**: lab + TOTO（明日ブリーフィング後・AI 確認報告付きで実施）

@@ -19,10 +19,21 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pathsFromRoot } from './lib/session-clock-core.mjs';
+import { paths as clockPaths } from './lib/session-clock-process.mjs';
 import { writeTickerFile } from './lib/session-clock-write-ticker.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const { tickerAbs } = pathsFromRoot(root);
+
+function writeWebMeta(url, pid) {
+  try {
+    fs.mkdirSync(path.dirname(clockPaths.webUrl), { recursive: true });
+    fs.writeFileSync(clockPaths.webUrl, `${url}\n`, 'utf8');
+    fs.writeFileSync(clockPaths.webPid, `${pid}\n`, 'utf8');
+  } catch (e) {
+    console.warn('[session-clock-web] meta write warn:', e?.message || e);
+  }
+}
 
 function resolveBindHost() {
   const h = (process.env.SESSION_CLOCK_WEB_HOST || '127.0.0.1').trim();
@@ -171,6 +182,11 @@ function tryListenOnce(p) {
       server.on('error', err => {
         console.error('[session-clock-web] runtime', err.message);
       });
+      const addr = server.address();
+      const bound =
+        typeof addr === 'object' && addr && 'port' in addr ? addr.port : p;
+      const url = `http://${DISPLAY_HOST}:${bound}/`;
+      writeWebMeta(url, process.pid);
       resolve(server);
     });
   });
@@ -214,10 +230,27 @@ async function main() {
       process.exit(1);
     }
   }
+  try {
+    const server = await tryListenOnce(0);
+    if (server) {
+      const addr = server.address();
+      const p = typeof addr === 'object' && addr ? addr.port : 0;
+      const url = `http://${DISPLAY_HOST}:${p}/`;
+      console.log(`[session-clock-web] 開く: ${url}`);
+      console.log(`  （${base}〜${max} が使用中のため OS 割当ポート ${p} にフォールバック）`);
+      if (PRINT_URL_ONLY) {
+        server.close(() => process.exit(0));
+        return;
+      }
+      console.log('  止める: Ctrl+C');
+      return;
+    }
+  } catch (e) {
+    console.error('[session-clock-web] ❌ port 0 fallback', e.message);
+  }
   console.error(
-    `[session-clock-web] ❌ ${base}〜${max} に空きポートがありません。古いプロセスを止めるか、別起点で:`,
+    `[session-clock-web] ❌ ${base}〜${max} に空きポートがありません。npm run session:clock:stop を実行してから再試行:`,
   );
-  console.error(`  SESSION_CLOCK_WEB_PORT=48000 npm run session:clock:web`);
   process.exit(1);
 }
 

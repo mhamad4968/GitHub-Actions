@@ -9,7 +9,6 @@ export const ICT_FIELDS = {
 
 /** 掲示板フィルタ・Gemini 厳選で使用（685 ドロップダウンと同期すること） */
 export const ICT_CATEGORIES = [
-  "AI・LLM",
   "インフラ・通信・端末",
   "開発トレンド",
   "Box・SaaS・文書管理",
@@ -38,7 +37,7 @@ export const LEGACY_CATEGORY_TO_NEW: Record<string, IctCategory> = {
   "資格・リスキリング": "DX人材・IT資格・組織",
   "DX人材・組織": "DX人材・IT資格・組織",
   "情シス・IT部門": "DX人材・IT資格・組織",
-  "AI・LLM": "AI・LLM",
+  "AI・LLM": "その他",
   "ITベンダー・DX": "その他",
   "IPA・政策調査": "その他",
   その他: "その他",

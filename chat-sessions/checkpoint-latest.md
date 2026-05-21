@@ -2,6 +2,35 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
+## 2026-05-19 JST — 是正追補（恒久ゲート承認・685 追加削除）
+
+| レーン | 状態 |
+|--------|------|
+| **674 棚卸** | deploy 済。**一括棚卸検収は明日（浜田）**・個別は #5a |
+| **685/686 ICT** | v2.2。**685 削除累計 6 件**（カテゴリ1 + topic5）。トレーサ: `docs/reports/2026-05-19-post-deploy-traceability.md` |
+| **恒久是正** | `chat-sessions/2026-05-19-cio-rule-remediation-plan.md` §3 **CEO 承認済** |
+| **git push** | **明日 CIO**（lab + TOTO） |
+| **TOTO** | 今治マスタ追記済・push は明日 |
+
+**CEO 厳命（2026-05-19 夜）**: 明日タスクは **ブリーフィング後に必ず実施**。完了確認は **AI チームから必ずチャット送信**（省略禁止）。正本: `chat-sessions/2026-05-20-post-briefing-mandatory-confirm.md`
+
+**次の 1 手**: 朝ブリーフィング → 上記チェックリスト全行 → **「AIチーム確認報告」貼付** → 浜田確認。
+
+---
+
+## 2026-05-17 JST — 最終締め（壁時計 Cursor 連動・運用徹底）
+
+| レーン | 状態 |
+|--------|------|
+| **壁時計** | **Cursor 終了で停止／起動で set+watch+web+URL（Win はブラウザ自動）**。Runbook: `docs/runbooks/session-clock-cursor-lifecycle.md`。手動: `session:clock:stop` |
+| **688/687 稼働日数** | v4-syntax-fix 完了。**CEO: 後日まで保留** |
+| **685/686 ICT** | v2.1・**運用中**・カスタマイズ依頼待ち |
+| **未 commit** | 壁時計 hook 一式（`.cursor/hooks/session-end-autopilot.mjs` 他）— 次回 push 可 |
+
+**次の 1 手**: ICT 運用フィードバック。稼働日数は CEO 再開まで触らない。
+
+---
+
 ## 2026-05-17 JST — セッション締め（688 稼働日数 OK・ICT v2.1 国内優先）
 
 | レーン | 状態 |

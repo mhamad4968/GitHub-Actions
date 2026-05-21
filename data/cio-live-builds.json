@@ -17,6 +17,14 @@
       "deployedAt": "2026-05-16T10:46:25.910Z",
       "note": null
     },
+    "674": {
+      "build": "2026-05-19-inventory-period-v1",
+      "fileKey": "f5dec978-319f-4eff-a240-89e0e14e9abe",
+      "revision": "216",
+      "relPath": "customize/new-pc-ledger-v1/desktop.js",
+      "deployedAt": "2026-05-19T12:27:23.158Z",
+      "note": null
+    },
     "677": {
       "build": "2026-05-15-677-block-all-ui-mutations-dash678-only",
       "fileKey": "eb3bbf90-5149-435d-9425-93b7473c396d",
@@ -58,11 +66,27 @@
       "note": null
     },
     "686": {
-      "build": "2026-05-17-686-ict-digest-board-v9",
-      "fileKey": "9d07ed42-ded9-4c07-82f0-9fc8853b83aa",
-      "revision": "21",
-      "relPath": ".kintone-deploy/upload-686.js",
-      "deployedAt": "2026-05-17T00:44:00.013Z",
+      "build": "2026-05-19-686-ict-digest-no-ai-llm",
+      "fileKey": "1d4e6220-2b6f-4a61-aadb-4c56b2e083a0",
+      "revision": "22",
+      "relPath": "customize/686/desktop.js",
+      "deployedAt": "2026-05-19T12:37:04.611Z",
+      "note": null
+    },
+    "687": {
+      "build": "2026-05-17-687-dash-link-v1",
+      "fileKey": "d56ec104-a163-4af4-8506-7b3c87aa9806",
+      "revision": "6",
+      "relPath": "customize/687/desktop.js",
+      "deployedAt": "2026-05-17T06:48:00.429Z",
+      "note": null
+    },
+    "688": {
+      "build": "2026-05-17-688-workdays-dash-v4-syntax-fix",
+      "fileKey": "9a06e604-4903-47b7-b2a8-20cb7ea35bc5",
+      "revision": "9",
+      "relPath": "customize/688/desktop.js",
+      "deployedAt": "2026-05-17T07:11:42.760Z",
       "note": null
     }
   }

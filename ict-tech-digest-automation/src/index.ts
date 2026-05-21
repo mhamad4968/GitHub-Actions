@@ -15,6 +15,7 @@ import {
   urlExists,
 } from "./lib/kintone-store.js";
 import { resolveArticleUrl } from "./lib/article-url.js";
+import { filterOutAiLlmArticles } from "./lib/ai-exclusion.js";
 import { curateWithGemini } from "./lib/gemini-curate.js";
 import { dedupeAndSort, fetchAllFeeds, getLastRssFetchReport } from "./lib/rss.js";
 
@@ -100,12 +101,13 @@ async function main(): Promise<void> {
   }
   const merged = dedupeAndSort(rawArticles);
   const unregistered = merged.filter((a) => !existingUrls.has(a.url));
-  const candidates = filterRecentForCuration(unregistered, today).map((a) => {
+  const recentCandidates = filterRecentForCuration(unregistered, today).map((a) => {
     const url = resolveArticleUrl(a.url, a.title, a.snippet);
     return url === a.url ? a : { ...a, url };
   });
+  const candidates = filterOutAiLlmArticles(recentCandidates);
   console.log(
-    `[ICT収集] RSS 横断 ${cfg.rssFeedUrls.length} 本 → 未登録 ${unregistered.length} 件 → 厳選候補（直近） ${candidates.length} 件`,
+    `[ICT収集] RSS 横断 ${cfg.rssFeedUrls.length} 本 → 未登録 ${unregistered.length} 件 → 厳選候補（直近・AI除外後） ${candidates.length} 件`,
   );
 
   if (candidates.length === 0) {

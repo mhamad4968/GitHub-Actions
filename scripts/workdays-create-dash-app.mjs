@@ -1,0 +1,158 @@
+#!/usr/bin/env node
+/**
+ * 工事稼働日数ダッシュ（688）— 空アプリ作成（Space 56 / thread 60）
+ * データ正本: アプリ 687（WORKDAYS_DATA_APP_ID）
+ *
+ *   npx dotenv -e .env -e .env.proxy -- node scripts/workdays-create-dash-app.mjs
+ */
+import 'dotenv/config';
+
+const APP_NAME = '工事稼働日数ダッシュ';
+const DATA_APP_ID = Number(process.env.WORKDAYS_DATA_APP_ID || 687);
+const SPACE_ID = Number(process.env.WORKDAYS_SPACE_ID || 56);
+const THREAD_ID = Number(process.env.WORKDAYS_THREAD_ID || 60);
+
+function requireEnv(key) {
+  const v = process.env[key];
+  if (!v || String(v).trim() === '') throw new Error(`Missing env var: ${key}`);
+  return String(v).trim();
+}
+
+let baseUrl = requireEnv('KINTONE_BASE_URL').replace(/\/+$/, '');
+baseUrl = baseUrl.replace(/\/k$/i, '');
+const user = requireEnv('KINTONE_USERNAME');
+const pass = requireEnv('KINTONE_PASSWORD');
+
+const headers = {
+  'X-Cybozu-Authorization': Buffer.from(`${user}:${pass}`, 'utf8').toString('base64'),
+  'Content-Type': 'application/json',
+};
+if (process.env.KINTONE_BASIC_AUTH_USERNAME && process.env.KINTONE_BASIC_AUTH_PASSWORD) {
+  const bu = String(process.env.KINTONE_BASIC_AUTH_USERNAME);
+  const bp = String(process.env.KINTONE_BASIC_AUTH_PASSWORD);
+  headers.Authorization = `Basic ${Buffer.from(`${bu}:${bp}`, 'utf8').toString('base64')}`;
+}
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function fetchJson(url, init) {
+  const res = await fetch(url, init);
+  const text = await res.text();
+  let json = null;
+  try {
+    json = JSON.parse(text);
+  } catch {
+    /* noop */
+  }
+  if (!res.ok) {
+    const msg = json?.code || json?.message ? `${json.code || ''} ${json.message || ''}`.trim() : text.slice(0, 1200);
+    throw new Error(`HTTP ${res.status} ${msg}`.trim());
+  }
+  return json;
+}
+
+async function waitDeploy(appNum) {
+  const stUrl = new URL(`${baseUrl}/k/v1/preview/app/deploy.json`);
+  stUrl.searchParams.set('apps[0]', String(appNum));
+  for (let i = 0; i < 90; i++) {
+    const st = await fetchJson(stUrl, { method: 'GET', headers: { ...headers, 'Content-Type': undefined } });
+    const status = Array.isArray(st.apps) && st.apps[0] ? st.apps[0].status : null;
+    if (status === 'SUCCESS') return;
+    if (status === 'FAIL' || status === 'CANCEL') throw new Error(`Deploy status: ${status}`);
+    await sleep(1000);
+  }
+  throw new Error('Deploy timed out.');
+}
+
+async function deployApp(appId, revision) {
+  const body = revision != null ? { apps: [{ app: appId, revision }] } : { apps: [{ app: appId }] };
+  await fetchJson(`${baseUrl}/k/v1/preview/app/deploy.json`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(body),
+  });
+  await waitDeploy(appId);
+}
+
+async function setEveryoneAcl(appId) {
+  const body = {
+    app: String(appId),
+    rights: [
+      {
+        entity: { type: 'GROUP', code: 'everyone' },
+        appEditable: false,
+        recordViewable: true,
+        recordAddable: true,
+        recordEditable: true,
+        recordDeletable: true,
+        recordImportable: true,
+        recordExportable: true,
+      },
+    ],
+  };
+  const j = await fetchJson(`${baseUrl}/k/v1/preview/app/acl.json`, {
+    method: 'PUT',
+    headers,
+    body: JSON.stringify(body),
+  });
+  return j.revision;
+}
+
+async function main() {
+  const found = await fetchJson(`${baseUrl}/k/v1/apps.json`, {
+    method: 'POST',
+    headers: { ...headers, 'X-HTTP-Method-Override': 'GET' },
+    body: JSON.stringify({ name: APP_NAME }),
+  });
+  const existing = (found.apps || []).filter((a) => a.name === APP_NAME);
+  if (existing.length) {
+    const id = existing[0].appId;
+    console.log(`既存ダッシュ: appId=${id} URL=${baseUrl}/k/${id}/`);
+    return;
+  }
+
+  console.log(`作成開始: "${APP_NAME}" space=${SPACE_ID} thread=${THREAD_ID} dataApp=${DATA_APP_ID}`);
+
+  const add = await fetchJson(`${baseUrl}/k/v1/preview/app.json`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ name: APP_NAME, space: SPACE_ID, thread: THREAD_ID }),
+  });
+  const appId = Number(add.app);
+  console.log(`app=${appId} revision=${add.revision}`);
+
+  await deployApp(appId);
+  console.log('空アプリ deploy OK');
+
+  const settingsRes = await fetchJson(`${baseUrl}/k/v1/preview/app/settings.json`, {
+    method: 'PUT',
+    headers,
+    body: JSON.stringify({
+      app: String(appId),
+      name: APP_NAME,
+      description: '工事稼働日数計算ツールです。データ入力後保存を押してください。',
+      theme: 'GREEN',
+    }),
+  });
+  console.log(`説明・テーマ revision=${settingsRes.revision}`);
+
+  let deployRev = settingsRes.revision;
+  try {
+    const aclRev = await setEveryoneAcl(appId);
+    console.log(`ACL Everyone revision=${aclRev}`);
+    deployRev = aclRev;
+  } catch (e) {
+    console.warn(`ACL スキップ: ${e.message || e}`);
+  }
+
+  await deployApp(appId, deployRev);
+  console.log('');
+  console.log(`DASH_APP_ID=${appId}`);
+  console.log(`DATA_APP_ID=${DATA_APP_ID}`);
+  console.log(`URL=${baseUrl}/k/${appId}/`);
+}
+
+main().catch((e) => {
+  console.error(e.message || e);
+  process.exit(1);
+});
