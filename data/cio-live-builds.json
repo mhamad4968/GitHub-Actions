@@ -67,26 +67,26 @@
     },
     "686": {
       "build": "2026-05-19-686-ict-digest-no-ai-llm",
-      "fileKey": "1d4e6220-2b6f-4a61-aadb-4c56b2e083a0",
-      "revision": "22",
-      "relPath": "customize/686/desktop.js",
-      "deployedAt": "2026-05-19T12:37:04.611Z",
+      "fileKey": "070626f8-5bb4-40a6-b046-be5d4a141355",
+      "revision": "23",
+      "relPath": ".kintone-deploy/upload-686.js",
+      "deployedAt": "2026-05-21T08:19:49.763Z",
       "note": null
     },
     "687": {
       "build": "2026-05-17-687-dash-link-v1",
-      "fileKey": "d56ec104-a163-4af4-8506-7b3c87aa9806",
-      "revision": "6",
-      "relPath": "customize/687/desktop.js",
-      "deployedAt": "2026-05-17T06:48:00.429Z",
+      "fileKey": "f4b76dec-4212-44f4-b8db-cf4deb00b28b",
+      "revision": "7",
+      "relPath": ".kintone-deploy/upload-687.js",
+      "deployedAt": "2026-05-21T08:19:52.635Z",
       "note": null
     },
     "688": {
       "build": "2026-05-17-688-workdays-dash-v4-syntax-fix",
-      "fileKey": "9a06e604-4903-47b7-b2a8-20cb7ea35bc5",
-      "revision": "9",
-      "relPath": "customize/688/desktop.js",
-      "deployedAt": "2026-05-17T07:11:42.760Z",
+      "fileKey": "91447155-618e-426e-a871-e303069e279b",
+      "revision": "10",
+      "relPath": ".kintone-deploy/upload-688.js",
+      "deployedAt": "2026-05-21T08:19:55.628Z",
       "note": null
     }
   }
