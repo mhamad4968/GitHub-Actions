@@ -26,33 +26,35 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { execSync, spawnSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import { maybeArchivePreviousMonth } from './archive-reports.mjs';
+import {
+  IS_WIN,
+  jstYmdIso,
+  resolveRepoNodeBinDir,
+  runRepoShellCmd,
+} from './lib/repo-node-env.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
 
-/** NVM `bin` dir matching `.nvmrc` (same logic as `scripts/print-nvm-node-bin.sh`). */
-function resolveNvmNodeBinDir() {
-  try {
-    const sh = path.join(__dirname, 'print-nvm-node-bin.sh');
-    return execSync(`bash "${sh}"`, { cwd: REPO_ROOT, encoding: 'utf8' }).trim();
-  } catch {
-    return path.dirname(process.execPath);
-  }
-}
-
 // ── ユーティリティ ──────────────────────────────────
 const today = (() => {
-  const d = new Date();
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const iso = jstYmdIso();
+  const jstNow = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Tokyo',
+    weekday: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).formatToParts(new Date());
+  const weekday = jstNow.find((p) => p.type === 'weekday')?.value ?? '???';
+  const hour = jstNow.find((p) => p.type === 'hour')?.value ?? '00';
+  const minute = jstNow.find((p) => p.type === 'minute')?.value ?? '00';
   return {
-    iso: `${yyyy}-${mm}-${dd}`,
-    label: `${yyyy}-${mm}-${dd} (${days[d.getDay()]}) ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`,
+    iso,
+    label: `${iso} (${weekday}) ${hour}:${minute}`,
   };
 })();
 
@@ -71,16 +73,16 @@ function log(msg) {
 
 function runCmd(label, cmd, opts = {}) {
   log(`▶ ${label}: ${cmd}`);
-  const res = spawnSync('bash', ['-lc', cmd], {
+  const res = runRepoShellCmd(cmd, {
     cwd: REPO_ROOT,
-    encoding: 'utf8',
-    timeout: opts.timeoutMs ?? 120_000,
-    env: { ...process.env, FORCE_COLOR: '0', NO_COLOR: '1' },
+    timeoutMs: opts.timeoutMs ?? 120_000,
+    tz: 'Asia/Tokyo',
+    env: { FORCE_COLOR: '0', NO_COLOR: '1' },
   });
   const stdout = (res.stdout || '').trim();
   const stderr = (res.stderr || '').trim();
   const ok = res.status === 0;
-  log(`  exit=${res.status} stdout=${stdout.length}B stderr=${stderr.length}B`);
+  log(`  exit=${res.status} stdout=${stdout.length}B stderr=${stderr.length}B platform=${IS_WIN ? 'win32' : process.platform}`);
   return { ok, exit: res.status, stdout, stderr };
 }
 
@@ -119,7 +121,7 @@ const sections = [];
 sections.push(`# 🌅 朝のブリーフィング — ${today.label}`);
 sections.push('');
 sections.push(
-  '> 本ファイルは `scripts/daily-morning-prep.mjs` が毎朝 06:00（WSL cron）に自動生成しています。'
+  '> 本ファイルは `scripts/daily-morning-prep.mjs` が毎朝 06:00（**WSL cron**）または **Windows 上の `npm run morning:ensure`** で自動生成しています。'
 );
 sections.push('> AI エージェントは WORKFLOW.md §Phase 0 に従い、最初にこのファイルを読みます。');
 sections.push('');
@@ -409,7 +411,7 @@ sections.push('');
 // → `.nvmrc` に合う NVM の bin を PATH 先頭に強制（`scripts/print-nvm-node-bin.sh` と同値）
 sections.push('## 7. RAG 知識ベース更新');
 sections.push('');
-const NVM_NODE_BIN = resolveNvmNodeBinDir();
+const NVM_NODE_BIN = resolveRepoNodeBinDir();
 const ragCmd = [
   `export PATH=${NVM_NODE_BIN}:$PATH`,
   'cp RULES-INDEX.md kintone-apps.md AGENTS.md WORKFLOW.md .rag/extra-docs/ 2>/dev/null || true',

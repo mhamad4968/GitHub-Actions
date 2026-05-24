@@ -18,6 +18,13 @@ const ROOT = path.resolve(__dirname, '..');
 const DEST_DIR = path.join(ROOT, '.rag', 'extra-docs');
 const FILES = ['RULES-INDEX.md', 'kintone-apps.md', 'AGENTS.md', 'WORKFLOW.md'];
 
+const PROJECT_DOCS_MIRROR = [
+  {
+    src: 'docs/plans/2026-05-23-business-improvement-proposal-spec.md',
+    dest: 'business-improvement-proposal-spec-2026-05-23.md',
+  },
+];
+
 /** Phase 2-B: 憲法ナビ（正本4の追加ではなく .rag/extra-docs/constitution/ へミラー） */
 const CONSTITUTION_MIRROR = [
   { src: 'docs/constitution/00-rule-hierarchy.md', dest: 'constitution/00-rule-hierarchy.md' },
@@ -59,6 +66,30 @@ for (const name of FILES) {
   }
 }
 
+const projectDiffs = [];
+for (const { src, dest } of PROJECT_DOCS_MIRROR) {
+  const srcPath = path.join(ROOT, src);
+  const destPath = path.join(DEST_DIR, dest);
+  if (!fs.existsSync(srcPath)) {
+    projectDiffs.push(`${src} (missing source)`);
+    exit = 1;
+    continue;
+  }
+  const srcBuf = fs.readFileSync(srcPath);
+  const dstBuf = fs.existsSync(destPath) ? fs.readFileSync(destPath) : null;
+  if (dstBuf === null || !srcBuf.equals(dstBuf)) {
+    projectDiffs.push(dest);
+    if (CHECK) {
+      exit = 1;
+      continue;
+    }
+    if (!DRY) {
+      fs.mkdirSync(path.dirname(destPath), { recursive: true });
+      fs.copyFileSync(srcPath, destPath);
+    }
+  }
+}
+
 const constitutionDiffs = [];
 for (const { src, dest } of CONSTITUTION_MIRROR) {
   const srcPath = path.join(ROOT, src);
@@ -88,10 +119,11 @@ if (CHECK) {
     console.error('❌ rag-mirror-canonical-docs: 正本と .rag/extra-docs が一致しません:');
     for (const n of diffs) console.error(`   - ${n}`);
     for (const n of constitutionDiffs) console.error(`   - constitution/${n}`);
+    for (const n of projectDiffs) console.error(`   - project/${n}`);
     console.error('   対応: npm run rag:mirror:canonical-docs');
     process.exit(1);
   }
-  console.log('✅ rag-mirror-canonical-docs: 4 正本 + constitution ミラー一致');
+  console.log('✅ rag-mirror-canonical-docs: 4 正本 + constitution + project ミラー一致');
   process.exit(0);
 }
 
@@ -101,10 +133,13 @@ if (DRY) {
   process.exit(0);
 }
 
-if (diffs.length === 0 && constitutionDiffs.length === 0) {
+if (diffs.length === 0 && constitutionDiffs.length === 0 && projectDiffs.length === 0) {
   console.log('rag-mirror-canonical-docs: 既に一致（スキップ）');
 } else {
   if (diffs.length) console.log('rag-mirror-canonical-docs: コピー完了 →', diffs.join(', '));
+  if (projectDiffs.length) {
+    console.log('rag-mirror-canonical-docs: project ミラー →', projectDiffs.join(', '));
+  }
   if (constitutionDiffs.length) {
     console.log('rag-mirror-canonical-docs: constitution ミラー →', constitutionDiffs.join(', '));
   }

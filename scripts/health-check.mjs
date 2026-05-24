@@ -26,11 +26,18 @@ import path from 'node:path';
 import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
+import { readCrontabText } from './lib/session-clock-cron-node.mjs';
+import {
+  maybeReexecWithRepoNode,
+  repoNodeExecutable,
+} from './lib/repo-node-env.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..');
 const ARG_JSON = process.argv.includes('--json');
 const IS_WIN = process.platform === 'win32';
+
+maybeReexecWithRepoNode(__filename, process.argv.slice(2));
 
 /** Windows ネイティブ実行時は MCP 偽陰性回避を既定 ON（従来は手動で HEALTH_CHECK_STRICT_WIN=1 が必要だった） */
 if (IS_WIN && process.env.HEALTH_CHECK_STRICT_WIN == null) {
@@ -484,11 +491,12 @@ if (!fs.existsSync(mcpJsonPath)) {
 }
 
 // ───── Node ─────
-const nodeRes = spawnSync('node', ['--version'], { encoding: 'utf8' });
+const nodeProbeBin = IS_WIN ? 'node' : repoNodeExecutable();
+const nodeRes = spawnSync(nodeProbeBin, ['--version'], { encoding: 'utf8' });
 const npmVersion = resolveNpmVersion();
 const whichRes = IS_WIN
   ? spawnSync('where.exe', ['node'], { encoding: 'utf8' })
-  : spawnSync('which', ['node'], { encoding: 'utf8' });
+  : spawnSync('which', [nodeProbeBin], { encoding: 'utf8' });
 const nvmV24 = checkNvmV24Present();
 const nvmV24Runtime = probeNvmV24Runtime();
 const nvmWslDefault = probeWslNvmDefaultVersion();
@@ -496,9 +504,14 @@ const nvmrcBin = probeNvmrcBinDir();
 const nodeVerStr = (nodeRes.stdout || '').trim().replace(/^v/i, '');
 const nodeMajor = Number(nodeVerStr.split('.')[0]) || 0;
 const nodeOkWindows = IS_WIN && nodeMajor >= 20;
+const nodeOkLinux = !IS_WIN && nodeMajor >= 20;
 const nvmDefaultOk = /^v24/i.test(nvmWslDefault);
 const nvmStackOk =
-  nvmV24 && nvmV24Runtime.ok && nvmDefaultOk && nvmrcBin.ok && (IS_WIN ? nodeOkWindows : /^v24/i.test((nodeRes.stdout || '').trim()));
+  nvmV24 &&
+  nvmV24Runtime.ok &&
+  nvmDefaultOk &&
+  nvmrcBin.ok &&
+  (IS_WIN ? nodeOkWindows : nodeOkLinux);
 
 const node = {
   current: (nodeRes.stdout || '').trim() || 'unknown',
@@ -518,8 +531,7 @@ const node = {
 const disk = readDiskAndCacheStats();
 const memory = { line: readMemoryLine(), status: 'ok' };
 
-const cronRes = spawnSync('bash', ['-lc', 'crontab -l 2>/dev/null'], { encoding: 'utf8' });
-const cronRaw = (cronRes.stdout || '').trim();
+const cronRaw = (IS_WIN ? readCrontabText() : (spawnSync('bash', ['-lc', 'crontab -l 2>/dev/null'], { encoding: 'utf8' }).stdout || '')).trim();
 const cron = {
   has_morning_prep: /daily-morning-prep/.test(cronRaw),
   raw: cronRaw,
@@ -731,7 +743,7 @@ for (const r of mcpResults) {
 out('');
 out('### システム');
 out('');
-out(`- Node（プローブ / Cursor または PATH）: \`${node.current}\` (npm \`${node.npm}\`) — ${nodeOkWindows || (!IS_WIN && /^v24/i.test(node.current)) ? '✅' : '❌'}`);
+out(`- Node（プローブ / Cursor または PATH）: \`${node.current}\` (npm \`${node.npm}\`) — ${nodeOkWindows || nodeOkLinux ? '✅' : '❌'}`);
 out(`  - which: \`${node.which_node}\``);
 out(`- NVM v24 スタック（cron・MCP・朝 prep 正本）:`);
 out(`  - バイナリ存在: ${node.nvm_v24_present ? '✅' : '❌'} \`${NVM_V24_DIR}\``);

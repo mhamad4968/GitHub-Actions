@@ -1,0 +1,69 @@
+{
+  "version": "2026-05-23",
+  "source": "docs/plans/2026-05-23-business-improvement-proposal-spec.md §4.3.1",
+  "note": "評価基準（点数・段階・ランク境界）は変更不可（Q70）",
+  "proposalTypes": {
+    "業務改善提案": {
+      "items": [
+        {
+          "axis": "効果",
+          "maxPoints": 10,
+          "levels": [
+            { "stage": "①", "points": 10 },
+            { "stage": "②", "points": 8 },
+            { "stage": "③", "points": 6 },
+            { "stage": "④", "points": 4 },
+            { "stage": "⑤", "points": 2 }
+          ]
+        },
+        {
+          "axis": "工夫度",
+          "maxPoints": 5,
+          "levels": [
+            { "stage": "①", "points": 5 },
+            { "stage": "②", "points": 4 },
+            { "stage": "③", "points": 3 },
+            { "stage": "④", "points": 2 },
+            { "stage": "⑤", "points": 1 }
+          ]
+        },
+        {
+          "axis": "努力度",
+          "maxPoints": 5,
+          "levels": [
+            { "stage": "①", "points": 5 },
+            { "stage": "②", "points": 4 },
+            { "stage": "③", "points": 3 },
+            { "stage": "④", "points": 2 },
+            { "stage": "⑤", "points": 1 }
+          ]
+        }
+      ],
+      "rankThresholds": [
+        { "rank": "A", "min": 18, "max": null },
+        { "rank": "B", "min": 14, "max": 17 },
+        { "rank": "C", "min": null, "max": 13 }
+      ]
+    },
+    "アイデア提案": {
+      "items": [
+        {
+          "axis": "総合的審査",
+          "maxPoints": 10,
+          "levels": [
+            { "stage": "①", "points": 10 },
+            { "stage": "②", "points": 8 },
+            { "stage": "③", "points": 6 },
+            { "stage": "④", "points": 4 },
+            { "stage": "⑤", "points": 2 }
+          ]
+        }
+      ],
+      "rankThresholds": [
+        { "rank": "A", "min": 10, "max": null },
+        { "rank": "B", "min": 7, "max": 9 },
+        { "rank": "C", "min": null, "max": 6 }
+      ]
+    }
+  }
+}

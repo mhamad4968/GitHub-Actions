@@ -1,0 +1,660 @@
+{
+  "業務改善_評価点3": {
+    "type": "NUMBER",
+    "code": "業務改善_評価点3",
+    "label": "評価点",
+    "noLabel": false,
+    "required": false,
+    "minValue": "",
+    "maxValue": "",
+    "digit": false,
+    "unique": false,
+    "defaultValue": "",
+    "displayScale": "",
+    "unit": "",
+    "unitPosition": "BEFORE"
+  },
+  "添付ファイル_0": {
+    "type": "FILE",
+    "code": "添付ファイル_0",
+    "label": "添付ファイル",
+    "noLabel": false,
+    "required": false,
+    "thumbnailSize": "150"
+  },
+  "業務改善_評価点1": {
+    "type": "NUMBER",
+    "code": "業務改善_評価点1",
+    "label": "評価点",
+    "noLabel": false,
+    "required": false,
+    "minValue": "",
+    "maxValue": "",
+    "digit": false,
+    "unique": false,
+    "defaultValue": "",
+    "displayScale": "",
+    "unit": "",
+    "unitPosition": "BEFORE"
+  },
+  "レコード番号": {
+    "type": "RECORD_NUMBER",
+    "code": "レコード番号",
+    "label": "レコード番号",
+    "noLabel": false
+  },
+  "業務改善_評価点2": {
+    "type": "NUMBER",
+    "code": "業務改善_評価点2",
+    "label": "評価点",
+    "noLabel": false,
+    "required": false,
+    "minValue": "",
+    "maxValue": "",
+    "digit": false,
+    "unique": false,
+    "defaultValue": "",
+    "displayScale": "",
+    "unit": "",
+    "unitPosition": "BEFORE"
+  },
+  "更新者": {
+    "type": "MODIFIER",
+    "code": "更新者",
+    "label": "更新者",
+    "noLabel": false
+  },
+  "ステータス": {
+    "type": "STATUS",
+    "code": "ステータス",
+    "label": "ステータス",
+    "enabled": true
+  },
+  "合計評価点_業務改善提案": {
+    "type": "CALC",
+    "code": "合計評価点_業務改善提案",
+    "label": "合計評価点（業務改善提案）",
+    "noLabel": false,
+    "required": false,
+    "expression": "IF(業務改善提案=\"アイディア提案\",\"\",業務改善_評価点1+業務改善_評価点2+業務改善_評価点3)",
+    "format": "NUMBER_DIGIT",
+    "displayScale": "",
+    "hideExpression": false,
+    "unit": "",
+    "unitPosition": "BEFORE"
+  },
+  "効果": {
+    "type": "RICH_TEXT",
+    "code": "効果",
+    "label": "効果（1行40字、120文字以内で記入ください）",
+    "noLabel": false,
+    "required": false,
+    "defaultValue": ""
+  },
+  "業務改善提案": {
+    "type": "RADIO_BUTTON",
+    "code": "業務改善提案",
+    "label": "業務改善提案",
+    "noLabel": false,
+    "required": true,
+    "options": {
+      "業務改善提案": {
+        "label": "業務改善提案",
+        "index": "0"
+      },
+      "アイディア提案": {
+        "label": "アイディア提案",
+        "index": "1"
+      }
+    },
+    "defaultValue": "業務改善提案",
+    "align": "HORIZONTAL"
+  },
+  "業務改善_評価3": {
+    "type": "SINGLE_LINE_TEXT",
+    "code": "業務改善_評価3",
+    "label": "評価",
+    "noLabel": false,
+    "required": false,
+    "lookup": {
+      "relatedApp": {
+        "app": "83",
+        "code": ""
+      },
+      "relatedKeyField": "評価",
+      "fieldMappings": [
+        {
+          "field": "業務改善_評価点3",
+          "relatedField": "評価点"
+        }
+      ],
+      "lookupPickerFields": [
+        "評価",
+        "評価点"
+      ],
+      "filterCond": "評価種別 = \"業務改善提案評価：努力度\"",
+      "sort": "評価点 desc"
+    }
+  },
+  "業務改善_評価2": {
+    "type": "SINGLE_LINE_TEXT",
+    "code": "業務改善_評価2",
+    "label": "評価",
+    "noLabel": false,
+    "required": false,
+    "lookup": {
+      "relatedApp": {
+        "app": "83",
+        "code": ""
+      },
+      "relatedKeyField": "評価",
+      "fieldMappings": [
+        {
+          "field": "業務改善_評価点2",
+          "relatedField": "評価点"
+        }
+      ],
+      "lookupPickerFields": [
+        "評価",
+        "評価点"
+      ],
+      "filterCond": "評価種別 = \"業務改善提案評価：工夫度\"",
+      "sort": "評価点 desc"
+    }
+  },
+  "業務改善_評価1": {
+    "type": "SINGLE_LINE_TEXT",
+    "code": "業務改善_評価1",
+    "label": "評価",
+    "noLabel": false,
+    "required": false,
+    "lookup": {
+      "relatedApp": {
+        "app": "83",
+        "code": ""
+      },
+      "relatedKeyField": "評価",
+      "fieldMappings": [
+        {
+          "field": "業務改善_評価点1",
+          "relatedField": "評価点"
+        }
+      ],
+      "lookupPickerFields": [
+        "評価",
+        "評価点"
+      ],
+      "filterCond": "評価種別 = \"業務改善提案評価：評価\"",
+      "sort": "評価点 desc"
+    }
+  },
+  "年度処理": {
+    "type": "GROUP",
+    "code": "年度処理",
+    "label": "年度処理",
+    "noLabel": false,
+    "openGroup": false
+  },
+  "支店長判断_アイディア": {
+    "type": "CHECK_BOX",
+    "code": "支店長判断_アイディア",
+    "label": "支店長判断",
+    "noLabel": false,
+    "required": false,
+    "options": {
+      "レ": {
+        "label": "レ",
+        "index": "0"
+      }
+    },
+    "defaultValue": [],
+    "align": "HORIZONTAL"
+  },
+  "カテゴリー": {
+    "type": "CATEGORY",
+    "code": "カテゴリー",
+    "label": "カテゴリー",
+    "enabled": false
+  },
+  "評価ランク_最終決定": {
+    "type": "SINGLE_LINE_TEXT",
+    "code": "評価ランク_最終決定",
+    "label": "評価ランク（最終決定）",
+    "noLabel": false,
+    "required": false,
+    "lookup": {
+      "relatedApp": {
+        "app": "83",
+        "code": ""
+      },
+      "relatedKeyField": "評価",
+      "fieldMappings": [
+        {
+          "field": "ポイント数",
+          "relatedField": "評価点"
+        }
+      ],
+      "lookupPickerFields": [
+        "評価",
+        "評価点"
+      ],
+      "filterCond": "評価種別 = \"最終評価\"",
+      "sort": "評価点 desc"
+    }
+  },
+  "合計評価点_アイデア提案": {
+    "type": "CALC",
+    "code": "合計評価点_アイデア提案",
+    "label": "合計評価点（アイデア提案）",
+    "noLabel": false,
+    "required": false,
+    "expression": "IF(業務改善提案=\"業務改善提案\",\"\",アイディア提案_評価点1)",
+    "format": "NUMBER_DIGIT",
+    "displayScale": "",
+    "hideExpression": false,
+    "unit": "",
+    "unitPosition": "BEFORE"
+  },
+  "目的": {
+    "type": "RICH_TEXT",
+    "code": "目的",
+    "label": "目的（1行40字、120文字以内で記入ください）",
+    "noLabel": false,
+    "required": false,
+    "defaultValue": ""
+  },
+  "部署": {
+    "type": "DROP_DOWN",
+    "code": "部署",
+    "label": "部署",
+    "noLabel": false,
+    "required": false,
+    "options": {
+      "--- 【FRP事業部】---": {
+        "label": "--- 【FRP事業部】---",
+        "index": "38"
+      },
+      "長野営業所": {
+        "label": "長野営業所",
+        "index": "20"
+      },
+      "千葉営業所": {
+        "label": "千葉営業所",
+        "index": "26"
+      },
+      "東海支店": {
+        "label": "東海支店",
+        "index": "28"
+      },
+      "東北支店": {
+        "label": "東北支店",
+        "index": "13"
+      },
+      "関西営業所": {
+        "label": "関西営業所",
+        "index": "32"
+      },
+      "名古屋営業所": {
+        "label": "名古屋営業所",
+        "index": "31"
+      },
+      "東京支店-鎌ヶ谷倉庫": {
+        "label": "東京支店-鎌ヶ谷倉庫",
+        "index": "24"
+      },
+      "経理部": {
+        "label": "経理部",
+        "index": "2"
+      },
+      "--- 【リフォーム事業統括部】---": {
+        "label": "--- 【リフォーム事業統括部】---",
+        "index": "33"
+      },
+      "盛岡営業所": {
+        "label": "盛岡営業所",
+        "index": "15"
+      },
+      "高崎営業所": {
+        "label": "高崎営業所",
+        "index": "21"
+      },
+      "安全推進部": {
+        "label": "安全推進部",
+        "index": "6"
+      },
+      "東京営業所": {
+        "label": "東京営業所",
+        "index": "29"
+      },
+      "札幌支店": {
+        "label": "札幌支店",
+        "index": "34"
+      },
+      "メンテナンス技術部": {
+        "label": "メンテナンス技術部",
+        "index": "8"
+      },
+      "関越支店": {
+        "label": "関越支店",
+        "index": "18"
+      },
+      "郡山営業所": {
+        "label": "郡山営業所",
+        "index": "16"
+      },
+      "--- 【関越支店】 ---": {
+        "label": "--- 【関越支店】 ---",
+        "index": "17"
+      },
+      "秋田営業所": {
+        "label": "秋田営業所",
+        "index": "14"
+      },
+      "品質管理部": {
+        "label": "品質管理部",
+        "index": "11"
+      },
+      "--- 【東北支店】 ---": {
+        "label": "--- 【東北支店】 ---",
+        "index": "12"
+      },
+      "首都圏支店": {
+        "label": "首都圏支店",
+        "index": "35"
+      },
+      "鉄構支店": {
+        "label": "鉄構支店",
+        "index": "37"
+      },
+      "東京支店": {
+        "label": "東京支店",
+        "index": "23"
+      },
+      "総務部": {
+        "label": "総務部",
+        "index": "1"
+      },
+      "水戸営業所": {
+        "label": "水戸営業所",
+        "index": "25"
+      },
+      "--- 【鉄構支店】---": {
+        "label": "--- 【鉄構支店】---",
+        "index": "36"
+      },
+      "--- 【東京支店】 ---": {
+        "label": "--- 【東京支店】 ---",
+        "index": "22"
+      },
+      "塗装技術部": {
+        "label": "塗装技術部",
+        "index": "9"
+      },
+      "静岡営業所": {
+        "label": "静岡営業所",
+        "index": "30"
+      },
+      "--- 【本店】 ---": {
+        "label": "--- 【本店】 ---",
+        "index": "0"
+      },
+      "経営企画部": {
+        "label": "経営企画部",
+        "index": "3"
+      },
+      "施工推進部": {
+        "label": "施工推進部",
+        "index": "7"
+      },
+      "塗装技術部-FRP推進室": {
+        "label": "塗装技術部-FRP推進室",
+        "index": "10"
+      },
+      "経営企画部-システム推進室": {
+        "label": "経営企画部-システム推進室",
+        "index": "4"
+      },
+      "人事研修部": {
+        "label": "人事研修部",
+        "index": "5"
+      },
+      "--- 【東海支店】 ---": {
+        "label": "--- 【東海支店】 ---",
+        "index": "27"
+      },
+      "新潟営業所": {
+        "label": "新潟営業所",
+        "index": "19"
+      }
+    },
+    "defaultValue": ""
+  },
+  "アイデア提案評価": {
+    "type": "GROUP",
+    "code": "アイデア提案評価",
+    "label": "アイデア提案評価",
+    "noLabel": false,
+    "openGroup": true
+  },
+  "取込ステータス": {
+    "type": "DROP_DOWN",
+    "code": "取込ステータス",
+    "label": "取込ステータス",
+    "noLabel": false,
+    "required": false,
+    "options": {
+      "処理完了": {
+        "label": "処理完了",
+        "index": "1"
+      },
+      "未処理": {
+        "label": "未処理",
+        "index": "0"
+      }
+    },
+    "defaultValue": "未処理"
+  },
+  "作業者": {
+    "type": "STATUS_ASSIGNEE",
+    "code": "作業者",
+    "label": "作業者",
+    "enabled": true
+  },
+  "作成者": {
+    "type": "CREATOR",
+    "code": "作成者",
+    "label": "作成者",
+    "noLabel": false
+  },
+  "支店長判断_業務改善": {
+    "type": "CHECK_BOX",
+    "code": "支店長判断_業務改善",
+    "label": "支店長判断",
+    "noLabel": false,
+    "required": false,
+    "options": {
+      "レ": {
+        "label": "レ",
+        "index": "0"
+      }
+    },
+    "defaultValue": [],
+    "align": "HORIZONTAL"
+  },
+  "更新日時": {
+    "type": "UPDATED_TIME",
+    "code": "更新日時",
+    "label": "更新日時",
+    "noLabel": false
+  },
+  "提案日": {
+    "type": "DATE",
+    "code": "提案日",
+    "label": "提案日",
+    "noLabel": false,
+    "required": false,
+    "unique": false,
+    "defaultValue": "",
+    "defaultNowValue": true
+  },
+  "提案者一覧": {
+    "type": "SUBTABLE",
+    "code": "提案者一覧",
+    "noLabel": true,
+    "label": "提案者一覧",
+    "fields": {
+      "社員番号": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "社員番号",
+        "label": "社員番号",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "提案者": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "提案者",
+        "label": "提案者",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      }
+    }
+  },
+  "アイディア提案_評価1": {
+    "type": "SINGLE_LINE_TEXT",
+    "code": "アイディア提案_評価1",
+    "label": "評価",
+    "noLabel": false,
+    "required": false,
+    "lookup": {
+      "relatedApp": {
+        "app": "83",
+        "code": ""
+      },
+      "relatedKeyField": "評価",
+      "fieldMappings": [
+        {
+          "field": "アイディア提案_評価点1",
+          "relatedField": "評価点"
+        }
+      ],
+      "lookupPickerFields": [
+        "評価",
+        "評価点"
+      ],
+      "filterCond": "評価種別 = \"アイディア提案評価：総合評価\"",
+      "sort": "評価点 desc"
+    }
+  },
+  "問題点": {
+    "type": "RICH_TEXT",
+    "code": "問題点",
+    "label": "問題点（1行40字、120文字以内で記入ください）",
+    "noLabel": false,
+    "required": false,
+    "defaultValue": ""
+  },
+  "アイディア提案_評価点1": {
+    "type": "NUMBER",
+    "code": "アイディア提案_評価点1",
+    "label": "評価点",
+    "noLabel": false,
+    "required": false,
+    "minValue": "",
+    "maxValue": "",
+    "digit": false,
+    "unique": false,
+    "defaultValue": "",
+    "displayScale": "",
+    "unit": "",
+    "unitPosition": "BEFORE"
+  },
+  "業務改善提案評価": {
+    "type": "GROUP",
+    "code": "業務改善提案評価",
+    "label": "業務改善提案評価",
+    "noLabel": false,
+    "openGroup": true
+  },
+  "評価ランク_自動判定": {
+    "type": "SINGLE_LINE_TEXT",
+    "code": "評価ランク_自動判定",
+    "label": "評価ランク（自動判定）",
+    "noLabel": false,
+    "required": false,
+    "minLength": "",
+    "maxLength": "",
+    "expression": "IF(業務改善提案=\"業務改善提案\",\nIF(合計評価点_業務改善提案>17,\"A\",IF(合計評価点_業務改善提案>13,\"B\",\"C\")),\nIF(合計評価点_アイデア提案>9,\"A\",IF(合計評価点_アイデア提案>8,\"B\",\"C\"))\n)",
+    "hideExpression": false,
+    "unique": false,
+    "defaultValue": ""
+  },
+  "現状": {
+    "type": "RICH_TEXT",
+    "code": "現状",
+    "label": "現状（1行40字、120文字以内で記入ください）",
+    "noLabel": false,
+    "required": false,
+    "defaultValue": ""
+  },
+  "ポイント数": {
+    "type": "NUMBER",
+    "code": "ポイント数",
+    "label": "ポイント数",
+    "noLabel": false,
+    "required": false,
+    "minValue": "",
+    "maxValue": "",
+    "digit": false,
+    "unique": false,
+    "defaultValue": "",
+    "displayScale": "",
+    "unit": "",
+    "unitPosition": "BEFORE"
+  },
+  "改善案": {
+    "type": "RICH_TEXT",
+    "code": "改善案",
+    "label": "改善案（1行40字、120文字以内で記入ください）",
+    "noLabel": false,
+    "required": false,
+    "defaultValue": ""
+  },
+  "評価": {
+    "type": "GROUP",
+    "code": "評価",
+    "label": "評価",
+    "noLabel": false,
+    "openGroup": true
+  },
+  "作成日時": {
+    "type": "CREATED_TIME",
+    "code": "作成日時",
+    "label": "作成日時",
+    "noLabel": false
+  },
+  "提案件名": {
+    "type": "SINGLE_LINE_TEXT",
+    "code": "提案件名",
+    "label": "提案件名",
+    "noLabel": false,
+    "required": false,
+    "minLength": "",
+    "maxLength": "",
+    "expression": "",
+    "hideExpression": false,
+    "unique": false,
+    "defaultValue": ""
+  }
+}
