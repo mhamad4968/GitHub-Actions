@@ -32,12 +32,15 @@
   **27-USER683-CLAUDE-RELAY-SESSION.txt**（read-pack）  
   （read-pack は **08〜20・26・27** をリポと同名コピー。番号付き **.md** も同梱）
 
-■ 実装日冒頭（CEO承認 A1・必須）  
-  DeepSeek 1 問（§50-3-8）→ 突合3行 → npm run cio:guard:5038 -- --stamp  
-  （customize/** / SPEC / deploy / 80行超 Diff の前。スキップは §50-3-8 スキップ理由: 1行）
+■ 実装日冒頭（CEO承認 A1 + D1〜D4 是正・必須）  
+  npm run cio:pre-implement-gate  
+  → DeepSeek 1 問（§50-3-8）→ 突合3行 → npm run cio:guard:5038 -- --stamp  
+  （customize/** / SPEC / deploy / 80行超 / PPTX資料 の前。スキップは §50-3-8 スキップ理由: 1行）  
+  毎ターン §1 四行先頭必須。締めは cio:report-verify-response exit 0。  
+  正本: docs/runbooks/cio-four-ai-violation-remediation.md
 
-■ Composer（CEO承認 B3）  
-  80行超 or customize/** → Composer 2.5 Subagent（🎖️ Composer=Subagent実施済）
+■ Composer（CEO承認 B3 + D3）  
+  80行超 or customize/** → Composer 2.5 Subagent のみ（CIO本体 Diff 禁止）
 
 ■ MCP・環境増強  
   npm run cio:mcp:env … 日常（SUMMARY OK 6/6）  

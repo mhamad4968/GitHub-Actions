@@ -23,7 +23,17 @@
   1. DeepSeek 1 問（§50-3-8・盲点3点）→ 2. CIO 突合3行 → 3. npm run cio:guard:5038 -- --stamp
   customize/**・SPEC.md・deploy:*・80行超 Diff の前に必須。スキップ時は §50-3-8 スキップ理由: を1行。
 
-【Composer 起用（CEO承認 B3）】
+【違反是正ゲート（CEO承認 D1〜D4・2026-05-22 即時施行 — 5/22違反の再発防止）】
+  着手前: npm run cio:pre-implement-gate（チェックリスト表示）
+  毎ターン: §1 四行を応答先頭に必須（欠落＝報告違反）
+  D1: kintone/customize/deploy 前 — DeepSeek→突合3行→5038 stamp（証跡 logs/cio-four-ai-governance/）
+  D2: PPTX/資料 — 年次矛盾・学習負荷・人事説明の盲点1問を DeepSeek に含める
+  D3: customize/** or 80行超 — Composer Subagent のみ Diff（CIO本体禁止）
+  D4: 報告・締め — npm run cio:report-verify-response -- --file <下書き> exit 0 必須
+  正本: docs/runbooks/cio-four-ai-violation-remediation.md
+  D5（674目視）: 未承認 — 実施しない
+
+【Composer 起用（CEO承認 B3・D3で再強調）】
   変更 80 行超 or customize/** → [🎖️] に Composer=Subagent実施済。CIO 本体が大量 Diff しない。
 
 【定例（CEO承認 A2/A3）】
