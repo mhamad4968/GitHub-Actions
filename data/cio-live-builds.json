@@ -18,11 +18,11 @@
       "note": null
     },
     "674": {
-      "build": "2026-05-21-list-create-modal-clear-btn",
-      "fileKey": "e8ac3ba6-86f3-46cb-a8cb-ad51ed568cb3",
-      "revision": "224",
+      "build": "2026-05-22-674-index-m365-shisan-checkbox-filter",
+      "fileKey": "6b5890f6-fdc1-401f-89dc-4a5860dd4a50",
+      "revision": "228",
       "relPath": "customize/new-pc-ledger-v1/desktop.js",
-      "deployedAt": "2026-05-21T11:50:10.095Z",
+      "deployedAt": "2026-05-22T12:52:59.612Z",
       "note": null
     },
     "677": {
@@ -34,11 +34,11 @@
       "note": null
     },
     "678": {
-      "build": "2026-05-21-678-insert-order-auto-rebalance",
-      "fileKey": "a3afff52-50d8-47a1-9668-21aec0589144",
-      "revision": "162",
-      "relPath": ".kintone-deploy/upload-678.js",
-      "deployedAt": "2026-05-21T09:28:18.286Z",
+      "build": "2026-05-22-678-payment-date-label-usage-month",
+      "fileKey": "3db9f10b-ff67-4b09-ab56-29cd2d124228",
+      "revision": "165",
+      "relPath": "customize/678/desktop.js",
+      "deployedAt": "2026-05-22T12:59:13.803Z",
       "note": null
     },
     "679": {
@@ -58,19 +58,19 @@
       "note": null
     },
     "683": {
-      "build": "2026-05-16-683-print-2page-tight-v2",
-      "fileKey": "ba2066bb-0cb1-4c8f-98e9-d93b9b881166",
-      "revision": "76",
+      "build": "2026-05-22-683-print-month-summary-12pt",
+      "fileKey": "8117dc58-bc6f-4994-8fd0-50e6d7bab81f",
+      "revision": "78",
       "relPath": "customize/683/desktop.js",
-      "deployedAt": "2026-05-16T10:47:21.012Z",
+      "deployedAt": "2026-05-22T12:26:29.362Z",
       "note": null
     },
     "686": {
-      "build": "2026-05-19-686-ict-digest-no-ai-llm",
-      "fileKey": "070626f8-5bb4-40a6-b046-be5d4a141355",
-      "revision": "23",
-      "relPath": ".kintone-deploy/upload-686.js",
-      "deployedAt": "2026-05-21T08:19:49.763Z",
+      "build": "2026-05-24-686-domestic-links-only",
+      "fileKey": "d252a061-c423-409a-891d-575fc5ac416b",
+      "revision": "24",
+      "relPath": "customize/686/desktop.js",
+      "deployedAt": "2026-05-24T00:04:57.537Z",
       "note": null
     },
     "687": {

@@ -7,7 +7,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-19-686-ict-digest-no-ai-llm';
+  const BUILD = '2026-05-24-686-domestic-links-only';
   const STORE_APP_ID =
     typeof window.ICT_DIGEST_STORE_APP === 'number' ? window.ICT_DIGEST_STORE_APP : 685;
 
@@ -111,36 +111,63 @@
       .replace(/"/g, '&quot;');
   }
 
-  var MSRC_VULN_PAGE_RE =
-    /^https?:\/\/msrc\.microsoft\.com\/update-guide\/vulnerability\/(CVE-\d{4}-\d+)\/?$/i;
-  var NON_MS_PRODUCT_RE =
-    /postgresql|postgres\b|nginx\b|linux\s+kernel|apache\s+http|openssl\b|mariadb|mysql\b|openssh|docker\b|kubernetes|vmware|fortinet|ivanti|wordpress|tomcat\b|jetty|jenkins|gitlab|jira\b/i;
+  var DOMESTIC_HOSTS = {
+    'qiita.com': 1,
+    'www.qiita.com': 1,
+    'zenn.dev': 1,
+    'b.hatena.ne.jp': 1,
+    'codezine.jp': 1,
+    'www.codezine.jp': 1,
+    'japan.cnet.com': 1,
+    'feeds.japan.cnet.com': 1,
+    'japan.zdnet.com': 1,
+    'feeds.japan.zdnet.com': 1,
+    'ascii.jp': 1,
+    'www.ascii.jp': 1,
+    'xtech.nikkei.com': 1,
+    'www.nikkei.com': 1,
+    'ipa.go.jp': 1,
+    'www.ipa.go.jp': 1,
+    'scan.netsecurity.ne.jp': 1,
+    'www.netsecurity.ne.jp': 1,
+    'pc.watch.impress.co.jp': 1,
+    'internet.watch.impress.co.jp': 1,
+    'forest.watch.impress.co.jp': 1,
+    'www.itmedia.co.jp': 1,
+    'rss.itmedia.co.jp': 1,
+    'www.atmarkit.co.jp': 1,
+  };
 
-  function nvdDetailUrl(cveId) {
-    return 'https://nvd.nist.gov/vuln/detail/' + String(cveId).toUpperCase();
-  }
+  var INTERNATIONAL_HOSTS = {
+    'msrc.microsoft.com': 1,
+    'www.microsoft.com': 1,
+    'microsoft.com': 1,
+    'blogs.windows.com': 1,
+    'www.windows.com': 1,
+    'nvd.nist.gov': 1,
+    'api.msrc.microsoft.com': 1,
+  };
 
-  function shouldPreferNvdOverMsrc(title, overview) {
-    return NON_MS_PRODUCT_RE.test(String(title) + '\n' + String(overview));
-  }
-
-  /** MSRC 個別 CVE ページは Microsoft 製品のみ。PostgreSQL / NGINX 等は SPA が 404 */
-  function resolveArticleUrl(url, title, overview) {
-    var u = String(url || '').trim();
-    if (!u) return u;
-    var m = MSRC_VULN_PAGE_RE.exec(u);
-    if (!m) return u;
-    if (shouldPreferNvdOverMsrc(title, overview)) {
-      return nvdDetailUrl(m[1]);
+  /** source-region.ts isDomesticArticleUrl と同期 */
+  function isDomesticArticleUrl(url) {
+    var host;
+    try {
+      host = new URL(String(url || '').trim()).hostname.toLowerCase();
+    } catch (e) {
+      return false;
     }
-    return u;
+    if (DOMESTIC_HOSTS[host]) return true;
+    if (INTERNATIONAL_HOSTS[host]) return false;
+    if (host.endsWith('.go.jp')) return true;
+    if (host.endsWith('.jp')) return true;
+    if (/\.japan\./i.test(host) || host.indexOf('japan.') === 0) return true;
+    if (host.indexOf('itmedia.co.jp') >= 0 || host.endsWith('.impress.co.jp')) return true;
+    if (host.indexOf('nikkei.com') >= 0) return true;
+    return false;
   }
 
-  function linkResolutionNote(url, title, overview) {
-    var raw = String(url || '').trim();
-    var resolved = resolveArticleUrl(raw, title, overview);
-    if (resolved === raw || !MSRC_VULN_PAGE_RE.test(raw)) return '';
-    return 'MSRC 個別ページは当該 CVE が掲載されないため NVD を表示しています';
+  function isDomesticRecord(rec) {
+    return isDomesticArticleUrl(recordUrl(rec));
   }
 
   function fetchAllRecords(query) {
@@ -214,9 +241,7 @@
     var pub = (rec[FC.published_at] && rec[FC.published_at].value) || '';
     var cat = displayCategory(rec);
     var overview = (rec[FC.overview] && rec[FC.overview].value) || '';
-    var rawUrl = recordUrl(rec);
-    var url = resolveArticleUrl(rawUrl, title, overview);
-    var linkNote = linkResolutionNote(rawUrl, title, overview);
+    var url = recordUrl(rec);
     var ovHtml = overview
       .split('\n')
       .filter(Boolean)
@@ -255,9 +280,6 @@
       '<h3 class="ict-card-title">' +
       titleHtml +
       '</h3>' +
-      (linkNote
-        ? '<p class="ict-link-note">' + escapeHtml(linkNote) + '</p>'
-        : '') +
       (ovHtml ? '<div class="ict-overview">' + ovHtml + '</div>' : '') +
       '</article>'
     );
@@ -355,7 +377,7 @@
       '<header class="ict-top">' +
       '<h1>最新 ICT 情報掲示板</h1>' +
       '<p class="ict-top-lead">20以上の RSS を横断し、Gemini が「今日、インフラ・PC 管理で最重要」のニュースを1日最大5件に要約（【事象】【影響】【推奨】）</p>' +
-      '<p class="ict-top-note">本日の新着は最大5件まで（厳選）</p>' +
+      '<p class="ict-top-note">本日の新着は最大5件まで（厳選）・リンク先は国内サイトのみ表示</p>' +
       '</header>' +
       '<div class="ict-search-panel">' +
       '<div class="ict-search-row ict-search-row--main">' +
@@ -479,7 +501,7 @@
 
     document.getElementById('ict-list-status').textContent = '記事を読込中…';
     return fetchAllRecords('order by ' + FC.published_at + ' desc').then(function (records) {
-      state.all = records;
+      state.all = records.filter(isDomesticRecord);
       renderHero();
       renderList();
     });

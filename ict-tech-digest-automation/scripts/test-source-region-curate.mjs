@@ -10,7 +10,6 @@ import { resolveArticleUrl } from "../src/lib/article-url.js";
 import { curateWithGemini } from "../src/lib/gemini-curate.js";
 import { dedupeAndSort, fetchAllFeeds } from "../src/lib/rss.js";
 import { isDomesticArticleUrl } from "../src/lib/source-region.js";
-import { DX_DOMESTIC_ONLY_CATEGORY } from "../src/lib/field-codes.js";
 
 const SLOTS = 3;
 
@@ -48,23 +47,23 @@ async function main() {
   console.log(`[試験] Gemini 厳選結果: ${picks.length} 件`);
   for (const [i, p] of picks.entries()) {
     const dom = isDomesticArticleUrl(p.url);
-    const dxOk = p.category !== DX_DOMESTIC_ONLY_CATEGORY || dom;
     console.log(
-      `[試験] [${i + 1}] score=${p.importanceScore} domestic=${dom} dxOk=${dxOk}`,
+      `[試験] [${i + 1}] score=${p.importanceScore} domestic=${dom}`,
     );
     console.log(`       category=${p.category}`);
     console.log(`       url=${p.url}`);
     console.log(`       title=${p.title.slice(0, 60)}…`);
   }
 
-  const dxViolations = picks.filter(
-    (p) => p.category === DX_DOMESTIC_ONLY_CATEGORY && !isDomesticArticleUrl(p.url),
-  );
-  if (dxViolations.length > 0) {
-    console.error("[試験] NG: DXカテゴリに海外URLが残っています");
+  const overseasViolations = picks.filter((p) => !isDomesticArticleUrl(p.url));
+  if (overseasViolations.length > 0) {
+    console.error("[試験] NG: 海外URLが残っています");
+    for (const p of overseasViolations) {
+      console.error(`       url=${p.url}`);
+    }
     process.exit(1);
   }
-  console.log("[試験] OK: DXカテゴリの海外URLなし");
+  console.log("[試験] OK: すべて国内URL");
   console.log("[試験] 完了（kintone 登録なし）");
 }
 

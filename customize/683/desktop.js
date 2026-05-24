@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-16-683-print-2page-tight-v2';
+  const BUILD = '2026-05-22-683-print-month-summary-12pt';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
   /**
@@ -2155,7 +2155,7 @@
       '.us683-print-block{margin-bottom:3px;}' +
       '.us683-print-block.us683-print-hero-wrap{break-inside:avoid-page;}' +
       '.us683-print-h2{font-size:8.5pt;font-weight:700;margin:3px 0 2px;border-bottom:1px solid #222;padding-bottom:0;}' +
-      '.us683-print-month-summary{white-space:pre-wrap;border:1px solid #999;padding:4px;min-height:1.2em;background:#fafafa;font-size:7.5pt;line-height:1.22;}' +
+      '.us683-print-month-summary{white-space:pre-wrap;border:1px solid #999;padding:6px;min-height:1.2em;background:#fafafa;font-size:12pt;line-height:1.45;}' +
       '.us683-print-hero-wrap{border:1px solid #333;border-radius:2px;padding:4px!important;margin:0 0 4px!important;}' +
       '.us683-print-hero-wrap .us683-print-hero-inner{background:transparent!important;color:#000!important;' +
       'box-shadow:none!important;text-align:left!important;padding:0!important;margin:0!important;border-radius:0!important;}' +

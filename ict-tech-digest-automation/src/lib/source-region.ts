@@ -85,16 +85,25 @@ export function applyDomesticScoreBoost<T extends PickWithScore>(picks: T[]): T[
   }));
 }
 
-/** DX人材・IT資格・組織は国内 URL のみ残す */
+/** 掲示板リンク先は国内 URL のみ（全カテゴリ） */
 export function filterPicksBySourceRegion<T extends PickWithScore & { title?: string }>(
   picks: T[],
 ): T[] {
   return picks.filter((p) => {
-    if (p.category !== DX_DOMESTIC_ONLY_CATEGORY) return true;
     if (isDomesticArticleUrl(p.url)) return true;
     console.warn(
-      `[Gemini厳選] 国内限定カテゴリのためスキップ（海外URL）: category=${p.category} url=${p.url}`,
+      `[Gemini厳選] 国内URLのみのためスキップ（海外URL）: category=${p.category} url=${p.url}`,
     );
     return false;
   });
+}
+
+/** RSS 候補を国内 URL のみに絞る（Gemini 投入前） */
+export function filterDomesticArticlesOnly<T extends { url: string }>(articles: T[]): T[] {
+  const kept = articles.filter((a) => isDomesticArticleUrl(a.url));
+  const skipped = articles.length - kept.length;
+  if (skipped > 0) {
+    console.log(`[ICT収集] 海外URL候補を除外: ${skipped} 件（残り ${kept.length} 件）`);
+  }
+  return kept;
 }

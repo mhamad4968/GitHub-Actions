@@ -17,7 +17,8 @@
  *
  * Day 5 残タスク（未完了のみ）:
  *   - （一覧）**SKYSEA 状態チップ**: **当面 UI 非表示**（§4.8a）。`query` 内の `skysea_status in (...)` は **引き続き解釈**（旧 URL 互換）。再表示は SKYSEA 計画後。
- *   - （一覧）**絞り込み URL**: `query` と `npl674kw` から **キーワード・種別（・SKYSEA in）**を復元（当バーが生成した形式に準拠）。
+ *   - （一覧）**絞り込み URL**: `query` と `npl674kw` から **キーワード・種別（・SKYSEA in）・M365切替／資産台帳（済／未）**を復元（当バーが生成した形式に準拠）。
+ *   - （一覧）**M365切替**（`M365_kirikae`）・**資産台帳登録**（`shisandaicyo`）: チップ **済／未**（`in ("済")` / `not in ("済")`）。
  *   - **PC買替は実装済**（§4.10.3）。594 同趣旨。**627 二重更新なし**。v0.9.14: ボタン掛け先フォールバック＋遅延再 inject、`import_source=PC_REPLACE_FROM_674:<旧$id>`。
  *   - 新規・編集: **所属ヘルプ `<details>`（入れ方・コピー一覧）は表示しない**（2026-05-05 浜田指示）。**入力支援**: `document` **capture** でフィールド内クリックを捕捉（kintone 内側の `stopPropagation` より先）。**はい／いいえ** の z-index は kintone ヘッダより上。**明示ボタン**は **`#new-pc-ledger-buttons` 帯**に **「入力支援利用」**（個人・非保管→595／共有・JR→680。表示名は同一、`aria-label` で区別）（フィールド直下 DOM 挿入は廃止）。ヘッダの旧「社員名検索／所属候補」ボタンは**廃止**。**`pc_status`=保管**のときは種別横断で **ヘッダは全フィールドリセットのみ**。**種別／ステータス**は record を DOM と突合。**共有・個人の自動生成**: `m365_master_record_id` は **set 前に disabled 解除**。**`pc_serial_no` 等内部メタ子**（§4.2.1a）も **`record.set` 同期間だけ** disabled 解除してから反映。
  *   - **備考（note）**: 全種別で任意（保存前チェックでは必須にしない）。
@@ -31,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-21-list-create-modal-clear-btn';
+  const BUILD = '2026-05-22-674-index-m365-shisan-checkbox-filter';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -140,6 +141,10 @@
   const FC_NPL_TRANSFER_MANUAL_OPT = '転用';
   /** 転用ウィザードで廃棄した旧 PC の識別子を転記（§4.10.6・一覧キーワード検索対象） */
   const FC_NPL_DISPOSED_PC_COPY = 'npl_disposed_pc_copy';
+  /** 当方 M365 切替・資産台帳登録（CHECK_BOX・選択肢「済」） */
+  const FC_M365_KIRIKAE = 'M365_kirikae';
+  const FC_SHISAN_DAICHO = 'shisandaicyo';
+  const SEARCH674_CB_DONE_OPT = '済';
   /** 編集画面で転用チェックの直前状態（外すときの確認用） */
   let npl674PrevTransferManualChecked674 = false;
   /** `change` / `show` で同期した「転用」ON（`setTimeout` 内の `get()` 遅れ・重い DOM 全走査を避ける） */
@@ -2135,9 +2140,9 @@
     return /^jbm\d{4}$/.test(String(s || '').trim());
   }
 
-  /** §4.7.4: 共有/JR の 671 連動経路でフォームへ出す M365 PW（`logon_pw` の `kent0000` とは別） */
-  function m365SharedJrFormPassword674(_envMap) {
-    return 'kent0000K#';
+  /** §4.7.4: 共有/JR の 671 連動経路でフォームへ出す M365 PW（`logon_pw` の `kent0000` とは別・670 `M365_PW_SHARED_FIXED`） */
+  function m365SharedJrFormPassword674(envMap) {
+    return String((envMap && envMap.M365_PW_SHARED_FIXED) || 'kent2511K#').trim();
   }
 
   /** §5.3: 利用可 かつ usage_count<5 の最古 serial（共有プール。JR も同一プール） */
@@ -7089,9 +7094,9 @@ ${bodyInner}\
     modal.style.display = 'flex';
   }
 
-  // --- 一覧：§4.8a 検索（キーワード + 種別チップ + 転用PCチップ + datalist。SKYSEA チップは当面非表示・query 互換は維持） ---
+  // --- 一覧：§4.8a 検索（キーワード + 種別チップ + 転用PC + M365切替/資産台帳 済・未 + datalist。SKYSEA チップは当面非表示・query 互換は維持） ---
   const SEARCH674_WRAP_ID = 'new-pc-ledger-674-index-search';
-  const SEARCH674_WRAP_VER = '2026-05-11-v12-index-search-debug-flag';
+  const SEARCH674_WRAP_VER = '2026-05-22-v1-m365-shisan-cb-chips';
   const SEARCH674_DL_ID = 'new-pc-ledger-674-search-datalist';
   /** 一覧 URL: キーワード原文（空白区切り AND 用）を query と併せて復元する */
   const SEARCH674_URL_KW_PARAM = 'npl674kw';
@@ -7144,6 +7149,12 @@ ${bodyInner}\
     { value: 'インストール済', label: 'SKYSEA: 済' },
     { value: '未インストール', label: 'SKYSEA: 未Inst' },
     { value: 'インストール対象外', label: 'SKYSEA: 対象外' },
+  ];
+
+  /** 一覧チップ: CHECK_BOX「済」のみ／未チェック（`not in ("済")`） */
+  const SEARCH674_DONE_CB_FILTERS = [
+    { key: 'm365', field: FC_M365_KIRIKAE, labelDone: 'M365切替: 済', labelNone: 'M365切替: 未' },
+    { key: 'shisan', field: FC_SHISAN_DAICHO, labelDone: '資産台帳: 済', labelNone: '資産台帳: 未' },
   ];
 
   const cache674IndexSearch = { key: '', records: [], ts: 0 };
@@ -7203,13 +7214,47 @@ ${bodyInner}\
     return out;
   }
 
+  function escape674QueryRegex674(s) {
+    return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  /** @returns {'checked'|'unchecked'|null} */
+  function parse674CheckboxDoneFilter674(listQuery, fieldCode) {
+    const raw = String(listQuery || '');
+    if (!raw || !fieldCode) return null;
+    const optEsc = escape674QueryRegex674(escape674QueryLike(SEARCH674_CB_DONE_OPT));
+    const fcEsc = escape674QueryRegex674(fieldCode);
+    const inRe = new RegExp(
+      '\\(\\s*' + fcEsc + '\\s+in\\s*\\(\\s*"' + optEsc + '"\\s*\\)\\s*\\)',
+    );
+    const notInRe = new RegExp(
+      '\\(\\s*' + fcEsc + '\\s+not\\s+in\\s*\\(\\s*"' + optEsc + '"\\s*\\)\\s*\\)',
+    );
+    if (inRe.test(raw)) return 'checked';
+    if (notInRe.test(raw)) return 'unchecked';
+    return null;
+  }
+
+  function append674CheckboxDoneFilter674(parts, fieldCode, mode) {
+    if (!fieldCode || !mode) return;
+    const q = '"' + escape674QueryLike(SEARCH674_CB_DONE_OPT) + '"';
+    if (mode === 'checked') parts.push('(' + fieldCode + ' in (' + q + '))');
+    else if (mode === 'unchecked') parts.push('(' + fieldCode + ' not in (' + q + '))');
+  }
+
   /**
    * 一覧 URL の `query` を、検索バーの状態に分解（当バーが build した形式を想定。手編集 query は部分一致のみ反映）。
-   * @returns {{ keyword: string, types: string[], skysea: string[], transferOnly: boolean }}
+   * @returns {{ keyword: string, types: string[], skysea: string[], transferOnly: boolean, cbFilters: Record<string, 'checked'|'unchecked'|null> }}
    */
   function parse674ListQueryToBarState674(listQuery) {
     const raw = String(listQuery || '').trim();
-    const out = { keyword: '', types: [], skysea: [], transferOnly: false };
+    const out = {
+      keyword: '',
+      types: [],
+      skysea: [],
+      transferOnly: false,
+      cbFilters: { m365: null, shisan: null },
+    };
     if (!raw) return out;
 
     const typeRe = new RegExp('\\(\\s*' + FC_ACCOUNT_TYPE + '\\s+in\\s*\\(([^)]*)\\)\\s*\\)');
@@ -7241,6 +7286,9 @@ ${bodyInner}\
       '\\(\\s*' + FC_NPL_TRANSFER_MANUAL + '\\s+in\\s*\\(\\s*"' + optEscForTransferRe + '"\\s*\\)\\s*\\)',
     );
     out.transferOnly = transferRe.test(raw);
+
+    out.cbFilters.m365 = parse674CheckboxDoneFilter674(raw, FC_M365_KIRIKAE);
+    out.cbFilters.shisan = parse674CheckboxDoneFilter674(raw, FC_SHISAN_DAICHO);
 
     const likeNeedle = FC_PC_NAME + ' like "';
     const li = raw.indexOf(likeNeedle);
@@ -7320,6 +7368,13 @@ ${bodyInner}\
     ref.selectedSkysea.clear();
     for (let si = 0; si < st.skysea.length; si++) ref.selectedSkysea.add(st.skysea[si]);
     if (ref.transferBox) ref.transferBox.v = !!st.transferOnly;
+    if (ref.cbFilterBoxes && st.cbFilters) {
+      for (let cbi = 0; cbi < SEARCH674_DONE_CB_FILTERS.length; cbi++) {
+        const defCb = SEARCH674_DONE_CB_FILTERS[cbi];
+        const boxCb = ref.cbFilterBoxes[defCb.key];
+        if (boxCb) boxCb.v = st.cbFilters[defCb.key] || null;
+      }
+    }
     ref.syncChips();
 
     wrap.setAttribute('data-npl-synced-query', syncKey);
@@ -7347,7 +7402,13 @@ ${bodyInner}\
       .filter(Boolean);
   }
 
-  function build674IndexListQuery(keyword, selectedTypes, selectedSkysea, transferOnly674) {
+  function build674IndexListQuery(
+    keyword,
+    selectedTypes,
+    selectedSkysea,
+    transferOnly674,
+    cbFilterBoxes674,
+  ) {
     const parts = [];
     const types = selectedTypes instanceof Set ? [...selectedTypes] : [];
     if (types.length) {
@@ -7369,6 +7430,13 @@ ${bodyInner}\
     }
     if (transferOnly674) {
       parts.push('(' + FC_NPL_TRANSFER_MANUAL + ' in ("' + escape674QueryLike(FC_NPL_TRANSFER_MANUAL_OPT) + '"))');
+    }
+    if (cbFilterBoxes674) {
+      for (let fi = 0; fi < SEARCH674_DONE_CB_FILTERS.length; fi++) {
+        const defF = SEARCH674_DONE_CB_FILTERS[fi];
+        const boxF = cbFilterBoxes674[defF.key];
+        if (boxF && boxF.v) append674CheckboxDoneFilter674(parts, defF.field, boxF.v);
+      }
     }
     let kwRaw = String(keyword || '').trim();
     if (kwRaw.length > 200) {
@@ -7741,7 +7809,7 @@ ${bodyInner}\
 
     const title = document.createElement('div');
     title.style.cssText = 'font-size:12px;font-weight:700;color:#0f172a;margin-bottom:8px;';
-    title.textContent = 'キーワードと種別で絞り込み';
+    title.textContent = 'キーワード・種別・M365切替／資産台帳で絞り込み';
 
     const row = document.createElement('div');
     row.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px;';
@@ -7852,6 +7920,45 @@ ${bodyInner}\
     });
     chipRow.appendChild(btnTransferChip);
 
+    const cbFilterBoxes = { m365: { v: null }, shisan: { v: null } };
+
+    function set674CbFilterMode674(key, mode) {
+      const box = cbFilterBoxes[key];
+      if (!box) return;
+      box.v = box.v === mode ? null : mode;
+      syncChips674();
+    }
+
+    SEARCH674_DONE_CB_FILTERS.forEach(function (defCb) {
+      const btnDone = document.createElement('button');
+      btnDone.type = 'button';
+      btnDone.textContent = defCb.labelDone;
+      btnDone.dataset.nplCbFilterKey = defCb.key;
+      btnDone.dataset.nplCbFilterMode = 'checked';
+      btnDone.className = 'npl674-index-chip';
+      btnDone.setAttribute('aria-pressed', 'false');
+      btnDone.style.cssText =
+        'padding:4px 10px;border-radius:999px;border:1px solid #94a3b8;background:#fff;' +
+        'font-size:12px;font-weight:700;cursor:pointer;color:#0f172a;';
+      btnDone.addEventListener('click', function () {
+        set674CbFilterMode674(defCb.key, 'checked');
+      });
+      chipRow.appendChild(btnDone);
+
+      const btnNone = document.createElement('button');
+      btnNone.type = 'button';
+      btnNone.textContent = defCb.labelNone;
+      btnNone.dataset.nplCbFilterKey = defCb.key;
+      btnNone.dataset.nplCbFilterMode = 'unchecked';
+      btnNone.className = 'npl674-index-chip';
+      btnNone.setAttribute('aria-pressed', 'false');
+      btnNone.style.cssText = btnDone.style.cssText;
+      btnNone.addEventListener('click', function () {
+        set674CbFilterMode674(defCb.key, 'unchecked');
+      });
+      chipRow.appendChild(btnNone);
+    });
+
     const skyChipRow = document.createElement('div');
     /** SKYSEA チップは当面出さないが、`selectedSkysea` と syncChips は URL 互換のため残す */
     skyChipRow.style.cssText = 'display:none;';
@@ -7880,6 +7987,20 @@ ${bodyInner}\
         tb.style.background = on ? '#ffedd5' : '#fff';
         tb.style.borderColor = on ? '#c2410c' : '#94a3b8';
       }
+      chipRow.querySelectorAll('button[data-npl-cb-filter-key]').forEach(function (b) {
+        const key = b.getAttribute('data-npl-cb-filter-key') || '';
+        const mode = b.getAttribute('data-npl-cb-filter-mode') || '';
+        const box = cbFilterBoxes[key];
+        const on = box && box.v === mode;
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        if (mode === 'checked') {
+          b.style.background = on ? '#dbeafe' : '#fff';
+          b.style.borderColor = on ? '#1d4ed8' : '#94a3b8';
+        } else {
+          b.style.background = on ? '#f1f5f9' : '#fff';
+          b.style.borderColor = on ? '#475569' : '#94a3b8';
+        }
+      });
     }
 
     wrap.appendChild(title);
@@ -7887,7 +8008,13 @@ ${bodyInner}\
     wrap.appendChild(chipRow);
 
     const apply674 = function () {
-      const q = build674IndexListQuery(inpKw.value, selectedTypes, selectedSkysea, transferBox.v);
+      const q = build674IndexListQuery(
+        inpKw.value,
+        selectedTypes,
+        selectedSkysea,
+        transferBox.v,
+        cbFilterBoxes,
+      );
       navigate674ListWithQuery(q, inpKw.value);
     };
 
@@ -7899,6 +8026,8 @@ ${bodyInner}\
       selectedTypes.clear();
       selectedSkysea.clear();
       transferBox.v = false;
+      cbFilterBoxes.m365.v = null;
+      cbFilterBoxes.shisan.v = null;
       syncChips674();
       wrap.setAttribute('data-npl-synced-query', '');
       navigate674ListWithQuery('', '');
@@ -7923,6 +8052,7 @@ ${bodyInner}\
       selectedTypes: selectedTypes,
       selectedSkysea: selectedSkysea,
       transferBox: transferBox,
+      cbFilterBoxes: cbFilterBoxes,
       syncChips: syncChips674,
       ensure674SearchCache: ensure674SearchCache,
     };

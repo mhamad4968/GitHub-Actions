@@ -29,6 +29,14 @@ npm run deploy:678
 npm run cio:audit:portfolio -- --strict
 ```
 
+**674（新・PC台帳）** はポートフォリオ対象外。単独監査:
+
+```bash
+npm run cio:audit:674
+```
+
+（リポ `BUILD` ↔ `data/cio-live-builds.json` ↔ 本番 JS 本文の `BUILD`＋機能マーカー。fileKey の UUID 表記差は BUILD 一致なら無視。）
+
 ポートフォリオ一括（**627 / 668(ops-guide) / 677–679 / 682–683 / 686**。定義: `scripts/cio-portfolio-apps.mjs`）:
 
 ```bash

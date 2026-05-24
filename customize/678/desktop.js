@@ -3,7 +3,9 @@
 
   /**
    * 部署予実 ダッシュアプリ 678
-   * BUILD: 2026-05-15-678-hide-native-pager-zero-label
+   * BUILD: 2026-05-22-678-payment-date-label-usage-month
+   * - **2026-05-22**: 実績入力モーダル — **支払日**表示を **利用月** に変更（`payment_date` は日付型のまま・**暦月**で実績帰属）。入力ヒントを追加。
+   * - **2026-05-22**: 新規明細追加モーダル — **固定費・月額**は **開始月**、**固定費・年額**は **支払月** を選択し `monthly_breakdown` の `month_budget` に反映（`SPEC.md` §6f）。
    * - **2026-05-15（続21）**: 標準一覧の **「0 - 0 （0件中）」**等が残るケースに対し、**件数テキスト正規化**（各種ハイフン・ゼロ幅文字）と **MutationObserver はアプリ 678 のとき常時**走査、**一覧表示直後に即時 1 回** `hide678NativeListPagingLabels`。**CSS** に **`.gaia-argoui-app-index-pager`** を追加。
    * - **2026-05-15（続20）**: 表本体の **`vertical-align`** — **予算見通し**列（`y678-sk7`・`y678-outlook-td`）を **上下中央**（`middle`）に変更（従来 `top`）。
    * - **2026-05-15（続19）**: ダッシュシェル **ヘッダ行**から **677 一覧 URL**・**677 新規入力（/edit）URL** の **2 リンクを削除**（明細の追加・保存は **678 のみ**・`SPEC.md` §6b）。**再読み込み**・**管理システム（678）自リンク**・マニュアル（679）リンクは維持。
@@ -67,7 +69,7 @@
     return t;
   }
 
-  var BUILD = "2026-05-21-678-insert-order-auto-rebalance";
+  var BUILD = "2026-05-22-678-payment-date-label-usage-month";
   /**
    * マニュアル掲載アプリ（システム推進室予実アプリガイド・679）。`window.Y678_QUICK_MANUAL_URL` が非空なら最優先。
    */
@@ -423,7 +425,7 @@
     return !b;
   }
 
-  /** 支払日（`payment_date`）から暦月ラベル（`1`…`12`）を得る。全角数字・`YYYY年M月D日`・`-` `/` `.` 区切り・日 1 桁・ISO `T` 先頭を解釈。 */
+  /** 利用月（フィールド `payment_date`・日付の**月**で暦月帰属）から暦月ラベル（`1`…`12`）を得る。全角数字・`YYYY年M月D日`・`-` `/` `.` 区切り・日 1 桁・ISO `T` 先頭を解釈。 */
   function paymentDateFiscalMonthKey678(dateStr) {
     var s = String(dateStr == null ? "" : dateStr)
       .replace(/[０-９]/g, function (c) {
@@ -926,6 +928,66 @@
   /** 今日の暦月（5〜4 月度ラベルと同じ表記："1"〜"12"） */
   function getCurrentMonthLabel() {
     return String(new Date().getMonth() + 1);
+  }
+
+  /** 新規明細モーダル用 — 暦月（5月〜翌4月）の select 内 option HTML */
+  function fiscalMonthSelectOptionsHtml(selectedLab) {
+    var sel = normalizeFiscalMonthLabel(selectedLab);
+    var html = "<option value=\"\">（選択してください）</option>";
+    for (var i = 0; i < FISCAL_ORDER.length; i++) {
+      var lab = FISCAL_ORDER[i];
+      var head = FISCAL_HEAD[lab] || lab + "月";
+      html +=
+        "<option value=\"" +
+        esc(lab) +
+        "\"" +
+        (lab === sel ? " selected" : "") +
+        ">" +
+        esc(head) +
+        "</option>";
+    }
+    return html;
+  }
+
+  /**
+   * 新規明細（固定費）の `monthly_breakdown` 初期値。
+   * - **月額**: 開始月〜年度末（4月）まで `month_budget`＝金額、それ以前は **0 明示**
+   * - **年額**: 支払月のみ金額、他 11 ヶ月は **0 明示**
+   */
+  function buildMonthlyTableForNewFixedDetail(payType, anchorMonthLab, budgetYen) {
+    var norm = normalizeFiscalMonthLabel(anchorMonthLab);
+    var idxAnchor = FISCAL_ORDER.indexOf(norm);
+    if (idxAnchor < 0) idxAnchor = 0;
+    var n = Math.trunc(Number(budgetYen));
+    if (!isFinite(n) || n < 0) n = 0;
+    var amt = String(n);
+    var arr = [];
+    for (var i = 0; i < FISCAL_ORDER.length; i++) {
+      var lab = FISCAL_ORDER[i];
+      var mb = "0";
+      if (payType === "年額") {
+        mb = lab === norm ? amt : "0";
+      } else if (payType === "月額") {
+        mb = i >= idxAnchor ? amt : "0";
+      }
+      arr.push({
+        value: {
+          fiscal_month: { value: lab },
+          month_budget: { value: mb },
+          month_actual: { value: "" },
+          month_budget_revision: { value: "0" },
+        },
+      });
+    }
+    return arr;
+  }
+
+  /** 固定費・月額の開始月から年度末までの暦月数（`learning_fixed_budget` 合計用） */
+  function countFixedMonthlyBudgetMonthsFrom(anchorMonthLab) {
+    var norm = normalizeFiscalMonthLabel(anchorMonthLab);
+    var idx = FISCAL_ORDER.indexOf(norm);
+    if (idx < 0) return FISCAL_ORDER.length;
+    return FISCAL_ORDER.length - idx;
   }
 
   /**
@@ -2903,6 +2965,40 @@
     }
 
     var modalEl = null;
+
+    function syncNewDetailFixedMonthUi() {
+      if (!modalEl) return;
+      var catEl = modalEl.querySelector("select[name='cost_category']");
+      var payEl = modalEl.querySelector("select[name='payment_type']");
+      var wrap = modalEl.querySelector(".y678-fixed-month-wrap");
+      var lbl = modalEl.querySelector(".y678-fixed-month-lbl");
+      var hint = modalEl.querySelector(".y678-fixed-month-hint");
+      var monthSel = modalEl.querySelector("select[name='fixed_fiscal_month']");
+      if (!wrap || !lbl || !monthSel) return;
+      var c = catEl ? catEl.value : "";
+      var p = payEl ? payEl.value : "";
+      if (c === "固定費" && (p === "月額" || p === "年額")) {
+        wrap.style.display = "";
+        if (p === "年額") {
+          lbl.textContent = "支払月";
+          if (hint) {
+            hint.textContent =
+              "年に1回支払う・計上する暦月です（当該月のみ予算を置き、他の月は 0）。ランニング（定額）に年額の金額を入力してください。";
+          }
+        } else {
+          lbl.textContent = "開始月";
+          if (hint) {
+            hint.textContent =
+              "月額定額を計上し始める暦月です（この月から当年度末・4月まで毎月同額。それより前の月は 0）。ランニング（定額）に1ヶ月あたりの金額を入力してください。";
+          }
+        }
+      } else {
+        wrap.style.display = "none";
+        monthSel.value = "";
+        if (hint) hint.textContent = "";
+      }
+    }
+
     function ensureModal() {
       if (modalEl) return modalEl;
       modalEl = document.createElement("div");
@@ -2923,6 +3019,13 @@
         "<label>会社<input type=\"text\" name=\"partner_company\" maxlength=\"255\" /></label>",
         "<label>ランニング（定額）<input type=\"number\" name=\"learning_fixed_budget\" step=\"1\" min=\"0\" /></label>",
         "<label>イニシャル（変動）<input type=\"number\" name=\"initial_variable_budget\" step=\"1\" min=\"0\" /></label>",
+        "<label class=\"y678-wide y678-fixed-month-wrap\" style=\"display:none\">",
+        "<span class=\"y678-fixed-month-lbl\">開始月</span> <span class=\"req\">*</span>",
+        "<select name=\"fixed_fiscal_month\">",
+        fiscalMonthSelectOptionsHtml(""),
+        "</select>",
+        "<span class=\"y678-modal-sub y678-fixed-month-hint\" style=\"display:block;margin-top:2px;font-weight:normal\"></span>",
+        "</label>",
         "<label class=\"y678-wide\">挿入位置 <span class=\"req\">*</span>",
         "<select name=\"insert_mode\">",
         "<option value=\"bottom\">一番下に追加（既定）</option>",
@@ -2964,20 +3067,22 @@
       if (modalEl.dataset.paymentTypeSyncAttached !== "1") {
         modalEl.dataset.paymentTypeSyncAttached = "1";
         var ccSel = modalEl.querySelector("select[name='cost_category']");
-        if (ccSel) {
-          ccSel.addEventListener("change", function () {
-            var catEl = modalEl.querySelector("select[name='cost_category']");
-            var payEl = modalEl.querySelector("select[name='payment_type']");
-            if (!catEl || !payEl) return;
-            var c = catEl.value;
-            if (c === "変動費") payEl.value = "都度";
-            else if (c === "固定費") {
-              if (payEl.value === "都度" || payEl.value === "") payEl.value = "月額";
-            } else {
-              payEl.value = "";
-            }
-          });
+        var paySel = modalEl.querySelector("select[name='payment_type']");
+        function onCostOrPayChange() {
+          var catEl = modalEl.querySelector("select[name='cost_category']");
+          var payEl = modalEl.querySelector("select[name='payment_type']");
+          if (!catEl || !payEl) return;
+          var c = catEl.value;
+          if (c === "変動費") payEl.value = "都度";
+          else if (c === "固定費") {
+            if (payEl.value === "都度" || payEl.value === "") payEl.value = "月額";
+          } else {
+            payEl.value = "";
+          }
+          syncNewDetailFixedMonthUi();
         }
+        if (ccSel) ccSel.addEventListener("change", onCostOrPayChange);
+        if (paySel) paySel.addEventListener("change", onCostOrPayChange);
       }
       return modalEl;
     }
@@ -3048,6 +3153,11 @@
       populateInsertTargetOptions();
       attachInsertHandlers();
       refreshInsertPreview();
+      var monthSelOpen = modalEl.querySelector("select[name='fixed_fiscal_month']");
+      if (monthSelOpen) {
+        monthSelOpen.innerHTML = fiscalMonthSelectOptionsHtml(getCurrentMonthLabel());
+      }
+      syncNewDetailFixedMonthUi();
       var first = modalEl.querySelector("input[name='work_type_name']");
       if (first) first.focus();
     }
@@ -3107,6 +3217,43 @@
         if (t === "") return { value: "" };
         return { value: String(Math.trunc(Number(t))) };
       }
+      var monthlyTable = buildEmptyMonthlyTable();
+      var learningBudgetCell = numCell(val("learning_fixed_budget"));
+      if (costCat === "固定費" && (payType === "月額" || payType === "年額")) {
+        var fixedMonthRaw = val("fixed_fiscal_month");
+        var fixedMonthNorm = normalizeFiscalMonthLabel(fixedMonthRaw);
+        if (!fixedMonthNorm || FISCAL_ORDER.indexOf(fixedMonthNorm) < 0) {
+          statusEl.style.color = "#b00020";
+          statusEl.textContent =
+            payType === "年額"
+              ? "「支払月」を選択してください（5月〜翌4月）。"
+              : "「開始月」を選択してください（5月〜翌4月）。";
+          return;
+        }
+        var budgetRaw = val("learning_fixed_budget");
+        if (budgetRaw === "") {
+          statusEl.style.color = "#b00020";
+          statusEl.textContent =
+            "固定費の「ランニング（定額）」に" +
+            (payType === "年額" ? "年額" : "月額") +
+            "の金額（円）を入力してください。";
+          return;
+        }
+        var budgetNum = Math.trunc(Number(String(budgetRaw).replace(/[,\s¥￥]/g, "")));
+        if (!isFinite(budgetNum) || budgetNum < 0) {
+          statusEl.style.color = "#b00020";
+          statusEl.textContent = "「ランニング（定額）」は 0 以上の数値で入力してください。";
+          return;
+        }
+        monthlyTable = buildMonthlyTableForNewFixedDetail(payType, fixedMonthNorm, budgetNum);
+        if (payType === "年額") {
+          learningBudgetCell = { value: String(budgetNum) };
+        } else {
+          learningBudgetCell = {
+            value: String(budgetNum * countFixedMonthlyBudgetMonthsFrom(fixedMonthNorm)),
+          };
+        }
+      }
       var rec = {
         work_type_name: { value: work.slice(0, 255) },
         work_type_code: { value: val("work_type_code").slice(0, 255) },
@@ -3114,11 +3261,11 @@
         payment_type: { value: payType },
         summary_text: { value: summary.slice(0, 10000) },
         partner_company: { value: val("partner_company").slice(0, 255) },
-        learning_fixed_budget: numCell(val("learning_fixed_budget")),
+        learning_fixed_budget: learningBudgetCell,
         initial_variable_budget: numCell(val("initial_variable_budget")),
         display_order: { value: String(doRes.value) },
         notes: { value: val("notes").slice(0, 10000) },
-        monthly_breakdown: { value: buildEmptyMonthlyTable() },
+        monthly_breakdown: { value: monthlyTable },
       };
       saveBtn.disabled = true;
       statusEl.style.color = "#555";
@@ -3487,7 +3634,7 @@
       var okDel;
       try {
         okDel = window.confirm(
-          "この支払行を削除しますか？\n支払日: " +
+          "この支払行を削除しますか？\n利用月: " +
             pdd +
             "\n金額（税抜）: " +
             formatYenPlainForDialog(pam) +
@@ -3661,7 +3808,10 @@
         "<div class=\"y678-modal-body\">",
         partnerDatalistHtml,
         "<div class=\"y678-wide y678-pay-existing-wrap\"></div>",
-        "<label>支払日 <span class=\"req\">*</span><input type=\"date\" name=\"payment_date\" required /></label>",
+        "<label class=\"y678-wide\">利用月 <span class=\"req\">*</span><input type=\"date\" name=\"payment_date\" required />" +
+          "<span class=\"y678-modal-sub\" style=\"display:block;margin-top:2px;font-weight:normal\">" +
+          "その<strong>利用月の任意の日付</strong>を選ぶと、暦月表の当該月の実績に計上されます（日にちは集計に使いません）。" +
+          "</span></label>",
         "<div class=\"y678-wide y678-tax-amount-stack\" style=\"grid-column:1 / -1\">",
         "<label class=\"y678-tax-row y678-tax-row-in\">",
         "<span class=\"y678-tax-lbl\">税込 <span class=\"req\">*</span></span>",
@@ -3996,7 +4146,7 @@
           var tb = [
             "<p style=\"margin:0 0 6px;font-weight:600\">既存の支払内訳（" + prow.length + " 件）</p>",
             "<table class=\"y678-pay-existing-tbl\" style=\"width:100%;font-size:12px;border-collapse:collapse;margin-bottom:8px\">",
-            "<thead><tr><th style=\"text-align:left;border:1px solid #cfd8d2;padding:4px 6px\">支払日</th>",
+            "<thead><tr><th style=\"text-align:left;border:1px solid #cfd8d2;padding:4px 6px\">利用月</th>",
             "<th style=\"text-align:right;border:1px solid #cfd8d2;padding:4px 6px\">金額（税抜）</th>",
             "<th style=\"text-align:left;border:1px solid #cfd8d2;padding:4px 6px\">請求書番号</th>",
             "<th style=\"text-align:left;border:1px solid #cfd8d2;padding:4px 6px\">枠種別</th>",
@@ -4086,7 +4236,7 @@
       var pamtRaw = String((y678PaymentModalField(payModal, "payment_amount_tax_in") || {}).value || "").trim();
       if (!/^\d{4}-\d{2}-\d{2}$/.test(pdate)) {
         st.style.color = "#b00020";
-        st.textContent = "支払日は YYYY-MM-DD 形式で入力してください。";
+        st.textContent = "利用月は YYYY-MM-DD 形式で入力してください（その月の任意の日付で構いません）。";
         return;
       }
       var pamtN = Number(String(pamtRaw).replace(/[,\s¥￥]/g, ""));

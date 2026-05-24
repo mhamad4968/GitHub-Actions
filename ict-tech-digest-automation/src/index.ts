@@ -16,6 +16,7 @@ import {
 } from "./lib/kintone-store.js";
 import { resolveArticleUrl } from "./lib/article-url.js";
 import { filterOutAiLlmArticles } from "./lib/ai-exclusion.js";
+import { isDomesticArticleUrl, filterDomesticArticlesOnly } from "./lib/source-region.js";
 import { curateWithGemini } from "./lib/gemini-curate.js";
 import { dedupeAndSort, fetchAllFeeds, getLastRssFetchReport } from "./lib/rss.js";
 
@@ -105,9 +106,9 @@ async function main(): Promise<void> {
     const url = resolveArticleUrl(a.url, a.title, a.snippet);
     return url === a.url ? a : { ...a, url };
   });
-  const candidates = filterOutAiLlmArticles(recentCandidates);
+  const candidates = filterDomesticArticlesOnly(filterOutAiLlmArticles(recentCandidates));
   console.log(
-    `[ICT収集] RSS 横断 ${cfg.rssFeedUrls.length} 本 → 未登録 ${unregistered.length} 件 → 厳選候補（直近・AI除外後） ${candidates.length} 件`,
+    `[ICT収集] RSS 横断 ${cfg.rssFeedUrls.length} 本 → 未登録 ${unregistered.length} 件 → 厳選候補（直近・AI除外・国内URLのみ） ${candidates.length} 件`,
   );
 
   if (candidates.length === 0) {
@@ -139,6 +140,10 @@ async function main(): Promise<void> {
     const url = resolveArticleUrl(p.url, p.title, p.overview);
     if (url !== p.url.trim()) {
       console.log(`[ICT収集] URL を NVD に差し替え: ${p.url} → ${url}`);
+    }
+    if (!isDomesticArticleUrl(url)) {
+      console.log(`[ICT収集] 海外URLのため登録スキップ: ${url}`);
+      continue;
     }
     toRegister.push({
       title: p.title,
