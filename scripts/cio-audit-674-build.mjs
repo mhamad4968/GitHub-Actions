@@ -11,7 +11,7 @@ const APP = "674";
 const REL = "customize/new-pc-ledger-v1/desktop.js";
 
 const MARKERS = [
-  "list-create-modal-clear-btn",
+  "npl674-list-create-modal",
   "npl674InventoryPeriodActive674",
   "リスト一覧を作成",
   "未棚卸一覧",

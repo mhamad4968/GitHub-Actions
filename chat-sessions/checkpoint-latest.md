@@ -24,9 +24,11 @@
 
 **夕反省**: `docs/reports/2026-05-24-evening-reflection.md` — **案 A1–A4 ✅ GO（2026-05-24 浜田）** / **案 B1–B4 ✅ GO（§41 1問ずつ・6月以降アプリ着手=CIOと決定）**
 
-**CIO規律（浜田指示）**: 確定即正本・毎ターン§1四行・着手前DeepSeek — CIOがAIチーム指揮で徹底
+**CIO規律（浜田指示）**: 確定即正本・毎ターン§1四行・着手前DeepSeek — CIO指揮で徹底。**「別途検討」に残さずその場で実施**（2026-05-24）
 
-**実装 GO 前**: DeepSeek 着手前 §50-3-8 ＋ `cio:guard:5038` ＋ 浜田 GO
+**git/deploy（2026-05-24 夜）**: **main 完全同期** — `6b34409` push → GHA **kintone-customize-deploy success**（674/678/683/686 順次・35s）→ `79d9001` deploy記録
+
+**実装 GO 前（業務改善）**: DeepSeek §50-3-8 ＋ `cio:guard:5038` ＋ 浜田 GO
 
 ---
 
