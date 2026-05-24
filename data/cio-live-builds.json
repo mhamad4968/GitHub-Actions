@@ -19,10 +19,10 @@
     },
     "674": {
       "build": "2026-05-22-674-index-m365-shisan-checkbox-filter",
-      "fileKey": "6b5890f6-fdc1-401f-89dc-4a5860dd4a50",
-      "revision": "228",
-      "relPath": "customize/new-pc-ledger-v1/desktop.js",
-      "deployedAt": "2026-05-22T12:52:59.612Z",
+      "fileKey": "51a2c16d-2d0c-4611-a377-dfeee6a31957",
+      "revision": "229",
+      "relPath": ".kintone-deploy/upload-674.js",
+      "deployedAt": "2026-05-24T09:22:15.269Z",
       "note": null
     },
     "677": {
@@ -35,10 +35,10 @@
     },
     "678": {
       "build": "2026-05-22-678-payment-date-label-usage-month",
-      "fileKey": "3db9f10b-ff67-4b09-ab56-29cd2d124228",
-      "revision": "165",
-      "relPath": "customize/678/desktop.js",
-      "deployedAt": "2026-05-22T12:59:13.803Z",
+      "fileKey": "d8f44be5-2260-40b2-a9f8-716489db4dde",
+      "revision": "166",
+      "relPath": ".kintone-deploy/upload-678.js",
+      "deployedAt": "2026-05-24T09:22:18.925Z",
       "note": null
     },
     "679": {
@@ -59,18 +59,18 @@
     },
     "683": {
       "build": "2026-05-22-683-print-month-summary-12pt",
-      "fileKey": "8117dc58-bc6f-4994-8fd0-50e6d7bab81f",
-      "revision": "78",
-      "relPath": "customize/683/desktop.js",
-      "deployedAt": "2026-05-22T12:26:29.362Z",
+      "fileKey": "3fdf5c5c-1094-4657-96e7-16b602086e79",
+      "revision": "79",
+      "relPath": ".kintone-deploy/upload-683.js",
+      "deployedAt": "2026-05-24T09:22:22.253Z",
       "note": null
     },
     "686": {
       "build": "2026-05-24-686-domestic-links-only",
-      "fileKey": "d252a061-c423-409a-891d-575fc5ac416b",
-      "revision": "24",
-      "relPath": "customize/686/desktop.js",
-      "deployedAt": "2026-05-24T00:04:57.537Z",
+      "fileKey": "885341e8-9086-4e97-81df-8b8ae0e450ba",
+      "revision": "25",
+      "relPath": ".kintone-deploy/upload-686.js",
+      "deployedAt": "2026-05-24T09:22:26.523Z",
       "note": null
     },
     "687": {
