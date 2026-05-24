@@ -354,6 +354,7 @@
     "localtunnel": "^2.0.2"
   },
   "overrides": {
+    "qs": "6.15.2",
     "@kintone/rest-api-client": {
       ".": "6.1.6",
       "axios": "1.16.1"
