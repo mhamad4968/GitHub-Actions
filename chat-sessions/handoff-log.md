@@ -2375,7 +2375,19 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 
 **正本反映**: `2026-05-23-business-improvement-proposal-spec.md`・`2026-05-24-business-improvement-proposal-01-fields-hamada-review.md`・`checkpoint-latest.md`
 
-**次 1 手**: **Q-WF-05** — 差戻し後の再申請（§41 1問）
+**次 1 手**: **Q-HIST-02** — 履歴保存先（§41 1問）
+
+**触らない**: kintone 実装・customize・deploy（Q35–Q36 GO 前）
+
+---
+
+### 2026-05-25 JST — Q-WF-05 確定（業務改善 ver.02）
+
+**浜田確定**: **差戻し＝申請のやり直しのみ**。**部長・支店長・人事部長**が各フェーズで差戻し可。**差戻し理由**は必須・記録・申請者閲覧可。申請者が修正→**再申請**→**部長評価から再開**（一般的運用に合わせる）。**提案日**は初回のまま。
+
+**正本反映**: `2026-05-23-business-improvement-proposal-spec.md`（Q-WF-04 整理）・`2026-05-24-business-improvement-proposal-01-fields-hamada-review.md`・`checkpoint-latest.md`
+
+**次 1 手**: **Q-HIST-02** — 履歴保存先（§41 1問）
 
 **触らない**: kintone 実装・customize・deploy（Q35–Q36 GO 前）
 
