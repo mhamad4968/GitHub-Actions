@@ -927,8 +927,13 @@ npm run business-improvement:prep-83
 | 12 | 部門共有アカウントで申請・承認者は個人アカウント | 運用前提 |
 | 13 | 7/1デモ可能 / 8/1本番リリーススケジュール | Q11–12, Q34 |
 | 14 | 4AI・Composer customize・D1–D4 ゲート遵守 | 憲法 |
+| 15 | **5アプリ**（新①〜⑤・新⑤=年次） | §4.1, Q-ANN-03 |
+| 16 | **Q-UI-01〜06** 申請画面確定 | §4.9, 2026-05-24〜25 |
+| 17 | **Q-WF-05** 差戻し・再申請 | §4.9-B, 2026-05-25 |
+| 18 | **Q-HIST-02** 履歴=新①サブテーブル | §4.9-C, 2026-05-25 |
+| 19 | **Q-PHASE-UX** §7.1→§7.2→GO の順 | §7, 2026-05-25 |
 
-チェック結果は `docs/plans/2026-05-23-business-improvement-proposal-spec-checklist.md` に都度記録（実装開始前に AI チームが作成）。
+チェック結果は `docs/plans/2026-05-23-business-improvement-proposal-spec-checklist.md` に都度記録。**Pass 3（2026-05-25）**: 14/14＋拡張 — チェックシート正本参照。
 
 ### 7.2 UX/UI 摺合せフェーズ（Q-PHASE-UX — 2026-05-25 確定）
 
