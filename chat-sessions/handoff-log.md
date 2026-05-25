@@ -2369,27 +2369,17 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 
 ---
 
-### 2026-05-25 JST — Q-UI-06 確定（業務改善 ver.02）
-
-**浜田確定**: 上段 `社員名`＝**代表提案者**。`提案者一覧`＝**全員**（代表含む）。**1行目↔上段双方向連動**（所属含む）。2行目以降＝手動 or 674同検索。**年次付与・目視突合**の正本＝一覧全行（Q-ANN-02 整合）。
-
-**正本反映**: `2026-05-23-business-improvement-proposal-spec.md`・`2026-05-24-business-improvement-proposal-01-fields-hamada-review.md`・`checkpoint-latest.md`
-
-**次 1 手**: **Q-HIST-02** — 履歴保存先（§41 1問）
-
-**触らない**: kintone 実装・customize・deploy（Q35–Q36 GO 前）
-
 ---
 
-### 2026-05-25 JST — Q-WF-05 確定（業務改善 ver.02）
+### 2026-05-25 JST — Q-PHASE-UX 確定（業務改善 ver.02）
 
-**浜田確定**: **差戻し＝申請のやり直しのみ**。**部長・支店長・人事部長**が各フェーズで差戻し可。**差戻し理由**は必須・記録・申請者閲覧可。申請者が修正→**再申請**→**部長評価から再開**（一般的運用に合わせる）。**提案日**は初回のまま。
+**浜田意向**: §7.1 完了後、**実装 GO 前**に **UI・申請～評価・帳票・デザイン（背景・文字・色）** を浜田↔AIで摺合せ・見直し。**「使わない」課題**の克服を確認。**時間をかけてよい**（7/1・8/1 まで余裕）。
 
-**正本反映**: `2026-05-23-business-improvement-proposal-spec.md`（Q-WF-04 整理）・`2026-05-24-business-improvement-proposal-01-fields-hamada-review.md`・`checkpoint-latest.md`
+**正本反映**: `2026-05-23-business-improvement-proposal-spec.md` §7.2・Q-PHASE-UX 行
 
-**次 1 手**: **Q35–Q36 GO 仰ぎ**（§7.1 中身確認）
+**次 1 手**: **§7.1** チェックシート → **§7.2 観点1（申請者 UI）** から摺合せ
 
-**触らない**: kintone 実装・customize・deploy（Q35–Q36 GO 前）
+**触らない**: customize/**・deploy（GO 前）
 
 ---
 
@@ -2399,7 +2389,21 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 
 **正本反映**: `2026-05-23-business-improvement-proposal-spec.md`・`2026-05-24-business-improvement-proposal-01-fields-hamada-review.md`・`checkpoint-latest.md`
 
-**次 1 手**: **Q35–Q36 GO 仰ぎ**
+---
+
+### 2026-05-25 JST — Q-WF-05 確定（業務改善 ver.02）
+
+**浜田確定**: **差戻し＝申請のやり直しのみ**。**部長・支店長・人事部長**が各フェーズで差戻し可。**差戻し理由**は必須・記録・申請者閲覧可。申請者が修正→**再申請**→**部長評価から再開**（一般的運用に合わせる）。**提案日**は初回のまま。
+
+**正本反映**: `2026-05-23-business-improvement-proposal-spec.md`（Q-WF-04 整理）・`2026-05-24-business-improvement-proposal-01-fields-hamada-review.md`・`checkpoint-latest.md`
+
+---
+
+### 2026-05-25 JST — Q-UI-06 確定（業務改善 ver.02）
+
+**浜田確定**: 上段 `社員名`＝**代表提案者**。`提案者一覧`＝**全員**（代表含む）。**1行目↔上段双方向連動**（所属含む）。2行目以降＝手動 or 674同検索。**年次付与・目視突合**の正本＝一覧全行（Q-ANN-02 整合）。
+
+**正本反映**: `2026-05-23-business-improvement-proposal-spec.md`・`2026-05-24-business-improvement-proposal-01-fields-hamada-review.md`・`checkpoint-latest.md`
 
 **触らない**: kintone 実装・customize・deploy（Q35–Q36 GO 前）
 
