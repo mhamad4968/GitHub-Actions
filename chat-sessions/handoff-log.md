@@ -2521,3 +2521,15 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 
 **触らない**: kintone 実装・customize・deploy（Q35–Q36 GO 前）
 
+---
+
+### 2026-05-25 JST — セッション締め（業務改善 §7.2 観点3〜5）
+
+**本日**: Q-UX-08〜11、Q-ANN-04〜08、Q-VIS-01〜03 確定。**観点6 未**（Q-GUIDE-01 ご利用ガイド文字サイズ＝未回答）。
+
+**次回第1手（浜田）**: ① **683 印刷 page1 文字拡大（A4）** ② **§41 Q-GUIDE-01**（ご利用ガイド）
+
+**正本**: `docs/reports/2026-05-25-evening-reflection.md` / Desktop `19-SESSION-ONE-REPORT-2026-05-25.md` / `25-checkpoint-latest.md`
+
+**触らない**: 業務改善 customize（Q35–Q36 GO 前）。683 のみ次回 B1 で Composer 実装可。
+
