@@ -2371,15 +2371,27 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 
 ---
 
+### 2026-05-25 JST — Q-HIST-03 確定 UX-01（業務改善 ver.02）
+
+**浜田確定（A）**: 差戻し後も **評価スナップショットはすべて残す**（無効化・削除しない）。再評価時は **行追加**。操作履歴とセットでタイムライン追跡。
+
+**正本反映**: `2026-05-23-business-improvement-proposal-spec.md`・checklist Pass 3
+
+**次 1 手**: **§7.2 観点1**（申請者 UI 摺合せ）
+
+**触らない**: kintone customize/deploy（**Q36 実装 GO 前**）
+
+---
+
 ### 2026-05-25 JST — §7.1 Pass 3 完了（業務改善 ver.02）
 
 **浜田 GO**: §7.1 厳格チェック開始。**4AI** で 14+8 項目・compare-83 再実行。
 
-**結果**: **22/22 ✅**（checklist Pass 3）。**⚠ UX-01〜03**（スナップショット/年次/人事部長配置）— §7.2・§41 先決。
+**結果**: **22/22 ✅**（checklist Pass 3）。**UX-01 ✅**（Q-HIST-03）。残 **UX-02〜03**。
 
 **正本**: `2026-05-23-business-improvement-proposal-spec-checklist.md` Pass 3
 
-**次 1 手**: **UX-01** §41 1問 → **§7.2 観点1**
+**次 1 手**: **§7.2 観点1**
 
 **触らない**: kintone customize/deploy（**Q36 実装 GO 前**）
 
