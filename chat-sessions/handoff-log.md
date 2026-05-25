@@ -2387,7 +2387,19 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 
 **正本反映**: `2026-05-23-business-improvement-proposal-spec.md`（Q-WF-04 整理）・`2026-05-24-business-improvement-proposal-01-fields-hamada-review.md`・`checkpoint-latest.md`
 
-**次 1 手**: **Q-HIST-02** — 履歴保存先（§41 1問）
+**次 1 手**: **Q35–Q36 GO 仰ぎ**（§7.1 中身確認）
+
+**触らない**: kintone 実装・customize・deploy（Q35–Q36 GO 前）
+
+---
+
+### 2026-05-25 JST — Q-HIST-02 確定（業務改善 ver.02）
+
+**浜田確定（A）**: **新①（提案アプリ）レコード内**に保存。**評価スナップショット**・**提案操作履歴**とも **サブテーブル**。**別アプリは使わない**。タイミング＝Q-HIST-01（段階完了）・Q-AUDIT-01（各操作時）。
+
+**正本反映**: `2026-05-23-business-improvement-proposal-spec.md`・`2026-05-24-business-improvement-proposal-01-fields-hamada-review.md`・`checkpoint-latest.md`
+
+**次 1 手**: **Q35–Q36 GO 仰ぎ**
 
 **触らない**: kintone 実装・customize・deploy（Q35–Q36 GO 前）
 
