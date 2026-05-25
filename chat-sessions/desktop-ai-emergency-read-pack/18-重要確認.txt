@@ -74,6 +74,7 @@ SPEC_TOUCHED: yes のターンで SECOND_REVIEWER: deepseek|kimi|openrouter の�
 
 【2026-05-09 追記・健康表記＋自動判定盲點】報告の「健康」＝**`npm run health-check` の事実**（`scripts/health-check.mjs`）。**「心身の健康」「水分・就寝のみ」等を健康節にすること／TSB-001 をここに結び付けることは禁止**（TSB-001 は troubleshooting の fileKey 孤児ラベル）。**報告・締め・GO** は確定前に **`npm run cio:report-verify-response -- --file <下書き>`** で **exit 0**（軽量のみなら `cio:chat-report-selfcheck`）。**Cursor Run 対策**: **`"文字列" | node …`** は allowlist の先頭一致から外れ **Run が出る** → 検証は **`npm run cio:selfcheck:test`**（パイプなし）か **`npm run … -- --file`**。
 【2026-05-10 追記・IDE チャット】hooks が届かない経路がある。**毎ターン先頭に §1 相当 4 行**、**報告・締め・GO 仰ぎでは応答末尾に §M-2 V2 七行**（`docs/session-report-checklist.md` §M-2）。抜け＝報告違反とする。**全文の正本**は Desktop **`＃重要確認事項.txt`**。
+【2026-05-25 追記・仕様セッション（案D1 GO）】業務改善など **仕様-only** でも **毎ターン §1 四行必須**。依頼文に **CEO 最低基準全文**があるときは **応答にも全文を行単位で同梱**（要約・「Read済み」で省略禁止）。
 【2026-05-09 追補・CIO】**統合統制・マルチエージェントは厳格**／**自律を進めることが正**。**動作確認を依頼されたら濱田が責任**— 詳細は Desktop 正本「＃CIO の自律判断」節。**補足の追記場所は CIO 判断**（浜田に判断を返さない）。**浜田に作業手順を仰ぐ禁止**（CIO が AI チームを指揮して自動実行）。**pending hook 手元試験**は **`npm run hook:smoke:report-pending`**（PowerShell の `echo … | node` だけだと stdin 空になり得る）。**抜けの是正も CIO が今すぐ**／**AIチーム全体で責任をもって改善**— Desktop 同節「即応・AIチーム責任」。
 
 【2026-05-06 追記】当日の「まとめ・反省・明日の案・ルール案」は **1 ファイル**に集約。**本日（JST）の締め**は read-pack の **`19-SESSION-ONE-REPORT-YYYY-MM-DD.md` 1 本**（**20 の前**）。**過去分**は **`docs/reports/archive/YYYY-MM/`**（Desktop には出さない）。
