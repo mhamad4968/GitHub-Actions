@@ -2367,3 +2367,15 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 
 **次 1 手**: **Q-UI-06**（B1）— §41 1問
 
+---
+
+### 2026-05-25 JST — Q-UI-06 確定（業務改善 ver.02）
+
+**浜田確定**: 上段 `社員名`＝**代表提案者**。`提案者一覧`＝**全員**（代表含む）。**1行目↔上段双方向連動**（所属含む）。2行目以降＝手動 or 674同検索。**年次付与・目視突合**の正本＝一覧全行（Q-ANN-02 整合）。
+
+**正本反映**: `2026-05-23-business-improvement-proposal-spec.md`・`2026-05-24-business-improvement-proposal-01-fields-hamada-review.md`・`checkpoint-latest.md`
+
+**次 1 手**: **Q-WF-05** — 差戻し後の再申請（§41 1問）
+
+**触らない**: kintone 実装・customize・deploy（Q35–Q36 GO 前）
+
