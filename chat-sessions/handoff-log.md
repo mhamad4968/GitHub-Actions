@@ -2541,7 +2541,9 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 
 **浜田**: 予実 **一旦 OK**。集計フォーマット **OK**。
 
-**次回第1手（案）**: 担当確認（備考・集計）→ レーン GO で **683 B1** または予実 E2〜E4（`docs/reports/2026-05-26-evening-reflection.md` 案 E〜H・**承認待ち**）。
+**次回第1手**: **G=明日**（レーン 1 行決定）。**E・F=保留**（担当依頼なし）。**H=承認**（運用継続）。
+
+**案承認（5/26 夜）**: H=GO / E・F=保留 / G=明日判断（浜田）。
 
 **正本**: `SESSION-CLOSE-REPORT-20260526.txt` / `docs/reports/2026-05-26-evening-reflection.md` / `19-SESSION-ONE-REPORT-2026-05-26.md` / `checkpoint-latest.md` 先頭
 
