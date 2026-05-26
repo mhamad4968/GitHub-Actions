@@ -43,6 +43,7 @@
    * - 実績モーダル内の既存支払一覧から **修正／削除**（サブテーブル行 id 維持・REST PUT）。削除は確認ダイアログ必須。
    * - 固定費かつ支払種別が月額／年額のとき、実績金額の初期値に当該月の month_budget + month_budget_revision（>0 のときのみ）をベストeffortでセット（開き直しで再セット。ユーザーが変更した値は保存時まで尊重）。
    * - **2026-05-21**: 実績モーダルは **税込（入力）／税抜（表示のみ）を縦2段**。677 保存・表の実績は **税抜**。税率 **10%／8%**・端数 **切り捨て／四捨五入／切り上げ**（前回値は localStorage 記憶）。
+   * - **2026-05-26（続6）**: 工種コード集計 — **全体予算**を SPEC §6 の **工種トータル**（変動費＝ランニング＋イニシャル＋予算修正、固定費＝ランニング＋予算修正、月次予算は二重計上しない）に修正。
    * - **2026-05-26（続5）**: 工種コード集計コピー — 実績・予算は **カンマ＋円**、消費率は **％**、実績なしは **0円・0％**。
    * - **2026-05-26（続4）**: 工種コード集計コピー — 指定暦月 **までの累計実績（税抜）**・**年度全体予算（税抜）**・**全体予算比消費率%** の 3 列のみ。
    * - **2026-05-26（続3）**: 工種コード集計コピー — **集計月を指定**。金額は **税抜**（`monthly_breakdown`／677 正本どおり）。
@@ -77,7 +78,7 @@
     return t;
   }
 
-  var BUILD = "2026-05-26-678-pivot-copy-yen-pct-format";
+  var BUILD = "2026-05-26-678-pivot-worktype-total-budget";
   /**
    * マニュアル掲載アプリ（システム推進室予実アプリガイド・679）。`window.Y678_QUICK_MANUAL_URL` が非空なら最優先。
    */
@@ -611,7 +612,27 @@
   }
 
   /**
-   * 工種コード単位 — 指定暦月までの累計実績・年度全体予算・全体予算比消費率（いずれも税抜）。
+   * 明細1件の工種トータル予算（年度・税抜）。`SPEC.md` §6 — 月次 `month_budget` 合計は二重計上しない。
+   * 変動費: ランニング＋イニシャル＋年度の予算修正合計。固定費: ランニング（あれば）＋予算修正、なければ月次予算＋修正。
+   */
+  function recordWorkTypeTotalBudget678(rec) {
+    var cat = String(fieldVal(rec, "cost_category") || "").trim();
+    var lb = toNum(fieldVal(rec, "learning_fixed_budget"));
+    var iv = toNum(fieldVal(rec, "initial_variable_budget"));
+    var sumR = sumMonthly(rec, "month_budget_revision");
+    var sumB = sumMonthly(rec, "month_budget");
+    if (cat === "変動費") return lb + iv + sumR;
+    if (cat === "固定費") {
+      if (lb > 0) return lb + sumR;
+      return sumB + sumR;
+    }
+    var top = lb + iv + sumR;
+    if (top > 0) return top;
+    return sumB + sumR;
+  }
+
+  /**
+   * 工種コード単位 — 指定暦月までの累計実績・工種トータル予算・消費率（いずれも税抜）。
    * @param {object[]} records
    * @param {string} monthLabOpt 締め暦月（"5" 等）
    * @param {string} [fallbackLab] 未選択時の既定（入力対象月など）
@@ -642,11 +663,7 @@
         if (wn) g0.name = wn;
       }
       var mm = monthlyMapFromRecord(rec);
-      for (var mi = 0; mi < FISCAL_ORDER.length; mi++) {
-        var labAll = FISCAL_ORDER[mi];
-        var rowAll = mm[labAll] || {};
-        g0.totalBudget += toNum(rowAll.budget) + toNum(rowAll.revision);
-      }
+      g0.totalBudget += recordWorkTypeTotalBudget678(rec);
       for (var mc = 0; mc < monthsCum.length; mc++) {
         var labC = monthsCum[mc];
         var rowC = mm[labC] || {};
@@ -1957,10 +1974,10 @@
     actionRow.innerHTML =
       "<button type=\"button\" id=\"y678-add\" class=\"y678-action-add\">＋ 明細を追加</button>" +
       "<label class=\"y678-pivot-month-wrap\" style=\"font-size:12px;color:#1f4d33;display:inline-flex;align-items:center;gap:4px\">" +
-      "集計締め月 <select id=\"y678-pivot-month\" class=\"y678-pivot-month\" title=\"5月起点で当該月までの累計実績と、年度全体予算（12ヶ月合計・税抜）を出力\">" +
+      "集計締め月 <select id=\"y678-pivot-month\" class=\"y678-pivot-month\" title=\"5月起点で当該月までの累計実績と、工種トータル予算（ランニング＋イニシャル等・税抜）を出力\">" +
       pivotMonthOpts.join("") +
       "</select></label>" +
-      "<button type=\"button\" id=\"y678-copy-worktype-pivot\" class=\"y678-action-pivot\" title=\"工種コード別に、締め月までの累計実績・全体予算・消費率（税抜）を Excel 貼付用にコピー\">工種コード集計を Excel 用にコピー</button>";
+      "<button type=\"button\" id=\"y678-copy-worktype-pivot\" class=\"y678-action-pivot\" title=\"工種コード別に、締め月までの累計実績・工種トータル予算・消費率（税抜）を Excel 貼付用にコピー\">工種コード集計を Excel 用にコピー</button>";
     wrap.appendChild(actionRow);
 
     var navRow = document.createElement("div");
