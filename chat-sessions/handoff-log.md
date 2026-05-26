@@ -2533,3 +2533,17 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 
 **触らない**: 業務改善 customize（Q35–Q36 GO 前）。683 のみ次回 B1 で Composer 実装可。
 
+---
+
+### 2026-05-26 JST — セッション締め（予実 678・5A）
+
+**本日**: 678 支払内訳同期（行 id）・月次孤児実績（**TSB-036**・reconcile スクリプト）・備考は `payment_memo` のみ・工種コード集計 Excel 3 列（円・%）。**deploy 7 回帯**、最終 BUILD `2026-05-26-678-pivot-copy-yen-pct-format`。
+
+**浜田**: 予実 **一旦 OK**。集計フォーマット **OK**。
+
+**次回第1手（案）**: 担当確認（備考・集計）→ レーン GO で **683 B1** または予実 E2〜E4（`docs/reports/2026-05-26-evening-reflection.md` 案 E〜H・**承認待ち**）。
+
+**正本**: `SESSION-CLOSE-REPORT-20260526.txt` / `docs/reports/2026-05-26-evening-reflection.md` / `19-SESSION-ONE-REPORT-2026-05-26.md` / `checkpoint-latest.md` 先頭
+
+**触らない**: 予実の追加仕様（全体予算定義変更等）は **浜田 GO 前に実装しない**。業務改善 customize（Q35–Q36 GO 前）は継続。
+

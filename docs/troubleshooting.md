@@ -45,8 +45,9 @@
 | TSB-033 | 2026-05-09 | Cloud「再開可能」SLO を「未完放置」と誤読しない | 「再開可能」と言語化した結果、**黙って中断＝放置**と運用で読まれるリスク | ✅ | true | Cloud handoff / `cio-consensus-seal` / CI |
 | TSB-034 | 2026-05-09 | Windows で `health-check` の stdio MCP が偽陰性／`permissions.json` で RUN 省略 | **IDE 外 CLI** と **Cursor IDE 内**で MCP 疎通が食い違い `smoke` 連鎖 NG 等 | ✅ | true | `health-check.mjs` / `permissions.json` / MCP env |
 | TSB-035 | 2026-05-16 | 複数アプリ `customize/**` push で GHA deploy スキップ → 本番先祖返り（678） | **1 push で複数アプリ変更時に旧 GHA が API deploy を全スキップ**し CI 緑でも本番 JS が更新されない | ✅ | true | `kintone-customize-deploy` / R-17 / `cio-live-builds.json` |
+| TSB-036 | 2026-05-26 | 予実 678→677 支払保存後も **月次実績だけ別月に残る**（光ダイレクト等） | **旧 `buildMonthlyTableForPayments` が支払ロールアップ時に「支払のない月」の `month_actual` を維持**し、移行・手入力の月次だけが 677 に残った | ✅ | true | `customize/678/desktop.js` / 677 `monthly_breakdown` |
 
-**集計** (2026-05-16 時点 / TSB-035 目次追記):
+**集計** (2026-05-26 時点 / TSB-036 目次追記):
 - 全 **31** 件中 **root_cause_confirmed = true: 30 件** / **false (孤児): 1 件**
 - 5 月目標 (F-2 自己批判 §54-5) = カバレッジ 100% を TSB-019 真因確定 (Cursor IDE Agents 設定) で **95% 前後を維持**（分母は TSB セクション数に追随）
 - 残 false: **TSB-001 のみ** = 孤児 TSB（4/19 D1-proposal でも「詳細未記載」）= 真因不明のまま記録止まり
@@ -1508,3 +1509,37 @@ Cursor の MCP ログで **`Connection failed: MCP error -32000: Connection clos
 - `scripts/cio-after-customize-change.mjs`
 - コミット `6b3d370`（事象）／`d5181d1`（恒久対策）
 
+---
+
+## TSB-036 — 予実 678→677 支払保存後も月次実績だけ別月に残る（2026-05-26 制定）
+
+### 事象
+
+担当報告: **678 実績入力**では支払内訳が 5 月のみなのに、**677** では 5 月・6 月とも実績がある（例: 光ﾀﾞｲﾚｸﾄ電話回線 #54、電話サービス INS 回線 #55）。678 の表・モーダルと 677 詳細で見え方がずれる。
+
+### 真因
+
+`customize/678/desktop.js` の **`buildMonthlyTableForPayments`** が、支払内訳から `month_actual` を再計算するとき **「支払のない暦月」は既存の `month_actual` をそのまま残す**実装だった。初回移行や 677 上の月次だけの手入力で入った値（多くは **6 月の重複**）が、5 月分の支払を 678 から保存しても消えなかった。
+
+※ **677 画面からの保存はブロック済み**（`customize/677/desktop.js`）。ズレの主因は **旧 678 ロールアップ**と **既存データ**。
+
+### 恒久対策（2026-05-26）
+
+1. **`buildMonthlyTableForPayments`**: 支払 1 件以上あるレコードでは、ロールアップ対象外の月の `month_actual` を **空**にする（支払 0 件は移行孤児を維持）。
+2. **678 一覧読込後**: ズレ検知時 **677 へ自動同期**（`reconcileMonthlyFromPaymentsAfterLoad`）。
+3. **実績モーダル**: 支払内訳にない月へ月次実績が残っているとき **警告**を表示。
+4. **運用スクリプト**: `npm run yojitsu:677:reconcile-monthly-from-payments`（`--apply` で一括同期）。
+
+### 検証
+
+```bash
+npm run yojitsu:677:reconcile-monthly-from-payments
+# 0 件なら整合。反映: --apply
+```
+
+678 本番 BUILD: `2026-05-26-678-auto-reconcile-monthly-payments`（`npm run deploy:678` 済みであること）。
+
+### 関連
+
+- `templates/yojitsu-budget-lite/SPEC.md` §6e（月次列と支払内訳は別・実績は支払ロールアップ）
+- `scripts/yojitsu-677-clear-fiscal-month-actual.mjs`（特定月のみ空にする手当て）

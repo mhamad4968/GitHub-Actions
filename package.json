@@ -266,6 +266,7 @@
     "yojitsu:677:backfill-learning-fixed:dry-run": "node scripts/yojitsu-677-backfill-learning-fixed-from-monthly.mjs",
     "yojitsu:677:backfill-learning-fixed:apply": "node scripts/yojitsu-677-backfill-learning-fixed-from-monthly.mjs --apply",
     "yojitsu:677:clear-fiscal-month-actual": "npx dotenv -e .env -e .env.proxy -- node scripts/yojitsu-677-clear-fiscal-month-actual.mjs",
+    "yojitsu:677:reconcile-monthly-from-payments": "npx dotenv -e .env -e .env.proxy -- node scripts/yojitsu-677-reconcile-monthly-from-payments.mjs",
     "yojitsu:677:spread-fixed-monthly:dry-run": "npx dotenv -e .env -e .env.proxy -- python3 scripts/yojitsu-677-spread-fixed-single-month-budget.py --dry-run",
     "yojitsu:677:spread-fixed-monthly:apply": "npx dotenv -e .env -e .env.proxy -- python3 scripts/yojitsu-677-spread-fixed-single-month-budget.py --apply",
     "evening:reflect": "node scripts/evening-reflect.mjs",
