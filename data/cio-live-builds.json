@@ -34,11 +34,11 @@
       "note": null
     },
     "678": {
-      "build": "2026-05-26-678-pivot-worktype-total-budget",
-      "fileKey": "33bd2860-bceb-423d-b518-2b089f85d636",
-      "revision": "176",
-      "relPath": ".kintone-deploy/upload-678.js",
-      "deployedAt": "2026-05-27T09:50:29.793Z",
+      "build": "2026-05-27-678-budget-diff-show-all-default",
+      "fileKey": "6043d9db-fec6-418e-9c92-4b261488dfb4",
+      "revision": "187",
+      "relPath": "customize/678/desktop.bundle.js",
+      "deployedAt": "2026-05-27T11:13:53.014Z",
       "note": null
     },
     "679": {
@@ -58,11 +58,11 @@
       "note": null
     },
     "683": {
-      "build": "2026-05-22-683-print-month-summary-12pt",
-      "fileKey": "3fdf5c5c-1094-4657-96e7-16b602086e79",
-      "revision": "79",
-      "relPath": ".kintone-deploy/upload-683.js",
-      "deployedAt": "2026-05-24T09:22:22.253Z",
+      "build": "2026-05-27-683-print-daily-lab-7pt",
+      "fileKey": "1929dd0a-8c57-4a28-a77a-6ff2f76173d3",
+      "revision": "83",
+      "relPath": "customize/683/desktop.js",
+      "deployedAt": "2026-05-27T11:28:31.916Z",
       "note": null
     },
     "686": {

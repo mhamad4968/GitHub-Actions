@@ -32,8 +32,8 @@
   D4: 報告・締め — npm run cio:report-verify-response -- --file <下書き> exit 0 必須
   正本: docs/runbooks/cio-four-ai-violation-remediation.md
   D5（674目視）: 未承認 — 実施しない
-
-【Composer 起用（CEO承認 B3・D3で再強調）】
+  D6（2026-05-27 GO）: customize/** または deploy:* の **応答末尾**に 1 行追記 — `SPEC_TOUCHED: yes|no` ／ `SECOND_REVIEWER: deepseek|kimi|openrouter|none(reason=…)`（hooks 補助・実装ターン可）
+  正本: docs/runbooks/cio-four-ai-violation-remediation.md
   変更 80 行超 or customize/** → [🎖️] に Composer=Subagent実施済。CIO 本体が大量 Diff しない。
 
 【定例（CEO承認 A2/A3）】
@@ -78,3 +78,5 @@ SPEC_TOUCHED: yes のターンで SECOND_REVIEWER: deepseek|kimi|openrouter の�
 【2026-05-09 追補・CIO】**統合統制・マルチエージェントは厳格**／**自律を進めることが正**。**動作確認を依頼されたら濱田が責任**— 詳細は Desktop 正本「＃CIO の自律判断」節。**補足の追記場所は CIO 判断**（浜田に判断を返さない）。**浜田に作業手順を仰ぐ禁止**（CIO が AI チームを指揮して自動実行）。**pending hook 手元試験**は **`npm run hook:smoke:report-pending`**（PowerShell の `echo … | node` だけだと stdin 空になり得る）。**抜けの是正も CIO が今すぐ**／**AIチーム全体で責任をもって改善**— Desktop 同節「即応・AIチーム責任」。
 
 【2026-05-06 追記】当日の「まとめ・反省・明日の案・ルール案」は **1 ファイル**に集約。**本日（JST）の締め**は read-pack の **`19-SESSION-ONE-REPORT-YYYY-MM-DD.md` 1 本**（**20 の前**）。**過去分**は **`docs/reports/archive/YYYY-MM/`**（Desktop には出さない）。
+
+【2026-05-27 追記・18 GO（浜田承認）】**報告・締め・GO 仰ぎ** — 送信確定前に **`npm run cio:report-verify-response -- --file <下書き>` で exit 0 必須**（省略＝報告違反）。IDE チャットでも **締め前は必ず実行**（要約・「後で」禁止）。

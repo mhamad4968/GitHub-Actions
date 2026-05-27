@@ -47,6 +47,17 @@
    * - **2026-05-26（続5）**: 工種コード集計コピー — 実績・予算は **カンマ＋円**、消費率は **％**、実績なしは **0円・0％**。
    * - **2026-05-26（続4）**: 工種コード集計コピー — 指定暦月 **までの累計実績（税抜）**・**年度全体予算（税抜）**・**全体予算比消費率%** の 3 列のみ。
    * - **2026-05-26（続3）**: 工種コード集計コピー — **集計月を指定**。金額は **税抜**（`monthly_breakdown`／677 正本どおり）。
+   * - **2026-05-27（続10）**: 予算増減差異 — **差異があるグループ／明細のみ** のチェックは初期 **OFF**（全件表示）。
+   * - **2026-05-27（続9）**: 予算増減差異 — 表示の初期値を **工種×摘要（合計）** に変更。
+   * - **2026-05-27（続8）**: 予算増減差異 — **上長承認用**に effective 前月比を維持。**固定費・年額**は **予算修正のみ**比較（集計月＝支払月）。支払月以外の集計月は増減 0。
+   * - **2026-05-27（続7）**: 予算増減差異 — **固定費・年額**は前月比対象外（支払月1回のため見かけの増減を防止）。他は支払月以外の暦月を 0 扱い。
+   * - **2026-05-27（続6）**: 予算増減差異 — **工種×摘要**で effective 予算を合算した前月比（明細／集計の表示切替・xlsx 対応）。
+   * - **2026-05-27（続5）**: **予算増減差異（前月比）**タブ — 集計月の effective 予算と前月比較・差異明細のみ表示・**xlsx 出力**。
+   * - **2026-05-27（続4）**: 実績入力 — 枠種別の表示を **「ランニング費用（定額費）」** に統一（677 保存値「ラーニング…」は PUT 時のみ使用）。
+   * - **2026-05-27（続3）**: 一覧 Excel 出力の備考列も **`sanitizeExcelNote`** を適用（移行メモを除外・画面と同じ）。
+   * - **2026-05-27（続2）**: 一覧 Excel 出力を **SheetJS（xlsx）** に切替（`desktop.bundle.js` デプロイ・修復ダイアログ解消）。
+   * - **2026-05-27（続）**: 一覧 Excel 出力 — styles/docProps（自前 ZIP は廃止）。
+   * - **2026-05-27**: **一覧を Excel（.xlsx）でダウンロード**（画面上の費用種別フィルタ・ソート順を反映。表と同じ列構成）。
    * - **2026-05-26（続2）**: **工種コード単位**の月次集計（予算・実績・消費率）を **TSV でクリップボードコピー**（Excel 貼付用・画面上の費用種別フィルタを反映）。
    * - **2026-05-26**: 実績モーダルの **備考**は **当該利用月の支払行 `payment_memo` のみ**（レコード `notes` へは保存しない・他月へ引き継がない）。一覧末尾の備考列は従来どおりレコード `notes`（明細共通）。
    * - **2026-05-21（続・廃止）**: ~~実績備考をレコード `notes` に保存~~ → 上記のとおり月別 `payment_memo` に変更。
@@ -78,7 +89,25 @@
     return t;
   }
 
-  var BUILD = "2026-05-26-678-pivot-worktype-total-budget";
+  /** 677 保存値（「ラーニング…」）を画面表示用「ランニング…」へ（実績モーダル・一覧） */
+  function formatBudgetBucketDisplay678(s) {
+    var t = String(s == null ? "" : s).trim();
+    if (!t) return "";
+    if (
+      t === Y678_BUCKET_RUNNING_VALUE ||
+      t === Y678_BUCKET_RUNNING_LEGACY_WRONG ||
+      t.indexOf("ラーニング") >= 0 ||
+      t.indexOf("ランニング") >= 0
+    ) {
+      return "ランニング費用（定額費）";
+    }
+    if (t === Y678_BUCKET_INITIAL_VALUE || t.indexOf("イニシャル") >= 0) {
+      return Y678_BUCKET_INITIAL_VALUE;
+    }
+    return t;
+  }
+
+  var BUILD = "2026-05-27-678-budget-diff-show-all-default";
   /**
    * マニュアル掲載アプリ（システム推進室予実アプリガイド・679）。`window.Y678_QUICK_MANUAL_URL` が非空なら最優先。
    */
@@ -349,13 +378,14 @@
   function sanitizeExcelNote(s) {
     var raw = String(s == null ? "" : s);
     if (!raw) return "";
-    raw = raw.replace(/旧フォーマット移行メモ（[^）]*）/g, "");
+    raw = raw.replace(/旧フォーマット移行メモ[（(][^）)]*[）)]/g, "");
     var lines = raw.split(/\r?\n/);
     var keep = [];
     for (var i = 0; i < lines.length; i++) {
       var ln = lines[i];
       if (/起票セル|出納セル/.test(ln)) continue;
       if (/^\s*都度\s*[:：].*$/.test(ln)) continue;
+      if (/^\s*旧フォーマット移行/.test(ln)) continue;
       keep.push(ln);
     }
     return keep.join("\n").trim();
@@ -733,6 +763,585 @@
         reject(eCp);
       }
     });
+  }
+
+  /** 一覧 Excel 出力ファイル名用（ローカル日付 YYYYMMDD） */
+  function y678ExportFilenameStamp() {
+    var d = new Date();
+    var m = d.getMonth() + 1;
+    var day = d.getDate();
+    return (
+      String(d.getFullYear()) +
+      (m < 10 ? "0" : "") +
+      String(m) +
+      (day < 10 ? "0" : "") +
+      String(day)
+    );
+  }
+
+  /** 予算見通し列のプレーンテキスト（`fixedMonthlyBudgetOutlookHtml678` と同判定） */
+  function fixedMonthlyBudgetOutlookText678(rec) {
+    if (!rec || String(fieldVal(rec, "cost_category") || "").trim() !== "固定費") return "";
+    if (String(fieldVal(rec, "payment_type") || "").trim() !== "月額") return "";
+    var mm = monthlyMapFromRecord(rec);
+    var cumB = 0;
+    var cumA = 0;
+    var firstDepleteLab = "";
+    var di;
+    for (di = 0; di < FISCAL_ORDER.length; di++) {
+      var labD = FISCAL_ORDER[di];
+      var rowD = mm[labD] || {};
+      var eff = toNum(rowD.budget) + toNum(rowD.revision);
+      var act = toNum(rowD.actual);
+      cumB += eff;
+      cumA += act;
+      if (!firstDepleteLab && cumA > cumB) {
+        firstDepleteLab = labD;
+        break;
+      }
+    }
+    if (firstDepleteLab) {
+      var headD = FISCAL_HEAD[firstDepleteLab] || firstDepleteLab + "月";
+      return "枯渇目安 " + headD + " 累積超過";
+    }
+    var fullB = 0;
+    for (var fj = 0; fj < FISCAL_ORDER.length; fj++) {
+      var rowJ = mm[FISCAL_ORDER[fj]] || {};
+      fullB += toNum(rowJ.budget) + toNum(rowJ.revision);
+    }
+    if (fullB <= 0) return "";
+    var curLab = normalizeFiscalMonthLabel(getCurrentMonthLabel());
+    var idxCur = -1;
+    for (var fk = 0; fk < FISCAL_ORDER.length; fk++) {
+      if (FISCAL_ORDER[fk] === curLab) {
+        idxCur = fk;
+        break;
+      }
+    }
+    if (idxCur < 0) return "順調";
+    cumB = 0;
+    cumA = 0;
+    for (var fm = 0; fm <= idxCur; fm++) {
+      var rowM = mm[FISCAL_ORDER[fm]] || {};
+      cumB += toNum(rowM.budget) + toNum(rowM.revision);
+      cumA += toNum(rowM.actual);
+    }
+    if (cumB <= 0) return "順調";
+    var slackRatio = (cumB - cumA) / cumB;
+    if (slackRatio >= 0.45 && cumA > 0 && idxCur >= 2) {
+      return "余力大 据置予算が実績ペースより大きい見込み";
+    }
+    return "順調";
+  }
+
+  function y678ExportNumOrBlank(v) {
+    if (v === "" || v == null) return "";
+    var n = toNum(v);
+    return isFinite(n) ? n : "";
+  }
+
+  function y678ExportUtilNumber(raw) {
+    if (raw === "" || raw == null) return "";
+    var t = String(raw).trim().replace(/%/g, "");
+    var n = Number(String(t).replace(/,/g, ""));
+    return isFinite(n) ? n : "";
+  }
+
+  /** 集計ブロック 4 列（予算・実績・消費率・予算修正）。非該当は空欄。 */
+  function y678ExportAggrFour(block, omitBudgetUtil) {
+    if (!block) return ["", "", "", ""];
+    if (omitBudgetUtil) {
+      return ["", y678ExportNumOrBlank(block.actual), "", y678ExportNumOrBlank(block.revision)];
+    }
+    var bud =
+      block.budget === "" || block.budget == null ? "" : y678ExportNumOrBlank(block.budget);
+    var util = block.util == null ? "" : block.util;
+    return [bud, y678ExportNumOrBlank(block.actual), util, y678ExportNumOrBlank(block.revision)];
+  }
+
+  /** 画面上の一覧と同じ列構成の 2 次元配列（先頭行＝ヘッダ） */
+  function buildListExportMatrix678(records) {
+    var months = activeMonthLabels();
+    var headers = [
+      "レコード番号",
+      "工種名称",
+      "工種コード",
+      "費用種別",
+      "支払種別",
+      "摘要",
+      "会社",
+      "予算見通し",
+    ];
+    var mi;
+    for (mi = 0; mi < months.length; mi++) {
+      var h = FISCAL_HEAD[months[mi]] || months[mi] + "月";
+      headers.push(h + "_予算", h + "_実績", h + "_消費率(%)", h + "_予算修正");
+    }
+    headers.push(
+      "ランニング集計_予算",
+      "ランニング集計_実績",
+      "ランニング集計_消費率(%)",
+      "ランニング集計_予算修正",
+      "都度費用_予算",
+      "都度費用_実績",
+      "都度費用_消費率(%)",
+      "都度費用_予算修正",
+      "固定費小計_予算",
+      "固定費小計_実績",
+      "固定費小計_消費率(%)",
+      "固定費小計_予算修正",
+      "変動費小計_予算",
+      "変動費小計_実績",
+      "変動費小計_消費率(%)",
+      "変動費小計_予算修正",
+      "表示順",
+      "備考"
+    );
+    var matrix = [headers];
+    for (var i = 0; i < records.length; i++) {
+      var r = records[i];
+      var costCat = String(fieldVal(r, "cost_category") || "").trim();
+      var mm = monthlyMapFromRecord(r);
+      var payTypeTrimRow = String(fieldVal(r, "payment_type") || "").trim();
+      var annualFixedPayLab678 =
+        costCat === "固定費" && payTypeTrimRow === "年額" ? annualFixedPayFiscalMonthLabel678(r) : "";
+      var row = [
+        fieldVal(r, "$id"),
+        fieldVal(r, "work_type_name"),
+        fieldVal(r, "work_type_code"),
+        fieldVal(r, "cost_category"),
+        fieldVal(r, "payment_type"),
+        fieldVal(r, "summary_text"),
+        fieldVal(r, "partner_company"),
+        fixedMonthlyBudgetOutlookText678(r),
+      ];
+      for (mi = 0; mi < months.length; mi++) {
+        var fl = months[mi];
+        var flN = normalizeFiscalMonthLabel(fl);
+        if (costCat === "変動費") {
+          row.push("", "", "", "");
+          continue;
+        }
+        var annSkipCol = annualFixedPayLab678 && flN !== annualFixedPayLab678;
+        if (annSkipCol) {
+          row.push("", "", "", "");
+          continue;
+        }
+        var rowM = mm[fl] || {};
+        row.push(
+          y678ExportNumOrBlank(rowM.budget),
+          costCat === "固定費" ? y678ExportNumOrBlank(rowM.actual === "" || rowM.actual == null ? 0 : rowM.actual) : y678ExportNumOrBlank(rowM.actual),
+          y678ExportUtilNumber(rowM.utilization),
+          y678ExportNumOrBlank(rowM.revision)
+        );
+      }
+      var ag = computeAggregates(r);
+      if (costCat === "変動費") {
+        row = row.concat(y678ExportAggrFour(null, true));
+        row = row.concat(y678ExportAggrFour(ag.initial, false));
+        row = row.concat(y678ExportAggrFour(null, true));
+        row = row.concat(y678ExportAggrFour(ag.variableSubtotal, false));
+      } else {
+        row = row.concat(y678ExportAggrFour(ag.running, false));
+        row = row.concat(y678ExportAggrFour(null, true));
+        row = row.concat(y678ExportAggrFour(ag.fixedSubtotal, false));
+        row = row.concat(y678ExportAggrFour(null, true));
+      }
+      row.push(fieldVal(r, "display_order"), sanitizeExcelNote(fieldVal(r, "notes")));
+      matrix.push(row);
+    }
+    return matrix;
+  }
+
+  function y678FormatYenPlain678(n) {
+    if (n === "" || n == null) return "—";
+    var num = toNum(n);
+    if (!isFinite(num)) return String(n);
+    var i = num >= 0 ? Math.floor(num) : Math.ceil(num);
+    var sign = i < 0 ? "-" : "";
+    return sign + "¥" + String(Math.abs(i)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  /** 年度内の前暦月（5月の前＝4月） */
+  function fiscalMonthPrev678(monthLab) {
+    var n = normalizeFiscalMonthLabel(monthLab);
+    var idx = FISCAL_ORDER.indexOf(n);
+    if (idx < 0) return FISCAL_ORDER[0];
+    if (idx === 0) return FISCAL_ORDER[FISCAL_ORDER.length - 1];
+    return FISCAL_ORDER[idx - 1];
+  }
+
+  function isAnnualFixed678(rec) {
+    if (!rec) return false;
+    return (
+      String(fieldVal(rec, "cost_category") || "").trim() === "固定費" &&
+      String(fieldVal(rec, "payment_type") || "").trim() === "年額"
+    );
+  }
+
+  /** 当該暦月の予算修正（税抜）。年額は支払月以外 0（一覧表と同じ） */
+  function monthBudgetRevision678(rec, monthLab) {
+    var lab = normalizeFiscalMonthLabel(monthLab);
+    if (!lab || !rec) return 0;
+    if (isAnnualFixed678(rec)) {
+      var annLab = annualFixedPayFiscalMonthLabel678(rec);
+      if (annLab && lab !== annLab) return 0;
+    }
+    var row = (monthlyMapFromRecord(rec) || {})[lab] || {};
+    return toNum(row.revision);
+  }
+
+  /** 当該暦月の effective 予算（予算＋予算修正・税抜）。年額は支払月以外 0（一覧表と同じ） */
+  function effectiveMonthBudget678(rec, monthLab) {
+    var lab = normalizeFiscalMonthLabel(monthLab);
+    if (!lab || !rec) return 0;
+    if (isAnnualFixed678(rec)) {
+      var annLab = annualFixedPayFiscalMonthLabel678(rec);
+      if (annLab && lab !== annLab) return 0;
+    }
+    var row = (monthlyMapFromRecord(rec) || {})[lab] || {};
+    return toNum(row.budget) + toNum(row.revision);
+  }
+
+  /**
+   * 予算増減差異（前月比）の比較値。通常＝effective（予算＋予算修正）。
+   * 固定費・年額はベース予算が支払月1回のため **予算修正のみ**（集計月が支払月でないときは 0）。
+   */
+  function budgetDiffPair678(rec, prevLab, currLab) {
+    var prev = normalizeFiscalMonthLabel(prevLab);
+    var curr = normalizeFiscalMonthLabel(currLab);
+    if (!rec || !prev || !curr) return { prevB: 0, currB: 0, diff: 0 };
+    if (isAnnualFixed678(rec)) {
+      var payLab = annualFixedPayFiscalMonthLabel678(rec);
+      if (!payLab || curr !== payLab) {
+        return { prevB: 0, currB: 0, diff: 0 };
+      }
+      var prevR = monthBudgetRevision678(rec, prev);
+      var currR = monthBudgetRevision678(rec, curr);
+      return { prevB: prevR, currB: currR, diff: currR - prevR };
+    }
+    var prevB = effectiveMonthBudget678(rec, prev);
+    var currB = effectiveMonthBudget678(rec, curr);
+    return { prevB: prevB, currB: currB, diff: currB - prevB };
+  }
+
+  function formatRecordCategoryLabel678(rec) {
+    var cat = String(fieldVal(rec, "cost_category") || "").trim();
+    var pt = String(fieldVal(rec, "payment_type") || "").trim();
+    if (cat && pt) return cat + "（" + pt + "）";
+    return cat || pt || "";
+  }
+
+  /**
+   * @param {object[]} records
+   * @param {string} currMonthLab
+   * @param {boolean} onlyWithDiff
+   */
+  function buildBudgetDiffRows678(records, currMonthLab, onlyWithDiff) {
+    var curr = resolvePivotEndMonth678(currMonthLab, getInputMonthLabel());
+    var prev = fiscalMonthPrev678(curr);
+    var rows = [];
+    for (var i = 0; i < records.length; i++) {
+      var r = records[i];
+      var pair = budgetDiffPair678(r, prev, curr);
+      if (onlyWithDiff && pair.diff === 0) continue;
+      rows.push({
+        rec: r,
+        prevB: pair.prevB,
+        currB: pair.currB,
+        diff: pair.diff,
+      });
+    }
+    return { mode: "detail", rows: rows, currLab: curr, prevLab: prev };
+  }
+
+  function budgetDiffAggregateKey678(rec) {
+    var code = String(fieldVal(rec, "work_type_code") || "").trim();
+    var summary = String(fieldVal(rec, "summary_text") || "").trim();
+    return code + "\u0001" + summary;
+  }
+
+  /**
+   * 工種コード＋摘要で合算（同一キーの明細の当月 effective 予算を合計して前月比）。
+   * @param {object[]} records
+   * @param {string} currMonthLab
+   * @param {boolean} onlyWithDiff
+   */
+  function buildBudgetDiffGroupedRows678(records, currMonthLab, onlyWithDiff) {
+    var curr = resolvePivotEndMonth678(currMonthLab, getInputMonthLabel());
+    var prev = fiscalMonthPrev678(curr);
+    var map = {};
+    for (var i = 0; i < records.length; i++) {
+      var r = records[i];
+      var pairG = budgetDiffPair678(r, prev, curr);
+      var key = budgetDiffAggregateKey678(r);
+      if (!map[key]) {
+        map[key] = {
+          workTypeCode: String(fieldVal(r, "work_type_code") || "").trim(),
+          workTypeName: String(fieldVal(r, "work_type_name") || "").trim(),
+          summary: String(fieldVal(r, "summary_text") || "").trim(),
+          count: 0,
+          prevB: 0,
+          currB: 0,
+        };
+      }
+      var g = map[key];
+      g.count++;
+      g.prevB += pairG.prevB;
+      g.currB += pairG.currB;
+      if (!g.workTypeName && fieldVal(r, "work_type_name")) {
+        g.workTypeName = String(fieldVal(r, "work_type_name") || "").trim();
+      }
+    }
+    var rows = [];
+    for (var k in map) {
+      if (!Object.prototype.hasOwnProperty.call(map, k)) continue;
+      var row = map[k];
+      row.diff = row.currB - row.prevB;
+      if (onlyWithDiff && row.diff === 0) continue;
+      rows.push(row);
+    }
+    rows.sort(function (a, b) {
+      var ac = a.workTypeCode;
+      var bc = b.workTypeCode;
+      if (!ac && !bc) return a.summary.localeCompare(b.summary, "ja");
+      if (!ac) return 1;
+      if (!bc) return -1;
+      var an = Number(ac);
+      var bn = Number(bc);
+      if (isFinite(an) && isFinite(bn) && ac !== "" && bc !== "") {
+        if (an !== bn) return an - bn;
+      } else {
+        var c = ac.localeCompare(bc, "ja");
+        if (c !== 0) return c;
+      }
+      return a.summary.localeCompare(b.summary, "ja");
+    });
+    return { mode: "group", rows: rows, currLab: curr, prevLab: prev };
+  }
+
+  function buildBudgetDiffPack678(records, currMonthLab, onlyWithDiff, displayMode) {
+    if (displayMode === "group") {
+      return buildBudgetDiffGroupedRows678(records, currMonthLab, onlyWithDiff);
+    }
+    return buildBudgetDiffRows678(records, currMonthLab, onlyWithDiff);
+  }
+
+  function buildBudgetDiffExportMatrix678(pack) {
+    if (pack.mode === "group") return buildBudgetDiffGroupedExportMatrix678(pack);
+    var currHead = FISCAL_HEAD[pack.currLab] || pack.currLab + "月";
+    var prevHead = FISCAL_HEAD[pack.prevLab] || pack.prevLab + "月";
+    var matrix = [
+      [
+        "レコード番号",
+        "工種コード",
+        "工種名称",
+        "種別",
+        "摘要",
+        "取引先",
+        prevHead + "予算（税抜）",
+        currHead + "予算（税抜）",
+        "増減額（税抜）",
+        "増減",
+      ],
+    ];
+    for (var i = 0; i < pack.rows.length; i++) {
+      var row = pack.rows[i];
+      var r = row.rec;
+      var diff = row.diff;
+      var trend = diff > 0 ? "増" : diff < 0 ? "減" : "—";
+      matrix.push([
+        fieldVal(r, "$id"),
+        fieldVal(r, "work_type_code"),
+        fieldVal(r, "work_type_name"),
+        formatRecordCategoryLabel678(r),
+        fieldVal(r, "summary_text"),
+        fieldVal(r, "partner_company"),
+        row.prevB,
+        row.currB,
+        diff,
+        trend,
+      ]);
+    }
+    return matrix;
+  }
+
+  function buildBudgetDiffGroupedExportMatrix678(pack) {
+    var currHead = FISCAL_HEAD[pack.currLab] || pack.currLab + "月";
+    var prevHead = FISCAL_HEAD[pack.prevLab] || pack.prevLab + "月";
+    var matrix = [
+      [
+        "工種コード",
+        "工種名称",
+        "摘要",
+        "明細件数",
+        prevHead + "予算合計（税抜）",
+        currHead + "予算合計（税抜）",
+        "増減額（税抜）",
+        "増減",
+      ],
+    ];
+    for (var i = 0; i < pack.rows.length; i++) {
+      var row = pack.rows[i];
+      var diff = row.diff;
+      matrix.push([
+        row.workTypeCode,
+        row.workTypeName,
+        row.summary,
+        row.count,
+        row.prevB,
+        row.currB,
+        diff,
+        diff > 0 ? "増" : diff < 0 ? "減" : "—",
+      ]);
+    }
+    return matrix;
+  }
+
+  function renderBudgetDiffGroupedTableHtml678(pack) {
+    var currHead = esc(FISCAL_HEAD[pack.currLab] || pack.currLab + "月");
+    var prevHead = esc(FISCAL_HEAD[pack.prevLab] || pack.prevLab + "月");
+    var parts = [
+      "<table class=\"y678-grid y678-budget-diff-grid\"><thead><tr>",
+      "<th class=\"y678-th-key\">工種コード</th>",
+      "<th class=\"y678-th-key\">工種名称</th>",
+      "<th class=\"y678-th-key\">摘要</th>",
+      "<th class=\"y678-num\">明細件数</th>",
+      "<th class=\"y678-num\">" + prevHead + "予算合計</th>",
+      "<th class=\"y678-num\">" + currHead + "予算合計</th>",
+      "<th class=\"y678-num\">増減額</th>",
+      "<th>増減</th>",
+      "</tr></thead><tbody>",
+    ];
+    if (!pack.rows.length) {
+      parts.push(
+        "<tr><td colspan=\"8\" class=\"y678-empty\">該当する集計行がありません（集計月・フィルタ・「差異のみ」を確認）</td></tr>"
+      );
+    }
+    for (var i = 0; i < pack.rows.length; i++) {
+      var row = pack.rows[i];
+      var diff = row.diff;
+      var stripe = i % 2 === 0 ? "y678-row-even" : "y678-row-odd";
+      var trendCls =
+        diff > 0 ? "y678-diff-up" : diff < 0 ? "y678-diff-down" : "y678-diff-flat";
+      var trendLab = diff > 0 ? "増" : diff < 0 ? "減" : "—";
+      parts.push(
+        "<tr class=\"" +
+          stripe +
+          "\"><td class=\"y678-code\">" +
+          esc(row.workTypeCode || "（未設定）") +
+          "</td><td>" +
+          esc(row.workTypeName) +
+          "</td><td class=\"y678-summary\">" +
+          esc(row.summary) +
+          "</td><td class=\"y678-num\">" +
+          esc(String(row.count)) +
+          "</td><td class=\"y678-num\">" +
+          esc(y678FormatYenPlain678(row.prevB)) +
+          "</td><td class=\"y678-num\">" +
+          esc(y678FormatYenPlain678(row.currB)) +
+          "</td><td class=\"y678-num " +
+          trendCls +
+          "\">" +
+          esc(y678FormatYenPlain678(diff)) +
+          "</td><td class=\"" +
+          trendCls +
+          "\" style=\"text-align:center;font-weight:700\">" +
+          esc(trendLab) +
+          "</td></tr>"
+      );
+    }
+    parts.push("</tbody></table>");
+    return parts.join("");
+  }
+
+  function renderBudgetDiffTableHtml678(pack) {
+    if (pack.mode === "group") return renderBudgetDiffGroupedTableHtml678(pack);
+    var currHead = esc(FISCAL_HEAD[pack.currLab] || pack.currLab + "月");
+    var prevHead = esc(FISCAL_HEAD[pack.prevLab] || pack.prevLab + "月");
+    var parts = [
+      "<table class=\"y678-grid y678-budget-diff-grid\"><thead><tr>",
+      "<th class=\"y678-th-key\">工種コード</th>",
+      "<th class=\"y678-th-key\">工種名称</th>",
+      "<th class=\"y678-th-key\">種別</th>",
+      "<th class=\"y678-th-key\">摘要</th>",
+      "<th class=\"y678-th-key\">取引先</th>",
+      "<th class=\"y678-num\">" + prevHead + "予算</th>",
+      "<th class=\"y678-num\">" + currHead + "予算</th>",
+      "<th class=\"y678-num\">増減額</th>",
+      "<th>増減</th>",
+      "</tr></thead><tbody>",
+    ];
+    if (!pack.rows.length) {
+      parts.push(
+        "<tr><td colspan=\"9\" class=\"y678-empty\">該当する明細がありません（集計月・フィルタ・「差異のみ」を確認）</td></tr>"
+      );
+    }
+    for (var i = 0; i < pack.rows.length; i++) {
+      var row = pack.rows[i];
+      var r = row.rec;
+      var diff = row.diff;
+      var stripe = i % 2 === 0 ? "y678-row-even" : "y678-row-odd";
+      var trendCls =
+        diff > 0 ? "y678-diff-up" : diff < 0 ? "y678-diff-down" : "y678-diff-flat";
+      var trendLab = diff > 0 ? "増" : diff < 0 ? "減" : "—";
+      parts.push(
+        "<tr class=\"" +
+          stripe +
+          "\"><td class=\"y678-code\">" +
+          esc(fieldVal(r, "work_type_code")) +
+          "</td><td>" +
+          esc(fieldVal(r, "work_type_name")) +
+          "</td><td>" +
+          esc(formatRecordCategoryLabel678(r)) +
+          "</td><td class=\"y678-summary\">" +
+          esc(fieldVal(r, "summary_text")) +
+          "</td><td>" +
+          (String(fieldVal(r, "partner_company") || "").trim()
+            ? esc(fieldVal(r, "partner_company"))
+            : "<span class=\"y678-dim\">—</span>") +
+          "</td><td class=\"y678-num\">" +
+          esc(y678FormatYenPlain678(row.prevB)) +
+          "</td><td class=\"y678-num\">" +
+          esc(y678FormatYenPlain678(row.currB)) +
+          "</td><td class=\"y678-num " +
+          trendCls +
+          "\">" +
+          esc(y678FormatYenPlain678(diff)) +
+          "</td><td class=\"" +
+          trendCls +
+          "\" style=\"text-align:center;font-weight:700\">" +
+          esc(trendLab) +
+          "</td></tr>"
+      );
+    }
+    parts.push("</tbody></table>");
+    return parts.join("");
+  }
+
+  function downloadXlsxFromMatrix678(matrix, sheetName, filenamePrefix) {
+    if (typeof XLSX === "undefined" || !XLSX.utils || !XLSX.writeFile) {
+      throw new Error(
+        "Excel 出力ライブラリが読み込まれていません。ページを再読み込みしてから再度お試しください。"
+      );
+    }
+    var ws = XLSX.utils.aoa_to_sheet(matrix);
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, sheetName || "Sheet1");
+    XLSX.writeFile(wb, filenamePrefix + "_" + y678ExportFilenameStamp() + ".xlsx", { bookType: "xlsx" });
+  }
+
+  /** SheetJS（`desktop.bundle.js` 先頭で同梱）を使い Excel 互換の .xlsx を保存 */
+  function downloadListXlsx678(records) {
+    downloadXlsxFromMatrix678(buildListExportMatrix678(records), "一覧", "予実一覧");
+  }
+
+  function downloadBudgetDiffXlsx678(records, currMonthLab, onlyWithDiff, displayMode) {
+    var pack = buildBudgetDiffPack678(records, currMonthLab, onlyWithDiff, displayMode);
+    var prefix =
+      pack.mode === "group" ? "予実予算増減差異_工種摘要" : "予実予算増減差異_明細";
+    var sheet = pack.mode === "group" ? "工種×摘要" : "明細";
+    downloadXlsxFromMatrix678(buildBudgetDiffExportMatrix678(pack), sheet, prefix);
   }
 
   /**
@@ -1833,6 +2442,21 @@
       "[data-yojitsu-678-shell] .y678-action-pivot{font-size:12px;font-weight:600;padding:6px 12px;border:1px solid #7a9a82;background:#fff;color:#1f4d33;border-radius:6px;cursor:pointer;}",
       "[data-yojitsu-678-shell] .y678-action-pivot:hover{background:#eaf4ec;}",
       "[data-yojitsu-678-shell] .y678-action-pivot:disabled{opacity:.6;cursor:wait;}",
+      "[data-yojitsu-678-shell] .y678-action-export{font-size:12px;font-weight:600;padding:6px 12px;border:1px solid #3d6b8f;background:#fff;color:#1a3d52;border-radius:6px;cursor:pointer;}",
+      "[data-yojitsu-678-shell] .y678-action-export:hover{background:#e8f2f8;}",
+      "[data-yojitsu-678-shell] .y678-action-export:disabled{opacity:.6;cursor:wait;}",
+      "[data-yojitsu-678-shell] .y678-view-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}",
+      "[data-yojitsu-678-shell] .y678-view-tab{font-size:12px;padding:6px 14px;border:1px solid #b9d6bd;background:#fff;color:#1f4d33;border-radius:6px;cursor:pointer;font-weight:500;}",
+      "[data-yojitsu-678-shell] .y678-view-tab:hover{background:#eaf4ec;}",
+      "[data-yojitsu-678-shell] .y678-view-tab.y678-view-tab--active{background:linear-gradient(180deg,#198042,#0d5c2e);color:#fff;border-color:#064b24;font-weight:700;}",
+      "[data-yojitsu-678-shell] .y678-diff-toolbar{margin-bottom:8px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;font-size:12px;color:#1f4d33;}",
+      "[data-yojitsu-678-shell] .y678-budget-diff-month{font-size:12px;padding:4px 6px;border:1px solid #b9d6bd;border-radius:4px;background:#fff;color:#1f4d33;}",
+      "[data-yojitsu-678-shell] .y678-budget-diff-grid{min-width:100%;}",
+      "[data-yojitsu-678-shell] .y678-budget-diff-grid .y678-diff-up{color:#b00020;}",
+      "[data-yojitsu-678-shell] .y678-budget-diff-grid .y678-diff-down{color:#0a5c8a;}",
+      "[data-yojitsu-678-shell] .y678-budget-diff-grid .y678-diff-flat{color:#6b7a72;}",
+      "[data-yojitsu-678-shell][data-y678-view=\"main\"] .y678-diff-only{display:none !important;}",
+      "[data-yojitsu-678-shell][data-y678-view=\"budget-diff\"] .y678-main-only{display:none !important;}",
       "[data-yojitsu-678-shell] .y678-pivot-month{font-size:12px;padding:4px 6px;border:1px solid #b9d6bd;border-radius:4px;background:#fff;color:#1f4d33;}",
       "[data-yojitsu-678-shell] .y678-action-hint{font-size:11px;color:#5e7a64;}",
       "[data-yojitsu-678-shell] .y678-grid td.y678-edit{cursor:pointer;}",
@@ -1958,8 +2582,38 @@
       "";
     wrap.appendChild(filterRow);
 
+    var tabRow = document.createElement("div");
+    tabRow.className = "y678-view-tabs";
+    tabRow.innerHTML =
+      "<button type=\"button\" class=\"y678-view-tab y678-view-tab--active\" data-y678-view=\"main\">一覧（通常）</button>" +
+      "<button type=\"button\" class=\"y678-view-tab\" data-y678-view=\"budget-diff\" title=\"予算修正・effective 予算の前月比（上長への増減承認の目安）\">予算増減差異（承認用）</button>";
+    wrap.appendChild(tabRow);
+
+    var diffToolbar = document.createElement("div");
+    diffToolbar.className = "y678-diff-toolbar y678-diff-only";
+    var diffMonthOpts = [];
+    for (var dmo = 0; dmo < FISCAL_ORDER.length; dmo++) {
+      var dl = FISCAL_ORDER[dmo];
+      diffMonthOpts.push(
+        "<option value=\"" + attrEsc(dl) + "\">" + esc(FISCAL_HEAD[dl] || dl + "月") + "</option>"
+      );
+    }
+    diffToolbar.innerHTML =
+      "<label style=\"display:inline-flex;align-items:center;gap:4px\">" +
+      "集計月（承認の対象月） <select id=\"y678-budget-diff-month\" class=\"y678-budget-diff-month\" title=\"この月と前月を比較。予算修正を入れた月を選ぶと承認額の目安になります\">" +
+      diffMonthOpts.join("") +
+      "</select></label>" +
+      "<span style=\"color:#555\">表示:</span>" +
+      "<label style=\"display:inline-flex;align-items:center;gap:3px;cursor:pointer\"><input type=\"radio\" name=\"y678-budget-diff-mode\" value=\"detail\" /> 明細ごと</label>" +
+      "<label style=\"display:inline-flex;align-items:center;gap:3px;cursor:pointer\"><input type=\"radio\" name=\"y678-budget-diff-mode\" value=\"group\" checked /> 工種×摘要（合計）</label>" +
+      "<label style=\"display:inline-flex;align-items:center;gap:4px;cursor:pointer\">" +
+      "<input type=\"checkbox\" id=\"y678-budget-diff-only\" /> <span class=\"y678-diff-only-label\">差異があるグループのみ</span></label>" +
+      "<button type=\"button\" id=\"y678-export-budget-diff-xlsx\" class=\"y678-action-export\" title=\"表示中の予算増減差異表を Excel（.xlsx）でダウンロード\">予算増減差異を Excel (.xlsx) で出力</button>" +
+      "<span class=\"y678-diff-hint\" style=\"color:#5e7a64;font-size:11px\">上長承認の目安：前月比＝予算＋予算修正（税抜）。固定費・年額は予算修正のみ・集計月は支払月を指定。</span>";
+    wrap.appendChild(diffToolbar);
+
     var actionRow = document.createElement("div");
-    actionRow.className = "y678-actionrow";
+    actionRow.className = "y678-actionrow y678-main-only";
     var pivotMonthOpts = [];
     for (var pmo = 0; pmo < FISCAL_ORDER.length; pmo++) {
       var pl = FISCAL_ORDER[pmo];
@@ -1977,11 +2631,12 @@
       "集計締め月 <select id=\"y678-pivot-month\" class=\"y678-pivot-month\" title=\"5月起点で当該月までの累計実績と、工種トータル予算（ランニング＋イニシャル等・税抜）を出力\">" +
       pivotMonthOpts.join("") +
       "</select></label>" +
-      "<button type=\"button\" id=\"y678-copy-worktype-pivot\" class=\"y678-action-pivot\" title=\"工種コード別に、締め月までの累計実績・工種トータル予算・消費率（税抜）を Excel 貼付用にコピー\">工種コード集計を Excel 用にコピー</button>";
+      "<button type=\"button\" id=\"y678-copy-worktype-pivot\" class=\"y678-action-pivot\" title=\"工種コード別に、締め月までの累計実績・工種トータル予算・消費率（税抜）を Excel 貼付用にコピー\">工種コード集計を Excel 用にコピー</button>" +
+      "<button type=\"button\" id=\"y678-export-list-xlsx\" class=\"y678-action-export\" title=\"現在の一覧（費用種別フィルタ・ソート順）を Excel ファイル（.xlsx）でダウンロード\">一覧を Excel (.xlsx) で出力</button>";
     wrap.appendChild(actionRow);
 
     var navRow = document.createElement("div");
-    navRow.className = "y678-nav";
+    navRow.className = "y678-nav y678-main-only";
     var navParts = [
       "<span class=\"y678-nav-label\">入力月へジャンプ:</span>",
       "<button type=\"button\" data-y678-jump=\"tsudo\" class=\"y678-nav-btn y678-nav-tsudo\" title=\"変動費の実績・予算修正はここ（暦月12列は参照）。ONのときは月ボタンは薄表示（クリックで解除してその月へ切替可）\">都度費用</button>",
@@ -2008,7 +2663,7 @@
     wrap.appendChild(status);
 
     var tblHostOuter = document.createElement("div");
-    tblHostOuter.className = "y678-tbl-outer";
+    tblHostOuter.className = "y678-tbl-outer y678-main-only";
     var tblHost = document.createElement("div");
     tblHost.className = "y678-tbl-host";
     tblHostOuter.appendChild(tblHost);
@@ -2016,6 +2671,17 @@
     fadeRight.className = "y678-fade-right";
     tblHostOuter.appendChild(fadeRight);
     wrap.appendChild(tblHostOuter);
+
+    var diffHostOuter = document.createElement("div");
+    diffHostOuter.className = "y678-tbl-outer y678-diff-only";
+    var diffHost = document.createElement("div");
+    diffHost.className = "y678-tbl-host";
+    diffHostOuter.appendChild(diffHost);
+    wrap.appendChild(diffHostOuter);
+
+    wrap.setAttribute("data-y678-view", "main");
+    var y678ViewMode = "main";
+    var y678BudgetDiffDisplayMode = "detail";
 
     attach678Shell(dest, wrap);
     schedule678PagingLabelHide();
@@ -2252,6 +2918,80 @@
       }, 0);
     }
 
+    function syncBudgetDiffMonthSelect() {
+      var diffSel = diffToolbar.querySelector("#y678-budget-diff-month");
+      var pivotSel = actionRow.querySelector("#y678-pivot-month");
+      var cur = normalizeFiscalMonthLabel(getInputMonthLabel());
+      if (diffSel && cur && FISCAL_ORDER.indexOf(cur) >= 0) diffSel.value = cur;
+      if (pivotSel && cur && FISCAL_ORDER.indexOf(cur) >= 0) pivotSel.value = cur;
+    }
+
+    function getBudgetDiffMonthPick() {
+      var diffSel = diffToolbar.querySelector("#y678-budget-diff-month");
+      return diffSel ? String(diffSel.value || "") : "";
+    }
+
+    function budgetDiffOnlyChecked() {
+      var cb = diffToolbar.querySelector("#y678-budget-diff-only");
+      return cb ? !!cb.checked : false;
+    }
+
+    function getBudgetDiffDisplayMode() {
+      var picked = diffToolbar.querySelector("input[name='y678-budget-diff-mode']:checked");
+      return picked && picked.value === "group" ? "group" : "detail";
+    }
+
+    function syncBudgetDiffOnlyLabel() {
+      var lab = diffToolbar.querySelector(".y678-diff-only-label");
+      if (!lab) return;
+      lab.textContent =
+        getBudgetDiffDisplayMode() === "group" ? "差異があるグループのみ" : "差異がある明細のみ";
+    }
+
+    function paintBudgetDiffTable(filtered) {
+      diffHost.innerHTML = "";
+      y678BudgetDiffDisplayMode = getBudgetDiffDisplayMode();
+      syncBudgetDiffOnlyLabel();
+      var pack = buildBudgetDiffPack678(
+        filtered,
+        getBudgetDiffMonthPick(),
+        budgetDiffOnlyChecked(),
+        y678BudgetDiffDisplayMode
+      );
+      var t = document.createElement("div");
+      t.innerHTML = renderBudgetDiffTableHtml678(pack);
+      var tbl = t.querySelector("table");
+      if (tbl) styleTable(tbl);
+      diffHost.appendChild(t);
+      var hint = diffToolbar.querySelector(".y678-diff-hint");
+      if (hint) {
+        var ch = FISCAL_HEAD[pack.currLab] || pack.currLab + "月";
+        var ph = FISCAL_HEAD[pack.prevLab] || pack.prevLab + "月";
+        var unit = pack.mode === "group" ? "グループ" : "明細";
+        hint.textContent =
+          ph +
+          " と " +
+          ch +
+          " の前月比（承認用・税抜）。表示 " +
+          String(pack.rows.length) +
+          " " +
+          unit +
+          "。月額等＝予算＋予算修正、年額＝予算修正のみ（集計月は支払月）。";
+      }
+    }
+
+    function setViewMode(mode) {
+      y678ViewMode = mode === "budget-diff" ? "budget-diff" : "main";
+      wrap.setAttribute("data-y678-view", y678ViewMode);
+      var tabs = tabRow.querySelectorAll(".y678-view-tab");
+      for (var ti = 0; ti < tabs.length; ti++) {
+        var on = tabs[ti].getAttribute("data-y678-view") === y678ViewMode;
+        tabs[ti].classList.toggle("y678-view-tab--active", on);
+        tabs[ti].setAttribute("aria-pressed", on ? "true" : "false");
+      }
+      applyFilterAndRedraw();
+    }
+
     function updateStatusLine() {
       // 説明文は非表示（クイックマニュアルへ集約・dashboard はチャート/表に集中）
       status.style.display = "none";
@@ -2317,10 +3057,15 @@
           pbLabel.textContent = "今月の実績未入力（¥0）のみ";
         }
         updateStatusLine();
-        paintTable(filtered);
+        if (y678ViewMode === "budget-diff") {
+          paintBudgetDiffTable(filtered);
+        } else {
+          paintTable(filtered);
+        }
         syncMonthJumpNavActive();
         syncTsudoNavButton();
         syncPivotMonthSelectFromInput();
+        syncBudgetDiffMonthSelect();
         if (y678OmitMonthlyCols) {
           status.textContent =
             status.textContent +
@@ -3579,6 +4324,40 @@
       });
     }
 
+    var exportListBtn = actionRow.querySelector("#y678-export-list-xlsx");
+    if (exportListBtn) {
+      exportListBtn.addEventListener("click", function () {
+        if (!lastRawRecords.length) {
+          status.style.color = "#b00020";
+          status.textContent = "明細が読み込まれていません。「再読み込み」を押してください。";
+          return;
+        }
+        var recs = applyKeySort(getDisplayedRecords());
+        if (!recs.length) {
+          status.style.color = "#b00020";
+          status.textContent = "出力対象の明細がありません（フィルタ条件を確認してください）。";
+          return;
+        }
+        exportListBtn.disabled = true;
+        status.style.color = "#555";
+        status.textContent = "一覧を Excel（.xlsx）に出力中…（明細 " + String(recs.length) + " 件）";
+        try {
+          downloadListXlsx678(recs);
+          status.style.color = "#0a6b0a";
+          status.textContent =
+            "予実一覧_" +
+            y678ExportFilenameStamp() +
+            ".xlsx をダウンロードしました（明細 " +
+            String(recs.length) +
+            " 件・画面上のフィルタ・ソート順）。";
+        } catch (eXl) {
+          status.style.color = "#b00020";
+          status.textContent = formatApiError(eXl, "Excel 出力に失敗しました。");
+        }
+        exportListBtn.disabled = false;
+      });
+    }
+
     /* ===== 実績入力モーダル（payment_breakdown 行追加 + 月次実績ロールアップ） ===== */
     var Y678_TAX_LS_RATE = "y678_payment_tax_rate_pct";
     var Y678_TAX_LS_ROUND = "y678_payment_tax_round_mode";
@@ -4651,7 +5430,7 @@
             var paNum = toNum((pv.payment_amount || {}).value);
             var pa = esc(formatYenPlainForDialog(paNum));
             var inv = esc(String(((pv.invoice_number || {}).value) || ""));
-            var bk = esc(String(((pv.budget_bucket || {}).value) || ""));
+            var bk = esc(formatBudgetBucketDisplay678((pv.budget_bucket || {}).value));
             var rowIdBtn =
               (prow[px] || {}).id != null
                 ? " data-y678-pay-row-id=\"" + attrEsc(String(prow[px].id)) + "\""
@@ -4985,6 +5764,80 @@
           function () { saveBtn.disabled = false; },
           function () { saveBtn.disabled = false; }
         );
+    }
+
+    tabRow.addEventListener("click", function (ev) {
+      var btn = ev.target && ev.target.closest ? ev.target.closest(".y678-view-tab") : null;
+      if (!btn || !tabRow.contains(btn)) return;
+      var vm = btn.getAttribute("data-y678-view");
+      if (vm) setViewMode(vm);
+    });
+
+    var diffMonthSel = diffToolbar.querySelector("#y678-budget-diff-month");
+    if (diffMonthSel) {
+      diffMonthSel.addEventListener("change", function () {
+        var pivotSel = actionRow.querySelector("#y678-pivot-month");
+        if (pivotSel) pivotSel.value = diffMonthSel.value;
+        if (lastRawRecords.length) applyFilterAndRedraw();
+      });
+    }
+    var diffOnlyCb = diffToolbar.querySelector("#y678-budget-diff-only");
+    if (diffOnlyCb) {
+      diffOnlyCb.addEventListener("change", function () {
+        if (lastRawRecords.length && y678ViewMode === "budget-diff") applyFilterAndRedraw();
+      });
+    }
+    var diffModeRadios = diffToolbar.querySelectorAll("input[name='y678-budget-diff-mode']");
+    for (var dri = 0; dri < diffModeRadios.length; dri++) {
+      diffModeRadios[dri].addEventListener("change", function () {
+        if (lastRawRecords.length && y678ViewMode === "budget-diff") applyFilterAndRedraw();
+        else syncBudgetDiffOnlyLabel();
+      });
+    }
+    var exportDiffBtn = diffToolbar.querySelector("#y678-export-budget-diff-xlsx");
+    if (exportDiffBtn) {
+      exportDiffBtn.addEventListener("click", function () {
+        if (!lastRawRecords.length) {
+          status.style.display = "block";
+          status.style.color = "#b00020";
+          status.textContent = "明細が読み込まれていません。「再読み込み」を押してください。";
+          return;
+        }
+        var recs = applyKeySort(getDisplayedRecords());
+        var dm = getBudgetDiffDisplayMode();
+        var pack = buildBudgetDiffPack678(recs, getBudgetDiffMonthPick(), budgetDiffOnlyChecked(), dm);
+        if (!pack.rows.length) {
+          status.style.display = "block";
+          status.style.color = "#b00020";
+          status.textContent = "出力対象がありません（集計月・差異のみ・フィルタを確認）。";
+          return;
+        }
+        exportDiffBtn.disabled = true;
+        status.style.display = "block";
+        status.style.color = "#555";
+        status.textContent = "予算増減差異を Excel（.xlsx）に出力中…（" + String(pack.rows.length) + " 件）";
+        try {
+          downloadBudgetDiffXlsx678(recs, getBudgetDiffMonthPick(), budgetDiffOnlyChecked(), dm);
+          status.style.color = "#0a6b0a";
+          status.textContent =
+            (dm === "group" ? "予実予算増減差異_工種摘要_" : "予実予算増減差異_明細_") +
+            y678ExportFilenameStamp() +
+            ".xlsx をダウンロードしました（" +
+            String(pack.rows.length) +
+            " 件）。";
+        } catch (eXd) {
+          status.style.color = "#b00020";
+          status.textContent = formatApiError(eXd, "Excel 出力に失敗しました。");
+        }
+        exportDiffBtn.disabled = false;
+      });
+    }
+    var pivotMonthSel = actionRow.querySelector("#y678-pivot-month");
+    if (pivotMonthSel) {
+      pivotMonthSel.addEventListener("change", function () {
+        if (diffMonthSel) diffMonthSel.value = pivotMonthSel.value;
+        if (lastRawRecords.length && y678ViewMode === "budget-diff") applyFilterAndRedraw();
+      });
     }
 
     filterRow.addEventListener("click", function (ev) {

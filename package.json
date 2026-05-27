@@ -51,7 +51,8 @@
     "cio:preflight:677": "node scripts/cio-preflight-stamp.mjs --app 677",
     "deploy:677": "node scripts/cio-deploy-preflight-guard.mjs 677 && npx dotenv -e .env -e .env.proxy -- node scripts/deploy-customization.js 677 customize/677/desktop.js",
     "cio:preflight:678": "node scripts/cio-preflight-stamp.mjs --app 678",
-    "deploy:678": "node scripts/cio-deploy-preflight-guard.mjs 678 && npx dotenv -e .env -e .env.proxy -- node scripts/deploy-customization.js 678 customize/678/desktop.js",
+    "bundle:678": "node scripts/bundle-678-desktop.mjs",
+    "deploy:678": "node scripts/bundle-678-desktop.mjs && node scripts/cio-deploy-preflight-guard.mjs 678 && npx dotenv -e .env -e .env.proxy -- node scripts/deploy-customization.js 678 customize/678/desktop.bundle.js",
     "cio:preflight:679": "node scripts/cio-preflight-stamp.mjs --app 679",
     "deploy:679": "node scripts/cio-deploy-preflight-guard.mjs 679 && npx dotenv -e .env -e .env.proxy -- node scripts/deploy-customization.js 679 customize/679/desktop.js",
     "cio:preflight:682": "node scripts/cio-preflight-stamp.mjs --app 682",
@@ -352,7 +353,8 @@
     "@kintone/cli": "^1.19.2",
     "eslint": "^10.3.0",
     "globals": "^17.6.0",
-    "localtunnel": "^2.0.2"
+    "localtunnel": "^2.0.2",
+    "xlsx": "^0.18.5"
   },
   "overrides": {
     "qs": "6.15.2",
@@ -367,4 +369,3 @@
   },
   "description": ""
 }
-

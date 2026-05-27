@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-22-683-print-month-summary-12pt';
+  const BUILD = '2026-05-27-683-print-daily-lab-7pt';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
   /**
@@ -1128,6 +1128,7 @@
     }
 
     const wrap = document.createElement('div');
+    wrap.className = 'us683-week-card';
     wrap.style.margin = compact ? '0' : '4px 0 10px';
     wrap.style.padding = compact ? '10px 8px 10px' : '12px 14px 14px';
     wrap.style.border = '1px solid #ccc';
@@ -1143,6 +1144,7 @@
       '棒の高さは週内の日合計（day_total）の合算。積み上げ色は午前件数・午後件数の週合算（インフラ／サポート／システム別は 682 に区分フィールドが無いため未表示）。';
 
     const t = document.createElement('div');
+    t.className = 'us683-week-card-title';
     t.style.fontWeight = 'bold';
     t.style.marginBottom = compact ? '4px' : '6px';
     t.style.fontSize = compact ? '13px' : '15px';
@@ -1165,6 +1167,7 @@
     }
 
     const legend = document.createElement('div');
+    legend.className = 'us683-week-card-legend';
     legend.style.display = 'flex';
     legend.style.flexWrap = 'wrap';
     legend.style.gap = compact ? '8px' : '12px';
@@ -1191,6 +1194,7 @@
 
     const barH = compact ? CH683_CHART_BOOST_COMPACT_BAR_H : 200;
     const row = document.createElement('div');
+    row.className = 'us683-week-card-row';
     row.style.display = 'flex';
     row.style.alignItems = 'flex-end';
     row.style.justifyContent = compact ? 'flex-start' : 'space-between';
@@ -1206,6 +1210,7 @@
     for (let i = 0; i < weeks.length; i += 1) {
       const w = weeks[i];
       const col = document.createElement('div');
+      col.className = 'us683-week-card-col';
       col.style.flex = compact ? '1 1 0%' : '1';
       col.style.display = 'flex';
       col.style.flexDirection = 'column';
@@ -1280,6 +1285,7 @@
       col.appendChild(stackOuter);
 
       const num = document.createElement('div');
+      num.className = 'us683-week-card-num';
       num.style.marginTop = compact ? '4px' : '6px';
       num.style.fontSize = compact ? '12px' : '14px';
       num.style.fontWeight = '700';
@@ -1288,6 +1294,7 @@
       col.appendChild(num);
 
       const lab = document.createElement('div');
+      lab.className = 'us683-week-card-lab';
       lab.style.marginTop = compact ? '2px' : '4px';
       lab.style.fontSize = compact ? '9px' : '10px';
       lab.style.fontWeight = '600';
@@ -1513,6 +1520,8 @@
     const labelColors = (opt && opt.labelColors) || null;
     const barColor = (opt && opt.barColor) || CH683_BAR_DAY;
     const wrap = document.createElement('div');
+    wrap.className =
+      'us683-bar-card' + (opt && opt.chartCardExtraClass ? ' ' + String(opt.chartCardExtraClass) : '');
     wrap.style.margin = boost ? '4px 0 10px' : '8px 0';
     wrap.style.padding = boost ? '12px 14px 14px' : compact ? '8px 10px' : '10px 12px';
     wrap.style.border = '1px solid #ccc';
@@ -1520,6 +1529,7 @@
     wrap.style.background = '#fafafa';
     wrap.style.overflowX = 'hidden';
     const t = document.createElement('div');
+    t.className = 'us683-bar-card-title';
     t.style.fontWeight = 'bold';
     t.style.marginBottom = boost ? '10px' : '6px';
     t.style.fontSize = boost ? '15px' : compact ? '12px' : '13px';
@@ -1533,6 +1543,7 @@
 
     const barH = boost ? (compact ? CH683_CHART_BOOST_COMPACT_BAR_H : 248) : tall ? (compact ? 112 : 144) : compact ? 72 : 96;
     const row = document.createElement('div');
+    row.className = 'us683-bar-card-row';
     row.style.display = 'flex';
     row.style.alignItems = 'flex-end';
     /** `space-between` は列間に余白を広げがち。日次のように本数が多いときは `chartPackColumnsTight` で詰める */
@@ -1583,6 +1594,7 @@
     for (let i = 0; i < labels.length; i += 1) {
       const val = values[i];
       const col = document.createElement('div');
+      col.className = 'us683-bar-card-col';
       col.style.flex = fitNoScroll ? '1 1 0%' : '1';
       col.style.display = 'flex';
       col.style.flexDirection = 'column';
@@ -1590,6 +1602,7 @@
       col.style.minWidth = fitNoScroll ? '0' : colMinW;
 
       const bar = document.createElement('div');
+      bar.className = 'us683-bar-card-bar';
       bar.style.width = '100%';
       bar.style.maxWidth = fitNoScroll ? barMaxWhenFitScroll : barMaxW;
       bar.style.margin = '0 auto';
@@ -1600,6 +1613,7 @@
       bar.title = labStr + ': ' + val + '件';
 
       const num = document.createElement('div');
+      num.className = 'us683-bar-card-num';
       num.style.marginTop = boost ? '6px' : '2px';
       num.style.fontSize = fsNum;
       num.style.fontWeight = '700';
@@ -1608,6 +1622,7 @@
       num.textContent = String(val);
 
       const lab = document.createElement('div');
+      lab.className = 'us683-bar-card-lab';
       lab.style.marginTop = boost ? '4px' : '1px';
       lab.style.fontSize = fsLab;
       lab.style.fontWeight = boost ? '600' : '400';
@@ -2147,26 +2162,32 @@
       '#user683-print-report-portal,#user683-print-report-portal *{visibility:visible!important;}' +
       '#user683-print-report-portal{' +
       'display:block!important;position:absolute!important;left:0!important;top:0!important;width:100%!important;' +
-      'background:#fff!important;color:#000!important;font-family:Meiryo,"Yu Gothic",system-ui,sans-serif;font-size:8pt;' +
+      'background:#fff!important;color:#000!important;font-family:Meiryo,"Yu Gothic",system-ui,sans-serif;font-size:11pt;' +
       '-webkit-print-color-adjust:exact;print-color-adjust:exact;' +
       '}' +
-      '.us683-print-page1{page-break-after:always;}' +
+      '.us683-print-page1{page-break-after:always;font-size:11pt;}' +
       '.us683-print-page2{page-break-before:auto;}' +
       '.us683-print-block{margin-bottom:3px;}' +
       '.us683-print-block.us683-print-hero-wrap{break-inside:avoid-page;}' +
-      '.us683-print-h2{font-size:8.5pt;font-weight:700;margin:3px 0 2px;border-bottom:1px solid #222;padding-bottom:0;}' +
-      '.us683-print-month-summary{white-space:pre-wrap;border:1px solid #999;padding:6px;min-height:1.2em;background:#fafafa;font-size:12pt;line-height:1.45;}' +
+      '.us683-print-page1 .us683-print-h2{font-size:12pt;font-weight:700;margin:4px 0 2px;border-bottom:1px solid #222;padding-bottom:0;}' +
+      '.us683-print-page1 .us683-print-month-summary{white-space:pre-wrap;border:1px solid #999;padding:6px;min-height:1.2em;background:#fafafa;font-size:15pt;line-height:1.45;}' +
       '.us683-print-hero-wrap{border:1px solid #333;border-radius:2px;padding:4px!important;margin:0 0 4px!important;}' +
       '.us683-print-hero-wrap .us683-print-hero-inner{background:transparent!important;color:#000!important;' +
       'box-shadow:none!important;text-align:left!important;padding:0!important;margin:0!important;border-radius:0!important;}' +
-      '.us683-print-hero-inner>div:nth-child(1){font-size:12pt!important;line-height:1.2!important;font-weight:800!important;}' +
-      '.us683-print-hero-inner>div:nth-child(2){font-size:9pt!important;margin-top:2px!important;font-weight:700!important;}' +
+      '.us683-print-hero-inner>div:nth-child(1){font-size:15pt!important;line-height:1.2!important;font-weight:800!important;}' +
+      '.us683-print-hero-inner>div:nth-child(2){font-size:12pt!important;margin-top:2px!important;font-weight:700!important;}' +
       '.us683-print-hero-wrap .us683-print-hero-inner *{color:#000!important;background:transparent!important;}' +
-      '#user683-print-report-portal .us683-print-chart-slot{' +
-      'transform:scale(0.68);transform-origin:top left;width:147.1%;margin-bottom:0;' +
-      '}' +
-      '.us683-print-page2-note{font-size:7pt;color:#333;margin:0 0 2px;line-height:1.2;}' +
-      '.us683-print-p2-wrap{font-size:6.5pt;line-height:1.08;}' +
+      '.us683-print-page1 .us683-print-chart-slot{transform:none!important;width:100%!important;margin-bottom:4px;}' +
+      '.us683-print-page1 .us683-bar-card,.us683-print-page1 .us683-week-card{padding:5px 8px!important;margin:2px 0!important;}' +
+      '.us683-print-page1 .us683-bar-card-title,.us683-print-page1 .us683-week-card-title{font-size:13pt!important;font-weight:700!important;margin-bottom:4px!important;line-height:1.25!important;}' +
+      '.us683-print-page1 .us683-bar-card-num,.us683-print-page1 .us683-week-card-num{font-size:11pt!important;font-weight:700!important;}' +
+      '.us683-print-page1 .us683-bar-card-lab,.us683-print-page1 .us683-week-card-lab{font-size:10pt!important;font-weight:600!important;line-height:1.2!important;}' +
+      '.us683-print-page1 .us683-bar-card--daily .us683-bar-card-lab{font-size:7pt!important;line-height:1!important;white-space:nowrap!important;word-break:keep-all!important;overflow:hidden!important;text-overflow:clip!important;}' +
+      '.us683-print-page1 .us683-week-card-legend{font-size:9.5pt!important;}' +
+      '.us683-print-page1 .us683-bar-card-row,.us683-print-page1 .us683-week-card-row{min-height:0!important;}' +
+      '.us683-print-page2 .us683-print-h2{font-size:10.5pt;font-weight:700;margin:3px 0 2px;border-bottom:1px solid #222;padding-bottom:0;}' +
+      '.us683-print-page2-note{font-size:7.5pt;color:#333;margin:0 0 2px;line-height:1.2;}' +
+      '.us683-print-p2-wrap{font-size:7pt;line-height:1.1;}' +
       '.us683-print-p2-wrap table{font-size:inherit!important;width:100%!important;border-collapse:collapse!important;}' +
       '.us683-print-p2-wrap th,.us683-print-p2-wrap td{padding:0 2px!important;border:1px solid #999!important;vertical-align:top!important;}' +
       '.us683-print-p2-wrap td{word-break:break-word;}' +
@@ -2542,6 +2563,7 @@
             dayVals,
             {
               compact: true,
+              chartCardExtraClass: 'us683-bar-card--daily',
               barColor: CH683_BAR_DAY,
               tall: true,
               chartBoost: true,

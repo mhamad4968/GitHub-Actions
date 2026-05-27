@@ -6,6 +6,9 @@
 # ユーザサポート月次 PDF デモ出力
 scripts/user683-monthly-pdf/_*.pdf
 
+# 678 デプロイ用（SheetJS + desktop.js 結合・`npm run bundle:678` で生成）
+customize/678/desktop.bundle.js
+
 # 依存キャッシュ
 node_modules/
 .npm-cache/
