@@ -94,6 +94,17 @@ export function commandNeedsUnixShell(cmd) {
   return /\b(tail|grep|crontab|head\s|awk\s|sed\s)\b/.test(cmd);
 }
 
+/** bash 構文（export / /home/… / 2>&1 パイプ）— Windows cmd.exe では実行不可 */
+export function commandNeedsBashShell(cmd) {
+  if (commandNeedsUnixShell(cmd)) return true;
+  return (
+    /\bexport\s+PATH=/.test(cmd) ||
+    /\/home\/[^/]+\//.test(cmd) ||
+    (/\|\|/.test(cmd) && /\bcp\b/.test(cmd)) ||
+    /2>&1\s*\|/.test(cmd)
+  );
+}
+
 /**
  * リポ内コマンド実行（morning-prep 用）。
  * - Windows: cmd.exe（npm/node）または WSL bash（unix 専用）
@@ -105,7 +116,7 @@ export function runRepoShellCmd(cmd, opts = {}) {
   const env = buildRepoProcessEnv(opts.env || {}, repoRoot);
 
   if (IS_WIN) {
-    if (commandNeedsUnixShell(cmd)) {
+    if (commandNeedsUnixShell(cmd) || commandNeedsBashShell(cmd)) {
       const wslRoot = win32ToWslPath(repoRoot);
       const wslBin = resolveRepoNodeBinDir(repoRoot);
       const inner = `export PATH="${wslBin}:$PATH" && cd '${wslRoot}' && ${cmd}`;

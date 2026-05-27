@@ -20,6 +20,11 @@ import {
   jstYmdIso,
   win32ToWslPath,
 } from './lib/repo-node-env.mjs';
+import {
+  acquireMorningPrepLock,
+  readMorningPrepLock,
+  releaseMorningPrepLock,
+} from './lib/morning-prep-lock.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const verifyOnly = process.argv.includes('--verify-only');
@@ -85,24 +90,52 @@ function runDailyMorningPrepLinux() {
 const ymd = jstYmdIso();
 
 if (!verifyOnly) {
+  const lock = acquireMorningPrepLock(root);
+  if (lock === 'busy') {
+    const info = readMorningPrepLock(root);
+    const ageSec = info?.startedAt ? Math.round((Date.now() - info.startedAt) / 1000) : -1;
+    console.log(
+      `[morning-prep-ensure] ⏳ 既に実行中（pid=${info?.pid ?? '?'} 経過=${ageSec}s）— 二重起動を回避`,
+    );
+    if (verify(ymd) === 0) {
+      console.log('[morning-prep-ensure] 当日レポートは既にあるため exit 0');
+      process.exit(0);
+    }
+    console.error('[morning-prep-ensure] レポート未生成のまま実行中 — 先のプロセス完了を待って再実行');
+    process.exit(2);
+  }
+  if (lock === 'stale-replaced') {
+    console.warn('[morning-prep-ensure] 古いロックを削除して再開');
+  }
+
+  const t0 = Date.now();
   console.log(`[morning-prep-ensure] generating (JST ${ymd}) …`);
+  console.log(
+    '[morning-prep-ensure] 目安: Windows 約 5〜8 分 / WSL フル RAG 込みで 15〜20 分。Cursor からは kill せず完了まで待つか `npm run morning:ensure` をターミナルで単独実行',
+  );
   let gen;
-  if (process.platform === 'win32') {
-    if (canRunMorningPrepNative()) {
-      console.log('[morning-prep-ensure] route: Windows native Node (優先)');
-      gen = runDailyMorningPrepNative();
-      if (gen.status !== 0 && gen.status != null) {
-        console.warn('[morning-prep-ensure] Windows native failed — retry via WSL …');
+  try {
+    if (process.platform === 'win32') {
+      if (canRunMorningPrepNative()) {
+        console.log('[morning-prep-ensure] route: Windows native Node (優先)');
+        gen = runDailyMorningPrepNative();
+        if (gen.status !== 0 && gen.status != null) {
+          console.warn('[morning-prep-ensure] Windows native failed — retry via WSL …');
+          gen = runDailyMorningPrepWsl();
+        }
+      } else {
+        console.log('[morning-prep-ensure] route: WSL (native Node < v20)');
         gen = runDailyMorningPrepWsl();
       }
     } else {
-      console.log('[morning-prep-ensure] route: WSL (native Node < v20)');
-      gen = runDailyMorningPrepWsl();
+      console.log('[morning-prep-ensure] route: Linux/WSL bash + NVM');
+      gen = runDailyMorningPrepLinux();
     }
-  } else {
-    console.log('[morning-prep-ensure] route: Linux/WSL bash + NVM');
-    gen = runDailyMorningPrepLinux();
+  } finally {
+    releaseMorningPrepLock(root);
   }
+  const elapsed = ((Date.now() - t0) / 1000 / 60).toFixed(1);
+  console.log(`[morning-prep-ensure] 生成処理終了（${elapsed} 分）`);
   if (gen.status !== 0 && gen.status != null) {
     console.error(`[morning-prep-ensure] ❌ daily-morning-prep exit ${gen.status}`);
     process.exit(typeof gen.status === 'number' ? gen.status : 2);

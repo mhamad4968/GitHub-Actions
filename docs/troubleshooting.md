@@ -1544,3 +1544,41 @@ npm run yojitsu:677:reconcile-monthly-from-payments
 - `templates/yojitsu-budget-lite/SPEC.md` §6e（月次列と支払内訳は別・実績は支払ロールアップ）
 - `scripts/yojitsu-677-clear-fiscal-month-actual.mjs`（特定月のみ空にする手当て）
 
+## TSB-037 — 朝ブリーフィングが毎日強制終了される（2026-05-27 制定）
+
+### 事象
+
+- `npm run morning:ensure` や `daily-morning-prep.mjs` 実行中、Cursor エージェントがプロセスを **強制終了**（exit `4294967295` 等）
+- ログ上は **RAG ingest** が 15 分前後かかり、その直後に `exit=null`（spawn タイムアウト）となりがち
+- レポート自体は生成完了していることもある（kill タイミング次第）
+
+### 真因
+
+1. **RAG ステップ**: Windows ネイティブ経路でも `export PATH=… && npx mcp-local-rag ingest docs/` を **WSL bash** で実行（`tail` 含有のため）。**docs/ 全件**が 15 分級
+2. **合計所要**: RAG 15 分 + health-check/auto-heal 等で **20 分超** → Cursor のシェル `block_until_ms`（3〜6 分）を超え、エージェントが **Stop-Process** 相当で kill
+3. **二重起動**: 未完了のまま再 `morning:ensure` すると複数プロセスが競合
+
+### 対策（2026-05-27 実装）
+
+| 対策 | 内容 |
+|------|------|
+| **RAG 短縮** | `scripts/lib/morning-prep-rag.mjs` — **node のみ**（bash+npx 連鎖廃止）。**Windows 既定はミラーのみ**（数秒）。npx ingest は **WSL cron 06:00** |
+| **ingest 手動（Win）** | `MORNING_PREP_RAG_INGEST=1 npm run morning:ensure`（extra-docs のみ・約 5〜6 分） |
+| **フル RAG 手動** | `MORNING_PREP_RAG_DOCS=1 npm run morning:ensure`（Linux 相当・docs/ 込み・要 15 分超） |
+| **進捗表示** | `[daily-morning-prep] ▶ label …` を各ステップで stdout（kill 判断材料） |
+| **二重起動防止** | `logs/morning-prep/.morning-prep.lock`（35 分以内は busy） |
+| **運用** | Cursor から走らせるときは **kill しない**。ターミナルで `npm run morning:ensure` を単独実行してもよい |
+
+### 確認
+
+```bash
+npm run morning:verify-today
+# 当日 docs/reports/YYYY-MM-DD-morning-prep.md が 200B 以上
+```
+
+### 関連
+
+- `scripts/morning-prep-ensure.mjs`
+- `scripts/daily-morning-prep.mjs`
+- `scripts/rag-ingest-path.mjs`（TSB-029）
+

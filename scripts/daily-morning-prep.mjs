@@ -11,7 +11,7 @@
  *   4. 依存最新性: npm outdated
  *   5. ルール整合性: scripts/audit-rules.mjs
  *   6. プラン進捗: scripts/scan-plans.mjs
- *   7. RAG 再 ingest（任意・失敗してもブリーフィングは続ける）
+ *   7. RAG 再 ingest（任意・失敗してもブリーフィングは続ける・TSB-037: Windows は extra-docs のみ短時間）
  *   7b. Z-3: 月初 JST のみ scripts/archive-reports.mjs で先月 docs/reports/*.md を archive/ へ
  *   8. ブリーフィング Markdown を docs/reports/<YYYY-MM-DD>-morning-prep.md に出力
  *   9. 失敗ログを logs/morning-prep/<YYYY-MM-DD>.log に保存
@@ -31,9 +31,9 @@ import { maybeArchivePreviousMonth } from './archive-reports.mjs';
 import {
   IS_WIN,
   jstYmdIso,
-  resolveRepoNodeBinDir,
   runRepoShellCmd,
 } from './lib/repo-node-env.mjs';
+import { runMorningPrepRag } from './lib/morning-prep-rag.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -72,7 +72,9 @@ function log(msg) {
 }
 
 function runCmd(label, cmd, opts = {}) {
+  const t0 = Date.now();
   log(`▶ ${label}: ${cmd}`);
+  console.log(`[daily-morning-prep] ▶ ${label} …`);
   const res = runRepoShellCmd(cmd, {
     cwd: REPO_ROOT,
     timeoutMs: opts.timeoutMs ?? 120_000,
@@ -82,7 +84,11 @@ function runCmd(label, cmd, opts = {}) {
   const stdout = (res.stdout || '').trim();
   const stderr = (res.stderr || '').trim();
   const ok = res.status === 0;
-  log(`  exit=${res.status} stdout=${stdout.length}B stderr=${stderr.length}B platform=${IS_WIN ? 'win32' : process.platform}`);
+  const elapsed = ((Date.now() - t0) / 1000).toFixed(1);
+  log(`  exit=${res.status} stdout=${stdout.length}B stderr=${stderr.length}B platform=${IS_WIN ? 'win32' : process.platform} elapsed=${elapsed}s`);
+  console.log(
+    `[daily-morning-prep]   ${ok ? '✓' : res.status == null ? '⏱' : '✗'} ${label} (${elapsed}s)`,
+  );
   return { ok, exit: res.status, stdout, stderr };
 }
 
@@ -406,25 +412,30 @@ const r6 = runCmd('scan-plans', 'node scripts/scan-plans.mjs');
 sections.push(r6.stdout || '_該当なし_');
 sections.push('');
 
-// 7. RAG 再 ingest（任意）
-// (#5 修正) Cursor 内蔵 Node 等が PATH 先頭にいると npx が古い jsdom (CJS) を引き ERR_REQUIRE_ESM。
-// → `.nvmrc` に合う NVM の bin を PATH 先頭に強制（`scripts/print-nvm-node-bin.sh` と同値）
+// 7. RAG 再 ingest（任意）— TSB-037: rag-ingest-path + Windows は extra-docs のみ（短時間完走）
 sections.push('## 7. RAG 知識ベース更新');
 sections.push('');
-const NVM_NODE_BIN = resolveRepoNodeBinDir();
-const ragCmd = [
-  `export PATH=${NVM_NODE_BIN}:$PATH`,
-  'cp RULES-INDEX.md kintone-apps.md AGENTS.md WORKFLOW.md .rag/extra-docs/ 2>/dev/null || true',
-  `${NVM_NODE_BIN}/npx --yes mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest .rag/extra-docs/ 2>&1 | tail -10 || true`,
-  `${NVM_NODE_BIN}/npx --yes mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest docs/ 2>&1 | tail -10 || true`,
-].join(' && ');
-const r7 = runCmd('rag-ingest', ragCmd, { timeoutMs: 900_000 });
-// 内側エラー検知: stdout/stderr に Error/ERR_/Exception を含む場合は ⚠ 降格 (#S1)
-const ragOutput = `${r7.stdout}\n${r7.stderr}`;
-const ragHasInnerError = /\b(?:Error|ERR_[A-Z_]+|Exception|Traceback)\b/.test(ragOutput);
-if (ragHasInnerError) r7.ok = false;
+const rag = runMorningPrepRag(runCmd, log);
+const r7 = {
+  ok: rag.ok,
+  stdout: [rag.rMirror.stdout, rag.rExtra.stdout, rag.rDocs.stdout].filter(Boolean).join('\n---\n'),
+  stderr: [rag.rMirror.stderr, rag.rExtra.stderr, rag.rDocs.stderr].filter(Boolean).join('\n'),
+  exit: rag.ok ? 0 : 1,
+};
+if (!rag.fullDocs) {
+  sections.push(
+    `> ℹ️ **docs/ 全件 ingest**: ${IS_WIN ? 'Windows 既定でスキップ' : 'スキップ'}（WSL cron 06:00 がフル正本。手動フルは \`MORNING_PREP_RAG_DOCS=1 npm run morning:ensure\`）\n`,
+  );
+}
+if (IS_WIN && !process.env.MORNING_PREP_RAG_INGEST) {
+  sections.push(
+    '> ℹ️ **Windows RAG ingest**: 既定は **ミラーのみ**（数秒）。DB 反映は WSL cron 06:00。午後に ingest する場合は `MORNING_PREP_RAG_INGEST=1 npm run morning:ensure`\n',
+  );
+}
 sections.push(summary('RAG ingest', r7, { ok: '✅', ng: '⚠️', limit: 12 }));
-if (ragHasInnerError) sections.push('> ⚠ 内側エラー検知: stdout/stderr に `Error/ERR_/Exception` を含むためヘルススコアを失敗扱いに降格しました。\n');
+if (rag.ragHasInnerError) {
+  sections.push('> ⚠ 内側エラー検知: stdout/stderr に `Error/ERR_/Exception` を含むためヘルススコアを失敗扱いに降格しました。\n');
+}
 
 // ========================================
 // §46 Phase 2-4: 健康チェック / 自動治療 / バージョンアップ
