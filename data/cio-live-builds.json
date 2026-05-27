@@ -34,11 +34,11 @@
       "note": null
     },
     "678": {
-      "build": "2026-05-26-678-pivot-copy-yen-pct-format",
-      "fileKey": "a2e79f14-ae73-467c-a1e0-56aaa9dc4416",
-      "revision": "174",
+      "build": "2026-05-26-678-pivot-worktype-total-budget",
+      "fileKey": "4f4ea194-4972-4792-8bfd-9de350ed7091",
+      "revision": "175",
       "relPath": "customize/678/desktop.js",
-      "deployedAt": "2026-05-26T10:38:01.595Z",
+      "deployedAt": "2026-05-26T10:56:47.807Z",
       "note": null
     },
     "679": {

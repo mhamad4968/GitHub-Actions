@@ -1543,3 +1543,4 @@ npm run yojitsu:677:reconcile-monthly-from-payments
 
 - `templates/yojitsu-budget-lite/SPEC.md` §6e（月次列と支払内訳は別・実績は支払ロールアップ）
 - `scripts/yojitsu-677-clear-fiscal-month-actual.mjs`（特定月のみ空にする手当て）
+
