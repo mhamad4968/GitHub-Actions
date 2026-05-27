@@ -35,10 +35,10 @@
     },
     "678": {
       "build": "2026-05-26-678-pivot-worktype-total-budget",
-      "fileKey": "4f4ea194-4972-4792-8bfd-9de350ed7091",
-      "revision": "175",
-      "relPath": "customize/678/desktop.js",
-      "deployedAt": "2026-05-26T10:56:47.807Z",
+      "fileKey": "33bd2860-bceb-423d-b518-2b089f85d636",
+      "revision": "176",
+      "relPath": ".kintone-deploy/upload-678.js",
+      "deployedAt": "2026-05-27T09:50:29.793Z",
       "note": null
     },
     "679": {
