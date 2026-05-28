@@ -11,6 +11,8 @@ export default [
       // workdays 687/688: deploy 対象は desktop.js のみ（ui*.js は build 用断片）
       "customize/**/desktop.ui.js",
       "customize/**/desktop.ui.slim.js",
+      // 678: Vite/SheetJS ビルド成果物（.gitignore・deploy は bundle、lint 対象外）
+      "customize/**/desktop.bundle.js",
     ],
   },
   {
@@ -21,6 +23,8 @@ export default [
       globals: {
         ...globals.browser,
         kintone: "readonly",
+        // 678 一覧/差異 Excel（SheetJS・desktop.bundle.js 同梱）
+        XLSX: "readonly",
       },
     },
     rules: {
