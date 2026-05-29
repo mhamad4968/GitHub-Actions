@@ -71,7 +71,7 @@
 
 ## § ↔ .mdc 双方向索引（自動生成・編集禁止）
 
-**更新**: `npm run rules:sync-section-mdc`（2026-05-21 JST）
+**更新**: `npm run rules:sync-section-mdc`（2026-05-29 JST）
 **正本**: `AGENTS.md` § 解釈 / 機械: `data/rules-index-section-mdc-map.json`
 
 ### § → .mdc（抜粋）
@@ -107,7 +107,7 @@
 | §36 | [`cio-constitution.mdc`](.cursor/rules/cio-constitution.mdc) · [`cio-discipline-always.mdc`](.cursor/rules/cio-discipline-always.mdc) |
 | §37-1 | [`every-turn-rules-confirm.mdc`](.cursor/rules/every-turn-rules-confirm.mdc) |
 | §38 | [`constitution-enforcement-core.mdc`](.cursor/rules/constitution-enforcement-core.mdc) |
-| §41 | [`auto-read-by-topic.mdc`](.cursor/rules/auto-read-by-topic.mdc) · [`constitution-enforcement-core.mdc`](.cursor/rules/constitution-enforcement-core.mdc) · [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) · [`constitutional-focus-yojitsu.mdc`](.cursor/rules/constitutional-focus-yojitsu.mdc) · [`creation-timing-ask.mdc`](.cursor/rules/creation-timing-ask.mdc) · [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) |
+| §41 | [`auto-read-by-topic.mdc`](.cursor/rules/auto-read-by-topic.mdc) · [`constitution-enforcement-core.mdc`](.cursor/rules/constitution-enforcement-core.mdc) · [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) · [`constitutional-focus-yojitsu.mdc`](.cursor/rules/constitutional-focus-yojitsu.mdc) · [`creation-timing-ask.mdc`](.cursor/rules/creation-timing-ask.mdc) · [`cursor-generate-image-assets.mdc`](.cursor/rules/cursor-generate-image-assets.mdc) · [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) |
 | §47-D | [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) |
 | §5 | [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) |
 | §50 | [`constitution-brief-card.mdc`](.cursor/rules/constitution-brief-card.mdc) · [`mcp-server-use-triggers.mdc`](.cursor/rules/mcp-server-use-triggers.mdc) |
@@ -152,7 +152,7 @@
 | [`constitutional-focus-kintone-customize.mdc`](.cursor/rules/constitutional-focus-kintone-customize.mdc) | §35-7 · §50-3-8 · §52 |
 | [`constitutional-focus-yojitsu.mdc`](.cursor/rules/constitutional-focus-yojitsu.mdc) | §2 · §41 · §50-3-8 |
 | [`creation-timing-ask.mdc`](.cursor/rules/creation-timing-ask.mdc) | §(RULES-INDEX行) · §41 |
-| [`cursor-generate-image-assets.mdc`](.cursor/rules/cursor-generate-image-assets.mdc) | §(RULES-INDEX行) · §0 · §1-2-2 · §1-2-3-4-A · §1-2-4 · §50-3-11 |
+| [`cursor-generate-image-assets.mdc`](.cursor/rules/cursor-generate-image-assets.mdc) | §(RULES-INDEX行) · §0 · §1-2-2 · §1-2-3-4-A · §1-2-4 · §41 · §50-3-11 |
 | [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) | §0 · §1-2-2 · §1-2-3-4-A · §1-2-4 · §50-3 · §50-3-10 · §50-3-11 · §50-3-2 · §50-3-8 · §50-3-9 |
 | [`deepseek-pre-edit-gate.mdc`](.cursor/rules/deepseek-pre-edit-gate.mdc) | §50-3-8 |
 | [`every-turn-rules-confirm.mdc`](.cursor/rules/every-turn-rules-confirm.mdc) | §(RULES-INDEX行) · §1 · §1-2-3 · §1-2-3-1 · §35-7 · §37-1 · §50-3-11 |

@@ -2,13 +2,12 @@
 
 **初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-05-21（**方式B・4AI MCP 台帳同期** — `data/cio-mcp-four-ai-matrix.json`・`npm run verify:mcp-four-ai-alignment`・`.cursor/rules/mcp-server-use-triggers.mdc` §4AI と **一字ズレなし**。2026-05-11 以前分:
 
-### §見送り — 画像生成 MCP（CEO 2026-05-21・変更禁止）
+### §見送り — 画像生成 MCP（計画削除・2026-05-29）
 
 | 項目 | 状態 |
 |------|------|
-| **DALL·E / Stable Diffusion / 画像生成専用 MCP** | **見送り** — `mcp.json` に **追加しない**・下表に行を足さない |
-| **許可のみ** | Cursor 内蔵 **`GenerateImage`** → **`assets/images/`**（`.cursor/rules/cursor-generate-image-assets.mdc`） |
-| **4AI 表** | 🎖️ 体制表にクリエイティブ MCP 行なし（`part-A-constitution-kernel.md`） |
+| **画像生成 MCP（DALL·E / SD 等）** | **計画削除** — `mcp.json` 追加**禁止**・台帳表に行を足さない |
+| **許可のみ** | Cursor 内蔵 **`GenerateImage`** → **`assets/images/`**（`cursor-generate-image-assets.mdc`） |
 
 ### §方式B — 固定4AI と MCP アクセス（正本マトリクス）
 
@@ -16,7 +15,7 @@
 
 | 役割 | モデル | MCP（呼び出し可・代表） |
 |------|--------|-------------------------|
-| **① CIO** | Opus 4.7 固定 | **registry 必須10** + kintone-dev/space・figma・colors-fonts・CVE/ニュース・GitHub（Win）・FE 検証系 |
+| **① CIO** | Opus 4.7 ベース / 必要時 **Opus 4.8** | **registry 必須10** + kintone-dev/space・figma・colors-fonts・CVE/ニュース・GitHub（Win）・FE 検証系 |
 | **② Composer** | 2.5 Subagent | kintone・playwright・rag・markdownify・shadcn-ui・chrome-devtools・duckduckgo-search・memory（**diff のみ**） |
 | **③ Kimi** | Kimi | kimi・openrouter・markdownify・rag・memory（**長文**） |
 | **④ DeepSeek** | DeepSeek | deepseek・openrouter・memory・sequential-thinking（**§50-3-8**） |

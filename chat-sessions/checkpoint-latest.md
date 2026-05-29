@@ -2,7 +2,18 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-## 2026-05-28 JST — **業務改善 ver.02 仕様フェーズ締め（レーン G）**
+## 2026-05-29 JST — **ハイブリッド4AI移行・環境台帳クリーンアップ（CIO自律）**
+
+| 項目 | 内容 |
+|------|------|
+| **変更** | CIO **Opus 4.7 ベース + 必要時 Opus 4.8**（§1-2-3-4-B）。4AI マトリクス正本統合。画像 MCP **計画削除**。`docs/mcp-status.md` クリーン化 |
+| **正本** | `AGENTS.md` §1-2-3-4-A/B・`mode-b-canonical.mdc`・`data/cio-mcp-four-ai-matrix.json`・`00-rule-hierarchy.md` |
+| **verify** | `verify:cio-mcp-registry`・`verify:mcp-four-ai-alignment`・`verify:mode-b-zombie-docs`・`verify:cio-four-ai-governance`・`verify:rule-hierarchy-prune` **exit 0** |
+| **履歴** | **CIOモデルへのOpus 4.8自律拡張条項適用、およびルール・環境台帳の徹底クリーンアップ完了** |
+| **触らない** | kintone customize / deploy（**Q36 GO 前**） |
+| **次回 1 手** | **§41 案A1**（Q36 報告の骨子確認 1 問） |
+
+---
 
 | 項目 | 内容 |
 |------|------|

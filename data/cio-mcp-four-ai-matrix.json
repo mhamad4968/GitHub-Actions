@@ -1,9 +1,9 @@
 {
-  "version": "2026-05-21",
+  "version": "2026-05-29",
   "mode": "B",
   "imageGenerationMcp": {
-    "status": "deferred",
-    "note": "CEO 2026-05-21 見送り。画像生成 MCP は mcp.json に追加しない。Cursor 内蔵 GenerateImage のみ → assets/images/（cursor-generate-image-assets.mdc）"
+    "status": "plan_deleted",
+    "note": "2026-05-29 計画完全削除・導入禁止。mcp.json 追加禁止。内蔵 GenerateImage のみ（cursor-generate-image-assets.mdc）"
   },
   "registryRequired": [
     "deepseek",
@@ -19,7 +19,7 @@
   ],
   "roles": {
     "cio": {
-      "model": "Claude Opus 4.7",
+      "model": "Claude Opus 4.7 base (Opus 4.8 on-demand per AGENTS §1-2-3-4-B)",
       "mcpAllow": [
         "deepseek",
         "kimi",

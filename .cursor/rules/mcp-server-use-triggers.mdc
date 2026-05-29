@@ -20,7 +20,7 @@ globs: "**/*"
 
 | 役割 | 主 MCP キー（mcp.json） |
 |------|-------------------------|
-| **CIO（Opus 4.7）** | 下表すべて＋統合判断。**画像生成 MCP は使わない**（内蔵 GenerateImage のみ・`cursor-generate-image-assets.mdc`） |
+| **CIO（Opus 4.7/4.8）** | 下表すべて＋統合判断（§1-2-3-4-B）。**画像生成 MCP は使わない**（計画削除・内蔵 GenerateImage のみ・`cursor-generate-image-assets.mdc`） |
 | **Composer 2.5** | `kintone`, `playwright`, `rag`, `markdownify`, `shadcn-ui`, `chrome-devtools`, `duckduckgo-search`, `memory` |
 | **Kimi** | `kimi`, `openrouter`, `markdownify`, `rag`, `memory` |
 | **DeepSeek** | `deepseek`, `openrouter`, `memory`, `sequential-thinking` |
