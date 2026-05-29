@@ -1,14 +1,16 @@
-# 夕反省 — 2026-05-30 JST（ヘルス・GitHub・Desktop 是正）
+# 夕反省 — 2026-05-30 JST（セッション完了・浜田おやすみ）
 
-## 実施
+## 良かったこと
 
-- health-check 97% → MCP死蔵 exempt 6件追加 → 再実行で 100% 目標
-- verify:cio-four-ai-governance exit 0
-- session:clock:set → 2026-05-30 00:40 JST
-- session-starter:sync-desktop + verify OK
-- 誤って巻き戻っていた `app83-spec431-crosswalk.md` を HEAD 復元
+- GitHub pending（Cursor/Mintlify queued）を CEO 設定で解消し、`b49c4ad` で機械確認
+- v5 目次を再実行し浜田 **OK** — 打合せドラフト確定
+- 18 遵守 45/100 の根本原因を文書化し、機械ゲート（turn-start 等）を main 反映
 
-## 教訓
+## 反省
 
-- Desktop 手書き追記は sync で消える → **必ず read-pack 正本を先に更新**
-- archive 固定名 stage2.docx は Word ロックと衝突 → TEMP 一意名に変更
+- §1 四行・4AI 順序を「急ぎ」で省略した — `cio-18-zero-tolerance.mdc` で再発防止
+- PowerShell にプロンプトや JSON 出力を貼ってエラー — コマンド1行のみ貼付を徹底
+
+## 明日の 1 手
+
+**§41 案A1**（Q36 報告骨子 1 問）。v5 は `C:\tmp\マニュアル\…v5.docx` を正本として打合せ。

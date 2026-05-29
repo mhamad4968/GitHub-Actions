@@ -2,21 +2,21 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-## 2026-05-30 JST — **ヘルスチェック・GitHub・Desktop・v5 完了**
+## 2026-05-30 JST — **本日完了（浜田おやすみ）**
 
 | 項目 | 内容 |
 |------|------|
-| **ヘルス** | `npm run health-check` **100%**（32 OK / 0 warn） |
-| **憲法** | `rules:sync-section-mdc` + `verify:cio-four-ai-governance` **exit 0** |
-| **Git** | `44a8752` push 済・**PR #1 クローズ**（2026-03 税計算・CONFLICTING） |
-| **Desktop** | sync + verify **全一致**（19/26 を 2026-05-30 版に復元） |
-| **v5** | `fix_toc_v5.py` **完了** — 62項・Ch1=p4・Ch7=手続き内容一覧・Ch8=p26 |
-| **GitHub pending** | **Cursor/Mintlify = queued**（Actions は success）→ CEO: Settings → GitHub Apps から本リポを外す（`github-commit-checks-pending.md`） |
-| **18 恒久対策** | `cio:turn-start` / `cio-doc-lane-gate` / `cio-18-zero-tolerance.mdc` / root-cause runbook（浜田命令・即施行） |
-| **次回 1 手** | 打合せ v5 / §41 案A1 — **毎ターン `cio:turn-start` 先行** |
+| **ヘルス** | `npm run health-check` **100%** |
+| **Git** | `d3c2e5e`（18恒久対策）・`b49c4ad`（GitHub pending 検証）push 済 |
+| **GitHub pending** | **解消** — `b49c4ad` に cursor/mintlify check suite **なし** |
+| **v5** | `fix_toc_v5.py` 再実行 **OK**（backup `…011027`）— 浜田 **OK** |
+| **18** | `cio:turn-start` / `cio-doc-lane-gate` / root-cause runbook |
+| **次回 1 手** | 打合せ v5 / **§41 案A1** |
 | **触らない** | kintone customize/deploy（Q36 GO 前） |
 
 ---
+
+## 2026-05-30 JST — **ヘルスチェック・GitHub・Desktop・v5 完了**（途中経過）
 
 ## 2026-05-29 JST — **情報管理運用マニュアル v5 目次・打合せドラフト**
 
