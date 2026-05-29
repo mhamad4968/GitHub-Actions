@@ -80,3 +80,9 @@ SPEC_TOUCHED: yes のターンで SECOND_REVIEWER: deepseek|kimi|openrouter の�
 【2026-05-06 追記】当日の「まとめ・反省・明日の案・ルール案」は **1 ファイル**に集約。**本日（JST）の締め**は read-pack の **`19-SESSION-ONE-REPORT-YYYY-MM-DD.md` 1 本**（**20 の前**）。**過去分**は **`docs/reports/archive/YYYY-MM/`**（Desktop には出さない）。
 
 【2026-05-27 追記・18 GO（浜田承認）】**報告・締め・GO 仰ぎ** — 送信確定前に **`npm run cio:report-verify-response -- --file <下書き>` で exit 0 必須**（省略＝報告違反）。IDE チャットでも **締め前は必ず実行**（要約・「後で」禁止）。
+
+【2026-05-28 追記・業務改善・夕反省案承認（浜田）】
+  案C（予実678・683・Git並行）: **クローズ**（依頼時まで着手しない）。
+  案A（Q36・GO）・案B（実装準備）: **明日 §41 で各1問**（推奨: A1→B1）。
+  反省点の改善: **CIO自律で安全に実施可**（**Q35–Q36 GO 前の kintone customize/deploy 禁止は維持**）。
+  Q36下書き正本: `docs/plans/business-improvement-q36-go-request-draft.md`（提出前・浜田GO待ち）。

@@ -2567,3 +2567,29 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 
 **触らない**: 業務改善 customize（Q35–Q36 GO 前）。683 印刷は完了（I2 微調整のみ要時）。
 
+---
+
+### 2026-05-28 JST — セッション締め（業務改善 ver.02 仕様フェーズ）
+
+**本日**: **Q-GUIDE-01〜07**（ご利用ガイド骨格）・**Q-IMPL-01〜05**（実装設計）・**Q-DATA-01**（設定マスタ Excel）・**Q-ANN-09**（年次 UX-02）・**Q-DEMO-01**・**Q-SCHED-02** 確定。**仕様確定日 2026-05-30（浜田）**。Pass4 **14/14**・83 突合 **20/20**。
+
+**次回第1手**: **Q36 報告**（6/8 着手 GO 仰ぎ）**または** ガイド **dropdown たたき台**（§41 1 問）。
+
+**正本**: `docs/plans/2026-05-23-business-improvement-proposal-spec.md`・`2026-05-28-business-improvement-implementation-handbook.md`・`docs/reports/2026-05-28-evening-reflection.md` / Desktop `19-SESSION-ONE-REPORT-2026-05-28.md` / `25-checkpoint-latest.md` 先頭
+
+**保留**: GUIDE-R（dropdown・FAQ）・OPS-01。**6/8** 実装・**7/1** デモ・**8/1** 本番。
+
+**触らない**: kintone customize / deploy（**Q36 GO 前**）。
+
+**Desktop**: `npm run session-starter:sync-desktop` + verify 済。旧 `19-SESSION-ONE-REPORT-2026-05-27.md` は archive へ退避。
+
+---
+
+### 2026-05-28 JST — 夕反省案・承認（浜田）
+
+**承認**: **案C（678/683/Git 並行）= クローズ**（依頼があるまで着手しない）。**案A・案B = 明日 §41 で各 1 問**（推奨順: **A1 → B1**）。**反省点の改善 = CIO 自律で安全に実施可**（**Q36 GO 前の customize/deploy 禁止は維持**）。
+
+**自律改善（本ターン）**: checkpoint 更新・`docs/plans/business-improvement-q36-go-request-draft.md` 下書き（GO 仰ぎ用・未提出）・18 追記。
+
+**次回第1手**: **§41 案A1**（Q36 報告の骨子確認 1 問）。
+
