@@ -1,6 +1,15 @@
 # 📊 MCP 状態管理台帳
 
-**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-05-29（**憲法大整理** — 4AI ハイブリッド・画像 MCP 計画削除・金曜定例 runbook 追加）
+**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-05-29（**Opus 4.8 大覚醒整備** — AI-KERNEL・repo-tree / eslint-mcp 活性化）
+
+### §活性化 — 画像MCP代替ツール（2026-05-29）
+
+| MCP | 用途 | 起動 |
+|-----|------|------|
+| **`repo-tree`** | リポジトリ構造ビジュアル化（depth・exclude 可） | `npx -y @andredezzy/deep-directory-tree-mcp` |
+| **`eslint-mcp`** | コード品質・lint 自動監査（公式 `@eslint/mcp`） | `npx -y @eslint/mcp@latest` |
+
+**代替方針**: 構造 = **repo-tree** / 品質 = **eslint-mcp** + **accessibility-scanner**。内蔵 **GenerateImage** のみ（画像 MCP 計画削除維持）。
 
 ### §見送り — 画像生成 MCP（計画削除・2026-05-29）
 

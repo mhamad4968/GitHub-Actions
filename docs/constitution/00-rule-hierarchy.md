@@ -9,7 +9,7 @@
 
 | 優先 | ファイル | 内容 |
 |:---:|----------|------|
-| 1 | **`AGENTS.md`** | 全 § の最終解釈。**§1-2-3-4**・**§1-2-3-4-A**（4AIマトリクス）・**§1-2-3-4-B**（Opus 4.8 ハイブリッド・Fast防衛）・**§50-3-8**・**§50-3-11** |
+| 1 | **`AGENTS.md`** | 全 § の最終解釈。**§1-2-3-4**・**§1-2-3-4-A**（4AIマトリクス）・**§1-2-3-4-B**（Opus 4.8 ハイブリッド・Fast防衛）・**§1-2-3-4-C**（AI読み込み最適化）・**§50-3-8**・**§50-3-11** |
 | 2 | **`chat-sessions/session-starter-parts/part-A-constitution-kernel.md`** | 🎖️ 役割表・実行/確認分離・ティア（スターター正本） |
 | 3 | **`RULES-INDEX.md`** | § 逆引き・タスク開始時の索引 |
 | 4 | **`.cursor/rules/mode-b-canonical.mdc`** | **用語・四行テンプレ・4AI担当明文化マトリクスの単一窓**（`AGENTS.md` §1-2-3-4-A と同一・重複コピー禁止） |
@@ -51,6 +51,7 @@
 
 | ファイル | 内容 |
 |----------|------|
+| **`docs/runbooks/cio-opus48-intelligence-activation.md`** | Opus 4.8 L3 思考プロトコル（2026-05-29） |
 | **`docs/runbooks/cio-friday-mcp-status-refresh-4ai.md`** | 金曜 `mcp-status:refresh-usage` 4AI 安全手順（2026-05-29） |
 | **`docs/runbooks/cio-four-ai-governance.md`** | 4AI統制コマンド一覧 |
 | **`docs/runbooks/deepseek-pre-edit-gate.md`** | §50-3-8 着手前チェックリスト |

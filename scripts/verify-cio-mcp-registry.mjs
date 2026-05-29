@@ -39,6 +39,8 @@ const RECOMMENDED = [
   'figma',
   'colors-fonts',
   'mintlify',
+  'repo-tree',
+  'eslint-mcp',
   'github',
   'kintone-dev',
   'kintone-space',

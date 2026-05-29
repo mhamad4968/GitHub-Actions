@@ -2,6 +2,20 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
+## 2026-05-29 JST — **Opus 4.8 大覚醒・究極環境整備**
+
+| 項目 | 内容 |
+|------|------|
+| **AI-KERNEL** | `mode-b-canonical.mdc` 構造化（前提/手順/禁止/exit）・§1-2-3-4-C 追補 |
+| **MCP** | **repo-tree** + **eslint-mcp** 活性化（画像MCP代替） |
+| **Runbook** | `cio-opus48-intelligence-activation.md` |
+| **verify** | 全 checker **exit 0** |
+| **履歴** | **4AI読み込み最適化、画像に代わる新規MCP追加、および明日以降12分にOpus 4.8を活用するための究極環境整備完了** |
+| **触らない** | customize/deploy（Q36 GO 前） |
+| **次回 1 手** | **§41 案A1**（Q36 報告 1 問） |
+
+---
+
 ## 2026-05-29 JST — **憲法・ルール大整理・環境充実化（実装レーン凍結）**
 
 | 項目 | 内容 |

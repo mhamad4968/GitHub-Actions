@@ -41,7 +41,9 @@
         "chrome-devtools",
         "shadcn-ui",
         "accessibility-scanner",
-        "mintlify"
+        "mintlify",
+        "repo-tree",
+        "eslint-mcp"
       ],
       "mcpDeny": ["image-generation-mcp"],
       "builtinAllow": ["GenerateImage"]
@@ -57,7 +59,9 @@
         "shadcn-ui",
         "chrome-devtools",
         "duckduckgo-search",
-        "memory"
+        "memory",
+        "repo-tree",
+        "eslint-mcp"
       ],
       "note": "diff のみ。単独 GO なし save/deploy"
     },

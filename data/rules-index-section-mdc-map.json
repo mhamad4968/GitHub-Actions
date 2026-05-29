@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-29T09:09:23.993Z",
+  "generatedAt": "2026-05-29T09:20:49.467Z",
   "sectionToMdc": {
     "§0": [
       "constitution-brief-card.mdc",
@@ -38,6 +38,9 @@
       "cursor-generate-image-assets.mdc",
       "deepseek-cursor-spec-division.mdc",
       "mode-b-canonical.mdc"
+    ],
+    "§1-2-3-4-C": [
+      "cursor-generate-image-assets.mdc"
     ],
     "§1-2-4": [
       "cursor-generate-image-assets.mdc",
@@ -311,6 +314,7 @@
       "§0",
       "§1-2-2",
       "§1-2-3-4-A",
+      "§1-2-3-4-C",
       "§1-2-4",
       "§41",
       "§50-3-11"

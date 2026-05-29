@@ -2569,6 +2569,18 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 
 ---
 
+### 2026-05-29 JST — Opus 4.8 大覚醒・究極環境整備
+
+**実施**: mode-b-canonical AI-KERNEL 構造化・§1-2-3-4-C・repo-tree/eslint-mcp 追加・Opus4.8 runbook・Desktop 00-27 同期。
+
+**履歴**: **4AI読み込み最適化、画像に代わる新規MCP追加、および明日以降12分にOpus 4.8を活用するための究極環境整備完了**
+
+**触らない**: customize/deploy（Q36 GO 前）。
+
+**次回第1手**: **§41 案A1**（Q36 報告 1 問）。
+
+---
+
 ### 2026-05-29 JST — 憲法・ルール大整理・環境充実化
 
 **実施**: `.mdc` Linter 規律追加（`mode-b-mdc-canonical-linter.mdc`）・金曜 MCP 定例 runbook（`cio-friday-mcp-status-refresh-4ai.md`）・四行テンプレ単一窓口化・Opus ハイブリッド表記統一。verify 群 **exit 0**。
