@@ -96,34 +96,47 @@ function copyReadPackFileToDesktop(readPackDir, name) {
 }
 
 /** 26 番: 夕反省 md または SLOT プレースホルダ（歯抜けなし） */
+function eveningReflectionReadPackMd(iso) {
+  return path.join(root, readPackRelDir, `26-evening-reflection-${iso}.md`);
+}
+
+function hasTodayEveningReflection(iso) {
+  const docs = path.join(root, 'docs/reports', `${iso}-evening-reflection.md`);
+  return fs.existsSync(docs) || fs.existsSync(eveningReflectionReadPackMd(iso));
+}
+
 function syncEveningReflectionToDesktop() {
   const ymd = getJstYyyymmdd();
   const iso = jstYmdToIso(ymd);
   const eveningSrc = path.join(root, 'docs/reports', `${iso}-evening-reflection.md`);
+  const readPackEvening = eveningReflectionReadPackMd(iso);
   const slotSrc = path.join(root, readPackRelDir, EVENING_REFLECTION_SLOT_NAME);
+  const destName = `26-evening-reflection-${iso}.md`;
+  const dest = path.join(destDir, destName);
   if (fs.existsSync(eveningSrc)) {
-    const destName = `26-evening-reflection-${iso}.md`;
-    const dest = path.join(destDir, destName);
     fs.copyFileSync(eveningSrc, dest);
     console.log(`[sync-session-starter-to-desktop] OK docs/reports/${iso}-evening-reflection.md -> ${dest}`);
+  } else if (fs.existsSync(readPackEvening)) {
+    fs.copyFileSync(readPackEvening, dest);
+    console.log(`[sync-session-starter-to-desktop] OK ${readPackRelDir}/${destName} -> ${dest}`);
+  } else if (fs.existsSync(slotSrc)) {
     const slotDest = path.join(destDir, EVENING_REFLECTION_SLOT_NAME);
-    if (fs.existsSync(slotDest)) {
-      fs.unlinkSync(slotDest);
-      console.log(`[sync-session-starter-to-desktop] 夕反省ありのため SLOT 削除: ${EVENING_REFLECTION_SLOT_NAME}`);
-    }
+    fs.copyFileSync(slotSrc, slotDest);
+    console.log(
+      `[sync-session-starter-to-desktop] OK ${readPackRelDir}/${EVENING_REFLECTION_SLOT_NAME} -> ${slotDest}（夕反省未作成日）`
+    );
     return;
-  }
-  if (!fs.existsSync(slotSrc)) {
+  } else {
     console.warn(
       `[sync-session-starter-to-desktop] 夕反省 SLOT 正本なし: ${readPackRelDir}/${EVENING_REFLECTION_SLOT_NAME}`
     );
     return;
   }
-  const dest = path.join(destDir, EVENING_REFLECTION_SLOT_NAME);
-  fs.copyFileSync(slotSrc, dest);
-  console.log(
-    `[sync-session-starter-to-desktop] OK ${readPackRelDir}/${EVENING_REFLECTION_SLOT_NAME} -> ${dest}（夕反省未作成日）`
-  );
+  const slotDest = path.join(destDir, EVENING_REFLECTION_SLOT_NAME);
+  if (fs.existsSync(slotDest)) {
+    fs.unlinkSync(slotDest);
+    console.log(`[sync-session-starter-to-desktop] 夕反省ありのため SLOT 削除: ${EVENING_REFLECTION_SLOT_NAME}`);
+  }
 }
 
 function syncReadPackToDesktop() {
@@ -179,12 +192,12 @@ function pruneLegacyDesktopAiEmergency(dir) {
 function pruneStaleEveningReflectionOnDesktop(dir) {
   const ymd = getJstYyyymmdd();
   const iso = jstYmdToIso(ymd);
-  const todaySrc = path.join(root, 'docs/reports', `${iso}-evening-reflection.md`);
   const keepMd = `26-evening-reflection-${iso}.md`;
+  const hasToday = hasTodayEveningReflection(iso);
   try {
     for (const n of fs.readdirSync(dir)) {
       if (/^26-evening-reflection-.+\.md$/i.test(n)) {
-        if (!fs.existsSync(todaySrc) || n !== keepMd) {
+        if (!hasToday || n !== keepMd) {
           fs.unlinkSync(path.join(dir, n));
           console.log(`[sync-session-starter-to-desktop] 旧夕反省 md 削除: ${n}`);
         }

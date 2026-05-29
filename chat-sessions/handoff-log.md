@@ -2639,3 +2639,15 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 
 **次回第1手**: **§41 案A1**（Q36 報告の骨子確認 1 問）。
 
+---
+
+### 2026-05-30 JST — ヘルスチェック・GitHub・Desktop 是正
+
+**実施**: health-check **100%**（MCP死蔵6→policy exempt）・`rules:sync-section-mdc`・`verify:cio-four-ai-governance` exit 0・`crosswalk.md` 誤巻き戻し復元・sync script 26番 prune 修正・read-pack 正本化（18/19/26）・`session:clock:set` 00:40 JST・Desktop sync verify 全一致。
+
+**残**: v5 Word ロック中（`fix_toc_v5.py` は Word 閉鎖後）・GitHub **Cursor/Mintlify queued pending** はリポ設定（CEO・`github-commit-checks-pending.md`）。
+
+**触らない**: kintone customize/deploy（Q36 GO 前）。
+
+---
+

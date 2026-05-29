@@ -75,6 +75,12 @@ const DORMANCY_POLICY_EXEMPT_REASON = new Map([
   ['figma', 'url-only MCP・IDE 接続・transcript 7d 未出現は設計上可（health-check 同趣旨）'],
   ['mintlify', 'url-only MCP・IDE 接続・transcript 7d 未出現は設計上可'],
   ['colors-fonts', 'CEO 2026-05-21: cio:env:enhance overlay・必要時のみ（7d dormant 許容）'],
+  ['memory', 'CEO 2026-05-30: 長期記憶は必要時のみ（7d dormant 許容）'],
+  ['sequential-thinking', 'CEO 2026-05-30: 複雑推論は必要時のみ（7d dormant 許容）'],
+  ['playwright', 'CEO 2026-05-30: E2E・画面検証時のみ（7d dormant 許容）'],
+  ['duckduckgo-search', 'CEO 2026-05-30: Web検索は必要時のみ（7d dormant 許容）'],
+  ['repo-tree', 'CEO 2026-05-29: §50-3-11 Composer 監査用・低頻度（7d dormant 許容）'],
+  ['eslint-mcp', 'CEO 2026-05-29: §50-3-11 Composer 監査用・低頻度（7d dormant 許容）'],
 ]);
 
 // ───── 2. agent transcripts grep ─────

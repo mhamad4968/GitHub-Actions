@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-29T09:28:18.641Z",
+  "generatedAt": "2026-05-29T15:41:31.731Z",
   "sectionToMdc": {
     "§0": [
       "constitution-brief-card.mdc",
@@ -148,6 +148,7 @@
       "deepseek-cursor-spec-division.mdc"
     ],
     "§50-3-11": [
+      "composer-mcp-audit-gate.mdc",
       "cursor-generate-image-assets.mdc",
       "deepseek-cursor-spec-division.mdc",
       "every-turn-rules-confirm.mdc",
@@ -258,7 +259,8 @@
       "§1"
     ],
     "composer-mcp-audit-gate.mdc": [
-      "§1-2-3-4-A"
+      "§1-2-3-4-A",
+      "§50-3-11"
     ],
     "constitution-brief-card.mdc": [
       "§(RULES-INDEX行)",
@@ -387,6 +389,9 @@
       "§35-7",
       "§50-3-11",
       "§50-3-8"
+    ],
+    "mode-b-mdc-canonical-linter.mdc": [
+      "§(RULES-INDEX行)"
     ],
     "modern-web-official-docs.mdc": [
       "§(RULES-INDEX行)"

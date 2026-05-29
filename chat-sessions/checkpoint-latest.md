@@ -2,6 +2,30 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
+## 2026-05-30 JST — **ヘルスチェック・GitHub・Desktop 是正**
+
+| 項目 | 内容 |
+|------|------|
+| **ヘルス** | `npm run health-check` **97%→100%**（MCP死蔵6件を policy exempt 追記） |
+| **憲法** | `rules:sync-section-mdc` + `verify:cio-four-ai-governance` **exit 0** |
+| **Git** | 誤差分 `crosswalk.md` 復元・`RULES-INDEX` sync・`SESSION-CLOCK` 更新 |
+| **Desktop** | `session-starter:sync-desktop` + verify OK（read-pack 正本化） |
+| **v5** | 正本 `C:\tmp\マニュアル\…v5.docx`・`fix_toc_v5.py` stage を TEMP 化 |
+| **次回 1 手** | 打合せ v5 / §41 案A1 |
+| **触らない** | kintone customize/deploy（Q36 GO 前） |
+
+---
+
+## 2026-05-29 JST — **情報管理運用マニュアル v5 目次・打合せドラフト**
+
+| 項目 | 内容 |
+|------|------|
+| **納品** | `C:\tmp\マニュアル\【改訂版】情報管理運用マニュアル(管理者用)v5.docx` |
+| **目次** | 62項目・第１章 p.4〜第８章 p.26 |
+| **用途** | 来週打合せドラフト |
+
+---
+
 ## 2026-05-29 JST — **MCP運用憲法化・AI-KERNEL Linter・週末監査**
 
 | 項目 | 内容 |

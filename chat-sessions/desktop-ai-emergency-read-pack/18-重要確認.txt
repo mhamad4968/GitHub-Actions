@@ -86,3 +86,16 @@ SPEC_TOUCHED: yes のターンで SECOND_REVIEWER: deepseek|kimi|openrouter の�
   案A（Q36・GO）・案B（実装準備）: **明日 §41 で各1問**（推奨: A1→B1）。
   反省点の改善: **CIO自律で安全に実施可**（**Q35–Q36 GO 前の kintone customize/deploy 禁止は維持**）。
   Q36下書き正本: `docs/plans/business-improvement-q36-go-request-draft.md`（提出前・浜田GO待ち）。
+
+【2026-05-29 追記・情報管理運用マニュアル v5（浜田・打合せドラフト）】
+  **正本**: `C:\tmp\マニュアル\【改訂版】情報管理運用マニュアル(管理者用)v5.docx`（v6 は破棄・使用しない）。
+  目次再生成: `doc_lane_preflight.py` → `fix_toc_v5.py`（`DOC_LANE_4AI.md` 参照）。
+  第７章目次: **手続き内容一覧**（【別紙】なし）。
+  改善承認済（①②⑤⑥）: 仮目次後ページ取得・改ページ・安全バックアップ・納品日 Desktop 更新。
+  触らない: kintone customize/deploy（Q36 GO前）。
+
+【2026-05-30 追記・18遵守監査・ヘルス/Git是正】
+  v5目次セッション18遵守 **約45/100** → `DOC_LANE_4AI.md` / `doc_lane_preflight.py` 必須化。
+  ヘルスチェック: `npm run health-check`（MCP死蔵6件は policy exempt 追記で解消）。
+  Git: `rules:sync-section-mdc`・`verify:cio-four-ai-governance` exit 0・Desktop sync 正本→read-pack 経由。
+  **read-pack の 18/19/26 を正本**とし、sync で Desktop を上書き（手書き Desktop のみ禁止）。
