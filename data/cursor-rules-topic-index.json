@@ -12,6 +12,7 @@
         "constitution-enforcement-core.mdc",
         "constitution-brief-card.mdc",
         "cio-discipline-always.mdc",
+        "cio-18-zero-tolerance.mdc",
         "cio-report-min-format.mdc",
         "mode-b-mdc-canonical-linter.mdc",
         "composer-mcp-audit-gate.mdc"

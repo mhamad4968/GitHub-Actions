@@ -99,3 +99,14 @@ SPEC_TOUCHED: yes のターンで SECOND_REVIEWER: deepseek|kimi|openrouter の�
   ヘルスチェック: `npm run health-check`（MCP死蔵6件は policy exempt 追記で解消）。
   Git: `rules:sync-section-mdc`・`verify:cio-four-ai-governance` exit 0・Desktop sync 正本→read-pack 経由。
   **read-pack の 18/19/26 を正本**とし、sync で Desktop を上書き（手書き Desktop のみ禁止）。
+
+【2026-05-30 追記・18違反根本原因と恒久対策（浜田命令・即時施行）】
+  **なぜ守られなかったか**: (1)「今すぐ」速度優先で §1/4AI を省略 (2) C:\tmp を憲法外と誤認 (3) hooks 非経路で手動四行を怠った (4) preflight 存在するが着手前未実行 (5) 完了＝commit のみで Desktop verify 未含有。
+  **恒久対策（毎ターン必須）**:
+    1. ツール着手前: `npm run cio:turn-start` → 表示 §1 四行を応答先頭に貼付
+    2. 編集・Shell 前: `npm run cio:pre-implement-gate -- --strict`
+    3. doc-lane: `npm run cio:doc-lane-gate -- --strict`（fix_toc_v5.py も stamp 必須）
+    4. 報告・締め: `npm run cio:report-verify-response -- --file <下書き>` exit 0
+    5. 区切り: `npm run cio:turn-start -- --complete --strict`
+  **禁止語**: 「別途検討」「後で」「軽微でスキップ」— 具体手順を同一ターンに書く。
+  **正本**: `docs/runbooks/cio-18-violation-root-cause-2026-05-30.md` / `.cursor/rules/cio-18-zero-tolerance.mdc`

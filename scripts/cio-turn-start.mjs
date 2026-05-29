@@ -1,0 +1,113 @@
+#!/usr/bin/env node
+/**
+ * 毎ターン開始ゲート（18 遵守・2026-05-30）
+ * §1 四行テンプレ表示 + 着手前リマインド + 任意 strict 検査
+ *
+ * Usage:
+ *   npm run cio:turn-start
+ *   npm run cio:turn-start -- --lane doc-lane --strict
+ *   npm run cio:turn-start -- --complete   # セッション区切り（Desktop verify リマインド）
+ */
+import { spawnSync } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
+import process from 'node:process';
+import { fileURLToPath } from 'node:url';
+import { collect5038EvidenceFromLogs, read5038Stamp } from './lib/cio-four-ai-governance.mjs';
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+
+const TEMPLATES = {
+  default: [
+    '[§1-2-3 ティア判定: L2] ガバナンス・是正',
+    '【適用憲法】§1-2-3-4-A §50-3-8 §50-3-11',
+    '[🎖️ 本セッション割当] CIO=Opus4.8 | Composer=実装 | DeepSeek=§50-3-8 | Kimi=review',
+    '[ルール確認] 18-重要確認.txt cio-18-zero-tolerance.mdc',
+  ],
+  'doc-lane': [
+    '[§1-2-3 ティア判定: L2] ドキュメントレーン',
+    '【適用憲法】§35-1 §50-3-11 §1-2-3-4-B',
+    '[🎖️ 本セッション割当] CIO=Opus4.8 | Composer=doc-lane | DeepSeek=§50-3-8 | Kimi=review',
+    '[ルール確認] DOC_LANE_4AI.md cio-18-zero-tolerance.mdc',
+  ],
+  report: [
+    '[§1-2-3 ティア判定: L2] 報告・締め',
+    '【適用憲法】§1-2-3 §50-3-8 CEO最低基準',
+    '[🎖️ 本セッション割当] CIO=Opus4.8 | Composer=— | DeepSeek=突合 | Kimi=review',
+    '[ルール確認] docs/session-report-checklist.md §M-2',
+  ],
+};
+
+function parseArgs(argv) {
+  const out = { lane: 'default', strict: false, complete: false };
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === '--lane' && argv[i + 1]) out.lane = argv[++i];
+    else if (argv[i] === '--strict') out.strict = true;
+    else if (argv[i] === '--complete') out.complete = true;
+  }
+  return out;
+}
+
+function runNpm(script, extraArgs = []) {
+  const isWin = process.platform === 'win32';
+  const cmd = isWin ? 'npm.cmd' : 'npm';
+  return spawnSync(cmd, ['run', script, '--', ...extraArgs], {
+    cwd: root,
+    stdio: 'inherit',
+    shell: isWin,
+  });
+}
+
+function main() {
+  const args = parseArgs(process.argv.slice(2));
+  const lines = TEMPLATES[args.lane] || TEMPLATES.default;
+
+  console.log('=== CIO ターン開始（18 遵守）===\n');
+  console.log('【§1 四行 — 応答先頭にこの順で貼付（欠落＝報告違反）】');
+  for (const line of lines) console.log(line);
+  console.log('');
+
+  const evidence = collect5038EvidenceFromLogs(root);
+  const stamp = read5038Stamp(root);
+  if (stamp?.stampedAt) {
+    console.log(`[cio:turn-start] 5038 stamp: ${stamp.stampedAt}`);
+  } else if (evidence.length) {
+    console.log(`[cio:turn-start] 5038 evidence: ${evidence.join(', ')}`);
+  } else {
+    console.warn('[cio:turn-start] WARN: §50-3-8 証跡なし — 編集前に DeepSeek→突合→stamp');
+  }
+
+  console.log('\n【編集・Shell 前】npm run cio:pre-implement-gate -- --strict');
+  console.log('【報告・締め送信前】npm run cio:report-verify-response -- --file <下書き.md>');
+
+  if (args.lane === 'doc-lane') {
+    console.log('\n【doc-lane】npm run cio:doc-lane-gate -- --strict');
+    const r = runNpm('cio:doc-lane-gate', args.strict ? ['--strict'] : []);
+    if (args.strict && (r.status ?? 1) !== 0) process.exit(r.status ?? 2);
+  }
+
+  if (args.complete) {
+    console.log('\n【セッション区切り】Desktop sync + verify');
+    const s1 = runNpm('session-starter:sync-desktop');
+    const s2 = runNpm('verify:desktop-ai-emergency-sync');
+    if (args.strict && ((s1.status ?? 1) !== 0 || (s2.status ?? 1) !== 0)) {
+      process.exit(2);
+    }
+  }
+
+  const runbook = path.join(root, 'docs/runbooks/cio-18-violation-root-cause-2026-05-30.md');
+  if (!fs.existsSync(runbook)) {
+    console.error('[cio:turn-start] NG: root-cause runbook 欠落');
+    if (args.strict) process.exit(2);
+  }
+
+  if (args.strict && !stamp?.stampedAt && evidence.length === 0) {
+    console.error('[cio:turn-start] NG --strict: 5038 証跡なし（編集前に DeepSeek 実施）');
+    process.exit(2);
+  }
+
+  console.log('\n[cio:turn-start] OK — ツール着手前に上記 §1 を応答先頭へ');
+  process.exit(0);
+}
+
+main();

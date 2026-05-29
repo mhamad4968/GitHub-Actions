@@ -2649,6 +2649,8 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 
 **v5**: `fix_toc_v5.py` 完了（62項・Ch1=4・Ch8=26）。孤立 Word ロックは `doc_lane_preflight` で自動削除対応。
 
+**18 恒久対策（2026-05-30 浜田命令）**: `cio:turn-start` / `cio:doc-lane-gate` / `cio-18-zero-tolerance.mdc` / root-cause runbook 実装・verify 連結。
+
 **触らない**: kintone customize/deploy（Q36 GO 前）。
 
 ---

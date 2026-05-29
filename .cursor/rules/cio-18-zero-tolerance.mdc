@@ -1,0 +1,41 @@
+---
+description: 18-重要確認 遵守ゼロ容認 — 毎ターン turn-start・編集前 strict gate・報告前 verify（2026-05-30 CEO命令）
+alwaysApply: true
+---
+
+# 18 遵守 — ゼロ容認（再発防止 2026-05-30）
+
+**正本**: `chat-sessions/desktop-ai-emergency-read-pack/18-重要確認.txt`  
+**根本原因**: `docs/runbooks/cio-18-violation-root-cause-2026-05-30.md`
+
+## 前提条件
+
+- IDE チャットでは **hooks が §1 四行を自動挿入できない経路**がある（18 L62）。
+- **理解している**だけでは不十分。**毎ターン機械ゲート + 応答先頭4行**が必須。
+- `C:\tmp\マニュアル\scripts/**` は **repo 外でも D3 適用**（80行超・Composer のみ Diff）。
+
+## 実行手順（この順のみ・欠落＝作業停止）
+
+1. **ユーザメッセージ受信後、最初のツール呼び出し前**に `npm run cio:turn-start` を実行し、表示された **§1 四行を応答先頭に貼付**。
+2. **編集・Shell・deploy の前**に `npm run cio:pre-implement-gate -- --strict`（証跡なしは停止）。
+3. **doc-lane**（v5 Word・`fix_toc_v5.py`）: `npm run cio:doc-lane-gate -- --strict` + DeepSeek→Composer→Kimi。
+4. **報告・締め・GO 仰ぎ**: 下書き → `npm run cio:report-verify-response -- --file <下書き>` **exit 0** 後に送信。
+5. **セッション区切り**: `npm run cio:turn-start -- --complete --strict`（Desktop sync + verify）。
+
+## 禁止事項
+
+- **§1 四行なし**で本文・ツール・謝罪を開始すること。
+- **CIO 本体**が `customize/**` または **80行超**（`C:\tmp` 含む）を直接 Diff すること。
+- **「軽微」「minor」「別途検討」「後で」**をスキップ理由・先送り理由にすること。
+- **read-pack 未更新**のまま Desktop `AI緊急用` を手書きすること。
+- **report-verify 未実行**の報告・締め・完了宣言。
+
+## 判定コード
+
+| 状況 | 動作 |
+|------|------|
+| turn-start / strict gate NG | **ツール停止**、§1 出力後にゲート再実行 |
+| §1 欠落に気づいた | **同一ターン内**に追記（次ターン禁止） |
+| GitHub App 等 CLI 不可 | **手順 URL + 確認コマンド**を同一応答に書く（先送り禁止） |
+
+**4行テンプレ正本**: `.cursor/rules/mode-b-canonical.mdc`（コピーせず参照）。

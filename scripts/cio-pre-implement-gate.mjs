@@ -69,8 +69,14 @@ function main() {
   }
 
   if (args.includes('--strict') && evidence.length === 0) {
-    console.error('[cio-pre-implement-gate] NG --strict: 証跡なし');
+    console.error('[cio-pre-implement-gate] NG --strict: §50-3-8 証跡なし');
+    console.error('  → DeepSeek 盲点3点 → CIO 突合3行 → npm run cio:guard:5038 -- --stamp');
+    console.error('  → 毎ターン先頭: npm run cio:turn-start');
     process.exit(2);
+  }
+
+  if (args.includes('--strict')) {
+    console.log('[cio-pre-implement-gate] --strict OK（証跡あり）');
   }
 
   process.exit(0);

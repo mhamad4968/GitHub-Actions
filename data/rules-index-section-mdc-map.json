@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-29T15:41:31.731Z",
+  "generatedAt": "2026-05-29T15:55:45.684Z",
   "sectionToMdc": {
     "§0": [
       "constitution-brief-card.mdc",
@@ -233,6 +233,9 @@
       "§41"
     ],
     "autonomous-with-mandatory-asks.mdc": [
+      "§(RULES-INDEX行)"
+    ],
+    "cio-18-zero-tolerance.mdc": [
       "§(RULES-INDEX行)"
     ],
     "cio-constitution.mdc": [

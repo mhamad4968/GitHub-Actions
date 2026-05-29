@@ -1,0 +1,67 @@
+#!/usr/bin/env node
+/**
+ * ドキュメントレーン機械ゲート（C:\tmp\マニュアル）
+ * DeepSeek/Kimi スタンプ + Word ロック + preflight --check-only
+ */
+import { spawnSync } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
+import process from 'node:process';
+import { fileURLToPath } from 'node:url';
+
+const DOC_BASE = path.win32.normalize('C:\\tmp\\マニュアル');
+const STAMPS = path.join(DOC_BASE, 'scripts', '.doc_lane_stamps');
+const PREFLIGHT = path.join(DOC_BASE, 'scripts', 'doc_lane_preflight.py');
+
+function todayKey() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}${m}${day}`;
+}
+
+function hasStamp(name) {
+  return fs.existsSync(path.join(STAMPS, `${name}_${todayKey()}.stamp`));
+}
+
+function main() {
+  const strict = process.argv.includes('--strict');
+  let ok = true;
+
+  console.log('[cio:doc-lane-gate] ドキュメントレーン検査\n');
+
+  for (const name of ['deepseek', 'kimi']) {
+    if (hasStamp(name)) {
+      console.log(`  OK stamp: ${name}_${todayKey()}.stamp`);
+    } else {
+      console.error(`  NG stamp: ${name} — python doc_lane_preflight.py --stamp ${name}`);
+      ok = false;
+    }
+  }
+
+  if (!fs.existsSync(PREFLIGHT)) {
+    console.error(`  NG preflight スクリプトなし: ${PREFLIGHT}`);
+    process.exit(strict ? 2 : 1);
+  }
+
+  const py = spawnSync('python', [PREFLIGHT, '--check-only'], {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  if (py.stdout) process.stdout.write(py.stdout);
+  if (py.stderr) process.stderr.write(py.stderr);
+  if ((py.status ?? 1) !== 0) {
+    ok = false;
+  }
+
+  if (!ok) {
+    console.error('\n[cio:doc-lane-gate] NG — fix_toc_v5.py / Word 編集は禁止');
+    process.exit(strict ? 2 : 1);
+  }
+
+  console.log('\n[cio:doc-lane-gate] OK');
+  process.exit(0);
+}
+
+main();

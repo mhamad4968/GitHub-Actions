@@ -34,6 +34,7 @@
 | CIO核・方式B・毎ターン | [`constitution-enforcement-core.mdc`](.cursor/rules/constitution-enforcement-core.mdc) | AGENTS.md §35-1 §56-1a（TSB-024）— 違反＝失敗・CIO体制2者ダブルチェックの定義正本（常時想起） |
 | CIO核・方式B・毎ターン | [`constitution-brief-card.mdc`](.cursor/rules/constitution-brief-card.mdc) | AGENTS.md §0 §3 §50 — 憲法薄型カード＋CIO三角＋MCP先出し（網羅版は Read） |
 | CIO核・方式B・毎ターン | [`cio-discipline-always.mdc`](.cursor/rules/cio-discipline-always.mdc) | §35-7 規律先行＋各 customize deploy 前スタンプ（条件付きではなく機械＋常時想起） |
+| CIO核・方式B・毎ターン | [`cio-18-zero-tolerance.mdc`](.cursor/rules/cio-18-zero-tolerance.mdc) | 18-重要確認 遵守ゼロ容認 — 毎ターン turn-start・編集前 strict gate・報告前 verify（2026-05-30 CEO命令） |
 | CIO核・方式B・毎ターン | [`cio-report-min-format.mdc`](.cursor/rules/cio-report-min-format.mdc) | 論点9 — §1 先頭4行のリポ／PR 向け機械検証（B スコープ）とチャット先頭ブロックの正本参照 |
 | CIO核・方式B・毎ターン | [`mode-b-mdc-canonical-linter.mdc`](.cursor/rules/mode-b-mdc-canonical-linter.mdc) | 方式B — .mdc 正本参照 + AI-KERNEL 4要素 Linter（2026-05-29 永久ロック） |
 | CIO核・方式B・毎ターン | [`composer-mcp-audit-gate.mdc`](.cursor/rules/composer-mcp-audit-gate.mdc) | 方式B — Composer 2.5 必須 MCP 監査（eslint-mcp / repo-tree）§50-3-11 第4ステップ |
@@ -143,6 +144,7 @@
 | [`ai-agent-tools-constitution.mdc`](.cursor/rules/ai-agent-tools-constitution.mdc) | §(RULES-INDEX行) |
 | [`auto-read-by-topic.mdc`](.cursor/rules/auto-read-by-topic.mdc) | §41 |
 | [`autonomous-with-mandatory-asks.mdc`](.cursor/rules/autonomous-with-mandatory-asks.mdc) | §(RULES-INDEX行) |
+| [`cio-18-zero-tolerance.mdc`](.cursor/rules/cio-18-zero-tolerance.mdc) | §(RULES-INDEX行) |
 | [`cio-constitution.mdc`](.cursor/rules/cio-constitution.mdc) | §(RULES-INDEX行) · §1 · §1-2-3-1 · §1-2-3-4 · §35-1 · §36 · §56-1 |
 | [`cio-discipline-always.mdc`](.cursor/rules/cio-discipline-always.mdc) | §10 · §11 · §35-7 · §36 · §50-3-2 · §50-3-8 |
 | [`cio-operating-loop.mdc`](.cursor/rules/cio-operating-loop.mdc) | §(RULES-INDEX行) |
