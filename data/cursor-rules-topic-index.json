@@ -12,7 +12,8 @@
         "constitution-enforcement-core.mdc",
         "constitution-brief-card.mdc",
         "cio-discipline-always.mdc",
-        "cio-report-min-format.mdc"
+        "cio-report-min-format.mdc",
+        "mode-b-mdc-canonical-linter.mdc"
       ]
     },
     {

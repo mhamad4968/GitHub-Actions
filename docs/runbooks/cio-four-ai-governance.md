@@ -8,7 +8,7 @@
 
 | # | 役割 | モデル |
 |---|------|--------|
-| ① | CIO | Claude Opus 4.7（本体・ピッカー固定） |
+| ① | CIO | Opus 4.7 ベース / 必要時 **Opus 4.8**（§1-2-3-4-B） |
 | ② | コード実務 | Composer 2.5（Subagent・diff のみ） |
 | ③ | 長文レビュー | Kimi |
 | ④ | 知恵袋 | DeepSeek（§50-3-8） |
@@ -48,7 +48,14 @@
 ## タスク3 — 先頭4行テンプレ重複禁止
 
 - **単一窓**: `.cursor/rules/mode-b-canonical.mdc`
+- **Linter 規律**: `.cursor/rules/mode-b-mdc-canonical-linter.mdc`
 - **検証**: `npm run verify:mode-b-turn-head-canonical`（`.mdc` が4行フェンスをコピーしていないか）
+
+## タスク4 — 金曜 MCP usage 定例（4AI 安全手順）
+
+- **Runbook**: `docs/runbooks/cio-friday-mcp-status-refresh-4ai.md`
+- **コマンド**: `npm run mcp-status:refresh-usage`（差分あれば commit + push）
+- **正本**: `docs/mcp-status.md` §CIO 定例 / `mcp-server-use-triggers.mdc` 項 0
 
 ## Phase 2-B — ルール論理分類（完了）
 

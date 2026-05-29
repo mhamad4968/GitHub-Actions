@@ -2569,6 +2569,18 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 
 ---
 
+### 2026-05-29 JST — 憲法・ルール大整理・環境充実化
+
+**実施**: `.mdc` Linter 規律追加（`mode-b-mdc-canonical-linter.mdc`）・金曜 MCP 定例 runbook（`cio-friday-mcp-status-refresh-4ai.md`）・四行テンプレ単一窓口化・Opus ハイブリッド表記統一。verify 群 **exit 0**。
+
+**履歴**: **憲法・ルールの大整理、および自律自動化ルールの追加環境充実化完了**
+
+**触らない**: customize/deploy（Q36 GO 前・実装レーン凍結）。
+
+**次回第1手**: **§41 案A1**（Q36 報告 1 問）。
+
+---
+
 ### 2026-05-29 JST — ハイブリッド4AI移行・環境台帳クリーンアップ
 
 **実施**: CIO **Opus 4.7/4.8 ハイブリッド**（§1-2-3-4-B）正本反映。4AI マトリクス統合。画像 MCP **計画削除**。`mcp-status.md`・Desktop `18`/`15` 同期。`rules:regenerate-constitution` + verify 群 **exit 0**。

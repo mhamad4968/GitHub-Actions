@@ -70,7 +70,7 @@ globs: "**/*"
 
 - **着手前（A1）**: DeepSeek §50-3-8 → 突合3行 → `cio:guard:5038`
 - **Composer（B3）**: 80行超 or `customize/**` → **Subagent のみ**
-- **定例**: 金曜 `mcp-status:refresh-usage`／週次 `cio:env:enhance`
+- **定例**: 金曜 **`docs/runbooks/cio-friday-mcp-status-refresh-4ai.md`** → `mcp-status:refresh-usage`／週次 `cio:env:enhance`
 
 ## 毎ターン先頭4行（共通テンプレ・機械検査と一致）
 

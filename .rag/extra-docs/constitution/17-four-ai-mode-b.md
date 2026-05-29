@@ -8,7 +8,7 @@
 
 ## 30秒要約
 
-- **CIO** = Claude Opus 4.7 固定（指揮・判断・統合）
+- **CIO** = Opus 4.7 ベース / 必要時 **Opus 4.8**（§1-2-3-4-B・指揮・判断・統合）
 - **コード** = Composer 2.5 Subagent（diff のみ・GOなし save/deploy 禁止）
 - **長文** = Kimi / **知恵袋** = DeepSeek（§50-3-8）
 - **開発前3ステップ**: DeepSeek 1問 → 突合3行 → `npm run cio:guard:5038 -- --stamp`

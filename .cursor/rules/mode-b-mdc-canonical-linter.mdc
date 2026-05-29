@@ -1,0 +1,39 @@
+---
+description: 方式B — .mdc が mode-b-canonical.mdc を正しく参照する静的Linter規律（2026-05-29）
+alwaysApply: false
+globs: ".cursor/rules/**"
+---
+
+# 方式B — `.mdc` 正本参照 Linter 規律
+
+> **上位**: `AGENTS.md` §1-2-3-4-B・**§50-3-11**／`.cursor/rules/mode-b-canonical.mdc`（四行テンプレ単一窓）  
+> **機械検査**: **`npm run verify:mode-b-turn-head-canonical`**
+
+## 目的
+
+AI が古い四行テンプレの **コピー**を `.mdc` から誤読しないよう、**環境側**で参照整合を強制する。
+
+## ルール（作成・更新 `.mdc` 時）
+
+1. **四行テンプレの正**は **`mode-b-canonical.mdc` のみ**。他 `.mdc` に **フェンス付き4行ブロックをコピー禁止**。
+2. 先頭4行・ティア・🎖️ に触れる `.mdc` は本文に **`mode-b-canonical.mdc` 参照**行を必ず含める。
+3. **例外**: `mode-b-canonical.mdc` 本体、`constitution.mdc`（結合ミラー・gitignore）。
+
+## 検査内容（`scripts/verify-mode-b-turn-head-canonical.mjs`）
+
+| ID | 検出 |
+|----|------|
+| `DUPLICATE_FENCED_TEMPLATE` | 4行フェンスの重複コピー |
+| `MISSING_MODE_B_CANONICAL_REF` | 先頭4行言及あり・参照なし |
+
+## 実行タイミング
+
+- **手動**: `npm run verify:mode-b-turn-head-canonical`
+- **一括**: `npm run verify:cio-four-ai-governance`（pre-commit / CI 連鎖）
+- **`.mdc` 追加・改定後**: 上記 **exit 0** を確認してから commit
+
+## 修正パターン
+
+```text
+**先頭4行テンプレ**: `.cursor/rules/mode-b-canonical.mdc` 参照（コピー禁止）。
+```

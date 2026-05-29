@@ -9,12 +9,13 @@
 
 | 優先 | ファイル | 内容 |
 |:---:|----------|------|
-| 1 | **`AGENTS.md`** | 全 § の最終解釈。**§1-2-3-4**・**§1-2-3-4-A**（4AI担当明文化マトリクス・CEO 2026-05-21）・**§50-3-8**・**§50-3-11**（連携プロトコル＋機械ゲート） |
+| 1 | **`AGENTS.md`** | 全 § の最終解釈。**§1-2-3-4**・**§1-2-3-4-A**（4AIマトリクス）・**§1-2-3-4-B**（Opus 4.8 ハイブリッド・Fast防衛）・**§50-3-8**・**§50-3-11** |
 | 2 | **`chat-sessions/session-starter-parts/part-A-constitution-kernel.md`** | 🎖️ 役割表・実行/確認分離・ティア（スターター正本） |
 | 3 | **`RULES-INDEX.md`** | § 逆引き・タスク開始時の索引 |
 | 4 | **`.cursor/rules/mode-b-canonical.mdc`** | **用語・四行テンプレ・4AI担当明文化マトリクスの単一窓**（`AGENTS.md` §1-2-3-4-A と同一・重複コピー禁止） |
 | 4b | **`.cursor/rules/mcp-server-use-triggers.mdc`** | MCP 選択・**§4AI**（`data/cio-mcp-four-ai-matrix.json` と同期） |
-| 4c | **`.cursor/rules/cursor-generate-image-assets.mdc`** | 画像 MCP 見送り・内蔵 GenerateImage のみ |
+| 4c | **`.cursor/rules/cursor-generate-image-assets.mdc`** | 画像 MCP 計画削除・内蔵 GenerateImage のみ |
+| 4d | **`.cursor/rules/mode-b-mdc-canonical-linter.mdc`** | `.mdc` → `mode-b-canonical` 参照 Linter 規律 |
 | 5 | **`.cursor/rules/cio-constitution.mdc`** | 唯一 `alwaysApply: true` 核（四行・Multi-Agent 要約） |
 | 6 | **`.cursor/rules/every-turn-rules-confirm.mdc`** | 毎ターン・報告チェックシート・§1e |
 | 7 | **`.cursor/rules/constitution-enforcement-core.mdc`** | 違反＝失敗・2者チェック |
@@ -50,6 +51,7 @@
 
 | ファイル | 内容 |
 |----------|------|
+| **`docs/runbooks/cio-friday-mcp-status-refresh-4ai.md`** | 金曜 `mcp-status:refresh-usage` 4AI 安全手順（2026-05-29） |
 | **`docs/runbooks/cio-four-ai-governance.md`** | 4AI統制コマンド一覧 |
 | **`docs/runbooks/deepseek-pre-edit-gate.md`** | §50-3-8 着手前チェックリスト |
 | **`docs/plans/2026-05-21-cio-session-model-override.md`** | 方式B 決定メモ |

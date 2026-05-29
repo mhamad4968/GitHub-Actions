@@ -1,6 +1,6 @@
 # 📊 MCP 状態管理台帳
 
-**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-05-21（**方式B・4AI MCP 台帳同期** — `data/cio-mcp-four-ai-matrix.json`・`npm run verify:mcp-four-ai-alignment`・`.cursor/rules/mcp-server-use-triggers.mdc` §4AI と **一字ズレなし**。2026-05-11 以前分:
+**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-05-29（**憲法大整理** — 4AI ハイブリッド・画像 MCP 計画削除・金曜定例 runbook 追加）
 
 ### §見送り — 画像生成 MCP（計画削除・2026-05-29）
 
@@ -64,7 +64,7 @@
 | 4 | Cursor 課金ダッシュボード（スクリーンショット） | **Total 76%**／Auto+Composer **56%**／API **100%**（同梱枠枯渇）／On-demand **$388.51 / $1000**（上限 Fixed **$1000 USD**）— `npm run credit:set 76` で日次記録に反映可（§1-2-4） |
 | 5 | Tavily | **削除で OK** → 同日 **`~/.cursor/mcp.json`** および **`C:\Users\…\.cursor\mcp.json`** から除去。`scripts/sync-cursor-mcp-windows-from-wsl.mjs` から **tavily コピー行を削除** |
 
-> **CIO 定例（運用確定）**: 上記 (3) の「過去30日」欄の **再集計・表への反映**は **CIO が金曜・週次反省の直後に必ず実施**。コマンド **`npm run mcp-status:refresh-usage`**（`--dry-run` で差分確認のみも可）。浜田さん側はカレンダーで **タイミング**のみ管理でよい。
+> **CIO 定例（運用確定）**: 上記 (3) の「過去30日」欄の **再集計・表への反映**は **CIO が金曜・週次反省の直後に必ず実施**。手順正本: **`docs/runbooks/cio-friday-mcp-status-refresh-4ai.md`**。コマンド **`npm run mcp-status:refresh-usage`**（`--dry-run` で差分確認のみも可）。浜田さん側はカレンダーで **タイミング**のみ管理でよい。
 
 ---
 

@@ -34,7 +34,7 @@ globs: "**/*"
 
 ## 方式B・4AI（2026-05-21）
 
-**用語・先頭4行テンプレの正**: **`.cursor/rules/mode-b-canonical.mdc`**（CIO＝Opus4.7固定 / Composer2.5＝diff / Kimi＝長文 / DeepSeek＝§50-3-8）。開発3ステップ: **`AGENTS.md` §50-3-11**。
+**用語・先頭4行テンプレの正**: **`.cursor/rules/mode-b-canonical.mdc`**（CIO＝Opus4.7ベース/必要時4.8 / Composer2.5＝diff / Kimi＝長文 / DeepSeek＝§50-3-8）。開発3ステップ: **`AGENTS.md` §50-3-11**。
 
 ## 毎ターンの型（チャット先頭）
 

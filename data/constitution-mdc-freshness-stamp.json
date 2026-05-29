@@ -1,6 +1,6 @@
 {
-  "sha256": "3d63f1c88582e01be4f658db40b2ec2be3fb81d6e5c9e982d764f33d1abd2ec4",
-  "bytes": 5301342,
-  "generatedAt": "2026-05-29T09:05:18.557Z",
+  "sha256": "5d2bb6a52b626cca5c841b7757db8ecf34042460b27cf592fdada3763aa76620",
+  "bytes": 5306931,
+  "generatedAt": "2026-05-29T09:09:23.653Z",
   "note": "gitignore された constitution.mdc の正規化ハッシュ（Phase 2-C）"
 }

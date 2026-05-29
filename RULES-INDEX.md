@@ -24,7 +24,7 @@
 
 ## Cursor ルール逆引き（自動生成・編集禁止）
 
-**更新**: `npm run rules:sync-mdc-index`（2026-05-21 JST）
+**更新**: `npm run rules:sync-mdc-index`（2026-05-29 JST）
 
 | トピック | ファイル | description（frontmatter） |
 |----------|----------|---------------------------|
@@ -62,6 +62,7 @@
 | その他・運用補助 | [`autonomous-with-mandatory-asks.mdc`](.cursor/rules/autonomous-with-mandatory-asks.mdc) | 開発は自律実行するが、確認が必要なら着手前に浜田へ聞く（浜田指示） |
 | その他・運用補助 | [`snyk-security.mdc`](.cursor/rules/snyk-security.mdc) | Snyk で生成・変更コードをスキャンする（Secure at Inception 相当） |
 | その他・運用補助 | [`constitution.mdc`](.cursor/rules/constitution.mdc) | 網羅統合版 — 憲法・索引・WORKFLOW・全mdc・予実・plans・chat・handoff・docs全（plans除く重複）・security-next・yojitsu README等（再生成=本スクリプト）。Cursor 常時枠の |
+| （未分類） | [`mode-b-mdc-canonical-linter.mdc`](.cursor/rules/mode-b-mdc-canonical-linter.mdc) | 方式B — .mdc が mode-b-canonical.mdc を正しく参照する静的Linter規律（2026-05-29） |
 
 索引: [`.cursor/rules/README.md`](.cursor/rules/README.md) / [`data/cursor-rules-topic-index.json`](data/cursor-rules-topic-index.json)
 
@@ -227,7 +228,7 @@
 | §1 / §1-2 / §1-2-2 / §1-2-3 / §1-2-3-1 / §1-2-3-2 / §1-2-3-3 / §1-2-4 | 役割定義 + **最適モデル原則 / Opus 4.7 デフォルト枠**（§1-2 / 2026-04-26 R-3 改定 = 「Opus 統一」を「最適モデル」に転換 / 浜田指示「絶対にこのモデルを使うというこだわりはしない」/ 別モデルへの常時切替・レビュー用サブエージェント禁止は維持 / 例外は §1-2）+ **API 制限到達時の自動フォールバック禁止**（§1-2-2 / N-3 / N-4 で 4 択 A-D 提示の枠組み + §1-2-2-1 Cursor IDE 必須設定 = Q1 で 4 → 8 項目 + Browser Protection ON + MCP Tools Protection ON + Monthly Limit $1000 / TSB-019 連動）+ **Opus 内モデル使い分け**（§1-2-3 / N-5 / 既定 Extra High / Max Thinking は §47-A 100% 証明・設計判断・複雑バグ修正のみ）+ **AI 自己宣言義務**（§1-2-3-1 / P5-5 / タスク冒頭で `[§1-2-3 ティア判定: Extra High/Max Thinking]` を 1 行明示 = 形骸化対策 / F-13 教訓）+ **AI 自律モデル選択原則**（§1-2-3-2 / R-3 / 3 段階 L1 Composer 2 / L2 Extra High / L3 Max Thinking / 1 秒判定フロー / 不可逆操作は L3 強制 / silent fallback と区別 = ティア宣言で証跡 / F-14 対策 = Max Thinking 59.4% → 20-30% 想定）+ **CIO によるモデル最終判断**（§1-2-3-3 / 2026-04-29 / 浜田 CIO が明示したティアは §1-2-3-2 に優先 / 未指定時は §1-2-3-1/2）+ **クレジット予算管理 改定**（§1-2-4 / P5-5 / 月予算 $200+$1000 引上げ / 3 系統 (Total/API/On-Demand) / 70-80-85-95% 4 段階自発警告 / Spending スクショ抽出 / 朝報 §0 統合 / TSB-018/TSB-021 連動）|
 | §51 / §51-3 / §51-6 / §51-6-2 | **並列禁止 + セッション分割推奨 + AI 自律セッション切り命令権**（§51-3 並列禁止 / §51-6 提案レベル + **遵守事項 5** = 2026-04-29 切替直後 **`session:clock:set` 必須** + **`session:clock:web` URL をチャットに転記し浜田にブラウザで開くよう促す** / **§51-6-2 命令権** = 2026-04-26 R-4 / 浜田 10:30「セッションを切ることは重要 / 命令指示権限を与える」/ 6 つの自律発動条件 (4h / 200 tool call / 重作業完了直後 / コスト 2x / Tier B 直前 / API 100%) / 浜田却下時は §47-D で逆却下 / 引き継ぎを checkpoint-latest.md へ追記義務 / **次チャット初手で遵守事項 5**）|
 | §51-6-2 運用 | **`npm run session:clock:set`**（切替毎・必須）／**`npm run session:clock:clear`**（終了時・`開始:` を未設定）／**`npm run session:clock:web`**（バックグラウンド・URL を浜田へ・止めるは Ctrl+C）／**`npm run session:clock:health`**（壁時計・hooks・crontab・watch pid ワンショット）／**`npm run verify:session-clock-health`**（`session:bootstrap` 内包・厳格）／`SESSION-SPLIT-REMINDER.md`／§**16-1** 個人端末のローカル前準備（`AGENTS.md`）|
-| §1-2-3-4 | **4AI方式B・CIOセッション特例**（2026-05-21）— Opus4.7固定 / Composer2.5 Subagent diffのみ / Kimi長文 / DeepSeek §50-3-8 / `mode-b-canonical.mdc` |
+| §1-2-3-4 | **4AI方式B・CIOセッション特例**（2026-05-21 / 2026-05-29 ハイブリッド）— Opus4.7ベース/必要時4.8 / Composer2.5 Subagent diffのみ / Kimi長文 / DeepSeek §50-3-8 / `mode-b-canonical.mdc` |
 | §50-3 / **§50-3-2a** / **§50-3-8** / **§50-3-9** / **§50-3-10** / **§50-3-11** | **CTO運用規定** + **§50-3-11 4AI開発プロトコル**（DeepSeek1問→突合3行→`cio:guard:5038` / Composer interlock / ゾンビ検査 / `00-rule-hierarchy.md`）／**仕様分業**: `deepseek-cursor-spec-division.mdc` |
 | §52 / §52-3 / §52-8 / §52-8-1 / §52-9 | **RACI Tier A/B 自律レベル**（§52-3 6 問自己診断）+ **§52-8 高リスク shell 暴走防止**（Q1 / TSB-019 連動 / rm -rf・git push --force・npm install (新規)・chmod -R・sudo・.env 編集 等は事前報告 → 浜田 GO 待ち）+ **§52-8-1 物理 block 層**（P5-1/R1 / TSB-019 構造的根本対策 / `~/.cursor/hooks/dangerous-shell-blocker.sh` で OS レベル deny / 三層防御確立）+ **§52-9 Tier A 範囲ミス発見時の自律修正権**（2026-04-26 R-5 / 浜田「ミスや発見があれば即座にこちらに確認しないで進めてよい」/ §52-4 Conservative Default の能動的反対側補完 / Tier A のみ即修正可 / Tier B / §52-8 / §57 / scope 外 / Cursor IDE 設定変更 は適用外 / 完了報告 + logs/autonomy-decisions/auto-fix-*.md 事後トレース義務）|
 | §39 | 発言前の日時確認（絶対遵守）|
