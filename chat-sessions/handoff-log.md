@@ -2569,6 +2569,18 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 
 ---
 
+### 2026-05-29 JST — 新規MCP運用憲法化・AI-KERNEL Linter・週末監査
+
+**実施**: §50-3-11 第4ステップ（eslint-mcp/repo-tree）・AI-KERNEL Linter 拡張・`cio-weekend-autonomous-audit` runbook。
+
+**履歴**: **新規MCPの運用憲法化、AI-KERNEL構造の自動Linter配置、および週末自律監査規律の追加アップデート完了**
+
+**触らない**: customize/deploy（Q36 GO 前）。
+
+**次回第1手**: **§41 案A1**（Q36 報告 1 問）。
+
+---
+
 ### 2026-05-29 JST — Opus 4.8 大覚醒・究極環境整備
 
 **実施**: mode-b-canonical AI-KERNEL 構造化・§1-2-3-4-C・repo-tree/eslint-mcp 追加・Opus4.8 runbook・Desktop 00-27 同期。

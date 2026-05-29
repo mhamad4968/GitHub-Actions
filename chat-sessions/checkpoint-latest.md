@@ -2,6 +2,18 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
+## 2026-05-29 JST — **MCP運用憲法化・AI-KERNEL Linter・週末監査**
+
+| 項目 | 内容 |
+|------|------|
+| **§50-3-11** | 第4ステップ: Composer **eslint-mcp + repo-tree** 強制（`composer-mcp-audit-gate.mdc`） |
+| **Linter** | `verify:mode-b-turn-head-canonical` + AI-KERNEL 4要素（manifest 管理） |
+| **週末** | `docs/runbooks/cio-weekend-autonomous-audit.md` |
+| **履歴** | **新規MCPの運用憲法化、AI-KERNEL構造の自動Linter配置、および週末自律監査規律の追加アップデート完了** |
+| **次回 1 手** | **§41 案A1** |
+
+---
+
 ## 2026-05-29 JST — **Opus 4.8 大覚醒・究極環境整備**
 
 | 項目 | 内容 |

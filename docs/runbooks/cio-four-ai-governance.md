@@ -51,11 +51,21 @@
 - **Linter 規律**: `.cursor/rules/mode-b-mdc-canonical-linter.mdc`
 - **検証**: `npm run verify:mode-b-turn-head-canonical`（`.mdc` が4行フェンスをコピーしていないか）
 
-## タスク4 — 金曜 MCP usage 定例（4AI 安全手順）
+## タスク4 — Composer MCP 監査（§50-3-11 第4ステップ）
+
+- **正本**: `.cursor/rules/composer-mcp-audit-gate.mdc`
+- **コマンド**: `npm run cio:guard:composer-mcp-audit -- --stamp --text "eslint=0 …"`
+- **MCP**: `eslint-mcp` + `repo-tree`（registry 必須）
+
+## タスク5 — 週末自律監査
+
+- **Runbook**: `docs/runbooks/cio-weekend-autonomous-audit.md`
+- **コマンド**: `npm run cio:weekend:autonomous-audit`
+
+## タスク6 — 金曜 MCP usage 定例
 
 - **Runbook**: `docs/runbooks/cio-friday-mcp-status-refresh-4ai.md`
-- **コマンド**: `npm run mcp-status:refresh-usage`（差分あれば commit + push）
-- **正本**: `docs/mcp-status.md` §CIO 定例 / `mcp-server-use-triggers.mdc` 項 0
+- **コマンド**: `npm run mcp-status:refresh-usage`
 
 ## Phase 2-B — ルール論理分類（完了）
 

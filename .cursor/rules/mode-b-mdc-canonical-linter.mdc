@@ -1,39 +1,44 @@
 ---
-description: 方式B — .mdc が mode-b-canonical.mdc を正しく参照する静的Linter規律（2026-05-29）
+description: 方式B — .mdc 正本参照 + AI-KERNEL 4要素 Linter（2026-05-29 永久ロック）
 alwaysApply: false
 globs: ".cursor/rules/**"
 ---
 
-# 方式B — `.mdc` 正本参照 Linter 規律
+# 方式B — `.mdc` Linter 規律（参照 + AI-KERNEL）
 
-> **上位**: `AGENTS.md` §1-2-3-4-B・**§50-3-11**／`.cursor/rules/mode-b-canonical.mdc`（四行テンプレ単一窓）  
-> **機械検査**: **`npm run verify:mode-b-turn-head-canonical`**
+> **上位**: `AGENTS.md` §50-3-11 / `mode-b-canonical.mdc`  
+> **機械**: `npm run verify:mode-b-turn-head-canonical`  
+> **正本**: `data/ai-kernel-mdc-manifest.json`
 
-## 目的
+## 前提条件
 
-AI が古い四行テンプレの **コピー**を `.mdc` から誤読しないよう、**環境側**で参照整合を強制する。
+| 項目 | 内容 |
+|------|------|
+| 四行テンプレ | **`mode-b-canonical.mdc` のみ** — 他 `.mdc` コピー禁止 |
+| AI-KERNEL 必須 | manifest **`required`** 3 ファイルは 4 見出し必須 |
+| exempt | manifest **`exempt`** — topic glob 専用（段階的移行） |
+| 例外 | `constitution.mdc`（結合ミラー・gitignore） |
 
-## ルール（作成・更新 `.mdc` 時）
+## 実行手順
 
-1. **四行テンプレの正**は **`mode-b-canonical.mdc` のみ**。他 `.mdc` に **フェンス付き4行ブロックをコピー禁止**。
-2. 先頭4行・ティア・🎖️ に触れる `.mdc` は本文に **`mode-b-canonical.mdc` 参照**行を必ず含める。
-3. **例外**: `mode-b-canonical.mdc` 本体、`constitution.mdc`（結合ミラー・gitignore）。
+1. `.mdc` 追加・更新前に manifest の **required / exempt** を確認
+2. **required** ファイルは `mode-b-canonical.mdc` と同型の 4 見出しを維持
+3. `npm run verify:mode-b-turn-head-canonical` → **exit 0**
+4. `npm run verify:cio-four-ai-governance` 一括合格
 
-## 検査内容（`scripts/verify-mode-b-turn-head-canonical.mjs`）
+## 禁止事項
 
-| ID | 検出 |
-|----|------|
-| `DUPLICATE_FENCED_TEMPLATE` | 4行フェンスの重複コピー |
-| `MISSING_MODE_B_CANONICAL_REF` | 先頭4行言及あり・参照なし |
+- required ファイルから **4 見出しの削除・改名**
+- 四行フェンスの **重複コピー**
+- manifest 未登録の `.mdc` 放置（`AI_KERNEL_UNCLASSIFIED`）
 
-## 実行タイミング
+## 判定コード
 
-- **手動**: `npm run verify:mode-b-turn-head-canonical`
-- **一括**: `npm run verify:cio-four-ai-governance`（pre-commit / CI 連鎖）
-- **`.mdc` 追加・改定後**: 上記 **exit 0** を確認してから commit
+| ID | 意味 | exit |
+|----|------|------|
+| `DUPLICATE_FENCED_TEMPLATE` | 四行コピー | 1 |
+| `MISSING_MODE_B_CANONICAL_REF` | 参照欠落 | 1 |
+| `AI_KERNEL_MISSING_HEADING` | 4要素欠落 | 1 |
+| `AI_KERNEL_UNCLASSIFIED` | manifest 未登録 | 1 |
 
-## 修正パターン
-
-```text
-**先頭4行テンプレ**: `.cursor/rules/mode-b-canonical.mdc` 参照（コピー禁止）。
-```
+**合格**: 上記ゼロ → exit 0

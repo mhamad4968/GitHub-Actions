@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-29T09:20:49.467Z",
+  "generatedAt": "2026-05-29T09:28:18.641Z",
   "sectionToMdc": {
     "§0": [
       "constitution-brief-card.mdc",
@@ -35,6 +35,7 @@
       "mode-b-canonical.mdc"
     ],
     "§1-2-3-4-A": [
+      "composer-mcp-audit-gate.mdc",
       "cursor-generate-image-assets.mdc",
       "deepseek-cursor-spec-division.mdc",
       "mode-b-canonical.mdc"
@@ -255,6 +256,9 @@
     ],
     "cio-report-min-format.mdc": [
       "§1"
+    ],
+    "composer-mcp-audit-gate.mdc": [
+      "§1-2-3-4-A"
     ],
     "constitution-brief-card.mdc": [
       "§(RULES-INDEX行)",

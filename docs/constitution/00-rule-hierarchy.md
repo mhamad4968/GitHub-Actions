@@ -51,7 +51,8 @@
 
 | ファイル | 内容 |
 |----------|------|
-| **`docs/runbooks/cio-opus48-intelligence-activation.md`** | Opus 4.8 L3 思考プロトコル（2026-05-29） |
+| **`docs/runbooks/cio-weekend-autonomous-audit.md`** | 週末自律監査（実装凍結時・2026-05-29） |
+| **`docs/runbooks/cio-opus48-intelligence-activation.md`** | Opus 4.8 L3 思考プロトコル |
 | **`docs/runbooks/cio-friday-mcp-status-refresh-4ai.md`** | 金曜 `mcp-status:refresh-usage` 4AI 安全手順（2026-05-29） |
 | **`docs/runbooks/cio-four-ai-governance.md`** | 4AI統制コマンド一覧 |
 | **`docs/runbooks/deepseek-pre-edit-gate.md`** | §50-3-8 着手前チェックリスト |

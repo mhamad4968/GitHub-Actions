@@ -283,6 +283,8 @@
     "verify:cio-mcp-registry": "node scripts/verify-cio-mcp-registry.mjs",
     "cio:guard:composer-interlock": "node scripts/cio-composer-silent-fallback-guard.mjs",
     "cio:guard:5038": "node scripts/cio-deepseek-5038-evidence-guard.mjs",
+    "cio:guard:composer-mcp-audit": "node scripts/cio-guard-composer-mcp-audit.mjs",
+    "cio:weekend:autonomous-audit": "node scripts/cio-weekend-autonomous-audit.mjs",
     "cio:pre-implement-gate": "node scripts/cio-pre-implement-gate.mjs",
     "verify:mode-b-zombie-docs": "node scripts/verify-mode-b-zombie-docs.mjs",
     "cio:prune:mode-b-zombie-docs": "node scripts/cio-prune-mode-b-zombie-docs.mjs",

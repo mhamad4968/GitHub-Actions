@@ -1,0 +1,51 @@
+{
+  "version": "2026-05-29",
+  "note": "AI-KERNEL 4要素（前提/手順/禁止/exit）必須ファイルと exempt 一覧。verify-mode-b-turn-head-canonical.mjs が参照。",
+  "requiredHeadings": {
+    "premise": "## 前提条件",
+    "procedure": "## 実行手順",
+    "forbidden": "## 禁止事項",
+    "exit": "## 判定コード"
+  },
+  "required": [
+    "mode-b-canonical.mdc",
+    "mode-b-mdc-canonical-linter.mdc",
+    "composer-mcp-audit-gate.mdc"
+  ],
+  "exempt": [
+    "constitution.mdc",
+    "cio-constitution.mdc",
+    "every-turn-rules-confirm.mdc",
+    "constitution-enforcement-core.mdc",
+    "constitution-brief-card.mdc",
+    "mcp-server-use-triggers.mdc",
+    "cursor-generate-image-assets.mdc",
+    "session-handoff.mdc",
+    "cio-operating-loop.mdc",
+    "cio-report-min-format.mdc",
+    "auto-read-by-topic.mdc",
+    "deepseek-cursor-spec-division.mdc",
+    "ai-agent-tools-constitution.mdc",
+    "cio-discipline-always.mdc",
+    "constitution-handoff-gate.mdc",
+    "constitutional-focus-github-workflows.mdc",
+    "deepseek-pre-edit-gate.mdc",
+    "constitutional-focus-kintone-customize.mdc",
+    "kintone-destructive-rest-guard.mdc",
+    "session-read-ladder-two-phase.mdc",
+    "mcp-frontend-shadcn-chrome.mdc",
+    "constitutional-focus-yojitsu.mdc",
+    "snyk-security.mdc",
+    "security-news-response.mdc",
+    "modern-web-official-docs.mdc",
+    "next-session-jbis-followups.mdc",
+    "kintone.mdc",
+    "mcp-tool-discipline.mdc",
+    "file-copy-exact-path.mdc",
+    "kintone-javascript.mdc",
+    "kintone-schema-trust.mdc",
+    "creation-timing-ask.mdc",
+    "autonomous-with-mandatory-asks.mdc"
+  ],
+  "exemptMarker": "AI-KERNEL-EXEMPT:"
+}

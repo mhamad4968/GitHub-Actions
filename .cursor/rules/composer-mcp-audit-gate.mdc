@@ -1,0 +1,44 @@
+---
+description: 方式B — Composer 2.5 必須 MCP 監査（eslint-mcp / repo-tree）§50-3-11 第4ステップ
+alwaysApply: false
+globs: "customize/**,scripts/**,*.js,*.mjs,*.ts,*.tsx"
+---
+
+# Composer MCP 監査ゲート（§50-3-11 第4ステップ）
+
+> **上位**: `AGENTS.md` §50-3-11 第4ステップ / `mode-b-canonical.mdc`  
+> **機械**: `npm run cio:guard:composer-mcp-audit`
+
+## 前提条件
+
+| 項目 | 必須 |
+|------|------|
+| 先行 | §50-3-11 **1〜3** 完了（DeepSeek → 突合3行 → `cio:guard:5038`） |
+| 担当 | **Composer 2.5 Subagent** が Diff 適用 |
+| MCP | **eslint-mcp** + **repo-tree** が registry に存在 |
+| 凍結 | 実装レーン凍結中は **customize/deploy 禁止**（監査のみ可） |
+
+## 実行手順
+
+1. Diff 適用 **直前または直後**（同一ターン内）に **eslint-mcp** で変更ファイルを lint
+2. **repo-tree** で影響ディレクトリの構造を可視化（depth 制限可）
+3. **Warning 0** を確認 — 残存時は修正して再監査
+4. CIO へ **1 行証明**: `MCP監査: eslint=0 warnings / repo-tree=OK / 対象=<path>`
+5. 機械スタンプ: `npm run cio:guard:composer-mcp-audit -- --stamp --text "…"`
+
+## 禁止事項
+
+- §50-3-11 **1〜3 スキップ**して MCP 監査のみ完結
+- Warning 残存のまま **commit / save 完結**
+- CIO への **口頭のみ**（スタンプ・1行証明なし）
+- 画像 MCP 代替として **GenerateImage 以外の画像 MCP** 使用
+
+## 判定コード
+
+| コマンド | 合格 |
+|----------|------|
+| `npm run cio:guard:composer-mcp-audit -- --stamp` | exit 0 |
+| `npm run verify:cio-mcp-registry` | eslint-mcp + repo-tree 存在 |
+| commit 前（コード変更） | スタンプ 45 分以内 or `--skip` 具体理由 |
+
+**スキップ**: `npm run cio:guard:composer-mcp-audit -- --skip "README typo only"`（**具体1行**）

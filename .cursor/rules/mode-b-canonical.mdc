@@ -41,6 +41,7 @@ globs: "**/*"
 ### 仕様触れ前（§50-3-11）
 
 1. DeepSeek 1問 → 2. 突合3行 → 3. `npm run cio:guard:5038 -- --stamp`
+4. **Composer MCP 監査** — eslint-mcp + repo-tree → `npm run cio:guard:composer-mcp-audit -- --stamp`（`composer-mcp-audit-gate.mdc`）
 
 ### 実装ゲート
 
