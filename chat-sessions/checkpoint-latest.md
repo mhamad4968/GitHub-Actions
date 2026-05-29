@@ -2,15 +2,16 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-## 2026-05-30 JST — **ヘルスチェック・GitHub・Desktop 是正**
+## 2026-05-30 JST — **ヘルスチェック・GitHub・Desktop・v5 完了**
 
 | 項目 | 内容 |
 |------|------|
-| **ヘルス** | `npm run health-check` **97%→100%**（MCP死蔵6件を policy exempt 追記） |
+| **ヘルス** | `npm run health-check` **100%**（32 OK / 0 warn） |
 | **憲法** | `rules:sync-section-mdc` + `verify:cio-four-ai-governance` **exit 0** |
-| **Git** | 誤差分 `crosswalk.md` 復元・`RULES-INDEX` sync・`SESSION-CLOCK` 更新 |
-| **Desktop** | `session-starter:sync-desktop` + verify OK（read-pack 正本化） |
-| **v5** | 正本 `C:\tmp\マニュアル\…v5.docx`・`fix_toc_v5.py` stage を TEMP 化 |
+| **Git** | `44a8752` push 済・**PR #1 クローズ**（2026-03 税計算・CONFLICTING） |
+| **Desktop** | sync + verify **全一致**（19/26 を 2026-05-30 版に復元） |
+| **v5** | `fix_toc_v5.py` **完了** — 62項・Ch1=p4・Ch7=手続き内容一覧・Ch8=p26 |
+| **GitHub pending** | **Cursor/Mintlify = queued**（Actions は success）→ CEO: Settings → GitHub Apps から本リポを外す（`github-commit-checks-pending.md`） |
 | **次回 1 手** | 打合せ v5 / §41 案A1 |
 | **触らない** | kintone customize/deploy（Q36 GO 前） |
 

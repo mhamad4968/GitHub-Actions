@@ -2645,7 +2645,9 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 
 **実施**: health-check **100%**（MCP死蔵6→policy exempt）・`rules:sync-section-mdc`・`verify:cio-four-ai-governance` exit 0・`crosswalk.md` 誤巻き戻し復元・sync script 26番 prune 修正・read-pack 正本化（18/19/26）・`session:clock:set` 00:40 JST・Desktop sync verify 全一致。
 
-**残**: v5 Word ロック中（`fix_toc_v5.py` は Word 閉鎖後）・GitHub **Cursor/Mintlify queued pending** はリポ設定（CEO・`github-commit-checks-pending.md`）。
+**残**: GitHub **Cursor/Mintlify queued pending** はリポ設定（CEO・`github-commit-checks-pending.md`）。**PR #1 クローズ済**（2026-05-30）。
+
+**v5**: `fix_toc_v5.py` 完了（62項・Ch1=4・Ch8=26）。孤立 Word ロックは `doc_lane_preflight` で自動削除対応。
 
 **触らない**: kintone customize/deploy（Q36 GO 前）。
 
