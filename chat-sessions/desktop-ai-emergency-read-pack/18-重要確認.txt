@@ -118,3 +118,10 @@ SPEC_TOUCHED: yes のターンで SECOND_REVIEWER: deepseek|kimi|openrouter の�
   **週末**: `npm run cio:weekend:autonomous-audit`（bridge 連動・Self-Healing 布石）
   **検証**: `npm run verify:cio-session-dissolution` / `verify:cio-four-ai-governance`
   **正本**: `.cursor/rules/cio-context-dissolution-interlock.mdc` / `mode-b-canonical.mdc`（Mermaid+ASCII）
+
+【2026-05-30 追記・超自律化インフラ 方針1〜3（CEO 超厳命）】
+  **方針1 エスカレーション**: verify 連続2回 fail → `cio:composer:escalation-guard` → DeepSeek §50-3-8 → Self-Heal×3 → CIO→CEO
+  **方針2 SPEC採点**: `npm run cio:task:score-spec` → `docs/handoff/spec-task-scores.json` + SPEC 優先順位節
+  **方針3 引っ越しマップ**: `verify:session-handoff-integrity -- --import` → 【4AI引っ越し完了マッピング表】
+  **検証**: `npm run verify:cio-autonomous-infra` / `verify:cio-four-ai-governance`
+  **正本**: `.cursor/rules/cio-composer-escalation-interlock.mdc` / `scripts/lib/cio-handoff-visual-map.mjs`

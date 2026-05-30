@@ -1,0 +1,45 @@
+---
+description: 方針1 — Composer verify 連続失敗時の DeepSeek 自律エスカレーション §50-3-11 第6層
+alwaysApply: false
+globs: "scripts/**,customize/**,*.mjs,*.js,*.ts,*.tsx"
+---
+
+# Composer 自律エスカレーション（§50-3-11 第6層）
+
+> **上位**: `AGENTS.md` §50-3-11 第6層 / §1-2-3-4-B / §50-3-8  
+> **非置換**: §35-1 / §56-1a / §41 / §51 / §1-2-2 / §52
+
+## 前提条件
+
+| 項目 | 内容 |
+|------|------|
+| 担当 | **Composer 2.5** が verify / eslint-mcp 実行 |
+| 閾値 | 同一ターン **連続 2 回** exit 1 → **作業ロック** |
+| 知恵袋 | **DeepSeek** (`mcp_user-deepseek_chat`) §50-3-8 強制 |
+| 上限 | Self-Heal **最大 3 回** → **CIO(Opus 4.8)** → CEO 報告 |
+
+## 実行手順
+
+1. verify 失敗 — `npm run cio:composer:escalation-guard -- --record-failure --cmd "…" --log "…"`
+2. **2 回目** — exit 1 ロック → `--prompt-deepseek` で盲点チェックプロンプト出力
+3. DeepSeek ヒントに基づき Composer が **セルフデバッグ** → 再 verify
+4. 再試行 — `--record-self-heal`（最大 3）
+5. 成功 — `--record-success` でロック解除
+6. 3 回失敗 — **CIO ハブ**経由 CEO へバグ報告（Composer 継続禁止）
+
+## 禁止事項
+
+- ロック中の **save / commit / deploy**
+- DeepSeek スキップして **人間へ即エスカレ**（2 回未満）
+- Self-Heal **4 回以上**（ゾンブループ）
+- customize/deploy **凍結中の実装レーン突破**
+
+## 判定コード
+
+| コマンド | 合格 |
+|----------|------|
+| `npm run cio:composer:escalation-guard -- --check` | exit 0 |
+| `--record-failure` 1 回目 | exit 0 |
+| `--record-failure` 2 回目 | exit 1（DeepSeek 強制） |
+| `--record-self-heal` 3 回目 | exit 1（CIO 報告） |
+| `npm run verify:cio-autonomous-infra` | exit 0 |

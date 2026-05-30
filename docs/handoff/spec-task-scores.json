@@ -1,0 +1,29 @@
+{
+  "scoredAt": "2026-05-30T02:17:18.724Z",
+  "specPath": "templates/yojitsu-budget-lite/SPEC.md",
+  "topTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
+  "tasks": [
+    {
+      "id": "backlog:B-MDFLOW:_**Markdown_ベースの開発フロー**（仕様・実装・レ",
+      "text": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
+      "source": "backlog",
+      "difficulty": 2,
+      "tokens": "中",
+      "tokenScore": 2,
+      "impact": 3,
+      "priority": 21,
+      "status": "pending"
+    },
+    {
+      "id": "checkpoint:打合せ_v5_/_**§41_案A1**",
+      "text": "打合せ v5 / **§41 案A1**",
+      "source": "checkpoint",
+      "difficulty": 3,
+      "tokens": "中",
+      "tokenScore": 2,
+      "impact": 5,
+      "priority": 25,
+      "status": "pending"
+    }
+  ]
+}

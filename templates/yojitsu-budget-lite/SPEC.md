@@ -455,3 +455,16 @@ OK → `partner_company` 入力欄の `readonly` を解除＋ `data-y678-partner
 - 2026-04-28: §0b を浜田合意どおり確定（旧＝現在・新＝今後・Sheet4 当面未使用）。
 - 2026-04-28: §0 課題・§0b シート確認・技術方針（JS/API・プラグイン NG）を追記。
 - 2026-04-28: 仕様デイ用に初版（ドラフト）。
+
+<!-- CIO-TASK-PRIORITY:AUTO:BEGIN -->
+
+## AI Task Priority（自動スコアリング · `npm run cio:task:score-spec`）
+
+> **入力ソース**: 未完了チェックボックス / backlog / checkpoint。`[🎖️ 本セッション割当]` 連動。
+
+| Rank | Task | 難易度 | Token | Impact | Priority |
+|------|------|--------|-------|--------|----------|
+| 1 | B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化） | 2/5 | 中 | 3/5 | 21 |
+| 2 | 打合せ v5 / **§41 案A1** | 3/5 | 中 | 5/5 | 25 |
+
+<!-- CIO-TASK-PRIORITY:AUTO:END -->

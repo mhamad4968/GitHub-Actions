@@ -32,6 +32,9 @@ flowchart LR
   KM --> CIO
   WALL{{"15ターン / 40k wall"}} --> EXP["export-handoff.json"]
   EXP --> NC["New Chat --import"]
+  NC --> MAP["4AI引っ越しマップ"]
+  CMP -->|verify×2 fail| DS2["DeepSeek Self-Heal"]
+  DS2 -->|3 fail| CIO2["CIO→CEO"]
 ```
 
 ## 前提条件
@@ -98,6 +101,9 @@ flowchart LR
 | `npm run verify:cio-mcp-registry` | exit 0 |
 | `npm run cio:session:turn-guard -- --check` | exit 0 |
 | `npm run verify:session-handoff-integrity -- --import` | exit 0（New Chat 時） |
+| `npm run cio:composer:escalation-guard -- --check` | exit 0 |
+| `npm run cio:task:score-spec` | exit 0 |
+| `npm run verify:cio-autonomous-infra` | exit 0 |
 
 ## 毎ターン先頭4行（機械検査一致・正本）
 

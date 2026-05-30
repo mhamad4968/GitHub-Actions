@@ -1,5 +1,5 @@
 {
-  "version": "2026-05-30",
+  "version": "2026-05-30-autonomous",
   "note": "AI-KERNEL 4要素（前提/手順/禁止/exit）必須ファイルと exempt 一覧。verify-mode-b-turn-head-canonical.mjs が参照。",
   "requiredHeadings": {
     "premise": "## 前提条件",
@@ -11,7 +11,8 @@
     "mode-b-canonical.mdc",
     "mode-b-mdc-canonical-linter.mdc",
     "composer-mcp-audit-gate.mdc",
-    "cio-context-dissolution-interlock.mdc"
+    "cio-context-dissolution-interlock.mdc",
+    "cio-composer-escalation-interlock.mdc"
   ],
   "exempt": [
     "constitution.mdc",

@@ -23,6 +23,9 @@ const PKG = [
   'cio:session:turn-guard',
   'verify:session-handoff-integrity',
   'verify:cio-session-dissolution',
+  'verify:cio-autonomous-infra',
+  'cio:composer:escalation-guard',
+  'cio:task:score-spec',
 ];
 
 function main() {
@@ -39,6 +42,7 @@ function main() {
     issues.push('AGENTS.md に cio:session:export-handoff 未記載');
   }
   if (!agents.includes('15ターン')) issues.push('AGENTS.md に 15ターン 未記載');
+  if (!agents.includes('第6層')) issues.push('AGENTS.md に 第6層 未記載');
   const mdc = fs.readFileSync(path.join(root, '.cursor/rules/mode-b-canonical.mdc'), 'utf8');
   if (!mdc.includes('mermaid')) issues.push('mode-b-canonical.mdc に mermaid 図解なし');
 

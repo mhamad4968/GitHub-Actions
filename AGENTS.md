@@ -423,7 +423,9 @@ flowchart LR
 6. **画像生成 MCP**: **計画削除・導入禁止**（内蔵 `GenerateImage` のみ・`cursor-generate-image-assets.mdc`）。
 7. **15ターン強制解体**: 同一チャット **15 ターン超**または **40k トークン自認** → 応答末尾で New Chat 強制申告 → **`npm run cio:session:export-handoff`**（`.cursor/rules/cio-context-dissolution-interlock.mdc`）。
 8. **Diff ループ遮断**: 同一ファイル **3 回連続 Diff** → `cio:session:turn-guard -- --record-diff` が **exit 1**（SPEC 根本見直し）。
-9. **New Chat 第 1 手**: **`npm run verify:session-handoff-integrity -- --import`** → exit 0 でロケットスタート。
+9. **New Chat 第 1 手**: **`npm run verify:session-handoff-integrity -- --import`** → exit 0 でロケットスタート（**4AI引っ越し完了マッピング表**自動表示）。
+10. **Composer 自律エスカレーション**: verify **連続2回** exit 1 → DeepSeek §50-3-8 強制 → Self-Heal **最大3回** → CIO(Opus 4.8) CEO 報告（`npm run cio:composer:escalation-guard`）。
+11. **SPEC 自動スコアリング**: **`npm run cio:task:score-spec`** → `docs/handoff/spec-task-scores.json` + SPEC 優先順位節 → `[🎖️ 本セッション割当]` 入力ソース。
 
 **§1-2-3-4-C AI読み込み最適化・命令圧縮（2026-05-29 CEO 浜田・§50-3-11 非置換追補）**:
 
@@ -1935,6 +1937,14 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 4. **週末連動** — `npm run cio:weekend:autonomous-audit` が bridge をロードし監査詳細をマージ
 
 正本: `.cursor/rules/cio-context-dissolution-interlock.mdc` / `docs/runbooks/cio-weekend-autonomous-audit.md`
+
+**第6層 — 超自律化（方針1〜3・2026-05-30 CEO 追補・§50-3-11 非置換）**:
+
+1. **方針1 — 自律エスカレーション**: `eslint-mcp` / verify が **連続2回** exit 1 → Composer **ロック** → **DeepSeek** §50-3-8 強制（`npm run cio:composer:escalation-guard -- --prompt-deepseek`）→ Self-Heal **最大3回** → 失敗時 **CIO(Opus 4.8)** ハブで CEO 報告
+2. **方針2 — SPEC 自動スコアリング**: `npm run cio:task:score-spec` — 難易度(5) × Token(低/中/高) × Impact(5) → `docs/handoff/spec-task-scores.json` + SPEC 優先順位節を自動更新 → 次セッション割当の入力ソース
+3. **方針3 — Handoff ビジュアルマップ**: `npm run verify:session-handoff-integrity -- --import` 成功直後に **【4AI引っ越し完了マッピング表】**（gitHead / SPEC進捗% / MCP稼働 / repo-tree lite）をチャット最先頭へ
+
+正本: `.cursor/rules/cio-composer-escalation-interlock.mdc` / `scripts/lib/cio-handoff-visual-map.mjs` / `scripts/cio-task-score-spec.mjs`
 
 **担当定義の極限明文化**: **`AGENTS.md` §1-2-3-4-A**（完全マトリクス）・`mode-b-canonical.mdc`（用語単一窓）・Desktop **`18-重要確認.txt`**（浜田視認用）。
 

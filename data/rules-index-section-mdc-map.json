@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-30T02:10:43.820Z",
+  "generatedAt": "2026-05-30T02:17:00.663Z",
   "sectionToMdc": {
     "§0": [
       "constitution-brief-card.mdc",
@@ -35,6 +35,7 @@
       "mode-b-canonical.mdc"
     ],
     "§1-2-3-4-A": [
+      "cio-composer-escalation-interlock.mdc",
       "cio-context-dissolution-interlock.mdc",
       "composer-mcp-audit-gate.mdc",
       "cursor-generate-image-assets.mdc",
@@ -149,6 +150,8 @@
       "deepseek-cursor-spec-division.mdc"
     ],
     "§50-3-11": [
+      "cio-composer-escalation-interlock.mdc",
+      "cio-context-dissolution-interlock.mdc",
       "composer-mcp-audit-gate.mdc",
       "cursor-generate-image-assets.mdc",
       "deepseek-cursor-spec-division.mdc",
@@ -239,6 +242,10 @@
     "cio-18-zero-tolerance.mdc": [
       "§(RULES-INDEX行)"
     ],
+    "cio-composer-escalation-interlock.mdc": [
+      "§1-2-3-4-A",
+      "§50-3-11"
+    ],
     "cio-constitution.mdc": [
       "§(RULES-INDEX行)",
       "§1",
@@ -250,7 +257,8 @@
     ],
     "cio-context-dissolution-interlock.mdc": [
       "§(RULES-INDEX行)",
-      "§1-2-3-4-A"
+      "§1-2-3-4-A",
+      "§50-3-11"
     ],
     "cio-discipline-always.mdc": [
       "§10",
