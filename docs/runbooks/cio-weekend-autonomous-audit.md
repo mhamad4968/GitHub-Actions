@@ -72,6 +72,16 @@ npm audit --omit=dev
 
 **禁止**: Self-Healing で customize/deploy 本番反映（Q36 GO 前凍結維持）。
 
+## Kimi 職分 — 死に文週末自動パージ（第7層・2026-05-30）
+
+| 項目 | 内容 |
+|------|------|
+| 担当 | **Kimi** 精査権（長文ドキュメント残骸の誤読防止） |
+| 実行 | `cio:weekend:autonomous-audit` 内で `cio:dead-lines-purge --apply` |
+| 対象 | 3階層索引（RULES-INDEX / rules-index-section-mdc / 00-rule-hierarchy）**外**の死に文 |
+| 退避先 | `docs/archive/dead-lines/`（削除禁止・移動のみ） |
+| 手動 | `npm run cio:dead-lines-purge -- --scan` / `--apply` |
+
 ## 関連
 
 - `docs/runbooks/cio-friday-mcp-status-refresh-4ai.md`（金曜定例）

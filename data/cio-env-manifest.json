@@ -1,0 +1,25 @@
+{
+  "version": "2026-05-30",
+  "note": "verify:cio-env-integrity 正本。値は出力しない（キー名のみ）。",
+  "repoEnvRequired": [
+    { "key": "KINTONE_BASE_URL", "label": "kintone API ベースURL" },
+    { "key": "KINTONE_USERNAME", "label": "kintone ログインユーザ" },
+    { "key": "KINTONE_PASSWORD", "label": "kintone ログインパスワード" }
+  ],
+  "repoEnvRecommended": [
+    { "key": "KINTONE_BASIC_AUTH_USERNAME", "label": "kintone Basic 認証ユーザ" },
+    { "key": "KINTONE_BASIC_AUTH_PASSWORD", "label": "kintone Basic 認証パスワード" }
+  ],
+  "mcpServerEnv": {
+    "deepseek": [{ "key": "DEEPSEEK_API_KEY", "label": "DeepSeek API キー" }],
+    "kimi": [{ "key": "MOONSHOT_API_KEY", "label": "Kimi/Moonshot API キー" }],
+    "openrouter": [{ "key": "OPENROUTER_API_KEY", "label": "OpenRouter API キー" }],
+    "kintone": [
+      { "key": "KINTONE_BASE_URL", "label": "kintone MCP ベースURL" },
+      { "key": "KINTONE_USERNAME", "label": "kintone MCP ユーザ" },
+      { "key": "KINTONE_PASSWORD", "label": "kintone MCP パスワード" }
+    ],
+    "rag": [{ "key": "OPENAI_API_KEY", "label": "RAG/OpenAI API キー", "optional": true }]
+  },
+  "customizeEnvPatterns": ["KINTONE_", "CYBOZU_"]
+}

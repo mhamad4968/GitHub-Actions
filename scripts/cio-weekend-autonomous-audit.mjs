@@ -9,6 +9,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { bridgePath, loadBridge } from './lib/cio-session-bridge.mjs';
+import { purgeDeadLines, scanDeadLines } from './lib/cio-dead-lines-purge.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const plansDir = path.join(root, 'docs', 'plans');
@@ -51,6 +52,15 @@ function auditBridgeTargets(bridge) {
     '- L2 以下の **構文のみ** エラー → Composer 2.5 が `[WEEKEND-SELF-HEALING]` コミット可（仕様意味変更禁止）',
   );
   lines.push('- 正本: `docs/runbooks/cio-weekend-autonomous-audit.md` §Self-Healing', '');
+  lines.push('', '### Kimi 職分 — 死に文パージ（第7層）', '');
+  const deadScan = scanDeadLines(root);
+  lines.push(`- 候補: ${deadScan.length} 件`);
+  const deadMoved = purgeDeadLines(root, { apply: true });
+  for (const m of deadMoved.slice(0, 20)) {
+    lines.push(`- 退避: \`${m.from}\` → \`${m.to}\``);
+  }
+  if (deadMoved.length > 20) lines.push(`- …他 ${deadMoved.length - 20} 件`);
+  lines.push('');
   return lines;
 }
 
@@ -75,8 +85,10 @@ function main() {
 
   const checks = [
     ['verify:cio-mcp-registry', 'npm run verify:cio-mcp-registry'],
+    ['verify:cio-env-integrity', 'npm run verify:cio-env-integrity'],
     ['verify:cio-four-ai-governance', 'npm run verify:cio-four-ai-governance'],
     ['verify:cio-session-dissolution', 'npm run verify:cio-session-dissolution'],
+    ['verify:cio-environment-infra', 'npm run verify:cio-environment-infra'],
     ['npm audit --omit=dev', 'npm audit --omit=dev --json'],
   ];
 

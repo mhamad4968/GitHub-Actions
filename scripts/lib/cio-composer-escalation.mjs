@@ -63,10 +63,15 @@ export function recordFailure(root, cmd, logSnippet = '') {
   return state;
 }
 
-export function recordSelfHealAttempt(root) {
+export function recordSelfHealAttempt(root, note = '') {
   const state = loadState(root);
   state.selfHealAttempts += 1;
-  state.history.push({ t: state.updatedAt, event: 'self-heal', n: state.selfHealAttempts });
+  state.history.push({
+    t: state.updatedAt,
+    event: 'self-heal',
+    n: state.selfHealAttempts,
+    note: note || `retry ${state.selfHealAttempts}`,
+  });
   if (state.selfHealAttempts >= MAX_SELF_HEAL) {
     state.locked = true;
     state.lockReason = 'cio-escalation';

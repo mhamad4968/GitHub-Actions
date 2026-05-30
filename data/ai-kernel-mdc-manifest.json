@@ -12,7 +12,9 @@
     "mode-b-mdc-canonical-linter.mdc",
     "composer-mcp-audit-gate.mdc",
     "cio-context-dissolution-interlock.mdc",
-    "cio-composer-escalation-interlock.mdc"
+    "cio-composer-escalation-interlock.mdc",
+    "cio-env-integrity-gate.mdc",
+    "cio-error-ticket-gate.mdc"
   ],
   "exempt": [
     "constitution.mdc",

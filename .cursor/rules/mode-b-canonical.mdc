@@ -104,6 +104,9 @@ flowchart LR
 | `npm run cio:composer:escalation-guard -- --check` | exit 0 |
 | `npm run cio:task:score-spec` | exit 0 |
 | `npm run verify:cio-autonomous-infra` | exit 0 |
+| `npm run verify:cio-env-integrity` | exit 0 |
+| `npm run cio:error:generate-ticket` | exit 0（Self-Heal 上限時） |
+| `npm run verify:cio-environment-infra` | exit 0 |
 
 ## 毎ターン先頭4行（機械検査一致・正本）
 

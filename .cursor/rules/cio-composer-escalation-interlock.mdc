@@ -41,5 +41,5 @@ globs: "scripts/**,customize/**,*.mjs,*.js,*.ts,*.tsx"
 | `npm run cio:composer:escalation-guard -- --check` | exit 0 |
 | `--record-failure` 1 回目 | exit 0 |
 | `--record-failure` 2 回目 | exit 1（DeepSeek 強制） |
-| `--record-self-heal` 3 回目 | exit 1（CIO 報告） |
+| `--record-self-heal` 3 回目 | exit 1 + **`npm run cio:error:generate-ticket`** 自動起票 |
 | `npm run verify:cio-autonomous-infra` | exit 0 |

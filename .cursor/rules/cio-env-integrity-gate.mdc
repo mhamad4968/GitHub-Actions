@@ -1,0 +1,37 @@
+---
+description: 改善案1 — 環境変数・MCP 秘密鍵セルフ監査 §50-3-11 第7層
+alwaysApply: false
+globs: "scripts/**,customize/**,.env*,*.mjs"
+---
+
+# 環境変数セルフ監査ゲート（§50-3-11 第7層）
+
+> **上位**: `AGENTS.md` §50-3-11 第7層 / §52-8（.env 編集は CEO GO）  
+> **機械**: `npm run verify:cio-env-integrity`
+
+## 前提条件
+
+| 項目 | 必須 |
+|------|------|
+| 正本 | `data/cio-env-manifest.json` |
+| 対象 | リポ `.env` / `~/.cursor/mcp.json` env / `customize/**` の `process.env.*` |
+| 出力 | **キー名のみ** — 値・秘密はログ禁止 |
+
+## 実行手順
+
+1. 本番実装・kintone 接続前に `npm run verify:cio-env-integrity`
+2. exit 0 確認後に verify / deploy 系へ進む
+3. 401/403 発生時は **先に本コマンド**を再実行
+
+## 禁止事項
+
+- 不足キーを無視して verify ループ
+- 監査ログへの **API キー値**出力
+- `.env` 無断編集（§52-8 — CEO GO）
+
+## 判定コード
+
+| コマンド | 合格 |
+|----------|------|
+| `npm run verify:cio-env-integrity` | exit 0 |
+| 不足時 | exit 1 + `【警告】環境変数に不足があります。〇〇…未配備` |

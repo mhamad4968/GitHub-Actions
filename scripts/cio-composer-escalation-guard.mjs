@@ -15,6 +15,7 @@ import {
   recordSuccess,
   repoRoot,
 } from './lib/cio-composer-escalation.mjs';
+import { CHAT_WAIT_LINE, writeTicket } from './lib/cio-error-ticket.mjs';
 
 const RED = '\x1b[31m';
 const RESET = '\x1b[0m';
@@ -54,12 +55,12 @@ function main() {
   }
 
   if (argv.includes('--record-self-heal')) {
-    const state = recordSelfHealAttempt(root);
+    const state = recordSelfHealAttempt(root, argValue('--note') || '');
     console.log(`[cio-composer-escalation-guard] self-heal ${state.selfHealAttempts}/${MAX_SELF_HEAL}`);
     if (state.cioEscalated) {
-      fail(
-        `Self-Heal ${MAX_SELF_HEAL} 回失敗 — CIO(Opus 4.8) 経由で CEO へバグ報告必須`,
-      );
+      const ticket = writeTicket(root, { state });
+      console.log('[cio-composer-escalation-guard] ticket →', ticket);
+      fail(`${CHAT_WAIT_LINE}`, 1);
     }
     process.exit(0);
   }

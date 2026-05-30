@@ -426,6 +426,9 @@ flowchart LR
 9. **New Chat 第 1 手**: **`npm run verify:session-handoff-integrity -- --import`** → exit 0 でロケットスタート（**4AI引っ越し完了マッピング表**自動表示）。
 10. **Composer 自律エスカレーション**: verify **連続2回** exit 1 → DeepSeek §50-3-8 強制 → Self-Heal **最大3回** → CIO(Opus 4.8) CEO 報告（`npm run cio:composer:escalation-guard`）。
 11. **SPEC 自動スコアリング**: **`npm run cio:task:score-spec`** → `docs/handoff/spec-task-scores.json` + SPEC 優先順位節 → `[🎖️ 本セッション割当]` 入力ソース。
+12. **環境変数セルフ監査**: **`npm run verify:cio-env-integrity`** — 401/403 先回り（不足時 exit 1 + 警告明示）。
+13. **死に文週末パージ**: **`npm run cio:dead-lines-purge`** — Kimi 精査職分、`docs/archive/dead-lines/` へ退避（週末監査連動）。
+14. **自律エラーチケット**: Self-Heal 3回上限 → **`npm run cio:error:generate-ticket`** → `docs/issues/bug-latest.md` + CEO 3択待機。
 
 **§1-2-3-4-C AI読み込み最適化・命令圧縮（2026-05-29 CEO 浜田・§50-3-11 非置換追補）**:
 
@@ -1945,6 +1948,14 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 3. **方針3 — Handoff ビジュアルマップ**: `npm run verify:session-handoff-integrity -- --import` 成功直後に **【4AI引っ越し完了マッピング表】**（gitHead / SPEC進捗% / MCP稼働 / repo-tree lite）をチャット最先頭へ
 
 正本: `.cursor/rules/cio-composer-escalation-interlock.mdc` / `scripts/lib/cio-handoff-visual-map.mjs` / `scripts/cio-task-score-spec.mjs`
+
+**第7層 — 環境自律化（改善案1〜3・2026-05-30 CEO 追補・§50-3-11 非置換）**:
+
+1. **改善案1 — 環境変数セルフ監査**: `npm run verify:cio-env-integrity` — `.env` / `mcp.json` env / `customize/**` 参照キーを検査。不足時 **exit 1** + `【警告】環境変数に不足があります。〇〇…未配備`
+2. **改善案2 — 死に文週末パージ**: 週末 `cio:weekend:autonomous-audit` + **Kimi 精査職分** — 3階層索引外の死に文を `docs/archive/dead-lines/` へ安全退避（`npm run cio:dead-lines-purge -- --apply`）
+3. **改善案3 — 3択エラーチケット**: Self-Heal **3回**上限 → `npm run cio:error:generate-ticket` → `docs/issues/bug-latest.md`（ログ・3アプローチ・§50-3-8仮説・**CEO 3択**）→ チャット1行待機
+
+正本: `.cursor/rules/cio-env-integrity-gate.mdc` / `.cursor/rules/cio-error-ticket-gate.mdc` / `data/cio-env-manifest.json`
 
 **担当定義の極限明文化**: **`AGENTS.md` §1-2-3-4-A**（完全マトリクス）・`mode-b-canonical.mdc`（用語単一窓）・Desktop **`18-重要確認.txt`**（浜田視認用）。
 

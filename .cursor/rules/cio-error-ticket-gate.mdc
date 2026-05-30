@@ -1,0 +1,38 @@
+---
+description: 改善案3 — 3択提案付き自律エラーチケット §50-3-11 第7層
+alwaysApply: false
+globs: "scripts/**,docs/issues/**"
+---
+
+# 自律エラーチケットゲート（§50-3-11 第7層）
+
+> **上位**: `cio-composer-escalation-interlock.mdc` / §50-3-8  
+> **機械**: `npm run cio:error:generate-ticket`
+
+## 前提条件
+
+| 項目 | 内容 |
+|------|------|
+| トリガ | Self-Heal **3回**失敗 → `cio-escalation` ロック |
+| 出力 | `docs/issues/bug-latest.md` |
+| 待機 | CEO **3択**から1つ — 指示待ちサボり禁止 |
+
+## 実行手順
+
+1. `npm run cio:composer:escalation-guard -- --record-self-heal` が 3 回目で自動起票
+2. または `npm run cio:error:generate-ticket -- --from-escalation`
+3. チャット 1 行: 「エスカレーション限界につき…3択ご指示を」
+4. CEO 選択後のみ `--record-success` または New Chat
+
+## 禁止事項
+
+- チケット無しの「調査中」長期放置
+- 3択以外の独断 GO
+- customize/deploy 凍結突破
+
+## 判定コード
+
+| コマンド | 合格 |
+|----------|------|
+| `npm run cio:error:generate-ticket` | exit 0 + bug-latest.md |
+| 待機 | CHAT_WAIT_LINE 出力 |
