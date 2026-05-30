@@ -5,15 +5,19 @@
    * 595 社員マスタ
    * BUILD: 2026-04-30-595-index-search-totalcap-loading
    * BUILD: 2026-05-12-595-no594-rest（旧594への REST・リンク廃止・674同期のみ）
+   * BUILD: 2026-05-30-595-retire-674-storage（退職→退職日自動・674保管連動）
    * - 一覧: 所属グループ・所属名・社員名のいずれかに部分一致する検索窓（ヘッダスペース）
    * - 詳細・編集: サブテーブル（新674）とアカウント台帳番号からレコードへのリンクをヘッダ下に表示
-   * - 保存成功後: 627／674 所属同期（旧594アプリへの REST は行わない）
+   * - 保存: 在籍=退職かつ退職日空→当日を退職日に設定
+   * - 保存成功後: 627 同期／退職時は 674 を保管＋アカウントクリア＋備考追記／それ以外は 674 所属ミラー
    */
 
   /** アカウント管理台帳（627） */
   var APP627 = "627";
   /** 新・PC台帳 ver.1（674） */
   var APP674 = "674";
+  /** M365 管理マスタ（674 退職連動後の usage_count 再計算） */
+  var APP671 = "671";
 
   var FC595_MAIL = "mail";
   var FC595_NAME = "user_name";
@@ -39,8 +43,18 @@
   var FC674_GROUP = "group_name";
   var FC674_TYPE = "account_type";
   var FC674_PC_STATUS = "pc_status";
+  var FC674_LOGON = "logon_name";
+  var FC674_WIN_NAME = "windows_name";
+  var FC674_MAIL_PW = "mail_pw";
+  var FC674_M365_ID = "m365_id";
+  var FC674_M365_PW = "m365_pw";
+  var FC674_M365_MASTER = "m365_master_record_id";
+  var FC674_M365_KIRIKAE = "M365_kirikae";
+  var FC674_NOTE = "note";
   var TYPE_PERSONAL = "個人";
   var PC_STATUS_STORAGE = "保管";
+  var PC_STATUS_DISPOSED = "廃棄";
+  var EMP_RETIRED = "退職";
 
   /** 595 上の PC 台帳紐づけ（旧594由来の列。リンクは出さず674のみ） */
   var FC595_PC594_SUB = "pc_ledger_list";
@@ -505,9 +519,242 @@
     return out;
   }
 
-  /** 旧594の note 追記は廃止（594アプリ非使用）。 */
-  function appendRetireNoteToPcLedger(record) {
-    return Promise.resolve();
+  function todayYmd595() {
+    var d = new Date();
+    var p = function (n) {
+      return String(n).padStart(2, "0");
+    };
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+  }
+
+  function applyRetiredDateOnSubmit595(event) {
+    var rec = event.record;
+    var emp = scalarFrom595(rec, FC595_EMP).trim();
+    if (emp !== EMP_RETIRED) {
+      return event;
+    }
+    var rd = scalarFrom595(rec, FC595_RETIRED).trim();
+    if (!rd && rec[FC595_RETIRED]) {
+      rec[FC595_RETIRED].value = todayYmd595();
+    }
+    return event;
+  }
+
+  function scalar674FromRow(r, code) {
+    var f = r[code];
+    if (!f || f.value === undefined || f.value === null) {
+      return "";
+    }
+    if (Array.isArray(f.value)) {
+      return f.value.join("");
+    }
+    return String(f.value);
+  }
+
+  function buildRetire674Note595(snapshot, retiredDate, userName) {
+    var parts = [
+      "[595退職連動 " + todayYmd595() + "]",
+      "旧利用者: " + (userName || "").trim(),
+      "退職日: " + (retiredDate || "").trim(),
+    ];
+    if (snapshot.logon) {
+      parts.push("WindowsID: " + snapshot.logon);
+    }
+    if (snapshot.winPw) {
+      parts.push("Windowsパスワード: " + snapshot.winPw);
+    }
+    return parts.join(" / ");
+  }
+
+  function get674RecordForRetire595(id674) {
+    var url = kintone.api.url("/k/v1/record.json", true);
+    return kintone
+      .api(url, "GET", {
+        app: APP674,
+        id: String(id674),
+      })
+      .then(function (resp) {
+        return { record: resp.record || null, revision: resp.revision || null };
+      });
+  }
+
+  function fetch674IdsByMailForRetire595(mail) {
+    if (!mail) {
+      return Promise.resolve([]);
+    }
+    var url = kintone.api.url("/k/v1/records.json", true);
+    var q =
+      FC674_MAIL +
+      ' = "' +
+      escapeForQuery(mail) +
+      '" and ' +
+      FC674_PC_STATUS +
+      ' not in ("' +
+      escapeForQuery(PC_STATUS_STORAGE) +
+      '", "' +
+      escapeForQuery(PC_STATUS_DISPOSED) +
+      '") order by $id asc limit 500';
+    return kintone
+      .api(url, "GET", {
+        app: APP674,
+        query: q,
+        fields: ["$id"],
+      })
+      .then(function (resp) {
+        var ids = [];
+        var rows = resp.records || [];
+        for (var i = 0; i < rows.length; i++) {
+          if (rows[i].$id && rows[i].$id.value) {
+            ids.push(String(rows[i].$id.value));
+          }
+        }
+        return ids;
+      });
+  }
+
+  function collect674TargetIdsForRetire595(record) {
+    var fromSub = collectSubtableNumericIds(record, FC595_PC674_SUB, FC595_PC674_ID);
+    var mail = scalarFrom595(record, FC595_MAIL).trim();
+    return fetch674IdsByMailForRetire595(mail).then(function (fromMail) {
+      return uniqueStringIds(fromSub.concat(fromMail));
+    });
+  }
+
+  function sync671MasterFrom674595(masterRecordId) {
+    var midStr = String(masterRecordId || "").trim();
+    if (!midStr) {
+      return Promise.resolve();
+    }
+    var urlGet674 = kintone.api.url("/k/v1/records.json", true);
+    var q =
+      '(account_type in ("共有", "JR端末")) and pc_status not in ("' +
+      escapeForQuery(PC_STATUS_DISPOSED) +
+      '") and m365_master_record_id = ' +
+      midStr +
+      " limit 500";
+    return kintone
+      .api(urlGet674, "GET", {
+        app: APP674,
+        query: q,
+        fields: ["pc_name"],
+      })
+      .then(function (resp674) {
+        var set = Object.create(null);
+        var rows = resp674.records || [];
+        for (var i = 0; i < rows.length; i++) {
+          var p = scalar674FromRow(rows[i], "pc_name").trim();
+          if (p) {
+            set[p] = true;
+          }
+        }
+        var pcsArr = Object.keys(set).sort();
+        var desiredLinked = pcsArr.join(",");
+        var desiredUsage = pcsArr.length;
+        var desiredStatus = desiredUsage >= 5 ? "満杯" : "利用可";
+        var url671Get = kintone.api.url("/k/v1/record.json", true);
+        return kintone.api(url671Get, "GET", { app: APP671, id: midStr }).then(function (get671) {
+          var r671 = get671.record;
+          var st671 = scalar674FromRow(r671, "status").trim();
+          if (st671 === "廃止") {
+            return Promise.resolve();
+          }
+          var url671Put = kintone.api.url("/k/v1/record.json", true);
+          return kintone.api(url671Put, "PUT", {
+            app: APP671,
+            id: midStr,
+            revision: get671.revision,
+            record: {
+              linked_pcs: { value: desiredLinked },
+              usage_count: { value: String(desiredUsage) },
+              status: { value: desiredStatus },
+            },
+          });
+        });
+      })
+      .catch(function (e) {
+        console.warn("[jbis 595 retire 671 sync]", midStr, e);
+        return Promise.resolve();
+      });
+  }
+
+  function sync671MastersFrom674Retire595(mids) {
+    var uniq = uniqueStringIds(mids || []);
+    return uniq.reduce(function (chain, mid) {
+      return chain.then(function () {
+        return sync671MasterFrom674595(mid);
+      });
+    }, Promise.resolve());
+  }
+
+  function retireSingle674From595(id674, retiredDate, userName) {
+    return get674RecordForRetire595(id674).then(function (payload) {
+      var tr = payload.record;
+      var rev = payload.revision;
+      if (!tr || !tr.$id || !rev) {
+        return { skipped: true, masterId: "" };
+      }
+      var st = scalar674FromRow(tr, FC674_PC_STATUS).trim();
+      if (st === PC_STATUS_STORAGE || st === PC_STATUS_DISPOSED) {
+        return { skipped: true, masterId: "" };
+      }
+      var snapshot = {
+        logon: scalar674FromRow(tr, FC674_LOGON).trim(),
+        winPw: scalar674FromRow(tr, FC674_MAIL_PW).trim(),
+      };
+      var masterId = scalar674FromRow(tr, FC674_M365_MASTER).trim();
+      var prevNote = scalar674FromRow(tr, FC674_NOTE).trim();
+      var stamp = buildRetire674Note595(snapshot, retiredDate, userName);
+      var nextNote = prevNote ? prevNote + "\n" + stamp : stamp;
+      var urlPut = kintone.api.url("/k/v1/record.json", true);
+      return kintone
+        .api(urlPut, "PUT", {
+          app: APP674,
+          id: String(id674),
+          revision: rev,
+          record: {
+            [FC674_PC_STATUS]: { value: PC_STATUS_STORAGE },
+            [FC674_WIN_NAME]: { value: "" },
+            [FC674_LOGON]: { value: "" },
+            [FC674_MAIL_PW]: { value: "" },
+            [FC674_M365_ID]: { value: "" },
+            [FC674_M365_PW]: { value: "" },
+            [FC674_M365_MASTER]: { value: "" },
+            [FC674_M365_KIRIKAE]: { value: [] },
+            [FC674_NOTE]: { value: nextNote },
+          },
+        })
+        .then(function () {
+          return { skipped: false, masterId: masterId };
+        });
+    });
+  }
+
+  function retire674PcsFrom595(record) {
+    var emp = scalarFrom595(record, FC595_EMP).trim();
+    if (emp !== EMP_RETIRED) {
+      return Promise.resolve();
+    }
+    var userName = scalarFrom595(record, FC595_NAME);
+    var retiredDate = scalarFrom595(record, FC595_RETIRED).trim() || todayYmd595();
+    return collect674TargetIdsForRetire595(record).then(function (ids) {
+      if (!ids.length) {
+        return;
+      }
+      var masterIds = [];
+      return ids
+        .reduce(function (chain, id674) {
+          return chain.then(function () {
+            return retireSingle674From595(id674, retiredDate, userName).then(function (res) {
+              if (res && res.masterId) {
+                masterIds.push(res.masterId);
+              }
+            });
+          });
+        }, Promise.resolve())
+        .then(function () {
+          return sync671MastersFrom674Retire595(masterIds);
+        });
+    });
   }
 
   function get627RecordById(id627) {
@@ -705,14 +952,22 @@
   }
 
   function run595DownstreamSync(record) {
-    return appendRetireNoteToPcLedger(record)
-      .then(function () {
-        return sync627From595(record);
-      })
-      .then(function () {
-        return sync674MirrorFrom595(record);
-      });
+    var emp = scalarFrom595(record, FC595_EMP).trim();
+    return sync627From595(record).then(function () {
+      if (emp === EMP_RETIRED) {
+        return retire674PcsFrom595(record);
+      }
+      return sync674MirrorFrom595(record);
+    });
   }
+
+  var submitBefore = [
+    "app.record.create.submit",
+    "app.record.edit.submit",
+    "mobile.app.record.create.submit",
+    "mobile.app.record.edit.submit",
+  ];
+  kintone.events.on(submitBefore, applyRetiredDateOnSubmit595);
 
   var ev = [
     "app.record.create.submit.success",

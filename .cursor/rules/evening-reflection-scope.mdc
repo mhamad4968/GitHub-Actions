@@ -1,0 +1,35 @@
+---
+description: 夕反省（26）のスコープ — 失敗とミス削減のみ。未来の作業は当日に聞く。
+globs:
+  - docs/reports/*-evening-reflection.md
+  - chat-sessions/desktop-ai-emergency-read-pack/26-evening-reflection-*.md
+alwaysApply: false
+---
+
+# 夕反省スコープ（2026-05-30 浜田承認）
+
+正本: `docs/runbooks/evening-reflection-scope.md`
+
+## 書く
+
+- AI の失敗・反省（事実）
+- ミス削減のルール/脚本/runbook 案（#R / #S / #D）
+
+## 書かない
+
+- 明日の第1手・レーン・業務改善の有無 → **当日 項番 -0**
+- クローズ済み項目の再計画 → **checkpoint**
+- 成果サマリ → **19**
+
+## 手順（R1）
+
+26 を書く前に **必ず Read**: `docs/runbooks/evening-reflection-scope.md`
+
+## 未来は分からない（2026-05-30）
+
+**前日に「明日やること」を決めない。** 不明点は **当日朝イチで浜田に聞く**。
+
+## 機械検証
+
+- `npm run verify:evening-reflection-scope`
+- 締め: `npm run desktop:sync-and-verify`（S2 未コミット WARN 含む）

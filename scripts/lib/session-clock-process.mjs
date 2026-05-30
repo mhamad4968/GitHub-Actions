@@ -122,6 +122,18 @@ export function killOrphanClockProcesses() {
   spawnSync('pkill', ['-f', 'session-clock-watch.mjs'], { encoding: 'utf8' });
 }
 
+/** web のみ停止（watch は維持） */
+export function stopWebOnly() {
+  const out = { web: false };
+  if (fs.existsSync(paths.webPid)) {
+    const pid = Number(fs.readFileSync(paths.webPid, 'utf8').trim());
+    out.web = killPid(pid, 'web');
+    unlinkSafe(paths.webPid);
+    unlinkSafe(paths.webUrl);
+  }
+  return out;
+}
+
 /** watch / web を停止（clear は含まない） */
 export function stopWatchAndWeb() {
   killOrphanClockProcesses();
@@ -181,12 +193,12 @@ function readUrlFromWebLog() {
   }
 }
 
-/** 前回残骸を止めてから web を起動（detached） */
+/** 前回 web 残骸を止めてから web を起動（detached）。watch は止めない */
 export function spawnWebServer() {
   if (webAlreadyRunning()) {
     return { started: false, url: readWebUrl(), message: 'web already running' };
   }
-  stopWatchAndWeb();
+  stopWebOnly();
 
   fs.mkdirSync(path.dirname(paths.webLog), { recursive: true });
   const out = fs.openSync(paths.webLog, 'a');

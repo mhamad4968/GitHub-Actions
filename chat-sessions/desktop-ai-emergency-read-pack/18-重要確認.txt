@@ -77,22 +77,20 @@ SPEC_TOUCHED: yes のターンで SECOND_REVIEWER: deepseek|kimi|openrouter の�
 【2026-05-25 追記・仕様セッション（案D1 GO）】業務改善など **仕様-only** でも **毎ターン §1 四行必須**。依頼文に **CEO 最低基準全文**があるときは **応答にも全文を行単位で同梱**（要約・「Read済み」で省略禁止）。
 【2026-05-09 追補・CIO】**統合統制・マルチエージェントは厳格**／**自律を進めることが正**。**動作確認を依頼されたら濱田が責任**— 詳細は Desktop 正本「＃CIO の自律判断」節。**補足の追記場所は CIO 判断**（浜田に判断を返さない）。**浜田に作業手順を仰ぐ禁止**（CIO が AI チームを指揮して自動実行）。**pending hook 手元試験**は **`npm run hook:smoke:report-pending`**（PowerShell の `echo … | node` だけだと stdin 空になり得る）。**抜けの是正も CIO が今すぐ**／**AIチーム全体で責任をもって改善**— Desktop 同節「即応・AIチーム責任」。
 
-【2026-05-06 追記】当日の「まとめ・反省・明日の案・ルール案」は **1 ファイル**に集約。**本日（JST）の締め**は read-pack の **`19-SESSION-ONE-REPORT-YYYY-MM-DD.md` 1 本**（**20 の前**）。**過去分**は **`docs/reports/archive/YYYY-MM/`**（Desktop には出さない）。
+【2026-05-06 追記】当日の締めは **役割分担**で書く。**成果・deploy・クローズ** → **`19-SESSION-ONE-REPORT-YYYY-MM-DD.md` 1 本**（**20 の前**）。**AI の失敗＋ミス削減案のみ** → **`26-evening-reflection-YYYY-MM-DD.md`**（`docs/runbooks/evening-reflection-scope.md` 厳守）。**過去分**は **`docs/reports/archive/YYYY-MM/`**（Desktop には出さない）。
 
 【2026-05-27 追記・18 GO（浜田承認）】**報告・締め・GO 仰ぎ** — 送信確定前に **`npm run cio:report-verify-response -- --file <下書き>` で exit 0 必須**（省略＝報告違反）。IDE チャットでも **締め前は必ず実行**（要約・「後で」禁止）。
 
-【2026-05-28 追記・業務改善・夕反省案承認（浜田）】
+【2026-05-28 追記・業務改善・夕反省案承認（浜田）— 2026-05-30 スコープ改定で一部無効】
   案C（予実678・683・Git並行）: **クローズ**（依頼時まで着手しない）。
-  案A（Q36・GO）・案B（実装準備）: **明日 §41 で各1問**（推奨: A1→B1）。
+  ~~案A（Q36・GO）・案B（実装準備）: **明日 §41 で各1問**~~ → **無効**（夕方に明日のレーンを決めない。**当日 -0**）。
   反省点の改善: **CIO自律で安全に実施可**（**Q35–Q36 GO 前の kintone customize/deploy 禁止は維持**）。
   Q36下書き正本: `docs/plans/business-improvement-q36-go-request-draft.md`（提出前・浜田GO待ち）。
 
-【2026-05-29 追記・情報管理運用マニュアル v5（浜田・打合せドラフト）】
-  **正本**: `C:\tmp\マニュアル\【改訂版】情報管理運用マニュアル(管理者用)v5.docx`（v6 は破棄・使用しない）。
-  目次再生成: `doc_lane_preflight.py` → `fix_toc_v5.py`（`DOC_LANE_4AI.md` 参照）。
-  第７章目次: **手続き内容一覧**（【別紙】なし）。
-  改善承認済（①②⑤⑥）: 仮目次後ページ取得・改ページ・安全バックアップ・納品日 Desktop 更新。
-  触らない: kintone customize/deploy（Q36 GO前）。
+【2026-05-29 追記・情報管理運用マニュアル v5（浜田）— 2026-05-30 クローズ】
+  **正本**: `C:\tmp\マニュアル\【改訂版】新情報管理運用マニュアルv5.docx`（69項・verify OK）。
+  **状態**: **クローズ**（AI 編集なし。打合せ持参・会議後の修正依頼時のみ再開）。
+  目次再生成手順: `doc_lane_preflight.py` → `fix_toc_v5.py`（再開時のみ・`DOC_LANE_4AI.md`）。
 
 【2026-05-30 追記・18遵守監査・ヘルス/Git是正】
   v5目次セッション18遵守 **約45/100** → `DOC_LANE_4AI.md` / `doc_lane_preflight.py` 必須化。
@@ -155,3 +153,33 @@ SPEC_TOUCHED: yes のターンで SECOND_REVIEWER: deepseek|kimi|openrouter の�
   **検証**: `npm run verify:constitution-genre-kernels` / `verify:desktop-ai-emergency-sync`
   **Desktop**: `npm run session-starter:sync-desktop` — 00〜27 歯抜け禁止・方式B最新エッセンス
   **正本**: `docs/constitution/README.md` / `08-INDEX.txt`
+
+【2026-05-30 追記・夕反省スコープ（浜田確定）＋ミス削減アップデート案】
+  **26 の役割**: **AI の失敗・反省**と**ミス削減のアップデート案のみ**（正本 `docs/runbooks/evening-reflection-scope.md`）。
+  **26 に書かない**: 明日の第1手・レーン・業務改善の有無・クローズ済みの再計画・成果サマリ（→ 19 / checkpoint / 当日 -0）。
+  **前日決定禁止**: 業務改善含め **当日 項番 -0** のみ。
+
+  **本日の AI 失敗（要約）**:
+    (1) 急務で §1 四行・cio:turn-start 省略
+    (2) 夕反省にタスク計画・「明日は○○」を混ぜた
+    (3) v5・595→674 をクローズ後も残タスク扱い
+    (4) 区切り commit せずセッション終了
+    (5) PC ログ修復の持続確認 runbook 不足
+
+  **承認済（2026-05-30・ミス削減 — 全 GO）**:
+    A1: 毎ターン `npm run cio:turn-start` 先行（急ぎ明示時のみ例外）
+    A2: checkpoint 先頭短文化・旧块 archive
+    A3: 締め `npm run desktop:sync-and-verify` 必須
+    B1: 本日変更 commit + push
+    B2: `docs/runbooks/pc-event-log-health.md` 新設 — **実施済**
+    B3: 再起動後 5 分（Event 3503 / BTHUSB 5 / hooks ログ）— runbook 内
+    R1: 26 作成前に `evening-reflection-scope.md` Read 必須 — **`.cursor/rules/evening-reflection-scope.mdc`**
+    R2: checkpoint「クローズ」項目を 26 に再掲禁止
+    R3: 26 から「明日の第1手」「案A/B/C/D タスク計画」禁止
+    S1: `npm run verify:evening-reflection-scope` — 禁止語で exit 1
+    S2: `npm run verify:session-close-git-warn` — 締め時未コミット WARN
+    D1: 本節を 18 正本化 — **実施済**
+
+  **未来は分からない**: 明日の作業・レーン・業務改善は **当日 -0 で聞く**（前日決定禁止）。
+
+  **595→674 退職連動**: rev 84 検収 OK — **クローズ**（夕反省・checkpoint に残タスクとして書かない）。

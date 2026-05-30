@@ -104,7 +104,14 @@ if (drift && !strict) warnings.push('crontab の node と install 想定が不�
 if (!cronLine && !strict) warnings.push('session-split の crontab 行がありません（任意: `npm run session:clock:install-cron`）');
 
 const hooks = readHooks();
-let exitOk = hooks.ok;
+const watchPid = watchPidStatus();
+if (!watchPid.alive) {
+  warnings.push(
+    'watch 未稼働（`npm run session:clock:ensure` または Cursor 再起動で sessionStart hook を発火）',
+  );
+}
+
+let exitOk = hooks.ok && watchPid.alive;
 if (strict) {
   exitOk = exitOk && Boolean(cronLine) && !drift;
 }
@@ -115,7 +122,7 @@ const report = {
   warnings,
   hooks,
   sessionClock: readClockStart(),
-  watchPid: watchPidStatus(),
+  watchPid,
   cron: {
     hasLine: Boolean(cronLine),
     nodeInCron: cronNode,

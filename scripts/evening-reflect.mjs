@@ -371,9 +371,11 @@ ${checkpointFreshness}
 
 ---
 
-## 🚀 5. 改善提案（AI が記入。ユーザー承認待ち）
+## 🚀 5. 改善提案（**ミス削減限定**・AI が記入。ユーザー承認待ち）
 
-| ID | カテゴリ | 提案 | 想定リスク | 翌朝自動実施可? |
+> **2026-05-30（浜田）**: 夕反省のアップデート案は **AI の失敗を減らすものだけ**。明日のレーン・第1手・タスク計画は **書かない**（→ checkpoint / 当日 -0）。正本: \`docs/runbooks/evening-reflection-scope.md\`
+
+| ID | カテゴリ | 提案（どの失敗を防ぐか） | 想定リスク | 翌朝自動実施可? |
 |---|---|---|---|---|
 | #R1 | R | _(AI が記入)_ | _(低/中/高)_ | _(○/×/手動)_ |
 
@@ -385,11 +387,11 @@ ${checkpointFreshness}
 
 ---
 
-## 🌅 明日へ（AI が記入）
+## ~~🌅 明日へ~~（使用禁止 — 2026-05-30）
 
-<!-- 明日朝の最初に取り組むべきこと（next action）を 1-3 個 -->
+<!-- 次アクション・レーン・第1手は checkpoint / handoff / 当日 -0 へ。ここには書かない。 -->
 `;
 
 fs.writeFileSync(REPORT_PATH, out, 'utf8');
 console.log(`✅ 反省レポート雛形を生成: ${path.relative(REPO_ROOT, REPORT_PATH)}`);
-console.log(`   AI は §1-N（毎夜必須議題）を浜田と議論し、§2-§5 を埋めてユーザーへ提示してください。`);
+console.log(`   AI は §4 失敗と §5 改善提案（ミス削減のみ）を埋めて提示。レーン・第1手は checkpoint / -0 へ（evening-reflection-scope.md 参照）。`);

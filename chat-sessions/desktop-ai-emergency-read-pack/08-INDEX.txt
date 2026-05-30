@@ -31,7 +31,7 @@
 
 **25-checkpoint-latest.md** … リポ **`chat-sessions/checkpoint-latest.md`** と **バイト同期**（最終更新・項番 0 手順の正本）。
 
-**26-evening-reflection-YYYY-MM-DD.md** … **当日 JST** の夕反省がリポにあるとき（`docs/reports/`）。
+**26-evening-reflection-YYYY-MM-DD.md** … **夕反省**（`docs/reports/`）。**AI の失敗＋ミス削減のアップデート案のみ**（成果・明日のレーンは 19 / checkpoint / -0）。正本: `docs/runbooks/evening-reflection-scope.md`
 
 **26-evening-reflection-SLOT.txt** … **夕反省未作成日**のプレースホルダ（**25 の次・27 の前**で番号を埋める。夕反省 md がある日は sync で SLOT を削除）。
 

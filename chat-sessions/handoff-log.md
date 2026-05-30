@@ -2662,3 +2662,33 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 **次回第1手**: 打合せ v5 / §41 案A1。
 
 ---
+
+### 2026-05-30 JST 終盤 — セッション締め
+
+**v5 目次最終**: 65項・第１章 p4・第８章＋Ａ－１〜Ａ－３ — `verify_toc_completeness_v5.py` 合格（backup `…155902`）。
+
+**壁時計**: `session:clock:stop`（開始: 未設定）/ `cursor:hooks:install-user-windows` 実施。
+
+**Desktop**: 19・checkpoint・26 sync 済 / `SESSION-CLOSE-REPORT-20260530.txt` 作成。
+
+**次回第1手**: 打合せ v5 持参 / §41 案A1。
+
+---
+
+### 2026-05-30 JST — 終盤（595 本番・PC ログ・夕反省）
+
+**完了**:
+- v5 目次 **69項** verify OK — クローズ
+- **595** 退職→674 保管連動 — deploy **rev 84** — 浜田検収 OK
+- 壁時計 spawn 競合修復・`session:clock:ensure`
+- PC **Event 3503**（Killer/DAS）・**BTHUSB 5**（HCI）修復 — 修復後新規 0
+
+**凍結例外**: 595 のみ（浜田明示 GO）
+
+**未 commit**: 595 desktop.js・session-clock 系・hooks・`cio-live-builds.json`
+
+**承認待ち**: `docs/reports/2026-05-30-evening-reflection.md`（案 A 規律 / B 技術 / C レーン）
+
+**次回第1手**: **B1 commit** または **§41 案A1**（浜田判断）
+
+---
