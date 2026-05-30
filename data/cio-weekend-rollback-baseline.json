@@ -1,0 +1,9 @@
+{
+  "baselineShort": "5512754",
+  "label": "金曜夜最終正常コミット（第8層 push 正本）",
+  "weekendCommitPatterns": [
+    "[WEEKEND-DEAD-CODE-PURGE]",
+    "[WEEKEND-SELF-HEALING]"
+  ],
+  "updatedAt": "2026-05-30T00:00:00.000Z"
+}

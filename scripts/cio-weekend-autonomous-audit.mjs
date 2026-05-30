@@ -98,6 +98,8 @@ function main() {
     ['verify:cio-session-dissolution', 'npm run verify:cio-session-dissolution'],
     ['verify:cio-environment-infra', 'npm run verify:cio-environment-infra'],
     ['verify:cio-extreme-defence-infra', 'npm run verify:cio-extreme-defence-infra'],
+    ['verify:cio-final-closure-infra', 'npm run verify:cio-final-closure-infra'],
+    ['verify:cio-spec-logic', 'npm run verify:cio-spec-logic'],
     ['npm audit --omit=dev', 'npm audit --omit=dev --json'],
   ];
 

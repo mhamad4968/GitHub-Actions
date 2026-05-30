@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-30T02:27:40.218Z",
+  "generatedAt": "2026-05-30T02:36:30.146Z",
   "sectionToMdc": {
     "§0": [
       "constitution-brief-card.mdc",
@@ -37,10 +37,13 @@
     "§1-2-3-4-A": [
       "cio-composer-escalation-interlock.mdc",
       "cio-context-dissolution-interlock.mdc",
+      "cio-debug-tips-stock-gate.mdc",
       "cio-env-integrity-gate.mdc",
       "cio-env-self-healing-gate.mdc",
       "cio-error-ticket-apply-gate.mdc",
       "cio-error-ticket-gate.mdc",
+      "cio-spec-logic-gate.mdc",
+      "cio-weekend-rollback-gate.mdc",
       "composer-mcp-audit-gate.mdc",
       "cursor-generate-image-assets.mdc",
       "deepseek-cursor-spec-division.mdc",
@@ -156,10 +159,13 @@
     "§50-3-11": [
       "cio-composer-escalation-interlock.mdc",
       "cio-context-dissolution-interlock.mdc",
+      "cio-debug-tips-stock-gate.mdc",
       "cio-env-integrity-gate.mdc",
       "cio-env-self-healing-gate.mdc",
       "cio-error-ticket-apply-gate.mdc",
       "cio-error-ticket-gate.mdc",
+      "cio-spec-logic-gate.mdc",
+      "cio-weekend-rollback-gate.mdc",
       "composer-mcp-audit-gate.mdc",
       "cursor-generate-image-assets.mdc",
       "deepseek-cursor-spec-division.mdc",
@@ -270,6 +276,10 @@
       "§1-2-3-4-A",
       "§50-3-11"
     ],
+    "cio-debug-tips-stock-gate.mdc": [
+      "§1-2-3-4-A",
+      "§50-3-11"
+    ],
     "cio-discipline-always.mdc": [
       "§10",
       "§11",
@@ -301,6 +311,14 @@
     ],
     "cio-report-min-format.mdc": [
       "§1"
+    ],
+    "cio-spec-logic-gate.mdc": [
+      "§1-2-3-4-A",
+      "§50-3-11"
+    ],
+    "cio-weekend-rollback-gate.mdc": [
+      "§1-2-3-4-A",
+      "§50-3-11"
     ],
     "composer-mcp-audit-gate.mdc": [
       "§1-2-3-4-A",

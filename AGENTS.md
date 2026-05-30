@@ -432,6 +432,9 @@ flowchart LR
 15. **3択自動承認**: CEO「選択肢Nで実行」→ **`npm run cio:error:apply-ticket-choice -- --choice N`** → verify 再駆動。
 16. **Self-Healing Env**: **`npm run cio:env:self-healing`** — `docs/secure/.env.enc` 復号・`.env` 自動補完。
 17. **デッドコード週末パージ**: **`npm run cio:dead-code-purge -- --apply`** — Kimi×Composer、`docs/archive/dead-codes/` 退避、`[WEEKEND-DEAD-CODE-PURGE]`。
+18. **週末救済ロールバック**: **`npm run cio:rollback:weekend-actions`** — verify NG 時に週末自律修正を revert → baseline 安全圏。
+19. **SPEC 論理 Linter**: **`npm run verify:cio-spec-logic`** — DeepSeek 職分・矛盾で exit 1 ロック。
+20. **デバッグ知恵ストック**: **`cio:session:export-handoff`** 内 — Kimi 職分で `docs/knowledge/debug-tips.md` 4要素追記。
 
 **§1-2-3-4-C AI読み込み最適化・命令圧縮（2026-05-29 CEO 浜田・§50-3-11 非置換追補）**:
 
@@ -1967,6 +1970,14 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 3. **拡張案3 — デッドコード週末パージ**: 週末監査 + Kimi×Composer — 未参照 export を `docs/archive/dead-codes/` 退避 — `[WEEKEND-DEAD-CODE-PURGE]` コミット
 
 正本: `.cursor/rules/cio-error-ticket-apply-gate.mdc` / `.cursor/rules/cio-env-self-healing-gate.mdc` / `docs/secure/README.md`
+
+**第9層 — 最終完結自律防衛（拡張案1〜3・2026-05-30 CEO 追補・§50-3-11 非置換・環境改善フェーズ一旦完了）**:
+
+1. **拡張案1 — 週末救済ロールバック**: `npm run cio:rollback:weekend-actions` — verify NG 時に `[WEEKEND-*]` コミットを解析・revert → 金曜 baseline 安全圏へ自動退避 + 1行安全報告 + lock
+2. **拡張案2 — SPEC 論理 Linter**: `npm run verify:cio-spec-logic` — DeepSeek 職分の静的解析 — 矛盾検知で exit 1 + 赤字 `【仕様矛盾】` — 実装着手ロック
+3. **拡張案3 — デバッグ知恵ストック**: `cio:session:export-handoff` データ抽出 — Kimi 職分 — エラー/解決手順を `docs/knowledge/debug-tips.md` へ 4要素（前提/手順/禁止/exit）自動追記
+
+正本: `.cursor/rules/cio-weekend-rollback-gate.mdc` / `.cursor/rules/cio-spec-logic-gate.mdc` / `.cursor/rules/cio-debug-tips-stock-gate.mdc` / `data/cio-weekend-rollback-baseline.json`
 
 **担当定義の極限明文化**: **`AGENTS.md` §1-2-3-4-A**（完全マトリクス）・`mode-b-canonical.mdc`（用語単一窓）・Desktop **`18-重要確認.txt`**（浜田視認用）。
 

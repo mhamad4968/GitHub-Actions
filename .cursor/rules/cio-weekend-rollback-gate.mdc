@@ -1,0 +1,35 @@
+---
+description: 第9層 — 週末自律修正自動ロールバック §50-3-11
+alwaysApply: false
+globs: "scripts/cio-rollback-*,data/cio-weekend-rollback-baseline.json"
+---
+
+# 週末救済ロールバック（§50-3-11 第9層）
+
+> **機械**: `npm run cio:rollback:weekend-actions`
+
+## 前提条件
+
+- 週明け verify 群が **1件でも exit 1**
+- baseline 以降に `[WEEKEND-DEAD-CODE-PURGE]` / `[WEEKEND-SELF-HEALING]` コミットが存在
+- 正本: `data/cio-weekend-rollback-baseline.json`
+
+## 実行手順
+
+1. `npm run cio:rollback:weekend-actions`（`--dry-run` で候補確認可）
+2. 週末コミットを `git revert --no-edit` で巻き戻し
+3. verify 群再実行
+4. 1行安全報告を出力
+
+## 禁止事項
+
+- `git push --force`（CEO 明示なし）
+- baseline 未確認の盲目的 `reset --hard`
+- customize/deploy 凍結中の本番反映
+
+## 判定コード
+
+| コマンド | 合格 |
+|----------|------|
+| `cio:rollback:weekend-actions` | exit 0（救済完了 or 不要） |
+| lock | `logs/cio-weekend-rollback/lock.json` |

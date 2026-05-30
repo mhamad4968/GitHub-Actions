@@ -14,6 +14,7 @@ import {
   saveState,
   writeJson,
 } from './lib/cio-session-bridge.mjs';
+import { stockDebugTips, TIPS_REL } from './lib/cio-debug-tips-stock.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -65,6 +66,7 @@ function main() {
     'chat-sessions/handoff-log.md',
     '.cursor/rules/mode-b-canonical.mdc',
     'docs/handoff/latest-session-bridge.json',
+    TIPS_REL,
   ];
 
   const bridge = {
@@ -81,6 +83,8 @@ function main() {
 
   writeJson(bridgePath(root), bridge);
 
+  const tipsResult = stockDebugTips(root, { exportedAt: bridge.exportedAt });
+
   const state = loadState(root);
   state.exported = true;
   state.exportedAt = bridge.exportedAt;
@@ -91,6 +95,7 @@ function main() {
   console.log('[cio:session:export-handoff] OK', BRIDGE_REL);
   console.log('[cio:session:export-handoff] gitHead=', gitHead);
   console.log('[cio:session:export-handoff] purged=', purged, 'temp files');
+  console.log('[cio:session:export-handoff] debug-tips=', tipsResult.merged ? 'merged' : tipsResult.reason);
   console.log('[cio:session:export-handoff] 次タスク:', nextTask);
   process.exit(0);
 }

@@ -1,0 +1,31 @@
+{
+  "version": "2026-05-30",
+  "specPath": "templates/yojitsu-budget-lite/SPEC.md",
+  "constitutionRefs": ["§35-1", "§56-1a", "§41", "§51", "§1-2-2", "§52", "§50-3-11"],
+  "rules": [
+    {
+      "id": "paid-plugin-ng",
+      "pattern": "有償.*プラグイン.*(導入|採用|使用)(?!.*NG)",
+      "flags": "i",
+      "negate": false,
+      "constitutionRef": "§5 非ゴール・§50-3-11",
+      "message": "有償 kintone プラグイン導入は SPEC 方針 NG と矛盾"
+    },
+    {
+      "id": "non-replacement-agents-delete",
+      "pattern": "(削除|置換|上書き).*§(35-1|56-1a|41|51|1-2-2|52)",
+      "flags": "i",
+      "negate": false,
+      "constitutionRef": "§50-3-11 上位条文非置換",
+      "message": "上位憲法条文の削除・置換は非置換規律と衝突"
+    },
+    {
+      "id": "double-count-explicit",
+      "pattern": "二重計上[^。\\n]{0,40}(許可|問題なし)",
+      "flags": "i",
+      "negate": false,
+      "constitutionRef": "§6 案A 二重計上防止",
+      "message": "二重計上許可は案A確定ルールと矛盾"
+    }
+  ]
+}

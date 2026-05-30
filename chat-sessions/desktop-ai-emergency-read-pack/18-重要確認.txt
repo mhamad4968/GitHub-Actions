@@ -139,3 +139,10 @@ SPEC_TOUCHED: yes のターンで SECOND_REVIEWER: deepseek|kimi|openrouter の�
   **案3 デッドコード**: `npm run cio:dead-code-purge -- --apply` → `[WEEKEND-DEAD-CODE-PURGE]`
   **検証**: `npm run verify:cio-extreme-defence-infra`
   **正本**: `cio-error-ticket-apply-gate.mdc` / `cio-env-self-healing-gate.mdc`
+
+【2026-05-30 追記・最終完結 第9層 拡張案1〜3（CEO 最終命・環境改善フェーズ一旦完了）】
+  **案1 週末ロールバック**: `npm run cio:rollback:weekend-actions` — verify NG → baseline 安全圏 revert
+  **案2 SPEC論理Linter**: `npm run verify:cio-spec-logic` — DeepSeek 職分・矛盾 exit 1 ロック
+  **案3 知恵ストック**: `cio:session:export-handoff` → `docs/knowledge/debug-tips.md`（前提/手順/禁止/exit）
+  **検証**: `npm run verify:cio-final-closure-infra` / `verify:cio-four-ai-governance`
+  **正本**: `cio-weekend-rollback-gate.mdc` / `cio-spec-logic-gate.mdc` / `cio-debug-tips-stock-gate.mdc`

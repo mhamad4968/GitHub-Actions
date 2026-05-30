@@ -92,6 +92,18 @@ npm audit --omit=dev
 | 退避 | `docs/archive/dead-codes/` + ソースからコメントアウト |
 | コミット | `[WEEKEND-DEAD-CODE-PURGE]` 自動 commit（週末監査連動） |
 
+## 週末救済ロールバック（第9層・2026-05-30 環境改善フェーズ完結）
+
+| 項目 | 内容 |
+|------|------|
+| 担当 | **CIO Opus 4.8** 主導 |
+| トリガ | 週明け verify 群 **1件でも exit 1** |
+| 実行 | `npm run cio:rollback:weekend-actions` |
+| 解析 | baseline（`data/cio-weekend-rollback-baseline.json`）以降の `[WEEKEND-*]` コミット |
+| 巻戻し | `git revert --no-edit`（force push 禁止） |
+| 報告 | 「週末の変更にデグレードを検知したため、金曜夜の安全圏へ自動退避しました」 |
+| ロック | `logs/cio-weekend-rollback/lock.json` |
+
 ## 関連
 
 - `docs/runbooks/cio-friday-mcp-status-refresh-4ai.md`（金曜定例）

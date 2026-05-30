@@ -1,0 +1,34 @@
+---
+description: 第9層 — 15ターン解体デバッグ知恵自動ストック §50-3-11
+alwaysApply: false
+globs: "docs/knowledge/**,scripts/cio-session-export-handoff.mjs"
+---
+
+# デバッグ知恵自動ストック（§50-3-11 第9層 / Kimi 職分）
+
+> **機械**: `npm run cio:session:export-handoff`（データ抽出フェーズ内）
+
+## 前提条件
+
+- 15ターン強制解体で export-handoff 実行
+- 抽出元: handoff-log / checkpoint / bug-latest / escalation logs
+- 蓄積先: `docs/knowledge/debug-tips.md`
+
+## 実行手順
+
+1. `npm run cio:session:export-handoff`
+2. Kimi 職分でエラー・解決コマンドを要約
+3. 4要素（前提/手順/禁止/exit）で `<!-- CIO-DEBUG-TIPS:AUTO -->` 以降に追記
+
+## 禁止事項
+
+- トークン・平文 .env の追記
+- 同一 fingerprint の重複追記
+- bridge nextFiles から debug-tips 欠落
+
+## 判定コード
+
+| 項目 | 合格 |
+|------|------|
+| export-handoff | `debug-tips=merged` ログ |
+| 構造 | 前提/手順/禁止/exit 4要素 |

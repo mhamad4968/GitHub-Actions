@@ -32,7 +32,10 @@
         "cio-env-integrity-gate.mdc",
         "cio-error-ticket-gate.mdc",
         "cio-error-ticket-apply-gate.mdc",
-        "cio-env-self-healing-gate.mdc"
+        "cio-env-self-healing-gate.mdc",
+        "cio-weekend-rollback-gate.mdc",
+        "cio-spec-logic-gate.mdc",
+        "cio-debug-tips-stock-gate.mdc"
       ]
     },
     {

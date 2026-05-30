@@ -110,6 +110,9 @@ flowchart LR
 | `npm run cio:error:apply-ticket-choice -- --choice N` | exit 0 |
 | `npm run cio:env:self-healing` | exit 0 |
 | `npm run verify:cio-extreme-defence-infra` | exit 0 |
+| `npm run cio:rollback:weekend-actions` | exit 0（週明け救済） |
+| `npm run verify:cio-spec-logic` | exit 0 |
+| `npm run verify:cio-final-closure-infra` | exit 0 |
 
 ## 毎ターン先頭4行（機械検査一致・正本）
 
