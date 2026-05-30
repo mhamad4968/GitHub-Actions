@@ -47,6 +47,17 @@
 | [17-four-ai-mode-b.md](17-four-ai-mode-b.md) | §1-2-3-4・§50-3-11 | 4AI・開発プロトコル |
 | [18-ai-team-read-map.md](18-ai-team-read-map.md) | 役割別ナビ | **どの AI が何を読むか**（Phase 2） |
 
+### AI-KERNEL 4要素カーネル（2026-05-30 細分化最適化・§50-3-11 非置換追補）
+
+| ファイル | ジャンル | いつ読む |
+|----------|----------|----------|
+| [19-governance-four-ai-kernel.md](19-governance-four-ai-kernel.md) | **統制・役割**（CIO・4AI・2名チェック） | 毎ターン・着手前・報告 |
+| [20-cost-token-defense-kernel.md](20-cost-token-defense-kernel.md) | **コスト・Fast防衛**（15ターン・荷造り） | 長セッション・引っ越し前 |
+| [21-autonomous-patrol-kernel.md](21-autonomous-patrol-kernel.md) | **無人パトロール**（週末・自己修復） | 土日監査・週明け |
+| [22-error-handling-kernel.md](22-error-handling-kernel.md) | **エラーハンドリング**（エスカレーション・3択） | verify 失敗・チケット |
+
+**機械検証**: `npm run verify:constitution-genre-kernels`
+
 ---
 
 ## Cursor ルール（.mdc）との関係

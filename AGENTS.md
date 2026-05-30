@@ -435,6 +435,8 @@ flowchart LR
 18. **週末救済ロールバック**: **`npm run cio:rollback:weekend-actions`** — verify NG 時に週末自律修正を revert → baseline 安全圏。
 19. **SPEC 論理 Linter**: **`npm run verify:cio-spec-logic`** — DeepSeek 職分・矛盾で exit 1 ロック。
 20. **デバッグ知恵ストック**: **`cio:session:export-handoff`** 内 — Kimi 職分で `docs/knowledge/debug-tips.md` 4要素追記。
+21. **憲法 AI-KERNEL カーネル**: **`npm run verify:constitution-genre-kernels`** — `docs/constitution/19〜22-*-kernel.md` 4要素整合。
+22. **Desktop 00〜27 同期**: **`npm run session-starter:sync-desktop`** → **`verify:desktop-ai-emergency-sync`** — 歯抜け番号禁止。
 
 **§1-2-3-4-C AI読み込み最適化・命令圧縮（2026-05-29 CEO 浜田・§50-3-11 非置換追補）**:
 
@@ -1978,6 +1980,14 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 3. **拡張案3 — デバッグ知恵ストック**: `cio:session:export-handoff` データ抽出 — Kimi 職分 — エラー/解決手順を `docs/knowledge/debug-tips.md` へ 4要素（前提/手順/禁止/exit）自動追記
 
 正本: `.cursor/rules/cio-weekend-rollback-gate.mdc` / `.cursor/rules/cio-spec-logic-gate.mdc` / `.cursor/rules/cio-debug-tips-stock-gate.mdc` / `data/cio-weekend-rollback-baseline.json`
+
+**第10層 — 憲法ジャンル細分化最適化（2026-05-30 CEO 最終命・§50-3-11 非置換・環境改善大団円）**:
+
+1. **AI-KERNEL 4要素カーネル** — `docs/constitution/19〜22-*-kernel.md`（統制・コスト防衛・週末パトロール・エラーハンドリング）
+2. **機械検証**: `npm run verify:constitution-genre-kernels`
+3. **Desktop 00〜27**: `session-starter:sync-desktop` + `verify:desktop-ai-emergency-sync` — 方式B Opus 4.8ハイブリッド・第9層エッセンス100%反映
+
+正本: `docs/constitution/README.md` / `chat-sessions/desktop-ai-emergency-read-pack/08-INDEX.txt`
 
 **担当定義の極限明文化**: **`AGENTS.md` §1-2-3-4-A**（完全マトリクス）・`mode-b-canonical.mdc`（用語単一窓）・Desktop **`18-重要確認.txt`**（浜田視認用）。
 

@@ -113,17 +113,19 @@ flowchart LR
 | `npm run cio:rollback:weekend-actions` | exit 0（週明け救済） |
 | `npm run verify:cio-spec-logic` | exit 0 |
 | `npm run verify:cio-final-closure-infra` | exit 0 |
+| `npm run verify:constitution-genre-kernels` | exit 0 |
+| `npm run verify:desktop-ai-emergency-sync` | exit 0 |
 
 ## 毎ターン先頭4行（機械検査一致・正本）
 
 ```text
 [§1-2-3 ティア判定: L2] <根拠1語>
-【適用憲法】§35-1 §50-3-11 §1-2-3-4-B
-[🎖️ 本セッション割当] CIO=Opus4.7 | Composer=未使用 | DeepSeek=未使用 | Kimi=未使用
-[ルール確認] mode-b-canonical.mdc
+【適用憲法】§35-1 §50-3-11 §1-2-3-4-B 第10層
+[🎖️ 本セッション割当] CIO=Opus4.8 | Composer=未使用 | DeepSeek=未使用 | Kimi=未使用
+[ルール確認] mode-b-canonical.mdc + docs/constitution/19-governance-four-ai-kernel.md
 ```
 
-- **L1** = Composer / **L2** = CIO 4.7 / **L3** = Opus 4.8 深検証
+- **L1** = Composer / **L2** = CIO 4.7ベース / **L3** = Opus 4.8 深検証（方式Bハイブリッド）
 
 ## 詳細（人間・監査用）
 

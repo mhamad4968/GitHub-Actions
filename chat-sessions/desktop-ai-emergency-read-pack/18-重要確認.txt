@@ -1,7 +1,7 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 【4AI体制 — CIO 担当分担表（正本 2026-05-21・浜田視認用）】
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-正本: AGENTS.md §1-2-3-4-A ＝ mode-b-canonical.mdc ＝ 本ファイル（追記）。§50-3-11 非置換。**2026-05-29**: CIO **Opus 4.7/4.8**（§1-2-3-4-B/C）。**4.8 L3**: `docs/runbooks/cio-opus48-intelligence-activation.md`。画像 MCP **計画削除**。
+正本: AGENTS.md §1-2-3-4-A ＝ mode-b-canonical.mdc ＝ 本ファイル（追記）。§50-3-11 非置換。**2026-05-30 方式B**: CIO **Opus 4.8ハイブリッド**（4.7ベース・L3=4.8深検証・§1-2-3-4-B/C）。**15ターン機械ロック・自動荷造り・週末パトロール**。**4.8 L3**: `docs/runbooks/cio-opus48-intelligence-activation.md`。画像 MCP **計画削除**。
 
 | # | 役割 | モデル | 持ち場（要約） | ◯ 可 | ✕ 禁止 |
 |---|------|--------|----------------|------|--------|
@@ -146,3 +146,12 @@ SPEC_TOUCHED: yes のターンで SECOND_REVIEWER: deepseek|kimi|openrouter の�
   **案3 知恵ストック**: `cio:session:export-handoff` → `docs/knowledge/debug-tips.md`（前提/手順/禁止/exit）
   **検証**: `npm run verify:cio-final-closure-infra` / `verify:cio-four-ai-governance`
   **正本**: `cio-weekend-rollback-gate.mdc` / `cio-spec-logic-gate.mdc` / `cio-debug-tips-stock-gate.mdc`
+
+【2026-05-30 追記・大団円 第10層 憲法細分化＋Desktop統廃合（CEO 真の最終命）】
+  **ジャンル1 統制**: `docs/constitution/19-governance-four-ai-kernel.md`
+  **ジャンル2 コスト防衛**: `docs/constitution/20-cost-token-defense-kernel.md`（15ターン・export-handoff）
+  **ジャンル3 週末パトロール**: `docs/constitution/21-autonomous-patrol-kernel.md`
+  **ジャンル4 エラー**: `docs/constitution/22-error-handling-kernel.md`
+  **検証**: `npm run verify:constitution-genre-kernels` / `verify:desktop-ai-emergency-sync`
+  **Desktop**: `npm run session-starter:sync-desktop` — 00〜27 歯抜け禁止・方式B最新エッセンス
+  **正本**: `docs/constitution/README.md` / `08-INDEX.txt`
