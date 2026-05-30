@@ -1,0 +1,33 @@
+---
+description: 第11層 — Kimi コミット 4要素ブロック（prepare-commit-msg）
+alwaysApply: false
+globs: "{AGENTS.md,.cursor/rules/**,docs/constitution/**}"
+---
+
+# Kimi コミットメッセージ ガバナンスゲート（§50-3-11 第11層）
+
+> **機械**: `git-hooks/prepare-commit-msg` / `npm run cio:commit-msg:kimi-draft`
+
+## 前提条件
+
+- ステージに憲法・`.mdc`・正本 SPEC
+- `npm run hooks:install` 済
+
+## 実行手順
+
+1. コミット → `CIO-GOVERNANCE-BLOCK` 自動追記
+2. 4要素 + `Reviewed-by: kimi` 必須
+3. 週末 JST → フック自動バイパス
+
+## 禁止事項
+
+- commit body の上書き・削除（append-only のみ）
+- 4要素欠落コミット
+- 上位憲法 §50-3-11 非置換違反
+
+## 判定コード
+
+| コマンド | 合格 |
+|----------|------|
+| `prepare-commit-msg` | 4要素あり exit 0 |
+| 週末 | バイパス + `[weekend-bypass]` 可 |

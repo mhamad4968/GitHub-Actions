@@ -113,6 +113,9 @@ flowchart LR
 | `npm run cio:rollback:weekend-actions` | exit 0（週明け救済） |
 | `npm run verify:cio-spec-logic` | exit 0 |
 | `npm run verify:cio-final-closure-infra` | exit 0 |
+| `npm run verify:kintone-fields` | exit 0 |
+| `npm run verify:cio-weekend-layer11-infra` | exit 0 |
+| `npm run verify:session-handoff-integrity -- --validate-export` | exit 0 |
 | `npm run verify:constitution-genre-kernels` | exit 0 |
 | `npm run verify:desktop-ai-emergency-sync` | exit 0 |
 

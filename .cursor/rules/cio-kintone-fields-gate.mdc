@@ -1,0 +1,33 @@
+---
+description: 第11層 — kintone フィールドコード Linter（verify:kintone-fields）
+alwaysApply: false
+globs: "customize/**"
+---
+
+# kintone フィールド Linter ゲート（§50-3-11 第11層）
+
+> **機械**: `npm run verify:kintone-fields`
+
+## 前提条件
+
+- `customize/**` 編集後・deploy 前
+- 正本: `data/kintone-field-registry.json` / `data/kintone-field-allowlist.json`
+
+## 実行手順
+
+1. registry に app/field を追記
+2. `npm run verify:kintone-fields [-- --app 678]`
+3. exit 0 → deploy 可
+
+## 禁止事項
+
+- 未登録 high フィールドのまま本番 PUT
+- registry 無視の allowlist 乱用
+- 上位憲法 §50-3-11 非置換違反
+
+## 判定コード
+
+| コマンド | 合格 |
+|----------|------|
+| `verify:kintone-fields` | exit 0 |
+| 不合格 | exit 1 + 赤字未登録一覧 |

@@ -1989,6 +1989,14 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 
 正本: `docs/constitution/README.md` / `chat-sessions/desktop-ai-emergency-read-pack/08-INDEX.txt`
 
+**第11層 — 土日環境改善3大自律インフラ（2026-05-30 CEO 超厳命・§50-3-11 非置換）**:
+
+1. **タスク① — kintone フィールド Linter**: `npm run verify:kintone-fields` — `data/kintone-field-registry.json` + `customize/**` 抽出突合 — 未登録 high → **exit 1**（本番 PUT ロック）
+2. **タスク② — Kimi コミット 4要素**: `git-hooks/prepare-commit-msg` → `scripts/cio-commit-msg-kimi-draft.mjs`（`npm run cio:commit-msg:kimi-draft`）— 憲法 diff に **前提/手順/禁止/exit** + `Reviewed-by: kimi` 追記 — 週末 JST 自動バイパス
+3. **タスク③ — Handoff 荷造り漏れ**: `npm run verify:session-handoff-integrity -- --validate-export` — bridge / checkpoint / SPEC / gitHead **DeepSeek 職分**クロスチェック — NG → 解体ロック
+
+正本: `.cursor/rules/cio-kintone-fields-gate.mdc` / `cio-commit-msg-kimi-gate.mdc` / `cio-handoff-export-validate-gate.mdc` / `data/kintone-field-registry.json`
+
 **担当定義の極限明文化**: **`AGENTS.md` §1-2-3-4-A**（完全マトリクス）・`mode-b-canonical.mdc`（用語単一窓）・Desktop **`18-重要確認.txt`**（浜田視認用）。
 
 **タスクA — Composer silent fallback 禁止（§1-2-2 強化）**:

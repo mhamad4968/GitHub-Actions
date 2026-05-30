@@ -1,0 +1,33 @@
+---
+description: 第11層 — 15ターン export 荷造り漏れゲート（--validate-export）
+alwaysApply: false
+globs: "docs/handoff/**"
+---
+
+# Handoff export クロスチェックゲート（§50-3-11 第11層）
+
+> **機械**: `npm run verify:session-handoff-integrity -- --validate-export`
+
+## 前提条件
+
+- `cio:session:export-handoff` 完了
+- bridge / checkpoint / SPEC タスクが同期済であること
+
+## 実行手順
+
+1. `npm run verify:session-handoff-integrity -- --validate-export`
+2. DeepSeek 職分決定論突合 OK → `crosscheckOk=true`
+3. New Chat `--import` 実行
+
+## 禁止事項
+
+- crosscheck NG のままチャット解体
+- bridge 手編集
+- 上位憲法 §50-3-11 非置換違反
+
+## 判定コード
+
+| コマンド | 合格 |
+|----------|------|
+| `--validate-export` | exit 0 |
+| `--import` + crosscheckOk=false | exit 1 |

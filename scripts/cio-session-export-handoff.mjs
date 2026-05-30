@@ -97,6 +97,7 @@ function main() {
   console.log('[cio:session:export-handoff] purged=', purged, 'temp files');
   console.log('[cio:session:export-handoff] debug-tips=', tipsResult.merged ? 'merged' : tipsResult.reason);
   console.log('[cio:session:export-handoff] 次タスク:', nextTask);
+  console.log('[cio:session:export-handoff] 続けて: npm run verify:session-handoff-integrity -- --validate-export');
   process.exit(0);
 }
 

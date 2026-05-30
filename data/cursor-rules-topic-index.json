@@ -35,7 +35,9 @@
         "cio-env-self-healing-gate.mdc",
         "cio-weekend-rollback-gate.mdc",
         "cio-spec-logic-gate.mdc",
-        "cio-debug-tips-stock-gate.mdc"
+        "cio-debug-tips-stock-gate.mdc",
+        "cio-handoff-export-validate-gate.mdc",
+        "cio-commit-msg-kimi-gate.mdc"
       ]
     },
     {
@@ -66,7 +68,8 @@
         "kintone-schema-trust.mdc",
         "kintone-destructive-rest-guard.mdc",
         "constitutional-focus-kintone-customize.mdc",
-        "creation-timing-ask.mdc"
+        "creation-timing-ask.mdc",
+        "cio-kintone-fields-gate.mdc"
       ]
     },
     {

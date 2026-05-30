@@ -1,0 +1,50 @@
+{
+  "version": "2026-05-30",
+  "specRel": "templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md",
+  "apps": {
+    "677": {
+      "label": "予実入力アプリ",
+      "customizeDirs": ["677"],
+      "recordFields": [
+        "work_type_name",
+        "work_type_code",
+        "cost_category",
+        "payment_type",
+        "summary_text",
+        "partner_company",
+        "issue_date",
+        "legacy_cash_date",
+        "learning_fixed_budget",
+        "initial_variable_budget",
+        "notes",
+        "legacy_row_no",
+        "display_order",
+        "attachments",
+        "variable_budget_total_display"
+      ],
+      "subtables": {
+        "monthly_breakdown": [
+          "fiscal_month",
+          "month_budget",
+          "month_actual",
+          "month_utilization",
+          "month_budget_revision"
+        ],
+        "payment_breakdown": [
+          "payment_date",
+          "payment_amount",
+          "invoice_number",
+          "payment_memo",
+          "budget_bucket"
+        ]
+      }
+    },
+    "678": {
+      "label": "予実ダッシュ",
+      "customizeDirs": ["678"],
+      "inheritsRecordFieldsFrom": "677",
+      "inheritsSubtablesFrom": "677",
+      "notes": "678 customize は 677 フィールドへ REST PUT。台帳は 677 と同一。"
+    }
+  }
+}

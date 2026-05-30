@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-30T02:43:01.697Z",
+  "generatedAt": "2026-05-30T05:54:48.041Z",
   "sectionToMdc": {
     "§0": [
       "constitution-brief-card.mdc",
@@ -35,6 +35,7 @@
       "mode-b-canonical.mdc"
     ],
     "§1-2-3-4-A": [
+      "cio-commit-msg-kimi-gate.mdc",
       "cio-composer-escalation-interlock.mdc",
       "cio-context-dissolution-interlock.mdc",
       "cio-debug-tips-stock-gate.mdc",
@@ -42,6 +43,8 @@
       "cio-env-self-healing-gate.mdc",
       "cio-error-ticket-apply-gate.mdc",
       "cio-error-ticket-gate.mdc",
+      "cio-handoff-export-validate-gate.mdc",
+      "cio-kintone-fields-gate.mdc",
       "cio-spec-logic-gate.mdc",
       "cio-weekend-rollback-gate.mdc",
       "composer-mcp-audit-gate.mdc",
@@ -258,6 +261,9 @@
     "cio-18-zero-tolerance.mdc": [
       "§(RULES-INDEX行)"
     ],
+    "cio-commit-msg-kimi-gate.mdc": [
+      "§1-2-3-4-A"
+    ],
     "cio-composer-escalation-interlock.mdc": [
       "§1-2-3-4-A",
       "§50-3-11"
@@ -305,6 +311,12 @@
       "§1-2-3-4-A",
       "§50-3-11",
       "§50-3-8"
+    ],
+    "cio-handoff-export-validate-gate.mdc": [
+      "§1-2-3-4-A"
+    ],
+    "cio-kintone-fields-gate.mdc": [
+      "§1-2-3-4-A"
     ],
     "cio-operating-loop.mdc": [
       "§(RULES-INDEX行)"
