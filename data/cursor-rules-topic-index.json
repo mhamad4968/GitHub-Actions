@@ -26,7 +26,8 @@
         "constitution-handoff-gate.mdc",
         "session-read-ladder-two-phase.mdc",
         "cio-operating-loop.mdc",
-        "auto-read-by-topic.mdc"
+        "auto-read-by-topic.mdc",
+        "cio-context-dissolution-interlock.mdc"
       ]
     },
     {

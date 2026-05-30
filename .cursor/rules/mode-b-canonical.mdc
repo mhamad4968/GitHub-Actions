@@ -9,6 +9,31 @@ globs: "**/*"
 > **上位**: `AGENTS.md` §1-2-3-4 / §1-2-3-4-A / §1-2-3-4-B / §1-2-3-4-C / §50-3-11  
 > **他 `.mdc`**: 四行テンプレを**コピー禁止** — 本ファイル参照のみ。
 
+## 空間認識図（1秒）
+
+```
+  ┌─────────┐    §50-3-8     ┌───────────┐   eslint+tree  ┌──────┐
+  │ ① CIO   │ ─────────────► │④ DeepSeek │ ──────────────► │② Comp│
+  │ Opus4.7 │ ◄───────────── │  盲点3点  │                 │ 2.5  │
+  └────┬────┘    突合3行     └───────────┘                 └──┬───┘
+       │                                                        │
+       │  1行要約 ◄── ③ Kimi レビュー ◄─────────────────────────┘
+       ▼
+    CEO（GO・目視）
+
+  ═══ 15ターン壁 ═══  turn>15 & !export → exit 1 → cio:session:export-handoff
+```
+
+```mermaid
+flowchart LR
+  CIO["① CIO Opus4.7/4.8"] --> DS["④ DeepSeek §50-3-8"]
+  DS --> CMP["② Composer 2.5"]
+  CMP --> KM["③ Kimi review"]
+  KM --> CIO
+  WALL{{"15ターン / 40k wall"}} --> EXP["export-handoff.json"]
+  EXP --> NC["New Chat --import"]
+```
+
 ## 前提条件
 
 | 項目 | 内容 |
@@ -71,6 +96,8 @@ globs: "**/*"
 | `npm run verify:mode-b-turn-head-canonical` | exit 0 |
 | `npm run cio:guard:5038` | exit 0 or `--skip` 理由 |
 | `npm run verify:cio-mcp-registry` | exit 0 |
+| `npm run cio:session:turn-guard -- --check` | exit 0 |
+| `npm run verify:session-handoff-integrity -- --import` | exit 0（New Chat 時） |
 
 ## 毎ターン先頭4行（機械検査一致・正本）
 

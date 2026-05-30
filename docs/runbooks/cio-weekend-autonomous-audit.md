@@ -57,6 +57,21 @@ npm audit --omit=dev
 | **exit 1** | verify 赤 — レポートに NG 記載・月曜 CEO へ報告 |
 | **月曜第1手** | レポート Read → CEO 1 行要約 |
 
+## bridge 動的連動（2026-05-30 追補）
+
+週末監査起動時、`docs/handoff/latest-session-bridge.json` を自動ロードし、**nextFiles** に対し eslint-mcp / repo-tree 監査対象として記録する。成果は **`docs/plans/2026-05-29-weekend-health-audit.md`** の **【監査詳細セクション】** へマージ追記。
+
+## Self-Healing（将来布石・2026-05-30 GO）
+
+| 条件 | 許可 |
+|------|------|
+| 週末監査中に **L2 以下・構文のみ** エラー検出 | Composer 2.5 が Diff 生成・適用可 |
+| 仕様意味変更 | **禁止** |
+| コミット | 先頭 **`[WEEKEND-SELF-HEALING]`** 必須 |
+| 追跡 | 月曜 CEO が 100% 目視可能 |
+
+**禁止**: Self-Healing で customize/deploy 本番反映（Q36 GO 前凍結維持）。
+
 ## 関連
 
 - `docs/runbooks/cio-friday-mcp-status-refresh-4ai.md`（金曜定例）

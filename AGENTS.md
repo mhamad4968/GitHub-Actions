@@ -352,6 +352,24 @@ agent
 
 **§1-2-3-4-A 4AI担当明文化マトリクス（CEO 浜田 2026-05-21 厳命・正本・§50-3-11 非置換追補）**:
 
+**4AI 連携ルート（視覚・2026-05-30 追補）**:
+
+```
+  CIO ──§50-3-8──► DeepSeek ──OK──► Composer ──review──► Kimi ──► CIO ──► CEO
+                              │                              │
+                         cio:guard:5038              cio:guard:composer-mcp-audit
+```
+
+```mermaid
+flowchart LR
+  A[CIO Opus4.7/4.8] --> B[DeepSeek 盲点3点]
+  B --> C[Composer 2.5 Diff]
+  C --> D[Kimi 精査]
+  D --> A
+  E[15ターン壁] --> F[latest-session-bridge.json]
+  F --> G[New Chat import]
+```
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ■ 1. 4AIチームの完全担当定義マトリクス
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -403,6 +421,9 @@ agent
 4. **コスト確認**: 1 ターンの消費が巨大化しそうなら **§41 一問**で浜田に区切り確認（強引に続行しない）。
 5. **リトライ上限**: verify 等の自律ループは **最大 3 回**で **exit 1** 停止（ゾンブループ防止）。
 6. **画像生成 MCP**: **計画削除・導入禁止**（内蔵 `GenerateImage` のみ・`cursor-generate-image-assets.mdc`）。
+7. **15ターン強制解体**: 同一チャット **15 ターン超**または **40k トークン自認** → 応答末尾で New Chat 強制申告 → **`npm run cio:session:export-handoff`**（`.cursor/rules/cio-context-dissolution-interlock.mdc`）。
+8. **Diff ループ遮断**: 同一ファイル **3 回連続 Diff** → `cio:session:turn-guard -- --record-diff` が **exit 1**（SPEC 根本見直し）。
+9. **New Chat 第 1 手**: **`npm run verify:session-handoff-integrity -- --import`** → exit 0 でロケットスタート。
 
 **§1-2-3-4-C AI読み込み最適化・命令圧縮（2026-05-29 CEO 浜田・§50-3-11 非置換追補）**:
 
@@ -1905,6 +1926,15 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 4. **機械スタンプ** — `npm run cio:guard:composer-mcp-audit -- --stamp --text "…"`（45分有効・`composer-mcp-audit-stamp.json`）
 
 正本: `.cursor/rules/composer-mcp-audit-gate.mdc`。スキップ: `--skip "具体理由1行"`（README 誤字のみ等）。
+
+**第5層 — 3重コンテキスト強制解体（2026-05-30 CEO 追補・§50-3-11 非置換）**:
+
+1. **15 ターン / 40k 壁** — `npm run cio:session:turn-guard -- --check --strict`（超過かつ export 未完了 → **exit 1**）
+2. **荷造り** — `npm run cio:session:export-handoff` → `docs/handoff/latest-session-bridge.json`
+3. **New Chat import** — `npm run verify:session-handoff-integrity -- --import` → exit 0
+4. **週末連動** — `npm run cio:weekend:autonomous-audit` が bridge をロードし監査詳細をマージ
+
+正本: `.cursor/rules/cio-context-dissolution-interlock.mdc` / `docs/runbooks/cio-weekend-autonomous-audit.md`
 
 **担当定義の極限明文化**: **`AGENTS.md` §1-2-3-4-A**（完全マトリクス）・`mode-b-canonical.mdc`（用語単一窓）・Desktop **`18-重要確認.txt`**（浜田視認用）。
 

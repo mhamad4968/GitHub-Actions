@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-29T15:55:45.684Z",
+  "generatedAt": "2026-05-30T02:10:43.820Z",
   "sectionToMdc": {
     "§0": [
       "constitution-brief-card.mdc",
@@ -35,6 +35,7 @@
       "mode-b-canonical.mdc"
     ],
     "§1-2-3-4-A": [
+      "cio-context-dissolution-interlock.mdc",
       "composer-mcp-audit-gate.mdc",
       "cursor-generate-image-assets.mdc",
       "deepseek-cursor-spec-division.mdc",
@@ -246,6 +247,10 @@
       "§35-1",
       "§36",
       "§56-1"
+    ],
+    "cio-context-dissolution-interlock.mdc": [
+      "§(RULES-INDEX行)",
+      "§1-2-3-4-A"
     ],
     "cio-discipline-always.mdc": [
       "§10",

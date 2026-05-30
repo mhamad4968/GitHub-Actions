@@ -1,4 +1,4 @@
-# 週末健康状態監査レポート（2026-05-29 JST）
+# 週末健康状態監査レポート（2026-05-30 JST）
 
 **生成**: `npm run cio:weekend:autonomous-audit`
 **提出**: 週明け月曜ファーストターンで CEO へ
@@ -8,6 +8,7 @@
 
 - **verify:cio-mcp-registry**: OK
 - **verify:cio-four-ai-governance**: OK
+- **verify:cio-session-dissolution**: OK
 - **npm audit --omit=dev**: OK
 
 ## npm audit（抜粋）
@@ -15,12 +16,6 @@
 ```
 found 0 vulnerabilities
 ```
-
-## 次アクション（月曜）
-
-- CEO 検収
-- NG 項目があれば CIO 自律是正
-
 
 ## 監査詳細（bridge 連動）
 
@@ -44,4 +39,10 @@ found 0 vulnerabilities
 
 - L2 以下の **構文のみ** エラー → Composer 2.5 が `[WEEKEND-SELF-HEALING]` コミット可（仕様意味変更禁止）
 - 正本: `docs/runbooks/cio-weekend-autonomous-audit.md` §Self-Healing
+
+
+## 次アクション（月曜）
+
+- CEO 検収
+- NG 項目があれば CIO 自律是正
 

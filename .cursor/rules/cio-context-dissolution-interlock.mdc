@@ -1,0 +1,44 @@
+---
+description: 3重インターロック型コンテキスト強制解体（15ターン・40k・Diffループ・export-handoff）
+alwaysApply: false
+globs: "**/*"
+---
+
+# コンテキスト強制解体 — AI-KERNEL
+
+> **上位非置換**: §50-3-11 / §35-1 / §56-1a / §41 / §51 / §1-2-2 / §52
+
+## 前提条件
+
+| 項目 | 値 |
+|------|-----|
+| 最大ターン | **15**（同一チャット） |
+| コンテキスト目安 | **40k トークン**超で New Chat 強制 |
+| Diff ループ | 同一 `customize/**` 等 **3 回**で exit 1 |
+| ゾンブリトライ | verify 等 **最大 3 回**で exit 1 |
+| bridge 正本 | `docs/handoff/latest-session-bridge.json` |
+
+## 実行手順
+
+1. **ターン開始** — `npm run cio:session:turn-guard -- --record-turn`（任意・CIO 自覚）
+2. **保存前** — `npm run cio:session:turn-guard -- --check --strict`
+3. **15 ターン超 or 40k 自認** — 応答末尾に  
+   `【警告】コンテキスト限界（15ターン超過）を検知しました。次ターンよりNew Chat（新規セッション）での仕切り直しを強制します`  
+   → **`npm run cio:session:export-handoff`**
+4. **New Chat 第 1 ターン** — `npm run verify:session-handoff-integrity -- --import` → exit 0
+5. **Diff 記録** — `npm run cio:session:turn-guard -- --record-diff customize/…`
+
+## 禁止事項
+
+- 15 ターン超・export 未完了で **本題の副作用**（Tier B・大量 Edit）継続
+- Token Bloat（不要な全文 Read）
+- export なし New Chat 移行
+
+## 判定コード
+
+| コマンド | 合格 |
+|----------|------|
+| `npm run cio:session:turn-guard -- --check` | exit 0 |
+| `npm run cio:session:export-handoff` | exit 0 + bridge 生成 |
+| `npm run verify:session-handoff-integrity -- --import` | exit 0 |
+| `npm run verify:cio-session-dissolution` | exit 0 |

@@ -1895,6 +1895,17 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 2. **突合 3 行** — CIO が `SPEC.md` 等正本と照合しチャットに記録（`[役割: CIO セカンドオピニオン / §50-3-8 突合]` 推奨）
 3. **機械スタンプ** — `npm run cio:guard:5038 -- --stamp --text "…"` または `--skip "理由"`（45分有効・`logs/cio-four-ai-governance/5038-stamp.json`）
 
+**第4ステップ — Composer MCP 監査（eslint-mcp / repo-tree・2026-05-29 CEO 追補・§50-3-8 非置換）**:
+
+上記 **1〜3 完了後**、**コード実務（Composer 2.5）** が Diff を **保存する直前または直後**（同一ターン）に:
+
+1. **eslint-mcp** — 変更ファイルの lint。**Warning 0** 必須
+2. **repo-tree** — 影響ディレクトリの構造可視化
+3. **CIO へ 1 行証明** — `MCP監査: eslint=0 warnings / repo-tree=OK / 対象=…`
+4. **機械スタンプ** — `npm run cio:guard:composer-mcp-audit -- --stamp --text "…"`（45分有効・`composer-mcp-audit-stamp.json`）
+
+正本: `.cursor/rules/composer-mcp-audit-gate.mdc`。スキップ: `--skip "具体理由1行"`（README 誤字のみ等）。
+
 **担当定義の極限明文化**: **`AGENTS.md` §1-2-3-4-A**（完全マトリクス）・`mode-b-canonical.mdc`（用語単一窓）・Desktop **`18-重要確認.txt`**（浜田視認用）。
 
 **タスクA — Composer silent fallback 禁止（§1-2-2 強化）**:

@@ -110,3 +110,11 @@ SPEC_TOUCHED: yes のターンで SECOND_REVIEWER: deepseek|kimi|openrouter の�
     5. 区切り: `npm run cio:turn-start -- --complete --strict`
   **禁止語**: 「別途検討」「後で」「軽微でスキップ」— 具体手順を同一ターンに書く。
   **正本**: `docs/runbooks/cio-18-violation-root-cause-2026-05-30.md` / `.cursor/rules/cio-18-zero-tolerance.mdc`
+
+【2026-05-30 追記・3重コンテキスト強制解体・週末監査連動（CEO 超厳命）】
+  **15ターン/40k壁**: `npm run cio:session:turn-guard -- --check --strict` — 超過かつ export 未完了 → exit 1
+  **荷造り**: `npm run cio:session:export-handoff` → `docs/handoff/latest-session-bridge.json`
+  **New Chat**: `npm run verify:session-handoff-integrity -- --import` exit 0
+  **週末**: `npm run cio:weekend:autonomous-audit`（bridge 連動・Self-Healing 布石）
+  **検証**: `npm run verify:cio-session-dissolution` / `verify:cio-four-ai-governance`
+  **正本**: `.cursor/rules/cio-context-dissolution-interlock.mdc` / `mode-b-canonical.mdc`（Mermaid+ASCII）
