@@ -151,7 +151,7 @@ SPEC_TOUCHED: yes のターンで SECOND_REVIEWER: deepseek|kimi|openrouter の�
   **ジャンル3 週末パトロール**: `docs/constitution/21-autonomous-patrol-kernel.md`
   **ジャンル4 エラー**: `docs/constitution/22-error-handling-kernel.md`
   **検証**: `npm run verify:constitution-genre-kernels` / `verify:desktop-ai-emergency-sync`
-  **Desktop**: `npm run session-starter:sync-desktop` — 00〜27 歯抜け禁止・方式B最新エッセンス
+  **Desktop**: `npm run session-starter:sync-desktop` — 00〜28 歯抜け禁止・方式B最新エッセンス（**28=憲法ジャンル早見**）
   **正本**: `docs/constitution/README.md` / `08-INDEX.txt`
 
 【2026-05-30 追記・夕反省スコープ（浜田確定）＋ミス削減アップデート案】

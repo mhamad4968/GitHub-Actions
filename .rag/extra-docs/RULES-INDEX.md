@@ -24,7 +24,7 @@
 
 ## Cursor ルール逆引き（自動生成・編集禁止）
 
-**更新**: `npm run rules:sync-mdc-index`（2026-05-29 JST）
+**更新**: `npm run rules:sync-mdc-index`（2026-05-30 JST）
 
 | トピック | ファイル | description（frontmatter） |
 |----------|----------|---------------------------|
@@ -43,6 +43,15 @@
 | セッション・引き継ぎ | [`session-read-ladder-two-phase.mdc`](.cursor/rules/session-read-ladder-two-phase.mdc) | セッション復元は二段階（事前準備A→本題確認B）＋ラダー正本を Read で取り込む（glob・常時想起は憲法カード等に委譲） |
 | セッション・引き継ぎ | [`cio-operating-loop.mdc`](.cursor/rules/cio-operating-loop.mdc) | CIO 運用の一本線（正シェル・朝ブリーフィング・軽検査・Desktop 同期の判断） |
 | セッション・引き継ぎ | [`auto-read-by-topic.mdc`](.cursor/rules/auto-read-by-topic.mdc) | 確認ログ+マルチAI・CIOレポート毎ターン+§41一問+Read義務+役割分担（alwaysApply） |
+| セッション・引き継ぎ | [`cio-context-dissolution-interlock.mdc`](.cursor/rules/cio-context-dissolution-interlock.mdc) | 3重インターロック型コンテキスト強制解体（15ターン・40k・Diffループ・export-handoff） |
+| セッション・引き継ぎ | [`cio-composer-escalation-interlock.mdc`](.cursor/rules/cio-composer-escalation-interlock.mdc) | 方針1 — Composer verify 連続失敗時の DeepSeek 自律エスカレーション §50-3-11 第6層 |
+| セッション・引き継ぎ | [`cio-env-integrity-gate.mdc`](.cursor/rules/cio-env-integrity-gate.mdc) | 改善案1 — 環境変数・MCP 秘密鍵セルフ監査 §50-3-11 第7層 |
+| セッション・引き継ぎ | [`cio-error-ticket-gate.mdc`](.cursor/rules/cio-error-ticket-gate.mdc) | 改善案3 — 3択提案付き自律エラーチケット §50-3-11 第7層 |
+| セッション・引き継ぎ | [`cio-error-ticket-apply-gate.mdc`](.cursor/rules/cio-error-ticket-apply-gate.mdc) | 第8層 — CEO 3択チケット自動承認・再駆動 §50-3-11 |
+| セッション・引き継ぎ | [`cio-env-self-healing-gate.mdc`](.cursor/rules/cio-env-self-healing-gate.mdc) | 第8層 — Self-Healing Env 暗号化復元 §50-3-11 |
+| セッション・引き継ぎ | [`cio-weekend-rollback-gate.mdc`](.cursor/rules/cio-weekend-rollback-gate.mdc) | 第9層 — 週末自律修正自動ロールバック §50-3-11 |
+| セッション・引き継ぎ | [`cio-spec-logic-gate.mdc`](.cursor/rules/cio-spec-logic-gate.mdc) | 第9層 — SPEC.md 日本語論理矛盾 Linter §50-3-11 |
+| セッション・引き継ぎ | [`cio-debug-tips-stock-gate.mdc`](.cursor/rules/cio-debug-tips-stock-gate.mdc) | 第9層 — 15ターン解体デバッグ知恵自動ストック §50-3-11 |
 | 4AI・DeepSeek・§50-3-8 | [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) | CIO×知恵袋の仕様確認分業（🎖️表の下位・予実など） |
 | 4AI・DeepSeek・§50-3-8 | [`deepseek-pre-edit-gate.mdc`](.cursor/rules/deepseek-pre-edit-gate.mdc) | U4 — customize/SPEC/本番PUT の編集前に DeepSeek 1 問必須（CEO 2026-05-17） |
 | MCP・ツール | [`mcp-server-use-triggers.mdc`](.cursor/rules/mcp-server-use-triggers.mdc) | MCP §50 — 先出し義務・1行トリガー表（descriptor は mcp-tool-discipline） |
@@ -74,7 +83,7 @@
 
 ## § ↔ .mdc 双方向索引（自動生成・編集禁止）
 
-**更新**: `npm run rules:sync-section-mdc`（2026-05-29 JST）
+**更新**: `npm run rules:sync-section-mdc`（2026-05-30 JST）
 **正本**: `AGENTS.md` § 解釈 / 機械: `data/rules-index-section-mdc-map.json`
 
 ### § → .mdc（抜粋）
@@ -88,7 +97,7 @@
 | §1-2-3-1 | [`cio-constitution.mdc`](.cursor/rules/cio-constitution.mdc) · [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) · [`every-turn-rules-confirm.mdc`](.cursor/rules/every-turn-rules-confirm.mdc) · [`mode-b-canonical.mdc`](.cursor/rules/mode-b-canonical.mdc) · [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) |
 | §1-2-3-3 | [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) |
 | §1-2-3-4 | [`cio-constitution.mdc`](.cursor/rules/cio-constitution.mdc) · [`mode-b-canonical.mdc`](.cursor/rules/mode-b-canonical.mdc) |
-| §1-2-3-4-A | [`composer-mcp-audit-gate.mdc`](.cursor/rules/composer-mcp-audit-gate.mdc) · [`cursor-generate-image-assets.mdc`](.cursor/rules/cursor-generate-image-assets.mdc) · [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) · [`mode-b-canonical.mdc`](.cursor/rules/mode-b-canonical.mdc) |
+| §1-2-3-4-A | [`cio-commit-msg-kimi-gate.mdc`](.cursor/rules/cio-commit-msg-kimi-gate.mdc) · [`cio-composer-escalation-interlock.mdc`](.cursor/rules/cio-composer-escalation-interlock.mdc) · [`cio-context-dissolution-interlock.mdc`](.cursor/rules/cio-context-dissolution-interlock.mdc) · [`cio-debug-tips-stock-gate.mdc`](.cursor/rules/cio-debug-tips-stock-gate.mdc) · [`cio-env-integrity-gate.mdc`](.cursor/rules/cio-env-integrity-gate.mdc) · [`cio-env-self-healing-gate.mdc`](.cursor/rules/cio-env-self-healing-gate.mdc) · [`cio-error-ticket-apply-gate.mdc`](.cursor/rules/cio-error-ticket-apply-gate.mdc) · [`cio-error-ticket-gate.mdc`](.cursor/rules/cio-error-ticket-gate.mdc) · [`cio-handoff-export-validate-gate.mdc`](.cursor/rules/cio-handoff-export-validate-gate.mdc) · [`cio-kintone-fields-gate.mdc`](.cursor/rules/cio-kintone-fields-gate.mdc) · [`cio-spec-logic-gate.mdc`](.cursor/rules/cio-spec-logic-gate.mdc) · [`cio-weekend-rollback-gate.mdc`](.cursor/rules/cio-weekend-rollback-gate.mdc) · [`composer-mcp-audit-gate.mdc`](.cursor/rules/composer-mcp-audit-gate.mdc) · [`cursor-generate-image-assets.mdc`](.cursor/rules/cursor-generate-image-assets.mdc) · [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) · [`mode-b-canonical.mdc`](.cursor/rules/mode-b-canonical.mdc) |
 | §1-2-3-4-C | [`cursor-generate-image-assets.mdc`](.cursor/rules/cursor-generate-image-assets.mdc) |
 | §1-2-4 | [`cursor-generate-image-assets.mdc`](.cursor/rules/cursor-generate-image-assets.mdc) · [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) · [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) |
 | §10 | [`cio-discipline-always.mdc`](.cursor/rules/cio-discipline-always.mdc) · [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) |
@@ -117,11 +126,11 @@
 | §50 | [`constitution-brief-card.mdc`](.cursor/rules/constitution-brief-card.mdc) · [`mcp-server-use-triggers.mdc`](.cursor/rules/mcp-server-use-triggers.mdc) |
 | §50-3 | [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) · [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) |
 | §50-3-10 | [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) |
-| §50-3-11 | [`composer-mcp-audit-gate.mdc`](.cursor/rules/composer-mcp-audit-gate.mdc) · [`cursor-generate-image-assets.mdc`](.cursor/rules/cursor-generate-image-assets.mdc) · [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) · [`every-turn-rules-confirm.mdc`](.cursor/rules/every-turn-rules-confirm.mdc) · [`mode-b-canonical.mdc`](.cursor/rules/mode-b-canonical.mdc) |
+| §50-3-11 | [`cio-composer-escalation-interlock.mdc`](.cursor/rules/cio-composer-escalation-interlock.mdc) · [`cio-context-dissolution-interlock.mdc`](.cursor/rules/cio-context-dissolution-interlock.mdc) · [`cio-debug-tips-stock-gate.mdc`](.cursor/rules/cio-debug-tips-stock-gate.mdc) · [`cio-env-integrity-gate.mdc`](.cursor/rules/cio-env-integrity-gate.mdc) · [`cio-env-self-healing-gate.mdc`](.cursor/rules/cio-env-self-healing-gate.mdc) · [`cio-error-ticket-apply-gate.mdc`](.cursor/rules/cio-error-ticket-apply-gate.mdc) · [`cio-error-ticket-gate.mdc`](.cursor/rules/cio-error-ticket-gate.mdc) · [`cio-spec-logic-gate.mdc`](.cursor/rules/cio-spec-logic-gate.mdc) · [`cio-weekend-rollback-gate.mdc`](.cursor/rules/cio-weekend-rollback-gate.mdc) · [`composer-mcp-audit-gate.mdc`](.cursor/rules/composer-mcp-audit-gate.mdc) · [`cursor-generate-image-assets.mdc`](.cursor/rules/cursor-generate-image-assets.mdc) · [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) · [`every-turn-rules-confirm.mdc`](.cursor/rules/every-turn-rules-confirm.mdc) · [`mode-b-canonical.mdc`](.cursor/rules/mode-b-canonical.mdc) |
 | §50-3-2 | [`cio-discipline-always.mdc`](.cursor/rules/cio-discipline-always.mdc) · [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) · [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) |
 | §50-3-3 | [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) |
 | §50-3-7 | [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) |
-| §50-3-8 | [`cio-discipline-always.mdc`](.cursor/rules/cio-discipline-always.mdc) · [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) · [`constitutional-focus-kintone-customize.mdc`](.cursor/rules/constitutional-focus-kintone-customize.mdc) · [`constitutional-focus-yojitsu.mdc`](.cursor/rules/constitutional-focus-yojitsu.mdc) · [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) · [`deepseek-pre-edit-gate.mdc`](.cursor/rules/deepseek-pre-edit-gate.mdc) · [`mode-b-canonical.mdc`](.cursor/rules/mode-b-canonical.mdc) |
+| §50-3-8 | [`cio-discipline-always.mdc`](.cursor/rules/cio-discipline-always.mdc) · [`cio-env-integrity-gate.mdc`](.cursor/rules/cio-env-integrity-gate.mdc) · [`cio-error-ticket-gate.mdc`](.cursor/rules/cio-error-ticket-gate.mdc) · [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) · [`constitutional-focus-kintone-customize.mdc`](.cursor/rules/constitutional-focus-kintone-customize.mdc) · [`constitutional-focus-yojitsu.mdc`](.cursor/rules/constitutional-focus-yojitsu.mdc) · [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) · [`deepseek-pre-edit-gate.mdc`](.cursor/rules/deepseek-pre-edit-gate.mdc) · [`mode-b-canonical.mdc`](.cursor/rules/mode-b-canonical.mdc) |
 | §50-3-9 | [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) |
 | §51 | [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) |
 | §51-6 | [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) · [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) |
@@ -145,10 +154,22 @@
 | [`auto-read-by-topic.mdc`](.cursor/rules/auto-read-by-topic.mdc) | §41 |
 | [`autonomous-with-mandatory-asks.mdc`](.cursor/rules/autonomous-with-mandatory-asks.mdc) | §(RULES-INDEX行) |
 | [`cio-18-zero-tolerance.mdc`](.cursor/rules/cio-18-zero-tolerance.mdc) | §(RULES-INDEX行) |
+| [`cio-commit-msg-kimi-gate.mdc`](.cursor/rules/cio-commit-msg-kimi-gate.mdc) | §1-2-3-4-A |
+| [`cio-composer-escalation-interlock.mdc`](.cursor/rules/cio-composer-escalation-interlock.mdc) | §1-2-3-4-A · §50-3-11 |
 | [`cio-constitution.mdc`](.cursor/rules/cio-constitution.mdc) | §(RULES-INDEX行) · §1 · §1-2-3-1 · §1-2-3-4 · §35-1 · §36 · §56-1 |
+| [`cio-context-dissolution-interlock.mdc`](.cursor/rules/cio-context-dissolution-interlock.mdc) | §(RULES-INDEX行) · §1-2-3-4-A · §50-3-11 |
+| [`cio-debug-tips-stock-gate.mdc`](.cursor/rules/cio-debug-tips-stock-gate.mdc) | §1-2-3-4-A · §50-3-11 |
 | [`cio-discipline-always.mdc`](.cursor/rules/cio-discipline-always.mdc) | §10 · §11 · §35-7 · §36 · §50-3-2 · §50-3-8 |
+| [`cio-env-integrity-gate.mdc`](.cursor/rules/cio-env-integrity-gate.mdc) | §1-2-3-4-A · §50-3-11 · §50-3-8 |
+| [`cio-env-self-healing-gate.mdc`](.cursor/rules/cio-env-self-healing-gate.mdc) | §1-2-3-4-A · §50-3-11 |
+| [`cio-error-ticket-apply-gate.mdc`](.cursor/rules/cio-error-ticket-apply-gate.mdc) | §1-2-3-4-A · §50-3-11 |
+| [`cio-error-ticket-gate.mdc`](.cursor/rules/cio-error-ticket-gate.mdc) | §1-2-3-4-A · §50-3-11 · §50-3-8 |
+| [`cio-handoff-export-validate-gate.mdc`](.cursor/rules/cio-handoff-export-validate-gate.mdc) | §1-2-3-4-A |
+| [`cio-kintone-fields-gate.mdc`](.cursor/rules/cio-kintone-fields-gate.mdc) | §1-2-3-4-A |
 | [`cio-operating-loop.mdc`](.cursor/rules/cio-operating-loop.mdc) | §(RULES-INDEX行) |
 | [`cio-report-min-format.mdc`](.cursor/rules/cio-report-min-format.mdc) | §1 |
+| [`cio-spec-logic-gate.mdc`](.cursor/rules/cio-spec-logic-gate.mdc) | §1-2-3-4-A · §50-3-11 |
+| [`cio-weekend-rollback-gate.mdc`](.cursor/rules/cio-weekend-rollback-gate.mdc) | §1-2-3-4-A · §50-3-11 |
 | [`composer-mcp-audit-gate.mdc`](.cursor/rules/composer-mcp-audit-gate.mdc) | §1-2-3-4-A · §50-3-11 |
 | [`constitution-brief-card.mdc`](.cursor/rules/constitution-brief-card.mdc) | §(RULES-INDEX行) · §0 · §3 · §50 |
 | [`constitution-enforcement-core.mdc`](.cursor/rules/constitution-enforcement-core.mdc) | §(RULES-INDEX行) · §35-1 · §38 · §41 · §56-1 · §56-1a |
@@ -169,18 +190,6 @@
 | [`kintone.mdc`](.cursor/rules/kintone.mdc) | §(RULES-INDEX行) |
 | [`mcp-frontend-shadcn-chrome.mdc`](.cursor/rules/mcp-frontend-shadcn-chrome.mdc) | §(RULES-INDEX行) |
 | [`mcp-server-use-triggers.mdc`](.cursor/rules/mcp-server-use-triggers.mdc) | §(RULES-INDEX行) · §50 · §57-10 |
-| [`mcp-tool-discipline.mdc`](.cursor/rules/mcp-tool-discipline.mdc) | §(RULES-INDEX行) · §57-5 |
-| [`mode-b-canonical.mdc`](.cursor/rules/mode-b-canonical.mdc) | §(RULES-INDEX行) · §1 · §1-2-2 · §1-2-3-1 · §1-2-3-4 · §1-2-3-4-A · §35-7 · §50-3-11 · §50-3-8 |
-| [`mode-b-mdc-canonical-linter.mdc`](.cursor/rules/mode-b-mdc-canonical-linter.mdc) | §(RULES-INDEX行) |
-| [`modern-web-official-docs.mdc`](.cursor/rules/modern-web-official-docs.mdc) | §(RULES-INDEX行) |
-| [`next-session-jbis-followups.mdc`](.cursor/rules/next-session-jbis-followups.mdc) | §(RULES-INDEX行) |
-| [`persist-policies.mdc`](.cursor/rules/persist-policies.mdc) | §13 · §15 · §26 · §30 · §31 |
-| [`preflight-checklist.mdc`](.cursor/rules/preflight-checklist.mdc) | §34 |
-| [`security-news-response.mdc`](.cursor/rules/security-news-response.mdc) | §(RULES-INDEX行) |
-| [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) | §(RULES-INDEX行) · §1-2-3-1 · §1-2-3-3 · §1-2-4 · §35 · §35-1 · §41 · §47-D · §50-3 · §50-3-3 · §50-3-7 · §51 · §51-6 · §51-6-2 · §52 · §52-4 · §52-8 · §52-9 · §56-1 · §57 |
-| [`session-read-ladder-two-phase.mdc`](.cursor/rules/session-read-ladder-two-phase.mdc) | §(RULES-INDEX行) |
-| [`snyk-security.mdc`](.cursor/rules/snyk-security.mdc) | §(RULES-INDEX行) |
-| [`windows-cross-platform.mdc`](.cursor/rules/windows-cross-platform.mdc) | §16 · §16-1 |
 
 <!-- RULES-INDEX:SECTION-MDC-AUTO:END -->
 

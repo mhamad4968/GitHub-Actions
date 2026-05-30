@@ -28,8 +28,9 @@
   22-HANDOFF-HUMAN.txt  
   23-AI緊急用-README.txt  
   **24-handoff-log.md**（リポ `chat-sessions/handoff-log.md`）／**25-checkpoint-latest.md**（リポ `chat-sessions/checkpoint-latest.md`）… **常時**バイト同期  
-  **26** … 夕反省 **`26-evening-reflection-YYYY-MM-DD.md`**（リポにレポートがある日）または **`26-evening-reflection-SLOT.txt`**（未作成日・歯抜け防止）  
+  26 … 夕反省 **`26-evening-reflection-YYYY-MM-DD.md`**（リポにレポートがある日）または **`26-evening-reflection-SLOT.txt`**（未作成日・歯抜け防止）  
   **27-USER683-CLAUDE-RELAY-SESSION.txt**（read-pack）  
+  **28-CONSTITUTION-GENRE-MAP.txt**（read-pack・憲法ジャンル早見）  
   （read-pack は **08〜20・26・27** をリポと同名コピー。番号付き **.md** も同梱）
 
 ■ 実装日冒頭（CEO承認 A1 + D1〜D4 是正・必須）  

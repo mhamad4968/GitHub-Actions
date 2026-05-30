@@ -1,0 +1,9 @@
+【26-evening-reflection-SLOT】夕反省プレースホルダ（当日レポート未作成日）
+
+正本: docs/reports/YYYY-MM-DD-evening-reflection.md がある日は sync で
+  26-evening-reflection-YYYY-MM-DD.md に差し替え（本 SLOT は Desktop から削除）。
+
+役割（docs/runbooks/evening-reflection-scope.md）:
+  · AI の失敗・反省
+  · ミス削減のアップデート案のみ
+  · 明日の第1手・レーン・成果サマリは書かない（→ 19 / 25 / 当日 -0）

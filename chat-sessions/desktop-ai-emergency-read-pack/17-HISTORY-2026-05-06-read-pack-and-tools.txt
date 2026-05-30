@@ -118,7 +118,12 @@
 - **B3**: 80行超・customize/** は Composer Subagent 必須（🎖️ 明記）。
 - **B1（CIO自律）**: `19-SESSION-ONE-REPORT-2026-05-19.md` → `docs/reports/archive/2026-05/`。Desktop 19 は **当日 1 本**。
 
-## 2026-05-21（追記）Desktop AI緊急用・番号 00〜27 連続化
+## 2026-05-31（追記）憲法ジャンル Desktop 28 番・Part C 最適化
+
+- **28-CONSTITUTION-GENRE-MAP.txt** … 4AI・17ジャンル+カーネル早見（`npm run constitution:sync-genre-desktop-map`、sync-desktop 時自動再生成）。
+- **番号体系**: **00〜28** 連続（`desktop-ai-emergency-expected-files.mjs` / verify 更新）。
+- **RULES-INDEX** … ジャンル表に 18〜22 + 28 追補。
+- **Part C** … 重複「主タスク」3块を整理 → **25-checkpoint + 28** 参照型に短縮。
 
 - **26 番**: 夕反省未作成日は **`26-evening-reflection-SLOT.txt`**（read-pack 正本）を Desktop へ。レポート作成日は **`26-evening-reflection-YYYY-MM-DD.md`** に差し替え（SLOT は prune）。
 - **prune**: 期待外の `NN-*`（文字化け複製・`19-SESSION-ONE-REPORT-2026-05-19.txt` 等）を sync 末尾で削除。`scripts/lib/desktop-ai-emergency-expected-files.mjs`。

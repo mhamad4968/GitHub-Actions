@@ -47,6 +47,8 @@
 | [17-four-ai-mode-b.md](17-four-ai-mode-b.md) | §1-2-3-4・§50-3-11 | 4AI・開発プロトコル |
 | [18-ai-team-read-map.md](18-ai-team-read-map.md) | 役割別ナビ | **どの AI が何を読むか**（Phase 2） |
 
+**Desktop 控え**: `chat-sessions/desktop-ai-emergency-read-pack/28-CONSTITUTION-GENRE-MAP.txt`（`npm run constitution:sync-genre-desktop-map` / sync-desktop 時に自動再生成）
+
 ### AI-KERNEL 4要素カーネル（2026-05-30 細分化最適化・§50-3-11 非置換追補）
 
 | ファイル | ジャンル | いつ読む |

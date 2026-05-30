@@ -59,12 +59,17 @@
 
 ## ジャンル読本への最短ルート
 
-| タスク種別 | 読本（1〜2本） |
-|------------|----------------|
-| kintone 実装 | `02-kintone-development.md` |
-| MCP | `12-mcp-usage.md` + `docs/mcp-status.md` |
-| セッション切替 | `10-session-operations.md` |
-| 報告・§41 | `09-human-autonomy-reporting.md` |
-| Tier / RACI | `15-raci-responsibility.md` |
+| タスク種別 | 読本（1〜2本） | 主担当 |
+|------------|----------------|--------|
+| kintone 実装 | `02-kintone-development.md` + `17-four-ai-mode-b.md` | CIO→Composer |
+| MCP | `12-mcp-usage.md` + `docs/mcp-status.md` | CIO |
+| セッション切替 | `10-session-operations.md` + `20-cost-token-defense-kernel.md`（長時間時） | CIO |
+| 報告・§41 | `09-human-autonomy-reporting.md` + `19-governance-four-ai-kernel.md` | CIO |
+| Tier / RACI | `15-raci-responsibility.md` | CIO |
+| verify 連続失敗 | `22-error-handling-kernel.md` | CIO |
+| 土日・週明け | `21-autonomous-patrol-kernel.md` | CIO |
+| 長セッション・引っ越し | `20-cost-token-defense-kernel.md` | CIO |
+
+**Desktop 控え（オフライン早見）**: `28-CONSTITUTION-GENRE-MAP.txt`（`npm run constitution:sync-genre-desktop-map` で再生成）
 
 全一覧: [`README.md`](README.md)

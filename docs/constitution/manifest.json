@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-05-17T01:27:35.094Z",
-  "source": "AGENTS.md",
-  "files": [
+  "generatedAt": "2026-05-31T00:00:00.000Z",
+  "source": "AGENTS.md + manual Phase2",
+  "extractedFromAgents": [
     "00-preamble.md",
     "01-fundamentals.md",
     "02-kintone-development.md",
@@ -19,5 +19,15 @@
     "14-self-governance-safemode.md",
     "15-raci-responsibility.md",
     "16-amendment-process.md"
-  ]
+  ],
+  "manualPhase2": [
+    "00-rule-hierarchy.md",
+    "17-four-ai-mode-b.md",
+    "18-ai-team-read-map.md",
+    "19-governance-four-ai-kernel.md",
+    "20-cost-token-defense-kernel.md",
+    "21-autonomous-patrol-kernel.md",
+    "22-error-handling-kernel.md"
+  ],
+  "desktopMap": "chat-sessions/desktop-ai-emergency-read-pack/28-CONSTITUTION-GENRE-MAP.txt"
 }

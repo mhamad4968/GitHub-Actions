@@ -352,6 +352,24 @@ agent
 
 **§1-2-3-4-A 4AI担当明文化マトリクス（CEO 浜田 2026-05-21 厳命・正本・§50-3-11 非置換追補）**:
 
+**4AI 連携ルート（視覚・2026-05-30 追補）**:
+
+```
+  CIO ──§50-3-8──► DeepSeek ──OK──► Composer ──review──► Kimi ──► CIO ──► CEO
+                              │                              │
+                         cio:guard:5038              cio:guard:composer-mcp-audit
+```
+
+```mermaid
+flowchart LR
+  A[CIO Opus4.7/4.8] --> B[DeepSeek 盲点3点]
+  B --> C[Composer 2.5 Diff]
+  C --> D[Kimi 精査]
+  D --> A
+  E[15ターン壁] --> F[latest-session-bridge.json]
+  F --> G[New Chat import]
+```
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ■ 1. 4AIチームの完全担当定義マトリクス
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -403,6 +421,22 @@ agent
 4. **コスト確認**: 1 ターンの消費が巨大化しそうなら **§41 一問**で浜田に区切り確認（強引に続行しない）。
 5. **リトライ上限**: verify 等の自律ループは **最大 3 回**で **exit 1** 停止（ゾンブループ防止）。
 6. **画像生成 MCP**: **計画削除・導入禁止**（内蔵 `GenerateImage` のみ・`cursor-generate-image-assets.mdc`）。
+7. **15ターン強制解体**: 同一チャット **15 ターン超**または **40k トークン自認** → 応答末尾で New Chat 強制申告 → **`npm run cio:session:export-handoff`**（`.cursor/rules/cio-context-dissolution-interlock.mdc`）。
+8. **Diff ループ遮断**: 同一ファイル **3 回連続 Diff** → `cio:session:turn-guard -- --record-diff` が **exit 1**（SPEC 根本見直し）。
+9. **New Chat 第 1 手**: **`npm run verify:session-handoff-integrity -- --import`** → exit 0 でロケットスタート（**4AI引っ越し完了マッピング表**自動表示）。
+10. **Composer 自律エスカレーション**: verify **連続2回** exit 1 → DeepSeek §50-3-8 強制 → Self-Heal **最大3回** → CIO(Opus 4.8) CEO 報告（`npm run cio:composer:escalation-guard`）。
+11. **SPEC 自動スコアリング**: **`npm run cio:task:score-spec`** → `docs/handoff/spec-task-scores.json` + SPEC 優先順位節 → `[🎖️ 本セッション割当]` 入力ソース。
+12. **環境変数セルフ監査**: **`npm run verify:cio-env-integrity`** — 401/403 先回り（不足時 exit 1 + 警告明示）。
+13. **死に文週末パージ**: **`npm run cio:dead-lines-purge`** — Kimi 精査職分、`docs/archive/dead-lines/` へ退避（週末監査連動）。
+14. **自律エラーチケット**: Self-Heal 3回上限 → **`npm run cio:error:generate-ticket`** → `docs/issues/bug-latest.md` + CEO 3択待機。
+15. **3択自動承認**: CEO「選択肢Nで実行」→ **`npm run cio:error:apply-ticket-choice -- --choice N`** → verify 再駆動。
+16. **Self-Healing Env**: **`npm run cio:env:self-healing`** — `docs/secure/.env.enc` 復号・`.env` 自動補完。
+17. **デッドコード週末パージ**: **`npm run cio:dead-code-purge -- --apply`** — Kimi×Composer、`docs/archive/dead-codes/` 退避、`[WEEKEND-DEAD-CODE-PURGE]`。
+18. **週末救済ロールバック**: **`npm run cio:rollback:weekend-actions`** — verify NG 時に週末自律修正を revert → baseline 安全圏。
+19. **SPEC 論理 Linter**: **`npm run verify:cio-spec-logic`** — DeepSeek 職分・矛盾で exit 1 ロック。
+20. **デバッグ知恵ストック**: **`cio:session:export-handoff`** 内 — Kimi 職分で `docs/knowledge/debug-tips.md` 4要素追記。
+21. **憲法 AI-KERNEL カーネル**: **`npm run verify:constitution-genre-kernels`** — `docs/constitution/19〜22-*-kernel.md` 4要素整合。
+22. **Desktop 00〜27 同期**: **`npm run session-starter:sync-desktop`** → **`verify:desktop-ai-emergency-sync`** — 歯抜け番号禁止。
 
 **§1-2-3-4-C AI読み込み最適化・命令圧縮（2026-05-29 CEO 浜田・§50-3-11 非置換追補）**:
 
@@ -1905,6 +1939,63 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 4. **機械スタンプ** — `npm run cio:guard:composer-mcp-audit -- --stamp --text "…"`（45分有効・`composer-mcp-audit-stamp.json`）
 
 正本: `.cursor/rules/composer-mcp-audit-gate.mdc`。スキップ: `--skip "具体理由1行"`（README 誤字のみ等）。
+
+**第5層 — 3重コンテキスト強制解体（2026-05-30 CEO 追補・§50-3-11 非置換）**:
+
+1. **15 ターン / 40k 壁** — `npm run cio:session:turn-guard -- --check --strict`（超過かつ export 未完了 → **exit 1**）
+2. **荷造り** — `npm run cio:session:export-handoff` → `docs/handoff/latest-session-bridge.json`
+3. **New Chat import** — `npm run verify:session-handoff-integrity -- --import` → exit 0
+4. **週末連動** — `npm run cio:weekend:autonomous-audit` が bridge をロードし監査詳細をマージ
+
+正本: `.cursor/rules/cio-context-dissolution-interlock.mdc` / `docs/runbooks/cio-weekend-autonomous-audit.md`
+
+**第6層 — 超自律化（方針1〜3・2026-05-30 CEO 追補・§50-3-11 非置換）**:
+
+1. **方針1 — 自律エスカレーション**: `eslint-mcp` / verify が **連続2回** exit 1 → Composer **ロック** → **DeepSeek** §50-3-8 強制（`npm run cio:composer:escalation-guard -- --prompt-deepseek`）→ Self-Heal **最大3回** → 失敗時 **CIO(Opus 4.8)** ハブで CEO 報告
+2. **方針2 — SPEC 自動スコアリング**: `npm run cio:task:score-spec` — 難易度(5) × Token(低/中/高) × Impact(5) → `docs/handoff/spec-task-scores.json` + SPEC 優先順位節を自動更新 → 次セッション割当の入力ソース
+3. **方針3 — Handoff ビジュアルマップ**: `npm run verify:session-handoff-integrity -- --import` 成功直後に **【4AI引っ越し完了マッピング表】**（gitHead / SPEC進捗% / MCP稼働 / repo-tree lite）をチャット最先頭へ
+
+正本: `.cursor/rules/cio-composer-escalation-interlock.mdc` / `scripts/lib/cio-handoff-visual-map.mjs` / `scripts/cio-task-score-spec.mjs`
+
+**第7層 — 環境自律化（改善案1〜3・2026-05-30 CEO 追補・§50-3-11 非置換）**:
+
+1. **改善案1 — 環境変数セルフ監査**: `npm run verify:cio-env-integrity` — `.env` / `mcp.json` env / `customize/**` 参照キーを検査。不足時 **exit 1** + `【警告】環境変数に不足があります。〇〇…未配備`
+2. **改善案2 — 死に文週末パージ**: 週末 `cio:weekend:autonomous-audit` + **Kimi 精査職分** — 3階層索引外の死に文を `docs/archive/dead-lines/` へ安全退避（`npm run cio:dead-lines-purge -- --apply`）
+3. **改善案3 — 3択エラーチケット**: Self-Heal **3回**上限 → `npm run cio:error:generate-ticket` → `docs/issues/bug-latest.md`（ログ・3アプローチ・§50-3-8仮説・**CEO 3択**）→ チャット1行待機
+
+正本: `.cursor/rules/cio-env-integrity-gate.mdc` / `.cursor/rules/cio-error-ticket-gate.mdc` / `data/cio-env-manifest.json`
+
+**第8層 — 極限自律防衛（拡張案1〜3・2026-05-30 CEO 追補・§50-3-11 非置換）**:
+
+1. **拡張案1 — 3択自動承認**: CEO 1行「選択肢Nで実行」→ `npm run cio:error:apply-ticket-choice -- --choice N` — チケット内 `CIO-EXEC-CHOICE-N` / Diff 適用 → verify 群再駆動
+2. **拡張案2 — Self-Healing Env**: `npm run cio:env:self-healing` — `docs/secure/.env.enc` + `CIO_ENV_MASTER_KEY` で不足キー自動復元 → `verify:cio-env-integrity` exit 0
+3. **拡張案3 — デッドコード週末パージ**: 週末監査 + Kimi×Composer — 未参照 export を `docs/archive/dead-codes/` 退避 — `[WEEKEND-DEAD-CODE-PURGE]` コミット
+
+正本: `.cursor/rules/cio-error-ticket-apply-gate.mdc` / `.cursor/rules/cio-env-self-healing-gate.mdc` / `docs/secure/README.md`
+
+**第9層 — 最終完結自律防衛（拡張案1〜3・2026-05-30 CEO 追補・§50-3-11 非置換・環境改善フェーズ一旦完了）**:
+
+1. **拡張案1 — 週末救済ロールバック**: `npm run cio:rollback:weekend-actions` — verify NG 時に `[WEEKEND-*]` コミットを解析・revert → 金曜 baseline 安全圏へ自動退避 + 1行安全報告 + lock
+2. **拡張案2 — SPEC 論理 Linter**: `npm run verify:cio-spec-logic` — DeepSeek 職分の静的解析 — 矛盾検知で exit 1 + 赤字 `【仕様矛盾】` — 実装着手ロック
+3. **拡張案3 — デバッグ知恵ストック**: `cio:session:export-handoff` データ抽出 — Kimi 職分 — エラー/解決手順を `docs/knowledge/debug-tips.md` へ 4要素（前提/手順/禁止/exit）自動追記
+
+正本: `.cursor/rules/cio-weekend-rollback-gate.mdc` / `.cursor/rules/cio-spec-logic-gate.mdc` / `.cursor/rules/cio-debug-tips-stock-gate.mdc` / `data/cio-weekend-rollback-baseline.json`
+
+**第10層 — 憲法ジャンル細分化最適化（2026-05-30 CEO 最終命・§50-3-11 非置換・環境改善大団円）**:
+
+1. **AI-KERNEL 4要素カーネル** — `docs/constitution/19〜22-*-kernel.md`（統制・コスト防衛・週末パトロール・エラーハンドリング）
+2. **機械検証**: `npm run verify:constitution-genre-kernels`
+3. **Desktop 00〜27**: `session-starter:sync-desktop` + `verify:desktop-ai-emergency-sync` — 方式B Opus 4.8ハイブリッド・第9層エッセンス100%反映
+
+正本: `docs/constitution/README.md` / `chat-sessions/desktop-ai-emergency-read-pack/08-INDEX.txt`
+
+**第11層 — 土日環境改善3大自律インフラ（2026-05-30 CEO 超厳命・§50-3-11 非置換）**:
+
+1. **タスク① — kintone フィールド Linter**: `npm run verify:kintone-fields` — `data/kintone-field-registry.json` + `customize/**` 抽出突合 — 未登録 high → **exit 1**（本番 PUT ロック）
+2. **タスク② — Kimi コミット 4要素**: `git-hooks/prepare-commit-msg` → `scripts/cio-commit-msg-kimi-draft.mjs`（`npm run cio:commit-msg:kimi-draft`）— 憲法 diff に **前提/手順/禁止/exit** + `Reviewed-by: kimi` 追記 — 週末 JST 自動バイパス
+3. **タスク③ — Handoff 荷造り漏れ**: `npm run verify:session-handoff-integrity -- --validate-export` — bridge / checkpoint / SPEC / gitHead **DeepSeek 職分**クロスチェック — NG → 解体ロック
+
+正本: `.cursor/rules/cio-kintone-fields-gate.mdc` / `cio-commit-msg-kimi-gate.mdc` / `cio-handoff-export-validate-gate.mdc` / `data/kintone-field-registry.json`
 
 **担当定義の極限明文化**: **`AGENTS.md` §1-2-3-4-A**（完全マトリクス）・`mode-b-canonical.mdc`（用語単一窓）・Desktop **`18-重要確認.txt`**（浜田視認用）。
 

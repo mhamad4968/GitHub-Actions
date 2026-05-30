@@ -1,6 +1,24 @@
 # 📊 MCP 状態管理台帳
 
-**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-05-29（**Opus 4.8 大覚醒整備** — AI-KERNEL・repo-tree / eslint-mcp 活性化）
+**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-05-31（**MCP 死活監査・AIチーム合意** — Tier A のみ・構成変更なし）
+
+### §監査スナップ（2026-05-31 JST — DeepSeek §50-3-8 + Kimi レビュー）
+
+| ゲート | 結果 |
+|--------|------|
+| `health-check` | **100%** — 32 OK / 0 NG / skip 2（figma・mintlify = url-only） |
+| `cio:mcp:env` | **OK 6/6** |
+| `cio:mcp:gate` | registry + BASE_URL + quickprobe + **Space 48 JSON 200** |
+| `cio:mcp:env:extended` | **OK 8/9** — `markdownify` = **SKIP**（Windows・TSB-029 意図。IDE/WSL 直起動は ✅） |
+| `verify:cio-mcp-registry` | merged **24** servers・必須 10 名 OK |
+| `verify:mcp-four-ai-alignment` | OK |
+| `verify:cursor-mcp-windows` | OK |
+| `mcp-status:refresh-usage --dry-run` | 変更 **0**（表更新不要） |
+| `cio:env:enhance --quick` | OK |
+
+**AIチーム合意（本ターン）**: **Tier A のみ GO** — 監査記録・台帳更新。**Tier B 保留** — `mcp.json` 変更・`npx @latest` 一括更新・registry 削除は **CEO GO 後**（計画書 `docs/plans/2026-05-17-mcp-optimization-plan.md` §3 P3）。**触らない**: `cio:mcp:gate` ロジック・four-ai マトリクス・kintone Space 48 設定。
+
+**O-3 パッケージ（registry latest）**: `@kintone/mcp-server` **1.4.0**、`@iflow-mcp/markdownify-mcp` **0.0.2**（pin 一致）、`@colorsandfonts/mcp` **1.1.0**（pin 一致）、`@eslint/mcp` **0.3.6**、`@andredezzy/deep-directory-tree-mcp` **1.0.1**。詳細: `docs/reports/2026-05-31-mcp-health-audit.md`。
 
 ### §活性化 — 画像MCP代替ツール（2026-05-29）
 

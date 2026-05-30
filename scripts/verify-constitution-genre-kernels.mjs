@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * ジャンル別 AI-KERNEL 4要素読本 — 整合検証（第10層・憲法細分化）
+ * ジャンル別読本 — 整合検証（AI-KERNEL 4要素 + Desktop 28 + RULES-INDEX）
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -19,6 +19,22 @@ const KERNELS = [
 
 const HEADINGS = ['## 前提条件', '## 実行手順', '## 禁止事項', '## 判定コード'];
 
+const RULES_INDEX_GENRE_ROWS = [
+  '18-ai-team-read-map.md',
+  '19-governance-four-ai-kernel.md',
+  '20-cost-token-defense-kernel.md',
+  '21-autonomous-patrol-kernel.md',
+  '22-error-handling-kernel.md',
+  '28-CONSTITUTION-GENRE-MAP.txt',
+];
+
+const DESKTOP_MAP_MARKERS = [
+  '【28-CONSTITUTION-GENRE-MAP】',
+  '4AI — 誰が何を読む',
+  '19-governance-four-ai-kernel',
+  'verify:constitution-genre-kernels',
+];
+
 function main() {
   const issues = [];
   for (const k of KERNELS) {
@@ -35,13 +51,50 @@ function main() {
       if (!text.includes(m)) issues.push(`${k.file} missing marker: ${m}`);
     }
   }
+
   const readme = path.join(root, KERNEL_DIR, 'README.md');
-  if (!fs.readFileSync(readme, 'utf8').includes('19-governance-four-ai-kernel')) {
+  const readmeText = fs.readFileSync(readme, 'utf8');
+  if (!readmeText.includes('19-governance-four-ai-kernel')) {
     issues.push('README.md missing kernel table entries');
   }
+  if (!readmeText.includes('18-ai-team-read-map')) {
+    issues.push('README.md missing 18-ai-team-read-map');
+  }
+
+  const rulesIndex = fs.readFileSync(path.join(root, 'RULES-INDEX.md'), 'utf8');
+  for (const row of RULES_INDEX_GENRE_ROWS) {
+    if (!rulesIndex.includes(row)) {
+      issues.push(`RULES-INDEX.md missing genre row: ${row}`);
+    }
+  }
+
+  const mapPath = path.join(
+    root,
+    'chat-sessions/desktop-ai-emergency-read-pack/28-CONSTITUTION-GENRE-MAP.txt',
+  );
+  if (!fs.existsSync(mapPath)) {
+    issues.push('missing Desktop map: 28-CONSTITUTION-GENRE-MAP.txt');
+  } else {
+    const mapText = fs.readFileSync(mapPath, 'utf8');
+    for (const m of DESKTOP_MAP_MARKERS) {
+      if (!mapText.includes(m)) issues.push(`28-CONSTITUTION-GENRE-MAP.txt missing: ${m}`);
+    }
+  }
+
+  const manifestPath = path.join(root, KERNEL_DIR, 'manifest.json');
+  if (fs.existsSync(manifestPath)) {
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    if (!Array.isArray(manifest.manualPhase2) || manifest.manualPhase2.length < 7) {
+      issues.push('manifest.json manualPhase2 incomplete');
+    }
+  }
+
   const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
   if (!pkg.scripts?.['verify:constitution-genre-kernels']) {
     issues.push('package.json scripts.verify:constitution-genre-kernels');
+  }
+  if (!pkg.scripts?.['constitution:sync-genre-desktop-map']) {
+    issues.push('package.json scripts.constitution:sync-genre-desktop-map');
   }
 
   if (issues.length) {
@@ -49,7 +102,7 @@ function main() {
     for (const i of issues) console.error('  -', i);
     process.exit(1);
   }
-  console.log('[verify:constitution-genre-kernels] OK 4ジャンル AI-KERNEL 整合');
+  console.log('[verify:constitution-genre-kernels] OK ジャンル+AI-KERNEL+Desktop28+索引 整合');
   process.exit(0);
 }
 

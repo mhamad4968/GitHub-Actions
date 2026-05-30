@@ -8,11 +8,11 @@
 
 ## 30秒要約
 
-- **CIO** = Opus 4.7 ベース / 必要時 **Opus 4.8**（§1-2-3-4-B・指揮・判断・統合）
+- **CIO** = Opus 4.7 ベース / **方式Bハイブリッド** — 重ターンは **Opus 4.8**（§1-2-3-4-B・L3深検証）
 - **コード** = Composer 2.5 Subagent（diff のみ・GOなし save/deploy 禁止）
 - **長文** = Kimi / **知恵袋** = DeepSeek（§50-3-8）
-- **開発前3ステップ**: DeepSeek 1問 → 突合3行 → `npm run cio:guard:5038 -- --stamp`
-- **機械**: `cio:guard:composer-interlock` / `verify:mode-b-zombie-docs`
+- **15ターン解体** → `cio:session:export-handoff` → New Chat `--import`
+- **AI-KERNEL カーネル**: `docs/constitution/19〜22-*-kernel.md`（4ジャンル）
 
 ---
 

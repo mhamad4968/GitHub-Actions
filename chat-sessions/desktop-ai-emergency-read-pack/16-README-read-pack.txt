@@ -10,7 +10,7 @@
   2. チャットに貼った追加内容を、**同じ番号帯の READ-NN にリポ側で保存**する（CIO が代筆してよい）。
   3. 使わない番号は「（未使用）」1 行にしてよい。
   4. 日終わりで `npm run session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync`。
-  5. 新セッションでは AI に **08-INDEX** → **09〜20** → **21〜23**（儀式）→ **24〜26**（鏡・夕反省または SLOT）→ **27**（683 Claude）を **Explorer 名前順**で Read してよい（683 だけなら **27 を先に単体**でもよい。`SESSION-READ-LADDER.md` も参照）。
+  5. 新セッションでは AI に **08-INDEX** → **09〜20** → **21〜23**（儀式）→ **24〜26**（鏡・夕反省または SLOT）→ **27**（683 Claude）→ **28**（憲法ジャンル早見）を **Explorer 名前順**で Read してよい（683 だけなら **27 を先に単体**でもよい。憲法タスクなら **28 を 14 の直後**）。`SESSION-READ-LADDER.md` も参照。
   6. **変更履歴**を短く知りたいときは **17-HISTORY-2026-05-06-read-pack-and-tools.txt**（以降、同日系はこのファイルに追記してよい）。
 
 08-INDEX.txt

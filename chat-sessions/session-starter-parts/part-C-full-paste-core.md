@@ -72,70 +72,27 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【次セッション優先（2026-04-28 JST 以降・項番 -0 の本題候補）】
-- **部署予実（実装フェーズ）**: **4/29（水）約 19:00 JST〜** **kintone アプリ作成**（**スペース決定**後に `kintone-add-app`）。続けて **4/30** 項目確定 → **5/1** 初回投入 → **5/2–5/3** 機能・運用（`SPEC.md` §10.1）。仕様正本は **`SPEC.md`**・**`yojitsu-master-and-field-plan.md`**・**`yojitsu-migration-kyu-to-kintone.md`**。
-- **夜・約 20:00 JST 再入場**（反省会など）: **新セッション**— Desktop の **`SESSION-HANDOFF-LATEST-2026-04-28.txt`** または **`checkpoint-latest.md` 最終更新** を開いてから **項番 -0**。控えが古い／欠けるときは **CIO が先に `session-starter:sync-desktop`** で **ハブ** `00-NEW-SESSION-STARTER_yyyymmdd.txt` と **`01`〜`06`-STARTER-part-*.txt** を復元（浜田へ npm 依頼しない）。
-- **PC 台帳**: **B-1**＝**4/28–29** は §9 表どおりの準備のみ（**前倒し禁止**・`2026-04-21-new-pc-ledger-spec.md` **§9.0**）／**4/30–5/2** 本番 import。**B-2（共有+JR）**＝**5/13 本番以降**に旧台帳確認のうえ **1 件ずつ手登録**（同仕様書 **§7.4.6**）。予実等其他タスクとの **優先順は当日に合意**。
+【今やってる主タスク（2026-05-31 更新 — 詳細は鏡像を正とする）】
+- **正本**: Desktop **`25-checkpoint-latest.md`**（リポ `chat-sessions/checkpoint-latest.md` と同期）
+- **憲法ジャンル早見**: Desktop **`28-CONSTITUTION-GENRE-MAP.txt`**（タスク→読本→4AI）
+- **凍結**: 業務改善 kintone 実装（Q36 GO 前）／v5 マニュアル・595→674 **クローズ**
+- **レーン**: **前日決定禁止** — 当日 **項番 -0** で決める
+- **履歴ブロック**: 旧スケジュール（4/23 PC台帳等）は **`docs/plans/`** と checkpoint 参照（本 Part C には載せない）
 
-【今やってる主タスク（2026-05-30 終盤更新）】
-- **595 退職→674**: **本番 rev 84 済**・浜田検収 OK — **凍結例外**
-- **v5 マニュアル**: **69項** verify OK — **クローズ**（打合せ用正本 `C:\tmp\マニュアル\…v5.docx`）
-- **壁時計**: spawn 修復・`npm run session:clock:ensure`
-- **PC masa**: Event 3503 / BTHUSB 5 修復済 — 再起動後要確認
-- **次（機械のみ）**: B1 commit・B3 PC ログ確認
-- **レーン**: **前日決定禁止** — 業務改善含め **当日 -0** で決める
-- **凍結継続**: 業務改善 kintone 実装（Q36 GO 前）
-- **クローズ**: v5 マニュアル・595→674 退職連動
+【次セッション優先（項番 -0 の本題候補・当日確定）】
+- checkpoint **先頭表**と **§41 一問**で本題を固定してから着手
+- 予実 5A / PC台帳 5B の分岐は **`12-READ-04.txt`** 参照
 
-【今やってる主タスク（2026-05-28 手動更新・仕様フェーズ締め）】
-- **レーン G（業務改善 ver.02）**: 仕様 **確定日 2026-05-30（浜田）**。Pass4・83 突合済。**kintone 実装は Q36 GO まで禁止**
-- **次の 1 手（推奨）**: **Q36 報告** → **6/8** 着手 GO 仰ぎ **または** ご利用ガイド **dropdown たたき台**（6/9 前）
-- **マイルストーン**: **6/8** 実装着手（スペース 57）→ **6/9–6/20** ガイド → **6/21–6/27** 動作確認 → **7/1** デモ → **8/1** 本番（スペース 5）
-- **正本**: `docs/plans/2026-05-23-business-improvement-proposal-spec.md`・`2026-05-28-business-improvement-implementation-handbook.md`
-- **並行（依頼時）**: 予実 678 担当レビュー・683 微調整
+【自動化基盤（要約 / 詳細は checkpoint・health-check）】
+- file-watcher / wipe-guard / morning-prep / health-check / guard:check — **稼働中**（`npm run guard:check`）
+- MCP 一覧・4AI 表: **`docs/mcp-status.md`** + **`28-CONSTITUTION-GENRE-MAP.txt`**
 
-【今やってる主タスク（2026-04-23 22:40 時点・歴史参照。当日の一手は上の「次セッション優先」と checkpoint を優先）】
-- 4/24（金）: 環境設定マスタ アプリ作成（PC 台帳 Day 1）
-  → CSV 既配置: /mnt/c/tmp/new-pc-ledger/env-master-init.csv
-  → 配置スペース: kintone Space 21 (システム管理)
-  → §47-8 で kintone API write は浜田立ち会い必須
-- 4/25（土）: M365管理マスタ作成
-- 4/26（日）: 新・PC台帳ver.1 + customize（Chrome 147 + Playwright + a11y-scanner で動作確認）
-- 4/27（月）: 動作確認
-- 4/28-29（火水祝）: **B-1** 移行データ整形・生成（準備・**前倒し禁止**・§9.0）
-- 4/30-5/2（木金土）: **B-1** データ移行— **画面 CSV 取込**（§7.4.6）
-- 5/3-6: GW
-- 5/7-12（木〜火）: 試運用 6 日
-- 5/13（水）: 🚀 **本番運用開始**／**以降 B-2（共有+JR）**は **1 件ずつ手登録**（§7.4.6）
-- 5/16（土）: Cursor サブエージェント PoC-1 再議論
-- 5/17（日）〜: SKYSEA 計画開始（4/21 で 5/15 → 5/17 にリスケ済）
-- 5/22+: M2 vite 6→8 / M5 tailwind 3→4 / M4 node v25 切替 / P3 fetch MCP uvx 化 再評価
-- 2026-10: node v26 LTS 化時に M4 再評価
-- 詳細: docs/plans/2026-04-21-new-pc-ledger-spec.md v1.1
-
-【自動化基盤（TSB-006 + TSB-007 ep5 対策で完成済 / 2026-04-23 時点）】
-- file-watcher (常駐 / PID 41917 / 4/19 から連続稼働): 21 ファイル監視 + 0 byte 化検知 + 自動復元
-- wipe-guard (15 分ごと cron): 空ファイル検知 + 自動復元
-- emergency-mirror (4 時間ごと / 17 */4): ~/.cursor-emergency-backup/ に最新ミラー
-- watcher-watchdog (5 分ごと + @reboot): file-watcher 死活監視・自動再起動
-- daily-morning-prep (06:00 cron): apply-approved-changes + ヘルスチェック + lint + audit + ブリーフィング生成
-- health-check (33 */4 cron): MCP 全件 probe + Node 整合 + cron + disk + mem + rag DB チェック (TSB-013 v2 で uv PATH 拡張済)
-- auto-heal (43 */4 cron): npm audit fix patch only (TSB-007 ep5 対策で --omit=dev 削除済)
-- backup-mcp (00:00 daily cron): mcp.json + MCP サーバ自作コードを backups/mcp/ に世代保存
-- npm run guard:check / restore:wiped / watcher:status / guard:mirror で確認可能
-
-【MCP 構成（2026-05-06 更新 / 15 件 / active 13 + skip 2）】
-active (13): rag (76+ docs / hybrid mode) / kintone (公式) / kintone-dev (自作 / API 仕様参照) / kintone-space (自作 / 4/24 で実戦投入) / cve-search / cyber-news / fetch / playwright (Chrome 147 install 済) / accessibility-scanner / sequential-thinking / memory (10+ entities + 11+ relations) / filesystem / duckduckgo-search (4/23 google-search から入替 / API key 不要)
-skip (2): github (Win) / office-powerpoint (Win)（WSL では **`gh`** を GitHub 操作の第一選択）
-
-【新ツール導入済（2026-04-23）】
-- jq 1.7 (kintone API JSON 整形)
-- ripgrep 14.1.0 (高速 grep / 大量ファイルでは -g '*.md' 等で filter 推奨)
-- uv 0.11.7 (Python uvx)
-- gh 2.91.0 (GitHub CLI / 4/22 リリース最新)
-- git 2.54.0 (Ubuntu PPA latest)
+【MCP 構成（2026-05-31 要約）】
+- registry 必須10 + repo-tree / eslint-mcp / kintone-dev / kintone-space / figma 等（**24 servers**）
+- 日常ゲート: **`npm run cio:mcp:env`**（SUMMARY OK 6/6）
+- 画像 MCP **計画削除** — GenerateImage のみ（明示依頼時）
 
 【今日（このセッション）の依頼】
 （ここに自由文で書く。例:「PC 台帳 Day 1 やろう」「○○について教えて」など）
-（**4/28 朝以降の新チャット**では、上記 **「次セッション優先」** を **項番 -0** で本題候補として確認してから着手）
+（本題は **項番 -0** の §41 一問で確認してから着手）
 

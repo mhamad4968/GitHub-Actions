@@ -15,6 +15,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import {
   getJstYyyymmdd,
@@ -236,6 +237,16 @@ function main() {
     );
     process.exitCode = 0;
     return;
+  }
+
+  const genreMapGen = path.join(root, 'scripts/generate-constitution-genre-desktop-map.mjs');
+  if (fs.existsSync(genreMapGen)) {
+    const g = spawnSync(process.execPath, [genreMapGen], { cwd: root, encoding: 'utf8' });
+    if (g.stdout) process.stdout.write(g.stdout);
+    if (g.stderr) process.stderr.write(g.stderr);
+    if (g.status !== 0) {
+      console.warn('[sync-session-starter-to-desktop] 28 ジャンル早見生成 NG（sync 続行）');
+    }
   }
 
   const starterSrc = path.join(root, 'chat-sessions/NEW-SESSION-STARTER.md');
