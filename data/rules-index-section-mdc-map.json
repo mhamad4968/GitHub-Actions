@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-30T02:23:40.149Z",
+  "generatedAt": "2026-05-30T02:27:40.218Z",
   "sectionToMdc": {
     "§0": [
       "constitution-brief-card.mdc",
@@ -38,6 +38,8 @@
       "cio-composer-escalation-interlock.mdc",
       "cio-context-dissolution-interlock.mdc",
       "cio-env-integrity-gate.mdc",
+      "cio-env-self-healing-gate.mdc",
+      "cio-error-ticket-apply-gate.mdc",
       "cio-error-ticket-gate.mdc",
       "composer-mcp-audit-gate.mdc",
       "cursor-generate-image-assets.mdc",
@@ -155,6 +157,8 @@
       "cio-composer-escalation-interlock.mdc",
       "cio-context-dissolution-interlock.mdc",
       "cio-env-integrity-gate.mdc",
+      "cio-env-self-healing-gate.mdc",
+      "cio-error-ticket-apply-gate.mdc",
       "cio-error-ticket-gate.mdc",
       "composer-mcp-audit-gate.mdc",
       "cursor-generate-image-assets.mdc",
@@ -278,6 +282,14 @@
       "§1-2-3-4-A",
       "§50-3-11",
       "§50-3-8"
+    ],
+    "cio-env-self-healing-gate.mdc": [
+      "§1-2-3-4-A",
+      "§50-3-11"
+    ],
+    "cio-error-ticket-apply-gate.mdc": [
+      "§1-2-3-4-A",
+      "§50-3-11"
     ],
     "cio-error-ticket-gate.mdc": [
       "§1-2-3-4-A",

@@ -1,0 +1,34 @@
+---
+description: 第8層 — Self-Healing Env 暗号化復元 §50-3-11
+alwaysApply: false
+globs: "docs/secure/**,.env*,scripts/cio-env-*"
+---
+
+# Self-Healing Env（§50-3-11 第8層）
+
+> **機械**: `npm run cio:env:self-healing`
+
+## 前提条件
+
+- `verify:cio-env-integrity` が NG
+- `docs/secure/.env.enc` 存在
+- `CIO_ENV_MASTER_KEY` が process.env に設定
+
+## 実行手順
+
+1. `npm run cio:env:self-healing`
+2. 暗号化バックアップ復号 → `.env` 不足キー補完
+3. `verify:cio-env-integrity` 再実行
+
+## 禁止事項
+
+- マスターキーの commit / ログ出力
+- 平文 .env のリポジトリ push
+- §52-8 無断 .env 編集（Self-Healing は復元のみ）
+
+## 判定コード
+
+| コマンド | 合格 |
+|----------|------|
+| `cio:env:self-healing` | exit 0 |
+| `cio:env:encrypt-backup` | バックアップ作成（CEO ローカル） |

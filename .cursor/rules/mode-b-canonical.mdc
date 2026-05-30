@@ -107,6 +107,9 @@ flowchart LR
 | `npm run verify:cio-env-integrity` | exit 0 |
 | `npm run cio:error:generate-ticket` | exit 0（Self-Heal 上限時） |
 | `npm run verify:cio-environment-infra` | exit 0 |
+| `npm run cio:error:apply-ticket-choice -- --choice N` | exit 0 |
+| `npm run cio:env:self-healing` | exit 0 |
+| `npm run verify:cio-extreme-defence-infra` | exit 0 |
 
 ## 毎ターン先頭4行（機械検査一致・正本）
 

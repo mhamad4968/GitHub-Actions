@@ -1,0 +1,36 @@
+---
+description: 第8層 — CEO 3択チケット自動承認・再駆動 §50-3-11
+alwaysApply: false
+globs: "docs/issues/**,scripts/cio-error-*"
+---
+
+# 3択チケット自動承認（§50-3-11 第8層）
+
+> **機械**: `npm run cio:error:apply-ticket-choice -- --choice <1|2|3>`
+
+## 前提条件
+
+- `docs/issues/bug-latest.md` 存在（Self-Heal 3回上限後）
+- CEO がチャットで **選択肢 N** を明示
+- 実装レーン凍結維持（customize/deploy 禁止）
+
+## 実行手順
+
+1. CEO: 「選択肢2番で実行」
+2. `npm run cio:error:apply-ticket-choice -- --choice 2`
+3. チケット内 `CIO-EXEC-CHOICE-N` ブロックを順実行
+4. `CIO-DIFF-CHOICE-N` があれば適用
+5. verify 群再実行 → exit 0
+
+## 禁止事項
+
+- チケット無しの独断 apply
+- 3択以外の番号
+- apply 後の customize/deploy
+
+## 判定コード
+
+| コマンド | 合格 |
+|----------|------|
+| `cio:error:apply-ticket-choice -- --choice N` | exit 0 |
+| 完了後 | `cio:composer:escalation-guard -- --record-success` 済 |

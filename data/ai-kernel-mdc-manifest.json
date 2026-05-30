@@ -14,7 +14,9 @@
     "cio-context-dissolution-interlock.mdc",
     "cio-composer-escalation-interlock.mdc",
     "cio-env-integrity-gate.mdc",
-    "cio-error-ticket-gate.mdc"
+    "cio-error-ticket-gate.mdc",
+    "cio-error-ticket-apply-gate.mdc",
+    "cio-env-self-healing-gate.mdc"
   ],
   "exempt": [
     "constitution.mdc",

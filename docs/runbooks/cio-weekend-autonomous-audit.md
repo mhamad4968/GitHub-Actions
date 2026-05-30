@@ -82,6 +82,16 @@ npm audit --omit=dev
 | 退避先 | `docs/archive/dead-lines/`（削除禁止・移動のみ） |
 | 手動 | `npm run cio:dead-lines-purge -- --scan` / `--apply` |
 
+## Kimi×Composer — デッドコード週末パージ（第8層・2026-05-30）
+
+| 項目 | 内容 |
+|------|------|
+| 担当 | **Kimi** 精査 + **Composer 2.5** 退避実務 |
+| 実行 | 週末監査内 `cio:dead-code-purge --apply`（**scripts/** のみ・凍結中 customize 未変更） |
+| 検出 | 未参照 `export function` 静的解析 |
+| 退避 | `docs/archive/dead-codes/` + ソースからコメントアウト |
+| コミット | `[WEEKEND-DEAD-CODE-PURGE]` 自動 commit（週末監査連動） |
+
 ## 関連
 
 - `docs/runbooks/cio-friday-mcp-status-refresh-4ai.md`（金曜定例）

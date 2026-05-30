@@ -130,5 +130,12 @@ SPEC_TOUCHED: yes のターンで SECOND_REVIEWER: deepseek|kimi|openrouter の�
   **案1 env監査**: `npm run verify:cio-env-integrity` — 不足時 exit 1 + 警告明示
   **案2 死に文**: `npm run cio:dead-lines-purge -- --apply`（週末監査・Kimi職分）→ docs/archive/dead-lines/
   **案3 エラーチケット**: Self-Heal×3上限 → `npm run cio:error:generate-ticket` → docs/issues/bug-latest.md + CEO 3択
-  **検証**: `npm run verify:cio-environment-infra` / `verify:cio-four-ai-governance`
+  **検証**: `npm run verify:cio-environment-infra` / `verify:cio-extreme-defence-infra` / `verify:cio-four-ai-governance`
   **正本**: `.cursor/rules/cio-env-integrity-gate.mdc` / `cio-error-ticket-gate.mdc`
+
+【2026-05-30 追記・極限自律防衛 拡張案1〜3（CEO 超厳命）】
+  **案1 3択承認**: `npm run cio:error:apply-ticket-choice -- --choice <1|2|3>`
+  **案2 Self-Healing Env**: `npm run cio:env:self-healing` / `cio:env:encrypt-backup` + `docs/secure/.env.enc`
+  **案3 デッドコード**: `npm run cio:dead-code-purge -- --apply` → `[WEEKEND-DEAD-CODE-PURGE]`
+  **検証**: `npm run verify:cio-extreme-defence-infra`
+  **正本**: `cio-error-ticket-apply-gate.mdc` / `cio-env-self-healing-gate.mdc`

@@ -5,6 +5,23 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { loadState } from './cio-composer-escalation.mjs';
 
+export const CHOICE_EXEC = {
+  1: [
+    'npm run cio:env:self-healing',
+    'npm run verify:cio-env-integrity',
+    'npm run cio:composer:escalation-guard -- --record-success',
+    'npm run verify:cio-environment-infra',
+  ],
+  2: [
+    'npm run cio:composer:escalation-guard -- --record-success',
+    'npm run verify:cio-four-ai-governance',
+  ],
+  3: [
+    'npm run verify:session-handoff-integrity -- --import',
+    'npm run cio:composer:escalation-guard -- --record-success',
+  ],
+};
+
 export const TICKET_REL = 'docs/issues/bug-latest.md';
 export const TICKET_STATE_REL = 'logs/cio-error-ticket/last.json';
 
@@ -92,9 +109,23 @@ export function generateTicketMarkdown(root, opts = {}) {
     '',
     '## 4）CEO 向け解決策 3択',
     '',
-    ...options.map(
-      (o) => `### 選択肢${o.n}: ${o.title}\n\n${o.action}\n`,
-    ),
+    ...options.flatMap((o) => {
+      const cmds = CHOICE_EXEC[o.n] || [];
+      return [
+        `### 選択肢${o.n}: ${o.title}`,
+        '',
+        o.action,
+        '',
+        `<!-- CIO-EXEC-CHOICE-${o.n} -->`,
+        ...cmds,
+        `<!-- /CIO-EXEC-CHOICE-${o.n} -->`,
+        '',
+      ];
+    }),
+    '',
+    '## CEO 1行承認プロトコル（第8層）',
+    '',
+    '浜田が「選択肢1/2/3で実行」と指示 → `npm run cio:error:apply-ticket-choice -- --choice N`',
     '',
     '## 実行手順（CIO）',
     '',

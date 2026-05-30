@@ -26,6 +26,7 @@ function main() {
     console.error(`${RED}${formatEnvWarning(issues)}${RESET}`);
     console.error('[verify:cio-env-integrity] NG', issues.length, 'missing');
     for (const i of issues) console.error(`  - ${i.key}: ${i.label}`);
+    console.error('[verify:cio-env-integrity] ヒント: npm run cio:env:self-healing');
     process.exit(1);
   }
 

@@ -429,6 +429,9 @@ flowchart LR
 12. **環境変数セルフ監査**: **`npm run verify:cio-env-integrity`** — 401/403 先回り（不足時 exit 1 + 警告明示）。
 13. **死に文週末パージ**: **`npm run cio:dead-lines-purge`** — Kimi 精査職分、`docs/archive/dead-lines/` へ退避（週末監査連動）。
 14. **自律エラーチケット**: Self-Heal 3回上限 → **`npm run cio:error:generate-ticket`** → `docs/issues/bug-latest.md` + CEO 3択待機。
+15. **3択自動承認**: CEO「選択肢Nで実行」→ **`npm run cio:error:apply-ticket-choice -- --choice N`** → verify 再駆動。
+16. **Self-Healing Env**: **`npm run cio:env:self-healing`** — `docs/secure/.env.enc` 復号・`.env` 自動補完。
+17. **デッドコード週末パージ**: **`npm run cio:dead-code-purge -- --apply`** — Kimi×Composer、`docs/archive/dead-codes/` 退避、`[WEEKEND-DEAD-CODE-PURGE]`。
 
 **§1-2-3-4-C AI読み込み最適化・命令圧縮（2026-05-29 CEO 浜田・§50-3-11 非置換追補）**:
 
@@ -1956,6 +1959,14 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 3. **改善案3 — 3択エラーチケット**: Self-Heal **3回**上限 → `npm run cio:error:generate-ticket` → `docs/issues/bug-latest.md`（ログ・3アプローチ・§50-3-8仮説・**CEO 3択**）→ チャット1行待機
 
 正本: `.cursor/rules/cio-env-integrity-gate.mdc` / `.cursor/rules/cio-error-ticket-gate.mdc` / `data/cio-env-manifest.json`
+
+**第8層 — 極限自律防衛（拡張案1〜3・2026-05-30 CEO 追補・§50-3-11 非置換）**:
+
+1. **拡張案1 — 3択自動承認**: CEO 1行「選択肢Nで実行」→ `npm run cio:error:apply-ticket-choice -- --choice N` — チケット内 `CIO-EXEC-CHOICE-N` / Diff 適用 → verify 群再駆動
+2. **拡張案2 — Self-Healing Env**: `npm run cio:env:self-healing` — `docs/secure/.env.enc` + `CIO_ENV_MASTER_KEY` で不足キー自動復元 → `verify:cio-env-integrity` exit 0
+3. **拡張案3 — デッドコード週末パージ**: 週末監査 + Kimi×Composer — 未参照 export を `docs/archive/dead-codes/` 退避 — `[WEEKEND-DEAD-CODE-PURGE]` コミット
+
+正本: `.cursor/rules/cio-error-ticket-apply-gate.mdc` / `.cursor/rules/cio-env-self-healing-gate.mdc` / `docs/secure/README.md`
 
 **担当定義の極限明文化**: **`AGENTS.md` §1-2-3-4-A**（完全マトリクス）・`mode-b-canonical.mdc`（用語単一窓）・Desktop **`18-重要確認.txt`**（浜田視認用）。
 

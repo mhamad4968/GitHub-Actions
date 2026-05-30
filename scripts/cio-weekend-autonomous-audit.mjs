@@ -10,6 +10,7 @@ import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { bridgePath, loadBridge } from './lib/cio-session-bridge.mjs';
 import { purgeDeadLines, scanDeadLines } from './lib/cio-dead-lines-purge.mjs';
+import { scanDeadCode, archiveDeadCode } from './lib/cio-dead-code-purge.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const plansDir = path.join(root, 'docs', 'plans');
@@ -31,27 +32,27 @@ function auditBridgeTargets(bridge) {
   const lines = ['', '## 監査詳細（bridge 連動）', ''];
   if (!bridge) {
     lines.push('_bridge 無し — `npm run cio:session:export-handoff` 未実行_', '');
-    return lines;
+  } else {
+    lines.push(`- **exportedAt**: ${bridge.exportedAt}`);
+    lines.push(`- **gitHead**: ${bridge.gitHead}`);
+    lines.push(`- **nextTask**: ${bridge.nextTask}`, '');
+    lines.push('### 対象ファイル群（repo-tree / eslint 監査対象）', '');
+    for (const rel of bridge.nextFiles || []) {
+      const p = path.join(root, rel);
+      const exists = fs.existsSync(p);
+      lines.push(`- \`${rel}\`: ${exists ? '存在 OK' : 'NG 欠落'}`);
+    }
+    lines.push('', '### MCP 監査ゲート', '');
+    const reg = run('npm run verify:cio-mcp-registry');
+    lines.push(`- verify:cio-mcp-registry: ${reg.ok ? 'OK' : 'NG'}`);
+    const comp = run('npm run cio:guard:composer-mcp-audit');
+    lines.push(`- cio:guard:composer-mcp-audit: ${comp.ok ? 'OK' : 'NG'}`);
+    lines.push('', '### Self-Healing 布石', '');
+    lines.push(
+      '- L2 以下の **構文のみ** エラー → Composer 2.5 が `[WEEKEND-SELF-HEALING]` コミット可（仕様意味変更禁止）',
+    );
+    lines.push('- 正本: `docs/runbooks/cio-weekend-autonomous-audit.md` §Self-Healing', '');
   }
-  lines.push(`- **exportedAt**: ${bridge.exportedAt}`);
-  lines.push(`- **gitHead**: ${bridge.gitHead}`);
-  lines.push(`- **nextTask**: ${bridge.nextTask}`, '');
-  lines.push('### 対象ファイル群（repo-tree / eslint 監査対象）', '');
-  for (const rel of bridge.nextFiles || []) {
-    const p = path.join(root, rel);
-    const exists = fs.existsSync(p);
-    lines.push(`- \`${rel}\`: ${exists ? '存在 OK' : 'NG 欠落'}`);
-  }
-  lines.push('', '### MCP 監査ゲート', '');
-  const reg = run('npm run verify:cio-mcp-registry');
-  lines.push(`- verify:cio-mcp-registry: ${reg.ok ? 'OK' : 'NG'}`);
-  const comp = run('npm run cio:guard:composer-mcp-audit');
-  lines.push(`- cio:guard:composer-mcp-audit: ${comp.ok ? 'OK' : 'NG'}`);
-  lines.push('', '### Self-Healing 布石', '');
-  lines.push(
-    '- L2 以下の **構文のみ** エラー → Composer 2.5 が `[WEEKEND-SELF-HEALING]` コミット可（仕様意味変更禁止）',
-  );
-  lines.push('- 正本: `docs/runbooks/cio-weekend-autonomous-audit.md` §Self-Healing', '');
   lines.push('', '### Kimi 職分 — 死に文パージ（第7層）', '');
   const deadScan = scanDeadLines(root);
   lines.push(`- 候補: ${deadScan.length} 件`);
@@ -60,8 +61,15 @@ function auditBridgeTargets(bridge) {
     lines.push(`- 退避: \`${m.from}\` → \`${m.to}\``);
   }
   if (deadMoved.length > 20) lines.push(`- …他 ${deadMoved.length - 20} 件`);
+  lines.push('', '### Kimi×Composer — デッドコードパージ（第8層）', '');
+  const codeHits = scanDeadCode(root, { includeCustomize: false });
+  lines.push(`- 未参照 export 候補: ${codeHits.length} 件`);
+  const codeMoved = archiveDeadCode(root, codeHits, { apply: true });
+  for (const m of codeMoved.slice(0, 10)) {
+    lines.push(`- 退避: \`${m.from}\` → \`${m.to}\` [${m.fns.join(', ')}]`);
+  }
   lines.push('');
-  return lines;
+  return { lines, deadCodeMoved: codeMoved };
 }
 
 function mergeIntoCanonicalReport(detailLines, ymd) {
@@ -89,6 +97,7 @@ function main() {
     ['verify:cio-four-ai-governance', 'npm run verify:cio-four-ai-governance'],
     ['verify:cio-session-dissolution', 'npm run verify:cio-session-dissolution'],
     ['verify:cio-environment-infra', 'npm run verify:cio-environment-infra'],
+    ['verify:cio-extreme-defence-infra', 'npm run verify:cio-extreme-defence-infra'],
     ['npm audit --omit=dev', 'npm audit --omit=dev --json'],
   ];
 
@@ -114,8 +123,21 @@ function main() {
   const audit = run('npm audit --omit=dev');
   lines.push('```', audit.out.slice(0, 2000) || '(empty)', '```');
 
-  const detail = auditBridgeTargets(bridge);
+  const detailResult = auditBridgeTargets(bridge);
+  const detail = detailResult.lines;
   lines.push(...detail);
+
+  if (detailResult.deadCodeMoved?.length) {
+    try {
+      execSync(
+        'git add docs/archive/dead-codes scripts && git commit -m "[WEEKEND-DEAD-CODE-PURGE] archive unreferenced exports" -m "Kimi×Composer weekend dead-code purge."',
+        { cwd: root, stdio: 'inherit', shell: true },
+      );
+      lines.push('', '- **[WEEKEND-DEAD-CODE-PURGE]** コミット完了', '');
+    } catch {
+      lines.push('', '- **[WEEKEND-DEAD-CODE-PURGE]** コミットスキップ（変更なし or hook）', '');
+    }
+  }
 
   lines.push('', '## 次アクション（月曜）', '', '- CEO 検収', '- NG 項目があれば CIO 自律是正', '');
 
