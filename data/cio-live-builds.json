@@ -2,11 +2,11 @@
   "version": 1,
   "apps": {
     "595": {
-      "build": "2026-05-30-595-retire-674-storage",
-      "fileKey": "19dadd3b-5987-41d1-81d0-b330a79bb286",
-      "revision": "84",
-      "relPath": "customize/595/desktop.js",
-      "deployedAt": "2026-05-30T11:25:16.627Z",
+      "build": "2026-04-30-595-index-search-totalcap-loading",
+      "fileKey": "0542264b-f1ee-4ff8-9819-a7dec6438d00",
+      "revision": "85",
+      "relPath": ".kintone-deploy/upload-595.js",
+      "deployedAt": "2026-05-30T12:22:32.964Z",
       "note": null
     },
     "627": {
