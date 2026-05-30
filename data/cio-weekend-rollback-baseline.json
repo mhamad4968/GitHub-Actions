@@ -1,6 +1,6 @@
 {
-  "baselineShort": "5512754",
-  "label": "金曜夜最終正常コミット（第8層 push 正本）",
+  "baselineShort": "42e96e8",
+  "label": "第9層 push 正本（環境改善フェーズ一旦完了・2026-05-30）",
   "weekendCommitPatterns": [
     "[WEEKEND-DEAD-CODE-PURGE]",
     "[WEEKEND-SELF-HEALING]"
