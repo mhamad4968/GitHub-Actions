@@ -18,7 +18,7 @@
 | 実装手引 | `docs/plans/2026-05-28-business-improvement-implementation-handbook.md` |
 | Pass4 チェックリスト | 14/14 |
 | 旧83突合 | `npm run business-improvement:compare-83` → 20/20 |
-| 本日確定ブロック | Q-GUIDE-01〜07, Q-IMPL-01〜05, Q-DATA-01, Q-ANN-09, Q-DEMO-01, Q-SCHED-02 |
+| 本日確定ブロック | Q-GUIDE-01〜08, Q-IMPL-01〜05, Q-DATA-01, Q-ANN-09, Q-DEMO-01, Q-SCHED-02 |
 
 ## 3. GO 後に着手する範囲（6/8〜）
 
@@ -33,7 +33,7 @@
 
 ## 5. 保留（ブロッカーではない）
 
-- ガイド dropdown ラベル・FAQ 本文（6/9〜6/20）
+- ガイド dropdown ラベル・FAQ 本文（6/9〜6/20）。**Q-GUIDE-08** — `C:\tmp\業務改善\導入資料保管` **保管済み**（6/8まで追加可）→ 下書きヒント
 - OPS-01（595 同期）
 
 ## 6. スケジュール（再掲）
