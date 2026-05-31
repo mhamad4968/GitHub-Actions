@@ -2724,3 +2724,21 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 **締め**: `SESSION-CLOSE-REPORT-20260531.txt` / export-handoff 更新
 
 ---
+
+### 2026-05-31 JST — **夜・最終締め**
+
+**追加完了**:
+- v5 目次 **70 項** — Ｃ－２（端末管理・台帳責任）・Ｃ－３（年1棚卸）— `verify_toc_completeness_v5.py` OK
+- Notepad Application Hang 調査 — 原因: 大容量 24/25 `.md` + sync 競合
+- **LITE mirror** — `24-handoff-log-LITE.txt`（末尾100行）／`25-checkpoint-latest-LITE.txt`（先頭100行）— commit **`84d80be`**
+- Plan & Usage 監視合意（閾値: Auto+Composer 70% / API 50% / On-Demand $0）
+
+**浜田運用**: メモ帳は **LITE のみ**。sync 前に Notepad 閉じる。
+
+**夕反省**: `docs/reports/2026-05-31-evening-reflection.md` — 改善案 **C1–C4 / B4 / S3 / D3 / E1 承認待ち**
+
+**Git**: push 実施（3+1 commits）
+
+**触らない**: customize/deploy 〜 **6/7**（6/8 まで実装しない）
+
+---
