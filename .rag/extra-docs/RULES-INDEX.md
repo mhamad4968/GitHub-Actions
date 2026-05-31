@@ -6,7 +6,7 @@
 > **3階層（2026-05-21）**: **[`docs/constitution/00-rule-hierarchy.md`](docs/constitution/00-rule-hierarchy.md)** — 第1憲法 / 第2機械検証 / 第3 runbook。  
 > **方式B 用語の単一窓**: **`.cursor/rules/mode-b-canonical.mdc`**（4AI定義・先頭4行テンプレ）。
 >
-> **ジャンル別読本（2026-05-17）**: 長文回避用の分割版は **`docs/constitution/README.md`**（17 ジャンル+階層索引）。索引で § を特定 → 該当ジャンル `.md` を Read → 必要時のみ `AGENTS.md` 正本。
+> **ジャンル別読本（2026-05-31 更新）**: 長文回避用の分割版は **`docs/constitution/README.md`**（**17 ジャンル + 階層 + 4AI + 4 AI-KERNEL**）。索引で § を特定 → 該当ジャンル `.md` を Read → 必要時のみ `AGENTS.md` 正本。**Desktop 早見**: `28-CONSTITUTION-GENRE-MAP.txt`。
 
 ---
 
@@ -217,8 +217,14 @@
 | §57 | [16-amendment-process.md](docs/constitution/16-amendment-process.md) |
 | （階層） | [00-rule-hierarchy.md](docs/constitution/00-rule-hierarchy.md) |
 | §1-2-3-4・§50-3-11 | [17-four-ai-mode-b.md](docs/constitution/17-four-ai-mode-b.md) |
+| 4AI 役割別ナビ | [18-ai-team-read-map.md](docs/constitution/18-ai-team-read-map.md) |
+| 統制・2名チェック（AI-KERNEL） | [19-governance-four-ai-kernel.md](docs/constitution/19-governance-four-ai-kernel.md) |
+| 15ターン・荷造り（AI-KERNEL） | [20-cost-token-defense-kernel.md](docs/constitution/20-cost-token-defense-kernel.md) |
+| 週末監査（AI-KERNEL） | [21-autonomous-patrol-kernel.md](docs/constitution/21-autonomous-patrol-kernel.md) |
+| エスカレ・3択（AI-KERNEL） | [22-error-handling-kernel.md](docs/constitution/22-error-handling-kernel.md) |
+| Desktop 早見（28番） | `chat-sessions/desktop-ai-emergency-read-pack/28-CONSTITUTION-GENRE-MAP.txt` |
 
-検証: `npm run constitution:verify-coverage` / `npm run verify:cio-four-ai-governance`
+検証: `npm run constitution:verify-coverage` / `npm run verify:constitution-genre-kernels` / `npm run verify:cio-four-ai-governance`
 
 ---
 
