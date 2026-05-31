@@ -27,9 +27,13 @@
 22-HANDOFF-HUMAN.txt … 任意メモ（5 行）
 23-AI緊急用-README.txt … フォルダ全体の説明（旧 **13-README.txt**）
 
-**24-handoff-log.md** … リポ **`chat-sessions/handoff-log.md`** と **バイト同期**（セッション締め・長期ログの正本）。
+**24-handoff-log.md** … リポ **`chat-sessions/handoff-log.md`** と **バイト同期**（**AI 同期専用 — メモ帳非推奨**）。
 
-**25-checkpoint-latest.md** … リポ **`chat-sessions/checkpoint-latest.md`** と **バイト同期**（最終更新・項番 0 手順の正本）。
+**24-handoff-log-LITE.txt** … **浜田用要約**（末尾100行・直近）。**メモ帗で開くのは LITE のみ**。
+
+**25-checkpoint-latest.md** … リポ **`chat-sessions/checkpoint-latest.md`** と **バイト同期**（**AI 同期専用 — メモ帳非推奨**）。
+
+**25-checkpoint-latest-LITE.txt** … **浜田用要約**（先頭100行）。**メモ帗で開くのは LITE のみ**。
 
 **26-evening-reflection-YYYY-MM-DD.md** … **夕反省**（`docs/reports/`）。**AI の失敗＋ミス削減のアップデート案のみ**（成果・明日のレーンは 19 / checkpoint / -0）。正本: `docs/runbooks/evening-reflection-scope.md`
 

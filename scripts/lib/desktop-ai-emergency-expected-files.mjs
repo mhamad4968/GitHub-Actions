@@ -8,6 +8,7 @@ import path from 'node:path';
 import { getJstYyyymmdd } from './session-starter-desktop.mjs';
 import { SESSION_STARTER_PART_SYNC } from './session-starter-parts.mjs';
 import { SESSION_DESKTOP_MIRROR_FILES } from './desktop-ai-emergency-session-docs.mjs';
+import { mirrorLiteExpectedDestNames } from './desktop-ai-emergency-mirror-lite.mjs';
 
 /** 夕反省レポートが無い日に Desktop へ置くプレースホルダ（read-pack 正本） */
 export const EVENING_REFLECTION_SLOT_NAME = '26-evening-reflection-SLOT.txt';
@@ -41,6 +42,9 @@ export function buildExpectedDesktopAiEmergencyFilenames(root, ymd = getJstYyyym
   }
   for (const [, outName] of SESSION_DESKTOP_MIRROR_FILES) {
     expected.add(outName);
+  }
+  for (const liteName of mirrorLiteExpectedDestNames()) {
+    expected.add(liteName);
   }
 
   const readPackDir = path.join(root, 'chat-sessions/desktop-ai-emergency-read-pack');

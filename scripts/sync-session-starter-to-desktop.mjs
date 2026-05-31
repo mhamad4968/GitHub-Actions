@@ -7,6 +7,7 @@
  * `chat-sessions/desktop-ai-emergency-read-pack/*.txt`（番号付き貼付控え）も **同名で** Desktop へコピーする。
  * 同フォルダの **`NN-*.md`（先頭 2 桁が数字）** も **同名で** Desktop へコピーする（例: **`19-SESSION-ONE-REPORT-…md`**）。
  * **`SESSION_DESKTOP_MIRROR_FILES`**（`handoff-log.md`→**`24-handoff-log.md`**、`checkpoint-latest.md`→**`25-checkpoint-latest.md`**）も Desktop へコピーする。
+ * **`SESSION_DESKTOP_MIRROR_LITE_SPECS`** … **`24-handoff-log-LITE.txt`**（末尾100行）／**`25-checkpoint-latest-LITE.txt`**（先頭100行）を **浜田用要約**として生成（全文 .md は AI 同期専用・メモ帳非推奨）。
  * **26**: 当日夕反省 `docs/reports/YYYY-MM-DD-evening-reflection.md` があれば **`26-evening-reflection-YYYY-MM-DD.md`**。無い日は **`26-evening-reflection-SLOT.txt`**（read-pack 正本）で **25→27 の歯抜けを防ぐ**。
  * 同期の最後に **旧番号ファイル**（`00p01`〜、旧 read-pack `02`〜`19` 帯、旧 **`14-evening-…`** 等）を Desktop から削除する。
  *
@@ -25,6 +26,7 @@ import {
 } from './lib/session-starter-desktop.mjs';
 import { SESSION_STARTER_PART_SYNC } from './lib/session-starter-parts.mjs';
 import { SESSION_DESKTOP_MIRROR_FILES } from './lib/desktop-ai-emergency-session-docs.mjs';
+import { syncMirrorLiteFiles } from './lib/desktop-ai-emergency-mirror-lite.mjs';
 import { resolveSessionStarterDesktopDir } from './lib/session-starter-desktop-dir.mjs';
 import {
   EVENING_REFLECTION_SLOT_NAME,
@@ -287,6 +289,7 @@ function main() {
     fs.copyFileSync(src, dest);
     console.log(`[sync-session-starter-to-desktop] OK ${rel} -> ${dest}`);
   }
+  syncMirrorLiteFiles(root, destDir);
   syncReadPackToDesktop();
   syncEveningReflectionToDesktop();
   pruneLegacyDesktopAiEmergency(destDir);

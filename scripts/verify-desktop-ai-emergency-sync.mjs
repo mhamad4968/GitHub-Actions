@@ -5,7 +5,8 @@
  * 分割 6 本: **`01`〜`06`-STARTER-…txt** をリポ `session-starter-parts/*.md` とバイト一致検査。
  * **`chat-sessions/desktop-ai-emergency-read-pack/`** の **`.txt` と `NN-*.md`** も Desktop 同名とバイト一致検査。
  * 成功時、**貼付推奨ファイル名**を 1 行で出す（項番 -1 / 案 D）。
- * **`24-handoff-log.md` / `25-checkpoint-latest.md`** … リポ `chat-sessions/` 正本とバイト一致。
+ * **`24-handoff-log.md` / `25-checkpoint-latest.md`** … リポ `chat-sessions/` 正本とバイト一致（**AI 同期専用・メモ帳非推奨**）。
+ * **`24-handoff-log-LITE.txt` / `25-checkpoint-latest-LITE.txt`** … 浜田用要約（生成内容一致）。
  *
  * @see scripts/lib/session-starter-desktop-dir.mjs（同期先パス解決）
  */
@@ -20,6 +21,10 @@ import {
 } from './lib/session-starter-desktop.mjs';
 import { SESSION_STARTER_PART_SYNC } from './lib/session-starter-parts.mjs';
 import { SESSION_DESKTOP_MIRROR_FILES } from './lib/desktop-ai-emergency-session-docs.mjs';
+import {
+  SESSION_DESKTOP_MIRROR_LITE_SPECS,
+  verifyMirrorLiteFile,
+} from './lib/desktop-ai-emergency-mirror-lite.mjs';
 import { resolveSessionStarterDesktopDir } from './lib/session-starter-desktop-dir.mjs';
 import {
   EVENING_REFLECTION_SLOT_NAME,
@@ -196,6 +201,16 @@ function main() {
       bad = true;
     } else {
       console.log(`[verify-desktop-ai-emergency-sync] OK ${outName}`);
+    }
+  }
+
+  for (const spec of SESSION_DESKTOP_MIRROR_LITE_SPECS) {
+    const r = verifyMirrorLiteFile(root, destDir, spec);
+    if (!r.ok) {
+      console.warn(`[verify-desktop-ai-emergency-sync] NG: ${r.reason}\n  先に: npm run session-starter:sync-desktop`);
+      bad = true;
+    } else {
+      console.log(`[verify-desktop-ai-emergency-sync] OK ${spec.destName}（浜田用 LITE 要約）`);
     }
   }
 
