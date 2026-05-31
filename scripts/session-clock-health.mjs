@@ -7,6 +7,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import {
   readCrontabText,
@@ -57,6 +58,65 @@ function watchPidStatus() {
   }
 }
 
+function readWebUrlFromFile() {
+  const urlPath = path.join(root, 'logs', '.session-clock-web.url');
+  if (!fs.existsSync(urlPath)) return null;
+  const u = fs.readFileSync(urlPath, 'utf8').trim();
+  return u.startsWith('http') ? u : null;
+}
+
+function webPidStatus() {
+  const pidPath = path.join(root, 'logs', '.session-clock-web.pid');
+  const url = readWebUrlFromFile();
+  let pid = null;
+  let processAlive = false;
+  if (fs.existsSync(pidPath)) {
+    pid = Number(fs.readFileSync(pidPath, 'utf8').trim());
+    if (Number.isFinite(pid) && pid > 0) {
+      try {
+        process.kill(pid, 0);
+        processAlive = true;
+      } catch {
+        try {
+          fs.unlinkSync(pidPath);
+        } catch {
+          /* noop */
+        }
+        if (url) {
+          try {
+            fs.unlinkSync(path.join(root, 'logs', '.session-clock-web.url'));
+          } catch {
+            /* noop */
+          }
+        }
+      }
+    }
+  }
+  let httpOk = false;
+  if (url && processAlive) {
+    try {
+      const res = spawnSync(
+        process.execPath,
+        [
+          '-e',
+          `fetch(${JSON.stringify(url)},{signal:AbortSignal.timeout(3000)}).then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))`,
+        ],
+        { encoding: 'utf8', timeout: 5000 },
+      );
+      httpOk = res.status === 0;
+    } catch {
+      httpOk = false;
+    }
+  }
+  const alive = processAlive && httpOk;
+  let detail = 'no pid file';
+  if (pid != null && !processAlive) detail = 'stale pid (pid file removed)';
+  else if (processAlive && !httpOk) detail = 'process up but HTTP failed';
+  else if (processAlive && httpOk) detail = 'process + HTTP OK';
+  else if (url && !processAlive) detail = 'url file without live process';
+  return { alive, pid, url, httpOk, detail };
+}
+
 function tailLog(rel, max = 400) {
   const p = path.join(root, rel);
   if (!fs.existsSync(p)) return '(no file)';
@@ -105,13 +165,19 @@ if (!cronLine && !strict) warnings.push('session-split の crontab 行があり�
 
 const hooks = readHooks();
 const watchPid = watchPidStatus();
+const webPid = webPidStatus();
 if (!watchPid.alive) {
   warnings.push(
     'watch 未稼働（`npm run session:clock:ensure` または Cursor 再起動で sessionStart hook を発火）',
   );
 }
+if (!webPid.alive) {
+  warnings.push(
+    'web 未稼働（`npm run session:clock:ensure` または web のみ再起動 — `logs/.session-clock-web.url` を確認）',
+  );
+}
 
-let exitOk = hooks.ok && watchPid.alive;
+let exitOk = hooks.ok && watchPid.alive && webPid.alive;
 if (strict) {
   exitOk = exitOk && Boolean(cronLine) && !drift;
 }
@@ -123,6 +189,7 @@ const report = {
   hooks,
   sessionClock: readClockStart(),
   watchPid,
+  webPid,
   cron: {
     hasLine: Boolean(cronLine),
     nodeInCron: cronNode,
@@ -144,6 +211,9 @@ if (json) {
   console.log(`SESSION-CLOCK 開始: [${report.sessionClock.mode}] ${report.sessionClock.line}`);
   console.log(
     `watch pid: ${report.watchPid.alive ? '✅' : '⚠'} ${report.watchPid.detail}${report.watchPid.pid != null ? ` (pid ${report.watchPid.pid})` : ''}`,
+  );
+  console.log(
+    `web: ${report.webPid.alive ? '✅' : '⚠'} ${report.webPid.detail}${report.webPid.pid != null ? ` (pid ${report.webPid.pid})` : ''}${report.webPid.url ? ` → ${report.webPid.url}` : ''}`,
   );
   console.log(`crontab session-split: ${cronLine ? '✅ 行あり' : '⚠ 行なし'}`);
   if (cronLine) {
