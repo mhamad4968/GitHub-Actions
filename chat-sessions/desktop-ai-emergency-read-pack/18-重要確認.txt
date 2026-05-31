@@ -183,3 +183,25 @@ SPEC_TOUCHED: yes のターンで SECOND_REVIEWER: deepseek|kimi|openrouter の�
   **未来は分からない**: 明日の作業・レーン・業務改善は **当日 -0 で聞く**（前日決定禁止）。
 
   **595→674 退職連動**: rev 84 検収 OK — **クローズ**（夕反省・checkpoint に残タスクとして書かない）。
+
+【2026-05-31 追記・夕反省改善案 全 GO（浜田）— 実施済】
+
+  **メモ帳（C1）**: 開くのは **`24-handoff-log-LITE.txt`** / **`25-checkpoint-latest-LITE.txt` のみ**。
+    **`24-handoff-log.md` / `25-checkpoint-latest.md` は AI 同期専用 — メモ帳で開かない**（Application Hang 再発防止）。
+
+  **sync 前（C2 / E1）**: `session-starter:sync-desktop` 実行前 — Notepad 終了推奨（RAM **≥80%** は強く推奨）。
+    スクリプト: `scripts/lib/desktop-ai-emergency-sync-precheck.mjs`（`--precheck-strict` で中止可）。
+
+  **1 日複数セッション（C3）**: 最終締めで **`SESSION-CLOSE-REPORT-YYYY-MM-DD.txt` を上書き**、handoff **末尾追加**のみ。
+    正本: `docs/runbooks/session-close-multi-session.md`
+
+  **doc-lane 完了（C4）**: v5 目次等 verify OK 後も報告末尾に **浜田 Word 目次 1 項目目視** 1 行必須。
+    **2026-05-31**: 浜田 **目視 OK**（Ｃ－２／Ｃ－３ 問題なし）。
+    正本: `docs/runbooks/doc-lane-completion-report.md`
+
+  **締め push（B4）**: commit 後 **`git push` 必須** — `verify:session-close-git-warn`（ahead > 0 で exit 1）。
+
+  **LITE 上限（S3）**: 各 LITE **32KB 超**で verify NG — `desktop-ai-emergency-mirror-lite.mjs`
+
+  **Plan & Usage（D3）**: 閾値 Auto+Composer **>70%** / API **>50%** / On-Demand **>$0** でルール見直し提案。
+    正本: `docs/runbooks/cursor-plan-usage-watch.md`

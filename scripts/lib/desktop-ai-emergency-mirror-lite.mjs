@@ -13,6 +13,9 @@ import path from 'node:path';
 /** 要約に含める本文行数（ヘッダー行は別） */
 export const MIRROR_LITE_BODY_LINE_LIMIT = 100;
 
+/** LITE 1 ファイル上限（全文 mirror 誤配置検知 / S3） */
+export const MIRROR_LITE_MAX_BYTES = 32 * 1024;
+
 /**
  * @type {Array<{
  *   srcRel: string;
@@ -117,6 +120,13 @@ export function verifyMirrorLiteFile(root, destDir, spec) {
   const actual = fs.readFileSync(destPath, 'utf8');
   if (expected !== actual) {
     return { ok: false, reason: `${spec.destName} が生成内容と不一致（sync 再実行）` };
+  }
+  const size = Buffer.byteLength(actual, 'utf8');
+  if (size > MIRROR_LITE_MAX_BYTES) {
+    return {
+      ok: false,
+      reason: `${spec.destName} が ${size} bytes（上限 ${MIRROR_LITE_MAX_BYTES}）— 行数上限見直しか全文混入`,
+    };
   }
   return { ok: true };
 }

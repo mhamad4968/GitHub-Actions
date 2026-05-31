@@ -34,6 +34,7 @@ import {
   jstYmdToIso,
   pruneUnexpectedNumberedDesktopFiles,
 } from './lib/desktop-ai-emergency-expected-files.mjs';
+import { runDesktopSyncPrecheck } from './lib/desktop-ai-emergency-sync-precheck.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -238,6 +239,12 @@ function main() {
         `  ${srcHint}`
     );
     process.exitCode = 0;
+    return;
+  }
+
+  const precheckStrict = process.argv.includes('--precheck-strict');
+  if (!runDesktopSyncPrecheck(destDir, { strict: precheckStrict })) {
+    process.exitCode = 1;
     return;
   }
 

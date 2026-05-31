@@ -81,3 +81,4 @@ Get-WinEvent -FilterHashtable @{
 1. PC トラブル対応後 → 本 runbook を参照し **B3 を同一セッションまたは再起動後に実施**
 2. 夕反省 **26** には PC 修復の**持続確認手順**だけ書く（明日の作業は書かない）
 3. 恒久対策が必要なら **ミス削減案（#S/#R）** として提案 — レーン計画は **当日 -0**
+4. **RAM ≥80%**（E1）: `session-starter:sync-desktop` 前に **Notepad 全終了**を浜田へ 1 行推奨 — `desktop-ai-emergency-sync-precheck.mjs`

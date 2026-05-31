@@ -61,6 +61,10 @@ function main() {
   }
 
   console.log('\n[cio:doc-lane-gate] OK');
+  console.log(
+    '【浜田確認】Word 目次を 1 項目目視してください（例: Ｃ－２ p.22）。問題なければ 1 行で OK を返信。'
+  );
+  console.log('  正本: docs/runbooks/doc-lane-completion-report.md（C4）');
   process.exit(0);
 }
 

@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 /**
- * セッション締め時の未コミット検査（S2 / 2026-05-30）
- * デフォルト: 未コミットあれば exit 1（締め禁止）。--warn-only で警告のみ exit 0。
+ * セッション締め時の未コミット・未 push 検査（S2 / B4 / 2026-05-30〜31）
+ * デフォルト: 未コミットまたは origin より ahead なら exit 1（締め禁止）。
+ * --warn-only … 警告のみ exit 0
+ * --skip-push-check … push 未実施チェックをスキップ（通常は使わない）
  */
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
@@ -10,10 +12,55 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const warnOnly = process.argv.includes('--warn-only');
+const skipPushCheck = process.argv.includes('--skip-push-check');
 
 function git(args) {
   const res = spawnSync('git', args, { cwd: root, encoding: 'utf8' });
   return (res.stdout || '').trim();
+}
+
+function failOrWarn(msg, detailLines = []) {
+  if (warnOnly) {
+    console.warn(msg.replace(' NG ', ' WARN '));
+    for (const line of detailLines) console.warn(line);
+    return false;
+  }
+  console.error(msg);
+  for (const line of detailLines) console.error(line);
+  return true;
+}
+
+function checkUncommitted() {
+  const status = git(['status', '--short']);
+  if (!status) return { ok: true };
+  const lines = status.split(/\r?\n/).filter(Boolean);
+  const msg = `[verify:session-close-git-warn] NG 未コミット ${lines.length} 件 — セッション締め前に commit 必須（B1）`;
+  const detail = lines.slice(0, 15);
+  if (lines.length > 15) detail.push(`  …他 ${lines.length - 15} 件`);
+  const hard = failOrWarn(msg, detail);
+  return { ok: false, hard };
+}
+
+function checkUnpushed() {
+  if (skipPushCheck) {
+    console.log('[verify:session-close-git-warn] SKIP push チェック（--skip-push-check）');
+    return { ok: true };
+  }
+  const branch = git(['rev-parse', '--abbrev-ref', 'HEAD']);
+  const upstream = git(['rev-parse', '--abbrev-ref', '@{u}']);
+  if (!upstream || upstream.includes('fatal')) {
+    console.warn('[verify:session-close-git-warn] WARN upstream 未設定 — push チェック省略');
+    return { ok: true };
+  }
+  const counts = git(['rev-list', '--left-right', '--count', `${upstream}...HEAD`]);
+  const parts = counts.split(/\s+/).map((x) => Number.parseInt(x, 10));
+  const behind = parts[0] || 0;
+  const ahead = parts[1] || 0;
+  if (ahead === 0) return { ok: true };
+  const msg = `[verify:session-close-git-warn] NG origin より ${ahead} commit ahead — 締め前に git push 必須（B4）`;
+  const detail = [`  branch: ${branch} → ${upstream}`, behind > 0 ? `  behind: ${behind}（pull 要検討）` : ''].filter(Boolean);
+  const hard = failOrWarn(msg, detail);
+  return { ok: false, hard };
 }
 
 function main() {
@@ -23,25 +70,18 @@ function main() {
     process.exit(0);
   }
 
-  const status = git(['status', '--short']);
-  if (!status) {
-    console.log('[verify:session-close-git-warn] OK（未コミットなし）');
-    process.exit(0);
+  const uncommitted = checkUncommitted();
+  if (!uncommitted.ok) {
+    process.exit(warnOnly ? 0 : 1);
   }
 
-  const count = status.split(/\r?\n/).filter(Boolean).length;
-  const msg = `[verify:session-close-git-warn] NG 未コミット ${count} 件 — セッション締め前に commit 必須（B1）`;
-  if (warnOnly) {
-    console.warn(msg.replace(' NG ', ' WARN '));
-    console.warn(status.split(/\r?\n/).slice(0, 15).join('\n'));
-    if (count > 15) console.warn(`  …他 ${count - 15} 件`);
-    process.exit(0);
+  const unpushed = checkUnpushed();
+  if (!unpushed.ok) {
+    process.exit(warnOnly ? 0 : 1);
   }
 
-  console.error(msg);
-  console.error(status.split(/\r?\n/).slice(0, 15).join('\n'));
-  if (count > 15) console.error(`  …他 ${count - 15} 件`);
-  process.exit(1);
+  console.log('[verify:session-close-git-warn] OK（未コミットなし・push 済または ahead 0）');
+  process.exit(0);
 }
 
 main();
