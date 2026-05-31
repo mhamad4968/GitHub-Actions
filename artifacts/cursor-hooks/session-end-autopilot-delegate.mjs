@@ -5,6 +5,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { resolveKintoneAiLabRoot } from './resolve-repo-root.mjs';
 
+function hiddenOpts(extra = {}) {
+  if (process.platform !== 'win32') return extra;
+  return { ...extra, windowsHide: true };
+}
+
 const root = resolveKintoneAiLabRoot();
 if (!root) {
   process.stdout.write(`${JSON.stringify({ additional_context: '' })}\n`);
@@ -17,9 +22,9 @@ if (!fs.existsSync(auto)) {
   process.exit(0);
 }
 
-const r = spawnSync(process.execPath, [auto], {
+const r = spawnSync(process.execPath, [auto], hiddenOpts({
   cwd: root,
   stdio: ['inherit', 'inherit', 'inherit'],
   shell: false,
-});
+}));
 process.exit(typeof r.status === 'number' ? r.status : 1);

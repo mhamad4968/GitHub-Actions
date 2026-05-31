@@ -18,6 +18,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { hiddenOpts, runNodeScriptSync } from '../../scripts/lib/win-hidden-spawn.mjs';
 import {
   newCorrelationId,
   pipelineStep,
@@ -60,12 +61,12 @@ function runReportPrecheck() {
     return { ok: true, violations: [], skipped: true };
   }
 
-  const clk = spawnSync(process.execPath, ['scripts/session-clock.mjs', 'check'], {
+  const clk = spawnSync(process.execPath, ['scripts/session-clock.mjs', 'check'], hiddenOpts({
     cwd: root,
     encoding: 'utf8',
     stdio: ['pipe', 'pipe', 'pipe'],
     timeout: 15000,
-  });
+  }));
   if (clk.status === 2) {
     violations.push('§51-6-2（session-clock: 4 時間超または時計異常）');
   }
@@ -75,10 +76,7 @@ function runReportPrecheck() {
     violations.push(`CIO Desktop 正本: ${desk.missing.join(' | ')}`);
   }
 
-  const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-  const pipe = spawnSync(npmCmd, ['run', 'report:pipeline-status'], {
-    cwd: root,
-    encoding: 'utf8',
+  const pipe = runNodeScriptSync(root, '.cursor/hooks/report-pipeline-status.mjs', [], {
     stdio: ['pipe', 'pipe', 'pipe'],
     timeout: 25000,
     env: { ...process.env },
@@ -92,13 +90,13 @@ function runReportPrecheck() {
     violations.push(`report-pipeline: report:pipeline-status が異常終了 (exit ${st})`);
   }
 
-  const ceo = spawnSync(process.execPath, ['scripts/verify-ceo-minimum-baseline.mjs'], {
+  const ceo = spawnSync(process.execPath, ['scripts/verify-ceo-minimum-baseline.mjs'], hiddenOpts({
     cwd: root,
     encoding: 'utf8',
     stdio: ['pipe', 'pipe', 'pipe'],
     timeout: 12_000,
     env: { ...process.env },
-  });
+  }));
   if (ceo.status !== 0 && ceo.status !== null) {
     violations.push(
       'CEO 最低基準ブロック（`chat-sessions/CEO-MINIMUM-ABSOLUTE-BASELINE.txt` と Desktop `＃重要確認事項.txt` の一致）不整合 — `npm run verify:ceo-minimum-baseline`'

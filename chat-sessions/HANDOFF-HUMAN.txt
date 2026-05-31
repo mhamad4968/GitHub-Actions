@@ -5,6 +5,12 @@ Windows から開きやすい控え: C:\Users\mhamada202408224\Desktop\AI緊急�
 
 推奨フロー（セッション切替）: ① **`00-NEW-SESSION-STARTER_yyyymmdd.txt`（JST・Explorer 名前順で先頭・常にこのファイル名）全文**（**v3.27+**: **「■ 貼付単独で完走」** が **唯一の詳細正本**（項番 -1〜0・**v3.28** 以後の改定もここ優先）。checkpoint 重複貼付不要。貼付推奨は verify 最終行）② この 5 行（**任意**）③ **項番 -0** → ④ **`session:bootstrap` 一括**。**日終わり**: sync → verify。
 
+日時(JST): 2026-05-31（日）終了 — **Q36 GO・壁時計 manual-desktop**
+いま何してた（1行）: 案A1 Q36 GO 完了（Word 記載）/ 壁時計 Desktop bat 運用 / cron 無効化。
+次にやる1つ: **6/8** 案B1（実装）— **それまで待機**。
+GO待ち（なし／内容）: Q36 **GO 済**（6/8 着手可・**前倒し禁止**）。
+触らないで（なし／内容）: customize/deploy **〜6/7**。v5・595 **クローズ**。
+
 日時(JST): 2026-05-30（土）終盤 — **595 本番・PC ログ修復・夕反省**
 いま何してた（1行）: 夕反省スコープ全 GO 実装・B1 commit push 済 / v5・595 **クローズ**。
 次にやる1つ: **B1 commit**（595・壁時計）**または** **§41 案A1** — `docs/reports/2026-05-30-evening-reflection.md` で A〜D 承認。

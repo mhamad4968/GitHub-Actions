@@ -1,5 +1,5 @@
 {
-  "scoredAt": "2026-05-30T02:17:18.724Z",
+  "scoredAt": "2026-05-31T00:59:51.787Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
   "topTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
   "tasks": [
@@ -15,14 +15,14 @@
       "status": "pending"
     },
     {
-      "id": "checkpoint:打合せ_v5_/_**§41_案A1**",
-      "text": "打合せ v5 / **§41 案A1**",
+      "id": "checkpoint:**6/8**_案B1_—_Space_57_新①③④_skeleton_+_設",
+      "text": "**6/8** 案B1 — Space 57 新①③④ skeleton + 設定マスタ Excel（AI チームと確認の上）。次回 **commit** 推奨",
       "source": "checkpoint",
-      "difficulty": 3,
-      "tokens": "中",
-      "tokenScore": 2,
+      "difficulty": 5,
+      "tokens": "高",
+      "tokenScore": 3,
       "impact": 5,
-      "priority": 25,
+      "priority": 50,
       "status": "pending"
     }
   ]

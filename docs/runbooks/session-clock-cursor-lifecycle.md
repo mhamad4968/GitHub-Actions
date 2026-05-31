@@ -15,6 +15,30 @@
 
 ---
 
+## 手動運用（Desktop bat — 2026-05-31 浜田）
+
+**背景**: hook 自動起動で CMD/PowerShell が一瞬表示される場合がある。  
+**方式**: `.cio/session-clock-mode.json` → `"mode": "manual-desktop"` で **hook は壁時計を起動しない**。
+
+| 操作 | ファイル |
+|------|----------|
+| **起動** | Desktop **`壁時計_START.bat`**（VBS 経由・node 完了まで **待機**） |
+| **停止** | Desktop **`壁時計_STOP.bat`** または Cursor 終了（sessionEnd） |
+
+初回配置: `npm run session:clock:install-desktop-bat`  
+更新間隔: 既定 **10 分**（`.cio/session-clock-mode.json` の `watchMs`）
+
+**運用フロー**
+
+1. Cursor を開く（hook は MCP stamp 等のみ — **壁時計は動かない**）
+2. Desktop **`壁時計_START.bat`** をダブルクリック  
+   - `[1/4]` 整理 → `[2/4]` 時刻セット → `[3/4]` watch/web → `[4/4]` **WEB 応答待ち → ブラウザ自動表示**  
+   - bat ウィンドウは **ブラウザが開くまで** 残る（完了メッセージ後 3 秒で閉じる）
+3. ブラウザで経過表示（任意）
+4. 作業終了 → Cursor 終了 **または** `壁時計_STOP.bat`
+
+---
+
 ## 手動（hook 無効・トラブル時）
 
 ```bash

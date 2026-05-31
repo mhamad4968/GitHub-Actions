@@ -26,7 +26,10 @@ function readCheckpointNextTask() {
   const p = path.join(root, 'chat-sessions/checkpoint-latest.md');
   if (!fs.existsSync(p)) return '(checkpoint 未設定)';
   const head = fs.readFileSync(p, 'utf8').slice(0, 2500);
-  const m = head.match(/\*\*次[^*]*\*\*[^|\n|]*\|[^|\n]+/i) || head.match(/次回[^:\n]*[:：]\s*([^\n]+)/);
+  const m =
+    head.match(/\*\*次回 1 手\*\*\s*\|\s*([^|\n]+)/i) ||
+    head.match(/\*\*次[^*]*\*\*[^|\n|]*\|[^|\n]+/i) ||
+    head.match(/次回[^:\n]*[:：]\s*([^\n]+)/);
   return m ? (m[1] || m[0]).trim().slice(0, 200) : '(要 Read checkpoint-latest.md)';
 }
 

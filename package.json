@@ -259,6 +259,7 @@
     "session:clock:uninstall-cron": "node scripts/install-session-clock-cron.mjs --uninstall",
     "session:clock:health": "node scripts/session-clock-health.mjs",
     "session:clock:ensure": "node scripts/session-clock-ensure.mjs",
+    "session:clock:install-desktop-bat": "node scripts/install-session-clock-desktop-bat.mjs",
     "verify:session-clock-health": "node scripts/session-clock-health.mjs --strict",
     "yojitsu:excel-draft": "python3 scripts/yojitsu_excel_columns_draft.py",
     "yojitsu:677:import-2026-budget:dry-run": "python3 scripts/yojitsu-import-2026-budget-xlsx-to-677.py --dry-run",

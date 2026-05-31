@@ -32,4 +32,4 @@ alwaysApply: false
 ## 機械検証
 
 - `npm run verify:evening-reflection-scope`
-- 締め: `npm run desktop:sync-and-verify`（S2 未コミット WARN 含む）
+- 締め: `npm run desktop:sync-and-verify`（S2 未コミット **NG — commit 必須**）

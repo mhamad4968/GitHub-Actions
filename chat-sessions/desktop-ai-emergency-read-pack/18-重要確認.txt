@@ -170,14 +170,14 @@ SPEC_TOUCHED: yes のターンで SECOND_REVIEWER: deepseek|kimi|openrouter の�
     A1: 毎ターン `npm run cio:turn-start` 先行（急ぎ明示時のみ例外）
     A2: checkpoint 先頭短文化・旧块 archive
     A3: 締め `npm run desktop:sync-and-verify` 必須
-    B1: 本日変更 commit + push
+    B1: 本日変更 **commit 必須**（締め前・未 commit 禁止）+ push 推奨
     B2: `docs/runbooks/pc-event-log-health.md` 新設 — **実施済**
     B3: 再起動後 5 分（Event 3503 / BTHUSB 5 / hooks ログ）— runbook 内
     R1: 26 作成前に `evening-reflection-scope.md` Read 必須 — **`.cursor/rules/evening-reflection-scope.mdc`**
     R2: checkpoint「クローズ」項目を 26 に再掲禁止
     R3: 26 から「明日の第1手」「案A/B/C/D タスク計画」禁止
     S1: `npm run verify:evening-reflection-scope` — 禁止語で exit 1
-    S2: `npm run verify:session-close-git-warn` — 締め時未コミット WARN
+    S2: `npm run verify:session-close-git-warn` — 締め時未コミット **NG（exit 1）** — commit 後に締め
     D1: 本節を 18 正本化 — **実施済**
 
   **未来は分からない**: 明日の作業・レーン・業務改善は **当日 -0 で聞く**（前日決定禁止）。

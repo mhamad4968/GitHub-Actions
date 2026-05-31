@@ -6,6 +6,8 @@ import path from 'node:path';
 
 export const TOKYO = 'Asia/Tokyo';
 export const FOUR_H_MS = 4 * 60 * 60 * 1000;
+/** watch ポーリング既定（10 分）。上書き: 環境変数 SESSION_CLOCK_WATCH_MS */
+export const DEFAULT_WATCH_MS = 600_000;
 
 /** @param {string} root リポジトリルート絶対パス */
 export function pathsFromRoot(root) {

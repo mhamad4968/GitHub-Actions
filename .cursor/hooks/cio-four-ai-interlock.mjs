@@ -7,6 +7,7 @@ import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { hiddenOpts } from '../../scripts/lib/win-hidden-spawn.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -19,11 +20,11 @@ const INTERLOCK_CMD_PATTERNS = [
 
 function runGuard(scriptName, extraArgs = []) {
   const script = path.join(root, 'scripts', scriptName);
-  const r = spawnSync(process.execPath, [script, ...extraArgs], {
+  const r = spawnSync(process.execPath, [script, ...extraArgs], hiddenOpts({
     cwd: root,
     encoding: 'utf8',
     shell: false,
-  });
+  }));
   return { status: r.status ?? 1, stdout: r.stdout || '', stderr: r.stderr || '' };
 }
 

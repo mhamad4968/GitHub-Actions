@@ -1,0 +1,7 @@
+{
+  "mode": "manual-desktop",
+  "note": "浜田 2026-05-31 — hook 自動起動オフ。Desktop 壁時計_START.bat 手動。WSL crontab session-split 無効化済。",
+  "watchMs": 600000,
+  "openBrowserOnStart": true,
+  "cronEnabled": false
+}

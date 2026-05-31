@@ -54,7 +54,7 @@ AI は **`npm run session:clock:set`** を実行し、結果（`SESSION-CLOCK.md
 **目的**: ターミナルで `npm run session:clock:prompt-hook` を打たなくても、**エディタのタブ**で経過と 4h までの残りが分かる。
 
 - **ファイル**: `chat-sessions/SESSION-CLOCK-TICKER.md`（**自動生成・git 追跡外**）
-- **更新タイミング**: `npm run session:clock:set` の直後、`session:clock:watch` の **既定 2 分ごと**、cron の `session-split-cron-ping` の **各実行**（`npm run session:clock:write-ticker` と同じ処理）
+- **更新タイミング**: `npm run session:clock:set` の直後、`session:clock:watch` の **既定 10 分ごと**（`SESSION_CLOCK_WATCH_MS` で変更可）、cron の `session-split-cron-ping` の **各実行**（`npm run session:clock:write-ticker` と同じ処理）
 - **運用**: Cursor でこのファイルを **開いてタブを固定**（split でも可）。外部更新で内容が変わるので、必要なら **エディタの「ファイルの再読み込み」**またはタブを閉じて開き直す
 
 ## ブラウザで見る（クリック・ブックマーク）
@@ -99,7 +99,7 @@ AI は **`npm run session:clock:set`** を実行し、結果（`SESSION-CLOCK.md
 
 ## チャット外で「教える」（`session:clock:watch` の中身）
 
-**通常は hook が起動する**ので、別ターミナルで手動起動は不要。ポーリングは **既定 2 分**（`SESSION_CLOCK_WATCH_MS`）。同一 `開始:` に対する通知は **1 回**（`logs/.session-clock-split-alerted`）。`session:clock:set` でリセット。
+**通常は hook が起動する**ので、別ターミナルで手動起動は不要。ポーリングは **既定 10 分**（`SESSION_CLOCK_WATCH_MS`）。Windows では tick 内の node 子プロセスに **`windowsHide: true`** を付与（cmd/PowerShell の一瞬フラッシュ抑止）。同一 `開始:` に対する通知は **1 回**（`logs/.session-clock-split-alerted`）。`session:clock:set` でリセット。
 
 **標準ツールが無い環境**: 通知本体は `scripts/lib/desktop-notify.mjs`（**ダイアログ／ポップアップ優先**: WSL2 は Windows `Popup` → 他は `notify-send` / `gdbus` / `zenity --warning`（timeout）/ `xmessage` → ベル）。**GUI が出なくても** `logs/session-desktop-notify.log` に **毎回 1 行**残る。経路の確認は **`npm run session:notify-selftest`**。
 

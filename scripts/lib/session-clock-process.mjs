@@ -5,6 +5,9 @@ import { spawn, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { DEFAULT_WATCH_MS } from './session-clock-core.mjs';
+import { readSessionClockMode } from './session-clock-mode.mjs';
+import { hiddenOpts, runNodeScriptSync, runPowerShellSync } from './win-hidden-spawn.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 export const repoRoot = path.resolve(here, '../..');
@@ -97,7 +100,7 @@ function killNodeListenersInPortRange(fromPort, toPort) {
     "  if ($p -and $p.Name -eq 'node.exe') { Stop-Process -Id $op -Force -ErrorAction SilentlyContinue }",
     '}',
   ].join(' ');
-  spawnSync('powershell', ['-NoProfile', '-Command', ps], { encoding: 'utf8', shell: false });
+  runPowerShellSync(ps);
 }
 
 /** pid ファイル無しの node 残骸（Windows 中心・best effort） */
@@ -112,10 +115,7 @@ export function killOrphanClockProcesses() {
       "Get-CimInstance Win32_Process -Filter \"Name='node.exe'\" -ErrorAction SilentlyContinue | " +
       "Where-Object { $_.CommandLine -match 'session-clock-web\\.mjs|session-clock-watch\\.mjs' } | " +
       "ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }";
-    spawnSync('powershell', ['-NoProfile', '-Command', ps], {
-      encoding: 'utf8',
-      shell: false,
-    });
+    runPowerShellSync(ps);
     return;
   }
   spawnSync('pkill', ['-f', 'session-clock-web.mjs'], { encoding: 'utf8' });
@@ -154,11 +154,7 @@ export function stopWatchAndWeb() {
 
 /** clear + watch/web 停止（Cursor 終了時） */
 export function stopAllClock() {
-  const clear = spawnSync('npm', ['run', 'session:clock:clear'], {
-    cwd: repoRoot,
-    encoding: 'utf8',
-    shell: true,
-  });
+  const clear = runNodeScriptSync(repoRoot, 'scripts/session-clock.mjs', ['clear']);
   const stopped = stopWatchAndWeb();
   return {
     clearOk: clear.status === 0,
@@ -203,12 +199,12 @@ export function spawnWebServer() {
   fs.mkdirSync(path.dirname(paths.webLog), { recursive: true });
   const out = fs.openSync(paths.webLog, 'a');
   const script = path.join(repoRoot, 'scripts', 'session-clock-web.mjs');
-  const child = spawn(process.execPath, [script], {
+  const child = spawn(process.execPath, [script], hiddenOpts({
     cwd: repoRoot,
     detached: true,
     stdio: ['ignore', out, out],
     env: clockWebSpawnEnv(),
-  });
+  }));
   child.unref();
 
   let url = null;
@@ -232,11 +228,18 @@ export function spawnWatch() {
   fs.mkdirSync(path.dirname(paths.watchLog), { recursive: true });
   const out = fs.openSync(paths.watchLog, 'a');
   const script = path.join(repoRoot, 'scripts', 'session-clock-watch.mjs');
-  const child = spawn(process.execPath, [script], {
+  const mode = readSessionClockMode(repoRoot);
+  const child = spawn(process.execPath, [script], hiddenOpts({
     cwd: repoRoot,
     detached: true,
     stdio: ['ignore', out, out],
-  });
+    env: {
+      ...process.env,
+      SESSION_CLOCK_WATCH_MS: String(
+        process.env.SESSION_CLOCK_WATCH_MS || mode.watchMs || DEFAULT_WATCH_MS,
+      ),
+    },
+  }));
   child.unref();
   return { started: true, pid: child.pid, message: 'watch started' };
 }

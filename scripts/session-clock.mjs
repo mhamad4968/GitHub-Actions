@@ -36,7 +36,7 @@ const HEADER =
   '**2026-05-17（浜田 CEO）**: **Cursor を閉じると自動停止**（`sessionEnd` hook → `session:clock:clear` ＋ watch/web 停止）。**Cursor を開くと自動起動**（`sessionStart` hook → set ＋ watch ＋ web ＋ **URL を additional_context 表示**）。手動: `npm run session:clock:stop` / `docs/runbooks/session-clock-cursor-lifecycle.md`。\n\n' +
   '**2026-04-29（浜田 CIO）**: セッション切替のたびに壁時計をリセットする運用（上記 hook に統合）。**この HEADER に永続化済（TSB-026）**。**人間注意書きの追記はここ（scripts/session-clock.mjs の HEADER 定数）に行うこと。**\n\n' +
   '**チャットから AI に依頼**（浜田が手で npm を打たなくてよい）: 「**壁時計をいまの時刻でセットして**（`npm run session:clock:set`）」→ AI が実行（§35-1）。依頼文の一覧は `chat-sessions/SESSION-SPLIT-REMINDER.md` の **浜田 → AI 依頼文**。\n\n' +
-  '**人間向けの経過表示（エディタ）**: **`SESSION-CLOCK-TICKER.md`** をタブで開いて固定（自動生成・git 追跡外）。`session:clock:watch` 稼働中は **既定 2 分ごと**に更新、`set` の直後も更新。`npm run session:clock:prompt-hook` は不要。\n\n' +
+  '**人間向けの経過表示（エディタ）**: **`SESSION-CLOCK-TICKER.md`** をタブで開いて固定（自動生成・git 追跡外）。`session:clock:watch` 稼働中は **既定 10 分ごと**に更新（`SESSION_CLOCK_WATCH_MS` で変更可）、`set` の直後も更新。子プロセスは **windowsHide** でバックグラウンド実行。`npm run session:clock:prompt-hook` は不要。\n\n' +
   '```bash\n' +
   'npm run session:clock:set\n' +
   'npm run session:clock:web-url\n' +

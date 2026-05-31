@@ -465,6 +465,6 @@ OK → `partner_company` 入力欄の `readonly` を解除＋ `data-y678-partner
 | Rank | Task | 難易度 | Token | Impact | Priority |
 |------|------|--------|-------|--------|----------|
 | 1 | B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化） | 2/5 | 中 | 3/5 | 21 |
-| 2 | 打合せ v5 / **§41 案A1** | 3/5 | 中 | 5/5 | 25 |
+| 2 | **6/8** 案B1 — Space 57 新①③④ skeleton + 設定マスタ Excel（AI チームと確認 | 5/5 | 高 | 5/5 | 50 |
 
 <!-- CIO-TASK-PRIORITY:AUTO:END -->

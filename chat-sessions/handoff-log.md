@@ -2692,3 +2692,35 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 **次回第1手**: **B1 commit** または **§41 案A1**（浜田判断）
 
 ---
+
+### 2026-05-31 JST — **Q36 GO 受領（案A1）**
+
+**GO**: 浜田 **OK** — Word `C:\tmp\業務改善\Q36-GO-仰ぎ報告書_業務改善ver02_20260531.docx` **第7章 GO 欄に記載済**（2026-05-31）
+
+**条件**: 実装着手 **2026-06-08** のみ。**前倒し禁止**（〜6/7 customize/deploy 不可）。
+
+**6/8 まで**: 実装・B1 **着手しない**（浜田 2026-05-31 — 6/8 に AI チームと確認の上で実施）。
+
+**次回第1手**: **6/8** 案B1（実装）— それまで待機。
+
+---
+
+### 2026-05-31 JST — **セッション締め**
+
+**本日完了**:
+- **Q36 GO** — Word 第7章記載・Markdown/checkpoint 更新
+- **案A1** — 報告書 Word + §41 OK
+- **壁時計** — manual-desktop（hook オフ / START.bat WEB待機起動 / crontab session-split 削除）
+- **Q-GUIDE-08** — 導入資料確定（午前）
+
+**触らない**: customize/deploy 〜 **6/7**（6/8 まで実装しない）
+
+**未 commit**: ~~Q36 正本・壁時計 scripts/hooks / `.cio/session-clock-mode.json`~~ → **本ターン commit 実施**
+
+**次回第1手**: **6/8** 実装（案B1）。壁時計は **`壁時計_START.bat`**。
+
+**ルール追補（2026-05-31）**: セッション締め時 **commit 必須** — `verify:session-close-git-warn` デフォルト exit 1
+
+**締め**: `SESSION-CLOSE-REPORT-20260531.txt` / export-handoff 更新
+
+---

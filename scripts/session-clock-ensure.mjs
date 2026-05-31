@@ -3,7 +3,6 @@
  * 壁時計を手動で確実に起動（hook 未発火・watch 停止時のフォールバック）
  *   npm run session:clock:ensure
  */
-import { spawnSync } from 'node:child_process';
 import {
   readWebUrl,
   repoRoot,
@@ -11,14 +10,11 @@ import {
   spawnWebServer,
   stopWatchAndWeb,
 } from './lib/session-clock-process.mjs';
+import { runNodeScriptSync } from './lib/win-hidden-spawn.mjs';
 
 function main() {
   const cleaned = stopWatchAndWeb();
-  const set = spawnSync('npm', ['run', 'session:clock:set'], {
-    cwd: repoRoot,
-    encoding: 'utf8',
-    shell: true,
-  });
+  const set = runNodeScriptSync(repoRoot, 'scripts/session-clock.mjs', ['set']);
   const web = spawnWebServer();
   const watch = spawnWatch();
   const url = web.url || readWebUrl();

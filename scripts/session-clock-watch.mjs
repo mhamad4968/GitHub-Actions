@@ -6,7 +6,7 @@
  * 手動のとき: `npm run session:clock:watch`
  *
  * 環境変数:
- *   SESSION_CLOCK_WATCH_MS — ポーリング間隔 ms（既定 120000 = 2 分）
+ *   SESSION_CLOCK_WATCH_MS — ポーリング間隔 ms（既定 600000 = 10 分）
  *
  * 通知:
  *   - `scripts/lib/desktop-notify.mjs`（notify-send → gdbus → zenity → コンソールベル）
@@ -19,14 +19,15 @@
  *
  * @see chat-sessions/SESSION-SPLIT-REMINDER.md
  */
-import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { DEFAULT_WATCH_MS } from './lib/session-clock-core.mjs';
 import { pollSessionSplitAlertOnce } from './lib/session-clock-split-alert-once.mjs';
+import { runNodeScriptSync } from './lib/win-hidden-spawn.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const intervalMs = Math.max(15_000, Number(process.env.SESSION_CLOCK_WATCH_MS || 120_000));
+const intervalMs = Math.max(60_000, Number(process.env.SESSION_CLOCK_WATCH_MS || DEFAULT_WATCH_MS));
 const pidPath = path.join(root, 'logs', '.session-clock-watch.pid');
 
 function otherInstanceRunning() {
@@ -85,10 +86,7 @@ for (const sig of ['SIGINT', 'SIGTERM', 'SIGHUP']) {
 }
 
 function tick() {
-  spawnSync(process.execPath, ['scripts/session-clock.mjs', 'write-ticker'], {
-    cwd: root,
-    encoding: 'utf8',
-  });
+  runNodeScriptSync(root, 'scripts/session-clock.mjs', ['write-ticker']);
   const r = pollSessionSplitAlertOnce({ root, source: 'watch' });
   if (r.outcome === 'parse-error') return;
   if (r.outcome === 'alerted') {

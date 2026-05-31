@@ -20,6 +20,7 @@ import {
   jstYmdIso,
   win32ToWslPath,
 } from './lib/repo-node-env.mjs';
+import { hiddenOpts } from './lib/win-hidden-spawn.mjs';
 import {
   acquireMorningPrepLock,
   readMorningPrepLock,
@@ -62,11 +63,11 @@ function runDailyMorningPrepWsl() {
   const wslRoot = win32ToWslPath(root);
   const printShBash = win32ToWslPath(printSh);
   const inner = `NVMN="$(bash '${printShBash}')" && export PATH="$NVMN:$PATH" && cd '${wslRoot}' && TZ=Asia/Tokyo node scripts/daily-morning-prep.mjs`;
-  return spawnSync('wsl.exe', ['-d', 'Ubuntu', '-e', 'bash', '-lc', inner], {
+  return spawnSync('wsl.exe', ['-d', 'Ubuntu', '-e', 'bash', '-lc', inner], hiddenOpts({
     stdio: 'inherit',
     cwd: root,
     env: { ...process.env, TZ: 'Asia/Tokyo' },
-  });
+  }));
 }
 
 function runDailyMorningPrepNative() {

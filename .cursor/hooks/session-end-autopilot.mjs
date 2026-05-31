@@ -11,6 +11,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { stopAllClock } from '../../scripts/lib/session-clock-process.mjs';
+import { readSessionClockMode } from '../../scripts/lib/session-clock-mode.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const logDir = path.join(root, 'logs');
@@ -42,9 +43,12 @@ function main() {
     `stopAll clearOk=${r.clearOk} watch=${r.watch} web=${r.web} msg=${r.clearMsg ?? ''}`,
   );
 
+  const mode = readSessionClockMode(root);
   const additional_context =
     '【自動・Cursor sessionEnd hook】壁時計を停止した（`session:clock:clear` ＋ watch/web プロセス終了）。' +
-    ' Cursor を再度開いたときは sessionStart で set・watch・web が自動起動し URL が表示される。';
+    (mode.mode === 'manual-desktop'
+      ? ' 次回は **Desktop `壁時計_START.bat`** で再起動。'
+      : ' Cursor を再度開いたときは sessionStart で set・watch・web が自動起動し URL が表示される。');
 
   process.stdout.write(`${JSON.stringify({ additional_context })}\n`);
   process.exit(0);

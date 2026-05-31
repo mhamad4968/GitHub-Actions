@@ -2,6 +2,48 @@
 
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
+## 2026-05-31 JST — **セッション締め**
+
+| 項目 | 内容 |
+|------|------|
+| **本日完了** | **Q36 GO**（Word 第7章記載）・案A1 完了 / 壁時計 **manual-desktop**（START.bat・WEB待機・cron 無効） |
+| **Word** | `C:\tmp\業務改善\Q36-GO-仰ぎ報告書_業務改善ver02_20260531.docx` |
+| **壁時計** | Desktop **`壁時計_START.bat`** / **`壁時計_STOP.bat`** — hook 自動起動 **オフ** |
+| **実装** | **6/8** まで **着手しない**（AI チームと確認の上） |
+| **Git** | 締め時 **commit 必須**（`verify:session-close-git-warn`） |
+| **次回 1 手** | **6/8** 案B1 — Space 57 新①③④ skeleton + 設定マスタ Excel（AI チームと確認の上） |
+| **締め** | `SESSION-CLOSE-REPORT-20260531.txt` |
+
+---
+
+## 2026-05-31 JST — **Q36 GO 受領（案A1 完了）**
+
+| 項目 | 内容 |
+|------|------|
+| **Q36 GO** | 浜田 **OK** — **Word 第7章「6/8 実装着手を承認する」記載済**（2026-05-31） |
+| **Word** | `C:\tmp\業務改善\Q36-GO-仰ぎ報告書_業務改善ver02_20260531.docx` |
+| **Markdown** | `docs/plans/business-improvement-q36-go-request-draft.md` |
+| **実装着手** | **2026-06-08** のみ（**前倒し禁止**・Q-SCHED-02 正本） |
+| **〜6/7 凍結** | customize/deploy **前倒し禁止**（GO 済みだが着手日まで待つ） |
+| **6/8 まで** | **実装・B1 等はやらない**（浜田 2026-05-31 — 6/8 に AI チームと確認の上で実施） |
+| **壁時計** | **manual-desktop** — hook オフ / Desktop **`壁時計_START.bat`** / **crontab session-split 無効化**（2026-05-31） |
+| **次** | **6/8** 実装着手（案B1）— それまで仕様・§41 のみ |
+
+---
+
+## 2026-05-31 JST — **案A1 Q36 報告書下書き完成**
+
+| 項目 | 内容 |
+|------|------|
+| **報告書** | `docs/plans/business-improvement-q36-go-request-draft.md` — CIO 作成済 |
+| **Word** | `C:\tmp\業務改善\Q36-GO-仰ぎ報告書_業務改善ver02_20260531.docx` |
+| **AI 所見** | 仕様 **問題なし**・6/8 着手前提 **満たす** |
+| **スケジュール** | **Q-SCHED-02 正本** — **前倒し禁止**（浜田 2026-05-31）・遅延は許容 |
+| **触らない** | customize/deploy（**Q36 明示 GO 前**） |
+| **次** | 浜田 **Q36 GO** または差戻し 1 行 |
+
+---
+
 ## 2026-05-31 JST — **業務改善 Q-GUIDE-08（導入資料・ガイド下書き）**
 
 | 項目 | 内容 |
@@ -11,7 +53,7 @@
 | **執筆** | **6/9〜6/20**（Q-SCHED-02）。操作手順は ver.02＋Q-GUIDE-07 スクショ |
 | **更新ファイル** | 仕様正本・checklist・implementation-handbook・Q36下書き・RAGミラー |
 | **触らない** | 業務改善 kintone 実装（**Q36 GO 前**）・PC台帳（**クローズ**） |
-| **次** | **§41 案A1**（Q36 GO 仰ぎ）— 当日 -0 |
+| **次** | ~~§41 案A1~~ → **Q36 GO 待ち**（報告書完成） |
 
 ---
 
@@ -1505,6 +1547,8 @@
 - [ ] **恒久**: 次回も効く決定を **`RULES-INDEX.md` 1 行** または **正本**（`kintone-apps.md` / `docs/*`）に残した
 - [ ] **現在地**: **このファイル**のゴール・未完了・**次に最初にやること**を、チャットと矛盾なく更新した
 - [ ] **詳細**: 長い経緯は **`chat-sessions/<日付>.md`** に残した
+- [ ] **Git（必須）**: 本セッション差分を **`git commit`**（未 commit のまま締め禁止 — `verify:session-close-git-warn`）
+- [ ] **荷造り**: `npm run cio:session:export-handoff` → `npm run desktop:sync-and-verify`
 - [ ] （任意）**`npm run guard:mirror`** で emergency-backup を最新化する
 
 ※ 手順の正本: **`docs/agent-restore-checkpoint.md`**「『忘れた』を防ぐ」

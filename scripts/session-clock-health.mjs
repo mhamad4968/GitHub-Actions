@@ -15,6 +15,8 @@ import {
   extractNodeFromCronLine,
   resolveNodeForCron,
 } from './lib/session-clock-cron-node.mjs';
+import { hiddenOpts } from './lib/win-hidden-spawn.mjs';
+import { readSessionClockMode } from './lib/session-clock-mode.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const json = process.argv.includes('--json');
@@ -101,7 +103,7 @@ function webPidStatus() {
           '-e',
           `fetch(${JSON.stringify(url)},{signal:AbortSignal.timeout(3000)}).then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))`,
         ],
-        { encoding: 'utf8', timeout: 5000 },
+        hiddenOpts({ encoding: 'utf8', timeout: 5000, shell: false }),
       );
       httpOk = res.status === 0;
     } catch {
@@ -164,20 +166,30 @@ if (drift && !strict) warnings.push('crontab の node と install 想定が不�
 if (!cronLine && !strict) warnings.push('session-split の crontab 行がありません（任意: `npm run session:clock:install-cron`）');
 
 const hooks = readHooks();
+const clockMode = readSessionClockMode(root);
 const watchPid = watchPidStatus();
 const webPid = webPidStatus();
-if (!watchPid.alive) {
+if (!watchPid.alive && clockMode.mode !== 'manual-desktop') {
   warnings.push(
     'watch 未稼働（`npm run session:clock:ensure` または Cursor 再起動で sessionStart hook を発火）',
   );
+} else if (!watchPid.alive && clockMode.mode === 'manual-desktop') {
+  warnings.push(
+    'watch 未稼働（手動運用: Desktop `壁時計_START.bat` を実行）',
+  );
 }
-if (!webPid.alive) {
+if (!webPid.alive && clockMode.mode !== 'manual-desktop') {
   warnings.push(
     'web 未稼働（`npm run session:clock:ensure` または web のみ再起動 — `logs/.session-clock-web.url` を確認）',
   );
+} else if (!webPid.alive && clockMode.mode === 'manual-desktop') {
+  warnings.push('web 未稼働（手動運用: Desktop `壁時計_START.bat` を実行）');
 }
 
 let exitOk = hooks.ok && watchPid.alive && webPid.alive;
+if (clockMode.mode === 'manual-desktop') {
+  exitOk = hooks.ok;
+}
 if (strict) {
   exitOk = exitOk && Boolean(cronLine) && !drift;
 }
@@ -186,6 +198,7 @@ const report = {
   ok: exitOk,
   strict,
   warnings,
+  clockMode: clockMode.mode,
   hooks,
   sessionClock: readClockStart(),
   watchPid,

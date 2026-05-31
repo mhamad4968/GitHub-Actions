@@ -2,10 +2,10 @@
  * §51-6-2 壁時計: check-json を1回だけ評価し、4h 超なら通知（同一開始行は1回だけ）。
  * session-clock-watch と cron から共有する。
  */
-import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { desktopNotify } from './desktop-notify.mjs';
+import { runNodeScriptSync } from './win-hidden-spawn.mjs';
 
 /** 短いタイトル／本文（ポップアップ・ダイアログ向け） */
 const NOTIFY_TITLE = '§51-6-2: 4時間超 → 新Composer';
@@ -40,10 +40,7 @@ export function pollSessionSplitAlertOnce(opts) {
   const source = opts.source ?? 'unknown';
   const ts = new Date().toISOString();
 
-  const j = spawnSync(process.execPath, ['scripts/session-clock.mjs', 'check-json'], {
-    cwd: root,
-    encoding: 'utf8',
-  });
+  const j = runNodeScriptSync(root, 'scripts/session-clock.mjs', ['check-json']);
   const flagAbs = path.join(root, 'logs', '.session-clock-split-alerted');
   let payload;
   try {

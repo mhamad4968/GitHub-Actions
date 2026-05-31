@@ -31,6 +31,10 @@ function scoreTask(text, source) {
     difficulty = 5;
     tokens = 3;
     impact = 5;
+  } else if (/案b1|space\s*57|skeleton|設定マスタ|6\/8.*実装/.test(t)) {
+    difficulty = 5;
+    tokens = 3;
+    impact = 5;
   } else if (/§41|q36|案a1|打合せ|憲法|spec\.md/.test(t)) {
     difficulty = 3;
     tokens = 2;

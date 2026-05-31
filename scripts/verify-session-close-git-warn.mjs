@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * セッション締め時の未コミット WARN（S2 / 2026-05-30）
- * exit 0（警告のみ）。--strict で未コミットあれば exit 1。
+ * セッション締め時の未コミット検査（S2 / 2026-05-30）
+ * デフォルト: 未コミットあれば exit 1（締め禁止）。--warn-only で警告のみ exit 0。
  */
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
@@ -9,7 +9,7 @@ import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const strict = process.argv.includes('--strict');
+const warnOnly = process.argv.includes('--warn-only');
 
 function git(args) {
   const res = spawnSync('git', args, { cwd: root, encoding: 'utf8' });
@@ -30,11 +30,18 @@ function main() {
   }
 
   const count = status.split(/\r?\n/).filter(Boolean).length;
-  console.warn(`[verify:session-close-git-warn] WARN 未コミット ${count} 件 — 区切りで commit + push 推奨（B1）`);
-  console.warn(status.split(/\r?\n/).slice(0, 15).join('\n'));
-  if (count > 15) console.warn(`  …他 ${count - 15} 件`);
+  const msg = `[verify:session-close-git-warn] NG 未コミット ${count} 件 — セッション締め前に commit 必須（B1）`;
+  if (warnOnly) {
+    console.warn(msg.replace(' NG ', ' WARN '));
+    console.warn(status.split(/\r?\n/).slice(0, 15).join('\n'));
+    if (count > 15) console.warn(`  …他 ${count - 15} 件`);
+    process.exit(0);
+  }
 
-  process.exit(strict ? 1 : 0);
+  console.error(msg);
+  console.error(status.split(/\r?\n/).slice(0, 15).join('\n'));
+  if (count > 15) console.error(`  …他 ${count - 15} 件`);
+  process.exit(1);
 }
 
 main();

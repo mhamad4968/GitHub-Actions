@@ -10,6 +10,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { hiddenOpts } from './win-hidden-spawn.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const REPO_ROOT = path.resolve(__dirname, '..', '..');
@@ -47,10 +48,10 @@ export function resolveRepoNodeBinDir(repoRoot = REPO_ROOT) {
   if (IS_WIN) {
     const wslRoot = win32ToWslPath(repoRoot);
     const inner = `cd '${wslRoot}' && bash scripts/print-nvm-node-bin.sh`;
-    const wsl = spawnSync('wsl.exe', ['-d', 'Ubuntu', '-e', 'bash', '-lc', inner], {
+    const wsl = spawnSync('wsl.exe', ['-d', 'Ubuntu', '-e', 'bash', '-lc', inner], hiddenOpts({
       encoding: 'utf8',
       timeout: 25_000,
-    });
+    }));
     const wslBin = (wsl.stdout || '').trim();
     if (wsl.status === 0 && wslBin) return wslBin;
     return path.dirname(process.execPath);
@@ -120,18 +121,18 @@ export function runRepoShellCmd(cmd, opts = {}) {
       const wslRoot = win32ToWslPath(repoRoot);
       const wslBin = resolveRepoNodeBinDir(repoRoot);
       const inner = `export PATH="${wslBin}:$PATH" && cd '${wslRoot}' && ${cmd}`;
-      return spawnSync('wsl.exe', ['-d', 'Ubuntu', '-e', 'bash', '-lc', inner], {
+      return spawnSync('wsl.exe', ['-d', 'Ubuntu', '-e', 'bash', '-lc', inner], hiddenOpts({
         encoding: 'utf8',
         timeout,
         env: { ...process.env, TZ: opts.tz || process.env.TZ || 'Asia/Tokyo' },
-      });
+      }));
     }
-    return spawnSync('cmd.exe', ['/d', '/s', '/c', cmd], {
+    return spawnSync('cmd.exe', ['/d', '/s', '/c', cmd], hiddenOpts({
       cwd: repoRoot,
       encoding: 'utf8',
       timeout,
       env,
-    });
+    }));
   }
 
   const binDir = resolveRepoNodeBinDir(repoRoot);

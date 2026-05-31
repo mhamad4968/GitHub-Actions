@@ -5,11 +5,11 @@
  *
  * インストール: npm run session:clock:install-cron
  */
-import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pollSessionSplitAlertOnce } from './lib/session-clock-split-alert-once.mjs';
+import { runNodeScriptSync } from './lib/win-hidden-spawn.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const logDir = path.join(root, 'logs');
@@ -26,10 +26,7 @@ function logLine(msg) {
   process.stdout.write(line);
 }
 
-spawnSync(process.execPath, ['scripts/session-clock.mjs', 'write-ticker'], {
-  cwd: root,
-  encoding: 'utf8',
-});
+runNodeScriptSync(root, 'scripts/session-clock.mjs', ['write-ticker']);
 const r = pollSessionSplitAlertOnce({ root, source: 'cron' });
 
 switch (r.outcome) {

@@ -68,13 +68,16 @@ Cursor / Claude は**会話全文を自動で永続化しない**。チャット
 - **ブロッカー**（`.env`・権限・仕様未確定）がある
 - **「あとでやる」**が1件でも出た
 
-### セッション締めの 3 点（迷ったらこの順）
+### セッション締めの 4 点（迷ったらこの順）
 
 | 優先 | 書く場所 | 何を |
 |------|----------|------|
 | 1 恒久 | **`RULES-INDEX.md` 1 行** と／または **該当正本** | **次回以降も効く決定**・例外ルール・参照パス |
 | 2 現在地 | **`checkpoint-latest.md`** | **いまのゴール・未完了・次に最初にやること**（短く） |
 | 3 詳細 | **`chat-sessions/YYYY-MM-DD.md`**（または会話メモ） | **試行錯誤・コマンド・長い文脈** |
+| 4 Git | **`git commit`**（**必須**） | 本セッションの差分を **未 commit のまま締めない**。`npm run verify:session-close-git-warn` が **exit 1** なら締め未完 |
+
+**締め儀式の機械順**（`desktop:sync-and-verify` 連動）: handoff 更新 → **`git commit`** → `npm run cio:session:export-handoff`（gitHead 同期）→ bridge 追記があれば再 commit → `npm run desktop:sync-and-verify`。
 
 **1 が空で 2 だけ、はよくある**（実装続きなら可）。**2 が空のままチャットだけで終わる**のが一番危険（翌セッションで文脈ゼロ）。
 

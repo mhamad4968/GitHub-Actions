@@ -38,7 +38,7 @@
 | コマンド | 用途 |
 |----------|------|
 | `npm run verify:evening-reflection-scope` | 26 の禁止語検出（exit 1） |
-| `npm run verify:session-close-git-warn` | 締め時未コミット WARN |
+| `npm run verify:session-close-git-warn` | 締め時未コミット **NG（exit 1・commit 必須）** |
 | `npm run desktop:sync-and-verify` | 上記 + Desktop sync 一括 |
 
 ## 関連
