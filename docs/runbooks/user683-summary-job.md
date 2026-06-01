@@ -134,6 +134,21 @@ npm run user683:sync-summaries:apply
 
 （手動で特定月だけ入れるときは `npm run user683:sync-summaries:apply -- --year 2026 --month 4`。）
 
+## 毎月の微調整（浜田依頼時）
+
+定時ジョブ `npm run user683:sync-summaries:apply`（または `apply-prev-month`）のあと、ダッシュ（683）で文言を直したいときは **AI に次の4点を伝える**（手修正のみの場合は「コメントを保存」で十分）。
+
+| 項目 | 記入例 |
+|------|--------|
+| 対象暦月 | `2026-05` |
+| 第何週（任意） | 第6週（5/31〜5/31） |
+| 症状 | コメント欄が空／途中で切れる／件数と合わない |
+| 期待 | 1行要約の追記／言い回し修正（数値はコーパスに無いものは書かない） |
+
+**AI 側の典型手順**: 682 から当該週のコーパス確認 → 必要なら Claude で週次のみ再生成 → 要約キャッシュの **当該 `user683_week_N` のみ PATCH**（週1〜5・月次は上書きしない）。
+
+**事前チェック（推奨）**: `npm run user683:verify-summary-fields`（`user683_week_6` 等が本番に無いと PUT しても表示されない）。
+
 ## トラブルシュート
 
 - **CB_IL02（REST GET）**: Node の `fetch` で **GET に `Content-Type: application/json` を付けない**（本リポの `user683-sync-summaries-to-kintone.mjs` は修正済み）。
@@ -142,6 +157,8 @@ npm run user683:sync-summaries:apply
 - **Claude HTTP 401 / 403**: キー無効・権限・組織ポリシーを確認。
 - **Claude タイムアウト**: `USER683_CLAUDE_TIMEOUT_MS` を延長。
 - **POST 失敗（必須フィールド）**: 683 にレコード追加用の **他必須フィールド**がある場合はアプリ設計を見直すか、要約専用の空アプリを `USER683_SUMMARY_APP` で指定。
+- **第6週だけコメントが空**: `npm run user683:verify-summary-fields` で `user683_week_6` の有無を確認 → 無ければ `npm run user683:add-summary-fields`。
+- **apply 直後に週6が空で終了**: コーパスはあるが要約未保存 — ログの `NG week 6` を確認（P2 検査）。
 
 ## レガシー（Ollama）
 

@@ -36,9 +36,9 @@ const FC_PM_TEXT = 'pm_correspondence';
 const RELAY_DAY_CORPUS_MAX_LEN = 3200;
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
 const CLAUDE_PROMPT_WEEK =
-  '以下は社内ユーザサポートの週次対応メモの抜粋です。当社の会計年度は**4月末が期末・5月が期首**（暦月のみの比較だけで終わらせず、必要ならその週が会計年度のどの位置かに触れてよい。コーパスに無い「21日締め」等の変形会計月は捏造しない）。週内に**年末年始・ゴールデンウィーク・秋分の日前後の連休（いわゆるシルバーウィーク）**など稼働日が少ない期間が含まれる場合は、件数・負荷の変動をその文脈で読むこと。日本語で、箇条書き3点以内・合計200字以内で要約してください。コーパスに無い数値は書かないこと。余計な前置きは不要。\n\n';
+  '以下は社内ユーザサポートの週次対応メモの抜粋です。当社の会計年度は**4月末が期末・5月が期首**（暦月のみの比較だけで終わらせず、必要ならその週が会計年度のどの位置かに触れてよい。コーパスに無い「21日締め」等の変形会計月は捏造しない）。週内に**年末年始・ゴールデンウィーク・秋分の日前後の連休（いわゆるシルバーウィーク）**など稼働日が少ない期間が含まれる場合は、件数・負荷の変動をその文脈で読むこと。日本語で、箇条書き3点以内・合計200字以内で要約してください。コーパスに無い数値は書かないこと。**対応件数やメモが1日・少数件でも、コーパスに書かれた内容は必ず1行以上で要約すること。空欄で返さないこと。**余計な前置きは不要。\n\n';
 const CLAUDE_PROMPT_MONTH =
-  '【前月の月次要約】と【当月の対応メモ抜粋】が続きます。当社の会計年度は**4月末が期末・5月が期首**である（暦月ベースの前月比に加え、必要ならその暦月が会計年度上どの位置かに一言触れてよい。例: 4月＝期末月、5月＝新年度期首、1〜3月＝期末に向けた後半、5〜12月＝期中。コーパスに無い変形会計カレンダーや四半期名は付け加えない）。当月のコーパスに**年末年始・ゴールデンウィーク・秋分の日前後の連休（シルバーウィーク）**など大型休暇が含まれる場合は、稼働日減による件数・相談量の変動を疑い、コーパスに根拠がある範囲で言及すること（根拠が無いときは断定しない）。日本語で、冒頭1〜3文で前月と比べた所感（件数・相談内容・負荷の増減など）を必ず書き、その後に箇条書き3点以内で当月の要点をまとめてください。コーパスに明示されていない数値は書かないでください。全体は350字程度を目安（やや超過可）。前月要約が空または「要約キャッシュなし」のときは「前月比:（初月または欠）」の1行でよいです。余計な前置きは不要。\n\n';
+  '【前月の月次要約】と【当月の対応メモ抜粋】が続きます。当社の会計年度は**4月末が期末・5月が期首**である（暦月ベースの前月比に加え、必要ならその暦月が会計年度上どの位置かに一言触れてよい。例: 4月＝期末月、5月＝新年度期首、1〜3月＝期末に向けた後半、5〜12月＝期中。コーパスに無い変形会計カレンダーや四半期名は付け加えない）。当月のコーパスに**年末年始・ゴールデンウィーク・秋分の日前後の連休（シルバーウィーク）**など大型休暇が含まれる場合は、稼働日減による件数・相談量の変動を疑い、コーパスに根拠がある範囲で言及すること（根拠が無いときは断定しない）。日本語で、冒頭1〜3文で前月と比べた所感（件数・相談内容・負荷の増減など）を必ず書き、その後に箇条書き3点以内で当月の要点をまとめてください。コーパスに明示されていない数値は書かないでください。全体は350字程度を目安（やや超過可）。**必ず完結した文・箇条書きで終えること（途中で切れないこと）**。前月要約が空または「要約キャッシュなし」のときは「前月比:（初月または欠）」の1行でよいです。余計な前置きは不要。\n\n';
 const ANTHROPIC_MODEL = (process.env.ANTHROPIC_MODEL || 'claude-opus-4-7').trim();
 const CLAUDE_MS = Number(process.env.USER683_CLAUDE_TIMEOUT_MS || 120000);
 
@@ -321,6 +321,16 @@ async function fetch682MonthRecords(baseUrl, headers, year, month) {
   return { records: all, dim };
 }
 
+/** 週次: Claude が空を返したときの最小フォールバック（コーパス先頭行ベース） */
+function weekSummaryFallbackFromCorpus(corpus) {
+  const line = String(corpus || '')
+    .split('\n')
+    .map((s) => s.trim())
+    .find(Boolean);
+  if (!line) return '（週次要約: コーパスから要約を生成できませんでした）';
+  return `・${line.replace(/^・+/, '').slice(0, 200)}`;
+}
+
 async function claudeSummarizeOnce(kind, promptCorpus) {
   const p = (promptCorpus || '').trim();
   if (!p) return '（集計対象の要約元テキストがありません）';
@@ -330,7 +340,7 @@ async function claudeSummarizeOnce(kind, promptCorpus) {
   }
   const model = ANTHROPIC_MODEL;
   const prompt = kind === 'month' ? CLAUDE_PROMPT_MONTH + p : CLAUDE_PROMPT_WEEK + p;
-  const maxTokens = kind === 'month' ? 420 : 320;
+  const maxTokens = kind === 'month' ? 1024 : 320;
   const ac = new AbortController();
   const t = setTimeout(() => ac.abort(), CLAUDE_MS);
   try {
@@ -475,7 +485,13 @@ async function main() {
   for (let i = 0; i < nWeek; i += 1) {
     const c = payload.weeks[i] && payload.weeks[i].corpus != null ? String(payload.weeks[i].corpus) : '';
     process.stderr.write(`[user683-sync] Claude week ${i + 1}/${nWeek} …\n`);
-    weekSummaries.push(await claudeSummarizeOnce('week', c));
+    let s = await claudeSummarizeOnce('week', c);
+    if (!s && c.trim()) {
+      console.warn(`[user683-sync] week ${i + 1} empty Claude output (corpus=${c.length} chars), retry once`);
+      s = await claudeSummarizeOnce('week', c);
+      if (!s) s = weekSummaryFallbackFromCorpus(c);
+    }
+    weekSummaries.push(s);
   }
   const pm = prevCalendarMonth(year, month);
   const prevYmKey = `${pm.year}-${pad2(pm.month)}`;
@@ -516,6 +532,40 @@ async function main() {
     });
     console.log('[user683-sync] POST record.json OK (new record)');
   }
+
+  await assertWeek6SummaryPersisted(baseUrl, headers, ymKey, nWeek, payload, weekSummaries);
+}
+
+/** 6週ブロックの月: 週6コーパスありなのに要約・kintone が空なら exit 1（P2） */
+async function assertWeek6SummaryPersisted(baseUrl, headers, ymKey, nWeek, payload, weekSummaries) {
+  if (nWeek < 6) return;
+  const wi = 5;
+  const corpus =
+    payload.weeks[wi] && payload.weeks[wi].corpus != null ? String(payload.weeks[wi].corpus).trim() : '';
+  const summary = weekSummaries[wi] != null ? String(weekSummaries[wi]).trim() : '';
+  if (!corpus) return;
+
+  if (!summary) {
+    console.error(`[user683-sync] NG week 6 summary empty after Claude (ym=${ymKey}, corpus=${corpus.length} chars)`);
+    process.exit(1);
+  }
+
+  const q = `${FC_YM} = "${ymKey}" limit 1`;
+  const u = new URL(`${baseUrl}/k/v1/records.json`);
+  u.searchParams.set('app', String(SUMMARY_APP));
+  u.searchParams.set('query', q);
+  u.searchParams.append('fields[0]', FC_W6);
+  u.searchParams.append('fields[1]', FC_YM);
+  const data = await fetchJson('GET', u.toString(), headers, null);
+  const recs = Array.isArray(data.records) ? data.records : [];
+  const stored = recs.length && recs[0][FC_W6] && recs[0][FC_W6].value != null ? String(recs[0][FC_W6].value).trim() : '';
+  if (!stored) {
+    console.error(
+      `[user683-sync] NG ${FC_W6} empty on kintone after PUT (ym=${ymKey}). Run: npm run user683:verify-summary-fields`,
+    );
+    process.exit(1);
+  }
+  console.log(`[user683-sync] week 6 verify OK (stored len=${stored.length})`);
 }
 
 main().catch((e) => {

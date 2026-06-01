@@ -2742,3 +2742,23 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 **触らない**: customize/deploy 〜 **6/7**（6/8 まで実装しない）
 
 ---
+
+### 2026-06-01 JST — **セッション締め**
+
+**本日完了**:
+- **予実** — 677 id=50 **41601** 都度 **¥70,000**（678 都度列も確認）— クローズ
+- **683** — 月次 max_tokens **1024**・2026-05 再生成／週6は **`user683_week_6` フィールド未作成**が原因 → `user683:add-summary-fields` + 要約 — **浜田表示 OK**
+- **v5 目次** — 第3章 **Ｃ－５ 生成AI**・**Ｃ－６ 問い合わせ** — **71項**・第1章 **p.4** — **浜田目視 OK**
+- **AI緊急用** — sync・health 確認
+
+**触らない**: 業務改善 customize/deploy 〜 **6/7**（**6/8** 案B1 まで）
+
+**次回第1手**: **6/8** 案B1（AI チームと確認の上）
+
+**夕反省 GO**: **P1/P2/P4/P5** 実施済（**P3** は説明後に判断）— `user683:verify-summary-fields`・週6 PUT 検査・runbook 微調整節・checkpoint 凍結ブロック
+
+**未 commit**: `user683-sync-summaries-to-kintone.mjs`・`user683_claude_relay.py`・締め一式
+
+**締め**: `SESSION-CLOSE-REPORT-20260601.txt`
+
+---
