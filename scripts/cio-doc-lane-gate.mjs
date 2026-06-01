@@ -12,6 +12,7 @@ import { fileURLToPath } from 'node:url';
 const DOC_BASE = path.win32.normalize('C:\\tmp\\マニュアル');
 const STAMPS = path.join(DOC_BASE, 'scripts', '.doc_lane_stamps');
 const PREFLIGHT = path.join(DOC_BASE, 'scripts', 'doc_lane_preflight.py');
+const VERIFY_CH3_C5 = path.join(DOC_BASE, 'scripts', 'verify_v5_ch3_c5_references.py');
 
 function todayKey() {
   const d = new Date();
@@ -53,6 +54,20 @@ function main() {
   if (py.stderr) process.stderr.write(py.stderr);
   if ((py.status ?? 1) !== 0) {
     ok = false;
+  }
+
+  if (fs.existsSync(VERIFY_CH3_C5)) {
+    console.log('\n[cio:doc-lane-gate] 第３章 Ｃ－５/Ｃ－６ 参照検査（P3）');
+    const v3 = spawnSync('python', [VERIFY_CH3_C5], {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
+      cwd: path.join(DOC_BASE, 'scripts'),
+    });
+    if (v3.stdout) process.stdout.write(v3.stdout);
+    if (v3.stderr) process.stderr.write(v3.stderr);
+    if ((v3.status ?? 1) !== 0) {
+      ok = false;
+    }
   }
 
   if (!ok) {

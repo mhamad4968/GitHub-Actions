@@ -316,6 +316,7 @@
     "verify:cio-final-closure-infra": "node scripts/verify-cio-final-closure-infra.mjs",
     "verify:cio-extreme-defence-infra": "node scripts/verify-cio-extreme-defence-infra.mjs",
     "cio:doc-lane-gate": "node scripts/cio-doc-lane-gate.mjs",
+    "doc-lane:verify-v5-ch3-refs": "python C:\\tmp\\マニュアル\\scripts\\verify_v5_ch3_c5_references.py",
     "verify:cio-18-countermeasures": "node scripts/verify-cio-18-countermeasures.mjs",
     "verify:mode-b-zombie-docs": "node scripts/verify-mode-b-zombie-docs.mjs",
     "cio:prune:mode-b-zombie-docs": "node scripts/cio-prune-mode-b-zombie-docs.mjs",

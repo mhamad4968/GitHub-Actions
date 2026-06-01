@@ -17,9 +17,10 @@
 ## AI 手順
 
 1. `npm run cio:doc-lane-gate -- --strict` → OK
-2. `fix_toc_v5.py` / verify スクリプト実行
-3. チャット報告末尾に **上記固定 1 行**
-4. 浜田 OK 後 → handoff に「目視 OK」1 行（任意）
+2. `fix_toc_v5.py` / verify スクリプト実行（末尾で **`verify_v5_ch3_c5_references.py`** — 第３章 Ｃ－５/Ｃ－６ 誤参照検出・P3）
+3. 誤参照 NG 時: `python scripts\verify_v5_ch3_c5_references.py --apply`（Word 閉じてから。開いているときは `archive\*_ch3c5fix_*.docx` に代替保存）
+4. チャット報告末尾に **上記固定 1 行**
+5. 浜田 OK 後 → handoff に「目視 OK」1 行（任意）
 
 ## 関連
 

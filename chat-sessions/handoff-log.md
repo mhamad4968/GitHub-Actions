@@ -2755,7 +2755,7 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 
 **次回第1手**: **6/8** 案B1（AI チームと確認の上）
 
-**夕反省 GO**: **P1/P2/P4/P5** 実施済（**P3** は説明後に判断）— `user683:verify-summary-fields`・週6 PUT 検査・runbook 微調整節・checkpoint 凍結ブロック
+**夕反省 GO**: **P1〜P5 全GO** — P3=`verify_v5_ch3_c5_references.py`（`npm run doc-lane:verify-v5-ch3-refs`）+ `add_reading_guide.py` 修正。v5 読み方1行は **Word 閉じて** `verify_v5_ch3_c5_references.py --apply` 要（代替: `archive\*_ch3c5fix_*.docx`）
 
 **未 commit**: `user683-sync-summaries-to-kintone.mjs`・`user683_claude_relay.py`・締め一式
 

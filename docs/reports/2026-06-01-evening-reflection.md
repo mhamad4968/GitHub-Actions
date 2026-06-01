@@ -23,7 +23,7 @@
 |----|------|------|
 | **P1** | `npm run user683:verify-summary-fields`（本番 week_1〜6） | **2026-06-01 承認・実施済** |
 | **P2** | `sync-summaries:apply` 後の週6永続化検査（6週月・コーパスあり時） | **2026-06-01 承認・実施済** |
-| **P3** | v5 Ｃ－５/Ｃ－６ 繰下げ後の参照 grep ゲート | **承認待ち**（説明後に判断） |
+| **P3** | `verify_v5_ch3_c5_references.py`（fix_toc / doc-lane gate 連動）+ `add_reading_guide.py` 修正 | **2026-06-01 承認・実施済**（v5 本文1箇所は Word 閉鎖後 `--apply` 要） |
 | **P4** | runbook「毎月の微調整」節 | **2026-06-01 承認・実施済** |
 | **P5** | checkpoint 先頭の凍結ブロック | **2026-06-01 承認・実施済** |
 
