@@ -17,10 +17,16 @@
 ## AI 手順
 
 1. `npm run cio:doc-lane-gate -- --strict` → OK
-2. `fix_toc_v5.py` / verify スクリプト実行（末尾で **`verify_v5_ch3_c5_references.py`** — 第３章 Ｃ－５/Ｃ－６ 誤参照検出・P3）
+2. `fix_toc_v5.py` / verify スクリプト実行（末尾で **`verify_v5_ch3_c5_references.py`** — 第３章 Ｃ－５/Ｃ－６ 誤参照 + **第８章 Ａ－３ 空欄**検出・P3）
 3. 誤参照 NG 時: `python scripts\verify_v5_ch3_c5_references.py --apply`（Word 閉じてから。開いているときは `archive\*_ch3c5fix_*.docx` に代替保存）
-4. チャット報告末尾に **上記固定 1 行**
-5. 浜田 OK 後 → handoff に「目視 OK」1 行（任意）
+4. **Ａ－３ 本文が空**のとき: `python scripts\patch_v5_a3_staff_summary.py`（`npm run doc-lane:patch-v5-a3`）→ 再 verify
+5. チャット報告末尾に **上記固定 1 行**
+6. 浜田 OK 後 → handoff に「目視 OK」1 行（任意）
+
+## v5 第８章 Ａ－３（2026-06-01）
+
+- **担当者向けまとめ**が見出しのみ空だったため `patch_v5_a3_staff_summary.py` で本文挿入（Ｃ－５ 生成AI / Ｃ－６ 問い合わせ 反映）
+- 浜田 **目視 OK**
 
 ## 関連
 

@@ -57,7 +57,9 @@ function main() {
   }
 
   if (fs.existsSync(VERIFY_CH3_C5)) {
-    console.log('\n[cio:doc-lane-gate] 第３章 Ｃ－５/Ｃ－６ 参照検査（P3）');
+    console.log(
+      '\n[cio:doc-lane-gate] v5 参照検査（P3: Ｃ－５/Ｃ－６ 誤参照 + 第８章 Ａ－３ 空欄）'
+    );
     const v3 = spawnSync('python', [VERIFY_CH3_C5], {
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'pipe'],

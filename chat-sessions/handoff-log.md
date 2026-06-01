@@ -2757,7 +2757,9 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 
 **夕反省 GO**: **P1〜P5 全GO** — P3=`verify_v5_ch3_c5_references.py`（`npm run doc-lane:verify-v5-ch3-refs`）+ `add_reading_guide.py` 修正。v5 読み方1行は **Word 閉じて** `verify_v5_ch3_c5_references.py --apply` 要（代替: `archive\*_ch3c5fix_*.docx`）
 
-**未 commit**: `user683-sync-summaries-to-kintone.mjs`・`user683_claude_relay.py`・締め一式
+**追記（同一日・締め）**: v5 **第８章 Ａ－３** 本文復元（`patch_v5_a3_staff_summary.py`）— 浜田目視 OK。doc-lane: `verify` に **Ａ－３ 空欄検知**・`npm run doc-lane:patch-v5-a3`・`cio:doc-lane-gate` ラベル更新。
+
+**Git**: 6/1 締め + Ａ－３/doc-lane 追記 **commit + push**（本ターン）
 
 **締め**: `SESSION-CLOSE-REPORT-20260601.txt`
 
