@@ -20,8 +20,8 @@
 
 - **スクリプト**: `scripts/user-support-682-ensure-monthly-bar-graph.mjs`
 - **npm（ローカル・`.env`）**: `npm run 682:graph-monthly:dry-run`（確認のみ）→ **`npm run cio:preflight:682 -- --note "…"`** のあと **`npm run 682:graph-monthly`**
-- **npm（CI・Secrets のみ）**: 同一ジョブ内で preflight のあと **`npm run 682:graph-monthly:scheduled`**（`dotenv` 不要・`process.env` のみ）。
-- **自動（GitHub Actions）**: **`.github/workflows/682-graph-monthly-refresh.yml`** — **毎月 1 日 14:00 UTC**（≈ JST 同日 23:00）に **`cio:preflight:682`**（note 固定）→ **`682:graph-monthly:scheduled`**。**手動**は Actions の **Run workflow**。**本ワークフローは `environment:` を使わず**、**Repository secrets** の **`KINTONE_BASE_URL` / `KINTONE_USERNAME` / `KINTONE_PASSWORD`**（任意 Basic）のみを参照する（**`kintone-collect` の Required reviewers で止まらない**）。値はローカル `.env` と同じ名前で **Settings → Secrets and variables → Actions** に登録。
+- **npm（CI・Secrets のみ）**: **`npm run 682:graph-monthly:gha`**（preflight + §50-3-8 skip stamp + guard + REST を一括。**workflow から `682:graph-monthly:scheduled` 直接呼び出し禁止**）。
+- **自動（GitHub Actions）**: **`.github/workflows/682-graph-monthly-refresh.yml`** — **毎月 1 日 14:00 UTC**（≈ JST 同日 23:00）に **`682:graph-monthly:gha`**。**手動**は Actions の **Run workflow**。**本ワークフローは `environment:` を使わず**、**Repository secrets** の **`KINTONE_BASE_URL` / `KINTONE_USERNAME` / `KINTONE_PASSWORD`**（任意 Basic）のみを参照する（**`kintone-collect` の Required reviewers で止まらない**）。5038 正本: **`docs/runbooks/cio-gha-periodic-5038-stamp.md`**。
 - **欠月を 0 で見せる**: kintone **標準グラフのみ**では不可。**`customize/682/desktop.js`**（`BUILD` 参照）が **一覧ヘッダ＋グラフ画面**で REST 集計の **7 暦月 0 埋め棒**を追加。反映は **`npm run deploy:682`**。
 - **挙動**: 既存グラフを **GET で全件マージ**し、§5.1 準拠グラフ（`record_date` **MONTH** × `day_total` **SUM**・**`COLUMN`（縦棒）**・**JST 直近 7 暦月**の `filterCond`）が **最新でない**とき **PUT `preview/app/reports.json`** → **`preview/app/deploy.json`** まで実行（同一月・同一設定ならスキップ）。**既存グラフが無いアプリでは安全に追加のみ**。
 - **手動 UI**（下記 1〜8）と **同等の設定**になるよう設計（公式 Update Graph Settings API に準拠）。

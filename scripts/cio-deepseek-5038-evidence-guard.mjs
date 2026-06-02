@@ -76,6 +76,12 @@ function main() {
   }
 
   console.error('[cio-deepseek-5038-evidence-guard] NG §50-3-8 evidence missing');
+  if (process.env.GITHUB_ACTIONS === 'true') {
+    console.error(
+      '  GHA: 定期 REST のみなら npm run 682:graph-monthly:gha（または cio-gha-periodic-5038-stamp 後に guard）',
+    );
+    console.error('  正本: docs/runbooks/cio-gha-periodic-5038-stamp.md');
+  }
   if (touchPaths.length) {
     console.error(`  spec-touch paths: ${touchPaths.join(', ')}`);
   }

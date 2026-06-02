@@ -35,6 +35,10 @@ on:
       - 'scripts/morning-prep-ensure.mjs'
       - 'scripts/print-nvm-node-bin.sh'
       - 'scripts/install-morning-cron.sh'
+      - '.github/workflows/682-graph-monthly-refresh.yml'
+      - 'scripts/cio-gha-periodic-5038-stamp.mjs'
+      - 'scripts/verify-gha-periodic-workflows.mjs'
+      - 'docs/runbooks/cio-gha-periodic-5038-stamp.md'
 
 permissions:
   contents: read

@@ -67,7 +67,7 @@ npm run mcp-status:refresh-usage
 |----------|------|
 | `kintone-customize-deploy.yml` | push 時 customize デプロイ＋`cio:audit:portfolio:strict` |
 | `ict-tech-digest-collect.yml` | 685 日次収集（最大5件） |
-| `682-graph-monthly-refresh.yml` | 682 グラフ窓（毎月1日 UTC） |
+| `682-graph-monthly-refresh.yml` | 682 グラフ窓（毎月1日 UTC）— **`682:graph-monthly:gha`**（5038 bundled） |
 
 ---
 
@@ -75,4 +75,5 @@ npm run mcp-status:refresh-usage
 
 | 日付 | 内容 |
 |------|------|
+| 2026-06-02 | 682-graph-monthly GHA — `682:graph-monthly:gha` bundled + `verify:gha-periodic-workflows`（5038 再発防止） |
 | 2026-05-16 | 初版（678/686 教訓後の定期運用・忘れ防止） |
