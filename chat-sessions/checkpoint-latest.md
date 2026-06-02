@@ -20,7 +20,7 @@
 | **正本 SPEC** | `docs/plans/2026-06-02-apple-id-kintone-spec.md` |
 | **凍結** | 業務改善 customize/deploy — **6/8 まで**（Apple ID は **Space 21 独立レーン**） |
 | **次回 1 手** | **6/3** 「Apple ID 作成 GO」→ §50-3-8 → DB/ダッシュ作成 → 移行 |
-| **夕反省** | `docs/reports/2026-06-02-evening-reflection.md` — 案 **A1–D2** **承認待ち** |
+| **夕反省** | `docs/reports/2026-06-02-evening-reflection.md` — **A1–D2 全 GO**（2026-06-02） |
 | **Git** | 本締め commit + push（682 済 + SPEC/締め追記） |
 | **締め** | `SESSION-CLOSE-REPORT-20260602.txt` |
 
