@@ -72,16 +72,17 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-05-31 更新 — 詳細は鏡像を正とする）】
+【今やってる主タスク（2026-06-02 更新 — 詳細は鏡像を正とする）】
 - **正本**: Desktop **`25-checkpoint-latest.md`**（リポ `chat-sessions/checkpoint-latest.md` と同期）
-- **憲法ジャンル早見**: Desktop **`28-CONSTITUTION-GENRE-MAP.txt`**（タスク→読本→4AI）
-- **凍結**: 業務改善 kintone 実装（Q36 GO 前）／v5 マニュアル・595→674 **クローズ**
-- **レーン**: **前日決定禁止** — 当日 **項番 -0** で決める
-- **履歴ブロック**: 旧スケジュール（4/23 PC台帳等）は **`docs/plans/`** と checkpoint 参照（本 Part C には載せない）
+- **憲法ジャンル早見**: Desktop **`28-CONSTITUTION-GENRE-MAP.txt`**
+- **6/3 GO**: **Apple ID kintone** — `docs/plans/2026-06-02-apple-id-kintone-spec.md`
+- **6/4**: kintone のみ運用・Excel 削除
+- **凍結**: 業務改善 kintone **6/8 まで**（Apple ID は Space 21 **独立**）
 
 【次セッション優先（項番 -0 の本題候補・当日確定）】
-- checkpoint **先頭表**と **§41 一問**で本題を固定してから着手
-- 予実 5A / PC台帳 5B の分岐は **`12-READ-04.txt`** 参照
+- **6/3 既定**: Apple ID 作成 GO（DB + ダッシュ + 移行）
+- レーン宣言: Space 21 — 674/677/業務改善と混同しない
+- 夕反省 **A1–D2** 承認（任意・推奨 A1+B2+B4）
 
 【自動化基盤（要約 / 詳細は checkpoint・health-check）】
 - file-watcher / wipe-guard / morning-prep / health-check / guard:check — **稼働中**（`npm run guard:check`）

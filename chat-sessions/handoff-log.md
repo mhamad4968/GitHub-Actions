@@ -2764,3 +2764,26 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 **締め**: `SESSION-CLOSE-REPORT-20260601.txt`
 
 ---
+
+### 2026-06-02 JST — **セッション締め**
+
+**本日完了**:
+- **682 GHA** — `682:graph-monthly:gha` バンドル・5038 skip stamp・run **26806570679** success（`9c6d773` push 済）
+- **Apple ID kintone SPEC 確定** — DB **Apple ID管理台帳用DB** / ダッシュ **Apple ID管理台帳** / Space 21 / jbis.039 / 利用中・廃止 / ダッシュのみ CRUD+削除
+- bootstrap / health / MCP — OK
+
+**GO（浜田）**:
+- **6/3** kintone アプリ作成 + Excel 移行
+- **6/4** kintone のみ運用 + Excel **削除**
+
+**触らない**: 業務改善 customize/deploy 〜 **6/7**（**6/8** 案B1）。Apple ID は **別レーン**。
+
+**次回第1手**: **6/3** 「Apple ID 作成 GO」— 正本 `docs/plans/2026-06-02-apple-id-kintone-spec.md`
+
+**夕反省**: `docs/reports/2026-06-02-evening-reflection.md` — **A1–D2 承認待ち**（推奨: A1+B2+B4+D1）
+
+**Git**: 本締め commit + push（本ターン）
+
+**締め**: `SESSION-CLOSE-REPORT-20260602.txt`
+
+---

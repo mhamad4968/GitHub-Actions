@@ -1,0 +1,456 @@
+{
+  "file": "C:\\tmp\\appleID管理一覧\\apple_ID一覧20210106.xlsx",
+  "sizeBytes": 598864,
+  "sheetNames": [
+    "icloud",
+    "メモ",
+    "Android",
+    "Sheet6",
+    "Sheet2",
+    "Sheet1",
+    "ユーザ印刷用",
+    "Sheet3",
+    "Sheet4",
+    "Sheet5"
+  ],
+  "analyzedAt": "2026-06-02T08:16:38.749Z",
+  "sheets": {
+    "icloud": {
+      "sheet": "icloud",
+      "totalRows": 2381,
+      "nonEmptyRows": 1149,
+      "headerRowIndex": 1,
+      "headers": [
+        "No.",
+        "登録日",
+        "MDMアカウント名",
+        "姓",
+        "名",
+        "回線番号",
+        "アップルID",
+        "パスワード",
+        "ロックパス"
+      ],
+      "estimatedDataRows": 1146,
+      "columnFillCounts": {
+        "No.": 1146,
+        "登録日": 251,
+        "MDMアカウント名": 251,
+        "姓": 251,
+        "名": 251,
+        "回線番号": 251,
+        "アップルID": 1146,
+        "パスワード": 251,
+        "ロックパス": 251
+      },
+      "sampleMasked": [
+        [
+          null,
+          "1",
+          "2017/05/31",
+          "Kanazawa",
+          "松田",
+          "健太郎",
+          "***-****-****",
+          "ken***om",
+          "Hon***00",
+          "***",
+          "iPhone",
+          null
+        ],
+        [
+          null,
+          "2",
+          "2018/05/11",
+          "nagano",
+          "星野",
+          "幸夫",
+          "***-****-****",
+          "ken***om",
+          "Hon***00",
+          "***",
+          "iPhone",
+          null
+        ],
+        [
+          null,
+          "3",
+          "2018/06/25",
+          "不明",
+          "星野",
+          "幸夫",
+          "***-****-****",
+          "ken***om",
+          "Hon***00",
+          "***",
+          "iPad",
+          null
+        ]
+      ],
+      "previewText": null
+    },
+    "メモ": {
+      "sheet": "メモ",
+      "totalRows": 6,
+      "nonEmptyRows": 6,
+      "headerRowIndex": null,
+      "headers": null,
+      "estimatedDataRows": 0,
+      "columnFillCounts": {},
+      "sampleMasked": [
+        [
+          "天野さん"
+        ],
+        [
+          "天野さんのGmail"
+        ],
+        [
+          "生年月日：2000/1/1"
+        ],
+        [
+          "kt.***om"
+        ],
+        [
+          "パスワード：kent2511"
+        ]
+      ],
+      "previewText": [
+        [
+          "天野さん"
+        ],
+        [
+          "天野さんのGmail"
+        ],
+        [
+          "生年月日：2000/1/1"
+        ],
+        [
+          "kt.***om"
+        ],
+        [
+          "パスワード：kent2511"
+        ],
+        [
+          "再設定***jp"
+        ]
+      ]
+    },
+    "Android": {
+      "sheet": "Android",
+      "totalRows": 2,
+      "nonEmptyRows": 2,
+      "headerRowIndex": 0,
+      "headers": [
+        "No.",
+        "登録日",
+        "社員番号",
+        "姓",
+        "名",
+        "回線番号",
+        "Googleアカウント",
+        "パスワード",
+        "ロックパス"
+      ],
+      "estimatedDataRows": 1,
+      "columnFillCounts": {
+        "No.": 1,
+        "登録日": 1,
+        "社員番号": 1,
+        "姓": 1,
+        "名": 1,
+        "回線番号": 1,
+        "Googleアカウント": 1,
+        "パスワード": 1,
+        "ロックパス": 1
+      },
+      "sampleMasked": [
+        [
+          "350",
+          "6/24/25",
+          "***-****-****",
+          "大野",
+          "龍巳",
+          "***-****-****",
+          "jbi***om",
+          "Hon***00",
+          "***",
+          "iphone"
+        ]
+      ],
+      "previewText": null
+    },
+    "Sheet6": {
+      "sheet": "Sheet6",
+      "totalRows": 0,
+      "nonEmptyRows": 0,
+      "headerRowIndex": null,
+      "headers": null,
+      "estimatedDataRows": 0,
+      "columnFillCounts": {},
+      "sampleMasked": [],
+      "previewText": []
+    },
+    "Sheet2": {
+      "sheet": "Sheet2",
+      "totalRows": 5,
+      "nonEmptyRows": 4,
+      "headerRowIndex": null,
+      "headers": null,
+      "estimatedDataRows": 0,
+      "columnFillCounts": {},
+      "sampleMasked": [
+        [
+          "登録日",
+          "社員番号",
+          "姓",
+          "名"
+        ],
+        [
+          "6/10/20",
+          "mizuguchi",
+          "水口",
+          "広美"
+        ],
+        [
+          "回線番号",
+          "アップルID",
+          "パスワード",
+          "ロックパス"
+        ],
+        [
+          "***-****-****",
+          "ken***om",
+          "Honten00",
+          "2511"
+        ]
+      ],
+      "previewText": [
+        [
+          "登録日",
+          "社員番号",
+          "姓",
+          "名"
+        ],
+        [
+          "6/10/20",
+          "mizuguchi",
+          "水口",
+          "広美"
+        ],
+        [
+          "回線番号",
+          "アップルID",
+          "パスワード",
+          "ロックパス"
+        ],
+        [
+          "***-****-****",
+          "ken***om",
+          "Honten00",
+          "2511"
+        ]
+      ]
+    },
+    "Sheet1": {
+      "sheet": "Sheet1",
+      "totalRows": 1,
+      "nonEmptyRows": 0,
+      "headerRowIndex": null,
+      "headers": null,
+      "estimatedDataRows": 0,
+      "columnFillCounts": {},
+      "sampleMasked": [],
+      "previewText": []
+    },
+    "ユーザ印刷用": {
+      "sheet": "ユーザ印刷用",
+      "totalRows": 63,
+      "nonEmptyRows": 14,
+      "headerRowIndex": 0,
+      "headers": [
+        "No.",
+        "登録日",
+        "社員番号",
+        "姓",
+        "名",
+        "回線番号",
+        "アップルID",
+        "パスワード",
+        "ロックパス"
+      ],
+      "estimatedDataRows": 11,
+      "columnFillCounts": {
+        "No.": 5,
+        "登録日": 7,
+        "社員番号": 7,
+        "姓": 7,
+        "名": 1,
+        "回線番号": 1,
+        "アップルID": 1,
+        "パスワード": 1,
+        "ロックパス": 1
+      },
+      "sampleMasked": [
+        [
+          "386",
+          "4/21/26",
+          "***-****-****",
+          "阿部",
+          "伊吹",
+          "***-****-****",
+          "jbi***om",
+          "Hon***00",
+          "***",
+          "iPhone"
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          "MDM:i-abe",
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      ],
+      "previewText": null
+    },
+    "Sheet3": {
+      "sheet": "Sheet3",
+      "totalRows": 2,
+      "nonEmptyRows": 2,
+      "headerRowIndex": null,
+      "headers": null,
+      "estimatedDataRows": 0,
+      "columnFillCounts": {},
+      "sampleMasked": [
+        [
+          "サイボウズURL"
+        ],
+        [
+          "https://kensetsu-toso.cybozu.com/o/"
+        ]
+      ],
+      "previewText": [
+        [
+          "サイボウズURL"
+        ],
+        [
+          "https://kensetsu-toso.cybozu.com/o/"
+        ]
+      ]
+    },
+    "Sheet4": {
+      "sheet": "Sheet4",
+      "totalRows": 14,
+      "nonEmptyRows": 5,
+      "headerRowIndex": null,
+      "headers": null,
+      "estimatedDataRows": 0,
+      "columnFillCounts": {},
+      "sampleMasked": [
+        [
+          "高瀬",
+          "",
+          "哲也",
+          "高瀬　哲也",
+          "ken***om"
+        ],
+        [
+          "高瀬",
+          "",
+          "晃弥",
+          "高瀬　晃弥",
+          "ken***om"
+        ],
+        [
+          "川尻",
+          "",
+          "聖也",
+          "川尻　聖也",
+          "ken***om"
+        ],
+        [
+          "井上",
+          "",
+          "君博",
+          "井上　君博",
+          "ken***om"
+        ],
+        [
+          "花浦",
+          "",
+          "秀次",
+          "花浦　秀次",
+          "ken***om"
+        ]
+      ],
+      "previewText": [
+        [
+          "高瀬",
+          "哲也",
+          "高瀬　哲也",
+          "ken***om"
+        ],
+        [
+          "高瀬",
+          "晃弥",
+          "高瀬　晃弥",
+          "ken***om"
+        ],
+        [
+          "川尻",
+          "聖也",
+          "川尻　聖也",
+          "ken***om"
+        ],
+        [
+          "井上",
+          "君博",
+          "井上　君博",
+          "ken***om"
+        ],
+        [
+          "花浦",
+          "秀次",
+          "花浦　秀次",
+          "ken***om"
+        ]
+      ]
+    },
+    "Sheet5": {
+      "sheet": "Sheet5",
+      "totalRows": 0,
+      "nonEmptyRows": 0,
+      "headerRowIndex": null,
+      "headers": null,
+      "estimatedDataRows": 0,
+      "columnFillCounts": {},
+      "sampleMasked": [],
+      "previewText": []
+    }
+  },
+  "icloudSummary": {
+    "maxNo": 1779030000000,
+    "withOk": 0,
+    "withPerson": 251,
+    "idOnly": 0,
+    "devices": {},
+    "note": "列L(12列目)=端末種別(iPhone/iPad等)・列B=OKステータス"
+  }
+}

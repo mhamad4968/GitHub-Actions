@@ -11,6 +11,21 @@
 
 ---
 
+## 2026-06-02 JST — **セッション締め**
+
+| 項目 | 内容 |
+|------|------|
+| **本日完了** | **682 GHA** 5038 stamp 恒久修正（`9c6d773`・run **26806570679** ✅）／**Apple ID kintone SPEC 確定**（11 フィールド・jbis.039・ダッシュのみ書込） |
+| **Apple ID GO** | **6/3（水）** アプリ作成・移行／**6/4（木）** kintone のみ運用・**Excel 削除** |
+| **正本 SPEC** | `docs/plans/2026-06-02-apple-id-kintone-spec.md` |
+| **凍結** | 業務改善 customize/deploy — **6/8 まで**（Apple ID は **Space 21 独立レーン**） |
+| **次回 1 手** | **6/3** 「Apple ID 作成 GO」→ §50-3-8 → DB/ダッシュ作成 → 移行 |
+| **夕反省** | `docs/reports/2026-06-02-evening-reflection.md` — 案 **A1–D2** **承認待ち** |
+| **Git** | 本締め commit + push（682 済 + SPEC/締め追記） |
+| **締め** | `SESSION-CLOSE-REPORT-20260602.txt` |
+
+---
+
 ## 2026-06-01 JST — **セッション締め**
 
 | 項目 | 内容 |
