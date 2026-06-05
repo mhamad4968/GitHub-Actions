@@ -19,16 +19,18 @@
 
 ---
 
-## アップデート案 — **承認待ち**
+## アップデート案 — **全 GO（2026-06-05 浜田）**
 
-| ID | 内容 | 状態 | 反映先（GO 時） |
-|----|------|------|-----------------|
-| **R1** | 月次セキュリティレポート builder を **`scripts/build-monthly-security-report.py`** へ移管＋`npm run doc-lane:security-report` | **承認待ち** | リポ + `docs/runbooks/monthly-security-report.md` |
-| **R2** | 4月テンプレ書式ルールを **`scripts/lib/docx-template-format.mjs`**（または `.py`）に共通化 | **承認待ち** | 上記 builder から import |
-| **R3** | レポート着手前 **チェックリスト**（SKYSEA件数・ネットワーク件数・社外事例の確定）を浜田 1 行確認 | **承認待ち** | runbook §0 + SESSION-REPORT-CHECKLIST |
-| **R4** | `security-next-kintone`：**Gemini 403 時は kintone 下書き保存のみ**＋workflow **warning 扱い**＋handoff 1 行 | **承認待ち** | GitHub-Actions リポ / 本リポ docs |
-| **R5** | `paragraph_format_for` 系：**prefix 判定は strip 前の raw 文字列** — コメント＋単体テスト 1 件 | **承認待ち** | builder + `docs/runbooks/docx-patch-windows.md` |
-| **R6** | **markdownify** 月次 doc レーン手順を `doc-lane` に 1 行追加（失敗時 python フォールバック） | **承認待ち** | `docs/runbooks/doc-lane.md` |
+| ID | 内容 | 状態 | 反映先 |
+|----|------|------|--------|
+| **R1** | 月次セキュリティレポート builder をリポ移管 + `npm run doc-lane:security-report` | **GO** | `scripts/build-monthly-security-report.py` / `docs/runbooks/monthly-security-report.md` |
+| **R2** | 4月テンプレ書式を `scripts/lib/docx_template_format.py` に共通化 | **GO** | 同上 + `docs/runbooks/docx-patch-windows.md` |
+| **R3** | 着手前チェックリスト（SKYSEA/ネットワーク/社外事例） | **GO** | runbook §0 + `docs/session-report-checklist.md` §Q |
+| **R4** | analyze: Gemini 403 時フォールバック要約で kintone 保存（exit 0） | **GO** | `security-next-automation/src/analyze.ts` |
+| **R5** | prefix 判定は strip 前 raw + 単体テスト | **GO** | lib + `scripts/test_docx_template_format.py` |
+| **R6** | doc-lane に markdownify 手順1行 | **GO** | `docs/runbooks/doc-lane.md` |
+
+**反映**: 2026-06-05 承認ターンで runbook / scripts / analyze へ追記済。
 
 ---
 

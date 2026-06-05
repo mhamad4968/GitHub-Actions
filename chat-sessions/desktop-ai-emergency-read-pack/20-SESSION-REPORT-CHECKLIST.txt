@@ -66,6 +66,10 @@
 
 □ E〜I 実績・不可逆・次手・Desktop・handoff（CIOが足した補助項目）
 
+□ Q 月次情報セキュリティレポート（該当時）
+  □ runbook §0: SKYSEA/ネットワーク/社外事例確定 or プレースホルダ明示
+  □ npm run doc-lane:security-report
+
 --- 貼付用ミニ骨格（CEO報告ゲート＋憲法4行＋hooksフッタ V2）---
 [§1-2-3 ティア判定: L?]（根拠: …）
 【適用憲法】…

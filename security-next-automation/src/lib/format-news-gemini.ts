@@ -39,6 +39,18 @@ export function isGeminiModelNotFoundError(err: unknown): boolean {
   return false;
 }
 
+/** Gemini API 403 / 課金 dunning — analyze はフォールバック要約で kintone 保存（R4） */
+export function isGeminiBillingDeniedError(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message : String(err);
+  if (/dunning decision is deny|Lightning dunning/i.test(msg)) {
+    return true;
+  }
+  if (err !== null && typeof err === "object" && "status" in err && (err as { status?: number }).status === 403) {
+    return /Forbidden|generativelanguage|dunning/i.test(msg);
+  }
+  return /403 Forbidden.*generativelanguage/i.test(msg);
+}
+
 /** LLM 入力に渡す RSS＋記事抜粋の上限（記事本文取得時は長めに） */
 const EXCERPT_FOR_LLM_MAX = 9_000;
 

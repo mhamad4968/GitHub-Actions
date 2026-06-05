@@ -14,6 +14,7 @@
 import {
   GEMINI_MODEL_FALLBACKS,
   geminiModelCandidates,
+  isGeminiBillingDeniedError,
   isGeminiModelNotFoundError,
 } from "../lib/format-news-gemini.js";
 
@@ -108,6 +109,13 @@ assert(!isGeminiModelNotFoundError(err429), "429 を 404 と誤判定しない")
 
 const errGeneric = new Error("Network timeout");
 assert(!isGeminiModelNotFoundError(errGeneric), "一般エラーを 404 と誤判定しない");
+
+console.log("\n[7-5] isGeminiBillingDeniedError: 403 dunning 判定");
+const err403 = new Error(
+  "[GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent: [403 Forbidden] Lightning dunning decision is deny",
+);
+assert(isGeminiBillingDeniedError(err403), "403 dunning を正しく検出");
+assert(!isGeminiBillingDeniedError(err404), "404 を billing と誤判定しない");
 
 // ===================================================================
 // §9: 例外枠ダブルキー論理の検証

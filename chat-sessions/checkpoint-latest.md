@@ -19,9 +19,9 @@
 | **レポート正本** | `C:\tmp\資料作成\【2026年6月度経営会議資料】2026年05月情報セキュリティレポート20260605.docx` |
 | **builder** | `C:\tmp\build-may-security-report.py`（**リポ外** — 夕反省 R1 承認待ち） |
 | **注記** | 5月検知 **0件**・社外事例2件はプレースホルダ |
-| **GHA** | `security-next-kintone` **失敗** — Gemini **403** dunning（要確認） |
-| **凍結** | 業務改善 customize/deploy — **6/8 まで** |
-| **夕反省** | `docs/reports/2026-06-05-evening-reflection.md` — **R1–R6 承認待ち** |
+| **夕反省** | `docs/reports/2026-06-05-evening-reflection.md` — **R1–R6 全 GO**（2026-06-05 浜田） |
+| **doc-lane** | `npm run doc-lane:security-report` / `scripts/lib/docx_template_format.py` |
+| **GHA** | `security-next-kintone` **analyze 再実行成功**（run 27012980832）— R4 フォールバック実装済 |
 | **締め** | `SESSION-CLOSE-REPORT-20260605.txt` |
 
 ---

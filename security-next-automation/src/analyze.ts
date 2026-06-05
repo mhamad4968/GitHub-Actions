@@ -14,7 +14,7 @@ import timezone from "dayjs/plugin/timezone.js";
 import utc from "dayjs/plugin/utc.js";
 
 import { loadConfig, requireGeminiApiKey, resolveApiTokenForAnalyze } from "./lib/config.js";
-import { geminiModelCandidates, isGeminiModelNotFoundError } from "./lib/format-news-gemini.js";
+import { geminiModelCandidates, isGeminiBillingDeniedError, isGeminiModelNotFoundError } from "./lib/format-news-gemini.js";
 import { generateContentWith429Retries } from "./lib/gemini-rate-limit.js";
 import { CREATED_TIME_CODE, NEWS_FIELDS, REPORT_FIELDS } from "./lib/field-codes.js";
 import { createKintoneClient } from "./lib/kintone-client.js";
@@ -68,6 +68,27 @@ function resolveExistingWeekBehavior(): "update" | "skip" {
 function githubRunIdForEvidence(): string {
   const id = process.env.GITHUB_RUN_ID?.trim();
   return id || "local";
+}
+
+function buildGeminiBillingFallback(
+  targetWeekMonday: string,
+  weekRecordCount: number,
+  usedCount: number,
+): WeeklyGeminiOut {
+  const weekly_article = [
+    "【週の全体像】",
+    `Gemini API が利用できないため（403 課金/dunning）、自動要約を生成できませんでした。対象週（月曜）${targetWeekMonday}、週内ニュース ${weekRecordCount} 件（LLM 入力 ${usedCount} 件）。Google Cloud 請求・GEMINI_API_KEY 確認後、workflow_dispatch で analyze を再実行してください。`,
+    "",
+    "【推奨アクション（優先度付き）】",
+    "・【高】Google Cloud Console で請求先アカウント・Generative Language API を確認",
+    "・【高】GitHub Environment kintone-collect の GEMINI_API_KEY を更新",
+    "・【中】復旧後に security-next-kintone を手動再実行（job=analyze）",
+  ].join("\n");
+  const summary_one_line = `Gemini不可(403)。週${targetWeekMonday}・${weekRecordCount}件。要再実行。`.slice(
+    0,
+    SUMMARY_ONE_LINE_MAX,
+  );
+  return { weekly_article, summary_one_line };
 }
 
 function parseWeeklyReportJson(raw: string): WeeklyGeminiOut {
@@ -362,7 +383,19 @@ async function main(): Promise<void> {
   }
 
   console.log("[analyze] Gemini モデル試行順:", geminiModelCandidates().join(" → "));
-  const geminiOut = await summarizeWeeklyReportGemini(geminiKey, condensed);
+  let geminiOut: WeeklyGeminiOut;
+  let geminiBillingFallback = false;
+  try {
+    geminiOut = await summarizeWeeklyReportGemini(geminiKey, condensed);
+  } catch (e) {
+    if (isGeminiBillingDeniedError(e)) {
+      geminiBillingFallback = true;
+      console.warn("[analyze] Gemini 403/billing — フォールバック要約で kintone へ保存（R4）");
+      geminiOut = buildGeminiBillingFallback(week.targetWeekMonday, records.length, usedCount);
+    } else {
+      throw e;
+    }
+  }
   console.log("[analyze] LLM 本文文字数:", geminiOut.weekly_article.length);
   console.log("[analyze] 1行サマリー:", geminiOut.summary_one_line);
 
@@ -407,6 +440,9 @@ async function main(): Promise<void> {
       `• 実行日時(JST系): ${runAtJst}`,
       `• github_run_id: ${ghRun}`,
       `• 要約文字数: ${geminiOut.weekly_article.length}`,
+      ...(geminiBillingFallback
+        ? ["• ⚠ Gemini 403 フォールバック要約（課金/API 要確認・再実行推奨）"]
+        : []),
     ],
   });
 }

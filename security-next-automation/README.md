@@ -81,6 +81,8 @@ Claude Code やエージェントが仕様・トラブル・開発作法を見�
 
 **トラブル**: Actions の Environment に Secret が無いと `KINTONE_APP_defined=false` のまま失敗します。**Repository secrets のみ**だと `environment: kintone-collect` では見えない場合があるため、**Environment `kintone-collect` に同じ名前で再登録**してください。
 
+**Gemini 403（課金 dunning）**: `analyze.ts` は **403 Forbidden / dunning deny** を検出すると、Gemini 要約の代わりに **RSS 集約フォールバック要約**で **632 へ保存し exit 0** します。ログに `Gemini billing denied` が出たら **Google Cloud 課金・API 有効化**を確認し、復旧後に workflow を **再実行**してください（`isGeminiBillingDeniedError` — `integration-defense-lines.ts`）。
+
 **概要と要約が画面上同じ長文に見えるとき**（想定と対処）:
 
 1. **GitHub Actions の Environment `kintone-collect` に `GEMINI_API_KEY` が無い** → collect は 4 見出しの材料整形で登録するが、ログ先頭の `GEMINI_API_KEY あり/オフ` と各レコードの `登録直前: ... gemini=Y|I|N` で確認。**Secret を追加**すると Gemini 体裁で差が出やすい。

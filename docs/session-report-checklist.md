@@ -159,6 +159,19 @@ CHECKSHEET_OK: yes
 
 ---
 
+## Q. 月次情報セキュリティレポート（doc-lane・着手前）
+
+正本: [`docs/runbooks/monthly-security-report.md`](runbooks/monthly-security-report.md) §0
+
+- [ ] **対象月・テンプレ docx**（前月レポート）パス確定
+- [ ] **§1 ソース PDF**（社内月報）§1 取得済
+- [ ] **SKYSEA / ネットワーク検知件数** — 確定値 or プレースホルダ明示（`detection_confirmed: false`）
+- [ ] **社外事例** — 件数・出典確定 or プレースホルダ明示
+- [ ] **`npm run doc-lane:security-report`**（JSON 更新 → 出力 docx 確認）
+- [ ] 書式: **`scripts/lib/docx_template_format.py`**（prefix は strip 前 raw）
+
+---
+
 ## H. read-pack / Desktop（リポで read-pack 等を変えたターン）
 
 - [ ] **`npm run session-starter:sync-desktop`**（`/mnt/c` がある環境で）
