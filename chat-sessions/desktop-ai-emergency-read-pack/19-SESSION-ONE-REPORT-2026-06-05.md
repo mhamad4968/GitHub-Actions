@@ -1,4 +1,4 @@
-# 本日の対応まとめ — 2026-06-05（JST）
+# 本日の対応まとめ — 2026-06-05（JST）最終
 
 > Desktop: **`19-SESSION-ONE-REPORT-2026-06-05.md`**（sync 正本）  
 > 締め正本: **`chat-sessions/SESSION-CLOSE-REPORT-20260605.txt`**
@@ -9,11 +9,13 @@
 
 | # | 内容 | 結果 |
 |---|------|------|
-| 1 | **セッション起動** — 憲法 read-pack・AI緊急用 00–28・health-check / MCP / guard | 100% 緑 |
-| 2 | **至急4件** — Desktop sync・壁時計・`＃重要確認事項.txt` 復旧・git push（`393b11f`） | 完了 |
-| 3 | **2026年05月 情報セキュリティレポート** — 4月テンプレ＋PDF「昨今のセキュリティ事情」 | **浜田 OK** |
-| 4 | IPA 10大脅威 **表形式**（5行）＋警視庁統計 **円グラフ4＋棒グラフ1** | 4月資料書式に統一 |
-| 5 | **Desktop AI緊急用** 更新・旧ファイル整理（本締め sync） | 実施 |
+| 1 | **セッション起動** — 憲法 read-pack・health-check / MCP / guard | 100% 緑 |
+| 2 | **至急4件** — Desktop sync・壁時計・`＃重要確認事項.txt` 復旧 | 完了 |
+| 3 | **2026年05月 情報セキュリティレポート** | **浜田 OK** |
+| 4 | IPA 表5行＋警視庁グラフ5・4月書式統一 | 完了 |
+| 5 | **夕反省 R1–R6 全 GO** — builder リポ移管・Gemini 403 fallback | `9a82b2a` |
+| 6 | **MCP context7** 追加（brave/exa/firecrawl 見送り） | `991b758` |
+| 7 | GHA analyze **再実行成功**（403 解消後） | run 27012980832 |
 
 ---
 
@@ -22,11 +24,8 @@
 | 項目 | 内容 |
 |------|------|
 | 出力 | `C:\tmp\資料作成\【2026年6月度経営会議資料】2026年05月情報セキュリティレポート20260605.docx` |
-| テンプレ | `…2026年04月情報セキュリティレポート20260511.docx` |
-| ソース | `0024792412.pdf` §1 ／ IPA 10大脅威 2026 ／ 警視庁令和6年統計 |
-| ビルド | `C:\tmp\build-may-security-report.py`（**リポ外** — 夕反省 **R1** 参照） |
-| チャート PNG | `C:\tmp\資料作成\_charts\` |
-| 注記 | **5月検知 0件**・社外事例2件はプレースホルダ（実数差替え可） |
+| リポ builder | `npm run doc-lane:security-report` |
+| 注記 | **5月検知 0件**・社外事例2件はプレースホルダ |
 
 ---
 
@@ -34,14 +33,13 @@
 
 | 項目 | 状態 |
 |------|------|
-| Git `main` | `393b11f` — **origin 同期済**（Apple ID 693/694 + 6/3 締め） |
-| health-check | **100%**（32/32） |
+| Git `main` | **`991b758`** — origin 同期済 |
 | cio:mcp:env | **OK 6/6** |
-| GHA | `security-next-kintone` **失敗** — Gemini **403**（課金/dunning・要確認） |
+| MCP 追加 | **context7**（ライブラリ docs） |
 | 凍結 | 業務改善 customize/deploy — **6/8 まで** |
 
 ---
 
 ## 4. 夕反省
 
-`docs/reports/2026-06-05-evening-reflection.md` — **R1–R6 承認待ち**
+`docs/reports/2026-06-05-evening-reflection.md` — **R1–R6 全 GO 反映済**
