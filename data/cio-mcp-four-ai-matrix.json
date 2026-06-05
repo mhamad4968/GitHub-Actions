@@ -43,7 +43,11 @@
         "accessibility-scanner",
         "mintlify",
         "repo-tree",
-        "eslint-mcp"
+        "eslint-mcp",
+        "context7",
+        "exa",
+        "brave-search",
+        "firecrawl"
       ],
       "mcpDeny": ["image-generation-mcp"],
       "builtinAllow": ["GenerateImage"]
@@ -61,7 +65,8 @@
         "duckduckgo-search",
         "memory",
         "repo-tree",
-        "eslint-mcp"
+        "eslint-mcp",
+        "context7"
       ],
       "note": "diff のみ。単独 GO なし save/deploy"
     },

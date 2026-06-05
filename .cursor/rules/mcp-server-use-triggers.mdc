@@ -21,7 +21,7 @@ globs: "**/*"
 | 役割 | 主 MCP キー（mcp.json） |
 |------|-------------------------|
 | **CIO（Opus 4.7/4.8）** | 下表すべて＋統合判断（§1-2-3-4-B）。**画像生成 MCP は使わない**（計画削除・内蔵 GenerateImage のみ・`cursor-generate-image-assets.mdc`） |
-| **Composer 2.5** | `kintone`, `playwright`, `rag`, `markdownify`, `shadcn-ui`, `chrome-devtools`, `duckduckgo-search`, `memory`, `repo-tree`, `eslint-mcp` |
+| **Composer 2.5** | `kintone`, `playwright`, `rag`, `markdownify`, `shadcn-ui`, `chrome-devtools`, `duckduckgo-search`, `memory`, `repo-tree`, `eslint-mcp`, `context7` |
 | **Kimi** | `kimi`, `openrouter`, `markdownify`, `rag`, `memory` |
 | **DeepSeek** | `deepseek`, `openrouter`, `memory`, `sequential-thinking` |
 
@@ -44,6 +44,7 @@ globs: "**/*"
 - **user-rag**: **`kintone-ai-lab` 内ドキュメント**の根拠検索（TSB / 手順 / spec）。憲法 §50 系と併用。
 - **repo-tree**（`@andredezzy/deep-directory-tree-mcp`）: **リポ構造の俯瞰**・depth 指定ツリー（画像 MCP 代替・2026-05-29）。
 - **eslint-mcp**（`@eslint/mcp`）: **lint 実行・fix 候補・品質監査**（JS/TS 変更後の客体検証）。
+- **context7**（`https://mcp.context7.com/mcp`）: **kintone JS API / React / Tailwind / shadcn** 等の **現行ライブラリ docs** が主題のとき（WebSearch の前に試す。プロンプト末尾 `use context7` も可）。
 - **user-cve-search** / **user-cyber-news**: **CVE 番号・脆弱性ニュース**が主題のとき（それ以外では使わない）。
 - **user-markdownify**: **長文 HTML → Markdown** の一括変換が目的のとき（小さな表は手直しでよい）。
 - **Figma 系 MCP**（サーバ名は環境依存: 例 `figma` / `figma-desktop` / `figma-developer-mcp`）: **Figma ファイル・フレーム URL が正**で、**表やダッシュの配色・タイポ・間隔・自動レイアウト**を設計データとして取り込みたいとき。**スクリーンショットだけではトークンが不明**なときはこちらを優先。手順の正本は **`docs/mcp-design-figma.md`**。
@@ -54,8 +55,8 @@ globs: "**/*"
 
 ## 調査・ドキュ・ブラウザ・パイプライン（ツール活用憲法・詳細は `ai-agent-tools-constitution.mdc`）
 
-- **exa**（`exa-mcp-server`）: **実装前**の最新ベストプラクティス・ライブラリ仕様の **セマンティック検索**が主題のとき（Brave と二重に掛けない。**根拠を短く残す**）。
-- **brave-search**: **Web 横断**の最新仕様・事例・リリース情報が主題のとき（Exa と併用する場合は役割分担を 1 行で明示）。
+- **exa**（`exa-mcp-server`）: **実装前**の最新ベストプラクティス・ライブラリ仕様の **セマンティック検索**が主題のとき（Brave と二重に掛けない。**根拠を短く残す**）。**`disabled: true` 時は `docs/examples/mcp_keys.env.example` → `temp/mcp_keys.env` + `npm run mcp:apply-keys` 後に解除**。
+- **brave-search**: **Web 横断**の最新仕様・事例・リリース情報が主題のとき（Exa と併用する場合は役割分担を 1 行で明示）。**API key 未設定時は DDG を第一選択**。
 - **firecrawl**（`firecrawl-mcp`）: **公式ドキュサイトの本文・構造取得**が主題で、軽量 fetch では足りないとき。
 - **puppeteer**（`@modelcontextprotocol/server-puppeteer`）: **Web UI の DOM 実検証**・**ログイン後画面**が主題のとき（**user-playwright** と重なる場合は descriptor 読みのうえ **どちらか＋理由 1 行**）。
 - **mintlify**（`https://mcp.mintlify.com`）: **連携 Mintlify プロジェクトのドキュ更新**が主題のとき（checkout / PR フローに従う）。

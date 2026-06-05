@@ -1,6 +1,14 @@
 # 📊 MCP 状態管理台帳
 
-**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-06-05（**セッション締め health-check** — 構成変更なし）
+**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-06-05（**context7 追加** + 調査系3件スタブ）
+
+### §監査スナップ（2026-06-05 JST — context7 追加）
+
+| ゲート | 結果 |
+|--------|------|
+| 追加 | **context7**（remote URL・即利用可） |
+| スタブ | **brave-search / exa / firecrawl**（`disabled: true` — key 取得後に解除） |
+| 既存 | merged **25** servers（+context7 他3は disabled スタブ） |
 
 ### §監査スナップ（2026-06-05 JST — セッション締め）
 
@@ -148,6 +156,10 @@
 | 17 | **figma（公式 remote MCP）** | ✅ **global + リポ**に `url` 追記済（2026-05-04）／初回 OAuth | 0 回（exempt） | 表・ダッシュの **配色・タイポ・間隔・レイアウト**を Figma から取得し実装に反映 | **`docs/mcp-design-figma.md`**／Figma プランの rate limit に注意 |
 | 18 | **figma-developer-mcp**（任意） | **📋 PAT 要・stdio** | — | 上記の代替（npm `figma-developer-mcp`） | 同上／§17-3 で **npx 絶対 path** |
 | 19 | **colors-fonts**（`@colorsandfonts/mcp`） | ✅ **global + リポ**（Node v24 `npx` 絶対 path／pin `1.1.0`） | 0 回（exempt） | **パレット生成**・**WCAG/APCA コントラスト**・CSS/Tailwind/**Figma トークン JSON** 出力（Figma 無しでも表配色のたたき台） | **`docs/mcp-design-kintone-tables.md`**／`call_mcp_tool` 前は descriptor 必読 |
+| 20 | **context7**（Upstash remote） | ✅ **active**（2026-06-05） | 0 回 | **ライブラリ/API 最新 docs**（kintone JS・React・shadcn 等） | 評価正本 `docs/reports/archive/2026-04/2026-04-23-context7-and-excel-mcp-eval.md` |
+| 21 | **brave-search** | ⏸ **disabled**（API key 待ち） | — | Web 横断検索（無料 2,000 q/月） | `docs/examples/mcp_keys.env.example` → `mcp:apply-keys` |
+| 22 | **exa** | ⏸ **disabled**（API key 待ち） | — | セマンティック検索（実装前調査） | 同上 |
+| 23 | **firecrawl** | ⏸ **disabled**（API key 待ち） | — | 公式ドキュサイト全文・構造取得 | 同上 |
 
 ### 凡例
 - ✅ active: 正常稼働 / 利用可能
