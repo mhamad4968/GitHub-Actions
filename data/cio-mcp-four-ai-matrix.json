@@ -44,10 +44,7 @@
         "mintlify",
         "repo-tree",
         "eslint-mcp",
-        "context7",
-        "exa",
-        "brave-search",
-        "firecrawl"
+        "context7"
       ],
       "mcpDeny": ["image-generation-mcp"],
       "builtinAllow": ["GenerateImage"]

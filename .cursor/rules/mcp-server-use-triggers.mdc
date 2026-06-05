@@ -55,9 +55,9 @@ globs: "**/*"
 
 ## 調査・ドキュ・ブラウザ・パイプライン（ツール活用憲法・詳細は `ai-agent-tools-constitution.mdc`）
 
-- **exa**（`exa-mcp-server`）: **実装前**の最新ベストプラクティス・ライブラリ仕様の **セマンティック検索**が主題のとき（Brave と二重に掛けない。**根拠を短く残す**）。**`disabled: true` 時は `docs/examples/mcp_keys.env.example` → `temp/mcp_keys.env` + `npm run mcp:apply-keys` 後に解除**。
-- **brave-search**: **Web 横断**の最新仕様・事例・リリース情報が主題のとき（Exa と併用する場合は役割分担を 1 行で明示）。**API key 未設定時は DDG を第一選択**。
-- **firecrawl**（`firecrawl-mcp`）: **公式ドキュサイトの本文・構造取得**が主題で、軽量 fetch では足りないとき。
+- **exa**（`exa-mcp-server`）: **実装前**の最新ベストプラクティス・ライブラリ仕様の **セマンティック検索**が主題のとき（**mcp.json 未導入** — **context7** または **duckduckgo-search** を優先）。
+- **brave-search**: **Web 横断**の最新仕様・事例・リリース情報が主題のとき（**mcp.json 未導入** — **duckduckgo-search** を第一選択）。
+- **firecrawl**（`firecrawl-mcp`）: **公式ドキュサイトの本文・構造取得**が主題で、軽量 fetch では足りないとき（**mcp.json 未導入** — **WebFetch** / **context7** を優先）。
 - **puppeteer**（`@modelcontextprotocol/server-puppeteer`）: **Web UI の DOM 実検証**・**ログイン後画面**が主題のとき（**user-playwright** と重なる場合は descriptor 読みのうえ **どちらか＋理由 1 行**）。
 - **mintlify**（`https://mcp.mintlify.com`）: **連携 Mintlify プロジェクトのドキュ更新**が主題のとき（checkout / PR フローに従う）。
 - **harness**（`harness-mcp-v2`）: **Harness / CI/CD パイプライン**の事実確認・設定整合が主題のとき。

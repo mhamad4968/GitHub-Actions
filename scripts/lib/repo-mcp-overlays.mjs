@@ -13,9 +13,6 @@ export const REPO_OVERLAY_SERVER_NAMES = [
   'repo-tree',
   'eslint-mcp',
   'context7',
-  'brave-search',
-  'exa',
-  'firecrawl',
 ];
 
 /**
