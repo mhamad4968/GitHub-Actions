@@ -72,11 +72,12 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-06-02 更新 — 詳細は鏡像を正とする）】
+【今やってる主タスク（2026-06-03 更新 — 詳細は鏡像を正とする）】
 - **正本**: Desktop **`25-checkpoint-latest.md`**（リポ `chat-sessions/checkpoint-latest.md` と同期）
 - **憲法ジャンル早見**: Desktop **`28-CONSTITUTION-GENRE-MAP.txt`**
-- **6/3 GO**: **Apple ID kintone** — `docs/plans/2026-06-02-apple-id-kintone-spec.md`
-- **6/4**: kintone のみ運用・Excel 削除
+- **Apple ID**: DB **693** / ダッシュ **694** — **本番運用中**（浜田 OK）— 正本 `docs/plans/2026-06-02-apple-id-kintone-spec.md`
+- **6/4**: kintone のみ運用・**Excel 削除**（runbook 未実施）
+- **資格 PPTX**: `C:\tmp\資格取得ロードマップ\…ver.03（方針説明付き）.pptx` — **浜田 OK**
 - **凍結**: 業務改善 kintone **6/8 まで**（Apple ID は Space 21 **独立**）
 
 【次セッション優先（項番 -0 の本題候補・当日確定）】

@@ -209,7 +209,7 @@ stateDiagram-v2
 
 | 項目 | 値 | UI |
 |------|-----|-----|
-| パスワード | **Honten00** | 新規時 **自動セット**。ダッシュ **マスク表示**（コピー可） |
+| パスワード | **Honten00** | 新規時 **自動セット**。ダッシュ **平文表示**（Excel 同様・**IT 管理者向け**・クリックでコピー可） |
 | ロックパス | **2511** | 同上 |
 
 **セキュリティ前提**（浜田判断）:
@@ -289,7 +289,7 @@ stateDiagram-v2
 
 `legacy_no` | `status` | `registered_date` | `mdm_name` | `user_name` | `phone_number` | `apple_id` | `password`* | `lock_passcode`* | `device_type` | 操作
 
-\* マスク表示（クリックでコピー — 674 M365 PW 表示を参考）
+\* **平文表示**（Excel `icloud` 同様。IT 管理者専用・クリックでコピー可）
 
 ### 9.3 モーダル
 
@@ -302,21 +302,9 @@ stateDiagram-v2
 
 ### 9.4 印刷
 
-- **対象**: 選択行（**利用中**推奨）。
-- **レイアウト**: Excel **`ユーザ印刷用`** 相当（A4）。
-- **方式**: `@media print` + **`window.print()`**。
-
-**印刷ブロック（案）**:
-
-```
-登録日: {registered_date}    MDM名: {mdm_name}
-氏名: {user_name}
-回線番号: {phone_number}
-Apple ID: {apple_id}
-パスワード: {password}
-ロックパス: {lock_passcode}
-端末: {device_type}
-```
+- **対象**: 選択行（**利用中**推奨）。**PC台帳 674 と同型**の別ウィンドウ帳票（緑テーマ・グリッド表）。
+- **レイアウト**: Excel **`ユーザ印刷用`** 相当 — 注意書き（端末種別に応じ iPhone/iPad 文言）→ MDM → **登録日/姓/名** → **回線/iCloud/パスワード** → **Apple ID/パスワード/ロックパス**。
+- **方式**: `window.open` + `document.write` + **`window.print()`**（674 §4.9 移植）。
 
 ---
 
@@ -334,7 +322,7 @@ Apple ID: {apple_id}
 
 1. **Apple ID管理台帳用DB** 作成（Space 21）+ フィールド §8 deploy。
 2. DB customize — 保存・削除 **全面ブロック**（677 型）。
-3. Excel `icloud` → REST 一括 POST（約 1,146 行）。
+3. Excel `icloud` → REST 一括 POST（**登録済み約 251 行**。`jbis.039`〜`933` の ID のみプール行は移行しない）。
 4. 移行検証: 件数・`apple_id` unique・`user_name` 結合サンプル・次採番 **jbis.039**。
 5. **Apple ID管理台帳**（ダッシュ）作成 + customize（一覧・採番・編集・廃止・削除）。
 6. 印刷（可能なら同日、無ければ 6/4 午前）。
@@ -364,6 +352,20 @@ Apple ID: {apple_id}
 
 - **運用の正**: kintone **のみ**（§3・§4）。
 - Excel への **書き戻し・二重管理は行わない**。
+
+### 10.5 移行後チェック — jbis プール行（P6 GO 2026-06-03）
+
+移行直後、**氏名未入力の jbis.039〜933 プール行**が DB に残るとダッシュが混乱する。
+
+| # | 確認 | 期待 |
+|---|------|------|
+| 1 | `npm run apple-id:record-count` | 割当済み行数（目安 **251**） |
+| 2 | 694 一覧 | **未割当プール行が大量に見えない** |
+| 3 | 次採番バナー | **`jbis.039@icloud.com`**（POST 新規作成） |
+| 4 | プール残存時 | 浜田 GO → `npm run apple-id:wipe-jbis-pool`（**dry-run 必須**） |
+| 5 | 再確認 | record-count 再実行・694 目視 OK |
+
+**注意**: 移行スクリプトは **user_name 空の jbis.039〜933 を skip** するが、旧データや手動投入でプール行が残りうる。**10.5 を必ず実施**。
 
 ---
 
@@ -437,4 +439,6 @@ Apple ID: {apple_id}
 | 2026-06-02 | 浜田反映: legacy_ok 削除、氏名統合、status 2 値、登録日・MDM名、返却日削除 |
 | 2026-06-02 | アプリ名確定: **Apple ID管理台帳用DB** / **Apple ID管理台帳** |
 | 2026-06-02 | 案 B 確定: DB 全面ブロック、ダッシュで CRUD+削除、退職は廃止 |
-| 2026-06-02 | スケジュール GO: 作成 **6/3**、運用 **6/4**、Excel **6/4 削除** |
+| 2026-06-03 | **jbis.039〜933 プール行**は kintone に載せない（移行・台帳とも未割当 ID のみ行は除外） |
+| 2026-06-03 | 印刷: **674 型別ウィンドウ帳票** + Excel `ユーザ印刷用` レイアウト |
+| 2026-06-03 | §10.5 移行後チェック（jbis プール行・wipe 条件）— 夕反省 P6 GO |

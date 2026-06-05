@@ -19,6 +19,7 @@
 > 正本: `chat-sessions/checkpoint-latest.md`「**日終わり（推奨）**」。
 
 - [ ] **セッション報告**: `docs/session-report-checklist.md`（詳細）または Desktop **`20-SESSION-REPORT-CHECKLIST.txt`** で自己点検し、必要ならチャットに貼付（2026-05-06 起票）
+- [ ] **kintone アプリで浜田 OK を受けた同一セッション**: **`npm run verify:session-close-git-warn`** まで実施（未 commit なら commit 方針を §41 で確認 — **P7 GO 2026-06-03**）
 - [ ] **`npm run session-starter:sync-desktop`**（儀式・read-pack・**25/26 引継ぎ正本** 一式。詳細は `checkpoint-latest.md` 項番 0b）
 - [ ] **`npm run verify:desktop-ai-emergency-sync`**（成功時 **貼付推奨**行まで確認。チャットに 1 行要約してよい）
 - [ ] **今日のチャットを閉じる前**に指示があれば **`npm run session:clock:clear`**（`SESSION-CLOCK.md` の **開始:** を **未設定**／§51-6 遵守事項 7）＋**`session:clock:web` は Ctrl+C**

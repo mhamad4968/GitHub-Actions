@@ -1,0 +1,107 @@
+{
+  "properties": {
+    "legacy_no": {
+      "type": "NUMBER",
+      "code": "legacy_no",
+      "label": "管理番号",
+      "required": true,
+      "noLabel": false,
+      "unique": true,
+      "digit": false,
+      "defaultValue": "",
+      "displayScale": "",
+      "unit": "",
+      "unitPosition": "BEFORE"
+    },
+    "status": {
+      "type": "DROP_DOWN",
+      "code": "status",
+      "label": "ステータス",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "利用中",
+      "options": {
+        "利用中": { "label": "利用中", "index": "0" },
+        "廃止": { "label": "廃止", "index": "1" }
+      }
+    },
+    "registered_date": {
+      "type": "DATE",
+      "code": "registered_date",
+      "label": "登録日",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "mdm_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "mdm_name",
+      "label": "MDM名",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "user_name",
+      "label": "氏名",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "phone_number": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "phone_number",
+      "label": "回線番号",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "apple_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "apple_id",
+      "label": "Apple ID",
+      "required": true,
+      "noLabel": false,
+      "unique": false,
+      "defaultValue": ""
+    },
+    "password": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "password",
+      "label": "パスワード",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "Honten00"
+    },
+    "lock_passcode": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "lock_passcode",
+      "label": "ロックパス",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "2511"
+    },
+    "device_type": {
+      "type": "DROP_DOWN",
+      "code": "device_type",
+      "label": "端末種別",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "iPhone": { "label": "iPhone", "index": "0" },
+        "iPad": { "label": "iPad", "index": "1" },
+        "その他": { "label": "その他", "index": "2" }
+      }
+    },
+    "note": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "note",
+      "label": "メモ",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    }
+  }
+}

@@ -96,6 +96,22 @@
       "relPath": ".kintone-deploy/upload-688.js",
       "deployedAt": "2026-05-21T08:19:55.628Z",
       "note": null
+    },
+    "693": {
+      "build": "2026-06-03-apple-id-db-block-ui-mutations",
+      "fileKey": "ca4b6489-bc6d-444c-b4a4-28b4c7f8c96c",
+      "revision": "5",
+      "relPath": "customize/apple-id-db/desktop.js",
+      "deployedAt": "2026-06-03T07:35:12.935Z",
+      "note": null
+    },
+    "694": {
+      "build": "2026-06-03-apple-id-dash-no-toolbar-new",
+      "fileKey": "5d77ad24-e9c4-4f6e-84cd-6e1432731cad",
+      "revision": "13",
+      "relPath": "customize/apple-id-dash/desktop.js",
+      "deployedAt": "2026-06-03T08:15:29.316Z",
+      "note": null
     }
   }
 }

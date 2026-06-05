@@ -2787,3 +2787,23 @@ ecords.json PUT 1 回・atomic）**: 26 件・8 種を一括更新（KDDI㈱→K
 **締め**: `SESSION-CLOSE-REPORT-20260602.txt`
 
 ---
+
+### 2026-06-03 JST — **セッション締め**
+
+**本日完了**:
+- **Apple ID kintone** — DB **693** / ダッシュ **694** 作成・deploy・Excel 移行 **251 件**（jbis プール895削除）— 次採番 **jbis.039@icloud.com** — **浜田 OK**
+- **資格 PPTX ver.03** — 必須2／推奨3／任意3・人事4枚目・OJT/通信講座/応用9年目 — **浜田 OK**
+
+**触らない**: 業務改善 customize/deploy 〜 **6/7**（**6/8** 案B1）。Apple ID は **別レーン**。
+
+**6/4 予定**: kintone のみ運用・Excel 削除（`apple-id:retire-excel` — 未実施）
+
+**資格 PPTX 正本**: `C:\tmp\資格取得ロードマップ\システム推進室_資格取得ロードマップver.03（方針説明付き）.pptx`
+
+**Git**: Apple ID 実装 **commit + push 済**（2026-06-05 至急対応）
+
+**夕反省 GO**: **P1–P8 全 GO** — runbook `pptx-patch-windows.md` / `qualification-roadmap-pptx.md` / SPEC §10.5 / bootstrap P7
+
+**締め**: `SESSION-CLOSE-REPORT-20260603.txt`
+
+---

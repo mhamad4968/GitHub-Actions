@@ -1,0 +1,12 @@
+{
+  "app": "APPLE_ID_DASH_APP_ID",
+  "scope": "ALL",
+  "desktop": {
+    "js": ["desktop.js"],
+    "css": []
+  },
+  "mobile": {
+    "js": ["desktop.js"],
+    "css": []
+  }
+}

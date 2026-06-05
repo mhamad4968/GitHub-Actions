@@ -11,6 +11,22 @@
 
 ---
 
+## 2026-06-03 JST — **セッション締め**
+
+| 項目 | 内容 |
+|------|------|
+| **本日完了** | **Apple ID kintone** DB **693** / ダッシュ **694** — 移行 **251 件**・プール895削除・次採番 **jbis.039** — **浜田 OK**／**資格 PPTX ver.03**（人事4枚目・区分確定）— **浜田 OK** |
+| **Apple ID URL** | [693](https://jbis-kintone.cybozu.com/k/693/) / [694](https://jbis-kintone.cybozu.com/k/694/) — BUILD **`2026-06-03-apple-id-dash-no-toolbar-new`** |
+| **6/4 予定** | kintone のみ運用・**Excel 削除**（runbook 未実施） |
+| **資格 PPTX** | `C:\tmp\資格取得ロードマップ\システム推進室_資格取得ロードマップver.03（方針説明付き）.pptx` |
+| **凍結** | 業務改善 customize/deploy — **6/8 まで**（Apple ID は **Space 21 独立**） |
+| **Git** | Apple ID 実装 **commit + push 済**（2026-06-05 至急対応） |
+| **夕反省** | `docs/reports/2026-06-03-evening-reflection.md` — **P1–P8 全 GO**（2026-06-03） |
+| **運用正本** | 資格 PPTX: `C:\tmp\資格取得ロードマップ\…ver.03（方針説明付き）.pptx` / JSON: `scripts/data/qualification-roadmap.json` |
+| **締め** | `SESSION-CLOSE-REPORT-20260603.txt` |
+
+---
+
 ## 2026-06-02 JST — **セッション締め**
 
 | 項目 | 内容 |

@@ -1,0 +1,19 @@
+{
+  "pptxDir": "C:\\tmp\\資格取得ロードマップ",
+  "pptxFilePattern": "*ver.03*.pptx",
+  "pptxCanonicalName": "システム推進室_資格取得ロードマップver.03（方針説明付き）.pptx",
+  "qualifications": [
+    { "name": "基本情報技術者", "category": "必須", "years": "1～2年目" },
+    { "name": "情報セキュリティマネジメント", "category": "必須", "years": "3～4年目" },
+    { "name": "建設業経理士 2級", "category": "推奨", "years": "5～6年目" },
+    { "name": "第二種電気工事士", "category": "推奨", "years": "7～8年目" },
+    { "name": "応用情報技術者", "category": "推奨", "years": "9～12年目", "targetNote": "入社9年目あたり（業務並行）" },
+    { "name": "ネットワークスペシャリスト", "category": "任意", "years": "13～17年目" },
+    { "name": "ITストラテジスト", "category": "任意", "years": "18年目～" },
+    { "name": "情報処理安全確保支援士", "category": "任意", "years": "18年目～" }
+  ],
+  "learningPolicy": {
+    "work": "業務は OJT をメインとして育成",
+    "qualification": "資格は基本として日々、通信講座等で研鑽"
+  }
+}
