@@ -26,11 +26,11 @@
       "note": null
     },
     "674": {
-      "build": "2026-05-22-674-index-m365-shisan-checkbox-filter",
-      "fileKey": "51a2c16d-2d0c-4611-a377-dfeee6a31957",
-      "revision": "229",
-      "relPath": ".kintone-deploy/upload-674.js",
-      "deployedAt": "2026-05-24T09:22:15.269Z",
+      "build": "2026-06-06-674-index-list-sort",
+      "fileKey": "70934597-79fb-4c2e-8750-9e6353f06d79",
+      "revision": "235",
+      "relPath": "customize/new-pc-ledger-v1/desktop.js",
+      "deployedAt": "2026-06-05T22:55:51.491Z",
       "note": null
     },
     "677": {

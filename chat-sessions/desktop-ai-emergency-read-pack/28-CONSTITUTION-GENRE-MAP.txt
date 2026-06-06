@@ -1,5 +1,5 @@
 【28-CONSTITUTION-GENRE-MAP】憲法・ルール — ジャンル早見（4AI・Desktop 控え）
-生成: 2026-06-05 JST — npm run constitution:sync-genre-desktop-map
+生成: 2026-06-06 JST — npm run constitution:sync-genre-desktop-map
 正本: docs/constitution/README.md（全文）／リポ AGENTS.md（§ 番号の正）
 
 ■■ 読み方（見落とし防止・3ステップ）

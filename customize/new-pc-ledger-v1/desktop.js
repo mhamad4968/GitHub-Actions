@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-22-674-index-m365-shisan-checkbox-filter';
+  const BUILD = '2026-06-06-674-index-list-sort';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -2082,6 +2082,39 @@
     } else {
       mergeScalarField(rec, FC_PC_NAME, built);
     }
+  }
+
+  function fetch674IndexNextSerialPreview674() {
+    return Promise.all([
+      loadEnv670Map(),
+      fetchNextFreePersonalJbisSerial674(),
+      fetchNextFreeSharedSjbisSerial674(),
+      nextJbmFrom672(),
+      nextSjbmFrom673(),
+    ])
+      .then(function (results) {
+        const envMap = results[0] || {};
+        const personalSerial = Math.max(
+          toPositiveInt674(results[1]),
+          parsePersonalJbisSerialFloor674(envMap),
+        );
+        const sharedSerial = toPositiveInt674(results[2]) || 1;
+        const personalPrefix =
+          String(envMap.PC_NAME_PREFIX_PERSONAL || 'JBIS').trim() || 'JBIS';
+        const sharedPrefix =
+          String(envMap.PC_NAME_PREFIX_SHARED || 'S-JBIS').trim() || 'S-JBIS';
+        /** 一覧バナーは接頭辞＋連番のみ（`-YYYYMM` は登録月で変動するため表示しない） */
+        return {
+          personalPc: personalPrefix + formatPcNameJbisSerialDigits674(personalSerial),
+          personalWin: String(results[3] || '').trim() || '—',
+          sharedPc: sharedPrefix + formatPcNameJbisSerialDigits674(sharedSerial),
+          sharedWin: String(results[4] || '').trim() || '—',
+        };
+      })
+      .catch(function (e) {
+        console.warn('[NEW-PC-LEDGER-V1] fetch674IndexNextSerialPreview674', e);
+        return null;
+      });
   }
 
   /** §4.2.2 メールPW: `MAIL_PW_PREFIX` + 乱数4桁 + `MAIL_PW_SUFFIX`（既定 `jb`+`K#`） */
@@ -7096,10 +7129,84 @@ ${bodyInner}\
 
   // --- 一覧：§4.8a 検索（キーワード + 種別チップ + 転用PC + M365切替/資産台帳 済・未 + datalist。SKYSEA チップは当面非表示・query 互換は維持） ---
   const SEARCH674_WRAP_ID = 'new-pc-ledger-674-index-search';
-  const SEARCH674_WRAP_VER = '2026-05-22-v1-m365-shisan-cb-chips';
+  const SEARCH674_WRAP_VER = '2026-06-06-v7-index-list-sort';
   const SEARCH674_DL_ID = 'new-pc-ledger-674-search-datalist';
   /** 一覧 URL: キーワード原文（空白区切り AND 用）を query と併せて復元する */
   const SEARCH674_URL_KW_PARAM = 'npl674kw';
+  /** 一覧並び（`field:asc` / `field:desc`）。`query` の order by と併用して UI 復元 */
+  const SEARCH674_SORT_URL_PARAM = 'npl674sort';
+
+  const SEARCH674_SORT_PRESETS = [
+    { value: '', label: '一覧の既定' },
+    { value: '$id:desc', label: 'レコード番号 ↓新しい順' },
+    { value: '$id:asc', label: 'レコード番号 ↑古い順' },
+    { value: FC_PC_NAME + ':asc', label: 'PC名 A→Z' },
+    { value: FC_PC_NAME + ':desc', label: 'PC名 Z→A' },
+    { value: FC_USER_NAME + ':asc', label: '利用者名 A→Z' },
+    { value: FC_USER_NAME + ':desc', label: '利用者名 Z→A' },
+    { value: FC_DEPT_NAME + ':asc', label: '所属名 A→Z' },
+    { value: FC_DEPT_NAME + ':desc', label: '所属名 Z→A' },
+    { value: FC_GROUP_NAME + ':asc', label: '所属グループ A→Z' },
+    { value: FC_GROUP_NAME + ':desc', label: '所属グループ Z→A' },
+    { value: FC_LOGON_NAME + ':asc', label: 'Windows ID A→Z' },
+    { value: FC_LOGON_NAME + ':desc', label: 'Windows ID Z→A' },
+    { value: FC_PC_STATUS + ':asc', label: 'ステータス A→Z' },
+    { value: FC_PC_STATUS + ':desc', label: 'ステータス Z→A' },
+    { value: FC_ACCOUNT_TYPE + ':asc', label: '種別 A→Z' },
+    { value: FC_ACCOUNT_TYPE + ':desc', label: '種別 Z→A' },
+  ];
+
+  const SEARCH674_SORT_ALLOWED_FIELDS = (function () {
+    const s = new Set(['$id']);
+    for (let si = 0; si < SEARCH674_SORT_PRESETS.length; si++) {
+      const v = SEARCH674_SORT_PRESETS[si].value;
+      if (!v) continue;
+      const idx = v.lastIndexOf(':');
+      if (idx > 0) s.add(v.slice(0, idx));
+    }
+    return s;
+  })();
+
+  function parse674SortSpec674(raw) {
+    const s = String(raw || '').trim();
+    if (!s) return null;
+    const idx = s.lastIndexOf(':');
+    if (idx <= 0) return null;
+    const field = s.slice(0, idx);
+    const dirRaw = s.slice(idx + 1).toLowerCase();
+    if (dirRaw !== 'asc' && dirRaw !== 'desc') return null;
+    if (!SEARCH674_SORT_ALLOWED_FIELDS.has(field)) return null;
+    return { field: field, dir: dirRaw };
+  }
+
+  function format674SortSpec674(spec) {
+    if (!spec || !spec.field) return '';
+    return spec.field + ':' + (spec.dir === 'asc' ? 'asc' : 'desc');
+  }
+
+  function strip674OrderByFromQuery674(raw) {
+    return String(raw || '')
+      .replace(/\s+order\s+by\s+[\s\S]*$/i, '')
+      .trim();
+  }
+
+  function parse674SortFromQuery674(raw) {
+    const m = /\border\s+by\s+([a-zA-Z0-9_$]+)\s+(asc|desc)/i.exec(String(raw || ''));
+    if (!m) return null;
+    return parse674SortSpec674(m[1] + ':' + m[2].toLowerCase());
+  }
+
+  function append674IndexOrderBy674(filterQuery, sortParsed) {
+    if (!sortParsed || !sortParsed.field) {
+      return String(filterQuery || '').trim();
+    }
+    const base = String(filterQuery || '').trim();
+    const dir = sortParsed.dir === 'asc' ? 'asc' : 'desc';
+    const orderClause = ' order by ' + sortParsed.field + ' ' + dir + ', $id ' + dir;
+    if (!base) return orderClause.trim();
+    return base + orderClause;
+  }
+
   /** kintone 標準ヘッダー検索・一覧 URL が載せる **`?q=`**（当 customize の **`query`** とは別名） */
   const SEARCH674_KINTONE_NATIVE_Q_PARAM = 'q';
 
@@ -7126,6 +7233,7 @@ ${bodyInner}\
   const SEARCH674_HINT_FIELDS = [
     FC_PC_NAME,
     FC_LOGON_NAME,
+    FC_WINDOWS_NAME,
     FC_M365_ID,
     FC_USER_NAME,
     FC_DEPT_NAME,
@@ -7133,7 +7241,10 @@ ${bodyInner}\
     FC_SHARED_TERMINAL_NAME,
     FC_NOTE,
     FC_NPL_DISPOSED_PC_COPY,
+    FC_PC_STATUS,
   ];
+  /** PC名系は kintone `like` 単語境界で KS002→KS0022 等が落ちるため compact 部分一致（627/594 同趣旨） */
+  const SEARCH674_COMPACT_MATCH_FIELDS = [FC_PC_NAME, FC_WINDOWS_NAME, FC_LOGON_NAME];
 
   const SEARCH674_TYPE_CHIPS = [
     { value: TYPE_PERSONAL, label: '👤 個人' },
@@ -7142,6 +7253,37 @@ ${bodyInner}\
     { value: TYPE_SERVER, label: '🖥 サーバーNAS' },
     { value: TYPE_OTHER, label: '📦 その他' },
   ];
+
+  /** PCステータス（全選択＝フィルタなし。保管・廃棄も検索対象に含める） */
+  const SEARCH674_STATUS_CHIPS = [
+    { value: PC_STATUS_IN_USE_674, label: '利用中' },
+    { value: PC_STATUS_STORAGE, label: '保管' },
+    { value: PC_STATUS_DISPOSED_674, label: '廃棄' },
+  ];
+
+  function init674DefaultStatusSet674() {
+    return new Set([PC_STATUS_IN_USE_674]);
+  }
+
+  function init674AllStatusSet674() {
+    return new Set(
+      SEARCH674_STATUS_CHIPS.map(function (c) {
+        return c.value;
+      }),
+    );
+  }
+
+  function append674StatusFilter674(parts, selectedStatuses674) {
+    const statuses =
+      selectedStatuses674 instanceof Set ? [...selectedStatuses674] : [];
+    if (!statuses.length || statuses.length >= SEARCH674_STATUS_CHIPS.length) return;
+    const quoted = statuses
+      .map(function (s) {
+        return '"' + escape674QueryLike(s) + '"';
+      })
+      .join(', ');
+    parts.push('(' + FC_PC_STATUS + ' in (' + quoted + '))');
+  }
 
   /** §4.2.3a / 仕様ドロップダウンと一致 */
   const SEARCH674_SKYSEA_CHIPS = [
@@ -7166,6 +7308,99 @@ ${bodyInner}\
       return f.value.name != null ? String(f.value.name) : '';
     }
     return String(f.value).trim();
+  }
+
+  function normalize674SearchText674(s) {
+    try {
+      return String(s ?? '').normalize('NFKC');
+    } catch (_e) {
+      return String(s ?? '');
+    }
+  }
+
+  /** 記号除去＋小文字（627 `build627PcNameIdQuery` と同趣旨） */
+  function compact674SearchKey674(s) {
+    return normalize674SearchText674(s)
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '');
+  }
+
+  /** JBIS / KS / S-JBIS 等 PC 名接頭辞検索（M365 の @jbism… 等に誤ヒットしない） */
+  function is674PcNamePrefixToken674(token) {
+    const raw = String(token || '').trim();
+    if (!raw || raw.indexOf('@') !== -1) return false;
+    const c = compact674SearchKey674(raw);
+    if (!c) return false;
+    if (c.startsWith('sjbis')) return true;
+    if (c.startsWith('jbis') || c === 'jbis') return true;
+    if (c.startsWith('ks') || c === 'ks') return true;
+    return false;
+  }
+
+  function pcName674MatchesPrefixToken674(pcName, token) {
+    const pn = normalize674SearchText674(String(pcName || '')).trim();
+    if (!pn) return false;
+    const pnCompact = compact674SearchKey674(pn);
+    const wantCompact = compact674SearchKey674(token);
+    if (!wantCompact) return false;
+
+    if (wantCompact.startsWith('ks')) {
+      if (!/^KS/i.test(pn)) return false;
+      return pnCompact.includes(wantCompact);
+    }
+    if (wantCompact.startsWith('sjbis') || /^s[\s-]*jbis/i.test(String(token || ''))) {
+      if (!/^S-JBIS/i.test(pn) && !pnCompact.startsWith('sjbis')) return false;
+      return pnCompact.includes(wantCompact);
+    }
+    if (wantCompact.startsWith('jbis') || /^jbis/i.test(String(token || ''))) {
+      if (/^KS/i.test(pn)) return false;
+      if (pnCompact.startsWith('jbis')) return pnCompact.includes(wantCompact);
+      if (pnCompact.startsWith('sjbis')) {
+        return wantCompact === 'jbis' || pnCompact.includes(wantCompact);
+      }
+      return false;
+    }
+    return pnCompact.includes(wantCompact);
+  }
+
+  function record674MatchesSearchToken674(rec, token) {
+    const raw = String(token || '').trim();
+    if (!raw) return false;
+    if (is674PcNamePrefixToken674(raw)) {
+      return pcName674MatchesPrefixToken674(cell674PlainForSearch(rec, FC_PC_NAME), raw);
+    }
+    const wantCompact = compact674SearchKey674(raw);
+    const wantLower = normalize674SearchText674(raw).toLowerCase();
+    for (let fi = 0; fi < SEARCH674_HINT_FIELDS.length; fi++) {
+      const code = SEARCH674_HINT_FIELDS[fi];
+      const v = cell674PlainForSearch(rec, code);
+      if (!v) continue;
+      if (code === FC_PC_STATUS) {
+        const vs = v.toLowerCase();
+        if (vs.includes(wantLower)) return true;
+        if (wantLower === '廃止' && vs.includes('廃棄')) return true;
+        continue;
+      }
+      if (SEARCH674_COMPACT_MATCH_FIELDS.indexOf(code) !== -1) {
+        if (wantCompact && compact674SearchKey674(v).includes(wantCompact)) return true;
+      } else if (v.toLowerCase().includes(wantLower)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function build674TokenIdQuery674(records, token) {
+    const ids = [];
+    const maxIds = 1000;
+    for (let ri = 0; ri < records.length; ri++) {
+      if (!record674MatchesSearchToken674(records[ri], token)) continue;
+      const id = Number(records[ri].$id && records[ri].$id.value);
+      if (!Number.isFinite(id)) continue;
+      ids.push(id);
+      if (ids.length >= maxIds) break;
+    }
+    return ids.length ? '$id in (' + ids.join(',') + ')' : '$id = -1';
   }
 
   function escape674QueryLike(s) {
@@ -7244,16 +7479,20 @@ ${bodyInner}\
 
   /**
    * 一覧 URL の `query` を、検索バーの状態に分解（当バーが build した形式を想定。手編集 query は部分一致のみ反映）。
-   * @returns {{ keyword: string, types: string[], skysea: string[], transferOnly: boolean, cbFilters: Record<string, 'checked'|'unchecked'|null> }}
+   * @returns {{ keyword: string, types: string[], skysea: string[], transferOnly: boolean, cbFilters: Record<string, 'checked'|'unchecked'|null>, statuses: string[], sort: string }}
    */
   function parse674ListQueryToBarState674(listQuery) {
-    const raw = String(listQuery || '').trim();
+    const rawFull = String(listQuery || '').trim();
+    const sortFromQ = parse674SortFromQuery674(rawFull);
+    const raw = strip674OrderByFromQuery674(rawFull);
     const out = {
       keyword: '',
       types: [],
       skysea: [],
       transferOnly: false,
       cbFilters: { m365: null, shisan: null },
+      statuses: [],
+      sort: sortFromQ ? format674SortSpec674(sortFromQ) : '',
     };
     if (!raw) return out;
 
@@ -7289,6 +7528,22 @@ ${bodyInner}\
 
     out.cbFilters.m365 = parse674CheckboxDoneFilter674(raw, FC_M365_KIRIKAE);
     out.cbFilters.shisan = parse674CheckboxDoneFilter674(raw, FC_SHISAN_DAICHO);
+
+    const statusRe = new RegExp(
+      '\\(\\s*' + FC_PC_STATUS + '\\s+in\\s*\\(([^)]*)\\)\\s*\\)',
+    );
+    const stm = statusRe.exec(raw);
+    if (stm) {
+      const candSt = parse674QuotedListInner674(stm[1]);
+      const allowedSt = new Set(
+        SEARCH674_STATUS_CHIPS.map(function (c) {
+          return c.value;
+        }),
+      );
+      for (let sti = 0; sti < candSt.length; sti++) {
+        if (allowedSt.has(candSt[sti])) out.statuses.push(candSt[sti]);
+      }
+    }
 
     const likeNeedle = FC_PC_NAME + ' like "';
     const li = raw.indexOf(likeNeedle);
@@ -7344,6 +7599,7 @@ ${bodyInner}\
     const urlQuery = read.urlQuery;
     const urlKwParam = read.urlKwParam;
     const urlNativeQ = read.urlNativeQ || '';
+    const urlSortParam = read.urlSort || '';
     let urlKwDecoded = '';
     if (urlKwParam) {
       try {
@@ -7352,7 +7608,7 @@ ${bodyInner}\
         urlKwDecoded = urlKwParam;
       }
     }
-    const syncKey = urlQuery + '\n' + urlKwDecoded + '\n' + urlNativeQ;
+    const syncKey = urlQuery + '\n' + urlKwDecoded + '\n' + urlNativeQ + '\n' + urlSortParam;
     if (wrap.getAttribute('data-npl-synced-query') === syncKey) return;
 
     const effectiveListQuery = urlQuery || urlNativeQ;
@@ -7375,7 +7631,20 @@ ${bodyInner}\
         if (boxCb) boxCb.v = st.cbFilters[defCb.key] || null;
       }
     }
+    ref.selectedStatuses.clear();
+    if (st.statuses.length) {
+      for (let sti = 0; sti < st.statuses.length; sti++) {
+        ref.selectedStatuses.add(st.statuses[sti]);
+      }
+    } else {
+      init674DefaultStatusSet674().forEach(function (sv) {
+        ref.selectedStatuses.add(sv);
+      });
+    }
     ref.syncChips();
+    if (ref.sortSel) {
+      ref.sortSel.value = urlSortParam || st.sort || '';
+    }
 
     wrap.setAttribute('data-npl-synced-query', syncKey);
 
@@ -7408,6 +7677,8 @@ ${bodyInner}\
     selectedSkysea,
     transferOnly674,
     cbFilterBoxes674,
+    recordsForKeyword674,
+    selectedStatuses674,
   ) {
     const parts = [];
     const types = selectedTypes instanceof Set ? [...selectedTypes] : [];
@@ -7431,6 +7702,7 @@ ${bodyInner}\
     if (transferOnly674) {
       parts.push('(' + FC_NPL_TRANSFER_MANUAL + ' in ("' + escape674QueryLike(FC_NPL_TRANSFER_MANUAL_OPT) + '"))');
     }
+    append674StatusFilter674(parts, selectedStatuses674);
     if (cbFilterBoxes674) {
       for (let fi = 0; fi < SEARCH674_DONE_CB_FILTERS.length; fi++) {
         const defF = SEARCH674_DONE_CB_FILTERS[fi];
@@ -7448,7 +7720,12 @@ ${bodyInner}\
         return t.length > 40 ? t.slice(0, 40) : t;
       });
     if (tokens.length) {
+      const useIdQuery =
+        Array.isArray(recordsForKeyword674) && recordsForKeyword674.length > 0;
       const tokenParts = tokens.map(function (tok) {
+        if (useIdQuery) {
+          return '(' + build674TokenIdQuery674(recordsForKeyword674, tok) + ')';
+        }
         const e = escape674QueryLike(tok);
         const ors = SEARCH674_HINT_FIELDS.map(function (c) {
           return '(' + c + ' like "' + e + '")';
@@ -7473,10 +7750,11 @@ ${bodyInner}\
       const qs = h.slice(qm + 1);
       if (!qs) return;
       const hp = new URLSearchParams(qs);
-      if (!hp.has('query') && !hp.has(SEARCH674_URL_KW_PARAM) && !hp.has(SEARCH674_KINTONE_NATIVE_Q_PARAM)) return;
+      if (!hp.has('query') && !hp.has(SEARCH674_URL_KW_PARAM) && !hp.has(SEARCH674_KINTONE_NATIVE_Q_PARAM) && !hp.has(SEARCH674_SORT_URL_PARAM)) return;
       hp.delete('query');
       hp.delete(SEARCH674_URL_KW_PARAM);
       hp.delete(SEARCH674_KINTONE_NATIVE_Q_PARAM);
+      hp.delete(SEARCH674_SORT_URL_PARAM);
       const next = hp.toString();
       u.hash = next ? path + '?' + next : path;
     } catch (_e) {
@@ -7494,18 +7772,19 @@ ${bodyInner}\
 
   /**
    * 一覧の **`query` / `npl674kw` / 標準 `q`** を **search と hash の両方**から読む（閲覧→戻る・絞り込み UI で片方だけ変わる場合のずれ対策）。
-   * @returns {{ urlQuery: string, urlKwParam: string, urlNativeQ: string }}
+   * @returns {{ urlQuery: string, urlKwParam: string, urlNativeQ: string, urlSort: string }}
    */
   function read674IndexSearchQueryAndKw674() {
     let u;
     try {
       u = new URL(location.href);
     } catch (_e) {
-      return { urlQuery: '', urlKwParam: '', urlNativeQ: '' };
+      return { urlQuery: '', urlKwParam: '', urlNativeQ: '', urlSort: '' };
     }
     let urlQuery = String(u.searchParams.get('query') || '').trim();
     let urlKwParam = String(u.searchParams.get(SEARCH674_URL_KW_PARAM) || '').trim();
     let urlNativeQ = String(u.searchParams.get(SEARCH674_KINTONE_NATIVE_Q_PARAM) || '').trim();
+    let urlSort = String(u.searchParams.get(SEARCH674_SORT_URL_PARAM) || '').trim();
     const qh = get674HashQueryString674(u.hash);
     if (qh) {
       try {
@@ -7513,11 +7792,12 @@ ${bodyInner}\
         if (!urlQuery) urlQuery = String(hp.get('query') || '').trim();
         if (!urlKwParam) urlKwParam = String(hp.get(SEARCH674_URL_KW_PARAM) || '').trim();
         if (!urlNativeQ) urlNativeQ = String(hp.get(SEARCH674_KINTONE_NATIVE_Q_PARAM) || '').trim();
+        if (!urlSort) urlSort = String(hp.get(SEARCH674_SORT_URL_PARAM) || '').trim();
       } catch (_e2) {
         /* noop */
       }
     }
-    return { urlQuery: urlQuery, urlKwParam: urlKwParam, urlNativeQ: urlNativeQ };
+    return { urlQuery: urlQuery, urlKwParam: urlKwParam, urlNativeQ: urlNativeQ, urlSort: urlSort };
   }
 
   /** カスタム検索バーの入力・チップのみ空にする（一覧の実効条件は触らない） */
@@ -7527,7 +7807,12 @@ ${bodyInner}\
     ref.inp.value = '';
     ref.selectedTypes.clear();
     ref.selectedSkysea.clear();
+    ref.selectedStatuses.clear();
+    init674DefaultStatusSet674().forEach(function (sv) {
+      ref.selectedStatuses.add(sv);
+    });
     if (ref.transferBox) ref.transferBox.v = false;
+    if (ref.sortSel) ref.sortSel.value = '';
     ref.syncChips();
     wrap.setAttribute('data-npl-synced-query', '\n');
     if (typeof ref.ensure674SearchCache === 'function') {
@@ -7651,16 +7936,19 @@ ${bodyInner}\
     );
   }
 
-  function navigate674ListWithQuery(queryStr, rawKeywordForUrl) {
+  function navigate674ListWithQuery(queryStr, rawKeywordForUrl, sortSpecStr) {
     let u;
     try {
       u = new URL(location.href);
     } catch (e) {
       return;
     }
-    const qTrim = String(queryStr != null ? queryStr : '').trim();
-    if (qTrim) {
-      u.searchParams.set('query', qTrim);
+    const filterQ = String(queryStr != null ? queryStr : '').trim();
+    const sortVal = String(sortSpecStr != null ? sortSpecStr : '').trim();
+    const sortParsed = parse674SortSpec674(sortVal);
+    const fullQ = append674IndexOrderBy674(filterQ, sortParsed);
+    if (fullQ) {
+      u.searchParams.set('query', fullQ);
     } else {
       u.searchParams.delete('query');
     }
@@ -7671,7 +7959,12 @@ ${bodyInner}\
     } else {
       u.searchParams.delete(SEARCH674_URL_KW_PARAM);
     }
-    if (qTrim || kwPlain) {
+    if (sortVal && sortParsed) {
+      u.searchParams.set(SEARCH674_SORT_URL_PARAM, format674SortSpec674(sortParsed));
+    } else {
+      u.searchParams.delete(SEARCH674_SORT_URL_PARAM);
+    }
+    if (fullQ || kwPlain) {
       /* カスタム `query`／`npl674kw` と標準 `?q=` が併存すると二重絞り込みになるため除去 */
       u.searchParams.delete(SEARCH674_KINTONE_NATIVE_Q_PARAM);
     } else {
@@ -7789,6 +8082,9 @@ ${bodyInner}\
     const existing = document.getElementById(SEARCH674_WRAP_ID);
     if (existing && existing.getAttribute('data-npl-ver') === SEARCH674_WRAP_VER) {
       hydrate674IndexSearchBarFromUrl674();
+      if (existing.__npl674 && typeof existing.__npl674.refreshNextSerial === 'function') {
+        existing.__npl674.refreshNextSerial();
+      }
       return;
     }
     if (existing) {
@@ -7809,7 +8105,66 @@ ${bodyInner}\
 
     const title = document.createElement('div');
     title.style.cssText = 'font-size:12px;font-weight:700;color:#0f172a;margin-bottom:8px;';
-    title.textContent = 'キーワード・種別・M365切替／資産台帳で絞り込み';
+    title.textContent = 'キーワード・種別・ステータス・M365切替／資産台帳で絞り込み';
+
+    const nextSerialBar = document.createElement('div');
+    nextSerialBar.id = 'npl674-index-next-serial-bar';
+    nextSerialBar.setAttribute('aria-live', 'polite');
+    nextSerialBar.style.cssText =
+      'display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;margin-bottom:10px;' +
+      'padding:10px 12px;background:#fff;border:1px solid #cbd5e1;border-radius:6px;' +
+      'font-size:14px;color:#0f172a;line-height:1.45;';
+
+    function render674NextSerialBar674(preview) {
+      if (!preview) {
+        nextSerialBar.innerHTML =
+          '<span style="color:#b45309;font-size:14px;">次採番の取得に失敗しました（再読み込みしてください）</span>';
+        return;
+      }
+      const valStyle =
+        'font-size:17px;font-weight:800;letter-spacing:0.02em;font-family:Consolas,Monaco,ui-monospace,monospace;';
+      const lblStyle = 'font-size:13px;color:#64748b;';
+      const catStyle = 'font-size:15px;font-weight:800;';
+      nextSerialBar.innerHTML =
+        '<div style="display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;">' +
+        '<span style="' +
+        catStyle +
+        'color:#0369a1;">個人用</span>' +
+        '<span style="' +
+        lblStyle +
+        '">PC名 <strong style="' +
+        valStyle +
+        'color:#0f172a;">' +
+        preview.personalPc +
+        '</strong></span>' +
+        '<span style="' +
+        lblStyle +
+        '">Windows <strong style="' +
+        valStyle +
+        'color:#0f172a;">' +
+        preview.personalWin +
+        '</strong></span>' +
+        '</div>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;">' +
+        '<span style="' +
+        catStyle +
+        'color:#6d28d9;">共有用</span>' +
+        '<span style="' +
+        lblStyle +
+        '">PC名 <strong style="' +
+        valStyle +
+        'color:#0f172a;">' +
+        preview.sharedPc +
+        '</strong></span>' +
+        '<span style="' +
+        lblStyle +
+        '">Windows <strong style="' +
+        valStyle +
+        'color:#0f172a;">' +
+        preview.sharedWin +
+        '</strong></span>' +
+        '</div>';
+    }
 
     const row = document.createElement('div');
     row.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px;';
@@ -7825,6 +8180,26 @@ ${bodyInner}\
 
     const dl = document.createElement('datalist');
     dl.id = SEARCH674_DL_ID;
+
+    const sortWrap = document.createElement('label');
+    sortWrap.style.cssText =
+      'display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#334155;';
+    const sortLbl = document.createElement('span');
+    sortLbl.textContent = '並び';
+    const selSort = document.createElement('select');
+    selSort.id = 'npl674-index-sort';
+    selSort.setAttribute('aria-label', '一覧の並び順');
+    selSort.style.cssText =
+      'padding:6px 8px;border:1px solid #94a3b8;border-radius:6px;background:#fff;font-size:12px;max-width:200px;';
+    for (let spi = 0; spi < SEARCH674_SORT_PRESETS.length; spi++) {
+      const defSort = SEARCH674_SORT_PRESETS[spi];
+      const opt = document.createElement('option');
+      opt.value = defSort.value;
+      opt.textContent = defSort.label;
+      selSort.appendChild(opt);
+    }
+    sortWrap.appendChild(sortLbl);
+    sortWrap.appendChild(selSort);
 
     const btnGo = document.createElement('button');
     btnGo.type = 'button';
@@ -7864,6 +8239,7 @@ ${bodyInner}\
 
     row.appendChild(inpKw);
     row.appendChild(dl);
+    row.appendChild(sortWrap);
     row.appendChild(btnGo);
     row.appendChild(btnClr);
     row.appendChild(btnList);
@@ -7919,6 +8295,39 @@ ${bodyInner}\
       syncChips674();
     });
     chipRow.appendChild(btnTransferChip);
+
+    const statusChipRow = document.createElement('div');
+    statusChipRow.style.cssText =
+      'display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px;';
+    const statusLabel = document.createElement('span');
+    statusLabel.textContent = 'ステータス:';
+    statusLabel.style.cssText = 'font-size:11px;font-weight:700;color:#475569;margin-right:2px;';
+    statusChipRow.appendChild(statusLabel);
+
+    const selectedStatuses = init674DefaultStatusSet674();
+
+    SEARCH674_STATUS_CHIPS.forEach(function (defSt) {
+      const bSt = document.createElement('button');
+      bSt.type = 'button';
+      bSt.textContent = defSt.label;
+      bSt.dataset.statusValue = defSt.value;
+      bSt.className = 'npl674-index-chip';
+      bSt.setAttribute('aria-pressed', 'false');
+      bSt.style.cssText =
+        'padding:4px 10px;border-radius:999px;border:1px solid #94a3b8;background:#dcfce7;' +
+        'font-size:12px;font-weight:700;cursor:pointer;color:#0f172a;';
+      bSt.addEventListener('click', function () {
+        const valSt = bSt.dataset.statusValue || '';
+        if (selectedStatuses.has(valSt)) {
+          if (selectedStatuses.size <= 1) return;
+          selectedStatuses.delete(valSt);
+        } else {
+          selectedStatuses.add(valSt);
+        }
+        syncChips674();
+      });
+      statusChipRow.appendChild(bSt);
+    });
 
     const cbFilterBoxes = { m365: { v: null }, shisan: { v: null } };
 
@@ -8001,22 +8410,53 @@ ${bodyInner}\
           b.style.borderColor = on ? '#475569' : '#94a3b8';
         }
       });
+      statusChipRow.querySelectorAll('button[data-status-value]').forEach(function (b) {
+        const valSt = b.dataset.statusValue || '';
+        const onSt = selectedStatuses.has(valSt);
+        b.setAttribute('aria-pressed', onSt ? 'true' : 'false');
+        b.style.background = onSt ? '#dcfce7' : '#fff';
+        b.style.borderColor = onSt ? '#15803d' : '#94a3b8';
+      });
     }
 
     wrap.appendChild(title);
+    wrap.appendChild(nextSerialBar);
     wrap.appendChild(row);
     wrap.appendChild(chipRow);
+    wrap.appendChild(statusChipRow);
 
     const apply674 = function () {
-      const q = build674IndexListQuery(
-        inpKw.value,
-        selectedTypes,
-        selectedSkysea,
-        transferBox.v,
-        cbFilterBoxes,
-      );
-      navigate674ListWithQuery(q, inpKw.value);
+      ensure674SearchCache()
+        .then(function (recs) {
+          const q = build674IndexListQuery(
+            inpKw.value,
+            selectedTypes,
+            selectedSkysea,
+            transferBox.v,
+            cbFilterBoxes,
+            recs,
+            selectedStatuses,
+          );
+          navigate674ListWithQuery(q, inpKw.value, selSort.value);
+        })
+        .catch(function (e) {
+          console.warn('[NEW-PC-LEDGER-V1] index search apply', e);
+          const q = build674IndexListQuery(
+            inpKw.value,
+            selectedTypes,
+            selectedSkysea,
+            transferBox.v,
+            cbFilterBoxes,
+            null,
+            selectedStatuses,
+          );
+          navigate674ListWithQuery(q, inpKw.value, selSort.value);
+        });
     };
+
+    selSort.addEventListener('change', function () {
+      apply674();
+    });
 
     btnGo.addEventListener('click', function () {
       apply674();
@@ -8025,12 +8465,17 @@ ${bodyInner}\
       inpKw.value = '';
       selectedTypes.clear();
       selectedSkysea.clear();
+      selectedStatuses.clear();
+      init674DefaultStatusSet674().forEach(function (sv) {
+        selectedStatuses.add(sv);
+      });
       transferBox.v = false;
       cbFilterBoxes.m365.v = null;
       cbFilterBoxes.shisan.v = null;
+      selSort.value = '';
       syncChips674();
       wrap.setAttribute('data-npl-synced-query', '');
-      navigate674ListWithQuery('', '');
+      navigate674ListWithQuery('', '', '');
     });
     inpKw.addEventListener('keydown', function (ev) {
       if (ev.key === 'Enter') {
@@ -8049,14 +8494,22 @@ ${bodyInner}\
 
     wrap.__npl674 = {
       inp: inpKw,
+      sortSel: selSort,
       selectedTypes: selectedTypes,
       selectedSkysea: selectedSkysea,
+      selectedStatuses: selectedStatuses,
       transferBox: transferBox,
       cbFilterBoxes: cbFilterBoxes,
       syncChips: syncChips674,
       ensure674SearchCache: ensure674SearchCache,
+      refreshNextSerial: function () {
+        fetch674IndexNextSerialPreview674().then(render674NextSerialBar674);
+      },
     };
     wrap.setAttribute('data-npl-synced-query', '');
+
+    syncChips674();
+    fetch674IndexNextSerialPreview674().then(render674NextSerialBar674);
 
     inpKw.addEventListener('input', function () {
       ensure674SearchCache()
