@@ -9,7 +9,7 @@
 | 業務改善 **kintone create/deploy** — **浜田「実装OK」サイン前** | 仕様・doc・**Cursor環境改善**・ゲート整備 |
 | 前倒し customize / データ取込 | **6/7 or 6/8** 案B1（サイン後） |
 
-**次回 1 手**: **6/7 朝** `npm run cio:morning:pre-implement -- --project business-improvement` → 浜田 **実装OK** → 案B1 着手
+**次回 1 手**: **6/7 朝** `npm run cio:morning:ready -- --project business-improvement` → 浜田 **実装OK** → 案B1 着手
 
 **Cursor Automations**: **4件登録＋スケジュール修正完了**（2026-06-06 浜田）
 
@@ -17,7 +17,19 @@
 
 ---
 
-## 2026-06-06 JST — **Cursor環境 Phase B〜D 完了（16:15〜）**
+## 2026-06-06 JST — **夜・最終締め**
+
+| 項目 | 内容 |
+|------|------|
+| **本日完了** | **674** deploy 済／**PCキッティング** ①②／**Cursor環境 Phase A〜E**／**Automations 4件**／**§4.7 修正**／**commit** `468b582`+`41c6045` |
+| **明日 1 手** | `npm run cio:morning:ready -- --project business-improvement` → **実装OK** → 案B1 |
+| **Git** | **ahead 2**（push は次セッション or 浜田 GO） |
+| **凍結** | 業務改善 kintone create/deploy — **実装OK 前** |
+| **締め** | `SESSION-CLOSE-REPORT-20260606.txt` |
+
+---
+
+## 2026-06-06 JST — **Cursor環境 Phase B〜E 完了**
 
 | 項目 | 内容 |
 |------|------|
@@ -25,7 +37,7 @@
 | **Phase C** | MCP manifest・second-reviewer capture・`autonomous-cold-start.mdc`・`smoke:bi-demo`・`rag:sync-business-improvement` |
 | **Phase D** | `docs/runbooks/cursor-automations-weekly.md`（Automations は浜田承認後） |
 | **検証** | `npm run verify:cio-env-upgrade` ✅ |
-| **Skills** | 4本（+ business-improvement-lane） |
+| **Skills** | **7本**（+ create-app / doc-lane / automation-register） |
 
 ---
 
@@ -107,6 +119,6 @@
 **§35-6 / §35-7 / HANDOFF-AI-FIVE-BLOCKS / TSB-031**: 削除・日終わり sync は浜田確認または §41  
 **詳細履歴**: `chat-sessions/checkpoints/checkpoint-archive-2026-06-06.md`
 
-**最終更新**: 2026-06-06 (Sat) JST — **Phase E 完了**: Skills 7本・`cio:morning:ready`・project-lanes・§4.7 本社部長評価修正・commit `468b582`
+**最終更新**: 2026-06-06 (Sat) JST 夜 — **最終締め**: Phase E・§4.7 修正・commit `41c6045`・明日 `cio:morning:ready`
 
 <!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-06-06.md -->
