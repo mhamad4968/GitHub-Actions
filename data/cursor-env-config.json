@@ -1,0 +1,10 @@
+{
+  "version": "2026-06-06",
+  "sessionEndHandoffExport": true,
+  "sessionEndHandoffRollup": false,
+  "bridgeStaleness": {
+    "maxAgeHours": 48,
+    "maxSectionLagDays": 2
+  },
+  "note": "sessionEndHandoffExport=true で sessionEnd hook が export-handoff を試行（失敗してもセッション終了は継続）"
+}

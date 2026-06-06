@@ -1,0 +1,90 @@
+{
+  "version": "2026-06-06",
+  "phases": {
+    "A": {
+      "status": "completed",
+      "completedAt": "2026-06-06",
+      "items": [
+        "repo-skills-3",
+        "cio-morning-pre-implement",
+        "cio-checkpoint-rollup",
+        "cio-session-start",
+        "upgrade-plan-doc"
+      ]
+    },
+    "B": {
+      "status": "completed",
+      "completedAt": "2026-06-06",
+      "items": [
+        "session-end-handoff-export",
+        "bridge-staleness-gate",
+        "ci-handoff-subset",
+        "skill-business-improvement-lane",
+        "implementation-ok-seal"
+      ]
+    },
+    "C": {
+      "status": "completed",
+      "completedAt": "2026-06-06",
+      "items": [
+        "mcp-manifest",
+        "second-reviewer-artifact",
+        "cold-start-one-pager-rule",
+        "playwright-demo-smoke",
+        "rag-bi-spec-collection"
+      ]
+    },
+    "D": {
+      "status": "completed",
+      "completedAt": "2026-06-06",
+      "items": [
+        "cursor-automations-prefill-4",
+        "cio-cursor-automation-prefill",
+        "cursor-automations-register-runbook",
+        "skill-kintone-cursor-automation-register",
+        "chrome-devtools-mcp-setup"
+      ],
+      "pending": ["cursor-sdk-nightly-jobs"],
+      "registeredAt": "2026-06-06",
+      "registeredBy": "浜田"
+    },
+    "E": {
+      "status": "completed",
+      "completedAt": "2026-06-06",
+      "items": [
+        "skill-kintone-create-app",
+        "skill-kintone-doc-lane",
+        "cio-project-lanes",
+        "cio-rules-topic-index",
+        "cio-morning-ready",
+        "cio-task-complete-seal"
+      ]
+    }
+  },
+  "skills": [
+    "kintone-session-bootstrap",
+    "kintone-pre-implement-gate",
+    "kintone-deploy-lane",
+    "kintone-business-improvement-lane",
+    "kintone-cursor-automation-register",
+    "kintone-create-app",
+    "kintone-doc-lane"
+  ],
+  "npmScripts": {
+    "cio:session:start": "turn-start → session:bootstrap → handoff import",
+    "cio:checkpoint:rollup": "checkpoint 圧縮",
+    "cio:morning:pre-implement": "実装前ゲート一括",
+    "cio:implementation-ok-seal": "浜田実装OK記録",
+    "cio:second-reviewer:capture": "§50-3-8 構造化記録",
+    "verify:cio-env-upgrade": "Phase 成果物検証",
+    "verify:cio-mcp-manifest": "MCP マニフェスト検証",
+    "rag:sync-business-improvement": "RAG ミラー同期",
+    "smoke:bi-demo": "7/1 デモスモーク骨格"
+  },
+  "kpi": {
+    "bridgeCheckpointMaxAgeDays": 0,
+    "checkpointHeadMaxLines": 80,
+    "repoSkillsTarget": 7,
+    "repoSkillsCurrent": 7
+  }
+}

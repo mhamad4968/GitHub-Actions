@@ -7,6 +7,7 @@
  *
  * @see docs/runbooks/session-clock-cursor-lifecycle.md
  */
+import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -38,6 +39,33 @@ function main() {
 
   logLine(`sessionEnd session_id=${input.session_id ?? '?'} reason=${input.reason ?? '?'}`);
 
+  let handoffMsg = '';
+  try {
+    const cfgPath = path.join(root, 'data/cursor-env-config.json');
+    const cfg = fs.existsSync(cfgPath) ? JSON.parse(fs.readFileSync(cfgPath, 'utf8')) : {};
+    if (cfg.sessionEndHandoffExport === true) {
+      execSync('npm run cio:session:export-handoff', {
+        cwd: root,
+        stdio: ['pipe', 'pipe', 'pipe'],
+        timeout: 20000,
+      });
+      handoffMsg = ' handoff-export=OK';
+      logLine('handoff export OK');
+      if (cfg.sessionEndHandoffRollup === true) {
+        execSync('npm run cio:checkpoint:rollup -- --keep 8', {
+          cwd: root,
+          stdio: ['pipe', 'pipe', 'pipe'],
+          timeout: 15000,
+        });
+        logLine('checkpoint rollup OK');
+        handoffMsg += ' rollup=OK';
+      }
+    }
+  } catch (e) {
+    logLine(`handoff export skip/fail: ${e.message || e}`);
+    handoffMsg = ' handoff-export=skip';
+  }
+
   const r = stopAllClock();
   logLine(
     `stopAll clearOk=${r.clearOk} watch=${r.watch} web=${r.web} msg=${r.clearMsg ?? ''}`,
@@ -46,6 +74,7 @@ function main() {
   const mode = readSessionClockMode(root);
   const additional_context =
     '【自動・Cursor sessionEnd hook】壁時計を停止した（`session:clock:clear` ＋ watch/web プロセス終了）。' +
+    handoffMsg +
     (mode.mode === 'manual-desktop'
       ? ' 次回は **Desktop `壁時計_START.bat`** で再起動。'
       : ' Cursor を再度開いたときは sessionStart で set・watch・web が自動起動し URL が表示される。');

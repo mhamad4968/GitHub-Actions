@@ -1,0 +1,51 @@
+{
+  "version": "2026-06-06",
+  "mergePolicy": "user_mcp_json ∪ repo_.cursor/mcp.json（同名は user 優先・repo は overlay 追加）",
+  "sources": {
+    "user": "%USERPROFILE%/.cursor/mcp.json",
+    "repo": ".cursor/mcp.json",
+    "matrix": "data/cio-mcp-four-ai-matrix.json"
+  },
+  "required": [
+    "deepseek",
+    "kimi",
+    "openrouter",
+    "memory",
+    "sequential-thinking",
+    "rag",
+    "markdownify",
+    "kintone",
+    "playwright",
+    "duckduckgo-search"
+  ],
+  "recommended": [
+    "chrome-devtools",
+    "shadcn-ui",
+    "accessibility-scanner",
+    "context7",
+    "eslint-mcp",
+    "repo-tree",
+    "figma",
+    "colors-fonts",
+    "github",
+    "kintone-dev",
+    "kintone-space",
+    "cyber-news",
+    "cve-search"
+  ],
+  "repoOverlayOnly": [
+    "figma",
+    "colors-fonts",
+    "mintlify",
+    "repo-tree",
+    "eslint-mcp",
+    "context7"
+  ],
+  "phaseD": {
+    "chrome-devtools": "repo overlay 有効化済（docs/runbooks/chrome-devtools-mcp-setup.md）",
+    "accessibility-scanner": "業務改善 Q55・60歳以上 UX（customize 後）",
+    "playwright": "7/1 デモ導線スモーク",
+    "rag": "spec 横断 QA — data/rag-business-improvement-manifest.json"
+  },
+  "verify": "npm run verify:cio-mcp-manifest"
+}

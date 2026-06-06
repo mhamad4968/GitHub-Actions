@@ -7,6 +7,51 @@
 ---
 
 <!-- CIO-DEBUG-TIPS:AUTO -->
+## [2026-06-06] セッション解体時知恵ストック
+
+**前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
+**手順**: `npm run doc-lane:verify-v5-ch3-refs` → `npm run doc-lane:patch-v5-a3` → `npm run cio:morning:pre-implement -- --project business-improvement` → 浜田 **実装OK** → 案B1 着手`
+**禁止**: customize/deploy 凍結中の無断 save・上位憲法 §50-3-11 非置換違反・本体単独完結
+**exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
+
+<!-- errors: npm run doc-lane:verify-v5-ch3-refs`）+ `add_reading_guide.py` 修正。v5 読み方1行は **Wor | npm run doc-lane:patch-v5-a3`・`cio:doc-lane-gate` ラベル更新。 | npm run cio:morning:pre-implement -- --project business-improvement` → 浜田 **実装OK -->
+
+## [2026-06-06] セッション解体時知恵ストック
+
+**前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
+**手順**: `npm run doc-lane:verify-v5-ch3-refs` → `npm run doc-lane:patch-v5-a3` → `npm run doc-lane:security-report`
+**禁止**: customize/deploy 凍結中の無断 save・上位憲法 §50-3-11 非置換違反・本体単独完結
+**exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
+
+<!-- errors: npm run doc-lane:verify-v5-ch3-refs`）+ `add_reading_guide.py` 修正。v5 読み方1行は **Wor | npm run doc-lane:patch-v5-a3`・`cio:doc-lane-gate` ラベル更新。 | npm run doc-lane:security-report` / `scripts/lib/docx_template_format.py` | -->
+
+## [2026-06-06] セッション解体時知恵ストック
+
+**前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
+**手順**: `npm run doc-lane:verify-v5-ch3-refs` → `npm run doc-lane:patch-v5-a3` → `npm run doc-lane:security-report`
+**禁止**: customize/deploy 凍結中の無断 save・上位憲法 §50-3-11 非置換違反・本体単独完結
+**exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
+
+<!-- errors: npm run doc-lane:verify-v5-ch3-refs`）+ `add_reading_guide.py` 修正。v5 読み方1行は **Wor | npm run doc-lane:patch-v5-a3`・`cio:doc-lane-gate` ラベル更新。 | npm run doc-lane:security-report` / `scripts/lib/docx_template_format.py` | -->
+
+## [2026-06-06] セッション解体時知恵ストック
+
+**前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
+**手順**: `npm run doc-lane:verify-v5-ch3-refs` → `npm run doc-lane:patch-v5-a3` → `npm run doc-lane:security-report`
+**禁止**: customize/deploy 凍結中の無断 save・上位憲法 §50-3-11 非置換違反・本体単独完結
+**exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
+
+<!-- errors: npm run doc-lane:verify-v5-ch3-refs`）+ `add_reading_guide.py` 修正。v5 読み方1行は **Wor | npm run doc-lane:patch-v5-a3`・`cio:doc-lane-gate` ラベル更新。 | npm run doc-lane:security-report` / `scripts/lib/docx_template_format.py` | -->
+
+## [2026-06-06] セッション解体時知恵ストック
+
+**前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
+**手順**: `npm run doc-lane:verify-v5-ch3-refs` → `npm run doc-lane:patch-v5-a3` → `npm run doc-lane:security-report`
+**禁止**: customize/deploy 凍結中の無断 save・上位憲法 §50-3-11 非置換違反・本体単独完結
+**exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
+
+<!-- errors: npm run doc-lane:verify-v5-ch3-refs`）+ `add_reading_guide.py` 修正。v5 読み方1行は **Wor | npm run doc-lane:patch-v5-a3`・`cio:doc-lane-gate` ラベル更新。 | npm run doc-lane:security-report` / `scripts/lib/docx_template_format.py` | -->
+
 ## [2026-05-31] セッション解体時知恵ストック
 
 **前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出

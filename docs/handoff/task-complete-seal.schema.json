@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TaskCompletionSeals",
+  "description": "汎用タスク完了 seal（配列）— 業務改善以外のレーン",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["lane", "signedAt", "signedBy", "scope"],
+    "properties": {
+      "lane": { "type": "string", "examples": ["674-done", "doc-lane", "pc-kitting"] },
+      "signedAt": { "type": "string", "format": "date-time" },
+      "signedBy": { "type": "string", "const": "浜田" },
+      "scope": { "type": "string" },
+      "gatesRun": { "type": "array", "items": { "type": "string" } },
+      "gitHead": { "type": "string" },
+      "note": { "type": "string" }
+    }
+  }
+}

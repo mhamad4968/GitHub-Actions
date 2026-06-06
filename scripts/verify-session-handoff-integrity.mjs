@@ -8,6 +8,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { bridgePath, bridgeSchemaOk, loadBridge } from './lib/cio-session-bridge.mjs';
+import { checkBridgeStaleness } from './lib/cio-bridge-staleness.mjs';
 import { renderHandoffVisualMap } from './lib/cio-handoff-visual-map.mjs';
 import {
   printHandoffIssues,
@@ -21,6 +22,7 @@ function main() {
   const doImport = process.argv.includes('--import');
   const doValidateExport = process.argv.includes('--validate-export');
   const allowHeadDrift = process.argv.includes('--allow-head-drift');
+  const strictStaleness = process.argv.includes('--strict-staleness');
   const bridge = loadBridge(root);
 
   if (!bridge) {
@@ -39,6 +41,26 @@ function main() {
       console.error('[verify:session-handoff-integrity] NG missing', rel);
       process.exit(1);
     }
+  }
+
+  if (strictStaleness) {
+    let cfg = {};
+    try {
+      const cfgPath = path.join(root, 'data/cursor-env-config.json');
+      if (fs.existsSync(cfgPath)) cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8'));
+    } catch {
+      /* noop */
+    }
+    const staleness = checkBridgeStaleness(root, bridge, cfg.bridgeStaleness || {});
+    if (!staleness.ok) {
+      console.error('[verify:session-handoff-integrity] NG --strict-staleness', staleness.issues.length);
+      for (const i of staleness.issues) {
+        console.error(`  [${i.code}] ${i.message}`);
+        if (i.fix) console.error(`    fix: ${i.fix}`);
+      }
+      process.exit(1);
+    }
+    console.log('[verify:session-handoff-integrity] OK --strict-staleness');
   }
 
   if (doValidateExport) {

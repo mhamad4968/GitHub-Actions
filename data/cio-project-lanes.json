@@ -1,0 +1,98 @@
+{
+  "version": "2026-06-06",
+  "description": "依頼キーワード → Skill / runbook / npm のルーティング索引",
+  "lanes": [
+    {
+      "id": "session-bootstrap",
+      "keywords": ["新規チャット", "復元", "どこまで", "cold-start", "セッション開始"],
+      "skill": ".cursor/skills/kintone-session-bootstrap/SKILL.md",
+      "npm": ["cio:session:start", "cio:morning:ready"],
+      "runbook": null
+    },
+    {
+      "id": "business-improvement",
+      "keywords": ["業務改善", "Space 57", "案B1", "設定マスタ", "compare-83", "ver.02"],
+      "skill": ".cursor/skills/kintone-business-improvement-lane/SKILL.md",
+      "npm": [
+        "cio:morning:pre-implement -- --project business-improvement",
+        "business-improvement:compare-83",
+        "rag:sync-business-improvement",
+        "cio:implementation-ok-seal"
+      ],
+      "runbook": "docs/plans/2026-05-28-business-improvement-implementation-handbook.md",
+      "freeze": "浜田「実装OK」前は kintone create/deploy 禁止"
+    },
+    {
+      "id": "kintone-create-app",
+      "keywords": ["新規アプリ", "create-app", "fields JSON", "スケルトン", "App ID"],
+      "skill": ".cursor/skills/kintone-create-app/SKILL.md",
+      "npm": ["verify:kintone-fields", "cio:second-reviewer:capture"],
+      "runbook": null,
+      "reference": ["scripts/shared-mail-create-db-app.mjs", "scripts/shared-mail-create-dash-app.mjs"]
+    },
+    {
+      "id": "kintone-deploy",
+      "keywords": ["deploy", "customize", "desktop.js", "preflight", "BUILD"],
+      "skill": ".cursor/skills/kintone-deploy-lane/SKILL.md",
+      "npm": ["cio:preflight:<APP_ID>", "deploy:<APP_ID>", "cio:audit:portfolio"],
+      "runbook": "docs/runbooks/customize-deploy-recovery.md"
+    },
+    {
+      "id": "doc-lane",
+      "keywords": ["docx", "pptx", "セキュリティレポート", "v5 マニュアル", "資格", "資料作成"],
+      "skill": ".cursor/skills/kintone-doc-lane/SKILL.md",
+      "npm": ["cio:doc-lane-gate", "doc-lane:security-report", "doc-lane:patch-v5-a3"],
+      "runbook": "docs/runbooks/doc-lane.md"
+    },
+    {
+      "id": "pc-ledger-674",
+      "keywords": ["674", "PC台帳", "pc-ledger", "jbis-purchase"],
+      "skill": ".cursor/skills/kintone-deploy-lane/SKILL.md",
+      "npm": ["cio:preflight:674", "cio:audit:674", "deploy:674"],
+      "runbook": "docs/runbooks/pc-ledger-674-hamada-ui-verify-jbis-purchase.md"
+    },
+    {
+      "id": "shared-mail",
+      "keywords": ["共有メール", "695", "696", "Space 21"],
+      "skill": ".cursor/skills/kintone-create-app/SKILL.md",
+      "npm": ["shared-mail:create-db", "shared-mail:create-dash", "shared-mail:migrate"],
+      "runbook": "docs/plans/2026-06-06-shared-mail-kintone-spec.md"
+    },
+    {
+      "id": "apple-id",
+      "keywords": ["Apple ID", "693", "694", "jbis.039"],
+      "skill": ".cursor/skills/kintone-create-app/SKILL.md",
+      "npm": ["cio:preflight:693", "cio:preflight:694"],
+      "runbook": "docs/plans/2026-06-02-apple-id-kintone-spec.md"
+    },
+    {
+      "id": "gha-5038",
+      "keywords": ["GHA", "5038", "GitHub Actions", "stamp", "workflow"],
+      "skill": null,
+      "npm": ["cio:gha-periodic-5038-stamp", "cio:guard:5038"],
+      "runbook": "docs/runbooks/cio-gha-periodic-5038-stamp.md"
+    },
+    {
+      "id": "cursor-automation",
+      "keywords": ["Automation", "prefill", "週次", "cron"],
+      "skill": ".cursor/skills/kintone-cursor-automation-register/SKILL.md",
+      "npm": ["cio:cursor-automation:prefill", "verify:cio-mcp-manifest"],
+      "runbook": "docs/runbooks/cursor-automations-register.md"
+    },
+    {
+      "id": "pc-kitting",
+      "keywords": ["PCキッティング", "キッティング", "kitting"],
+      "skill": null,
+      "npm": [],
+      "runbook": "templates/pc-kitting/README.md"
+    },
+    {
+      "id": "user683",
+      "keywords": ["683", "週次要約", "Ollama", "Claude relay"],
+      "skill": null,
+      "npm": ["cio:preflight:683"],
+      "runbook": "docs/runbooks/user683-weekly-summary-and-print.md"
+    }
+  ],
+  "routing": "依頼文のキーワードで lanes をマッチ → skill を Read → npm を順実行"
+}

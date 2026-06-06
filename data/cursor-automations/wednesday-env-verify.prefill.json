@@ -1,0 +1,28 @@
+{
+  "name": "週次 Cursor環境検証",
+  "description": "毎週水 10:00 — Phase 成果物・handoff・bridge 鮮度の定期検証",
+  "workflow": {
+    "triggers": [
+      {
+        "cron": {
+          "cron": "0 10 * * 3"
+        }
+      }
+    ],
+    "actions": [],
+    "prompts": [
+      {
+        "prompt": "あなたは kintone-ai-lab の CIO 補助エージェントです。\n\n順に実行し結果を要約:\n1. `npm run verify:cio-env-upgrade`\n2. `npm run verify:session-handoff-integrity -- --strict-staleness`\n3. `npm run cio:checkpoint:rollup -- --dry-run`（実行は dry-run のみ）\n\nNG があれば修正提案を箇条書き。**自動コミット・PR はしない**。\n\n正本: docs/plans/2026-06-06-cursor-environment-upgrade-plan.md"
+      }
+    ],
+    "model": "",
+    "gitConfig": {
+      "repo": "mhamad4968/GitHub-Actions",
+      "branch": "main"
+    },
+    "agentOptions": {
+      "skipInstall": false
+    },
+    "memoryEnabled": false
+  }
+}

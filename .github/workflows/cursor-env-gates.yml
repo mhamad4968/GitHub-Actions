@@ -1,0 +1,57 @@
+# Cursor 環境アップグレード成果物の CI 検証（Windows/MCP 非依存）
+name: cursor-env-gates
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+    paths:
+      - '.cursor/skills/**'
+      - '.cursor/rules/autonomous-cold-start.mdc'
+      - '.cursor/hooks/session-end-autopilot.mjs'
+      - 'docs/handoff/**'
+      - 'docs/plans/2026-06-06-cursor-environment-upgrade-plan.md'
+      - 'docs/runbooks/cursor-automations-weekly.md'
+      - 'data/cursor-*.json'
+      - 'data/cio-mcp-manifest.json'
+      - 'data/rag-business-improvement-manifest.json'
+      - 'scripts/cio-*.mjs'
+      - 'scripts/verify-cio-env-upgrade.mjs'
+      - 'scripts/verify-cio-mcp-manifest.mjs'
+      - 'scripts/rag-sync-business-improvement.mjs'
+      - 'scripts/smoke-business-improvement-demo.mjs'
+      - 'scripts/lib/cio-bridge-staleness.mjs'
+      - '.github/workflows/cursor-env-gates.yml'
+      - 'package.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cursor-env-gates-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  env-artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: verify-cio-env-upgrade（Phase 成果物）
+        run: node scripts/verify-cio-env-upgrade.mjs
+
+      - name: verify-session-handoff-integrity（bridge schema）
+        run: node scripts/verify-session-handoff-integrity.mjs
+
+      - name: verify-cio-mcp-manifest（manifest↔matrix）
+        run: node scripts/verify-cio-mcp-manifest.mjs
+
+      - name: smoke-bi-demo scaffold（dry-run）
+        run: npm run smoke:bi-demo -- --dry-run

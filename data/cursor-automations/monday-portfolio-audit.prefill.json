@@ -1,0 +1,28 @@
+{
+  "name": "週次 portfolio audit",
+  "description": "毎週月 09:00 — kintone デプロイ BUILD 整合チェック",
+  "workflow": {
+    "triggers": [
+      {
+        "cron": {
+          "cron": "0 9 * * 1"
+        }
+      }
+    ],
+    "actions": [],
+    "prompts": [
+      {
+        "prompt": "あなたは kintone-ai-lab の CIO 補助エージェントです。\n\n1. リポジトリルートで `npm run cio:audit:portfolio` を実行\n2. BUILD 不整合・要対応アプリがあれば箇条書き\n3. 問題なければ「整合 OK」と1行\n4. **勝手に deploy や PR は作らない**\n\n正本: docs/kintone-apps.md"
+      }
+    ],
+    "model": "",
+    "gitConfig": {
+      "repo": "mhamad4968/GitHub-Actions",
+      "branch": "main"
+    },
+    "agentOptions": {
+      "skipInstall": false
+    },
+    "memoryEnabled": false
+  }
+}

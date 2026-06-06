@@ -1,0 +1,22 @@
+{
+  "version": "2026-06-06",
+  "collection": "business-improvement-ver02",
+  "purpose": "業務改善提案 ver.02 仕様の RAG 検索精度向上",
+  "canonicalSources": [
+    "docs/plans/2026-05-23-business-improvement-proposal-spec.md",
+    "docs/plans/2026-05-28-business-improvement-implementation-handbook.md",
+    "docs/plans/2026-05-23-business-improvement-proposal-spec-checklist.md",
+    "docs/plans/2026-05-24-business-improvement-proposal-01-fields-hamada-review.md",
+    "docs/plans/business-improvement-q36-go-request-draft.md",
+    "docs/plans/2026-06-06-cursor-environment-upgrade-plan.md"
+  ],
+  "ragMirrorDir": ".rag/extra-docs",
+  "syncScript": "npm run rag:sync-business-improvement",
+  "hamadaConfirmed20260606": [
+    "設定マスタ Excel 確定版",
+    "本社部長評価あり（E列）",
+    "人事部長 jinji",
+    "Space57 ログイン確認済み",
+    "実装OKサイン後着手"
+  ]
+}

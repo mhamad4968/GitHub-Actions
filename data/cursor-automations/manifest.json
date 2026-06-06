@@ -1,0 +1,36 @@
+{
+  "version": "2026-06-06",
+  "registeredAt": "2026-06-06",
+  "registeredBy": "浜田",
+  "status": "active",
+  "repo": "mhamad4968/GitHub-Actions",
+  "branch": "main",
+  "registerSkill": ".cursor/skills/kintone-cursor-automation-register/SKILL.md",
+  "registerRunbook": "docs/runbooks/cursor-automations-register.md",
+  "automations": [
+    {
+      "id": "friday-mcp-health",
+      "file": "friday-mcp-health.prefill.json",
+      "name": "金曜 MCP 健全性",
+      "schedule": "毎週金 17:00 (0 17 * * 5)"
+    },
+    {
+      "id": "monday-portfolio-audit",
+      "file": "monday-portfolio-audit.prefill.json",
+      "name": "週次 portfolio audit",
+      "schedule": "毎週月 09:00 (0 9 * * 1)"
+    },
+    {
+      "id": "wednesday-env-verify",
+      "file": "wednesday-env-verify.prefill.json",
+      "name": "週次 Cursor環境検証",
+      "schedule": "毎週水 10:00 (0 10 * * 3)"
+    },
+    {
+      "id": "daily-rag-bi-sync",
+      "file": "daily-rag-bi-sync.prefill.json",
+      "name": "業務改善 RAG 同期",
+      "schedule": "毎日 06:00 (0 6 * * *)"
+    }
+  ]
+}

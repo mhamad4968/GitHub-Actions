@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ImplementationOkSeal",
+  "description": "浜田「実装OK」サインの機械記録（Phase B5）",
+  "type": "object",
+  "required": ["project", "signedAt", "signedBy", "scope"],
+  "properties": {
+    "project": { "type": "string", "examples": ["business-improvement-ver02"] },
+    "signedAt": { "type": "string", "format": "date-time" },
+    "signedBy": { "type": "string", "const": "浜田" },
+    "scope": { "type": "string" },
+    "gatesRun": { "type": "array", "items": { "type": "string" } },
+    "gitHead": { "type": "string" },
+    "note": { "type": "string" }
+  }
+}

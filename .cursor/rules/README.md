@@ -16,6 +16,20 @@
 2. `cio-constitution.mdc` — 唯一 `alwaysApply: true` 核
 3. タスクに応じて下表のトピックから **1〜2 本**
 
+## Repo Skills（`.cursor/skills/`）
+
+| Skill | 用途 |
+|-------|------|
+| `kintone-session-bootstrap` | 新規チャット復元 — `npm run cio:session:start` |
+| `kintone-pre-implement-gate` | 実装前ゲート — `npm run cio:morning:pre-implement` |
+| `kintone-deploy-lane` | preflight → deploy → audit |
+| `kintone-business-improvement-lane` | 業務改善 ver.02 専用レーン |
+| `kintone-cursor-automation-register` | Automations 登録（**Agents Window**） |
+
+**Cold-start 圧縮**: `autonomous-cold-start.mdc`  
+**鮮度ゲート**: `npm run verify:session-handoff-integrity -- --strict-staleness`  
+環境改善ロードマップ: `docs/plans/2026-06-06-cursor-environment-upgrade-plan.md`
+
 ---
 
 ## トピック一覧

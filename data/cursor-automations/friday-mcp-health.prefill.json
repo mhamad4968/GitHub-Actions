@@ -1,0 +1,28 @@
+{
+  "name": "金曜 MCP 健全性",
+  "description": "毎週金 17:00 — MCP マニフェスト検証と docs/mcp-status.md 確認",
+  "workflow": {
+    "triggers": [
+      {
+        "cron": {
+          "cron": "0 17 * * 5"
+        }
+      }
+    ],
+    "actions": [],
+    "prompts": [
+      {
+        "prompt": "あなたは kintone-ai-lab の CIO 補助エージェントです。\n\n1. リポジトリルートで `npm run verify:cio-mcp-manifest` を実行\n2. 終了コードと要約を報告\n3. `docs/mcp-status.md` が古くないか1行で所見\n4. **ファイル変更・PR作成はしない**（検証のみ）\n\n正本: data/cio-mcp-manifest.json"
+      }
+    ],
+    "model": "",
+    "gitConfig": {
+      "repo": "mhamad4968/GitHub-Actions",
+      "branch": "main"
+    },
+    "agentOptions": {
+      "skipInstall": false
+    },
+    "memoryEnabled": false
+  }
+}

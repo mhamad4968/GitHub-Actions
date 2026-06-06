@@ -29,6 +29,13 @@
       "_meta": {
         "purpose": "ライブラリ/API 最新 docs（kintone JS・React・shadcn 等・2026-06-05）"
       }
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@latest"],
+      "_meta": {
+        "purpose": "FE バグ調査・実レンダリング・コンソール（Phase D・2026-06-06）"
+      }
     }
   }
 }

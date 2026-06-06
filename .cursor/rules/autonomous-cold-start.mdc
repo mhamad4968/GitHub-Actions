@@ -1,0 +1,55 @@
+---
+description: 新規チャット cold-start 圧縮 — bridge + checkpoint 先頭 + Skills のみで復元
+globs:
+  - chat-sessions/**
+  - docs/handoff/**
+alwaysApply: false
+---
+
+# 自律 Cold-Start（1-pager）
+
+## 適用
+
+新規チャット・セッション復元・「どこまで進んだか」質問時。
+
+## 必読（この3つだけで開始可）
+
+1. `docs/handoff/latest-session-bridge.json`
+2. `chat-sessions/checkpoint-latest.md`（**先頭80行まで**）
+3. `.cursor/skills/kintone-session-bootstrap/SKILL.md`
+
+## 索引（依頼ルーティング）
+
+- `data/cio-project-lanes.json` — キーワード → Skill / runbook
+- `data/cio-rules-topic-index.json` — ルール発見コスト削減
+
+## ワンコマンド
+
+```bash
+npm run cio:session:start
+```
+
+朝の立ち上げ:
+
+```bash
+npm run cio:morning:ready -- --project business-improvement
+```
+
+## 鮮度
+
+`--strict-staleness` 付きで検証:
+
+```bash
+npm run verify:session-handoff-integrity -- --strict-staleness
+```
+
+NG 時: `npm run cio:session:export-handoff`
+
+## フル6部ラダー
+
+bootstrap が NG のときのみ `chat-sessions/NEW-SESSION-STARTER.md` へ。
+
+## 業務改善レーン
+
+`kintone-business-improvement-lane` スキルを併読。  
+**実装OK seal 前は kintone create/deploy 禁止**。

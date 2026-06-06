@@ -1,0 +1,28 @@
+{
+  "name": "業務改善 RAG 同期",
+  "description": "毎日 06:00 — 業務改善 spec を .rag/extra-docs にミラー",
+  "workflow": {
+    "triggers": [
+      {
+        "cron": {
+          "cron": "0 6 * * *"
+        }
+      }
+    ],
+    "actions": [],
+    "prompts": [
+      {
+        "prompt": "あなたは kintone-ai-lab の CIO 補助エージェントです。\n\n1. `npm run rag:sync-business-improvement` を実行\n2. copied / skipped 件数を報告\n3. 変更があったファイル名を列挙\n4. **コミットはしない**（ミラーのみ。コミットは浜田判断）\n\n正本: data/rag-business-improvement-manifest.json"
+      }
+    ],
+    "model": "",
+    "gitConfig": {
+      "repo": "mhamad4968/GitHub-Actions",
+      "branch": "main"
+    },
+    "agentOptions": {
+      "skipInstall": false
+    },
+    "memoryEnabled": false
+  }
+}
