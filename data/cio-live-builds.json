@@ -27,10 +27,10 @@
     },
     "674": {
       "build": "2026-06-06-674-index-list-sort",
-      "fileKey": "70934597-79fb-4c2e-8750-9e6353f06d79",
-      "revision": "235",
-      "relPath": "customize/new-pc-ledger-v1/desktop.js",
-      "deployedAt": "2026-06-05T22:55:51.491Z",
+      "fileKey": "da8a3c5f-9b42-4188-be7a-82ee715f79cf",
+      "revision": "238",
+      "relPath": ".kintone-deploy/upload-674.js",
+      "deployedAt": "2026-06-06T00:17:40.478Z",
       "note": null
     },
     "677": {
