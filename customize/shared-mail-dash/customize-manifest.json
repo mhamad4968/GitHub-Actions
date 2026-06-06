@@ -1,0 +1,12 @@
+{
+  "app": "SHARED_MAIL_DASH_APP_ID",
+  "scope": "ALL",
+  "desktop": {
+    "js": ["desktop.js"],
+    "css": []
+  },
+  "mobile": {
+    "js": ["desktop.js"],
+    "css": []
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "properties": {
+    "legacy_no": {
+      "type": "NUMBER",
+      "code": "legacy_no",
+      "label": "管理番号",
+      "required": true,
+      "noLabel": false,
+      "unique": true,
+      "digit": false,
+      "defaultValue": "",
+      "displayScale": "",
+      "unit": "",
+      "unitPosition": "BEFORE"
+    },
+    "usage_type": {
+      "type": "DROP_DOWN",
+      "code": "usage_type",
+      "label": "利用種別",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "共有メールアドレス",
+      "options": {
+        "共有メールアドレス": { "label": "共有メールアドレス", "index": "0" }
+      }
+    },
+    "department": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "department",
+      "label": "利用部署",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "mailbox_display_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "mailbox_display_name",
+      "label": "共有メールアドレス名",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "mail_address": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "mail_address",
+      "label": "メールアドレス",
+      "required": true,
+      "noLabel": false,
+      "unique": true,
+      "defaultValue": ""
+    },
+    "mail_account": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "mail_account",
+      "label": "メールアカウント",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "password": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "password",
+      "label": "パスワード",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "status": {
+      "type": "DROP_DOWN",
+      "code": "status",
+      "label": "ステータス",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "利用中",
+      "options": {
+        "利用中": { "label": "利用中", "index": "0" },
+        "廃止": { "label": "廃止", "index": "1" }
+      }
+    },
+    "registered_date": {
+      "type": "DATE",
+      "code": "registered_date",
+      "label": "登録日",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "note": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "note",
+      "label": "メモ",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    }
+  }
+}

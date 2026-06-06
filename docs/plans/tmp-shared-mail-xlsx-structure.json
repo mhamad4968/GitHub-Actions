@@ -1,0 +1,32 @@
+{
+  "analyzedAt": "2026-06-06",
+  "file": "C:\\tmp\\共有メールアドレス\\共有メールアドレス.xlsx",
+  "sizeBytes": 12810,
+  "sheets": [
+    {
+      "name": "Sheet1",
+      "headerRow": 1,
+      "dataRows": 46,
+      "headers": [
+        "利用種別",
+        "利用部署",
+        "共有メールアドレス名",
+        "メールアドレス",
+        "メールアカウント",
+        "パスワード"
+      ],
+      "notes": "全行 利用種別=共有メールアドレス。ドメインは j-bis.co.jp のみ。パスワード列は分析出力からマスク。"
+    }
+  ],
+  "stats": {
+    "totalRows": 46,
+    "domains": { "j-bis.co.jp": 46 },
+    "duplicateMailAddresses": [],
+    "mailAccountAlwaysMatchesLocalPart": true,
+    "topDepartments": [
+      { "name": "施工推進部", "count": 11 },
+      { "name": "東北支店", "count": 6 },
+      { "name": "東海支店", "count": 5 }
+    ]
+  }
+}

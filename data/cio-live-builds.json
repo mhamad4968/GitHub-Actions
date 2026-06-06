@@ -106,11 +106,27 @@
       "note": null
     },
     "694": {
-      "build": "2026-06-03-apple-id-dash-no-toolbar-new",
-      "fileKey": "5d77ad24-e9c4-4f6e-84cd-6e1432731cad",
-      "revision": "13",
+      "build": "2026-06-06-694-apple-id-email-legacy",
+      "fileKey": "b47683b7-9fb9-4ab3-9ea9-d46a12de1448",
+      "revision": "17",
       "relPath": "customize/apple-id-dash/desktop.js",
-      "deployedAt": "2026-06-03T08:15:29.316Z",
+      "deployedAt": "2026-06-06T06:10:29.703Z",
+      "note": null
+    },
+    "695": {
+      "build": "2026-06-06-shared-mail-db-block-ui",
+      "fileKey": "afc1ca51-aeed-4a67-a3ed-9a2fac00e91a",
+      "revision": "5",
+      "relPath": "customize/shared-mail-db/desktop.js",
+      "deployedAt": "2026-06-06T06:36:43.796Z",
+      "note": null
+    },
+    "696": {
+      "build": "2026-06-06-696-shared-mail-dash-v1",
+      "fileKey": "74c75fb1-6be2-45e3-a330-74c4a7dfa070",
+      "revision": "4",
+      "relPath": "customize/shared-mail-dash/desktop.js",
+      "deployedAt": "2026-06-06T06:36:53.029Z",
       "note": null
     }
   }

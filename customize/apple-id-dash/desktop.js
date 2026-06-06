@@ -2,7 +2,7 @@
   "use strict";
 
   /** Apple ID管理台帳 — 693 REST CRUD（678 型） */
-  var BUILD = "2026-06-03-apple-id-dash-no-toolbar-new";
+  var BUILD = "2026-06-06-694-apple-id-email-legacy";
 
   var APP_DB = 693;
   var FIXED_PASSWORD = "Honten00";
@@ -405,14 +405,42 @@
     return '<p style="color:#b45309;font-size:12px;">氏名に全角スペースがありません（例: 山田\u3000太郎）</p>';
   }
 
+  /** SPEC §8.4 + legacy（au.com 等の業務メール含む） */
+  function validateAppleId(id) {
+    var s = String(id == null ? "" : id).trim();
+    if (!s) return "Apple ID は必須です";
+    if (/^jbis\.\d{3}@icloud\.com$/i.test(s)) return "";
+    if (/^[\w.-]+@icloud\.com$/i.test(s)) return "";
+    if (/^[\w.-]+@[\w.-]+\.[a-z]{2,}$/i.test(s)) return "";
+    return "形式が不正です（例: jbis.039@icloud.com または name@example.com）";
+  }
+
+  function normalizeAppleIdInput(id) {
+    return String(id == null ? "" : id).trim();
+  }
+
+  function displayPassword(row) {
+    return String(row.password || "").trim() || FIXED_PASSWORD;
+  }
+
+  function displayLockPass(row) {
+    return String(row.lock_passcode || "").trim() || FIXED_LOCK;
+  }
+
   function executeNumbering(slot) {
     if (!slot.isNew) {
       var today = todayJstYmd();
+      var existing = state.records.find(function (x) {
+        return x.id === slot.id;
+      });
+      var patch = { registered_date: { value: today } };
+      if (!String((existing && existing.password) || "").trim()) patch.password = { value: FIXED_PASSWORD };
+      if (!String((existing && existing.lock_passcode) || "").trim()) patch.lock_passcode = { value: FIXED_LOCK };
       return apiPut("/k/v1/record.json", {
         app: APP_DB,
         id: slot.id,
         revision: slot.revision,
-        record: { registered_date: { value: today } },
+        record: patch,
       }).then(function (resp) {
         return reloadRecords().then(function () {
           var row = state.records.find(function (x) {
@@ -504,7 +532,12 @@
   function openEditModal(row) {
     var box = openModal(
       "編集 — No." + row.legacy_no,
-      '<label>MDM名<input id="aid-edit-mdm" value="' +
+      '<label>Apple ID<input id="aid-edit-apple-id" value="' +
+        esc(row.apple_id) +
+        '" autocomplete="off" spellcheck="false"></label>' +
+        '<div id="aid-edit-apple-id-warn"></div>' +
+        '<p style="font-size:11px;color:#64748b;margin:4px 0 8px;">登録ミス時のみ修正。重複する ID は保存できません。</p>' +
+        '<label>MDM名<input id="aid-edit-mdm" value="' +
         esc(row.mdm_name) +
         '"></label>' +
         '<label>氏名<input id="aid-edit-name" value="' +
@@ -514,6 +547,17 @@
         '<label>回線番号<input id="aid-edit-phone" value="' +
         esc(row.phone_number) +
         '"></label>' +
+        '<label>パスワード<input id="aid-edit-password" value="' +
+        esc(displayPassword(row)) +
+        '" autocomplete="off"></label>' +
+        '<label>ロックパス<input id="aid-edit-lock" value="' +
+        esc(displayLockPass(row)) +
+        '" autocomplete="off"></label>' +
+        '<p style="font-size:11px;color:#64748b;margin:4px 0 8px;">未入力で保存すると標準値（' +
+        esc(FIXED_PASSWORD) +
+        " / " +
+        esc(FIXED_LOCK) +
+        "）をセットします。</p>" +
         '<label>端末種別<select id="aid-edit-device"><option value="">—</option><option value="iPhone">iPhone</option><option value="iPad">iPad</option><option value="その他">その他</option></select></label>' +
         '<label>メモ<textarea id="aid-edit-note" rows="3">' +
         esc(row.note) +
@@ -524,20 +568,56 @@
           label: "保存",
           primary: true,
           onClick: function (close) {
+            var appleEl = document.getElementById("aid-edit-apple-id");
+            var appleId = appleEl ? normalizeAppleIdInput(appleEl.value) : "";
+            var appleErr = validateAppleId(appleId);
+            if (appleErr) {
+              alert(appleErr);
+              return;
+            }
+            if (appleId !== row.apple_id) {
+              if (
+                !window.confirm(
+                  "Apple ID を変更します。\n\n変更前: " +
+                    row.apple_id +
+                    "\n変更後: " +
+                    appleId +
+                    "\n\nよろしいですか？",
+                )
+              ) {
+                return;
+              }
+            }
             var nameEl = document.getElementById("aid-edit-name");
             var name = nameEl ? nameEl.value.trim() : "";
             if (name && name.indexOf("\u3000") < 0) {
               if (!window.confirm("氏名に全角スペースがありません。このまま保存しますか？")) return;
             }
+            var pw = normalizeAppleIdInput((document.getElementById("aid-edit-password") || {}).value);
+            var lock = normalizeAppleIdInput((document.getElementById("aid-edit-lock") || {}).value);
+            if (!pw) pw = FIXED_PASSWORD;
+            if (!lock) lock = FIXED_LOCK;
             var rec = toKintoneRecord(
               {
+                apple_id: appleId,
                 mdm_name: (document.getElementById("aid-edit-mdm") || {}).value || "",
                 user_name: name,
                 phone_number: (document.getElementById("aid-edit-phone") || {}).value || "",
+                password: pw,
+                lock_passcode: lock,
                 device_type: (document.getElementById("aid-edit-device") || {}).value || "",
                 note: (document.getElementById("aid-edit-note") || {}).value || "",
               },
-              { mdm_name: 1, user_name: 1, phone_number: 1, device_type: 1, note: 1 },
+              {
+                apple_id: 1,
+                mdm_name: 1,
+                user_name: 1,
+                phone_number: 1,
+                password: 1,
+                lock_passcode: 1,
+                device_type: 1,
+                note: 1,
+              },
             );
             apiPut("/k/v1/record.json", {
               app: APP_DB,
@@ -551,7 +631,12 @@
                 alert("保存しました");
               })
               .catch(function (e) {
-                alert("保存失敗: " + (e.message || e));
+                var msg = e.message || String(e);
+                if (/unique|重複|duplicate|GAIA_/i.test(msg)) {
+                  alert("保存失敗: この Apple ID は既に別の行で使われています。\n" + msg);
+                } else {
+                  alert("保存失敗: " + msg);
+                }
               });
           },
         },
@@ -559,6 +644,16 @@
     );
     var dev = box.querySelector("#aid-edit-device");
     if (dev) dev.value = row.device_type || "";
+    var appleInput = box.querySelector("#aid-edit-apple-id");
+    var appleWarn = box.querySelector("#aid-edit-apple-id-warn");
+    if (appleInput && appleWarn) {
+      appleInput.addEventListener("input", function () {
+        var err = validateAppleId(normalizeAppleIdInput(appleInput.value));
+        appleWarn.innerHTML = err
+          ? '<p style="color:#b91c1c;font-size:12px;">' + esc(err) + "</p>"
+          : "";
+      });
+    }
     var nameInput = box.querySelector("#aid-edit-name");
     var warn = box.querySelector("#aid-edit-name-warn");
     if (nameInput && warn) {
@@ -901,14 +996,14 @@
           esc(r.apple_id) +
           "</td>" +
           '<td><span class="aid-copy" data-copy="' +
-          esc(r.password || FIXED_PASSWORD) +
+          esc(displayPassword(r)) +
           '" title="クリックでコピー">' +
-          esc(r.password || FIXED_PASSWORD) +
+          esc(displayPassword(r)) +
           "</span></td>" +
           '<td><span class="aid-copy" data-copy="' +
-          esc(r.lock_passcode || FIXED_LOCK) +
+          esc(displayLockPass(r)) +
           '" title="クリックでコピー">' +
-          esc(r.lock_passcode || FIXED_LOCK) +
+          esc(displayLockPass(r)) +
           "</span></td>" +
           "<td>" +
           esc(r.device_type) +
