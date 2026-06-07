@@ -7,6 +7,15 @@
 ---
 
 <!-- CIO-DEBUG-TIPS:AUTO -->
+## [2026-06-07] セッション解体時知恵ストック
+
+**前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
+**手順**: `npm run cio:morning:ready -- --project business-improvement` → `npm run deploy:699` → `npm run session:bootstrap`
+**禁止**: customize/deploy 凍結中の無断 save・上位憲法 §50-3-11 非置換違反・本体単独完結
+**exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
+
+<!-- errors: npm run cio:morning:ready -- --project business-improvement | npm run deploy:699` → 実機確認 | npm run deploy:699` → kintone 実機 Ctrl+F5 -->
+
 ## [2026-06-07] 業務改善 — applyDraft / beforeunload / branch_delegate
 
 **前提**: 700 申請UIはカスタム DOM。入力のたび `kintone.app.record.set()` すると標準フォームが dirty になり、REST 申請後のガイド遷移で「変更内容が保存されない可能性があります」が出る。評価UIは v30 で evalDraft 済みだったが申請UIは v33 まで未対応。
