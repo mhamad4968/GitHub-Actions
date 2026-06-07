@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-06-07T09:19:37.240Z",
-  "gitHead": "b543300",
+  "exportedAt": "2026-06-07T09:24:42.238Z",
+  "gitHead": "2f5d5b7",
   "gitStatus": "## main...origin/main",
-  "nextTask": "2026-06-08: 699 ガイド申請編（入力・添付・申請ボタン + Q-GUIDE-07 スクショ）。はじめに ✅ rev39",
+  "nextTask": "2026-06-08: 699 ガイド申請編 + Q-GUIDE-07 スクショ。Q-ACL-01 人事699/700閲覧は浜田が kintone 付与",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "customize/business-improvement-guide/desktop.js",
@@ -11,6 +11,6 @@
     "docs/handoff/latest-session-bridge.json",
     "docs/knowledge/debug-tips.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=b543300 | 699=rev39 はじめにOK | 次=6/8 申請編+スクショ | Read: checkpoint-latest, spec §11.3",
+  "promptBlock": "【SESSION-BRIDGE】git=2f5d5b7 | Q-ACL-01 OK | 次=6/8 申請編 | Read: checkpoint-latest, spec Q-GUIDE-07",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }
