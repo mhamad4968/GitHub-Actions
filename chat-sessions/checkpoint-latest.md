@@ -1,61 +1,47 @@
-# 復元チェックポイント（最新）
+# checkpoint-latest（2026-06-07 終了時点）
 
-<!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
+**最終更新**: 2026-06-07（本日終了・はじめに完了）
 
-## 凍結（毎セッション先頭）
+---
 
-| 禁止 | 許可 |
+## 次にやること（最優先）
+
+**2026-06-08（明日）**: **699 ご利用ガイド — 申請編**（Q-GUIDE-07 スクショ 3〜5 枚含む）
+
+1. 申請編の本文（入力項目・添付・申請ボタン）を Hamada と確定
+2. `customize/business-improvement-guide/desktop.js` の `guideApplyChapter` / 申請章 HTML を実装
+3. 必要なら Q-GUIDE-07 用スクショを `docs/assets/business-improvement-guide/` に追加
+4. preflight → `npm run deploy:699` → 実機確認
+
+**6/9**: 評価編。**その他（FAQ）**は後日。
+
+---
+
+## 本日完了（2026-06-07）
+
+| 区分 | 内容 |
 |------|------|
-| 本番 WF 6段階への無断切替 | ガイド執筆・背景デザイン・仕様/doc 更新 |
-| 評価スナップショット本番投入（未設計確認前） | test_v3 WF 継続テスト |
-
-**次回 1 手**: **今夜** ガイド **申請編** 本文 + **699/700 背景デザイン**（微調整はその場で）
-
-**実装OK**: 2026-06-06 浜田 — Phase 4b–5 **E2E OK**（2026-06-07 確認）
+| **699 はじめに** | 4 小節（制度説明→システムの説明、ログイン、申請〜完了の流れ、一覧の見方）文案・実装・Hamada OK |
+| **699 UI** | 横メニュー＋クリックドロップダウン、章背景色、見出しアイコン、ログイン状態バナー（共有/評価者・**提案を出す**太字） |
+| **699 本番** | BUILD `2026-06-07-bi-guide-v13d-banner-bold-both` **rev 39** |
+| **正本** | spec Q-GUIDE-04/05/09、handbook §5、Q-GUIDE-09 はじめに完了 |
+| **git** | `605d883` はじめに完了 + 本日追加分（バナー太字 rev38–39）を push 済み想定で close 時 commit |
 
 ---
 
-## 2026-06-07 JST — **業務改善 Phase 4b–5 完走・締め**
+## 参照
 
-| 項目 | 内容 |
+| 用途 | パス |
 |------|------|
-| **本日完了** | 697–700 Space5 / 申請UI applyDraft **v33** / 評価UI evalDraft / test_v3 WF / A→人事 / ガイド遷移 / 支店長判断 **OK** |
-| **BUILD** | 700=`2026-06-07-bi-proposal-apply-v33` rev118 / 699=`2026-06-07-bi-guide-v5g` rev16 |
-| **浜田確認** | 業務改善・アイデア提案・支店長判断 — **すべて OK** |
-| **今夜** | 申請編ガイド + 背景デザイン |
-| **6/8** | 評価者編 |
-| **6/9** | FAQ |
-| **Git** | commit + push（本締め） |
-| **締め** | `SESSION-CLOSE-REPORT-20260607.txt` |
+| 699 カスタマイズ | `customize/business-improvement-guide/desktop.js` |
+| 仕様 | `docs/plans/2026-05-23-business-improvement-proposal-spec.md` |
+| 実装ハンドブック | `docs/plans/2026-05-28-business-improvement-implementation-handbook.md` |
+| 導入資料（ヒント） | `C:\tmp\業務改善\導入資料\` |
+| 終了レポート | `chat-sessions/SESSION-CLOSE-REPORT-20260607.txt` |
 
 ---
 
-## 2026-06-06 JST — **夜・最終締め**
+## 履歴（参考）
 
-| 項目 | 内容 |
-|------|------|
-| **本日完了** | **674** deploy 済／**PCキッティング** ①②／**Cursor環境 Phase A〜E**／**Automations 4件**／**§4.7 修正** |
-| **実装OK** | 浜田 2026-06-06 — `docs/handoff/implementation-ok-seal.json` |
-| **締め** | `SESSION-CLOSE-REPORT-20260606.txt` |
-
----
-
-<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-06-06.md -->
-
----
-
-## セッション切替後の自律復元（圧縮ミラー・rollup 後）
-
-**cold-start 優先**: `docs/handoff/latest-session-bridge.json` + 本ファイル先頭80行 + `.cursor/skills/kintone-session-bootstrap/SKILL.md`  
-**索引**: `data/cio-project-lanes.json` / `data/cio-rules-topic-index.json`
-
-**項番 -1**: Desktop **`00-NEW-SESSION-STARTER_yyyymmdd.txt` 全文貼付推奨**（`chat-sessions/NEW-SESSION-STARTER.md` 同内容）  
-**項番 -0**: 浜田 **OK が返るまで** 項番 0・本題の副作用に **着手しない**（§41 一問）  
-**項番 0**: リポルートで **`npm run session:bootstrap`**（**Read より前**に `verify:constitution-handoff` → `mandatory-read-gate.mjs` → `verify:session-clock-health` → `session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync`）  
-**項番 0.9**: 合意と checkpoint が食い違うときだけ §41 再確認  
-**0b Desktop**: `C:\Users\mhamada202408224\Desktop\AI緊急用` — `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync` / **`23-AI緊急用-README.txt`**  
-**壁時計**: `SESSION-CLOCK.md` / `SESSION-SPLIT-REMINDER.md` / `session:clock:set` / `session:clock:watch` / `session:split-check`  
-**§35-6 / §35-7 / HANDOFF-AI-FIVE-BLOCKS / TSB-031**: 削除・日終わり sync は浜田確認または §41  
-**詳細履歴**: `chat-sessions/checkpoints/checkpoint-archive-2026-06-06.md`
-
-**最終更新**: 2026-06-07 (Sun) JST — **Phase 4b–5 E2E OK**・commit `b8a2824`・今夜 申請編ガイド+背景デザイン
+- 午前: Phase 4b-5（697/698/699/700 デプロイ・Q-GUIDE-04 骨子）
+- 夕方: はじめに全文・UI・本番 rev39 まで

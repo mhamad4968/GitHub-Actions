@@ -6,7 +6,7 @@
 
   /** 業務改善 ver.02 — ご利用ガイド */
 
-  var BUILD = '2026-06-07-bi-guide-v13b-eval-banner-only';
+  var BUILD = '2026-06-07-bi-guide-v13d-banner-bold-both';
 
 
 
@@ -877,7 +877,7 @@
     var box =
       'border-radius:12px;padding:14px 18px;margin-bottom:16px;box-shadow:0 1px 4px rgba(15,23,42,.06)';
     if (state.isEvaluator) {
-      var body = '提案を出すから提案出来ます。';
+      var body = '<strong>提案を出す</strong>から提案出来ます。';
       if (state.pendingList.length > 0) {
         body += ' また未評価一覧に未評価の案件がある場合は評価がそのままできます。';
       }
@@ -896,7 +896,7 @@
       box +
       '">' +
       '<strong style="color:#1e3a8a">共有アカウントでログインしています。</strong><br>' +
-      '<span style="font-size:0.95em;color:#334155">「提案を出す」から提案出来ます。</span></div>'
+      '<span style="font-size:0.95em;color:#334155"><strong>提案を出す</strong>から提案出来ます。</span></div>'
     );
   }
 

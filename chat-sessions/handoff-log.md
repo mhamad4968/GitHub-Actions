@@ -2902,3 +2902,25 @@ npm run cio:morning:ready -- --project business-improvement
 **締め**: `SESSION-CLOSE-REPORT-20260607.txt`
 
 ---
+
+### 2026-06-07 JST — **最終締め（699 ガイド「はじめに」完了）**
+
+**本日完了（追記）**:
+- **699 はじめに** — 4 小節文案確定・Hamada OK（システムの説明 / ログイン / 申請〜完了 / 一覧の見方）
+- **699 UI** — 横メニュー＋クリックドロップダウン、章背景、見出しアイコン、ログイン状態バナー（共有・評価者）
+- **699 本番** — BUILD `2026-06-07-bi-guide-v13d-banner-bold-both` **rev 39**（バナー「**提案を出す**」太字 rev38–39）
+- **正本** — spec Q-GUIDE-04/05/09、handbook §5、Q-GUIDE-09 はじめに完了
+
+**Git**: `605d883`（はじめに）+ 終了 commit（バナー・registry・handoff）
+
+**次セッション（2026-06-08）**:
+- 699 **申請編**（入力項目・添付・申請ボタン + Q-GUIDE-07 スクショ 3〜5）
+- preflight → `npm run deploy:699` → 実機確認
+
+**6/9**: 評価編。**その他 FAQ** は後日。
+
+**触らない**: 申請編本文を Hamada 確認前に勝手に確定しない
+
+**締め**: `SESSION-CLOSE-REPORT-20260607.txt`（**最終**）
+
+---
