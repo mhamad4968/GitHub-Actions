@@ -1,17 +1,14 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-06-07T12:00:00.000Z",
-  "gitHead": "b8a2824",
+  "exportedAt": "2026-06-07T09:30:00.000Z",
+  "gitHead": "pending",
   "gitStatus": "## main",
-  "nextTask": "**今夜** ガイド申請編本文 + 699/700 背景デザイン → **6/8** 評価者編 → **6/9** FAQ",
+  "nextTask": "**6/8** ガイド **申請編** 本文＋スクショ（Q-GUIDE-07）。**はじめに** ✅ 2026-06-07",
   "nextFiles": [
-    "chat-sessions/checkpoint-latest.md",
-    "chat-sessions/SESSION-CLOSE-REPORT-20260607.txt",
-    "docs/reports/2026-06-07-bi-phase4-5-session.md",
     "customize/business-improvement-guide/desktop.js",
-    "customize/business-improvement-proposal/desktop.js",
-    "docs/plans/2026-05-23-business-improvement-proposal-spec.md"
+    "docs/plans/2026-05-23-business-improvement-proposal-spec.md",
+    "customize/business-improvement-proposal/desktop.js"
   ],
-  "promptBlock": "【SESSION-BRIDGE】Phase4b-5 E2E OK | BUILD 700=v33 699=v5g | 次=今夜 申請編ガイド+背景デザイン | Read: checkpoint-latest.md, SESSION-CLOSE-REPORT-20260607.txt",
+  "promptBlock": "【SESSION-BRIDGE】699=rev37 はじめにOK | 次=6/8 申請編ガイド+スクショ | Read: spec §11.3, handbook §5",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }
