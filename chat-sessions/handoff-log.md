@@ -2924,3 +2924,20 @@ npm run cio:morning:ready -- --project business-improvement
 **締め**: `SESSION-CLOSE-REPORT-20260607.txt`（**最終**）
 
 ---
+
+### 2026-06-07 JST — **追記締め（Q-ACL-01）**
+
+**本セッション**:
+- 699/700 を人事部に見せる可否 → **付与 OK**
+- 仕様 **Q-ACL-01** — 人事部のみ・**閲覧のみ**・**浜田判断・浜田責任**
+- 正本: spec §4.0.1 / handbook §2 / checklist
+
+**Git**: spec 3 ファイル commit + push（本締め）
+
+**次**: **6/8** 申請編（変更なし）
+
+**浜田**: kintone で権限付与（仕様追記と別操作）
+
+**締め**: `SESSION-CLOSE-REPORT-20260607.txt`
+
+---

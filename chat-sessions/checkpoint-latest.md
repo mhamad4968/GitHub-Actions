@@ -10,6 +10,18 @@
 **次の1手**: **2026-06-08** ガイド **申請編** 本文 + Q-GUIDE-07 スクショ（3〜5）— Hamada 確認後 deploy
 **実装OK**: 2026-06-06 浜田 → Phase 4b–5 **E2E OK**（2026-06-07 確認）
 **はじめに**: **2026-06-07 完了**（699 rev39 v13d — Hamada OK）
+**仕様追記**: **Q-ACL-01** — 699/700 に **人事部のみ** 閲覧権付与（浜田判断・浜田責任）
+
+---
+
+## 2026-06-07 JST — **追記締め（Q-ACL-01 人事部アクセス）**
+
+| 項目 | 内容 |
+|------|------|
+| **本セッション** | 699/700 を人事部に一部見せる可否 → **付与 OK** → 仕様 **Q-ACL-01** 確定（閲覧のみ・浜田責任） |
+| **正本** | spec §4.0.1 / handbook §2 / checklist |
+| **kintone 操作** | アプリ権限付与は **浜田側**（仕様追記のみ commit） |
+| **次** | **6/8** 申請編（変更なし） |
 
 ---
 
@@ -24,7 +36,7 @@
 | **6/8** | **申請編**（入力項目・添付・申請ボタン + スクショ） |
 | **6/9** | **評価編** |
 | **後日** | その他 FAQ |
-| **Git** | `605d883` + `ce4d9a8`（本締め handoff） |
+| **Git** | `605d883` + handoff commits + **Q-ACL-01** spec（本追記締め） |
 | **締め** | `SESSION-CLOSE-REPORT-20260607.txt`（**最終**） |
 
 ---
@@ -64,7 +76,7 @@
 
 **deploy 手順（699）**: `node scripts/cio-preflight-stamp.mjs --app 699 --note "..."` → `npm run deploy:699` → kintone 実機 Ctrl+F5
 
-**Q-GUIDE 進捗**: Q-GUIDE-09 はじめに ✅ / Q-GUIDE-07 申請編スクショは **6/8** / 評価編 **6/9** / FAQ 後日
+**Q-GUIDE 進捗**: Q-GUIDE-09 はじめに ✅ / **Q-ACL-01** 人事部699・700閲覧 ✅ / Q-GUIDE-07 申請編スクショは **6/8** / 評価編 **6/9** / FAQ 後日
 
 <!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-06-06.md -->
 
@@ -86,4 +98,4 @@
 
 再開時は `chat-sessions/handoff-log.md` 末尾（2026-06-07 最終締め）と `SESSION-CLOSE-REPORT-20260607.txt` も参照。新 Chat 第1ターンは `npm run verify:session-handoff-integrity -- --import` 推奨。
 
-**最終更新**: 2026-06-07 (Sun) JST — **699 はじめに完了 rev39**・commit `ce4d9a8`・次=6/8 申請編ガイド+スクショ
+**最終更新**: 2026-06-07 (Sun) JST — **Q-ACL-01 確定**・699 rev39 はじめにOK・次=6/8 申請編

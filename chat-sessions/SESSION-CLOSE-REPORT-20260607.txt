@@ -1,33 +1,31 @@
 ================================================================================
 SESSION CLOSE REPORT — 2026-06-07（本日終了・最終）
-業務改善システム（Space 5 / apps 697–700）— 699 ご利用ガイド「はじめに」完了
+業務改善システム（Space 5 / apps 697–700）
 ================================================================================
 
 【本日の成果】
-1. 699 ご利用ガイド「はじめに」4 小節を文案確定・実装・Hamada 確認 OK
-   - システムの説明 / ログインについて / 申請〜完了の流れ / 一覧の見方
-2. ナビ UI: 横メニュー 4 章、クリックでサブメニュー、章別背景色、見出しアイコン
-3. ログイン状態バナー（共有アカウント・評価者用）— 「提案を出す」太字（rev38–39）
-4. 仕様・ハンドブック更新（Q-GUIDE-04/05/09、§11.3 スケジュール）
-5. 本番 699: BUILD 2026-06-07-bi-guide-v13d-banner-bold-both / rev 39
+1. 699 ご利用ガイド「はじめに」4 小節 — 文案・実装・Hamada OK（rev39 v13d）
+2. ナビ UI / ログインバナー / 仕様 Q-GUIDE-04/05/09
+3. **Q-ACL-01 確定** — 699・700 に **人事部のみ** アプリ閲覧権付与（浜田判断・浜田責任）
+   - spec §4.0.1 / handbook §2 / checklist 追記済
 
 【git】
-- 605d883 feat(business-improvement): complete guide intro section on app 699
-- 終了処理 commit: バナー太字・live-builds・checkpoint・handoff（close 時）
+- 605d883 … はじめに完了
+- ce4d9a8 / b543300 / 1769269 … handoff
+- 本追記締め … Q-ACL-01 spec（commit 予定）
 
 【次セッション（2026-06-08）】
-- 699 申請編（入力項目・添付・申請ボタン + Q-GUIDE-07 スクショ 3〜5）
+- 699 申請編（入力・添付・申請ボタン + Q-GUIDE-07 スクショ）
 - preflight → deploy:699 → 実機確認
+
+【浜田側（未実施なら）】
+- kintone で人事部へ 699/700 **閲覧のみ** アクセス権付与
+- テストデータである旨を人事へ説明
 
 【再開時に読む】
 - chat-sessions/checkpoint-latest.md
 - docs/handoff/latest-session-bridge.json
-- customize/business-improvement-guide/desktop.js（BUILD 行）
-
-【未着手・後日】
-- 評価編（6/9 予定）
-- その他 FAQ
-- Q-GUIDE-07 申請編スクショ（明日）
+- docs/plans/2026-05-23-business-improvement-proposal-spec.md（Q-ACL-01）
 
 ================================================================================
 END
