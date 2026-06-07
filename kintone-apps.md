@@ -53,8 +53,10 @@ npm run app:fields <アプリID>
 | アカウント管理台帳 | 627 | `customize/627/desktop.js` | `npm run deploy:627` |
 | 出張精算アプリ | **629** | `customize/shucccho-seisan/desktop.js` | `npm run deploy:629` |
 | 社内FAQ（DB） | **640** | （**FAQ レコードの本番保管先**で確定。運用ガイド **668** とは別アプリ） | [https://jbis-kintone.cybozu.com/k/640/](https://jbis-kintone.cybozu.com/k/640/) ・UI 用 HTML の作業例: `scripts/faq-portal-full.html`（640 への反映は運用で実施） |
-| Security NEXT ニュース（収集） | **631** | `security-next-automation` | [https://jbis-kintone.cybozu.com/k/631/](https://jbis-kintone.cybozu.com/k/631/) ・`KINTONE_APP_ID` |
-| ニュース週次要約（週次LLM） | **632** | `security-next-automation` | [https://jbis-kintone.cybozu.com/k/632/](https://jbis-kintone.cybozu.com/k/632/) ・`KINTONE_REPORT_APP_ID` ・[設計CSV](security-next-automation/docs/security-next-weekly-report-app-design.csv) |
+| Security NEXT ニュース（収集・正本 DB） | **631** | `security-next-automation` | [https://jbis-kintone.cybozu.com/k/631/](https://jbis-kintone.cybozu.com/k/631/) ・`KINTONE_APP_ID` ・**浜田運用**（部員は掲示板 701 から閲覧） |
+| ニュース週次要約（週次 LLM・正本 DB） | **632** | `security-next-automation` | [https://jbis-kintone.cybozu.com/k/632/](https://jbis-kintone.cybozu.com/k/632/) ・`KINTONE_REPORT_APP_ID` ・[設計CSV](security-next-automation/docs/security-next-weekly-report-app-design.csv) |
+| **Security NEXT ニュース掲示板**（631 REST 閲覧・CVE/パッチ除外） | **701** | `customize/security-next-news-board/desktop.js` \| `npm run deploy:701` | [https://jbis-kintone.cybozu.com/k/701/](https://jbis-kintone.cybozu.com/k/701/) **Space 48 / thread 52**・仕様 **`docs/plans/2026-06-07-security-next-board-spec.md`**・**BUILD=`2026-06-07-sn-news-board-v3`** rev **6**（2026-06-07） |
+| **Security NEXT 週次掲示板**（632 REST 閲覧） | **702** | `customize/security-next-weekly-board/desktop.js` \| `npm run deploy:702` | [https://jbis-kintone.cybozu.com/k/702/](https://jbis-kintone.cybozu.com/k/702/) **Space 48 / thread 52**・**BUILD=`2026-06-07-sn-weekly-board-v2`** rev **5**（2026-06-07） |
 | 運用ガイド（PC台帳・アカウント周りの操作手順） | **668** | `customize/ops-guide/desktop.js` | `npm run ops-guide:publish`（HTML レコード同期＋desktop.js デプロイ） |
 | 環境設定マスタ（新・PC台帳ver.1 用 / Day 1） | **670** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-24 作成 / 12 レコード（M365 ドメイン・固定文字・上限値）|
 | M365管理マスタ（新・PC台帳ver.1 用 / Day 2 / 5 台ライセンス厳守） | **671** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-24 作成 / 10 レコード（sjm-001~sjm-010 / X 案 5 台節約）|

@@ -144,6 +144,22 @@
       "relPath": "customize/business-improvement-proposal/desktop.js",
       "deployedAt": "2026-06-07T03:42:27.083Z",
       "note": null
+    },
+    "701": {
+      "build": "2026-06-07-sn-news-board-v3",
+      "fileKey": "624cee54-98f6-4d1e-b309-be8eb20416f7",
+      "revision": "6",
+      "relPath": "customize/security-next-news-board/desktop.js",
+      "deployedAt": "2026-06-07T07:50:18.908Z",
+      "note": null
+    },
+    "702": {
+      "build": "2026-06-07-sn-weekly-board-v2",
+      "fileKey": "50ea3203-378e-495a-9f0e-f8739ef67d4e",
+      "revision": "5",
+      "relPath": "customize/security-next-weekly-board/desktop.js",
+      "deployedAt": "2026-06-07T07:47:27.700Z",
+      "note": null
     }
   }
 }
