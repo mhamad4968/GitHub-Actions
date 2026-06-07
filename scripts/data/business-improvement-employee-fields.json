@@ -1,0 +1,37 @@
+{
+  "comment": "新② 社員マスタ — 595ミラー（4項目・emp_idなし）",
+  "properties": {
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "user_name",
+      "label": "社員名",
+      "required": true,
+      "noLabel": false
+    },
+    "dept_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "dept_name",
+      "label": "部署名",
+      "required": false,
+      "noLabel": false
+    },
+    "group_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "group_name",
+      "label": "所属グループ",
+      "required": false,
+      "noLabel": false
+    },
+    "employment_status": {
+      "type": "DROP_DOWN",
+      "code": "employment_status",
+      "label": "在籍ステータス",
+      "required": false,
+      "noLabel": false,
+      "options": {
+        "在籍": { "label": "在籍", "index": "0" },
+        "退職": { "label": "退職", "index": "1" }
+      }
+    }
+  }
+}

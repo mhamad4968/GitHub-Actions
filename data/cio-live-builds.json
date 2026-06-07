@@ -128,6 +128,22 @@
       "relPath": "customize/shared-mail-dash/desktop.js",
       "deployedAt": "2026-06-06T06:36:53.029Z",
       "note": null
+    },
+    "699": {
+      "build": "2026-06-07-bi-guide-v5g",
+      "fileKey": "1b22865a-3c82-4671-af2f-311aea7bc038",
+      "revision": "16",
+      "relPath": "customize/business-improvement-guide/desktop.js",
+      "deployedAt": "2026-06-07T03:07:04.487Z",
+      "note": null
+    },
+    "700": {
+      "build": "2026-06-07-bi-proposal-apply-v33",
+      "fileKey": "ab72c699-f495-425a-bc00-15190c97b97c",
+      "revision": "118",
+      "relPath": "customize/business-improvement-proposal/desktop.js",
+      "deployedAt": "2026-06-07T03:42:27.083Z",
+      "note": null
     }
   }
 }

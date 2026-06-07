@@ -1,0 +1,144 @@
+{
+  "comment": "新④ 設定マスタ — record_kind=所属行(30) + 共通設定(1: jinji + 評価20段階)",
+  "properties": {
+    "record_kind": {
+      "type": "RADIO_BUTTON",
+      "code": "record_kind",
+      "label": "レコード種別",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "所属行",
+      "options": {
+        "所属行": { "label": "所属行", "index": "0" },
+        "共通設定": { "label": "共通設定", "index": "1" }
+      }
+    },
+    "org_type": {
+      "type": "DROP_DOWN",
+      "code": "org_type",
+      "label": "種別",
+      "required": false,
+      "noLabel": false,
+      "options": {
+        "支店": { "label": "支店", "index": "0" },
+        "営業所": { "label": "営業所", "index": "1" },
+        "本社部": { "label": "本社部", "index": "2" }
+      }
+    },
+    "dept_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "dept_name",
+      "label": "部署名",
+      "required": false,
+      "noLabel": false
+    },
+    "group_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "group_name",
+      "label": "group_name",
+      "required": false,
+      "noLabel": false
+    },
+    "applicant_login": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "applicant_login",
+      "label": "申請者",
+      "required": false,
+      "noLabel": false
+    },
+    "manager_login": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "manager_login",
+      "label": "部長評価",
+      "required": false,
+      "noLabel": false
+    },
+    "branch_manager_login": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "branch_manager_login",
+      "label": "支店長評価",
+      "required": false,
+      "noLabel": false
+    },
+    "manager_email": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "manager_email",
+      "label": "部長メール（任意）",
+      "required": false,
+      "noLabel": false
+    },
+    "branch_manager_email": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "branch_manager_email",
+      "label": "支店長メール（任意）",
+      "required": false,
+      "noLabel": false
+    },
+    "note": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "note",
+      "label": "備考",
+      "required": false,
+      "noLabel": false
+    },
+    "hr_director_login": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "hr_director_login",
+      "label": "人事部長（全社共通）",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": "jinji"
+    },
+    "hr_director_email": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "hr_director_email",
+      "label": "人事部長メール（任意）",
+      "required": false,
+      "noLabel": false
+    },
+    "eval_items": {
+      "type": "SUBTABLE",
+      "code": "eval_items",
+      "label": "評価項目マスタ",
+      "noLabel": false,
+      "fields": {
+        "eval_proposal_type": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "eval_proposal_type",
+          "label": "提案種別",
+          "required": false,
+          "noLabel": false
+        },
+        "eval_axis": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "eval_axis",
+          "label": "評価軸",
+          "required": false,
+          "noLabel": false
+        },
+        "eval_stage": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "eval_stage",
+          "label": "段階",
+          "required": false,
+          "noLabel": false
+        },
+        "eval_points": {
+          "type": "NUMBER",
+          "code": "eval_points",
+          "label": "点数",
+          "required": false,
+          "noLabel": false,
+          "digit": false
+        },
+        "eval_label": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "eval_label",
+          "label": "表示ラベル",
+          "required": false,
+          "noLabel": false
+        }
+      }
+    }
+  }
+}

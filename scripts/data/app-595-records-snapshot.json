@@ -1,0 +1,8238 @@
+{
+  "meta": {
+    "appId": 595,
+    "fetchedAt": "2026-06-06T22:48:13.424Z",
+    "totalCount": 266,
+    "recordCount": 266,
+    "query": "order by レコード番号 asc",
+    "baseUrl": "https://jbis-kintone.cybozu.com"
+  },
+  "records": [
+    {
+      "レコード番号": "1",
+      "mail": "j-horigome@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "堀込　順一",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "242"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "役員室",
+      "sort": "1",
+      "revision": "1056",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0285",
+      "id": "1"
+    },
+    {
+      "レコード番号": "2",
+      "mail": "ogiwara@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "荻原　郁男",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "243"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "役員室",
+      "sort": "2",
+      "revision": "1056",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0284",
+      "id": "2"
+    },
+    {
+      "レコード番号": "3",
+      "mail": "yajima@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "矢嶋　敬",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "244"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "役員室",
+      "sort": "3",
+      "revision": "1056",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0283",
+      "id": "3"
+    },
+    {
+      "レコード番号": "4",
+      "mail": "k-aigou@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "藍郷　一博",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "245"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "役員室",
+      "sort": "4",
+      "revision": "1056",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0282",
+      "id": "4"
+    },
+    {
+      "レコード番号": "5",
+      "mail": "m-osoegawa@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "小副川　誠",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "246"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "顧問",
+      "sort": "5",
+      "revision": "1056",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0281",
+      "id": "5"
+    },
+    {
+      "レコード番号": "6",
+      "mail": "t-nezu@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "根津　友明",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "249"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "総務部",
+      "sort": "6",
+      "revision": "1056",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0280",
+      "id": "6"
+    },
+    {
+      "レコード番号": "7",
+      "mail": "m-tobita@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "飛田　まさ子",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "250"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "総務部",
+      "sort": "7",
+      "revision": "1056",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0279",
+      "id": "7"
+    },
+    {
+      "レコード番号": "8",
+      "mail": "t-namie@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "浪江　崇",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "251"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "総務部",
+      "sort": "8",
+      "revision": "1056",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0278",
+      "id": "8"
+    },
+    {
+      "レコード番号": "9",
+      "mail": "kinoshita@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "木下　澪帆",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "252"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "総務部",
+      "sort": "9",
+      "revision": "1056",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0277",
+      "id": "9"
+    },
+    {
+      "レコード番号": "10",
+      "mail": "tsuchiya@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "土屋　秀幸",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "253"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "経理部",
+      "sort": "10",
+      "revision": "1056",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0276",
+      "id": "10"
+    },
+    {
+      "レコード番号": "11",
+      "mail": "n-kusunoki@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "楠　直江",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "254"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "経理部",
+      "sort": "11",
+      "revision": "1056",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0275",
+      "id": "11"
+    },
+    {
+      "レコード番号": "12",
+      "mail": "a-wada@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "和田　麻子",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "255"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "経理部",
+      "sort": "12",
+      "revision": "1056",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0274",
+      "id": "12"
+    },
+    {
+      "レコード番号": "13",
+      "mail": "funasaki-y@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "船崎　優愛",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "256"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "経理部",
+      "sort": "14",
+      "revision": "1056",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0273",
+      "id": "13"
+    },
+    {
+      "レコード番号": "14",
+      "mail": "hamada-m@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "濵田　政一",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "268"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "経営企画部",
+      "sort": "15",
+      "revision": "1064",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0272",
+      "id": "14"
+    },
+    {
+      "レコード番号": "15",
+      "mail": "oonuki-y@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "大貫　義昭",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "265"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "経営企画部",
+      "sort": "16",
+      "revision": "1056",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0271",
+      "id": "15"
+    },
+    {
+      "レコード番号": "16",
+      "mail": "s-hashiba@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "羽柴　祥子",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "201"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "経営企画部",
+      "sort": "17",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0270",
+      "id": "16"
+    },
+    {
+      "レコード番号": "17",
+      "mail": "m-yamaguchi@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "山口　順也",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "269"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "経営企画部",
+      "sort": "18",
+      "revision": "1056",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0269",
+      "id": "17"
+    },
+    {
+      "レコード番号": "18",
+      "mail": "arai-s@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "荒井　茂",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "260"
+        },
+        {
+          "pc_674_record_id": "261"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "人事研修部",
+      "sort": "19",
+      "revision": "1056",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0268",
+      "id": "18"
+    },
+    {
+      "レコード番号": "19",
+      "mail": "y-takei@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "武井　洋子",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "262"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "人事研修部",
+      "sort": "20",
+      "revision": "1056",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0267",
+      "id": "19"
+    },
+    {
+      "レコード番号": "20",
+      "mail": "sato-k@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "佐藤　健太",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "263"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "人事研修部",
+      "sort": "21",
+      "revision": "1056",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0266",
+      "id": "20"
+    },
+    {
+      "レコード番号": "21",
+      "mail": "n-goi@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "五井　奈月",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "264"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "人事研修部",
+      "sort": "22",
+      "revision": "1056",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0265",
+      "id": "21"
+    },
+    {
+      "レコード番号": "22",
+      "mail": "m-funyu@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "船生　誠",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "231"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "142",
+      "revision": "1058",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0264",
+      "id": "22"
+    },
+    {
+      "レコード番号": "23",
+      "mail": "y-onishi@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "大西　美一",
+      "pc_ledger_v1_list": [],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "出向者",
+      "sort": "23",
+      "revision": "1055",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0263",
+      "id": "23"
+    },
+    {
+      "レコード番号": "24",
+      "mail": "k-nakata@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "中田　久美子",
+      "pc_ledger_v1_list": [],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "出向者",
+      "sort": "24",
+      "revision": "1055",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0262",
+      "id": "24"
+    },
+    {
+      "レコード番号": "25",
+      "mail": "nemoto-t@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "根本　敏樹",
+      "pc_ledger_v1_list": [],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "出向者",
+      "sort": "25",
+      "revision": "1055",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0261",
+      "id": "25"
+    },
+    {
+      "レコード番号": "26",
+      "mail": "r-kono@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "河野　玲佳",
+      "pc_ledger_v1_list": [],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "出向者",
+      "sort": "26",
+      "revision": "1055",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0260",
+      "id": "26"
+    },
+    {
+      "レコード番号": "27",
+      "mail": "kodama@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "兒玉　敏洋",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "266"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "安全推進部",
+      "sort": "30",
+      "revision": "1056",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0259",
+      "id": "27"
+    },
+    {
+      "レコード番号": "28",
+      "mail": "y-kidou@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "木藤　美博",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "267"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "安全推進部",
+      "sort": "31",
+      "revision": "1056",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0258",
+      "id": "28"
+    },
+    {
+      "レコード番号": "29",
+      "mail": "k-maeda@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "前田　邦彦",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "258"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "施工推進部",
+      "sort": "32",
+      "revision": "1056",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0257",
+      "id": "29"
+    },
+    {
+      "レコード番号": "30",
+      "mail": "m-okutomi@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "奥富　誠",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "230"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "施工推進部",
+      "sort": "33",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0256",
+      "id": "30"
+    },
+    {
+      "レコード番号": "31",
+      "mail": "y-masui@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "増井　洋介",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "257"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "メンテナンス技術部",
+      "sort": "36",
+      "revision": "1056",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0255",
+      "id": "31"
+    },
+    {
+      "レコード番号": "32",
+      "mail": "f-omata@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "小俣　富士夫",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "259"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "メンテナンス技術部",
+      "sort": "37",
+      "revision": "1056",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0254",
+      "id": "32"
+    },
+    {
+      "レコード番号": "33",
+      "mail": "fujiwara-t@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "藤原　亨",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "247"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "塗装技術部",
+      "sort": "38",
+      "revision": "1056",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0253",
+      "id": "33"
+    },
+    {
+      "レコード番号": "34",
+      "mail": "t-takagi@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "高木　達也",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "248"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "施工推進部",
+      "sort": "34",
+      "revision": "1057",
+      "transfer_date": "2026-05-01",
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0252",
+      "id": "34"
+    },
+    {
+      "レコード番号": "35",
+      "mail": "takebayashi@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "竹林　久美子",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "203"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "経理部",
+      "sort": "13",
+      "revision": "1058",
+      "transfer_date": "2026-05-01",
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0251",
+      "id": "35"
+    },
+    {
+      "レコード番号": "36",
+      "mail": "h-suzuki@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "鈴木　隼人",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "270"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "品質管理部",
+      "sort": "39",
+      "revision": "1056",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0250",
+      "id": "36"
+    },
+    {
+      "レコード番号": "37",
+      "mail": "kinbara@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "金原　風雅",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "271"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "品質管理部",
+      "sort": "40",
+      "revision": "1056",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0249",
+      "id": "37"
+    },
+    {
+      "レコード番号": "38",
+      "mail": "y-moroji@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "諸治　友一郎",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "80"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東北支店",
+      "sort": "41",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0248",
+      "id": "38"
+    },
+    {
+      "レコード番号": "39",
+      "mail": "takehana-m@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "竹花　万寿男",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "81"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東北支店",
+      "sort": "42",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0247",
+      "id": "39"
+    },
+    {
+      "レコード番号": "40",
+      "mail": "n-okuyama@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "奥山　伸之",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "70"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東北支店",
+      "sort": "43",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0246",
+      "id": "40"
+    },
+    {
+      "レコード番号": "41",
+      "mail": "t-nagasawa@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "永澤　千鶴子",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "82"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東北支店",
+      "sort": "44",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0245",
+      "id": "41"
+    },
+    {
+      "レコード番号": "42",
+      "mail": "sato-sa@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "佐藤　沙緒理",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "83"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東北支店",
+      "sort": "45",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0244",
+      "id": "42"
+    },
+    {
+      "レコード番号": "43",
+      "mail": "sasaki-ka@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "佐々木　和也",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "84"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東北支店",
+      "sort": "46",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0243",
+      "id": "43"
+    },
+    {
+      "レコード番号": "44",
+      "mail": "t-nakanishi@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "中西　巧",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "88"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "仙台営業所",
+      "sort": "52",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0242",
+      "id": "44"
+    },
+    {
+      "レコード番号": "45",
+      "mail": "sasaki-k@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "佐々木　勝法",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "85"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東北支店",
+      "sort": "48",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0241",
+      "id": "45"
+    },
+    {
+      "レコード番号": "46",
+      "mail": "y-mikami@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "三上　義昭",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "86"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "盛岡営業所",
+      "sort": "49",
+      "revision": "1057",
+      "transfer_date": "2026-05-01",
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0240",
+      "id": "46"
+    },
+    {
+      "レコード番号": "47",
+      "mail": "m-tamura@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "田村　基",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "87"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "盛岡営業所",
+      "sort": "50",
+      "revision": "1057",
+      "transfer_date": "2026-05-01",
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0239",
+      "id": "47"
+    },
+    {
+      "レコード番号": "48",
+      "mail": "mori-m@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "森　昌徳",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "68"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "仙台営業所",
+      "sort": "51",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0238",
+      "id": "48"
+    },
+    {
+      "レコード番号": "49",
+      "mail": "watanabe-s@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "渡辺　忍",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "69"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "仙台営業所",
+      "sort": "53",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0237",
+      "id": "49"
+    },
+    {
+      "レコード番号": "50",
+      "mail": "odashima@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "小田島　優生",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "71"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "秋田営業所",
+      "sort": "68",
+      "revision": "1058",
+      "transfer_date": "2026-06-01",
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0236",
+      "id": "50"
+    },
+    {
+      "レコード番号": "51",
+      "mail": "s-hosino@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "星野　仁",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "72"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "仙台営業所",
+      "sort": "54",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0235",
+      "id": "51"
+    },
+    {
+      "レコード番号": "52",
+      "mail": "saito-n@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "齋藤　直吉",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "73"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "仙台営業所",
+      "sort": "55",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0234",
+      "id": "52"
+    },
+    {
+      "レコード番号": "53",
+      "mail": "k-suma@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "須磨　一樹",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "74"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "仙台営業所",
+      "sort": "56",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0233",
+      "id": "53"
+    },
+    {
+      "レコード番号": "54",
+      "mail": "t-chiba@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "千葉　達也",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "165"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "仙台営業所",
+      "sort": "57",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0232",
+      "id": "54"
+    },
+    {
+      "レコード番号": "55",
+      "mail": "honda-r@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "本田　怜央",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "75"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "仙台営業所",
+      "sort": "58",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0231",
+      "id": "55"
+    },
+    {
+      "レコード番号": "56",
+      "mail": "konno-t@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "紺野　敦幹",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "76"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "仙台営業所",
+      "sort": "59",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0230",
+      "id": "56"
+    },
+    {
+      "レコード番号": "57",
+      "mail": "takahashi-e@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "高橋　笑瑠",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "77"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "仙台営業所",
+      "sort": "60",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0229",
+      "id": "57"
+    },
+    {
+      "レコード番号": "58",
+      "mail": "miura-f@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "三浦　詞",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "78"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "仙台営業所",
+      "sort": "61",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0228",
+      "id": "58"
+    },
+    {
+      "レコード番号": "59",
+      "mail": "y-kato@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "加藤　雄志",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "79"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "仙台営業所",
+      "sort": "62",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0227",
+      "id": "59"
+    },
+    {
+      "レコード番号": "60",
+      "mail": "h-kirikoshi@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "桐越　秀樹",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "54"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "秋田営業所",
+      "sort": "65",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0226",
+      "id": "60"
+    },
+    {
+      "レコード番号": "61",
+      "mail": "n-nagaoka@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "長岡　範夫",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "55"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "秋田営業所",
+      "sort": "66",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0225",
+      "id": "61"
+    },
+    {
+      "レコード番号": "62",
+      "mail": "h-kamata@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "鎌田　大樹",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "56"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "秋田営業所",
+      "sort": "67",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0224",
+      "id": "62"
+    },
+    {
+      "レコード番号": "63",
+      "mail": "t-miura@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "三浦　貴",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "57"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "秋田営業所",
+      "sort": "69",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0223",
+      "id": "63"
+    },
+    {
+      "レコード番号": "64",
+      "mail": "sato-r@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "佐藤　竜太郎",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "58"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "秋田営業所",
+      "sort": "70",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0222",
+      "id": "64"
+    },
+    {
+      "レコード番号": "65",
+      "mail": "r-shiota@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "塩田　稜",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "59"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "秋田営業所",
+      "sort": "71",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0221",
+      "id": "65"
+    },
+    {
+      "レコード番号": "66",
+      "mail": "nonaka-t@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "野中　照彦",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "61"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "盛岡営業所",
+      "sort": "72",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0220",
+      "id": "66"
+    },
+    {
+      "レコード番号": "67",
+      "mail": "kaneta@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "金田　悟司",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "62"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "盛岡営業所",
+      "sort": "73",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0219",
+      "id": "67"
+    },
+    {
+      "レコード番号": "68",
+      "mail": "ma-sasaki@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "佐々木　誠志",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "63"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "盛岡営業所",
+      "sort": "74",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0218",
+      "id": "68"
+    },
+    {
+      "レコード番号": "69",
+      "mail": "ota-n@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "太田　信彦",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "64"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "盛岡営業所",
+      "sort": "75",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0217",
+      "id": "69"
+    },
+    {
+      "レコード番号": "70",
+      "mail": "oikawa-i@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "及川　育男",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "65"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "盛岡営業所",
+      "sort": "76",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0216",
+      "id": "70"
+    },
+    {
+      "レコード番号": "71",
+      "mail": "y-sasaki@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "佐々木　祥昭",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "66"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "盛岡営業所",
+      "sort": "77",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0215",
+      "id": "71"
+    },
+    {
+      "レコード番号": "72",
+      "mail": "h-itakura@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "板倉　白真",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "67"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "盛岡営業所",
+      "sort": "78",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0214",
+      "id": "72"
+    },
+    {
+      "レコード番号": "73",
+      "mail": "n-suzuki@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "鈴木　延彰",
+      "pc_ledger_v1_list": [],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "関越支店",
+      "sort": "79",
+      "revision": "1055",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0213",
+      "id": "73"
+    },
+    {
+      "レコード番号": "74",
+      "mail": "t-shinkai@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "新開　達也",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "109"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "関越支店",
+      "sort": "80",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0212",
+      "id": "74"
+    },
+    {
+      "レコード番号": "75",
+      "mail": "s-asami@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "浅見　聡一",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "110"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "関越支店",
+      "sort": "81",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0211",
+      "id": "75"
+    },
+    {
+      "レコード番号": "76",
+      "mail": "k-abukawa@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "虻川　和美",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "111"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "関越支店",
+      "sort": "82",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0210",
+      "id": "76"
+    },
+    {
+      "レコード番号": "77",
+      "mail": "o-nanishi@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "名西　理",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "112"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "関越支店",
+      "sort": "83",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0209",
+      "id": "77"
+    },
+    {
+      "レコード番号": "78",
+      "mail": "y-seki@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "関　禎幸",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "113"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "関越支店",
+      "sort": "84",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0208",
+      "id": "78"
+    },
+    {
+      "レコード番号": "79",
+      "mail": "y-taguchi@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "田口　裕司",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "114"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "関越支店",
+      "sort": "86",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0207",
+      "id": "79"
+    },
+    {
+      "レコード番号": "80",
+      "mail": "h-takazawa@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "高澤　裕季",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "119"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "関越支店",
+      "sort": "87",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0206",
+      "id": "80"
+    },
+    {
+      "レコード番号": "81",
+      "mail": "goto-s@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "後藤　駿介",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "120"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "関越支店",
+      "sort": "88",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0205",
+      "id": "81"
+    },
+    {
+      "レコード番号": "82",
+      "mail": "n-hataoka@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "畑岡　直樹",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "122"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "関越支店",
+      "sort": "89",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0204",
+      "id": "82"
+    },
+    {
+      "レコード番号": "83",
+      "mail": "t-agehari@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "揚張　智樹",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "118"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "関越支店",
+      "sort": "90",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0203",
+      "id": "83"
+    },
+    {
+      "レコード番号": "84",
+      "mail": "yu-takahashi@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "高橋　優弥",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "116"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "関越支店",
+      "sort": "91",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0202",
+      "id": "84"
+    },
+    {
+      "レコード番号": "85",
+      "mail": "yu-matsunaga@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "松永　雄太",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "115"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "関越支店",
+      "sort": "92",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0201",
+      "id": "85"
+    },
+    {
+      "レコード番号": "86",
+      "mail": "iijima@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "飯島　拓",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "117"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "関越支店",
+      "sort": "93",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0200",
+      "id": "86"
+    },
+    {
+      "レコード番号": "87",
+      "mail": "suzuki-y@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "鈴木　義明",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "47"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "新潟営業所",
+      "sort": "95",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0199",
+      "id": "87"
+    },
+    {
+      "レコード番号": "88",
+      "mail": "h-mukaida@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "迎田　秀樹",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "48"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "新潟営業所",
+      "sort": "96",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0198",
+      "id": "88"
+    },
+    {
+      "レコード番号": "89",
+      "mail": "k-kobayashi@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "小林　桂樹",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "49"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "新潟営業所",
+      "sort": "97",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0197",
+      "id": "89"
+    },
+    {
+      "レコード番号": "90",
+      "mail": "m-ikarashi@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "五十嵐　益夫",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "50"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "新潟営業所",
+      "sort": "98",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0196",
+      "id": "90"
+    },
+    {
+      "レコード番号": "91",
+      "mail": "t-kimura@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "木村　忠雄",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "51"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "新潟営業所",
+      "sort": "99",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0195",
+      "id": "91"
+    },
+    {
+      "レコード番号": "92",
+      "mail": "m-takizawa@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "瀧澤　道夫",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "52"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "新潟営業所",
+      "sort": "100",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0194",
+      "id": "92"
+    },
+    {
+      "レコード番号": "93",
+      "mail": "sato-s@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "佐藤　聡美",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "53"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "新潟営業所",
+      "sort": "101",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0193",
+      "id": "93"
+    },
+    {
+      "レコード番号": "94",
+      "mail": "t-haba@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "羽場　剛",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "10"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "長野営業所",
+      "sort": "102",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0192",
+      "id": "94"
+    },
+    {
+      "レコード番号": "95",
+      "mail": "kuroiwa@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "黒岩　誠",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "11"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "長野営業所",
+      "sort": "103",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0191",
+      "id": "95"
+    },
+    {
+      "レコード番号": "96",
+      "mail": "saito@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "齋藤　翔也",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "12"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "長野営業所",
+      "sort": "104",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0190",
+      "id": "96"
+    },
+    {
+      "レコード番号": "97",
+      "mail": "k-murayama@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "村山　克之",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "162"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "高崎営業所",
+      "sort": "105",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0189",
+      "id": "97"
+    },
+    {
+      "レコード番号": "98",
+      "mail": "k-yuasa@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "湯浅　啓司",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "123"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "高崎営業所",
+      "sort": "106",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0188",
+      "id": "98"
+    },
+    {
+      "レコード番号": "99",
+      "mail": "hoshino-s@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "星野　幸夫",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "163"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "高崎営業所",
+      "sort": "107",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0187",
+      "id": "99"
+    },
+    {
+      "レコード番号": "100",
+      "mail": "m-yamagata@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "山形　光希",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "164"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "高崎営業所",
+      "sort": "108",
+      "revision": "1057",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0186",
+      "id": "100"
+    },
+    {
+      "レコード番号": "101",
+      "mail": "s-koide@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "小出　悟史",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "121"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "高崎営業所",
+      "sort": "109",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0185",
+      "id": "101"
+    },
+    {
+      "レコード番号": "102",
+      "mail": "h-otsuka@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "大塚　英雄",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "130"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "110",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0184",
+      "id": "102"
+    },
+    {
+      "レコード番号": "103",
+      "mail": "shinohara@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "篠原　良治",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "131"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "111",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0183",
+      "id": "103"
+    },
+    {
+      "レコード番号": "104",
+      "mail": "k-yamada@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "山田　健太郎",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "132"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "112",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0182",
+      "id": "104"
+    },
+    {
+      "レコード番号": "105",
+      "mail": "e-shimizu@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "清水　悦郎",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "133"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "113",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0181",
+      "id": "105"
+    },
+    {
+      "レコード番号": "106",
+      "mail": "kitamura-n@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "北村　直樹",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "134"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "114",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0180",
+      "id": "106"
+    },
+    {
+      "レコード番号": "107",
+      "mail": "koizumi-k@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "小泉　佳代",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "135"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "115",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0179",
+      "id": "107"
+    },
+    {
+      "レコード番号": "108",
+      "mail": "m-goto@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "後藤　真由美",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "136"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "116",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0178",
+      "id": "108"
+    },
+    {
+      "レコード番号": "109",
+      "mail": "hirose-t@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "廣瀬　貴之",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "137"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "117",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0177",
+      "id": "109"
+    },
+    {
+      "レコード番号": "110",
+      "mail": "s-takase@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "髙瀬　誠司",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "138"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "118",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0176",
+      "id": "110"
+    },
+    {
+      "レコード番号": "111",
+      "mail": "s-matsuhashi@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "松橋　正一",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "139"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "119",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0175",
+      "id": "111"
+    },
+    {
+      "レコード番号": "112",
+      "mail": "ito@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "伊藤　典雄",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "140"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "120",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0174",
+      "id": "112"
+    },
+    {
+      "レコード番号": "113",
+      "mail": "t-takara@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "高良　智樹",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "141"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "121",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0173",
+      "id": "113"
+    },
+    {
+      "レコード番号": "114",
+      "mail": "s-hirashima@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "平嶋　伸也",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "214"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "122",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0172",
+      "id": "114"
+    },
+    {
+      "レコード番号": "115",
+      "mail": "t-kashiwazaki@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "柏﨑　孝",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "142"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "123",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0171",
+      "id": "115"
+    },
+    {
+      "レコード番号": "116",
+      "mail": "k-tsuda@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "津田　健太郎",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "215"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "124",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0170",
+      "id": "116"
+    },
+    {
+      "レコード番号": "117",
+      "mail": "ta-nemoto@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "根本　孝",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "143"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "125",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0169",
+      "id": "117"
+    },
+    {
+      "レコード番号": "118",
+      "mail": "n-shimazaki@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "島﨑　信弘",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "144"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "126",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0168",
+      "id": "118"
+    },
+    {
+      "レコード番号": "119",
+      "mail": "hida@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "日田　聖人",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "145"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "127",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0167",
+      "id": "119"
+    },
+    {
+      "レコード番号": "120",
+      "mail": "y-matsumoto@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "松本　結太",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "146"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "128",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0166",
+      "id": "120"
+    },
+    {
+      "レコード番号": "121",
+      "mail": "suzuki-j@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "鈴木　純平",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "147"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "136",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0165",
+      "id": "121"
+    },
+    {
+      "レコード番号": "122",
+      "mail": "kaido@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "海藤　光治",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "148"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "130",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0164",
+      "id": "122"
+    },
+    {
+      "レコード番号": "123",
+      "mail": "s-kagaya@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "加賀谷　慎吾",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "149"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "131",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0163",
+      "id": "123"
+    },
+    {
+      "レコード番号": "124",
+      "mail": "t-akahori@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "赤堀　太一",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "150"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "133",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0162",
+      "id": "124"
+    },
+    {
+      "レコード番号": "125",
+      "mail": "tan@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "チンフックタン",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": ""
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "125",
+      "revision": "18",
+      "transfer_date": null,
+      "更新日時": "2026-05-30T11:26:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "退職",
+      "retired_date": "2026-05-29",
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0161",
+      "id": "125"
+    },
+    {
+      "レコード番号": "126",
+      "mail": "watanabe@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "渡邊　陽一",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "151"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "134",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0160",
+      "id": "126"
+    },
+    {
+      "レコード番号": "127",
+      "mail": "r-omae@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "大前　涼",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "152"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "135",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0159",
+      "id": "127"
+    },
+    {
+      "レコード番号": "128",
+      "mail": "d-fujita@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "藤田　大輝",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "153"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "129",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0158",
+      "id": "128"
+    },
+    {
+      "レコード番号": "129",
+      "mail": "sato-ka@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "佐藤　嘉辰",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "213"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "138",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0157",
+      "id": "129"
+    },
+    {
+      "レコード番号": "130",
+      "mail": "s-mori@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "森　蕉太",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "154"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "139",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0156",
+      "id": "130"
+    },
+    {
+      "レコード番号": "131",
+      "mail": "yu-ito@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "伊藤　祐二",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "155"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "140",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0155",
+      "id": "131"
+    },
+    {
+      "レコード番号": "132",
+      "mail": "nakajima@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "中嶋　優歩",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "156"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "141",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0154",
+      "id": "132"
+    },
+    {
+      "レコード番号": "133",
+      "mail": "s-takahashi@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "高橋　成典",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "202"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "137",
+      "revision": "18",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0153",
+      "id": "133"
+    },
+    {
+      "レコード番号": "134",
+      "mail": "k-yonezawa@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "米沢　一起",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "157"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "143",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0152",
+      "id": "134"
+    },
+    {
+      "レコード番号": "135",
+      "mail": "komori-yu@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "小森　優輝",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "159"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "千葉営業所",
+      "sort": "150",
+      "revision": "18",
+      "transfer_date": "2026-06-01",
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0151",
+      "id": "135"
+    },
+    {
+      "レコード番号": "136",
+      "mail": "kitani@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "木谷　雄一",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "89"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "千葉営業所",
+      "sort": "144",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0150",
+      "id": "136"
+    },
+    {
+      "レコード番号": "137",
+      "mail": "t-hanabusa@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "花房　竜美",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "90"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "千葉営業所",
+      "sort": "145",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0149",
+      "id": "137"
+    },
+    {
+      "レコード番号": "138",
+      "mail": "m-murayama@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "村山　文男",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "91"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "千葉営業所",
+      "sort": "146",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0148",
+      "id": "138"
+    },
+    {
+      "レコード番号": "139",
+      "mail": "ishii@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "石井　裕太",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "92"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "千葉営業所",
+      "sort": "147",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0147",
+      "id": "139"
+    },
+    {
+      "レコード番号": "140",
+      "mail": "hayashi@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "林　大河",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "93"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "千葉営業所",
+      "sort": "148",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0146",
+      "id": "140"
+    },
+    {
+      "レコード番号": "141",
+      "mail": "maeda@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "前田　徳雲",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "94"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "静岡営業所",
+      "sort": "181",
+      "revision": "18",
+      "transfer_date": "2026-05-01",
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0145",
+      "id": "141"
+    },
+    {
+      "レコード番号": "142",
+      "mail": "nakata-y@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "中田　雄基",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "95"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "千葉営業所",
+      "sort": "149",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0144",
+      "id": "142"
+    },
+    {
+      "レコード番号": "143",
+      "mail": "s-chubachi@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "中鉢　悟",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "43"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "水戸営業所",
+      "sort": "152",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0143",
+      "id": "143"
+    },
+    {
+      "レコード番号": "144",
+      "mail": "miyamoto-s@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "宮本　茂",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "44"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "水戸営業所",
+      "sort": "153",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0142",
+      "id": "144"
+    },
+    {
+      "レコード番号": "145",
+      "mail": "suzuki-yu@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "鈴木　幸男",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "45"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "水戸営業所",
+      "sort": "154",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0141",
+      "id": "145"
+    },
+    {
+      "レコード番号": "146",
+      "mail": "yamaguchi@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "山口　智典",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "46"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "水戸営業所",
+      "sort": "155",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0140",
+      "id": "146"
+    },
+    {
+      "レコード番号": "147",
+      "mail": "h-amano@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "天野　博仁",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "22"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "施工推進部",
+      "sort": "35",
+      "revision": "17",
+      "transfer_date": "2026-05-01",
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0139",
+      "id": "147"
+    },
+    {
+      "レコード番号": "148",
+      "mail": "kobayashi-t@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "小林　俊久",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "23"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "出向者",
+      "sort": "27",
+      "revision": "17",
+      "transfer_date": "2026-05-01",
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0138",
+      "id": "148"
+    },
+    {
+      "レコード番号": "149",
+      "mail": "kobayashi-h@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "小林　浩",
+      "pc_ledger_v1_list": [],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "鎌ヶ谷事務所",
+      "sort": "149",
+      "revision": "15",
+      "transfer_date": null,
+      "更新日時": "2026-04-16T08:53:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "退職",
+      "retired_date": "2026-04-01",
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0137",
+      "id": "149"
+    },
+    {
+      "レコード番号": "150",
+      "mail": "k-yamazaki@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "山崎　邦夫",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "24"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "出向者",
+      "sort": "28",
+      "revision": "17",
+      "transfer_date": "2026-05-01",
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0136",
+      "id": "150"
+    },
+    {
+      "レコード番号": "151",
+      "mail": "ouchi-t@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "大内　琢磨",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "25"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "出向者",
+      "sort": "29",
+      "revision": "17",
+      "transfer_date": "2026-05-01",
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0135",
+      "id": "151"
+    },
+    {
+      "レコード番号": "152",
+      "mail": "k-imai@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "今井　賢一",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "96"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東海支店",
+      "sort": "156",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0134",
+      "id": "152"
+    },
+    {
+      "レコード番号": "153",
+      "mail": "h-mizuguchi@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "水口　広美",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "97"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東海支店",
+      "sort": "159",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0133",
+      "id": "153"
+    },
+    {
+      "レコード番号": "154",
+      "mail": "h-shinoda@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "篠田　尚野",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "5"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東海支店",
+      "sort": "160",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0132",
+      "id": "154"
+    },
+    {
+      "レコード番号": "155",
+      "mail": "hasegawa@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "長谷川　雅子",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "98"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東海支店",
+      "sort": "161",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0131",
+      "id": "155"
+    },
+    {
+      "レコード番号": "156",
+      "mail": "a-nishio@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "西尾　彰洋",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "99"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東海支店",
+      "sort": "162",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0130",
+      "id": "156"
+    },
+    {
+      "レコード番号": "157",
+      "mail": "ma-takahashi@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "髙橋　政彦",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "2"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東海支店",
+      "sort": "163",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0129",
+      "id": "157"
+    },
+    {
+      "レコード番号": "158",
+      "mail": "t-ichii@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "市居　勉",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "125"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東海支店",
+      "sort": "164",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0128",
+      "id": "158"
+    },
+    {
+      "レコード番号": "159",
+      "mail": "t-seshimo@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "瀬下　哲志",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "100"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東海支店",
+      "sort": "166",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0127",
+      "id": "159"
+    },
+    {
+      "レコード番号": "160",
+      "mail": "k-hosokawa@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "細川　カレン",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "101"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東海支店",
+      "sort": "167",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0126",
+      "id": "160"
+    },
+    {
+      "レコード番号": "161",
+      "mail": "m-shibata@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "柴田　正人",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "14"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京営業所",
+      "sort": "168",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0125",
+      "id": "161"
+    },
+    {
+      "レコード番号": "162",
+      "mail": "t-koga@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "古賀　哲平",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "15"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京営業所",
+      "sort": "169",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0124",
+      "id": "162"
+    },
+    {
+      "レコード番号": "163",
+      "mail": "k-okamoto@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "岡本　賢治",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "16"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京営業所",
+      "sort": "170",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0123",
+      "id": "163"
+    },
+    {
+      "レコード番号": "164",
+      "mail": "m-yamamoto@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "山本　元成",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "17"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京営業所",
+      "sort": "171",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0122",
+      "id": "164"
+    },
+    {
+      "レコード番号": "165",
+      "mail": "s-hayasaka@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "早坂　翔",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "18"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京営業所",
+      "sort": "172",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0121",
+      "id": "165"
+    },
+    {
+      "レコード番号": "166",
+      "mail": "s-yukawa@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "湯川　俊",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "19"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京営業所",
+      "sort": "173",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0120",
+      "id": "166"
+    },
+    {
+      "レコード番号": "167",
+      "mail": "ogusa@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "小草　光嗣",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "20"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京営業所",
+      "sort": "174",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0119",
+      "id": "167"
+    },
+    {
+      "レコード番号": "168",
+      "mail": "k-ouchi@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "大内　清孝",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "1"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "静岡営業所",
+      "sort": "175",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0118",
+      "id": "168"
+    },
+    {
+      "レコード番号": "169",
+      "mail": "mochizuki-y@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "望月　之次",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "3"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京営業所",
+      "sort": "176",
+      "revision": "18",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0117",
+      "id": "169"
+    },
+    {
+      "レコード番号": "170",
+      "mail": "s-mio@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "美尾　真二",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "4"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "静岡営業所",
+      "sort": "177",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0116",
+      "id": "170"
+    },
+    {
+      "レコード番号": "171",
+      "mail": "kobayashi-s@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "小林　翔太",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "6"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "静岡営業所",
+      "sort": "178",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0115",
+      "id": "171"
+    },
+    {
+      "レコード番号": "172",
+      "mail": "ta-yamada@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "山田　拓斗",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "7"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "静岡営業所",
+      "sort": "179",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0114",
+      "id": "172"
+    },
+    {
+      "レコード番号": "173",
+      "mail": "hirano@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "平野　隼人",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "8"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "静岡営業所",
+      "sort": "180",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0113",
+      "id": "173"
+    },
+    {
+      "レコード番号": "174",
+      "mail": "t-kawabayashi@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "河林　那樹",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "9"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "静岡営業所",
+      "sort": "182",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0112",
+      "id": "174"
+    },
+    {
+      "レコード番号": "175",
+      "mail": "h-haruna@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "春名　宏胤",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "102"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "名古屋営業所",
+      "sort": "183",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0111",
+      "id": "175"
+    },
+    {
+      "レコード番号": "176",
+      "mail": "kondo@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "近藤　充",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "103"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "名古屋営業所",
+      "sort": "184",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0110",
+      "id": "176"
+    },
+    {
+      "レコード番号": "177",
+      "mail": "mochizuki-yu@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "望月　豊",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "104"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "名古屋営業所",
+      "sort": "185",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0109",
+      "id": "177"
+    },
+    {
+      "レコード番号": "178",
+      "mail": "m-ota@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "太田　雅也",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "105"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "名古屋営業所",
+      "sort": "186",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0108",
+      "id": "178"
+    },
+    {
+      "レコード番号": "179",
+      "mail": "r-tayama@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "田山　稜太",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "272"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "名古屋営業所",
+      "sort": "187",
+      "revision": "35",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0107",
+      "id": "179"
+    },
+    {
+      "レコード番号": "180",
+      "mail": "k-fujiwara@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "藤原　克裕",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "107"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "名古屋営業所",
+      "sort": "188",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0106",
+      "id": "180"
+    },
+    {
+      "レコード番号": "181",
+      "mail": "k-miyata@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "宮田　航平",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "108"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "名古屋営業所",
+      "sort": "189",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0105",
+      "id": "181"
+    },
+    {
+      "レコード番号": "182",
+      "mail": "s-motojima@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "元島　誠一",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "126"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "関西営業所",
+      "sort": "190",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0104",
+      "id": "182"
+    },
+    {
+      "レコード番号": "183",
+      "mail": "m-sugimoto@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "杉本　雅博",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "127"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "関西営業所",
+      "sort": "191",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0103",
+      "id": "183"
+    },
+    {
+      "レコード番号": "184",
+      "mail": "h-yamane@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "山根　博",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "128"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "関西営業所",
+      "sort": "192",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0102",
+      "id": "184"
+    },
+    {
+      "レコード番号": "185",
+      "mail": "h-yamagishi@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "山岸　秀典",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "228"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "リフォーム事業統括部",
+      "sort": "193",
+      "revision": "26",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0101",
+      "id": "185"
+    },
+    {
+      "レコード番号": "186",
+      "mail": "takahashi-k@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "高橋　和明",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "26"
+        },
+        {
+          "pc_674_record_id": "27"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "札幌支店",
+      "sort": "194",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0100",
+      "id": "186"
+    },
+    {
+      "レコード番号": "187",
+      "mail": "t-nishikawa@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "西川　寿幸",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "28"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "札幌支店",
+      "sort": "195",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0099",
+      "id": "187"
+    },
+    {
+      "レコード番号": "188",
+      "mail": "y-hayase@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "早勢　泰博",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "29"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "札幌支店",
+      "sort": "196",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0098",
+      "id": "188"
+    },
+    {
+      "レコード番号": "189",
+      "mail": "t-araki@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "荒木　知道",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "30"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "札幌支店",
+      "sort": "197",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0097",
+      "id": "189"
+    },
+    {
+      "レコード番号": "190",
+      "mail": "m-naruse@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "成瀬　桃子",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "31"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "札幌支店",
+      "sort": "198",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0096",
+      "id": "190"
+    },
+    {
+      "レコード番号": "191",
+      "mail": "s-sugawara@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "菅原　新",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "32"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "札幌支店",
+      "sort": "199",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0095",
+      "id": "191"
+    },
+    {
+      "レコード番号": "192",
+      "mail": "k-hakoda@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "箱田　圭亮",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "33"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "札幌支店",
+      "sort": "200",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0094",
+      "id": "192"
+    },
+    {
+      "レコード番号": "193",
+      "mail": "a-tsuruta@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "鶴田　晃",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "34"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "札幌支店",
+      "sort": "201",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0093",
+      "id": "193"
+    },
+    {
+      "レコード番号": "194",
+      "mail": "iwasaki@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "岩崎　貴哉",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "35"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "札幌支店",
+      "sort": "202",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0092",
+      "id": "194"
+    },
+    {
+      "レコード番号": "195",
+      "mail": "y-ominato@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "大湊　有希",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "36"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "札幌支店",
+      "sort": "203",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0091",
+      "id": "195"
+    },
+    {
+      "レコード番号": "196",
+      "mail": "aizawa-i@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "相澤　勇",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "37"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "札幌支店",
+      "sort": "204",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0090",
+      "id": "196"
+    },
+    {
+      "レコード番号": "197",
+      "mail": "tsukamoto@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "塚本　貴史",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "38"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "札幌支店",
+      "sort": "205",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0089",
+      "id": "197"
+    },
+    {
+      "レコード番号": "198",
+      "mail": "kobayashi-a@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "小林　昭夫",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "41"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "札幌支店",
+      "sort": "206",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0088",
+      "id": "198"
+    },
+    {
+      "レコード番号": "199",
+      "mail": "j-shimaya@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "嶋谷　仁",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "39"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "札幌支店",
+      "sort": "207",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0087",
+      "id": "199"
+    },
+    {
+      "レコード番号": "200",
+      "mail": "y-mukai@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "向井　ゆかり",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "40"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "札幌支店",
+      "sort": "208",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0086",
+      "id": "200"
+    },
+    {
+      "レコード番号": "201",
+      "mail": "h-yosizawa@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "吉沢　弘",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "177"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "209",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0085",
+      "id": "201"
+    },
+    {
+      "レコード番号": "202",
+      "mail": "o-hashiyama@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "橋山　修",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "166"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "210",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0084",
+      "id": "202"
+    },
+    {
+      "レコード番号": "203",
+      "mail": "m-yokoyama@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "横山　雅好",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "178"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "211",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0083",
+      "id": "203"
+    },
+    {
+      "レコード番号": "204",
+      "mail": "y-haga@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "羽賀　康広",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "179"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "212",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0082",
+      "id": "204"
+    },
+    {
+      "レコード番号": "205",
+      "mail": "k-harada@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "原田　憲一",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "182"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "213",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0081",
+      "id": "205"
+    },
+    {
+      "レコード番号": "206",
+      "mail": "s-takemura@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "竹村　智",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "183"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "206",
+      "revision": "15",
+      "transfer_date": null,
+      "更新日時": "2026-04-30T11:57:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "退職",
+      "retired_date": "2026-04-01",
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0080",
+      "id": "206"
+    },
+    {
+      "レコード番号": "207",
+      "mail": "m-korenaga@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "是永　真人",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "184"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "214",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0079",
+      "id": "207"
+    },
+    {
+      "レコード番号": "208",
+      "mail": "osugi@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "大杉　貴徳",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "185"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "215",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0078",
+      "id": "208"
+    },
+    {
+      "レコード番号": "209",
+      "mail": "m-kaji@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "加治　雅春",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "186"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "216",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0077",
+      "id": "209"
+    },
+    {
+      "レコード番号": "210",
+      "mail": "m-higasa@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "樋笠　美奈子",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "187"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "217",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0076",
+      "id": "210"
+    },
+    {
+      "レコード番号": "211",
+      "mail": "shirasu@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "白須　蓮太",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "188"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "218",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0075",
+      "id": "211"
+    },
+    {
+      "レコード番号": "212",
+      "mail": "suzuki-t@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "鈴木　隆史",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "189"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "219",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0074",
+      "id": "212"
+    },
+    {
+      "レコード番号": "213",
+      "mail": "h-orui@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "大類　仁美",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "191"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "220",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0073",
+      "id": "213"
+    },
+    {
+      "レコード番号": "214",
+      "mail": "t-ono@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "大野　龍巳",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "192"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "221",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0072",
+      "id": "214"
+    },
+    {
+      "レコード番号": "215",
+      "mail": "t-shimada@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "嶋田　大赳",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "232"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "223",
+      "revision": "19",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0071",
+      "id": "215"
+    },
+    {
+      "レコード番号": "216",
+      "mail": "t-matsumoto@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "松本　貴光",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "233"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "224",
+      "revision": "21",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0070",
+      "id": "216"
+    },
+    {
+      "レコード番号": "217",
+      "mail": "k-nakazato@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "仲里　一則",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "180"
+        },
+        {
+          "pc_674_record_id": "181"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "225",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0069",
+      "id": "217"
+    },
+    {
+      "レコード番号": "218",
+      "mail": "koizumi-s@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "小泉　智嗣",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "194"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "226",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0068",
+      "id": "218"
+    },
+    {
+      "レコード番号": "219",
+      "mail": "m-nakayama@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "中山　勝",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "193"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "227",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0067",
+      "id": "219"
+    },
+    {
+      "レコード番号": "220",
+      "mail": "omura@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "大村　玲",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "195"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "228",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0066",
+      "id": "220"
+    },
+    {
+      "レコード番号": "221",
+      "mail": "suzawa@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "須澤　海斗",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "196"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "229",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0065",
+      "id": "221"
+    },
+    {
+      "レコード番号": "222",
+      "mail": "aida-t@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "會田　匠",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "190"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "230",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0064",
+      "id": "222"
+    },
+    {
+      "レコード番号": "223",
+      "mail": "iiduka@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "飯塚　崇",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "197"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "231",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0063",
+      "id": "223"
+    },
+    {
+      "レコード番号": "224",
+      "mail": "y-tomura@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "戸村　唯斗",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "198"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "232",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0062",
+      "id": "224"
+    },
+    {
+      "レコード番号": "225",
+      "mail": "y-kumamoto@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "隈元　康郎",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "167"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "233",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0061",
+      "id": "225"
+    },
+    {
+      "レコード番号": "226",
+      "mail": "ando@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "安藤　聡",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "168"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "234",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0060",
+      "id": "226"
+    },
+    {
+      "レコード番号": "227",
+      "mail": "reform001@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "小原　昌子",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "169"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "235",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0059",
+      "id": "227"
+    },
+    {
+      "レコード番号": "228",
+      "mail": "reform002@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "鳥飼　紀子",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "170"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "236",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0058",
+      "id": "228"
+    },
+    {
+      "レコード番号": "229",
+      "mail": "a-hirasawa@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "平澤　亜実",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "174"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "237",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0057",
+      "id": "229"
+    },
+    {
+      "レコード番号": "230",
+      "mail": "abe@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "安倍　勝宏",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "172"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "238",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0056",
+      "id": "230"
+    },
+    {
+      "レコード番号": "231",
+      "mail": "suzuki-k@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "鈴木　健人",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "171"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "239",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0055",
+      "id": "231"
+    },
+    {
+      "レコード番号": "232",
+      "mail": "ogawa-y@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "小川　雄太",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "173"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "240",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0054",
+      "id": "232"
+    },
+    {
+      "レコード番号": "233",
+      "mail": "reform003@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "竹井　あづさ",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "175"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "241",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0053",
+      "id": "233"
+    },
+    {
+      "レコード番号": "234",
+      "mail": "kondo-s@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "近藤　節二",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "176"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "242",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0052",
+      "id": "234"
+    },
+    {
+      "レコード番号": "235",
+      "mail": "k-kitamura@j-bis.co.jp",
+      "group_name": "tekko",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "北村　公一",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "204"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "鉄構支店",
+      "sort": "243",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0051",
+      "id": "235"
+    },
+    {
+      "レコード番号": "236",
+      "mail": "t-shimoda@j-bis.co.jp",
+      "group_name": "tekko",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "下田　竜也",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "235"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "鉄構支店",
+      "sort": "244",
+      "revision": "16",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0050",
+      "id": "236"
+    },
+    {
+      "レコード番号": "237",
+      "mail": "handa-k@j-bis.co.jp",
+      "group_name": "tekko",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "半田　健輔",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "236"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "鉄構支店",
+      "sort": "247",
+      "revision": "16",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0049",
+      "id": "237"
+    },
+    {
+      "レコード番号": "238",
+      "mail": "y-koiwa@j-bis.co.jp",
+      "group_name": "tekko",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "小岩　洋平",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "207"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "鉄構支店",
+      "sort": "245",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0048",
+      "id": "238"
+    },
+    {
+      "レコード番号": "239",
+      "mail": "kobayashi-y@j-bis.co.jp",
+      "group_name": "tekko",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "小林　優磨",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "237"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "鉄構支店",
+      "sort": "248",
+      "revision": "16",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0047",
+      "id": "239"
+    },
+    {
+      "レコード番号": "240",
+      "mail": "nishimura@j-bis.co.jp",
+      "group_name": "tekko",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "西村　直也",
+      "pc_ledger_v1_list": [],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "鉄構支店",
+      "sort": "240",
+      "revision": "11",
+      "transfer_date": null,
+      "更新日時": "2026-04-16T08:44:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "退職",
+      "retired_date": "2026-03-31",
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0046",
+      "id": "240"
+    },
+    {
+      "レコード番号": "241",
+      "mail": "k-matsuda@j-bis.co.jp",
+      "group_name": "tekko",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "松田　健太郎",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "208"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "鉄構支店",
+      "sort": "249",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0045",
+      "id": "241"
+    },
+    {
+      "レコード番号": "242",
+      "mail": "y-kawakami@j-bis.co.jp",
+      "group_name": "tekko",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "河上　陽亮",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "209"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "鉄構支店",
+      "sort": "250",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0044",
+      "id": "242"
+    },
+    {
+      "レコード番号": "243",
+      "mail": "machida@j-bis.co.jp",
+      "group_name": "tekko",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "町田　達弥",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "238"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "鉄構支店",
+      "sort": "251",
+      "revision": "16",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0043",
+      "id": "243"
+    },
+    {
+      "レコード番号": "244",
+      "mail": "ishii-t@j-bis.co.jp",
+      "group_name": "tekko",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "石井　貴大",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "239"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "鉄構支店",
+      "sort": "252",
+      "revision": "16",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0042",
+      "id": "244"
+    },
+    {
+      "レコード番号": "245",
+      "mail": "ueshima-s@j-bis.co.jp",
+      "group_name": "tekko",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "上島　咲蘭",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "129"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "鉄構支店",
+      "sort": "253",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0041",
+      "id": "245"
+    },
+    {
+      "レコード番号": "246",
+      "mail": "oomori@j-bis.co.jp",
+      "group_name": "tekko",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "大盛　幹一郎",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "240"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "鉄構支店",
+      "sort": "254",
+      "revision": "16",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0040",
+      "id": "246"
+    },
+    {
+      "レコード番号": "247",
+      "mail": "y-kawarai@j-bis.co.jp",
+      "group_name": "tekko",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "河原井　庸次",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "241"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "鉄構支店",
+      "sort": "255",
+      "revision": "16",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0039",
+      "id": "247"
+    },
+    {
+      "レコード番号": "248",
+      "mail": "i-takano@j-bis.co.jp",
+      "group_name": "tekko",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "高野　郁美",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "205"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "鉄構支店",
+      "sort": "256",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0038",
+      "id": "248"
+    },
+    {
+      "レコード番号": "249",
+      "mail": "yamahara@j-bis.co.jp",
+      "group_name": "tekko",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "山原　夏美",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "206"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "鉄構支店",
+      "sort": "257",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0037",
+      "id": "249"
+    },
+    {
+      "レコード番号": "250",
+      "mail": "k-mochinaga@j-bis.co.jp",
+      "group_name": "wangan",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "持永　健次郎",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "210"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "湾岸工事所",
+      "sort": "258",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0036",
+      "id": "250"
+    },
+    {
+      "レコード番号": "251",
+      "mail": "kaneko@j-bis.co.jp",
+      "group_name": "wangan",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "金子　達哉",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "211"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "湾岸工事所",
+      "sort": "259",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0035",
+      "id": "251"
+    },
+    {
+      "レコード番号": "252",
+      "mail": "s-honma@j-bis.co.jp",
+      "group_name": "wangan",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "本間　伸吾",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "212"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "湾岸工事所",
+      "sort": "260",
+      "revision": "17",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T06:58:00Z",
+      "emp_id": "EMP-0034",
+      "id": "252"
+    },
+    {
+      "レコード番号": "275",
+      "mail": "k-yuzawa@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "湯澤　昂",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "219"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "関越支店",
+      "sort": "94",
+      "revision": "14",
+      "transfer_date": "2026-05-01",
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T10:58:00Z",
+      "emp_id": "EMP-0011",
+      "id": "275"
+    },
+    {
+      "レコード番号": "276",
+      "mail": "i-abe@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "阿部　伊吹",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "220"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東京支店",
+      "sort": "132",
+      "revision": "14",
+      "transfer_date": "2026-05-01",
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T10:58:00Z",
+      "emp_id": "EMP-0010",
+      "id": "276"
+    },
+    {
+      "レコード番号": "277",
+      "mail": "y-hirukawa@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "蛭川　大和",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "221"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東北支店",
+      "sort": "47",
+      "revision": "14",
+      "transfer_date": "2026-05-01",
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T10:58:00Z",
+      "emp_id": "EMP-0009",
+      "id": "277"
+    },
+    {
+      "レコード番号": "278",
+      "mail": "e-wada@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "和田　英祐",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "222"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東海支店",
+      "sort": "165",
+      "revision": "14",
+      "transfer_date": "2026-05-01",
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T10:58:00Z",
+      "emp_id": "EMP-0008",
+      "id": "278"
+    },
+    {
+      "レコード番号": "279",
+      "mail": "m-sugawara@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "菅原　未希斗",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "223"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "仙台営業所",
+      "sort": "63",
+      "revision": "15",
+      "transfer_date": "2026-05-01",
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T10:58:00Z",
+      "emp_id": "EMP-0007",
+      "id": "279"
+    },
+    {
+      "レコード番号": "280",
+      "mail": "s-ikedo@j-bis.co.jp",
+      "group_name": "honsya",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "池戸　柊二",
+      "pc_ledger_v1_list": [],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "人事研修部",
+      "sort": "258",
+      "revision": "11",
+      "transfer_date": null,
+      "更新日時": "2026-04-16T08:44:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "退職",
+      "retired_date": "2026-04-15",
+      "作成日時": "2026-03-21T10:58:00Z",
+      "emp_id": "EMP-0006",
+      "id": "280"
+    },
+    {
+      "レコード番号": "281",
+      "mail": "wada-a@j-bis.co.jp",
+      "group_name": "reform",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "和田　渉",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "224"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "首都圏支店",
+      "sort": "222",
+      "revision": "14",
+      "transfer_date": "2026-05-01",
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T10:58:00Z",
+      "emp_id": "EMP-0005",
+      "id": "281"
+    },
+    {
+      "レコード番号": "282",
+      "mail": "g-oikawa@j-bis.co.jp",
+      "group_name": "tohoku",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "及川　樂",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "225"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "仙台営業所",
+      "sort": "64",
+      "revision": "15",
+      "transfer_date": "2026-05-01",
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T10:58:00Z",
+      "emp_id": "EMP-0004",
+      "id": "282"
+    },
+    {
+      "レコード番号": "283",
+      "mail": "s-ishizaka@j-bis.co.jp",
+      "group_name": "tekko",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "石坂　真之佑",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "226"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "鉄構支店",
+      "sort": "246",
+      "revision": "14",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T10:58:00Z",
+      "emp_id": "EMP-0003",
+      "id": "283"
+    },
+    {
+      "レコード番号": "284",
+      "mail": "m-tada@j-bis.co.jp",
+      "group_name": "kan-etsu",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "但田　元秀",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "227"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "関越支店",
+      "sort": "85",
+      "revision": "15",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-03-21T10:58:00Z",
+      "emp_id": "EMP-0002",
+      "id": "284"
+    },
+    {
+      "レコード番号": "307",
+      "mail": "m-kondo@j-bis.co.jp",
+      "group_name": "tokyo",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "近藤　匡浩",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": "234"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "千葉営業所",
+      "sort": "151",
+      "revision": "11",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-04-15T05:03:00Z",
+      "emp_id": "EMP-0001",
+      "id": "307"
+    },
+    {
+      "レコード番号": "308",
+      "mail": "k-kato@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "加藤　千典",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": ""
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東海支店",
+      "sort": "158",
+      "revision": "3",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-06-03T05:56:00Z",
+      "emp_id": "",
+      "id": "308"
+    },
+    {
+      "レコード番号": "309",
+      "mail": "kawamoto@j-bis.co.jp",
+      "group_name": "tokai",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "川元　隆史",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": ""
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "東海支店",
+      "sort": "157",
+      "revision": "4",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T02:36:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-06-03T05:57:00Z",
+      "emp_id": "",
+      "id": "309"
+    },
+    {
+      "レコード番号": "310",
+      "mail": "isohata@j-bis.co.jp",
+      "group_name": "wangan",
+      "更新者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "user_name": "五十畑　亘",
+      "pc_ledger_v1_list": [
+        {
+          "pc_674_record_id": ""
+        },
+        {
+          "pc_674_record_id": "328"
+        }
+      ],
+      "作成者": {
+        "code": "admin",
+        "name": "管理者"
+      },
+      "dept_name": "湾岸工事所",
+      "sort": "261",
+      "revision": "4",
+      "transfer_date": null,
+      "更新日時": "2026-06-04T06:21:00Z",
+      "transfer_note": "",
+      "retired_note": "",
+      "employment_status": "在籍",
+      "retired_date": null,
+      "作成日時": "2026-06-04T04:39:00Z",
+      "emp_id": "",
+      "id": "310"
+    }
+  ]
+}

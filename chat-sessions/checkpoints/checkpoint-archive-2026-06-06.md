@@ -1700,3 +1700,45 @@
 
 <!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-06-06.md -->
 
+
+
+---
+
+> rollup from checkpoint-latest.md — 1 sections
+
+## 2026-06-05 JST — **セッション締め**
+
+| 項目 | 内容 |
+|------|------|
+| **本日完了** | **2026年05月 情報セキュリティレポート**（IPA表・警視庁グラフ5・4月書式統一）— **浜田 OK**／セッション起動・至急4件（Desktop sync・壁時計・重要確認事項・git `393b11f` push） |
+| **レポート正本** | `C:\tmp\資料作成\【2026年6月度経営会議資料】2026年05月情報セキュリティレポート20260605.docx` |
+| **builder** | `C:\tmp\build-may-security-report.py`（**リポ外** — 夕反省 R1 承認待ち） |
+| **注記** | 5月検知 **0件**・社外事例2件はプレースホルダ |
+| **夕反省** | `docs/reports/2026-06-05-evening-reflection.md` — **R1–R6 全 GO**（2026-06-05 浜田） |
+| **doc-lane** | `npm run doc-lane:security-report` / `scripts/lib/docx_template_format.py` |
+| **GHA** | `security-next-kintone` **analyze 再実行成功**（run 27012980832）— R4 フォールバック実装済 |
+| **締め** | `SESSION-CLOSE-REPORT-20260605.txt` |
+
+---
+
+
+
+## セッション切替後の自律復元（圧縮ミラー・rollup 後）
+
+**cold-start 優先**: `docs/handoff/latest-session-bridge.json` + 本ファイル先頭80行 + `.cursor/skills/kintone-session-bootstrap/SKILL.md`  
+**朝一括**: `npm run cio:morning:ready -- --project business-improvement`  
+**索引**: `data/cio-project-lanes.json` / `data/cio-rules-topic-index.json`
+
+**項番 -1**: Desktop **`00-NEW-SESSION-STARTER_yyyymmdd.txt` 全文貼付推奨**（`chat-sessions/NEW-SESSION-STARTER.md` 同内容）  
+**項番 -0**: 浜田 **OK が返るまで** 項番 0・本題の副作用に **着手しない**（§41 一問）  
+**項番 0**: リポルートで **`npm run session:bootstrap`**（**Read より前**に `verify:constitution-handoff` → `mandatory-read-gate.mjs` → `verify:session-clock-health` → `session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync`）  
+**項番 0.9**: 合意と checkpoint が食い違うときだけ §41 再確認  
+**0b Desktop**: `C:\Users\mhamada202408224\Desktop\AI緊急用` — `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync` / **`23-AI緊急用-README.txt`**  
+**壁時計**: `SESSION-CLOCK.md` / `SESSION-SPLIT-REMINDER.md` / `session:clock:set` / `session:clock:watch` / `session:split-check`  
+**§35-6 / §35-7 / HANDOFF-AI-FIVE-BLOCKS / TSB-031**: 削除・日終わり sync は浜田確認または §41  
+**詳細履歴**: `chat-sessions/checkpoints/checkpoint-archive-2026-06-06.md`
+
+**最終更新**: 2026-06-06 (Sat) JST 夜 — **最終締め**: Phase E・§4.7 修正・commit `41c6045`・明日 `cio:morning:ready`
+
+<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-06-06.md -->
+

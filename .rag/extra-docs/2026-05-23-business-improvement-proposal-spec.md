@@ -1412,3 +1412,46 @@ npm run business-improvement:prep-83
 | ID | 論点 |
 |----|------|
 ※ OPEN-03 / 04 / 06・**Q-IMPL-01〜05** は確定済み。
+
+---
+
+## 11. 実装ログ（Space 5 — 2026-06-07）
+
+**実装OK**: 2026-06-06 浜田（`docs/handoff/implementation-ok-seal.json`）  
+**詳細報告**: `docs/reports/2026-06-07-bi-phase4-5-session.md`
+
+### 11.1 アプリ（Space 5）
+
+| ID | 表示名 | 状態 |
+|----|--------|------|
+| 697 | 設定マスタ | 作成・seed 済 |
+| 698 | 社員マスタ | 作成・595 同期スクリプト |
+| 699 | ご利用ガイド | customize **v5g** — 骨格のみ（本文は §11.3） |
+| 700 | 提案申請 ver.02 | customize **v33** — 申請+評価 UI |
+
+### 11.2 customize 実装済（700）
+
+| 機能 | BUILD 帯 | 備考 |
+|------|----------|------|
+| 申請UI 5ブロック | v4b | applyDraft **v33** |
+| REST 申請→ガイド遷移 | v29 | `bi-apply-done` |
+| 評価UI evalDraft | v30 | beforeunload 解消 |
+| 完了前 最終ランク必須 | v28 | `evalForwardTargetsDone` |
+| test_v3 WF（A→人事） | v26–v27 | seed スクリプト |
+| branch_delegate 型対応 | v31–v32 | CHECK_BOX/DROP_DOWN 両対応 |
+| アイデア提案（10点・総合審査のみ） | v33 | 申請 E2E OK |
+
+### 11.3 ガイド執筆スケジュール（浜田 2026-06-07 合意）
+
+| 日程 | セクション | 状態 |
+|------|------------|------|
+| **6/7 夜** | 申請編 + 699/700 背景デザイン | 未着手 |
+| **6/8** | 評価者編 | 未着手 |
+| **6/9** | よくあるFAQ（Q-GUIDE-06/08） | 未着手 |
+
+### 11.4 Phase 6 残（未着手）
+
+- 本番 6 段階 WF
+- 評価スナップショット・操作履歴の本番投入
+- 3日リマインドメール
+- `branch_delegate` live フィールド型修復（CHECK_BOX 正）

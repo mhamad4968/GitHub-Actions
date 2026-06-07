@@ -1,0 +1,95 @@
+{
+  "version": "2026-06-07",
+  "profileId": "test_v3",
+  "label": "テスト用WF（dev・未処理→部長→支店長→人事→完了）",
+  "note": "C=部長で完了、B=支店長で完了、A=支店長→人事部長→完了。kintone key は ASCII 固定。",
+  "settingsMaster": {
+    "deptName": "【WFテスト】開発検証用",
+    "orgType": "本社部",
+    "applicantLogin": "admin",
+    "managerLogin": "admin",
+    "branchManagerLogin": "admin",
+    "note": "dev評価UI・WF動作確認用（v3=人事部長段階追加）"
+  },
+  "stateLabelsJa": {
+    "Draft": "未処理",
+    "Mgr": "上司承認中",
+    "Branch": "支店長承認中",
+    "Hr": "人事研修部長承認中",
+    "Done": "完了"
+  },
+  "actionLabelsJa": {
+    "Apply": "申請",
+    "MgrToBranch": "支店長評価へ",
+    "MgrToDone": "承認する",
+    "BranchToHr": "人事部長評価へ",
+    "BranchApprove": "承認する",
+    "HrApprove": "承認する"
+  },
+  "customizeStatusKeys": {
+    "applyStatuses": ["Draft", "unprocessed", "未処理", "applicant_fix", "申請者修正待ち"],
+    "evalStatuses": ["Mgr", "manager", "上司承認中", "Branch", "branch", "支店長承認中", "Hr", "hr", "人事研修部長承認中", "Done", "done", "完了"]
+  },
+  "kintoneStatus": {
+    "enable": true,
+    "states": {
+      "Draft": {
+        "name": "Draft",
+        "index": "0",
+        "assignee": { "type": "ONE", "entities": [] }
+      },
+      "Mgr": {
+        "name": "Mgr",
+        "index": "1",
+        "assignee": {
+          "type": "ONE",
+          "entities": [
+            {
+              "entity": { "type": "FIELD_ENTITY", "code": "部長評価者" },
+              "includeSubs": false
+            }
+          ]
+        }
+      },
+      "Branch": {
+        "name": "Branch",
+        "index": "2",
+        "assignee": {
+          "type": "ONE",
+          "entities": [
+            {
+              "entity": { "type": "FIELD_ENTITY", "code": "支店長評価者" },
+              "includeSubs": false
+            }
+          ]
+        }
+      },
+      "Hr": {
+        "name": "Hr",
+        "index": "3",
+        "assignee": {
+          "type": "ONE",
+          "entities": [
+            {
+              "entity": { "type": "FIELD_ENTITY", "code": "人事部長評価者" },
+              "includeSubs": false
+            }
+          ]
+        }
+      },
+      "Done": {
+        "name": "Done",
+        "index": "4",
+        "assignee": { "type": "ONE", "entities": [] }
+      }
+    },
+    "actions": [
+      { "name": "Apply", "index": "0", "from": "Draft", "to": "Mgr", "filterCond": "", "type": "PRIMARY" },
+      { "name": "MgrToBranch", "index": "1", "from": "Mgr", "to": "Branch", "filterCond": "", "type": "PRIMARY" },
+      { "name": "MgrToDone", "index": "2", "from": "Mgr", "to": "Done", "filterCond": "", "type": "PRIMARY" },
+      { "name": "BranchToHr", "index": "3", "from": "Branch", "to": "Hr", "filterCond": "", "type": "PRIMARY" },
+      { "name": "BranchApprove", "index": "4", "from": "Branch", "to": "Done", "filterCond": "", "type": "PRIMARY" },
+      { "name": "HrApprove", "index": "5", "from": "Hr", "to": "Done", "filterCond": "", "type": "PRIMARY" }
+    ]
+  }
+}

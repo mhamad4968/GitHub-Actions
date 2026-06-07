@@ -2880,3 +2880,25 @@ npm run cio:morning:ready -- --project business-improvement
 **締め**: `SESSION-CLOSE-REPORT-20260606.txt`
 
 ---
+
+### 2026-06-07 JST — **業務改善 Phase 4b–5 完走・締め**
+
+**本日完了**:
+- Space 5 — **697–700** 作成・seed・customize deploy
+- **700 v33** — applyDraft（beforeunload 解消）・REST 申請→ガイド(699)遷移
+- **700 v28–v32** — evalDraft・最終ランク必須・test_v3 WF・branch_delegate 型対応
+- **E2E** — 業務改善・アイデア提案・支店長判断 — **浜田 OK**
+
+**BUILD live**: 700=`2026-06-07-bi-proposal-apply-v33` / 699=`2026-06-07-bi-guide-v5g`
+
+**今夜 1 手**: ガイド **申請編** 本文 + **699/700 背景デザイン**
+
+**6/8**: 評価者編 / **6/9**: FAQ
+
+**仕様**: `docs/plans/2026-05-23-business-improvement-proposal-spec.md` §11
+
+**Git**: commit + push（本締め）
+
+**締め**: `SESSION-CLOSE-REPORT-20260607.txt`
+
+---

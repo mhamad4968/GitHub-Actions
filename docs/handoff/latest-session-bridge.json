@@ -1,16 +1,17 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-06-06T08:18:37.011Z",
-  "gitHead": "9ea5b18",
-  "gitStatus": "## main...origin/main [ahead 3]",
-  "nextTask": "**6/7 朝** `npm run cio:morning:ready -- --project business-improvement` → 浜田 **実装OK** → 案B1 着手",
+  "exportedAt": "2026-06-07T12:00:00.000Z",
+  "gitHead": "(commit pending)",
+  "gitStatus": "## main",
+  "nextTask": "**今夜** ガイド申請編本文 + 699/700 背景デザイン → **6/8** 評価者編 → **6/9** FAQ",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
-    "chat-sessions/handoff-log.md",
-    ".cursor/rules/mode-b-canonical.mdc",
-    "docs/handoff/latest-session-bridge.json",
-    "docs/knowledge/debug-tips.md"
+    "chat-sessions/SESSION-CLOSE-REPORT-20260607.txt",
+    "docs/reports/2026-06-07-bi-phase4-5-session.md",
+    "customize/business-improvement-guide/desktop.js",
+    "customize/business-improvement-proposal/desktop.js",
+    "docs/plans/2026-05-23-business-improvement-proposal-spec.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=9ea5b18 | 次=**6/7 朝** `npm run cio:morning:ready -- --project business-improvement` → 浜田 **実装OK** → 案B1 着手 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, .cursor/rules/mode-b-canonical.mdc",
+  "promptBlock": "【SESSION-BRIDGE】Phase4b-5 E2E OK | BUILD 700=v33 699=v5g | 次=今夜 申請編ガイド+背景デザイン | Read: checkpoint-latest.md, SESSION-CLOSE-REPORT-20260607.txt",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }

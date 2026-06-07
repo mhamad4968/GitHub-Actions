@@ -25,6 +25,8 @@ npm run app:fields <アプリID>
 | 694 | `2026-06-06-694-apple-id-email-legacy` | **17** | `b47683b7-9fb9-4ab3-9ea9-d46a12de1448` | 2026-06-06 legacy メール（au.com 等）検証拡張 |
 | 695 | `2026-06-06-shared-mail-db-block-ui` | **5** | `afc1ca51-aeed-4a67-a3ed-9a2fac00e91a` | 2026-06-06 共有メール DB save/delete ブロック |
 | 696 | `2026-06-06-696-shared-mail-dash-v1` | **4** | `74c75fb1-6be2-45e3-a330-74c4a7dfa070` | 2026-06-06 共有メール台帳 v1 |
+| 699 | `2026-06-07-bi-guide-v5g` | **16** | `1b22865a-3c82-4671-af2f-311aea7bc038` | 2026-06-07 業務改善ガイド骨格 |
+| 700 | `2026-06-07-bi-proposal-apply-v33` | **118** | `ab72c699-f495-425a-bc00-15190c97b97c` | 2026-06-07 申請+評価 UI applyDraft |
 | 627 | `2026-05-12-627-no594-rest` | 150 | `9fc3efc8-2a22-4585-881f-0ee3c2a0fbf2` | 2026-05-16 portfolio 拡張（6b3d370 同期） |
 | 668 | `2026-05-16-668-ops-guide-portfolio-audit` | 42 | `106126f5-7249-4104-8b43-405c85ddfa51` | 2026-05-16 portfolio 拡張・`deploy:668` |
 | 677 | `2026-05-15-677-block-all-ui-mutations-dash678-only` | 20 | `6eb02e6f-4319-4bed-97ee-245ee0869a01` | 2026-05-16 registry 整合 |
@@ -124,7 +126,6 @@ npm run app:fields <アプリID>
 
 | 日時（UTC） | アプリID | customize パス |
 |-------------|----------|----------------|
-| 2026-06-06T00:17:40Z | 674 | `customize/new-pc-ledger-v1/desktop.js` |
 | 2026-05-30T12:22:33Z | 595 | `customize/595/desktop.js` |
 | 2026-05-27T09:50:29Z | 678 | `customize/678/desktop.js` |
 | 2026-05-24T09:22:26Z | 686 | `customize/686/desktop.js` |
@@ -626,6 +627,23 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 - **668**: `ops-guide:publish` のタイミング（本番即時か）、HTML 変更のレビュー者
 
 上記を **フェーズとして切ったマイルストーン**（例: フェーズ1＝フィールド一覧とスクリプト grep の突合のみ、フェーズ2＝検証環境 E2E）にすると、**「意図的に未実施だった部分」を段階的に完了**させやすい。
+
+---
+
+## 業務改善 ver.02（Space 5 — 697–700）
+
+**仕様正本**: `docs/plans/2026-05-23-business-improvement-proposal-spec.md` §11  
+**実装報告**: `docs/reports/2026-06-07-bi-phase4-5-session.md`  
+**WF テスト**: `scripts/data/business-improvement-wf-test-master.json`（test_v3）
+
+| アプリ | ID | customize | BUILD（本番） | deploy |
+|--------|-----|-----------|---------------|--------|
+| 設定マスタ | **697** | — | — | `business-improvement:seed-settings` |
+| 社員マスタ | **698** | — | — | `business-improvement:sync-595` |
+| ご利用ガイド | **699** | `customize/business-improvement-guide/desktop.js` | `2026-06-07-bi-guide-v5g` rev16 | `deploy:699` |
+| 提案申請 ver.02 | **700** | `customize/business-improvement-proposal/desktop.js` | `2026-06-07-bi-proposal-apply-v33` rev118 | `deploy:700` |
+
+**700 主要機能**: 申請UI（applyDraft v33）・評価UI（evalDraft）・REST 申請→ガイド遷移・test_v3 WF（A→人事）・branch_delegate 型対応。
 
 ---
 

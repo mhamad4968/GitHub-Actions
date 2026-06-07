@@ -1,0 +1,569 @@
+{
+  "comment": "generated at create",
+  "properties": {
+    "部署": {
+      "type": "DROP_DOWN",
+      "code": "部署",
+      "label": "部署",
+      "required": false,
+      "noLabel": false,
+      "options": {
+        "総務部": {
+          "label": "総務部",
+          "index": "0"
+        },
+        "経理部": {
+          "label": "経理部",
+          "index": "1"
+        },
+        "経営企画部": {
+          "label": "経営企画部",
+          "index": "2"
+        },
+        "人事研修部": {
+          "label": "人事研修部",
+          "index": "3"
+        },
+        "安全推進部": {
+          "label": "安全推進部",
+          "index": "4"
+        },
+        "施工推進部": {
+          "label": "施工推進部",
+          "index": "5"
+        },
+        "メンテナンス技術部": {
+          "label": "メンテナンス技術部",
+          "index": "6"
+        },
+        "塗装技術部": {
+          "label": "塗装技術部",
+          "index": "7"
+        },
+        "品質管理部": {
+          "label": "品質管理部",
+          "index": "8"
+        },
+        "東北支店": {
+          "label": "東北支店",
+          "index": "9"
+        },
+        "仙台営業所": {
+          "label": "仙台営業所",
+          "index": "10"
+        },
+        "盛岡営業所": {
+          "label": "盛岡営業所",
+          "index": "11"
+        },
+        "盛岡営業所技術部": {
+          "label": "盛岡営業所技術部",
+          "index": "12"
+        },
+        "秋田営業所": {
+          "label": "秋田営業所",
+          "index": "13"
+        },
+        "関越支店": {
+          "label": "関越支店",
+          "index": "14"
+        },
+        "新潟営業所": {
+          "label": "新潟営業所",
+          "index": "15"
+        },
+        "長野営業所": {
+          "label": "長野営業所",
+          "index": "16"
+        },
+        "高崎営業所": {
+          "label": "高崎営業所",
+          "index": "17"
+        },
+        "東京支店": {
+          "label": "東京支店",
+          "index": "18"
+        },
+        "水戸営業所": {
+          "label": "水戸営業所",
+          "index": "19"
+        },
+        "千葉営業所": {
+          "label": "千葉営業所",
+          "index": "20"
+        },
+        "東海支店": {
+          "label": "東海支店",
+          "index": "21"
+        },
+        "東京営業所": {
+          "label": "東京営業所",
+          "index": "22"
+        },
+        "静岡営業所": {
+          "label": "静岡営業所",
+          "index": "23"
+        },
+        "名古屋営業所": {
+          "label": "名古屋営業所",
+          "index": "24"
+        },
+        "関西営業所": {
+          "label": "関西営業所",
+          "index": "25"
+        },
+        "札幌支店": {
+          "label": "札幌支店",
+          "index": "26"
+        },
+        "首都圏支店": {
+          "label": "首都圏支店",
+          "index": "27"
+        },
+        "鉄構支店": {
+          "label": "鉄構支店",
+          "index": "28"
+        },
+        "湾岸工事所": {
+          "label": "湾岸工事所",
+          "index": "29"
+        }
+      }
+    },
+    "社員名": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "社員名",
+      "label": "社員名（代表提案者）",
+      "required": false,
+      "noLabel": false
+    },
+    "提案種別": {
+      "type": "DROP_DOWN",
+      "code": "提案種別",
+      "label": "提案種別",
+      "required": false,
+      "noLabel": false,
+      "options": {
+        "業務改善提案": {
+          "label": "業務改善提案",
+          "index": "0"
+        },
+        "アイデア提案": {
+          "label": "アイデア提案",
+          "index": "1"
+        }
+      }
+    },
+    "提案件名": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "提案件名",
+      "label": "提案件名",
+      "required": false,
+      "noLabel": false
+    },
+    "提案日": {
+      "type": "DATE",
+      "code": "提案日",
+      "label": "提案日",
+      "required": false,
+      "noLabel": false
+    },
+    "目的": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "目的",
+      "label": "目的",
+      "required": false,
+      "noLabel": false
+    },
+    "現状": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "現状",
+      "label": "現状",
+      "required": false,
+      "noLabel": false
+    },
+    "問題点": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "問題点",
+      "label": "問題点",
+      "required": false,
+      "noLabel": false
+    },
+    "改善案": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "改善案",
+      "label": "改善案",
+      "required": false,
+      "noLabel": false
+    },
+    "効果": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "効果",
+      "label": "効果",
+      "required": false,
+      "noLabel": false
+    },
+    "提案者一覧": {
+      "type": "SUBTABLE",
+      "code": "提案者一覧",
+      "label": "提案者一覧",
+      "noLabel": false,
+      "fields": {
+        "提案者所属": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "提案者所属",
+          "label": "所属",
+          "required": false,
+          "noLabel": false
+        },
+        "提案者名": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "提案者名",
+          "label": "社員名",
+          "required": false,
+          "noLabel": false
+        }
+      }
+    },
+    "添付ファイル_0": {
+      "type": "FILE",
+      "code": "添付ファイル_0",
+      "label": "添付ファイル",
+      "required": false,
+      "noLabel": false,
+      "thumbnailSize": "150"
+    },
+    "eval_effect": {
+      "type": "DROP_DOWN",
+      "code": "eval_effect",
+      "label": "評価（効果）",
+      "required": false,
+      "noLabel": false,
+      "options": {
+        "stage_a": {
+          "label": "①（10点）",
+          "index": "0"
+        },
+        "stage_b": {
+          "label": "②（8点）",
+          "index": "1"
+        },
+        "stage_c": {
+          "label": "③（6点）",
+          "index": "2"
+        },
+        "stage_d": {
+          "label": "④（4点）",
+          "index": "3"
+        },
+        "stage_e": {
+          "label": "⑤（2点）",
+          "index": "4"
+        }
+      }
+    },
+    "eval_ingenuity": {
+      "type": "DROP_DOWN",
+      "code": "eval_ingenuity",
+      "label": "評価（工夫度）",
+      "required": false,
+      "noLabel": false,
+      "options": {
+        "stage_a": {
+          "label": "①（5点）",
+          "index": "0"
+        },
+        "stage_b": {
+          "label": "②（4点）",
+          "index": "1"
+        },
+        "stage_c": {
+          "label": "③（3点）",
+          "index": "2"
+        },
+        "stage_d": {
+          "label": "④（2点）",
+          "index": "3"
+        },
+        "stage_e": {
+          "label": "⑤（1点）",
+          "index": "4"
+        }
+      }
+    },
+    "eval_effort": {
+      "type": "DROP_DOWN",
+      "code": "eval_effort",
+      "label": "評価（努力度）",
+      "required": false,
+      "noLabel": false,
+      "options": {
+        "stage_a": {
+          "label": "①（5点）",
+          "index": "0"
+        },
+        "stage_b": {
+          "label": "②（4点）",
+          "index": "1"
+        },
+        "stage_c": {
+          "label": "③（3点）",
+          "index": "2"
+        },
+        "stage_d": {
+          "label": "④（2点）",
+          "index": "3"
+        },
+        "stage_e": {
+          "label": "⑤（1点）",
+          "index": "4"
+        }
+      }
+    },
+    "eval_overall": {
+      "type": "DROP_DOWN",
+      "code": "eval_overall",
+      "label": "評価（総合的審査）",
+      "required": false,
+      "noLabel": false,
+      "options": {
+        "stage_a": {
+          "label": "①（10点）",
+          "index": "0"
+        },
+        "stage_b": {
+          "label": "②（8点）",
+          "index": "1"
+        },
+        "stage_c": {
+          "label": "③（6点）",
+          "index": "2"
+        },
+        "stage_d": {
+          "label": "④（4点）",
+          "index": "3"
+        },
+        "stage_e": {
+          "label": "⑤（2点）",
+          "index": "4"
+        }
+      }
+    },
+    "評価コメント": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "評価コメント",
+      "label": "評価コメント",
+      "required": false,
+      "noLabel": false
+    },
+    "合計点": {
+      "type": "NUMBER",
+      "code": "合計点",
+      "label": "合計点",
+      "required": false,
+      "noLabel": false,
+      "digit": false,
+      "unique": false,
+      "defaultValue": "",
+      "displayScale": "",
+      "unit": "",
+      "unitPosition": "BEFORE"
+    },
+    "表彰ランク_自動": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "表彰ランク_自動",
+      "label": "表彰ランク（自動）",
+      "required": false,
+      "noLabel": false
+    },
+    "表彰ランク_最終": {
+      "type": "DROP_DOWN",
+      "code": "表彰ランク_最終",
+      "label": "表彰ランク（最終）",
+      "required": false,
+      "noLabel": false,
+      "options": {
+        "A": {
+          "label": "A",
+          "index": "0"
+        },
+        "B": {
+          "label": "B",
+          "index": "1"
+        },
+        "C": {
+          "label": "C",
+          "index": "2"
+        }
+      }
+    },
+    "付与ポイント": {
+      "type": "NUMBER",
+      "code": "付与ポイント",
+      "label": "付与ポイント",
+      "required": false,
+      "noLabel": false,
+      "digit": false,
+      "unique": false,
+      "defaultValue": "",
+      "displayScale": "",
+      "unit": "",
+      "unitPosition": "BEFORE"
+    },
+    "branch_delegate": {
+      "type": "CHECK_BOX",
+      "code": "branch_delegate",
+      "label": "支店長判断",
+      "required": false,
+      "noLabel": false,
+      "options": {
+        "delegate": {
+          "label": "支店長へ判断を委ねる",
+          "index": "0"
+        }
+      }
+    },
+    "差戻し理由": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "差戻し理由",
+      "label": "差戻し理由",
+      "required": false,
+      "noLabel": false
+    },
+    "申請者": {
+      "type": "USER_SELECT",
+      "code": "申請者",
+      "label": "申請者（共有ID）",
+      "required": false,
+      "noLabel": false,
+      "entities": [],
+      "defaultValue": []
+    },
+    "部長評価者": {
+      "type": "USER_SELECT",
+      "code": "部長評価者",
+      "label": "部長評価者",
+      "required": false,
+      "noLabel": false,
+      "entities": [],
+      "defaultValue": []
+    },
+    "支店長評価者": {
+      "type": "USER_SELECT",
+      "code": "支店長評価者",
+      "label": "支店長評価者",
+      "required": false,
+      "noLabel": false,
+      "entities": [],
+      "defaultValue": []
+    },
+    "人事部長評価者": {
+      "type": "USER_SELECT",
+      "code": "人事部長評価者",
+      "label": "人事部長評価者",
+      "required": false,
+      "noLabel": false,
+      "entities": [],
+      "defaultValue": []
+    },
+    "評価スナップショット": {
+      "type": "SUBTABLE",
+      "code": "評価スナップショット",
+      "label": "評価スナップショット",
+      "noLabel": false,
+      "fields": {
+        "snap_phase": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "snap_phase",
+          "label": "フェーズ",
+          "required": false,
+          "noLabel": false
+        },
+        "snap_actor": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "snap_actor",
+          "label": "操作者",
+          "required": false,
+          "noLabel": false
+        },
+        "snap_at": {
+          "type": "DATETIME",
+          "code": "snap_at",
+          "label": "日時",
+          "required": false,
+          "noLabel": false
+        },
+        "snap_total": {
+          "type": "NUMBER",
+          "code": "snap_total",
+          "label": "合計点",
+          "required": false,
+          "noLabel": false,
+          "digit": false,
+          "unique": false,
+          "defaultValue": "",
+          "displayScale": "",
+          "unit": "",
+          "unitPosition": "BEFORE"
+        },
+        "snap_rank_auto": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "snap_rank_auto",
+          "label": "自動ランク",
+          "required": false,
+          "noLabel": false
+        },
+        "snap_rank_final": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "snap_rank_final",
+          "label": "最終ランク",
+          "required": false,
+          "noLabel": false
+        },
+        "snap_comment": {
+          "type": "MULTI_LINE_TEXT",
+          "code": "snap_comment",
+          "label": "評価コメント",
+          "required": false,
+          "noLabel": false
+        }
+      }
+    },
+    "提案操作履歴": {
+      "type": "SUBTABLE",
+      "code": "提案操作履歴",
+      "label": "提案操作履歴",
+      "noLabel": false,
+      "fields": {
+        "hist_at": {
+          "type": "DATETIME",
+          "code": "hist_at",
+          "label": "操作日時",
+          "required": false,
+          "noLabel": false
+        },
+        "hist_action": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "hist_action",
+          "label": "操作種別",
+          "required": false,
+          "noLabel": false
+        },
+        "hist_actor": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "hist_actor",
+          "label": "操作者",
+          "required": false,
+          "noLabel": false
+        },
+        "hist_detail": {
+          "type": "MULTI_LINE_TEXT",
+          "code": "hist_detail",
+          "label": "詳細",
+          "required": false,
+          "noLabel": false
+        }
+      }
+    }
+  }
+}

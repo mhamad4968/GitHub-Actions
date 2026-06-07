@@ -1,0 +1,12 @@
+{
+  "project": "business-improvement-ver02",
+  "signedAt": "2026-06-06T23:56:17.249Z",
+  "signedBy": "浜田",
+  "scope": "案B1+customize段階実施 Space5",
+  "gatesRun": [
+    "cio:morning:pre-implement",
+    "cio:guard:5038"
+  ],
+  "gitHead": "77bf7a1",
+  "note": "浜田「実装OK」サイン記録"
+}
