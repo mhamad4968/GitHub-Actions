@@ -41,3 +41,21 @@
 ---
 
 <!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-06-06.md -->
+
+---
+
+## セッション切替後の自律復元（圧縮ミラー・rollup 後）
+
+**cold-start 優先**: `docs/handoff/latest-session-bridge.json` + 本ファイル先頭80行 + `.cursor/skills/kintone-session-bootstrap/SKILL.md`  
+**索引**: `data/cio-project-lanes.json` / `data/cio-rules-topic-index.json`
+
+**項番 -1**: Desktop **`00-NEW-SESSION-STARTER_yyyymmdd.txt` 全文貼付推奨**（`chat-sessions/NEW-SESSION-STARTER.md` 同内容）  
+**項番 -0**: 浜田 **OK が返るまで** 項番 0・本題の副作用に **着手しない**（§41 一問）  
+**項番 0**: リポルートで **`npm run session:bootstrap`**（**Read より前**に `verify:constitution-handoff` → `mandatory-read-gate.mjs` → `verify:session-clock-health` → `session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync`）  
+**項番 0.9**: 合意と checkpoint が食い違うときだけ §41 再確認  
+**0b Desktop**: `C:\Users\mhamada202408224\Desktop\AI緊急用` — `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync` / **`23-AI緊急用-README.txt`**  
+**壁時計**: `SESSION-CLOCK.md` / `SESSION-SPLIT-REMINDER.md` / `session:clock:set` / `session:clock:watch` / `session:split-check`  
+**§35-6 / §35-7 / HANDOFF-AI-FIVE-BLOCKS / TSB-031**: 削除・日終わり sync は浜田確認または §41  
+**詳細履歴**: `chat-sessions/checkpoints/checkpoint-archive-2026-06-06.md`
+
+**最終更新**: 2026-06-07 (Sun) JST — **Phase 4b–5 E2E OK**・commit `b8a2824`・今夜 申請編ガイド+背景デザイン
