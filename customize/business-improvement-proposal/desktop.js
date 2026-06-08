@@ -2,7 +2,7 @@
   'use strict';
 
   /** 業務改善 ver.02 — 提案申請 申請UI（Phase 4b）+ 評価UI（Phase 5） */
-  var BUILD = '2026-06-07-bi-proposal-apply-v33';
+  var BUILD = '2026-06-08-bi-proposal-no-purpose-jump';
   var WF_ACTION_APPLY = 'Apply';
   var WF_ACTION_REAPPLY = 'reapply';
   var BI = {
@@ -251,9 +251,8 @@
     });
   }
 
-  function refreshWfRouteDisplay(rec, variant) {
+  function refreshWfRouteDisplay(rec) {
     rec = rec || recForApplyCheck();
-    variant = variant || 'apply';
     return resolveWfPeople(rec).then(function () {
       var wrap = ui.root && ui.root.querySelector('[data-bi-wf-route-wrap]');
       if (wrap) wrap.innerHTML = wfRouteHtml(rec, 'apply');
@@ -1065,6 +1064,18 @@
     setTimeout(function () { el.focus(); }, 120);
   }
 
+  function isHeaderOrProposerFocus(el) {
+    if (!el || !ui.root || !ui.root.contains(el)) return false;
+    if (el.closest && el.closest('[data-bi-proposers-tbody]')) return true;
+    if (el.hasAttribute('data-bi-add-row')) return true;
+    if (el.hasAttribute('data-bi-pdept') || el.hasAttribute('data-bi-pname')) return true;
+    if (el.hasAttribute('data-bi-psearch') || el.hasAttribute('data-bi-pdel')) return true;
+    if (el.hasAttribute('data-bi-rep-search')) return true;
+    if (el.hasAttribute('data-bi-dept') || el.hasAttribute('data-bi-rep') ||
+        el.hasAttribute('data-bi-type') || el.hasAttribute('data-bi-title')) return true;
+    return false;
+  }
+
   function openPurposeAndFocus() {
     if (ui.open[F.purpose]) {
       focusField('[data-bi-field="' + F.purpose + '"]');
@@ -1145,10 +1156,65 @@
     });
   }
 
-  function updateApplyUi(rec) {
+  function proposerRowHtml(row, idx) {
+    var rd = (row.value[F.propDept] && row.value[F.propDept].value) || '';
+    var rn = (row.value[F.propName] && row.value[F.propName].value) || '';
+    return '<tr><td><input data-bi-pdept="' + idx + '" value="' + esc(rd) + '" style="width:100%;padding:6px 8px;border:1px solid #cbd5e1;border-radius:6px"' + roAttr() + '></td>' +
+      '<td><div style="display:flex;gap:6px"><input data-bi-pname="' + idx + '" value="' + esc(rn) + '" style="flex:1;padding:6px 8px;border:1px solid #cbd5e1;border-radius:6px"' + roAttr() + '>' +
+      (ui.readOnly ? '' : '<button type="button" data-bi-psearch="' + idx + '" style="padding:6px 10px;border:1px solid #93c5fd;background:#eff6ff;border-radius:6px;cursor:pointer">検索</button>') + '</div></td>' +
+      '<td>' + (!ui.readOnly && idx > 0 ? '<button type="button" data-bi-pdel="' + idx + '" style="padding:4px 8px;border:0;background:#fee2e2;color:#b91c1c;border-radius:6px;cursor:pointer">削除</button>' : '') + '</td></tr>';
+  }
+
+  function bindProposerRows() {
+    if (!ui.root || ui.readOnly) return;
+    ui.root.querySelectorAll('[data-bi-pdept]').forEach(function (el) {
+      el.oninput = function () {
+        var idx = Number(el.getAttribute('data-bi-pdept'));
+        patchRec(function (r) {
+          r = ensureProposers(r);
+          r[F.proposers].value[idx].value[F.propDept] = { type: 'SINGLE_LINE_TEXT', value: el.value };
+          if (idx === 0) syncRow1ToRep(r);
+        }, false, { skipWfRefresh: true });
+      };
+    });
+    ui.root.querySelectorAll('[data-bi-pname]').forEach(function (el) {
+      el.oninput = function () {
+        var idx = Number(el.getAttribute('data-bi-pname'));
+        patchRec(function (r) {
+          r = ensureProposers(r);
+          r[F.proposers].value[idx].value[F.propName] = { type: 'SINGLE_LINE_TEXT', value: el.value };
+          if (idx === 0) syncRow1ToRep(r);
+        }, false, { skipWfRefresh: true });
+      };
+    });
+    ui.root.querySelectorAll('[data-bi-psearch]').forEach(function (btn) {
+      btn.onclick = function () { openSearchModal(Number(btn.getAttribute('data-bi-psearch'))); };
+    });
+    ui.root.querySelectorAll('[data-bi-pdel]').forEach(function (btn) {
+      btn.onclick = function () {
+        var idx = Number(btn.getAttribute('data-bi-pdel'));
+        patchRec(function (r) {
+          r = ensureProposers(r);
+          r[F.proposers].value.splice(idx, 1);
+        }, false, { refreshProposers: true });
+      };
+    });
+  }
+
+  function updateProposerTable(rec) {
+    if (!ui.root) return;
+    rec = ensureProposers(rec);
+    var tbody = ui.root.querySelector('[data-bi-proposers-tbody]');
+    if (!tbody) return;
+    tbody.innerHTML = rec[F.proposers].value.map(proposerRowHtml).join('');
+    bindProposerRows();
+  }
+
+  function updateApplyUi(rec, opts) {
+    opts = opts || {};
     if (!ui.root) return;
     rec = recForApplyCheck();
-    refreshWfRouteDisplay(rec, 'apply');
+    if (!opts.skipWfRefresh) refreshWfRouteDisplay(rec);
     var btnWrap = ui.root.querySelector('[data-bi-footer-buttons]');
     if (btnWrap) {
       btnWrap.innerHTML = footerActionsHtml(rec);
@@ -1184,14 +1250,7 @@
       return '<option value="' + esc(t) + '"' + (val(rec, F.type) === t ? ' selected' : '') + '>' + esc(t) + '</option>';
     }).join('');
 
-    var propRows = rec[F.proposers].value.map(function (row, idx) {
-      var rd = (row.value[F.propDept] && row.value[F.propDept].value) || '';
-      var rn = (row.value[F.propName] && row.value[F.propName].value) || '';
-      return '<tr><td><input data-bi-pdept="' + idx + '" value="' + esc(rd) + '" style="width:100%;padding:6px 8px;border:1px solid #cbd5e1;border-radius:6px"' + roAttr() + '></td>' +
-        '<td><div style="display:flex;gap:6px"><input data-bi-pname="' + idx + '" value="' + esc(rn) + '" style="flex:1;padding:6px 8px;border:1px solid #cbd5e1;border-radius:6px"' + roAttr() + '>' +
-        (ui.readOnly ? '' : '<button type="button" data-bi-psearch="' + idx + '" style="padding:6px 10px;border:1px solid #93c5fd;background:#eff6ff;border-radius:6px;cursor:pointer">検索</button>') + '</div></td>' +
-        '<td>' + (!ui.readOnly && idx > 0 ? '<button type="button" data-bi-pdel="' + idx + '" style="padding:4px 8px;border:0;background:#fee2e2;color:#b91c1c;border-radius:6px;cursor:pointer">削除</button>' : '') + '</td></tr>';
-    }).join('');
+    var propRows = rec[F.proposers].value.map(proposerRowHtml).join('');
 
     var accHtml = ACC.map(function (a) {
       var open = !!ui.open[a.code];
@@ -1236,7 +1295,7 @@
       '<div style="background:#fff;border:1px solid #bfdbfe;border-radius:10px;padding:12px;margin-bottom:14px">' +
       '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><strong>提案者一覧</strong>' +
       (ui.readOnly ? '' : '<button type="button" data-bi-add-row style="padding:6px 12px;border:1px solid #93c5fd;background:#eff6ff;border-radius:8px;cursor:pointer">行を追加</button>') + '</div>' +
-      '<table style="width:100%;border-collapse:collapse"><thead><tr style="background:#f1f5f9"><th style="padding:8px;text-align:left">所属</th><th style="padding:8px;text-align:left">社員名</th><th></th></tr></thead><tbody>' + propRows + '</tbody></table></div>' +
+      '<table style="width:100%;border-collapse:collapse"><thead><tr style="background:#f1f5f9"><th style="padding:8px;text-align:left">所属</th><th style="padding:8px;text-align:left">社員名</th><th></th></tr></thead><tbody data-bi-proposers-tbody>' + propRows + '</tbody></table></div>' +
       accHtml +
       '<div style="background:#fff;border:1px solid #bfdbfe;border-radius:10px;margin-bottom:10px">' +
       '<button type="button" data-bi-toggle-attach style="width:100%;text-align:left;padding:12px 14px;border:0;background:#f8fafc;cursor:pointer;display:flex;justify-content:space-between">' +
@@ -1259,7 +1318,8 @@
     }
   }
 
-  function updateSummary() {
+  function updateSummary(opts) {
+    opts = opts || {};
     if (!ui.root) return;
     syncDomToCache();
     var rec = recForApplyCheck();
@@ -1270,16 +1330,20 @@
       return '<span style="padding:4px 10px;background:#ffedd5;color:#c2410c;border-radius:999px;font-size:0.85em">' + esc(a.label) + '</span>';
     }).join('');
     bar.innerHTML = '<strong style="color:#1d4ed8">入力 ' + done + '/5</strong>' + chips;
-    updateApplyUi(rec);
+    updateApplyUi(rec, opts);
     maybeAutoExpand(rec);
   }
 
-  function patchRec(mutator, fullRender) {
+  function patchRec(mutator, fullRender, opts) {
+    opts = opts || {};
     if (ui.syncing) return;
     var rec = getApplyWorkingRec();
     mutator(rec);
     if (fullRender) render();
-    else updateSummary();
+    else if (opts.refreshProposers) {
+      updateProposerTable(rec);
+      updateSummary({ skipWfRefresh: true });
+    } else updateSummary(opts);
   }
 
   function bindUi() {
@@ -1341,43 +1405,13 @@
           if (!ui.root) return;
           var ae = document.activeElement;
           if (ae && ui.root.contains(ae) && ae.getAttribute('data-bi-field') === F.purpose) return;
+          if (isHeaderOrProposerFocus(ae)) return;
           if (!filled(ui.cache[F.purpose])) openPurposeAndFocus();
         }, 150);
       };
     }
 
-    ui.root.querySelectorAll('[data-bi-pdept]').forEach(function (el) {
-      el.oninput = function () {
-        var idx = Number(el.getAttribute('data-bi-pdept'));
-        patchRec(function (r) {
-          r = ensureProposers(r);
-          r[F.proposers].value[idx].value[F.propDept] = { type: 'SINGLE_LINE_TEXT', value: el.value };
-          if (idx === 0) syncRow1ToRep(r);
-        });
-      };
-    });
-    ui.root.querySelectorAll('[data-bi-pname]').forEach(function (el) {
-      el.oninput = function () {
-        var idx = Number(el.getAttribute('data-bi-pname'));
-        patchRec(function (r) {
-          r = ensureProposers(r);
-          r[F.proposers].value[idx].value[F.propName] = { type: 'SINGLE_LINE_TEXT', value: el.value };
-          if (idx === 0) syncRow1ToRep(r);
-        });
-      };
-    });
-    ui.root.querySelectorAll('[data-bi-psearch]').forEach(function (btn) {
-      btn.onclick = function () { openSearchModal(Number(btn.getAttribute('data-bi-psearch'))); };
-    });
-    ui.root.querySelectorAll('[data-bi-pdel]').forEach(function (btn) {
-      btn.onclick = function () {
-        var idx = Number(btn.getAttribute('data-bi-pdel'));
-        patchRec(function (r) {
-          r = ensureProposers(r);
-          r[F.proposers].value.splice(idx, 1);
-        });
-      };
-    });
+    bindProposerRows();
     var add = ui.root.querySelector('[data-bi-add-row]');
     if (add) add.onclick = function () {
       patchRec(function (r) {
@@ -1388,7 +1422,13 @@
             [F.propName]: { type: 'SINGLE_LINE_TEXT', value: '' },
           },
         });
-      });
+      }, false, { refreshProposers: true });
+      setTimeout(function () {
+        if (!ui.root) return;
+        var rows = ui.root.querySelectorAll('[data-bi-proposers-tbody] [data-bi-pname]');
+        var last = rows[rows.length - 1];
+        if (last) last.focus();
+      }, 0);
     };
 
     ui.root.querySelectorAll('[data-bi-field]').forEach(function (ta) {
@@ -1468,6 +1508,10 @@
   }
 
   function onSubmitRecord(event) {
+    if (evalIsDoneStatus(event.record)) {
+      event.error = '承認が完了した案件は変更できません。';
+      return event;
+    }
     if (isApplyMode(event)) return onSubmitApply(event);
     if (isEvalMode(event) && evUi.role) recalcEval(event.record);
     return event;
@@ -1608,6 +1652,7 @@
     root: null,
     role: null,
     login: '',
+    readOnly: false,
     fieldOpts: {},
     pendingEvalWf: null,
     pendingEvalDraft: false,
@@ -1891,19 +1936,21 @@
     return lv.label + ' ' + lv.points + '点';
   }
 
-  function evalOptionListHtml(code, cur, kind) {
+  function evalOptionListHtml(code, cur, kind, rec) {
     var c = EVAL_CRITERIA[kind];
+    var ro = evalRoAttr(rec);
     var opts = '<option value=""></option>' + c.levels.map(function (lv) {
       return '<option value="' + esc(lv.key) + '"' + (cur === lv.key ? ' selected' : '') + '>' +
         esc(evalOptionDisplayLabel(lv)) + '</option>';
     }).join('');
-    return '<select data-bi-eval="' + esc(code) + '" style="width:100%;padding:10px;border:1px solid #d6b896;border-radius:8px;font-size:0.95em">' +
+    return '<select data-bi-eval="' + esc(code) + '" style="width:100%;padding:10px;border:1px solid #d6b896;border-radius:8px;font-size:0.95em"' + ro + '>' +
       opts + '</select>' +
-      '<p style="margin:8px 0 0;color:#94a3b8;font-size:0.85em">無効　0点（旧システム参照・新システムでは選択不可）</p>';
+      (ro ? '' : '<p style="margin:8px 0 0;color:#94a3b8;font-size:0.85em">無効　0点（旧システム参照・新システムでは選択不可）</p>');
   }
 
-  function evalCardHtml(kind, code, cur) {
+  function evalCardHtml(kind, code, cur, rec) {
     var c = EVAL_CRITERIA[kind];
+    var ro = evalRoAttr(rec);
     var bullets = c.bullets.length
       ? '<ul style="margin:10px 0 0;padding-left:22px;color:#57534e;font-size:0.92em;line-height:1.65">' +
         c.bullets.map(function (b) { return '<li>' + esc(b) + '</li>'; }).join('') + '</ul>'
@@ -1913,10 +1960,10 @@
       esc(c.roman + '【' + c.title + '】') + '</div>' +
       '<p style="margin:0;color:#444;font-size:0.95em;line-height:1.55;padding-left:1em">' + esc(c.intro) + '</p>' +
       bullets +
-      '<p style="margin:14px 0 8px;color:#64748b;font-size:0.88em">配点上限 ' + c.maxPoints +
-      '点 — 該当する段階を選択してください</p>' +
-      evalOptionListHtml(code, cur, kind) +
-      (c.invalidNote ? '<p style="margin:8px 0 0;color:#94a3b8;font-size:0.82em;line-height:1.45">' + esc(c.invalidNote) + '</p>' : '') +
+      (ro ? '' : '<p style="margin:14px 0 8px;color:#64748b;font-size:0.88em">配点上限 ' + c.maxPoints +
+        '点 — 該当する段階を選択してください</p>') +
+      evalOptionListHtml(code, cur, kind, rec) +
+      (c.invalidNote && !ro ? '<p style="margin:8px 0 0;color:#94a3b8;font-size:0.82em;line-height:1.45">' + esc(c.invalidNote) + '</p>' : '') +
       '</div>';
   }
 
@@ -1943,6 +1990,10 @@
   function evalIsDoneStatus(rec) {
     var st = recordStatusKey(rec);
     return st === 'Done' || st === 'done' || st === '完了';
+  }
+
+  function evalRoAttr(rec) {
+    return evUi.readOnly || evalIsDoneStatus(rec) ? ' disabled readonly' : '';
   }
 
   function evalRoleMatchesStatus(role, status) {
@@ -2385,6 +2436,9 @@
     var typeNote = type === 'アイデア提案'
       ? '（アイデア提案＝総合的審査のみ・満点10点）'
       : '（業務改善提案＝効果10点＋工夫度5点＋努力度5点＝合計20点）';
+    if (evalIsDoneStatus(rec) || evUi.readOnly) {
+      return '承認が完了した案件です。提案内容・評価内容ともに変更できません。';
+    }
     if (evUi.role === 'branch') {
       return '部長評価済みです。評価内容を確認し、必要なら各項目を修正できます（修正後は一時保存）。' + typeNote;
     }
@@ -2450,11 +2504,12 @@
     var needsFinalRank = evalForwardTargetsDone(rec);
     var wide = window.innerWidth >= 1280;
     var commentVal = evUi.commentDraft != null ? evUi.commentDraft : val(rec, FE.comment);
+    var locked = evUi.readOnly || evalIsDoneStatus(rec);
     var cards = type === 'アイデア提案'
-      ? evalCardHtml('overall', FE.overall, val(rec, FE.overall))
+      ? evalCardHtml('overall', FE.overall, val(rec, FE.overall), rec)
       : ['effect', 'ingenuity', 'effort'].map(function (k) {
           var codes = { effect: FE.effect, ingenuity: FE.ingenuity, effort: FE.effort };
-          return evalCardHtml(k, codes[k], val(rec, codes[k]));
+          return evalCardHtml(k, codes[k], val(rec, codes[k]), rec);
         }).join('');
     var breakdown = evalScoreBreakdown(rec);
     var pointsLabel = calc.points
@@ -2465,7 +2520,7 @@
     evUi.root.innerHTML =
       '<div style="font-family:\'Segoe UI\',Meiryo,sans-serif;line-height:1.5;padding:16px;background:linear-gradient(180deg,#faf5f0 0%,#f5f5f4 100%);border-radius:12px;border:1px solid #d6b896">' +
       '<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;margin-bottom:12px">' +
-      '<h2 style="margin:0;color:#78350f">業務改善提案 — 評価</h2>' +
+      '<h2 style="margin:0;color:#78350f">業務改善提案 — ' + (locked ? '評価（閲覧）' : '評価') + '</h2>' +
       '<span style="color:#78716c;font-size:0.9em">ステータス: ' + esc(wfStateLabel(recordStatusKey(rec))) + '</span></div>' +
       '<div style="display:' + (wide ? 'grid' : 'block') + ';grid-template-columns:' + (wide ? '1fr 1fr' : 'none') + ';gap:16px">' +
       '<div>' + readOnlyBlock(rec) + '</div>' +
@@ -2473,21 +2528,23 @@
       '<p style="margin:0 0 12px;padding:10px 12px;background:#fff7ed;border-radius:8px;color:#57534e;font-size:0.9em;line-height:1.5">' +
       esc(evalIntroText(rec)) + '</p>' +
       cards +
-      '<label style="display:block;margin:12px 0 0">評価コメント（任意）<br><textarea data-bi-eval-comment rows="3" style="width:100%;padding:8px;border:1px solid #d6b896;border-radius:8px">' +
-      esc(commentVal) + '</textarea></label>' +
-      (evUi.role === 'manager' ? '<label style="display:block;margin:12px 0 0;padding:10px;background:#fff7ed;border-radius:8px">' +
-        '<input type="checkbox" data-bi-branch-delegate' + (branchDelegateOn(rec) ? ' checked' : '') + '> 支店長へ判断を委ねる（支店長判断）</label>' : '') +
+      '<label style="display:block;margin:12px 0 0">評価コメント（任意）<br><textarea data-bi-eval-comment rows="3" style="width:100%;padding:8px;border:1px solid #d6b896;border-radius:8px"' +
+      evalRoAttr(rec) + '>' + esc(commentVal) + '</textarea></label>' +
+      (evUi.role === 'manager' && !locked ? '<label style="display:block;margin:12px 0 0;padding:10px;background:#fff7ed;border-radius:8px">' +
+        '<input type="checkbox" data-bi-branch-delegate' + (branchDelegateOn(rec) ? ' checked' : '') + '> 支店長へ判断を委ねる（支店長判断）</label>' :
+        (evUi.role === 'manager' && locked && branchDelegateOn(rec) ? '<p style="margin:12px 0 0;padding:10px;background:#fff7ed;border-radius:8px;color:#57534e">支店長へ判断を委ねる（支店長判断）: あり</p>' : '')) +
       '<div style="margin-top:14px;padding:12px;background:#fef3c7;border-radius:8px">' +
       '<div style="font-size:0.9em;color:#57534e;margin-bottom:6px">内訳: ' + esc(breakdown) + '</div>' +
       '<div>合計点: <strong>' + esc(calc.total) + '点</strong>' +
       (type === 'アイデア提案' ? '（満点10点）' : '（満点20点）') + '</div>' +
       '<div>表彰ランク（自動）: <strong>' + esc(auto || '—') + '</strong></div>' +
-      (needsFinalRank ? '<div style="margin-top:10px"><label>表彰ランク（最終）<span style="color:#b45309"> *必須</span><br><select data-bi-rank-final style="padding:8px;border-radius:8px">' +
+      (needsFinalRank && !locked ? '<div style="margin-top:10px"><label>表彰ランク（最終）<span style="color:#b45309"> *必須</span><br><select data-bi-rank-final style="padding:8px;border-radius:8px">' +
         '<option value=""></option><option value="A"' + (fin === 'A' ? ' selected' : '') + '>A（5,000 pt）</option>' +
         '<option value="B"' + (fin === 'B' ? ' selected' : '') + '>B（1,000 pt）</option>' +
         '<option value="C"' + (fin === 'C' ? ' selected' : '') + '>C（100 pt）</option></select></label>' +
         (fin ? '' : '<p style="margin:8px 0 0;color:#b45309;font-size:0.9em">完了に進む前に表彰ランク（最終）を選択してください</p>') +
         '</div>' : '') +
+      (locked && fin ? '<div style="margin-top:10px">表彰ランク（最終）: <strong>' + esc(fin) + '</strong></div>' : '') +
       '<div>付与ポイント: <strong>' + esc(pointsLabel) + '</strong></div></div>' +
       evalFooterActionsHtml(rec) +
       '</div></div></div>' +
@@ -2509,6 +2566,7 @@
 
   function bindEvalUi() {
     if (!evUi.root) return;
+    if (evUi.readOnly || evalIsDoneStatus(getEvalWorkingRec())) return;
     evUi.root.querySelectorAll('[data-bi-eval]').forEach(function (sel) {
       sel.onchange = function () {
         var code = sel.getAttribute('data-bi-eval');
@@ -2538,10 +2596,33 @@
     if (reject) reject.onclick = function () { promptEvalReject(getRec()); };
   }
 
+  function onShowEvalReadOnly(event) {
+    hideFields(HIDE_EVAL.concat(HIDE_APPLY));
+    hideNativeProcessActions();
+    evUi.readOnly = true;
+    evUi.allowNavigate = true;
+    evUi.role = evUi.role || 'viewer';
+    evUi.commentDraft = val(event.record, FE.comment);
+    evUi.login = (kintone.getLoginUser() && kintone.getLoginUser().code) || '';
+    var host = mountHost();
+    if (!host) return event;
+    evUi.root = host;
+    ui.root = null;
+    return loadEvalFieldOpts().then(function () {
+      return fetchWfRoute().then(function () {
+        return resolveWfPeople(event.record).then(function () {
+          setTimeout(function () { renderEval(); }, 0);
+          return event;
+        });
+      });
+    });
+  }
+
   function onShowEval(event) {
     hideFields(HIDE_EVAL.concat(HIDE_APPLY));
     hideNativeProcessActions();
     installBiUnloadGuard();
+    evUi.readOnly = false;
     evUi.allowNavigate = false;
     resetEvalDraft();
     evUi.commentDraft = val(event.record, FE.comment);
@@ -2650,6 +2731,7 @@
       return onShowApply(event);
     }
     if (isEvalMode(event)) {
+      if (evalIsDoneStatus(event.record)) return onShowEvalReadOnly(event);
       if (isDetailShow(event)) return onShowEvalDetailRedirect(event);
       return onShowEval(event);
     }

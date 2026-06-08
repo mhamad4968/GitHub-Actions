@@ -2,7 +2,7 @@
   "use strict";
 
   /** Apple ID管理台帳 — 693 REST CRUD（678 型） */
-  var BUILD = "2026-06-06-694-apple-id-email-legacy";
+  var BUILD = "2026-06-08-694-device-exchange-date";
 
   var APP_DB = 693;
   var FIXED_PASSWORD = "Honten00";
@@ -15,6 +15,7 @@
     legacy_no: "legacy_no",
     status: "status",
     registered_date: "registered_date",
+    device_exchange_date: "device_exchange_date",
     mdm_name: "mdm_name",
     user_name: "user_name",
     phone_number: "phone_number",
@@ -31,6 +32,7 @@
     FC.legacy_no,
     FC.status,
     FC.registered_date,
+    FC.device_exchange_date,
     FC.mdm_name,
     FC.user_name,
     FC.phone_number,
@@ -45,6 +47,7 @@
     { key: "legacy_no", label: "No." },
     { key: "status", label: "状態" },
     { key: "registered_date", label: "登録日" },
+    { key: "device_exchange_date", label: "端末交換日" },
     { key: "mdm_name", label: "MDM名" },
     { key: "user_name", label: "氏名" },
     { key: "phone_number", label: "回線" },
@@ -94,6 +97,10 @@
     return rec && rec[code] && rec[code].value != null ? String(rec[code].value) : "";
   }
 
+  function normalizeMdm(v) {
+    return String(v == null ? "" : v).trim();
+  }
+
   function flatten(rec) {
     return {
       id: val(rec, "$id"),
@@ -101,6 +108,7 @@
       legacy_no: val(rec, FC.legacy_no),
       status: val(rec, FC.status) || STATUS_ACTIVE,
       registered_date: val(rec, FC.registered_date),
+      device_exchange_date: val(rec, FC.device_exchange_date),
       mdm_name: val(rec, FC.mdm_name),
       user_name: val(rec, FC.user_name),
       phone_number: val(rec, FC.phone_number),
@@ -120,6 +128,10 @@
     if (!partial || partial.legacy_no) set(FC.legacy_no, row.legacy_no);
     if (!partial || partial.status) set(FC.status, row.status);
     if (!partial || partial.registered_date) set(FC.registered_date, row.registered_date);
+    if (!partial || partial.device_exchange_date) {
+      if (row.device_exchange_date) set(FC.device_exchange_date, row.device_exchange_date);
+      else o[FC.device_exchange_date] = { value: null };
+    }
     if (!partial || partial.mdm_name) set(FC.mdm_name, row.mdm_name);
     if (!partial || partial.user_name) set(FC.user_name, row.user_name);
     if (!partial || partial.phone_number) set(FC.phone_number, row.phone_number);
@@ -298,8 +310,8 @@
     if (key === "legacy_no") {
       return Number(a.legacy_no || 0) - Number(b.legacy_no || 0);
     }
-    if (key === "registered_date") {
-      return String(a.registered_date || "").localeCompare(String(b.registered_date || ""));
+    if (key === "registered_date" || key === "device_exchange_date") {
+      return String(a[key] || "").localeCompare(String(b[key] || ""));
     }
     if (key === "status") {
       var sa = a.status === STATUS_ACTIVE ? 0 : 1;
@@ -359,7 +371,10 @@
       state.sortDir = state.sortDir === "asc" ? "desc" : "asc";
     } else {
       state.sortKey = key;
-      state.sortDir = key === "legacy_no" || key === "registered_date" ? "desc" : "asc";
+      state.sortDir =
+        key === "legacy_no" || key === "registered_date" || key === "device_exchange_date"
+          ? "desc"
+          : "asc";
     }
     updateSortHeaders();
     renderTable();
@@ -537,6 +552,13 @@
         '" autocomplete="off" spellcheck="false"></label>' +
         '<div id="aid-edit-apple-id-warn"></div>' +
         '<p style="font-size:11px;color:#64748b;margin:4px 0 8px;">登録ミス時のみ修正。重複する ID は保存できません。</p>' +
+        '<p style="font-size:12px;color:#475569;margin:8px 0 4px;">登録日: <span id="aid-edit-reg-val">' +
+        esc(row.registered_date) +
+        "</span>（MDM変更時に今日へ自動更新）</p>" +
+        '<label>端末交換日<input type="date" id="aid-edit-exchange" value="' +
+        esc(row.device_exchange_date) +
+        '"></label>' +
+        '<p style="font-size:11px;color:#64748b;margin:4px 0 8px;">端末買い替え時に入力（iPhone・iPad 共通）</p>' +
         '<label>MDM名<input id="aid-edit-mdm" value="' +
         esc(row.mdm_name) +
         '"></label>' +
@@ -597,10 +619,39 @@
             var lock = normalizeAppleIdInput((document.getElementById("aid-edit-lock") || {}).value);
             if (!pw) pw = FIXED_PASSWORD;
             if (!lock) lock = FIXED_LOCK;
+            var oldMdm = normalizeMdm(row.mdm_name);
+            var newMdm = normalizeMdm((document.getElementById("aid-edit-mdm") || {}).value);
+            var exchangeEl = document.getElementById("aid-edit-exchange");
+            var exchangeDate = exchangeEl ? exchangeEl.value : "";
+            var registeredDate = row.registered_date;
+            var mdmChanged = oldMdm !== newMdm;
+            if (mdmChanged) {
+              registeredDate = todayJstYmd();
+              window.alert(
+                "MDM名が変更されたため、登録日を " + registeredDate + " に更新します。",
+              );
+              if (!exchangeDate) {
+                if (
+                  window.confirm(
+                    "端末交換日が未入力です。今日（" +
+                      registeredDate +
+                      "）を端末交換日にセットして保存しますか？\n「キャンセル」で入力欄に戻ります。",
+                  )
+                ) {
+                  exchangeDate = registeredDate;
+                  if (exchangeEl) exchangeEl.value = exchangeDate;
+                } else {
+                  if (exchangeEl) exchangeEl.focus();
+                  return;
+                }
+              }
+            }
             var rec = toKintoneRecord(
               {
                 apple_id: appleId,
-                mdm_name: (document.getElementById("aid-edit-mdm") || {}).value || "",
+                registered_date: registeredDate,
+                device_exchange_date: exchangeDate,
+                mdm_name: newMdm,
                 user_name: name,
                 phone_number: (document.getElementById("aid-edit-phone") || {}).value || "",
                 password: pw,
@@ -610,6 +661,8 @@
               },
               {
                 apple_id: 1,
+                registered_date: mdmChanged ? 1 : 0,
+                device_exchange_date: 1,
                 mdm_name: 1,
                 user_name: 1,
                 phone_number: 1,
@@ -796,6 +849,7 @@
       buildAidPrintTierHtml(
         [
           { label: "登録日", value: row.registered_date },
+          { label: "端末交換日", value: row.device_exchange_date },
           { label: "姓", value: names.family },
           { label: "名", value: names.given },
         ],
@@ -982,6 +1036,9 @@
           "</td>" +
           "<td>" +
           esc(r.registered_date) +
+          "</td>" +
+          "<td>" +
+          esc(r.device_exchange_date) +
           "</td>" +
           "<td>" +
           esc(r.mdm_name) +

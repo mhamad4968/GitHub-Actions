@@ -33,6 +33,14 @@
       "noLabel": false,
       "defaultValue": ""
     },
+    "device_exchange_date": {
+      "type": "DATE",
+      "code": "device_exchange_date",
+      "label": "端末交換日",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
     "mdm_name": {
       "type": "SINGLE_LINE_TEXT",
       "code": "mdm_name",

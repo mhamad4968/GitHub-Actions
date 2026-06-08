@@ -106,11 +106,11 @@
       "note": null
     },
     "694": {
-      "build": "2026-06-06-694-apple-id-email-legacy",
-      "fileKey": "b47683b7-9fb9-4ab3-9ea9-d46a12de1448",
-      "revision": "17",
+      "build": "2026-06-08-694-device-exchange-date",
+      "fileKey": "699da986-7b14-49d0-aafe-bfe3322300e5",
+      "revision": "18",
       "relPath": "customize/apple-id-dash/desktop.js",
-      "deployedAt": "2026-06-06T06:10:29.703Z",
+      "deployedAt": "2026-06-08T09:18:04.393Z",
       "note": null
     },
     "695": {
@@ -130,27 +130,27 @@
       "note": null
     },
     "699": {
-      "build": "2026-06-07-bi-guide-v13d-banner-bold-both",
-      "fileKey": "0cee3997-61f1-422c-b0e4-530fdf246718",
-      "revision": "39",
+      "build": "2026-06-08-bi-guide-reapply-passive",
+      "fileKey": "9996c9f5-5cc3-4c19-92f2-e948cc994572",
+      "revision": "70",
       "relPath": "customize/business-improvement-guide/desktop.js",
-      "deployedAt": "2026-06-07T09:15:01.207Z",
+      "deployedAt": "2026-06-08T10:58:29.252Z",
       "note": null
     },
     "700": {
-      "build": "2026-06-07-bi-proposal-apply-v33",
-      "fileKey": "ab72c699-f495-425a-bc00-15190c97b97c",
-      "revision": "118",
+      "build": "2026-06-08-bi-proposal-no-purpose-jump",
+      "fileKey": "9271f9a3-4b97-4c6b-80fa-9c660db1c118",
+      "revision": "124",
       "relPath": "customize/business-improvement-proposal/desktop.js",
-      "deployedAt": "2026-06-07T03:42:27.083Z",
+      "deployedAt": "2026-06-08T10:15:04.512Z",
       "note": null
     },
     "701": {
-      "build": "2026-06-07-sn-news-board-v3",
-      "fileKey": "624cee54-98f6-4d1e-b309-be8eb20416f7",
-      "revision": "6",
+      "build": "2026-06-08-sn-news-board-v4-digest-labels",
+      "fileKey": "313ce558-6a11-4e5c-90b2-85d49426cfa8",
+      "revision": "7",
       "relPath": "customize/security-next-news-board/desktop.js",
-      "deployedAt": "2026-06-07T07:50:18.908Z",
+      "deployedAt": "2026-06-08T09:06:33.444Z",
       "note": null
     },
     "702": {
