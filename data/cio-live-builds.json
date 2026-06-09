@@ -27,10 +27,10 @@
     },
     "674": {
       "build": "2026-06-09-674-next-serial-label",
-      "fileKey": "a312cfbd-d586-48f3-9fcd-078ab8ccaa08",
-      "revision": "240",
-      "relPath": "customize/new-pc-ledger-v1/desktop.js",
-      "deployedAt": "2026-06-09T10:07:31.122Z",
+      "fileKey": "165be2df-f6fc-4159-b726-f8bcbdce2244",
+      "revision": "241",
+      "relPath": ".kintone-deploy/upload-674.js",
+      "deployedAt": "2026-06-09T12:18:28.773Z",
       "note": null
     },
     "677": {
@@ -83,18 +83,18 @@
     },
     "687": {
       "build": "2026-06-09-687-workdays-excel-v1",
-      "fileKey": "a4d38e42-54e2-49a8-852c-0f1a06022f21",
-      "revision": "9",
-      "relPath": "customize/687/desktop.js",
-      "deployedAt": "2026-06-09T11:45:28.319Z",
+      "fileKey": "13bc24dc-a753-404a-9f03-8e7e92c43647",
+      "revision": "10",
+      "relPath": ".kintone-deploy/upload-687.js",
+      "deployedAt": "2026-06-09T12:18:32.034Z",
       "note": null
     },
     "688": {
       "build": "2026-06-09-688-workdays-excel-table-v5",
-      "fileKey": "7faba101-20e3-4d40-a62b-0540e8cc231c",
-      "revision": "15",
-      "relPath": "customize/688/desktop.js",
-      "deployedAt": "2026-06-09T12:02:10.844Z",
+      "fileKey": "d4f3fd8d-5454-407e-b822-13c93e1f17f3",
+      "revision": "16",
+      "relPath": ".kintone-deploy/upload-688.js",
+      "deployedAt": "2026-06-09T12:18:35.640Z",
       "note": null
     },
     "693": {
