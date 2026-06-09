@@ -2,7 +2,7 @@
   'use strict';
 
   /** 業務改善 ver.02 — 提案申請 申請UI（Phase 4b）+ 評価UI（Phase 5） */
-  var BUILD = '2026-06-08-bi-proposal-no-purpose-jump';
+  var BUILD = '2026-06-09-bi-proposal-remove-foo-bar';
   var WF_ACTION_APPLY = 'Apply';
   var WF_ACTION_REAPPLY = 'reapply';
   var BI = {
@@ -39,6 +39,7 @@
     '評価コメント', '合計点', '表彰ランク_自動', '表彰ランク_最終', '付与ポイント',
     'branch_delegate', '差戻し理由', '申請者', '部長評価者', '支店長評価者',
     '人事部長評価者', '評価スナップショット', '提案操作履歴', F.date,
+    'foo_bar',
   ];
 
   var HIDE_APPLY = [
@@ -2524,11 +2525,11 @@
       '<span style="color:#78716c;font-size:0.9em">ステータス: ' + esc(wfStateLabel(recordStatusKey(rec))) + '</span></div>' +
       '<div style="display:' + (wide ? 'grid' : 'block') + ';grid-template-columns:' + (wide ? '1fr 1fr' : 'none') + ';gap:16px">' +
       '<div>' + readOnlyBlock(rec) + '</div>' +
-      '<div><div style="background:#fff;border:1px solid #d6b896;border-radius:10px;padding:14px">' +
+      '<div><div style="background:#fff;border:1px solid #d6b896;border-radius:10px;padding:14px;min-width:0">' +
       '<p style="margin:0 0 12px;padding:10px 12px;background:#fff7ed;border-radius:8px;color:#57534e;font-size:0.9em;line-height:1.5">' +
       esc(evalIntroText(rec)) + '</p>' +
       cards +
-      '<label style="display:block;margin:12px 0 0">評価コメント（任意）<br><textarea data-bi-eval-comment rows="3" style="width:100%;padding:8px;border:1px solid #d6b896;border-radius:8px"' +
+      '<label style="display:block;margin:12px 0 0">評価コメント（任意）<br><textarea data-bi-eval-comment rows="3" style="width:100%;max-width:100%;box-sizing:border-box;display:block;padding:8px;border:1px solid #d6b896;border-radius:8px"' +
       evalRoAttr(rec) + '>' + esc(commentVal) + '</textarea></label>' +
       (evUi.role === 'manager' && !locked ? '<label style="display:block;margin:12px 0 0;padding:10px;background:#fff7ed;border-radius:8px">' +
         '<input type="checkbox" data-bi-branch-delegate' + (branchDelegateOn(rec) ? ' checked' : '') + '> 支店長へ判断を委ねる（支店長判断）</label>' :

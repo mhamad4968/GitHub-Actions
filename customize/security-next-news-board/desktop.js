@@ -5,7 +5,7 @@
    * Security NEXT ニュース掲示板 — 正本 631 を REST 読取（脆弱性/CVE は表示除外）
    * npm run deploy:701
    */
-  var BUILD = '2026-06-07-sn-news-board-v3';
+  var BUILD = '2026-06-08-sn-news-board-v4-digest-labels';
 
   var STORE_APP_ID =
     typeof window.SN_NEWS_STORE_APP === 'number' ? window.SN_NEWS_STORE_APP : 631;
@@ -207,13 +207,26 @@
       .join('');
   }
 
+  /** 要約見出し: 旧 `事象:` 形式と新 `【事象】` 形式の両方を掲示板用に統一 */
+  function normalizeDigestLabelLine(line) {
+    if (/^事象:\s*/.test(line)) return line.replace(/^事象:\s*/, '【事象】 ');
+    if (/^脆弱性関連:\s*/.test(line)) return line.replace(/^脆弱性関連:\s*/, '【脆弱性関連】 ');
+    if (/^修正・対策:\s*/.test(line)) return line.replace(/^修正・対策:\s*/, '【修正・対策】 ');
+    if (/^見解:\s*/.test(line)) return line.replace(/^見解:\s*/, '【見解】 ');
+    return line;
+  }
+
   function formatDigestHtml(text) {
     return String(text || '')
       .split('\n')
       .filter(Boolean)
       .map(function (line) {
-        var cls = /^【/.test(line) || /:$/.test(line.slice(0, 20)) ? 'sn-dg-line sn-dg-line--label' : 'sn-dg-line';
-        return '<p class="' + cls + '">' + escapeHtml(line) + '</p>';
+        var normalized = normalizeDigestLabelLine(line);
+        var cls =
+          /^【[^】]+】/.test(normalized) || /:$/.test(normalized.slice(0, 20))
+            ? 'sn-dg-line sn-dg-line--label'
+            : 'sn-dg-line';
+        return '<p class="' + cls + '">' + escapeHtml(normalized) + '</p>';
       })
       .join('');
   }

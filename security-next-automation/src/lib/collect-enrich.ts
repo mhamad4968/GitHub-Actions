@@ -48,10 +48,10 @@ function sameSummaryAndDigest(a: string, b: string): boolean {
 function digestHasMaterialHeadings(digest: string): boolean {
   const d = digest.trim();
   return (
-    /事象:\s*\S/m.test(d) &&
-    /脆弱性関連:\s*\S/m.test(d) &&
-    /修正・対策:\s*\S/m.test(d) &&
-    /見解:\s*\S/m.test(d)
+    /(?:^事象:|^【事象】)\s*\S/m.test(d) &&
+    /(?:^脆弱性関連:|^【脆弱性関連】)\s*\S/m.test(d) &&
+    /(?:^修正・対策:|^【修正・対策】)\s*\S/m.test(d) &&
+    /(?:^見解:|^【見解】)\s*\S/m.test(d)
   );
 }
 
@@ -79,7 +79,7 @@ async function rssExcerptWithOptionalArticleBody(row: NormalizedNewsRow): Promis
 }
 
 function insertNvdSourceTagAfterVulnHeading(digest: string): string {
-  const re = /^脆弱性関連:(\s*)/m;
+  const re = /^(?:脆弱性関連:|【脆弱性関連】)(\s*)/m;
   const m = re.exec(digest);
   if (!m) {
     return digest;
@@ -186,7 +186,7 @@ export async function enrichOneNewsForKintone(row: NormalizedNewsRow): Promise<E
   }
 
   if (sameSummaryAndDigest(overview, digest)) {
-    const m = /^事象:\s*(.+)$/m.exec(digest);
+    const m = /^(?:事象:|【事象】)\s*(.+)$/m.exec(digest);
     const stub = ((m ? m[1] : digest) || "").trim();
     overview = `${truncateForLlm(stub, COLLECT_OVERVIEW_MAX_CHARS)}\n${overviewFooterSource(row)}`;
   }

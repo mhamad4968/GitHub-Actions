@@ -145,10 +145,10 @@ function buildNvdMaterialSummaryDigestFromParsed(
     "NVD からの自動取り込みです。社内資産に該当するか、優先度をどう置くかは、スキャン結果・構成台帳と突き合わせて判断してください。";
 
   const digest = [
-    `事象: ${事象本文}`,
-    `脆弱性関連: ${脆弱性関連}`,
-    `修正・対策: ${修正対策}`,
-    `見解: ${見解}`,
+    `【事象】 ${事象本文}`,
+    `【脆弱性関連】 ${脆弱性関連}`,
+    `【修正・対策】 ${修正対策}`,
+    `【見解】 ${見解}`,
   ].join("\n\n");
 
   return { overview, digest };
@@ -319,17 +319,17 @@ export function buildRssMaterialSummaryDigest(
     "優先度は事案の公開状況と社内利用資産に依存。関係システムの利用有無とパッチ適用方針を早めに整理するとよい。";
 
   const digest = [
-    `事象: ${事象本文}`,
-    `脆弱性関連: ${脆弱性関連}`,
-    `修正・対策: ${修正対策}`,
-    `見解: ${見解}`,
+    `【事象】 ${事象本文}`,
+    `【脆弱性関連】 ${脆弱性関連}`,
+    `【修正・対策】 ${修正対策}`,
+    `【見解】 ${見解}`,
   ].join("\n\n");
 
   return { overview, digest };
 }
 
 /** kintone 要約（digest）の 4 見出し。順序・表記は format-news-gemini の DIGEST_HEADINGS と一致させる */
-const DIGEST_SECTION_LABELS = ["事象:", "脆弱性関連:", "修正・対策:", "見解:"] as const;
+const DIGEST_SECTION_LABELS = ["【事象】", "【脆弱性関連】", "【修正・対策】", "【見解】"] as const;
 
 /**
  * 事象・脆弱性関連・修正・対策・見解の各ブロックの間に空行を 1 行入れる（一覧・リッチ変換で段落分けされやすくする）
@@ -360,7 +360,7 @@ export function layoutDigestWithSectionSpacing(digest: string): string {
  * Gemini や手入力で混入しやすい「見解:」重複・文末の「ます。です。」を整える
  */
 export function normalizeInsightParagraphBody(raw: string): string {
-  let s = raw.trim().replace(/^見解:\s*/i, "").replace(/\r\n/g, "\n");
+  let s = raw.trim().replace(/^(?:見解:|【見解】)\s*/i, "").replace(/\r\n/g, "\n");
   while (/です[。．]\s*です[。．]/.test(s)) {
     s = s.replace(/です[。．]\s*です[。．]/g, "です。");
   }
@@ -373,12 +373,20 @@ export function normalizeInsightParagraphBody(raw: string): string {
  * digest 末尾の「見解:」直後の本文だけを差し替える（Gemini 見解のみ注入など）
  */
 export function replaceDigestInsightParagraph(digest: string, newInsightBody: string): string {
-  const label = "見解:";
-  const idx = digest.lastIndexOf(label);
+  const labels = ["【見解】", "見解:"] as const;
+  let idx = -1;
+  let label = labels[0];
+  for (const l of labels) {
+    const i = digest.lastIndexOf(l);
+    if (i > idx) {
+      idx = i;
+      label = l;
+    }
+  }
   const body = normalizeInsightParagraphBody(newInsightBody);
   if (!body) return digest;
   if (idx === -1) {
-    return `${digest.trim()}\n${label} ${body}`;
+    return `${digest.trim()}\n${labels[0]} ${body}`;
   }
   return `${digest.slice(0, idx + label.length)} ${body}`;
 }

@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-06-06-674-index-list-sort';
+  const BUILD = '2026-06-09-674-next-serial-label';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -7129,7 +7129,7 @@ ${bodyInner}\
 
   // --- 一覧：§4.8a 検索（キーワード + 種別チップ + 転用PC + M365切替/資産台帳 済・未 + datalist。SKYSEA チップは当面非表示・query 互換は維持） ---
   const SEARCH674_WRAP_ID = 'new-pc-ledger-674-index-search';
-  const SEARCH674_WRAP_VER = '2026-06-06-v7-index-list-sort';
+  const SEARCH674_WRAP_VER = '2026-06-09-v8-next-serial-label';
   const SEARCH674_DL_ID = 'new-pc-ledger-674-search-datalist';
   /** 一覧 URL: キーワード原文（空白区切り AND 用）を query と併せて復元する */
   const SEARCH674_URL_KW_PARAM = 'npl674kw';
@@ -8125,7 +8125,13 @@ ${bodyInner}\
         'font-size:17px;font-weight:800;letter-spacing:0.02em;font-family:Consolas,Monaco,ui-monospace,monospace;';
       const lblStyle = 'font-size:13px;color:#64748b;';
       const catStyle = 'font-size:15px;font-weight:800;';
+      const headStyle = 'font-size:15px;font-weight:800;color:#0f172a;';
       nextSerialBar.innerHTML =
+        '<div style="width:100%;margin-bottom:2px;">' +
+        '<span style="' +
+        headStyle +
+        '">次採番</span>' +
+        '</div>' +
         '<div style="display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;">' +
         '<span style="' +
         catStyle +

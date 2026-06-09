@@ -1,6 +1,6 @@
 # 旧83 × §4.3.1 突合表（機械生成）
 
-**生成**: 2026-06-06T23:09:51.641Z  
+**生成**: 2026-06-09T09:56:52.580Z  
 **正本**: `scripts/data/app-83-records-snapshot.json` × `business-improvement-eval-spec-431.json`
 
 ## サマリ
