@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { readFile } from 'node:fs/promises';
+import { spawnSync } from 'node:child_process';
 import { extractBuildFromSource, recordLiveBuild } from './cio-live-build-registry.mjs';
 
 function requireEnv(key) {
@@ -123,6 +124,12 @@ for (let i = 0; i < 60; i++) {
     });
     console.log('Deploy SUCCESS');
     if (buildTag) console.log(`[live-build-registry] recorded BUILD=${buildTag} app=${appNum}`);
+    const sync = spawnSync(process.execPath, ['scripts/sync-kintone-apps-build.mjs', String(appNum)], {
+      cwd: process.cwd(),
+      encoding: 'utf8',
+    });
+    if (sync.stdout) process.stdout.write(sync.stdout);
+    if (sync.stderr) process.stderr.write(sync.stderr);
     process.exit(0);
   }
   if (st === 'FAIL' || st === 'CANCEL') {

@@ -2941,3 +2941,13 @@ npm run cio:morning:ready -- --project business-improvement
 **締め**: `SESSION-CLOSE-REPORT-20260607.txt`
 
 ---
+
+### 2026-06-09 JST — **AI 失敗 → 憲法・ルール更新案（R1〜R6）**
+
+**AI 失敗**: F1 月列 / F2 年列v4 / F3 BUILD台帳 / F4 calc-test / F5 締め混在
+
+**ルール案**: deploy UI grep・月ソート明文化・BUILD sync・calc-test同梱・締め区分・workdays runbook
+
+**締め**: `SESSION-CLOSE-REPORT-20260609.txt` / `docs/reports/2026-06-09-evening-reflection.md`
+
+---

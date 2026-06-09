@@ -6,17 +6,31 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const BUILD = process.env.WORKDAYS_BUILD || '2026-05-17-688-workdays-dash-v4-syntax-fix';
+const BUILD = process.env.WORKDAYS_BUILD || '2026-06-09-688-workdays-excel-table-v5';
 
-const core = readFileSync(path.join(root, 'scripts/workdays-calc-core.mjs'), 'utf8')
-  .replace(/^\/\*\*[\s\S]*?\*\/\r?\n/, '')
-  .replace(/^export function /gm, '  function ')
-  .replace(/^export /gm, '  ');
+function prepareCoreForBrowser() {
+  const holidayDates = JSON.parse(
+    readFileSync(path.join(root, 'scripts/data/jp-holidays.json'), 'utf8'),
+  ).dates;
+  const holidayBlock =
+    '  const JP_HOLIDAY_YMD = ' +
+    JSON.stringify(Object.fromEntries(holidayDates.map((d) => [d, true]))) +
+    ';\n\n';
+  let core = readFileSync(path.join(root, 'scripts/workdays-calc-core.mjs'), 'utf8');
+  const start = core.indexOf('// BROWSER_CORE_START');
+  if (start < 0) throw new Error('BROWSER_CORE_START marker missing');
+  core = core.slice(start + '// BROWSER_CORE_START'.length + 1);
+  core = core
+    .replace(/^export function jpHolidayYmdForBundle[\s\S]*?\n\}\n\n/gm, '')
+    .replace(/^export function /gm, '  function ')
+    .replace(/^export /gm, '  ');
+  return holidayBlock + core;
+}
 
 const ui = readFileSync(path.join(root, 'customize/688/desktop.ui.js'), 'utf8');
 
 const out = `/**
- * 工事稼働日数ダッシュ（688）— データ正本アプリ 687 / SPEC-v1 §6.2
+ * 工事稼働日数ダッシュ（688）— データ正本アプリ 687 / Excel 準拠
  *   npm run deploy:688
  * 計算コア: scripts/workdays-calc-core.mjs
  */
@@ -25,8 +39,7 @@ const out = `/**
 
   const BUILD = '${BUILD}';
 
-${core}
-
+${prepareCoreForBrowser()}
 ${ui}
 })();
 `;

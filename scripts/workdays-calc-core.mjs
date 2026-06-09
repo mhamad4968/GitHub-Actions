@@ -1,7 +1,19 @@
 /**
- * 工事稼働日数算出 — 計算コア（SPEC §4–§5 / 検証レポート準拠）
+ * 工事稼働日数算出 — 計算コア（Excel 準拠 / Option A / 祝日マスタ）
  * テスト: node scripts/workdays-calc-test.mjs
  */
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const __holidayJson = JSON.parse(
+  readFileSync(path.join(__root, 'scripts/data/jp-holidays.json'), 'utf8'),
+);
+/** @type {Record<string, true>} */
+const JP_HOLIDAY_YMD = Object.fromEntries(__holidayJson.dates.map((d) => [d, true]));
+
+// BROWSER_CORE_START
 
 /** @param {number} y @param {number} m 1-12 */
 export function daysInMonth(y, m) {
@@ -30,135 +42,103 @@ export function overlapDays(start, end, y, m) {
   return Math.round((e - s) / 86400000) + 1;
 }
 
-function nthWeekdayOfMonth(y, m, weekday, n) {
-  let count = 0;
-  for (let d = 1; d <= daysInMonth(y, m); d += 1) {
-    const dow = new Date(Date.UTC(y, m - 1, d, 12)).getUTCDay();
-    if (dow === weekday) {
-      count += 1;
-      if (count === n) return d;
-    }
-  }
-  return null;
-}
-
-function equinoxDay(y, spring) {
-  const base = spring ? 20.8431 : 23.2488;
-  return Math.floor(base + 0.242194 * (y - 1980) - Math.floor((y - 1980) / 4));
-}
-
-/** 国民の祝日（日付キー YYYY-MM-DD） */
+/** @param {number} year */
 export function nationalHolidaySet(year) {
   const set = new Set();
-  const add = (mo, d) => set.add(toIso({ y: year, mo, d }));
-
-  add(1, 1);
-  const jan2 = nthWeekdayOfMonth(year, 1, 1, 2);
-  if (jan2) add(1, jan2);
-  add(2, 11);
-  const feb23 = nthWeekdayOfMonth(year, 2, 1, 3);
-  if (feb23) add(2, feb23);
-  add(3, equinoxDay(year, true));
-  add(4, 29);
-  add(5, 3);
-  add(5, 4);
-  add(5, 5);
-  const jul3 = nthWeekdayOfMonth(year, 7, 1, 3);
-  if (jul3) add(7, jul3);
-  add(8, 11);
-  const sep3 = nthWeekdayOfMonth(year, 9, 1, 3);
-  if (sep3) add(9, sep3);
-  add(9, equinoxDay(year, false));
-  const oct2 = nthWeekdayOfMonth(year, 10, 1, 2);
-  if (oct2) add(10, oct2);
-  add(11, 3);
-  add(11, 23);
-
-  // 振替休日（日曜の祝日 → 翌日以降で最初の非祝日平日）
-  const sorted = [...set].sort();
-  for (const iso of sorted) {
-    const p = parseIsoDate(iso);
-    if (!p) continue;
-    const dow = new Date(Date.UTC(p.y, p.mo - 1, p.d, 12)).getUTCDay();
-    if (dow !== 0) continue;
-    for (let off = 1; off < 8; off += 1) {
-      const nd = new Date(Date.UTC(p.y, p.mo - 1, p.d + off, 12));
-      const ni = toIso({ y: nd.getUTCFullYear(), mo: nd.getUTCMonth() + 1, d: nd.getUTCDate() });
-      if (!set.has(ni)) {
-        set.add(ni);
-        break;
-      }
-    }
+  const prefix = `${year}-`;
+  for (const iso of Object.keys(JP_HOLIDAY_YMD)) {
+    if (iso.startsWith(prefix)) set.add(iso);
   }
-
   return set;
 }
 
-/** 暦月の休日計 K = 土日 + 平日祝日（G〜J は 0 想定） */
-export function holidayTotalForMonth(y, m) {
+/**
+ * Option A: 着工〜完工 ∩ 暦月 の休日内訳（土日・平日祝日）
+ * @param {Date} start @param {Date} end @param {number} y @param {number} m
+ */
+export function holidayBreakdownInRange(start, end, y, m) {
   const hol = nationalHolidaySet(y);
+  const dim = daysInMonth(y, m);
+  const ms = new Date(Date.UTC(y, m - 1, 1, 12));
+  const me = new Date(Date.UTC(y, m - 1, dim, 12));
+  const s = start > ms ? start : ms;
+  const e = end < me ? end : me;
   let weekends = 0;
   let weekdayHol = 0;
-  const dim = daysInMonth(y, m);
+  if (s > e) return { C: 0, weekends: 0, weekdayHol: 0 };
   for (let d = 1; d <= dim; d += 1) {
-    const dow = new Date(Date.UTC(y, m - 1, d, 12)).getUTCDay();
+    const dt = new Date(Date.UTC(y, m - 1, d, 12));
+    if (dt < s || dt > e) continue;
+    const dow = dt.getUTCDay();
     const iso = toIso({ y, mo: m, d });
     if (dow === 0 || dow === 6) weekends += 1;
     else if (hol.has(iso)) weekdayHol += 1;
   }
-  return { C: dim, K: weekends + weekdayHol, weekends, weekdayHol };
+  const C = overlapDays(start, end, y, m);
+  return { C, weekends, weekdayHol };
 }
 
 /**
  * 建設年度（4月始まり）の暦月 m (1-12) → 西暦年
- * @param {number} fiscalYear 03!C4
- * @param {number} m 1-12（ダッシュボード暦月）
+ * @param {number} fiscalYear
+ * @param {number} m 1-12
  */
 export function calendarYearForDashboardMonth(fiscalYear, m) {
   return m >= 4 ? fiscalYear : fiscalYear + 1;
 }
 
-/** @param {Array<{date:string,value:number}>} rows */
-export function monthlyCountGe(rows, threshold) {
-  const acc = new Map();
+/**
+ * Option A: 工期範囲内の日のみ ※1 をカウント
+ * @param {Array<{date:string,value:number}>} rows
+ * @param {Date} start @param {Date} end @param {number} y @param {number} m
+ */
+export function weatherCountGeInRange(rows, threshold, start, end, y, m) {
+  let count = 0;
   for (const { date, value } of rows) {
     if (value == null || Number.isNaN(value)) continue;
     if (value < threshold) continue;
     const p = parseIsoDate(date);
-    if (!p) continue;
-    const key = `${p.y}-${p.mo}`;
-    acc.set(key, (acc.get(key) || 0) + 1);
-  }
-  return acc;
-}
-
-/** @param {Array<{date:string,value:number}>} rain @param {Array<{date:string,value:number}>} hum */
-export function weatherUnionCount(rain, hum, y, m, rainTh, humTh) {
-  const bad = new Set();
-  for (const { date, value } of rain) {
-    const p = parseIsoDate(date);
     if (!p || p.y !== y || p.mo !== m) continue;
-    if (value >= rainTh) bad.add(date);
+    const dt = new Date(Date.UTC(p.y, p.mo - 1, p.d, 12));
+    if (dt < start || dt > end) continue;
+    count += 1;
   }
-  for (const { date, value } of hum) {
-    const p = parseIsoDate(date);
-    if (!p || p.y !== y || p.mo !== m) continue;
-    if (value >= humTh) bad.add(date);
-  }
-  return bad.size;
+  return count;
 }
 
 /**
+ * @param {number} m 1-12
+ * @param {Array<{m:number,gw?:number,summer?:number,nye?:number}>|Record<number,{gw?:number,summer?:number,nye?:number}>} manual
+ */
+export function manualHolidayForMonth(m, manual) {
+  if (!manual) return { gw: 0, summer: 0, nye: 0 };
+  if (Array.isArray(manual)) {
+    const hit = manual.find((r) => r.m === m);
+    return {
+      gw: hit && hit.gw != null ? Number(hit.gw) || 0 : 0,
+      summer: hit && hit.summer != null ? Number(hit.summer) || 0 : 0,
+      nye: hit && hit.nye != null ? Number(hit.nye) || 0 : 0,
+    };
+  }
+  const hit = manual[m];
+  return {
+    gw: hit && hit.gw != null ? Number(hit.gw) || 0 : 0,
+    summer: hit && hit.summer != null ? Number(hit.summer) || 0 : 0,
+    nye: hit && hit.nye != null ? Number(hit.nye) || 0 : 0,
+  };
+}
+
+/**
+ * Excel ※2–④（Option A: 暦日・休日・※1 はすべて工期範囲内）
  * @param {object} p
- * @param {string} p.startDate YYYY-MM-DD
+ * @param {string} p.startDate
  * @param {string} p.endDate
  * @param {number} p.fiscalYear
  * @param {number} p.windTh
  * @param {number} p.rainTh
- * @param {number} p.humTh
  * @param {Array<{date:string,value:number}>} p.wind
  * @param {Array<{date:string,value:number}>} p.rain
- * @param {Array<{date:string,value:number}>} p.hum
+ * @param {Array<{m:number,gw?:number,summer?:number,nye?:number}>} [p.holidayManual]
  */
 export function calcWorkdays(p) {
   const sp = parseIsoDate(p.startDate);
@@ -168,29 +148,53 @@ export function calcWorkdays(p) {
   const end = new Date(Date.UTC(ep.y, ep.mo - 1, ep.d, 12));
   if (start > end) throw new Error('着工日は完工日以前にしてください');
 
-  const windM = monthlyCountGe(p.wind, p.windTh);
   const monthly = [];
 
   for (let m = 1; m <= 12; m += 1) {
     const calYear = calendarYearForDashboardMonth(p.fiscalYear, m);
-    const { C, K: D } = holidayTotalForMonth(calYear, m);
-    const key = `${calYear}-${m}`;
-    const E = windM.get(key) || 0;
-    const W = weatherUnionCount(p.rain, p.hum, calYear, m, p.rainTh, p.humTh);
+    const { C, weekends, weekdayHol } = holidayBreakdownInRange(start, end, calYear, m);
+    const man = manualHolidayForMonth(m, p.holidayManual);
+    const gw = man.gw;
+    const summer = man.summer;
+    const nye = man.nye;
+    const D = weekends + weekdayHol + gw + summer + nye;
+
+    const E =
+      C > 0 ? weatherCountGeInRange(p.wind, p.windTh, start, end, calYear, m) : 0;
+    const W =
+      C > 0 ? weatherCountGeInRange(p.rain, p.rainTh, start, end, calYear, m) : 0;
 
     const G = C ? (D * E) / C : 0;
     const I = C - (D + E - G);
     const H_rate = I ? (D + E - G) / I : 0;
+    const N = I;
 
     const J = C ? (D * W) / C : 0;
     const L = C - (D + W - J);
     const K_rate = L ? (D + W - J) / L : 0;
+    const O = L;
 
-    const M = overlapDays(start, end, calYear, m);
-    const N = M * (1 - H_rate);
-    const O = M * (1 - K_rate);
-
-    monthly.push({ m, calYear, C, D, E, W, M, N, O, H_rate, K_rate });
+    monthly.push({
+      m,
+      calYear,
+      C,
+      D,
+      weekends,
+      weekdayHol,
+      gw,
+      summer,
+      nye,
+      E,
+      W,
+      G,
+      J,
+      N,
+      O,
+      H_rate,
+      K_rate,
+      scaffoldAvail: I,
+      paintAvail: L,
+    });
   }
 
   const scaffold = monthly.reduce((s, r) => s + r.N, 0);
@@ -203,4 +207,9 @@ export function inferFiscalYear(startDate) {
   const p = parseIsoDate(startDate);
   if (!p) return new Date().getFullYear();
   return p.mo >= 4 ? p.y : p.y - 1;
+}
+
+/** ビルド用: 祝日マスタを JS オブジェクトリテラル文字列で返す */
+export function jpHolidayYmdForBundle() {
+  return JP_HOLIDAY_YMD;
 }

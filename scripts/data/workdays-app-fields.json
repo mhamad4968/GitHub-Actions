@@ -74,17 +74,61 @@
       "unit": "",
       "unitPosition": "BEFORE"
     },
-    "threshold_humidity_pct": {
-      "type": "NUMBER",
-      "code": "threshold_humidity_pct",
-      "label": "湿度閾値(%)",
-      "required": true,
+    "holiday_manual": {
+      "type": "SUBTABLE",
+      "code": "holiday_manual",
+      "label": "休日手入力(月別)",
       "noLabel": false,
-      "digit": false,
-      "defaultValue": "85",
-      "displayScale": "0",
-      "unit": "",
-      "unitPosition": "BEFORE"
+      "fields": {
+        "hm_month": {
+          "type": "NUMBER",
+          "code": "hm_month",
+          "label": "月(1-12)",
+          "required": false,
+          "noLabel": false,
+          "digit": false,
+          "defaultValue": "",
+          "displayScale": "0",
+          "unit": "",
+          "unitPosition": "BEFORE"
+        },
+        "hm_gw": {
+          "type": "NUMBER",
+          "code": "hm_gw",
+          "label": "GW",
+          "required": false,
+          "noLabel": false,
+          "digit": false,
+          "defaultValue": "0",
+          "displayScale": "0",
+          "unit": "",
+          "unitPosition": "BEFORE"
+        },
+        "hm_summer": {
+          "type": "NUMBER",
+          "code": "hm_summer",
+          "label": "夏休み",
+          "required": false,
+          "noLabel": false,
+          "digit": false,
+          "defaultValue": "0",
+          "displayScale": "0",
+          "unit": "",
+          "unitPosition": "BEFORE"
+        },
+        "hm_nye": {
+          "type": "NUMBER",
+          "code": "hm_nye",
+          "label": "年末年始",
+          "required": false,
+          "noLabel": false,
+          "digit": false,
+          "defaultValue": "0",
+          "displayScale": "0",
+          "unit": "",
+          "unitPosition": "BEFORE"
+        }
+      }
     },
     "holiday_fiscal_year": {
       "type": "NUMBER",

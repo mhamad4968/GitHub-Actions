@@ -1,12 +1,15 @@
 /**
- * 工事稼働日数ダッシュ（688）— データ正本アプリ 687 / SPEC-v1 §6.2
+ * 工事稼働日数ダッシュ（688）— データ正本アプリ 687 / Excel 準拠
  *   npm run deploy:688
  * 計算コア: scripts/workdays-calc-core.mjs
  */
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-17-688-workdays-dash-v4-syntax-fix';
+  const BUILD = '2026-06-09-688-workdays-excel-table-v5';
+
+  const JP_HOLIDAY_YMD = {"2024-01-01":true,"2024-01-08":true,"2024-02-11":true,"2024-02-12":true,"2024-02-23":true,"2024-03-20":true,"2024-04-29":true,"2024-05-03":true,"2024-05-04":true,"2024-05-05":true,"2024-05-06":true,"2024-07-15":true,"2024-08-11":true,"2024-08-12":true,"2024-09-16":true,"2024-09-22":true,"2024-09-23":true,"2024-10-14":true,"2024-11-03":true,"2024-11-04":true,"2024-11-23":true,"2025-01-01":true,"2025-01-13":true,"2025-02-11":true,"2025-02-23":true,"2025-02-24":true,"2025-03-20":true,"2025-04-29":true,"2025-05-03":true,"2025-05-04":true,"2025-05-05":true,"2025-05-06":true,"2025-07-21":true,"2025-08-11":true,"2025-09-15":true,"2025-09-23":true,"2025-10-13":true,"2025-11-03":true,"2025-11-23":true,"2025-11-24":true,"2026-01-01":true,"2026-01-12":true,"2026-02-11":true,"2026-02-23":true,"2026-03-20":true,"2026-04-29":true,"2026-05-03":true,"2026-05-04":true,"2026-05-05":true,"2026-05-06":true,"2026-07-20":true,"2026-08-11":true,"2026-09-21":true,"2026-09-22":true,"2026-09-23":true,"2026-10-12":true,"2026-11-03":true,"2026-11-23":true,"2027-01-01":true,"2027-01-11":true,"2027-02-11":true,"2027-02-23":true,"2027-03-21":true,"2027-04-29":true,"2027-05-03":true,"2027-05-04":true,"2027-05-05":true,"2027-07-19":true,"2027-08-11":true,"2027-09-20":true,"2027-09-23":true,"2027-10-11":true,"2027-11-03":true,"2027-11-23":true,"2028-01-01":true,"2028-01-10":true,"2028-02-11":true,"2028-02-23":true,"2028-03-20":true,"2028-04-29":true,"2028-05-03":true,"2028-05-04":true,"2028-05-05":true,"2028-07-17":true,"2028-08-11":true,"2028-09-18":true,"2028-09-22":true,"2028-10-09":true,"2028-11-03":true,"2028-11-23":true,"2029-01-01":true,"2029-01-08":true,"2029-02-11":true,"2029-02-12":true,"2029-02-23":true,"2029-03-20":true,"2029-04-29":true,"2029-04-30":true,"2029-05-03":true,"2029-05-04":true,"2029-05-05":true,"2029-07-16":true,"2029-08-11":true,"2029-09-17":true,"2029-09-23":true,"2029-09-24":true,"2029-10-08":true,"2029-11-03":true,"2029-11-23":true,"2030-01-01":true,"2030-01-14":true,"2030-02-11":true,"2030-02-23":true,"2030-03-20":true,"2030-04-29":true,"2030-05-03":true,"2030-05-04":true,"2030-05-05":true,"2030-05-06":true,"2030-07-15":true,"2030-08-11":true,"2030-09-16":true,"2030-09-23":true,"2030-10-14":true,"2030-11-03":true,"2030-11-04":true,"2030-11-23":true};
+
 
 
 /** @param {number} y @param {number} m 1-12 */
@@ -36,135 +39,103 @@
   return Math.round((e - s) / 86400000) + 1;
 }
 
-function nthWeekdayOfMonth(y, m, weekday, n) {
-  let count = 0;
-  for (let d = 1; d <= daysInMonth(y, m); d += 1) {
-    const dow = new Date(Date.UTC(y, m - 1, d, 12)).getUTCDay();
-    if (dow === weekday) {
-      count += 1;
-      if (count === n) return d;
-    }
-  }
-  return null;
-}
-
-function equinoxDay(y, spring) {
-  const base = spring ? 20.8431 : 23.2488;
-  return Math.floor(base + 0.242194 * (y - 1980) - Math.floor((y - 1980) / 4));
-}
-
-/** 国民の祝日（日付キー YYYY-MM-DD） */
+/** @param {number} year */
   function nationalHolidaySet(year) {
   const set = new Set();
-  const add = (mo, d) => set.add(toIso({ y: year, mo, d }));
-
-  add(1, 1);
-  const jan2 = nthWeekdayOfMonth(year, 1, 1, 2);
-  if (jan2) add(1, jan2);
-  add(2, 11);
-  const feb23 = nthWeekdayOfMonth(year, 2, 1, 3);
-  if (feb23) add(2, feb23);
-  add(3, equinoxDay(year, true));
-  add(4, 29);
-  add(5, 3);
-  add(5, 4);
-  add(5, 5);
-  const jul3 = nthWeekdayOfMonth(year, 7, 1, 3);
-  if (jul3) add(7, jul3);
-  add(8, 11);
-  const sep3 = nthWeekdayOfMonth(year, 9, 1, 3);
-  if (sep3) add(9, sep3);
-  add(9, equinoxDay(year, false));
-  const oct2 = nthWeekdayOfMonth(year, 10, 1, 2);
-  if (oct2) add(10, oct2);
-  add(11, 3);
-  add(11, 23);
-
-  // 振替休日（日曜の祝日 → 翌日以降で最初の非祝日平日）
-  const sorted = [...set].sort();
-  for (const iso of sorted) {
-    const p = parseIsoDate(iso);
-    if (!p) continue;
-    const dow = new Date(Date.UTC(p.y, p.mo - 1, p.d, 12)).getUTCDay();
-    if (dow !== 0) continue;
-    for (let off = 1; off < 8; off += 1) {
-      const nd = new Date(Date.UTC(p.y, p.mo - 1, p.d + off, 12));
-      const ni = toIso({ y: nd.getUTCFullYear(), mo: nd.getUTCMonth() + 1, d: nd.getUTCDate() });
-      if (!set.has(ni)) {
-        set.add(ni);
-        break;
-      }
-    }
+  const prefix = `${year}-`;
+  for (const iso of Object.keys(JP_HOLIDAY_YMD)) {
+    if (iso.startsWith(prefix)) set.add(iso);
   }
-
   return set;
 }
 
-/** 暦月の休日計 K = 土日 + 平日祝日（G〜J は 0 想定） */
-  function holidayTotalForMonth(y, m) {
+/**
+ * Option A: 着工〜完工 ∩ 暦月 の休日内訳（土日・平日祝日）
+ * @param {Date} start @param {Date} end @param {number} y @param {number} m
+ */
+  function holidayBreakdownInRange(start, end, y, m) {
   const hol = nationalHolidaySet(y);
+  const dim = daysInMonth(y, m);
+  const ms = new Date(Date.UTC(y, m - 1, 1, 12));
+  const me = new Date(Date.UTC(y, m - 1, dim, 12));
+  const s = start > ms ? start : ms;
+  const e = end < me ? end : me;
   let weekends = 0;
   let weekdayHol = 0;
-  const dim = daysInMonth(y, m);
+  if (s > e) return { C: 0, weekends: 0, weekdayHol: 0 };
   for (let d = 1; d <= dim; d += 1) {
-    const dow = new Date(Date.UTC(y, m - 1, d, 12)).getUTCDay();
+    const dt = new Date(Date.UTC(y, m - 1, d, 12));
+    if (dt < s || dt > e) continue;
+    const dow = dt.getUTCDay();
     const iso = toIso({ y, mo: m, d });
     if (dow === 0 || dow === 6) weekends += 1;
     else if (hol.has(iso)) weekdayHol += 1;
   }
-  return { C: dim, K: weekends + weekdayHol, weekends, weekdayHol };
+  const C = overlapDays(start, end, y, m);
+  return { C, weekends, weekdayHol };
 }
 
 /**
  * 建設年度（4月始まり）の暦月 m (1-12) → 西暦年
- * @param {number} fiscalYear 03!C4
- * @param {number} m 1-12（ダッシュボード暦月）
+ * @param {number} fiscalYear
+ * @param {number} m 1-12
  */
   function calendarYearForDashboardMonth(fiscalYear, m) {
   return m >= 4 ? fiscalYear : fiscalYear + 1;
 }
 
-/** @param {Array<{date:string,value:number}>} rows */
-  function monthlyCountGe(rows, threshold) {
-  const acc = new Map();
+/**
+ * Option A: 工期範囲内の日のみ ※1 をカウント
+ * @param {Array<{date:string,value:number}>} rows
+ * @param {Date} start @param {Date} end @param {number} y @param {number} m
+ */
+  function weatherCountGeInRange(rows, threshold, start, end, y, m) {
+  let count = 0;
   for (const { date, value } of rows) {
     if (value == null || Number.isNaN(value)) continue;
     if (value < threshold) continue;
     const p = parseIsoDate(date);
-    if (!p) continue;
-    const key = `${p.y}-${p.mo}`;
-    acc.set(key, (acc.get(key) || 0) + 1);
-  }
-  return acc;
-}
-
-/** @param {Array<{date:string,value:number}>} rain @param {Array<{date:string,value:number}>} hum */
-  function weatherUnionCount(rain, hum, y, m, rainTh, humTh) {
-  const bad = new Set();
-  for (const { date, value } of rain) {
-    const p = parseIsoDate(date);
     if (!p || p.y !== y || p.mo !== m) continue;
-    if (value >= rainTh) bad.add(date);
+    const dt = new Date(Date.UTC(p.y, p.mo - 1, p.d, 12));
+    if (dt < start || dt > end) continue;
+    count += 1;
   }
-  for (const { date, value } of hum) {
-    const p = parseIsoDate(date);
-    if (!p || p.y !== y || p.mo !== m) continue;
-    if (value >= humTh) bad.add(date);
-  }
-  return bad.size;
+  return count;
 }
 
 /**
+ * @param {number} m 1-12
+ * @param {Array<{m:number,gw?:number,summer?:number,nye?:number}>|Record<number,{gw?:number,summer?:number,nye?:number}>} manual
+ */
+  function manualHolidayForMonth(m, manual) {
+  if (!manual) return { gw: 0, summer: 0, nye: 0 };
+  if (Array.isArray(manual)) {
+    const hit = manual.find((r) => r.m === m);
+    return {
+      gw: hit && hit.gw != null ? Number(hit.gw) || 0 : 0,
+      summer: hit && hit.summer != null ? Number(hit.summer) || 0 : 0,
+      nye: hit && hit.nye != null ? Number(hit.nye) || 0 : 0,
+    };
+  }
+  const hit = manual[m];
+  return {
+    gw: hit && hit.gw != null ? Number(hit.gw) || 0 : 0,
+    summer: hit && hit.summer != null ? Number(hit.summer) || 0 : 0,
+    nye: hit && hit.nye != null ? Number(hit.nye) || 0 : 0,
+  };
+}
+
+/**
+ * Excel ※2–④（Option A: 暦日・休日・※1 はすべて工期範囲内）
  * @param {object} p
- * @param {string} p.startDate YYYY-MM-DD
+ * @param {string} p.startDate
  * @param {string} p.endDate
  * @param {number} p.fiscalYear
  * @param {number} p.windTh
  * @param {number} p.rainTh
- * @param {number} p.humTh
  * @param {Array<{date:string,value:number}>} p.wind
  * @param {Array<{date:string,value:number}>} p.rain
- * @param {Array<{date:string,value:number}>} p.hum
+ * @param {Array<{m:number,gw?:number,summer?:number,nye?:number}>} [p.holidayManual]
  */
   function calcWorkdays(p) {
   const sp = parseIsoDate(p.startDate);
@@ -174,29 +145,53 @@ function equinoxDay(y, spring) {
   const end = new Date(Date.UTC(ep.y, ep.mo - 1, ep.d, 12));
   if (start > end) throw new Error('着工日は完工日以前にしてください');
 
-  const windM = monthlyCountGe(p.wind, p.windTh);
   const monthly = [];
 
   for (let m = 1; m <= 12; m += 1) {
     const calYear = calendarYearForDashboardMonth(p.fiscalYear, m);
-    const { C, K: D } = holidayTotalForMonth(calYear, m);
-    const key = `${calYear}-${m}`;
-    const E = windM.get(key) || 0;
-    const W = weatherUnionCount(p.rain, p.hum, calYear, m, p.rainTh, p.humTh);
+    const { C, weekends, weekdayHol } = holidayBreakdownInRange(start, end, calYear, m);
+    const man = manualHolidayForMonth(m, p.holidayManual);
+    const gw = man.gw;
+    const summer = man.summer;
+    const nye = man.nye;
+    const D = weekends + weekdayHol + gw + summer + nye;
+
+    const E =
+      C > 0 ? weatherCountGeInRange(p.wind, p.windTh, start, end, calYear, m) : 0;
+    const W =
+      C > 0 ? weatherCountGeInRange(p.rain, p.rainTh, start, end, calYear, m) : 0;
 
     const G = C ? (D * E) / C : 0;
     const I = C - (D + E - G);
     const H_rate = I ? (D + E - G) / I : 0;
+    const N = I;
 
     const J = C ? (D * W) / C : 0;
     const L = C - (D + W - J);
     const K_rate = L ? (D + W - J) / L : 0;
+    const O = L;
 
-    const M = overlapDays(start, end, calYear, m);
-    const N = M * (1 - H_rate);
-    const O = M * (1 - K_rate);
-
-    monthly.push({ m, calYear, C, D, E, W, M, N, O, H_rate, K_rate });
+    monthly.push({
+      m,
+      calYear,
+      C,
+      D,
+      weekends,
+      weekdayHol,
+      gw,
+      summer,
+      nye,
+      E,
+      W,
+      G,
+      J,
+      N,
+      O,
+      H_rate,
+      K_rate,
+      scaffoldAvail: I,
+      paintAvail: L,
+    });
   }
 
   const scaffold = monthly.reduce((s, r) => s + r.N, 0);
@@ -211,6 +206,10 @@ function equinoxDay(y, spring) {
   return p.mo >= 4 ? p.y : p.y - 1;
 }
 
+/** ビルド用: 祝日マスタを JS オブジェクトリテラル文字列で返す */
+  function jpHolidayYmdForBundle() {
+  return JP_HOLIDAY_YMD;
+}
 
   const APP_DATA = 687;
   const FC = {
@@ -221,7 +220,6 @@ function equinoxDay(y, spring) {
     obsNote: 'obs_location_note',
     windTh: 'threshold_wind_ms',
     rainTh: 'threshold_rain_mm',
-    humTh: 'threshold_humidity_pct',
     fiscal: 'holiday_fiscal_year',
     windTbl: 'wind_data',
     windDate: 'wind_obs_date',
@@ -229,9 +227,11 @@ function equinoxDay(y, spring) {
     rainTbl: 'rain_data',
     rainDate: 'rain_obs_date',
     rainVal: 'rain_mm',
-    humTbl: 'humidity_data',
-    humDate: 'humidity_obs_date',
-    humVal: 'humidity_pct',
+    holTbl: 'holiday_manual',
+    holMonth: 'hm_month',
+    holGw: 'hm_gw',
+    holSummer: 'hm_summer',
+    holNye: 'hm_nye',
     resScaffold: 'result_scaffold_days',
     resPaint: 'result_paint_days',
     calcAt: 'calculated_at',
@@ -239,12 +239,20 @@ function equinoxDay(y, spring) {
   };
 
   const OBS_OPTIONS = ['東京', 'さいたま', '熊谷', '宇都宮', '前橋', '横浜', '千葉', 'その他'];
-  const JMA_WIND = 'https://www.data.jma.go.jp/gmd/risk/obsdl/';
-  const JMA_RAIN_HUM = 'https://www.data.jma.go.jp/risk/obsdl/index.php';
+  const JMA_OBSDL = 'https://www.data.jma.go.jp/risk/obsdl/';
   const SESSION_RECORD_KEY = 'workdays688_last_record_id';
 
   let state = emptyState();
   let pendingCsvKind = null;
+  let activeTab = 'scaffold';
+
+  function emptyHolidayManual() {
+    const rows = [];
+    for (let m = 1; m <= 12; m += 1) {
+      rows.push({ m: m, gw: 0, summer: 0, nye: 0 });
+    }
+    return rows;
+  }
 
   function emptyState() {
     return {
@@ -258,11 +266,10 @@ function equinoxDay(y, spring) {
       obs_location_note: '',
       threshold_wind_ms: 10,
       threshold_rain_mm: 10,
-      threshold_humidity_pct: 85,
       holiday_fiscal_year: null,
       wind: [],
       rain: [],
-      hum: [],
+      holidayManual: emptyHolidayManual(),
       result_scaffold_days: null,
       result_paint_days: null,
       calculated_at: '',
@@ -287,12 +294,46 @@ function equinoxDay(y, spring) {
     return out;
   }
 
+  function readHolidayManualFromKintone(rec) {
+    const rows = (rec[FC.holTbl] && rec[FC.holTbl].value) || [];
+    const byMonth = {};
+    for (let i = 0; i < rows.length; i += 1) {
+      const v = rows[i].value || {};
+      const m = Number(v[FC.holMonth] && v[FC.holMonth].value);
+      if (!m || m < 1 || m > 12) continue;
+      byMonth[m] = {
+        m: m,
+        gw: Number(v[FC.holGw] && v[FC.holGw].value) || 0,
+        summer: Number(v[FC.holSummer] && v[FC.holSummer].value) || 0,
+        nye: Number(v[FC.holNye] && v[FC.holNye].value) || 0,
+      };
+    }
+    const out = emptyHolidayManual();
+    for (let i = 0; i < out.length; i += 1) {
+      if (byMonth[out[i].m]) out[i] = byMonth[out[i].m];
+    }
+    return out;
+  }
+
   function subToKintone(rows, dateFc, valFc) {
     return rows.map(function (r) {
       const row = { value: {} };
       row.value[dateFc] = { value: r.date };
       row.value[valFc] = { value: String(r.value) };
       return row;
+    });
+  }
+
+  function holidayManualToKintone(rows) {
+    return rows.map(function (r) {
+      return {
+        value: {
+          [FC.holMonth]: { value: String(r.m) },
+          [FC.holGw]: { value: String(r.gw != null ? r.gw : 0) },
+          [FC.holSummer]: { value: String(r.summer != null ? r.summer : 0) },
+          [FC.holNye]: { value: String(r.nye != null ? r.nye : 0) },
+        },
+      };
     });
   }
 
@@ -307,12 +348,11 @@ function equinoxDay(y, spring) {
     s.obs_location_note = String(gv(rec, FC.obsNote));
     s.threshold_wind_ms = Number(gv(rec, FC.windTh)) || 10;
     s.threshold_rain_mm = Number(gv(rec, FC.rainTh)) || 10;
-    s.threshold_humidity_pct = Number(gv(rec, FC.humTh)) || 85;
     const fy = gv(rec, FC.fiscal);
     s.holiday_fiscal_year = fy !== '' ? Number(fy) : null;
     s.wind = readSubFromKintone(rec, FC.windTbl, FC.windDate, FC.windVal);
     s.rain = readSubFromKintone(rec, FC.rainTbl, FC.rainDate, FC.rainVal);
-    s.hum = readSubFromKintone(rec, FC.humTbl, FC.humDate, FC.humVal);
+    s.holidayManual = readHolidayManualFromKintone(rec);
     const rs = gv(rec, FC.resScaffold);
     const rp = gv(rec, FC.resPaint);
     s.result_scaffold_days = rs !== '' ? Number(rs) : null;
@@ -331,11 +371,10 @@ function equinoxDay(y, spring) {
     rec[FC.obsNote] = { value: s.obs_location_note };
     rec[FC.windTh] = { value: String(s.threshold_wind_ms) };
     rec[FC.rainTh] = { value: String(s.threshold_rain_mm) };
-    rec[FC.humTh] = { value: String(s.threshold_humidity_pct) };
     if (s.holiday_fiscal_year != null) rec[FC.fiscal] = { value: String(s.holiday_fiscal_year) };
     rec[FC.windTbl] = { value: subToKintone(s.wind, FC.windDate, FC.windVal) };
     rec[FC.rainTbl] = { value: subToKintone(s.rain, FC.rainDate, FC.rainVal) };
-    rec[FC.humTbl] = { value: subToKintone(s.hum, FC.humDate, FC.humVal) };
+    rec[FC.holTbl] = { value: holidayManualToKintone(s.holidayManual) };
     if (includeResults && s.lastResult) {
       rec[FC.resScaffold] = { value: String(Math.round(s.lastResult.scaffold * 100) / 100) };
       rec[FC.resPaint] = { value: String(Math.round(s.lastResult.paint * 100) / 100) };
@@ -415,7 +454,7 @@ function equinoxDay(y, spring) {
         return c.trim().replace(/^"|"$/g, '');
       });
       if (cols.length < 2) continue;
-      if (/日付|年月日|date|風速|降雨|降水|湿度/i.test(cols[0] + cols[1])) continue;
+      if (/日付|年月日|date|風速|降雨|降水/i.test(cols[0] + cols[1])) continue;
       const date = normalizeDate(cols[0]);
       const val = parseFloat(String(cols[1]).replace(/[^\d.-]/g, ''));
       if (!date || Number.isNaN(val)) continue;
@@ -428,14 +467,28 @@ function equinoxDay(y, spring) {
     const lines = [
       'BUILD=' + BUILD,
       '足場=' + result.scaffold.toFixed(2) + ' / 塗装=' + result.paint.toFixed(2),
-      '（688ダッシュ保存・塗装=降雨∪湿度）',
+      '（Excel準拠・Option A・塗装=降雨のみ・祝日=マスタ自動）',
       '',
-      '月 | 年 | 暦 | 休 | 風 | 雨湿 | M | 足場N | 塗装O',
+      '月 | 年 | 暦 | 休 | 風 | 雨 | ダブ風 | ダブ雨 | 足場 | 塗装 | 不稼働率(足) | 不稼働率(塗)',
     ];
     for (let i = 0; i < result.monthly.length; i += 1) {
       const r = result.monthly[i];
+      if (!r.C) continue;
       lines.push(
-        [r.m, r.calYear, r.C, r.D, r.E, r.W, r.M.toFixed(0), r.N.toFixed(2), r.O.toFixed(2)].join(' | '),
+        [
+          r.m,
+          r.calYear,
+          r.C,
+          r.D,
+          r.E,
+          r.W,
+          r.G != null ? r.G.toFixed(2) : '',
+          r.J != null ? r.J.toFixed(2) : '',
+          r.N.toFixed(2),
+          r.O.toFixed(2),
+          r.H_rate != null ? (r.H_rate * 100).toFixed(2) + '%' : '',
+          r.K_rate != null ? (r.K_rate * 100).toFixed(2) + '%' : '',
+        ].join(' | '),
       );
     }
     if (warnings.length) {
@@ -463,9 +516,20 @@ function equinoxDay(y, spring) {
     }
     rangeWarn(state.wind, '風速');
     rangeWarn(state.rain, '降雨');
-    rangeWarn(state.hum, '湿度');
     if (!state.obs_location) warnings.push('観測地点が未選択です');
     return warnings;
+  }
+
+  function readHolidayManualFromForm() {
+    for (let m = 1; m <= 12; m += 1) {
+      const row = state.holidayManual[m - 1];
+      const gwEl = document.getElementById('wd688-hm-gw-' + m);
+      const suEl = document.getElementById('wd688-hm-summer-' + m);
+      const nyEl = document.getElementById('wd688-hm-nye-' + m);
+      if (gwEl) row.gw = Number(gwEl.value) || 0;
+      if (suEl) row.summer = Number(suEl.value) || 0;
+      if (nyEl) row.nye = Number(nyEl.value) || 0;
+    }
   }
 
   function runCalc() {
@@ -476,12 +540,9 @@ function equinoxDay(y, spring) {
     const s = new Date(Date.UTC(sp.y, sp.mo - 1, sp.d, 12));
     const e = new Date(Date.UTC(ep.y, ep.mo - 1, ep.d, 12));
     if (s > e) throw new Error('着工日は完工日以前にしてください');
-    if (!state.wind.length || !state.rain.length || !state.hum.length) {
-      throw new Error('風速・降雨・湿度のデータを取込んでください');
-    }
-    if (state.threshold_humidity_pct < 0 || state.threshold_humidity_pct > 100) {
-      throw new Error('湿度閾値は 0〜100 にしてください');
-    }
+    if (!state.wind.length) throw new Error('風速データを取込んでください');
+    if (!state.rain.length) throw new Error('降雨データを取込んでください');
+    readHolidayManualFromForm();
     let fiscal = state.holiday_fiscal_year;
     if (fiscal == null) fiscal = inferFiscalYear(state.start_date);
 
@@ -491,10 +552,9 @@ function equinoxDay(y, spring) {
       fiscalYear: fiscal,
       windTh: state.threshold_wind_ms,
       rainTh: state.threshold_rain_mm,
-      humTh: state.threshold_humidity_pct,
       wind: state.wind,
       rain: state.rain,
-      hum: state.hum,
+      holidayManual: state.holidayManual,
     });
     state.lastResult = result;
     state.lastWarnings = collectWarnings();
@@ -533,9 +593,9 @@ function equinoxDay(y, spring) {
     state.obs_location_note = g('wd688-obs-note');
     state.threshold_wind_ms = Number(g('wd688-wind-th')) || 10;
     state.threshold_rain_mm = Number(g('wd688-rain-th')) || 10;
-    state.threshold_humidity_pct = Number(g('wd688-hum-th')) || 85;
     const fy = g('wd688-fiscal');
     state.holiday_fiscal_year = fy !== '' ? Number(fy) : null;
+    readHolidayManualFromForm();
     markDirty();
   }
 
@@ -551,10 +611,16 @@ function equinoxDay(y, spring) {
     s('wd688-obs-note', state.obs_location_note);
     s('wd688-wind-th', state.threshold_wind_ms);
     s('wd688-rain-th', state.threshold_rain_mm);
-    s('wd688-hum-th', state.threshold_humidity_pct);
     s('wd688-fiscal', state.holiday_fiscal_year != null ? state.holiday_fiscal_year : '');
+    for (let m = 1; m <= 12; m += 1) {
+      const row = state.holidayManual[m - 1];
+      s('wd688-hm-gw-' + m, row.gw);
+      s('wd688-hm-summer-' + m, row.summer);
+      s('wd688-hm-nye-' + m, row.nye);
+    }
     renderSummary();
     renderMonthlyTable();
+    updateTabButtons();
     updateDirtyBanner();
   }
 
@@ -577,44 +643,205 @@ function equinoxDay(y, spring) {
     }
   }
 
+  function monthLabel(m) {
+    return m + '月';
+  }
+
+  function fmtNum(n, digits) {
+    if (n == null || Number.isNaN(n)) return '—';
+    return Number(n).toFixed(digits != null ? digits : 2);
+  }
+
+  function fmtPct(rate) {
+    if (rate == null || Number.isNaN(rate)) return '—';
+    return (Number(rate) * 100).toFixed(2) + '%';
+  }
+
+  function computeYearTotals(rows, isWind) {
+    function sum(key) {
+      return rows.reduce(function (s, r) {
+        return s + (Number(r[key]) || 0);
+      }, 0);
+    }
+    const C = sum('C');
+    const D = sum('D');
+    const weather = isWind ? sum('E') : sum('W');
+    const overlap = C ? (D * weather) / C : 0;
+    const avail = C - (D + weather - overlap);
+    const rate = avail ? (D + weather - overlap) / avail : 0;
+    return {
+      weather: weather,
+      weekends: sum('weekends'),
+      weekdayHol: sum('weekdayHol'),
+      gw: sum('gw'),
+      summer: sum('summer'),
+      nye: sum('nye'),
+      D: D,
+      overlap: overlap,
+      C: C,
+      avail: avail,
+      rate: rate,
+    };
+  }
+
+  function renderExcelTransposedTable(rows, mode) {
+    const isWind = mode === 'scaffold';
+    const yt = computeYearTotals(rows, isWind);
+    const weatherLabel = isWind
+      ? '風速日数 ※1<br><span class="wd688-sub">(10m/s以上の日数)</span>'
+      : '降雨日数 ※1<br><span class="wd688-sub">(10mm以上の日数)</span>';
+    const overlapLabel = isWind
+      ? '休日数と風速日数のダブり ※2'
+      : '休日数と降雨日数のダブり ※2';
+
+    function cellVal(r, key) {
+      return r[key];
+    }
+
+    function weatherVal(r) {
+      return isWind ? r.E : r.W;
+    }
+
+    function overlapVal(r) {
+      return isWind ? r.G : r.J;
+    }
+
+    function availVal(r) {
+      return isWind ? r.N : r.O;
+    }
+
+    function rateVal(r) {
+      return isWind ? r.H_rate : r.K_rate;
+    }
+
+    function fmtYearCell(v, opts) {
+      opts = opts || {};
+      if (opts.pct) return fmtPct(v);
+      if (opts.fixed != null) return fmtNum(v, opts.fixed);
+      return v;
+    }
+
+    let html =
+      '<div class="wd688-excel-wrap"><table class="wd688-table wd688-excel-table"><thead><tr>' +
+      '<th class="wd688-row-label">月</th>';
+    for (let i = 0; i < rows.length; i += 1) {
+      html += '<th>' + monthLabel(rows[i].m) + '<br><span class="wd688-sub">' + rows[i].calYear + '年</span></th>';
+    }
+    html +=
+      '<th class="wd688-year-col">年<br><span class="wd688-sub">合計</span></th></tr></thead><tbody>';
+
+    function addRow(label, valueFn, opts) {
+      opts = opts || {};
+      html += '<tr><td class="wd688-row-label">' + label + '</td>';
+      for (let i = 0; i < rows.length; i += 1) {
+        const r = rows[i];
+        if (opts.inputPrefix) {
+          html +=
+            '<td><input type="number" min="0" step="1" id="wd688-hm-' +
+            opts.inputPrefix +
+            '-' +
+            r.m +
+            '" class="wd688-hm-in" value="' +
+            cellVal(r, opts.field) +
+            '" style="width:52px"></td>';
+        } else {
+          const v = valueFn(r);
+          html += '<td>' + (opts.pct ? fmtPct(v) : opts.fixed != null ? fmtNum(v, opts.fixed) : v) + '</td>';
+        }
+      }
+      html += '<td class="wd688-year-col">' + fmtYearCell(opts.yearVal, opts) + '</td>';
+      html += '</tr>';
+    }
+
+    addRow(weatherLabel, weatherVal, { fixed: 0, yearVal: yt.weather });
+    html +=
+      '<tr><td class="wd688-row-label wd688-indent" colspan="' +
+      (rows.length + 2) +
+      '">休日数</td></tr>';
+    addRow('<span class="wd688-indent2">土　曜・日　曜</span>', function (r) {
+      return r.weekends;
+    }, { yearVal: yt.weekends });
+    addRow('<span class="wd688-indent2">祝　日・祭　日</span>', function (r) {
+      return r.weekdayHol;
+    }, { yearVal: yt.weekdayHol });
+    addRow('<span class="wd688-indent2">年　末　年　始</span>', function (r) {
+      return r.nye;
+    }, { inputPrefix: 'nye', field: 'nye', yearVal: yt.nye });
+    addRow('<span class="wd688-indent2">G　W</span>', function (r) {
+      return r.gw;
+    }, { inputPrefix: 'gw', field: 'gw', yearVal: yt.gw });
+    addRow('<span class="wd688-indent2">夏　休　み</span>', function (r) {
+      return r.summer;
+    }, { inputPrefix: 'summer', field: 'summer', yearVal: yt.summer });
+    addRow('<span class="wd688-indent2">計</span>', function (r) {
+      return r.D;
+    }, { yearVal: yt.D });
+    addRow(overlapLabel, overlapVal, { fixed: 2, yearVal: yt.overlap });
+    addRow('暦　　　　　日', function (r) {
+      return r.C;
+    }, { yearVal: yt.C });
+    addRow('稼　働　可　能　日　数　※3', availVal, { fixed: 2, yearVal: yt.avail });
+    addRow('不　稼　働　率　※4', rateVal, { pct: true, yearVal: yt.rate });
+
+    html += '</tbody></table></div>';
+    return html;
+  }
+
   function renderMonthlyTable() {
     const host = document.getElementById('wd688-monthly');
     if (!host) return;
     if (!state.lastResult) {
       host.innerHTML =
-        '<p style="color:#666">「再算出」で月別内訳を表示します（Excel 01_ダッシュボード相当）</p>';
+        '<p style="color:#666">「再算出」で月別内訳を表示します（Excel 上段表相当・工期外の月は非表示）</p>';
       return;
     }
-    const rows = state.lastResult.monthly;
-    let html =
-      '<table class="wd688-table"><thead><tr>' +
-      '<th>月</th><th>年</th><th>暦日</th><th>休日</th><th>風速日</th><th>雨湿</th><th>工期M</th><th>足場N</th><th>塗装O</th>' +
-      '</tr></thead><tbody>';
-    for (let i = 0; i < rows.length; i += 1) {
-      const r = rows[i];
-      html +=
-        '<tr><td>' +
-        r.m +
-        '</td><td>' +
-        r.calYear +
-        '</td><td>' +
-        r.C +
-        '</td><td>' +
-        r.D +
-        '</td><td>' +
-        r.E +
-        '</td><td>' +
-        r.W +
-        '</td><td>' +
-        r.M.toFixed(0) +
-        '</td><td>' +
-        r.N.toFixed(2) +
-        '</td><td>' +
-        r.O.toFixed(2) +
-        '</td></tr>';
+    const rows = state.lastResult.monthly
+      .filter(function (r) {
+        return r.C > 0;
+      })
+      .sort(function (a, b) {
+        if (a.calYear !== b.calYear) return a.calYear - b.calYear;
+        return a.m - b.m;
+      });
+    if (!rows.length) {
+      host.innerHTML = '<p style="color:#666">着工〜完工の範囲に該当する月がありません。</p>';
+      return;
     }
-    html += '</tbody></table>';
-    host.innerHTML = html;
+
+    let intro =
+      '<p style="font-size:12px;color:#555;margin:0 0 8px;">' +
+      '土日・祝祭日は自動。GW・夏休み・年末年始はセル内で編集可（編集後は再算出）。右端「年」列は Excel V列相当（表示月の合計・※2〜※4は合計値から再計算）。' +
+      '</p>';
+
+    if (activeTab === 'scaffold') {
+      host.innerHTML = intro + renderExcelTransposedTable(rows, 'scaffold');
+    } else if (activeTab === 'paint' || activeTab === 'holiday') {
+      host.innerHTML = intro + renderExcelTransposedTable(rows, 'paint');
+    }
+
+    const inputs = host.querySelectorAll('.wd688-hm-in');
+    for (let j = 0; j < inputs.length; j += 1) {
+      inputs[j].addEventListener('change', markDirty);
+    }
+  }
+
+  function updateTabButtons() {
+    ['scaffold', 'paint', 'holiday'].forEach(function (tab) {
+      const btn = document.getElementById('wd688-tab-' + tab);
+      if (!btn) return;
+      if (tab === activeTab) {
+        btn.classList.add('wd688-tab-active');
+      } else {
+        btn.classList.remove('wd688-tab-active');
+      }
+    });
+  }
+
+  function switchTab(tab) {
+    if (tab === 'holiday') readHolidayManualFromForm();
+    activeTab = tab;
+    updateTabButtons();
+    renderMonthlyTable();
   }
 
   function refreshProjectSelect(projects, selectedId) {
@@ -646,7 +873,7 @@ function equinoxDay(y, spring) {
         /* noop */
       }
       fillFormFromState();
-      if (state.wind.length && state.rain.length && state.hum.length) {
+      if (state.wind.length && state.rain.length) {
         try {
           runCalc();
           fillFormFromState();
@@ -705,9 +932,9 @@ function equinoxDay(y, spring) {
     state.end_date = end;
     state.threshold_wind_ms = 10;
     state.threshold_rain_mm = 10;
-    state.threshold_humidity_pct = 85;
     state.holiday_fiscal_year = inferFiscalYear(start);
     state.dirty = true;
+    activeTab = 'scaffold';
     fillFormFromState();
     const sel = document.getElementById('wd688-project-select');
     if (sel) sel.value = '';
@@ -722,7 +949,16 @@ function equinoxDay(y, spring) {
       '.wd688-table{border-collapse:collapse;width:100%;font-size:13px;margin:8px 0;}' +
       '.wd688-table th,.wd688-table td{border:1px solid #ccc;padding:4px 8px;text-align:right;}' +
       '.wd688-table th{background:#f0f4f8;text-align:center;}' +
-      '.wd688-root{font-family:Segoe UI,Meiryo,sans-serif;max-width:1200px;margin:0 auto;padding:12px;}';
+      '.wd688-excel-wrap{overflow-x:auto;margin:8px 0;}' +
+      '.wd688-excel-table .wd688-row-label{text-align:left;min-width:200px;background:#f8fafc;font-weight:600;white-space:nowrap;}' +
+      '.wd688-excel-table .wd688-year-col{background:#fffbeb;font-weight:600;}' +
+      '.wd688-excel-table .wd688-indent{font-weight:bold;background:#eef2f7;text-align:left;}' +
+      '.wd688-sub{font-size:11px;color:#64748b;font-weight:normal;}' +
+      '.wd688-indent2{padding-left:1.2em;display:inline-block;}' +
+      '.wd688-root{font-family:Segoe UI,Meiryo,sans-serif;max-width:1200px;margin:0 auto;padding:12px;}' +
+      '.wd688-tabs{display:flex;gap:4px;margin:12px 0 8px;flex-wrap:wrap;}' +
+      '.wd688-tab{padding:8px 18px;cursor:pointer;border:1px solid #94a3b8;border-radius:6px 6px 0 0;background:#f1f5f9;font-size:13px;font-weight:600;}' +
+      '.wd688-tab.wd688-tab-active{background:#2563eb;color:#fff;border-color:#2563eb;}';
     document.head.appendChild(st);
   }
 
@@ -730,20 +966,15 @@ function equinoxDay(y, spring) {
     return (
       '<div style="font-weight:bold;margin-bottom:8px;">CSVの入手先（気象庁・過去の気象データダウンロード）</div>' +
       '<p style="margin:0 0 10px;"><strong>① 風速（足場用）</strong><br>サイト：<a href="' +
-      JMA_WIND +
+      JMA_OBSDL +
       '" target="_blank" rel="noopener">' +
-      JMA_WIND +
+      JMA_OBSDL +
       '</a><br>選ぶ項目：<strong>日別値</strong> → <strong>日最大風速 (m/s)</strong>。観測地点は案件と同じ地点を選択。CSVは<strong>日付・風速の2列</strong>。「CSV→風速」で取込。</p>' +
-      '<p style="margin:0 0 10px;"><strong>② 降雨（塗装用）</strong><br>サイト：<a href="' +
-      JMA_RAIN_HUM +
+      '<p style="margin:0;"><strong>② 降雨（塗装・休日用）</strong><br>サイト：<a href="' +
+      JMA_OBSDL +
       '" target="_blank" rel="noopener">' +
-      JMA_RAIN_HUM +
-      '</a><br>選ぶ項目：<strong>日別値</strong> → <strong>降水量の合計 (mm)</strong>（日降水量）。CSVは<strong>日付・降水量の2列</strong>。「CSV→降雨」で取込。</p>' +
-      '<p style="margin:0;"><strong>③ 湿度（塗装用）</strong><br>サイト：<a href="' +
-      JMA_RAIN_HUM +
-      '" target="_blank" rel="noopener">' +
-      JMA_RAIN_HUM +
-      '</a>（降雨と同じサイト）<br>選ぶ項目：<strong>日別値</strong> → <strong>平均湿度 (%)</strong>。CSVは<strong>日付・湿度の2列</strong>。「CSV→湿度」で取込。</p>'
+      JMA_OBSDL +
+      '</a><br>選ぶ項目：<strong>日別値</strong> → <strong>降水量の合計 (mm)</strong>（日降水量）。CSVは<strong>日付・降水量の2列</strong>。「CSV→降雨」で取込。</p>'
     );
   }
 
@@ -765,7 +996,7 @@ function equinoxDay(y, spring) {
       '<div id="wd688-dirty" style="display:none;padding:10px;background:#fff3cd;border:1px solid #ffc107;border-radius:6px;margin-bottom:10px;font-size:13px;"></div>' +
       '<div style="margin-bottom:12px;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;line-height:1.65;">' +
       '<strong style="font-size:15px">工事稼働日数計算ツール</strong><br>' +
-      'データ入力後、<strong>保存</strong>を押してください。' +
+      'データ入力後、<strong>保存</strong>を押してください。暦日・休日・気象※1は<strong>着工〜完工</strong>の範囲内のみ集計します。' +
       '</div>' +
       '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;">' +
       '<strong style="font-size:16px">工事稼働日数ダッシュ</strong>' +
@@ -786,7 +1017,6 @@ function equinoxDay(y, spring) {
       '<label>地点備考<br><input id="wd688-obs-note" type="text" style="width:100%"></label>' +
       '<label>風速閾値(m/s)<br><input id="wd688-wind-th" type="number" step="0.1" style="width:100%"></label>' +
       '<label>降雨閾値(mm)<br><input id="wd688-rain-th" type="number" step="0.1" style="width:100%"></label>' +
-      '<label>湿度閾値(%)<br><input id="wd688-hum-th" type="number" style="width:100%"></label>' +
       '<label>休日基準年度<br><input id="wd688-fiscal" type="number" placeholder="空=自動" style="width:100%"></label></div>' +
       '<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0;padding:12px;background:#e8f4fc;border-radius:8px;">' +
       '<div><span style="font-size:12px;color:#555">足場 稼働可能日数</span><br><strong id="wd688-scaffold" style="font-size:22px">—</strong></div>' +
@@ -796,23 +1026,36 @@ function equinoxDay(y, spring) {
       '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 4px;">' +
       '<span style="font-size:13px;font-weight:bold;color:#334155">気象CSV取込：</span>' +
       '<button type="button" id="wd688-csv-wind" class="kintoneplugin-button-normal">CSV→風速</button>' +
-      '<button type="button" id="wd688-csv-rain" class="kintoneplugin-button-normal">CSV→降雨</button>' +
-      '<button type="button" id="wd688-csv-hum" class="kintoneplugin-button-normal">CSV→湿度</button></div>' +
+      '<button type="button" id="wd688-csv-rain" class="kintoneplugin-button-normal">CSV→降雨</button></div>' +
       '<div id="wd688-csv-help" style="margin:0 0 14px;padding:12px 14px;background:#fff;border:1px solid #d0d7de;border-radius:8px;font-size:13px;line-height:1.7;color:#1e293b;">' +
       csvHelpHtml() +
       '</div>' +
+      '<div class="wd688-tabs">' +
+      '<button type="button" class="wd688-tab wd688-tab-active" id="wd688-tab-scaffold">足場</button>' +
+      '<button type="button" class="wd688-tab" id="wd688-tab-paint">塗装</button>' +
+      '<button type="button" class="wd688-tab" id="wd688-tab-holiday">休日</button></div>' +
       '<div id="wd688-meta" style="font-size:12px;color:#666;margin-bottom:8px"></div>' +
       '<div id="wd688-monthly"></div>' +
       '<input type="file" id="wd688-csv-file" accept=".csv,.txt" style="display:none">';
 
     header.appendChild(root);
 
-    ['wd688-project', 'wd688-start', 'wd688-end', 'wd688-obs', 'wd688-obs-note', 'wd688-wind-th', 'wd688-rain-th', 'wd688-hum-th', 'wd688-fiscal'].forEach(
+    ['wd688-project', 'wd688-start', 'wd688-end', 'wd688-obs', 'wd688-obs-note', 'wd688-wind-th', 'wd688-rain-th', 'wd688-fiscal'].forEach(
       function (id) {
         const el = document.getElementById(id);
         if (el) el.addEventListener('change', markDirty);
       },
     );
+
+    document.getElementById('wd688-tab-scaffold').addEventListener('click', function () {
+      switchTab('scaffold');
+    });
+    document.getElementById('wd688-tab-paint').addEventListener('click', function () {
+      switchTab('paint');
+    });
+    document.getElementById('wd688-tab-holiday').addEventListener('click', function () {
+      switchTab('holiday');
+    });
 
     document.getElementById('wd688-load').addEventListener('click', function () {
       const id = document.getElementById('wd688-project-select').value;
@@ -856,9 +1099,6 @@ function equinoxDay(y, spring) {
     document.getElementById('wd688-csv-rain').addEventListener('click', function () {
       pickCsv('rain');
     });
-    document.getElementById('wd688-csv-hum').addEventListener('click', function () {
-      pickCsv('hum');
-    });
 
     fileInput.addEventListener('change', function () {
       const file = fileInput.files && fileInput.files[0];
@@ -873,8 +1113,7 @@ function equinoxDay(y, spring) {
           }
           readFormIntoState();
           if (pendingCsvKind === 'wind') state.wind = rows;
-          else if (pendingCsvKind === 'rain') state.rain = rows;
-          else state.hum = rows;
+          else state.rain = rows;
           markDirty();
           fillFormFromState();
           alert(rows.length + ' 行取込みました（「保存」で記録に反映されます）');

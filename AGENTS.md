@@ -1326,6 +1326,7 @@ WSL cron が `scripts/daily-morning-prep.mjs` を実行し、ブリーフィン�
 
 #### 関連
 - スキャフォール: `scripts/evening-reflect.mjs`
+- **反省会スコープ（失敗＋ルール案のみ / 案件・UAT・明日 TODO は別）**: `docs/runbooks/session-close-reflection-scope.md`（2026-06-09 R5）
 - 実行: `scripts/apply-approved-changes.mjs`
 - 事前検証: `scripts/check-proposals.mjs`（**proposal 作成直後 + 朝 cron 実行直前に必須**）
 - スキーマ: `docs/approved-changes/README.md`
