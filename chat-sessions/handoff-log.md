@@ -2980,3 +2980,15 @@ npm run cio:morning:ready -- --project business-improvement
 **浜田**: 710/711 アプリ権限（推進室のみ CRUD）は kintone 側で設定（仕様 Q5）
 
 ---
+
+### 2026-06-10 JST — **PC メンテナンス**
+
+**実施**: health-check 100% / portfolio 13/13 / eslint 全件 OK / npm cache clean / `_tmp` 25 本削除
+
+**修正**: 627 テナント削除を portfolio から除外・706–711 追加 / 709・711 eslint / RAG mirror 同期
+
+**記録**: `docs/reports/2026-06-10-pc-maintenance.md`
+
+**未解決**: npm audit `xlsx` high（fix なし — 別途検討）
+
+---

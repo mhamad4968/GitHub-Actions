@@ -659,7 +659,7 @@
       "</div>" +
       '<div class="footer">株式会社 J-BIS — システム推進室</div>' +
       "</div>" +
-      "<script>window.onload=function(){window.print();};<\/script>" +
+      "<script>window.onload=function(){window.print();};</scr" + "ipt>" +
       "</body></html>"
     );
   }

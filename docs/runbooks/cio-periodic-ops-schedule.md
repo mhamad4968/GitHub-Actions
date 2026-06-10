@@ -31,7 +31,7 @@
 ## コマンド早見（CIO）
 
 ```bash
-# 月次（portfolio 8アプリ: 627/668/677-679/682-683/686）
+# 月次（portfolio 13アプリ: 668/677-679/682-683/686 + Space48 706-711）
 npm run cio:periodic:monthly
 # 実体: cio:audit:portfolio:strict
 

@@ -739,7 +739,7 @@
       "　ヒアリング日: " +
       esc(form.hearing_date) +
       "</span></div></div>" +
-      "<script>window.onload=function(){window.print();};<\/script>" +
+      "<script>window.onload=function(){window.print();};</scr" + "ipt>" +
       "</body></html>"
     );
   }
