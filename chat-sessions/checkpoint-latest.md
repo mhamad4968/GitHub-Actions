@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-06-10 JST — Space 48 チェック系 706–711 すべて目視 OK
+**最終更新**: 2026-06-10 JST — Space 48 チェック系 706–711 目視 OK ＋ **憲法 Phase 2-D 完了**
 
 ## 凍結（毎セッション先頭）
 | 禁止 | 許可 |
@@ -17,7 +17,20 @@
 **不適合台帳**: **2026-06-10 完了**（706/707 — Hamada 目視 OK）
 **外部ITチェック**: **2026-06-10 完了**（708/709 — Hamada 目視 OK・印刷 A4 v2）
 **新規システム導入ヒアリング**: **2026-06-10 完了**（710/711 — Hamada 目視 OK・印刷 A4 2枚）
+**憲法 Phase 2-D**: **2026-06-10 完了**（`576090f` — genre catalog + §↔ジャンル sync/verify — AGENTS 未変更）
 **仕様追記**: **Q-ACL-01** — 699/700 に **人事部のみ** 閲覧権付与（浜田判断・浜田責任）
+
+---
+
+## 2026-06-10 JST — **憲法 Phase 2-D 完了（§↔ジャンル機械リンク）**
+
+| 項目 | 内容 |
+|------|------|
+| **本日完了** | `constitution-genre-catalog.json` 単一正本 / RULES-INDEX 自動節 / sync+verify 連鎖 / `18-ai-team-read-map` 索引ポインタ追記 |
+| **AIチーム** | DeepSeek **GO** + `5038` stamp + `verify:cio-four-ai-governance` 全通過 |
+| **Git** | `576090f` push 済 |
+| **正本** | `docs/plans/2026-06-10-constitution-phase2d-team-proposal.md` |
+| **触らない** | AGENTS.md § 本文 / constitution.mdc 手編集 |
 
 ---
 
