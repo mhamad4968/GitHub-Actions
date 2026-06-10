@@ -2993,6 +2993,20 @@ npm run cio:morning:ready -- --project business-improvement
 
 ---
 
+### 2026-06-10 JST — **GitHub + 憲法 Phase 2-D チーム提案**
+
+**GitHub**: main 最新 CI **全 success**（`aa8faec` の eslint 失敗は `cb70cf0` で修正済）
+
+**AIチーム**（Explore + DeepSeek + CIO）:
+- Phase 2-D **即全文実装は NG** — 提案書先行
+- 安全最小: `ai-kernel-mdc-manifest` exempt 2件 + `cursor-rules-topic-index` 追記
+
+**正本**: `docs/plans/2026-06-10-constitution-phase2d-team-proposal.md`
+
+**次**: 浜田 GO 後 Phase 2-D 本体（§↔ジャンル機械リンク）
+
+---
+
 ### 2026-06-10 JST — **627 削除の正式確認**
 
 **浜田**: 627 アカウント管理台帳は **削除済み**（674 移行後・意図的）。`kintone-apps.md` / portfolio コメントを更新。

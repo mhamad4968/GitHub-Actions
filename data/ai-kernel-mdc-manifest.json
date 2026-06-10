@@ -1,6 +1,10 @@
 {
   "version": "2026-05-30-autonomous",
   "note": "AI-KERNEL 4要素（前提/手順/禁止/exit）必須ファイルと exempt 一覧。verify-mode-b-turn-head-canonical.mjs が参照。",
+  "exemptAudit": {
+    "autonomous-cold-start.mdc": "2026-06-10 1-pager cold-start（AI-KERNEL 4要素対象外・DeepSeek/Kimi 合意）",
+    "evening-reflection-scope.mdc": "2026-06-10 夕反省スコープ限定（AI-KERNEL 4要素対象外・DeepSeek/Kimi 合意）"
+  },
   "requiredHeadings": {
     "premise": "## 前提条件",
     "procedure": "## 実行手順",
@@ -58,7 +62,9 @@
     "kintone-javascript.mdc",
     "kintone-schema-trust.mdc",
     "creation-timing-ask.mdc",
-    "autonomous-with-mandatory-asks.mdc"
+    "autonomous-with-mandatory-asks.mdc",
+    "autonomous-cold-start.mdc",
+    "evening-reflection-scope.mdc"
   ],
   "exemptMarker": "AI-KERNEL-EXEMPT:"
 }

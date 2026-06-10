@@ -1,5 +1,5 @@
 {
-  "version": "2026-05-21-phase2b",
+  "version": "2026-06-10-phase2d-hygiene",
   "note": "Cursor は .cursor/rules/*.mdc 直下のみ読む。サブフォルダ移動はしない。",
   "topics": [
     {
@@ -37,7 +37,9 @@
         "cio-spec-logic-gate.mdc",
         "cio-debug-tips-stock-gate.mdc",
         "cio-handoff-export-validate-gate.mdc",
-        "cio-commit-msg-kimi-gate.mdc"
+        "cio-commit-msg-kimi-gate.mdc",
+        "autonomous-cold-start.mdc",
+        "evening-reflection-scope.mdc"
       ]
     },
     {

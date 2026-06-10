@@ -61,7 +61,17 @@
 2. `constitution.mdc` は **4.8MB ミラー** — 編集は元ファイル + 再生成のみ。
 3. 自動節は **マーカー間のみ**上書き（手編集はマーカー外）。
 
-## Phase 2-D（将来）
+## Phase 2-D（提案中 — 2026-06-10）
+
+> **チーム合意提案**: `docs/plans/2026-06-10-constitution-phase2d-team-proposal.md`  
+> **状態**: 索引 hygiene（manifest + topic-index）のみ実装済。**§↔ジャンル機械リンク本体は浜田 GO 待ち**。
+
+| 成果（予定） | コマンド |
+|------|----------|
+| §↔ジャンル読本 機械リンク | `rules:sync-section-genre`（未実装） |
+| GENRES 単一正本 | `data/constitution-genre-catalog.json`（未実装） |
+
+## Phase 2-D（旧メモ・将来）
 
 - AGENTS § 見出しとジャンル読本の **機械リンク**（extract-constitution 連動）
 
