@@ -62,6 +62,13 @@ function main() {
   }
 
   const rulesIndex = fs.readFileSync(path.join(root, 'RULES-INDEX.md'), 'utf8');
+  if (!rulesIndex.includes('<!-- RULES-INDEX:SECTION-GENRE-AUTO:BEGIN -->')) {
+    issues.push('RULES-INDEX.md missing SECTION-GENRE-AUTO block — run npm run rules:sync-section-genre');
+  }
+  const catalogPath = path.join(root, 'data', 'constitution-genre-catalog.json');
+  if (!fs.existsSync(catalogPath)) {
+    issues.push('missing data/constitution-genre-catalog.json');
+  }
   for (const row of RULES_INDEX_GENRE_ROWS) {
     if (!rulesIndex.includes(row)) {
       issues.push(`RULES-INDEX.md missing genre row: ${row}`);
@@ -86,6 +93,9 @@ function main() {
     const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
     if (!Array.isArray(manifest.manualPhase2) || manifest.manualPhase2.length < 7) {
       issues.push('manifest.json manualPhase2 incomplete');
+    }
+    if (!manifest.catalog) {
+      issues.push('manifest.json missing catalog pointer');
     }
   }
 

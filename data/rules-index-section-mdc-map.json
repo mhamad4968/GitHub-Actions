@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-30T05:54:48.041Z",
+  "generatedAt": "2026-06-10T10:53:47.348Z",
   "sectionToMdc": {
     "§0": [
       "constitution-brief-card.mdc",
@@ -255,6 +255,9 @@
     "auto-read-by-topic.mdc": [
       "§41"
     ],
+    "autonomous-cold-start.mdc": [
+      "§(RULES-INDEX行)"
+    ],
     "autonomous-with-mandatory-asks.mdc": [
       "§(RULES-INDEX行)"
     ],
@@ -262,6 +265,7 @@
       "§(RULES-INDEX行)"
     ],
     "cio-commit-msg-kimi-gate.mdc": [
+      "§(RULES-INDEX行)",
       "§1-2-3-4-A"
     ],
     "cio-composer-escalation-interlock.mdc": [
@@ -313,9 +317,11 @@
       "§50-3-8"
     ],
     "cio-handoff-export-validate-gate.mdc": [
+      "§(RULES-INDEX行)",
       "§1-2-3-4-A"
     ],
     "cio-kintone-fields-gate.mdc": [
+      "§(RULES-INDEX行)",
       "§1-2-3-4-A"
     ],
     "cio-operating-loop.mdc": [
@@ -413,6 +419,9 @@
     ],
     "deepseek-pre-edit-gate.mdc": [
       "§50-3-8"
+    ],
+    "evening-reflection-scope.mdc": [
+      "§(RULES-INDEX行)"
     ],
     "every-turn-rules-confirm.mdc": [
       "§(RULES-INDEX行)",

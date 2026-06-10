@@ -1,0 +1,203 @@
+{
+  "version": "2026-06-10-phase2d",
+  "note": "GENRES 単一正本。extract / desktop-map / §↔genre sync が参照。AGENTS.md 本文は変更しない。",
+  "extractedGenres": [
+    {
+      "file": "00-preamble.md",
+      "title": "前文・体系図・読み方",
+      "when": "初回着手・全体像の把握",
+      "chapterStart": "^## 🗺️",
+      "chapterEnd": "^## 第1章"
+    },
+    {
+      "file": "01-fundamentals.md",
+      "title": "基本原則（§0〜§3・モデル・正本）",
+      "when": "タスク開始・モデル選択・正本の確認",
+      "chapter": "^## 第1章",
+      "sectionRange": { "min": 0, "max": 3, "excludePrefixes": ["§1-2"] }
+    },
+    {
+      "file": "02-kintone-development.md",
+      "title": "kintone 開発（§4〜§8）",
+      "when": "フィールド設計・REST・デプロイ",
+      "chapter": "^## 第2章",
+      "sectionRange": { "min": 4, "max": 8 }
+    },
+    {
+      "file": "03-quality-engineering.md",
+      "title": "品質保証（§9〜§15）",
+      "when": "実装中・レビュー・戦略転換",
+      "chapter": "^## 第3章",
+      "sectionRange": { "min": 9, "max": 15 }
+    },
+    {
+      "file": "04-environment-security.md",
+      "title": "環境・MCP 設定・セキュリティ（§16〜§18）",
+      "when": "WSL/Windows・mcp.json 変更",
+      "chapter": "^## 第4章",
+      "sectionRange": { "min": 16, "max": 18 }
+    },
+    {
+      "file": "05-knowledge-rag.md",
+      "title": "ナレッジ・RAG（§19〜§21・第6章）",
+      "when": "ドキュ追加・RAG 検索",
+      "chapter": "^## 第5章",
+      "extraChapter": "^## 第6章",
+      "combineExtraChapter": true,
+      "sectionRange": { "min": 19, "max": 21 }
+    },
+    {
+      "file": "06-mcp-disaster-recovery.md",
+      "title": "MCP 保全・災害復旧（§22〜§25）",
+      "when": "MCP 障害・バックアップ",
+      "chapter": "^## 第7章",
+      "sectionRange": { "min": 22, "max": 25 }
+    },
+    {
+      "file": "07-frontend-web-quality.md",
+      "title": "WEB フロント品質（§26〜§30）",
+      "when": "UI・a11y・性能",
+      "chapter": "^## 第8章",
+      "sectionRange": { "min": 26, "max": 30 }
+    },
+    {
+      "file": "08-deliverables-architecture.md",
+      "title": "成果物・アーキテクト（§31〜§33）",
+      "when": "納品・図解・外部調査",
+      "chapter": "^## 第9章",
+      "extraChapter": "^## 第10章",
+      "combineExtraChapter": true,
+      "sectionRange": { "min": 31, "max": 33 }
+    },
+    {
+      "file": "09-human-autonomy-reporting.md",
+      "title": "人間尊重・自律・報告（§34〜§41）",
+      "when": "報告・一問一答・自律実行",
+      "chapter": "^## 第11章",
+      "sectionRange": { "min": 34, "max": 41 }
+    },
+    {
+      "file": "10-session-operations.md",
+      "title": "セッション運用 OS（§42〜§46）",
+      "when": "セッション切替・朝ルーチン",
+      "chapter": "^## 第12章",
+      "sectionRange": { "min": 42, "max": 46 }
+    },
+    {
+      "file": "11-professional-judgment.md",
+      "title": "プロ判断（§47〜§49）",
+      "when": "批判・複数案・先回り",
+      "chapter": "^## 第13章",
+      "sectionRange": { "min": 47, "max": 49 }
+    },
+    {
+      "file": "12-mcp-usage.md",
+      "title": "MCP 活用（§50 系）",
+      "when": "MCP 選択・想起儀式・CTO 規定",
+      "chapter": "^## 第14章",
+      "sectionPrefix": "§50"
+    },
+    {
+      "file": "13-parallel-session.md",
+      "title": "並列禁止・セッション分割（§51 系）",
+      "when": "並列作業・session:clock",
+      "chapter": "^## 第15章",
+      "sectionPrefix": "§51"
+    },
+    {
+      "file": "14-self-governance-safemode.md",
+      "title": "自己統治・セーフモード（第18〜19章）",
+      "when": "異常時・セーフモード",
+      "chapter": "^## 第18章",
+      "extraChapter": "^## 第19章",
+      "combineExtraChapter": true,
+      "sectionPrefix": "§55"
+    },
+    {
+      "file": "15-raci-responsibility.md",
+      "title": "RACI・責任の所在（第20章・第16章）",
+      "when": "Tier A/B・自律レベル",
+      "chapter": "^## 第20章",
+      "extraChapter": "^## 第16章",
+      "combineExtraChapter": true,
+      "sectionPrefixes": ["§52", "§56"]
+    },
+    {
+      "file": "16-amendment-process.md",
+      "title": "憲法改定（§57・第21章）",
+      "when": "AGENTS.md 改変・[BREAKING]",
+      "chapter": "^## 第21章",
+      "sectionPrefix": "§57"
+    }
+  ],
+  "manualPhase2": [
+    {
+      "file": "00-rule-hierarchy.md",
+      "title": "3階層索引",
+      "when": "迷ったら最初",
+      "aliases": ["（階層）"]
+    },
+    {
+      "file": "17-four-ai-mode-b.md",
+      "title": "§1-2-3-4・§50-3-11",
+      "when": "4AI・開発",
+      "sectionPrefixes": ["§1-2-3", "§1-2-4"]
+    },
+    {
+      "file": "18-ai-team-read-map.md",
+      "title": "4AI 役割別ナビ",
+      "when": "誰が何を読む",
+      "aliases": ["4AI 役割別ナビ"]
+    },
+    {
+      "file": "19-governance-four-ai-kernel.md",
+      "title": "統制・2名チェック",
+      "when": "毎ターン・着手前"
+    },
+    {
+      "file": "20-cost-token-defense-kernel.md",
+      "title": "15ターン・荷造り",
+      "when": "長セッション"
+    },
+    {
+      "file": "21-autonomous-patrol-kernel.md",
+      "title": "週末監査",
+      "when": "土日"
+    },
+    {
+      "file": "22-error-handling-kernel.md",
+      "title": "エスカレ・3択",
+      "when": "verify失敗"
+    }
+  ],
+  "specialSectionToGenre": {
+    "§50-3-11": ["17-four-ai-mode-b.md", "12-mcp-usage.md"],
+    "§1-2-3-4-A": ["17-four-ai-mode-b.md"],
+    "§1-2-3-4-B": ["17-four-ai-mode-b.md"],
+    "§1-2-3-4-C": ["17-four-ai-mode-b.md"],
+    "§1-2-3-4": ["17-four-ai-mode-b.md"],
+    "§1-2-3-1": ["17-four-ai-mode-b.md", "01-fundamentals.md"],
+    "§1-2-3": ["17-four-ai-mode-b.md", "01-fundamentals.md"],
+    "§1-2-2": ["17-four-ai-mode-b.md"],
+    "§1-2-4": ["17-four-ai-mode-b.md"]
+  },
+  "desktopGenres": [
+    ["00-preamble", "前文・体系図・レーン", "初回・迷ったとき", "CIO"],
+    ["01-fundamentals", "§0〜§3・モデル・正本", "毎タスク開始", "CIO"],
+    ["02-kintone-development", "§4〜§8 kintone", "実装・deploy", "CIO→Composer"],
+    ["03-quality-engineering", "§9〜§15 品質", "監査・戦略", "CIO"],
+    ["04-environment-security", "§16〜§18 環境・秘密", "mcp.json・WSL", "CIO"],
+    ["05-knowledge-rag", "§19〜§21 RAG", "ドキュ・検索", "CIO/Kimi"],
+    ["06-mcp-disaster-recovery", "§22〜§25 MCP障害", "MCP 不通", "CIO"],
+    ["07-frontend-web-quality", "§26〜§30 UI/a11y", "FE・Playwright", "Composer"],
+    ["08-deliverables-architecture", "§31〜§33 納品", "長文・資料", "Kimi"],
+    ["09-human-autonomy-reporting", "§34〜§41 報告", "報告・§41一問", "CIO"],
+    ["10-session-operations", "§42〜§46 セッション", "切替・朝", "CIO"],
+    ["11-professional-judgment", "§47〜§49 批判", "複数案・却下", "CIO"],
+    ["12-mcp-usage", "§50 系 MCP", "MCP 選択", "CIO"],
+    ["13-parallel-session", "§51 系 並列", "並列可否", "CIO"],
+    ["14-self-governance-safemode", "§55 セーフ", "safe-mode", "CIO"],
+    ["15-raci-responsibility", "§52・Tier", "Tier A/B", "CIO"],
+    ["16-amendment-process", "§57 改定", "憲法改定", "CIO"]
+  ]
+}

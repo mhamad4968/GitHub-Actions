@@ -1,7 +1,7 @@
 # 憲法 Phase 2-D — AIチーム合意提案書（2026-06-10）
 
 > **起票**: 2026-06-10  
-> **状態**: **提案・部分実装（索引 hygiene のみ GO）**  
+> **状態**: **Phase 2-D 完了（2026-06-10 浜田 GO → DeepSeek GO → governance 全通過）**  
 > **制約**: AGENTS.md § 本文 **変更・削除禁止** / `constitution.mdc` **手編集禁止** / **1人作業禁止**
 
 ---
@@ -24,8 +24,8 @@
 | 役割 | 実施 | 結論 |
 |------|------|------|
 | **Explore** | Phase 2-D 未着手点・安全な追加のみリスト | Phase 2-D = §↔ジャンル機械リンク。索引 drift 修正は先行可 |
-| **DeepSeek** | 第2者反例レビュー | **Phase 2-D 即実装 NG** — 計画書 + 第2者承認後。exempt は理由監査必須 |
-| **CIO** | 突合3行 + 本提案書 | 索引 hygiene のみ今回 GO。本文・ミラーは触らない |
+| **DeepSeek** | 第2者反例レビュー（Phase 2-D 本体） | **GO（commit可）** — verify 全通過・AGENTS 未変更・索引のみ |
+| **CIO** | 突合3行 + 本提案書 | 索引 hygiene + Phase 2-D 本体完了 |
 
 ### CIO 突合3行（§50-3-8）
 
@@ -43,12 +43,14 @@
 | B | `cursor-rules-topic-index.json` — 2 `.mdc` 追記 | **実装済** |
 | C | 本提案書 + Phase 2 計画への参照追記 | **本ファイル** |
 
-**非 GO（Phase 2-D 本体）**:
+**非 GO（Phase 2-D 本体）** → **2026-06-10 浜田 GO により実装完了**:
 
-- `constitution-genre-catalog.json` 新設
-- `sync-rules-index-section-genre.mjs` / verify 連鎖
-- `18-ai-team-read-map.md` への「30秒ルート」大追記（DeepSeek 懸念 — 別途文案レビュー）
-- AGENTS.md § 本文の再分割
+| # | 内容 | 状態 |
+|---|------|------|
+| 1 | `constitution-genre-catalog.json` 新設 | **実装済** |
+| 2 | `sync-rules-index-section-genre.mjs` / verify 連鎖 | **実装済** |
+| 3 | `18-ai-team-read-map.md` 索引ポインタ追記（30秒ルート大追記は回避） | **実装済** |
+| 4 | AGENTS.md § 本文の再分割 | **未実施（意図的）** |
 
 ---
 
@@ -67,12 +69,12 @@
 
 ## §4. 誤削除防止チェックリスト
 
-- [ ] AGENTS.md diff に `-` 行（本文削除）が **0**
-- [ ] `constitution.mdc` を手編集していない
-- [ ] `.mdc` をサブフォルダへ移動していない
-- [ ] `npm run verify:cio-four-ai-governance` OK
-- [ ] `npm run verify:constitution-genre-kernels` OK
-- [ ] `npm run constitution:verify-coverage` OK（Phase 2-D 時）
+- [x] AGENTS.md diff に `-` 行（本文削除）が **0**
+- [x] `constitution.mdc` を手編集していない
+- [x] `.mdc` をサブフォルダへ移動していない
+- [x] `npm run verify:cio-four-ai-governance` OK
+- [x] `npm run verify:constitution-genre-kernels` OK
+- [x] `npm run constitution:verify-coverage` OK
 
 ---
 

@@ -6,19 +6,11 @@
 
 ---
 
-## 30秒要約（Phase 2）
+## 要約
 
-§51 並列禁止・session:clock・セッション分割。1タスク1操作。
+このジャンルに属する § は、下記本文どおり `AGENTS.md` から抽出したものです。解釈の最終正本は `AGENTS.md` の同一 § です。
 
-## いつ読む（チェックリスト）
-
-- 並列の誘惑
-- 長時間セッション
-- 切替
-
-## 条文本文（AGENTS 抽出・削除禁止）
-
-> 以下は `AGENTS.md` からの抽出コピー。**省略・削除しない**。解釈疑義は `AGENTS.md` 正本。
+---
 
 ## 第15章 並列処理禁止（2026-04-23 制定 / 浜田指示 / 1 タスク 1 操作の絶対原則）
 
@@ -395,14 +387,13 @@ $ node scripts/parallel-session-detector.mjs --explain # 軸ごとの内訳を�
 
 ---
 
----
-
 ## 関連ファイル
 
 | 種別 | パス |
 |------|------|
 | 正本 | `AGENTS.md` |
 | 索引 | `RULES-INDEX.md` |
-| 読本目次 | `docs/constitution/README.md` |
-| 検証 | `npm run constitution:verify-coverage` |
+| §↔ジャンル | `data/constitution-section-genre-map.json` |
+| Cursor 常時 | `.cursor/rules/cio-constitution.mdc` |
+| 手順 | `WORKFLOW.md` |
 

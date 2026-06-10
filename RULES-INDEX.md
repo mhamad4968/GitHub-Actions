@@ -24,7 +24,7 @@
 
 ## Cursor ルール逆引き（自動生成・編集禁止）
 
-**更新**: `npm run rules:sync-mdc-index`（2026-05-30 JST）
+**更新**: `npm run rules:sync-mdc-index`（2026-06-10 JST）
 
 | トピック | ファイル | description（frontmatter） |
 |----------|----------|---------------------------|
@@ -52,6 +52,10 @@
 | セッション・引き継ぎ | [`cio-weekend-rollback-gate.mdc`](.cursor/rules/cio-weekend-rollback-gate.mdc) | 第9層 — 週末自律修正自動ロールバック §50-3-11 |
 | セッション・引き継ぎ | [`cio-spec-logic-gate.mdc`](.cursor/rules/cio-spec-logic-gate.mdc) | 第9層 — SPEC.md 日本語論理矛盾 Linter §50-3-11 |
 | セッション・引き継ぎ | [`cio-debug-tips-stock-gate.mdc`](.cursor/rules/cio-debug-tips-stock-gate.mdc) | 第9層 — 15ターン解体デバッグ知恵自動ストック §50-3-11 |
+| セッション・引き継ぎ | [`cio-handoff-export-validate-gate.mdc`](.cursor/rules/cio-handoff-export-validate-gate.mdc) | 第11層 — 15ターン export 荷造り漏れゲート（--validate-export） |
+| セッション・引き継ぎ | [`cio-commit-msg-kimi-gate.mdc`](.cursor/rules/cio-commit-msg-kimi-gate.mdc) | 第11層 — Kimi コミット 4要素ブロック（prepare-commit-msg） |
+| セッション・引き継ぎ | [`autonomous-cold-start.mdc`](.cursor/rules/autonomous-cold-start.mdc) | 新規チャット cold-start 圧縮 — bridge + checkpoint 先頭 + Skills のみで復元 |
+| セッション・引き継ぎ | [`evening-reflection-scope.mdc`](.cursor/rules/evening-reflection-scope.mdc) | 夕反省（26）のスコープ — 失敗とミス削減のみ。未来の作業は当日に聞く。 |
 | 4AI・DeepSeek・§50-3-8 | [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) | CIO×知恵袋の仕様確認分業（🎖️表の下位・予実など） |
 | 4AI・DeepSeek・§50-3-8 | [`deepseek-pre-edit-gate.mdc`](.cursor/rules/deepseek-pre-edit-gate.mdc) | U4 — customize/SPEC/本番PUT の編集前に DeepSeek 1 問必須（CEO 2026-05-17） |
 | MCP・ツール | [`mcp-server-use-triggers.mdc`](.cursor/rules/mcp-server-use-triggers.mdc) | MCP §50 — 先出し義務・1行トリガー表（descriptor は mcp-tool-discipline） |
@@ -65,6 +69,7 @@
 | kintone・customize | [`kintone-destructive-rest-guard.mdc`](.cursor/rules/kintone-destructive-rest-guard.mdc) | kintone REST の DELETE・全件入替・本番アプリ破壊級の前に dry-run＋CEO GO（2026-05-06 浜田承認） |
 | kintone・customize | [`constitutional-focus-kintone-customize.mdc`](.cursor/rules/constitutional-focus-kintone-customize.mdc) | AGENTS.md §35-7 §50-3-8 §52 — customize 編集・本番 deploy 時の追加想起（glob） |
 | kintone・customize | [`creation-timing-ask.mdc`](.cursor/rules/creation-timing-ask.mdc) | アプリ新規作成前に「今すぐ／後日」と配置先スペースを浜田へ確認。未決なら作成に着手しない（浜田指示 2026-04-28） |
+| kintone・customize | [`cio-kintone-fields-gate.mdc`](.cursor/rules/cio-kintone-fields-gate.mdc) | 第11層 — kintone フィールドコード Linter（verify:kintone-fields） |
 | ドメイン特化（glob） | [`constitutional-focus-yojitsu.mdc`](.cursor/rules/constitutional-focus-yojitsu.mdc) | AGENTS.md §50-3-8 §41 §2 — 部署予実（yojitsu）テンプレ・SPEC 変更時の追加想起（glob） |
 | ドメイン特化（glob） | [`constitutional-focus-github-workflows.mdc`](.cursor/rules/constitutional-focus-github-workflows.mdc) | AGENTS.md §18 §52-8 §35-1 — GitHub Actions / workflow 変更時の追加想起（glob） |
 | ドメイン特化（glob） | [`security-news-response.mdc`](.cursor/rules/security-news-response.mdc) | セキュリティニュースの説明・要約・整理を依頼されたときの出力形式と CVE 時の調査 |
@@ -83,7 +88,7 @@
 
 ## § ↔ .mdc 双方向索引（自動生成・編集禁止）
 
-**更新**: `npm run rules:sync-section-mdc`（2026-05-30 JST）
+**更新**: `npm run rules:sync-section-mdc`（2026-06-10 JST）
 **正本**: `AGENTS.md` § 解釈 / 機械: `data/rules-index-section-mdc-map.json`
 
 ### § → .mdc（抜粋）
@@ -152,9 +157,10 @@
 |------|---|
 | [`ai-agent-tools-constitution.mdc`](.cursor/rules/ai-agent-tools-constitution.mdc) | §(RULES-INDEX行) |
 | [`auto-read-by-topic.mdc`](.cursor/rules/auto-read-by-topic.mdc) | §41 |
+| [`autonomous-cold-start.mdc`](.cursor/rules/autonomous-cold-start.mdc) | §(RULES-INDEX行) |
 | [`autonomous-with-mandatory-asks.mdc`](.cursor/rules/autonomous-with-mandatory-asks.mdc) | §(RULES-INDEX行) |
 | [`cio-18-zero-tolerance.mdc`](.cursor/rules/cio-18-zero-tolerance.mdc) | §(RULES-INDEX行) |
-| [`cio-commit-msg-kimi-gate.mdc`](.cursor/rules/cio-commit-msg-kimi-gate.mdc) | §1-2-3-4-A |
+| [`cio-commit-msg-kimi-gate.mdc`](.cursor/rules/cio-commit-msg-kimi-gate.mdc) | §(RULES-INDEX行) · §1-2-3-4-A |
 | [`cio-composer-escalation-interlock.mdc`](.cursor/rules/cio-composer-escalation-interlock.mdc) | §1-2-3-4-A · §50-3-11 |
 | [`cio-constitution.mdc`](.cursor/rules/cio-constitution.mdc) | §(RULES-INDEX行) · §1 · §1-2-3-1 · §1-2-3-4 · §35-1 · §36 · §56-1 |
 | [`cio-context-dissolution-interlock.mdc`](.cursor/rules/cio-context-dissolution-interlock.mdc) | §(RULES-INDEX行) · §1-2-3-4-A · §50-3-11 |
@@ -164,8 +170,8 @@
 | [`cio-env-self-healing-gate.mdc`](.cursor/rules/cio-env-self-healing-gate.mdc) | §1-2-3-4-A · §50-3-11 |
 | [`cio-error-ticket-apply-gate.mdc`](.cursor/rules/cio-error-ticket-apply-gate.mdc) | §1-2-3-4-A · §50-3-11 |
 | [`cio-error-ticket-gate.mdc`](.cursor/rules/cio-error-ticket-gate.mdc) | §1-2-3-4-A · §50-3-11 · §50-3-8 |
-| [`cio-handoff-export-validate-gate.mdc`](.cursor/rules/cio-handoff-export-validate-gate.mdc) | §1-2-3-4-A |
-| [`cio-kintone-fields-gate.mdc`](.cursor/rules/cio-kintone-fields-gate.mdc) | §1-2-3-4-A |
+| [`cio-handoff-export-validate-gate.mdc`](.cursor/rules/cio-handoff-export-validate-gate.mdc) | §(RULES-INDEX行) · §1-2-3-4-A |
+| [`cio-kintone-fields-gate.mdc`](.cursor/rules/cio-kintone-fields-gate.mdc) | §(RULES-INDEX行) · §1-2-3-4-A |
 | [`cio-operating-loop.mdc`](.cursor/rules/cio-operating-loop.mdc) | §(RULES-INDEX行) |
 | [`cio-report-min-format.mdc`](.cursor/rules/cio-report-min-format.mdc) | §1 |
 | [`cio-spec-logic-gate.mdc`](.cursor/rules/cio-spec-logic-gate.mdc) | §1-2-3-4-A · §50-3-11 |
@@ -182,17 +188,118 @@
 | [`cursor-generate-image-assets.mdc`](.cursor/rules/cursor-generate-image-assets.mdc) | §(RULES-INDEX行) · §0 · §1-2-2 · §1-2-3-4-A · §1-2-3-4-C · §1-2-4 · §41 · §50-3-11 |
 | [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) | §0 · §1-2-2 · §1-2-3-4-A · §1-2-4 · §50-3 · §50-3-10 · §50-3-11 · §50-3-2 · §50-3-8 · §50-3-9 |
 | [`deepseek-pre-edit-gate.mdc`](.cursor/rules/deepseek-pre-edit-gate.mdc) | §50-3-8 |
+| [`evening-reflection-scope.mdc`](.cursor/rules/evening-reflection-scope.mdc) | §(RULES-INDEX行) |
 | [`every-turn-rules-confirm.mdc`](.cursor/rules/every-turn-rules-confirm.mdc) | §(RULES-INDEX行) · §1 · §1-2-3 · §1-2-3-1 · §35-7 · §37-1 · §50-3-11 |
 | [`file-copy-exact-path.mdc`](.cursor/rules/file-copy-exact-path.mdc) | §(RULES-INDEX行) |
 | [`kintone-destructive-rest-guard.mdc`](.cursor/rules/kintone-destructive-rest-guard.mdc) | §(RULES-INDEX行) · §52-8 |
 | [`kintone-javascript.mdc`](.cursor/rules/kintone-javascript.mdc) | §(RULES-INDEX行) · §11 · §9 |
 | [`kintone-schema-trust.mdc`](.cursor/rules/kintone-schema-trust.mdc) | §(RULES-INDEX行) |
 | [`kintone.mdc`](.cursor/rules/kintone.mdc) | §(RULES-INDEX行) |
-| [`mcp-frontend-shadcn-chrome.mdc`](.cursor/rules/mcp-frontend-shadcn-chrome.mdc) | §(RULES-INDEX行) |
-| [`mcp-server-use-triggers.mdc`](.cursor/rules/mcp-server-use-triggers.mdc) | §(RULES-INDEX行) · §50 · §57-10 |
 
 <!-- RULES-INDEX:SECTION-MDC-AUTO:END -->
 
+
+<!-- RULES-INDEX:SECTION-GENRE-AUTO:BEGIN -->
+
+## § ↔ ジャンル読本 双方向索引（自動生成・編集禁止）
+
+**更新**: `npm run rules:sync-section-genre`（2026-06-10 JST）
+**正本**: `AGENTS.md` § 解釈 / 機械: `data/constitution-section-genre-map.json`
+**カタログ**: `data/constitution-genre-catalog.json`
+
+> 本節は **索引専用**。矛盾時は **AGENTS.md** が正。手動表「ジャンル読本 早見」はフォールバック。
+
+### § → ジャンル（抜粋）
+
+| § | ジャンル読本 |
+|---|-------------|
+| §0 | [`01-fundamentals.md`](docs/constitution/01-fundamentals.md) |
+| §1 | [`01-fundamentals.md`](docs/constitution/01-fundamentals.md) |
+| §1-2 | [`17-four-ai-mode-b.md`](docs/constitution/17-four-ai-mode-b.md) |
+| §1-2-1 | [`17-four-ai-mode-b.md`](docs/constitution/17-four-ai-mode-b.md) |
+| §1-2-2 | [`17-four-ai-mode-b.md`](docs/constitution/17-four-ai-mode-b.md) |
+| §1-2-2-1 | [`17-four-ai-mode-b.md`](docs/constitution/17-four-ai-mode-b.md) |
+| §1-2-3 | [`01-fundamentals.md`](docs/constitution/01-fundamentals.md) · [`17-four-ai-mode-b.md`](docs/constitution/17-four-ai-mode-b.md) |
+| §1-2-3-1 | [`01-fundamentals.md`](docs/constitution/01-fundamentals.md) · [`17-four-ai-mode-b.md`](docs/constitution/17-four-ai-mode-b.md) |
+| §1-2-3-2 | [`01-fundamentals.md`](docs/constitution/01-fundamentals.md) · [`17-four-ai-mode-b.md`](docs/constitution/17-four-ai-mode-b.md) |
+| §1-2-3-3 | [`01-fundamentals.md`](docs/constitution/01-fundamentals.md) · [`17-four-ai-mode-b.md`](docs/constitution/17-four-ai-mode-b.md) |
+| §1-2-3-4 | [`01-fundamentals.md`](docs/constitution/01-fundamentals.md) · [`17-four-ai-mode-b.md`](docs/constitution/17-four-ai-mode-b.md) |
+| §1-2-3-4-A | [`01-fundamentals.md`](docs/constitution/01-fundamentals.md) · [`17-four-ai-mode-b.md`](docs/constitution/17-four-ai-mode-b.md) |
+| §1-2-3-4-B | [`01-fundamentals.md`](docs/constitution/01-fundamentals.md) · [`17-four-ai-mode-b.md`](docs/constitution/17-four-ai-mode-b.md) |
+| §1-2-3-4-C | [`01-fundamentals.md`](docs/constitution/01-fundamentals.md) · [`17-four-ai-mode-b.md`](docs/constitution/17-four-ai-mode-b.md) |
+| §1-2-4 | [`17-four-ai-mode-b.md`](docs/constitution/17-four-ai-mode-b.md) |
+| §1-N | [`01-fundamentals.md`](docs/constitution/01-fundamentals.md) |
+| §10 | [`03-quality-engineering.md`](docs/constitution/03-quality-engineering.md) |
+| §11 | [`03-quality-engineering.md`](docs/constitution/03-quality-engineering.md) |
+| §11-2 | [`03-quality-engineering.md`](docs/constitution/03-quality-engineering.md) |
+| §11-3 | [`03-quality-engineering.md`](docs/constitution/03-quality-engineering.md) |
+| §11-4 | [`03-quality-engineering.md`](docs/constitution/03-quality-engineering.md) |
+| §11-5 | [`03-quality-engineering.md`](docs/constitution/03-quality-engineering.md) |
+| §11-6 | [`03-quality-engineering.md`](docs/constitution/03-quality-engineering.md) |
+| §12 | [`03-quality-engineering.md`](docs/constitution/03-quality-engineering.md) |
+| §13 | [`03-quality-engineering.md`](docs/constitution/03-quality-engineering.md) |
+| §14 | [`03-quality-engineering.md`](docs/constitution/03-quality-engineering.md) |
+| §15 | [`03-quality-engineering.md`](docs/constitution/03-quality-engineering.md) |
+| §16 | [`04-environment-security.md`](docs/constitution/04-environment-security.md) |
+| §16-1 | [`04-environment-security.md`](docs/constitution/04-environment-security.md) |
+| §17 | [`04-environment-security.md`](docs/constitution/04-environment-security.md) |
+| §17-2 | [`04-environment-security.md`](docs/constitution/04-environment-security.md) |
+| §17-3 | [`04-environment-security.md`](docs/constitution/04-environment-security.md) |
+| §18 | [`04-environment-security.md`](docs/constitution/04-environment-security.md) |
+| §19 | [`05-knowledge-rag.md`](docs/constitution/05-knowledge-rag.md) |
+| §2 | [`01-fundamentals.md`](docs/constitution/01-fundamentals.md) |
+| §20 | [`05-knowledge-rag.md`](docs/constitution/05-knowledge-rag.md) |
+| §21 | [`05-knowledge-rag.md`](docs/constitution/05-knowledge-rag.md) |
+| §22 | [`06-mcp-disaster-recovery.md`](docs/constitution/06-mcp-disaster-recovery.md) |
+| §23 | [`06-mcp-disaster-recovery.md`](docs/constitution/06-mcp-disaster-recovery.md) |
+| §24 | [`06-mcp-disaster-recovery.md`](docs/constitution/06-mcp-disaster-recovery.md) |
+| §25 | [`06-mcp-disaster-recovery.md`](docs/constitution/06-mcp-disaster-recovery.md) |
+| §26 | [`07-frontend-web-quality.md`](docs/constitution/07-frontend-web-quality.md) |
+| §27 | [`07-frontend-web-quality.md`](docs/constitution/07-frontend-web-quality.md) |
+| §28 | [`07-frontend-web-quality.md`](docs/constitution/07-frontend-web-quality.md) |
+| §29 | [`07-frontend-web-quality.md`](docs/constitution/07-frontend-web-quality.md) |
+| §3 | [`01-fundamentals.md`](docs/constitution/01-fundamentals.md) |
+| §30 | [`07-frontend-web-quality.md`](docs/constitution/07-frontend-web-quality.md) |
+| §31 | [`08-deliverables-architecture.md`](docs/constitution/08-deliverables-architecture.md) |
+| §32 | [`08-deliverables-architecture.md`](docs/constitution/08-deliverables-architecture.md) |
+| §33 | [`08-deliverables-architecture.md`](docs/constitution/08-deliverables-architecture.md) |
+| §33-A | [`08-deliverables-architecture.md`](docs/constitution/08-deliverables-architecture.md) |
+| §33-B | [`08-deliverables-architecture.md`](docs/constitution/08-deliverables-architecture.md) |
+| §34 | [`09-human-autonomy-reporting.md`](docs/constitution/09-human-autonomy-reporting.md) |
+| §34-1 | [`09-human-autonomy-reporting.md`](docs/constitution/09-human-autonomy-reporting.md) |
+| §34-3 | [`09-human-autonomy-reporting.md`](docs/constitution/09-human-autonomy-reporting.md) |
+| §35 | [`09-human-autonomy-reporting.md`](docs/constitution/09-human-autonomy-reporting.md) |
+| §35-1 | [`09-human-autonomy-reporting.md`](docs/constitution/09-human-autonomy-reporting.md) |
+| §35-5 | [`09-human-autonomy-reporting.md`](docs/constitution/09-human-autonomy-reporting.md) |
+| §35-6 | [`09-human-autonomy-reporting.md`](docs/constitution/09-human-autonomy-reporting.md) |
+| §35-7 | [`09-human-autonomy-reporting.md`](docs/constitution/09-human-autonomy-reporting.md) |
+
+_他 105 件は `data/constitution-section-genre-map.json` を参照_
+
+### ジャンル → §（抜粋）
+
+| ジャンル | § |
+|----------|---|
+| [`00-rule-hierarchy.md`](docs/constitution/00-rule-hierarchy.md) | §(階層) |
+| [`01-fundamentals.md`](docs/constitution/01-fundamentals.md) | §0 · §1 · §1-2-3 · §1-2-3-1 · §1-2-3-2 · §1-2-3-3 · §1-2-3-4 · §1-2-3-4-A … |
+| [`02-kintone-development.md`](docs/constitution/02-kintone-development.md) | §4 · §5 · §5-5 · §6 · §7 · §8 |
+| [`03-quality-engineering.md`](docs/constitution/03-quality-engineering.md) | §10 · §11 · §11-2 · §11-3 · §11-4 · §11-5 · §11-6 · §12 … |
+| [`04-environment-security.md`](docs/constitution/04-environment-security.md) | §16 · §16-1 · §17 · §17-2 · §17-3 · §18 |
+| [`05-knowledge-rag.md`](docs/constitution/05-knowledge-rag.md) | §19 · §20 · §21 |
+| [`06-mcp-disaster-recovery.md`](docs/constitution/06-mcp-disaster-recovery.md) | §22 · §23 · §24 · §25 |
+| [`07-frontend-web-quality.md`](docs/constitution/07-frontend-web-quality.md) | §26 · §27 · §28 · §29 · §30 |
+| [`08-deliverables-architecture.md`](docs/constitution/08-deliverables-architecture.md) | §31 · §32 · §33 · §33-A · §33-B |
+| [`09-human-autonomy-reporting.md`](docs/constitution/09-human-autonomy-reporting.md) | §34 · §34-1 · §34-3 · §35 · §35-1 · §35-5 · §35-6 · §35-7 … |
+| [`10-session-operations.md`](docs/constitution/10-session-operations.md) | §42 · §42-2 · §42-2-1 · §42-2-2 · §42-2-3 · §42-2-4 · §42-2-5 · §42-2-6 … |
+| [`11-professional-judgment.md`](docs/constitution/11-professional-judgment.md) | §47 · §47-3 · §47-8 · §47-9 · §47-A · §47-B · §47-C · §47-D … |
+| [`12-mcp-usage.md`](docs/constitution/12-mcp-usage.md) | §50 · §50-2 · §50-3 · §50-3-1 · §50-3-10 · §50-3-11 · §50-3-2 · §50-3-3 … |
+| [`13-parallel-session.md`](docs/constitution/13-parallel-session.md) | §51 · §51-2 · §51-3 · §51-4 · §51-5 · §51-6 · §51-6-2 |
+| [`14-self-governance-safemode.md`](docs/constitution/14-self-governance-safemode.md) | §55 · §55-1 · §55-2 · §55-3 · §55-4 · §55-5 · §55-6 · §55-7 |
+| [`15-raci-responsibility.md`](docs/constitution/15-raci-responsibility.md) | §52 · §52-1 · §52-2 · §52-3 · §52-4 · §52-5 · §52-6 · §52-7 … |
+| [`16-amendment-process.md`](docs/constitution/16-amendment-process.md) | §57 · §57-1 · §57-10 · §57-2 · §57-3 · §57-4 · §57-5 · §57-6 … |
+| [`17-four-ai-mode-b.md`](docs/constitution/17-four-ai-mode-b.md) | §1-2 · §1-2-1 · §1-2-2 · §1-2-2-1 · §1-2-3 · §1-2-3-1 · §1-2-3-2 · §1-2-3-3 … |
+
+<!-- RULES-INDEX:SECTION-GENRE-AUTO:END -->
 
 ## ジャンル読本 早見（§ → ファイル）
 

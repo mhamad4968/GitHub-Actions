@@ -1,6 +1,6 @@
 【28-CONSTITUTION-GENRE-MAP】憲法・ルール — ジャンル早見（4AI・Desktop 控え）
 生成: 2026-06-10 JST — npm run constitution:sync-genre-desktop-map
-正本: docs/constitution/README.md（全文）／リポ AGENTS.md（§ 番号の正）
+正本: data/constitution-genre-catalog.json／リポ AGENTS.md（§ 番号の正）
 
 ■■ 読み方（見落とし防止・3ステップ）
   1) 本ファイル（28）でタスク→ジャンルを特定
@@ -12,60 +12,54 @@
   第2 機械 … verify:* / cio:guard:* / smoke:quiet
   第3 runbook … docs/runbooks/*.md
 
-■■ 4AI — 誰が何を読む（抜け防止）
-  ① CIO … 00-rule-hierarchy → RULES-INDEX → ジャンル1〜2本 → 19（毎ターン）
-  ② Composer … 02 + customize SPEC + constitutional-focus-kintone-customize.mdc
-  ③ Kimi … 08 + CIO 指定 SPEC 抜粋（長文・レビューのみ）
-  ④ DeepSeek … deepseek-cursor-spec-division + SPEC 抜粋（§50-3-8 のみ）
+■■ ジャンル早見（AGENTS 抽出 17 + 手動 Phase2）
+ID                     概要                           いつ               主担当
+----------------------------------------------------------------------------------------
+00-preamble            前文・体系図・レーン                   初回・迷ったとき         CIO
+01-fundamentals        §0〜§3・モデル・正本                 毎タスク開始           CIO
+02-kintone-development §4〜§8 kintone                実装・deploy        CIO→Composer
+03-quality-engineering §9〜§15 品質                    監査・戦略            CIO
+04-environment-security §16〜§18 環境・秘密                mcp.json・WSL     CIO
+05-knowledge-rag       §19〜§21 RAG                  ドキュ・検索           CIO/Kimi
+06-mcp-disaster-recovery §22〜§25 MCP障害                MCP 不通           CIO
+07-frontend-web-quality §26〜§30 UI/a11y              FE・Playwright    Composer
+08-deliverables-architecture §31〜§33 納品                   長文・資料            Kimi
+09-human-autonomy-reporting §34〜§41 報告                   報告・§41一問         CIO
+10-session-operations  §42〜§46 セッション                切替・朝             CIO
+11-professional-judgment §47〜§49 批判                   複数案・却下           CIO
+12-mcp-usage           §50 系 MCP                    MCP 選択           CIO
+13-parallel-session    §51 系 並列                     並列可否             CIO
+14-self-governance-safemode §55 セーフ                      safe-mode        CIO
+15-raci-responsibility §52・Tier                     Tier A/B         CIO
+16-amendment-process   §57 改定                       憲法改定             CIO
 
-■■ ジャンル一覧（AGENTS 抽出 00〜16）
-ファイル                         内容                     いつ               主担当
-------------------------------------------------------------------------------
-00-preamble.md               前文・体系図・レーン             初回・迷ったとき         CIO
-01-fundamentals.md           §0〜§3・モデル・正本           毎タスク開始           CIO
-02-kintone-development.md    §4〜§8 kintone          実装・deploy        CIO→Composer
-03-quality-engineering.md    §9〜§15 品質              監査・戦略            CIO
-04-environment-security.md   §16〜§18 環境・秘密          mcp.json・WSL     CIO
-05-knowledge-rag.md          §19〜§21 RAG            ドキュ・検索           CIO/Kimi
-06-mcp-disaster-recovery.md  §22〜§25 MCP障害          MCP 不通           CIO
-07-frontend-web-quality.md   §26〜§30 UI/a11y        FE・Playwright    Composer
-08-deliverables-architecture.md §31〜§33 納品             長文・資料            Kimi
-09-human-autonomy-reporting.md §34〜§41 報告             報告・§41一問         CIO
-10-session-operations.md     §42〜§46 セッション          切替・朝             CIO
-11-professional-judgment.md  §47〜§49 批判             複数案・却下           CIO
-12-mcp-usage.md              §50 系 MCP              MCP 選択           CIO
-13-parallel-session.md       §51 系 並列               並列可否             CIO
-14-self-governance-safemode.md §55 セーフ                safe-mode        CIO
-15-raci-responsibility.md    §52・Tier               Tier A/B         CIO
-16-amendment-process.md      §57 改定                 憲法改定             CIO
+■■ Phase2 手動カーネル（00/17/18/19-22）
+ID                     概要                           いつ               主担当
+----------------------------------------------------------------------------------------
+00-rule-hierarchy      3階層索引                        迷ったら最初           全員
+17-four-ai-mode-b      §1-2-3-4・§50-3-11            4AI・開発           全員
+18-ai-team-read-map    4AI 役割別ナビ                    誰が何を読む           全員
+19-governance-four-ai-kernel 統制・2名チェック                    毎ターン・着手前         全員
+20-cost-token-defense-kernel 15ターン・荷造り                    長セッション           全員
+21-autonomous-patrol-kernel 週末監査                         土日               全員
+22-error-handling-kernel エスカレ・3択                      verify失敗         全員
 
-■■ 手動・カーネル（Phase2 / AI-KERNEL 4要素）
-ファイル                         内容                     いつ               主担当
-------------------------------------------------------------------------------
-00-rule-hierarchy.md         3階層索引                  迷ったら最初           全員
-17-four-ai-mode-b.md         §1-2-3-4・§50-3-11      4AI・開発           CIO
-18-ai-team-read-map.md       役割別ナビ                  誰が何を読む           全員
-19-governance-four-ai-kernel.md 統制・2名チェック              毎ターン・着手前         CIO
-20-cost-token-defense-kernel.md 15ターン・荷造り              長セッション           CIO
-21-autonomous-patrol-kernel.md 週末監査                   土日               CIO
-22-error-handling-kernel.md  エスカレ・3択                verify失敗         CIO
+■■ タスク → 読本（1〜2本）
+タスク                          読本                   主担当
+------------------------------------------------------------------------
+kintone customize/deploy     02 + 17 + 19         DeepSeek→Composer
+報告・締め・GO仰ぎ                   09 + 19              report-verify-response
+セッション切替                      10 + 25-checkpoint   session:bootstrap
+MCP 選定                       12 + docs/mcp-status.md cio:mcp:env
+並列可否                         13                   5点チェック
+Tier B / GO                  15                   浜田 GO 後 AI 実行
+長文 SPEC/資料                   08                   Kimi レビュー
+FE 実装                        07                   playwright/chrome-devtools
 
-■■ タスク種別 → 読本（最短ルート）
-  · kintone customize/deploy → 02 + 17 + 19（DeepSeek→Composer）
-  · 報告・締め・GO仰ぎ → 09 + 19（report-verify-response）
-  · セッション切替 → 10 + 25-checkpoint（session:bootstrap）
-  · MCP 選定 → 12 + docs/mcp-status.md（cio:mcp:env）
-  · 並列可否 → 13（5点チェック）
-  · Tier B / GO → 15（浜田 GO 後 AI 実行）
-  · 長文 SPEC/資料 → 08（Kimi レビュー）
-  · FE 実装 → 07（playwright/chrome-devtools）
+■■ 4AI — 誰が何を読む
+  CIO … mode-b-canonical + RULES-INDEX + 19-governance-four-ai-kernel
+  Composer … customize SPEC + constitutional-focus-kintone-customize
+  Kimi … 08-deliverables + 依頼 SPEC
+  DeepSeek … deepseek-cursor-spec-division + 突合3行
 
-■■ Desktop 読取順（憲法まわり）
-  14-READ-06（分業チェック）→ **28（本ファイル）** → 18-重要確認 → 25-checkpoint
-  詳細条文はリポ Read。Desktop だけでは完結しない（意図的）。
-
-■■ 機械検証（変更後は CIO が実行）
-  npm run verify:constitution-genre-kernels
-  npm run constitution:verify-coverage
-  npm run verify:cio-four-ai-governance
-  npm run session-starter:sync-desktop && npm run verify:desktop-ai-emergency-sync
+検証: npm run verify:constitution-genre-kernels / verify:cio-four-ai-governance

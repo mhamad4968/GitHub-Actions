@@ -6,19 +6,11 @@
 
 ---
 
-## 30秒要約（Phase 2）
+## 要約
 
-§42〜§46: 過去ログ・WORKFLOW・夕反省・朝ルーチン最上位。
+このジャンルに属する § は、下記本文どおり `AGENTS.md` から抽出したものです。解釈の最終正本は `AGENTS.md` の同一 § です。
 
-## いつ読む（チェックリスト）
-
-- セッション切替
-- session:clock
-- 朝イチ
-
-## 条文本文（AGENTS 抽出・削除禁止）
-
-> 以下は `AGENTS.md` からの抽出コピー。**省略・削除しない**。解釈疑義は `AGENTS.md` 正本。
+---
 
 ## 第12章 セッション運用 OS（2026-04-18 制定 / 最重要）
 
@@ -193,6 +185,7 @@ WSL cron が `scripts/daily-morning-prep.mjs` を実行し、ブリーフィン�
 
 #### 関連
 - スキャフォール: `scripts/evening-reflect.mjs`
+- **反省会スコープ（失敗＋ルール案のみ / 案件・UAT・明日 TODO は別）**: `docs/runbooks/session-close-reflection-scope.md`（2026-06-09 R5）
 - 実行: `scripts/apply-approved-changes.mjs`
 - 事前検証: `scripts/check-proposals.mjs`（**proposal 作成直後 + 朝 cron 実行直前に必須**）
 - スキーマ: `docs/approved-changes/README.md`
@@ -313,14 +306,13 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 
 ---
 
----
-
 ## 関連ファイル
 
 | 種別 | パス |
 |------|------|
 | 正本 | `AGENTS.md` |
 | 索引 | `RULES-INDEX.md` |
-| 読本目次 | `docs/constitution/README.md` |
-| 検証 | `npm run constitution:verify-coverage` |
+| §↔ジャンル | `data/constitution-section-genre-map.json` |
+| Cursor 常時 | `.cursor/rules/cio-constitution.mdc` |
+| 手順 | `WORKFLOW.md` |
 

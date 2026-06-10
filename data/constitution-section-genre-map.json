@@ -1,0 +1,722 @@
+{
+  "generatedAt": "2026-06-10T10:53:47.439Z",
+  "catalogVersion": "2026-06-10-phase2d",
+  "sectionToGenre": {
+    "§(階層)": [
+      "00-rule-hierarchy.md"
+    ],
+    "§0": [
+      "01-fundamentals.md"
+    ],
+    "§1": [
+      "01-fundamentals.md"
+    ],
+    "§1-2": [
+      "17-four-ai-mode-b.md"
+    ],
+    "§1-2-1": [
+      "17-four-ai-mode-b.md"
+    ],
+    "§1-2-2": [
+      "17-four-ai-mode-b.md"
+    ],
+    "§1-2-2-1": [
+      "17-four-ai-mode-b.md"
+    ],
+    "§1-2-3": [
+      "01-fundamentals.md",
+      "17-four-ai-mode-b.md"
+    ],
+    "§1-2-3-1": [
+      "01-fundamentals.md",
+      "17-four-ai-mode-b.md"
+    ],
+    "§1-2-3-2": [
+      "01-fundamentals.md",
+      "17-four-ai-mode-b.md"
+    ],
+    "§1-2-3-3": [
+      "01-fundamentals.md",
+      "17-four-ai-mode-b.md"
+    ],
+    "§1-2-3-4": [
+      "01-fundamentals.md",
+      "17-four-ai-mode-b.md"
+    ],
+    "§1-2-3-4-A": [
+      "01-fundamentals.md",
+      "17-four-ai-mode-b.md"
+    ],
+    "§1-2-3-4-B": [
+      "01-fundamentals.md",
+      "17-four-ai-mode-b.md"
+    ],
+    "§1-2-3-4-C": [
+      "01-fundamentals.md",
+      "17-four-ai-mode-b.md"
+    ],
+    "§1-2-4": [
+      "17-four-ai-mode-b.md"
+    ],
+    "§1-N": [
+      "01-fundamentals.md"
+    ],
+    "§10": [
+      "03-quality-engineering.md"
+    ],
+    "§11": [
+      "03-quality-engineering.md"
+    ],
+    "§11-2": [
+      "03-quality-engineering.md"
+    ],
+    "§11-3": [
+      "03-quality-engineering.md"
+    ],
+    "§11-4": [
+      "03-quality-engineering.md"
+    ],
+    "§11-5": [
+      "03-quality-engineering.md"
+    ],
+    "§11-6": [
+      "03-quality-engineering.md"
+    ],
+    "§12": [
+      "03-quality-engineering.md"
+    ],
+    "§13": [
+      "03-quality-engineering.md"
+    ],
+    "§14": [
+      "03-quality-engineering.md"
+    ],
+    "§15": [
+      "03-quality-engineering.md"
+    ],
+    "§16": [
+      "04-environment-security.md"
+    ],
+    "§16-1": [
+      "04-environment-security.md"
+    ],
+    "§17": [
+      "04-environment-security.md"
+    ],
+    "§17-2": [
+      "04-environment-security.md"
+    ],
+    "§17-3": [
+      "04-environment-security.md"
+    ],
+    "§18": [
+      "04-environment-security.md"
+    ],
+    "§19": [
+      "05-knowledge-rag.md"
+    ],
+    "§2": [
+      "01-fundamentals.md"
+    ],
+    "§20": [
+      "05-knowledge-rag.md"
+    ],
+    "§21": [
+      "05-knowledge-rag.md"
+    ],
+    "§22": [
+      "06-mcp-disaster-recovery.md"
+    ],
+    "§23": [
+      "06-mcp-disaster-recovery.md"
+    ],
+    "§24": [
+      "06-mcp-disaster-recovery.md"
+    ],
+    "§25": [
+      "06-mcp-disaster-recovery.md"
+    ],
+    "§26": [
+      "07-frontend-web-quality.md"
+    ],
+    "§27": [
+      "07-frontend-web-quality.md"
+    ],
+    "§28": [
+      "07-frontend-web-quality.md"
+    ],
+    "§29": [
+      "07-frontend-web-quality.md"
+    ],
+    "§3": [
+      "01-fundamentals.md"
+    ],
+    "§30": [
+      "07-frontend-web-quality.md"
+    ],
+    "§31": [
+      "08-deliverables-architecture.md"
+    ],
+    "§32": [
+      "08-deliverables-architecture.md"
+    ],
+    "§33": [
+      "08-deliverables-architecture.md"
+    ],
+    "§33-A": [
+      "08-deliverables-architecture.md"
+    ],
+    "§33-B": [
+      "08-deliverables-architecture.md"
+    ],
+    "§34": [
+      "09-human-autonomy-reporting.md"
+    ],
+    "§34-1": [
+      "09-human-autonomy-reporting.md"
+    ],
+    "§34-3": [
+      "09-human-autonomy-reporting.md"
+    ],
+    "§35": [
+      "09-human-autonomy-reporting.md"
+    ],
+    "§35-1": [
+      "09-human-autonomy-reporting.md"
+    ],
+    "§35-5": [
+      "09-human-autonomy-reporting.md"
+    ],
+    "§35-6": [
+      "09-human-autonomy-reporting.md"
+    ],
+    "§35-7": [
+      "09-human-autonomy-reporting.md"
+    ],
+    "§36": [
+      "09-human-autonomy-reporting.md"
+    ],
+    "§37": [
+      "09-human-autonomy-reporting.md"
+    ],
+    "§37-1": [
+      "09-human-autonomy-reporting.md"
+    ],
+    "§38": [
+      "09-human-autonomy-reporting.md"
+    ],
+    "§39": [
+      "09-human-autonomy-reporting.md"
+    ],
+    "§4": [
+      "02-kintone-development.md"
+    ],
+    "§40": [
+      "09-human-autonomy-reporting.md"
+    ],
+    "§41": [
+      "09-human-autonomy-reporting.md"
+    ],
+    "§41-1": [
+      "09-human-autonomy-reporting.md"
+    ],
+    "§41-2": [
+      "09-human-autonomy-reporting.md"
+    ],
+    "§41-3": [
+      "09-human-autonomy-reporting.md"
+    ],
+    "§41-4": [
+      "09-human-autonomy-reporting.md"
+    ],
+    "§41-5": [
+      "09-human-autonomy-reporting.md"
+    ],
+    "§41-6": [
+      "09-human-autonomy-reporting.md"
+    ],
+    "§41-7": [
+      "09-human-autonomy-reporting.md"
+    ],
+    "§41-8": [
+      "09-human-autonomy-reporting.md"
+    ],
+    "§42": [
+      "10-session-operations.md"
+    ],
+    "§42-2": [
+      "10-session-operations.md"
+    ],
+    "§42-2-1": [
+      "10-session-operations.md"
+    ],
+    "§42-2-2": [
+      "10-session-operations.md"
+    ],
+    "§42-2-3": [
+      "10-session-operations.md"
+    ],
+    "§42-2-4": [
+      "10-session-operations.md"
+    ],
+    "§42-2-5": [
+      "10-session-operations.md"
+    ],
+    "§42-2-6": [
+      "10-session-operations.md"
+    ],
+    "§42-2-7": [
+      "10-session-operations.md"
+    ],
+    "§42-2-8": [
+      "10-session-operations.md"
+    ],
+    "§42-2-9": [
+      "10-session-operations.md"
+    ],
+    "§43": [
+      "10-session-operations.md"
+    ],
+    "§44": [
+      "10-session-operations.md"
+    ],
+    "§45": [
+      "10-session-operations.md"
+    ],
+    "§46": [
+      "10-session-operations.md"
+    ],
+    "§47": [
+      "11-professional-judgment.md"
+    ],
+    "§47-3": [
+      "11-professional-judgment.md"
+    ],
+    "§47-8": [
+      "11-professional-judgment.md"
+    ],
+    "§47-9": [
+      "11-professional-judgment.md"
+    ],
+    "§47-A": [
+      "11-professional-judgment.md"
+    ],
+    "§47-B": [
+      "11-professional-judgment.md"
+    ],
+    "§47-C": [
+      "11-professional-judgment.md"
+    ],
+    "§47-D": [
+      "11-professional-judgment.md"
+    ],
+    "§47-E": [
+      "11-professional-judgment.md"
+    ],
+    "§48": [
+      "11-professional-judgment.md"
+    ],
+    "§49": [
+      "11-professional-judgment.md"
+    ],
+    "§5": [
+      "02-kintone-development.md"
+    ],
+    "§5-5": [
+      "02-kintone-development.md"
+    ],
+    "§50": [
+      "12-mcp-usage.md"
+    ],
+    "§50-2": [
+      "12-mcp-usage.md"
+    ],
+    "§50-3": [
+      "12-mcp-usage.md"
+    ],
+    "§50-3-1": [
+      "12-mcp-usage.md"
+    ],
+    "§50-3-10": [
+      "12-mcp-usage.md"
+    ],
+    "§50-3-11": [
+      "12-mcp-usage.md",
+      "17-four-ai-mode-b.md"
+    ],
+    "§50-3-2": [
+      "12-mcp-usage.md"
+    ],
+    "§50-3-3": [
+      "12-mcp-usage.md"
+    ],
+    "§50-3-4": [
+      "12-mcp-usage.md"
+    ],
+    "§50-3-5": [
+      "12-mcp-usage.md"
+    ],
+    "§50-3-6": [
+      "12-mcp-usage.md"
+    ],
+    "§50-3-7": [
+      "12-mcp-usage.md"
+    ],
+    "§50-3-8": [
+      "12-mcp-usage.md"
+    ],
+    "§50-3-9": [
+      "12-mcp-usage.md"
+    ],
+    "§51": [
+      "13-parallel-session.md"
+    ],
+    "§51-2": [
+      "13-parallel-session.md"
+    ],
+    "§51-3": [
+      "13-parallel-session.md"
+    ],
+    "§51-4": [
+      "13-parallel-session.md"
+    ],
+    "§51-5": [
+      "13-parallel-session.md"
+    ],
+    "§51-6": [
+      "13-parallel-session.md"
+    ],
+    "§51-6-2": [
+      "13-parallel-session.md"
+    ],
+    "§52": [
+      "15-raci-responsibility.md"
+    ],
+    "§52-1": [
+      "15-raci-responsibility.md"
+    ],
+    "§52-2": [
+      "15-raci-responsibility.md"
+    ],
+    "§52-3": [
+      "15-raci-responsibility.md"
+    ],
+    "§52-4": [
+      "15-raci-responsibility.md"
+    ],
+    "§52-5": [
+      "15-raci-responsibility.md"
+    ],
+    "§52-6": [
+      "15-raci-responsibility.md"
+    ],
+    "§52-7": [
+      "15-raci-responsibility.md"
+    ],
+    "§52-8": [
+      "15-raci-responsibility.md"
+    ],
+    "§52-8-1": [
+      "15-raci-responsibility.md"
+    ],
+    "§52-9": [
+      "15-raci-responsibility.md"
+    ],
+    "§55": [
+      "14-self-governance-safemode.md"
+    ],
+    "§55-1": [
+      "14-self-governance-safemode.md"
+    ],
+    "§55-2": [
+      "14-self-governance-safemode.md"
+    ],
+    "§55-3": [
+      "14-self-governance-safemode.md"
+    ],
+    "§55-4": [
+      "14-self-governance-safemode.md"
+    ],
+    "§55-5": [
+      "14-self-governance-safemode.md"
+    ],
+    "§55-6": [
+      "14-self-governance-safemode.md"
+    ],
+    "§55-7": [
+      "14-self-governance-safemode.md"
+    ],
+    "§56": [
+      "15-raci-responsibility.md"
+    ],
+    "§56-1": [
+      "15-raci-responsibility.md"
+    ],
+    "§56-2": [
+      "15-raci-responsibility.md"
+    ],
+    "§56-3": [
+      "15-raci-responsibility.md"
+    ],
+    "§56-4": [
+      "15-raci-responsibility.md"
+    ],
+    "§57": [
+      "16-amendment-process.md"
+    ],
+    "§57-1": [
+      "16-amendment-process.md"
+    ],
+    "§57-10": [
+      "16-amendment-process.md"
+    ],
+    "§57-2": [
+      "16-amendment-process.md"
+    ],
+    "§57-3": [
+      "16-amendment-process.md"
+    ],
+    "§57-4": [
+      "16-amendment-process.md"
+    ],
+    "§57-5": [
+      "16-amendment-process.md"
+    ],
+    "§57-6": [
+      "16-amendment-process.md"
+    ],
+    "§57-7": [
+      "16-amendment-process.md"
+    ],
+    "§57-8": [
+      "16-amendment-process.md"
+    ],
+    "§57-9": [
+      "16-amendment-process.md"
+    ],
+    "§6": [
+      "02-kintone-development.md"
+    ],
+    "§7": [
+      "02-kintone-development.md"
+    ],
+    "§8": [
+      "02-kintone-development.md"
+    ],
+    "§9": [
+      "03-quality-engineering.md"
+    ]
+  },
+  "genreToSection": {
+    "00-rule-hierarchy.md": [
+      "§(階層)"
+    ],
+    "01-fundamentals.md": [
+      "§0",
+      "§1",
+      "§1-2-3",
+      "§1-2-3-1",
+      "§1-2-3-2",
+      "§1-2-3-3",
+      "§1-2-3-4",
+      "§1-2-3-4-A",
+      "§1-2-3-4-B",
+      "§1-2-3-4-C",
+      "§1-N",
+      "§2",
+      "§3"
+    ],
+    "02-kintone-development.md": [
+      "§4",
+      "§5",
+      "§5-5",
+      "§6",
+      "§7",
+      "§8"
+    ],
+    "03-quality-engineering.md": [
+      "§10",
+      "§11",
+      "§11-2",
+      "§11-3",
+      "§11-4",
+      "§11-5",
+      "§11-6",
+      "§12",
+      "§13",
+      "§14",
+      "§15",
+      "§9"
+    ],
+    "04-environment-security.md": [
+      "§16",
+      "§16-1",
+      "§17",
+      "§17-2",
+      "§17-3",
+      "§18"
+    ],
+    "05-knowledge-rag.md": [
+      "§19",
+      "§20",
+      "§21"
+    ],
+    "06-mcp-disaster-recovery.md": [
+      "§22",
+      "§23",
+      "§24",
+      "§25"
+    ],
+    "07-frontend-web-quality.md": [
+      "§26",
+      "§27",
+      "§28",
+      "§29",
+      "§30"
+    ],
+    "08-deliverables-architecture.md": [
+      "§31",
+      "§32",
+      "§33",
+      "§33-A",
+      "§33-B"
+    ],
+    "09-human-autonomy-reporting.md": [
+      "§34",
+      "§34-1",
+      "§34-3",
+      "§35",
+      "§35-1",
+      "§35-5",
+      "§35-6",
+      "§35-7",
+      "§36",
+      "§37",
+      "§37-1",
+      "§38",
+      "§39",
+      "§40",
+      "§41",
+      "§41-1",
+      "§41-2",
+      "§41-3",
+      "§41-4",
+      "§41-5",
+      "§41-6",
+      "§41-7",
+      "§41-8"
+    ],
+    "10-session-operations.md": [
+      "§42",
+      "§42-2",
+      "§42-2-1",
+      "§42-2-2",
+      "§42-2-3",
+      "§42-2-4",
+      "§42-2-5",
+      "§42-2-6",
+      "§42-2-7",
+      "§42-2-8",
+      "§42-2-9",
+      "§43",
+      "§44",
+      "§45",
+      "§46"
+    ],
+    "11-professional-judgment.md": [
+      "§47",
+      "§47-3",
+      "§47-8",
+      "§47-9",
+      "§47-A",
+      "§47-B",
+      "§47-C",
+      "§47-D",
+      "§47-E",
+      "§48",
+      "§49"
+    ],
+    "12-mcp-usage.md": [
+      "§50",
+      "§50-2",
+      "§50-3",
+      "§50-3-1",
+      "§50-3-10",
+      "§50-3-11",
+      "§50-3-2",
+      "§50-3-3",
+      "§50-3-4",
+      "§50-3-5",
+      "§50-3-6",
+      "§50-3-7",
+      "§50-3-8",
+      "§50-3-9"
+    ],
+    "13-parallel-session.md": [
+      "§51",
+      "§51-2",
+      "§51-3",
+      "§51-4",
+      "§51-5",
+      "§51-6",
+      "§51-6-2"
+    ],
+    "14-self-governance-safemode.md": [
+      "§55",
+      "§55-1",
+      "§55-2",
+      "§55-3",
+      "§55-4",
+      "§55-5",
+      "§55-6",
+      "§55-7"
+    ],
+    "15-raci-responsibility.md": [
+      "§52",
+      "§52-1",
+      "§52-2",
+      "§52-3",
+      "§52-4",
+      "§52-5",
+      "§52-6",
+      "§52-7",
+      "§52-8",
+      "§52-8-1",
+      "§52-9",
+      "§56",
+      "§56-1",
+      "§56-2",
+      "§56-3",
+      "§56-4"
+    ],
+    "16-amendment-process.md": [
+      "§57",
+      "§57-1",
+      "§57-10",
+      "§57-2",
+      "§57-3",
+      "§57-4",
+      "§57-5",
+      "§57-6",
+      "§57-7",
+      "§57-8",
+      "§57-9"
+    ],
+    "17-four-ai-mode-b.md": [
+      "§1-2",
+      "§1-2-1",
+      "§1-2-2",
+      "§1-2-2-1",
+      "§1-2-3",
+      "§1-2-3-1",
+      "§1-2-3-2",
+      "§1-2-3-3",
+      "§1-2-3-4",
+      "§1-2-3-4-A",
+      "§1-2-3-4-B",
+      "§1-2-3-4-C",
+      "§1-2-4",
+      "§50-3-11"
+    ]
+  }
+}

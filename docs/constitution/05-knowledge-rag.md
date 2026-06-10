@@ -6,19 +6,11 @@
 
 ---
 
-## 30秒要約（Phase 2）
+## 要約
 
-§19〜§21 と RAG 第6章。鮮度・RAG 検索義務・学習サイクル。
+このジャンルに属する § は、下記本文どおり `AGENTS.md` から抽出したものです。解釈の最終正本は `AGENTS.md` の同一 § です。
 
-## いつ読む（チェックリスト）
-
-- docs 追加
-- rag:ingest
-- TSB 起票
-
-## 条文本文（AGENTS 抽出・削除禁止）
-
-> 以下は `AGENTS.md` からの抽出コピー。**省略・削除しない**。解釈疑義は `AGENTS.md` 正本。
+---
 
 ## 第5章 ナレッジ運用（RAG 連携）
 
@@ -82,14 +74,13 @@ npx mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest .rag/ext
 
 ---
 
----
-
 ## 関連ファイル
 
 | 種別 | パス |
 |------|------|
 | 正本 | `AGENTS.md` |
 | 索引 | `RULES-INDEX.md` |
-| 読本目次 | `docs/constitution/README.md` |
-| 検証 | `npm run constitution:verify-coverage` |
+| §↔ジャンル | `data/constitution-section-genre-map.json` |
+| Cursor 常時 | `.cursor/rules/cio-constitution.mdc` |
+| 手順 | `WORKFLOW.md` |
 
