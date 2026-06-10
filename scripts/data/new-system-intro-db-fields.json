@@ -1,0 +1,176 @@
+{
+  "properties": {
+    "hearing_date": {
+      "type": "DATE",
+      "code": "hearing_date",
+      "label": "ヒアリング日",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "recorder": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "recorder",
+      "label": "記録者",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "applicant": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "applicant",
+      "label": "申請者",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "usage_dept": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "usage_dept",
+      "label": "利用部署",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "service_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "service_name",
+      "label": "サービス名",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "tool_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "tool_name",
+      "label": "ツール名",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "intro_background": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "intro_background",
+      "label": "導入経緯",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "issue_to_solve": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "issue_to_solve",
+      "label": "解決したい課題",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "func_requirements": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "func_requirements",
+      "label": "必要な機能・要件",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "budget_estimate": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "budget_estimate",
+      "label": "予算（概算）",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "crit_dx": {
+      "type": "DROP_DOWN",
+      "code": "crit_dx",
+      "label": "要件-DX該当",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "該当": { "label": "該当", "index": "0" },
+        "非該当": { "label": "非該当", "index": "1" }
+      }
+    },
+    "crit_dx_note": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "crit_dx_note",
+      "label": "要件-DX説明",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "crit_productivity": {
+      "type": "DROP_DOWN",
+      "code": "crit_productivity",
+      "label": "要件-生産性該当",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "該当": { "label": "該当", "index": "0" },
+        "非該当": { "label": "非該当", "index": "1" }
+      }
+    },
+    "crit_productivity_note": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "crit_productivity_note",
+      "label": "要件-生産性説明",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "crit_cost": {
+      "type": "DROP_DOWN",
+      "code": "crit_cost",
+      "label": "要件-コスト該当",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "該当": { "label": "該当", "index": "0" },
+        "非該当": { "label": "非該当", "index": "1" }
+      }
+    },
+    "crit_cost_note": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "crit_cost_note",
+      "label": "要件-コスト説明",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "confirm_no_solo": {
+      "type": "DROP_DOWN",
+      "code": "confirm_no_solo",
+      "label": "確認-独断導入でない",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "はい": { "label": "はい", "index": "0" },
+        "いいえ": { "label": "いいえ", "index": "1" }
+      }
+    },
+    "confirm_joint": {
+      "type": "DROP_DOWN",
+      "code": "confirm_joint",
+      "label": "確認-共同プロジェクト",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "はい": { "label": "はい", "index": "0" },
+        "いいえ": { "label": "いいえ", "index": "1" }
+      }
+    },
+    "ops_owner": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "ops_owner",
+      "label": "運用・アカウント管理担当",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    }
+  }
+}

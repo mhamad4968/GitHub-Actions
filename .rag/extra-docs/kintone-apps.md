@@ -20,13 +20,20 @@ npm run app:fields <アプリID>
 
 | app | BUILD（本番） | revision | fileKey | 更新 |
 |-----|---------------|----------|---------|------|
-| 674 | `2026-05-21-list-create-modal-clear-btn` | **224** | `e8ac3ba6-86f3-46cb-a8cb-ad51ed568cb3` | 2026-05-21 リスト一覧・本番運用中 |
-| 693 | `2026-06-03-apple-id-db-block-ui-mutations` | — | `ca4b6489-bc6d-444c-b4a4-28b4c7f8c96c` | 2026-06-03 Apple ID DB save/delete ブロック |
-| 694 | `2026-06-06-694-apple-id-email-legacy` | **17** | `b47683b7-9fb9-4ab3-9ea9-d46a12de1448` | 2026-06-06 legacy メール（au.com 等）検証拡張 |
+| 674 | `2026-06-09-674-next-serial-label` | **241** | `165be2df-f6fc-4159-b726-f8bcbdce2244` | 2026-06-09 次シリアル表示ラベル |
+| 687 | `2026-06-09-687-workdays-excel-v1` | **10** | `13bc24dc-a753-404a-9f03-8e7e92c43647` | 2026-06-09 工事稼働 Excel v1 |
+| 688 | `2026-06-09-688-workdays-excel-table-v5` | **16** | `d4f3fd8d-5454-407e-b822-13c93e1f17f3` | 2026-06-09 工事稼働表 v5 |
+| 693 | `2026-06-03-apple-id-db-block-ui-mutations` | **5** | `ca4b6489-bc6d-444c-b4a4-28b4c7f8c96c` | 2026-06-03 Apple ID DB save/delete ブロック |
+| 694 | `2026-06-08-694-device-exchange-date` | **18** | `699da986-7b14-49d0-aafe-bfe3322300e5` | 2026-06-08 端末交換日フィールド |
 | 695 | `2026-06-06-shared-mail-db-block-ui` | **5** | `afc1ca51-aeed-4a67-a3ed-9a2fac00e91a` | 2026-06-06 共有メール DB save/delete ブロック |
 | 696 | `2026-06-06-696-shared-mail-dash-v1` | **4** | `74c75fb1-6be2-45e3-a330-74c4a7dfa070` | 2026-06-06 共有メール台帳 v1 |
-| 699 | `2026-06-07-bi-guide-v13d-banner-bold-both` | **39** | `0cee3997-61f1-422c-b0e4-530fdf246718` | 2026-06-07 ガイドはじめに完了・バナー太字 |
-| 700 | `2026-06-07-bi-proposal-apply-v33` | **118** | `ab72c699-f495-425a-bc00-15190c97b97c` | 2026-06-07 申請+評価 UI applyDraft |
+| 706 | `2026-06-10-nonconformance-db-block-ui` | **5** | `4a387219-5384-4ef5-877a-2997857f551f` | 2026-06-10 不適合 DB save/delete ブロック |
+| 707 | `2026-06-10-nonconformance-dash-v1` | **4** | `34332582-396a-40b8-af06-c6395fe70bb1` | 2026-06-10 不適合台帳 Excel UI v1 |
+| 708 | `2026-06-10-external-it-checksheet-db-block-ui` | **5** | `13055622-745a-4787-9cdd-3515b6f2e0e7` | 2026-06-10 外部ITチェック DB ブロック |
+| 709 | `2026-06-10-external-it-checksheet-dash-v1` | **4** | `51a444eb-7e42-4f3c-b953-1af6fd3769f2` | 2026-06-10 外部ITチェック 一覧+印刷 v1 |
+| 699 | `2026-06-09-bi-guide-eval-screenshots-complete` | **87** | `3fe0b2f6-77ed-42ba-b470-2015c46d3105` | 2026-06-09 ガイド評価編完了（スクショ含む） |
+| 700 | `2026-06-09-bi-proposal-remove-foo-bar` | **127** | `e8960d3e-f062-4869-b796-ff60f02455da` | 2026-06-09 提案700 文言整理 |
+| 701 | `2026-06-08-sn-news-board-v4-digest-labels` | **7** | `313ce558-6a11-4e5c-90b2-85d49426cfa8` | 2026-06-08 SN ニュース掲示板 v4 |
 | 627 | `2026-05-12-627-no594-rest` | 150 | `9fc3efc8-2a22-4585-881f-0ee3c2a0fbf2` | 2026-05-16 portfolio 拡張（6b3d370 同期） |
 | 668 | `2026-05-16-668-ops-guide-portfolio-audit` | 42 | `106126f5-7249-4104-8b43-405c85ddfa51` | 2026-05-16 portfolio 拡張・`deploy:668` |
 | 677 | `2026-05-15-677-block-all-ui-mutations-dash678-only` | 20 | `6eb02e6f-4319-4bed-97ee-245ee0869a01` | 2026-05-16 registry 整合 |
@@ -45,8 +52,8 @@ npm run app:fields <アプリID>
 | **ユーザサポート件数日次**（記録日・午前/午後件数・日合計 CALC・**対応内容→件数 JS**） | **682** | `customize/682/desktop.js`（**グラフ／ダッシュ／AI／§7 二枚印刷** は §9.1 C〜F） | [https://jbis-kintone.cybozu.com/k/682/](https://jbis-kintone.cybozu.com/k/682/) **Space 48 / thread 52**。`npm run cio:preflight:682 -- --note "…"` → `npm run deploy:682`。初回のみ `node --env-file=.env scripts/user-support-682-add-correspondence-fields.mjs`（`am_correspondence` / `pm_correspondence` 追加）。**月次欠日・重複の機械確認**: `npm run 682:audit-month -- --year 2026 --month 4`（`.env`）。**2026-05-12 deploy SUCCESS** / fileKey **`50783c0f-1aed-4dbe-a183-84e78b121e05`** / preview revision **`21`** / **BUILD=`2026-05-12-682-hide-rolling7m-dashboard683`**（**同一暦日は 1 レコード**・REST 重複検査。**7 暦月 REST 棒は非表示**・月次は **[683 ダッシュ](https://jbis-kintone.cybozu.com/k/683/)** を正。欠日バナー等 **§6.2.1** は従来どおり）（一覧 **§6.2.1**: 欠日は **JST 昨日まで**（**当月**）・**ヘッダで対象暦月を前月／次月／今月に戻す**・`sessionStorage` 保持・欠日列挙 **`yyyy/mm/dd(曜)`**・重複は暦月フル・offset ループ。**対応日セル**も **`yyyy/mm/dd(曜)`**・詳細・新規編集は補助行）。`npm run cio:preflight:682 -- --note "…"` → `npm run deploy:682`。**Runbook（§9.1 フェーズ C–D）**: `docs/runbooks/user-support-682-phase-c-and-space48-phase-d.md`。**フェーズ C（REST）**: `npm run 682:graph-monthly` — グラフ **`682_day_total_monthly`**（`day_total` SUM・`record_date` MONTH・**COLUMN 縦棒**・**JST 直近 7 暦月** `filterCond`）を維持（初回 **2026-05-10** revision **12**、以降は再実行で窓更新）。**自動窓更新**: GitHub Actions **`682-graph-monthly-refresh.yml`**（月初・**Repository secrets**・Runbook §1.0）。**7 暦月 0 埋め棒**: `customize/682/desktop.js`（**BUILD** 行参照・`deploy:682`）。**仕様** §4.1・§6.1・§6.2・§6.2.1・§7: `docs/plans/2026-05-08-user-support-daily-counts-spec.md` |
 | **最新ICT情報掲示板（収集用）**（RSS×Gemini 自動登録・正本 DB） | **685** | `ict-tech-digest-automation/` | [https://jbis-kintone.cybozu.com/k/685/](https://jbis-kintone.cybozu.com/k/685/) **Space 48**・仕様 **`docs/plans/2026-05-16-ict-tech-digest-spec.md`（v2）**・GHA `ict-tech-digest-collect.yml`・1日最大5件・**RSS 27 本**・カテゴリ **7 種**・`ICT_DRY_RUN` 対応・**v2 本番 2026-05-17**（`84c4f77`〜） |
 | **最新ICT情報掲示板**（685 REST 閲覧・過去検索ダッシュ） | **686** | `customize/686/desktop.js` | [https://jbis-kintone.cybozu.com/k/686/](https://jbis-kintone.cybozu.com/k/686/) **Space 48** 入口・`npm run deploy:686` **BUILD** `2026-05-17-686-ict-digest-board-v9`（rev 20・2026-05-17） |
-| **工事稼働日数算出（データ正本）** | **687** | `customize/687/desktop.js` \| `npm run deploy:687` | [https://jbis-kintone.cybozu.com/k/687/](https://jbis-kintone.cybozu.com/k/687/) **Space 56**・§6.2 データ層。**BUILD=`2026-05-17-687-dash-link-v1`**（編集画面は **688 ダッシュへ誘導**） |
-| **工事稼働日数ダッシュ（日常入口）** | **688** | `customize/688/desktop.js` \| `npm run deploy:688` | [https://jbis-kintone.cybozu.com/k/688/](https://jbis-kintone.cybozu.com/k/688/) **Space 56**・687 REST 読書き・Excel風 UI。**BUILD=`2026-05-17-688-workdays-dash-v2-copy`**（案内文・保存ボタン・CSV入手URL）・`?workdays_record=` 深いリンク |
+| **工事稼働日数算出（データ正本）** | **687** | `customize/687/desktop.js` \| `npm run deploy:687` | [https://jbis-kintone.cybozu.com/k/687/](https://jbis-kintone.cybozu.com/k/687/) **Space 56**・§6.2 データ層。**BUILD=`2026-06-09-687-workdays-excel-v1`**（Excel準拠・Option A・祝日マスタ） |
+| **工事稼働日数ダッシュ（日常入口）** | **688** | `customize/688/desktop.js` \| `npm run deploy:688` | [https://jbis-kintone.cybozu.com/k/688/](https://jbis-kintone.cybozu.com/k/688/) **Space 56**・687 REST。**BUILD=`2026-06-09-688-workdays-excel-table-v5`**（Excel上段表・※1〜※4・年列・3タブ） |
 | **ユーザサポート682ダッシュ**（682 の REST 参照・閲覧／集約 UI・**入力は 682 のみ**） | **683** | `customize/683/desktop.js` | [https://jbis-kintone.cybozu.com/k/683/](https://jbis-kintone.cybozu.com/k/683/) **Space 48**（**2026-05-11** `kintone-add-app` → **`deploy:683` SUCCESS**・SPEC **§6.1.1**・Runbook **`docs/runbooks/user683-weekly-summary-and-print.md`**）。`npm run cio:preflight:683 -- --note "…"` → `npm run deploy:683`。**2026-05-16 deploy SUCCESS** / **BUILD**: `2026-05-16-683-print-2page-tight-v2` / fileKey **`4bb662aa-b47a-40c5-b1f7-2ba4dffa8f63`** / preview revision **`74`**（**印刷報告用**・`@media print` で **2 枚前後**を目標にレイアウト縮小。**一覧の「提出用PDF」ボタンは撤去**。**月次 PDF HTTP serve は廃止**（2026-05-17 CEO・印刷は **`window.print()` のみ**・オフライン PDF は CLI `user683:monthly-pdf` 任意）。**Claude 中継**: `?user683_claude_relay=`・`text/plain` POST。**グラフ直下 月次→週次4**・要約キャッシュ PUT/POST／`USER683_SHOW_OLLAMA_GENERATE_BTN=false`）。 |
 | **PC台帳 ver.2（旧・削除予定／正は674）** | **594** | `customize/594/desktop.js` | `npm run deploy:594`（**新機能は674**。594は移行・清掃・監査コードが残る間のみ。本番に恒久的に残す前提なし） |
 | 社員マスタ（台帳・627 連携用） | 595 | `customize/595/desktop.js` | `npm run deploy:595` |
@@ -55,8 +62,12 @@ npm run app:fields <アプリID>
 | 社内FAQ（DB） | **640** | （**FAQ レコードの本番保管先**で確定。運用ガイド **668** とは別アプリ） | [https://jbis-kintone.cybozu.com/k/640/](https://jbis-kintone.cybozu.com/k/640/) ・UI 用 HTML の作業例: `scripts/faq-portal-full.html`（640 への反映は運用で実施） |
 | Security NEXT ニュース（収集・正本 DB） | **631** | `security-next-automation` | [https://jbis-kintone.cybozu.com/k/631/](https://jbis-kintone.cybozu.com/k/631/) ・`KINTONE_APP_ID` ・**浜田運用**（部員は掲示板 701 から閲覧） |
 | ニュース週次要約（週次 LLM・正本 DB） | **632** | `security-next-automation` | [https://jbis-kintone.cybozu.com/k/632/](https://jbis-kintone.cybozu.com/k/632/) ・`KINTONE_REPORT_APP_ID` ・[設計CSV](security-next-automation/docs/security-next-weekly-report-app-design.csv) |
-| **Security NEXT ニュース掲示板**（631 REST 閲覧・CVE/パッチ除外） | **701** | `customize/security-next-news-board/desktop.js` \| `npm run deploy:701` | [https://jbis-kintone.cybozu.com/k/701/](https://jbis-kintone.cybozu.com/k/701/) **Space 48 / thread 52**・仕様 **`docs/plans/2026-06-07-security-next-board-spec.md`**・**BUILD=`2026-06-07-sn-news-board-v3`** rev **6**（2026-06-07） |
+| **Security NEXT ニュース掲示板**（631 REST 閲覧・CVE/パッチ除外） | **701** | `customize/security-next-news-board/desktop.js` \| `npm run deploy:701` | [https://jbis-kintone.cybozu.com/k/701/](https://jbis-kintone.cybozu.com/k/701/) **Space 48 / thread 52**・仕様 **`docs/plans/2026-06-07-security-next-board-spec.md`**・**BUILD=`2026-06-08-sn-news-board-v4-digest-labels`** rev **7**（2026-06-08） |
 | **Security NEXT 週次掲示板**（632 REST 閲覧） | **702** | `customize/security-next-weekly-board/desktop.js` \| `npm run deploy:702` | [https://jbis-kintone.cybozu.com/k/702/](https://jbis-kintone.cybozu.com/k/702/) **Space 48 / thread 52**・**BUILD=`2026-06-07-sn-weekly-board-v2`** rev **5**（2026-06-07） |
+| **不適合管理台帳用DB**（正本・閲覧のみ） | **706** | `customize/nonconformance-db/desktop.js` \| `npm run deploy:706` | [https://jbis-kintone.cybozu.com/k/706/](https://jbis-kintone.cybozu.com/k/706/) **Space 48 / thread 52**・**2026-06-10**: 10 フィールド・**初回 0 件**・正本 `docs/plans/2026-06-10-nonconformance-ledger-spec.md`・**BUILD=`2026-06-10-nonconformance-db-block-ui`** rev **5** |
+| **不適合管理台帳**（日常 UI・706 へ REST） | **707** | `customize/nonconformance-dash/desktop.js` \| `npm run deploy:707` | [https://jbis-kintone.cybozu.com/k/707/](https://jbis-kintone.cybozu.com/k/707/) **Space 48 / thread 52**・**2026-06-10**: Excel 風表＋モーダル CRUD・**BUILD=`2026-06-10-nonconformance-dash-v1`** rev **4** |
+| **外部ITサービス導入チェック用DB**（正本・閲覧のみ） | **708** | `customize/external-it-checksheet-db/desktop.js` \| `npm run deploy:708` | [https://jbis-kintone.cybozu.com/k/708/](https://jbis-kintone.cybozu.com/k/708/) **Space 48 / thread 52**・正本 `docs/plans/2026-06-10-external-it-checksheet-spec.md`・**BUILD=`2026-06-10-external-it-checksheet-db-block-ui`** rev **5** |
+| **外部ITサービス導入チェックシート**（日常 UI・708 へ REST） | **709** | `customize/external-it-checksheet-dash/desktop.js` \| `npm run deploy:709` | [https://jbis-kintone.cybozu.com/k/709/](https://jbis-kintone.cybozu.com/k/709/) **Space 48 / thread 52**・一覧 + チェック表モーダル + **印刷**・**BUILD=`2026-06-10-external-it-checksheet-dash-v1`** rev **4** |
 | 運用ガイド（PC台帳・アカウント周りの操作手順） | **668** | `customize/ops-guide/desktop.js` | `npm run ops-guide:publish`（HTML レコード同期＋desktop.js デプロイ） |
 | 環境設定マスタ（新・PC台帳ver.1 用 / Day 1） | **670** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-24 作成 / 12 レコード（M365 ドメイン・固定文字・上限値）|
 | M365管理マスタ（新・PC台帳ver.1 用 / Day 2 / 5 台ライセンス厳守） | **671** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-24 作成 / 10 レコード（sjm-001~sjm-010 / X 案 5 台節約）|
@@ -128,6 +139,9 @@ npm run app:fields <アプリID>
 
 | 日時（UTC） | アプリID | customize パス |
 |-------------|----------|----------------|
+| 2026-06-09T12:18:35Z | 688 | `customize/688/desktop.js` |
+| 2026-06-09T12:18:35Z | 687 | `customize/687/desktop.js` |
+| 2026-06-09T12:18:35Z | 674 | `customize/new-pc-ledger-v1/desktop.js` |
 | 2026-05-30T12:22:33Z | 595 | `customize/595/desktop.js` |
 | 2026-05-27T09:50:29Z | 678 | `customize/678/desktop.js` |
 | 2026-05-24T09:22:26Z | 686 | `customize/686/desktop.js` |
@@ -642,8 +656,8 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 |--------|-----|-----------|---------------|--------|
 | 設定マスタ | **697** | — | — | `business-improvement:seed-settings` |
 | 社員マスタ | **698** | — | — | `business-improvement:sync-595` |
-| ご利用ガイド | **699** | `customize/business-improvement-guide/desktop.js` | `2026-06-07-bi-guide-v13d-banner-bold-both` rev39 | `deploy:699` |
-| 提案申請 ver.02 | **700** | `customize/business-improvement-proposal/desktop.js` | `2026-06-07-bi-proposal-apply-v33` rev118 | `deploy:700` |
+| ご利用ガイド | **699** | `customize/business-improvement-guide/desktop.js` | `2026-06-09-bi-guide-eval-screenshots-complete` rev87 | `deploy:699` |
+| 提案申請 ver.02 | **700** | `customize/business-improvement-proposal/desktop.js` | `2026-06-09-bi-proposal-remove-foo-bar` rev127 | `deploy:700` |
 
 **700 主要機能**: 申請UI（applyDraft v33）・評価UI（evalDraft）・REST 申請→ガイド遷移・test_v3 WF（A→人事）・branch_delegate 型対応。
 

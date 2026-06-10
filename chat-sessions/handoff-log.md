@@ -2951,3 +2951,32 @@ npm run cio:morning:ready -- --project business-improvement
 **締め**: `SESSION-CLOSE-REPORT-20260609.txt` / `docs/reports/2026-06-09-evening-reflection.md`
 
 ---
+
+### 2026-06-09 JST — **699 ガイド「評価編」完了**（checkpoint 反映 2026-06-10）
+
+**本日完了**: 699 評価編 本文＋スクショ（Q-GUIDE-07）— 浜田 OK
+
+**699**: BUILD `2026-06-09-bi-guide-eval-screenshots-complete` **rev87**（`data/cio-live-builds.json` 正）
+
+**次**: **6/11** 年次 Q-SCHED-03 → **6/13** 新⑤ + Q-MANUAL-01
+
+**注**: 6/9 セッション締めは **687/688 反省会**のみ記載。699 完了は deploy 台帳に残っていたが **checkpoint 更新漏れ** — 本条目で補正。
+
+---
+
+### 2026-06-10 JST — **Space 48 チェック系 706–711 完了**
+
+**本日完了**（いずれも浜田 **目視 OK**）:
+- **706/707** 不適合管理台帳（Excel 風 UI・初回 0 件）
+- **708/709** 外部 IT サービス導入チェック（A4 1枚印刷）
+- **710/711** 新規システム導入ヒアリング記録（A4 2枚印刷・稟議添付想定）
+
+**正本**: `docs/plans/2026-06-10-*-spec.md` 3 本 / 台帳 `kintone-apps.md` / `data/cio-live-builds.json`
+
+**Git**: 本条目追記とともに repo commit + push
+
+**次**: **6/11** 年次 Q-SCHED-03 → **6/12–13** 新⑤ + Q-MANUAL-01
+
+**浜田**: 710/711 アプリ権限（推進室のみ CRUD）は kintone 側で設定（仕様 Q5）
+
+---

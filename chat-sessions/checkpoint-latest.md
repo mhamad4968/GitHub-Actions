@@ -1,16 +1,67 @@
 # 復元チェックポイント（最新）
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
+**最終更新**: 2026-06-10 JST — Space 48 チェック系 706–711 すべて目視 OK
+
 ## 凍結（毎セッション先頭）
 | 禁止 | 許可 |
 |------|------|
 | 本番 WF 6段階への無断分割 | ガイド執筆・背景デザイン・仕様 doc 更新 |
 | 評価スナップショット本番投入（未設計確認前） | test_v3 WF 継続テスト |
 
-**次の1手**: **2026-06-09** ガイド **評価編** — **6/11** 年次再整理 → **6/13** 新⑤実装＋Q-MANUAL-01（Word）
+**次の1手**: **6/11** 年次 **Q-SCHED-03** 再整理 → **6/12–13** 新⑤実装 ＋ **Q-MANUAL-01**（Word）
 **実装OK**: 2026-06-06 浜田 → Phase 4b–5 **E2E OK**（2026-06-07 確認）
 **はじめに**: **2026-06-07 完了**（699 rev39 v13d — Hamada OK）
+**申請編**: **2026-06-08 完了**（699 rev70 — Hamada OK）
+**評価編**: **2026-06-09 完了**（699 rev87 — Hamada OK）
+**不適合台帳**: **2026-06-10 完了**（706/707 — Hamada 目視 OK）
+**外部ITチェック**: **2026-06-10 完了**（708/709 — Hamada 目視 OK・印刷 A4 v2）
+**新規システム導入ヒアリング**: **2026-06-10 完了**（710/711 — Hamada 目視 OK・印刷 A4 2枚）
 **仕様追記**: **Q-ACL-01** — 699/700 に **人事部のみ** 閲覧権付与（浜田判断・浜田責任）
+
+---
+
+## 2026-06-10 JST — **新規システム導入ヒアリング記録（Space 48）**
+
+| 項目 | 内容 |
+|------|------|
+| **本日完了** | 710 DB + 711 ダッシュ・一覧 + ヒアリングモーダル + **印刷 A4 2枚** — 浜田 **目視 OK** |
+| **BUILD** | 710=`2026-06-10-new-system-intro-db-block-ui` rev **5** / 711=`2026-06-10-new-system-intro-dash-print-a4-v2` rev **4** |
+| **正本** | `docs/plans/2026-06-10-new-system-intro-hearing-spec.md` |
+| **入口** | [711](https://jbis-kintone.cybozu.com/k/711/) |
+
+---
+
+## 2026-06-10 JST — **外部 IT サービス導入チェックシート（Space 48）**
+
+| 項目 | 内容 |
+|------|------|
+| **本日完了** | 708 DB + 709 ダッシュ・一覧 + チェック表モーダル + **印刷 A4** — 浜田 **目視 OK** |
+| **BUILD** | 708=`2026-06-10-external-it-checksheet-db-block-ui` rev **5** / 709=`2026-06-10-external-it-checksheet-dash-print-a4-v2` rev **5** |
+| **正本** | `docs/plans/2026-06-10-external-it-checksheet-spec.md` |
+| **入口** | [709](https://jbis-kintone.cybozu.com/k/709/) |
+
+---
+
+## 2026-06-10 JST — **不適合管理台帳 kintone 化（Space 48）**
+
+| 項目 | 内容 |
+|------|------|
+| **本日完了** | 706 DB + 707 ダッシュ作成・customize deploy・浜田 **目視 OK** |
+| **BUILD** | 706=`2026-06-10-nonconformance-db-block-ui` rev **5** / 707=`2026-06-10-nonconformance-dash-v1` rev **4** |
+| **正本** | `docs/plans/2026-06-10-nonconformance-ledger-spec.md` |
+| **次** | FAQ なし・印刷 v1 後回し（SPEC §5.4） |
+
+---
+
+## 2026-06-09 JST — **699 ガイド「評価編」完了**
+
+| 項目 | 内容 |
+|------|------|
+| **本日完了** | 699 **評価編** 本文＋スクショ（Q-GUIDE-07）— 浜田 OK |
+| **699** | BUILD `2026-06-09-bi-guide-eval-screenshots-complete` **rev87** |
+| **正本** | handbook §5.3 / spec Q-GUIDE-07 |
+| **次** | **6/11** 年次 Q-SCHED-03 / **6/13** Q-MANUAL-01 |
 
 ---
 
@@ -27,6 +78,7 @@
 
 ---
 
+
 ## 2026-06-07 JST — **追記締め（Q-ACL-01 人事部アクセス）**
 
 | 項目 | 内容 |
@@ -37,6 +89,7 @@
 | **次** | **6/8** 申請編（変更なし） |
 
 ---
+
 
 ## 2026-06-07 JST — **最終締め（699 ガイド「はじめに」完了）**
 
@@ -54,6 +107,7 @@
 
 ---
 
+
 ## 2026-06-07 JST — **業務改善 Phase 4b–5 完走**
 
 | 項目 | 内容 |
@@ -64,6 +118,7 @@
 | **仕様** | `docs/plans/2026-05-23-business-improvement-proposal-spec.md` §11 |
 
 ---
+
 
 ## 2026-06-06 JST — **夜・最終締め**
 
@@ -89,7 +144,7 @@
 
 **deploy 手順（699）**: `node scripts/cio-preflight-stamp.mjs --app 699 --note "..."` → `npm run deploy:699` → kintone 実機 Ctrl+F5
 
-**Q-GUIDE 進捗**: Q-GUIDE-09 はじめに ✅ / **Q-ACL-01** ✅ / **申請編 ✅ 2026-06-08**（699 rev70）/ 評価編 **6/9** / FAQ 後日 / **年次 Q-SCHED-03** 6/11〜13 + **Q-MANUAL-01**
+**Q-GUIDE 進捗**: Q-GUIDE-09 はじめに ✅ / **Q-ACL-01** ✅ / **申請編 ✅ 2026-06-08**（699 rev70）/ **評価編 ✅ 2026-06-09**（699 rev87）/ FAQ 後日 / **年次 Q-SCHED-03** 6/11〜13 + **Q-MANUAL-01**
 
 <!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-06-06.md -->
 
@@ -111,13 +166,5 @@
 
 再開時は `chat-sessions/handoff-log.md` 末尾（2026-06-07 最終締め）と `SESSION-CLOSE-REPORT-20260607.txt` も参照。新 Chat 第1ターンは `npm run verify:session-handoff-integrity -- --import` 推奨。
 
-## 2026-06-08 JST — **申請編完了・年次スケジュール追記**
 
-| 項目 | 内容 |
-|------|------|
-| **本日完了** | 699 **申請編** 3小項目（入力項目・添付・申請するうえでの注意点）本文推敲＋スクショ（data URL 埋め込み） |
-| **699** | BUILD `2026-06-08-bi-guide-reapply-passive` **rev70** |
-| **仕様追記** | **Q-SCHED-03**（6/11 再整理・6/12-13 新⑤実装）・**Q-MANUAL-01**（浜田向け年次 Word マニュアル） |
-| **次** | **6/9** 評価編 / **6/11-13** 年次 |
-
-**最終更新**: 2026-06-09 (Mon) JST — 工事稼働 R1–R6 承認・repo 反映
+<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-06-10.md -->

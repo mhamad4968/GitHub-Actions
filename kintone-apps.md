@@ -20,13 +20,22 @@ npm run app:fields <アプリID>
 
 | app | BUILD（本番） | revision | fileKey | 更新 |
 |-----|---------------|----------|---------|------|
-| 674 | `2026-05-21-list-create-modal-clear-btn` | **224** | `e8ac3ba6-86f3-46cb-a8cb-ad51ed568cb3` | 2026-05-21 リスト一覧・本番運用中 |
-| 693 | `2026-06-03-apple-id-db-block-ui-mutations` | — | `ca4b6489-bc6d-444c-b4a4-28b4c7f8c96c` | 2026-06-03 Apple ID DB save/delete ブロック |
-| 694 | `2026-06-06-694-apple-id-email-legacy` | **17** | `b47683b7-9fb9-4ab3-9ea9-d46a12de1448` | 2026-06-06 legacy メール（au.com 等）検証拡張 |
+| 674 | `2026-06-09-674-next-serial-label` | **241** | `165be2df-f6fc-4159-b726-f8bcbdce2244` | 2026-06-09 次シリアル表示ラベル |
+| 687 | `2026-06-09-687-workdays-excel-v1` | **10** | `13bc24dc-a753-404a-9f03-8e7e92c43647` | 2026-06-09 工事稼働 Excel v1 |
+| 688 | `2026-06-09-688-workdays-excel-table-v5` | **16** | `d4f3fd8d-5454-407e-b822-13c93e1f17f3` | 2026-06-09 工事稼働表 v5 |
+| 693 | `2026-06-03-apple-id-db-block-ui-mutations` | **5** | `ca4b6489-bc6d-444c-b4a4-28b4c7f8c96c` | 2026-06-03 Apple ID DB save/delete ブロック |
+| 694 | `2026-06-08-694-device-exchange-date` | **18** | `699da986-7b14-49d0-aafe-bfe3322300e5` | 2026-06-08 端末交換日フィールド |
 | 695 | `2026-06-06-shared-mail-db-block-ui` | **5** | `afc1ca51-aeed-4a67-a3ed-9a2fac00e91a` | 2026-06-06 共有メール DB save/delete ブロック |
 | 696 | `2026-06-06-696-shared-mail-dash-v1` | **4** | `74c75fb1-6be2-45e3-a330-74c4a7dfa070` | 2026-06-06 共有メール台帳 v1 |
-| 699 | `2026-06-07-bi-guide-v13d-banner-bold-both` | **39** | `0cee3997-61f1-422c-b0e4-530fdf246718` | 2026-06-07 ガイドはじめに完了・バナー太字 |
-| 700 | `2026-06-07-bi-proposal-apply-v33` | **118** | `ab72c699-f495-425a-bc00-15190c97b97c` | 2026-06-07 申請+評価 UI applyDraft |
+| 706 | `2026-06-10-nonconformance-db-block-ui` | **5** | `4a387219-5384-4ef5-877a-2997857f551f` | 2026-06-10 不適合 DB save/delete ブロック |
+| 707 | `2026-06-10-nonconformance-dash-v1` | **4** | `34332582-396a-40b8-af06-c6395fe70bb1` | 2026-06-10 不適合台帳 Excel UI v1 |
+| 708 | `2026-06-10-external-it-checksheet-db-block-ui` | **5** | `13055622-745a-4787-9cdd-3515b6f2e0e7` | 2026-06-10 外部ITチェック DB ブロック |
+| 709 | `2026-06-10-external-it-checksheet-dash-print-a4-v2` | **5** | `7952c4af-8fc5-4dbb-9516-5ff2e963745c` | 2026-06-10 外部ITチェック 印刷A4 v2 |
+| 710 | `2026-06-10-new-system-intro-db-block-ui` | **5** | `372a6214-84de-48ff-891f-2126483ed5dd` | 2026-06-10 新規システム導入ヒアリング DB ブロック |
+| 711 | `2026-06-10-new-system-intro-dash-print-a4-v2` | **4** | `de21c60d-301b-49aa-91bf-d1e25d16efb2` | 2026-06-10 新規システム導入ヒアリング 印刷A4 2枚 |
+| 699 | `2026-06-09-bi-guide-eval-screenshots-complete` | **87** | `3fe0b2f6-77ed-42ba-b470-2015c46d3105` | 2026-06-09 ガイド評価編完了（スクショ含む） |
+| 700 | `2026-06-09-bi-proposal-remove-foo-bar` | **127** | `e8960d3e-f062-4869-b796-ff60f02455da` | 2026-06-09 提案700 文言整理 |
+| 701 | `2026-06-08-sn-news-board-v4-digest-labels` | **7** | `313ce558-6a11-4e5c-90b2-85d49426cfa8` | 2026-06-08 SN ニュース掲示板 v4 |
 | 627 | `2026-05-12-627-no594-rest` | 150 | `9fc3efc8-2a22-4585-881f-0ee3c2a0fbf2` | 2026-05-16 portfolio 拡張（6b3d370 同期） |
 | 668 | `2026-05-16-668-ops-guide-portfolio-audit` | 42 | `106126f5-7249-4104-8b43-405c85ddfa51` | 2026-05-16 portfolio 拡張・`deploy:668` |
 | 677 | `2026-05-15-677-block-all-ui-mutations-dash678-only` | 20 | `6eb02e6f-4319-4bed-97ee-245ee0869a01` | 2026-05-16 registry 整合 |
@@ -55,8 +64,14 @@ npm run app:fields <アプリID>
 | 社内FAQ（DB） | **640** | （**FAQ レコードの本番保管先**で確定。運用ガイド **668** とは別アプリ） | [https://jbis-kintone.cybozu.com/k/640/](https://jbis-kintone.cybozu.com/k/640/) ・UI 用 HTML の作業例: `scripts/faq-portal-full.html`（640 への反映は運用で実施） |
 | Security NEXT ニュース（収集・正本 DB） | **631** | `security-next-automation` | [https://jbis-kintone.cybozu.com/k/631/](https://jbis-kintone.cybozu.com/k/631/) ・`KINTONE_APP_ID` ・**浜田運用**（部員は掲示板 701 から閲覧） |
 | ニュース週次要約（週次 LLM・正本 DB） | **632** | `security-next-automation` | [https://jbis-kintone.cybozu.com/k/632/](https://jbis-kintone.cybozu.com/k/632/) ・`KINTONE_REPORT_APP_ID` ・[設計CSV](security-next-automation/docs/security-next-weekly-report-app-design.csv) |
-| **Security NEXT ニュース掲示板**（631 REST 閲覧・CVE/パッチ除外） | **701** | `customize/security-next-news-board/desktop.js` \| `npm run deploy:701` | [https://jbis-kintone.cybozu.com/k/701/](https://jbis-kintone.cybozu.com/k/701/) **Space 48 / thread 52**・仕様 **`docs/plans/2026-06-07-security-next-board-spec.md`**・**BUILD=`2026-06-07-sn-news-board-v3`** rev **6**（2026-06-07） |
+| **Security NEXT ニュース掲示板**（631 REST 閲覧・CVE/パッチ除外） | **701** | `customize/security-next-news-board/desktop.js` \| `npm run deploy:701` | [https://jbis-kintone.cybozu.com/k/701/](https://jbis-kintone.cybozu.com/k/701/) **Space 48 / thread 52**・仕様 **`docs/plans/2026-06-07-security-next-board-spec.md`**・**BUILD=`2026-06-08-sn-news-board-v4-digest-labels`** rev **7**（2026-06-08） |
 | **Security NEXT 週次掲示板**（632 REST 閲覧） | **702** | `customize/security-next-weekly-board/desktop.js` \| `npm run deploy:702` | [https://jbis-kintone.cybozu.com/k/702/](https://jbis-kintone.cybozu.com/k/702/) **Space 48 / thread 52**・**BUILD=`2026-06-07-sn-weekly-board-v2`** rev **5**（2026-06-07） |
+| **不適合管理台帳用DB**（正本・閲覧のみ） | **706** | `customize/nonconformance-db/desktop.js` \| `npm run deploy:706` | [https://jbis-kintone.cybozu.com/k/706/](https://jbis-kintone.cybozu.com/k/706/) **Space 48 / thread 52**・**2026-06-10**: 10 フィールド・**初回 0 件**・正本 `docs/plans/2026-06-10-nonconformance-ledger-spec.md`・**BUILD=`2026-06-10-nonconformance-db-block-ui`** rev **5** |
+| **不適合管理台帳**（日常 UI・706 へ REST） | **707** | `customize/nonconformance-dash/desktop.js` \| `npm run deploy:707` | [https://jbis-kintone.cybozu.com/k/707/](https://jbis-kintone.cybozu.com/k/707/) **Space 48 / thread 52**・**2026-06-10**: Excel 風表＋モーダル CRUD・**BUILD=`2026-06-10-nonconformance-dash-v1`** rev **4** |
+| **外部ITサービス導入チェック用DB**（正本・閲覧のみ） | **708** | `customize/external-it-checksheet-db/desktop.js` \| `npm run deploy:708` | [https://jbis-kintone.cybozu.com/k/708/](https://jbis-kintone.cybozu.com/k/708/) **Space 48 / thread 52**・正本 `docs/plans/2026-06-10-external-it-checksheet-spec.md`・**BUILD=`2026-06-10-external-it-checksheet-db-block-ui`** rev **5** |
+| **外部ITサービス導入チェックシート**（日常 UI・708 へ REST） | **709** | `customize/external-it-checksheet-dash/desktop.js` \| `npm run deploy:709` | [https://jbis-kintone.cybozu.com/k/709/](https://jbis-kintone.cybozu.com/k/709/) **Space 48 / thread 52**・一覧 + チェック表モーダル + **印刷（A4 1枚・カラー）**・**BUILD=`2026-06-10-external-it-checksheet-dash-print-a4-v2`** rev **5** |
+| **新規システム導入ヒアリング用DB**（正本・閲覧のみ） | **710** | `customize/new-system-intro-db/desktop.js` \| `npm run deploy:710` | [https://jbis-kintone.cybozu.com/k/710/](https://jbis-kintone.cybozu.com/k/710/) **Space 48 / thread 52**・19 フィールド・**初回 0 件**・浜田 **目視 OK**（2026-06-10）・正本 `docs/plans/2026-06-10-new-system-intro-hearing-spec.md`・**BUILD=`2026-06-10-new-system-intro-db-block-ui`** rev **5** |
+| **新規システム導入ヒアリング記録**（日常 UI・710 へ REST） | **711** | `customize/new-system-intro-dash/desktop.js` \| `npm run deploy:711` | [https://jbis-kintone.cybozu.com/k/711/](https://jbis-kintone.cybozu.com/k/711/) **Space 48 / thread 52**・一覧 + ヒアリングモーダル + **印刷（A4 2枚・稟議添付）**・浜田 **目視 OK**（2026-06-10）・**BUILD=`2026-06-10-new-system-intro-dash-print-a4-v2`** rev **4** |
 | 運用ガイド（PC台帳・アカウント周りの操作手順） | **668** | `customize/ops-guide/desktop.js` | `npm run ops-guide:publish`（HTML レコード同期＋desktop.js デプロイ） |
 | 環境設定マスタ（新・PC台帳ver.1 用 / Day 1） | **670** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-24 作成 / 12 レコード（M365 ドメイン・固定文字・上限値）|
 | M365管理マスタ（新・PC台帳ver.1 用 / Day 2 / 5 台ライセンス厳守） | **671** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-24 作成 / 10 レコード（sjm-001~sjm-010 / X 案 5 台節約）|
@@ -645,8 +660,8 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 |--------|-----|-----------|---------------|--------|
 | 設定マスタ | **697** | — | — | `business-improvement:seed-settings` |
 | 社員マスタ | **698** | — | — | `business-improvement:sync-595` |
-| ご利用ガイド | **699** | `customize/business-improvement-guide/desktop.js` | `2026-06-07-bi-guide-v13d-banner-bold-both` rev39 | `deploy:699` |
-| 提案申請 ver.02 | **700** | `customize/business-improvement-proposal/desktop.js` | `2026-06-07-bi-proposal-apply-v33` rev118 | `deploy:700` |
+| ご利用ガイド | **699** | `customize/business-improvement-guide/desktop.js` | `2026-06-09-bi-guide-eval-screenshots-complete` rev87 | `deploy:699` |
+| 提案申請 ver.02 | **700** | `customize/business-improvement-proposal/desktop.js` | `2026-06-09-bi-proposal-remove-foo-bar` rev127 | `deploy:700` |
 
 **700 主要機能**: 申請UI（applyDraft v33）・評価UI（evalDraft）・REST 申請→ガイド遷移・test_v3 WF（A→人事）・branch_delegate 型対応。
 

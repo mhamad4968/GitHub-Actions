@@ -1,0 +1,105 @@
+{
+  "properties": {
+    "check_date": {
+      "type": "DATE",
+      "code": "check_date",
+      "label": "確認日",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "checker": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "checker",
+      "label": "確認者",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "service_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "service_name",
+      "label": "サービス名",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "tool_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "tool_name",
+      "label": "ツール名",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "purpose": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "purpose",
+      "label": "導入の目的",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "security_checks": {
+      "type": "SUBTABLE",
+      "code": "security_checks",
+      "label": "セキュリティ確認項目",
+      "noLabel": false,
+      "fields": {
+        "item_no": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "item_no",
+          "label": "項番",
+          "required": false,
+          "noLabel": false,
+          "defaultValue": ""
+        },
+        "category": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "category",
+          "label": "大項目",
+          "required": false,
+          "noLabel": false,
+          "defaultValue": ""
+        },
+        "check_method": {
+          "type": "MULTI_LINE_TEXT",
+          "code": "check_method",
+          "label": "確認方法",
+          "required": false,
+          "noLabel": false,
+          "defaultValue": ""
+        },
+        "question": {
+          "type": "MULTI_LINE_TEXT",
+          "code": "question",
+          "label": "設問",
+          "required": false,
+          "noLabel": false,
+          "defaultValue": ""
+        },
+        "result": {
+          "type": "DROP_DOWN",
+          "code": "result",
+          "label": "結果",
+          "required": false,
+          "noLabel": false,
+          "defaultValue": "",
+          "options": {
+            "〇": { "label": "〇", "index": "0" },
+            "×": { "label": "×", "index": "1" },
+            "該当なし": { "label": "該当なし", "index": "2" }
+          }
+        },
+        "note": {
+          "type": "MULTI_LINE_TEXT",
+          "code": "note",
+          "label": "備考",
+          "required": false,
+          "noLabel": false,
+          "defaultValue": ""
+        }
+      }
+    }
+  }
+}

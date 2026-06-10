@@ -160,6 +160,54 @@
       "relPath": "customize/security-next-weekly-board/desktop.js",
       "deployedAt": "2026-06-07T07:47:27.700Z",
       "note": null
+    },
+    "706": {
+      "build": "2026-06-10-nonconformance-db-block-ui",
+      "fileKey": "4a387219-5384-4ef5-877a-2997857f551f",
+      "revision": "5",
+      "relPath": "customize/nonconformance-db/desktop.js",
+      "deployedAt": "2026-06-10T09:35:01.003Z",
+      "note": null
+    },
+    "707": {
+      "build": "2026-06-10-nonconformance-dash-v1",
+      "fileKey": "34332582-396a-40b8-af06-c6395fe70bb1",
+      "revision": "4",
+      "relPath": "customize/nonconformance-dash/desktop.js",
+      "deployedAt": "2026-06-10T09:35:05.807Z",
+      "note": null
+    },
+    "708": {
+      "build": "2026-06-10-external-it-checksheet-db-block-ui",
+      "fileKey": "13055622-745a-4787-9cdd-3515b6f2e0e7",
+      "revision": "5",
+      "relPath": "customize/external-it-checksheet-db/desktop.js",
+      "deployedAt": "2026-06-10T09:58:43.791Z",
+      "note": null
+    },
+    "709": {
+      "build": "2026-06-10-external-it-checksheet-dash-print-a4-v2",
+      "fileKey": "7952c4af-8fc5-4dbb-9516-5ff2e963745c",
+      "revision": "5",
+      "relPath": "customize/external-it-checksheet-dash/desktop.js",
+      "deployedAt": "2026-06-10T10:02:27.524Z",
+      "note": null
+    },
+    "710": {
+      "build": "2026-06-10-new-system-intro-db-block-ui",
+      "fileKey": "372a6214-84de-48ff-891f-2126483ed5dd",
+      "revision": "5",
+      "relPath": "customize/new-system-intro-db/desktop.js",
+      "deployedAt": "2026-06-10T10:26:53.149Z",
+      "note": null
+    },
+    "711": {
+      "build": "2026-06-10-new-system-intro-dash-print-a4-v2",
+      "fileKey": "de21c60d-301b-49aa-91bf-d1e25d16efb2",
+      "revision": "4",
+      "relPath": "customize/new-system-intro-dash/desktop.js",
+      "deployedAt": "2026-06-10T10:26:56.640Z",
+      "note": null
     }
   }
 }

@@ -1,0 +1,90 @@
+{
+  "properties": {
+    "mgmt_no": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "mgmt_no",
+      "label": "管理番号",
+      "required": true,
+      "noLabel": false,
+      "unique": true,
+      "defaultValue": ""
+    },
+    "report_date": {
+      "type": "DATE",
+      "code": "report_date",
+      "label": "報告日",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "reporter": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "reporter",
+      "label": "報告者",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "category": {
+      "type": "DROP_DOWN",
+      "code": "category",
+      "label": "種別",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "（A）設定ミス": { "label": "（A）設定ミス", "index": "0" },
+        "（B）ルール違反": { "label": "（B）ルール違反", "index": "1" },
+        "（C）運用ミス": { "label": "（C）運用ミス", "index": "2" }
+      }
+    },
+    "issue_detail": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "issue_detail",
+      "label": "ミスの内容",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "root_cause": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "root_cause",
+      "label": "原因",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "temp_action": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "temp_action",
+      "label": "暫定策",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "permanent_action": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "permanent_action",
+      "label": "恒久策",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "completed_date": {
+      "type": "DATE",
+      "code": "completed_date",
+      "label": "対応完了日",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "verifier": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "verifier",
+      "label": "確認者",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    }
+  }
+}
