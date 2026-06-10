@@ -36,7 +36,7 @@ npm run app:fields <アプリID>
 | 699 | `2026-06-09-bi-guide-eval-screenshots-complete` | **87** | `3fe0b2f6-77ed-42ba-b470-2015c46d3105` | 2026-06-09 ガイド評価編完了（スクショ含む） |
 | 700 | `2026-06-09-bi-proposal-remove-foo-bar` | **127** | `e8960d3e-f062-4869-b796-ff60f02455da` | 2026-06-09 提案700 文言整理 |
 | 701 | `2026-06-08-sn-news-board-v4-digest-labels` | **7** | `313ce558-6a11-4e5c-90b2-85d49426cfa8` | 2026-06-08 SN ニュース掲示板 v4 |
-| 627 | `2026-05-12-627-no594-rest` | 150 | `9fc3efc8-2a22-4585-881f-0ee3c2a0fbf2` | 2026-05-16 portfolio 拡張（6b3d370 同期） |
+| 627 | `2026-05-12-627-no594-rest` | 150 | `9fc3efc8-2a22-4585-881f-0ee3c2a0fbf2` | **削除済**（674 移行後・浜田確認 2026-06-10）— 台帳参照用 |
 | 668 | `2026-05-16-668-ops-guide-portfolio-audit` | 42 | `106126f5-7249-4104-8b43-405c85ddfa51` | 2026-05-16 portfolio 拡張・`deploy:668` |
 | 677 | `2026-05-15-677-block-all-ui-mutations-dash678-only` | 20 | `6eb02e6f-4319-4bed-97ee-245ee0869a01` | 2026-05-16 registry 整合 |
 | 678 | `2026-05-15-678-hide-native-pager-zero-label` | **157** | `33343967-1f61-4981-88fe-924a090918b3` | 2026-05-16 registry 整合 |
@@ -59,7 +59,7 @@ npm run app:fields <アプリID>
 | **ユーザサポート682ダッシュ**（682 の REST 参照・閲覧／集約 UI・**入力は 682 のみ**） | **683** | `customize/683/desktop.js` | [https://jbis-kintone.cybozu.com/k/683/](https://jbis-kintone.cybozu.com/k/683/) **Space 48**（**2026-05-11** `kintone-add-app` → **`deploy:683` SUCCESS**・SPEC **§6.1.1**・Runbook **`docs/runbooks/user683-weekly-summary-and-print.md`**）。`npm run cio:preflight:683 -- --note "…"` → `npm run deploy:683`。**2026-05-16 deploy SUCCESS** / **BUILD**: `2026-05-16-683-print-2page-tight-v2` / fileKey **`4bb662aa-b47a-40c5-b1f7-2ba4dffa8f63`** / preview revision **`74`**（**印刷報告用**・`@media print` で **2 枚前後**を目標にレイアウト縮小。**一覧の「提出用PDF」ボタンは撤去**。**月次 PDF HTTP serve は廃止**（2026-05-17 CEO・印刷は **`window.print()` のみ**・オフライン PDF は CLI `user683:monthly-pdf` 任意）。**Claude 中継**: `?user683_claude_relay=`・`text/plain` POST。**グラフ直下 月次→週次4**・要約キャッシュ PUT/POST／`USER683_SHOW_OLLAMA_GENERATE_BTN=false`）。 |
 | **PC台帳 ver.2（旧・削除予定／正は674）** | **594** | `customize/594/desktop.js` | `npm run deploy:594`（**新機能は674**。594は移行・清掃・監査コードが残る間のみ。本番に恒久的に残す前提なし） |
 | 社員マスタ（台帳・627 連携用） | 595 | `customize/595/desktop.js` | `npm run deploy:595` |
-| アカウント管理台帳 | **627**（**テナント上は削除済**） | `customize/627/desktop.js`（**リポ参照用・deploy 対象外**） | **2026-06-10**: kintone API **GAIA_AP01**（app 不在）。674 移行後の旧台帳。**月次 portfolio 監査対象外**（681 同型）。 |
+| アカウント管理台帳 | **627**（**テナント削除済・意図的**） | `customize/627/desktop.js`（**リポ参照用・deploy 対象外**） | **674 移行後に削除**（浜田確認 **2026-06-10**）。正本は **674**。portfolio 監査対象外（681 同型）。 |
 | 出張精算アプリ | **629** | `customize/shucccho-seisan/desktop.js` | `npm run deploy:629` |
 | 社内FAQ（DB） | **640** | （**FAQ レコードの本番保管先**で確定。運用ガイド **668** とは別アプリ） | [https://jbis-kintone.cybozu.com/k/640/](https://jbis-kintone.cybozu.com/k/640/) ・UI 用 HTML の作業例: `scripts/faq-portal-full.html`（640 への反映は運用で実施） |
 | Security NEXT ニュース（収集・正本 DB） | **631** | `security-next-automation` | [https://jbis-kintone.cybozu.com/k/631/](https://jbis-kintone.cybozu.com/k/631/) ・`KINTONE_APP_ID` ・**浜田運用**（部員は掲示板 701 から閲覧） |
@@ -429,9 +429,11 @@ used_count	DROP_DOWN	アカウント採番有無
 
 ---
 
-## 627（アカウント管理台帳）
+## 627（アカウント管理台帳）— **削除済**
 
-`npm run app:fields 627`（本番 2026-04-18 時点）。サブテーブル `pc_ledger_links` 内の 594 参照フィールドは **`pc_ledger_link_594_id`**（`customize/627/desktop.js` の `FC627_PC_SUB_594` と一致）。
+> **2026-06-10 浜田確認**: 674 移行後の **意図的削除**。以下フィールド一覧は **レガシー監査用**（`npm run app:fields 627` は不可）。
+
+`npm run app:fields 627`（本番 2026-04-18 時点・**現テナント上は app 不在**）。サブテーブル `pc_ledger_links` 内の 594 参照フィールドは **`pc_ledger_link_594_id`**（`customize/627/desktop.js` の `FC627_PC_SUB_594` と一致）。
 
 ```
 App 627 fields (31)

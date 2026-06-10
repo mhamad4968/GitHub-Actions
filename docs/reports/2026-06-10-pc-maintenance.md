@@ -39,8 +39,8 @@
 
 ### 3. 627 アカウント管理台帳
 
-- kintone API: `GAIA_AP01` — app 627 not found
-- `kintone-apps.md` を **681 同型**（テナント削除済・deploy 対象外）に更新
+- **浜田確認 2026-06-10**: 674 移行後の **意図的削除**（kintone 上 app 不在 = 正常）
+- `kintone-apps.md` を **681 同型**（削除済・deploy 対象外）に更新
 - `customize/627/` はリポ参照用に残置
 
 ### 4. 未解決（要知悉）

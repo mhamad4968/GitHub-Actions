@@ -2992,3 +2992,9 @@ npm run cio:morning:ready -- --project business-improvement
 **未解決**: npm audit `xlsx` high（fix なし — 別途検討）
 
 ---
+
+### 2026-06-10 JST — **627 削除の正式確認**
+
+**浜田**: 627 アカウント管理台帳は **削除済み**（674 移行後・意図的）。`kintone-apps.md` / portfolio コメントを更新。
+
+---

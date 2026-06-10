@@ -2,7 +2,7 @@
  * customize ポートフォリオ監査・同期の対象アプリ（単一正本）。
  * 監査: cio-audit-customize-portfolio.mjs / 同期: cio-sync-portfolio-deploy.mjs / 快照: cio-snapshot-portfolio-apps.mjs
  *
- * 627: 2026-06-10 テナント削除確認（GAIA_AP01）— 監査対象外。リポ customize/627 は参照用に残置。
+ * 627: 674 移行後に削除済（浜田確認 2026-06-10）— 監査対象外。リポ customize/627 は参照用に残置。
  */
 export const PORTFOLIO_CUSTOMIZE = [
   { id: "668", rel: "customize/ops-guide/desktop.js", deploy: "deploy:668" },
