@@ -47,7 +47,18 @@
 
 | 項目 | 内容 |
 |------|------|
-| npm audit `xlsx` | high（Prototype Pollution / ReDoS）— **fix なし**。678 bundle 等で使用中。代替検討は別タスク |
+| npm audit `xlsx` | high（Prototype Pollution / ReDoS）— **fix なし**。678 bundle 等で使用中 |
+
+#### R12 — xlsx リスク受容（浜田 GO 2026-06-10）
+
+| 項目 | 判断 |
+|------|------|
+| **現状** | `npm audit` で `xlsx` high が継続。公式 fix 版なし |
+| **影響範囲** | 678 bundle / 677 予実 Excel 系。本番入力は社内限定 |
+| **受容理由** | 代替 lib 置換は regression リスク大。年次レーン着手前の別タスクとして切り出し |
+| **再評価** | 四半期メンテ（`cio:periodic:quarterly`）または xlsx 利用箇所変更時 |
+| **正本** | 本節 + `docs/approved-changes/2026-06-10-rules-r1-r12-hamada-go.md` |
+
 | メモリ | 81% 使用 — 警告なしだが他アプリ終了で余裕可 |
 
 ---

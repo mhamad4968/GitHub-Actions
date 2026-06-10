@@ -18,6 +18,13 @@ const manifestPath = path.join(outDir, 'manifest.json');
 
 const GENRES = getExtractGenres();
 
+/** R9 — repo pre-commit EOL 維持（CRLF） */
+function writeFileCrlf(fp, content) {
+  let t = String(content).replace(/\r\n/g, '\n').replace(/\n/g, '\r\n');
+  if (!t.endsWith('\r\n')) t += '\r\n';
+  fs.writeFileSync(fp, t, 'utf8');
+}
+
 function wrapGenre(meta, body) {
   return `# ${meta.title}
 
@@ -78,7 +85,7 @@ function main() {
   const writeGenre = (meta, body) => {
     if (!body.trim()) return;
     const fp = path.join(outDir, meta.file);
-    fs.writeFileSync(fp, `${wrapGenre(meta, body)}\n`, 'utf8');
+    writeFileCrlf(fp, `${wrapGenre(meta, body)}\n`);
     written.push(meta.file);
   };
 

@@ -80,6 +80,25 @@
 - **一括**: `npm run rules:sync-index-all`
 - **constitution.mdc**: `npm run rules:regenerate-constitution` のみ（`verify:constitution-mdc-freshness` / pre-commit）
 
+## Phase 2-D — §↔ジャンル機械リンク（完了 2026-06-10）
+
+- **カタログ**: `data/constitution-genre-catalog.json`
+- **同期**: `npm run rules:sync-section-genre` / `npm run rules:sync-index-all`
+- **検証**: `npm run verify:rules-index-section-genre`（`verify:cio-four-ai-governance` 内）
+- **Desktop 28 番**: `npm run constitution:sync-genre-desktop-map`
+
+### R7 — 憲法・索引変更後の Desktop 同期（浜田 GO 2026-06-10）
+
+`docs/constitution/`・`RULES-INDEX.md`・`data/constitution-*`・`28-CONSTITUTION-GENRE-MAP.txt` を **同一セッションで commit する前**に:
+
+```powershell
+npm run desktop:sync-and-verify
+```
+
+（PowerShell では `;` で連結。`&&` は bash/WSL 専用 — **R8**）
+
+push 前に `verify:desktop-ai-emergency-sync` が **OK** であること。`16-amendment-process.md` §57-6 周知 sync と同列。
+
 ## 一括検証
 
 ```bash

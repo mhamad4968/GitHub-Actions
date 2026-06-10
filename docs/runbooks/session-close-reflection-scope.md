@@ -24,5 +24,7 @@
 
 ## 関連
 
-- R1〜R6 承認: `docs/reports/2026-06-09-evening-reflection.md`
+- R1〜R12 承認: `docs/approved-changes/2026-06-10-rules-r1-r12-hamada-go.md`
+- 6/9 詳細: `docs/reports/2026-06-09-evening-reflection.md`
+- 6/10 夕反省: `docs/reports/2026-06-10-evening-reflection.md`
 - workdays deploy: `docs/runbooks/workdays-deploy-checklist.md`
