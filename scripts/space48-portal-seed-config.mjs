@@ -7,33 +7,20 @@ import {
   getKintoneConfig,
   loadAppIds,
   loadSeedRows,
+  portalLinkTypeKintone,
+  portalTabKintone,
   saveAppIds,
 } from './lib/space48-portal-kintone.mjs';
-
-const TAB_KINTONE = {
-  bi: '業務改善提案',
-  ledger: '台帳',
-  ops: '運用',
-  info: '情報',
-  other: 'その他',
-};
-
-const LINK_TYPE_KINTONE = {
-  app: 'アプリ',
-  space: 'スペース',
-  external: 'URL',
-  url: 'URL',
-};
 
 function linkRow(row) {
   const activeVal = row.active ? ['有効'] : [];
   const appId = row.app_id != null && row.app_id !== '' ? String(row.app_id) : '';
   return {
     value: {
-      portal_tab: { value: TAB_KINTONE[row.tab] || row.tab },
+      portal_tab: { value: portalTabKintone(row.tab) },
       title: { value: row.title },
       description: { value: row.description || '' },
-      link_type: { value: LINK_TYPE_KINTONE[row.link_type] || row.link_type },
+      link_type: { value: portalLinkTypeKintone(row.link_type) },
       app_id: { value: appId },
       link_url: { value: row.url || '' },
       sort_no: { value: String(row.sort_no != null ? row.sort_no : 0) },

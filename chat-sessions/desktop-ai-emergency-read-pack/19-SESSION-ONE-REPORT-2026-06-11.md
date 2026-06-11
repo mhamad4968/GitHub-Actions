@@ -56,6 +56,12 @@
 
 ---
 
-## 6. 夕反省
+## 6. 夕反省・ルール GO
 
-`docs/reports/2026-06-11-evening-reflection.md` — F1–F8 + **R13–R18 承認待ち**
+`docs/reports/2026-06-11-evening-reflection.md` — F1–F8  
+**R13–R18 浜田 GO 済** — `docs/approved-changes/2026-06-11-rules-r13-r18-hamada-go.md`
+
+## 7. 明日（項番 -0 合意済）
+
+**第1手**: 業務改善 **年次集計** — **Q-SCHED-03**（§4.8・Q-ANN → 新⑤ 6/12–13）  
+**並行可**: Space 48 → 712 リンク（手動）

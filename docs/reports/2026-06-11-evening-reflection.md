@@ -19,16 +19,18 @@
 
 ---
 
-## ルール更新案 — **承認待ち**
+## ルール更新案 — **浜田 GO 済（2026-06-11 夜）**
 
-| ID | 概要 | 提案先 |
-|----|------|--------|
-| **R13** | サブテーブル内 DD/CB の REST 選択肢キーは **日本語**デフォルト（ASCII は事前プローブ） | `scripts/lib/kintone-subtable-dropdown-keys.md`（新） |
-| **R14** | ポータル seed の短 code↔日本語マップを seed スクリプト **1 箇所**に集約 | `space48-portal-seed-config.mjs` |
-| **R15** | 新アプリ deploy 成功後 **kintone-apps 行未追加を WARN** | `deploy-customization.js` 後 or runbook |
-| **R16** | サブテーブル列変更は **DELETE+全列 POST** を先に検討 | `space48-portal-add-fields.mjs` ヘッダ |
-| **R17** | 締め **desktop:sync-and-verify**（Windows は `SESSION_STARTER_DESKTOP_DIR`） | R7 補強 |
-| **R18** | 業務改善 **表彰ランク**: 最終は自動以上不可・WF 分岐は自動のみ・仕様変更時は 700+spec 同時 | spec §Q-UX-06 + `debug-tips.md` 追記 |
+| ID | 概要 | 実装 |
+|----|------|------|
+| **R13** | サブテーブル DD/CB REST 選択肢キー **日本語** | `scripts/lib/kintone-subtable-dropdown-keys.md` |
+| **R14** | ポータル seed マップ 1 箇所 | `space48-portal-kintone.mjs` |
+| **R15** | deploy 後 kintone-apps 未登録 WARN | `sync-kintone-apps-build.mjs` |
+| **R16** | サブテーブル DELETE+POST | `space48-portal-add-fields.mjs` |
+| **R17** | 締め desktop sync 必須 | `cio-four-ai-governance.md` §R17 |
+| **R18** | 業務改善表彰ランクチェックリスト | `debug-tips.md` + spec |
+
+正本: `docs/approved-changes/2026-06-11-rules-r13-r18-hamada-go.md`
 
 ---
 

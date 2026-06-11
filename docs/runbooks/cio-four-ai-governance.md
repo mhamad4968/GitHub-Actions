@@ -99,6 +99,18 @@ npm run desktop:sync-and-verify
 
 push 前に `verify:desktop-ai-emergency-sync` が **OK** であること。`16-amendment-process.md` §57-6 周知 sync と同列。
 
+### R17 — セッション締め Desktop 同期必須（浜田 GO 2026-06-11）
+
+日終わり・セッション切替前は **commit / push の前または直後**に必ず:
+
+```powershell
+$env:SESSION_STARTER_DESKTOP_DIR="C:\Users\mhamada202408224\Desktop\AI緊急用"
+npm run desktop:sync-and-verify
+```
+
+- `verify:session-close-git-warn` が **未コミット / ahead** で NG のときは先に git を整える
+- R7（憲法・索引変更時）と併用 — **締めでは常に実行**
+
 ## 一括検証
 
 ```bash

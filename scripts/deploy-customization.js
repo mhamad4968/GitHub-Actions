@@ -130,6 +130,12 @@ for (let i = 0; i < 60; i++) {
     });
     if (sync.stdout) process.stdout.write(sync.stdout);
     if (sync.stderr) process.stderr.write(sync.stderr);
+    const syncOut = `${sync.stdout || ''}${sync.stderr || ''}`;
+    if (syncOut.includes('R15 WARN')) {
+      console.warn(
+        '[deploy-customization] ⚠️ R15: kintone-apps.md 未登録 — セッション締め前に台帳行を追加すること',
+      );
+    }
     process.exit(0);
   }
   if (st === 'FAIL' || st === 'CANCEL') {

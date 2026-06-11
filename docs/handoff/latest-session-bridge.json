@@ -1,16 +1,16 @@
 {
-  "version": "2026-05-30",
-  "exportedAt": "2026-06-11T10:06:58.314Z",
-  "gitHead": "48dcab2",
+  "version": "2026-06-11",
+  "exportedAt": "2026-06-12T00:00:00.000Z",
+  "gitHead": "(post R13-R18 commit)",
   "gitStatus": "## main...origin/main",
-  "nextTask": "(要 Read checkpoint-latest.md)",
+  "nextTask": "業務改善 年次集計 Q-SCHED-03（§4.8・Q-ANN）— 浜田 6/12 着手",
   "nextFiles": [
+    "docs/plans/2026-05-23-business-improvement-proposal-spec.md",
+    "docs/plans/2026-05-23-business-improvement-proposal-spec-checklist.md",
+    "docs/plans/2026-05-28-business-improvement-implementation-handbook.md",
     "chat-sessions/checkpoint-latest.md",
-    "chat-sessions/handoff-log.md",
-    ".cursor/rules/mode-b-canonical.mdc",
-    "docs/handoff/latest-session-bridge.json",
-    "docs/knowledge/debug-tips.md"
+    "docs/approved-changes/2026-06-11-rules-r13-r18-hamada-go.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=48dcab2 | 次=(要 Read checkpoint-latest.md) | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, .cursor/rules/mode-b-canonical.mdc",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
+  "promptBlock": "【SESSION-BRIDGE】次=業務改善年次集計 Q-SCHED-03 §4.8 | R13-R18 GO済 | Read: business-improvement-proposal-spec §4.8",
+  "note": "新 Chat 第1ターン: npm run session:clock:set → session:bootstrap → 項番 -0 は合意済（年次集計）"
 }

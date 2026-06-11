@@ -35,7 +35,9 @@ const rowRe = new RegExp(
   'm',
 );
 if (!rowRe.test(md)) {
-  console.warn(`[sync-kintone-apps-build] skip app=${appId} (row not found)`);
+  console.warn(
+    `[sync-kintone-apps-build] ⚠️ R15 WARN: app=${appId} — kintone-apps.md にポートフォリオ行がありません。deploy 成功後に台帳へ **BUILD=...** 行を追加してください。`,
+  );
   process.exit(0);
 }
 

@@ -10,6 +10,30 @@ export const PORTAL_APP_NAME = 'システム推進室ポータル';
 export const SPACE_ID = Number(process.env.SPACE48_SPACE_ID || 48);
 export const THREAD_ID = Number(process.env.SPACE48_THREAD_ID || 52);
 
+/** R14 — seed JSON 短 code → kintone REST 用日本語キー（R13 正本: kintone-subtable-dropdown-keys.md） */
+export const PORTAL_TAB_KINTONE = {
+  bi: '業務改善提案',
+  ledger: '台帳',
+  ops: '運用',
+  info: '情報',
+  other: 'その他',
+};
+
+export const PORTAL_LINK_TYPE_KINTONE = {
+  app: 'アプリ',
+  space: 'スペース',
+  external: 'URL',
+  url: 'URL',
+};
+
+export function portalTabKintone(shortOrLabel) {
+  return PORTAL_TAB_KINTONE[shortOrLabel] || shortOrLabel;
+}
+
+export function portalLinkTypeKintone(shortOrLabel) {
+  return PORTAL_LINK_TYPE_KINTONE[shortOrLabel] || shortOrLabel;
+}
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const FIELDS_PATH = path.join(__dirname, '..', 'data', 'space48-portal-fields.json');
 export const SEED_PATH = path.join(__dirname, '..', 'data', 'space48-portal-seed.json');

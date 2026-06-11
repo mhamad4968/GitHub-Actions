@@ -1,6 +1,11 @@
 #!/usr/bin/env node
 /**
  * システム推進室ポータル — フィールド追加（作成途中失敗時の修復用）
+ *
+ * R16 — サブテーブル列変更チェックリスト:
+ * 1. 既存サブテーブルへの列の段階追加は多くの場合 API 拒否
+ * 2. DELETE サブテーブル → GET preview revision → 全列一括 POST
+ * 3. DD/CB は日本語選択肢キー（R13: scripts/lib/kintone-subtable-dropdown-keys.md）
  */
 import {
   PORTAL_APP_NAME,

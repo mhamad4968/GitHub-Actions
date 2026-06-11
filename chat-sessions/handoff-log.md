@@ -3069,3 +3069,18 @@ npm run cio:morning:ready -- --project business-improvement
 **未着手（手動）**: Space 48 → 712 リンク 1 つ
 
 ---
+
+### 2026-06-11 JST — **R13–R18 浜田 GO + 明日レーン合意（最終締め）**
+
+**承認**: 夕反省 **R13–R18 すべて GO**（「ルール更新案はすべて承認します」）
+
+**反映**: `docs/approved-changes/2026-06-11-rules-r13-r18-hamada-go.md`  
+R13 `kintone-subtable-dropdown-keys.md` / R14 portal マップ一元化 / R15 deploy WARN / R16–R17 runbook / R18 debug-tips
+
+**明日（項番 -0 合意済）**:
+- **第1手**: 業務改善 **年次集計** — **Q-SCHED-03**（§4.8・Q-ANN 再整理 → 新⑤ 6/12–13）
+- **並行可**: Space 48 → 712 リンク（手動）
+
+**Git**: R13–R18 反映 commit + push + desktop sync
+
+---
