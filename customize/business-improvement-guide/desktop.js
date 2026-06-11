@@ -6,7 +6,7 @@
 
   /** 業務改善 ver.02 — ご利用ガイド */
 
-  var BUILD = '2026-06-09-bi-guide-eval-screenshots-complete';
+  var BUILD = '2026-06-11-bi-font-xlarge-23px';
 
 
 
@@ -260,18 +260,36 @@
 
 
 
-  function fontSizePx() {
-
-    return localStorage.getItem(FONT_KEY) === 'large' ? '18px' : '16px';
-
+  function fontKey() {
+    var v = localStorage.getItem(FONT_KEY);
+    if (v === 'xlarge') return 'xlarge';
+    if (v === 'large') return 'large';
+    return 'standard';
   }
 
+  function fontSizePx() {
+    var k = fontKey();
+    if (k === 'xlarge') return '23px';
+    if (k === 'large') return '18px';
+    return '16px';
+  }
 
+  function fontBtnGuideBg(key) {
+    return fontKey() === key ? '#dbeafe' : 'rgba(255,255,255,0.9)';
+  }
+
+  function fontToggleHtml() {
+    return '<div><span style="margin-right:8px;color:#475569">文字サイズ：</span>' +
+      '<button type="button" data-bi-font="standard" style="padding:6px 12px;margin-right:4px;border-radius:6px;border:1px solid #cbd5e1;background:' +
+      fontBtnGuideBg('standard') + ';cursor:pointer">標準</button>' +
+      '<button type="button" data-bi-font="large" style="padding:6px 12px;margin-right:4px;border-radius:6px;border:1px solid #cbd5e1;background:' +
+      fontBtnGuideBg('large') + ';cursor:pointer">大</button>' +
+      '<button type="button" data-bi-font="xlarge" style="padding:6px 12px;border-radius:6px;border:1px solid #cbd5e1;background:' +
+      fontBtnGuideBg('xlarge') + ';cursor:pointer">特大</button></div>';
+  }
 
   function applyFontSize(root) {
-
     root.style.fontSize = fontSizePx();
-
   }
 
 
@@ -1928,11 +1946,7 @@
 
       '<h1 style="margin:0;font-size:1.5em;color:#0f172a">【業務改善提案システム】ご利用ガイド</h1>' +
 
-      '<div><span style="margin-right:8px;color:#475569">文字サイズ：</span>' +
-
-      '<button type="button" data-bi-font="standard" style="padding:6px 12px;margin-right:4px;border-radius:6px;border:1px solid #cbd5e1;background:rgba(255,255,255,0.9);cursor:pointer">標準</button>' +
-
-      '<button type="button" data-bi-font="large" style="padding:6px 12px;border-radius:6px;border:1px solid #cbd5e1;background:rgba(255,255,255,0.9);cursor:pointer">大</button></div></div>' +
+      fontToggleHtml() + '</div>' +
 
       '<nav style="' + cardStyle + ';padding:12px 16px;margin-bottom:16px;background:' + t.navBg + ';position:relative;overflow:visible;z-index:20">' +
 

@@ -259,3 +259,15 @@ WSL cron が `scripts/daily-morning-prep.mjs` を実行し、ブリーフィン�
 - `docs/troubleshooting.md` — 失敗事例の TSB-XXX
 - `docs/plans/` — 計画ファイル
 - `docs/reports/` — レポート（朝のブリーフィング含む）
+
+---
+
+## シェル別コマンド連結（R8 — 浜田 GO 2026-06-10）
+
+| 環境 | 連結 | 例 |
+|------|------|-----|
+| **PowerShell**（Cursor Agent 既定） | **`;`** + `$LASTEXITCODE` 確認 | `npm run foo; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; npm run bar` |
+| **bash / WSL** | **`&&`** | `npm run foo && npm run bar` |
+| **cmd.exe** | **`&&`** | `npm run foo && npm run bar` |
+
+**禁止**: PowerShell で `&&` を例示したまま実行（ParserError）。runbook に bash 例だけ書く場合は **「WSL のみ」** と明記する。

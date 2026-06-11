@@ -1,0 +1,154 @@
+{
+  "links": [
+    {
+      "tab": "bi",
+      "title": "【業務改善提案システム】ご利用ガイド",
+      "description": "申請・評価の入口",
+      "link_type": "app",
+      "app_id": 699,
+      "url": "",
+      "sort_no": 10,
+      "active": true
+    },
+    {
+      "tab": "bi",
+      "title": "【業務改善提案システム】提案申請 ver.02",
+      "description": "提案の申請・再申請",
+      "link_type": "app",
+      "app_id": 700,
+      "url": "",
+      "sort_no": 20,
+      "active": true
+    },
+    {
+      "tab": "ledger",
+      "title": "社員マスタ",
+      "description": "PC台帳用の社員マスタ",
+      "link_type": "app",
+      "app_id": 595,
+      "url": "",
+      "sort_no": 10,
+      "active": true
+    },
+    {
+      "tab": "ledger",
+      "title": "PC台帳（新・PC台帳 ver.1）",
+      "description": "PC・端末の台帳",
+      "link_type": "app",
+      "app_id": 674,
+      "url": "",
+      "sort_no": 20,
+      "active": true
+    },
+    {
+      "tab": "ledger",
+      "title": "Apple ID 及び iCloud メールアドレス一覧",
+      "description": "Apple ID 管理台帳",
+      "link_type": "app",
+      "app_id": 694,
+      "url": "",
+      "sort_no": 30,
+      "active": true
+    },
+    {
+      "tab": "ledger",
+      "title": "共有メールアドレス管理台帳",
+      "description": "共有メールの管理",
+      "link_type": "app",
+      "app_id": 696,
+      "url": "",
+      "sort_no": 40,
+      "active": true
+    },
+    {
+      "tab": "ledger",
+      "title": "不適合管理台帳",
+      "description": "不適合の記録・印刷",
+      "link_type": "app",
+      "app_id": 707,
+      "url": "",
+      "sort_no": 50,
+      "active": true
+    },
+    {
+      "tab": "ledger",
+      "title": "外部ITサービス導入チェックシート",
+      "description": "導入チェック・A4印刷",
+      "link_type": "app",
+      "app_id": 709,
+      "url": "",
+      "sort_no": 60,
+      "active": true
+    },
+    {
+      "tab": "ledger",
+      "title": "新規システム導入ヒアリング記録簿",
+      "description": "ヒアリング記録・印刷",
+      "link_type": "app",
+      "app_id": 711,
+      "url": "",
+      "sort_no": 70,
+      "active": true
+    },
+    {
+      "tab": "ops",
+      "title": "ユーザサポート件数日次入力",
+      "description": "日次の件数入力",
+      "link_type": "app",
+      "app_id": 682,
+      "url": "",
+      "sort_no": 10,
+      "active": true
+    },
+    {
+      "tab": "ops",
+      "title": "ユーザサポートダッシュボード",
+      "description": "月次・グラフ・印刷",
+      "link_type": "app",
+      "app_id": 683,
+      "url": "",
+      "sort_no": 20,
+      "active": true
+    },
+    {
+      "tab": "info",
+      "title": "Security NEXT ニュース掲示板",
+      "description": "セキュリティニュース",
+      "link_type": "app",
+      "app_id": 701,
+      "url": "",
+      "sort_no": 10,
+      "active": true
+    },
+    {
+      "tab": "info",
+      "title": "Security NEXT 週次掲示板",
+      "description": "週次サマリー",
+      "link_type": "app",
+      "app_id": 702,
+      "url": "",
+      "sort_no": 20,
+      "active": true
+    },
+    {
+      "tab": "info",
+      "title": "最新ICT情報掲示板",
+      "description": "ICT トレンド収集",
+      "link_type": "app",
+      "app_id": 686,
+      "url": "",
+      "sort_no": 30,
+      "active": true
+    },
+    {
+      "tab": "other",
+      "title": "システム管理スペース",
+      "description": "PC台帳・マスタ等",
+      "link_type": "space",
+      "app_id": "",
+      "url": "https://jbis-kintone.cybozu.com/k/#/space/21",
+      "sort_no": 10,
+      "active": true
+    }
+  ]
+}

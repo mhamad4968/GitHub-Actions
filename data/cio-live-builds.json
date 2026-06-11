@@ -130,19 +130,19 @@
       "note": null
     },
     "699": {
-      "build": "2026-06-09-bi-guide-eval-screenshots-complete",
-      "fileKey": "3fe0b2f6-77ed-42ba-b470-2015c46d3105",
-      "revision": "87",
+      "build": "2026-06-11-bi-font-xlarge-23px",
+      "fileKey": "b291634a-987d-45d8-b255-69f531a5d393",
+      "revision": "88",
       "relPath": "customize/business-improvement-guide/desktop.js",
-      "deployedAt": "2026-06-09T11:04:25.325Z",
+      "deployedAt": "2026-06-11T10:16:00.114Z",
       "note": null
     },
     "700": {
-      "build": "2026-06-09-bi-proposal-remove-foo-bar",
-      "fileKey": "e8960d3e-f062-4869-b796-ff60f02455da",
-      "revision": "127",
+      "build": "2026-06-11-bi-rank-hint-message",
+      "fileKey": "220393ec-1c7e-4b58-8836-541f07054cb1",
+      "revision": "134",
       "relPath": "customize/business-improvement-proposal/desktop.js",
-      "deployedAt": "2026-06-09T11:10:34.410Z",
+      "deployedAt": "2026-06-11T11:44:56.455Z",
       "note": null
     },
     "701": {
@@ -207,6 +207,14 @@
       "revision": "4",
       "relPath": "customize/new-system-intro-dash/desktop.js",
       "deployedAt": "2026-06-10T10:26:56.640Z",
+      "note": null
+    },
+    "712": {
+      "build": "2026-06-11-space48-portal-v3",
+      "fileKey": "1e261ed5-bfdc-4918-bd98-eb6f2f07c24b",
+      "revision": "24",
+      "relPath": "customize/space48-portal/desktop.js",
+      "deployedAt": "2026-06-11T11:24:27.963Z",
       "note": null
     }
   }

@@ -72,4 +72,16 @@
 
 **Desktop 控え（オフライン早見）**: `28-CONSTITUTION-GENRE-MAP.txt`（`npm run constitution:sync-genre-desktop-map` で再生成）
 
+---
+
+## § → ジャンル（機械索引・Phase 2-D）
+
+| 用途 | 参照先 |
+|------|--------|
+| **§ から読本を引く** | `RULES-INDEX.md` の `<!-- RULES-INDEX:SECTION-GENRE-AUTO -->` 節（`npm run rules:sync-section-genre`） |
+| **JSON 正本** | `data/constitution-section-genre-map.json` |
+| **GENRES カタログ** | `data/constitution-genre-catalog.json` |
+
+> 本節・上表・早見表は **索引ショートカット** です。**条文解釈の正本は常に `AGENTS.md` の同一 §** です。矛盾時は AGENTS を優先し、索引は `rules:sync-section-genre` で再生成してください。
+
 全一覧: [`README.md`](README.md)

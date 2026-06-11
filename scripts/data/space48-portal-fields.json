@@ -1,0 +1,117 @@
+{
+  "properties": {
+    "portal_links": {
+      "type": "SUBTABLE",
+      "code": "portal_links",
+      "label": "ポータルリンク",
+      "noLabel": false,
+      "fields": {
+        "portal_tab": {
+          "type": "DROP_DOWN",
+          "code": "portal_tab",
+          "label": "タブ",
+          "noLabel": false,
+          "required": false,
+          "options": {
+            "業務改善提案": { "label": "業務改善提案", "index": "0" },
+            "台帳": { "label": "台帳", "index": "1" },
+            "運用": { "label": "運用", "index": "2" },
+            "情報": { "label": "情報", "index": "3" },
+            "その他": { "label": "その他", "index": "4" }
+          },
+          "defaultValue": ""
+        },
+        "title": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "title",
+          "label": "表示名",
+          "noLabel": false,
+          "required": true,
+          "minLength": "",
+          "maxLength": "",
+          "expression": "",
+          "hideExpression": false,
+          "unique": false,
+          "defaultValue": ""
+        },
+        "description": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "description",
+          "label": "説明",
+          "noLabel": false,
+          "required": false,
+          "minLength": "",
+          "maxLength": "",
+          "expression": "",
+          "hideExpression": false,
+          "unique": false,
+          "defaultValue": ""
+        },
+        "link_type": {
+          "type": "DROP_DOWN",
+          "code": "link_type",
+          "label": "リンク種別",
+          "noLabel": false,
+          "required": false,
+          "options": {
+            "アプリ": { "label": "アプリ", "index": "0" },
+            "スペース": { "label": "スペース", "index": "1" },
+            "URL": { "label": "URL", "index": "2" }
+          },
+          "defaultValue": ""
+        },
+        "app_id": {
+          "type": "NUMBER",
+          "code": "app_id",
+          "label": "アプリID",
+          "noLabel": false,
+          "required": false,
+          "digit": false,
+          "unique": false,
+          "displayScale": "",
+          "minValue": "",
+          "maxValue": "",
+          "defaultValue": ""
+        },
+        "link_url": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "link_url",
+          "label": "URL",
+          "noLabel": false,
+          "required": false,
+          "minLength": "",
+          "maxLength": "",
+          "expression": "",
+          "hideExpression": false,
+          "unique": false,
+          "defaultValue": ""
+        },
+        "sort_no": {
+          "type": "NUMBER",
+          "code": "sort_no",
+          "label": "表示順",
+          "noLabel": false,
+          "required": false,
+          "digit": false,
+          "unique": false,
+          "displayScale": "",
+          "minValue": "",
+          "maxValue": "",
+          "defaultValue": ""
+        },
+        "active": {
+          "type": "CHECK_BOX",
+          "code": "active",
+          "label": "有効",
+          "noLabel": false,
+          "required": false,
+          "align": "HORIZONTAL",
+          "options": {
+            "有効": { "label": "有効", "index": "0" }
+          },
+          "defaultValue": []
+        }
+      }
+    }
+  }
+}

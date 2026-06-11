@@ -2,7 +2,7 @@
   'use strict';
 
   /** 業務改善 ver.02 — 提案申請 申請UI（Phase 4b）+ 評価UI（Phase 5） */
-  var BUILD = '2026-06-09-bi-proposal-remove-foo-bar';
+  var BUILD = '2026-06-11-bi-rank-hint-message';
   var WF_ACTION_APPLY = 'Apply';
   var WF_ACTION_REAPPLY = 'reapply';
   var BI = {
@@ -64,18 +64,18 @@
 
   var WF_STATE_LABELS = {
     Draft: '未処理', unprocessed: '未処理', '未処理': '未処理',
-    Mgr: '上司承認中', manager: '上司承認中', '上司承認中': '上司承認中',
-    Branch: '支店長承認中', branch: '支店長承認中', '支店長承認中': '支店長承認中',
-    Hr: '人事研修部長承認中', hr: '人事研修部長承認中', '人事研修部長承認中': '人事研修部長承認中',
+    Mgr: '上司評価中', manager: '上司評価中', '上司承認中': '上司評価中',
+    Branch: '支店長評価中', branch: '支店長評価中', '支店長承認中': '支店長評価中',
+    Hr: '本社評価中', hr: '本社評価中', '人事研修部長承認中': '本社評価中',
     Done: '完了', done: '完了', '完了': '完了',
     applicant_fix: '申請者修正待ち', '申請者修正待ち': '申請者修正待ち',
   };
 
   var WF_FALLBACK_ROUTE = [
     { key: 'Draft', label: '未処理', index: 0 },
-    { key: 'Mgr', label: '上司承認中', index: 1 },
-    { key: 'Branch', label: '支店長承認中', index: 2 },
-    { key: 'Hr', label: '人事研修部長承認中', index: 3 },
+    { key: 'Mgr', label: '上司評価中', index: 1 },
+    { key: 'Branch', label: '支店長評価中', index: 2 },
+    { key: 'Hr', label: '本社評価中', index: 3 },
     { key: 'Done', label: '完了', index: 4 },
   ];
 
@@ -110,8 +110,32 @@
     return String(s || '').replace(/\\/g, '\\\\').replace(/"/g, '\\"');
   }
 
+  function fontKey() {
+    var v = localStorage.getItem(FONT_KEY);
+    if (v === 'xlarge') return 'xlarge';
+    if (v === 'large') return 'large';
+    return 'standard';
+  }
+
   function fontPx() {
-    return localStorage.getItem(FONT_KEY) === 'large' ? '18px' : '16px';
+    var k = fontKey();
+    if (k === 'xlarge') return '23px';
+    if (k === 'large') return '18px';
+    return '16px';
+  }
+
+  function fontBtnBg(key) {
+    return fontKey() === key ? '#dbeafe' : '#fff';
+  }
+
+  function fontToggleHtml() {
+    return '<div><span style="margin-right:6px">文字サイズ：</span>' +
+      '<button type="button" data-bi-font="standard" style="padding:5px 10px;margin-right:4px;border:1px solid #cbd5e1;border-radius:6px;cursor:pointer;background:' +
+      fontBtnBg('standard') + '">標準</button>' +
+      '<button type="button" data-bi-font="large" style="padding:5px 10px;margin-right:4px;border:1px solid #cbd5e1;border-radius:6px;cursor:pointer;background:' +
+      fontBtnBg('large') + '">大</button>' +
+      '<button type="button" data-bi-font="xlarge" style="padding:5px 10px;border:1px solid #cbd5e1;border-radius:6px;cursor:pointer;background:' +
+      fontBtnBg('xlarge') + '">特大</button></div>';
   }
 
   function hideFields(codes) {
@@ -197,9 +221,9 @@
     var map = {
       Draft: '申請', unprocessed: '申請', '未処理': '申請',
       applicant_fix: '再申請', '申請者修正待ち': '再申請',
-      Mgr: '上司承認', manager: '上司承認', '上司承認中': '上司承認',
-      Branch: '支店長承認', branch: '支店長承認', '支店長承認中': '支店長承認',
-      Hr: '人事承認', hr: '人事承認', '人事研修部長承認中': '人事承認',
+      Mgr: '上司評価', manager: '上司評価', '上司承認中': '上司評価',
+      Branch: '支店長評価', branch: '支店長評価', '支店長承認中': '支店長評価',
+      Hr: '本社評価', hr: '本社評価', '人事研修部長承認中': '本社評価',
       Done: '完了', done: '完了', '完了': '完了',
     };
     return map[stateKey] || wfStateLabel(stateKey);
@@ -267,7 +291,7 @@
     var st = recordStatusKey(rec);
     var steps = [
       { key: 'Draft', label: '未処理', index: 0 },
-      { key: 'Mgr', label: '上司承認中', index: 1 },
+      { key: 'Mgr', label: '上司評価中', index: 1 },
     ];
     var auto = val(rec, FE.rankAuto);
     if (!filled(auto) && evalItemsDone(rec)) auto = recalcEvalFields(rec).auto;
@@ -282,21 +306,29 @@
       needsBranch = true;
       needsHr = true;
     } else if (st === 'Mgr' || st === 'manager' || st === '上司承認中') {
-      if (variant === 'eval') {
-        needsBranch = delegate || auto === 'A' || auto === 'B';
+      needsBranch = delegate || auto === 'A' || auto === 'B';
+      needsHr = auto === 'A';
+    } else if (st === 'applicant_fix' || st === '申請者修正待ち') {
+      if (filled(auto)) {
+        needsBranch = auto === 'A' || auto === 'B';
         needsHr = auto === 'A';
       }
     }
 
     var idx = 2;
-    if (needsBranch) steps.push({ key: 'Branch', label: '支店長承認中', index: idx++ });
-    if (needsHr) steps.push({ key: 'Hr', label: '人事研修部長承認中', index: idx++ });
+    if (needsBranch) steps.push({ key: 'Branch', label: '支店長評価中', index: idx++ });
+    if (needsHr) steps.push({ key: 'Hr', label: '本社評価中', index: idx++ });
     steps.push({ key: 'Done', label: '完了', index: idx });
     return steps;
   }
 
   function wfRouteSteps(rec, variant) {
     if (variant === 'eval') return resolveLogicalWfSteps(rec, variant);
+    var st = recordStatusKey(rec);
+    var auto = val(rec, FE.rankAuto);
+    if (variant === 'apply' && (filled(auto) || st === '申請者修正待ち' || st === 'applicant_fix')) {
+      return resolveLogicalWfSteps(rec, 'eval');
+    }
     return ui.wfRoute || WF_FALLBACK_ROUTE;
   }
 
@@ -307,7 +339,11 @@
     var parts = steps.map(function (s, i) {
       var isCurrent = i === curIdx;
       var isPast = curIdx >= 0 && i < curIdx;
-      var chip = wfStepChipLabel(s.key, rec);
+      var chipKey = s.key;
+      if (isCurrent && (cur === '申請者修正待ち' || cur === 'applicant_fix') && s.key === 'Draft') {
+        chipKey = 'applicant_fix';
+      }
+      var chip = wfStepChipLabel(chipKey, rec);
       var unset = chip.indexOf('（未設定）') >= 0;
       var bg = isCurrent ? (variant === 'eval' ? '#92400e' : '#1d4ed8') : (isPast ? '#86efac' : (unset ? '#fef3c7' : '#e2e8f0'));
       var color = isCurrent || isPast ? '#fff' : (unset ? '#b45309' : '#64748b');
@@ -325,7 +361,11 @@
     var hint = '';
     var curStep = curIdx >= 0 ? steps[curIdx] : null;
     var nextStep = curIdx >= 0 ? steps[curIdx + 1] : (steps[1] || null);
-    if (variant === 'apply') {
+    if (cur === '申請者修正待ち' || cur === 'applicant_fix') {
+      hint = '<div style="flex:1 1 100%;margin-top:6px;color:#b45309;font-size:0.82em;line-height:1.4">' +
+        '<strong>差戻し中</strong> — 内容を修正して再申請すると、<strong>上司評価</strong>から再開します（提案日は変わりません）' +
+        '</div>';
+    } else if (variant === 'apply') {
       if (!ui.readOnly && nextStep) {
         var nextChip = wfStepChipLabel(nextStep.key, rec);
         hint = '<div style="flex:1 1 100%;margin-top:6px;color:#64748b;font-size:0.82em;line-height:1.4">' +
@@ -539,8 +579,20 @@
     st.textContent =
       '.gaia-app-statusbar,.gaia-argoui-app-toolbar-statusmenu{display:none!important;}' +
       '.gaia-ui-actionmenu-save,.gaia-ui-actionmenu-cancel,.gaia-ui-actionmenu-remove,' +
-      '[data-cy="record-save-button"],[data-cy="record-cancel-button"]{display:none!important;}';
+      '[data-cy="record-save-button"],[data-cy="record-cancel-button"]{display:none!important;}' +
+      '.gaia-argoui-app-show-sidebar,.gaia-argoui-app-sidebar-gaia,.ocean-ui-plugin-comment-gaia{display:none!important;}';
     document.head.appendChild(st);
+  }
+
+  /** レコード右側のコメント／履歴サイドバーを閉じる（公式 API + CSS 二重化） */
+  function closeRecordSideBar() {
+    hideNativeProcessActions();
+    try {
+      if (kintone.app && kintone.app.record && typeof kintone.app.record.showSideBar === 'function') {
+        return kintone.app.record.showSideBar('CLOSED').catch(function () { /* noop */ });
+      }
+    } catch (e) { /* noop */ }
+    return kintone.Promise.resolve();
   }
 
   function closeBiModal() {
@@ -816,9 +868,8 @@
     var rec = recForApplyCheck();
     var missing = validateApply(rec);
     if (missing.length) {
-      alert('未入力の必須項目があります:\n' + missing.join('、'));
-      var first = ACC.find(function (a) { return !accDone(rec, a.code); });
-      if (first) expandAcc(first.code);
+      alert('未入力の必須項目があります。オレンジ色の項目を入力してください。');
+      jumpToFirstApplyMissing(rec);
       return;
     }
     armNavigateAway();
@@ -856,7 +907,8 @@
     var rec = recForApplyCheck();
     var missing = validateApply(rec);
     if (missing.length) {
-      alert('未入力の必須項目があります:\n' + missing.join('、'));
+      alert('未入力の必須項目があります。オレンジ色の項目を入力してください。');
+      jumpToFirstApplyMissing(rec);
       return;
     }
     if (!hasAttachments(rec)) {
@@ -1121,16 +1173,44 @@
     }, 0);
   }
 
+  function jumpToFirstApplyMissing(rec) {
+    rec = rec || recForApplyCheck();
+    if (!filled(val(rec, F.dept))) {
+      var deptEl = ui.root && ui.root.querySelector('[data-bi-dept]');
+      if (deptEl) deptEl.focus();
+      return;
+    }
+    if (!filled(val(rec, F.repName))) {
+      var repEl = ui.root && ui.root.querySelector('[data-bi-rep]');
+      if (repEl) repEl.focus();
+      return;
+    }
+    if (!filled(val(rec, F.type))) {
+      var typeEl = ui.root && ui.root.querySelector('[data-bi-type]');
+      if (typeEl) typeEl.focus();
+      return;
+    }
+    if (!filled(val(rec, F.title))) {
+      var titleEl = ui.root && ui.root.querySelector('[data-bi-title]');
+      if (titleEl) titleEl.focus();
+      return;
+    }
+    var firstAcc = ACC.find(function (a) { return !accDone(rec, a.code); });
+    if (firstAcc) expandAcc(firstAcc.code);
+  }
+
   function footerActionsHtml(rec) {
     if (ui.readOnly) {
       return '<a href="' + esc(guideIndexUrl()) + '" style="padding:10px 18px;border:1px solid #64748b;background:#fff;color:#334155;border-radius:8px;text-decoration:none">ガイドに戻る</a>';
     }
     var r = rec || recForApplyCheck();
     var missing = validateApply(r);
+    var applyReady = missing.length === 0;
     return '<button type="button" data-bi-draft-save style="padding:10px 18px;border:1px solid #64748b;background:#fff;color:#334155;border-radius:8px;cursor:pointer">一時保存</button>' +
-      (missing.length === 0
-        ? '<button type="button" data-bi-apply-footer style="padding:10px 18px;background:#15803d;color:#fff;border:0;border-radius:8px;cursor:pointer">' + esc(applyLabel(r)) + '</button>'
-        : '<span style="color:#64748b;font-size:0.9em">申請には未入力: ' + esc(missing.join('、')) + '</span>');
+      '<button type="button" data-bi-apply-footer style="padding:10px 18px;background:' +
+      (applyReady ? '#15803d' : '#94a3b8') + ';color:#fff;border:0;border-radius:8px;cursor:' +
+      (applyReady ? 'pointer' : 'not-allowed') + '"' +
+      (applyReady ? '' : ' disabled') + '>' + esc(applyLabel(r)) + '</button>';
   }
 
   function bindApplyActions(scope) {
@@ -1243,7 +1323,6 @@
     if (!ui.readOnly && !ui.applyDraftRec) refreshCacheFromRec(getRec());
     else if (ui.readOnly) refreshCacheFromRec(recOptional || getRec());
     var rec = ui.readOnly ? ensureProposers(recOptional || getRec()) : ensureProposers(getApplyWorkingRec());
-    var done = ACC.filter(function (a) { return filled(ui.cache[a.code]); }).length;
     var deptOpts = ui.depts.map(function (d) {
       return '<option value="' + esc(d) + '"' + (val(rec, F.dept) === d ? ' selected' : '') + '>' + esc(d) + '</option>';
     }).join('');
@@ -1277,16 +1356,7 @@
       '<div style="font-family:\'Segoe UI\',Meiryo,sans-serif;line-height:1.5;padding:16px 18px 28px;background:linear-gradient(180deg,#eff6ff 0%,#f8fafc 100%);border-radius:12px;border:1px solid #bfdbfe">' +
       '<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px">' +
       '<h2 style="margin:0;color:#1e3a8a;font-size:1.2em">業務改善提案 — ' + (ui.readOnly ? '提案書（閲覧）' : '申請') + '</h2>' +
-      '<div><span style="margin-right:6px">文字サイズ：</span>' +
-      '<button type="button" data-bi-font="standard" style="padding:5px 10px;margin-right:4px;border:1px solid #cbd5e1;border-radius:6px;cursor:pointer;background:' +
-      (fontPx() === '16px' ? '#dbeafe' : '#fff') + '">標準</button>' +
-      '<button type="button" data-bi-font="large" style="padding:5px 10px;border:1px solid #cbd5e1;border-radius:6px;cursor:pointer;background:' +
-      (fontPx() === '18px' ? '#dbeafe' : '#fff') + '">大</button></div></div>' +
-      '<div data-bi-summary style="background:#fff;border:1px solid #93c5fd;border-radius:10px;padding:10px 14px;margin-bottom:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center">' +
-      '<strong style="color:#1d4ed8">入力 ' + done + '/5</strong>' +
-      ACC.filter(function (a) { return !filled(ui.cache[a.code]); }).map(function (a) {
-        return '<span style="padding:4px 10px;background:#ffedd5;color:#c2410c;border-radius:999px;font-size:0.85em">' + esc(a.label) + '</span>';
-      }).join('') + '</div>' +
+      fontToggleHtml() + '</div>' +
       '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">' +
       '<label>部署<br><select data-bi-dept style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:8px"' + roAttr() + '><option value=""></option>' + deptOpts + '</select></label>' +
       '<label>社員名（代表）<br><div style="display:flex;gap:6px"><input data-bi-rep type="text" value="' + esc(val(rec, F.repName)) + '" style="flex:1;padding:8px;border:1px solid #cbd5e1;border-radius:8px"' + roAttr() + '>' +
@@ -1324,13 +1394,6 @@
     if (!ui.root) return;
     syncDomToCache();
     var rec = recForApplyCheck();
-    var bar = ui.root.querySelector('[data-bi-summary]');
-    if (!bar) return;
-    var done = ACC.filter(function (a) { return filled(ui.cache[a.code]); }).length;
-    var chips = ACC.filter(function (a) { return !filled(ui.cache[a.code]); }).map(function (a) {
-      return '<span style="padding:4px 10px;background:#ffedd5;color:#c2410c;border-radius:999px;font-size:0.85em">' + esc(a.label) + '</span>';
-    }).join('');
-    bar.innerHTML = '<strong style="color:#1d4ed8">入力 ' + done + '/5</strong>' + chips;
     updateApplyUi(rec, opts);
     maybeAutoExpand(rec);
   }
@@ -1648,6 +1711,67 @@
     overall: [10, 8, 6, 4, 2],
   };
   var AWARD_PTS = { A: 5000, B: 1000, C: 100 };
+  var RANK_TIER = { A: 3, B: 2, C: 1 };
+
+  function rankTier(rank) {
+    return RANK_TIER[rank] || 0;
+  }
+
+  function finalRankExceedsAuto(auto, fin) {
+    if (!filled(fin) || !filled(auto)) return false;
+    return rankTier(fin) > rankTier(auto);
+  }
+
+  function rankReevalHintMessage(rec, auto) {
+    var rank = auto || effectiveAutoRank(rec);
+    if (!filled(rank)) {
+      return '評価項目を入力すると、現在評価（自動）が表示されます。';
+    }
+    return '現在評価（自動）は ' + rank + ' です。' + rank +
+      ' 以上の評価にしたい場合は加点が足りませんので、再度評価を見直してください。';
+  }
+
+  function finalRankUpgradeBlockMessage(rec) {
+    return rankReevalHintMessage(rec);
+  }
+
+  function managerMustForwardMessage(rec, auto) {
+    var type = val(rec, F.type);
+    var items = type === 'アイデア提案' ? '総合的審査' : '効果・工夫度・努力度の①～③';
+    if (auto === 'A') {
+      return '表彰ランク（自動）が A です。部長評価では完了できません。支店長評価のあと本社評価へ進みます。';
+    }
+    if (auto === 'B') {
+      return '表彰ランク（自動）が B です。部長評価では完了できません。支店長評価へ進むか、' +
+        items + 'を見直して合計点を上げてください。';
+    }
+    return '部長評価では完了できません。評価項目と自動ランクを確認してください。';
+  }
+
+  function clampInvalidFinalRank(rec) {
+    var auto = effectiveAutoRank(rec);
+    var fin = val(rec, FE.rankFinal);
+    if (finalRankExceedsAuto(auto, fin)) {
+      rec[FE.rankFinal] = { type: 'DROP_DOWN', value: '' };
+      if (evUi.evalDraft) evUi.evalDraft.rankFinal = '';
+    }
+  }
+
+  function rankFinalSelectOptionsHtml(auto, fin) {
+    var maxTier = rankTier(auto);
+    var opts = [
+      { v: 'A', label: 'A（5,000 pt）' },
+      { v: 'B', label: 'B（1,000 pt）' },
+      { v: 'C', label: 'C（100 pt）' },
+    ];
+    var html = '<option value=""></option>';
+    opts.forEach(function (o) {
+      if (maxTier && rankTier(o.v) <= maxTier) {
+        html += '<option value="' + o.v + '"' + (fin === o.v ? ' selected' : '') + '>' + o.label + '</option>';
+      }
+    });
+    return html;
+  }
 
   var evUi = {
     root: null,
@@ -1909,6 +2033,7 @@
     } else if (rec[FE.points]) {
       rec[FE.points] = { type: 'NUMBER', value: '' };
     }
+    clampInvalidFinalRank(rec);
     return rec;
   }
 
@@ -2070,16 +2195,27 @@
             assigneeMissing: '支店長評価者が未設定です',
           });
         }
+        if (auto === 'A' || auto === 'B') {
+          return withForwardMeta(rec, {
+            action: '',
+            label: '支店長評価へ',
+            assignee: people.branch || wfPersonFromField(rec, '支店長評価者'),
+            assigneeRequired: true,
+            assigneeMissing: '表彰ランク（自動）が ' + auto + ' のため部長では完了できません。WFに「支店長評価へ」がありません。',
+          });
+        }
       }
-      var toDone = findWfAction(status, ['部長承認_完了', 'MgrToDone'], 'Done') ||
-        findWfAction(status, ['部長承認_完了'], '完了');
-      if (toDone) {
-        return withForwardMeta(rec, {
-          action: toDone.name,
-          label: '承認する',
-          assignee: '',
-          assigneeRequired: false,
-        });
+      if (auto === 'C' && !branchDelegateOn(rec)) {
+        var toDone = findWfAction(status, ['部長承認_完了', 'MgrToDone'], 'Done') ||
+          findWfAction(status, ['部長承認_完了'], '完了');
+        if (toDone) {
+          return withForwardMeta(rec, {
+            action: toDone.name,
+            label: '承認する',
+            assignee: '',
+            assigneeRequired: false,
+          });
+        }
       }
     }
     if (role === 'branch') {
@@ -2137,7 +2273,10 @@
   function evalCompletionBlockReason(rec) {
     syncEvalFormFromDom();
     rec = getEvalWorkingRec();
+    recalcEval(rec);
+    var auto = effectiveAutoRank(rec);
     var fin = val(rec, FE.rankFinal);
+    if (finalRankExceedsAuto(auto, fin)) return finalRankUpgradeBlockMessage(rec);
     if (!filled(fin)) return '完了に進む前に表彰ランク（最終）を選択してください';
     if (!AWARD_PTS[fin]) return '表彰ランク（最終）が不正です。A / B / C から選択してください';
     var calc = recalcEvalFields(rec);
@@ -2155,9 +2294,18 @@
   }
 
   function evalApproveBlockReason(rec) {
+    syncEvalFormFromDom();
+    rec = getEvalWorkingRec();
+    recalcEval(rec);
     if (!evalCanShowActions(rec)) return '評価を完了してください';
     if (evUi.role === 'manager' && !branchDelegateOn(rec) && !evalItemsDone(rec)) {
       return '評価項目をすべて選択してください';
+    }
+    if (evUi.role === 'manager' && !branchDelegateOn(rec) && evalItemsDone(rec)) {
+      var mgrAuto = effectiveAutoRank(rec);
+      if (mgrAuto === 'B' || mgrAuto === 'A') {
+        return managerMustForwardMessage(rec, mgrAuto);
+      }
     }
     var fwd = resolveEvalForwardAction(rec);
     if (!fwd || !fwd.action) {
@@ -2226,9 +2374,13 @@
     return String(raw).trim();
   }
 
-  function isValidEvalDropDown(code, value) {
+  function isValidEvalDropDown(code, value, rec) {
     if (!filled(value)) return false;
-    if (code === FE.rankFinal) return !!AWARD_PTS[value];
+    if (code === FE.rankFinal) {
+      if (!AWARD_PTS[value]) return false;
+      if (rec && finalRankExceedsAuto(effectiveAutoRank(rec), value)) return false;
+      return true;
+    }
     if (code === FE.effect || code === FE.ingenuity || code === FE.effort || code === FE.overall) {
       return STAGE_KEYS.indexOf(value) >= 0;
     }
@@ -2296,7 +2448,7 @@
       if (code === FE.rankFinal || code === FE.effect || code === FE.ingenuity ||
           code === FE.effort || code === FE.overall) {
         var dropVal = normalizeEvalScalar(rec[code].value);
-        if (!isValidEvalDropDown(code, dropVal)) return;
+        if (!isValidEvalDropDown(code, dropVal, rec)) return;
         payload[code] = { value: dropVal };
         return;
       }
@@ -2520,9 +2672,11 @@
     evUi.root.style.fontSize = fontPx();
     evUi.root.innerHTML =
       '<div style="font-family:\'Segoe UI\',Meiryo,sans-serif;line-height:1.5;padding:16px;background:linear-gradient(180deg,#faf5f0 0%,#f5f5f4 100%);border-radius:12px;border:1px solid #d6b896">' +
-      '<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;margin-bottom:12px">' +
+      '<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px">' +
       '<h2 style="margin:0;color:#78350f">業務改善提案 — ' + (locked ? '評価（閲覧）' : '評価') + '</h2>' +
-      '<span style="color:#78716c;font-size:0.9em">ステータス: ' + esc(wfStateLabel(recordStatusKey(rec))) + '</span></div>' +
+      '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px">' +
+      fontToggleHtml() +
+      '<span style="color:#78716c;font-size:0.9em">ステータス: ' + esc(wfStateLabel(recordStatusKey(rec))) + '</span></div></div>' +
       '<div style="display:' + (wide ? 'grid' : 'block') + ';grid-template-columns:' + (wide ? '1fr 1fr' : 'none') + ';gap:16px">' +
       '<div>' + readOnlyBlock(rec) + '</div>' +
       '<div><div style="background:#fff;border:1px solid #d6b896;border-radius:10px;padding:14px;min-width:0">' +
@@ -2539,10 +2693,14 @@
       '<div>合計点: <strong>' + esc(calc.total) + '点</strong>' +
       (type === 'アイデア提案' ? '（満点10点）' : '（満点20点）') + '</div>' +
       '<div>表彰ランク（自動）: <strong>' + esc(auto || '—') + '</strong></div>' +
+      (evUi.role === 'manager' && !locked && !branchDelegateOn(rec) && (auto === 'B' || auto === 'A') ?
+        '<p style="margin:8px 0 0;color:#57534e;font-size:0.88em;line-height:1.45">※ ' +
+        esc(managerMustForwardMessage(rec, auto)) + '</p>' : '') +
+      (needsFinalRank && !locked ?
+        '<p style="margin:8px 0 0;color:#57534e;font-size:0.88em;line-height:1.45">※ ' +
+        esc(rankReevalHintMessage(rec, auto)) + '</p>' : '') +
       (needsFinalRank && !locked ? '<div style="margin-top:10px"><label>表彰ランク（最終）<span style="color:#b45309"> *必須</span><br><select data-bi-rank-final style="padding:8px;border-radius:8px">' +
-        '<option value=""></option><option value="A"' + (fin === 'A' ? ' selected' : '') + '>A（5,000 pt）</option>' +
-        '<option value="B"' + (fin === 'B' ? ' selected' : '') + '>B（1,000 pt）</option>' +
-        '<option value="C"' + (fin === 'C' ? ' selected' : '') + '>C（100 pt）</option></select></label>' +
+        rankFinalSelectOptionsHtml(auto, fin) + '</select></label>' +
         (fin ? '' : '<p style="margin:8px 0 0;color:#b45309;font-size:0.9em">完了に進む前に表彰ランク（最終）を選択してください</p>') +
         '</div>' : '') +
       (locked && fin ? '<div style="margin-top:10px">表彰ランク（最終）: <strong>' + esc(fin) + '</strong></div>' : '') +
@@ -2567,6 +2725,12 @@
 
   function bindEvalUi() {
     if (!evUi.root) return;
+    evUi.root.querySelectorAll('[data-bi-font]').forEach(function (btn) {
+      btn.onclick = function () {
+        localStorage.setItem(FONT_KEY, btn.getAttribute('data-bi-font'));
+        renderEval();
+      };
+    });
     if (evUi.readOnly || evalIsDoneStatus(getEvalWorkingRec())) return;
     evUi.root.querySelectorAll('[data-bi-eval]').forEach(function (sel) {
       sel.onchange = function () {
@@ -2587,6 +2751,13 @@
     };
     var rf = evUi.root.querySelector('[data-bi-rank-final]');
     if (rf) rf.onchange = function () {
+      var rec = getEvalWorkingRec();
+      var auto = effectiveAutoRank(rec);
+      if (finalRankExceedsAuto(auto, rf.value)) {
+        alert(finalRankUpgradeBlockMessage(rec));
+        rf.value = val(rec, FE.rankFinal) || '';
+        return;
+      }
       patchEval(function (r) { r[FE.rankFinal] = { type: 'DROP_DOWN', value: rf.value }; });
     };
     var draft = evUi.root.querySelector('[data-bi-eval-draft]');
@@ -2599,6 +2770,12 @@
 
   function onShowEvalReadOnly(event) {
     hideFields(HIDE_EVAL.concat(HIDE_APPLY));
+    return closeRecordSideBar().then(function () {
+      return onShowEvalReadOnlyBody(event);
+    });
+  }
+
+  function onShowEvalReadOnlyBody(event) {
     hideNativeProcessActions();
     evUi.readOnly = true;
     evUi.allowNavigate = true;
@@ -2621,6 +2798,12 @@
 
   function onShowEval(event) {
     hideFields(HIDE_EVAL.concat(HIDE_APPLY));
+    return closeRecordSideBar().then(function () {
+      return onShowEvalBody(event);
+    });
+  }
+
+  function onShowEvalBody(event) {
     hideNativeProcessActions();
     installBiUnloadGuard();
     evUi.readOnly = false;
@@ -2653,6 +2836,12 @@
 
   function onShowEvalDetailRedirect(event) {
     hideFields(HIDE_EVAL.concat(HIDE_APPLY));
+    return closeRecordSideBar().then(function () {
+      return onShowEvalDetailRedirectBody(event);
+    });
+  }
+
+  function onShowEvalDetailRedirectBody(event) {
     evUi.login = (kintone.getLoginUser() && kintone.getLoginUser().code) || '';
     return resolveEvalRole(event.record, evUi.login).then(function (role) {
       if (!role) {
@@ -2667,6 +2856,12 @@
 
   function onShowApplyView(event) {
     hideFields(HIDE_EVAL.concat(HIDE_APPLY));
+    return closeRecordSideBar().then(function () {
+      return onShowApplyViewBody(event);
+    });
+  }
+
+  function onShowApplyViewBody(event) {
     var host = mountHost();
     if (!host) return event;
     ui.root = host;
@@ -2688,6 +2883,12 @@
 
   function onShowApply(event) {
     hideFields(HIDE_EVAL.concat(HIDE_APPLY));
+    return closeRecordSideBar().then(function () {
+      return onShowApplyBody(event);
+    });
+  }
+
+  function onShowApplyBody(event) {
     hideNativeProcessActions();
     installBiUnloadGuard();
     var host = mountHost();

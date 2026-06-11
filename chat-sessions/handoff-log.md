@@ -3032,3 +3032,40 @@ npm run cio:morning:ready -- --project business-improvement
 **反映**: `docs/approved-changes/2026-06-10-rules-r1-r12-hamada-go.md` / WORKFLOW / governance / workdays-deploy-gate / SESSION-ONE-REPORT 2026-06-10
 
 ---
+
+### 2026-06-11 JST — **業務改善 700 + システム推進室ポータル 712**
+
+**本日完了**:
+- **700** 承認経路表示（上司評価／支店長評価／本社評価）・差戻し再申請 — BUILD `2026-06-11-bi-wf-route-eval-labels`
+- **712** ポータル新設（5 タブ・デフォルト運用・15 リンク seed・別タブ）— 浜田 **OK**
+- 社員マスタ 595 カード説明 → **PC台帳用の社員マスタ**
+- サブテーブル REST: ドロップダウン選択肢は **日本語キー**（ASCII `bi`/`app` は CB_VA01）
+
+**未着手（手動）**: Space 48 に **712 へのリンク 1 つ**
+
+**締め**: `SESSION-CLOSE-REPORT-20260611.txt` / `docs/reports/2026-06-11-evening-reflection.md`
+
+**承認待ち**: 夕反省 **R13–R17**（サブテーブル DD・deploy 後台帳同期等）
+
+**Desktop**: `desktop:sync-and-verify`（本締め）
+
+---
+
+### 2026-06-11 JST — **表彰ランク確定（700 最終）— セッション締め**
+
+**浜田確認**: 表彰ランク挙動 — **「これで正常の動作仕様となりました」**
+
+**本日追加完了**:
+- **700** 最終ランク≦自動ランクガード・WF 分岐は `effectiveAutoRank`・部長は自動 **C** のみ完結
+- 注記文言「現在評価（自動）は XX…」
+- BUILD 最終: `2026-06-11-bi-rank-hint-message` rev **134**
+- **699** BUILD: `2026-06-11-bi-font-xlarge-23px` rev **88**
+- spec: `business-improvement-proposal-spec.md` §Q-UX-06 追記
+
+**締め正本**: `SESSION-CLOSE-REPORT-20260611.txt`（最終版）/ `19-SESSION-ONE-REPORT-2026-06-11.md`
+
+**承認待ち**: 夕反省 **R13–R18**（R18=表彰ランク実装チェックリスト）
+
+**未着手（手動）**: Space 48 → 712 リンク 1 つ
+
+---
