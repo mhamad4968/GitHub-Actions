@@ -1,0 +1,83 @@
+{
+  "version": "2026-06-13",
+  "description": "新⑤ 年次処理アプリ — Q-IMPL-04 / §4.8",
+  "properties": {
+    "年度キー": {
+      "type": "NUMBER",
+      "code": "年度キー",
+      "label": "年度キー",
+      "required": true,
+      "noLabel": false,
+      "digit": false,
+      "unique": true,
+      "defaultValue": "",
+      "displayScale": "",
+      "unit": "",
+      "unitPosition": "BEFORE"
+    },
+    "締め済み": {
+      "type": "CHECK_BOX",
+      "code": "締め済み",
+      "label": "締め済み",
+      "required": false,
+      "noLabel": false,
+      "options": {
+        "年度締め完了": { "label": "年度締め完了", "index": "0" }
+      }
+    },
+    "締処理日": {
+      "type": "DATE",
+      "code": "締処理日",
+      "label": "締処理日",
+      "required": false,
+      "noLabel": false
+    },
+    "集計実行日時": {
+      "type": "DATETIME",
+      "code": "集計実行日時",
+      "label": "集計実行日時",
+      "required": false,
+      "noLabel": false
+    },
+    "実行者": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "実行者",
+      "label": "実行者",
+      "required": false,
+      "noLabel": false
+    },
+    "集計件数": {
+      "type": "NUMBER",
+      "code": "集計件数",
+      "label": "集計件数",
+      "required": false,
+      "noLabel": false,
+      "digit": false,
+      "unique": false,
+      "defaultValue": "",
+      "displayScale": "",
+      "unit": "件",
+      "unitPosition": "AFTER"
+    },
+    "検算_提案完了件数": {
+      "type": "NUMBER",
+      "code": "検算_提案完了件数",
+      "label": "検算（新①完了件数）",
+      "required": false,
+      "noLabel": false,
+      "digit": false,
+      "unique": false,
+      "defaultValue": "",
+      "displayScale": "",
+      "unit": "件",
+      "unitPosition": "AFTER"
+    },
+    "集計結果JSON": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "集計結果JSON",
+      "label": "集計結果JSON",
+      "required": false,
+      "noLabel": false
+    }
+  }
+}

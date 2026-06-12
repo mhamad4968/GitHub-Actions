@@ -96,6 +96,13 @@
       "required": false,
       "noLabel": false
     },
+    "年次暗唱番号": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "年次暗唱番号",
+      "label": "年次暗唱番号",
+      "required": false,
+      "noLabel": false
+    },
     "eval_items": {
       "type": "SUBTABLE",
       "code": "eval_items",

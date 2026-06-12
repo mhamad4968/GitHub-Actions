@@ -12,6 +12,8 @@ export const GUIDE_APP_NAME = '【業務改善提案システム】ご利用ガ�
 export const GUIDE_CUSTOMIZE_DIR = 'customize/business-improvement-guide';
 export const PROPOSAL_CUSTOMIZE_DIR = 'customize/business-improvement-proposal';
 export const PROPOSAL_APP_NAME = '【業務改善提案システム】提案申請ver.02';
+export const ANNUAL_APP_NAME = '【業務改善提案システム】年次処理';
+export const ANNUAL_CUSTOMIZE_DIR = 'customize/business-improvement-annual';
 
 export const SPACE_ID = Number(process.env.BI_SPACE_ID || 5);
 export const THREAD_ID = Number(process.env.BI_SPACE_THREAD_ID || 7);
@@ -19,6 +21,7 @@ export const THREAD_ID = Number(process.env.BI_SPACE_THREAD_ID || 7);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const DATA_DIR = path.join(__dirname, '..', 'data');
 export const APP_IDS_PATH = path.join(DATA_DIR, 'business-improvement-app-ids.json');
+export const ANNUAL_FIELDS_PATH = path.join(DATA_DIR, 'business-improvement-annual-fields.json');
 export const SETTINGS_FIELDS_PATH = path.join(DATA_DIR, 'business-improvement-settings-master-fields.json');
 export const SETTINGS_XLSX_PATH = path.join(DATA_DIR, 'business-improvement-settings-master-template.xlsx');
 export const EVAL_SPEC_PATH = path.join(DATA_DIR, 'business-improvement-eval-spec-431.json');
@@ -105,9 +108,16 @@ export function loadAppIds() {
       employeeAppId: null,
       guideAppId: null,
       proposalAppId: null,
+      annualAppId: null,
     };
   }
   return JSON.parse(readFileSync(APP_IDS_PATH, 'utf8'));
+}
+
+export function loadAnnualFieldProperties() {
+  const raw = JSON.parse(readFileSync(ANNUAL_FIELDS_PATH, 'utf8'));
+  if (!raw.properties) throw new Error('business-improvement-annual-fields.json: missing properties');
+  return raw.properties;
 }
 
 export function saveAppIds(ids) {

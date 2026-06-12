@@ -92,6 +92,13 @@ export function buildProposalFieldProperties(deptNames = []) {
       required: false,
       noLabel: false,
     },
+    完了日: {
+      type: 'DATE',
+      code: '完了日',
+      label: '完了日',
+      required: false,
+      noLabel: false,
+    },
     目的: {
       type: 'MULTI_LINE_TEXT',
       code: '目的',

@@ -34,8 +34,9 @@ npm run app:fields <アプリID>
 | 710 | `2026-06-10-new-system-intro-db-block-ui` | **5** | `372a6214-84de-48ff-891f-2126483ed5dd` | 2026-06-10 新規システム導入ヒアリング DB ブロック |
 | 711 | `2026-06-10-new-system-intro-dash-print-a4-v2` | **4** | `de21c60d-301b-49aa-91bf-d1e25d16efb2` | 2026-06-10 新規システム導入ヒアリング 印刷A4 2枚 |
 | 712 | `2026-06-11-space48-portal-v3` | **24** | `1e261ed5-bfdc-4918-bd98-eb6f2f07c24b` | 2026-06-11 開くを別タブ |
-| 699 | `2026-06-09-bi-guide-eval-screenshots-complete` | **87** | `3fe0b2f6-77ed-42ba-b470-2015c46d3105` | 2026-06-09 ガイド評価編完了（スクショ含む） |
-| 700 | `2026-06-11-bi-rank-hint-message` | **134** | `220393ec-1c7e-4b58-8836-541f07054cb1` | 2026-06-11 自動ランク注記文言改善 |
+| 699 | `2026-06-13-bi-guide-hide-native-list-footer` | **104** | `d7c8441f-4f51-4cb2-a127-90704e6e1ef6` | 2026-06-13 年次集計+暗唱+標準一覧非表示・ガイド完成 |
+| 700 | `2026-06-13-bi-completion-date` | **139** | `f2504a69-8cae-4545-8ee3-1876c01bfe4e` | 2026-06-13 完了日自動設定（年次集計用） |
+| 713 | `2026-06-13-bi-annual-redirect-guide` | **12** | `d9baa102-67f1-4c12-a291-812ce2a794ac` | 2026-06-13 年次713→699ガイド誘導 |
 | 701 | `2026-06-08-sn-news-board-v4-digest-labels` | **7** | `313ce558-6a11-4e5c-90b2-85d49426cfa8` | 2026-06-08 SN ニュース掲示板 v4 |
 | 627 | `2026-05-12-627-no594-rest` | 150 | `9fc3efc8-2a22-4585-881f-0ee3c2a0fbf2` | **削除済**（674 移行後・浜田確認 2026-06-10）— 台帳参照用 |
 | 668 | `2026-05-16-668-ops-guide-portfolio-audit` | 42 | `106126f5-7249-4104-8b43-405c85ddfa51` | 2026-05-16 portfolio 拡張・`deploy:668` |
@@ -654,9 +655,10 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 
 ---
 
-## 業務改善 ver.02（Space 5 — 697–700）
+## 業務改善 ver.02（Space 5 — 697–713）
 
 **仕様正本**: `docs/plans/2026-05-23-business-improvement-proposal-spec.md` §11  
+**完成サマリー**: `docs/reports/2026-06-13-business-improvement-completion.md`  
 **実装報告**: `docs/reports/2026-06-07-bi-phase4-5-session.md`  
 **WF テスト**: `scripts/data/business-improvement-wf-test-master.json`（test_v3）
 
@@ -664,10 +666,17 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 |--------|-----|-----------|---------------|--------|
 | 設定マスタ | **697** | — | — | `business-improvement:seed-settings` |
 | 社員マスタ | **698** | — | — | `business-improvement:sync-595` |
-| ご利用ガイド | **699** | `customize/business-improvement-guide/desktop.js` | `2026-06-09-bi-guide-eval-screenshots-complete` rev87 | `deploy:699` |
-| 提案申請 ver.02 | **700** | `customize/business-improvement-proposal/desktop.js` | `2026-06-09-bi-proposal-remove-foo-bar` rev127 | `deploy:700` |
+| ご利用ガイド | **699** | `customize/business-improvement-guide/desktop.bundle.js` | `2026-06-13-bi-guide-hide-native-list-footer` rev104 | `deploy:699` |
+| 提案申請 ver.02 | **700** | `customize/business-improvement-proposal/desktop.js` | `2026-06-13-bi-completion-date` rev139 | `deploy:700` |
+| 年次処理（新⑤） | **713** | `customize/business-improvement-annual/desktop.bundle.js` | `2026-06-13-bi-annual-redirect-guide` rev12 | `deploy:713` |
 
-**700 主要機能**: 申請UI（applyDraft v33）・評価UI（evalDraft）・REST 申請→ガイド遷移・test_v3 WF（A→人事）・branch_delegate 型対応。
+**699 年次集計**: **admin のみ**「年次ポイント集計」。暗唱番号は **697 共通設定** `年次暗唱番号`（起動・集計の都度入力）。集計 UI は 699 オーバーレイ（713 はデータ保存）。
+
+**699 UI**: kintone 標準一覧フッター（Record number / 0-0件中）を非表示。ガイド本文に年次手順は載せない。
+
+**713 主要機能**: 年度レコード保存。画面操作は **699** から（713 レコード画面は誘導のみ）。
+
+**状態（2026-06-13）**: **v1 完成** — 申請・評価・年次集計まで浜田確認済。
 
 ---
 
@@ -675,6 +684,7 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 
 | 日付 | 変更内容 |
 |------|----------|
+| 2026-06-13 | **業務改善 ver.02 完成**: 699 rev104（年次+標準一覧非表示）・700 rev139・713 rev12。`docs/reports/2026-06-13-business-improvement-completion.md` |
 | 2026-05-04 | **679 アプリ新規**：**部署予実クイックマニュアル**（Space **54** / thread **58**）。一覧 customize **deploy SUCCESS** / fileKey **`3c6b72d4-ac94-4600-920d-e6bd13c8bd1e`** / rev **`3`** / **BUILD=`2026-05-04-679-yojitsu-quick-manual-page`**。`npm run yojitsu:679:sync-manual-js` → `npm run deploy:679`。**678 customize** マニュアルリンク→679 / fileKey **`731c4729-79ec-46c4-9573-5f92b1e0a67a`** / rev **`94`** / **BUILD=`2026-05-04-678-manual-app-679-link`**。**678 アプリの説明** 679 短案内 **deploy SUCCESS**（`yojitsu:678:set-manual-pointer`） |
 | 2026-05-04 | **679 マニュアル追随（夜・運用ルール）**: `yojitsu-quick-manual.html` 本文を多数更新→`sync-yojitsu-679-manual-desktop.mjs`→`deploy:679` 連続反映。**BUILD 正**は `customize/679/desktop.js` 先頭の **`var BUILD`**（例 **`2026-05-04-679-remove-footer-and-css`**）。**revision / fileKey** は **各 `deploy:679` 成功行をその都度** `kintone-apps.md`（本表）と `SESSION-CLOSE-REPORT_yyyymmdd.txt` に追記すること（CIO）。**Git**: `main` で **interactive rebase 中断**→回復手順 **`docs/reports/GIT-REBASE-RECOVERY-20260504.md`**。**WIP 退避**: `git stash`（`stash@{0}` = 677/678/679 + sync 系スクリプト）。**§52-8**: `git rebase --continue` は **Cursor 外ターミナル**または **浜田明示 GO** |
 | 2026-05-04 | **678 アプリ設定**：**クイックマニュアル**を **「アプリの説明」**（HTML・一覧上部）に掲載。再反映 `npm run yojitsu:678:publish-manual-description`（`scripts/yojitsu-678-publish-quick-manual-app-description.mjs`）。**deploy SUCCESS**（general settings） |

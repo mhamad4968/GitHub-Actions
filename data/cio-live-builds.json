@@ -130,19 +130,19 @@
       "note": null
     },
     "699": {
-      "build": "2026-06-11-bi-font-xlarge-23px",
-      "fileKey": "b291634a-987d-45d8-b255-69f531a5d393",
-      "revision": "88",
-      "relPath": "customize/business-improvement-guide/desktop.js",
-      "deployedAt": "2026-06-11T10:16:00.114Z",
+      "build": "2026-06-13-bi-guide-hide-native-list-footer",
+      "fileKey": "86c593e1-f528-47e2-abcb-b0dfcc0aaa07",
+      "revision": "104",
+      "relPath": "customize/business-improvement-guide/desktop.bundle.js",
+      "deployedAt": "2026-06-12T23:26:57.798Z",
       "note": null
     },
     "700": {
-      "build": "2026-06-11-bi-rank-hint-message",
-      "fileKey": "220393ec-1c7e-4b58-8836-541f07054cb1",
-      "revision": "134",
+      "build": "2026-06-13-bi-completion-date",
+      "fileKey": "f2504a69-8cae-4545-8ee3-1876c01bfe4e",
+      "revision": "139",
       "relPath": "customize/business-improvement-proposal/desktop.js",
-      "deployedAt": "2026-06-11T11:44:56.455Z",
+      "deployedAt": "2026-06-12T22:10:49.393Z",
       "note": null
     },
     "701": {
@@ -215,6 +215,14 @@
       "revision": "24",
       "relPath": "customize/space48-portal/desktop.js",
       "deployedAt": "2026-06-11T11:24:27.963Z",
+      "note": null
+    },
+    "713": {
+      "build": "2026-06-13-bi-annual-redirect-guide",
+      "fileKey": "d9baa102-67f1-4c12-a291-812ce2a794ac",
+      "revision": "12",
+      "relPath": "customize/business-improvement-annual/desktop.bundle.js",
+      "deployedAt": "2026-06-12T22:20:24.187Z",
       "note": null
     }
   }

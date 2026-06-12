@@ -2,7 +2,7 @@
   'use strict';
 
   /** 業務改善 ver.02 — 提案申請 申請UI（Phase 4b）+ 評価UI（Phase 5） */
-  var BUILD = '2026-06-11-bi-rank-hint-message';
+  var BUILD = '2026-06-13-bi-completion-date';
   var WF_ACTION_APPLY = 'Apply';
   var WF_ACTION_REAPPLY = 'reapply';
   var BI = {
@@ -22,6 +22,7 @@
     type: '提案種別',
     title: '提案件名',
     date: '提案日',
+    completedDate: '完了日',
     purpose: '目的',
     current: '現状',
     problem: '問題点',
@@ -38,7 +39,7 @@
     'eval_effect', 'eval_ingenuity', 'eval_effort', 'eval_overall',
     '評価コメント', '合計点', '表彰ランク_自動', '表彰ランク_最終', '付与ポイント',
     'branch_delegate', '差戻し理由', '申請者', '部長評価者', '支店長評価者',
-    '人事部長評価者', '評価スナップショット', '提案操作履歴', F.date,
+    '人事部長評価者', '評価スナップショット', '提案操作履歴', F.date, F.completedDate,
     'foo_bar',
   ];
 
@@ -1607,7 +1608,7 @@
       evUi.pendingEvalWf = null;
       evUi.allowNavigate = true;
       return runWorkflowAction(event.recordId, pending.action, pending.assignee || '').then(function () {
-        afterEvalSuccess(event.recordId);
+        afterEvalSuccess(event.recordId, !!pending.targetsDone);
         return event;
       }).catch(function (err) {
         var msg = (err && err.message) || String(err);
@@ -1729,6 +1730,93 @@
     }
     return '現在評価（自動）は ' + rank + ' です。' + rank +
       ' 以上の評価にしたい場合は加点が足りませんので、再度評価を見直してください。';
+  }
+
+  function rankBadgeHtml(rank) {
+    var colors = { A: '#15803d', B: '#c2410c', C: '#475569' };
+    var bg = colors[rank] || '#475569';
+    return '<span style="display:inline-block;min-width:2.4em;padding:5px 14px;font-size:1.3em;font-weight:800;color:#fff;background:' +
+      bg + ';border-radius:8px;text-align:center;letter-spacing:0.06em;box-shadow:0 1px 3px rgba(0,0,0,0.15)">' +
+      esc(rank) + '</span>';
+  }
+
+  function rankReevalHintHtml(rec, auto) {
+    var rank = auto || effectiveAutoRank(rec);
+    var fs = fontPx();
+    if (!filled(rank)) {
+      return '<div data-bi-rank-reeval-hint role="status" style="margin:12px 0 0;padding:12px 14px;background:#f8fafc;border:1px dashed #94a3b8;border-radius:10px;font-size:' +
+        fs + ';color:#475569;line-height:1.55">' +
+        esc('評価項目を入力すると、現在評価（自動）が表示されます。') + '</div>';
+    }
+    var accent = rank === 'B' ? '#c2410c' : (rank === 'A' ? '#b45309' : '#64748b');
+    var bg = rank === 'C' ? '#f1f5f9' : '#fff7ed';
+    var border = rank === 'C' ? '#64748b' : '#ea580c';
+    var msg = rankReevalHintMessage(rec, rank);
+    return '<div data-bi-rank-reeval-hint role="alert" style="margin:12px 0 0;padding:14px 16px;background:' + bg +
+      ';border:2px solid ' + border + ';border-left:6px solid ' + accent + ';border-radius:10px;box-shadow:0 2px 8px rgba(180,83,9,0.14)">' +
+      '<div style="margin-bottom:10px;font-size:' + fs + ';font-weight:700;color:' + accent + '">⚠ 評価の見直しが必要な場合</div>' +
+      '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:10px">' +
+      '<span style="font-size:' + fs + ';font-weight:600;color:#44403c">現在評価（自動）</span>' +
+      rankBadgeHtml(rank) + '</div>' +
+      '<p style="margin:0;font-size:' + fs + ';font-weight:600;color:#78350f;line-height:1.65">' +
+      esc(msg) + '</p></div>';
+  }
+
+  function managerForwardHintHtml(rec, auto) {
+    var fs = fontPx();
+    return '<div data-bi-mgr-forward-hint role="alert" style="margin:10px 0 0;padding:12px 14px;background:#fef2f2;border:2px solid #f87171;border-left:6px solid #dc2626;border-radius:10px;box-shadow:0 2px 6px rgba(220,38,38,0.12)">' +
+      '<p style="margin:0;font-size:' + fs + ';font-weight:700;color:#991b1b;line-height:1.6">※ ' +
+      esc(managerMustForwardMessage(rec, auto)) + '</p></div>';
+  }
+
+  function finalRankPhaseLabel() {
+    if (evUi.role === 'manager') return '部長評価 — 完結フェーズ';
+    if (evUi.role === 'branch') return '支店長評価 — 完結フェーズ';
+    if (evUi.role === 'hr') return '本社評価 — 完結フェーズ';
+    return '最終評価フェーズ';
+  }
+
+  function rankFinalInputHtml(rec, auto, fin) {
+    var fs = fontPx();
+    var phase = finalRankPhaseLabel();
+    var done = filled(fin);
+    var border = done ? '#15803d' : '#ea580c';
+    var bg = done ? '#ecfdf5' : '#fffbeb';
+    var left = done ? '#15803d' : '#c2410c';
+    var selBorder = done ? '#15803d' : '#ea580c';
+    var selStyle = 'display:block;width:100%;max-width:360px;margin-top:10px;padding:14px 16px;font-size:' + fs +
+      ';font-weight:700;border:3px solid ' + selBorder + ';border-radius:10px;background:#fff;box-sizing:border-box;color:#1c1917';
+    var html = '<div data-bi-rank-final-block role="group" style="margin:16px 0 0;padding:18px 20px;background:' + bg +
+      ';border:3px solid ' + border + ';border-left:8px solid ' + left + ';border-radius:12px;box-shadow:0 3px 12px rgba(21,128,61,0.15)">' +
+      '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:10px">' +
+      '<span style="display:inline-block;padding:6px 12px;font-size:0.88em;font-weight:800;color:#fff;background:#15803d;border-radius:8px;letter-spacing:0.04em">★ 最終フェーズ</span>' +
+      '<span style="font-size:' + fs + ';font-weight:800;color:#166534">' + esc(phase) + '</span></div>' +
+      '<div style="font-size:calc(' + fs + ' + 2px);font-weight:800;color:#78350f;margin-bottom:6px">' +
+      '表彰ランク（最終）を選択してください' +
+      '<span style="display:inline-block;margin-left:10px;padding:3px 10px;font-size:0.72em;font-weight:800;color:#fff;background:#dc2626;border-radius:6px;vertical-align:middle">必須</span></div>' +
+      '<p style="margin:0 0 10px;font-size:' + fs + ';color:#44403c;line-height:1.6">表彰ランク（自動）は <strong>' + esc(auto || '—') +
+      '</strong> です。ここで確定するランクを選ぶと付与ポイントが決まり、承認を完了できます。</p>' +
+      '<label style="display:block;margin:0;font-size:' + fs + ';font-weight:600;color:#57534e">▼ 表彰ランク（最終）' +
+      '<select data-bi-rank-final style="' + selStyle + '">' +
+      rankFinalSelectOptionsHtml(auto, fin) + '</select></label>';
+    if (done) {
+      html += '<div style="margin-top:14px;display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:10px 12px;background:#fff;border:1px solid #86efac;border-radius:8px">' +
+        '<span style="font-size:' + fs + ';font-weight:600;color:#166534">確定:</span>' + rankBadgeHtml(fin) +
+        '<span style="font-size:' + fs + ';font-weight:700;color:#15803d">付与 ' + esc(String(AWARD_PTS[fin])) + ' pt</span></div>';
+    } else {
+      html += '<p role="alert" style="margin:14px 0 0;padding:12px 14px;background:#fef2f2;border:2px solid #f87171;border-radius:10px;font-size:' + fs +
+        ';font-weight:700;color:#991b1b;line-height:1.55">⚠ まだ選択されていません。上の一覧から <strong>A / B / C</strong> を選んでから承認してください。</p>';
+    }
+    html += '</div>';
+    return html;
+  }
+
+  function rankFinalDisplayHtml(fin) {
+    var fs = fontPx();
+    return '<div data-bi-rank-final-block style="margin:16px 0 0;padding:16px 18px;background:#ecfdf5;border:2px solid #15803d;border-left:8px solid #15803d;border-radius:12px">' +
+      '<div style="font-size:' + fs + ';font-weight:600;color:#166534;margin-bottom:8px">表彰ランク（最終）</div>' +
+      '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px">' + rankBadgeHtml(fin) +
+      '<span style="font-size:' + fs + ';font-weight:700">付与 ' + esc(String(AWARD_PTS[fin] || '')) + ' pt</span></div></div>';
   }
 
   function finalRankUpgradeBlockMessage(rec) {
@@ -2496,10 +2584,11 @@
     }
     appendOperationHistory(rec, fwd.label || '承認', '');
     var recordId = kintone.app.record.getId();
+    var targetsDone = !!fwd.targetsDone;
     putEvalRecord(recordId, rec).then(function () {
       return runWorkflowAction(recordId, fwd.action, fwd.assignee || '');
     }).then(function () {
-      afterEvalSuccess(recordId);
+      afterEvalSuccess(recordId, targetsDone);
     }).catch(function (err) {
       evUi.allowNavigate = false;
       alert('承認処理に失敗しました。\n' + formatKintoneApiError(err));
@@ -2579,9 +2668,21 @@
     wrap.querySelector('#bi-forward-no').onclick = closeBiModal;
   }
 
-  function afterEvalSuccess(recordId) {
-    try { sessionStorage.setItem('bi-eval-done', '1'); } catch (e) { /* noop */ }
-    navigateAwaySafe(guideIndexUrl());
+  function stampCompletionDate(recordId) {
+    return kintone.api(kintone.api.url('/k/v1/record.json', true), 'PUT', {
+      app: kintone.app.getId(),
+      id: String(recordId),
+      record: { 完了日: { value: todayISO() } },
+    }).catch(function () { /* 完了日は年次集計用。失敗しても承認自体は成功 */ });
+  }
+
+  function afterEvalSuccess(recordId, targetsDone) {
+    var chain = Promise.resolve();
+    if (targetsDone) chain = stampCompletionDate(recordId);
+    chain.then(function () {
+      try { sessionStorage.setItem('bi-eval-done', '1'); } catch (e) { /* noop */ }
+      navigateAwaySafe(guideIndexUrl());
+    });
   }
 
   function evalIntroText(rec) {
@@ -2694,17 +2795,11 @@
       (type === 'アイデア提案' ? '（満点10点）' : '（満点20点）') + '</div>' +
       '<div>表彰ランク（自動）: <strong>' + esc(auto || '—') + '</strong></div>' +
       (evUi.role === 'manager' && !locked && !branchDelegateOn(rec) && (auto === 'B' || auto === 'A') ?
-        '<p style="margin:8px 0 0;color:#57534e;font-size:0.88em;line-height:1.45">※ ' +
-        esc(managerMustForwardMessage(rec, auto)) + '</p>' : '') +
-      (needsFinalRank && !locked ?
-        '<p style="margin:8px 0 0;color:#57534e;font-size:0.88em;line-height:1.45">※ ' +
-        esc(rankReevalHintMessage(rec, auto)) + '</p>' : '') +
-      (needsFinalRank && !locked ? '<div style="margin-top:10px"><label>表彰ランク（最終）<span style="color:#b45309"> *必須</span><br><select data-bi-rank-final style="padding:8px;border-radius:8px">' +
-        rankFinalSelectOptionsHtml(auto, fin) + '</select></label>' +
-        (fin ? '' : '<p style="margin:8px 0 0;color:#b45309;font-size:0.9em">完了に進む前に表彰ランク（最終）を選択してください</p>') +
-        '</div>' : '') +
-      (locked && fin ? '<div style="margin-top:10px">表彰ランク（最終）: <strong>' + esc(fin) + '</strong></div>' : '') +
+        managerForwardHintHtml(rec, auto) : '') +
+      (needsFinalRank && !locked ? rankReevalHintHtml(rec, auto) : '') +
       '<div>付与ポイント: <strong>' + esc(pointsLabel) + '</strong></div></div>' +
+      (needsFinalRank && !locked ? rankFinalInputHtml(rec, auto, fin) : '') +
+      (locked && fin ? rankFinalDisplayHtml(fin) : '') +
       evalFooterActionsHtml(rec) +
       '</div></div></div>' +
       '<div data-bi-wf-route-wrap style="margin-top:14px;padding:12px 14px;background:#fff;border:1px solid #d6b896;border-radius:10px;display:flex;flex-wrap:wrap;gap:10px;align-items:center">' +

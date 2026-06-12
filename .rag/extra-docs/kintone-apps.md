@@ -33,8 +33,9 @@ npm run app:fields <アプリID>
 | 709 | `2026-06-10-external-it-checksheet-dash-print-a4-v2` | **5** | `7952c4af-8fc5-4dbb-9516-5ff2e963745c` | 2026-06-10 外部ITチェック 印刷A4 v2 |
 | 710 | `2026-06-10-new-system-intro-db-block-ui` | **5** | `372a6214-84de-48ff-891f-2126483ed5dd` | 2026-06-10 新規システム導入ヒアリング DB ブロック |
 | 711 | `2026-06-10-new-system-intro-dash-print-a4-v2` | **4** | `de21c60d-301b-49aa-91bf-d1e25d16efb2` | 2026-06-10 新規システム導入ヒアリング 印刷A4 2枚 |
+| 712 | `2026-06-11-space48-portal-v3` | **24** | `1e261ed5-bfdc-4918-bd98-eb6f2f07c24b` | 2026-06-11 開くを別タブ |
 | 699 | `2026-06-09-bi-guide-eval-screenshots-complete` | **87** | `3fe0b2f6-77ed-42ba-b470-2015c46d3105` | 2026-06-09 ガイド評価編完了（スクショ含む） |
-| 700 | `2026-06-09-bi-proposal-remove-foo-bar` | **127** | `e8960d3e-f062-4869-b796-ff60f02455da` | 2026-06-09 提案700 文言整理 |
+| 700 | `2026-06-11-bi-rank-hint-message` | **134** | `220393ec-1c7e-4b58-8836-541f07054cb1` | 2026-06-11 自動ランク注記文言改善 |
 | 701 | `2026-06-08-sn-news-board-v4-digest-labels` | **7** | `313ce558-6a11-4e5c-90b2-85d49426cfa8` | 2026-06-08 SN ニュース掲示板 v4 |
 | 627 | `2026-05-12-627-no594-rest` | 150 | `9fc3efc8-2a22-4585-881f-0ee3c2a0fbf2` | **削除済**（674 移行後・浜田確認 2026-06-10）— 台帳参照用 |
 | 668 | `2026-05-16-668-ops-guide-portfolio-audit` | 42 | `106126f5-7249-4104-8b43-405c85ddfa51` | 2026-05-16 portfolio 拡張・`deploy:668` |
@@ -72,6 +73,7 @@ npm run app:fields <アプリID>
 | **外部ITサービス導入チェックシート**（日常 UI・708 へ REST） | **709** | `customize/external-it-checksheet-dash/desktop.js` \| `npm run deploy:709` | [https://jbis-kintone.cybozu.com/k/709/](https://jbis-kintone.cybozu.com/k/709/) **Space 48 / thread 52**・一覧 + チェック表モーダル + **印刷（A4 1枚・カラー）**・**BUILD=`2026-06-10-external-it-checksheet-dash-print-a4-v2`** rev **5** |
 | **新規システム導入ヒアリング用DB**（正本・閲覧のみ） | **710** | `customize/new-system-intro-db/desktop.js` \| `npm run deploy:710` | [https://jbis-kintone.cybozu.com/k/710/](https://jbis-kintone.cybozu.com/k/710/) **Space 48 / thread 52**・19 フィールド・**初回 0 件**・浜田 **目視 OK**（2026-06-10）・正本 `docs/plans/2026-06-10-new-system-intro-hearing-spec.md`・**BUILD=`2026-06-10-new-system-intro-db-block-ui`** rev **5** |
 | **新規システム導入ヒアリング記録**（日常 UI・710 へ REST） | **711** | `customize/new-system-intro-dash/desktop.js` \| `npm run deploy:711` | [https://jbis-kintone.cybozu.com/k/711/](https://jbis-kintone.cybozu.com/k/711/) **Space 48 / thread 52**・一覧 + ヒアリングモーダル + **印刷（A4 2枚・稟議添付）**・浜田 **目視 OK**（2026-06-10）・**BUILD=`2026-06-10-new-system-intro-dash-print-a4-v2`** rev **4** |
+| **システム推進室ポータル**（タブ型リンクハブ・設定はサブテーブル） | **712** | `customize/space48-portal/desktop.js` \| `npm run deploy:712` | [https://jbis-kintone.cybozu.com/k/712/](https://jbis-kintone.cybozu.com/k/712/) **Space 48 / thread 52**・仕様 **`docs/plans/2026-06-11-space48-portal-spec.md`**・初回 **運用**タブ・15 リンク seed・**BUILD=`2026-06-11-space48-portal-v3`** rev **24**（2026-06-11・開くは別タブ） |
 | 運用ガイド（PC台帳・アカウント周りの操作手順） | **668** | `customize/ops-guide/desktop.js` | `npm run ops-guide:publish`（HTML レコード同期＋desktop.js デプロイ） |
 | 環境設定マスタ（新・PC台帳ver.1 用 / Day 1） | **670** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-24 作成 / 12 レコード（M365 ドメイン・固定文字・上限値）|
 | M365管理マスタ（新・PC台帳ver.1 用 / Day 2 / 5 台ライセンス厳守） | **671** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-24 作成 / 10 レコード（sjm-001~sjm-010 / X 案 5 台節約）|

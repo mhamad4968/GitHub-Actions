@@ -6,7 +6,7 @@
 
   /** 業務改善 ver.02 — ご利用ガイド */
 
-  var BUILD = '2026-06-11-bi-font-xlarge-23px';
+  var BUILD = '2026-06-13-bi-guide-hide-native-list-footer';
 
 
 
@@ -18,7 +18,11 @@
 
     proposalAppId: 700,
 
+    annualAppId: 713,
+
   };
+
+  var ADMIN_LOGIN_CODES = ['admin'];
 
 
 
@@ -159,6 +163,13 @@
     style.textContent =
       '.contents-gaia,.contents-bodygaia{background:transparent!important}' +
       '#gaia .layout-gaia{background:transparent!important}' +
+      /* 699: kintone 標準一覧（Record number / データがありません / 0-0件中）を非表示 */
+      '.gaia-argoui-app-index-recordlist,.gaia-argoui-app-index-norecord,.recordlist-gaia,.recordlist-norecord-gaia,' +
+      '.gaia-argoui-list-norecord,.recordlist-paging-gaia,div[class*="recordlist-norecord"],' +
+      '.recordlist-header-gaia,.recordlist-headerbar-gaia,#recordlist-header-gaia,' +
+      '.gaia-argoui-app-index-paging,.gaia-argoui-app-index-pager,.gaia-argoui-app-index-recordcount,' +
+      '.gaia-argoui-app-recordcount,.gaia-argoui-paging,div[class*="recordlist-paging"],' +
+      'div[class*="recordcount-gaia"],[class*="recordlist-paging"]{display:none!important}' +
       '#bi-guide-root .bi-nav-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start}' +
       '#bi-guide-root .bi-nav-wrap{position:relative}' +
       '#bi-guide-root .bi-nav-top{padding:10px 18px;border-radius:8px;border:1px solid transparent;cursor:pointer;font-size:1.05em;font-weight:700;background:transparent;white-space:nowrap;font-family:inherit;line-height:1.4}' +
@@ -171,6 +182,8 @@
   var state = {
 
     isEvaluator: false,
+
+    isAdmin: false,
 
     showPending: false,
 
@@ -219,6 +232,266 @@
       .replace(/>/g, '&gt;')
 
       .replace(/"/g, '&quot;');
+
+  }
+
+
+
+  function isBiAdmin(code) {
+
+    return !!(code && ADMIN_LOGIN_CODES.indexOf(code) >= 0);
+
+  }
+
+
+
+  function apiErrorMessage(err, fallback) {
+
+    var parts = [fallback];
+
+    if (err && err.message) parts.push(String(err.message));
+
+    if (err && err.code) parts.push('コード: ' + err.code);
+
+    return parts.join('\n');
+
+  }
+
+
+
+  function fetchAnnualPassphrase() {
+
+    return kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', {
+
+      app: BI.settingsAppId,
+
+      query: 'record_kind in ("共通設定") order by $id asc limit 1',
+
+    }).then(function (res) {
+
+      var rec = (res.records || [])[0];
+
+      if (!rec) return '';
+
+      if (!rec.年次暗唱番号 || rec.年次暗唱番号.value == null || String(rec.年次暗唱番号.value).trim() === '') {
+
+        return '';
+
+      }
+
+      return String(rec.年次暗唱番号.value).trim();
+
+    });
+
+  }
+
+
+
+  function openGuideModal(title, bodyHtml, buttonsHtml, options) {
+
+    options = options || {};
+
+    var old = document.getElementById('bi-guide-modal');
+
+    if (old) old.remove();
+
+    var wrap = document.createElement('div');
+
+    wrap.id = 'bi-guide-modal';
+
+    wrap.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:10002;display:flex;align-items:center;justify-content:center;padding:16px';
+
+    wrap.innerHTML =
+
+      '<div style="background:#fff;border-radius:12px;max-width:480px;width:100%;padding:20px;box-shadow:0 20px 40px rgba(0,0,0,.2)">' +
+
+      '<h3 style="margin:0 0 12px;color:#166534">' + esc(title) + '</h3>' +
+
+      '<div style="margin-bottom:16px;line-height:1.6">' + bodyHtml + '</div>' +
+
+      '<div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end">' + buttonsHtml + '</div></div>';
+
+    document.body.appendChild(wrap);
+
+    if (options.closeOnBackdrop) {
+
+      wrap.onclick = function (e) { if (e.target === wrap) wrap.remove(); };
+
+    }
+
+    return wrap;
+
+  }
+
+
+
+  function promptAnnualPassphrase(onSuccess) {
+
+    fetchAnnualPassphrase().then(function (expected) {
+
+      if (!expected) {
+
+        alert('年次暗唱番号が設定マスタ（697）の共通設定に未登録です。\n697の「共通設定」レコードでフィールド「年次暗唱番号」を設定するか、697の閲覧権限を確認してください。');
+
+        return;
+
+      }
+
+      var passFieldId = 'bi-annual-pass-input';
+
+      var wrap = openGuideModal(
+
+        '暗唱番号の入力',
+
+        '<form id="bi-annual-pass-form" autocomplete="off">' +
+
+        '<p style="margin:0 0 10px">年次ポイント集計を行うには暗唱番号が必要です。</p>' +
+
+        '<label for="' + passFieldId + '" style="display:block;font-weight:600;margin-bottom:6px;color:#166534">暗唱番号</label>' +
+
+        '<input type="password" id="' + passFieldId + '" name="bi-annual-passphrase" autocomplete="new-password" autocapitalize="off" spellcheck="false" value="" placeholder="暗唱番号を入力" style="width:100%;padding:10px;border:1px solid #86efac;border-radius:8px;font-size:1em;box-sizing:border-box">' +
+
+        '</form>',
+
+        '<button type="button" id="bi-annual-pass-cancel" style="padding:8px 14px;background:#fff;color:#334155;border:1px solid #cbd5e1;border-radius:8px;cursor:pointer">キャンセル</button>' +
+
+        '<button type="button" id="bi-annual-pass-ok" style="padding:8px 14px;background:#15803d;color:#fff;border:0;border-radius:8px;cursor:pointer;font-weight:600">解除</button>'
+
+      );
+
+      var passInput = wrap.querySelector('#' + passFieldId);
+
+      var cancelBtn = wrap.querySelector('#bi-annual-pass-cancel');
+
+      var okBtn = wrap.querySelector('#bi-annual-pass-ok');
+
+      if (!passInput || !cancelBtn || !okBtn) {
+
+        alert('暗唱番号入力画面の表示に失敗しました。699を再読み込みして再度お試しください。');
+
+        wrap.remove();
+
+        return;
+
+      }
+
+      function resetPassInput() {
+
+        passInput.value = '';
+
+        passInput.defaultValue = '';
+
+      }
+
+      resetPassInput();
+
+      passInput.addEventListener('focus', resetPassInput, { once: true });
+
+      requestAnimationFrame(function () {
+
+        resetPassInput();
+
+        passInput.focus();
+
+      });
+
+      cancelBtn.onclick = function () { wrap.remove(); };
+
+      function submitPassphrase() {
+
+        var input = (passInput.value || '').trim();
+
+        if (input !== expected) {
+
+          alert('暗唱番号が正しくありません。');
+
+          resetPassInput();
+
+          passInput.focus();
+
+          return;
+
+        }
+
+        wrap.remove();
+
+        onSuccess();
+
+      }
+
+      okBtn.onclick = submitPassphrase;
+
+      passInput.onkeydown = function (ev) {
+
+        if (ev.key === 'Enter') {
+
+          ev.preventDefault();
+
+          submitPassphrase();
+
+        }
+
+      };
+
+    }).catch(function (err) {
+
+      alert(apiErrorMessage(err, '暗唱番号の取得に失敗しました。\n設定マスタ（697）の閲覧権限、またはネットワークを確認してください。'));
+
+    });
+
+  }
+
+
+
+  function openAnnualAggregationPanel() {
+
+    if (document.getElementById('bi-annual-overlay') || document.getElementById('bi-guide-modal')) {
+
+      return;
+
+    }
+
+    function launch() {
+
+      if (!window.BiAnnualPanel || !window.BiAnnualPanel.openOverlay) {
+
+        alert('年次集計モジュールが読み込まれていません。');
+
+        return;
+
+      }
+
+      try {
+
+        var opened = window.BiAnnualPanel.openOverlay({
+
+          annualAppId: BI.annualAppId,
+
+          proposalAppId: BI.proposalAppId,
+
+          passphraseGuard: function (onOk) { promptAnnualPassphrase(onOk); },
+
+        });
+
+        if (opened && typeof opened.catch === 'function') {
+
+          opened.catch(function (err) {
+
+            alert('年次パネルの表示に失敗しました。\n' + (err && err.message ? err.message : String(err)));
+
+          });
+
+        }
+
+      } catch (err) {
+
+        alert('年次パネルの表示に失敗しました。\n' + (err && err.message ? err.message : String(err)));
+
+      }
+
+    }
+
+    promptAnnualPassphrase(launch);
 
   }
 
@@ -296,17 +569,31 @@
 
   function hideKintoneChrome() {
 
-    var list = document.querySelector('.recordlist-gaia') || document.querySelector('[class*="recordlist"]');
+    var selectors = [
+      '.recordlist-gaia',
+      '.recordlist-header-gaia',
+      '.recordlist-headerbar-gaia',
+      '#recordlist-header-gaia',
+      '.gaia-argoui-app-index-recordlist',
+      '.gaia-argoui-app-index-norecord',
+      '.recordlist-norecord-gaia',
+      '.gaia-argoui-list-norecord',
+      '.recordlist-paging-gaia',
+      '.gaia-argoui-app-index-pager',
+      '.gaia-argoui-app-index-paging',
+      '.gaia-argoui-app-index-recordcount',
+    ];
 
-    if (list) list.style.display = 'none';
+    selectors.forEach(function (sel) {
+      document.querySelectorAll(sel).forEach(function (el) {
+        el.style.setProperty('display', 'none', 'important');
+      });
+    });
 
-    var hdr = document.querySelector('.recordlist-header-gaia');
-
-    if (hdr) hdr.style.display = 'none';
-
-    var pager = document.querySelector('.gaia-argoui-app-index-pager');
-
-    if (pager) pager.style.display = 'none';
+    document.querySelectorAll('[class*="recordlist"]').forEach(function (el) {
+      if (el.closest && el.closest('#bi-guide-host')) return;
+      el.style.setProperty('display', 'none', 'important');
+    });
 
     var contents = document.querySelector('.contents-gaia');
 
@@ -317,6 +604,31 @@
       contents.style.overflow = 'visible';
 
     }
+
+  }
+
+  var hideChromeTimer = null;
+
+  var hideChromeObserver = null;
+
+  function scheduleHideKintoneChrome() {
+
+    hideKintoneChrome();
+
+    [50, 200, 500, 1000, 2000].forEach(function (ms) {
+      setTimeout(hideKintoneChrome, ms);
+    });
+
+    if (hideChromeObserver || typeof MutationObserver === 'undefined') return;
+
+    var root = document.querySelector('.contents-gaia') || document.body;
+
+    hideChromeObserver = new MutationObserver(function () {
+      clearTimeout(hideChromeTimer);
+      hideChromeTimer = setTimeout(hideKintoneChrome, 80);
+    });
+
+    hideChromeObserver.observe(root, { childList: true, subtree: true });
 
   }
 
@@ -1387,7 +1699,7 @@
   function guideBodyNote() {
     return (
       '<p style="color:#78716c;margin:16px 0 0;font-size:0.92em">' +
-      '文字が小さく感じるときは、ページ右上の <strong>「大」</strong> を選んでください。</p>'
+      '文字が小さく感じるときは、ページ右上の <strong>「大」</strong> または <strong>「特大」</strong> を選んでください。</p>'
     );
   }
 
@@ -1964,6 +2276,12 @@
 
       '<button type="button" id="bi-btn-past-search" style="display:inline-block;padding:14px 22px;margin:8px 0;background:#fff;color:#1d4ed8;border:2px solid #1d4ed8;border-radius:10px;font-weight:700;font-size:1.05em;cursor:pointer;box-shadow:0 2px 8px rgba(29,78,216,.12)">過去の提案を探す</button>' +
 
+      (state.isAdmin
+
+        ? '<button type="button" id="bi-btn-annual" style="display:inline-block;padding:14px 22px;margin:8px 0 8px 12px;background:#15803d;color:#fff;border:0;border-radius:10px;font-weight:700;font-size:1.05em;cursor:pointer;box-shadow:0 2px 8px rgba(21,128,61,.25)">年次ポイント集計</button>'
+
+        : '') +
+
       '</div>' +
 
       '<div id="bi-guide-body" style="' + cardStyle + ';padding:20px 24px;margin-bottom:20px;min-height:120px">' +
@@ -2084,6 +2402,24 @@
 
 
 
+    var annualBtn = root.querySelector('#bi-btn-annual');
+
+    if (annualBtn && !annualBtn._biBound) {
+
+      annualBtn._biBound = true;
+
+      annualBtn.addEventListener('click', function (ev) {
+
+        ev.preventDefault();
+
+        openAnnualAggregationPanel();
+
+      });
+
+    }
+
+
+
     adjustGuideOffset(root);
 
   }
@@ -2150,7 +2486,7 @@
 
     injectGuideThemeStyles();
 
-    hideKintoneChrome();
+    scheduleHideKintoneChrome();
 
     var host = document.getElementById('bi-guide-host');
 
@@ -2169,6 +2505,8 @@
     scheduleAdjustGuideOffset(host);
 
     state.loginCode = (kintone.getLoginUser() && kintone.getLoginUser().code) || '';
+
+    state.isAdmin = isBiAdmin(state.loginCode);
 
     fetchSettingsEvaluators(BI.settingsAppId)
 
