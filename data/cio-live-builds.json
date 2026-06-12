@@ -130,11 +130,11 @@
       "note": null
     },
     "699": {
-      "build": "2026-06-13-bi-guide-hide-native-list-footer",
-      "fileKey": "86c593e1-f528-47e2-abcb-b0dfcc0aaa07",
-      "revision": "104",
+      "build": "2026-06-13-bi-guide-lists-first-accordion",
+      "fileKey": "b55f1469-0bd9-4559-9a30-5b8e961d8b4e",
+      "revision": "105",
       "relPath": "customize/business-improvement-guide/desktop.bundle.js",
-      "deployedAt": "2026-06-12T23:26:57.798Z",
+      "deployedAt": "2026-06-12T23:37:42.003Z",
       "note": null
     },
     "700": {

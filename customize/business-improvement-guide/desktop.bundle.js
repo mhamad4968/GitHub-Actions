@@ -1246,7 +1246,7 @@ window.BiAnnualPanel = (function () {
 
   /** 業務改善 ver.02 — ご利用ガイド */
 
-  var BUILD = '2026-06-13-bi-guide-hide-native-list-footer';
+  var BUILD = '2026-06-13-bi-guide-lists-first-accordion';
 
 
 
@@ -1415,7 +1415,12 @@ window.BiAnnualPanel = (function () {
       '#bi-guide-root .bi-nav-top{padding:10px 18px;border-radius:8px;border:1px solid transparent;cursor:pointer;font-size:1.05em;font-weight:700;background:transparent;white-space:nowrap;font-family:inherit;line-height:1.4}' +
       '#bi-guide-root .bi-nav-drop{position:absolute;top:calc(100% + 6px);left:0;min-width:240px;padding:6px;border-radius:10px;box-shadow:0 8px 24px rgba(15,23,42,.14);z-index:100;flex-direction:column;gap:2px}' +
       '#bi-guide-root .bi-nav-sub{text-align:left;padding:10px 14px;border-radius:6px;border:none;cursor:pointer;font-size:1em;width:100%;font-family:inherit;line-height:1.4}' +
-      '#bi-guide-root .bi-nav-sub:hover{filter:brightness(0.97)}';
+      '#bi-guide-root .bi-nav-sub:hover{filter:brightness(0.97)}' +
+      '#bi-guide-body{scroll-margin-top:72px}' +
+      '#bi-guide-root .bi-guide-topic summary{list-style:none;display:flex;align-items:flex-start;gap:8px}' +
+      '#bi-guide-root .bi-guide-topic summary::-webkit-details-marker{display:none}' +
+      '#bi-guide-root .bi-guide-topic[open] .bi-guide-topic-caret{transform:rotate(180deg);display:inline-block}' +
+      '#bi-guide-root .bi-guide-topic summary:hover{background:rgba(248,250,252,0.9)}';
     document.head.appendChild(style);
   }
 
@@ -2924,15 +2929,29 @@ window.BiAnnualPanel = (function () {
     );
   }
 
+  var guideTopicSeq = 0;
+
+  function resetGuideTopics() {
+    guideTopicSeq = 0;
+  }
+
   function guideTopic(label, emoji, markBg, bodyHtml) {
+    var isFirst = guideTopicSeq === 0;
+    guideTopicSeq += 1;
     return (
-      '<p style="margin:14px 0 0;line-height:1.65">' +
+      '<details class="bi-guide-topic"' +
+      (isFirst ? ' open' : '') +
+      ' style="margin:14px 0 0;border:1px solid #e2e8f0;border-radius:10px;background:rgba(255,255,255,0.55);overflow:hidden">' +
+      '<summary style="padding:12px 16px;cursor:pointer;font-weight:700;line-height:1.5">' +
       guideMark(emoji, markBg) +
-      '<strong>' +
+      '<span style="margin-right:6px">' +
       label +
-      '</strong><br>' +
+      '</span>' +
+      '<span class="bi-guide-topic-caret" aria-hidden="true" style="color:#64748b;font-size:0.85em">▼</span>' +
+      '</summary>' +
+      '<div class="bi-guide-topic-body" style="padding:4px 16px 14px;line-height:1.65;border-top:1px solid #f1f5f9">' +
       bodyHtml +
-      '</p>'
+      '</div></details>'
     );
   }
 
@@ -3261,7 +3280,7 @@ window.BiAnnualPanel = (function () {
     if (state.sub === 'lists') {
       return (
         guideH2('一覧の見方', th, '📑', mark) +
-        '<p>このガイド画面の下には、ログイン中のアカウントに関係する一覧が表示されます。</p>' +
+        '<p>このガイド画面の上部には、ログイン中のアカウントに関係する一覧が表示されます。</p>' +
         '<div style="' + box + '">' +
         guideLabel('申請した一覧', '（全員）', '📝', '#dbeafe', '10px') +
         '<p style="margin:0 0 14px;padding-left:2.5em">共有IDで提出した提案が一覧表示されます。' +
@@ -3439,6 +3458,7 @@ window.BiAnnualPanel = (function () {
   }
 
   function sectionHtml() {
+    resetGuideTopics();
 
     var th = guideTheme().heading;
 
@@ -3464,6 +3484,14 @@ window.BiAnnualPanel = (function () {
 
     return '<p style="color:#666">表示する内容を選択してください。</p>';
 
+  }
+
+  function scrollToGuideManual(root) {
+    var el = root.querySelector('#bi-guide-body');
+    if (!el) return;
+    window.requestAnimationFrame(function () {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   }
 
 
@@ -3524,15 +3552,15 @@ window.BiAnnualPanel = (function () {
 
       '</div>' +
 
-      '<div id="bi-guide-body" style="' + cardStyle + ';padding:20px 24px;margin-bottom:20px;min-height:120px">' +
+      '<div id="bi-guide-lists" style="' + cardStyle + ';padding:20px 24px;margin-bottom:20px">' +
 
-      sectionHtml() +
+      listsSectionHtml() +
 
       '</div>' +
 
-      '<div id="bi-guide-lists" style="' + cardStyle + ';padding:20px 24px">' +
+      '<div id="bi-guide-body" style="' + cardStyle + ';padding:20px 24px;min-height:120px">' +
 
-      listsSectionHtml() +
+      sectionHtml() +
 
       '</div>' +
 
@@ -3583,6 +3611,8 @@ window.BiAnnualPanel = (function () {
         state.openNav = null;
 
         render(root);
+
+        scrollToGuideManual(root);
 
       });
 
