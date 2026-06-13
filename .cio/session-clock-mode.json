@@ -3,5 +3,7 @@
   "note": "浜田 2026-05-31 — hook 自動起動オフ。Desktop 壁時計_START.bat 手動。WSL crontab session-split 無効化済。",
   "watchMs": 600000,
   "openBrowserOnStart": true,
-  "cronEnabled": false
+  "cronEnabled": false,
+  "trialPaused": true,
+  "trialPausedNote": "2026-06-13 — PS フラッシュ切り分け試験。壁時計 STOP 済・START.bat 使わない。sessionEnd の stopAllClock もスキップ。"
 }

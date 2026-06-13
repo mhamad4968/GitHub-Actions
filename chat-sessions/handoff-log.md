@@ -3104,3 +3104,26 @@ R13 `kintone-subtable-dropdown-keys.md` / R14 portal マップ一元化 / R15 de
 **記録修正（2026-06-13 追補）**: checkpoint / handoff が 6/11 の Q-SCHED-03 のまま残っていたため `verify:checkpoint-project-closure` を新設し朝 ready に組込
 
 ---
+
+### 2026-06-13 JST — **ソフトウェア/記憶媒体台帳 SPEC + 壁時計試験（セッション締め）**
+
+**本日完了（意見交換・SPEC のみ / kintone 未作成）**:
+- **ソフトウェア管理台帳** SPEC GO — 694 型・595・識別スロット3・支店/営業所/社員リスト+印刷
+- **記憶媒体等管理台帳** SPEC GO — A–D+F・その他テキスト・1物理1レコード（実装はソフト v1 後）
+- **壁時計** PS フラッシュ切り分け — `trialPaused: true`・STOP 済・**START.bat 試験中は使わない**
+
+**正本**:
+- `docs/plans/2026-06-13-software-ledger-kintone-spec.md`
+- `docs/plans/2026-06-13-storage-media-ledger-kintone-spec.md`
+
+**次セッション第1手**: 浜田 **「ソフトウェア台帳 kintone 作成 GO」** → DB+Dash+customize → §12.3 目視 → OK なら記憶媒体
+
+**未 commit（意図的に残置の可能性あり）**:
+- SPEC 2 本（新規）
+- `.cio/session-clock-mode.json` / `session-end-autopilot.mjs` / `session-clock-mode.mjs`（trialPaused 試験）
+
+**Git**: `main...origin/main` — 壁時計試験パッチ + SPEC は **未 commit**（締め commit は浜田判断 / `cio:session:close-git`）
+
+**Desktop**: 次回 `npm run session-starter:sync-desktop`（checkpoint 更新後）
+
+---

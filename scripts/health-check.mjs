@@ -384,11 +384,16 @@ if (!fs.existsSync(mcpJsonPath)) {
 
     // ───── rag MCP 専用 DB 内容チェック (TSB-012 再発防止 / 2026-04-23 追加) ─────
     // mcp-local-rag v0.13.0 は server mode で --db-path CLI 引数を無視し env DB_PATH のみ参照する。
-    // 設定不備で documentCount=0 になる事故を 2026-04-23 03:00 早朝に発見 (TSB-012) し、
-    // 静的設定チェック + 動的 status 呼出の二段階で再発防止する。
+    // WSL ゲートウェイでは bash -lc 内 export DB_PATH=... も有効（~/.cursor/mcp.json 実態）。
+    const ragHasDbPathConfigured = (server) => {
+      if (server?.env?.DB_PATH) return true;
+      const joined = [...(server?.args || []), server?.command || ''].join(' ');
+      return /(?:^|[\s;])DB_PATH=/.test(joined);
+    };
+
     const ragServer = servers.rag;
     if (ragServer && !ragServer.disabled) {
-      const hasDbPathEnv = !!(ragServer.env && ragServer.env.DB_PATH);
+      const hasDbPathEnv = ragHasDbPathConfigured(ragServer);
       const hasDbPathArg = (ragServer.args || []).includes('--db-path');
       const configIssues = [];
       if (!hasDbPathEnv) configIssues.push('env.DB_PATH 未設定 (v0.13.0 server mode は CLI 引数無視)');

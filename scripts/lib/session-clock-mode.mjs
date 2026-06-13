@@ -34,6 +34,7 @@ export function readSessionClockMode(root = repoRootFromLib) {
       watchMs,
       openBrowserOnStart: j.openBrowserOnStart !== false,
       note: typeof j.note === 'string' ? j.note : undefined,
+      trialPaused: j.trialPaused === true,
     };
   } catch {
     return fallback;

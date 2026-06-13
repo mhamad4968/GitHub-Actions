@@ -32,6 +32,11 @@ const HOTPATHS = [
     mustNotInclude: ['shell: true'],
   },
   {
+    rel: '.cursor/hooks/session-end-autopilot.mjs',
+    mustInclude: ['win-hidden-spawn', 'runNpmScriptSync'],
+    mustNotInclude: ["execSync('npm run"],
+  },
+  {
     rel: 'scripts/desktop-sync-and-verify.mjs',
     mustInclude: ['runNpmScriptSync', 'runNodeScriptSync'],
   },

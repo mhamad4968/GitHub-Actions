@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-06-13 JST — **業務改善 ver.02 v1 完成（クローズ）**
+**最終更新**: 2026-06-13 JST — **ソフトウェア/記憶媒体台帳 SPEC 確定 + 壁時計試験停止**
 
 ## 凍結（毎セッション先頭）
 | 禁止 | 許可 |
@@ -9,13 +9,29 @@
 | 業務改善 ver.02 の **v1 再実装**（クローズ後の無断再開） | v1 完成条件外の任意（FAQその他・本番6段WF・RAG・Wordマニュアル） |
 | 本番 WF 6段階への無断分割 | test_v3 WF 継続テスト |
 | 評価スナップショット本番投入（未設計確認前） | ガイド doc 更新（完成条件外） |
+| **記憶媒体台帳の kintone 作成**（ソフトウェア v1 目視前） | **ソフトウェア台帳 SPEC 実装**（浜田 GO 後） |
 
-**次の1手**: **（未確定 — 当日 項番 -0 で浜田と合意）** — 業務改善は **v1 クローズ済**（`docs/reports/2026-06-13-business-improvement-completion.md`）
+**次の1手**: **ソフトウェア管理台帳** kintone 作成（Space 21・694 型）— 浜田 **「ソフトウェア台帳 kintone 作成 GO」** → 目視 OK 後 **記憶媒体等台帳**
 **業務改善 ver.02**: **2026-06-13 クローズ** — 699 rev **105** / 700 rev **139** / 713 rev **12** — 浜田確認済
+**新レーン（Space 21）**: **ソフトウェア管理台帳** SPEC GO 済 → **明日 kintone 作成** / **記憶媒体等台帳** SPEC GO 済（ソフト v1 後）
+**壁時計試験**: `.cio/session-clock-mode.json` **`trialPaused: true`** — START.bat 不使用・sessionEnd の stopAllClock スキップ（PS フラッシュ切り分け）
 **クローズ正本**: `data/cio-project-closures.json` / `npm run verify:checkpoint-project-closure`
 **R13–R18**: **浜田 GO 済** — `docs/approved-changes/2026-06-11-rules-r13-r18-hamada-go.md`
 **システム推進室ポータル**: **2026-06-11 完了**（712 — 5タブ・15リンク — 浜田 OK）
 **ポータル未着手（手動）**: Space 48 スペース画面へ **712 リンク 1 つ**
+
+---
+
+## 2026-06-13 JST — **ソフトウェア/記憶媒体台帳 SPEC + 壁時計試験**
+
+| 項目 | 内容 |
+|------|------|
+| **本日完了（意見交換）** | ソフトウェア台帳 SPEC 確定（識別3スロット・595・支店/営業所/社員リスト・印刷） |
+| **SPEC** | `docs/plans/2026-06-13-software-ledger-kintone-spec.md` |
+| **記憶媒体 SPEC** | `docs/plans/2026-06-13-storage-media-ledger-kintone-spec.md`（A–D+F・1物理1レコード・ソフト v1 後に実装） |
+| **実装順** | ① ソフトウェア DB+Dash → 目視 OK → ② 記憶媒体 |
+| **壁時計** | `trialPaused: true` — PS フラッシュ原因切り分け試験中（`.cursor/hooks/session-end-autopilot.mjs` 未 commit） |
+| **未 commit** | 上記 SPEC 2 本 + 壁時計試験パッチ（`.cio/session-clock-mode.json` 等） |
 
 ---
 
