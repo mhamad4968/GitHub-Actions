@@ -59,6 +59,15 @@ function main() {
     issues.push('checkpoint bootstrap に cio:session:close-git 未記載');
   }
 
+  const r1318Path = path.join(root, 'docs/approved-changes/2026-06-11-rules-r13-r18-hamada-go.md');
+  if (fs.existsSync(r1318Path)) {
+    const r1318 = fs.readFileSync(r1318Path, 'utf8');
+    const laneSection = r1318.match(/## 明日レーン[\s\S]*?(?=\n---|\n## |$)/)?.[0] || '';
+    if (/Q-SCHED-03/.test(laneSection) && !/SUPERSEDED|6\/13.*完了|v1 クローズ/i.test(laneSection)) {
+      issues.push('approved-changes R13-18 明日レーンに Q-SCHED-03 あるが superseded なし');
+    }
+  }
+
   const eighteen = fs.readFileSync(
     path.join(root, 'chat-sessions/desktop-ai-emergency-read-pack/18-重要確認.txt'),
     'utf8',
