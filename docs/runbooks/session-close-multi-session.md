@@ -21,7 +21,7 @@
 2. handoff **末尾 1 ブロック** / checkpoint **先頭 1 表**
 3. 夕反省（26）作成 → `verify:evening-reflection-scope`
 4. **先祖返りガード + 締め一括** — `npm run cio:session:close-git -- --execute --auto-stage --message "…"`（R19 pre-commit + B1/B4 + desktop sync 内包）
-5. `verify:session-handoff-integrity -- --validate-export`（close-git 内包可）
+5. `verify:session-handoff-integrity -- --validate-export`（close-git 内で export 直後に実行）
 
 ## 関連
 

@@ -1,7 +1,8 @@
 {
-  "scoredAt": "2026-05-31T00:59:51.787Z",
+  "scoredAt": "2026-06-13T12:00:00.000Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
   "topTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
+  "closureNote": "business-improvement v1 closed 2026-06-13 — checkpoint-derived 案B1 task superseded",
   "tasks": [
     {
       "id": "backlog:B-MDFLOW:_**Markdown_ベースの開発フロー**（仕様・実装・レ",
@@ -23,7 +24,9 @@
       "tokenScore": 3,
       "impact": 5,
       "priority": 50,
-      "status": "pending"
+      "status": "superseded",
+      "supersededAt": "2026-06-13",
+      "supersededReason": "business-improvement v1 closed-v1"
     }
   ]
 }

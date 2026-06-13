@@ -3077,8 +3077,9 @@ npm run cio:morning:ready -- --project business-improvement
 **反映**: `docs/approved-changes/2026-06-11-rules-r13-r18-hamada-go.md`  
 R13 `kintone-subtable-dropdown-keys.md` / R14 portal マップ一元化 / R15 deploy WARN / R16–R17 runbook / R18 debug-tips
 
-**明日（項番 -0 合意済）**:
-- **第1手**: 業務改善 **年次集計** — **Q-SCHED-03**（§4.8・Q-ANN 再整理 → 新⑤ 6/12–13）
+**明日（項番 -0 合意済）** — **【SUPERSEDED-2026-06-13】** 下記 Q-SCHED-03 は **6/13 v1 クローズで完了**。現行 nextTask は **本ログ末尾 6/13 エントリ** + checkpoint 先頭を正とする。
+
+- **第1手（履歴）**: 業務改善 **年次集計** — **Q-SCHED-03**（§4.8・Q-ANN 再整理 → 新⑤ 6/12–13）
 - **並行可**: Space 48 → 712 リンク（手動）
 
 **Git**: R13–R18 反映 commit + push + desktop sync

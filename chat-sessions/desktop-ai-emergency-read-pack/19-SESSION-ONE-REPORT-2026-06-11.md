@@ -1,5 +1,7 @@
 # 本日の対応まとめ — 2026-06-11（JST）最終
 
+> **【履歴・SUPERSEDED-2026-06-13】** 業務改善 ver.02 v1 は **2026-06-13 クローズ済**。次手は `checkpoint-latest.md` 先頭 + `HANDOFF-HUMAN.txt` **先頭 6/13 块**を正とする。
+
 > Desktop: **`19-SESSION-ONE-REPORT-2026-06-11.md`**（sync 正本）  
 > 締め正本: **`chat-sessions/SESSION-CLOSE-REPORT-20260611.txt`**
 

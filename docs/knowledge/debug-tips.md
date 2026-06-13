@@ -6,7 +6,25 @@
 
 ---
 
+## [2026-06-13] 業務改善 v1 クローズ — 陳腐化警告（R19 / TSB-038）
+
+**前提**: `data/cio-project-closures.json` — business-improvement **closed-v1**（2026-06-13）
+**手順**: 次手は **checkpoint 先頭** + bridge（**項番 -0 で合意**）。`cio:morning:ready -- --project business-improvement` は pre-implement **スキップ**
+**禁止**: 本ファイル内 **2026-06-12 以前**の「**案B1**」「**Q-SCHED-03 を次手**」を **現行 nextTask** として引用・再開
+**exit**: `npm run verify:checkpoint-project-closure` OK
+
+---
+
 <!-- CIO-DEBUG-TIPS:AUTO -->
+## [2026-06-13] セッション解体時知恵ストック
+
+**前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
+**手順**: `npm run desktop:sync-and-verify` → `npm run verify:checkpoint-project-closure` → `npm run session:bootstrap`
+**禁止**: customize/deploy 凍結中の無断 save・上位憲法 §50-3-11 非置換違反・本体単独完結
+**exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
+
+<!-- errors: npm run desktop:sync-and-verify` — 28 番 map 含む全 mirror 更新 | npm run verify:checkpoint-project-closure` | npm run session:bootstrap`** — **Read より前**に `verify:constitution-handoff` → `ma -->
+
 ## [2026-06-13] セッション解体時知恵ストック
 
 **前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出

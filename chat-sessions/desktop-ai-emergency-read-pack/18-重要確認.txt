@@ -208,10 +208,9 @@ SPEC_TOUCHED: yes のターンで SECOND_REVIEWER: deepseek|kimi|openrouter の�
     (1) `npm run cio:guard:multi-customize` — customize **2アプリ以上**（R-17-1 / TSB-035）
     (2) **`git pull --rebase origin main`** — リモート先行時の reject 回避
     (3) その後 **`git push`**
-  **一括（推奨）**:
+  **一括（R20・desktop sync 内包）**:
     `npm run cio:session:close-git -- --execute --auto-stage --message "…"`
-    → 続けて `npm run desktop:sync-and-verify`
-  **順序**: commit+push **完了後**に Desktop sync（A3/R17）。sync だけで締め完了扱い **禁止**。
+  **順序**: close-git exit 0 = commit+push+**desktop:sync-and-verify** まで完了（A3/R17）。sync だけで締め完了扱い **禁止**。
   **禁止**: 「commit GO 待ち」「push は次セッション」（handoff 2857 型の再発）
   **正本**: `docs/runbooks/session-close-multi-session.md` / `.cursor/rules/cio-session-close-git-gate.mdc`
 
