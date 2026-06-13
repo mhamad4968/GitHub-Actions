@@ -5,9 +5,9 @@
  * 順序（--execute 時）:
  *   0) cio:session:close-recognition-gate --pre-commit（R19 内容突合のみ）
  *   1) cio:guard:multi-customize
- *   2) git add（--auto-stage）/ cio:session:export-handoff / commit
- *   3) git pull --rebase → git push
- *   4) verify:session-handoff-integrity --validate-export（bridge あれば）
+ *   2) git add（--auto-stage）/ commit
+ *   3) cio:session:export-handoff → verify:session-handoff-integrity --validate-export（amend 前）
+ *   4) bridge を amend fold → git pull --rebase → git push
  *   5) verify:session-close-git-warn
  *   6) desktop:sync-and-verify（--skip-desktop-sync で省略可・浜田 GO 時のみ）
  */
@@ -139,6 +139,14 @@ function main() {
   }
 
   runNpm('cio:session:export-handoff');
+
+  if (fs.existsSync(path.join(root, 'docs/handoff/latest-session-bridge.json'))) {
+    if (!runNpm('verify:session-handoff-integrity', ['--validate-export'])) {
+      console.error('[cio:session:close-git] NG handoff bridge 整合 — export-handoff を確認');
+      process.exit(1);
+    }
+  }
+
   if (autoStage) stageSessionChanges();
   const bridgeStaged = git(['diff', '--cached', '--name-only']).out;
   if (bridgeStaged) {
@@ -168,13 +176,6 @@ function main() {
     process.exit(push.status || 1);
   }
   console.log('[cio:session:close-git] push OK');
-
-  if (fs.existsSync(path.join(root, 'docs/handoff/latest-session-bridge.json'))) {
-    if (!runNpm('verify:session-handoff-integrity', ['--validate-export'])) {
-      console.error('[cio:session:close-git] NG handoff bridge 整合 — export-handoff を確認');
-      process.exit(1);
-    }
-  }
 
   if (!runNode('scripts/verify-session-close-git-warn.mjs')) {
     process.exit(1);
