@@ -209,6 +209,330 @@ export function inferFiscalYear(startDate) {
   return p.mo >= 4 ? p.y : p.y - 1;
 }
 
+/**
+ * Excel 20260613 — 工事稼働日管理表（1〜12月・暦日=各月全日・※1=過去5年平均）
+ * @param {object} p
+ * @param {number} p.calendarYear 休日・暦日の基準年（西暦）
+ * @param {Record<number, number>|Array<{m:number}>} p.weatherByMonth 月1〜12の平均日数
+ * @param {Array<{m:number,gw?:number,summer?:number,nye?:number}>} [p.holidayManual]
+ */
+export function calcWorkdaysExcel20260613(p) {
+  const calYear = p.calendarYear;
+  const weatherByMonth = p.weatherByMonth || {};
+  const monthly = [];
+
+  for (let m = 1; m <= 12; m += 1) {
+    const C = daysInMonth(calYear, m);
+    const monthStart = new Date(Date.UTC(calYear, m - 1, 1, 12));
+    const monthEnd = new Date(Date.UTC(calYear, m - 1, C, 12));
+    const { weekends, weekdayHol } = holidayBreakdownInRange(monthStart, monthEnd, calYear, m);
+    const man = manualHolidayForMonth(m, p.holidayManual);
+    const gw = man.gw;
+    const summer = man.summer;
+    const nye = man.nye;
+    const D = weekends + weekdayHol + gw + summer + nye;
+    const weather =
+      typeof weatherByMonth[m] === 'number'
+        ? weatherByMonth[m]
+        : weatherByMonth[String(m)] != null
+          ? Number(weatherByMonth[String(m)])
+          : 0;
+    const overlap = C ? (D * weather) / C : 0;
+    const avail = C - (D + weather - overlap);
+    const rate = avail ? (D + weather - overlap) / avail : 0;
+
+    monthly.push({
+      m,
+      calYear,
+      C,
+      D,
+      weekends,
+      weekdayHol,
+      gw,
+      summer,
+      nye,
+      E: weather,
+      W: weather,
+      G: overlap,
+      J: overlap,
+      N: avail,
+      O: avail,
+      H_rate: rate,
+      K_rate: rate,
+      scaffoldAvail: avail,
+      paintAvail: avail,
+    });
+  }
+
+  const totalAvail = monthly.reduce((s, r) => s + r.N, 0);
+  return { totalAvail, monthly };
+}
+
+/**
+ * 見積作成年 Y に対する過去5年（Y-5 〜 Y-1）
+ * @param {number} estimateYear
+ */
+export function pastFiveYearsForEstimate(estimateYear) {
+  const y = Number(estimateYear);
+  if (!Number.isFinite(y)) throw new Error('見積作成年が不正です');
+  return [y - 5, y - 4, y - 3, y - 2, y - 1];
+}
+
+/**
+ * 参照データから見積作成年に対応する5年月平均を構築
+ * @param {{ months?: Array<{m:number,byYear?:Record<string,number>}> }} refBlock
+ * @param {number} estimateYear
+ */
+export function build5yrMonthlyAverages(refBlock, estimateYear) {
+  const years = pastFiveYearsForEstimate(estimateYear).map(String);
+  const monthRows = refBlock && refBlock.months ? refBlock.months : [];
+  const byMonth = {};
+  monthRows.forEach(function (r) {
+    byMonth[r.m] = r;
+  });
+  const missingYears = new Set();
+  const months = [];
+
+  for (let m = 1; m <= 12; m += 1) {
+    const src = byMonth[m] || {};
+    const byYear = {};
+    let sum = 0;
+    years.forEach(function (y) {
+      const raw = src.byYear && src.byYear[y] != null ? src.byYear[y] : src.byYear && src.byYear[Number(y)];
+      if (raw == null || Number.isNaN(Number(raw))) {
+        missingYears.add(y);
+        return;
+      }
+      const v = Number(raw);
+      byYear[y] = v;
+      sum += v;
+    });
+    const avg = years.length ? sum / years.length : 0;
+    months.push({ m, byYear, years: years.slice(), avg });
+  }
+
+  return {
+    years,
+    months,
+    missingYears: years.filter(function (y) {
+      return missingYears.has(y);
+    }),
+  };
+}
+
+/**
+ * @param {object} p
+ * @param {number} p.estimateYear 見積作成年（休日・暦日の基準年）
+ * @param {object} p.ref5yr REF5YR 相当
+ * @param {Array<{m:number,gw?:number,summer?:number,nye?:number}>} [p.holidayManual]
+ */
+export function calcWorkdaysBundleForEstimate(p) {
+  const wind5 = build5yrMonthlyAverages(p.ref5yr.wind_ge10_ms, p.estimateYear);
+  const rain5 = build5yrMonthlyAverages(p.ref5yr.rain_ge10_mm, p.estimateYear);
+  const missing = Array.from(new Set(wind5.missingYears.concat(rain5.missingYears))).sort();
+  if (missing.length) {
+    throw new Error(
+      '見積作成年 ' +
+        p.estimateYear +
+        ' の過去5年（' +
+        wind5.years.join('・') +
+        '）のうち、参照データにない年があります: ' +
+        missing.join(', '),
+    );
+  }
+  const bundle = calcWorkdaysBundle20260613({
+    calendarYear: p.estimateYear,
+    wind5yrMonths: wind5.months,
+    rain5yrMonths: rain5.months,
+    holidayManual: p.holidayManual,
+  });
+  return {
+    ...bundle,
+    estimateYear: p.estimateYear,
+    pastYears: wind5.years,
+    wind5yr: wind5,
+    rain5yr: rain5,
+  };
+}
+
+/**
+ * @param {object} p
+ * @param {number} p.calendarYear
+ * @param {Array<{m:number,avg:number}>} p.wind5yrMonths
+ * @param {Array<{m:number,avg:number}>} p.rain5yrMonths
+ * @param {Array<{m:number,gw?:number,summer?:number,nye?:number}>} [p.holidayManual]
+ */
+export function calcWorkdaysBundle20260613(p) {
+  function toMap(rows) {
+    const map = {};
+    (rows || []).forEach(function (r) {
+      map[r.m] = Number(r.avg) || 0;
+    });
+    return map;
+  }
+  const windRes = calcWorkdaysExcel20260613({
+    calendarYear: p.calendarYear,
+    holidayManual: p.holidayManual,
+    weatherByMonth: toMap(p.wind5yrMonths),
+  });
+  const rainRes = calcWorkdaysExcel20260613({
+    calendarYear: p.calendarYear,
+    holidayManual: p.holidayManual,
+    weatherByMonth: toMap(p.rain5yrMonths),
+  });
+  return {
+    scaffold: windRes.totalAvail,
+    paint: rainRes.totalAvail,
+    monthlyWind: windRes.monthly,
+    monthlyRain: rainRes.monthly,
+  };
+}
+
+export const REF5YR_WIND_THRESHOLDS = [10, 15, 20, 30];
+export const REF5YR_RAIN_THRESHOLDS = [1, 10, 30, 50, 70, 100];
+
+/** @param {'wind'|'rain'} kind @param {number} threshold */
+export function ref5yrBlockKey(kind, threshold) {
+  return kind === 'wind' ? 'wind_ge' + threshold + '_ms' : 'rain_ge' + threshold + '_mm';
+}
+
+/** @param {string} key */
+export function ref5yrBlockTitle(key) {
+  const titles = {
+    wind_ge10_ms: '≧10m/s　月別最大風速',
+    wind_ge15_ms: '≧15m/s　月別最大風速',
+    wind_ge20_ms: '≧20m/s　月別最大風速',
+    wind_ge30_ms: '≧30m/s　月別最大風速',
+    rain_ge1_mm: '≧1mm　月別降雨量',
+    rain_ge10_mm: '≧10mm　月別降雨量',
+    rain_ge30_mm: '≧30mm　月別降雨量',
+    rain_ge50_mm: '≧50mm　月別降雨量',
+    rain_ge70_mm: '≧70mm　月別降雨量',
+    rain_ge100_mm: '≧100mm　月別降雨量',
+  };
+  return titles[key] || key;
+}
+
+/**
+ * 日別 CSV 行から閾値別・年月別日数を集計
+ * @param {Array<{date:string,value:number}>} rows
+ * @param {number} threshold
+ */
+export function aggregateDailyToMonthlyCounts(rows, threshold) {
+  const counts = {};
+  (rows || []).forEach(function (row) {
+    const p = parseIsoDate(row.date);
+    if (!p) return;
+    const y = String(p.y);
+    if (!counts[y]) counts[y] = {};
+    if (counts[y][p.mo] == null) counts[y][p.mo] = 0;
+  });
+  (rows || []).forEach(function (row) {
+    const val = Number(row.value);
+    if (Number.isNaN(val) || val < threshold) return;
+    const p = parseIsoDate(row.date);
+    if (!p) return;
+    const y = String(p.y);
+    if (!counts[y]) counts[y] = {};
+    counts[y][p.mo] = (counts[y][p.mo] || 0) + 1;
+  });
+  return counts;
+}
+
+/**
+ * @param {{ months?: Array<{m:number,byYear?:Record<string,number>}> }} block
+ * @param {Record<string, Record<number, number>>} counts year -> month -> count
+ */
+export function mergeMonthlyCountsIntoBlock(block, counts) {
+  if (!block.months) block.months = [];
+  const csvYears = Object.keys(counts).sort();
+  for (let m = 1; m <= 12; m += 1) {
+    let row = block.months.find(function (r) {
+      return r.m === m;
+    });
+    if (!row) {
+      row = { m: m, byYear: {} };
+      block.months.push(row);
+    }
+    if (!row.byYear) row.byYear = {};
+    csvYears.forEach(function (y) {
+      row.byYear[y] = counts[y] && counts[y][m] != null ? counts[y][m] : 0;
+    });
+  }
+  block.months.sort(function (a, b) {
+    return a.m - b.m;
+  });
+  const yearSet = new Set(block.years || []);
+  csvYears.forEach(function (y) {
+    yearSet.add(y);
+  });
+  block.months.forEach(function (row) {
+    Object.keys(row.byYear || {}).forEach(function (y) {
+      yearSet.add(y);
+    });
+  });
+  block.years = Array.from(yearSet).sort();
+  block.months.forEach(function (row) {
+    const vals = block.years.map(function (y) {
+      return Number(row.byYear[y]) || 0;
+    });
+    row.avg = vals.length ? vals.reduce(function (s, v) { return s + v; }, 0) / vals.length : 0;
+  });
+  return block;
+}
+
+/**
+ * 日別 CSV から REF5YR 全閾値ブロックを更新（既存年は上書き・他年は維持）
+ * @param {object} ref5yr
+ * @param {Array<{date:string,value:number}>} rows
+ * @param {'wind'|'rain'} kind
+ */
+export function mergeDailyCsvIntoRef5yr(ref5yr, rows, kind) {
+  const out = JSON.parse(JSON.stringify(ref5yr || {}));
+  const thresholds = kind === 'wind' ? REF5YR_WIND_THRESHOLDS : REF5YR_RAIN_THRESHOLDS;
+  thresholds.forEach(function (th) {
+    const key = ref5yrBlockKey(kind, th);
+    const counts = aggregateDailyToMonthlyCounts(rows, th);
+    if (!rows || !rows.length) return;
+    if (!out[key]) {
+      out[key] = {
+        label: kind === 'wind' ? '>=' + th + 'm/s' : '>=' + th + 'mm',
+        threshold: th,
+        years: [],
+        months: [],
+      };
+    }
+    mergeMonthlyCountsIntoBlock(out[key], counts);
+  });
+  const allYears = new Set();
+  thresholds.forEach(function (th) {
+    const key = ref5yrBlockKey(kind, th);
+    (out[key] && out[key].years ? out[key].years : []).forEach(function (y) {
+      allYears.add(y);
+    });
+  });
+  const span = Array.from(allYears).sort();
+  if (span.length) {
+    const period = span[0] + '〜' + span[span.length - 1];
+    if (kind === 'wind') out.windPeriod = period;
+    else out.rainPeriod = period;
+  }
+  out.updatedFromCsv = new Date().toISOString().slice(0, 10);
+  return out;
+}
+
+/**
+ * @param {object} ref5yr
+ * @param {Array<{date:string,value:number}>} windRows
+ * @param {Array<{date:string,value:number}>} rainRows
+ */
+export function rebuildRef5yrFromDailyCsv(ref5yr, windRows, rainRows) {
+  let out = JSON.parse(JSON.stringify(ref5yr || {}));
+  if (windRows && windRows.length) out = mergeDailyCsvIntoRef5yr(out, windRows, 'wind');
+  if (rainRows && rainRows.length) out = mergeDailyCsvIntoRef5yr(out, rainRows, 'rain');
+  return out;
+}
+
 /** ビルド用: 祝日マスタを JS オブジェクトリテラル文字列で返す */
 export function jpHolidayYmdForBundle() {
   return JP_HOLIDAY_YMD;

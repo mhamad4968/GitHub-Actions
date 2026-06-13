@@ -7,7 +7,17 @@ const app = String(process.argv[2] || '').trim();
 const specs = {
   688: {
     file: 'customize/688/desktop.js',
-    must: ['wd688-year-col', 'computeYearTotals', 'a.calYear !== b.calYear', 'renderExcelTransposedTable'],
+    must: [
+      'wd688-year-col',
+      'computeYearTotals',
+      'renderExcelTransposedTable',
+      'calcWorkdaysBundleForEstimate',
+      'pastFiveYearsForEstimate',
+      'mergeDailyCsvIntoRef5yr',
+      'REF5YR_WIND_THRESHOLDS',
+      'ref5yrBlockTitle',
+      'wd688-estimate',
+    ],
   },
   687: {
     file: 'customize/687/desktop.js',

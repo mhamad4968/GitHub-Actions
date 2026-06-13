@@ -12,7 +12,7 @@
       "type": "DATE",
       "code": "start_date",
       "label": "着工日",
-      "required": true,
+      "required": false,
       "noLabel": false,
       "defaultValue": ""
     },
@@ -20,7 +20,7 @@
       "type": "DATE",
       "code": "end_date",
       "label": "完工日",
-      "required": true,
+      "required": false,
       "noLabel": false,
       "defaultValue": ""
     },
@@ -129,6 +129,18 @@
           "unitPosition": "BEFORE"
         }
       }
+    },
+    "estimate_year": {
+      "type": "NUMBER",
+      "code": "estimate_year",
+      "label": "見積作成年",
+      "required": true,
+      "noLabel": false,
+      "digit": false,
+      "defaultValue": "",
+      "displayScale": "0",
+      "unit": "",
+      "unitPosition": "BEFORE"
     },
     "holiday_fiscal_year": {
       "type": "NUMBER",

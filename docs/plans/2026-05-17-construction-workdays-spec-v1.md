@@ -16,3 +16,5 @@ kintone 実装・レビューは上記ファイルを参照すること。内容
 | **ダッシュ（日常入口）** | **688** | https://jbis-kintone.cybozu.com/k/688/ |
 
 687: フィールド正本。688: Excel 風 UI（687 REST 読書き）。ACL Everyone は両アプリ管理画面設定。
+
+**Excel 20260613 改修（2026-06-13）**: 見積作成年・過去5年参照表・CSV 取込・全閾値表 → **`docs/plans/2026-06-13-construction-workdays-excel-20260613.md`**

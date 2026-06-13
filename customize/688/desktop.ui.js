@@ -3,6 +3,7 @@
     project: 'project_name',
     start: 'start_date',
     end: 'end_date',
+    estimate: 'estimate_year',
     obs: 'obs_location',
     obsNote: 'obs_location_note',
     windTh: 'threshold_wind_ms',
@@ -47,6 +48,7 @@
       revision: null,
       dirty: false,
       project_name: '',
+      estimate_year: null,
       start_date: '',
       end_date: '',
       obs_location: '',
@@ -57,6 +59,7 @@
       wind: [],
       rain: [],
       holidayManual: emptyHolidayManual(),
+      ref5yr: null,
       result_scaffold_days: null,
       result_paint_days: null,
       calculated_at: '',
@@ -129,14 +132,20 @@
     s.recordId = rec.$id && rec.$id.value != null ? String(rec.$id.value) : null;
     s.revision = rec.$revision && rec.$revision.value != null ? String(rec.$revision.value) : null;
     s.project_name = String(gv(rec, FC.project));
-    s.start_date = String(gv(rec, FC.start)).slice(0, 10);
+    const est = gv(rec, FC.estimate);
+    const fy = gv(rec, FC.fiscal);
+    const start = String(gv(rec, FC.start)).slice(0, 10);
+    if (est !== '') s.estimate_year = Number(est);
+    else if (fy !== '') s.estimate_year = Number(fy);
+    else if (start) s.estimate_year = Number(start.slice(0, 4));
+    s.start_date = start;
     s.end_date = String(gv(rec, FC.end)).slice(0, 10);
     s.obs_location = String(gv(rec, FC.obs));
     s.obs_location_note = String(gv(rec, FC.obsNote));
     s.threshold_wind_ms = Number(gv(rec, FC.windTh)) || 10;
     s.threshold_rain_mm = Number(gv(rec, FC.rainTh)) || 10;
-    const fy = gv(rec, FC.fiscal);
-    s.holiday_fiscal_year = fy !== '' ? Number(fy) : null;
+    const fyLegacy = gv(rec, FC.fiscal);
+    s.holiday_fiscal_year = fyLegacy !== '' ? Number(fyLegacy) : s.estimate_year;
     s.wind = readSubFromKintone(rec, FC.windTbl, FC.windDate, FC.windVal);
     s.rain = readSubFromKintone(rec, FC.rainTbl, FC.rainDate, FC.rainVal);
     s.holidayManual = readHolidayManualFromKintone(rec);
@@ -146,19 +155,26 @@
     s.result_paint_days = rp !== '' ? Number(rp) : null;
     s.calculated_at = String(gv(rec, FC.calcAt));
     s.dirty = false;
+    syncRef5yrFromDaily();
     return s;
   }
 
   function stateToKintoneRecord(s, includeResults) {
     const rec = {};
     rec[FC.project] = { value: s.project_name };
-    rec[FC.start] = { value: s.start_date };
-    rec[FC.end] = { value: s.end_date };
+    if (s.estimate_year != null) {
+      rec[FC.estimate] = { value: String(s.estimate_year) };
+      rec[FC.fiscal] = { value: String(s.estimate_year) };
+      rec[FC.start] = { value: s.estimate_year + '-01-01' };
+      rec[FC.end] = { value: s.estimate_year + '-12-31' };
+    }
     rec[FC.obs] = { value: s.obs_location };
     rec[FC.obsNote] = { value: s.obs_location_note };
     rec[FC.windTh] = { value: String(s.threshold_wind_ms) };
     rec[FC.rainTh] = { value: String(s.threshold_rain_mm) };
-    if (s.holiday_fiscal_year != null) rec[FC.fiscal] = { value: String(s.holiday_fiscal_year) };
+    if (s.holiday_fiscal_year != null && s.estimate_year == null) {
+      rec[FC.fiscal] = { value: String(s.holiday_fiscal_year) };
+    }
     rec[FC.windTbl] = { value: subToKintone(s.wind, FC.windDate, FC.windVal) };
     rec[FC.rainTbl] = { value: subToKintone(s.rain, FC.rainDate, FC.rainVal) };
     rec[FC.holTbl] = { value: holidayManualToKintone(s.holidayManual) };
@@ -189,7 +205,7 @@
     return kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', {
       app: APP_DATA,
       query: 'order by $id desc limit 100',
-      fields: [FC.project, FC.start, FC.end, FC.obs, FC.resScaffold, FC.resPaint, '$id'],
+      fields: [FC.project, FC.estimate, FC.fiscal, FC.start, FC.obs, FC.resScaffold, FC.resPaint, '$id'],
     });
   }
 
@@ -231,6 +247,31 @@
     return null;
   }
 
+  function cloneRef5yr(src) {
+    return JSON.parse(JSON.stringify(src || REF5YR));
+  }
+
+  function getRef5yr() {
+    return state.ref5yr || REF5YR;
+  }
+
+  function syncRef5yrFromDaily() {
+    state.ref5yr = rebuildRef5yrFromDailyCsv(cloneRef5yr(REF5YR), state.wind, state.rain);
+  }
+
+  function decodeCsvArrayBuffer(buf) {
+    const encodings = ['shift-jis', 'utf-8'];
+    for (let i = 0; i < encodings.length; i += 1) {
+      try {
+        const text = new TextDecoder(encodings[i]).decode(buf);
+        if (/\d{4}[/-]\d{1,2}[/-]\d{1,2}/.test(text)) return text;
+      } catch (_e) {
+        /* noop */
+      }
+    }
+    return new TextDecoder('utf-8').decode(buf);
+  }
+
   function parseCsvTwoColumn(text) {
     const lines = String(text).replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').split('\n');
     const rows = [];
@@ -250,17 +291,28 @@
     return rows;
   }
 
+  function currentEstimateYear() {
+    const el = document.getElementById('wd688-estimate');
+    if (el && el.value !== '') return Number(el.value);
+    if (state.estimate_year != null) return state.estimate_year;
+    return new Date().getFullYear();
+  }
+
   function buildCalcNote(result, warnings) {
     const lines = [
       'BUILD=' + BUILD,
+      '見積作成年=' + (result.estimateYear != null ? result.estimateYear : '—'),
+      '過去5年=' + (result.pastYears ? result.pastYears.join('・') : '—'),
       '足場=' + result.scaffold.toFixed(2) + ' / 塗装=' + result.paint.toFixed(2),
-      '（Excel準拠・Option A・塗装=降雨のみ・祝日=マスタ自動）',
+      '（Excel 20260613準拠・1〜12月・※1=見積作成年の過去5年月平均・祝日=マスタ自動）',
       '',
-      '月 | 年 | 暦 | 休 | 風 | 雨 | ダブ風 | ダブ雨 | 足場 | 塗装 | 不稼働率(足) | 不稼働率(塗)',
+      '月 | 年 | 暦 | 休 | 風※1 | 雨※1 | ダブ風 | ダブ雨 | 足場 | 塗装 | 不稼働率(足) | 不稼働率(塗)',
     ];
-    for (let i = 0; i < result.monthly.length; i += 1) {
-      const r = result.monthly[i];
-      if (!r.C) continue;
+    const windRows = result.monthlyWind || result.monthly || [];
+    const rainRows = result.monthlyRain || result.monthly || [];
+    for (let i = 0; i < windRows.length; i += 1) {
+      const r = windRows[i];
+      const rain = rainRows[i] || r;
       lines.push(
         [
           r.m,
@@ -268,13 +320,13 @@
           r.C,
           r.D,
           r.E,
-          r.W,
+          rain.W,
           r.G != null ? r.G.toFixed(2) : '',
-          r.J != null ? r.J.toFixed(2) : '',
+          rain.J != null ? rain.J.toFixed(2) : '',
           r.N.toFixed(2),
-          r.O.toFixed(2),
+          rain.O.toFixed(2),
           r.H_rate != null ? (r.H_rate * 100).toFixed(2) + '%' : '',
-          r.K_rate != null ? (r.K_rate * 100).toFixed(2) + '%' : '',
+          rain.K_rate != null ? (rain.K_rate * 100).toFixed(2) + '%' : '',
         ].join(' | '),
       );
     }
@@ -286,24 +338,9 @@
 
   function collectWarnings() {
     const warnings = [];
-    if (!state.start_date || !state.end_date) return warnings;
-    function rangeWarn(rows, label) {
-      if (!rows.length) return;
-      let min = rows[0].date;
-      let max = rows[0].date;
-      for (let i = 1; i < rows.length; i += 1) {
-        if (rows[i].date < min) min = rows[i].date;
-        if (rows[i].date > max) max = rows[i].date;
-      }
-      if (min > state.start_date || max < state.end_date) {
-        warnings.push(
-          label + 'の日付範囲(' + min + '〜' + max + ')が工期を十分カバーしていない可能性があります',
-        );
-      }
-    }
-    rangeWarn(state.wind, '風速');
-    rangeWarn(state.rain, '降雨');
+    if (state.estimate_year == null) warnings.push('見積作成年が未入力です');
     if (!state.obs_location) warnings.push('観測地点が未選択です');
+    if (!getRef5yr() || !getRef5yr().wind_ge10_ms) warnings.push('過去5年参照データが読み込めていません');
     return warnings;
   }
 
@@ -320,36 +357,31 @@
   }
 
   function runCalc() {
-    if (!state.start_date || !state.end_date) throw new Error('着工日・完工日を入力してください');
-    const sp = parseIsoDate(state.start_date);
-    const ep = parseIsoDate(state.end_date);
-    if (!sp || !ep) throw new Error('日付形式が不正です');
-    const s = new Date(Date.UTC(sp.y, sp.mo - 1, sp.d, 12));
-    const e = new Date(Date.UTC(ep.y, ep.mo - 1, ep.d, 12));
-    if (s > e) throw new Error('着工日は完工日以前にしてください');
-    if (!state.wind.length) throw new Error('風速データを取込んでください');
-    if (!state.rain.length) throw new Error('降雨データを取込んでください');
     readHolidayManualFromForm();
-    let fiscal = state.holiday_fiscal_year;
-    if (fiscal == null) fiscal = inferFiscalYear(state.start_date);
-
-    const result = calcWorkdays({
-      startDate: state.start_date,
-      endDate: state.end_date,
-      fiscalYear: fiscal,
-      windTh: state.threshold_wind_ms,
-      rainTh: state.threshold_rain_mm,
-      wind: state.wind,
-      rain: state.rain,
+    const estimateYear = currentEstimateYear();
+    if (!estimateYear || Number.isNaN(estimateYear)) throw new Error('見積作成年を入力してください');
+    const bundle = calcWorkdaysBundleForEstimate({
+      estimateYear: estimateYear,
+      ref5yr: getRef5yr(),
       holidayManual: state.holidayManual,
     });
-    state.lastResult = result;
+    state.lastResult = {
+      scaffold: bundle.scaffold,
+      paint: bundle.paint,
+      monthlyWind: bundle.monthlyWind,
+      monthlyRain: bundle.monthlyRain,
+      estimateYear: bundle.estimateYear,
+      pastYears: bundle.pastYears,
+      wind5yr: bundle.wind5yr,
+      rain5yr: bundle.rain5yr,
+    };
     state.lastWarnings = collectWarnings();
-    state.result_scaffold_days = Math.round(result.scaffold * 100) / 100;
-    state.result_paint_days = Math.round(result.paint * 100) / 100;
-    state.holiday_fiscal_year = fiscal;
+    state.result_scaffold_days = Math.round(bundle.scaffold * 100) / 100;
+    state.result_paint_days = Math.round(bundle.paint * 100) / 100;
+    state.estimate_year = estimateYear;
+    state.holiday_fiscal_year = estimateYear;
     state.dirty = true;
-    return result;
+    return state.lastResult;
   }
 
   function markDirty() {
@@ -374,14 +406,11 @@
       return el ? el.value : '';
     };
     state.project_name = g('wd688-project');
-    state.start_date = g('wd688-start');
-    state.end_date = g('wd688-end');
+    state.estimate_year = g('wd688-estimate') !== '' ? Number(g('wd688-estimate')) : null;
     state.obs_location = g('wd688-obs');
     state.obs_location_note = g('wd688-obs-note');
     state.threshold_wind_ms = Number(g('wd688-wind-th')) || 10;
     state.threshold_rain_mm = Number(g('wd688-rain-th')) || 10;
-    const fy = g('wd688-fiscal');
-    state.holiday_fiscal_year = fy !== '' ? Number(fy) : null;
     readHolidayManualFromForm();
     markDirty();
   }
@@ -392,13 +421,11 @@
       if (el) el.value = val != null ? String(val) : '';
     };
     s('wd688-project', state.project_name);
-    s('wd688-start', state.start_date);
-    s('wd688-end', state.end_date);
+    s('wd688-estimate', state.estimate_year != null ? state.estimate_year : '');
     s('wd688-obs', state.obs_location);
     s('wd688-obs-note', state.obs_location_note);
     s('wd688-wind-th', state.threshold_wind_ms);
     s('wd688-rain-th', state.threshold_rain_mm);
-    s('wd688-fiscal', state.holiday_fiscal_year != null ? state.holiday_fiscal_year : '');
     for (let m = 1; m <= 12; m += 1) {
       const row = state.holidayManual[m - 1];
       s('wd688-hm-gw-' + m, row.gw);
@@ -475,8 +502,8 @@
     const isWind = mode === 'scaffold';
     const yt = computeYearTotals(rows, isWind);
     const weatherLabel = isWind
-      ? '風速日数 ※1<br><span class="wd688-sub">(10m/s以上の日数)</span>'
-      : '降雨日数 ※1<br><span class="wd688-sub">(10mm以上の日数)</span>';
+      ? '風速日数 ※1<br><span class="wd688-sub">(10m/s以上・見積作成年の過去5年月平均)</span>'
+      : '降雨日数 ※1<br><span class="wd688-sub">(10mm以上・見積作成年の過去5年月平均)</span>';
     const overlapLabel = isWind
       ? '休日数と風速日数のダブり ※2'
       : '休日数と降雨日数のダブり ※2';
@@ -512,7 +539,7 @@
       '<div class="wd688-excel-wrap"><table class="wd688-table wd688-excel-table"><thead><tr>' +
       '<th class="wd688-row-label">月</th>';
     for (let i = 0; i < rows.length; i += 1) {
-      html += '<th>' + monthLabel(rows[i].m) + '<br><span class="wd688-sub">' + rows[i].calYear + '年</span></th>';
+      html += '<th>' + monthLabel(rows[i].m) + '</th>';
     }
     html +=
       '<th class="wd688-year-col">年<br><span class="wd688-sub">合計</span></th></tr></thead><tbody>';
@@ -574,30 +601,134 @@
     return html;
   }
 
+  function sortMonthlyRows(rows) {
+    return rows.slice().sort(function (a, b) {
+      return a.m - b.m;
+    });
+  }
+
+  function renderOne5yrTable(refBlock, title, estimateYear) {
+    if (!refBlock || !refBlock.months) {
+      return '<p style="color:#888">' + title + ' — データなし</p>';
+    }
+    const built = build5yrMonthlyAverages(refBlock, estimateYear);
+    const years = built.years;
+    const months = built.months.slice().sort(function (a, b) {
+      return a.m - b.m;
+    });
+
+    let html =
+      '<h4 style="margin:16px 0 8px;font-size:13px;">' +
+      title +
+      '</h4>' +
+      '<div class="wd688-excel-wrap"><table class="wd688-table wd688-excel-table"><thead><tr>' +
+      '<th class="wd688-row-label">月</th>';
+    for (let i = 0; i < years.length; i += 1) {
+      html += '<th>' + years[i] + '年</th>';
+    }
+    html += '<th class="wd688-year-col">平均</th></tr></thead><tbody>';
+
+    for (let i = 0; i < months.length; i += 1) {
+      const row = months[i];
+      html += '<tr><td class="wd688-row-label">' + monthLabel(row.m) + '</td>';
+      for (let j = 0; j < years.length; j += 1) {
+        const y = years[j];
+        const v = row.byYear && row.byYear[y] != null ? row.byYear[y] : '—';
+        html += '<td>' + v + '</td>';
+      }
+      html += '<td class="wd688-year-col">' + fmtNum(row.avg, 1) + '</td></tr>';
+    }
+    html += '</tbody></table></div>';
+    if (built.missingYears.length) {
+      html +=
+        '<p style="color:#b45309;font-size:11px;margin:4px 0 0;">不足年: ' +
+        built.missingYears.join(', ') +
+        '</p>';
+    }
+    return html;
+  }
+
+  function render5yrReferenceTable(kind) {
+    const estimateYear = currentEstimateYear();
+    const ref = getRef5yr();
+    const isWind = kind === 'wind';
+    const thresholds = isWind ? REF5YR_WIND_THRESHOLDS : REF5YR_RAIN_THRESHOLDS;
+    const sectionTitle = isWind ? '過去5年月別風速日数' : '過去5年月別降雨日数';
+    const period = isWind ? ref.windPeriod : ref.rainPeriod;
+
+    let html =
+      '<div style="font-size:13px;line-height:1.6;margin-bottom:10px;">' +
+      '<strong>' +
+      sectionTitle +
+      '</strong>（' +
+      ref.location +
+      '・見積作成年 <strong>' +
+      estimateYear +
+      '年</strong> → 対象 <strong>' +
+      pastFiveYearsForEstimate(estimateYear).join('・') +
+      '年</strong>' +
+      (period ? '／登録データ: ' + period : '') +
+      '）</div>';
+    if (ref.updatedFromCsv) {
+      html +=
+        '<p style="font-size:12px;color:#047857;margin:0 0 10px;">CSV取込反映日: ' +
+        ref.updatedFromCsv +
+        '</p>';
+    }
+
+    for (let i = 0; i < thresholds.length; i += 1) {
+      const th = thresholds[i];
+      const key = ref5yrBlockKey(isWind ? 'wind' : 'rain', th);
+      html += renderOne5yrTable(ref[key], ref5yrBlockTitle(key), estimateYear);
+    }
+
+    html +=
+      '<p style="font-size:12px;color:#64748b;margin:12px 0 0;">' +
+      '※ 足場・塗装の ※1 には <strong>≧10m/s</strong>・<strong>≧10mm</strong> の平均列を使用。上記は Excel シートと同様の全閾値表です。' +
+      ' CSV取込で全表が自動更新されます。' +
+      '</p>';
+    return html;
+  }
+
   function renderMonthlyTable() {
     const host = document.getElementById('wd688-monthly');
     if (!host) return;
-    if (!state.lastResult) {
-      host.innerHTML =
-        '<p style="color:#666">「再算出」で月別内訳を表示します（Excel 上段表相当・工期外の月は非表示）</p>';
+
+    if (activeTab === 'ref-wind') {
+      host.innerHTML = render5yrReferenceTable('wind');
       return;
     }
-    const rows = state.lastResult.monthly
-      .filter(function (r) {
-        return r.C > 0;
-      })
-      .sort(function (a, b) {
-        if (a.calYear !== b.calYear) return a.calYear - b.calYear;
-        return a.m - b.m;
-      });
-    if (!rows.length) {
-      host.innerHTML = '<p style="color:#666">着工〜完工の範囲に該当する月がありません。</p>';
+    if (activeTab === 'ref-rain') {
+      host.innerHTML = render5yrReferenceTable('rain');
+      return;
+    }
+
+    if (!state.lastResult) {
+      host.innerHTML =
+        '<p style="color:#666">「再算出」で月別内訳を表示します（Excel 20260613 準拠・常に1〜12月）</p>';
+      return;
+    }
+
+    const estYear = state.lastResult.estimateYear || currentEstimateYear();
+    const pastYears = state.lastResult.pastYears ? state.lastResult.pastYears.join('・') : '—';
+    let rows;
+    if (activeTab === 'scaffold') {
+      rows = sortMonthlyRows(state.lastResult.monthlyWind || []);
+    } else {
+      rows = sortMonthlyRows(state.lastResult.monthlyRain || []);
+    }
+    if (rows.length !== 12) {
+      host.innerHTML = '<p style="color:#c00">月別データが12ヶ月分揃っていません。</p>';
       return;
     }
 
     let intro =
       '<p style="font-size:12px;color:#555;margin:0 0 8px;">' +
-      '土日・祝祭日は自動。GW・夏休み・年末年始はセル内で編集可（編集後は再算出）。右端「年」列は Excel V列相当（表示月の合計・※2〜※4は合計値から再計算）。' +
+      '見積作成年 <strong>' +
+      estYear +
+      '年</strong>（休日・暦日基準）／過去5年 <strong>' +
+      pastYears +
+      '年</strong> の月平均を ※1 に使用。表は1月〜12月固定。GW・夏休み・年末年始はセル内編集可（編集後は再算出）。' +
       '</p>';
 
     if (activeTab === 'scaffold') {
@@ -613,7 +744,7 @@
   }
 
   function updateTabButtons() {
-    ['scaffold', 'paint', 'holiday'].forEach(function (tab) {
+    ['scaffold', 'paint', 'holiday', 'ref-wind', 'ref-rain'].forEach(function (tab) {
       const btn = document.getElementById('wd688-tab-' + tab);
       if (!btn) return;
       if (tab === activeTab) {
@@ -639,10 +770,15 @@
       const p = projects[i];
       const id = p.$id && p.$id.value;
       const name = gv(p, FC.project) || '（名称なし）';
-      const start = String(gv(p, FC.start)).slice(0, 10);
+      let est = gv(p, FC.estimate);
+      if (est === '') est = gv(p, FC.fiscal);
+      if (est === '') {
+        const start = String(gv(p, FC.start)).slice(0, 10);
+        if (start) est = start.slice(0, 4);
+      }
       const opt = document.createElement('option');
       opt.value = String(id);
-      opt.textContent = '#' + id + ' ' + name + (start ? ' (' + start + '〜)' : '');
+      opt.textContent = '#' + id + ' ' + name + (est ? ' (' + est + '年見積)' : '');
       if (String(id) === String(selectedId)) opt.selected = true;
       sel.appendChild(opt);
     }
@@ -660,13 +796,11 @@
         /* noop */
       }
       fillFormFromState();
-      if (state.wind.length && state.rain.length) {
-        try {
-          runCalc();
-          fillFormFromState();
-        } catch (_e2) {
-          /* 再算出不可時は保存値のみ表示 */
-        }
+      try {
+        runCalc();
+        fillFormFromState();
+      } catch (_e2) {
+        /* 再算出不可時は保存値のみ表示 */
       }
     });
   }
@@ -674,7 +808,7 @@
   function saveTo687() {
     readFormIntoState();
     if (!state.project_name.trim()) throw new Error('工事名を入力してください');
-    if (!state.start_date || !state.end_date) throw new Error('着工日・完工日を入力してください');
+    if (state.estimate_year == null) throw new Error('見積作成年を入力してください');
     if (!state.lastResult) runCalc();
     const record = stateToKintoneRecord(state, true);
     if (state.recordId) {
@@ -711,15 +845,14 @@
 
   function createNewProject() {
     if (state.dirty && !window.confirm('未保存の変更があります。新規案件を作成しますか？')) return;
-    const start = todayJstYmd();
-    const end = addDaysIso(start, 364);
+    const year = Number(todayJstYmd().slice(0, 4));
     state = emptyState();
     state.project_name = '新規案件';
-    state.start_date = start;
-    state.end_date = end;
+    state.estimate_year = year;
     state.threshold_wind_ms = 10;
     state.threshold_rain_mm = 10;
-    state.holiday_fiscal_year = inferFiscalYear(start);
+    state.holiday_fiscal_year = year;
+    syncRef5yrFromDaily();
     state.dirty = true;
     activeTab = 'scaffold';
     fillFormFromState();
@@ -751,17 +884,40 @@
 
   function csvHelpHtml() {
     return (
-      '<div style="font-weight:bold;margin-bottom:8px;">CSVの入手先（気象庁・過去の気象データダウンロード）</div>' +
-      '<p style="margin:0 0 10px;"><strong>① 風速（足場用）</strong><br>サイト：<a href="' +
+      '<div style="font-weight:bold;margin-bottom:10px;font-size:14px;">気象データの入手（過去5年・気象庁）</div>' +
+      '<p style="margin:0 0 12px;line-height:1.75;">' +
+      '※1 の気象日数は、<strong>見積作成年の直前5年間</strong>の日別データから求めた<strong>月別平均日数</strong>です。' +
+      '見積作成年を入力すると対象年が決まります（例: <strong>2026年</strong>見積 → <strong>2021・2022・2023・2024・2025年</strong>）。' +
+      '算出には組込の参照表（タブ「過去5年(風速)」「過去5年(降雨)」）を使います。下記は打合せ資料との照合・監査用に、気象庁から同じ期間の CSV を取得する手順です。' +
+      '</p>' +
+      '<p style="margin:0 0 12px;padding:10px 12px;background:#f1f5f9;border-radius:6px;line-height:1.75;font-size:12px;">' +
+      '<strong>共通手順（気象庁・過去の気象データダウンロード）</strong><br>' +
+      '1. サイトを開く：<a href="' +
       JMA_OBSDL +
       '" target="_blank" rel="noopener">' +
       JMA_OBSDL +
-      '</a><br>選ぶ項目：<strong>日別値</strong> → <strong>日最大風速 (m/s)</strong>。観測地点は案件と同じ地点を選択。CSVは<strong>日付・風速の2列</strong>。「CSV→風速」で取込。</p>' +
-      '<p style="margin:0;"><strong>② 降雨（塗装・休日用）</strong><br>サイト：<a href="' +
-      JMA_OBSDL +
-      '" target="_blank" rel="noopener">' +
-      JMA_OBSDL +
-      '</a><br>選ぶ項目：<strong>日別値</strong> → <strong>降水量の合計 (mm)</strong>（日降水量）。CSVは<strong>日付・降水量の2列</strong>。「CSV→降雨」で取込。</p>'
+      '</a><br>' +
+      '2. <strong>地点</strong> … 案件の観測地点を選択（大宮地区の場合は<strong>埼玉</strong>など近傍の観測所）<br>' +
+      '3. <strong>期間</strong> … 見積作成年の <strong>5年前の1月1日</strong> 〜 <strong>昨年の12月31日</strong>（上記例なら 2021/1/1〜2025/12/31）。年ごとに分けて取得しても可<br>' +
+      '4. <strong>項目</strong> … 「<strong>日別値</strong>」を選択<br>' +
+      '5. 下記の気象要素を選び CSV ダウンロード →「CSV→風速」「CSV→降雨」で取込（<strong>全閾値表が自動更新</strong>・再算出可能）' +
+      '</p>' +
+      '<p style="margin:0 0 12px;line-height:1.75;">' +
+      '<strong>① 風速（足場・※1）</strong><br>' +
+      '気象要素：<strong>日最大風速 (m/s)</strong><br>' +
+      '数え方：各日の値が <strong>10m/s 以上</strong> の日を1日とカウント → 月ごとに集計 → 5年分の同月平均（小数可）<br>' +
+      'CSV形式：<strong>日付・風速の2列</strong>（ヘッダ行は自動スキップ）' +
+      '</p>' +
+      '<p style="margin:0 0 12px;line-height:1.75;">' +
+      '<strong>② 降雨（塗装・休日・※1）</strong><br>' +
+      '気象要素：<strong>降水量の日合計 (mm)</strong>（日別値の1日合計＝日降水量。サイトによって「降水量の合計」と表記される場合も同じ項目）<br>' +
+      '数え方：各日の値が <strong>10mm 以上</strong> の日を1日とカウント → 月ごとに集計 → 5年分の同月平均<br>' +
+      'CSV形式：<strong>日付・降水量の2列</strong>' +
+      '</p>' +
+      '<p style="margin:0;line-height:1.75;font-size:12px;color:#475569;">' +
+      '<strong>過去5年表の見方</strong> … タブ「過去5年(風速)」「過去5年(降雨)」に Excel シートと同じ<strong>全閾値表</strong>（風速: ≧10/15/20/30m/s、降雨: ≧1/10/30/50/70/100mm）を表示します。' +
+      ' CSV を取込むと登録済みデータが更新され、見積作成年に応じた5年分の平均列が再計算されます。' +
+      '</p>'
     );
   }
 
@@ -783,7 +939,7 @@
       '<div id="wd688-dirty" style="display:none;padding:10px;background:#fff3cd;border:1px solid #ffc107;border-radius:6px;margin-bottom:10px;font-size:13px;"></div>' +
       '<div style="margin-bottom:12px;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;line-height:1.65;">' +
       '<strong style="font-size:15px">工事稼働日数計算ツール</strong><br>' +
-      'データ入力後、<strong>保存</strong>を押してください。暦日・休日・気象※1は<strong>着工〜完工</strong>の範囲内のみ集計します。' +
+      '見積作成年・観測地点を入力し「再算出」→「保存」してください。表は常に<strong>1月〜12月</strong>。※1 気象日数は見積作成年の<strong>直前5年間</strong>の月平均です（例: 2026年見積 → 2021〜2025年）。休日は自動＋GW/夏/年末年始は表内で編集できます。' +
       '</div>' +
       '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;">' +
       '<strong style="font-size:16px">工事稼働日数ダッシュ</strong>' +
@@ -796,22 +952,20 @@
       '<button type="button" id="wd688-new" class="kintoneplugin-button-normal">新規案件</button></div>' +
       '<div class="wd688-form" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:12px;font-size:13px;">' +
       '<label>工事名<br><input id="wd688-project" type="text" style="width:100%"></label>' +
-      '<label>着工日<br><input id="wd688-start" type="date" style="width:100%"></label>' +
-      '<label>完工日<br><input id="wd688-end" type="date" style="width:100%"></label>' +
+      '<label>見積作成年<br><input id="wd688-estimate" type="number" min="2000" max="2100" step="1" style="width:100%"></label>' +
       '<label>観測地点<br><select id="wd688-obs" style="width:100%">' +
       obsOpts +
       '</select></label>' +
       '<label>地点備考<br><input id="wd688-obs-note" type="text" style="width:100%"></label>' +
       '<label>風速閾値(m/s)<br><input id="wd688-wind-th" type="number" step="0.1" style="width:100%"></label>' +
-      '<label>降雨閾値(mm)<br><input id="wd688-rain-th" type="number" step="0.1" style="width:100%"></label>' +
-      '<label>休日基準年度<br><input id="wd688-fiscal" type="number" placeholder="空=自動" style="width:100%"></label></div>' +
+      '<label>降雨閾値(mm)<br><input id="wd688-rain-th" type="number" step="0.1" style="width:100%"></label></div>' +
       '<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0;padding:12px;background:#e8f4fc;border-radius:8px;">' +
       '<div><span style="font-size:12px;color:#555">足場 稼働可能日数</span><br><strong id="wd688-scaffold" style="font-size:22px">—</strong></div>' +
       '<div><span style="font-size:12px;color:#555">塗装 稼働可能日数</span><br><strong id="wd688-paint" style="font-size:22px">—</strong></div>' +
       '<button type="button" id="wd688-calc" class="kintoneplugin-button-dialog-ok">再算出</button>' +
       '<button type="button" id="wd688-save" class="kintoneplugin-button-dialog-ok">保存</button></div>' +
       '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 4px;">' +
-      '<span style="font-size:13px;font-weight:bold;color:#334155">気象CSV取込：</span>' +
+      '<span style="font-size:13px;font-weight:bold;color:#334155">気象CSV取込（過去5年表を自動更新）：</span>' +
       '<button type="button" id="wd688-csv-wind" class="kintoneplugin-button-normal">CSV→風速</button>' +
       '<button type="button" id="wd688-csv-rain" class="kintoneplugin-button-normal">CSV→降雨</button></div>' +
       '<div id="wd688-csv-help" style="margin:0 0 14px;padding:12px 14px;background:#fff;border:1px solid #d0d7de;border-radius:8px;font-size:13px;line-height:1.7;color:#1e293b;">' +
@@ -820,14 +974,16 @@
       '<div class="wd688-tabs">' +
       '<button type="button" class="wd688-tab wd688-tab-active" id="wd688-tab-scaffold">足場</button>' +
       '<button type="button" class="wd688-tab" id="wd688-tab-paint">塗装</button>' +
-      '<button type="button" class="wd688-tab" id="wd688-tab-holiday">休日</button></div>' +
+      '<button type="button" class="wd688-tab" id="wd688-tab-holiday">休日</button>' +
+      '<button type="button" class="wd688-tab" id="wd688-tab-ref-wind">過去5年(風速)</button>' +
+      '<button type="button" class="wd688-tab" id="wd688-tab-ref-rain">過去5年(降雨)</button></div>' +
       '<div id="wd688-meta" style="font-size:12px;color:#666;margin-bottom:8px"></div>' +
       '<div id="wd688-monthly"></div>' +
       '<input type="file" id="wd688-csv-file" accept=".csv,.txt" style="display:none">';
 
     header.appendChild(root);
 
-    ['wd688-project', 'wd688-start', 'wd688-end', 'wd688-obs', 'wd688-obs-note', 'wd688-wind-th', 'wd688-rain-th', 'wd688-fiscal'].forEach(
+    ['wd688-project', 'wd688-estimate', 'wd688-obs', 'wd688-obs-note', 'wd688-wind-th', 'wd688-rain-th'].forEach(
       function (id) {
         const el = document.getElementById(id);
         if (el) el.addEventListener('change', markDirty);
@@ -842,6 +998,12 @@
     });
     document.getElementById('wd688-tab-holiday').addEventListener('click', function () {
       switchTab('holiday');
+    });
+    document.getElementById('wd688-tab-ref-wind').addEventListener('click', function () {
+      switchTab('ref-wind');
+    });
+    document.getElementById('wd688-tab-ref-rain').addEventListener('click', function () {
+      switchTab('ref-rain');
     });
 
     document.getElementById('wd688-load').addEventListener('click', function () {
@@ -893,23 +1055,39 @@
       const reader = new FileReader();
       reader.onload = function () {
         try {
-          const rows = parseCsvTwoColumn(reader.result);
+          const text = decodeCsvArrayBuffer(reader.result);
+          const rows = parseCsvTwoColumn(text);
           if (!rows.length) {
             alert('有効なデータ行がありません');
             return;
           }
           readFormIntoState();
-          if (pendingCsvKind === 'wind') state.wind = rows;
-          else state.rain = rows;
+          if (pendingCsvKind === 'wind') {
+            state.wind = rows;
+            state.ref5yr = mergeDailyCsvIntoRef5yr(getRef5yr(), rows, 'wind');
+          } else {
+            state.rain = rows;
+            state.ref5yr = mergeDailyCsvIntoRef5yr(getRef5yr(), rows, 'rain');
+          }
           markDirty();
-          fillFormFromState();
-          alert(rows.length + ' 行取込みました（「保存」で記録に反映されます）');
+          let msg =
+            rows.length +
+            ' 行取込みました。過去5年表（全閾値）を更新しました。';
+          try {
+            runCalc();
+            fillFormFromState();
+            msg += ' 再算出も完了しました。';
+          } catch (calcErr) {
+            msg += ' 再算出: ' + (calcErr.message || calcErr);
+          }
+          if (activeTab === 'ref-wind' || activeTab === 'ref-rain') renderMonthlyTable();
+          alert(msg + ' 「保存」で記録に反映されます。');
         } catch (e) {
           alert('CSVエラー: ' + (e.message || e));
         }
         pendingCsvKind = null;
       };
-      reader.readAsText(file, 'UTF-8');
+      reader.readAsArrayBuffer(file);
     });
 
     window.addEventListener('beforeunload', function (e) {

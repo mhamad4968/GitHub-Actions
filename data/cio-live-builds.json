@@ -90,11 +90,11 @@
       "note": null
     },
     "688": {
-      "build": "2026-06-09-688-workdays-excel-table-v5",
-      "fileKey": "d4f3fd8d-5454-407e-b822-13c93e1f17f3",
-      "revision": "16",
-      "relPath": ".kintone-deploy/upload-688.js",
-      "deployedAt": "2026-06-09T12:18:35.640Z",
+      "build": "2026-06-13-688-ref5yr-zero-year-register",
+      "fileKey": "247fc365-3821-42e1-a7ec-57f14eb2416d",
+      "revision": "23",
+      "relPath": "customize/688/desktop.js",
+      "deployedAt": "2026-06-13T00:31:06.536Z",
       "note": null
     },
     "693": {

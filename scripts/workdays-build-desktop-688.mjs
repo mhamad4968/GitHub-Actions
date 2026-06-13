@@ -6,7 +6,14 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const BUILD = process.env.WORKDAYS_BUILD || '2026-06-09-688-workdays-excel-table-v5';
+const BUILD = process.env.WORKDAYS_BUILD || '2026-06-13-688-ref5yr-zero-year-register';
+
+function prepareRef5yrForBrowser() {
+  const ref = JSON.parse(
+    readFileSync(path.join(root, 'scripts/data/workdays-5yr-omiya.json'), 'utf8'),
+  );
+  return '  const REF5YR = ' + JSON.stringify(ref) + ';\n\n';
+}
 
 function prepareCoreForBrowser() {
   const holidayDates = JSON.parse(
@@ -39,7 +46,7 @@ const out = `/**
 
   const BUILD = '${BUILD}';
 
-${prepareCoreForBrowser()}
+${prepareRef5yrForBrowser()}${prepareCoreForBrowser()}
 ${ui}
 })();
 `;

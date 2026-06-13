@@ -1,6 +1,14 @@
 #!/usr/bin/env node
 /** R4 — workdays 計算コアの最小回帰（Option A・月ソート・年合計式） */
-import { calcWorkdays } from './workdays-calc-core.mjs';
+import { calcWorkdays, calcWorkdaysBundleForEstimate, pastFiveYearsForEstimate } from './workdays-calc-core.mjs';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const ref5yr = JSON.parse(
+  readFileSync(path.join(__root, 'scripts/data/workdays-5yr-omiya.json'), 'utf8'),
+);
 
 function assert(cond, msg) {
   if (!cond) throw new Error(msg);
@@ -51,5 +59,32 @@ const expectedOverlap = yt.C ? (yt.D * yt.weather) / yt.C : 0;
 assert(Math.abs(yt.overlap - expectedOverlap) < 1e-9, 'year overlap formula');
 const expectedAvail = yt.C - (yt.D + yt.weather - yt.overlap);
 assert(Math.abs(yt.avail - expectedAvail) < 1e-9, 'year avail formula');
+
+/** Excel 20260613 足場シート row 9–11（GW・夏休み・年末年始） */
+const excel2023HolidayManual = [
+  { m: 1, gw: 0, summer: 0, nye: 2 },
+  { m: 2, gw: 0, summer: 0, nye: 0 },
+  { m: 3, gw: 0, summer: 0, nye: 0 },
+  { m: 4, gw: 2, summer: 0, nye: 0 },
+  { m: 5, gw: 0, summer: 0, nye: 2 },
+  { m: 6, gw: 0, summer: 0, nye: 0 },
+  { m: 7, gw: 0, summer: 0, nye: 0 },
+  { m: 8, gw: 0, summer: 6, nye: 0 },
+  { m: 9, gw: 0, summer: 0, nye: 0 },
+  { m: 10, gw: 0, summer: 0, nye: 0 },
+  { m: 11, gw: 0, summer: 0, nye: 0 },
+  { m: 12, gw: 0, summer: 0, nye: 3 },
+];
+
+const bundle = calcWorkdaysBundleForEstimate({
+  estimateYear: 2023,
+  ref5yr: ref5yr,
+  holidayManual: excel2023HolidayManual,
+});
+assert(Math.abs(bundle.scaffold - 223.93016897081412) < 2.5, '20260613 scaffold total');
+assert(Math.abs(bundle.paint - 206.15972350230413) < 2.5, '20260613 paint total');
+assert(bundle.monthlyWind.length === 12, '20260613 wind months');
+assert(bundle.monthlyRain.length === 12, '20260613 rain months');
+assert(JSON.stringify(pastFiveYearsForEstimate(2026)) === JSON.stringify([2021, 2022, 2023, 2024, 2025]), 'rolling 5yr window');
 
 console.log('[workdays-calc-gate] OK');

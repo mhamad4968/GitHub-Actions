@@ -100,6 +100,7 @@
     "cio:preflight:687": "node scripts/cio-preflight-stamp.mjs --app 687",
     "workdays:build-desktop": "node scripts/workdays-build-desktop.mjs",
     "workdays:build-desktop:688": "node scripts/workdays-build-desktop-688.mjs",
+    "workdays:import-jma-csv": "python scripts/workdays-import-jma-csv.py",
     "workdays:add-fields-687": "npx dotenv -e .env -e .env.proxy -- node scripts/workdays-add-fields-687.mjs",
     "workdays:calc-test": "node scripts/workdays-calc-test.mjs",
     "workdays:calc-gate": "node scripts/workdays-calc-gate.mjs",
