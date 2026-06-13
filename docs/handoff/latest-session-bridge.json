@@ -1,16 +1,16 @@
 {
-  "version": "2026-06-11",
-  "exportedAt": "2026-06-12T00:00:00.000Z",
-  "gitHead": "01d469d",
+  "version": "2026-05-30",
+  "exportedAt": "2026-06-13T09:44:47.079Z",
+  "gitHead": "5078400",
   "gitStatus": "## main...origin/main",
-  "nextTask": "業務改善 年次集計 Q-SCHED-03（§4.8・Q-ANN）— 浜田 6/12 着手",
+  "nextTask": "**（未確定 — 当日 項番 -0 で浜田と合意）** — 業務改善は **v1 クローズ済**（`docs/reports/2026-06-13-business-improvement-completion.md`）",
   "nextFiles": [
-    "docs/plans/2026-05-23-business-improvement-proposal-spec.md",
-    "docs/plans/2026-05-23-business-improvement-proposal-spec-checklist.md",
-    "docs/plans/2026-05-28-business-improvement-implementation-handbook.md",
     "chat-sessions/checkpoint-latest.md",
-    "docs/approved-changes/2026-06-11-rules-r13-r18-hamada-go.md"
+    "chat-sessions/handoff-log.md",
+    ".cursor/rules/mode-b-canonical.mdc",
+    "docs/handoff/latest-session-bridge.json",
+    "docs/knowledge/debug-tips.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】次=業務改善年次集計 Q-SCHED-03 §4.8 | R13-R18 GO済 | Read: business-improvement-proposal-spec §4.8",
-  "note": "新 Chat 第1ターン: npm run session:clock:set → session:bootstrap → 項番 -0 は合意済（年次集計）"
+  "promptBlock": "【SESSION-BRIDGE】git=5078400 | 次=**（未確定 — 当日 項番 -0 で浜田と合意）** — 業務改善は **v1 クローズ済**（`docs/reports/2026-06-13-business-improvement-completion.md`） | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, .cursor/rules/mode-b-canonical.mdc",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }

@@ -1,0 +1,26 @@
+{
+  "version": "2026-06-13",
+  "description": "プロジェクト v1 クローズ登録 — 朝 ready / checkpoint / レーンルーティングが再開しない正本",
+  "closures": [
+    {
+      "id": "business-improvement",
+      "laneId": "business-improvement",
+      "label": "業務改善提案 ver.02",
+      "status": "closed-v1",
+      "closedAt": "2026-06-13",
+      "completionReport": "docs/reports/2026-06-13-business-improvement-completion.md",
+      "sessionCloseReport": "chat-sessions/SESSION-CLOSE-REPORT-20260613.txt",
+      "kintoneAppsSection": "業務改善 ver.02（Space 5 — 697–713）",
+      "kintoneAppsStateMarker": "v1 完成",
+      "forbiddenNextTaskPatterns": [
+        "業務改善",
+        "年次集計",
+        "Q-SCHED-03",
+        "案B1",
+        "compare-83",
+        "設定マスタ Excel 30行"
+      ],
+      "note": "申請・評価・年次集計・ガイド UX（C案）まで浜田確認済。v1 必須外: FAQその他・本番6段WF・RAG・Wordマニュアル"
+    }
+  ]
+}

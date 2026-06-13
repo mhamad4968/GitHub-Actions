@@ -11,16 +11,17 @@
     },
     {
       "id": "business-improvement",
+      "status": "closed-v1",
+      "closedAt": "2026-06-13",
+      "completionReport": "docs/reports/2026-06-13-business-improvement-completion.md",
       "keywords": ["業務改善", "Space 57", "案B1", "設定マスタ", "compare-83", "ver.02"],
       "skill": ".cursor/skills/kintone-business-improvement-lane/SKILL.md",
       "npm": [
-        "cio:morning:pre-implement -- --project business-improvement",
-        "business-improvement:compare-83",
-        "rag:sync-business-improvement",
-        "cio:implementation-ok-seal"
+        "verify:checkpoint-project-closure",
+        "cio:project:close -- --project business-improvement --show"
       ],
       "runbook": "docs/plans/2026-05-28-business-improvement-implementation-handbook.md",
-      "freeze": "浜田「実装OK」前は kintone create/deploy 禁止"
+      "note": "v1 完成クローズ — 再開は浜田 GO + checkpoint 更新 + closures 解除"
     },
     {
       "id": "kintone-create-app",

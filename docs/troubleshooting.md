@@ -46,8 +46,9 @@
 | TSB-034 | 2026-05-09 | Windows で `health-check` の stdio MCP が偽陰性／`permissions.json` で RUN 省略 | **IDE 外 CLI** と **Cursor IDE 内**で MCP 疎通が食い違い `smoke` 連鎖 NG 等 | ✅ | true | `health-check.mjs` / `permissions.json` / MCP env |
 | TSB-035 | 2026-05-16 | 複数アプリ `customize/**` push で GHA deploy スキップ → 本番先祖返り（678） | **1 push で複数アプリ変更時に旧 GHA が API deploy を全スキップ**し CI 緑でも本番 JS が更新されない | ✅ | true | `kintone-customize-deploy` / R-17 / `cio-live-builds.json` |
 | TSB-036 | 2026-05-26 | 予実 678→677 支払保存後も **月次実績だけ別月に残る**（光ダイレクト等） | **旧 `buildMonthlyTableForPayments` が支払ロールアップ時に「支払のない月」の `month_actual` を維持**し、移行・手入力の月次だけが 677 に残った | ✅ | true | `customize/678/desktop.js` / 677 `monthly_breakdown` |
+| TSB-038 | 2026-06-13 | 業務改善 v1 完了後も **checkpoint/handoff が Q-SCHED-03 のまま** → 新セッション誤ブリーフィング | **締めで closures/checkpoint/handoff を同ターン更新せず**、朝 ready が stale レーンを復元。副因: `次の1手`/`次回 1 手` 表記ゆれ | ✅ | true | R19 / `cio-project-closures.json` / TSB-038 |
 
-**集計** (2026-05-26 時点 / TSB-036 目次追記):
+**集計** (2026-06-13 時点 / TSB-038 目次追記):
 - 全 **31** 件中 **root_cause_confirmed = true: 30 件** / **false (孤児): 1 件**
 - 5 月目標 (F-2 自己批判 §54-5) = カバレッジ 100% を TSB-019 真因確定 (Cursor IDE Agents 設定) で **95% 前後を維持**（分母は TSB セクション数に追随）
 - 残 false: **TSB-001 のみ** = 孤児 TSB（4/19 D1-proposal でも「詳細未記載」）= 真因不明のまま記録止まり
@@ -1581,4 +1582,45 @@ npm run morning:verify-today
 - `scripts/morning-prep-ensure.mjs`
 - `scripts/daily-morning-prep.mjs`
 - `scripts/rag-ingest-path.mjs`（TSB-029）
+
+---
+
+## TSB-038 — 業務改善 v1 完了後 checkpoint が古いまま誤ブリーフィング（2026-06-13 制定）
+
+### 事象
+
+- 業務改善 ver.02 **v1 完成・クローズ**（2026-06-13）後、新セッション朝ブリーフィングで **「次手 = 年次集計 Q-SCHED-03」** と報告
+- 浜田は **完了済み** と認識 — AI チームとの **認識ズレ**（誤着手・誤 GO 待ちのリスク）
+
+### 真因
+
+1. **締め儀式の欠落**: 完成サマリー・SESSION-CLOSE はあるが、**同一ターン**で `checkpoint-latest` / `handoff-log` / `cio-project-closures.json` が追随しなかった
+2. **朝 ready の stale 復元**: `cio:morning:ready --project business-improvement` が **6/11 時点の checkpoint** を正とした
+3. **表記ゆれ**: スクリプトが `**次回 1 手**` を読むが checkpoint は `**次の1手**` → bridge が `(要 Read checkpoint-latest.md)` になり staleness 検知が弱かった
+
+### 恒久対策（2026-06-13 — R19）
+
+| 対策 | 内容 |
+|------|------|
+| **closures 正本** | `data/cio-project-closures.json` — 機械登録 |
+| **統一読取** | `scripts/lib/cio-checkpoint-read.mjs` |
+| **verify** | `npm run verify:checkpoint-project-closure` |
+| **ブリーフィング前** | `npm run cio:briefing:recognition-gate`（3 系統突合） |
+| **締め** | `npm run cio:session:close-recognition-gate` |
+| **Runbook** | `docs/runbooks/cio-project-closure-governance.md` |
+| **憲法カーネル** | `docs/constitution/23-project-closure-recognition-kernel.md` |
+
+### 確認
+
+```powershell
+npm run verify:checkpoint-project-closure
+npm run cio:briefing:recognition-gate
+npm run verify:cio-project-closure-governance
+```
+
+### 関連
+
+- `docs/approved-changes/2026-06-13-rules-r19-project-closure-governance-hamada-go.md`
+- `.cursor/rules/cio-project-closure-gate.mdc`
+- `chat-sessions/desktop-ai-emergency-read-pack/18-重要確認.txt` R19 節
 

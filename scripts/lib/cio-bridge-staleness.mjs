@@ -1,31 +1,12 @@
 /**
  * bridge と checkpoint の鮮度チェック
  */
-import fs from 'node:fs';
-import path from 'node:path';
+import {
+  readCheckpointLatestSectionDate,
+  readCheckpointNextTask,
+} from './cio-checkpoint-read.mjs';
 
-const CHECKPOINT_REL = 'chat-sessions/checkpoint-latest.md';
-
-export function readCheckpointNextTask(root) {
-  const p = path.join(root, CHECKPOINT_REL);
-  if (!fs.existsSync(p)) return null;
-  const head = fs.readFileSync(p, 'utf8').slice(0, 2500);
-  const m =
-    head.match(/\*\*次回 1 手\*\*\s*[:：]\s*([^\n]+)/i) ||
-    head.match(/\*\*次回 1 手\*\*\s*\|\s*([^|\n]+)/i) ||
-    head.match(/次回\s*1\s*手[^:\n]*[:：]\s*([^\n]+)/i);
-  return m ? (m[1] || m[0]).trim().slice(0, 200) : null;
-}
-
-/** checkpoint 先頭セクションの最新日付（## YYYY-MM-DD） */
-export function readCheckpointLatestSectionDate(root) {
-  const p = path.join(root, CHECKPOINT_REL);
-  if (!fs.existsSync(p)) return null;
-  const head = fs.readFileSync(p, 'utf8').slice(0, 4000);
-  const m = head.match(/^## (\d{4}-\d{2}-\d{2})/m);
-  if (!m) return null;
-  return m[1];
-}
+export { readCheckpointNextTask, readCheckpointLatestSectionDate };
 
 export function bridgeAgeMs(bridge) {
   if (!bridge?.exportedAt) return Infinity;

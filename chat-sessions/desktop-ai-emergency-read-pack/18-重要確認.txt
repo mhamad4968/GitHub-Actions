@@ -205,3 +205,16 @@ SPEC_TOUCHED: yes のターンで SECOND_REVIEWER: deepseek|kimi|openrouter の�
 
   **Plan & Usage（D3）**: 閾値 Auto+Composer **>70%** / API **>50%** / On-Demand **>$0** でルール見直し提案。
     正本: `docs/runbooks/cursor-plan-usage-watch.md`
+
+【2026-06-13 追記・R19 認識ズレ防止（浜田 GO — 業務改善 v1 教訓）】
+  **趣旨**: 完了したのに checkpoint/handoff が古い → AI が誤ブリーフィング → 浜田↔AI 事故。禁止。
+  **3 系統突合**（次手を述べる前）: (1) `data/cio-project-closures.json` (2) `kintone-apps.md` 状態行 (3) checkpoint **次の1手**
+  **儀式（v1 締め）**: 完成サマリー + SESSION-CLOSE + closures + checkpoint + handoff + lanes → 同一ターン
+  **機械ゲート**:
+    `npm run verify:checkpoint-project-closure`
+    `npm run cio:briefing:recognition-gate`（ブリーフィング前）
+    `npm run cio:session:close-recognition-gate`（締め）
+    `npm run verify:cio-project-closure-governance`
+  **矛盾時**: 浜田認識 + closures + kintone-apps > 古い checkpoint → §41 一問 → checkpoint 修正後に次手
+  **再開**: 浜田 GO + closures 解除 + checkpoint 更新のみ
+  **正本**: `docs/runbooks/cio-project-closure-governance.md` / `23-project-closure-recognition-kernel.md` / TSB-038

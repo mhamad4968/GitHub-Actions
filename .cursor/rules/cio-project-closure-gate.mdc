@@ -1,0 +1,35 @@
+---
+description: プロジェクト v1 完了・checkpoint/handoff 認識同期 — 浜田↔AI 事故防止（TSB-038 / R19）
+globs:
+  - chat-sessions/checkpoint-latest.md
+  - chat-sessions/handoff-log.md
+  - chat-sessions/SESSION-CLOSE-REPORT*.txt
+  - data/cio-project-closures.json
+  - data/cio-project-lanes.json
+  - docs/reports/*-completion.md
+  - scripts/cio-morning-ready.mjs
+  - scripts/cio-morning-pre-implement.mjs
+  - docs/handoff/latest-session-bridge.json
+alwaysApply: false
+---
+
+# プロジェクト完了・認識同期ゲート（R19）
+
+**Runbook**: `docs/runbooks/cio-project-closure-governance.md`  
+**Kernel**: `docs/constitution/23-project-closure-recognition-kernel.md`
+
+## 触る前
+
+- **締め**: `npm run cio:session:close-recognition-gate`
+- **ブリーフィング / 次手を述べる前**: `npm run cio:briefing:recognition-gate`
+- **朝**: `cio:morning:ready`（内包 `verify:checkpoint-project-closure`）
+
+## 禁止
+
+- closures 済みなのに checkpoint「次の1手」だけで未完了と報告
+- クローズ済み `--project` で compare-83 / 案B1 再実行
+- SESSION-CLOSE だけ書いて checkpoint/handoff/closures を同ターンで更新しない
+
+## 矛盾時
+
+浜田の認識 + kintone-apps + closures > 古い checkpoint。**先に checkpoint 修正**。

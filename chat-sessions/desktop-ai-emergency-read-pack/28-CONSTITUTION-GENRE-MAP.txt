@@ -1,5 +1,5 @@
 【28-CONSTITUTION-GENRE-MAP】憲法・ルール — ジャンル早見（4AI・Desktop 控え）
-生成: 2026-06-11 JST — npm run constitution:sync-genre-desktop-map
+生成: 2026-06-13 JST — npm run constitution:sync-genre-desktop-map
 正本: data/constitution-genre-catalog.json／リポ AGENTS.md（§ 番号の正）
 
 ■■ 読み方（見落とし防止・3ステップ）
@@ -33,7 +33,7 @@ ID                     概要                           いつ               主
 15-raci-responsibility §52・Tier                     Tier A/B         CIO
 16-amendment-process   §57 改定                       憲法改定             CIO
 
-■■ Phase2 手動カーネル（00/17/18/19-22）
+■■ Phase2 手動カーネル（00/17/18/19-23）
 ID                     概要                           いつ               主担当
 ----------------------------------------------------------------------------------------
 00-rule-hierarchy      3階層索引                        迷ったら最初           全員
@@ -43,6 +43,7 @@ ID                     概要                           いつ               主
 20-cost-token-defense-kernel 15ターン・荷造り                    長セッション           全員
 21-autonomous-patrol-kernel 週末監査                         土日               全員
 22-error-handling-kernel エスカレ・3択                      verify失敗         全員
+23-project-closure-recognition-kernel 完了・認識同期                      締め・ブリーフィング前      全員
 
 ■■ タスク → 読本（1〜2本）
 タスク                          読本                   主担当

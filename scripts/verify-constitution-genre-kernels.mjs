@@ -15,6 +15,7 @@ const KERNELS = [
   { file: '20-cost-token-defense-kernel.md', markers: ['15ターン', 'export-handoff', 'verify:cio-session-dissolution'] },
   { file: '21-autonomous-patrol-kernel.md', markers: ['週末', 'rollback:weekend-actions', 'WEEKEND'] },
   { file: '22-error-handling-kernel.md', markers: ['3択', 'verify:cio-spec-logic', 'escalation-guard'] },
+  { file: '23-project-closure-recognition-kernel.md', markers: ['認識同期', 'verify:checkpoint-project-closure', '§41'] },
 ];
 
 const HEADINGS = ['## 前提条件', '## 実行手順', '## 禁止事項', '## 判定コード'];
@@ -25,6 +26,7 @@ const RULES_INDEX_GENRE_ROWS = [
   '20-cost-token-defense-kernel.md',
   '21-autonomous-patrol-kernel.md',
   '22-error-handling-kernel.md',
+  '23-project-closure-recognition-kernel.md',
   '28-CONSTITUTION-GENRE-MAP.txt',
 ];
 
@@ -60,6 +62,9 @@ function main() {
   if (!readmeText.includes('18-ai-team-read-map')) {
     issues.push('README.md missing 18-ai-team-read-map');
   }
+  if (!readmeText.includes('23-project-closure-recognition-kernel')) {
+    issues.push('README.md missing 23-project-closure-recognition-kernel');
+  }
 
   const rulesIndex = fs.readFileSync(path.join(root, 'RULES-INDEX.md'), 'utf8');
   if (!rulesIndex.includes('<!-- RULES-INDEX:SECTION-GENRE-AUTO:BEGIN -->')) {
@@ -91,7 +96,7 @@ function main() {
   const manifestPath = path.join(root, KERNEL_DIR, 'manifest.json');
   if (fs.existsSync(manifestPath)) {
     const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-    if (!Array.isArray(manifest.manualPhase2) || manifest.manualPhase2.length < 7) {
+    if (!Array.isArray(manifest.manualPhase2) || manifest.manualPhase2.length < 8) {
       issues.push('manifest.json manualPhase2 incomplete');
     }
     if (!manifest.catalog) {

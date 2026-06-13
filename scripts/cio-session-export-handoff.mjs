@@ -15,22 +15,12 @@ import {
   writeJson,
 } from './lib/cio-session-bridge.mjs';
 import { stockDebugTips, TIPS_REL } from './lib/cio-debug-tips-stock.mjs';
+import { readCheckpointNextTask } from './lib/cio-checkpoint-read.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 function sh(cmd) {
   return execSync(cmd, { cwd: root, encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] }).trim();
-}
-
-function readCheckpointNextTask() {
-  const p = path.join(root, 'chat-sessions/checkpoint-latest.md');
-  if (!fs.existsSync(p)) return '(checkpoint 未設定)';
-  const head = fs.readFileSync(p, 'utf8').slice(0, 2500);
-  const m =
-    head.match(/\*\*次回 1 手\*\*\s*[:：]\s*([^\n]+)/i) ||
-    head.match(/\*\*次回 1 手\*\*\s*\|\s*([^|\n]+)/i) ||
-    head.match(/次回\s*1\s*手[^:\n]*[:：]\s*([^\n]+)/i);
-  return m ? (m[1] || m[0]).trim().slice(0, 200) : '(要 Read checkpoint-latest.md)';
 }
 
 function purgeTemporaries() {
@@ -63,7 +53,7 @@ function main() {
     /* noop */
   }
 
-  const nextTask = readCheckpointNextTask();
+  const nextTask = readCheckpointNextTask(root) || '(要 Read checkpoint-latest.md)';
   const nextFiles = [
     'chat-sessions/checkpoint-latest.md',
     'chat-sessions/handoff-log.md',

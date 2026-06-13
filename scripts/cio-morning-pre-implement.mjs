@@ -11,6 +11,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
+import { formatClosureBanner, isProjectClosed } from './lib/cio-project-closure.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -61,6 +62,14 @@ function main() {
   run('npm run cio:guard:5038 --stamp');
 
   if (project) {
+    if (isProjectClosed(root, projectKey)) {
+      console.log(`\n${formatClosureBanner(root, projectKey)}\n`);
+      console.log('⏭ 実装前ゲートをスキップ（v1 クローズ済 — 再開は浜田 GO + checkpoint 更新が必要）\n');
+      console.log('═══════════════════════════════════════');
+      console.log('  次: 当日 項番 -0 で新レーンを合意（本プロジェクトはクローズ）');
+      console.log('═══════════════════════════════════════\n');
+      return;
+    }
     console.log(`\n📋 プロジェクト: ${project.label}\n`);
     for (const g of project.gates) run(g);
     console.log('\n── 浜田確定事項（2026-06-06）──');
@@ -74,7 +83,11 @@ function main() {
     }
   } else {
     run('npm run cio:pre-implement-gate -- --strict');
-    console.log('\n💡 業務改善: npm run cio:morning:pre-implement -- --project business-improvement');
+    if (!isProjectClosed(root, 'business-improvement')) {
+      console.log('\n💡 業務改善: npm run cio:morning:pre-implement -- --project business-improvement');
+    } else {
+      console.log('\n💡 業務改善 ver.02 は v1 クローズ済 — data/cio-project-closures.json 参照');
+    }
   }
 
   console.log('\n═══════════════════════════════════════');

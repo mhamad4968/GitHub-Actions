@@ -1,11 +1,15 @@
 ---
 name: kintone-business-improvement-lane
 description: >-
-  業務改善提案 ver.02 専用レーン（Space 57 開発 / Space 5 本番）。
-  仕様・案B1・設定マスタ・compare-83・朝ゲート・実装OK seal を一括参照。
+  業務改善提案 ver.02 — **v1 クローズ済（2026-06-13）**。再開は浜田 GO 必須。
+  完成サマリー: docs/reports/2026-06-13-business-improvement-completion.md
 ---
 
 # 業務改善提案 ver.02 レーン
+
+> **⏸ v1 クローズ（2026-06-13）** — 申請・評価・年次集計・ガイド UX まで完了。  
+> 正本: `data/cio-project-closures.json` / `npm run verify:checkpoint-project-closure`  
+> **再開条件**: 浜田 GO + checkpoint「次の1手」更新 + closures 登録解除
 
 ## レーン分離
 

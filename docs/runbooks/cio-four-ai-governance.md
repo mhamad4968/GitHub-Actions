@@ -111,6 +111,20 @@ npm run desktop:sync-and-verify
 - `verify:session-close-git-warn` が **未コミット / ahead** で NG のときは先に git を整える
 - R7（憲法・索引変更時）と併用 — **締めでは常に実行**
 
+### R19 — プロジェクト完了・認識同期（浜田 GO 2026-06-13）
+
+**趣旨**: 浜田↔AI の「完了 vs 未完了」認識ズレ防止（TSB-038）。
+
+| タイミング | コマンド |
+|------------|----------|
+| ブリーフィング / 次手を述べる前 | `npm run cio:briefing:recognition-gate` |
+| プロジェクト v1 締め | `npm run cio:session:close-recognition-gate` |
+| 朝 ready / bootstrap / desktop sync | `npm run verify:checkpoint-project-closure`（内包） |
+
+**正本**: `docs/runbooks/cio-project-closure-governance.md` / `docs/constitution/23-project-closure-recognition-kernel.md` / `.cursor/rules/cio-project-closure-gate.mdc`
+
+**禁止**: closures 済みなのに checkpoint だけで未完了レーンを報告 / 締めで checkpoint・handoff・closures を同ターンで揃えない
+
 ## 一括検証
 
 ```bash

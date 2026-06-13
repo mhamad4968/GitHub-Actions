@@ -3084,3 +3084,22 @@ R13 `kintone-subtable-dropdown-keys.md` / R14 portal マップ一元化 / R15 de
 **Git**: R13–R18 反映 commit + push + desktop sync
 
 ---
+
+### 2026-06-13 JST — **業務改善 ver.02 v1 完成（クローズ）— 最終**
+
+**判定**: 申請・評価・年次集計・699 ガイド UX（C案）まで浜田確認済 — **v1 クローズ可**
+
+**本番 BUILD（最終）**:
+- **699** `2026-06-13-bi-guide-lists-first-accordion` rev **105**
+- **700** `2026-06-13-bi-completion-date` rev **139**
+- **713** `2026-06-13-bi-annual-redirect-guide` rev **12**
+
+**正本**: `docs/reports/2026-06-13-business-improvement-completion.md` / `data/cio-project-closures.json`
+
+**締め**: `SESSION-CLOSE-REPORT-20260613.txt`
+
+**次にやる1つ**: **（当日 項番 -0 で合意）** — 業務改善は **再開しない**（v1 完成条件外のみ任意）
+
+**記録修正（2026-06-13 追補）**: checkpoint / handoff が 6/11 の Q-SCHED-03 のまま残っていたため `verify:checkpoint-project-closure` を新設し朝 ready に組込
+
+---

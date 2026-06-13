@@ -57,6 +57,7 @@
 | [20-cost-token-defense-kernel.md](20-cost-token-defense-kernel.md) | **コスト・Fast防衛**（15ターン・荷造り） | 長セッション・引っ越し前 |
 | [21-autonomous-patrol-kernel.md](21-autonomous-patrol-kernel.md) | **無人パトロール**（週末・自己修復） | 土日監査・週明け |
 | [22-error-handling-kernel.md](22-error-handling-kernel.md) | **エラーハンドリング**（エスカレーション・3択） | verify 失敗・チケット |
+| [23-project-closure-recognition-kernel.md](23-project-closure-recognition-kernel.md) | **完了・認識同期**（浜田↔AI 事故防止） | 締め・ブリーフィング前 |
 
 **機械検証**: `npm run verify:constitution-genre-kernels`
 

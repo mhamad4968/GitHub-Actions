@@ -168,6 +168,11 @@
       "file": "22-error-handling-kernel.md",
       "title": "エスカレ・3択",
       "when": "verify失敗"
+    },
+    {
+      "file": "23-project-closure-recognition-kernel.md",
+      "title": "完了・認識同期",
+      "when": "締め・ブリーフィング前"
     }
   ],
   "specialSectionToGenre": {

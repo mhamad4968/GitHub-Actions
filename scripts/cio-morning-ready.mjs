@@ -11,6 +11,7 @@ import { execSync } from 'node:child_process';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
+import { formatClosureBanner, isProjectClosed } from './lib/cio-project-closure.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -36,6 +37,7 @@ function main() {
 
   run('npm run cio:session:export-handoff');
   run('npm run verify:session-handoff-integrity -- --strict-staleness');
+  run('npm run verify:checkpoint-project-closure');
 
   if (!skipHealth) {
     try {
@@ -46,9 +48,17 @@ function main() {
   }
 
   if (project) {
+    if (isProjectClosed(root, project)) {
+      console.log(`\n${formatClosureBanner(root, project)}\n`);
+      console.warn('[cio:morning:ready] --project はクローズ済 — pre-implement はスキップされます\n');
+    }
     run(`npm run cio:morning:pre-implement -- --project ${project}`);
   } else {
-    console.log('\n💡 業務改善: npm run cio:morning:ready -- --project business-improvement\n');
+    if (!isProjectClosed(root, 'business-improvement')) {
+      console.log('\n💡 業務改善（未クローズ）: npm run cio:morning:ready -- --project business-improvement\n');
+    } else {
+      console.log('\n💡 業務改善 ver.02 v1 クローズ済 — 当日レーンは 項番 -0 で合意\n');
+    }
   }
 
   console.log('═══════════════════════════════════════');

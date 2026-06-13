@@ -27,7 +27,8 @@
     "19-governance-four-ai-kernel.md",
     "20-cost-token-defense-kernel.md",
     "21-autonomous-patrol-kernel.md",
-    "22-error-handling-kernel.md"
+    "22-error-handling-kernel.md",
+    "23-project-closure-recognition-kernel.md"
   ],
   "desktopMap": "chat-sessions/desktop-ai-emergency-read-pack/28-CONSTITUTION-GENRE-MAP.txt",
   "catalog": "data/constitution-genre-catalog.json",

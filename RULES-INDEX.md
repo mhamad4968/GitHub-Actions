@@ -329,6 +329,7 @@ _他 105 件は `data/constitution-section-genre-map.json` を参照_
 | 15ターン・荷造り（AI-KERNEL） | [20-cost-token-defense-kernel.md](docs/constitution/20-cost-token-defense-kernel.md) |
 | 週末監査（AI-KERNEL） | [21-autonomous-patrol-kernel.md](docs/constitution/21-autonomous-patrol-kernel.md) |
 | エスカレ・3択（AI-KERNEL） | [22-error-handling-kernel.md](docs/constitution/22-error-handling-kernel.md) |
+| 完了・認識同期（AI-KERNEL） | [23-project-closure-recognition-kernel.md](docs/constitution/23-project-closure-recognition-kernel.md) |
 | Desktop 早見（28番） | `chat-sessions/desktop-ai-emergency-read-pack/28-CONSTITUTION-GENRE-MAP.txt` |
 
 検証: `npm run constitution:verify-coverage` / `npm run verify:constitution-genre-kernels` / `npm run verify:cio-four-ai-governance`

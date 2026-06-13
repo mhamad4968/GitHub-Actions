@@ -7,6 +7,51 @@
 ---
 
 <!-- CIO-DEBUG-TIPS:AUTO -->
+## [2026-06-13] セッション解体時知恵ストック
+
+**前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
+**手順**: `npm run desktop:sync-and-verify` → `npm run verify:checkpoint-project-closure` → `npm run cio:report-verify-response -- --file <下書き>`**（または `--stdin`）を **実行し exit 0 を確認**する（`package.json` の `cio:report-`
+**禁止**: customize/deploy 凍結中の無断 save・上位憲法 §50-3-11 非置換違反・本体単独完結
+**exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
+
+<!-- errors: npm run desktop:sync-and-verify` — 28 番 map 含む全 mirror 更新 | npm run verify:checkpoint-project-closure` | npm run cio:report-verify-response -- --file <下書き>`**（または `--stdin`）を **実行し exit -->
+
+## [2026-06-13] セッション解体時知恵ストック
+
+**前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
+**手順**: `npm run desktop:sync-and-verify` → `npm run verify:checkpoint-project-closure` → `npm run cio:report-verify-response -- --file <下書き>`**（または `--stdin`）を **実行し exit 0 を確認**する（`package.json` の `cio:report-`
+**禁止**: customize/deploy 凍結中の無断 save・上位憲法 §50-3-11 非置換違反・本体単独完結
+**exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
+
+<!-- errors: npm run desktop:sync-and-verify` — 28 番 map 含む全 mirror 更新 | npm run verify:checkpoint-project-closure` | npm run cio:report-verify-response -- --file <下書き>`**（または `--stdin`）を **実行し exit -->
+
+## [2026-06-13] セッション解体時知恵ストック
+
+**前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
+**手順**: `npm run desktop:sync-and-verify` → `npm run cio:report-verify-response -- --file <下書き>`**（または `--stdin`）を **実行し exit 0 を確認**する（`package.json` の `cio:report-` → `npm run cio:report-verify-response -- --file <下書き>`**（または `--stdin`）を **実行し exit 0 を確認**する（`package.json` の `cio:report-`
+**禁止**: customize/deploy 凍結中の無断 save・上位憲法 §50-3-11 非置換違反・本体単独完結
+**exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
+
+<!-- errors: npm run desktop:sync-and-verify` — 28 番 map 含む全 mirror 更新 | npm run cio:report-verify-response -- --file <下書き>`**（または `--stdin`）を **実行し exit -->
+
+## [2026-06-12] セッション解体時知恵ストック
+
+**前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
+**手順**: `npm run desktop:sync-and-verify` → `npm run cio:report-verify-response -- --file <下書き>`**（または `--stdin`）を **実行し exit 0 を確認**する（`package.json` の `cio:report-` → `npm run cio:report-verify-response -- --file <下書き>`**（または `--stdin`）を **実行し exit 0 を確認**する（`package.json` の `cio:report-`
+**禁止**: customize/deploy 凍結中の無断 save・上位憲法 §50-3-11 非置換違反・本体単独完結
+**exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
+
+<!-- errors: npm run desktop:sync-and-verify` — 28 番 map 含む全 mirror 更新 | npm run cio:report-verify-response -- --file <下書き>`**（または `--stdin`）を **実行し exit -->
+
+## [2026-06-11] セッション解体時知恵ストック
+
+**前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
+**手順**: `npm run desktop:sync-and-verify` → `npm run session:bootstrap` → `npm run verify:session-handoff-integrity -- --import` 推奨。`
+**禁止**: customize/deploy 凍結中の無断 save・上位憲法 §50-3-11 非置換違反・本体単独完結
+**exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
+
+<!-- errors: npm run desktop:sync-and-verify` — 28 番 map 含む全 mirror 更新 | npm run session:bootstrap`** — **Read より前**に `verify:constitution-handoff` → `ma | npm run verify:session-handoff-integrity -- --import` 推奨。 -->
+
 ## [2026-06-11] セッション解体時知恵ストック
 
 **前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
@@ -195,15 +240,3 @@
 
 <!-- errors: npm run session-starter:sync-desktop` + verify 済。旧 `19-SESSION-ONE-REPORT-2026-0 | npm run guard:mirror`** で emergency-backup を最新化する | npm run cio:report-verify-response -- --file <下書き>`**（または `--stdin`）を **実行し exit -->
 
-
-## [2026-06-11] 業務改善 700 — 表彰ランク（R18）
-
-**前提**: App 700 `customize/business-improvement-proposal/desktop.js` / spec §Q-UX-06
-**ルール**:
-- **自動ランク**（合計点から JS 判定）が **WF 分岐の正**（`effectiveAutoRank`）
-- **最終ランク**は完結評価者の明示確定。**自動より上は不可**（格上げは①〜③の加点見直し）
-- **部長**: 自動 **C** のみ完了。自動 B/A は支店長（または本社）へ転送
-- **支店長**: 自動 **B** で完結。自動 **A** は評価見直し → 本社へ
-**手順**: 仕様変更時は **700 desktop.js + business-improvement-proposal-spec.md を同ターンで更新** → preflight → deploy:700
-**禁止**: 最終ランクだけ上げて WF を短絡（支店長完了・高ポイント付与）
-**exit**: 浜田目視 — 自動 B + 最終 A 選択で完了不可・注記「現在評価（自動）は…」表示
