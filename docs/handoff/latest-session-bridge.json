@@ -1,8 +1,8 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-06-13T13:19:05.567Z",
-  "gitHead": "0a538a2",
-  "gitStatus": "## main...origin/main [ahead 1]",
+  "exportedAt": "2026-06-13T13:19:08.571Z",
+  "gitHead": "8d2cf8d",
+  "gitStatus": "## main...origin/main [ahead 2]",
   "nextTask": "**ソフトウェア管理台帳** kintone 作成（Space 21・694 型）— 浜田 **「ソフトウェア台帳 kintone 作成 GO」** → 目視 OK 後 **記憶媒体等台帳**",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
@@ -11,8 +11,6 @@
     "docs/handoff/latest-session-bridge.json",
     "docs/knowledge/debug-tips.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=0a538a2 | 次=**ソフトウェア管理台帳** kintone 作成（Space 21・694 型）— 浜田 **「ソフトウェア台帳 kintone 作成 GO」** → 目視 OK 後 **記憶媒体等台帳** | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, .cursor/rules/mode-b-canonical.mdc",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
-  "validatedAt": "2026-06-13T13:19:05.905Z",
-  "crosscheckOk": true
+  "promptBlock": "【SESSION-BRIDGE】git=8d2cf8d | 次=**ソフトウェア管理台帳** kintone 作成（Space 21・694 型）— 浜田 **「ソフトウェア台帳 kintone 作成 GO」** → 目視 OK 後 **記憶媒体等台帳** | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, .cursor/rules/mode-b-canonical.mdc",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }
