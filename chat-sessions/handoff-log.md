@@ -3134,10 +3134,24 @@ R13 `kintone-subtable-dropdown-keys.md` / R14 portal マップ一元化 / R15 de
 - verify: `cio-miss-reduction-governance` / `health-check-regression` / win-hidden-spawn **runtime smoke**（R29）
 - `session-clock-process.mjs` taskkill 化（R22）/ bridge gitHead R31 / close-git bridge 単独 commit
 
-**Git**: `4449977` — **push 済** / `main = origin/main`
-
-**次セッション第1手**（変更なし）: 浜田 **「ソフトウェア台帳 kintone 作成 GO」**
+**Git**: `8b21807` — **push 済** / `main = origin/main` / `desktop:sync-and-verify` OK
 
 **Desktop**: 本追補後 `npm run desktop:sync-and-verify`
+
+---
+
+### 2026-06-13 JST — **セッション締め（浜田「では終わります」）**
+
+**本ターン**: 仕様/コミット/push 漏れ是正 — checkpoint・handoff・bridge 同期（`df8eb95`〜`8b21807`）
+
+**状態**:
+- R19–R33 ガバナンス **反映・push 済**
+- `verify:session-handoff-integrity --validate-export` OK
+- `desktop:sync-and-verify` OK
+- working tree clean（`data/*` 一時ファイル・pending proposal は未追跡のまま）
+
+**次セッション第1手**: 浜田 **「ソフトウェア台帳 kintone 作成 GO」** → Space 21・694 型
+
+**壁時計**: `trialPaused: true` — 試験継続・START.bat 不使用
 
 ---
