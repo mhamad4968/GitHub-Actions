@@ -9,6 +9,7 @@ import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
+import { isSessionCloseTempPath } from './lib/cio-session-close-temp-paths.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const warnOnly = process.argv.includes('--warn-only');
@@ -33,7 +34,10 @@ function failOrWarn(msg, detailLines = []) {
 function checkUncommitted() {
   const status = git(['status', '--short']);
   if (!status) return { ok: true };
-  const lines = status.split(/\r?\n/).filter(Boolean);
+  const lines = status.split(/\r?\n/).filter(Boolean).filter((line) => {
+    const rel = line.slice(3).trim().replace(/^"(.*)"$/, '$1');
+    return !isSessionCloseTempPath(rel);
+  });
   const msg = `[verify:session-close-git-warn] NG 未コミット ${lines.length} 件 — セッション締め前に commit 必須（B1）`;
   const detail = lines.slice(0, 15);
   if (lines.length > 15) detail.push(`  …他 ${lines.length - 15} 件`);

@@ -27,14 +27,7 @@ const autoStage = process.argv.includes('--auto-stage');
 const msgIdx = process.argv.indexOf('--message');
 const message = msgIdx >= 0 ? process.argv[msgIdx + 1] : '';
 
-const TEMP_UNTRACKED = [
-  /^data\/csv-inspect\.json$/,
-  /^data\/jma-monthly-counts\.json$/,
-  /^data\/rain-.*\.txt$/,
-  /^data\/workdays-.*-(dump|summary)\.json$/,
-  /^data\/workdays-.*-summary\.txt$/,
-  /^docs\/approved-changes\/pending\//,
-];
+import { isSessionCloseTempPath } from './lib/cio-session-close-temp-paths.mjs';
 
 function git(args, opts = {}) {
   const r = spawnSync('git', args, { cwd: root, encoding: 'utf8', ...opts });
@@ -64,7 +57,7 @@ function runNpm(script, args = []) {
 }
 
 function isTempUntracked(rel) {
-  return TEMP_UNTRACKED.some((re) => re.test(rel.replace(/\\/g, '/')));
+  return isSessionCloseTempPath(rel);
 }
 
 function checkOnly() {
