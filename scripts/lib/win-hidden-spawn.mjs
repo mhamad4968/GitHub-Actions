@@ -45,6 +45,27 @@ export function runPowerShellSync(command, opts = {}) {
   }));
 }
 
+/** Windows: npm.cmd + windowsHide。Unix: npm + shell:false（cmd フラッシュ回避） */
+export function npmExecutable() {
+  return process.platform === 'win32' ? 'npm.cmd' : 'npm';
+}
+
+/**
+ * @param {string} cwd
+ * @param {string} script package.json scripts キー
+ * @param {string[]} [args] `--` 以降
+ */
+export function runNpmScriptSync(cwd, script, args = [], opts = {}) {
+  const npmArgs = args.length ? ['run', script, '--', ...args] : ['run', script];
+  return spawnSync(npmExecutable(), npmArgs, hiddenOpts({
+    cwd,
+    stdio: opts.stdio ?? 'inherit',
+    shell: false,
+    env: opts.env ?? process.env,
+    ...opts,
+  }));
+}
+
 export function hiddenSpawn(exe, args, opts = {}) {
   return spawn(exe, args, hiddenOpts(opts));
 }

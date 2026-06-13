@@ -5,6 +5,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -47,10 +48,20 @@ function main() {
   if (!closeGit.includes('--pre-commit')) {
     issues.push('cio-session-close-git.mjs が recognition-gate --pre-commit 未使用');
   }
+  if (!closeGit.includes('runNpmScriptSync') || closeGit.includes('shell: true')) {
+    issues.push('cio-session-close-git.mjs が Windows hidden npm spawn 未適用');
+  }
 
   const desktop = pkg.scripts?.['desktop:sync-and-verify'] || '';
-  if (!desktop.includes('verify-checkpoint-project-closure')) {
-    issues.push('desktop:sync-and-verify に verify-checkpoint-project-closure 未連結');
+  if (!desktop.includes('desktop-sync-and-verify.mjs')) {
+    issues.push('desktop:sync-and-verify が Node オーケストレータ未使用（cmd フラッシュ回避）');
+  }
+  const orchestrator = path.join(root, 'scripts/desktop-sync-and-verify.mjs');
+  if (fs.existsSync(orchestrator)) {
+    const orchText = fs.readFileSync(orchestrator, 'utf8');
+    if (!orchText.includes('verify-checkpoint-project-closure')) {
+      issues.push('desktop-sync-and-verify.mjs に verify-checkpoint-project-closure 未連結');
+    }
   }
 
   const eighteen = fs.readFileSync(
@@ -82,7 +93,12 @@ function main() {
     process.exit(1);
   }
   console.log('[verify:cio-r20-session-close-git-infra] OK R20 締め連鎖インフラ整合');
-  process.exit(0);
+
+  const hot = spawnSync(process.execPath, ['scripts/verify-win-hidden-spawn-hotpaths.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+  process.exit(hot.status === 0 ? 0 : hot.status || 1);
 }
 
 main();

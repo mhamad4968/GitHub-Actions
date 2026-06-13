@@ -31,6 +31,7 @@ import {
   maybeReexecWithRepoNode,
   repoNodeExecutable,
 } from './lib/repo-node-env.mjs';
+import { hiddenOpts } from './lib/win-hidden-spawn.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..');
@@ -205,13 +206,13 @@ function probeNvmrcBinDir() {
 function readDiskAndCacheStats() {
   if (IS_WIN) {
     const ps = spawnSync(
-      'powershell',
+      'powershell.exe',
       [
         '-NoProfile',
         '-Command',
         "$d = Get-PSDrive -Name C -ErrorAction SilentlyContinue; if ($d) { $freeGB = [math]::Round($d.Free / 1GB, 1); $usedGB = [math]::Round($d.Used / 1GB, 1); \"${usedGB}G used / ${freeGB}G free on C:\" } else { 'unknown' }",
       ],
-      { encoding: 'utf8', timeout: 30_000 },
+      hiddenOpts({ encoding: 'utf8', timeout: 30_000, shell: false }),
     );
     const npmCacheDir = path.join(os.homedir(), 'AppData', 'Local', 'npm-cache');
     const npxCacheDir = path.join(os.homedir(), 'AppData', 'Local', 'npm-cache', '_npx');
@@ -253,13 +254,13 @@ function readDiskAndCacheStats() {
 function readMemoryLine() {
   if (IS_WIN) {
     const ps = spawnSync(
-      'powershell',
+      'powershell.exe',
       [
         '-NoProfile',
         '-Command',
         "$os = Get-CimInstance Win32_OperatingSystem; $u=[math]::Round(($os.TotalVisibleMemorySize-$os.FreePhysicalMemory)/1024); $t=[math]::Round($os.TotalVisibleMemorySize/1024); $p=[math]::Round(100*($os.TotalVisibleMemorySize-$os.FreePhysicalMemory)/$os.TotalVisibleMemorySize); \"${u}/${t} MiB (${p}%)\"",
       ],
-      { encoding: 'utf8', timeout: 30_000 },
+      hiddenOpts({ encoding: 'utf8', timeout: 30_000, shell: false }),
     );
     return (ps.stdout || '').trim() || 'unknown';
   }

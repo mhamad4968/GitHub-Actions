@@ -17,6 +17,7 @@
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { runNpmScriptSync } from './lib/win-hidden-spawn.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -66,11 +67,7 @@ if (closureGate.status !== 0) {
   process.exit(typeof closureGate.status === 'number' && closureGate.status !== 0 ? closureGate.status : 2);
 }
 
-const syncDesk = spawnSync('npm', ['run', 'session-starter:sync-desktop'], {
-  cwd: root,
-  stdio: 'inherit',
-  shell: true,
-});
+const syncDesk = runNpmScriptSync(root, 'session-starter:sync-desktop', [], { stdio: 'inherit' });
 if (syncDesk.status !== 0) {
   process.exit(typeof syncDesk.status === 'number' && syncDesk.status !== 0 ? syncDesk.status : 2);
 }
@@ -105,10 +102,6 @@ if (health.status !== 0) {
   console.log('[bootstrap] cio:health GREEN');
 }
 
-const r = spawnSync('npm', ['run', 'smoke:quiet'], {
-  cwd: root,
-  stdio: 'inherit',
-  shell: true,
-});
+const r = runNpmScriptSync(root, 'smoke:quiet', [], { stdio: 'inherit' });
 
 process.exit(typeof r.status === 'number' ? r.status : 1);

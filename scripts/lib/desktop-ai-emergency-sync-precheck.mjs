@@ -5,7 +5,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { spawnSync } from 'node:child_process';
+import { runPowerShellSync } from './win-hidden-spawn.mjs';
 
 /** 浜田向け: sync 前に Notepad 全終了を推奨する RAM 閾値（%） */
 export const RAM_WARN_PERCENT = 80;
@@ -43,10 +43,8 @@ export function isFileOpenLocked(filePath) {
  */
 export function countNotepadProcesses() {
   if (process.platform !== 'win32') return 0;
-  const r = spawnSync(
-    'powershell',
-    ['-NoProfile', '-Command', '(Get-Process notepad -ErrorAction SilentlyContinue).Count'],
-    { encoding: 'utf8' }
+  const r = runPowerShellSync(
+    '(Get-Process notepad -ErrorAction SilentlyContinue).Count',
   );
   const n = Number.parseInt(String(r.stdout || '').trim(), 10);
   return Number.isFinite(n) ? n : 0;

@@ -8,15 +8,16 @@
  *   node scripts/cio-after-customize-change.mjs --base=origin/main
  */
 import { spawnSync } from "node:child_process";
+import { runNpmScriptSync } from "./lib/win-hidden-spawn.mjs";
 
 const staged = process.argv.includes("--staged");
 const baseArg = process.argv.find((a) => a.startsWith("--base="));
 const base = baseArg ? baseArg.slice("--base=".length) : "HEAD";
 
-const diffCmd = staged
-  ? "git diff --name-only --cached"
-  : `git diff --name-only ${base}`;
-const names = spawnSync(diffCmd, { encoding: "utf8", shell: true, cwd: process.cwd() });
+const diffArgs = staged
+  ? ["diff", "--name-only", "--cached"]
+  : ["diff", "--name-only", base];
+const names = spawnSync("git", diffArgs, { encoding: "utf8", cwd: process.cwd() });
 if (names.status !== 0) {
   console.error(`[cio-after-customize] diff failed: ${names.stderr || names.stdout}`);
   process.exit(names.status || 2);
@@ -43,10 +44,8 @@ if (list.length < 2) {
 }
 
 console.log("[cio-after-customize] R-17-1: 2+ apps changed → running cio:audit:portfolio:strict");
-const audit = spawnSync("npm", ["run", "cio:audit:portfolio:strict"], {
+const audit = runNpmScriptSync(process.cwd(), "cio:audit:portfolio:strict", [], {
   stdio: "inherit",
-  shell: true,
-  cwd: process.cwd(),
   env: process.env,
 });
 if (audit.status !== 0) {

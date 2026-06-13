@@ -17,6 +17,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { isSessionCloseTempPath } from './lib/cio-session-close-temp-paths.mjs';
+import { runNpmScriptSync } from './lib/win-hidden-spawn.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DESKTOP_DIR = process.env.SESSION_STARTER_DESKTOP_DIR || 'C:\\Users\\mhamada202408224\\Desktop\\AI緊急用';
@@ -47,10 +48,8 @@ function runNode(rel, args = []) {
 }
 
 function runNpm(script, args = [], extraEnv = {}) {
-  const r = spawnSync('npm', ['run', script, '--', ...args], {
-    cwd: root,
+  const r = runNpmScriptSync(root, script, args, {
     stdio: 'inherit',
-    shell: true,
     env: { ...process.env, ...extraEnv },
   });
   return r.status === 0;

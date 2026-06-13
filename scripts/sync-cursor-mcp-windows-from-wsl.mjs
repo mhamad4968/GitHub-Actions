@@ -9,15 +9,24 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { mergeRepoMcpOverlays, readRepoMcpOverlays } from './lib/repo-mcp-overlays.mjs';
+import { hiddenOpts } from './lib/win-hidden-spawn.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 const wslMcp = path.join(os.homedir(), '.cursor', 'mcp.json');
-const winMcp =
-  process.env.CURSOR_MCP_WINDOWS_JSON ||
-  '/mnt/c/Users/mhamada202408224/.cursor/mcp.json';
+
+function resolveWinMcpPath() {
+  if (process.env.CURSOR_MCP_WINDOWS_JSON) return process.env.CURSOR_MCP_WINDOWS_JSON;
+  if (process.platform === 'win32' && process.env.USERPROFILE) {
+    return path.join(process.env.USERPROFILE, '.cursor', 'mcp.json');
+  }
+  return '/mnt/c/Users/mhamada202408224/.cursor/mcp.json';
+}
+
+const winMcp = resolveWinMcpPath();
 
 function escSh(s) {
   return String(s ?? '')
@@ -55,6 +64,8 @@ function buildWindowsMcp(S) {
       '-NoProfile',
       '-ExecutionPolicy',
       'Bypass',
+      '-WindowStyle',
+      'Hidden',
       '-File',
       'C:\\\\Users\\\\mhamada202408224\\\\.cursor\\\\mcp-github-wrapper.ps1',
     ],
@@ -187,8 +198,26 @@ function buildWindowsMcp(S) {
   return out;
 }
 
-if (!fs.existsSync(wslMcp)) {
-  console.error('[sync-cursor-mcp-windows] SKIP: missing WSL canonical', wslMcp);
+function loadWslCanonicalMcp() {
+  if (process.platform === 'win32') {
+    const r = spawnSync(
+      'wsl.exe',
+      ['-d', 'Ubuntu', '-e', 'cat', '/home/mhamada202408224/.cursor/mcp.json'],
+      hiddenOpts({ encoding: 'utf8' }),
+    );
+    if (r.status === 0 && (r.stdout || '').trim()) {
+      return JSON.parse(r.stdout);
+    }
+  }
+  if (fs.existsSync(wslMcp)) {
+    return JSON.parse(fs.readFileSync(wslMcp, 'utf8'));
+  }
+  return null;
+}
+
+const canonical = loadWslCanonicalMcp();
+if (!canonical) {
+  console.error('[sync-cursor-mcp-windows] SKIP: missing WSL canonical ~/.cursor/mcp.json');
   process.exit(0);
 }
 
@@ -197,7 +226,7 @@ if (!fs.existsSync(path.dirname(winMcp))) {
   process.exit(0);
 }
 
-const src = JSON.parse(fs.readFileSync(wslMcp, 'utf8'));
+const src = canonical;
 const built = buildWindowsMcp(src.mcpServers || {});
 const overlays = readRepoMcpOverlays(repoRoot);
 mergeRepoMcpOverlays(built, overlays);
