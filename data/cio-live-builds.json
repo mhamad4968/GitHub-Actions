@@ -2,11 +2,11 @@
   "version": 1,
   "apps": {
     "595": {
-      "build": "2026-04-30-595-index-search-totalcap-loading",
-      "fileKey": "0542264b-f1ee-4ff8-9819-a7dec6438d00",
-      "revision": "85",
-      "relPath": ".kintone-deploy/upload-595.js",
-      "deployedAt": "2026-05-30T12:22:32.964Z",
+      "build": "2026-06-14-595-software-ledger-mirror",
+      "fileKey": "401148d6-9140-4075-aebc-f88062a5cc29",
+      "revision": "88",
+      "relPath": "customize/595/desktop.js",
+      "deployedAt": "2026-06-13T23:15:28.850Z",
       "note": null
     },
     "627": {
@@ -223,6 +223,22 @@
       "revision": "12",
       "relPath": "customize/business-improvement-annual/desktop.bundle.js",
       "deployedAt": "2026-06-12T22:20:24.187Z",
+      "note": null
+    },
+    "714": {
+      "build": "2026-06-14-software-ledger-db-block-ui-mutations",
+      "fileKey": "45b4c125-5d47-47a1-a373-3bbcd273b54d",
+      "revision": "5",
+      "relPath": "customize/software-ledger-db/desktop.js",
+      "deployedAt": "2026-06-13T23:14:36.811Z",
+      "note": null
+    },
+    "715": {
+      "build": "2026-06-14-software-ledger-dash-v1",
+      "fileKey": "79d1a058-abf9-4eb9-94c6-123671cbd5a7",
+      "revision": "4",
+      "relPath": "customize/software-ledger-dash/desktop.js",
+      "deployedAt": "2026-06-13T23:14:40.124Z",
       "note": null
     }
   }

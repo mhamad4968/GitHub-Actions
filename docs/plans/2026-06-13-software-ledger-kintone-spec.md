@@ -1,7 +1,8 @@
 # ソフトウェア管理台帳 — kintone 仕様書（SPEC）
 
 > **起票**: 2026-06-13 (土)  
-> **状態**: **SPEC GO 済**（2026-06-13 初版 浜田 + **2026-06-14 Q&A 追確認** 浜田）。**kintone 作成 GO は未実施**  
+> **状態**: **kintone 作成・デプロイ済**（2026-06-14）。**目視確認待ち**（§12.3）  
+> **App ID**: DB **714** / Dash **715**（Space 21 / thread 23）  
 > **Q&A 関門**: `docs/runbooks/kintone-ledger-spec-qa-checklist.md`（R19 — **2026-06-14 完走**）  
 > **配置**: [Space 21](https://jbis-kintone.cybozu.com/k/#/space/21)（PC・M365・Apple ID と同エリア / thread **23** 想定）  
 > **参照パターン**: Apple ID [694](https://jbis-kintone.cybozu.com/k/694/) 型（DB 正本 + Dash Excel UI / REST 書込）
