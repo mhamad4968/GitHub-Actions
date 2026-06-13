@@ -1,7 +1,7 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-06-13T09:44:47.079Z",
-  "gitHead": "5078400",
+  "exportedAt": "2026-06-13T10:16:29.578Z",
+  "gitHead": "14c730b",
   "gitStatus": "## main...origin/main",
   "nextTask": "**（未確定 — 当日 項番 -0 で浜田と合意）** — 業務改善は **v1 クローズ済**（`docs/reports/2026-06-13-business-improvement-completion.md`）",
   "nextFiles": [
@@ -11,6 +11,6 @@
     "docs/handoff/latest-session-bridge.json",
     "docs/knowledge/debug-tips.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=5078400 | 次=**（未確定 — 当日 項番 -0 で浜田と合意）** — 業務改善は **v1 クローズ済**（`docs/reports/2026-06-13-business-improvement-completion.md`） | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, .cursor/rules/mode-b-canonical.mdc",
+  "promptBlock": "【SESSION-BRIDGE】git=14c730b | 次=**（未確定 — 当日 項番 -0 で浜田と合意）** — 業務改善は **v1 クローズ済**（`docs/reports/2026-06-13-business-improvement-completion.md`） | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, .cursor/rules/mode-b-canonical.mdc",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }
