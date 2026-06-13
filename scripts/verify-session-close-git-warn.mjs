@@ -38,6 +38,7 @@ function checkUncommitted() {
     const rel = line.slice(3).trim().replace(/^"(.*)"$/, '$1');
     return !isSessionCloseTempPath(rel);
   });
+  if (lines.length === 0) return { ok: true };
   const msg = `[verify:session-close-git-warn] NG 未コミット ${lines.length} 件 — セッション締め前に commit 必須（B1）`;
   const detail = lines.slice(0, 15);
   if (lines.length > 15) detail.push(`  …他 ${lines.length - 15} 件`);
