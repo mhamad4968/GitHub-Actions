@@ -149,12 +149,24 @@ function main() {
   if (autoStage) stageSessionChanges();
   const bridgeStaged = git(['diff', '--cached', '--name-only']).out;
   if (bridgeStaged) {
-    const amend = git(['commit', '--amend', '--no-edit']);
-    if (!amend.ok) {
-      console.error('[cio:session:close-git] NG bridge export amend 失敗');
-      process.exit(amend.status || 1);
+    // R31: amend fold 後 gitHead === HEAD~1 を許容 — bridge は単独 commit（amend 禁止）
+    const bridgeCommit = git(['commit', '-m', 'chore(handoff): session bridge export']);
+    if (!bridgeCommit.ok) {
+      console.error('[cio:session:close-git] NG bridge export commit 失敗');
+      process.exit(bridgeCommit.status || 1);
     }
-    console.log('[cio:session:close-git] bridge export を commit に fold（amend）');
+    console.log('[cio:session:close-git] bridge export を単独 commit（R31）');
+    runNpm('cio:session:export-handoff');
+    if (autoStage) stageSessionChanges();
+    const bridgeRefresh = git(['diff', '--cached', '--name-only']).out;
+    if (bridgeRefresh) {
+      const refreshCommit = git(['commit', '-m', 'chore(handoff): align bridge gitHead']);
+      if (!refreshCommit.ok) {
+        console.error('[cio:session:close-git] NG bridge gitHead refresh 失敗');
+        process.exit(refreshCommit.status || 1);
+      }
+      console.log('[cio:session:close-git] bridge gitHead refresh commit（R31）');
+    }
   }
 
   const branch = git(['rev-parse', '--abbrev-ref', 'HEAD']).out || 'main';

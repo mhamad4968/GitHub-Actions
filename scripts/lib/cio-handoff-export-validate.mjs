@@ -68,6 +68,41 @@ export function gitHeadShort(root) {
   }
 }
 
+/** R31 — amend fold 後: 直近 commit が bridge のみ かつ gitHead === HEAD~1 を許容 */
+export function gitParentHeadShort(root) {
+  try {
+    return execFileSync('git', ['rev-parse', '--short', 'HEAD~1'], {
+      cwd: root,
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'pipe'],
+    }).trim();
+  } catch {
+    return null;
+  }
+}
+
+export function lastCommitTouchesOnlyBridge(root) {
+  try {
+    const names = execFileSync('git', ['diff-tree', '--no-commit-id', '--name-only', '-r', 'HEAD'], {
+      cwd: root,
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'pipe'],
+    })
+      .trim()
+      .split(/\r?\n/)
+      .filter(Boolean);
+    if (!names.length) return false;
+    const bridgeOnly = names.every(
+      (n) =>
+        n === 'docs/handoff/latest-session-bridge.json' ||
+        n === 'docs/knowledge/debug-tips.md',
+    );
+    return bridgeOnly;
+  } catch {
+    return false;
+  }
+}
+
 /** DeepSeek 職分 — 決定論セマンティック監査（API 可用時は強化可能） */
 export function deepseekSemanticAudit(payload) {
   const { bridgeTask, checkpointTask, topScoreTask } = payload;
@@ -143,7 +178,12 @@ export function validateExportHandoff(root, options = {}) {
 
   const currentHead = gitHeadShort(root);
   if (currentHead && bridge.gitHead && bridge.gitHead !== 'unknown' && currentHead !== bridge.gitHead) {
-    if (!options.allowHeadDrift) {
+    const parentHead = gitParentHeadShort(root);
+    const r31BridgeFold =
+      parentHead &&
+      bridge.gitHead === parentHead &&
+      lastCommitTouchesOnlyBridge(root);
+    if (!options.allowHeadDrift && !r31BridgeFold) {
       issues.push({
         code: 'GIT_HEAD_DRIFT',
         message: `gitHead 不一致: bridge=${bridge.gitHead} current=${currentHead}`,

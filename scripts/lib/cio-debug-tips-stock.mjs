@@ -82,6 +82,20 @@ function fingerprint(block) {
   return block.replace(/\d{4}-\d{2}-\d{2}/g, 'DATE').slice(0, 200);
 }
 
+/** R28 — 指定日の見出しブロックをすべて除去（挿入前に 1 件に保つ） */
+export function removeSameDayTipBlocks(body, ymd) {
+  const startNeedle = `## [${ymd}] セッション解体時知恵ストック`;
+  let result = body;
+  while (result.includes(startNeedle)) {
+    const idx = result.indexOf(startNeedle);
+    const before = result.slice(0, idx);
+    const afterStart = result.slice(idx);
+    const nextIdx = afterStart.slice(1).search(/\n## \[/);
+    result = nextIdx >= 0 ? before + afterStart.slice(nextIdx + 1) : before;
+  }
+  return result;
+}
+
 export function stockDebugTips(root, { exportedAt = new Date().toISOString() } = {}) {
   const tipsPath = path.join(root, TIPS_REL);
   fs.mkdirSync(path.dirname(tipsPath), { recursive: true });
@@ -96,6 +110,8 @@ export function stockDebugTips(root, { exportedAt = new Date().toISOString() } =
   }
 
   let body = fs.readFileSync(tipsPath, 'utf8');
+  const ymd = exportedAt.slice(0, 10);
+  body = removeSameDayTipBlocks(body, ymd);
   const fp = fingerprint(block);
   if (body.includes(fp.slice(0, 80))) {
     return { merged: false, reason: 'duplicate-fingerprint' };

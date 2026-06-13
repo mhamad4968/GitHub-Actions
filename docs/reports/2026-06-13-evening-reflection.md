@@ -27,12 +27,30 @@
 | **R23** | **セッション締め AI 手順** — 浜田「終わり」系発話で **checkpoint → handoff-log → export-handoff → desktop sync** を **先に実行**してから返答 | `.cursor/rules/` または `evening-reflection-scope.md` 追記 | F1 再発防止 |
 | **R24** | **SPEC 確定日** — `docs/plans/*-spec.md` 追加・試験フラグ変更は **同日 close-git**（未 push 可・commit 必須） | `cio-four-ai-governance.md` または verify 追加 | F4 再発防止 |
 | **R25** | **trialPaused** — 試験終了条件と **恒久設定（R21/R22）への昇格手順**を runbook 1 節 | `docs/runbooks/session-clock-cursor-lifecycle.md` | 試験の迷子防止 |
+| **R26** | **返答スコープ分離** — 改善案/チェック結果に「明日やること」を混ぜない | `evening-reflection-scope.md` + `session-close-execute-first.mdc` | F11 |
+| **R27** | （R33 に統合）ヘルスチェックターン runbook | `cio-health-check-turn.md` | チェック混乱 |
+| **R28** | debug-tips **同日見出し dedupe** | `cio-debug-tips-stock.mjs` | F10 |
+| **R29** | win-hidden-spawn **runtime smoke**（npm-cli 経路） | `verify-win-hidden-spawn-hotpaths.mjs` | F8 |
+| **R30** | health-check **回帰 fixture** | `verify-health-check-regression.mjs` | F6/F7 |
+| **R31** | **bridge gitHead 意味固定** + close-git bridge 単独 commit | governance + `cio-handoff-export-validate.mjs` | F9 |
+| **R32** | **PS フラッシュ切り分け runbook** | `windows-spawn-flash-triage.md` | F5 |
+| **R33** | **「チェックして」標準チェーン** | `cio-health-check-turn.md` | 本ターン混乱 |
 
 ---
 
 ## 承認済み
 
-（本日なし — 上記 R19–R25 は **浜田 GO 待ち**）
+| ID | 承認日 | 備考 |
+|----|--------|------|
+| **R19–R33** | 2026-06-13 | 浜田一括 GO — 反映: runbook / rules / verify / close-git / spawn |
+
+（夕反省初版 R19–R25 + 新規 R26–R33 を含む）
+
+---
+
+## 承認待ち
+
+（なし — 2026-06-13 一括 GO 済）
 
 ---
 

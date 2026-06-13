@@ -7,7 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DEFAULT_WATCH_MS } from './session-clock-core.mjs';
 import { readSessionClockMode } from './session-clock-mode.mjs';
-import { hiddenOpts, runNodeScriptSync, runPowerShellSync } from './win-hidden-spawn.mjs';
+import { hiddenOpts, runNodeScriptSync } from './win-hidden-spawn.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 export const repoRoot = path.resolve(here, '../..');
@@ -87,20 +87,47 @@ export function clockWebSpawnEnv() {
   return env;
 }
 
-/** 壁時計が使う TCP 帯の node LISTEN を止める（Windows） */
+/** Windows: netstat + taskkill（R22 — PS 不要経路） */
+function killWindowsPid(pid) {
+  if (!Number.isFinite(pid) || pid <= 0) return;
+  spawnSync('taskkill', ['/PID', String(pid), '/F'], hiddenOpts({ stdio: 'ignore' }));
+}
+
+function parseNetstatListenPids(fromPort, toPort) {
+  const r = spawnSync('netstat', ['-ano'], hiddenOpts({ encoding: 'utf8' }));
+  if (r.status !== 0) return [];
+  const pids = new Set();
+  for (const line of (r.stdout || '').split(/\r?\n/)) {
+    const m = line.match(/^\s*TCP\s+\S+:(\d+)\s+\S+\s+LISTENING\s+(\d+)\s*$/i);
+    if (!m) continue;
+    const port = Number(m[1]);
+    const pid = Number(m[2]);
+    if (port >= fromPort && port <= toPort && pid > 0) pids.add(pid);
+  }
+  return [...pids];
+}
+
+/** 壁時計が使う TCP 帯の node LISTEN を止める（Windows — R22 taskkill） */
 function killNodeListenersInPortRange(fromPort, toPort) {
   if (process.platform !== 'win32') return;
-  const ps = [
-    `$from=${fromPort}; $to=${toPort}`,
-    'Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue |',
-    'Where-Object { $_.LocalPort -ge $from -and $_.LocalPort -le $to } |',
-    'ForEach-Object {',
-    '  $op = $_.OwningProcess',
-    '  $p = Get-CimInstance Win32_Process -Filter ("ProcessId=" + $op) -ErrorAction SilentlyContinue',
-    "  if ($p -and $p.Name -eq 'node.exe') { Stop-Process -Id $op -Force -ErrorAction SilentlyContinue }",
-    '}',
-  ].join(' ');
-  runPowerShellSync(ps);
+  for (const pid of parseNetstatListenPids(fromPort, toPort)) {
+    killWindowsPid(pid);
+  }
+}
+
+/** wmic — commandLine 一致 node を taskkill（R22: runPowerShellSync 代替） */
+function killNodeProcessesByCmdFragment(fragment) {
+  if (process.platform !== 'win32') return;
+  const safe = fragment.replace(/'/g, "''");
+  const r = spawnSync(
+    'wmic',
+    ['process', 'where', `CommandLine like '%${safe}%'`, 'get', 'ProcessId', '/FORMAT:CSV'],
+    hiddenOpts({ encoding: 'utf8' }),
+  );
+  for (const line of (r.stdout || '').split(/\r?\n/)) {
+    const m = line.match(/,(\d+)\s*$/);
+    if (m) killWindowsPid(Number(m[1]));
+  }
 }
 
 /** pid ファイル無しの node 残骸（Windows 中心・best effort） */
@@ -111,11 +138,8 @@ export function killOrphanClockProcesses() {
     killNodeListenersInPortRange(envBase, envBase + 29);
   }
   if (process.platform === 'win32') {
-    const ps =
-      "Get-CimInstance Win32_Process -Filter \"Name='node.exe'\" -ErrorAction SilentlyContinue | " +
-      "Where-Object { $_.CommandLine -match 'session-clock-web\\.mjs|session-clock-watch\\.mjs' } | " +
-      "ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }";
-    runPowerShellSync(ps);
+    killNodeProcessesByCmdFragment('session-clock-web.mjs');
+    killNodeProcessesByCmdFragment('session-clock-watch.mjs');
     return;
   }
   spawnSync('pkill', ['-f', 'session-clock-web.mjs'], { encoding: 'utf8' });

@@ -2,6 +2,7 @@
 
 > **起票**: 2026-06-13 (土)  
 > **状態**: **仕様確定 — 作成 GO 済**（2026-06-13 浜田）  
+> **Q&A 関門**: `docs/runbooks/kintone-ledger-spec-qa-checklist.md`（R19 — GO 前必須）  
 > **配置**: [Space 21](https://jbis-kintone.cybozu.com/k/#/space/21)（PC・M365・Apple ID・ソフトウェア台帳と同エリア / thread **23** 想定）  
 > **参照パターン**: ソフトウェア管理台帳 SPEC（`2026-06-13-software-ledger-kintone-spec.md`）・Apple ID [694](https://jbis-kintone.cybozu.com/k/694/) 型  
 > **実装順**: **ソフトウェア管理台帳 v1 安定後**に kintone 作成（本 SPEC は先行確定）

@@ -9,7 +9,24 @@
 | タイミング | hook | 動作 |
 |------------|------|------|
 | **Cursor 起動 / 新 Composer セッション** | `sessionStart` → `session-start-autopilot.mjs` | 残骸 watch/web 停止 → `session:clock:set` → watch 起動 → **web 起動** → **`additional_context` に URL** |
-| **Cursor 終了 / セッション終了** | `sessionEnd` → `session-end-autopilot.mjs` | `session:clock:clear` → watch/web 停止 |
+| **Cursor 終了 / セッション終了** | `sessionEnd` → `session-end-autopilot.mjs` | `session:clock:clear` → watch/web 停止（**R21**: `manual-desktop` / `trialPaused` 時は **skip**） |
+
+**R21（浜田 GO 2026-06-13）**: `.cio/session-clock-mode.json` で `mode: manual-desktop` または `trialPaused: true` のとき、**Composer 終了だけでは stopAllClock しない**。Cursor **完全終了**または Desktop `壁時計_STOP.bat`。
+
+---
+
+## 試験フラグ trialPaused（R25 — 浜田 GO 2026-06-13）
+
+| 項目 | 内容 |
+|------|------|
+| 目的 | PS フラッシュ原因切り分け（壁時計 vs handoff） |
+| 設定 | `.cio/session-clock-mode.json` → `"trialPaused": true`, `"mode": "manual-desktop"` |
+| 試験中 | **Desktop `壁時計_START.bat` 禁止** / hook は壁時計を触らない |
+| 終了条件 | 浜田が **PS フラッシュ再現なし** を 1 セッション確認 |
+| 昇格 | R21 恒久化済み → **R22**（taskkill 化）適用 → `trialPaused: false` に戻す |
+| 禁止 | 試験フラグを **commit せず締める**（F4 → R24） |
+
+正本切り分け: `docs/runbooks/windows-spawn-flash-triage.md`
 
 ログ: `logs/session-start-hook.log` / `logs/session-end-hook.log`
 

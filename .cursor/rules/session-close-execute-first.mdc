@@ -1,0 +1,58 @@
+---
+description: 締め・チェック依頼 — 返答より先に実行（R23/R26 浜田 GO 2026-06-13）
+globs:
+  - chat-sessions/**
+  - docs/reports/**
+  - docs/handoff/**
+alwaysApply: false
+---
+
+# セッション締め — 実行→返答（R23）
+
+**憲法化**: トリガー語を受けた **最初の tool call は実行**。要約・提案・「明日は…」は **実行完了後のみ**。
+
+## トリガー（部分一致）
+
+| 種別 | 例 |
+|------|-----|
+| 締め | 終わり / お疲れ / まとめ / 反省 / 締め / 今日はここまで |
+| 検査 | ヘルスチェック / githubチェック / チェックして / 健康状況 |
+
+## 締めトリガー — 最初に実行（順序固定）
+
+1. `checkpoint-latest.md` / `handoff-log.md` 更新（事実のみ）
+2. `npm run cio:session:export-handoff`
+3. `npm run verify:session-handoff-integrity -- --validate-export`
+4. `npm run cio:session:close-git -- --execute --auto-stage --message "…"` **または** B1/B4 整備後 `desktop:sync-and-verify`
+
+**禁止**: 上記の前に「お疲れさまでした」「次回は…」だけ返す（F1 再発）。
+
+## 検査トリガー — 最初に実行
+
+正本: `docs/runbooks/cio-health-check-turn.md`（R33）
+
+```powershell
+npm run health-check
+npm run verify:session-handoff-integrity -- --validate-export
+npm run desktop:sync-and-verify
+```
+
+軽微 NG は **同一ターンで修正**。台帳 kintone 作成・項番 -0 は **混ぜない**。
+
+## R26 — 返答スコープ分離（説明の憲法）
+
+| 書いてよい | 同一返答で書かない |
+|------------|-------------------|
+| 失敗事実・修正内容・verify 結果 | **明日の第1手**・**明日やること**・台帳 GO タイミング |
+| 改善案 ID と GO 記録 | 改善案を「明日のタスク一覧」に並べる |
+| ヘルスチェック / GitHub CI 結果 | 業務レーン（kintone 作成）の着手宣言 |
+
+**夕反省・改善案・チェック結果** ≠ **当日項番 -0**。混在は F5/F11 再発。
+
+## 障害説明（R32 連携）
+
+PS/cmd 一瞬フラッシュ等 — **口頭で複数原因を並べない**。先に Read:
+
+`docs/runbooks/windows-spawn-flash-triage.md`
+
+試験停止 → 観察 → hotpath 特定の順のみ。

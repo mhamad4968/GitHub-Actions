@@ -137,6 +137,38 @@ npm run desktop:sync-and-verify
 
 **正本**: `18-重要確認.txt` B1/B4 / `.cursor/rules/cio-session-close-git-gate.mdc`
 
+### R23 — 実行→返答（2026-06-13 浜田 GO）
+
+締め・チェック依頼で **チャット返答より先に tool 実行**。  
+正本: `.cursor/rules/session-close-execute-first.mdc` / `docs/runbooks/cio-health-check-turn.md`
+
+### R24 — SPEC 確定日 commit 必須（2026-06-13 浜田 GO）
+
+`docs/plans/*-spec.md` の新規・試験フラグ（`.cio/session-clock-mode.json` 等）変更は **同一日 commit 必須**（push は B4）。  
+検証: `npm run verify:cio-spec-close-git`
+
+### R31 — bridge gitHead 意味（2026-06-13 浜田 GO）
+
+| フィールド | 意味 |
+|------------|------|
+| `bridge.gitHead` | **export-handoff 成功時点**の `git rev-parse --short HEAD` |
+| clean tree で verify | `gitHead === HEAD` **または** R31 許容ドリフト（下記） |
+
+**許容ドリフト（amend fold 後）**: 直近 commit が bridge のみ かつ `bridge.gitHead === HEAD~1` → `--validate-export` OK。  
+手動 amend の迷子防止 — `close-git` は export → verify → amend fold → **再 export → bridge commit（amend 禁止）**。
+
+### R26 / R32 / R33 — 説明・切り分け・チェックターン（2026-06-13 浜田 GO）
+
+| ID | 正本 |
+|----|------|
+| R26 | `evening-reflection-scope.md` §R26 + `session-close-execute-first.mdc` |
+| R32 | `docs/runbooks/windows-spawn-flash-triage.md` |
+| R33 | `docs/runbooks/cio-health-check-turn.md` |
+
+### R19 — 台帳 SPEC Q&A（2026-06-13 浜田 GO）
+
+`docs/runbooks/kintone-ledger-spec-qa-checklist.md` — SPEC GO 前必須。検証: `verify:kintone-ledger-spec-qa`
+
 ## 一括検証
 
 ```bash

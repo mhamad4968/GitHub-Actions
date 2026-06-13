@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 /**
- * Windows cmd/PowerShell 一瞬フラッシュ回避 — 高頻度スクリプトの静的検査
+ * Windows cmd/PowerShell 一瞬フラッシュ回避 — 高頻度スクリプトの静的 + ランタイム検査（R29）
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
+import { runNpmScriptSync, resolveNpmCliJs } from './lib/win-hidden-spawn.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -48,7 +49,34 @@ const HOTPATHS = [
     rel: 'scripts/lib/win-hidden-spawn.mjs',
     mustInclude: ['runNpmScriptSync', 'windowsHide', 'resolveNpmCliJs', 'npm-cli.js'],
   },
+  {
+    rel: 'scripts/lib/session-clock-process.mjs',
+    mustInclude: ['taskkill', 'R22'],
+  },
 ];
+
+function runtimeSmoke() {
+  if (process.platform !== 'win32') {
+    console.log('[verify-win-hidden-spawn-hotpaths] SKIP runtime smoke（非 Windows）');
+    return [];
+  }
+  const issues = [];
+  if (!resolveNpmCliJs()) {
+    issues.push('resolveNpmCliJs が null — npm-cli 経路不可');
+  }
+  const r = runNpmScriptSync(root, 'verify:session-close-git-warn', ['--', '--warn-only'], {
+    stdio: 'pipe',
+    encoding: 'utf8',
+  });
+  if (r.error) {
+    issues.push(`R29 runtime smoke spawn error: ${r.error.code || r.error.message}`);
+  } else if (r.status !== 0) {
+    issues.push(`R29 runtime smoke exit=${r.status ?? 1}（npm-cli 経路 NG）`);
+  } else {
+    console.log('[verify-win-hidden-spawn-hotpaths] OK R29 runtime smoke（npm-cli + warn-only）');
+  }
+  return issues;
+}
 
 function main() {
   const issues = [];
@@ -72,6 +100,8 @@ function main() {
       if (text.includes(bad)) issues.push(`${rel} forbidden: ${bad}`);
     }
   }
+
+  issues.push(...runtimeSmoke());
 
   if (issues.length) {
     console.error('[verify-win-hidden-spawn-hotpaths] NG', issues.length);

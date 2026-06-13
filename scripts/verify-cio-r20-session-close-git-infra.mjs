@@ -51,6 +51,9 @@ function main() {
   if (!closeGit.includes('runNpmScriptSync') || closeGit.includes('shell: true')) {
     issues.push('cio-session-close-git.mjs が Windows hidden npm spawn 未適用');
   }
+  if (!closeGit.includes('R31') && !closeGit.includes('bridge export を単独 commit')) {
+    issues.push('cio-session-close-git.mjs に R31 bridge 単独 commit 未実装');
+  }
 
   const desktop = pkg.scripts?.['desktop:sync-and-verify'] || '';
   if (!desktop.includes('desktop-sync-and-verify.mjs')) {
