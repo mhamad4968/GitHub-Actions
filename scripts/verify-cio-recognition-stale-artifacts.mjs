@@ -47,6 +47,18 @@ function main() {
     issues.push('HANDOFF-HUMAN 日終わりが旧 sync→verify のまま');
   }
 
+  const checkpoint = fs.readFileSync(path.join(root, 'chat-sessions/checkpoint-latest.md'), 'utf8');
+  const bootstrapMatch = checkpoint.match(
+    /## セッション切替後の自律復元[\s\S]*?(?=\n---\n\n## |\n## 2026)/,
+  );
+  const bootstrap = bootstrapMatch ? bootstrapMatch[0] : '';
+  if (bootstrap && /日終わり.*sync.*浜田確認|日終わり sync は浜田確認/.test(bootstrap)) {
+    issues.push('checkpoint bootstrap 日終わりが旧「浜田確認または §41」のまま');
+  }
+  if (bootstrap && !bootstrap.includes('cio:session:close-git')) {
+    issues.push('checkpoint bootstrap に cio:session:close-git 未記載');
+  }
+
   const eighteen = fs.readFileSync(
     path.join(root, 'chat-sessions/desktop-ai-emergency-read-pack/18-重要確認.txt'),
     'utf8',
