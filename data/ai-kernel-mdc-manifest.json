@@ -45,6 +45,8 @@
     "cio-discipline-always.mdc",
     "cio-18-zero-tolerance.mdc",
     "constitution-handoff-gate.mdc",
+    "cio-project-closure-gate.mdc",
+    "cio-session-close-git-gate.mdc",
     "constitutional-focus-github-workflows.mdc",
     "deepseek-pre-edit-gate.mdc",
     "constitutional-focus-kintone-customize.mdc",

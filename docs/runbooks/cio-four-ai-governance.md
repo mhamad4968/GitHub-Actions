@@ -129,7 +129,7 @@ npm run desktop:sync-and-verify
 
 | タイミング | コマンド |
 |------------|----------|
-| セッション締め | `npm run cio:session:close-git -- --execute --message "…"` |
+| セッション締め | `npm run cio:session:close-git -- --execute --auto-stage --message "…"`（desktop sync 内包） |
 | 検査のみ | `npm run cio:session:close-git` |
 
 **順序**: R-17-1 guard → commit → `pull --rebase` → push → `desktop:sync-and-verify`  

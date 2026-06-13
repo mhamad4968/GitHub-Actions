@@ -2,6 +2,7 @@
 /**
  * R19 プロジェクト完了・認識同期ガバナンス — インフラ整合検証
  */
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
@@ -78,6 +79,14 @@ function main() {
   const gov = pkg.scripts?.['verify:cio-four-ai-governance'] || '';
   if (!gov.includes('verify-cio-project-closure-governance')) {
     issues.push('verify:cio-four-ai-governance に project-closure-governance 未連結');
+  }
+
+  const checkpoint = spawnSync(process.execPath, ['scripts/verify-checkpoint-project-closure.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+  if (checkpoint.status !== 0) {
+    issues.push('verify-checkpoint-project-closure 実行 NG（内容整合）');
   }
 
   if (issues.length) {

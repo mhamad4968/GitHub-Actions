@@ -14,9 +14,9 @@
 
 ---
 
-## 日終わり（推奨・2026-04-26 追補）
+## 日終わり（R17 **必須**・2026-06-13 R20 更新）
 
-> 正本: `chat-sessions/checkpoint-latest.md`「**日終わり（推奨）**」。
+> 正本: `18-重要確認.txt` B1/B4 + R20 — **`npm run cio:session:close-git -- --execute --auto-stage --message "…"`** が commit+push+Desktop 一括。
 
 - [ ] **セッション報告**: `docs/session-report-checklist.md`（詳細）または Desktop **`20-SESSION-REPORT-CHECKLIST.txt`** で自己点検し、必要ならチャットに貼付（2026-05-06 起票）
 - [ ] **kintone アプリで浜田 OK を受けた同一セッション**: **`npm run verify:session-close-git-warn`** まで実施（未 commit なら commit 方針を §41 で確認 — **P7 GO 2026-06-03**）

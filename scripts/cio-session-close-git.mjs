@@ -1,33 +1,32 @@
 #!/usr/bin/env node
 /**
- * セッション締め Git 儀式 — 先祖返り回避 + B1/B4（浜田 GO 2026-05-30〜31 / R-17-1）
+ * セッション締め Git 儀式 — 先祖返り回避 + B1/B4 + R19/R20 連鎖
  *
  * 順序（--execute 時）:
- *   1) cio:guard:multi-customize（customize 2アプリ以上 → portfolio strict）
- *   2) git commit（--message 必須。未 stage なら --auto-stage で追加、temp は除外）
- *   3) git pull --rebase origin <branch>（reject / 先祖返り回避）
- *   4) git push
+ *   0) cio:session:close-recognition-gate --pre-commit（R19 内容突合のみ）
+ *   1) cio:guard:multi-customize
+ *   2) git add（--auto-stage）/ cio:session:export-handoff / commit
+ *   3) git pull --rebase → git push
+ *   4) verify:session-handoff-integrity --validate-export（bridge あれば）
  *   5) verify:session-close-git-warn
- *
- * 検査のみ（既定）:
- *   npm run cio:session:close-git
- *
- * 実行:
- *   npm run cio:session:close-git -- --execute --message "…"
+ *   6) desktop:sync-and-verify（--skip-desktop-sync で省略可・浜田 GO 時のみ）
  */
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
+import { isSessionCloseTempPath } from './lib/cio-session-close-temp-paths.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const DESKTOP_DIR = process.env.SESSION_STARTER_DESKTOP_DIR || 'C:\\Users\\mhamada202408224\\Desktop\\AI緊急用';
+
 const execute = process.argv.includes('--execute');
 const autoStage = process.argv.includes('--auto-stage');
+const skipDesktop = process.argv.includes('--skip-desktop-sync');
+const skipR19 = process.argv.includes('--skip-r19');
 const msgIdx = process.argv.indexOf('--message');
 const message = msgIdx >= 0 ? process.argv[msgIdx + 1] : '';
-
-import { isSessionCloseTempPath } from './lib/cio-session-close-temp-paths.mjs';
 
 function git(args, opts = {}) {
   const r = spawnSync('git', args, { cwd: root, encoding: 'utf8', ...opts });
@@ -47,22 +46,14 @@ function runNode(rel, args = []) {
   return r.status === 0;
 }
 
-function runNpm(script, args = []) {
+function runNpm(script, args = [], extraEnv = {}) {
   const r = spawnSync('npm', ['run', script, '--', ...args], {
     cwd: root,
     stdio: 'inherit',
     shell: true,
+    env: { ...process.env, ...extraEnv },
   });
   return r.status === 0;
-}
-
-function isTempUntracked(rel) {
-  return isSessionCloseTempPath(rel);
-}
-
-function checkOnly() {
-  console.log('[cio:session:close-git] 検査モード — 締め前に --execute --message で B1/B4 実行');
-  return runNode('scripts/verify-session-close-git-warn.mjs');
 }
 
 function stageSessionChanges() {
@@ -72,28 +63,30 @@ function stageSessionChanges() {
     console.error('[cio:session:close-git] git status 失敗');
     process.exit(2);
   }
-  const lines = st.out.split(/\r?\n/).filter(Boolean);
-  let staged = 0;
-  for (const line of lines) {
+  for (const line of st.out.split(/\r?\n/).filter(Boolean)) {
     if (line.length < 4) continue;
     const x = line[0];
     const y = line[1];
     if (x !== '?' || y !== '?') continue;
     const rel = line.slice(3).trim().replace(/^"(.*)"$/, '$1');
-    if (isTempUntracked(rel)) {
+    if (isSessionCloseTempPath(rel)) {
       console.log(`[cio:session:close-git] skip temp: ${rel}`);
       continue;
     }
-    const add = git(['add', '--', rel]);
-    if (add.ok) staged += 1;
+    git(['add', '--', rel]);
   }
   const count = git(['diff', '--cached', '--name-only']).out.split(/\r?\n/).filter(Boolean).length;
   console.log(`[cio:session:close-git] auto-stage: ${count} path(s) staged`);
 }
 
+function checkOnly() {
+  console.log('[cio:session:close-git] 検査モード — 締め前に --execute --message で B1/B4 実行');
+  return runNode('scripts/verify-session-close-git-warn.mjs');
+}
+
 function main() {
-  console.log('=== cio:session:close-git（先祖返り回避 + B1/B4）===');
-  console.log('正本: 18-重要確認 B1/B4 / 14-READ-06 R-17-1 / session-close-multi-session.md\n');
+  console.log('=== cio:session:close-git（先祖返り回避 + B1/B4 + R20）===');
+  console.log('正本: 18-重要確認 B1/B4 / session-close-multi-session.md\n');
 
   if (!execute) {
     process.exit(checkOnly() ? 0 : 1);
@@ -102,6 +95,15 @@ function main() {
   if (!message) {
     console.error('[cio:session:close-git] NG --execute には --message "…" 必須');
     process.exit(1);
+  }
+
+  if (!skipR19) {
+    if (!runNode('scripts/cio-session-close-recognition-gate.mjs', ['--pre-commit'])) {
+      console.error('[cio:session:close-git] NG R19 pre-commit 認識ゲート');
+      process.exit(1);
+    }
+  } else {
+    console.warn('[cio:session:close-git] WARN --skip-r19（浜田 GO + 理由必須）');
   }
 
   if (!runNpm('cio:guard:multi-customize')) {
@@ -117,8 +119,14 @@ function main() {
     stageSessionChanges();
   }
 
+  if (git(['diff', '--cached', '--name-only']).out || hasUncommitted) {
+    runNpm('cio:session:export-handoff');
+    if (autoStage) stageSessionChanges();
+  }
+
+  const porcelainAfter = git(['status', '--porcelain']).out;
   const stagedAfter = git(['diff', '--cached', '--name-only']).out;
-  if (hasUncommitted && !stagedAfter) {
+  if (porcelainAfter && !stagedAfter) {
     console.error('[cio:session:close-git] NG 未コミットあり — git add または --auto-stage');
     git(['status', '--short']);
     process.exit(1);
@@ -136,13 +144,7 @@ function main() {
   }
 
   const branch = git(['rev-parse', '--abbrev-ref', 'HEAD']).out || 'main';
-  const upstream = git(['rev-parse', '--abbrev-ref', '@{u}']).out;
-  const remoteBranch = upstream && !upstream.includes('fatal') ? upstream : `origin/${branch}`;
-
-  const fetch = git(['fetch', 'origin', branch]);
-  if (!fetch.ok) {
-    console.warn('[cio:session:close-git] WARN git fetch — 続行');
-  }
+  git(['fetch', 'origin', branch]);
 
   const pull = spawnSync('git', ['pull', '--rebase', 'origin', branch], {
     cwd: root,
@@ -160,11 +162,25 @@ function main() {
   }
   console.log('[cio:session:close-git] push OK');
 
+  if (fs.existsSync(path.join(root, 'docs/handoff/latest-session-bridge.json'))) {
+    if (!runNpm('verify:session-handoff-integrity', ['--validate-export'])) {
+      console.error('[cio:session:close-git] NG handoff bridge 整合 — export-handoff を確認');
+      process.exit(1);
+    }
+  }
+
   if (!runNode('scripts/verify-session-close-git-warn.mjs')) {
     process.exit(1);
   }
 
-  console.log('\n[cio:session:close-git] OK — 続けて npm run desktop:sync-and-verify');
+  if (skipDesktop) {
+    console.warn('[cio:session:close-git] WARN --skip-desktop-sync — 後で desktop:sync-and-verify 必須（R17）');
+  } else if (!runNpm('desktop:sync-and-verify', [], { SESSION_STARTER_DESKTOP_DIR: DESKTOP_DIR })) {
+    console.error('[cio:session:close-git] NG desktop:sync-and-verify');
+    process.exit(1);
+  }
+
+  console.log('\n[cio:session:close-git] OK — 締め Git + Desktop 連鎖完了（R20）');
   process.exit(0);
 }
 

@@ -12,19 +12,18 @@ alwaysApply: false
 
 **18**: B1 commit 必須 / B4 push 必須 / S2 verify NG = 締め未完  
 **R-17-1**: customize 2アプリ以上 → `cio:guard:multi-customize` を **commit 前**  
-**順序**: `cio:session:close-git -- --execute --message "…"` → `desktop:sync-and-verify`
+**順序**: `cio:session:close-git -- --execute --auto-stage --message "…"`（R19 pre-commit + B1/B4 + desktop sync **一括**）
 
 ## 禁止
 
 - 締めターンで「commit GO 待ち」「push は次セッション」
 - pull --rebase なしで push（reject / リモート先祖返り）
 - `desktop:sync-and-verify` を **commit+push より先**に完了扱い
+- close-git 成功後に **別途** desktop sync だけ省略（`--skip-desktop-sync` は浜田 GO 時のみ）
 
 ## 実行
 
 ```powershell
 npm run cio:session:close-git -- --execute --auto-stage --message "…"
-npm run desktop:sync-and-verify
 ```
-
 Cursor 汎用「明示指示まで commit しない」は **締めでは無効**（§35-1 CIO 自律）。

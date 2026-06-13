@@ -43,6 +43,12 @@ function main() {
   if (!eighteen.includes('npm run cio:turn-start')) {
     issues.push('18-重要確認.txt に cio:turn-start 未記載');
   }
+  if (!eighteen.includes('cio:session:close-git')) {
+    issues.push('18-重要確認.txt に cio:session:close-git 未記載');
+  }
+  if (!eighteen.includes('B1/B4')) {
+    issues.push('18-重要確認.txt に B1/B4 未記載');
+  }
 
   const gov = pkg.scripts?.['verify:cio-four-ai-governance'] || '';
   if (!gov.includes('verify-cio-18-countermeasures')) {

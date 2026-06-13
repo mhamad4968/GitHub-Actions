@@ -44,10 +44,11 @@
    npm run verify:checkpoint-project-closure
    npm run cio:session:export-handoff
    npm run verify:session-handoff-integrity -- --strict-staleness --validate-export
-   npm run verify:session-close-git-warn
-   npm run desktop:sync-and-verify
+   npm run cio:session:close-git -- --execute --auto-stage --message "…"
    ```
-8. **commit → push**（B1/B4）
+   （`close-git` 内包: R-17-1 guard → commit → pull --rebase → push → git-warn → **desktop:sync-and-verify**）
+
+8. **締め完了** — 上記 `close-git` exit 0 = B1/B4 + R17 Desktop 同期まで完了（GO 待ち禁止）
 
 ---
 
