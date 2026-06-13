@@ -46,7 +46,7 @@ const HOTPATHS = [
   },
   {
     rel: 'scripts/lib/win-hidden-spawn.mjs',
-    mustInclude: ['runNpmScriptSync', 'windowsHide'],
+    mustInclude: ['runNpmScriptSync', 'windowsHide', 'resolveNpmCliJs', 'npm-cli.js'],
   },
 ];
 

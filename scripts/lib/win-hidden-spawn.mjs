@@ -2,6 +2,7 @@
  * Windows 上で cmd / PowerShell の一瞬フラッシュを抑える spawn ヘルパー
  */
 import { spawn, spawnSync } from 'node:child_process';
+import fs from 'node:fs';
 import path from 'node:path';
 
 export function hiddenOpts(extra = {}) {
@@ -50,6 +51,19 @@ export function npmExecutable() {
   return process.platform === 'win32' ? 'npm.cmd' : 'npm';
 }
 
+/** Windows: npm.cmd は shell:false だと EINVAL — node + npm-cli.js で cmd フラッシュ回避 */
+export function resolveNpmCliJs() {
+  const candidates = [
+    path.join(path.dirname(process.execPath), 'node_modules', 'npm', 'bin', 'npm-cli.js'),
+    path.join(process.execPath, '..', 'node_modules', 'npm', 'bin', 'npm-cli.js'),
+  ];
+  for (const p of candidates) {
+    const resolved = path.resolve(p);
+    if (fs.existsSync(resolved)) return resolved;
+  }
+  return null;
+}
+
 /**
  * @param {string} cwd
  * @param {string} script package.json scripts キー
@@ -57,13 +71,22 @@ export function npmExecutable() {
  */
 export function runNpmScriptSync(cwd, script, args = [], opts = {}) {
   const npmArgs = args.length ? ['run', script, '--', ...args] : ['run', script];
-  return spawnSync(npmExecutable(), npmArgs, hiddenOpts({
+  const spawnOpts = hiddenOpts({
     cwd,
     stdio: opts.stdio ?? 'inherit',
     shell: false,
     env: opts.env ?? process.env,
     ...opts,
-  }));
+  });
+
+  if (process.platform === 'win32') {
+    const npmCli = resolveNpmCliJs();
+    if (npmCli) {
+      return spawnSync(process.execPath, [npmCli, ...npmArgs], spawnOpts);
+    }
+  }
+
+  return spawnSync(npmExecutable(), npmArgs, spawnOpts);
 }
 
 export function hiddenSpawn(exe, args, opts = {}) {
