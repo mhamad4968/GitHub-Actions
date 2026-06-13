@@ -3,10 +3,10 @@
   "apps": {
     "595": {
       "build": "2026-06-14-595-software-ledger-mirror",
-      "fileKey": "401148d6-9140-4075-aebc-f88062a5cc29",
-      "revision": "88",
-      "relPath": "customize/595/desktop.js",
-      "deployedAt": "2026-06-13T23:15:28.850Z",
+      "fileKey": "27c4ea36-3ca5-487e-ad6d-e68ac3ca56af",
+      "revision": "89",
+      "relPath": ".kintone-deploy/upload-595.js",
+      "deployedAt": "2026-06-13T23:16:23.896Z",
       "note": null
     },
     "627": {
