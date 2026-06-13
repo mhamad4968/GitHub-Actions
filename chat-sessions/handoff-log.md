@@ -3118,12 +3118,26 @@ R13 `kintone-subtable-dropdown-keys.md` / R14 portal マップ一元化 / R15 de
 
 **次セッション第1手**: 浜田 **「ソフトウェア台帳 kintone 作成 GO」** → DB+Dash+customize → §12.3 目視 → OK なら記憶媒体
 
-**未 commit（意図的に残置の可能性あり）**:
-- SPEC 2 本（新規）
-- `.cio/session-clock-mode.json` / `session-end-autopilot.mjs` / `session-clock-mode.mjs`（trialPaused 試験）
+**Desktop**: `npm run desktop:sync-and-verify`（checkpoint 更新後）
 
-**Git**: `main...origin/main` — 壁時計試験パッチ + SPEC は **未 commit**（締め commit は浜田判断 / `cio:session:close-git`）
+---
 
-**Desktop**: 次回 `npm run session-starter:sync-desktop`（checkpoint 更新後）
+### 2026-06-13 JST — **R19–R33 ミス削減ガバナンス（浜田 GO 反映）**
+
+**承認**: 夕反省 **R19–R33 すべて GO**（改善案一括 + 深掘り 5 点対応）
+
+**反映**:
+- `.cursor/rules/session-close-execute-first.mdc`（R23/R26 — 実行→返答）
+- `docs/runbooks/windows-spawn-flash-triage.md`（R32）
+- `docs/runbooks/kintone-ledger-spec-qa-checklist.md`（R19）
+- `docs/runbooks/cio-health-check-turn.md`（R33）
+- verify: `cio-miss-reduction-governance` / `health-check-regression` / win-hidden-spawn **runtime smoke**（R29）
+- `session-clock-process.mjs` taskkill 化（R22）/ bridge gitHead R31 / close-git bridge 単独 commit
+
+**Git**: `4449977` — **push 済** / `main = origin/main`
+
+**次セッション第1手**（変更なし）: 浜田 **「ソフトウェア台帳 kintone 作成 GO」**
+
+**Desktop**: 本追補後 `npm run desktop:sync-and-verify`
 
 ---

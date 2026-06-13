@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-06-13 JST — **ソフトウェア/記憶媒体台帳 SPEC 確定 + 壁時計試験停止**
+**最終更新**: 2026-06-13 JST — **R19–R33 ガバナンス反映 + SPEC/インフラ commit 済**
 
 ## 凍結（毎セッション先頭）
 | 禁止 | 許可 |
@@ -13,7 +13,8 @@
 
 **次の1手**: **ソフトウェア管理台帳** kintone 作成（Space 21・694 型）— 浜田 **「ソフトウェア台帳 kintone 作成 GO」** → 目視 OK 後 **記憶媒体等台帳**
 **業務改善 ver.02**: **2026-06-13 クローズ** — 699 rev **105** / 700 rev **139** / 713 rev **12** — 浜田確認済
-**新レーン（Space 21）**: **ソフトウェア管理台帳** SPEC GO 済 → **明日 kintone 作成** / **記憶媒体等台帳** SPEC GO 済（ソフト v1 後）
+**新レーン（Space 21）**: **ソフトウェア管理台帳** SPEC GO 済 → **浜田「ソフトウェア台帳 kintone 作成 GO」待ち** / **記憶媒体等台帳** SPEC GO 済（ソフト v1 後）
+**ガバナンス**: **R19–R33 浜田 GO 済** — commit `4449977` push 済（`verify:cio-miss-reduction-governance` OK）
 **壁時計試験**: `.cio/session-clock-mode.json` **`trialPaused: true`** — START.bat 不使用・sessionEnd の stopAllClock スキップ（PS フラッシュ切り分け）
 **クローズ正本**: `data/cio-project-closures.json` / `npm run verify:checkpoint-project-closure`
 **R13–R18**: **浜田 GO 済** — `docs/approved-changes/2026-06-11-rules-r13-r18-hamada-go.md`
@@ -22,16 +23,27 @@
 
 ---
 
+## 2026-06-13 JST — **R19–R33 ミス削減ガバナンス（浜田 GO 反映）**
+
+| 項目 | 内容 |
+|------|------|
+| **承認** | 夕反省 R19–R25 + 新規 R26–R33 **一括 GO** |
+| **正本** | `docs/reports/2026-06-13-evening-reflection.md` / `docs/runbooks/cio-four-ai-governance.md` |
+| **主要** | `session-close-execute-first.mdc`（R23/R26）/ `windows-spawn-flash-triage.md`（R32）/ `kintone-ledger-spec-qa-checklist.md`（R19） |
+| **Git** | `4449977` feat(governance) — **push 済** / `verify:cio-spec-close-git` OK |
+
+---
+
 ## 2026-06-13 JST — **ソフトウェア/記憶媒体台帳 SPEC + 壁時計試験**
 
 | 項目 | 内容 |
 |------|------|
 | **本日完了（意見交換）** | ソフトウェア台帳 SPEC 確定（識別3スロット・595・支店/営業所/社員リスト・印刷） |
-| **SPEC** | `docs/plans/2026-06-13-software-ledger-kintone-spec.md` |
+| **SPEC** | `docs/plans/2026-06-13-software-ledger-kintone-spec.md`（R19 runbook 参照追記済） |
 | **記憶媒体 SPEC** | `docs/plans/2026-06-13-storage-media-ledger-kintone-spec.md`（A–D+F・1物理1レコード・ソフト v1 後に実装） |
 | **実装順** | ① ソフトウェア DB+Dash → 目視 OK → ② 記憶媒体 |
-| **壁時計** | `trialPaused: true` — PS フラッシュ原因切り分け試験中（`.cursor/hooks/session-end-autopilot.mjs` 未 commit） |
-| **未 commit** | 上記 SPEC 2 本 + 壁時計試験パッチ（`.cio/session-clock-mode.json` 等） |
+| **壁時計** | `trialPaused: true` — PS フラッシュ切り分け試験中（R21/R22/R25 runbook 反映済） |
+| **Git** | SPEC + 試験パッチ + npm-cli spawn 修正 — **commit/push 済**（`4324f8f`〜`4449977`） |
 
 ---
 
