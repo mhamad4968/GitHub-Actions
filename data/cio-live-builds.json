@@ -91,10 +91,10 @@
     },
     "688": {
       "build": "2026-06-13-688-ref5yr-zero-year-register",
-      "fileKey": "247fc365-3821-42e1-a7ec-57f14eb2416d",
-      "revision": "23",
-      "relPath": "customize/688/desktop.js",
-      "deployedAt": "2026-06-13T00:31:06.536Z",
+      "fileKey": "3c92d47c-b7d9-482d-b837-0555f94f7c5c",
+      "revision": "24",
+      "relPath": ".kintone-deploy/upload-688.js",
+      "deployedAt": "2026-06-13T01:12:27.725Z",
       "note": null
     },
     "693": {
