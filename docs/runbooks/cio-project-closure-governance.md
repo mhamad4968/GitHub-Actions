@@ -42,11 +42,10 @@
 7. **機械検証**（すべて exit 0）:
    ```powershell
    npm run verify:checkpoint-project-closure
-   npm run cio:session:export-handoff
-   npm run verify:session-handoff-integrity -- --strict-staleness --validate-export
+   npm run verify:session-handoff-integrity -- --strict-staleness
    npm run cio:session:close-git -- --execute --auto-stage --message "…"
    ```
-   （`close-git` 内包: R-17-1 guard → commit → pull --rebase → push → git-warn → **desktop:sync-and-verify**）
+   （`close-git` 内包: R19 pre-commit → commit → **export-handoff（commit 後・gitHead 整合）** → pull --rebase → push → git-warn → **desktop:sync-and-verify**）
 
 8. **締め完了** — 上記 `close-git` exit 0 = B1/B4 + R17 Desktop 同期まで完了（GO 待ち禁止）
 

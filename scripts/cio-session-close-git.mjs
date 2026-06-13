@@ -119,11 +119,6 @@ function main() {
     stageSessionChanges();
   }
 
-  if (git(['diff', '--cached', '--name-only']).out || hasUncommitted) {
-    runNpm('cio:session:export-handoff');
-    if (autoStage) stageSessionChanges();
-  }
-
   const porcelainAfter = git(['status', '--porcelain']).out;
   const stagedAfter = git(['diff', '--cached', '--name-only']).out;
   if (porcelainAfter && !stagedAfter) {
@@ -141,6 +136,18 @@ function main() {
     console.log('[cio:session:close-git] commit OK');
   } else {
     console.log('[cio:session:close-git] 新規 commit なし（既に commit 済）');
+  }
+
+  runNpm('cio:session:export-handoff');
+  if (autoStage) stageSessionChanges();
+  const bridgeStaged = git(['diff', '--cached', '--name-only']).out;
+  if (bridgeStaged) {
+    const amend = git(['commit', '--amend', '--no-edit']);
+    if (!amend.ok) {
+      console.error('[cio:session:close-git] NG bridge export amend 失敗');
+      process.exit(amend.status || 1);
+    }
+    console.log('[cio:session:close-git] bridge export を commit に fold（amend）');
   }
 
   const branch = git(['rev-parse', '--abbrev-ref', 'HEAD']).out || 'main';
