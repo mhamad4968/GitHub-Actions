@@ -4,7 +4,7 @@
   /** ソフトウエア管理台帳ver.1 — REST CRUD（694 型） */
   var APP_DB = 714;
   var APP_EMPLOYEE = 595;
-  var BUILD = "2026-06-14-software-ledger-dash-v1";
+  var BUILD = "2026-06-14-software-ledger-dash-sw-info-label";
 
   var STATUS_ACTIVE = "利用中";
   var STATUS_RETIRED = "廃止";
@@ -73,7 +73,7 @@
     { key: "license_type", label: "ライセンス", sort: true },
     { key: "software_name", label: "製品名", sort: true },
     { key: "model_number", label: "型番", sort: true },
-    { key: "ident", label: "識別", sort: false },
+    { key: "ident", label: "ソフトウエアの情報", sort: false },
     { key: "emp_id", label: "社員番号", sort: false },
     { key: "user_name", label: "氏名", sort: true },
     { key: "dept_name", label: "所属名", sort: true },
@@ -85,7 +85,7 @@
     { key: "status", label: "状態" },
     { key: "software_name", label: "製品名" },
     { key: "license_type", label: "ライセンス" },
-    { key: "ident", label: "識別" },
+    { key: "ident", label: "ソフトウエアの情報" },
     { key: "emp_id", label: "社員番号" },
     { key: "user_name", label: "氏名" },
     { key: "dept_name", label: "所属名" },
@@ -336,7 +336,7 @@
       backdrop.className = "swl-e595-bg";
       backdrop.innerHTML =
         '<div class="swl-e595-box">' +
-        "<h3>社員を検索（595）</h3>" +
+        "<h3>社員検索</h3>" +
         '<p class="swl-e595-sub">退職者は表示されません。行をクリックして選択してください。</p>' +
         '<div class="swl-e595-search-row">' +
         '<input type="text" id="swl-e595-q" placeholder="例: 山田　または　太郎">' +
@@ -471,14 +471,14 @@
 
   function validateIdSlots(slots) {
     if (!slots.length || !slots[0].kind || !slots[0].value) {
-      return "識別1（種別・値）は必須です";
+      return "ソフトウエアの情報1（種別・値）は必須です";
     }
     for (var i = 1; i < slots.length; i++) {
       var s = slots[i];
       var hasK = !!s.kind;
       var hasV = !!s.value;
       if (hasK !== hasV) {
-        return "識別" + s.n + "は種別と値をセットで入力してください";
+        return "ソフトウエアの情報" + s.n + "は種別と値をセットで入力してください";
       }
     }
     return "";
@@ -570,13 +570,13 @@
         '" class="swl-id-slot"' +
         (n > vis ? ' style="display:none"' : "") +
         ">" +
-        '<label>識別' +
+        '<label>ソフトウエアの情報' +
         n +
         " — 種別<select id=\"swl-id-kind-" +
         n +
         '">' +
         idKindOptionsHtml(row ? row["id_kind_" + n] : "") +
-        '</select></label><label>識別' +
+        '</select></label><label>ソフトウエアの情報' +
         n +
         " — 値<input id=\"swl-id-value-" +
         n +
@@ -587,7 +587,7 @@
     html +=
       '<button type="button" id="swl-id-add"' +
       (vis >= 3 ? ' style="display:none"' : "") +
-      ' class="kintoneplugin-button-normal">識別を追加</button>';
+      ' class="kintoneplugin-button-normal">ソフトウエアの情報を追加</button>';
     return html;
   }
 
@@ -635,7 +635,7 @@
     row = row || {};
     return (
       '<div class="swl-emp-block">' +
-      '<button type="button" id="swl-pick-595" class="kintoneplugin-button-normal">595 利用者選択</button>' +
+      '<button type="button" id="swl-pick-595" class="kintoneplugin-button-normal">社員検索</button>' +
       '<label>社員番号<input id="swl-emp-id" value="' +
       esc(row.emp_id) +
       '" readonly></label>' +
@@ -685,7 +685,7 @@
     if (dups.length) {
       if (
         !window.confirm(
-          "同一の識別種別（" + dups.join("、") + "）が複数あります。このまま保存しますか？",
+          "同一の情報種別（" + dups.join("、") + "）が複数あります。このまま保存しますか？",
         )
       ) {
         return;
@@ -693,7 +693,7 @@
     }
     var emp = readEmployeeFromModal(box);
     if (!String(emp.user_name || "").trim()) {
-      alert("595 から利用者を選択してください");
+      alert("社員検索で利用者を選択してください");
       return;
     }
     var slotFields = slotsToRowFields(slots);
@@ -717,7 +717,7 @@
         if (hasDup) {
           if (
             !window.confirm(
-              "同一識別値（シリアル等）が既に登録されています。登録しますか？",
+              "同一のソフトウエア情報（シリアル等）が既に登録されています。登録しますか？",
             )
           ) {
             return Promise.reject(new Error("cancelled"));
@@ -1605,7 +1605,7 @@
         '<input type="text" id="swl-list-user" style="width:100%;box-sizing:border-box;margin-bottom:10px;padding:8px;">' +
         '<label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;">社員番号（完全一致）</label>' +
         '<div style="display:flex;gap:8px;margin-bottom:10px;"><input type="text" id="swl-list-emp" readonly style="flex:1;padding:8px;">' +
-        '<button type="button" id="swl-list-pick-595" class="kintoneplugin-button-normal">社員を選ぶ</button></div>' +
+        '<button type="button" id="swl-list-pick-595" class="kintoneplugin-button-normal">社員検索</button></div>' +
         '<label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;">製品名（部分一致）</label>' +
         '<input type="text" id="swl-list-sw" style="width:100%;box-sizing:border-box;margin-bottom:10px;padding:8px;">' +
         '<div style="font-size:12px;font-weight:700;margin-bottom:6px;">ステータス（1つ以上必須）</div>' +
@@ -1665,7 +1665,7 @@
       (state.filter === "active" ? " checked" : "") +
       "> 利用中</label>" +
       '<label><input type="radio" name="swl-filter" value="retired"> 廃止</label>' +
-      '<input type="search" id="swl-search" placeholder="製品名・型番・識別・氏名・所属…" style="min-width:240px;padding:6px;margin-left:8px">' +
+      '<input type="search" id="swl-search" placeholder="製品名・型番・ソフトウエアの情報・氏名・所属…" style="min-width:240px;padding:6px;margin-left:8px">' +
       '<button type="button" id="swl-clear" class="kintoneplugin-button-normal">クリア</button>' +
       "</div>" +
       '<div id="swl-meta" class="swl-meta"></div>' +

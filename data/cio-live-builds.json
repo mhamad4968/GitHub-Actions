@@ -234,11 +234,11 @@
       "note": null
     },
     "715": {
-      "build": "2026-06-14-software-ledger-dash-v1",
-      "fileKey": "79d1a058-abf9-4eb9-94c6-123671cbd5a7",
-      "revision": "4",
+      "build": "2026-06-14-software-ledger-dash-sw-info-label",
+      "fileKey": "69ab1b99-1170-4577-86d1-04c11d5b9a80",
+      "revision": "6",
       "relPath": "customize/software-ledger-dash/desktop.js",
-      "deployedAt": "2026-06-13T23:14:40.124Z",
+      "deployedAt": "2026-06-13T23:29:14.372Z",
       "note": null
     }
   }

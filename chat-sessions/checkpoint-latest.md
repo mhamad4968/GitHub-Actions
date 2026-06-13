@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-06-13 JST — **セッション締め**（R19–R33 反映・handoff/bridge 同期済 `8b21807`）
+**最終更新**: 2026-06-14 JST — **ソフトウエア台帳 v1 完了**（714/715・浜田目視 OK）
 
 ## 凍結（毎セッション先頭）
 | 禁止 | 許可 |
@@ -9,11 +9,10 @@
 | 業務改善 ver.02 の **v1 再実装**（クローズ後の無断再開） | v1 完成条件外の任意（FAQその他・本番6段WF・RAG・Wordマニュアル） |
 | 本番 WF 6段階への無断分割 | test_v3 WF 継続テスト |
 | 評価スナップショット本番投入（未設計確認前） | ガイド doc 更新（完成条件外） |
-| **記憶媒体台帳の kintone 作成**（ソフトウェア v1 目視前） | **ソフトウェア台帳 SPEC 実装**（浜田 GO 後） |
 
-**次の1手**: **ソフトウェア管理台帳** kintone 作成（Space 21・694 型）— 浜田 **「ソフトウェア台帳 kintone 作成 GO」** → 目視 OK 後 **記憶媒体等台帳**
-**業務改善 ver.02**: **2026-06-13 クローズ** — 699 rev **105** / 700 rev **139** / 713 rev **12** — 浜田確認済
-**新レーン（Space 21）**: **ソフトウェア管理台帳** SPEC GO 済 → **浜田「ソフトウェア台帳 kintone 作成 GO」待ち** / **記憶媒体等台帳** SPEC GO 済（ソフト v1 後）
+**次の1手**: **記憶媒体等管理台帳** — SPEC レビュー（R19 Q&A）→ 浜田 **「記憶媒体等台帳 kintone 作成 GO」**
+**Space 21 完了**: **ソフトウエア管理台帳 v1** — App **714/715** — **2026-06-14 浜田目視 OK**（commit 同期後 CLOSED）
+**新レーン（Space 21）**: **記憶媒体等台帳** SPEC GO 済 → **Q&A / 作成 GO 待ち**
 **ガバナンス**: **R19–R33 浜田 GO 済** — commit `4449977` push 済（`verify:cio-miss-reduction-governance` OK）
 **壁時計試験**: `.cio/session-clock-mode.json` **`trialPaused: true`** — START.bat 不使用・sessionEnd の stopAllClock スキップ（PS フラッシュ切り分け）
 **クローズ正本**: `data/cio-project-closures.json` / `npm run verify:checkpoint-project-closure`
@@ -34,6 +33,7 @@
 
 ---
 
+
 ## 2026-06-13 JST — **ソフトウェア/記憶媒体台帳 SPEC + 壁時計試験**
 
 | 項目 | 内容 |
@@ -46,6 +46,7 @@
 | **Git** | SPEC + 試験パッチ + npm-cli spawn 修正 — **commit/push 済**（`4324f8f`〜`4449977`） |
 
 ---
+
 
 ## 2026-06-13 JST — **業務改善 ver.02 v1 完成（クローズ）**
 
@@ -79,6 +80,7 @@
 ---
 
 
+
 ## 2026-06-11 JST — **システム推進室ポータル（App 712）**
 
 | 項目 | 内容 |
@@ -93,6 +95,7 @@
 
 
 
+
 ## 2026-06-11 JST — **業務改善 700 表彰ランク（確定仕様）**
 
 | 項目 | 内容 |
@@ -100,34 +103,6 @@
 | **本日完了** | 承認経路 UI ＋ **表彰ランク**: 自動=WF正・最終≦自動・部長は自動Cのみ完結・注記文言 |
 | **BUILD** | `2026-06-11-bi-rank-hint-message` rev **134** — 浜田 **正常動作 OK** |
 | **正本** | `docs/plans/2026-05-23-business-improvement-proposal-spec.md` §Q-UX-06 |
-
----
-
-
-
-## 2026-06-10 JST — **憲法 Phase 2-D 完了（§↔ジャンル機械リンク）**
-
-| 項目 | 内容 |
-|------|------|
-| **本日完了** | `constitution-genre-catalog.json` 単一正本 / RULES-INDEX 自動節 / sync+verify 連鎖 / `18-ai-team-read-map` 索引ポインタ追記 |
-| **AIチーム** | DeepSeek **GO** + `5038` stamp + `verify:cio-four-ai-governance` 全通過 |
-| **Git** | `576090f` push 済 |
-| **正本** | `docs/plans/2026-06-10-constitution-phase2d-team-proposal.md` |
-| **触らない** | AGENTS.md § 本文 / constitution.mdc 手編集 |
-
----
-
-
-
-
-## 2026-06-10 JST — **新規システム導入ヒアリング記録（Space 48）**
-
-| 項目 | 内容 |
-|------|------|
-| **本日完了** | 710 DB + 711 ダッシュ・一覧 + ヒアリングモーダル + **印刷 A4 2枚** — 浜田 **目視 OK** |
-| **BUILD** | 710=`2026-06-10-new-system-intro-db-block-ui` rev **5** / 711=`2026-06-10-new-system-intro-dash-print-a4-v2` rev **4** |
-| **正本** | `docs/plans/2026-06-10-new-system-intro-hearing-spec.md` |
-| **入口** | [711](https://jbis-kintone.cybozu.com/k/711/) |
 
 ---
 
