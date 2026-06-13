@@ -170,7 +170,8 @@ SPEC_TOUCHED: yes のターンで SECOND_REVIEWER: deepseek|kimi|openrouter の�
     A1: 毎ターン `npm run cio:turn-start` 先行（急ぎ明示時のみ例外）
     A2: checkpoint 先頭短文化・旧块 archive
     A3: 締め `npm run desktop:sync-and-verify` 必須
-    B1: 本日変更 **commit 必須**（締め前・未 commit 禁止）+ push 推奨
+    B1: 本日変更 **commit 必須**（締め前・未 commit 禁止）
+    B4: commit 後 **`git push` 必須**（B1 と一体・GO 待ち禁止）
     B2: `docs/runbooks/pc-event-log-health.md` 新設 — **実施済**
     B3: 再起動後 5 分（Event 3503 / BTHUSB 5 / hooks ログ）— runbook 内
     R1: 26 作成前に `evening-reflection-scope.md` Read 必須 — **`.cursor/rules/evening-reflection-scope.mdc`**
@@ -200,6 +201,19 @@ SPEC_TOUCHED: yes のターンで SECOND_REVIEWER: deepseek|kimi|openrouter の�
     正本: `docs/runbooks/doc-lane-completion-report.md`
 
   **締め push（B4）**: commit 後 **`git push` 必須** — `verify:session-close-git-warn`（ahead > 0 で exit 1）。
+
+【2026-06-13 追記・B1/B4 + 先祖返り回避（締め Git 儀式）】
+  **趣旨**: セッション終了時は **必ず commit + push**（浜田 GO 不要・CIO 自律 §35-1）。未 push のまま次セッション = **認識・コードの先祖返り**リスク。
+  **先祖返りガード（push 前）**:
+    (1) `npm run cio:guard:multi-customize` — customize **2アプリ以上**（R-17-1 / TSB-035）
+    (2) **`git pull --rebase origin main`** — リモート先行時の reject 回避
+    (3) その後 **`git push`**
+  **一括（推奨）**:
+    `npm run cio:session:close-git -- --execute --auto-stage --message "…"`
+    → 続けて `npm run desktop:sync-and-verify`
+  **順序**: commit+push **完了後**に Desktop sync（A3/R17）。sync だけで締め完了扱い **禁止**。
+  **禁止**: 「commit GO 待ち」「push は次セッション」（handoff 2857 型の再発）
+  **正本**: `docs/runbooks/session-close-multi-session.md` / `.cursor/rules/cio-session-close-git-gate.mdc`
 
   **LITE 上限（S3）**: 各 LITE **32KB 超**で verify NG — `desktop-ai-emergency-mirror-lite.mjs`
 

@@ -125,6 +125,18 @@ npm run desktop:sync-and-verify
 
 **禁止**: closures 済みなのに checkpoint だけで未完了レーンを報告 / 締めで checkpoint・handoff・closures を同ターンで揃えない
 
+### R20 — 締め commit+push + 先祖返り回避（2026-06-13 追補）
+
+| タイミング | コマンド |
+|------------|----------|
+| セッション締め | `npm run cio:session:close-git -- --execute --message "…"` |
+| 検査のみ | `npm run cio:session:close-git` |
+
+**順序**: R-17-1 guard → commit → `pull --rebase` → push → `desktop:sync-and-verify`  
+**禁止**: 締めで「commit GO 待ち」／push 先送り
+
+**正本**: `18-重要確認.txt` B1/B4 / `.cursor/rules/cio-session-close-git-gate.mdc`
+
 ## 一括検証
 
 ```bash

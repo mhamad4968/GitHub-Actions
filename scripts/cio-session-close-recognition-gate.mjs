@@ -32,7 +32,7 @@ function main() {
     console.warn('[cio:session:close-recognition-gate] WARN: 当日 SESSION-CLOSE-REPORT 無し（プロジェクト完了日でないなら省略可）');
   }
 
-  console.log('\n[cio:session:close-recognition-gate] OK — 続けて desktop:sync-and-verify + commit/push');
+  console.log('\n[cio:session:close-recognition-gate] OK — 続けて cio:session:close-git --execute → desktop:sync-and-verify');
   process.exit(0);
 }
 

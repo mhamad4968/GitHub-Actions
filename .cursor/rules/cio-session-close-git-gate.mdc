@@ -1,0 +1,30 @@
+---
+description: セッション締め B1/B4 — 先祖返り回避付き commit+push 必須（GO 待ち禁止）
+globs:
+  - chat-sessions/SESSION-CLOSE-REPORT*.txt
+  - chat-sessions/handoff-log.md
+  - chat-sessions/checkpoint-latest.md
+  - docs/reports/*-evening-reflection.md
+alwaysApply: false
+---
+
+# セッション締め Git（B1/B4 + 先祖返り回避）
+
+**18**: B1 commit 必須 / B4 push 必須 / S2 verify NG = 締め未完  
+**R-17-1**: customize 2アプリ以上 → `cio:guard:multi-customize` を **commit 前**  
+**順序**: `cio:session:close-git -- --execute --message "…"` → `desktop:sync-and-verify`
+
+## 禁止
+
+- 締めターンで「commit GO 待ち」「push は次セッション」
+- pull --rebase なしで push（reject / リモート先祖返り）
+- `desktop:sync-and-verify` を **commit+push より先**に完了扱い
+
+## 実行
+
+```powershell
+npm run cio:session:close-git -- --execute --auto-stage --message "…"
+npm run desktop:sync-and-verify
+```
+
+Cursor 汎用「明示指示まで commit しない」は **締めでは無効**（§35-1 CIO 自律）。

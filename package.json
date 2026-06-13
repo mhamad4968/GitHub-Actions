@@ -399,6 +399,7 @@
     "verify:cio-project-closure-governance": "node scripts/verify-cio-project-closure-governance.mjs",
     "cio:briefing:recognition-gate": "node scripts/cio-briefing-recognition-gate.mjs",
     "cio:session:close-recognition-gate": "node scripts/cio-session-close-recognition-gate.mjs",
+    "cio:session:close-git": "node scripts/cio-session-close-git.mjs",
     "cio:implementation-ok-seal": "node scripts/cio-implementation-ok-seal.mjs",
     "cio:task-complete-seal": "node scripts/cio-task-complete-seal.mjs",
     "cio:second-reviewer:capture": "node scripts/cio-second-reviewer-capture.mjs",
