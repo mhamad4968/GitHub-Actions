@@ -1,0 +1,40 @@
+{
+  "analyzedAt": "2026-06-14",
+  "file": "C:\\tmp\\社内Wi-FiのSSID情報管理台帳\\Wi-Fi情報一覧(20260205現在).xlsx",
+  "sizeBytes": 13196,
+  "sheets": [
+    {
+      "name": "Sheet1",
+      "headerRow": 3,
+      "excelLocationBlocks": 21,
+      "kintoneRecordsAfterSplit": 22,
+      "headers": ["(拠点)", "SSID", "パスワード"],
+      "notes": "パスワード値はリポに載せない。移行正本はローカル Excel。"
+    }
+  ],
+  "migrationRules": {
+    "splitCombinedRow": {
+      "excelLabel": "東北支店・仙台営業所",
+      "kintoneRecords": ["東北支店", "仙台営業所"],
+      "duplicateCredentials": true
+    },
+    "equipmentNone": ["水戸営業所", "鎌ヶ谷事務所"],
+    "ssid2BlankInitially": ["東京営業所", "静岡営業所"],
+    "trimWhitespace": ["関西営業所", "湾岸工事所"]
+  },
+  "sortNoPlan": {
+    "reference": "App 680 pc-ledger-dept-master-seed-records.json",
+    "honshaAboveTohoku": 11,
+    "kamagayaAfterMito": 223,
+    "recordCount": 22
+  },
+  "stats": {
+    "locationsWithTwoSsids": 18,
+    "locationsWithOneSsid": 2,
+    "locationsEquipmentNone": 2,
+    "dataQualityNotes": [
+      "盛岡営業所: Excel 上 ssid_2 も morioka01 と同一表記",
+      "名古屋営業所: tokai01 と nagoya01（東海支店の tokai01 と同名 SSID あり）"
+    ]
+  }
+}
