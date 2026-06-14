@@ -3190,6 +3190,17 @@ npm run cio:morning:ready
 
 ---
 
+### 2026-06-14 JST — **リポ + C:\tmp 作業領域整理**
+
+**C:\tmp**: A 区分削除 + 維持4フォルダのみ + runbook 整合（`17e75e6`）
+
+**リポ**:
+- `npm run cio:repo:purge-temp -- --apply` — 一時 data / pending proposals / `scripts/tmp-*` 削除
+- `scripts/tmp-analyze-apple-id-xlsx.mjs` 削除（正本: `docs/plans/tmp-apple-id-xlsx-structure.json`）
+- 正本: `docs/runbooks/repo-workspace-lifecycle.md`
+
+---
+
 ### 2026-06-14 JST — **Wi-Fi 移行元 Excel 完全削除（浜田報告）**
 
 **報告**: 移行元 Excel ファイルを **完全削除**済。

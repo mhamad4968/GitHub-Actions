@@ -107,7 +107,7 @@
 **0b Desktop**: `C:\Users\mhamada202408224\Desktop\AI緊急用` — `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync` / **`23-AI緊急用-README.txt`**  
 **壁時計**: `SESSION-CLOCK.md` / `SESSION-SPLIT-REMINDER.md` / `session:clock:set` / `session:clock:watch` / `session:split-check`  
 **§35-6 / §35-7 / HANDOFF-AI-FIVE-BLOCKS / TSB-031**: 削除は §35-6 / §41。**日終わり（R17 必須）**: `npm run cio:session:close-git -- --execute --auto-stage --message "…"`（R20 — desktop sync 内包。正本: 18 R20 / HANDOFF 先頭）
-**詳細履歴**: `chat-sessions/checkpoints/checkpoint-archive-2026-06-13.md`
+**詳細履歴**: `chat-sessions/checkpoints/checkpoint-archive-2026-06-14.md`
 
 再開時は `chat-sessions/handoff-log.md` 末尾と `chat-sessions/SESSION-CLOSE-REPORT-20260613.txt`。業務改善再開は **浜田 GO + closures 解除** のみ（R19）。
 

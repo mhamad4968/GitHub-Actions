@@ -47,6 +47,7 @@ npm run cio:tmp:ensure-workspaces
 
 ## 関連 runbook
 
+- `docs/runbooks/repo-workspace-lifecycle.md`（リポジトリ内一時ファイル）
 - `docs/runbooks/monthly-security-report.md`
 - `docs/runbooks/qualification-roadmap-pptx.md`
 - `docs/runbooks/pptx-patch-windows.md`

@@ -5,6 +5,7 @@ export const SESSION_CLOSE_TEMP_PATTERNS = [
   /^data\/rain-.*\.txt$/,
   /^data\/workdays-.*-(dump|summary)\.json$/,
   /^data\/workdays-.*-summary\.txt$/,
+  /^data\/tmp-.*\.(txt|json)$/,
   /^docs\/approved-changes\/pending\//,
 ];
 
