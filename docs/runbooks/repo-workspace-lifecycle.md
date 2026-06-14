@@ -59,6 +59,25 @@ git status -sb
 | `Documents\kintone-app` | **削除済（2026-06-14）** — 移行前ワークスペース |
 | `Documents\Claude` | **温存** — Claude Desktop 用（利用有無は浜田判断） |
 
+## C:\ 重複 clone・残骸（2026-06-14 削除済）
+
+| パス | 状態 |
+|------|------|
+| `C:\Users\mhamada202408224\kintone-ai-lab` | **正本** — git `main` の唯一の clone |
+| `C:\kintone_dev` | **削除済** — 2026-04 旧作業場（649–654 時代・`.env` 含む） |
+| `%USERPROFILE%\dev\kintone-ai-lab` | **削除済** — stale clone（`ca4ffd8`） |
+| `C:\home\mhamada202408224` | **削除済** — WSL パス誤作成 stub |
+| `C:\Claudeとの会話保存` | **削除済** — kintone 無関係の会話メモ（`Claudeとの会話メモ` とは別） |
+
+## Desktop（2026-06-14 整理）
+
+| パス | 状態 |
+|------|------|
+| `Desktop\AI緊急用` | **維持** — セッション bootstrap 正本（`session-starter:sync-desktop`） |
+| `Desktop\kintone-app - ショートカット.lnk` | **削除済** — 削除済 `Documents\kintone-app` への死リンク |
+| `Desktop\tmp - ショートカット.lnk` | **削除済** — 任意整理 |
+| `Desktop\AI*.txt`（内省メモ等） | **削除済** — 任意整理 |
+
 ## 関連
 
 - `docs/runbooks/c-tmp-workspace-lifecycle.md`
