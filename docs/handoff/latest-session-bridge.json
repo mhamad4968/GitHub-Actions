@@ -1,8 +1,8 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-06-14T00:41:11.698Z",
-  "gitHead": "ed0fb82",
-  "gitStatus": "## main...origin/main [ahead 1]",
+  "exportedAt": "2026-06-14T00:41:14.245Z",
+  "gitHead": "2e866f1",
+  "gitStatus": "## main...origin/main [ahead 2]",
   "nextTask": "**浜田指示待ち** — Space 21 台帳 v1（ソフトウエア + 記憶媒体等）**両方 CLOSED**",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
@@ -11,8 +11,6 @@
     "docs/handoff/latest-session-bridge.json",
     "docs/knowledge/debug-tips.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=ed0fb82 | 次=**浜田指示待ち** — Space 21 台帳 v1（ソフトウエア + 記憶媒体等）**両方 CLOSED** | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, .cursor/rules/mode-b-canonical.mdc",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
-  "validatedAt": "2026-06-14T00:41:12.008Z",
-  "crosscheckOk": true
+  "promptBlock": "【SESSION-BRIDGE】git=2e866f1 | 次=**浜田指示待ち** — Space 21 台帳 v1（ソフトウエア + 記憶媒体等）**両方 CLOSED** | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, .cursor/rules/mode-b-canonical.mdc",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }
