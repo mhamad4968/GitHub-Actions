@@ -50,8 +50,12 @@ function main() {
     if (!pkg.scripts?.[s]) issues.push(`package.json scripts.${s}`);
   }
 
-  const desktop = pkg.scripts?.['desktop:sync-and-verify'] || '';
-  if (!desktop.includes('verify-checkpoint-project-closure')) {
+  const desktopScript = fs.readFileSync(path.join(root, 'scripts/desktop-sync-and-verify.mjs'), 'utf8');
+  const desktopPkg = pkg.scripts?.['desktop:sync-and-verify'] || '';
+  if (
+    !desktopScript.includes('verify-checkpoint-project-closure') &&
+    !desktopPkg.includes('verify-checkpoint-project-closure')
+  ) {
     issues.push('desktop:sync-and-verify に verify-checkpoint-project-closure 未連結');
   }
 

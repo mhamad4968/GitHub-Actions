@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-10T10:53:47.348Z",
+  "generatedAt": "2026-06-14T00:25:36.255Z",
   "sectionToMdc": {
     "§0": [
       "constitution-brief-card.mdc",
@@ -160,6 +160,7 @@
       "deepseek-cursor-spec-division.mdc"
     ],
     "§50-3-11": [
+      "cio-commit-msg-kimi-gate.mdc",
       "cio-composer-escalation-interlock.mdc",
       "cio-context-dissolution-interlock.mdc",
       "cio-debug-tips-stock-gate.mdc",
@@ -167,6 +168,8 @@
       "cio-env-self-healing-gate.mdc",
       "cio-error-ticket-apply-gate.mdc",
       "cio-error-ticket-gate.mdc",
+      "cio-handoff-export-validate-gate.mdc",
+      "cio-kintone-fields-gate.mdc",
       "cio-spec-logic-gate.mdc",
       "cio-weekend-rollback-gate.mdc",
       "composer-mcp-audit-gate.mdc",
@@ -266,7 +269,8 @@
     ],
     "cio-commit-msg-kimi-gate.mdc": [
       "§(RULES-INDEX行)",
-      "§1-2-3-4-A"
+      "§1-2-3-4-A",
+      "§50-3-11"
     ],
     "cio-composer-escalation-interlock.mdc": [
       "§1-2-3-4-A",
@@ -318,17 +322,25 @@
     ],
     "cio-handoff-export-validate-gate.mdc": [
       "§(RULES-INDEX行)",
-      "§1-2-3-4-A"
+      "§1-2-3-4-A",
+      "§50-3-11"
     ],
     "cio-kintone-fields-gate.mdc": [
       "§(RULES-INDEX行)",
-      "§1-2-3-4-A"
+      "§1-2-3-4-A",
+      "§50-3-11"
     ],
     "cio-operating-loop.mdc": [
       "§(RULES-INDEX行)"
     ],
+    "cio-project-closure-gate.mdc": [
+      "§(RULES-INDEX行)"
+    ],
     "cio-report-min-format.mdc": [
       "§1"
+    ],
+    "cio-session-close-git-gate.mdc": [
+      "§(RULES-INDEX行)"
     ],
     "cio-spec-logic-gate.mdc": [
       "§1-2-3-4-A",
@@ -493,6 +505,9 @@
       "§34"
     ],
     "security-news-response.mdc": [
+      "§(RULES-INDEX行)"
+    ],
+    "session-close-execute-first.mdc": [
       "§(RULES-INDEX行)"
     ],
     "session-handoff.mdc": [

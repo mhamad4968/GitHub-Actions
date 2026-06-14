@@ -1,6 +1,15 @@
 # 📊 MCP 状態管理台帳
 
-**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-06-05（**context7 追加** + 調査系3件スタブ）
+**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-06-14（**第12層 — kintone-schema-mcp + git-history-mcp 追加**）
+
+### §活性化 — 第12層 2大新規MCP（2026-06-14）
+
+| MCP | 用途 | 起動 |
+|-----|------|------|
+| **`kintone-schema-mcp`** | 実 kintone アプリ form / views / settings を REST で取得（第11層 Linter と実スキーマ突合） | `node mcp/kintone-schema-mcp/index.mjs`（`.env` + `KINTONE_*`） |
+| **`git-history-mcp`** | Git ログから憲法層・4要素コミット・R19/R20 締め儀式を検索 | `node mcp/git-history-mcp/index.mjs`（repo root cwd） |
+
+**配備手順**: `npm run apply-layer12-mcp` → `npm run mcp:sync-cursor-windows` — 正本 `AGENTS.md` §50-3-11 第12層 / 検証 `verify:cio-weekend-layer12-infra` + `verify:cio-mcp-layer12-probe`
 
 ### §監査スナップ（2026-06-05 JST — context7 追加）
 

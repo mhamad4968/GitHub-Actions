@@ -1998,6 +1998,15 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 
 正本: `.cursor/rules/cio-kintone-fields-gate.mdc` / `cio-commit-msg-kimi-gate.mdc` / `cio-handoff-export-validate-gate.mdc` / `data/kintone-field-registry.json`
 
+**第12層 — 2大新規MCP拡張（2026-06-14 CEO 超厳命・§50-3-11 非置換）**:
+
+1. **kintone-schema-mcp** — 実 kintone アプリの form / views / settings を REST で直接取得 — `mcp/kintone-schema-mcp/index.mjs` — 第11層 Linter（`verify:kintone-fields`）と **実スキーマ突合**で customize JS の 1 文字ズレを根絶
+2. **git-history-mcp** — Git ログから憲法改定層・4要素コミット・R19/R20 締め儀式を自律検索 — `mcp/git-history-mcp/index.mjs` — `cio:session:close-git` / `cio:briefing:recognition-gate` と連動し先祖返りを防衛
+3. **配備**: `npm run apply-layer12-mcp` → `npm run mcp:sync-cursor-windows` — WSL `~/.cursor/mcp.json` + Windows `%USERPROFILE%\.cursor\mcp.json` + リポ `.cursor/mcp.json` へ同期
+4. **機械検証**: `npm run verify:cio-weekend-layer12-infra` / `npm run verify:cio-mcp-layer12-probe` — `verify:cio-four-ai-governance` に内包
+
+正本: `docs/mcp-status.md` §活性化 — 第12層 / `data/cio-mcp-manifest.json` / `scripts/apply-layer12-mcp-servers.mjs`
+
 **担当定義の極限明文化**: **`AGENTS.md` §1-2-3-4-A**（完全マトリクス）・`mode-b-canonical.mdc`（用語単一窓）・Desktop **`18-重要確認.txt`**（浜田視認用）。
 
 **タスクA — Composer silent fallback 禁止（§1-2-2 強化）**:

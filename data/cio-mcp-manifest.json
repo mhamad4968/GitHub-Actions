@@ -31,7 +31,9 @@
     "kintone-dev",
     "kintone-space",
     "cyber-news",
-    "cve-search"
+    "cve-search",
+    "kintone-schema-mcp",
+    "git-history-mcp"
   ],
   "repoOverlayOnly": [
     "figma",
@@ -39,7 +41,9 @@
     "mintlify",
     "repo-tree",
     "eslint-mcp",
-    "context7"
+    "context7",
+    "kintone-schema-mcp",
+    "git-history-mcp"
   ],
   "phaseD": {
     "chrome-devtools": "repo overlay 有効化済（docs/runbooks/chrome-devtools-mcp-setup.md）",

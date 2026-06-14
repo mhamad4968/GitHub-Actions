@@ -45,6 +45,8 @@ const RECOMMENDED = [
   'kintone-dev',
   'kintone-space',
   'office-powerpoint',
+  'kintone-schema-mcp',
+  'git-history-mcp',
 ];
 
 function loadServers(filePath) {
