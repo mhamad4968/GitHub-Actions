@@ -1,15 +1,16 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-06-14T18:00:00.000Z",
-  "gitHead": "pending",
-  "gitStatus": "## main...origin/main",
-  "nextTask": "Space 21 台帳 v1 両方 CLOSED（714/715・716/717）。次レーンは別 SPEC / 浜田指示待ち",
+  "exportedAt": "2026-06-14T00:25:52.128Z",
+  "gitHead": "4a05c5b",
+  "gitStatus": "## main...origin/main [ahead 1]",
+  "nextTask": "**浜田指示待ち** — Space 21 台帳 v1（ソフトウエア + 記憶媒体等）**両方 CLOSED**",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
-    "kintone-apps.md",
-    "docs/plans/2026-06-13-storage-media-ledger-kintone-spec.md",
-    "docs/plans/2026-06-13-software-ledger-kintone-spec.md"
+    "chat-sessions/handoff-log.md",
+    ".cursor/rules/mode-b-canonical.mdc",
+    "docs/handoff/latest-session-bridge.json",
+    "docs/knowledge/debug-tips.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】Space 21 台帳 v1 完了 — ソフトウエア(714/715) + 記憶媒体等(716/717) 浜田目視 OK | Read: checkpoint-latest.md",
-  "note": "記憶媒体等台帳 v1 CLOSED 2026-06-14 浜田目視 OK"
+  "promptBlock": "【SESSION-BRIDGE】git=4a05c5b | 次=**浜田指示待ち** — Space 21 台帳 v1（ソフトウエア + 記憶媒体等）**両方 CLOSED** | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, .cursor/rules/mode-b-canonical.mdc",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }
