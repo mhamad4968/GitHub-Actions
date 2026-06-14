@@ -65,6 +65,9 @@ jobs:
         with:
           node-version-file: '.nvmrc'
 
+      - name: npm ci（ESLint / verify 用）
+        run: npm ci
+
       # `.cursor/rules/constitution.mdc` は `.gitignore` によりリポに含めない（大容量の網羅結合版）。
       # verify は先頭 needle のみ検査するため、CI 上で再生成してから走らせる。
       - name: Generate constitution.mdc（runner 内のみ・常時想起は constitution-brief-card.mdc）
