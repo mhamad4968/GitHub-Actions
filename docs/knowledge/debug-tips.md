@@ -25,6 +25,7 @@
 
 <!-- errors: npm run desktop:sync-and-verify`（checkpoint 更新後） | npm run desktop:sync-and-verify` | npm run verify:checkpoint-project-closure` -->
 
+
 ## [2026-06-13] セッション解体時知恵ストック
 
 **前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
