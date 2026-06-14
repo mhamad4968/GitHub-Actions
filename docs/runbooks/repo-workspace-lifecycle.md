@@ -51,6 +51,14 @@ git status -sb
 
 セッション締め前: `cio:session:close-git` は一時 untracked を **自動スキップ**（`isSessionCloseTempPath`）。
 
+## Documents（ユーザプロファイル）
+
+| パス | 状態 |
+|------|------|
+| `Documents\kintone-src` | **削除済（2026-06-14）** — 正本はリポ `customize/` / `scripts/` |
+| `Documents\kintone-app` | **削除済（2026-06-14）** — 移行前ワークスペース |
+| `Documents\Claude` | **温存** — Claude Desktop 用（利用有無は浜田判断） |
+
 ## 関連
 
 - `docs/runbooks/c-tmp-workspace-lifecycle.md`

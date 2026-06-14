@@ -47,7 +47,7 @@ cd /home/mhamada202408224/kintone-ai-lab
 
 - **kintone**: kintone REST API / スキーマ取得（環境側スクリプト経由）
 - **google-search / fetch**: 公式ドキュメントの参照・取得
-- **filesystem**: `kintone-ai-lab` や `Documents/kintone-src` を読み書き
+- **filesystem**: `kintone-ai-lab` を読み書き（旧 `Documents/kintone-src` / `kintone-app` は 2026-06-14 削除済）
 
 「仕様確認が必要なときは MCP を使って公式へ回帰する」は `kintone-ai-lab/CLAUDE.md` の方針に従う。
 

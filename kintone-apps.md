@@ -6,7 +6,7 @@
 
 - 新規アプリやフィールド変更があったら **このファイルを更新**する（アプリ名・アプリID・フィールド一覧）。
 - **部署予実（予算・実績・修正）**: 仕様は `templates/yojitsu-budget-lite/SPEC.md`（**§6c**＝`支払内訳` サブテーブル等のたたき台）。**入力**と **ダッシュ**の **2 アプリ**＋任意マスタ（`SPEC.md` §6b）。一覧表は **アプリごと 1 行**（下表参照）。`shin-format-excel-layout.md`・`excel-column-draft-2026-04-28.md`・`yojitsu-spec-session-checklist.md`。**アプリ新規作成時は配置先 kintone スペース（名または ID）を先に決める**（`.cursor/rules/creation-timing-ask.mdc`）。
-- 生成したアップロード前の JS などは、可能なら **`Documents/kintone-src`**（WSL: `/mnt/c/Users/mhamada202408224/Documents/kintone-src`）に置く。既存のデプロイ済みソースは `kintone-ai-lab/customize/<アプリIDまたは別名>/` を参照。
+- **カスタマイズ JS の正本**: `kintone-ai-lab/customize/<アプリIDまたは別名>/desktop.js`（deploy 前もここを編集）。FAQ ポータル等は `scripts/`。
 - フィールド一覧を最新化するときは、リポジトリ直下で次を実行し、出力を貼るか表に反映する。
 
 ```bash

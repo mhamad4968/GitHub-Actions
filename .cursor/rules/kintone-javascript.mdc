@@ -24,7 +24,7 @@ alwaysApply: false
 
 - **ワンオフ・検証用・生成ドラフト**: `kintone-ai-lab/scripts/` に保存してからデプロイ手順へ回す（ユーザ指定の「プロジェクト内の scripts」はここを指す）。
 - **画面カスタマイズ本番ソース**: `kintone-ai-lab/customize/<アプリIDまたはフォルダ名>/desktop.js` に反映する。
-- **アップロード前の退避・共有用**: `Documents/kintone-src`（WSL: `/mnt/c/Users/mhamada202408224/Documents/kintone-src`）も使ってよい。
+- **正本**: `kintone-ai-lab/customize/<app>/desktop.js` および `scripts/`（`Documents/kintone-src` は **2026-06-14 廃止・削除済**）。
 
 ## REST API / 更新回数
 

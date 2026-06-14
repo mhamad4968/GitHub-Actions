@@ -3208,3 +3208,13 @@ npm run cio:morning:ready
 **記録**: SPEC §6.4 / completion / checkpoint / closures を更新。
 
 ---
+
+### 2026-06-14 JST — **Documents 旧 kintone ワークスペース削除**
+
+**削除**: `Documents\kintone-src` / `Documents\kintone-app`（浜田 OK）
+
+**温存**: `Documents\Claude`（Claude Desktop 利用未定のため）
+
+**正本更新**: `kintone-apps.md` / `kintone-javascript.mdc` — 正本はリポのみ
+
+---
