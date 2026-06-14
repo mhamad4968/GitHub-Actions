@@ -1,13 +1,27 @@
 # 資格取得ロードマップ PPTX
 
 > **正本データ**: `scripts/data/qualification-roadmap.json`（夕反省 **P3 GO**）  
-> **編集手順**: `docs/runbooks/pptx-patch-windows.md`
+> **編集手順**: `docs/runbooks/pptx-patch-windows.md`  
+> **作業領域**: `docs/runbooks/c-tmp-workspace-lifecycle.md`
 
 ## 確定ファイル（2026-06-03 浜田 OK）
 
 ```
 C:\tmp\資格取得ロードマップ\システム推進室_資格取得ロードマップver.03（方針説明付き）.pptx
 ```
+
+> **2026-06-14**: 上記フォルダは棚卸しで **削除済**。次回編集時は §着手前 を実施し、バックアップから canonical PPTX を **再配置**する（リポには commit しない）。
+
+## 着手前（都度）
+
+```powershell
+cd C:\Users\mhamada202408224\kintone-ai-lab
+npm run cio:tmp:ensure-workspaces
+# バックアップ等から canonical PPTX を配置:
+#   C:\tmp\資格取得ロードマップ\システム推進室_資格取得ロードマップver.03（方針説明付き）.pptx
+```
+
+パス正本: `scripts/data/qualification-roadmap.json` の `pptxDir` / `pptxCanonicalName`
 
 ## 区分（正本 JSON と一致）
 
@@ -27,4 +41,7 @@ C:\tmp\資格取得ロードマップ\システム推進室_資格取得ロー�
 
 1. `qualification-roadmap.json` を先に更新
 2. 区分表を浜田に提示 → OK
-3. `rebuild_roadmap_pptx.py` 相当で 1～4 枚目を同期
+3. リポ正本スクリプトで同期（**`C:\tmp\*.py` は使わない**）:
+   - `node scripts/build-qualification-roadmap-hr-deck.mjs` — 人事説明付き生成
+   - `python scripts/_update_roadmap_hr_deck_v3.py` — 年次区分整合
+   - `python scripts/_normalize_roadmap_slide1_styles.py` — 1枚目スタイル

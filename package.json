@@ -473,6 +473,7 @@
     "verify:constitution-genre-kernels": "node scripts/verify-constitution-genre-kernels.mjs",
     "verify:cio-final-closure-infra": "node scripts/verify-cio-final-closure-infra.mjs",
     "verify:cio-extreme-defence-infra": "node scripts/verify-cio-extreme-defence-infra.mjs",
+    "cio:tmp:ensure-workspaces": "node scripts/cio-tmp-ensure-workspaces.mjs",
     "cio:doc-lane-gate": "node scripts/cio-doc-lane-gate.mjs",
     "doc-lane:verify-v5-ch3-refs": "python C:\\tmp\\マニュアル\\scripts\\verify_v5_ch3_c5_references.py",
     "doc-lane:patch-v5-a3": "python C:\\tmp\\マニュアル\\scripts\\patch_v5_a3_staff_summary.py",

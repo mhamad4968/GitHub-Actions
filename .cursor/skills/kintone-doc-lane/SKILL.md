@@ -54,6 +54,7 @@ markdownify が SKIP のときは python フォールバックで続行し、チ
 | DOCX パッチ | `docs/runbooks/docx-patch-windows.md` |
 | PPTX パッチ | `docs/runbooks/pptx-patch-windows.md` |
 | 資格 PPTX | `docs/runbooks/qualification-roadmap-pptx.md` |
+| C:\tmp 作業領域 | `docs/runbooks/c-tmp-workspace-lifecycle.md` |
 
 ## 完了記録
 

@@ -5,7 +5,8 @@
 ## 対象
 
 - Word / PPTX / PDF 由来の **社内資料**（kintone customize/deploy **外**）
-- 正本は `C:\tmp\` または `scripts/` — リポ commit で再現可能にする
+- 正本は `C:\tmp\`（維持・都度作成）または `scripts/` — 台帳は `data/c-tmp-workspace-registry.json`
+- リポ commit で再現可能にする（機密 DOCX/PPTX/XLSX は **commit しない**）
 
 ## 起動前
 

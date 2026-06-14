@@ -1,0 +1,59 @@
+{
+  "version": "2026-06-14",
+  "description": "C:\\tmp 作業領域 — 2026-06-14 棚卸し後の正本",
+  "lastCleanup": "2026-06-14",
+  "lastCleanupNote": "A/B 区分整理。維持4 + 都度作成2。ルート直下 ad-hoc .py は削除済（正本は scripts/）",
+  "folders": [
+    {
+      "id": "manual",
+      "path": "C:\\tmp\\マニュアル",
+      "status": "keep",
+      "label": "v5 マニュアル doc-lane",
+      "runbook": "docs/runbooks/doc-lane.md",
+      "npm": ["doc-lane:patch-v5-a3", "doc-lane:verify-v5-ch3-refs"]
+    },
+    {
+      "id": "budget",
+      "path": "C:\\tmp\\予算管理",
+      "status": "keep",
+      "label": "予実 677/678 移行元 Excel",
+      "runbook": "templates/yojitsu-budget-lite/SPEC.md"
+    },
+    {
+      "id": "workdays",
+      "path": "C:\\tmp\\稼働日数算出ツール",
+      "status": "keep",
+      "label": "稼働日数算出ツール（687/688）",
+      "runbook": "docs/plans/2026-05-17-construction-workdays-spec-v1.md",
+      "npm": ["workdays:import-jma-csv", "workdays:calc-gate"]
+    },
+    {
+      "id": "pc-kitting-iso",
+      "path": "C:\\tmp\\PCキッティングインストール用",
+      "status": "keep",
+      "label": "PC キッティング ISO（大容量）",
+      "runbook": "templates/pc-kitting/README.md"
+    },
+    {
+      "id": "security-report",
+      "path": "C:\\tmp\\資料作成",
+      "status": "on-demand",
+      "label": "月次情報セキュリティレポート（テンプレ・出力 DOCX）",
+      "runbook": "docs/runbooks/monthly-security-report.md",
+      "npm": ["doc-lane:security-report"],
+      "ensureBeforeUse": true,
+      "note": "2026-06-14 削除済 — 月次作業開始時に再作成（builder が mkdir する）"
+    },
+    {
+      "id": "qualification-pptx",
+      "path": "C:\\tmp\\資格取得ロードマップ",
+      "status": "on-demand",
+      "label": "資格取得ロードマップ PPTX",
+      "runbook": "docs/runbooks/qualification-roadmap-pptx.md",
+      "jsonRef": "scripts/data/qualification-roadmap.json",
+      "ensureBeforeUse": true,
+      "note": "2026-06-14 削除済 — 編集前にフォルダ作成し canonical PPTX を配置"
+    }
+  ],
+  "adHocPyRule": "調査用は C:\\tmp\\*.py 可。完了後は scripts/ 昇格 or 削除。正本はリポ scripts/ + npm run。"
+}

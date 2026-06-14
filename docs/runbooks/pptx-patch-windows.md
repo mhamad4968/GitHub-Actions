@@ -13,13 +13,22 @@
 2. **バックアップ**: 編集前に `*_backup.pptx` または `*_更新YYYYMMDD.pptx` をコピー
 3. **本文差替**: `text_frame.clear()` のあと全文を再設定。**追記のみ禁止**（P1）
 4. **検証**: 保存直後に python で対象段落を read-back。期待文字列が無ければ **再保存しない**
-5. **Windows 実行**: スクリプトは **`C:\tmp\*.py` にファイル化**して `python C:\tmp\xxx.py`。**PowerShell heredoc（`<<'EOF'`）禁止**（P5）
+5. **Windows 実行**: **PowerShell heredoc（`<<'EOF'`）禁止**（P5）。スクリプトはファイル化して実行:
+   - **再利用（正本）** → `scripts/*.py`（リポ commit 済み）
+   - **一度きり調査** → `C:\tmp\xxx.py`（完了後 **削除** or `scripts/` 昇格）
 6. **人事向けスライド**: 編集前に **区分表（必須/推奨/任意）をチャットで1回提示 → 浜田 OK 後に着手**（P4）
 
 ## 正本
 
 - 資格ロードマップ区分: `scripts/data/qualification-roadmap.json`（P3）
-- 生成・パッチ例: `C:\tmp\rebuild_roadmap_pptx.py` / `C:\tmp\fix_slide4_section4.py`
+- 資格 PPTX 手順: `docs/runbooks/qualification-roadmap-pptx.md`
+- 資格ロードマップ生成・更新（**リポ正本**）:
+  - `node scripts/build-qualification-roadmap-hr-deck.mjs` — 人事説明付きデック生成
+  - `python scripts/_update_roadmap_hr_deck_v3.py` — 1～2年目=基本情報 / 2～3年目=SG 整合
+  - `python scripts/_normalize_roadmap_slide1_styles.py` — 1枚目スタイル統一
+- `C:\tmp` 台帳: `data/c-tmp-workspace-registry.json` / `docs/runbooks/c-tmp-workspace-lifecycle.md`
+
+> **2026-06-14**: 旧 `C:\tmp\rebuild_roadmap_pptx.py` 等は削除済。**復元不要**（上記 `scripts/` が正本）。
 
 ## 失敗例（再発防止）
 

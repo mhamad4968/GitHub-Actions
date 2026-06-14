@@ -9,8 +9,11 @@
 | builder | `scripts/build-monthly-security-report.py` |
 | 書式 lib | `scripts/lib/docx_template_format.py` |
 | 月次 JSON | `scripts/data/monthly-security-report-YYYYMM.json` |
+| 作業ディレクトリ | `C:\tmp\資料作成`（**都度作成** — `data/c-tmp-workspace-registry.json`） |
 | テンプレ DOCX | `C:\tmp\資料作成\*YYYYMM11.docx`（前月分） |
 | 出力 DOCX | `C:\tmp\資料作成\【YYYY年M月度経営会議資料】…docx` |
+
+> **2026-06-14**: `資料作成` は棚卸しで削除済。月次作業前に `npm run cio:tmp:ensure-workspaces` または builder 実行（`work_dir` 自動 mkdir）。
 
 ## 実行
 
@@ -39,10 +42,11 @@ python scripts/build-monthly-security-report.py --config scripts/data/monthly-se
 
 ## 新規月の追加
 
-1. 前月 DOCX を `C:\tmp\資料作成\` に配置
-2. `scripts/data/monthly-security-report-YYYYMM.json` をコピー作成
-3. `output_filename` / `section2` / `external_cases` を更新
-4. `npm run doc-lane:security-report -- --config scripts/data/monthly-security-report-YYYYMM.json`
+1. `npm run cio:tmp:ensure-workspaces`（`C:\tmp\資料作成` が無ければ作成）
+2. 前月 DOCX を `C:\tmp\資料作成\` に配置
+3. `scripts/data/monthly-security-report-YYYYMM.json` をコピー作成
+4. `output_filename` / `section2` / `external_cases` を更新
+5. `npm run doc-lane:security-report -- --config scripts/data/monthly-security-report-YYYYMM.json`
 
 ## 関連
 

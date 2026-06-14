@@ -136,6 +136,7 @@ def load_config(path: Path) -> dict:
 
 def build_report(cfg: dict) -> Path:
     work_dir = Path(cfg["work_dir"])
+    work_dir.mkdir(parents=True, exist_ok=True)
     template = next(work_dir.glob(cfg["template_glob"]))
     out = work_dir / cfg["output_filename"]
     charts_dir = work_dir / "_charts"
