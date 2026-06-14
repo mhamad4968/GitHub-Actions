@@ -32,8 +32,10 @@ npm run cio:session:start
 朝の立ち上げ:
 
 ```bash
-npm run cio:morning:ready -- --project business-improvement
+npm run cio:morning:ready
 ```
+
+**注意（2026-06-14）**: 業務改善 ver.02 v1 **クローズ済** — `--project business-improvement` は **付けない**（付けても pre-implement はスキップされるだけ）。
 
 ## 鮮度
 

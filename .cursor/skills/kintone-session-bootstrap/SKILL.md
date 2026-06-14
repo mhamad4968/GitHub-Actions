@@ -24,8 +24,10 @@ npm run cio:session:start
 **朝の立ち上げ**（rollup + handoff + health + 実装前ゲート）:
 
 ```bash
-npm run cio:morning:ready -- --project business-improvement
+npm run cio:morning:ready
 ```
+
+業務改善 ver.02 v1 **クローズ済（2026-06-13）** — `--project business-improvement` は **不要**（付けても pre-implement スキップのみ）。
 
 依頼ルーティング: `data/cio-project-lanes.json`
 

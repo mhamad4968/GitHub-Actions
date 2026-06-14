@@ -1,0 +1,37 @@
+SESSION CLOSE — 2026-06-14 JST（第12/13層ガバナンス + Space 21 台帳 v1 完了）
+（本日成果の要約。明日の作業手順は checkpoint 先頭のみ）
+
+================================================================================
+【本日の成果（事実）】
+================================================================================
+■ Space 21 台帳 v1 — 両方 CLOSED（浜田目視 OK）
+  - ソフトウエア 714/715
+  - 記憶媒体等 716/717
+
+■ 第12/13層ガバナンス A1–C4（Tier A）
+  - live-schema portfolio 再設計 / handoff diff / generations sync
+  - deploy 前 live-schema ガード / MCP×CLI 単一窓 / 月次 portfolio 連鎖
+  - 674: customizeDirs 逆引き + relatedAppFieldsFrom + 596 静的台帳
+
+■ 許容ギャップの運用化（「知ってるのにやらない」防止）
+  - 640: data/kintone-accepted-gaps.json — deploy 接続時に verify NG
+  - generations: pre-commit dry-run + post-commit manifest amend + git マージ監査
+
+■ Git
+  - commit 6a37e1d + push 済
+  - hooks:install 済（浜田端末）
+
+================================================================================
+【許容のまま（意図的）】
+================================================================================
+- 640 live-schema（641 category_name）— deploy 未接続
+- generations manifest WARN — 監査は git マージで安全
+
+================================================================================
+【次セッション】
+================================================================================
+- 朝: npm run cio:morning:ready（--project business-improvement は不要）
+- 第1手: 浜田指示待ち — 項番 -0 で本題合意
+- 参照: chat-sessions/checkpoint-latest.md 先頭
+
+EOF

@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-06-14 JST — **記憶媒体等台帳 v1 完了**（716/717・浜田目視 OK）
+**最終更新**: 2026-06-14 JST — **第12/13層ガバナンス A1–C4 完了** + Space 21 台帳 v1 両方 CLOSED
 
 ## 凍結（毎セッション先頭）
 | 禁止 | 許可 |
@@ -10,16 +10,30 @@
 | 本番 WF 6段階への無断分割 | test_v3 WF 継続テスト |
 | 評価スナップショット本番投入（未設計確認前） | ガイド doc 更新（完成条件外） |
 
-**次の1手**: **浜田指示待ち** — Space 21 台帳 v1（ソフトウエア + 記憶媒体等）**両方 CLOSED**
+**次の1手**: **浜田指示待ち** — Space 21 台帳 v1 完了・第12/13層インフラ完了。**次レーンは浜田 GO + 項番 -0 合意**
 **Space 21 完了**: **ソフトウエア管理台帳 v1** — App **714/715** — **2026-06-14 浜田目視 OK**
 **Space 21 完了**: **記憶媒体等管理台帳 v1** — App **716/717** — **2026-06-14 浜田目視 OK**
+**ガバナンス（第12/13層）**: **A1–C4 + 674 live-schema + 許容ギャップ運用化** — commit **`6a37e1d` push 済** / `verify:cio-four-ai-governance` OK / `hooks:install` 済（浜田端末）
+**許容（機械監視）**: **640** deploy 未接続（`verify:kintone-accepted-gaps`）/ **generations** post-commit amend + git マージ監査
 **新レーン（Space 21）**: なし（v1 台帳2本とも CLOSED — 次は別 SPEC / 浜田 GO）
-**ガバナンス**: **R19–R33 浜田 GO 済** — commit `4449977` push 済（`verify:cio-miss-reduction-governance` OK）
 **壁時計試験**: `.cio/session-clock-mode.json` **`trialPaused: true`** — START.bat 不使用・sessionEnd の stopAllClock スキップ（PS フラッシュ切り分け）
 **クローズ正本**: `data/cio-project-closures.json` / `npm run verify:checkpoint-project-closure`
 **R13–R18**: **浜田 GO 済** — `docs/approved-changes/2026-06-11-rules-r13-r18-hamada-go.md`
 **システム推進室ポータル**: **2026-06-11 完了**（712 — 5タブ・15リンク — 浜田 OK）
 **ポータル未着手（手動）**: Space 48 スペース画面へ **712 リンク 1 つ**
+
+---
+
+## 2026-06-14 JST — **第12/13層ガバナンス A1–C4 + 674 live-schema + 許容ギャップ運用化**
+
+| 項目 | 内容 |
+|------|------|
+| **範囲** | A1 handoff / A2 MCP matrix / A3 deploy live-schema guard / B1–B5 registry・portfolio・generations / C1–C4 MCP×CLI・月次 portfolio |
+| **674** | `resolveCustomizeDirsForApp` + registry `relatedAppFieldsFrom` + 596 静的台帳 — `verify:kintone-live-schema --app 674` OK |
+| **許容** | **640** deploy 未接続 → `data/kintone-accepted-gaps.json` + `verify:kintone-accepted-gaps` / **generations** → pre-commit dry-run + post-commit amend |
+| **正本** | `kintone-apps.md` SOP / `docs/runbooks/cio-periodic-ops-schedule.md` / `docs/faq-apps-640-641.md` |
+| **Git** | **`6a37e1d`** push 済 / `main = origin/main` |
+| **次回朝** | `npm run cio:morning:ready`（**`--project business-improvement` 不要** — v1 クローズ済） |
 
 ---
 

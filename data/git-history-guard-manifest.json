@@ -3,7 +3,7 @@
   "note": "git-history-alignment が保護するコマンド・緩和禁止パターン。verify:git-history-alignment / git-history-mcp 連動。",
   "generations": [
     {
-      "hash": "a2a8244",
+      "hash": "6a37e1d",
       "label": "feat(cio): 第12/13層 A1-C4 + 674 live-schema ガード + 許容ギャップ運用化",
       "at": "2026-06-14"
     },

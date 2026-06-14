@@ -169,6 +169,15 @@ npm run desktop:sync-and-verify
 
 `docs/runbooks/kintone-ledger-spec-qa-checklist.md` — SPEC GO 前必須。検証: `verify:kintone-ledger-spec-qa`
 
+## 第12/13層 — 許容ギャップの機械監視（2026-06-14）
+
+| ギャップ | 許容条件 | 忘れ防止 |
+|----------|----------|----------|
+| **640** FAQ DB | deploy 未接続 | `data/kintone-accepted-gaps.json` + `npm run verify:kintone-accepted-gaps` — **`deploy:640` 追加時 NG**（registry `relatedAppFieldsFrom: ["641"]` 必須） |
+| **generations manifest** | 監査は git マージで安全 | pre-commit dry-run + post-commit `sync --apply` → `--amend` / close-git 二重化 |
+
+正本: `kintone-apps.md` フィールド台帳 SOP / `docs/runbooks/cio-periodic-ops-schedule.md`
+
 ## 一括検証
 
 ```bash
