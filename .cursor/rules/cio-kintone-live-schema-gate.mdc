@@ -1,0 +1,35 @@
+---
+description: 第12層拡張案1 — kintone 実機ライブスキーマ Linter（verify:kintone-live-schema）
+alwaysApply: false
+globs: "customize/**"
+---
+
+# kintone 実機ライブスキーマ Linter ゲート（§50-3-11 第12層・拡張案1）
+
+> **機械**: `npm run verify:kintone-live-schema` — kintone-schema-mcp 同一 REST 正本
+
+## 前提条件
+
+- `customize/**` 編集後・**deploy / 本番 PUT 直前**
+- `.env` + `KINTONE_*` 設定済（`verify:cio-env-integrity` 合格）
+- 第11層 `verify:kintone-fields`（registry）と **併用**（registry → 実機の二段）
+
+## 実行手順
+
+1. フィールドコード変更後 `npm run verify:kintone-fields [-- --app <id>]`
+2. **`npm run verify:kintone-live-schema [-- --app <id>]`** — 実機 preview form と customize JS をライブ突合
+3. **Warning 0**（medium 含む未登録も NG）→ exit 0 のみ deploy 可
+4. Composer 2.5 は §50-3-11 **第4ステップ** 証明行に `live-schema=OK` を追記
+
+## 禁止事項
+
+- 実機 API 未突合のまま customize PUT
+- registry のみ OK で live NG を無視
+- 上位憲法 §50-3-11 非置換違反
+
+## 判定コード
+
+| コマンド | 合格 |
+|----------|------|
+| `verify:kintone-live-schema` | exit 0・Warning 0 |
+| 不合格 | exit 1 + 実機不存在フィールド一覧 |

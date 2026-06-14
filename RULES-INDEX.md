@@ -73,6 +73,8 @@
 | kintone・customize | [`constitutional-focus-kintone-customize.mdc`](.cursor/rules/constitutional-focus-kintone-customize.mdc) | AGENTS.md §35-7 §50-3-8 §52 — customize 編集・本番 deploy 時の追加想起（glob） |
 | kintone・customize | [`creation-timing-ask.mdc`](.cursor/rules/creation-timing-ask.mdc) | アプリ新規作成前に「今すぐ／後日」と配置先スペースを浜田へ確認。未決なら作成に着手しない（浜田指示 2026-04-28） |
 | kintone・customize | [`cio-kintone-fields-gate.mdc`](.cursor/rules/cio-kintone-fields-gate.mdc) | 第11層 — kintone フィールドコード Linter（verify:kintone-fields） |
+| kintone・customize | [`cio-kintone-live-schema-gate.mdc`](.cursor/rules/cio-kintone-live-schema-gate.mdc) | 第12層拡張案1 — kintone 実機ライブスキーマ Linter（verify:kintone-live-schema） |
+| Git履歴・先祖返り防止 | [`cio-git-history-alignment-gate.mdc`](.cursor/rules/cio-git-history-alignment-gate.mdc) | 第12層拡張案2 — Git 履歴デグレード防止（verify:git-history-alignment） |
 | ドメイン特化（glob） | [`constitutional-focus-yojitsu.mdc`](.cursor/rules/constitutional-focus-yojitsu.mdc) | AGENTS.md §50-3-8 §41 §2 — 部署予実（yojitsu）テンプレ・SPEC 変更時の追加想起（glob） |
 | ドメイン特化（glob） | [`constitutional-focus-github-workflows.mdc`](.cursor/rules/constitutional-focus-github-workflows.mdc) | AGENTS.md §18 §52-8 §35-1 — GitHub Actions / workflow 変更時の追加想起（glob） |
 | ドメイン特化（glob） | [`security-news-response.mdc`](.cursor/rules/security-news-response.mdc) | セキュリティニュースの説明・要約・整理を依頼されたときの出力形式と CVE 時の調査 |
@@ -134,7 +136,7 @@
 | §50 | [`constitution-brief-card.mdc`](.cursor/rules/constitution-brief-card.mdc) · [`mcp-server-use-triggers.mdc`](.cursor/rules/mcp-server-use-triggers.mdc) |
 | §50-3 | [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) · [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) |
 | §50-3-10 | [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) |
-| §50-3-11 | [`cio-commit-msg-kimi-gate.mdc`](.cursor/rules/cio-commit-msg-kimi-gate.mdc) · [`cio-composer-escalation-interlock.mdc`](.cursor/rules/cio-composer-escalation-interlock.mdc) · [`cio-context-dissolution-interlock.mdc`](.cursor/rules/cio-context-dissolution-interlock.mdc) · [`cio-debug-tips-stock-gate.mdc`](.cursor/rules/cio-debug-tips-stock-gate.mdc) · [`cio-env-integrity-gate.mdc`](.cursor/rules/cio-env-integrity-gate.mdc) · [`cio-env-self-healing-gate.mdc`](.cursor/rules/cio-env-self-healing-gate.mdc) · [`cio-error-ticket-apply-gate.mdc`](.cursor/rules/cio-error-ticket-apply-gate.mdc) · [`cio-error-ticket-gate.mdc`](.cursor/rules/cio-error-ticket-gate.mdc) · [`cio-handoff-export-validate-gate.mdc`](.cursor/rules/cio-handoff-export-validate-gate.mdc) · [`cio-kintone-fields-gate.mdc`](.cursor/rules/cio-kintone-fields-gate.mdc) · [`cio-spec-logic-gate.mdc`](.cursor/rules/cio-spec-logic-gate.mdc) · [`cio-weekend-rollback-gate.mdc`](.cursor/rules/cio-weekend-rollback-gate.mdc) · [`composer-mcp-audit-gate.mdc`](.cursor/rules/composer-mcp-audit-gate.mdc) · [`cursor-generate-image-assets.mdc`](.cursor/rules/cursor-generate-image-assets.mdc) · [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) · [`every-turn-rules-confirm.mdc`](.cursor/rules/every-turn-rules-confirm.mdc) · [`mode-b-canonical.mdc`](.cursor/rules/mode-b-canonical.mdc) |
+| §50-3-11 | [`cio-commit-msg-kimi-gate.mdc`](.cursor/rules/cio-commit-msg-kimi-gate.mdc) · [`cio-composer-escalation-interlock.mdc`](.cursor/rules/cio-composer-escalation-interlock.mdc) · [`cio-context-dissolution-interlock.mdc`](.cursor/rules/cio-context-dissolution-interlock.mdc) · [`cio-debug-tips-stock-gate.mdc`](.cursor/rules/cio-debug-tips-stock-gate.mdc) · [`cio-env-integrity-gate.mdc`](.cursor/rules/cio-env-integrity-gate.mdc) · [`cio-env-self-healing-gate.mdc`](.cursor/rules/cio-env-self-healing-gate.mdc) · [`cio-error-ticket-apply-gate.mdc`](.cursor/rules/cio-error-ticket-apply-gate.mdc) · [`cio-error-ticket-gate.mdc`](.cursor/rules/cio-error-ticket-gate.mdc) · [`cio-handoff-export-validate-gate.mdc`](.cursor/rules/cio-handoff-export-validate-gate.mdc) · [`cio-kintone-fields-gate.mdc`](.cursor/rules/cio-kintone-fields-gate.mdc) · [`cio-kintone-live-schema-gate.mdc`](.cursor/rules/cio-kintone-live-schema-gate.mdc) · [`cio-spec-logic-gate.mdc`](.cursor/rules/cio-spec-logic-gate.mdc) · [`cio-weekend-rollback-gate.mdc`](.cursor/rules/cio-weekend-rollback-gate.mdc) · [`composer-mcp-audit-gate.mdc`](.cursor/rules/composer-mcp-audit-gate.mdc) · [`cursor-generate-image-assets.mdc`](.cursor/rules/cursor-generate-image-assets.mdc) · [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) · [`every-turn-rules-confirm.mdc`](.cursor/rules/every-turn-rules-confirm.mdc) · [`mode-b-canonical.mdc`](.cursor/rules/mode-b-canonical.mdc) |
 | §50-3-2 | [`cio-discipline-always.mdc`](.cursor/rules/cio-discipline-always.mdc) · [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) · [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) |
 | §50-3-3 | [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) |
 | §50-3-7 | [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) |
@@ -175,6 +177,7 @@
 | [`cio-error-ticket-gate.mdc`](.cursor/rules/cio-error-ticket-gate.mdc) | §1-2-3-4-A · §50-3-11 · §50-3-8 |
 | [`cio-handoff-export-validate-gate.mdc`](.cursor/rules/cio-handoff-export-validate-gate.mdc) | §(RULES-INDEX行) · §1-2-3-4-A · §50-3-11 |
 | [`cio-kintone-fields-gate.mdc`](.cursor/rules/cio-kintone-fields-gate.mdc) | §(RULES-INDEX行) · §1-2-3-4-A · §50-3-11 |
+| [`cio-kintone-live-schema-gate.mdc`](.cursor/rules/cio-kintone-live-schema-gate.mdc) | §50-3-11 |
 | [`cio-operating-loop.mdc`](.cursor/rules/cio-operating-loop.mdc) | §(RULES-INDEX行) |
 | [`cio-project-closure-gate.mdc`](.cursor/rules/cio-project-closure-gate.mdc) | §(RULES-INDEX行) |
 | [`cio-report-min-format.mdc`](.cursor/rules/cio-report-min-format.mdc) | §1 |
@@ -197,7 +200,6 @@
 | [`every-turn-rules-confirm.mdc`](.cursor/rules/every-turn-rules-confirm.mdc) | §(RULES-INDEX行) · §1 · §1-2-3 · §1-2-3-1 · §35-7 · §37-1 · §50-3-11 |
 | [`file-copy-exact-path.mdc`](.cursor/rules/file-copy-exact-path.mdc) | §(RULES-INDEX行) |
 | [`kintone-destructive-rest-guard.mdc`](.cursor/rules/kintone-destructive-rest-guard.mdc) | §(RULES-INDEX行) · §52-8 |
-| [`kintone-javascript.mdc`](.cursor/rules/kintone-javascript.mdc) | §(RULES-INDEX行) · §11 · §9 |
 
 <!-- RULES-INDEX:SECTION-MDC-AUTO:END -->
 

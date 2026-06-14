@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-14T00:25:36.255Z",
+  "generatedAt": "2026-06-14T00:40:10.490Z",
   "sectionToMdc": {
     "§0": [
       "constitution-brief-card.mdc",
@@ -170,6 +170,7 @@
       "cio-error-ticket-gate.mdc",
       "cio-handoff-export-validate-gate.mdc",
       "cio-kintone-fields-gate.mdc",
+      "cio-kintone-live-schema-gate.mdc",
       "cio-spec-logic-gate.mdc",
       "cio-weekend-rollback-gate.mdc",
       "composer-mcp-audit-gate.mdc",
@@ -328,6 +329,9 @@
     "cio-kintone-fields-gate.mdc": [
       "§(RULES-INDEX行)",
       "§1-2-3-4-A",
+      "§50-3-11"
+    ],
+    "cio-kintone-live-schema-gate.mdc": [
       "§50-3-11"
     ],
     "cio-operating-loop.mdc": [

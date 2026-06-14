@@ -67,7 +67,9 @@
     "autonomous-with-mandatory-asks.mdc",
     "autonomous-cold-start.mdc",
     "evening-reflection-scope.mdc",
-    "session-close-execute-first.mdc"
+    "session-close-execute-first.mdc",
+    "cio-kintone-live-schema-gate.mdc",
+    "cio-git-history-alignment-gate.mdc"
   ],
   "exemptMarker": "AI-KERNEL-EXEMPT:"
 }

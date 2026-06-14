@@ -1,0 +1,30 @@
+{
+  "version": "2026-06-14",
+  "note": "git-history-alignment が保護するコマンド・緩和禁止パターン。verify:git-history-alignment / git-history-mcp 連動。",
+  "protectedCommands": [
+    "npm run verify:kintone-fields",
+    "npm run verify:kintone-live-schema",
+    "npm run verify:git-history-alignment",
+    "npm run verify:cio-four-ai-governance",
+    "npm run verify:cio-mcp-registry",
+    "npm run cio:guard:5038",
+    "npm run cio:guard:composer-mcp-audit",
+    "npm run cio:session:close-git",
+    "npm run verify:session-handoff-integrity",
+    "npm run desktop:sync-and-verify"
+  ],
+  "protectedPhrases": [
+    "非置換",
+    "exit 1",
+    "Warning 0",
+    "本体単独完結",
+    "第2者",
+    "§50-3-8"
+  ],
+  "relaxationPatterns": [
+    "skip.*always",
+    "disabled:\\s*true.*verify",
+    "optional.*verify:kintone",
+    "remove.*exit 1"
+  ]
+}

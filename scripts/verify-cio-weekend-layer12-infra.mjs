@@ -21,6 +21,9 @@ const SCRIPTS = [
   'apply-layer12-mcp',
   'verify:cio-weekend-layer12-infra',
   'verify:cio-mcp-layer12-probe',
+  'verify:kintone-live-schema',
+  'verify:git-history-alignment',
+  'verify:cio-weekend-layer12-ext-infra',
 ];
 
 const AGENTS_MARKERS = [

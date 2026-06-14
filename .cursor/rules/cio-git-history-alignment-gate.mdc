@@ -1,0 +1,34 @@
+---
+description: 第12層拡張案2 — Git 履歴デグレード防止（verify:git-history-alignment）
+alwaysApply: false
+globs: "AGENTS.md,docs/**,.cursor/rules/**,package.json"
+---
+
+# Git 履歴デグレード防止ゲート（§50-3-11 第12層・拡張案2）
+
+> **機械**: `npm run verify:git-history-alignment` — git-history-mcp 相当
+
+## 前提条件
+
+- **New Chat 引っ越し第1ターン**（`--handoff`）
+- **大局判断**（憲法・SPEC・package.json scripts 変更）
+- 正本: `data/git-history-guard-manifest.json`
+
+## 実行手順
+
+1. Opus 4.8（アーキテクト）が過去 **3 世代**の governance コミットを把握
+2. `npm run verify:git-history-alignment [-- --handoff]`
+3. exit 0 → 設計続行 / exit 1 → 赤 banner + 設計再調整
+
+## 禁止事項
+
+- 過去 CEO 合意の **exit 1 ゲート削除・必須→任意化**
+- SPEC 完了 `[x]` の `[ ]` への先祖返り
+- 検証コマンドの diff 上での削除
+
+## 判定コード
+
+| コマンド | 合格 |
+|----------|------|
+| `verify:git-history-alignment` | exit 0 |
+| 不合格 | exit 1 + `【警告】過去規律とのデグレード（先祖返り）…` |

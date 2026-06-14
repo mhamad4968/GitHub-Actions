@@ -74,8 +74,14 @@
         "kintone-destructive-rest-guard.mdc",
         "constitutional-focus-kintone-customize.mdc",
         "creation-timing-ask.mdc",
-        "cio-kintone-fields-gate.mdc"
+        "cio-kintone-fields-gate.mdc",
+        "cio-kintone-live-schema-gate.mdc"
       ]
+    },
+    {
+      "id": "governance-history",
+      "label": "Git履歴・先祖返り防止",
+      "files": ["cio-git-history-alignment-gate.mdc"]
     },
     {
       "id": "domain-focus",

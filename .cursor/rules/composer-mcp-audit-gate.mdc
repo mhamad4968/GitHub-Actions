@@ -23,8 +23,9 @@ globs: "customize/**,scripts/**,*.js,*.mjs,*.ts,*.tsx"
 1. Diff 適用 **直前または直後**（同一ターン内）に **eslint-mcp** で変更ファイルを lint
 2. **repo-tree** で影響ディレクトリの構造を可視化（depth 制限可）
 3. **Warning 0** を確認 — 残存時は修正して再監査
-4. CIO へ **1 行証明**: `MCP監査: eslint=0 warnings / repo-tree=OK / 対象=<path>`
-5. 機械スタンプ: `npm run cio:guard:composer-mcp-audit -- --stamp --text "…"`
+4. **customize/** 変更時 — **`npm run verify:kintone-live-schema`**（実機 preview form 突合・Warning 0 必須・§50-3-11 第12層拡張案1）
+5. CIO へ **1 行証明**: `MCP監査: eslint=0 warnings / repo-tree=OK / live-schema=OK / 対象=<path>`
+6. 機械スタンプ: `npm run cio:guard:composer-mcp-audit -- --stamp --text "…"`
 
 ## 禁止事項
 

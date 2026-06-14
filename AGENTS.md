@@ -1936,8 +1936,9 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 
 1. **eslint-mcp** — 変更ファイルの lint。**Warning 0** 必須
 2. **repo-tree** — 影響ディレクトリの構造可視化
-3. **CIO へ 1 行証明** — `MCP監査: eslint=0 warnings / repo-tree=OK / 対象=…`
-4. **機械スタンプ** — `npm run cio:guard:composer-mcp-audit -- --stamp --text "…"`（45分有効・`composer-mcp-audit-stamp.json`）
+3. **customize/** 変更時 — **`npm run verify:kintone-live-schema`** — 実機 preview form 突合。**Warning 0** 必須（§50-3-11 第12層・拡張案1）
+4. **CIO へ 1 行証明** — `MCP監査: eslint=0 warnings / repo-tree=OK / live-schema=OK / 対象=…`
+5. **機械スタンプ** — `npm run cio:guard:composer-mcp-audit -- --stamp --text "…"`（45分有効・`composer-mcp-audit-stamp.json`）
 
 正本: `.cursor/rules/composer-mcp-audit-gate.mdc`。スキップ: `--skip "具体理由1行"`（README 誤字のみ等）。
 
@@ -2004,6 +2005,21 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 2. **git-history-mcp** — Git ログから憲法改定層・4要素コミット・R19/R20 締め儀式を自律検索 — `mcp/git-history-mcp/index.mjs` — `cio:session:close-git` / `cio:briefing:recognition-gate` と連動し先祖返りを防衛
 3. **配備**: `npm run apply-layer12-mcp` → `npm run mcp:sync-cursor-windows` — WSL `~/.cursor/mcp.json` + Windows `%USERPROFILE%\.cursor\mcp.json` + リポ `.cursor/mcp.json` へ同期
 4. **機械検証**: `npm run verify:cio-weekend-layer12-infra` / `npm run verify:cio-mcp-layer12-probe` — `verify:cio-four-ai-governance` に内包
+
+**第12層・拡張案1 — 実機アプリ構造ライブ Linter（2026-06-14 CEO 超厳命・§50-3-11 非置換）**:
+
+1. **コマンド**: `npm run verify:kintone-live-schema` — customize/** 抽出コード × **kintone-schema-mcp 同一 REST**（preview form / lookup / reference / 型）
+2. **Composer 絶対手順（第4ステップ拡張）**: customize/** を **保存または PUT 直前**に必ず実行 — **Warning 0** 証明必須 — NG → **exit 1** ロック
+3. **二段 Linter**: 第11層 `verify:kintone-fields`（registry）→ 本コマンド（実機）
+
+正本: `.cursor/rules/cio-kintone-live-schema-gate.mdc` / `scripts/lib/kintone-live-schema.mjs`
+
+**第12層・拡張案2 — 過去規律デグレード永久防止（2026-06-14 CEO 超厳命・§50-3-11 非置換）**:
+
+1. **コマンド**: `npm run verify:git-history-alignment` — git-history-mcp 相当 — 過去 **3 世代** governance コミット（4要素・§50-3-11 層）をスキャン
+2. **トリガー**: New Chat 引っ越し **第1ターン**（`--handoff`）・憲法/SPEC/大局変更時 — Opus 4.8 が自発駆動
+3. **防衛**: 論理矛盾・規律緩和検知 → **exit 1** + 赤 banner `【警告】過去規律とのデグレード（先祖返り）を検知しました。過去の合意ハッシュを確認し、設計を再調整してください`
+4. **正本**: `data/git-history-guard-manifest.json` / `.cursor/rules/cio-git-history-alignment-gate.mdc`
 
 正本: `docs/mcp-status.md` §活性化 — 第12層 / `data/cio-mcp-manifest.json` / `scripts/apply-layer12-mcp-servers.mjs`
 

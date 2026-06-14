@@ -9,6 +9,8 @@
 | **`kintone-schema-mcp`** | 実 kintone アプリ form / views / settings を REST で取得（第11層 Linter と実スキーマ突合） | `node mcp/kintone-schema-mcp/index.mjs`（`.env` + `KINTONE_*`） |
 | **`git-history-mcp`** | Git ログから憲法層・4要素コミット・R19/R20 締め儀式を検索 | `node mcp/git-history-mcp/index.mjs`（repo root cwd） |
 
+**拡張運用（2026-06-14）**: `npm run verify:kintone-live-schema` / `npm run verify:git-history-alignment` — CLI 正本（MCP と同一 REST/git ロジック）
+
 **配備手順**: `npm run apply-layer12-mcp` → `npm run mcp:sync-cursor-windows` — 正本 `AGENTS.md` §50-3-11 第12層 / 検証 `verify:cio-weekend-layer12-infra` + `verify:cio-mcp-layer12-probe`
 
 ### §監査スナップ（2026-06-05 JST — context7 追加）
