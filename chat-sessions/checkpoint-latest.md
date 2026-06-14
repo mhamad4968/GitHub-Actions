@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-06-14 JST — **社内 Wi-Fi SSID 718/719 v1 CLOSED** + 第12/13層ガバナンス A1–C4 完了
+**最終更新**: 2026-06-14 JST — **R34–R40 ガバナンス + ESLint CI 緑 + C:\ 作業領域整理完了**
 
 ## 凍結（毎セッション先頭）
 | 禁止 | 許可 |
@@ -11,7 +11,10 @@
 | 本番 WF 6段階への無断分割 | test_v3 WF 継続テスト |
 | 評価スナップショット本番投入（未設計確認前） | ガイド doc 更新（完成条件外） |
 
-**次の1手**: **浜田指示待ち** — Space 21 台帳 v1 **3本 CLOSED**（714–717 + Wi-Fi **v1 完成**）・第12/13層インフラ完了。**次レーンは浜田 GO + 項番 -0 合意**
+**次の1手**: **浜田指示待ち** — Space 21 台帳 v1 **3本 CLOSED**。**次レーンは浜田 GO + 項番 -0 合意**
+**Git**: **`694c5a4`** = `origin/main` — CI **constitution-gates / kintone-customize-deploy / cursor-env-gates すべて success**
+**R34–R40**: **浜田 GO 反映済** — `docs/approved-changes/2026-06-14-rules-r34-r40-hamada-go.md`
+**作業領域**: C:\ 重複 clone 削除済 / 正本 clone のみ / `verify:windows-canonical-paths` OK
 **Space 21 完了**: **ソフトウエア管理台帳 v1** — App **714/715** — **2026-06-14 浜田目視 OK**
 **Space 21 完了**: **記憶媒体等管理台帳 v1** — App **716/717** — **2026-06-14 浜田目視 OK**
 **Space 21 完了**: **社内 Wi-Fi SSID 管理 ver.1** — App **718/719** — **2026-06-14 浜田目視 OK**
@@ -25,6 +28,18 @@
 **ポータル未着手（手動）**: Space 48 スペース画面へ **712 リンク 1 つ**
 
 ---
+
+---
+
+## 2026-06-14 JST — **R34–R40 ガバナンス + ESLint CI 修正（セッション締め）**
+
+| 項目 | 内容 |
+|------|------|
+| **背景** | Wi-Fi push 後 `kintone-customize-deploy` ESLint 赤（bundle 型 719） |
+| **ESLint** | `qrcode-vendor.js` / bundle `desktop.js` ignore、`desktop.src.js` に `QRCode` global |
+| **R34–R40** | Windows 正本パス / CLOSED 前 lint / customize registry / 死ショートカット / runbook CI / 四半期スキャン |
+| **CI** | **`694c5a4`** — constitution-gates + kintone-customize-deploy + cursor-env-gates **success** |
+| **正本** | `docs/runbooks/kintone-project-close-gate.md` / `data/windows-canonical-paths.json` / `data/kintone-customize-path-registry.json` |
 
 ---
 

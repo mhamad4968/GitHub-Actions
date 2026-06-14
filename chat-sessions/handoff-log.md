@@ -3218,3 +3218,23 @@ npm run cio:morning:ready
 **正本更新**: `kintone-apps.md` / `kintone-javascript.mdc` — 正本はリポのみ
 
 ---
+
+### 2026-06-14 JST — **C:\ 重複 clone・Desktop 整理 + runbook 記録**
+
+**削除**: `C:\kintone_dev` / `dev\kintone-ai-lab` / `C:\home\mhamada202408224` / `C:\Claudeとの会話保存` / Desktop 死ショートカット・AI メモ
+
+**Git**: `57a3c34` — `repo-workspace-lifecycle.md` 更新
+
+---
+
+### 2026-06-14 JST — **R34–R40 ガバナンス + ESLint CI 緑**
+
+**ESLint**: bundle 型 719 の lint 方針修正 — CI 赤解消
+
+**R34–R40**: 浜田 GO 一括反映（Windows 正本パス / CLOSED 前 lint / customize registry / 死ショートカット / runbook CI / 四半期スキャン）
+
+**Git**: `85344fa` + `694c5a4` push 済 / CI 3 workflow **success**
+
+**正本**: `docs/approved-changes/2026-06-14-rules-r34-r40-hamada-go.md`
+
+---

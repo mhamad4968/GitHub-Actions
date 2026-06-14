@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-06-14T07:50:57.870Z",
-  "gitHead": "7f0402b",
+  "exportedAt": "2026-06-14T08:33:02.541Z",
+  "gitHead": "694c5a4",
   "gitStatus": "## main...origin/main",
-  "nextTask": "**浜田指示待ち** — Space 21 台帳 v1 **3本 CLOSED**（714–717 + Wi-Fi **v1 完成**）・第12/13層インフラ完了。**次レーンは浜田 GO + 項番 -0 合意**",
+  "nextTask": "**浜田指示待ち** — Space 21 台帳 v1 **3本 CLOSED**。**次レーンは浜田 GO + 項番 -0 合意**",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -11,6 +11,8 @@
     "docs/handoff/latest-session-bridge.json",
     "docs/knowledge/debug-tips.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=7f0402b | 次=**浜田指示待ち** — Space 21 台帳 v1 **3本 CLOSED**（714–717 + Wi-Fi **v1 完成**）・第12/13層インフラ完了。**次レーンは浜田 GO + 項番 -0 合意** | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, .cursor/rules/mode-b-canonical.mdc",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
+  "promptBlock": "【SESSION-BRIDGE】git=694c5a4 | 次=**浜田指示待ち** — Space 21 台帳 v1 **3本 CLOSED**。**次レーンは浜田 GO + 項番 -0 合意** | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, .cursor/rules/mode-b-canonical.mdc",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
+  "validatedAt": "2026-06-14T08:33:08.237Z",
+  "crosscheckOk": true
 }

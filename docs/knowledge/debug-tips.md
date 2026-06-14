@@ -19,7 +19,7 @@
 ## [2026-06-14] セッション解体時知恵ストック
 
 **前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
-**手順**: `npm run desktop:sync-and-verify` → `npm run cio:morning:ready` → `npm run verify:checkpoint-project-closure`
+**手順**: `npm run desktop:sync-and-verify` → `npm run cio:morning:ready` → `npm run cio:repo:purge-temp -- --apply` — 一時 data / pending proposals / `scripts/tmp-*` 削除`
 **禁止**: customize/deploy 凍結中の無断 save・上位憲法 §50-3-11 非置換違反・本体単独完結
 **exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
 
