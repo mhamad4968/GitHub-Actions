@@ -39,6 +39,14 @@ on:
       - 'scripts/cio-gha-periodic-5038-stamp.mjs'
       - 'scripts/verify-gha-periodic-workflows.mjs'
       - 'docs/runbooks/cio-gha-periodic-5038-stamp.md'
+      - 'docs/runbooks/**'
+      - 'data/*-registry.json'
+      - 'data/windows-canonical-paths.json'
+      - 'data/kintone-customize-path-registry.json'
+      - 'scripts/verify-runbook-registry-integrity.mjs'
+      - 'scripts/verify-kintone-customize-path-registry.mjs'
+      - 'scripts/verify-kintone-project-close-gate.mjs'
+      - 'eslint.config.js'
 
 permissions:
   contents: read
@@ -67,3 +75,12 @@ jobs:
 
       - name: verify-ci-rule-integrity（薄型憲法・alwaysApply 上限）
         run: node scripts/verify-ci-rule-integrity.mjs
+
+      - name: verify-runbook-registry-integrity（R39 runbook/registry）
+        run: node scripts/verify-runbook-registry-integrity.mjs
+
+      - name: verify-kintone-customize-path-registry（R37）
+        run: node scripts/verify-kintone-customize-path-registry.mjs
+
+      - name: lint:customize（R36 — ESLint error 0）
+        run: npm run lint:customize

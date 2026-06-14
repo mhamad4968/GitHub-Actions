@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 /**
  * R24 — docs/plans/*-spec.md 変更は working tree または commit 済みであること
+ * R36 — customize/** 変更時は lint:customize error 0（CLOSED 前ゲート）
  */
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
@@ -35,6 +36,21 @@ function main() {
   const rule = path.join(root, '.cursor/rules/session-close-execute-first.mdc');
   if (!fs.existsSync(rule)) {
     issues.push('missing session-close-execute-first.mdc (R23)');
+  }
+
+  const customizeTouched =
+    git(['diff', '--name-only', 'HEAD']) +
+    git(['diff', '--name-only', '--cached']) +
+    git(['status', '--porcelain', '--', 'customize']);
+  if (/customize[/\\]/.test(customizeTouched)) {
+    const lint = spawnSync('npm', ['run', 'lint:customize', '--silent'], {
+      cwd: root,
+      encoding: 'utf8',
+      shell: true,
+    });
+    if (lint.status !== 0) {
+      issues.push('R36 lint:customize NG — customize 変更あり。CLOSED 前に ESLint error 0 必須');
+    }
   }
 
   if (issues.length) {

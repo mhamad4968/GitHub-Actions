@@ -78,8 +78,37 @@ git status -sb
 | `Desktop\tmp - ショートカット.lnk` | **削除済** — 任意整理 |
 | `Desktop\AI*.txt`（内省メモ等） | **削除済** — 任意整理 |
 
+## 正本 registry（R34–R40）
+
+| ファイル | 用途 |
+|----------|------|
+| `data/windows-canonical-paths.json` | Windows 正本 clone・禁止パス・Desktop 必須（R34） |
+| `data/kintone-customize-path-registry.json` | semantic customize → appId（R37） |
+| `data/c-tmp-workspace-registry.json` | `C:\tmp` 作業領域 |
+
+## パス整理 GO の締め（R35）
+
+浜田 GO で **ローカル削除・整理**した場合:
+
+1. 本 runbook（または `c-tmp-workspace-registry.json`）を **同日更新**
+2. **`git commit` + `push` 必須** — 記録なし削除禁止
+3. Windows 端末: `npm run verify:windows-canonical-paths` + `npm run verify:desktop-dead-shortcuts`
+
+## 四半期スキャン（R40）
+
+**1・4・7・10 月**の月初（またはセッション最初）に実施:
+
+```powershell
+npm run verify:windows-canonical-paths
+npm run verify:desktop-dead-shortcuts
+# 目視: C:\ 直下・%USERPROFILE% に kintone-ai-lab 重複 clone がないか
+```
+
 ## 関連
 
 - `docs/runbooks/c-tmp-workspace-lifecycle.md`
 - `docs/runbooks/doc-lane.md`
+- `docs/runbooks/kintone-project-close-gate.md`（R36 CLOSED 前）
 - `data/c-tmp-workspace-registry.json`
+- `data/windows-canonical-paths.json`
+- `data/kintone-customize-path-registry.json`

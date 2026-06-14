@@ -13,6 +13,9 @@ export default [
       "customize/**/desktop.ui.slim.js",
       // 678: Vite/SheetJS ビルド成果物（.gitignore・deploy は bundle、lint 対象外）
       "customize/**/desktop.bundle.js",
+      // 719 Wi-Fi: qrcode vendor + desktop.src.js → desktop.js 結合成果物（lint は src のみ）
+      "customize/**/qrcode-vendor.js",
+      "customize/wifi-ssid-dash/desktop.js",
     ],
   },
   {
@@ -34,6 +37,23 @@ export default [
       // 2026-04-25 復帰 (TSB-007 続編・A-3 完遂):
       // 旧 off の no-useless-assignment / no-irregular-whitespace は recommended 既定 (error) に戻した。
       // 5 違反は customize/594/627 のコード側で実修正済み (let init 削除 / \u3000 escape 化)。
+    },
+  },
+  {
+    files: ["customize/**/desktop.src.js"],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: "script",
+      globals: {
+        ...globals.browser,
+        kintone: "readonly",
+        QRCode: "readonly",
+      },
+    },
+    rules: {
+      ...js.configs.recommended.rules,
+      "no-unused-vars": "off",
+      "no-console": "off",
     },
   },
 ];

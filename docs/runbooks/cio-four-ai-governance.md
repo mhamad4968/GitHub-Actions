@@ -178,6 +178,20 @@ npm run desktop:sync-and-verify
 
 正本: `kintone-apps.md` フィールド台帳 SOP / `docs/runbooks/cio-periodic-ops-schedule.md`
 
+## R34–R40 — 作業領域・CLOSED 前ゲート（2026-06-14 浜田 GO）
+
+| ID | 内容 | 検証 |
+|----|------|------|
+| R34 | Windows 正本パス | `verify:windows-canonical-paths`（ローカル） |
+| R35 | パス整理 GO → 同日 commit | `repo-workspace-lifecycle.md` |
+| R36 | CLOSED 前 ESLint | `verify:kintone-project-close-gate` |
+| R37 | customize → appId | `data/kintone-customize-path-registry.json` |
+| R38 | Desktop 死ショートカット | `verify:desktop-dead-shortcuts` |
+| R39 | runbook/registry CI | `verify:runbook-registry-integrity` |
+| R40 | 四半期 C:\ スキャン | `repo-workspace-lifecycle.md` §四半期 |
+
+承認: `docs/approved-changes/2026-06-14-rules-r34-r40-hamada-go.md`
+
 ## 一括検証
 
 ```bash

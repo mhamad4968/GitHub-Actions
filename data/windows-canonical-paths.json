@@ -1,0 +1,23 @@
+{
+  "version": "2026-06-14",
+  "description": "Windows 作業領域正本 — R34（浜田 GO 2026-06-14）",
+  "canonicalRepoClone": "C:\\Users\\mhamada202408224\\kintone-ai-lab",
+  "forbiddenPaths": [
+    "C:\\kintone_dev",
+    "C:\\home\\mhamada202408224"
+  ],
+  "forbiddenDuplicateClones": [
+    "%USERPROFILE%\\dev\\kintone-ai-lab"
+  ],
+  "requiredLocalPaths": [
+    "C:\\tmp\\マニュアル",
+    "C:\\tmp\\予算管理",
+    "C:\\tmp\\稼働日数算出ツール",
+    "C:\\tmp\\PCキッティングインストール用"
+  ],
+  "desktopRequiredDirs": [
+    "AI緊急用"
+  ],
+  "quarterlyScanMonths": [1, 4, 7, 10],
+  "runbook": "docs/runbooks/repo-workspace-lifecycle.md"
+}

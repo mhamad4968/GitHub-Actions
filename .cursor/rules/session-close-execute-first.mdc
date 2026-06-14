@@ -49,6 +49,26 @@ npm run desktop:sync-and-verify
 
 **夕反省・改善案・チェック結果** ≠ **当日項番 -0**。混在は F5/F11 再発。
 
+軽微 NG は **同一ターンで修正**。台帳 kintone 作成・項番 -0 は **混ぜない**。
+
+## R35 — パス整理 GO の同日 commit（2026-06-14 浜田 GO）
+
+`C:\` / `Documents\` / Desktop の **削除・整理 GO** を実行したターン:
+
+1. `docs/runbooks/repo-workspace-lifecycle.md` または `data/*-registry.json` を更新
+2. **`git commit` + `push` まで同一セッション**（記録なし削除禁止）
+3. `npm run verify:windows-canonical-paths` + `npm run verify:desktop-dead-shortcuts`（Windows）
+
+## kintone CLOSED 前（R36）
+
+`customize/**` を触った台帳の **目視 OK / クローズ宣言前**:
+
+```powershell
+npm run verify:kintone-project-close-gate
+```
+
+正本: `docs/runbooks/kintone-project-close-gate.md`
+
 ## 障害説明（R32 連携）
 
 PS/cmd 一瞬フラッシュ等 — **口頭で複数原因を並べない**。先に Read:

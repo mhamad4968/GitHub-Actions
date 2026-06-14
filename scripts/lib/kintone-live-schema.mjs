@@ -8,6 +8,9 @@ import {
   LIVE_SCHEMA_MONTHLY_IDS,
   PORTFOLIO_CUSTOMIZE,
 } from '../cio-portfolio-apps.mjs';
+import { getCustomizeDirToApp, REPO_ROOT_FROM_LIB } from './kintone-customize-path-registry.mjs';
+
+export const CUSTOMIZE_DIR_TO_APP = getCustomizeDirToApp(REPO_ROOT_FROM_LIB);
 
 export function loadDotenv(repoRoot) {
   for (const name of ['.env', '.env.proxy']) {
@@ -107,33 +110,6 @@ export async function fetchLiveFormSchema(appId) {
   }
   return out;
 }
-
-/** customize ディレクトリ名 → appId（非数値フォルダ） */
-export const CUSTOMIZE_DIR_TO_APP = {
-  'software-ledger-db': '714',
-  'software-ledger-dash': '715',
-  'storage-media-ledger-db': '716',
-  'storage-media-ledger-dash': '717',
-  'shared-mail-db': '695',
-  'shared-mail-dash': '696',
-  'apple-id-db': '693',
-  'apple-id-dash': '694',
-  'nonconformance-db': '706',
-  'nonconformance-dash': '707',
-  'external-it-checksheet-db': '708',
-  'external-it-checksheet-dash': '709',
-  'new-system-intro-db': '710',
-  'new-system-intro-dash': '711',
-  'space48-portal': '712',
-  'security-next-news-board': '701',
-  'security-next-weekly-board': '702',
-  'business-improvement-guide': '699',
-  'business-improvement-proposal': '700',
-  'business-improvement-annual': '713',
-  'new-pc-ledger-v1': '674',
-  'ops-guide': '668',
-  'shucccho-seisan': '629',
-};
 
 /** appId → customize ディレクトリ名（registry 優先 → CUSTOMIZE_DIR_TO_APP 逆引き → 数値フォルダ） */
 export function resolveCustomizeDirsForApp(appId, registryMeta) {
