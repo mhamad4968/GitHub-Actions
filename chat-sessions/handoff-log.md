@@ -3175,3 +3175,17 @@ npm run cio:morning:ready
 **正本**: `chat-sessions/SESSION-CLOSE-REPORT-20260614.txt` / `checkpoint-latest.md` 先頭
 
 ---
+
+### 2026-06-14 JST — **社内 Wi-Fi SSID 718/719 v1 クローズ（浜田 OK）**
+
+**本ターン**: 目視 OK 後の SPEC 完了化・completion / closures / checkpoint 更新 → commit / push
+
+**状態**:
+- App **718/719** — 一覧・編集・A4 印刷（QR）・ヘッダー **(株）J-BISメンテナンス** — **浜田目視 OK**
+- BUILD: 718 rev5 / 719 rev7
+- Excel: 共有パス削除（浜田 PC 控えのみ）
+- 正本: `docs/reports/2026-06-14-wifi-ssid-completion.md`
+
+**次セッション**: checkpoint 先頭 — **浜田指示待ち**（Space 21 v1 台帳3本 CLOSED）
+
+---

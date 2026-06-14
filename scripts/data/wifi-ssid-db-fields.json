@@ -1,0 +1,82 @@
+{
+  "properties": {
+    "sort_no": {
+      "type": "NUMBER",
+      "code": "sort_no",
+      "label": "並び順",
+      "required": true,
+      "noLabel": false,
+      "unique": false,
+      "digit": false,
+      "defaultValue": "",
+      "displayScale": "",
+      "unit": "",
+      "unitPosition": "BEFORE"
+    },
+    "location_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "location_name",
+      "label": "拠点名",
+      "required": true,
+      "noLabel": false,
+      "unique": true,
+      "defaultValue": ""
+    },
+    "ssid_1": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "ssid_1",
+      "label": "SSID①",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "password_1": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "password_1",
+      "label": "SSIDパスワード①",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "ssid_2": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "ssid_2",
+      "label": "SSID②",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "password_2": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "password_2",
+      "label": "SSIDパスワード②",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "registered_date": {
+      "type": "DATE",
+      "code": "registered_date",
+      "label": "登録日",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "updated_date": {
+      "type": "DATE",
+      "code": "updated_date",
+      "label": "更新日",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "note": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "note",
+      "label": "備考",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    }
+  }
+}

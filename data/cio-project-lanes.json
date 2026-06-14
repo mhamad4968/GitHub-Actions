@@ -67,6 +67,20 @@
       "runbook": "docs/plans/2026-06-02-apple-id-kintone-spec.md"
     },
     {
+      "id": "wifi-ssid",
+      "status": "closed-v1",
+      "closedAt": "2026-06-14",
+      "completionReport": "docs/reports/2026-06-14-wifi-ssid-completion.md",
+      "keywords": ["Wi-Fi", "wifi-ssid", "SSID", "718", "719", "社内Wi-Fi"],
+      "skill": ".cursor/skills/kintone-create-app/SKILL.md",
+      "npm": [
+        "verify:checkpoint-project-closure",
+        "cio:project:close -- --project wifi-ssid --show"
+      ],
+      "runbook": "docs/plans/2026-06-14-wifi-ssid-kintone-spec.md",
+      "note": "v1 完成クローズ — 再開は浜田 GO + checkpoint 更新 + closures 解除"
+    },
+    {
       "id": "gha-5038",
       "keywords": ["GHA", "5038", "GitHub Actions", "stamp", "workflow"],
       "skill": null,

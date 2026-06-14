@@ -1,5 +1,5 @@
 {
-  "version": "2026-06-14",
+  "version": "2026-06-14-wifi",
   "specRel": "templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md",
   "apps": {
     "677": {
@@ -110,6 +110,29 @@
       "inheritsRecordFieldsFrom": "716",
       "specRel": "docs/plans/2026-06-13-storage-media-ledger-kintone-spec.md",
       "notes": "717 dash は App 716 へ REST CRUD。DB フィールドは 716 と同一。"
+    },
+    "718": {
+      "label": "社内Wi-Fi管理DB",
+      "customizeDirs": ["wifi-ssid-db"],
+      "specRel": "docs/plans/2026-06-14-wifi-ssid-kintone-spec.md",
+      "recordFields": [
+        "sort_no",
+        "location_name",
+        "ssid_1",
+        "password_1",
+        "ssid_2",
+        "password_2",
+        "registered_date",
+        "updated_date",
+        "note"
+      ]
+    },
+    "719": {
+      "label": "社内Wi-Fi管理台帳 ver.1",
+      "customizeDirs": ["wifi-ssid-dash"],
+      "inheritsRecordFieldsFrom": "718",
+      "specRel": "docs/plans/2026-06-14-wifi-ssid-kintone-spec.md",
+      "notes": "719 dash は App 718 へ REST CRUD。DB フィールドは 718 と同一。"
     },
     "674": {
       "label": "新PC台帳",

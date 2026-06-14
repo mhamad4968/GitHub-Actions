@@ -1,5 +1,5 @@
 {
-  "version": "2026-06-13",
+  "version": "2026-06-14",
   "description": "プロジェクト v1 クローズ登録 — 朝 ready / checkpoint / レーンルーティングが再開しない正本",
   "closures": [
     {
@@ -21,6 +21,26 @@
         "設定マスタ Excel 30行"
       ],
       "note": "申請・評価・年次集計・ガイド UX（C案）まで浜田確認済。v1 必須外: FAQその他・本番6段WF・RAG・Wordマニュアル"
+    },
+    {
+      "id": "wifi-ssid",
+      "laneId": "wifi-ssid",
+      "label": "社内 Wi-Fi SSID 管理 ver.1",
+      "status": "closed-v1",
+      "closedAt": "2026-06-14",
+      "completionReport": "docs/reports/2026-06-14-wifi-ssid-completion.md",
+      "sessionCloseReport": "chat-sessions/SESSION-CLOSE-REPORT-20260614.txt",
+      "kintoneAppsSection": "社内 Wi-Fi SSID 管理 ver.1（Space 21 — 718–719）",
+      "kintoneAppsStateMarker": "v1 完成",
+      "forbiddenNextTaskPatterns": [
+        "Wi-Fi",
+        "wifi-ssid",
+        "SSID",
+        "718",
+        "719",
+        "社内Wi-Fi"
+      ],
+      "note": "22拠点・一覧・A4印刷・QR・浜田目視 OK。Excel 廃止（浜田 PC 控えのみ）。v2: PC台帳連携・ゲスト Wi-Fi 等"
     }
   ]
 }
