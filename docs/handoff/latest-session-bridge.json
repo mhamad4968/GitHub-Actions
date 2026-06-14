@@ -1,16 +1,15 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-06-14T12:00:00.000Z",
-  "gitHead": "70d23e0",
+  "exportedAt": "2026-06-14T18:00:00.000Z",
+  "gitHead": "pending",
   "gitStatus": "## main...origin/main",
-  "nextTask": "**記憶媒体等管理台帳** — R19 Q&A 完走（2026-06-14）。浜田 **「記憶媒体等台帳 kintone 作成 GO」** 待ち（ソフトウエア v1 完了 714/715）",
+  "nextTask": "Space 21 台帳 v1 両方 CLOSED（714/715・716/717）。次レーンは別 SPEC / 浜田指示待ち",
   "nextFiles": [
-    "docs/plans/2026-06-13-storage-media-ledger-kintone-spec.md",
-    "docs/plans/2026-06-13-software-ledger-kintone-spec.md",
     "chat-sessions/checkpoint-latest.md",
-    "docs/runbooks/kintone-ledger-spec-qa-checklist.md",
-    ".cursor/rules/mode-b-canonical.mdc"
+    "kintone-apps.md",
+    "docs/plans/2026-06-13-storage-media-ledger-kintone-spec.md",
+    "docs/plans/2026-06-13-software-ledger-kintone-spec.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】次=**記憶媒体等管理台帳**（Space 21）— ソフトウエア v1 完了(714/715) | Read: docs/plans/2026-06-13-storage-media-ledger-kintone-spec.md, checkpoint-latest.md",
-  "note": "ソフトウエア台帳 v1 CLOSED 2026-06-14 浜田目視 OK"
+  "promptBlock": "【SESSION-BRIDGE】Space 21 台帳 v1 完了 — ソフトウエア(714/715) + 記憶媒体等(716/717) 浜田目視 OK | Read: checkpoint-latest.md",
+  "note": "記憶媒体等台帳 v1 CLOSED 2026-06-14 浜田目視 OK"
 }

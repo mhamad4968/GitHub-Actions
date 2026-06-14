@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-06-14 JST — **ソフトウエア台帳 v1 完了**（714/715・浜田目視 OK）
+**最終更新**: 2026-06-14 JST — **記憶媒体等台帳 v1 完了**（716/717・浜田目視 OK）
 
 ## 凍結（毎セッション先頭）
 | 禁止 | 許可 |
@@ -10,9 +10,10 @@
 | 本番 WF 6段階への無断分割 | test_v3 WF 継続テスト |
 | 評価スナップショット本番投入（未設計確認前） | ガイド doc 更新（完成条件外） |
 
-**次の1手**: **記憶媒体等管理台帳** — SPEC レビュー（R19 Q&A）→ 浜田 **「記憶媒体等台帳 kintone 作成 GO」**
-**Space 21 完了**: **ソフトウエア管理台帳 v1** — App **714/715** — **2026-06-14 浜田目視 OK**（commit 同期後 CLOSED）
-**新レーン（Space 21）**: **記憶媒体等台帳** SPEC GO 済 → **Q&A / 作成 GO 待ち**
+**次の1手**: **浜田指示待ち** — Space 21 台帳 v1（ソフトウエア + 記憶媒体等）**両方 CLOSED**
+**Space 21 完了**: **ソフトウエア管理台帳 v1** — App **714/715** — **2026-06-14 浜田目視 OK**
+**Space 21 完了**: **記憶媒体等管理台帳 v1** — App **716/717** — **2026-06-14 浜田目視 OK**
+**新レーン（Space 21）**: なし（v1 台帳2本とも CLOSED — 次は別 SPEC / 浜田 GO）
 **ガバナンス**: **R19–R33 浜田 GO 済** — commit `4449977` push 済（`verify:cio-miss-reduction-governance` OK）
 **壁時計試験**: `.cio/session-clock-mode.json` **`trialPaused: true`** — START.bat 不使用・sessionEnd の stopAllClock スキップ（PS フラッシュ切り分け）
 **クローズ正本**: `data/cio-project-closures.json` / `npm run verify:checkpoint-project-closure`
