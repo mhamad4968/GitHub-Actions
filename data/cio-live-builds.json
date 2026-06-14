@@ -3,10 +3,10 @@
   "apps": {
     "595": {
       "build": "2026-06-14-595-storage-media-ledger-mirror",
-      "fileKey": "7cc190e4-5a14-4ca9-8ce7-4a4024445419",
-      "revision": "90",
-      "relPath": "customize/595/desktop.js",
-      "deployedAt": "2026-06-13T23:53:24.802Z",
+      "fileKey": "f31c5f6b-251d-4d91-852f-78586d6075f2",
+      "revision": "91",
+      "relPath": ".kintone-deploy/upload-595.js",
+      "deployedAt": "2026-06-14T00:01:18.036Z",
       "note": null
     },
     "627": {
