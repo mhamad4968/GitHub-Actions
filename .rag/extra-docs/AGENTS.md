@@ -1936,8 +1936,9 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 
 1. **eslint-mcp** — 変更ファイルの lint。**Warning 0** 必須
 2. **repo-tree** — 影響ディレクトリの構造可視化
-3. **CIO へ 1 行証明** — `MCP監査: eslint=0 warnings / repo-tree=OK / 対象=…`
-4. **機械スタンプ** — `npm run cio:guard:composer-mcp-audit -- --stamp --text "…"`（45分有効・`composer-mcp-audit-stamp.json`）
+3. **customize/** 変更時 — **`npm run verify:kintone-live-schema`** — 実機 preview form 突合。**Warning 0** 必須（§50-3-11 第12層・拡張案1）
+4. **CIO へ 1 行証明** — `MCP監査: eslint=0 warnings / repo-tree=OK / live-schema=OK / 対象=…`
+5. **機械スタンプ** — `npm run cio:guard:composer-mcp-audit -- --stamp --text "…"`（45分有効・`composer-mcp-audit-stamp.json`）
 
 正本: `.cursor/rules/composer-mcp-audit-gate.mdc`。スキップ: `--skip "具体理由1行"`（README 誤字のみ等）。
 
@@ -1997,6 +1998,42 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 3. **タスク③ — Handoff 荷造り漏れ**: `npm run verify:session-handoff-integrity -- --validate-export` — bridge / checkpoint / SPEC / gitHead **DeepSeek 職分**クロスチェック — NG → 解体ロック
 
 正本: `.cursor/rules/cio-kintone-fields-gate.mdc` / `cio-commit-msg-kimi-gate.mdc` / `cio-handoff-export-validate-gate.mdc` / `data/kintone-field-registry.json`
+
+**第12層 — 2大新規MCP拡張（2026-06-14 CEO 超厳命・§50-3-11 非置換）**:
+
+1. **kintone-schema-mcp** — 実 kintone アプリの form / views / settings を REST で直接取得 — `mcp/kintone-schema-mcp/index.mjs` — 第11層 Linter（`verify:kintone-fields`）と **実スキーマ突合**で customize JS の 1 文字ズレを根絶
+2. **git-history-mcp** — Git ログから憲法改定層・4要素コミット・R19/R20 締め儀式を自律検索 — `mcp/git-history-mcp/index.mjs` — `cio:session:close-git` / `cio:briefing:recognition-gate` と連動し先祖返りを防衛
+3. **配備**: `npm run apply-layer12-mcp` → `npm run mcp:sync-cursor-windows` — WSL `~/.cursor/mcp.json` + Windows `%USERPROFILE%\.cursor\mcp.json` + リポ `.cursor/mcp.json` へ同期
+4. **機械検証**: `npm run verify:cio-weekend-layer12-infra` / `npm run verify:cio-mcp-layer12-probe` — `verify:cio-four-ai-governance` に内包
+
+**第12層・拡張案1 — 実機アプリ構造ライブ Linter（2026-06-14 CEO 超厳命・§50-3-11 非置換）**:
+
+1. **コマンド**: `npm run verify:kintone-live-schema` — customize/** 抽出コード × **kintone-schema-mcp 同一 REST**（preview form / lookup / reference / 型）
+2. **Composer 絶対手順（第4ステップ拡張）**: customize/** を **保存または PUT 直前**に必ず実行 — **Warning 0** 証明必須 — NG → **exit 1** ロック
+3. **二段 Linter**: 第11層 `verify:kintone-fields`（registry）→ 本コマンド（実機）
+
+正本: `.cursor/rules/cio-kintone-live-schema-gate.mdc` / `scripts/lib/kintone-live-schema.mjs`
+
+**第12層・拡張案2 — 過去規律デグレード永久防止（2026-06-14 CEO 超厳命・§50-3-11 非置換）**:
+
+1. **コマンド**: `npm run verify:git-history-alignment` — git-history-mcp 相当 — 過去 **3 世代** governance コミット（4要素・§50-3-11 層）をスキャン
+2. **トリガー**: New Chat 引っ越し **第1ターン**（`--handoff`）・憲法/SPEC/大局変更時 — Opus 4.8 が自発駆動
+3. **防衛**: 論理矛盾・規律緩和検知 → **exit 1** + 赤 banner `【警告】過去規律とのデグレード（先祖返り）を検知しました。過去の合意ハッシュを確認し、設計を再調整してください`
+4. **正本**: `data/git-history-guard-manifest.json` / `.cursor/rules/cio-git-history-alignment-gate.mdc`
+
+正本: `docs/mcp-status.md` §活性化 — 第12層 / `data/cio-mcp-manifest.json` / `scripts/apply-layer12-mcp-servers.mjs`
+
+**第13層 — MCP×CLI 単一窓・定例ヘルス（2026-06-14 CEO 追補・§50-3-11 非置換）**:
+
+1. **単一窓原則**: **kintone-schema-mcp** ↔ **`verify:kintone-live-schema`**、**git-history-mcp** ↔ **`verify:git-history-alignment`** — **同一 REST/Git 正本**。MCP と CLI の結果を **同一ターンで矛盾させない**（差異 → 再取得 or exit 1）。
+2. **Composer 前ヘルス**: `npm run cio:mcp:env:extended` — 必須6 + FE 系に加え **第12層 MCP initialize**（`verify:cio-mcp-layer12-probe` 相当）を **内包**。
+3. **handoff 連鎖**: `verify:session-handoff-integrity -- --import` 成功直後 **`verify:git-history-alignment --handoff --since <bridge.gitHead>`** 自動（**export 以降 commit + staged のみ**検査・未 stage WIP 許容。緊急: `SKIP_CIO_GIT_HISTORY_HANDOFF=1`）
+4. **deploy 連鎖**: `cio-deploy-preflight-guard` が **`verify:kintone-live-schema --app <id>`** を **機械実行**（API 障害=exit 2・再試行可。緊急: `SKIP_CIO_LIVE_SCHEMA_GUARD=1`）
+5. **generations 同期**: governance commit 時 **`npm run sync:git-history-generations -- --apply`**（`cio:session:close-git` でも自動）
+6. **月次 portfolio**: `npm run cio:periodic:monthly` — **`verify:kintone-live-schema --portfolio`**（`cio-portfolio-apps.mjs` の **PORTFOLIO + 714-717** のみ。全 customize 走査禁止）
+7. **ゾンビ文書**: `git-history-mcp` の **「6月以降」** 等の未導入表記は **`verify:mode-b-zombie-docs`** で検知 — 導入済みは **「導入済（第12層）」** に更新。
+
+正本: `.cursor/rules/mcp-tool-discipline.mdc` / `data/git-history-guard-manifest.json` / `docs/runbooks/cio-periodic-ops-schedule.md`
 
 **担当定義の極限明文化**: **`AGENTS.md` §1-2-3-4-A**（完全マトリクス）・`mode-b-canonical.mdc`（用語単一窓）・Desktop **`18-重要確認.txt`**（浜田視認用）。
 
