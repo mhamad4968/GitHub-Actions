@@ -8,6 +8,7 @@
  * 旧 PC 台帳スタック: 595（626/627 は本番から削除済みのため対象外。採番後継は 672）
  * 新 PC 台帳スタック: 670 (環境設定) / 671 (M365 管理) / 672 (jbm 採番) / 673 (sjbm 採番) / 674 (新・PC台帳ver.1)
  * ソフトウェア台帳スタック: 714 (DB) / 715 (Dash)
+ * 記憶媒体等台帳スタック: 716 (DB) / 717 (Dash)
  */
 import 'dotenv/config';
 
@@ -38,6 +39,7 @@ const PC_STACK_APPS = [
 ];
 
 const SOFTWARE_LEDGER_APPS = [714, 715];
+const STORAGE_MEDIA_LEDGER_APPS = [716, 717];
 
 async function fetchJson(url) {
   const res = await fetch(url, { method: 'GET', headers });
@@ -57,7 +59,7 @@ async function fetchJson(url) {
 
 let failures = 0;
 
-for (const app of [...PC_STACK_APPS, ...SOFTWARE_LEDGER_APPS]) {
+for (const app of [...PC_STACK_APPS, ...SOFTWARE_LEDGER_APPS, ...STORAGE_MEDIA_LEDGER_APPS]) {
   const u = new URL(`${baseUrl}/k/v1/app.json`);
   u.searchParams.set('id', String(app));
   try {
@@ -79,4 +81,4 @@ if (failures > 0) {
 if (process.env.INCLUDE_LEGACY_APP_594 !== '1') {
   console.log('[kintone:test] app 594 は既定でスキップ（移行時のみ INCLUDE_LEGACY_APP_594=1）');
 }
-console.log('[kintone:test] PC台帳 + ソフトウェア台帳スタック疎通 OK');
+console.log('[kintone:test] PC台帳 + ソフトウェア台帳 + 記憶媒体等台帳スタック疎通 OK');

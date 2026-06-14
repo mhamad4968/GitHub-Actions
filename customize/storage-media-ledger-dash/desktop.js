@@ -1,0 +1,1799 @@
+(function () {
+  "use strict";
+
+  /** 記憶媒体等管理台帳ver.1 — REST CRUD（694 型） */
+  var APP_DB = 716;
+  var APP_EMPLOYEE = 595;
+  var BUILD = "2026-06-14-storage-media-ledger-dash-v1";
+
+  var STATUS_ACTIVE = "利用中";
+  var STATUS_RETIRED = "廃止";
+  var MEDIA_TYPE_OTHER = "その他";
+  var PAGE_SIZE = 100;
+
+  var FC = {
+    legacy_no: "legacy_no",
+    status: "status",
+    registered_date: "registered_date",
+    purchase_date: "purchase_date",
+    media_type: "media_type",
+    media_type_other: "media_type_other",
+    item_name: "item_name",
+    capacity: "capacity",
+    id_kind_1: "id_kind_1",
+    id_value_1: "id_value_1",
+    id_kind_2: "id_kind_2",
+    id_value_2: "id_value_2",
+    id_kind_3: "id_kind_3",
+    id_value_3: "id_value_3",
+    emp_id: "emp_id",
+    user_name: "user_name",
+    dept_name: "dept_name",
+    group_name: "group_name",
+    note: "note",
+  };
+
+  var API_FIELDS = [
+    "$id",
+    "$revision",
+    FC.legacy_no,
+    FC.status,
+    FC.registered_date,
+    FC.purchase_date,
+    FC.media_type,
+    FC.media_type_other,
+    FC.item_name,
+    FC.capacity,
+    FC.id_kind_1,
+    FC.id_value_1,
+    FC.id_kind_2,
+    FC.id_value_2,
+    FC.id_kind_3,
+    FC.id_value_3,
+    FC.emp_id,
+    FC.user_name,
+    FC.dept_name,
+    FC.group_name,
+    FC.note,
+  ];
+
+  var ID_KIND_OPTIONS = [
+    "シリアル番号",
+    "製造番号",
+    "管理番号",
+    "型番",
+    "その他",
+  ];
+
+  var MEDIA_TYPE_OPTIONS = [
+    "USBメモリ",
+    "外付けHDD/SSD",
+    "光学ディスク",
+    "SD/microSD",
+    "その他",
+  ];
+
+  var TABLE_COLUMNS = [
+    { key: "legacy_no", label: "管理番号", sort: true },
+    { key: "status", label: "状態", sort: true },
+    { key: "registered_date", label: "登録日", sort: true },
+    { key: "purchase_date", label: "購入日", sort: true },
+    { key: "media_type_display", label: "種別", sort: true },
+    { key: "item_name", label: "名称", sort: true },
+    { key: "capacity", label: "容量", sort: true },
+    { key: "ident", label: "ハードウエア情報", sort: false },
+    { key: "emp_id", label: "社員番号", sort: false },
+    { key: "user_name", label: "氏名", sort: true },
+    { key: "dept_name", label: "所属名", sort: true },
+    { key: "group_name", label: "グループ", sort: true },
+  ];
+
+  var LIST_TABLE_COLS = [
+    { key: "legacy_no", label: "管理番号" },
+    { key: "status", label: "状態" },
+    { key: "media_type_display", label: "種別" },
+    { key: "item_name", label: "名称" },
+    { key: "capacity", label: "容量" },
+    { key: "ident", label: "ハードウエア情報" },
+    { key: "emp_id", label: "社員番号" },
+    { key: "user_name", label: "氏名" },
+    { key: "dept_name", label: "所属名" },
+    { key: "group_name", label: "グループ" },
+    { key: "purchase_date", label: "購入日" },
+  ];
+
+  var EMP595_MODAL_ID = "swl-e595-modal";
+  var LIST_MODAL_ID = "swl-list-modal";
+  var LIST_PANEL_ID = "swl-list-panel";
+  var LIST_LOADING_ID = "swl-list-loading";
+  var LIST_PRINT_STYLE_ID = "swl-list-print-style";
+
+  var state = {
+    records: [],
+    retiredEmpIds: {},
+    filter: "active",
+    search: "",
+    deptFilter: "",
+    userFilter: "",
+    loading: false,
+    sortKey: null,
+    sortDir: "desc",
+    emp595PickCallback: null,
+  };
+
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function escapeQueryValue(str) {
+    return String(str || "").replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+  }
+
+  function todayJstYmd() {
+    var parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Tokyo",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).formatToParts(new Date());
+    var y = "";
+    var mo = "";
+    var d = "";
+    parts.forEach(function (p) {
+      if (p.type === "year") y = p.value;
+      if (p.type === "month") mo = p.value;
+      if (p.type === "day") d = p.value;
+    });
+    return y + "-" + mo + "-" + d;
+  }
+
+  function val(rec, code) {
+    return rec && rec[code] && rec[code].value != null ? String(rec[code].value) : "";
+  }
+
+  function flatten(rec) {
+    var row = {
+      id: val(rec, "$id"),
+      revision: val(rec, "$revision"),
+      legacy_no: val(rec, FC.legacy_no),
+      status: val(rec, FC.status) || STATUS_ACTIVE,
+      registered_date: val(rec, FC.registered_date),
+      purchase_date: val(rec, FC.purchase_date),
+      media_type: val(rec, FC.media_type),
+      media_type_other: val(rec, FC.media_type_other),
+      item_name: val(rec, FC.item_name),
+      capacity: val(rec, FC.capacity),
+      id_kind_1: val(rec, FC.id_kind_1),
+      id_value_1: val(rec, FC.id_value_1),
+      id_kind_2: val(rec, FC.id_kind_2),
+      id_value_2: val(rec, FC.id_value_2),
+      id_kind_3: val(rec, FC.id_kind_3),
+      id_value_3: val(rec, FC.id_value_3),
+      emp_id: val(rec, FC.emp_id),
+      user_name: val(rec, FC.user_name),
+      dept_name: val(rec, FC.dept_name),
+      group_name: val(rec, FC.group_name),
+      note: val(rec, FC.note),
+    };
+    row.ident = formatIdentification(row);
+    row.media_type_display = formatMediaTypeDisplay(row);
+    return row;
+  }
+
+  function formatMediaTypeDisplay(row) {
+    var mt = String(row.media_type || "").trim();
+    if (!mt) return "";
+    if (mt === MEDIA_TYPE_OTHER) {
+      var other = String(row.media_type_other || "").trim();
+      return other ? "その他（" + other + "）" : "その他";
+    }
+    return mt;
+  }
+
+  function formatIdentification(row) {
+    var parts = [];
+    [1, 2, 3].forEach(function (n) {
+      var kind = String(row["id_kind_" + n] || "").trim();
+      var value = String(row["id_value_" + n] || "").trim();
+      if (kind && value) parts.push(kind + ":" + value);
+    });
+    return parts.join(" / ");
+  }
+
+  function toKintoneRecord(row, partial) {
+    var o = {};
+    function set(code, v) {
+      if (v != null && v !== "") o[code] = { value: v };
+    }
+    function clear(code) {
+      o[code] = { value: null };
+    }
+    if (!partial || partial.legacy_no) set(FC.legacy_no, row.legacy_no);
+    if (!partial || partial.status) set(FC.status, row.status);
+    if (!partial || partial.registered_date) set(FC.registered_date, row.registered_date);
+    if (!partial || partial.purchase_date) {
+      if (row.purchase_date) set(FC.purchase_date, row.purchase_date);
+      else clear(FC.purchase_date);
+    }
+    if (!partial || partial.media_type) set(FC.media_type, row.media_type);
+    if (!partial || partial.media_type_other) {
+      if (row.media_type_other) set(FC.media_type_other, row.media_type_other);
+      else clear(FC.media_type_other);
+    }
+    if (!partial || partial.item_name) set(FC.item_name, row.item_name);
+    if (!partial || partial.capacity) set(FC.capacity, row.capacity);
+    [1, 2, 3].forEach(function (n) {
+      var kc = "id_kind_" + n;
+      var vc = "id_value_" + n;
+      if (!partial || partial[kc] || partial[vc]) {
+        if (row[kc]) set(FC[kc], row[kc]);
+        else clear(FC[kc]);
+        if (row[vc]) set(FC[vc], row[vc]);
+        else clear(FC[vc]);
+      }
+    });
+    if (!partial || partial.emp_id) set(FC.emp_id, row.emp_id);
+    if (!partial || partial.user_name) set(FC.user_name, row.user_name);
+    if (!partial || partial.dept_name) set(FC.dept_name, row.dept_name);
+    if (!partial || partial.group_name) set(FC.group_name, row.group_name);
+    if (!partial || partial.note) set(FC.note, row.note);
+    return o;
+  }
+
+  function apiGet(path, params) {
+    return kintone.api(kintone.api.url(path, true), "GET", params);
+  }
+  function apiPost(path, params) {
+    return kintone.api(kintone.api.url(path, true), "POST", params);
+  }
+  function apiPut(path, params) {
+    return kintone.api(kintone.api.url(path, true), "PUT", params);
+  }
+  function apiDelete(path, params) {
+    return kintone.api(kintone.api.url(path, true), "DELETE", params);
+  }
+
+  function fetchAllDbRecords() {
+    var all = [];
+    var offset = 0;
+    function page() {
+      var query = "order by legacy_no desc limit " + PAGE_SIZE + " offset " + offset;
+      return apiGet("/k/v1/records.json", {
+        app: APP_DB,
+        query: query,
+        fields: API_FIELDS,
+      }).then(function (resp) {
+        var rows = resp.records || [];
+        all = all.concat(rows);
+        if (rows.length >= PAGE_SIZE) {
+          offset += PAGE_SIZE;
+          return page();
+        }
+        return all;
+      });
+    }
+    return page();
+  }
+
+  /** §6.4: 595 退職者 emp_id 一覧 */
+  function fetchRetiredEmpIds595() {
+    var map = {};
+    var offset = 0;
+    function page() {
+      var query =
+        'employment_status in ("退職") order by $id asc limit ' +
+        PAGE_SIZE +
+        " offset " +
+        offset;
+      return apiGet("/k/v1/records.json", {
+        app: APP_EMPLOYEE,
+        query: query,
+        fields: ["emp_id"],
+      }).then(function (resp) {
+        (resp.records || []).forEach(function (r) {
+          var id = val(r, "emp_id").trim();
+          if (id) map[id] = true;
+        });
+        if ((resp.records || []).length >= PAGE_SIZE) {
+          offset += PAGE_SIZE;
+          return page();
+        }
+        return map;
+      });
+    }
+    return page();
+  }
+
+  function isRetiredEmployeeRow(row) {
+    var emp = String(row.emp_id || "").trim();
+    return emp && state.retiredEmpIds[emp];
+  }
+
+  function visibleRecords() {
+    return state.records.filter(function (r) {
+      return !isRetiredEmployeeRow(r);
+    });
+  }
+
+  function nextLegacyNo(records) {
+    var max = 0;
+    records.forEach(function (r) {
+      var n = Number(r.legacy_no);
+      if (Number.isFinite(n)) max = Math.max(max, n);
+    });
+    return max + 1;
+  }
+
+  function searchEmployees595Contains(keyword, limit) {
+    var k = String(keyword || "").trim();
+    if (!k) return Promise.resolve([]);
+    var lim = Math.min(Math.max(parseInt(String(limit || "12"), 10) || 12, 1), 25);
+    var q =
+      'user_name like "' +
+      escapeQueryValue(k) +
+      '" and employment_status not in ("退職") order by user_name asc limit ' +
+      lim;
+    return apiGet("/k/v1/records.json", {
+      app: APP_EMPLOYEE,
+      query: q,
+      fields: ["user_name", "emp_id", "dept_name", "group_name", "employment_status"],
+    }).then(function (resp) {
+      return resp.records || [];
+    });
+  }
+
+  function closeEmp595Modal() {
+    var el = document.getElementById(EMP595_MODAL_ID);
+    if (el) el.style.display = "none";
+    state.emp595PickCallback = null;
+  }
+
+  function openEmp595Picker(onPick) {
+    state.emp595PickCallback = onPick;
+    var backdrop = document.getElementById(EMP595_MODAL_ID);
+    if (!backdrop) {
+      backdrop = document.createElement("div");
+      backdrop.id = EMP595_MODAL_ID;
+      backdrop.className = "swl-e595-bg";
+      backdrop.innerHTML =
+        '<div class="swl-e595-box">' +
+        "<h3>社員検索</h3>" +
+        '<p class="swl-e595-sub">退職者は表示されません。行をクリックして選択してください。</p>' +
+        '<div class="swl-e595-search-row">' +
+        '<input type="text" id="swl-e595-q" placeholder="例: 山田　または　太郎">' +
+        '<button type="button" id="swl-e595-go" class="kintoneplugin-button-dialog-ok">検索</button>' +
+        "</div>" +
+        '<div id="swl-e595-results" class="swl-e595-results"></div>' +
+        '<div class="swl-e595-foot">' +
+        '<button type="button" id="swl-e595-close" class="kintoneplugin-button-normal">閉じる</button>' +
+        "</div></div>";
+      backdrop.addEventListener("click", function (ev) {
+        if (ev.target === backdrop) closeEmp595Modal();
+      });
+      document.body.appendChild(backdrop);
+      backdrop.querySelector("#swl-e595-close").addEventListener("click", closeEmp595Modal);
+      backdrop.querySelector("#swl-e595-go").addEventListener("click", runEmp595Search);
+      backdrop.querySelector("#swl-e595-q").addEventListener("keydown", function (ev) {
+        if (ev.key === "Enter") {
+          ev.preventDefault();
+          runEmp595Search();
+        }
+      });
+    }
+    var inp = document.getElementById("swl-e595-q");
+    var res = document.getElementById("swl-e595-results");
+    if (inp) inp.value = "";
+    if (res) res.innerHTML = '<p class="swl-e595-hint">検索語を入力して「検索」を押してください。</p>';
+    backdrop.style.display = "flex";
+    if (inp) inp.focus();
+  }
+
+  function renderEmp595Results(rows) {
+    var container = document.getElementById("swl-e595-results");
+    if (!container) return;
+    container.innerHTML = "";
+    if (!rows.length) {
+      container.innerHTML =
+        '<p class="swl-e595-hint">該当する在籍社員が見つかりません。</p>';
+      return;
+    }
+    rows.forEach(function (row) {
+      var un = val(row, "user_name");
+      var dept = val(row, "dept_name");
+      var grp = val(row, "group_name");
+      var emp = val(row, "emp_id");
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "swl-e595-item";
+      btn.textContent =
+        un +
+        (emp ? "（" + emp + "）" : "") +
+        (dept ? "　／　" + dept : "") +
+        (grp ? "　（" + grp + "）" : "");
+      btn.addEventListener("click", function () {
+        if (state.emp595PickCallback) {
+          state.emp595PickCallback({
+            emp_id: emp,
+            user_name: un,
+            dept_name: dept,
+            group_name: grp,
+          });
+        }
+        closeEmp595Modal();
+      });
+      container.appendChild(btn);
+    });
+  }
+
+  function runEmp595Search() {
+    var inp = document.getElementById("swl-e595-q");
+    var container = document.getElementById("swl-e595-results");
+    if (!inp || !container) return;
+    var kw = String(inp.value || "").trim();
+    if (!kw) {
+      container.innerHTML = '<p class="swl-e595-hint">検索語を入力してください。</p>';
+      return;
+    }
+    container.innerHTML = '<p class="swl-e595-hint">検索しています…</p>';
+    searchEmployees595Contains(kw, 25)
+      .then(renderEmp595Results)
+      .catch(function (e) {
+        container.innerHTML =
+          '<p class="swl-e595-err">検索に失敗しました: ' + esc(e.message || e) + "</p>";
+      });
+  }
+
+  function idKindOptionsHtml(selected) {
+    return (
+      '<option value="">—</option>' +
+      ID_KIND_OPTIONS.map(function (opt) {
+        return (
+          '<option value="' +
+          esc(opt) +
+          '"' +
+          (opt === selected ? " selected" : "") +
+          ">" +
+          esc(opt) +
+          "</option>"
+        );
+      }).join("")
+    );
+  }
+
+  function mediaTypeOptionsHtml(selected) {
+    return MEDIA_TYPE_OPTIONS.map(function (opt) {
+      return (
+        '<option value="' +
+        esc(opt) +
+        '"' +
+        (opt === selected ? " selected" : "") +
+        ">" +
+        esc(opt) +
+        "</option>"
+      );
+    }).join("");
+  }
+
+  function readIdSlotsFromModal(box) {
+    var slots = [];
+    [1, 2, 3].forEach(function (n) {
+      var kindEl = box.querySelector("#swl-id-kind-" + n);
+      var valEl = box.querySelector("#swl-id-value-" + n);
+      var rowEl = box.querySelector("#swl-id-slot-" + n);
+      if (!rowEl || rowEl.style.display === "none") return;
+      slots.push({
+        n: n,
+        kind: kindEl ? String(kindEl.value || "").trim() : "",
+        value: valEl ? String(valEl.value || "").trim() : "",
+      });
+    });
+    return slots;
+  }
+
+  function validateIdSlots(slots) {
+    if (!slots.length || !slots[0].kind || !slots[0].value) {
+      return "ハードウエア情報1（種別・値）は必須です";
+    }
+    for (var i = 1; i < slots.length; i++) {
+      var s = slots[i];
+      var hasK = !!s.kind;
+      var hasV = !!s.value;
+      if (hasK !== hasV) {
+        return "ハードウエア情報" + s.n + "は種別と値をセットで入力してください";
+      }
+    }
+    return "";
+  }
+
+  function duplicateKindsInRecord(slots) {
+    var kinds = [];
+    slots.forEach(function (s) {
+      if (s.kind && s.value) kinds.push(s.kind);
+    });
+    var seen = {};
+    var dups = [];
+    kinds.forEach(function (k) {
+      if (seen[k]) dups.push(k);
+      seen[k] = true;
+    });
+    return dups;
+  }
+
+  function buildCrossRecordDupQuery(kind, value, excludeId) {
+    var k = escapeQueryValue(kind);
+    var v = escapeQueryValue(String(value || "").trim());
+    if (!k || !v) return "";
+    var parts = [
+      '(id_kind_1 = "' + k + '" and id_value_1 = "' + v + '")',
+      '(id_kind_2 = "' + k + '" and id_value_2 = "' + v + '")',
+      '(id_kind_3 = "' + k + '" and id_value_3 = "' + v + '")',
+    ];
+    var q = "(" + parts.join(" or ") + ")";
+    if (excludeId) q += " and $id != " + Number(excludeId);
+    return q + " limit 1";
+  }
+
+  function checkCrossRecordDuplicates(slots, excludeId) {
+    var checks = slots
+      .filter(function (s) {
+        return s.kind && s.value;
+      })
+      .map(function (s) {
+        var q = buildCrossRecordDupQuery(s.kind, s.value, excludeId);
+        if (!q) return Promise.resolve(null);
+        return apiGet("/k/v1/records.json", {
+          app: APP_DB,
+          query: q,
+          fields: ["$id"],
+        }).then(function (resp) {
+          return (resp.records || []).length > 0;
+        });
+      });
+    if (!checks.length) return Promise.resolve(false);
+    return Promise.all(checks).then(function (hits) {
+      return hits.some(function (h) {
+        return h;
+      });
+    });
+  }
+
+  function slotsToRowFields(slots) {
+    var row = {
+      id_kind_1: "",
+      id_value_1: "",
+      id_kind_2: "",
+      id_value_2: "",
+      id_kind_3: "",
+      id_value_3: "",
+    };
+    slots.forEach(function (s) {
+      row["id_kind_" + s.n] = s.kind;
+      row["id_value_" + s.n] = s.value;
+    });
+    return row;
+  }
+
+  function countVisibleIdSlots(row) {
+    var n = 1;
+    if (row.id_kind_2 || row.id_value_2) n = 2;
+    if (row.id_kind_3 || row.id_value_3) n = 3;
+    return n;
+  }
+
+  function buildIdSlotsHtml(row, maxVisible) {
+    var vis = maxVisible || countVisibleIdSlots(row || {});
+    var html = "";
+    [1, 2, 3].forEach(function (n) {
+      html +=
+        '<div id="swl-id-slot-' +
+        n +
+        '" class="swl-id-slot"' +
+        (n > vis ? ' style="display:none"' : "") +
+        ">" +
+        '<label>ハードウエア情報' +
+        n +
+        " — 種別<select id=\"swl-id-kind-" +
+        n +
+        '">' +
+        idKindOptionsHtml(row ? row["id_kind_" + n] : "") +
+        '</select></label><label>ハードウエア情報' +
+        n +
+        " — 値<input id=\"swl-id-value-" +
+        n +
+        '" value="' +
+        esc(row ? row["id_value_" + n] : "") +
+        '"></label></div>';
+    });
+    html +=
+      '<button type="button" id="swl-id-add"' +
+      (vis >= 3 ? ' style="display:none"' : "") +
+      ' class="kintoneplugin-button-normal">ハードウエア情報を追加</button>';
+    return html;
+  }
+
+  function wireIdSlotUi(box) {
+    var addBtn = box.querySelector("#swl-id-add");
+    if (addBtn) {
+      addBtn.addEventListener("click", function () {
+        var hidden = null;
+        [2, 3].forEach(function (n) {
+          var el = box.querySelector("#swl-id-slot-" + n);
+          if (el && el.style.display === "none" && !hidden) {
+            el.style.display = "";
+            hidden = n;
+          }
+        });
+        var slot3 = box.querySelector("#swl-id-slot-3");
+        if (slot3 && slot3.style.display !== "none") addBtn.style.display = "none";
+      });
+    }
+  }
+
+  function readEmployeeFromModal(box) {
+    return {
+      emp_id: (box.querySelector("#swl-emp-id") || {}).value || "",
+      user_name: (box.querySelector("#swl-user-name") || {}).value || "",
+      dept_name: (box.querySelector("#swl-dept-name") || {}).value || "",
+      group_name: (box.querySelector("#swl-group-name") || {}).value || "",
+    };
+  }
+
+  function setEmployeeInModal(box, emp) {
+    var map = [
+      ["#swl-emp-id", emp.emp_id],
+      ["#swl-user-name", emp.user_name],
+      ["#swl-dept-name", emp.dept_name],
+      ["#swl-group-name", emp.group_name],
+    ];
+    map.forEach(function (pair) {
+      var el = box.querySelector(pair[0]);
+      if (el) el.value = pair[1] || "";
+    });
+  }
+
+  function employeeFieldsHtml(row) {
+    row = row || {};
+    return (
+      '<div class="swl-emp-block">' +
+      '<button type="button" id="swl-pick-595" class="kintoneplugin-button-normal">社員検索</button>' +
+      '<label>社員番号<input id="swl-emp-id" value="' +
+      esc(row.emp_id) +
+      '" readonly></label>' +
+      '<label>氏名<input id="swl-user-name" value="' +
+      esc(row.user_name) +
+      '" readonly></label>' +
+      '<label>所属名<input id="swl-dept-name" value="' +
+      esc(row.dept_name) +
+      '" readonly></label>' +
+      '<label>所属グループ<input id="swl-group-name" value="' +
+      esc(row.group_name) +
+      '" readonly></label></div>'
+    );
+  }
+
+  function wireEmployeePicker(box) {
+    var btn = box.querySelector("#swl-pick-595");
+    if (btn) {
+      btn.addEventListener("click", function () {
+        openEmp595Picker(function (emp) {
+          setEmployeeInModal(box, emp);
+        });
+      });
+    }
+  }
+
+  function buildMediaTypeFieldsHtml(row) {
+    row = row || {};
+    var mt = row.media_type || "";
+    var showOther = mt === MEDIA_TYPE_OTHER;
+    return (
+      '<label>媒体種別<select id="swl-media-type">' +
+      mediaTypeOptionsHtml(mt) +
+      '</select></label>' +
+      '<div id="swl-media-type-other-wrap" style="display:' +
+      (showOther ? "block" : "none") +
+      '">' +
+      '<label>種別（その他）<input id="swl-media-type-other" value="' +
+      esc(row.media_type_other || "") +
+      '"></label></div>' +
+      '<label>名称<input id="swl-item-name" value="' +
+      esc(row.item_name || "") +
+      '"></label>' +
+      '<label>容量<input id="swl-capacity" value="' +
+      esc(row.capacity || "") +
+      '" placeholder="例: 32GB"></label>'
+    );
+  }
+
+  function wireMediaTypeUi(box) {
+    var sel = box.querySelector("#swl-media-type");
+    var wrap = box.querySelector("#swl-media-type-other-wrap");
+    if (!sel || !wrap) return;
+    sel.addEventListener("change", function () {
+      wrap.style.display = sel.value === MEDIA_TYPE_OTHER ? "block" : "none";
+    });
+  }
+
+  function saveRecordFromModal(box, row, isNew, close) {
+    var mediaTypeEl = box.querySelector("#swl-media-type");
+    var mediaType = mediaTypeEl ? mediaTypeEl.value : "";
+    if (!mediaType) {
+      alert("媒体種別は必須です");
+      return;
+    }
+    var mediaTypeOther = ((box.querySelector("#swl-media-type-other") || {}).value || "").trim();
+    if (mediaType === MEDIA_TYPE_OTHER && !mediaTypeOther) {
+      alert("種別（その他）は必須です");
+      return;
+    }
+    if (mediaType !== MEDIA_TYPE_OTHER) mediaTypeOther = "";
+    var slots = readIdSlotsFromModal(box);
+    var slotErr = validateIdSlots(slots);
+    if (slotErr) {
+      alert(slotErr);
+      return;
+    }
+    var dups = duplicateKindsInRecord(slots);
+    if (dups.length) {
+      if (
+        !window.confirm(
+          "同一の情報種別（" + dups.join("、") + "）が複数あります。このまま保存しますか？",
+        )
+      ) {
+        return;
+      }
+    }
+    var emp = readEmployeeFromModal(box);
+    if (!String(emp.user_name || "").trim()) {
+      alert("社員検索で利用者を選択してください");
+      return;
+    }
+    var slotFields = slotsToRowFields(slots);
+    var payload = {
+      media_type: mediaType,
+      media_type_other: mediaTypeOther,
+      item_name: ((box.querySelector("#swl-item-name") || {}).value || "").trim(),
+      capacity: ((box.querySelector("#swl-capacity") || {}).value || "").trim(),
+      purchase_date: (box.querySelector("#swl-purchase-date") || {}).value || "",
+      emp_id: emp.emp_id,
+      user_name: emp.user_name,
+      dept_name: emp.dept_name,
+      group_name: emp.group_name,
+      note: (box.querySelector("#swl-note") || {}).value || "",
+    };
+    Object.keys(slotFields).forEach(function (k) {
+      payload[k] = slotFields[k];
+    });
+
+    checkCrossRecordDuplicates(slots, isNew ? null : row.id)
+      .then(function (hasDup) {
+        if (hasDup) {
+          if (
+            !window.confirm(
+              "同一のハードウエア情報（シリアル等）が既に登録されています。登録しますか？",
+            )
+          ) {
+            return Promise.reject(new Error("cancelled"));
+          }
+        }
+        if (isNew) {
+          var today = todayJstYmd();
+          payload.legacy_no = String(nextLegacyNo(state.records));
+          payload.status = STATUS_ACTIVE;
+          payload.registered_date = today;
+          if (!payload.purchase_date) payload.purchase_date = today;
+          return apiPost("/k/v1/record.json", {
+            app: APP_DB,
+            record: toKintoneRecord(payload),
+          });
+        }
+        if (row.status === STATUS_RETIRED && payload.status === STATUS_ACTIVE) {
+          alert("廃止済みレコードを利用中に戻すことはできません");
+          return Promise.reject(new Error("cancelled"));
+        }
+        return apiPut("/k/v1/record.json", {
+          app: APP_DB,
+          id: row.id,
+          revision: row.revision,
+          record: toKintoneRecord(payload, {
+            media_type: 1,
+            media_type_other: 1,
+            item_name: 1,
+            capacity: 1,
+            purchase_date: 1,
+            id_kind_1: 1,
+            id_value_1: 1,
+            id_kind_2: 1,
+            id_value_2: 1,
+            id_kind_3: 1,
+            id_value_3: 1,
+            emp_id: 1,
+            user_name: 1,
+            dept_name: 1,
+            group_name: 1,
+            note: 1,
+          }),
+        });
+      })
+      .then(function () {
+        close();
+        reloadRecords();
+        alert("保存しました");
+      })
+      .catch(function (e) {
+        if (String(e.message || e) === "cancelled") return;
+        alert("保存失敗: " + (e.message || e));
+      });
+  }
+
+  function injectCss() {
+    if (document.getElementById("swl-dash-css")) return;
+    var st = document.createElement("style");
+    st.id = "swl-dash-css";
+    st.textContent =
+      ".gaia-argoui-app-index-recordlist,.recordlist-gaia,.recordlist-norecord-gaia,.contents-gaia .recordlist-header-gaia,.gaia-argoui-app-index-pager{display:none!important;}" +
+      ".swl-root{font-family:Segoe UI,Meiryo,sans-serif;padding:8px 12px 24px;max-width:100%;}" +
+      ".swl-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;}" +
+      ".swl-meta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:10px;padding:10px 14px;background:#eff6ff;border:1px solid #93c5fd;border-radius:8px;}" +
+      ".swl-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}" +
+      ".swl-chip{padding:4px 10px;border-radius:999px;border:1px solid #cbd5e1;background:#fff;font-size:12px;cursor:pointer;}" +
+      ".swl-chip--active{background:#0369a1;color:#fff;border-color:#0369a1;}" +
+      ".swl-chip-label{font-size:12px;font-weight:700;color:#475569;margin-right:4px;}" +
+      ".swl-table-wrap{overflow:auto;max-height:calc(100vh - 300px);border:1px solid #cbd5e1;border-radius:6px;}" +
+      ".swl-table{border-collapse:collapse;width:100%;font-size:12px;min-width:1400px;}" +
+      ".swl-table th,.swl-table td{border:1px solid #e2e8f0;padding:4px 6px;vertical-align:middle;}" +
+      ".swl-table th{background:#f1f5f9;position:sticky;top:0;z-index:1;}" +
+      ".swl-table th.swl-sort{cursor:pointer;user-select:none;white-space:nowrap;}" +
+      ".swl-table th.swl-sort:hover{background:#e2e8f0;}" +
+      ".swl-sort-ind{display:inline-block;margin-left:4px;font-size:10px;color:#94a3b8;}" +
+      ".swl-table th.swl-sort--active .swl-sort-ind{color:#0369a1;font-weight:700;}" +
+      ".swl-table tr.retired{background:#f8fafc;color:#64748b;}" +
+      ".swl-user-link{color:#0369a1;cursor:pointer;text-decoration:underline;}" +
+      ".swl-ident{font-family:Consolas,Monaco,monospace;font-size:11px;word-break:break-all;}" +
+      ".swl-actions button{margin:0 2px;padding:2px 6px;font-size:11px;}" +
+      ".swl-modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:10000;display:flex;align-items:center;justify-content:center;}" +
+      ".swl-modal{background:#fff;border-radius:8px;padding:16px 18px;max-width:560px;width:92%;max-height:90vh;overflow:auto;box-shadow:0 8px 30px rgba(0,0,0,.2);}" +
+      ".swl-modal h3{margin:0 0 12px;font-size:16px;}" +
+      ".swl-modal label{display:block;margin:8px 0;font-size:13px;}" +
+      ".swl-modal input,.swl-modal select,.swl-modal textarea{width:100%;box-sizing:border-box;padding:6px;margin-top:4px;}" +
+      ".swl-modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;}" +
+      ".swl-id-slot{margin:8px 0;padding:8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;}" +
+      ".swl-emp-block{margin:10px 0;padding:10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;}" +
+      ".swl-e595-bg{position:fixed;inset:0;z-index:10001;background:rgba(15,23,42,.5);display:none;align-items:center;justify-content:center;padding:16px;}" +
+      ".swl-e595-box{background:#fff;border-radius:8px;max-width:560px;width:100%;max-height:88vh;overflow:auto;padding:16px 18px;}" +
+      ".swl-e595-sub{font-size:12px;color:#64748b;margin:0 0 10px;}" +
+      ".swl-e595-search-row{display:flex;gap:8px;margin-bottom:10px;}" +
+      ".swl-e595-search-row input{flex:1;padding:8px;}" +
+      ".swl-e595-results{max-height:46vh;overflow:auto;border:1px solid #e2e8f0;border-radius:6px;padding:8px;background:#f8fafc;}" +
+      ".swl-e595-item{display:block;width:100%;text-align:left;padding:10px;margin:0 0 6px;border:1px solid #dee2e6;border-radius:4px;background:#fff;cursor:pointer;font-size:13px;}" +
+      ".swl-e595-item:hover{background:#eff6ff;}" +
+      ".swl-e595-hint,.swl-e595-err{font-size:13px;margin:8px 0;color:#64748b;}" +
+      ".swl-e595-err{color:#b91c1c;}" +
+      ".swl-e595-foot{margin-top:12px;text-align:right;}" +
+      ".swl-list-modal-bg{position:fixed;inset:0;z-index:10002;background:rgba(15,23,42,.5);display:none;align-items:center;justify-content:center;padding:16px;}" +
+      ".swl-list-modal{background:#fff;border-radius:10px;max-width:480px;width:100%;padding:20px 22px;}" +
+      ".swl-list-loading{position:fixed;inset:0;z-index:10003;background:rgba(15,23,42,.45);display:none;align-items:center;justify-content:center;color:#fff;font-weight:700;}" +
+      ".swl-list-panel{position:fixed;inset:0;z-index:10004;background:#f8fafc;display:flex;flex-direction:column;}" +
+      ".swl-list-toolbar{flex:0 0 auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 16px;background:#0f172a;color:#fff;}" +
+      ".swl-list-scroll{flex:1 1 auto;overflow:auto;padding:12px 16px 24px;}" +
+      ".swl-list-print-head{display:none;margin-bottom:16px;}" +
+      ".swl-list-table{width:100%;border-collapse:collapse;background:#fff;font-size:13px;}" +
+      ".swl-list-table th,.swl-list-table td{border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top;word-break:break-word;}" +
+      ".swl-list-table th{background:#e2e8f0;position:sticky;top:0;}";
+    document.head.appendChild(st);
+  }
+
+  function ensureListPrintStyles() {
+    if (document.getElementById(LIST_PRINT_STYLE_ID)) return;
+    var st = document.createElement("style");
+    st.id = LIST_PRINT_STYLE_ID;
+    st.textContent =
+      "@media print{@page{size:landscape;margin:10mm;}" +
+      "body *{visibility:hidden!important;}" +
+      "#" +
+      LIST_PANEL_ID +
+      ",#" +
+      LIST_PANEL_ID +
+      " *{visibility:visible!important;}" +
+      "#" +
+      LIST_PANEL_ID +
+      "{position:absolute!important;left:0!important;top:0!important;width:100%!important;max-height:none!important;background:#fff!important;}" +
+      "#" +
+      LIST_PANEL_ID +
+      " .swl-list-toolbar{display:none!important;}" +
+      "#" +
+      LIST_PANEL_ID +
+      " .swl-list-scroll{overflow:visible!important;max-height:none!important;}" +
+      "#" +
+      LIST_PANEL_ID +
+      " .swl-list-print-head{display:block!important;}}";
+    document.head.appendChild(st);
+  }
+
+  function resolveMountHost() {
+    return (
+      kintone.app.getHeaderSpaceElement() ||
+      kintone.app.getHeaderMenuSpaceElement() ||
+      document.querySelector(".ocean-ui-app-index-head") ||
+      document.body
+    );
+  }
+
+  function compareSortValues(key, a, b) {
+    if (key === "legacy_no") return Number(a.legacy_no || 0) - Number(b.legacy_no || 0);
+    if (key === "registered_date" || key === "purchase_date") {
+      return String(a[key] || "").localeCompare(String(b[key] || ""));
+    }
+    if (key === "status") {
+      var sa = a.status === STATUS_ACTIVE ? 0 : 1;
+      var sb = b.status === STATUS_ACTIVE ? 0 : 1;
+      if (sa !== sb) return sa - sb;
+    }
+    return String(a[key] || "").localeCompare(String(b[key] || ""), "ja");
+  }
+
+  function filteredRecords() {
+    var q = state.search.trim().toLowerCase();
+    var rows = visibleRecords().filter(function (r) {
+      if (state.filter === "active" && r.status !== STATUS_ACTIVE) return false;
+      if (state.filter === "retired" && r.status !== STATUS_RETIRED) return false;
+      if (state.deptFilter && String(r.dept_name || "").indexOf(state.deptFilter) < 0) return false;
+      if (state.userFilter && r.user_name !== state.userFilter) return false;
+      if (!q) return true;
+      var hay = (
+        r.item_name +
+        " " +
+        r.capacity +
+        " " +
+        r.media_type_display +
+        " " +
+        r.media_type_other +
+        r.id_value_1 +
+        " " +
+        r.id_value_2 +
+        " " +
+        r.id_value_3 +
+        " " +
+        r.emp_id +
+        " " +
+        r.user_name +
+        " " +
+        r.dept_name +
+        " " +
+        r.group_name +
+        " " +
+        r.ident
+      ).toLowerCase();
+      return hay.indexOf(q) >= 0;
+    });
+    rows.sort(function (a, b) {
+      if (state.sortKey) {
+        var cmp = compareSortValues(state.sortKey, a, b);
+        return state.sortDir === "asc" ? cmp : -cmp;
+      }
+      var sa = a.status === STATUS_ACTIVE ? 0 : 1;
+      var sb = b.status === STATUS_ACTIVE ? 0 : 1;
+      if (sa !== sb) return sa - sb;
+      return Number(b.legacy_no) - Number(a.legacy_no);
+    });
+    return rows;
+  }
+
+  function distinctValues(rows, key) {
+    var map = {};
+    rows.forEach(function (r) {
+      var v = String(r[key] || "").trim();
+      if (v) map[v] = true;
+    });
+    return Object.keys(map).sort(function (a, b) {
+      return a.localeCompare(b, "ja");
+    });
+  }
+
+  function renderChips() {
+    var deptEl = document.getElementById("swl-dept-chips");
+    var userEl = document.getElementById("swl-user-chips");
+    if (!deptEl || !userEl) return;
+    var base = visibleRecords();
+    var depts = distinctValues(base, "dept_name");
+    var users = distinctValues(base, "user_name");
+    deptEl.innerHTML =
+      '<span class="swl-chip-label">所属:</span>' +
+      depts
+        .map(function (d) {
+          return (
+            '<button type="button" class="swl-chip' +
+            (state.deptFilter === d ? " swl-chip--active" : "") +
+            '" data-dept="' +
+            esc(d) +
+            '">' +
+            esc(d) +
+            "</button>"
+          );
+        })
+        .join("");
+    userEl.innerHTML =
+      '<span class="swl-chip-label">利用者:</span>' +
+      users
+        .map(function (u) {
+          return (
+            '<button type="button" class="swl-chip' +
+            (state.userFilter === u ? " swl-chip--active" : "") +
+            '" data-user="' +
+            esc(u) +
+            '">' +
+            esc(u) +
+            "</button>"
+          );
+        })
+        .join("");
+    deptEl.querySelectorAll("[data-dept]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var v = btn.getAttribute("data-dept");
+        state.deptFilter = state.deptFilter === v ? "" : v;
+        renderChips();
+        renderTable();
+      });
+    });
+    userEl.querySelectorAll("[data-user]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var v = btn.getAttribute("data-user");
+        state.userFilter = state.userFilter === v ? "" : v;
+        renderChips();
+        renderTable();
+      });
+    });
+  }
+
+  function updateSortHeaders() {
+    var thead = document.querySelector("#swl-root .swl-table thead");
+    if (!thead) return;
+    thead.querySelectorAll("th.swl-sort").forEach(function (th) {
+      var key = th.getAttribute("data-sort");
+      var ind = th.querySelector(".swl-sort-ind");
+      th.classList.toggle("swl-sort--active", key === state.sortKey);
+      if (ind) {
+        if (key === state.sortKey) ind.textContent = state.sortDir === "asc" ? "\u25b2" : "\u25bc";
+        else ind.textContent = "";
+      }
+    });
+  }
+
+  function toggleSort(key) {
+    if (state.sortKey === key) state.sortDir = state.sortDir === "asc" ? "desc" : "asc";
+    else {
+      state.sortKey = key;
+      state.sortDir =
+        key === "legacy_no" || key === "registered_date" || key === "purchase_date"
+          ? "desc"
+          : "asc";
+    }
+    updateSortHeaders();
+    renderTable();
+  }
+
+  function closeModal() {
+    var el = document.getElementById("swl-modal-root");
+    if (el) el.remove();
+  }
+
+  function openModal(title, bodyHtml, buttons) {
+    closeModal();
+    var bg = document.createElement("div");
+    bg.id = "swl-modal-root";
+    bg.className = "swl-modal-bg";
+    var box = document.createElement("div");
+    box.className = "swl-modal";
+    box.innerHTML = "<h3>" + esc(title) + "</h3>" + bodyHtml;
+    var actions = document.createElement("div");
+    actions.className = "swl-modal-actions";
+    buttons.forEach(function (b) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = b.label;
+      btn.className = b.primary ? "kintoneplugin-button-dialog-ok" : "kintoneplugin-button-normal";
+      btn.addEventListener("click", function () {
+        if (b.onClick) b.onClick(closeModal);
+        else closeModal();
+      });
+      actions.appendChild(btn);
+    });
+    box.appendChild(actions);
+    bg.appendChild(box);
+    bg.addEventListener("click", function (ev) {
+      if (ev.target === bg) closeModal();
+    });
+    document.body.appendChild(bg);
+    return box;
+  }
+
+  function openCreateModal() {
+    var today = todayJstYmd();
+    var box = openModal(
+      "新規登録",
+      buildMediaTypeFieldsHtml(null) +
+        buildIdSlotsHtml(null, 1) +
+        employeeFieldsHtml(null) +
+        '<label>購入日<input type="date" id="swl-purchase-date" value="' +
+        esc(today) +
+        '"></label>' +
+        '<label>備考<textarea id="swl-note" rows="3"></textarea></label>',
+      [
+        { label: "キャンセル" },
+        {
+          label: "保存",
+          primary: true,
+          onClick: function (close) {
+            saveRecordFromModal(box, null, true, close);
+          },
+        },
+      ],
+    );
+    wireIdSlotUi(box);
+    wireMediaTypeUi(box);
+    wireEmployeePicker(box);
+  }
+
+  function openEditModal(row) {
+    var statusHtml =
+      '<p style="font-size:12px;color:#475569;">状態: <strong>' +
+      esc(row.status) +
+      "</strong>" +
+      (row.status === STATUS_RETIRED ? "（利用中へ戻せません）" : "") +
+      "</p>" +
+      '<p style="font-size:12px;color:#475569;">登録日: <strong>' +
+      esc(row.registered_date) +
+      "</strong>（変更不可）</p>";
+    var box = openModal(
+      "編集 — No." + row.legacy_no,
+      statusHtml +
+        buildMediaTypeFieldsHtml(row) +
+        buildIdSlotsHtml(row) +
+        employeeFieldsHtml(row) +
+        '<label>購入日<input type="date" id="swl-purchase-date" value="' +
+        esc(row.purchase_date) +
+        '"></label><label>備考<textarea id="swl-note" rows="3">' +
+        esc(row.note) +
+        "</textarea></label>",
+      [
+        { label: "キャンセル" },
+        {
+          label: "保存",
+          primary: true,
+          onClick: function (close) {
+            saveRecordFromModal(box, row, false, close);
+          },
+        },
+      ],
+    );
+    wireIdSlotUi(box);
+    wireMediaTypeUi(box);
+    wireEmployeePicker(box);
+  }
+
+  function openRetireModal(row) {
+    openModal(
+      "廃止確認",
+      "<p>種別: <strong>" +
+        esc(row.media_type_display) +
+        "</strong></p><p>名称: <strong>" +
+        esc(row.item_name) +
+        "</strong></p><p>氏名: " +
+        esc(row.user_name) +
+        "</p><p>ステータスを <strong>廃止</strong> にします（元に戻せません）。</p>",
+      [
+        { label: "キャンセル" },
+        {
+          label: "廃止する",
+          primary: true,
+          onClick: function (close) {
+            if (row.status !== STATUS_ACTIVE) {
+              alert("利用中のレコードのみ廃止できます");
+              return;
+            }
+            apiPut("/k/v1/record.json", {
+              app: APP_DB,
+              id: row.id,
+              revision: row.revision,
+              record: { status: { value: STATUS_RETIRED } },
+            })
+              .then(function () {
+                close();
+                reloadRecords();
+                alert("廃止しました");
+              })
+              .catch(function (e) {
+                alert("廃止失敗: " + (e.message || e));
+              });
+          },
+        },
+      ],
+    );
+  }
+
+  function openDeleteModal(row) {
+    openModal(
+      "削除確認（誤登録のみ）",
+      "<p>名称: <strong>" +
+        esc(row.item_name) +
+        "</strong></p><p>管理番号: " +
+        esc(row.legacy_no) +
+        "</p><p>このレコードを<strong>物理削除</strong>します。</p>",
+      [
+        { label: "キャンセル" },
+        {
+          label: "削除する",
+          primary: true,
+          onClick: function (close) {
+            apiDelete("/k/v1/records.json", { app: APP_DB, ids: [Number(row.id)] })
+              .then(function () {
+                close();
+                reloadRecords();
+                alert("削除しました");
+              })
+              .catch(function (e) {
+                alert("削除失敗: " + (e.message || e));
+              });
+          },
+        },
+      ],
+    );
+  }
+
+  function filterByUserName(name) {
+    state.userFilter = String(name || "").trim();
+    renderChips();
+    renderTable();
+  }
+
+  function reloadRecords() {
+    state.loading = true;
+    renderTable();
+    return fetchRetiredEmpIds595()
+      .then(function (retiredMap) {
+        state.retiredEmpIds = retiredMap;
+        return fetchAllDbRecords();
+      })
+      .then(function (rows) {
+        state.records = rows.map(flatten);
+        state.loading = false;
+        renderChips();
+        renderTable();
+        updateMeta();
+      })
+      .catch(function (e) {
+        state.loading = false;
+        renderTable();
+        alert("読込失敗: " + (e.message || e));
+      });
+  }
+
+  function updateMeta() {
+    var el = document.getElementById("swl-meta");
+    if (!el) return;
+    var vis = visibleRecords();
+    var active = vis.filter(function (r) {
+      return r.status === STATUS_ACTIVE;
+    }).length;
+    el.innerHTML =
+      "<span>表示 " +
+      esc(String(vis.length)) +
+      " 件（利用中 " +
+      esc(String(active)) +
+      "）</span>" +
+      '<span style="font-size:11px;color:#64748b;">build ' +
+      esc(BUILD) +
+      "</span>";
+  }
+
+  function renderTable() {
+    var tbody = document.getElementById("swl-tbody");
+    if (!tbody) return;
+    if (state.loading) {
+      tbody.innerHTML = '<tr><td colspan="13">読込中…</td></tr>';
+      return;
+    }
+    var rows = filteredRecords();
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="13">該当なし</td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows
+      .map(function (r) {
+        var cls = r.status === STATUS_RETIRED ? "retired" : "";
+        return (
+          '<tr class="' +
+          cls +
+          '" data-id="' +
+          esc(r.id) +
+          '">' +
+          "<td>" +
+          esc(r.legacy_no) +
+          "</td><td>" +
+          esc(r.status) +
+          "</td><td>" +
+          esc(r.registered_date) +
+          "</td><td>" +
+          esc(r.purchase_date) +
+          "</td><td>" +
+          esc(r.media_type_display) +
+          "</td><td>" +
+          esc(r.item_name) +
+          "</td><td>" +
+          esc(r.capacity) +
+          '</td><td class="swl-ident">' +
+          esc(r.ident) +
+          "</td><td>" +
+          esc(r.emp_id) +
+          '</td><td><span class="swl-user-link" data-user="' +
+          esc(r.user_name) +
+          '">' +
+          esc(r.user_name) +
+          "</span></td><td>" +
+          esc(r.dept_name) +
+          "</td><td>" +
+          esc(r.group_name) +
+          '</td><td class="swl-actions">' +
+          '<button type="button" class="swl-btn-edit">編集</button>' +
+          (r.status === STATUS_ACTIVE
+            ? '<button type="button" class="swl-btn-retire">廃止</button>'
+            : "") +
+          '<button type="button" class="swl-btn-del">削除</button>' +
+          '<button type="button" class="swl-btn-user-list">この社員のリスト</button>' +
+          "</td></tr>"
+        );
+      })
+      .join("");
+
+    tbody.querySelectorAll(".swl-user-link").forEach(function (el) {
+      el.addEventListener("click", function () {
+        filterByUserName(el.getAttribute("data-user"));
+      });
+    });
+    tbody.querySelectorAll("tr[data-id]").forEach(function (tr) {
+      var id = tr.getAttribute("data-id");
+      var row = state.records.find(function (x) {
+        return x.id === id;
+      });
+      if (!row) return;
+      tr.querySelector(".swl-btn-edit").addEventListener("click", function () {
+        openEditModal(row);
+      });
+      var retireBtn = tr.querySelector(".swl-btn-retire");
+      if (retireBtn) {
+        retireBtn.addEventListener("click", function () {
+          openRetireModal(row);
+        });
+      }
+      tr.querySelector(".swl-btn-del").addEventListener("click", function () {
+        openDeleteModal(row);
+      });
+      tr.querySelector(".swl-btn-user-list").addEventListener("click", function () {
+        openListCreateModal({
+          emp_id: row.emp_id,
+          user_name: row.user_name,
+        });
+      });
+    });
+    updateSortHeaders();
+  }
+
+  function clearFilters() {
+    state.search = "";
+    state.filter = "active";
+    state.deptFilter = "";
+    state.userFilter = "";
+    state.sortKey = null;
+    state.sortDir = "desc";
+    var search = document.getElementById("swl-search");
+    if (search) search.value = "";
+    var activeRb = document.querySelector('input[name="swl-filter"][value="active"]');
+    if (activeRb) activeRb.checked = true;
+    renderChips();
+    updateSortHeaders();
+    renderTable();
+  }
+
+  function appendListLike(parts, field, raw) {
+    var v = String(raw || "").trim();
+    if (!v) return;
+    parts.push("(" + field + ' like "' + escapeQueryValue(v) + '")');
+  }
+
+  function buildListQuery(opts) {
+    var parts = [];
+    if (opts.includeMain) {
+      if (state.deptFilter) appendListLike(parts, FC.dept_name, state.deptFilter);
+      if (state.userFilter) parts.push(FC.user_name + ' = "' + escapeQueryValue(state.userFilter) + '"');
+      var q = state.search.trim();
+      if (q) {
+        appendListLike(parts, FC.item_name, q);
+        appendListLike(parts, FC.capacity, q);
+        appendListLike(parts, FC.media_type_other, q);
+      }
+    }
+    appendListLike(parts, FC.dept_name, opts.dept_name);
+    appendListLike(parts, FC.group_name, opts.group_name);
+    if (opts.emp_id) parts.push(FC.emp_id + ' = "' + escapeQueryValue(opts.emp_id) + '"');
+    else appendListLike(parts, FC.user_name, opts.user_name);
+    appendListLike(parts, FC.item_name, opts.item_name);
+    appendListLike(parts, FC.media_type, opts.media_type);
+    appendListLike(parts, FC.media_type_other, opts.media_type_other);
+    var statuses = opts.statuses || [];
+    if (statuses.length) {
+      parts.push(
+        FC.status +
+          " in (" +
+          statuses
+            .map(function (s) {
+              return '"' + escapeQueryValue(s) + '"';
+            })
+            .join(", ") +
+          ")",
+      );
+    }
+    if (!parts.length) return "";
+    return parts.join(" and ");
+  }
+
+  function fetchListRecords(queryCond, sortEmp) {
+    var all = [];
+    var offset = 0;
+    var order = sortEmp
+      ? " order by " + FC.media_type + " asc, " + FC.item_name + " asc, " + FC.legacy_no + " asc"
+      : " order by " + FC.dept_name + " asc, " + FC.user_name + " asc, " + FC.legacy_no + " asc";
+    function page() {
+      var base = String(queryCond || "").trim();
+      var q = (base || "$id > 0") + order + " limit 500 offset " + offset;
+      return apiGet("/k/v1/records.json", {
+        app: APP_DB,
+        query: q,
+        fields: API_FIELDS,
+      }).then(function (resp) {
+        var rows = resp.records || [];
+        all = all.concat(rows);
+        if (rows.length >= 500) {
+          offset += 500;
+          return page();
+        }
+        return all;
+      });
+    }
+    return page();
+  }
+
+  function showListLoading(show) {
+    var el = document.getElementById(LIST_LOADING_ID);
+    if (!show) {
+      if (el) el.remove();
+      return;
+    }
+    if (!el) {
+      el = document.createElement("div");
+      el.id = LIST_LOADING_ID;
+      el.className = "swl-list-loading";
+      el.textContent = "一覧を取得しています…";
+      document.body.appendChild(el);
+    }
+    el.style.display = "flex";
+  }
+
+  function closeListPanel() {
+    var p = document.getElementById(LIST_PANEL_ID);
+    if (p) p.remove();
+    showListLoading(false);
+  }
+
+  function renderListPanel(records, summaryText) {
+    closeListPanel();
+    ensureListPrintStyles();
+    var rows = records.map(flatten).filter(function (r) {
+      return !isRetiredEmployeeRow(r);
+    });
+    var panel = document.createElement("div");
+    panel.id = LIST_PANEL_ID;
+    panel.className = "swl-list-panel";
+
+    var toolbar = document.createElement("div");
+    toolbar.className = "swl-list-toolbar";
+    var titleWrap = document.createElement("div");
+    titleWrap.style.flex = "1";
+    var title = document.createElement("div");
+    title.style.fontWeight = "700";
+    title.textContent = "リスト一覧（" + rows.length + "件）";
+    titleWrap.appendChild(title);
+    if (summaryText) {
+      var sub = document.createElement("div");
+      sub.style.fontSize = "12px";
+      sub.style.marginTop = "4px";
+      sub.textContent = summaryText;
+      titleWrap.appendChild(sub);
+    }
+    var btnPrint = document.createElement("button");
+    btnPrint.type = "button";
+    btnPrint.textContent = "印刷";
+    btnPrint.className = "kintoneplugin-button-dialog-ok";
+    btnPrint.addEventListener("click", function () {
+      window.print();
+    });
+    var btnClose = document.createElement("button");
+    btnClose.type = "button";
+    btnClose.textContent = "閉じる";
+    btnClose.className = "kintoneplugin-button-normal";
+    btnClose.addEventListener("click", closeListPanel);
+    toolbar.appendChild(titleWrap);
+    toolbar.appendChild(btnPrint);
+    toolbar.appendChild(btnClose);
+
+    var scroll = document.createElement("div");
+    scroll.className = "swl-list-scroll";
+
+    var printHead = document.createElement("div");
+    printHead.className = "swl-list-print-head";
+    printHead.innerHTML =
+      "<h1 style=\"margin:0 0 8px;font-size:18px;\">記憶媒体等管理台帳ver.1 — リスト一覧</h1>" +
+      (summaryText ? "<p style=\"margin:0;font-size:13px;\">" + esc(summaryText) + "</p>" : "") +
+      '<p style="margin:8px 0 0;font-size:12px;color:#64748b;">出力日: ' +
+      esc(todayJstYmd()) +
+      "　件数: " +
+      rows.length +
+      "件</p>";
+
+    var table = document.createElement("table");
+    table.className = "swl-list-table";
+    var thead = document.createElement("thead");
+    var hr = document.createElement("tr");
+    LIST_TABLE_COLS.forEach(function (col) {
+      var th = document.createElement("th");
+      th.textContent = col.label;
+      hr.appendChild(th);
+    });
+    thead.appendChild(hr);
+    table.appendChild(thead);
+
+    var tbody = document.createElement("tbody");
+    if (!rows.length) {
+      var tr0 = document.createElement("tr");
+      var td0 = document.createElement("td");
+      td0.colSpan = LIST_TABLE_COLS.length;
+      td0.textContent = "該当なし";
+      tr0.appendChild(td0);
+      tbody.appendChild(tr0);
+    } else {
+      rows.forEach(function (r) {
+        var tr = document.createElement("tr");
+        LIST_TABLE_COLS.forEach(function (col) {
+          var td = document.createElement("td");
+          td.textContent = col.key === "ident" ? r.ident : r[col.key] || "";
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+    }
+    table.appendChild(tbody);
+    scroll.appendChild(printHead);
+    scroll.appendChild(table);
+    panel.appendChild(toolbar);
+    panel.appendChild(scroll);
+    document.body.appendChild(panel);
+  }
+
+  function closeListModal() {
+    var m = document.getElementById(LIST_MODAL_ID);
+    if (m) m.style.display = "none";
+  }
+
+  function resetListForm() {
+    ["swl-list-dept", "swl-list-group", "swl-list-user", "swl-list-emp", "swl-list-item", "swl-list-media"].forEach(
+      function (id) {
+        var el = document.getElementById(id);
+        if (el) el.value = "";
+      },
+    );
+    var merge = document.getElementById("swl-list-merge");
+    if (merge) merge.checked = false;
+    document.querySelectorAll('input[name="swl-list-status"]').forEach(function (cb, i) {
+      cb.checked = i === 0;
+    });
+  }
+
+  function runListQueryFromModal() {
+    var dept = (document.getElementById("swl-list-dept") || {}).value || "";
+    var group = (document.getElementById("swl-list-group") || {}).value || "";
+    var user = (document.getElementById("swl-list-user") || {}).value || "";
+    var emp = (document.getElementById("swl-list-emp") || {}).value || "";
+    var itemName = (document.getElementById("swl-list-item") || {}).value || "";
+    var mediaType = (document.getElementById("swl-list-media") || {}).value || "";
+    var merge = (document.getElementById("swl-list-merge") || {}).checked;
+    var statuses = [];
+    document.querySelectorAll('input[name="swl-list-status"]:checked').forEach(function (cb) {
+      statuses.push(cb.value);
+    });
+    if (!statuses.length) {
+      alert("ステータスを1つ以上選んでください");
+      return;
+    }
+    var q = buildListQuery({
+      dept_name: dept,
+      group_name: group,
+      user_name: user,
+      emp_id: emp,
+      item_name: itemName,
+      media_type: mediaType,
+      statuses: statuses,
+      includeMain: merge,
+    });
+    var sortEmp = !!(String(emp).trim() || String(user).trim());
+    var summary =
+      "所属: " +
+      (dept.trim() || "（指定なし）") +
+      "　／　グループ: " +
+      (group.trim() || "（指定なし）") +
+      "　／　社員: " +
+      (emp.trim() || user.trim() || "（指定なし）") +
+      "　／　ステータス: " +
+      statuses.join("・");
+    closeListModal();
+    showListLoading(true);
+    fetchListRecords(q, sortEmp)
+      .then(function (recs) {
+        showListLoading(false);
+        renderListPanel(recs, summary);
+      })
+      .catch(function (e) {
+        showListLoading(false);
+        alert("一覧の取得に失敗しました: " + (e.message || e));
+      });
+  }
+
+  function openListCreateModal(prefill) {
+    prefill = prefill || {};
+    var backdrop = document.getElementById(LIST_MODAL_ID);
+    if (!backdrop) {
+      backdrop = document.createElement("div");
+      backdrop.id = LIST_MODAL_ID;
+      backdrop.className = "swl-list-modal-bg";
+      backdrop.innerHTML =
+        '<div class="swl-list-modal">' +
+        "<h2 style=\"margin:0 0 12px;font-size:17px;\">リスト一覧を作成</h2>" +
+        '<p style="font-size:13px;color:#475569;margin:0 0 14px;">条件に合うレコードを表示し、印刷できます（横向き）。</p>' +
+        '<label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;">所属名（部分一致）</label>' +
+        '<input type="text" id="swl-list-dept" style="width:100%;box-sizing:border-box;margin-bottom:10px;padding:8px;">' +
+        '<label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;">所属グループ（部分一致）</label>' +
+        '<input type="text" id="swl-list-group" style="width:100%;box-sizing:border-box;margin-bottom:10px;padding:8px;">' +
+        '<label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;">利用者名（部分一致）</label>' +
+        '<input type="text" id="swl-list-user" style="width:100%;box-sizing:border-box;margin-bottom:10px;padding:8px;">' +
+        '<label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;">社員番号（完全一致）</label>' +
+        '<div style="display:flex;gap:8px;margin-bottom:10px;"><input type="text" id="swl-list-emp" readonly style="flex:1;padding:8px;">' +
+        '<button type="button" id="swl-list-pick-595" class="kintoneplugin-button-normal">社員検索</button></div>' +
+        '<label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;">媒体種別（部分一致）</label>' +
+        '<input type="text" id="swl-list-media" placeholder="例: USBメモリ / その他" style="width:100%;box-sizing:border-box;margin-bottom:10px;padding:8px;">' +
+        '<label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;">名称（部分一致）</label>' +
+        '<input type="text" id="swl-list-item" style="width:100%;box-sizing:border-box;margin-bottom:10px;padding:8px;">' +
+        '<div style="font-size:12px;font-weight:700;margin-bottom:6px;">ステータス（1つ以上必須）</div>' +
+        '<label style="margin-right:12px;"><input type="checkbox" name="swl-list-status" value="利用中" checked> 利用中</label>' +
+        '<label><input type="checkbox" name="swl-list-status" value="廃止"> 廃止</label>' +
+        '<label style="display:flex;align-items:center;gap:8px;margin:12px 0;font-size:13px;">' +
+        '<input type="checkbox" id="swl-list-merge"> いまの一覧条件も含める</label>' +
+        '<div style="display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;margin-top:16px;">' +
+        '<button type="button" id="swl-list-clear" class="kintoneplugin-button-normal">クリア</button>' +
+        '<button type="button" id="swl-list-cancel" class="kintoneplugin-button-normal">キャンセル</button>' +
+        '<button type="button" id="swl-list-go" class="kintoneplugin-button-dialog-ok">一覧を表示</button>' +
+        "</div></div>";
+      backdrop.addEventListener("click", function (ev) {
+        if (ev.target === backdrop) closeListModal();
+      });
+      document.body.appendChild(backdrop);
+      backdrop.querySelector("#swl-list-cancel").addEventListener("click", closeListModal);
+      backdrop.querySelector("#swl-list-clear").addEventListener("click", resetListForm);
+      backdrop.querySelector("#swl-list-go").addEventListener("click", runListQueryFromModal);
+      backdrop.querySelector("#swl-list-pick-595").addEventListener("click", function () {
+        openEmp595Picker(function (emp) {
+          var empEl = document.getElementById("swl-list-emp");
+          var userEl = document.getElementById("swl-list-user");
+          if (empEl) empEl.value = emp.emp_id || "";
+          if (userEl) userEl.value = emp.user_name || "";
+        });
+      });
+    }
+    resetListForm();
+    if (prefill.emp_id) {
+      var empEl = document.getElementById("swl-list-emp");
+      if (empEl) empEl.value = prefill.emp_id;
+    }
+    if (prefill.user_name) {
+      var userEl = document.getElementById("swl-list-user");
+      if (userEl) userEl.value = prefill.user_name;
+    }
+    backdrop.style.display = "flex";
+  }
+
+  function buildShell() {
+    if (document.getElementById("swl-root")) return;
+    injectCss();
+    var host = resolveMountHost();
+    var root = document.createElement("div");
+    root.id = "swl-root";
+    root.className = "swl-root";
+    root.innerHTML =
+      '<div class="swl-toolbar">' +
+      "<strong style=\"font-size:16px\">記憶媒体等管理台帳ver.1</strong>" +
+      '<button type="button" id="swl-reload" class="kintoneplugin-button-normal">再読込</button>' +
+      '<button type="button" id="swl-new" class="kintoneplugin-button-dialog-ok">新規登録</button>' +
+      '<button type="button" id="swl-list-create" class="kintoneplugin-button-normal">リスト一覧作成</button>' +
+      "</div>" +
+      '<div class="swl-toolbar">' +
+      '<label><input type="radio" name="swl-filter" value="active"' +
+      (state.filter === "active" ? " checked" : "") +
+      "> 利用中</label>" +
+      '<label><input type="radio" name="swl-filter" value="retired"> 廃止</label>' +
+      '<input type="search" id="swl-search" placeholder="種別・名称・容量・ハードウエア情報・氏名・所属…" style="min-width:240px;padding:6px;margin-left:8px">' +
+      '<button type="button" id="swl-clear" class="kintoneplugin-button-normal">クリア</button>' +
+      "</div>" +
+      '<div id="swl-meta" class="swl-meta"></div>' +
+      '<div id="swl-dept-chips" class="swl-chips"></div>' +
+      '<div id="swl-user-chips" class="swl-chips"></div>' +
+      '<div class="swl-table-wrap"><table class="swl-table"><thead><tr>' +
+      TABLE_COLUMNS.map(function (c) {
+        if (!c.sort) return "<th>" + esc(c.label) + "</th>";
+        return (
+          '<th class="swl-sort" data-sort="' +
+          esc(c.key) +
+          '">' +
+          esc(c.label) +
+          '<span class="swl-sort-ind"></span></th>'
+        );
+      }).join("") +
+      "<th>操作</th>" +
+      '</tr></thead><tbody id="swl-tbody"></tbody></table></div>';
+    host.appendChild(root);
+
+    var table = root.querySelector(".swl-table");
+    if (table) {
+      table.querySelector("thead").addEventListener("click", function (ev) {
+        var th = ev.target.closest("th.swl-sort");
+        if (!th) return;
+        var key = th.getAttribute("data-sort");
+        if (key) toggleSort(key);
+      });
+    }
+
+    document.getElementById("swl-reload").addEventListener("click", reloadRecords);
+    document.getElementById("swl-new").addEventListener("click", openCreateModal);
+    document.getElementById("swl-list-create").addEventListener("click", function () {
+      openListCreateModal();
+    });
+    document.querySelectorAll('input[name="swl-filter"]').forEach(function (rb) {
+      rb.addEventListener("change", function () {
+        if (rb.checked) {
+          state.filter = rb.value;
+          renderTable();
+        }
+      });
+    });
+    var search = document.getElementById("swl-search");
+    search.addEventListener("input", function () {
+      state.search = search.value;
+      renderTable();
+    });
+    document.getElementById("swl-clear").addEventListener("click", clearFilters);
+  }
+
+  function scheduleMount() {
+    [0, 120, 400, 1000].forEach(function (ms) {
+      setTimeout(function () {
+        buildShell();
+        if (ms === 0) reloadRecords();
+      }, ms);
+    });
+  }
+
+  kintone.events.on("app.record.index.show", function (ev) {
+    scheduleMount();
+    return ev;
+  });
+})();

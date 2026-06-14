@@ -3,7 +3,7 @@
 
   /**
    * 595 社員マスタ
-   * BUILD: 2026-06-14-595-software-ledger-mirror
+   * BUILD: 2026-06-14-595-storage-media-ledger-mirror
    * BUILD: 2026-05-12-595-no594-rest（旧594への REST・リンク廃止・674同期のみ）
    * BUILD: 2026-05-30-595-retire-674-storage（退職→退職日自動・674保管連動）
    * - 一覧: 所属グループ・所属名・社員名のいずれかに部分一致する検索窓（ヘッダスペース）
@@ -18,6 +18,8 @@
   var APP674 = "674";
   /** ソフトウエア台帳 DB（714）— 595 所属ミラー */
   var APP_SOFTWARE_DB = "714";
+  /** 記憶媒体等台帳 DB — 595 所属ミラー（作成後に appId を更新） */
+  var APP_STORAGE_MEDIA_DB = "716";
   /** M365 管理マスタ（674 退職連動後の usage_count 再計算） */
   var APP671 = "671";
 
@@ -1034,6 +1036,80 @@
     return page();
   }
 
+  function syncStorageMediaLedgerMirrorFrom595(record) {
+    var empId = scalarFrom595(record, FC595_EMP_ID).trim();
+    if (!empId) {
+      return Promise.resolve();
+    }
+    var name = scalarFrom595(record, FC595_NAME);
+    var dept = scalarFrom595(record, FC595_DEPT);
+    var grp = scalarFrom595(record, FC595_GROUP);
+    return fetchStorageMediaLedgerMirrorTargets(empId, name, dept, grp);
+  }
+
+  function fetchStorageMediaLedgerMirrorTargets(empId, name, dept, grp) {
+    var offset = 0;
+    var limit = 500;
+    var urlGet = kintone.api.url("/k/v1/records.json", true);
+
+    function page() {
+      var q =
+        FC_SWL_EMP_ID +
+        ' = "' +
+        escapeForQuery(empId) +
+        '" and ' +
+        FC_SWL_STATUS +
+        ' in ("' +
+        escapeForQuery(SWL_STATUS_ACTIVE) +
+        '") order by $id asc limit ' +
+        limit +
+        " offset " +
+        offset;
+      return kintone
+        .api(urlGet, "GET", {
+          app: APP_STORAGE_MEDIA_DB,
+          query: q,
+          fields: ["$id", "$revision", FC_SWL_NAME, FC_SWL_DEPT, FC_SWL_GROUP],
+        })
+        .then(function (resp) {
+          var list = resp.records || [];
+          var updates = recordsNeedingMirror(
+            list,
+            name,
+            dept,
+            grp,
+            FC_SWL_NAME,
+            FC_SWL_DEPT,
+            FC_SWL_GROUP
+          );
+          if (!updates.length) {
+            if (list.length < limit) {
+              return;
+            }
+            offset += limit;
+            return page();
+          }
+          var urlPut = kintone.api.url("/k/v1/records.json", true);
+          var parts = chunk(updates, 100);
+          return parts
+            .reduce(function (chain, part) {
+              return chain.then(function () {
+                return kintone.api(urlPut, "PUT", { app: APP_STORAGE_MEDIA_DB, records: part });
+              });
+            }, Promise.resolve())
+            .then(function () {
+              if (list.length < limit) {
+                return;
+              }
+              offset += limit;
+              return page();
+            });
+        });
+    }
+
+    return page();
+  }
+
   function run595DownstreamSync(record) {
     var emp = scalarFrom595(record, FC595_EMP).trim();
     return sync627From595(record).then(function () {
@@ -1041,7 +1117,9 @@
         return retire674PcsFrom595(record);
       }
       return sync674MirrorFrom595(record).then(function () {
-        return syncSoftwareLedgerMirrorFrom595(record);
+        return syncSoftwareLedgerMirrorFrom595(record).then(function () {
+          return syncStorageMediaLedgerMirrorFrom595(record);
+        });
       });
     });
   }

@@ -1,0 +1,193 @@
+{
+  "properties": {
+    "legacy_no": {
+      "type": "NUMBER",
+      "code": "legacy_no",
+      "label": "管理番号",
+      "required": true,
+      "noLabel": false,
+      "unique": true,
+      "digit": false,
+      "defaultValue": "",
+      "displayScale": "",
+      "unit": "",
+      "unitPosition": "BEFORE"
+    },
+    "status": {
+      "type": "DROP_DOWN",
+      "code": "status",
+      "label": "ステータス",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "利用中",
+      "options": {
+        "利用中": { "label": "利用中", "index": "0" },
+        "廃止": { "label": "廃止", "index": "1" }
+      }
+    },
+    "registered_date": {
+      "type": "DATE",
+      "code": "registered_date",
+      "label": "登録日",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "purchase_date": {
+      "type": "DATE",
+      "code": "purchase_date",
+      "label": "購入日",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "media_type": {
+      "type": "DROP_DOWN",
+      "code": "media_type",
+      "label": "媒体種別",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "USBメモリ": { "label": "USBメモリ", "index": "0" },
+        "外付けHDD/SSD": { "label": "外付けHDD/SSD", "index": "1" },
+        "光学ディスク": { "label": "光学ディスク", "index": "2" },
+        "SD/microSD": { "label": "SD/microSD", "index": "3" },
+        "その他": { "label": "その他", "index": "4" }
+      }
+    },
+    "media_type_other": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "media_type_other",
+      "label": "種別（その他）",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "item_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "item_name",
+      "label": "名称",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "capacity": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "capacity",
+      "label": "容量",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "id_kind_1": {
+      "type": "DROP_DOWN",
+      "code": "id_kind_1",
+      "label": "識別種別1",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "シリアル番号": { "label": "シリアル番号", "index": "0" },
+        "製造番号": { "label": "製造番号", "index": "1" },
+        "管理番号": { "label": "管理番号", "index": "2" },
+        "型番": { "label": "型番", "index": "3" },
+        "その他": { "label": "その他", "index": "4" }
+      }
+    },
+    "id_value_1": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "id_value_1",
+      "label": "識別値1",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "id_kind_2": {
+      "type": "DROP_DOWN",
+      "code": "id_kind_2",
+      "label": "識別種別2",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "シリアル番号": { "label": "シリアル番号", "index": "0" },
+        "製造番号": { "label": "製造番号", "index": "1" },
+        "管理番号": { "label": "管理番号", "index": "2" },
+        "型番": { "label": "型番", "index": "3" },
+        "その他": { "label": "その他", "index": "4" }
+      }
+    },
+    "id_value_2": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "id_value_2",
+      "label": "識別値2",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "id_kind_3": {
+      "type": "DROP_DOWN",
+      "code": "id_kind_3",
+      "label": "識別種別3",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "シリアル番号": { "label": "シリアル番号", "index": "0" },
+        "製造番号": { "label": "製造番号", "index": "1" },
+        "管理番号": { "label": "管理番号", "index": "2" },
+        "型番": { "label": "型番", "index": "3" },
+        "その他": { "label": "その他", "index": "4" }
+      }
+    },
+    "id_value_3": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "id_value_3",
+      "label": "識別値3",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "emp_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "emp_id",
+      "label": "社員番号",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "user_name",
+      "label": "氏名",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "dept_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "dept_name",
+      "label": "所属名",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "group_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "group_name",
+      "label": "所属グループ",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "note": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "note",
+      "label": "備考",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    }
+  }
+}
