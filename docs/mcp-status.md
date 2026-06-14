@@ -11,7 +11,9 @@
 
 **拡張運用（2026-06-14）**: `npm run verify:kintone-live-schema` / `npm run verify:git-history-alignment` — CLI 正本（MCP と同一 REST/git ロジック）
 
-**配備手順**: `npm run apply-layer12-mcp` → `npm run mcp:sync-cursor-windows` — 正本 `AGENTS.md` §50-3-11 第12層 / 検証 `verify:cio-weekend-layer12-infra` + `verify:cio-mcp-layer12-probe`
+**第13層（2026-06-14）**: `npm run cio:mcp:env:extended` — 必須6 + FE 系 probe の末尾に **第12層 initialize**（`verify:cio-mcp-layer12-probe`）を **自動連鎖**。月次 `cio:periodic:monthly` に **`verify:kintone-live-schema --portfolio`** 内包。
+
+**配備手順**: `npm run apply-layer12-mcp` → `npm run mcp:sync-cursor-windows` — 正本 `AGENTS.md` §50-3-11 第12/13層 / 検証 `verify:cio-weekend-layer12-infra` + `verify:cio-weekend-layer13-infra` + `verify:cio-mcp-layer12-probe`
 
 ### §監査スナップ（2026-06-05 JST — context7 追加）
 

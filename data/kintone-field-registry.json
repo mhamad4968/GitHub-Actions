@@ -1,5 +1,5 @@
 {
-  "version": "2026-05-30",
+  "version": "2026-06-14",
   "specRel": "templates/yojitsu-budget-lite/docs/yojitsu-master-and-field-plan.md",
   "apps": {
     "677": {
@@ -45,6 +45,80 @@
       "inheritsRecordFieldsFrom": "677",
       "inheritsSubtablesFrom": "677",
       "notes": "678 customize は 677 フィールドへ REST PUT。台帳は 677 と同一。"
+    },
+    "714": {
+      "label": "ソフトウエア台帳DB",
+      "customizeDirs": ["software-ledger-db"],
+      "specRel": "docs/plans/2026-06-13-software-ledger-kintone-spec.md",
+      "recordFields": [
+        "legacy_no",
+        "status",
+        "registered_date",
+        "purchase_date",
+        "license_type",
+        "software_name",
+        "model_number",
+        "id_kind_1",
+        "id_value_1",
+        "id_kind_2",
+        "id_value_2",
+        "id_kind_3",
+        "id_value_3",
+        "emp_id",
+        "user_name",
+        "dept_name",
+        "group_name",
+        "note"
+      ]
+    },
+    "715": {
+      "label": "ソフトウエア管理台帳ver.1",
+      "customizeDirs": ["software-ledger-dash"],
+      "inheritsRecordFieldsFrom": "714",
+      "specRel": "docs/plans/2026-06-13-software-ledger-kintone-spec.md",
+      "notes": "715 dash は App 714 へ REST CRUD。DB フィールドは 714 と同一。"
+    },
+    "716": {
+      "label": "記憶媒体等台帳DB",
+      "customizeDirs": ["storage-media-ledger-db"],
+      "specRel": "docs/plans/2026-06-13-storage-media-ledger-kintone-spec.md",
+      "recordFields": [
+        "legacy_no",
+        "status",
+        "registered_date",
+        "purchase_date",
+        "media_type",
+        "media_type_other",
+        "item_name",
+        "capacity",
+        "id_kind_1",
+        "id_value_1",
+        "id_kind_2",
+        "id_value_2",
+        "id_kind_3",
+        "id_value_3",
+        "emp_id",
+        "user_name",
+        "dept_name",
+        "group_name",
+        "note"
+      ]
+    },
+    "717": {
+      "label": "記憶媒体等管理台帳ver.1",
+      "customizeDirs": ["storage-media-ledger-dash"],
+      "inheritsRecordFieldsFrom": "716",
+      "specRel": "docs/plans/2026-06-13-storage-media-ledger-kintone-spec.md",
+      "notes": "717 dash は App 716 へ REST CRUD。DB フィールドは 716 と同一。"
+    },
+    "674": {
+      "label": "新PC台帳",
+      "customizeDirs": ["new-pc-ledger-v1"],
+      "relatedAppFieldsFrom": ["670", "671", "672", "673", "595", "680"],
+      "relatedAppFieldCodes": {
+        "596": ["number_top", "in_code"]
+      },
+      "notes": "674 customize は 670/671/672/673/595/680/596 へ REST。596 は kintone 削除済みのため relatedAppFieldCodes で監査。live-schema は関連アプリ実機スキーマをマージ監査。"
     }
   }
 }

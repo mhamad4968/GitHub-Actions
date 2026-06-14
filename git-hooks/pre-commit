@@ -21,6 +21,14 @@ if [ "$status" -ne 0 ]; then
 fi
 
 if command -v node >/dev/null 2>&1; then
+  node scripts/cio-precommit-governance-sync.mjs
+  status=$?
+  if [ "$status" -ne 0 ]; then
+    echo "" >&2
+    echo "[pre-commit] governance generations 同期 NG — commit 中断" >&2
+    exit 1
+  fi
+
   node scripts/cio-report-format-check.mjs --staged
   status=$?
   if [ "$status" -ne 0 ]; then

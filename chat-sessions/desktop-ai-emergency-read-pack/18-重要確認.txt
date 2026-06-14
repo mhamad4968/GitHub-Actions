@@ -231,3 +231,11 @@ SPEC_TOUCHED: yes のターンで SECOND_REVIEWER: deepseek|kimi|openrouter の�
   **矛盾時**: 浜田認識 + closures + kintone-apps > 古い checkpoint → §41 一問 → checkpoint 修正後に次手
   **再開**: 浜田 GO + closures 解除 + checkpoint 更新のみ
   **正本**: `docs/runbooks/cio-project-closure-governance.md` / `23-project-closure-recognition-kernel.md` / TSB-038
+
+【2026-06-14 追記・第12層 MCP 実戦運用（CEO 超厳命 — A1〜C4 統合）】
+  **customize 変更 / deploy 前**: `npm run verify:kintone-live-schema -- --app <3桁ID>` — **Warning 0**（deploy 前段 `cio-deploy-preflight-guard` にも連鎖）
+  **New Chat import 後**: `verify:session-handoff-integrity -- --import` 成功時に **`verify:git-history-alignment --handoff` 自動連鎖**（先祖返り exit 1）
+  **Composer 第4ステップ**: `npm run cio:guard:composer-mcp-audit -- --stamp --text "…" --live-schema-ok --live-schema-app <id>`
+  **月次（第1営業日）**: `npm run cio:periodic:monthly` — 内包 **`verify:kintone-live-schema --portfolio`**
+  **Composer 前 probe**: `npm run cio:mcp:env:extended` — 第12層 MCP initialize 含む
+  **正本**: `docs/constitution/12-mcp-usage.md` 第12層 / `AGENTS.md` 第13層 / `data/kintone-field-registry.json`（714〜717 登録済）

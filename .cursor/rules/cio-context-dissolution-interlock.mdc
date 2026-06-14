@@ -25,7 +25,7 @@ globs: "**/*"
 3. **15 ターン超 or 40k 自認** — 応答末尾に  
    `【警告】コンテキスト限界（15ターン超過）を検知しました。次ターンよりNew Chat（新規セッション）での仕切り直しを強制します`  
    → **`npm run cio:session:export-handoff`**
-4. **New Chat 第 1 ターン** — `npm run verify:session-handoff-integrity -- --import` → exit 0
+4. **New Chat 第 1 ターン** — `npm run verify:session-handoff-integrity -- --import` → exit 0（import 成功直後に **`verify:git-history-alignment --handoff --since <bridge.gitHead>`** を **自動連鎖** — **export 以降 commit + staged のみ**・未 stage WIP 許容）
 5. **Diff 記録** — `npm run cio:session:turn-guard -- --record-diff customize/…`
 
 ## 禁止事項
@@ -40,5 +40,5 @@ globs: "**/*"
 |----------|------|
 | `npm run cio:session:turn-guard -- --check` | exit 0 |
 | `npm run cio:session:export-handoff` | exit 0 + bridge 生成 |
-| `npm run verify:session-handoff-integrity -- --import` | exit 0 |
+| `npm run verify:session-handoff-integrity -- --import` | exit 0（内包: `verify:git-history-alignment --handoff`） |
 | `npm run verify:cio-session-dissolution` | exit 0 |

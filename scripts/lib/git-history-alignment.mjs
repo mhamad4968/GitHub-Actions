@@ -29,8 +29,8 @@ export function loadGuardManifest(repoRoot) {
   return JSON.parse(fs.readFileSync(p, 'utf8'));
 }
 
-/** 過去3世代 — 憲法・ガバナンス系コミット */
-export function getGovernanceGenerations(repoRoot, maxGenerations = 3) {
+/** git log から governance 世代を発見（manifest 非参照 — sync 用） */
+export function discoverGovernanceGenerationsFromGit(repoRoot, maxGenerations = 3) {
   const raw = git(
     repoRoot,
     ['log', '--oneline', '--max-count=60', '--', 'AGENTS.md', 'docs/', '.cursor/rules/', 'package.json'],
@@ -54,6 +54,24 @@ export function getGovernanceGenerations(repoRoot, maxGenerations = 3) {
     }
   }
   return hashes.slice(0, maxGenerations);
+}
+
+/** 過去3世代 — git 最新を優先し manifest を補完（manifest 古くても監査は最新世代を含む） */
+export function getGovernanceGenerations(repoRoot, maxGenerations = 3) {
+  const fresh = discoverGovernanceGenerationsFromGit(repoRoot, maxGenerations);
+  const manifest = loadGuardManifest(repoRoot);
+  const fromManifest = Array.isArray(manifest.generations)
+    ? manifest.generations.map((g) => (typeof g === 'string' ? g : g.hash)).filter(Boolean)
+    : [];
+
+  const merged = [];
+  for (const h of fresh) {
+    if (h && !merged.includes(h)) merged.push(h);
+  }
+  for (const h of fromManifest) {
+    if (h && !merged.includes(h)) merged.push(h);
+  }
+  return merged.slice(0, maxGenerations);
 }
 
 export function getCommitDetail(repoRoot, hash) {
@@ -101,6 +119,16 @@ export function getWorkingDiffText(repoRoot) {
   const staged = git(repoRoot, ['diff', '--cached'], { allowFail: true });
   const unstaged = git(repoRoot, ['diff'], { allowFail: true });
   return `${staged}\n${unstaged}`;
+}
+
+/** handoff 用 — export 以降の commit + staged のみ（未 stage WIP は許容） */
+export function getHandoffDiffText(repoRoot, sinceHash) {
+  const parts = [];
+  if (sinceHash) {
+    parts.push(git(repoRoot, ['diff', `${sinceHash}..HEAD`], { allowFail: true }));
+  }
+  parts.push(git(repoRoot, ['diff', '--cached'], { allowFail: true }));
+  return parts.filter(Boolean).join('\n');
 }
 
 export function scanDiffForRegression(diffText, constraints) {
@@ -174,11 +202,35 @@ export function scanSpecContradiction(repoRoot) {
   return issues;
 }
 
+export function validateManifestGenerations(repoRoot, generations) {
+  const manifest = loadGuardManifest(repoRoot);
+  const issues = [];
+  if (!Array.isArray(manifest.generations) || !manifest.generations.length) {
+    return issues;
+  }
+  for (const entry of manifest.generations) {
+    const hash = typeof entry === 'string' ? entry : entry.hash;
+    if (!hash) continue;
+    try {
+      git(repoRoot, ['cat-file', '-t', hash]);
+    } catch {
+      issues.push({
+        code: 'GEN_MISSING',
+        message: `manifest.generations の hash ${hash} がリポに存在しません`,
+      });
+    }
+  }
+  return issues;
+}
+
 export function runAlignmentAudit(repoRoot, options = {}) {
   const generations = getGovernanceGenerations(repoRoot, options.generations ?? 3);
   const constraints = collectHistoricalConstraints(repoRoot, generations);
-  const diffText = getWorkingDiffText(repoRoot);
+  const diffText = options.handoffMode
+    ? getHandoffDiffText(repoRoot, options.sinceHash)
+    : getWorkingDiffText(repoRoot);
   const issues = [
+    ...validateManifestGenerations(repoRoot, generations),
     ...scanDiffForRegression(diffText, constraints),
     ...(options.checkSpec !== false ? scanSpecContradiction(repoRoot) : []),
   ];
@@ -194,9 +246,14 @@ export function runAlignmentAudit(repoRoot, options = {}) {
   };
 }
 
-export function printRegressionIssues(issues) {
+export function printRegressionIssues(issues, { handoffMode = false } = {}) {
   console.error(`${RED}${DEGRADE_BANNER}${RESET}`);
   for (const i of issues) {
     console.error(`${RED}[verify:git-history-alignment] ${i.code}: ${i.message}${RESET}`);
+  }
+  if (handoffMode) {
+    console.error(`${RED}[verify:git-history-alignment] handoff 修復手順:${RESET}`);
+    console.error('  1) 規律削除 diff を取り消す / 2) 先に commit してから import 再実行');
+    console.error('  3) 緊急のみ SKIP_CIO_GIT_HISTORY_HANDOFF=1 + チャット理由1行');
   }
 }

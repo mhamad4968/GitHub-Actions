@@ -9,6 +9,8 @@
 
 **631 / 632 / 637（セキュリティニュース等）とは別物。** **640 を 641 と取り違えないこと。**
 
+**640（社内FAQDB）**: deploy 未接続・月次 portfolio 外。**live-schema NG（641 の `category_name`）は許容**。deploy 接続時は `relatedAppFieldsFrom: ["641"]` を registry に追加すること。
+
 ## 640 での連携フィールド
 
 - **`category_lookup`**（数値・ルックアップ）… 参照先アプリ **641**、関連キー **レコード番号**。`fieldMappings` が空でもよいが、その場合 **画面・REST で `category`（1行テキスト）が自動では埋まらない**。

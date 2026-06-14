@@ -2,9 +2,12 @@
 /**
  * 実機 kintone スキーマ × customize/** ライブ Linter（§50-3-11 第12層・拡張案1）
  * npm run verify:kintone-live-schema [-- --app 678] [--portfolio] [--offline-skip]
+ *
+ * exit: 0=OK / 1=フィールド不一致 / 2=API・接続・削除済みアプリ
  */
 import process from 'node:process';
 import path from 'node:path';
+import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import {
   auditApp,
@@ -30,13 +33,17 @@ const appFilter = args.includes('--app') ? args[args.indexOf('--app') + 1] : nul
 const portfolio = args.includes('--portfolio');
 const offlineSkip = args.includes('--offline-skip');
 
-function auditAgainstLive(appMeta, liveSchema, parentLiveSchema) {
+function auditAgainstLive(appMeta, liveSchema, parentLiveSchema, relatedLiveSchemas = [], extraLiveCodes = []) {
   const allowlist = loadAllowlist(root);
-  const allowGlobal = new Set([...(allowlist.global || []), 'trim', 'split', 'map', 'filter']);
+  const allowGlobal = new Set([...(allowlist.global || []), 'trim', 'split', 'map', 'filter', 'has']);
   const liveCodes = new Set(liveSchema.fieldCodes);
   if (parentLiveSchema) {
     for (const c of parentLiveSchema.fieldCodes) liveCodes.add(c);
   }
+  for (const rel of relatedLiveSchemas) {
+    for (const c of rel.fieldCodes) liveCodes.add(c);
+  }
+  for (const c of extraLiveCodes) liveCodes.add(c);
   const issues = [];
   const files = [];
 
@@ -78,7 +85,7 @@ function auditAgainstLive(appMeta, liveSchema, parentLiveSchema) {
     }
   }
 
-  return { ok: issues.length === 0, issues, files, liveFieldCount: liveCodes.size };
+  return { ok: issues.length === 0, issues, files, liveFieldCount: liveCodes.size, extractedCodes: [...seen.keys()] };
 }
 
 function printLiveIssues(issues) {
@@ -92,41 +99,94 @@ function printLiveIssues(issues) {
 async function main() {
   loadDotenv(root);
   const registry = loadRegistry(root);
-  const apps = discoverLiveSchemaApps(root, { appFilter, portfolio, allCustomize: portfolio });
+  const apps = discoverLiveSchemaApps(root, { appFilter, portfolio });
 
   if (!apps.length) {
-    console.error('[verify:kintone-live-schema] NG 監査対象 app 無し — --app または registry を確認');
+    console.error('[verify:kintone-live-schema] NG 監査対象 app 無し — --app または registry / portfolio を確認');
     process.exit(1);
   }
 
+  if (portfolio) {
+    console.log(
+      `[verify:kintone-live-schema] portfolio managed apps=${apps.map((a) => a.appId).join(',')}`,
+    );
+  }
+
   let ng = 0;
+  let apiNg = 0;
   let audited = 0;
 
   for (const appMeta of apps) {
     let liveSchema;
     let parentLiveSchema = null;
+    const relatedLiveSchemas = [];
+    const extraLiveCodes = [];
+    const reg = registry.apps?.[appMeta.appId];
     try {
       liveSchema = await fetchLiveFormSchema(appMeta.appId);
-      const reg = registry.apps?.[appMeta.appId];
       if (reg?.inheritsRecordFieldsFrom) {
         parentLiveSchema = await fetchLiveFormSchema(reg.inheritsRecordFieldsFrom);
       }
+      if (Array.isArray(reg?.relatedAppFieldsFrom)) {
+        for (const relId of reg.relatedAppFieldsFrom) {
+          try {
+            relatedLiveSchemas.push(await fetchLiveFormSchema(String(relId)));
+          } catch (relErr) {
+            const staticFields = reg.relatedAppFieldCodes?.[String(relId)];
+            if (staticFields?.length && /not found|GAIA_AP01/i.test(String(relErr.message))) {
+              for (const c of staticFields) extraLiveCodes.push(c);
+              console.warn(
+                `[verify:kintone-live-schema] WARN related app=${relId} unreachable — static codes ${staticFields.join(',')}`,
+              );
+              continue;
+            }
+            throw relErr;
+          }
+        }
+      }
+      if (reg?.relatedAppFieldCodes) {
+        for (const [relId, codes] of Object.entries(reg.relatedAppFieldCodes)) {
+          if ((reg.relatedAppFieldsFrom || []).includes(relId)) continue;
+          for (const c of codes || []) extraLiveCodes.push(c);
+        }
+      }
     } catch (e) {
-      if (offlineSkip) {
+      if (offlineSkip || (portfolio && /not found|GAIA_AP01/i.test(String(e.message)))) {
         console.warn(`[verify:kintone-live-schema] SKIP app=${appMeta.appId} — ${e.message}`);
         continue;
       }
-      console.error(`${RED}[verify:kintone-live-schema] NG app=${appMeta.appId} API — ${e.message}${RESET}`);
-      ng += 1;
+      console.error(`${RED}[verify:kintone-live-schema] API app=${appMeta.appId} — ${e.message}${RESET}`);
+      apiNg += 1;
       continue;
     }
 
-    const result = auditAgainstLive(appMeta, liveSchema, parentLiveSchema);
+    const result = auditAgainstLive(appMeta, liveSchema, parentLiveSchema, relatedLiveSchemas, extraLiveCodes);
     audited += 1;
     console.log(
       `[verify:kintone-live-schema] app=${appMeta.appId} files=${result.files?.length ?? 0} liveFields=${result.liveFieldCount} revision=${liveSchema.revision}`,
     );
     if (result.warning) console.log(`[verify:kintone-live-schema] WARN ${result.warning}`);
+
+    if (reg?.relatedAppFieldCodes && result.extractedCodes) {
+      const extracted = new Set(result.extractedCodes);
+      const sourceText = (result.files || [])
+        .map((rel) => fs.readFileSync(path.join(root, rel), 'utf8'))
+        .join('\n');
+      for (const [relId, codes] of Object.entries(reg.relatedAppFieldCodes)) {
+        for (const code of codes || []) {
+          const inExtract = extracted.has(code);
+          const inSource =
+            sourceText.includes(`'${code}'`) ||
+            sourceText.includes(`"${code}"`) ||
+            sourceText.includes(`\`${code}\``);
+          if (!inExtract && !inSource) {
+            console.warn(
+              `[verify:kintone-live-schema] WARN static relatedAppFieldCodes[${relId}] \`${code}\` — customize 内に参照無し（台帳更新要）`,
+            );
+          }
+        }
+      }
+    }
 
     if (!result.ok) {
       printLiveIssues(result.issues);
@@ -142,6 +202,12 @@ async function main() {
   if (ng) {
     console.error(`${RED}[verify:kintone-live-schema] NG ${ng} 件 — Warning 0 未達・本番 PUT ロック${RESET}`);
     process.exit(1);
+  }
+  if (apiNg) {
+    console.error(
+      `${RED}[verify:kintone-live-schema] API ${apiNg} 件 — kintone 接続/権限/アプリ存在を確認（exit 2）${RESET}`,
+    );
+    process.exit(2);
   }
   console.log('[verify:kintone-live-schema] OK — 実機スキーマと customize 完全一致（Warning 0）');
   process.exit(0);

@@ -17,8 +17,9 @@ globs: "AGENTS.md,docs/**,.cursor/rules/**,package.json"
 ## 実行手順
 
 1. Opus 4.8（アーキテクト）が過去 **3 世代**の governance コミットを把握
-2. `npm run verify:git-history-alignment [-- --handoff]`
-3. exit 0 → 設計続行 / exit 1 → 赤 banner + 設計再調整
+2. `npm run verify:git-history-alignment [-- --handoff [--since <bridge.gitHead>]]`
+3. **handoff 時**: export 以降の **commit + staged** のみ検査（未 stage WIP は許容）。NG 時は修復手順を表示
+4. exit 0 → 設計続行 / exit 1 → 赤 banner + 設計再調整
 
 ## 禁止事項
 

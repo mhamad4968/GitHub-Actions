@@ -9,9 +9,25 @@ import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { CUSTOMIZE_DIR_TO_APP } from './lib/kintone-live-schema.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const MAX_AGE_MS = 45 * 60 * 1000;
+
+function hasCustomizeForApp(app) {
+  const numDir = path.join(root, 'customize', app);
+  if (fs.existsSync(numDir) && fs.statSync(numDir).isDirectory()) {
+    return fs.readdirSync(numDir).some((f) => f.endsWith('.js'));
+  }
+  for (const [dir, id] of Object.entries(CUSTOMIZE_DIR_TO_APP)) {
+    if (id !== app) continue;
+    const full = path.join(root, 'customize', dir);
+    if (fs.existsSync(full) && fs.statSync(full).isDirectory()) {
+      return fs.readdirSync(full).some((f) => f.endsWith('.js'));
+    }
+  }
+  return false;
+}
 
 function main() {
   if (process.env.SKIP_CIO_DEPLOY_GUARD === '1') {
@@ -62,13 +78,42 @@ function main() {
       ['cio-composer-silent-fallback-guard.mjs', []],
       ['cio-deepseek-5038-evidence-guard.mjs', ['--force-check']],
     ]) {
-      const abs = path.join(root, 'scripts', script);
-      const r = spawnSync(process.execPath, [abs, ...args], { cwd: root, encoding: 'utf8' });
+      const absScript = path.join(root, 'scripts', script);
+      const r = spawnSync(process.execPath, [absScript, ...args], { cwd: root, encoding: 'utf8' });
       if (r.status !== 0) {
         process.stderr.write(r.stderr || r.stdout || '');
         process.exit(1);
       }
     }
+  }
+
+  if (hasCustomizeForApp(app) && process.env.SKIP_CIO_LIVE_SCHEMA_GUARD !== '1') {
+    const liveScript = path.join(root, 'scripts', 'verify-kintone-live-schema.mjs');
+    const lr = spawnSync(process.execPath, [liveScript, '--app', app], {
+      cwd: root,
+      encoding: 'utf8',
+      stdio: 'inherit',
+      env: { ...process.env },
+    });
+    if (lr.status !== 0) {
+      if (lr.status === 2) {
+        console.error(
+          `[cio-deploy-preflight-guard] ❌ verify:kintone-live-schema API/接続エラー app=${app} — 再試行後に deploy`,
+        );
+        console.error(`  緊急のみ: SKIP_CIO_LIVE_SCHEMA_GUARD=1 npm run deploy:${app}`);
+        process.exit(2);
+      }
+      console.error(
+        `[cio-deploy-preflight-guard] ❌ verify:kintone-live-schema --app ${app} NG — フィールド不一致・deploy 中止`,
+      );
+      console.error(`  緊急のみ: SKIP_CIO_LIVE_SCHEMA_GUARD=1 npm run deploy:${app}`);
+      process.exit(1);
+    }
+    console.log(`[cio-deploy-preflight-guard] OK live-schema app=${app}`);
+  } else if (process.env.SKIP_CIO_LIVE_SCHEMA_GUARD === '1') {
+    console.warn(
+      `[cio-deploy-preflight-guard] SKIP_CIO_LIVE_SCHEMA_GUARD=1 app=${app}（緊急モード・証跡をチャットに残すこと）`,
+    );
   }
 
   console.log(`[cio-deploy-preflight-guard] OK app=${app} age=${Math.round(age / 1000)}s note=${JSON.stringify((data.note || '').slice(0, 80))}`);

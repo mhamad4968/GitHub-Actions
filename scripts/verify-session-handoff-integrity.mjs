@@ -3,6 +3,7 @@
  * 新チャット import 検証 — bridge JSON → 高密度プロンプト展開 + ビジュアルマップ
  * --validate-export: 15ターン荷造り漏れ DeepSeek 職分クロスチェック（第11層・タスク③）
  */
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
@@ -104,6 +105,28 @@ function main() {
     console.log('nextFiles:');
     for (const f of bridge.nextFiles) console.log(`  @${f}`);
     console.log('━━━━━━━━ ロケットスタート OK — New Chat 本題へ ━━━━━━━━');
+
+    if (process.env.SKIP_CIO_GIT_HISTORY_HANDOFF !== '1') {
+      const alignScript = path.join(root, 'scripts', 'verify-git-history-alignment.mjs');
+      const alignArgs = ['--handoff'];
+      if (bridge.gitHead) alignArgs.push('--since', bridge.gitHead);
+      const r = spawnSync(process.execPath, [alignScript, ...alignArgs], {
+        cwd: root,
+        encoding: 'utf8',
+        stdio: 'inherit',
+      });
+      if (r.status !== 0) {
+        console.error(
+          '[verify:session-handoff-integrity] NG git-history-alignment --handoff（先祖返り検知）',
+        );
+        process.exit(1);
+      }
+      console.log('[verify:session-handoff-integrity] OK git-history-alignment --handoff');
+    } else {
+      console.warn(
+        '[verify:session-handoff-integrity] SKIP_CIO_GIT_HISTORY_HANDOFF=1 — 緊急モード（理由1行をチャットに残すこと）',
+      );
+    }
   } else if (!doValidateExport) {
     console.log('[verify:session-handoff-integrity] OK bridge valid');
   }

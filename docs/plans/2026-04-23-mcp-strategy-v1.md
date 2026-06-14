@@ -246,7 +246,7 @@ slack-mcp は対象外確定。代わりに浜田の実業務にフィットす�
 | 🥉 | **screenshot-mcp / browser-screenshot** | URL → 画像生成 | ⭐⭐ 経理 FAQ ポータル / kintone UI 改修時の before/after 比較 | 🟡 中 | 5/13 後 |
 | 4 | **date-mcp** | 日時計算専用 | ⭐⭐ §39 発言前日時確認の精度向上 / 営業日計算 / cron 時刻設計 | 🟡 中 | 5/13 後 |
 | 5 | **semgrep-mcp** | 静的解析自動化 | ⭐⭐ kintone customize JS の脆弱性自動スキャン / S8 と統合可能 | 🟡 中 | 6 月以降 |
-| 6 | **git-history-mcp** | git 履歴高度検索 | ⭐ 過去 30 日 TSB 言及 commit 等の複雑検索 | 🟡 中 | 6 月以降 |
+| 6 | **git-history-mcp** | git 履歴高度検索 | ⭐ 過去 30 日 TSB 言及 commit 等の複雑検索 | 🟡 中 | **導入済（第12層・2026-06-14）** |
 | 7 | **postgres-mcp / sqlite-mcp** | DB 直接操作 | ⭐ logs/task-estimates.jsonl の query 用 / 改善 #5 段階 2 と連動 | 🟡 中 | 6 月以降 |
 
 ### 10.3 私の §48 推奨（追加 MCP）

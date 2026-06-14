@@ -281,6 +281,27 @@
 
 正本: `.cursor/rules/cio-kintone-fields-gate.mdc` / `cio-commit-msg-kimi-gate.mdc` / `cio-handoff-export-validate-gate.mdc` / `data/kintone-field-registry.json`
 
+**第12層 — 2大新規MCP＋ライブ Linter / 先祖返り防衛（2026-06-14 CEO 超厳命・§50-3-11 非置換）**:
+
+1. **kintone-schema-mcp** — 実 kintone form / views / settings を REST 取得 — `mcp/kintone-schema-mcp/index.mjs` — 第11層 `verify:kintone-fields` と **実スキーマ突合**
+2. **git-history-mcp** — Git ログから憲法改定層・4要素コミットを検索 — `mcp/git-history-mcp/index.mjs` — `cio:session:close-git` / handoff と連動
+3. **拡張案1**: `npm run verify:kintone-live-schema` — customize/** × 実機 preview form — **Warning 0** 必須 — deploy 前段（`cio-deploy-preflight-guard`）にも連鎖
+4. **拡張案2**: `npm run verify:git-history-alignment` — 過去 governance 世代スキャン — New Chat import 時 **`--handoff` 自動連鎖**
+5. **配備**: `npm run apply-layer12-mcp` → `npm run mcp:sync-cursor-windows`
+6. **機械検証**: `verify:cio-weekend-layer12-infra` / `verify:cio-weekend-layer12-ext-infra` / `verify:cio-mcp-layer12-probe`
+
+正本: `docs/mcp-status.md` §活性化 — 第12層 / `data/git-history-guard-manifest.json` / `.cursor/rules/cio-kintone-live-schema-gate.mdc` / `.cursor/rules/cio-git-history-alignment-gate.mdc`
+
+**第13層 — MCP×CLI 単一窓・定例ヘルス（2026-06-14 CEO 追補・§50-3-11 非置換）**:
+
+1. **単一窓**: kintone-schema-mcp ↔ `verify:kintone-live-schema` / git-history-mcp ↔ `verify:git-history-alignment` — **同一正本・矛盾禁止**
+2. **extended probe**: `npm run cio:mcp:env:extended` — 第12層 MCP initialize を **末尾連鎖**
+3. **handoff / deploy 連鎖**: import → `--handoff` 自動 / deploy preflight → `--app` live-schema 自動
+4. **月次**: `cio:periodic:monthly` — `--portfolio` live-schema 内包
+5. **ゾンビ**: `git-history-mcp … 6月以降` — `verify:mode-b-zombie-docs` 検知
+
+正本: `AGENTS.md` 第13層 / `.cursor/rules/mcp-tool-discipline.mdc` / `docs/runbooks/cio-periodic-ops-schedule.md`
+
 **担当定義の極限明文化**: **`AGENTS.md` §1-2-3-4-A**（完全マトリクス）・`mode-b-canonical.mdc`（用語単一窓）・Desktop **`18-重要確認.txt`**（浜田視認用）。
 
 **タスクA — Composer silent fallback 禁止（§1-2-2 強化）**:

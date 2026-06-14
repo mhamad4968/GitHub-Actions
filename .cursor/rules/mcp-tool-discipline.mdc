@@ -20,6 +20,17 @@ Cursor の **MCP FileSystem** 上の `mcps/<server>/tools/*.json`（または同
 
 - **新規 MCP サーバ**を `mcp.json` に足したら: descriptor を **1 本試読**し、**`docs/mcp-status.md`** に 1 行でもよいので **日付・サーバ名・主用途**を追記する（詳細カウンタの更新は月次診断でよい）。
 
+## 第12/13層 — MCP×CLI 単一窓（2026-06-14）
+
+| MCP | CLI 同等（正本） | 使い分け |
+|-----|------------------|----------|
+| **kintone-schema-mcp** | `npm run verify:kintone-live-schema [-- --app <id>]` | 対話調査=MCP / ゲート・deploy=CLI |
+| **git-history-mcp** | `npm run verify:git-history-alignment [-- --handoff]` | 履歴探索=MCP / handoff・commit 前=CLI |
+
+- **同一ターン**で MCP 結果と CLI 結果が食い違う → **再取得**。解消不能 → **exit 1** + 1 行報告。
+- **call_mcp_tool 前**は従来どおり descriptor 必読。**CLI ゲート**（live-schema / git-history-alignment）を **スキップして MCP だけ完結**しない。
+- **週次/Composer 前**: `npm run cio:mcp:env:extended`（第12層 initialize 含む）。**月次**: `npm run cio:periodic:monthly`（`--portfolio` live-schema 含む）。
+
 ## アイドル時間の有効活用（浜田希望・2026-04-28）
 
 - **本題がなく・待ち・余裕があるターン**では、**先に浜田へ確認を挟まず**、リポ内の **メンテ・整合**に充ててよい。**優先の目安（上から）**: ① **緑の回復**（まず **`npm run verify:agent-env`**＝憲法→必読ゲート→`verify:all`→`smoke:quiet` の **Tier A 一発**／Desktop 同期・時計 strict は含まない。出た **warn/ng を 1 件だけ**潰す）② **引継ぎ鮮度**（`checkpoint-latest.md` / `evening-reflect-queue.md` / `handoff-log.md` の **事実と一致**）③ **ドキュ・ルール整合**（`RULES-INDEX` / `.cursor/rules` / `docs/mcp-status.md` の矛盾 1 件）④ **監査メモの 1 歩**（P5-3 等の **未消化を 1 件**）。いずれも **Tier A** のみ。

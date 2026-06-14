@@ -35,7 +35,7 @@
 |---|-----|----------|
 | **-1** | **浜田** | 新チャット **1 通目**に **`AI緊急用\00-NEW-SESSION-STARTER_yyyymmdd.txt`（JST・常にこの 1 ファイル名）** の **全文**を貼る（**必須級・これだけで項番 -1 素材は足りる**）。**貼付推奨**は verify の最終行。`22-HANDOFF-HUMAN.txt` 5 行は **任意**（メモ用）。checkpoint をチャットに **重ねて貼らなくてよい**（v3.27）。 |
 | **-0** | **浜田＋AI** | AI: ティア宣言＋スターター受領＋**次に着手すること**を **§41 一問だけ**確認。**浜田 OK が出るまで項番 0（verify/bootstrap）に着手しない**。詳細はスターター内 **「■ 貼付単独で完走」**。 |
-| **0** | **AI** | **`npm run session:bootstrap`**（内包順: `verify:constitution-handoff` → **`verify:mandatory-read-gate`**（必読ファイル構造）→ **`verify:session-clock-health`**（§51-6-2 hooks / crontab node）→ **`session-starter:sync-desktop`**（`C:\Users\mhamada202408224\Desktop\AI緊急用` 都度メンテ）→ **`verify:desktop-ai-emergency-sync`**（バイト一致）→ `smoke:quiet`）。**全文貼付済みなら -0 OK 直後に実行**し、棚卸し Read（フェーズ 1）は **bootstrap 通過後**でよい。激短のみ verify だけは非推奨。 |
+| **0** | **AI** | **`npm run session:bootstrap`**（内包順: `verify:constitution-handoff` → **`verify:mandatory-read-gate`**（必読ファイル構造）→ **`verify:session-clock-health`**（§51-6-2 hooks / crontab node）→ **`session-starter:sync-desktop`**（`C:\Users\mhamada202408224\Desktop\AI緊急用` 都度メンテ）→ **`verify:desktop-ai-emergency-sync`**（バイト一致）→ `smoke:quiet`）。**全文貼付済みなら -0 OK 直後に実行**し、棚卸し Read（フェーズ 1）は **bootstrap 通過後**でよい。激短のみ verify だけは非推奨。**New Chat 本題前**: `npm run verify:session-handoff-integrity -- --import`（成功時 **`verify:git-history-alignment --handoff` 自動連鎖** — 第12層） |
 
 ---
 

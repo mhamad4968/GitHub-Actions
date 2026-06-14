@@ -9,7 +9,7 @@
 
 | 頻度 | リマインダ名（例） | 担当 | やること（1行） |
 |------|-------------------|------|-----------------|
-| **毎月 第1営業日** | kintone customize BUILD 監査 | **CIO**（浜田は異常時のみ画面確認） | `npm run cio:periodic:monthly` |
+| **毎月 第1営業日** | kintone customize BUILD 監査 + live-schema portfolio | **CIO**（浜田は異常時のみ画面確認） | `npm run cio:periodic:monthly` |
 | **四半期初月 第1営業日** | kintone スナップショット＋GHA secrets | **CIO** 実施 / **浜田** secrets ローテ承認 | `npm run cio:periodic:quarterly` ＋ GitHub Settings |
 | **毎週金曜**（反省後） | MCP 利用状況更新 | **CIO** | `npm run mcp-status:refresh-usage`（`docs/mcp-status.md` 定例） |
 | **customize 変更のたび** | preflight → deploy | **CIO** | `npm run cio:preflight:<app> -- --note "…"` → `npm run deploy:<app>` |
@@ -31,9 +31,10 @@
 ## コマンド早見（CIO）
 
 ```bash
-# 月次（portfolio 13アプリ: 668/677-679/682-683/686 + Space48 706-711）
+# 月次（BUILD 監査 PORTFOLIO + 管理対象 live-schema 横断）
 npm run cio:periodic:monthly
-# 実体: cio:audit:portfolio:strict
+# 実体: cio:audit:portfolio:strict && verify:kintone-live-schema --portfolio
+# --portfolio = PORTFOLIO_CUSTOMIZE + registry 714-717 のみ（全 customize 走査禁止・削除済 594/627 等は除外）
 
 # 四半期（予実・ユーザサポートのフィールド構成バックアップ）
 npm run cio:periodic:quarterly
@@ -44,6 +45,10 @@ npm run mcp-status:refresh-usage
 ```
 
 **監査 NG 時**: `docs/runbooks/customize-deploy-recovery.md` に従い復旧 → 再監査。
+
+**許容ギャップ（640 等）**: `data/kintone-accepted-gaps.json` — deploy 未接続は許容。**`deploy:640` を package.json に足した瞬間** `verify:kintone-accepted-gaps` が **registry 台帳化なしで NG**（知ってるのに忘れ防止）。
+
+**generations manifest**: governance 触媒の commit 後 **post-commit が sync→amend**（同一 commit に manifest 反映）。pre-commit は dry-run のみ。`--no-verify` 時は post-commit 警告。監査は git 最新世代をマージするため先祖返り検知は維持。
 
 **ICT 収集失敗時**: Actions `ict-tech-digest-collect` ログ確認 → `KINTONE_API_TOKEN_ICT_COLLECT`（631 用と混同しない）。
 
@@ -75,5 +80,7 @@ npm run mcp-status:refresh-usage
 
 | 日付 | 内容 |
 |------|------|
+| 2026-06-14 | 月次 `--portfolio` を PORTFOLIO+714-717 管理対象のみに限定（全 customize 走査廃止） |
+| 2026-06-14 | 月次に `verify:kintone-live-schema --portfolio` 内包（第13層 C4） |
 | 2026-06-02 | 682-graph-monthly GHA — `682:graph-monthly:gha` bundled + `verify:gha-periodic-workflows`（5038 再発防止） |
 | 2026-05-16 | 初版（678/686 教訓後の定期運用・忘れ防止） |

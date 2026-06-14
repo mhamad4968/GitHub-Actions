@@ -2023,6 +2023,18 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 
 正本: `docs/mcp-status.md` §活性化 — 第12層 / `data/cio-mcp-manifest.json` / `scripts/apply-layer12-mcp-servers.mjs`
 
+**第13層 — MCP×CLI 単一窓・定例ヘルス（2026-06-14 CEO 追補・§50-3-11 非置換）**:
+
+1. **単一窓原則**: **kintone-schema-mcp** ↔ **`verify:kintone-live-schema`**、**git-history-mcp** ↔ **`verify:git-history-alignment`** — **同一 REST/Git 正本**。MCP と CLI の結果を **同一ターンで矛盾させない**（差異 → 再取得 or exit 1）。
+2. **Composer 前ヘルス**: `npm run cio:mcp:env:extended` — 必須6 + FE 系に加え **第12層 MCP initialize**（`verify:cio-mcp-layer12-probe` 相当）を **内包**。
+3. **handoff 連鎖**: `verify:session-handoff-integrity -- --import` 成功直後 **`verify:git-history-alignment --handoff --since <bridge.gitHead>`** 自動（**export 以降 commit + staged のみ**検査・未 stage WIP 許容。緊急: `SKIP_CIO_GIT_HISTORY_HANDOFF=1`）
+4. **deploy 連鎖**: `cio-deploy-preflight-guard` が **`verify:kintone-live-schema --app <id>`** を **機械実行**（API 障害=exit 2・再試行可。緊急: `SKIP_CIO_LIVE_SCHEMA_GUARD=1`）
+5. **generations 同期**: governance commit 時 **`npm run sync:git-history-generations -- --apply`**（`cio:session:close-git` でも自動）
+6. **月次 portfolio**: `npm run cio:periodic:monthly` — **`verify:kintone-live-schema --portfolio`**（`cio-portfolio-apps.mjs` の **PORTFOLIO + 714-717** のみ。全 customize 走査禁止）
+7. **ゾンビ文書**: `git-history-mcp` の **「6月以降」** 等の未導入表記は **`verify:mode-b-zombie-docs`** で検知 — 導入済みは **「導入済（第12層）」** に更新。
+
+正本: `.cursor/rules/mcp-tool-discipline.mdc` / `data/git-history-guard-manifest.json` / `docs/runbooks/cio-periodic-ops-schedule.md`
+
 **担当定義の極限明文化**: **`AGENTS.md` §1-2-3-4-A**（完全マトリクス）・`mode-b-canonical.mdc`（用語単一窓）・Desktop **`18-重要確認.txt`**（浜田視認用）。
 
 **タスクA — Composer silent fallback 禁止（§1-2-2 強化）**:

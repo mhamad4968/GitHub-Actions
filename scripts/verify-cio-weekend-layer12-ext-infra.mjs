@@ -47,6 +47,26 @@ function main() {
   if (!composer.includes('verify:kintone-live-schema')) {
     issues.push('composer-mcp-audit-gate.mdc に verify:kintone-live-schema 未連結');
   }
+  const guard = fs.readFileSync(path.join(root, 'scripts/cio-guard-composer-mcp-audit.mjs'), 'utf8');
+  if (!guard.includes('liveSchemaOk')) {
+    issues.push('cio-guard-composer-mcp-audit.mjs に liveSchemaOk 未実装');
+  }
+  const liveLib = fs.readFileSync(path.join(root, 'scripts/lib/kintone-live-schema.mjs'), 'utf8');
+  if (!liveLib.includes('resolveCustomizeDirsForApp')) {
+    issues.push('kintone-live-schema.mjs に resolveCustomizeDirsForApp 未実装');
+  }
+  const registry = JSON.parse(fs.readFileSync(path.join(root, 'data/kintone-field-registry.json'), 'utf8'));
+  if (!registry.apps?.['674']?.relatedAppFieldsFrom?.length) {
+    issues.push('kintone-field-registry.json に 674 relatedAppFieldsFrom 未登録');
+  }
+  const handoff = fs.readFileSync(path.join(root, 'scripts/verify-session-handoff-integrity.mjs'), 'utf8');
+  if (!handoff.includes('verify-git-history-alignment.mjs')) {
+    issues.push('verify-session-handoff-integrity.mjs に git-history handoff 連鎖未実装');
+  }
+  const constitution = fs.readFileSync(path.join(root, 'docs/constitution/12-mcp-usage.md'), 'utf8');
+  if (!constitution.includes('第12層 — 2大新規MCP')) {
+    issues.push('docs/constitution/12-mcp-usage.md に 第12層 未記載');
+  }
   const gov = pkg.scripts?.['verify:cio-four-ai-governance'] || '';
   if (!gov.includes('verify-kintone-live-schema') || !gov.includes('verify-git-history-alignment')) {
     issues.push('verify:cio-four-ai-governance に layer12 拡張未連結');

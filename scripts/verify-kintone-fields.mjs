@@ -22,7 +22,10 @@ function main() {
   let ng = 0;
   for (const appId of appIds) {
     const result = auditApp(root, registry, appId, { mediumFail });
-    if (result.skipped) continue;
+    if (result.skipped) {
+      if (result.note) console.log(`[verify:kintone-fields] SKIP ${result.note}`);
+      continue;
+    }
     if (result.warning) console.log(`[verify:kintone-fields] WARN ${result.warning}`);
     console.log(`[verify:kintone-fields] app=${appId} files=${result.files?.length ?? 0} registered=${result.registered?.length ?? 0}`);
     if (!result.ok) {

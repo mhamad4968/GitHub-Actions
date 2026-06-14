@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-14T00:40:10.490Z",
+  "generatedAt": "2026-06-14T00:49:39.000Z",
   "sectionToMdc": {
     "§0": [
       "constitution-brief-card.mdc",
@@ -50,6 +50,7 @@
       "composer-mcp-audit-gate.mdc",
       "cursor-generate-image-assets.mdc",
       "deepseek-cursor-spec-division.mdc",
+      "mcp-tool-discipline.mdc",
       "mode-b-canonical.mdc"
     ],
     "§1-2-3-4-C": [
@@ -321,6 +322,9 @@
       "§50-3-11",
       "§50-3-8"
     ],
+    "cio-git-history-alignment-gate.mdc": [
+      "§(RULES-INDEX行)"
+    ],
     "cio-handoff-export-validate-gate.mdc": [
       "§(RULES-INDEX行)",
       "§1-2-3-4-A",
@@ -332,6 +336,7 @@
       "§50-3-11"
     ],
     "cio-kintone-live-schema-gate.mdc": [
+      "§(RULES-INDEX行)",
       "§50-3-11"
     ],
     "cio-operating-loop.mdc": [
@@ -476,6 +481,7 @@
     ],
     "mcp-tool-discipline.mdc": [
       "§(RULES-INDEX行)",
+      "§1-2-3-4-A",
       "§57-5"
     ],
     "mode-b-canonical.mdc": [

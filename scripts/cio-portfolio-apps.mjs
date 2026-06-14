@@ -22,5 +22,19 @@ export const PORTFOLIO_CUSTOMIZE = [
 
 export const PORTFOLIO_APP_IDS = PORTFOLIO_CUSTOMIZE.map((p) => p.id);
 
+/** 月次 live-schema 追加対象（BUILD 監査 PORTFOLIO 外の registry 台帳） */
+export const LIVE_SCHEMA_MONTHLY_EXTRA_IDS = ['714', '715', '716', '717'];
+
+/** 月次 live-schema 監査対象 — PORTFOLIO + Space21 台帳（単一正本・全 customize 走査禁止） */
+export const LIVE_SCHEMA_MONTHLY_IDS = [
+  ...new Set([...PORTFOLIO_APP_IDS, ...LIVE_SCHEMA_MONTHLY_EXTRA_IDS]),
+];
+
+/**
+ * kintone 削除済み・参照のみ — live-schema / 月次から除外。
+ * リポ customize/ は残置可（git 履歴・Runbook 参照用）。
+ */
+export const LIVE_SCHEMA_EXCLUDED_IDS = ['594', '626', '627', '651', '652', '653', '681'];
+
 /** revision スナップショット対象（予実＋ユーザサポート） */
 export const PORTFOLIO_SNAPSHOT_IDS = ["677", "678", "679", "682", "683"];

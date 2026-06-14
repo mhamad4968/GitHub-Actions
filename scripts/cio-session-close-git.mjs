@@ -18,6 +18,7 @@ import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { isSessionCloseTempPath } from './lib/cio-session-close-temp-paths.mjs';
 import { runNpmScriptSync } from './lib/win-hidden-spawn.mjs';
+import { touchesGovernance } from './lib/cio-governance-touch.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DESKTOP_DIR = process.env.SESSION_STARTER_DESKTOP_DIR || 'C:\\Users\\mhamada202408224\\Desktop\\AI緊急用';
@@ -53,6 +54,12 @@ function runNpm(script, args = [], extraEnv = {}) {
     env: { ...process.env, ...extraEnv },
   });
   return r.status === 0;
+}
+
+function syncGitHistoryGenerationsIfNeeded(pathsText) {
+  if (!touchesGovernance(pathsText)) return true;
+  console.log('[cio:session:close-git] governance touch — sync:git-history-generations --apply');
+  return runNode('scripts/sync-git-history-generations.mjs', ['--apply']);
 }
 
 function stageSessionChanges() {
@@ -133,6 +140,10 @@ function main() {
       process.exit(commit.status || 1);
     }
     console.log('[cio:session:close-git] commit OK');
+    if (!syncGitHistoryGenerationsIfNeeded(stagedAfter)) {
+      console.error('[cio:session:close-git] NG sync:git-history-generations');
+      process.exit(1);
+    }
   } else {
     console.log('[cio:session:close-git] 新規 commit なし（既に commit 済）');
   }

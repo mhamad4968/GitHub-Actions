@@ -40,6 +40,12 @@ export function resolveAppFields(registry, appId) {
     const parent = registry.apps[app.inheritsRecordFieldsFrom];
     if (parent?.recordFields) for (const f of parent.recordFields) recordFields.add(f);
   }
+  if (Array.isArray(app.relatedAppFieldsFrom)) {
+    for (const relId of app.relatedAppFieldsFrom) {
+      const rel = registry.apps[relId];
+      if (rel?.recordFields) for (const f of rel.recordFields) recordFields.add(f);
+    }
+  }
   if (app.inheritsSubtablesFrom) {
     const parent = registry.apps[app.inheritsSubtablesFrom];
     if (parent?.subtables) subtables = { ...parent.subtables, ...subtables };
@@ -83,6 +89,7 @@ function extractFromText(text, file, allowGlobal) {
     if (!code || allowGlobal.has(code)) return;
     if (/^\d+$/.test(code)) return;
     if (code.startsWith('y678') || code.startsWith('gaia') || code.startsWith('cybozu')) return;
+    if (code === 'has' && /\.has\s*\(/.test(line)) return;
     const prev = hits.get(code);
     const rank = { high: 3, medium: 2, low: 1 };
     if (!prev || rank[confidence] > rank[prev.confidence]) {
@@ -117,6 +124,15 @@ export function auditApp(root, registry, appId, options = {}) {
   const allowGlobal = new Set([...(allowlist.global || []), ...(options.extraAllow || [])]);
   const app = registry.apps[appId];
   if (!app) return { ok: true, skipped: true, issues: [] };
+  if (Array.isArray(app.relatedAppFieldsFrom) && app.relatedAppFieldsFrom.length) {
+    return {
+      ok: true,
+      skipped: true,
+      issues: [],
+      appId,
+      note: `app=${appId} relatedAppFieldsFrom — registry 監査は verify:kintone-live-schema に委譲`,
+    };
+  }
 
   const { recordFields, subtables } = resolveAppFields(registry, appId);
   const allRegistered = new Set(recordFields);
@@ -150,7 +166,15 @@ export function auditApp(root, registry, appId, options = {}) {
   }
 
   const blocking = issues.filter((i) => i.severity === 'error' || (options.mediumFail && i.severity === 'warn'));
-  return { ok: blocking.length === 0, issues, blocking, files, appId, registered: [...allRegistered] };
+  return {
+    ok: blocking.length === 0,
+    issues,
+    blocking,
+    files,
+    appId,
+    registered: [...allRegistered],
+    extractedCodes: [...seen.keys()],
+  };
 }
 
 export function printFieldIssues(issues) {

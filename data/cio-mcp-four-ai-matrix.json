@@ -44,7 +44,9 @@
         "mintlify",
         "repo-tree",
         "eslint-mcp",
-        "context7"
+        "context7",
+        "kintone-schema-mcp",
+        "git-history-mcp"
       ],
       "mcpDeny": ["image-generation-mcp"],
       "builtinAllow": ["GenerateImage"]
@@ -63,7 +65,9 @@
         "memory",
         "repo-tree",
         "eslint-mcp",
-        "context7"
+        "context7",
+        "kintone-schema-mcp",
+        "git-history-mcp"
       ],
       "note": "diff のみ。単独 GO なし save/deploy"
     },

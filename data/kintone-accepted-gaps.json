@@ -1,0 +1,17 @@
+{
+  "version": "2026-06-14",
+  "gaps": [
+    {
+      "appId": "640",
+      "label": "社内FAQDB",
+      "reason": "deploy 未接続 — live-schema は 641 の category_name を cross-app 参照（registry 未台帳）",
+      "acceptUntil": "package.json に deploy:640 を追加するまで",
+      "requiredBeforeDeploy": {
+        "registryRelatedAppFieldsFrom": ["641"],
+        "packageScript": "deploy:640",
+        "preflightScript": "cio:preflight:640"
+      },
+      "docRel": "docs/faq-apps-640-641.md"
+    }
+  ]
+}

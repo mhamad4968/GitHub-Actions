@@ -18,7 +18,7 @@
  * - 上書き: **`CIO_MCP_PROBE_TIMEOUT_MS`**、**`CIO_MCP_PROBE_KIMI_TIMEOUT_MS`**
  * - 再試行: **`CIO_MCP_PROBE_RETRY_ON_TIMEOUT=1`**（既定）で TIMEOUT 時 **1 回だけ**再 probe。`0` で無効
  */
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
@@ -363,4 +363,13 @@ const skip = results.filter((r) => r.status === "SKIP").length;
 const ng = results.filter((r) => r.status !== "OK" && r.status !== "SKIP").length;
 console.log(`SUMMARY: OK ${ok}/${results.length}  SKIP=${skip}  NG=${ng}`);
 const exitMissing = results.some((r) => r.status === "NG" && r.detail?.includes("missing env"));
+if (ng === 0 && useExtended && !filter) {
+  const layer12Script = path.join(root, "scripts", "verify-cio-mcp-layer12-probe.mjs");
+  const l12 = spawnSync(process.execPath, [layer12Script], { cwd: root, encoding: "utf8", stdio: "inherit" });
+  if (l12.status !== 0) {
+    console.error("[cio-mcp-quickprobe] NG layer12 probe (kintone-schema-mcp / git-history-mcp)");
+    process.exit(1);
+  }
+  console.log("[cio-mcp-quickprobe] OK layer12 MCP initialize (extended)");
+}
 process.exit(ng === 0 ? 0 : exitMissing ? 2 : 1);

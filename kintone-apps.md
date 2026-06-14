@@ -18,6 +18,17 @@ npm run app:fields <アプリID>
 
 **正**: `data/cio-live-builds.json`（deploy 成功時に自動更新）。**照合**: `npm run cio:audit:portfolio:strict`（リポ `var BUILD` ↔ 台帳 ↔ kintone 本番 JS）。**復旧 Runbook**: `docs/runbooks/customize-deploy-recovery.md`。**定期運用（忘れ防止）**: `docs/runbooks/cio-periodic-ops-schedule.md`（月次・四半期・金曜 MCP）。
 
+**フィールド台帳 SOP（第11/12層 — 2026-06-14）**:
+
+1. **新規 kintone アプリ**（customize あり）→ `data/kintone-field-registry.json` に **recordFields**（＋ subtables）を追加。**dash アプリ**は DB アプリへ REST する場合 **`inheritsRecordFieldsFrom`** を設定（例: 715→714、717→716、678→677）。**他アプリ REST 参照**（674→671 等）は **`relatedAppFieldsFrom`** に関連 appId 配列を設定（live-schema が実機スキーマをマージ監査）。
+2. **二段 Linter**: `npm run verify:kintone-fields`（registry）→ `npm run verify:kintone-live-schema -- --app <id>`（実機 preview form）。
+3. **deploy 前**: `npm run cio:preflight:<app>` → `npm run deploy:<app>`（`cio-deploy-preflight-guard` が live-schema を **機械連鎖**）。
+4. **月次**: `npm run verify:kintone-live-schema -- --portfolio`（`cio:periodic:monthly` 内包）。
+5. **許容ギャップ**（640 deploy 未接続等）: `data/kintone-accepted-gaps.json` に登録 → `npm run verify:kintone-accepted-gaps` が **deploy 接続時に自動 NG**（台帳化忘れ防止）。
+6. **generations 同期**: governance 触媒 commit 時 **post-commit が `sync --apply` → `--amend` で manifest を同一 commit に反映**（pre-commit は dry-run のみ）。
+
+正本: `.cursor/rules/cio-kintone-fields-gate.mdc` / `.cursor/rules/cio-kintone-live-schema-gate.mdc`
+
 | app | BUILD（本番） | revision | fileKey | 更新 |
 |-----|---------------|----------|---------|------|
 | 674 | `2026-06-09-674-next-serial-label` | **241** | `165be2df-f6fc-4159-b726-f8bcbdce2244` | 2026-06-09 次シリアル表示ラベル |

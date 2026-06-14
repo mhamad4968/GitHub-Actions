@@ -54,6 +54,11 @@ export const ZOMBIE_PATTERNS = [
     pattern: /(?:画像生成\s*MCP\s*(?:を)?(?:導入|採用|有効化)|dall-?e-mcp|stable-?diffusion-mcp)/i,
     hint: '画像生成 MCP は見送り（GenerateImage + assets/images/ のみ）',
   },
+  {
+    id: 'GIT_HISTORY_MCP_DEFERRED',
+    pattern: /git-history-mcp[^|\n]{0,80}6\s*月以降/i,
+    hint: 'git-history-mcp は第12層で導入済 — 「6月以降」等の先送り表記を削除',
+  },
 ];
 
 export const PRUNE_SAFE_REPLACEMENTS = [

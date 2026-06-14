@@ -107,7 +107,7 @@
 | §1-2-3-1 | [`cio-constitution.mdc`](.cursor/rules/cio-constitution.mdc) · [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) · [`every-turn-rules-confirm.mdc`](.cursor/rules/every-turn-rules-confirm.mdc) · [`mode-b-canonical.mdc`](.cursor/rules/mode-b-canonical.mdc) · [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) |
 | §1-2-3-3 | [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) |
 | §1-2-3-4 | [`cio-constitution.mdc`](.cursor/rules/cio-constitution.mdc) · [`mode-b-canonical.mdc`](.cursor/rules/mode-b-canonical.mdc) |
-| §1-2-3-4-A | [`cio-commit-msg-kimi-gate.mdc`](.cursor/rules/cio-commit-msg-kimi-gate.mdc) · [`cio-composer-escalation-interlock.mdc`](.cursor/rules/cio-composer-escalation-interlock.mdc) · [`cio-context-dissolution-interlock.mdc`](.cursor/rules/cio-context-dissolution-interlock.mdc) · [`cio-debug-tips-stock-gate.mdc`](.cursor/rules/cio-debug-tips-stock-gate.mdc) · [`cio-env-integrity-gate.mdc`](.cursor/rules/cio-env-integrity-gate.mdc) · [`cio-env-self-healing-gate.mdc`](.cursor/rules/cio-env-self-healing-gate.mdc) · [`cio-error-ticket-apply-gate.mdc`](.cursor/rules/cio-error-ticket-apply-gate.mdc) · [`cio-error-ticket-gate.mdc`](.cursor/rules/cio-error-ticket-gate.mdc) · [`cio-handoff-export-validate-gate.mdc`](.cursor/rules/cio-handoff-export-validate-gate.mdc) · [`cio-kintone-fields-gate.mdc`](.cursor/rules/cio-kintone-fields-gate.mdc) · [`cio-spec-logic-gate.mdc`](.cursor/rules/cio-spec-logic-gate.mdc) · [`cio-weekend-rollback-gate.mdc`](.cursor/rules/cio-weekend-rollback-gate.mdc) · [`composer-mcp-audit-gate.mdc`](.cursor/rules/composer-mcp-audit-gate.mdc) · [`cursor-generate-image-assets.mdc`](.cursor/rules/cursor-generate-image-assets.mdc) · [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) · [`mode-b-canonical.mdc`](.cursor/rules/mode-b-canonical.mdc) |
+| §1-2-3-4-A | [`cio-commit-msg-kimi-gate.mdc`](.cursor/rules/cio-commit-msg-kimi-gate.mdc) · [`cio-composer-escalation-interlock.mdc`](.cursor/rules/cio-composer-escalation-interlock.mdc) · [`cio-context-dissolution-interlock.mdc`](.cursor/rules/cio-context-dissolution-interlock.mdc) · [`cio-debug-tips-stock-gate.mdc`](.cursor/rules/cio-debug-tips-stock-gate.mdc) · [`cio-env-integrity-gate.mdc`](.cursor/rules/cio-env-integrity-gate.mdc) · [`cio-env-self-healing-gate.mdc`](.cursor/rules/cio-env-self-healing-gate.mdc) · [`cio-error-ticket-apply-gate.mdc`](.cursor/rules/cio-error-ticket-apply-gate.mdc) · [`cio-error-ticket-gate.mdc`](.cursor/rules/cio-error-ticket-gate.mdc) · [`cio-handoff-export-validate-gate.mdc`](.cursor/rules/cio-handoff-export-validate-gate.mdc) · [`cio-kintone-fields-gate.mdc`](.cursor/rules/cio-kintone-fields-gate.mdc) · [`cio-spec-logic-gate.mdc`](.cursor/rules/cio-spec-logic-gate.mdc) · [`cio-weekend-rollback-gate.mdc`](.cursor/rules/cio-weekend-rollback-gate.mdc) · [`composer-mcp-audit-gate.mdc`](.cursor/rules/composer-mcp-audit-gate.mdc) · [`cursor-generate-image-assets.mdc`](.cursor/rules/cursor-generate-image-assets.mdc) · [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) · [`mcp-tool-discipline.mdc`](.cursor/rules/mcp-tool-discipline.mdc) · [`mode-b-canonical.mdc`](.cursor/rules/mode-b-canonical.mdc) |
 | §1-2-3-4-C | [`cursor-generate-image-assets.mdc`](.cursor/rules/cursor-generate-image-assets.mdc) |
 | §1-2-4 | [`cursor-generate-image-assets.mdc`](.cursor/rules/cursor-generate-image-assets.mdc) · [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) · [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) |
 | §10 | [`cio-discipline-always.mdc`](.cursor/rules/cio-discipline-always.mdc) · [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) |
@@ -175,9 +175,10 @@
 | [`cio-env-self-healing-gate.mdc`](.cursor/rules/cio-env-self-healing-gate.mdc) | §1-2-3-4-A · §50-3-11 |
 | [`cio-error-ticket-apply-gate.mdc`](.cursor/rules/cio-error-ticket-apply-gate.mdc) | §1-2-3-4-A · §50-3-11 |
 | [`cio-error-ticket-gate.mdc`](.cursor/rules/cio-error-ticket-gate.mdc) | §1-2-3-4-A · §50-3-11 · §50-3-8 |
+| [`cio-git-history-alignment-gate.mdc`](.cursor/rules/cio-git-history-alignment-gate.mdc) | §(RULES-INDEX行) |
 | [`cio-handoff-export-validate-gate.mdc`](.cursor/rules/cio-handoff-export-validate-gate.mdc) | §(RULES-INDEX行) · §1-2-3-4-A · §50-3-11 |
 | [`cio-kintone-fields-gate.mdc`](.cursor/rules/cio-kintone-fields-gate.mdc) | §(RULES-INDEX行) · §1-2-3-4-A · §50-3-11 |
-| [`cio-kintone-live-schema-gate.mdc`](.cursor/rules/cio-kintone-live-schema-gate.mdc) | §50-3-11 |
+| [`cio-kintone-live-schema-gate.mdc`](.cursor/rules/cio-kintone-live-schema-gate.mdc) | §(RULES-INDEX行) · §50-3-11 |
 | [`cio-operating-loop.mdc`](.cursor/rules/cio-operating-loop.mdc) | §(RULES-INDEX行) |
 | [`cio-project-closure-gate.mdc`](.cursor/rules/cio-project-closure-gate.mdc) | §(RULES-INDEX行) |
 | [`cio-report-min-format.mdc`](.cursor/rules/cio-report-min-format.mdc) | §1 |
@@ -199,7 +200,6 @@
 | [`evening-reflection-scope.mdc`](.cursor/rules/evening-reflection-scope.mdc) | §(RULES-INDEX行) |
 | [`every-turn-rules-confirm.mdc`](.cursor/rules/every-turn-rules-confirm.mdc) | §(RULES-INDEX行) · §1 · §1-2-3 · §1-2-3-1 · §35-7 · §37-1 · §50-3-11 |
 | [`file-copy-exact-path.mdc`](.cursor/rules/file-copy-exact-path.mdc) | §(RULES-INDEX行) |
-| [`kintone-destructive-rest-guard.mdc`](.cursor/rules/kintone-destructive-rest-guard.mdc) | §(RULES-INDEX行) · §52-8 |
 
 <!-- RULES-INDEX:SECTION-MDC-AUTO:END -->
 

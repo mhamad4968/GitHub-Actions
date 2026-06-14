@@ -3,6 +3,11 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import {
+  LIVE_SCHEMA_EXCLUDED_IDS,
+  LIVE_SCHEMA_MONTHLY_IDS,
+  PORTFOLIO_CUSTOMIZE,
+} from '../cio-portfolio-apps.mjs';
 
 export function loadDotenv(repoRoot) {
   for (const name of ['.env', '.env.proxy']) {
@@ -130,7 +135,71 @@ export const CUSTOMIZE_DIR_TO_APP = {
   'shucccho-seisan': '629',
 };
 
+/** appId → customize ディレクトリ名（registry 優先 → CUSTOMIZE_DIR_TO_APP 逆引き → 数値フォルダ） */
+export function resolveCustomizeDirsForApp(appId, registryMeta) {
+  if (registryMeta?.customizeDirs?.length) return [...registryMeta.customizeDirs];
+  const id = String(appId);
+  for (const [dir, mapped] of Object.entries(CUSTOMIZE_DIR_TO_APP)) {
+    if (mapped === id) return [dir];
+  }
+  return [id];
+}
+
+function portfolioCustomizeDir(root, appId) {
+  const entry = PORTFOLIO_CUSTOMIZE.find((p) => p.id === appId);
+  if (!entry) return null;
+  const dir = path.dirname(entry.rel).replace(/^customize\//, '');
+  return dir || appId;
+}
+
+/** 月次 `--portfolio` 専用 — BUILD 監査 PORTFOLIO + registry 714-717 のみ（全 customize 走査禁止） */
+export function discoverManagedPortfolioApps(root) {
+  const registryPath = path.join(root, 'data/kintone-field-registry.json');
+  let registry = { apps: {} };
+  if (fs.existsSync(registryPath)) {
+    registry = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
+  }
+
+  const apps = [];
+  for (const appId of LIVE_SCHEMA_MONTHLY_IDS) {
+    if (LIVE_SCHEMA_EXCLUDED_IDS.includes(appId)) continue;
+
+    const reg = registry.apps?.[appId];
+    if (reg) {
+      apps.push({
+        appId,
+        customizeDirs: resolveCustomizeDirsForApp(appId, reg),
+        label: reg.label || appId,
+        source: 'registry',
+      });
+      continue;
+    }
+
+    const portfolioDir = portfolioCustomizeDir(root, appId);
+    if (portfolioDir) {
+      apps.push({
+        appId,
+        customizeDirs: [portfolioDir],
+        label: appId,
+        source: 'portfolio',
+      });
+      continue;
+    }
+
+    const numericDir = path.join(root, 'customize', appId);
+    if (fs.existsSync(numericDir)) {
+      apps.push({ appId, customizeDirs: [appId], label: appId, source: 'portfolio-numeric' });
+    }
+  }
+
+  return apps;
+}
+
 export function discoverLiveSchemaApps(root, options = {}) {
+  if (options.portfolio) {
+    return discoverManagedPortfolioApps(root);
+  }
+
   const registryPath = path.join(root, 'data/kintone-field-registry.json');
   const apps = new Map();
 
@@ -139,7 +208,7 @@ export function discoverLiveSchemaApps(root, options = {}) {
     for (const [appId, meta] of Object.entries(registry.apps || {})) {
       apps.set(appId, {
         appId,
-        customizeDirs: meta.customizeDirs || [appId],
+        customizeDirs: resolveCustomizeDirsForApp(appId, meta),
         label: meta.label || appId,
         source: 'registry',
       });
@@ -155,7 +224,7 @@ export function discoverLiveSchemaApps(root, options = {}) {
       if (!hasJs) continue;
       let appId = /^\d+$/.test(name) ? name : CUSTOMIZE_DIR_TO_APP[name];
       if (!appId) continue;
-      if (!options.portfolio && !apps.has(appId) && !options.allCustomize) continue;
+      if (!apps.has(appId) && !options.allCustomize) continue;
       if (!apps.has(appId)) {
         apps.set(appId, { appId, customizeDirs: [name], label: name, source: 'discover' });
       }
@@ -164,8 +233,21 @@ export function discoverLiveSchemaApps(root, options = {}) {
 
   if (options.appFilter) {
     const f = String(options.appFilter);
+    const registry = fs.existsSync(registryPath)
+      ? JSON.parse(fs.readFileSync(registryPath, 'utf8'))
+      : { apps: {} };
+    const reg = registry.apps?.[f];
     if (!apps.has(f)) {
-      apps.set(f, { appId: f, customizeDirs: [f in CUSTOMIZE_DIR_TO_APP ? Object.entries(CUSTOMIZE_DIR_TO_APP).find(([, v]) => v === f)?.[0] || f : f], label: f, source: 'filter' });
+      apps.set(f, {
+        appId: f,
+        customizeDirs: resolveCustomizeDirsForApp(f, reg),
+        label: reg?.label || f,
+        source: 'filter',
+      });
+    } else if (reg) {
+      const entry = apps.get(f);
+      entry.customizeDirs = resolveCustomizeDirsForApp(f, reg);
+      entry.label = reg.label || entry.label;
     }
     for (const [id] of [...apps]) {
       if (id !== f) apps.delete(id);
