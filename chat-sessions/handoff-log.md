@@ -3183,9 +3183,17 @@ npm run cio:morning:ready
 **状態**:
 - App **718/719** — 一覧・編集・A4 印刷（QR）・ヘッダー **(株）J-BISメンテナンス** — **浜田目視 OK**
 - BUILD: 718 rev5 / 719 rev7
-- Excel: 共有パス削除（浜田 PC 控えのみ）
+- Excel: **完全削除済**（2026-06-14 浜田報告）
 - 正本: `docs/reports/2026-06-14-wifi-ssid-completion.md`
 
 **次セッション**: checkpoint 先頭 — **浜田指示待ち**（Space 21 v1 台帳3本 CLOSED）
+
+---
+
+### 2026-06-14 JST — **Wi-Fi 移行元 Excel 完全削除（浜田報告）**
+
+**報告**: 移行元 Excel ファイルを **完全削除**済。
+
+**記録**: SPEC §6.4 / completion / checkpoint / closures を更新。
 
 ---

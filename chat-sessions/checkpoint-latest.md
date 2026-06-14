@@ -35,7 +35,7 @@
 | **判定** | 一覧・編集・A4 印刷（QR 付き）・印刷ヘッダー **(株）J-BISメンテナンス** — **浜田目視 OK** |
 | **BUILD** | 718=`2026-06-14-wifi-ssid-db-block-ui-mutations` rev **5** / 719=`2026-06-14-wifi-ssid-dash-company-jbis` rev **7** |
 | **正本** | `docs/reports/2026-06-14-wifi-ssid-completion.md` |
-| **Excel** | 共有パス削除（浜田 PC 控えのみ） |
+| **Excel** | **完全削除済**（2026-06-14 浜田報告）— kintone 正本のみ |
 | **再開条件** | 浜田 GO + checkpoint「次の1手」更新 + `data/cio-project-closures.json` 解除 |
 
 ---
