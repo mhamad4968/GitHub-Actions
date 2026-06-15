@@ -13,7 +13,7 @@
 | 評価スナップショット本番投入（未設計確認前） | ガイド doc 更新（完成条件外） |
 
 **次の1手**: **浜田指示待ち** — Space 21 台帳 v1 **3本 CLOSED** + Space 34 **JR iPad CLOSED**。**次レーンは浜田 GO + 項番 -0 合意**
-**Git**: **`694c5a4`** = `origin/main` — CI **constitution-gates / kintone-customize-deploy / cursor-env-gates すべて success**
+**Git**: **`71266bd`** = `origin/main` — JR iPad v1 CLOSED push 済
 **R34–R40**: **浜田 GO 反映済** — `docs/approved-changes/2026-06-14-rules-r34-r40-hamada-go.md`
 **作業領域**: C:\ 重複 clone 削除済 / 正本 clone のみ / `verify:windows-canonical-paths` OK
 **Space 21 完了**: **ソフトウエア管理台帳 v1** — App **714/715** — **2026-06-14 浜田目視 OK**
@@ -29,7 +29,19 @@
 **システム推進室ポータル**: **2026-06-11 完了**（712 — 5タブ・15リンク — 浜田 OK）
 **ポータル未着手（手動）**: Space 48 スペース画面へ **712 リンク 1 つ**
 
----
+## セッション切替後の自律復元（圧縮ミラー）
+
+**cold-start 優先**: `docs/handoff/latest-session-bridge.json` + 本ファイル**先頭凍結表** + `.cursor/skills/kintone-session-bootstrap/SKILL.md`  
+**クローズ正本**: `data/cio-project-closures.json` — `npm run verify:checkpoint-project-closure`
+
+**項番 -1**: Desktop **`00-NEW-SESSION-STARTER_yyyymmdd.txt` 全文貼付推奨**（`chat-sessions/NEW-SESSION-STARTER.md` 同内容）  
+**項番 -0**: 浜田 **OK が返るまで** 項番 0・本題の副作用に **着手しない**（§41 一問）  
+**項番 0**: リポルートで **`npm run session:bootstrap`** — **Read より前**に `verify:constitution-handoff` → `mandatory-read-gate.mjs` → `verify:session-clock-health` → `session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync`  
+**項番 0.9**: 合意と checkpoint が食い違うときだけ §41 再確認  
+**0b Desktop**: `C:\Users\mhamada202408224\Desktop\AI緊急用` — `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync` / **`23-AI緊急用-README.txt`**  
+**壁時計**: `SESSION-CLOCK.md` / `SESSION-SPLIT-REMINDER.md` / `session:clock:set` / `session:clock:watch` / `session:split-check`  
+**§35-6 / §35-7 / HANDOFF-AI-FIVE-BLOCKS / TSB-031**: 削除は §35-6 / §41。**日終わり（R17 必須）**: `npm run cio:session:close-git`  
+**詳細履歴**: `chat-sessions/checkpoints/checkpoint-archive-2026-06-15.md`
 
 ---
 
