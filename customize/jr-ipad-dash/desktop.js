@@ -2,7 +2,7 @@
   "use strict";
 
   /** JRシステム用iPad管理台帳 ver.1 — DB REST CRUD + 部署×ステータス集計 + A4印刷 */
-  var BUILD = "2026-06-15-jr-ipad-dash-v1";
+  var BUILD = "2026-06-15-jr-ipad-dash-summary-accordion";
 
   var APP_DB = 720;
   var FIXED_APPLE_PW = "Honten00";
@@ -372,7 +372,10 @@
       ".jip-next-id{font-size:1.35rem;font-weight:700;font-family:Consolas,Monaco,monospace;color:#1e3a8a;}" +
       ".jip-next-action{margin-left:auto;white-space:nowrap;font-size:14px;padding:8px 18px;}" +
       ".jip-readonly-msg{font-size:12px;color:#64748b;margin-left:auto;}" +
-      ".jip-summary-wrap{margin-bottom:14px;overflow:auto;border:1px solid #cbd5e1;border-radius:6px;}" +
+      ".jip-summary-acc{margin-bottom:14px;border:1px solid #cbd5e1;border-radius:6px;background:#f8fafc;}" +
+      ".jip-summary-acc>summary{cursor:pointer;padding:10px 14px;font-size:13px;font-weight:600;color:#334155;user-select:none;}" +
+      ".jip-summary-acc[open]>summary{border-bottom:1px solid #e2e8f0;}" +
+      ".jip-summary-wrap{margin-bottom:0;overflow:auto;border:none;border-radius:0;}" +
       ".jip-summary{border-collapse:collapse;width:100%;font-size:12px;min-width:640px;}" +
       ".jip-summary th,.jip-summary td{border:1px solid #e2e8f0;padding:4px 8px;text-align:center;}" +
       ".jip-summary th{background:#f1f5f9;}" +
@@ -380,7 +383,7 @@
       ".jip-summary tr.jip-summary-total td{font-weight:700;background:#f8fafc;}" +
       ".jip-filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;}" +
       ".jip-filters input,.jip-filters select{padding:6px;font-size:13px;}" +
-      ".jip-table-wrap{overflow:auto;max-height:calc(100vh - 420px);border:1px solid #cbd5e1;border-radius:6px;}" +
+      ".jip-table-wrap{overflow:auto;max-height:calc(100vh - 300px);border:1px solid #cbd5e1;border-radius:6px;}" +
       ".jip-table{border-collapse:collapse;width:100%;font-size:12px;min-width:1400px;}" +
       ".jip-table th,.jip-table td{border:1px solid #e2e8f0;padding:4px 6px;vertical-align:middle;}" +
       ".jip-table th{background:#f1f5f9;position:sticky;top:0;z-index:1;}" +
@@ -934,12 +937,14 @@
       '<button type="button" id="jip-reload" class="kintoneplugin-button-normal">再読込</button>' +
       "</div>" +
       '<div id="jip-meta" class="jip-meta"></div>' +
+      '<details class="jip-summary-acc" id="jip-summary-acc">' +
+      '<summary>管理部署×ステータス集計（必要時のみ開く）</summary>' +
       '<div class="jip-summary-wrap"><table class="jip-summary"><thead><tr>' +
       '<th>管理部署</th>' +
       SUMMARY_COLUMNS.map(function (c) {
         return "<th>" + esc(c) + "</th>";
       }).join("") +
-      "<th>合計</th></tr></thead><tbody id=\"jip-summary-tbody\"></tbody></table></div>" +
+      "<th>合計</th></tr></thead><tbody id=\"jip-summary-tbody\"></tbody></table></div></details>" +
       '<div class="jip-filters">' +
       '<input type="search" id="jip-search" placeholder="端末名・電話・Apple ID・貸出先・モデル・備考" style="min-width:260px">' +
       '<select id="jip-filter-status"><option value="">ステータス: すべて</option>' +

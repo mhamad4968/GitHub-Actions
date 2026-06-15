@@ -272,6 +272,22 @@
       "relPath": "customize/wifi-ssid-dash/desktop.js",
       "deployedAt": "2026-06-14T07:47:12.958Z",
       "note": null
+    },
+    "720": {
+      "build": "2026-06-15-jr-ipad-db-block-ui-mutations",
+      "fileKey": "6a022180-0c57-4992-8f3c-929a93678a0f",
+      "revision": "5",
+      "relPath": "customize/jr-ipad-db/desktop.js",
+      "deployedAt": "2026-06-15T09:28:40.430Z",
+      "note": null
+    },
+    "721": {
+      "build": "2026-06-15-jr-ipad-dash-summary-accordion",
+      "fileKey": "19bee265-36bc-430a-ab2a-786a1f8bcbe5",
+      "revision": "5",
+      "relPath": "customize/jr-ipad-dash/desktop.js",
+      "deployedAt": "2026-06-15T09:36:44.108Z",
+      "note": null
     }
   }
 }
