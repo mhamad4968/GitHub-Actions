@@ -2,7 +2,7 @@
   "use strict";
 
   /** JRシステム用iPad管理台帳 ver.1 — DB REST CRUD + 部署×ステータス集計 + A4印刷 */
-  var BUILD = "2026-06-15-jr-ipad-dash-larger-type";
+  var BUILD = "2026-06-15-jr-ipad-dash-search-clear";
 
   var APP_DB = 720;
   var FIXED_APPLE_PW = "Honten00";
@@ -383,6 +383,7 @@
       ".jip-summary tr.jip-summary-total td{font-weight:700;background:#f8fafc;}" +
       ".jip-filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px;}" +
       ".jip-filters input,.jip-filters select{padding:8px 10px;font-size:15px;}" +
+      ".jip-filter-clear{white-space:nowrap;}" +
       ".jip-table-wrap{overflow:auto;max-height:calc(100vh - 300px);border:1px solid #cbd5e1;border-radius:6px;}" +
       ".jip-table{border-collapse:collapse;width:100%;font-size:15px;min-width:1500px;}" +
       ".jip-table th,.jip-table td{border:1px solid #e2e8f0;padding:6px 8px;vertical-align:middle;line-height:1.45;}" +
@@ -923,6 +924,19 @@
     });
   }
 
+  function clearFilters() {
+    state.search = "";
+    state.filterStatus = "";
+    state.filterDept = "";
+    var search = document.getElementById("jip-search");
+    var statusSel = document.getElementById("jip-filter-status");
+    var deptSel = document.getElementById("jip-filter-dept");
+    if (search) search.value = "";
+    if (statusSel) statusSel.value = "";
+    if (deptSel) deptSel.value = "";
+    renderTable();
+  }
+
   function buildShell() {
     if (document.getElementById("jip-root")) return;
     injectCss();
@@ -947,6 +961,7 @@
       "<th>合計</th></tr></thead><tbody id=\"jip-summary-tbody\"></tbody></table></div></details>" +
       '<div class="jip-filters">' +
       '<input type="search" id="jip-search" placeholder="端末名・電話・Apple ID・貸出先・モデル・備考" style="min-width:260px">' +
+      '<button type="button" id="jip-filter-clear" class="kintoneplugin-button-normal jip-filter-clear">クリア</button>' +
       '<select id="jip-filter-status"><option value="">ステータス: すべて</option>' +
       STATUS_VALUES.map(function (s) {
         return '<option value="' + esc(s) + '">' + esc(s) + "</option>";
@@ -985,6 +1000,12 @@
       state.filterDept = deptSel.value;
       renderTable();
     });
+    var clearBtn = document.getElementById("jip-filter-clear");
+    if (clearBtn) {
+      clearBtn.addEventListener("click", function () {
+        clearFilters();
+      });
+    }
   }
 
   function scheduleMount() {

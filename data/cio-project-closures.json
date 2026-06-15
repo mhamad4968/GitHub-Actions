@@ -41,6 +41,27 @@
         "社内Wi-Fi"
       ],
       "note": "22拠点・一覧・A4印刷・QR・浜田目視 OK。移行元 Excel 完全削除済（2026-06-14 浜田報告）。v2: PC台帳連携・ゲスト Wi-Fi 等"
+    },
+    {
+      "id": "jr-ipad-ledger",
+      "laneId": "jr-ipad-ledger",
+      "label": "JRシステム用 iPad 管理台帳 ver.1",
+      "status": "closed-v1",
+      "closedAt": "2026-06-15",
+      "completionReport": "docs/reports/2026-06-15-jr-ipad-ledger-completion.md",
+      "sessionCloseReport": "chat-sessions/SESSION-CLOSE-REPORT-20260615.txt",
+      "kintoneAppsSection": "JRシステム用 iPad 管理台帳 ver.1（Space 34 — 720–721）",
+      "kintoneAppsStateMarker": "v1 完成",
+      "forbiddenNextTaskPatterns": [
+        "JR iPad",
+        "jr-ipad",
+        "iPad台帳",
+        "iPad 台帳",
+        "720",
+        "721",
+        "JRシステム用iPad"
+      ],
+      "note": "64台・一覧・2系統採番・集計アコーディオン・A4印刷・検索クリア。浜田目視 OK。Excel 運用終了（kintone 正本）。v2: 694連携・674連携等"
     }
   ]
 }

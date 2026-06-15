@@ -1,0 +1,26 @@
+SESSION CLOSE — 2026-06-15 JST（JR システム用 iPad 台帳 720/721 CLOSED）
+（本日成果の要約。明日の作業手順は checkpoint 先頭のみ）
+
+================================================================================
+【本日の成果（事実）】
+================================================================================
+■ Space 34 JR iPad 台帳 v1 — CLOSED（浜田目視 OK）
+  - DB 720 / 台帳 721
+  - 64 台 Excel 移行済
+  - 2 系統採番・集計アコーディオン・A4 印刷
+  - UX: 文字サイズ拡大・検索・絞込クリアボタン
+  - 最終 BUILD: 721 rev8 `2026-06-15-jr-ipad-dash-search-clear`
+
+■ 正本
+  - SPEC: docs/plans/2026-06-15-jr-ipad-ledger-kintone-spec.md
+  - 完成報告: docs/reports/2026-06-15-jr-ipad-ledger-completion.md
+  - closures: data/cio-project-closures.json（jr-ipad-ledger）
+
+================================================================================
+【次セッション】
+================================================================================
+- 朝: npm run cio:morning:ready
+- 第1手: 浜田指示待ち — 項番 -0 で本題合意
+- 参照: chat-sessions/checkpoint-latest.md 先頭
+
+EOF

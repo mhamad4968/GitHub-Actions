@@ -9,6 +9,8 @@
     "storage-media-ledger-dash": "717",
     "wifi-ssid-db": "718",
     "wifi-ssid-dash": "719",
+    "jr-ipad-db": "720",
+    "jr-ipad-dash": "721",
     "shared-mail-db": "695",
     "shared-mail-dash": "696",
     "apple-id-db": "693",
@@ -34,6 +36,11 @@
       "deployFile": "desktop.js",
       "lintFile": "desktop.src.js",
       "bundleNpm": "wifi-ssid:bundle-dash"
+    },
+    "jr-ipad-dash": {
+      "deployFile": "desktop.js",
+      "lintFile": "desktop.src.js",
+      "bundleNpm": "jr-ipad:bundle-dash"
     }
   }
 }

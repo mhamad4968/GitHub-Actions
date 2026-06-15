@@ -3238,3 +3238,25 @@ npm run cio:morning:ready
 **正本**: `docs/approved-changes/2026-06-14-rules-r34-r40-hamada-go.md`
 
 ---
+
+### 2026-06-15 JST — **Plan & Usage 記録催促（CEO 合意）**
+
+**合意**: 浜田から報告がない場合、**CIO が催促してよい**（§1-2-4 補完）。
+
+**実装**: `credit-budget.mjs` — 最終記録から **3 日**で `stale_nudge` / 朝 prep §0a 表示。正本 `docs/runbooks/cursor-plan-usage-watch.md`「記録催促」節。
+
+**課金日**: `reset_day=16`（6/16 リセット）。
+
+---
+
+### 2026-06-15 JST — **JRシステム用 iPad 管理台帳 ver.1 v1 完成（CLOSED）**
+
+**判定**: 一覧・2 系統採番・集計アコーディオン・A4 印刷・検索クリア — **浜田目視 OK**。
+
+**BUILD**: 720=`2026-06-15-jr-ipad-db-block-ui-mutations` rev **5** / 721=`2026-06-15-jr-ipad-dash-search-clear` rev **8**
+
+**正本**: `docs/reports/2026-06-15-jr-ipad-ledger-completion.md` / `docs/plans/2026-06-15-jr-ipad-ledger-kintone-spec.md` / `data/cio-project-closures.json`
+
+**GO待ち**: なし（クローズ）
+
+---
