@@ -23,6 +23,8 @@ function main() {
     'lint:customize',
     'verify:cio-spec-close-git',
     'verify:kintone-customize-path-registry',
+    'verify:constitution-handoff',
+    'verify:checkpoint-archive-tracked',
   ];
   const failed = [];
   for (const s of steps) {
@@ -32,7 +34,7 @@ function main() {
     console.error('[verify:kintone-project-close-gate] NG', failed.join(', '));
     process.exit(1);
   }
-  console.log('[verify:kintone-project-close-gate] OK R36 lint + R24 + R37');
+  console.log('[verify:kintone-project-close-gate] OK R36 lint + R24 + R37 + handoff + archive');
   process.exit(0);
 }
 

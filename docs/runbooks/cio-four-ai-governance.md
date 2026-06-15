@@ -13,7 +13,18 @@
 | ③ | 長文レビュー | Kimi |
 | ④ | 知恵袋 | DeepSeek（§50-3-8） |
 
-## タスクA — Composer silent fallback インターロック
+## 四 AI フォールバック行列（R-2026-06-15-C2）
+
+| 順 | 役割 | 失敗時 | 代替 |
+|----|------|--------|------|
+| 1 | Kimi 長文レビュー | API 429 / overload | DeepSeek 盲点 3 点 + CIO が 694 型既存コード突合 |
+| 2 | DeepSeek §50-3-8 | 未応答 | OpenRouter 要約 1 回 + `logs/cio-four-ai-governance/5038-stamp.json` に skip 理由 |
+| 3 | Composer 実装 | silent fallback 検知 | `npm run cio:guard:composer-interlock` で停止 |
+| 4 | CIO 単独判断 | 上記すべて不可 | **実装着手禁止** — 浜田に「第2者レビュー不可」を 1 行報告 |
+
+**禁止**: Kimi 429 を理由に §50-3-8 をスキップして customize 着手すること。
+
+---
 
 - **検知**: `Switched to Composer` + 正規表現 `Composer\s*2(?:\.5)?`
 - **コマンド**: `npm run cio:guard:composer-interlock`

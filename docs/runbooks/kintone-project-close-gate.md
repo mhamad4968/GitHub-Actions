@@ -13,7 +13,10 @@
 | 2 | **bundle 成果物** | 719 等 bundle 型は `npm run wifi-ssid:bundle-dash` 後、**lint は `desktop.src.js` のみ**（`eslint.config.js` 参照） |
 | 3 | **SPEC 同日 commit** | `npm run verify:cio-spec-close-git`（R24） |
 | 4 | **customize パス registry** | `npm run verify:kintone-customize-path-registry`（R37） |
-| 5 | **クローズ JSON** | `data/cio-project-closures.json` 更新 + `npm run verify:checkpoint-project-closure` |
+| 5 | **憲法 handoff** | `npm run verify:constitution-handoff` |
+| 6 | **checkpoint archive 追跡** | `npm run verify:checkpoint-archive-tracked` |
+| 7 | **クローズ JSON** | `data/cio-project-closures.json` 更新 + `npm run verify:checkpoint-project-closure` |
+| 8 | **一括** | `npm run cio:project:close -- --verify` |
 
 ---
 
@@ -32,7 +35,10 @@
 | ディレクトリ | appId | deploy ファイル | lint 対象 |
 |-------------|-------|-----------------|-----------|
 | `wifi-ssid-db` | 718 | `desktop.js` | `desktop.js` |
-| `wifi-ssid-dash` | 719 | `desktop.js`（bundle） | `desktop.src.js` |
+| `jr-ipad-db` | 720 | `desktop.js` | `desktop.js` |
+| `jr-ipad-dash` | 721 | `desktop.js`（bundle） | `desktop.src.js` |
+
+実装 setup 時は `npm run <lane>:register-registry` で mappings を追記（R-2026-06-15-A3）。
 
 ---
 
@@ -42,7 +48,7 @@
 npm run verify:kintone-project-close-gate
 ```
 
-内訳: `lint:customize` + `verify:cio-spec-close-git` + `verify:kintone-customize-path-registry`
+内訳: `lint:customize` + `verify:cio-spec-close-git` + `verify:kintone-customize-path-registry` + `verify:constitution-handoff` + `verify:checkpoint-archive-tracked`
 
 ---
 

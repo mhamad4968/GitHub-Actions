@@ -23,6 +23,7 @@ on:
       - 'AGENTS.md'
       - 'RULES-INDEX.md'
       - 'chat-sessions/NEW-SESSION-STARTER.md'
+      - 'chat-sessions/checkpoint-latest.md'
       - 'chat-sessions/session-starter-parts/**'
       - 'chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md'
       - 'chat-sessions/desktop-ai-emergency-read-pack/**'

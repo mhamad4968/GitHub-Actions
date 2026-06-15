@@ -1,0 +1,5 @@
+#!/bin/sh
+# pre-push — Node へ委譲（constitution-handoff NG 時は push ブロック）
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT" || exit 1
+exec node scripts/git-hook-pre-push.mjs

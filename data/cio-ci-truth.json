@@ -1,0 +1,28 @@
+{
+  "version": "2026-06-15",
+  "description": "CI 表示とローカル verify の正本定義",
+  "runbook": "docs/runbooks/cio-ci-truth.md",
+  "workflows": {
+    "constitution-gates": {
+      "file": ".github/workflows/constitution-gates.yml",
+      "localVerify": "npm run verify:constitution-handoff",
+      "pathsIncludeCheckpoint": true,
+      "fixOutsidePathsPolicy": "checkpoint-only fix は paths に含めたうえで空コミットまたは registry 同梱 push で再実行"
+    },
+    "kintone-customize-deploy": {
+      "file": ".github/workflows/kintone-customize-deploy.yml",
+      "localVerify": "npm run lint:customize"
+    }
+  },
+  "sessionCloseChecks": [
+    "npm run verify:constitution-handoff",
+    "npm run verify:github-constitution-gates",
+    "npm run verify:session-close-git-warn"
+  ],
+  "projectCloseChecks": [
+    "npm run verify:kintone-project-close-gate",
+    "npm run verify:checkpoint-project-closure",
+    "npm run verify:checkpoint-archive-tracked",
+    "npm run verify:github-constitution-gates"
+  ]
+}

@@ -85,6 +85,20 @@ function main() {
     process.exit(warnOnly ? 0 : 1);
   }
 
+  if (!process.argv.includes('--skip-gh-ci')) {
+    const gh = spawnSync('npm', ['run', 'verify:github-constitution-gates', '--silent'], {
+      cwd: root,
+      encoding: 'utf8',
+      shell: true,
+    });
+    if (gh.status !== 0 && !warnOnly) {
+      process.exit(1);
+    }
+    if (gh.status !== 0 && warnOnly) {
+      console.warn('[verify:session-close-git-warn] WARN github constitution-gates NG');
+    }
+  }
+
   console.log('[verify:session-close-git-warn] OK（未コミットなし・push 済または ahead 0）');
   process.exit(0);
 }
