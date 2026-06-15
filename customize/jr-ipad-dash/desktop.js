@@ -2,7 +2,7 @@
   "use strict";
 
   /** JRシステム用iPad管理台帳 ver.1 — DB REST CRUD + 部署×ステータス集計 + A4印刷 */
-  var BUILD = "2026-06-15-jr-ipad-dash-summary-accordion";
+  var BUILD = "2026-06-15-jr-ipad-dash-larger-type";
 
   var APP_DB = 720;
   var FIXED_APPLE_PW = "Honten00";
@@ -361,39 +361,39 @@
     st.id = "jip-dash-css";
     st.textContent =
       ".gaia-argoui-app-index-recordlist,.recordlist-gaia,.recordlist-norecord-gaia,.contents-gaia .recordlist-header-gaia,.gaia-argoui-app-index-pager{display:none!important;}" +
-      ".jip-root{font-family:Segoe UI,Meiryo,sans-serif;padding:8px 12px 24px;max-width:100%;}" +
-      ".jip-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;}" +
-      ".jip-meta{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;margin-bottom:12px;padding:16px 20px;" +
+      ".jip-root{font-family:Segoe UI,Meiryo,sans-serif;font-size:15px;padding:8px 12px 24px;max-width:100%;}" +
+      ".jip-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px;}" +
+      ".jip-meta{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;margin-bottom:12px;padding:18px 22px;" +
       "background:linear-gradient(135deg,#eff6ff 0%,#dbeafe 100%);border:2px solid #3b82f6;border-radius:12px;" +
       "box-shadow:0 2px 8px rgba(59,130,246,.15);}" +
-      ".jip-meta-count{font-size:13px;color:#475569;font-weight:500;white-space:nowrap;}" +
-      ".jip-next-slot{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;flex:1;min-width:280px;}" +
-      ".jip-next-label{font-size:13px;font-weight:700;color:#1d4ed8;}" +
-      ".jip-next-id{font-size:1.35rem;font-weight:700;font-family:Consolas,Monaco,monospace;color:#1e3a8a;}" +
-      ".jip-next-action{margin-left:auto;white-space:nowrap;font-size:14px;padding:8px 18px;}" +
-      ".jip-readonly-msg{font-size:12px;color:#64748b;margin-left:auto;}" +
+      ".jip-meta-count{font-size:15px;color:#475569;font-weight:500;white-space:nowrap;}" +
+      ".jip-next-slot{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 18px;flex:1;min-width:280px;}" +
+      ".jip-next-label{font-size:15px;font-weight:700;color:#1d4ed8;}" +
+      ".jip-next-id{font-size:1.55rem;font-weight:700;font-family:Consolas,Monaco,monospace;color:#1e3a8a;}" +
+      ".jip-next-action{margin-left:auto;white-space:nowrap;font-size:15px;padding:10px 20px;}" +
+      ".jip-readonly-msg{font-size:14px;color:#64748b;margin-left:auto;}" +
       ".jip-summary-acc{margin-bottom:14px;border:1px solid #cbd5e1;border-radius:6px;background:#f8fafc;}" +
-      ".jip-summary-acc>summary{cursor:pointer;padding:10px 14px;font-size:13px;font-weight:600;color:#334155;user-select:none;}" +
+      ".jip-summary-acc>summary{cursor:pointer;padding:12px 16px;font-size:15px;font-weight:600;color:#334155;user-select:none;}" +
       ".jip-summary-acc[open]>summary{border-bottom:1px solid #e2e8f0;}" +
       ".jip-summary-wrap{margin-bottom:0;overflow:auto;border:none;border-radius:0;}" +
-      ".jip-summary{border-collapse:collapse;width:100%;font-size:12px;min-width:640px;}" +
-      ".jip-summary th,.jip-summary td{border:1px solid #e2e8f0;padding:4px 8px;text-align:center;}" +
+      ".jip-summary{border-collapse:collapse;width:100%;font-size:14px;min-width:640px;}" +
+      ".jip-summary th,.jip-summary td{border:1px solid #e2e8f0;padding:6px 10px;text-align:center;}" +
       ".jip-summary th{background:#f1f5f9;}" +
       ".jip-summary td.jip-dept{text-align:left;font-weight:600;white-space:nowrap;}" +
       ".jip-summary tr.jip-summary-total td{font-weight:700;background:#f8fafc;}" +
-      ".jip-filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;}" +
-      ".jip-filters input,.jip-filters select{padding:6px;font-size:13px;}" +
+      ".jip-filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px;}" +
+      ".jip-filters input,.jip-filters select{padding:8px 10px;font-size:15px;}" +
       ".jip-table-wrap{overflow:auto;max-height:calc(100vh - 300px);border:1px solid #cbd5e1;border-radius:6px;}" +
-      ".jip-table{border-collapse:collapse;width:100%;font-size:12px;min-width:1400px;}" +
-      ".jip-table th,.jip-table td{border:1px solid #e2e8f0;padding:4px 6px;vertical-align:middle;}" +
-      ".jip-table th{background:#f1f5f9;position:sticky;top:0;z-index:1;}" +
+      ".jip-table{border-collapse:collapse;width:100%;font-size:15px;min-width:1500px;}" +
+      ".jip-table th,.jip-table td{border:1px solid #e2e8f0;padding:6px 8px;vertical-align:middle;line-height:1.45;}" +
+      ".jip-table th{background:#f1f5f9;position:sticky;top:0;z-index:1;font-size:14px;}" +
       ".jip-none{color:#64748b;font-style:italic;}" +
-      ".jip-actions button{margin:0 2px;padding:2px 6px;font-size:11px;}" +
+      ".jip-actions button{margin:0 3px;padding:4px 10px;font-size:14px;}" +
       ".jip-modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:10000;display:flex;align-items:center;justify-content:center;}" +
-      ".jip-modal{background:#fff;border-radius:8px;padding:16px 18px;max-width:560px;width:92%;max-height:90vh;overflow:auto;box-shadow:0 8px 30px rgba(0,0,0,.2);}" +
-      ".jip-modal h3{margin:0 0 12px;font-size:16px;}" +
-      ".jip-modal label{display:block;margin:8px 0;font-size:13px;}" +
-      ".jip-modal input,.jip-modal select,.jip-modal textarea{width:100%;box-sizing:border-box;padding:6px;margin-top:4px;}" +
+      ".jip-modal{background:#fff;border-radius:8px;padding:18px 20px;max-width:600px;width:92%;max-height:90vh;overflow:auto;box-shadow:0 8px 30px rgba(0,0,0,.2);font-size:15px;}" +
+      ".jip-modal h3{margin:0 0 14px;font-size:18px;}" +
+      ".jip-modal label{display:block;margin:10px 0;font-size:15px;}" +
+      ".jip-modal input,.jip-modal select,.jip-modal textarea{width:100%;box-sizing:border-box;padding:8px;font-size:15px;margin-top:4px;}" +
       ".jip-modal-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;margin-top:14px;}" +
       ".jip-modal-delete{margin-right:auto;}";
     document.head.appendChild(st);
@@ -825,18 +825,18 @@
       'body{margin:0;padding:24px;background:#f8fafc;font-family:"Noto Sans JP",system-ui,sans-serif;color:#0f172a;-webkit-print-color-adjust:exact;print-color-adjust:exact;}' +
       ".jippr-page{max-width:720px;margin:0 auto;}" +
       ".jippr-header{background:linear-gradient(135deg,#dbeafe 0%,#eff6ff 100%);border:1px solid #cbd5e1;border-radius:16px;padding:28px 32px 24px;margin-bottom:24px;text-align:center;}" +
-      ".jippr-header h1{margin:0;font-size:20pt;font-weight:700;color:#1e3a8a;}" +
+      ".jippr-header h1{margin:0;font-size:22pt;font-weight:700;color:#1e3a8a;}" +
       ".jippr-body{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:24px 28px;box-shadow:0 4px 16px rgba(15,23,42,.06);}" +
       ".jippr-row{margin-bottom:18px;}" +
       ".jippr-row:last-child{margin-bottom:0;}" +
-      ".jippr-lab{display:block;font-size:12pt;font-weight:700;color:#64748b;margin-bottom:6px;}" +
-      ".jippr-val{display:block;font-size:18pt;font-weight:700;line-height:1.4;word-break:break-all;}" +
+      ".jippr-lab{display:block;font-size:13pt;font-weight:700;color:#64748b;margin-bottom:6px;}" +
+      ".jippr-val{display:block;font-size:20pt;font-weight:700;line-height:1.4;word-break:break-all;}" +
       "@media print{@page{size:A4 portrait;margin:10mm;}" +
       "body{padding:0;background:#fff;}" +
       ".jippr-header{border-radius:0;}" +
       ".jippr-body{box-shadow:none;}" +
-      ".jippr-header h1{font-size:18pt;}" +
-      ".jippr-val{font-size:16pt;}}"
+      ".jippr-header h1{font-size:20pt;}" +
+      ".jippr-val{font-size:18pt;}}"
     );
   }
 
@@ -933,7 +933,7 @@
     root.className = "jip-root";
     root.innerHTML =
       '<div class="jip-toolbar">' +
-      "<strong style=\"font-size:16px\">JRシステム用 iPad 管理台帳</strong>" +
+      "<strong style=\"font-size:18px\">JRシステム用 iPad 管理台帳</strong>" +
       '<button type="button" id="jip-reload" class="kintoneplugin-button-normal">再読込</button>' +
       "</div>" +
       '<div id="jip-meta" class="jip-meta"></div>' +

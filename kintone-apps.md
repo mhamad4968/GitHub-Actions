@@ -55,7 +55,7 @@ npm run app:fields <アプリID>
 | 716 | `2026-06-14-storage-media-ledger-db-block-ui-mutations` | **5** | `36e4bdf3-9362-4837-8f53-4135b41084d1` | 2026-06-14 記憶媒体等台帳 DB save/delete ブロック |
 | 717 | `2026-06-14-storage-media-ledger-dash-v1` | **4** | `ed202a45-c53b-4930-bd2e-84d3d084779d` | 2026-06-14 記憶媒体等管理台帳 v1 |
 | 720 | `2026-06-15-jr-ipad-db-block-ui-mutations` | **5** | `6a022180-0c57-4992-8f3c-929a93678a0f` | 2026-06-15 JR iPad DB save/delete ブロック |
-| 721 | `2026-06-15-jr-ipad-dash-summary-accordion` | **5** | `19bee265-36bc-430a-ab2a-786a1f8bcbe5` | 2026-06-15 集計表アコーディオン初期閉じ |
+| 721 | `2026-06-15-jr-ipad-dash-larger-type` | **7** | `3120a50f-730e-4b25-af37-c0176d071dfc` | 2026-06-15 全体文字サイズ拡大 |
 | 701 | `2026-06-08-sn-news-board-v4-digest-labels` | **7** | `313ce558-6a11-4e5c-90b2-85d49426cfa8` | 2026-06-08 SN ニュース掲示板 v4 |
 | 627 | `2026-05-12-627-no594-rest` | 150 | `9fc3efc8-2a22-4585-881f-0ee3c2a0fbf2` | **削除済**（674 移行後・浜田確認 2026-06-10）— 台帳参照用 |
 | 668 | `2026-05-16-668-ops-guide-portfolio-audit` | 42 | `106126f5-7249-4104-8b43-405c85ddfa51` | 2026-05-16 portfolio 拡張・`deploy:668` |
