@@ -1,0 +1,242 @@
+{
+  "properties": {
+    "sort_no": {
+      "type": "NUMBER",
+      "code": "sort_no",
+      "label": "並び順",
+      "required": false,
+      "noLabel": false,
+      "unique": false,
+      "digit": false,
+      "defaultValue": "",
+      "displayScale": "",
+      "unit": "",
+      "unitPosition": "BEFORE"
+    },
+    "status": {
+      "type": "DROP_DOWN",
+      "code": "status",
+      "label": "ステータス",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "待機",
+      "options": {
+        "待機": {
+          "label": "待機",
+          "index": "0"
+        },
+        "貸出中": {
+          "label": "貸出中",
+          "index": "1"
+        },
+        "確認中": {
+          "label": "確認中",
+          "index": "2"
+        },
+        "故障": {
+          "label": "故障",
+          "index": "3"
+        },
+        "廃棄": {
+          "label": "廃棄",
+          "index": "4"
+        }
+      }
+    },
+    "mgmt_dept": {
+      "type": "DROP_DOWN",
+      "code": "mgmt_dept",
+      "label": "管理部署",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "本社": {
+          "label": "本社",
+          "index": "0"
+        },
+        "東北支店": {
+          "label": "東北支店",
+          "index": "1"
+        },
+        "秋田営業所": {
+          "label": "秋田営業所",
+          "index": "2"
+        },
+        "盛岡営業所": {
+          "label": "盛岡営業所",
+          "index": "3"
+        },
+        "仙台営業所": {
+          "label": "仙台営業所",
+          "index": "4"
+        },
+        "関越支店": {
+          "label": "関越支店",
+          "index": "5"
+        },
+        "新潟営業所": {
+          "label": "新潟営業所",
+          "index": "6"
+        },
+        "長野営業所": {
+          "label": "長野営業所",
+          "index": "7"
+        },
+        "高崎営業所": {
+          "label": "高崎営業所",
+          "index": "8"
+        },
+        "東京支店": {
+          "label": "東京支店",
+          "index": "9"
+        },
+        "千葉営業所": {
+          "label": "千葉営業所",
+          "index": "10"
+        },
+        "水戸営業所": {
+          "label": "水戸営業所",
+          "index": "11"
+        },
+        "鎌ヶ谷事務所": {
+          "label": "鎌ヶ谷事務所",
+          "index": "12"
+        },
+        "東海支店": {
+          "label": "東海支店",
+          "index": "13"
+        },
+        "東京営業所": {
+          "label": "東京営業所",
+          "index": "14"
+        },
+        "静岡営業所": {
+          "label": "静岡営業所",
+          "index": "15"
+        },
+        "名古屋営業所": {
+          "label": "名古屋営業所",
+          "index": "16"
+        },
+        "関西営業所": {
+          "label": "関西営業所",
+          "index": "17"
+        },
+        "札幌支店": {
+          "label": "札幌支店",
+          "index": "18"
+        },
+        "首都圏支店": {
+          "label": "首都圏支店",
+          "index": "19"
+        },
+        "鉄構支店": {
+          "label": "鉄構支店",
+          "index": "20"
+        },
+        "湾岸工事所": {
+          "label": "湾岸工事所",
+          "index": "21"
+        }
+      }
+    },
+    "device_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "device_name",
+      "label": "端末名",
+      "required": true,
+      "noLabel": false,
+      "unique": true,
+      "defaultValue": ""
+    },
+    "phone_number": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "phone_number",
+      "label": "電話番号",
+      "required": true,
+      "noLabel": false,
+      "unique": true,
+      "defaultValue": ""
+    },
+    "apple_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "apple_id",
+      "label": "Apple ID",
+      "required": true,
+      "noLabel": false,
+      "unique": false,
+      "defaultValue": ""
+    },
+    "apple_pw": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "apple_pw",
+      "label": "Apple PW",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "Honten00"
+    },
+    "loan_company": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "loan_company",
+      "label": "貸出先会社",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "loan_person": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "loan_person",
+      "label": "貸出先氏名",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "model": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "model",
+      "label": "モデル",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "purchase_date": {
+      "type": "DATE",
+      "code": "purchase_date",
+      "label": "購入日",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "purchase_vendor": {
+      "type": "DROP_DOWN",
+      "code": "purchase_vendor",
+      "label": "購入先",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "au",
+      "options": {
+        "au": {
+          "label": "au",
+          "index": "0"
+        },
+        "ドコモ": {
+          "label": "ドコモ",
+          "index": "1"
+        },
+        "ソフトバンク": {
+          "label": "ソフトバンク",
+          "index": "2"
+        }
+      }
+    },
+    "note": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "note",
+      "label": "備考",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    }
+  }
+}

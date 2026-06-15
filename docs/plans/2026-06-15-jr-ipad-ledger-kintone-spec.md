@@ -1,7 +1,7 @@
 # JRシステム用 iPad 管理台帳 — kintone 仕様書（SPEC）
 
 > **起票**: 2026-06-15 (月)  
-> **状態**: **仕様確定 — §41 完走（Q1–Q26）** / **実装 GO 待ち**（浜田が別途指示）  
+> **状態**: **実装完了 — 浜田目視待ち**（2026-06-15 GO）  
 > **配置**: [Space 34 — JRシステム関連](https://jbis-kintone.cybozu.com/k/#/space/34) / thread **38**  
 > **移行元 Excel**: `C:\tmp\JRシステム用iPad管理台帳\JRシステム用iPad.xlsx`（シート `JRシステム用iPad`・データ **64 台**）  
 > **UI 参照**: [Apple ID 管理台帳 694](https://jbis-kintone.cybozu.com/k/694/) 型（DB 正本 + Dash 一覧表 + REST 書込・**2 系統採番**）  
@@ -96,7 +96,7 @@ Space 34 / thread 38
 | データ | 693 / 714 | **JRシステム用iPad台帳DB** |
 | ダッシュ | 694 / 715 | **JRシステム用iPad管理台帳 ver.1** |
 
-**App ID**: **未割当**（実装 GO 後に採番・`kintone-apps.md` 追記）
+**App ID**: **720**（DB）/ **721**（台帳 ver.1）— `kintone-apps.md` / `scripts/data/jr-ipad-app-ids.json`
 
 ### 4.1 書込経路・単一入り口（694 型）
 
@@ -447,11 +447,11 @@ Wi-Fi 台帳 718/719 の拠点名と **同名・同順**。JR iPad 内では sor
 |------|------|------|
 | M0 | 仕様確定（本書・§41 Q1–Q26） | **済** |
 | M1 | AI チームレビュー | **済**（2026-06-15 — §14） |
-| M2 | 浜田 **実装 GO** | **待ち**（別指示） |
-| M3 | DB + 台帳作成・フィールド deploy | 未 |
-| M4 | Excel 一括移行（64 台） | 未 |
-| M5 | 台帳 customize deploy | 未 |
-| M6 | 浜田目視 OK | 未 |
+| M2 | 浜田 **実装 GO** | **済**（2026-06-15） |
+| M3 | DB + 台帳作成・フィールド deploy | **済**（720 / 721） |
+| M4 | Excel 一括移行（64 台） | **済** |
+| M5 | 台帳 customize deploy | **済** |
+| M6 | 浜田目視 OK | **待ち** |
 
 ---
 
