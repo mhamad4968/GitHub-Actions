@@ -14,7 +14,7 @@
 | 評価スナップショット本番投入（未設計確認前） | ガイド doc 更新（完成条件外） |
 
 **次の1手**: **浜田指示待ち** — Space 48 **VPN 台帳 CLOSED** + Space 21 台帳 v1 **3本 CLOSED** + Space 34 **JR iPad CLOSED**
-**Git**: **`3836e63`** = `origin/main` — VPN 台帳 733/734 v1 CLOSED push 済
+**Git**: **`b53faa8`** = `origin/main` — VPN 台帳 733/734 v1 CLOSED push 済
 **R34–R40**: **浜田 GO 反映済** — `docs/approved-changes/2026-06-14-rules-r34-r40-hamada-go.md`
 **作業領域**: C:\ 重複 clone 削除済 / 正本 clone のみ / `verify:windows-canonical-paths` OK
 **Space 21 完了**: **ソフトウエア管理台帳 v1** — App **714/715** — **2026-06-14 浜田目視 OK**
