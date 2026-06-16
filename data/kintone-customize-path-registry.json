@@ -29,7 +29,9 @@
     "business-improvement-annual": "713",
     "new-pc-ledger-v1": "674",
     "ops-guide": "668",
-    "shucccho-seisan": "629"
+    "shucccho-seisan": "629",
+    "vpn-account-db": "733",
+    "vpn-account-dash": "734"
   },
   "bundlePatterns": {
     "wifi-ssid-dash": {
@@ -41,6 +43,11 @@
       "deployFile": "desktop.js",
       "lintFile": "desktop.src.js",
       "bundleNpm": "jr-ipad:bundle-dash"
+    },
+    "vpn-account-dash": {
+      "deployFile": "desktop.js",
+      "lintFile": "desktop.src.js",
+      "bundleNpm": "vpn-account:bundle-dash"
     }
   }
 }

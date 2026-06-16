@@ -62,6 +62,25 @@
         "JRシステム用iPad"
       ],
       "note": "64台・一覧・2系統採番・集計アコーディオン・A4印刷・検索クリア。浜田目視 OK。Excel 運用終了（kintone 正本）。v2: 694連携・674連携等"
+    },
+    {
+      "id": "vpn-account-ledger",
+      "laneId": "vpn-account-ledger",
+      "label": "VPNアカウント管理台帳（@kensetsutoso.fre）",
+      "status": "closed-v1",
+      "closedAt": "2026-06-17",
+      "completionReport": "docs/reports/2026-06-17-vpn-account-completion.md",
+      "kintoneAppsSection": "VPNアカウント管理台帳（Space 48 — 733–734）",
+      "kintoneAppsStateMarker": "v1 完成",
+      "forbiddenNextTaskPatterns": [
+        "VPNアカウント",
+        "vpn-account",
+        "kensetsutoso.fre",
+        "733",
+        "734",
+        "VPN ID"
+      ],
+      "note": "66件・一覧・採番user080・集計アコーディオン・0口全表示・印刷。浜田目視 OK。v2: PC台帳連携等"
     }
   ]
 }

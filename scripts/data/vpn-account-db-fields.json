@@ -1,0 +1,212 @@
+{
+  "properties": {
+    "record_kind": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "record_kind",
+      "label": "レコード種別",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "next_user_num": {
+      "type": "NUMBER",
+      "code": "next_user_num",
+      "label": "次user番号",
+      "required": false,
+      "noLabel": false,
+      "unique": false,
+      "digit": false,
+      "defaultValue": "",
+      "displayScale": "",
+      "unit": "",
+      "unitPosition": "BEFORE"
+    },
+    "account_label": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "account_label",
+      "label": "アカウント名",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "dept": {
+      "type": "DROP_DOWN",
+      "code": "dept",
+      "label": "所属",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "役員室": {
+          "label": "役員室",
+          "index": "0"
+        },
+        "総務部": {
+          "label": "総務部",
+          "index": "1"
+        },
+        "経理部": {
+          "label": "経理部",
+          "index": "2"
+        },
+        "経営企画部": {
+          "label": "経営企画部",
+          "index": "3"
+        },
+        "システム推進室": {
+          "label": "システム推進室",
+          "index": "4"
+        },
+        "人事研修部": {
+          "label": "人事研修部",
+          "index": "5"
+        },
+        "安全推進部": {
+          "label": "安全推進部",
+          "index": "6"
+        },
+        "施工推進部": {
+          "label": "施工推進部",
+          "index": "7"
+        },
+        "メンテナンス技術部": {
+          "label": "メンテナンス技術部",
+          "index": "8"
+        },
+        "塗装技術部": {
+          "label": "塗装技術部",
+          "index": "9"
+        },
+        "品質管理部": {
+          "label": "品質管理部",
+          "index": "10"
+        },
+        "東北支店": {
+          "label": "東北支店",
+          "index": "11"
+        },
+        "秋田営業所": {
+          "label": "秋田営業所",
+          "index": "12"
+        },
+        "盛岡営業所": {
+          "label": "盛岡営業所",
+          "index": "13"
+        },
+        "仙台営業所": {
+          "label": "仙台営業所",
+          "index": "14"
+        },
+        "関越支店": {
+          "label": "関越支店",
+          "index": "15"
+        },
+        "関越支店施工部": {
+          "label": "関越支店施工部",
+          "index": "16"
+        },
+        "新潟営業所": {
+          "label": "新潟営業所",
+          "index": "17"
+        },
+        "長野営業所": {
+          "label": "長野営業所",
+          "index": "18"
+        },
+        "高崎営業所": {
+          "label": "高崎営業所",
+          "index": "19"
+        },
+        "東京支店": {
+          "label": "東京支店",
+          "index": "20"
+        },
+        "東京支店施工部": {
+          "label": "東京支店施工部",
+          "index": "21"
+        },
+        "東京支店橋りょうリペア部": {
+          "label": "東京支店橋りょうリペア部",
+          "index": "22"
+        },
+        "千葉営業所": {
+          "label": "千葉営業所",
+          "index": "23"
+        },
+        "水戸営業所": {
+          "label": "水戸営業所",
+          "index": "24"
+        },
+        "鎌ヶ谷事務所": {
+          "label": "鎌ヶ谷事務所",
+          "index": "25"
+        },
+        "東海支店": {
+          "label": "東海支店",
+          "index": "26"
+        },
+        "東京営業所": {
+          "label": "東京営業所",
+          "index": "27"
+        },
+        "静岡営業所": {
+          "label": "静岡営業所",
+          "index": "28"
+        },
+        "名古屋営業所": {
+          "label": "名古屋営業所",
+          "index": "29"
+        },
+        "関西営業所": {
+          "label": "関西営業所",
+          "index": "30"
+        },
+        "札幌支店": {
+          "label": "札幌支店",
+          "index": "31"
+        },
+        "鉄構支店": {
+          "label": "鉄構支店",
+          "index": "32"
+        },
+        "湾岸工事所": {
+          "label": "湾岸工事所",
+          "index": "33"
+        }
+      }
+    },
+    "vpn_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "vpn_id",
+      "label": "VPN ID",
+      "required": true,
+      "noLabel": false,
+      "unique": true,
+      "defaultValue": ""
+    },
+    "password": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "password",
+      "label": "パスワード",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "registered_date": {
+      "type": "DATE",
+      "code": "registered_date",
+      "label": "登録日",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "note": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "note",
+      "label": "備考",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    }
+  }
+}
