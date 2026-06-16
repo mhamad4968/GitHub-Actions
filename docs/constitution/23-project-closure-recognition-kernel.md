@@ -19,8 +19,9 @@
 1. 完成サマリー + SESSION-CLOSE-REPORT
 2. `cio-project-closures.json` 登録
 3. checkpoint 先頭 + handoff 末尾更新
-4. `verify:checkpoint-project-closure` → export-handoff → desktop sync
-5. commit / push
+4. 台帳 v1: [`kintone-ledger-v1-closure-checklist.md`](../runbooks/kintone-ledger-v1-closure-checklist.md)（R41）完走
+5. `verify:checkpoint-project-closure` → export-handoff → `cio:session:close-git`（R44 checkpoint Git 同期内包）
+6. commit / push
 
 ### 新セッション・ブリーフィング前
 
@@ -33,6 +34,7 @@
 - クローズ済みプロジェクトを checkpoint の古い「次手」だけで **再開レーン**として報告
 - 締めターンで checkpoint / handoff 未更新のまま SESSION-CLOSE のみ
 - `cio:morning:pre-implement --project <closed>` で compare-83 / 案B1 を再実行
+- **クローズ済みレーン**への `--project` / `--intent` 着手（R47 — `cio:pre-implement-gate` が exit 3）
 - 浜田「完了」と kintone-apps / closures が一致しているのに **AI だけが未完了扱い**を続ける
 
 ## 判定コード

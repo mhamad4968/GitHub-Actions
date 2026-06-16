@@ -1,5 +1,6 @@
 #!/bin/sh
 # pre-push — Node へ委譲（constitution-handoff NG 時は push ブロック）
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-cd "$ROOT" || exit 1
+# R42: git rev-parse --show-toplevel（.git/hooks からの相対パス事故防止）
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+cd "$REPO_ROOT" || exit 0
 exec node scripts/git-hook-pre-push.mjs

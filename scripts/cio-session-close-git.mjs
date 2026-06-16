@@ -19,6 +19,8 @@ import { fileURLToPath } from 'node:url';
 import { isSessionCloseTempPath } from './lib/cio-session-close-temp-paths.mjs';
 import { runNpmScriptSync } from './lib/win-hidden-spawn.mjs';
 import { touchesGovernance } from './lib/cio-governance-touch.mjs';
+import { syncCheckpointGitAfterPush } from './lib/cio-checkpoint-git-sync.mjs';
+import { CHECKPOINT_REL } from './lib/cio-checkpoint-read.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DESKTOP_DIR = process.env.SESSION_STARTER_DESKTOP_DIR || 'C:\\Users\\mhamada202408224\\Desktop\\AI緊急用';
@@ -26,6 +28,7 @@ const DESKTOP_DIR = process.env.SESSION_STARTER_DESKTOP_DIR || 'C:\\Users\\mhama
 const execute = process.argv.includes('--execute');
 const autoStage = process.argv.includes('--auto-stage');
 const skipDesktop = process.argv.includes('--skip-desktop-sync');
+const skipCheckpointGit = process.argv.includes('--skip-checkpoint-git-sync');
 const skipR19 = process.argv.includes('--skip-r19');
 const msgIdx = process.argv.indexOf('--message');
 const message = msgIdx >= 0 ? process.argv[msgIdx + 1] : '';
@@ -198,6 +201,22 @@ function main() {
     process.exit(push.status || 1);
   }
   console.log('[cio:session:close-git] push OK');
+
+  if (!skipCheckpointGit) {
+    const { changed, hash } = syncCheckpointGitAfterPush(root);
+    if (changed && hash) {
+      git(['add', CHECKPOINT_REL]);
+      const cpCommit = git(['commit', '-m', 'chore(checkpoint): sync Git line after close']);
+      if (cpCommit.ok) {
+        const push2 = git(['push', 'origin', 'HEAD']);
+        if (!push2.ok) {
+          console.error('[cio:session:close-git] NG checkpoint Git sync push', push2.err || push2.out);
+          process.exit(push2.status || 1);
+        }
+        console.log(`[cio:session:close-git] checkpoint Git synced → ${hash}`);
+      }
+    }
+  }
 
   if (!runNode('scripts/verify-session-close-git-warn.mjs')) {
     process.exit(1);

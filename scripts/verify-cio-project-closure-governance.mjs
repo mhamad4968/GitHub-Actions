@@ -21,6 +21,8 @@ const FILES = [
   'scripts/cio-briefing-recognition-gate.mjs',
   'scripts/cio-session-close-recognition-gate.mjs',
   'docs/approved-changes/2026-06-13-rules-r19-project-closure-governance-hamada-go.md',
+  'docs/runbooks/kintone-ledger-v1-closure-checklist.md',
+  'docs/approved-changes/2026-06-17-rules-r41-r48-vpn-evening-improvements-hamada-go.md',
 ];
 
 const SCRIPTS = [

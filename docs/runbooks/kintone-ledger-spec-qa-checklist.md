@@ -46,4 +46,6 @@ npm run verify:kintone-ledger-spec-qa
 
 ## 関連
 
+- `docs/plans/_TEMPLATE-kintone-ledger-spec.md`（R46 — 新規 SPEC テンプレ + §UI 受入基準）
+- `docs/runbooks/kintone-ledger-v1-closure-checklist.md`（R41 — v1 CLOSED 時）
 - `creation-timing-ask.mdc` — kintone **作成** GO は SPEC GO の後

@@ -23,6 +23,12 @@
     "npm run verify:kintone-project-close-gate",
     "npm run verify:checkpoint-project-closure",
     "npm run verify:checkpoint-archive-tracked",
-    "npm run verify:github-constitution-gates"
+    "npm run verify:github-constitution-gates",
+    "npm run verify:cio-r41-r48-infra"
+  ],
+  "powershellRunbooks": [
+    "docs/runbooks/windows-governance-ops.md",
+    "docs/runbooks/kintone-ledger-v1-closure-checklist.md",
+    "docs/runbooks/cio-project-closure-governance.md"
   ]
 }

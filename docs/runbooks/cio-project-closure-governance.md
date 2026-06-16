@@ -41,11 +41,14 @@
 6. **lanes 更新** — `data/cio-project-lanes.json` の `status: closed-v1`
 7. **機械検証**（すべて exit 0）:
    ```powershell
+   npm run verify:kintone-project-close-gate
    npm run verify:checkpoint-project-closure
    npm run verify:session-handoff-integrity -- --strict-staleness
    npm run cio:session:close-git -- --execute --auto-stage --message "…"
    ```
-   （`close-git` 内包: R19 pre-commit → commit → **export-handoff（commit 後・gitHead 整合）** → pull --rebase → push → git-warn → **desktop:sync-and-verify**）
+   **台帳 v1 専用 checklist**: [`kintone-ledger-v1-closure-checklist.md`](kintone-ledger-v1-closure-checklist.md)（R41）  
+   **Windows PowerShell 標準形**: [`windows-governance-ops.md`](windows-governance-ops.md)（R48）  
+   （`close-git` 内包: R19 pre-commit → commit → **export-handoff** → pull --rebase → push → **checkpoint `**Git**` 同期（R44）** → git-warn → **desktop:sync-and-verify**）
 
 8. **締め完了** — 上記 `close-git` exit 0 = B1/B4 + R17 Desktop 同期まで完了（GO 待ち禁止）
 

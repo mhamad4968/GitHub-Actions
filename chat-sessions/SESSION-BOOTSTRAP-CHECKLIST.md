@@ -77,6 +77,8 @@
 
 **§50-3-8（憲法・盲点・セッション切替後も再実行）**: 上表の **kintone 作成・フィールド・計算ロジック・複雑 customize** または **`SPEC.md` / `docs/*.md` の仕様変更編集**に**着手する直前**、必ず **DeepSeek** で盲点3点（型／SPEC 乖離／差異ロジック）を抽出し、**直後**に正本と突合した**約3行の突合メモ**をチャットに残す（`AGENTS.md` §50-3-8）。**新チャットに切り替わったら**、前セッションの突合メモだけで済ませず、**同じ作業区分に再入る直前に再度** §50-3-8 を実行する。
 
+**R47（クローズ済みレーン再開ゲート）**: `npm run cio:pre-implement-gate -- --project <lane-id>` または `--intent "作業内容"` — **closed-v1** レーンは exit 3。再開には `data/cio-project-closures.json` 解除 + 浜田 GO。
+
 **Tier B**: `kintone-add-app` / `add-form-fields` / deploy / 本番レコード書込は従来どおり **浜田 GO 後に AI が実行**（§35-1 / §56-1a / TSB-024）。
 
 **仕様確認デイ**: 上の **Read 表 1c.1〜1c.5** と **§50-3-8** は実施。**1c.6**（`creation-timing-ask`）は **「このデイでアプリ作成に着手する場合」**に必須。**終了時**は **`handoff-log.md`** に **確定／未確定**と **次セッション 1 行**（`checkpoint-latest.md` 表の通り）。

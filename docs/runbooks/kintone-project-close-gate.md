@@ -40,6 +40,17 @@
 
 実装 setup 時は `npm run <lane>:register-registry` で mappings を追記（R-2026-06-15-A3）。
 
+### DB+台帳 ID 同期 bundle（R43）
+
+dash が DB を REST 参照するレーンは **bundle 前に APP_DB 同期必須**（0 禁止）。
+
+| レーン | sync | bundle |
+|--------|------|--------|
+| `vpn-account` | `vpn-account-sync-dash-db-id.mjs` | `vpn-account-bundle-dash.mjs` |
+
+テンプレ: `scripts/lib/kintone-sync-dash-db-id.mjs` + `kintone-bundle-dash-with-sync.mjs`  
+scaffold: `npm run kintone:ledger-v1-scaffold -- … --emit-scripts`
+
 ---
 
 ## 機械検査（一括）

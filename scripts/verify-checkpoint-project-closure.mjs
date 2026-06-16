@@ -8,8 +8,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { readCheckpointLastUpdatedDate, readCheckpointNextTask } from './lib/cio-checkpoint-read.mjs';
+import { readCheckpointGitHead } from './lib/cio-checkpoint-git-sync.mjs';
 import { checkClosedProjectNextTask, loadProjectClosures } from './lib/cio-project-closure.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -25,6 +27,18 @@ function main() {
   const nextTask = readCheckpointNextTask(root);
   const nextCheck = checkClosedProjectNextTask(root, nextTask);
   if (!nextCheck.ok) issues.push(...nextCheck.issues);
+
+  const cpGit = readCheckpointGitHead(root);
+  if (cpGit) {
+    const cat = spawnSync('git', ['cat-file', '-t', cpGit], { cwd: root, encoding: 'utf8' });
+    if (cat.status !== 0) {
+      issues.push({
+        code: 'CHECKPOINT_GIT_UNKNOWN',
+        message: `checkpoint Git hash ${cpGit} が git に存在しない`,
+        fix: 'chat-sessions/checkpoint-latest.md の **Git** 行を実在 commit に更新',
+      });
+    }
+  }
 
   const lastUpdated = readCheckpointLastUpdatedDate(root);
   for (const c of closures) {
