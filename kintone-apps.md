@@ -177,6 +177,7 @@ npm run app:fields <アプリID>
 
 | 日時（UTC） | アプリID | customize パス |
 |-------------|----------|----------------|
+| 2026-06-17T13:24:13Z | 595 | `customize/595/desktop.js` |
 | 2026-06-17T12:45:00Z | 595 | `customize/595/desktop.js`（**627 downstream 廃止**・674/714/716 のみ・**BUILD=`2026-06-17-595-drop-627-downstream`** rev **92**） |
 | 2026-06-14T00:01:18Z | 595 | `customize/595/desktop.js` |
 | 2026-06-13T23:16:23Z | 595 | `customize/595/desktop.js` |

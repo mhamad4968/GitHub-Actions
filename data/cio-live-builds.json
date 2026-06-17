@@ -3,10 +3,10 @@
   "apps": {
     "595": {
       "build": "2026-06-17-595-emp-id-auto-assign（新規/未付番保存時に",
-      "fileKey": "6b2cf005-c798-4d08-b08c-49b6c49cd7a0",
-      "revision": "93",
-      "relPath": "customize/595/desktop.js",
-      "deployedAt": "2026-06-17T12:49:51.826Z",
+      "fileKey": "f010d86a-3271-48c1-a557-093e69f1df3e",
+      "revision": "94",
+      "relPath": ".kintone-deploy/upload-595.js",
+      "deployedAt": "2026-06-17T13:24:13.454Z",
       "note": null
     },
     "627": {
