@@ -3260,3 +3260,39 @@ npm run cio:morning:ready
 **GO待ち**: なし（クローズ）
 
 ---
+
+### 2026-06-17 JST — **595 emp_id / 715・717 利用者 UI / PCキッティング BOM**
+
+**595**: 627 連携削除 rev **92** / emp_id 自動付番 + 7件バックフィル rev **93** — **浜田 OK**
+
+**715/717**: 利用者チップ→「社員で絞る」UI（715 rev **13** / 717 rev **8**）— **浜田 OK**
+
+**PCキッティング**: `kitting-run.ps1` + UTF-8 BOM 自動修復 + START.bat 更新 — `templates/pc-kitting/` 正本。キッティング PC へフォルダ丸ごとコピー済。
+
+**（新）キッティングセット**: リポ外 USB 資産。`PCキッティングインストール用\` 配下に配置済 — **②試験は明日**。
+
+**GitHub CI**: `main` **`e0ec691`** — 直近 workflow **success**。本日 kintone/pc-kitting 修正は **未コミット**。
+
+**夕反省**: `docs/reports/2026-06-17-evening-reflection.md` — **R49–R54 浜田 GO 済**
+
+**GO待ち**: なし（R49–R54 反映 commit 予定）
+
+---
+
+### 2026-06-17 JST — **595 emp_id / 715・717 利用者 UI / PCキッティング BOM**
+
+**595**: 627 連携削除 rev **92** / emp_id 自動付番 + 7件バックフィル rev **93** — **浜田 OK**
+
+**715/717**: 利用者チップ→「社員で絞る」UI（715 rev **13** / 717 rev **8**）— **浜田 OK**
+
+**PCキッティング**: `kitting-run.ps1` + UTF-8 BOM 自動修復 + START.bat 更新 — `templates/pc-kitting/` 正本。キッティング PC へフォルダ丸ごとコピー済。
+
+**（新）キッティングセット**: リポ外 USB 資産。`PCキッティングインストール用\` 配下に配置済 — **②試験は明日**。
+
+**GitHub CI**: `main` **`e0ec691`** — 直近 workflow **success**。本日 kintone/pc-kitting 修正は **未コミット**。
+
+**夕反省**: `docs/reports/2026-06-17-evening-reflection.md` — **R49–R54 浜田 GO 済**
+
+**GO待ち**: なし（R49–R54 反映 commit 予定）
+
+---

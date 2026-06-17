@@ -1,4 +1,4 @@
-# UTF-8 / 日本語表示・ログの共通処理（Windows 11 Pro / PowerShell 5.1）
+﻿# UTF-8 / 日本語表示・ログの共通処理（Windows 11 Pro / PowerShell 5.1）
 # kitting-main.ps1 / post-domain-install.ps1 から dot-source
 
 $script:KittingActiveLogFiles674 = @()

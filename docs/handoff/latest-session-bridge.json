@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-06-14T08:33:21.998Z",
-  "gitHead": "22dff86",
-  "gitStatus": "## main...origin/main [ahead 2]",
-  "nextTask": "**浜田指示待ち** — Space 21 台帳 v1 **3本 CLOSED**。**次レーンは浜田 GO + 項番 -0 合意**",
+  "exportedAt": "2026-06-17T12:36:03.191Z",
+  "gitHead": "e0ec691",
+  "gitStatus": "## main...origin/main",
+  "nextTask": "**浜田指示待ち** — Space 48 **VPN 台帳 CLOSED** + Space 21 台帳 v1 **3本 CLOSED** + Space 34 **JR iPad CLOSED**",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -11,6 +11,6 @@
     "docs/handoff/latest-session-bridge.json",
     "docs/knowledge/debug-tips.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=22dff86 | 次=**浜田指示待ち** — Space 21 台帳 v1 **3本 CLOSED**。**次レーンは浜田 GO + 項番 -0 合意** | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, .cursor/rules/mode-b-canonical.mdc",
+  "promptBlock": "【SESSION-BRIDGE】git=e0ec691 | 次=**浜田指示待ち** — Space 48 **VPN 台帳 CLOSED** + Space 21 台帳 v1 **3本 CLOSED** + Space 34 **JR iPad CLOSED** | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, .cursor/rules/mode-b-canonical.mdc",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }

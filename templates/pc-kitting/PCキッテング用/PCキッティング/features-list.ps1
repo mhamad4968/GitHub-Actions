@@ -1,4 +1,4 @@
-# Windows 11 Pro 向け — Windowsの機能（DISM フィーチャー名・画像のチェック状態に準拠）
+﻿# Windows 11 Pro 向け — Windowsの機能（DISM フィーチャー名・画像のチェック状態に準拠）
 # All=$true → dism /all（部分チェックの親＋主要サブ機能）
 $KittingWindowsFeatures = @(
     @{ Name = 'NetFx3';                         Label = '.NET Framework 3.5'; All = $false }

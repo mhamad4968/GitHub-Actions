@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-06-17 JST — **VPN アカウント管理台帳 733/734 v1 CLOSED**
+**最終更新**: 2026-06-17 JST — **595/715/717 運用修正 + PCキッティング BOM 対策**
 
 ## 凍結（毎セッション先頭）
 | 禁止 | 許可 |
@@ -13,8 +13,8 @@
 | 本番 WF 6段階への無断分割 | test_v3 WF 継続テスト |
 | 評価スナップショット本番投入（未設計確認前） | ガイド doc 更新（完成条件外） |
 
-**次の1手**: **浜田指示待ち** — Space 48 **VPN 台帳 CLOSED** + Space 21 台帳 v1 **3本 CLOSED** + Space 34 **JR iPad CLOSED**
-**Git**: **`b53faa8`** = `origin/main` — VPN 台帳 733/734 v1 CLOSED push 済
+**次の1手**: **浜田指示待ち** — PCキッティング **②試験（明日）** / kintone **本日 deploy 分の git 整理**
+**Git**: **`e0ec691`** = `origin/main` — **本日 595/715/717/pc-kitting 修正は未コミット**
 **R34–R40**: **浜田 GO 反映済** — `docs/approved-changes/2026-06-14-rules-r34-r40-hamada-go.md`
 **作業領域**: C:\ 重複 clone 削除済 / 正本 clone のみ / `verify:windows-canonical-paths` OK
 **Space 21 完了**: **ソフトウエア管理台帳 v1** — App **714/715** — **2026-06-14 浜田目視 OK**
@@ -49,6 +49,22 @@
 
 ---
 
+---
+
+## 2026-06-17 JST — **595 emp_id / 715・717 利用者 UI / PCキッティング BOM**
+
+| 項目 | 内容 |
+|------|------|
+| **595** | 627 連携削除 rev **92** / emp_id 自動付番 rev **93** — **浜田 OK** |
+| **715** | emp_id ガード + 利用者チップ→社員検索 rev **13** — **浜田 OK** |
+| **717** | 715 同型利用者絞り込み rev **8** — **浜田 OK** |
+| **PCキッティング** | `kitting-run.ps1` + UTF-8 BOM 修復 + START.bat 更新 — キッティング PC コピー済 |
+| **②インストール** | `（新）キッティングセット` USB 配置済 — **明日試験** |
+| **Git** | working tree **dirty**（deploy 済み・未 push） |
+| **夕反省** | `docs/reports/2026-06-17-evening-reflection.md` — **R49–R54 承認待ち** |
+
+---
+
 ## 2026-06-17 JST — **VPNアカウント管理台帳 v1 完成（クローズ）**
 
 | 項目 | 内容 |
@@ -59,6 +75,7 @@
 | **再開条件** | 浜田 GO + checkpoint「次の1手」更新 + `data/cio-project-closures.json` 解除 |
 
 ---
+
 
 ## 2026-06-15 JST — **JRシステム用 iPad 管理台帳 ver.1 v1 完成（クローズ）**
 
@@ -71,6 +88,7 @@
 | **再開条件** | 浜田 GO + checkpoint「次の1手」更新 + `data/cio-project-closures.json` 解除 |
 
 ---
+
 
 
 ## 2026-06-14 JST — **R34–R40 ガバナンス + ESLint CI 修正（セッション締め）**
@@ -87,6 +105,7 @@
 
 
 
+
 ## 2026-06-14 JST — **社内 Wi-Fi SSID 管理 ver.1 v1 完成（クローズ）**
 
 | 項目 | 内容 |
@@ -98,6 +117,7 @@
 | **再開条件** | 浜田 GO + checkpoint「次の1手」更新 + `data/cio-project-closures.json` 解除 |
 
 ---
+
 
 
 
@@ -117,19 +137,5 @@
 
 
 
-## 2026-06-13 JST — **R19–R33 ミス削減ガバナンス（浜田 GO 反映）**
 
-| 項目 | 内容 |
-|------|------|
-| **承認** | 夕反省 R19–R25 + 新規 R26–R33 **一括 GO** |
-| **正本** | `docs/reports/2026-06-13-evening-reflection.md` / `docs/runbooks/cio-four-ai-governance.md` |
-| **主要** | `session-close-execute-first.mdc`（R23/R26）/ `windows-spawn-flash-triage.md`（R32）/ `kintone-ledger-spec-qa-checklist.md`（R19） |
-| **Git** | `4449977` feat(governance) — **push 済** / `verify:cio-spec-close-git` OK |
-
----
-
-
-
-
-
-<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-06-16.md -->
+<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-06-17.md -->

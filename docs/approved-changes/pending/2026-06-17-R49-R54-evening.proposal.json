@@ -1,0 +1,40 @@
+{
+  "id": "2026-06-17-R49-R54",
+  "created_at": "2026-06-17T21:00:00+09:00",
+  "status": "approved_hamada_go",
+  "approved_at": "2026-06-17T21:30:00+09:00",
+  "go_doc": "docs/approved-changes/2026-06-17-rules-r49-r54-hamada-go.md",
+  "source": "docs/reports/2026-06-17-evening-reflection.md",
+  "items": [
+    {
+      "id": "R49",
+      "title": "kintone アプリ削除時 downstream/registry チェックリスト",
+      "target": "docs/runbooks/kintone-app-retire-checklist.md"
+    },
+    {
+      "id": "R50",
+      "title": "595 emp_id customize 必須 + dash POST 400 ガード",
+      "target": "docs/emp-id-js-account-design.md"
+    },
+    {
+      "id": "R51",
+      "title": "台帳 dash 利用者チップ — 社員検索絞り込みを SPEC 標準化",
+      "target": "docs/plans/2026-06-13-software-ledger-kintone-spec.md"
+    },
+    {
+      "id": "R52",
+      "title": "PCキッティング UTF-8 BOM + kitting-run 配布 runbook",
+      "target": "templates/pc-kitting/README.md"
+    },
+    {
+      "id": "R53",
+      "title": "Windows live-schema UV_HANDLE_CLOSING 回避 runbook",
+      "target": "docs/runbooks/windows-governance-ops.md"
+    },
+    {
+      "id": "R54",
+      "title": "セッション締め — deploy 済み未コミットを 19 レポート必須",
+      "target": "chat-sessions/desktop-ai-emergency-read-pack/20-SESSION-REPORT-CHECKLIST.txt"
+    }
+  ]
+}

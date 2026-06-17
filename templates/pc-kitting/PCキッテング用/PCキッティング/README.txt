@@ -1,4 +1,4 @@
-# PCキッティング（Windows 11 Pro 向け）
+﻿# PCキッティング（Windows 11 Pro 向け）
 
 配置: デスクトップ **`PCキッテング用`** フォルダ内
 
@@ -34,15 +34,38 @@
 デスクトップ\PCキッテング用\
   PCキッティング_START.bat   … 起動用（ここをダブルクリック）
   PCキッティング\
+    kitting-run.ps1          … 起動ブートストラップ（UTF-8 BOM 自動修復 → main 実行）
     kitting-main.ps1
+    kitting-encoding.ps1
     features-list.ps1
     README.txt
+    logs\                    … 実行後に生成（共有用ログ）
 ```
+
+## 起動エラー（Unexpected token / 文字化け / CenterScreen）
+
+**原因**: `.ps1` が **UTF-8 BOM なし**でコピーされると、PowerShell 5.1（日本語 Windows）が
+Shift-JIS として読み込み、日本語文字列内の `"` や `}` が壊れて **構文解析エラー**になります。
+（例: `10遘貞ｾ後↓...` のような文字化け）
+
+**対処**:
+1. リポ `templates\pc-kitting\PCキッテング用\` から **フォルダごと** デスクトップへ上書きコピー
+2. **`PCキッティング_START.bat`** で起動（`kitting-run.ps1` 経由 — 初回に BOM を自動修復）
+3. 開発側で BOM を一括適用する場合: `templates\pc-kitting\add-bom.ps1` を実行
+
+## 起動エラー（'l' / 'ITDIR' / Script not found）
+
+**原因**: 旧版の .bat に日本語パスが直書きされており、UTF-8 BOM なしでコピーすると
+cmd.exe が行を壊して `KITDIR` が空になります。
+
+**対処**: リポ `templates\pc-kitting\PCキッテング用\` から **フォルダごと** デスクトップへ
+上書きコピーし、**ASCII 版** `PCキッティング_START.bat` で再実行してください。
+（サブフォルダ名は `PCキッティング` のままで可 — .bat は中の ps1 を自動検出します）
 
 ## 手動で再起動後フェーズだけ実行
 
 ```powershell
-powershell -ExecutionPolicy Bypass -Sta -File "...\PCキッティング\kitting-main.ps1" -Mode PostReboot
+powershell -ExecutionPolicy Bypass -Sta -File "...\PCキッティング\kitting-run.ps1" -Mode PostReboot
 ```
 
 （管理者 PowerShell）

@@ -1,26 +1,30 @@
-@echo off
-rem PC post-domain install — PCキッティングインストール用 folder (UTF-8 BOM + chcp 65001)
+﻿@echo off
+rem JBIS PC post-domain install launcher (ASCII-only .bat for cmd.exe)
 chcp 65001 >nul 2>&1
 setlocal EnableDelayedExpansion
 
-set "KITDIR=%~dp0PCキッティング"
-set "PSMAIN=%KITDIR%\post-domain-install.ps1"
+set "ROOT=%~dp0"
+set "PSRUN="
 
-if not exist "%PSMAIN%" (
-    echo [ERROR] Script not found:
-    echo   %PSMAIN%
+for /d %%D in ("%ROOT%*") do (
+    if exist "%%~fD\kitting-run.ps1" set "PSRUN=%%~fD\kitting-run.ps1"
+)
+
+if not defined PSRUN (
+    echo [ERROR] Script not found: kitting-run.ps1
+    echo   Looked under: %ROOT%
+    echo   Expected: one subfolder containing kitting-run.ps1
     pause
     exit /b 1
 )
 
-rem Admin check
 net session >nul 2>&1
 if errorlevel 1 (
     powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
     exit /b
 )
 
-powershell -NoProfile -ExecutionPolicy Bypass -Sta -File "%PSMAIN%"
+powershell -NoProfile -ExecutionPolicy Bypass -Sta -File "%PSRUN%"
 set "EC=%ERRORLEVEL%"
 if not "%EC%"=="0" (
     echo.

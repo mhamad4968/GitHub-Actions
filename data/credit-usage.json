@@ -3,8 +3,8 @@
   "budget_usd_total": 1200,
   "budget_usd_l1_credits": 200,
   "budget_usd_l2_on_demand_cap": 1000,
-  "reset_day": 14,
-  "current_period_start": "2026-04-14",
+  "reset_day": 16,
+  "current_period_start": "2026-05-16",
   "daily_records": [
     {
       "date": "2026-04-26",
@@ -47,6 +47,16 @@
       "date": "2026-06-13",
       "percent": 27,
       "recorded_at": "2026-06-13T06:55:23.846+09:00"
+    },
+    {
+      "date": "2026-06-15",
+      "percent": 32,
+      "recorded_at": "2026-06-15T17:25:57.371+09:00"
+    },
+    {
+      "date": "2026-06-16",
+      "percent": 1,
+      "recorded_at": "2026-06-16T19:05:05.154+09:00"
     }
   ]
 }

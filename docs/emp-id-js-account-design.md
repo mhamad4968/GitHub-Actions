@@ -67,6 +67,8 @@ erDiagram
 |------|------|
 | フォーマット | `EMP-[4桁数字]` 例: `EMP-0001` |
 | 付番方式 | 595 の新規保存時に自動採番（最大値+1） |
+| **customize 必須（R50）** | **`customize/595/desktop.js`** の `submit` 時に空 `emp_id` を付番。**バッチのみ**（`scripts/assign-emp-id.mjs`）では不十分 |
+| **Dash ガード（R50）** | 714/716 へ POST する dash（715/717）は **`emp_id` 空なら保存ブロック** + 595 ピッカーに未付番警告 |
 | 格納先 | 595 に `emp_id` フィールドを新設（SINGLE_LINE_TEXT, unique） |
 | 既存データ | 既存社員にも一括付番スクリプトで遡及適用 |
 

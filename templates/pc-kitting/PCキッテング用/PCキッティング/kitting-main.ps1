@@ -1,4 +1,4 @@
-#requires -RunAsAdministrator
+﻿#requires -RunAsAdministrator
 <#
 .SYNOPSIS
   JBIS PCキッティング — Windows 11 Pro 向け
@@ -9,25 +9,24 @@
 #>
 param(
     [ValidateSet('Full', 'PostReboot')]
-    [string]$Mode = 'Full'
+    [string]$Mode = 'Full',
+    [switch]$SkipConfirm
 )
 
-# --- 文字コード ---
-[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-$OutputEncoding = [System.Text.Encoding]::UTF8
-
-# --- パス ---
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+. (Join-Path $ScriptDir 'kitting-encoding.ps1')
+Initialize-KittingEncoding674
+
 $StateRoot = Join-Path $env:ProgramData 'JBIS-PC-Kitting'
-$LogDir = Join-Path $StateRoot 'logs'
 $StateFile = Join-Path $StateRoot 'state.json'
 $RunOnceName = 'JBIS-PC-Kitting-PostReboot'
 $script:KittingSkipDomainJoin674 = $false
 # 社内 Active Directory ドメイン（FQDN）
 $script:KittingDefaultDomain674 = 'kent.local'
 
-New-Item -ItemType Directory -Force -Path $LogDir | Out-Null
-$LogFile = Join-Path $LogDir ("kitting_{0:yyyyMMdd_HHmmss}.log" -f (Get-Date))
+$script:KittingLogInfo674 = Initialize-KittingLogs674 -ScriptDir $ScriptDir -LogPrefix 'kitting' -Title '① ドメイン参加前'
+$LogFile = $script:KittingLogInfo674.Primary
+$script:KittingExitCode674 = 0
 
 # --- UI ---
 Add-Type -AssemblyName System.Windows.Forms
@@ -44,7 +43,7 @@ function Write-KittingLog {
     param([string]$Message)
     $line = '[{0:HH:mm:ss}] {1}' -f (Get-Date), $Message
     $script:LogLines.Add($line)
-    Add-Content -LiteralPath $LogFile -Value $line -Encoding UTF8
+    Write-KittingLogLine674 -Line $line
     if ($script:UiLog) {
         $script:UiLog.AppendText($line + [Environment]::NewLine)
         $script:UiLog.SelectionStart = $script:UiLog.Text.Length
@@ -89,7 +88,7 @@ function Show-KittingProgressForm {
     $tb.Multiline = $true
     $tb.ReadOnly = $true
     $tb.ScrollBars = 'Vertical'
-    $tb.Font = New-Object System.Drawing.Font('Consolas', 9)
+    $tb.Font = Get-KittingUiLogFont674
     $tb.WordWrap = $false
 
     $form.Controls.AddRange(@($lbl, $pb, $tb))
@@ -156,11 +155,14 @@ function Test-KittingOsWin11Pro674 {
 
 function Save-KittingState {
     param([hashtable]$Data)
-    $Data | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $StateFile -Encoding UTF8
+    Write-KittingTextFile674 -Path $StateFile -Content ($Data | ConvertTo-Json -Depth 5)
 }
 
 function Register-PostRebootTask {
-    $psPath = Join-Path $ScriptDir 'kitting-main.ps1'
+    $psPath = Join-Path $ScriptDir 'kitting-run.ps1'
+    if (-not (Test-Path -LiteralPath $psPath)) {
+        $psPath = Join-Path $ScriptDir 'kitting-main.ps1'
+    }
     $cmd = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Sta -WindowStyle Normal -File `"$psPath`" -Mode PostReboot"
     Set-ItemProperty -Path 'HKLM:\Software\Microsoft\Windows\CurrentVersion\RunOnce' -Name $RunOnceName -Value $cmd -Force
     Write-KittingLog '再起動後の自動続行を RunOnce に登録しました。'
@@ -395,6 +397,17 @@ function Show-DomainJoinWizard {
 }
 
 function Start-KittingFull {
+    if (-not $SkipConfirm) {
+        $startConfirm = [System.Windows.Forms.MessageBox]::Show(
+            "PCキッティングを開始しますか？（Windows 11 Pro 向け）`n`n・Windows Update`n・Windows機能の有効化`n・再起動後: PC名変更とドメイン参加",
+            'PCキッティング (Win11 Pro)',
+            [System.Windows.Forms.MessageBoxButtons]::YesNo,
+            [System.Windows.Forms.MessageBoxIcon]::Question)
+        if ($startConfirm -ne [System.Windows.Forms.DialogResult]::Yes) {
+            Write-KittingLog 'ユーザーによりキャンセルされました。'
+            return
+        }
+    }
     if (-not (Test-KittingOsWin11Pro674)) {
         Write-KittingLog 'ユーザーにより OS 確認で中止'
         return
@@ -402,7 +415,8 @@ function Start-KittingFull {
     . (Join-Path $ScriptDir 'features-list.ps1')
     $features = $KittingWindowsFeatures
     Write-KittingLog '=== PCキッティング開始（フル） ==='
-    Write-KittingLog "ログ: $LogFile"
+    Write-KittingLog ('ログ（共有用）: {0}' -f $script:KittingLogInfo674.LocalDir)
+    Write-KittingLog ('ログ（最新）: {0}' -f $script:KittingLogInfo674.Latest)
     Install-KittingWindowsUpdates
     Enable-KittingWindowsFeatures -FeatureDefs $features
     Invoke-KittingRebootPrompt
@@ -442,17 +456,18 @@ try {
     }
 }
 catch {
+    $script:KittingExitCode674 = 1
     Write-KittingLog "致命的エラー: $($_.Exception.Message)"
     [System.Windows.Forms.MessageBox]::Show(
-        $_.Exception.Message,
+        ("エラーが発生しました。`n`n{0}`n`nログ: {1}`n（最新.log を AI に見せてください）" -f $_.Exception.Message, $script:KittingLogInfo674.LocalDir),
         'PCキッティング — エラー',
         [System.Windows.Forms.MessageBoxButtons]::OK,
         [System.Windows.Forms.MessageBoxIcon]::Error) | Out-Null
-    exit 1
 }
 finally {
     if ($script:UiProgress) { $script:UiProgress.Style = 'Continuous'; $script:UiProgress.Value = 100 }
     Set-KittingStatus 'すべての処理が終了しました。ログを確認してください。'
+    Complete-KittingLogs674 -ExitCode $script:KittingExitCode674 -Summary ('Mode={0}' -f $Mode)
 }
 
 # 完了後フォームを閉じるボタン

@@ -3,17 +3,16 @@
 
   /**
    * 595 社員マスタ
+   * BUILD: 2026-06-17-595-emp-id-auto-assign（新規/未付番保存時に EMP-xxxx 自動採番）
    * BUILD: 2026-06-14-595-storage-media-ledger-mirror
    * BUILD: 2026-05-12-595-no594-rest（旧594への REST・リンク廃止・674同期のみ）
    * BUILD: 2026-05-30-595-retire-674-storage（退職→退職日自動・674保管連動）
    * - 一覧: 所属グループ・所属名・社員名のいずれかに部分一致する検索窓（ヘッダスペース）
-   * - 詳細・編集: サブテーブル（新674）とアカウント台帳番号からレコードへのリンクをヘッダ下に表示
-   * - 保存: 在籍=退職かつ退職日空→当日を退職日に設定
-   * - 保存成功後: 627 同期／退職時は 674 を保管＋アカウントクリア＋備考追記／それ以外は 674 所属ミラー
+   * - 詳細・編集: サブテーブル（674）からレコードへのリンクをヘッダ下に表示
+   * - 保存: 在籍=退職かつ退職日空→当日を退職日に設定／**emp_id 空なら EMP-xxxx 自動採番**
+   * - 保存成功後: 退職時は 674 を保管＋アカウントクリア＋備考追記／それ以外は 674・714・716 所属ミラー
    */
 
-  /** アカウント管理台帳（627） */
-  var APP627 = "627";
   /** 新・PC台帳 ver.1（674） */
   var APP674 = "674";
   /** ソフトウエア台帳 DB（714）— 595 所属ミラー */
@@ -29,18 +28,7 @@
   var FC595_GROUP = "group_name";
   var FC595_EMP = "employment_status";
   var FC595_EMP_ID = "emp_id";
-  var FC595_LEDGER_ID = "ledger_record_id";
   var FC595_RETIRED = "retired_date";
-
-  var FC627_MAIL = "mail";
-  var FC627_NAME = "user_name";
-  var FC627_DEPT = "dept_name";
-  var FC627_GROUP = "group_name";
-  var FC627_EMP = "employment_status";
-  var FC627_ACCOUNT_STATE = "account_state";
-  var ACCT_ACTIVE = "有効";
-  var ACCT_RETIRED = "退職";
-  var ACCT_DELETED = "削除";
 
   var FC674_MAIL = "mail";
   var FC674_NAME = "user_name";
@@ -416,7 +404,6 @@
     removePcLedgerLinkBox595();
 
     var ids674 = collectSubtableNumericIds(record, FC595_PC674_SUB, FC595_PC674_ID);
-    var id627 = scalarFrom595(record, FC595_LEDGER_ID).trim();
 
     var space =
       (kintone.app && kintone.app.record && kintone.app.record.getHeaderMenuSpaceElement && kintone.app.record.getHeaderMenuSpaceElement()) ||
@@ -442,7 +429,7 @@
     title.textContent = "PC台帳へのリンク";
     box.appendChild(title);
 
-    var hasAny = ids674.length > 0 || !!id627;
+    var hasAny = ids674.length > 0;
 
     function addLinkRow(label, appId, rid) {
       var row = document.createElement("div");
@@ -459,17 +446,12 @@
     for (var b = 0; b < ids674.length; b++) {
       addLinkRow("新・PC台帳（674）", APP674, ids674[b]);
     }
-    if (id627) {
-      addLinkRow("アカウント台帳（627）", APP627, id627);
-    }
 
     if (!hasAny) {
       var empty = document.createElement("div");
       empty.style.cssText = "color:#6c757d;font-size:12px;";
       empty.textContent =
-        "「" +
-        FC595_PC674_SUB +
-        "」に番号が入るか、アカウント台帳番号が入ると、ここにリンクが表示されます。";
+        "「" + FC595_PC674_SUB + "」に番号が入ると、ここにリンクが表示されます。";
       box.appendChild(empty);
     }
 
@@ -549,6 +531,55 @@
       rec[FC595_RETIRED].value = todayYmd595();
     }
     return event;
+  }
+
+  function parseEmpNum595(raw) {
+    var m = /^EMP-(\d+)$/.exec(String(raw || "").trim());
+    return m ? parseInt(m[1], 10) : 0;
+  }
+
+  /** 全件走査で最大 EMP 番号+1（assign-emp-id.mjs と同ロジック・docs/emp-id-js-account-design.md） */
+  function fetchNextEmpId595() {
+    var maxNum = 0;
+    var offset = 0;
+    var limit = 500;
+
+    function page() {
+      return kintone
+        .api(kintone.api.url("/k/v1/records.json", true), "GET", {
+          app: kintone.app.getId(),
+          query: "order by $id asc limit " + limit + " offset " + offset,
+          fields: [FC595_EMP_ID],
+        })
+        .then(function (resp) {
+          var rows = resp.records || [];
+          for (var i = 0; i < rows.length; i++) {
+            maxNum = Math.max(maxNum, parseEmpNum595(scalarFrom595(rows[i], FC595_EMP_ID)));
+          }
+          if (rows.length < limit) {
+            return "EMP-" + String(maxNum + 1).padStart(4, "0");
+          }
+          offset += limit;
+          return page();
+        });
+    }
+
+    return page();
+  }
+
+  function applyEmpIdOnSubmit595(event) {
+    applyRetiredDateOnSubmit595(event);
+    var rec = event.record;
+    if (!rec[FC595_EMP_ID]) {
+      return event;
+    }
+    if (scalarFrom595(rec, FC595_EMP_ID).trim()) {
+      return event;
+    }
+    return fetchNextEmpId595().then(function (nextId) {
+      rec[FC595_EMP_ID].value = nextId;
+      return event;
+    });
   }
 
   function scalar674FromRow(r, code) {
@@ -765,101 +796,6 @@
         .then(function () {
           return sync671MastersFrom674Retire595(masterIds);
         });
-    });
-  }
-
-  function get627RecordById(id627) {
-    var url = kintone.api.url("/k/v1/record.json", true);
-    return kintone
-      .api(url, "GET", { app: APP627, id: String(id627) })
-      .then(function (resp) {
-        return resp.record || null;
-      })
-      .catch(function () {
-        return null;
-      });
-  }
-
-  function get627RecordByMail(mail) {
-    if (!mail) {
-      return Promise.resolve(null);
-    }
-    var url = kintone.api.url("/k/v1/records.json", true);
-    return kintone
-      .api(url, "GET", {
-        app: APP627,
-        query: FC627_MAIL + ' = "' + escapeForQuery(mail) + '" limit 1',
-        fields: ["$id", "$revision", FC627_ACCOUNT_STATE]
-      })
-      .then(function (resp) {
-        var rows = resp.records || [];
-        if (!rows.length) {
-          return null;
-        }
-        return rows[0];
-      });
-  }
-
-  /** @returns {Promise<object|null>} kintone レコード行（$id/$revision 付き） */
-  function resolve627RowFor595(record) {
-    var mail = scalarFrom595(record, FC595_MAIL).trim();
-    var lid = scalarFrom595(record, FC595_LEDGER_ID).trim();
-    if (lid) {
-      return get627RecordById(lid).then(function (rec) {
-        if (rec && rec.$id) {
-          return rec;
-        }
-        if (mail) {
-          return get627RecordByMail(mail);
-        }
-        return null;
-      });
-    }
-    if (mail) {
-      return get627RecordByMail(mail);
-    }
-    return Promise.resolve(null);
-  }
-
-  function sync627From595(record) {
-    return resolve627RowFor595(record).then(function (row627) {
-      if (!row627 || !row627.$id) {
-        return;
-      }
-      var id627 = row627.$id.value;
-      var rev627 = row627.$revision ? row627.$revision.value : null;
-      return get627RecordById(id627).then(function (fresh) {
-        if (!fresh || !fresh.$id) {
-          return;
-        }
-        rev627 = fresh.$revision ? fresh.$revision.value : rev627;
-        var curState = String((fresh[FC627_ACCOUNT_STATE] && fresh[FC627_ACCOUNT_STATE].value) || "").trim();
-
-        var name = scalarFrom595(record, FC595_NAME);
-        var dept = scalarFrom595(record, FC595_DEPT);
-        var grp = scalarFrom595(record, FC595_GROUP);
-        var emp = scalarFrom595(record, FC595_EMP).trim();
-
-        var patch = {};
-        patch[FC627_NAME] = { value: name };
-        patch[FC627_DEPT] = { value: dept };
-        patch[FC627_GROUP] = { value: grp };
-        if (emp) {
-          patch[FC627_EMP] = { value: emp };
-        }
-        if (curState !== ACCT_DELETED) {
-          patch[FC627_ACCOUNT_STATE] = {
-            value: emp === "退職" ? ACCT_RETIRED : ACCT_ACTIVE
-          };
-        }
-
-        var urlPut = kintone.api.url("/k/v1/record.json", true);
-        var body = { app: APP627, id: id627, record: patch };
-        if (rev627 !== null && rev627 !== undefined && rev627 !== "") {
-          body.revision = rev627;
-        }
-        return kintone.api(urlPut, "PUT", body);
-      });
     });
   }
 
@@ -1112,14 +1048,12 @@
 
   function run595DownstreamSync(record) {
     var emp = scalarFrom595(record, FC595_EMP).trim();
-    return sync627From595(record).then(function () {
-      if (emp === EMP_RETIRED) {
-        return retire674PcsFrom595(record);
-      }
-      return sync674MirrorFrom595(record).then(function () {
-        return syncSoftwareLedgerMirrorFrom595(record).then(function () {
-          return syncStorageMediaLedgerMirrorFrom595(record);
-        });
+    if (emp === EMP_RETIRED) {
+      return retire674PcsFrom595(record);
+    }
+    return sync674MirrorFrom595(record).then(function () {
+      return syncSoftwareLedgerMirrorFrom595(record).then(function () {
+        return syncStorageMediaLedgerMirrorFrom595(record);
       });
     });
   }
@@ -1130,7 +1064,7 @@
     "mobile.app.record.create.submit",
     "mobile.app.record.edit.submit",
   ];
-  kintone.events.on(submitBefore, applyRetiredDateOnSubmit595);
+  kintone.events.on(submitBefore, applyEmpIdOnSubmit595);
 
   var ev = [
     "app.record.create.submit.success",
@@ -1147,7 +1081,7 @@
       .catch(function (e) {
         console.error("[jbis 595 downstream]", e);
         var msg =
-          "社員マスタ保存後の連携（627／674）の一部に失敗しました。権限・ネットワークを確認し、必要なら手動で台帳を更新してください。";
+          "社員マスタ保存後の連携（674／714／716）の一部に失敗しました。権限・ネットワークを確認し、必要なら手動で台帳を更新してください。";
         if (e && e.message) {
           msg += "\n" + e.message;
         }

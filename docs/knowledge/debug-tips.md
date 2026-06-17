@@ -16,6 +16,47 @@
 ---
 
 <!-- CIO-DEBUG-TIPS:AUTO -->
+## [2026-06-17] 595 emp_id 空 → 714/716 POST 400（R50）
+
+**前提**: App **714/716** の `emp_id` は必須。595 に `emp_id` 未付番の社員を dash から POST すると **400 Bad Request**
+**手順**: `customize/595/desktop.js` で submit 時自動付番（`applyEmpIdOnSubmit595`）／715・717 で保存前ガード／既存は `node scripts/assign-emp-id.mjs`
+**禁止**: 設計 doc のみ更新して customize 未 deploy
+**exit**: 595 新規保存で `emp_id` 付与・715 新規登録が 200
+
+## [2026-06-17] Windows live-schema UV_HANDLE_CLOSING（R53）
+
+**前提**: Windows ネイティブ Node で `verify:kintone-live-schema` 後にプロセス異常終了することがある
+**手順**: 出力が OK なら `SKIP_CIO_LIVE_SCHEMA_GUARD=1` で deploy（`docs/runbooks/windows-governance-ops.md`）
+**禁止**: 検証未実施のまま skip
+**exit**: deploy 成功 + kintone-apps BUILD 行更新
+
+## [2026-06-17] セッション解体時知恵ストック
+
+**前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
+**手順**: `npm run desktop:sync-and-verify` → `npm run cio:morning:ready` → `npm run cio:repo:purge-temp -- --apply` — 一時 data / pending proposals / `scripts/tmp-*` 削除`
+**禁止**: customize/deploy 凍結中の無断 save・上位憲法 §50-3-11 非置換違反・本体単独完結
+**exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
+
+<!-- errors: npm run desktop:sync-and-verify` | npm run cio:morning:ready | npm run cio:repo:purge-temp -- --apply` — 一時 data / pending proposals / `scripts -->
+
+## [2026-06-16] セッション解体時知恵ストック
+
+**前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
+**手順**: `npm run desktop:sync-and-verify` → `npm run cio:morning:ready` → `npm run cio:repo:purge-temp -- --apply` — 一時 data / pending proposals / `scripts/tmp-*` 削除`
+**禁止**: customize/deploy 凍結中の無断 save・上位憲法 §50-3-11 非置換違反・本体単独完結
+**exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
+
+<!-- errors: npm run desktop:sync-and-verify` | npm run cio:morning:ready | npm run cio:repo:purge-temp -- --apply` — 一時 data / pending proposals / `scripts -->
+
+## [2026-06-15] セッション解体時知恵ストック
+
+**前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
+**手順**: `npm run desktop:sync-and-verify` → `npm run cio:morning:ready` → `npm run cio:repo:purge-temp -- --apply` — 一時 data / pending proposals / `scripts/tmp-*` 削除`
+**禁止**: customize/deploy 凍結中の無断 save・上位憲法 §50-3-11 非置換違反・本体単独完結
+**exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
+
+<!-- errors: npm run desktop:sync-and-verify`（checkpoint 更新後） | npm run desktop:sync-and-verify` | npm run cio:morning:ready -->
+
 ## [2026-06-14] セッション解体時知恵ストック
 
 **前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出

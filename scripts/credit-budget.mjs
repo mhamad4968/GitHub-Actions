@@ -29,6 +29,8 @@ const REPO_ROOT = path.resolve(path.dirname(__filename), '..');
 const DATA_DIR = path.join(REPO_ROOT, 'data');
 const USAGE_FILE = path.join(DATA_DIR, 'credit-usage.json');
 const HISTORY_FILE = path.join(DATA_DIR, 'credit-usage-history.jsonl');
+/** §1-2-4 — 最終記録からこの日数以上で CIO が浜田へ Plan & Usage 共有を催促（2026-06-15 CEO 合意） */
+const STALE_RECORD_DAYS = 3;
 
 const DEFAULT_STATE = {
   schema_version: 1,
@@ -201,6 +203,29 @@ function cmdSet(pct) {
   }
 }
 
+function deriveStaleNudge(latest, todayJst) {
+  if (!latest) {
+    return {
+      days_since_last_record: null,
+      stale: true,
+      stale_threshold_days: STALE_RECORD_DAYS,
+      nudge:
+        'Plan & Usage のスクショまたは Total% をチャットに送ってください（CIO が credit:set まで実行します）',
+    };
+  }
+  const lastDate = jstIsoDateToDate(latest.date);
+  const days = daysBetween(lastDate, todayJst);
+  const stale = days >= STALE_RECORD_DAYS;
+  return {
+    days_since_last_record: days,
+    stale,
+    stale_threshold_days: STALE_RECORD_DAYS,
+    nudge: stale
+      ? `最終記録から ${days} 日経過 — Plan & Usage スクショまたは Total% を1行で送付ください（§1-2-4・CIO が記録）`
+      : null,
+  };
+}
+
 function cmdStatus(asJson = false) {
   const state = loadState();
   const records = state.daily_records || [];
@@ -214,6 +239,7 @@ function cmdStatus(asJson = false) {
     ? jstIsoDateToDate(state.current_period_start)
     : (state.reset_day ? computeCurrentPeriodStart(state.reset_day) : null);
   const exhaustion = predictExhaustionDate(records, periodStart);
+  const staleInfo = deriveStaleNudge(latest, todayJst);
   const result = {
     latest_percent: pct,
     latest_date: latest ? latest.date : null,
@@ -230,6 +256,10 @@ function cmdStatus(asJson = false) {
     predicted_exhaustion_date: exhaustion ? dateToJstIsoDate(exhaustion) : null,
     records_count: records.length,
     advice: deriveAdvice(w.level, pct, nextReset, exhaustion, todayJst),
+    days_since_last_record: staleInfo.days_since_last_record,
+    stale_record: staleInfo.stale,
+    stale_threshold_days: staleInfo.stale_threshold_days,
+    stale_nudge: staleInfo.nudge,
     timezone: 'JST (UTC+9)',
   };
   if (asJson) {
@@ -244,6 +274,9 @@ function cmdStatus(asJson = false) {
   if (nextReset) console.log(`- 次回リセット: ${dateToJstIsoDate(nextReset)} (残 ${remainingDays} 日)`);
   if (exhaustion) console.log(`- 線形回帰予測 枯渇日: ${dateToJstIsoDate(exhaustion)} ${exhaustion < nextReset ? '⚠️ リセット日より前' : 'OK'}`);
   if (result.advice) console.log(`- AI 助言: ${result.advice}`);
+  if (staleInfo.stale && staleInfo.nudge) {
+    console.log(`- 📣 記録催促 (§1-2-4): ${staleInfo.nudge}`);
+  }
   console.log(`- 履歴件数: ${records.length} 日分`);
 }
 

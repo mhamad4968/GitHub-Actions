@@ -197,6 +197,9 @@ if (rCredit.ok && rCredit.stdout) {
       creditAdvice = c.advice;
     }
     sections.push(`- 履歴件数: ${c.records_count} 日分`);
+    if (c.stale_record && c.stale_nudge) {
+      sections.push(`- 📣 **記録催促 (§1-2-4 / CEO 2026-06-15)**: ${c.stale_nudge}`);
+    }
     if (c.warning_level === 'critical' || c.warning_level === 'warn') creditWarn = c;
   } catch (e) {
     sections.push(`- ⚠️ credit-budget JSON 解析エラー: ${e.message}`);

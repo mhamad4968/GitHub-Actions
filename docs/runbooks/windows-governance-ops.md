@@ -66,6 +66,22 @@ pre-push は `git rev-parse --show-toplevel` でリポ root を解決（`.git/ho
 
 ---
 
+## live-schema guard — Windows UV クラッシュ（R53）
+
+**症状**: `npm run verify:kintone-live-schema` が **OK 表示後**に Node が `UV_HANDLE_CLOSING` で落ちる（Windows 固有）。
+
+**回避（deploy 時）**:
+
+```powershell
+$env:SKIP_CIO_LIVE_SCHEMA_GUARD = "1"
+npm run deploy:715
+Remove-Item Env:SKIP_CIO_LIVE_SCHEMA_GUARD
+```
+
+**条件**: 手動で live-schema が OK であることを確認済みであること。チャットに **skip 理由と appId** を残す（R15 証跡）。
+
+---
+
 ## 緊急 push（constitution-handoff NG 時のみ）
 
 ```powershell

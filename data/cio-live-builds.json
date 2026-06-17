@@ -2,11 +2,11 @@
   "version": 1,
   "apps": {
     "595": {
-      "build": "2026-06-14-595-storage-media-ledger-mirror",
-      "fileKey": "f31c5f6b-251d-4d91-852f-78586d6075f2",
-      "revision": "91",
-      "relPath": ".kintone-deploy/upload-595.js",
-      "deployedAt": "2026-06-14T00:01:18.036Z",
+      "build": "2026-06-17-595-emp-id-auto-assign（新規/未付番保存時に",
+      "fileKey": "6b2cf005-c798-4d08-b08c-49b6c49cd7a0",
+      "revision": "93",
+      "relPath": "customize/595/desktop.js",
+      "deployedAt": "2026-06-17T12:49:51.826Z",
       "note": null
     },
     "627": {
@@ -234,11 +234,11 @@
       "note": null
     },
     "715": {
-      "build": "2026-06-16-software-ledger-id-kind-query-in",
-      "fileKey": "134e450e-1417-4632-95b7-ea50eb171fd7",
-      "revision": "11",
+      "build": "2026-06-17-software-ledger-user-filter-compact",
+      "fileKey": "995b8658-e960-4d39-81de-ca1f61a4fa44",
+      "revision": "13",
       "relPath": "customize/software-ledger-dash/desktop.js",
-      "deployedAt": "2026-06-16T10:11:48.731Z",
+      "deployedAt": "2026-06-17T12:52:54.154Z",
       "note": null
     },
     "716": {
@@ -250,11 +250,11 @@
       "note": null
     },
     "717": {
-      "build": "2026-06-14-storage-media-ledger-dash-v1",
-      "fileKey": "ed202a45-c53b-4930-bd2e-84d3d084779d",
-      "revision": "4",
+      "build": "2026-06-17-storage-media-ledger-user-filter-compact",
+      "fileKey": "0bfa4bc3-b65c-418e-9687-d6a53a9fb04f",
+      "revision": "8",
       "relPath": "customize/storage-media-ledger-dash/desktop.js",
-      "deployedAt": "2026-06-13T23:54:14.784Z",
+      "deployedAt": "2026-06-17T12:54:22.955Z",
       "note": null
     },
     "718": {

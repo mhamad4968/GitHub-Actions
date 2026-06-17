@@ -1,4 +1,4 @@
-#requires -RunAsAdministrator
+﻿#requires -RunAsAdministrator
 <#
 .SYNOPSIS
   ドメイン参加後 — プログラムインストール・アイコン配置（Windows 11 Pro）

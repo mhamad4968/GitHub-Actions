@@ -4,7 +4,7 @@
   /** ソフトウエア管理台帳ver.1 — REST CRUD（694 型） */
   var APP_DB = 714;
   var APP_EMPLOYEE = 595;
-  var BUILD = "2026-06-14-software-ledger-dash-sw-info-label";
+  var BUILD = "2026-06-17-software-ledger-user-filter-compact";
 
   var STATUS_ACTIVE = "利用中";
   var STATUS_RETIRED = "廃止";
@@ -386,10 +386,16 @@
       btn.className = "swl-e595-item";
       btn.textContent =
         un +
-        (emp ? "（" + emp + "）" : "") +
+        (emp ? "（" + emp + "）" : "（⚠ 社員番号未付番）") +
         (dept ? "　／　" + dept : "") +
         (grp ? "　（" + grp + "）" : "");
       btn.addEventListener("click", function () {
+        if (!String(emp || "").trim()) {
+          alert(
+            "この社員には社員管理番号（emp_id）がありません。\n595 社員マスタで一度「保存」して番号を付与してから、再度社員検索してください。",
+          );
+          return;
+        }
         if (state.emp595PickCallback) {
           state.emp595PickCallback({
             emp_id: emp,
@@ -502,10 +508,11 @@
     var k = escapeQueryValue(kind);
     var v = escapeQueryValue(String(value || "").trim());
     if (!k || !v) return "";
+    // DROP_DOWN は kintone クエリで = 不可 → in を使用（CB_IL02）
     var parts = [
-      '(id_kind_1 = "' + k + '" and id_value_1 = "' + v + '")',
-      '(id_kind_2 = "' + k + '" and id_value_2 = "' + v + '")',
-      '(id_kind_3 = "' + k + '" and id_value_3 = "' + v + '")',
+      '(id_kind_1 in ("' + k + '") and id_value_1 = "' + v + '")',
+      '(id_kind_2 in ("' + k + '") and id_value_2 = "' + v + '")',
+      '(id_kind_3 in ("' + k + '") and id_value_3 = "' + v + '")',
     ];
     var q = "(" + parts.join(" or ") + ")";
     if (excludeId) q += " and $id != " + Number(excludeId);
@@ -696,6 +703,12 @@
       alert("社員検索で利用者を選択してください");
       return;
     }
+    if (!String(emp.emp_id || "").trim()) {
+      alert(
+        "社員管理番号（emp_id）が空のため保存できません。595 社員マスタで該当社員を保存して番号を付与してから、再度お試しください。",
+      );
+      return;
+    }
     var slotFields = slotsToRowFields(slots);
     var payload = {
       license_type: licenseType,
@@ -768,7 +781,15 @@
       })
       .catch(function (e) {
         if (String(e.message || e) === "cancelled") return;
-        alert("保存失敗: " + (e.message || e));
+        var detail = e.message || String(e);
+        if (e.errors) {
+          try {
+            detail += "\n" + JSON.stringify(e.errors);
+          } catch (ignore) {
+            /* noop */
+          }
+        }
+        alert("保存失敗: " + detail);
       });
   }
 
@@ -785,6 +806,8 @@
       ".swl-chip{padding:4px 10px;border-radius:999px;border:1px solid #cbd5e1;background:#fff;font-size:12px;cursor:pointer;}" +
       ".swl-chip--active{background:#0369a1;color:#fff;border-color:#0369a1;}" +
       ".swl-chip-label{font-size:12px;font-weight:700;color:#475569;margin-right:4px;}" +
+      ".swl-chip-hint{font-size:12px;color:#64748b;margin-right:6px;}" +
+      ".swl-user-filter-btn{margin-left:4px;padding:4px 10px;font-size:12px;}" +
       ".swl-table-wrap{overflow:auto;max-height:calc(100vh - 300px);border:1px solid #cbd5e1;border-radius:6px;}" +
       ".swl-table{border-collapse:collapse;width:100%;font-size:12px;min-width:1400px;}" +
       ".swl-table th,.swl-table td{border:1px solid #e2e8f0;padding:4px 6px;vertical-align:middle;}" +
@@ -955,21 +978,25 @@
           );
         })
         .join("");
-    userEl.innerHTML =
-      '<span class="swl-chip-label">利用者:</span>' +
-      users
-        .map(function (u) {
-          return (
-            '<button type="button" class="swl-chip' +
-            (state.userFilter === u ? " swl-chip--active" : "") +
-            '" data-user="' +
-            esc(u) +
-            '">' +
-            esc(u) +
-            "</button>"
-          );
-        })
-        .join("");
+    var userHtml = '<span class="swl-chip-label">利用者:</span>';
+    if (state.userFilter) {
+      userHtml +=
+        '<button type="button" class="swl-chip swl-chip--active" data-user-clear="1" title="クリックで解除">' +
+        esc(state.userFilter) +
+        " ×</button>";
+    } else {
+      userHtml +=
+        '<span class="swl-chip-hint">未選択（全員表示）</span>';
+    }
+    userHtml +=
+      '<button type="button" id="swl-user-pick-filter" class="kintoneplugin-button-normal swl-user-filter-btn">社員で絞る</button>';
+    if (users.length) {
+      userHtml +=
+        '<span class="swl-chip-hint">（登録 ' +
+        users.length +
+        " 名）</span>";
+    }
+    userEl.innerHTML = userHtml;
     deptEl.querySelectorAll("[data-dept]").forEach(function (btn) {
       btn.addEventListener("click", function () {
         var v = btn.getAttribute("data-dept");
@@ -978,14 +1005,26 @@
         renderTable();
       });
     });
-    userEl.querySelectorAll("[data-user]").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        var v = btn.getAttribute("data-user");
-        state.userFilter = state.userFilter === v ? "" : v;
+    var clearUserBtn = userEl.querySelector("[data-user-clear]");
+    if (clearUserBtn) {
+      clearUserBtn.addEventListener("click", function () {
+        state.userFilter = "";
         renderChips();
         renderTable();
       });
-    });
+    }
+    var pickUserBtn = document.getElementById("swl-user-pick-filter");
+    if (pickUserBtn) {
+      pickUserBtn.addEventListener("click", function () {
+        openEmp595Picker(function (emp) {
+          var name = String(emp.user_name || "").trim();
+          if (!name) return;
+          state.userFilter = name;
+          renderChips();
+          renderTable();
+        });
+      });
+    }
   }
 
   function updateSortHeaders() {

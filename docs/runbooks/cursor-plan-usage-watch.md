@@ -25,6 +25,19 @@ Plan & Usage スクリーンショットを浜田が共有したとき、CIO が
 3. 閾値内: 「OK — 対応不要」と 1 行
 4. **夕反省 26 には書かない**（運用監視のみ。ミス削減案が出た場合のみ 26 へ）
 
+## 記録催促（2026-06-15 CEO 合意）
+
+浜田から Plan & Usage の報告がないとき、**CIO（AI チーム）が催促してよい**。
+
+| 条件 | アクション |
+|------|------------|
+| 最終 `credit:set` から **3 日以上**（`credit-budget.mjs` の `STALE_RECORD_DAYS`） | 朝 prep §0a・セッション先頭・締め前のいずれかで **1 行催促** |
+| 未記録（`latest_percent === null`） | 同上 |
+| 催促の内容 | 「Plan & Usage スクショまたは Total% を送付ください」— **`npm run credit:set` は CIO が実行**（§35-1） |
+| 頻度 | **同一セッションで 1 回**まで（うるさくしない）。翌日以降また 3 日超なら再催促 |
+
+機械ゲート: `npm run credit:status -- --json` の `stale_record` / `stale_nudge` を参照。
+
 ## 関連
 
 - `docs/constitution/20-cost-token-defense-kernel.md`
