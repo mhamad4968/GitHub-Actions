@@ -14,7 +14,7 @@
 | 評価スナップショット本番投入（未設計確認前） | ガイド doc 更新（完成条件外） |
 
 **次の1手**: **浜田指示待ち** — PCキッティング **②試験（明日）** / kintone **本日 deploy 分の git 整理**
-**Git**: **`661e669`** = `origin/main` — 595/715/717/pc-kitting + R49–R54 GO push 済
+**Git**: **`0c51c94`** = `origin/main` — 595/715/717/pc-kitting + R49–R54 GO push 済
 **R34–R40**: **浜田 GO 反映済** — `docs/approved-changes/2026-06-14-rules-r34-r40-hamada-go.md`
 **作業領域**: C:\ 重複 clone 削除済 / 正本 clone のみ / `verify:windows-canonical-paths` OK
 **Space 21 完了**: **ソフトウエア管理台帳 v1** — App **714/715** — **2026-06-14 浜田目視 OK**
