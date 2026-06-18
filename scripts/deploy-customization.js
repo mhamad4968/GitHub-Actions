@@ -131,9 +131,9 @@ for (let i = 0; i < 60; i++) {
     if (sync.stdout) process.stdout.write(sync.stdout);
     if (sync.stderr) process.stderr.write(sync.stderr);
     const syncOut = `${sync.stdout || ''}${sync.stderr || ''}`;
-    if (syncOut.includes('R15 WARN')) {
+    if (syncOut.includes('R15 WARN') || syncOut.includes('R21')) {
       console.warn(
-        '[deploy-customization] ⚠️ R15: kintone-apps.md 未登録 — セッション締め前に台帳行を追加すること',
+        '[deploy-customization] ⚠️ R15/R21: kintone-apps.md 未登録または機械表未同期 — セッション締め前に台帳を更新（verify:cio-deploy-ledger-gate）',
       );
     }
     process.exit(0);

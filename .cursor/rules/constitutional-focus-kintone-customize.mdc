@@ -12,6 +12,8 @@ alwaysApply: false
 - **§50-3-8** — DeepSeek ＋ 約 3 行突合、または **`§50-3-8 スキップ理由:`** 1 行。
 - **§52 / Tier B** — 本番書込・`deploy:*` は **浜田 GO** 後も **実行は AI**（TSB-024）。
 - **`kintone-apps.md`** — 触るアプリ ID の単一の真（§2）。
+- **R21（2026-06-18 GO）** — `deploy:*` 成功後は `verify:cio-deploy-ledger-gate` + `sync:kintone-apps-build`。`.cursor/rules/cio-deploy-ledger-gate.mdc`
+- **R23（2026-06-18 GO）** — Excel UI（688/736 型）は **`desktop.ui.js` + build** のみ編集。`docs/runbooks/excel-ui-customize-two-stage.md`
 
 ## R-17（浜田 CEO 2026-05-16 全承認 GO）
 

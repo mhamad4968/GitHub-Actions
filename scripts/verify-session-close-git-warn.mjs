@@ -99,6 +99,20 @@ function main() {
     }
   }
 
+  if (!process.argv.includes('--skip-deploy-ledger')) {
+    const ledger = spawnSync('npm', ['run', 'verify:cio-deploy-ledger-gate', '--silent'], {
+      cwd: root,
+      encoding: 'utf8',
+      shell: true,
+    });
+    if (ledger.status !== 0 && !warnOnly) {
+      process.exit(1);
+    }
+    if (ledger.status !== 0 && warnOnly) {
+      console.warn('[verify:session-close-git-warn] WARN deploy ledger gate NG（R21）');
+    }
+  }
+
   console.log('[verify:session-close-git-warn] OK（未コミットなし・push 済または ahead 0）');
   process.exit(0);
 }

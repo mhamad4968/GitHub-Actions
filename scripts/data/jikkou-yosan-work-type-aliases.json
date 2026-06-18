@@ -1,0 +1,12 @@
+{
+  "_meta": {
+    "purpose": "総括表の工種名 ↔ M735 work_type_name の表示エイリアス（正本）",
+    "approved": "2026-06-18 浜田 GO（提案 D → R24）",
+    "master_app": 735,
+    "seed_ref": "scripts/data/jikkou-yosan-master-seed.json の work_type_name 列"
+  },
+  "work_type_app_to_master": {
+    "修繕工事": "（塗）修繕等工事",
+    "塗装附帯工事": "（塗）塗装付帯工事"
+  }
+}

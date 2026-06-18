@@ -171,21 +171,30 @@
 | `scripts/jikkou-yosan-excel-cost-layout.mjs` | Excel 罫線・グループ・コード表ルール |
 | `scripts/jikkou-yosan-build-desktop.mjs` | UI+calc → `desktop.js` |
 | `scripts/data/jikkou-yosan-default-cost-template.json` | 新規レコード原価行テンプレ |
+| `scripts/data/jikkou-yosan-work-type-aliases.json` | 工種名エイリアス正本（R24 — build 注入） |
 | `C:\tmp\実行予算書\実行予算書　書式.xls` | レイアウト・計行・罫線の Excel 正 |
 
-### 9.5 デプロイ手順
+### 9.5 デプロイ・説明前（R21–R24）
+
+| ID | 内容 | コマンド / Runbook |
+|----|------|-------------------|
+| **R21** | deploy 後 **registry + kintone-apps 機械表** 同期 — 締め前 gate | `npm run verify:cio-deploy-ledger-gate` |
+| **R22** | 担当説明前 3 点（§9 + gate + 超リロード） | `npm run jikkou-yosan:pre-demo-gate` / `docs/runbooks/excel-ui-pre-demo-checklist.md` |
+| **R23** | **desktop.ui.js + build** 二段構成 — `desktop.js` 直編集禁止 | `docs/runbooks/excel-ui-customize-two-stage.md` |
+| **R24** | 工種エイリアスは seed JSON 正本 | `scripts/data/jikkou-yosan-work-type-aliases.json` |
 
 ```bash
 npm run jikkou-yosan:build-desktop
 npm run cio:preflight:736 -- --note "…"
 npm run deploy:736
+npm run jikkou-yosan:pre-demo-gate   # 担当説明前
 ```
 
 ### 9.6 v1 未実装（依頼外・v2 候補）
 
 - 修正版・差分・WF・Excel 出力・見積取込
 - ダッシュのみ入口（v1.1）— 未着手
-- kintone-apps 台帳・field-registry の 736 完全登録 — 要追補（R15 WARN 継続）
+- field-registry の 736 完全登録 — 要追補（live-schema 月次）
 
 ---
 

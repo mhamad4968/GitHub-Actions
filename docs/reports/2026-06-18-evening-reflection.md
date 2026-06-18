@@ -21,7 +21,20 @@
 4. **openRecord と master 読込**: 一覧から開く経路で master 未読込だった問題を途中修正 — 回帰テスト項目に未登録
 5. **未コミット混在**: 736 以外（721/pc-kitting/595 等）の working tree が並存 — 今日分は **736 スコープ commit のみ** に分離
 
-## 憲法・ルール更新提案（承認待ち）
+## 憲法・ルール更新提案（**2026-06-18 浜田 GO 済 → R21–R24 反映**）
+
+| 提案 | ID | 状態 |
+|------|-----|------|
+| A deploy 台帳同期 | **R21** | ✅ `verify:cio-deploy-ledger-gate` |
+| B 説明前チェックリスト | **R22** | ✅ `excel-ui-pre-demo-checklist.md` + `jikkou-yosan:pre-demo-gate` |
+| C 二段 customize | **R23** | ✅ `excel-ui-customize-two-stage.md` |
+| D エイリアス JSON | **R24** | ✅ `jikkou-yosan-work-type-aliases.json` |
+
+正本: `docs/approved-changes/2026-06-18-rules-r21-r24-hamada-go.md`
+
+---
+
+## 旧提案本文（記録）
 
 ### 提案 A — kintone 新アプリ deploy 完了の定義（R15 強化）
 

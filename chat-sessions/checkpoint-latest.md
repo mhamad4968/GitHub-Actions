@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-06-18 JST — **実行予算書 735/736 v1 実装デプロイ（BUILD v10 rev29）**
+**最終更新**: 2026-06-18 JST — **R21–R24 反映 + 736 担当説明準備**
 
 ## 凍結（毎セッション先頭）
 | 禁止 | 許可 |
@@ -13,8 +13,9 @@
 | 本番 WF 6段階への無断分割 | test_v3 WF 継続テスト |
 | 評価スナップショット本番投入（未設計確認前） | ガイド doc 更新（完成条件外） |
 
-**次の1手**: **担当説明（736 イメージ確認）** — 仕様 `docs/plans/2026-06-18-jikkou-yosan-spec.md` §9  
-**Git**: 736 一式 commit/push 後に更新  
+**次の1手**: **担当説明（736 イメージ確認）** — 先に `npm run jikkou-yosan:pre-demo-gate` → 仕様 §9 + Ctrl+Shift+R 目視  
+**Git**: `3fec05d` + GHA `9a0d178` — pull 推奨  
+**R21–R24**: **浜田 GO 反映済** — `docs/approved-changes/2026-06-18-rules-r21-r24-hamada-go.md`
 **Space 56 進行中**: **実行予算書 v1** — App **735/736** — **BUILD=`2026-06-18-jikkou-yosan-v10-bidir-codes`** rev **29** — 2623001-001 検算 OK
 **R34–R40**: **浜田 GO 反映済** — `docs/approved-changes/2026-06-14-rules-r34-r40-hamada-go.md`
 **作業領域**: C:\ 重複 clone 削除済 / 正本 clone のみ / `verify:windows-canonical-paths` OK

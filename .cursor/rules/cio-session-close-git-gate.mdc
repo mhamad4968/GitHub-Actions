@@ -11,6 +11,7 @@ alwaysApply: false
 # セッション締め Git（B1/B4 + 先祖返り回避）
 
 **18**: B1 commit 必須 / B4 push 必須 / S2 verify NG = 締め未完  
+**R21**: deploy 触媒セッションは `verify:cio-deploy-ledger-gate` exit 0（session-close 内包）  
 **R-17-1**: customize 2アプリ以上 → `cio:guard:multi-customize` を **commit 前**  
 **順序**: `cio:session:close-git -- --execute --auto-stage --message "…"`（R19 pre-commit + B1/B4 + desktop sync **一括**）
 

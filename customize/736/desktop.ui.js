@@ -63,11 +63,13 @@
   };
   const REF_TARGETS = REF_DETAIL_IDS;
   const BLOCK_MARKERS = { repair: '④', scaffold: '⑤', paint: '⑥', labor: '⑦' };
-  /** 総括表の工種名 → コード表 M の work_type_name */
+  /** 総括表の工種名 → コード表 M の work_type_name（正本: scripts/data/jikkou-yosan-work-type-aliases.json / R24） */
+  // WORK_TYPE_ALIASES_START
   const WORK_TYPE_TO_MASTER = {
     '修繕工事': '（塗）修繕等工事',
     '塗装附帯工事': '（塗）塗装付帯工事',
   };
+  // WORK_TYPE_ALIASES_END
   const MASTER_TO_WORK_TYPE = (function () {
     const m = {};
     Object.keys(WORK_TYPE_TO_MASTER).forEach(function (app) {
