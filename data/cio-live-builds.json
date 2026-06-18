@@ -138,11 +138,11 @@
       "note": null
     },
     "700": {
-      "build": "2026-06-13-bi-completion-date",
-      "fileKey": "f2504a69-8cae-4545-8ee3-1876c01bfe4e",
-      "revision": "139",
+      "build": "2026-06-18-bi-eval-role-ui-labels",
+      "fileKey": "b3fcd9a6-310c-4c1e-9cd1-d1df91abcd1d",
+      "revision": "141",
       "relPath": "customize/business-improvement-proposal/desktop.js",
-      "deployedAt": "2026-06-12T22:10:49.393Z",
+      "deployedAt": "2026-06-18T09:08:31.179Z",
       "note": null
     },
     "701": {
@@ -282,11 +282,11 @@
       "note": null
     },
     "721": {
-      "build": "2026-06-15-jr-ipad-dash-search-clear",
-      "fileKey": "5ce759fa-b837-44d5-b7a2-a2e97cc90e4b",
-      "revision": "8",
+      "build": "2026-06-18-jr-ipad-dash-list-print-landscape",
+      "fileKey": "1505144a-b3e2-4868-854b-3a6b9478abf7",
+      "revision": "11",
       "relPath": "customize/jr-ipad-dash/desktop.js",
-      "deployedAt": "2026-06-15T09:42:41.849Z",
+      "deployedAt": "2026-06-18T08:53:25.308Z",
       "note": null
     },
     "733": {
@@ -303,6 +303,14 @@
       "revision": "12",
       "relPath": "customize/vpn-account-dash/desktop.js",
       "deployedAt": "2026-06-16T11:58:37.493Z",
+      "note": null
+    },
+    "736": {
+      "build": "2026-06-18-jikkou-yosan-v10-bidir-codes",
+      "fileKey": "9645ddc7-7b43-41a7-829e-910ab19f6902",
+      "revision": "29",
+      "relPath": "customize/736/desktop.js",
+      "deployedAt": "2026-06-18T12:44:10.382Z",
       "note": null
     }
   }

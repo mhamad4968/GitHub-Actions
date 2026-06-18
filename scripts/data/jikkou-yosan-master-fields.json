@@ -1,0 +1,106 @@
+{
+  "properties": {
+    "list_category": {
+      "type": "DROP_DOWN",
+      "code": "list_category",
+      "label": "カテゴリ",
+      "required": true,
+      "options": {
+        "コード表行": { "label": "コード表行", "index": "0" },
+        "発注支社": { "label": "発注支社", "index": "1" },
+        "部門": { "label": "部門", "index": "2" },
+        "桁種別": { "label": "桁種別", "index": "3" },
+        "単位": { "label": "単位", "index": "4" },
+        "消費税": { "label": "消費税", "index": "5" }
+      }
+    },
+    "item_group": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "item_group",
+      "label": "項目",
+      "required": false
+    },
+    "expense_code": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "expense_code",
+      "label": "費目コード",
+      "required": false
+    },
+    "expense_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "expense_name",
+      "label": "費目名称",
+      "required": false
+    },
+    "work_type_code": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "work_type_code",
+      "label": "工種コード",
+      "required": false
+    },
+    "work_type_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "work_type_name",
+      "label": "工種名称",
+      "required": false
+    },
+    "sub_type_code": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "sub_type_code",
+      "label": "種別コード",
+      "required": false
+    },
+    "sub_type_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "sub_type_name",
+      "label": "種別名称",
+      "required": false
+    },
+    "item_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "item_name",
+      "label": "名称",
+      "required": false
+    },
+    "item_sub_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "item_sub_name",
+      "label": "サブ名称",
+      "required": false
+    },
+    "definition": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "definition",
+      "label": "定義及び品名",
+      "required": false
+    },
+    "sort_order": {
+      "type": "NUMBER",
+      "code": "sort_order",
+      "label": "表示順",
+      "required": false,
+      "digit": false,
+      "displayScale": "0"
+    },
+    "source": {
+      "type": "DROP_DOWN",
+      "code": "source",
+      "label": "出所",
+      "required": false,
+      "options": {
+        "コード表取込": { "label": "コード表取込", "index": "0" },
+        "リスト取込": { "label": "リスト取込", "index": "1" },
+        "手入力": { "label": "手入力", "index": "2" }
+      }
+    },
+    "is_active": {
+      "type": "CHECK_BOX",
+      "code": "is_active",
+      "label": "有効",
+      "required": false,
+      "options": {
+        "有効": { "label": "有効", "index": "0" }
+      }
+    }
+  }
+}

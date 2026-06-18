@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-06-17 JST — **595/715/717 運用修正 + PCキッティング BOM 対策**
+**最終更新**: 2026-06-18 JST — **実行予算書 735/736 v1 実装デプロイ（BUILD v10 rev29）**
 
 ## 凍結（毎セッション先頭）
 | 禁止 | 許可 |
@@ -13,8 +13,9 @@
 | 本番 WF 6段階への無断分割 | test_v3 WF 継続テスト |
 | 評価スナップショット本番投入（未設計確認前） | ガイド doc 更新（完成条件外） |
 
-**次の1手**: **浜田指示待ち** — PCキッティング **②試験（明日）** / kintone **本日 deploy 分の git 整理**
-**Git**: **`0c51c94`** = `origin/main` — 595/715/717/pc-kitting + R49–R54 GO push 済
+**次の1手**: **担当説明（736 イメージ確認）** — 仕様 `docs/plans/2026-06-18-jikkou-yosan-spec.md` §9  
+**Git**: 736 一式 commit/push 後に更新  
+**Space 56 進行中**: **実行予算書 v1** — App **735/736** — **BUILD=`2026-06-18-jikkou-yosan-v10-bidir-codes`** rev **29** — 2623001-001 検算 OK
 **R34–R40**: **浜田 GO 反映済** — `docs/approved-changes/2026-06-14-rules-r34-r40-hamada-go.md`
 **作業領域**: C:\ 重複 clone 削除済 / 正本 clone のみ / `verify:windows-canonical-paths` OK
 **Space 21 完了**: **ソフトウエア管理台帳 v1** — App **714/715** — **2026-06-14 浜田目視 OK**
@@ -65,6 +66,7 @@
 
 ---
 
+
 ## 2026-06-17 JST — **VPNアカウント管理台帳 v1 完成（クローズ）**
 
 | 項目 | 内容 |
@@ -75,6 +77,7 @@
 | **再開条件** | 浜田 GO + checkpoint「次の1手」更新 + `data/cio-project-closures.json` 解除 |
 
 ---
+
 
 
 ## 2026-06-15 JST — **JRシステム用 iPad 管理台帳 ver.1 v1 完成（クローズ）**
@@ -91,6 +94,7 @@
 
 
 
+
 ## 2026-06-14 JST — **R34–R40 ガバナンス + ESLint CI 修正（セッション締め）**
 
 | 項目 | 内容 |
@@ -102,6 +106,7 @@
 | **正本** | `docs/runbooks/kintone-project-close-gate.md` / `data/windows-canonical-paths.json` / `data/kintone-customize-path-registry.json` |
 
 ---
+
 
 
 
@@ -121,21 +126,5 @@
 
 
 
-## 2026-06-14 JST — **第12/13層ガバナンス A1–C4 + 674 live-schema + 許容ギャップ運用化**
 
-| 項目 | 内容 |
-|------|------|
-| **範囲** | A1 handoff / A2 MCP matrix / A3 deploy live-schema guard / B1–B5 registry・portfolio・generations / C1–C4 MCP×CLI・月次 portfolio |
-| **674** | `resolveCustomizeDirsForApp` + registry `relatedAppFieldsFrom` + 596 静的台帳 — `verify:kintone-live-schema --app 674` OK |
-| **許容** | **640** deploy 未接続 → `data/kintone-accepted-gaps.json` + `verify:kintone-accepted-gaps` / **generations** → pre-commit dry-run + post-commit amend |
-| **正本** | `kintone-apps.md` SOP / `docs/runbooks/cio-periodic-ops-schedule.md` / `docs/faq-apps-640-641.md` |
-| **Git** | **`6a37e1d`** push 済 / `main = origin/main` |
-| **次回朝** | `npm run cio:morning:ready`（**`--project business-improvement` 不要** — v1 クローズ済） |
-
----
-
-
-
-
-
-<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-06-17.md -->
+<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-06-18.md -->
