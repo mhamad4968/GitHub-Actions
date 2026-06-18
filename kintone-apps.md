@@ -181,6 +181,7 @@ npm run app:fields <アプリID>
 
 | 日時（UTC） | アプリID | customize パス |
 |-------------|----------|----------------|
+| 2026-06-18T12:51:23Z | 736 | `customize/736/desktop.js` |
 | 2026-06-18T15:00:00Z | 736 | `customize/736/desktop.js`（**v10 双方向コード・行追加・連携緑・ジャンプ**・**BUILD** `2026-06-18-jikkou-yosan-v10-bidir-codes`・rev **`29`**） |
 | 2026-06-18T14:00:00Z | 736 | `customize/736/desktop.js`（**計算修正+サンプル2623001-001 record=1**・**BUILD** `2026-06-18-jikkou-yosan-v2-excel-form-calc`・rev **`7`**） |
 | 2026-06-18T12:00:00Z | 736 | `customize/736/desktop.js`（**Excel風一覧+総括/詳細フォーム**・**BUILD** `2026-06-18-jikkou-yosan-v2-excel-form`・rev **`6`**） |
