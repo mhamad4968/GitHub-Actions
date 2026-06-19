@@ -156,6 +156,8 @@
     "jr-ipad:register-registry": "node scripts/register-kintone-customize-registry.mjs --dir jr-ipad-db --app 720 && node scripts/register-kintone-customize-registry.mjs --dir jr-ipad-dash --app 721 --bundle-npm jr-ipad:bundle-dash",
     "jr-ipad:migrate:xlsx": "npx dotenv -e .env -e .env.proxy -- node scripts/jr-ipad-migrate-xlsx.mjs",
     "jr-ipad:bundle-dash": "node scripts/jr-ipad-bundle-dash.mjs",
+    "jr-ipad:relax-draft-required-fields": "npx dotenv -e .env -e .env.proxy -- node scripts/jr-ipad-relax-draft-required-fields.mjs",
+    "jr-ipad:relax-draft-required-fields:dry-run": "npx dotenv -e .env -e .env.proxy -- node scripts/jr-ipad-relax-draft-required-fields.mjs --dry-run",
     "vpn-account:create-db": "npx dotenv -e .env -e .env.proxy -- node scripts/vpn-account-create-db-app.mjs",
     "vpn-account:create-db:dry-run": "npx dotenv -e .env -e .env.proxy -- node scripts/vpn-account-create-db-app.mjs --dry-run",
     "vpn-account:create-dash": "npx dotenv -e .env -e .env.proxy -- node scripts/vpn-account-create-dash-app.mjs",

@@ -1182,6 +1182,7 @@ snapshot: `data/snapshots/594-pre-migration-scan-2026-04-22.json`
 | 2026-05-06 | v2.1 追記 | **§4.2.1a / 674**: 共有・個人の **`record.set`（自動生成）**で **`pc_serial_no` 等内部メタ子が disabled のまま**だと kintone が **「入力内容が正しくありません」** となるため、**set 同期間だけ** disabled を外す |
 | 2026-05-06 | v2.1 追記 | **§4.2.2 / 674**: **個人用自動生成**に **`mail_pw`（MAIL_PW_PREFIX+4桁+MAIL_PW_SUFFIX）・`gb_id`/`sb_id`（=mail_acct）・`gb_pw`/`sb_pw`（=logon_name）** を追加 |
 | 2026-05-06 | v2.1 追記 | **§4.3.1 / §4.2.2 / 674**: **個人用自動生成**に **`pc_name`（JBIS####-YYYYMM）・`pc_serial_no`** を追加。**`windows_name`** を **`jbm####+[mail_acct]`** 形式へ（角括弧は後続改訂で確定）。共有自動生成に **`S-JBIS####-YYYYMM`**（空欄時）を追加 |
+| 2026-06-19 | v2.1 追記 | **674 rev243** — 詳細画面の右サイドバー（コメント・履歴）非表示。**595 rev96** — 新規・編集で **680 所属候補モーダル**（所属名・所属グループ一括入力・手入力可） |
 | 2026-05-06 | v2.1 追記 | **§4.2.0b / 674**: 帯の入力支援ボタン表記を **「入力支援利用」** に統一（595／680 は **`aria-label`** で区別）。配色をインディゴ系グラデに変更 |
 | 2026-05-06 | v2.1 追記 | **§4.2.0b / 674**: **入力支援**を **`#new-pc-ledger-buttons`** に集約（フィールド直下挿入は廃止） |
 | 2026-05-06 | v2.1 追記 | **§4.2.0b / 674**: **新規（create.show）**でヘッダ API が null のとき **`layout-gaia` 先頭**＋**`kintone.app.getHeaderMenuSpaceElement`** フォールバック。ヘッダの種別は **`readAccountTypeLive674`** |

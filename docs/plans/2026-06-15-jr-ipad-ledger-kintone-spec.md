@@ -490,3 +490,4 @@ Wi-Fi 台帳 718/719 の拠点名と **同名・同順**。JR iPad 内では sor
 | 2026-06-15 | §14 AI チームレビュー追記（DeepSeek + CIO 突合） |
 | 2026-06-15 | M6 — 浜田目視 OK（集計アコーディオン・文字サイズ・検索クリア） |
 | 2026-06-15 | v1 完成 — 64 台移行・721 rev8・Excel 運用終了・CLOSED |
+| 2026-06-19 | **721 rev12** — 一覧 **有効/廃止トグル**（デフォルト有効＝廃棄非表示）。**720 フォーム rev7** — 新規採番 POST 時 `mgmt_dept` / `phone_number` / `model` を空可（`jr-ipad-relax-draft-required-fields.mjs`）。保存時必須は Dash が担保 |

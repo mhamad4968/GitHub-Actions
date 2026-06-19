@@ -503,3 +503,4 @@ stateDiagram-v2
 | 2026-06-16 | 浜田 GO — App 733/734 作成・66 件移行・customize deploy |
 | 2026-06-17 | 目視フィードバック反映（アコーディオン・文字拡大・クリア・所属34順・0口全表示・APP_DB 修正） |
 | 2026-06-17 | **v1 完成 — CLOSED**（浜田目視 OK） |
+| 2026-06-19 | **733 フォーム rev7** — `snapshot_month` / `snapshot_json` 追加（月次ライセンス確定保存）。**734 rev13** — 前回確定とのライセンス比較・月次確定ボタン。Space 48 月末注意書き GHA（`vpn-license-space48-notice.yml`・JST 28日〜翌1日） |
