@@ -13,9 +13,9 @@
 | 本番 WF 6段階への無断分割 | test_v3 WF 継続テスト |
 | 評価スナップショット本番投入（未設計確認前） | ガイド doc 更新（完成条件外） |
 
-**次の1手**: **688 施工主報告印刷** — ユーザー最終目視確認（浜田 OK 済・施工主確認待ち）  
-**Git**: `3d1ae44` — pull 推奨  
-**2026-06-19 本番 BUILD**: 595 rev96 / 674 rev243 / 688 rev34 / 721 rev12 / 734 rev13 / 720 フォーム rev7  
+**次の1手**: （688 **CLOSED** — 再開は浜田相談時）次セッションは別件から  
+**Git**: `4260490` — pull 推奨  
+**688 本番**: `2026-06-19-688-print-rounding-fix` rev **34** — 施工主報告用印刷 **CLOSED**（2026-06-19）  
 **監査**: `npm run cio:audit:session-builds:strict` — repo=ledger=live **6/6 OK**（先祖返りなし）  
 **R21–R24**: **浜田 GO 反映済** — `docs/approved-changes/2026-06-18-rules-r21-r24-hamada-go.md`
 **Space 56 進行中**: **実行予算書 v1** — App **735/736** — **BUILD=`2026-06-18-jikkou-yosan-v10-bidir-codes`** rev **29** — 2623001-001 検算 OK
@@ -129,7 +129,8 @@
 | **733** | snapshot_month / snapshot_json 追加（フォーム rev **7**） |
 | **CI修復** | 削除済 668 を portfolio BUILD 監査対象から除外 |
 | **正本** | `docs/plans/2026-06-13-construction-workdays-excel-20260613.md` §9 / JR・VPN・PC台帳 改定履歴 |
-| **再開条件** | 688 ユーザー確認完了後は本件クローズ。736 担当説明は別セッション |
+| **判定** | **CLOSED**（2026-06-19 — 浜田 OK・施工主報告印刷・丸め・空白ページ修正） |
+| **再開条件** | 浜田から再度相談があった場合のみ |
 
 ---
 
