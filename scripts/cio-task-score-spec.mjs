@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
+import { readCheckpointNextTask } from './lib/cio-checkpoint-read.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SPEC_REL = 'templates/yojitsu-budget-lite/SPEC.md';
@@ -81,12 +82,14 @@ function collectTasks() {
     tasks.push(scoreTask(`${idTrim}: ${summary.trim()}`, 'backlog'));
   }
 
-  const cp = read(CHECKPOINT_REL);
-  const nextMatch = cp.match(/\*\*次回 1 手\*\*\s*\|\s*([^|]+)/);
-  if (nextMatch) {
-    tasks.push(scoreTask(nextMatch[1].trim(), 'checkpoint'));
-  } else if (/q36|§41|案a1/i.test(cp)) {
-    tasks.push(scoreTask('§41 案A1 — Q36 GO 報告・打合せ v5', 'checkpoint-synthetic'));
+  const nextTask = readCheckpointNextTask(root);
+  if (nextTask) {
+    tasks.push(scoreTask(nextTask, 'checkpoint'));
+  } else {
+    const cp = read(CHECKPOINT_REL);
+    if (/q36|§41|案a1/i.test(cp)) {
+      tasks.push(scoreTask('§41 案A1 — Q36 GO 報告・打合せ v5', 'checkpoint-synthetic'));
+    }
   }
 
   if (!tasks.length) {

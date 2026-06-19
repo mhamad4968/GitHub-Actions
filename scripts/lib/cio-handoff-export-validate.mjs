@@ -122,8 +122,8 @@ export function deepseekSemanticAudit(payload) {
   }
   if (topScoreTask && bridgeTask) {
     const unsettled =
-      /未確定|項番\s*-0|クローズ済|v1\s*クローズ/i.test(bridgeTask) ||
-      /未確定|クローズ/i.test(checkpointTask || '');
+      /未確定|項番\s*-0|クローズ済|v1\s*クローズ|closed|別件から/i.test(bridgeTask) ||
+      /未確定|クローズ|closed|別件/i.test(checkpointTask || '');
     if (!unsettled) {
       const overlap = tokenOverlap(bridgeTask, topScoreTask);
       if (overlap < 0.25) {

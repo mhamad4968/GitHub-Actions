@@ -190,7 +190,8 @@ let exitOk = hooks.ok && watchPid.alive && webPid.alive;
 if (clockMode.mode === 'manual-desktop') {
   exitOk = hooks.ok;
 }
-if (strict) {
+const cronStrictRequired = strict && clockMode.cronEnabled !== false && !clockMode.trialPaused;
+if (cronStrictRequired) {
   exitOk = exitOk && Boolean(cronLine) && !drift;
 }
 
@@ -240,11 +241,19 @@ if (json) {
   }
   console.log('\n--- logs/session-cron-ping.log (末尾) ---\n', report.logs.cronPingTail, '\n');
   console.log(exitOk ? '\n✅ health OK' : '\n❌ health NG（--strict または hooks 失敗）');
+  if (strict && clockMode.cronEnabled === false) {
+    console.log('ℹ cron strict スキップ: session-clock-mode cronEnabled=false');
+  }
+  if (strict && clockMode.trialPaused) {
+    console.log('ℹ cron strict スキップ: session-clock-mode trialPaused=true');
+  }
 }
 
 const code = exitOk ? 0 : 2;
 if (strict && !exitOk) {
-  console.error('\n[session-clock-health] --strict: hooks 欠落 / crontab 無し / node ドリフトのいずれかで NG');
+  console.error(
+    '\n[session-clock-health] --strict: hooks 欠落 / crontab 無し / node ドリフトのいずれかで NG（cronEnabled=false・trialPaused 時は cron 検査除外）',
+  );
 } else if (!hooks.ok) {
   console.error('\n[session-clock-health] hooks.json が不正です');
 }

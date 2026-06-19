@@ -38,6 +38,7 @@ import { runMorningPrepRag } from './lib/morning-prep-rag.mjs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
+const FAST = process.argv.includes('--fast') || process.env.MORNING_PREP_FAST === '1';
 
 // ── ユーティリティ ──────────────────────────────────
 const today = (() => {
@@ -130,6 +131,13 @@ sections.push(
   '> 本ファイルは `scripts/daily-morning-prep.mjs` が毎朝 06:00（**WSL cron**）または **Windows 上の `npm run morning:ensure`** で自動生成しています。'
 );
 sections.push('> AI エージェントは WORKFLOW.md §Phase 0 に従い、最初にこのファイルを読みます。');
+if (FAST) {
+  sections.push(
+    '> **MORNING_PREP_MODE: fast** — セッション開始用短縮版（目安 1〜3 分）。フル版は WSL/cron 06:00 または `npm run morning:ensure`（`--fast` なし）。',
+  );
+} else {
+  sections.push('> **MORNING_PREP_MODE: full** — 毎朝 cron / 手動フル生成。');
+}
 sections.push('');
 sections.push('---');
 sections.push('');
@@ -245,6 +253,21 @@ sections.push('');
 sections.push('---');
 sections.push('');
 
+if (FAST) {
+  sections.push('## 0c. checkpoint 先頭（cold-start 用ミラー）');
+  sections.push('');
+  const cpPath = path.join(REPO_ROOT, 'chat-sessions', 'checkpoint-latest.md');
+  if (fs.existsSync(cpPath)) {
+    const cpHead = fs.readFileSync(cpPath, 'utf8').split('\n').slice(0, 28).join('\n');
+    sections.push(fence('markdown', cpHead));
+  } else {
+    sections.push('_checkpoint-latest.md 未検出_');
+  }
+  sections.push('');
+  sections.push('---');
+  sections.push('');
+}
+
 // 1. 環境ヘルス
 sections.push('## 1. 環境ヘルス（kintone API 疎通）');
 sections.push('');
@@ -264,14 +287,22 @@ const r3 = runCmd('audit', 'npm audit --omit=dev --audit-level=moderate || true'
 sections.push(summary('npm audit', r3));
 
 // 4. npm outdated
-sections.push('## 4. 依存パッケージの最新性（npm outdated）');
-sections.push('');
-const r4 = runCmd('outdated', 'npm outdated || true', { timeoutMs: 60_000 });
-const outdatedText = r4.stdout || '_すべて最新_';
-sections.push('```text');
-sections.push(outdatedText.split('\n').slice(0, 30).join('\n'));
-sections.push('```');
-sections.push('');
+let r4 = { ok: true, stdout: '', stderr: '', exit: 0 };
+if (!FAST) {
+  sections.push('## 4. 依存パッケージの最新性（npm outdated）');
+  sections.push('');
+  r4 = runCmd('outdated', 'npm outdated || true', { timeoutMs: 60_000 });
+  const outdatedText = r4.stdout || '_すべて最新_';
+  sections.push('```text');
+  sections.push(outdatedText.split('\n').slice(0, 30).join('\n'));
+  sections.push('```');
+  sections.push('');
+} else {
+  sections.push('## 4. 依存パッケージの最新性（npm outdated）');
+  sections.push('');
+  sections.push('> ⏭ **fast スキップ** — フル朝報で確認');
+  sections.push('');
+}
 
 // 5. ルール整合性
 sections.push('## 5. ルール整合性（AGENTS.md ↔ RULES-INDEX.md / WORKFLOW.md）');
@@ -378,94 +409,125 @@ sections.push('');
     }
   }
   sections.push('');
-  // P4 統合 (2026-04-26): §51-4 並列セッション疑い 4 軸機械判定
-  sections.push('### §51-4 並列セッション疑い判定（P4 / parallel-session-detector）');
-  sections.push('');
-  try {
-    const r = runCmd('parallel-detector', 'node scripts/parallel-session-detector.mjs --json', { timeoutMs: 5_000 });
-    if (r.stdout) {
-      const j = JSON.parse(r.stdout);
-      sections.push(`**総合スコア**: ${j.score_total} 点 / ${j.verdict_icon} ${j.verdict_label}`);
-      sections.push('');
-      sections.push('| 軸 | スコア | 内訳（要約） |');
-      sections.push('|---|---:|---|');
-      const ab = j.axis_breakdown;
-      const summary = (e) => (Array.isArray(e) ? e.join(' / ').slice(0, 100) : '');
-      sections.push(`| 軸1: watcher_pid 不一致 | ${ab.axis1_watcher_pid_mismatch.score} | ${summary(ab.axis1_watcher_pid_mismatch.evidence)} |`);
-      sections.push(`| 軸2: 過密編集 | ${ab.axis2_burst_edit.score} | ${summary(ab.axis2_burst_edit.evidence) || '該当なし'} |`);
-      sections.push(`| 軸3: lock 不在 | ${ab.axis3_no_lock.score} | ${summary(ab.axis3_no_lock.evidence)} |`);
-      sections.push(`| 軸4: 不審バックアップ | ${ab.axis4_suspicious_backup.score} | ${summary(ab.axis4_suspicious_backup.evidence)} |`);
-      if (j.snapshot_saved_to) {
+  if (!FAST) {
+    // P4 統合 (2026-04-26): §51-4 並列セッション疑い 4 軸機械判定
+    sections.push('### §51-4 並列セッション疑い判定（P4 / parallel-session-detector）');
+    sections.push('');
+    try {
+      const r = runCmd('parallel-detector', 'node scripts/parallel-session-detector.mjs --json', { timeoutMs: 5_000 });
+      if (r.stdout) {
+        const j = JSON.parse(r.stdout);
+        sections.push(`**総合スコア**: ${j.score_total} 点 / ${j.verdict_icon} ${j.verdict_label}`);
         sections.push('');
-        sections.push(`**🔴 スナップショット**: \`${j.snapshot_saved_to}\``);
+        sections.push('| 軸 | スコア | 内訳（要約） |');
+        sections.push('|---|---:|---|');
+        const ab = j.axis_breakdown;
+        const summary = (e) => (Array.isArray(e) ? e.join(' / ').slice(0, 100) : '');
+        sections.push(`| 軸1: watcher_pid 不一致 | ${ab.axis1_watcher_pid_mismatch.score} | ${summary(ab.axis1_watcher_pid_mismatch.evidence)} |`);
+        sections.push(`| 軸2: 過密編集 | ${ab.axis2_burst_edit.score} | ${summary(ab.axis2_burst_edit.evidence) || '該当なし'} |`);
+        sections.push(`| 軸3: lock 不在 | ${ab.axis3_no_lock.score} | ${summary(ab.axis3_no_lock.evidence)} |`);
+        sections.push(`| 軸4: 不審バックアップ | ${ab.axis4_suspicious_backup.score} | ${summary(ab.axis4_suspicious_backup.evidence)} |`);
+        if (j.snapshot_saved_to) {
+          sections.push('');
+          sections.push(`**🔴 スナップショット**: \`${j.snapshot_saved_to}\``);
+        }
+      } else {
+        sections.push('_detector 実行エラー（朝報生成は継続）_');
       }
-    } else {
-      sections.push('_detector 実行エラー（朝報生成は継続）_');
+    } catch (e) {
+      sections.push(`_detector 統合エラー: ${e.message}_`);
     }
-  } catch (e) {
-    sections.push(`_detector 統合エラー: ${e.message}_`);
+    sections.push('');
+  } else {
+    sections.push('> ⏭ **fast**: §51-4 parallel-detector はスキップ（`npm run audit:parallel` で手動可）');
+    sections.push('');
   }
-  sections.push('');
 })();
 
 // 6. プラン進捗
-sections.push('## 6. 未完了プラン抽出（docs/plans/*.md）');
-sections.push('');
-const r6 = runCmd('scan-plans', 'node scripts/scan-plans.mjs');
-sections.push(r6.stdout || '_該当なし_');
-sections.push('');
-
-// 7. RAG 再 ingest（任意）— TSB-037: rag-ingest-path + Windows は extra-docs のみ（短時間完走）
-sections.push('## 7. RAG 知識ベース更新');
-sections.push('');
-const rag = runMorningPrepRag(runCmd, log);
-const r7 = {
-  ok: rag.ok,
-  stdout: [rag.rMirror.stdout, rag.rExtra.stdout, rag.rDocs.stdout].filter(Boolean).join('\n---\n'),
-  stderr: [rag.rMirror.stderr, rag.rExtra.stderr, rag.rDocs.stderr].filter(Boolean).join('\n'),
-  exit: rag.ok ? 0 : 1,
-};
-if (!rag.fullDocs) {
-  sections.push(
-    `> ℹ️ **docs/ 全件 ingest**: ${IS_WIN ? 'Windows 既定でスキップ' : 'スキップ'}（WSL cron 06:00 がフル正本。手動フルは \`MORNING_PREP_RAG_DOCS=1 npm run morning:ensure\`）\n`,
-  );
-}
-if (IS_WIN && !process.env.MORNING_PREP_RAG_INGEST) {
-  sections.push(
-    '> ℹ️ **Windows RAG ingest**: 既定は **ミラーのみ**（数秒）。DB 反映は WSL cron 06:00。午後に ingest する場合は `MORNING_PREP_RAG_INGEST=1 npm run morning:ensure`\n',
-  );
-}
-sections.push(summary('RAG ingest', r7, { ok: '✅', ng: '⚠️', limit: 12 }));
-if (rag.ragHasInnerError) {
-  sections.push('> ⚠ 内側エラー検知: stdout/stderr に `Error/ERR_/Exception` を含むためヘルススコアを失敗扱いに降格しました。\n');
+let r6 = { ok: true, stdout: '', stderr: '', exit: 0 };
+if (!FAST) {
+  sections.push('## 6. 未完了プラン抽出（docs/plans/*.md）');
+  sections.push('');
+  r6 = runCmd('scan-plans', 'node scripts/scan-plans.mjs');
+  sections.push(r6.stdout || '_該当なし_');
+  sections.push('');
+} else {
+  sections.push('## 6. 未完了プラン抽出（docs/plans/*.md）');
+  sections.push('');
+  sections.push('> ⏭ **fast スキップ**');
+  sections.push('');
 }
 
-// ========================================
-// §46 Phase 2-4: 健康チェック / 自動治療 / バージョンアップ
-// ========================================
-sections.push('---');
-sections.push('');
-sections.push('# 🌅 §46 朝ルーチン Phase 2-4');
-sections.push('');
-sections.push('> §46 により Phase 2-4 は SKYSEA 等のいかなるタスクよりも先に実行する。異常検出時はここで解消するまで他タスクへ進まない。');
-sections.push('');
+// 7. RAG 再 ingest（任意）
+let r7 = { ok: true, stdout: '', stderr: '', exit: 0 };
+let rag = { ok: true, fullDocs: false, ragHasInnerError: false };
+if (!FAST) {
+  sections.push('## 7. RAG 知識ベース更新');
+  sections.push('');
+  rag = runMorningPrepRag(runCmd, log);
+  r7 = {
+    ok: rag.ok,
+    stdout: [rag.rMirror.stdout, rag.rExtra.stdout, rag.rDocs.stdout].filter(Boolean).join('\n---\n'),
+    stderr: [rag.rMirror.stderr, rag.rExtra.stderr, rag.rDocs.stderr].filter(Boolean).join('\n'),
+    exit: rag.ok ? 0 : 1,
+  };
+  if (!rag.fullDocs) {
+    sections.push(
+      `> ℹ️ **docs/ 全件 ingest**: ${IS_WIN ? 'Windows 既定でスキップ' : 'スキップ'}（WSL cron 06:00 がフル正本。手動フルは \`MORNING_PREP_RAG_DOCS=1 npm run morning:ensure\`）\n`,
+    );
+  }
+  if (IS_WIN && !process.env.MORNING_PREP_RAG_INGEST) {
+    sections.push(
+      '> ℹ️ **Windows RAG ingest**: 既定は **ミラーのみ**（数秒）。DB 反映は WSL cron 06:00。午後に ingest する場合は `MORNING_PREP_RAG_INGEST=1 npm run morning:ensure`\n',
+    );
+  }
+  sections.push(summary('RAG ingest', r7, { ok: '✅', ng: '⚠️', limit: 12 }));
+  if (rag.ragHasInnerError) {
+    sections.push('> ⚠ 内側エラー検知: stdout/stderr に `Error/ERR_/Exception` を含むためヘルススコアを失敗扱いに降格しました。\n');
+  }
+} else {
+  sections.push('## 7. RAG 知識ベース更新');
+  sections.push('');
+  sections.push('> ⏭ **fast スキップ** — ミラー/ingest は cron または `MORNING_PREP_RAG_INGEST=1`');
+  sections.push('');
+}
 
-// Phase 2: 健康チェック
-const rPhase2 = runCmd('phase2 health-check', 'node scripts/health-check.mjs', { timeoutMs: 180_000 });
-sections.push(rPhase2.stdout || '## 🩺 Phase 2: 健康状況チェック\n\n_(出力なし)_');
-sections.push('');
+// §46 Phase 2-4
+let rPhase2 = { ok: true, stdout: '', stderr: '', exit: 0 };
+let rPhase3 = { ok: true, stdout: '', stderr: '', exit: 0 };
+let rPhase4 = { ok: true, stdout: '', stderr: '', exit: 0 };
+if (!FAST) {
+  sections.push('---');
+  sections.push('');
+  sections.push('# 🌅 §46 朝ルーチン Phase 2-4');
+  sections.push('');
+  sections.push('> §46 により Phase 2-4 は SKYSEA 等のいかなるタスクよりも先に実行する。異常検出時はここで解消するまで他タスクへ進まない。');
+  sections.push('');
 
-// Phase 3: 自動治療
-const rPhase3 = runCmd('phase3 auto-heal', 'node scripts/auto-heal.mjs', { timeoutMs: 300_000 });
-sections.push(rPhase3.stdout || '## 🔧 Phase 3: 自動治療\n\n_(出力なし)_');
-sections.push('');
+  rPhase2 = runCmd('phase2 health-check', 'node scripts/health-check.mjs', { timeoutMs: 180_000 });
+  sections.push(rPhase2.stdout || '## 🩺 Phase 2: 健康状況チェック\n\n_(出力なし)_');
+  sections.push('');
 
-// Phase 4: バージョンアップ
-const rPhase4 = runCmd('phase4 version-up', 'node scripts/version-up.mjs', { timeoutMs: 120_000 });
-sections.push(rPhase4.stdout || '## 📦 Phase 4: バージョンアップ対応\n\n_(出力なし)_');
-sections.push('');
-sections.push('---');
-sections.push('');
+  rPhase3 = runCmd('phase3 auto-heal', 'node scripts/auto-heal.mjs', { timeoutMs: 300_000 });
+  sections.push(rPhase3.stdout || '## 🔧 Phase 3: 自動治療\n\n_(出力なし)_');
+  sections.push('');
+
+  rPhase4 = runCmd('phase4 version-up', 'node scripts/version-up.mjs', { timeoutMs: 120_000 });
+  sections.push(rPhase4.stdout || '## 📦 Phase 4: バージョンアップ対応\n\n_(出力なし)_');
+  sections.push('');
+  sections.push('---');
+  sections.push('');
+} else {
+  sections.push('---');
+  sections.push('');
+  sections.push('# 🌅 §46 朝ルーチン Phase 2-4');
+  sections.push('');
+  sections.push('> ⏭ **fast スキップ** — `npm run health-check` / `npm run morning:ensure`（フル）で §46 完走');
+  sections.push('');
+  sections.push('---');
+  sections.push('');
+}
 
 // ========================================
 // S1+S4 (2026-04-20): 自動防衛網ログ集約
@@ -611,12 +673,19 @@ const score = [
   ['audit-tsb-confirmed', r5b.ok],
   ['verify-breaking-deletions', r5c.ok],
   ['audit-cross-references', r5d.ok],
-  ['scan-plans', r6.ok],
-  ['RAG ingest', r7.ok],
-  ['§46 Phase 2 health-check', rPhase2.ok],
-  ['§46 Phase 3 auto-heal', rPhase3.ok],
-  ['§46 Phase 4 version-up', rPhase4.ok],
 ];
+if (!FAST) {
+  score.push(
+    ['npm outdated', r4.ok],
+    ['scan-plans', r6.ok],
+    ['RAG ingest', r7.ok],
+    ['§46 Phase 2 health-check', rPhase2.ok],
+    ['§46 Phase 3 auto-heal', rPhase3.ok],
+    ['§46 Phase 4 version-up', rPhase4.ok],
+  );
+} else {
+  score.push(['fast-mode skips', true]);
+}
 const passed = score.filter(([, ok]) => ok).length;
 sections.push(`**${passed} / ${score.length} 合格**`);
 sections.push('');
@@ -632,5 +701,12 @@ fs.writeFileSync(LOG_PATH, logChunks.join('\n'), 'utf8');
 console.log(`✅ ブリーフィング生成完了: ${path.relative(REPO_ROOT, REPORT_PATH)}`);
 console.log(`📝 ログ: ${path.relative(REPO_ROOT, LOG_PATH)}`);
 console.log(`📊 ヘルススコア: ${passed}/${score.length}`);
+if (FAST) {
+  console.log('[daily-morning-prep] MORNING_PREP_MODE=fast');
+  if (!r1.ok || !r2.ok) {
+    console.error('[daily-morning-prep] fast: kintone:test または lint:customize 失敗 — exit 2');
+    process.exit(2);
+  }
+}
 
 process.exit(0);

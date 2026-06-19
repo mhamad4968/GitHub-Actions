@@ -29,6 +29,7 @@ import {
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const verifyOnly = process.argv.includes('--verify-only');
+const fast = process.argv.includes('--fast');
 
 function reportPath(ymd) {
   return path.join(root, 'docs', 'reports', `${ymd}-morning-prep.md`);
@@ -62,7 +63,8 @@ function runDailyMorningPrepWsl() {
   const printSh = path.join(root, 'scripts', 'print-nvm-node-bin.sh');
   const wslRoot = win32ToWslPath(root);
   const printShBash = win32ToWslPath(printSh);
-  const inner = `NVMN="$(bash '${printShBash}')" && export PATH="$NVMN:$PATH" && cd '${wslRoot}' && TZ=Asia/Tokyo node scripts/daily-morning-prep.mjs`;
+  const fastFlag = fast ? ' --fast' : '';
+  const inner = `NVMN="$(bash '${printShBash}')" && export PATH="$NVMN:$PATH" && cd '${wslRoot}' && TZ=Asia/Tokyo node scripts/daily-morning-prep.mjs${fastFlag}`;
   return spawnSync('wsl.exe', ['-d', 'Ubuntu', '-e', 'bash', '-lc', inner], hiddenOpts({
     stdio: 'inherit',
     cwd: root,
@@ -71,16 +73,19 @@ function runDailyMorningPrepWsl() {
 }
 
 function runDailyMorningPrepNative() {
-  return spawnSync(process.execPath, [path.join(root, 'scripts', 'daily-morning-prep.mjs')], {
+  const args = [path.join(root, 'scripts', 'daily-morning-prep.mjs')];
+  if (fast) args.push('--fast');
+  return spawnSync(process.execPath, args, {
     stdio: 'inherit',
     cwd: root,
-    env: { ...process.env, TZ: 'Asia/Tokyo' },
+    env: { ...process.env, TZ: 'Asia/Tokyo', ...(fast ? { MORNING_PREP_FAST: '1' } : {}) },
   });
 }
 
 function runDailyMorningPrepLinux() {
   const printSh = path.join(root, 'scripts', 'print-nvm-node-bin.sh');
-  const inner = `NVMN="$(bash '${printSh}')" && export PATH="$NVMN:$PATH" && cd '${root}' && TZ=Asia/Tokyo node scripts/daily-morning-prep.mjs`;
+  const fastFlag = fast ? ' --fast' : '';
+  const inner = `NVMN="$(bash '${printSh}')" && export PATH="$NVMN:$PATH" && cd '${root}' && TZ=Asia/Tokyo node scripts/daily-morning-prep.mjs${fastFlag}`;
   return spawnSync('bash', ['-lc', inner], {
     stdio: 'inherit',
     cwd: root,
@@ -110,7 +115,7 @@ if (!verifyOnly) {
   }
 
   const t0 = Date.now();
-  console.log(`[morning-prep-ensure] generating (JST ${ymd}) …`);
+  console.log(`[morning-prep-ensure] generating (JST ${ymd})${fast ? ' [fast]' : ''} …`);
   console.log(
     '[morning-prep-ensure] 目安: Windows 約 5〜8 分 / WSL フル RAG 込みで 15〜20 分。Cursor からは kill せず完了まで待つか `npm run morning:ensure` をターミナルで単独実行',
   );

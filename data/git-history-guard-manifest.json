@@ -1,21 +1,21 @@
 {
-  "version": "2026-06-14",
+  "version": "2026-06-19",
   "note": "git-history-alignment が保護するコマンド・緩和禁止パターン。verify:git-history-alignment / git-history-mcp 連動。",
   "generations": [
     {
+      "hash": "f58f655",
+      "label": "feat(cio): session cold-start 統合と朝報 fast モード",
+      "at": "2026-06-19"
+    },
+    {
       "hash": "6a37e1d",
       "label": "feat(cio): 第12/13層 A1-C4 + 674 live-schema ガード + 許容ギャップ運用化",
-      "at": "2026-06-14"
+      "at": "2026-06-19"
     },
     {
       "hash": "ed0fb82",
       "label": "feat(cio): 新規配備MCPの実戦運用化・kintoneライブLinterおよび先祖返り防止監査インフラの完全統合完了",
-      "at": "2026-06-14"
-    },
-    {
-      "hash": "9185feb",
-      "label": "feat(cio): 第12層 kintone-schemaおよびgit-history MCPの追加配備完了",
-      "at": "2026-06-14"
+      "at": "2026-06-19"
     }
   ],
   "protectedCommands": [

@@ -4,10 +4,10 @@
   "lanes": [
     {
       "id": "session-bootstrap",
-      "keywords": ["新規チャット", "復元", "どこまで", "cold-start", "セッション開始"],
+      "keywords": ["新規チャット", "復元", "どこまで", "cold-start", "セッション開始", "朝報"],
       "skill": ".cursor/skills/kintone-session-bootstrap/SKILL.md",
-      "npm": ["cio:session:start", "cio:morning:ready"],
-      "runbook": null
+      "npm": ["cio:session:cold-start", "cio:session:start", "cio:morning:ready"],
+      "runbook": "docs/runbooks/session-cold-start-v1.md"
     },
     {
       "id": "business-improvement",
