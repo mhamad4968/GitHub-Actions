@@ -72,29 +72,9 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-06-03 更新 — 詳細は鏡像を正とする）】
-- **正本**: Desktop **`25-checkpoint-latest.md`**（リポ `chat-sessions/checkpoint-latest.md` と同期）
-- **憲法ジャンル早見**: Desktop **`28-CONSTITUTION-GENRE-MAP.txt`**
-- **Apple ID**: DB **693** / ダッシュ **694** — **本番運用中**（浜田 OK）— 正本 `docs/plans/2026-06-02-apple-id-kintone-spec.md`
-- **6/4**: kintone のみ運用・**Excel 削除**（runbook 未実施）
-- **資格 PPTX**: `C:\tmp\資格取得ロードマップ\…ver.03（方針説明付き）.pptx` — **浜田 OK**
-- **凍結**: 業務改善 kintone **6/8 まで**（Apple ID は Space 21 **独立**）
-
-【次セッション優先（項番 -0 の本題候補・当日確定）】
-- **6/3 既定**: Apple ID 作成 GO（DB + ダッシュ + 移行）
-- レーン宣言: Space 21 — 674/677/業務改善と混同しない
-- 夕反省 **A1–D2** 承認（任意・推奨 A1+B2+B4）
-
-【自動化基盤（要約 / 詳細は checkpoint・health-check）】
-- file-watcher / wipe-guard / morning-prep / health-check / guard:check — **稼働中**（`npm run guard:check`）
-- MCP 一覧・4AI 表: **`docs/mcp-status.md`** + **`28-CONSTITUTION-GENRE-MAP.txt`**
-
-【MCP 構成（2026-05-31 要約）】
-- registry 必須10 + repo-tree / eslint-mcp / kintone-dev / kintone-space / figma 等（**24 servers**）
-- 日常ゲート: **`npm run cio:mcp:env`**（SUMMARY OK 6/6）
-- 画像 MCP **計画削除** — GenerateImage のみ（明示依頼時）
-
-【今日（このセッション）の依頼】
-（ここに自由文で書く。例:「PC 台帳 Day 1 やろう」「○○について教えて」など）
-（本題は **項番 -0** の §41 一問で確認してから着手）
-
+【今やってる主タスク（2026-06-19 自動更新）】
+- 進行中 plan: docs/plans/2026-04-21-new-pc-ledger-spec.md
+- 当日コミット (上位 3):
+  - docs(688): 施工主報告印刷 CLOSED — checkpoint/handoff更新
+  - chore(governance): セッションBUILD監査恒久化とcheckpoint更新
+  - docs(kintone): 2026-06-19 全アプリ台帳・仕様・RAG同期を完了
