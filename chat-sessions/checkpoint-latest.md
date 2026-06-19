@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-06-18 JST — **R21–R24 反映 + 736 担当説明準備**
+**最終更新**: 2026-06-19 JST — **688 施工主報告印刷クローズ + 595/674/JR/VPN 本日対応完了**
 
 ## 凍結（毎セッション先頭）
 | 禁止 | 許可 |
@@ -13,8 +13,10 @@
 | 本番 WF 6段階への無断分割 | test_v3 WF 継続テスト |
 | 評価スナップショット本番投入（未設計確認前） | ガイド doc 更新（完成条件外） |
 
-**次の1手**: **担当説明（736 イメージ確認）** — 先に `npm run jikkou-yosan:pre-demo-gate` → 仕様 §9 + Ctrl+Shift+R 目視  
-**Git**: `3fec05d` + GHA `9a0d178` — pull 推奨  
+**次の1手**: **688 施工主報告印刷** — ユーザー最終目視確認（浜田 OK 済・施工主確認待ち）  
+**Git**: `3d1ae44` — pull 推奨  
+**2026-06-19 本番 BUILD**: 595 rev96 / 674 rev243 / 688 rev34 / 721 rev12 / 734 rev13 / 720 フォーム rev7  
+**監査**: `npm run cio:audit:session-builds:strict` — repo=ledger=live **6/6 OK**（先祖返りなし）  
 **R21–R24**: **浜田 GO 反映済** — `docs/approved-changes/2026-06-18-rules-r21-r24-hamada-go.md`
 **Space 56 進行中**: **実行予算書 v1** — App **735/736** — **BUILD=`2026-06-18-jikkou-yosan-v10-bidir-codes`** rev **29** — 2623001-001 検算 OK
 **R34–R40**: **浜田 GO 反映済** — `docs/approved-changes/2026-06-14-rules-r34-r40-hamada-go.md`
@@ -111,6 +113,25 @@
 
 
 
+
+---
+
+## 2026-06-19 JST — **688 施工主報告印刷 + 関連 Kintone 本日対応（クローズ）**
+
+| 項目 | 内容 |
+|------|------|
+| **688** | `2026-06-19-688-print-rounding-fix` rev **34** — 施工主報告用印刷（5セクション）・足場風速日数丸め・印刷フッター削除 |
+| **595** | `2026-06-19-595-dept-picker-680` rev **96** — 680 所属候補モーダル |
+| **674** | `2026-06-19-674-detail-hide-sidebar` rev **243** — 詳細画面右サイドバー非表示 |
+| **721** | `2026-06-19-jr-ipad-dash-lifecycle-toggle` rev **12** — 有効/廃止トグル |
+| **734** | `2026-06-19-vpn-dash-license-month-compare` rev **13** — ライセンス前回確定比較 |
+| **720** | フォーム rev **7** — 新規採番時下書き必須緩和（customize BUILD 不変） |
+| **733** | snapshot_month / snapshot_json 追加（フォーム rev **7**） |
+| **CI修復** | 削除済 668 を portfolio BUILD 監査対象から除外 |
+| **正本** | `docs/plans/2026-06-13-construction-workdays-excel-20260613.md` §9 / JR・VPN・PC台帳 改定履歴 |
+| **再開条件** | 688 ユーザー確認完了後は本件クローズ。736 担当説明は別セッション |
+
+---
 
 ## 2026-06-14 JST — **社内 Wi-Fi SSID 管理 ver.1 v1 完成（クローズ）**
 

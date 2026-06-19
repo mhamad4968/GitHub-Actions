@@ -261,6 +261,8 @@
     "ict-digest:test:source-region": "npx dotenv -e .env -e .env.proxy -- tsx ict-tech-digest-automation/scripts/test-source-region-curate.mjs",
     "cio:audit:portfolio": "npx dotenv -e .env -e .env.proxy -- node scripts/cio-audit-customize-portfolio.mjs",
     "cio:audit:portfolio:strict": "npx dotenv -e .env -e .env.proxy -- node scripts/cio-audit-customize-portfolio.mjs --strict",
+    "cio:audit:session-builds": "npx dotenv -e .env -e .env.proxy -- node scripts/cio-audit-session-builds.mjs",
+    "cio:audit:session-builds:strict": "npx dotenv -e .env -e .env.proxy -- node scripts/cio-audit-session-builds.mjs --strict",
     "cio:audit:674": "npx dotenv -e .env -e .env.proxy -- node scripts/cio-audit-674-build.mjs",
     "cio:guard:multi-customize": "node scripts/cio-after-customize-change.mjs",
     "cio:periodic:monthly": "npm run cio:audit:portfolio:strict && npx dotenv -e .env -e .env.proxy -- node scripts/verify-kintone-live-schema.mjs --portfolio",
