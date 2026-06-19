@@ -53,13 +53,14 @@ Shift-JIS として読み込み、日本語文字列内の `"` や `}` が壊れ
 2. **`PCキッティング_START.bat`** で起動（`kitting-run.ps1` 経由 — 初回に BOM を自動修復）
 3. 開発側で BOM を一括適用する場合: `templates\pc-kitting\add-bom.ps1` を実行
 
-## 起動エラー（'l' / 'ITDIR' / Script not found）
+## 起動エラー（'l' / 'ITDIR' / Script not found / `・ｿ@echo`）
 
-**原因**: 旧版の .bat に日本語パスが直書きされており、UTF-8 BOM なしでコピーすると
-cmd.exe が行を壊して `KITDIR` が空になります。
+**原因**: `.bat` に **UTF-8 BOM** が付いている（旧 `add-bom.ps1` が .bat にも BOM を付けていた）。
+cmd.exe が先頭行を `・ｿ@echo off` のように壊し、続く行も `setlocal`→`l`、`set ROOT`→`OOT=` となります。
 
 **対処**: リポ `templates\pc-kitting\PCキッテング用\` から **フォルダごと** デスクトップへ
-上書きコピーし、**ASCII 版** `PCキッティング_START.bat` で再実行してください。
+上書きコピーし、**ASCII 版（BOM なし）** `PCキッティング_START.bat` で再実行してください。
+開発 PC では `templates\pc-kitting\fix-bat-encoding.ps1` で .bat の BOM を除去してから配布できます。
 （サブフォルダ名は `PCキッティング` のままで可 — .bat は中の ps1 を自動検出します）
 
 ## 手動で再起動後フェーズだけ実行

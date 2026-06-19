@@ -1,12 +1,13 @@
 (function () {
   "use strict";
 
-  /** VPNアカウント管理台帳 — DB REST CRUD + ライセンス集計 + 利用者印刷 */
-  var BUILD = "2026-06-16-vpn-account-dash-license-all-depts";
+  /** VPNアカウント管理台帳 — DB REST CRUD + ライセンス集計 + 利用者印刷 + 月次前回比 */
+  var BUILD = "2026-06-19-vpn-dash-license-month-compare";
   var APP_DB = 733;
 
   var VPN_DOMAIN = "@kensetsutoso.fre";
   var RECORD_KIND_SETTING = "設定";
+  var RECORD_KIND_LICENSE_SNAPSHOT = "月次集計";
   var LICENSE_UNIT = 550;
   var PAGE_SIZE = 100;
 
@@ -56,6 +57,8 @@
     password: "password",
     registered_date: "registered_date",
     note: "note",
+    snapshot_month: "snapshot_month",
+    snapshot_json: "snapshot_json",
   };
 
   var API_FIELDS = [
@@ -74,6 +77,7 @@
   var state = {
     records: [],
     settings: { id: "", revision: "", nextUserNum: 80 },
+    licenseSnapshots: [],
     search: "",
     loading: false,
   };
@@ -102,6 +106,46 @@
       if (p.type === "day") d = p.value;
     });
     return y + "-" + mo + "-" + d;
+  }
+
+  function currentJstYm() {
+    return todayJstYmd().slice(0, 7);
+  }
+
+  function formatDiffCount(n) {
+    if (n == null) return "—";
+    if (n > 0) return "+" + n;
+    if (n < 0) return String(n);
+    return "±0";
+  }
+
+  function formatDiffYen(n) {
+    if (n == null) return "—";
+    var sign = n > 0 ? "+" : n < 0 ? "" : "±";
+    if (n === 0) return "±0 円";
+    return sign + n.toLocaleString("ja-JP") + " 円";
+  }
+
+  function diffClass(n) {
+    if (n == null) return "vpn-diff-none";
+    if (n > 0) return "vpn-diff-up";
+    if (n < 0) return "vpn-diff-down";
+    return "vpn-diff-zero";
+  }
+
+  function parseSnapshotPayload(raw) {
+    if (!raw) return null;
+    try {
+      var j = JSON.parse(String(raw));
+      if (!j || typeof j !== "object") return null;
+      return j;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function snapshotVpnIdForMonth(ym) {
+    return "__license_snapshot_" + String(ym).replace(/-/g, "") + "__@kensetsutoso.fre";
   }
 
   function val(rec, code) {
@@ -198,18 +242,50 @@
     });
   }
 
+  function fetchLicenseSnapshots() {
+    return apiGet("/k/v1/records.json", {
+      app: APP_DB,
+      query:
+        'record_kind in ("' +
+        RECORD_KIND_LICENSE_SNAPSHOT +
+        '") order by snapshot_month desc limit 100',
+      fields: ["$id", "$revision", FC.record_kind, FC.snapshot_month, FC.snapshot_json],
+    }).then(function (resp) {
+      state.licenseSnapshots = (resp.records || [])
+        .map(function (rec) {
+          return {
+            id: val(rec, "$id"),
+            revision: val(rec, "$revision"),
+            month: val(rec, FC.snapshot_month),
+            data: parseSnapshotPayload(val(rec, FC.snapshot_json)),
+          };
+        })
+        .filter(function (s) {
+          return /^\d{4}-\d{2}$/.test(s.month);
+        })
+        .sort(function (a, b) {
+          return a.month < b.month ? 1 : a.month > b.month ? -1 : 0;
+        });
+    });
+  }
+
   function fetchAccounts() {
-    return fetchPaged('record_kind not in ("' + RECORD_KIND_SETTING + '") order by registered_date desc').then(
-      function (rows) {
-        state.records = rows.map(flatten);
-      },
-    );
+    return fetchPaged(
+      'record_kind not in ("' +
+        RECORD_KIND_SETTING +
+        '", "' +
+        RECORD_KIND_LICENSE_SNAPSHOT +
+        '") order by registered_date desc',
+    ).then(function (rows) {
+      state.records = rows.map(flatten);
+    });
   }
 
   function reloadAll() {
     state.loading = true;
     renderTable();
     return fetchSettings()
+      .then(fetchLicenseSnapshots)
       .then(fetchAccounts)
       .then(function () {
         state.loading = false;
@@ -249,38 +325,216 @@
     return { total: total, totalYen: total * LICENSE_UNIT, rows: rows };
   }
 
+  function latestSnapshotForCompare() {
+    if (!state.licenseSnapshots.length) return null;
+    return state.licenseSnapshots[0];
+  }
+
+  function snapshotForMonth(ym) {
+    return state.licenseSnapshots.find(function (s) {
+      return s.month === ym;
+    });
+  }
+
+  function buildComparisonRows(current) {
+    var prevSnap = latestSnapshotForCompare();
+    var prevCounts = {};
+    var prevTotal = null;
+    if (prevSnap && prevSnap.data) {
+      prevTotal = Number(prevSnap.data.total);
+      if (isNaN(prevTotal)) prevTotal = null;
+      (prevSnap.data.rows || []).forEach(function (r) {
+        prevCounts[r.dept] = Number(r.count) || 0;
+      });
+    }
+    var hasPrev = !!prevSnap;
+    var rows = current.rows.map(function (r) {
+      var prev = hasPrev ? prevCounts[r.dept] || 0 : null;
+      var diff = hasPrev ? r.count - prev : null;
+      return {
+        dept: r.dept,
+        count: r.count,
+        yen: r.yen,
+        prev: prev,
+        diff: diff,
+        prevYen: hasPrev ? prev * LICENSE_UNIT : null,
+        diffYen: hasPrev ? diff * LICENSE_UNIT : null,
+      };
+    });
+    var totalDiff = hasPrev && prevTotal != null ? current.total - prevTotal : null;
+    return {
+      rows: rows,
+      hasPrev: hasPrev,
+      prevSnap: prevSnap,
+      prevTotal: prevTotal,
+      prevTotalYen: hasPrev && prevTotal != null ? prevTotal * LICENSE_UNIT : null,
+      totalDiff: totalDiff,
+      totalDiffYen: totalDiff != null ? totalDiff * LICENSE_UNIT : null,
+    };
+  }
+
+  function confirmLicenseSnapshot() {
+    var ym = currentJstYm();
+    var b = licenseBreakdown();
+    var existing = snapshotForMonth(ym);
+    var msg =
+      "対象月: " +
+      ym +
+      "\n合計: " +
+      b.total +
+      " 口 / " +
+      b.totalYen.toLocaleString("ja-JP") +
+      " 円\n\n" +
+      (existing
+        ? "この月は既に確定済みです。現在の集計で上書きします。"
+        : "請求書照合後、この月の集計を確定します。") +
+      "\n\nよろしいですか？";
+    if (!window.confirm(msg)) return;
+
+    var payload = {
+      total: b.total,
+      totalYen: b.totalYen,
+      rows: b.rows.map(function (r) {
+        return { dept: r.dept, count: r.count };
+      }),
+      savedAt: new Date().toISOString(),
+      build: BUILD,
+    };
+    var rec = {
+      record_kind: { value: RECORD_KIND_LICENSE_SNAPSHOT },
+      snapshot_month: { value: ym },
+      snapshot_json: { value: JSON.stringify(payload) },
+      account_label: { value: "（月次集計 " + ym + "）" },
+      dept: { value: "システム推進室" },
+      vpn_id: { value: snapshotVpnIdForMonth(ym) },
+      password: { value: "N/A" },
+      registered_date: { value: todayJstYmd() },
+      note: { value: "734 ライセンス集計確定" },
+    };
+
+    var chain;
+    if (existing && existing.id) {
+      chain = apiPut("/k/v1/record.json", {
+        app: APP_DB,
+        id: existing.id,
+        revision: existing.revision,
+        record: {
+          snapshot_json: rec.snapshot_json,
+          registered_date: rec.registered_date,
+          note: rec.note,
+        },
+      });
+    } else {
+      chain = apiPost("/k/v1/record.json", { app: APP_DB, record: rec });
+    }
+
+    chain
+      .then(function () {
+        alert(ym + " の集計を確定しました。来月以降、前回確定分との比較に使われます。");
+        return reloadAll();
+      })
+      .catch(function (e) {
+        alert("確定の保存に失敗しました: " + (e.message || e));
+      });
+  }
+
   function renderLicensePanel() {
     var body = document.getElementById("vpn-license-body");
     var sum = document.getElementById("vpn-license-summary-text");
     if (!body) return;
     var b = licenseBreakdown();
+    var cmp = buildComparisonRows(b);
+    var ym = currentJstYm();
+    var confirmedThisMonth = snapshotForMonth(ym);
+
     if (sum) {
-      sum.textContent =
+      var sumText =
         "拠点単位ライセンス集計（" +
         LICENSE_UNIT +
-        " 円/口） — 合計 " +
+        " 円/口） — 現在 " +
         b.total +
         " 口 / " +
         b.totalYen.toLocaleString("ja-JP") +
         " 円";
+      if (cmp.hasPrev && cmp.prevSnap) {
+        sumText +=
+          "（前回確定 " +
+          cmp.prevSnap.month +
+          ": " +
+          (cmp.prevTotal != null ? cmp.prevTotal + " 口" : "—") +
+          " / 差分 " +
+          formatDiffCount(cmp.totalDiff) +
+          " 口 / " +
+          formatDiffYen(cmp.totalDiffYen) +
+          "）";
+      } else {
+        sumText += "（前回確定データなし — 確定後、次回から比較できます）";
+      }
+      sum.textContent = sumText;
     }
-    var lines = b.rows
+
+    var lines = cmp.rows
       .map(function (r) {
         return (
           "<tr><td>" +
           esc(r.dept) +
-          "</td><td class=\"vpn-num\">" +
+          '</td><td class="vpn-num">' +
           esc(String(r.count)) +
-          " 口</td><td class=\"vpn-num\">" +
+          ' 口</td><td class="vpn-num">' +
+          (r.prev == null ? "—" : esc(String(r.prev)) + " 口") +
+          '</td><td class="vpn-num ' +
+          diffClass(r.diff) +
+          '">' +
+          esc(formatDiffCount(r.diff)) +
+          '</td><td class="vpn-num">' +
           esc(r.yen.toLocaleString("ja-JP")) +
-          " 円</td></tr>"
+          ' 円</td><td class="vpn-num ' +
+          diffClass(r.diffYen) +
+          '">' +
+          esc(formatDiffYen(r.diffYen)) +
+          "</td></tr>"
         );
       })
       .join("");
+
+    var footNote = cmp.hasPrev
+      ? '<p class="vpn-license-note">前回確定: <strong>' +
+        esc(cmp.prevSnap.month) +
+        "</strong> のスナップショットと、現在の稼働アカウント数を比較しています。</p>"
+      : '<p class="vpn-license-note">前回確定データがありません。請求書と照合後、「' +
+        esc(ym) +
+        ' の集計を確定」を押してください。</p>';
+
+    var confirmLabel = ym + " の集計を確定";
+    if (confirmedThisMonth) {
+      confirmLabel += "（再確定）";
+    }
+
     body.innerHTML =
-      '<table class="vpn-license-table"><thead><tr><th>所属</th><th>口数</th><th>金額</th></tr></thead><tbody>' +
+      footNote +
+      '<table class="vpn-license-table"><thead><tr><th>所属</th><th>現在</th><th>前回確定</th><th>差分</th><th>現在金額</th><th>前月比</th></tr></thead><tbody>' +
       lines +
-      "</tbody></table>";
+      '<tr class="vpn-license-total"><td><strong>合計</strong></td><td class="vpn-num"><strong>' +
+      esc(String(b.total)) +
+      ' 口</strong></td><td class="vpn-num"><strong>' +
+      (cmp.prevTotal == null ? "—" : esc(String(cmp.prevTotal)) + " 口") +
+      '</strong></td><td class="vpn-num ' +
+      diffClass(cmp.totalDiff) +
+      '"><strong>' +
+      esc(formatDiffCount(cmp.totalDiff)) +
+      '</strong></td><td class="vpn-num"><strong>' +
+      esc(b.totalYen.toLocaleString("ja-JP")) +
+      ' 円</strong></td><td class="vpn-num ' +
+      diffClass(cmp.totalDiffYen) +
+      '"><strong>' +
+      esc(formatDiffYen(cmp.totalDiffYen)) +
+      '</strong></td></tr></tbody></table>' +
+      '<div class="vpn-license-actions"><button type="button" id="vpn-license-confirm" class="kintoneplugin-button-dialog-ok">' +
+      esc(confirmLabel) +
+      "</button></div>";
+
+    var btn = document.getElementById("vpn-license-confirm");
+    if (btn) btn.onclick = confirmLicenseSnapshot;
   }
 
   function updateNextIdBanner() {
@@ -752,9 +1006,16 @@
       ".vpn-license-acc[open]>summary::before{content:'▼ ';}" +
       ".vpn-license-acc[open]>summary{border-bottom:1px solid #e2e8f0;}" +
       ".vpn-license-body{padding:12px 16px 14px;}" +
-      ".vpn-license-table{border-collapse:collapse;width:100%;max-width:720px;font-size:14px;}" +
+      ".vpn-license-table{border-collapse:collapse;width:100%;max-width:960px;font-size:14px;}" +
       ".vpn-license-table th,.vpn-license-table td{border:1px solid #e2e8f0;padding:6px 10px;text-align:left;}" +
       ".vpn-license-table th{background:#f1f5f9;}" +
+      ".vpn-license-total td{background:#f8fafc;}" +
+      ".vpn-license-note{font-size:13px;color:#475569;margin:0 0 10px;line-height:1.5;}" +
+      ".vpn-license-actions{margin-top:12px;}" +
+      ".vpn-diff-up{color:#15803d;font-weight:700;}" +
+      ".vpn-diff-down{color:#b91c1c;font-weight:700;}" +
+      ".vpn-diff-zero{color:#64748b;}" +
+      ".vpn-diff-none{color:#94a3b8;}" +
       ".vpn-num{text-align:right;font-variant-numeric:tabular-nums;}" +
       ".vpn-table-wrap{overflow:auto;max-height:calc(100vh - 360px);border:1px solid #cbd5e1;border-radius:6px;}" +
       ".vpn-table{border-collapse:collapse;width:100%;font-size:15px;min-width:1080px;}" +

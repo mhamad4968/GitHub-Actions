@@ -3,6 +3,7 @@
 
   /**
    * 595 社員マスタ
+   * BUILD: 2026-06-19-595-dept-picker-680（新規・編集: 680 所属候補モーダル＋手入力併用）
    * BUILD: 2026-06-17-595-emp-id-auto-assign（新規/未付番保存時に EMP-xxxx 自動採番）
    * BUILD: 2026-06-14-595-storage-media-ledger-mirror
    * BUILD: 2026-05-12-595-no594-rest（旧594への REST・リンク廃止・674同期のみ）
@@ -11,8 +12,13 @@
    * - 詳細・編集: サブテーブル（674）からレコードへのリンクをヘッダ下に表示
    * - 保存: 在籍=退職かつ退職日空→当日を退職日に設定／**emp_id 空なら EMP-xxxx 自動採番**
    * - 保存成功後: 退職時は 674 を保管＋アカウントクリア＋備考追記／それ以外は 674・714・716 所属ミラー
+   * - 新規・編集: 680 所属候補マスタから所属名・所属グループを選ぶモーダル（手入力も可）
    */
 
+  var BUILD = "2026-06-19-595-dept-picker-680";
+
+  /** 新・PC台帳 所属候補マスタ（674 共有・JR と共用） */
+  var APP_DEPT_MASTER_595 = "680";
   /** 新・PC台帳 ver.1（674） */
   var APP674 = "674";
   /** ソフトウエア台帳 DB（714）— 595 所属ミラー */
@@ -63,6 +69,8 @@
   var FC595_PC674_ID = "pc_674_record_id";
 
   var LINK_BOX_ID = "jbis-595-pc-ledger-link-box";
+  var DEPT_PICKER_WRAP_ID = "jbis-595-dept-picker-wrap";
+  var DEPT_MASTER_MODAL_ID_595 = "jbis-595-dept-master-modal";
   var INDEX_SEARCH_WRAP_ID = "jbis-595-index-search-wrap";
   var STORAGE_KEY_595_IDX_KW = "jbis595-index-search-kw";
   var INDEX_SEARCH_MAX_IDS = 800;
@@ -462,6 +470,320 @@
     }
   }
 
+  /** 680 取得失敗時の埋め込み候補（scripts/data/pc-ledger-dept-master-seed-records.json と同期） */
+  var DEPT_MASTER_FALLBACK_INLINE_595 =
+    "役員室|honsya,顧問室|honsya,顧問|honsya,出向者|honsya,総務部|honsya,経理部|honsya,経営企画部|honsya,人事研修部|honsya,安全推進部|honsya,施工推進部|honsya,メンテナンス技術部|honsya,塗装技術部|honsya,品質管理部|honsya," +
+    "東北支店|tohoku,秋田営業所|tohoku,盛岡営業所|tohoku,仙台営業所|tohoku," +
+    "関越支店|kan-etsu,新潟営業所|kan-etsu,長野営業所|kan-etsu,高崎営業所|kan-etsu," +
+    "東京支店|tokyo,千葉営業所|tokyo,水戸営業所|tokyo,鎌ヶ谷事務所|tokyo," +
+    "東海支店|tokai,東京営業所|tokai,静岡営業所|tokai,名古屋営業所|tokai,関西営業所|tokai," +
+    "札幌支店|tokyo,首都圏支店|tokyo,リフォーム事業統括部|reform,札幌支店|reform,首都圏支店|reform,鉄構支店|tekko,湾岸工事所|wangan";
+
+  var deptMasterRowsCache595 = null;
+
+  function getRecordHeaderMenuSpace595() {
+    return (
+      (kintone.app && kintone.app.record && kintone.app.record.getHeaderMenuSpaceElement && kintone.app.record.getHeaderMenuSpaceElement()) ||
+      (typeof kintone !== "undefined" &&
+        kintone.mobile &&
+        kintone.mobile.app &&
+        kintone.mobile.app.record &&
+        kintone.mobile.app.record.getHeaderMenuSpaceElement &&
+        kintone.mobile.app.record.getHeaderMenuSpaceElement()) ||
+      null
+    );
+  }
+
+  function parseDeptMasterFallbackRows595() {
+    var out = [];
+    var parts = String(DEPT_MASTER_FALLBACK_INLINE_595 || "").split(",");
+    for (var i = 0; i < parts.length; i++) {
+      var seg = String(parts[i] || "").trim();
+      if (!seg) continue;
+      var bar = seg.indexOf("|");
+      var dept = (bar === -1 ? seg : seg.slice(0, bar)).trim();
+      var grp = (bar === -1 ? "" : seg.slice(bar + 1)).trim();
+      if (dept) out.push({ dept_name: dept, group_name: grp });
+    }
+    return out;
+  }
+
+  function fetchDeptMasterRows595() {
+    if (deptMasterRowsCache595 && deptMasterRowsCache595.length) {
+      return Promise.resolve(deptMasterRowsCache595);
+    }
+    var app = String(APP_DEPT_MASTER_595 || "").trim();
+    if (!app || app === "0") {
+      deptMasterRowsCache595 = parseDeptMasterFallbackRows595();
+      return Promise.resolve(deptMasterRowsCache595);
+    }
+    var url = kintone.api.url("/k/v1/records.json", true);
+    return kintone
+      .api(url, "GET", {
+        app: app,
+        query: "order by $id asc limit 500",
+        fields: ["dept_name", "group_name"],
+      })
+      .then(function (resp) {
+        var rows = [];
+        var recs = resp.records || [];
+        for (var i = 0; i < recs.length; i++) {
+          var r = recs[i];
+          var d = (r.dept_name && r.dept_name.value) || "";
+          var g = (r.group_name && r.group_name.value) || "";
+          if (String(d).trim()) {
+            rows.push({ dept_name: String(d).trim(), group_name: String(g).trim() });
+          }
+        }
+        deptMasterRowsCache595 = rows.length ? rows : parseDeptMasterFallbackRows595();
+        return deptMasterRowsCache595;
+      })
+      .catch(function (e) {
+        console.warn("[jbis 595 dept master fetch]", e);
+        deptMasterRowsCache595 = parseDeptMasterFallbackRows595();
+        return deptMasterRowsCache595;
+      });
+  }
+
+  function applyDeptMasterPick595(dept, grp) {
+    var holder =
+      (kintone.app && kintone.app.record && kintone.app.record.get && kintone.app.record.get()) ||
+      (kintone.mobile &&
+        kintone.mobile.app &&
+        kintone.mobile.app.record &&
+        kintone.mobile.app.record.get &&
+        kintone.mobile.app.record.get()) ||
+      null;
+    if (!holder || !holder.record) return;
+    if (holder.record[FC595_DEPT]) holder.record[FC595_DEPT].value = dept;
+    if (holder.record[FC595_GROUP]) holder.record[FC595_GROUP].value = grp;
+    if (kintone.app && kintone.app.record && kintone.app.record.set) {
+      kintone.app.record.set(holder);
+    } else if (
+      kintone.mobile &&
+      kintone.mobile.app &&
+      kintone.mobile.app.record &&
+      kintone.mobile.app.record.set
+    ) {
+      kintone.mobile.app.record.set(holder);
+    }
+  }
+
+  function closeDeptMasterModal595() {
+    var m = document.getElementById(DEPT_MASTER_MODAL_ID_595);
+    if (m) m.style.display = "none";
+  }
+
+  function renderDeptMasterResults595(container, rows, kw) {
+    container.textContent = "";
+    var k = String(kw || "")
+      .trim()
+      .toLowerCase();
+    var filtered = !k
+      ? rows.slice()
+      : rows.filter(function (r) {
+          var a = (r.dept_name + " " + r.group_name).toLowerCase();
+          return a.indexOf(k) !== -1;
+        });
+    if (!filtered.length) {
+      var p = document.createElement("p");
+      p.style.cssText = "margin:8px 0;color:#6c757d;font-size:13px;line-height:1.5;";
+      p.textContent = "該当する行がありません。キーワードを変えるか、一覧をスクロールしてください。";
+      container.appendChild(p);
+      return;
+    }
+    for (var i = 0; i < filtered.length; i++) {
+      (function (r) {
+        var item = document.createElement("button");
+        item.type = "button";
+        item.style.cssText =
+          "display:block;width:100%;text-align:left;padding:10px 12px;margin:0 0 6px;border:1px solid #dee2e6;border-radius:4px;background:#fff;cursor:pointer;font-size:14px;line-height:1.4;";
+        item.textContent = r.dept_name + (r.group_name ? "　／　" + r.group_name : "");
+        item.addEventListener("mousedown", function (ev) {
+          ev.preventDefault();
+          applyDeptMasterPick595(r.dept_name, r.group_name);
+          closeDeptMasterModal595();
+        });
+        container.appendChild(item);
+      })(filtered[i]);
+    }
+  }
+
+  function runDeptMasterModalFilter595() {
+    var modal = document.getElementById(DEPT_MASTER_MODAL_ID_595);
+    if (!modal) return;
+    var input = modal.querySelector("[data-jbis595-dept-q]");
+    var container = modal.querySelector("[data-jbis595-dept-results]");
+    if (!input || !container) return;
+    var kw = String(input.value || "").trim();
+    fetchDeptMasterRows595().then(function (rows) {
+      renderDeptMasterResults595(container, rows, kw);
+    });
+  }
+
+  function ensureDeptMasterModal595() {
+    var backdrop = document.getElementById(DEPT_MASTER_MODAL_ID_595);
+    if (backdrop) return backdrop;
+
+    backdrop = document.createElement("div");
+    backdrop.id = DEPT_MASTER_MODAL_ID_595;
+    backdrop.style.cssText =
+      "display:none;position:fixed;inset:0;z-index:100001;align-items:center;justify-content:center;" +
+      "padding:16px;box-sizing:border-box;background:rgba(33,37,41,.48);";
+    backdrop.setAttribute("role", "dialog");
+    backdrop.setAttribute("aria-modal", "true");
+    backdrop.addEventListener("click", function (e) {
+      if (e.target === backdrop) closeDeptMasterModal595();
+    });
+
+    var panel = document.createElement("div");
+    panel.style.cssText =
+      "background:#fff;border-radius:8px;max-width:560px;width:100%;max-height:88vh;overflow:hidden;display:flex;" +
+      "flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.2);";
+    panel.addEventListener("click", function (e) {
+      e.stopPropagation();
+    });
+
+    var head = document.createElement("div");
+    head.style.cssText = "padding:14px 16px;border-bottom:1px solid #dee2e6;";
+    var h = document.createElement("div");
+    h.style.cssText = "font-weight:bold;font-size:16px;color:#052c65;";
+    h.textContent = "所属候補を選ぶ（680）";
+    head.appendChild(h);
+    var sub = document.createElement("div");
+    sub.style.cssText = "font-size:12px;color:#495057;margin-top:6px;line-height:1.5;";
+    sub.textContent =
+      "行を押すと「所属名」「所属グループ」に反映されます。680 に無い所属は従来どおり手入力もできます。";
+    head.appendChild(sub);
+
+    var body = document.createElement("div");
+    body.style.cssText = "padding:12px 16px;flex:1;min-height:0;display:flex;flex-direction:column;gap:10px;";
+
+    var row = document.createElement("div");
+    row.style.cssText = "display:flex;flex-wrap:wrap;gap:8px;align-items:center;";
+    var inp = document.createElement("input");
+    inp.type = "text";
+    inp.setAttribute("data-jbis595-dept-q", "1");
+    inp.placeholder = "所属名・グループの一部で絞り込み";
+    inp.style.cssText =
+      "flex:1;min-width:160px;padding:8px 10px;font-size:14px;border:1px solid #ced4da;border-radius:4px;box-sizing:border-box;";
+    var filterBtn = document.createElement("button");
+    filterBtn.type = "button";
+    filterBtn.textContent = "絞り込み";
+    filterBtn.style.cssText =
+      "padding:8px 16px;font-weight:bold;background:#198754;color:#fff;border:none;border-radius:4px;cursor:pointer;";
+    filterBtn.addEventListener("click", function () {
+      runDeptMasterModalFilter595();
+    });
+    inp.addEventListener("keydown", function (ev) {
+      if (ev.key === "Enter") {
+        ev.preventDefault();
+        runDeptMasterModalFilter595();
+      }
+    });
+    row.appendChild(inp);
+    row.appendChild(filterBtn);
+    body.appendChild(row);
+
+    var results = document.createElement("div");
+    results.setAttribute("data-jbis595-dept-results", "1");
+    results.style.cssText =
+      "overflow-y:auto;flex:1;min-height:120px;max-height:46vh;border:1px solid #e9ecef;border-radius:4px;padding:8px;background:#f8f9fa;";
+    body.appendChild(results);
+
+    var foot = document.createElement("div");
+    foot.style.cssText = "padding:12px 16px;border-top:1px solid #dee2e6;display:flex;justify-content:flex-end;gap:8px;";
+    var closeBtn = document.createElement("button");
+    closeBtn.type = "button";
+    closeBtn.textContent = "閉じる";
+    closeBtn.style.cssText =
+      "padding:6px 14px;border:1px solid #6c757d;background:#fff;border-radius:4px;cursor:pointer;font-size:13px;";
+    closeBtn.addEventListener("click", function () {
+      closeDeptMasterModal595();
+    });
+    foot.appendChild(closeBtn);
+
+    panel.appendChild(head);
+    panel.appendChild(body);
+    panel.appendChild(foot);
+    backdrop.appendChild(panel);
+    document.body.appendChild(backdrop);
+
+    document.addEventListener(
+      "keydown",
+      function jbis595DeptModalEsc(ev) {
+        var m = document.getElementById(DEPT_MASTER_MODAL_ID_595);
+        if (!m || m.style.display === "none") return;
+        if (ev.key === "Escape") closeDeptMasterModal595();
+      },
+      true
+    );
+    return backdrop;
+  }
+
+  function openDeptMasterModal595() {
+    var holder =
+      (kintone.app && kintone.app.record && kintone.app.record.get && kintone.app.record.get()) ||
+      null;
+    if (!holder || !holder.record) {
+      window.alert("フォームの準備ができていません。画面を開き直してからお試しください。");
+      return;
+    }
+    var backdrop = ensureDeptMasterModal595();
+    var input = backdrop.querySelector("[data-jbis595-dept-q]");
+    var container = backdrop.querySelector("[data-jbis595-dept-results]");
+    if (input) input.value = "";
+    backdrop.style.display = "flex";
+    fetchDeptMasterRows595().then(function (rows) {
+      if (container) renderDeptMasterResults595(container, rows, "");
+    });
+    if (input) {
+      try {
+        input.focus();
+      } catch (ignore) {
+        /* focus optional */
+      }
+    }
+  }
+
+  function removeDeptPickerWrap595() {
+    var el = document.getElementById(DEPT_PICKER_WRAP_ID);
+    if (el && el.parentNode) el.parentNode.removeChild(el);
+  }
+
+  function mountDeptPickerButton595() {
+    removeDeptPickerWrap595();
+    var space = getRecordHeaderMenuSpace595();
+    if (!space) return;
+
+    var wrap = document.createElement("div");
+    wrap.id = DEPT_PICKER_WRAP_ID;
+    wrap.style.cssText = "margin:0 0 10px;padding:0;";
+
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = "📋 所属候補から選ぶ（680）";
+    btn.setAttribute("aria-label", "所属候補から選ぶ（680）");
+    btn.style.cssText =
+      "padding:8px 14px;font-weight:bold;font-size:13px;background:#0d6efd;color:#fff;border:none;border-radius:6px;cursor:pointer;";
+    btn.addEventListener("click", function () {
+      openDeptMasterModal595();
+    });
+
+    var hint = document.createElement("span");
+    hint.style.cssText = "margin-left:10px;font-size:12px;color:#495057;";
+    hint.textContent = "所属名・所属グループを一括入力（手入力も可）";
+
+    wrap.appendChild(btn);
+    wrap.appendChild(hint);
+
+    if (space.firstChild) {
+      space.insertBefore(wrap, space.firstChild);
+    } else {
+      space.appendChild(wrap);
+    }
+  }
+
   var showEvents595 = [
     "app.record.detail.show",
     "app.record.edit.show",
@@ -473,6 +795,21 @@
       mountPcLedgerLinkBox595(event.record);
     } catch (e) {
       console.warn("[jbis 595 pc-ledger links ui]", e);
+    }
+    return event;
+  });
+
+  var formEditEvents595 = [
+    "app.record.create.show",
+    "app.record.edit.show",
+    "mobile.app.record.create.show",
+    "mobile.app.record.edit.show",
+  ];
+  kintone.events.on(formEditEvents595, function (event) {
+    try {
+      mountDeptPickerButton595();
+    } catch (e) {
+      console.warn("[jbis 595 dept picker ui]", e);
     }
     return event;
   });

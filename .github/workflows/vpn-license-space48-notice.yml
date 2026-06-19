@@ -1,0 +1,45 @@
+# VPN 734: Space 48 注意書き（733 未確定・JST 28日〜翌1日のみ表示）
+#
+# ■ スケジュール: 毎日 00:00 UTC ≈ 09:00 JST（期間外はスクリプトが削除）
+# ■ 手動: workflow_dispatch 可
+#
+# ■ Secrets: KINTONE_BASE_URL / KINTONE_USERNAME / KINTONE_PASSWORD
+#   任意: KINTONE_BASIC_AUTH_*
+
+name: vpn-license-space48-notice
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vpn-license-space48-notice
+  cancel-in-progress: false
+
+jobs:
+  notice:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      KINTONE_BASE_URL: ${{ secrets.KINTONE_BASE_URL }}
+      KINTONE_USERNAME: ${{ secrets.KINTONE_USERNAME }}
+      KINTONE_PASSWORD: ${{ secrets.KINTONE_PASSWORD }}
+      KINTONE_BASIC_AUTH_USERNAME: ${{ secrets.KINTONE_BASIC_AUTH_USERNAME }}
+      KINTONE_BASIC_AUTH_PASSWORD: ${{ secrets.KINTONE_BASIC_AUTH_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: ".nvmrc"
+          cache: npm
+
+      - name: npm ci
+        run: npm ci
+
+      - name: Update Space 48 VPN license notice
+        run: npm run vpn-account:space48-notice:gha

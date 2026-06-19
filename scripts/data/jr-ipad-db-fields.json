@@ -47,7 +47,7 @@
       "type": "DROP_DOWN",
       "code": "mgmt_dept",
       "label": "管理部署",
-      "required": true,
+      "required": false,
       "noLabel": false,
       "defaultValue": "",
       "options": {
@@ -154,7 +154,7 @@
       "type": "SINGLE_LINE_TEXT",
       "code": "phone_number",
       "label": "電話番号",
-      "required": true,
+      "required": false,
       "noLabel": false,
       "unique": true,
       "defaultValue": ""
@@ -196,7 +196,7 @@
       "type": "SINGLE_LINE_TEXT",
       "code": "model",
       "label": "モデル",
-      "required": true,
+      "required": false,
       "noLabel": false,
       "defaultValue": ""
     },

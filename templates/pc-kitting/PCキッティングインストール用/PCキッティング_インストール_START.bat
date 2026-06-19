@@ -1,4 +1,4 @@
-﻿@echo off
+@echo off
 rem JBIS PC post-domain install launcher (ASCII-only .bat for cmd.exe)
 chcp 65001 >nul 2>&1
 setlocal EnableDelayedExpansion

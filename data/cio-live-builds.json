@@ -2,11 +2,11 @@
   "version": 1,
   "apps": {
     "595": {
-      "build": "2026-06-17-595-emp-id-auto-assign（新規/未付番保存時に",
-      "fileKey": "f010d86a-3271-48c1-a557-093e69f1df3e",
-      "revision": "94",
-      "relPath": ".kintone-deploy/upload-595.js",
-      "deployedAt": "2026-06-17T13:24:13.454Z",
+      "build": "2026-06-19-595-dept-picker-680",
+      "fileKey": "d9754327-5627-45e7-a3a4-78059977fcab",
+      "revision": "95",
+      "relPath": "customize/595/desktop.js",
+      "deployedAt": "2026-06-19T09:56:51.000Z",
       "note": null
     },
     "627": {
@@ -26,11 +26,11 @@
       "note": null
     },
     "674": {
-      "build": "2026-06-09-674-next-serial-label",
-      "fileKey": "165be2df-f6fc-4159-b726-f8bcbdce2244",
-      "revision": "241",
-      "relPath": ".kintone-deploy/upload-674.js",
-      "deployedAt": "2026-06-09T12:18:28.773Z",
+      "build": "2026-06-19-674-detail-hide-sidebar",
+      "fileKey": "0dbb4061-8af0-4e77-8066-5efab2d3d1a9",
+      "revision": "242",
+      "relPath": "customize/new-pc-ledger-v1/desktop.js",
+      "deployedAt": "2026-06-19T09:50:53.034Z",
       "note": null
     },
     "677": {
@@ -90,11 +90,11 @@
       "note": null
     },
     "688": {
-      "build": "2026-06-13-688-ref5yr-zero-year-register",
-      "fileKey": "3c92d47c-b7d9-482d-b837-0555f94f7c5c",
-      "revision": "24",
-      "relPath": ".kintone-deploy/upload-688.js",
-      "deployedAt": "2026-06-13T01:12:27.725Z",
+      "build": "2026-06-19-688-print-rounding-fix",
+      "fileKey": "f6226064-b3a5-4c97-8cf3-d981f5608625",
+      "revision": "33",
+      "relPath": "customize/688/desktop.js",
+      "deployedAt": "2026-06-19T11:54:29.818Z",
       "note": null
     },
     "693": {
@@ -282,11 +282,11 @@
       "note": null
     },
     "721": {
-      "build": "2026-06-18-jr-ipad-dash-list-print-landscape",
-      "fileKey": "1505144a-b3e2-4868-854b-3a6b9478abf7",
-      "revision": "11",
+      "build": "2026-06-19-jr-ipad-dash-lifecycle-toggle",
+      "fileKey": "9fe209c3-84a0-4cde-bc0b-b0896c3c75e2",
+      "revision": "12",
       "relPath": "customize/jr-ipad-dash/desktop.js",
-      "deployedAt": "2026-06-18T08:53:25.308Z",
+      "deployedAt": "2026-06-19T09:48:17.596Z",
       "note": null
     },
     "733": {
@@ -298,11 +298,11 @@
       "note": null
     },
     "734": {
-      "build": "2026-06-16-vpn-account-dash-license-all-depts",
-      "fileKey": "273ed3ab-d253-4d6a-ab79-778b66c2bf66",
-      "revision": "12",
+      "build": "2026-06-19-vpn-dash-license-month-compare",
+      "fileKey": "a0f30083-2cce-4573-8e5d-01c9bd8e0146",
+      "revision": "13",
       "relPath": "customize/vpn-account-dash/desktop.js",
-      "deployedAt": "2026-06-16T11:58:37.493Z",
+      "deployedAt": "2026-06-19T10:04:55.898Z",
       "note": null
     },
     "736": {

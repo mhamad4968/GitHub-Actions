@@ -15,6 +15,7 @@ export const DEFAULT_XLSX =
 export const VPN_DOMAIN = '@kensetsutoso.fre';
 export const NEXT_USER_NUM_START = 80;
 export const RECORD_KIND_SETTING = '設定';
+export const RECORD_KIND_LICENSE_SNAPSHOT = '月次集計';
 export const LICENSE_UNIT_YEN = 550;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

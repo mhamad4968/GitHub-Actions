@@ -14,7 +14,7 @@ $allFiles = @()
 foreach ($root in ($roots | Select-Object -Unique)) {
     if (-not (Test-Path -LiteralPath $root)) { continue }
     $allFiles += Get-ChildItem -LiteralPath $root -Recurse -File -ErrorAction SilentlyContinue |
-        Where-Object { $_.Extension -in '.ps1', '.bat', '.txt' }
+        Where-Object { $_.Extension -eq '.ps1' }
 }
 $allFiles = $allFiles | Select-Object -Unique -Property FullName
 
@@ -58,4 +58,8 @@ foreach ($item in $allFiles) {
 }
 
 if ($fail) { exit 1 }
-Write-Host "[add-bom] OK ($($allFiles.Count) files)"
+
+& (Join-Path $PSScriptRoot 'fix-bat-encoding.ps1')
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+Write-Host "[add-bom] OK ($($allFiles.Count) ps1 files; bat encoding verified)"

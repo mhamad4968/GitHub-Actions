@@ -209,6 +209,29 @@ export function inferFiscalYear(startDate) {
   return p.mo >= 4 ? p.y : p.y - 1;
 }
 
+/** 工期設定資料 p.94 — 小数第2位四捨五入・小数第1位止め */
+export function roundWorkdaysPdf1(n) {
+  if (n == null || Number.isNaN(n)) return 0;
+  return Math.round(Number(n) * 10) / 10;
+}
+
+/**
+ * 工期設定資料 p.94 雨休率（塗装・ダブり補正あり）
+ * O = R×H/C, W = C−H−R+O, P% = round((H+R−O)/W×100)
+ * @returns {{ weatherR: number, overlap: number, avail: number, rate: number, ratePct: number }}
+ */
+export function calcRainHolidayRatePdf(D, weather, C) {
+  const H = Number(D) || 0;
+  const Cn = Number(C) || 0;
+  const weatherR = roundWorkdaysPdf1(weather);
+  const overlap = Cn ? roundWorkdaysPdf1((weatherR * H) / Cn) : 0;
+  const avail = roundWorkdaysPdf1(Cn - H - weatherR + overlap);
+  const numerator = H + weatherR - overlap;
+  const rate = avail ? numerator / avail : 0;
+  const ratePct = Math.round(rate * 100);
+  return { weatherR, overlap, avail, rate, ratePct, numerator };
+}
+
 /**
  * Excel 20260613 — 工事稼働日管理表（1〜12月・暦日=各月全日・※1=過去5年平均）
  * @param {object} p

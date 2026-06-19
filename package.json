@@ -165,7 +165,14 @@
     "vpn-account:register-registry": "node scripts/vpn-account-register-registry.mjs",
     "vpn-account:migrate:xlsx": "npx dotenv -e .env -e .env.proxy -- node scripts/vpn-account-migrate-xlsx.mjs",
     "vpn-account:update-dept-field": "npx dotenv -e .env -e .env.proxy -- node scripts/vpn-account-update-dept-field.mjs",
+    "vpn-account:add-license-snapshot-fields": "npx dotenv -e .env -e .env.proxy -- node scripts/vpn-account-add-license-snapshot-fields.mjs",
+    "vpn-account:add-license-snapshot-fields:dry-run": "npx dotenv -e .env -e .env.proxy -- node scripts/vpn-account-add-license-snapshot-fields.mjs --dry-run",
     "vpn-account:bundle-dash": "node scripts/vpn-account-bundle-dash.mjs",
+    "vpn-account:space48-notice": "npx dotenv -e .env -e .env.proxy -- node scripts/vpn-account-update-space48-notice.mjs",
+    "vpn-account:space48-notice:dry-run": "npx dotenv -e .env -e .env.proxy -- node scripts/vpn-account-update-space48-notice.mjs --dry-run",
+    "vpn-account:space48-notice:keep": "npx dotenv -e .env -e .env.proxy -- node scripts/vpn-account-update-space48-notice.mjs --keep",
+    "vpn-account:space48-notice:remove": "npx dotenv -e .env -e .env.proxy -- node scripts/vpn-account-update-space48-notice.mjs --remove",
+    "vpn-account:space48-notice:gha": "node scripts/vpn-account-update-space48-notice.mjs",
     "vpn-account:deploy": "npx dotenv -e .env -e .env.proxy -- node scripts/vpn-account-deploy-customize.mjs",
     "storage-media-ledger:create-db": "npx dotenv -e .env -e .env.proxy -- node scripts/storage-media-ledger-create-db-app.mjs",
     "storage-media-ledger:create-db:dry-run": "npx dotenv -e .env -e .env.proxy -- node scripts/storage-media-ledger-create-db-app.mjs --dry-run",
@@ -598,7 +605,8 @@
   },
   "dependencies": {
     "dotenv": "^17.3.1",
-    "dotenv-cli": "^11.0.0"
+    "dotenv-cli": "^11.0.0",
+    "nodemailer": "^7.0.3"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

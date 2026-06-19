@@ -1,6 +1,8 @@
 [
   {"dept_name": "役員室", "group_name": "honsya"},
   {"dept_name": "顧問室", "group_name": "honsya"},
+  {"dept_name": "顧問", "group_name": "honsya"},
+  {"dept_name": "出向者", "group_name": "honsya"},
   {"dept_name": "総務部", "group_name": "honsya"},
   {"dept_name": "経理部", "group_name": "honsya"},
   {"dept_name": "経営企画部", "group_name": "honsya"},
@@ -21,6 +23,7 @@
   {"dept_name": "東京支店", "group_name": "tokyo"},
   {"dept_name": "千葉営業所", "group_name": "tokyo"},
   {"dept_name": "水戸営業所", "group_name": "tokyo"},
+  {"dept_name": "鎌ヶ谷事務所", "group_name": "tokyo"},
   {"dept_name": "東海支店", "group_name": "tokai"},
   {"dept_name": "東京営業所", "group_name": "tokai"},
   {"dept_name": "静岡営業所", "group_name": "tokai"},
@@ -28,6 +31,9 @@
   {"dept_name": "関西営業所", "group_name": "tokai"},
   {"dept_name": "札幌支店", "group_name": "tokyo"},
   {"dept_name": "首都圏支店", "group_name": "tokyo"},
+  {"dept_name": "リフォーム事業統括部", "group_name": "reform"},
+  {"dept_name": "札幌支店", "group_name": "reform"},
+  {"dept_name": "首都圏支店", "group_name": "reform"},
   {"dept_name": "鉄構支店", "group_name": "tekko"},
   {"dept_name": "湾岸工事所", "group_name": "wangan"}
 ]

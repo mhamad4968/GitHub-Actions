@@ -207,6 +207,22 @@
       "required": false,
       "noLabel": false,
       "defaultValue": ""
+    },
+    "snapshot_month": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "snapshot_month",
+      "label": "集計対象月",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "snapshot_json": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "snapshot_json",
+      "label": "集計JSON",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
     }
   }
 }

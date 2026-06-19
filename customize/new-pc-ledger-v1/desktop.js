@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-06-09-674-next-serial-label';
+  const BUILD = '2026-06-19-674-detail-hide-sidebar';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -494,6 +494,32 @@
   function removeDeptHelpBanner() {
     const el = document.getElementById(DEPT_HELP_ID);
     if (el) el.remove();
+  }
+
+  const HIDE_SIDEBAR_STYLE_ID = 'npl674-hide-record-sidebar';
+
+  /** 詳細画面: 右サイドバー（コメント・履歴）を非表示（公式 API + CSS） */
+  function injectHideRecordSidebarStyle674() {
+    if (document.getElementById(HIDE_SIDEBAR_STYLE_ID)) return;
+    const st = document.createElement('style');
+    st.id = HIDE_SIDEBAR_STYLE_ID;
+    st.textContent =
+      '.gaia-argoui-app-show-sidebar,.gaia-argoui-app-sidebar-gaia,.ocean-ui-plugin-comment-gaia{display:none!important;}';
+    document.head.appendChild(st);
+  }
+
+  function closeRecordSideBar674() {
+    injectHideRecordSidebarStyle674();
+    try {
+      if (kintone.app && kintone.app.record && typeof kintone.app.record.showSideBar === 'function') {
+        return kintone.app.record.showSideBar('CLOSED').catch(function () {
+          /* noop */
+        });
+      }
+    } catch (e) {
+      /* noop */
+    }
+    return kintone.Promise.resolve();
   }
 
   // ===== ヘッダスペース (PC / モバイル) =====
@@ -6556,6 +6582,12 @@ ${bodyInner}\
       !!(event.record && event.record[FC_NPL_TRANSFER_MANUAL]) &&
       readNplTransferManualChecked674(event.record);
     console.log(`[NEW-PC-LEDGER-V1] BUILD=${BUILD} event=${event.type}`);
+    if (
+      event.type === 'app.record.detail.show' ||
+      event.type === 'mobile.app.record.detail.show'
+    ) {
+      closeRecordSideBar674();
+    }
     if (
       event.type === 'app.record.edit.show' ||
       event.type === 'mobile.app.record.edit.show'

@@ -1,4 +1,4 @@
-﻿@echo off
+@echo off
 rem JBIS PC kitting launcher (ASCII-only .bat for cmd.exe)
 chcp 65001 >nul 2>&1
 setlocal EnableDelayedExpansion
@@ -14,7 +14,7 @@ if not defined PSRUN (
     echo [ERROR] Script not found: kitting-run.ps1
     echo   Looked under: %ROOT%
     echo   Expected: one subfolder containing kitting-run.ps1
-    echo   Fix: copy templates\pc-kitting\PCキッテング用 from repo to Desktop
+    echo   Fix: copy templates\pc-kitting\PC?????? from repo to Desktop
     pause
     exit /b 1
 )

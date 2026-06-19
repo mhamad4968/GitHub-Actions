@@ -23,9 +23,11 @@
 cd C:\Users\mhamada202408224\kintone-ai-lab\templates\pc-kitting
 powershell -ExecutionPolicy Bypass -File .\add-bom.ps1
 powershell -ExecutionPolicy Bypass -File .\add-bom.ps1 -VerifyOnly
+powershell -ExecutionPolicy Bypass -File .\fix-bat-encoding.ps1 -VerifyOnly
 ```
 
 - すべての `.ps1` が **UTF-8 BOM** + **Parser OK** であること
+- すべての `.bat` が **ASCII（BOM なし・CRLF）** であること — **BOM 付き .bat は cmd.exe が壊す**（`・ｿ@echo` / `'l'` / `'OOT'` エラー）
 - 起動は **`PCキッティング_START.bat`** → **`kitting-run.ps1`**（`kitting-main.ps1` 直接不可）
 
 ---
@@ -44,6 +46,18 @@ powershell -ExecutionPolicy Bypass -File .\add-bom.ps1 -VerifyOnly
 **原因**: PowerShell 5.1 が UTF-8 BOM なし `.ps1` を Shift-JIS として解析。
 
 **対処**: 正本から再コピー + `kitting-run.ps1` 経由起動（初回 BOM 自動修復）。
+
+---
+
+## 起動エラー（`・ｿ@echo` / `'l'` / `'OOT'` / `'RUN='`）
+
+**原因**: `.bat` に **UTF-8 BOM**（または UTF-16）が付いている。`add-bom.ps1` 旧版が `.bat` に BOM を付けていた。
+
+**対処**:
+
+1. リポ `templates\pc-kitting\` から **フォルダごと** 再コピー
+2. 開発 PC で `fix-bat-encoding.ps1` を実行してから配布（または正本の ASCII .bat で上書き）
+3. **①** は `PCキッテング用\PCキッティング_START.bat`、**②** は `PCキッティングインストール用\PCキッティング_インストール_START.bat` をダブルクリック（`.bat` 自身と同じフォルダの直下に `PCキッティング\kitting-run.ps1` がある構成）
 
 ---
 

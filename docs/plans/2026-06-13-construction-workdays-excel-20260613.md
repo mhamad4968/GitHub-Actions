@@ -2,8 +2,8 @@
 
 **正本ツール**: `C:\tmp\稼働日数算出ツール\稼働日数算出ツール20260613.xlsx`  
 **前提 SPEC**: `docs/plans/2026-05-17-construction-workdays-spec-v1.md`（Space 56・687/688 構成）  
-**更新日**: 2026-06-13  
-**本番 BUILD（688）**: `2026-06-13-688-ref5yr-zero-year-register`（revision 23）
+**更新日**: 2026-06-19  
+**本番 BUILD（688）**: `2026-06-19-688-print-rounding-fix`（revision 33）
 
 ---
 
@@ -97,3 +97,45 @@ Runbook: `docs/runbooks/workdays-deploy-checklist.md`
   - `calcWorkdaysBundleForEstimate`
   - `mergeDailyCsvIntoRef5yr` / `aggregateDailyToMonthlyCounts`
 - 回帰: `scripts/workdays-calc-gate.mjs`（Excel 2023 足場・塗装 ±2.5 日）
+- PDF 丸め（工期設定資料 p.94）:
+  - `roundWorkdaysPdf1` — 小数第2位四捨五入・小数第1位止め
+  - `calcRainHolidayRatePdf` — 塗装の雨休率（ダブり補正・率は整数％）
+
+## 9. 施工主報告用印刷（688 UI）
+
+688 詳細画面の **「施工主報告用印刷」** ボタン（683 型: 非表示 `#wd688-print-portal` + `window.print()`）。
+
+### 9.1 出力セクション（Excel 報告用ブック準拠・順序固定）
+
+| # | シート相当タイトル | 内容 |
+|---|-------------------|------|
+| 1 | 工事稼働日管理 (塗装) | 年間表 + 12か月カレンダー |
+| 2 | 工事稼働日管理 (足場) | 年間表 + 12か月カレンダー |
+| 3 | 工事稼働日管理 (休日) | 年間表 + 12か月カレンダー |
+| 4 | 過去5年月別降雨日数 | 全閾値表 |
+| 5 | 過去5年月別風速日数 | 全閾値表 |
+
+各セクション: タブ行 → 青見出し → 年間集計表 → 脚注 → 月別カレンダー。
+
+### 9.2 表示・丸め（PDF p.94）
+
+| 項目 | 丸め |
+|------|------|
+| 降雨・降雪等日数 / 風速日数 | 小数第1位（第2位四捨五入） |
+| 休日数とのダブり日数 | 小数第1位 |
+| 稼働可能日数 | 小数第1位 |
+| 雨休率・不稼働率 | 整数％（小数以下四捨五入） |
+
+塗装は `calcRainHolidayRatePdf`、足場は `windPdfMonth` / `windPdfYear`（`roundWorkdaysPdf1` 適用）。年列も月列と同じ丸めを用い、浮動小数点合計の生値は表示しない。
+
+### 9.3 印刷レイアウト
+
+- `@media print` で A4 縦・セクション区切り（最終セクション後は改ページなし）
+- 印刷フッター（印刷日 / BUILD / ツール名）は **出力しない**（末尾空白ページ防止）
+- 表題・セクション順序は Excel 報告用と同一（変更時は浜田確認）
+
+### 9.4 参照
+
+- Excel: `C:\tmp\稼働日数算出ツール\報告用\20260422_稼働日数算出(2025年度).xlsx`
+- PDF: `C:\tmp\稼働日数算出ツール\報告用\工期設定不稼働率算出.pdf`（p.94 丸め規則）
+- 実装: `customize/688/desktop.ui.js`（`buildFullClientReportHtml` / `buildPrintSummaryTable`）

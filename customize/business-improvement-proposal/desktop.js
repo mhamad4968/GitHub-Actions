@@ -2,7 +2,7 @@
   'use strict';
 
   /** 業務改善 ver.02 — 提案申請 申請UI（Phase 4b）+ 評価UI（Phase 5） */
-  var BUILD = '2026-06-13-bi-completion-date';
+  var BUILD = '2026-06-18-bi-eval-role-ui-labels';
   var WF_ACTION_APPLY = 'Apply';
   var WF_ACTION_REAPPLY = 'reapply';
   var BI = {
@@ -1728,8 +1728,16 @@
     if (!filled(rank)) {
       return '評価項目を入力すると、現在評価（自動）が表示されます。';
     }
-    return '現在評価（自動）は ' + rank + ' です。' + rank +
-      ' 以上の評価にしたい場合は加点が足りませんので、再度評価を見直してください。';
+    if (rank === 'C') {
+      return '現在評価（自動）は C です。AやB評価で申請したい場合は再度評価を見直してください。';
+    }
+    if (rank === 'B') {
+      return '現在評価（自動）は B です。A評価で申請したい場合は再度評価を見直してください。';
+    }
+    if (rank === 'A') {
+      return '現在評価（自動）は A です。';
+    }
+    return '現在評価（自動）は ' + rank + ' です。';
   }
 
   function rankBadgeHtml(rank) {
@@ -1748,7 +1756,10 @@
         fs + ';color:#475569;line-height:1.55">' +
         esc('評価項目を入力すると、現在評価（自動）が表示されます。') + '</div>';
     }
-    var accent = rank === 'B' ? '#c2410c' : (rank === 'A' ? '#b45309' : '#64748b');
+    if (rank === 'A') {
+      return '';
+    }
+    var accent = rank === 'B' ? '#c2410c' : '#64748b';
     var bg = rank === 'C' ? '#f1f5f9' : '#fff7ed';
     var border = rank === 'C' ? '#64748b' : '#ea580c';
     var msg = rankReevalHintMessage(rec, rank);
@@ -1762,18 +1773,75 @@
       esc(msg) + '</p></div>';
   }
 
-  function managerForwardHintHtml(rec, auto) {
+  function evalPhaseFromStatus(rec) {
+    var st = recordStatusKey(rec);
+    if (st === 'Mgr' || st === 'manager' || st === '上司承認中') return '部長評価';
+    if (st === 'Branch' || st === 'branch' || st === '支店長承認中') return '支店長評価';
+    if (st === 'Hr' || st === 'hr' || st === '人事研修部長承認中') return '本社評価';
+    return '評価';
+  }
+
+  function evalRolePhaseLabel(role, rec) {
+    role = role || evUi.role;
+    if (role === 'manager') return '部長評価';
+    if (role === 'branch') return '支店長評価';
+    if (role === 'hr') return '本社評価';
+    if (rec) return evalPhaseFromStatus(rec);
+    return '評価';
+  }
+
+  function evalScreenTitle(rec, locked) {
+    var phase = evalRolePhaseLabel(undefined, rec);
+    if (locked) return '業務改善提案 — ' + phase + '（閲覧）';
+    if (evUi.role === 'viewer') return '業務改善提案 — ' + phase;
+    return '業務改善提案 — ' + phase;
+  }
+
+  function evalForwardWaitMessage(rec, fwdLabel) {
+    var role = evUi.role;
+    if (role === 'branch') {
+      var auto = effectiveAutoRank(rec);
+      return auto === 'A'
+        ? '評価内容を確認後、「本社評価へ」が表示されます'
+        : '評価内容を確認後、「承認する」が表示されます';
+    }
+    if (role === 'hr') {
+      return '評価内容を確認後、「承認する」が表示されます';
+    }
+    if (role === 'manager') {
+      if (branchDelegateOn(rec)) {
+        return '「支店長評価へ」で支店長判断として進められます';
+      }
+      var mgrAuto = effectiveAutoRank(rec);
+      if (mgrAuto === 'A' || mgrAuto === 'B') {
+        return '評価項目をすべて選択すると「支店長評価へ」が表示されます';
+      }
+      return '評価項目をすべて選択すると「承認する」が表示されます';
+    }
+    return '評価完了後に「' + esc(fwdLabel) + '」等のボタンが表示されます';
+  }
+
+  function evalForwardHintHtml(message) {
     var fs = fontPx();
-    return '<div data-bi-mgr-forward-hint role="alert" style="margin:10px 0 0;padding:12px 14px;background:#fef2f2;border:2px solid #f87171;border-left:6px solid #dc2626;border-radius:10px;box-shadow:0 2px 6px rgba(220,38,38,0.12)">' +
+    return '<div data-bi-eval-forward-hint role="alert" style="margin:10px 0 0;padding:12px 14px;background:#fef2f2;border:2px solid #f87171;border-left:6px solid #dc2626;border-radius:10px;box-shadow:0 2px 6px rgba(220,38,38,0.12)">' +
       '<p style="margin:0;font-size:' + fs + ';font-weight:700;color:#991b1b;line-height:1.6">※ ' +
-      esc(managerMustForwardMessage(rec, auto)) + '</p></div>';
+      esc(message) + '</p></div>';
+  }
+
+  function managerForwardHintHtml(rec, auto) {
+    return evalForwardHintHtml(managerMustForwardMessage(rec, auto));
+  }
+
+  function branchMustForwardMessage() {
+    return '表彰ランク（自動）が A です。支店長評価では完了できません。本社評価へ進みます。';
+  }
+
+  function branchForwardHintHtml() {
+    return evalForwardHintHtml(branchMustForwardMessage());
   }
 
   function finalRankPhaseLabel() {
-    if (evUi.role === 'manager') return '部長評価 — 完結フェーズ';
-    if (evUi.role === 'branch') return '支店長評価 — 完結フェーズ';
-    if (evUi.role === 'hr') return '本社評価 — 完結フェーズ';
-    return '最終評価フェーズ';
+    return evalRolePhaseLabel() + ' — 完結フェーズ';
   }
 
   function rankFinalInputHtml(rec, auto, fin) {
@@ -2313,18 +2381,18 @@
         if (toHr) {
           return withForwardMeta(rec, {
             action: toHr.name,
-            label: '人事部長評価へ',
+            label: '本社評価へ',
             assignee: people.hr || wfPersonFromField(rec, '人事部長評価者'),
             assigneeRequired: true,
-            assigneeMissing: '人事部長評価者が未設定です。設定マスタ(697)の人事部長を確認してください',
+            assigneeMissing: '本社評価者が未設定です。設定マスタ(697)の人事部長を確認してください',
           });
         }
         return withForwardMeta(rec, {
           action: '',
-          label: '人事部長評価へ',
+          label: '本社評価へ',
           assignee: '',
           assigneeRequired: true,
-          assigneeMissing: 'A評価ですがWFに「人事部長評価へ」(BranchToHr)がありません。test_v3 WFを適用してください',
+          assigneeMissing: 'A評価ですがWFに「本社評価へ」(BranchToHr)がありません。test_v3 WFを適用してください',
         });
       }
       var branchDone = findWfAction(status, ['支店長承認_完了', 'BranchApprove'], 'Done') ||
@@ -2650,9 +2718,10 @@
       alert('承認操作を特定できません');
       return;
     }
+    var phase = evalRolePhaseLabel(undefined, rec);
     var wrap = openBiModal(
-      '承認の確認',
-      '<p style="margin:0">承認しますか？</p>',
+      phase + ' — 承認の確認',
+      '<p style="margin:0">「' + esc(fwd.label || '承認する') + '」で進めます。よろしいですか？</p>',
       '<button type="button" id="bi-forward-yes" style="padding:8px 14px;background:#15803d;color:#fff;border:0;border-radius:8px;cursor:pointer">はい</button>' +
       '<button type="button" id="bi-forward-reject" style="padding:8px 14px;background:#b45309;color:#fff;border:0;border-radius:8px;cursor:pointer">差戻し</button>' +
       '<button type="button" id="bi-forward-no" style="padding:8px 14px;border:1px solid #cbd5e1;background:#fff;border-radius:8px;cursor:pointer">キャンセル</button>'
@@ -2694,12 +2763,12 @@
       return '承認が完了した案件です。提案内容・評価内容ともに変更できません。';
     }
     if (evUi.role === 'branch') {
-      return '部長評価済みです。評価内容を確認し、必要なら各項目を修正できます（修正後は一時保存）。' + typeNote;
+      return '部長評価済みです。支店長評価を行います。評価内容を確認し、必要なら各項目を修正できます（修正後は一時保存）。' + typeNote;
     }
     if (evUi.role === 'hr') {
-      return '前段階の評価を確認し、必要なら各項目を修正できます（修正後は一時保存）。' + typeNote;
+      return '支店長評価済みです。本社評価を行います。前段階の評価を確認し、必要なら各項目を修正できます（修正後は一時保存）。' + typeNote;
     }
-    return '各項目の審査基準を確認し、ドロップダウンから該当段階を選択してください。' + typeNote;
+    return '部長評価を行います。各項目の審査基準を確認し、ドロップダウンから該当段階を選択してください。' + typeNote;
   }
 
   function evalFooterActionsHtml(rec) {
@@ -2719,9 +2788,9 @@
         html += '<button type="button" data-bi-eval-reject style="padding:10px 18px;border:1px solid #b45309;background:#fff7ed;color:#b45309;border-radius:8px;cursor:pointer">差戻し</button>';
       }
     } else if (!showActions) {
-      var waitMsg = evUi.role === 'branch' || evUi.role === 'hr'
-        ? 'このフェーズの承認操作は表示できません（ログインまたはステータスを確認してください）'
-        : '評価完了後に「' + esc(fwdLabel) + '」等のボタンが表示されます';
+      var waitMsg = evalRoleMatchesStatus(evUi.role, recordStatusKey(rec))
+        ? evalForwardWaitMessage(rec, fwdLabel)
+        : 'このフェーズの承認操作は表示できません（ログインまたはステータスを確認してください）';
       html += '<span style="color:#64748b;font-size:0.88em">' + waitMsg + '</span>';
     } else if (!fwd) {
       html += '<span style="color:#b45309;font-size:0.88em">承認操作を特定できません（WF設定を確認してください）</span>';
@@ -2774,7 +2843,7 @@
     evUi.root.innerHTML =
       '<div style="font-family:\'Segoe UI\',Meiryo,sans-serif;line-height:1.5;padding:16px;background:linear-gradient(180deg,#faf5f0 0%,#f5f5f4 100%);border-radius:12px;border:1px solid #d6b896">' +
       '<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px">' +
-      '<h2 style="margin:0;color:#78350f">業務改善提案 — ' + (locked ? '評価（閲覧）' : '評価') + '</h2>' +
+      '<h2 style="margin:0;color:#78350f">' + esc(evalScreenTitle(rec, locked)) + '</h2>' +
       '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px">' +
       fontToggleHtml() +
       '<span style="color:#78716c;font-size:0.9em">ステータス: ' + esc(wfStateLabel(recordStatusKey(rec))) + '</span></div></div>' +
@@ -2796,6 +2865,7 @@
       '<div>表彰ランク（自動）: <strong>' + esc(auto || '—') + '</strong></div>' +
       (evUi.role === 'manager' && !locked && !branchDelegateOn(rec) && (auto === 'B' || auto === 'A') ?
         managerForwardHintHtml(rec, auto) : '') +
+      (evUi.role === 'branch' && !locked && auto === 'A' ? branchForwardHintHtml() : '') +
       (needsFinalRank && !locked ? rankReevalHintHtml(rec, auto) : '') +
       '<div>付与ポイント: <strong>' + esc(pointsLabel) + '</strong></div></div>' +
       (needsFinalRank && !locked ? rankFinalInputHtml(rec, auto, fin) : '') +

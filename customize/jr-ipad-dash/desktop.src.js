@@ -2,7 +2,7 @@
   "use strict";
 
   /** JRシステム用iPad管理台帳 ver.1 — DB REST CRUD + 部署×ステータス集計 + A4印刷 */
-  var BUILD = "2026-06-15-jr-ipad-dash-search-clear";
+  var BUILD = "2026-06-19-jr-ipad-dash-lifecycle-toggle";
 
   var APP_DB = 720;
   var FIXED_APPLE_PW = "Honten00";
@@ -43,6 +43,7 @@
   ];
 
   var STATUS_VALUES = ["待機", "貸出中", "確認中", "故障", "廃棄"];
+  var STATUS_DISPOSED = "廃棄";
 
   var SUMMARY_COLUMNS = ["貸出中", "待機", "故障", "確認中", "廃棄"];
 
@@ -94,6 +95,7 @@
     search: "",
     filterStatus: "",
     filterDept: "",
+    lifecycleFilter: "active",
     loading: false,
     isAdmin: false,
   };
@@ -276,6 +278,19 @@
     return kintone.api(kintone.api.url(path, true), "DELETE", params);
   }
 
+  function formatKintoneApiError(e) {
+    if (!e) return "不明なエラー";
+    if (e.errors && typeof e.errors === "object") {
+      var parts = [];
+      Object.keys(e.errors).forEach(function (k) {
+        var msg = e.errors[k] && e.errors[k].messages ? e.errors[k].messages.join(" / ") : "";
+        parts.push(k + ": " + msg);
+      });
+      if (parts.length) return parts.join("; ");
+    }
+    return e.message || String(e);
+  }
+
   function fetchAllRecords() {
     var all = [];
     var offset = 0;
@@ -381,9 +396,14 @@
       ".jip-summary th{background:#f1f5f9;}" +
       ".jip-summary td.jip-dept{text-align:left;font-weight:600;white-space:nowrap;}" +
       ".jip-summary tr.jip-summary-total td{font-weight:700;background:#f8fafc;}" +
-      ".jip-filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px;}" +
+      ".jip-filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:8px;}" +
       ".jip-filters input,.jip-filters select{padding:8px 10px;font-size:15px;}" +
       ".jip-filter-clear{white-space:nowrap;}" +
+      ".jip-lifecycle-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;}" +
+      ".jip-lifecycle-label{font-size:14px;font-weight:600;color:#475569;}" +
+      ".jip-lifecycle-btn{padding:8px 18px;font-size:15px;border:1px solid #cbd5e1;border-radius:999px;background:#fff;cursor:pointer;}" +
+      ".jip-lifecycle-btn.active{background:#2563eb;color:#fff;border-color:#2563eb;font-weight:700;}" +
+      ".jip-lifecycle-btn:hover:not(.active){background:#f1f5f9;}" +
       ".jip-table-wrap{overflow:auto;max-height:calc(100vh - 300px);border:1px solid #cbd5e1;border-radius:6px;}" +
       ".jip-table{border-collapse:collapse;width:100%;font-size:15px;min-width:1500px;}" +
       ".jip-table th,.jip-table td{border:1px solid #e2e8f0;padding:6px 8px;vertical-align:middle;line-height:1.45;}" +
@@ -416,9 +436,37 @@
     return String(a.device_name || "").localeCompare(String(b.device_name || ""), "ja");
   }
 
+  function syncLifecycleStatusFilter() {
+    var statusSel = document.getElementById("jip-filter-status");
+    if (state.lifecycleFilter === "active" && state.filterStatus === STATUS_DISPOSED) {
+      state.filterStatus = "";
+      if (statusSel) statusSel.value = "";
+    }
+    if (state.lifecycleFilter === "retired" && state.filterStatus && state.filterStatus !== STATUS_DISPOSED) {
+      state.filterStatus = "";
+      if (statusSel) statusSel.value = "";
+    }
+  }
+
+  function setLifecycleFilter(mode) {
+    if (mode !== "active" && mode !== "retired") return;
+    if (state.lifecycleFilter === mode) return;
+    state.lifecycleFilter = mode;
+    syncLifecycleStatusFilter();
+    var root = document.getElementById("jip-root");
+    if (root) {
+      root.querySelectorAll(".jip-lifecycle-btn").forEach(function (b) {
+        b.classList.toggle("active", b.getAttribute("data-lifecycle") === mode);
+      });
+    }
+    renderTable();
+  }
+
   function filteredRecords() {
     var q = state.search.trim().toLowerCase();
     var rows = state.records.filter(function (r) {
+      if (state.lifecycleFilter === "active" && r.status === STATUS_DISPOSED) return false;
+      if (state.lifecycleFilter === "retired" && r.status !== STATUS_DISPOSED) return false;
       if (state.filterStatus && r.status !== state.filterStatus) return false;
       if (state.filterDept && r.mgmt_dept !== state.filterDept) return false;
       if (!q) return true;
@@ -657,7 +705,7 @@
               alert("保存しました");
             })
             .catch(function (e) {
-              alert("保存失敗: " + (e.message || e));
+              alert("保存失敗: " + formatKintoneApiError(e));
             });
         },
       },
@@ -694,7 +742,7 @@
                 alert("削除しました");
               })
               .catch(function (e) {
-                alert("削除失敗: " + (e.message || e));
+                alert("削除失敗: " + formatKintoneApiError(e));
               });
           },
         },
@@ -731,7 +779,7 @@
         });
       })
       .catch(function (e) {
-        alert("作成失敗: " + (e.message || e));
+        alert("作成失敗: " + formatKintoneApiError(e));
       });
   }
 
@@ -789,6 +837,135 @@
   function printVal(raw) {
     var s = String(raw == null ? "" : raw).trim();
     return s || "—";
+  }
+
+  /** 一覧印刷 — A4 横向き・全 12 列 1 表（§12 拡張） */
+  var LIST_PRINT_COL_WIDTHS = [6, 8, 7, 8, 10, 7, 8, 8, 9, 7, 6, 16];
+
+  function listPrintLabel(key) {
+    for (var i = 0; i < LIST_COLUMNS.length; i++) {
+      if (LIST_COLUMNS[i].key === key) return LIST_COLUMNS[i].label;
+    }
+    return key;
+  }
+
+  function listPrintFilterSummary() {
+    var parts = ["全 " + filteredRecords().length + " 台"];
+    parts.push(state.lifecycleFilter === "retired" ? "表示=廃止" : "表示=有効");
+    if (state.filterStatus) parts.push("ステータス=" + state.filterStatus);
+    if (state.filterDept) parts.push("部署=" + state.filterDept);
+    if (state.search.trim()) parts.push("検索=" + state.search.trim());
+    return parts.join(" / ");
+  }
+
+  function listPrintStylesheet() {
+    return (
+      '@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap");' +
+      "*{box-sizing:border-box;}" +
+      'body{margin:0;padding:12px 14px;font-family:"Noto Sans JP",system-ui,sans-serif;color:#0f172a;-webkit-print-color-adjust:exact;print-color-adjust:exact;}' +
+      ".jipl-header{margin-bottom:10px;text-align:center;}" +
+      ".jipl-header h1{margin:0 0 6px;font-size:16pt;font-weight:700;color:#1e3a8a;}" +
+      ".jipl-meta{margin:0;font-size:10pt;color:#475569;}" +
+      ".jipl-table-wrap{overflow:visible;}" +
+      ".jipl-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:11pt;}" +
+      ".jipl-table th,.jipl-table td{border:1px solid #64748b;padding:7px 5px;vertical-align:top;line-height:1.45;word-break:break-word;overflow-wrap:anywhere;}" +
+      ".jipl-table th{background:#dbeafe;font-size:10.5pt;font-weight:700;}" +
+      ".jipl-table tr:nth-child(even) td{background:#f8fafc;}" +
+      ".jipl-col-device{font-weight:700;}" +
+      "@media print{@page{size:A4 landscape;margin:8mm;}" +
+      "body{padding:0;}" +
+      ".jipl-table{font-size:10.5pt;}" +
+      ".jipl-table th{font-size:10pt;}" +
+      ".jipl-table th,.jipl-table td{padding:6px 4px;}" +
+      "thead{display:table-header-group;}" +
+      "tr{page-break-inside:avoid;}" +
+      "}"
+    );
+  }
+
+  function buildListPrintTableHtml(rows) {
+    var keys = LIST_COLUMNS.map(function (c) {
+      return c.key;
+    });
+    var colgroup =
+      "<colgroup>" +
+      LIST_PRINT_COL_WIDTHS.map(function (w) {
+        return '<col style="width:' + w + '%">';
+      }).join("") +
+      "</colgroup>";
+    var head =
+      "<thead><tr>" +
+      keys
+        .map(function (k) {
+          return "<th>" + esc(listPrintLabel(k)) + "</th>";
+        })
+        .join("") +
+      "</tr></thead>";
+    var body =
+      "<tbody>" +
+      rows
+        .map(function (row) {
+          return (
+            "<tr>" +
+            keys
+              .map(function (k) {
+                var cls = k === "device_name" ? ' class="jipl-col-device"' : "";
+                return "<td" + cls + ">" + esc(printVal(row[k])) + "</td>";
+              })
+              .join("") +
+            "</tr>"
+          );
+        })
+        .join("") +
+      "</tbody>";
+    return '<div class="jipl-table-wrap"><table class="jipl-table">' + colgroup + head + body + "</table></div>";
+  }
+
+  function buildPrintListHtml(rows) {
+    var today = todayJstYmd();
+    var header =
+      '<header class="jipl-header"><h1>JRシステム用 iPad 管理台帳 — 一覧（横向き）</h1>' +
+      '<p class="jipl-meta">印刷日: ' +
+      esc(today) +
+      " / " +
+      esc(listPrintFilterSummary()) +
+      "</p></header>";
+    return header + buildListPrintTableHtml(rows);
+  }
+
+  function openPrintListWindow() {
+    if (!state.isAdmin) return;
+    var rows = filteredRecords();
+    if (!rows.length) {
+      alert("印刷する端末がありません（絞込条件を確認してください）。");
+      return;
+    }
+    var w = window.open("", "_blank");
+    if (!w) {
+      alert("別ウィンドウを開けませんでした。ポップアップブロックを解除してください。");
+      return;
+    }
+    w.opener = null;
+    var docHtml =
+      '<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">' +
+      '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+      "<title>JR iPad 一覧</title><style>" +
+      listPrintStylesheet() +
+      "</style></head><body>" +
+      buildPrintListHtml(rows) +
+      "</body></html>";
+    var d = w.document;
+    d.open();
+    d.write(docHtml);
+    d.close();
+    w.focus();
+    setTimeout(function () {
+      try {
+        w.print();
+      } catch (e) {
+        console.warn(BUILD, e);
+      }
+    }, 400);
   }
 
   function buildPrintPageHtml(row) {
@@ -928,12 +1105,19 @@
     state.search = "";
     state.filterStatus = "";
     state.filterDept = "";
+    state.lifecycleFilter = "active";
     var search = document.getElementById("jip-search");
     var statusSel = document.getElementById("jip-filter-status");
     var deptSel = document.getElementById("jip-filter-dept");
     if (search) search.value = "";
     if (statusSel) statusSel.value = "";
     if (deptSel) deptSel.value = "";
+    var root = document.getElementById("jip-root");
+    if (root) {
+      root.querySelectorAll(".jip-lifecycle-btn").forEach(function (b) {
+        b.classList.toggle("active", b.getAttribute("data-lifecycle") === "active");
+      });
+    }
     renderTable();
   }
 
@@ -949,6 +1133,9 @@
       '<div class="jip-toolbar">' +
       "<strong style=\"font-size:18px\">JRシステム用 iPad 管理台帳</strong>" +
       '<button type="button" id="jip-reload" class="kintoneplugin-button-normal">再読込</button>' +
+      (state.isAdmin
+        ? '<button type="button" id="jip-print-list" class="kintoneplugin-button-normal">一覧印刷</button>'
+        : "") +
       "</div>" +
       '<div id="jip-meta" class="jip-meta"></div>' +
       '<details class="jip-summary-acc" id="jip-summary-acc">' +
@@ -972,6 +1159,15 @@
         return '<option value="' + esc(d.name) + '">' + esc(d.name) + "</option>";
       }).join("") +
       "</select></div>" +
+      '<div class="jip-lifecycle-bar">' +
+      '<span class="jip-lifecycle-label">表示:</span>' +
+      '<button type="button" class="jip-lifecycle-btn' +
+      (state.lifecycleFilter === "active" ? " active" : "") +
+      '" data-lifecycle="active">有効</button>' +
+      '<button type="button" class="jip-lifecycle-btn' +
+      (state.lifecycleFilter === "retired" ? " active" : "") +
+      '" data-lifecycle="retired">廃止</button>' +
+      "</div>" +
       '<div class="jip-table-wrap"><table class="jip-table"><thead><tr>' +
       LIST_COLUMNS.map(function (c) {
         return "<th>" + esc(c.label) + "</th>";
@@ -982,6 +1178,12 @@
     document.getElementById("jip-reload").addEventListener("click", function () {
       reloadRecords();
     });
+    var printListBtn = document.getElementById("jip-print-list");
+    if (printListBtn) {
+      printListBtn.addEventListener("click", function () {
+        openPrintListWindow();
+      });
+    }
     var search = document.getElementById("jip-search");
     search.value = state.search;
     search.addEventListener("input", function () {
@@ -1006,6 +1208,11 @@
         clearFilters();
       });
     }
+    root.querySelectorAll(".jip-lifecycle-btn").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        setLifecycleFilter(btn.getAttribute("data-lifecycle"));
+      });
+    });
   }
 
   function scheduleMount() {

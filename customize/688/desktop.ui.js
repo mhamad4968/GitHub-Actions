@@ -471,6 +471,35 @@
     return (Number(rate) * 100).toFixed(2) + '%';
   }
 
+  function fmtRainHolidayPct(pct) {
+    if (pct == null || Number.isNaN(pct)) return '—';
+    return String(Math.round(Number(pct))) + '%';
+  }
+
+  function paintPdfMonth(r) {
+    return calcRainHolidayRatePdf(r.D, r.W, r.C);
+  }
+
+  function paintPdfYear(yt) {
+    return calcRainHolidayRatePdf(yt.D, yt.weather, yt.C);
+  }
+
+  function windPdfMonth(r) {
+    return {
+      weatherR: roundWorkdaysPdf1(r.E),
+      overlap: roundWorkdaysPdf1(r.G),
+      avail: roundWorkdaysPdf1(r.N),
+    };
+  }
+
+  function windPdfYear(yt) {
+    return {
+      weatherR: roundWorkdaysPdf1(yt.weather),
+      overlap: roundWorkdaysPdf1(yt.overlap),
+      avail: roundWorkdaysPdf1(yt.avail),
+    };
+  }
+
   function computeYearTotals(rows, isWind) {
     function sum(key) {
       return rows.reduce(function (s, r) {
@@ -513,15 +542,18 @@
     }
 
     function weatherVal(r) {
-      return isWind ? r.E : r.W;
+      if (isWind) return r.E;
+      return paintPdfMonth(r).weatherR;
     }
 
     function overlapVal(r) {
-      return isWind ? r.G : r.J;
+      if (isWind) return r.G;
+      return paintPdfMonth(r).overlap;
     }
 
     function availVal(r) {
-      return isWind ? r.N : r.O;
+      if (isWind) return r.N;
+      return paintPdfMonth(r).avail;
     }
 
     function rateVal(r) {
@@ -530,10 +562,13 @@
 
     function fmtYearCell(v, opts) {
       opts = opts || {};
+      if (opts.rainPctInt) return fmtRainHolidayPct(v);
       if (opts.pct) return fmtPct(v);
       if (opts.fixed != null) return fmtNum(v, opts.fixed);
       return v;
     }
+
+    const pdfYear = isWind ? null : paintPdfYear(yt);
 
     let html =
       '<div class="wd688-excel-wrap"><table class="wd688-table wd688-excel-table"><thead><tr>' +
@@ -560,14 +595,26 @@
             '" style="width:52px"></td>';
         } else {
           const v = valueFn(r);
-          html += '<td>' + (opts.pct ? fmtPct(v) : opts.fixed != null ? fmtNum(v, opts.fixed) : v) + '</td>';
+          html +=
+            '<td>' +
+            (opts.rainPctInt
+              ? fmtRainHolidayPct(v)
+              : opts.pct
+                ? fmtPct(v)
+                : opts.fixed != null
+                  ? fmtNum(v, opts.fixed)
+                  : v) +
+            '</td>';
         }
       }
       html += '<td class="wd688-year-col">' + fmtYearCell(opts.yearVal, opts) + '</td>';
       html += '</tr>';
     }
 
-    addRow(weatherLabel, weatherVal, { fixed: 0, yearVal: yt.weather });
+    addRow(weatherLabel, weatherVal, {
+      fixed: isWind ? 0 : 1,
+      yearVal: isWind ? yt.weather : pdfYear.weatherR,
+    });
     html +=
       '<tr><td class="wd688-row-label wd688-indent" colspan="' +
       (rows.length + 2) +
@@ -590,15 +637,732 @@
     addRow('<span class="wd688-indent2">計</span>', function (r) {
       return r.D;
     }, { yearVal: yt.D });
-    addRow(overlapLabel, overlapVal, { fixed: 2, yearVal: yt.overlap });
+    addRow(overlapLabel, overlapVal, {
+      fixed: isWind ? 2 : 1,
+      yearVal: isWind ? yt.overlap : pdfYear.overlap,
+    });
     addRow('暦　　　　　日', function (r) {
       return r.C;
     }, { yearVal: yt.C });
-    addRow('稼　働　可　能　日　数　※3', availVal, { fixed: 2, yearVal: yt.avail });
+    addRow('稼　働　可　能　日　数　※3', availVal, {
+      fixed: isWind ? 2 : 1,
+      yearVal: isWind ? yt.avail : pdfYear.avail,
+    });
     addRow('不　稼　働　率　※4', rateVal, { pct: true, yearVal: yt.rate });
+    if (!isWind) {
+      addRow(
+        '雨休率（％）',
+        function (r) {
+          return paintPdfMonth(r).ratePct;
+        },
+        { rainPctInt: true, yearVal: pdfYear.ratePct },
+      );
+    }
 
     html += '</tbody></table></div>';
     return html;
+  }
+
+  function escHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function paintReportPrintStylesheet() {
+    return (
+      '*{box-sizing:border-box;}' +
+      'body{margin:0;padding:8mm 10mm;font-family:"Yu Gothic","Meiryo",sans-serif;font-size:10pt;color:#111;-webkit-print-color-adjust:exact;print-color-adjust:exact;}' +
+      '.wd688pr-title{margin:0 0 8px;padding:8px 12px;background:#1e3a8a;color:#fff;text-align:center;font-size:15pt;font-weight:700;letter-spacing:0.04em;}' +
+      '.wd688pr-meta{margin:0 0 8px;font-size:9.5pt;line-height:1.55;}' +
+      '.wd688pr-meta table{border-collapse:collapse;width:100%;}' +
+      '.wd688pr-meta th,.wd688pr-meta td{border:1px solid #666;padding:3px 8px;text-align:left;}' +
+      '.wd688pr-meta th{width:18%;background:#f3f4f6;font-weight:600;}' +
+      '.wd688pr-sum{width:100%;border-collapse:collapse;margin:6px 0 8px;font-size:8.5pt;table-layout:fixed;}' +
+      '.wd688pr-sum th,.wd688pr-sum td{border:1px solid #333;padding:2px 2px;text-align:center;vertical-align:middle;line-height:1.3;}' +
+      '.wd688pr-sum th{background:#d9e2ec;font-weight:600;}' +
+      '.wd688pr-sum .wd688pr-lab{text-align:left;padding-left:5px;min-width:10em;font-weight:600;background:#f8fafc;}' +
+      '.wd688pr-sum .wd688pr-indent{padding-left:1.2em;font-weight:500;}' +
+      '.wd688pr-sum .wd688pr-year{background:#fffbeb;font-weight:700;}' +
+      '.wd688pr-notes{margin:4px 0 10px;font-size:8pt;line-height:1.5;color:#222;}' +
+      '.wd688pr-notes p{margin:0 0 2px;}' +
+      '.wd688pr-cal-section{margin-top:8px;}' +
+      '.wd688pr-cal-year{margin:10px 0 4px;font-size:11pt;font-weight:700;}' +
+      '.wd688pr-cal-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 8px;margin-bottom:6px;}' +
+      '.wd688pr-cal{border:1px solid #444;padding:3px 4px 4px;min-width:0;}' +
+      '.wd688pr-cal-mnum{margin:0 0 2px;text-align:center;font-size:10pt;font-weight:700;}' +
+      '.wd688pr-cal-t{width:100%;border-collapse:collapse;font-size:7pt;table-layout:fixed;}' +
+      '.wd688pr-cal-t th,.wd688pr-cal-t td{border:1px solid #999;text-align:center;padding:0;line-height:13px;height:13px;}' +
+      '.wd688pr-cal-t th{background:#e8eef4;font-weight:600;font-size:6.5pt;}' +
+      '.wd688pr-cal-t .wd688pr-d-sat{color:#1d4ed8;}' +
+      '.wd688pr-cal-t .wd688pr-d-sun,.wd688pr-cal-t .wd688pr-d-hol{color:#dc2626;font-weight:600;}' +
+      '.wd688pr-cal-t .wd688pr-d-rain{background:#dbeafe;}' +
+      '.wd688pr-cal-t .wd688pr-d-empty{background:#fafafa;}' +
+      '.wd688pr-cal-stats{width:100%;border-collapse:collapse;margin-top:2px;font-size:7.5pt;table-layout:fixed;}' +
+      '.wd688pr-cal-stats td{border:1px solid #999;padding:1px 3px;line-height:1.25;vertical-align:middle;}' +
+      '.wd688pr-cal-stats .wd688pr-sl{width:68%;text-align:left;white-space:normal;word-break:break-all;}' +
+      '.wd688pr-cal-stats .wd688pr-sv{width:32%;text-align:right;font-weight:700;white-space:nowrap;}' +
+      '.wd688pr-foot{margin-top:6px;font-size:7.5pt;color:#444;text-align:right;}' +
+      '.wd688pr-section{margin-bottom:12px;}' +
+      '.wd688pr-tabs{display:flex;flex-wrap:wrap;gap:2px;margin:0 0 6px;font-size:7.5pt;}' +
+      '.wd688pr-tabs span{border:1px solid #94a3b8;padding:2px 6px;background:#f1f5f9;border-radius:3px 3px 0 0;}' +
+      '.wd688pr-tabs .wd688pr-tab-active{background:#1e3a8a;color:#fff;border-color:#1e3a8a;font-weight:700;}' +
+      '.wd688pr-meta-line{margin:0 0 6px;font-size:9pt;}' +
+      '.wd688pr-5yr-block{margin:8px 0;}' +
+      '.wd688pr-5yr-block h3{margin:0 0 4px;font-size:9pt;font-weight:700;}' +
+      '#wd688-print-portal{display:none;}' +
+      '@media print{' +
+      '@page{size:A4 landscape;margin:7mm;}' +
+      'body{padding:0!important;}' +
+      'body *{visibility:hidden!important;}' +
+      '#wd688-print-portal,#wd688-print-portal *{visibility:visible!important;}' +
+      '#wd688-print-portal{display:block!important;position:absolute;left:0;top:0;width:100%;}' +
+      '.wd688pr-section{page-break-after:always;}' +
+      '.wd688pr-section:last-child{page-break-after:auto;}' +
+      '}'
+    );
+  }
+
+  var WD688_PRINT_TABS = [
+    '工事稼働日管理 (塗装)',
+    '工事稼働日管理 (足場)',
+    '工事稼働日管理 (休日)',
+    '過去5年月別降雨日数',
+    '過去5年月別風速日数',
+  ];
+
+  function sheetTabsHtml(activeTab) {
+    var out = '<div class="wd688pr-tabs">';
+    for (var i = 0; i < WD688_PRINT_TABS.length; i += 1) {
+      var t = WD688_PRINT_TABS[i];
+      out +=
+        '<span' +
+        (t === activeTab ? ' class="wd688pr-tab-active"' : '') +
+        '>' +
+        escHtml(t) +
+        '</span>';
+    }
+    return out + '</div>';
+  }
+
+  function injectPrintPortalCss() {
+    if (document.getElementById('wd688-print-portal-css')) return;
+    var st = document.createElement('style');
+    st.id = 'wd688-print-portal-css';
+    st.textContent = paintReportPrintStylesheet();
+    document.head.appendChild(st);
+  }
+
+  function ensurePrintPortal() {
+    var el = document.getElementById('wd688-print-portal');
+    if (el) return el;
+    el = document.createElement('div');
+    el.id = 'wd688-print-portal';
+    document.body.appendChild(el);
+    return el;
+  }
+
+  var WD688_PRINT_AFTERPRINT_BOUND = false;
+
+  function bindPrintPortalCleanup() {
+    if (WD688_PRINT_AFTERPRINT_BOUND) return;
+    WD688_PRINT_AFTERPRINT_BOUND = true;
+    window.addEventListener(
+      'afterprint',
+      function () {
+        var p = document.getElementById('wd688-print-portal');
+        if (p) p.innerHTML = '';
+      },
+      false,
+    );
+  }
+
+  function buildWindDaySetForYear(year, windRows, threshold) {
+    const set = new Set();
+    const prefix = String(year) + '-';
+    const th = Number(threshold) || 10;
+    const rows = windRows || [];
+    for (let i = 0; i < rows.length; i += 1) {
+      const r = rows[i];
+      if (!r.date || !r.date.startsWith(prefix)) continue;
+      if (Number(r.value) >= th) set.add(r.date);
+    }
+    return set;
+  }
+
+  function buildRainDaySetForYear(year, rainRows, threshold) {
+    const set = new Set();
+    const prefix = String(year) + '-';
+    const th = Number(threshold) || 10;
+    const rows = rainRows || [];
+    for (let i = 0; i < rows.length; i += 1) {
+      const r = rows[i];
+      if (!r.date || !r.date.startsWith(prefix)) continue;
+      if (Number(r.value) >= th) set.add(r.date);
+    }
+    return set;
+  }
+
+  function calendarDayClass(year, month, day, rainSet) {
+    const iso = toIso({ y: year, mo: month, d: day });
+    const dt = new Date(Date.UTC(year, month - 1, day, 12));
+    const dow = dt.getUTCDay();
+    const hol = nationalHolidaySet(year);
+    const cls = [];
+    if (rainSet.has(iso)) cls.push('wd688pr-d-rain');
+    if (dow === 0 || hol.has(iso)) cls.push('wd688pr-d-sun');
+    else if (dow === 6) cls.push('wd688pr-d-sat');
+    if (hol.has(iso) && dow !== 0 && dow !== 6) cls.push('wd688pr-d-hol');
+    return cls.join(' ');
+  }
+
+  function calStatRow(label, value) {
+    return (
+      '<tr><td class="wd688pr-sl">' +
+      label +
+      '</td><td class="wd688pr-sv">' +
+      value +
+      '</td></tr>'
+    );
+  }
+
+  function renderMonthCalendarBlock(year, month, row, mode, markSet) {
+    const isWind = mode === 'scaffold';
+    const wind = isWind ? windPdfMonth(row) : null;
+    const pdf = isWind ? null : paintPdfMonth(row);
+    const dim = daysInMonth(year, month);
+    const firstDow = new Date(Date.UTC(year, month - 1, 1, 12)).getUTCDay();
+    const holidayTotal = Math.round(Number(row.D) || 0);
+    const weatherVal = isWind ? wind.weatherR : pdf.weatherR;
+    const overlapVal = isWind ? wind.overlap : pdf.overlap;
+    const availVal = isWind ? wind.avail : pdf.avail;
+    const rateVal = isWind ? row.H_rate : row.K_rate;
+    const nonWork = Math.round((Number(row.D) || 0) + weatherVal - overlapVal);
+
+    let grid = '<table class="wd688pr-cal-t"><thead><tr>';
+    ['日', '月', '火', '水', '木', '金', '土'].forEach(function (w) {
+      grid += '<th>' + w + '</th>';
+    });
+    grid += '</tr></thead><tbody><tr>';
+    for (let i = 0; i < firstDow; i += 1) {
+      grid += '<td class="wd688pr-d-empty"></td>';
+    }
+    for (let d = 1; d <= dim; d += 1) {
+      const pos = (firstDow + d - 1) % 7;
+      if (d > 1 && pos === 0) grid += '</tr><tr>';
+      const cls = calendarDayClass(year, month, d, markSet);
+      grid += '<td' + (cls ? ' class="' + cls + '"' : '') + '>' + d + '</td>';
+    }
+    const tail = (firstDow + dim) % 7;
+    if (tail !== 0) {
+      for (let i = tail; i < 7; i += 1) {
+        grid += '<td class="wd688pr-d-empty"></td>';
+      }
+    }
+    grid += '</tr></tbody></table>';
+
+    let stats =
+      '<table class="wd688pr-cal-stats"><colgroup><col style="width:68%"><col style="width:32%"></colgroup>' +
+      calStatRow('暦日', row.C + '日') +
+      calStatRow('休日数', holidayTotal + '日');
+    if (isWind) {
+      stats +=
+        calStatRow('風速日数', fmtNum(weatherVal, 1) + '日') +
+        calStatRow('休日数と風速日数のダブり日数', fmtNum(overlapVal, 1) + '日') +
+        calStatRow('稼働可能日数', fmtNum(availVal, 1) + '日') +
+        calStatRow('不稼働率', fmtPct(rateVal)) +
+        calStatRow('不稼働日', nonWork + '日');
+    } else {
+      stats +=
+        calStatRow('降雨日数', fmtNum(weatherVal, 1) + '日') +
+        calStatRow('休日数と降雨日数のダブり日数', fmtNum(overlapVal, 1) + '日') +
+        calStatRow('稼働可能日数', fmtNum(availVal, 1) + '日') +
+        calStatRow('不稼働率', fmtPct(rateVal)) +
+        calStatRow('雨休率（％）', fmtRainHolidayPct(pdf.ratePct)) +
+        calStatRow('不稼働日', nonWork + '日');
+    }
+    stats += '</table>';
+
+    return (
+      '<div class="wd688pr-cal">' +
+      '<p class="wd688pr-cal-mnum">' +
+      month +
+      '</p>' +
+      grid +
+      stats +
+      '</div>'
+    );
+  }
+
+  function renderCalendarYearSection(year, rows, mode, markSet) {
+    let html = '<p class="wd688pr-cal-year">' + year + '年</p>';
+    for (let start = 1; start <= 12; start += 3) {
+      html += '<div class="wd688pr-cal-row">';
+      for (let m = start; m < start + 3; m += 1) {
+        const row = rows.find(function (r) {
+          return r.m === m;
+        });
+        if (row) html += renderMonthCalendarBlock(year, m, row, mode, markSet);
+      }
+      html += '</div>';
+    }
+    return html;
+  }
+
+  function buildPrintSummaryTable(rows, mode, opts) {
+    opts = opts || {};
+    const isWind = mode === 'scaffold';
+    const isHoliday = mode === 'holiday';
+    const yt = computeYearTotals(rows, isWind);
+    const pdfYear = isWind ? null : paintPdfYear(yt);
+    const windYear = isWind ? windPdfYear(yt) : null;
+    const rainTh = opts.rainTh != null ? opts.rainTh : 10;
+    const windTh = opts.windTh != null ? opts.windTh : 10;
+
+    function monthCells(fn, cellOpts) {
+      cellOpts = cellOpts || {};
+      let out = '';
+      for (let i = 0; i < rows.length; i += 1) {
+        const v = fn(rows[i], i);
+        if (cellOpts.pct) out += '<td>' + fmtPct(v) + '</td>';
+        else if (cellOpts.rainPctInt) out += '<td>' + fmtRainHolidayPct(v) + '</td>';
+        else if (cellOpts.fixed != null) out += '<td>' + fmtNum(v, cellOpts.fixed) + '</td>';
+        else out += '<td>' + escHtml(v) + '</td>';
+      }
+      return out;
+    }
+
+    function yearCell(v, cellOpts) {
+      cellOpts = cellOpts || {};
+      if (cellOpts.pct) return '<td class="wd688pr-year">' + fmtPct(v) + '</td>';
+      if (cellOpts.rainPctInt) return '<td class="wd688pr-year">' + fmtRainHolidayPct(v) + '</td>';
+      if (cellOpts.fixed != null) return '<td class="wd688pr-year">' + fmtNum(v, cellOpts.fixed) + '</td>';
+      return '<td class="wd688pr-year">' + escHtml(v) + '</td>';
+    }
+
+    function holidayAvail(r) {
+      return (Number(r.C) || 0) - (Number(r.D) || 0);
+    }
+
+    function holidayRate(r) {
+      const avail = holidayAvail(r);
+      return avail ? (Number(r.D) || 0) / avail : 0;
+    }
+
+    let sum =
+      '<table class="wd688pr-sum"><thead><tr>' +
+      '<th class="wd688pr-lab">項目</th>';
+    for (let i = 0; i < rows.length; i += 1) {
+      sum += '<th>' + rows[i].m + '月</th>';
+    }
+    sum += '<th class="wd688pr-year">年</th></tr></thead><tbody>';
+
+    if (isWind) {
+      sum +=
+        '<tr><td class="wd688pr-lab">風速日数 ※1<br><span style="font-size:8pt;font-weight:normal">(' +
+        windTh +
+        'm/s以上・過去5年月平均)</span></td>' +
+        monthCells(function (r) {
+          return windPdfMonth(r).weatherR;
+        }, { fixed: 1 }) +
+        yearCell(windYear.weatherR, { fixed: 1 }) +
+        '</tr>';
+    } else if (isHoliday) {
+      sum +=
+        '<tr><td class="wd688pr-lab">降雨日数 ※1<br><span style="font-size:8pt;font-weight:normal">(' +
+        rainTh +
+        'mm以上)</span></td>' +
+        monthCells(function () {
+          return 0;
+        }) +
+        yearCell(0) +
+        '</tr>';
+    } else {
+      sum +=
+        '<tr><td class="wd688pr-lab">降雨日数 ※1<br><span style="font-size:8pt;font-weight:normal">(' +
+        rainTh +
+        'mm以上・過去5年月平均)</span></td>' +
+        monthCells(function (r) {
+          return paintPdfMonth(r).weatherR;
+        }, { fixed: 1 }) +
+        yearCell(pdfYear.weatherR, { fixed: 1 }) +
+        '</tr>';
+    }
+
+    sum +=
+      '<tr><td class="wd688pr-lab" colspan="' +
+      (rows.length + 2) +
+      '">休日数</td></tr>';
+    sum +=
+      '<tr><td class="wd688pr-lab wd688pr-indent">土　曜・日　曜</td>' +
+      monthCells(function (r) {
+        return r.weekends;
+      }) +
+      yearCell(yt.weekends) +
+      '</tr>';
+    sum +=
+      '<tr><td class="wd688pr-lab wd688pr-indent">祝　日・祭　日</td>' +
+      monthCells(function (r) {
+        return r.weekdayHol;
+      }) +
+      yearCell(yt.weekdayHol) +
+      '</tr>';
+    sum +=
+      '<tr><td class="wd688pr-lab wd688pr-indent">年　末　年　始</td>' +
+      monthCells(function (r) {
+        return r.nye;
+      }) +
+      yearCell(yt.nye) +
+      '</tr>';
+    sum +=
+      '<tr><td class="wd688pr-lab wd688pr-indent">G　W</td>' +
+      monthCells(function (r) {
+        return r.gw;
+      }) +
+      yearCell(yt.gw) +
+      '</tr>';
+    sum +=
+      '<tr><td class="wd688pr-lab wd688pr-indent">夏　休　み</td>' +
+      monthCells(function (r) {
+        return r.summer;
+      }) +
+      yearCell(yt.summer) +
+      '</tr>';
+    sum +=
+      '<tr><td class="wd688pr-lab wd688pr-indent">計</td>' +
+      monthCells(function (r) {
+        return r.D;
+      }) +
+      yearCell(yt.D) +
+      '</tr>';
+
+    if (isWind) {
+      sum +=
+        '<tr><td class="wd688pr-lab">休日数と風速日数のダブり ※2</td>' +
+        monthCells(function (r) {
+          return windPdfMonth(r).overlap;
+        }, { fixed: 1 }) +
+        yearCell(windYear.overlap, { fixed: 1 }) +
+        '</tr>';
+    } else if (isHoliday) {
+      sum +=
+        '<tr><td class="wd688pr-lab">休日数と降雨日数のダブり ※2</td>' +
+        monthCells(function () {
+          return 0;
+        }, { fixed: 1 }) +
+        yearCell(0, { fixed: 1 }) +
+        '</tr>';
+    } else {
+      sum +=
+        '<tr><td class="wd688pr-lab">休日数と降雨日数のダブり ※2</td>' +
+        monthCells(function (r) {
+          return paintPdfMonth(r).overlap;
+        }, { fixed: 1 }) +
+        yearCell(pdfYear.overlap, { fixed: 1 }) +
+        '</tr>';
+    }
+
+    sum +=
+      '<tr><td class="wd688pr-lab">暦　　　　　日</td>' +
+      monthCells(function (r) {
+        return r.C;
+      }) +
+      yearCell(yt.C) +
+      '</tr>';
+
+    if (isWind) {
+      sum +=
+        '<tr><td class="wd688pr-lab">稼　働　可　能　日　数　※3</td>' +
+        monthCells(function (r) {
+          return windPdfMonth(r).avail;
+        }, { fixed: 1 }) +
+        yearCell(windYear.avail, { fixed: 1 }) +
+        '</tr>' +
+        '<tr><td class="wd688pr-lab">不　稼　働　率　※4</td>' +
+        monthCells(function (r) {
+          return r.H_rate;
+        }, { pct: true }) +
+        yearCell(yt.rate, { pct: true }) +
+        '</tr>';
+    } else if (isHoliday) {
+      sum +=
+        '<tr><td class="wd688pr-lab">稼　働　可　能　日　数　※3</td>' +
+        monthCells(function (r) {
+          return holidayAvail(r);
+        }) +
+        yearCell(yt.C - yt.D) +
+        '</tr>' +
+        '<tr><td class="wd688pr-lab">不　稼　働　率　※4</td>' +
+        monthCells(function (r) {
+          return holidayRate(r);
+        }, { pct: true }) +
+        yearCell(yt.D && yt.C - yt.D ? yt.D / (yt.C - yt.D) : 0, { pct: true }) +
+        '</tr>';
+    } else {
+      sum +=
+        '<tr><td class="wd688pr-lab">稼　働　可　能　日　数　※3</td>' +
+        monthCells(function (r) {
+          return paintPdfMonth(r).avail;
+        }, { fixed: 1 }) +
+        yearCell(pdfYear.avail, { fixed: 1 }) +
+        '</tr>' +
+        '<tr><td class="wd688pr-lab">不　稼　働　率　※4</td>' +
+        monthCells(function (r) {
+          return r.K_rate;
+        }, { pct: true }) +
+        yearCell(yt.rate, { pct: true }) +
+        '</tr>' +
+        '<tr><td class="wd688pr-lab">雨休率（％）</td>' +
+        monthCells(function (r) {
+          return paintPdfMonth(r).ratePct;
+        }, { rainPctInt: true }) +
+        yearCell(pdfYear.ratePct, { rainPctInt: true }) +
+        '</tr>';
+    }
+
+    sum += '</tbody></table>';
+    return sum;
+  }
+
+  function buildPrintFootnotes(mode, pastLabel, rainTh, windTh) {
+    if (mode === 'scaffold') {
+      return (
+        '<div class="wd688pr-notes">' +
+        '<p>※1　風速日数は、見積作成年の過去5年間（' +
+        escHtml(pastLabel) +
+        '）の月平均日数（' +
+        escHtml(windTh) +
+        'm/s以上の日数）です。</p>' +
+        '<p>※2　休日数と風速日数のダブり＝風速日数×（休日数÷暦日数）</p>' +
+        '<p>※3　稼働可能日数＝暦日数－（休日数＋風速日数－ダブり）</p>' +
+        '<p>※4　不稼働率＝（休日数＋風速日数－ダブり）÷稼働可能日数</p>' +
+        '</div>'
+      );
+    }
+    if (mode === 'holiday') {
+      return (
+        '<div class="wd688pr-notes">' +
+        '<p>※1　上段表は休日数のみ（降雨日数は0）。カレンダー下は月別の降雨・休日内訳です。</p>' +
+        '<p>※2　休日数と降雨日数のダブり＝降雨日数×（休日数÷暦日数）</p>' +
+        '<p>※3　稼働可能日数＝暦日数－休日数（休日シート上段）</p>' +
+        '<p>※4　不稼働率＝休日数÷稼働可能日数（休日シート上段）</p>' +
+        '</div>'
+      );
+    }
+    return (
+      '<div class="wd688pr-notes">' +
+      '<p>※1　降雨日数は、見積作成年の過去5年間（' +
+      escHtml(pastLabel) +
+      '）の月平均日数（' +
+      escHtml(rainTh) +
+      'mm以上の日数）です。</p>' +
+      '<p>※2　休日数と降雨日数のダブり＝降雨日数×（休日数÷暦日数）</p>' +
+      '<p>※3　稼働可能日数＝暦日数－休日数－降雨日数＋ダブり</p>' +
+      '<p>※4　不稼働率＝（休日数＋降雨日数－ダブり）÷稼働可能日数</p>' +
+      '<p>　　雨休率（％）＝（休日数＋降雨日数－ダブり）÷稼働可能日数（整数％・工期設定資料p.94）</p>' +
+      '</div>'
+    );
+  }
+
+  function buildWorkdaysMgmtPrintSection(config) {
+    const rows = sortMonthlyRows(config.rows || []);
+    const calYear = config.calYear;
+    const mode = config.mode;
+    const markSet = config.markSet || new Set();
+    const calMode = mode === 'scaffold' ? 'scaffold' : 'paint';
+
+    return (
+      '<div class="wd688pr-section">' +
+      sheetTabsHtml(config.sheetTab) +
+      '<h1 class="wd688pr-title">' +
+      escHtml(config.sheetTab) +
+      '</h1>' +
+      buildPrintSummaryTable(rows, mode, {
+        rainTh: config.rainTh,
+        windTh: config.windTh,
+      }) +
+      buildPrintFootnotes(mode, config.pastLabel, config.rainTh, config.windTh) +
+      '<section class="wd688pr-cal-section">' +
+      renderCalendarYearSection(calYear, rows, calMode, markSet) +
+      '</section></div>'
+    );
+  }
+
+  function renderPrintOne5yrTable(refBlock, title, estimateYear) {
+    if (!refBlock || !refBlock.months) {
+      return '<p style="color:#888">' + escHtml(title) + ' — データなし</p>';
+    }
+    const built = build5yrMonthlyAverages(refBlock, estimateYear);
+    const years = built.years;
+    const months = built.months.slice().sort(function (a, b) {
+      return a.m - b.m;
+    });
+
+    let html =
+      '<div class="wd688pr-5yr-block"><h3>' +
+      escHtml(title) +
+      '</h3><table class="wd688pr-sum"><thead><tr>' +
+      '<th class="wd688pr-lab">月</th>';
+    for (let i = 0; i < years.length; i += 1) {
+      html += '<th>' + years[i] + '年</th>';
+    }
+    html += '<th class="wd688pr-year">平均</th></tr></thead><tbody>';
+
+    for (let i = 0; i < months.length; i += 1) {
+      const row = months[i];
+      html += '<tr><td class="wd688pr-lab">' + monthLabel(row.m) + '</td>';
+      for (let j = 0; j < years.length; j += 1) {
+        const y = years[j];
+        const v = row.byYear && row.byYear[y] != null ? row.byYear[y] : '—';
+        html += '<td>' + escHtml(v) + '</td>';
+      }
+      html += '<td class="wd688pr-year">' + fmtNum(row.avg, 1) + '</td></tr>';
+    }
+    html += '</tbody></table></div>';
+    return html;
+  }
+
+  function buildPrint5yrSection(kind, estYear, pastLabel) {
+    const ref = getRef5yr();
+    const isWind = kind === 'wind';
+    const thresholds = isWind ? REF5YR_WIND_THRESHOLDS : REF5YR_RAIN_THRESHOLDS;
+    const sheetTab = isWind ? '過去5年月別風速日数' : '過去5年月別降雨日数';
+
+    let html =
+      '<div class="wd688pr-section">' +
+      sheetTabsHtml(sheetTab) +
+      '<h1 class="wd688pr-title">' +
+      escHtml(sheetTab) +
+      '</h1>' +
+      '<p class="wd688pr-meta-line">' +
+      escHtml(ref.location || '大宮地区') +
+      '　気象庁過去5年データ（見積作成年 ' +
+      escHtml(estYear) +
+      '年 → ' +
+      escHtml(pastLabel) +
+      '）</p>';
+
+    for (let i = 0; i < thresholds.length; i += 1) {
+      const th = thresholds[i];
+      const key = ref5yrBlockKey(isWind ? 'wind' : 'rain', th);
+      html += renderPrintOne5yrTable(ref[key], ref5yrBlockTitle(key), estYear);
+    }
+
+    html += '</div>';
+    return html;
+  }
+
+  function buildFullClientReportHtml() {
+    const estYear = state.lastResult.estimateYear || currentEstimateYear();
+    const pastYears = state.lastResult.pastYears || pastFiveYearsForEstimate(estYear);
+    const pastLabel =
+      pastYears.length >= 2
+        ? pastYears[0] + '年〜' + pastYears[pastYears.length - 1] + '年'
+        : pastYears.join('・');
+    const rainTh = state.threshold_rain_mm != null ? state.threshold_rain_mm : 10;
+    const windTh = state.threshold_wind_ms != null ? state.threshold_wind_ms : 10;
+    const calYear = state.holiday_fiscal_year || estYear;
+    const rainRows = sortMonthlyRows(state.lastResult.monthlyRain || []);
+    const windRows = sortMonthlyRows(state.lastResult.monthlyWind || []);
+    const rainSet = buildRainDaySetForYear(calYear, state.rain, rainTh);
+    const windSet = buildWindDaySetForYear(calYear, state.wind, windTh);
+    const obsNote = state.obs_location_note ? '（' + state.obs_location_note + '）' : '';
+
+    const meta =
+      '<div class="wd688pr-meta"><table>' +
+      '<tr><th>工事名</th><td>' +
+      escHtml(state.project_name || '—') +
+      '</td><th>見積作成年</th><td>' +
+      escHtml(estYear) +
+      '年</td></tr>' +
+      '<tr><th>観測地点</th><td colspan="3">' +
+      escHtml(state.obs_location || '—') +
+      escHtml(obsNote) +
+      '　／　足場 稼働可能日数: <strong>' +
+      fmtNum(state.result_scaffold_days, 2) +
+      ' 日</strong>　／　塗装: <strong>' +
+      fmtNum(state.result_paint_days, 2) +
+      ' 日</strong></td></tr></table></div>';
+
+    return (
+      meta +
+      buildWorkdaysMgmtPrintSection({
+        sheetTab: '工事稼働日管理 (塗装)',
+        rows: rainRows,
+        mode: 'paint',
+        calYear: calYear,
+        markSet: rainSet,
+        pastLabel: pastLabel,
+        rainTh: rainTh,
+        windTh: windTh,
+      }) +
+      buildWorkdaysMgmtPrintSection({
+        sheetTab: '工事稼働日管理 (足場)',
+        rows: windRows,
+        mode: 'scaffold',
+        calYear: calYear,
+        markSet: windSet,
+        pastLabel: pastLabel,
+        rainTh: rainTh,
+        windTh: windTh,
+      }) +
+      buildWorkdaysMgmtPrintSection({
+        sheetTab: '工事稼働日管理 (休日)',
+        rows: rainRows,
+        mode: 'holiday',
+        calYear: calYear,
+        markSet: rainSet,
+        pastLabel: pastLabel,
+        rainTh: rainTh,
+        windTh: windTh,
+      }) +
+      buildPrint5yrSection('rain', estYear, pastLabel) +
+      buildPrint5yrSection('wind', estYear, pastLabel)
+    );
+  }
+
+  function buildPaintClientReportHtml() {
+    return buildFullClientReportHtml();
+  }
+
+  function openPaintClientReportPrint() {
+    try {
+      readFormIntoState();
+      runCalc();
+      if (
+        !state.lastResult ||
+        !state.lastResult.monthlyRain ||
+        !state.lastResult.monthlyRain.length ||
+        !state.lastResult.monthlyWind ||
+        !state.lastResult.monthlyWind.length
+      ) {
+        alert('算出結果がありません。「再算出」後にお試しください。');
+        return;
+      }
+      var html = buildFullClientReportHtml();
+      if (!html || html.indexOf('wd688pr-sum') < 0) {
+        throw new Error('報告HTMLの生成に失敗しました');
+      }
+      injectPrintPortalCss();
+      bindPrintPortalCleanup();
+      var portal = ensurePrintPortal();
+      portal.innerHTML = html;
+      window.requestAnimationFrame(function () {
+        window.requestAnimationFrame(function () {
+          try {
+            window.print();
+          } catch (err) {
+            console.warn(BUILD, err);
+            alert('印刷を開始できませんでした: ' + (err.message || err));
+          }
+        });
+      });
+    } catch (e) {
+      alert('印刷の準備に失敗しました: ' + (e.message || e));
+      console.error(BUILD, e);
+    }
   }
 
   function sortMonthlyRows(rows) {
@@ -926,6 +1690,8 @@
     if (!header) return;
     header.innerHTML = '';
     injectHideListCss();
+    injectPrintPortalCss();
+    bindPrintPortalCleanup();
 
     const root = document.createElement('div');
     root.className = 'wd688-root';
@@ -963,7 +1729,8 @@
       '<div><span style="font-size:12px;color:#555">足場 稼働可能日数</span><br><strong id="wd688-scaffold" style="font-size:22px">—</strong></div>' +
       '<div><span style="font-size:12px;color:#555">塗装 稼働可能日数</span><br><strong id="wd688-paint" style="font-size:22px">—</strong></div>' +
       '<button type="button" id="wd688-calc" class="kintoneplugin-button-dialog-ok">再算出</button>' +
-      '<button type="button" id="wd688-save" class="kintoneplugin-button-dialog-ok">保存</button></div>' +
+      '<button type="button" id="wd688-save" class="kintoneplugin-button-dialog-ok">保存</button>' +
+      '<button type="button" id="wd688-print-paint" class="kintoneplugin-button-normal">施工主報告用印刷</button></div>' +
       '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 4px;">' +
       '<span style="font-size:13px;font-weight:bold;color:#334155">気象CSV取込（過去5年表を自動更新）：</span>' +
       '<button type="button" id="wd688-csv-wind" class="kintoneplugin-button-normal">CSV→風速</button>' +
@@ -1035,6 +1802,8 @@
         alert('保存失敗: ' + (e.message || e));
       });
     });
+
+    document.getElementById('wd688-print-paint').addEventListener('click', openPaintClientReportPrint);
 
     const fileInput = document.getElementById('wd688-csv-file');
     function pickCsv(kind) {

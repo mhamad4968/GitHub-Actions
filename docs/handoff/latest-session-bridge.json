@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-06-17T12:36:03.191Z",
-  "gitHead": "e0ec691",
+  "exportedAt": "2026-06-19T09:38:08.219Z",
+  "gitHead": "af0dfa4",
   "gitStatus": "## main...origin/main",
-  "nextTask": "**浜田指示待ち** — Space 48 **VPN 台帳 CLOSED** + Space 21 台帳 v1 **3本 CLOSED** + Space 34 **JR iPad CLOSED**",
+  "nextTask": "**担当説明（736 イメージ確認）** — 先に `npm run jikkou-yosan:pre-demo-gate` → 仕様 §9 + Ctrl+Shift+R 目視",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -11,6 +11,6 @@
     "docs/handoff/latest-session-bridge.json",
     "docs/knowledge/debug-tips.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=e0ec691 | 次=**浜田指示待ち** — Space 48 **VPN 台帳 CLOSED** + Space 21 台帳 v1 **3本 CLOSED** + Space 34 **JR iPad CLOSED** | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, .cursor/rules/mode-b-canonical.mdc",
+  "promptBlock": "【SESSION-BRIDGE】git=af0dfa4 | 次=**担当説明（736 イメージ確認）** — 先に `npm run jikkou-yosan:pre-demo-gate` → 仕様 §9 + Ctrl+Shift+R 目視 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, .cursor/rules/mode-b-canonical.mdc",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }
