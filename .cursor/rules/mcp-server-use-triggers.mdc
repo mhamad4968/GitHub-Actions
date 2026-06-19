@@ -31,6 +31,7 @@ globs: "**/*"
 
 - **deepseek** / **user-deepseek**: **§50-3-8**・着手前盲点3点・仕様乖離の第2視点（方式B ④）。
 - **kimi** / **user-kimi**: **長文・大差分レビュー**・`kimi_review`（方式B ③）。**コード diff の主担当ではない**（② Composer 2.5）。
+- **MCP 失敗時フォールバック（2026-06-19 GO）**: **Kimi** がパス解決・initialize・TIMEOUT で使えない → **DeepSeek（§50-3-8）** → 不可なら **OpenRouter**。**いずれも不可**のときだけチャットに **`MCPスキップ: kimi — <理由>`** を 1 行残す。**締め・GO 報告を第2者なしで完走しない**。
 
 - **user-github**: Actions Run / PR / Issue / ブランチ・リポ設定を **API で確かめる**とき（外部の正）。
 - **user-kintone**（本番系）: 本番アプリの **フィールド／レコード／権限**が主題、または本番 CRUD の前段調査。

@@ -54,6 +54,24 @@ const REPORT_DIR = path.join(REPO_ROOT, 'docs', 'reports');
 const REPORT_PATH = path.join(REPORT_DIR, `${today.iso}-evening-reflection.md`);
 fs.mkdirSync(REPORT_DIR, { recursive: true });
 
+/** S16 — §4 記入済みなら雛形再生成で上書き禁止 */
+function isEveningReflectionFilled(filePath) {
+  if (!fs.existsSync(filePath)) return false;
+  const text = fs.readFileSync(filePath, 'utf8');
+  const m = text.match(/## ⚠️ 4\.[\s\S]*?(?=\n## |\n---|\Z)/);
+  if (!m) return false;
+  const body = m[0];
+  if (/<!-- AI が記入/m.test(body)) return false;
+  return /\| F\d+ \|/m.test(body) || /^\| # \|/m.test(body);
+}
+
+if (isEveningReflectionFilled(REPORT_PATH)) {
+  console.error(
+    '[evening:reflect] NG §4 記入済み — 上書き禁止（S16）。docs/reports/ をエディタで直接編集してください。',
+  );
+  process.exit(1);
+}
+
 function run(cmd) {
   const res = spawnSync('bash', ['-lc', cmd], {
     cwd: REPO_ROOT,
@@ -67,13 +85,27 @@ function run(cmd) {
   };
 }
 
+/** S15 — Windows でも repo root 固定で git を実行（bash 経由の誤報防止） */
+function gitSpawn(args) {
+  const res = spawnSync('git', args, { cwd: REPO_ROOT, encoding: 'utf8', timeout: 30_000 });
+  return {
+    ok: res.status === 0,
+    stdout: (res.stdout || '').trim(),
+    stderr: (res.stderr || '').trim(),
+  };
+}
+
 // ── 1. git 差分（git レポでない場合はスキップ） ─────
 let gitSection = '_(git レポジトリではありません)_';
-const gitCheck = run('git rev-parse --is-inside-work-tree 2>/dev/null');
+const gitCheck = gitSpawn(['rev-parse', '--is-inside-work-tree']);
 if (gitCheck.ok && gitCheck.stdout === 'true') {
-  const status = run('git status --short');
-  // 2026-04-20 制定 (#D5): midnight 起点だと深夜跨ぎ・早朝実行で空になるため直近 12 時間で抽出
-  const today_log = run(`git log --since='12 hours ago' --pretty=format:'%h %s' | head -20`);
+  const status = gitSpawn(['status', '--short']);
+  const today_log = gitSpawn([
+    'log',
+    '--since=12 hours ago',
+    '--pretty=format:%h %s',
+    '-20',
+  ]);
   gitSection = [
     '**`git status`（未コミット）**:',
     '```text',
@@ -150,8 +182,8 @@ if (fs.existsSync(pendingDir)) {
 // ── 1-H. S2 (2026-04-20): git status 汚れ度合い警告 ──
 let gitDirtyWarning = '';
 if (gitCheck.ok && gitCheck.stdout === 'true') {
-  const stCount = run('git status --short | wc -l');
-  const cnt = parseInt(stCount.stdout || '0', 10);
+  const stLines = gitSpawn(['status', '--short']).stdout.split(/\r?\n/).filter(Boolean);
+  const cnt = stLines.length;
   if (cnt > 50) {
     gitDirtyWarning = `\n### ⚠ 1-H. git 未コミット件数警告\n\n**未コミット ${cnt} 件**（50 件超え）→ 区切り良いところで commit 推奨。状況把握が困難になる前に整理する。`;
   } else if (cnt > 30) {
@@ -199,7 +231,7 @@ function updateNewSessionStarter() {
     }
   }
   // 当日 commit のうち主要なもの
-  const todayCommits = run(`git log --since='12 hours ago' --pretty=format:'%s' | head -3`);
+  const todayCommits = gitSpawn(['log', '--since=12 hours ago', '--pretty=format:%s', '-3']);
   if (todayCommits.ok && todayCommits.stdout) {
     summary.push('- 当日コミット (上位 3):');
     todayCommits.stdout.split('\n').forEach((s) => summary.push(`  - ${s.slice(0, 80)}`));

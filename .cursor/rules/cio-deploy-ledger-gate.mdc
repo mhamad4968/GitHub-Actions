@@ -25,13 +25,17 @@ alwaysApply: false
 
 **セッション締め前**に `npm run verify:cio-deploy-ledger-gate` が **exit 0** 必須（`verify:session-close-git-warn` 内包）。
 
-## deploy 直後
+## deploy 直後（R56 close gate）
 
 ```bash
 npm run sync:kintone-apps-build -- <appId>
 # 機械表行が無い新規 app → kintone-apps.md に行追加してから再 sync
 npm run verify:cio-deploy-ledger-gate -- --apps <appId>
+npm run rag:mirror:canonical-docs
+npm run verify:rag-mirror-canonical
 ```
+
+**セッション内で複数 app deploy** した場合は **各 appId ごとに sync** してから上記 verify を **commit 前に 1 回**。
 
 ## 禁止
 

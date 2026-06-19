@@ -1,0 +1,17 @@
+{
+  "id": "2026-06-19-R55-S16",
+  "created_at": "2026-06-19T22:00:00+09:00",
+  "status": "approved_hamada_go",
+  "approved_at": "2026-06-20T00:00:00+09:00",
+  "go_doc": "docs/approved-changes/2026-06-19-rules-r55-s16-hamada-go.md",
+  "source": "docs/reports/2026-06-19-evening-reflection.md",
+  "items": [
+    { "id": "R55", "title": "セッション締め BUILD 三重監査 strict 必須", "target": "scripts/verify-session-close-git-warn.mjs" },
+    { "id": "R56", "title": "deploy close gate RAG mirror", "target": ".cursor/rules/cio-deploy-ledger-gate.mdc" },
+    { "id": "R57", "title": "退役 checklist portfolio/RAG/gaps", "target": "docs/runbooks/kintone-app-retire-checklist.md" },
+    { "id": "S15", "title": "evening-reflect git Windows 修正", "target": "scripts/evening-reflect.mjs" },
+    { "id": "S16", "title": "夕反省再生成上書き禁止", "target": "scripts/evening-reflect.mjs" },
+    { "id": "D1", "title": "kintone-apps 700 フォーム rev 注釈", "target": "kintone-apps.md" },
+    { "id": "C1", "title": "688 dead CSS wd688pr-foot 削除", "target": "customize/688/desktop.ui.js" }
+  ]
+}

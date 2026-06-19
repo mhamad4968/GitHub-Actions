@@ -1266,7 +1266,6 @@
       '.wd688pr-cal-stats td{border:1px solid #999;padding:1px 3px;line-height:1.25;vertical-align:middle;}' +
       '.wd688pr-cal-stats .wd688pr-sl{width:68%;text-align:left;white-space:normal;word-break:break-all;}' +
       '.wd688pr-cal-stats .wd688pr-sv{width:32%;text-align:right;font-weight:700;white-space:nowrap;}' +
-      '.wd688pr-foot{margin-top:6px;font-size:7.5pt;color:#444;text-align:right;}' +
       '.wd688pr-section{margin-bottom:12px;}' +
       '.wd688pr-tabs{display:flex;flex-wrap:wrap;gap:2px;margin:0 0 6px;font-size:7.5pt;}' +
       '.wd688pr-tabs span{border:1px solid #94a3b8;padding:2px 6px;background:#f1f5f9;border-radius:3px 3px 0 0;}' +

@@ -113,6 +113,34 @@ function main() {
     }
   }
 
+  if (!process.argv.includes('--skip-rag-mirror')) {
+    const rag = spawnSync('npm', ['run', 'verify:rag-mirror-canonical', '--silent'], {
+      cwd: root,
+      encoding: 'utf8',
+      shell: true,
+    });
+    if (rag.status !== 0 && !warnOnly) {
+      process.exit(1);
+    }
+    if (rag.status !== 0 && warnOnly) {
+      console.warn('[verify:session-close-git-warn] WARN RAG mirror NG（R56）');
+    }
+  }
+
+  if (!process.argv.includes('--skip-session-builds')) {
+    const builds = spawnSync('npm', ['run', 'cio:audit:session-builds:strict', '--silent'], {
+      cwd: root,
+      encoding: 'utf8',
+      shell: true,
+    });
+    if (builds.status !== 0 && !warnOnly) {
+      process.exit(1);
+    }
+    if (builds.status !== 0 && warnOnly) {
+      console.warn('[verify:session-close-git-warn] WARN session BUILD audit NG（R55）');
+    }
+  }
+
   console.log('[verify:session-close-git-warn] OK（未コミットなし・push 済または ahead 0）');
   process.exit(0);
 }

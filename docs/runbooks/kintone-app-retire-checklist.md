@@ -25,6 +25,10 @@
 | 7 | **npm deploy スクリプト** | `package.json` の `deploy:NNN` |
 | 8 | **live deploy 済み** | 参照元アプリを **preflight → deploy**（627 除去例: 595 rev 92+） |
 | 9 | **SPEC / runbook** | 削除アプリへのリンク・§ 番号 |
+| 10 | **`scripts/cio-portfolio-apps.mjs`** | `EXCLUDED` / 監査対象から **削除 appId を除外**（668 型 — R57） |
+| 11 | **RAG mirror** | `npm run rag:mirror:canonical-docs` → **`verify:rag-mirror-canonical`** |
+| 12 | **`data/kintone-accepted-gaps.json`** | deploy 未接続・退役の **許容ギャップ** を更新 |
+| 13 | **`verify:cio-deploy-ledger-gate`** | 退役後も **参照元 app** の BUILD 三重が OK |
 
 ---
 
