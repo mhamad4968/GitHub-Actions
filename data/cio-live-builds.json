@@ -3,10 +3,10 @@
   "apps": {
     "595": {
       "build": "2026-06-19-595-dept-picker-680",
-      "fileKey": "d9754327-5627-45e7-a3a4-78059977fcab",
-      "revision": "95",
-      "relPath": "customize/595/desktop.js",
-      "deployedAt": "2026-06-19T09:56:51.000Z",
+      "fileKey": "6ae0fe9e-1ccd-4627-bd91-d5b0bd7b9cc0",
+      "revision": "96",
+      "relPath": ".kintone-deploy/upload-595.js",
+      "deployedAt": "2026-06-19T12:01:16.199Z",
       "note": null
     },
     "627": {
@@ -27,10 +27,10 @@
     },
     "674": {
       "build": "2026-06-19-674-detail-hide-sidebar",
-      "fileKey": "0dbb4061-8af0-4e77-8066-5efab2d3d1a9",
-      "revision": "242",
-      "relPath": "customize/new-pc-ledger-v1/desktop.js",
-      "deployedAt": "2026-06-19T09:50:53.034Z",
+      "fileKey": "8578fb9c-900c-4153-8f1e-c97e3887c39c",
+      "revision": "243",
+      "relPath": ".kintone-deploy/upload-674.js",
+      "deployedAt": "2026-06-19T12:01:20.986Z",
       "note": null
     },
     "677": {
@@ -91,10 +91,10 @@
     },
     "688": {
       "build": "2026-06-19-688-print-rounding-fix",
-      "fileKey": "f6226064-b3a5-4c97-8cf3-d981f5608625",
-      "revision": "33",
-      "relPath": "customize/688/desktop.js",
-      "deployedAt": "2026-06-19T11:54:29.818Z",
+      "fileKey": "fba04636-2b4f-49c2-b271-3a3f36fa9886",
+      "revision": "34",
+      "relPath": ".kintone-deploy/upload-688.js",
+      "deployedAt": "2026-06-19T12:01:24.144Z",
       "note": null
     },
     "693": {
