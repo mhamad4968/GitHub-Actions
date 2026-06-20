@@ -36,7 +36,7 @@ npm run app:fields <アプリID>
 | 687 | `2026-06-09-687-workdays-excel-v1` | **10** | `13bc24dc-a753-404a-9f03-8e7e92c43647` | 2026-06-09 工事稼働 Excel v1 |
 | 688 | `2026-06-19-688-print-rounding-fix` | **34** | `fba04636-2b4f-49c2-b271-3a3f36fa9886` | 2026-06-19 足場風速日数丸め・印刷フッター削除 |
 | 735 | — | — | — | 2026-06-18 実行予算書リストマスタ（104件 seed・customize なし） |
-| 736 | `2026-06-20-jikkou-yosan-print-tune` | **78** | `787caadd-0d75-4dd4-a78c-777a011b4e1c` | 2026-06-20 タブ別印刷v1 |
+| 736 | `2026-06-20-jikkou-yosan-print-tune` | **78** | `6a03f36f-fb27-402b-8afb-13ad526d71f1` | 2026-06-20 総括表印刷調整 |
 | 693 | `2026-06-03-apple-id-db-block-ui-mutations` | **5** | `ca4b6489-bc6d-444c-b4a4-28b4c7f8c96c` | 2026-06-03 Apple ID DB save/delete ブロック |
 | 694 | `2026-06-08-694-device-exchange-date` | **18** | `699da986-7b14-49d0-aafe-bfe3322300e5` | 2026-06-08 端末交換日フィールド |
 | 695 | `2026-06-06-shared-mail-db-block-ui` | **5** | `afc1ca51-aeed-4a67-a3ed-9a2fac00e91a` | 2026-06-06 共有メール DB save/delete ブロック |
