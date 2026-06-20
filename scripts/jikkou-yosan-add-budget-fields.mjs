@@ -45,22 +45,25 @@ async function main() {
   });
   const hasSpec = form.properties?.spec_lines;
   const merged = { ...(form.properties || {}) };
+  const toAdd = {};
   let added = 0;
   for (const [code, prop] of Object.entries(properties)) {
     if (!merged[code]) {
-      merged[code] = prop;
+      toAdd[code] = prop;
       added += 1;
     }
   }
   if (hasSpec && added === 0) {
     console.log('Fields already exist on app', appId);
+  } else if (added === 0) {
+    console.log('No new fields to add on app', appId);
   } else {
     const j = await fetchJson(`${baseUrl}/k/v1/preview/app/form/fields.json`, {
       method: 'POST',
       headers,
-      body: JSON.stringify({ app: appId, properties: merged, revision: form.revision }),
+      body: JSON.stringify({ app: appId, properties: toAdd, revision: form.revision }),
     });
-    console.log('fields revision', j.revision, added ? `(+${added} fields)` : '');
+    console.log('fields revision', j.revision, `(+${added} fields)`);
   }
   const latest = await fetchJson(`${baseUrl}/k/v1/preview/app/form/fields.json?app=${appId}`, {
     headers: { ...headers, 'Content-Type': undefined },

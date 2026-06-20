@@ -6,6 +6,7 @@ import {
   COST_GROUP_STARTERS,
   costGroupSubtotalNote,
   assignCostBorderRoles,
+  syncWorkTypeSubtotalRows,
 } from './jikkou-yosan-excel-cost-layout.mjs';
 
 export {
@@ -14,6 +15,8 @@ export {
   costGroupSubtotalNote,
   assignCostBorderRoles,
   costBorderCssClass,
+  syncWorkTypeSubtotalRows,
+  isCountableCostRow,
 } from './jikkou-yosan-excel-cost-layout.mjs';
 
 
@@ -110,43 +113,42 @@ export function calcCostTotal8(costLines) {
   return t;
 }
 
-/** Excel 総括表 — 「計」行を持つグループのみ小計再計算 */
+/** Excel 総括表 — 小計行の金額・備考をグループ直前の明細から再計算 */
 export function applyCostGroupSubtotals(lines) {
   let groupKey = '';
-  let groupStart = 0;
   for (let i = 0; i < lines.length; i += 1) {
     const r = lines[i];
     const wt = String(r.cost_work_type || '').trim();
     if (wt && wt !== '計' && COST_GROUP_STARTERS[wt]) {
-      const nextKey = COST_GROUP_STARTERS[wt];
-      if (nextKey !== groupKey) {
-        groupKey = nextKey;
-        groupStart = i;
-      }
+      groupKey = COST_GROUP_STARTERS[wt];
       r.cost_group_key = groupKey;
-    } else if (groupKey && r.cost_row_kind !== 'subtotal') {
+    } else if (groupKey && !isSubtotalRow(r)) {
       r.cost_group_key = r.cost_group_key || groupKey;
       if (!wt && groupKey === 'rental') r.cost_work_type = '';
     }
     if (r.cost_row_kind === 'subtotal') {
       const gk = r.cost_group_key || groupKey;
       let sum = 0;
-      for (let j = groupStart; j < i; j += 1) {
+      for (let j = i - 1; j >= 0; j -= 1) {
         const p = lines[j];
-        if (p.cost_row_kind !== 'detail' && p.cost_row_kind !== 'link') continue;
-        if (gk && p.cost_group_key && p.cost_group_key !== gk) continue;
+        if (isSubtotalRow(p)) break;
+        if (p.cost_row_kind !== 'detail' && p.cost_row_kind !== 'link') break;
+        if (gk && p.cost_group_key && p.cost_group_key !== gk) break;
         sum += num(p.cost_amount);
       }
       r.cost_work_type = '計';
-      r.cost_group_key = r.cost_group_key || groupKey;
+      r.cost_group_key = gk;
       r.subtotal_display_amount = sum;
       r.cost_amount = sum;
-      r.cost_basis_note = costGroupSubtotalNote(r.cost_group_key || groupKey);
+      r.cost_basis_note = costGroupSubtotalNote(gk);
       groupKey = '';
-      groupStart = i + 1;
     }
   }
   return lines;
+}
+
+function isSubtotalRow(r) {
+  return r.cost_row_kind === 'subtotal' || r.cost_row_kind === '小計';
 }
 
 export function applyDetailLinks(costLines, ctx) {
@@ -190,6 +192,8 @@ export function recalcAll(state) {
   state.sub_scaffold_order_amount = blockOrderAmount(state.subcontract_lines, 'scaffold');
   state.sub_paint_order_amount = blockOrderAmount(state.subcontract_lines, 'paint');
   state.sub_labor_total = blockOrderAmount(state.subcontract_lines, 'labor');
+
+  state.cost_lines = syncWorkTypeSubtotalRows(state.cost_lines);
 
   applyDetailLinks(state.cost_lines, state);
 

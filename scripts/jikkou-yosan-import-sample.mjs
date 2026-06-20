@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * サンプル 2623001-001 → 【実行予算書】736 投入
+ * サンプル 2623001-001 → 実行予算書作成支援ツール（App 736）投入
  *   npx dotenv -e .env -e .env.proxy -- node scripts/jikkou-yosan-import-sample.mjs
  *   npx dotenv -e .env -e .env.proxy -- node scripts/jikkou-yosan-import-sample.mjs --dry-run
  */

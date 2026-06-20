@@ -6,7 +6,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const BUILD = process.env.JIKKOU_YOSAN_BUILD || '2026-06-18-jikkou-yosan-v10-bidir-codes';
+const BUILD = process.env.JIKKOU_YOSAN_BUILD || '2026-06-20-jikkou-yosan-unit-price-comma';
 
 function injectWorkTypeAliases(uiSrc) {
   const aliasPath = path.join(root, 'scripts/data/jikkou-yosan-work-type-aliases.json');
@@ -39,7 +39,7 @@ ui = injectWorkTypeAliases(ui);
 const costTemplate = readFileSync(path.join(root, 'scripts/data/jikkou-yosan-default-cost-template.json'), 'utf8');
 const masterId = process.env.JIKKOU_YOSAN_MASTER_APP_ID || '735';
 const out = `/**
- * 【実行予算書】ver.01 — BUILD ${BUILD}
+ * 実行予算書作成支援ツール　ver.01 — BUILD ${BUILD}
  * Master app: ${masterId}
  */
 (function () {

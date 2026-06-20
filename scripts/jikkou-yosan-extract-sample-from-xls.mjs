@@ -227,7 +227,7 @@ for r in range(24, 67):
     if wt in ('材料費', '工事管理者賃金', '工事管理者（保）賃金', '線閉責任者', '列車見張員', '交通整理員等', 'レンタル'):
         gkey = {'材料費': 'material', '工事管理者賃金': 'manager_wage', '工事管理者（保）賃金': 'manager_wage_ins',
                 '線閉責任者': 'line_close', '列車見張員': 'train_watch', '交通整理員等': 'traffic', 'レンタル': 'rental'}[wt]
-    row = {
+    base_row = {
         'cost_work_type': wt if wt else '',
         'cost_category': c5,
         'cost_row_kind': row_kind,
@@ -241,10 +241,23 @@ for r in range(24, 67):
         'detail_marker': marker,
     }
     if not wt and cur_wt:
-        row['cost_group_key'] = gkey or {'材料費': 'material', 'レンタル': 'rental'}.get(cur_wt, cur_wt)
+        base_row['cost_group_key'] = gkey or {'材料費': 'material', 'レンタル': 'rental'}.get(cur_wt, cur_wt)
     if wt == '追加工事⑤':
-        row['cost_group_key'] = 'addon5_excluded'
-    cost_lines.append(row_with_border(row, r, c0 if c0 else cur_wt))
+        base_row['cost_group_key'] = 'addon5_excluded'
+    if row_kind == 'detail' and '（昼・夜）' in c5:
+        day_cat = c5.replace('（昼・夜）', '（昼）')
+        night_cat = c5.replace('（昼・夜）', '（夜）')
+        for idx, cat in enumerate([day_cat, night_cat]):
+            row = dict(base_row)
+            row['cost_category'] = cat
+            if idx > 0:
+                row['cost_qty'] = ''
+                row['cost_unit_price'] = ''
+                row['cost_amount'] = 0
+                row['cost_basis_note'] = ''
+            cost_lines.append(row_with_border(row, r, c0 if c0 else cur_wt))
+        continue
+    cost_lines.append(row_with_border(base_row, r, c0 if c0 else cur_wt))
 
 mat_lines = []
 cur_vendor = ''

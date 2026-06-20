@@ -1,6 +1,18 @@
 {
-  "version": "2026-06-14",
-  "description": "プロジェクト v1 クローズ登録 — 朝 ready / checkpoint / レーンルーティングが再開しない正本",
+  "version": "2026-06-20",
+  "description": "プロジェクト v1 クローズ / 保留登録 — 朝 ready / checkpoint / レーンルーティングの正本（2026-06-20 浜田: Wi-Fi/JR/VPN はクローズ維持・688 は保留・業務改善提案レーンのみ継続可）",
+  "holds": [
+    {
+      "id": "construction-workdays-688",
+      "laneId": "688",
+      "label": "688 工事稼働日数ダッシュ（施工主報告印刷含む）",
+      "status": "on-hold",
+      "holdSince": "2026-06-20",
+      "note": "浜田指示で保留（クローズではない）。再開は浜田相談時のみ。本番 BUILD=`2026-06-19-688-print-rounding-fix` rev 34。",
+      "spec": "docs/plans/2026-06-13-construction-workdays-excel-20260613.md",
+      "forbiddenNextTaskPatterns": ["688", "施工主報告", "稼働日数ダッシュ"]
+    }
+  ],
   "closures": [
     {
       "id": "business-improvement",
@@ -20,7 +32,7 @@
         "compare-83",
         "設定マスタ Excel 30行"
       ],
-      "note": "申請・評価・年次集計・ガイド UX（C案）まで浜田確認済。v1 必須外: FAQその他・本番6段WF・RAG・Wordマニュアル"
+      "note": "申請・評価・年次集計・ガイド UX（C案）まで浜田確認済。v1 再実装は禁止。継続可: 業務改善提案レーンの軽微対応・完成条件外（FAQその他・本番6段WF・RAG・Wordマニュアル）— 2026-06-20 浜田確認"
     },
     {
       "id": "wifi-ssid",

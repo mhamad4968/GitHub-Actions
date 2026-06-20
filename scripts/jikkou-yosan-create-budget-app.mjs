@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-/** 【実行予算書】ver.01 — kintone アプリ作成 */
+/** 実行予算書作成支援ツール　ver.01 — kintone アプリ作成 */
 import 'dotenv/config';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const APP_NAME = '【実行予算書】ver.01';
+const APP_NAME = '実行予算書作成支援ツール　ver.01';
 const SPACE_ID = Number(process.env.JIKKOU_YOSAN_SPACE_ID || 56);
 const THREAD_ID = Number(process.env.JIKKOU_YOSAN_THREAD_ID || 60);
 const FIELDS_PATH = path.join(path.dirname(fileURLToPath(import.meta.url)), 'data', 'jikkou-yosan-budget-fields.json');

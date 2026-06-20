@@ -41,8 +41,99 @@ export const COST_GROUP_LABELS = {
 };
 
 export function costGroupSubtotalNote(groupKey) {
-  const label = COST_GROUP_LABELS[String(groupKey || '').trim()];
-  return label ? label + '合計' : '合計';
+  const key = String(groupKey || '').trim();
+  const label = COST_GROUP_LABELS[key];
+  if (label) return label + '合計';
+  const wtMatch = key.match(/^wt:(.+)$/);
+  if (wtMatch) return wtMatch[1] + '合計';
+  return '合計';
+}
+
+export function isCountableCostRow(r) {
+  const kind = r.cost_row_kind;
+  return kind === 'detail' || kind === 'link' || kind === '明細' || kind === '連携';
+}
+
+function effectiveWorkType(r, carry) {
+  const wt = String(r.cost_work_type || '').trim();
+  if (wt && wt !== '計') return wt;
+  return carry || '';
+}
+
+function groupKeyForWorkType(workType) {
+  return COST_GROUP_STARTERS[workType] || 'wt:' + workType;
+}
+
+function makeSubtotalRow(workType, groupRows) {
+  const gk = groupKeyForWorkType(workType);
+  const last = groupRows[groupRows.length - 1];
+  return {
+    cost_work_type_code: '',
+    cost_work_type: '計',
+    cost_category_code: '',
+    cost_category: gk === 'rental' && last ? (last.cost_category || '') : '',
+    cost_row_kind: 'subtotal',
+    cost_group_key: gk,
+    cost_tax_rate: '',
+    cost_unit: '',
+    cost_qty: '',
+    cost_unit_price: '',
+    cost_amount: 0,
+    cost_basis_note: costGroupSubtotalNote(gk),
+    detail_marker: '',
+    subtotal_display_amount: 0,
+    cost_ratio: 0,
+    excel_border_role: 'group_subtotal',
+  };
+}
+
+/**
+ * 同じシステム入力工種が2行以上連続する塊の直後に「計」行を自動挿入する。
+ * 既存の小計行はいったん除去し、再計算時に再生成する。
+ */
+export function syncWorkTypeSubtotalRows(lines) {
+  const stripped = lines.filter(function (r) { return !isSubtotalRow(r); });
+  const out = [];
+  let i = 0;
+  while (i < stripped.length) {
+    const row = stripped[i];
+    if (!isCountableCostRow(row)) {
+      out.push(row);
+      i += 1;
+      continue;
+    }
+    let carry = '';
+    const group = [];
+    let groupWt = '';
+    let j = i;
+    while (j < stripped.length) {
+      const r = stripped[j];
+      if (!isCountableCostRow(r)) break;
+      const wt = effectiveWorkType(r, carry);
+      if (!wt) {
+        if (group.length > 0) break;
+        out.push(r);
+        j += 1;
+        i = j;
+        group.length = 0;
+        break;
+      }
+      if (!groupWt) groupWt = wt;
+      else if (wt !== groupWt) break;
+      carry = wt;
+      group.push(r);
+      j += 1;
+    }
+    if (group.length === 0) continue;
+    const gk = groupKeyForWorkType(groupWt);
+    group.forEach(function (r) { r.cost_group_key = gk; });
+    group.forEach(function (r) { out.push(r); });
+    if (group.length >= 2) {
+      out.push(makeSubtotalRow(groupWt, group));
+    }
+    i = j;
+  }
+  return out;
 }
 
 export function isSubtotalGroupKey(key) {
@@ -90,7 +181,7 @@ export function assignCostBorderRoles(lines) {
     }
 
     const gk = r.cost_group_key;
-    if (gk && isSubtotalGroupKey(gk)) {
+    if (gk) {
       const subIdx = findGroupSubtotalIndex(lines, i, gk);
       if (subIdx >= 0) {
         const firstIdx = findGroupFirstIndex(lines, i, gk);

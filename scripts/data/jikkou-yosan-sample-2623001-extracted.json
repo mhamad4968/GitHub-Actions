@@ -526,7 +526,7 @@
     },
     {
       "cost_work_type": "重機誘導員",
-      "cost_category": "重機誘導員（昼・夜）",
+      "cost_category": "重機誘導員（昼）",
       "cost_row_kind": "detail",
       "cost_group_key": "",
       "cost_tax_rate": "0.1",
@@ -539,8 +539,22 @@
       "excel_border_role": "standalone"
     },
     {
+      "cost_work_type": "重機誘導員",
+      "cost_category": "重機誘導員（夜）",
+      "cost_row_kind": "detail",
+      "cost_group_key": "",
+      "cost_tax_rate": "0.1",
+      "cost_unit": "式",
+      "cost_qty": "",
+      "cost_unit_price": "",
+      "cost_amount": 0,
+      "cost_basis_note": "",
+      "detail_marker": "",
+      "excel_border_role": "standalone"
+    },
+    {
       "cost_work_type": "検電接地",
-      "cost_category": "検電接地等（昼・夜）",
+      "cost_category": "検電接地等（昼）",
       "cost_row_kind": "detail",
       "cost_group_key": "",
       "cost_tax_rate": "0.1",
@@ -548,6 +562,20 @@
       "cost_qty": "1",
       "cost_unit_price": "750000",
       "cost_amount": 750000,
+      "cost_basis_note": "",
+      "detail_marker": "",
+      "excel_border_role": "standalone"
+    },
+    {
+      "cost_work_type": "検電接地",
+      "cost_category": "検電接地等（夜）",
+      "cost_row_kind": "detail",
+      "cost_group_key": "",
+      "cost_tax_rate": "0.1",
+      "cost_unit": "式",
+      "cost_qty": "",
+      "cost_unit_price": "",
+      "cost_amount": 0,
       "cost_basis_note": "",
       "detail_marker": "",
       "excel_border_role": "standalone"

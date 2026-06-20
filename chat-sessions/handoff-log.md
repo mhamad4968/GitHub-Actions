@@ -3279,20 +3279,17 @@ npm run cio:morning:ready
 
 ---
 
-### 2026-06-17 JST — **595 emp_id / 715・717 利用者 UI / PCキッティング BOM**
+### 2026-06-20 JST — **凍結表→クローズ正本集約・688 保留維持**
 
-**595**: 627 連携削除 rev **92** / emp_id 自動付番 + 7件バックフィル rev **93** — **浜田 OK**
+**浜田指示（原文要約）**: 凍結（業務改善 v1、Wi-Fi、JR、VPN 等）のうち **業務改善提案以外は一旦クローズで記録 OK**。**688 は保留のまま**。
 
-**715/717**: 利用者チップ→「社員で絞る」UI（715 rev **13** / 717 rev **8**）— **浜田 OK**
+**実施**:
+- `chat-sessions/checkpoint-latest.md` — 先頭凍結表を **クローズ済み表 + 保留** に再構成
+- `data/cio-project-closures.json` — version **2026-06-20** / **`holds`** に 688 追加（`on-hold`）/ 業務改善 note 更新
+- 688: 6/19 **CLOSED** 表記 → **保留** に訂正（本番 rev **34** 維持）
 
-**PCキッティング**: `kitting-run.ps1` + UTF-8 BOM 自動修復 + START.bat 更新 — `templates/pc-kitting/` 正本。キッティング PC へフォルダ丸ごとコピー済。
+**次の1手**: 実行予算書 v1（735/736）または浜田指示の別件 — 688 は触らない
 
-**（新）キッティングセット**: リポ外 USB 資産。`PCキッティングインストール用\` 配下に配置済 — **②試験は明日**。
-
-**GitHub CI**: `main` **`e0ec691`** — 直近 workflow **success**。本日 kintone/pc-kitting 修正は **未コミット**。
-
-**夕反省**: `docs/reports/2026-06-17-evening-reflection.md` — **R49–R54 浜田 GO 済**
-
-**GO待ち**: なし（R49–R54 反映 commit 予定）
+**GO待ち**: なし
 
 ---

@@ -124,6 +124,7 @@
 | OPEN-SPEC-04 | 配置 kintone スペース | **確定: Space 56** |
 | OPEN-SPEC-05 | サンプル以外の **外注ブロック**（線閉・レンタル等）を v1 に含めるか — **依頼範囲外なら総括直入力のみ** でよいか | 依頼部署確認 |
 | OPEN-SPEC-06 | 「イメージ確認」の **完了条件** | **確定: A** — 2623001-001 で ①⑧⑨ Excel 一致（浜田 GO 2026-06-18） |
+| OPEN-SPEC-07 | **版管理・差分（v2）** | **仕様確定** → [`2026-06-20-jikkou-yosan-version-management-spec.md`](2026-06-20-jikkou-yosan-version-management-spec.md) |
 
 ---
 
@@ -135,7 +136,7 @@
 |------|------|
 | リストマスタ **M** | App **735** — コード表77＋リスト27＝104件。`npm run jikkou-yosan:import-master` |
 | 実行予算書 **B** | App **736** — **実行予算書作成支援ツール　ver.01** — `customize/736/desktop.js` |
-| 本番 BUILD | **`2026-06-20-jikkou-yosan-display-name`** / revision **34** |
+| 本番 BUILD | **`2026-06-20-jikkou-yosan-title-banner-wide`** / revision **88** |
 | サンプル | **2623001-001** record **1** — `npm run jikkou-yosan:import-sample` |
 | Space | **56 / thread 60**（687/688 同スレッド） |
 
@@ -294,4 +295,6 @@ npm run jikkou-yosan:pre-demo-gate   # 担当説明前
 | 2026-06-20 | **印刷仕様確定** — §9.7（タブ別印刷・〃・688 portal・浜田 GO 待ち） |
 | 2026-06-20 | **一覧サブタイトル** — 「Excel 風フォームで総括表・詳細表を作成出来るツールです。」BUILD `2026-06-20-jikkou-yosan-subtitle` |
 | 2026-06-20 | **表示名変更** — kintone App 736 を **実行予算書作成支援ツール　ver.01** に（浜田）。一覧 UI タイトル同期・BUILD `2026-06-20-jikkou-yosan-display-name` |
+| 2026-06-20 | **印刷微調整〜表題拡大** — rev **78–88**。印刷レイアウト調整・詳細表印刷 v2・中央揃え／半角数字・消費税％表示・年度表記（`2026年度`）・印刷ボタン強調・昼夜分割行（重機誘導員・検電接地等）・タブ背景色（総括青／詳細緑）・表題バナー（総括／詳細／工事基本情報）・バナー横広・文字拡大。BUILD 最終 `2026-06-20-jikkou-yosan-title-banner-wide` |
+| 2026-06-20 | **版管理 v2 仕様確定** — Q-VER-01〜06・ST2。明日実装セッション手順 §10。→ [`2026-06-20-jikkou-yosan-version-management-spec.md`](2026-06-20-jikkou-yosan-version-management-spec.md) |
 | 2026-06-18 | **v1 実装デプロイ** — App 735/736・BUILD v10-bidir-codes rev29・§9 実装正本追加。担当説明フェーズ |

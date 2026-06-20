@@ -306,11 +306,11 @@
       "note": null
     },
     "736": {
-      "build": "2026-06-20-jikkou-yosan-print-detail-v2",
-      "fileKey": "a9962b5b-b25d-4904-b463-3589f82b5ffe",
-      "revision": "79",
+      "build": "2026-06-20-jikkou-yosan-title-banner-wide",
+      "fileKey": "0d2ca397-d20b-4c96-b0bb-9ec14e3dcc86",
+      "revision": "88",
       "relPath": "customize/736/desktop.js",
-      "deployedAt": "2026-06-20T01:50:12.239Z",
+      "deployedAt": "2026-06-20T02:20:33.255Z",
       "note": null
     }
   }

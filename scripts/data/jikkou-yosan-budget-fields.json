@@ -24,6 +24,46 @@
       "label": "立案日",
       "required": false
     },
+    "record_created_date": {
+      "type": "DATE",
+      "code": "record_created_date",
+      "label": "作成日",
+      "required": false
+    },
+    "created_by": {
+      "type": "USER_SELECT",
+      "code": "created_by",
+      "label": "作成者（ユーザー）",
+      "required": false,
+      "noLabel": false,
+      "entities": [],
+      "defaultValue": []
+    },
+    "created_by_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "created_by_name",
+      "label": "作成者",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "person_in_charge": {
+      "type": "USER_SELECT",
+      "code": "person_in_charge",
+      "label": "担当者（ユーザー）",
+      "required": false,
+      "noLabel": false,
+      "entities": [],
+      "defaultValue": []
+    },
+    "person_in_charge_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "person_in_charge_name",
+      "label": "担当者",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
     "project_code": {
       "type": "SINGLE_LINE_TEXT",
       "code": "project_code",
