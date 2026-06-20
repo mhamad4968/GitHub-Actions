@@ -8,6 +8,7 @@ import path from 'node:path';
 import { readCheckpointLastUpdatedDate, readCheckpointNextTask } from './cio-checkpoint-read.mjs';
 import { loadBridge } from './cio-session-bridge.mjs';
 import { readSessionClockMode } from './session-clock-mode.mjs';
+import { runNpmScriptSync } from './win-hidden-spawn.mjs';
 
 function runNode(root, scriptArgs, { stdio = 'inherit' } = {}) {
   return spawnSync(process.execPath, scriptArgs, { cwd: root, stdio });
@@ -15,11 +16,7 @@ function runNode(root, scriptArgs, { stdio = 'inherit' } = {}) {
 
 /** @returns {{ ok: boolean, code: number|null }} */
 export function runNpmScript(root, scriptName, extraArgs = []) {
-  const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-  const res = spawnSync(npmCmd, ['run', scriptName, '--', ...extraArgs], {
-    cwd: root,
-    stdio: 'inherit',
-  });
+  const res = runNpmScriptSync(root, scriptName, extraArgs, { stdio: 'inherit' });
   return { ok: res.status === 0, code: res.status };
 }
 

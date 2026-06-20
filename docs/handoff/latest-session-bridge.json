@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-06-19T23:14:32.173Z",
-  "gitHead": "ffe373e",
-  "gitStatus": "## main...origin/main [ahead 1]",
-  "nextTask": "**実行予算書 v1（735/736）本日継続** — 担当説明・イメージ確認フェーズ（浜田 2026-06-20）。688 は保留のまま触らない",
+  "exportedAt": "2026-06-20T12:19:54.610Z",
+  "gitHead": "4d45c53",
+  "gitStatus": "## main...origin/main",
+  "nextTask": "**2026-06-21 実行予算書（735/736）** — 担当説明・イメージ確認フェーズ（浜田予定）。予実（677–679）は来週ヒアリングまで保留。688 / SKYSEA は保留のまま触らない",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -11,6 +11,6 @@
     "docs/handoff/latest-session-bridge.json",
     "docs/knowledge/debug-tips.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=ffe373e | 次=**実行予算書 v1（735/736）本日継続** — 担当説明・イメージ確認フェーズ（浜田 2026-06-20）。688 は保留のまま触らない | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, .cursor/rules/mode-b-canonical.mdc",
+  "promptBlock": "【SESSION-BRIDGE】git=4d45c53 | 次=**2026-06-21 実行予算書（735/736）** — 担当説明・イメージ確認フェーズ（浜田予定）。予実（677–679）は来週ヒアリングまで保留。688 / SKYSEA は保留のまま触らない | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, .cursor/rules/mode-b-canonical.mdc",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }

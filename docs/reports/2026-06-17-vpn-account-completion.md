@@ -2,6 +2,8 @@
 
 **判定**: Space 48 本番で **一覧・新規・編集・削除・利用者印刷・ライセンス集計** まで浜田目視 OK。**v1 完成 — クローズ**。
 
+**v1.1 / v1.2 追記（2026-06-20）**: 本書は v1 クローズ時点の記録。**§16–§18** 実装完了 — 詳細は SPEC §16–§18 を正本とする（**CLOSED 状態は維持**、拡張のみ）。
+
 **仕様正本**: `docs/plans/2026-06-16-vpn-account-kintone-spec.md`
 
 ---
@@ -10,8 +12,8 @@
 
 | ID | 名称 | 役割 | BUILD / rev（最終） |
 |----|------|------|---------------------|
-| 733 | VPNアカウント管理台帳用DB | 正本（1 アカウント = 1 レコード + 設定 1 件） | `2026-06-16-vpn-account-db-block-ui-mutations` **rev 5** |
-| 734 | VPNアカウント台帳 | 日常 UI（733 へ REST） | `2026-06-16-vpn-account-dash-license-all-depts` **rev 12** |
+| 733 | VPNアカウント管理台帳用DB | 正本（1 アカウント = 1 レコード + 設定 3 件） | `2026-06-20-vpn-db-rename-message` **rev 11** |
+| 734 | VPNアカウント台帳 | 日常 UI（733 へ REST） | `2026-06-20-vpn-595-search-primary` **rev 19** |
 
 **URL**: [733](https://jbis-kintone.cybozu.com/k/733/) / [734](https://jbis-kintone.cybozu.com/k/734/) — Space 48 / thread 52
 
@@ -59,4 +61,16 @@
 ## 5. 再開条件
 
 - 浜田 **GO** + checkpoint「次の1手」更新 + `data/cio-project-closures.json` 解除
-- v2 候補（スコープ外）: PC 台帳連携・廃止履歴保持 等
+- v2 候補（スコープ外）: 廃止履歴保持 等
+
+---
+
+## 6. v1.1 / v1.2 拡張サマリー（2026-06-20）
+
+| 項目 | 内容 |
+|------|------|
+| **v1.1** | 3 VPN ドメイン統合 — **105 件**（fre/ds/bnp）・`vpn_domain`・734 マルチドメイン UI |
+| **v1.2** | PC台帳 **674** 連携 — VPN 新規/変更/削除 → 674 自動反映・595 検索既定 |
+| **リネーム** | 734=**VPNアカウント台帳** / 733=**VPNアカウント管理台帳用DB** |
+| **674 BUILD** | `2026-06-20-674-vpn-readonly-dom-lock` rev **245** |
+| **Git** | `7f422ff` feat(vpn) push 済 |

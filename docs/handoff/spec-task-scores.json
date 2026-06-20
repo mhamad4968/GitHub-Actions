@@ -1,5 +1,5 @@
 {
-  "scoredAt": "2026-06-19T23:02:22.408Z",
+  "scoredAt": "2026-06-20T10:37:48.512Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
   "topTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
   "tasks": [
@@ -15,8 +15,8 @@
       "status": "pending"
     },
     {
-      "id": "checkpoint:（688_**CLOSED**_—_再開は浜田相談時）次セッションは別件から",
-      "text": "（688 **CLOSED** — 再開は浜田相談時）次セッションは別件から",
+      "id": "checkpoint:**実行予算書_v1（735/736）本日継続**_—_担当説明・イメージ確認フ",
+      "text": "**実行予算書 v1（735/736）本日継続** — 担当説明・イメージ確認フェーズ（浜田 2026-06-20）。688 は保留のまま触らない",
       "source": "checkpoint",
       "difficulty": 2,
       "tokens": "中",

@@ -1,5 +1,5 @@
 /**
- * 実行予算書作成支援ツール　ver.01 — BUILD 2026-06-20-jikkou-yosan-title-banner-wide
+ * 実行予算書作成支援ツール ver.01 — BUILD 2026-06-20-jikkou-yosan-title-banner-wide
  * Master app: 735
  */
 (function () {
@@ -392,10 +392,6 @@ const SUB_CALC_KINDS = new Set(['overhead', 'insurance', 'block_total', 'legal_w
   return lines;
 }
 
-function isSubtotalRow(r) {
-  return r.cost_row_kind === 'subtotal' || r.cost_row_kind === '小計';
-}
-
   function applyDetailLinks(costLines, ctx) {
   const map = {
     '②': ctx.mat_total_2,
@@ -583,15 +579,15 @@ function isSubtotalRow(r) {
   let pendingRowHighlight = null;
   let personInChargeManual = false;
 
-  const PERSON_NAME_PLACEHOLDER = '例: 浜田　太郎';
-  const PERSON_NAME_FORMAT_RE = /^[^\s　]+　[^\s　]+$/;
+  const PERSON_NAME_PLACEHOLDER = '例: 浜田\u3000太郎';
+  const PERSON_NAME_FORMAT_RE = /^[^\s\u3000]+\u3000[^\s\u3000]+$/;
   const FONT_KEY = 'jikkou-yosan-font-size';
 
   function normalizePersonName(name) {
     const s = String(name || '').trim();
     if (!s) return '';
-    const m = s.match(/^([^\s　]+)[\s　]+([^\s　]+)$/);
-    if (m) return m[1] + '　' + m[2];
+    const m = s.match(/^([^\s\u3000]+)[\s\u3000]+([^\s\u3000]+)$/);
+    if (m) return m[1] + '\u3000' + m[2];
     return s;
   }
 
@@ -735,7 +731,7 @@ function isSubtotalRow(r) {
     if (s == null || s === '') return '';
     return String(s).replace(/[０-９]/g, function (c) {
       return String.fromCharCode(c.charCodeAt(0) - 0xFEE0);
-    }).replace(/[－ー−―]/g, '-').replace(/　/g, ' ');
+    }).replace(/[－ー−―]/g, '-').replace(/\u3000/g, ' ');
   }
 
   /** 工事名称等 — 西暦＋年 → 半角＋年度（例: ２０２６年 → 2026年度） */
