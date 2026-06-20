@@ -1948,6 +1948,9 @@
       '.jy-pr{font-family:Segoe UI,Meiryo,sans-serif;color:#1e293b;font-size:11pt;line-height:1.3}' +
       '.jy-pr-doc{padding:0}' +
       '.jy-pr-doc-title{font-size:16pt;font-weight:700;text-align:center;letter-spacing:.15em;margin:0 0 1mm;line-height:1.2}' +
+      '.jy-pr-project-banner{margin:0 0 5px;text-align:center;padding:3px 0 2px}' +
+      '.jy-pr-project-name{font-size:13pt;font-weight:700;color:#0f172a;line-height:1.35}' +
+      '.jy-pr-project-sub{font-size:10pt;color:#475569;margin-top:1px;line-height:1.3}' +
       '.jy-pr-sheet-title{font-size:12pt;font-weight:700;text-align:center;margin:0 0 4px;color:#334155;line-height:1.2}' +
       '.jy-pr-meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px 8px;margin-bottom:4px;border:1px solid #cbd5e1;border-radius:3px;padding:4px 6px;background:#f8fafc;font-size:10pt;line-height:1.25}' +
       '.jy-pr-meta-item{display:flex;gap:4px;align-items:baseline;min-width:0}' +
@@ -1955,7 +1958,13 @@
       '.jy-pr-meta-val{color:#0f172a;min-width:0;word-break:break-all}' +
       '.jy-pr-section{margin-bottom:3px}' +
       '.jy-pr-sec-head{font-size:11pt;font-weight:700;margin:0 0 2px;padding:2px 6px;background:#e8eef4;border-left:4px solid #2563eb;line-height:1.25}' +
-      '.jy-pr-block-head{font-size:10.5pt;font-weight:700;margin:4px 0 2px;padding:2px 6px;background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;line-height:1.25}' +
+      '.jy-pr-block-section{margin-top:10px;padding-top:6px;border-top:2px solid #94a3b8}' +
+      '.jy-pr-block-section:first-of-type{margin-top:6px;border-top:none;padding-top:0}' +
+      '.jy-pr-block-head{font-size:12.5pt;font-weight:700;margin:0 0 4px;padding:6px 12px;background:#e0f2fe;border:1px solid #38bdf8;border-radius:4px;color:#0c4a6e;line-height:1.3}' +
+      '.jy-pr-block-wrap{border:1px solid #cbd5e1;border-radius:3px;padding:2px;margin-bottom:2px;background:#fff}' +
+      '.jy-pr-vendor-row td{background:#f8fafc}' +
+      '.jy-pr-vendor-row td:first-child{font-weight:700}' +
+      '.jy-pr-marker{text-align:center;color:#0369a1;font-weight:700;font-size:10pt}' +
       '.jy-pr-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:10pt;line-height:1.25}' +
       '.jy-pr-table th,.jy-pr-table td{border:1px solid #cbd5e1;padding:1px 3px;vertical-align:middle}' +
       '.jy-pr-table th{background:#f1f5f9;font-weight:600;text-align:center;color:#475569;font-size:9pt;padding:2px 3px}' +
@@ -1988,8 +1997,10 @@
       '.jy-pr-mat .jy-col-qty{width:7%}' +
       '.jy-pr-mat .jy-col-price{width:8%}' +
       '.jy-pr-mat .jy-col-grp{width:7%}' +
-      '.jy-pr-mat .jy-col-amt{width:9%}' +
-      '.jy-pr-mat .jy-col-basis{width:11%}'
+      '.jy-pr-mat .jy-col-amt{width:8%}' +
+      '.jy-pr-mat .jy-col-basis{width:10%}' +
+      '.jy-pr-mat .jy-col-note{width:7%}' +
+      '.jy-pr-sub-table .jy-col-note{width:7%}'
     );
   }
 
@@ -2058,9 +2069,33 @@
     return html;
   }
 
+  function printRefMarker(marker) {
+    return marker ? '…' + marker : '';
+  }
+
+  function printSubBlockTitle(label) {
+    return String(label || '').replace(/…[②③④⑤⑥⑦]/g, '').trim();
+  }
+
+  function renderPrintProjectBanner() {
+    const name = String(state.project_name || '').trim();
+    const official = String(state.project_official_name || '').trim();
+    const code = String(state.project_code || '').trim();
+    if (!name && !official && !code) return '';
+    let html = '<div class="jy-pr-project-banner">';
+    if (name) html += '<div class="jy-pr-project-name">' + esc(name) + '</div>';
+    const sub = [];
+    if (code) sub.push('工事コード：' + code);
+    if (official && official !== name) sub.push(official);
+    if (sub.length) html += '<div class="jy-pr-project-sub">' + esc(sub.join('　')) + '</div>';
+    html += '</div>';
+    return html;
+  }
+
   function renderPrintDocHead(sheetTitle) {
     return (
       '<h1 class="jy-pr-doc-title">実　行　予　算　書</h1>' +
+      renderPrintProjectBanner() +
       '<p class="jy-pr-sheet-title">' + esc(sheetTitle) + '</p>' +
       renderPrintMetaHtml()
     );
@@ -2125,46 +2160,46 @@
     return html;
   }
 
-  function renderPrintMatBlock(title, group, totalLabel, totalAmount) {
-    let html = '<div class="jy-pr-section">';
-    html += '<div class="jy-pr-block-head">' + esc(title) + '</div><div class="jy-pr-wrap">';
+  function renderPrintMatBlock(title, group, totalLabel, totalAmount, marker) {
+    let html = '<div class="jy-pr-block-section"><div class="jy-pr-block-head">' + esc(title) + '</div><div class="jy-pr-block-wrap"><div class="jy-pr-wrap">';
     html += '<table class="jy-pr-table jy-pr-mat"><thead><tr>' +
       '<th class="jy-col-vendor">仕入先</th><th class="jy-col-name">品名</th><th class="jy-col-cap">容量</th><th class="jy-col-maker">メーカー</th>' +
-      '<th class="jy-col-qty">所要量</th><th class="jy-col-price">単価</th><th class="jy-col-grp">区分</th><th class="jy-col-amt jy-num">金額</th><th class="jy-col-basis">計算基準</th>' +
+      '<th class="jy-col-qty">所要量</th><th class="jy-col-price">単価</th><th class="jy-col-grp">区分</th><th class="jy-col-amt jy-num">金額</th><th class="jy-col-basis">計算基準</th><th class="jy-col-note">備考</th>' +
       '</tr></thead><tbody>';
     state.mat_lines.forEach(function (r) {
       if (r.mat_group !== group) return;
       html += '<tr><td>' + esc(r.mat_vendor) + '</td><td>' + esc(r.mat_name) + '</td><td>' + esc(r.mat_capacity) + '</td>';
       html += '<td>' + esc(r.mat_maker) + '</td><td class="jy-num">' + esc(r.mat_qty) + '</td>';
       html += '<td class="jy-num">' + esc(formatUnitPrice(r.mat_unit_price)) + '</td><td>' + esc(r.mat_group) + '</td>';
-      html += '<td class="jy-num">' + fmt(r.mat_amount) + '</td><td>' + esc(r.mat_basis) + '</td></tr>';
+      html += '<td class="jy-num">' + fmt(r.mat_amount) + '</td><td>' + esc(r.mat_basis) + '</td><td></td></tr>';
     });
-    html += '</tbody><tfoot><tr><td colspan="7">' + esc(totalLabel) + '</td><td class="jy-num">' + fmt(totalAmount) + '</td><td></td></tr></tfoot></table></div></div>';
+    html += '</tbody><tfoot><tr><td colspan="7">' + esc(totalLabel) + '</td><td class="jy-num">' + fmt(totalAmount) + '</td><td></td>';
+    html += '<td class="jy-pr-marker">' + esc(printRefMarker(marker)) + '</td></tr></tfoot></table></div></div></div>';
     return html;
   }
 
   function renderPrintSubBlock(b) {
     const mk = BLOCK_MARKERS[b.id];
-    let html = '<div class="jy-pr-section">';
-    html += '<div class="jy-pr-block-head">' + esc(b.label) + ' …' + mk + '</div><div class="jy-pr-wrap">';
-    html += '<table class="jy-pr-table"><thead><tr><th>会社名</th><th>種別</th><th>単位</th><th>数量</th><th>単価</th><th class="jy-num">金額</th><th>計算基準</th></tr></thead><tbody>';
+    let html = '<div class="jy-pr-block-section"><div class="jy-pr-block-head">' + esc(printSubBlockTitle(b.label)) + '</div><div class="jy-pr-block-wrap"><div class="jy-pr-wrap">';
+    html += '<table class="jy-pr-table jy-pr-sub-table"><thead><tr><th>会社名</th><th>種別</th><th>単位</th><th>数量</th><th>単価</th><th class="jy-num">金額</th><th>計算基準</th><th class="jy-col-note">備考</th></tr></thead><tbody>';
     state.subcontract_lines.forEach(function (r) {
       if (r.subcontract_block !== b.id) return;
       if (r.sub_row_kind === 'vendor') {
-        html += '<tr><td colspan="2">' + esc(r.sub_vendor) + '</td><td colspan="5"></td></tr>';
+        html += '<tr class="jy-pr-vendor-row"><td>' + esc(r.sub_vendor) + '</td><td></td><td></td><td></td><td></td><td></td><td></td>';
+        html += '<td class="jy-pr-marker">' + esc(printRefMarker(mk)) + '</td></tr>';
         return;
       }
       const calcRow = SUB_CALC.has(r.sub_row_kind) || r.sub_row_kind === 'overhead';
       html += '<tr' + (calcRow ? ' class="jy-pr-sub"' : '') + '><td></td><td>' + esc(r.sub_line_type) + '</td>';
       if (calcRow) {
-        html += '<td>' + esc(r.sub_unit) + '</td><td colspan="2"></td><td class="jy-num">' + fmt(r.sub_amount) + '</td><td>' + esc(r.sub_basis) + '</td></tr>';
+        html += '<td>' + esc(r.sub_unit) + '</td><td></td><td></td><td class="jy-num">' + fmt(r.sub_amount) + '</td><td>' + esc(r.sub_basis) + '</td><td></td></tr>';
       } else {
         html += '<td>' + esc(r.sub_unit) + '</td><td class="jy-num">' + esc(r.sub_qty) + '</td>';
         html += '<td class="jy-num">' + esc(formatUnitPrice(r.sub_unit_price)) + '</td>';
-        html += '<td class="jy-num">' + fmt(r.sub_amount) + '</td><td>' + esc(r.sub_basis) + '</td></tr>';
+        html += '<td class="jy-num">' + fmt(r.sub_amount) + '</td><td>' + esc(r.sub_basis) + '</td><td></td></tr>';
       }
     });
-    html += '</tbody></table></div></div>';
+    html += '</tbody></table></div></div></div>';
     return html;
   }
 
@@ -2174,8 +2209,8 @@
 
   function buildPrintDetailHtml() {
     let html = renderPrintDocHead('（　詳　細　表　）');
-    html += renderPrintMatBlock('② 材料明細（塗料）', '塗料', '② 塗料合計', state.mat_total_2);
-    html += renderPrintMatBlock('③ 材料明細（その他）', 'その他', '③ その他合計', state.mat_total_3);
+    html += renderPrintMatBlock('材料明細（塗料）', '塗料', '塗料合計', state.mat_total_2, '②');
+    html += renderPrintMatBlock('材料明細（その他）', 'その他', 'その他合計', state.mat_total_3, '③');
     SUB_BLOCKS.forEach(function (b) {
       html += renderPrintSubBlock(b);
     });
