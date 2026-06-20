@@ -4,6 +4,8 @@
 
 **v1.1 / v1.2 追記（2026-06-20）**: 本書は v1 クローズ時点の記録。**§16–§18** 実装完了 — 詳細は SPEC §16–§18 を正本とする（**CLOSED 状態は維持**、拡張のみ）。
 
+**v1.3 追記（2026-06-21）**: **§19–§21** 実装完了 — リスト出力（xlsx+印刷）・VPN接続情報アコーディオン（PW編集・更新日表示）。浜田目視 OK。**CLOSED 維持**。
+
 **仕様正本**: `docs/plans/2026-06-16-vpn-account-kintone-spec.md`
 
 ---
@@ -13,7 +15,7 @@
 | ID | 名称 | 役割 | BUILD / rev（最終） |
 |----|------|------|---------------------|
 | 733 | VPNアカウント管理台帳用DB | 正本（1 アカウント = 1 レコード + 設定 3 件） | `2026-06-20-vpn-db-rename-message` **rev 11** |
-| 734 | VPNアカウント台帳 | 日常 UI（733 へ REST） | `2026-06-20-vpn-595-search-primary` **rev 19** |
+| 734 | VPNアカウント台帳 | 日常 UI（733 へ REST） | `2026-06-21-vpn-conn-pw-updated-date` **rev 28** |
 
 **URL**: [733](https://jbis-kintone.cybozu.com/k/733/) / [734](https://jbis-kintone.cybozu.com/k/734/) — Space 48 / thread 52
 
@@ -74,3 +76,16 @@
 | **リネーム** | 734=**VPNアカウント台帳** / 733=**VPNアカウント管理台帳用DB** |
 | **674 BUILD** | `2026-06-20-674-vpn-readonly-dom-lock` rev **245** |
 | **Git** | `7f422ff` feat(vpn) push 済 |
+
+---
+
+## 7. v1.3 拡張サマリー（2026-06-21）
+
+| 項目 | 内容 |
+|------|------|
+| **リスト出力** | 所属 multi-select + 一括（全選択/全解除/本社/支店・営業所）・ドメイン すべて/個別。Excel `.xlsx` + A4 印刷 |
+| **VPN接続情報** | ライセンス集計の上・アコーディオン（初期閉）。見出し **VPNアカウント管理画面URL**（文字大きめ） |
+| **接続 PW** | 3 ドメインの管理者 PW を 734 UI から編集 → **733 設定レコード**に保存。PW 横に **`(yyyy/mm/dd更新)`** |
+| **bundle** | SheetJS 同梱 — `scripts/vpn-account-bundle-dash.mjs` |
+| **734 BUILD** | `2026-06-21-vpn-conn-pw-updated-date` rev **28** / fileKey `8d2a21e0-d570-43c9-b908-1c2bab1d8c1b` |
+| **判定** | 浜田目視 OK — **v1.3 完成**（CLOSED 維持） |

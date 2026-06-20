@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-06-20 JST — **735/736 は 6/21 予定・SKYSEA は 7 月から計画検討**
+**最終更新**: 2026-06-21 JST — **734 VPN v1.3 完了**（リスト出力・VPN接続情報 PW編集）
 
 ## クローズ済み（`data/cio-project-closures.json` — 無断 v1 再開禁止）
 
@@ -24,8 +24,8 @@
 | 本番 WF 6段階 | 無断分割禁止 — test_v3 WF 継続テストのみ |
 | 評価スナップショット | 未設計確認前の本番投入禁止 |
 
-**次の1手**: **2026-06-21 実行予算書（735/736）** — 担当説明・イメージ確認フェーズ（浜田予定）。予実（677–679）は来週ヒアリングまで保留。688 / SKYSEA は保留のまま触らない  
-**Git**: `0b07df9` — 夕締め push 済（CI 緑）
+**次の1手**: **735/736 実行予算書** — 担当説明・イメージ確認フェーズ（浜田予定）。予実（677–679）は来週ヒアリングまで保留。688 / SKYSEA は保留のまま触らない  
+**Git**: 734 v1.3 commit push 予定（本セッション）
 **688 本番**: `2026-06-19-688-print-rounding-fix` rev **34** — **保留**（2026-06-20 浜田指示。6/19 施工主報告印刷対応済・CLOSED 表記は訂正）  
 **監査**: `npm run cio:audit:session-builds:strict` — repo=ledger=live **6/6 OK**（先祖返りなし）  
 **R21–R24**: **浜田 GO 反映済** — `docs/approved-changes/2026-06-18-rules-r21-r24-hamada-go.md`
@@ -36,7 +36,7 @@
 **Space 21 完了**: **記憶媒体等管理台帳 v1** — App **716/717** — **2026-06-14 浜田目視 OK**
 **Space 21 完了**: **社内 Wi-Fi SSID 管理 ver.1** — App **718/719** — **2026-06-14 浜田目視 OK**
 **Space 34 完了**: **JRシステム用 iPad 管理台帳 ver.1** — App **720/721** — **2026-06-15 浜田目視 OK**
-**Space 48 完了**: **VPNアカウント台帳** — App **733/734** — **2026-06-20 v1.2 完了**（3ドメイン・674連携・リネーム）
+**Space 48 完了**: **VPNアカウント台帳** — App **733/734** — **2026-06-21 v1.3 完了**（リスト出力 xlsx+印刷・VPN接続情報 PW編集・BUILD `2026-06-21-vpn-conn-pw-updated-date` rev **28**）
 **ガバナンス（第12/13層）**: **A1–C4 + 674 live-schema + 許容ギャップ運用化** — commit **`6a37e1d` push 済** / `verify:cio-four-ai-governance` OK / `hooks:install` 済（浜田端末）
 **許容（機械監視）**: **640** deploy 未接続（`verify:kintone-accepted-gaps`）/ **generations** post-commit amend + git マージ監査
 **新レーン（Space 21）**: なし（v1 台帳3本とも CLOSED — 次は別 SPEC / 浜田 GO）

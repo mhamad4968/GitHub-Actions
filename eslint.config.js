@@ -16,6 +16,8 @@ export default [
       // 719 Wi-Fi: qrcode vendor + desktop.src.js → desktop.js 結合成果物（lint は src のみ）
       "customize/**/qrcode-vendor.js",
       "customize/wifi-ssid-dash/desktop.js",
+      // 734 VPN: SheetJS + desktop.src.js → desktop.js 結合成果物（lint は src のみ）
+      "customize/vpn-account-dash/desktop.js",
     ],
   },
   {
@@ -48,6 +50,7 @@ export default [
         ...globals.browser,
         kintone: "readonly",
         QRCode: "readonly",
+        XLSX: "readonly",
       },
     },
     rules: {

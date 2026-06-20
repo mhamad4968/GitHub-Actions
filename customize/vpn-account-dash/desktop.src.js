@@ -2,7 +2,7 @@
   "use strict";
 
   /** VPNアカウント台帳 — DB REST CRUD + ライセンス集計 + 利用者印刷 + 月次前回比 + PC台帳連携 */
-  var BUILD = "2026-06-20-vpn-595-search-primary";
+  var BUILD = "2026-06-21-vpn-conn-pw-updated-date";
   var APP_DB = 733;
   var APP_EMP_MASTER = 595;
   var APP_PC_LEDGER = 674;
@@ -27,6 +27,34 @@
   var RECORD_KIND_LICENSE_SNAPSHOT = "月次集計";
   var LICENSE_UNIT = 550;
   var PAGE_SIZE = 100;
+
+  var CONN_ADMIN = {
+    fre: {
+      domain: VPN_DOMAINS.FRE,
+      key: "fre",
+      head: "■ @kensetsutoso.fre",
+      adminId: "bN98534",
+      defaultPassword: "Honten0911",
+      gwUrl: "https://gw20.flexrmt.kddi.ne.jp/kensetsutoso_fre",
+    },
+    ds: {
+      domain: VPN_DOMAINS.DS,
+      key: "ds",
+      head: "■ @kensetsutoso.ds.fre（首都圏）",
+      adminId: "Yk94373",
+      defaultPassword: "kent25132",
+      gwUrl: "https://gw24.flexrmt.kddi.ne.jp/kensetsutoso_ds_fre",
+    },
+    bnp: {
+      domain: VPN_DOMAINS.BNP,
+      key: "bnp",
+      head: "■ @bnp001 (BNP)",
+      adminId: "dr62761",
+      defaultPassword: "kent0901",
+      gwUrl: "https://gw28.flexrmt.kddi.ne.jp/bnp001",
+    },
+  };
+  var CONN_ADMIN_LIST = [CONN_ADMIN.fre, CONN_ADMIN.ds, CONN_ADMIN.bnp];
 
   var DEPT_ORDER = [
     "役員室",
@@ -260,8 +288,71 @@
         id: "",
         revision: "",
         nextUserNum: defaultNextNum(domain),
+        connAdminPassword: "",
+        connAdminNote: "",
       }
     );
+  }
+
+  function isPlaceholderConnPassword(pw) {
+    var s = String(pw || "").trim();
+    return !s || s === "N/A";
+  }
+
+  function resolveConnAdminPassword(domain) {
+    var cfg = CONN_ADMIN.fre;
+    CONN_ADMIN_LIST.some(function (item) {
+      if (item.domain === domain) {
+        cfg = item;
+        return true;
+      }
+      return false;
+    });
+    var settings = getSettings(domain);
+    if (!isPlaceholderConnPassword(settings.connAdminPassword)) {
+      return settings.connAdminPassword;
+    }
+    return cfg.defaultPassword;
+  }
+
+  function todayJstYmdSlash() {
+    return todayJstYmd().replace(/-/g, "/");
+  }
+
+  function parseConnAdminUpdatedYmd(note) {
+    var s = String(note || "").trim();
+    if (!s) return "";
+    var m = s.match(/^(\d{4})[/-](\d{1,2})(?:[/-](\d{1,2}))?$/);
+    if (m) {
+      return (
+        m[1] +
+        "/" +
+        String(m[2]).padStart(2, "0") +
+        "/" +
+        String(m[3] || "01").padStart(2, "0")
+      );
+    }
+    m = s.match(/\(?(\d{4})[/-](\d{1,2})(?:[/-](\d{1,2}))?\)?(?:変更|更新)?/);
+    if (!m) return "";
+    return (
+      m[1] +
+      "/" +
+      String(m[2]).padStart(2, "0") +
+      "/" +
+      String(m[3] || "01").padStart(2, "0")
+    );
+  }
+
+  function formatConnAdminUpdatedLabel(domain) {
+    var settings = getSettings(domain);
+    if (isPlaceholderConnPassword(settings.connAdminPassword)) return "";
+    var ymd = parseConnAdminUpdatedYmd(settings.connAdminNote);
+    if (!ymd) return "";
+    return "(" + ymd + "更新)";
+  }
+
+  function connPasswordUpdatedStored() {
+    return todayJstYmdSlash();
   }
 
   function apiGet(path, params) {
@@ -622,7 +713,7 @@
     return apiGet("/k/v1/records.json", {
       app: APP_DB,
       query: 'record_kind in ("' + RECORD_KIND_SETTING + '") limit 10',
-      fields: ["$id", "$revision", FC.record_kind, FC.next_user_num, FC.vpn_id, FC.vpn_domain],
+      fields: ["$id", "$revision", FC.record_kind, FC.next_user_num, FC.vpn_id, FC.vpn_domain, FC.password, FC.note],
     }).then(function (resp) {
       state.settingsByDomain = {};
       (resp.records || []).forEach(function (rec) {
@@ -631,6 +722,8 @@
           id: val(rec, "$id"),
           revision: val(rec, "$revision"),
           nextUserNum: Number(val(rec, FC.next_user_num) || defaultNextNum(domain)),
+          connAdminPassword: val(rec, FC.password),
+          connAdminNote: val(rec, FC.note),
         };
       });
     });
@@ -683,6 +776,7 @@
       .then(fetchAccounts)
       .then(function () {
         state.loading = false;
+        renderConnInfoPanel();
         renderLicensePanel();
         updateNextIdBanner();
         renderTable();
@@ -1426,6 +1520,343 @@
     }, 400);
   }
 
+  var LIST_COLUMNS = [
+    { key: "registered_date", label: "登録日" },
+    { key: "account_label", label: "アカウント名" },
+    { key: "dept", label: "所属" },
+    { key: "vpn_domain", label: "ドメイン" },
+    { key: "vpn_id", label: "VPN ID" },
+    { key: "password", label: "パスワード" },
+    { key: "note", label: "備考" },
+  ];
+
+  function listExportFilenameStamp() {
+    return todayJstYmd().replace(/-/g, "");
+  }
+
+  function rowMatchesSearch(row) {
+    var q = state.search.trim().toLowerCase();
+    if (!q) return true;
+    var hay =
+      (row.account_label + " " + row.vpn_id + " " + row.dept + " " + row.note + " " + row.vpn_domain).toLowerCase();
+    return hay.indexOf(q) >= 0;
+  }
+
+  function sortListRows(rows) {
+    return rows.slice().sort(function (a, b) {
+      var da = deptRank(a.dept) - deptRank(b.dept);
+      if (da !== 0) return da;
+      var la = String(a.account_label || "").localeCompare(String(b.account_label || ""), "ja");
+      if (la !== 0) return la;
+      return String(a.vpn_id || "").localeCompare(String(b.vpn_id || ""), "ja");
+    });
+  }
+
+  function filterListRecords(selectedDepts, selectedDomains, applySearch) {
+    var deptSet = {};
+    selectedDepts.forEach(function (d) {
+      deptSet[d] = true;
+    });
+    var domSet = {};
+    selectedDomains.forEach(function (d) {
+      domSet[d] = true;
+    });
+    return state.records.filter(function (r) {
+      if (!deptSet[r.dept]) return false;
+      if (!domSet[r.vpn_domain]) return false;
+      if (applySearch && !rowMatchesSearch(r)) return false;
+      return true;
+    });
+  }
+
+  function readListExportSelections() {
+    var deptSel = document.getElementById("vpn-list-dept");
+    var depts = deptSel ? selectedMultiSelectValues(deptSel) : [];
+    var modeEl = document.getElementById("vpn-list-domain-mode");
+    var domainMode = modeEl ? modeEl.value : "all";
+    var domains =
+      domainMode === "all"
+        ? VPN_DOMAIN_LIST.slice()
+        : selectedMultiSelectValues(document.getElementById("vpn-list-domain"));
+    var applyEl = document.getElementById("vpn-list-apply-search");
+    return { depts: depts, domains: domains, applySearch: !!(applyEl && applyEl.checked), domainMode: domainMode };
+  }
+
+  function selectedMultiSelectValues(selectEl) {
+    if (!selectEl) return [];
+    return Array.prototype.slice.call(selectEl.selectedOptions).map(function (o) {
+      return o.value;
+    });
+  }
+
+  function setMultiSelectAll(selectEl, on) {
+    if (!selectEl) return;
+    Array.prototype.slice.call(selectEl.options).forEach(function (o) {
+      o.selected = !!on;
+    });
+  }
+
+  function setMultiSelectValues(selectEl, values) {
+    if (!selectEl) return;
+    var set = {};
+    values.forEach(function (v) {
+      set[v] = true;
+    });
+    Array.prototype.slice.call(selectEl.options).forEach(function (o) {
+      o.selected = !!set[o.value];
+    });
+  }
+
+  function syncListExportDomainPickUi() {
+    var modeEl = document.getElementById("vpn-list-domain-mode");
+    var wrap = document.getElementById("vpn-list-domain-pick-wrap");
+    if (!modeEl || !wrap) return;
+    wrap.style.display = modeEl.value === "pick" ? "block" : "none";
+  }
+
+  function buildListFilterSummary(depts, domains, count, applySearch) {
+    var parts = ["全 " + count + " 件"];
+    if (depts.length && depts.length < DEPT_ORDER.length) {
+      parts.push(
+        "所属=" +
+          (depts.length <= 4 ? depts.join("、") : depts.slice(0, 3).join("、") + " 他" + (depts.length - 3)),
+      );
+    }
+    if (domains.length && domains.length < VPN_DOMAIN_LIST.length) {
+      parts.push(
+        "ドメイン=" +
+          domains
+            .map(function (d) {
+              return domainLabel(d);
+            })
+            .join("+"),
+      );
+    }
+    if (applySearch && state.search.trim()) {
+      parts.push("検索=" + state.search.trim());
+    }
+    return parts.join(" / ");
+  }
+
+  function exportListXlsx(rows) {
+    if (typeof XLSX === "undefined" || !XLSX.utils || !XLSX.writeFile) {
+      alert("Excel 出力ライブラリが読み込まれていません。ページを再読み込みしてください。");
+      return;
+    }
+    var header = LIST_COLUMNS.map(function (c) {
+      return c.label;
+    });
+    var matrix = [header];
+    rows.forEach(function (r) {
+      matrix.push(
+        LIST_COLUMNS.map(function (c) {
+          return r[c.key] != null ? String(r[c.key]) : "";
+        }),
+      );
+    });
+    var ws = XLSX.utils.aoa_to_sheet(matrix);
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "一覧");
+    XLSX.writeFile(wb, "VPNアカウント一覧_" + listExportFilenameStamp() + ".xlsx", { bookType: "xlsx" });
+  }
+
+  function listPrintStylesheet() {
+    return (
+      '@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap");' +
+      "*{box-sizing:border-box;}" +
+      'body{margin:0;padding:12px 14px;font-family:"Noto Sans JP",system-ui,sans-serif;color:#0f172a;-webkit-print-color-adjust:exact;print-color-adjust:exact;}' +
+      ".vpnl-header{margin-bottom:10px;text-align:center;}" +
+      ".vpnl-header h1{margin:0 0 6px;font-size:16pt;font-weight:700;color:#1e3a8a;}" +
+      ".vpnl-meta{margin:0;font-size:10pt;color:#475569;}" +
+      ".vpnl-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:10.5pt;}" +
+      ".vpnl-table th,.vpnl-table td{border:1px solid #64748b;padding:6px 5px;vertical-align:top;line-height:1.45;word-break:break-word;overflow-wrap:anywhere;}" +
+      ".vpnl-table th{background:#dbeafe;font-size:10pt;font-weight:700;}" +
+      ".vpnl-table tr:nth-child(even) td{background:#f8fafc;}" +
+      "@media print{@page{size:A4 landscape;margin:8mm;}" +
+      "body{padding:0;}" +
+      ".vpnl-table{font-size:10pt;}" +
+      "thead{display:table-header-group;}" +
+      "tr{page-break-inside:avoid;}}"
+    );
+  }
+
+  function buildListPrintHtml(rows, summary) {
+    var head =
+      "<thead><tr>" +
+      LIST_COLUMNS.map(function (c) {
+        return "<th>" + esc(c.label) + "</th>";
+      }).join("") +
+      "</tr></thead>";
+    var body =
+      "<tbody>" +
+      rows
+        .map(function (r) {
+          return (
+            "<tr>" +
+            LIST_COLUMNS.map(function (c) {
+              var v = r[c.key] != null ? String(r[c.key]).trim() : "";
+              return "<td>" + esc(v || "—") + "</td>";
+            }).join("") +
+            "</tr>"
+          );
+        })
+        .join("") +
+      "</tbody>";
+    return (
+      '<header class="vpnl-header"><h1>VPNアカウント台帳 — 一覧（横向き）</h1>' +
+      '<p class="vpnl-meta">印刷日: ' +
+      esc(todayJstYmd()) +
+      " / " +
+      esc(summary) +
+      "</p></header>" +
+      '<table class="vpnl-table">' +
+      head +
+      body +
+      "</table>"
+    );
+  }
+
+  function openListPrintWindow(rows, summary) {
+    var w = window.open("", "_blank");
+    if (!w) {
+      alert("別ウィンドウを開けませんでした。ポップアップブロックを解除してください。");
+      return;
+    }
+    w.opener = null;
+    var docHtml =
+      '<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">' +
+      "<title>VPNアカウント一覧</title><style>" +
+      listPrintStylesheet() +
+      "</style></head><body>" +
+      buildListPrintHtml(rows, summary) +
+      "</body></html>";
+    var d = w.document;
+    d.open();
+    d.write(docHtml);
+    d.close();
+    w.focus();
+    setTimeout(function () {
+      try {
+        w.print();
+      } catch (e) {
+        console.warn(BUILD, e);
+      }
+    }, 400);
+  }
+
+  function openListExportModal() {
+    closeModal();
+    var domainAll = !state.domainFilter;
+    var deptOptions = DEPT_ORDER.map(function (d) {
+      return '<option value="' + esc(d) + '" selected>' + esc(d) + "</option>";
+    }).join("");
+    var domainOptions = VPN_DOMAIN_LIST.map(function (d) {
+      var sel =
+        !domainAll && state.domainFilter === d ? " selected" : domainAll ? " selected" : "";
+      return '<option value="' + esc(d) + '"' + sel + ">" + esc(d) + "</option>";
+    }).join("");
+    var applySearchChecked = state.search.trim() ? " checked" : "";
+    var searchHint = state.search.trim() ? esc(state.search.trim()) : "なし";
+    var body =
+      '<p class="vpn-hint">パスワードは平文で出力されます。取り扱いに注意してください。</p>' +
+      '<div class="vpn-list-section"><div class="vpn-list-section-head">所属</div>' +
+      '<p class="vpn-hint vpn-list-hint">Ctrl+クリック（Mac: ⌘+クリック）で複数選択。下のボタンで一括選択もできます。</p>' +
+      '<div class="vpn-list-actions">' +
+      '<button type="button" id="vpn-list-dept-all" class="kintoneplugin-button-normal">全選択</button>' +
+      '<button type="button" id="vpn-list-dept-none" class="kintoneplugin-button-normal">全解除</button>' +
+      '<button type="button" id="vpn-list-dept-hq" class="kintoneplugin-button-normal">本社</button>' +
+      '<button type="button" id="vpn-list-dept-branch" class="kintoneplugin-button-normal">支店・営業所</button>' +
+      "</div>" +
+      '<select id="vpn-list-dept" class="vpn-list-multi" multiple size="10">' +
+      deptOptions +
+      "</select></div>" +
+      '<div class="vpn-list-section"><div class="vpn-list-section-head">ドメイン</div>' +
+      '<label class="vpn-list-domain-mode">範囲<select id="vpn-list-domain-mode">' +
+      '<option value="all"' +
+      (domainAll ? " selected" : "") +
+      ">すべて（3ドメイン）</option>" +
+      '<option value="pick"' +
+      (domainAll ? "" : " selected") +
+      ">個別指定（複数可）</option>" +
+      "</select></label>" +
+      '<div id="vpn-list-domain-pick-wrap" class="vpn-list-domain-pick-wrap"' +
+      (domainAll ? ' style="display:none"' : "") +
+      ">" +
+      '<p class="vpn-hint vpn-list-hint">出力するドメインを複数選択（Ctrl+クリック）</p>' +
+      '<select id="vpn-list-domain" class="vpn-list-multi" multiple size="3">' +
+      domainOptions +
+      "</select></div></div>" +
+      '<label class="vpn-list-apply"><input type="checkbox" id="vpn-list-apply-search"' +
+      applySearchChecked +
+      "> 現在の検索キーワードも適用（「" +
+      searchHint +
+      "」）</label>";
+
+    var bg = document.createElement("div");
+    bg.id = "vpn-modal-root";
+    bg.className = "vpn-modal-bg";
+    bg.innerHTML =
+      '<div class="vpn-modal vpn-list-modal" role="dialog">' +
+      "<h3>リスト出力</h3>" +
+      body +
+      '<div class="vpn-modal-actions">' +
+      '<button type="button" id="vpn-list-cancel" class="kintoneplugin-button-normal">キャンセル</button>' +
+      '<button type="button" id="vpn-list-print" class="kintoneplugin-button-normal">印刷</button>' +
+      '<button type="button" id="vpn-list-xlsx" class="kintoneplugin-button-dialog-ok">Excel (.xlsx)</button>' +
+      "</div></div>";
+    document.body.appendChild(bg);
+
+    var deptSel = document.getElementById("vpn-list-dept");
+    var DEPT_BATCH_HQ = DEPT_ORDER.slice(0, 11);
+    var DEPT_BATCH_BRANCH = DEPT_ORDER.slice(11);
+
+    document.getElementById("vpn-list-dept-all").onclick = function () {
+      setMultiSelectAll(deptSel, true);
+    };
+    document.getElementById("vpn-list-dept-none").onclick = function () {
+      setMultiSelectAll(deptSel, false);
+    };
+    document.getElementById("vpn-list-dept-hq").onclick = function () {
+      setMultiSelectValues(deptSel, DEPT_BATCH_HQ);
+    };
+    document.getElementById("vpn-list-dept-branch").onclick = function () {
+      setMultiSelectValues(deptSel, DEPT_BATCH_BRANCH);
+    };
+    document.getElementById("vpn-list-domain-mode").onchange = syncListExportDomainPickUi;
+    document.getElementById("vpn-list-cancel").onclick = closeModal;
+
+    function runExport(kind) {
+      var sel = readListExportSelections();
+      if (!sel.depts.length) {
+        alert("所属を1つ以上選択してください。");
+        return;
+      }
+      if (sel.domainMode === "pick" && !sel.domains.length) {
+        alert("ドメインを1つ以上選択してください。");
+        return;
+      }
+      var rows = sortListRows(filterListRecords(sel.depts, sel.domains, sel.applySearch));
+      if (!rows.length) {
+        alert("条件に該当するアカウントがありません。");
+        return;
+      }
+      var summary = buildListFilterSummary(sel.depts, sel.domains, rows.length, sel.applySearch);
+      if (kind === "xlsx") {
+        exportListXlsx(rows);
+        closeModal();
+      } else {
+        openListPrintWindow(rows, summary);
+        closeModal();
+      }
+    }
+    document.getElementById("vpn-list-xlsx").onclick = function () {
+      runExport("xlsx");
+    };
+    document.getElementById("vpn-list-print").onclick = function () {
+      runExport("print");
+    };
+  }
+
   function renderTable() {
     var tbody = document.getElementById("vpn-tbody");
     if (!tbody) return;
@@ -1523,6 +1954,128 @@
     renderTable();
   }
 
+  function connInfoDomainSectionHtml(item) {
+    return (
+      '<section class="vpn-conn-domain" data-domain="' +
+      esc(item.domain) +
+      '">' +
+      '<p class="vpn-conn-domain-head">' +
+      esc(item.head) +
+      "</p>" +
+      '<div class="vpn-conn-cred">' +
+      '<span class="vpn-conn-id">' +
+      esc(item.adminId) +
+      "</span>" +
+      '<label class="vpn-conn-pw-row">パスワード<input type="text" class="vpn-conn-pw-input" id="vpn-conn-pw-' +
+      item.key +
+      '" data-domain="' +
+      esc(item.domain) +
+      '" autocomplete="off"><span class="vpn-conn-note" id="vpn-conn-note-' +
+      item.key +
+      '"></span></label>' +
+      "</div>" +
+      '<p class="vpn-conn-url-label">※VPNの接続先URL</p>' +
+      '<p><a href="' +
+      esc(item.gwUrl) +
+      '" target="_blank" rel="noopener noreferrer">' +
+      esc(item.gwUrl) +
+      "</a></p>" +
+      "</section>"
+    );
+  }
+
+  function connInfoAccordionHtml() {
+    var sections = CONN_ADMIN_LIST.map(connInfoDomainSectionHtml).join('<hr class="vpn-conn-hr">');
+    return (
+      '<details class="vpn-license-acc vpn-conn-acc" id="vpn-conn-acc">' +
+      "<summary>VPN接続情報（必要時のみ開く）</summary>" +
+      '<div class="vpn-license-body vpn-conn-body">' +
+      '<p class="vpn-conn-title">VPNアカウント管理画面URL</p>' +
+      '<hr class="vpn-conn-hr">' +
+      '<p><a href="https://radiusid.kddi.ne.jp/" target="_blank" rel="noopener noreferrer">https://radiusid.kddi.ne.jp/</a></p>' +
+      '<hr class="vpn-conn-hr">' +
+      sections +
+      '<div class="vpn-conn-actions">' +
+      '<button type="button" id="vpn-conn-save" class="kintoneplugin-button-dialog-ok">接続パスワードを保存</button>' +
+      '<span class="vpn-conn-save-hint">733 設定レコードに保存され、全員共通で反映されます</span>' +
+      "</div>" +
+      "</div></details>"
+    );
+  }
+
+  function renderConnInfoPanel() {
+    CONN_ADMIN_LIST.forEach(function (item) {
+      var pwEl = document.getElementById("vpn-conn-pw-" + item.key);
+      var noteEl = document.getElementById("vpn-conn-note-" + item.key);
+      if (pwEl) pwEl.value = resolveConnAdminPassword(item.domain);
+      if (noteEl) noteEl.textContent = formatConnAdminUpdatedLabel(item.domain);
+    });
+  }
+
+  function saveConnAdminPasswords() {
+    var updates = [];
+    for (var i = 0; i < CONN_ADMIN_LIST.length; i++) {
+      var item = CONN_ADMIN_LIST[i];
+      var pwEl = document.getElementById("vpn-conn-pw-" + item.key);
+      if (!pwEl) continue;
+      var newPw = String(pwEl.value || "").trim();
+      if (!newPw) {
+        alert(item.head + " のパスワードを入力してください。");
+        return;
+      }
+      var settings = getSettings(item.domain);
+      if (!settings.id) {
+        alert("設定レコードがありません（" + item.domain + "）。管理者に連絡してください。");
+        return;
+      }
+      var prevPw = resolveConnAdminPassword(item.domain);
+      if (newPw === prevPw) continue;
+      updates.push({
+        item: item,
+        settings: settings,
+        password: newPw,
+        note: connPasswordUpdatedStored(),
+      });
+    }
+    if (!updates.length) {
+      alert("変更はありません。");
+      return;
+    }
+    var btn = document.getElementById("vpn-conn-save");
+    if (btn) btn.disabled = true;
+    var chain = Promise.resolve();
+    updates.forEach(function (u) {
+      chain = chain.then(function () {
+        return apiPut("/k/v1/record.json", {
+          app: APP_DB,
+          id: u.settings.id,
+          revision: u.settings.revision,
+          record: {
+            password: { value: u.password },
+            note: { value: u.note },
+          },
+        }).then(function (resp) {
+          state.settingsByDomain[u.item.domain] = Object.assign({}, getSettings(u.item.domain), {
+            connAdminPassword: u.password,
+            connAdminNote: u.note,
+            revision: String(resp.revision || ""),
+          });
+        });
+      });
+    });
+    chain
+      .then(function () {
+        renderConnInfoPanel();
+        alert("接続パスワードを保存しました。");
+      })
+      .catch(function (e) {
+        alert("保存失敗: " + (e.message || e));
+      })
+      .then(function () {
+        if (btn) btn.disabled = false;
+      });
+  }
+
   function injectCss() {
     if (document.getElementById("vpn-dash-css")) return;
     var st = document.createElement("style");
@@ -1553,6 +2106,20 @@
       ".vpn-license-domain-table{max-width:640px;margin-bottom:4px;}" +
       ".vpn-domain-tag{font-size:12px;color:#64748b;font-weight:400;}" +
       ".vpn-license-actions{margin-top:12px;}" +
+      ".vpn-conn-body{font-size:17px;line-height:1.65;}" +
+      ".vpn-conn-title{font-size:20px;font-weight:700;margin:0 0 10px;color:#0f172a;}" +
+      ".vpn-conn-hr{border:none;border-top:1px dashed #cbd5e1;margin:14px 0;}" +
+      ".vpn-conn-domain{margin-bottom:6px;}" +
+      ".vpn-conn-domain-head{font-weight:700;margin:0 0 8px;font-size:17px;color:#334155;}" +
+      ".vpn-conn-cred{font-family:Consolas,Monaco,monospace;font-size:16px;margin:0 0 8px;line-height:1.6;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;}" +
+      ".vpn-conn-id{font-weight:600;font-size:17px;}" +
+      ".vpn-conn-pw-row{font-family:Segoe UI,Meiryo,sans-serif;font-size:15px;color:#334155;display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0;}" +
+      ".vpn-conn-pw-input{font-family:Consolas,Monaco,monospace;font-size:16px;padding:6px 10px;min-width:180px;border:1px solid #cbd5e1;border-radius:4px;}" +
+      ".vpn-conn-actions{margin-top:16px;display:flex;flex-wrap:wrap;align-items:center;gap:10px;}" +
+      ".vpn-conn-save-hint{font-size:13px;color:#64748b;}" +
+      ".vpn-conn-note{font-family:Segoe UI,Meiryo,sans-serif;font-size:14px;color:#64748b;font-weight:400;white-space:nowrap;}" +
+      ".vpn-conn-url-label{font-size:15px;color:#475569;margin:10px 0 6px;}" +
+      ".vpn-conn-body a{color:#0369a1;word-break:break-all;font-size:17px;}" +
       ".vpn-diff-up{color:#15803d;font-weight:700;}" +
       ".vpn-diff-down{color:#b91c1c;font-weight:700;}" +
       ".vpn-diff-zero{color:#64748b;}" +
@@ -1580,7 +2147,18 @@
       ".vpn-595-results{margin-top:10px;max-height:240px;overflow:auto;display:flex;flex-direction:column;gap:6px;}" +
       ".vpn-595-pick{text-align:left;white-space:normal;}" +
       ".vpn-595-actions{display:flex;gap:8px;margin:8px 0;}" +
-      ".vpn-warn{font-size:13px;color:#b45309;}";
+      ".vpn-warn{font-size:13px;color:#b45309;}" +
+      ".vpn-list-modal{max-width:640px;}" +
+      ".vpn-list-section{margin:12px 0;}" +
+      ".vpn-list-section-head{font-size:14px;font-weight:700;color:#334155;margin-bottom:6px;}" +
+      ".vpn-list-hint{margin:0 0 6px!important;}" +
+      ".vpn-list-actions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;}" +
+      ".vpn-list-multi{width:100%;box-sizing:border-box;font-size:14px;padding:4px;border:1px solid #cbd5e1;border-radius:6px;background:#fff;}" +
+      ".vpn-list-multi option{padding:2px 6px;}" +
+      ".vpn-list-domain-mode{display:block;margin-bottom:8px;font-size:14px;}" +
+      ".vpn-list-domain-mode select{margin-left:8px;padding:6px 8px;font-size:14px;min-width:220px;}" +
+      ".vpn-list-domain-pick-wrap{margin-top:4px;}" +
+      ".vpn-list-apply{display:block;margin-top:12px;font-size:14px;}";
     document.head.appendChild(st);
   }
 
@@ -1604,6 +2182,7 @@
       '<div class="vpn-toolbar">' +
       '<button type="button" id="vpn-reload" class="kintoneplugin-button-normal">再読み込み</button>' +
       '<button type="button" id="vpn-create" class="kintoneplugin-button-dialog-ok">新規作成</button>' +
+      '<button type="button" id="vpn-list-export" class="kintoneplugin-button-normal">リスト出力</button>' +
       '<label class="vpn-filter-label">ドメイン<select id="vpn-domain-filter">' +
       '<option value="">すべて</option>' +
       '<option value="' +
@@ -1620,6 +2199,7 @@
       '<button type="button" id="vpn-search-clear" class="kintoneplugin-button-normal vpn-search-clear">クリア</button>' +
       "</div>" +
       '<div class="vpn-meta" id="vpn-next-id"></div>' +
+      connInfoAccordionHtml() +
       '<details class="vpn-license-acc" id="vpn-license-acc">' +
       '<summary><span id="vpn-license-summary-text">拠点単位ライセンス集計</span></summary>' +
       '<div class="vpn-license-body" id="vpn-license-body"></div>' +
@@ -1633,6 +2213,7 @@
       reloadAll();
     };
     document.getElementById("vpn-create").onclick = openCreateModal;
+    document.getElementById("vpn-list-export").onclick = openListExportModal;
     document.getElementById("vpn-domain-filter").onchange = function (e) {
       state.domainFilter = e.target.value;
       updateNextIdBanner();
@@ -1643,6 +2224,7 @@
       renderTable();
     };
     document.getElementById("vpn-search-clear").onclick = clearSearch;
+    document.getElementById("vpn-conn-save").onclick = saveConnAdminPasswords;
 
     reloadAll();
   }
