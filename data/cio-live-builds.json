@@ -307,10 +307,10 @@
     },
     "736": {
       "build": "2026-06-21-jikkou-yosan-legal-welfare-total-label",
-      "fileKey": "3aa633a8-6799-41a6-82e7-322a5f460c6d",
-      "revision": "94",
-      "relPath": "customize/736/desktop.js",
-      "deployedAt": "2026-06-20T23:08:57.118Z",
+      "fileKey": "6bc54a3f-b780-4063-9a3e-bdfe9cd9e4dc",
+      "revision": "95",
+      "relPath": ".kintone-deploy/upload-736.js",
+      "deployedAt": "2026-06-20T23:13:13.093Z",
       "note": null
     }
   }
