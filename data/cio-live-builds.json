@@ -307,10 +307,10 @@
     },
     "736": {
       "build": "2026-06-20-jikkou-yosan-title-banner-wide",
-      "fileKey": "0d2ca397-d20b-4c96-b0bb-9ec14e3dcc86",
-      "revision": "88",
-      "relPath": "customize/736/desktop.js",
-      "deployedAt": "2026-06-20T02:20:33.255Z",
+      "fileKey": "ab07f935-1e4d-44f9-9702-d2eb3e5824ca",
+      "revision": "89",
+      "relPath": ".kintone-deploy/upload-736.js",
+      "deployedAt": "2026-06-20T12:20:43.781Z",
       "note": null
     }
   }

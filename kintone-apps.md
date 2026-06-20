@@ -182,6 +182,7 @@ npm run app:fields <アプリID>
 
 | 日時（UTC） | アプリID | customize パス |
 |-------------|----------|----------------|
+| 2026-06-20T12:20:43Z | 736 | `customize/736/desktop.js` |
 | 2026-06-20T23:00:00Z | 736 | `customize/736/desktop.js`（**詳細表印刷レイアウトv2**・**BUILD** `2026-06-20-jikkou-yosan-print-detail-v2`・rev **`79`**） |
 | 2026-06-20T22:30:00Z | 736 | `customize/736/desktop.js`（**総括表印刷調整**・**BUILD** `2026-06-20-jikkou-yosan-print-tune`・rev **`78`**） |
 | 2026-06-20T22:00:00Z | 736 | `customize/736/desktop.js`（**タブ別印刷v1**・**BUILD** `2026-06-20-jikkou-yosan-print-v1`・rev **`77`**） |
