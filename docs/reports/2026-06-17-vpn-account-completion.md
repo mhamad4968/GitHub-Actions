@@ -10,8 +10,8 @@
 
 | ID | 名称 | 役割 | BUILD / rev（最終） |
 |----|------|------|---------------------|
-| 733 | VPNアカウント管理台帳用DB（@kensetsutoso.fre） | 正本（1 アカウント = 1 レコード + 設定 1 件） | `2026-06-16-vpn-account-db-block-ui-mutations` **rev 5** |
-| 734 | VPNアカウント管理台帳（@kensetsutoso.fre） | 日常 UI（733 へ REST） | `2026-06-16-vpn-account-dash-license-all-depts` **rev 12** |
+| 733 | VPNアカウント管理台帳用DB | 正本（1 アカウント = 1 レコード + 設定 1 件） | `2026-06-16-vpn-account-db-block-ui-mutations` **rev 5** |
+| 734 | VPNアカウント台帳 | 日常 UI（733 へ REST） | `2026-06-16-vpn-account-dash-license-all-depts` **rev 12** |
 
 **URL**: [733](https://jbis-kintone.cybozu.com/k/733/) / [734](https://jbis-kintone.cybozu.com/k/734/) — Space 48 / thread 52
 

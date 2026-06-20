@@ -26,11 +26,11 @@
       "note": null
     },
     "674": {
-      "build": "2026-06-19-674-detail-hide-sidebar",
-      "fileKey": "8578fb9c-900c-4153-8f1e-c97e3887c39c",
-      "revision": "243",
-      "relPath": ".kintone-deploy/upload-674.js",
-      "deployedAt": "2026-06-19T12:01:20.986Z",
+      "build": "2026-06-20-674-vpn-readonly-dom-lock",
+      "fileKey": "c5cc8abf-9e0a-4be6-8436-659f0e150f72",
+      "revision": "245",
+      "relPath": "customize/new-pc-ledger-v1/desktop.js",
+      "deployedAt": "2026-06-20T11:57:38.975Z",
       "note": null
     },
     "677": {
@@ -290,19 +290,19 @@
       "note": null
     },
     "733": {
-      "build": "2026-06-16-vpn-account-db-block-ui-mutations",
-      "fileKey": "35d18639-b5bc-4c3a-9338-6d047f9a2854",
-      "revision": "5",
+      "build": "2026-06-20-vpn-db-rename-message",
+      "fileKey": "252e24ee-a0c8-451c-8bff-46c967c9e9f3",
+      "revision": "11",
       "relPath": "customize/vpn-account-db/desktop.js",
-      "deployedAt": "2026-06-16T11:43:53.119Z",
+      "deployedAt": "2026-06-20T12:04:23.697Z",
       "note": null
     },
     "734": {
-      "build": "2026-06-19-vpn-dash-license-month-compare",
-      "fileKey": "a0f30083-2cce-4573-8e5d-01c9bd8e0146",
-      "revision": "13",
+      "build": "2026-06-20-vpn-595-search-primary",
+      "fileKey": "4b8c7052-7fec-4897-bd3d-01ecdb08e4f6",
+      "revision": "19",
       "relPath": "customize/vpn-account-dash/desktop.js",
-      "deployedAt": "2026-06-19T10:04:55.898Z",
+      "deployedAt": "2026-06-20T11:56:06.374Z",
       "note": null
     },
     "736": {

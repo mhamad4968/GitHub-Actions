@@ -71,7 +71,7 @@ async function main() {
     headers,
     appId,
     DASH_APP_NAME,
-    'VPNアカウント管理台帳 — 一覧・新規・編集・削除・印刷の唯一の入り口。',
+    'VPNアカウント台帳 — 一覧・新規・編集・削除・印刷の唯一の入り口。',
   );
   console.log(`設定 revision=${settingsRev}`);
 

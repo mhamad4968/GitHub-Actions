@@ -1,7 +1,7 @@
 # VPN アカウント管理 — kintone 仕様書（SPEC）
 
 > **起票**: 2026-06-16 (火)  
-> **状態**: **v1 完成 — CLOSED**（2026-06-17）／ **v1.1 3ドメイン統合 — SPEC 確定・実装 GO 待ち**（2026-06-20 浜田 Q&A）  
+> **状態**: **v1 完成 — CLOSED**（2026-06-17）／ **v1.1 3ドメイン統合 — 実装完了**（2026-06-20）／ **v1.2 PC台帳連携 + アプリ名変更 — 実装完了**（2026-06-20 浜田目視 OK）  
 > **完成報告**: `docs/reports/2026-06-17-vpn-account-completion.md`  
 > **配置**: [Space 48](https://jbis-kintone.cybozu.com/k/#/space/48) / thread **52**  
 > **App ID**: **733**（DB）/ **734**（台帳）  
@@ -53,7 +53,7 @@
 | **パスワード再生成ボタン** | 編集画面で手動変更のみ（浜田確定） |
 | **管理者向け一覧印刷** | 利用者渡し用のみ（浜田確定） |
 | **パスワードマスキング** | IT 管理者専用アプリのため **平文表示**（Excel 同様） |
-| **他台帳（PC 674 等）との自動連携** | v1 は独立台帳 |
+| **他台帳（PC 674 等）との自動連携** | v1 は独立台帳（**v1.2 §17 で 674 連携を追加**） |
 
 ---
 
@@ -61,8 +61,8 @@
 
 | 用語 | 意味 |
 |------|------|
-| **データアプリ（DB）** | 正本（名称: **VPNアカウント管理台帳用DB（@kensetsutoso.fre）**） |
-| **ダッシュアプリ（台帳）** | 日常 UI（名称: **VPNアカウント管理台帳（@kensetsutoso.fre）**） |
+| **データアプリ（DB）** | 正本（名称: **VPNアカウント管理台帳用DB**） |
+| **ダッシュアプリ（台帳）** | 日常 UI（名称: **VPNアカウント台帳**） |
 | **アカウント名** | 利用者表示名（通常 `姓　名`。例外: `本社共有` 等） |
 | **所属** | 拠点・部署名（ドロップダウン **34 選択肢** — §7.3） |
 | **VPN ID** | `vpn_id` — ログイン ID（`user###@kensetsutoso.fre` または手動 ID） |
@@ -74,14 +74,14 @@
 
 ```
 Space 48
-├── VPNアカウント管理台帳用DB（@kensetsutoso.fre） … 正本・API 書込先
-└── VPNアカウント管理台帳（@kensetsutoso.fre） … customize 一覧・操作 UI
+├── VPNアカウント管理台帳用DB … 正本・API 書込先
+└── VPNアカウント台帳 … customize 一覧・操作 UI
 ```
 
 | 役割 | 参照例 | 本案件（名称・確定） |
 |------|--------|----------------------|
-| データ | 693 / 714 | **VPNアカウント管理台帳用DB（@kensetsutoso.fre）** |
-| ダッシュ | 694 / 715 | **VPNアカウント管理台帳（@kensetsutoso.fre）** |
+| データ | 693 / 714 | **VPNアカウント管理台帳用DB** |
+| ダッシュ | 694 / 715 | **VPNアカウント台帳** |
 
 **App ID**: **733**（DB）/ **734**（台帳） — `kintone-apps.md` / `scripts/data/vpn-account-app-ids.json`
 
@@ -413,19 +413,20 @@ stateDiagram-v2
 | 項目 | 確定値 |
 |------|--------|
 | DB 名 / App | **VPNアカウント管理台帳用DB** — **733** |
-| 台帳名 / App | **VPNアカウント管理台帳** — **734** |
+| 台帳名 / App | **VPNアカウント台帳** — **734** |
 | 配置 | **Space 48** / thread **52** |
 | 構成 | **DB + ダッシュ** |
 | フィールド数 | **6**（アカウント行）+ 設定レコード |
-| 所属 | **34** 選択肢（移行データは 26 所属） |
+| 所属 | **36** 選択肢（v1.1 で +2。移行データは 26 所属） |
 | 廃止ステータス | **なし**（削除運用） |
-| 次の VPN ID | **`user080@kensetsutoso.fre`** |
+| 次の VPN ID | **fre: user080** / **ds: user36** / **bnp: user01**（ドメイン別・§16.5） |
 | パスワード（新規） | **`jbis` + 5 桁乱数** |
 | ライセンス単価 | **550 円/口** |
-| 移行件数 | **66** |
-| 台帳 BUILD（最終） | 734=`2026-06-16-vpn-account-dash-license-all-depts` **rev 12** |
-| DB BUILD（最終） | 733=`2026-06-16-vpn-account-db-block-ui-mutations` **rev 5** |
-| 状態 | **v1 完成 — CLOSED** |
+| 移行件数 | **105**（fre 66 + ds 35 + bnp 4） |
+| 台帳 BUILD（最終） | 734=`2026-06-20-vpn-595-search-primary` **rev 19** |
+| DB BUILD（最終） | 733=`2026-06-20-vpn-db-rename-message` **rev 11** |
+| PC台帳 BUILD（連携） | 674=`2026-06-20-674-vpn-readonly-dom-lock` **rev 245** |
+| 状態 | **v1.2 完成 — 運用中** |
 
 ---
 
@@ -450,9 +451,14 @@ stateDiagram-v2
 | コマンド | 用途 |
 |----------|------|
 | `npm run vpn-account:setup` | DB + 台帳作成 + registry |
-| `npm run vpn-account:migrate:xlsx -- --apply` | Excel 移行 |
+| `npm run vpn-account:migrate:xlsx -- --apply` | Excel 移行（`--incremental` で追加分のみ） |
 | `npm run vpn-account:update-dept-field` | 所属 DROP_DOWN 更新（733） |
-| `npm run deploy:733` / `deploy:734` | customize deploy |
+| `npm run vpn-account:add-vpn-domain-field` | `vpn_domain` フィールド追加（733） |
+| `npm run vpn-account:v11-backfill` | 既存レコード `vpn_domain` バックフィル + 設定レコード追加 |
+| `npm run vpn-account:v11-verify-counts` | ドメイン別件数検証 |
+| `npm run vpn-account:sync-pc-ledger -- --dry-run\|--apply` | VPN→674 一括同期（初回バックフィル） |
+| `npm run vpn-account:rename-apps -- --dry-run\|--apply` | 733/734 アプリ表示名変更 |
+| `npm run deploy:733` / `deploy:734` / `deploy:674` | customize deploy |
 
 ---
 
@@ -504,7 +510,10 @@ stateDiagram-v2
 | 2026-06-17 | 目視フィードバック反映（アコーディオン・文字拡大・クリア・所属34順・0口全表示・APP_DB 修正） |
 | 2026-06-17 | **v1 完成 — CLOSED**（浜田目視 OK） |
 | 2026-06-19 | **733 フォーム rev7** — `snapshot_month` / `snapshot_json` 追加（月次ライセンス確定保存）。**734 rev13** — 前回確定とのライセンス比較・月次確定ボタン。Space 48 月末注意書き GHA（`vpn-license-space48-notice.yml`・JST 28日〜翌1日） |
-| 2026-06-20 | **v1.1 SPEC 確定** — 3 VPN ドメイン統合（§16）。AI チームレビュー + 浜田 Q&A 反映。**実装は浜田 GO 後** |
+| 2026-06-20 | **v1.1 SPEC 確定** — 3 VPN ドメイン統合（§16）。AI チームレビュー + 浜田 Q&A 反映 |
+| 2026-06-20 | **v1.1 実装完了** — 105 件移行・734 マルチドメイン UI・733 `vpn_domain` |
+| 2026-06-20 | **v1.2 実装完了** — PC台帳 674 連携（§17）。595 検索既定・VPN 欄 read-only |
+| 2026-06-20 | **アプリ表示名変更**（§18）— `@kensetsutoso.fre` サフィックス削除。浜田目視 OK |
 
 ---
 
@@ -512,7 +521,7 @@ stateDiagram-v2
 
 **背景**: 社内 VPN は同一サービスだがドメインが **3 種**。v1 は `@kensetsutoso.fre` のみ（66 件投入済）。Excel 正本に **105 件**（fre 66 + ds 35 + bnp 4）。**未投入 39 件**を追加し [734](https://jbis-kintone.cybozu.com/k/734/) を **総合台帳**化する。
 
-**実装 GO**: 浜田が本 §16 確認後に **別途指示**。本節のみ commit 済みの段階では **kintone 書込・deploy 禁止**。
+**実装 GO**: 浜田 **2026-06-20 GO** — **実装完了**（105 件・deploy 済・浜田目視 OK）。
 
 ### 16.1 ドメイン定義と所属対応（業務ルール・確定）
 
@@ -600,14 +609,77 @@ BNP            ← 追加（湾岸工事所の直下）
 | 550 円/口合算 | 浜田指示どおり。過去契約単価差の会計処理は kintone **スコープ外** |
 | 設定 3 件化・`vpn_domain` | 実装で吸収 |
 | `vpn_id` unique | 全ドメイン横断（v1 継承） |
-| アプリ表示名の `@kensetsutoso.fre` | **v1.1 では変更しない**（実装時に任意。浜田 GO 後） |
+| アプリ表示名の `@kensetsutoso.fre` | **§18 で変更済**（733/734 からサフィックス削除） |
 
 ### 16.10 実装チェックリスト（GO 後）
 
-1. 733 — `vpn_domain` フィールド deploy + 所属 36 件更新  
-2. 既存 66 件 — `vpn_domain` バックフィル  
-3. 設定レコード — ds（next=36）・bnp（next=1）追加  
-4. migrate — ds 35 + bnp 4  
-5. 734 customize — フィルタ・3 行バナー・所属→ドメイン連動・検証・合算集計  
-6. `deploy:733` / `deploy:734`（preflight ゲート）  
-7. 浜田 **目視 OK** → checkpoint / handoff 更新  
+1. ✅ 733 — `vpn_domain` フィールド deploy + 所属 36 件更新  
+2. ✅ 既存 66 件 — `vpn_domain` バックフィル  
+3. ✅ 設定レコード — ds（next=36）・bnp（next=1）追加  
+4. ✅ migrate — ds 35 + bnp 4（計 **105 件**）  
+5. ✅ 734 customize — フィルタ・3 行バナー・所属→ドメイン連動・検証・合算集計  
+6. ✅ `deploy:733` / `deploy:734`（preflight ゲート）  
+7. ✅ 浜田 **目視 OK**
+
+---
+
+## §17. PC台帳（674）連携 — v1.2（2026-06-20 浜田 GO）
+
+**背景**: PC台帳 674 に `vpn_id` / `vpn_pw` があるが v1 まで手入力。運用は **PC先 → VPN後（申告後）**。VPN台帳が正本。
+
+### 17.1 連携方向（確定）
+
+| 操作 | 674 への動作 |
+|------|----------------|
+| **734 VPN 新規作成** | `account_label` = 674 `user_name` **完全一致**の **個人・利用中** PC **全台**へ `vpn_id` / `vpn_pw` を PUT |
+| **734 VPN パスワード変更** | 同上 |
+| **734 VPN 削除** | 同上 PC 全台の `vpn_id` / `vpn_pw` を **空に** |
+| **674 PC 新規作成** | VPN 欄は **空のまま**（自動入力しない） |
+| **674 編集** | `vpn_id` / `vpn_pw` は **disabled + submit 拒否**（手入力不可） |
+| **595 退職連動** | **VPN 欄は触らない**（既存どおり Windows/M365 のみクリア） |
+
+### 17.2 アカウント名入力（734 新規）
+
+| モード | 用途 |
+|--------|------|
+| **既定: 社員名検索（595）** | 新規作成時に **検索モーダルを自動表示**。選択で **アカウント名（社員名）** と **所属** を自動入力（所属は 595 突合後ロック）。`group_name` も所属候補にフォールバック |
+| **手動入力** | 共有アカウント等。所属・アカウント名を手入力 |
+
+### 17.3 対象外
+
+- 674 `account_type` ≠ 個人
+- `pc_status` = 保管 / 廃棄
+- 0 件ヒット時: VPN 登録は成功、PC 反映なしを **情報表示**（エラーにしない）
+
+### 17.4 BUILD
+
+| アプリ | BUILD |
+|--------|-------|
+| 734 | `2026-06-20-vpn-595-search-primary` |
+| 674 | `2026-06-20-674-vpn-readonly-dom-lock` |
+
+### 17.5 初回バックフィル（確定）
+
+- スクリプト: `npm run vpn-account:sync-pc-ledger -- --dry-run|--apply`
+- マッチ条件: §17.1 同様（`account_label` ↔ `user_name` 完全一致・個人・利用中）
+- **2026-06-20 実行結果**: 91 件マッチ・19 PC レコード更新。17 VPN アカウントは PC 未紐付（共有/JR/名前不一致）— エラーにしない
+
+---
+
+## §18. アプリ表示名変更（2026-06-20 浜田 GO）
+
+**背景**: v1 作成時にドメイン識別のためアプリ名末尾に `（@kensetsutoso.fre）` を付与していたが、v1.1 で 3 ドメイン統合後は誤解を招くため削除。
+
+| App | 変更前 | 変更後 |
+|-----|--------|--------|
+| **733**（DB） | VPNアカウント管理台帳用DB（@kensetsutoso.fre） | **VPNアカウント管理台帳用DB** |
+| **734**（台帳） | VPNアカウント管理台帳（@kensetsutoso.fre） | **VPNアカウント台帳** |
+
+**実装**:
+
+- kintone: `npm run vpn-account:rename-apps -- --apply`（settings PUT + deploy）
+- 定数: `scripts/lib/vpn-account-kintone.mjs` の `DB_APP_NAME` / `DASH_APP_NAME`
+- 733 customize: ブロックメッセージの誘導先名称を **VPNアカウント台帳** に更新（BUILD=`2026-06-20-vpn-db-rename-message`）
+- Space 48 ポータルリンク文言: `scripts/lib/space48-body.mjs`
+
+**kintone revision（適用時）**: 733 **rev 10**（settings）/ 734 **rev 20**（settings）

@@ -165,13 +165,21 @@
           "label": "札幌支店",
           "index": "31"
         },
+        "首都圏支店": {
+          "label": "首都圏支店",
+          "index": "32"
+        },
         "鉄構支店": {
           "label": "鉄構支店",
-          "index": "32"
+          "index": "33"
         },
         "湾岸工事所": {
           "label": "湾岸工事所",
-          "index": "33"
+          "index": "34"
+        },
+        "BNP": {
+          "label": "BNP",
+          "index": "35"
         }
       }
     },
@@ -223,6 +231,28 @@
       "required": false,
       "noLabel": false,
       "defaultValue": ""
+    },
+    "vpn_domain": {
+      "type": "DROP_DOWN",
+      "code": "vpn_domain",
+      "label": "VPNドメイン",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "@kensetsutoso.fre": {
+          "label": "@kensetsutoso.fre",
+          "index": "0"
+        },
+        "@kensetsutoso.ds.fre": {
+          "label": "@kensetsutoso.ds.fre",
+          "index": "1"
+        },
+        "@bnp001": {
+          "label": "@bnp001",
+          "index": "2"
+        }
+      }
     }
   }
 }

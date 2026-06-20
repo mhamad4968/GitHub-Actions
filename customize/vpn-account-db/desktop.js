@@ -2,7 +2,7 @@
   "use strict";
 
   /** VPNアカウント管理台帳用DB — save/delete 全面ブロック（Dash REST のみ） */
-  var BUILD = "2026-06-16-vpn-account-db-block-ui-mutations";
+  var BUILD = "2026-06-20-vpn-db-rename-message";
 
   var BLOCK_EVENTS = [
     "app.record.create.submit",
@@ -20,7 +20,7 @@
   function blockMessage() {
     return (
       "このアプリ（VPNアカウント管理台帳用DB）の画面からの追加・保存・削除はできません。" +
-      "登録・修正・削除は「VPNアカウント管理台帳（@kensetsutoso.fre）」から行ってください。" +
+      "登録・修正・削除は「VPNアカウント台帳」から行ってください。" +
       "（閲覧・目視確認のみ本アプリで可。移行スクリプトは REST のため対象外。）"
     );
   }

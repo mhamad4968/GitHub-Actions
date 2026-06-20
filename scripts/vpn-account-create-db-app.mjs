@@ -81,7 +81,7 @@ async function main() {
     headers,
     appId,
     DB_APP_NAME,
-    'VPNアカウント（@kensetsutoso.fre）の正本。日常の書込は「VPNアカウント管理台帳」から REST のみ。標準 UI は閲覧のみ。',
+    'VPNアカウント（@kensetsutoso.fre）の正本。日常の書込は「VPNアカウント台帳」から REST のみ。標準 UI は閲覧のみ。',
   );
   console.log(`設定 revision=${settingsRev}`);
 

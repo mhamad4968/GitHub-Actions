@@ -58,7 +58,7 @@ async function hasConfirmedSnapshot(baseUrl, headers, appId, ym) {
 function buildMail(ym) {
   const subject = `[VPN台帳] ${ym} ライセンス集計の確定をお願いします`;
   const text = [
-    'VPNアカウント管理台帳の月次ライセンス集計が、まだ確定されていません。',
+    'VPNアカウント台帳の月次ライセンス集計が、まだ確定されていません。',
     '',
     `対象月: ${ym}`,
     '',

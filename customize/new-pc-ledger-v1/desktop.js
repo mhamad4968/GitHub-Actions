@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-06-19-674-detail-hide-sidebar';
+  const BUILD = '2026-06-20-674-vpn-readonly-dom-lock';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -338,6 +338,104 @@
     const cell = record && record[FC_M365_MASTER_RECORD_ID];
     if (!cell || !Object.prototype.hasOwnProperty.call(cell, 'disabled')) return;
     cell.disabled = mode === 'editable';
+  }
+
+  /**
+   * VPN ID/PW は VPNアカウント台帳（734）からのみ更新。PC台帳では手入力不可。
+   * `disabled` 未定義のフィールドも kintone record + DOM 両方でロックする。
+   * @param {Record<string, object>} record
+   * @param {'detail'|'editable'} mode
+   */
+  function applyVpnFieldUi674(record, mode) {
+    const type = String((record && record[FC_ACCOUNT_TYPE] && record[FC_ACCOUNT_TYPE].value) || '').trim();
+    if (type !== TYPE_PERSONAL) return;
+    if (mode !== 'editable') return;
+    for (const code of [FC_VPN_ID, FC_VPN_PW]) {
+      const cell = record && record[code];
+      if (!cell || typeof cell !== 'object') continue;
+      cell.disabled = true;
+    }
+  }
+
+  const VPN_READONLY_STYLE_ID = 'npl674-vpn-readonly-style';
+
+  function injectVpnReadonlyStyle674() {
+    if (document.getElementById(VPN_READONLY_STYLE_ID)) return;
+    const st = document.createElement('style');
+    st.id = VPN_READONLY_STYLE_ID;
+    st.textContent =
+      '.npl674-vpn-readonly input,.npl674-vpn-readonly textarea{' +
+      'background:#f1f5f9!important;color:#64748b!important;cursor:not-allowed!important;' +
+      'pointer-events:none!important;-webkit-text-fill-color:#64748b!important;}';
+    document.head.appendChild(st);
+  }
+
+  function lockVpnFieldDom674(record) {
+    injectVpnReadonlyStyle674();
+    const type = String((record && record[FC_ACCOUNT_TYPE] && record[FC_ACCOUNT_TYPE].value) || '').trim();
+    if (type !== TYPE_PERSONAL) return;
+    for (const code of [FC_VPN_ID, FC_VPN_PW]) {
+      try {
+        const el = tryGetFieldElement674(code);
+        if (!el) continue;
+        el.classList.add('npl674-vpn-readonly');
+        const inputs = el.querySelectorAll('input,textarea');
+        for (let i = 0; i < inputs.length; i++) {
+          const inp = inputs[i];
+          inp.readOnly = true;
+          inp.disabled = true;
+          inp.setAttribute('aria-readonly', 'true');
+          inp.tabIndex = -1;
+        }
+      } catch (_e) {
+        /* ignore */
+      }
+    }
+  }
+
+  function scheduleLockVpnFieldsDom674(record) {
+    [0, 80, 250, 600, 1200, 2000].forEach(function (ms) {
+      setTimeout(function () {
+        lockVpnFieldDom674(record);
+      }, ms);
+    });
+  }
+
+  function syncVpnFieldUiToForm674(record, mode) {
+    applyVpnFieldUi674(record, mode);
+    if (mode === 'editable') {
+      const bag = getRecordFormHolder674();
+      if (bag && bag.api && bag.holder && bag.holder.record) {
+        try {
+          bag.api.set(bag.holder);
+        } catch (e) {
+          console.warn('[NEW-PC-LEDGER-V1] VPN readonly set:', e.message || e);
+        }
+      }
+      scheduleLockVpnFieldsDom674(record);
+    }
+  }
+
+  function validateVpnFieldsNotManuallyChanged674(event) {
+    const type = String(event.record[FC_ACCOUNT_TYPE]?.value || '').trim();
+    if (type !== TYPE_PERSONAL) return null;
+    const isEdit = String(event.type || '').indexOf('edit.submit') >= 0;
+    const rid = event.record.$id && event.record.$id.value;
+    if (isEdit && rid) {
+      const prev = snapshotBeforeEdit674[String(rid)];
+      if (prev) {
+        const curId = trimmedScalarValue674(event.record, FC_VPN_ID);
+        const curPw = trimmedScalarValue674(event.record, FC_VPN_PW);
+        if (curId !== (prev.vpn_id || '') || curPw !== (prev.vpn_pw || '')) {
+          return 'VPN ID / VPNパスワードは VPNアカウント台帳から自動反映されます。PC台帳では直接編集できません。';
+        }
+      }
+      return null;
+    }
+    if (trimmedScalarValue674(event.record, FC_VPN_ID) || trimmedScalarValue674(event.record, FC_VPN_PW)) {
+      return 'VPN ID / VPNパスワードは PC台帳登録時には入力できません。VPNアカウント台帳で登録後に自動反映されます。';
+    }
+    return null;
   }
 
   /**
@@ -4329,6 +4427,8 @@
       pc_name: String((rec[FC_PC_NAME] && rec[FC_PC_NAME].value) || '').trim(),
       logon_name: String((rec[FC_LOGON_NAME] && rec[FC_LOGON_NAME].value) || '').trim(),
       pc_status: String((rec[FC_PC_STATUS] && rec[FC_PC_STATUS].value) || '').trim(),
+      vpn_id: String((rec[FC_VPN_ID] && rec[FC_VPN_ID].value) || '').trim(),
+      vpn_pw: String((rec[FC_VPN_PW] && rec[FC_VPN_PW].value) || '').trim(),
     };
   }
 
@@ -6605,6 +6705,7 @@ ${bodyInner}\
     applySkyseaGroupUi(event.record, editable ? 'editable' : 'detail');
     applyVisibilityByType(event.record);
     applyM365MasterRecordIdFieldUi674(event.record, editable ? 'editable' : 'detail');
+    syncVpnFieldUiToForm674(event.record, editable ? 'editable' : 'detail');
     showJrBannerIfNeeded(event.record);
     scheduleInjectButtons674(event);
     scheduleInject595FieldAdjacent674(event.record, editable);
@@ -6681,6 +6782,7 @@ ${bodyInner}\
     applySkyseaGroupUi(result.record, 'editable');
     applyVisibilityByType(result.record);
     applyM365MasterRecordIdFieldUi674(result.record, 'editable');
+    syncVpnFieldUiToForm674(result.record, 'editable');
     showJrBannerIfNeeded(result.record);
     scheduleInjectButtons674(result);
     scheduleInject595FieldAdjacent674(result.record, true);
@@ -8658,6 +8760,17 @@ ${bodyInner}\
 
       if (errors.length > 0) {
         event.error = errors.join(' ');
+        resolve(event);
+        return;
+      }
+
+      const vpnMsg = validateVpnFieldsNotManuallyChanged674(event);
+      if (vpnMsg) {
+        event.error = vpnMsg;
+        event.errors = Object.assign(event.errors || {}, {
+          [FC_VPN_ID]: vpnMsg,
+          [FC_VPN_PW]: vpnMsg,
+        });
         resolve(event);
         return;
       }

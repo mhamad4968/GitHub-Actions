@@ -1,20 +1,19 @@
 #!/usr/bin/env node
 /**
- * VPN アカウント — Excel → DB REST 一括 POST（66 件 + 設定 1 件）
- * 正本: docs/plans/2026-06-16-vpn-account-kintone-spec.md §9
+ * VPN v1.1 — Excel から新ドメイン分のみ増分投入（既存 vpn_id はスキップ）
  *
- *   npm run vpn-account:migrate:xlsx -- --dry-run
- *   npm run vpn-account:migrate:xlsx -- --apply
+ *   npm run vpn-account:migrate:xlsx -- --dry-run --incremental
+ *   npm run vpn-account:migrate:xlsx -- --apply --incremental
  */
 import { existsSync } from 'node:fs';
 import XLSX from 'xlsx';
 import {
   DEFAULT_XLSX,
-  NEXT_USER_NUM_START,
-  RECORD_KIND_SETTING,
+  domainForDept,
   fetchJson,
   formatDateYmd,
   getKintoneConfig,
+  inferDomainFromVpnId,
   loadAppIds,
   loadDeptList,
   recordCount,
@@ -22,17 +21,17 @@ import {
 } from './lib/vpn-account-kintone.mjs';
 
 const BATCH = 100;
-const HEADER_ROW = 3;
 const DATA_START_ROW = 4;
 
 function parseArgs() {
   const dryRun = process.argv.includes('--dry-run');
   const apply = process.argv.includes('--apply');
   const force = process.argv.includes('--force');
+  const incremental = process.argv.includes('--incremental');
   const xlsx =
     process.argv.find((a) => a.startsWith('--xlsx='))?.slice(7) || process.env.VPN_ACCOUNT_XLSX || DEFAULT_XLSX;
   const appArg = process.argv.find((a) => a.startsWith('--app='))?.slice(6);
-  return { dryRun, apply, force, xlsx, appId: appArg ? Number(appArg) : null };
+  return { dryRun, apply, force, incremental, xlsx, appId: appArg ? Number(appArg) : null };
 }
 
 function readExcelAccounts(xlsxPath) {
@@ -50,7 +49,8 @@ function readExcelAccounts(xlsxPath) {
     const dept = trimCell(row[3]);
     const vpnId = trimCell(row[4]);
     const password = trimCell(row[5]);
-    const regDate = formatDateYmd(row[6]);
+    const domainCol = trimCell(row[6]);
+    const regDate = formatDateYmd(row[7]);
 
     if (!/^\d+$/.test(seq) || !vpnId.includes('@')) continue;
     if (!label || !dept || !password) {
@@ -60,11 +60,20 @@ function readExcelAccounts(xlsxPath) {
       throw new Error(`行 ${i + 1}: 所属「${dept}」はドロップダウンにありません`);
     }
 
+    const vpnDomain = domainCol && domainCol.includes('@') ? domainCol : inferDomainFromVpnId(vpnId);
+    const expected = domainForDept(dept);
+    if (vpnDomain !== expected) {
+      throw new Error(
+        `行 ${i + 1}: 所属「${dept}」とドメイン「${vpnDomain}」が不一致（期待: ${expected}）`,
+      );
+    }
+
     out.push({
       account_label: label,
       dept,
       vpn_id: vpnId,
       password,
+      vpn_domain: vpnDomain,
       registered_date: regDate || formatDateYmd(new Date()),
     });
   }
@@ -77,19 +86,8 @@ function toKintoneRecord(row) {
     dept: { value: row.dept },
     vpn_id: { value: row.vpn_id },
     password: { value: row.password },
+    vpn_domain: { value: row.vpn_domain },
     registered_date: { value: row.registered_date },
-  };
-}
-
-function settingsRecord() {
-  return {
-    record_kind: { value: RECORD_KIND_SETTING },
-    next_user_num: { value: String(NEXT_USER_NUM_START) },
-    account_label: { value: '（システム設定）' },
-    dept: { value: 'システム推進室' },
-    vpn_id: { value: '__vpn_settings__@kensetsutoso.fre' },
-    password: { value: 'N/A' },
-    registered_date: { value: formatDateYmd(new Date()) },
   };
 }
 
@@ -97,6 +95,25 @@ function redact(rec) {
   const o = { ...rec };
   if (o.password) o.password = { value: '***' };
   return o;
+}
+
+async function fetchExistingVpnIds(baseUrl, headers, appId) {
+  const ids = new Set();
+  let offset = 0;
+  const PAGE = 500;
+  while (true) {
+    const q = `record_kind not in ("設定", "月次集計") order by $id asc limit ${PAGE} offset ${offset}`;
+    const url = `${baseUrl}/k/v1/records.json?app=${appId}&query=${encodeURIComponent(q)}&fields[0]=vpn_id`;
+    const j = await fetchJson(url, { method: 'GET', headers: { ...headers, 'Content-Type': undefined } });
+    const rows = j.records || [];
+    rows.forEach(function (rec) {
+      const v = rec.vpn_id && rec.vpn_id.value != null ? String(rec.vpn_id.value).toLowerCase() : '';
+      if (v) ids.add(v);
+    });
+    if (rows.length < PAGE) break;
+    offset += PAGE;
+  }
+  return ids;
 }
 
 async function postBatch(baseUrl, headers, appId, records) {
@@ -108,7 +125,7 @@ async function postBatch(baseUrl, headers, appId, records) {
 }
 
 async function main() {
-  const { dryRun, apply, force, xlsx, appId: appArg } = parseArgs();
+  const { dryRun, apply, force, incremental, xlsx, appId: appArg } = parseArgs();
   if (!dryRun && !apply) {
     console.error('Use --dry-run or --apply');
     process.exit(1);
@@ -118,14 +135,13 @@ async function main() {
     process.exit(1);
   }
 
-  const accounts = readExcelAccounts(xlsx);
+  let accounts = readExcelAccounts(xlsx);
   console.log(`source=${xlsx}`);
   console.log(`accounts=${accounts.length}`);
 
-  if (dryRun) {
+  if (dryRun && !incremental) {
     console.log('sample[0]:', JSON.stringify(redact(toKintoneRecord(accounts[0])), null, 2));
     console.log('sample[last]:', JSON.stringify(redact(toKintoneRecord(accounts[accounts.length - 1])), null, 2));
-    console.log('settings:', JSON.stringify(settingsRecord(), null, 2));
     return;
   }
 
@@ -137,11 +153,35 @@ async function main() {
   }
 
   const { baseUrl, headers } = getKintoneConfig();
+
+  if (incremental) {
+    const existingIds = await fetchExistingVpnIds(baseUrl, headers, appId);
+    const before = accounts.length;
+    accounts = accounts.filter(function (a) {
+      return !existingIds.has(String(a.vpn_id).toLowerCase());
+    });
+    console.log(`incremental skip=${before - accounts.length} post=${accounts.length}`);
+    if (dryRun) {
+      accounts.slice(0, 3).forEach(function (a, i) {
+        console.log(`new[${i}]:`, JSON.stringify(redact(toKintoneRecord(a)), null, 2));
+      });
+      return;
+    }
+  } else if (dryRun) {
+    console.log('sample[0]:', JSON.stringify(redact(toKintoneRecord(accounts[0])), null, 2));
+    return;
+  }
+
   const existing = await recordCount(baseUrl, headers, appId);
   console.log(`existingCount=${existing}`);
-  if (existing > 0 && !force) {
-    console.error('既存レコードあり。--force で続行');
+  if (existing > 0 && !force && !incremental) {
+    console.error('既存レコードあり。--force または --incremental で続行');
     process.exit(1);
+  }
+
+  if (!accounts.length) {
+    console.log('nothing to post');
+    return;
   }
 
   const kintoneRows = accounts.map(toKintoneRecord);
@@ -153,15 +193,8 @@ async function main() {
     console.log(`POST accounts ${posted}/${kintoneRows.length} ids=${(res.ids || []).slice(0, 3).join(',')}…`);
   }
 
-  const settingsRes = await fetchJson(`${baseUrl}/k/v1/record.json`, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({ app: appId, record: settingsRecord() }),
-  });
-  console.log(`POST settings id=${settingsRes.id} next_user_num=${NEXT_USER_NUM_START}`);
-
   const total = await recordCount(baseUrl, headers, appId);
-  console.log(`done totalCount=${total} (expected ${accounts.length + 1})`);
+  console.log(`done totalCount=${total}`);
 }
 
 main().catch((e) => {

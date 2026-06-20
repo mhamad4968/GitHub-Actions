@@ -6,13 +6,26 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-export const DB_APP_NAME = 'VPNアカウント管理台帳用DB（@kensetsutoso.fre）';
-export const DASH_APP_NAME = 'VPNアカウント管理台帳（@kensetsutoso.fre）';
+export const DB_APP_NAME = 'VPNアカウント管理台帳用DB';
+export const DASH_APP_NAME = 'VPNアカウント台帳';
 export const SPACE_ID = Number(process.env.VPN_ACCOUNT_SPACE_ID || process.env.SPACE48_SPACE_ID || 48);
 export const THREAD_ID = Number(process.env.VPN_ACCOUNT_THREAD_ID || process.env.SPACE48_THREAD_ID || 52);
 export const DEFAULT_XLSX =
   process.env.VPN_ACCOUNT_XLSX || 'C:\\tmp\\VPNアカウント管理\\VPNアカウント管理.xlsx';
 export const VPN_DOMAIN = '@kensetsutoso.fre';
+export const VPN_DOMAINS = {
+  FRE: '@kensetsutoso.fre',
+  DS: '@kensetsutoso.ds.fre',
+  BNP: '@bnp001',
+};
+export const VPN_DOMAIN_LIST = [VPN_DOMAINS.FRE, VPN_DOMAINS.DS, VPN_DOMAINS.BNP];
+export const DEPT_CAPITAL = '首都圏支店';
+export const DEPT_BNP = 'BNP';
+export const NEXT_USER_NUM_BY_DOMAIN = {
+  [VPN_DOMAINS.FRE]: 80,
+  [VPN_DOMAINS.DS]: 36,
+  [VPN_DOMAINS.BNP]: 1,
+};
 export const NEXT_USER_NUM_START = 80;
 export const RECORD_KIND_SETTING = '設定';
 export const RECORD_KIND_LICENSE_SNAPSHOT = '月次集計';
@@ -139,6 +152,33 @@ export function formatDateYmd(v) {
   return s;
 }
 
-export function formatUserVpnId(num) {
-  return `user${String(num).padStart(3, '0')}${VPN_DOMAIN}`;
+export function formatUserVpnId(num, domain = VPN_DOMAINS.FRE) {
+  const n = Number(num);
+  if (domain === VPN_DOMAINS.FRE) {
+    return `user${String(n).padStart(3, '0')}${domain}`;
+  }
+  const local = n >= 1 && n <= 9 ? String(n).padStart(2, '0') : String(n);
+  return `user${local}${domain}`;
+}
+
+export function domainForDept(dept) {
+  const d = String(dept || '').trim();
+  if (d === DEPT_CAPITAL) return VPN_DOMAINS.DS;
+  if (d === DEPT_BNP) return VPN_DOMAINS.BNP;
+  return VPN_DOMAINS.FRE;
+}
+
+export function inferDomainFromVpnId(vpnId) {
+  const s = String(vpnId || '').trim().toLowerCase();
+  if (s.endsWith('@kensetsutoso.ds.fre')) return VPN_DOMAINS.DS;
+  if (s.endsWith('@bnp001')) return VPN_DOMAINS.BNP;
+  return VPN_DOMAINS.FRE;
+}
+
+export function settingsVpnId(domain) {
+  return `__vpn_settings__${domain}`;
+}
+
+export function snapshotVpnIdForMonth(ym) {
+  return `__license_snapshot_${String(ym).replace(/-/g, '')}__all`;
 }

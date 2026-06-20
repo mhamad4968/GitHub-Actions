@@ -78,11 +78,11 @@
     {
       "id": "vpn-account-ledger",
       "laneId": "vpn-account-ledger",
-      "label": "VPNアカウント管理台帳（@kensetsutoso.fre）",
+      "label": "VPNアカウント台帳",
       "status": "closed-v1",
       "closedAt": "2026-06-17",
       "completionReport": "docs/reports/2026-06-17-vpn-account-completion.md",
-      "kintoneAppsSection": "VPNアカウント管理台帳（Space 48 — 733–734）",
+      "kintoneAppsSection": "VPNアカウント台帳（Space 48 — 733–734）",
       "kintoneAppsStateMarker": "v1 完成",
       "forbiddenNextTaskPatterns": [
         "VPNアカウント",

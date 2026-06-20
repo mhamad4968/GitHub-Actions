@@ -29,7 +29,7 @@ export function buildVpnLicenseNoticeHtml(ym) {
     `<div style="${VPN_NOTICE_BOX_STYLE}">` +
     `<font size="4"><b>${VPN_NOTICE_MARKER}</b></font><br />` +
     '<font size="3">毎月末（28日〜）：' +
-    '<a href="https://jbis-kintone.cybozu.com/k/734/" target="_blank" rel="nofollow noopener noreferrer">VPNアカウント管理台帳</a>' +
+    '<a href="https://jbis-kintone.cybozu.com/k/734/" target="_blank" rel="nofollow noopener noreferrer">VPNアカウント台帳</a>' +
     ' を開き、ライセンス欄の <strong>「' +
     monthLabel +
     ' の集計を確定」</strong> ボタンを押してください。<br />' +
