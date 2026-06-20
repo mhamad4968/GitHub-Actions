@@ -1,6 +1,6 @@
 {
   "version": "2026-06-20",
-  "description": "プロジェクト v1 クローズ / 保留登録 — 朝 ready / checkpoint / レーンルーティングの正本（2026-06-20 浜田: Wi-Fi/JR/VPN はクローズ維持・688/予実 は保留・業務改善提案レーンのみ継続可）",
+  "description": "プロジェクト v1 クローズ / 保留登録 — 朝 ready / checkpoint / レーンルーティングの正本（2026-06-20 浜田: 688/予実/SKYSEA 保留・735/736 は 6/21 予定・業務改善のみ継続可）",
   "holds": [
     {
       "id": "construction-workdays-688",
@@ -21,6 +21,17 @@
       "note": "浜田指示で保留（クローズではない）。来週 運用等ヒアリング後に再開。deploy・仕様変更・未コミット作業は触らない。",
       "spec": "templates/yojitsu-budget-lite/SPEC.md",
       "forbiddenNextTaskPatterns": ["予実", "yojitsu", "677", "678", "679", "部署予実", "deploy:677", "deploy:678", "deploy:679"]
+    },
+    {
+      "id": "skysea-installer",
+      "laneId": "skysea",
+      "label": "SKYSEA 未導入 PC 自動インストール（674 連携）",
+      "status": "on-hold",
+      "holdSince": "2026-04-21",
+      "planReviewFrom": "2026-07",
+      "note": "2026-04-21 以降 PC台帳移行優先で長期保留。2026-07 頃から本格計画検討（浜田 2026-06-20）。実装・deploy は計画確定・GO 後。674 に skysea フィールド群は既設・recon スクリプトあり。",
+      "spec": "docs/plans/2026-04-18-skysea-installer.md",
+      "forbiddenNextTaskPatterns": ["SKYSEA", "skysea", "skysea-recon", "skysea-installer", "未導入PC"]
     }
   ],
   "closures": [
