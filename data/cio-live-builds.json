@@ -306,11 +306,11 @@
       "note": null
     },
     "736": {
-      "build": "2026-06-20-jikkou-yosan-print-v1",
-      "fileKey": "787caadd-0d75-4dd4-a78c-777a011b4e1c",
-      "revision": "77",
+      "build": "2026-06-20-jikkou-yosan-print-tune",
+      "fileKey": "6a03f36f-fb27-402b-8afb-13ad526d71f1",
+      "revision": "78",
       "relPath": "customize/736/desktop.js",
-      "deployedAt": "2026-06-20T01:31:37.356Z",
+      "deployedAt": "2026-06-20T01:38:25.295Z",
       "note": null
     }
   }

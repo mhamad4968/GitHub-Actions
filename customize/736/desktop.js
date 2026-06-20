@@ -1,10 +1,10 @@
 /**
- * 実行予算書作成支援ツール　ver.01 — BUILD 2026-06-20-jikkou-yosan-print-v1
+ * 実行予算書作成支援ツール　ver.01 — BUILD 2026-06-20-jikkou-yosan-print-tune
  * Master app: 735
  */
 (function () {
   'use strict';
-  const BUILD = '2026-06-20-jikkou-yosan-print-v1';
+  const BUILD = '2026-06-20-jikkou-yosan-print-tune';
   const APP_MASTER = 735;
   const DEFAULT_COST_TEMPLATE = [
   { "cost_work_type_code": "10100", "cost_work_type": "材料費", "cost_category_code": "", "cost_category": "塗料", "cost_row_kind": "link", "cost_group_key": "material", "cost_tax_rate": 0.1, "cost_unit": "－", "detail_marker": "②", "cost_basis_note": "詳細表にて内訳を記載…②" },
@@ -2405,50 +2405,47 @@ function isSubtotalRow(r) {
     return (
       '#jy-print-portal{display:none}' +
       '@media print{' +
-      '@page{size:A4 landscape;margin:7mm}' +
-      'body{padding:0!important}' +
-      'body *{visibility:hidden!important}' +
-      '#jy-print-portal,#jy-print-portal *{visibility:visible!important}' +
-      '#jy-print-portal{display:block!important;position:absolute;left:0;top:0;width:100%}' +
+      '@page{size:A4 landscape;margin:5mm}' +
+      'html,body{margin:0!important;padding:0!important;height:auto!important;min-height:0!important;overflow:hidden!important}' +
+      'body>:not(#jy-print-portal){display:none!important}' +
+      '#jy-print-portal{display:block!important;position:static!important;width:100%!important;height:auto!important;overflow:visible!important}' +
       '}' +
-      '.jy-pr{font-family:Segoe UI,Meiryo,sans-serif;color:#1e293b;font-size:9pt;line-height:1.35}' +
-      '.jy-pr-doc{padding:0 1mm}' +
-      '.jy-pr-doc-title{font-size:14pt;font-weight:700;text-align:center;letter-spacing:.18em;margin:0 0 2mm}' +
-      '.jy-pr-sheet-title{font-size:11pt;font-weight:700;text-align:center;margin:0 0 8px;color:#334155}' +
-      '.jy-pr-meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px 10px;margin-bottom:10px;border:1px solid #cbd5e1;border-radius:4px;padding:8px 10px;background:#f8fafc;font-size:8.5pt}' +
-      '.jy-pr-meta-item{display:flex;gap:6px;align-items:baseline;min-width:0}' +
-      '.jy-pr-meta-label{font-weight:600;color:#475569;white-space:nowrap;flex-shrink:0}' +
+      '.jy-pr{font-family:Segoe UI,Meiryo,sans-serif;color:#1e293b;font-size:11pt;line-height:1.3}' +
+      '.jy-pr-doc{padding:0}' +
+      '.jy-pr-doc-title{font-size:16pt;font-weight:700;text-align:center;letter-spacing:.15em;margin:0 0 1mm;line-height:1.2}' +
+      '.jy-pr-sheet-title{font-size:12pt;font-weight:700;text-align:center;margin:0 0 4px;color:#334155;line-height:1.2}' +
+      '.jy-pr-meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px 8px;margin-bottom:4px;border:1px solid #cbd5e1;border-radius:3px;padding:4px 6px;background:#f8fafc;font-size:10pt;line-height:1.25}' +
+      '.jy-pr-meta-item{display:flex;gap:4px;align-items:baseline;min-width:0}' +
+      '.jy-pr-meta-label{font-weight:600;color:#475569;white-space:nowrap;flex-shrink:0;font-size:9pt}' +
       '.jy-pr-meta-val{color:#0f172a;min-width:0;word-break:break-all}' +
-      '.jy-pr-section{margin-bottom:8px}' +
-      '.jy-pr-section.jy-pr-break-before{page-break-before:always}' +
-      '.jy-pr-sec-head{font-size:10pt;font-weight:700;margin:0 0 4px;padding:4px 8px;background:#e8eef4;border-left:4px solid #2563eb}' +
-      '.jy-pr-block-head{font-size:9.5pt;font-weight:700;margin:8px 0 4px;padding:3px 8px;background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46}' +
-      '.jy-pr-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:8pt}' +
-      '.jy-pr-table th,.jy-pr-table td{border:1px solid #cbd5e1;padding:2px 3px;vertical-align:middle}' +
-      '.jy-pr-table th{background:#f1f5f9;font-weight:600;text-align:center;color:#475569;font-size:7.5pt}' +
+      '.jy-pr-section{margin-bottom:3px}' +
+      '.jy-pr-sec-head{font-size:11pt;font-weight:700;margin:0 0 2px;padding:2px 6px;background:#e8eef4;border-left:4px solid #2563eb;line-height:1.25}' +
+      '.jy-pr-block-head{font-size:10.5pt;font-weight:700;margin:4px 0 2px;padding:2px 6px;background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;line-height:1.25}' +
+      '.jy-pr-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:10pt;line-height:1.25}' +
+      '.jy-pr-table th,.jy-pr-table td{border:1px solid #cbd5e1;padding:1px 3px;vertical-align:middle}' +
+      '.jy-pr-table th{background:#f1f5f9;font-weight:600;text-align:center;color:#475569;font-size:9pt;padding:2px 3px}' +
       '.jy-pr-table td.jy-num{text-align:right;font-variant-numeric:tabular-nums}' +
-      '.jy-pr-table tfoot td{background:#f8fafc;font-weight:700;border-top:2px solid #94a3b8}' +
+      '.jy-pr-table tfoot td{background:#f8fafc;font-weight:700;border-top:2px solid #94a3b8;padding:2px 3px}' +
       '.jy-pr-table tr.jy-pr-link td{background:#f0fdf4}' +
       '.jy-pr-table tr.jy-pr-link td:first-child{box-shadow:inset 3px 0 0 #6ee7b7}' +
       '.jy-pr-table tr.jy-pr-sub td{background:#eff6ff}' +
       '.jy-pr-table tr.jy-pr-sub td.jy-pr-sub-amt{background:#dbeafe;font-weight:700;color:#1e3a8a}' +
-      '.jy-pr-sub-badge{display:inline-block;background:#3b82f6;color:#fff;font-size:7pt;padding:1px 6px;border-radius:2px}' +
+      '.jy-pr-sub-badge{display:inline-block;background:#3b82f6;color:#fff;font-size:8.5pt;padding:1px 6px;border-radius:2px}' +
       '.jy-pr-ditto{text-align:center;color:#64748b}' +
       '.jy-pr-wrap{overflow:hidden}' +
-      '.jy-pr-spec .jy-col-spec{width:34%}' +
+      '.jy-pr-spec .jy-col-spec{width:36%}' +
       '.jy-pr-cost .jy-col-wcd{width:6%}' +
-      '.jy-pr-cost .jy-col-wt{width:12%}' +
+      '.jy-pr-cost .jy-col-wt{width:14%}' +
       '.jy-pr-cost .jy-col-ccd{width:6%}' +
-      '.jy-pr-cost .jy-col-cat{width:11%}' +
-      '.jy-pr-cost .jy-col-kind{width:8%}' +
+      '.jy-pr-cost .jy-col-cat{width:12%}' +
+      '.jy-pr-cost .jy-col-kind{width:9%}' +
       '.jy-pr-cost .jy-col-tax{width:5%}' +
       '.jy-pr-cost .jy-col-unit{width:5%}' +
       '.jy-pr-cost .jy-col-qty{width:6%}' +
       '.jy-pr-cost .jy-col-price{width:7%}' +
       '.jy-pr-cost .jy-col-amt{width:8%}' +
-      '.jy-pr-cost .jy-col-note{width:10%}' +
-      '.jy-pr-cost .jy-col-ref{width:5%}' +
-      '.jy-pr-cost .jy-col-ratio{width:5%}' +
+      '.jy-pr-cost .jy-col-note{width:14%}' +
+      '.jy-pr-cost .jy-col-ratio{width:6%}' +
       '.jy-pr-mat .jy-col-vendor{width:10%}' +
       '.jy-pr-mat .jy-col-name{width:22%}' +
       '.jy-pr-mat .jy-col-cap{width:8%}' +
@@ -2462,11 +2459,13 @@ function isSubtotalRow(r) {
   }
 
   function injectPrintPortalCss() {
-    if (document.getElementById('jy-print-portal-css')) return;
-    const st = document.createElement('style');
-    st.id = 'jy-print-portal-css';
+    let st = document.getElementById('jy-print-portal-css');
+    if (!st) {
+      st = document.createElement('style');
+      st.id = 'jy-print-portal-css';
+      document.head.appendChild(st);
+    }
     st.textContent = printPortalStylesheet();
-    document.head.appendChild(st);
   }
 
   function ensurePrintPortal() {
@@ -2549,11 +2548,11 @@ function isSubtotalRow(r) {
 
   function renderPrintCostTable() {
     const lines = state.cost_lines;
-    let html = '<div class="jy-pr-section jy-pr-break-before"><div class="jy-pr-sec-head">原価行（②〜⑧）</div><div class="jy-pr-wrap">';
+    let html = '<div class="jy-pr-section"><div class="jy-pr-sec-head">原価行（②〜⑧）</div><div class="jy-pr-wrap">';
     html += '<table class="jy-pr-table jy-pr-cost"><thead><tr>' +
       '<th class="jy-col-wcd">工種CD</th><th class="jy-col-wt">システム入力工種</th><th class="jy-col-ccd">種別CD</th><th class="jy-col-cat">種別</th>' +
       '<th class="jy-col-kind">行種別</th><th class="jy-col-tax">消費税</th><th class="jy-col-unit">単位</th><th class="jy-col-qty">数量</th>' +
-      '<th class="jy-col-price">単価</th><th class="jy-col-amt jy-num">金額</th><th class="jy-col-note">計算基準・備考</th><th class="jy-col-ref">詳細</th><th class="jy-col-ratio jy-num">率</th>' +
+      '<th class="jy-col-price">単価</th><th class="jy-col-amt jy-num">金額</th><th class="jy-col-note">計算基準・備考</th><th class="jy-col-ratio jy-num">率</th>' +
       '</tr></thead><tbody>';
     lines.forEach(function (r, i) {
       const isLink = r.cost_row_kind === '連携';
@@ -2564,7 +2563,7 @@ function isSubtotalRow(r) {
       if (isSub) {
         html += '<td colspan="9" class="jy-pr-sub-label"><span class="jy-pr-sub-badge">計</span></td>';
         html += '<td class="jy-num jy-pr-sub-amt">' + fmt(subAmt) + '</td>';
-        html += '<td>' + esc(subtotalBasisNote(r)) + '</td><td></td><td class="jy-num">' + fmtPct(r.cost_ratio) + '</td>';
+        html += '<td>' + esc(subtotalBasisNote(r)) + '</td><td class="jy-num">' + fmtPct(r.cost_ratio) + '</td>';
       } else {
         const wcd = costPrintDisplay(lines, i, 'wcd', 'cost_work_type_code');
         const wt = costPrintDisplay(lines, i, 'wt', 'cost_work_type');
@@ -2580,20 +2579,19 @@ function isSubtotalRow(r) {
         html += '<td class="jy-num">' + esc(formatUnitPrice(r.cost_unit_price)) + '</td>';
         html += '<td class="jy-num">' + fmt(r.cost_amount) + '</td>';
         html += '<td>' + esc(r.cost_basis_note) + '</td>';
-        html += '<td>' + esc(r.detail_marker) + '</td>';
         html += '<td class="jy-num">' + fmtPct(r.cost_ratio) + '</td>';
       }
       html += '</tr>';
     });
     html += '</tbody><tfoot>';
-    html += '<tr><td colspan="9">工事原価額 …⑧</td><td class="jy-num">' + fmt(state.cost_total_8) + '</td><td colspan="3"></td></tr>';
-    html += '<tr><td colspan="9">粗利 …⑨</td><td class="jy-num">' + fmt(state.profit_9) + '</td><td colspan="2" class="jy-num">' + fmtPct(state.profit_rate) + '</td><td></td></tr>';
+    html += '<tr><td colspan="9">工事原価額 …⑧</td><td class="jy-num">' + fmt(state.cost_total_8) + '</td><td colspan="2"></td></tr>';
+    html += '<tr><td colspan="9">粗利 …⑨</td><td class="jy-num">' + fmt(state.profit_9) + '</td><td></td><td class="jy-num">' + fmtPct(state.profit_rate) + '</td></tr>';
     html += '</tfoot></table></div></div>';
     return html;
   }
 
   function renderPrintMatBlock(title, group, totalLabel, totalAmount) {
-    let html = '<div class="jy-pr-section' + (group === 'その他' ? ' jy-pr-break-before' : '') + '">';
+    let html = '<div class="jy-pr-section">';
     html += '<div class="jy-pr-block-head">' + esc(title) + '</div><div class="jy-pr-wrap">';
     html += '<table class="jy-pr-table jy-pr-mat"><thead><tr>' +
       '<th class="jy-col-vendor">仕入先</th><th class="jy-col-name">品名</th><th class="jy-col-cap">容量</th><th class="jy-col-maker">メーカー</th>' +
@@ -2610,9 +2608,9 @@ function isSubtotalRow(r) {
     return html;
   }
 
-  function renderPrintSubBlock(b, breakBefore) {
+  function renderPrintSubBlock(b) {
     const mk = BLOCK_MARKERS[b.id];
-    let html = '<div class="jy-pr-section' + (breakBefore ? ' jy-pr-break-before' : '') + '">';
+    let html = '<div class="jy-pr-section">';
     html += '<div class="jy-pr-block-head">' + esc(b.label) + ' …' + mk + '</div><div class="jy-pr-wrap">';
     html += '<table class="jy-pr-table"><thead><tr><th>会社名</th><th>種別</th><th>単位</th><th>数量</th><th>単価</th><th class="jy-num">金額</th><th>計算基準</th></tr></thead><tbody>';
     state.subcontract_lines.forEach(function (r) {
@@ -2643,8 +2641,8 @@ function isSubtotalRow(r) {
     let html = renderPrintDocHead('（　詳　細　表　）');
     html += renderPrintMatBlock('② 材料明細（塗料）', '塗料', '② 塗料合計', state.mat_total_2);
     html += renderPrintMatBlock('③ 材料明細（その他）', 'その他', '③ その他合計', state.mat_total_3);
-    SUB_BLOCKS.forEach(function (b, idx) {
-      html += renderPrintSubBlock(b, idx > 0);
+    SUB_BLOCKS.forEach(function (b) {
+      html += renderPrintSubBlock(b);
     });
     return html;
   }
