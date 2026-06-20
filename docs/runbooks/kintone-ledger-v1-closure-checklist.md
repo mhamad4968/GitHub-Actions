@@ -70,6 +70,7 @@ npm run kintone:ledger-v1-scaffold -- --id <lane-id> --label "表示名" --apps 
 ## 関連
 
 - [`kintone-project-close-gate.md`](kintone-project-close-gate.md)（R36）
+- [`kintone-v1-extension-addendum.md`](kintone-v1-extension-addendum.md)（R61 — closed-v1 後の v1.x）
 - [`kintone-ledger-spec-qa-checklist.md`](kintone-ledger-spec-qa-checklist.md)（SPEC GO 前）
 - [`windows-governance-ops.md`](windows-governance-ops.md)（R48 PowerShell 標準形）
 - [`docs/plans/_TEMPLATE-kintone-ledger-spec.md`](../plans/_TEMPLATE-kintone-ledger-spec.md)（R46）

@@ -8,12 +8,65 @@ export const CLOSURES_REL = 'data/cio-project-closures.json';
 
 export function loadProjectClosures(root) {
   const p = path.join(root, CLOSURES_REL);
-  if (!fs.existsSync(p)) return { version: '', closures: [] };
+  if (!fs.existsSync(p)) return { version: '', holds: [], closures: [] };
   try {
-    return JSON.parse(fs.readFileSync(p, 'utf8'));
+    const data = JSON.parse(fs.readFileSync(p, 'utf8'));
+    return { ...data, holds: data.holds || [], closures: data.closures || [] };
   } catch {
-    return { version: '', closures: [] };
+    return { version: '', holds: [], closures: [] };
   }
+}
+
+export function loadHolds(root) {
+  return loadProjectClosures(root).holds || [];
+}
+
+/** @param {string} rel POSIX-style repo-relative path */
+export function matchHoldLaneFile(hold, rel) {
+  const norm = String(rel || '').replace(/\\/g, '/');
+  if (!norm || !hold) return false;
+
+  const spec = hold.spec ? String(hold.spec).replace(/\\/g, '/') : '';
+  if (spec && (norm === spec || norm.startsWith(`${spec}/`))) return true;
+
+  if (hold.id === 'yojitsu-budget' && norm.startsWith('templates/yojitsu-budget-lite/')) {
+    return true;
+  }
+
+  for (const p of hold.forbiddenNextTaskPatterns || []) {
+    if (/^\d{3}$/.test(p) && norm.includes(`customize/${p}/`)) return true;
+    if (/^deploy:\d{3}$/.test(p)) continue;
+    if ((p === 'yojitsu' || p === '予実' || p === '部署予実') && norm.startsWith('templates/yojitsu-budget-lite/')) {
+      return true;
+    }
+    if (/skysea/i.test(p) && (/skysea/i.test(norm) || norm.startsWith('data/skysea/'))) return true;
+    if ((p === '688' || p === '施工主報告' || p === '稼働日数ダッシュ') &&
+      (norm.includes('customize/688/') || /construction-workdays|688/.test(norm))) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/** @param {string} root @param {string[]} relativePaths */
+export function checkHoldLaneDirtyFiles(root, relativePaths) {
+  const holds = loadHolds(root);
+  const issues = [];
+  for (const rel of relativePaths) {
+    for (const hold of holds) {
+      if (hold.status !== 'on-hold') continue;
+      if (matchHoldLaneFile(hold, rel)) {
+        issues.push({
+          code: 'HOLD_LANE_DIRTY',
+          holdId: hold.id,
+          label: hold.label,
+          path: rel,
+          fix: `保留レーン — git restore "${rel}" または意図的なら CIO_ALLOW_HOLD_LANE_DIRTY=1`,
+        });
+      }
+    }
+  }
+  return { ok: issues.length === 0, issues };
 }
 
 export function findClosure(root, laneOrProjectId) {

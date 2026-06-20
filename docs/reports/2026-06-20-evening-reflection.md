@@ -17,15 +17,17 @@
 
 ---
 
-## ルール更新案 — **承認待ち**
+## ルール更新案 — **浜田 GO 済（2026-06-20）**
 
-| ID | 概要 | 提案先 |
-|----|------|--------|
-| **R58** | **保留レーン**（`cio-project-closures holds`）のファイルは `verify:session-close-git-warn` で **commit 禁止**または警告 | `scripts/verify-session-close-git-warn.mjs` |
-| **R59** | **アプリ rename** 後は completion report + SPEC §13 BUILD + `kintone-apps.md` を **同一セッション checklist** 化 | `20-SESSION-REPORT-CHECKLIST.txt` |
-| **R60** | **736 等 WIP customize** — push 前 `npm run lint:customize` **必須**（CI 赤の再発防止） | `.cursor/rules` / pre-push hook 案 |
-| **R61** | **closed-v1 レーン**の v1.x 拡張（VPN v1.2 等）は completion report **addendum** 必須 | `docs/runbooks/kintone-v1-extension-addendum.md`（新規案） |
-| **R62** | 500行超 customize 変更は **bundle 単位で commit 分割** | `split-to-prs` skill 参照 |
+| ID | 概要 | 実装 |
+|----|------|------|
+| **R58** | 保留レーン dirty 検査（session-close） | `verify-session-close-git-warn.mjs` |
+| **R59** | アプリ rename checklist | `20-SESSION-REPORT-CHECKLIST.txt` |
+| **R60** | pre-push `lint:customize` 必須 | `git-hook-pre-push.mjs` |
+| **R61** | closed-v1 v1.x addendum runbook | `kintone-v1-extension-addendum.md` |
+| **R62** | 500行超 customize commit 分割 | checklist + runbook §commit |
+
+正本: `docs/approved-changes/2026-06-20-rules-r58-r62-hamada-go.md`
 
 ---
 

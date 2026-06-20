@@ -10,6 +10,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { isSessionCloseTempPath } from './lib/cio-session-close-temp-paths.mjs';
+import { checkHoldLaneDirtyFiles } from './lib/cio-project-closure.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const warnOnly = process.argv.includes('--warn-only');
@@ -46,6 +47,26 @@ function checkUncommitted() {
   return { ok: false, hard };
 }
 
+function checkHoldLaneDirty() {
+  if (process.env.CIO_ALLOW_HOLD_LANE_DIRTY === '1') {
+    console.log('[verify:session-close-git-warn] SKIP hold-lane（CIO_ALLOW_HOLD_LANE_DIRTY=1）');
+    return { ok: true };
+  }
+  const status = git(['status', '--short']);
+  if (!status) return { ok: true };
+  const relPaths = status.split(/\r?\n/).filter(Boolean).map((line) => {
+    const raw = line.slice(3).trim().replace(/^"(.*)"$/, '$1');
+    return raw;
+  }).filter((rel) => rel && !isSessionCloseTempPath(rel));
+  const { ok, issues } = checkHoldLaneDirtyFiles(root, relPaths);
+  if (ok) return { ok: true };
+  const msg = `[verify:session-close-git-warn] NG 保留レーン ${issues.length} 件 — restore または CIO_ALLOW_HOLD_LANE_DIRTY=1（R58）`;
+  const detail = issues.slice(0, 10).map((i) => `  ${i.path} ← ${i.label}`);
+  if (issues.length > 10) detail.push(`  …他 ${issues.length - 10} 件`);
+  const hard = failOrWarn(msg, detail);
+  return { ok: false, hard };
+}
+
 function checkUnpushed() {
   if (skipPushCheck) {
     console.log('[verify:session-close-git-warn] SKIP push チェック（--skip-push-check）');
@@ -77,6 +98,11 @@ function main() {
 
   const uncommitted = checkUncommitted();
   if (!uncommitted.ok) {
+    process.exit(warnOnly ? 0 : 1);
+  }
+
+  const holdDirty = checkHoldLaneDirty();
+  if (!holdDirty.ok) {
     process.exit(warnOnly ? 0 : 1);
   }
 

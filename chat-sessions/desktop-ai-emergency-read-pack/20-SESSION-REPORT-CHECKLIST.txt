@@ -70,6 +70,24 @@
   □ kintone deploy / customize 変更があれば **19-SESSION-ONE-REPORT** §未コミット（または §Git）に **App BUILD rev 一覧**を記載
   □ 締め前 `git status -sb` で dirty が残っていないか確認（残る場合は理由1行）
 
+□ R59 アプリ表示名 rename（該当時・2026-06-20 GO）
+  □ kintone settings PUT + deploy（`npm run *:rename-apps` 等）
+  □ `scripts/lib/*-kintone.mjs` の `*_APP_NAME` 定数
+  □ SPEC §13 + completion report + `kintone-apps.md` + Space48 リンク文言
+
+□ R61 closed-v1 の v1.x 拡張（該当時・2026-06-20 GO）
+  □ 完成報告書 **addendum §**（CLOSED 維持）— `docs/runbooks/kintone-v1-extension-addendum.md`
+  □ SPEC 新 § + 変更履歴 + BUILD/rev
+
+□ R62 大規模 customize commit（500行超 diff 該当時）
+  □ 機能単位で commit 分割（bundle/deploy 単位推奨）。1 commit 巨大 diff は避ける
+
+□ R58 保留レーン dirty（締め前）
+  □ `data/cio-project-closures.json` **holds** 対象ファイルが dirty なら **restore**（意図時のみ `CIO_ALLOW_HOLD_LANE_DIRTY=1`）
+
+□ R60 push 前 lint（自動）
+  □ pre-push が `lint:customize` を実行 — 緊急 bypass は `CIO_ALLOW_PUSH_WITHOUT_LINT=1` のみ
+
 □ Q 月次情報セキュリティレポート（該当時）
   □ runbook §0: SKYSEA/ネットワーク/社外事例確定 or プレースホルダ明示
   □ npm run doc-lane:security-report

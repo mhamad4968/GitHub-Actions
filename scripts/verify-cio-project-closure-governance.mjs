@@ -23,6 +23,8 @@ const FILES = [
   'docs/approved-changes/2026-06-13-rules-r19-project-closure-governance-hamada-go.md',
   'docs/runbooks/kintone-ledger-v1-closure-checklist.md',
   'docs/approved-changes/2026-06-17-rules-r41-r48-vpn-evening-improvements-hamada-go.md',
+  'docs/approved-changes/2026-06-20-rules-r58-r62-hamada-go.md',
+  'docs/runbooks/kintone-v1-extension-addendum.md',
 ];
 
 const SCRIPTS = [

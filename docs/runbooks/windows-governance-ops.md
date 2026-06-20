@@ -64,6 +64,8 @@ git push --dry-run origin HEAD
 
 pre-push は `git rev-parse --show-toplevel` でリポ root を解決（`.git/hooks` からの相対パス事故を防止）。
 
+**R60（2026-06-20）**: pre-push は **constitution-handoff 通過後**に `npm run lint:customize` を実行。NG 時は push ブロック。緊急のみ `CIO_ALLOW_PUSH_WITHOUT_LINT=1 git push`。
+
 ---
 
 ## live-schema guard — Windows UV クラッシュ（R53）
