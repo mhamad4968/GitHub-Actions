@@ -31,7 +31,7 @@
 | H02 | 現場入場予定日 | 現場入場予定日 | `site_entry_date` | 日付 | 作成者 | |
 | H03 | 立案日 | 立案日 | `draft_date` | 日付 | 作成者/自動 | |
 | H03b | 作成日 | 作成日 | `record_created_date` | 日付 | 自動 | 初回保存時に JST 当日を設定。未設定時はシステム `Created_datetime` を表示 |
-| H04 | 工事コード | 工事コード | `project_code` | 文字列(1行) | 作成者 | 必須・一意 |
+| H04 | 工事コード | 工事コード | `project_code` | 文字列(1行) | 作成者 | 必須。**v1: レコード一意 → v2: 版ごとに別レコード**（`project_code`+`version_seq` で論理一意 — 版管理 SPEC §9.3 R-13） |
 | H05 | 工事正式名称 | 工事正式名称 | `project_official_name` | 文字列(1行) | 作成者 | |
 | H06 | 工事名称 | 工事名称 | `project_name` | 文字列(1行) | 作成者 | |
 | H07 | 桁種別 | 桁種別 | `girder_type` | ドロップダウン | 作成者 | リスト列 |

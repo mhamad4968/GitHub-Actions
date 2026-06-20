@@ -1,7 +1,18 @@
 {
   "version": "2026-06-20",
-  "description": "プロジェクト v1 クローズ / 保留登録 — 朝 ready / checkpoint / レーンルーティングの正本（2026-06-20 浜田: 688/予実/SKYSEA 保留・735/736 は 6/21 予定・業務改善のみ継続可）",
+  "description": "プロジェクト v1 クローズ / 保留登録 — 朝 ready / checkpoint / レーンルーティングの正本（2026-06-21 浜田: 736 担当説明は月曜以降保留・735/736 版管理 v2 §10 段1 優先）",
   "holds": [
+    {
+      "id": "jikkou-yosan-v1-demo",
+      "laneId": "735/736",
+      "label": "実行予算書 v1 担当説明・イメージ確認",
+      "status": "on-hold",
+      "holdSince": "2026-06-21",
+      "resumeFrom": "2026-06-23",
+      "note": "依頼部署への説明・感触確認。月曜（2026-06-23）以降。今日の 735/736 作業は版管理 v2 §10 段1（仕様レビュー）を優先。",
+      "spec": "docs/plans/2026-06-18-jikkou-yosan-spec.md",
+      "forbiddenNextTaskPatterns": ["担当説明", "イメージ確認", "pre-demo-gate", "説明フェーズ"]
+    },
     {
       "id": "construction-workdays-688",
       "laneId": "688",

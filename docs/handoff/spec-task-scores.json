@@ -1,5 +1,5 @@
 {
-  "scoredAt": "2026-06-20T10:37:48.512Z",
+  "scoredAt": "2026-06-20T22:12:03.134Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
   "topTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
   "tasks": [
@@ -15,15 +15,26 @@
       "status": "pending"
     },
     {
-      "id": "checkpoint:**実行予算書_v1（735/736）本日継続**_—_担当説明・イメージ確認フ",
-      "text": "**実行予算書 v1（735/736）本日継続** — 担当説明・イメージ確認フェーズ（浜田 2026-06-20）。688 は保留のまま触らない",
+      "id": "checkpoint:**735/736_版管理_v2_§10_段1",
+      "text": "**735/736 版管理 v2** — §10 段1 仕様レビュー（R-01〜R-10 洗い出し）。実装は段6以降",
       "source": "checkpoint",
-      "difficulty": 2,
+      "difficulty": 4,
       "tokens": "中",
       "tokenScore": 2,
-      "impact": 3,
-      "priority": 21,
+      "impact": 5,
+      "priority": 50,
       "status": "pending"
+    },
+    {
+      "id": "hold:**736_担当説明・イメージ確認**_—_月曜以降",
+      "text": "**736 担当説明・イメージ確認** — **2026-06-23（月）以降保留**（浜田 2026-06-21）。v1 説明・pre-demo-gate は月曜以降",
+      "source": "checkpoint-hold",
+      "difficulty": 3,
+      "tokens": "中",
+      "tokenScore": 2,
+      "impact": 4,
+      "priority": 10,
+      "status": "on-hold"
     }
   ]
 }
