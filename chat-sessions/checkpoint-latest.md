@@ -25,7 +25,7 @@
 | 評価スナップショット | 未設計確認前の本番投入禁止 |
 
 **次の1手**: **735/736 実行予算書** — 担当説明・イメージ確認フェーズ（浜田予定）。予実（677–679）は来週ヒアリングまで保留。688 / SKYSEA は保留のまま触らない  
-**Git**: 734 v1.3 commit push 予定（本セッション）
+**Git**: `8577ba2` — 734 v1.3 push 済
 **688 本番**: `2026-06-19-688-print-rounding-fix` rev **34** — **保留**（2026-06-20 浜田指示。6/19 施工主報告印刷対応済・CLOSED 表記は訂正）  
 **監査**: `npm run cio:audit:session-builds:strict` — repo=ledger=live **6/6 OK**（先祖返りなし）  
 **R21–R24**: **浜田 GO 反映済** — `docs/approved-changes/2026-06-18-rules-r21-r24-hamada-go.md`
