@@ -2,8 +2,8 @@
 
 **正本ツール**: `C:\tmp\稼働日数算出ツール\稼働日数算出ツール20260613.xlsx`  
 **前提 SPEC**: `docs/plans/2026-05-17-construction-workdays-spec-v1.md`（Space 56・687/688 構成）  
-**更新日**: 2026-06-19  
-**本番 BUILD（688）**: `2026-06-19-688-print-rounding-fix`（revision 33）
+**更新日**: 2026-06-21  
+**本番 BUILD（688）**: `2026-06-21-688-rate-over100-comment-formula`（revision 37）
 
 ---
 
@@ -80,12 +80,22 @@ npm run workdays:import-jma-csv
 
 ## 7. ビルド・デプロイ・ゲート
 
+**deploy は AI が実行**（浜田 GO 後も `npm run deploy:*` を人に依頼しない — TSB-024 / §52）。
+
 ```bash
-npm run workdays:build-desktop:688
-npm run workdays:calc-gate
-npm run workdays:deploy-gate -- 688
-npm run deploy:688
+npm run workdays:build-desktop:688   # WORKDAYS_BUILD=… を設定可
+npm run cio:preflight:688 -- --note "…"   # 45 分以内に deploy
+npm run deploy:688   # workdays-deploy-gate + cio-deploy-preflight-guard + upload
 ```
+
+`deploy:688` は **機械連鎖**（抜け落ち防止）:
+
+1. `workdays-verify-built-ui` — `desktop.ui.js` と `desktop.js` の BUILD 一致
+2. `workdays-calc-gate` — Excel 回帰
+3. `cio-deploy-preflight-guard` — preflight スタンプ＋（既定）live-schema
+4. `deploy-customization.js` — 本番反映＋ `cio-live-builds.json` 更新
+
+セッション締め: `npm run verify:cio-deploy-ledger-gate`（R21 — registry ↔ repo ↔ `kintone-apps.md` 機械表）。
 
 Runbook: `docs/runbooks/workdays-deploy-checklist.md`
 
@@ -139,3 +149,41 @@ Runbook: `docs/runbooks/workdays-deploy-checklist.md`
 - Excel: `C:\tmp\稼働日数算出ツール\報告用\20260422_稼働日数算出(2025年度).xlsx`
 - PDF: `C:\tmp\稼働日数算出ツール\報告用\工期設定不稼働率算出.pdf`（p.94 丸め規則）
 - 実装: `customize/688/desktop.ui.js`（`buildFullClientReportHtml` / `buildPrintSummaryTable`）
+
+## 10. 不稼働率 100%超の表示・コメント欄（688 UI）
+
+Excel 準拠の不稼働率は **（休日＋天候−ダブり）÷ 稼働可能日数** のため、分子が分母を超える月は **100%超**（例: 8月塗装 18.32 ÷ 12.68 ≒ 144%）。計算バグではない。
+
+### 10.1 月次表
+
+| 項目 | 仕様 |
+|------|------|
+| 雨休率・不稼働率 | 100%超は数値ではなく **赤文字「100%以上」**（`fmtPctOver100` / `fmtRainHolidayPctOver100`） |
+| 休日タブ | `renderExcelTransposedTable(rows, 'holiday')`（降雨 0・稼働＝暦日−休日） |
+
+### 10.2 コメント欄（表とは別ブロック）
+
+| 項目 | 仕様 |
+|------|------|
+| 配置 | 足場・塗装・休日タブの **表直下**（`buildOver100CommentPanel`） |
+| 表示条件 | 再算出後、当タブで不稼働率 100%超の月があるとき **自動表示** |
+| 保存 | **kintone 非保存**・手入力不可（参考用 UI のみ） |
+| 印刷 | 施工主報告用印刷にも同コメント欄を含む |
+
+### 10.3 月別コメント文面（`buildOver100MonthNote`）
+
+塗装・足場（天候あり）の例:
+
+> 5月: 休日14日（土日10・祝3・GW1）＋降雨4.2日（ダブり控除後・不稼働16.3日）が稼働可能14.7日を上回ります。（不稼働16.3÷稼働14.7≒111%）
+
+| タブ | 天候ラベル | 式の分子 |
+|------|-----------|---------|
+| 塗装 | 降雨 | 休日＋降雨−ダブり |
+| 足場 | 風速 | 休日＋風速−ダブり |
+| 休日 | （なし） | 休日のみ |
+
+末尾は常に **（不稼働÷稼働≒％）**。休日内訳は `holidayPartsSummary`（土日・祝・GW 等）。
+
+### 10.4 実装参照
+
+- `customize/688/desktop.ui.js` — `buildOver100MonthNote` / `buildOver100CommentPanel` / `renderMonthlyTable`

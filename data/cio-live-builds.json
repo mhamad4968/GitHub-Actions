@@ -90,11 +90,11 @@
       "note": null
     },
     "688": {
-      "build": "2026-06-19-688-print-rounding-fix",
-      "fileKey": "24ce084f-6faf-4b48-b350-9cddea4810db",
-      "revision": "35",
-      "relPath": ".kintone-deploy/upload-688.js",
-      "deployedAt": "2026-06-19T12:21:29.256Z",
+      "build": "2026-06-21-688-rate-over100-comment-formula",
+      "fileKey": "d4fe5f5a-9c00-4a80-b64c-729f9751c50b",
+      "revision": "37",
+      "relPath": "customize/688/desktop.js",
+      "deployedAt": "2026-06-20T06:45:20.220Z",
       "note": null
     },
     "693": {

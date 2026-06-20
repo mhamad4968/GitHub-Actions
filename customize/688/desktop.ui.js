@@ -476,6 +476,162 @@
     return String(Math.round(Number(pct))) + '%';
   }
 
+  function isDecimalRateOver100(rate) {
+    return rate != null && !Number.isNaN(rate) && Number(rate) > 1;
+  }
+
+  function isRainPctOver100(pct) {
+    return pct != null && !Number.isNaN(pct) && Number(pct) > 100;
+  }
+
+  function fmtPctOver100(rate) {
+    if (rate == null || Number.isNaN(rate)) return '—';
+    if (isDecimalRateOver100(rate)) {
+      return '<span class="wd688-rate-over">100%以上</span>';
+    }
+    return fmtPct(rate);
+  }
+
+  function fmtRainHolidayPctOver100(pct) {
+    if (pct == null || Number.isNaN(pct)) return '—';
+    if (isRainPctOver100(pct)) {
+      return '<span class="wd688-rate-over">100%以上</span>';
+    }
+    return fmtRainHolidayPct(pct);
+  }
+
+  function holidayAvailRow(r) {
+    return (Number(r.C) || 0) - (Number(r.D) || 0);
+  }
+
+  function holidayRateRow(r) {
+    const avail = holidayAvailRow(r);
+    return avail ? (Number(r.D) || 0) / avail : 0;
+  }
+
+  function modeKindLabel(mode) {
+    if (mode === 'scaffold') return '足場';
+    if (mode === 'paint') return '塗装';
+    if (mode === 'holiday') return '休日';
+    return mode;
+  }
+
+  function isRowRateOver100(r, mode) {
+    if (mode === 'scaffold') return isDecimalRateOver100(r.H_rate);
+    if (mode === 'paint') return isDecimalRateOver100(r.K_rate);
+    if (mode === 'holiday') return isDecimalRateOver100(holidayRateRow(r));
+    return false;
+  }
+
+  function holidayPartsSummary(r) {
+    const parts = [];
+    if (r.weekends) parts.push('土日' + r.weekends);
+    if (r.weekdayHol) parts.push('祝' + r.weekdayHol);
+    if (r.gw) parts.push('GW' + r.gw);
+    if (r.summer) parts.push('夏季休暇' + r.summer);
+    if (r.nye) parts.push('年末年始' + r.nye);
+    return parts.length ? parts.join('・') : '手動休日なし';
+  }
+
+  function formatOver100PctFromRate(rate) {
+    if (rate == null || Number.isNaN(rate)) return '—';
+    return String(Math.round(Number(rate) * 100));
+  }
+
+  function buildOver100MonthNote(r, mode) {
+    const d = Number(r.D) || 0;
+    const holidaySummary = holidayPartsSummary(r);
+
+    if (mode === 'holiday') {
+      const avail = holidayAvailRow(r);
+      const rate = holidayRateRow(r);
+      return (
+        monthLabel(r.m) +
+        ': 休日' +
+        d +
+        '日（' +
+        holidaySummary +
+        '）が稼働可能' +
+        fmtNum(avail, 1) +
+        '日を上回ります。（不稼働' +
+        fmtNum(d, 1) +
+        '÷稼働' +
+        fmtNum(avail, 1) +
+        '≒' +
+        formatOver100PctFromRate(rate) +
+        '%）'
+      );
+    }
+
+    const isWind = mode === 'scaffold';
+    const weather = Number(isWind ? r.E : r.W) || 0;
+    const overlap = Number(isWind ? r.G : r.J) || 0;
+    const avail = Number(isWind ? r.N : r.O) || 0;
+    const nonWork = d + weather - overlap;
+    const wlabel = isWind ? '風速' : '降雨';
+    const wDigits = isWind ? 1 : 1;
+    const rate = isWind ? r.H_rate : r.K_rate;
+
+    return (
+      monthLabel(r.m) +
+      ': 休日' +
+      d +
+      '日（' +
+      holidaySummary +
+      '）＋' +
+      wlabel +
+      fmtNum(weather, wDigits) +
+      '日（ダブり控除後・不稼働' +
+      fmtNum(nonWork, 1) +
+      '日）が稼働可能' +
+      fmtNum(avail, 1) +
+      '日を上回ります。（不稼働' +
+      fmtNum(nonWork, 1) +
+      '÷稼働' +
+      fmtNum(avail, 1) +
+      '≒' +
+      formatOver100PctFromRate(rate) +
+      '%）'
+    );
+  }
+
+  function buildOver100CommentPanel(rows, mode) {
+    const kind = modeKindLabel(mode);
+    const overLines = [];
+    for (let i = 0; i < rows.length; i += 1) {
+      const r = rows[i];
+      if (!isRowRateOver100(r, mode)) continue;
+      overLines.push(buildOver100MonthNote(r, mode));
+    }
+
+    let body;
+    if (!overLines.length) {
+      body =
+        '<p class="wd688-comment-empty">不稼働率が100%を超える月はありません。</p>';
+    } else {
+      body =
+        '<p class="wd688-comment-intro">表の不稼働率が<strong class="wd688-rate-over">100%以上</strong>の月について、原因の目安を記載しています。' +
+        '<strong class="wd688-rate-over">休日（GW・夏季休暇・年末年始等）の見直しが必要と思われます。</strong></p>' +
+        '<ul class="wd688-comment-list">';
+      for (let j = 0; j < overLines.length; j += 1) {
+        body += '<li>' + escHtml(overLines[j]) + '</li>';
+      }
+      body += '</ul>';
+    }
+
+    return (
+      '<div class="wd688-comment-panel" id="wd688-comment-' +
+      mode +
+      '">' +
+      '<div class="wd688-comment-panel-head">コメント（' +
+      kind +
+      '・不稼働率100%超）</div>' +
+      '<div class="wd688-comment-panel-body">' +
+      body +
+      '</div></div>'
+    );
+  }
+
   function paintPdfMonth(r) {
     return calcRainHolidayRatePdf(r.D, r.W, r.C);
   }
@@ -529,41 +685,50 @@
 
   function renderExcelTransposedTable(rows, mode) {
     const isWind = mode === 'scaffold';
+    const isHoliday = mode === 'holiday';
     const yt = computeYearTotals(rows, isWind);
     const weatherLabel = isWind
       ? '風速日数 ※1<br><span class="wd688-sub">(10m/s以上・見積作成年の過去5年月平均)</span>'
-      : '降雨日数 ※1<br><span class="wd688-sub">(10mm以上・見積作成年の過去5年月平均)</span>';
+      : isHoliday
+        ? '降雨日数 ※1<br><span class="wd688-sub">(休日シート上段は0)</span>'
+        : '降雨日数 ※1<br><span class="wd688-sub">(10mm以上・見積作成年の過去5年月平均)</span>';
     const overlapLabel = isWind
       ? '休日数と風速日数のダブり ※2'
       : '休日数と降雨日数のダブり ※2';
+    const holidayYearAvail = yt.C - yt.D;
+    const holidayYearRate = holidayYearAvail ? yt.D / holidayYearAvail : 0;
 
     function cellVal(r, key) {
       return r[key];
     }
 
     function weatherVal(r) {
+      if (isHoliday) return 0;
       if (isWind) return r.E;
       return paintPdfMonth(r).weatherR;
     }
 
     function overlapVal(r) {
+      if (isHoliday) return 0;
       if (isWind) return r.G;
       return paintPdfMonth(r).overlap;
     }
 
     function availVal(r) {
+      if (isHoliday) return holidayAvailRow(r);
       if (isWind) return r.N;
       return paintPdfMonth(r).avail;
     }
 
     function rateVal(r) {
+      if (isHoliday) return holidayRateRow(r);
       return isWind ? r.H_rate : r.K_rate;
     }
 
     function fmtYearCell(v, opts) {
       opts = opts || {};
-      if (opts.rainPctInt) return fmtRainHolidayPct(v);
-      if (opts.pct) return fmtPct(v);
+      if (opts.rainPctInt) return fmtRainHolidayPctOver100(v);
+      if (opts.pct) return fmtPctOver100(v);
       if (opts.fixed != null) return fmtNum(v, opts.fixed);
       return v;
     }
@@ -598,9 +763,9 @@
           html +=
             '<td>' +
             (opts.rainPctInt
-              ? fmtRainHolidayPct(v)
+              ? fmtRainHolidayPctOver100(v)
               : opts.pct
-                ? fmtPct(v)
+                ? fmtPctOver100(v)
                 : opts.fixed != null
                   ? fmtNum(v, opts.fixed)
                   : v) +
@@ -612,8 +777,8 @@
     }
 
     addRow(weatherLabel, weatherVal, {
-      fixed: isWind ? 0 : 1,
-      yearVal: isWind ? yt.weather : pdfYear.weatherR,
+      fixed: isWind ? 0 : isHoliday ? 0 : 1,
+      yearVal: isWind ? yt.weather : isHoliday ? 0 : pdfYear.weatherR,
     });
     html +=
       '<tr><td class="wd688-row-label wd688-indent" colspan="' +
@@ -638,18 +803,21 @@
       return r.D;
     }, { yearVal: yt.D });
     addRow(overlapLabel, overlapVal, {
-      fixed: isWind ? 2 : 1,
-      yearVal: isWind ? yt.overlap : pdfYear.overlap,
+      fixed: isWind ? 2 : isHoliday ? 0 : 1,
+      yearVal: isWind ? yt.overlap : isHoliday ? 0 : pdfYear.overlap,
     });
     addRow('暦　　　　　日', function (r) {
       return r.C;
     }, { yearVal: yt.C });
     addRow('稼　働　可　能　日　数　※3', availVal, {
-      fixed: isWind ? 2 : 1,
-      yearVal: isWind ? yt.avail : pdfYear.avail,
+      fixed: isWind ? 2 : isHoliday ? 0 : 1,
+      yearVal: isWind ? yt.avail : isHoliday ? holidayYearAvail : pdfYear.avail,
     });
-    addRow('不　稼　働　率　※4', rateVal, { pct: true, yearVal: yt.rate });
-    if (!isWind) {
+    addRow('不　稼　働　率　※4', rateVal, {
+      pct: true,
+      yearVal: isHoliday ? holidayYearRate : yt.rate,
+    });
+    if (!isWind && !isHoliday) {
       addRow(
         '雨休率（％）',
         function (r) {
@@ -688,6 +856,14 @@
       '.wd688pr-sum .wd688pr-year{background:#fffbeb;font-weight:700;}' +
       '.wd688pr-notes{margin:4px 0 10px;font-size:8pt;line-height:1.5;color:#222;}' +
       '.wd688pr-notes p{margin:0 0 2px;}' +
+      '.wd688-rate-over,.wd688pr-rate-over{color:#dc2626;font-weight:700;}' +
+      '.wd688-comment-panel{margin:14px 0 8px;border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;}' +
+      '.wd688-comment-panel-head{padding:8px 12px;background:#e2e8f0;border-bottom:1px solid #cbd5e1;font-size:13px;font-weight:700;color:#334155;}' +
+      '.wd688-comment-panel-body{padding:10px 12px;font-size:12px;line-height:1.6;color:#1f2937;}' +
+      '.wd688-comment-intro{margin:0 0 8px;}' +
+      '.wd688-comment-empty{margin:0;color:#64748b;}' +
+      '.wd688-comment-list{margin:0;padding-left:1.25em;}' +
+      '.wd688-comment-list li{margin:4px 0;}' +
       '.wd688pr-cal-section{margin-top:8px;}' +
       '.wd688pr-cal-year{margin:10px 0 4px;font-size:11pt;font-weight:700;}' +
       '.wd688pr-cal-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 8px;margin-bottom:6px;}' +
@@ -871,15 +1047,15 @@
         calStatRow('風速日数', fmtNum(weatherVal, 1) + '日') +
         calStatRow('休日数と風速日数のダブり日数', fmtNum(overlapVal, 1) + '日') +
         calStatRow('稼働可能日数', fmtNum(availVal, 1) + '日') +
-        calStatRow('不稼働率', fmtPct(rateVal)) +
+        calStatRow('不稼働率', fmtPctOver100(rateVal)) +
         calStatRow('不稼働日', nonWork + '日');
     } else {
       stats +=
         calStatRow('降雨日数', fmtNum(weatherVal, 1) + '日') +
         calStatRow('休日数と降雨日数のダブり日数', fmtNum(overlapVal, 1) + '日') +
         calStatRow('稼働可能日数', fmtNum(availVal, 1) + '日') +
-        calStatRow('不稼働率', fmtPct(rateVal)) +
-        calStatRow('雨休率（％）', fmtRainHolidayPct(pdf.ratePct)) +
+        calStatRow('不稼働率', fmtPctOver100(rateVal)) +
+        calStatRow('雨休率（％）', fmtRainHolidayPctOver100(pdf.ratePct)) +
         calStatRow('不稼働日', nonWork + '日');
     }
     stats += '</table>';
@@ -925,8 +1101,8 @@
       let out = '';
       for (let i = 0; i < rows.length; i += 1) {
         const v = fn(rows[i], i);
-        if (cellOpts.pct) out += '<td>' + fmtPct(v) + '</td>';
-        else if (cellOpts.rainPctInt) out += '<td>' + fmtRainHolidayPct(v) + '</td>';
+        if (cellOpts.pct) out += '<td>' + fmtPctOver100(v) + '</td>';
+        else if (cellOpts.rainPctInt) out += '<td>' + fmtRainHolidayPctOver100(v) + '</td>';
         else if (cellOpts.fixed != null) out += '<td>' + fmtNum(v, cellOpts.fixed) + '</td>';
         else out += '<td>' + escHtml(v) + '</td>';
       }
@@ -935,8 +1111,8 @@
 
     function yearCell(v, cellOpts) {
       cellOpts = cellOpts || {};
-      if (cellOpts.pct) return '<td class="wd688pr-year">' + fmtPct(v) + '</td>';
-      if (cellOpts.rainPctInt) return '<td class="wd688pr-year">' + fmtRainHolidayPct(v) + '</td>';
+      if (cellOpts.pct) return '<td class="wd688pr-year">' + fmtPctOver100(v) + '</td>';
+      if (cellOpts.rainPctInt) return '<td class="wd688pr-year">' + fmtRainHolidayPctOver100(v) + '</td>';
       if (cellOpts.fixed != null) return '<td class="wd688pr-year">' + fmtNum(v, cellOpts.fixed) + '</td>';
       return '<td class="wd688pr-year">' + escHtml(v) + '</td>';
     }
@@ -1182,6 +1358,7 @@
         rainTh: config.rainTh,
         windTh: config.windTh,
       }) +
+      buildOver100CommentPanel(rows, mode) +
       buildPrintFootnotes(mode, config.pastLabel, config.rainTh, config.windTh) +
       '<section class="wd688pr-cal-section">' +
       renderCalendarYearSection(calYear, rows, calMode, markSet) +
@@ -1495,9 +1672,18 @@
       '</p>';
 
     if (activeTab === 'scaffold') {
-      host.innerHTML = intro + renderExcelTransposedTable(rows, 'scaffold');
-    } else if (activeTab === 'paint' || activeTab === 'holiday') {
-      host.innerHTML = intro + renderExcelTransposedTable(rows, 'paint');
+      host.innerHTML =
+        intro +
+        renderExcelTransposedTable(rows, 'scaffold') +
+        buildOver100CommentPanel(rows, 'scaffold');
+    } else if (activeTab === 'paint') {
+      host.innerHTML =
+        intro + renderExcelTransposedTable(rows, 'paint') + buildOver100CommentPanel(rows, 'paint');
+    } else if (activeTab === 'holiday') {
+      host.innerHTML =
+        intro +
+        renderExcelTransposedTable(rows, 'holiday') +
+        buildOver100CommentPanel(rows, 'holiday');
     }
 
     const inputs = host.querySelectorAll('.wd688-hm-in');
@@ -1641,7 +1827,15 @@
       '.wd688-root{font-family:Segoe UI,Meiryo,sans-serif;max-width:1200px;margin:0 auto;padding:12px;}' +
       '.wd688-tabs{display:flex;gap:4px;margin:12px 0 8px;flex-wrap:wrap;}' +
       '.wd688-tab{padding:8px 18px;cursor:pointer;border:1px solid #94a3b8;border-radius:6px 6px 0 0;background:#f1f5f9;font-size:13px;font-weight:600;}' +
-      '.wd688-tab.wd688-tab-active{background:#2563eb;color:#fff;border-color:#2563eb;}';
+      '.wd688-tab.wd688-tab-active{background:#2563eb;color:#fff;border-color:#2563eb;}' +
+      '.wd688-rate-over{color:#dc2626;font-weight:700;}' +
+      '.wd688-comment-panel{margin:14px 0 12px;border:1px solid #94a3b8;border-radius:6px;background:#f8fafc;}' +
+      '.wd688-comment-panel-head{padding:6px 10px;background:#e2e8f0;border-bottom:1px solid #94a3b8;font-size:12px;font-weight:700;}' +
+      '.wd688-comment-panel-body{padding:8px 10px;font-size:11px;line-height:1.55;}' +
+      '.wd688-comment-intro{margin:0 0 6px;}' +
+      '.wd688-comment-empty{margin:0;color:#64748b;}' +
+      '.wd688-comment-list{margin:0;padding-left:1.2em;}' +
+      '.wd688-comment-list li{margin:3px 0;}';
     document.head.appendChild(st);
   }
 
