@@ -34,6 +34,14 @@ globs: "**/*"
 
 2. **45 分以内**に `npm run deploy:<app>` を実行する。
 
+**セッション締め（deploy 漏れ防止）**: customize を触ったセッションは **締め前に必ず**（`cio:session:close-git` 内包）:
+
+```powershell
+npm run verify:session-close-git-warn
+```
+
+内包: **R21** `verify:cio-deploy-ledger-gate`（repo↔台帳↔`kintone-apps`）・**R55** `cio:audit:session-builds:strict`（repo↔台帳↔**kintone 本番 live BUILD**）。NG なら締め不可（exit 1）。
+
 **緊急のみ**: `SKIP_CIO_DEPLOY_GUARD=1 npm run deploy:<app>`（浜田 GO とチャットに理由 1 行必須）。
 
 **違反＝失敗・2 者チェック（本体＋ DeepSeek/Kimi）の定義全文**: `.cursor/rules/constitution-enforcement-core.mdc`（**`alwaysApply: false` + `globs`**・薄型想起）。

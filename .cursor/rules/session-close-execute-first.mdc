@@ -24,6 +24,7 @@ alwaysApply: false
 2. `npm run cio:session:export-handoff`
 3. `npm run verify:session-handoff-integrity -- --validate-export`
 4. `npm run cio:session:close-git -- --execute --auto-stage --message "…"` **または** B1/B4 整備後 `desktop:sync-and-verify`
+5. **deploy 漏れ防止**: `npm run verify:session-close-git-warn`（R21 台帳 + R55 本番 BUILD 三重照合 — close-git 手順 5 でも実行）
 
 **禁止**: 上記の前に「お疲れさまでした」「次回は…」だけ返す（F1 再発）。
 

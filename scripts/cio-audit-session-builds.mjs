@@ -7,9 +7,17 @@
  *   ... 595 674 688
  *   ... --strict   # NG で exit 2（portfolio audit と同型）
  */
-import { readFileSync, existsSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { extractBuildFromSource, readLiveBuildRegistry } from './cio-live-build-registry.mjs';
+import {
+  discoverSessionCustomizeAppIds,
+  resolveCustomizeAppPaths,
+} from './lib/cio-session-customize-apps.mjs';
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 const DEFAULT_APPS = [
   ['595', 'customize/595/desktop.js'],
@@ -24,13 +32,25 @@ const strict = process.argv.includes('--strict');
 const ids = process.argv.filter((a) => /^\d{3}$/.test(a));
 
 function resolveApps() {
-  if (!ids.length) return DEFAULT_APPS;
-  const reg = readLiveBuildRegistry();
-  return ids.map((id) => {
-    const rel = reg.apps?.[id]?.relPath;
-    if (rel && existsSync(path.join(process.cwd(), rel))) return [id, rel.replace(/\\/g, '/')];
-    throw new Error(`app=${id}: registry relPath missing or file not found (${rel || '-'})`);
-  });
+  if (ids.length) {
+    const reg = readLiveBuildRegistry();
+    return ids.map((id) => {
+      const rel = reg.apps?.[id]?.relPath;
+      if (rel && existsSync(path.join(process.cwd(), rel))) return [id, rel.replace(/\\/g, '/')];
+      throw new Error(`app=${id}: registry relPath missing or file not found (${rel || '-'})`);
+    });
+  }
+  const sessionIds = discoverSessionCustomizeAppIds(root);
+  if (sessionIds.length) {
+    const resolved = resolveCustomizeAppPaths(root, sessionIds);
+    if (resolved.length) {
+      console.log(
+        `[cio-audit-session-builds] session apps: ${resolved.map((a) => a[0]).join(', ')}`,
+      );
+      return resolved;
+    }
+  }
+  return DEFAULT_APPS;
 }
 
 function kintoneBase() {
