@@ -147,10 +147,6 @@ export function applyCostGroupSubtotals(lines) {
   return lines;
 }
 
-function isSubtotalRow(r) {
-  return r.cost_row_kind === 'subtotal' || r.cost_row_kind === '小計';
-}
-
 export function applyDetailLinks(costLines, ctx) {
   const map = {
     '②': ctx.mat_total_2,

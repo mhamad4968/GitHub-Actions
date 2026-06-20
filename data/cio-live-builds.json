@@ -306,11 +306,11 @@
       "note": null
     },
     "736": {
-      "build": "2026-06-20-jikkou-yosan-title-banner-wide",
-      "fileKey": "ab07f935-1e4d-44f9-9702-d2eb3e5824ca",
-      "revision": "89",
-      "relPath": ".kintone-deploy/upload-736.js",
-      "deployedAt": "2026-06-20T12:20:43.781Z",
+      "build": "2026-06-21-jikkou-yosan-legal-welfare-total-label",
+      "fileKey": "3aa633a8-6799-41a6-82e7-322a5f460c6d",
+      "revision": "94",
+      "relPath": "customize/736/desktop.js",
+      "deployedAt": "2026-06-20T23:08:57.118Z",
       "note": null
     }
   }

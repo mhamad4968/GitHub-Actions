@@ -1,10 +1,10 @@
 /**
- * 実行予算書作成支援ツール ver.01 — BUILD 2026-06-20-jikkou-yosan-title-banner-wide
+ * 実行予算書作成支援ツール ver.01 — BUILD 2026-06-21-jikkou-yosan-legal-welfare-total-label
  * Master app: 735
  */
 (function () {
   'use strict';
-  const BUILD = '2026-06-20-jikkou-yosan-title-banner-wide';
+  const BUILD = '2026-06-21-jikkou-yosan-legal-welfare-total-label';
   const APP_MASTER = 735;
   const DEFAULT_COST_TEMPLATE = [
   { "cost_work_type_code": "10100", "cost_work_type": "材料費", "cost_category_code": "", "cost_category": "塗料", "cost_row_kind": "link", "cost_group_key": "material", "cost_tax_rate": 0.1, "cost_unit": "－", "detail_marker": "②", "cost_basis_note": "詳細表にて内訳を記載…②" },
@@ -507,6 +507,36 @@ const SUB_CALC_KINDS = new Set(['overhead', 'insurance', 'block_total', 'legal_w
   function rowKindDisplay(k) { return ROW_KIND_LABEL[k] || k; }
   const SPEC_UNITS = ['㎡', '式', '回', '人', '日', '－'];
   const SUB_CALC = new Set(['overhead', 'block_total', 'legal_welfare', 'order_amount', 'labor_total']);
+
+  function isSubCalcRow(r) {
+    return !!(r && (SUB_CALC.has(r.sub_row_kind) || r.sub_row_kind === 'overhead'));
+  }
+
+  /** 詳細表の合計行（合計・法定福利費（合計）・注文金額・材料合計・労務「合計」） */
+  function isSubBlockTotalRow(r) {
+    if (!r || r.sub_row_kind === 'vendor') return false;
+    if (r.sub_row_kind === 'block_total' || r.sub_row_kind === 'legal_welfare' || r.sub_row_kind === 'order_amount') {
+      return true;
+    }
+    if (r.sub_row_kind === 'labor_total') {
+      var t = String(r.sub_line_type || '').replace(/\u3000/g, '').trim();
+      return t === '合計';
+    }
+    return false;
+  }
+
+  var SUB_LEGAL_WELFARE_LABEL = '法定福利費（合計）';
+
+  function isLegalWelfareRow(r) {
+    if (!r) return false;
+    if (r.sub_row_kind === 'legal_welfare') return true;
+    return String(r.sub_line_type || '').replace(/\u3000/g, '').trim() === '法定福利費';
+  }
+
+  function subLineTypeDisplay(r) {
+    if (isLegalWelfareRow(r)) return SUB_LEGAL_WELFARE_LABEL;
+    return String(r.sub_line_type || '');
+  }
   const SUB_BLOCKS = [
     { id: 'repair', label: '【修繕工事】…④', vendor: '' },
     { id: 'scaffold', label: '【足場工事】…⑤', vendor: '' },
@@ -550,9 +580,9 @@ const SUB_CALC_KINDS = new Set(['overhead', 'insurance', 'block_total', 'legal_w
     return m;
   })();
   const SUB_LINES = {
-    repair: ['塗装工事一式', '労務費（昼）', '労務費（夜）', '事前打合せ費等', '仮設・工具費等', '運送費', '宿泊費', '交通費', 'その他', '諸経費', '各種保険料(任意保険）', '合計', '法定福利費', '注文金額'],
-    scaffold: ['足場工事一式', '労務費（昼）', '労務費（夜）', '事前打合せ費等', '仮設・工具費等', '運送費', '宿泊費', '交通費', 'その他', '諸経費', '各種保険料（任意保険）', '合計', '法定福利費', '注文金額'],
-    paint: ['塗装及び足場工事一式', '労務費（昼）', '労務費（夜）', '事前打合せ費等', '仮設・工具費等', '運送費', '足場資材リース費', '交通費', 'その他', '諸経費', '各種保険料', '合計', '法定福利費', '注文金額'],
+    repair: ['塗装工事一式', '労務費（昼）', '労務費（夜）', '事前打合せ費等', '仮設・工具費等', '運送費', '宿泊費', '交通費', 'その他', '諸経費', '各種保険料(任意保険）', '合計', '法定福利費（合計）', '注文金額'],
+    scaffold: ['足場工事一式', '労務費（昼）', '労務費（夜）', '事前打合せ費等', '仮設・工具費等', '運送費', '宿泊費', '交通費', 'その他', '諸経費', '各種保険料（任意保険）', '合計', '法定福利費（合計）', '注文金額'],
+    paint: ['塗装及び足場工事一式', '労務費（昼）', '労務費（夜）', '事前打合せ費等', '仮設・工具費等', '運送費', '足場資材リース費', '交通費', 'その他', '諸経費', '各種保険料', '合計', '法定福利費（合計）', '注文金額'],
     labor: ['労務費', '労務費（昼）', '労務費（夜）', 'その他', '交通費', '宿泊費', '合計'],
   };
   const SUB_DETAIL_EXTRA = {
@@ -1249,6 +1279,8 @@ const SUB_CALC_KINDS = new Set(['overhead', 'insurance', 'block_total', 'legal_w
       '.jy-summary-table-cost input.jy-code{text-overflow:clip;font-variant-numeric:tabular-nums;padding:2px 3px}' +
       '.jy-summary-table-cost select.jy-in{font-size:11px;padding:1px 2px}' +
       '.jy-table tfoot td{background:#f8fafc;font-weight:700;color:#334155;border-color:#e2e8f0}' +
+      '.jy-table tr.jy-total-row td,.jy-summary-table tr.jy-total-row td{background:#f5ebe0;color:#44372a;font-weight:700;border-color:#d4b896;border-top:2px solid #c4a574}' +
+      '.jy-table tr.jy-total-row td.jy-num,.jy-summary-table tr.jy-total-row td.jy-num{color:#3d2f24;font-size:13px}' +
       '.jy-summary-table tr.jy-cost-detail td{background:#fff}' +
       '.jy-summary-table tr.jy-cost-group-inner td{background:#fafbfc}' +
       '.jy-summary-table tr.jy-cost-standalone td{border-top:none;border-bottom:1px solid #f1f5f9;background:#fff}' +
@@ -1270,8 +1302,8 @@ const SUB_CALC_KINDS = new Set(['overhead', 'insurance', 'block_total', 'legal_w
       '.jy-block.jy-linked-block>summary{background:#ecfdf5;color:#166534;border-radius:4px}' +
       '.jy-block .jy-btn{margin-top:6px}' +
       '.jy-legend-linked{display:inline-block;margin-left:10px;padding:1px 8px;background:#ecfdf5;border:1px solid #86efac;border-radius:4px;color:#166534;font-size:11px;font-weight:600}' +
-      '.jy-summary-table tr.jy-foot-sum td{background:#e8eef4;color:#1e293b;border-color:#cbd5e1;font-size:12px;padding:5px 8px}' +
-      '.jy-summary-table tr.jy-foot-sum td.jy-num{font-size:13px;color:#0f172a}' +
+      '.jy-summary-table tr.jy-foot-sum td{background:#f5ebe0;color:#44372a;border-color:#d4b896;border-top:2px solid #c4a574;font-size:12px;padding:5px 8px}' +
+      '.jy-summary-table tr.jy-foot-sum td.jy-num{font-size:13px;color:#3d2f24}' +
       '.jy-num{text-align:right;font-variant-numeric:tabular-nums}' +
       '.jy-center{text-align:center}' +
       '.jy-table th.jy-center{text-align:center}' +
@@ -1295,7 +1327,8 @@ const SUB_CALC_KINDS = new Set(['overhead', 'insurance', 'block_total', 'legal_w
       '.jy-block-summary-label{flex:1;min-width:12em}' +
       '.jy-block-summary-actions{display:flex;gap:6px;flex-shrink:0;align-items:center}' +
       '.jy-block-summary-actions .jy-btn{margin-top:0}' +
-      '.jy-calc-row{background:#f3f4f6;font-weight:600}' +
+      '.jy-calc-row{background:#f3f4f6;font-weight:600;color:#334155}' +
+      '.jy-calc-row td{border-color:#e2e8f0}' +
       '.jy-list-table tbody tr{cursor:pointer}' +
       '.jy-list-table tbody tr:hover{background:#eff6ff}' +
       '.jy-sort-th{cursor:pointer;user-select:none}' +
@@ -1743,7 +1776,7 @@ const SUB_CALC_KINDS = new Set(['overhead', 'insurance', 'block_total', 'legal_w
   function subKindFromLabel(t, block) {
     if (t === '諸経費') return 'overhead';
     if (t === '合計') return block === 'labor' ? 'labor_total' : 'block_total';
-    if (t === '法定福利費') return 'legal_welfare';
+    if (t === '法定福利費' || t === '法定福利費（合計）') return 'legal_welfare';
     if (t.indexOf('注文金額') >= 0 || t === '注　文　金　額') return 'order_amount';
     return 'detail';
   }
@@ -2048,7 +2081,7 @@ const SUB_CALC_KINDS = new Set(['overhead', 'insurance', 'block_total', 'legal_w
       'ブロック見出しが<strong>緑</strong>のものは総括表と連携しています。番号（…②など）や<strong>合計金額</strong>をクリックすると、総括表の該当行へ移動します。',
       '<strong>材料</strong>：見出しの「末尾に追加」または各行の<strong>＋</strong>で行を追加します（区分は塗料／その他）。',
       '<strong>外注（④〜⑦）</strong>：各ブロック見出しの「末尾に明細追加」、または会社名行・明細行の<strong>＋</strong>で諸経費・合計の前に明細を挿入します。種別はリストから選ぶか入力できます。',
-      '諸経費・合計・法定福利費・注文金額などの<strong>計算行は自動</strong>です（金額の手入力・行削除はできません）。',
+      '諸経費・合計・法定福利費（合計）・注文金額などの<strong>計算行は自動</strong>です（金額の手入力・行削除はできません）。',
       '行の追加時は、追加した行が<strong>薄い黄色</strong>で強調表示されます。'
     ]);
   }
@@ -2123,7 +2156,7 @@ const SUB_CALC_KINDS = new Set(['overhead', 'insurance', 'block_total', 'legal_w
       html += '</tr>';
     });
     html += '<tr class="jy-sum-anchor-row jy-sec-anchor" id="jy-sum-ref-1"><td colspan="' + (readOnly ? 6 : 7) + '"></td></tr>';
-    html += '</tbody><tfoot><tr class="jy-foot-sum"><td colspan="4" class="jy-num">合計 …①</td><td class="jy-num">' + fmt(state.contract_total_1) + '</td><td colspan="' + (readOnly ? 1 : 2) + '"></td></tr></tfoot></table></div>';
+    html += '</tbody><tfoot><tr class="jy-foot-sum jy-total-row"><td colspan="4" class="jy-num">合計 …①</td><td class="jy-num">' + fmt(state.contract_total_1) + '</td><td colspan="' + (readOnly ? 1 : 2) + '"></td></tr></tfoot></table></div>';
 
     html += detailSectionHead(
       '原価行（②〜⑧）',
@@ -2203,8 +2236,8 @@ const SUB_CALC_KINDS = new Set(['overhead', 'insurance', 'block_total', 'legal_w
     });
     html += '<tr class="jy-sum-anchor-row jy-sec-anchor" id="jy-sum-ref-8"><td colspan="' + costColSpan + '"></td></tr>';
     html += '<tr class="jy-sum-anchor-row jy-sec-anchor" id="jy-sum-ref-9"><td colspan="' + costColSpan + '"></td></tr>';
-    html += '</tbody><tfoot><tr class="jy-foot-sum"><td colspan="9">工事原価額 …⑧</td><td class="jy-num">' + fmt(state.cost_total_8) + '</td><td colspan="' + (readOnly ? 3 : 4) + '"></td></tr>';
-    html += '<tr class="jy-foot-sum"><td colspan="9">粗利 …⑨</td><td class="jy-num">' + fmt(state.profit_9) + '</td><td colspan="2" class="jy-num">' + fmtPct(state.profit_rate) + '</td><td colspan="' + (readOnly ? 1 : 2) + '"></td></tr></tfoot></table>';
+    html += '</tbody><tfoot><tr class="jy-foot-sum jy-total-row"><td colspan="9">工事原価額 …⑧</td><td class="jy-num">' + fmt(state.cost_total_8) + '</td><td colspan="' + (readOnly ? 3 : 4) + '"></td></tr>';
+    html += '<tr class="jy-foot-sum jy-total-row"><td colspan="9">粗利 …⑨</td><td class="jy-num">' + fmt(state.profit_9) + '</td><td colspan="2" class="jy-num">' + fmtPct(state.profit_rate) + '</td><td colspan="' + (readOnly ? 1 : 2) + '"></td></tr></tfoot></table>';
     html += datalist('jy-wt-list', (masterCache && masterCache.workTypes) || []);
     html += datalist('jy-wt-code-list', (masterCache && masterCache.workTypeCodes) || []);
     html += datalist('jy-cat-list', (masterCache && masterCache.categories) || []);
@@ -2446,7 +2479,7 @@ const SUB_CALC_KINDS = new Set(['overhead', 'insurance', 'block_total', 'legal_w
       if (r.mat_group !== '塗料') return;
       html += renderMatRow(r, i, readOnly);
     });
-    html += '</tbody><tfoot><tr><td colspan="7">' + refLinkToSummary('②') + ' 塗料合計</td><td class="jy-num">' + refAmountLink('②', 'summary', state.mat_total_2) + '</td><td colspan="' + (readOnly ? 1 : 2) + '"></td></tr></tfoot></table></div>';
+    html += '</tbody><tfoot><tr class="jy-total-row"><td colspan="7">' + refLinkToSummary('②') + ' 塗料合計</td><td class="jy-num">' + refAmountLink('②', 'summary', state.mat_total_2) + '</td><td colspan="' + (readOnly ? 1 : 2) + '"></td></tr></tfoot></table></div>';
 
     html += '<div id="jy-sec-mat-3" class="jy-sec-anchor"></div>';
     html += detailSectionHead(
@@ -2459,7 +2492,7 @@ const SUB_CALC_KINDS = new Set(['overhead', 'insurance', 'block_total', 'legal_w
       if (r.mat_group !== 'その他') return;
       html += renderMatRow(r, i, readOnly);
     });
-    html += '</tbody><tfoot><tr><td colspan="7">' + refLinkToSummary('③') + ' その他合計</td><td class="jy-num">' + refAmountLink('③', 'summary', state.mat_total_3) + '</td><td colspan="' + (readOnly ? 1 : 2) + '"></td></tr></tfoot></table></div>';
+    html += '</tbody><tfoot><tr class="jy-total-row"><td colspan="7">' + refLinkToSummary('③') + ' その他合計</td><td class="jy-num">' + refAmountLink('③', 'summary', state.mat_total_3) + '</td><td colspan="' + (readOnly ? 1 : 2) + '"></td></tr></tfoot></table></div>';
 
     SUB_BLOCKS.forEach(function (b) {
       const mk = BLOCK_MARKERS[b.id];
@@ -2478,13 +2511,15 @@ const SUB_CALC_KINDS = new Set(['overhead', 'insurance', 'block_total', 'legal_w
           html += '</tr>';
           return;
         }
-        const calcRow = SUB_CALC.has(r.sub_row_kind) || r.sub_row_kind === 'overhead';
+        const calcRow = isSubCalcRow(r);
+        const totalRow = isSubBlockTotalRow(r);
         const customRow = isCustomSubRow(r, b.id);
-        html += '<tr class="' + (calcRow ? 'jy-calc-row' : '') + '"><td></td><td>';
+        var rowCls = totalRow ? 'jy-total-row' : (calcRow ? 'jy-calc-row' : '');
+        html += '<tr class="' + rowCls + '"><td></td><td>';
         if (customRow && !readOnly) {
           html += subLineTypeInput(i, r, b.id);
         } else {
-          html += esc(r.sub_line_type);
+          html += esc(subLineTypeDisplay(r));
         }
         html += '</td>';
         if (calcRow) {
@@ -2553,6 +2588,9 @@ const SUB_CALC_KINDS = new Set(['overhead', 'insurance', 'block_total', 'legal_w
       '.jy-pr-table td.jy-center{text-align:center}' +
       '.jy-pr-table th.jy-center{text-align:center}' +
       '.jy-pr-table tfoot td{background:#f8fafc;font-weight:700;border-top:2px solid #94a3b8;padding:2px 3px}' +
+      '.jy-pr-table tr.jy-pr-total-row td,.jy-pr-cost-totals tr.jy-pr-total-row td{background:#f5ebe0;color:#44372a;font-weight:700;border-top:2px solid #c4a574;border-color:#d4b896;padding:2px 3px}' +
+      '.jy-pr-table tr.jy-pr-calc-row td{background:#f3f4f6;font-weight:600;color:#334155;padding:2px 3px}' +
+      '.jy-pr-cost-totals{margin-top:0;break-inside:avoid;page-break-inside:avoid}' +
       '.jy-pr-table tr.jy-pr-link td{background:#f0fdf4}' +
       '.jy-pr-table tr.jy-pr-link td:first-child{box-shadow:inset 3px 0 0 #6ee7b7}' +
       '.jy-pr-table tr.jy-pr-sub td{background:#eff6ff}' +
@@ -2695,7 +2733,7 @@ const SUB_CALC_KINDS = new Set(['overhead', 'insurance', 'block_total', 'legal_w
       html += '<td class="jy-num">' + esc(formatUnitPrice(r.spec_unit_price)) + '</td>';
       html += '<td class="jy-num">' + fmt(r.spec_amount) + '</td><td>' + esc(r.spec_note) + '</td></tr>';
     });
-    html += '</tbody><tfoot><tr><td colspan="4" class="jy-num">合計 …①</td><td class="jy-num">' + fmt(state.contract_total_1) + '</td><td></td></tr></tfoot></table></div></div>';
+    html += '</tbody><tfoot><tr class="jy-pr-total-row"><td colspan="4" class="jy-num">合計 …①</td><td class="jy-num">' + fmt(state.contract_total_1) + '</td><td></td></tr></tfoot></table></div></div>';
     return html;
   }
 
@@ -2736,10 +2774,11 @@ const SUB_CALC_KINDS = new Set(['overhead', 'insurance', 'block_total', 'legal_w
       }
       html += '</tr>';
     });
-    html += '</tbody><tfoot>';
-    html += '<tr><td colspan="9">工事原価額 …⑧</td><td class="jy-num">' + fmt(state.cost_total_8) + '</td><td colspan="2"></td></tr>';
-    html += '<tr><td colspan="9">粗利 …⑨</td><td class="jy-num">' + fmt(state.profit_9) + '</td><td></td><td class="jy-num">' + fmtPct(state.profit_rate) + '</td></tr>';
-    html += '</tfoot></table></div></div>';
+    html += '</tbody></table>';
+    html += '<table class="jy-pr-table jy-pr-cost jy-pr-cost-totals"><tbody>';
+    html += '<tr class="jy-pr-total-row"><td colspan="9">工事原価額 …⑧</td><td class="jy-num">' + fmt(state.cost_total_8) + '</td><td colspan="2"></td></tr>';
+    html += '<tr class="jy-pr-total-row"><td colspan="9">粗利 …⑨</td><td class="jy-num">' + fmt(state.profit_9) + '</td><td></td><td class="jy-num">' + fmtPct(state.profit_rate) + '</td></tr>';
+    html += '</tbody></table></div></div>';
     return html;
   }
 
@@ -2756,7 +2795,7 @@ const SUB_CALC_KINDS = new Set(['overhead', 'insurance', 'block_total', 'legal_w
       html += '<td class="jy-num">' + esc(formatUnitPrice(r.mat_unit_price)) + '</td><td class="jy-center">' + disp(r.mat_group) + '</td>';
       html += '<td class="jy-num">' + fmt(r.mat_amount) + '</td><td>' + esc(r.mat_basis) + '</td><td></td></tr>';
     });
-    html += '</tbody><tfoot><tr><td colspan="7">' + esc(totalLabel) + '</td><td class="jy-num">' + fmt(totalAmount) + '</td><td></td>';
+    html += '</tbody><tfoot><tr class="jy-pr-total-row"><td colspan="7">' + esc(totalLabel) + '</td><td class="jy-num">' + fmt(totalAmount) + '</td><td></td>';
     html += '<td class="jy-pr-marker">' + esc(printRefMarker(marker)) + '</td></tr></tfoot></table></div></div></div>';
     return html;
   }
@@ -2772,8 +2811,10 @@ const SUB_CALC_KINDS = new Set(['overhead', 'insurance', 'block_total', 'legal_w
         html += '<td class="jy-pr-marker">' + esc(printRefMarker(mk)) + '</td></tr>';
         return;
       }
-      const calcRow = SUB_CALC.has(r.sub_row_kind) || r.sub_row_kind === 'overhead';
-      html += '<tr' + (calcRow ? ' class="jy-pr-sub"' : '') + '><td></td><td>' + esc(r.sub_line_type) + '</td>';
+      const calcRow = isSubCalcRow(r);
+      const totalRow = isSubBlockTotalRow(r);
+      var rowCls = totalRow ? 'jy-pr-total-row' : (calcRow ? 'jy-pr-calc-row' : '');
+      html += '<tr' + (rowCls ? ' class="' + rowCls + '"' : '') + '><td></td><td>' + esc(subLineTypeDisplay(r)) + '</td>';
       if (calcRow) {
         html += '<td class="jy-center">' + disp(r.sub_unit) + '</td><td></td><td></td><td class="jy-num">' + fmt(r.sub_amount) + '</td><td>' + esc(r.sub_basis) + '</td><td></td></tr>';
       } else {
