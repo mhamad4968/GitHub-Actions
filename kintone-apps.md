@@ -36,7 +36,7 @@ npm run app:fields <アプリID>
 | 687 | `2026-06-09-687-workdays-excel-v1` | **10** | `13bc24dc-a753-404a-9f03-8e7e92c43647` | 2026-06-09 工事稼働 Excel v1 |
 | 688 | `2026-06-19-688-print-rounding-fix` | **34** | `fba04636-2b4f-49c2-b271-3a3f36fa9886` | 2026-06-19 足場風速日数丸め・印刷フッター削除 |
 | 735 | — | — | — | 2026-06-18 実行予算書リストマスタ（104件 seed・customize なし） |
-| 736 | `2026-06-18-jikkou-yosan-v10-bidir-codes` | **29** | `9645ddc7-7b43-41a7-829e-910ab19f6902` | 2026-06-18 工種CD↔名称双方向・行追加・連携緑・ジャンプ |
+| 736 | `2026-06-20-jikkou-yosan-print-v1` | **77** | `787caadd-0d75-4dd4-a78c-777a011b4e1c` | 2026-06-20 タブ別印刷v1 |
 | 693 | `2026-06-03-apple-id-db-block-ui-mutations` | **5** | `ca4b6489-bc6d-444c-b4a4-28b4c7f8c96c` | 2026-06-03 Apple ID DB save/delete ブロック |
 | 694 | `2026-06-08-694-device-exchange-date` | **18** | `699da986-7b14-49d0-aafe-bfe3322300e5` | 2026-06-08 端末交換日フィールド |
 | 695 | `2026-06-06-shared-mail-db-block-ui` | **5** | `afc1ca51-aeed-4a67-a3ed-9a2fac00e91a` | 2026-06-06 共有メール DB save/delete ブロック |
@@ -83,7 +83,7 @@ npm run app:fields <アプリID>
 | **工事稼働日数算出（データ正本）** | **687** | `customize/687/desktop.js` \| `npm run deploy:687` | [https://jbis-kintone.cybozu.com/k/687/](https://jbis-kintone.cybozu.com/k/687/) **Space 56**・§6.2 データ層。**BUILD=`2026-06-09-687-workdays-excel-v1`**（`estimate_year` 追加済・着工/完工任意）。仕様 **`docs/plans/2026-06-13-construction-workdays-excel-20260613.md`** |
 | **工事稼働日数ダッシュ（日常入口）** | **688** | `customize/688/desktop.js` \| `npm run deploy:688` | [https://jbis-kintone.cybozu.com/k/688/](https://jbis-kintone.cybozu.com/k/688/) **Space 56**・687 REST。**BUILD=`2026-06-19-688-print-rounding-fix`** rev **34**（施工主報告印刷・足場風速日数丸め・印刷フッター削除）。仕様 **`docs/plans/2026-06-13-construction-workdays-excel-20260613.md`** |
 | **【実行予算書】リストマスタ ver.01** | **735** | （customize なし）\| `npm run jikkou-yosan:import-master` | [https://jbis-kintone.cybozu.com/k/735/](https://jbis-kintone.cybozu.com/k/735/) **Space 56 / thread 60**・コード表77＋リスト27＝104件。**M 編集=管理者のみ**（ACL 要確認）。仕様 **`docs/plans/2026-06-18-jikkou-yosan-spec.md`** |
-| **【実行予算書】ver.01** | **736** | `customize/736/desktop.js` \| `npm run deploy:736` | [https://jbis-kintone.cybozu.com/k/736/](https://jbis-kintone.cybozu.com/k/736/) **Space 56 / thread 60**・735 REST・688型一覧+Excel風フォーム。**BUILD=`2026-06-18-jikkou-yosan-v10-bidir-codes`** rev **29**・サンプル **2623001-001** record **1**（`npm run jikkou-yosan:import-sample`）。仕様 **`docs/plans/2026-06-18-jikkou-yosan-spec.md`** §9 |
+| **実行予算書作成支援ツール　ver.01** | **736** | `customize/736/desktop.js` \| `npm run deploy:736` | [https://jbis-kintone.cybozu.com/k/736/](https://jbis-kintone.cybozu.com/k/736/) **Space 56 / thread 60**・735 REST・688型一覧+Excel風フォーム。**BUILD=`2026-06-20-jikkou-yosan-print-v1`** rev **77**。仕様 **`docs/plans/2026-06-18-jikkou-yosan-spec.md`** §9 |
 | **ユーザサポート682ダッシュ**（682 の REST 参照・閲覧／集約 UI・**入力は 682 のみ**） | **683** | `customize/683/desktop.js` | [https://jbis-kintone.cybozu.com/k/683/](https://jbis-kintone.cybozu.com/k/683/) **Space 48**（**2026-05-11** `kintone-add-app` → **`deploy:683` SUCCESS**・SPEC **§6.1.1**・Runbook **`docs/runbooks/user683-weekly-summary-and-print.md`**）。`npm run cio:preflight:683 -- --note "…"` → `npm run deploy:683`。**2026-05-16 deploy SUCCESS** / **BUILD**: `2026-05-16-683-print-2page-tight-v2` / fileKey **`4bb662aa-b47a-40c5-b1f7-2ba4dffa8f63`** / preview revision **`74`**（**印刷報告用**・`@media print` で **2 枚前後**を目標にレイアウト縮小。**一覧の「提出用PDF」ボタンは撤去**。**月次 PDF HTTP serve は廃止**（2026-05-17 CEO・印刷は **`window.print()` のみ**・オフライン PDF は CLI `user683:monthly-pdf` 任意）。**Claude 中継**: `?user683_claude_relay=`・`text/plain` POST。**グラフ直下 月次→週次4**・要約キャッシュ PUT/POST／`USER683_SHOW_OLLAMA_GENERATE_BTN=false`）。 |
 | **PC台帳 ver.2（旧・削除予定／正は674）** | **594** | `customize/594/desktop.js` | `npm run deploy:594`（**新機能は674**。594は移行・清掃・監査コードが残る間のみ。本番に恒久的に残す前提なし） |
 | 社員マスタ（674/714/716 連携） | 595 | `customize/595/desktop.js` | **本番 live 最終 deploy（2026-06-19）**: `npm run deploy:595` **SUCCESS** / fileKey **`6ae0fe9e-1ccd-4627-bd91-d5b0bd7b9cc0`** / preview revision **`96`** / **`BUILD=`** **`2026-06-19-595-dept-picker-680`**（新規・編集: **680 所属候補モーダル**で所属名・所属グループを一括入力・手入力も可）。**前 deploy（2026-06-17）**: rev **93** / **BUILD=`2026-06-17-595-emp-id-auto-assign`**（627 downstream 廃止 + **EMP-xxxx 保存時自動採番**） |
@@ -182,7 +182,31 @@ npm run app:fields <アプリID>
 
 | 日時（UTC） | アプリID | customize パス |
 |-------------|----------|----------------|
+| 2026-06-20T22:00:00Z | 736 | `customize/736/desktop.js`（**タブ別印刷v1**・**BUILD** `2026-06-20-jikkou-yosan-print-v1`・rev **`77`**） |
+| 2026-06-20T21:00:00Z | 736 | `customize/736/desktop.js`（**ヘルプバナー形式**・**BUILD** `2026-06-20-jikkou-yosan-help-banner`・rev **`76`**） |
+| 2026-06-20T20:30:00Z | 736 | `customize/736/desktop.js`（**詳細表ヘルプを詳細表タブへ**・**BUILD** `2026-06-20-jikkou-yosan-help-detail-move`・rev **`75`**） |
+| 2026-06-20T20:00:00Z | 736 | `customize/736/desktop.js`（**ヘルプを各ブロックへ移動**・**BUILD** `2026-06-20-jikkou-yosan-help-section-move`・rev **`74`**） |
+| 2026-06-20T19:30:00Z | 736 | `customize/736/desktop.js`（**詳細表ヘルプ折りたたみ**・**BUILD** `2026-06-20-jikkou-yosan-help-detail`・rev **`73`**） |
+| 2026-06-20T19:00:00Z | 736 | `customize/736/desktop.js`（**仕様・原価ヘルプ見出し整理**・**BUILD** `2026-06-20-jikkou-yosan-help-spec-cost`・rev **`72`**） |
+| 2026-06-20T18:30:00Z | 736 | `customize/736/desktop.js`（**原価行・計行ヘルプ折りたたみ**・**BUILD** `2026-06-20-jikkou-yosan-cost-help-panel`・rev **`71`**） |
+| 2026-06-20T18:00:00Z | 736 | `customize/736/desktop.js`（**syncInputs行削除エラー修正**・**BUILD** `2026-06-20-jikkou-yosan-sync-inputs-fix`・rev **`70`**） |
+| 2026-06-20T17:30:00Z | 736 | `customize/736/desktop.js`（**同工種2行以上で計行自動**・**BUILD** `2026-06-20-jikkou-yosan-auto-subtotal-rows`・rev **`69`**） |
+| 2026-06-20T17:00:00Z | 736 | `customize/736/desktop.js`（**労務費＋列ずれ修正・追加行ハイライト**・**BUILD** `2026-06-20-jikkou-yosan-labor-col-fix-highlight`・rev **`68`**） |
+| 2026-06-20T16:30:00Z | 736 | `customize/736/desktop.js`（**総括表も行挿入・見出し追加**・**BUILD** `2026-06-20-jikkou-yosan-summary-row-insert`・rev **`67`**） |
+| 2026-06-20T16:00:00Z | 736 | `customize/736/desktop.js`（**見出しに末尾追加ボタン移動**・**BUILD** `2026-06-20-jikkou-yosan-section-add-top`・rev **`66`**） |
+| 2026-06-20T15:30:00Z | 736 | `customize/736/desktop.js`（**詳細表行ごと追加位置指定**・**BUILD** `2026-06-20-jikkou-yosan-row-insert-after`・rev **`65`**） |
+| 2026-06-20T15:00:00Z | 736 | `customize/736/desktop.js`（**詳細表明細行追加・種別リスト**・**BUILD** `2026-06-20-jikkou-yosan-sub-detail-add`・rev **`64`**） |
+| 2026-06-20T14:30:00Z | 736 | `customize/736/desktop.js`（**仕様・材料・工種列幅調整**・**BUILD** `2026-06-20-jikkou-yosan-table-col-width-v3`・rev **`63`**） |
+| 2026-06-20T14:00:00Z | 736 | `customize/736/desktop.js`（**工種CD・種別CD列幅再調整**・**BUILD** `2026-06-20-jikkou-yosan-cost-col-width-v2`・rev **`62`**） |
+| 2026-06-20T13:30:00Z | 736 | `customize/736/desktop.js`（**原価行列幅調整・種別列拡大**・**BUILD** `2026-06-20-jikkou-yosan-cost-col-width`・rev **`61`**） |
+| 2026-06-20T13:00:00Z | 736 | `customize/736/desktop.js`（**工種・種別の繰り上げ空白表示**・**BUILD** `2026-06-20-jikkou-yosan-repeat-blank-display`・rev **`60`**） |
+| 2026-06-20T12:30:00Z | 736 | `customize/736/desktop.js`（**工種CD・種別CDプレースホルダ空白**・**BUILD** `2026-06-20-jikkou-yosan-code-blank-placeholder`・rev **`59`**） |
+| 2026-06-20T12:00:00Z | 736 | `customize/736/desktop.js`（**行種別「詳細表と連携」表記**・**BUILD** `2026-06-20-jikkou-yosan-link-row-label`・rev **`58`**） |
 | 2026-06-19T12:21:29Z | 688 | `customize/688/desktop.js` |
+| 2026-06-20T00:00:04Z | 736 | `customize/736/desktop.js`（**一覧 作成日・更新日**・**BUILD** `2026-06-20-jikkou-yosan-list-dates`・rev **`38`**） |
+| 2026-06-20T00:00:03Z | 736 | `customize/736/desktop.js`（**一覧6列**・**BUILD** `2026-06-20-jikkou-yosan-list-columns`・rev **`37`**） |
+| 2026-06-20T00:00:01Z | 736 | `customize/736/desktop.js`（**一覧サブタイトル**・**BUILD** `2026-06-20-jikkou-yosan-subtitle`・rev **`35`**） |
+| 2026-06-20T00:00:00Z | 736 | `customize/736/desktop.js`（**表示名同期**・**BUILD** `2026-06-20-jikkou-yosan-display-name`・rev **`34`**） |
 | 2026-06-19T12:01:24Z | 688 | `customize/688/desktop.js` |
 | 2026-06-19T12:01:24Z | 674 | `customize/new-pc-ledger-v1/desktop.js` |
 | 2026-06-19T12:01:24Z | 595 | `customize/595/desktop.js` |

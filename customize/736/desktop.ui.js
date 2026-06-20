@@ -2,6 +2,11 @@
     version_type: 'version_type',
     site_entry_date: 'site_entry_date',
     draft_date: 'draft_date',
+    record_created_date: 'record_created_date',
+    created_by: 'created_by',
+    created_by_name: 'created_by_name',
+    person_in_charge: 'person_in_charge',
+    person_in_charge_name: 'person_in_charge_name',
     project_code: 'project_code',
     project_official_name: 'project_official_name',
     project_name: 'project_name',
@@ -28,11 +33,15 @@
     cost_lines: 'cost_lines',
     mat_lines: 'mat_lines',
     subcontract_lines: 'subcontract_lines',
+    created_datetime: 'Created_datetime',
+    updated_datetime: 'Updated_datetime',
   };
 
   const KIND_TO_CALC = { 明細: 'detail', 小計: 'subtotal', 見出し: 'group_header', 連携: 'link' };
   const KIND_FROM_CALC = { detail: '明細', subtotal: '小計', group_header: '見出し', link: '連携' };
   const ROW_KIND_OPTS = ['明細', '小計', '見出し', '連携'];
+  const ROW_KIND_LABEL = { 連携: '詳細表と連携' };
+  function rowKindDisplay(k) { return ROW_KIND_LABEL[k] || k; }
   const SPEC_UNITS = ['㎡', '式', '回', '人', '日', '－'];
   const SUB_CALC = new Set(['overhead', 'block_total', 'legal_welfare', 'order_amount', 'labor_total']);
   const SUB_BLOCKS = [
@@ -81,7 +90,10 @@
     repair: ['塗装工事一式', '労務費（昼）', '労務費（夜）', '事前打合せ費等', '仮設・工具費等', '運送費', '宿泊費', '交通費', 'その他', '諸経費', '各種保険料(任意保険）', '合計', '法定福利費', '注文金額'],
     scaffold: ['足場工事一式', '労務費（昼）', '労務費（夜）', '事前打合せ費等', '仮設・工具費等', '運送費', '宿泊費', '交通費', 'その他', '諸経費', '各種保険料（任意保険）', '合計', '法定福利費', '注文金額'],
     paint: ['塗装及び足場工事一式', '労務費（昼）', '労務費（夜）', '事前打合せ費等', '仮設・工具費等', '運送費', '足場資材リース費', '交通費', 'その他', '諸経費', '各種保険料', '合計', '法定福利費', '注文金額'],
-    labor: ['労務費', '合計'],
+    labor: ['労務費', '労務費（昼）', '労務費（夜）', 'その他', '交通費', '宿泊費', '合計'],
+  };
+  const SUB_DETAIL_EXTRA = {
+    labor: ['労務費（昼）', '労務費（夜）', 'その他', '交通費', '宿泊費', '事前打合せ費等', '仮設・工具費等'],
   };
 
   let masterCache = null;
@@ -91,8 +103,108 @@
   let readOnly = false;
   let uiScreen = 'list';
   let headerOpen = true;
+  let headerLegendOpen = false;
+  let headerSpecHelpOpen = false;
+  let headerCostHelpOpen = false;
+  let headerDetailHelpOpen = false;
   let listRows = [];
+  let listRowsAll = [];
+  let listSearchQuery = '';
+  let listSortKey = 'updated_at';
+  let listSortDir = 'desc';
   let pendingScrollTargetId = null;
+  let pendingRowHighlight = null;
+  let personInChargeManual = false;
+
+  const PERSON_NAME_PLACEHOLDER = '例: 浜田　太郎';
+  const PERSON_NAME_FORMAT_RE = /^[^\s　]+　[^\s　]+$/;
+  const FONT_KEY = 'jikkou-yosan-font-size';
+
+  function normalizePersonName(name) {
+    const s = String(name || '').trim();
+    if (!s) return '';
+    const m = s.match(/^([^\s　]+)[\s　]+([^\s　]+)$/);
+    if (m) return m[1] + '　' + m[2];
+    return s;
+  }
+
+  function isValidPersonNameFormat(name) {
+    return PERSON_NAME_FORMAT_RE.test(String(name || '').trim());
+  }
+
+  function fontKey() {
+    const v = localStorage.getItem(FONT_KEY);
+    if (v === 'xlarge') return 'xlarge';
+    if (v === 'large') return 'large';
+    return 'standard';
+  }
+
+  function fontPx() {
+    const k = fontKey();
+    if (k === 'xlarge') return '23px';
+    if (k === 'large') return '18px';
+    return '16px';
+  }
+
+  function fontBtnClass(key) {
+    return 'jy-font-btn' + (fontKey() === key ? ' active' : '');
+  }
+
+  function renderFontToggle() {
+    return (
+      '<div class="jy-font-toggle">' +
+      '<span class="jy-font-label">文字サイズ：</span>' +
+      '<button type="button" class="' + fontBtnClass('standard') + '" data-jy-font="standard">標準</button>' +
+      '<button type="button" class="' + fontBtnClass('large') + '" data-jy-font="large">大</button>' +
+      '<button type="button" class="' + fontBtnClass('xlarge') + '" data-jy-font="xlarge">特大</button>' +
+      '</div>'
+    );
+  }
+
+  function bindFontToggle(root) {
+    root.querySelectorAll('[data-jy-font]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        localStorage.setItem(FONT_KEY, btn.getAttribute('data-jy-font'));
+        render();
+      });
+    });
+  }
+
+  function validatePersonNameField(label, name) {
+    const normalized = normalizePersonName(name);
+    if (!isValidPersonNameFormat(normalized)) {
+      alert(label + 'は「苗字　名前」（苗字と名前の間は全角スペース）で入力してください。');
+      return false;
+    }
+    return true;
+  }
+
+  function personNameInputAttrs(readOnlyMode) {
+    const cls = readOnlyMode ? 'jy-hf-readonly' : 'jy-hf-text';
+    return ' class="' + cls + '" placeholder="' + esc(PERSON_NAME_PLACEHOLDER) + '" title="苗字と名前の間は全角スペース（　）"' + (readOnlyMode ? ' disabled' : '');
+  }
+
+  function hfTag(kind) {
+    const tags = {
+      input: ['jy-hf-tag-input', '入力'],
+      select: ['jy-hf-tag-select', '選択'],
+      date: ['jy-hf-tag-date', '日付'],
+      auto: ['jy-hf-tag-auto', '自動'],
+    };
+    const t = tags[kind] || tags.input;
+    return '<span class="jy-hf-tag ' + t[0] + '">' + t[1] + '</span>';
+  }
+
+  function hfLabel(kind, text) {
+    return '<label>' + hfTag(kind) + esc(text) + '</label>';
+  }
+
+  function hfDisabled(readOnlyMode) {
+    return readOnly ? ' disabled' : '';
+  }
+
+  const LIST_SORTABLE_KEYS = ['project_name', 'draft_date', 'created_at', 'updated_at', 'status'];
+  const LIST_DATE_SORT_KEYS = ['draft_date', 'created_at', 'updated_at'];
 
   function emptyState() {
     return {
@@ -101,6 +213,11 @@
       version_type: '当初',
       site_entry_date: '',
       draft_date: '',
+      record_created_date: '',
+      created_by: '',
+      created_by_name: '',
+      person_in_charge: '',
+      person_in_charge_name: '',
       project_code: '',
       project_official_name: '',
       project_name: '',
@@ -147,9 +264,162 @@
     return Number(n).toLocaleString('ja-JP');
   }
 
+  function normalizeUnitPriceVal(v) {
+    return String(v == null ? '' : v).replace(/,/g, '').trim();
+  }
+
+  function formatUnitPrice(v) {
+    const s = normalizeUnitPriceVal(v);
+    if (!s) return '';
+    const n = Number(s);
+    if (!Number.isFinite(n)) return String(v == null ? '' : v);
+    return n.toLocaleString('ja-JP', { maximumFractionDigits: 10 });
+  }
+
+  function parseNumInput(v) {
+    return num(normalizeUnitPriceVal(v));
+  }
+
+  function unitPriceInput(dataAttr, index, value, readOnly) {
+    return '<input class="jy-in jy-num jy-unit-price" ' + dataAttr + '="' + index + '" type="text" inputmode="decimal" value="' + esc(formatUnitPrice(value)) + '"' + (readOnly ? ' disabled' : '') + '>';
+  }
+
+  function bindUnitPriceInputs(root) {
+    if (readOnly) return;
+    root.querySelectorAll('.jy-unit-price').forEach(function (el) {
+      el.addEventListener('focus', function () {
+        el.value = normalizeUnitPriceVal(el.value);
+      });
+      el.addEventListener('blur', function () {
+        el.value = formatUnitPrice(el.value);
+        syncInputs();
+        markDirty();
+      });
+    });
+  }
+
   function fmtPct(n) {
     if (n == null || Number.isNaN(n)) return '';
     return (Number(n) * 100).toFixed(2) + '%';
+  }
+
+  /** kintone CREATED_TIME / UPDATED_TIME → JST YYYY-MM-DD（App 736 は英語コード Created_datetime） */
+  function kintoneDatetimeToJstYmd(v) {
+    const s = String(v || '').trim();
+    if (!s) return '';
+    const d = new Date(s);
+    if (Number.isNaN(d.getTime())) return s.slice(0, 10);
+    return new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Tokyo',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(d);
+  }
+
+  function jstTodayYmd() {
+    return new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Tokyo',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(new Date());
+  }
+
+  function readUserField(rec, code) {
+    const f = rec[code];
+    if (!f || !Array.isArray(f.value) || !f.value.length) return { code: '', name: '' };
+    return { code: f.value[0].code || '', name: f.value[0].name || f.value[0].code || '' };
+  }
+
+  function userSelectBody(code) {
+    return code ? { value: [{ code: String(code) }] } : { value: [] };
+  }
+
+  function ensureSaveMetadata(s) {
+    if (!s.record_created_date) s.record_created_date = jstTodayYmd();
+    const login = kintone.getLoginUser();
+    if (!String(s.created_by_name || '').trim()) {
+      s.created_by_name = normalizePersonName(login.name || login.code || '');
+    } else {
+      s.created_by_name = normalizePersonName(s.created_by_name);
+    }
+    if (!String(s.person_in_charge_name || '').trim()) {
+      s.person_in_charge_name = s.created_by_name || normalizePersonName(login.name || login.code || '');
+    } else {
+      s.person_in_charge_name = normalizePersonName(s.person_in_charge_name);
+    }
+  }
+
+  function syncPersonInChargeFromCreator(updateDom) {
+    if (personInChargeManual) return;
+    state.person_in_charge_name = state.created_by_name;
+    if (updateDom) {
+      const personInput = document.getElementById('jy-person-in-charge-name');
+      if (personInput) personInput.value = state.person_in_charge_name;
+    }
+  }
+
+  function compareListRows(a, b) {
+    const key = listSortKey;
+    const dir = listSortDir === 'asc' ? 1 : -1;
+    let va = a[key];
+    let vb = b[key];
+    if (LIST_DATE_SORT_KEYS.indexOf(key) >= 0) {
+      va = String(va || '');
+      vb = String(vb || '');
+      if (!va && !vb) return 0;
+      if (!va) return 1;
+      if (!vb) return -1;
+      return va.localeCompare(vb) * dir;
+    }
+    va = String(va || '');
+    vb = String(vb || '');
+    return va.localeCompare(vb, 'ja') * dir;
+  }
+
+  function applyListSort() {
+    if (!listSortKey || !listRows.length) return;
+    listRows.sort(compareListRows);
+  }
+
+  function normalizeListSearch(q) {
+    return String(q || '').trim().toLowerCase();
+  }
+
+  function rowMatchesListSearch(row, q) {
+    if (!q) return true;
+    const hay = [
+      row.project_name,
+      row.project_code,
+      row.version_type,
+      row.status,
+      row.draft_date,
+      row.created_at,
+      row.updated_at,
+    ].join(' ').toLowerCase();
+    return hay.indexOf(q) >= 0;
+  }
+
+  function applyListFilter() {
+    const q = normalizeListSearch(listSearchQuery);
+    listRows = listRowsAll.filter(function (r) { return rowMatchesListSearch(r, q); });
+    applyListSort();
+  }
+
+  function listCountLabel() {
+    const total = listRowsAll.length;
+    const shown = listRows.length;
+    if (!total) return '0 件';
+    if (!normalizeListSearch(listSearchQuery)) return '全 ' + total + ' 件';
+    return '表示 ' + shown + ' / 全 ' + total + ' 件';
+  }
+
+  function listSortTh(key, label) {
+    let mark = '';
+    if (listSortKey === key) mark = listSortDir === 'asc' ? ' ▲' : ' ▼';
+    const cls = 'jy-sort-th' + (listSortKey === key ? ' jy-sort-active' : '');
+    return '<th class="' + cls + '" data-sort-key="' + esc(key) + '" title="クリックで並べ替え">' + esc(label) + mark + '</th>';
   }
 
   function refLinkMarker(marker, destTab) {
@@ -228,7 +498,9 @@
     const root = document.getElementById('jy-root');
     if (!root) return 112;
     let o = 8;
-    root.querySelectorAll('.jy-bar').forEach(function (bar) { o += bar.offsetHeight + 6; });
+    const sticky = root.querySelector('.jy-sticky-top');
+    if (sticky) o += sticky.offsetHeight + 8;
+    else root.querySelectorAll('.jy-bar').forEach(function (bar) { o += bar.offsetHeight + 6; });
     const tabs = root.querySelector('.jy-tabs');
     if (tabs) o += tabs.offsetHeight + 6;
     const hint = root.querySelector('.jy-tab-hint');
@@ -272,11 +544,51 @@
       }
       scrollToJyElement(el);
     }
-    window.requestAnimationFrame(function () {
-      window.requestAnimationFrame(function () {
-        window.setTimeout(function () { tryScroll(0); }, 80);
-      });
-    });
+    tryScroll(0);
+  }
+
+  function markInsertedRow(kind, index) {
+    pendingRowHighlight = { kind: kind, index: Number(index) };
+  }
+
+  function findInsertedRowEl(root, h) {
+    const i = h.index;
+    let el;
+    if (h.kind === 'spec') {
+      el = root.querySelector('[data-spec-name="' + i + '"]');
+    } else if (h.kind === 'cost') {
+      el = root.querySelector('[data-cost-wcd="' + i + '"]') ||
+        root.querySelector('[data-cost-kind="' + i + '"]') ||
+        root.querySelector('[data-cost-add-after="' + i + '"]');
+    } else if (h.kind === 'mat') {
+      el = root.querySelector('[data-mat-vendor="' + i + '"]');
+    } else if (h.kind === 'sub') {
+      el = root.querySelector('[data-sub-vendor="' + i + '"]') ||
+        root.querySelector('[data-sub-type="' + i + '"]') ||
+        root.querySelector('[data-sub-unit="' + i + '"]');
+    }
+    return el ? el.closest('tr') : null;
+  }
+
+  function applyPendingRowHighlight() {
+    if (!pendingRowHighlight) return;
+    const h = pendingRowHighlight;
+    pendingRowHighlight = null;
+    function tryHighlight(attempt) {
+      const root = document.getElementById('jy-root');
+      if (!root) return;
+      const row = findInsertedRowEl(root, h);
+      if (!row) {
+        if (attempt < 12) window.setTimeout(function () { tryHighlight(attempt + 1); }, 60);
+        return;
+      }
+      const block = row.closest('details.jy-block');
+      if (block && !block.open) block.open = true;
+      row.classList.add('jy-ref-highlight');
+      scrollToJyElement(row);
+      window.setTimeout(function () { row.classList.remove('jy-ref-highlight'); }, 2200);
+    }
+    tryHighlight(0);
   }
 
   function markDirty() {
@@ -297,25 +609,114 @@
       '.jy-title{font-size:18px;font-weight:700;letter-spacing:.15em;margin:0 0 8px}' +
       '.jy-subtitle{font-size:12px;color:#64748b;margin-bottom:12px}' +
       '.jy-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}' +
+      '.jy-sticky-top{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid #e2e8f0;padding:8px 0 10px;margin-bottom:12px;box-shadow:0 2px 8px rgba(15,23,42,.06)}' +
+      '.jy-sticky-top .jy-bar{margin-bottom:0}' +
+      '.jy-sticky-top .jy-dirty{margin-bottom:8px}' +
+      '.jy-action-bar{justify-content:space-between;gap:12px}' +
+      '.jy-action-group{display:flex;flex-wrap:wrap;gap:8px;align-items:center}' +
+      '.jy-action-bar-right{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-left:auto}' +
+      '.jy-font-toggle{display:flex;align-items:center;gap:4px;flex-wrap:wrap}' +
+      '.jy-font-label{font-size:12px;color:#475569;white-space:nowrap;margin-right:2px}' +
+      '.jy-font-btn{padding:5px 10px;border:1px solid #cbd5e1;border-radius:6px;cursor:pointer;background:#fff;font-size:12px;font-weight:600;line-height:1.2;font-family:inherit}' +
+      '.jy-font-btn.active{background:#dbeafe;border-color:#2563eb;color:#1d4ed8}' +
+      '.jy-font-btn:hover{background:#f1f5f9}' +
       '.jy-btn{padding:8px 16px;border:1px solid #94a3b8;border-radius:6px;background:#f8fafc;cursor:pointer;font-size:13px;font-weight:600}' +
       '.jy-btn-primary{background:#2563eb;color:#fff;border-color:#2563eb}' +
       '.jy-btn:disabled{opacity:.5;cursor:not-allowed}' +
       '.jy-dirty{padding:8px 12px;background:#fff3cd;border:1px solid #ffc107;border-radius:6px;font-size:13px;margin-bottom:8px}' +
       '.jy-header-panel{border:1px solid #cbd5e1;border-radius:8px;margin-bottom:12px;background:#f8fafc}' +
       '.jy-header-panel summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}' +
+      '.jy-help-banner{margin:0 0 10px;border:1px solid #93c5fd;border-radius:6px;background:#eff6ff;overflow:hidden}' +
+      '.jy-help-banner summary{display:flex;align-items:center;gap:8px;cursor:pointer;padding:9px 12px;font-size:12px;font-weight:600;color:#1e3a8a;background:linear-gradient(180deg,#eff6ff 0%,#dbeafe 100%);list-style:none;user-select:none}' +
+      '.jy-help-banner summary::-webkit-details-marker{display:none}' +
+      '.jy-help-banner summary::before{content:"";display:block;width:4px;height:16px;border-radius:2px;background:#2563eb;flex-shrink:0}' +
+      '.jy-help-banner summary::after{content:"▸";font-size:11px;color:#2563eb;margin-left:auto;flex-shrink:0;line-height:1}' +
+      '.jy-help-banner[open] summary::after{content:"▾"}' +
+      '.jy-help-banner-title{flex:1;line-height:1.4}' +
+      '.jy-help-banner-body{padding:10px 12px 12px;background:#fff;border-top:1px solid #bfdbfe}' +
+      '.jy-help-banner .jy-header-legend-list{margin:0;padding:0 0 0 1.15em;max-width:none}' +
+      '.jy-help-banner-header{margin:0 14px 10px}' +
+      '.jy-header-legend{font-size:11px;color:#64748b;padding:0;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}' +
+      '.jy-header-legend-list{margin:0;padding:0 0 8px 1.2em;font-size:11px;color:#475569;line-height:1.55;max-width:52em}' +
+      '.jy-header-legend-list li{margin:3px 0}' +
+      '.jy-header-legend .jy-hf-tag{margin-right:0}' +
       '.jy-header-grid{display:grid;grid-template-columns:repeat(4,minmax(140px,1fr));gap:8px 12px;padding:0 14px 14px}' +
-      '.jy-header-grid label{display:block;font-size:11px;color:#475569;margin-bottom:2px}' +
-      '.jy-header-grid input,.jy-header-grid select,.jy-header-grid textarea{width:100%;box-sizing:border-box;font-size:13px;padding:4px 6px}' +
+      '.jy-header-grid label{display:block;font-size:11px;color:#475569;margin-bottom:4px;line-height:1.35}' +
+      '.jy-hf-tag{display:inline-block;font-size:10px;font-weight:700;padding:1px 6px;border-radius:3px;margin-right:5px;vertical-align:middle;line-height:1.4}' +
+      '.jy-hf-tag-input{background:#fff;border:1px solid #93c5fd;color:#1d4ed8}' +
+      '.jy-hf-tag-select{background:#f1f5f9;border:1px solid #94a3b8;color:#475569}' +
+      '.jy-hf-tag-date{background:#fffbeb;border:1px solid #fcd34d;color:#b45309}' +
+      '.jy-hf-tag-auto{background:#f8fafc;border:1px solid #cbd5e1;color:#64748b}' +
+      '.jy-header-grid input,.jy-header-grid select,.jy-header-grid textarea{width:100%;box-sizing:border-box;font-size:13px;padding:5px 8px;border-radius:4px}' +
+      '.jy-header-grid input.jy-hf-text,.jy-header-grid textarea.jy-hf-text{background:#fff;border:1px solid #93c5fd;border-left:3px solid #2563eb}' +
+      '.jy-header-grid input.jy-hf-text:focus,.jy-header-grid textarea.jy-hf-text:focus{border-color:#2563eb;outline:none;box-shadow:0 0 0 2px rgba(37,99,235,.15)}' +
+      '.jy-header-grid select.jy-hf-select{background-color:#f1f5f9;border:1px solid #94a3b8;border-left:3px solid #64748b;cursor:pointer;appearance:none;-webkit-appearance:none;padding-right:26px;background-image:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%2712%27 viewBox=%270 0 12 12%27%3E%3Cpath fill=%27%2364748b%27 d=%27M2 4l4 4 4-4z%27/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}' +
+      '.jy-header-grid select.jy-hf-select:focus{border-color:#64748b;outline:none;box-shadow:0 0 0 2px rgba(100,116,139,.2);background-color:#e8eef4}' +
+      '.jy-header-grid input.jy-hf-date{background:#fffbeb;border:1px solid #fcd34d;border-left:3px solid #f59e0b}' +
+      '.jy-header-grid input.jy-hf-date:focus{border-color:#f59e0b;outline:none;box-shadow:0 0 0 2px rgba(245,158,11,.2)}' +
+      '.jy-header-grid input.jy-hf-readonly{background:#f8fafc;border:1px solid #e2e8f0;border-left:3px solid #cbd5e1;color:#64748b;cursor:default}' +
       '.jy-tabs{display:flex;gap:4px;margin:10px 0 8px;flex-wrap:wrap}' +
       '.jy-tab{padding:8px 18px;cursor:pointer;border:1px solid #94a3b8;border-radius:6px 6px 0 0;background:#f1f5f9;font-size:13px;font-weight:600}' +
       '.jy-tab.active{background:#2563eb;color:#fff;border-color:#2563eb}' +
       '.jy-tab-hint{font-size:12px;color:#64748b;margin:4px 0 10px}' +
       '.jy-pane{border:1px solid #cbd5e1;border-top:none;border-radius:0 0 8px 8px;padding:12px;background:#fff}' +
+      '.jy-pane-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:6px}' +
+      '.jy-pane-head .jy-title,.jy-pane-head .jy-pane-title{margin:0;font-size:14px;font-weight:700;letter-spacing:.1em}' +
       '.jy-pane-title{font-size:14px;font-weight:700;margin:8px 0 6px;padding:4px 8px;background:#e8eef4;border-left:4px solid #2563eb}' +
+      '.jy-section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}' +
+      '.jy-section-head-title{flex:1;min-width:12em}' +
+      '.jy-section-head-actions{display:flex;gap:6px;flex-shrink:0;align-items:center}' +
+      '.jy-section-head-actions .jy-btn{margin:0}' +
+      '.jy-btn-sm{padding:4px 10px;font-size:12px;line-height:1.2}' +
       '.jy-excel-wrap{overflow:auto;border:1px solid #e2e8f0;margin-bottom:12px;background:#fff;border-radius:6px}' +
       '.jy-table{border-collapse:collapse;width:100%;font-size:12px}' +
       '.jy-table th,.jy-table td{border:1px solid #e2e8f0;padding:4px 6px;vertical-align:middle}' +
       '.jy-table th{background:#f1f5f9;text-align:center;font-weight:600;white-space:nowrap;color:#475569}' +
+      '.jy-summary-table-cost{table-layout:fixed;width:100%;min-width:1080px}' +
+      '.jy-summary-table-spec{table-layout:fixed;width:100%;min-width:760px}' +
+      '.jy-summary-table-spec .jy-col-spec{width:38%}' +
+      '.jy-summary-table-spec .jy-col-unit{width:64px}' +
+      '.jy-summary-table-spec .jy-col-qty{width:72px}' +
+      '.jy-summary-table-spec .jy-col-price{width:80px}' +
+      '.jy-summary-table-spec .jy-col-amt{width:88px}' +
+      '.jy-summary-table-spec .jy-col-note{width:16%}' +
+      '.jy-summary-table-spec .jy-col-del{width:32px}' +
+      '.jy-summary-table-spec td{overflow:hidden}' +
+      '.jy-summary-table-spec .jy-in{min-width:0}' +
+      '.jy-table-mat{table-layout:fixed;width:100%;min-width:980px}' +
+      '.jy-table-mat .jy-col-vendor{width:11%}' +
+      '.jy-table-mat .jy-col-name{width:28%}' +
+      '.jy-table-mat .jy-col-cap{width:9%}' +
+      '.jy-table-mat .jy-col-maker{width:11%}' +
+      '.jy-table-mat .jy-col-qty{width:72px}' +
+      '.jy-table-mat .jy-col-price{width:80px}' +
+      '.jy-table-mat .jy-col-grp{width:64px}' +
+      '.jy-table-mat .jy-col-amt{width:88px}' +
+      '.jy-table-mat .jy-col-basis{width:11%}' +
+      '.jy-table-mat .jy-col-del{width:32px}' +
+      '.jy-table-mat td{overflow:hidden}' +
+      '.jy-table-mat .jy-in{min-width:0}' +
+      '.jy-table-mat select.jy-in{font-size:11px;padding:1px 2px}' +
+      '.jy-text-cell{text-overflow:ellipsis}' +
+      '.jy-summary-table-cost .jy-col-wcd{width:68px}' +
+      '.jy-summary-table-cost .jy-col-wt{width:12%}' +
+      '.jy-summary-table-cost .jy-col-ccd{width:68px}' +
+      '.jy-summary-table-cost .jy-col-cat{width:16%}' +
+      '.jy-summary-table-cost .jy-col-kind{width:92px}' +
+      '.jy-summary-table-cost .jy-col-tax{width:52px}' +
+      '.jy-summary-table-cost .jy-col-unit{width:48px}' +
+      '.jy-summary-table-cost .jy-col-qty{width:64px}' +
+      '.jy-summary-table-cost .jy-col-price{width:80px}' +
+      '.jy-summary-table-cost .jy-col-amt{width:88px}' +
+      '.jy-summary-table-cost .jy-col-note{width:11%}' +
+      '.jy-summary-table-cost .jy-col-ref{width:40px}' +
+      '.jy-summary-table-cost .jy-col-ratio{width:48px}' +
+      '.jy-summary-table-cost .jy-col-del{width:32px}' +
+      '.jy-summary-table-cost td{overflow:hidden}' +
+      '.jy-summary-table-cost .jy-in{min-width:0}' +
+      '.jy-summary-table-cost input.jy-in:not([type=number]):not(.jy-code):not(.jy-text-cell){text-overflow:ellipsis}' +
+      '.jy-summary-table-cost input.jy-code{text-overflow:clip;font-variant-numeric:tabular-nums;padding:2px 3px}' +
+      '.jy-summary-table-cost select.jy-in{font-size:11px;padding:1px 2px}' +
       '.jy-table tfoot td{background:#f8fafc;font-weight:700;color:#334155;border-color:#e2e8f0}' +
       '.jy-summary-table tr.jy-cost-detail td{background:#fff}' +
       '.jy-summary-table tr.jy-cost-group-inner td{background:#fafbfc}' +
@@ -341,16 +742,37 @@
       '.jy-summary-table tr.jy-foot-sum td{background:#e8eef4;color:#1e293b;border-color:#cbd5e1;font-size:12px;padding:5px 8px}' +
       '.jy-summary-table tr.jy-foot-sum td.jy-num{font-size:13px;color:#0f172a}' +
       '.jy-num{text-align:right;font-variant-numeric:tabular-nums}' +
-      '.jy-code{width:72px;text-align:right}' +
-      '.jy-in{width:100%;box-sizing:border-box;font-size:12px;padding:2px 4px;border:1px solid #e2e8f0}' +
+      '.jy-code{width:100%;text-align:right;box-sizing:border-box}' +
+      '.jy-in{width:100%;box-sizing:border-box;font-size:12px;padding:2px 4px;border:1px solid #e2e8f0;background:#fff}' +
       '.jy-in:focus{border-color:#2563eb;outline:none}' +
+      '.jy-root select{background-color:#f1f5f9;border:1px solid #cbd5e1;border-radius:4px;cursor:pointer;accent-color:#60a5fa}' +
+      '.jy-root select:not(:disabled):hover{background-color:#e8eef4}' +
+      '.jy-root select:focus{background-color:#eef4ff;border-color:#2563eb;outline:none}' +
+      '.jy-root select:disabled{background-color:#f8fafc;color:#64748b;cursor:not-allowed;opacity:1}' +
+      '.jy-root select option{background-color:#f8fafc;color:#0f172a;padding:6px 8px}' +
+      '.jy-root select option:nth-child(even){background-color:#f1f5f9}' +
+      '.jy-root select option:checked,.jy-root select option:focus{background-color:#dbeafe;color:#1e40af;font-weight:600}' +
       '.jy-ro{background:#f8fafc}' +
       '.jy-table tr.jy-cost-group-subtotal td.jy-ro,.jy-table tr.jy-subtotal td.jy-ro{background:transparent}' +
       '.jy-block{margin:8px 0;border:1px solid #cbd5e1;border-radius:6px;padding:6px 8px;background:#fff}' +
       '.jy-block summary{cursor:pointer;font-weight:600;padding:4px}' +
+      '.jy-block-summary{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;list-style:none}' +
+      '.jy-block-summary::-webkit-details-marker{display:none}' +
+      '.jy-block-summary-label{flex:1;min-width:12em}' +
+      '.jy-block-summary-actions{display:flex;gap:6px;flex-shrink:0;align-items:center}' +
+      '.jy-block-summary-actions .jy-btn{margin-top:0}' +
       '.jy-calc-row{background:#f3f4f6;font-weight:600}' +
       '.jy-list-table tbody tr{cursor:pointer}' +
       '.jy-list-table tbody tr:hover{background:#eff6ff}' +
+      '.jy-sort-th{cursor:pointer;user-select:none}' +
+      '.jy-sort-th:hover{background:#e2e8f0}' +
+      '.jy-sort-th.jy-sort-active{background:#dbeafe;color:#1e40af}' +
+      '.jy-list-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:10px}' +
+      '.jy-list-toolbar .jy-font-toggle{margin-left:auto}' +
+      '.jy-search-label{font-size:12px;color:#475569;margin-right:6px}' +
+      '.jy-list-search{min-width:280px;padding:6px 10px;font-size:13px;border:1px solid #cbd5e1;border-radius:6px}' +
+      '.jy-list-search:focus{border-color:#2563eb;outline:none}' +
+      '.jy-list-count{font-size:12px;color:#64748b;margin-left:4px}' +
       '.jy-list-code{color:#2563eb;font-weight:600;text-decoration:underline;text-underline-offset:2px}' +
       '.jy-ref-link{background:none;border:none;color:#2563eb;cursor:pointer;font-weight:700;text-decoration:underline;padding:0 3px;font-size:inherit;line-height:inherit}' +
       '.jy-ref-link:hover{color:#1d4ed8;background:#eff6ff;border-radius:3px}' +
@@ -362,7 +784,8 @@
       '.jy-sum-anchor-row td{height:0;padding:0!important;border:none!important;line-height:0;font-size:0;vertical-align:top}' +
       '.jy-table tr.jy-ref-highlight td{background:#fef9c3!important;animation:jy-ref-flash 2.2s ease}' +
       '.jy-ref-meta{font-size:11px;font-weight:500;color:#64748b;margin-left:8px}' +
-      '.jy-ref-meta .jy-ref-link{font-size:11px}' +
+      '.jy-row-actions{display:flex;gap:3px;justify-content:center;white-space:nowrap}' +
+      '.jy-row-actions .jy-btn{padding:2px 6px;font-size:11px;line-height:1.2;min-width:0}' +
       '.jy-ref-highlight{outline:2px solid #facc15;outline-offset:2px;border-radius:4px;animation:jy-ref-flash 2.2s ease}' +
       '@keyframes jy-ref-flash{0%,100%{background:transparent}25%{background:#fef9c3}}' +
       '.jy-meta{font-size:11px;color:#64748b}' +
@@ -589,17 +1012,134 @@
     }
   }
 
+  function normCostField(s) {
+    return String(s || '').trim();
+  }
+
+  function costLinePrevComparableIndex(lines, i) {
+    if (i <= 0) return -1;
+    const prev = lines[i - 1];
+    if (!prev || prev.cost_row_kind === '小計' || prev.cost_work_type === '計') return -1;
+    return i - 1;
+  }
+
+  function costFieldIsCollapsed(lines, i, kind) {
+    const r = lines[i];
+    if (!r || r.cost_row_kind === '小計' || r.cost_work_type === '計') return false;
+    const j = costLinePrevComparableIndex(lines, i);
+    if (j < 0) return false;
+    const prev = lines[j];
+    if (kind === 'wcd') {
+      const v = normCostField(r.cost_work_type_code);
+      return v && v === normCostField(prev.cost_work_type_code);
+    }
+    if (kind === 'wt') {
+      const v = normCostField(r.cost_work_type);
+      return v && v === normCostField(prev.cost_work_type);
+    }
+    if (kind === 'ccd') {
+      const v = normCostField(r.cost_category_code);
+      return v
+        && normCostField(r.cost_work_type_code) === normCostField(prev.cost_work_type_code)
+        && v === normCostField(prev.cost_category_code);
+    }
+    if (kind === 'cat') {
+      const v = normCostField(r.cost_category);
+      return v
+        && normCostField(r.cost_work_type) === normCostField(prev.cost_work_type)
+        && v === normCostField(prev.cost_category);
+    }
+    return false;
+  }
+
+  function costCollapsedDisplay(lines, i, kind, field) {
+    const r = lines[i];
+    if (!r) return '';
+    const actual = r[field] || '';
+    if (!normCostField(actual)) return '';
+    return costFieldIsCollapsed(lines, i, kind) ? '' : actual;
+  }
+
+  function costPrintDisplay(lines, i, kind, field) {
+    const r = lines[i];
+    if (!r) return '';
+    const actual = r[field] || '';
+    if (!normCostField(actual)) return '';
+    return costFieldIsCollapsed(lines, i, kind) ? '〃' : actual;
+  }
+
+  function costRepeatCollapsedAttr(lines, i, kind) {
+    return costFieldIsCollapsed(lines, i, kind) ? ' data-jy-repeat-collapsed="1"' : '';
+  }
+
+  function syncCostLineFieldFromInput(el, attr, field) {
+    const i = Number(el.getAttribute(attr));
+    const r = state.cost_lines[i];
+    if (!r) return;
+    if (el.dataset.jyRepeatCollapsed === '1' && el.value === '') return;
+    r[field] = el.value;
+  }
+
   function refreshCostLineFieldInputs(i) {
     const wtEl = document.querySelector('[data-cost-wt="' + i + '"]');
     const wcdEl = document.querySelector('[data-cost-wcd="' + i + '"]');
     const catEl = document.querySelector('[data-cost-cat="' + i + '"]');
     const ccdEl = document.querySelector('[data-cost-ccd="' + i + '"]');
     const r = state.cost_lines[i];
+    const lines = state.cost_lines;
     if (!r) return;
-    if (wtEl) wtEl.value = r.cost_work_type || '';
-    if (wcdEl) wcdEl.value = r.cost_work_type_code || '';
-    if (catEl) catEl.value = r.cost_category || '';
-    if (ccdEl) ccdEl.value = r.cost_category_code || '';
+    if (wtEl && wtEl !== document.activeElement) {
+      wtEl.value = costCollapsedDisplay(lines, i, 'wt', 'cost_work_type');
+      wtEl.dataset.jyRepeatCollapsed = costFieldIsCollapsed(lines, i, 'wt') ? '1' : '';
+    }
+    if (wcdEl && wcdEl !== document.activeElement) {
+      wcdEl.value = costCollapsedDisplay(lines, i, 'wcd', 'cost_work_type_code');
+      wcdEl.dataset.jyRepeatCollapsed = costFieldIsCollapsed(lines, i, 'wcd') ? '1' : '';
+    }
+    if (catEl && catEl !== document.activeElement) {
+      catEl.value = costCollapsedDisplay(lines, i, 'cat', 'cost_category');
+      catEl.dataset.jyRepeatCollapsed = costFieldIsCollapsed(lines, i, 'cat') ? '1' : '';
+    }
+    if (ccdEl && ccdEl !== document.activeElement) {
+      ccdEl.value = costCollapsedDisplay(lines, i, 'ccd', 'cost_category_code');
+      ccdEl.dataset.jyRepeatCollapsed = costFieldIsCollapsed(lines, i, 'ccd') ? '1' : '';
+    }
+  }
+
+  function refreshAllCostLineFieldInputs() {
+    (state.cost_lines || []).forEach(function (_r, i) {
+      refreshCostLineFieldInputs(i);
+    });
+  }
+
+  function bindCostLineCollapseDisplay(root) {
+    const specs = [
+      { attr: 'data-cost-wcd', field: 'cost_work_type_code', kind: 'wcd' },
+      { attr: 'data-cost-wt', field: 'cost_work_type', kind: 'wt' },
+      { attr: 'data-cost-ccd', field: 'cost_category_code', kind: 'ccd' },
+      { attr: 'data-cost-cat', field: 'cost_category', kind: 'cat' },
+    ];
+    specs.forEach(function (spec) {
+      root.querySelectorAll('[' + spec.attr + ']').forEach(function (el) {
+        if (el.disabled) return;
+        el.addEventListener('focus', function () {
+          const i = Number(el.getAttribute(spec.attr));
+          const r = state.cost_lines[i];
+          if (!r) return;
+          el.value = r[spec.field] || '';
+          el.dataset.jyRepeatCollapsed = '';
+        });
+        el.addEventListener('blur', function () {
+          const i = Number(el.getAttribute(spec.attr));
+          syncCostLineFieldFromInput(el, spec.attr, spec.field);
+          syncCostLineFields(i, spec.kind === 'wcd' ? 'wcd' : spec.kind === 'wt' ? 'wt' : spec.kind === 'ccd' ? 'ccd' : 'cat');
+          const lines = state.cost_lines;
+          el.value = costCollapsedDisplay(lines, i, spec.kind, spec.field);
+          el.dataset.jyRepeatCollapsed = costFieldIsCollapsed(lines, i, spec.kind) ? '1' : '';
+          refreshAllCostLineFieldInputs();
+        });
+      });
+    });
   }
 
   function bindCostLineFieldSync(root, attr, source) {
@@ -609,7 +1149,7 @@
         syncInputs();
         syncCostLineFields(i, source);
         markDirty();
-        refreshCostLineFieldInputs(i);
+        refreshAllCostLineFieldInputs();
       });
     });
   }
@@ -687,9 +1227,13 @@
   }
 
   function newDraftState() {
+    personInChargeManual = false;
     const s = emptyState();
+    const login = kintone.getLoginUser();
     s.version_type = '当初';
-    s.draft_date = new Date().toISOString().slice(0, 10);
+    s.draft_date = jstTodayYmd();
+    s.created_by_name = normalizePersonName(login.name || login.code || '');
+    s.person_in_charge_name = s.created_by_name;
     s.spec_lines = defaultSpecLines();
     s.cost_lines = defaultCostRows();
     s.mat_lines = [{ mat_vendor: '', mat_name: '', mat_capacity: '', mat_maker: '', mat_qty: '', mat_unit_price: '', mat_amount: 0, mat_group: '塗料', mat_basis: '' }];
@@ -710,6 +1254,23 @@
     s.version_type = String(gv(rec, FC.version_type) || '当初');
     s.site_entry_date = String(gv(rec, FC.site_entry_date)).slice(0, 10);
     s.draft_date = String(gv(rec, FC.draft_date)).slice(0, 10);
+    s.record_created_date = String(gv(rec, FC.record_created_date)).slice(0, 10);
+    if (!s.record_created_date) {
+      s.record_created_date = kintoneDatetimeToJstYmd(gv(rec, FC.created_datetime));
+    }
+    s.created_by_name = normalizePersonName(gv(rec, FC.created_by_name));
+    if (!s.created_by_name) {
+      const createdBy = readUserField(rec, FC.created_by);
+      s.created_by_name = normalizePersonName(createdBy.name || createdBy.code || '');
+    }
+    if (!s.created_by_name && rec.Creator && rec.Creator.value) {
+      s.created_by_name = normalizePersonName(rec.Creator.value.name || rec.Creator.value.code || '');
+    }
+    s.person_in_charge_name = normalizePersonName(gv(rec, FC.person_in_charge_name));
+    if (!s.person_in_charge_name) {
+      const personInCharge = readUserField(rec, FC.person_in_charge);
+      s.person_in_charge_name = normalizePersonName(personInCharge.name || personInCharge.code || '');
+    }
     s.project_code = String(gv(rec, FC.project_code));
     s.project_official_name = String(gv(rec, FC.project_official_name));
     s.project_name = String(gv(rec, FC.project_name));
@@ -754,7 +1315,29 @@
     if (!s.cost_lines.length) s.cost_lines = defaultCostRows();
     if (!s.mat_lines.length) s.mat_lines = [{ mat_vendor: '', mat_name: '', mat_capacity: '', mat_maker: '', mat_qty: '', mat_unit_price: '', mat_amount: 0, mat_group: '塗料', mat_basis: '' }];
     if (!s.subcontract_lines.length) s.subcontract_lines = defaultSubcontractTemplate();
+    personInChargeManual = String(s.person_in_charge_name) !== String(s.created_by_name);
     return recalcState(s);
+  }
+
+  function costLineFromCalcRow(r) {
+    return {
+      cost_work_type_code: r.cost_work_type_code || '',
+      cost_work_type: r.cost_work_type || '',
+      cost_category_code: r.cost_category_code || '',
+      cost_category: r.cost_category || '',
+      cost_row_kind: KIND_FROM_CALC[r.cost_row_kind] || r.cost_row_kind,
+      cost_group_key: r.cost_group_key || '',
+      cost_tax_rate: r.cost_tax_rate != null && r.cost_tax_rate !== '' ? r.cost_tax_rate : '',
+      cost_unit: r.cost_unit || '',
+      cost_qty: r.cost_qty != null && r.cost_qty !== '' ? r.cost_qty : '',
+      cost_unit_price: r.cost_unit_price != null && r.cost_unit_price !== '' ? r.cost_unit_price : '',
+      cost_amount: r.cost_amount,
+      cost_basis_note: r.cost_basis_note || '',
+      detail_marker: r.detail_marker || '',
+      cost_ratio: r.cost_ratio,
+      subtotal_display_amount: r.subtotal_display_amount,
+      excel_border_role: r.excel_border_role,
+    };
   }
 
   function recalcState(s) {
@@ -764,16 +1347,7 @@
       r.cost_row_kind = KIND_TO_CALC[r.cost_row_kind] || r.cost_row_kind;
     });
     recalcAll(calc);
-    calc.cost_lines.forEach(function (r, i) {
-      s.cost_lines[i].cost_amount = r.cost_amount;
-      s.cost_lines[i].cost_ratio = r.cost_ratio;
-      s.cost_lines[i].cost_row_kind = KIND_FROM_CALC[r.cost_row_kind] || r.cost_row_kind;
-      s.cost_lines[i].subtotal_display_amount = r.subtotal_display_amount;
-      s.cost_lines[i].cost_work_type = r.cost_work_type;
-      s.cost_lines[i].cost_group_key = r.cost_group_key;
-      s.cost_lines[i].excel_border_role = r.excel_border_role;
-      s.cost_lines[i].cost_basis_note = r.cost_basis_note;
-    });
+    s.cost_lines = calc.cost_lines.map(costLineFromCalcRow);
     s.spec_lines = calc.spec_lines;
     s.mat_lines = calc.mat_lines;
     s.subcontract_lines = calc.subcontract_lines;
@@ -796,6 +1370,9 @@
     body[FC.version_type] = { value: s.version_type };
     body[FC.site_entry_date] = { value: s.site_entry_date || null };
     body[FC.draft_date] = { value: s.draft_date || null };
+    body[FC.record_created_date] = { value: s.record_created_date || null };
+    body[FC.created_by_name] = { value: s.created_by_name || '' };
+    body[FC.person_in_charge_name] = { value: s.person_in_charge_name || '' };
     body[FC.project_code] = { value: s.project_code };
     body[FC.project_official_name] = { value: s.project_official_name };
     body[FC.project_name] = { value: s.project_name };
@@ -872,27 +1449,82 @@
     }).join('') + '</datalist>';
   }
 
+  function renderSectionHelpBanner(id, openFlag, title, listItems) {
+    const items = listItems.map(function (item) { return '<li>' + item + '</li>'; }).join('');
+    return (
+      '<details class="jy-help-banner"' + (openFlag ? ' open' : '') + ' id="' + id + '">' +
+      '<summary><span class="jy-help-banner-title">' + esc(title) + '</span></summary>' +
+      '<div class="jy-help-banner-body"><ul class="jy-header-legend-list">' + items + '</ul></div>' +
+      '</details>'
+    );
+  }
+
+  function renderSpecHelpPanel() {
+    return renderSectionHelpBanner('jy-spec-help-panel', headerSpecHelpOpen, '仕様明細（①）の入力について（クリックで開閉）', [
+      '契約・見積の<strong>仕様明細 …①</strong>です。仕様・単位・数量・単価を行ごとに入力します。',
+      '金額は<strong>数量×単価</strong>で自動計算されます。表下の合計が<strong>契約合計 …①</strong>になります。',
+      '行の追加は、見出しの「末尾に追加」または各行の<strong>＋</strong>で行います。追加した行は薄い黄色で強調表示されます。',
+      '原価行（②〜⑧）との関係は、下の<strong>原価行</strong>の見方、または<strong>詳細表</strong>タブの見方を参照してください。'
+    ]);
+  }
+
+  function renderCostHelpPanel() {
+    return renderSectionHelpBanner('jy-cost-help-panel', headerCostHelpOpen, '原価行の入力について（クリックで開閉）', [
+      '総括表の<strong>原価行（②〜⑧）</strong>です。システム入力工種・種別・数量・単価などを入力します。',
+      '<strong>同じシステム入力工種が2行以上続く</strong>と、その直後に<strong>「計」行が自動表示</strong>されます（1行だけの工種には出ません）。',
+      '「計」行の金額は<strong>明細・連携行（②〜⑦の緑行含む）の合算</strong>で自動更新されます。手入力・削除はできません。',
+      '工種・種別が空白に見える行は、直上行と同じ値の<strong>繰り上げ表示</strong>です（保存データは各行に保持されています）。',
+      '行の追加は、見出しの「末尾に追加」または各行の<strong>＋</strong>で行います。追加した行は薄い黄色で強調表示されます。',
+      '番号（…②など）や連携行の金額をクリックすると、総括表と詳細表の該当ブロックへ移動します。詳細表の内容は<strong>詳細表</strong>タブの見方を参照してください。'
+    ]);
+  }
+
+  function renderDetailHelpPanel() {
+    return renderSectionHelpBanner('jy-detail-help-panel', headerDetailHelpOpen, '詳細表について（クリックで開閉）', [
+      '<strong>材料明細（②塗料・③その他）</strong>と<strong>外注明細（④〜⑦）</strong>を入力します。総括表の連携行（緑）と対応しています。',
+      'ブロック見出しが<strong>緑</strong>のものは総括表と連携しています。番号（…②など）や<strong>合計金額</strong>をクリックすると、総括表の該当行へ移動します。',
+      '<strong>材料</strong>：見出しの「末尾に追加」または各行の<strong>＋</strong>で行を追加します（区分は塗料／その他）。',
+      '<strong>外注（④〜⑦）</strong>：各ブロック見出しの「末尾に明細追加」、または会社名行・明細行の<strong>＋</strong>で諸経費・合計の前に明細を挿入します。種別はリストから選ぶか入力できます。',
+      '諸経費・合計・法定福利費・注文金額などの<strong>計算行は自動</strong>です（金額の手入力・行削除はできません）。',
+      '行の追加時は、追加した行が<strong>薄い黄色</strong>で強調表示されます。'
+    ]);
+  }
+
   function renderHeader() {
     const m = masterCache || { branches: [], departments: [], girderTypes: [] };
+    const createdDateTitle = state.record_created_date ? '' : ' title="初回保存時に設定されます"';
+    const ro = hfDisabled(readOnly);
     return (
       '<details class="jy-header-panel"' + (headerOpen ? ' open' : '') + ' id="jy-header-panel">' +
-      '<summary>ヘッダ（版種別・工事コード・発注者 等）</summary>' +
+      '<summary>工事基本情報</summary>' +
+      '<details class="jy-help-banner jy-help-banner-header"' + (headerLegendOpen ? ' open' : '') + ' id="jy-header-legend-panel">' +
+      '<summary><span class="jy-help-banner-title">入力の見方（クリックで開閉）</span></summary>' +
+      '<div class="jy-help-banner-body">' +
+      '<div class="jy-header-legend">' +
+      hfTag('input') + '手入力（白・青枠）' +
+      hfTag('select') + 'リスト選択（灰）' +
+      hfTag('date') + '日付（薄黄）' +
+      hfTag('auto') + '自動・参照のみ' +
+      '</div></div></details>' +
       '<div class="jy-header-grid">' +
-      '<div><label>版種別</label><select id="jy-version"' + (readOnly ? ' disabled' : '') + '><option' + (state.version_type === '当初' ? ' selected' : '') + '>当初</option></select></div>' +
-      '<div><label>現場入場予定日</label><input id="jy-site-entry" type="date" value="' + esc(state.site_entry_date) + '"' + (readOnly ? ' disabled' : '') + '></div>' +
-      '<div><label>立案日</label><input id="jy-draft-date" type="date" value="' + esc(state.draft_date) + '"' + (readOnly ? ' disabled' : '') + '></div>' +
-      '<div><label>ステータス</label><select id="jy-status"' + (readOnly ? ' disabled' : '') + '><option' + (state.status === '下書き' ? ' selected' : '') + '>下書き</option><option' + (state.status === '初版確定' ? ' selected' : '') + '>初版確定</option></select></div>' +
-      '<div><label>工事コード *</label><input id="jy-project-code" value="' + esc(state.project_code) + '"' + (readOnly ? ' disabled' : '') + '></div>' +
-      '<div><label>工事正式名称</label><input id="jy-project-official" value="' + esc(state.project_official_name) + '"' + (readOnly ? ' disabled' : '') + '></div>' +
-      '<div><label>工事名称</label><input id="jy-project-name" value="' + esc(state.project_name) + '"' + (readOnly ? ' disabled' : '') + '></div>' +
-      '<div><label>桁種別</label><select id="jy-girder"' + (readOnly ? ' disabled' : '') + '>' + selOpts(m.girderTypes, state.girder_type, true) + '</select></div>' +
-      '<div><label>発注支社</label><select id="jy-branch"' + (readOnly ? ' disabled' : '') + '>' + selOpts(m.branches, state.order_branch, true) + '</select></div>' +
-      '<div><label>部門</label><select id="jy-dept"' + (readOnly ? ' disabled' : '') + '>' + selOpts(m.departments, state.department, true) + '</select></div>' +
-      '<div><label>発注者</label><input id="jy-client" value="' + esc(state.client_name) + '"' + (readOnly ? ' disabled' : '') + '></div>' +
-      '<div><label>安衛則88条</label><select id="jy-safety"' + (readOnly ? ' disabled' : '') + '><option' + (state.safety_rule_88 === '有' ? ' selected' : '') + '>有</option><option' + (state.safety_rule_88 === '無' ? ' selected' : '') + '>無</option></select></div>' +
-      '<div><label>着手日</label><input id="jy-start" type="date" value="' + esc(state.start_date) + '"' + (readOnly ? ' disabled' : '') + '></div>' +
-      '<div><label>竣工日</label><input id="jy-end" type="date" value="' + esc(state.end_date) + '"' + (readOnly ? ' disabled' : '') + '></div>' +
-      '<div style="grid-column:span 2"><label>備考</label><textarea id="jy-note" rows="2"' + (readOnly ? ' disabled' : '') + '>' + esc(state.note) + '</textarea></div>' +
+      '<div>' + hfLabel('select', '版種別') + '<select class="jy-hf-select" id="jy-version"' + ro + '><option' + (state.version_type === '当初' ? ' selected' : '') + '>当初</option></select></div>' +
+      '<div>' + hfLabel('date', '現場入場予定日') + '<input class="jy-hf-date" id="jy-site-entry" type="date" value="' + esc(state.site_entry_date) + '"' + ro + '></div>' +
+      '<div>' + hfLabel('date', '立案日') + '<input class="jy-hf-date" id="jy-draft-date" type="date" value="' + esc(state.draft_date) + '"' + ro + '></div>' +
+      '<div>' + hfLabel('auto', '作成日') + '<input class="jy-hf-readonly" id="jy-record-created-date" type="date" value="' + esc(state.record_created_date) + '" disabled readonly' + createdDateTitle + '></div>' +
+      '<div>' + hfLabel('input', '作成者') + '<input id="jy-created-by-name" value="' + esc(state.created_by_name) + '"' + personNameInputAttrs(readOnly) + '></div>' +
+      '<div>' + hfLabel('input', '担当者') + '<input id="jy-person-in-charge-name" value="' + esc(state.person_in_charge_name) + '"' + personNameInputAttrs(readOnly) + '></div>' +
+      '<div>' + hfLabel('select', 'ステータス') + '<select class="jy-hf-select" id="jy-status"' + ro + '><option' + (state.status === '下書き' ? ' selected' : '') + '>下書き</option><option' + (state.status === '初版確定' ? ' selected' : '') + '>初版確定</option></select></div>' +
+      '<div>' + hfLabel('input', '工事コード *') + '<input class="jy-hf-text" id="jy-project-code" value="' + esc(state.project_code) + '"' + ro + '></div>' +
+      '<div>' + hfLabel('input', '工事正式名称') + '<input class="jy-hf-text" id="jy-project-official" value="' + esc(state.project_official_name) + '"' + ro + '></div>' +
+      '<div>' + hfLabel('input', '工事名称') + '<input class="jy-hf-text" id="jy-project-name" value="' + esc(state.project_name) + '"' + ro + '></div>' +
+      '<div>' + hfLabel('select', '桁種別') + '<select class="jy-hf-select" id="jy-girder"' + ro + '>' + selOpts(m.girderTypes, state.girder_type, true) + '</select></div>' +
+      '<div>' + hfLabel('select', '発注支社') + '<select class="jy-hf-select" id="jy-branch"' + ro + '>' + selOpts(m.branches, state.order_branch, true) + '</select></div>' +
+      '<div>' + hfLabel('select', '部門') + '<select class="jy-hf-select" id="jy-dept"' + ro + '>' + selOpts(m.departments, state.department, true) + '</select></div>' +
+      '<div>' + hfLabel('input', '発注者') + '<input class="jy-hf-text" id="jy-client" value="' + esc(state.client_name) + '"' + ro + '></div>' +
+      '<div>' + hfLabel('select', '安衛則88条') + '<select class="jy-hf-select" id="jy-safety"' + ro + '><option' + (state.safety_rule_88 === '有' ? ' selected' : '') + '>有</option><option' + (state.safety_rule_88 === '無' ? ' selected' : '') + '>無</option></select></div>' +
+      '<div>' + hfLabel('date', '着手日') + '<input class="jy-hf-date" id="jy-start" type="date" value="' + esc(state.start_date) + '"' + ro + '></div>' +
+      '<div>' + hfLabel('date', '竣工日') + '<input class="jy-hf-date" id="jy-end" type="date" value="' + esc(state.end_date) + '"' + ro + '></div>' +
+      '<div style="grid-column:span 2">' + hfLabel('input', '備考') + '<textarea class="jy-hf-text" id="jy-note" rows="2"' + ro + '>' + esc(state.note) + '</textarea></div>' +
       '</div></details>'
     );
   }
@@ -900,24 +1532,46 @@
   function renderSummary() {
     recalcState(state);
     const m = masterCache || { units: SPEC_UNITS };
-    let html = '<div class="jy-pane-title">仕様明細（①）</div><div class="jy-excel-wrap jy-summary-wrap"><table class="jy-table jy-summary-table"><thead><tr><th>仕様</th><th>単位</th><th>数量</th><th>単価</th><th class="jy-num">金額</th><th>備考</th>' + (readOnly ? '' : '<th></th>') + '</tr></thead><tbody>';
+    let html = detailSectionHead(
+      '仕様明細（①）',
+      readOnly ? '' : specSectionAddBtn()
+    );
+    html += renderSpecHelpPanel();
+    html += '<div class="jy-excel-wrap jy-summary-wrap"><table class="jy-table jy-summary-table jy-summary-table-spec"><colgroup>' +
+      '<col class="jy-col-spec"><col class="jy-col-unit"><col class="jy-col-qty"><col class="jy-col-price"><col class="jy-col-amt"><col class="jy-col-note">' +
+      (readOnly ? '' : '<col class="jy-col-del">') +
+      '</colgroup><thead><tr><th>仕様</th><th>単位</th><th>数量</th><th>単価</th><th class="jy-num">金額</th><th>備考</th>' + (readOnly ? '' : '<th>操作</th>') + '</tr></thead><tbody>';
     state.spec_lines.forEach(function (r, i) {
-      html += '<tr><td><input class="jy-in" data-spec-name="' + i + '" value="' + esc(r.spec_name) + '"' + (readOnly ? ' disabled' : '') + '></td>';
+      html += '<tr><td><input class="jy-in jy-text-cell" data-spec-name="' + i + '" value="' + esc(r.spec_name) + '"' + (r.spec_name ? ' title="' + esc(r.spec_name) + '"' : '') + (readOnly ? ' disabled' : '') + '></td>';
       html += '<td><select class="jy-in" data-spec-unit="' + i + '"' + (readOnly ? ' disabled' : '') + '>' + selOpts(m.units.concat(SPEC_UNITS).filter(function (v, idx, a) { return a.indexOf(v) === idx; }), r.spec_unit, true) + '</select></td>';
       html += '<td><input class="jy-in jy-num" data-spec-qty="' + i + '" type="number" step="any" value="' + esc(r.spec_qty) + '"' + (readOnly ? ' disabled' : '') + '></td>';
-      html += '<td><input class="jy-in jy-num" data-spec-price="' + i + '" type="number" step="any" value="' + esc(r.spec_unit_price) + '"' + (readOnly ? ' disabled' : '') + '></td>';
+      html += '<td>' + unitPriceInput('data-spec-price', i, r.spec_unit_price, readOnly) + '</td>';
       html += '<td class="jy-num jy-ro">' + fmt(r.spec_amount) + '</td>';
-      html += '<td><input class="jy-in" data-spec-note="' + i + '" value="' + esc(r.spec_note) + '"' + (readOnly ? ' disabled' : '') + '></td>';
-      if (!readOnly) html += '<td><button type="button" class="jy-btn" data-spec-del="' + i + '" style="padding:2px 6px">×</button></td>';
+      html += '<td><input class="jy-in jy-text-cell" data-spec-note="' + i + '" value="' + esc(r.spec_note) + '"' + (r.spec_note ? ' title="' + esc(r.spec_note) + '"' : '') + (readOnly ? ' disabled' : '') + '></td>';
+      if (!readOnly) {
+        html += '<td class="jy-row-actions">';
+        html += '<button type="button" class="jy-btn" data-spec-add-after="' + i + '" title="この行の下に追加">＋</button>';
+        html += '<button type="button" class="jy-btn" data-spec-del="' + i + '" title="この行を削除">×</button>';
+        html += '</td>';
+      }
       html += '</tr>';
     });
     html += '<tr class="jy-sum-anchor-row jy-sec-anchor" id="jy-sum-ref-1"><td colspan="' + (readOnly ? 6 : 7) + '"></td></tr>';
     html += '</tbody><tfoot><tr class="jy-foot-sum"><td colspan="4" class="jy-num">合計 …①</td><td class="jy-num">' + fmt(state.contract_total_1) + '</td><td colspan="' + (readOnly ? 1 : 2) + '"></td></tr></tfoot></table></div>';
-    if (!readOnly) html += '<button type="button" class="jy-btn" id="jy-spec-add">＋ 仕様行追加</button>';
 
-    html += '<div class="jy-pane-title">原価行（②〜⑧）</div><div class="jy-excel-wrap jy-summary-wrap"><table class="jy-table jy-summary-table"><thead><tr>' +
+    html += detailSectionHead(
+      '原価行（②〜⑧）',
+      readOnly ? '' : costSectionAddBtn()
+    );
+    html += renderCostHelpPanel();
+    html += '<div class="jy-excel-wrap jy-summary-wrap"><table class="jy-table jy-summary-table jy-summary-table-cost"><colgroup>' +
+      '<col class="jy-col-wcd"><col class="jy-col-wt"><col class="jy-col-ccd"><col class="jy-col-cat"><col class="jy-col-kind">' +
+      '<col class="jy-col-tax"><col class="jy-col-unit"><col class="jy-col-qty"><col class="jy-col-price"><col class="jy-col-amt">' +
+      '<col class="jy-col-note"><col class="jy-col-ref"><col class="jy-col-ratio">' +
+      (readOnly ? '' : '<col class="jy-col-del">') +
+      '</colgroup><thead><tr>' +
       '<th>工種CD</th><th>システム入力工種</th><th>種別CD</th><th>種別</th><th>行種別</th><th>消費税</th><th>単位</th><th>数量</th><th>単価</th><th class="jy-num">金額</th><th>計算基準・備考</th><th>詳細</th><th class="jy-num">率</th>' +
-      (readOnly ? '' : '<th></th>') + '</tr></thead><tbody>';
+      (readOnly ? '' : '<th>操作</th>') + '</tr></thead><tbody>';
     const costColSpan = readOnly ? 13 : 14;
     state.cost_lines.forEach(function (r, i) {
       const isLink = r.cost_row_kind === '連携';
@@ -928,7 +1582,10 @@
       const cls = [isLink ? 'jy-link' : '', isSub ? 'jy-subtotal' : 'jy-cost-detail', borderCls].filter(Boolean).join(' ');
       const ro = readOnly || isLink || isSub;
       const sumId = isLink && r.detail_marker && REF_SUMMARY_IDS[r.detail_marker] ? REF_SUMMARY_IDS[r.detail_marker] : '';
-      const wtDisplay = isSub ? '' : (r.cost_work_type === '計' ? '' : (r.cost_work_type || ''));
+      const wtDisplay = isSub ? '' : (r.cost_work_type === '計' ? '' : costCollapsedDisplay(state.cost_lines, i, 'wt', 'cost_work_type'));
+      const wcdDisplay = costCollapsedDisplay(state.cost_lines, i, 'wcd', 'cost_work_type_code');
+      const catDisplay = costCollapsedDisplay(state.cost_lines, i, 'cat', 'cost_category');
+      const ccdDisplay = costCollapsedDisplay(state.cost_lines, i, 'ccd', 'cost_category_code');
       const subAmt = isSub ? (r.subtotal_display_amount != null ? r.subtotal_display_amount : r.cost_amount) : r.cost_amount;
       if (sumId) html += '<tr class="jy-sum-anchor-row jy-sec-anchor" id="' + sumId + '"><td colspan="' + costColSpan + '"></td></tr>';
       html += '<tr class="' + cls + '">';
@@ -937,18 +1594,23 @@
         html += '<td class="jy-num jy-ro jy-subtotal-col">' + fmt(subAmt) + '</td>';
         html += '<td class="jy-ro jy-subtotal-note">' + esc(subtotalBasisNote(r)) + '</td>';
         html += '<td class="jy-ro"></td><td class="jy-num jy-ro">' + fmtPct(r.cost_ratio) + '</td>';
+        if (!readOnly) {
+          html += '<td class="jy-row-actions">';
+          html += '<button type="button" class="jy-btn" data-cost-add-after="' + i + '" title="この行の下に追加">＋</button>';
+          html += '</td>';
+        }
       } else {
-      html += '<td><input class="jy-in jy-code" list="jy-wt-code-list" data-cost-wcd="' + i + '" value="' + esc(r.cost_work_type_code) + '" placeholder="未設定"' + (ro ? ' disabled' : '') + '></td>';
-      html += '<td' + (isLink ? ' class="jy-link-wt"' : '') + '><input class="jy-in" list="jy-wt-list" data-cost-wt="' + i + '" value="' + esc(wtDisplay) + '"' + (ro ? ' disabled' : '') + '></td>';
-      html += '<td><input class="jy-in jy-code" list="jy-cat-code-list" data-cost-ccd="' + i + '" value="' + esc(r.cost_category_code) + '" placeholder="未設定"' + (ro ? ' disabled' : '') + '></td>';
-      html += '<td><input class="jy-in" list="jy-cat-list" data-cost-cat="' + i + '" value="' + esc(r.cost_category) + '"' + (ro ? ' disabled' : '') + '></td>';
+      html += '<td><input class="jy-in jy-code" list="jy-wt-code-list" data-cost-wcd="' + i + '" value="' + esc(wcdDisplay) + '"' + costRepeatCollapsedAttr(state.cost_lines, i, 'wcd') + (r.cost_work_type_code ? ' title="' + esc(r.cost_work_type_code) + '"' : '') + (ro ? ' disabled' : '') + '></td>';
+      html += '<td' + (isLink ? ' class="jy-link-wt"' : '') + '><input class="jy-in jy-text-cell" list="jy-wt-list" data-cost-wt="' + i + '" value="' + esc(wtDisplay) + '"' + costRepeatCollapsedAttr(state.cost_lines, i, 'wt') + (r.cost_work_type ? ' title="' + esc(r.cost_work_type) + '"' : '') + (ro ? ' disabled' : '') + '></td>';
+      html += '<td><input class="jy-in jy-code" list="jy-cat-code-list" data-cost-ccd="' + i + '" value="' + esc(ccdDisplay) + '"' + costRepeatCollapsedAttr(state.cost_lines, i, 'ccd') + (r.cost_category_code ? ' title="' + esc(r.cost_category_code) + '"' : '') + (ro ? ' disabled' : '') + '></td>';
+      html += '<td><input class="jy-in jy-text-cell" list="jy-cat-list" data-cost-cat="' + i + '" value="' + esc(catDisplay) + '"' + costRepeatCollapsedAttr(state.cost_lines, i, 'cat') + (r.cost_category ? ' title="' + esc(r.cost_category) + '"' : '') + (ro ? ' disabled' : '') + '></td>';
       html += '<td><select class="jy-in" data-cost-kind="' + i + '"' + (ro ? ' disabled' : '') + '>' + ROW_KIND_OPTS.map(function (k) {
-        return '<option' + (r.cost_row_kind === k ? ' selected' : '') + '>' + k + '</option>';
+        return '<option value="' + esc(k) + '"' + (r.cost_row_kind === k ? ' selected' : '') + '>' + esc(rowKindDisplay(k)) + '</option>';
       }).join('') + '</select></td>';
       html += '<td><select class="jy-in" data-cost-tax="' + i + '"' + (ro ? ' disabled' : '') + '>' + selOpts((masterCache && masterCache.taxRates) || ['0', '0.08', '0.1'], r.cost_tax_rate === '' ? '' : String(r.cost_tax_rate), true) + '</select></td>';
       html += '<td><select class="jy-in" data-cost-unit="' + i + '"' + (ro ? ' disabled' : '') + '>' + selOpts(m.units, r.cost_unit, true) + '</select></td>';
       html += '<td><input class="jy-in jy-num" data-cost-qty="' + i + '" type="number" step="any" value="' + esc(r.cost_qty) + '"' + (ro ? ' disabled' : '') + '></td>';
-      html += '<td><input class="jy-in jy-num" data-cost-price="' + i + '" type="number" step="any" value="' + esc(r.cost_unit_price) + '"' + (ro ? ' disabled' : '') + '></td>';
+      html += '<td>' + unitPriceInput('data-cost-price', i, r.cost_unit_price, ro) + '</td>';
       html += '<td class="jy-num jy-ro">' + (isLink && r.detail_marker && REF_DETAIL_IDS[r.detail_marker]
         ? refAmountLink(r.detail_marker, 'detail', r.cost_amount)
         : fmt(r.cost_amount)) + '</td>';
@@ -960,7 +1622,12 @@
       html += '<td class="jy-ref-cell">' + (r.detail_marker && REF_DETAIL_IDS[r.detail_marker] ? refLinkToDetail(r.detail_marker) : esc(r.detail_marker)) + '</td>';
       html += '<td class="jy-num jy-ro">' + fmtPct(r.cost_ratio) + '</td>';
       }
-      if (!readOnly) html += '<td><button type="button" class="jy-btn" data-cost-del="' + i + '" style="padding:2px 6px"' + (isSub ? ' disabled title="小計行は自動"' : '') + '>×</button></td>';
+      if (!readOnly && !isSub) {
+        html += '<td class="jy-row-actions">';
+        html += '<button type="button" class="jy-btn" data-cost-add-after="' + i + '" title="この行の下に追加">＋</button>';
+        html += '<button type="button" class="jy-btn" data-cost-del="' + i + '" title="この行を削除">×</button>';
+        html += '</td>';
+      }
       html += '</tr>';
     });
     html += '<tr class="jy-sum-anchor-row jy-sec-anchor" id="jy-sum-ref-8"><td colspan="' + costColSpan + '"></td></tr>';
@@ -972,7 +1639,6 @@
     html += datalist('jy-cat-list', (masterCache && masterCache.categories) || []);
     html += datalist('jy-cat-code-list', (masterCache && masterCache.categoryCodes) || []);
     html += '</div>';
-    if (!readOnly) html += '<button type="button" class="jy-btn" id="jy-cost-add">＋ 原価行追加</button>';
     return html;
   }
 
@@ -990,6 +1656,27 @@
     };
   }
 
+  function subDetailLineOptions(blockId) {
+    const base = (SUB_LINES[blockId] || []).filter(function (t) {
+      return subKindFromLabel(t, blockId) === 'detail';
+    });
+    const extra = SUB_DETAIL_EXTRA[blockId] || [];
+    const out = base.slice();
+    extra.forEach(function (t) {
+      if (out.indexOf(t) < 0) out.push(t);
+    });
+    return out;
+  }
+
+  function subLineTypeDatalist(blockId) {
+    return datalist('jy-sub-type-list-' + blockId, subDetailLineOptions(blockId));
+  }
+
+  function subLineTypeInput(i, r, blockId) {
+    const listId = 'jy-sub-type-list-' + blockId;
+    return '<input class="jy-in jy-text-cell" data-sub-type="' + i + '" list="' + listId + '" value="' + esc(r.sub_line_type) + '" placeholder="種別"' + (r.sub_line_type ? ' title="' + esc(r.sub_line_type) + '"' : '') + '>';
+  }
+
   function isCustomSubRow(r, blockId) {
     if (r.sub_row_kind !== 'detail') return false;
     if (r.sub_is_custom) return true;
@@ -997,10 +1684,10 @@
     return !r.sub_line_type || template.indexOf(r.sub_line_type) < 0;
   }
 
-  function canDeleteSubRow(r) {
+  function canDeleteSubRow(r, blockId) {
     if (r.sub_row_kind === 'vendor') return false;
     if (SUB_CALC.has(r.sub_row_kind) || r.sub_row_kind === 'overhead') return false;
-    return r.sub_row_kind === 'detail';
+    return isCustomSubRow(r, blockId);
   }
 
   function findSubDetailInsertIndex(blockId) {
@@ -1016,10 +1703,71 @@
     return insertAt;
   }
 
-  function insertSubDetailRow(blockId) {
+  function insertMatRowAfter(i) {
     syncInputs();
-    const idx = findSubDetailInsertIndex(blockId);
-    state.subcontract_lines.splice(idx, 0, {
+    const r = state.mat_lines[i];
+    if (!r) return;
+    state.mat_lines.splice(i + 1, 0, blankMatRow(r.mat_group || '塗料'));
+    markInsertedRow('mat', i + 1);
+    markDirty();
+    render();
+  }
+
+  function insertMatRowAtGroupEnd(group) {
+    syncInputs();
+    let insertAt = state.mat_lines.length;
+    for (let i = state.mat_lines.length - 1; i >= 0; i -= 1) {
+      if (state.mat_lines[i].mat_group === group) {
+        insertAt = i + 1;
+        break;
+      }
+    }
+    state.mat_lines.splice(insertAt, 0, blankMatRow(group));
+    markInsertedRow('mat', insertAt);
+    markDirty();
+    render();
+  }
+
+  function blankSpecRow() {
+    return { spec_name: '', spec_unit: '', spec_qty: '', spec_unit_price: '', spec_amount: 0, spec_note: '' };
+  }
+
+  function insertSpecRowAfter(i) {
+    syncInputs();
+    if (!state.spec_lines[i]) return;
+    state.spec_lines.splice(i + 1, 0, blankSpecRow());
+    markInsertedRow('spec', i + 1);
+    markDirty();
+    render();
+  }
+
+  function insertSpecRowAtEnd() {
+    syncInputs();
+    state.spec_lines.push(blankSpecRow());
+    markInsertedRow('spec', state.spec_lines.length - 1);
+    markDirty();
+    render();
+  }
+
+  function insertCostRowAfter(i) {
+    syncInputs();
+    if (!state.cost_lines[i]) return;
+    state.cost_lines.splice(i + 1, 0, blankCostRow({ cost_row_kind: 'detail' }));
+    markInsertedRow('cost', i + 1);
+    markDirty();
+    render();
+  }
+
+  function insertCostRowAtEnd() {
+    syncInputs();
+    state.cost_lines.push(blankCostRow({ cost_row_kind: 'detail' }));
+    markInsertedRow('cost', state.cost_lines.length - 1);
+    markDirty();
+    render();
+  }
+
+  function blankSubDetailRow(blockId) {
+    return {
       subcontract_block: blockId,
       sub_row_kind: 'detail',
       sub_is_custom: true,
@@ -1030,22 +1778,68 @@
       sub_unit_price: '',
       sub_amount: 0,
       sub_basis: '',
-    });
+    };
+  }
+
+  function insertSubRowAfter(i) {
+    syncInputs();
+    const r = state.subcontract_lines[i];
+    if (!r) return;
+    if (SUB_CALC.has(r.sub_row_kind) || r.sub_row_kind === 'overhead') return;
+    state.subcontract_lines.splice(i + 1, 0, blankSubDetailRow(r.subcontract_block));
+    markInsertedRow('sub', i + 1);
     markDirty();
     render();
   }
 
+  function insertSubDetailRow(blockId) {
+    syncInputs();
+    const idx = findSubDetailInsertIndex(blockId);
+    state.subcontract_lines.splice(idx, 0, blankSubDetailRow(blockId));
+    markInsertedRow('sub', idx);
+    markDirty();
+    render();
+  }
+
+  function detailSectionHead(titleHtml, actionsHtml, extraClass) {
+    return '<div class="jy-pane-title jy-section-head' + (extraClass ? ' ' + extraClass : '') + '">' +
+      '<span class="jy-section-head-title">' + titleHtml + '</span>' +
+      (actionsHtml ? '<span class="jy-section-head-actions">' + actionsHtml + '</span>' : '') +
+      '</div>';
+  }
+
+  function matSectionAddBtn(group) {
+    return '<button type="button" class="jy-btn jy-btn-sm" data-mat-add="' + esc(group) + '" title="この表の末尾に行を追加">＋ 末尾に追加</button>';
+  }
+
+  function specSectionAddBtn() {
+    return '<button type="button" class="jy-btn jy-btn-sm" data-spec-add title="この表の末尾に行を追加">＋ 末尾に追加</button>';
+  }
+
+  function costSectionAddBtn() {
+    return '<button type="button" class="jy-btn jy-btn-sm" data-cost-add title="原価行を末尾に追加">＋ 末尾に追加</button>';
+  }
+
+  function subSectionAddBtn(blockId, label) {
+    return '<button type="button" class="jy-btn jy-btn-sm" data-sub-add="' + esc(blockId) + '" title="諸経費・合計の前に明細を追加">＋ 末尾に明細追加</button>';
+  }
+
   function renderMatRow(r, i, readOnly) {
-    let row = '<tr><td><input class="jy-in" data-mat-vendor="' + i + '" value="' + esc(r.mat_vendor) + '"' + (readOnly ? ' disabled' : '') + '></td>';
-    row += '<td><input class="jy-in" data-mat-name="' + i + '" value="' + esc(r.mat_name) + '"' + (readOnly ? ' disabled' : '') + '></td>';
+    let row = '<tr><td><input class="jy-in jy-text-cell" data-mat-vendor="' + i + '" value="' + esc(r.mat_vendor) + '"' + (r.mat_vendor ? ' title="' + esc(r.mat_vendor) + '"' : '') + (readOnly ? ' disabled' : '') + '></td>';
+    row += '<td><input class="jy-in jy-text-cell" data-mat-name="' + i + '" value="' + esc(r.mat_name) + '"' + (r.mat_name ? ' title="' + esc(r.mat_name) + '"' : '') + (readOnly ? ' disabled' : '') + '></td>';
     row += '<td><input class="jy-in" data-mat-cap="' + i + '" value="' + esc(r.mat_capacity) + '"' + (readOnly ? ' disabled' : '') + '></td>';
     row += '<td><input class="jy-in" data-mat-maker="' + i + '" value="' + esc(r.mat_maker) + '"' + (readOnly ? ' disabled' : '') + '></td>';
     row += '<td><input class="jy-in jy-num" data-mat-qty="' + i + '" type="number" step="any" value="' + esc(r.mat_qty) + '"' + (readOnly ? ' disabled' : '') + '></td>';
-    row += '<td><input class="jy-in jy-num" data-mat-price="' + i + '" type="number" step="any" value="' + esc(r.mat_unit_price) + '"' + (readOnly ? ' disabled' : '') + '></td>';
+    row += '<td>' + unitPriceInput('data-mat-price', i, r.mat_unit_price, readOnly) + '</td>';
     row += '<td><select class="jy-in" data-mat-grp="' + i + '"' + (readOnly ? ' disabled' : '') + '><option' + (r.mat_group === '塗料' ? ' selected' : '') + '>塗料</option><option' + (r.mat_group === 'その他' ? ' selected' : '') + '>その他</option></select></td>';
     row += '<td class="jy-num jy-ro">' + fmt(r.mat_amount) + '</td>';
     row += '<td><input class="jy-in" data-mat-basis="' + i + '" value="' + esc(r.mat_basis) + '"' + (readOnly ? ' disabled' : '') + '></td>';
-    if (!readOnly) row += '<td><button type="button" class="jy-btn" data-mat-del="' + i + '" style="padding:2px 6px">×</button></td>';
+    if (!readOnly) {
+      row += '<td class="jy-row-actions">';
+      row += '<button type="button" class="jy-btn" data-mat-add-after="' + i + '" title="この行の下に追加">＋</button>';
+      row += '<button type="button" class="jy-btn" data-mat-del="' + i + '" title="この行を削除">×</button>';
+      row += '</td>';
+    }
     row += '</tr>';
     return row;
   }
@@ -1053,41 +1847,61 @@
   function renderDetail() {
     recalcState(state);
     const m = masterCache || { units: SPEC_UNITS };
-    const matHead = '<thead><tr><th>仕入先</th><th>品名</th><th>容量</th><th>メーカー</th><th>所要量</th><th>単価</th><th>区分</th><th class="jy-num">金額</th><th>計算基準</th>' + (readOnly ? '' : '<th></th>') + '</tr></thead>';
-    let html = '<div class="jy-pane-title">実　行　予　算　書　（　詳　細　表　）</div>';
+    const matColgroup = '<colgroup><col class="jy-col-vendor"><col class="jy-col-name"><col class="jy-col-cap"><col class="jy-col-maker">' +
+      '<col class="jy-col-qty"><col class="jy-col-price"><col class="jy-col-grp"><col class="jy-col-amt"><col class="jy-col-basis">' +
+      (readOnly ? '' : '<col class="jy-col-del">') +
+      '</colgroup>';
+    const matHead = matColgroup + '<thead><tr><th>仕入先</th><th>品名</th><th>容量</th><th>メーカー</th><th>所要量</th><th>単価</th><th>区分</th><th class="jy-num">金額</th><th>計算基準</th>' + (readOnly ? '' : '<th>操作</th>') + '</tr></thead>';
+    let html = '';
+    html += renderDetailHelpPanel();
     html += '<div id="jy-sec-mat-2" class="jy-sec-anchor"></div>';
-    html += '<div class="jy-pane-title jy-linked-title">' + refLinkToSummary('②') + ' 材料明細（塗料）</div><div class="jy-excel-wrap jy-linked-wrap"><table class="jy-table">' + matHead + '<tbody>';
+    html += detailSectionHead(
+      refLinkToSummary('②') + ' 材料明細（塗料）',
+      readOnly ? '' : matSectionAddBtn('塗料'),
+      'jy-linked-title'
+    );
+    html += '<div class="jy-excel-wrap jy-linked-wrap"><table class="jy-table jy-table-mat">' + matHead + '<tbody>';
     state.mat_lines.forEach(function (r, i) {
       if (r.mat_group !== '塗料') return;
       html += renderMatRow(r, i, readOnly);
     });
     html += '</tbody><tfoot><tr><td colspan="7">' + refLinkToSummary('②') + ' 塗料合計</td><td class="jy-num">' + refAmountLink('②', 'summary', state.mat_total_2) + '</td><td colspan="' + (readOnly ? 1 : 2) + '"></td></tr></tfoot></table></div>';
-    if (!readOnly) html += '<button type="button" class="jy-btn" data-mat-add="塗料">＋ 塗料行追加</button>';
 
     html += '<div id="jy-sec-mat-3" class="jy-sec-anchor"></div>';
-    html += '<div class="jy-pane-title jy-linked-title">' + refLinkToSummary('③') + ' 材料明細（その他）</div><div class="jy-excel-wrap jy-linked-wrap"><table class="jy-table">' + matHead + '<tbody>';
+    html += detailSectionHead(
+      refLinkToSummary('③') + ' 材料明細（その他）',
+      readOnly ? '' : matSectionAddBtn('その他'),
+      'jy-linked-title'
+    );
+    html += '<div class="jy-excel-wrap jy-linked-wrap"><table class="jy-table jy-table-mat">' + matHead + '<tbody>';
     state.mat_lines.forEach(function (r, i) {
       if (r.mat_group !== 'その他') return;
       html += renderMatRow(r, i, readOnly);
     });
     html += '</tbody><tfoot><tr><td colspan="7">' + refLinkToSummary('③') + ' その他合計</td><td class="jy-num">' + refAmountLink('③', 'summary', state.mat_total_3) + '</td><td colspan="' + (readOnly ? 1 : 2) + '"></td></tr></tfoot></table></div>';
-    if (!readOnly) html += '<button type="button" class="jy-btn" data-mat-add="その他">＋ その他行追加</button>';
 
     SUB_BLOCKS.forEach(function (b) {
       const mk = BLOCK_MARKERS[b.id];
       html += '<div id="jy-sec-block-' + b.id + '" class="jy-sec-anchor"></div>';
-      html += '<details class="jy-block jy-linked-block" open><summary>' + esc(b.label) + ' <span class="jy-ref-meta">' + refLinkToSummary(mk) + ' → 総括表</span></summary><table class="jy-table"><thead><tr><th>会社名</th><th>種別</th><th>単位</th><th>数量</th><th>単価</th><th class="jy-num">金額</th><th>計算基準</th>' + (readOnly ? '' : '<th></th>') + '</tr></thead><tbody>';
+      html += '<details class="jy-block jy-linked-block" open><summary class="jy-block-summary">' +
+        '<span class="jy-block-summary-label">' + esc(b.label) + ' <span class="jy-ref-meta">' + refLinkToSummary(mk) + ' → 総括表</span></span>' +
+        (readOnly ? '' : '<span class="jy-block-summary-actions">' + subSectionAddBtn(b.id, b.label) + '</span>') +
+        '</summary><table class="jy-table"><thead><tr><th>会社名</th><th>種別</th><th>単位</th><th>数量</th><th>単価</th><th class="jy-num">金額</th><th>計算基準</th>' + (readOnly ? '' : '<th>操作</th>') + '</tr></thead><tbody>';
       state.subcontract_lines.forEach(function (r, i) {
         if (r.subcontract_block !== b.id) return;
         if (r.sub_row_kind === 'vendor') {
-          html += '<tr><td colspan="2"><input class="jy-in" data-sub-vendor="' + i + '" value="' + esc(r.sub_vendor) + '" placeholder="会社名"' + (readOnly ? ' disabled' : '') + '></td><td colspan="' + (readOnly ? 5 : 6) + '"></td></tr>';
+          html += '<tr><td colspan="2"><input class="jy-in" data-sub-vendor="' + i + '" value="' + esc(r.sub_vendor) + '" placeholder="会社名"' + (readOnly ? ' disabled' : '') + '></td><td colspan="5"></td>';
+          if (!readOnly) {
+            html += '<td class="jy-row-actions"><button type="button" class="jy-btn" data-sub-add-after="' + i + '" title="この行の下に明細行を追加">＋</button></td>';
+          }
+          html += '</tr>';
           return;
         }
         const calcRow = SUB_CALC.has(r.sub_row_kind) || r.sub_row_kind === 'overhead';
         const customRow = isCustomSubRow(r, b.id);
         html += '<tr class="' + (calcRow ? 'jy-calc-row' : '') + '"><td></td><td>';
         if (customRow && !readOnly) {
-          html += '<input class="jy-in" data-sub-type="' + i + '" value="' + esc(r.sub_line_type) + '" placeholder="種別">';
+          html += subLineTypeInput(i, r, b.id);
         } else {
           html += esc(r.sub_line_type);
         }
@@ -1099,57 +1913,369 @@
         } else {
           html += '<td><select class="jy-in" data-sub-unit="' + i + '"' + (readOnly ? ' disabled' : '') + '>' + selOpts(m.units, r.sub_unit, true) + '</select></td>';
           html += '<td><input class="jy-in jy-num" data-sub-qty="' + i + '" type="number" step="any" value="' + esc(r.sub_qty) + '"' + (readOnly ? ' disabled' : '') + '></td>';
-          html += '<td><input class="jy-in jy-num" data-sub-price="' + i + '" type="number" step="any" value="' + esc(r.sub_unit_price) + '"' + (readOnly ? ' disabled' : '') + '></td>';
+          html += '<td>' + unitPriceInput('data-sub-price', i, r.sub_unit_price, readOnly) + '</td>';
           html += '<td class="jy-num jy-ro">' + fmt(r.sub_amount) + '</td>';
           html += '<td><input class="jy-in" data-sub-basis="' + i + '" value="' + esc(r.sub_basis) + '"' + (readOnly ? ' disabled' : '') + '></td>';
           if (!readOnly) {
-            html += '<td>' + (canDeleteSubRow(r) ? '<button type="button" class="jy-btn" data-sub-del="' + i + '" style="padding:2px 6px">×</button>' : '') + '</td>';
+            html += '<td class="jy-row-actions">';
+            html += '<button type="button" class="jy-btn" data-sub-add-after="' + i + '" title="この行の下に追加">＋</button>';
+            if (canDeleteSubRow(r, b.id)) {
+              html += '<button type="button" class="jy-btn" data-sub-del="' + i + '" title="この行を削除">×</button>';
+            }
+            html += '</td>';
           }
           html += '</tr>';
         }
       });
       html += '</tbody></table>';
-      if (!readOnly) html += '<button type="button" class="jy-btn" data-sub-add="' + b.id + '">＋ 明細行追加</button>';
+      html += subLineTypeDatalist(b.id);
       html += '</details>';
     });
     return html;
   }
 
-  function renderForm() {
-    let html = '';
+  let jyPrintAfterPrintBound = false;
+
+  function printPortalStylesheet() {
+    return (
+      '#jy-print-portal{display:none}' +
+      '@media print{' +
+      '@page{size:A4 landscape;margin:7mm}' +
+      'body{padding:0!important}' +
+      'body *{visibility:hidden!important}' +
+      '#jy-print-portal,#jy-print-portal *{visibility:visible!important}' +
+      '#jy-print-portal{display:block!important;position:absolute;left:0;top:0;width:100%}' +
+      '}' +
+      '.jy-pr{font-family:Segoe UI,Meiryo,sans-serif;color:#1e293b;font-size:9pt;line-height:1.35}' +
+      '.jy-pr-doc{padding:0 1mm}' +
+      '.jy-pr-doc-title{font-size:14pt;font-weight:700;text-align:center;letter-spacing:.18em;margin:0 0 2mm}' +
+      '.jy-pr-sheet-title{font-size:11pt;font-weight:700;text-align:center;margin:0 0 8px;color:#334155}' +
+      '.jy-pr-meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px 10px;margin-bottom:10px;border:1px solid #cbd5e1;border-radius:4px;padding:8px 10px;background:#f8fafc;font-size:8.5pt}' +
+      '.jy-pr-meta-item{display:flex;gap:6px;align-items:baseline;min-width:0}' +
+      '.jy-pr-meta-label{font-weight:600;color:#475569;white-space:nowrap;flex-shrink:0}' +
+      '.jy-pr-meta-val{color:#0f172a;min-width:0;word-break:break-all}' +
+      '.jy-pr-section{margin-bottom:8px}' +
+      '.jy-pr-section.jy-pr-break-before{page-break-before:always}' +
+      '.jy-pr-sec-head{font-size:10pt;font-weight:700;margin:0 0 4px;padding:4px 8px;background:#e8eef4;border-left:4px solid #2563eb}' +
+      '.jy-pr-block-head{font-size:9.5pt;font-weight:700;margin:8px 0 4px;padding:3px 8px;background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46}' +
+      '.jy-pr-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:8pt}' +
+      '.jy-pr-table th,.jy-pr-table td{border:1px solid #cbd5e1;padding:2px 3px;vertical-align:middle}' +
+      '.jy-pr-table th{background:#f1f5f9;font-weight:600;text-align:center;color:#475569;font-size:7.5pt}' +
+      '.jy-pr-table td.jy-num{text-align:right;font-variant-numeric:tabular-nums}' +
+      '.jy-pr-table tfoot td{background:#f8fafc;font-weight:700;border-top:2px solid #94a3b8}' +
+      '.jy-pr-table tr.jy-pr-link td{background:#f0fdf4}' +
+      '.jy-pr-table tr.jy-pr-link td:first-child{box-shadow:inset 3px 0 0 #6ee7b7}' +
+      '.jy-pr-table tr.jy-pr-sub td{background:#eff6ff}' +
+      '.jy-pr-table tr.jy-pr-sub td.jy-pr-sub-amt{background:#dbeafe;font-weight:700;color:#1e3a8a}' +
+      '.jy-pr-sub-badge{display:inline-block;background:#3b82f6;color:#fff;font-size:7pt;padding:1px 6px;border-radius:2px}' +
+      '.jy-pr-ditto{text-align:center;color:#64748b}' +
+      '.jy-pr-wrap{overflow:hidden}' +
+      '.jy-pr-spec .jy-col-spec{width:34%}' +
+      '.jy-pr-cost .jy-col-wcd{width:6%}' +
+      '.jy-pr-cost .jy-col-wt{width:12%}' +
+      '.jy-pr-cost .jy-col-ccd{width:6%}' +
+      '.jy-pr-cost .jy-col-cat{width:11%}' +
+      '.jy-pr-cost .jy-col-kind{width:8%}' +
+      '.jy-pr-cost .jy-col-tax{width:5%}' +
+      '.jy-pr-cost .jy-col-unit{width:5%}' +
+      '.jy-pr-cost .jy-col-qty{width:6%}' +
+      '.jy-pr-cost .jy-col-price{width:7%}' +
+      '.jy-pr-cost .jy-col-amt{width:8%}' +
+      '.jy-pr-cost .jy-col-note{width:10%}' +
+      '.jy-pr-cost .jy-col-ref{width:5%}' +
+      '.jy-pr-cost .jy-col-ratio{width:5%}' +
+      '.jy-pr-mat .jy-col-vendor{width:10%}' +
+      '.jy-pr-mat .jy-col-name{width:22%}' +
+      '.jy-pr-mat .jy-col-cap{width:8%}' +
+      '.jy-pr-mat .jy-col-maker{width:10%}' +
+      '.jy-pr-mat .jy-col-qty{width:7%}' +
+      '.jy-pr-mat .jy-col-price{width:8%}' +
+      '.jy-pr-mat .jy-col-grp{width:7%}' +
+      '.jy-pr-mat .jy-col-amt{width:9%}' +
+      '.jy-pr-mat .jy-col-basis{width:11%}'
+    );
+  }
+
+  function injectPrintPortalCss() {
+    if (document.getElementById('jy-print-portal-css')) return;
+    const st = document.createElement('style');
+    st.id = 'jy-print-portal-css';
+    st.textContent = printPortalStylesheet();
+    document.head.appendChild(st);
+  }
+
+  function ensurePrintPortal() {
+    let el = document.getElementById('jy-print-portal');
+    if (el) return el;
+    el = document.createElement('div');
+    el.id = 'jy-print-portal';
+    document.body.appendChild(el);
+    return el;
+  }
+
+  function bindPrintPortalCleanup() {
+    if (jyPrintAfterPrintBound) return;
+    jyPrintAfterPrintBound = true;
+    window.addEventListener('afterprint', function () {
+      const p = document.getElementById('jy-print-portal');
+      if (p) p.innerHTML = '';
+    }, false);
+  }
+
+  function printPrepState() {
+    syncInputs();
+    recalcState(state);
+  }
+
+  function printMetaFields() {
+    return [
+      ['版種別', state.version_type],
+      ['工事コード', state.project_code],
+      ['工事正式名称', state.project_official_name],
+      ['工事名称', state.project_name],
+      ['桁種別', state.girder_type],
+      ['発注支社', state.order_branch],
+      ['部門', state.department],
+      ['発注者', state.client_name],
+      ['安衛則88条', state.safety_rule_88],
+      ['現場入場予定日', state.site_entry_date],
+      ['立案日', state.draft_date],
+      ['作成日', state.record_created_date],
+      ['着手日', state.start_date],
+      ['竣工日', state.end_date],
+      ['作成者', state.created_by_name],
+      ['担当者', state.person_in_charge_name],
+      ['ステータス', state.status],
+      ['備考', state.note],
+    ];
+  }
+
+  function renderPrintMetaHtml() {
+    let html = '<div class="jy-pr-meta">';
+    printMetaFields().forEach(function (pair) {
+      html += '<div class="jy-pr-meta-item"><span class="jy-pr-meta-label">' + esc(pair[0]) + '</span><span class="jy-pr-meta-val">' + esc(pair[1] || '') + '</span></div>';
+    });
+    html += '</div>';
+    return html;
+  }
+
+  function renderPrintDocHead(sheetTitle) {
+    return (
+      '<h1 class="jy-pr-doc-title">実　行　予　算　書</h1>' +
+      '<p class="jy-pr-sheet-title">' + esc(sheetTitle) + '</p>' +
+      renderPrintMetaHtml()
+    );
+  }
+
+  function renderPrintSpecTable() {
+    let html = '<div class="jy-pr-section"><div class="jy-pr-sec-head">仕様明細（①）</div><div class="jy-pr-wrap">';
+    html += '<table class="jy-pr-table jy-pr-spec"><thead><tr>' +
+      '<th class="jy-col-spec">仕様</th><th>単位</th><th>数量</th><th>単価</th><th class="jy-num">金額</th><th>備考</th>' +
+      '</tr></thead><tbody>';
+    state.spec_lines.forEach(function (r) {
+      html += '<tr><td>' + esc(r.spec_name) + '</td><td>' + esc(r.spec_unit) + '</td>';
+      html += '<td class="jy-num">' + esc(r.spec_qty) + '</td>';
+      html += '<td class="jy-num">' + esc(formatUnitPrice(r.spec_unit_price)) + '</td>';
+      html += '<td class="jy-num">' + fmt(r.spec_amount) + '</td><td>' + esc(r.spec_note) + '</td></tr>';
+    });
+    html += '</tbody><tfoot><tr><td colspan="4" class="jy-num">合計 …①</td><td class="jy-num">' + fmt(state.contract_total_1) + '</td><td></td></tr></tfoot></table></div></div>';
+    return html;
+  }
+
+  function renderPrintCostTable() {
+    const lines = state.cost_lines;
+    let html = '<div class="jy-pr-section jy-pr-break-before"><div class="jy-pr-sec-head">原価行（②〜⑧）</div><div class="jy-pr-wrap">';
+    html += '<table class="jy-pr-table jy-pr-cost"><thead><tr>' +
+      '<th class="jy-col-wcd">工種CD</th><th class="jy-col-wt">システム入力工種</th><th class="jy-col-ccd">種別CD</th><th class="jy-col-cat">種別</th>' +
+      '<th class="jy-col-kind">行種別</th><th class="jy-col-tax">消費税</th><th class="jy-col-unit">単位</th><th class="jy-col-qty">数量</th>' +
+      '<th class="jy-col-price">単価</th><th class="jy-col-amt jy-num">金額</th><th class="jy-col-note">計算基準・備考</th><th class="jy-col-ref">詳細</th><th class="jy-col-ratio jy-num">率</th>' +
+      '</tr></thead><tbody>';
+    lines.forEach(function (r, i) {
+      const isLink = r.cost_row_kind === '連携';
+      const isSub = r.cost_row_kind === '小計';
+      const rowCls = isLink ? 'jy-pr-link' : (isSub ? 'jy-pr-sub' : '');
+      const subAmt = isSub ? (r.subtotal_display_amount != null ? r.subtotal_display_amount : r.cost_amount) : r.cost_amount;
+      html += '<tr class="' + rowCls + '">';
+      if (isSub) {
+        html += '<td colspan="9" class="jy-pr-sub-label"><span class="jy-pr-sub-badge">計</span></td>';
+        html += '<td class="jy-num jy-pr-sub-amt">' + fmt(subAmt) + '</td>';
+        html += '<td>' + esc(subtotalBasisNote(r)) + '</td><td></td><td class="jy-num">' + fmtPct(r.cost_ratio) + '</td>';
+      } else {
+        const wcd = costPrintDisplay(lines, i, 'wcd', 'cost_work_type_code');
+        const wt = costPrintDisplay(lines, i, 'wt', 'cost_work_type');
+        const ccd = costPrintDisplay(lines, i, 'ccd', 'cost_category_code');
+        const cat = costPrintDisplay(lines, i, 'cat', 'cost_category');
+        html += '<td class="' + (wcd === '〃' ? 'jy-pr-ditto' : '') + '">' + esc(wcd) + '</td>';
+        html += '<td class="' + (wt === '〃' ? 'jy-pr-ditto' : '') + '">' + esc(wt) + '</td>';
+        html += '<td class="' + (ccd === '〃' ? 'jy-pr-ditto' : '') + '">' + esc(ccd) + '</td>';
+        html += '<td class="' + (cat === '〃' ? 'jy-pr-ditto' : '') + '">' + esc(cat) + '</td>';
+        html += '<td>' + esc(rowKindDisplay(r.cost_row_kind)) + '</td>';
+        html += '<td>' + esc(r.cost_tax_rate) + '</td><td>' + esc(r.cost_unit) + '</td>';
+        html += '<td class="jy-num">' + esc(r.cost_qty) + '</td>';
+        html += '<td class="jy-num">' + esc(formatUnitPrice(r.cost_unit_price)) + '</td>';
+        html += '<td class="jy-num">' + fmt(r.cost_amount) + '</td>';
+        html += '<td>' + esc(r.cost_basis_note) + '</td>';
+        html += '<td>' + esc(r.detail_marker) + '</td>';
+        html += '<td class="jy-num">' + fmtPct(r.cost_ratio) + '</td>';
+      }
+      html += '</tr>';
+    });
+    html += '</tbody><tfoot>';
+    html += '<tr><td colspan="9">工事原価額 …⑧</td><td class="jy-num">' + fmt(state.cost_total_8) + '</td><td colspan="3"></td></tr>';
+    html += '<tr><td colspan="9">粗利 …⑨</td><td class="jy-num">' + fmt(state.profit_9) + '</td><td colspan="2" class="jy-num">' + fmtPct(state.profit_rate) + '</td><td></td></tr>';
+    html += '</tfoot></table></div></div>';
+    return html;
+  }
+
+  function renderPrintMatBlock(title, group, totalLabel, totalAmount) {
+    let html = '<div class="jy-pr-section' + (group === 'その他' ? ' jy-pr-break-before' : '') + '">';
+    html += '<div class="jy-pr-block-head">' + esc(title) + '</div><div class="jy-pr-wrap">';
+    html += '<table class="jy-pr-table jy-pr-mat"><thead><tr>' +
+      '<th class="jy-col-vendor">仕入先</th><th class="jy-col-name">品名</th><th class="jy-col-cap">容量</th><th class="jy-col-maker">メーカー</th>' +
+      '<th class="jy-col-qty">所要量</th><th class="jy-col-price">単価</th><th class="jy-col-grp">区分</th><th class="jy-col-amt jy-num">金額</th><th class="jy-col-basis">計算基準</th>' +
+      '</tr></thead><tbody>';
+    state.mat_lines.forEach(function (r) {
+      if (r.mat_group !== group) return;
+      html += '<tr><td>' + esc(r.mat_vendor) + '</td><td>' + esc(r.mat_name) + '</td><td>' + esc(r.mat_capacity) + '</td>';
+      html += '<td>' + esc(r.mat_maker) + '</td><td class="jy-num">' + esc(r.mat_qty) + '</td>';
+      html += '<td class="jy-num">' + esc(formatUnitPrice(r.mat_unit_price)) + '</td><td>' + esc(r.mat_group) + '</td>';
+      html += '<td class="jy-num">' + fmt(r.mat_amount) + '</td><td>' + esc(r.mat_basis) + '</td></tr>';
+    });
+    html += '</tbody><tfoot><tr><td colspan="7">' + esc(totalLabel) + '</td><td class="jy-num">' + fmt(totalAmount) + '</td><td></td></tr></tfoot></table></div></div>';
+    return html;
+  }
+
+  function renderPrintSubBlock(b, breakBefore) {
+    const mk = BLOCK_MARKERS[b.id];
+    let html = '<div class="jy-pr-section' + (breakBefore ? ' jy-pr-break-before' : '') + '">';
+    html += '<div class="jy-pr-block-head">' + esc(b.label) + ' …' + mk + '</div><div class="jy-pr-wrap">';
+    html += '<table class="jy-pr-table"><thead><tr><th>会社名</th><th>種別</th><th>単位</th><th>数量</th><th>単価</th><th class="jy-num">金額</th><th>計算基準</th></tr></thead><tbody>';
+    state.subcontract_lines.forEach(function (r) {
+      if (r.subcontract_block !== b.id) return;
+      if (r.sub_row_kind === 'vendor') {
+        html += '<tr><td colspan="2">' + esc(r.sub_vendor) + '</td><td colspan="5"></td></tr>';
+        return;
+      }
+      const calcRow = SUB_CALC.has(r.sub_row_kind) || r.sub_row_kind === 'overhead';
+      html += '<tr' + (calcRow ? ' class="jy-pr-sub"' : '') + '><td></td><td>' + esc(r.sub_line_type) + '</td>';
+      if (calcRow) {
+        html += '<td>' + esc(r.sub_unit) + '</td><td colspan="2"></td><td class="jy-num">' + fmt(r.sub_amount) + '</td><td>' + esc(r.sub_basis) + '</td></tr>';
+      } else {
+        html += '<td>' + esc(r.sub_unit) + '</td><td class="jy-num">' + esc(r.sub_qty) + '</td>';
+        html += '<td class="jy-num">' + esc(formatUnitPrice(r.sub_unit_price)) + '</td>';
+        html += '<td class="jy-num">' + fmt(r.sub_amount) + '</td><td>' + esc(r.sub_basis) + '</td></tr>';
+      }
+    });
+    html += '</tbody></table></div></div>';
+    return html;
+  }
+
+  function buildPrintSummaryHtml() {
+    return renderPrintDocHead('（　総　括　表　）') + renderPrintSpecTable() + renderPrintCostTable();
+  }
+
+  function buildPrintDetailHtml() {
+    let html = renderPrintDocHead('（　詳　細　表　）');
+    html += renderPrintMatBlock('② 材料明細（塗料）', '塗料', '② 塗料合計', state.mat_total_2);
+    html += renderPrintMatBlock('③ 材料明細（その他）', 'その他', '③ その他合計', state.mat_total_3);
+    SUB_BLOCKS.forEach(function (b, idx) {
+      html += renderPrintSubBlock(b, idx > 0);
+    });
+    return html;
+  }
+
+  function openTabPrint(mode) {
+    try {
+      printPrepState();
+      const bodyHtml = mode === 'summary' ? buildPrintSummaryHtml() : buildPrintDetailHtml();
+      if (!bodyHtml || bodyHtml.indexOf('jy-pr-table') < 0) throw new Error('印刷HTMLの生成に失敗しました');
+      injectPrintPortalCss();
+      bindPrintPortalCleanup();
+      const portal = ensurePrintPortal();
+      portal.innerHTML = '<div class="jy-pr jy-pr-doc">' + bodyHtml + '</div>';
+      window.requestAnimationFrame(function () {
+        window.requestAnimationFrame(function () {
+          try {
+            window.print();
+          } catch (err) {
+            console.warn(BUILD, err);
+            alert('印刷を開始できませんでした: ' + (err.message || err));
+          }
+        });
+      });
+    } catch (e) {
+      alert('印刷の準備に失敗しました: ' + (e.message || e));
+      console.error(BUILD, e);
+    }
+  }
+
+  function renderFormActionBar() {
+    const saveLabel = state.status === '初版確定' ? '保存' : '一時保存';
+    let html = '<div class="jy-sticky-top">';
     if (dirty) html += '<div class="jy-dirty" id="jy-dirty">● 未保存の変更があります</div>';
-    html += '<div class="jy-bar"><button type="button" class="jy-btn" id="jy-back-list">← 一覧</button>';
-    html += '<strong>' + esc(state.project_code || '新規') + '</strong> <span class="jy-meta">' + esc(state.status) + ' / BUILD ' + BUILD + '</span></div>';
+    html += '<div class="jy-bar jy-action-bar">';
+    html += '<button type="button" class="jy-btn" id="jy-back-list">← 一覧</button>';
+    html += '<strong>' + esc(state.project_code || '新規') + '</strong> <span class="jy-meta">' + esc(state.status) + '</span>';
+    html += '<div class="jy-action-bar-right">';
+    html += renderFontToggle();
+    if (!readOnly) {
+      html += '<div class="jy-action-group">';
+      html += '<button type="button" class="jy-btn jy-btn-primary" id="jy-save">' + esc(saveLabel) + '</button>';
+      html += '<button type="button" class="jy-btn" id="jy-recalc">再計算</button>';
+      if (state.status !== '初版確定') {
+        html += '<button type="button" class="jy-btn" id="jy-confirm">初版確定</button>';
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+    html += '</div></div>';
+    return html;
+  }
+
+  function renderForm() {
+    let html = renderFormActionBar();
     html += renderHeader();
     html += '<div class="jy-tabs"><button type="button" class="jy-tab' + (activeTab === 'summary' ? ' active' : '') + '" data-tab="summary">総括表</button>';
     html += '<button type="button" class="jy-tab' + (activeTab === 'detail' ? ' active' : '') + '" data-tab="detail">詳細表</button></div>';
     html += '<div class="jy-tab-hint">' + (activeTab === 'summary'
-      ? '番号または連携行の金額をクリックすると詳細表の該当ブロックへ移動します'
-      : '番号または合計金額をクリックすると総括表の連携行へ移動します') +
-      '<span class="jy-legend-linked">緑 = 詳細表連携（②〜⑦）</span></div>';
+      ? '番号または詳細表と連携行の金額をクリックすると詳細表の該当ブロックへ移動します'
+      : '番号または合計金額をクリックすると総括表の詳細表と連携行へ移動します') +
+      '<span class="jy-legend-linked">緑 = 詳細表と連携（②〜⑦）</span>' +
+      (readOnly ? '' : '<span class="jy-legend-linked" style="margin-left:8px;background:#f1f5f9;border-color:#cbd5e1;color:#475569">見出しの「末尾に追加」または各行の ＋ で挿入</span>') + '</div>';
     if (activeTab === 'summary') {
-      html += '<div class="jy-pane"><div class="jy-title">実　行　予　算　書　（　総　括　表　）</div>' + renderSummary() + '</div>';
+      html += '<div class="jy-pane"><div class="jy-pane-head"><div class="jy-title">実　行　予　算　書　（　総　括　表　）</div>';
+      html += '<button type="button" class="jy-btn" id="jy-print-summary">印刷</button></div>' + renderSummary() + '</div>';
     } else {
-      html += '<div class="jy-pane">' + renderDetail() + '</div>';
-    }
-    if (!readOnly) {
-      html += '<div class="jy-bar"><button type="button" class="jy-btn jy-btn-primary" id="jy-save">保存</button>';
-      html += '<button type="button" class="jy-btn" id="jy-recalc">再計算</button>';
-      html += '<button type="button" class="jy-btn" id="jy-confirm">初版確定</button></div>';
+      html += '<div class="jy-pane"><div class="jy-pane-head"><div class="jy-pane-title">実　行　予　算　書　（　詳　細　表　）</div>';
+      html += '<button type="button" class="jy-btn" id="jy-print-detail">印刷</button></div>' + renderDetail() + '</div>';
     }
     return html;
   }
 
   function renderList() {
-    let html = '<div class="jy-title">【実行予算書】ver.01</div>';
-    html += '<div class="jy-subtitle">Excel 風フォームで総括表・詳細表を入力します（リストマスタ App ' + APP_MASTER + ' 連動）</div>';
-    html += '<div class="jy-bar"><button type="button" class="jy-btn jy-btn-primary" id="jy-new">＋ 新規作成</button><span class="jy-meta">BUILD ' + BUILD + '</span></div>';
-    html += '<div class="jy-excel-wrap"><table class="jy-table jy-list-table"><thead><tr><th>No.</th><th>工事コード</th><th>工事名称</th><th>版種別</th><th>立案日</th><th>ステータス</th><th class="jy-num">契約合計①</th><th class="jy-num">粗利⑨</th></tr></thead><tbody>';
-    if (!listRows.length) {
+    let html = '<div class="jy-title">実行予算書作成支援ツール　ver.01</div>';
+    html += '<div class="jy-subtitle">Excel 風フォームで総括表・詳細表を作成出来るツールです。</div>';
+    html += '<div class="jy-bar jy-list-toolbar"><button type="button" class="jy-btn jy-btn-primary" id="jy-new">＋ 新規作成</button>';
+    html += '<label><span class="jy-search-label">検索</span><input type="search" id="jy-list-search" class="jy-list-search" placeholder="工事名称・版種別・ステータス・日付など" value="' + esc(listSearchQuery) + '"></label>';
+    html += '<button type="button" class="jy-btn" id="jy-list-search-clear">クリア</button>';
+    html += '<span class="jy-list-count" id="jy-list-count">' + esc(listCountLabel()) + '</span>';
+    html += renderFontToggle();
+    html += '</div>';
+    html += '<div class="jy-excel-wrap"><table class="jy-table jy-list-table"><thead><tr>' +
+      listSortTh('project_name', '工事名称') +
+      '<th>版種別</th>' +
+      listSortTh('draft_date', '立案日') +
+      listSortTh('created_at', '作成日') +
+      listSortTh('updated_at', '更新日') +
+      listSortTh('status', 'ステータス') +
+      '<th class="jy-num">契約合計①</th><th class="jy-num">粗利⑨</th></tr></thead><tbody>';
+    if (!listRowsAll.length) {
       html += '<tr><td colspan="8" style="text-align:center;padding:24px">レコードがありません。「新規作成」から開始してください。</td></tr>';
+    } else if (!listRows.length) {
+      html += '<tr><td colspan="8" style="text-align:center;padding:24px">検索条件に一致するレコードがありません。</td></tr>';
     } else {
       listRows.forEach(function (r) {
-        html += '<tr data-open-id="' + esc(r.id) + '" title="クリックで詳細を開く"><td class="jy-num">' + esc(r.id) + '</td><td class="jy-list-code">' + esc(r.project_code) + '</td><td>' + esc(r.project_name) + '</td><td>' + esc(r.version_type) + '</td><td>' + esc(r.draft_date) + '</td><td>' + esc(r.status) + '</td><td class="jy-num">' + fmt(r.contract_total_1) + '</td><td class="jy-num">' + fmt(r.profit_9) + '</td></tr>';
+        html += '<tr data-open-id="' + esc(r.id) + '" title="クリックで詳細を開く"><td>' + esc(r.project_name) + '</td><td>' + esc(r.version_type) + '</td><td>' + esc(r.draft_date) + '</td><td>' + esc(r.created_at) + '</td><td>' + esc(r.updated_at) + '</td><td>' + esc(r.status) + '</td><td class="jy-num">' + fmt(r.contract_total_1) + '</td><td class="jy-num">' + fmt(r.profit_9) + '</td></tr>';
       });
     }
     html += '</tbody></table></div>';
@@ -1159,6 +2285,7 @@
   function render() {
     const root = document.getElementById('jy-root');
     if (!root) return;
+    root.style.fontSize = fontPx();
     root.innerHTML = uiScreen === 'list' ? renderList() : renderForm();
     bindEvents(root);
   }
@@ -1177,6 +2304,20 @@
     });
     const panel = document.getElementById('jy-header-panel');
     if (panel) panel.addEventListener('toggle', function () { headerOpen = panel.open; });
+    const legendPanel = document.getElementById('jy-header-legend-panel');
+    if (legendPanel) legendPanel.addEventListener('toggle', function () { headerLegendOpen = legendPanel.open; });
+    const specHelpPanel = document.getElementById('jy-spec-help-panel');
+    if (specHelpPanel) specHelpPanel.addEventListener('toggle', function () { headerSpecHelpOpen = specHelpPanel.open; });
+    const costHelpPanel = document.getElementById('jy-cost-help-panel');
+    if (costHelpPanel) costHelpPanel.addEventListener('toggle', function () { headerCostHelpOpen = costHelpPanel.open; });
+    const detailHelpPanel = document.getElementById('jy-detail-help-panel');
+    if (detailHelpPanel) detailHelpPanel.addEventListener('toggle', function () { headerDetailHelpOpen = detailHelpPanel.open; });
+
+    bindFontToggle(root);
+
+    bindUnitPriceInputs(root);
+
+    bindPersonNameFields();
 
     const newBtn = document.getElementById('jy-new');
     if (newBtn) newBtn.addEventListener('click', function () {
@@ -1188,9 +2329,45 @@
       render();
     });
 
+    const listSearch = document.getElementById('jy-list-search');
+    if (listSearch) {
+      listSearch.addEventListener('input', function () {
+        listSearchQuery = listSearch.value;
+        applyListFilter();
+        render();
+        const el = document.getElementById('jy-list-search');
+        if (el) {
+          el.focus();
+          const len = el.value.length;
+          el.setSelectionRange(len, len);
+        }
+      });
+    }
+    const listSearchClear = document.getElementById('jy-list-search-clear');
+    if (listSearchClear) listSearchClear.addEventListener('click', function () {
+      listSearchQuery = '';
+      applyListFilter();
+      render();
+    });
+
     root.querySelectorAll('[data-open-id]').forEach(function (tr) {
       tr.addEventListener('click', function () {
         openRecord(tr.getAttribute('data-open-id'));
+      });
+    });
+
+    root.querySelectorAll('.jy-sort-th').forEach(function (th) {
+      th.addEventListener('click', function () {
+        const key = th.getAttribute('data-sort-key');
+        if (!key || LIST_SORTABLE_KEYS.indexOf(key) < 0) return;
+        if (listSortKey === key) {
+          listSortDir = listSortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+          listSortKey = key;
+          listSortDir = LIST_DATE_SORT_KEYS.indexOf(key) >= 0 ? 'desc' : 'asc';
+        }
+        applyListSort();
+        render();
       });
     });
 
@@ -1203,6 +2380,7 @@
     });
 
     applyPendingScroll();
+    applyPendingRowHighlight();
 
     const back = document.getElementById('jy-back-list');
     if (back) back.addEventListener('click', function () {
@@ -1218,16 +2396,27 @@
     if (recalcBtn) recalcBtn.addEventListener('click', function () { syncInputs(); recalcState(state); render(); });
     const confirmBtn = document.getElementById('jy-confirm');
     if (confirmBtn) confirmBtn.addEventListener('click', function () {
+      if (!window.confirm('初版を確定します。確定後も編集は可能ですが、ステータスは「初版確定」になります。よろしいですか？')) return;
       state.status = '初版確定';
-      saveRecord();
+      saveRecord({ isConfirm: true });
     });
 
-    const specAdd = document.getElementById('jy-spec-add');
-    if (specAdd) specAdd.addEventListener('click', function () {
-      syncInputs();
-      state.spec_lines.push({ spec_name: '', spec_unit: '', spec_qty: '', spec_unit_price: '', spec_amount: 0, spec_note: '' });
-      markDirty();
-      render();
+    const printSummaryBtn = document.getElementById('jy-print-summary');
+    if (printSummaryBtn) printSummaryBtn.addEventListener('click', function () { openTabPrint('summary'); });
+    const printDetailBtn = document.getElementById('jy-print-detail');
+    if (printDetailBtn) printDetailBtn.addEventListener('click', function () { openTabPrint('detail'); });
+
+    root.querySelectorAll('[data-spec-add]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        insertSpecRowAtEnd();
+      });
+    });
+    root.querySelectorAll('[data-spec-add-after]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        insertSpecRowAfter(Number(btn.getAttribute('data-spec-add-after')));
+      });
     });
     root.querySelectorAll('[data-spec-del]').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
@@ -1239,29 +2428,41 @@
       });
     });
 
-    const costAdd = document.getElementById('jy-cost-add');
-    if (costAdd) costAdd.addEventListener('click', function () {
-      syncInputs();
-      state.cost_lines.push(blankCostRow({ cost_row_kind: 'detail' }));
-      markDirty();
-      render();
+    root.querySelectorAll('[data-cost-add]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        insertCostRowAtEnd();
+      });
+    });
+    root.querySelectorAll('[data-cost-add-after]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        insertCostRowAfter(Number(btn.getAttribute('data-cost-add-after')));
+      });
     });
     root.querySelectorAll('[data-cost-del]').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
         syncInputs();
-        state.cost_lines.splice(Number(btn.getAttribute('data-cost-del')), 1);
+        const idx = Number(btn.getAttribute('data-cost-del'));
+        const r = lineAt(state.cost_lines, idx);
+        if (!r || r.cost_row_kind === '小計') return;
+        state.cost_lines.splice(idx, 1);
         markDirty();
         render();
       });
     });
 
     root.querySelectorAll('[data-mat-add]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        syncInputs();
-        state.mat_lines.push(blankMatRow(btn.getAttribute('data-mat-add') || '塗料'));
-        markDirty();
-        render();
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        insertMatRowAtGroupEnd(btn.getAttribute('data-mat-add') || '塗料');
+      });
+    });
+    root.querySelectorAll('[data-mat-add-after]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        insertMatRowAfter(Number(btn.getAttribute('data-mat-add-after')));
       });
     });
     root.querySelectorAll('[data-mat-del]').forEach(function (btn) {
@@ -1275,8 +2476,15 @@
     });
 
     root.querySelectorAll('[data-sub-add]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
         insertSubDetailRow(btn.getAttribute('data-sub-add'));
+      });
+    });
+    root.querySelectorAll('[data-sub-add-after]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        insertSubRowAfter(Number(btn.getAttribute('data-sub-add-after')));
       });
     });
     root.querySelectorAll('[data-sub-del]').forEach(function (btn) {
@@ -1285,7 +2493,7 @@
         syncInputs();
         const idx = Number(btn.getAttribute('data-sub-del'));
         const r = state.subcontract_lines[idx];
-        if (!r || !canDeleteSubRow(r)) return;
+        if (!r || !canDeleteSubRow(r, r.subcontract_block)) return;
         state.subcontract_lines.splice(idx, 1);
         markDirty();
         render();
@@ -1296,6 +2504,41 @@
     bindCostLineFieldSync(root, 'data-cost-wcd', 'wcd');
     bindCostLineFieldSync(root, 'data-cost-cat', 'cat');
     bindCostLineFieldSync(root, 'data-cost-ccd', 'ccd');
+    bindCostLineCollapseDisplay(root);
+  }
+
+  function bindPersonNameFields() {
+    const createdInput = document.getElementById('jy-created-by-name');
+    const personInput = document.getElementById('jy-person-in-charge-name');
+    if (createdInput && !readOnly) {
+      createdInput.addEventListener('input', function () {
+        state.created_by_name = normalizePersonName(createdInput.value);
+        syncPersonInChargeFromCreator(true);
+        markDirty();
+      });
+      createdInput.addEventListener('change', function () {
+        state.created_by_name = normalizePersonName(createdInput.value);
+        syncPersonInChargeFromCreator(true);
+        markDirty();
+      });
+    }
+    if (personInput && !readOnly) {
+      personInput.addEventListener('input', function () {
+        personInChargeManual = true;
+        state.person_in_charge_name = normalizePersonName(personInput.value);
+        markDirty();
+      });
+      personInput.addEventListener('change', function () {
+        personInChargeManual = true;
+        state.person_in_charge_name = normalizePersonName(personInput.value);
+        markDirty();
+      });
+    }
+  }
+
+  function lineAt(lines, i) {
+    if (!lines || i < 0 || i >= lines.length) return null;
+    return lines[i];
   }
 
   function syncInputs() {
@@ -1307,6 +2550,12 @@
     state.version_type = g('jy-version') || '当初';
     state.site_entry_date = g('jy-site-entry');
     state.draft_date = g('jy-draft-date');
+    state.created_by_name = normalizePersonName(g('jy-created-by-name'));
+    if (!personInChargeManual) {
+      state.person_in_charge_name = state.created_by_name;
+    } else {
+      state.person_in_charge_name = normalizePersonName(g('jy-person-in-charge-name'));
+    }
     state.project_code = g('jy-project-code');
     state.project_official_name = g('jy-project-official');
     state.project_name = g('jy-project-name');
@@ -1321,117 +2570,149 @@
     state.note = g('jy-note');
 
     document.querySelectorAll('[data-spec-name]').forEach(function (el) {
-      state.spec_lines[Number(el.getAttribute('data-spec-name'))].spec_name = el.value;
+      const r = lineAt(state.spec_lines, Number(el.getAttribute('data-spec-name')));
+      if (r) r.spec_name = el.value;
     });
     document.querySelectorAll('[data-spec-unit]').forEach(function (el) {
-      state.spec_lines[Number(el.getAttribute('data-spec-unit'))].spec_unit = el.value;
+      const r = lineAt(state.spec_lines, Number(el.getAttribute('data-spec-unit')));
+      if (r) r.spec_unit = el.value;
     });
     document.querySelectorAll('[data-spec-qty]').forEach(function (el) {
-      state.spec_lines[Number(el.getAttribute('data-spec-qty'))].spec_qty = el.value;
+      const r = lineAt(state.spec_lines, Number(el.getAttribute('data-spec-qty')));
+      if (r) r.spec_qty = el.value;
     });
     document.querySelectorAll('[data-spec-price]').forEach(function (el) {
-      state.spec_lines[Number(el.getAttribute('data-spec-price'))].spec_unit_price = el.value;
+      const r = lineAt(state.spec_lines, Number(el.getAttribute('data-spec-price')));
+      if (r) r.spec_unit_price = normalizeUnitPriceVal(el.value);
     });
     document.querySelectorAll('[data-spec-note]').forEach(function (el) {
-      state.spec_lines[Number(el.getAttribute('data-spec-note'))].spec_note = el.value;
+      const r = lineAt(state.spec_lines, Number(el.getAttribute('data-spec-note')));
+      if (r) r.spec_note = el.value;
     });
 
     document.querySelectorAll('[data-cost-wcd]').forEach(function (el) {
-      state.cost_lines[Number(el.getAttribute('data-cost-wcd'))].cost_work_type_code = el.value;
+      syncCostLineFieldFromInput(el, 'data-cost-wcd', 'cost_work_type_code');
     });
     document.querySelectorAll('[data-cost-wt]').forEach(function (el) {
-      state.cost_lines[Number(el.getAttribute('data-cost-wt'))].cost_work_type = el.value;
+      syncCostLineFieldFromInput(el, 'data-cost-wt', 'cost_work_type');
     });
     document.querySelectorAll('[data-cost-ccd]').forEach(function (el) {
-      state.cost_lines[Number(el.getAttribute('data-cost-ccd'))].cost_category_code = el.value;
+      syncCostLineFieldFromInput(el, 'data-cost-ccd', 'cost_category_code');
     });
     document.querySelectorAll('[data-cost-cat]').forEach(function (el) {
-      state.cost_lines[Number(el.getAttribute('data-cost-cat'))].cost_category = el.value;
+      syncCostLineFieldFromInput(el, 'data-cost-cat', 'cost_category');
     });
     document.querySelectorAll('[data-cost-kind]').forEach(function (el) {
-      state.cost_lines[Number(el.getAttribute('data-cost-kind'))].cost_row_kind = el.value;
+      const r = lineAt(state.cost_lines, Number(el.getAttribute('data-cost-kind')));
+      if (r) r.cost_row_kind = el.value;
     });
     document.querySelectorAll('[data-cost-tax]').forEach(function (el) {
-      state.cost_lines[Number(el.getAttribute('data-cost-tax'))].cost_tax_rate = el.value;
+      const r = lineAt(state.cost_lines, Number(el.getAttribute('data-cost-tax')));
+      if (r) r.cost_tax_rate = el.value;
     });
     document.querySelectorAll('[data-cost-unit]').forEach(function (el) {
-      state.cost_lines[Number(el.getAttribute('data-cost-unit'))].cost_unit = el.value;
+      const r = lineAt(state.cost_lines, Number(el.getAttribute('data-cost-unit')));
+      if (r) r.cost_unit = el.value;
     });
     document.querySelectorAll('[data-cost-qty]').forEach(function (el) {
       const i = Number(el.getAttribute('data-cost-qty'));
-      state.cost_lines[i].cost_qty = el.value;
-      if (state.cost_lines[i].cost_row_kind === '明細') {
-        state.cost_lines[i].cost_amount = num(el.value) * num(state.cost_lines[i].cost_unit_price);
+      const r = lineAt(state.cost_lines, i);
+      if (!r) return;
+      r.cost_qty = el.value;
+      if (r.cost_row_kind === '明細') {
+        r.cost_amount = parseNumInput(el.value) * parseNumInput(r.cost_unit_price);
       }
     });
     document.querySelectorAll('[data-cost-price]').forEach(function (el) {
       const i = Number(el.getAttribute('data-cost-price'));
-      state.cost_lines[i].cost_unit_price = el.value;
-      if (state.cost_lines[i].cost_row_kind === '明細') {
-        state.cost_lines[i].cost_amount = num(state.cost_lines[i].cost_qty) * num(el.value);
+      const r = lineAt(state.cost_lines, i);
+      if (!r) return;
+      r.cost_unit_price = normalizeUnitPriceVal(el.value);
+      if (r.cost_row_kind === '明細') {
+        r.cost_amount = parseNumInput(r.cost_qty) * parseNumInput(el.value);
       }
     });
     document.querySelectorAll('[data-cost-note]').forEach(function (el) {
-      state.cost_lines[Number(el.getAttribute('data-cost-note'))].cost_basis_note = el.value;
+      const r = lineAt(state.cost_lines, Number(el.getAttribute('data-cost-note')));
+      if (r) r.cost_basis_note = el.value;
     });
 
     document.querySelectorAll('[data-mat-vendor]').forEach(function (el) {
-      state.mat_lines[Number(el.getAttribute('data-mat-vendor'))].mat_vendor = el.value;
+      const r = lineAt(state.mat_lines, Number(el.getAttribute('data-mat-vendor')));
+      if (r) r.mat_vendor = el.value;
     });
     document.querySelectorAll('[data-mat-name]').forEach(function (el) {
-      state.mat_lines[Number(el.getAttribute('data-mat-name'))].mat_name = el.value;
+      const r = lineAt(state.mat_lines, Number(el.getAttribute('data-mat-name')));
+      if (r) r.mat_name = el.value;
     });
     document.querySelectorAll('[data-mat-cap]').forEach(function (el) {
-      state.mat_lines[Number(el.getAttribute('data-mat-cap'))].mat_capacity = el.value;
+      const r = lineAt(state.mat_lines, Number(el.getAttribute('data-mat-cap')));
+      if (r) r.mat_capacity = el.value;
     });
     document.querySelectorAll('[data-mat-maker]').forEach(function (el) {
-      state.mat_lines[Number(el.getAttribute('data-mat-maker'))].mat_maker = el.value;
+      const r = lineAt(state.mat_lines, Number(el.getAttribute('data-mat-maker')));
+      if (r) r.mat_maker = el.value;
     });
     document.querySelectorAll('[data-mat-qty]').forEach(function (el) {
-      state.mat_lines[Number(el.getAttribute('data-mat-qty'))].mat_qty = el.value;
+      const r = lineAt(state.mat_lines, Number(el.getAttribute('data-mat-qty')));
+      if (r) r.mat_qty = el.value;
     });
     document.querySelectorAll('[data-mat-price]').forEach(function (el) {
-      state.mat_lines[Number(el.getAttribute('data-mat-price'))].mat_unit_price = el.value;
+      const r = lineAt(state.mat_lines, Number(el.getAttribute('data-mat-price')));
+      if (r) r.mat_unit_price = normalizeUnitPriceVal(el.value);
     });
     document.querySelectorAll('[data-mat-grp]').forEach(function (el) {
-      state.mat_lines[Number(el.getAttribute('data-mat-grp'))].mat_group = el.value;
+      const r = lineAt(state.mat_lines, Number(el.getAttribute('data-mat-grp')));
+      if (r) r.mat_group = el.value;
     });
     document.querySelectorAll('[data-mat-basis]').forEach(function (el) {
-      state.mat_lines[Number(el.getAttribute('data-mat-basis'))].mat_basis = el.value;
+      const r = lineAt(state.mat_lines, Number(el.getAttribute('data-mat-basis')));
+      if (r) r.mat_basis = el.value;
     });
 
     document.querySelectorAll('[data-sub-vendor]').forEach(function (el) {
-      state.subcontract_lines[Number(el.getAttribute('data-sub-vendor'))].sub_vendor = el.value;
+      const r = lineAt(state.subcontract_lines, Number(el.getAttribute('data-sub-vendor')));
+      if (r) r.sub_vendor = el.value;
     });
     document.querySelectorAll('[data-sub-qty]').forEach(function (el) {
       const i = Number(el.getAttribute('data-sub-qty'));
-      state.subcontract_lines[i].sub_qty = el.value;
-      state.subcontract_lines[i].sub_amount = num(el.value) * num(state.subcontract_lines[i].sub_unit_price);
+      const r = lineAt(state.subcontract_lines, i);
+      if (!r) return;
+      r.sub_qty = el.value;
+      r.sub_amount = parseNumInput(el.value) * parseNumInput(r.sub_unit_price);
     });
     document.querySelectorAll('[data-sub-price]').forEach(function (el) {
       const i = Number(el.getAttribute('data-sub-price'));
-      state.subcontract_lines[i].sub_unit_price = el.value;
-      state.subcontract_lines[i].sub_amount = num(state.subcontract_lines[i].sub_qty) * num(el.value);
+      const r = lineAt(state.subcontract_lines, i);
+      if (!r) return;
+      r.sub_unit_price = normalizeUnitPriceVal(el.value);
+      r.sub_amount = parseNumInput(r.sub_qty) * parseNumInput(el.value);
     });
     document.querySelectorAll('[data-sub-unit]').forEach(function (el) {
-      state.subcontract_lines[Number(el.getAttribute('data-sub-unit'))].sub_unit = el.value;
+      const r = lineAt(state.subcontract_lines, Number(el.getAttribute('data-sub-unit')));
+      if (r) r.sub_unit = el.value;
     });
     document.querySelectorAll('[data-sub-basis]').forEach(function (el) {
-      state.subcontract_lines[Number(el.getAttribute('data-sub-basis'))].sub_basis = el.value;
+      const r = lineAt(state.subcontract_lines, Number(el.getAttribute('data-sub-basis')));
+      if (r) r.sub_basis = el.value;
     });
     document.querySelectorAll('[data-sub-type]').forEach(function (el) {
-      state.subcontract_lines[Number(el.getAttribute('data-sub-type'))].sub_line_type = el.value;
+      const r = lineAt(state.subcontract_lines, Number(el.getAttribute('data-sub-type')));
+      if (r) r.sub_line_type = el.value;
     });
-    recalcState(state);
   }
 
-  function saveRecord() {
+  function saveRecord(options) {
     if (readOnly) return;
+    const opts = options || {};
     syncInputs();
+    ensureSaveMetadata(state);
     if (!state.project_code || !String(state.project_code).trim()) {
       alert('工事コードを入力してください');
       return;
     }
+    if (!validatePersonNameField('作成者', state.created_by_name)) return;
+    if (!validatePersonNameField('担当者', state.person_in_charge_name)) return;
     const record = stateToKintone(state);
     const appId = kintone.app.getId();
     const req = state.recordId
@@ -1442,7 +2723,12 @@
       dirty = false;
       state.recordId = state.recordId || String(resp.id);
       if (resp.revision) state.revision = String(resp.revision);
-      alert('保存しました (ID: ' + state.recordId + ')');
+      const msg = opts.isConfirm
+        ? '初版を確定しました (ID: ' + state.recordId + ')'
+        : (state.status === '下書き'
+          ? '一時保存しました (ID: ' + state.recordId + ')'
+          : '保存しました (ID: ' + state.recordId + ')');
+      alert(msg);
       uiScreen = 'list';
       refreshList().then(render);
     }).catch(function (e) {
@@ -1455,9 +2741,9 @@
     return kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', {
       app: appId,
       query: 'order by $id desc limit 100',
-      fields: ['$id', 'project_code', 'project_name', 'version_type', 'draft_date', 'status', 'contract_total_1', 'profit_9'],
+      fields: ['$id', 'project_code', 'project_name', 'version_type', 'draft_date', FC.created_datetime, FC.updated_datetime, 'status', 'contract_total_1', 'profit_9'],
     }).then(function (resp) {
-      listRows = (resp.records || []).map(function (rec) {
+      listRowsAll = (resp.records || []).map(function (rec) {
         const id = rec.$id && rec.$id.value != null ? String(rec.$id.value) : '';
         if (!id) return null;
         return {
@@ -1466,13 +2752,17 @@
           project_name: gv(rec, 'project_name'),
           version_type: gv(rec, 'version_type'),
           draft_date: String(gv(rec, 'draft_date')).slice(0, 10),
+          created_at: kintoneDatetimeToJstYmd(gv(rec, FC.created_datetime)),
+          updated_at: kintoneDatetimeToJstYmd(gv(rec, FC.updated_datetime)),
           status: gv(rec, 'status'),
           contract_total_1: num(gv(rec, 'contract_total_1')),
           profit_9: num(gv(rec, 'profit_9')),
         };
       }).filter(function (r) { return r != null; });
+      applyListFilter();
     }).catch(function (e) {
       console.error(BUILD, 'refreshList', e);
+      listRowsAll = [];
       listRows = [];
       alert('一覧取得エラー: ' + (e.message || JSON.stringify(e)));
     });

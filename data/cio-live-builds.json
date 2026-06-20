@@ -306,11 +306,11 @@
       "note": null
     },
     "736": {
-      "build": "2026-06-18-jikkou-yosan-v10-bidir-codes",
-      "fileKey": "60454b71-45a0-47a6-a469-822c23c371a7",
-      "revision": "33",
-      "relPath": ".kintone-deploy/upload-736.js",
-      "deployedAt": "2026-06-18T12:59:51.860Z",
+      "build": "2026-06-20-jikkou-yosan-print-v1",
+      "fileKey": "787caadd-0d75-4dd4-a78c-777a011b4e1c",
+      "revision": "77",
+      "relPath": "customize/736/desktop.js",
+      "deployedAt": "2026-06-20T01:31:37.356Z",
       "note": null
     }
   }
