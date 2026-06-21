@@ -19,6 +19,7 @@ import {
   enumerateIpRange,
   fetchJson,
   getKintoneConfig,
+  computeIpCountFromRange,
   ipToLong,
   loadAppIds,
   loadLocations,
@@ -51,8 +52,6 @@ export function readExcelSites(xlsxPath) {
     if (!rawName) continue;
     const location_name = stripLocationPrefix(rawName);
     const range = parseIpRange(row[7]);
-    const ipCountRaw = row[6];
-    const ip_count = ipCountRaw === '' || ipCountRaw == null ? '' : String(ipCountRaw);
     map.set(location_name, {
       location_name,
       network_address: trimCell(row[1]),
@@ -60,7 +59,6 @@ export function readExcelSites(xlsxPath) {
       gateway: trimCell(row[3]),
       dns_primary: trimCell(row[4]),
       dns_secondary: trimCell(row[5]),
-      ip_count,
       ip_range_start: range.start,
       ip_range_end: range.end,
       address: trimCell(row[8]),
@@ -111,7 +109,8 @@ function buildSiteRecords(excelSites) {
       rec.gateway = { value: ex.gateway };
       rec.dns_primary = { value: ex.dns_primary };
       rec.dns_secondary = { value: ex.dns_secondary };
-      if (ex.ip_count !== '') rec.ip_count = { value: ex.ip_count };
+      const ipCount = computeIpCountFromRange(ex.ip_range_start, ex.ip_range_end);
+      if (ipCount !== '') rec.ip_count = { value: ipCount };
       rec.ip_range_start = { value: ex.ip_range_start };
       rec.ip_range_end = { value: ex.ip_range_end };
       rec.address = { value: ex.address };

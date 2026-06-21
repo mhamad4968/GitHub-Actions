@@ -72,7 +72,7 @@
 | ゲートウェイ | `gateway` | 文字列 |
 | 優先 DNS | `dns_primary` | 文字列 |
 | 代替 DNS | `dns_secondary` | 文字列 |
-| IP 数 | `ip_count` | 数値（Excel「IP数」列。範囲内の使用可能ホスト数） |
+| IP 数 | `ip_count` | 数値。**`ip_range_start`〜`ip_range_end` から台帳 UI が自動計算**（範囲内 IP 数 − 1。Excel 一覧表と同型）。保存時に DB へ書込 |
 | IP アドレス範囲 | `ip_range_start` / `ip_range_end` | 文字列（`10.208.1.2～10.208.1.8` をパース） |
 | 住所 | `address` | 文字列（複数行） |
 | 備考 | `note` | 文字列（複数行） |

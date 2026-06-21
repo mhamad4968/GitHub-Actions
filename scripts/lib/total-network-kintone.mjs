@@ -151,6 +151,13 @@ export function enumerateIpRange(start, end) {
   return out;
 }
 
+/** Excel「IP数」列と同型: 範囲内 IP 数（終端−始端+1）− 1 */
+export function computeIpCountFromRange(start, end) {
+  const ips = enumerateIpRange(start, end);
+  if (!ips.length) return '';
+  return String(Math.max(0, ips.length - 1));
+}
+
 export const DEVICE_TYPE_SEED = [
   { sort_no: 1, device_type_code: 'notebook_pc', device_type_label: 'ノートPC' },
   { sort_no: 2, device_type_code: 'nas', device_type_label: 'NAS' },

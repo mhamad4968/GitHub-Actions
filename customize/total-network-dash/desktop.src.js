@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  var BUILD = "2026-06-21-total-network-dash-v1-conn-method-col";
+  var BUILD = "2026-06-21-total-network-dash-v1-auto-ip-count";
   var APP_DB = 737;
   var PAGE_SIZE = 100;
   var CHECKBOX_CONNECTED = "IPアドレス固定";
@@ -159,6 +159,13 @@
     return ips;
   }
 
+  /** 範囲開始〜終了から IP数を自動算出（Excel 一覧表と同型: 範囲幅 − 1） */
+  function computeIpCountFromRange(start, end) {
+    var ips = enumerateIpRange(start, end);
+    if (!ips.length) return "";
+    return String(Math.max(0, ips.length - 1));
+  }
+
   /* ───── Flatten ───── */
 
   function flattenSite(rec) {
@@ -175,9 +182,12 @@
       gateway: val(rec, FC.gateway),
       dns_primary: val(rec, FC.dns_primary),
       dns_secondary: val(rec, FC.dns_secondary),
-      ip_count: val(rec, FC.ip_count),
       ip_range_start: val(rec, FC.ip_range_start),
       ip_range_end: val(rec, FC.ip_range_end),
+      ip_count: computeIpCountFromRange(
+        val(rec, FC.ip_range_start),
+        val(rec, FC.ip_range_end)
+      ),
       address: val(rec, FC.address),
       note: val(rec, FC.note),
       _changeHistoryRaw: rec[FC.change_history] ? (rec[FC.change_history].value || []) : [],
@@ -533,9 +543,9 @@
       '<label>代替DNS<input type="text" id="tnd-f-dns2" value="' +
       esc(site.dns_secondary) +
       '"></label>' +
-      '<label>IP数<input type="number" id="tnd-f-ipcount" value="' +
-      esc(site.ip_count) +
-      '"></label>' +
+      '<p class="tnd-hint" style="margin:8px 0">IP数: <strong id="tnd-f-ipcount-preview">' +
+      esc(computeIpCountFromRange(site.ip_range_start, site.ip_range_end) || "—") +
+      "</strong>（IPアドレス範囲から自動計算・手入力不可）</p>" +
       '<label>範囲開始<input type="text" id="tnd-f-start" value="' +
       esc(site.ip_range_start) +
       '"></label>' +
@@ -572,12 +582,15 @@
             gateway: document.getElementById("tnd-f-gw").value.trim(),
             dns_primary: document.getElementById("tnd-f-dns1").value.trim(),
             dns_secondary: document.getElementById("tnd-f-dns2").value.trim(),
-            ip_count: document.getElementById("tnd-f-ipcount").value.trim(),
             ip_range_start: document.getElementById("tnd-f-start").value.trim(),
             ip_range_end: document.getElementById("tnd-f-end").value.trim(),
             address: document.getElementById("tnd-f-addr").value.trim(),
             note: document.getElementById("tnd-f-note").value.trim(),
           };
+          newVals.ip_count = computeIpCountFromRange(
+            newVals.ip_range_start,
+            newVals.ip_range_end
+          );
           var now = nowIso();
           var user = loginUser();
           var newHistoryRows = [];
@@ -610,7 +623,7 @@
             return { id: r.id, value: r.value };
           });
           var ipCountVal =
-            newVals.ip_count !== "" ? Number(newVals.ip_count) : "";
+            newVals.ip_count !== "" ? Number(newVals.ip_count) : null;
           var record = {
             total_network_enabled: {
               value: newVals.total_network_enabled ? [CHECKBOX_CONNECTED] : [],
@@ -620,7 +633,7 @@
             gateway: { value: newVals.gateway },
             dns_primary: { value: newVals.dns_primary },
             dns_secondary: { value: newVals.dns_secondary },
-            ip_count: { value: ipCountVal === "" ? null : ipCountVal },
+            ip_count: { value: ipCountVal },
             ip_range_start: { value: newVals.ip_range_start },
             ip_range_end: { value: newVals.ip_range_end },
             address: { value: newVals.address },
