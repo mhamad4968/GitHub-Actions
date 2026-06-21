@@ -40,7 +40,7 @@ npm run app:fields <アプリID>
 | 693 | `2026-06-03-apple-id-db-block-ui-mutations` | **5** | `ca4b6489-bc6d-444c-b4a4-28b4c7f8c96c` | 2026-06-03 Apple ID DB save/delete ブロック |
 | 694 | `2026-06-08-694-device-exchange-date` | **18** | `699da986-7b14-49d0-aafe-bfe3322300e5` | 2026-06-08 端末交換日フィールド |
 | 695 | `2026-06-06-shared-mail-db-block-ui` | **5** | `afc1ca51-aeed-4a67-a3ed-9a2fac00e91a` | 2026-06-06 共有メール DB save/delete ブロック |
-| 696 | `2026-06-21-696-mail-address-ledger-title` | **10** | `74c75fb1-6be2-45e3-a330-74c4a7dfa070` | 2026-06-21 アプリ名→メールアドレス管理台帳 |
+| 696 | `2026-06-21-696-mail-address-ledger-title` | **10** | `9eeed7c9-8952-4447-aa92-2984451db3a1` | 2026-06-21 アプリ名→メールアドレス管理台帳 |
 | 706 | `2026-06-10-nonconformance-db-block-ui` | **5** | `4a387219-5384-4ef5-877a-2997857f551f` | 2026-06-10 不適合 DB save/delete ブロック |
 | 707 | `2026-06-10-nonconformance-dash-v1` | **4** | `34332582-396a-40b8-af06-c6395fe70bb1` | 2026-06-10 不適合台帳 Excel UI v1 |
 | 708 | `2026-06-10-external-it-checksheet-db-block-ui` | **5** | `13055622-745a-4787-9cdd-3515b6f2e0e7` | 2026-06-10 外部ITチェック DB ブロック |
