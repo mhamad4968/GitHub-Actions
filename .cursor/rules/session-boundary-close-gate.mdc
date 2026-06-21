@@ -43,9 +43,12 @@ alwaysApply: false
 
 **実行**（返答より先）:
 
-1. checkpoint **先頭**（凍結ゾーン）更新 — `次の1手` / `Git` / 保留
-2. `npm run cio:session:export-handoff`
-3. 復元 1 行（gitHead + 次の1手）
+1. checkpoint **先頭**（凍結ゾーン）更新 — テンプレ `chat-sessions/templates/checkpoint-freeze-zone.template.md`
+2. `npm run cio:handoff:append-block -- --title "…" --summary "…"`（または手動で同等ブロック）
+3. `npm run cio:session:export-handoff`
+4. 復元 1 行（gitHead + 次の1手）
+
+**正本**: `docs/runbooks/checkpoint-handoff-template-v2.md`
 
 **partial では commit 任意**。dirty なら `次セッションで close-git` を checkpoint に明記。
 

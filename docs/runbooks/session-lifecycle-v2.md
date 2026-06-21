@@ -163,14 +163,14 @@ npm run cio:checkpoint:rollup -- --keep 3
 
 ## 6. CLOSE — 二段（partial / full）
 
-正本: `.cursor/rules/session-boundary-close-gate.mdc`
+正本: `.cursor/rules/session-boundary-close-gate.mdc` / **`docs/runbooks/checkpoint-handoff-template-v2.md`**
 
 | 種別 | トリガー例 | 実行 |
 |------|------------|------|
-| **partial** | 一旦終わり / 一旦区切り / OK（区切り） / GO 待ち / 保留 | checkpoint 先頭更新 → `export-handoff` → 復元 1 行 |
-| **full** | 締め / 終わり / お疲れ / 今日はここまで / 反省 | `session-close-execute-first` 順 → **`cio:session:close-git --execute`** |
+| **partial** | 一旦終わり / 一旦区切り / OK（区切り） / GO 待ち / 保留 | checkpoint 更新 → **`cio:handoff:append-block`** → `export-handoff` → 復元 1 行 |
+| **full** | 締め / 終わり / お疲れ / 今日はここまで / 反省 | partial 手順 → **`cio:session:close-git --execute`** |
 
-**partial でも必須**: `次の1手` と `Git` 行を checkpoint 先頭に反映。
+**partial でも必須**: checkpoint `次の1手` / `Git` + handoff-log 末尾ブロック（**Git** キー含む）。
 
 **full でも必須**: push まで（`close-git` 内包）。
 
@@ -184,6 +184,8 @@ npm run cio:checkpoint:rollup -- --keep 3
 | bootstrap のみ | `npm run session:bootstrap` |
 | handoff 更新 | `npm run cio:session:export-handoff` |
 | 凍結ゾーン検証 | `npm run verify:checkpoint-freeze-zone` |
+| 引き継ぎテンプレ | `npm run verify:checkpoint-handoff-template` |
+| handoff 追記 | `npm run cio:handoff:append-block -- --title "…"` |
 | checkpoint 圧縮 | `npm run cio:checkpoint:rollup` |
 | セッション締め | `npm run cio:session:close-git -- --execute --auto-stage --message "…"` |
 | 引き継ぎ検証 | `npm run verify:session-handoff-integrity -- --strict-staleness` |

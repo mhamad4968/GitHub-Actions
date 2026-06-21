@@ -1,0 +1,60 @@
+{
+  "version": "2026-06-21",
+  "description": "checkpoint / handoff / bridge テンプレ正本 — Session Lifecycle v2 CLOSE 連動",
+  "connectionRules": {
+    "order": ["checkpoint-freeze-zone", "handoff-log-block", "bridge-export"],
+    "partialClose": ["checkpoint-freeze-zone", "handoff-log-block", "export-handoff"],
+    "fullClose": ["checkpoint-freeze-zone", "handoff-log-block", "export-handoff", "close-git"],
+    "skipHandoffBlock": "禁止 — partial/full いずれも handoff-log 末尾ブロック必須"
+  },
+  "templateDir": "chat-sessions/templates",
+  "freezeZone": {
+    "maxLines": 50,
+    "requiredHeadings": [
+      "## クローズ済み",
+      "## 保留・その他の制約",
+      "## セッション切替後の自律復元"
+    ],
+    "requiredFields": [
+      "**最終更新**:",
+      "**次の1手**:",
+      "**Git**:"
+    ],
+    "recommendedFields": [
+      "**品質ゲート**:",
+      "**736 本番**:"
+    ]
+  },
+  "handoffBlock": {
+    "headingPattern": "^### \\d{4}-\\d{2}-\\d{2} JST",
+    "requiredKeys": [
+      "**次の1手**:",
+      "**Git**:",
+      "**GO待ち**:"
+    ],
+    "optionalKeys": [
+      "**要約**:",
+      "**BUILD**:",
+      "**触らない**:",
+      "**判定**:"
+    ]
+  },
+  "handoffHuman": {
+    "requiredLines": [
+      "日時(JST):",
+      "いま何してた（1行）:",
+      "次にやる1つ:",
+      "GO待ち（なし／内容）:",
+      "触らないで（なし／内容）:"
+    ]
+  },
+  "bridgeNextFiles": [
+    "chat-sessions/checkpoint-latest.md",
+    "chat-sessions/handoff-log.md",
+    "docs/handoff/latest-session-bridge.json",
+    "docs/runbooks/session-lifecycle-v2.md",
+    "docs/runbooks/push-deploy-quality-gates-v2.md",
+    "docs/runbooks/checkpoint-handoff-template-v2.md",
+    ".cursor/rules/mode-b-canonical.mdc"
+  ]
+}

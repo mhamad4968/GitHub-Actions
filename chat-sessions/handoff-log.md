@@ -3326,3 +3326,17 @@ npm run cio:morning:ready
 **GO待ち**: なし
 
 ---
+
+### 2026-06-21 JST — **AIチーム運用 A/B/C — Lifecycle + 品質ゲート + テンプレ v2**
+
+**要約**: Session Lifecycle v2(A)・push/deploy品質ゲート v2(B)・checkpoint/handoffテンプレ v2(C) 実装 push 予定
+
+**次の1手**: **736** — 修正版スモーク（後日）→ **6/23（月）以降** 担当説明 → v2c GO。**運用改善 A/B/C 完了** — 以降は実装レーン優先。**677–679 / 688 / SKYSEA** — 触らない
+
+**Git**: `989e512` — handoff sync after B
+
+**GO待ち**: なし
+
+**触らない**: 688 / 677–679 / SKYSEA — 触らない
+
+---

@@ -1,16 +1,19 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-06-21T00:55:34.767Z",
-  "gitHead": "14bc4ca",
+  "exportedAt": "2026-06-21T00:58:08.363Z",
+  "gitHead": "989e512",
   "gitStatus": "## main...origin/main",
-  "nextTask": "**AI チーム運用 C** — checkpoint・引き継ぎテンプレ統一（正本 `session-lifecycle-v2.md` 完了）。**736** v2c **未着手**（6/23 以降）。**677–679 / 688 / SKYSEA** — 触らない",
+  "nextTask": "**736** — 修正版スモーク（後日）→ **6/23（月）以降** 担当説明 → v2c GO。**運用改善 A/B/C 完了** — 以降は実装レーン優先。**677–679 / 688 / SKYSEA** — 触らない",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
-    ".cursor/rules/mode-b-canonical.mdc",
     "docs/handoff/latest-session-bridge.json",
+    "docs/runbooks/session-lifecycle-v2.md",
+    "docs/runbooks/push-deploy-quality-gates-v2.md",
+    "docs/runbooks/checkpoint-handoff-template-v2.md",
+    ".cursor/rules/mode-b-canonical.mdc",
     "docs/knowledge/debug-tips.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=14bc4ca | 次=**AI チーム運用 C** — checkpoint・引き継ぎテンプレ統一（正本 `session-lifecycle-v2.md` 完了）。**736** v2c **未着手**（6/23 以降）。**677–679 / 688 / SKYSEA** — 触らない | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, .cursor/rules/mode-b-canonical.mdc",
+  "promptBlock": "【SESSION-BRIDGE】git=989e512 | 次=**736** — 修正版スモーク（後日）→ **6/23（月）以降** 担当説明 → v2c GO。**運用改善 A/B/C 完了** — 以降は実装レーン優先。**677–679 / 688 / SKYSEA** — 触らない | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }

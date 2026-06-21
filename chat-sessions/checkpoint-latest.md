@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-06-21 JST — **B push/deploy 品質ゲート v2 反映** / 736 v2c **保留** / 次 **C checkpoint テンプレ**
+**最終更新**: 2026-06-21 JST — **C checkpoint/handoff テンプレ v2 反映** / 736 v2c **保留**
 
 ## クローズ済み（`data/cio-project-closures.json` — 無断 v1 再開禁止）
 
@@ -25,9 +25,9 @@
 | 本番 WF 6段階 | 無断分割禁止 — test_v3 WF 継続テストのみ |
 | 評価スナップショット | 未設計確認前の本番投入禁止 |
 
-**次の1手**: **AI チーム運用 C** — checkpoint・引き継ぎテンプレ統一（正本 `session-lifecycle-v2.md` 完了）。**736** v2c **未着手**（6/23 以降）。**677–679 / 688 / SKYSEA** — 触らない  
-**Git**: `14bc4ca` — push/deploy quality gates v2 B（push 済）  
-**品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` — commit=`cio:pre-commit-check` / push=`cio:pre-push-check` / deploy=`cio:deploy-gate -- <app>`  
+**次の1手**: **736** — 修正版スモーク（後日）→ **6/23（月）以降** 担当説明 → v2c GO。**運用改善 A/B/C 完了** — 以降は実装レーン優先。**677–679 / 688 / SKYSEA** — 触らない  
+**Git**: C v2 コミット予定  
+**引き継ぎテンプレ**: `docs/runbooks/checkpoint-handoff-template-v2.md` — `cio:handoff:append-block`  
 **736 本番**: BUILD=`2026-06-21-jikkou-yosan-versions-help-wording` rev **104**  
 **688 本番**: BUILD=`2026-06-19-688-print-rounding-fix` rev **34** — **保留**  
 **クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`

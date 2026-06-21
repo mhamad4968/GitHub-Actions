@@ -16,6 +16,7 @@ import {
 } from './lib/cio-session-bridge.mjs';
 import { stockDebugTips, TIPS_REL } from './lib/cio-debug-tips-stock.mjs';
 import { readCheckpointNextTask } from './lib/cio-checkpoint-read.mjs';
+import { getDefaultBridgeNextFiles } from './lib/cio-handoff-template.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -54,13 +55,8 @@ function main() {
   }
 
   const nextTask = readCheckpointNextTask(root) || '(要 Read checkpoint-latest.md)';
-  const nextFiles = [
-    'chat-sessions/checkpoint-latest.md',
-    'chat-sessions/handoff-log.md',
-    '.cursor/rules/mode-b-canonical.mdc',
-    'docs/handoff/latest-session-bridge.json',
-    TIPS_REL,
-  ];
+  const nextFiles = getDefaultBridgeNextFiles(root);
+  if (!nextFiles.includes(TIPS_REL)) nextFiles.push(TIPS_REL);
 
   const bridge = {
     version: '2026-05-30',
