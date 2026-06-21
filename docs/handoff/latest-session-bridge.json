@@ -1,7 +1,7 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-06-21T00:58:08.363Z",
-  "gitHead": "989e512",
+  "exportedAt": "2026-06-21T00:58:54.366Z",
+  "gitHead": "a18f01c",
   "gitStatus": "## main...origin/main",
   "nextTask": "**736** — 修正版スモーク（後日）→ **6/23（月）以降** 担当説明 → v2c GO。**運用改善 A/B/C 完了** — 以降は実装レーン優先。**677–679 / 688 / SKYSEA** — 触らない",
   "nextFiles": [
@@ -14,6 +14,6 @@
     ".cursor/rules/mode-b-canonical.mdc",
     "docs/knowledge/debug-tips.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=989e512 | 次=**736** — 修正版スモーク（後日）→ **6/23（月）以降** 担当説明 → v2c GO。**運用改善 A/B/C 完了** — 以降は実装レーン優先。**677–679 / 688 / SKYSEA** — 触らない | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "promptBlock": "【SESSION-BRIDGE】git=a18f01c | 次=**736** — 修正版スモーク（後日）→ **6/23（月）以降** 担当説明 → v2c GO。**運用改善 A/B/C 完了** — 以降は実装レーン優先。**677–679 / 688 / SKYSEA** — 触らない | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }

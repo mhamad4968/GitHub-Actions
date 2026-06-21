@@ -26,7 +26,7 @@
 | 評価スナップショット | 未設計確認前の本番投入禁止 |
 
 **次の1手**: **736** — 修正版スモーク（後日）→ **6/23（月）以降** 担当説明 → v2c GO。**運用改善 A/B/C 完了** — 以降は実装レーン優先。**677–679 / 688 / SKYSEA** — 触らない  
-**Git**: C v2 コミット予定  
+**Git**: `a18f01c` — checkpoint/handoff template v2 C（push 済）  
 **引き継ぎテンプレ**: `docs/runbooks/checkpoint-handoff-template-v2.md` — `cio:handoff:append-block`  
 **736 本番**: BUILD=`2026-06-21-jikkou-yosan-versions-help-wording` rev **104**  
 **688 本番**: BUILD=`2026-06-19-688-print-rounding-fix` rev **34** — **保留**  
