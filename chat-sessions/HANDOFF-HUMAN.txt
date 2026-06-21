@@ -5,6 +5,12 @@ Windows から開きやすい控え: C:\Users\mhamada202408224\Desktop\AI緊急�
 
 推奨フロー（セッション切替）: ① **`00-NEW-SESSION-STARTER_yyyymmdd.txt`（JST・Explorer 名前順で先頭・常にこのファイル名）全文**（**v3.27+**: **「■ 貼付単独で完走」** が **唯一の詳細正本**（項番 -1〜0・**v3.28** 以後の改定もここ優先）。checkpoint 重複貼付不要。貼付推奨は verify 最終行）② この 5 行（**任意**）③ **項番 -0** → ④ **`session:bootstrap` 一括**。**日終わり（R17 必須）**: `npm run cio:session:close-git -- --execute --auto-stage --message "…"`（desktop sync 内包）。
 
+日時(JST): 2026-06-21 — **運用改善 A-E 完了・セッション締め**
+いま何してた（1行）: Lifecycle/品質ゲート/handoff/tool routing/憲法鏡像（A-E）push 済。
+次にやる1つ: **夜セッション — 新規 kintone アプリ作成**（kintone-create-app Skill）
+GO待ち（なし／内容）: 新規アプリの spec / Space / App ID は開始時 §41 確認
+触らないで（なし／内容）: 736（6/23以降）/ 677–679 / 688 / SKYSEA
+
 日時(JST): 2026-06-13（土）— **業務改善 ver.02 v1 クローズ**
 いま何してた（1行）: 年次集計・699ガイドUX(C案)・700完了日 — v1完成。checkpoint/handoff/機械ゲート整備。
 次にやる1つ: **（当日 項番 -0 で合意）** — 業務改善は再開しない。

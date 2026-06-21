@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-06-21T01:21:25.108Z",
-  "gitHead": "a069de4",
-  "gitStatus": "## main...origin/main [ahead 1]",
-  "nextTask": "**736** — 修正版スモーク（後日）→ **6/23（月）以降** 担当説明 → v2c GO。**運用改善 A/B/C/D/E 完了** — 以降は実装レーン優先。**677–679 / 688 / SKYSEA** — 触らない",
+  "exportedAt": "2026-06-21T01:24:04.586Z",
+  "gitHead": "273c38a",
+  "gitStatus": "## main...origin/main",
+  "nextTask": "**夜セッション — 新規 kintone アプリ作成**（`.cursor/skills/kintone-create-app/SKILL.md` → `cio:pre-implement-gate` → `cio:tool:route`）。**736** — 6/23（月）以降・v2c GO 待ち（本セッションでは触らない）。**運用改善 A/B/C/D/E 完了**。**677–679 / ",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -15,6 +15,6 @@
     ".cursor/rules/mode-b-canonical.mdc",
     "docs/knowledge/debug-tips.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=a069de4 | 次=**736** — 修正版スモーク（後日）→ **6/23（月）以降** 担当説明 → v2c GO。**運用改善 A/B/C/D/E 完了** — 以降は実装レーン優先。**677–679 / 688 / SKYSEA** — 触らない | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "promptBlock": "【SESSION-BRIDGE】git=273c38a | 次=**夜セッション — 新規 kintone アプリ作成**（`.cursor/skills/kintone-create-app/SKILL.md` → `cio:pre-implement-gate` → `cio:tool:route`）。**736** — 6/23（月）以降・v2c GO 待ち（本セッションでは触らない）。**運用改善 A/B/C/D/E 完了**。**677–679 /  | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }
