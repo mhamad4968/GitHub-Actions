@@ -107,7 +107,32 @@
       "skill": null,
       "npm": ["cio:preflight:683"],
       "runbook": "docs/runbooks/user683-weekly-summary-and-print.md"
+    },
+    {
+      "id": "tool-routing-governance",
+      "keywords": ["MCP選択", "tool route", "ツールルーティング", "どのMCP", "ai-team-tool-routing"],
+      "skill": ".cursor/skills/ai-team-tool-routing/SKILL.md",
+      "npm": ["cio:tool:route", "verify:cio-tool-routing-infra"],
+      "runbook": "docs/runbooks/ai-team-tool-routing-v2.md",
+      "reference": ["data/cio-ai-team-tool-routing.json"]
+    },
+    {
+      "id": "governance-lifecycle-v2",
+      "keywords": ["Lifecycle v2", "WAKE", "ORIENT", "CLOSE", "凍結ゾーン", "品質ゲート"],
+      "skill": ".cursor/skills/kintone-session-bootstrap/SKILL.md",
+      "npm": [
+        "cio:session:cold-start",
+        "verify:checkpoint-freeze-zone",
+        "cio:pre-commit-check",
+        "cio:pre-push-check"
+      ],
+      "runbook": "docs/runbooks/session-lifecycle-v2.md",
+      "reference": [
+        "docs/runbooks/push-deploy-quality-gates-v2.md",
+        "docs/runbooks/checkpoint-handoff-template-v2.md",
+        "docs/runbooks/ai-team-tool-routing-v2.md"
+      ]
     }
   ],
-  "routing": "依頼文のキーワードで lanes をマッチ → skill を Read → npm を順実行"
+  "routing": "依頼文のキーワードで lanes をマッチ → cio:tool:route で MCP/npm 提案 → skill を Read → npm を順実行"
 }

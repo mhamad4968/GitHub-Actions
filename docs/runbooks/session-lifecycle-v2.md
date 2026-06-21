@@ -119,7 +119,11 @@ MORNING → PREFLIGHT → ROLLUP → QUICK-HEALTH → BOOTSTRAP → IMPORT → R
 
 ```bash
 npm run cio:pre-implement-gate -- --intent "作業内容の要約"
+npm run cio:tool:route -- --intent "作業内容の要約" [--app <APP_ID>] [--log]
 ```
+
+**ツールルーティング（D v2）** — 正本 `docs/runbooks/ai-team-tool-routing-v2.md`  
+依頼意図 → MCP / npm / §50-3-8 / verify を機械提案。Skill: `.cursor/skills/ai-team-tool-routing/SKILL.md`
 
 **品質ゲート（B v2）** — 正本 `docs/runbooks/push-deploy-quality-gates-v2.md`
 

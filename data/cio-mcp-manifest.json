@@ -49,7 +49,8 @@
     "chrome-devtools": "repo overlay 有効化済（docs/runbooks/chrome-devtools-mcp-setup.md）",
     "accessibility-scanner": "業務改善 Q55・60歳以上 UX（customize 後）",
     "playwright": "7/1 デモ導線スモーク",
-    "rag": "spec 横断 QA — data/rag-business-improvement-manifest.json"
+    "rag": "spec 横断 QA — data/rag-business-improvement-manifest.json",
+    "tool-routing-v2": "依頼意図→MCP/npm — docs/runbooks/ai-team-tool-routing-v2.md / npm run cio:tool:route"
   },
   "verify": "npm run verify:cio-mcp-manifest"
 }

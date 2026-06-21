@@ -40,6 +40,12 @@ import {
 
 } from './lib/cio-project-closure.mjs';
 
+import {
+  buildRoutePlan,
+  formatRoutePlan,
+  loadToolRoutingManifest,
+} from './lib/cio-tool-routing.mjs';
+
 
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -174,7 +180,21 @@ function main() {
 
   console.log(CHECKLIST.trim());
 
-
+  const intentIdx = args.indexOf('--intent');
+  if (intentIdx >= 0) {
+    const intent = args[intentIdx + 1] || '';
+    if (intent) {
+      try {
+        const manifest = loadToolRoutingManifest(root);
+        const plan = buildRoutePlan(manifest, intent);
+        console.log('\n--- tool routing (D v2) ---');
+        console.log(formatRoutePlan(plan));
+        console.log('  → npm run cio:tool:route -- --intent "' + intent.replace(/"/g, '\\"') + '" --log');
+      } catch (e) {
+        console.warn(`[cio-pre-implement-gate] WARN tool-routing: ${e.message}`);
+      }
+    }
+  }
 
   const evidence = collect5038EvidenceFromLogs(root);
 

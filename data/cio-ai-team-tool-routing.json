@@ -1,0 +1,355 @@
+{
+  "version": "2026-06-21",
+  "description": "依頼意図 → MCP / npm / 第2者 / verify — Session Lifecycle v2 WORK 連動",
+  "canonicalRunbook": "docs/runbooks/ai-team-tool-routing-v2.md",
+  "relatedManifests": [
+    "data/cio-mcp-manifest.json",
+    "data/cio-mcp-four-ai-matrix.json",
+    "data/cio-project-lanes.json",
+    "data/cio-app-quality-gates.json"
+  ],
+  "fallback": {
+    "strategy": "priority_then_npm",
+    "mcpSkipTemplate": "MCPスキップ: {server} — {reason}",
+    "defaultNpm": ["cio:pre-implement-gate"],
+    "mcpFailureChain": ["deepseek", "openrouter"]
+  },
+  "lifecyclePhases": {
+    "WAKE": {
+      "npm": ["cio:session:cold-start"],
+      "verify": ["verify:checkpoint-freeze-zone", "verify:session-handoff-integrity"]
+    },
+    "ORIENT": {
+      "read": [
+        "docs/handoff/latest-session-bridge.json",
+        "chat-sessions/checkpoint-latest.md",
+        "chat-sessions/constitution-first-read-pack/00-ORDER.txt"
+      ]
+    },
+    "WORK": {
+      "npm": ["cio:pre-implement-gate", "cio:tool:route"],
+      "rule": ".cursor/rules/mcp-server-use-triggers.mdc"
+    },
+    "CLOSE": {
+      "npm": ["cio:handoff:append-block", "cio:session:export-handoff"],
+      "verify": ["verify:checkpoint-handoff-template", "verify:checkpoint-freeze-zone"]
+    }
+  },
+  "categories": [
+    "session",
+    "governance",
+    "kintone-deploy",
+    "kintone-schema",
+    "kintone-crud",
+    "frontend-ui",
+    "accessibility",
+    "library-docs",
+    "security",
+    "performance",
+    "incident",
+    "compliance",
+    "data",
+    "doc-lane",
+    "github-ci",
+    "design",
+    "research"
+  ],
+  "intents": [
+    {
+      "id": "session-cold-start",
+      "category": "session",
+      "phase": ["WAKE"],
+      "keywords": ["cold-start", "新規チャット", "復元", "セッション開始", "朝報", "bootstrap"],
+      "priority": 10,
+      "lane": "session-bootstrap",
+      "mcp": [],
+      "npm": ["cio:session:cold-start", "cio:session:start"],
+      "skill": ".cursor/skills/kintone-session-bootstrap/SKILL.md",
+      "runbook": "docs/runbooks/session-lifecycle-v2.md",
+      "secondReviewer": null,
+      "verify": ["verify:session-handoff-integrity", "verify:checkpoint-freeze-zone"]
+    },
+    {
+      "id": "session-close",
+      "category": "session",
+      "phase": ["CLOSE"],
+      "keywords": ["締め", "close", "handoff", "checkpoint", "export-handoff", "close-git"],
+      "priority": 10,
+      "mcp": [],
+      "npm": ["cio:handoff:append-block", "cio:session:export-handoff", "cio:session:close-git"],
+      "runbook": "docs/runbooks/checkpoint-handoff-template-v2.md",
+      "secondReviewer": null,
+      "verify": ["verify:checkpoint-handoff-template", "verify:checkpoint-freeze-zone"]
+    },
+    {
+      "id": "governance-second-review",
+      "category": "governance",
+      "phase": ["WORK"],
+      "keywords": ["§50-3-8", "盲点", "第2レビュ", "second reviewer", "設計レビュ", "GO判定"],
+      "priority": 10,
+      "mcp": [
+        { "server": "deepseek", "tools": ["chat"], "priority": 10 },
+        { "server": "kimi", "tools": ["kimi_review"], "priority": 20 },
+        { "server": "openrouter", "tools": ["chat"], "priority": 30 }
+      ],
+      "npm": ["cio:pre-implement-gate", "cio:guard:5038"],
+      "runbook": "docs/runbooks/cio-four-ai-violation-remediation.md",
+      "secondReviewer": "deepseek",
+      "verify": ["verify:mcp-four-ai-alignment"]
+    },
+    {
+      "id": "kintone-deploy",
+      "category": "kintone-deploy",
+      "phase": ["WORK"],
+      "keywords": ["deploy", "customize", "desktop.js", "preflight", "BUILD", "rev"],
+      "priority": 15,
+      "lane": "kintone-deploy",
+      "mcp": [
+        { "server": "kintone", "tools": ["kintone-get-app-deploy-status", "kintone-deploy-app"], "priority": 10 },
+        { "server": "kintone-dev", "tools": ["kintone-get-app-deploy-status"], "priority": 20 }
+      ],
+      "npm": ["cio:pre-implement-gate", "cio:preflight:<APP_ID>", "cio:deploy-gate", "deploy:<APP_ID>"],
+      "skill": ".cursor/skills/kintone-deploy-lane/SKILL.md",
+      "runbook": "docs/runbooks/push-deploy-quality-gates-v2.md",
+      "secondReviewer": "deepseek",
+      "verify": ["verify:cio-quality-gate-infra", "verify:cio-deploy-ledger-gate"]
+    },
+    {
+      "id": "kintone-schema-live",
+      "category": "kintone-schema",
+      "phase": ["WORK"],
+      "keywords": ["スキーマ", "form fields", "lookup", "reference", "フィールドコード", "live schema"],
+      "priority": 10,
+      "mcp": [
+        { "server": "kintone-schema-mcp", "tools": ["get_form_fields", "get_form_layout"], "priority": 10 },
+        { "server": "kintone", "tools": ["kintone-get-form-fields", "kintone-get-form-layout"], "priority": 20 }
+      ],
+      "npm": ["verify:kintone-live-schema"],
+      "runbook": ".cursor/rules/kintone-schema-trust.mdc",
+      "secondReviewer": null,
+      "verify": ["verify:kintone-live-schema"]
+    },
+    {
+      "id": "kintone-crud-records",
+      "category": "kintone-crud",
+      "phase": ["WORK"],
+      "keywords": ["レコード", "CRUD", "get-records", "update-records", "本番データ"],
+      "priority": 20,
+      "mcp": [
+        { "server": "kintone", "tools": ["kintone-get-records", "kintone-update-records"], "priority": 10 },
+        { "server": "kintone-dev", "tools": ["kintone-get-records"], "priority": 5, "note": "検証テナント優先（本番混同禁止）" }
+      ],
+      "npm": ["cio:mcp:gate"],
+      "rule": ".cursor/rules/kintone-destructive-rest-guard.mdc",
+      "secondReviewer": "deepseek",
+      "verify": ["cio:mcp:gate"]
+    },
+    {
+      "id": "frontend-ui-verify",
+      "category": "frontend-ui",
+      "phase": ["WORK"],
+      "keywords": ["UI", "E2E", "ログイン後", "実画面", "DOM", "スモーク", "console"],
+      "priority": 15,
+      "mcp": [
+        { "server": "playwright", "tools": ["browser_navigate", "browser_snapshot"], "priority": 10 },
+        { "server": "chrome-devtools", "tools": ["navigate_page", "take_snapshot"], "priority": 20 }
+      ],
+      "npm": [],
+      "runbook": "docs/runbooks/chrome-devtools-mcp-setup.md",
+      "secondReviewer": null,
+      "verify": []
+    },
+    {
+      "id": "accessibility-audit",
+      "category": "accessibility",
+      "phase": ["WORK"],
+      "keywords": ["a11y", "WCAG", "アクセシビリティ", "axe", "キーボード", "60歳"],
+      "priority": 10,
+      "mcp": [
+        { "server": "accessibility-scanner", "tools": ["audit_site", "scan_page_matrix", "audit_keyboard"], "priority": 10 }
+      ],
+      "npm": [],
+      "runbook": "docs/mcp-design-kintone-tables.md",
+      "secondReviewer": null,
+      "verify": []
+    },
+    {
+      "id": "library-docs",
+      "category": "library-docs",
+      "phase": ["WORK"],
+      "keywords": ["kintone JS API", "React", "Tailwind", "shadcn", "ライブラリ", "migration", "context7"],
+      "priority": 10,
+      "mcp": [
+        { "server": "context7", "tools": ["resolve-library-id", "get-library-docs"], "priority": 10 },
+        { "server": "duckduckgo-search", "tools": ["search"], "priority": 30 }
+      ],
+      "npm": [],
+      "rule": ".cursor/rules/mcp-server-use-triggers.mdc",
+      "secondReviewer": null,
+      "verify": []
+    },
+    {
+      "id": "eslint-quality",
+      "category": "performance",
+      "phase": ["WORK"],
+      "keywords": ["eslint", "lint", "品質", "pre-commit", "pre-push", "静的解析"],
+      "priority": 10,
+      "mcp": [
+        { "server": "eslint-mcp", "tools": ["lint-files"], "priority": 10 }
+      ],
+      "npm": ["cio:pre-commit-check", "cio:pre-push-check"],
+      "runbook": "docs/runbooks/push-deploy-quality-gates-v2.md",
+      "secondReviewer": null,
+      "verify": ["verify:cio-quality-gate-infra"]
+    },
+    {
+      "id": "security-cve",
+      "category": "security",
+      "phase": ["WORK"],
+      "keywords": ["CVE", "脆弱性", "セキュリティニュース", "cve-search", "cyber-news"],
+      "priority": 10,
+      "mcp": [
+        { "server": "cve-search", "tools": ["search_cve", "get_cve"], "priority": 10 },
+        { "server": "cyber-news", "tools": ["get_news"], "priority": 20 }
+      ],
+      "npm": [],
+      "rule": ".cursor/rules/security-news-response.mdc",
+      "secondReviewer": "deepseek",
+      "verify": []
+    },
+    {
+      "id": "security-audit-log",
+      "category": "security",
+      "phase": ["WORK"],
+      "keywords": ["audit-log", "アクセス制御", "secret", "認証", "権限"],
+      "priority": 15,
+      "mcp": [
+        { "server": "github", "tools": ["list_commits", "get_file_contents"], "priority": 20 },
+        { "server": "git-history-mcp", "tools": ["search_commits"], "priority": 10 }
+      ],
+      "npm": ["verify:cio-env-integrity"],
+      "rule": ".cursor/rules/snyk-security.mdc",
+      "secondReviewer": "deepseek",
+      "verify": ["verify:cio-env-integrity"]
+    },
+    {
+      "id": "incident-recover",
+      "category": "incident",
+      "phase": ["WORK"],
+      "keywords": ["障害", "rollback", "recover", "復旧", "deploy失敗", "incident"],
+      "priority": 10,
+      "mcp": [
+        { "server": "kintone", "tools": ["kintone-get-app-deploy-status"], "priority": 10 },
+        { "server": "github", "tools": ["list_commits"], "priority": 20 }
+      ],
+      "npm": ["cio:preflight:<APP_ID>"],
+      "runbook": "docs/runbooks/customize-deploy-recovery.md",
+      "secondReviewer": "deepseek",
+      "verify": ["verify:cio-deploy-ledger-gate"]
+    },
+    {
+      "id": "compliance-constitution",
+      "category": "compliance",
+      "phase": ["WORK"],
+      "keywords": ["憲法", "R19", "R20", "4要素", "policy", "compliance", "締めコミット"],
+      "priority": 10,
+      "mcp": [
+        { "server": "git-history-mcp", "tools": ["search_commits", "get_commit_detail"], "priority": 10 }
+      ],
+      "npm": ["verify:git-history-alignment", "verify:constitution-handoff"],
+      "runbook": "docs/constitution/19-governance-four-ai-kernel.md",
+      "secondReviewer": null,
+      "verify": ["verify:git-history-alignment"]
+    },
+    {
+      "id": "data-migrate",
+      "category": "data",
+      "phase": ["WORK"],
+      "keywords": ["migrate", "移行", "backup", "restore", "一括登録", "import"],
+      "priority": 15,
+      "mcp": [
+        { "server": "kintone", "tools": ["kintone-add-records", "kintone-update-records"], "priority": 20 },
+        { "server": "markdownify", "tools": ["convert"], "priority": 30 }
+      ],
+      "npm": ["verify:kintone-fields"],
+      "rule": ".cursor/rules/kintone-destructive-rest-guard.mdc",
+      "secondReviewer": "deepseek",
+      "verify": ["verify:kintone-fields"]
+    },
+    {
+      "id": "doc-lane",
+      "category": "doc-lane",
+      "phase": ["WORK"],
+      "keywords": ["docx", "pptx", "資料", "マニュアル", "セキュリティレポート"],
+      "priority": 10,
+      "lane": "doc-lane",
+      "mcp": [
+        { "server": "markdownify", "tools": ["convert"], "priority": 20 },
+        { "server": "office-powerpoint", "tools": ["create_presentation"], "priority": 10 }
+      ],
+      "npm": ["cio:doc-lane-gate"],
+      "skill": ".cursor/skills/kintone-doc-lane/SKILL.md",
+      "runbook": "docs/runbooks/doc-lane.md",
+      "secondReviewer": "deepseek",
+      "verify": ["cio:doc-lane-gate"]
+    },
+    {
+      "id": "github-ci",
+      "category": "github-ci",
+      "phase": ["WORK"],
+      "keywords": ["PR", "Actions", "CI", "workflow", "5038", "check失敗"],
+      "priority": 10,
+      "lane": "gha-5038",
+      "mcp": [
+        { "server": "github", "tools": ["list_pull_requests", "get_pull_request", "list_workflow_runs"], "priority": 10 }
+      ],
+      "npm": ["cio:gha-periodic-5038-stamp", "cio:guard:5038"],
+      "runbook": "docs/runbooks/cio-gha-periodic-5038-stamp.md",
+      "secondReviewer": null,
+      "verify": ["verify:cio-r41-r48-infra"]
+    },
+    {
+      "id": "design-figma",
+      "category": "design",
+      "phase": ["WORK"],
+      "keywords": ["Figma", "配色", "トークン", "ダッシュデザイン", "WCAG contrast"],
+      "priority": 10,
+      "mcp": [
+        { "server": "figma", "tools": ["get_design_context", "get_screenshot"], "priority": 10 },
+        { "server": "colors-fonts", "tools": ["generate_palette", "check_contrast"], "priority": 20 }
+      ],
+      "npm": [],
+      "runbook": "docs/mcp-design-figma.md",
+      "secondReviewer": null,
+      "verify": []
+    },
+    {
+      "id": "internal-rag-research",
+      "category": "research",
+      "phase": ["WORK", "ORIENT"],
+      "keywords": ["spec", "手順", "TSB", "社内ドキュ", "横断調査", "RAG"],
+      "priority": 10,
+      "mcp": [
+        { "server": "rag", "tools": ["search"], "priority": 10 },
+        { "server": "repo-tree", "tools": ["get_directory_tree"], "priority": 20 }
+      ],
+      "npm": ["verify:rag-mirror-canonical"],
+      "runbook": "docs/mcp-status.md",
+      "secondReviewer": null,
+      "verify": ["verify:rag-mirror-canonical"]
+    },
+    {
+      "id": "tool-routing-self",
+      "category": "governance",
+      "phase": ["WORK"],
+      "keywords": ["tool route", "MCP選択", "どのMCP", "ツールルーティング", "cio:tool:route"],
+      "priority": 5,
+      "mcp": [],
+      "npm": ["cio:tool:route", "verify:cio-tool-routing-infra"],
+      "skill": ".cursor/skills/ai-team-tool-routing/SKILL.md",
+      "runbook": "docs/runbooks/ai-team-tool-routing-v2.md",
+      "secondReviewer": null,
+      "verify": ["verify:cio-tool-routing-infra"]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+[
+  { "intent": "736 deploy customize", "expectId": "kintone-deploy", "app": "736" },
+  { "intent": "§50-3-8 盲点レビュー", "expectId": "governance-second-review" },
+  { "intent": "CVE-2024-1234 脆弱性", "expectId": "security-cve" },
+  { "intent": "WCAG アクセシビリティ監査", "expectId": "accessibility-audit" },
+  { "intent": "cold-start 新規チャット", "expectId": "session-cold-start" },
+  { "intent": "handoff checkpoint 締め", "expectId": "session-close" },
+  { "intent": "kintone JS API context7", "expectId": "library-docs" },
+  { "intent": "deploy失敗 rollback 復旧", "expectId": "incident-recover" },
+  { "intent": "憲法 R20 4要素 compliance", "expectId": "compliance-constitution" },
+  { "intent": "PR Actions CI 5038", "expectId": "github-ci" }
+]

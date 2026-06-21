@@ -55,6 +55,7 @@
     "docs/runbooks/session-lifecycle-v2.md",
     "docs/runbooks/push-deploy-quality-gates-v2.md",
     "docs/runbooks/checkpoint-handoff-template-v2.md",
+    "docs/runbooks/ai-team-tool-routing-v2.md",
     ".cursor/rules/mode-b-canonical.mdc"
   ]
 }

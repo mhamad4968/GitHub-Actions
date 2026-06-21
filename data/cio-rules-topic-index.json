@@ -56,7 +56,9 @@
         ".cursor/rules/mcp-frontend-shadcn-chrome.mdc",
         ".cursor/rules/ai-agent-tools-constitution.mdc"
       ],
-      "when": "MCP 呼出・descriptor 必読・フロント検証"
+      "when": "MCP 呼出・descriptor 必読・フロント検証",
+      "runbook": "docs/runbooks/ai-team-tool-routing-v2.md",
+      "npm": ["cio:tool:route", "verify:cio-tool-routing-infra"]
     },
     {
       "topic": "仕様・実装前ゲート",
@@ -127,11 +129,13 @@
     ".cursor/skills/kintone-business-improvement-lane/SKILL.md",
     ".cursor/skills/kintone-create-app/SKILL.md",
     ".cursor/skills/kintone-doc-lane/SKILL.md",
-    ".cursor/skills/kintone-cursor-automation-register/SKILL.md"
+    ".cursor/skills/kintone-cursor-automation-register/SKILL.md",
+    ".cursor/skills/ai-team-tool-routing/SKILL.md"
   ],
   "dataIndexes": [
     "data/cio-project-lanes.json",
     "data/cio-mcp-manifest.json",
+    "data/cio-ai-team-tool-routing.json",
     "data/cursor-environment-upgrade.json"
   ]
 }

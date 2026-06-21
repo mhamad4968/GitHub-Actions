@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-06-21 JST — **C checkpoint/handoff テンプレ v2 反映** / 736 v2c **保留**
+**最終更新**: 2026-06-21 JST — **D AIチーム MCP/ツールルーティング v2 反映** / 736 v2c **保留**
 
 ## クローズ済み（`data/cio-project-closures.json` — 無断 v1 再開禁止）
 
@@ -25,12 +25,13 @@
 | 本番 WF 6段階 | 無断分割禁止 — test_v3 WF 継続テストのみ |
 | 評価スナップショット | 未設計確認前の本番投入禁止 |
 
-**次の1手**: **736** — 修正版スモーク（後日）→ **6/23（月）以降** 担当説明 → v2c GO。**運用改善 A/B/C 完了** — 以降は実装レーン優先。**677–679 / 688 / SKYSEA** — 触らない  
-**Git**: `a18f01c` — checkpoint/handoff template v2 C（push 済）  
+**次の1手**: **736** — 修正版スモーク（後日）→ **6/23（月）以降** 担当説明 → v2c GO。**運用改善 A/B/C/D 完了** — 以降は実装レーン優先。**677–679 / 688 / SKYSEA** — 触らない  
+**Git**: `3833ddd` — handoff sync after C（D 未 push）  
+**ツールルーティング**: `docs/runbooks/ai-team-tool-routing-v2.md` — `npm run cio:tool:route -- --intent "<要約>"`  
 **引き継ぎテンプレ**: `docs/runbooks/checkpoint-handoff-template-v2.md` — `cio:handoff:append-block`  
 **736 本番**: BUILD=`2026-06-21-jikkou-yosan-versions-help-wording` rev **104**  
 **688 本番**: BUILD=`2026-06-19-688-print-rounding-fix` rev **34** — **保留**  
-**クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
+**クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md` / **Tool routing v2**: `docs/runbooks/ai-team-tool-routing-v2.md`
 
 ## セッション切替後の自律復元（Lifecycle v2 鏡像）
 
