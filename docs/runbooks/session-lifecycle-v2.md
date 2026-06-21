@@ -121,6 +121,14 @@ MORNING → PREFLIGHT → ROLLUP → QUICK-HEALTH → BOOTSTRAP → IMPORT → R
 npm run cio:pre-implement-gate -- --intent "作業内容の要約"
 ```
 
+**品質ゲート（B v2）** — 正本 `docs/runbooks/push-deploy-quality-gates-v2.md`
+
+| タイミング | コマンド |
+|------------|----------|
+| **commit 前** | `npm run cio:pre-commit-check` |
+| **push 前** | `npm run cio:pre-push-check`（pre-push hook 同等） |
+| **deploy 前** | `npm run cio:deploy-gate -- <appId>` |
+
 deploy 系: `cio:preflight:<app>` → `deploy:<app>`（`.cursor/rules/cio-discipline-always.mdc`）
 
 ---

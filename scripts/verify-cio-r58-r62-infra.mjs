@@ -20,7 +20,7 @@ const FILES = [
 const NEEDLES = [
   { rel: 'scripts/lib/cio-project-closure.mjs', needles: ['checkHoldLaneDirtyFiles', 'matchHoldLaneFile'] },
   { rel: 'scripts/verify-session-close-git-warn.mjs', needles: ['checkHoldLaneDirty', 'R58'] },
-  { rel: 'scripts/git-hook-pre-push.mjs', needles: ['lint:customize', 'R60'] },
+  { rel: 'scripts/git-hook-pre-push.mjs', needles: ['cio-quality-gate.mjs', 'R60'] },
   { rel: 'chat-sessions/desktop-ai-emergency-read-pack/20-SESSION-REPORT-CHECKLIST.txt', needles: ['R59', 'R61', 'R62'] },
   { rel: 'docs/runbooks/windows-governance-ops.md', needles: ['R60', 'CIO_ALLOW_PUSH_WITHOUT_LINT'] },
   { rel: 'docs/runbooks/kintone-ledger-v1-closure-checklist.md', needles: ['kintone-v1-extension-addendum'] },

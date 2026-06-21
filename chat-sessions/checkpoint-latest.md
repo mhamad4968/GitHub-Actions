@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-06-21 JST — **Session Lifecycle v2（A1–A5）反映** / 736 v2c/v2d **保留** / 次 **B 品質ゲート**
+**最終更新**: 2026-06-21 JST — **B push/deploy 品質ゲート v2 反映** / 736 v2c **保留** / 次 **C checkpoint テンプレ**
 
 ## クローズ済み（`data/cio-project-closures.json` — 無断 v1 再開禁止）
 
@@ -25,8 +25,9 @@
 | 本番 WF 6段階 | 無断分割禁止 — test_v3 WF 継続テストのみ |
 | 評価スナップショット | 未設計確認前の本番投入禁止 |
 
-**次の1手**: **AI チーム運用 B** — push/deploy 前品質ゲート（正本 `docs/runbooks/session-lifecycle-v2.md`）。**736** v2c **未着手**（6/23 以降担当説明→GO）。**677–679 / 688 / SKYSEA** — 触らない  
-**Git**: `c571c94` — Session Lifecycle v2 A1–A5（push 済）  
+**次の1手**: **AI チーム運用 C** — checkpoint・引き継ぎテンプレ統一（正本 `session-lifecycle-v2.md` 完了）。**736** v2c **未着手**（6/23 以降）。**677–679 / 688 / SKYSEA** — 触らない  
+**Git**: B v2 品質ゲート コミット予定  
+**品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` — commit=`cio:pre-commit-check` / push=`cio:pre-push-check` / deploy=`cio:deploy-gate -- <app>`  
 **736 本番**: BUILD=`2026-06-21-jikkou-yosan-versions-help-wording` rev **104**  
 **688 本番**: BUILD=`2026-06-19-688-print-rounding-fix` rev **34** — **保留**  
 **クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
