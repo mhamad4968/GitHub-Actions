@@ -26,7 +26,7 @@
 | 評価スナップショット | 未設計確認前の本番投入禁止 |
 
 **次の1手**: **AI チーム運用 C** — checkpoint・引き継ぎテンプレ統一（正本 `session-lifecycle-v2.md` 完了）。**736** v2c **未着手**（6/23 以降）。**677–679 / 688 / SKYSEA** — 触らない  
-**Git**: B v2 品質ゲート コミット予定  
+**Git**: `14bc4ca` — push/deploy quality gates v2 B（push 済）  
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` — commit=`cio:pre-commit-check` / push=`cio:pre-push-check` / deploy=`cio:deploy-gate -- <app>`  
 **736 本番**: BUILD=`2026-06-21-jikkou-yosan-versions-help-wording` rev **104**  
 **688 本番**: BUILD=`2026-06-19-688-print-rounding-fix` rev **34** — **保留**  
