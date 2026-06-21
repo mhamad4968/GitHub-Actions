@@ -42,7 +42,7 @@
       "required": false,
       "noLabel": false,
       "options": {
-        "接続": { "label": "接続", "index": "0" }
+        "IPアドレス固定": { "label": "IPアドレス固定", "index": "0" }
       }
     },
     "network_address": {

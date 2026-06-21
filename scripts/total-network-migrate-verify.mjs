@@ -63,7 +63,7 @@ async function main() {
     dupCheck.add(ip);
   }
 
-  const connected = sites.filter((s) => (s.total_network_enabled.value || []).includes('接続')).length;
+  const connected = sites.filter((s) => (s.total_network_enabled.value || []).includes('IPアドレス固定')).length;
 
   const report = {
     ok: missing.length === 0 && extra.length === 0 && !dup && sites.length === 22 && ips.length === expectedIps.size,

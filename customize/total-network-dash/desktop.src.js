@@ -1,10 +1,11 @@
 (function () {
   "use strict";
 
-  var BUILD = "2026-06-21-total-network-dash-v1";
+  var BUILD = "2026-06-21-total-network-dash-v1-labels";
   var APP_DB = 737;
   var PAGE_SIZE = 100;
-  var CHECKBOX_CONNECTED = "接続";
+  var CHECKBOX_CONNECTED = "IPアドレス固定";
+  var CHECKBOX_CONNECTED_LEGACY = "接続";
   var CHECKBOX_ACTIVE = "有効";
   var STATUS_IN_USE = "使用中";
 
@@ -52,7 +53,7 @@
   ];
 
   var SITE_TRACK_FIELDS = [
-    { key: "total_network_enabled", label: "接続", bool: true },
+    { key: "total_network_enabled", label: "IPアドレス固定", bool: true },
     { key: "network_address", label: "NWアドレス" },
     { key: "subnet_mask", label: "サブネットマスク" },
     { key: "gateway", label: "ゲートウェイ" },
@@ -165,7 +166,9 @@
       revision: val(rec, "$revision"),
       sort_no: val(rec, FC.sort_no),
       location_name: val(rec, FC.location_name),
-      total_network_enabled: checkboxOn(rec, FC.total_network_enabled, CHECKBOX_CONNECTED),
+      total_network_enabled:
+        checkboxOn(rec, FC.total_network_enabled, CHECKBOX_CONNECTED) ||
+        checkboxOn(rec, FC.total_network_enabled, CHECKBOX_CONNECTED_LEGACY),
       network_address: val(rec, FC.network_address),
       subnet_mask: val(rec, FC.subnet_mask),
       gateway: val(rec, FC.gateway),
@@ -421,8 +424,8 @@
     var rows = filteredSites();
     var thead =
       "<thead><tr>" +
-      "<th>並</th><th>拠点名</th><th>接続</th>" +
-      "<th>NWアドレス</th><th>マスク</th><th>GW</th>" +
+      "<th>並</th><th>拠点名</th><th>IPアドレス固定</th>" +
+      "<th>NWアドレス</th><th>サブネットマスク</th><th>GW</th>" +
       "<th>優先DNS</th><th>代替DNS</th><th>IP数</th>" +
       "<th>範囲</th><th>住所</th><th>備考</th><th>操作</th>" +
       "</tr></thead>";
@@ -448,7 +451,7 @@
             "</strong></td>" +
             "<td>" +
             (s.total_network_enabled
-              ? "接続"
+              ? CHECKBOX_CONNECTED
               : '<span style="color:#94a3b8">未接続</span>') +
             "</td>" +
             "<td>" +
@@ -505,10 +508,12 @@
 
   function openEditSiteModal(site) {
     var body =
-      '<label>接続状況<select id="tnd-f-conn">' +
+      '<label>IPアドレス固定<select id="tnd-f-conn">' +
       '<option value="1"' +
       (site.total_network_enabled ? " selected" : "") +
-      ">接続</option>" +
+      ">" +
+      CHECKBOX_CONNECTED +
+      "</option>" +
       '<option value="0"' +
       (!site.total_network_enabled ? " selected" : "") +
       ">未接続</option></select></label>" +
@@ -577,10 +582,10 @@
           var newHistoryRows = [];
           SITE_TRACK_FIELDS.forEach(function (f) {
             var oldV = f.bool
-              ? site.total_network_enabled ? "接続" : "未接続"
+              ? site.total_network_enabled ? CHECKBOX_CONNECTED : "未接続"
               : String(site[f.key] || "");
             var nv = f.bool
-              ? newVals.total_network_enabled ? "接続" : "未接続"
+              ? newVals.total_network_enabled ? CHECKBOX_CONNECTED : "未接続"
               : String(newVals[f.key] || "");
             if (oldV !== nv) {
               newHistoryRows.push({
@@ -1151,13 +1156,13 @@
     var connSites = sortedAll.filter(function (s) { return s.total_network_enabled; });
 
     var listHeader = [
-      "並", "拠点名", "接続", "NWアドレス", "マスク", "GW",
+      "並", "拠点名", "IPアドレス固定", "NWアドレス", "サブネットマスク", "GW",
       "優先DNS", "代替DNS", "IP数", "範囲開始", "範囲終了", "住所", "備考",
     ];
     var listData = [listHeader].concat(
       connSites.map(function (s) {
         return [
-          s.sort_no, s.location_name, "接続",
+          s.sort_no, s.location_name, CHECKBOX_CONNECTED,
           s.network_address, s.subnet_mask, s.gateway,
           s.dns_primary, s.dns_secondary, s.ip_count,
           s.ip_range_start, s.ip_range_end, s.address, s.note,
@@ -1232,7 +1237,7 @@
     var colDefs = [
       { k: "location_name", l: "拠点名" },
       { k: "network_address", l: "NWアドレス" },
-      { k: "subnet_mask", l: "マスク" },
+      { k: "subnet_mask", l: "サブネットマスク" },
       { k: "gateway", l: "GW" },
       { k: "dns_primary", l: "優先DNS" },
       { k: "dns_secondary", l: "代替DNS" },
@@ -1484,7 +1489,7 @@
       "</div>" +
       '<div class="tnd-tab-pane" data-pane="list">' +
       '<div class="tnd-filters">' +
-      '<button type="button" class="tnd-filter-btn kintoneplugin-button-normal" data-f="connected">接続拠点</button>' +
+      '<button type="button" class="tnd-filter-btn kintoneplugin-button-normal" data-f="connected">IPアドレス固定拠点</button>' +
       '<button type="button" class="tnd-filter-btn kintoneplugin-button-normal" data-f="all">全拠点</button>' +
       '<button type="button" class="tnd-filter-btn kintoneplugin-button-normal" data-f="disconnected">未接続拠点</button>' +
       '<input type="search" id="tnd-site-search" placeholder="拠点名で絞込" style="padding:5px 8px;min-width:200px">' +
