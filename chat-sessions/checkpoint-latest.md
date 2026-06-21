@@ -26,7 +26,7 @@
 | 評価スナップショット | 未設計確認前の本番投入禁止 |
 
 **次の1手**: **AI チーム運用 B** — push/deploy 前品質ゲート（正本 `docs/runbooks/session-lifecycle-v2.md`）。**736** v2c **未着手**（6/23 以降担当説明→GO）。**677–679 / 688 / SKYSEA** — 触らない  
-**Git**: A1–A5 lifecycle v2 コミット予定  
+**Git**: `c571c94` — Session Lifecycle v2 A1–A5（push 済）  
 **736 本番**: BUILD=`2026-06-21-jikkou-yosan-versions-help-wording` rev **104**  
 **688 本番**: BUILD=`2026-06-19-688-print-rounding-fix` rev **34** — **保留**  
 **クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
