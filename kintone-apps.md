@@ -182,6 +182,7 @@ npm run app:fields <アプリID>
 
 | 日時（UTC） | アプリID | customize パス |
 |-------------|----------|----------------|
+| 2026-06-21T00:31:13Z | 736 | `customize/736/desktop.js` |
 | 2026-06-20T23:13:13Z | 736 | `customize/736/desktop.js` |
 | 2026-06-21T12:00:00Z | 736 | `customize/736/desktop.js`（**法定福利費（合計）ラベル＋薄茶色合計行**・**BUILD** `2026-06-21-jikkou-yosan-legal-welfare-total-label`・rev **`94`** / fileKey **`3aa633a8-6799-41a6-82e7-322a5f460c6d`**） |
 | 2026-06-20T12:20:43Z | 736 | `customize/736/desktop.js` |

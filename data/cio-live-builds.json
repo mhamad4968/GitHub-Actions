@@ -307,10 +307,10 @@
     },
     "736": {
       "build": "2026-06-21-jikkou-yosan-versions-help-wording",
-      "fileKey": "80ea3e38-1e6e-48d2-a924-df6177351494",
-      "revision": "104",
-      "relPath": "customize/736/desktop.js",
-      "deployedAt": "2026-06-21T00:24:12.609Z",
+      "fileKey": "3f4cf0ce-3435-4de1-ba28-97a2d0b227cb",
+      "revision": "105",
+      "relPath": ".kintone-deploy/upload-736.js",
+      "deployedAt": "2026-06-21T00:31:13.925Z",
       "note": null
     }
   }
