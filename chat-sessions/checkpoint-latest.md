@@ -26,7 +26,7 @@
 | 評価スナップショット | 未設計確認前の本番投入禁止 |
 
 **次の1手**: **736** — 修正版作成スモーク（後日）→ **月曜以降 担当者説明・イメージ確認** → フィードバック後 **v2c GO 判断**。v2c/v2d **未着手**（§8.4 R-18）。予実（677–679）は来週ヒアリングまで保留。688 / SKYSEA は保留のまま触らない  
-**Git**: 本コミットで v2a/v2b 実装 push 予定  
+**Git**: `958f071` — feat(736): version management v2a/v2b deploy complete（push 済）  
 **736 本番**: BUILD=`2026-06-21-jikkou-yosan-versions-help-wording` rev **104** — 版管理 v2a/v2b 完了・一覧 R-17・ヘルプ
 **688 本番**: `2026-06-19-688-print-rounding-fix` rev **34** — **保留**（2026-06-20 浜田指示。6/19 施工主報告印刷対応済・CLOSED 表記は訂正）  
 **監査**: `npm run cio:audit:session-builds:strict` — repo=ledger=live **6/6 OK**（先祖返りなし）  
