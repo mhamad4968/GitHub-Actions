@@ -26,7 +26,7 @@
 | 評価スナップショット | 未設計確認前の本番投入禁止 |
 
 **次の1手**: **736** — 修正版スモーク（後日）→ **6/23（月）以降** 担当説明 → v2c GO。**運用改善 A/B/C/D 完了** — 以降は実装レーン優先。**677–679 / 688 / SKYSEA** — 触らない  
-**Git**: `3833ddd` — handoff sync after C（D 未 push）  
+**Git**: `b318530` — AI team tool routing v2 D  
 **ツールルーティング**: `docs/runbooks/ai-team-tool-routing-v2.md` — `npm run cio:tool:route -- --intent "<要約>"`  
 **引き継ぎテンプレ**: `docs/runbooks/checkpoint-handoff-template-v2.md` — `cio:handoff:append-block`  
 **736 本番**: BUILD=`2026-06-21-jikkou-yosan-versions-help-wording` rev **104**  
