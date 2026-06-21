@@ -867,6 +867,7 @@
       '.wd688pr-cal-section{margin-top:8px;}' +
       '.wd688pr-cal-year{margin:10px 0 4px;font-size:11pt;font-weight:700;}' +
       '.wd688pr-cal-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 8px;margin-bottom:6px;}' +
+      '.wd688pr-cal-row-4{grid-template-columns:repeat(4,1fr);gap:3px 6px;margin-bottom:4px;}' +
       '.wd688pr-cal{border:1px solid #444;padding:3px 4px 4px;min-width:0;}' +
       '.wd688pr-cal-mnum{margin:0 0 2px;text-align:center;font-size:10pt;font-weight:700;}' +
       '.wd688pr-cal-t{width:100%;border-collapse:collapse;font-size:7pt;table-layout:fixed;}' +
@@ -887,15 +888,55 @@
       '.wd688pr-meta-line{margin:0 0 6px;font-size:9pt;}' +
       '.wd688pr-5yr-block{margin:8px 0;}' +
       '.wd688pr-5yr-block h3{margin:0 0 4px;font-size:9pt;font-weight:700;}' +
+      '.wd688pr-sheet{margin-bottom:0;}' +
+      '.wd688pr-subtitle{margin:0 0 6px;padding:5px 10px;background:#1e40af;color:#fff;text-align:center;font-size:11pt;font-weight:700;}' +
+      '.wd688pr-5yr-combined{margin-top:6px;}' +
+      '.wd688pr-5yr-group{margin-bottom:8px;}' +
+      '.wd688pr-5yr-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:4px 8px;align-items:start;}' +
+      '.wd688pr-5yr-grid-rain{grid-template-columns:repeat(3,1fr);}' +
+      '.wd688pr-5yr-grid-wind{grid-template-columns:repeat(4,1fr);}' +
       '#wd688-print-portal{display:none;}' +
       '@media print{' +
-      '@page{size:A4 landscape;margin:7mm;}' +
+      '@page{size:A3 landscape;margin:3mm;}' +
       'body{padding:0!important;}' +
       'body *{visibility:hidden!important;}' +
       '#wd688-print-portal,#wd688-print-portal *{visibility:visible!important;}' +
       '#wd688-print-portal{display:block!important;position:absolute;left:0;top:0;width:100%;}' +
-      '.wd688pr-section{page-break-after:always;}' +
-      '.wd688pr-section:last-child{page-break-after:auto;}' +
+      '.wd688pr-sheet{page-break-after:always;break-after:page;}' +
+      '.wd688pr-sheet:last-child{page-break-after:auto;break-after:auto;}' +
+      '.wd688pr-section{page-break-after:auto;break-after:auto;}' +
+      '.wd688pr-sheet-work .wd688pr-meta{margin-bottom:9px;font-size:11.5pt;}' +
+      '.wd688pr-sheet-work .wd688pr-meta th,.wd688pr-sheet-work .wd688pr-meta td{padding:5px 11px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-title{font-size:18pt;padding:11px 15px;margin-bottom:9px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-tabs{margin-bottom:7px;font-size:9pt;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-tabs span{padding:3px 9px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum{font-size:12pt;margin:9px 0 11px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum th,.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum td{padding:4px 4px;line-height:1.42;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-notes{font-size:9.5pt;margin:7px 0 9px;line-height:1.48;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-year{margin:9px 0 5px;font-size:13.5pt;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-mnum{font-size:11.5pt;margin:0 0 3px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-row-4{gap:7px 11px;margin-bottom:9px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal{padding:5px 7px 7px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t{font-size:9pt;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t th{font-size:8.5pt;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t th,.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t td{line-height:17px;height:17px;padding:1px 2px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-stats-wrap{display:none;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-panel{margin:9px 0;font-size:10.5pt;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-panel-head{font-size:10.5pt;padding:6px 11px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-panel-body{font-size:10.5pt;padding:9px 13px;line-height:1.52;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-section{margin-top:9px;}' +
+      '.wd688pr-sheet-5yr .wd688pr-tabs{display:none;}' +
+      '.wd688pr-sheet-5yr .wd688pr-5yr-combined{margin:0;}' +
+      '.wd688pr-sheet-5yr .wd688pr-5yr-group{margin-bottom:14px;}' +
+      '.wd688pr-sheet-5yr .wd688pr-5yr-group-wind{margin-bottom:0;}' +
+      '.wd688pr-sheet-5yr .wd688pr-subtitle{font-size:18pt;padding:10px 14px;margin-bottom:12px;}' +
+      '.wd688pr-sheet-5yr .wd688pr-meta-line{font-size:11.5pt;margin-bottom:12px;}' +
+      '.wd688pr-sheet-5yr .wd688pr-5yr-grid-rain{grid-template-columns:repeat(3,1fr);gap:10px 12px;}' +
+      '.wd688pr-sheet-5yr .wd688pr-5yr-grid-wind{grid-template-columns:repeat(4,1fr);gap:10px 12px;}' +
+      '.wd688pr-5yr-grid .wd688pr-5yr-block{margin:0;}' +
+      '.wd688pr-sheet-5yr .wd688pr-5yr-grid .wd688pr-5yr-block h3{font-size:10.5pt;margin:0 0 5px;line-height:1.35;}' +
+      '.wd688pr-sheet-5yr .wd688pr-5yr-grid .wd688pr-sum{font-size:11.5pt;margin:0;}' +
+      '.wd688pr-sheet-5yr .wd688pr-5yr-grid .wd688pr-sum th,.wd688pr-sheet-5yr .wd688pr-5yr-grid .wd688pr-sum td{padding:5px 4px;line-height:1.4;}' +
       '}'
     );
   }
@@ -1066,16 +1107,18 @@
       month +
       '</p>' +
       grid +
+      '<div class="wd688pr-cal-stats-wrap">' +
       stats +
-      '</div>'
+      '</div></div>'
     );
   }
 
-  function renderCalendarYearSection(year, rows, mode, markSet) {
+  function renderCalendarYearSection(year, rows, mode, markSet, colsPerRow) {
+    const cols = colsPerRow && colsPerRow > 0 ? colsPerRow : 3;
     let html = '<p class="wd688pr-cal-year">' + year + '年</p>';
-    for (let start = 1; start <= 12; start += 3) {
-      html += '<div class="wd688pr-cal-row">';
-      for (let m = start; m < start + 3; m += 1) {
+    for (let start = 1; start <= 12; start += cols) {
+      html += '<div class="wd688pr-cal-row wd688pr-cal-row-' + cols + '">';
+      for (let m = start; m < start + cols; m += 1) {
         const row = rows.find(function (r) {
           return r.m === m;
         });
@@ -1319,7 +1362,7 @@
     if (mode === 'holiday') {
       return (
         '<div class="wd688pr-notes">' +
-        '<p>※1　上段表は休日数のみ（降雨日数は0）。カレンダー下は月別の降雨・休日内訳です。</p>' +
+        '<p>※1　上段表は休日数のみ（降雨日数は0）。カレンダーは降雨・休日の色分けです。</p>' +
         '<p>※2　休日数と降雨日数のダブり＝降雨日数×（休日数÷暦日数）</p>' +
         '<p>※3　稼働可能日数＝暦日数－休日数（休日シート上段）</p>' +
         '<p>※4　不稼働率＝休日数÷稼働可能日数（休日シート上段）</p>' +
@@ -1349,7 +1392,7 @@
     const calMode = mode === 'scaffold' ? 'scaffold' : 'paint';
 
     return (
-      '<div class="wd688pr-section">' +
+      '<div class="wd688pr-section wd688pr-section-work">' +
       sheetTabsHtml(config.sheetTab) +
       '<h1 class="wd688pr-title">' +
       escHtml(config.sheetTab) +
@@ -1361,7 +1404,7 @@
       buildOver100CommentPanel(rows, mode) +
       buildPrintFootnotes(mode, config.pastLabel, config.rainTh, config.windTh) +
       '<section class="wd688pr-cal-section">' +
-      renderCalendarYearSection(calYear, rows, calMode, markSet) +
+      renderCalendarYearSection(calYear, rows, calMode, markSet, 4) +
       '</section></div>'
     );
   }
@@ -1430,6 +1473,48 @@
     return html;
   }
 
+  /** 施工主報告 A3・2枚両面（4ページ）: 1枚表=塗装/裏=足場、2枚表=休日/裏=過去5年 */
+  function buildPrint5yrCombined(estYear, pastLabel) {
+    const ref = getRef5yr();
+    const metaLine =
+      escHtml(ref.location || '大宮地区') +
+      '　気象庁過去5年（見積作成年 ' +
+      escHtml(estYear) +
+      '年 → ' +
+      escHtml(pastLabel) +
+      '）';
+
+    function blocksForKind(kind) {
+      const isWind = kind === 'wind';
+      const thresholds = isWind ? REF5YR_WIND_THRESHOLDS : REF5YR_RAIN_THRESHOLDS;
+      let inner = '';
+      for (let i = 0; i < thresholds.length; i += 1) {
+        const th = thresholds[i];
+        const key = ref5yrBlockKey(isWind ? 'wind' : 'rain', th);
+        inner += renderPrintOne5yrTable(ref[key], ref5yrBlockTitle(key), estYear);
+      }
+      return inner;
+    }
+
+    return (
+      '<div class="wd688pr-5yr-combined">' +
+      '<div class="wd688pr-5yr-group">' +
+      sheetTabsHtml('過去5年月別降雨日数') +
+      '<h2 class="wd688pr-subtitle">過去5年月別降雨日数</h2>' +
+      '<p class="wd688pr-meta-line">' +
+      metaLine +
+      '</p>' +
+      '<div class="wd688pr-5yr-grid wd688pr-5yr-grid-rain">' +
+      blocksForKind('rain') +
+      '</div></div>' +
+      '<div class="wd688pr-5yr-group wd688pr-5yr-group-wind">' +
+      '<h2 class="wd688pr-subtitle">過去5年月別風速日数</h2>' +
+      '<div class="wd688pr-5yr-grid wd688pr-5yr-grid-wind">' +
+      blocksForKind('wind') +
+      '</div></div></div>'
+    );
+  }
+
   function buildFullClientReportHtml() {
     const estYear = state.lastResult.estimateYear || currentEstimateYear();
     const pastYears = state.lastResult.pastYears || pastFiveYearsForEstimate(estYear);
@@ -1462,40 +1547,48 @@
       fmtNum(state.result_paint_days, 2) +
       ' 日</strong></td></tr></table></div>';
 
+    const sectionCommon = {
+      calYear: calYear,
+      pastLabel: pastLabel,
+      rainTh: rainTh,
+      windTh: windTh,
+    };
+
     return (
+      '<div class="wd688pr-sheet wd688pr-sheet-work">' +
       meta +
-      buildWorkdaysMgmtPrintSection({
-        sheetTab: '工事稼働日管理 (塗装)',
-        rows: rainRows,
-        mode: 'paint',
-        calYear: calYear,
-        markSet: rainSet,
-        pastLabel: pastLabel,
-        rainTh: rainTh,
-        windTh: windTh,
-      }) +
-      buildWorkdaysMgmtPrintSection({
-        sheetTab: '工事稼働日管理 (足場)',
-        rows: windRows,
-        mode: 'scaffold',
-        calYear: calYear,
-        markSet: windSet,
-        pastLabel: pastLabel,
-        rainTh: rainTh,
-        windTh: windTh,
-      }) +
-      buildWorkdaysMgmtPrintSection({
-        sheetTab: '工事稼働日管理 (休日)',
-        rows: rainRows,
-        mode: 'holiday',
-        calYear: calYear,
-        markSet: rainSet,
-        pastLabel: pastLabel,
-        rainTh: rainTh,
-        windTh: windTh,
-      }) +
-      buildPrint5yrSection('rain', estYear, pastLabel) +
-      buildPrint5yrSection('wind', estYear, pastLabel)
+      buildWorkdaysMgmtPrintSection(
+        Object.assign({}, sectionCommon, {
+          sheetTab: '工事稼働日管理 (塗装)',
+          rows: rainRows,
+          mode: 'paint',
+          markSet: rainSet,
+        }),
+      ) +
+      '</div>' +
+      '<div class="wd688pr-sheet wd688pr-sheet-work">' +
+      buildWorkdaysMgmtPrintSection(
+        Object.assign({}, sectionCommon, {
+          sheetTab: '工事稼働日管理 (足場)',
+          rows: windRows,
+          mode: 'scaffold',
+          markSet: windSet,
+        }),
+      ) +
+      '</div>' +
+      '<div class="wd688pr-sheet wd688pr-sheet-work">' +
+      buildWorkdaysMgmtPrintSection(
+        Object.assign({}, sectionCommon, {
+          sheetTab: '工事稼働日管理 (休日)',
+          rows: rainRows,
+          mode: 'holiday',
+          markSet: rainSet,
+        }),
+      ) +
+      '</div>' +
+      '<div class="wd688pr-sheet wd688pr-sheet-5yr">' +
+      buildPrint5yrCombined(estYear, pastLabel) +
+      '</div>'
     );
   }
 

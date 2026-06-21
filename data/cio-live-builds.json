@@ -90,11 +90,11 @@
       "note": null
     },
     "688": {
-      "build": "2026-06-21-688-rate-over100-comment-formula",
-      "fileKey": "d4fe5f5a-9c00-4a80-b64c-729f9751c50b",
-      "revision": "37",
+      "build": "2026-06-21-688-print-a3-duplex-2sheets-work-balance",
+      "fileKey": "3c10280e-e448-47a3-aea8-860425221c47",
+      "revision": "49",
       "relPath": "customize/688/desktop.js",
-      "deployedAt": "2026-06-20T06:45:20.220Z",
+      "deployedAt": "2026-06-21T09:17:44.516Z",
       "note": null
     },
     "693": {
