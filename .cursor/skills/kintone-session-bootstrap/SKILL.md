@@ -1,67 +1,67 @@
 ---
 name: kintone-session-bootstrap
 description: >-
-  kintone-ai-lab の新規チャット／セッション復元時に使う。checkpoint・bridge・
-  session:bootstrap を順に実行し、凍結・次タスク・必読を復元する。
+  kintone-ai-lab の新規チャット／セッション復元時に使う。Session Lifecycle v2
+  （WAKE→ORIENT→ALIGN→WORK→CLOSE）に従い cold-start で復元する。
 ---
 
 # kintone セッション Bootstrap
 
+## 正本
+
+**`docs/runbooks/session-lifecycle-v2.md`** — 5 Phase / L0・L1・L2 Reading
+
+WAKE 詳細: `docs/runbooks/session-cold-start-v1.md`
+
 ## いつ使うか
 
-- 新規 Cursor チャットの **第1ターン**
+- 新規 Cursor チャットの **第1ターン**（WAKE + ORIENT）
 - 「どこまで進んだか」「次に何をするか」が不明なとき
 - `checkpoint-latest.md` や handoff が言及されたとき
 
-## 手順（推奨: ワンコマンド）
-
-### 統合 cold-start（推奨）
+## WAKE — ワンコマンド（推奨）
 
 ```bash
 npm run cio:session:cold-start
 ```
 
-朝報 fast 自動生成 → preflight（scores/bridge）→ rollup → quick-health → bootstrap → import を **1 本**で実行。
-
-Runbook: `docs/runbooks/session-cold-start-v1.md`
-
-### 朝のみ（bootstrap 前）
-
-```bash
-npm run cio:morning:ready
-```
-
-朝報未作成時は **fast 自動生成**（従来は verify NG で warn のみ）。
+朝報 fast 自動生成 → preflight（gitHead 含む bridge 修復）→ 凍結ゾーン → rollup → bootstrap → import を **1 本**で実行。
 
 ### 従来（分割）
 
-```bash
-npm run cio:session:start
-```
+| 用途 | コマンド |
+|------|----------|
+| 統合 | `npm run cio:session:cold-start` |
+| 朝のみ | `npm run cio:morning:ready` |
+| bootstrap のみ | `npm run session:bootstrap` |
 
-preflight + turn-start + bootstrap + import（cold-start の Phase 5〜6 相当）。
-
-## 必読（圧縮版）
+## ORIENT — L0 必読
 
 | 優先 | ファイル | 目的 |
 |------|----------|------|
-| 1 | `docs/handoff/latest-session-bridge.json` | 次タスク・gitHead |
-| 2 | `chat-sessions/checkpoint-latest.md`（先頭80行） | 凍結・直近完了 |
-| 3 | `docs/reports/<今日>-morning-prep.md` | 朝のヘルス（fast/full マーカー確認） |
-| 4 | `.cursor/rules/mode-b-canonical.mdc` | 4AI・先頭4行 |
+| 1 | `docs/handoff/latest-session-bridge.json` | gitHead・次タスク |
+| 2 | `chat-sessions/checkpoint-latest.md`（**先頭 50 行**） | 凍結・直近完了 |
+| 3 | `chat-sessions/constitution-first-read-pack/00-ORDER.txt` 〜 `05-full-refs.txt` | 憲法要約 |
 
-## 凍結の確認
+## L2 フォールバック（bootstrap NG 時のみ）
 
-`checkpoint-latest.md` 先頭の **凍結表** を必ず読む。
+`chat-sessions/NEW-SESSION-STARTER.md` + part-A〜F。同一セッション **1 回まで**。NG 続行 → 浜田へエスカレーション。
 
-## 報告フォーマット（第1ターン終了時）
+## 報告（ORIENT 終了時）
 
-- **gitHead** / **次タスク1行**
+- **gitHead** / bridge 鮮度
 - **凍結**（触ってはいけないこと）
-- **本ターンで着手する1手**
+- **次タスク 1 行**
+- **本ターン §41 候補**（あれば 1 問）
+
+## CLOSE
+
+| 種別 | ルール |
+|------|--------|
+| partial | `session-boundary-close-gate.mdc` — checkpoint + export-handoff |
+| full | `session-close-execute-first.mdc` — close-git |
 
 ## 参照
 
-- 正本: `AGENTS.md` / `docs/agent-restore-checkpoint.md`
-- Runbook: `docs/runbooks/session-cold-start-v1.md`
-- 詳細6部: `chat-sessions/NEW-SESSION-STARTER.md`
+- `AGENTS.md` / `docs/agent-restore-checkpoint.md`
+- `.cursor/rules/autonomous-cold-start.mdc`

@@ -39,6 +39,16 @@ export function readCheckpointLastUpdatedDate(root) {
   return m ? m[1] : null;
 }
 
+/** 凍結ゾーン（最初の ## YYYY-MM-DD 直前まで）の行数 */
+export function readCheckpointPreambleLineCount(root) {
+  const p = path.join(root, CHECKPOINT_REL);
+  if (!fs.existsSync(p)) return 0;
+  const lines = fs.readFileSync(p, 'utf8').split('\n');
+  const sectionIdx = lines.findIndex((l, i) => i > 0 && /^## \d{4}-\d{2}-\d{2}/.test(l));
+  const end = sectionIdx < 0 ? lines.length : sectionIdx;
+  return end;
+}
+
 /** @returns {string|null} first ## YYYY-MM-DD section date */
 export function readCheckpointLatestSectionDate(root) {
   const head = readCheckpointHead(root, 4000);

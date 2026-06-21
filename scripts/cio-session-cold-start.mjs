@@ -72,10 +72,11 @@ function main() {
     process.exit(2);
   }
 
-  // Phase 3 — rollup + handoff 整合（export は preflight で済みなら軽い）
+  // Phase 3 — 凍結ゾーン + rollup + handoff 整合
   console.log('\n▶ Phase 3 ROLLUP');
+  run('npm run verify:checkpoint-freeze-zone -- --auto-rollup');
   if (!skipRollup) {
-    run('npm run cio:checkpoint:rollup');
+    run('npm run cio:checkpoint:rollup -- --keep 3');
   }
   run('npm run cio:session:export-handoff');
   run('npm run verify:session-handoff-integrity -- --strict-staleness');
@@ -101,6 +102,7 @@ function main() {
   console.log('\n═══════════════════════════════════════');
   console.log('  cold-start READY');
   console.log('  Skill: .cursor/skills/kintone-session-bootstrap/SKILL.md');
+  console.log('  Lifecycle: docs/runbooks/session-lifecycle-v2.md');
   console.log('═══════════════════════════════════════\n');
 }
 

@@ -1,12 +1,22 @@
 /**
  * bridge と checkpoint の鮮度チェック
  */
+import { spawnSync } from 'node:child_process';
 import {
   readCheckpointLatestSectionDate,
   readCheckpointNextTask,
 } from './cio-checkpoint-read.mjs';
 
 export { readCheckpointNextTask, readCheckpointLatestSectionDate };
+
+function gitHeadShort(root) {
+  const r = spawnSync('git', ['rev-parse', '--short', 'HEAD'], {
+    cwd: root,
+    encoding: 'utf8',
+  });
+  if (r.status !== 0) return null;
+  return String(r.stdout || '').trim() || null;
+}
 
 export function bridgeAgeMs(bridge) {
   if (!bridge?.exportedAt) return Infinity;
@@ -66,6 +76,20 @@ export function checkBridgeStaleness(root, bridge, opts = {}) {
         fix: 'npm run cio:session:export-handoff',
       });
     }
+  }
+
+  const currentHead = gitHeadShort(root);
+  if (
+    currentHead
+    && bridge.gitHead
+    && bridge.gitHead !== 'unknown'
+    && currentHead !== bridge.gitHead
+  ) {
+    issues.push({
+      code: 'GIT_HEAD_DRIFT',
+      message: `gitHead 不一致: bridge=${bridge.gitHead} current=${currentHead}`,
+      fix: 'npm run cio:session:export-handoff',
+    });
   }
 
   return { ok: issues.length === 0, issues };

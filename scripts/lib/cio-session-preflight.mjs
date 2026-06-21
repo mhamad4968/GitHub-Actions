@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { readCheckpointLastUpdatedDate, readCheckpointNextTask } from './cio-checkpoint-read.mjs';
 import { loadBridge } from './cio-session-bridge.mjs';
+import { checkBridgeStaleness } from './cio-bridge-staleness.mjs';
 import { readSessionClockMode } from './session-clock-mode.mjs';
 import { runNpmScriptSync } from './win-hidden-spawn.mjs';
 
@@ -21,21 +22,19 @@ export function runNpmScript(root, scriptName, extraArgs = []) {
 }
 
 /**
- * bridge が checkpoint より古い、または nextTask 不一致
+ * bridge が checkpoint より古い、nextTask 不一致、gitHead 不一致
  * @returns {boolean}
  */
 export function isBridgeStale(root, { maxAgeHours = 48 } = {}) {
   const bridge = loadBridge(root);
   if (!bridge?.exportedAt) return true;
 
+  const staleness = checkBridgeStaleness(root, bridge, { maxAgeHours });
+  if (!staleness.ok) return true;
+
   const exportedMs = Date.parse(bridge.exportedAt);
   if (!Number.isFinite(exportedMs)) return true;
   if (Date.now() - exportedMs > maxAgeHours * 3600 * 1000) return true;
-
-  const cpTask = readCheckpointNextTask(root);
-  if (cpTask && bridge.nextTask && normalizeTask(bridge.nextTask) !== normalizeTask(cpTask)) {
-    return true;
-  }
 
   const cpDate = readCheckpointLastUpdatedDate(root);
   if (cpDate && bridge.exportedAt) {
@@ -44,13 +43,6 @@ export function isBridgeStale(root, { maxAgeHours = 48 } = {}) {
   }
 
   return false;
-}
-
-function normalizeTask(s) {
-  return String(s || '')
-    .replace(/\*\*/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
 }
 
 /**

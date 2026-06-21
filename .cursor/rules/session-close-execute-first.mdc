@@ -9,6 +9,8 @@ alwaysApply: false
 
 # セッション締め — 実行→返答（R23）
 
+> **Lifecycle v2 CLOSE**: partial/full 判定は `session-boundary-close-gate.mdc` を先に参照。
+
 **憲法化**: トリガー語を受けた **最初の tool call は実行**。要約・提案・「明日は…」は **実行完了後のみ**。
 
 ## トリガー（部分一致）

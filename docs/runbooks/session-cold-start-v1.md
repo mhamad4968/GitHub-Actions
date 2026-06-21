@@ -1,6 +1,7 @@
 # セッション cold-start v1 — 統合立ち上げ
 
-> 正本: 2026-06-20 JST — 朝報未作成・入口分散・毎回手直しの再発防止
+> **Lifecycle 正本**: `docs/runbooks/session-lifecycle-v2.md`（本ファイルは **WAKE Phase** 詳細）  
+> 正本日: 2026-06-20 JST — 朝報未作成・入口分散・毎回手直しの再発防止
 
 ## 問題（なぜ毎回手直しが起きたか）
 
@@ -23,8 +24,8 @@ MORNING → PREFLIGHT → ROLLUP → QUICK-HEALTH → BOOTSTRAP → IMPORT → R
 | Phase | 内容 |
 |-------|------|
 | MORNING | 当日 `*-morning-prep.md` 無ければ **fast 生成**（1〜3 分） |
-| PREFLIGHT | `cio:task:score-spec` + 必要時 `export-handoff` |
-| ROLLUP | checkpoint rollup + export + integrity + closure |
+| PREFLIGHT | `cio:task:score-spec` + 必要時 `export-handoff`（**gitHead 不一致**含む bridge 陳腐化） |
+| ROLLUP | 凍結ゾーン verify（`verify:checkpoint-freeze-zone --auto-rollup`）+ checkpoint rollup + export + integrity + closure |
 | QUICK-HEALTH | 朝報 ensure + kintone:test + guard:check |
 | BOOTSTRAP | `session:bootstrap`（憲法・desktop sync・smoke 15） |
 | IMPORT | `verify:session-handoff-integrity --import` |
@@ -73,6 +74,7 @@ powershell -ExecutionPolicy Bypass -File scripts/install-morning-task-windows.ps
 
 ## 参照
 
+- **`docs/runbooks/session-lifecycle-v2.md`** — 5 Phase 正本
 - `scripts/lib/cio-session-preflight.mjs`
 - `scripts/cio-session-cold-start.mjs`
 - `.cursor/skills/kintone-session-bootstrap/SKILL.md`

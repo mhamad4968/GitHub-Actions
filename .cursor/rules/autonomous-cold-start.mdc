@@ -1,57 +1,56 @@
 ---
-description: 新規チャット cold-start 圧縮 — bridge + checkpoint 先頭 + Skills のみで復元
+description: Session Lifecycle v2 — L0 cold-start（正本 runbook へ集約）
 globs:
   - chat-sessions/**
   - docs/handoff/**
 alwaysApply: false
 ---
 
-# 自律 Cold-Start（1-pager）
+# 自律 Cold-Start（Lifecycle v2）
 
-## 適用
+> **正本**: `docs/runbooks/session-lifecycle-v2.md`
 
-新規チャット・セッション復元・「どこまで進んだか」質問時。
+## 5 Phase（要約）
 
-## 必読（この3つだけで開始可）
+```
+WAKE → ORIENT → ALIGN → WORK → CLOSE
+```
+
+## WAKE
+
+```bash
+npm run cio:session:cold-start
+```
+
+## ORIENT — L0 必読（3 系統）
 
 1. `docs/handoff/latest-session-bridge.json`
-2. `chat-sessions/checkpoint-latest.md`（**先頭80行まで**）
-3. `.cursor/skills/kintone-session-bootstrap/SKILL.md`
+2. `chat-sessions/checkpoint-latest.md`（**先頭 50 行**）
+3. `chat-sessions/constitution-first-read-pack/00-ORDER.txt` 〜 `05-full-refs.txt`
 
-## 索引（依頼ルーティング）
+## L1 / L2
+
+- **L1**: 本題決定後 — プロジェクト spec + `data/cio-project-closures.json`
+- **L2**: bootstrap **exit ≠ 0** のみ — `NEW-SESSION-STARTER.md` 6 部（**1 回まで**）
+
+## 索引
 
 - `data/cio-project-lanes.json` — キーワード → Skill / runbook
-- `data/cio-rules-topic-index.json` — ルール発見コスト削減
-
-## ワンコマンド
-
-```bash
-npm run cio:session:start
-```
-
-朝の立ち上げ:
-
-```bash
-npm run cio:morning:ready
-```
-
-**注意（2026-06-14）**: 業務改善 ver.02 v1 **クローズ済** — `--project business-improvement` は **付けない**（付けても pre-implement はスキップされるだけ）。
+- `data/cio-rules-topic-index.json` — ルール発見
 
 ## 鮮度
-
-`--strict-staleness` 付きで検証:
 
 ```bash
 npm run verify:session-handoff-integrity -- --strict-staleness
 ```
 
-NG 時: `npm run cio:session:export-handoff`
+NG 時: cold-start の PREFLIGHT が **auto export-handoff**（gitHead 不一致含む）。
 
-## フル6部ラダー
+## CLOSE 二段
 
-bootstrap が NG のときのみ `chat-sessions/NEW-SESSION-STARTER.md` へ。
+- partial: `session-boundary-close-gate.mdc`
+- full: `session-close-execute-first.mdc`
 
 ## 業務改善レーン
 
-`kintone-business-improvement-lane` スキルを併読。  
-**実装OK seal 前は kintone create/deploy 禁止**。
+`kintone-business-improvement-lane` スキル併読。**v1 クローズ済** — 再実装禁止。

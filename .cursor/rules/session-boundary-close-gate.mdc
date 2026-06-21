@@ -1,0 +1,66 @@
+---
+description: 区切り語 → CLOSE 二段（partial / full）— Session Lifecycle v2 §6
+globs:
+  - chat-sessions/**
+  - docs/handoff/**
+alwaysApply: false
+---
+
+# セッション区切り — partial / full CLOSE（A5）
+
+> 正本: `docs/runbooks/session-lifecycle-v2.md` §6  
+> full 締め詳細: `session-close-execute-first.mdc`
+
+## 判定順（上から最初にマッチ）
+
+### 1. full CLOSE（締め儀式 — 返答より先に実行）
+
+**トリガー**（ユーザメッセージに部分一致）:
+
+```
+締め | 終わり | お疲れ | 今日はここまで | 反省 | セッション終了 | 日終わり
+```
+
+**最初の tool call 順**:
+
+1. `chat-sessions/checkpoint-latest.md` / `handoff-log.md` 更新
+2. `npm run cio:session:export-handoff`
+3. `npm run verify:session-handoff-integrity -- --validate-export`
+4. `npm run cio:session:close-git -- --execute --auto-stage --message "…"`
+5. `npm run verify:session-close-git-warn`
+
+**禁止**: 上記前に「お疲れさまでした」だけ返す。
+
+### 2. partial CLOSE（区切り — 実装停止・引き継ぎ更新）
+
+**トリガー**（full と **両方** マッチしないこと）:
+
+```
+一旦終わり | 一旦区切り | 区切りで | GO待ち | 保留で | ここまでOK | 実装は止め
+```
+
+**「OK」単独**: 直前ターンが **区切り・完了確認・方針承認** の文脈なら partial。deploy 直後の「OK」も partial。
+
+**実行**（返答より先）:
+
+1. checkpoint **先頭**（凍結ゾーン）更新 — `次の1手` / `Git` / 保留
+2. `npm run cio:session:export-handoff`
+3. 復元 1 行（gitHead + 次の1手）
+
+**partial では commit 任意**。dirty なら `次セッションで close-git` を checkpoint に明記。
+
+### 3. 曖昧時
+
+「OK」「終わり」だけで full/partial 判定不能 → **1 問だけ**:
+
+> 「**区切り（partial）** と **今日の締め（full）** のどちらですか？」
+
+---
+
+## F-A4 / F-A5 防止チェック
+
+| 失敗 | 防止 |
+|------|------|
+| v2c 着手を「OK」で誤 GO | partial でも **着手 GO** と **区切り OK** を checkpoint に分離記載 |
+| bridge 陳腐化 | partial/full いずれも **export-handoff 必須** |
+| 保留レーン触り | partial 更新時 **凍結表** を必ず確認 |

@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-06-21 JST — **736 版管理 v2a/v2b 完了** rev **104** / v2c/v2d **保留** / 担当説明 **月曜以降**
+**最終更新**: 2026-06-21 JST — **Session Lifecycle v2（A1–A5）反映** / 736 v2c/v2d **保留** / 次 **B 品質ゲート**
 
 ## クローズ済み（`data/cio-project-closures.json` — 無断 v1 再開禁止）
 
@@ -21,52 +21,21 @@
 | **688 保留** | 工事稼働日数ダッシュ — **クローズではない**。再開は浜田相談時のみ。BUILD `2026-06-19-688-print-rounding-fix` rev **34** |
 | **予実管理 保留** | 部署予実 **677/678/679** — **クローズではない**。来週 **運用等ヒアリング**後に再開。deploy・仕様変更・未コミット作業は **触らない**（浜田 2026-06-20） |
 | **SKYSEA 保留** | 未導入 PC 自動インストール — **2026-04-21 以降長期保留**。**2026-07 頃**から本格 **計画検討**（浜田 2026-06-20）。正本 `docs/plans/2026-04-18-skysea-installer.md` |
-| **736 担当説明 保留** | v1 **担当説明・イメージ確認** — **2026-06-23（月）以降**（浜田 2026-06-21）。**今日は版管理 v2 §10 段1（仕様レビュー）** を優先。正本 `docs/plans/2026-06-18-jikkou-yosan-spec.md` §9.5 R22 / `data/cio-project-closures.json` holds |
+| **736 担当説明 保留** | **2026-06-23（月）以降** — v2a/v2b 完了・v2c GO 待ち。正本 `docs/plans/2026-06-18-jikkou-yosan-spec.md` §9.5 |
 | 本番 WF 6段階 | 無断分割禁止 — test_v3 WF 継続テストのみ |
 | 評価スナップショット | 未設計確認前の本番投入禁止 |
 
-**次の1手**: **736** — 修正版作成スモーク（後日）→ **月曜以降 担当者説明・イメージ確認** → フィードバック後 **v2c GO 判断**。v2c/v2d **未着手**（§8.4 R-18）。予実（677–679）は来週ヒアリングまで保留。688 / SKYSEA は保留のまま触らない  
-**Git**: `958f071` — feat(736): version management v2a/v2b deploy complete（push 済）  
-**736 本番**: BUILD=`2026-06-21-jikkou-yosan-versions-help-wording` rev **104** — 版管理 v2a/v2b 完了・一覧 R-17・ヘルプ
-**688 本番**: `2026-06-19-688-print-rounding-fix` rev **34** — **保留**（2026-06-20 浜田指示。6/19 施工主報告印刷対応済・CLOSED 表記は訂正）  
-**監査**: `npm run cio:audit:session-builds:strict` — repo=ledger=live **6/6 OK**（先祖返りなし）  
-**R21–R24**: **浜田 GO 反映済** — `docs/approved-changes/2026-06-18-rules-r21-r24-hamada-go.md`
-**Space 56 進行中**: **実行予算書作成支援ツール　ver.01** — App **735/736** — **BUILD=`2026-06-21-jikkou-yosan-versions-help-wording`** rev **104** / v2a+v2b **完了**・v2c/v2d **保留**
-**R34–R40**: **浜田 GO 反映済** — `docs/approved-changes/2026-06-14-rules-r34-r40-hamada-go.md`
-**作業領域**: C:\ 重複 clone 削除済 / 正本 clone のみ / `verify:windows-canonical-paths` OK
-**Space 21 完了**: **ソフトウエア管理台帳 v1** — App **714/715** — **2026-06-14 浜田目視 OK**
-**Space 21 完了**: **記憶媒体等管理台帳 v1** — App **716/717** — **2026-06-14 浜田目視 OK**
-**Space 21 完了**: **社内 Wi-Fi SSID 管理 ver.1** — App **718/719** — **2026-06-14 浜田目視 OK**
-**Space 34 完了**: **JRシステム用 iPad 管理台帳 ver.1** — App **720/721** — **2026-06-15 浜田目視 OK**
-**Space 48 完了**: **VPNアカウント台帳** — App **733/734** — **2026-06-21 v1.3 完了**（リスト出力 xlsx+印刷・VPN接続情報 PW編集・BUILD `2026-06-21-vpn-conn-pw-updated-date` rev **28**）
-**ガバナンス（第12/13層）**: **A1–C4 + 674 live-schema + 許容ギャップ運用化** — commit **`6a37e1d` push 済** / `verify:cio-four-ai-governance` OK / `hooks:install` 済（浜田端末）
-**許容（機械監視）**: **640** deploy 未接続（`verify:kintone-accepted-gaps`）/ **generations** post-commit amend + git マージ監査
-**新レーン（Space 21）**: なし（v1 台帳3本とも CLOSED — 次は別 SPEC / 浜田 GO）
-**壁時計試験**: `.cio/session-clock-mode.json` **`trialPaused: true`** — START.bat 不使用・sessionEnd の stopAllClock スキップ（PS フラッシュ切り分け）
-**クローズ正本**: `data/cio-project-closures.json` / `npm run verify:checkpoint-project-closure`
-**R13–R18**: **浜田 GO 済** — `docs/approved-changes/2026-06-11-rules-r13-r18-hamada-go.md`
-**システム推進室ポータル**: **2026-06-11 完了**（712 — 5タブ・15リンク — 浜田 OK）
-**ポータル未着手（手動）**: Space 48 スペース画面へ **712 リンク 1 つ**
+**次の1手**: **AI チーム運用 B** — push/deploy 前品質ゲート（正本 `docs/runbooks/session-lifecycle-v2.md`）。**736** v2c **未着手**（6/23 以降担当説明→GO）。**677–679 / 688 / SKYSEA** — 触らない  
+**Git**: A1–A5 lifecycle v2 コミット予定  
+**736 本番**: BUILD=`2026-06-21-jikkou-yosan-versions-help-wording` rev **104**  
+**688 本番**: BUILD=`2026-06-19-688-print-rounding-fix` rev **34** — **保留**  
+**クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
 
-## セッション切替後の自律復元（圧縮ミラー）
+## セッション切替後の自律復元（Lifecycle v2 鏡像）
 
-**cold-start 優先**: `docs/handoff/latest-session-bridge.json` + 本ファイル**先頭凍結表** + `.cursor/skills/kintone-session-bootstrap/SKILL.md`  
-**クローズ正本**: `data/cio-project-closures.json` — `npm run verify:checkpoint-project-closure`
-
-**項番 -1**: Desktop **`00-NEW-SESSION-STARTER_yyyymmdd.txt` 全文貼付推奨**（`chat-sessions/NEW-SESSION-STARTER.md` 同内容）  
-**項番 -0**: 浜田 **OK が返るまで** 項番 0・本題の副作用に **着手しない**（§41 一問）  
-**項番 0**: リポルートで **`npm run session:bootstrap`** — **Read より前**に `verify:constitution-handoff` → `mandatory-read-gate.mjs` → `verify:session-clock-health` → `session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync`  
-**項番 0.9**: 合意と checkpoint が食い違うときだけ §41 再確認  
-**0b Desktop**: `C:\Users\mhamada202408224\Desktop\AI緊急用` — `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync` / **`23-AI緊急用-README.txt`**  
-**壁時計**: `SESSION-CLOCK.md` / `SESSION-SPLIT-REMINDER.md` / `session:clock:set` / `session:clock:watch` / `session:split-check`  
-**§35-6 / §35-7 / HANDOFF-AI-FIVE-BLOCKS / TSB-031**: 削除は §35-6 / §41。**日終わり（R17 必須）**: `npm run cio:session:close-git`  
-**詳細履歴**: `chat-sessions/checkpoints/checkpoint-archive-2026-06-15.md`
-
----
-
----
-
----
+**正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`  
+**項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
+**L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** `session-boundary-close-gate.mdc` | **履歴** `chat-sessions/checkpoints/checkpoint-archive-2026-06-21.md`
 
 ## 2026-06-17 JST — **595 emp_id / 715・717 利用者 UI / PCキッティング BOM**
 
@@ -84,6 +53,7 @@
 
 
 
+
 ## 2026-06-17 JST — **VPNアカウント管理台帳 v1 完成（クローズ）**
 
 | 項目 | 内容 |
@@ -94,6 +64,7 @@
 | **再開条件** | 浜田 GO + checkpoint「次の1手」更新 + `data/cio-project-closures.json` 解除 |
 
 ---
+
 
 
 
@@ -114,42 +85,5 @@
 
 
 
-## 2026-06-14 JST — **R34–R40 ガバナンス + ESLint CI 修正（セッション締め）**
 
-| 項目 | 内容 |
-|------|------|
-| **背景** | Wi-Fi push 後 `kintone-customize-deploy` ESLint 赤（bundle 型 719） |
-| **ESLint** | `qrcode-vendor.js` / bundle `desktop.js` ignore、`desktop.src.js` に `QRCode` global |
-| **R34–R40** | Windows 正本パス / CLOSED 前 lint / customize registry / 死ショートカット / runbook CI / 四半期スキャン |
-| **CI** | **`694c5a4`** — constitution-gates + kintone-customize-deploy + cursor-env-gates **success** |
-| **正本** | `docs/runbooks/kintone-project-close-gate.md` / `data/windows-canonical-paths.json` / `data/kintone-customize-path-registry.json` |
-
----
-
-
-
-
-
----
-
-
-## 2026-06-19 JST — **688 施工主報告印刷 + 関連 Kintone 本日対応（クローズ）**
-
-| 項目 | 内容 |
-|------|------|
-| **688** | `2026-06-19-688-print-rounding-fix` rev **34** — 施工主報告用印刷（5セクション）・足場風速日数丸め・印刷フッター削除 |
-| **595** | `2026-06-19-595-dept-picker-680` rev **96** — 680 所属候補モーダル |
-| **674** | `2026-06-19-674-detail-hide-sidebar` rev **243** — 詳細画面右サイドバー非表示 |
-| **721** | `2026-06-19-jr-ipad-dash-lifecycle-toggle` rev **12** — 有効/廃止トグル |
-| **734** | `2026-06-19-vpn-dash-license-month-compare` rev **13** — ライセンス前回確定比較 |
-| **720** | フォーム rev **7** — 新規採番時下書き必須緩和（customize BUILD 不変） |
-| **733** | snapshot_month / snapshot_json 追加（フォーム rev **7**） |
-| **CI修復** | 削除済 668 を portfolio BUILD 監査対象から除外 |
-| **正本** | `docs/plans/2026-06-13-construction-workdays-excel-20260613.md` §9 / JR・VPN・PC台帳 改定履歴 |
-| **判定** | 施工主報告印刷・丸め・空白ページ修正まで本番対応済（浜田 OK）— **2026-06-20 表記訂正: CLOSED → 保留**（`data/cio-project-closures.json` holds） |
-| **再開条件** | 浜田から再度相談があった場合のみ |
-
----
-
-
-<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-06-19.md -->
+<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-06-21.md -->
