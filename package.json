@@ -114,6 +114,8 @@
     "jikkou-yosan:gen-budget-fields": "node scripts/jikkou-yosan-gen-budget-fields.mjs",
     "jikkou-yosan:create-budget": "npx dotenv -e .env -e .env.proxy -- node scripts/jikkou-yosan-create-budget-app.mjs",
     "jikkou-yosan:add-budget-fields": "npx dotenv -e .env -e .env.proxy -- node scripts/jikkou-yosan-add-budget-fields.mjs",
+    "jikkou-yosan:add-v2-fields": "npx dotenv -e .env -e .env.proxy -- node scripts/jikkou-yosan-add-v2-fields.mjs",
+    "jikkou-yosan:v2-backfill": "npx dotenv -e .env -e .env.proxy -- node scripts/jikkou-yosan-v2-backfill.mjs",
     "jikkou-yosan:build-desktop": "node scripts/jikkou-yosan-build-desktop.mjs",
     "jikkou-yosan:calc-gate": "node scripts/jikkou-yosan-calc-gate.mjs",
     "jikkou-yosan:verify-sample": "node scripts/jikkou-yosan-sample-2623001.mjs",

@@ -7,6 +7,7 @@ import {
   costGroupSubtotalNote,
   assignCostBorderRoles,
   syncWorkTypeSubtotalRows,
+  isSubtotalRow,
 } from './jikkou-yosan-excel-cost-layout.mjs';
 
 export {

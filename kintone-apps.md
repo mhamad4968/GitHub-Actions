@@ -36,7 +36,7 @@ npm run app:fields <アプリID>
 | 687 | `2026-06-09-687-workdays-excel-v1` | **10** | `13bc24dc-a753-404a-9f03-8e7e92c43647` | 2026-06-09 工事稼働 Excel v1 |
 | 688 | `2026-06-21-688-rate-over100-comment-formula` | **37** | `d4fe5f5a-9c00-4a80-b64c-729f9751c50b` | 2026-06-21 不稼働率100%超コメント欄・式付き内訳 |
 | 735 | — | — | — | 2026-06-18 実行予算書リストマスタ（104件 seed・customize なし） |
-| 736 | `2026-06-21-jikkou-yosan-legal-welfare-total-label` | **94** | `3aa633a8-6799-41a6-82e7-322a5f460c6d` | 2026-06-21 法定福利費（合計）ラベル＋薄茶色合計行 |
+| 736 | `2026-06-21-jikkou-yosan-versions-help-wording` | **104** | `80ea3e38-1e6e-48d2-a924-df6177351494` | 2026-06-21 版管理 v2a/v2b（複製・ロック・版管理タブ・一覧R-17・ヘルプ） |
 | 693 | `2026-06-03-apple-id-db-block-ui-mutations` | **5** | `ca4b6489-bc6d-444c-b4a4-28b4c7f8c96c` | 2026-06-03 Apple ID DB save/delete ブロック |
 | 694 | `2026-06-08-694-device-exchange-date` | **18** | `699da986-7b14-49d0-aafe-bfe3322300e5` | 2026-06-08 端末交換日フィールド |
 | 695 | `2026-06-06-shared-mail-db-block-ui` | **5** | `afc1ca51-aeed-4a67-a3ed-9a2fac00e91a` | 2026-06-06 共有メール DB save/delete ブロック |

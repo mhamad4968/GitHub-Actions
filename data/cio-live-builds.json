@@ -306,11 +306,11 @@
       "note": null
     },
     "736": {
-      "build": "2026-06-21-jikkou-yosan-legal-welfare-total-label",
-      "fileKey": "6bc54a3f-b780-4063-9a3e-bdfe9cd9e4dc",
-      "revision": "95",
-      "relPath": ".kintone-deploy/upload-736.js",
-      "deployedAt": "2026-06-20T23:13:13.093Z",
+      "build": "2026-06-21-jikkou-yosan-versions-help-wording",
+      "fileKey": "80ea3e38-1e6e-48d2-a924-df6177351494",
+      "revision": "104",
+      "relPath": "customize/736/desktop.js",
+      "deployedAt": "2026-06-21T00:24:12.609Z",
       "note": null
     }
   }

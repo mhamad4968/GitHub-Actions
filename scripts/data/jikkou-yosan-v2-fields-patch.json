@@ -1,0 +1,103 @@
+{
+  "properties": {
+    "version_seq": {
+      "type": "NUMBER",
+      "code": "version_seq",
+      "label": "版連番",
+      "required": false,
+      "digit": false,
+      "displayScale": "0",
+      "unit": "",
+      "unitPosition": "BEFORE"
+    },
+    "source_record_id": {
+      "type": "NUMBER",
+      "code": "source_record_id",
+      "label": "複製元レコードID",
+      "required": false,
+      "digit": false,
+      "displayScale": "0",
+      "unit": "",
+      "unitPosition": "BEFORE"
+    },
+    "is_locked": {
+      "type": "CHECK_BOX",
+      "code": "is_locked",
+      "label": "版ロック",
+      "required": false,
+      "options": {
+        "ロック": {
+          "label": "ロック",
+          "index": "0"
+        }
+      },
+      "defaultValue": []
+    },
+    "revision_note": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "revision_note",
+      "label": "修正理由メモ",
+      "required": false
+    },
+    "spec_lines": {
+      "type": "SUBTABLE",
+      "code": "spec_lines",
+      "label": "仕様明細",
+      "fields": {
+        "spec_row_key": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "spec_row_key",
+          "label": "行キー",
+          "required": false,
+          "noLabel": false,
+          "defaultValue": ""
+        }
+      }
+    },
+    "cost_lines": {
+      "type": "SUBTABLE",
+      "code": "cost_lines",
+      "label": "原価行",
+      "fields": {
+        "cost_row_key": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "cost_row_key",
+          "label": "行キー",
+          "required": false,
+          "noLabel": false,
+          "defaultValue": ""
+        }
+      }
+    },
+    "mat_lines": {
+      "type": "SUBTABLE",
+      "code": "mat_lines",
+      "label": "材料明細",
+      "fields": {
+        "mat_row_key": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "mat_row_key",
+          "label": "行キー",
+          "required": false,
+          "noLabel": false,
+          "defaultValue": ""
+        }
+      }
+    },
+    "subcontract_lines": {
+      "type": "SUBTABLE",
+      "code": "subcontract_lines",
+      "label": "外注明細",
+      "fields": {
+        "sub_row_key": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "sub_row_key",
+          "label": "行キー",
+          "required": false,
+          "noLabel": false,
+          "defaultValue": ""
+        }
+      }
+    }
+  }
+}

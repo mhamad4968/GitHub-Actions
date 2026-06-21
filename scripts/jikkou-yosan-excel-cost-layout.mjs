@@ -140,8 +140,13 @@ export function isSubtotalGroupKey(key) {
   return EXCEL_SUBTOTAL_GROUP_KEYS.has(String(key || ''));
 }
 
-function isSubtotalRow(r) {
-  return r.cost_row_kind === 'subtotal' || r.cost_row_kind === '小計';
+export function isSubtotalRow(r) {
+  if (!r) return false;
+  return (
+    r.cost_row_kind === 'subtotal'
+    || r.cost_row_kind === '小計'
+    || String(r.cost_work_type || '').trim() === '計'
+  );
 }
 
 function findGroupSubtotalIndex(lines, startIdx, groupKey) {

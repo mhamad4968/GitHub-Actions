@@ -35,6 +35,20 @@
     subcontract_lines: 'subcontract_lines',
     created_datetime: 'Created_datetime',
     updated_datetime: 'Updated_datetime',
+    version_seq: 'version_seq',
+    source_record_id: 'source_record_id',
+    is_locked: 'is_locked',
+    revision_note: 'revision_note',
+  };
+
+  const VERSION_TYPES = ['当初', '仕様変更', '価格変更', '仕様・価格変更', 'その他'];
+  const STATUS_CONFIRMED = '版確定';
+  const LOCK_CHECK_LABEL = 'ロック';
+  const ROW_KEY_FC = {
+    spec_lines: 'spec_row_key',
+    cost_lines: 'cost_row_key',
+    mat_lines: 'mat_row_key',
+    subcontract_lines: 'sub_row_key',
   };
 
   const KIND_TO_CALC = { 明細: 'detail', 小計: 'subtotal', 見出し: 'group_header', 連携: 'link' };
@@ -137,6 +151,7 @@
   let headerSpecHelpOpen = false;
   let headerCostHelpOpen = false;
   let headerDetailHelpOpen = false;
+  let headerVersionsHelpOpen = false;
   let listRows = [];
   let listRowsAll = [];
   let listSearchQuery = '';
@@ -145,6 +160,9 @@
   let pendingScrollTargetId = null;
   let pendingRowHighlight = null;
   let personInChargeManual = false;
+  let versionListRows = [];
+  let versionListLoading = false;
+  let revisionBusy = false;
 
   const PERSON_NAME_PLACEHOLDER = '例: 浜田\u3000太郎';
   const PERSON_NAME_FORMAT_RE = /^[^\s\u3000]+\u3000[^\s\u3000]+$/;
@@ -233,7 +251,7 @@
     return readOnly ? ' disabled' : '';
   }
 
-  const LIST_SORTABLE_KEYS = ['project_name', 'draft_date', 'created_at', 'updated_at', 'status'];
+  const LIST_SORTABLE_KEYS = ['project_name', 'updated_at'];
   const LIST_DATE_SORT_KEYS = ['draft_date', 'created_at', 'updated_at'];
 
   function emptyState() {
@@ -274,6 +292,10 @@
       cost_lines: [],
       mat_lines: [],
       subcontract_lines: [],
+      version_seq: 1,
+      source_record_id: '',
+      is_locked: false,
+      revision_note: '',
     };
   }
 
@@ -287,6 +309,55 @@
 
   function gv(rec, code) {
     return rec[code] && rec[code].value != null ? rec[code].value : '';
+  }
+
+  function newRowKey() {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+    return 'rk-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+  }
+
+  function normalizeStatusValue(raw) {
+    const s = String(raw || '下書き');
+    return s === '初版確定' ? STATUS_CONFIRMED : s;
+  }
+
+  function isLockedFromRecord(rec) {
+    const v = gv(rec, FC.is_locked);
+    if (Array.isArray(v)) return v.indexOf(LOCK_CHECK_LABEL) >= 0 || v.length > 0;
+    return !!v;
+  }
+
+  function isConfirmedStatus(st) {
+    return normalizeStatusValue(st) === STATUS_CONFIRMED;
+  }
+
+  function ensureRowKeysOnState(s) {
+    function touch(rows) {
+      (rows || []).forEach(function (r) {
+        if (r && !String(r.row_key || '').trim()) r.row_key = newRowKey();
+      });
+    }
+    touch(s.spec_lines);
+    touch(s.cost_lines);
+    touch(s.mat_lines);
+    touch(s.subcontract_lines);
+  }
+
+  function readRowKey(v, tblCode) {
+    const code = ROW_KEY_FC[tblCode] || 'row_key';
+    return gv(v, code) || gv(v, 'row_key');
+  }
+
+  function rowKeyBody(tblCode, key) {
+    const code = ROW_KEY_FC[tblCode] || 'row_key';
+    const o = {};
+    o[code] = { value: key || newRowKey() };
+    return o;
+  }
+
+  function versionSeqNum(v) {
+    const n = Number(v);
+    return Number.isFinite(n) && n > 0 ? n : 1;
   }
 
   function fmt(n) {
@@ -461,10 +532,9 @@
     const hay = [
       row.project_name,
       row.project_code,
+      row.project_official_name,
       row.version_type,
       row.status,
-      row.draft_date,
-      row.created_at,
       row.updated_at,
     ].join(' ').toLowerCase();
     return hay.indexOf(q) >= 0;
@@ -479,9 +549,54 @@
   function listCountLabel() {
     const total = listRowsAll.length;
     const shown = listRows.length;
-    if (!total) return '0 件';
-    if (!normalizeListSearch(listSearchQuery)) return '全 ' + total + ' 件';
-    return '表示 ' + shown + ' / 全 ' + total + ' 件';
+    if (!total) return '0 工事';
+    if (!normalizeListSearch(listSearchQuery)) return '全 ' + total + ' 工事';
+    return '表示 ' + shown + ' / 全 ' + total + ' 工事';
+  }
+
+  function pickOpenVersion(versions) {
+    if (!versions || !versions.length) return null;
+    const draft = versions.find(function (r) { return r.status === '下書き'; });
+    if (draft) return draft;
+    let best = versions[0];
+    versions.forEach(function (r) {
+      if (versionSeqNum(r.version_seq) >= versionSeqNum(best.version_seq)) best = r;
+    });
+    return best;
+  }
+
+  function buildListProjectRows(recordRows) {
+    const map = {};
+    (recordRows || []).forEach(function (r) {
+      const key = r.project_code || '(工事コードなし)';
+      if (!map[key]) {
+        map[key] = {
+          project_code: key,
+          project_name: r.project_name || key,
+          project_official_name: r.project_official_name || '',
+          versions: [],
+        };
+      }
+      map[key].versions.push(r);
+      if (!map[key].project_name && r.project_name) map[key].project_name = r.project_name;
+      if (!map[key].project_official_name && r.project_official_name) map[key].project_official_name = r.project_official_name;
+    });
+    return Object.keys(map).map(function (k) {
+      const g = map[k];
+      const open = pickOpenVersion(g.versions) || g.versions[0];
+      return {
+        project_code: g.project_code,
+        project_name: g.project_name,
+        project_official_name: g.project_official_name,
+        open_id: open.id,
+        version_seq: open.version_seq,
+        version_type: open.version_type,
+        status: open.status,
+        updated_at: open.updated_at,
+        contract_total_1: open.contract_total_1,
+        profit_9: open.profit_9,
+      };
+    });
   }
 
   function listSortTh(key, label) {
@@ -707,6 +822,14 @@
       '.jy-header-body{padding:0 14px 14px;border-top:1px solid #e2e8f0}' +
       '.jy-help-banner{margin:0 0 10px;border:1px solid #93c5fd;border-radius:6px;background:#eff6ff;overflow:hidden}' +
       '.jy-help-banner summary{display:flex;align-items:center;gap:8px;cursor:pointer;padding:9px 12px;font-size:12px;font-weight:600;color:#1e3a8a;background:linear-gradient(180deg,#eff6ff 0%,#dbeafe 100%);list-style:none;user-select:none}' +
+      '.jy-help-banner-section{margin:0 0 14px;border-color:#93c5fd;border-radius:8px}' +
+      '.jy-help-banner-section summary{padding:12px 16px;font-size:1.05em;font-weight:700;color:#1e3a8a;min-height:44px}' +
+      '.jy-help-banner-section summary::before{height:20px;width:5px}' +
+      '.jy-help-banner-section summary::after{font-size:0.95em}' +
+      '.jy-help-banner-section .jy-help-banner-body{padding:14px 18px 16px}' +
+      '.jy-help-banner-section .jy-header-legend-list{font-size:0.98em;line-height:1.8;color:#334155;padding-left:1.35em}' +
+      '.jy-help-banner-section .jy-header-legend-list li{margin:8px 0}' +
+      '.jy-help-banner-section .jy-header-legend-list li::marker{color:#2563eb}' +
       '.jy-help-banner summary::-webkit-details-marker{display:none}' +
       '.jy-help-banner summary::before{content:"";display:block;width:4px;height:16px;border-radius:2px;background:#2563eb;flex-shrink:0}' +
       '.jy-help-banner summary::after{content:"▸";font-size:11px;color:#2563eb;margin-left:auto;flex-shrink:0;line-height:1}' +
@@ -738,8 +861,19 @@
       '.jy-tab{padding:8px 18px;cursor:pointer;border:1px solid #94a3b8;border-radius:6px 6px 0 0;background:#f1f5f9;font-size:13px;font-weight:600}' +
       '.jy-tab[data-tab="summary"]:not(.active){background:#eff6ff;border-color:#93c5fd;color:#1e40af}' +
       '.jy-tab[data-tab="detail"]:not(.active){background:#ecfdf5;border-color:#86efac;color:#166534}' +
+      '.jy-tab[data-tab="versions"]:not(.active){background:#f5f3ff;border-color:#c4b5fd;color:#5b21b6}' +
       '.jy-tab.active{background:#2563eb;color:#fff;border-color:#2563eb}' +
       '.jy-tab[data-tab="detail"].active{background:#059669;border-color:#059669}' +
+      '.jy-tab[data-tab="versions"].active{background:#7c3aed;border-color:#7c3aed}' +
+      '.jy-tab-hint-versions{background:#f5f3ff;border-color:#ddd6fe;color:#475569}' +
+      '.jy-ver-table .jy-ver-current td{background:#ede9fe!important;font-weight:600}' +
+      '.jy-ver-pos{font-size:11px;color:#64748b;display:block}' +
+      '.jy-ver-link{background:none;border:none;color:#2563eb;cursor:pointer;font-weight:700;text-decoration:underline;padding:0}' +
+      '.jy-list-group-sub{font-size:11px;color:#64748b;margin-top:2px}' +
+      '.jy-list-project-row{cursor:pointer}' +
+      '.jy-list-project-row:hover td{background:#eff6ff}' +
+      '.jy-list-hint{font-size:12px;color:#64748b;margin:0 0 10px;line-height:1.5}' +
+      '.jy-revision-blocked{font-size:12px;color:#b45309;margin-left:8px}' +
       '.jy-tab-hint{font-size:12px;color:#64748b;margin:4px 0 10px;border-radius:6px;padding:6px 10px;border:1px solid transparent}' +
       '.jy-tab-hint-summary{background:#eff6ff;border-color:#bfdbfe;color:#475569}' +
       '.jy-tab-hint-detail{background:#ecfdf5;border-color:#bbf7d0;color:#475569}' +
@@ -1260,6 +1394,7 @@
 
   function blankCostRow(tmpl) {
     return {
+      row_key: newRowKey(),
       cost_work_type_code: tmpl.cost_work_type_code || '',
       cost_work_type: tmpl.cost_work_type || '',
       cost_category_code: tmpl.cost_category_code || '',
@@ -1363,6 +1498,10 @@
     const s = emptyState();
     const login = kintone.getLoginUser();
     s.version_type = '当初';
+    s.version_seq = 1;
+    s.is_locked = false;
+    s.source_record_id = '';
+    s.revision_note = '';
     s.draft_date = jstTodayYmd();
     s.created_by_name = normalizePersonName(login.name || login.code || '');
     s.person_in_charge_name = s.created_by_name;
@@ -1413,14 +1552,19 @@
     s.safety_rule_88 = String(gv(rec, FC.safety_rule_88) || '有');
     s.start_date = String(gv(rec, FC.start_date)).slice(0, 10);
     s.end_date = String(gv(rec, FC.end_date)).slice(0, 10);
-    s.status = String(gv(rec, FC.status) || '下書き');
+    s.status = normalizeStatusValue(gv(rec, FC.status) || '下書き');
     s.note = String(gv(rec, FC.note));
+    s.version_seq = versionSeqNum(gv(rec, FC.version_seq));
+    s.source_record_id = String(gv(rec, FC.source_record_id) || '');
+    s.is_locked = isLockedFromRecord(rec);
+    s.revision_note = String(gv(rec, FC.revision_note) || '');
     s.spec_lines = readSub(rec, FC.spec_lines, function (v) {
-      return { spec_name: gv(v, 'spec_name'), spec_unit: gv(v, 'spec_unit'), spec_qty: gv(v, 'spec_qty'), spec_unit_price: gv(v, 'spec_unit_price'), spec_amount: num(gv(v, 'spec_amount')), spec_note: gv(v, 'spec_note') };
+      return { row_key: readRowKey(v, FC.spec_lines), spec_name: gv(v, 'spec_name'), spec_unit: gv(v, 'spec_unit'), spec_qty: gv(v, 'spec_qty'), spec_unit_price: gv(v, 'spec_unit_price'), spec_amount: num(gv(v, 'spec_amount')), spec_note: gv(v, 'spec_note') };
     });
     s.cost_lines = readSub(rec, FC.cost_lines, function (v) {
       const mk = gv(v, 'cost_row_kind') || '明細';
       return {
+        row_key: readRowKey(v, FC.cost_lines),
         cost_work_type_code: gv(v, 'cost_work_type_code'),
         cost_work_type: gv(v, 'cost_work_type'),
         cost_category_code: gv(v, 'cost_category_code'),
@@ -1438,16 +1582,17 @@
       };
     });
     s.mat_lines = readSub(rec, FC.mat_lines, function (v) {
-      return { mat_vendor: gv(v, 'mat_vendor'), mat_name: gv(v, 'mat_name'), mat_capacity: gv(v, 'mat_capacity'), mat_maker: gv(v, 'mat_maker'), mat_qty: gv(v, 'mat_qty'), mat_unit_price: gv(v, 'mat_unit_price'), mat_amount: num(gv(v, 'mat_amount')), mat_group: gv(v, 'mat_group') || '塗料', mat_basis: gv(v, 'mat_basis') };
+      return { row_key: readRowKey(v, FC.mat_lines), mat_vendor: gv(v, 'mat_vendor'), mat_name: gv(v, 'mat_name'), mat_capacity: gv(v, 'mat_capacity'), mat_maker: gv(v, 'mat_maker'), mat_qty: gv(v, 'mat_qty'), mat_unit_price: gv(v, 'mat_unit_price'), mat_amount: num(gv(v, 'mat_amount')), mat_group: gv(v, 'mat_group') || '塗料', mat_basis: gv(v, 'mat_basis') };
     });
     s.subcontract_lines = readSub(rec, FC.subcontract_lines, function (v) {
-      return { subcontract_block: gv(v, 'subcontract_block'), sub_row_kind: gv(v, 'sub_row_kind'), sub_vendor: gv(v, 'sub_vendor'), sub_line_type: gv(v, 'sub_line_type'), sub_unit: gv(v, 'sub_unit'), sub_qty: gv(v, 'sub_qty'), sub_unit_price: gv(v, 'sub_unit_price'), sub_amount: num(gv(v, 'sub_amount')), sub_basis: gv(v, 'sub_basis') };
+      return { row_key: readRowKey(v, FC.subcontract_lines), subcontract_block: gv(v, 'subcontract_block'), sub_row_kind: gv(v, 'sub_row_kind'), sub_vendor: gv(v, 'sub_vendor'), sub_line_type: gv(v, 'sub_line_type'), sub_unit: gv(v, 'sub_unit'), sub_qty: gv(v, 'sub_qty'), sub_unit_price: gv(v, 'sub_unit_price'), sub_amount: num(gv(v, 'sub_amount')), sub_basis: gv(v, 'sub_basis') };
     });
     if (!s.spec_lines.length) s.spec_lines = defaultSpecLines();
     if (!s.cost_lines.length) s.cost_lines = defaultCostRows();
     else s.cost_lines = migrateDayNightCombinedCostLines(s.cost_lines);
     if (!s.mat_lines.length) s.mat_lines = [{ mat_vendor: '', mat_name: '', mat_capacity: '', mat_maker: '', mat_qty: '', mat_unit_price: '', mat_amount: 0, mat_group: '塗料', mat_basis: '' }];
     if (!s.subcontract_lines.length) s.subcontract_lines = defaultSubcontractTemplate();
+    ensureRowKeysOnState(s);
     personInChargeManual = String(s.person_in_charge_name) !== String(s.created_by_name);
     return recalcState(s);
   }
@@ -1499,8 +1644,15 @@
 
   function stateToKintone(s) {
     recalcState(s);
+    ensureRowKeysOnState(s);
+    if (!s.version_seq) s.version_seq = 1;
+    s.status = normalizeStatusValue(s.status);
     const body = {};
     body[FC.version_type] = { value: s.version_type };
+    body[FC.version_seq] = { value: String(s.version_seq) };
+    if (s.source_record_id) body[FC.source_record_id] = { value: String(s.source_record_id) };
+    body[FC.is_locked] = { value: s.is_locked ? [LOCK_CHECK_LABEL] : [] };
+    body[FC.revision_note] = { value: s.revision_note || '' };
     body[FC.site_entry_date] = { value: s.site_entry_date || null };
     body[FC.draft_date] = { value: s.draft_date || null };
     body[FC.record_created_date] = { value: s.record_created_date || null };
@@ -1530,13 +1682,13 @@
     body[FC.profit_rate] = { value: String(s.profit_rate) };
     body[FC.spec_lines] = {
       value: s.spec_lines.map(function (r) {
-        return { value: { spec_name: { value: r.spec_name }, spec_unit: { value: r.spec_unit }, spec_qty: { value: String(r.spec_qty || '') }, spec_unit_price: { value: String(r.spec_unit_price || '') }, spec_amount: { value: String(r.spec_amount || 0) }, spec_note: { value: r.spec_note } } };
+        return { value: Object.assign({}, rowKeyBody(FC.spec_lines, r.row_key), { spec_name: { value: r.spec_name }, spec_unit: { value: r.spec_unit }, spec_qty: { value: String(r.spec_qty || '') }, spec_unit_price: { value: String(r.spec_unit_price || '') }, spec_amount: { value: String(r.spec_amount || 0) }, spec_note: { value: r.spec_note } }) };
       }),
     };
     body[FC.cost_lines] = {
       value: s.cost_lines.map(function (r) {
         return {
-          value: {
+          value: Object.assign({}, rowKeyBody(FC.cost_lines, r.row_key), {
             cost_work_type_code: { value: r.cost_work_type_code },
             cost_work_type: { value: r.cost_work_type },
             cost_category_code: { value: r.cost_category_code },
@@ -1551,18 +1703,18 @@
             cost_basis_note: { value: r.cost_basis_note },
             detail_marker: { value: r.detail_marker || 'なし' },
             cost_ratio: { value: String(r.cost_ratio || 0) },
-          },
+          }),
         };
       }),
     };
     body[FC.mat_lines] = {
       value: s.mat_lines.map(function (r) {
-        return { value: { mat_vendor: { value: r.mat_vendor }, mat_name: { value: r.mat_name }, mat_capacity: { value: String(r.mat_capacity || '') }, mat_maker: { value: r.mat_maker }, mat_qty: { value: String(r.mat_qty || '') }, mat_unit_price: { value: String(r.mat_unit_price || '') }, mat_amount: { value: String(r.mat_amount || 0) }, mat_group: { value: r.mat_group }, mat_basis: { value: r.mat_basis } } };
+        return { value: Object.assign({}, rowKeyBody(FC.mat_lines, r.row_key), { mat_vendor: { value: r.mat_vendor }, mat_name: { value: r.mat_name }, mat_capacity: { value: String(r.mat_capacity || '') }, mat_maker: { value: r.mat_maker }, mat_qty: { value: String(r.mat_qty || '') }, mat_unit_price: { value: String(r.mat_unit_price || '') }, mat_amount: { value: String(r.mat_amount || 0) }, mat_group: { value: r.mat_group }, mat_basis: { value: r.mat_basis } }) };
       }),
     };
     body[FC.subcontract_lines] = {
       value: s.subcontract_lines.map(function (r) {
-        return { value: { subcontract_block: { value: r.subcontract_block }, sub_row_kind: { value: r.sub_row_kind }, sub_vendor: { value: r.sub_vendor }, sub_line_type: { value: r.sub_line_type }, sub_unit: { value: r.sub_unit }, sub_qty: { value: String(r.sub_qty || '') }, sub_unit_price: { value: String(r.sub_unit_price || '') }, sub_amount: { value: String(r.sub_amount || 0) }, sub_basis: { value: r.sub_basis } } };
+        return { value: Object.assign({}, rowKeyBody(FC.subcontract_lines, r.row_key), { subcontract_block: { value: r.subcontract_block }, sub_row_kind: { value: r.sub_row_kind }, sub_vendor: { value: r.sub_vendor }, sub_line_type: { value: r.sub_line_type }, sub_unit: { value: r.sub_unit }, sub_qty: { value: String(r.sub_qty || '') }, sub_unit_price: { value: String(r.sub_unit_price || '') }, sub_amount: { value: String(r.sub_amount || 0) }, sub_basis: { value: r.sub_basis } }) };
       }),
     };
     return body;
@@ -1585,7 +1737,7 @@
   function renderSectionHelpBanner(id, openFlag, title, listItems) {
     const items = listItems.map(function (item) { return '<li>' + item + '</li>'; }).join('');
     return (
-      '<details class="jy-help-banner"' + (openFlag ? ' open' : '') + ' id="' + id + '">' +
+      '<details class="jy-help-banner jy-help-banner-section"' + (openFlag ? ' open' : '') + ' id="' + id + '">' +
       '<summary><span class="jy-help-banner-title">' + esc(title) + '</span></summary>' +
       '<div class="jy-help-banner-body"><ul class="jy-header-legend-list">' + items + '</ul></div>' +
       '</details>'
@@ -1623,6 +1775,18 @@
     ]);
   }
 
+  function renderVersionsHelpPanel() {
+    return renderSectionHelpBanner('jy-versions-help-panel', headerVersionsHelpOpen, '版管理について（クリックで開閉）', [
+      'このタブでは、<strong>同一工事（工事コード）</strong>の<strong>全版</strong>を一覧できます（印刷対象外）。',
+      '<strong>版番号</strong>をクリックすると、その版を開きます。未保存の変更がある場合は確認ダイアログが出ます。',
+      '版を切り替えたあとは、<strong>総括表</strong>または<strong>詳細表</strong>タブで帳票内容を閲覧・編集します。',
+      '<strong>版の位置</strong>：最新版／編集中（下書き）／過去版（参照のみ・🔒）が表示されます。',
+      '<strong>修正版を作成</strong>：最新の確定版からのみ作成できます。作成直後に旧版は参照のみ（ロック）になり、新版は下書きで編集できます。',
+      '<strong>版を確定</strong>：下書きを確定するとステータスが「版確定」になります（確定後も編集可。旧版ロックは修正版作成時）。',
+      '<strong>一覧表</strong>から対象の工事を開くと<strong>最新版</strong>（下書きがあれば下書き）が開きます。過去版は<strong>版管理</strong>のタブから選んでください。'
+    ]);
+  }
+
   function renderHeader() {
     const m = masterCache || { branches: [], departments: [], girderTypes: [] };
     const createdDateTitle = state.record_created_date ? '' : ' title="初回保存時に設定されます"';
@@ -1643,13 +1807,15 @@
       hfTag('auto') + '自動・参照のみ' +
       '</div></div></details>' +
       '<div class="jy-header-grid">' +
-      '<div>' + hfLabel('select', '版種別') + '<select class="jy-hf-select" id="jy-version"' + ro + '><option' + (state.version_type === '当初' ? ' selected' : '') + '>当初</option></select></div>' +
+      '<div>' + hfLabel('select', '版種別') + '<select class="jy-hf-select" id="jy-version"' + ro + '>' + selOpts(state.version_seq === 1 && state.version_type === '当初' ? ['当初'] : VERSION_TYPES.filter(function (v) { return v !== '当初' || state.version_type === '当初'; }), state.version_type, false) + '</select></div>' +
+      '<div>' + hfLabel('auto', '版番号') + '<input class="jy-hf-readonly" id="jy-version-seq" value="' + esc(String(state.version_seq || 1)) + '" disabled readonly></div>' +
       '<div>' + hfLabel('date', '現場入場予定日') + '<input class="jy-hf-date" id="jy-site-entry" type="date" value="' + esc(state.site_entry_date) + '"' + ro + '></div>' +
       '<div>' + hfLabel('date', '立案日') + '<input class="jy-hf-date" id="jy-draft-date" type="date" value="' + esc(state.draft_date) + '"' + ro + '></div>' +
       '<div>' + hfLabel('auto', '作成日') + '<input class="jy-hf-readonly" id="jy-record-created-date" type="date" value="' + esc(state.record_created_date) + '" disabled readonly' + createdDateTitle + '></div>' +
       '<div>' + hfLabel('input', '作成者') + '<input id="jy-created-by-name" value="' + esc(state.created_by_name) + '"' + personNameInputAttrs(readOnly) + '></div>' +
       '<div>' + hfLabel('input', '担当者') + '<input id="jy-person-in-charge-name" value="' + esc(state.person_in_charge_name) + '"' + personNameInputAttrs(readOnly) + '></div>' +
-      '<div>' + hfLabel('select', 'ステータス') + '<select class="jy-hf-select" id="jy-status"' + ro + '><option' + (state.status === '下書き' ? ' selected' : '') + '>下書き</option><option' + (state.status === '初版確定' ? ' selected' : '') + '>初版確定</option></select></div>' +
+      '<div>' + hfLabel('select', 'ステータス') + '<select class="jy-hf-select" id="jy-status"' + ro + '><option' + (state.status === '下書き' ? ' selected' : '') + '>下書き</option><option' + (isConfirmedStatus(state.status) ? ' selected' : '') + '>' + STATUS_CONFIRMED + '</option></select></div>' +
+      '<div style="grid-column:span 2">' + hfLabel('input', '修正理由メモ') + '<textarea class="jy-hf-text" id="jy-revision-note" rows="2"' + ro + ' placeholder="修正版の変更理由（任意）">' + esc(state.revision_note) + '</textarea></div>' +
       '<div>' + hfLabel('input', '工事コード *') + '<input class="jy-hf-text" id="jy-project-code" value="' + esc(state.project_code) + '"' + ro + '></div>' +
       '<div>' + hfLabel('input', '工事正式名称') + '<input class="jy-hf-text" id="jy-project-official" value="' + esc(normalizeFiscalYearText(state.project_official_name)) + '"' + ro + '></div>' +
       '<div>' + hfLabel('input', '工事名称') + '<input class="jy-hf-text" id="jy-project-name" value="' + esc(state.project_name) + '"' + ro + '></div>' +
@@ -1785,6 +1951,7 @@
 
   function blankMatRow(group) {
     return {
+      row_key: newRowKey(),
       mat_vendor: '',
       mat_name: '',
       mat_capacity: '',
@@ -1870,7 +2037,7 @@
   }
 
   function blankSpecRow() {
-    return { spec_name: '', spec_unit: '', spec_qty: '', spec_unit_price: '', spec_amount: 0, spec_note: '' };
+    return { row_key: newRowKey(), spec_name: '', spec_unit: '', spec_qty: '', spec_unit_price: '', spec_amount: 0, spec_note: '' };
   }
 
   function insertSpecRowAfter(i) {
@@ -1909,6 +2076,7 @@
 
   function blankSubDetailRow(blockId) {
     return {
+      row_key: newRowKey(),
       subcontract_block: blockId,
       sub_row_kind: 'detail',
       sub_is_custom: true,
@@ -2403,23 +2571,222 @@
     }
   }
 
+  function fetchVersionRowsForProject(projectCode) {
+    const appId = kintone.app.getId();
+    const code = String(projectCode || '').trim();
+    if (!code) return Promise.resolve([]);
+    const q = 'project_code = "' + code.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '" order by version_seq asc';
+    return kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', {
+      app: appId,
+      query: q,
+      fields: ['$id', 'project_code', 'version_seq', 'version_type', 'draft_date', FC.record_created_date, FC.created_datetime, 'status', 'is_locked', FC.created_by_name, FC.revision_note, 'contract_total_1', 'profit_9'],
+    }).then(function (resp) {
+      const rows = (resp.records || []).map(function (rec) {
+        return {
+          id: String(gv(rec, '$id')),
+          version_seq: versionSeqNum(gv(rec, FC.version_seq)),
+          version_type: gv(rec, 'version_type'),
+          draft_date: String(gv(rec, 'draft_date')).slice(0, 10),
+          created_at: String(gv(rec, FC.record_created_date) || kintoneDatetimeToJstYmd(gv(rec, FC.created_datetime))).slice(0, 10),
+          status: normalizeStatusValue(gv(rec, 'status')),
+          is_locked: isLockedFromRecord(rec),
+          created_by_name: gv(rec, FC.created_by_name),
+          revision_note: gv(rec, FC.revision_note),
+          contract_total_1: num(gv(rec, 'contract_total_1')),
+          profit_9: num(gv(rec, 'profit_9')),
+        };
+      });
+      const maxSeq = rows.reduce(function (m, r) { return Math.max(m, r.version_seq); }, 0);
+      rows.forEach(function (r) {
+        r.positionLabels = versionPositionLabels(r, maxSeq);
+      });
+      return rows;
+    });
+  }
+
+  function versionPositionLabels(row, maxSeq) {
+    const labels = [];
+    if (row.version_seq === maxSeq) labels.push('最新版');
+    if (row.status === '下書き') labels.push('編集中');
+    if (row.is_locked) labels.push('過去版（参照のみ）🔒');
+    if (!labels.length) labels.push('—');
+    return labels;
+  }
+
+  function refreshVersionList() {
+    versionListLoading = true;
+    return fetchVersionRowsForProject(state.project_code).then(function (rows) {
+      versionListRows = rows;
+      versionListLoading = false;
+      return rows;
+    }).catch(function (e) {
+      versionListLoading = false;
+      versionListRows = [];
+      console.error(BUILD, 'refreshVersionList', e);
+      throw e;
+    });
+  }
+
+  function revisionGuardReason(rows) {
+    const code = String(state.project_code || '').trim();
+    if (!code) return '工事コードを保存してください';
+    if (!state.recordId) return '先に保存してください';
+    if (state.is_locked) return '参照のみの版からは作成できません';
+    if (state.status === '下書き') return '下書きの版からは作成できません（版を確定してください）';
+    const maxSeq = (rows || versionListRows).reduce(function (m, r) { return Math.max(m, r.version_seq); }, state.version_seq || 1);
+    if (versionSeqNum(state.version_seq) < maxSeq) return '最新版のみ修正版を作成できます';
+    const draft = (rows || versionListRows).find(function (r) { return r.status === '下書き'; });
+    if (draft) return '同一工事に編集中（下書き）の版があります（版' + draft.version_seq + '）';
+    if (!isConfirmedStatus(state.status)) return '版確定済みの最新版のみ修正版を作成できます';
+    return '';
+  }
+
+  function canCreateRevision(rows) {
+    return !revisionGuardReason(rows);
+  }
+
+  function pickRevisionMeta() {
+    const opts = VERSION_TYPES.filter(function (v) { return v !== '当初'; });
+    let msg = '修正版の版種別を選んでください:\n';
+    opts.forEach(function (v, i) { msg += (i + 1) + '. ' + v + '\n'; });
+    const n = window.prompt(msg + '\n番号を入力（1-' + opts.length + '）');
+    if (n == null) return null;
+    const idx = Number(n) - 1;
+    if (!Number.isFinite(idx) || idx < 0 || idx >= opts.length) {
+      alert('版種別の選択が無効です');
+      return null;
+    }
+    const note = window.prompt('修正理由メモ（任意・空欄可）', state.revision_note || '') || '';
+    return { version_type: opts[idx], revision_note: note };
+  }
+
+  function cloneRecordBody(sourceRec, meta) {
+    const body = {};
+    Object.keys(sourceRec).forEach(function (k) {
+      if (k.charAt(0) === '$') return;
+      if (k === 'Revision' || k === 'Creator' || k === 'Created_datetime' || k === 'Updated_datetime' || k === 'Record_number') return;
+      body[k] = JSON.parse(JSON.stringify(sourceRec[k]));
+    });
+    body.version_seq = { value: String(meta.version_seq) };
+    body.source_record_id = { value: String(meta.source_id) };
+    body.status = { value: '下書き' };
+    body.is_locked = { value: [] };
+    body.version_type = { value: meta.version_type };
+    body.revision_note = { value: meta.revision_note || '' };
+    return body;
+  }
+
+  function createRevision() {
+    if (revisionBusy || readOnly) return;
+    syncInputs();
+    if (dirty && !window.confirm('未保存の変更があります。修正版を作成しますか？')) return;
+    revisionBusy = true;
+    fetchVersionRowsForProject(state.project_code).then(function (rows) {
+      const reason = revisionGuardReason(rows);
+      if (reason) {
+        alert(reason);
+        revisionBusy = false;
+        return null;
+      }
+      const metaPick = pickRevisionMeta();
+      if (!metaPick) {
+        revisionBusy = false;
+        return null;
+      }
+      const maxSeq = rows.reduce(function (m, r) { return Math.max(m, r.version_seq); }, state.version_seq || 1);
+      const appId = kintone.app.getId();
+      const sourceId = state.recordId;
+      return kintone.api(kintone.api.url('/k/v1/record.json', true), 'GET', { app: appId, id: sourceId }).then(function (src) {
+        const body = cloneRecordBody(src.record, {
+          version_seq: maxSeq + 1,
+          source_id: sourceId,
+          version_type: metaPick.version_type,
+          revision_note: metaPick.revision_note,
+        });
+        return kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', { app: appId, record: body }).then(function (created) {
+          return kintone.api(kintone.api.url('/k/v1/record.json', true), 'PUT', {
+            app: appId,
+            id: sourceId,
+            record: { is_locked: { value: [LOCK_CHECK_LABEL] } },
+            revision: src.record.$revision.value,
+          }).then(function () {
+            return created;
+          }).catch(function (lockErr) {
+            alert('修正版は作成しましたが、旧版のロックに失敗しました。管理者に連絡してください (ID:' + sourceId + '): ' + (lockErr.message || lockErr));
+            return created;
+          });
+        });
+      }).then(function (created) {
+        if (!created) return;
+        alert('修正版を作成しました（版' + (maxSeq + 1) + ' / ID:' + created.id + '）');
+        dirty = false;
+        openRecord(String(created.id), { skipDirtyCheck: true });
+      });
+    }).catch(function (e) {
+      alert('修正版の作成に失敗しました: ' + (e.message || e));
+    }).then(function () {
+      revisionBusy = false;
+    });
+  }
+
+  function navigateToVersion(id) {
+    if (String(id) === String(state.recordId)) return;
+    if (dirty && !window.confirm('未保存の変更があります。別の版を開きますか？')) return;
+    openRecord(id, { skipDirtyCheck: true });
+  }
+
+  function renderVersionsTab() {
+    if (!String(state.project_code || '').trim()) {
+      return '<div class="jy-pane jy-pane-versions"><p class="jy-ver-empty">工事コードを保存すると、この工事の版一覧が表示されます。</p></div>';
+    }
+    if (versionListLoading) {
+      return '<div class="jy-pane jy-pane-versions"><p class="jy-ver-empty">版一覧を読み込み中…</p></div>';
+    }
+    let html = '<div class="jy-pane jy-pane-versions"><div class="jy-excel-wrap"><table class="jy-table jy-ver-table"><thead><tr>' +
+      '<th>版番号</th><th>版種別</th><th>立案日</th><th>作成日</th><th>ステータス</th><th>版の位置</th><th>作成者</th><th>変更理由</th><th class="jy-num">契約合計①</th><th class="jy-num">粗利⑨</th>' +
+      '</tr></thead><tbody>';
+    if (!versionListRows.length) {
+      html += '<tr><td colspan="10" style="text-align:center;padding:20px">版が1件のみです。修正版を作成すると2行目以降が表示されます。</td></tr>';
+    } else {
+      versionListRows.forEach(function (r) {
+        const cur = String(r.id) === String(state.recordId) ? ' jy-ver-current' : '';
+        html += '<tr class="' + cur + '"><td><button type="button" class="jy-ver-link" data-open-version="' + esc(r.id) + '">' + esc(String(r.version_seq)) + '</button></td>';
+        html += '<td>' + esc(r.version_type) + '</td><td>' + esc(r.draft_date) + '</td><td>' + esc(r.created_at) + '</td><td>' + esc(r.status) + '</td>';
+        html += '<td><span class="jy-ver-pos">' + esc((r.positionLabels || []).join(' / ')) + '</span></td>';
+        html += '<td>' + esc(r.created_by_name) + '</td><td>' + esc(r.version_type === '当初' ? '—' : (r.revision_note || '')) + '</td>';
+        html += '<td class="jy-num">' + fmt(r.contract_total_1) + '</td><td class="jy-num">' + fmt(r.profit_9) + '</td></tr>';
+      });
+    }
+    html += '</tbody></table></div></div>';
+    return html;
+  }
+
   function renderFormActionBar() {
-    const saveLabel = state.status === '初版確定' ? '保存' : '一時保存';
+    const saveLabel = isConfirmedStatus(state.status) ? '保存' : '一時保存';
+    const revReason = revisionGuardReason(versionListRows);
     let html = '<div class="jy-sticky-top">';
     if (dirty) html += '<div class="jy-dirty" id="jy-dirty">● 未保存の変更があります</div>';
+    if (state.is_locked) html += '<div class="jy-dirty" style="background:#fef3c7;color:#92400e">🔒 参照のみ（ロック済み）</div>';
     html += '<div class="jy-bar jy-action-bar">';
     html += '<button type="button" class="jy-btn" id="jy-back-list">← 一覧</button>';
-    html += '<strong>' + esc(state.project_code || '新規') + '</strong> <span class="jy-meta">' + esc(state.status) + '</span>';
+    html += '<strong>' + esc(state.project_code || '新規') + '</strong> <span class="jy-meta">版' + esc(String(state.version_seq || 1)) + ' / ' + esc(state.version_type) + ' / ' + esc(state.status) + '</span>';
     html += '<div class="jy-action-bar-right">';
     html += renderFontToggle();
     if (!readOnly) {
       html += '<div class="jy-action-group">';
       html += '<button type="button" class="jy-btn jy-btn-primary" id="jy-save">' + esc(saveLabel) + '</button>';
       html += '<button type="button" class="jy-btn" id="jy-recalc">再計算</button>';
-      if (state.status !== '初版確定') {
-        html += '<button type="button" class="jy-btn" id="jy-confirm">初版確定</button>';
+      if (!isConfirmedStatus(state.status)) {
+        html += '<button type="button" class="jy-btn" id="jy-confirm">版を確定</button>';
+      }
+      if (!revReason) {
+        html += '<button type="button" class="jy-btn" id="jy-create-revision">修正版を作成</button>';
+      } else if (state.recordId && isConfirmedStatus(state.status) && !state.is_locked) {
+        html += '<span class="jy-revision-blocked" title="' + esc(revReason) + '">修正版: ' + esc(revReason) + '</span>';
       }
       html += '</div>';
+    } else if (!state.is_locked && isConfirmedStatus(state.status) && state.recordId && !revReason) {
+      html += '<button type="button" class="jy-btn" id="jy-create-revision">修正版を作成</button>';
     }
     html += '</div>';
     html += '</div></div>';
@@ -2430,18 +2797,22 @@
     let html = renderFormActionBar();
     html += renderHeader();
     html += '<div class="jy-tabs"><button type="button" class="jy-tab' + (activeTab === 'summary' ? ' active' : '') + '" data-tab="summary">総括表</button>';
-    html += '<button type="button" class="jy-tab' + (activeTab === 'detail' ? ' active' : '') + '" data-tab="detail">詳細表</button></div>';
-    html += '<div class="jy-tab-hint ' + (activeTab === 'summary' ? 'jy-tab-hint-summary' : 'jy-tab-hint-detail') + '">' + (activeTab === 'summary'
-      ? '番号または詳細表と連携行の金額をクリックすると詳細表の該当ブロックへ移動します'
-      : '番号または合計金額をクリックすると総括表の詳細表と連携行へ移動します') +
-      '<span class="jy-legend-linked">緑 = 詳細表と連携（②〜⑦）</span>' +
-      (readOnly ? '' : '<span class="jy-legend-linked" style="margin-left:8px;background:#f1f5f9;border-color:#cbd5e1;color:#475569">見出しの「末尾に追加」または各行の ＋ で挿入</span>') + '</div>';
+    html += '<button type="button" class="jy-tab' + (activeTab === 'detail' ? ' active' : '') + '" data-tab="detail">詳細表</button>';
+    html += '<button type="button" class="jy-tab' + (activeTab === 'versions' ? ' active' : '') + '" data-tab="versions">版管理</button></div>';
     if (activeTab === 'summary') {
+      html += '<div class="jy-tab-hint jy-tab-hint-summary">番号または詳細表と連携行の金額をクリックすると詳細表の該当ブロックへ移動します<span class="jy-legend-linked">緑 = 詳細表と連携（②〜⑦）</span>' +
+        (readOnly ? '' : '<span class="jy-legend-linked" style="margin-left:8px;background:#f1f5f9;border-color:#cbd5e1;color:#475569">見出しの「末尾に追加」または各行の ＋ で挿入</span>') + '</div>';
       html += '<div class="jy-pane jy-pane-summary"><div class="jy-pane-head">' + renderSheetBanner('summary');
       html += '<button type="button" class="jy-btn jy-btn-print" id="jy-print-summary">印刷</button></div>' + renderSummary() + '</div>';
-    } else {
+    } else if (activeTab === 'detail') {
+      html += '<div class="jy-tab-hint jy-tab-hint-detail">番号または合計金額をクリックすると総括表の詳細表と連携行へ移動します<span class="jy-legend-linked">緑 = 詳細表と連携（②〜⑦）</span>' +
+        (readOnly ? '' : '<span class="jy-legend-linked" style="margin-left:8px;background:#f1f5f9;border-color:#cbd5e1;color:#475569">見出しの「末尾に追加」または各行の ＋ で挿入</span>') + '</div>';
       html += '<div class="jy-pane jy-pane-detail"><div class="jy-pane-head">' + renderSheetBanner('detail');
       html += '<button type="button" class="jy-btn jy-btn-print" id="jy-print-detail">印刷</button></div>' + renderDetail() + '</div>';
+    } else {
+      html += '<div class="jy-tab-hint jy-tab-hint-versions">同一工事の全版一覧。版番号をクリックするとその版を開き、総括表・詳細表で閲覧できます（印刷対象外）。</div>';
+      html += renderVersionsHelpPanel();
+      html += renderVersionsTab();
     }
     return html;
   }
@@ -2450,26 +2821,31 @@
     let html = '<div class="jy-title">実行予算書作成支援ツール　ver.01</div>';
     html += '<div class="jy-subtitle">Excel 風フォームで総括表・詳細表を作成出来るツールです。</div>';
     html += '<div class="jy-bar jy-list-toolbar"><button type="button" class="jy-btn jy-btn-primary" id="jy-new">＋ 新規作成</button>';
-    html += '<label><span class="jy-search-label">検索</span><input type="search" id="jy-list-search" class="jy-list-search" placeholder="工事名称・版種別・ステータス・日付など" value="' + esc(listSearchQuery) + '"></label>';
+    html += '<label><span class="jy-search-label">検索</span><input type="search" id="jy-list-search" class="jy-list-search" placeholder="工事名称・工事コード・正式名称など" value="' + esc(listSearchQuery) + '"></label>';
     html += '<button type="button" class="jy-btn" id="jy-list-search-clear">クリア</button>';
     html += '<span class="jy-list-count" id="jy-list-count">' + esc(listCountLabel()) + '</span>';
     html += renderFontToggle();
     html += '</div>';
+    html += '<p class="jy-list-hint">工事名称をクリックすると <strong>最新版</strong>（編集中の下書きがある場合は <strong>下書き</strong>）を開きます。過去版は <strong>版管理</strong> タブで確認できます。</p>';
     html += '<div class="jy-excel-wrap"><table class="jy-table jy-list-table"><thead><tr>' +
       listSortTh('project_name', '工事名称') +
-      '<th>版種別</th>' +
-      listSortTh('draft_date', '立案日') +
-      listSortTh('created_at', '作成日') +
       listSortTh('updated_at', '更新日') +
-      listSortTh('status', 'ステータス') +
       '<th class="jy-num">契約合計①</th><th class="jy-num">粗利⑨</th></tr></thead><tbody>';
     if (!listRowsAll.length) {
-      html += '<tr><td colspan="8" style="text-align:center;padding:24px">レコードがありません。「新規作成」から開始してください。</td></tr>';
+      html += '<tr><td colspan="4" style="text-align:center;padding:24px">レコードがありません。「新規作成」から開始してください。</td></tr>';
     } else if (!listRows.length) {
-      html += '<tr><td colspan="8" style="text-align:center;padding:24px">検索条件に一致するレコードがありません。</td></tr>';
+      html += '<tr><td colspan="4" style="text-align:center;padding:24px">検索条件に一致する工事がありません。</td></tr>';
     } else {
       listRows.forEach(function (r) {
-        html += '<tr data-open-id="' + esc(r.id) + '" title="クリックで詳細を開く"><td>' + esc(r.project_name) + '</td><td>' + esc(r.version_type) + '</td><td>' + esc(r.draft_date) + '</td><td>' + esc(r.created_at) + '</td><td>' + esc(r.updated_at) + '</td><td>' + esc(r.status) + '</td><td class="jy-num">' + fmt(r.contract_total_1) + '</td><td class="jy-num">' + fmt(r.profit_9) + '</td></tr>';
+        const sub = [r.project_official_name, r.project_code].filter(Boolean).join(' ／ ');
+        const openHint = r.status === '下書き' ? '下書きを開く' : '最新版（版' + r.version_seq + '）を開く';
+        html += '<tr class="jy-list-project-row" data-open-id="' + esc(r.open_id) + '" title="' + esc(openHint) + '">';
+        html += '<td><strong>' + esc(r.project_name || r.project_code) + '</strong>';
+        if (sub) html += '<div class="jy-list-group-sub">' + esc(sub) + '</div>';
+        html += '</td>';
+        html += '<td>' + esc(r.updated_at) + '</td>';
+        html += '<td class="jy-num">' + fmt(r.contract_total_1) + '</td>';
+        html += '<td class="jy-num">' + fmt(r.profit_9) + '</td></tr>';
       });
     }
     html += '</tbody></table></div>';
@@ -2480,8 +2856,25 @@
     const root = document.getElementById('jy-root');
     if (!root) return;
     root.style.fontSize = fontPx();
-    root.innerHTML = uiScreen === 'list' ? renderList() : renderForm();
-    bindEvents(root);
+    if (uiScreen === 'list') {
+      root.innerHTML = renderList();
+      bindEvents(root);
+      return;
+    }
+    const paint = function () {
+      root.innerHTML = renderForm();
+      bindEvents(root);
+    };
+    if (activeTab === 'versions' && String(state.project_code || '').trim()) {
+      refreshVersionList().then(paint).catch(function () { paint(); });
+    } else {
+      if (String(state.project_code || '').trim()) {
+        fetchVersionRowsForProject(state.project_code).then(function (rows) {
+          versionListRows = rows;
+        }).catch(function () { versionListRows = []; });
+      }
+      paint();
+    }
   }
 
   function bindEvents(root) {
@@ -2506,6 +2899,8 @@
     if (costHelpPanel) costHelpPanel.addEventListener('toggle', function () { headerCostHelpOpen = costHelpPanel.open; });
     const detailHelpPanel = document.getElementById('jy-detail-help-panel');
     if (detailHelpPanel) detailHelpPanel.addEventListener('toggle', function () { headerDetailHelpOpen = detailHelpPanel.open; });
+    const versionsHelpPanel = document.getElementById('jy-versions-help-panel');
+    if (versionsHelpPanel) versionsHelpPanel.addEventListener('toggle', function () { headerVersionsHelpOpen = versionsHelpPanel.open; });
 
     bindFontToggle(root);
 
@@ -2549,6 +2944,12 @@
         openRecord(tr.getAttribute('data-open-id'));
       });
     });
+    root.querySelectorAll('[data-open-version]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        navigateToVersion(btn.getAttribute('data-open-version'));
+      });
+    });
 
     root.querySelectorAll('.jy-sort-th').forEach(function (th) {
       th.addEventListener('click', function () {
@@ -2590,10 +2991,12 @@
     if (recalcBtn) recalcBtn.addEventListener('click', function () { syncInputs(); recalcState(state); render(); });
     const confirmBtn = document.getElementById('jy-confirm');
     if (confirmBtn) confirmBtn.addEventListener('click', function () {
-      if (!window.confirm('初版を確定します。確定後も編集は可能ですが、ステータスは「初版確定」になります。よろしいですか？')) return;
-      state.status = '初版確定';
+      if (!window.confirm('版を確定します。確定後も編集は可能ですが、ステータスは「版確定」になります。よろしいですか？')) return;
+      state.status = STATUS_CONFIRMED;
       saveRecord({ isConfirm: true });
     });
+    const revBtn = document.getElementById('jy-create-revision');
+    if (revBtn) revBtn.addEventListener('click', createRevision);
 
     const printSummaryBtn = document.getElementById('jy-print-summary');
     if (printSummaryBtn) printSummaryBtn.addEventListener('click', function () { openTabPrint('summary'); });
@@ -2761,6 +3164,7 @@
     state.start_date = g('jy-start');
     state.end_date = g('jy-end');
     state.status = g('jy-status') || '下書き';
+    state.revision_note = g('jy-revision-note');
     state.note = g('jy-note');
 
     document.querySelectorAll('[data-spec-name]').forEach(function (el) {
@@ -2897,28 +3301,50 @@
   }
 
   function saveRecord(options) {
-    if (readOnly) return;
+    if (readOnly || state.is_locked) {
+      alert('参照のみの版は保存できません');
+      return;
+    }
     const opts = options || {};
     syncInputs();
     ensureSaveMetadata(state);
+    ensureRowKeysOnState(state);
     if (!state.project_code || !String(state.project_code).trim()) {
       alert('工事コードを入力してください');
       return;
     }
     if (!validatePersonNameField('作成者', state.created_by_name)) return;
     if (!validatePersonNameField('担当者', state.person_in_charge_name)) return;
+    if (state.version_type === '当初' && !state.recordId) {
+      const appId = kintone.app.getId();
+      const q = 'project_code = "' + String(state.project_code).replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '" and version_type in ("当初")';
+      return kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', { app: appId, query: q, fields: ['$id'] }).then(function (resp) {
+        const dup = (resp.records || []).some(function (rec) { return String(gv(rec, '$id')) !== String(state.recordId); });
+        if (dup) {
+          alert('この工事コードには既に当初版があります');
+          return;
+        }
+        return saveRecordPut(opts);
+      }).catch(function (e) {
+        alert('保存前チェックエラー: ' + (e.message || e));
+      });
+    }
+    return saveRecordPut(opts);
+  }
+
+  function saveRecordPut(opts) {
     const record = stateToKintone(state);
     const appId = kintone.app.getId();
     const req = state.recordId
       ? { app: appId, id: state.recordId, record: record, revision: state.revision }
       : { app: appId, record: record };
     const method = state.recordId ? 'PUT' : 'POST';
-    kintone.api(kintone.api.url('/k/v1/record.json', true), method, req).then(function (resp) {
+    return kintone.api(kintone.api.url('/k/v1/record.json', true), method, req).then(function (resp) {
       dirty = false;
       state.recordId = state.recordId || String(resp.id);
       if (resp.revision) state.revision = String(resp.revision);
       const msg = opts.isConfirm
-        ? '初版を確定しました (ID: ' + state.recordId + ')'
+        ? '版を確定しました (ID: ' + state.recordId + ')'
         : (state.status === '下書き'
           ? '一時保存しました (ID: ' + state.recordId + ')'
           : '保存しました (ID: ' + state.recordId + ')');
@@ -2935,24 +3361,27 @@
     return kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', {
       app: appId,
       query: 'order by $id desc limit 100',
-      fields: ['$id', 'project_code', 'project_name', 'version_type', 'draft_date', FC.created_datetime, FC.updated_datetime, 'status', 'contract_total_1', 'profit_9'],
+      fields: ['$id', 'project_code', 'project_name', 'project_official_name', 'version_seq', 'version_type', 'draft_date', FC.created_datetime, FC.updated_datetime, 'status', 'contract_total_1', 'profit_9'],
     }).then(function (resp) {
-      listRowsAll = (resp.records || []).map(function (rec) {
+      const records = (resp.records || []).map(function (rec) {
         const id = rec.$id && rec.$id.value != null ? String(rec.$id.value) : '';
         if (!id) return null;
         return {
           id: id,
           project_code: gv(rec, 'project_code'),
           project_name: gv(rec, 'project_name'),
+          project_official_name: gv(rec, 'project_official_name'),
+          version_seq: versionSeqNum(gv(rec, 'version_seq')),
           version_type: gv(rec, 'version_type'),
           draft_date: String(gv(rec, 'draft_date')).slice(0, 10),
           created_at: kintoneDatetimeToJstYmd(gv(rec, FC.created_datetime)),
           updated_at: kintoneDatetimeToJstYmd(gv(rec, FC.updated_datetime)),
-          status: gv(rec, 'status'),
+          status: normalizeStatusValue(gv(rec, 'status')),
           contract_total_1: num(gv(rec, 'contract_total_1')),
           profit_9: num(gv(rec, 'profit_9')),
         };
       }).filter(function (r) { return r != null; });
+      listRowsAll = buildListProjectRows(records);
       applyListFilter();
     }).catch(function (e) {
       console.error(BUILD, 'refreshList', e);
@@ -2962,12 +3391,14 @@
     });
   }
 
-  function openRecord(id) {
+  function openRecord(id, options) {
+    const opts = options || {};
+    if (!opts.skipDirtyCheck && dirty && !window.confirm('未保存の変更があります。別の版を開きますか？')) return Promise.resolve();
     const appId = kintone.app.getId();
     return kintone.api(kintone.api.url('/k/v1/record.json', true), 'GET', { app: appId, id: id }).then(function (resp) {
       return loadMaster().then(function () {
         state = stateFromKintone(resp.record);
-        readOnly = false;
+        readOnly = !!state.is_locked;
         dirty = false;
         uiScreen = 'form';
         activeTab = 'summary';
@@ -3035,9 +3466,9 @@
   kintone.events.on('app.record.edit.show', function (ev) {
     state = stateFromKintone(ev.record);
     dirty = false;
-    readOnly = false;
+    readOnly = !!state.is_locked;
     uiScreen = 'form';
-    mountFormHost(false);
+    mountFormHost(readOnly);
     return ev;
   });
 
@@ -3047,5 +3478,12 @@
     readOnly = true;
     uiScreen = 'form';
     mountFormHost(true);
+    return ev;
+  });
+
+  kintone.events.on(['app.record.edit.submit', 'app.record.create.submit'], function (ev) {
+    if (isLockedFromRecord(ev.record)) {
+      ev.error = 'この版は参照のみです（ロック済み）。修正版を作成してください。';
+    }
     return ev;
   });

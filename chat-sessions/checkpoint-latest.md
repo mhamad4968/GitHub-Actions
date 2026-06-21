@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-06-21 JST — **736 v1 UI 仕上げ push 済** / **版管理 v2 §10 段1 着手** / 担当説明は **月曜以降保留**
+**最終更新**: 2026-06-21 JST — **736 版管理 v2a/v2b 完了** rev **104** / v2c/v2d **保留** / 担当説明 **月曜以降**
 
 ## クローズ済み（`data/cio-project-closures.json` — 無断 v1 再開禁止）
 
@@ -25,12 +25,13 @@
 | 本番 WF 6段階 | 無断分割禁止 — test_v3 WF 継続テストのみ |
 | 評価スナップショット | 未設計確認前の本番投入禁止 |
 
-**次の1手**: **735/736 版管理 v2** — §10 **段1 仕様レビュー**（R-01〜R-10 洗い出し）。**担当説明・イメージ確認は月曜以降保留**。予実（677–679）は来週ヒアリングまで保留。688 / SKYSEA は保留のまま触らない  
-**Git**: `ccb9c60` — 736 法定福利費（合計）+ 合計行スタイル push 済
+**次の1手**: **736** — 修正版作成スモーク（後日）→ **月曜以降 担当者説明・イメージ確認** → フィードバック後 **v2c GO 判断**。v2c/v2d **未着手**（§8.4 R-18）。予実（677–679）は来週ヒアリングまで保留。688 / SKYSEA は保留のまま触らない  
+**Git**: 本コミットで v2a/v2b 実装 push 予定  
+**736 本番**: BUILD=`2026-06-21-jikkou-yosan-versions-help-wording` rev **104** — 版管理 v2a/v2b 完了・一覧 R-17・ヘルプ
 **688 本番**: `2026-06-19-688-print-rounding-fix` rev **34** — **保留**（2026-06-20 浜田指示。6/19 施工主報告印刷対応済・CLOSED 表記は訂正）  
 **監査**: `npm run cio:audit:session-builds:strict` — repo=ledger=live **6/6 OK**（先祖返りなし）  
 **R21–R24**: **浜田 GO 反映済** — `docs/approved-changes/2026-06-18-rules-r21-r24-hamada-go.md`
-**Space 56 進行中**: **実行予算書作成支援ツール　ver.01** — App **735/736** — **BUILD=`2026-06-21-jikkou-yosan-legal-welfare-total-label`** rev **94** / 版管理 v2 §10 段1 着手
+**Space 56 進行中**: **実行予算書作成支援ツール　ver.01** — App **735/736** — **BUILD=`2026-06-21-jikkou-yosan-versions-help-wording`** rev **104** / v2a+v2b **完了**・v2c/v2d **保留**
 **R34–R40**: **浜田 GO 反映済** — `docs/approved-changes/2026-06-14-rules-r34-r40-hamada-go.md`
 **作業領域**: C:\ 重複 clone 削除済 / 正本 clone のみ / `verify:windows-canonical-paths` OK
 **Space 21 完了**: **ソフトウエア管理台帳 v1** — App **714/715** — **2026-06-14 浜田目視 OK**
