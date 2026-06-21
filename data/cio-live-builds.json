@@ -91,10 +91,10 @@
     },
     "688": {
       "build": "2026-06-21-688-print-a3-duplex-2sheets-work-balance",
-      "fileKey": "3c10280e-e448-47a3-aea8-860425221c47",
-      "revision": "49",
-      "relPath": "customize/688/desktop.js",
-      "deployedAt": "2026-06-21T09:17:44.516Z",
+      "fileKey": "f47f0673-c750-48e1-9425-7c315e805d09",
+      "revision": "50",
+      "relPath": ".kintone-deploy/upload-688.js",
+      "deployedAt": "2026-06-21T09:22:02.034Z",
       "note": null
     },
     "693": {
