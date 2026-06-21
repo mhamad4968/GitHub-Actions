@@ -134,6 +134,54 @@
       "specRel": "docs/plans/2026-06-14-wifi-ssid-kintone-spec.md",
       "notes": "719 dash は App 718 へ REST CRUD。DB フィールドは 718 と同一。"
     },
+    "737": {
+      "label": "トータルネットワークネットワーク管理DB",
+      "customizeDirs": ["total-network-db"],
+      "specRel": "docs/plans/2026-06-21-total-network-kintone-spec.md",
+      "recordFields": [
+        "record_type",
+        "sort_no",
+        "location_name",
+        "total_network_enabled",
+        "network_address",
+        "subnet_mask",
+        "gateway",
+        "dns_primary",
+        "dns_secondary",
+        "ip_count",
+        "ip_range_start",
+        "ip_range_end",
+        "address",
+        "note",
+        "site_location_name",
+        "ip_address",
+        "status",
+        "device_type",
+        "device_type_other",
+        "assignment_note",
+        "sort_index",
+        "device_type_code",
+        "device_type_label",
+        "is_active"
+      ],
+      "subtables": {
+        "change_history": [
+          "changed_at",
+          "changed_by",
+          "field_name",
+          "value_before",
+          "value_after",
+          "change_reason"
+        ]
+      }
+    },
+    "738": {
+      "label": "トータルネットワークネットワーク管理台帳",
+      "customizeDirs": ["total-network-dash"],
+      "inheritsRecordFieldsFrom": "737",
+      "specRel": "docs/plans/2026-06-21-total-network-kintone-spec.md",
+      "notes": "738 dash は App 737 へ REST CRUD。DB フィールドは 737 と同一。"
+    },
     "674": {
       "label": "新PC台帳",
       "customizeDirs": ["new-pc-ledger-v1"],

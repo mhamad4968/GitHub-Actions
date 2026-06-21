@@ -312,6 +312,22 @@
       "relPath": ".kintone-deploy/upload-736.js",
       "deployedAt": "2026-06-21T00:31:13.925Z",
       "note": null
+    },
+    "737": {
+      "build": "2026-06-21-total-network-db-block",
+      "fileKey": "d35de612-a6dc-484e-9881-aa603b024712",
+      "revision": "5",
+      "relPath": "customize/total-network-db/desktop.js",
+      "deployedAt": "2026-06-21T10:46:39.205Z",
+      "note": null
+    },
+    "738": {
+      "build": "2026-06-21-total-network-dash-v1",
+      "fileKey": "ab0c8537-d98b-42bd-a7a2-cc16ea35b178",
+      "revision": "4",
+      "relPath": "customize/total-network-dash/desktop.js",
+      "deployedAt": "2026-06-21T10:46:47.212Z",
+      "note": null
     }
   }
 }

@@ -31,7 +31,9 @@
     "ops-guide": "668",
     "shucccho-seisan": "629",
     "vpn-account-db": "733",
-    "vpn-account-dash": "734"
+    "vpn-account-dash": "734",
+    "total-network-db": "737",
+    "total-network-dash": "738"
   },
   "bundlePatterns": {
     "wifi-ssid-dash": {
@@ -48,6 +50,11 @@
       "deployFile": "desktop.js",
       "lintFile": "desktop.src.js",
       "bundleNpm": "vpn-account:bundle-dash"
+    },
+    "total-network-dash": {
+      "deployFile": "desktop.js",
+      "lintFile": "desktop.src.js",
+      "bundleNpm": "total-network:bundle-dash"
     }
   }
 }

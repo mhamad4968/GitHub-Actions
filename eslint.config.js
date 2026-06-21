@@ -18,6 +18,8 @@ export default [
       "customize/wifi-ssid-dash/desktop.js",
       // 734 VPN: SheetJS + desktop.src.js → desktop.js 結合成果物（lint は src のみ）
       "customize/vpn-account-dash/desktop.js",
+      // total-network dash: SheetJS bundle（lint は desktop.src.js のみ）
+      "customize/total-network-dash/desktop.js",
     ],
   },
   {

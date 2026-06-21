@@ -23,7 +23,7 @@ export const PORTFOLIO_CUSTOMIZE = [
 export const PORTFOLIO_APP_IDS = PORTFOLIO_CUSTOMIZE.map((p) => p.id);
 
 /** 月次 live-schema 追加対象（BUILD 監査 PORTFOLIO 外の registry 台帳） */
-export const LIVE_SCHEMA_MONTHLY_EXTRA_IDS = ['714', '715', '716', '717', '718', '719'];
+export const LIVE_SCHEMA_MONTHLY_EXTRA_IDS = ['714', '715', '716', '717', '718', '719', '733', '734', '737', '738'];
 
 /** 月次 live-schema 監査対象 — PORTFOLIO + Space21 台帳（単一正本・全 customize 走査禁止） */
 export const LIVE_SCHEMA_MONTHLY_IDS = [

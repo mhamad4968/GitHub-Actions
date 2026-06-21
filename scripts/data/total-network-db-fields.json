@@ -1,0 +1,289 @@
+{
+  "properties": {
+    "record_type": {
+      "type": "DROP_DOWN",
+      "code": "record_type",
+      "label": "レコード種別",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "site": { "label": "site", "index": "0" },
+        "ip": { "label": "ip", "index": "1" },
+        "device_type": { "label": "device_type", "index": "2" }
+      }
+    },
+    "sort_no": {
+      "type": "NUMBER",
+      "code": "sort_no",
+      "label": "並び順",
+      "required": false,
+      "noLabel": false,
+      "unique": false,
+      "digit": false,
+      "defaultValue": "",
+      "displayScale": "",
+      "unit": "",
+      "unitPosition": "BEFORE"
+    },
+    "location_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "location_name",
+      "label": "拠点名",
+      "required": false,
+      "noLabel": false,
+      "unique": false,
+      "defaultValue": ""
+    },
+    "total_network_enabled": {
+      "type": "CHECK_BOX",
+      "code": "total_network_enabled",
+      "label": "トータルNW接続",
+      "required": false,
+      "noLabel": false,
+      "options": {
+        "接続": { "label": "接続", "index": "0" }
+      }
+    },
+    "network_address": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "network_address",
+      "label": "ネットワークアドレス",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "subnet_mask": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "subnet_mask",
+      "label": "サブネットマスク",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "gateway": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "gateway",
+      "label": "ゲートウェイ",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "dns_primary": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "dns_primary",
+      "label": "優先DNS",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "dns_secondary": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "dns_secondary",
+      "label": "代替DNS",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "ip_count": {
+      "type": "NUMBER",
+      "code": "ip_count",
+      "label": "IP数",
+      "required": false,
+      "noLabel": false,
+      "unique": false,
+      "digit": false,
+      "defaultValue": "",
+      "displayScale": "",
+      "unit": "",
+      "unitPosition": "BEFORE"
+    },
+    "ip_range_start": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "ip_range_start",
+      "label": "IP範囲開始",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "ip_range_end": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "ip_range_end",
+      "label": "IP範囲終了",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "address": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "address",
+      "label": "住所",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "note": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "note",
+      "label": "備考",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "change_history": {
+      "type": "SUBTABLE",
+      "code": "change_history",
+      "label": "変更履歴",
+      "noLabel": false,
+      "fields": {
+        "changed_at": {
+          "type": "DATETIME",
+          "code": "changed_at",
+          "label": "変更日時",
+          "required": false,
+          "noLabel": false,
+          "defaultValue": ""
+        },
+        "changed_by": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "changed_by",
+          "label": "変更者",
+          "required": false,
+          "noLabel": false,
+          "defaultValue": ""
+        },
+        "field_name": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "field_name",
+          "label": "項目",
+          "required": false,
+          "noLabel": false,
+          "defaultValue": ""
+        },
+        "value_before": {
+          "type": "MULTI_LINE_TEXT",
+          "code": "value_before",
+          "label": "変更前",
+          "required": false,
+          "noLabel": false,
+          "defaultValue": ""
+        },
+        "value_after": {
+          "type": "MULTI_LINE_TEXT",
+          "code": "value_after",
+          "label": "変更後",
+          "required": false,
+          "noLabel": false,
+          "defaultValue": ""
+        },
+        "change_reason": {
+          "type": "MULTI_LINE_TEXT",
+          "code": "change_reason",
+          "label": "変更理由",
+          "required": false,
+          "noLabel": false,
+          "defaultValue": ""
+        }
+      }
+    },
+    "site_location_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "site_location_name",
+      "label": "拠点名（IP）",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "ip_address": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "ip_address",
+      "label": "IPアドレス",
+      "required": false,
+      "noLabel": false,
+      "unique": true,
+      "defaultValue": ""
+    },
+    "status": {
+      "type": "DROP_DOWN",
+      "code": "status",
+      "label": "状態",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "使用中": { "label": "使用中", "index": "0" }
+      }
+    },
+    "device_type": {
+      "type": "DROP_DOWN",
+      "code": "device_type",
+      "label": "用途",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "ノートPC": { "label": "ノートPC", "index": "0" },
+        "NAS": { "label": "NAS", "index": "1" },
+        "AP": { "label": "AP", "index": "2" },
+        "複合機": { "label": "複合機", "index": "3" },
+        "その他": { "label": "その他", "index": "4" }
+      }
+    },
+    "device_type_other": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "device_type_other",
+      "label": "用途（その他）",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "assignment_note": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "assignment_note",
+      "label": "IP備考",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "sort_index": {
+      "type": "NUMBER",
+      "code": "sort_index",
+      "label": "拠点内並び",
+      "required": false,
+      "noLabel": false,
+      "unique": false,
+      "digit": false,
+      "defaultValue": "",
+      "displayScale": "",
+      "unit": "",
+      "unitPosition": "BEFORE"
+    },
+    "device_type_code": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "device_type_code",
+      "label": "用途コード",
+      "required": false,
+      "noLabel": false,
+      "unique": false,
+      "defaultValue": ""
+    },
+    "device_type_label": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "device_type_label",
+      "label": "用途表示名",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "is_active": {
+      "type": "CHECK_BOX",
+      "code": "is_active",
+      "label": "有効",
+      "required": false,
+      "noLabel": false,
+      "options": {
+        "有効": { "label": "有効", "index": "0" }
+      }
+    }
+  }
+}
