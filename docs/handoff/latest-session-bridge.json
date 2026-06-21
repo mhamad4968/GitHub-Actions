@@ -1,7 +1,7 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-06-21T12:00:00.000Z",
-  "gitHead": "pending-commit",
+  "exportedAt": "2026-06-21T12:05:00.000Z",
+  "gitHead": "acded35",
   "gitStatus": "## main...origin/main",
   "nextTask": "**696 メールアドレス管理台帳** — 個人種別・部署 datalist・検索パネル **deploy/commit 済（2026-06-21）**。次レーンは checkpoint 項番 -0 で決定。**736** — 6/23（月）以降・v2c GO 待ち。",
   "nextFiles": [
