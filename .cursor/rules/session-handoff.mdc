@@ -5,6 +5,8 @@ alwaysApply: false
 
 # セッション引き継ぎ（漏れ防止）
 
+> **C v2 正本（2026-06-21・非置換）**: partial/full CLOSE では **`npm run cio:handoff:append-block`** を優先。正本 **`docs/runbooks/checkpoint-handoff-template-v2.md`**。下記手動フォーマットは **append-block 不可時の L2 フォールバック**。
+
 > **先頭4行テンプレ**: `.cursor/rules/mode-b-canonical.mdc` 参照（コピー禁止）。
 
 **IDE 先頭規律（2026-05-11 CEO 承認・CIO 必須）**: Cursor チャットでは hooks が **§1 先頭 4 行**を自動挿入できない。**`customize/**`・`docs/plans/2026-04-21-new-pc-ledger-spec.md`・本番 `deploy:*` を触るターン**では、**編集ツール／Shell（deploy）を呼ぶ直前**に、チャット先頭へ **`[§1-2-3 ティア判定]`・`【適用憲法】`・`[🎖️ 本セッション割当]`・`[ルール確認]`** を **CIO が自書き**する（欠け＝報告違反ゼロ違反と自覚）。**報告・締め・GO 仰ぎ**は `docs/session-report-checklist.md` **§M-2 V2 七行**を応答末尾に付す。

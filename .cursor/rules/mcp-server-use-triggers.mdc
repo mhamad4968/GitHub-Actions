@@ -29,6 +29,8 @@ globs: "**/*"
 
 ## サーバー別（1 行トリガー）
 
+> **D v2 先出し（2026-06-21・非置換）**: 依頼意図が決まったら **`npm run cio:tool:route -- --intent "…"`** → 正本 **`docs/runbooks/ai-team-tool-routing-v2.md`**。下表は plan 詳細・descriptor 必読は **`mcp-tool-discipline.mdc`**。
+
 - **deepseek** / **user-deepseek**: **§50-3-8**・着手前盲点3点・仕様乖離の第2視点（方式B ④）。
 - **kimi** / **user-kimi**: **長文・大差分レビュー**・`kimi_review`（方式B ③）。**コード diff の主担当ではない**（② Composer 2.5）。
 - **MCP 失敗時フォールバック（2026-06-19 GO）**: **Kimi** がパス解決・initialize・TIMEOUT で使えない → **DeepSeek（§50-3-8）** → 不可なら **OpenRouter**。**いずれも不可**のときだけチャットに **`MCPスキップ: kimi — <理由>`** を 1 行残す。**締め・GO 報告を第2者なしで完走しない**。

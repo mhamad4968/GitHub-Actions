@@ -1,0 +1,16 @@
+【06 Session Lifecycle v2 — A/B/C/D 正本索引（2026-06-21 追補・非置換）】
+
+本ファイルは **索引層のみ**。§42 / §35-7 / §50-3-11 第1〜13層の権限・手順を **置換しない**。
+WAKE（cold-start / bootstrap）完了後、WORK / CLOSE 向け npm・MCP の **正本ポインタ**として参照する。
+
+| 記号 | 正本 runbook | 代表 npm |
+|------|--------------|----------|
+| **A** | docs/runbooks/session-lifecycle-v2.md | cio:session:cold-start |
+| **B** | docs/runbooks/push-deploy-quality-gates-v2.md | cio:pre-commit-check / cio:pre-push-check / cio:deploy-gate |
+| **C** | docs/runbooks/checkpoint-handoff-template-v2.md | cio:handoff:append-block |
+| **D** | docs/runbooks/ai-team-tool-routing-v2.md | cio:tool:route -- --intent "…" |
+
+**L0 ORIENT**: bridge + checkpoint 先頭50行 + 本パック 01〜06
+**L2 フォールバック**: NEW-SESSION-STARTER 6部（bootstrap NG 時のみ）
+
+矛盾時: session-lifecycle-v2.md → AGENTS.md §50-3-12 → .mdc 正本

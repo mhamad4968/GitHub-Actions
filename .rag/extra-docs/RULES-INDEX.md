@@ -17,6 +17,9 @@
 | **第1 憲法** | `AGENTS.md` §1-2-3-4 §50-3-8 §50-3-11 / `part-A` 🎖️ / `mode-b-canonical.mdc` | 毎ターン・役割・報告 |
 | **第2 機械** | `cio-four-ai-governance.mjs` / `cio:guard:*` / `verify:mode-b-zombie-docs` / `verify:mcp-four-ai-alignment` / `verify:mode-b-turn-head-canonical` / `verify:rule-hierarchy-prune` | commit・deploy・CI |
 | **第3 runbook** | `docs/runbooks/cio-four-ai-governance.md` / `deepseek-pre-edit-gate.md` | コマンド手順 |
+| **第3 runbook（A/B/C/D v2）** | [`session-lifecycle-v2.md`](docs/runbooks/session-lifecycle-v2.md) / [`push-deploy-quality-gates-v2.md`](docs/runbooks/push-deploy-quality-gates-v2.md) / [`checkpoint-handoff-template-v2.md`](docs/runbooks/checkpoint-handoff-template-v2.md) / [`ai-team-tool-routing-v2.md`](docs/runbooks/ai-team-tool-routing-v2.md) | WAKE→CLOSE / commit・push・deploy-gate / handoff テンプレ / MCP ルーティング |
+
+> **RULES-INDEX 追記順（2026-06-21）**: 憲法 kernel は **19 → 20 → 23** の順で解釈。本表の A/B/C/D runbook 行は **索引追加のみ**で kernel 19/20/23 の本文を置換しない。
 
 ---
 

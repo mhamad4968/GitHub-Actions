@@ -1,6 +1,6 @@
 【読取順インデックス】CIO 準備済み（2026-05-31・**スターター 00〜07**／**read-pack 08〜20・26・27・28**／**儀式 21〜23**（リポ別正本）／**鏡 24〜25**（常時）／**26**（夕反省 md または SLOT）／ファイル名＝読取順）
 
-**Desktop「AI緊急用」**では Explorer の **名前順＝推奨読取順**（先頭 2 桁＋ハイフン）。**read-pack（08〜20・27・28）**の正本は **`chat-sessions/desktop-ai-emergency-read-pack/`**。**21〜23** は同フォルダ名で Desktop に置くが、編集正本は **`chat-sessions/`** 側（`SESSION-BOOTSTRAP`・`HANDOFF-HUMAN`・`AI緊急用-README`）。**憲法・ルールの細分化でファイルが増えたとき**は **リポと本索引を先に更新**し、**同一ターンで** `npm run session-starter:sync-desktop` → `npm run verify:desktop-ai-emergency-sync`（歯抜け番号は **詰めてから** sync。中間名は prune 対象）。
+**Desktop「AI緊急用」**では Explorer の **名前順＝推奨読取順**（先頭 2 桁＋ハイフン）。**read-pack（08〜20・27〜29）**の正本は **`chat-sessions/desktop-ai-emergency-read-pack/`**。**21〜23** は同フォルダ名で Desktop に置くが、編集正本は **`chat-sessions/`** 側（`SESSION-BOOTSTRAP`・`HANDOFF-HUMAN`・`AI緊急用-README`）。**憲法・ルールの細分化でファイルが増えたとき**は **リポと本索引を先に更新**し、**同一ターンで** `npm run session-starter:sync-desktop` → `npm run verify:desktop-ai-emergency-sync`（歯抜け番号は **詰めてから** sync。中間名は prune 対象）。
 
 00-NEW-SESSION-STARTER_yyyymmdd.txt … 項番 -1 貼付・**ハブ短縮版**（JST 8 桁・verify 最終行と一致）
 01-STARTER-part-A-constitution-kernel.txt … スターター詳細 A（憲法・禁句・preflight・🎖️）
@@ -42,6 +42,8 @@
 27-USER683-CLAUDE-RELAY-SESSION.txt … **kintone 683 × Claude 中継**（**26 の次**。Runbook: `docs/runbooks/user683-claude-relay.md`）
 
 28-CONSTITUTION-GENRE-MAP.txt … **憲法・ルール ジャンル早見**（4AI・タスク→読本。**14-READ-06 の直後**に Read 推奨。再生成: `npm run constitution:sync-genre-desktop-map`）
+
+29-ABCD-V2-LIFECYCLE.txt … **Session Lifecycle v2 A/B/C/D 索引**（2026-06-21。**09-READ-01 項番 0 の後**または **28 の直後**に Read 推奨）
 
 **ルール索引メンテ（2026-05-31）**: `npm run constitution:sync-genre-desktop-map` → `npm run rules:sync-index-all` → `npm run rules:regenerate-constitution` → `npm run verify:constitution-genre-kernels` → `npm run verify:constitution-mdc-freshness` → `npm run verify:cio-four-ai-governance`
 

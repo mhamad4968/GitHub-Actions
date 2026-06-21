@@ -44,6 +44,16 @@ npm run verify:session-close-git-warn
 
 **緊急のみ**: `SKIP_CIO_DEPLOY_GUARD=1 npm run deploy:<app>`（浜田 GO とチャットに理由 1 行必須）。
 
+## 品質ゲート B v2（2026-06-21・非置換）
+
+正本 **`docs/runbooks/push-deploy-quality-gates-v2.md`**:
+
+| タイミング | コマンド |
+|------------|----------|
+| commit 前 | `npm run cio:pre-commit-check` |
+| push 前 | `npm run cio:pre-push-check` |
+| deploy 前 | `npm run cio:deploy-gate -- <app>`（preflight の後段） |
+
 **違反＝失敗・2 者チェック（本体＋ DeepSeek/Kimi）の定義全文**: `.cursor/rules/constitution-enforcement-core.mdc`（**`alwaysApply: false` + `globs`**・薄型想起）。
 
 ## kintone レコード DELETE・破壊級 REST

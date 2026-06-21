@@ -25,8 +25,11 @@ npm run cio:morning:pre-implement -- --project business-improvement
 
 ```bash
 npm run cio:pre-implement-gate -- --strict
+npm run cio:tool:route -- --intent "<作業要約>" [--log]
 npm run cio:guard:5038 --stamp
 ```
+
+**D v2**: `docs/runbooks/ai-team-tool-routing-v2.md`
 
 ## 業務改善 ver.02 追加ゲート
 

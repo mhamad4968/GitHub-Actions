@@ -147,8 +147,12 @@ export function scanDiffForRegression(diffText, constraints) {
   for (const pat of constraints.forbiddenRelaxations) {
     try {
       const re = new RegExp(pat, 'i');
-      if (re.test(diffText)) {
-        issues.push({ code: 'RELAXATION', message: `規律緩和パターン検知: /${pat}/` });
+      for (const line of diffText.split('\n')) {
+        if (!line.startsWith('+') || line.startsWith('+++')) continue;
+        if (re.test(line)) {
+          issues.push({ code: 'RELAXATION', message: `規律緩和パターン検知: /${pat}/` });
+          break;
+        }
       }
     } catch {
       /* skip bad pattern */

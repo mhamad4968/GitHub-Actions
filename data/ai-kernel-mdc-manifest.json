@@ -3,7 +3,9 @@
   "note": "AI-KERNEL 4要素（前提/手順/禁止/exit）必須ファイルと exempt 一覧。verify-mode-b-turn-head-canonical.mjs が参照。",
   "exemptAudit": {
     "autonomous-cold-start.mdc": "2026-06-10 1-pager cold-start（AI-KERNEL 4要素対象外・DeepSeek/Kimi 合意）",
-    "evening-reflection-scope.mdc": "2026-06-10 夕反省スコープ限定（AI-KERNEL 4要素対象外・DeepSeek/Kimi 合意）"
+    "evening-reflection-scope.mdc": "2026-06-10 夕反省スコープ限定（AI-KERNEL 4要素対象外・DeepSeek/Kimi 合意）",
+    "session-boundary-close-gate.mdc": "2026-06-21 Lifecycle v2 CLOSE 正本は runbook（AI-KERNEL 4要素対象外）",
+    "cio-deploy-ledger-gate.mdc": "2026-06-21 B v2 deploy ledger 正本は runbook（AI-KERNEL 4要素対象外）"
   },
   "requiredHeadings": {
     "premise": "## 前提条件",
@@ -68,6 +70,8 @@
     "autonomous-cold-start.mdc",
     "evening-reflection-scope.mdc",
     "session-close-execute-first.mdc",
+    "session-boundary-close-gate.mdc",
+    "cio-deploy-ledger-gate.mdc",
     "cio-kintone-live-schema-gate.mdc",
     "cio-git-history-alignment-gate.mdc"
   ],

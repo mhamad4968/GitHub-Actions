@@ -6,6 +6,8 @@ globs: "**/*"
 
 # 憲法級ハンドオフ・実行ゲート（TSB-024）
 
+> **WAKE 標準（2026-06-21 A v2・非置換）**: **`npm run cio:session:cold-start`**（`session:bootstrap` を内包）。正本 **`docs/runbooks/session-lifecycle-v2.md`** §3。下記項番 0 の **`session:bootstrap`** は **cold-start 内包と同義** — 単独実行も L2 フォールバックとして有効。
+
 > **先頭4行テンプレ**: `.cursor/rules/mode-b-canonical.mdc` 参照（コピー禁止）。
 
 ## 新セッション第 0 手（考慮漏れ防止）

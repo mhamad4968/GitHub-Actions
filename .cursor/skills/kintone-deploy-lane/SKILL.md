@@ -24,7 +24,13 @@ description: >-
 npm run cio:preflight:<APP_ID>
 ```
 
-例: `cio:preflight:696`（共有メール台帳）
+### 2b. Deploy 品質ゲート B v2（必須）
+
+```bash
+npm run cio:deploy-gate -- <APP_ID>
+```
+
+正本: `docs/runbooks/push-deploy-quality-gates-v2.md`
 
 ### 3. Deploy
 

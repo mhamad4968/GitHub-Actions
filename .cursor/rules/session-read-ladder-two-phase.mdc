@@ -6,6 +6,8 @@ alwaysApply: false
 
 # セッション読解 — 二段階（Project Rules）
 
+> **Lifecycle v2 位置づけ（2026-06-21・非置換）**: 本ルール = **L2 深掘り**（`session-lifecycle-v2.md` §3 L2）。通常新セッションは **ORIENT L0**（bridge + checkpoint 50行 + constitution-first-read-pack 01〜06）のみ。bootstrap NG 時に本ファイル全文を Read。
+
 正本は **`chat-sessions/SESSION-READ-LADDER.md`**。セッション切替・新チャットで本題に触れる前は **二段階**で進める（`checkpoint-latest.md` と矛盾する場合は **checkpoint 優先**）。
 
 **当面の時間目安**（同一ブロックの目安・超えたらチャットに 1 行理由）: **事前準備（第0手＋A）≒ 1h**／**本題（B＋実装・検証）≒ 3h**。詳細は同ファイル「当面の時間目安」。

@@ -17,6 +17,7 @@
 1. 15ターン到達: 応答末尾で New Chat 強制申告
 2. `npm run cio:session:export-handoff` — bridge JSON + debug-tips 追記 + temp purge
 3. New Chat 第1手: `npm run verify:session-handoff-integrity -- --import`（ビジュアルマップ）
+3b. WAKE 標準: `npm run cio:session:cold-start`（正本 `docs/runbooks/session-lifecycle-v2.md` §3）
 4. 同一ファイル3回連続Diff: `cio:session:turn-guard -- --record-diff` が exit 1
 5. コスト巨大化見込み: §41 一問で浜田に区切り確認
 

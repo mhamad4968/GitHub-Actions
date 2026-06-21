@@ -11,11 +11,11 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const KERNEL_DIR = 'docs/constitution';
 
 const KERNELS = [
-  { file: '19-governance-four-ai-kernel.md', markers: ['統制・役割', '§35-1', 'verify:cio-four-ai-governance'] },
-  { file: '20-cost-token-defense-kernel.md', markers: ['15ターン', 'export-handoff', 'verify:cio-session-dissolution'] },
+  { file: '19-governance-four-ai-kernel.md', markers: ['統制・役割', '§35-1', 'verify:cio-four-ai-governance', 'cio:tool:route'] },
+  { file: '20-cost-token-defense-kernel.md', markers: ['15ターン', 'export-handoff', 'verify:cio-session-dissolution', 'cio:session:cold-start'] },
   { file: '21-autonomous-patrol-kernel.md', markers: ['週末', 'rollback:weekend-actions', 'WEEKEND'] },
   { file: '22-error-handling-kernel.md', markers: ['3択', 'verify:cio-spec-logic', 'escalation-guard'] },
-  { file: '23-project-closure-recognition-kernel.md', markers: ['認識同期', 'verify:checkpoint-project-closure', '§41'] },
+  { file: '23-project-closure-recognition-kernel.md', markers: ['認識同期', 'verify:checkpoint-project-closure', '§41', 'handoff:append-block'] },
 ];
 
 const HEADINGS = ['## 前提条件', '## 実行手順', '## 禁止事項', '## 判定コード'];

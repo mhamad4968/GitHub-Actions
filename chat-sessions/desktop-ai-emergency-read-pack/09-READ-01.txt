@@ -15,8 +15,8 @@
 2) 項番 -0  
    ティア宣言＋「次にやる **1 つ**」を **§41 一問だけ**浜田へ。OK が出るまで **verify / bootstrap / 本題に着手しない**。
 
-3) 項番 0  
-   リポルートで **`npm run verify:constitution-handoff` → exit 0**（**憲法級ハンドオフ物理ガード**）を確認したうえで、`npm run session:bootstrap` → **exit 0** を確認（**2026-05-15 CEO 承認**: ユーザサポート系は read-pack 09 直後と **項番 0 でセット**）。
+3) 項番 0（WAKE 標準 2026-06-21）  
+   リポルートで **`npm run cio:session:cold-start`** → **exit 0**（内包: verify:constitution-handoff・凍結ゾーン・handoff テンプレ・bootstrap・import）。**L2**: cold-start NG 時のみ **`npm run session:bootstrap`** 単独。正本 **`docs/runbooks/session-lifecycle-v2.md`** §3。Desktop **`29-ABCD-V2-LIFECYCLE.txt`** 参照。
 
 4) 第0手（段階読解）  
    **本パック** `10-READ-02.txt` から **`15-READ-07.txt` までファイル名の番号昇順**で Read（中身が「（未使用）」のみならその番号はスキップ可＋チャットに理由 1 行）。**`14-READ-06.txt` を Read した直後**、**`28-CONSTITUTION-GENRE-MAP.txt` を Read**（ジャンル早見・4AI 役割・見落とし防止）し、チャットに **`【AI分業チェック】`** を **1 回必ず**出す（項目・表は READ-06 先頭のテンプレどおり。**省略・「同上」禁止**）。**`15-READ-07.txt`（浜田 CEO のお願い）**を Read した直後、チャットに **`【READ-07 読了】`** と **1 行**（「Project Rules 厳守・壁時計・分業・GH Actions・健全性を再確認」等、自分の言葉で要約）を残す。  

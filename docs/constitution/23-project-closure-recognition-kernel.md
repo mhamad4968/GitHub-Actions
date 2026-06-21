@@ -19,6 +19,7 @@
 1. 完成サマリー + SESSION-CLOSE-REPORT
 2. `cio-project-closures.json` 登録
 3. checkpoint 先頭 + handoff 末尾更新
+3b. partial/full CLOSE: `docs/runbooks/checkpoint-handoff-template-v2.md` — **`cio:handoff:append-block`** 必須
 4. 台帳 v1: [`kintone-ledger-v1-closure-checklist.md`](../runbooks/kintone-ledger-v1-closure-checklist.md)（R41）完走
 5. `verify:checkpoint-project-closure` → export-handoff → `cio:session:close-git`（R44 checkpoint Git 同期内包）
 6. commit / push

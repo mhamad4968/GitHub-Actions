@@ -424,6 +424,7 @@ flowchart LR
 7. **15ターン強制解体**: 同一チャット **15 ターン超**または **40k トークン自認** → 応答末尾で New Chat 強制申告 → **`npm run cio:session:export-handoff`**（`.cursor/rules/cio-context-dissolution-interlock.mdc`）。
 8. **Diff ループ遮断**: 同一ファイル **3 回連続 Diff** → `cio:session:turn-guard -- --record-diff` が **exit 1**（SPEC 根本見直し）。
 9. **New Chat 第 1 手**: **`npm run verify:session-handoff-integrity -- --import`** → exit 0 でロケットスタート（**4AI引っ越し完了マッピング表**自動表示）。
+9b. **New Chat 第 0 手（2026-06-21 A v2・§50-3-11 非置換追補）**: **`npm run cio:session:cold-start`**（内包: 凍結ゾーン・handoff テンプレ・bootstrap・import）。正本 **`docs/runbooks/session-lifecycle-v2.md`** §3–§7。従来 **`verify:session-handoff-integrity -- --import`** は Phase IMPORT 相当。**`bootstrap exit ≠ 0`** 時のみ L2（`NEW-SESSION-STARTER` 6 部）。
 10. **Composer 自律エスカレーション**: verify **連続2回** exit 1 → DeepSeek §50-3-8 強制 → Self-Heal **最大3回** → CIO(Opus 4.8) CEO 報告（`npm run cio:composer:escalation-guard`）。
 11. **SPEC 自動スコアリング**: **`npm run cio:task:score-spec`** → `docs/handoff/spec-task-scores.json` + SPEC 優先順位節 → `[🎖️ 本セッション割当]` 入力ソース。
 12. **環境変数セルフ監査**: **`npm run verify:cio-env-integrity`** — 401/403 先回り（不足時 exit 1 + 警告明示）。
@@ -972,6 +973,7 @@ GitHub・npm・Stack Overflow 等から外部コードを参考にする際は�
    - **締め応答**: 技術完了と別に、**ルール順守の自己評価を 1 文**（できていなければそのまま記載）。  
    - **引き継ぎの読み方（5 分割）**: **`chat-sessions/HANDOFF-AI-FIVE-BLOCKS.md`** を索引とする（長文を一度に読まなくてよい）。
    - **customize 本番 deploy の機械ゲート（2026-05-06 拡張）**: `package.json` の **`deploy:595` `626` `627` `629` `671` `674` `677` `678` `679`** および **移行専用の `deploy:594`** は、それぞれ **`logs/cio-preflight/<同じアプリID>.json`** に **45 分以内**のスタンプが無いと **`cio-deploy-preflight-guard.mjs` が exit 2** で拒否する。スタンプ: **`npm run cio:preflight:<app> -- --note "（チャット規律の一行要約・4文字以上）"`**（`scripts/cio-preflight-stamp.mjs`）。**任意**: ワーキングツリー要約の 1 行を JSON に載せるとき **`--with-git-diff-line`**（`git diff --shortstat HEAD` の先頭行。**差分なしなら `gitDiffLine: null`**）。**緊急脱出**: `SKIP_CIO_DEPLOY_GUARD=1`（**浜田 GO** とチャットに **理由 1 行**必須。濫用禁止）。**Cursor 想起（glob 注入）**: `.cursor/rules/cio-discipline-always.mdc`（**`alwaysApply: false` + `globs`**）。**常時 true 核は `cio-constitution.mdc` のみ**。
+   - **品質ゲート B v2（2026-06-21・§50-3-11 非置換追補）**: 正本 **`docs/runbooks/push-deploy-quality-gates-v2.md`**。commit 前 **`npm run cio:pre-commit-check`** / push 前 **`npm run cio:pre-push-check`** / deploy 前 **`npm run cio:deploy-gate -- <appId>`**（preflight の後段）。
 
 ### §36 デュアルラン（キー移行の安全策）
 1. **二段ルックアップ**: `emp_id` へ移行する機能では、**`JBIS594_EMP_ID_QUERY_PRIMARY`（または同等の単一フラグ）が true のとき `emp_id` を先に検索し、0件または無効なら `mail` にフォールバック**する。
@@ -1185,6 +1187,8 @@ AIエージェント自身および開発環境のすべてのツール・ライ
 4. 「過去ログ確認: <要約 1-2 行>」と宣言してから本題へ
 
 この 1〜4 を踏まずに本題に入った場合、§42 違反として即訂正する。NEW-SESSION-STARTER.md を作っておきながら自分が踏まないという 2026-04-19 セッションの矛盾を防ぐため。
+
+**Lifecycle v2 追補（2026-06-21 / §50-3-11 非置換）**: 新セッションの **機械入口**は **`docs/runbooks/session-lifecycle-v2.md`**（WAKE→ORIENT→ALIGN→WORK→CLOSE）。ORIENT L0 = bridge + checkpoint **先頭50行** + **`chat-sessions/constitution-first-read-pack/00-ORDER.txt`〜`06-abcd-v2-runbooks.txt`**。`NEW-SESSION-STARTER.md` 全文通読は **L2 フォールバックのみ**（`cio:session:cold-start` / `session:bootstrap` が exit ≠ 0）。**§42 儀式 1〜4 は維持**（v2 は入口の機械化を追加するだけで置換しない）。
 
 #### 違反時のリカバリー
 ユーザーから「過去のやり取りを確認して」と指摘されたら、**即座に上記 1-5 を全部実行** し、結果を要約してから次の発言に移る。「すみません、確認します」だけで済ませず、実際にツール実行する。
@@ -2034,6 +2038,16 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 7. **ゾンビ文書**: `git-history-mcp` の **「6月以降」** 等の未導入表記は **`verify:mode-b-zombie-docs`** で検知 — 導入済みは **「導入済（第12層）」** に更新。
 
 正本: `.cursor/rules/mcp-tool-discipline.mdc` / `data/git-history-guard-manifest.json` / `docs/runbooks/cio-periodic-ops-schedule.md`
+
+**第14層 — Session Lifecycle v2 運用改善 A/B/C/D（2026-06-21 浜田 GO・§50-3-11 非置換）**:
+
+1. **索引のみ（権限非置換）**: 本層は **§42 / §35-7 / 第1〜13層の手順・権限を置換しない**。WAKE（`cio:session:cold-start` / bootstrap）**完了後**、WORK / CLOSE 向け npm・MCP の **正本ポインタ**として参照する。bootstrap 未完了時は **§42 項番 0 を優先**し、本層の WORK 索引は待機する。
+2. **A — Lifecycle**: `docs/runbooks/session-lifecycle-v2.md` — WAKE **`npm run cio:session:cold-start`** / ORIENT L0 / CLOSE partial|full
+3. **B — 品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` — **`cio:pre-commit-check`** / **`cio:pre-push-check`** / **`cio:deploy-gate -- <app>`**
+4. **C — 引き継ぎ**: `docs/runbooks/checkpoint-handoff-template-v2.md` — **`cio:handoff:append-block`** / 凍結ゾーン ≤50 行
+5. **D — ツールルーティング**: `docs/runbooks/ai-team-tool-routing-v2.md` — **`npm run cio:tool:route -- --intent "…"`** → MCP descriptor 必読
+6. **機械検証**: **`verify:cio-handoff-template-infra`** + **`verify:cio-quality-gate-infra`** + **`verify:cio-tool-routing-infra`**（`verify:cio-four-ai-governance` に内包）
+7. **first-read-pack**: `chat-sessions/constitution-first-read-pack/06-abcd-v2-runbooks.txt`
 
 **担当定義の極限明文化**: **`AGENTS.md` §1-2-3-4-A**（完全マトリクス）・`mode-b-canonical.mdc`（用語単一窓）・Desktop **`18-重要確認.txt`**（浜田視認用）。
 

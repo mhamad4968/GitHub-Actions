@@ -26,7 +26,9 @@
         ".cursor/rules/auto-read-by-topic.mdc",
         ".cursor/rules/cio-handoff-export-validate-gate.mdc"
       ],
-      "when": "新規チャット・checkpoint・bridge・確認ログ"
+      "when": "新規チャット・checkpoint・bridge・確認ログ",
+      "runbook": "docs/runbooks/session-lifecycle-v2.md",
+      "npm": ["cio:session:cold-start", "verify:checkpoint-handoff-template"]
     },
     {
       "topic": "kintone 全般",

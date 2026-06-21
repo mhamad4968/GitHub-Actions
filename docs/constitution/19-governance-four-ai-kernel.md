@@ -20,6 +20,7 @@
 3. 開発3ステップ: DeepSeek → 突合 → Composer Diff（GOなし save/deploy 禁止）
 4. 報告前: `npm run cio:report-verify-response -- --file <下書き>` exit 0
 5. 機械整合: `npm run verify:cio-four-ai-governance`
+6. WORK 着手: `npm run cio:tool:route -- --intent "…"`（D v2）→ B v2 品質ゲート（`push-deploy-quality-gates-v2.md`）
 
 ## 禁止事項
 

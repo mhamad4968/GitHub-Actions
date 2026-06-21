@@ -42,8 +42,9 @@ globs: "**/*"
 
 ## 新セッション・二段階読解
 
-- **`chat-sessions/NEW-SESSION-STARTER.md`**（「■ 貼付単独で完走」）
-- **`chat-sessions/SESSION-READ-LADDER.md`**（A/B・第0手）
+- **Session 入口（2026-06-21 v2）**: **`docs/runbooks/session-lifecycle-v2.md`** — ORIENT L0。WAKE = **`npm run cio:session:cold-start`**
+- **`chat-sessions/NEW-SESSION-STARTER.md`**（「■ 貼付単独で完走」）— **L2 フォールバック**
+- **`chat-sessions/SESSION-READ-LADDER.md`**（A/B・第0手）— **L2 深掘り**
 - **`.cursor/rules/session-read-ladder-two-phase.mdc`**（Project Rules 側の要約）
 
 ## ジャンル別（glob）

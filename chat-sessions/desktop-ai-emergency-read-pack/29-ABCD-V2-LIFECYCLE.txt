@@ -1,0 +1,17 @@
+【29 ABCD v2 — Session Lifecycle 運用改善索引（2026-06-21 追補・非置換）】
+
+リポ正本: chat-sessions/constitution-first-read-pack/06-abcd-v2-runbooks.txt
+本ファイルは Desktop 控え。権限は §42 / §35-7 を置換しない。
+
+| 記号 | runbook | 代表 npm |
+|------|---------|----------|
+| A | docs/runbooks/session-lifecycle-v2.md | cio:session:cold-start |
+| B | docs/runbooks/push-deploy-quality-gates-v2.md | cio:pre-commit-check / cio:pre-push-check / cio:deploy-gate |
+| C | docs/runbooks/checkpoint-handoff-template-v2.md | cio:handoff:append-block |
+| D | docs/runbooks/ai-team-tool-routing-v2.md | cio:tool:route -- --intent "…" |
+
+WAKE 標準: npm run cio:session:cold-start（session:bootstrap 内包）
+WORK 先頭: cio:pre-implement-gate → cio:tool:route
+L2: NEW-SESSION-STARTER 6 部（bootstrap NG 時のみ）
+
+矛盾時: session-lifecycle-v2.md → AGENTS.md §50-3-12 第14層

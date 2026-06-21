@@ -39,7 +39,9 @@
         "cio-handoff-export-validate-gate.mdc",
         "cio-project-closure-gate.mdc",
         "cio-session-close-git-gate.mdc",
+        "session-boundary-close-gate.mdc",
         "session-close-execute-first.mdc",
+        "cio-deploy-ledger-gate.mdc",
         "cio-commit-msg-kimi-gate.mdc",
         "autonomous-cold-start.mdc",
         "evening-reflection-scope.mdc"

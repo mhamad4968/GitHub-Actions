@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-14T00:49:39.000Z",
+  "generatedAt": "2026-06-21T01:20:31.989Z",
   "sectionToMdc": {
     "§0": [
       "constitution-brief-card.mdc",
@@ -163,8 +163,10 @@
     "§50-3-11": [
       "cio-commit-msg-kimi-gate.mdc",
       "cio-composer-escalation-interlock.mdc",
+      "cio-constitution.mdc",
       "cio-context-dissolution-interlock.mdc",
       "cio-debug-tips-stock-gate.mdc",
+      "cio-discipline-always.mdc",
       "cio-env-integrity-gate.mdc",
       "cio-env-self-healing-gate.mdc",
       "cio-error-ticket-apply-gate.mdc",
@@ -178,6 +180,7 @@
       "cursor-generate-image-assets.mdc",
       "deepseek-cursor-spec-division.mdc",
       "every-turn-rules-confirm.mdc",
+      "mcp-tool-discipline.mdc",
       "mode-b-canonical.mdc"
     ],
     "§50-3-2": [
@@ -285,6 +288,7 @@
       "§1-2-3-4",
       "§35-1",
       "§36",
+      "§50-3-11",
       "§56-1"
     ],
     "cio-context-dissolution-interlock.mdc": [
@@ -301,6 +305,7 @@
       "§11",
       "§35-7",
       "§36",
+      "§50-3-11",
       "§50-3-2",
       "§50-3-8"
     ],
@@ -482,6 +487,7 @@
     "mcp-tool-discipline.mdc": [
       "§(RULES-INDEX行)",
       "§1-2-3-4-A",
+      "§50-3-11",
       "§57-5"
     ],
     "mode-b-canonical.mdc": [

@@ -110,6 +110,39 @@ const suites = [
     needles: ['mcp-chat-stamp.mjs', 'MCP貼付1行', 'mcp:chat-stamp'],
   },
   {
+    id: 'agents-abcd-v2',
+    rel: 'AGENTS.md',
+    needles: [
+      '第14層 — Session Lifecycle v2',
+      'session-lifecycle-v2.md',
+      'push-deploy-quality-gates-v2.md',
+      'checkpoint-handoff-template-v2.md',
+      'ai-team-tool-routing-v2.md',
+      'cio:session:cold-start',
+      'cio:tool:route',
+      '非置換',
+    ],
+  },
+  {
+    id: 'rules-index-abcd-v2',
+    rel: 'RULES-INDEX.md',
+    needles: [
+      'session-lifecycle-v2.md',
+      'ai-team-tool-routing-v2.md',
+      '19 → 20 → 23',
+    ],
+  },
+  {
+    id: 'first-read-pack-06',
+    rel: 'chat-sessions/constitution-first-read-pack/00-ORDER.txt',
+    needles: ['06-abcd-v2-runbooks.txt'],
+  },
+  {
+    id: 'handoff-gate-cold-start-v2',
+    rel: '.cursor/rules/constitution-handoff-gate.mdc',
+    needles: ['cio:session:cold-start', 'session-lifecycle-v2.md'],
+  },
+  {
     id: 'agents-35-6',
     rel: 'AGENTS.md',
     needles: [

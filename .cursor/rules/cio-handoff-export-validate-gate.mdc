@@ -16,6 +16,7 @@ globs: "docs/handoff/**"
 ## 実行手順
 
 1. `npm run verify:session-handoff-integrity -- --validate-export`
+1b. partial/full CLOSE 後 **`npm run cio:handoff:append-block`**（`checkpoint-handoff-template-v2.md`）
 2. DeepSeek 職分決定論突合 OK → `crosscheckOk=true`
 3. New Chat `--import` 実行
 

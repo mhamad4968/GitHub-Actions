@@ -6,3 +6,4 @@ chat-sessions/constitution-first-read-pack/02-cio-second-reviewer.txt
 chat-sessions/constitution-first-read-pack/03-minimum-m-baseline.txt
 chat-sessions/constitution-first-read-pack/04-hooks-pipeline.txt
 chat-sessions/constitution-first-read-pack/05-full-refs.txt
+chat-sessions/constitution-first-read-pack/06-abcd-v2-runbooks.txt

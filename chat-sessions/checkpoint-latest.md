@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-06-21 JST — **D AIチーム MCP/ツールルーティング v2 反映** / 736 v2c **保留**
+**最終更新**: 2026-06-21 JST — **E 憲法・ルール A/B/C/D 鏡像追補** / 736 v2c **保留**
 
 ## クローズ済み（`data/cio-project-closures.json` — 無断 v1 再開禁止）
 
@@ -25,8 +25,9 @@
 | 本番 WF 6段階 | 無断分割禁止 — test_v3 WF 継続テストのみ |
 | 評価スナップショット | 未設計確認前の本番投入禁止 |
 
-**次の1手**: **736** — 修正版スモーク（後日）→ **6/23（月）以降** 担当説明 → v2c GO。**運用改善 A/B/C/D 完了** — 以降は実装レーン優先。**677–679 / 688 / SKYSEA** — 触らない  
-**Git**: `b318530` — AI team tool routing v2 D  
+**次の1手**: **736** — 修正版スモーク（後日）→ **6/23（月）以降** 担当説明 → v2c GO。**運用改善 A/B/C/D/E 完了** — 以降は実装レーン優先。**677–679 / 688 / SKYSEA** — 触らない  
+**Git**: `409adfd` — D tool routing（E 未 push）  
+**憲法鏡像**: AGENTS.md §50-3-12 第14層 / first-read-pack/06 / Desktop `29-ABCD-V2-LIFECYCLE.txt`
 **ツールルーティング**: `docs/runbooks/ai-team-tool-routing-v2.md` — `npm run cio:tool:route -- --intent "<要約>"`  
 **引き継ぎテンプレ**: `docs/runbooks/checkpoint-handoff-template-v2.md` — `cio:handoff:append-block`  
 **736 本番**: BUILD=`2026-06-21-jikkou-yosan-versions-help-wording` rev **104**  

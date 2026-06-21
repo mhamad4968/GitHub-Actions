@@ -5,4 +5,6 @@
 - docs/session-report-checklist.md（§P・§M-2 正本）
 - chat-sessions/desktop-ai-emergency-read-pack/20-SESSION-REPORT-CHECKLIST.txt（短縮チェックリスト）
 
+- docs/runbooks/session-lifecycle-v2.md（A）/ push-deploy-quality-gates-v2.md（B）/ checkpoint-handoff-template-v2.md（C）/ ai-team-tool-routing-v2.md（D）
+
 先読みパックは要約層。矛盾がある場合は **上記全文が勝つ**。
