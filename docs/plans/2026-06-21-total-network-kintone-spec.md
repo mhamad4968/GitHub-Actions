@@ -1,8 +1,9 @@
 # トータルネットワーク ネットワーク管理 — kintone 仕様書（SPEC）
 
 > **起票**: 2026-06-21  
-> **状態**: **実装 GO（2026-06-21）— M2 着手**  
-> **配置**: [Space 48](https://jbis-kintone.cybozu.com/k/#/space/48) / thread **52**  
+> **状態**: **v1 完成 — CLOSED**（2026-06-21 浜田 OK）  
+> **完成報告**: `docs/reports/2026-06-21-total-network-completion.md`  
+> **配置**: [Space 48](https://jbis-kintone.cybozu.com/k/#/space/48) / thread **52** — App **737**（DB）/ **738**（台帳）  
 > **移行元 Excel**: `C:\tmp\トータルネットワークのネットワーク情報管理台帳\トータルネットワークのネットワーク情報管理台帳.xlsx`  
 > **機械分析**: `docs/plans/tmp-total-network-xlsx-structure.json`  
 > **拠点並び正本**: `scripts/data/jbis-location-sort-master.json`（**22 拠点・全アプリ共通**）
@@ -14,7 +15,7 @@
 1. **浜田 Q&A（Q1–Q24）で項目・運用を確定**（**完了 2026-06-21**）。
 2. **AI チームでレビュー・意見交換**（**§15 記載・完了**）。
 3. 本書を正本として浜田 **確認** → **実装 GO** 指示（`.cursor/rules/creation-timing-ask.mdc`）。
-4. AI 実行: kintone アプリ作成 → フィールド deploy → Excel **一括移行** → ダッシュ customize → 印刷・Excel 出力 → 浜田 **目視 OK** → **kintone のみ正本運用**（Excel 削除は浜田実施）。
+4. AI 実行: kintone アプリ作成 → フィールド deploy → Excel **一括移行** → ダッシュ customize → 印刷・Excel 出力 → 浜田 **目視 OK** → **kintone のみ正本運用**（**完了 2026-06-21**）。
 
 **技術方針**（VPN 733/734・不適合 706/707 型）:
 
@@ -311,16 +312,16 @@ IP 割当変更は kintone **標準の更新履歴**のみ（理由不要）。
 
 ---
 
-## §11. マイルストーン（案）
+## §11. マイルストーン
 
-| # | 内容 |
-|---|------|
-| M1 | 本 SPEC 確定・コミット |
-| M2 | kintone DB + 台帳作成・フィールド deploy |
-| M3 | 移行スクリプト + 検証 diff |
-| M4 | 台帳 customize（一覧・マトリックス・設定・次 IP 提案） |
-| M5 | 印刷 + Excel 出力 |
-| M6 | 浜田目視 OK → Excel 削除 |
+| # | 内容 | 状態 |
+|---|------|------|
+| M1 | 本 SPEC 確定・コミット | **済** |
+| M2 | kintone DB + 台帳作成・フィールド deploy | **済**（737 rev5 / 738 rev8） |
+| M3 | 移行スクリプト + 検証 diff | **済**（拠点22・使用中IP26） |
+| M4 | 台帳 customize（一覧・マトリックス・設定・次 IP 提案） | **済** |
+| M5 | 印刷 + Excel 出力 | **済** |
+| M6 | 浜田目視 OK → 正本運用 | **済**（2026-06-21） |
 
 ---
 
@@ -347,7 +348,7 @@ IP 割当変更は kintone **標準の更新履歴**のみ（理由不要）。
 | 1 | マトリックス列順 | **`sort_no` 昇順**（千葉→水戸。Wi-Fi 台帳と統一） |
 | 2 | IP スロット | **DB は使用中のみ**。空きは画面計算。次 IP 提案で都度 POST |
 | 3 | IP 割当解除 | **マトリックスから削除**（REST DELETE）。DB 標準 UI は使わない |
-| 4 | 一覧表デフォルト | **接続拠点 12 件**。`total_network_enabled` ON 拠点は自動表示。拠点・接続/未接続フィルタあり |
+| 4 | 一覧表デフォルト | **接続拠点 12 件**。列 **接続方式**（値: IPアドレス固定）。拠点・接続/未接続フィルタあり |
 | 5 | 用途マスタ ACL | **部署全員**が追加・無効化可（v1） |
 
 ---
@@ -361,6 +362,52 @@ IP 割当変更は kintone **標準の更新履歴**のみ（理由不要）。
 - [x] 一覧デフォルト（接続拠点 + フィルタ）OK
 - [x] 移行元 Excel パス OK
 - [x] 実装 GO 指示（2026-06-21）
+- [x] 浜田目視 OK・v1 クローズ（2026-06-21）
+
+---
+
+## §18. v1 完成・クローズ（2026-06-21）
+
+**判定**: Space 48 本番で **一覧表・IP マトリックス・次 IP 提案・印刷・Excel 出力** まで浜田 **OK**。**v1 完成 — CLOSED**。
+
+**完成報告**: `docs/reports/2026-06-21-total-network-completion.md`
+
+### 本番 BUILD（最終）
+
+| App | BUILD | rev |
+|-----|-------|-----|
+| 737 DB | `2026-06-21-total-network-db-block` | **5** |
+| 738 台帳 | `2026-06-21-total-network-dash-v1-auto-ip-count` | **8** |
+
+### v1 実装後の仕様追従（同一クローズ内）
+
+| 項目 | 内容 |
+|------|------|
+| 列名 | **サブネットマスク** / **接続方式**（値: **IPアドレス固定**） |
+| IP 数 | **`ip_range_start`〜`ip_range_end` から自動計算**（範囲幅 − 1）。手入力廃止 |
+| チェックボックス値 | `total_network_enabled` = `IPアドレス固定` |
+
+### 運用コマンド（継続利用）
+
+| 用途 | コマンド |
+|------|----------|
+| 台帳 deploy | `npm run deploy:738`（前に `total-network:bundle-dash`） |
+| DB deploy | `npm run deploy:737` |
+| 移行検証 | `npm run total-network:migrate:verify` |
+| IP 数再同期 | `npm run total-network:sync-ip-count -- --apply` |
+
+### 再開条件（v2）
+
+- 浜田 **GO** + 本 SPEC または v2 草案 + `data/cio-project-closures.json` 解除
+- v2 候補（§1.3 スコープ外）: PC 台帳 674 連携・社内ネットワーク管理台帳連携 等
+
+### 変更履歴（SPEC）
+
+| 日付 | 内容 |
+|------|------|
+| 2026-06-21 | v1 完成 — 実装・移行・deploy・浜田 OK・**CLOSED** |
+| 2026-06-21 | §15.1 確定・実装 GO |
+| 2026-06-21 | 起票・Excel 機械分析 |
 
 ---
 

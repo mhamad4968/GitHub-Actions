@@ -125,6 +125,25 @@
         "VPN ID"
       ],
       "note": "66件・一覧・採番user080・集計アコーディオン・0口全表示・印刷。浜田目視 OK。v2: PC台帳連携等"
+    },
+    {
+      "id": "total-network-ledger",
+      "laneId": "total-network",
+      "label": "トータルネットワーク ネットワーク管理",
+      "status": "closed-v1",
+      "closedAt": "2026-06-21",
+      "completionReport": "docs/reports/2026-06-21-total-network-completion.md",
+      "kintoneAppsSection": "トータルネットワーク ネットワーク管理 ver.1（Space 48 — 737–738）",
+      "kintoneAppsStateMarker": "v1 完成",
+      "forbiddenNextTaskPatterns": [
+        "トータルネットワーク",
+        "total-network",
+        "737",
+        "738",
+        "IPマトリックス",
+        "次IP提案"
+      ],
+      "note": "拠点22・接続12・使用中IP26・一覧/マトリックス/次IP/印刷/Excel・IP数自動計算。浜田 OK（2026-06-21）。v2: 674連携・社内NW台帳連携等"
     }
   ]
 }
