@@ -2,7 +2,7 @@
   "use strict";
 
   /** メールアドレス管理台帳 — 695 REST CRUD */
-  var BUILD = "2026-06-21-696-search-panel";
+  var BUILD = "2026-06-21-696-dept-sort-master";
 
   var APP_DB = 695;
   var MAIL_DOMAIN = "@j-bis.co.jp";
@@ -11,6 +11,15 @@
   var USAGE_DEFAULT = "共有メールアドレス";
   var USAGE_TYPES = ["共有メールアドレス", "個人メールアドレス"];
   var DEPT_DATALIST_ID = "smd-dept-list";
+  /** R68 正本: scripts/data/vpn-account-depts.json（浜田 2026-06-21 確定・再確認不要） */
+  var JBIS_DEPT_FLAT_ORDER = [
+    "役員室", "総務部", "経理部", "経営企画部", "システム推進室", "人事研修部", "安全推進部",
+    "施工推進部", "メンテナンス技術部", "塗装技術部", "品質管理部", "東北支店", "秋田営業所",
+    "盛岡営業所", "仙台営業所", "関越支店", "関越支店施工部", "新潟営業所", "長野営業所",
+    "高崎営業所", "東京支店", "東京支店施工部", "東京支店橋りょうリペア部", "千葉営業所",
+    "水戸営業所", "鎌ヶ谷事務所", "東海支店", "東京営業所", "静岡営業所", "名古屋営業所",
+    "関西営業所", "札幌支店", "首都圏支店", "鉄構支店", "湾岸工事所", "BNP",
+  ];
   var SEARCH_DL_ID = "smd-search-datalist";
   var SEARCH_URL_KW = "smd696kw";
   var SEARCH_URL_DEPT = "smd696dept";
@@ -137,6 +146,40 @@
     sync();
   }
 
+  function departmentSortKey(name) {
+    var n = String(name == null ? "" : name).trim();
+    if (!n) return [9, ""];
+    var exact = JBIS_DEPT_FLAT_ORDER.indexOf(n);
+    if (exact >= 0) return [0, exact, ""];
+    var i;
+    for (i = 0; i < JBIS_DEPT_FLAT_ORDER.length; i++) {
+      var base = JBIS_DEPT_FLAT_ORDER[i];
+      if (n.indexOf(base + "-") === 0 || n.indexOf(base + "－") === 0) {
+        return [0, i, n.slice(base.length + 1)];
+      }
+    }
+    return [2, n];
+  }
+
+  function compareDepartmentNames(a, b) {
+    var ka = departmentSortKey(a);
+    var kb = departmentSortKey(b);
+    var len = Math.max(ka.length, kb.length);
+    var i;
+    for (i = 0; i < len; i++) {
+      var va = ka[i] == null ? "" : ka[i];
+      var vb = kb[i] == null ? "" : kb[i];
+      if (va === vb) continue;
+      if (typeof va === "number" && typeof vb === "number") return va - vb;
+      return String(va).localeCompare(String(vb), "ja");
+    }
+    return 0;
+  }
+
+  function sortDepartmentNames(list) {
+    return list.slice().sort(compareDepartmentNames);
+  }
+
   function collectDepartmentOptions(extraValue) {
     var seen = {};
     var out = [];
@@ -149,10 +192,7 @@
     });
     var extra = String(extraValue == null ? "" : extraValue).trim();
     if (extra && !seen[extra]) out.push(extra);
-    out.sort(function (a, b) {
-      return a.localeCompare(b, "ja");
-    });
-    return out;
+    return sortDepartmentNames(out);
   }
 
   function departmentDatalistHtml(items) {
@@ -251,10 +291,7 @@
       seen[d] = true;
       out.push(d);
     });
-    out.sort(function (a, b) {
-      return a.localeCompare(b, "ja");
-    });
-    return out;
+    return sortDepartmentNames(out);
   }
 
   function updateSearchDatalist(prefix) {
@@ -365,9 +402,7 @@
     var cur = state.departmentFilter || "";
     var opts = collectAllDepartmentOptions();
     if (cur && opts.indexOf(cur) < 0) opts.push(cur);
-    opts.sort(function (a, b) {
-      return a.localeCompare(b, "ja");
-    });
+    opts = sortDepartmentNames(opts);
     sel.innerHTML =
       '<option value="">すべての部署</option>' +
       opts
@@ -641,6 +676,7 @@
       var sb = b.status === STATUS_ACTIVE ? 0 : 1;
       if (sa !== sb) return sa - sb;
     }
+    if (key === "department") return compareDepartmentNames(a.department, b.department);
     return String(a[key] || "").localeCompare(String(b[key] || ""), "ja");
   }
 

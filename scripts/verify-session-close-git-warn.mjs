@@ -89,6 +89,20 @@ function checkUnpushed() {
   return { ok: false, hard };
 }
 
+function checkRulesIndexDirty() {
+  const diff = git(['diff', '--name-only', 'HEAD', '--', 'RULES-INDEX.md']);
+  if (!diff) return { ok: true };
+  const msg =
+    '[verify:session-close-git-warn] WARN RULES-INDEX.md が dirty（R67）— 意図しない巻き戻しの可能性。`npm run rules:sync-section-mdc` で再生成するか restore';
+  if (warnOnly) {
+    console.warn(msg);
+    return { ok: true };
+  }
+  console.error(msg);
+  console.error('  緊急: --warn-only または意図的変更なら commit に含める');
+  return { ok: false, hard: true };
+}
+
 function main() {
   const inside = git(['rev-parse', '--is-inside-work-tree']);
   if (inside !== 'true') {
@@ -104,6 +118,11 @@ function main() {
   const holdDirty = checkHoldLaneDirty();
   if (!holdDirty.ok) {
     process.exit(warnOnly ? 0 : 1);
+  }
+
+  const rulesIndex = checkRulesIndexDirty();
+  if (!rulesIndex.ok) {
+    process.exit(1);
   }
 
   const unpushed = checkUnpushed();

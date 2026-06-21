@@ -49,6 +49,7 @@ function main() {
   }
   if (!note || note.length < 4) {
     console.error('[cio-preflight-stamp] --note "4文字以上" が必要です（チャット規律の一行要約）');
+    console.error(`  例: npm run cio:preflight:${app} -- --note "利用種別に個人メール追加"`);
     process.exit(2);
   }
 

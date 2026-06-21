@@ -70,6 +70,16 @@
   □ kintone deploy / customize 変更があれば **19-SESSION-ONE-REPORT** §未コミット（または §Git）に **App BUILD rev 一覧**を記載
   □ 締め前 `git status -sb` で dirty が残っていないか確認（残る場合は理由1行）
 
+□ R63 deploy → 即 commit（2026-06-21 GO）
+  □ `deploy:*` **SUCCESS** 後 **同一セッション内**に customize + kintone-apps.md + 関連 spec を commit（夕締め一括禁止）
+  □ preflight `cio:preflight:<app> -- --note "…"` を 45 分以内に deploy（R64）
+
+□ R68 所属・拠点並び正本（2026-06-21 GO・再確認不要）
+  □ 拠点: `scripts/data/jbis-location-sort-master.json`
+  □ 所属ブロック: `scripts/data/business-improvement-annual-department-order.json`
+  □ 所属フラット34: `scripts/data/vpn-account-depts.json`
+  □ 正本: `docs/knowledge/jbis-affiliation-location-sort-masters.md`
+
 □ R59 アプリ表示名 rename（該当時・2026-06-20 GO）
   □ kintone settings PUT + deploy（`npm run *:rename-apps` 等）
   □ `scripts/lib/*-kintone.mjs` の `*_APP_NAME` 定数
