@@ -1,0 +1,29 @@
+{
+  "version": "2026-06-21",
+  "description": "JBIS 拠点デフォルト並び順（正本）。Wi-Fi 台帳 §6.3 / App 680 所属候補順と整合。新規 kintone アプリは location_name + sort_no を本ファイルから参照する。",
+  "source": "docs/plans/2026-06-14-wifi-ssid-kintone-spec.md §6.3（浜田 2026-06-21 再確認）",
+  "locations": [
+    { "sort_no": 11, "location_name": "本社" },
+    { "sort_no": 12, "location_name": "東北支店" },
+    { "sort_no": 13, "location_name": "秋田営業所" },
+    { "sort_no": 14, "location_name": "盛岡営業所" },
+    { "sort_no": 15, "location_name": "仙台営業所" },
+    { "sort_no": 16, "location_name": "関越支店" },
+    { "sort_no": 17, "location_name": "新潟営業所" },
+    { "sort_no": 18, "location_name": "長野営業所" },
+    { "sort_no": 19, "location_name": "高崎営業所" },
+    { "sort_no": 20, "location_name": "東京支店" },
+    { "sort_no": 21, "location_name": "千葉営業所" },
+    { "sort_no": 22, "location_name": "水戸営業所" },
+    { "sort_no": 223, "location_name": "鎌ヶ谷事務所" },
+    { "sort_no": 24, "location_name": "東海支店" },
+    { "sort_no": 25, "location_name": "東京営業所" },
+    { "sort_no": 26, "location_name": "静岡営業所" },
+    { "sort_no": 27, "location_name": "名古屋営業所" },
+    { "sort_no": 28, "location_name": "関西営業所" },
+    { "sort_no": 29, "location_name": "札幌支店" },
+    { "sort_no": 30, "location_name": "首都圏支店" },
+    { "sort_no": 31, "location_name": "鉄構支店" },
+    { "sort_no": 32, "location_name": "湾岸工事所" }
+  ]
+}

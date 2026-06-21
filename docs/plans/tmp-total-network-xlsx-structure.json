@@ -1,0 +1,28 @@
+{
+  "source": "C:\\tmp\\トータルネットワークのネットワーク情報管理台帳\\トータルネットワークのネットワーク情報管理台帳.xlsx",
+  "analyzedAt": "2026-06-21",
+  "sheets": [
+    { "name": "一覧表", "role": "site_network_summary", "dataRows": 12 },
+    { "name": "IPアドレスレンジマトリックス", "role": "ip_assignment_matrix", "matrixColumns": 12 }
+  ],
+  "matrixColumnOrder": [
+    "東北支店",
+    "秋田営業所",
+    "盛岡営業所",
+    "仙台営業所",
+    "関越支店",
+    "新潟営業所",
+    "長野営業所",
+    "高崎営業所",
+    "東京支店",
+    "水戸営業所",
+    "千葉営業所",
+    "湾岸工事所"
+  ],
+  "assignmentRowsInMatrix": 141,
+  "notes": [
+    "東北支店と仙台営業所は network 10.208.1.0/28 を共有（GW 10.208.1.1）。割当 IP 範囲は分離。",
+    "湾岸工事所のみ gateway = network_address (10.208.2.17)。ip_count セルは空。",
+    "拠点表示名は Excel 上 (株)J-BISメンテナンス　接頭辞付き → kintone では location_name 短名称"
+  ]
+}
