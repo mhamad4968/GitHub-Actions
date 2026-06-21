@@ -22,7 +22,7 @@
   "assignmentRowsInMatrix": 141,
   "notes": [
     "東北支店と仙台営業所は network 10.208.1.0/28 を共有（GW 10.208.1.1）。割当 IP 範囲は分離。",
-    "湾岸工事所のみ gateway = network_address (10.208.2.17)。ip_count セルは空。",
+    "湾岸工事所のみ gateway = network_address (10.208.2.17)。ip_count は範囲内ホスト数（12）。",
     "拠点表示名は Excel 上 (株)J-BISメンテナンス　接頭辞付き → kintone では location_name 短名称"
   ]
 }

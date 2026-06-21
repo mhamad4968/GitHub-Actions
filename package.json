@@ -198,6 +198,7 @@
     "total-network:migrate:xlsx": "npx dotenv -e .env -e .env.proxy -- node scripts/total-network-migrate-xlsx.mjs",
     "total-network:migrate:verify": "npx dotenv -e .env -e .env.proxy -- node scripts/total-network-migrate-verify.mjs",
     "total-network:patch-labels": "npx dotenv -e .env -e .env.proxy -- node scripts/total-network-patch-labels.mjs",
+    "total-network:sync-ip-count": "npx dotenv -e .env -e .env.proxy -- node scripts/total-network-sync-ip-count-from-xlsx.mjs",
     "total-network:bundle-dash": "node scripts/total-network-bundle-dash.mjs",
     "total-network:deploy": "npx dotenv -e .env -e .env.proxy -- node scripts/total-network-deploy-customize.mjs",
     "cio:preflight:737": "node scripts/cio-preflight-stamp.mjs --app 737",

@@ -28,8 +28,6 @@ import {
 } from './lib/total-network-kintone.mjs';
 
 const CHECKBOX_CONNECTED = 'IPアドレス固定';
-const CHECKBOX_CONNECTED_LEGACY = '接続';
-const WANGAN_IP_COUNT_DEFAULT = '16';
 
 function parseArgs() {
   const dryRun = process.argv.includes('--dry-run');
@@ -54,8 +52,7 @@ export function readExcelSites(xlsxPath) {
     const location_name = stripLocationPrefix(rawName);
     const range = parseIpRange(row[7]);
     const ipCountRaw = row[6];
-    let ip_count = ipCountRaw === '' || ipCountRaw == null ? '' : String(ipCountRaw);
-    if (ip_count === '' && location_name === '湾岸工事所') ip_count = WANGAN_IP_COUNT_DEFAULT;
+    const ip_count = ipCountRaw === '' || ipCountRaw == null ? '' : String(ipCountRaw);
     map.set(location_name, {
       location_name,
       network_address: trimCell(row[1]),

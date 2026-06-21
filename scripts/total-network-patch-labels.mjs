@@ -100,14 +100,23 @@ async function patchRecords(baseUrl, headers, appId, sites, dryRun) {
     const patch = { id };
     let changed = false;
     if (enabled.includes(CHECKBOX_OLD) || (enabled.length && !enabled.includes(CHECKBOX_NEW))) {
-      patch.total_network_enabled = { value: [CHECKBOX_NEW] };
+      patch.record = {
+        ...(patch.record || {}),
+        total_network_enabled: { value: [CHECKBOX_NEW] },
+      };
       changed = true;
     }
     if (name === WANGAN && (ipCount === '' || ipCount == null)) {
-      patch.ip_count = { value: String(WANGAN_IP_COUNT) };
+      patch.record = {
+        ...(patch.record || {}),
+        ip_count: { value: WANGAN_IP_COUNT },
+      };
       changed = true;
     }
-    if (changed) updates.push(patch);
+    if (changed) {
+      patch.id = id;
+      updates.push(patch);
+    }
   }
   if (!updates.length) {
     console.log('records: no changes needed');
