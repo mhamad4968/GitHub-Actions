@@ -62,7 +62,7 @@ npm run app:fields <アプリID>
 | 733 | `2026-06-20-vpn-db-rename-message` | **11** | `252e24ee-a0c8-451c-8bff-46c967c9e9f3` | 2026-06-20 アプリ名変更・ブロックメッセージ更新 |
 | 734 | `2026-06-21-vpn-conn-pw-updated-date` | **28** | `8d2a21e0-d570-43c9-b908-1c2bab1d8c1b` | 2026-06-21 VPN接続PW横に (yyyy/mm/dd更新) 表示 |
 | 737 | `2026-06-21-total-network-db-block` | **5** | `d35de612-a6dc-484e-9881-aa603b024712` | 2026-06-21 トータルNW DB save/delete ブロック |
-| 738 | `2026-06-21-total-network-dash-v1-labels` | **6** | `ab0c8537-d98b-42bd-a7a2-cc16ea35b178` | 2026-06-21 トータルNW台帳 v1（一覧・マトリックス・次IP） |
+| 738 | `2026-06-21-total-network-dash-v1-labels` | **6** | `46d0d29b-f421-47b6-8c7e-8f37139c1769` | 2026-06-21 サブネットマスク列名・IPアドレス固定・湾岸IP数16 |
 | 701 | `2026-06-08-sn-news-board-v4-digest-labels` | **7** | `313ce558-6a11-4e5c-90b2-85d49426cfa8` | 2026-06-08 SN ニュース掲示板 v4 |
 | 627 | `2026-05-12-627-no594-rest` | 150 | `9fc3efc8-2a22-4585-881f-0ee3c2a0fbf2` | **削除済**（674 移行後・浜田確認 2026-06-10）— 台帳参照用 |
 | 668 | `2026-05-16-668-ops-guide-portfolio-audit` | 42 | `106126f5-7249-4104-8b43-405c85ddfa51` | 2026-05-16 portfolio 拡張・`deploy:668` |
