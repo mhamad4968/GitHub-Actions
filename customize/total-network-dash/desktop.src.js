@@ -1,11 +1,12 @@
 (function () {
   "use strict";
 
-  var BUILD = "2026-06-21-total-network-dash-v1-labels";
+  var BUILD = "2026-06-21-total-network-dash-v1-conn-method-col";
   var APP_DB = 737;
   var PAGE_SIZE = 100;
   var CHECKBOX_CONNECTED = "IPアドレス固定";
   var CHECKBOX_CONNECTED_LEGACY = "接続";
+  var LABEL_CONN_METHOD = "接続方式";
   var CHECKBOX_ACTIVE = "有効";
   var STATUS_IN_USE = "使用中";
 
@@ -53,7 +54,7 @@
   ];
 
   var SITE_TRACK_FIELDS = [
-    { key: "total_network_enabled", label: "IPアドレス固定", bool: true },
+    { key: "total_network_enabled", label: LABEL_CONN_METHOD, bool: true },
     { key: "network_address", label: "NWアドレス" },
     { key: "subnet_mask", label: "サブネットマスク" },
     { key: "gateway", label: "ゲートウェイ" },
@@ -424,7 +425,7 @@
     var rows = filteredSites();
     var thead =
       "<thead><tr>" +
-      "<th>並</th><th>拠点名</th><th>IPアドレス固定</th>" +
+      "<th>並</th><th>拠点名</th><th>" + LABEL_CONN_METHOD + "</th>" +
       "<th>NWアドレス</th><th>サブネットマスク</th><th>GW</th>" +
       "<th>優先DNS</th><th>代替DNS</th><th>IP数</th>" +
       "<th>範囲</th><th>住所</th><th>備考</th><th>操作</th>" +
@@ -508,7 +509,7 @@
 
   function openEditSiteModal(site) {
     var body =
-      '<label>IPアドレス固定<select id="tnd-f-conn">' +
+      '<label>' + LABEL_CONN_METHOD + '<select id="tnd-f-conn">' +
       '<option value="1"' +
       (site.total_network_enabled ? " selected" : "") +
       ">" +
@@ -1156,7 +1157,7 @@
     var connSites = sortedAll.filter(function (s) { return s.total_network_enabled; });
 
     var listHeader = [
-      "並", "拠点名", "IPアドレス固定", "NWアドレス", "サブネットマスク", "GW",
+      "並", "拠点名", LABEL_CONN_METHOD, "NWアドレス", "サブネットマスク", "GW",
       "優先DNS", "代替DNS", "IP数", "範囲開始", "範囲終了", "住所", "備考",
     ];
     var listData = [listHeader].concat(
@@ -1489,7 +1490,7 @@
       "</div>" +
       '<div class="tnd-tab-pane" data-pane="list">' +
       '<div class="tnd-filters">' +
-      '<button type="button" class="tnd-filter-btn kintoneplugin-button-normal" data-f="connected">IPアドレス固定拠点</button>' +
+      '<button type="button" class="tnd-filter-btn kintoneplugin-button-normal" data-f="connected">接続拠点</button>' +
       '<button type="button" class="tnd-filter-btn kintoneplugin-button-normal" data-f="all">全拠点</button>' +
       '<button type="button" class="tnd-filter-btn kintoneplugin-button-normal" data-f="disconnected">未接続拠点</button>' +
       '<input type="search" id="tnd-site-search" placeholder="拠点名で絞込" style="padding:5px 8px;min-width:200px">' +

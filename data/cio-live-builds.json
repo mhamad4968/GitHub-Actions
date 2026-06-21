@@ -322,11 +322,11 @@
       "note": null
     },
     "738": {
-      "build": "2026-06-21-total-network-dash-v1-labels",
-      "fileKey": "46d0d29b-f421-47b6-8c7e-8f37139c1769",
-      "revision": "6",
+      "build": "2026-06-21-total-network-dash-v1-conn-method-col",
+      "fileKey": "2736c1fe-4a7f-4a82-a206-18a73e84cead",
+      "revision": "7",
       "relPath": "customize/total-network-dash/desktop.js",
-      "deployedAt": "2026-06-21T10:54:59.032Z",
+      "deployedAt": "2026-06-21T10:56:24.306Z",
       "note": null
     }
   }
