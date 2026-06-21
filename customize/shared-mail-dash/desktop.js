@@ -1,8 +1,8 @@
 (function () {
   "use strict";
 
-  /** 共有メールアドレス管理台帳 — 695 REST CRUD */
-  var BUILD = "2026-06-06-696-shared-mail-dash-v1";
+  /** メールアドレス管理台帳 — 695 REST CRUD */
+  var BUILD = "2026-06-21-696-mail-address-ledger-title";
 
   var APP_DB = 695;
   var MAIL_DOMAIN = "@j-bis.co.jp";
@@ -844,7 +844,7 @@
     root.className = "smd-root";
     root.innerHTML =
       '<div class="smd-toolbar">' +
-      "<strong style=\"font-size:16px\">共有メールアドレス管理台帳</strong>" +
+      "<strong style=\"font-size:16px\">メールアドレス管理台帳</strong>" +
       '<button type="button" id="smd-reload" class="kintoneplugin-button-normal">再読込</button>' +
       '<button type="button" id="smd-print" class="kintoneplugin-button-normal">印刷</button>' +
       "</div>" +

@@ -7,7 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 export const DB_APP_NAME = '共有メールアドレス管理用DB';
-export const DASH_APP_NAME = '共有メールアドレス管理台帳';
+export const DASH_APP_NAME = 'メールアドレス管理台帳';
 export const SPACE_ID = Number(process.env.SHARED_MAIL_SPACE_ID || 21);
 export const THREAD_ID = Number(process.env.SHARED_MAIL_THREAD_ID || 23);
 export const DEFAULT_XLSX =

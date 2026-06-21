@@ -122,11 +122,11 @@
       "note": null
     },
     "696": {
-      "build": "2026-06-06-696-shared-mail-dash-v1",
-      "fileKey": "74c75fb1-6be2-45e3-a330-74c4a7dfa070",
-      "revision": "4",
+      "build": "2026-06-21-696-mail-address-ledger-title",
+      "fileKey": "9eeed7c9-8952-4447-aa92-2984451db3a1",
+      "revision": "10",
       "relPath": "customize/shared-mail-dash/desktop.js",
-      "deployedAt": "2026-06-06T06:36:53.029Z",
+      "deployedAt": "2026-06-21T11:13:14.737Z",
       "note": null
     },
     "699": {
