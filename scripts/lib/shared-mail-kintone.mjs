@@ -14,6 +14,7 @@ export const DEFAULT_XLSX =
   process.env.SHARED_MAIL_XLSX || 'C:\\tmp\\共有メールアドレス\\共有メールアドレス.xlsx';
 export const STATUS_ACTIVE = '利用中';
 export const USAGE_TYPE_DEFAULT = '共有メールアドレス';
+export const USAGE_TYPES = ['共有メールアドレス', '個人メールアドレス'];
 export const MAIL_DOMAIN = '@j-bis.co.jp';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

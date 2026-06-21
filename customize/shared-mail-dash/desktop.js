@@ -2,13 +2,29 @@
   "use strict";
 
   /** メールアドレス管理台帳 — 695 REST CRUD */
-  var BUILD = "2026-06-21-696-mail-address-ledger-title";
+  var BUILD = "2026-06-21-696-search-panel";
 
   var APP_DB = 695;
   var MAIL_DOMAIN = "@j-bis.co.jp";
   var STATUS_ACTIVE = "利用中";
   var STATUS_RETIRED = "廃止";
   var USAGE_DEFAULT = "共有メールアドレス";
+  var USAGE_TYPES = ["共有メールアドレス", "個人メールアドレス"];
+  var DEPT_DATALIST_ID = "smd-dept-list";
+  var SEARCH_DL_ID = "smd-search-datalist";
+  var SEARCH_URL_KW = "smd696kw";
+  var SEARCH_URL_DEPT = "smd696dept";
+  var SEARCH_URL_ST = "smd696st";
+  var SEARCH_URL_UT = "smd696ut";
+  var SEARCH_HINT_FIELDS = [
+    "legacy_no",
+    "mail_address",
+    "mail_account",
+    "department",
+    "mailbox_display_name",
+    "usage_type",
+    "note",
+  ];
   var PAGE_SIZE = 100;
 
   var CONN = {
@@ -50,7 +66,7 @@
     { key: "legacy_no", label: "No." },
     { key: "status", label: "状態" },
     { key: "department", label: "利用部署" },
-    { key: "mailbox_display_name", label: "共有名" },
+    { key: "mailbox_display_name", label: "表示名" },
     { key: "mail_address", label: "メール" },
     { key: "mail_account", label: "アカウント" },
     { key: "password", label: "PW" },
@@ -59,13 +75,355 @@
 
   var state = {
     records: [],
-    filter: "active",
     search: "",
+    departmentFilter: "",
+    statusFilter: { active: true, retired: false },
+    usageFilter: { shared: false, personal: false },
     loading: false,
     selected: {},
     sortKey: null,
     sortDir: "desc",
   };
+
+  function displayNameLabel(usageType) {
+    return usageType === "個人メールアドレス" ? "表示名" : "共有メールアドレス名";
+  }
+
+  function printHeroTitle(usageType) {
+    return usageType === "個人メールアドレス"
+      ? "メールアドレス設定情報"
+      : "共有メールアドレス設定情報";
+  }
+
+  function usageSelectHtml(selectId, selected) {
+    var html = '<label>利用種別<select id="' + selectId + '">';
+    USAGE_TYPES.forEach(function (u) {
+      html +=
+        '<option value="' +
+        esc(u) +
+        '"' +
+        (selected === u ? " selected" : "") +
+        ">" +
+        esc(u) +
+        "</option>";
+    });
+    return html + "</select></label>";
+  }
+
+  function nameFieldHtml(prefix, value, usageType) {
+    return (
+      '<label id="' +
+      prefix +
+      '-name-wrap"><span class="smd-name-lbl">' +
+      esc(displayNameLabel(usageType || USAGE_DEFAULT)) +
+      '</span><input id="' +
+      prefix +
+      "-name\" value=\"" +
+      esc(value || "") +
+      '" required></label>'
+    );
+  }
+
+  function wireDisplayNameLabel(box, usageSelectId, nameWrapId) {
+    var usageEl = box.querySelector("#" + usageSelectId);
+    var wrap = box.querySelector("#" + nameWrapId);
+    if (!usageEl || !wrap) return;
+    var lbl = wrap.querySelector(".smd-name-lbl");
+    if (!lbl) return;
+    function sync() {
+      lbl.textContent = displayNameLabel(usageEl.value);
+    }
+    usageEl.addEventListener("change", sync);
+    sync();
+  }
+
+  function collectDepartmentOptions(extraValue) {
+    var seen = {};
+    var out = [];
+    state.records.forEach(function (r) {
+      if (r.status !== STATUS_ACTIVE) return;
+      var d = String(r.department || "").trim();
+      if (!d || seen[d]) return;
+      seen[d] = true;
+      out.push(d);
+    });
+    var extra = String(extraValue == null ? "" : extraValue).trim();
+    if (extra && !seen[extra]) out.push(extra);
+    out.sort(function (a, b) {
+      return a.localeCompare(b, "ja");
+    });
+    return out;
+  }
+
+  function departmentDatalistHtml(items) {
+    return (
+      '<datalist id="' +
+      DEPT_DATALIST_ID +
+      '">' +
+      (items || [])
+        .map(function (d) {
+          return '<option value="' + esc(d) + '"></option>';
+        })
+        .join("") +
+      "</datalist>"
+    );
+  }
+
+  function departmentFieldHtml(inputId, value, required) {
+    return (
+      '<label>利用部署<input id="' +
+      inputId +
+      '" list="' +
+      DEPT_DATALIST_ID +
+      '" value="' +
+      esc(value || "") +
+      '" autocomplete="off"' +
+      (required ? " required" : "") +
+      "></label>"
+    );
+  }
+
+  function normalizeSearchText(s) {
+    try {
+      return String(s == null ? "" : s).normalize("NFKC");
+    } catch (e) {
+      return String(s == null ? "" : s);
+    }
+  }
+
+  function searchTokens(q) {
+    return normalizeSearchText(q)
+      .toLowerCase()
+      .split(/\s+/)
+      .filter(function (t) {
+        return !!t;
+      });
+  }
+
+  function recordHaystack(row) {
+    return normalizeSearchText(
+      SEARCH_HINT_FIELDS.map(function (k) {
+        return row[k];
+      }).join(" "),
+    ).toLowerCase();
+  }
+
+  function recordMatchesTokens(row, tokens) {
+    if (!tokens.length) return true;
+    var hay = recordHaystack(row);
+    for (var i = 0; i < tokens.length; i++) {
+      if (hay.indexOf(tokens[i]) < 0) return false;
+    }
+    return true;
+  }
+
+  function matchesStatusFilter(row) {
+    var a = state.statusFilter.active;
+    var r = state.statusFilter.retired;
+    if (!a && !r) return true;
+    if (a && r) return true;
+    if (a) return row.status === STATUS_ACTIVE;
+    if (r) return row.status === STATUS_RETIRED;
+    return true;
+  }
+
+  function matchesUsageFilter(row) {
+    var s = state.usageFilter.shared;
+    var p = state.usageFilter.personal;
+    if (!s && !p) return true;
+    var ut = row.usage_type || USAGE_DEFAULT;
+    if (s && ut === "共有メールアドレス") return true;
+    if (p && ut === "個人メールアドレス") return true;
+    return false;
+  }
+
+  function matchesDepartmentFilter(row) {
+    if (!state.departmentFilter) return true;
+    return String(row.department || "").trim() === state.departmentFilter;
+  }
+
+  function collectAllDepartmentOptions() {
+    var seen = {};
+    var out = [];
+    state.records.forEach(function (r) {
+      var d = String(r.department || "").trim();
+      if (!d || seen[d]) return;
+      seen[d] = true;
+      out.push(d);
+    });
+    out.sort(function (a, b) {
+      return a.localeCompare(b, "ja");
+    });
+    return out;
+  }
+
+  function updateSearchDatalist(prefix) {
+    var dl = document.getElementById(SEARCH_DL_ID);
+    if (!dl) return;
+    var p = normalizeSearchText(prefix).trim().toLowerCase();
+    dl.innerHTML = "";
+    if (!p) return;
+    var seen = {};
+    var out = [];
+    state.records.forEach(function (row) {
+      SEARCH_HINT_FIELDS.forEach(function (k) {
+        var v = String(row[k] == null ? "" : row[k]).trim();
+        if (!v) return;
+        if (v.toLowerCase().indexOf(p) < 0) return;
+        if (seen[v]) return;
+        seen[v] = true;
+        out.push(v);
+      });
+    });
+    out.sort(function (a, b) {
+      return a.length - b.length || a.localeCompare(b, "ja");
+    });
+    out.slice(0, 80).forEach(function (v) {
+      dl.innerHTML += '<option value="' + esc(v) + '"></option>';
+    });
+  }
+
+  function encodeStatusFilterBits() {
+    var n = 0;
+    if (state.statusFilter.active) n |= 1;
+    if (state.statusFilter.retired) n |= 2;
+    return String(n);
+  }
+
+  function decodeStatusFilterBits(raw) {
+    var n = parseInt(String(raw || "1"), 10);
+    if (isNaN(n)) n = 1;
+    return { active: (n & 1) !== 0, retired: (n & 2) !== 0 };
+  }
+
+  function encodeUsageFilterBits() {
+    var n = 0;
+    if (state.usageFilter.shared) n |= 1;
+    if (state.usageFilter.personal) n |= 2;
+    return String(n);
+  }
+
+  function decodeUsageFilterBits(raw) {
+    var n = parseInt(String(raw || "0"), 10);
+    if (isNaN(n)) n = 0;
+    return { shared: (n & 1) !== 0, personal: (n & 2) !== 0 };
+  }
+
+  function syncChipUi() {
+    document.querySelectorAll(".smd-chip-status").forEach(function (btn) {
+      var st = btn.getAttribute("data-status");
+      var on =
+        (st === STATUS_ACTIVE && state.statusFilter.active) ||
+        (st === STATUS_RETIRED && state.statusFilter.retired);
+      btn.classList.toggle("on", on);
+    });
+    document.querySelectorAll(".smd-chip-usage").forEach(function (btn) {
+      var ut = btn.getAttribute("data-usage");
+      var on =
+        (ut === "共有メールアドレス" && state.usageFilter.shared) ||
+        (ut === "個人メールアドレス" && state.usageFilter.personal);
+      btn.classList.toggle("on", on);
+    });
+    var deptSel = document.getElementById("smd-dept-filter");
+    if (deptSel) deptSel.value = state.departmentFilter || "";
+    var search = document.getElementById("smd-search");
+    if (search && search.value !== state.search) search.value = state.search;
+  }
+
+  function syncSearchUrl() {
+    try {
+      var u = new URL(location.href);
+      var kw = state.search.trim();
+      if (kw) u.searchParams.set(SEARCH_URL_KW, kw.slice(0, 200));
+      else u.searchParams.delete(SEARCH_URL_KW);
+      if (state.departmentFilter) u.searchParams.set(SEARCH_URL_DEPT, state.departmentFilter);
+      else u.searchParams.delete(SEARCH_URL_DEPT);
+      u.searchParams.set(SEARCH_URL_ST, encodeStatusFilterBits());
+      u.searchParams.set(SEARCH_URL_UT, encodeUsageFilterBits());
+      history.replaceState(null, "", u.toString());
+    } catch (e) {
+      /* noop */
+    }
+  }
+
+  function restoreSearchFromUrl() {
+    try {
+      var u = new URL(location.href);
+      state.search = String(u.searchParams.get(SEARCH_URL_KW) || "");
+      state.departmentFilter = String(u.searchParams.get(SEARCH_URL_DEPT) || "").trim();
+      state.statusFilter = decodeStatusFilterBits(u.searchParams.get(SEARCH_URL_ST));
+      state.usageFilter = decodeUsageFilterBits(u.searchParams.get(SEARCH_URL_UT));
+    } catch (e2) {
+      /* noop */
+    }
+    syncChipUi();
+  }
+
+  function refreshDeptFilterOptions() {
+    var sel = document.getElementById("smd-dept-filter");
+    if (!sel) return;
+    var cur = state.departmentFilter || "";
+    var opts = collectAllDepartmentOptions();
+    if (cur && opts.indexOf(cur) < 0) opts.push(cur);
+    opts.sort(function (a, b) {
+      return a.localeCompare(b, "ja");
+    });
+    sel.innerHTML =
+      '<option value="">すべての部署</option>' +
+      opts
+        .map(function (d) {
+          return (
+            '<option value="' +
+            esc(d) +
+            '"' +
+            (d === cur ? " selected" : "") +
+            ">" +
+            esc(d) +
+            "</option>"
+          );
+        })
+        .join("");
+  }
+
+  function updateSearchSummary() {
+    var el = document.getElementById("smd-search-summary");
+    if (!el) return;
+    var shown = filteredRecords().length;
+    var total = state.records.length;
+    var active = state.records.filter(function (r) {
+      return r.status === STATUS_ACTIVE;
+    }).length;
+    var bits = [];
+    bits.push("表示 " + shown + " 件 / 全 " + total + " 件（利用中 " + active + "）");
+    if (state.search.trim()) bits.push('キーワード「' + state.search.trim() + "」");
+    if (state.departmentFilter) bits.push("部署: " + state.departmentFilter);
+    if (state.usageFilter.shared || state.usageFilter.personal) {
+      var ut = [];
+      if (state.usageFilter.shared) ut.push("共有");
+      if (state.usageFilter.personal) ut.push("個人");
+      bits.push("種別: " + ut.join("・"));
+    }
+    el.textContent = bits.join(" · ");
+  }
+
+  function applySearchAndRender() {
+    syncSearchUrl();
+    renderTable();
+  }
+
+  function clearSearchFilters() {
+    state.search = "";
+    state.departmentFilter = "";
+    state.statusFilter = { active: true, retired: false };
+    state.usageFilter = { shared: false, personal: false };
+    state.selected = {};
+    syncChipUi();
+    var search = document.getElementById("smd-search");
+    if (search) search.value = "";
+    var dl = document.getElementById(SEARCH_DL_ID);
+    if (dl) dl.innerHTML = "";
+    applySearchAndRender();
+  }
 
   function esc(s) {
     return String(s == null ? "" : s)
@@ -234,6 +592,16 @@
       ".gaia-argoui-app-index-recordlist,.recordlist-gaia,.recordlist-norecord-gaia,.contents-gaia .recordlist-header-gaia,.gaia-argoui-app-index-pager{display:none!important;}" +
       ".smd-root{font-family:Segoe UI,Meiryo,sans-serif;padding:8px 12px 24px;max-width:100%;}" +
       ".smd-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;}" +
+      ".smd-search-panel{margin-bottom:12px;padding:10px 12px;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:8px;}" +
+      ".smd-search-title{font-size:12px;font-weight:700;color:#0f172a;margin-bottom:8px;}" +
+      ".smd-search-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px;}" +
+      ".smd-search-row input[type=search]{min-width:220px;flex:1;max-width:420px;padding:6px 10px;border:1px solid #94a3b8;border-radius:6px;}" +
+      ".smd-search-row select{padding:6px 8px;border:1px solid #94a3b8;border-radius:6px;background:#fff;font-size:12px;max-width:220px;}" +
+      ".smd-search-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px;}" +
+      ".smd-chip-label{font-size:11px;font-weight:700;color:#64748b;margin-right:2px;}" +
+      ".smd-chip{padding:4px 10px;border-radius:999px;border:1px solid #94a3b8;background:#fff;font-size:12px;cursor:pointer;}" +
+      ".smd-chip.on{background:#0d9488;color:#fff;border-color:#0d9488;font-weight:700;}" +
+      ".smd-search-summary{font-size:12px;color:#334155;}" +
       ".smd-conn{margin-bottom:12px;padding:14px 18px;background:linear-gradient(135deg,#eff6ff 0%,#dbeafe 100%);border:2px solid #2563eb;border-radius:10px;}" +
       ".smd-conn h4{margin:0 0 8px;font-size:14px;color:#1e40af;}" +
       ".smd-conn-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px 16px;font-size:12px;}" +
@@ -277,21 +645,12 @@
   }
 
   function filteredRecords() {
-    var q = state.search.trim().toLowerCase();
+    var tokens = searchTokens(state.search);
     var rows = state.records.filter(function (r) {
-      if (state.filter === "active" && r.status !== STATUS_ACTIVE) return false;
-      if (state.filter === "retired" && r.status !== STATUS_RETIRED) return false;
-      if (!q) return true;
-      var hay = (
-        r.mail_address +
-        " " +
-        r.mail_account +
-        " " +
-        r.department +
-        " " +
-        r.mailbox_display_name
-      ).toLowerCase();
-      return hay.indexOf(q) >= 0;
+      if (!matchesStatusFilter(r)) return false;
+      if (!matchesUsageFilter(r)) return false;
+      if (!matchesDepartmentFilter(r)) return false;
+      return recordMatchesTokens(r, tokens);
     });
     rows.sort(function (a, b) {
       if (state.sortKey) {
@@ -369,6 +728,7 @@
       .then(function (rows) {
         state.records = rows.map(flatten);
         state.loading = false;
+        refreshDeptFilterOptions();
         renderTable();
         updateMeta();
       })
@@ -398,11 +758,12 @@
 
   function openNewModal() {
     var pw = buildNewPassword();
+    var deptOptions = collectDepartmentOptions();
     var box = openModal(
       "新規登録",
-      '<label>利用種別<select id="smd-new-usage"><option value="共有メールアドレス">共有メールアドレス</option></select></label>' +
-        '<label>利用部署<input id="smd-new-dept" required></label>' +
-        '<label>共有メールアドレス名<input id="smd-new-name" required></label>' +
+      usageSelectHtml("smd-new-usage", USAGE_DEFAULT) +
+        departmentFieldHtml("smd-new-dept", "", true) +
+        nameFieldHtml("smd-new", "", USAGE_DEFAULT) +
         '<label>メールアドレス<input id="smd-new-mail" placeholder="name' +
         esc(MAIL_DOMAIN) +
         '" autocomplete="off"></label>' +
@@ -412,7 +773,8 @@
         esc(pw) +
         '" autocomplete="off"></label>' +
         '<button type="button" id="smd-regen-pw" class="kintoneplugin-button-normal" style="margin-top:4px">PW再生成</button>' +
-        '<label>メモ<textarea id="smd-new-note" rows="2"></textarea></label>',
+        '<label>メモ<textarea id="smd-new-note" rows="2"></textarea></label>' +
+        departmentDatalistHtml(deptOptions),
       [
         { label: "キャンセル" },
         {
@@ -430,7 +792,7 @@
               return;
             }
             if (!dept || !name) {
-              alert("利用部署と共有メールアドレス名は必須です");
+              alert("利用部署と表示名は必須です");
               return;
             }
             var pwVal = (document.getElementById("smd-new-pw") || {}).value.trim() || buildNewPassword();
@@ -464,6 +826,7 @@
         },
       ],
     );
+    wireDisplayNameLabel(box, "smd-new-usage", "smd-new-name-wrap");
     var mailInput = box.querySelector("#smd-new-mail");
     var mailWarn = box.querySelector("#smd-new-mail-warn");
     if (mailInput && mailWarn) {
@@ -484,15 +847,13 @@
   }
 
   function openEditModal(row) {
+    var usage = row.usage_type || USAGE_DEFAULT;
+    var deptOptions = collectDepartmentOptions(row.department);
     var box = openModal(
       "編集 — No." + row.legacy_no,
-      '<label>利用種別<select id="smd-edit-usage"><option value="共有メールアドレス">共有メールアドレス</option></select></label>' +
-        '<label>利用部署<input id="smd-edit-dept" value="' +
-        esc(row.department) +
-        '"></label>' +
-        '<label>共有メールアドレス名<input id="smd-edit-name" value="' +
-        esc(row.mailbox_display_name) +
-        '"></label>' +
+      usageSelectHtml("smd-edit-usage", usage) +
+        departmentFieldHtml("smd-edit-dept", row.department, false) +
+        nameFieldHtml("smd-edit", row.mailbox_display_name, usage) +
         '<label>メールアドレス<input id="smd-edit-mail" value="' +
         esc(row.mail_address) +
         '" autocomplete="off"></label>' +
@@ -505,7 +866,8 @@
         '" autocomplete="off"></label>' +
         '<label>メモ<textarea id="smd-edit-note" rows="2">' +
         esc(row.note) +
-        "</textarea></label>",
+        "</textarea></label>" +
+        departmentDatalistHtml(deptOptions),
       [
         { label: "キャンセル" },
         {
@@ -576,8 +938,7 @@
         },
       ],
     );
-    var usage = box.querySelector("#smd-edit-usage");
-    if (usage) usage.value = row.usage_type || USAGE_DEFAULT;
+    wireDisplayNameLabel(box, "smd-edit-usage", "smd-edit-name-wrap");
     var mailInput = box.querySelector("#smd-edit-mail");
     var acctInput = box.querySelector("#smd-edit-acct");
     var mailWarn = box.querySelector("#smd-edit-mail-warn");
@@ -674,7 +1035,9 @@
   function buildPrintPageHtml(row) {
     return (
       '<div class="smdpr-page">' +
-      '<div class="smdpr-hero"><h1>共有メールアドレス設定情報</h1>' +
+      '<div class="smdpr-hero"><h1>' +
+      esc(printHeroTitle(row.usage_type)) +
+      "</h1>" +
       "<p>No." +
       esc(row.legacy_no) +
       " · " +
@@ -691,7 +1054,9 @@
       esc(CONN.popPort) +
       "</div>" +
       '<div class="smdpr-grid">' +
-      '<div class="smdpr-cell"><div class="smdpr-lab">共有メールアドレス名</div><div class="smdpr-val">' +
+      '<div class="smdpr-cell"><div class="smdpr-lab">' +
+      esc(displayNameLabel(row.usage_type)) +
+      '</div><div class="smdpr-val">' +
       esc(row.mailbox_display_name) +
       "</div></div>" +
       '<div class="smdpr-cell"><div class="smdpr-lab">利用種別</div><div class="smdpr-val">' +
@@ -752,7 +1117,8 @@
     }
     var rows = filteredRecords();
     if (!rows.length) {
-      tbody.innerHTML = '<tr><td colspan="11">該当なし</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="11">該当なし（条件を変えるか「条件クリア」）</td></tr>';
+      updateSearchSummary();
       return;
     }
     tbody.innerHTML = rows
@@ -833,6 +1199,48 @@
         openDeleteModal(row);
       });
     });
+    updateSearchSummary();
+  }
+
+  function wireSearchPanel() {
+    var search = document.getElementById("smd-search");
+    if (search) {
+      search.addEventListener("input", function () {
+        state.search = search.value;
+        updateSearchDatalist(state.search);
+        applySearchAndRender();
+      });
+    }
+    var deptSel = document.getElementById("smd-dept-filter");
+    if (deptSel) {
+      deptSel.addEventListener("change", function () {
+        state.departmentFilter = deptSel.value || "";
+        applySearchAndRender();
+      });
+    }
+    document.querySelectorAll(".smd-chip-status").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var st = btn.getAttribute("data-status");
+        if (st === STATUS_ACTIVE) state.statusFilter.active = !state.statusFilter.active;
+        if (st === STATUS_RETIRED) state.statusFilter.retired = !state.statusFilter.retired;
+        syncChipUi();
+        applySearchAndRender();
+      });
+    });
+    document.querySelectorAll(".smd-chip-usage").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var ut = btn.getAttribute("data-usage");
+        if (ut === "共有メールアドレス") state.usageFilter.shared = !state.usageFilter.shared;
+        if (ut === "個人メールアドレス") state.usageFilter.personal = !state.usageFilter.personal;
+        syncChipUi();
+        applySearchAndRender();
+      });
+    });
+    var clearBtn = document.getElementById("smd-clear");
+    if (clearBtn) clearBtn.addEventListener("click", clearSearchFilters);
+    restoreSearchFromUrl();
+    refreshDeptFilterOptions();
+    updateSearchSummary();
   }
 
   function buildShell() {
@@ -849,12 +1257,31 @@
       '<button type="button" id="smd-print" class="kintoneplugin-button-normal">印刷</button>' +
       "</div>" +
       connectionPanelHtml() +
-      '<div class="smd-toolbar">' +
-      '<label><input type="radio" name="smd-filter" value="active" checked> 利用中</label>' +
-      '<label><input type="radio" name="smd-filter" value="all"> すべて</label>' +
-      '<label><input type="radio" name="smd-filter" value="retired"> 廃止</label>' +
-      '<input type="search" id="smd-search" placeholder="メール・部署・共有名・アカウント" style="min-width:240px;padding:6px;margin-left:8px">' +
-      '<button type="button" id="smd-clear" class="kintoneplugin-button-normal">クリア</button>' +
+      '<div class="smd-search-panel" id="smd-search-panel">' +
+      '<div class="smd-search-title">キーワード・種別・状態・部署で絞り込み</div>' +
+      '<div class="smd-search-row">' +
+      '<input type="search" id="smd-search" list="' +
+      SEARCH_DL_ID +
+      '" placeholder="メール・部署・表示名・アカウント・No.・メモ（空白区切りでAND）" autocomplete="off">' +
+      '<datalist id="' +
+      SEARCH_DL_ID +
+      '"></datalist>' +
+      '<select id="smd-dept-filter" aria-label="利用部署で絞り込み"><option value="">すべての部署</option></select>' +
+      '<button type="button" id="smd-clear" class="kintoneplugin-button-normal">条件クリア</button>' +
+      "</div>" +
+      '<div class="smd-search-chips">' +
+      '<span class="smd-chip-label">状態</span>' +
+      '<button type="button" class="smd-chip smd-chip-status on" data-status="' +
+      esc(STATUS_ACTIVE) +
+      '">利用中</button>' +
+      '<button type="button" class="smd-chip smd-chip-status" data-status="' +
+      esc(STATUS_RETIRED) +
+      '">廃止</button>' +
+      '<span class="smd-chip-label" style="margin-left:8px">種別</span>' +
+      '<button type="button" class="smd-chip smd-chip-usage" data-usage="共有メールアドレス">共有</button>' +
+      '<button type="button" class="smd-chip smd-chip-usage" data-usage="個人メールアドレス">個人</button>' +
+      "</div>" +
+      '<div id="smd-search-summary" class="smd-search-summary"></div>' +
       "</div>" +
       '<div id="smd-meta" class="smd-meta"></div>' +
       '<div class="smd-table-wrap"><table class="smd-table"><thead><tr>' +
@@ -874,28 +1301,7 @@
 
     document.getElementById("smd-reload").addEventListener("click", reloadRecords);
     document.getElementById("smd-print").addEventListener("click", printSelected);
-    document.querySelectorAll('input[name="smd-filter"]').forEach(function (rb) {
-      rb.addEventListener("change", function () {
-        if (rb.checked) {
-          state.filter = rb.value;
-          renderTable();
-        }
-      });
-    });
-    var search = document.getElementById("smd-search");
-    search.addEventListener("input", function () {
-      state.search = search.value;
-      renderTable();
-    });
-    document.getElementById("smd-clear").addEventListener("click", function () {
-      state.search = "";
-      state.filter = "active";
-      state.selected = {};
-      search.value = "";
-      var ar = document.querySelector('input[name="smd-filter"][value="active"]');
-      if (ar) ar.checked = true;
-      renderTable();
-    });
+    wireSearchPanel();
 
     root.querySelector(".smd-table thead").addEventListener("click", function (ev) {
       var th = ev.target.closest("th.smd-sort");

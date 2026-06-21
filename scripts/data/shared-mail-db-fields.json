@@ -21,7 +21,8 @@
       "noLabel": false,
       "defaultValue": "共有メールアドレス",
       "options": {
-        "共有メールアドレス": { "label": "共有メールアドレス", "index": "0" }
+        "共有メールアドレス": { "label": "共有メールアドレス", "index": "0" },
+        "個人メールアドレス": { "label": "個人メールアドレス", "index": "1" }
       }
     },
     "department": {

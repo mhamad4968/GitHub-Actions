@@ -224,6 +224,7 @@
     "shared-mail:create-dash": "npx dotenv -e .env -e .env.proxy -- node scripts/shared-mail-create-dash-app.mjs",
     "shared-mail:migrate:xlsx": "npx dotenv -e .env -e .env.proxy -- node scripts/shared-mail-migrate-xlsx.mjs",
     "shared-mail:rename-dash": "npx dotenv -e .env -e .env.proxy -- node scripts/shared-mail-rename-dash-app.mjs",
+    "shared-mail:add-usage-type": "npx dotenv -e .env -e .env.proxy -- node scripts/shared-mail-add-usage-type-option.mjs",
     "nonconformance:create-db": "npx dotenv -e .env -e .env.proxy -- node scripts/nonconformance-create-db-app.mjs",
     "nonconformance:create-dash": "npx dotenv -e .env -e .env.proxy -- node scripts/nonconformance-create-dash-app.mjs",
     "external-it-checksheet:create-db": "npx dotenv -e .env -e .env.proxy -- node scripts/external-it-checksheet-create-db-app.mjs",
