@@ -1,7 +1,7 @@
 # 複合機管理台帳 — kintone 仕様書（SPEC）
 
 > **起票**: 2026-06-22 (日)  
-> **状態**: **SPEC 確定 — 実装 GO 待ち**（浜田確認後）  
+> **状態**: **v1 完成 — CLOSED**（浜田目視 OK **2026-06-22**）  
 > **配置**: [Space 48](https://jbis-kintone.cybozu.com/k/#/space/48) / thread **52**  
 > **UI 参照**: [社内Wi-Fi管理台帳 719](https://jbis-kintone.cybozu.com/k/719/) 型（一覧表 + REST で DB 書込）・権限は [VPNアカウント台帳 734](https://jbis-kintone.cybozu.com/k/734/) 型（Space 48 メンバー全員編集）  
 > **機械分析（秘匿マスク）**: `docs/plans/tmp-mfp-xlsx-structure.json`  
@@ -14,7 +14,7 @@
 1. **浜田 Q&A（Q1–Q22）で項目・運用を確定**（**完了**）。
 2. **AI チームでレビュー・意見交換**（**済 — §15**）。
 3. 本書を正本として浜田 **確認** → **実装 GO** 指示（`.cursor/rules/creation-timing-ask.mdc`）。
-4. AI 実行: 拠点マスタ更新 → kintone アプリ作成 → フィールド deploy → Excel **一括移行（36 件）** → ダッシュ customize → 印刷・xlsx 出力 → 浜田 **目視 OK** → **kintone のみ正本運用**（Excel 削除は §9.4）。
+4. AI 実行: 拠点マスタ更新 → kintone アプリ作成 → フィールド deploy → Excel **一括移行（36 件）** → ダッシュ customize → 印刷・xlsx 出力 → 浜田 **目視 OK** → **kintone のみ正本運用**（Excel 削除は §9.4）。**→ 完了（2026-06-22）**
 
 **技術方針**（Wi-Fi 718/719・VPN 733/734 と同型）:
 
@@ -92,7 +92,7 @@ Space 48 / thread 52
 | データ | 718 / 733 | **複合機管理台帳DB** |
 | ダッシュ | 719 / 734 | **複合機管理台帳** |
 
-**App ID**: 実装時採番 → `scripts/data/mfp-ledger-app-ids.json` / `kintone-apps.md` に記録。
+**App ID**: **741**（DB）/ **742**（台帳） — `scripts/data/mfp-ledger-app-ids.json` / `kintone-apps.md` に記録済。
 
 ---
 
@@ -245,7 +245,8 @@ npm run mfp-ledger:migrate:xlsx -- --apply
 
 ### 9.4 Excel 廃止（Q14）
 
-- 浜田 **目視 OK** 後、共有パスの Excel 表を **削除**（Wi-Fi 型）。個人控えは任意。
+- 浜田 **目視 OK**（**2026-06-22**）— 742 台帳で一覧・CRUD・検索・一覧印刷・拠点指定印刷・xlsx を確認。
+- 共有パス `C:\tmp\複合機管理台帳\` の Excel 表は **Q14 通り削除可**（kintone **741/742 が正本**）。個人控えは任意。
 
 ---
 
@@ -289,7 +290,7 @@ npm run mfp-ledger:migrate:xlsx -- --apply
 | M4 | DB + 台帳作成・フィールド deploy | **済**（741/742） |
 | M5 | Excel 一括移行（36 件） | **済** |
 | M6 | 台帳 customize deploy | **済**（741 rev5・742 rev4） |
-| M7 | 浜田目視 OK → Excel 削除 | **待ち** |
+| M7 | 浜田目視 OK → Excel 削除 | **済**（目視 OK **2026-06-22**） |
 | M8 | `kintone-apps.md` 更新 | **済** |
 
 ---
@@ -331,8 +332,30 @@ npm run mfp-ledger:migrate:xlsx -- --apply
 
 ---
 
+## §16. v1 完成サマリー（2026-06-22 確定）
+
+**判定**: Space 48 本番で **一覧・モーダル CRUD・検索・一覧印刷・拠点指定印刷・xlsx 出力** まで浜田目視 OK。**v1 完成 — CLOSED**。
+
+| ID | 名称 | BUILD / rev |
+|----|------|-------------|
+| **741** | 複合機管理台帳DB | `2026-06-22-mfp-ledger-db-block-ui` **rev 5** |
+| **742** | 複合機管理台帳 | `2026-06-22-mfp-ledger-dash-v1` **rev 4** |
+
+**URL**: [741](https://jbis-kintone.cybozu.com/k/741/) / [742](https://jbis-kintone.cybozu.com/k/742/) — Space 48 / thread 52
+
+| 項目 | 内容 |
+|------|------|
+| レコード数 | **36 台**（Excel 移行済） |
+| 拠点マスタ | 680 に「子会社（株）ブリッジニアプラス」追加済 |
+| 並び | R68 拠点順・ブリッジニアプラス 3 台は最下部 |
+| 権限 | Space 48 メンバー全員 CRUD（734 型） |
+| 完成報告 | `docs/reports/2026-06-22-mfp-ledger-completion.md` |
+
+---
+
 ## 改定履歴
 
 | 日付 | 内容 |
 |------|------|
+| 2026-06-22 | **v1 完成** — 741/742 deploy・36 件移行・浜田目視 OK・M0–M8 完遂 |
 | 2026-06-22 | 初版（浜田 Q&A Q1–Q22・AI レビュー §15・R68 拠点順・36 台移行） |
