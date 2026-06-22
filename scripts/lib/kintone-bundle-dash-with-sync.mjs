@@ -1,5 +1,8 @@
 /**
  * sync → bundle → lint チェーン（R43 テンプレ — VPN 型）
+ *
+ * S-741-04: SheetJS / vendor を bundle する dash は eslint.config.js ignores に
+ * `customize/<slug>-dash/desktop.js` を必ず追加（lint は desktop.src.js のみ）
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';

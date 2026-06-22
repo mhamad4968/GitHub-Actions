@@ -58,6 +58,7 @@
 | [21-autonomous-patrol-kernel.md](21-autonomous-patrol-kernel.md) | **無人パトロール**（週末・自己修復） | 土日監査・週明け |
 | [22-error-handling-kernel.md](22-error-handling-kernel.md) | **エラーハンドリング**（エスカレーション・3択） | verify 失敗・チケット |
 | [23-project-closure-recognition-kernel.md](23-project-closure-recognition-kernel.md) | **完了・認識同期**（浜田↔AI 事故防止） | 締め・ブリーフィング前 |
+| [24-db-dash-scaffold-kernel.md](24-db-dash-scaffold-kernel.md) | **DB+Dash 新規台帳**（10 項チェック） | 718/734 型 新規作成 |
 
 **機械検証**: `npm run verify:constitution-genre-kernels`
 

@@ -15,7 +15,26 @@
 
 ---
 
+## [2026-06-22] kintone records.json POST — CB_VA01（R741 / D-741-01）
+
+**前提**: `POST /k/v1/records.json` で 1 件追加するとき  
+**手順**: body は `{ app, records: [{ field: { value } }] }` — **`record` 単体は NG**  
+**禁止**: seed / add-master で `record: { ... }` パターン（680 マスタ F1）  
+**exit**: `npm run verify:kintone-records-post-shape` OK
+
+---
+
 <!-- CIO-DEBUG-TIPS:AUTO -->
+## [2026-06-22] セッション解体時知恵ストック
+
+**前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
+**手順**: `npm run session:bootstrap` → `npm run cio:tool:route -- --intent "<要約>"`` → `npm run cio:session:cold-start`
+**禁止**: customize/deploy 凍結中の無断 save・上位憲法 §50-3-11 非置換違反・本体単独完結
+**exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
+
+<!-- errors: npm run session:bootstrap`**。新規 kintone は **24-db-dash-scaffold-kernel** + `db-d | npm run cio:tool:route -- --intent "<要約>"` | npm run cio:session:cold-start` -->
+
+
 ## [2026-06-21] セッション解体時知恵ストック
 
 **前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出

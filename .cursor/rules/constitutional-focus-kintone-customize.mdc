@@ -14,6 +14,7 @@ alwaysApply: false
 - **`kintone-apps.md`** — 触るアプリ ID の単一の真（§2）。
 - **R21（2026-06-18 GO）** — `deploy:*` 成功後は `verify:cio-deploy-ledger-gate` + `sync:kintone-apps-build`。`.cursor/rules/cio-deploy-ledger-gate.mdc`
 - **R23（2026-06-18 GO）** — Excel UI（688/736 型）は **`desktop.ui.js` + build** のみ編集。`docs/runbooks/excel-ui-customize-two-stage.md`
+- **R-741-01（2026-06-22 GO）** — 新規 **DB+Dash** 台帳は `docs/constitution/24-db-dash-scaffold-kernel.md` + `docs/runbooks/db-dash-v1-launch.md` の **10 項**を通す。`verify:kintone-app-ids` / `verify:kintone-records-post-shape`
 
 ## R-17（浜田 CEO 2026-05-16 全承認 GO）
 

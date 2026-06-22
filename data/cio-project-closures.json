@@ -144,6 +144,25 @@
         "次IP提案"
       ],
       "note": "拠点22・接続12・使用中IP26・一覧/マトリックス/次IP/印刷/Excel・IP数自動計算。浜田 OK（2026-06-21）。v2: 674連携・社内NW台帳連携等"
+    },
+    {
+      "id": "mfp-ledger",
+      "laneId": "mfp-ledger",
+      "label": "複合機管理台帳",
+      "status": "closed-v1",
+      "closedAt": "2026-06-22",
+      "completionReport": "docs/reports/2026-06-22-mfp-ledger-completion.md",
+      "kintoneAppsSection": "複合機管理台帳（Space 48 — 741–742）",
+      "kintoneAppsStateMarker": "v1 完成 — CLOSED",
+      "forbiddenNextTaskPatterns": [
+        "複合機",
+        "mfp-ledger",
+        "MFP",
+        "741",
+        "742",
+        "複合機管理台帳"
+      ],
+      "note": "36台・一覧・CRUD・印刷・xlsx。浜田目視 OK。Excel 完全削除済（2026-06-22 浜田報告）。v2: 674連携・IP重複チェック等"
     }
   ]
 }

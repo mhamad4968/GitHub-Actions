@@ -29,6 +29,8 @@ temp/
 data/tmp-*.txt
 scripts/_*.py
 scripts/_tmp-*.mjs
+scripts/tmp/
+scripts/tmp-*.mjs
 scripts/_patch-*.mjs
 
 # §51-6-2 人間向けタイマー表示（session-clock が自動生成・watch/cron で更新）

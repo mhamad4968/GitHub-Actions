@@ -173,6 +173,11 @@
       "file": "23-project-closure-recognition-kernel.md",
       "title": "完了・認識同期",
       "when": "締め・ブリーフィング前"
+    },
+    {
+      "file": "24-db-dash-scaffold-kernel.md",
+      "title": "DB+Dash 新規台帳",
+      "when": "718/734型 新規"
     }
   ],
   "specialSectionToGenre": {

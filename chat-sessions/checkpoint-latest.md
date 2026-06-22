@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-06-21 JST — **セッション締め** / 夜は **新規 kintone アプリ作成**（別チャット）
+**最終更新**: 2026-06-22 JST — **セッション締め** / 複合機 741/742 v1 CLOSED + R741 改善 A〜D 実装
 
 ## クローズ済み（`data/cio-project-closures.json` — 無断 v1 再開禁止）
 
@@ -11,6 +11,8 @@
 | **社内 Wi-Fi SSID**（718/719） | closed-v1 | 2026-06-14 | `docs/reports/2026-06-14-wifi-ssid-completion.md` |
 | **JR iPad 台帳**（720/721） | closed-v1 | 2026-06-15 | `docs/reports/2026-06-15-jr-ipad-ledger-completion.md` |
 | **VPN アカウント**（733/734） | closed-v1 | 2026-06-17 | `docs/reports/2026-06-17-vpn-account-completion.md` |
+| **トータルネットワーク**（737/738） | closed-v1 | 2026-06-21 | `docs/reports/2026-06-21-total-network-completion.md` |
+| **複合機管理台帳**（741/742） | closed-v1 | 2026-06-22 | `docs/reports/2026-06-22-mfp-ledger-completion.md` |
 
 **業務改善のみ継続可**（浜田 2026-06-20）: **業務改善提案レーン**の軽微対応・完成条件外（FAQその他・本番6段WF・RAG・Wordマニュアル）。**v1 再実装は禁止**。
 
@@ -25,9 +27,9 @@
 | 本番 WF 6段階 | 無断分割禁止 — test_v3 WF 継続テストのみ |
 | 評価スナップショット | 未設計確認前の本番投入禁止 |
 
-**次の1手**: **夜セッション — 新規 kintone アプリ作成**（`.cursor/skills/kintone-create-app/SKILL.md` → `cio:pre-implement-gate` → `cio:tool:route`）。**736** — 6/23（月）以降・v2c GO 待ち（本セッションでは触らない）。**運用改善 A/B/C/D/E 完了**。**677–679 / 688 / SKYSEA** — 触らない  
-**Git**: `273c38a` — handoff sync after E  
-**憲法鏡像**: AGENTS.md §50-3-12 第14層 / first-read-pack/06 / Desktop `29-ABCD-V2-LIFECYCLE.txt`
+**次の1手**: **項番 -0** で合意のあと **`npm run session:bootstrap`**。新規 kintone は **24-db-dash-scaffold-kernel** + `db-dash-v1-launch.md` 参照。**688 / 677–679 / SKYSEA / 736 担当説明** — 触らない（保留）  
+**Git**: `57093e9` — main push 済（複合機 CLOSED + Excel 削除記録）  
+**本日 GO 実装**: R741 A〜D — `docs/approved-changes/2026-06-22-rules-r741-hamada-go.md`
 **ツールルーティング**: `docs/runbooks/ai-team-tool-routing-v2.md` — `npm run cio:tool:route -- --intent "<要約>"`  
 **引き継ぎテンプレ**: `docs/runbooks/checkpoint-handoff-template-v2.md` — `cio:handoff:append-block`  
 **736 本番**: BUILD=`2026-06-21-jikkou-yosan-versions-help-wording` rev **104**  

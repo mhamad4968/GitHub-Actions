@@ -1,5 +1,5 @@
 {
-  "scoredAt": "2026-06-20T22:12:03.134Z",
+  "scoredAt": "2026-06-22T08:02:28.515Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
   "topTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
   "tasks": [
@@ -15,26 +15,15 @@
       "status": "pending"
     },
     {
-      "id": "checkpoint:**735/736_版管理_v2_§10_段1",
-      "text": "**735/736 版管理 v2** — §10 段1 仕様レビュー（R-01〜R-10 洗い出し）。実装は段6以降",
+      "id": "checkpoint:**夜セッション_—_新規_kintone_アプリ作成**（`.cursor/s",
+      "text": "**夜セッション — 新規 kintone アプリ作成**（`.cursor/skills/kintone-create-app/SKILL.md` → `cio:pre-implement-gate` → `cio:tool:route`）。**736** — 6/23（月）以降・v2c GO 待ち（本セッションでは触らない）。**運用改善 A/B/C/D/E 完了**。**677–679 /",
       "source": "checkpoint",
-      "difficulty": 4,
-      "tokens": "中",
-      "tokenScore": 2,
+      "difficulty": 5,
+      "tokens": "高",
+      "tokenScore": 3,
       "impact": 5,
       "priority": 50,
       "status": "pending"
-    },
-    {
-      "id": "hold:**736_担当説明・イメージ確認**_—_月曜以降",
-      "text": "**736 担当説明・イメージ確認** — **2026-06-23（月）以降保留**（浜田 2026-06-21）。v1 説明・pre-demo-gate は月曜以降",
-      "source": "checkpoint-hold",
-      "difficulty": 3,
-      "tokens": "中",
-      "tokenScore": 2,
-      "impact": 4,
-      "priority": 10,
-      "status": "on-hold"
     }
   ]
 }

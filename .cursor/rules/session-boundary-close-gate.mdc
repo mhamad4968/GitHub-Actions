@@ -52,6 +52,15 @@ alwaysApply: false
 
 **partial では commit 任意**。dirty なら `次セッションで close-git` を checkpoint に明記。
 
+### partial CLOSE 後の dirty 分類（R-741-04）
+
+| 種別 | 例 | 扱い |
+|------|-----|------|
+| **close-git 対象** | handoff / checkpoint / SESSION-CLOCK / evening-reflection / approved-changes | full 締め or 次セッション `cio:session:close-git` |
+| **rag 鏡像** | `.rag/extra-docs/kintone-apps.md` | `rag:mirror:canonical-docs` 後 commit |
+| **一時解析** | `scripts/tmp/*.mjs` | **削除** or `.gitignore`（commit しない） |
+| **無関係レーン** | yojitsu SPEC 等 | **触らない** / 別レーン GO まで stash |
+
 ### 3. 曖昧時
 
 「OK」「終わり」だけで full/partial 判定不能 → **1 問だけ**:

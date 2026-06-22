@@ -15,7 +15,8 @@ const outPath = path.join(
 );
 
 const TASK_ROUTE = [
-  ['kintone customize/deploy', '02 + 17 + 19', 'DeepSeek→Composer'],
+  ['kintone customize/deploy', '02 + 17 + 19 + 24', 'DeepSeek→Composer'],
+  ['新規 DB+Dash 台帳', '24 + db-dash-v1-launch', 'CIO→Composer'],
   ['報告・締め・GO仰ぎ', '09 + 19', 'report-verify-response'],
   ['セッション切替', '10 + 25-checkpoint', 'session:bootstrap'],
   ['MCP 選定', '12 + docs/mcp-status.md', 'cio:mcp:env'],
@@ -57,7 +58,7 @@ function main() {
     lines.push(`${pad(id, 22)} ${pad(summary, 28)} ${pad(when, 16)} ${owner}`);
   }
   lines.push('');
-  lines.push('■■ Phase2 手動カーネル（00/17/18/19-23）');
+  lines.push('■■ Phase2 手動カーネル（00/17/18/19-24）');
   lines.push(`${pad('ID', 22)} ${pad('概要', 28)} ${pad('いつ', 16)} 主担当`);
   lines.push('-'.repeat(88));
   for (const [id, summary, when, owner] of MANUAL) {

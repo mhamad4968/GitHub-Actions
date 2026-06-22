@@ -14,6 +14,7 @@ alwaysApply: false
 **R21**: deploy 触媒セッションは `verify:cio-deploy-ledger-gate` exit 0（session-close 内包）  
 **R55**: 締め前 **`npm run cio:audit:session-builds:strict`** exit 0（repo=ledger=live・`verify:session-close-git-warn` 内包）  
 **R56**: 締め前 **`npm run verify:rag-mirror-canonical`** exit 0（deploy 後 stale 防止・同内包）  
+**R-741-04**: dirty 分類 — `session-boundary-close-gate.mdc`（handoff / rag / tmp / 無関係レーン）  
 **R-17-1**: customize 2アプリ以上 → `cio:guard:multi-customize` を **commit 前**  
 **順序**: `cio:session:close-git -- --execute --auto-stage --message "…"`（R19 pre-commit + B1/B4 + desktop sync **一括**）
 

@@ -23,6 +23,7 @@ alwaysApply: false
 - **締め**: `npm run cio:session:close-recognition-gate`
 - **ブリーフィング / 次手を述べる前**: `npm run cio:briefing:recognition-gate`
 - **朝**: `cio:morning:ready`（内包 `verify:checkpoint-project-closure`）
+- **v1 CLOSED 直後（R-741-02）**: `data/cio-project-closures.json` 登録 + completion.md + 仕様 M7 + Excel 廃止 2 段階（`docs/runbooks/excel-abandon-two-stage.md`）
 
 ## 禁止
 
