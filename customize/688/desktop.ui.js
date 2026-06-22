@@ -868,6 +868,8 @@
       '.wd688pr-cal-year{margin:10px 0 4px;font-size:11pt;font-weight:700;}' +
       '.wd688pr-cal-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 8px;margin-bottom:6px;}' +
       '.wd688pr-cal-row-4{grid-template-columns:repeat(4,1fr);gap:3px 6px;margin-bottom:4px;}' +
+      '.wd688pr-cal-row-5{grid-template-columns:repeat(5,1fr);gap:2px 5px;margin-bottom:4px;}' +
+      '.wd688pr-cal-row-6{grid-template-columns:repeat(6,1fr);gap:2px 4px;margin-bottom:3px;}' +
       '.wd688pr-cal{border:1px solid #444;padding:3px 4px 4px;min-width:0;}' +
       '.wd688pr-cal-mnum{margin:0 0 2px;text-align:center;font-size:10pt;font-weight:700;}' +
       '.wd688pr-cal-t{width:100%;border-collapse:collapse;font-size:7pt;table-layout:fixed;}' +
@@ -897,7 +899,7 @@
       '.wd688pr-5yr-grid-wind{grid-template-columns:repeat(4,1fr);}' +
       '#wd688-print-portal{display:none;}' +
       '@media print{' +
-      '@page{size:A3 landscape;margin:3mm;}' +
+      '@page{size:A3 landscape;margin:2mm;}' +
       'body{padding:0!important;}' +
       'body *{visibility:hidden!important;}' +
       '#wd688-print-portal,#wd688-print-portal *{visibility:visible!important;}' +
@@ -905,38 +907,46 @@
       '.wd688pr-sheet{page-break-after:always;break-after:page;}' +
       '.wd688pr-sheet:last-child{page-break-after:auto;break-after:auto;}' +
       '.wd688pr-section{page-break-after:auto;break-after:auto;}' +
-      '.wd688pr-sheet-work .wd688pr-meta{margin-bottom:9px;font-size:11.5pt;}' +
+      '.wd688pr-sheet-work .wd688pr-meta{margin-bottom:8px;font-size:14pt;}' +
       '.wd688pr-sheet-work .wd688pr-meta th,.wd688pr-sheet-work .wd688pr-meta td{padding:5px 11px;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-title{font-size:18pt;padding:11px 15px;margin-bottom:9px;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-tabs{margin-bottom:7px;font-size:9pt;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-tabs span{padding:3px 9px;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum{font-size:12pt;margin:9px 0 11px;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum th,.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum td{padding:4px 4px;line-height:1.42;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-notes{font-size:9.5pt;margin:7px 0 9px;line-height:1.48;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-year{margin:9px 0 5px;font-size:13.5pt;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-mnum{font-size:11.5pt;margin:0 0 3px;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-row-4{gap:7px 11px;margin-bottom:9px;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal{padding:5px 7px 7px;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t{font-size:9pt;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t th{font-size:8.5pt;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t th,.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t td{line-height:17px;height:17px;padding:1px 2px;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-stats-wrap{display:none;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-panel{margin:9px 0;font-size:10.5pt;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-panel-head{font-size:10.5pt;padding:6px 11px;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-panel-body{font-size:10.5pt;padding:9px 13px;line-height:1.52;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-section{margin-top:9px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-tabs{display:none;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-title{font-size:19pt;padding:8px 17px;margin-bottom:7px;}' +
+      '.wd688pr-sheet-work .wd688pr-work-head{page-break-after:avoid;break-after:avoid-page;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum{font-size:12.5pt;margin:6px 0 8px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum th,.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum td{padding:3px 4px;line-height:1.3;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-lab{min-width:0;padding-left:4px;font-size:12pt;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-lab span{font-size:9pt!important;font-weight:normal;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-notes{font-size:9pt;margin:6px 0 0;line-height:1.34;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-notes p{margin:0 0 2px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-section{margin-top:6px;page-break-before:avoid;break-before:avoid-page;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-year{margin:6px 0 5px;font-size:14pt;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-row-6{gap:7px 12px;margin-bottom:8px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal{padding:6px 7px 7px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-mnum{font-size:12.5pt;margin:0 0 2px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t{font-size:10pt;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t th{font-size:9.5pt;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t th,.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t td{line-height:19px;height:19px;padding:0 1px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-stats-wrap{margin-top:4px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-stats{font-size:9pt;margin-top:0;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-stats td{padding:1px 2px;line-height:1.22;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-stats .wd688pr-sl{word-break:break-all;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-panel{margin:6px 0 7px;font-size:11pt;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-panel-head{font-size:11pt;padding:6px 11px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-panel-body{font-size:11pt;padding:7px 11px;line-height:1.4;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-list{margin:0;padding-left:1.1em;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-list li{margin:2px 0;}' +
       '.wd688pr-sheet-5yr .wd688pr-tabs{display:none;}' +
       '.wd688pr-sheet-5yr .wd688pr-5yr-combined{margin:0;}' +
-      '.wd688pr-sheet-5yr .wd688pr-5yr-group{margin-bottom:14px;}' +
-      '.wd688pr-sheet-5yr .wd688pr-5yr-group-wind{margin-bottom:0;}' +
-      '.wd688pr-sheet-5yr .wd688pr-subtitle{font-size:18pt;padding:10px 14px;margin-bottom:12px;}' +
-      '.wd688pr-sheet-5yr .wd688pr-meta-line{font-size:11.5pt;margin-bottom:12px;}' +
-      '.wd688pr-sheet-5yr .wd688pr-5yr-grid-rain{grid-template-columns:repeat(3,1fr);gap:10px 12px;}' +
-      '.wd688pr-sheet-5yr .wd688pr-5yr-grid-wind{grid-template-columns:repeat(4,1fr);gap:10px 12px;}' +
+      '.wd688pr-sheet-5yr .wd688pr-5yr-group{margin-bottom:0;}' +
+      '.wd688pr-sheet-5yr .wd688pr-subtitle{font-size:22pt;padding:12px 18px;margin-bottom:14px;}' +
+      '.wd688pr-sheet-5yr .wd688pr-meta-line{font-size:14pt;margin-bottom:14px;line-height:1.4;}' +
+      '.wd688pr-sheet-5yr .wd688pr-5yr-grid-rain{grid-template-columns:repeat(3,1fr);gap:14px 16px;}' +
+      '.wd688pr-sheet-5yr .wd688pr-5yr-grid-wind{grid-template-columns:repeat(4,1fr);gap:14px 16px;}' +
       '.wd688pr-5yr-grid .wd688pr-5yr-block{margin:0;}' +
-      '.wd688pr-sheet-5yr .wd688pr-5yr-grid .wd688pr-5yr-block h3{font-size:10.5pt;margin:0 0 5px;line-height:1.35;}' +
-      '.wd688pr-sheet-5yr .wd688pr-5yr-grid .wd688pr-sum{font-size:11.5pt;margin:0;}' +
-      '.wd688pr-sheet-5yr .wd688pr-5yr-grid .wd688pr-sum th,.wd688pr-sheet-5yr .wd688pr-5yr-grid .wd688pr-sum td{padding:5px 4px;line-height:1.4;}' +
+      '.wd688pr-sheet-5yr .wd688pr-5yr-grid .wd688pr-5yr-block h3{font-size:13pt;margin:0 0 7px;line-height:1.38;}' +
+      '.wd688pr-sheet-5yr .wd688pr-5yr-grid .wd688pr-sum{font-size:14pt;margin:0;}' +
+      '.wd688pr-sheet-5yr .wd688pr-5yr-grid .wd688pr-sum th,.wd688pr-sheet-5yr .wd688pr-5yr-grid .wd688pr-sum td{padding:7px 5px;line-height:1.45;}' +
+      '.wd688pr-sheet-5yr .wd688pr-5yr-grid .wd688pr-sum .wd688pr-lab{font-size:13pt;padding-left:4px;}' +
       '}'
     );
   }
@@ -1394,6 +1404,7 @@
     return (
       '<div class="wd688pr-section wd688pr-section-work">' +
       sheetTabsHtml(config.sheetTab) +
+      '<div class="wd688pr-work-head">' +
       '<h1 class="wd688pr-title">' +
       escHtml(config.sheetTab) +
       '</h1>' +
@@ -1402,10 +1413,12 @@
         windTh: config.windTh,
       }) +
       buildOver100CommentPanel(rows, mode) +
-      buildPrintFootnotes(mode, config.pastLabel, config.rainTh, config.windTh) +
+      '</div>' +
       '<section class="wd688pr-cal-section">' +
-      renderCalendarYearSection(calYear, rows, calMode, markSet, 4) +
-      '</section></div>'
+      renderCalendarYearSection(calYear, rows, calMode, markSet, 6) +
+      '</section>' +
+      buildPrintFootnotes(mode, config.pastLabel, config.rainTh, config.windTh) +
+      '</div>'
     );
   }
 
@@ -1473,9 +1486,11 @@
     return html;
   }
 
-  /** 施工主報告 A3・2枚両面（4ページ）: 1枚表=塗装/裏=足場、2枚表=休日/裏=過去5年 */
-  function buildPrint5yrCombined(estYear, pastLabel) {
+  /** 施工主報告 過去5年（降雨 or 風速）1枚分 */
+  function buildPrint5yrSheet(kind, estYear, pastLabel) {
     const ref = getRef5yr();
+    const isWind = kind === 'wind';
+    const sheetTab = isWind ? '過去5年月別風速日数' : '過去5年月別降雨日数';
     const metaLine =
       escHtml(ref.location || '大宮地区') +
       '　気象庁過去5年（見積作成年 ' +
@@ -1483,34 +1498,30 @@
       '年 → ' +
       escHtml(pastLabel) +
       '）';
-
-    function blocksForKind(kind) {
-      const isWind = kind === 'wind';
-      const thresholds = isWind ? REF5YR_WIND_THRESHOLDS : REF5YR_RAIN_THRESHOLDS;
-      let inner = '';
-      for (let i = 0; i < thresholds.length; i += 1) {
-        const th = thresholds[i];
-        const key = ref5yrBlockKey(isWind ? 'wind' : 'rain', th);
-        inner += renderPrintOne5yrTable(ref[key], ref5yrBlockTitle(key), estYear);
-      }
-      return inner;
+    const thresholds = isWind ? REF5YR_WIND_THRESHOLDS : REF5YR_RAIN_THRESHOLDS;
+    let inner = '';
+    for (let i = 0; i < thresholds.length; i += 1) {
+      const th = thresholds[i];
+      const key = ref5yrBlockKey(isWind ? 'wind' : 'rain', th);
+      inner += renderPrintOne5yrTable(ref[key], ref5yrBlockTitle(key), estYear);
     }
-
+    const gridClass = isWind ? 'wd688pr-5yr-grid wd688pr-5yr-grid-wind' : 'wd688pr-5yr-grid wd688pr-5yr-grid-rain';
     return (
       '<div class="wd688pr-5yr-combined">' +
-      '<div class="wd688pr-5yr-group">' +
-      sheetTabsHtml('過去5年月別降雨日数') +
-      '<h2 class="wd688pr-subtitle">過去5年月別降雨日数</h2>' +
+      '<div class="wd688pr-5yr-group' +
+      (isWind ? ' wd688pr-5yr-group-wind' : '') +
+      '">' +
+      sheetTabsHtml(sheetTab) +
+      '<h2 class="wd688pr-subtitle">' +
+      escHtml(sheetTab) +
+      '</h2>' +
       '<p class="wd688pr-meta-line">' +
       metaLine +
       '</p>' +
-      '<div class="wd688pr-5yr-grid wd688pr-5yr-grid-rain">' +
-      blocksForKind('rain') +
-      '</div></div>' +
-      '<div class="wd688pr-5yr-group wd688pr-5yr-group-wind">' +
-      '<h2 class="wd688pr-subtitle">過去5年月別風速日数</h2>' +
-      '<div class="wd688pr-5yr-grid wd688pr-5yr-grid-wind">' +
-      blocksForKind('wind') +
+      '<div class="' +
+      gridClass +
+      '">' +
+      inner +
       '</div></div></div>'
     );
   }
@@ -1587,7 +1598,10 @@
       ) +
       '</div>' +
       '<div class="wd688pr-sheet wd688pr-sheet-5yr">' +
-      buildPrint5yrCombined(estYear, pastLabel) +
+      buildPrint5yrSheet('rain', estYear, pastLabel) +
+      '</div>' +
+      '<div class="wd688pr-sheet wd688pr-sheet-5yr">' +
+      buildPrint5yrSheet('wind', estYear, pastLabel) +
       '</div>'
     );
   }
