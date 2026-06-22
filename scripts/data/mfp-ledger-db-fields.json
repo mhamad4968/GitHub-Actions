@@ -1,0 +1,151 @@
+{
+  "properties": {
+    "sort_no": {
+      "type": "NUMBER",
+      "code": "sort_no",
+      "label": "並び順",
+      "required": true,
+      "noLabel": false,
+      "unique": false,
+      "digit": false,
+      "defaultValue": "",
+      "displayScale": "",
+      "unit": "",
+      "unitPosition": "BEFORE"
+    },
+    "location_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "location_name",
+      "label": "拠点名",
+      "required": true,
+      "noLabel": false,
+      "unique": false,
+      "defaultValue": ""
+    },
+    "manufacturer": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "manufacturer",
+      "label": "メーカー",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "model_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "model_name",
+      "label": "型番",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "connection_type": {
+      "type": "DROP_DOWN",
+      "code": "connection_type",
+      "label": "接続方式",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "ネットワーク接続": { "label": "ネットワーク接続", "index": "0" },
+        "USB接続": { "label": "USB接続", "index": "1" }
+      }
+    },
+    "ip_address": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "ip_address",
+      "label": "IPアドレス",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "ip_prefix": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "ip_prefix",
+      "label": "プレフィックス",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "admin_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "admin_id",
+      "label": "管理者ID",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "admin_password": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "admin_password",
+      "label": "管理者PW",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "machine_no": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "machine_no",
+      "label": "機械番号",
+      "required": false,
+      "noLabel": false,
+      "unique": true,
+      "defaultValue": ""
+    },
+    "introduced_date": {
+      "type": "DATE",
+      "code": "introduced_date",
+      "label": "導入年月日",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "install_location": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "install_location",
+      "label": "設置場所",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "contract_holder": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "contract_holder",
+      "label": "契約名義",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "lease_contract_no": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "lease_contract_no",
+      "label": "リース契約番号",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "note": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "note",
+      "label": "メモ",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "registered_date": {
+      "type": "DATE",
+      "code": "registered_date",
+      "label": "登録日",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "updated_date": {
+      "type": "DATE",
+      "code": "updated_date",
+      "label": "更新日",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    }
+  }
+}

@@ -20,6 +20,8 @@ export default [
       "customize/vpn-account-dash/desktop.js",
       // total-network dash: SheetJS bundle（lint は desktop.src.js のみ）
       "customize/total-network-dash/desktop.js",
+      // 742 複合機: SheetJS + location master + desktop.src.js → desktop.js（lint は src のみ）
+      "customize/mfp-ledger-dash/desktop.js",
     ],
   },
   {
@@ -53,6 +55,7 @@ export default [
         kintone: "readonly",
         QRCode: "readonly",
         XLSX: "readonly",
+        MFP_LOCATION_MASTER: "readonly",
       },
     },
     rules: {

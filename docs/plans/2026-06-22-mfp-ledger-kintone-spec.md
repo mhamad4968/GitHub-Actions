@@ -284,13 +284,13 @@ npm run mfp-ledger:migrate:xlsx -- --apply
 |------|------|------|
 | M0 | 仕様確定（本書） | **済** |
 | M1 | AI チームレビュー | **済**（§15） |
-| M2 | 浜田 **実装 GO** | **待ち** |
-| M3 | R68 + 680 マスタ更新（子会社追加） | 未 |
-| M4 | DB + 台帳作成・フィールド deploy | 未 |
-| M5 | Excel 一括移行（36 件） | 未 |
-| M6 | 台帳 customize deploy | 未 |
-| M7 | 浜田目視 OK → Excel 削除 | 未 |
-| M8 | `kintone-apps.md` 更新 | 未 |
+| M2 | 浜田 **実装 GO** | **済** |
+| M3 | R68 + 680 マスタ更新（子会社追加） | **済** |
+| M4 | DB + 台帳作成・フィールド deploy | **済**（741/742） |
+| M5 | Excel 一括移行（36 件） | **済** |
+| M6 | 台帳 customize deploy | **済**（741 rev5・742 rev4） |
+| M7 | 浜田目視 OK → Excel 削除 | **待ち** |
+| M8 | `kintone-apps.md` 更新 | **済** |
 
 ---
 

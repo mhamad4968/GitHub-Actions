@@ -1,0 +1,6 @@
+{
+  "desktop": {
+    "js": ["desktop.js"],
+    "css": []
+  }
+}

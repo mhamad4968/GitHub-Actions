@@ -33,7 +33,9 @@
     "vpn-account-db": "733",
     "vpn-account-dash": "734",
     "total-network-db": "737",
-    "total-network-dash": "738"
+    "total-network-dash": "738",
+    "mfp-ledger-db": "741",
+    "mfp-ledger-dash": "742"
   },
   "bundlePatterns": {
     "wifi-ssid-dash": {
@@ -55,6 +57,11 @@
       "deployFile": "desktop.js",
       "lintFile": "desktop.src.js",
       "bundleNpm": "total-network:bundle-dash"
+    },
+    "mfp-ledger-dash": {
+      "deployFile": "desktop.js",
+      "lintFile": "desktop.src.js",
+      "bundleNpm": "mfp-ledger:bundle-dash"
     }
   }
 }
