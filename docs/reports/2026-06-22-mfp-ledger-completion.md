@@ -24,7 +24,7 @@
 | レコード数 | **36 台** |
 | 移行 | `npm run mfp-ledger:migrate:xlsx -- --apply` |
 | 拠点マスタ | 680 に「子会社（株）ブリッジニアプラス」追加 |
-| Excel 廃止 | Q14 — kintone **741/742 が正本**（共有 Excel は削除可） |
+| Excel 廃止 | **完全削除済**（2026-06-22 浜田報告）— kintone **741/742 のみ正本 |
 
 ---
 
@@ -56,3 +56,4 @@ npm run deploy:742   # 内部で mfp-ledger:bundle-dash
 ## 5. 浜田確認（2026-06-22）
 
 - 742 台帳 UI・36 件データ・CRUD・検索・印刷・xlsx — **OK**
+- 移行元 Excel（`C:\tmp\複合機管理台帳\`）— **削除済**
