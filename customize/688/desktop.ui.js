@@ -1006,27 +1006,32 @@
       '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-tabs{display:none;}' +
       '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-title{font-size:19pt;padding:8px 17px;margin-bottom:7px;}' +
       '.wd688pr-sheet-work .wd688pr-work-head{page-break-after:avoid;break-after:avoid-page;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum{font-size:12pt;margin:5px 0 6px;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum th,.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum td{padding:2px 3px;line-height:1.22;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-lab{min-width:0;padding-left:4px;font-size:12pt;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-lab span{font-size:9pt!important;font-weight:normal;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum{font-size:11.5pt;margin:4px 0 5px;table-layout:fixed;width:100%;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-col-lab{width:13%;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-col-m{width:6.4%;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-col-year{width:6.4%;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum th,.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum td{padding:1px 2px;line-height:1.15;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-lab{width:13%;min-width:7.8em;padding-left:6px;font-size:11.5pt;white-space:nowrap;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-indent{padding-left:1.4em;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum th:not(.wd688pr-lab){font-size:10.5pt;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-lab span{font-size:8pt!important;font-weight:normal;}' +
       '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-notes{font-size:9pt;margin:6px 0 0;line-height:1.34;}' +
       '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-notes p{margin:0 0 2px;}' +
       '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-section{margin-top:6px;page-break-before:avoid;break-before:avoid-page;}' +
       '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-year{margin:6px 0 5px;font-size:14pt;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-row-6{gap:7px 12px;margin-bottom:8px;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal{padding:6px 7px 7px;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-mnum{font-size:12.5pt;margin:0 0 2px;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t{font-size:10pt;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t th{font-size:9.5pt;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t th,.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t td{line-height:17px;height:17px;padding:0 1px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-row-6{gap:5px 8px;margin-bottom:5px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal{padding:4px 5px 5px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-mnum{font-size:11.5pt;margin:0 0 1px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t{font-size:9pt;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t th{font-size:8.5pt;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t th,.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t td{line-height:16px;height:16px;padding:0 1px;}' +
       '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-stats-wrap{margin-top:4px;}' +
       '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-stats{font-size:9pt;margin-top:0;}' +
       '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-stats td{padding:1px 2px;line-height:1.22;}' +
       '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-stats .wd688pr-sl{word-break:break-all;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-panel{margin:6px 0 7px;font-size:11pt;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-panel-head{font-size:11pt;padding:6px 11px;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-panel-body{font-size:11pt;padding:7px 11px;line-height:1.4;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-panel{margin:4px 0 5px;font-size:10pt;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-panel-head{font-size:10pt;padding:4px 8px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-panel-body{font-size:10pt;padding:5px 8px;line-height:1.32;}' +
       '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-list{margin:0;padding-left:1.1em;}' +
       '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-list li{margin:2px 0;}' +
       '.wd688pr-sheet-5yr .wd688pr-tabs{display:none;}' +
@@ -1274,7 +1279,13 @@
     }
 
     let sum =
-      '<table class="wd688pr-sum"><thead><tr>' +
+      '<table class="wd688pr-sum"><colgroup>' +
+      '<col class="wd688pr-col-lab">' +
+      '<col span="' +
+      rows.length +
+      '" class="wd688pr-col-m">' +
+      '<col class="wd688pr-col-year">' +
+      '</colgroup><thead><tr>' +
       '<th class="wd688pr-lab">項目</th>';
     for (let i = 0; i < rows.length; i += 1) {
       sum += '<th>' + rows[i].m + '月</th>';
@@ -1318,12 +1329,18 @@
       (rows.length + 2) +
       '">休日数</td></tr>';
     sum +=
-      '<tr><td class="wd688pr-lab wd688pr-indent">土　曜・日　曜</td>' +
+      '<tr><td class="wd688pr-lab wd688pr-indent">土　曜</td>' +
       monthCells(function (r) {
-        const sat = r.saturday != null ? r.saturday : r.saturdaysAuto;
-        return (Number(sat) || 0) + (Number(r.sundays) || 0);
+        return r.saturday != null ? r.saturday : r.saturdaysAuto;
       }) +
-      yearCell((Number(yt.saturday) || 0) + (Number(yt.sundays) || 0)) +
+      yearCell(yt.saturday) +
+      '</tr>';
+    sum +=
+      '<tr><td class="wd688pr-lab wd688pr-indent">日　曜</td>' +
+      monthCells(function (r) {
+        return r.sundays;
+      }) +
+      yearCell(yt.sundays) +
       '</tr>';
     sum +=
       '<tr><td class="wd688pr-lab wd688pr-indent">祝　日・祭　日</td>' +
