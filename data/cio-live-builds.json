@@ -90,11 +90,11 @@
       "note": null
     },
     "688": {
-      "build": "2026-06-23-688-holiday-sat-sun-csv-obs",
-      "fileKey": "66c3d879-b441-4825-b739-ca4fcafcbc05",
-      "revision": "66",
+      "build": "2026-06-23-688-print-one-page-fix",
+      "fileKey": "7cd0a120-ac0b-480c-ad7d-9419df6b7561",
+      "revision": "67",
       "relPath": ".kintone-deploy/upload-688.js",
-      "deployedAt": "2026-06-23T10:36:08.283Z",
+      "deployedAt": "2026-06-23T10:42:20.745Z",
       "note": null
     },
     "693": {

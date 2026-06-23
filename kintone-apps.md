@@ -190,6 +190,7 @@ npm run app:fields <アプリID>
 
 | 日時（UTC） | アプリID | customize パス |
 |-------------|----------|----------------|
+| 2026-06-23T10:42:20Z | 688 | `customize/688/desktop.js` |
 | 2026-06-23T10:36:08Z | 688 | `customize/688/desktop.js` |
 | 2026-06-22T09:29:12Z | 688 | `customize/688/desktop.js` |
 | 2026-06-21T09:22:02Z | 688 | `customize/688/desktop.js` |
