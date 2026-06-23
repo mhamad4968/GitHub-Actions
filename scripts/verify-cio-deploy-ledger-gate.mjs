@@ -126,7 +126,9 @@ function checkApp(appId, md, reg) {
   }
 
   const detailBuild = parsePortfolioDetailBuild(md, appId);
-  if (detailBuild && detailBuild !== entry.build) {
+  if (!detailBuild && machineBuild) {
+    issues.push('kintone-apps: 詳細行 BUILD なし（R15/R21 NG — sync:kintone-apps-build --strict）');
+  } else if (detailBuild && detailBuild !== entry.build) {
     issues.push(`kintone-apps詳細行≠registry (${detailBuild} vs ${entry.build})`);
   }
 

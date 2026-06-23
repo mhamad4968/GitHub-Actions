@@ -6,6 +6,7 @@ import { extractBuildFromSource, readLiveBuildRegistry } from './cio-live-build-
 import {
   parsePortfolioMachineBuild,
   updatePortfolioMachineBuild,
+  updatePortfolioDetailBuild,
 } from './lib/cio-kintone-apps-portfolio-build.mjs';
 
 const appId = String(process.argv[2] || '').trim();
@@ -60,16 +61,18 @@ if (machineUpdate.changed) {
   if (strict) process.exit(1);
 }
 
-  if (!rowRe.test(md)) {
-    const warn = `[sync-kintone-apps-build] ⚠️ R15 WARN: app=${appId} — kintone-apps.md 詳細行（**BUILD=**）がありません。`;
-    console.warn(warn);
-    if (strict) process.exit(1);
-  } else {
-    const nextDetail = md.replace(rowRe, `$1${build}$3`);
-    if (nextDetail !== md) {
-      md = nextDetail;
+if (!rowRe.test(md)) {
+  const warn = `[sync-kintone-apps-build] ⚠️ R15 WARN: app=${appId} — kintone-apps.md 詳細行（**BUILD=**）がありません。`;
+  console.warn(warn);
+  if (strict) process.exit(1);
+} else {
+  const detailUpdate = updatePortfolioDetailBuild(md, appId, build, revision);
+  if (detailUpdate.changed) {
+    md = detailUpdate.md;
     changed = true;
-    console.log(`[sync-kintone-apps-build] detail row app=${appId} BUILD=${build}`);
+    console.log(
+      `[sync-kintone-apps-build] detail row app=${appId} BUILD=${build} rev=${revision || '—'}`,
+    );
   }
 }
 

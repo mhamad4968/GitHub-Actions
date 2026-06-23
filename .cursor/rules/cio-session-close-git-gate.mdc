@@ -11,6 +11,7 @@ alwaysApply: false
 # セッション締め Git（B1/B4 + 先祖返り回避）
 
 **18**: B1 commit 必須 / B4 push 必須 / S2 verify NG = 締め未完  
+**反省会（浜田 2026-06-23 GO）**: 「お疲れ」「終わり」「GO」「反省」「まとめて」等の **セッション締め意図**では、**commit + push を必ず実行**する。「進めますか？」と確認して止めない。ローカル未コミットのまま終了 **禁止**。  
 **R21**: deploy 触媒セッションは `verify:cio-deploy-ledger-gate` exit 0（session-close 内包）  
 **R55**: 締め前 **`npm run cio:audit:session-builds:strict`** exit 0（repo=ledger=live・`verify:session-close-git-warn` 内包）  
 **R56**: 締め前 **`npm run verify:rag-mirror-canonical`** exit 0（deploy 後 stale 防止・同内包）  
@@ -21,6 +22,7 @@ alwaysApply: false
 ## 禁止
 
 - 締めターンで「commit GO 待ち」「push は次セッション」
+- 締めターンで「commit / push も進めますか？」と **確認だけして未実施で終了**
 - pull --rebase なしで push（reject / リモート先祖返り）
 - `desktop:sync-and-verify` を **commit+push より先**に完了扱い
 - close-git 成功後に **別途** desktop sync だけ省略（`--skip-desktop-sync` は浜田 GO 時のみ）

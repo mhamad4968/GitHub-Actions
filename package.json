@@ -121,6 +121,7 @@
     "jikkou-yosan:v2-backfill": "npx dotenv -e .env -e .env.proxy -- node scripts/jikkou-yosan-v2-backfill.mjs",
     "jikkou-yosan:build-desktop": "node scripts/jikkou-yosan-build-desktop.mjs",
     "jikkou-yosan:calc-gate": "node scripts/jikkou-yosan-calc-gate.mjs",
+    "jikkou-yosan:rowkey-gate": "node scripts/jikkou-yosan-rowkey-gate.mjs",
     "jikkou-yosan:deploy-gate": "node scripts/jikkou-yosan-deploy-gate.mjs",
     "cio:quality-gate": "node scripts/cio-quality-gate.mjs",
     "cio:pre-commit-check": "node scripts/cio-quality-gate.mjs --commit",

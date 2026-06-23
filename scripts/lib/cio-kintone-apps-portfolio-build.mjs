@@ -31,3 +31,28 @@ export function updatePortfolioMachineBuild(md, appId, build, revision) {
   });
   return { md: next, changed: next !== md };
 }
+
+export function updatePortfolioDetailBuild(md, appId, build, revision) {
+  const id = String(appId).trim();
+  const withRev = new RegExp(
+    `(\\|\\s*\\*\\*[^|]*\\*\\*\\s*\\|\\s*\\*\\*${id}\\*\\*\\s*\\|[^|]*\\|[^|]*\\*\\*BUILD=\`)([^\`]+)(\`\\s*rev\\s*\\*\\*)([^*]+)(\\*\\*[^|]*\\|)`,
+    'm',
+  );
+  if (withRev.test(md)) {
+    const next = md.replace(withRev, (_m, p1, _oldBuild, p3, _oldRev, p5) => {
+      const revCell = revision != null ? ` ${revision} ` : _oldRev;
+      return `${p1}${build}${p3}${revCell}${p5}`;
+    });
+    return { md: next, changed: next !== md };
+  }
+  const buildOnly = new RegExp(
+    `(\\|\\s*\\*\\*[^|]*\\*\\*\\s*\\|\\s*\\*\\*${id}\\*\\*\\s*\\|[^|]*\\|[^|]*\\*\\*BUILD=\`)([^\`]+)(\`)([^|]*\\|)`,
+    'm',
+  );
+  if (!buildOnly.test(md)) return { md, changed: false };
+  const next = md.replace(buildOnly, (_m, p1, _old, p3, tail) => {
+    const revSuffix = revision != null ? ` rev **${revision}**` : '';
+    return `${p1}${build}${p3}${revSuffix}${tail}`;
+  });
+  return { md: next, changed: next !== md };
+}

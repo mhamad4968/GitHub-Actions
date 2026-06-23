@@ -16,6 +16,17 @@ alwaysApply: false
 - **R23（2026-06-18 GO）** — Excel UI（688/736 型）は **`desktop.ui.js` + build** のみ編集。`docs/runbooks/excel-ui-customize-two-stage.md`
 - **R-741-01（2026-06-22 GO）** — 新規 **DB+Dash** 台帳は `docs/constitution/24-db-dash-scaffold-kernel.md` + `docs/runbooks/db-dash-v1-launch.md` の **10 項**を通す。`verify:kintone-app-ids` / `verify:kintone-records-post-shape`
 
+## R-736-ROWKEY（浜田 GO 2026-06-23 / B-1）
+
+- **再計算で identity 列を落とすな** — `recalcState` → `costLineFromCalcRow` は `row_key`（4 サブテーブル）を **必ず保持**。
+- **差分比較前にランダム UUID を付与しない** — `snapshotForDiff` で `ensureRowKeysOnState` しない。
+- **ゲート**: `npm run jikkou-yosan:rowkey-gate`（`calc-gate` / `deploy-gate` 内包）。正本: `scripts/lib/jikkou-yosan-rowkey-guard.mjs`
+
+## R-736-DIFF（浜田 GO 2026-06-23 / B-2・B-6）
+
+- **deploy 前スモーク**: `docs/runbooks/jikkou-yosan-diff-smoke.md`（版2・材料+7600・削除0）
+- **差分系変更時**: `docs/runbooks/jikkou-yosan-diff-second-review-checklist.md` で第2者レビュー（§50-3-8）
+
 ## R-17（浜田 CEO 2026-05-16 全承認 GO）
 
 - **§50-3-8（着手前）**: `customize/**` 編集の**最初の Write/StrReplace の前**に DeepSeek 1 問（盲点・反例）。省略は **`§50-3-8 スキップ理由:`** 1 行のみ。

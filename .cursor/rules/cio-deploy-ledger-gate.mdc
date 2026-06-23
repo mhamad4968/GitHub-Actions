@@ -40,7 +40,8 @@ npm run verify:rag-mirror-canonical
 ## 禁止
 
 - registry だけ更新され **kintone-apps 機械表が古い rev のまま** でセッション終了
-- R15 WARN を無視して締め完了扱い
+- **詳細行の BUILD/rev が機械表・registry と不一致** のままセッション終了（B-4 / 2026-06-23 GO）
+- R15 WARN を無視して締め完了扱い（**セッション締め前は 0 WARN** を目標）
 
 ## 関連
 
