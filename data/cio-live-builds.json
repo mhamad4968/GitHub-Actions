@@ -90,11 +90,11 @@
       "note": null
     },
     "688": {
-      "build": "2026-06-23-688-print-sat-sun-wide-lab",
-      "fileKey": "fb5ea260-a3a0-4477-a76e-943a5de1df7a",
-      "revision": "68",
+      "build": "2026-06-23-688-print-fit-one-page-v3",
+      "fileKey": "0c48e839-4fd9-45c7-a241-a26891079ab4",
+      "revision": "69",
       "relPath": ".kintone-deploy/upload-688.js",
-      "deployedAt": "2026-06-23T10:44:37.678Z",
+      "deployedAt": "2026-06-23T10:49:08.969Z",
       "note": null
     },
     "693": {
