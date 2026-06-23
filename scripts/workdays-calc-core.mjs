@@ -53,7 +53,8 @@ export function nationalHolidaySet(year) {
 }
 
 /**
- * Option A: 着工〜完工 ∩ 暦月 の休日内訳（土日・平日祝日）
+ * Option A: 着工〜完工 ∩ 暦月 の休日内訳（土曜自動・日曜自動・祝日）
+ * 土日が祝日と重なる日は祝日のみ（二重計上しない）
  * @param {Date} start @param {Date} end @param {number} y @param {number} m
  */
 export function holidayBreakdownInRange(start, end, y, m) {
@@ -63,19 +64,24 @@ export function holidayBreakdownInRange(start, end, y, m) {
   const me = new Date(Date.UTC(y, m - 1, dim, 12));
   const s = start > ms ? start : ms;
   const e = end < me ? end : me;
-  let weekends = 0;
+  let saturdaysAuto = 0;
+  let sundays = 0;
   let weekdayHol = 0;
-  if (s > e) return { C: 0, weekends: 0, weekdayHol: 0 };
+  if (s > e) {
+    return { C: 0, saturdaysAuto: 0, sundays: 0, weekdayHol: 0, weekends: 0 };
+  }
   for (let d = 1; d <= dim; d += 1) {
     const dt = new Date(Date.UTC(y, m - 1, d, 12));
     if (dt < s || dt > e) continue;
     const dow = dt.getUTCDay();
     const iso = toIso({ y, mo: m, d });
-    if (dow === 0 || dow === 6) weekends += 1;
-    else if (hol.has(iso)) weekdayHol += 1;
+    if (hol.has(iso)) weekdayHol += 1;
+    else if (dow === 6) saturdaysAuto += 1;
+    else if (dow === 0) sundays += 1;
   }
   const C = overlapDays(start, end, y, m);
-  return { C, weekends, weekdayHol };
+  const weekends = saturdaysAuto + sundays;
+  return { C, saturdaysAuto, sundays, weekdayHol, weekends };
 }
 
 /**
@@ -108,13 +114,14 @@ export function weatherCountGeInRange(rows, threshold, start, end, y, m) {
 
 /**
  * @param {number} m 1-12
- * @param {Array<{m:number,gw?:number,summer?:number,nye?:number}>|Record<number,{gw?:number,summer?:number,nye?:number}>} manual
+ * @param {Array<{m:number,saturday?:number,gw?:number,summer?:number,nye?:number}>|Record<number,{saturday?:number,gw?:number,summer?:number,nye?:number}>} manual
  */
 export function manualHolidayForMonth(m, manual) {
-  if (!manual) return { gw: 0, summer: 0, nye: 0 };
+  if (!manual) return { saturday: null, gw: 0, summer: 0, nye: 0 };
   if (Array.isArray(manual)) {
     const hit = manual.find((r) => r.m === m);
     return {
+      saturday: hit && hit.saturday != null ? Number(hit.saturday) || 0 : null,
       gw: hit && hit.gw != null ? Number(hit.gw) || 0 : 0,
       summer: hit && hit.summer != null ? Number(hit.summer) || 0 : 0,
       nye: hit && hit.nye != null ? Number(hit.nye) || 0 : 0,
@@ -122,10 +129,28 @@ export function manualHolidayForMonth(m, manual) {
   }
   const hit = manual[m];
   return {
+    saturday: hit && hit.saturday != null ? Number(hit.saturday) || 0 : null,
     gw: hit && hit.gw != null ? Number(hit.gw) || 0 : 0,
     summer: hit && hit.summer != null ? Number(hit.summer) || 0 : 0,
     nye: hit && hit.nye != null ? Number(hit.nye) || 0 : 0,
   };
+}
+
+/**
+ * 見積作成年の暦月ごとに土曜自動値（祝日でない土曜）を返す
+ * @param {number} estimateYear
+ */
+export function saturdayAutoByMonthForEstimate(estimateYear) {
+  const out = [];
+  for (let m = 1; m <= 12; m += 1) {
+    const calYear = estimateYear;
+    const C = daysInMonth(calYear, m);
+    const monthStart = new Date(Date.UTC(calYear, m - 1, 1, 12));
+    const monthEnd = new Date(Date.UTC(calYear, m - 1, C, 12));
+    const { saturdaysAuto } = holidayBreakdownInRange(monthStart, monthEnd, calYear, m);
+    out.push({ m, saturday: saturdaysAuto });
+  }
+  return out;
 }
 
 /**
@@ -152,12 +177,18 @@ export function calcWorkdays(p) {
 
   for (let m = 1; m <= 12; m += 1) {
     const calYear = calendarYearForDashboardMonth(p.fiscalYear, m);
-    const { C, weekends, weekdayHol } = holidayBreakdownInRange(start, end, calYear, m);
+    const { C, saturdaysAuto, sundays, weekdayHol, weekends } = holidayBreakdownInRange(
+      start,
+      end,
+      calYear,
+      m,
+    );
     const man = manualHolidayForMonth(m, p.holidayManual);
+    const saturday = man.saturday != null ? man.saturday : saturdaysAuto;
     const gw = man.gw;
     const summer = man.summer;
     const nye = man.nye;
-    const D = weekends + weekdayHol + gw + summer + nye;
+    const D = saturday + sundays + weekdayHol + gw + summer + nye;
 
     const E =
       C > 0 ? weatherCountGeInRange(p.wind, p.windTh, start, end, calYear, m) : 0;
@@ -179,6 +210,9 @@ export function calcWorkdays(p) {
       calYear,
       C,
       D,
+      saturday,
+      saturdaysAuto,
+      sundays,
       weekends,
       weekdayHol,
       gw,
@@ -248,12 +282,18 @@ export function calcWorkdaysExcel20260613(p) {
     const C = daysInMonth(calYear, m);
     const monthStart = new Date(Date.UTC(calYear, m - 1, 1, 12));
     const monthEnd = new Date(Date.UTC(calYear, m - 1, C, 12));
-    const { weekends, weekdayHol } = holidayBreakdownInRange(monthStart, monthEnd, calYear, m);
+    const { saturdaysAuto, sundays, weekdayHol, weekends } = holidayBreakdownInRange(
+      monthStart,
+      monthEnd,
+      calYear,
+      m,
+    );
     const man = manualHolidayForMonth(m, p.holidayManual);
+    const saturday = man.saturday != null ? man.saturday : saturdaysAuto;
     const gw = man.gw;
     const summer = man.summer;
     const nye = man.nye;
-    const D = weekends + weekdayHol + gw + summer + nye;
+    const D = saturday + sundays + weekdayHol + gw + summer + nye;
     const weather =
       typeof weatherByMonth[m] === 'number'
         ? weatherByMonth[m]
@@ -269,6 +309,9 @@ export function calcWorkdaysExcel20260613(p) {
       calYear,
       C,
       D,
+      saturday,
+      saturdaysAuto,
+      sundays,
       weekends,
       weekdayHol,
       gw,

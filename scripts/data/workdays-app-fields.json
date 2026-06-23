@@ -42,14 +42,6 @@
         "その他": { "label": "その他", "index": "7" }
       }
     },
-    "obs_location_note": {
-      "type": "SINGLE_LINE_TEXT",
-      "code": "obs_location_note",
-      "label": "地点備考",
-      "required": false,
-      "noLabel": false,
-      "defaultValue": ""
-    },
     "threshold_wind_ms": {
       "type": "NUMBER",
       "code": "threshold_wind_ms",
@@ -96,6 +88,18 @@
           "type": "NUMBER",
           "code": "hm_gw",
           "label": "GW",
+          "required": false,
+          "noLabel": false,
+          "digit": false,
+          "defaultValue": "0",
+          "displayScale": "0",
+          "unit": "",
+          "unitPosition": "BEFORE"
+        },
+        "hm_saturday": {
+          "type": "NUMBER",
+          "code": "hm_saturday",
+          "label": "土曜",
           "required": false,
           "noLabel": false,
           "digit": false,

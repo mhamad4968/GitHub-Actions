@@ -6,7 +6,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-06-22-688-print-5yr-scale-up';
+  const BUILD = '2026-06-23-688-holiday-sat-sun-csv-obs';
 
   const REF5YR = {"location":"大宮地区","windPeriod":"2018〜2025","rainPeriod":"2018〜2025","updated":"2026-06-13","csvSource":"風速.csv, 降雨.csv","wind_ge10_ms":{"label":">=10ms","years":["2018","2019","2020","2021","2022","2023","2024","2025"],"months":[{"m":1,"byYear":{"2018":1,"2019":4,"2020":1,"2021":1,"2022":3,"2023":6,"2024":5,"2025":1},"avg":2.75},{"m":2,"byYear":{"2018":1,"2019":2,"2020":2,"2021":1,"2022":4,"2023":2,"2024":4,"2025":3},"avg":2.375},{"m":3,"byYear":{"2018":0,"2019":0,"2020":3,"2021":4,"2022":1,"2023":1,"2024":5,"2025":2},"avg":2},{"m":4,"byYear":{"2018":2,"2019":2,"2020":3,"2021":1,"2022":0,"2023":0,"2024":1,"2025":0},"avg":1.125},{"m":5,"byYear":{"2018":1,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.125},{"m":6,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":7,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":1,"2025":0},"avg":0.125},{"m":8,"byYear":{"2018":1,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.125},{"m":9,"byYear":{"2018":1,"2019":1,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.25},{"m":10,"byYear":{"2018":2,"2019":0,"2020":1,"2021":1,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.5},{"m":11,"byYear":{"2018":0,"2019":1,"2020":0,"2021":0,"2022":0,"2023":1,"2024":1,"2025":1},"avg":0.5},{"m":12,"byYear":{"2018":3,"2019":1,"2020":1,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.625}]},"wind_ge15_ms":{"label":">=15ms","years":["2018","2019","2020","2021","2022","2023","2024","2025"],"months":[{"m":1,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":2,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":3,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":4,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":5,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":6,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":7,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":8,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":9,"byYear":{"2018":1,"2019":1,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.25},{"m":10,"byYear":{"2018":1,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.125},{"m":11,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":12,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0}]},"wind_ge20_ms":{"label":">=20ms","years":["2018","2019","2020","2021","2022","2023","2024","2025"],"months":[{"m":1,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":2,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":3,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":4,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":5,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":6,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":7,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":8,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":9,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":10,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":11,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":12,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0}]},"wind_ge30_ms":{"label":">=30ms","years":["2018","2019","2020","2021","2022","2023","2024","2025"],"months":[{"m":1,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":2,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":3,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":4,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":5,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":6,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":7,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":8,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":9,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":10,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":11,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":12,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0}]},"rain_ge1_mm":{"label":">=1mm","years":["2018","2019","2020","2021","2022","2023","2024","2025"],"months":[{"m":1,"byYear":{"2018":4,"2019":1,"2020":7,"2021":3,"2022":2,"2023":2,"2024":3,"2025":4},"avg":3.25},{"m":2,"byYear":{"2018":3,"2019":4,"2020":4,"2021":2,"2022":6,"2023":4,"2024":9,"2025":1},"avg":4.125},{"m":3,"byYear":{"2018":10,"2019":9,"2020":9,"2021":7,"2022":6,"2023":9,"2024":9,"2025":9},"avg":8.5},{"m":4,"byYear":{"2018":4,"2019":11,"2020":8,"2021":7,"2022":14,"2023":5,"2024":12,"2025":9},"avg":8.75},{"m":5,"byYear":{"2018":9,"2019":4,"2020":10,"2021":13,"2022":12,"2023":11,"2024":13,"2025":13},"avg":10.625},{"m":6,"byYear":{"2018":12,"2019":13,"2020":16,"2021":11,"2022":10,"2023":14,"2024":9,"2025":6},"avg":11.375},{"m":7,"byYear":{"2018":6,"2019":15,"2020":23,"2021":14,"2022":11,"2023":5,"2024":13,"2025":5},"avg":11.5},{"m":8,"byYear":{"2018":9,"2019":10,"2020":5,"2021":10,"2022":7,"2023":13,"2024":10,"2025":10},"avg":9.25},{"m":9,"byYear":{"2018":8,"2019":8,"2020":12,"2021":13,"2022":10,"2023":8,"2024":8,"2025":9},"avg":9.5},{"m":10,"byYear":{"2018":17,"2019":7,"2020":8,"2021":8,"2022":10,"2023":4,"2024":10,"2025":10},"avg":9.25},{"m":11,"byYear":{"2018":5,"2019":3,"2020":5,"2021":5,"2022":5,"2023":3,"2024":6,"2025":2},"avg":4.25},{"m":12,"byYear":{"2018":5,"2019":1,"2020":6,"2021":1,"2022":0,"2023":0,"2024":0,"2025":0},"avg":1.625}]},"rain_ge10_mm":{"label":">=10mm","years":["2018","2019","2020","2021","2022","2023","2024","2025"],"months":[{"m":1,"byYear":{"2018":1,"2019":1,"2020":2,"2021":2,"2022":1,"2023":0,"2024":1,"2025":1},"avg":1.125},{"m":2,"byYear":{"2018":0,"2019":1,"2020":0,"2021":1,"2022":2,"2023":1,"2024":1,"2025":0},"avg":0.75},{"m":3,"byYear":{"2018":6,"2019":2,"2020":3,"2021":4,"2022":4,"2023":5,"2024":6,"2025":5},"avg":4.375},{"m":4,"byYear":{"2018":2,"2019":2,"2020":4,"2021":3,"2022":7,"2023":2,"2024":2,"2025":3},"avg":3.125},{"m":5,"byYear":{"2018":4,"2019":2,"2020":3,"2021":2,"2022":3,"2023":4,"2024":6,"2025":6},"avg":3.75},{"m":6,"byYear":{"2018":3,"2019":6,"2020":4,"2021":5,"2022":1,"2023":6,"2024":6,"2025":5},"avg":4.5},{"m":7,"byYear":{"2018":4,"2019":6,"2020":7,"2021":9,"2022":3,"2023":0,"2024":4,"2025":1},"avg":4.25},{"m":8,"byYear":{"2018":4,"2019":5,"2020":2,"2021":7,"2022":3,"2023":3,"2024":9,"2025":2},"avg":4.375},{"m":9,"byYear":{"2018":4,"2019":4,"2020":5,"2021":5,"2022":7,"2023":3,"2024":1,"2025":4},"avg":4.125},{"m":10,"byYear":{"2018":5,"2019":4,"2020":4,"2021":4,"2022":2,"2023":2,"2024":4,"2025":2},"avg":3.375},{"m":11,"byYear":{"2018":3,"2019":0,"2020":2,"2021":2,"2022":1,"2023":2,"2024":2,"2025":0},"avg":1.5},{"m":12,"byYear":{"2018":2,"2019":0,"2020":2,"2021":1,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.625}]},"rain_ge30_mm":{"label":">=30mm","years":["2018","2019","2020","2021","2022","2023","2024","2025"],"months":[{"m":1,"byYear":{"2018":0,"2019":0,"2020":1,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.125},{"m":2,"byYear":{"2018":0,"2019":0,"2020":0,"2021":1,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.125},{"m":3,"byYear":{"2018":3,"2019":1,"2020":1,"2021":1,"2022":1,"2023":0,"2024":2,"2025":0},"avg":1.125},{"m":4,"byYear":{"2018":1,"2019":0,"2020":2,"2021":0,"2022":1,"2023":0,"2024":1,"2025":1},"avg":0.75},{"m":5,"byYear":{"2018":1,"2019":1,"2020":1,"2021":0,"2022":1,"2023":0,"2024":2,"2025":1},"avg":0.875},{"m":6,"byYear":{"2018":0,"2019":2,"2020":2,"2021":1,"2022":0,"2023":2,"2024":3,"2025":1},"avg":1.375},{"m":7,"byYear":{"2018":1,"2019":1,"2020":2,"2021":4,"2022":1,"2023":0,"2024":2,"2025":1},"avg":1.5},{"m":8,"byYear":{"2018":1,"2019":0,"2020":1,"2021":3,"2022":1,"2023":1,"2024":4,"2025":1},"avg":1.5},{"m":9,"byYear":{"2018":1,"2019":1,"2020":1,"2021":1,"2022":3,"2023":1,"2024":0,"2025":2},"avg":1.25},{"m":10,"byYear":{"2018":3,"2019":2,"2020":1,"2021":1,"2022":1,"2023":1,"2024":0,"2025":0},"avg":1.125},{"m":11,"byYear":{"2018":2,"2019":0,"2020":1,"2021":1,"2022":1,"2023":1,"2024":1,"2025":0},"avg":0.875},{"m":12,"byYear":{"2018":0,"2019":0,"2020":2,"2021":1,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.375}]},"rain_ge50_mm":{"label":">=50mm","years":["2018","2019","2020","2021","2022","2023","2024","2025"],"months":[{"m":1,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":2,"byYear":{"2018":0,"2019":0,"2020":0,"2021":1,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.125},{"m":3,"byYear":{"2018":1,"2019":0,"2020":0,"2021":1,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.25},{"m":4,"byYear":{"2018":0,"2019":0,"2020":2,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.25},{"m":5,"byYear":{"2018":0,"2019":1,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":1},"avg":0.25},{"m":6,"byYear":{"2018":0,"2019":1,"2020":1,"2021":1,"2022":0,"2023":2,"2024":1,"2025":0},"avg":0.75},{"m":7,"byYear":{"2018":0,"2019":0,"2020":0,"2021":1,"2022":1,"2023":0,"2024":1,"2025":1},"avg":0.5},{"m":8,"byYear":{"2018":1,"2019":0,"2020":0,"2021":1,"2022":0,"2023":0,"2024":3,"2025":0},"avg":0.625},{"m":9,"byYear":{"2018":1,"2019":1,"2020":0,"2021":1,"2022":1,"2023":1,"2024":0,"2025":2},"avg":0.875},{"m":10,"byYear":{"2018":2,"2019":1,"2020":1,"2021":1,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.625},{"m":11,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":12,"byYear":{"2018":0,"2019":0,"2020":1,"2021":1,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.25}]},"rain_ge70_mm":{"label":">=70mm","years":["2018","2019","2020","2021","2022","2023","2024","2025"],"months":[{"m":1,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":2,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":3,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":4,"byYear":{"2018":0,"2019":0,"2020":1,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.125},{"m":5,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":6,"byYear":{"2018":0,"2019":1,"2020":0,"2021":0,"2022":0,"2023":1,"2024":0,"2025":0},"avg":0.25},{"m":7,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":1,"2023":0,"2024":0,"2025":1},"avg":0.25},{"m":8,"byYear":{"2018":0,"2019":0,"2020":0,"2021":1,"2022":0,"2023":0,"2024":2,"2025":0},"avg":0.375},{"m":9,"byYear":{"2018":1,"2019":1,"2020":0,"2021":0,"2022":0,"2023":1,"2024":0,"2025":1},"avg":0.5},{"m":10,"byYear":{"2018":2,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.25},{"m":11,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":12,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0}]},"rain_ge100_mm":{"label":">=100mm","years":["2018","2019","2020","2021","2022","2023","2024","2025"],"months":[{"m":1,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":2,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":3,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":4,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":5,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":6,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":1,"2024":0,"2025":0},"avg":0.125},{"m":7,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":8,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":1,"2025":0},"avg":0.125},{"m":9,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":1},"avg":0.125},{"m":10,"byYear":{"2018":1,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.125},{"m":11,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":12,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0}]}};
 
@@ -52,7 +52,8 @@
 }
 
 /**
- * Option A: 着工〜完工 ∩ 暦月 の休日内訳（土日・平日祝日）
+ * Option A: 着工〜完工 ∩ 暦月 の休日内訳（土曜自動・日曜自動・祝日）
+ * 土日が祝日と重なる日は祝日のみ（二重計上しない）
  * @param {Date} start @param {Date} end @param {number} y @param {number} m
  */
   function holidayBreakdownInRange(start, end, y, m) {
@@ -62,19 +63,24 @@
   const me = new Date(Date.UTC(y, m - 1, dim, 12));
   const s = start > ms ? start : ms;
   const e = end < me ? end : me;
-  let weekends = 0;
+  let saturdaysAuto = 0;
+  let sundays = 0;
   let weekdayHol = 0;
-  if (s > e) return { C: 0, weekends: 0, weekdayHol: 0 };
+  if (s > e) {
+    return { C: 0, saturdaysAuto: 0, sundays: 0, weekdayHol: 0, weekends: 0 };
+  }
   for (let d = 1; d <= dim; d += 1) {
     const dt = new Date(Date.UTC(y, m - 1, d, 12));
     if (dt < s || dt > e) continue;
     const dow = dt.getUTCDay();
     const iso = toIso({ y, mo: m, d });
-    if (dow === 0 || dow === 6) weekends += 1;
-    else if (hol.has(iso)) weekdayHol += 1;
+    if (hol.has(iso)) weekdayHol += 1;
+    else if (dow === 6) saturdaysAuto += 1;
+    else if (dow === 0) sundays += 1;
   }
   const C = overlapDays(start, end, y, m);
-  return { C, weekends, weekdayHol };
+  const weekends = saturdaysAuto + sundays;
+  return { C, saturdaysAuto, sundays, weekdayHol, weekends };
 }
 
 /**
@@ -107,13 +113,14 @@
 
 /**
  * @param {number} m 1-12
- * @param {Array<{m:number,gw?:number,summer?:number,nye?:number}>|Record<number,{gw?:number,summer?:number,nye?:number}>} manual
+ * @param {Array<{m:number,saturday?:number,gw?:number,summer?:number,nye?:number}>|Record<number,{saturday?:number,gw?:number,summer?:number,nye?:number}>} manual
  */
   function manualHolidayForMonth(m, manual) {
-  if (!manual) return { gw: 0, summer: 0, nye: 0 };
+  if (!manual) return { saturday: null, gw: 0, summer: 0, nye: 0 };
   if (Array.isArray(manual)) {
     const hit = manual.find((r) => r.m === m);
     return {
+      saturday: hit && hit.saturday != null ? Number(hit.saturday) || 0 : null,
       gw: hit && hit.gw != null ? Number(hit.gw) || 0 : 0,
       summer: hit && hit.summer != null ? Number(hit.summer) || 0 : 0,
       nye: hit && hit.nye != null ? Number(hit.nye) || 0 : 0,
@@ -121,10 +128,28 @@
   }
   const hit = manual[m];
   return {
+    saturday: hit && hit.saturday != null ? Number(hit.saturday) || 0 : null,
     gw: hit && hit.gw != null ? Number(hit.gw) || 0 : 0,
     summer: hit && hit.summer != null ? Number(hit.summer) || 0 : 0,
     nye: hit && hit.nye != null ? Number(hit.nye) || 0 : 0,
   };
+}
+
+/**
+ * 見積作成年の暦月ごとに土曜自動値（祝日でない土曜）を返す
+ * @param {number} estimateYear
+ */
+  function saturdayAutoByMonthForEstimate(estimateYear) {
+  const out = [];
+  for (let m = 1; m <= 12; m += 1) {
+    const calYear = estimateYear;
+    const C = daysInMonth(calYear, m);
+    const monthStart = new Date(Date.UTC(calYear, m - 1, 1, 12));
+    const monthEnd = new Date(Date.UTC(calYear, m - 1, C, 12));
+    const { saturdaysAuto } = holidayBreakdownInRange(monthStart, monthEnd, calYear, m);
+    out.push({ m, saturday: saturdaysAuto });
+  }
+  return out;
 }
 
 /**
@@ -151,12 +176,18 @@
 
   for (let m = 1; m <= 12; m += 1) {
     const calYear = calendarYearForDashboardMonth(p.fiscalYear, m);
-    const { C, weekends, weekdayHol } = holidayBreakdownInRange(start, end, calYear, m);
+    const { C, saturdaysAuto, sundays, weekdayHol, weekends } = holidayBreakdownInRange(
+      start,
+      end,
+      calYear,
+      m,
+    );
     const man = manualHolidayForMonth(m, p.holidayManual);
+    const saturday = man.saturday != null ? man.saturday : saturdaysAuto;
     const gw = man.gw;
     const summer = man.summer;
     const nye = man.nye;
-    const D = weekends + weekdayHol + gw + summer + nye;
+    const D = saturday + sundays + weekdayHol + gw + summer + nye;
 
     const E =
       C > 0 ? weatherCountGeInRange(p.wind, p.windTh, start, end, calYear, m) : 0;
@@ -178,6 +209,9 @@
       calYear,
       C,
       D,
+      saturday,
+      saturdaysAuto,
+      sundays,
       weekends,
       weekdayHol,
       gw,
@@ -247,12 +281,18 @@
     const C = daysInMonth(calYear, m);
     const monthStart = new Date(Date.UTC(calYear, m - 1, 1, 12));
     const monthEnd = new Date(Date.UTC(calYear, m - 1, C, 12));
-    const { weekends, weekdayHol } = holidayBreakdownInRange(monthStart, monthEnd, calYear, m);
+    const { saturdaysAuto, sundays, weekdayHol, weekends } = holidayBreakdownInRange(
+      monthStart,
+      monthEnd,
+      calYear,
+      m,
+    );
     const man = manualHolidayForMonth(m, p.holidayManual);
+    const saturday = man.saturday != null ? man.saturday : saturdaysAuto;
     const gw = man.gw;
     const summer = man.summer;
     const nye = man.nye;
-    const D = weekends + weekdayHol + gw + summer + nye;
+    const D = saturday + sundays + weekdayHol + gw + summer + nye;
     const weather =
       typeof weatherByMonth[m] === 'number'
         ? weatherByMonth[m]
@@ -268,6 +308,9 @@
       calYear,
       C,
       D,
+      saturday,
+      saturdaysAuto,
+      sundays,
       weekends,
       weekdayHol,
       gw,
@@ -567,7 +610,6 @@
     end: 'end_date',
     estimate: 'estimate_year',
     obs: 'obs_location',
-    obsNote: 'obs_location_note',
     windTh: 'threshold_wind_ms',
     rainTh: 'threshold_rain_mm',
     fiscal: 'holiday_fiscal_year',
@@ -580,6 +622,7 @@
     holTbl: 'holiday_manual',
     holMonth: 'hm_month',
     holGw: 'hm_gw',
+    holSaturday: 'hm_saturday',
     holSummer: 'hm_summer',
     holNye: 'hm_nye',
     resScaffold: 'result_scaffold_days',
@@ -589,6 +632,7 @@
   };
 
   const OBS_OPTIONS = ['東京', 'さいたま', '熊谷', '宇都宮', '前橋', '横浜', '千葉', 'その他'];
+  const OBS_ALIASES = { 埼玉: 'さいたま', さきたま: 'さいたま', 大宮: 'さいたま' };
   const JMA_OBSDL = 'https://www.data.jma.go.jp/risk/obsdl/';
   const SESSION_RECORD_KEY = 'workdays688_last_record_id';
 
@@ -599,7 +643,7 @@
   function emptyHolidayManual() {
     const rows = [];
     for (let m = 1; m <= 12; m += 1) {
-      rows.push({ m: m, gw: 0, summer: 0, nye: 0 });
+      rows.push({ m: m, saturday: 0, gw: 0, summer: 0, nye: 0 });
     }
     return rows;
   }
@@ -614,7 +658,6 @@
       start_date: '',
       end_date: '',
       obs_location: '',
-      obs_location_note: '',
       threshold_wind_ms: 10,
       threshold_rain_mm: 10,
       holiday_fiscal_year: null,
@@ -625,6 +668,9 @@
       result_scaffold_days: null,
       result_paint_days: null,
       calculated_at: '',
+      csvObsWind: '',
+      csvObsRain: '',
+      showSaturdayAutoNotice: false,
       lastResult: null,
     };
   }
@@ -655,6 +701,7 @@
       if (!m || m < 1 || m > 12) continue;
       byMonth[m] = {
         m: m,
+        saturday: Number(v[FC.holSaturday] && v[FC.holSaturday].value) || 0,
         gw: Number(v[FC.holGw] && v[FC.holGw].value) || 0,
         summer: Number(v[FC.holSummer] && v[FC.holSummer].value) || 0,
         nye: Number(v[FC.holNye] && v[FC.holNye].value) || 0,
@@ -681,6 +728,7 @@
       return {
         value: {
           [FC.holMonth]: { value: String(r.m) },
+          [FC.holSaturday]: { value: String(r.saturday != null ? r.saturday : 0) },
           [FC.holGw]: { value: String(r.gw != null ? r.gw : 0) },
           [FC.holSummer]: { value: String(r.summer != null ? r.summer : 0) },
           [FC.holNye]: { value: String(r.nye != null ? r.nye : 0) },
@@ -703,7 +751,6 @@
     s.start_date = start;
     s.end_date = String(gv(rec, FC.end)).slice(0, 10);
     s.obs_location = String(gv(rec, FC.obs));
-    s.obs_location_note = String(gv(rec, FC.obsNote));
     s.threshold_wind_ms = Number(gv(rec, FC.windTh)) || 10;
     s.threshold_rain_mm = Number(gv(rec, FC.rainTh)) || 10;
     const fyLegacy = gv(rec, FC.fiscal);
@@ -717,6 +764,10 @@
     s.result_paint_days = rp !== '' ? Number(rp) : null;
     s.calculated_at = String(gv(rec, FC.calcAt));
     s.dirty = false;
+    if (s.obs_location) {
+      s.csvObsWind = s.obs_location;
+      s.csvObsRain = s.obs_location;
+    }
     syncRef5yrFromDaily();
     return s;
   }
@@ -731,7 +782,6 @@
       rec[FC.end] = { value: s.estimate_year + '-12-31' };
     }
     rec[FC.obs] = { value: s.obs_location };
-    rec[FC.obsNote] = { value: s.obs_location_note };
     rec[FC.windTh] = { value: String(s.threshold_wind_ms) };
     rec[FC.rainTh] = { value: String(s.threshold_rain_mm) };
     if (s.holiday_fiscal_year != null && s.estimate_year == null) {
@@ -807,6 +857,79 @@
     m = /^(\d{4})(\d{2})(\d{2})$/.exec(s.replace(/\D/g, ''));
     if (m) return m[1] + '-' + m[2] + '-' + m[3];
     return null;
+  }
+
+  function normalizeObsLocation(raw) {
+    const s = String(raw || '').trim();
+    if (!s) return '';
+    if (OBS_OPTIONS.indexOf(s) >= 0) return s;
+    const aliased = OBS_ALIASES[s];
+    if (aliased && OBS_OPTIONS.indexOf(aliased) >= 0) return aliased;
+    return '';
+  }
+
+  function parseCsvStationName(text) {
+    const lines = String(text).replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').split('\n');
+    for (let i = 0; i < Math.min(lines.length, 8); i += 1) {
+      const cols = lines[i].split(/[,\t]/).map(function (c) {
+        return c.trim().replace(/^"|"$/g, '');
+      });
+      for (let j = 0; j < cols.length; j += 1) {
+        const norm = normalizeObsLocation(cols[j]);
+        if (norm) return norm;
+      }
+    }
+    return '';
+  }
+
+  function resolveCsvObsLocation(kind, text) {
+    const loc = parseCsvStationName(text);
+    if (!loc) {
+      throw new Error('CSVから観測地点を読み取れませんでした（地点名が一覧にない可能性があります）');
+    }
+    const other = kind === 'wind' ? state.csvObsRain : state.csvObsWind;
+    if (other && other !== loc) {
+      throw new Error(
+        '風速CSVの地点（' +
+          (kind === 'wind' ? loc : other) +
+          '）と降雨CSVの地点（' +
+          (kind === 'rain' ? loc : other) +
+          '）が一致しません',
+      );
+    }
+    if (state.obs_location && state.obs_location !== loc) {
+      throw new Error(
+        '保存済み・確定済みの観測地点（' + state.obs_location + '）とCSVの地点（' + loc + '）が一致しません',
+      );
+    }
+    if (kind === 'wind') state.csvObsWind = loc;
+    else state.csvObsRain = loc;
+    state.obs_location = loc;
+    return loc;
+  }
+
+  function updateObsLocationDisplay() {
+    const el = document.getElementById('wd688-obs-display');
+    if (!el) return;
+    el.textContent = state.obs_location ? state.obs_location : '未設定';
+    el.className = state.obs_location ? 'wd688-obs-set' : 'wd688-obs-unset';
+  }
+
+  function applySaturdayAutoToHolidayManual() {
+    const y = currentEstimateYear();
+    if (!y || Number.isNaN(y)) return;
+    const autos = saturdayAutoByMonthForEstimate(y);
+    for (let i = 0; i < 12; i += 1) {
+      state.holidayManual[i].saturday = autos[i].saturday;
+    }
+  }
+
+  function fillSaturdayInputsFromState() {
+    for (let m = 1; m <= 12; m += 1) {
+      const el = document.getElementById('wd688-hm-saturday-' + m);
+      const row = state.holidayManual[m - 1];
+      if (el && row) el.value = String(row.saturday != null ? row.saturday : 0);
+    }
   }
 
   function cloneRef5yr(src) {
@@ -906,20 +1029,26 @@
     return warnings;
   }
 
-  function readHolidayManualFromForm() {
+  function readHolidayManualFromForm(opts) {
+    opts = opts || {};
     for (let m = 1; m <= 12; m += 1) {
       const row = state.holidayManual[m - 1];
       const gwEl = document.getElementById('wd688-hm-gw-' + m);
       const suEl = document.getElementById('wd688-hm-summer-' + m);
       const nyEl = document.getElementById('wd688-hm-nye-' + m);
+      const satEl = document.getElementById('wd688-hm-saturday-' + m);
       if (gwEl) row.gw = Number(gwEl.value) || 0;
       if (suEl) row.summer = Number(suEl.value) || 0;
       if (nyEl) row.nye = Number(nyEl.value) || 0;
+      if (!opts.skipSaturday && satEl) row.saturday = Number(satEl.value) || 0;
     }
   }
 
   function runCalc() {
-    readHolidayManualFromForm();
+    readHolidayManualFromForm({ skipSaturday: true });
+    applySaturdayAutoToHolidayManual();
+    fillSaturdayInputsFromState();
+    state.showSaturdayAutoNotice = true;
     const estimateYear = currentEstimateYear();
     if (!estimateYear || Number.isNaN(estimateYear)) throw new Error('見積作成年を入力してください');
     const bundle = calcWorkdaysBundleForEstimate({
@@ -969,8 +1098,7 @@
     };
     state.project_name = g('wd688-project');
     state.estimate_year = g('wd688-estimate') !== '' ? Number(g('wd688-estimate')) : null;
-    state.obs_location = g('wd688-obs');
-    state.obs_location_note = g('wd688-obs-note');
+    state.obs_location = state.obs_location || '';
     state.threshold_wind_ms = Number(g('wd688-wind-th')) || 10;
     state.threshold_rain_mm = Number(g('wd688-rain-th')) || 10;
     readHolidayManualFromForm();
@@ -984,12 +1112,12 @@
     };
     s('wd688-project', state.project_name);
     s('wd688-estimate', state.estimate_year != null ? state.estimate_year : '');
-    s('wd688-obs', state.obs_location);
-    s('wd688-obs-note', state.obs_location_note);
+    updateObsLocationDisplay();
     s('wd688-wind-th', state.threshold_wind_ms);
     s('wd688-rain-th', state.threshold_rain_mm);
     for (let m = 1; m <= 12; m += 1) {
       const row = state.holidayManual[m - 1];
+      s('wd688-hm-saturday-' + m, row.saturday);
       s('wd688-hm-gw-' + m, row.gw);
       s('wd688-hm-summer-' + m, row.summer);
       s('wd688-hm-nye-' + m, row.nye);
@@ -1048,18 +1176,20 @@
 
   function fmtPctOver100(rate) {
     if (rate == null || Number.isNaN(rate)) return '—';
+    const pct = fmtPct(rate);
     if (isDecimalRateOver100(rate)) {
-      return '<span class="wd688-rate-over">100%以上</span>';
+      return '<span class="wd688-rate-over">' + pct + '</span>';
     }
-    return fmtPct(rate);
+    return pct;
   }
 
   function fmtRainHolidayPctOver100(pct) {
     if (pct == null || Number.isNaN(pct)) return '—';
+    const shown = fmtRainHolidayPct(pct);
     if (isRainPctOver100(pct)) {
-      return '<span class="wd688-rate-over">100%以上</span>';
+      return '<span class="wd688-rate-over">' + shown + '</span>';
     }
-    return fmtRainHolidayPct(pct);
+    return shown;
   }
 
   function holidayAvailRow(r) {
@@ -1087,7 +1217,9 @@
 
   function holidayPartsSummary(r) {
     const parts = [];
-    if (r.weekends) parts.push('土日' + r.weekends);
+    const sat = r.saturday != null ? r.saturday : r.saturdaysAuto;
+    if (sat) parts.push('土曜' + sat);
+    if (r.sundays) parts.push('日曜' + r.sundays);
     if (r.weekdayHol) parts.push('祝' + r.weekdayHol);
     if (r.gw) parts.push('GW' + r.gw);
     if (r.summer) parts.push('夏季休暇' + r.summer);
@@ -1232,6 +1364,8 @@
     const rate = avail ? (D + weather - overlap) / avail : 0;
     return {
       weather: weather,
+      saturday: sum('saturday'),
+      sundays: sum('sundays'),
       weekends: sum('weekends'),
       weekdayHol: sum('weekdayHol'),
       gw: sum('gw'),
@@ -1346,9 +1480,12 @@
       '<tr><td class="wd688-row-label wd688-indent" colspan="' +
       (rows.length + 2) +
       '">休日数</td></tr>';
-    addRow('<span class="wd688-indent2">土　曜・日　曜</span>', function (r) {
-      return r.weekends;
-    }, { yearVal: yt.weekends });
+    addRow('<span class="wd688-indent2">土　曜</span>', function (r) {
+      return r.saturday != null ? r.saturday : r.saturdaysAuto;
+    }, { inputPrefix: 'saturday', field: 'saturday', yearVal: yt.saturday });
+    addRow('<span class="wd688-indent2">日　曜</span>', function (r) {
+      return r.sundays;
+    }, { yearVal: yt.sundays });
     addRow('<span class="wd688-indent2">祝　日・祭　日</span>', function (r) {
       return r.weekdayHol;
     }, { yearVal: yt.weekdayHol });
@@ -1786,11 +1923,18 @@
       (rows.length + 2) +
       '">休日数</td></tr>';
     sum +=
-      '<tr><td class="wd688pr-lab wd688pr-indent">土　曜・日　曜</td>' +
+      '<tr><td class="wd688pr-lab wd688pr-indent">土　曜</td>' +
       monthCells(function (r) {
-        return r.weekends;
+        return r.saturday != null ? r.saturday : r.saturdaysAuto;
       }) +
-      yearCell(yt.weekends) +
+      yearCell(yt.saturday) +
+      '</tr>';
+    sum +=
+      '<tr><td class="wd688pr-lab wd688pr-indent">日　曜</td>' +
+      monthCells(function (r) {
+        return r.sundays;
+      }) +
+      yearCell(yt.sundays) +
       '</tr>';
     sum +=
       '<tr><td class="wd688pr-lab wd688pr-indent">祝　日・祭　日</td>' +
@@ -2102,8 +2246,6 @@
     const windRows = sortMonthlyRows(state.lastResult.monthlyWind || []);
     const rainSet = buildRainDaySetForYear(calYear, state.rain, rainTh);
     const windSet = buildWindDaySetForYear(calYear, state.wind, windTh);
-    const obsNote = state.obs_location_note ? '（' + state.obs_location_note + '）' : '';
-
     const meta =
       '<div class="wd688pr-meta"><table>' +
       '<tr><th>工事名</th><td>' +
@@ -2113,7 +2255,6 @@
       '年</td></tr>' +
       '<tr><th>観測地点</th><td colspan="3">' +
       escHtml(state.obs_location || '—') +
-      escHtml(obsNote) +
       '　／　足場 稼働可能日数: <strong>' +
       fmtNum(state.result_scaffold_days, 2) +
       ' 日</strong>　／　塗装: <strong>' +
@@ -2299,6 +2440,15 @@
     return html;
   }
 
+  function buildSaturdayAutoNoticePanel() {
+    if (!state.showSaturdayAutoNotice) return '';
+    return (
+      '<p class="wd688-saturday-auto-notice">' +
+      '※ 土曜の数は自動計算値です。現場の休日運用に合わせて<strong>手直しが必要な場合があります</strong>。' +
+      '</p>'
+    );
+  }
+
   function renderMonthlyTable() {
     const host = document.getElementById('wd688-monthly');
     if (!host) return;
@@ -2337,8 +2487,9 @@
       estYear +
       '年</strong>（休日・暦日基準）／過去5年 <strong>' +
       pastYears +
-      '年</strong> の月平均を ※1 に使用。表は1月〜12月固定。GW・夏休み・年末年始はセル内編集可（編集後は再算出）。' +
-      '</p>';
+      '年</strong> の月平均を ※1 に使用。表は1月〜12月固定。土曜・GW・夏休み・年末年始はセル内編集可（土曜は再算出で自動上書き）。' +
+      '</p>' +
+      buildSaturdayAutoNoticePanel();
 
     if (activeTab === 'scaffold') {
       host.innerHTML =
@@ -2504,7 +2655,12 @@
       '.wd688-comment-intro{margin:0 0 6px;}' +
       '.wd688-comment-empty{margin:0;color:#64748b;}' +
       '.wd688-comment-list{margin:0;padding-left:1.2em;}' +
-      '.wd688-comment-list li{margin:3px 0;}';
+      '.wd688-comment-list li{margin:3px 0;}' +
+      '.wd688-obs-unset{color:#64748b;font-weight:600;}' +
+      '.wd688-obs-set{font-weight:600;}' +
+      '.wd688-saturday-auto-notice{margin:0 0 10px;padding:8px 10px;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;color:#dc2626;font-size:12px;line-height:1.55;}' +
+      '.wd688-csv-btn{margin:8px 0 0;padding:6px 14px;border:1px solid #94a3b8;border-radius:6px;background:#e8eef4;color:#334155;font-size:13px;cursor:pointer;}' +
+      '.wd688-csv-btn:hover{background:#dbe4ee;}';
     document.head.appendChild(st);
   }
 
@@ -2523,22 +2679,24 @@
       '" target="_blank" rel="noopener">' +
       JMA_OBSDL +
       '</a><br>' +
-      '2. <strong>地点</strong> … 案件の観測地点を選択（大宮地区の場合は<strong>埼玉</strong>など近傍の観測所）<br>' +
+      '2. <strong>地点</strong> … 気象庁サイトで観測所を選択（CSV取込で画面上の観測地点が<strong>自動設定</strong>されます）<br>' +
       '3. <strong>期間</strong> … 見積作成年の <strong>5年前の1月1日</strong> 〜 <strong>昨年の12月31日</strong>（上記例なら 2021/1/1〜2025/12/31）。年ごとに分けて取得しても可<br>' +
       '4. <strong>項目</strong> … 「<strong>日別値</strong>」を選択<br>' +
-      '5. 下記の気象要素を選び CSV ダウンロード →「CSV→風速」「CSV→降雨」で取込（<strong>全閾値表が自動更新</strong>・再算出可能）' +
+      '5. 下記の気象要素を選び CSV ダウンロードし、各説明直下のボタンで取込（<strong>全閾値表が自動更新</strong>・再算出可能）' +
       '</p>' +
       '<p style="margin:0 0 12px;line-height:1.75;">' +
       '<strong>① 風速（足場・※1）</strong><br>' +
       '気象要素：<strong>日最大風速 (m/s)</strong><br>' +
       '数え方：各日の値が <strong>10m/s 以上</strong> の日を1日とカウント → 月ごとに集計 → 5年分の同月平均（小数可）<br>' +
-      'CSV形式：<strong>日付・風速の2列</strong>（ヘッダ行は自動スキップ）' +
+      'CSV形式：<strong>日付・風速の2列</strong>（ヘッダ行は自動スキップ）<br>' +
+      '<button type="button" id="wd688-csv-wind" class="wd688-csv-btn">CSV→風速</button>' +
       '</p>' +
       '<p style="margin:0 0 12px;line-height:1.75;">' +
       '<strong>② 降雨（塗装・休日・※1）</strong><br>' +
       '気象要素：<strong>降水量の日合計 (mm)</strong>（日別値の1日合計＝日降水量。サイトによって「降水量の合計」と表記される場合も同じ項目）<br>' +
       '数え方：各日の値が <strong>10mm 以上</strong> の日を1日とカウント → 月ごとに集計 → 5年分の同月平均<br>' +
-      'CSV形式：<strong>日付・降水量の2列</strong>' +
+      'CSV形式：<strong>日付・降水量の2列</strong><br>' +
+      '<button type="button" id="wd688-csv-rain" class="wd688-csv-btn">CSV→降雨</button>' +
       '</p>' +
       '<p style="margin:0;line-height:1.75;font-size:12px;color:#475569;">' +
       '<strong>過去5年表の見方</strong> … タブ「過去5年(風速)」「過去5年(降雨)」に Excel シートと同じ<strong>全閾値表</strong>（風速: ≧10/15/20/30m/s、降雨: ≧1/10/30/50/70/100mm）を表示します。' +
@@ -2559,15 +2717,11 @@
     root.className = 'wd688-root';
     root.id = 'wd688-root';
 
-    const obsOpts = OBS_OPTIONS.map(function (o) {
-      return '<option value="' + o + '">' + o + '</option>';
-    }).join('');
-
     root.innerHTML =
       '<div id="wd688-dirty" style="display:none;padding:10px;background:#fff3cd;border:1px solid #ffc107;border-radius:6px;margin-bottom:10px;font-size:13px;"></div>' +
       '<div style="margin-bottom:12px;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;line-height:1.65;">' +
       '<strong style="font-size:15px">工事稼働日数計算ツール</strong><br>' +
-      '見積作成年・観測地点を入力し「再算出」→「保存」してください。表は常に<strong>1月〜12月</strong>。※1 気象日数は見積作成年の<strong>直前5年間</strong>の月平均です（例: 2026年見積 → 2021〜2025年）。休日は自動＋GW/夏/年末年始は表内で編集できます。' +
+      '見積作成年を入力し、気象CSVを取込んで観測地点を確定→「再算出」→「保存」してください。表は常に<strong>1月〜12月</strong>。※1 気象日数は見積作成年の<strong>直前5年間</strong>の月平均です（例: 2026年見積 → 2021〜2025年）。土曜は再算出で自動（手直し可）・日曜は自動＋GW/夏/年末年始は表内で編集できます。' +
       '</div>' +
       '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;">' +
       '<strong style="font-size:16px">工事稼働日数ダッシュ</strong>' +
@@ -2581,10 +2735,7 @@
       '<div class="wd688-form" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:12px;font-size:13px;">' +
       '<label>工事名<br><input id="wd688-project" type="text" style="width:100%"></label>' +
       '<label>見積作成年<br><input id="wd688-estimate" type="number" min="2000" max="2100" step="1" style="width:100%"></label>' +
-      '<label>観測地点<br><select id="wd688-obs" style="width:100%">' +
-      obsOpts +
-      '</select></label>' +
-      '<label>地点備考<br><input id="wd688-obs-note" type="text" style="width:100%"></label>' +
+      '<label>観測地点<br><div id="wd688-obs-display" class="wd688-obs-unset">未設定</div></label>' +
       '<label>風速閾値(m/s)<br><input id="wd688-wind-th" type="number" step="0.1" style="width:100%"></label>' +
       '<label>降雨閾値(mm)<br><input id="wd688-rain-th" type="number" step="0.1" style="width:100%"></label></div>' +
       '<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0;padding:12px;background:#e8f4fc;border-radius:8px;">' +
@@ -2593,10 +2744,6 @@
       '<button type="button" id="wd688-calc" class="kintoneplugin-button-dialog-ok">再算出</button>' +
       '<button type="button" id="wd688-save" class="kintoneplugin-button-dialog-ok">保存</button>' +
       '<button type="button" id="wd688-print-paint" class="kintoneplugin-button-normal">施工主報告用印刷</button></div>' +
-      '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 4px;">' +
-      '<span style="font-size:13px;font-weight:bold;color:#334155">気象CSV取込（過去5年表を自動更新）：</span>' +
-      '<button type="button" id="wd688-csv-wind" class="kintoneplugin-button-normal">CSV→風速</button>' +
-      '<button type="button" id="wd688-csv-rain" class="kintoneplugin-button-normal">CSV→降雨</button></div>' +
       '<div id="wd688-csv-help" style="margin:0 0 14px;padding:12px 14px;background:#fff;border:1px solid #d0d7de;border-radius:8px;font-size:13px;line-height:1.7;color:#1e293b;">' +
       csvHelpHtml() +
       '</div>' +
@@ -2612,7 +2759,7 @@
 
     header.appendChild(root);
 
-    ['wd688-project', 'wd688-estimate', 'wd688-obs', 'wd688-obs-note', 'wd688-wind-th', 'wd688-rain-th'].forEach(
+    ['wd688-project', 'wd688-estimate', 'wd688-wind-th', 'wd688-rain-th'].forEach(
       function (id) {
         const el = document.getElementById(id);
         if (el) el.addEventListener('change', markDirty);
@@ -2687,12 +2834,13 @@
       reader.onload = function () {
         try {
           const text = decodeCsvArrayBuffer(reader.result);
+          readFormIntoState();
+          const loc = resolveCsvObsLocation(pendingCsvKind, text);
           const rows = parseCsvTwoColumn(text);
           if (!rows.length) {
             alert('有効なデータ行がありません');
             return;
           }
-          readFormIntoState();
           if (pendingCsvKind === 'wind') {
             state.wind = rows;
             state.ref5yr = mergeDailyCsvIntoRef5yr(getRef5yr(), rows, 'wind');
@@ -2700,8 +2848,12 @@
             state.rain = rows;
             state.ref5yr = mergeDailyCsvIntoRef5yr(getRef5yr(), rows, 'rain');
           }
+          updateObsLocationDisplay();
           markDirty();
           let msg =
+            '観測地点: ' +
+            loc +
+            ' / ' +
             rows.length +
             ' 行取込みました。過去5年表（全閾値）を更新しました。';
           try {
