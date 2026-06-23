@@ -34,6 +34,14 @@ function prepareCore() {
   return strip(layout) + strip(core);
 }
 
+function prepareDiffCore() {
+  let diff = readFileSync(path.join(root, 'scripts/jikkou-yosan-diff-core.mjs'), 'utf8');
+  return diff
+    .replace(/^export function /gm, '  function ')
+    .replace(/^export const /gm, '  const ')
+    .replace(/^export /gm, '  ');
+}
+
 let ui = readFileSync(path.join(root, 'customize/736/desktop.ui.js'), 'utf8');
 ui = injectWorkTypeAliases(ui);
 const costTemplate = readFileSync(path.join(root, 'scripts/data/jikkou-yosan-default-cost-template.json'), 'utf8');
@@ -49,6 +57,7 @@ const out = `/**
   const DEFAULT_COST_TEMPLATE = ${costTemplate.trim()};
 
 ${prepareCore()}
+${prepareDiffCore()}
 ${ui}
 })();
 `;

@@ -24,8 +24,17 @@
 
 ---
 
+---
+
+## [2026-06-23] 736 差分表示 — row_key と突合（App 736 / v2c）
+
+**前提**: `recalcState` → `costLineFromCalcRow` が `row_key` を落とすと、差分で全行不一致（例: 削除53件）や小計行キー衝突（例: -10,750,000 誤表示）が起きる  
+**手順**: ① `costLineFromCalcRow` で `row_key` 保持 ② `snapshotForDiff` でランダム UUID 付与禁止 ③ 突合は `scripts/jikkou-yosan-diff-core.mjs` の `structuralRowKey` + `pairTableRows`  
+**禁止**: 差分比較前の `ensureRowKeysOnState`（比較元・現行で別 UUID になる）  
+**exit**: 版2で材料1行のみ変更 → 削除0件・連携②のみ増減・⑧⑨ が ±同額
+
 <!-- CIO-DEBUG-TIPS:AUTO -->
-## [2026-06-22] セッション解体時知恵ストック
+## [2026-06-23] セッション解体時知恵ストック
 
 **前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
 **手順**: `npm run session:bootstrap` → `npm run cio:tool:route -- --intent "<要約>"`` → `npm run cio:session:cold-start`
@@ -33,6 +42,16 @@
 **exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
 
 <!-- errors: npm run session:bootstrap`**。新規 kintone は **24-db-dash-scaffold-kernel** + `db-d | npm run cio:tool:route -- --intent "<要約>"` | npm run cio:session:cold-start` -->
+
+
+## [2026-06-22] セッション解体時知恵ストック
+
+**前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
+**手順**: `npm run cio:tool:route -- --intent "<要約>"`` → `npm run cio:session:cold-start` → `npm run session:bootstrap`
+**禁止**: customize/deploy 凍結中の無断 save・上位憲法 §50-3-11 非置換違反・本体単独完結
+**exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
+
+<!-- errors: npm run cio:tool:route -- --intent "<要約>"` | npm run cio:session:cold-start` | npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `manda -->
 
 
 ## [2026-06-21] セッション解体時知恵ストック

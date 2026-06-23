@@ -306,11 +306,11 @@
       "note": null
     },
     "736": {
-      "build": "2026-06-21-jikkou-yosan-versions-help-wording",
-      "fileKey": "86380bc7-14e0-4257-9b06-30802b996a06",
-      "revision": "111",
+      "build": "2026-06-23-jikkou-yosan-diff-structural-match",
+      "fileKey": "9eb9150c-2bf6-4d53-abb3-52017948f5d9",
+      "revision": "123",
       "relPath": "customize/736/desktop.js",
-      "deployedAt": "2026-06-22T08:48:16.888Z",
+      "deployedAt": "2026-06-23T12:08:31.526Z",
       "note": null
     },
     "737": {
