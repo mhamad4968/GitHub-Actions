@@ -90,11 +90,11 @@
       "note": null
     },
     "688": {
-      "build": "2026-06-22-688-print-5yr-scale-up",
-      "fileKey": "12294dd5-17f6-40c3-a044-facf24270d49",
-      "revision": "65",
+      "build": "2026-06-23-688-holiday-sat-sun-csv-obs",
+      "fileKey": "66c3d879-b441-4825-b739-ca4fcafcbc05",
+      "revision": "66",
       "relPath": ".kintone-deploy/upload-688.js",
-      "deployedAt": "2026-06-22T09:29:12.107Z",
+      "deployedAt": "2026-06-23T10:36:08.283Z",
       "note": null
     },
     "693": {
