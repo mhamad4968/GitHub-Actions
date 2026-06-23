@@ -6,7 +6,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-06-23-688-print-sat-sun-wide-lab';
+  const BUILD = '2026-06-23-688-print-fit-one-page-v3';
 
   const REF5YR = {"location":"大宮地区","windPeriod":"2018〜2025","rainPeriod":"2018〜2025","updated":"2026-06-13","csvSource":"風速.csv, 降雨.csv","wind_ge10_ms":{"label":">=10ms","years":["2018","2019","2020","2021","2022","2023","2024","2025"],"months":[{"m":1,"byYear":{"2018":1,"2019":4,"2020":1,"2021":1,"2022":3,"2023":6,"2024":5,"2025":1},"avg":2.75},{"m":2,"byYear":{"2018":1,"2019":2,"2020":2,"2021":1,"2022":4,"2023":2,"2024":4,"2025":3},"avg":2.375},{"m":3,"byYear":{"2018":0,"2019":0,"2020":3,"2021":4,"2022":1,"2023":1,"2024":5,"2025":2},"avg":2},{"m":4,"byYear":{"2018":2,"2019":2,"2020":3,"2021":1,"2022":0,"2023":0,"2024":1,"2025":0},"avg":1.125},{"m":5,"byYear":{"2018":1,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.125},{"m":6,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":7,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":1,"2025":0},"avg":0.125},{"m":8,"byYear":{"2018":1,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.125},{"m":9,"byYear":{"2018":1,"2019":1,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.25},{"m":10,"byYear":{"2018":2,"2019":0,"2020":1,"2021":1,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.5},{"m":11,"byYear":{"2018":0,"2019":1,"2020":0,"2021":0,"2022":0,"2023":1,"2024":1,"2025":1},"avg":0.5},{"m":12,"byYear":{"2018":3,"2019":1,"2020":1,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.625}]},"wind_ge15_ms":{"label":">=15ms","years":["2018","2019","2020","2021","2022","2023","2024","2025"],"months":[{"m":1,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":2,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":3,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":4,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":5,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":6,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":7,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":8,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":9,"byYear":{"2018":1,"2019":1,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.25},{"m":10,"byYear":{"2018":1,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.125},{"m":11,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":12,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0}]},"wind_ge20_ms":{"label":">=20ms","years":["2018","2019","2020","2021","2022","2023","2024","2025"],"months":[{"m":1,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":2,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":3,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":4,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":5,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":6,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":7,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":8,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":9,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":10,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":11,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":12,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0}]},"wind_ge30_ms":{"label":">=30ms","years":["2018","2019","2020","2021","2022","2023","2024","2025"],"months":[{"m":1,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":2,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":3,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":4,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":5,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":6,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":7,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":8,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":9,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":10,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":11,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":12,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0}]},"rain_ge1_mm":{"label":">=1mm","years":["2018","2019","2020","2021","2022","2023","2024","2025"],"months":[{"m":1,"byYear":{"2018":4,"2019":1,"2020":7,"2021":3,"2022":2,"2023":2,"2024":3,"2025":4},"avg":3.25},{"m":2,"byYear":{"2018":3,"2019":4,"2020":4,"2021":2,"2022":6,"2023":4,"2024":9,"2025":1},"avg":4.125},{"m":3,"byYear":{"2018":10,"2019":9,"2020":9,"2021":7,"2022":6,"2023":9,"2024":9,"2025":9},"avg":8.5},{"m":4,"byYear":{"2018":4,"2019":11,"2020":8,"2021":7,"2022":14,"2023":5,"2024":12,"2025":9},"avg":8.75},{"m":5,"byYear":{"2018":9,"2019":4,"2020":10,"2021":13,"2022":12,"2023":11,"2024":13,"2025":13},"avg":10.625},{"m":6,"byYear":{"2018":12,"2019":13,"2020":16,"2021":11,"2022":10,"2023":14,"2024":9,"2025":6},"avg":11.375},{"m":7,"byYear":{"2018":6,"2019":15,"2020":23,"2021":14,"2022":11,"2023":5,"2024":13,"2025":5},"avg":11.5},{"m":8,"byYear":{"2018":9,"2019":10,"2020":5,"2021":10,"2022":7,"2023":13,"2024":10,"2025":10},"avg":9.25},{"m":9,"byYear":{"2018":8,"2019":8,"2020":12,"2021":13,"2022":10,"2023":8,"2024":8,"2025":9},"avg":9.5},{"m":10,"byYear":{"2018":17,"2019":7,"2020":8,"2021":8,"2022":10,"2023":4,"2024":10,"2025":10},"avg":9.25},{"m":11,"byYear":{"2018":5,"2019":3,"2020":5,"2021":5,"2022":5,"2023":3,"2024":6,"2025":2},"avg":4.25},{"m":12,"byYear":{"2018":5,"2019":1,"2020":6,"2021":1,"2022":0,"2023":0,"2024":0,"2025":0},"avg":1.625}]},"rain_ge10_mm":{"label":">=10mm","years":["2018","2019","2020","2021","2022","2023","2024","2025"],"months":[{"m":1,"byYear":{"2018":1,"2019":1,"2020":2,"2021":2,"2022":1,"2023":0,"2024":1,"2025":1},"avg":1.125},{"m":2,"byYear":{"2018":0,"2019":1,"2020":0,"2021":1,"2022":2,"2023":1,"2024":1,"2025":0},"avg":0.75},{"m":3,"byYear":{"2018":6,"2019":2,"2020":3,"2021":4,"2022":4,"2023":5,"2024":6,"2025":5},"avg":4.375},{"m":4,"byYear":{"2018":2,"2019":2,"2020":4,"2021":3,"2022":7,"2023":2,"2024":2,"2025":3},"avg":3.125},{"m":5,"byYear":{"2018":4,"2019":2,"2020":3,"2021":2,"2022":3,"2023":4,"2024":6,"2025":6},"avg":3.75},{"m":6,"byYear":{"2018":3,"2019":6,"2020":4,"2021":5,"2022":1,"2023":6,"2024":6,"2025":5},"avg":4.5},{"m":7,"byYear":{"2018":4,"2019":6,"2020":7,"2021":9,"2022":3,"2023":0,"2024":4,"2025":1},"avg":4.25},{"m":8,"byYear":{"2018":4,"2019":5,"2020":2,"2021":7,"2022":3,"2023":3,"2024":9,"2025":2},"avg":4.375},{"m":9,"byYear":{"2018":4,"2019":4,"2020":5,"2021":5,"2022":7,"2023":3,"2024":1,"2025":4},"avg":4.125},{"m":10,"byYear":{"2018":5,"2019":4,"2020":4,"2021":4,"2022":2,"2023":2,"2024":4,"2025":2},"avg":3.375},{"m":11,"byYear":{"2018":3,"2019":0,"2020":2,"2021":2,"2022":1,"2023":2,"2024":2,"2025":0},"avg":1.5},{"m":12,"byYear":{"2018":2,"2019":0,"2020":2,"2021":1,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.625}]},"rain_ge30_mm":{"label":">=30mm","years":["2018","2019","2020","2021","2022","2023","2024","2025"],"months":[{"m":1,"byYear":{"2018":0,"2019":0,"2020":1,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.125},{"m":2,"byYear":{"2018":0,"2019":0,"2020":0,"2021":1,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.125},{"m":3,"byYear":{"2018":3,"2019":1,"2020":1,"2021":1,"2022":1,"2023":0,"2024":2,"2025":0},"avg":1.125},{"m":4,"byYear":{"2018":1,"2019":0,"2020":2,"2021":0,"2022":1,"2023":0,"2024":1,"2025":1},"avg":0.75},{"m":5,"byYear":{"2018":1,"2019":1,"2020":1,"2021":0,"2022":1,"2023":0,"2024":2,"2025":1},"avg":0.875},{"m":6,"byYear":{"2018":0,"2019":2,"2020":2,"2021":1,"2022":0,"2023":2,"2024":3,"2025":1},"avg":1.375},{"m":7,"byYear":{"2018":1,"2019":1,"2020":2,"2021":4,"2022":1,"2023":0,"2024":2,"2025":1},"avg":1.5},{"m":8,"byYear":{"2018":1,"2019":0,"2020":1,"2021":3,"2022":1,"2023":1,"2024":4,"2025":1},"avg":1.5},{"m":9,"byYear":{"2018":1,"2019":1,"2020":1,"2021":1,"2022":3,"2023":1,"2024":0,"2025":2},"avg":1.25},{"m":10,"byYear":{"2018":3,"2019":2,"2020":1,"2021":1,"2022":1,"2023":1,"2024":0,"2025":0},"avg":1.125},{"m":11,"byYear":{"2018":2,"2019":0,"2020":1,"2021":1,"2022":1,"2023":1,"2024":1,"2025":0},"avg":0.875},{"m":12,"byYear":{"2018":0,"2019":0,"2020":2,"2021":1,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.375}]},"rain_ge50_mm":{"label":">=50mm","years":["2018","2019","2020","2021","2022","2023","2024","2025"],"months":[{"m":1,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":2,"byYear":{"2018":0,"2019":0,"2020":0,"2021":1,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.125},{"m":3,"byYear":{"2018":1,"2019":0,"2020":0,"2021":1,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.25},{"m":4,"byYear":{"2018":0,"2019":0,"2020":2,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.25},{"m":5,"byYear":{"2018":0,"2019":1,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":1},"avg":0.25},{"m":6,"byYear":{"2018":0,"2019":1,"2020":1,"2021":1,"2022":0,"2023":2,"2024":1,"2025":0},"avg":0.75},{"m":7,"byYear":{"2018":0,"2019":0,"2020":0,"2021":1,"2022":1,"2023":0,"2024":1,"2025":1},"avg":0.5},{"m":8,"byYear":{"2018":1,"2019":0,"2020":0,"2021":1,"2022":0,"2023":0,"2024":3,"2025":0},"avg":0.625},{"m":9,"byYear":{"2018":1,"2019":1,"2020":0,"2021":1,"2022":1,"2023":1,"2024":0,"2025":2},"avg":0.875},{"m":10,"byYear":{"2018":2,"2019":1,"2020":1,"2021":1,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.625},{"m":11,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":12,"byYear":{"2018":0,"2019":0,"2020":1,"2021":1,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.25}]},"rain_ge70_mm":{"label":">=70mm","years":["2018","2019","2020","2021","2022","2023","2024","2025"],"months":[{"m":1,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":2,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":3,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":4,"byYear":{"2018":0,"2019":0,"2020":1,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.125},{"m":5,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":6,"byYear":{"2018":0,"2019":1,"2020":0,"2021":0,"2022":0,"2023":1,"2024":0,"2025":0},"avg":0.25},{"m":7,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":1,"2023":0,"2024":0,"2025":1},"avg":0.25},{"m":8,"byYear":{"2018":0,"2019":0,"2020":0,"2021":1,"2022":0,"2023":0,"2024":2,"2025":0},"avg":0.375},{"m":9,"byYear":{"2018":1,"2019":1,"2020":0,"2021":0,"2022":0,"2023":1,"2024":0,"2025":1},"avg":0.5},{"m":10,"byYear":{"2018":2,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.25},{"m":11,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":12,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0}]},"rain_ge100_mm":{"label":">=100mm","years":["2018","2019","2020","2021","2022","2023","2024","2025"],"months":[{"m":1,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":2,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":3,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":4,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":5,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":6,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":1,"2024":0,"2025":0},"avg":0.125},{"m":7,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":8,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":1,"2025":0},"avg":0.125},{"m":9,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":1},"avg":0.125},{"m":10,"byYear":{"2018":1,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0.125},{"m":11,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0},{"m":12,"byYear":{"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0},"avg":0}]}};
 
@@ -1598,7 +1598,7 @@
       '.wd688pr-5yr-grid-wind{grid-template-columns:repeat(4,1fr);}' +
       '#wd688-print-portal{display:none;}' +
       '@media print{' +
-      '@page{size:A3 landscape;margin:2mm;}' +
+      '@page{size:A3 landscape;margin:1mm;}' +
       'body{padding:0!important;}' +
       'body *{visibility:hidden!important;}' +
       '#wd688-print-portal,#wd688-print-portal *{visibility:visible!important;}' +
@@ -1606,37 +1606,39 @@
       '.wd688pr-sheet{page-break-after:always;break-after:page;}' +
       '.wd688pr-sheet:last-child{page-break-after:auto;break-after:auto;}' +
       '.wd688pr-section{page-break-after:auto;break-after:auto;}' +
-      '.wd688pr-sheet-work .wd688pr-meta{margin-bottom:8px;font-size:14pt;}' +
-      '.wd688pr-sheet-work .wd688pr-meta th,.wd688pr-sheet-work .wd688pr-meta td{padding:5px 11px;}' +
+      '.wd688pr-sheet-work{zoom:0.82;}' +
+      '.wd688pr-sheet-work .wd688pr-meta{margin-bottom:5px;font-size:12pt;}' +
+      '.wd688pr-sheet-work .wd688pr-meta th,.wd688pr-sheet-work .wd688pr-meta td{padding:3px 8px;}' +
       '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-tabs{display:none;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-title{font-size:19pt;padding:8px 17px;margin-bottom:7px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-title{font-size:17pt;padding:6px 14px;margin-bottom:4px;}' +
       '.wd688pr-sheet-work .wd688pr-work-head{page-break-after:avoid;break-after:avoid-page;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum{font-size:11.5pt;margin:4px 0 5px;table-layout:fixed;width:100%;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-col-lab{width:13%;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-col-m{width:6.4%;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-col-year{width:6.4%;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum th,.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum td{padding:1px 2px;line-height:1.15;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-lab{width:13%;min-width:7.8em;padding-left:6px;font-size:11.5pt;white-space:nowrap;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-indent{padding-left:1.4em;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum th:not(.wd688pr-lab){font-size:10.5pt;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-lab span{font-size:8pt!important;font-weight:normal;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-notes{font-size:9pt;margin:6px 0 0;line-height:1.34;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-notes p{margin:0 0 2px;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-section{margin-top:6px;page-break-before:avoid;break-before:avoid-page;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-year{margin:6px 0 5px;font-size:14pt;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-row-6{gap:5px 8px;margin-bottom:5px;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal{padding:4px 5px 5px;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-mnum{font-size:11.5pt;margin:0 0 1px;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t{font-size:9pt;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t th{font-size:8.5pt;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t th,.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t td{line-height:16px;height:16px;padding:0 1px;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-stats-wrap{margin-top:4px;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-stats{font-size:9pt;margin-top:0;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-stats td{padding:1px 2px;line-height:1.22;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-stats .wd688pr-sl{word-break:break-all;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-panel{margin:4px 0 5px;font-size:10pt;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-panel-head{font-size:10pt;padding:4px 8px;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-panel-body{font-size:10pt;padding:5px 8px;line-height:1.32;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum{font-size:10.5pt;margin:2px 0 4px;table-layout:fixed;width:100%;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-col-lab{width:22%;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-col-m{width:5.2%;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-col-year{width:5.5%;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum th,.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum td{padding:1px 2px;line-height:1.1;vertical-align:middle;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-lab{width:22%;min-width:12em;padding:4px 6px;font-size:10.5pt;white-space:normal;word-break:keep-all;line-height:1.12;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-lab-long{min-width:12.5em;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-indent{padding-left:1.2em;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum th:not(.wd688pr-lab){font-size:9.5pt;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-lab span{font-size:7.5pt!important;font-weight:normal;line-height:1.1;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-notes{font-size:7.5pt;margin:3px 0 0;line-height:1.18;columns:2;column-gap:14px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-notes p{margin:0 0 1px;break-inside:avoid;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-section{margin-top:3px;page-break-before:avoid;break-before:avoid-page;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-year{margin:3px 0 2px;font-size:12pt;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-row-6{gap:3px 6px;margin-bottom:3px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal{padding:2px 3px 3px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-mnum{font-size:10pt;margin:0 0 1px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t{font-size:8pt;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t th{font-size:7.5pt;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t th,.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t td{line-height:13px;height:13px;padding:0;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-stats-wrap{margin-top:2px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-stats{font-size:6.5pt;margin-top:0;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-stats td{padding:0 1px;line-height:1.1;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-stats .wd688pr-sl{word-break:keep-all;line-height:1.1;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-panel{margin:2px 0 3px;font-size:9pt;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-panel-head{font-size:9pt;padding:3px 6px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-panel-body{font-size:9pt;padding:4px 6px;line-height:1.25;}' +
       '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-list{margin:0;padding-left:1.1em;}' +
       '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-list li{margin:2px 0;}' +
       '.wd688pr-sheet-5yr .wd688pr-tabs{display:none;}' +
@@ -1985,7 +1987,7 @@
 
     if (isWind) {
       sum +=
-        '<tr><td class="wd688pr-lab">休日数と風速日数のダブり ※2</td>' +
+        '<tr><td class="wd688pr-lab wd688pr-lab-long">休日数と風速日数の<br>ダブり ※2</td>' +
         monthCells(function (r) {
           return windPdfMonth(r).overlap;
         }, { fixed: 1 }) +
@@ -1993,7 +1995,7 @@
         '</tr>';
     } else if (isHoliday) {
       sum +=
-        '<tr><td class="wd688pr-lab">休日数と降雨日数のダブり ※2</td>' +
+        '<tr><td class="wd688pr-lab wd688pr-lab-long">休日数と降雨日数の<br>ダブり ※2</td>' +
         monthCells(function () {
           return 0;
         }, { fixed: 1 }) +
@@ -2001,7 +2003,7 @@
         '</tr>';
     } else {
       sum +=
-        '<tr><td class="wd688pr-lab">休日数と降雨日数のダブり ※2</td>' +
+        '<tr><td class="wd688pr-lab wd688pr-lab-long">休日数と降雨日数の<br>ダブり ※2</td>' +
         monthCells(function (r) {
           return paintPdfMonth(r).overlap;
         }, { fixed: 1 }) +
@@ -2131,10 +2133,10 @@
       }) +
       buildOver100CommentPanel(rows, mode) +
       '</div>' +
+      buildPrintFootnotes(mode, config.pastLabel, config.rainTh, config.windTh) +
       '<section class="wd688pr-cal-section">' +
       renderCalendarYearSection(calYear, rows, calMode, markSet, 6) +
       '</section>' +
-      buildPrintFootnotes(mode, config.pastLabel, config.rainTh, config.windTh) +
       '</div>'
     );
   }
