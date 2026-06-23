@@ -307,10 +307,10 @@
     },
     "736": {
       "build": "2026-06-23-jikkou-yosan-diff-structural-match",
-      "fileKey": "9eb9150c-2bf6-4d53-abb3-52017948f5d9",
-      "revision": "123",
-      "relPath": "customize/736/desktop.js",
-      "deployedAt": "2026-06-23T12:08:31.526Z",
+      "fileKey": "b3a5777d-35d8-4097-91e2-09f59d499526",
+      "revision": "124",
+      "relPath": ".kintone-deploy/upload-736.js",
+      "deployedAt": "2026-06-23T12:23:12.394Z",
       "note": null
     },
     "737": {
