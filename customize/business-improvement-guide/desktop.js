@@ -6,7 +6,7 @@
 
   /** 業務改善 ver.02 — ご利用ガイド */
 
-  var BUILD = '2026-06-24-bi-guide-review3-lists-fix400';
+  var BUILD = '2026-06-24-bi-guide-unapplied-no-number-col';
 
 
 
@@ -1514,7 +1514,7 @@
 
     var thBg = guideTheme().tableHead;
 
-    var showNo = kind === 'view' || kind === 'done' || kind === 'unapplied';
+    var showNo = kind === 'view' || kind === 'done';
 
     var head =
 
@@ -1542,9 +1542,11 @@
 
       var id = r.$id.value;
 
-      var no = (r[FP.proposalNo] && r[FP.proposalNo].value) || '—';
+      var no = (r[FP.proposalNo] && r[FP.proposalNo].value) || '';
 
-      var dt = (r[FP.date] && r[FP.date].value) || '—';
+      var dtRaw = (r[FP.date] && r[FP.date].value) || '';
+
+      var dt = dtRaw || (kind === 'unapplied' ? '未申請' : '—');
 
       var title = (r[FP.title] && r[FP.title].value) || '—';
 
@@ -1576,7 +1578,7 @@
 
       if (showNo) {
 
-        row += '<td style="padding:10px 12px;white-space:nowrap">' + esc(no) + '</td>';
+        row += '<td style="padding:10px 12px;white-space:nowrap">' + esc(no || '—') + '</td>';
 
       }
 
@@ -1623,7 +1625,11 @@
           '#fff7ed'
         ) +
 
-        listTableHtml(state.unappliedList, 'unapplied') + '</div>';
+        listTableHtml(state.unappliedList, 'unapplied') +
+
+        '<p style="margin:10px 0 0;color:#92400e;font-size:0.92em">' +
+
+        '提案番号は <strong>「申請する」</strong> を押して申請が完了したあとに付与されます（一時保存のみの段階では番号はありません）。</p></div>';
 
     }
 
