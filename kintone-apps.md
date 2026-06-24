@@ -58,7 +58,7 @@ npm run app:fields <アプリID>
 | 716 | `2026-06-14-storage-media-ledger-db-block-ui-mutations` | **5** | `36e4bdf3-9362-4837-8f53-4135b41084d1` | 2026-06-14 記憶媒体等台帳 DB save/delete ブロック |
 | 717 | `2026-06-17-storage-media-ledger-user-filter-compact` | **8** | `ed202a45-c53b-4930-bd2e-84d3d084779d` | 2026-06-17 利用者チップを社員検索絞り込みに変更 |
 | 720 | `2026-06-15-jr-ipad-db-block-ui-mutations` | **5** | `6a022180-0c57-4992-8f3c-929a93678a0f` | 2026-06-19 新規採番時下書き必須緩和（フォーム rev **7**） |
-| 721 | `2026-06-19-jr-ipad-dash-lifecycle-toggle` | **12** | `1505144a-b3e2-4868-854b-3a6b9478abf7` | 2026-06-19 一覧 有効/廃止トグル（デフォルト有効・廃棄非表示） |
+| 721 | `2026-06-24-jr-ipad-dash-register-existing` | **13** | `1505144a-b3e2-4868-854b-3a6b9478abf7` | 2026-06-24 既存端末を登録ボタン（採番なし・保存時POST） |
 | 733 | `2026-06-20-vpn-db-rename-message` | **11** | `252e24ee-a0c8-451c-8bff-46c967c9e9f3` | 2026-06-20 アプリ名変更・ブロックメッセージ更新 |
 | 734 | `2026-06-21-vpn-conn-pw-updated-date` | **28** | `8d2a21e0-d570-43c9-b908-1c2bab1d8c1b` | 2026-06-21 VPN接続PW横に (yyyy/mm/dd更新) 表示 |
 | 737 | `2026-06-21-total-network-db-block` | **5** | `d35de612-a6dc-484e-9881-aa603b024712` | 2026-06-21 トータルNW DB save/delete ブロック |
@@ -123,7 +123,7 @@ npm run app:fields <アプリID>
 | **記憶媒体等台帳DB**（媒体・周辺機器正本・閲覧のみ） | **716** | `customize/storage-media-ledger-db/desktop.js` \| `npm run deploy:716` | [https://jbis-kintone.cybozu.com/k/716/](https://jbis-kintone.cybozu.com/k/716/) **Space 21 / thread 23**・**2026-06-14**: 19 フィールド・正本 `docs/plans/2026-06-13-storage-media-ledger-kintone-spec.md`・**BUILD=`2026-06-14-storage-media-ledger-db-block-ui-mutations`** rev **5** |
 | **記憶媒体等管理台帳ver.1**（日常 UI・716 へ REST） | **717** | `customize/storage-media-ledger-dash/desktop.js` \| `npm run deploy:717` | [https://jbis-kintone.cybozu.com/k/717/](https://jbis-kintone.cybozu.com/k/717/) **Space 21 / thread 23**・**2026-06-17**: 利用者チップを社員検索絞り込みに変更・**BUILD=`2026-06-17-storage-media-ledger-user-filter-compact`** rev **8** |
 | **JRシステム用iPad台帳DB**（端末正本・閲覧のみ） | **720** | `customize/jr-ipad-db/desktop.js` \| `npm run deploy:720` | [https://jbis-kintone.cybozu.com/k/720/](https://jbis-kintone.cybozu.com/k/720/) **Space 34 / thread 38**・**2026-06-15**: 13 フィールド・**64 台移行済**・正本 `docs/plans/2026-06-15-jr-ipad-ledger-kintone-spec.md`・**BUILD=`2026-06-15-jr-ipad-db-block-ui-mutations`** rev **5**（**2026-06-19**: フォーム rev **7** — 新規採番 POST 時 `mgmt_dept` / `phone_number` / `model` を空可。保存時必須は Dash `validateRequired` が担保） |
-| **JRシステム用iPad管理台帳 ver.1**（日常 UI・720 へ REST） | **721** | `customize/jr-ipad-dash/desktop.js` \| `npm run deploy:721` | [https://jbis-kintone.cybozu.com/k/721/](https://jbis-kintone.cybozu.com/k/721/) **Space 34 / thread 38**・**BUILD=`2026-06-19-jr-ipad-dash-lifecycle-toggle`** rev **12** |
+| **JRシステム用iPad管理台帳 ver.1**（日常 UI・720 へ REST） | **721** | `customize/jr-ipad-dash/desktop.js` \| `npm run deploy:721` | [https://jbis-kintone.cybozu.com/k/721/](https://jbis-kintone.cybozu.com/k/721/) **Space 34 / thread 38**・**BUILD=`2026-06-24-jr-ipad-dash-register-existing`** rev **13** |
 | **VPNアカウント管理台帳用DB**（正本・閲覧のみ） | **733** | `customize/vpn-account-db/desktop.js` \| `npm run deploy:733` | [https://jbis-kintone.cybozu.com/k/733/](https://jbis-kintone.cybozu.com/k/733/) **Space 48 / thread 52**・**v1.2 運用中** — `vpn_domain` + snapshot フィールド・**105 件**（fre/ds/bnp）・正本 `docs/plans/2026-06-16-vpn-account-kintone-spec.md`・**BUILD=`2026-06-20-vpn-db-rename-message`** rev **11** |
 | **VPNアカウント台帳**（日常 UI・733 へ REST） | **734** | `customize/vpn-account-dash/desktop.js` \| `npm run deploy:734` | [https://jbis-kintone.cybozu.com/k/734/](https://jbis-kintone.cybozu.com/k/734/) **Space 48 / thread 52**・**v1.3 運用中** — 3ドメイン統合・595検索・PC台帳674連携・**VPN接続情報アコーディオン**（**VPNアカウント管理画面URL**・接続PW編集・**(yyyy/mm/dd更新)** 表示）・ライセンス集計・利用者印刷・**リスト出力（xlsx+印刷）** — 所属 **multi-select + 一括（全選択/全解除/本社/支店・営業所）**・ドメイン **すべて | 個別指定（複数可）**・**BUILD=`2026-06-21-vpn-conn-pw-updated-date`** rev **28**・月末リマインド **Space 48 注意書き**（JST **28日〜翌1日**のみ・`vpn-license-space48-notice` GHA） |
 | **トータルネットワークネットワーク管理DB**（正本・閲覧のみ） | **737** | `customize/total-network-db/desktop.js` \| `npm run deploy:737` | [https://jbis-kintone.cybozu.com/k/737/](https://jbis-kintone.cybozu.com/k/737/) **Space 48 / thread 52**・**v1 完成 — CLOSED** — 拠点22・使用中IP26・用途マスタ5・正本 `docs/plans/2026-06-21-total-network-kintone-spec.md`・**BUILD=`2026-06-21-total-network-db-block`** rev **5** |
@@ -762,7 +762,7 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 |--------|-----|-----------|---------------|--------|
 | 設定マスタ | **697** | — | — | `business-improvement:seed-settings` |
 | 社員マスタ | **698** | — | — | `business-improvement:sync-595` |
-| ご利用ガイド | **699** | `customize/business-improvement-guide/desktop.bundle.js` | `2026-06-24-bi-guide-unapplied-no-number-col` rev108 | `deploy:699` |
+| ご利用ガイド | **699** | `customize/business-improvement-guide/desktop.bundle.js` | `2026-06-24-bi-guide-fix-datelabel-ref` rev109 | `deploy:699` |
 | 提案申請 ver.02 | **700** | `customize/business-improvement-proposal/desktop.js` | `2026-06-24-bi-proposal-number-review3` rev143 | `deploy:700` |
 | 年次処理（新⑤） | **713** | `customize/business-improvement-annual/desktop.bundle.js` | `2026-06-13-bi-annual-redirect-guide` rev12 | `deploy:713` |
 
@@ -799,9 +799,9 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 | アプリ | ID | customize | BUILD（本番） | deploy |
 |--------|-----|-----------|---------------|--------|
 | JRシステム用iPad台帳DB | **720** | `customize/jr-ipad-db/desktop.js` | `2026-06-15-jr-ipad-db-block-ui-mutations` rev5（**フォーム rev 7** — 2026-06-19 新規採番時下書き必須緩和） | `deploy:720` / `jr-ipad:relax-draft-required-fields` |
-| JRシステム用iPad管理台帳 ver.1 | **721** | `customize/jr-ipad-dash/desktop.js`（`desktop.src.js` + bundle） | `2026-06-19-jr-ipad-dash-lifecycle-toggle` rev12 | `deploy:721`（前に `jr-ipad:bundle-dash`） |
+| JRシステム用iPad管理台帳 ver.1 | **721** | `customize/jr-ipad-dash/desktop.js`（`desktop.src.js` + bundle） | `2026-06-24-jr-ipad-dash-register-existing` rev13 | `deploy:721`（前に `jr-ipad:bundle-dash`） |
 
-**721 主要機能**: 694 型一覧・admin のみ・2 系統採番（JBIS### + jb###m）・**集計表はアコーディオン（初期閉じ）**・端末別 A4 印刷・モデルコンボボックス + NFKC 正規化・**検索・絞込クリアボタン**・**一覧 有効/廃止トグル（デフォルト有効＝廃棄非表示）**。
+**721 主要機能**: 694 型一覧・admin のみ・2 系統採番（JBIS### + jb###m）・**既存端末を登録**（採番なし）・**集計表はアコーディオン（初期閉じ）**・端末別 A4 印刷・モデルコンボボックス + NFKC 正規化・**検索・絞込クリアボタン**・**一覧 有効/廃止トグル（デフォルト有効＝廃棄非表示）**。
 
 **状態（2026-06-15）**: **v1 完成 — CLOSED**（浜田目視 OK）。Excel **64 台移行済**・**運用終了**（kintone のみ正本）。完成報告: `docs/reports/2026-06-15-jr-ipad-ledger-completion.md`
 

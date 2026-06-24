@@ -2,7 +2,7 @@
   "use strict";
 
   /** JRシステム用iPad管理台帳 ver.1 — DB REST CRUD + 部署×ステータス集計 + A4印刷 */
-  var BUILD = "2026-06-19-jr-ipad-dash-lifecycle-toggle";
+  var BUILD = "2026-06-24-jr-ipad-dash-register-existing";
 
   var APP_DB = 720;
   var FIXED_APPLE_PW = "Honten00";
@@ -385,7 +385,11 @@
       ".jip-next-slot{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 18px;flex:1;min-width:280px;}" +
       ".jip-next-label{font-size:15px;font-weight:700;color:#1d4ed8;}" +
       ".jip-next-id{font-size:1.55rem;font-weight:700;font-family:Consolas,Monaco,monospace;color:#1e3a8a;}" +
-      ".jip-next-action{margin-left:auto;white-space:nowrap;font-size:15px;padding:10px 20px;}" +
+      ".jip-next-action{margin-left:0;white-space:nowrap;font-size:15px;padding:10px 20px;}" +
+      ".jip-meta-actions{margin-left:auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center;}" +
+      ".jip-next-action-secondary{white-space:nowrap;font-size:15px;padding:10px 20px;border:1px solid #3b82f6;" +
+      "background:#fff;color:#1d4ed8;border-radius:4px;cursor:pointer;}" +
+      ".jip-next-action-secondary:hover{background:#eff6ff;}" +
       ".jip-readonly-msg{font-size:14px;color:#64748b;margin-left:auto;}" +
       ".jip-summary-acc{margin-bottom:14px;border:1px solid #cbd5e1;border-radius:6px;background:#f8fafc;}" +
       ".jip-summary-acc>summary{cursor:pointer;padding:12px 16px;font-size:15px;font-weight:600;color:#334155;user-select:none;}" +
@@ -678,8 +682,18 @@
     );
   }
 
-  function openEditModal(row) {
+  function registerExistingIntroHtml() {
+    return (
+      '<p style="margin:0 0 12px;color:#92400e;font-size:14px;line-height:1.5">' +
+      "現物の<strong>端末名・Apple ID・パスワード</strong>を入力してください。" +
+      "新規採番（JBIS###／jb###m@icloud.com）は行いません。</p>"
+    );
+  }
+
+  function openEditModal(row, opts) {
     if (!state.isAdmin) return;
+    opts = opts || {};
+    var isCreate = !!opts.createMode;
     var buttons = [
       { label: "キャンセル" },
       {
@@ -688,21 +702,27 @@
         onClick: function (close) {
           var updated;
           try {
-            updated = prepareRowFromForm(row, false);
+            updated = prepareRowFromForm(row, isCreate);
           } catch (e) {
             alert(e.message || e);
             return;
           }
-          apiPut("/k/v1/record.json", {
-            app: APP_DB,
-            id: Number(updated.id),
-            revision: Number(updated.revision),
-            record: toKintoneRecord(updated),
-          })
+          var savePromise = isCreate
+            ? apiPost("/k/v1/record.json", {
+                app: APP_DB,
+                record: toKintoneRecord(updated),
+              })
+            : apiPut("/k/v1/record.json", {
+                app: APP_DB,
+                id: Number(updated.id),
+                revision: Number(updated.revision),
+                record: toKintoneRecord(updated),
+              });
+          savePromise
             .then(function () {
               close();
               reloadRecords();
-              alert("保存しました");
+              alert(isCreate ? "既存端末を登録しました" : "保存しました");
             })
             .catch(function (e) {
               alert("保存失敗: " + formatKintoneApiError(e));
@@ -710,7 +730,7 @@
         },
       },
     ];
-    if (row.id) {
+    if (row.id && !isCreate) {
       buttons.unshift({
         label: "削除",
         danger: true,
@@ -719,7 +739,14 @@
         },
       });
     }
-    openModal("編集 — " + (row.device_name || ""), formFieldsHtml(row), buttons);
+    var title = isCreate ? "既存端末を登録" : "編集 — " + (row.device_name || "");
+    var body = (isCreate ? registerExistingIntroHtml() : "") + formFieldsHtml(row);
+    openModal(title, body, buttons);
+  }
+
+  function openRegisterExistingModal() {
+    if (!state.isAdmin) return;
+    openEditModal({ status: "待機" }, { createMode: true });
   }
 
   function openDeleteConfirm(row) {
@@ -801,13 +828,18 @@
       "</span></div></div>";
     if (state.isAdmin) {
       html +=
-        '<button type="button" id="jip-new-device" class="jip-next-action kintoneplugin-button-dialog-ok">新規端末を作成</button>';
+        '<div class="jip-meta-actions">' +
+        '<button type="button" id="jip-register-existing" class="jip-next-action-secondary">既存端末を登録</button>' +
+        '<button type="button" id="jip-new-device" class="jip-next-action kintoneplugin-button-dialog-ok">新規端末を作成</button>' +
+        "</div>";
     } else {
       html += '<span class="jip-readonly-msg">閲覧のみ（編集はシステム管理者）</span>';
     }
     el.innerHTML = html;
     var btn = document.getElementById("jip-new-device");
     if (btn) btn.addEventListener("click", createNewDevice);
+    var regBtn = document.getElementById("jip-register-existing");
+    if (regBtn) regBtn.addEventListener("click", openRegisterExistingModal);
   }
 
   function reloadRecords() {

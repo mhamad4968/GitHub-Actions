@@ -282,11 +282,11 @@
       "note": null
     },
     "721": {
-      "build": "2026-06-19-jr-ipad-dash-lifecycle-toggle",
-      "fileKey": "9fe209c3-84a0-4cde-bc0b-b0896c3c75e2",
-      "revision": "12",
+      "build": "2026-06-24-jr-ipad-dash-register-existing",
+      "fileKey": "e4923d8c-aec1-4d3a-8b4a-f712d5c3d5e8",
+      "revision": "13",
       "relPath": "customize/jr-ipad-dash/desktop.js",
-      "deployedAt": "2026-06-19T09:48:17.596Z",
+      "deployedAt": "2026-06-24T10:14:08.968Z",
       "note": null
     },
     "733": {
