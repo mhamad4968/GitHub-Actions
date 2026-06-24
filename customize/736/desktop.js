@@ -1,10 +1,10 @@
 /**
- * 実行予算書作成支援ツール ver.01 — BUILD 2026-06-24-736-summary-print-one-page
+ * 実行予算書作成支援ツール ver.01 — BUILD 2026-06-24-736-diff-print-summary-v2c
  * Master app: 735
  */
 (function () {
   'use strict';
-  const BUILD = '2026-06-24-736-summary-print-one-page';
+  const BUILD = '2026-06-24-736-diff-print-summary-v2c';
   const APP_MASTER = 735;
   const DEFAULT_COST_TEMPLATE = [
   { "cost_work_type_code": "10100", "cost_work_type": "材料費", "cost_category_code": "", "cost_category": "塗料", "cost_row_kind": "link", "cost_group_key": "material", "cost_tax_rate": 0.1, "cost_unit": "－", "detail_marker": "②", "cost_basis_note": "詳細表にて内訳を記載…②" },
@@ -1315,6 +1315,8 @@ function pushTotalEntry(list, field, label, info, bucket) {
   let diffResult = null;
   let diffLoading = false;
   let diffDeletedExpanded = { spec: false, cost: false, mat: false, sub: false };
+  let printDiffMode = 'normal';
+  let jyDiffPrintBuild = false;
   let revisionBusy = false;
 
   const PERSON_NAME_PLACEHOLDER = '例: 浜田\u3000太郎';
@@ -2081,6 +2083,12 @@ function pushTotalEntry(list, field, label, info, bucket) {
       '.jy-sheet-title-doc{font-size:26px;font-weight:800;letter-spacing:.24em;color:#1e3a8a}' +
       '.jy-sheet-title-sheet{font-size:20px;font-weight:700;letter-spacing:.32em;padding:6px 28px;border-radius:8px;display:inline-block}' +
       '.jy-pane-head .jy-btn-print{grid-column:3;justify-self:end}' +
+      '.jy-pane-head-tools{grid-column:3;justify-self:end;display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap}' +
+      '.jy-pane-head-tools .jy-btn-print{flex-shrink:0}' +
+      '.jy-print-mode-bar{display:inline-flex;align-items:center;gap:8px;font-size:12px;white-space:nowrap}' +
+      '.jy-print-mode-label{font-weight:600;color:#475569}' +
+      '.jy-print-mode{display:inline-flex;align-items:center;gap:4px;cursor:pointer}' +
+      '.jy-print-mode input:disabled+span,.jy-print-mode input:disabled{opacity:.55;cursor:not-allowed}' +
       '@media (max-width:900px){.jy-pane-head{grid-template-columns:1fr;justify-items:stretch}.jy-sheet-title{grid-column:1;padding:14px 20px}.jy-pane-head .jy-btn-print{grid-column:1;justify-self:center;margin-top:4px}.jy-header-title-banner{padding:14px 24px}.jy-header-title-text{font-size:20px;letter-spacing:.22em}.jy-sheet-title-doc{font-size:22px}.jy-sheet-title-sheet{font-size:17px;padding:5px 18px}}' +
       '.jy-sheet-title-summary .jy-sheet-title-sheet{background:#fff;color:#1d4ed8;border:1px solid #93c5fd}' +
       '.jy-sheet-title-detail .jy-sheet-title-doc{color:#14532d}' +
@@ -3039,6 +3047,15 @@ function pushTotalEntry(list, field, label, info, bucket) {
     return diffCompareMode !== 'off' && !!diffResult && !!diffBaseState;
   }
 
+  function printDiffActive() {
+    return printDiffMode === 'diff' && diffIsActive();
+  }
+
+  function diffMarksEnabled() {
+    if (jyDiffPrintBuild) return printDiffActive();
+    return diffIsActive();
+  }
+
   function snapshotForDiff(s) {
     if (!s) return s;
     const copy = JSON.parse(JSON.stringify(s));
@@ -3052,6 +3069,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
   }
 
   function diffRowClass(table, rowKey) {
+    if (!diffMarksEnabled()) return '';
     const info = diffRowInfo(table, rowKey);
     if (!info) return '';
     if (info.status === 'added') return 'jy-diff-added';
@@ -3061,6 +3079,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
   }
 
   function diffCellClass(table, rowKey, field) {
+    if (!diffMarksEnabled()) return '';
     const info = diffRowInfo(table, rowKey);
     if (!info || !info.cells || !info.cells[field]) return '';
     if (info.status === 'cascade') {
@@ -3075,7 +3094,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
   }
 
   function diffScalarClass(field) {
-    if (!diffIsActive() || !diffResult.totals || !diffResult.totals[field]) return '';
+    if (!diffMarksEnabled() || !diffResult.totals || !diffResult.totals[field]) return '';
     const kind = diffKind(diffResult.totals[field]);
     if (kind === 'up') return 'jy-diff-amt-up';
     if (kind === 'down') return 'jy-diff-amt-down';
@@ -3090,7 +3109,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
   }
 
   function diffAmtMark(field, table, rowKey) {
-    if (!diffIsActive()) return '';
+    if (!diffMarksEnabled()) return '';
     let info = null;
     if (table && rowKey) {
       const row = diffRowInfo(table, rowKey);
@@ -3151,6 +3170,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
       diffBaseState = null;
       diffBaseMeta = null;
       diffResult = null;
+      printDiffMode = 'normal';
       return Promise.resolve();
     }
     const baseId = resolveDiffBaseRecordId(diffCompareMode);
@@ -3297,6 +3317,29 @@ function pushTotalEntry(list, field, label, info, bucket) {
     html += '<span class="jy-diff-swatch jy-diff-amt-down">減 ▼</span></span>';
     html += '</div>';
     return html;
+  }
+
+  function renderPrintModeRadios() {
+    const canDiff = diffIsActive();
+    const mode = canDiff && printDiffMode === 'diff' ? 'diff' : 'normal';
+    if (!canDiff && printDiffMode === 'diff') printDiffMode = 'normal';
+    let html = '<div class="jy-print-mode-bar" role="group" aria-label="印刷種別">';
+    html += '<span class="jy-print-mode-label">印刷</span>';
+    html += '<label class="jy-print-mode"><input type="radio" name="jy-print-mode" value="normal"' + (mode === 'normal' ? ' checked' : '') + '><span>通常</span></label>';
+    html += '<label class="jy-print-mode"><input type="radio" name="jy-print-mode" value="diff"' + (mode === 'diff' ? ' checked' : '') + (canDiff ? '' : ' disabled') + '><span>差分付き</span></label>';
+    html += '</div>';
+    return html;
+  }
+
+  function readPrintDiffModeFromDom() {
+    const el = document.querySelector('input[name="jy-print-mode"]:checked');
+    if (!el || el.value !== 'diff' || !diffIsActive()) return 'normal';
+    return 'diff';
+  }
+
+  function renderPrintPaneHeadTools(printBtnId) {
+    return '<div class="jy-pane-head-tools">' + renderPrintModeRadios() +
+      '<button type="button" class="jy-btn jy-btn-print" id="' + printBtnId + '">印刷</button></div>';
   }
 
   function renderSummary() {
@@ -3832,7 +3875,20 @@ function pushTotalEntry(list, field, label, info, bucket) {
       '.jy-pr-mat .jy-col-amt{width:8%}' +
       '.jy-pr-mat .jy-col-basis{width:10%}' +
       '.jy-pr-mat .jy-col-note{width:7%}' +
-      '.jy-pr-sub-table .jy-col-note{width:7%}'
+      '.jy-pr-sub-table .jy-col-note{width:7%}' +
+      '.jy-pr-diff-footer{margin-top:4px;font-size:9pt;color:#475569;text-align:right;line-height:1.3}' +
+      'tr.jy-diff-added td{background:#d4edda!important}' +
+      'tr.jy-diff-changed td{background:#fffbeb!important}' +
+      'tr.jy-diff-cascade td,td.jy-diff-cascade{background:#f0f9ff!important}' +
+      'td.jy-diff-changed{background:#fff3cd!important}' +
+      'td.jy-diff-amt-up{background:#cfe2ff!important}' +
+      'td.jy-diff-amt-down{background:#f5c2c7!important}' +
+      'tr.jy-diff-added td:first-child{box-shadow:inset 4px 0 0 #22c55e}' +
+      'tr.jy-diff-changed td:first-child{box-shadow:inset 4px 0 0 #f59e0b}' +
+      'tr.jy-diff-cascade td:first-child{box-shadow:inset 4px 0 0 #38bdf8}' +
+      '.jy-diff-mark{font-size:8pt;font-weight:700;margin-left:2px}' +
+      '.jy-diff-delta{font-size:8pt;font-weight:700;color:#1d4ed8;margin-left:2px;white-space:nowrap}' +
+      'td.jy-diff-amt-down .jy-diff-delta{color:#b91c1c}'
     );
   }
 
@@ -3867,6 +3923,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
   function printPrepState() {
     syncInputs();
     recalcState(state);
+    prepareDiffForRender();
   }
 
   function printMetaFields() {
@@ -3933,18 +3990,37 @@ function pushTotalEntry(list, field, label, info, bucket) {
     );
   }
 
+  function renderPrintDiffFooter() {
+    if (!printDiffActive() || !diffBaseMeta) return '';
+    const modeLabel = diffCompareMode === 'original' ? '当初版' : '直前版';
+    return (
+      '<p class="jy-pr-diff-footer">比較: 版' +
+      esc(String(diffBaseMeta.version_seq)) +
+      ' ' +
+      esc(diffBaseMeta.version_type || '') +
+      '（' +
+      esc(modeLabel) +
+      '）</p>'
+    );
+  }
+
   function renderPrintSpecTable() {
     let html = '<div class="jy-pr-section"><div class="jy-pr-sec-head">仕様明細（①）</div><div class="jy-pr-wrap">';
     html += '<table class="jy-pr-table jy-pr-spec"><thead><tr>' +
       '<th class="jy-col-spec">仕様</th><th class="jy-center">単位</th><th>数量</th><th>単価</th><th class="jy-num">金額</th><th>備考</th>' +
       '</tr></thead><tbody>';
-    state.spec_lines.forEach(function (r) {
-      html += '<tr><td>' + esc(r.spec_name) + '</td><td class="jy-center">' + disp(r.spec_unit) + '</td>';
-      html += '<td class="jy-num">' + disp(r.spec_qty) + '</td>';
-      html += '<td class="jy-num">' + esc(formatUnitPrice(r.spec_unit_price)) + '</td>';
-      html += '<td class="jy-num">' + fmt(r.spec_amount) + '</td><td>' + esc(r.spec_note) + '</td></tr>';
+    state.spec_lines.forEach(function (r, i) {
+      const rk = rowKeyForTable('spec', r, i);
+      const dr = diffRowClass('spec', rk);
+      html += '<tr' + (dr ? ' class="' + dr + '"' : '') + '>';
+      html += '<td class="' + diffCellClass('spec', rk, 'spec_name') + '">' + esc(r.spec_name) + '</td>';
+      html += '<td class="jy-center ' + diffCellClass('spec', rk, 'spec_unit') + '">' + disp(r.spec_unit) + '</td>';
+      html += '<td class="jy-num ' + diffCellClass('spec', rk, 'spec_qty') + '">' + disp(r.spec_qty) + '</td>';
+      html += '<td class="jy-num ' + diffCellClass('spec', rk, 'spec_unit_price') + '">' + esc(formatUnitPrice(r.spec_unit_price)) + '</td>';
+      html += '<td class="jy-num ' + diffCellClass('spec', rk, 'spec_amount') + '">' + fmt(r.spec_amount) + diffAmtMark('spec_amount', 'spec', rk) + '</td>';
+      html += '<td class="' + diffCellClass('spec', rk, 'spec_note') + '">' + esc(r.spec_note) + '</td></tr>';
     });
-    html += '</tbody><tfoot><tr class="jy-pr-total-row"><td colspan="4" class="jy-num">合計 …①</td><td class="jy-num">' + fmt(state.contract_total_1) + '</td><td></td></tr></tfoot></table></div></div>';
+    html += '</tbody><tfoot><tr class="jy-pr-total-row"><td colspan="4" class="jy-num">合計 …①</td><td class="jy-num ' + diffScalarClass('contract_total_1') + '">' + fmt(state.contract_total_1) + diffAmtMark('contract_total_1') + '</td><td></td></tr></tfoot></table></div></div>';
     return html;
   }
 
@@ -3969,38 +4045,41 @@ function pushTotalEntry(list, field, label, info, bucket) {
       '<th class="jy-col-price">単価</th><th class="jy-col-amt jy-num">金額</th><th class="jy-col-note">計算基準・備考</th><th class="jy-col-ratio jy-num">率</th>' +
       '</tr></thead><tbody>';
     lines.forEach(function (r, i) {
+      const origIdx = state.cost_lines.indexOf(r);
+      const rowIndex = origIdx >= 0 ? origIdx : i;
+      const rk = rowKeyForTable('cost', r, rowIndex);
       const isLink = r.cost_row_kind === '連携';
       const isSub = r.cost_row_kind === '小計';
-      const rowCls = isLink ? 'jy-pr-link' : (isSub ? 'jy-pr-sub' : '');
+      const rowCls = [isLink ? 'jy-pr-link' : (isSub ? 'jy-pr-sub' : ''), diffRowClass('cost', rk)].filter(Boolean).join(' ');
       const subAmt = costPrintRowAmount(r);
-      html += '<tr class="' + rowCls + '">';
+      html += '<tr' + (rowCls ? ' class="' + rowCls + '"' : '') + '>';
       if (isSub) {
         html += '<td colspan="9" class="jy-pr-sub-label"><span class="jy-pr-sub-badge">計</span></td>';
-        html += '<td class="jy-num jy-pr-sub-amt">' + fmt(subAmt) + '</td>';
+        html += '<td class="jy-num jy-pr-sub-amt ' + diffCellClass('cost', rk, 'cost_amount') + '">' + fmt(subAmt) + diffAmtMark('cost_amount', 'cost', rk) + '</td>';
         html += '<td>' + esc(subtotalBasisNote(r)) + '</td><td class="jy-num">' + fmtPct(r.cost_ratio) + '</td>';
       } else {
         const wcd = costPrintDisplay(lines, i, 'wcd', 'cost_work_type_code');
         const wt = costPrintDisplay(lines, i, 'wt', 'cost_work_type');
         const ccd = costPrintDisplay(lines, i, 'ccd', 'cost_category_code');
         const cat = costPrintDisplay(lines, i, 'cat', 'cost_category');
-        html += '<td class="' + (wcd === '〃' ? 'jy-pr-ditto' : '') + '">' + esc(wcd) + '</td>';
-        html += '<td class="' + (wt === '〃' ? 'jy-pr-ditto' : '') + '">' + esc(wt) + '</td>';
-        html += '<td class="' + (ccd === '〃' ? 'jy-pr-ditto' : '') + '">' + esc(ccd) + '</td>';
-        html += '<td class="' + (cat === '〃' ? 'jy-pr-ditto' : '') + '">' + esc(cat) + '</td>';
-        html += '<td>' + esc(rowKindDisplay(r.cost_row_kind)) + '</td>';
-        html += '<td class="jy-center">' + esc(fmtTaxRate(r.cost_tax_rate)) + '</td><td class="jy-center">' + disp(r.cost_unit) + '</td>';
-        html += '<td class="jy-num">' + disp(r.cost_qty) + '</td>';
-        html += '<td class="jy-num">' + esc(formatUnitPrice(r.cost_unit_price)) + '</td>';
-        html += '<td class="jy-num">' + fmt(r.cost_amount) + '</td>';
-        html += '<td>' + esc(r.cost_basis_note) + '</td>';
+        html += '<td class="' + (wcd === '〃' ? 'jy-pr-ditto' : '') + ' ' + diffCellClass('cost', rk, 'cost_work_type_code') + '">' + esc(wcd) + '</td>';
+        html += '<td class="' + (wt === '〃' ? 'jy-pr-ditto' : '') + ' ' + diffCellClass('cost', rk, 'cost_work_type') + '">' + esc(wt) + '</td>';
+        html += '<td class="' + (ccd === '〃' ? 'jy-pr-ditto' : '') + ' ' + diffCellClass('cost', rk, 'cost_category_code') + '">' + esc(ccd) + '</td>';
+        html += '<td class="' + (cat === '〃' ? 'jy-pr-ditto' : '') + ' ' + diffCellClass('cost', rk, 'cost_category') + '">' + esc(cat) + '</td>';
+        html += '<td class="' + diffCellClass('cost', rk, 'cost_row_kind') + '">' + esc(rowKindDisplay(r.cost_row_kind)) + '</td>';
+        html += '<td class="jy-center ' + diffCellClass('cost', rk, 'cost_tax_rate') + '">' + esc(fmtTaxRate(r.cost_tax_rate)) + '</td><td class="jy-center ' + diffCellClass('cost', rk, 'cost_unit') + '">' + disp(r.cost_unit) + '</td>';
+        html += '<td class="jy-num ' + diffCellClass('cost', rk, 'cost_qty') + '">' + disp(r.cost_qty) + '</td>';
+        html += '<td class="jy-num ' + diffCellClass('cost', rk, 'cost_unit_price') + '">' + esc(formatUnitPrice(r.cost_unit_price)) + '</td>';
+        html += '<td class="jy-num ' + diffCellClass('cost', rk, 'cost_amount') + '">' + fmt(r.cost_amount) + diffAmtMark('cost_amount', 'cost', rk) + '</td>';
+        html += '<td class="' + diffCellClass('cost', rk, 'cost_basis_note') + '">' + esc(r.cost_basis_note) + '</td>';
         html += '<td class="jy-num">' + fmtPct(r.cost_ratio) + '</td>';
       }
       html += '</tr>';
     });
     html += '</tbody></table>';
     html += '<table class="jy-pr-table jy-pr-cost jy-pr-cost-totals"><tbody>';
-    html += '<tr class="jy-pr-total-row"><td colspan="9">工事原価額 …⑧</td><td class="jy-num">' + fmt(state.cost_total_8) + '</td><td colspan="2"></td></tr>';
-    html += '<tr class="jy-pr-total-row"><td colspan="9">粗利 …⑨</td><td class="jy-num">' + fmt(state.profit_9) + '</td><td></td><td class="jy-num">' + fmtPct(state.profit_rate) + '</td></tr>';
+    html += '<tr class="jy-pr-total-row"><td colspan="9">工事原価額 …⑧</td><td class="jy-num ' + diffScalarClass('cost_total_8') + '">' + fmt(state.cost_total_8) + diffAmtMark('cost_total_8') + '</td><td colspan="2"></td></tr>';
+    html += '<tr class="jy-pr-total-row"><td colspan="9">粗利 …⑨</td><td class="jy-num ' + diffScalarClass('profit_9') + '">' + fmt(state.profit_9) + diffAmtMark('profit_9') + '</td><td></td><td class="jy-num ' + diffScalarClass('profit_rate') + '">' + fmtPct(state.profit_rate) + diffAmtMark('profit_rate') + '</td></tr>';
     html += '</tbody></table></div></div>';
     return html;
   }
@@ -4055,7 +4134,12 @@ function pushTotalEntry(list, field, label, info, bucket) {
   }
 
   function buildPrintSummaryHtml() {
-    return renderPrintDocHead('（　総　括　表　）') + renderPrintSpecTable() + renderPrintCostTable();
+    jyDiffPrintBuild = printDiffActive();
+    try {
+      return renderPrintDocHead('（　総　括　表　）') + renderPrintSpecTable() + renderPrintCostTable() + renderPrintDiffFooter();
+    } finally {
+      jyDiffPrintBuild = false;
+    }
   }
 
   function buildPrintDetailHtml() {
@@ -4071,13 +4155,15 @@ function pushTotalEntry(list, field, label, info, bucket) {
 
   function openTabPrint(mode) {
     try {
+      printDiffMode = readPrintDiffModeFromDom();
       printPrepState();
       const bodyHtml = mode === 'summary' ? buildPrintSummaryHtml() : buildPrintDetailHtml();
       if (!bodyHtml || bodyHtml.indexOf('jy-pr-table') < 0) throw new Error('印刷HTMLの生成に失敗しました');
       injectPrintPortalCss();
       bindPrintPortalCleanup();
       const portal = ensurePrintPortal();
-      portal.innerHTML = '<div class="jy-pr jy-pr-doc jy-pr-mode-' + mode + '">' + bodyHtml + '</div>';
+      const prCls = 'jy-pr jy-pr-doc jy-pr-mode-' + mode + (mode === 'summary' && printDiffActive() ? ' jy-pr-mode-diff' : '');
+      portal.innerHTML = '<div class="' + prCls + '">' + bodyHtml + '</div>';
       window.requestAnimationFrame(function () {
         window.requestAnimationFrame(function () {
           try {
@@ -4331,12 +4417,12 @@ function pushTotalEntry(list, field, label, info, bucket) {
       html += '<div class="jy-tab-hint jy-tab-hint-summary">番号または詳細表と連携行の金額をクリックすると詳細表の該当ブロックへ移動します<span class="jy-legend-linked">緑 = 詳細表と連携（②〜⑦）</span>' +
         (readOnly ? '' : '<span class="jy-legend-linked" style="margin-left:8px;background:#f1f5f9;border-color:#cbd5e1;color:#475569">見出しの「末尾に追加」または各行の ＋ で挿入</span>') + '</div>';
       html += '<div class="jy-pane jy-pane-summary"><div class="jy-pane-head">' + renderSheetBanner('summary');
-      html += '<button type="button" class="jy-btn jy-btn-print" id="jy-print-summary">印刷</button></div>' + renderSummary() + '</div>';
+      html += renderPrintPaneHeadTools('jy-print-summary') + '</div>' + renderSummary() + '</div>';
     } else if (activeTab === 'detail') {
       html += '<div class="jy-tab-hint jy-tab-hint-detail">番号または合計金額をクリックすると総括表の詳細表と連携行へ移動します<span class="jy-legend-linked">緑 = 詳細表と連携（②〜⑦）</span>' +
         (readOnly ? '' : '<span class="jy-legend-linked" style="margin-left:8px;background:#f1f5f9;border-color:#cbd5e1;color:#475569">見出しの「末尾に追加」または各行の ＋ で挿入</span>') + '</div>';
       html += '<div class="jy-pane jy-pane-detail"><div class="jy-pane-head">' + renderSheetBanner('detail');
-      html += '<button type="button" class="jy-btn jy-btn-print" id="jy-print-detail">印刷</button></div>' + renderDetail() + '</div>';
+      html += renderPrintPaneHeadTools('jy-print-detail') + '</div>' + renderDetail() + '</div>';
     } else {
       html += '<div class="jy-tab-hint jy-tab-hint-versions">同一工事の全版一覧。版番号をクリックするとその版を開き、総括表・詳細表で閲覧できます（印刷対象外）。</div>';
       html += renderVersionsHelpPanel();
@@ -4549,6 +4635,11 @@ function pushTotalEntry(list, field, label, info, bucket) {
     if (printSummaryBtn) printSummaryBtn.addEventListener('click', function () { openTabPrint('summary'); });
     const printDetailBtn = document.getElementById('jy-print-detail');
     if (printDetailBtn) printDetailBtn.addEventListener('click', function () { openTabPrint('detail'); });
+    root.querySelectorAll('input[name="jy-print-mode"]').forEach(function (el) {
+      el.addEventListener('change', function () {
+        if (el.checked) printDiffMode = el.value === 'diff' && diffIsActive() ? 'diff' : 'normal';
+      });
+    });
 
     root.querySelectorAll('[data-spec-add]').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
