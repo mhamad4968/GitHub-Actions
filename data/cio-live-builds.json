@@ -91,10 +91,10 @@
     },
     "688": {
       "build": "2026-06-24-688-print-5yr-rain-compact-v8",
-      "fileKey": "00abed71-9948-4216-b427-44d26034ec36",
-      "revision": "77",
-      "relPath": "customize/688/desktop.js",
-      "deployedAt": "2026-06-24T10:43:27.664Z",
+      "fileKey": "6d8ce4bd-821d-4a90-8478-d7140aaf2953",
+      "revision": "78",
+      "relPath": ".kintone-deploy/upload-688.js",
+      "deployedAt": "2026-06-24T10:47:08.513Z",
       "note": null
     },
     "693": {
