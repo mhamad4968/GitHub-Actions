@@ -6,7 +6,7 @@
 
   /** 業務改善 ver.02 — ご利用ガイド */
 
-  var BUILD = '2026-06-24-bi-guide-review3-lists';
+  var BUILD = '2026-06-24-bi-guide-review3-lists-fix400';
 
 
 
@@ -805,30 +805,6 @@
 
 
 
-  function mergeRecordsById(rows) {
-
-    var seen = {};
-
-    var out = [];
-
-    (rows || []).forEach(function (r) {
-
-      var id = r.$id && r.$id.value;
-
-      if (!id || seen[id]) return;
-
-      seen[id] = true;
-
-      out.push(r);
-
-    });
-
-    return out;
-
-  }
-
-
-
   function fetchRecordsForList(query) {
 
     return kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', {
@@ -849,23 +825,9 @@
 
     if (!BI.proposalAppId) return kintone.Promise.resolve([]);
 
-    var order = ' order by ' + FP.date + ' desc limit 200';
+    var q = FP.applicant + ' in (LOGINUSER()) order by ' + FP.date + ' desc limit 200';
 
-    var qApplicant = FP.applicant + ' in (LOGINUSER())' + order;
-
-    var qCreator = '作成者 in (LOGINUSER())' + order;
-
-    return kintone.Promise.all([
-
-      fetchRecordsForList(qApplicant),
-
-      fetchRecordsForList(qCreator),
-
-    ]).then(function (pair) {
-
-      return mergeRecordsById(pair[0].concat(pair[1]));
-
-    });
+    return fetchRecordsForList(q);
 
   }
 
