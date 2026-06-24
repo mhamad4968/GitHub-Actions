@@ -307,10 +307,10 @@
     },
     "736": {
       "build": "2026-06-24-736-diff-print-detail-v2c",
-      "fileKey": "93621f24-37f9-437a-85a2-99a3c207b60d",
-      "revision": "131",
-      "relPath": "customize/736/desktop.js",
-      "deployedAt": "2026-06-24T11:22:54.361Z",
+      "fileKey": "3f7b3445-5e4f-496d-87ad-d18888ccff13",
+      "revision": "132",
+      "relPath": ".kintone-deploy/upload-736.js",
+      "deployedAt": "2026-06-24T12:16:45.040Z",
       "note": null
     },
     "737": {
