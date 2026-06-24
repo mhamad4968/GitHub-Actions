@@ -3030,7 +3030,7 @@
   }
 
   function buildPrintSummaryHtml() {
-    jyDiffPrintBuild = printDiffActive();
+    jyDiffPrintBuild = true;
     try {
       return renderPrintDocHead('（　総　括　表　）') + renderPrintSpecTable() + renderPrintCostTable() + renderPrintDiffFooter();
     } finally {

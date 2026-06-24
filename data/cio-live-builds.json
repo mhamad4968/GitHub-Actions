@@ -306,11 +306,11 @@
       "note": null
     },
     "736": {
-      "build": "2026-06-24-736-diff-print-summary-v2c",
-      "fileKey": "52e9c9cc-a736-43de-9690-24fef2a342f6",
-      "revision": "128",
-      "relPath": ".kintone-deploy/upload-736.js",
-      "deployedAt": "2026-06-24T11:03:18.487Z",
+      "build": "2026-06-24-736-diff-print-normal-no-highlight",
+      "fileKey": "a2abdd7c-57b4-4177-ada6-f1ba151e8ce2",
+      "revision": "129",
+      "relPath": "customize/736/desktop.js",
+      "deployedAt": "2026-06-24T11:15:33.023Z",
       "note": null
     },
     "737": {

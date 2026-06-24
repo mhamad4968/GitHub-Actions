@@ -1,10 +1,10 @@
 /**
- * 実行予算書作成支援ツール ver.01 — BUILD 2026-06-24-736-diff-print-summary-v2c
+ * 実行予算書作成支援ツール ver.01 — BUILD 2026-06-24-736-diff-print-normal-no-highlight
  * Master app: 735
  */
 (function () {
   'use strict';
-  const BUILD = '2026-06-24-736-diff-print-summary-v2c';
+  const BUILD = '2026-06-24-736-diff-print-normal-no-highlight';
   const APP_MASTER = 735;
   const DEFAULT_COST_TEMPLATE = [
   { "cost_work_type_code": "10100", "cost_work_type": "材料費", "cost_category_code": "", "cost_category": "塗料", "cost_row_kind": "link", "cost_group_key": "material", "cost_tax_rate": 0.1, "cost_unit": "－", "detail_marker": "②", "cost_basis_note": "詳細表にて内訳を記載…②" },
@@ -4134,7 +4134,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
   }
 
   function buildPrintSummaryHtml() {
-    jyDiffPrintBuild = printDiffActive();
+    jyDiffPrintBuild = true;
     try {
       return renderPrintDocHead('（　総　括　表　）') + renderPrintSpecTable() + renderPrintCostTable() + renderPrintDiffFooter();
     } finally {
