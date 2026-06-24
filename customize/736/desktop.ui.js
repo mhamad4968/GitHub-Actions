@@ -2646,6 +2646,21 @@
       'html,body{margin:0!important;padding:0!important;height:auto!important;min-height:0!important;overflow:hidden!important}' +
       'body>:not(#jy-print-portal){display:none!important}' +
       '#jy-print-portal{display:block!important;position:static!important;width:100%!important;height:auto!important;overflow:visible!important}' +
+      '.jy-pr-mode-summary{zoom:0.9;page-break-inside:avoid;break-inside:avoid-page;}' +
+      '.jy-pr-mode-summary .jy-pr-doc-title{font-size:14pt;margin:0 0 0.5mm;line-height:1.15}' +
+      '.jy-pr-mode-summary .jy-pr-project-banner{margin:0 0 2px;padding:2px 0 1px}' +
+      '.jy-pr-mode-summary .jy-pr-project-name{font-size:11pt;line-height:1.25}' +
+      '.jy-pr-mode-summary .jy-pr-project-sub{font-size:8.5pt;margin-top:0;line-height:1.2}' +
+      '.jy-pr-mode-summary .jy-pr-sheet-title{font-size:10pt;margin:0 0 2px;line-height:1.15}' +
+      '.jy-pr-mode-summary .jy-pr-meta{grid-template-columns:repeat(6,minmax(0,1fr));gap:1px 6px;margin-bottom:2px;padding:2px 5px;font-size:8pt;line-height:1.15}' +
+      '.jy-pr-mode-summary .jy-pr-meta-label{font-size:7.5pt}' +
+      '.jy-pr-mode-summary .jy-pr-section{margin-bottom:2px}' +
+      '.jy-pr-mode-summary .jy-pr-sec-head{font-size:9.5pt;margin:0 0 1px;padding:1px 5px;line-height:1.2}' +
+      '.jy-pr-mode-summary .jy-pr-table{font-size:8.5pt;line-height:1.15}' +
+      '.jy-pr-mode-summary .jy-pr-table th{font-size:8pt;padding:1px 2px}' +
+      '.jy-pr-mode-summary .jy-pr-table th,.jy-pr-mode-summary .jy-pr-table td{padding:0 2px}' +
+      '.jy-pr-mode-summary .jy-pr-table tfoot td,.jy-pr-mode-summary .jy-pr-cost-totals td{padding:1px 2px}' +
+      '.jy-pr-mode-summary .jy-pr-cost-totals{margin-top:0}' +
       '}' +
       '.jy-pr{font-family:Segoe UI,Meiryo,sans-serif;color:#1e293b;font-size:11pt;line-height:1.3}' +
       '.jy-pr-doc{padding:0}' +
@@ -2958,7 +2973,7 @@
       injectPrintPortalCss();
       bindPrintPortalCleanup();
       const portal = ensurePrintPortal();
-      portal.innerHTML = '<div class="jy-pr jy-pr-doc">' + bodyHtml + '</div>';
+      portal.innerHTML = '<div class="jy-pr jy-pr-doc jy-pr-mode-' + mode + '">' + bodyHtml + '</div>';
       window.requestAnimationFrame(function () {
         window.requestAnimationFrame(function () {
           try {
