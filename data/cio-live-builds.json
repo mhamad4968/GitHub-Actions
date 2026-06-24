@@ -91,10 +91,10 @@
     },
     "688": {
       "build": "2026-06-24-688-print-a4-popup-v7",
-      "fileKey": "ac9809be-3f92-4c14-872f-22c574c27f03",
-      "revision": "75",
-      "relPath": "customize/688/desktop.js",
-      "deployedAt": "2026-06-24T10:39:49.277Z",
+      "fileKey": "efd77c9a-742a-4556-a1ca-fea31ddfda2f",
+      "revision": "76",
+      "relPath": ".kintone-deploy/upload-688.js",
+      "deployedAt": "2026-06-24T10:40:30.936Z",
       "note": null
     },
     "693": {
