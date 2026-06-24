@@ -6,7 +6,7 @@
 
   /** 業務改善 ver.02 — ご利用ガイド */
 
-  var BUILD = '2026-06-13-bi-guide-lists-first-accordion';
+  var BUILD = '2026-06-24-bi-guide-review3-lists';
 
 
 
@@ -41,6 +41,10 @@
     status: 'Status',
 
     applicant: '申請者',
+
+    proposalNo: '提案番号',
+
+    completedDate: '完了日',
 
     mgr: '部長評価者',
 
@@ -201,6 +205,14 @@
     openNav: null,
 
     myList: [],
+
+    unappliedList: [],
+
+    submittedList: [],
+
+    doneList: [],
+
+    closedAnnualYears: {},
 
     pendingList: [],
 
@@ -783,17 +795,231 @@
 
   function fetchMyProposals() {
 
-    if (!BI.proposalAppId) return kintone.Promise.resolve([]);
+    return fetchAccountProposals();
+
+  }
+
+
+
+  var LIST_FIELDS = ['$id', FP.date, FP.title, FP.status, FP.proposalNo, FP.completedDate];
+
+
+
+  function mergeRecordsById(rows) {
+
+    var seen = {};
+
+    var out = [];
+
+    (rows || []).forEach(function (r) {
+
+      var id = r.$id && r.$id.value;
+
+      if (!id || seen[id]) return;
+
+      seen[id] = true;
+
+      out.push(r);
+
+    });
+
+    return out;
+
+  }
+
+
+
+  function fetchRecordsForList(query) {
 
     return kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', {
 
       app: BI.proposalAppId,
 
-      query: FP.applicant + ' in (LOGINUSER()) order by ' + FP.date + ' desc limit 100',
+      query: query,
 
-      fields: ['$id', FP.date, FP.title, FP.status],
+      fields: LIST_FIELDS,
 
     }).then(function (res) { return res.records || []; });
+
+  }
+
+
+
+  function fetchAccountProposals() {
+
+    if (!BI.proposalAppId) return kintone.Promise.resolve([]);
+
+    var order = ' order by ' + FP.date + ' desc limit 200';
+
+    var qApplicant = FP.applicant + ' in (LOGINUSER())' + order;
+
+    var qCreator = '作成者 in (LOGINUSER())' + order;
+
+    return kintone.Promise.all([
+
+      fetchRecordsForList(qApplicant),
+
+      fetchRecordsForList(qCreator),
+
+    ]).then(function (pair) {
+
+      return mergeRecordsById(pair[0].concat(pair[1]));
+
+    });
+
+  }
+
+
+
+  function fetchClosedAnnualYears() {
+
+    if (!BI.annualAppId) return kintone.Promise.resolve({});
+
+    return kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', {
+
+      app: BI.annualAppId,
+
+      query: '締め済み in ("年度締め完了") limit 100',
+
+      fields: ['年度キー', '締め済み'],
+
+    }).then(function (res) {
+
+      var map = {};
+
+      (res.records || []).forEach(function (r) {
+
+        var y = r['年度キー'] && r['年度キー'].value;
+
+        if (y != null && y !== '') map[String(y)] = true;
+
+      });
+
+      return map;
+
+    }).catch(function (err) {
+
+      console.error('[bi-guide] closed annual years fetch failed', err);
+
+      return {};
+
+    });
+
+  }
+
+
+
+  function parseISODate(iso) {
+
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso || ''));
+
+    if (!m) return null;
+
+    return { y: Number(m[1]), mo: Number(m[2]), d: Number(m[3]) };
+
+  }
+
+
+
+  function fiscalYearKeyForCompletion(completed) {
+
+    var mo = parseISODate(completed);
+
+    if (!mo) return null;
+
+    return mo.mo >= 5 ? mo.y : mo.y - 1;
+
+  }
+
+
+
+  function isUnappliedStatus(st) {
+
+    return st === 'Draft' || st === '未処理' || st === 'unprocessed' ||
+
+      st === 'applicant_fix' || st === '申請者修正待ち';
+
+  }
+
+
+
+  function isDoneStatus(st) {
+
+    return st === 'Done' || st === '完了' || st === 'done';
+
+  }
+
+
+
+  function sortByProposalDateDesc(rows) {
+
+    return rows.slice().sort(function (a, b) {
+
+      var da = (a[FP.date] && a[FP.date].value) || '';
+
+      var db = (b[FP.date] && b[FP.date].value) || '';
+
+      return db.localeCompare(da);
+
+    });
+
+  }
+
+
+
+  function splitProposalLists(rows) {
+
+    var unapplied = [];
+
+    var submitted = [];
+
+    var done = [];
+
+    (rows || []).forEach(function (r) {
+
+      var st = r[FP.status] && r[FP.status].value;
+
+      if (isUnappliedStatus(st)) unapplied.push(r);
+
+      else if (isDoneStatus(st)) done.push(r);
+
+      else submitted.push(r);
+
+    });
+
+    return {
+
+      unapplied: sortByProposalDateDesc(unapplied),
+
+      submitted: sortByProposalDateDesc(submitted),
+
+      done: sortByProposalDateDesc(done),
+
+    };
+
+  }
+
+
+
+  function unappliedStatusLabel(stVal) {
+
+    if (stVal === 'applicant_fix' || stVal === '申請者修正待ち') return '差戻し・要修正';
+
+    return '未申請（一時保存）';
+
+  }
+
+
+
+  function isAnnualClosedForRec(r) {
+
+    var completed = (r[FP.completedDate] && r[FP.completedDate].value) || '';
+
+    if (!completed) return false;
+
+    var fy = fiscalYearKeyForCompletion(completed);
+
+    return !!(fy != null && state.closedAnnualYears[String(fy)]);
 
   }
 
@@ -1326,11 +1552,21 @@
 
     var thBg = guideTheme().tableHead;
 
+    var showNo = kind === 'view' || kind === 'done' || kind === 'unapplied';
+
     var head =
 
       '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;min-width:520px">' +
 
-      '<thead><tr style="background:' + thBg + ';text-align:left">' +
+      '<thead><tr style="background:' + thBg + ';text-align:left">';
+
+    if (showNo) {
+
+      head += '<th style="padding:10px 12px">提案番号</th>';
+
+    }
+
+    head +=
 
       '<th style="padding:10px 12px">申請日</th>' +
 
@@ -1344,26 +1580,55 @@
 
       var id = r.$id.value;
 
+      var no = (r[FP.proposalNo] && r[FP.proposalNo].value) || '—';
+
       var dt = (r[FP.date] && r[FP.date].value) || '—';
 
       var title = (r[FP.title] && r[FP.title].value) || '—';
 
       var stVal = r[FP.status] && r[FP.status].value;
-      var st = statusLabel(stVal);
-      var useEdit = kind === 'eval' || (kind === 'view' && isApplyStatus(stVal));
-      var btn = kind === 'eval'
-        ? '<a href="' + esc(proposalShowUrl(id, true)) + '" style="display:inline-block;padding:8px 14px;background:#78350f;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;white-space:nowrap">評価する</a>'
-        : '<a href="' + esc(proposalShowUrl(id, useEdit)) + '" style="display:inline-block;padding:8px 14px;background:#1d4ed8;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;white-space:nowrap">提案書を見る</a>';
 
-      return '<tr style="border-bottom:1px solid #e2e8f0">' +
+      var st = kind === 'unapplied' ? unappliedStatusLabel(stVal) : statusLabel(stVal);
+
+      var useEdit = kind === 'eval' || kind === 'unapplied' ||
+
+        (kind === 'view' && isApplyStatus(stVal));
+
+      var btn = kind === 'eval'
+
+        ? '<a href="' + esc(proposalShowUrl(id, true)) + '" style="display:inline-block;padding:8px 14px;background:#78350f;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;white-space:nowrap">評価する</a>'
+
+        : '<a href="' + esc(proposalShowUrl(id, useEdit)) + '" style="display:inline-block;padding:8px 14px;background:#1d4ed8;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;white-space:nowrap">' +
+
+          (kind === 'unapplied' ? '申請する' : '提案書を見る') + '</a>';
+
+      var annualBadge = '';
+
+      if (kind === 'done' && isAnnualClosedForRec(r)) {
+
+        annualBadge = ' <span style="display:inline-block;margin-left:6px;padding:2px 8px;background:#dcfce7;color:#166534;border-radius:6px;font-size:0.85em;font-weight:600">年次処理済み</span>';
+
+      }
+
+      var row = '<tr style="border-bottom:1px solid #e2e8f0">';
+
+      if (showNo) {
+
+        row += '<td style="padding:10px 12px;white-space:nowrap">' + esc(no) + '</td>';
+
+      }
+
+      row +=
 
         '<td style="padding:10px 12px;white-space:nowrap">' + esc(dt) + '</td>' +
 
         '<td style="padding:10px 12px">' + esc(title) + '</td>' +
 
-        '<td style="padding:10px 12px">' + esc(st) + '</td>' +
+        '<td style="padding:10px 12px">' + esc(st) + annualBadge + '</td>' +
 
         '<td style="padding:10px 12px;text-align:right">' + btn + '</td></tr>';
+
+      return row;
 
     }).join('');
 
@@ -1381,13 +1646,40 @@
 
     }
 
-    var html =
+    var html = '';
+
+    if (state.unappliedList.length > 0) {
+
+      html +=
+
+        '<div style="margin-bottom:28px">' +
+
+        guideH3(
+          '未申請・下書き（' + state.unappliedList.length + '件）',
+          '#b45309',
+          '⚠️',
+          '#fff7ed'
+        ) +
+
+        listTableHtml(state.unappliedList, 'unapplied') + '</div>';
+
+    }
+
+    html +=
 
       '<div style="margin-bottom:28px">' +
 
       guideH3('申請した一覧', guideTheme().heading, '📝', '#dbeafe') +
 
-      listTableHtml(state.myList, 'view') + '</div>';
+      listTableHtml(state.submittedList, 'view') + '</div>';
+
+    html +=
+
+      '<div style="margin-bottom:28px">' +
+
+      guideH3('評価完了一覧', '#166534', '✅', '#dcfce7') +
+
+      listTableHtml(state.doneList, 'done') + '</div>';
 
     if (state.showPending) {
 
@@ -1586,6 +1878,24 @@
 
 
 
+  function unappliedAlertHtml() {
+
+    var n = state.unappliedList.length;
+
+    if (!n) return '';
+
+    return (
+
+      '<p style="margin:10px 0 0;color:#dc2626;font-weight:700;font-size:1.05em;line-height:1.5">' +
+
+      '未申請案件が ' + n + ' 件あります。申請してください。</p>'
+
+    );
+
+  }
+
+
+
   function loginStatusBannerHtml() {
     var box =
       'border-radius:12px;padding:14px 18px;margin-bottom:16px;box-shadow:0 1px 4px rgba(15,23,42,.06)';
@@ -1601,7 +1911,9 @@
         '<strong style="color:#78350f">評価者用のアカウントでログインしています。</strong><br>' +
         '<span style="font-size:0.95em;color:#44403c">' +
         body +
-        '</span></div>'
+        '</span>' +
+        unappliedAlertHtml() +
+        '</div>'
       );
     }
     return (
@@ -1609,7 +1921,9 @@
       box +
       '">' +
       '<strong style="color:#1e3a8a">共有アカウントでログインしています。</strong><br>' +
-      '<span style="font-size:0.95em;color:#334155"><strong>提案を出す</strong>から提案出来ます。</span></div>'
+      '<span style="font-size:0.95em;color:#334155"><strong>提案を出す</strong>から提案出来ます。</span>' +
+      unappliedAlertHtml() +
+      '</div>'
     );
   }
 
@@ -2466,7 +2780,15 @@
 
       .then(function (rows) {
 
-        state.myList = rows;
+        var split = splitProposalLists(rows);
+
+        state.unappliedList = split.unapplied;
+
+        state.submittedList = split.submitted;
+
+        state.doneList = split.done;
+
+        state.myList = split.submitted;
 
       })
 
@@ -2474,7 +2796,23 @@
 
         console.error('[bi-guide] my list fetch failed', err);
 
+        state.unappliedList = [];
+
+        state.submittedList = [];
+
+        state.doneList = [];
+
         state.myList = [];
+
+      })
+
+      .then(function () {
+
+        return fetchClosedAnnualYears().then(function (map) {
+
+          state.closedAnnualYears = map || {};
+
+        });
 
       })
 

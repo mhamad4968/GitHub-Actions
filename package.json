@@ -36,6 +36,8 @@
     "business-improvement:seed-wf-test-master": "npx dotenv -e .env -e .env.proxy -- node scripts/business-improvement-seed-wf-test-master.mjs",
     "business-improvement:add-proposal-completion-date": "npx dotenv -e .env -e .env.proxy -- node scripts/business-improvement-add-proposal-completion-date.mjs",
     "business-improvement:add-proposal-completion-date:dry-run": "npx dotenv -e .env -e .env.proxy -- node scripts/business-improvement-add-proposal-completion-date.mjs --dry-run",
+    "business-improvement:add-proposal-number": "npx dotenv -e .env -e .env.proxy -- node scripts/business-improvement-add-proposal-number.mjs",
+    "business-improvement:add-proposal-number:dry-run": "npx dotenv -e .env -e .env.proxy -- node scripts/business-improvement-add-proposal-number.mjs --dry-run",
     "business-improvement:create-annual-app": "npx dotenv -e .env -e .env.proxy -- node scripts/business-improvement-create-annual-app.mjs",
     "business-improvement:create-annual-app:dry-run": "npx dotenv -e .env -e .env.proxy -- node scripts/business-improvement-create-annual-app.mjs --dry-run",
     "business-improvement:verify-annual": "npx dotenv -e .env -e .env.proxy -- node scripts/business-improvement-verify-annual.mjs",

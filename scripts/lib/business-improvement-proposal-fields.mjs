@@ -92,6 +92,14 @@ export function buildProposalFieldProperties(deptNames = []) {
       required: false,
       noLabel: false,
     },
+    提案番号: {
+      type: 'SINGLE_LINE_TEXT',
+      code: '提案番号',
+      label: '提案番号',
+      required: false,
+      noLabel: false,
+      unique: true,
+    },
     完了日: {
       type: 'DATE',
       code: '完了日',

@@ -90,11 +90,11 @@
       "note": null
     },
     "688": {
-      "build": "2026-06-23-688-print-fit-one-page-v3",
-      "fileKey": "0c48e839-4fd9-45c7-a241-a26891079ab4",
-      "revision": "69",
+      "build": "2026-06-23-688-print-sat-sun-wide-lab",
+      "fileKey": "fb5ea260-a3a0-4477-a76e-943a5de1df7a",
+      "revision": "68",
       "relPath": ".kintone-deploy/upload-688.js",
-      "deployedAt": "2026-06-23T10:49:08.969Z",
+      "deployedAt": "2026-06-23T10:44:37.678Z",
       "note": null
     },
     "693": {
@@ -130,19 +130,19 @@
       "note": null
     },
     "699": {
-      "build": "2026-06-13-bi-guide-lists-first-accordion",
-      "fileKey": "b55f1469-0bd9-4559-9a30-5b8e961d8b4e",
-      "revision": "105",
+      "build": "2026-06-24-bi-guide-review3-lists",
+      "fileKey": "01c45448-c0e4-4d8e-a7d8-8fb54f78f38c",
+      "revision": "106",
       "relPath": "customize/business-improvement-guide/desktop.bundle.js",
-      "deployedAt": "2026-06-12T23:37:42.003Z",
+      "deployedAt": "2026-06-24T09:46:46.228Z",
       "note": null
     },
     "700": {
-      "build": "2026-06-18-bi-eval-role-ui-labels",
-      "fileKey": "b3fcd9a6-310c-4c1e-9cd1-d1df91abcd1d",
-      "revision": "141",
+      "build": "2026-06-24-bi-proposal-number-review3",
+      "fileKey": "0b0b0706-3abc-45a1-9ae7-d70f90d148e6",
+      "revision": "143",
       "relPath": "customize/business-improvement-proposal/desktop.js",
-      "deployedAt": "2026-06-18T09:08:31.179Z",
+      "deployedAt": "2026-06-24T09:46:34.698Z",
       "note": null
     },
     "701": {

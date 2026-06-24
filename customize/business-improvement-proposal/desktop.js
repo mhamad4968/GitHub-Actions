@@ -2,7 +2,7 @@
   'use strict';
 
   /** 業務改善 ver.02 — 提案申請 申請UI（Phase 4b）+ 評価UI（Phase 5） */
-  var BUILD = '2026-06-18-bi-eval-role-ui-labels';
+  var BUILD = '2026-06-24-bi-proposal-number-review3';
   var WF_ACTION_APPLY = 'Apply';
   var WF_ACTION_REAPPLY = 'reapply';
   var BI = {
@@ -22,6 +22,7 @@
     type: '提案種別',
     title: '提案件名',
     date: '提案日',
+    proposalNo: '提案番号',
     completedDate: '完了日',
     purpose: '目的',
     current: '現状',
@@ -40,6 +41,7 @@
     '評価コメント', '合計点', '表彰ランク_自動', '表彰ランク_最終', '付与ポイント',
     'branch_delegate', '差戻し理由', '申請者', '部長評価者', '支店長評価者',
     '人事部長評価者', '評価スナップショット', '提案操作履歴', F.date, F.completedDate,
+    F.proposalNo,
     'foo_bar',
   ];
 
@@ -832,11 +834,64 @@
     navigateAwaySafe(guideIndexUrl());
   }
 
+  function fiscalYearKeyFromDate(iso) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso || ''));
+    if (!m) return null;
+    var y = Number(m[1]);
+    var mo = Number(m[2]);
+    return mo >= 5 ? y : y - 1;
+  }
+
+  function proposalTypePrefix(typeVal) {
+    if (typeVal === 'アイデア提案') return 'A';
+    if (typeVal === '業務改善提案') return 'G';
+    return 'X';
+  }
+
+  function padProposalSeq(n) {
+    var s = String(n);
+    while (s.length < 3) s = '0' + s;
+    return s;
+  }
+
+  function nextProposalNumber(typeVal, dateIso) {
+    var fy = fiscalYearKeyFromDate(dateIso);
+    if (fy == null) return kintone.Promise.reject(new Error('提案日が未設定です'));
+    var prefix = proposalTypePrefix(typeVal) + '-' + fy + '-';
+    var q = F.proposalNo + ' like "' + escQ(prefix) + '" order by ' + F.proposalNo + ' desc limit 1';
+    return kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', {
+      app: kintone.app.getId(),
+      query: q,
+      fields: [F.proposalNo],
+    }).then(function (res) {
+      var next = 1;
+      var recs = res.records || [];
+      if (recs.length && recs[0][F.proposalNo] && recs[0][F.proposalNo].value) {
+        var last = String(recs[0][F.proposalNo].value);
+        var tail = last.slice(prefix.length);
+        var parsed = parseInt(tail, 10);
+        if (parsed >= 1) next = parsed + 1;
+      }
+      return prefix + padProposalSeq(next);
+    });
+  }
+
+  function assignProposalNumberIfNeeded(rec) {
+    if (val(rec, F.proposalNo)) return kintone.Promise.resolve(rec);
+    var dateIso = val(rec, F.date) || todayISO();
+    var typeVal = val(rec, F.type);
+    if (!typeVal) return kintone.Promise.reject(new Error('提案種別が未設定です'));
+    return nextProposalNumber(typeVal, dateIso).then(function (num) {
+      rec[F.proposalNo] = { type: 'SINGLE_LINE_TEXT', value: num };
+      return rec;
+    });
+  }
+
   function applyRecordPayload(rec) {
     var payload = {};
     var codes = [
       F.dept, F.repName, F.type, F.title, F.date, F.purpose, F.current, F.problem, F.plan, F.effect,
-      F.proposers, F.attach,
+      F.proposers, F.attach, F.proposalNo,
       '申請者', '部長評価者', '支店長評価者', '人事部長評価者',
     ];
     codes.forEach(function (code) {
@@ -878,26 +933,32 @@
     prepareRecordForApply(rec).then(function (prepared) {
       mergeCacheToRec(prepared);
       prepared = syncRepToRow1(ensureProposers(prepared));
-      return resolveWfPeople(prepared).then(function (people) {
+      var chain = kintone.Promise.resolve(prepared);
+      if (!reapply) {
+        chain = chain.then(function (p) { return assignProposalNumberIfNeeded(p); });
+      }
+      return chain.then(function (preparedWithNo) {
+        return resolveWfPeople(preparedWithNo).then(function (people) {
         if (!people.mgr) {
           alert('部長評価者が特定できません。\n部署の選択、または設定マスタ(697)の所属行を確認してください。');
           return;
         }
-        if (people.mgr) prepared['部長評価者'] = userSelect(people.mgr);
-        if (people.branch) prepared['支店長評価者'] = userSelect(people.branch);
-        if (people.hr) prepared['人事部長評価者'] = userSelect(people.hr);
-        if (people.applicant) prepared['申請者'] = userSelect(people.applicant);
+        if (people.mgr) preparedWithNo['部長評価者'] = userSelect(people.mgr);
+        if (people.branch) preparedWithNo['支店長評価者'] = userSelect(people.branch);
+        if (people.hr) preparedWithNo['人事部長評価者'] = userSelect(people.hr);
+        if (people.applicant) preparedWithNo['申請者'] = userSelect(people.applicant);
         var action = reapply ? WF_ACTION_REAPPLY : WF_ACTION_APPLY;
-        var assignee = people.mgr || wfPersonFromField(prepared, '部長評価者');
+        var assignee = people.mgr || wfPersonFromField(preparedWithNo, '部長評価者');
         if (!assignee) {
           alert('申請処理に失敗しました。部長評価者が未設定です。');
           return;
         }
-        return saveApplyRecordViaApi(prepared).then(function (recordId) {
+        return saveApplyRecordViaApi(preparedWithNo).then(function (recordId) {
           return runWorkflowAction(recordId, action, assignee).then(function () {
             afterApplySuccess(recordId);
           });
         });
+      });
       });
     }).catch(function (err) {
       alert('申請処理に失敗しました。\n' + ((err && err.message) || String(err)));
@@ -1358,6 +1419,9 @@
       '<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px">' +
       '<h2 style="margin:0;color:#1e3a8a;font-size:1.2em">業務改善提案 — ' + (ui.readOnly ? '提案書（閲覧）' : '申請') + '</h2>' +
       fontToggleHtml() + '</div>' +
+      (val(rec, F.proposalNo)
+        ? '<p style="margin:0 0 12px;color:#1e40af;font-weight:600">提案番号: ' + esc(val(rec, F.proposalNo)) + '</p>'
+        : '') +
       '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">' +
       '<label>部署<br><select data-bi-dept style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:8px"' + roAttr() + '><option value=""></option>' + deptOpts + '</select></label>' +
       '<label>社員名（代表）<br><div style="display:flex;gap:6px"><input data-bi-rep type="text" value="' + esc(val(rec, F.repName)) + '" style="flex:1;padding:8px;border:1px solid #cbd5e1;border-radius:8px"' + roAttr() + '>' +
@@ -1577,7 +1641,13 @@
       event.error = '承認が完了した案件は変更できません。';
       return event;
     }
-    if (isApplyMode(event)) return onSubmitApply(event);
+    if (isApplyMode(event)) {
+      if (!ui.pendingApply) {
+        var login = (kintone.getLoginUser() && kintone.getLoginUser().code) || '';
+        if (login) event.record['申請者'] = userSelect(login);
+      }
+      return onSubmitApply(event);
+    }
     if (isEvalMode(event) && evUi.role) recalcEval(event.record);
     return event;
   }
