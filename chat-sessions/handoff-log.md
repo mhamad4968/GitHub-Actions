@@ -3365,7 +3365,7 @@ npm run cio:morning:ready
 
 **MCP**: Memory/Serena/Excalidraw 追加・強化は意見交換のみ。**現状凍結・導入見送り**
 
-**夕反省**: `docs/reports/2026-06-24-evening-reflection.md` — R736-01〜03・R-MCP-01 **承認待ち**
+**夕反省**: `docs/reports/2026-06-24-evening-reflection.md` — R736-01〜03 **GO**（R-MCP-01 削除）
 
 **Git**: 本締め commit/push（736 Step2 分）
 

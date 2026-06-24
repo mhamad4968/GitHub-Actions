@@ -66,7 +66,7 @@
 
 □ E〜I 実績・不可逆・次手・Desktop・handoff（CIOが足した補助項目）
 
-□ R54 deploy 済み未コミット（セッション締め・19 レポート必須）
+□ R54 deploy 済み未コミット（セッション締め・19 レポート必須 / **R736-02 GO**）
   □ kintone deploy / customize 変更があれば **19-SESSION-ONE-REPORT** §未コミット（または §Git）に **App BUILD rev 一覧**を記載
   □ 締め前 `git status -sb` で dirty が残っていないか確認（残る場合は理由1行）
 

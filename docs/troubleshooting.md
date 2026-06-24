@@ -1624,3 +1624,28 @@ npm run verify:cio-project-closure-governance
 - `.cursor/rules/cio-project-closure-gate.mdc`
 - `chat-sessions/desktop-ai-emergency-read-pack/18-重要確認.txt` R19 節
 
+---
+
+## TSB-039 — Windows で `verify:kintone-live-schema` OK 後に Node UV assertion crash（2026-06-24 制定 / R736-01 GO）
+
+### 事象
+
+- `npm run deploy:736` 実行時、`cio-deploy-preflight-guard` 内の `verify:kintone-live-schema --app 736` が **「OK — 実機スキーマと customize 完全一致」** と表示した直後、Node が `Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)` で **exit 非0**
+- preflight guard が NG と判定し deploy 中止（スキーマ不一致ではない）
+
+### 真因
+
+Windows 上の Node/libuv が verify スクリプト終了時に非同期ハンドルを閉じる際にクラッシュする既知系（R53 継続）。**検証結果自体は正しい**。
+
+### 恒久対策（Mitigated）
+
+1. **手動 verify**: `node scripts/verify-kintone-live-schema.mjs --app <id>` で OK を目視確認
+2. **deploy 回避**: OK 確認後のみ  
+   `SKIP_CIO_LIVE_SCHEMA_GUARD=1 npm run deploy:<id>`（チャットに skip 理由・appId を1行）
+3. **正本**: `docs/runbooks/windows-governance-ops.md` §live-schema guard — Windows UV クラッシュ（R53）
+
+### 関連
+
+- 夕反省 R736-01 GO（2026-06-24）
+- `docs/reports/2026-06-21-evening-reflection.md` F3（R53 継続）
+

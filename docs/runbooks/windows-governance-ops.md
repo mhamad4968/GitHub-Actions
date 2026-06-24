@@ -70,7 +70,7 @@ pre-push は `git rev-parse --show-toplevel` でリポ root を解決（`.git/ho
 
 ---
 
-## live-schema guard — Windows UV クラッシュ（R53）
+## live-schema guard — Windows UV クラッシュ（R53 / TSB-039 / R736-01）
 
 **症状**: `npm run verify:kintone-live-schema` が **OK 表示後**に Node が `UV_HANDLE_CLOSING` で落ちる（Windows 固有）。
 

@@ -1,7 +1,7 @@
 # 夕反省 — 2026-06-24
 
 正本: `docs/runbooks/evening-reflection-scope.md`  
-承認: **承認待ち**（R736-01〜03・R-MCP-01 は明日判断）
+承認: **浜田 GO 2026-06-24** — R736-01〜03 実装。R-MCP-01 は **削除**（意見交換のみ・憲法化しない）
 
 ---
 
@@ -16,11 +16,12 @@
 
 ---
 
-## 2. 改善案（ミス削減）— 承認待ち
+## 2. 改善案（ミス削減）— 承認済み
 
-| ID | 内容 | 種別 |
-|----|------|------|
-| **R736-01** | Windows で schema verify が assertion crash する場合の runbook 1 行（`SKIP_CIO_LIVE_SCHEMA_GUARD=1` は verify 手動 OK 後のみ） | runbook / TSB |
-| **R736-02** | kintone customize deploy 成功後 **同一セッション内 commit** を締めチェックに追加 | 締め儀式 |
-| **R736-03** | `checkpoint-latest` 先頭に **当日アクティブアプリ（BUILD/rev）** を必ず1ブロック追記 | checkpoint 運用 |
-| **R-MCP-01** | MCP 追加は **意見交換→浜田 GO→導入**。現状凍結を AGENTS または runbook に1段落（Memory/Serena/Excalidraw 見送り記録） | 憲法補足 |
+| ID | 内容 | 種別 | 状態 |
+|----|------|------|------|
+| **R736-01** | Windows で schema verify が assertion crash する場合の手順（`SKIP_CIO_LIVE_SCHEMA_GUARD=1` は verify 手動 OK 後のみ） | TSB-039 / `windows-governance-ops.md` R53 | **GO・反映済** |
+| **R736-02** | kintone customize deploy 成功後 **同一セッション内 commit** を締めチェックに追加 | `20-SESSION-REPORT-CHECKLIST.txt` R54 再確認 | **GO・既存 R54 で充足** |
+| **R736-03** | `checkpoint-latest` 先頭に **当日アクティブアプリ（BUILD/rev）** を必ず1ブロック追記 | `checkpoint-handoff-template-v2.md` §4 | **GO・反映済** |
+
+~~**R-MCP-01**~~ — **削除**（MCP 追加凍結の憲文化は不要。意見交換で終了）
