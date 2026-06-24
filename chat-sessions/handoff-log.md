@@ -3354,3 +3354,21 @@ npm run cio:morning:ready
 **触らない**: 688 / 677–679 / SKYSEA — 触らない
 
 ---
+
+### 2026-06-24 JST — **736 差分印刷 Step2 受け入れ + MCP 意見交換（導入見送り）**
+
+**736**:
+- Step1 総括表差分印刷 rev **129** — 通常印刷ハイライト抑止済
+- Step2 詳細表差分印刷＋削除行（展開時のみ）— **浜田受け入れ OK（2〜5）**
+- 本番 BUILD=`2026-06-24-736-diff-print-detail-v2c` rev **131**
+- **明日**: Step2-3 差分サマリー印刷（任意）
+
+**MCP**: Memory/Serena/Excalidraw 追加・強化は意見交換のみ。**現状凍結・導入見送り**
+
+**夕反省**: `docs/reports/2026-06-24-evening-reflection.md` — R736-01〜03・R-MCP-01 **承認待ち**
+
+**Git**: 本締め commit/push（736 Step2 分）
+
+**触らない**: 688 / 677–679 / SKYSEA — 保留のまま
+
+---

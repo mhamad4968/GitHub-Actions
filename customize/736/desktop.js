@@ -1,10 +1,10 @@
 /**
- * 実行予算書作成支援ツール ver.01 — BUILD 2026-06-24-736-diff-print-normal-no-highlight
+ * 実行予算書作成支援ツール ver.01 — BUILD 2026-06-24-736-diff-print-detail-v2c
  * Master app: 735
  */
 (function () {
   'use strict';
-  const BUILD = '2026-06-24-736-diff-print-normal-no-highlight';
+  const BUILD = '2026-06-24-736-diff-print-detail-v2c';
   const APP_MASTER = 735;
   const DEFAULT_COST_TEMPLATE = [
   { "cost_work_type_code": "10100", "cost_work_type": "材料費", "cost_category_code": "", "cost_category": "塗料", "cost_row_kind": "link", "cost_group_key": "material", "cost_tax_rate": 0.1, "cost_unit": "－", "detail_marker": "②", "cost_basis_note": "詳細表にて内訳を記載…②" },
@@ -3207,12 +3207,34 @@ function pushTotalEntry(list, field, label, info, bucket) {
   function renderDiffRemovedBlock(table, label, renderRowHtml) {
     if (!diffIsActive() || !diffResult[table] || !diffResult[table].removed.length) return '';
     const n = diffResult[table].removed.length;
-    let html = '<details class="jy-diff-removed" open data-diff-removed="' + table + '">';
+    let html = '<details class="jy-diff-removed" data-diff-removed="' + table + '">';
     html += '<summary>削除された行（' + n + '件）</summary><table class="jy-table jy-diff-removed-table"><tbody>';
     diffResult[table].removed.forEach(function (item) {
       html += '<tr class="jy-diff-removed-row">' + renderRowHtml(item.row) + '</tr>';
     });
     html += '</tbody></table></details>';
+    return html;
+  }
+
+  function syncDiffDeletedExpandedFromDom() {
+    document.querySelectorAll('details.jy-diff-removed').forEach(function (el) {
+      const table = el.getAttribute('data-diff-removed');
+      if (table && Object.prototype.hasOwnProperty.call(diffDeletedExpanded, table)) {
+        diffDeletedExpanded[table] = el.open;
+      }
+    });
+  }
+
+  function renderPrintDiffRemovedBlock(table, sectionLabel, renderRowHtml) {
+    if (!printDiffActive() || !diffDeletedExpanded[table]) return '';
+    if (!diffIsActive() || !diffResult[table] || !diffResult[table].removed.length) return '';
+    const n = diffResult[table].removed.length;
+    let html = '<div class="jy-pr-diff-removed"><div class="jy-pr-diff-removed-head">削除された行（' + esc(sectionLabel) + '・' + n + '件）</div>';
+    html += '<table class="jy-pr-table jy-pr-diff-removed-table"><tbody>';
+    diffResult[table].removed.forEach(function (item) {
+      html += '<tr class="jy-diff-removed-row">' + renderRowHtml(item.row) + '</tr>';
+    });
+    html += '</tbody></table></div>';
     return html;
   }
 
@@ -3888,7 +3910,10 @@ function pushTotalEntry(list, field, label, info, bucket) {
       'tr.jy-diff-cascade td:first-child{box-shadow:inset 4px 0 0 #38bdf8}' +
       '.jy-diff-mark{font-size:8pt;font-weight:700;margin-left:2px}' +
       '.jy-diff-delta{font-size:8pt;font-weight:700;color:#1d4ed8;margin-left:2px;white-space:nowrap}' +
-      'td.jy-diff-amt-down .jy-diff-delta{color:#b91c1c}'
+      'td.jy-diff-amt-down .jy-diff-delta{color:#b91c1c}' +
+      '.jy-pr-diff-removed{margin:4px 0 6px;border:1px dashed #f87171;border-radius:3px;padding:3px 6px;background:#fff5f5;break-inside:avoid;page-break-inside:avoid}' +
+      '.jy-pr-diff-removed-head{font-size:9pt;font-weight:700;color:#b91c1c;margin:0 0 3px}' +
+      '.jy-pr-diff-removed-table .jy-diff-removed-row td{background:#f8d7da!important;text-decoration:line-through;color:#7f1d1d}'
     );
   }
 
@@ -4021,6 +4046,9 @@ function pushTotalEntry(list, field, label, info, bucket) {
       html += '<td class="' + diffCellClass('spec', rk, 'spec_note') + '">' + esc(r.spec_note) + '</td></tr>';
     });
     html += '</tbody><tfoot><tr class="jy-pr-total-row"><td colspan="4" class="jy-num">合計 …①</td><td class="jy-num ' + diffScalarClass('contract_total_1') + '">' + fmt(state.contract_total_1) + diffAmtMark('contract_total_1') + '</td><td></td></tr></tfoot></table></div></div>';
+    html += renderPrintDiffRemovedBlock('spec', '仕様明細', function (r) {
+      return '<td>' + esc(r.spec_name) + '</td><td class="jy-center">' + disp(r.spec_unit) + '</td><td class="jy-num">' + disp(r.spec_qty) + '</td><td class="jy-num">' + esc(formatUnitPrice(r.spec_unit_price)) + '</td><td class="jy-num">' + fmt(r.spec_amount) + '</td><td>' + esc(r.spec_note) + '</td>';
+    });
     return html;
   }
 
@@ -4080,11 +4108,20 @@ function pushTotalEntry(list, field, label, info, bucket) {
     html += '<table class="jy-pr-table jy-pr-cost jy-pr-cost-totals"><tbody>';
     html += '<tr class="jy-pr-total-row"><td colspan="9">工事原価額 …⑧</td><td class="jy-num ' + diffScalarClass('cost_total_8') + '">' + fmt(state.cost_total_8) + diffAmtMark('cost_total_8') + '</td><td colspan="2"></td></tr>';
     html += '<tr class="jy-pr-total-row"><td colspan="9">粗利 …⑨</td><td class="jy-num ' + diffScalarClass('profit_9') + '">' + fmt(state.profit_9) + diffAmtMark('profit_9') + '</td><td></td><td class="jy-num ' + diffScalarClass('profit_rate') + '">' + fmtPct(state.profit_rate) + diffAmtMark('profit_rate') + '</td></tr>';
-    html += '</tbody></table></div></div>';
+    html += '</tbody></table>';
+    html += renderPrintDiffRemovedBlock('cost', '原価行', function (r) {
+      return '<td>' + esc(r.cost_work_type_code) + '</td><td>' + esc(r.cost_work_type) + '</td><td>' + esc(r.cost_category_code) + '</td><td>' + esc(r.cost_category) + '</td><td>' + esc(rowKindDisplay(r.cost_row_kind)) + '</td><td colspan="4"></td><td class="jy-num">' + fmt(r.cost_amount) + '</td><td colspan="2"></td>';
+    });
+    html += '</div></div>';
     return html;
   }
 
+  function matPrintTotalField(group) {
+    return group === '塗料' ? 'mat_total_2' : 'mat_total_3';
+  }
+
   function renderPrintMatBlock(title, group, totalLabel, totalAmount, marker) {
+    const totalField = matPrintTotalField(group);
     let html = '<div class="jy-pr-block-section jy-pr-mat-block-section"><div class="jy-pr-block-inner">';
     html += '<div class="jy-pr-block-head"><span class="jy-pr-block-head-title">' + esc(title) + '</span>';
     html += '<span class="jy-pr-block-head-marker">' + esc(printRefMarker(marker)) + '</span></div>';
@@ -4093,14 +4130,22 @@ function pushTotalEntry(list, field, label, info, bucket) {
       '<th class="jy-col-vendor jy-center">仕入先</th><th class="jy-col-name">品名</th><th class="jy-col-cap jy-center">容量</th><th class="jy-col-maker jy-center">メーカー</th>' +
       '<th class="jy-col-qty">所要量</th><th class="jy-col-price">単価</th><th class="jy-col-grp jy-center">区分</th><th class="jy-col-amt jy-num">金額</th><th class="jy-col-basis">計算基準</th><th class="jy-col-note">備考</th>' +
       '</tr></thead><tbody>';
-    state.mat_lines.forEach(function (r) {
+    state.mat_lines.forEach(function (r, i) {
       if (r.mat_group !== group) return;
-      html += '<tr><td class="jy-center">' + disp(r.mat_vendor) + '</td><td>' + esc(r.mat_name) + '</td><td class="jy-center">' + disp(r.mat_capacity) + '</td>';
-      html += '<td class="jy-center">' + disp(r.mat_maker) + '</td><td class="jy-num">' + disp(r.mat_qty) + '</td>';
-      html += '<td class="jy-num">' + esc(formatUnitPrice(r.mat_unit_price)) + '</td><td class="jy-center">' + disp(r.mat_group) + '</td>';
-      html += '<td class="jy-num">' + fmt(r.mat_amount) + '</td><td>' + esc(r.mat_basis) + '</td><td></td></tr>';
+      const rk = rowKeyForTable('mat', r, i);
+      const dr = diffRowClass('mat', rk);
+      html += '<tr' + (dr ? ' class="' + dr + '"' : '') + '>';
+      html += '<td class="jy-center ' + diffCellClass('mat', rk, 'mat_vendor') + '">' + disp(r.mat_vendor) + '</td>';
+      html += '<td class="' + diffCellClass('mat', rk, 'mat_name') + '">' + esc(r.mat_name) + '</td>';
+      html += '<td class="jy-center ' + diffCellClass('mat', rk, 'mat_capacity') + '">' + disp(r.mat_capacity) + '</td>';
+      html += '<td class="jy-center ' + diffCellClass('mat', rk, 'mat_maker') + '">' + disp(r.mat_maker) + '</td>';
+      html += '<td class="jy-num ' + diffCellClass('mat', rk, 'mat_qty') + '">' + disp(r.mat_qty) + '</td>';
+      html += '<td class="jy-num ' + diffCellClass('mat', rk, 'mat_unit_price') + '">' + esc(formatUnitPrice(r.mat_unit_price)) + '</td>';
+      html += '<td class="jy-center ' + diffCellClass('mat', rk, 'mat_group') + '">' + disp(r.mat_group) + '</td>';
+      html += '<td class="jy-num ' + diffCellClass('mat', rk, 'mat_amount') + '">' + fmt(r.mat_amount) + diffAmtMark('mat_amount', 'mat', rk) + '</td>';
+      html += '<td class="' + diffCellClass('mat', rk, 'mat_basis') + '">' + esc(r.mat_basis) + '</td><td></td></tr>';
     });
-    html += '</tbody><tfoot><tr class="jy-pr-total-row"><td colspan="7">' + esc(totalLabel) + '</td><td class="jy-num">' + fmt(totalAmount) + '</td><td colspan="2"></td></tr></tfoot></table></div></div></div></div>';
+    html += '</tbody><tfoot><tr class="jy-pr-total-row"><td colspan="7">' + esc(totalLabel) + '</td><td class="jy-num ' + diffScalarClass(totalField) + '">' + fmt(totalAmount) + diffAmtMark(totalField) + '</td><td colspan="2"></td></tr></tfoot></table></div></div></div></div>';
     return html;
   }
 
@@ -4114,19 +4159,22 @@ function pushTotalEntry(list, field, label, info, bucket) {
     html += '<span class="jy-pr-block-head-marker">' + esc(printRefMarker(mk)) + '</span></div>';
     html += '<div class="jy-pr-block-wrap"><div class="jy-pr-wrap">';
     html += '<table class="jy-pr-table jy-pr-sub-table"><thead><tr><th>種別</th><th class="jy-center">単位</th><th>数量</th><th>単価</th><th class="jy-num">金額</th><th>計算基準</th><th class="jy-col-note">備考</th></tr></thead><tbody>';
-    state.subcontract_lines.forEach(function (r) {
+    state.subcontract_lines.forEach(function (r, i) {
       if (r.subcontract_block !== b.id) return;
       if (r.sub_row_kind === 'vendor') return;
       const calcRow = isSubCalcRow(r);
       const totalRow = isSubBlockTotalRow(r);
-      var rowCls = totalRow ? 'jy-pr-total-row' : (calcRow ? 'jy-pr-calc-row' : '');
-      html += '<tr' + (rowCls ? ' class="' + rowCls + '"' : '') + '><td>' + esc(subLineTypeDisplay(r)) + '</td>';
+      const rk = rowKeyForTable('sub', r, i);
+      var rowCls = [totalRow ? 'jy-pr-total-row' : (calcRow ? 'jy-pr-calc-row' : ''), diffRowClass('sub', rk)].filter(Boolean).join(' ');
+      html += '<tr' + (rowCls ? ' class="' + rowCls + '"' : '') + '><td class="' + diffCellClass('sub', rk, 'sub_line_type') + '">' + esc(subLineTypeDisplay(r)) + '</td>';
       if (calcRow) {
-        html += '<td class="jy-center">' + disp(r.sub_unit) + '</td><td></td><td></td><td class="jy-num">' + fmt(r.sub_amount) + '</td><td>' + esc(r.sub_basis) + '</td><td></td></tr>';
+        html += '<td class="jy-center">' + disp(r.sub_unit) + '</td><td></td><td></td><td class="jy-num ' + diffCellClass('sub', rk, 'sub_amount') + '">' + fmt(r.sub_amount) + diffAmtMark('sub_amount', 'sub', rk) + '</td><td>' + esc(r.sub_basis) + '</td><td></td></tr>';
       } else {
-        html += '<td class="jy-center">' + disp(r.sub_unit) + '</td><td class="jy-num">' + disp(r.sub_qty) + '</td>';
-        html += '<td class="jy-num">' + esc(formatUnitPrice(r.sub_unit_price)) + '</td>';
-        html += '<td class="jy-num">' + fmt(r.sub_amount) + '</td><td>' + esc(r.sub_basis) + '</td><td></td></tr>';
+        html += '<td class="jy-center ' + diffCellClass('sub', rk, 'sub_unit') + '">' + disp(r.sub_unit) + '</td>';
+        html += '<td class="jy-num ' + diffCellClass('sub', rk, 'sub_qty') + '">' + disp(r.sub_qty) + '</td>';
+        html += '<td class="jy-num ' + diffCellClass('sub', rk, 'sub_unit_price') + '">' + esc(formatUnitPrice(r.sub_unit_price)) + '</td>';
+        html += '<td class="jy-num ' + diffCellClass('sub', rk, 'sub_amount') + '">' + fmt(r.sub_amount) + diffAmtMark('sub_amount', 'sub', rk) + '</td>';
+        html += '<td class="' + diffCellClass('sub', rk, 'sub_basis') + '">' + esc(r.sub_basis) + '</td><td></td></tr>';
       }
     });
     html += '</tbody></table></div></div></div></div>';
@@ -4136,25 +4184,43 @@ function pushTotalEntry(list, field, label, info, bucket) {
   function buildPrintSummaryHtml() {
     jyDiffPrintBuild = true;
     try {
-      return renderPrintDocHead('（　総　括　表　）') + renderPrintSpecTable() + renderPrintCostTable() + renderPrintDiffFooter();
+      return (
+        renderPrintDocHead('（　総　括　表　）') +
+        renderPrintSpecTable() +
+        renderPrintCostTable() +
+        renderPrintDiffFooter()
+      );
     } finally {
       jyDiffPrintBuild = false;
     }
   }
 
   function buildPrintDetailHtml() {
-    ensureSubVendorRows();
-    let html = renderPrintDocHead('（　詳　細　表　）');
-    html += renderPrintMatBlock('材料明細（塗料）', '塗料', '塗料合計', state.mat_total_2, '②');
-    html += renderPrintMatBlock('材料明細（その他）', 'その他', 'その他合計', state.mat_total_3, '③');
-    SUB_BLOCKS.forEach(function (b) {
-      html += renderPrintSubBlock(b);
-    });
-    return html;
+    jyDiffPrintBuild = true;
+    try {
+      ensureSubVendorRows();
+      let html = renderPrintDocHead('（　詳　細　表　）');
+      html += renderPrintMatBlock('材料明細（塗料）', '塗料', '塗料合計', state.mat_total_2, '②');
+      html += renderPrintMatBlock('材料明細（その他）', 'その他', 'その他合計', state.mat_total_3, '③');
+      html += renderPrintDiffRemovedBlock('mat', '材料明細', function (r) {
+        return '<td class="jy-center">' + disp(r.mat_vendor) + '</td><td>' + esc(r.mat_name) + '</td><td class="jy-center">' + disp(r.mat_capacity) + '</td><td class="jy-center">' + disp(r.mat_maker) + '</td><td class="jy-num">' + disp(r.mat_qty) + '</td><td class="jy-num">' + esc(formatUnitPrice(r.mat_unit_price)) + '</td><td class="jy-center">' + disp(r.mat_group) + '</td><td class="jy-num">' + fmt(r.mat_amount) + '</td><td>' + esc(r.mat_basis) + '</td><td></td>';
+      });
+      SUB_BLOCKS.forEach(function (b) {
+        html += renderPrintSubBlock(b);
+      });
+      html += renderPrintDiffRemovedBlock('sub', '外注明細', function (r) {
+        return '<td>' + esc(subLineTypeDisplay(r)) + '</td><td class="jy-center">' + disp(r.sub_unit) + '</td><td class="jy-num">' + disp(r.sub_qty) + '</td><td class="jy-num">' + esc(formatUnitPrice(r.sub_unit_price)) + '</td><td class="jy-num">' + fmt(r.sub_amount) + '</td><td>' + esc(r.sub_basis) + '</td><td></td>';
+      });
+      html += renderPrintDiffFooter();
+      return html;
+    } finally {
+      jyDiffPrintBuild = false;
+    }
   }
 
   function openTabPrint(mode) {
     try {
+      syncDiffDeletedExpandedFromDom();
       printDiffMode = readPrintDiffModeFromDom();
       printPrepState();
       const bodyHtml = mode === 'summary' ? buildPrintSummaryHtml() : buildPrintDetailHtml();
@@ -4162,7 +4228,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
       injectPrintPortalCss();
       bindPrintPortalCleanup();
       const portal = ensurePrintPortal();
-      const prCls = 'jy-pr jy-pr-doc jy-pr-mode-' + mode + (mode === 'summary' && printDiffActive() ? ' jy-pr-mode-diff' : '');
+      const prCls = 'jy-pr jy-pr-doc jy-pr-mode-' + mode + (printDiffActive() ? ' jy-pr-mode-diff' : '');
       portal.innerHTML = '<div class="' + prCls + '">' + bodyHtml + '</div>';
       window.requestAnimationFrame(function () {
         window.requestAnimationFrame(function () {
@@ -4529,9 +4595,11 @@ function pushTotalEntry(list, field, label, info, bucket) {
       });
     });
     root.querySelectorAll('details.jy-diff-removed').forEach(function (el) {
+      const table = el.getAttribute('data-diff-removed');
+      if (table) diffDeletedExpanded[table] = el.open;
       el.addEventListener('toggle', function () {
-        const table = el.getAttribute('data-diff-removed');
-        if (table) diffDeletedExpanded[table] = el.open;
+        const t = el.getAttribute('data-diff-removed');
+        if (t) diffDeletedExpanded[t] = el.open;
       });
     });
 
