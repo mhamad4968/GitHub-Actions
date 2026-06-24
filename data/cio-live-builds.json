@@ -90,11 +90,11 @@
       "note": null
     },
     "688": {
-      "build": "2026-06-24-688-print-5yr-rain-compact-v8",
-      "fileKey": "6d8ce4bd-821d-4a90-8478-d7140aaf2953",
-      "revision": "78",
-      "relPath": ".kintone-deploy/upload-688.js",
-      "deployedAt": "2026-06-24T10:47:08.513Z",
+      "build": "2026-06-24-688-print-5yr-rain-scale-up-v9",
+      "fileKey": "dc6ed705-941d-46c1-b57b-516dc7571db4",
+      "revision": "79",
+      "relPath": "customize/688/desktop.js",
+      "deployedAt": "2026-06-24T10:49:30.529Z",
       "note": null
     },
     "693": {
