@@ -91,10 +91,10 @@
     },
     "688": {
       "build": "2026-06-24-688-print-a4-fit-v6",
-      "fileKey": "f0fce5ee-b07d-4213-8e88-e45d8a9043d3",
-      "revision": "73",
-      "relPath": "customize/688/desktop.js",
-      "deployedAt": "2026-06-24T10:27:22.674Z",
+      "fileKey": "8bc0ce28-dc5f-4f00-bd59-64d7cc6fa981",
+      "revision": "74",
+      "relPath": ".kintone-deploy/upload-688.js",
+      "deployedAt": "2026-06-24T10:28:07.965Z",
       "note": null
     },
     "693": {
