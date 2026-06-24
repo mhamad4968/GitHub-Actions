@@ -995,48 +995,45 @@
       '@media print{' +
       '@page{size:A4 landscape;margin:7mm 5mm 2mm 7mm;}' +
       'html,body{margin:0!important;padding:0!important;}' +
-      'body *{visibility:hidden!important;}' +
-      '#wd688-print-portal,#wd688-print-portal *{visibility:visible!important;}' +
-      '#wd688-print-portal{display:block!important;position:static!important;left:auto!important;top:auto!important;width:100%!important;}' +
       '.wd688pr-sheet{page-break-after:always;break-after:page;}' +
       '.wd688pr-sheet:last-child{page-break-after:auto;break-after:auto;}' +
-      '.wd688pr-sheet-work{page-break-inside:avoid;break-inside:avoid-page;height:190mm;max-height:190mm;overflow:hidden;position:relative;}' +
-      '.wd688pr-sheet-work .wd688pr-sheet-fit{transform:scale(0.54);transform-origin:top left;width:185.2%;}' +
+      '.wd688pr-sheet-work{zoom:0.58;page-break-inside:avoid;break-inside:avoid-page;}' +
       '.wd688pr-section{page-break-after:auto;break-after:auto;}' +
-      '.wd688pr-sheet-work .wd688pr-meta{margin-bottom:10px;font-size:14pt;}' +
-      '.wd688pr-sheet-work .wd688pr-meta th,.wd688pr-sheet-work .wd688pr-meta td{padding:5px 11px;}' +
+      '.wd688pr-sheet-work .wd688pr-meta{margin-bottom:5px;font-size:12pt;}' +
+      '.wd688pr-sheet-work .wd688pr-meta th,.wd688pr-sheet-work .wd688pr-meta td{padding:3px 8px;}' +
       '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-tabs{display:none;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-title{font-size:20pt;padding:9px 18px;margin-bottom:7px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-title{font-size:17pt;padding:6px 14px;margin-bottom:4px;}' +
       '.wd688pr-sheet-work .wd688pr-work-head{page-break-after:avoid;break-after:avoid-page;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum{font-size:12.5pt;margin:5px 0 7px;table-layout:fixed;width:100%;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum{font-size:10.5pt;margin:2px 0 4px;table-layout:fixed;width:100%;}' +
       '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-col-lab{width:22%;}' +
       '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-col-m{width:5.2%;}' +
       '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-col-year{width:5.5%;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum th,.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum td{padding:3px 4px;line-height:1.25;vertical-align:middle;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-lab{width:22%;min-width:12em;padding:6px 8px;font-size:12pt;white-space:normal;word-break:keep-all;line-height:1.2;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum th,.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum td{padding:1px 2px;line-height:1.1;vertical-align:middle;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-lab{width:22%;min-width:12em;padding:4px 6px;font-size:10.5pt;white-space:normal;word-break:keep-all;line-height:1.12;}' +
       '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-lab-long{min-width:12.5em;}' +
       '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-indent{padding-left:1.2em;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum th:not(.wd688pr-lab){font-size:11.5pt;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-lab span{font-size:9pt!important;font-weight:normal;line-height:1.18;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-notes{font-size:9.5pt;margin:6px 0 0;line-height:1.4;columns:1;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-notes p{margin:0 0 4px;break-inside:avoid;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-section{margin-top:6px;page-break-before:avoid;break-before:avoid-page;page-break-inside:avoid;break-inside:avoid-page;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-year{margin:6px 0 5px;font-size:14pt;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-row-6{gap:6px 9px;margin-bottom:6px;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal{padding:5px 6px 6px;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-mnum{font-size:12pt;margin:0 0 3px;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t{font-size:10pt;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t th{font-size:9.5pt;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t th,.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t td{line-height:17px;height:17px;padding:0;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-stats-wrap{margin-top:5px;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-stats{font-size:8.5pt;margin-top:0;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-stats td{padding:2px 4px;line-height:1.3;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-stats .wd688pr-sl{word-break:keep-all;line-height:1.3;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-panel{margin:5px 0 6px;font-size:11pt;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-panel-head{font-size:11pt;padding:5px 9px;}' +
-      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-panel-body{font-size:11pt;padding:6px 9px;line-height:1.4;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum th:not(.wd688pr-lab){font-size:9.5pt;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-sum .wd688pr-lab span{font-size:7.5pt!important;font-weight:normal;line-height:1.1;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-notes{font-size:7.5pt;margin:3px 0 0;line-height:1.18;columns:2;column-gap:14px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-notes p{margin:0 0 1px;break-inside:avoid;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-section{margin-top:3px;page-break-before:avoid;break-before:avoid-page;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-year{margin:3px 0 2px;font-size:12pt;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-row-6{gap:3px 6px;margin-bottom:3px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal{padding:2px 3px 3px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-mnum{font-size:10pt;margin:0 0 1px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t{font-size:8pt;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t th{font-size:7.5pt;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t th,.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-t td{line-height:13px;height:13px;padding:0;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-stats-wrap{margin-top:2px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-stats{font-size:6.5pt;margin-top:0;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-stats td{padding:0 1px;line-height:1.1;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688pr-cal-stats .wd688pr-sl{word-break:keep-all;line-height:1.1;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-panel{margin:2px 0 3px;font-size:9pt;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-panel-head{font-size:9pt;padding:3px 6px;}' +
+      '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-panel-body{font-size:9pt;padding:4px 6px;line-height:1.25;}' +
       '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-list{margin:0;padding-left:1.1em;}' +
       '.wd688pr-sheet-work .wd688pr-section-work .wd688-comment-list li{margin:2px 0;}' +
+      '.wd688pr-sheet-5yr{zoom:0.72;page-break-inside:avoid;break-inside:avoid-page;}' +
       '.wd688pr-sheet-5yr .wd688pr-tabs{display:none;}' +
       '.wd688pr-sheet-5yr .wd688pr-5yr-combined{margin:0;}' +
       '.wd688pr-sheet-5yr .wd688pr-5yr-group{margin-bottom:0;}' +
@@ -1678,7 +1675,7 @@
     };
 
     return (
-      '<div class="wd688pr-sheet wd688pr-sheet-work"><div class="wd688pr-sheet-fit">' +
+      '<div class="wd688pr-sheet wd688pr-sheet-work">' +
       meta +
       buildWorkdaysMgmtPrintSection(
         Object.assign({}, sectionCommon, {
@@ -1688,8 +1685,8 @@
           markSet: rainSet,
         }),
       ) +
-      '</div></div>' +
-      '<div class="wd688pr-sheet wd688pr-sheet-work"><div class="wd688pr-sheet-fit">' +
+      '</div>' +
+      '<div class="wd688pr-sheet wd688pr-sheet-work">' +
       buildWorkdaysMgmtPrintSection(
         Object.assign({}, sectionCommon, {
           sheetTab: '工事稼働日管理 (足場)',
@@ -1698,8 +1695,8 @@
           markSet: windSet,
         }),
       ) +
-      '</div></div>' +
-      '<div class="wd688pr-sheet wd688pr-sheet-work"><div class="wd688pr-sheet-fit">' +
+      '</div>' +
+      '<div class="wd688pr-sheet wd688pr-sheet-work">' +
       buildWorkdaysMgmtPrintSection(
         Object.assign({}, sectionCommon, {
           sheetTab: '工事稼働日管理 (休日)',
@@ -1708,7 +1705,7 @@
           markSet: rainSet,
         }),
       ) +
-      '</div></div>' +
+      '</div>' +
       '<div class="wd688pr-sheet wd688pr-sheet-5yr">' +
       buildPrint5yrSheet('rain', estYear, pastLabel) +
       '</div>' +
@@ -1720,6 +1717,49 @@
 
   function buildPaintClientReportHtml() {
     return buildFullClientReportHtml();
+  }
+
+  function buildPaintClientReportPrintDocument(bodyHtml) {
+    return (
+      '<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8">' +
+      '<title>施工主報告</title><style>' +
+      paintReportPrintStylesheet() +
+      '</style></head><body>' +
+      bodyHtml +
+      '</body></html>'
+    );
+  }
+
+  function openPaintClientReportPrintWindow(bodyHtml) {
+    var printWin = window.open('', '_blank');
+    if (!printWin) {
+      return false;
+    }
+    printWin.document.open();
+    printWin.document.write(buildPaintClientReportPrintDocument(bodyHtml));
+    printWin.document.close();
+    var closed = false;
+    function closePrintWin() {
+      if (closed || printWin.closed) return;
+      closed = true;
+      try {
+        printWin.close();
+      } catch (closeErr) {
+        console.warn(BUILD, closeErr);
+      }
+    }
+    printWin.addEventListener('afterprint', closePrintWin, false);
+    window.setTimeout(function () {
+      try {
+        printWin.focus();
+        printWin.print();
+      } catch (err) {
+        console.warn(BUILD, err);
+        alert('印刷を開始できませんでした: ' + (err.message || err));
+      }
+      window.setTimeout(closePrintWin, 2000);
+    }, 200);
+    return true;
   }
 
   function openPaintClientReportPrint() {
@@ -1740,20 +1780,11 @@
       if (!html || html.indexOf('wd688pr-sum') < 0) {
         throw new Error('報告HTMLの生成に失敗しました');
       }
-      injectPrintPortalCss();
-      bindPrintPortalCleanup();
-      var portal = ensurePrintPortal();
-      portal.innerHTML = html;
-      window.requestAnimationFrame(function () {
-        window.requestAnimationFrame(function () {
-          try {
-            window.print();
-          } catch (err) {
-            console.warn(BUILD, err);
-            alert('印刷を開始できませんでした: ' + (err.message || err));
-          }
-        });
-      });
+      if (!openPaintClientReportPrintWindow(html)) {
+        alert(
+          '印刷ウィンドウを開けませんでした。ブラウザのポップアップ許可をご確認のうえ、再度お試しください。',
+        );
+      }
     } catch (e) {
       alert('印刷の準備に失敗しました: ' + (e.message || e));
       console.error(BUILD, e);
