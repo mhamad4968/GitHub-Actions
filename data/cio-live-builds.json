@@ -90,11 +90,11 @@
       "note": null
     },
     "688": {
-      "build": "2026-06-24-688-print-a4-popup-v7",
-      "fileKey": "efd77c9a-742a-4556-a1ca-fea31ddfda2f",
-      "revision": "76",
-      "relPath": ".kintone-deploy/upload-688.js",
-      "deployedAt": "2026-06-24T10:40:30.936Z",
+      "build": "2026-06-24-688-print-5yr-rain-compact-v8",
+      "fileKey": "00abed71-9948-4216-b427-44d26034ec36",
+      "revision": "77",
+      "relPath": "customize/688/desktop.js",
+      "deployedAt": "2026-06-24T10:43:27.664Z",
       "note": null
     },
     "693": {
