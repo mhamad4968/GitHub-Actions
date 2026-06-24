@@ -307,10 +307,10 @@
     },
     "736": {
       "build": "2026-06-24-736-summary-print-one-page",
-      "fileKey": "b52b6c52-b24c-4ca4-a9e0-533a6f8f17df",
-      "revision": "125",
-      "relPath": "customize/736/desktop.js",
-      "deployedAt": "2026-06-24T10:55:15.602Z",
+      "fileKey": "3e5f79b0-bebd-438d-a834-4c7e62fa90aa",
+      "revision": "126",
+      "relPath": ".kintone-deploy/upload-736.js",
+      "deployedAt": "2026-06-24T10:56:03.462Z",
       "note": null
     },
     "737": {
