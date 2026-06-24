@@ -6,7 +6,7 @@
 
   /** 業務改善 ver.02 — ご利用ガイド */
 
-  var BUILD = '2026-06-24-bi-guide-unapplied-no-number-col';
+  var BUILD = '2026-06-24-bi-guide-fix-datelabel-ref';
 
 
 

@@ -1246,7 +1246,7 @@ window.BiAnnualPanel = (function () {
 
   /** 業務改善 ver.02 — ご利用ガイド */
 
-  var BUILD = '2026-06-24-bi-guide-unapplied-no-number-col';
+  var BUILD = '2026-06-24-bi-guide-fix-datelabel-ref';
 
 
 
@@ -2770,7 +2770,7 @@ window.BiAnnualPanel = (function () {
 
     head +=
 
-      '<th style="padding:10px 12px">' + dateLabel + '</th>' +
+      '<th style="padding:10px 12px">申請日</th>' +
 
       '<th style="padding:10px 12px">提案名</th>' +
 

@@ -130,11 +130,11 @@
       "note": null
     },
     "699": {
-      "build": "2026-06-24-bi-guide-unapplied-no-number-col",
-      "fileKey": "86217052-a5da-4a17-b13e-f06385b8b123",
-      "revision": "108",
+      "build": "2026-06-24-bi-guide-fix-datelabel-ref",
+      "fileKey": "5ebd7a3a-2218-4a0d-94cf-4c01edebe0d1",
+      "revision": "109",
       "relPath": "customize/business-improvement-guide/desktop.bundle.js",
-      "deployedAt": "2026-06-24T10:00:07.952Z",
+      "deployedAt": "2026-06-24T10:03:24.584Z",
       "note": null
     },
     "700": {
