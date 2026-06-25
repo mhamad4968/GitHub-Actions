@@ -1,16 +1,17 @@
 # 復元チェックポイント（最新）
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-06-25 JST — **業務改善 699/698 UX バナー完了・セッション締め**
+**最終更新**: 2026-06-25 JST — **683 6暦月棒欠落是正・浜田 OK・セッション締め**
 
 ### 本日アクティブ（BUILD/rev — 2026-06-25）
 
 | 項目 | 内容 |
 |------|------|
+| **683** | BUILD=`2026-06-25-683-sixmo-chart-pagination-fix-v1` rev **85** — 6暦月棒 REST 100件打切り欠落是正（暦月別取得） |
 | **699** | BUILD=`2026-06-25-bi-guide-login-aggregate-note-v3` rev **113** — 4ロール能力バナー・年次集計注記 |
 | **698** | BUILD=`2026-06-25-bi-employee-sync595-banner-v1` rev **11** — 697 `sync595_meta` から一覧同期ステータス |
 | **697** | `sync595_meta` 追加 — 595→698 同期結果を JSON 記録 |
-| **浜田** | 698 一覧バナー **目視 OK・最新版確認済** |
+| **浜田** | 698 一覧バナー **目視 OK** / **683 6暦月棒 目視 OK** |
 
 ## クローズ済み（`data/cio-project-closures.json` — 無断 v1 再開禁止）
 
@@ -35,7 +36,8 @@
 | **736 担当説明 保留** | **2026-06-23 以降** — Step2-3 待ち |
 
 **次の1手**: 736 Step2-3（差分サマリー印刷）または浜田指定。**688 / 677–679 / SKYSEA / 736担当説明** — 触らない  
-**Git**: `92ae4a9` — R-BI/R-SESS ルール GO 反映 push 済（浜田承認 2026-06-25）  
+**Git**: `288cfcf` — 683 6暦月棒 fix push 済（浜田 OK 2026-06-25）  
+**683 検証**: `npm run 683:audit-six-month-chart -- --view-year 2026 --view-month 7`（REST 単月 vs 旧一括の差分確認）  
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`  
 **736 本番**: BUILD=`2026-06-24-736-diff-print-detail-v2c` rev **131**  
 **698 本番**: BUILD=`2026-06-25-bi-employee-sync595-banner-v1` rev **11**  
