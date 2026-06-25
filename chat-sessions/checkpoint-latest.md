@@ -35,7 +35,7 @@
 | **736 担当説明 保留** | **2026-06-23 以降** — Step2-3 待ち |
 
 **次の1手**: 736 Step2-3（差分サマリー印刷）または浜田指定。**688 / 677–679 / SKYSEA / 736担当説明** — 触らない  
-**Git**: 本日締め commit+push 予定（BI 699/698 + セッション是正）  
+**Git**: `aaabd3f` — BI 699/698 バナー + セッション締め是正 push 済  
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`  
 **736 本番**: BUILD=`2026-06-24-736-diff-print-detail-v2c` rev **131**  
 **698 本番**: BUILD=`2026-06-25-bi-employee-sync595-banner-v1` rev **11**  
