@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-27-683-print-daily-lab-7pt';
+  const BUILD = '2026-06-25-683-sixmo-chart-pagination-fix-v1';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
   /**
@@ -1356,9 +1356,40 @@
     return { query: query, slots: slots };
   }
 
-  /** 満ページのときだけ次 offset を取る（totalCount だけで継続しない） */
-  function shouldFetchMoreKintoneRecords(batchLen, pageLimit) {
-    return batchLen > 0 && batchLen === pageLimit;
+  /**
+   * 次ページ取得要否。limit=500 指定でも 1 ページ 100 件で返る環境があるため、
+   * totalCount が取れるときは offset と突合する（6 暦月棒の月合計欠落対策）。
+   */
+  function shouldFetchMoreKintoneRecords(batchLen, offsetAfterBatch, totalCount, pageLimit) {
+    if (batchLen === 0) return false;
+    if (totalCount != null && totalCount !== '') {
+      const tc = Number(totalCount);
+      if (Number.isFinite(tc) && tc >= 0) {
+        return offsetAfterBatch < tc;
+      }
+    }
+    return batchLen === pageLimit;
+  }
+
+  /** 6 暦月棒グラフ用 — 各暦月を個別クエリで合算（一括取得＋ページング欠落を避ける） */
+  function fetchSixMonthBarTotals(ym) {
+    const six = sixMonthWindowQuery(ym);
+    const promises = six.slots.map(function (slot) {
+      const parts = slot.key.split('-');
+      const y = Number(parts[0]);
+      const m = Number(parts[1]);
+      const range = monthQueryRange(y, m);
+      return sumDayTotalInRange(APP682, range.query).then(function (r) {
+        return { key: slot.key, sum: r.sum };
+      });
+    });
+    return Promise.all(promises).then(function (rows) {
+      const ysums = {};
+      for (let i = 0; i < rows.length; i += 1) {
+        ysums[rows[i].key] = rows[i].sum;
+      }
+      return { slots: six.slots, ysums: ysums };
+    });
   }
 
   function fetchRecordsFieldsForQuery(appId, query, fields) {
@@ -1388,7 +1419,7 @@
           if (pageCount >= maxPages) {
             return all;
           }
-          if (shouldFetchMoreKintoneRecords(batch.length, limit)) {
+          if (shouldFetchMoreKintoneRecords(batch.length, offset, resp.totalCount, limit)) {
             return step();
           }
           return all;
@@ -1999,7 +2030,7 @@
                 : all.length;
             return { records: all, totalCount: total };
           }
-          if (shouldFetchMoreKintoneRecords(batch.length, limit)) {
+          if (shouldFetchMoreKintoneRecords(batch.length, offset, resp.totalCount, limit)) {
             return step();
           }
           const total =
@@ -2499,7 +2530,6 @@
     const range = monthQueryRange(ym.y, ym.m);
     const prevYm = addMonthsCal(ym.y, ym.m, -1);
     const prevRange = monthQueryRange(prevYm.y, prevYm.m);
-    const six = sixMonthWindowQuery(ym);
 
     const summaryCacheP = USER683_SHOW_AI_SUMMARY_UI
       ? fetchSummaryCacheFromKintone(ym)
@@ -2516,14 +2546,14 @@
         FC_PM_TEXT,
       ]),
       sumDayTotalInRange(APP682, prevRange.query),
-      fetchRecordsFieldsForQuery(APP682, six.query, [FC_DATE, FC_DAY_TOTAL]),
+      fetchSixMonthBarTotals(ym),
       summaryCacheP,
     ])
       .then(function (tuple) {
         const res = tuple[0];
         const monthRec = tuple[1];
         const prev = tuple[2];
-        const sixRec = tuple[3];
+        const sixData = tuple[3];
         const summaryCache = tuple[4];
 
         const a = analyzeMonthRecords(res.records, ym.y, ym.m, range.dim);
@@ -2581,17 +2611,11 @@
           ),
         );
 
-        const ysums = sumDayTotalByYearMonth(sixRec);
-        const ymBarKey = ym.y + '-' + pad2(ym.m);
-        /** 右端＝当月は詳細取得の合計に揃える */
-        ysums[ymBarKey] = curTotal;
-        /** 前月は「前月比」用の専用クエリ集計（`sumDayTotalInRange`）に揃える。6 暦月一括取得と件数がずれるのを防ぐ */
-        const prevYmBarKey = prevYm.y + '-' + pad2(prevYm.m);
-        ysums[prevYmBarKey] = prevTotal;
+        const ysums = sixData.ysums;
         const yLabels = [];
         const yVals = [];
-        for (let si = 0; si < six.slots.length; si += 1) {
-          const sk = six.slots[si].key;
+        for (let si = 0; si < sixData.slots.length; si += 1) {
+          const sk = sixData.slots[si].key;
           const p = sk.split('-');
           yLabels.push(p[0] + '/' + p[1]);
           yVals.push(ysums[sk] != null ? ysums[sk] : 0);

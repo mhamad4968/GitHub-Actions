@@ -66,11 +66,11 @@
       "note": null
     },
     "683": {
-      "build": "2026-05-27-683-print-daily-lab-7pt",
-      "fileKey": "1929dd0a-8c57-4a28-a77a-6ff2f76173d3",
-      "revision": "83",
+      "build": "2026-06-25-683-sixmo-chart-pagination-fix-v1",
+      "fileKey": "63981bff-6e05-4fcd-9b88-3dd8c3d51ad3",
+      "revision": "85",
       "relPath": "customize/683/desktop.js",
-      "deployedAt": "2026-05-27T11:28:31.916Z",
+      "deployedAt": "2026-06-25T13:50:07.172Z",
       "note": null
     },
     "686": {

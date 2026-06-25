@@ -144,6 +144,7 @@
     "deploy:736": "npm run jikkou-yosan:deploy-gate && node scripts/cio-deploy-preflight-guard.mjs 736 && npx dotenv -e .env -e .env.proxy -- node scripts/deploy-customization.js 736 customize/736/desktop.js",
     "workdays:update-688-description": "npx dotenv -e .env -e .env.proxy -- node scripts/workdays-update-688-description.mjs",
     "682:audit-month": "npx dotenv -e .env -e .env.proxy -- node scripts/user-support-682-audit-calendar-month.mjs",
+    "683:audit-six-month-chart": "npx dotenv -e .env -e .env.proxy -- node scripts/user683-audit-six-month-chart.mjs",
     "682:graph-monthly:dry-run": "npx dotenv -e .env -e .env.proxy -- node scripts/user-support-682-ensure-monthly-bar-graph.mjs --dry-run",
     "682:graph-monthly": "node scripts/cio-deploy-preflight-guard.mjs 682 && npx dotenv -e .env -e .env.proxy -- node scripts/user-support-682-ensure-monthly-bar-graph.mjs",
     "682:graph-monthly:scheduled": "node scripts/cio-deploy-preflight-guard.mjs 682 && node scripts/user-support-682-ensure-monthly-bar-graph.mjs",
