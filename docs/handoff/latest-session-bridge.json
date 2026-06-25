@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-06-22T11:12:11.908Z",
-  "gitHead": "57093e9",
-  "gitStatus": "## main...origin/main",
-  "nextTask": "**項番 -0** で合意のあと **`npm run session:bootstrap`**。新規 kintone は **24-db-dash-scaffold-kernel** + `db-dash-v1-launch.md` 参照。**688 / 677–679 / SKYSEA / 736 担当説明** — 触らない（保留）",
+  "exportedAt": "2026-06-25T13:29:37.549Z",
+  "gitHead": "00e054f",
+  "gitStatus": "## main...origin/main [ahead 2]",
+  "nextTask": "736 Step2-3（差分サマリー印刷）または浜田指定。**688 / 677–679 / SKYSEA / 736担当説明** — 触らない",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -15,6 +15,6 @@
     ".cursor/rules/mode-b-canonical.mdc",
     "docs/knowledge/debug-tips.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=57093e9 | 次=**項番 -0** で合意のあと **`npm run session:bootstrap`**。新規 kintone は **24-db-dash-scaffold-kernel** + `db-dash-v1-launch.md` 参照。**688 / 677–679 / SKYSEA / 736 担当説明** — 触らない（保留） | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "promptBlock": "【SESSION-BRIDGE】git=00e054f | 次=736 Step2-3（差分サマリー印刷）または浜田指定。**688 / 677–679 / SKYSEA / 736担当説明** — 触らない | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }

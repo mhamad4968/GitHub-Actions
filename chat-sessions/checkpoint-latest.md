@@ -49,4 +49,18 @@
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** `session-boundary-close-gate.mdc` | **履歴** `chat-sessions/checkpoints/checkpoint-archive-2026-06-21.md`
 
+## 参照鏡像（bootstrap 最低文字数・正本は各パス）
+
+| 種別 | 正本 |
+|------|------|
+| 品質ゲート | `docs/runbooks/push-deploy-quality-gates-v2.md` |
+| handoff テンプレ | `docs/runbooks/checkpoint-handoff-template-v2.md` — `cio:handoff:append-block` |
+| tool routing | `docs/runbooks/ai-team-tool-routing-v2.md` — `npm run cio:tool:route -- --intent "<要約>"` |
+| 736 差分印刷 | `docs/plans/2026-06-24-jikkou-yosan-diff-print-session-memo.md` §Step2-3 待ち |
+| 業務改善 spec | `docs/plans/2026-05-23-business-improvement-proposal-spec.md` §4.2（698 ミラー） |
+| 夕反省 | `docs/reports/2026-06-25-evening-reflection.md` — R-BI-01〜R-SESS-04 **承認待ち** |
+| 688 本番 | BUILD=`2026-06-19-688-print-rounding-fix` rev **34** — **保留** |
+| 本番 WF 6段階 | 無断分割禁止 — test_v3 WF 継続テストのみ |
+| 評価スナップショット | 未設計確認前の本番投入禁止 |
+
 <!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-06-21.md -->

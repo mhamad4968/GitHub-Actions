@@ -77,7 +77,7 @@
     var theme = bannerTheme(meta);
     var box =
       'border-radius:12px;padding:14px 18px;margin:0 0 14px;box-shadow:0 1px 4px rgba(15,23,42,.06);font-size:14px;line-height:1.55';
-    var body = '';
+    var body;
 
     if (!meta) {
       body =
