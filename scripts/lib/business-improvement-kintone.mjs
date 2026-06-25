@@ -10,6 +10,7 @@ export const SETTINGS_APP_NAME = '【業務改善提案システム】設定マ�
 export const EMPLOYEE_APP_NAME = '【業務改善提案システム】社員マスタ';
 export const GUIDE_APP_NAME = '【業務改善提案システム】ご利用ガイド';
 export const GUIDE_CUSTOMIZE_DIR = 'customize/business-improvement-guide';
+export const EMPLOYEE_CUSTOMIZE_DIR = 'customize/business-improvement-employee';
 export const PROPOSAL_CUSTOMIZE_DIR = 'customize/business-improvement-proposal';
 export const PROPOSAL_APP_NAME = '【業務改善提案システム】提案申請ver.02';
 export const ANNUAL_APP_NAME = '【業務改善提案システム】年次処理';

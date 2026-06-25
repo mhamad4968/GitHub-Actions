@@ -15,6 +15,7 @@
  * @see scripts/lib/session-starter-desktop-dir.mjs（Desktop 同期先の解決・Windows ネイティブ対応）
  */
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -141,6 +142,42 @@ function syncEveningReflectionToDesktop() {
     fs.unlinkSync(slotDest);
     console.log(`[sync-session-starter-to-desktop] 夕反省ありのため SLOT 削除: ${EVENING_REFLECTION_SLOT_NAME}`);
   }
+}
+
+/** Desktop 直下 `＃重要確認事項.txt` — read-pack 18 正本から復元（hooks 層1 NG 防止） */
+function syncDesktopImportantConfirmFile() {
+  const readPack18 = path.join(root, readPackRelDir, '18-重要確認.txt');
+  if (!fs.existsSync(readPack18)) {
+    console.warn('[sync-session-starter-to-desktop] skip Desktop ＃重要確認事項: read-pack 18 なし');
+    return;
+  }
+  const home = os.homedir();
+  const candidates = [
+    path.join(home, 'Desktop', '＃重要確認事項.txt'),
+    'C:\\Users\\mhamada202408224\\Desktop\\＃重要確認事項.txt',
+  ];
+  const srcBuf = fs.readFileSync(readPack18);
+  for (const dest of [...new Set(candidates)]) {
+    try {
+      const dir = path.dirname(dest);
+      if (!fs.existsSync(dir)) continue;
+      const existed = fs.existsSync(dest);
+      const same = existed && fs.readFileSync(dest).equals(srcBuf);
+      if (same) {
+        console.log(`[sync-session-starter-to-desktop] OK Desktop ＃重要確認事項.txt（既に一致）`);
+        return;
+      }
+      fs.copyFileSync(readPack18, dest);
+      console.log(
+        `[sync-session-starter-to-desktop] OK read-pack/18-重要確認.txt -> ${dest}` +
+          (existed ? '（上書き）' : '（新規復元）'),
+      );
+      return;
+    } catch (e) {
+      console.warn(`[sync-session-starter-to-desktop] Desktop ＃重要確認事項 失敗 ${dest}: ${e.message}`);
+    }
+  }
+  console.warn('[sync-session-starter-to-desktop] Desktop ＃重要確認事項.txt を書けませんでした（Desktop フォルダ確認）');
 }
 
 function syncReadPackToDesktop() {
@@ -298,6 +335,7 @@ function main() {
   }
   syncMirrorLiteFiles(root, destDir);
   syncReadPackToDesktop();
+  syncDesktopImportantConfirmFile();
   syncEveningReflectionToDesktop();
   pruneLegacyDesktopAiEmergency(destDir);
   const expected = buildExpectedDesktopAiEmergencyFilenames(root);

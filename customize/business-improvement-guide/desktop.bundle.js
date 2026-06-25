@@ -1246,7 +1246,7 @@ window.BiAnnualPanel = (function () {
 
   /** 業務改善 ver.02 — ご利用ガイド */
 
-  var BUILD = '2026-06-24-bi-guide-fix-datelabel-ref';
+  var BUILD = '2026-06-25-bi-guide-login-aggregate-note-v3';
 
 
 
@@ -3104,32 +3104,110 @@ window.BiAnnualPanel = (function () {
 
 
 
-  function loginStatusBannerHtml() {
-    var box =
-      'border-radius:12px;padding:14px 18px;margin-bottom:16px;box-shadow:0 1px 4px rgba(15,23,42,.06)';
-    if (state.isEvaluator) {
-      var body = '<strong>提案を出す</strong>から提案出来ます。';
-      if (state.pendingList.length > 0) {
-        body += ' また未評価一覧に未評価の案件がある場合は評価がそのままできます。';
-      }
+  function loginRoleProfile() {
+    var canEvaluate = !!state.isEvaluator;
+    var canAggregate = !!state.isAdmin;
+    if (canEvaluate && canAggregate) {
+      return {
+        key: 'evaluator_admin',
+        headline:
+          '「提案を出す」「評価・承認する」「年次ポイント集計」ができるアカウントでログインしています。',
+        hint: '評価者かつ集計担当向けのアカウントです。',
+        bg: '#f5f3ff',
+        border: '#c4b5fd',
+        titleColor: '#5b21b6',
+        bodyColor: '#4c1d95',
+      };
+    }
+    if (canEvaluate) {
+      return {
+        key: 'evaluator',
+        headline:
+          '「提案を出す」と「評価・承認する」ができるアカウントでログインしています。',
+        hint: '評価者用の個人アカウントです。',
+        bg: '#faf7f3',
+        border: '#e7d5c4',
+        titleColor: '#78350f',
+        bodyColor: '#44403c',
+      };
+    }
+    if (canAggregate) {
+      return {
+        key: 'admin',
+        headline:
+          '「提案を出す」と「年次ポイント集計」ができるアカウントでログインしています。',
+        hint: '集計担当（管理者）向けのアカウントです。',
+        bg: '#f0fdf4',
+        border: '#86efac',
+        titleColor: '#166534',
+        bodyColor: '#15803d',
+      };
+    }
+    return {
+      key: 'shared',
+      headline: '「提案を出す」ができるアカウントでログインしています。',
+      hint: '組織の共有アカウントです。',
+      bg: '#eff6ff',
+      border: '#bfdbfe',
+      titleColor: '#1e3a8a',
+      bodyColor: '#334155',
+    };
+  }
+
+  function aggregateRestrictionNoteHtml(profile) {
+    var small =
+      'font-size:0.82em;color:#64748b;margin:10px 0 0;line-height:1.55;display:block';
+    if (profile.key === 'admin' || profile.key === 'evaluator_admin') {
       return (
-        '<div style="background:#faf7f3;border:2px solid #e7d5c4;' +
-        box +
-        '">' +
-        '<strong style="color:#78350f">評価者用のアカウントでログインしています。</strong><br>' +
-        '<span style="font-size:0.95em;color:#44403c">' +
-        body +
-        '</span>' +
-        unappliedAlertHtml() +
-        '</div>'
+        '<span style="' +
+        small +
+        '">※ <strong>年次ポイント集計</strong>は、指定した集計担当のアカウントだけが実行出来る機能です。</span>'
       );
     }
     return (
-      '<div style="background:#eff6ff;border:2px solid #bfdbfe;' +
+      '<span style="' +
+      small +
+      '">※ <strong>年次ポイント集計</strong>は集計担当のアカウントでのみ実行できます。' +
+      'このアカウントでは集計ボタンは<strong>表示されません</strong>。</span>'
+    );
+  }
+
+  function loginStatusBannerHtml() {
+    var profile = loginRoleProfile();
+    var box =
+      'border-radius:12px;padding:14px 18px;margin-bottom:16px;box-shadow:0 1px 4px rgba(15,23,42,.06)';
+    var body =
+      '<span style="font-size:0.92em;color:' +
+      profile.bodyColor +
+      '">' +
+      esc(profile.hint) +
+      ' 下の<strong>「提案を出す」</strong>から申請を始められます。';
+    if (profile.key === 'evaluator' || profile.key === 'evaluator_admin') {
+      body += ' <strong>未評価一覧</strong>から評価・承認も行えます。';
+      if (state.pendingList.length > 0) {
+        body +=
+          ' <span style="color:#b45309">（いま未評価の案件があります）</span>';
+      }
+    }
+    if (profile.key === 'admin' || profile.key === 'evaluator_admin') {
+      body += ' <strong>年次ポイント集計</strong>は下の緑ボタンから行えます。';
+    }
+    body += '</span>';
+    return (
+      '<div style="background:' +
+      profile.bg +
+      ';border:2px solid ' +
+      profile.border +
+      ';' +
       box +
       '">' +
-      '<strong style="color:#1e3a8a">共有アカウントでログインしています。</strong><br>' +
-      '<span style="font-size:0.95em;color:#334155"><strong>提案を出す</strong>から提案出来ます。</span>' +
+      '<strong style="color:' +
+      profile.titleColor +
+      ';line-height:1.5">' +
+      profile.headline +
+      '</strong><br>' +
+      body +
+      aggregateRestrictionNoteHtml(profile) +
       unappliedAlertHtml() +
       '</div>'
     );

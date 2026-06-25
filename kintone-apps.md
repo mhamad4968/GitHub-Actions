@@ -48,7 +48,8 @@ npm run app:fields <アプリID>
 | 710 | `2026-06-10-new-system-intro-db-block-ui` | **5** | `372a6214-84de-48ff-891f-2126483ed5dd` | 2026-06-10 新規システム導入ヒアリング DB ブロック |
 | 711 | `2026-06-10-new-system-intro-dash-print-a4-v2` | **4** | `de21c60d-301b-49aa-91bf-d1e25d16efb2` | 2026-06-10 新規システム導入ヒアリング 印刷A4 2枚 |
 | 712 | `2026-06-11-space48-portal-v3` | **24** | `1e261ed5-bfdc-4918-bd98-eb6f2f07c24b` | 2026-06-11 開くを別タブ |
-| 699 | `2026-06-24-bi-guide-fix-datelabel-ref` | **109** | `b55f1469-0bd9-4559-9a30-5b8e961d8b4e` | 2026-06-24 未申請一覧・評価完了一覧・年次バッジ（レビュー#3） |
+| 698 | `2026-06-25-bi-employee-sync595-banner-v1` | **11** | `f3e129da-9591-4d7d-bf84-81f2f86ec0b4` | 2026-06-25 595同期ステータス一覧バナー |
+| 699 | `2026-06-25-bi-guide-login-aggregate-note-v3` | **113** | `38b2b37f-97f7-493c-a60a-c7b9ba7dcbc7` | 2026-06-25 ログイン能力バナー・年次集計注記 |
 | 700 | `2026-06-24-bi-proposal-number-review3` | **143** | `704c383a-f29e-4ee2-858b-70c0bc127c35` | 2026-06-24 提案番号採番・下書き申請者紐付け（レビュー#3） |
 | 713 | `2026-06-13-bi-annual-redirect-guide` | **12** | `d9baa102-67f1-4c12-a291-812ce2a794ac` | 2026-06-13 年次713→699ガイド誘導 |
 | 714 | `2026-06-14-software-ledger-db-block-ui-mutations` | **5** | `45b4c125-5d47-47a1-a373-3bbcd273b54d` | 2026-06-14 ソフトウエア台帳 DB save/delete ブロック |
@@ -770,8 +771,8 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 | アプリ | ID | customize | BUILD（本番） | deploy |
 |--------|-----|-----------|---------------|--------|
 | 設定マスタ | **697** | — | — | `business-improvement:seed-settings` |
-| 社員マスタ | **698** | — | — | `business-improvement:sync-595` |
-| ご利用ガイド | **699** | `customize/business-improvement-guide/desktop.bundle.js` | `2026-06-24-bi-guide-fix-datelabel-ref` rev109 | `deploy:699` |
+| 社員マスタ | **698** | `customize/business-improvement-employee/desktop.js` | `2026-06-25-bi-employee-sync595-banner-v1` rev **11** | `deploy:698` |
+| ご利用ガイド | **699** | `customize/business-improvement-guide/desktop.bundle.js` | `2026-06-25-bi-guide-login-aggregate-note-v3` rev **113** | `deploy:699` |
 | 提案申請 ver.02 | **700** | `customize/business-improvement-proposal/desktop.js` | `2026-06-24-bi-proposal-number-review3` rev143 | `deploy:700` |
 | 年次処理（新⑤） | **713** | `customize/business-improvement-annual/desktop.bundle.js` | `2026-06-13-bi-annual-redirect-guide` rev12 | `deploy:713` |
 

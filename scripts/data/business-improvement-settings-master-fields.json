@@ -103,6 +103,13 @@
       "required": false,
       "noLabel": false
     },
+    "sync595_meta": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "sync595_meta",
+      "label": "595同期メタ（自動更新）",
+      "required": false,
+      "noLabel": false
+    },
     "eval_items": {
       "type": "SUBTABLE",
       "code": "eval_items",

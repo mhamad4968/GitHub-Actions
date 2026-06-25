@@ -129,12 +129,20 @@
       "deployedAt": "2026-06-21T11:49:58.511Z",
       "note": null
     },
+    "698": {
+      "build": "2026-06-25-bi-employee-sync595-banner-v1",
+      "fileKey": "f3e129da-9591-4d7d-bf84-81f2f86ec0b4",
+      "revision": "11",
+      "relPath": "customize/business-improvement-employee/desktop.js",
+      "deployedAt": "2026-06-25T13:20:17.733Z",
+      "note": null
+    },
     "699": {
-      "build": "2026-06-24-bi-guide-fix-datelabel-ref",
-      "fileKey": "5ebd7a3a-2218-4a0d-94cf-4c01edebe0d1",
-      "revision": "109",
+      "build": "2026-06-25-bi-guide-login-aggregate-note-v3",
+      "fileKey": "38b2b37f-97f7-493c-a60a-c7b9ba7dcbc7",
+      "revision": "113",
       "relPath": "customize/business-improvement-guide/desktop.bundle.js",
-      "deployedAt": "2026-06-24T10:03:24.584Z",
+      "deployedAt": "2026-06-25T13:10:59.728Z",
       "note": null
     },
     "700": {
