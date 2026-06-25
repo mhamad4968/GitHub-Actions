@@ -58,7 +58,8 @@
 | tool routing | `docs/runbooks/ai-team-tool-routing-v2.md` — `npm run cio:tool:route -- --intent "<要約>"` |
 | 736 差分印刷 | `docs/plans/2026-06-24-jikkou-yosan-diff-print-session-memo.md` §Step2-3 待ち |
 | 業務改善 spec | `docs/plans/2026-05-23-business-improvement-proposal-spec.md` §4.2（698 ミラー） |
-| 夕反省 | `docs/reports/2026-06-25-evening-reflection.md` — R-BI-01〜R-SESS-04 **承認待ち** |
+| セッション one report | `docs/reports/2026-06-25-session-one-report.md` / Desktop `19-SESSION-ONE-REPORT-2026-06-25.md` |
+| Desktop CEO 正本 | `Desktop\＃重要確認事項.txt` — sync 自動復元（2026-06-25） |
 | 688 本番 | BUILD=`2026-06-19-688-print-rounding-fix` rev **34** — **保留** |
 | 本番 WF 6段階 | 無断分割禁止 — test_v3 WF 継続テストのみ |
 | 評価スナップショット | 未設計確認前の本番投入禁止 |
