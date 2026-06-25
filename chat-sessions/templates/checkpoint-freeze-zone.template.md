@@ -10,6 +10,12 @@
 
 **最終更新**: YYYY-MM-DD JST — **{本日の要約 1 行}**
 
+### 本日アクティブ（BUILD/rev — YYYY-MM-DD）
+
+| 項目 | 内容 |
+|------|------|
+| **{app}** | BUILD=`...` rev **N** — {要約} |
+
 ## クローズ済み（`data/cio-project-closures.json` — 無断 v1 再開禁止）
 
 | レーン | 状態 | クローズ日 | 正本 |

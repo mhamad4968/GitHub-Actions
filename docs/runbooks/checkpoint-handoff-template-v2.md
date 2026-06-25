@@ -21,13 +21,15 @@
 ## 2. 接続ルール（DeepSeek 盲点① 反映）
 
 ```
-checkpoint 凍結ゾーン更新 → handoff-log 末尾ブロック追記 → export-handoff → (full のみ close-git)
+checkpoint 凍結ゾーン更新 → handoff-log 末尾ブロック追記 → export-handoff → sync-desktop → verify:desktop → (full のみ close-git)
 ```
 
-| CLOSE 種別 | checkpoint | handoff-log | export-handoff | close-git |
-|------------|------------|-------------|----------------|-----------|
-| **partial** | 必須 | **必須** | 必須 | 任意 |
-| **full** | 必須 | **必須** | 必須 | 必須 |
+| CLOSE 種別 | checkpoint | handoff-log | export-handoff | sync-desktop | close-git |
+|------------|------------|-------------|----------------|--------------|-----------|
+| **partial** | 必須 | **必須** | 必須 | 推奨 | 任意 |
+| **full** | 必須 | **必須** | 必須 | **必須** | 必須 |
+
+**R-SESS-01（2026-06-25 GO）**: `export-handoff` の **直後**・`close-git` の **直前**に `npm run session-starter:sync-desktop` → `npm run verify:desktop-ai-emergency-sync`。逆順禁止。
 
 **skip 禁止**: handoff-log ブロックを省略して checkpoint だけ更新しない。
 
@@ -51,7 +53,7 @@ checkpoint 凍結ゾーン更新 → handoff-log 末尾ブロック追記 → ex
 |------|------|
 | 見出し | `## クローズ済み` / `## 保留・その他の制約` / `## セッション切替後の自律復元` |
 | フィールド | `**最終更新**:` / `**次の1手**:` / `**Git**:` |
-| **R736-03** | セッション締め時、先頭に **`## YYYY-MM-DD JST — {当日タイトル}`** ブロックを1つ置き、**アクティブアプリの BUILD/rev** を必ず記載（日付履歴の積み上げはしない） |
+| **R736-03**（改 2026-06-25） | セッション締め時、凍結ゾーン内に **`### 本日アクティブ（BUILD/rev — YYYY-MM-DD）`** 表を1つ置き **BUILD/rev** を記載。**`## YYYY-MM-DD` 見出しは禁止**（preamble 検証が壊れる） |
 | 行数 | ≤50 推奨（`verify:checkpoint-freeze-zone`） |
 
 **書かない**: `## YYYY-MM-DD` 日付履歴（rollup 対象）
@@ -108,7 +110,9 @@ npm run cio:handoff:append-block -- --dry-run --title "テスト"
 ### full（締め / お疲れ）
 
 1. 上記 partial 1〜3
-2. `npm run cio:session:close-git -- --execute --auto-stage --message "…"`
+2. `npm run session-starter:sync-desktop` → `npm run verify:desktop-ai-emergency-sync`（**R-SESS-01**）
+3. `npm run session:clock:clear`（**R-SESS-03**）
+4. `npm run cio:session:close-git -- --execute --auto-stage --message "…"`
 
 ---
 

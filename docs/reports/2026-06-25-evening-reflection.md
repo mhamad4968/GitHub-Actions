@@ -1,7 +1,7 @@
 # 夕反省 — 2026-06-25
 
 正本: `docs/runbooks/evening-reflection-scope.md`  
-承認: **浜田判断待ち** — 下記 R-BI-01〜R-SESS-04
+承認: **浜田 GO 2026-06-25** — R-BI-01〜02 / R-SESS-01〜04 / R736-03改 / 4.2 **すべて反映済**
 
 ---
 
@@ -18,17 +18,18 @@
 
 ---
 
-## 2. 改善案（ミス削減）— **承認待ち**
+## 2. 改善案（ミス削減）— **承認済（2026-06-25 浜田 GO）**
 
-| ID | 内容 | 種別 | 期待効果 |
-|----|------|------|----------|
-| **R-BI-01** | 業務改善で **新規 customize アプリ**（例 698）を追加するとき、**同一セッション内**に `deploy:N` + `kintone-customize-path-registry` + `kintone-apps.md` 機械表 + `cio:preflight:N` を **セットで完了**してから締め | runbook §BI 軽微 UX | deploy 警告・次セッション台帳ズレ防止 |
-| **R-BI-02** | 697 `sync595_meta` は **sync-595 成功/失敗の両方**で書く（実装済）。運用: Task Scheduler 失敗時も 698 バナーが赤表示になることを **月1確認** | 運用メモ | 同期失敗の見落とし防止 |
-| **R-SESS-01** | セッション **full CLOSE** 順序を固定: `checkpoint` → `handoff:append-block` → `export-handoff` → **`session-starter:sync-desktop`** → `verify:desktop-ai-emergency-sync` → `close-git`（逆順禁止） | `checkpoint-handoff-template-v2.md` §7 追記 | F6 再発防止 |
-| **R-SESS-02** | `session-starter:sync-desktop` が **Desktop `＃重要確認事項.txt` を read-pack 18 から自動復元**（2026-06-25 実装済・本提案は **憲文化 GO 待ち**） | `sync-session-starter-to-desktop.mjs` | F4 恒久対策 |
-| **R-SESS-03** | 日終わり **必ず** `session:clock:clear`（または次回 WAKE 前に `session:clock:set` を bootstrap 直後に実施）を CLOSE チェックリストに明記 | `20-SESSION-REPORT-CHECKLIST.txt` | F2 再発防止 |
-| **R-SESS-04** | `cio:session:cold-start` 失敗時、AI は **L2 完走（1回）→ 浜田へ NG ログ貼付**まで同一ターンで行い、本題に着手しない（Lifecycle v2 §3 既存を **違反扱いで強調**） | `session-lifecycle-v2.md` | cold-start 是正の手戻り削減 |
-| **R736-01** | （既存 GO）Windows UV assertion → verify 手動 OK 後 `SKIP_CIO_LIVE_SCHEMA_GUARD=1` | TSB-039 | 本日 deploy でも再発 — **運用徹底** |
+| ID | 内容 | 種別 | 状態 |
+|----|------|------|------|
+| **R-BI-01** | 新規 customize 同一セッション台帳セット | runbook | **GO・反映済** |
+| **R-BI-02** | sync595_meta 月次確認 | 運用 | **GO・反映済** |
+| **R-SESS-01** | CLOSE 順序 sync-desktop 固定 | template / mdc | **GO・反映済** |
+| **R-SESS-02** | Desktop CEO 正本 sync 自動復元 | sync + bootstrap | **GO・反映済** |
+| **R-SESS-03** | 締め session:clock:clear 必須 | checklist | **GO・反映済** |
+| **R-SESS-04** | bootstrap NG 本題禁止 | lifecycle v2 | **GO・反映済** |
+| **R736-03改** | 本日アクティブ `###` 見出し | template §4 | **GO・反映済** |
+| **R736-01** | Windows UV SKIP 手順 | TSB-039 | **既存 GO** |
 
 ---
 
@@ -49,9 +50,9 @@
 
 ### 4.2 提案（承認後に反映）
 
-1. **`.cursor/rules/session-close-execute-first.mdc`** — CLOSE 順序に `sync-desktop` を **export-handoff の直後・close-git の直前**と明記
-2. **`mandatory-read-gate.mjs`** — bootstrap 時、`Desktop\＃重要確認事項.txt` 不在なら **warn→sync 再実行を1回自動**（exit 0 は sync 成功後のみ）
-3. **業務改善 closed-v1 例外レーン** — 「軽微 UX」の定義に **一覧バナー・ログイン案内**を examples として 1 行追加（再実装禁止との境界明確化）
+1. **`.cursor/rules/session-close-execute-first.mdc`** — CLOSE 順序に sync-desktop / clock:clear 明記 → **反映済**
+2. **`session-bootstrap-verify.mjs`** — Desktop CEO 不在時 sync 1回再実行 → **反映済**
+3. **業務改善 closed-v1 例外レーン** — `docs/runbooks/business-improvement-closed-v1-ux.md` 新設 → **反映済**
 
 ### 4.3 承認不要（既存ルールで充足）
 

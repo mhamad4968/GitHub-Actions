@@ -80,7 +80,7 @@ flowchart LR
 | 2 | `chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` |
 | 3 | 必要時 `chat-sessions/SESSION-READ-LADDER.md`（共通五段階） |
 
-**打ち切り**: 同一セッション内で L2 完走後も bootstrap NG → **チャットに NG ログを貼り、浜田へエスカレーション**。無限リトライ禁止（最大 **1 回** L2 完走）。
+**打ち切り**: 同一セッション内で L2 完走後も bootstrap NG → **チャットに NG ログを貼り、浜田へエスカレーション**。無限リトライ禁止（最大 **1 回** L2 完走）。**本題・kintone deploy 禁止**（R-SESS-04 GO 2026-06-25）。
 
 ---
 
@@ -172,7 +172,13 @@ npm run cio:checkpoint:rollup -- --keep 3
 | 種別 | トリガー例 | 実行 |
 |------|------------|------|
 | **partial** | 一旦終わり / 一旦区切り / OK（区切り） / GO 待ち / 保留 | checkpoint 更新 → **`cio:handoff:append-block`** → `export-handoff` → 復元 1 行 |
-| **full** | 締め / 終わり / お疲れ / 今日はここまで / 反省 | partial 手順 → **`cio:session:close-git --execute`** |
+| **full** | 締め / 終わり / お疲れ / 今日はここまで / 反省 | checkpoint → handoff → export → **sync-desktop** → clock:clear → **close-git** |
+
+**R-SESS-01（2026-06-25 GO）**: full CLOSE では `export-handoff` 後 **`session-starter:sync-desktop` + `verify:desktop-ai-emergency-sync`** を **close-git より前**に必須。
+
+**R-SESS-03（2026-06-25 GO）**: full CLOSE では **`session:clock:clear`** を close-git 直前に実行（次 WAKE で clock 76h NG 防止）。
+
+**R-SESS-04（2026-06-25 GO）**: `session:bootstrap` / `cio:session:cold-start` が **exit ≠ 0** のとき — **L2 完走は1回のみ** → NG ログをチャットに貼付 → **浜田へエスカレ** → **本題・deploy に着手しない**（Lifecycle v2 §3 L2 違反＝報告違反）。
 
 **partial でも必須**: checkpoint `次の1手` / `Git` + handoff-log 末尾ブロック（**Git** キー含む）。
 

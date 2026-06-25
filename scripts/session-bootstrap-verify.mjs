@@ -15,6 +15,8 @@
  * 終了コード: (1)(1b)(1c)(1d)(3)(3b) が非 0 なら即終了 / さもなければ smoke に委譲（0=ok / 1=warn / 2=ng）。
  */
 import { spawnSync } from 'node:child_process';
+import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { runNpmScriptSync } from './lib/win-hidden-spawn.mjs';
@@ -70,6 +72,15 @@ if (closureGate.status !== 0) {
 const syncDesk = runNpmScriptSync(root, 'session-starter:sync-desktop', [], { stdio: 'inherit' });
 if (syncDesk.status !== 0) {
   process.exit(typeof syncDesk.status === 'number' && syncDesk.status !== 0 ? syncDesk.status : 2);
+}
+
+const ceoDesktop = path.join(os.homedir(), 'Desktop', '＃重要確認事項.txt');
+if (!fs.existsSync(ceoDesktop)) {
+  console.warn('[session-bootstrap] Desktop ＃重要確認事項.txt なし → sync 再実行（R-SESS-02）');
+  const retry = runNpmScriptSync(root, 'session-starter:sync-desktop', [], { stdio: 'inherit' });
+  if (retry.status !== 0) {
+    process.exit(typeof retry.status === 'number' && retry.status !== 0 ? retry.status : 2);
+  }
 }
 
 const desk = spawnSync(process.execPath, ['scripts/verify-desktop-ai-emergency-sync.mjs'], {

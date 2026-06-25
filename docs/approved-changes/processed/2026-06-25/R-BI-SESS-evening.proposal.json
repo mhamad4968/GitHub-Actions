@@ -1,0 +1,17 @@
+{
+  "id": "2026-06-25-R-BI-SESS",
+  "created_at": "2026-06-25T22:00:00+09:00",
+  "status": "approved_hamada_go",
+  "approved_at": "2026-06-25T22:30:00+09:00",
+  "go_doc": "docs/approved-changes/2026-06-25-rules-bi-sess-hamada-go.md",
+  "source": "docs/reports/2026-06-25-evening-reflection.md",
+  "items": [
+    { "id": "R-BI-01", "title": "BI 新規 customize 同一セッション台帳セット", "target": "docs/runbooks/business-improvement-closed-v1-ux.md" },
+    { "id": "R-BI-02", "title": "595 sync595_meta 月次確認", "target": "docs/runbooks/business-improvement-closed-v1-ux.md" },
+    { "id": "R-SESS-01", "title": "CLOSE 順序 sync-desktop 固定", "target": "docs/runbooks/checkpoint-handoff-template-v2.md" },
+    { "id": "R-SESS-02", "title": "Desktop CEO 正本 sync 自動復元", "target": "scripts/sync-session-starter-to-desktop.mjs" },
+    { "id": "R-SESS-03", "title": "締め session:clock:clear 必須", "target": "chat-sessions/desktop-ai-emergency-read-pack/20-SESSION-REPORT-CHECKLIST.txt" },
+    { "id": "R-SESS-04", "title": "bootstrap NG 本題禁止", "target": "docs/runbooks/session-lifecycle-v2.md" },
+    { "id": "R736-03改", "title": "本日アクティブ ### 見出し", "target": "chat-sessions/templates/checkpoint-freeze-zone.template.md" }
+  ]
+}

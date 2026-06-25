@@ -23,7 +23,7 @@
 | **トータルネットワーク**（737/738） | closed-v1 | 2026-06-21 | `docs/reports/2026-06-21-total-network-completion.md` |
 | **複合機管理台帳**（741/742） | closed-v1 | 2026-06-22 | `docs/reports/2026-06-22-mfp-ledger-completion.md` |
 
-**業務改善のみ継続可**（浜田 2026-06-20）: **軽微 UX**（699/698 バナー等）。**v1 再実装は禁止**。
+**業務改善のみ継続可**（浜田 2026-06-20 / R-BI GO 2026-06-25）: **軽微 UX** — 正本 `docs/runbooks/business-improvement-closed-v1-ux.md`（699/698 バナー等）。**v1 再実装は禁止**。
 
 ## 保留・その他の制約
 
@@ -35,33 +35,23 @@
 | **736 担当説明 保留** | **2026-06-23 以降** — Step2-3 待ち |
 
 **次の1手**: 736 Step2-3（差分サマリー印刷）または浜田指定。**688 / 677–679 / SKYSEA / 736担当説明** — 触らない  
-**Git**: `aaabd3f` — BI 699/698 バナー + セッション締め是正 push 済  
+**Git**: `7a72ecf` — R-BI/R-SESS ルール GO 反映 push 待ち（浜田承認 2026-06-25）  
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`  
 **736 本番**: BUILD=`2026-06-24-736-diff-print-detail-v2c` rev **131**  
 **698 本番**: BUILD=`2026-06-25-bi-employee-sync595-banner-v1` rev **11**  
 **699 本番**: BUILD=`2026-06-25-bi-guide-login-aggregate-note-v3` rev **113**  
 **MCP**: **現状凍結**  
-**クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
+**クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`  
+**ルール GO（2026-06-25）**: R-BI-01〜02 / R-SESS-01〜04 / R736-03改 — `docs/approved-changes/2026-06-25-rules-bi-sess-hamada-go.md` / 夕反省 `docs/reports/2026-06-25-evening-reflection.md`  
+**CLOSE 順（R-SESS-01）**: export-handoff → `session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync` → `session:clock:clear` → `cio:session:close-git`  
+**bootstrap（R-SESS-02/04）**: Desktop `＃重要確認事項.txt` を sync 自動復元 / bootstrap NG → L2 1回 → エスカレ・**本題禁止**  
+**BI runbook（R-BI-01）**: `docs/runbooks/business-improvement-closed-v1-ux.md` — 677–682 新規 customize 必須 appType manifest+registry / 698/699 BUILD 日付・697 sync595 meta  
+**manifest v2026-06-25**: fullCloseSteps に sync-desktop / clock-clear — `data/cio-handoff-template.json`
 
 ## セッション切替後の自律復元（Lifecycle v2 鏡像）
 
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`  
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** `session-boundary-close-gate.mdc` | **履歴** `chat-sessions/checkpoints/checkpoint-archive-2026-06-21.md`
-
-## 参照鏡像（bootstrap 最低文字数・正本は各パス）
-
-| 種別 | 正本 |
-|------|------|
-| 品質ゲート | `docs/runbooks/push-deploy-quality-gates-v2.md` |
-| handoff テンプレ | `docs/runbooks/checkpoint-handoff-template-v2.md` — `cio:handoff:append-block` |
-| tool routing | `docs/runbooks/ai-team-tool-routing-v2.md` — `npm run cio:tool:route -- --intent "<要約>"` |
-| 736 差分印刷 | `docs/plans/2026-06-24-jikkou-yosan-diff-print-session-memo.md` §Step2-3 待ち |
-| 業務改善 spec | `docs/plans/2026-05-23-business-improvement-proposal-spec.md` §4.2（698 ミラー） |
-| セッション one report | `docs/reports/2026-06-25-session-one-report.md` / Desktop `19-SESSION-ONE-REPORT-2026-06-25.md` |
-| Desktop CEO 正本 | `Desktop\＃重要確認事項.txt` — sync 自動復元（2026-06-25） |
-| 688 本番 | BUILD=`2026-06-19-688-print-rounding-fix` rev **34** — **保留** |
-| 本番 WF 6段階 | 無断分割禁止 — test_v3 WF 継続テストのみ |
-| 評価スナップショット | 未設計確認前の本番投入禁止 |
 
 <!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-06-21.md -->

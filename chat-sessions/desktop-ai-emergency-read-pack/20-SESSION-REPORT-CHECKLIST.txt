@@ -98,6 +98,13 @@
 □ R60 push 前 lint（自動）
   □ pre-push が `lint:customize` を実行 — 緊急 bypass は `CIO_ALLOW_PUSH_WITHOUT_LINT=1` のみ
 
+□ R-SESS-03 壁時計クリア（full 締め・2026-06-25 GO）
+  □ `npm run session:clock:clear` を close-git **直前**に実行（SESSION-CLOCK 破損/76h NG 防止）
+  □ 次セッション WAKE 後 `npm run session:clock:set`（項番 0.9）
+
+□ R-BI-01 業務改善 新規 customize（該当時・2026-06-25 GO）
+  □ 同一セッション: registry + deploy:<id> + kintone-apps 機械表 + preflight（`docs/runbooks/business-improvement-closed-v1-ux.md` §2）
+
 □ Q 月次情報セキュリティレポート（該当時）
   □ runbook §0: SKYSEA/ネットワーク/社外事例確定 or プレースホルダ明示
   □ npm run doc-lane:security-report
