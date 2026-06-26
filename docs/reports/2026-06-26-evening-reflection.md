@@ -1,7 +1,7 @@
 # 夕反省 — 2026-06-26
 
 正本: `docs/runbooks/evening-reflection-scope.md`  
-承認: **浜田判断待ち**（下表 ID）
+承認: **浜田 GO 2026-06-26**（改善案すべて承認 → `docs/approved-changes/2026-06-26-rules-jre-kap-sess-hamada-go.md`）
 
 ---
 
@@ -17,15 +17,15 @@
 
 ---
 
-## 2. 改善案（ミス削減）— **承認待ち**
+## 2. 改善案（ミス削減）— **GO 2026-06-26**
 
 | ID | 内容 | 種別 | 状態 |
 |----|------|------|------|
-| **R-JRE-01** | 745 一覧検索仕様を spec §7 に明文化（org/dept 単独・AND・結合表現・電話/メール） | spec | **承認待ち** |
-| **R-KAP-01** | `cio-kintone-apps-portfolio-build.mjs` にユニットテスト追加（`\|` col3・括弧外 col1） | script/test | **承認待ち**（本日パーサ修正済・テスト未） |
-| **R-KAP-02** | `deploy-customization.js` 成功後、`sync:kintone-apps-build --strict` 失敗なら exit 1 | deploy gate | **承認待ち** |
-| **R-SESS-06** | 新規 dash アプリ初回目視チェックリストに「拠点名のみ検索」「支店+部署 AND」を追加 | checklist | **承認待ち** |
-| **R-SESS-07** | deploy SUCCESS 後 **同一セッション commit** を UX 調整ループでも必須（R63 再確認） | mdc | **承認待ち** |
+| **R-JRE-01** | 745 一覧検索仕様を spec §7.6 に明文化 | spec | **反映済** |
+| **R-KAP-01** | BUILD パーサユニットテスト | script/test | **反映済** |
+| **R-KAP-02** | deploy 後 `sync --strict` 失敗で exit 1 | deploy gate | **反映済** |
+| **R-SESS-06** | dash 初回目視チェックリスト（拠点検索・AND） | runbook | **反映済** |
+| **R-SESS-07** | UX 調整ループでも deploy 後同一セッション commit | mdc | **反映済** |
 
 ---
 
@@ -34,3 +34,8 @@
 - 745 検索: `buildRecordSearchHaystack` + AND トークン（v13）
 - BUILD パーサ: 行ベース `**appId**` … `**BUILD=` マッチに変更
 - `kintone-apps.md` 744/745 詳細行 BUILD rev 同期
+
+## 4. 承認後反映（2026-06-26 追記）
+
+- spec §7.6 / Q11、runbook `kintone-dash-first-visual-checklist.md`
+- `deploy-customization.js` strict sync、BUILD パーサ test、mdc R-KAP-02 / R-SESS-07

@@ -25,15 +25,19 @@ alwaysApply: false
 
 **セッション締め前**に `npm run verify:cio-deploy-ledger-gate` が **exit 0** 必須（`verify:session-close-git-warn` 内包）。
 
-## deploy 直後（R56 close gate）
+## deploy 直後（R56 close gate / R-KAP-02）
 
 ```bash
-npm run sync:kintone-apps-build -- <appId>
+npm run sync:kintone-apps-build -- <appId> --strict
 # 機械表行が無い新規 app → kintone-apps.md に行追加してから再 sync
 npm run verify:cio-deploy-ledger-gate -- --apps <appId>
 npm run rag:mirror:canonical-docs
 npm run verify:rag-mirror-canonical
 ```
+
+`deploy-customization.js` は SUCCESS 後 **`sync --strict` 失敗で exit 1**（WARN のみ許容しない — R-KAP-02 GO 2026-06-26）。
+
+**UX 調整ループ（R-SESS-07 / R63）**: `deploy:*` **SUCCESS ごと**に customize + kintone-apps + spec を **同一セッション内 commit**。夕締め一括に寄せない。
 
 **セッション内で複数 app deploy** した場合は **各 appId ごとに sync** してから上記 verify を **commit 前に 1 回**。
 

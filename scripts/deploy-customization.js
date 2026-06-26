@@ -124,17 +124,17 @@ for (let i = 0; i < 60; i++) {
     });
     console.log('Deploy SUCCESS');
     if (buildTag) console.log(`[live-build-registry] recorded BUILD=${buildTag} app=${appNum}`);
-    const sync = spawnSync(process.execPath, ['scripts/sync-kintone-apps-build.mjs', String(appNum)], {
+    const sync = spawnSync(process.execPath, ['scripts/sync-kintone-apps-build.mjs', String(appNum), '--strict'], {
       cwd: process.cwd(),
       encoding: 'utf8',
     });
     if (sync.stdout) process.stdout.write(sync.stdout);
     if (sync.stderr) process.stderr.write(sync.stderr);
-    const syncOut = `${sync.stdout || ''}${sync.stderr || ''}`;
-    if (syncOut.includes('R15 WARN') || syncOut.includes('R21')) {
-      console.warn(
-        '[deploy-customization] ⚠️ R15/R21: kintone-apps.md 未登録または機械表未同期 — セッション締め前に台帳を更新（verify:cio-deploy-ledger-gate）',
+    if (sync.status !== 0) {
+      console.error(
+        `[deploy-customization] NG sync:kintone-apps-build --strict app=${appNum} — kintone-apps 詳細行/機械表を修正して再 deploy（R-KAP-02）`,
       );
+      process.exit(sync.status || 1);
     }
     process.exit(0);
   }

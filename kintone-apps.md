@@ -834,7 +834,8 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 
 **745 主要機能**: 734 型一覧・admin のみ CRUD（744 REST）・595 検索（氏名/メール/ID/拠点推定・**部署手選必須**）・稼働中/すべて/退職バッジ・**利用終了（退職）**ボタン・**月次集計**（当年1–12月自動・所属組織ブロック/小計/全社合計・部署「－」は支店名表示）・**所属・部署 AND 検索**・一覧/集計 **xlsx+印刷**。
 
-**npm**: `jre-cloud:setup` / `jre-cloud:migrate:xlsx` / `jre-cloud:sync-dash` — App ID 正本 `scripts/data/jre-cloud-account-app-ids.json`
+**npm**: `jre-cloud:setup` / `jre-cloud:migrate:xlsx` / `jre-cloud:sync-dash` — App ID 正本 `scripts/data/jre-cloud-account-app-ids.json`  
+**検索仕様**: §7.6（R-JRE-01）・目視 `docs/runbooks/kintone-dash-first-visual-checklist.md`（R-SESS-06）
 
 **状態（2026-06-26）**: **v1 実装・deploy 済** — Excel **99 件移行済**・浜田 **検索・退職運用 OK**（BUILD v13 rev18）。
 
