@@ -138,11 +138,11 @@
       "note": null
     },
     "699": {
-      "build": "2026-06-25-bi-guide-login-aggregate-note-v3",
-      "fileKey": "38b2b37f-97f7-493c-a60a-c7b9ba7dcbc7",
-      "revision": "113",
+      "build": "2026-06-26-bi-guide-login-permission-lines-v1",
+      "fileKey": "481ce014-ea6f-4643-897e-5c4721d61fe4",
+      "revision": "115",
       "relPath": "customize/business-improvement-guide/desktop.bundle.js",
-      "deployedAt": "2026-06-25T13:10:59.728Z",
+      "deployedAt": "2026-06-26T10:18:51.800Z",
       "note": null
     },
     "700": {
@@ -314,11 +314,11 @@
       "note": null
     },
     "736": {
-      "build": "2026-06-24-736-diff-print-detail-v2c",
-      "fileKey": "3f7b3445-5e4f-496d-87ad-d18888ccff13",
-      "revision": "132",
-      "relPath": ".kintone-deploy/upload-736.js",
-      "deployedAt": "2026-06-24T12:16:45.040Z",
+      "build": "2026-06-26-736-ux-sticky-print-badges-v1",
+      "fileKey": "ddd65ac3-b2d8-4c07-a876-cc1a11ba3064",
+      "revision": "134",
+      "relPath": "customize/736/desktop.js",
+      "deployedAt": "2026-06-26T10:28:35.124Z",
       "note": null
     },
     "737": {
@@ -351,6 +351,22 @@
       "revision": "4",
       "relPath": "customize/mfp-ledger-dash/desktop.js",
       "deployedAt": "2026-06-22T10:43:28.632Z",
+      "note": null
+    },
+    "744": {
+      "build": "2026-06-26-jre-cloud-account-db-block-v1",
+      "fileKey": "125843f1-4b4b-49ce-91ad-2ae1886291fd",
+      "revision": "5",
+      "relPath": "customize/jre-cloud-account-db/desktop.js",
+      "deployedAt": "2026-06-26T11:10:09.629Z",
+      "note": null
+    },
+    "745": {
+      "build": "2026-06-26-jre-cloud-account-dash-dept-dash-branch-v13",
+      "fileKey": "d9ee5abe-c99d-4ad3-aeb3-260c122aeee4",
+      "revision": "18",
+      "relPath": "customize/jre-cloud-account-dash/desktop.js",
+      "deployedAt": "2026-06-26T11:45:46.954Z",
       "note": null
     }
   }

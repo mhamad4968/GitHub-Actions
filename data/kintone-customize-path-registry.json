@@ -36,7 +36,9 @@
     "total-network-db": "737",
     "total-network-dash": "738",
     "mfp-ledger-db": "741",
-    "mfp-ledger-dash": "742"
+    "mfp-ledger-dash": "742",
+    "jre-cloud-account-db": "744",
+    "jre-cloud-account-dash": "745"
   },
   "bundlePatterns": {
     "wifi-ssid-dash": {
@@ -63,6 +65,11 @@
       "deployFile": "desktop.js",
       "lintFile": "desktop.src.js",
       "bundleNpm": "mfp-ledger:bundle-dash"
+    },
+    "jre-cloud-account-dash": {
+      "deployFile": "desktop.js",
+      "lintFile": "desktop.src.js",
+      "bundleNpm": "jre-cloud:bundle-dash"
     }
   }
 }

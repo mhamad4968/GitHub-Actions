@@ -1,0 +1,173 @@
+{
+  "properties": {
+    "user_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "user_id",
+      "label": "ユーザID",
+      "required": true,
+      "noLabel": false,
+      "unique": true,
+      "defaultValue": ""
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "user_name",
+      "label": "ユーザ名",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "org": {
+      "type": "DROP_DOWN",
+      "code": "org",
+      "label": "所属組織",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "本社": {
+          "label": "本社",
+          "index": "0"
+        },
+        "東京支店": {
+          "label": "東京支店",
+          "index": "1"
+        },
+        "東北支店": {
+          "label": "東北支店",
+          "index": "2"
+        },
+        "関越支店": {
+          "label": "関越支店",
+          "index": "3"
+        },
+        "湾岸工事所": {
+          "label": "湾岸工事所",
+          "index": "4"
+        }
+      }
+    },
+    "dept": {
+      "type": "DROP_DOWN",
+      "code": "dept",
+      "label": "部署",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "－": {
+          "label": "－",
+          "index": "0"
+        },
+        "役員室": {
+          "label": "役員室",
+          "index": "1"
+        },
+        "管理部": {
+          "label": "管理部",
+          "index": "2"
+        },
+        "安全部": {
+          "label": "安全部",
+          "index": "3"
+        },
+        "工事部": {
+          "label": "工事部",
+          "index": "4"
+        },
+        "施工部": {
+          "label": "施工部",
+          "index": "5"
+        },
+        "施工支援部": {
+          "label": "施工支援部",
+          "index": "6"
+        },
+        "メンテナンス技術部": {
+          "label": "メンテナンス技術部",
+          "index": "7"
+        },
+        "橋りょうリペア部": {
+          "label": "橋りょうリペア部",
+          "index": "8"
+        },
+        "技術部": {
+          "label": "技術部",
+          "index": "9"
+        },
+        "仙台営業所": {
+          "label": "仙台営業所",
+          "index": "10"
+        },
+        "盛岡営業所": {
+          "label": "盛岡営業所",
+          "index": "11"
+        },
+        "秋田営業所": {
+          "label": "秋田営業所",
+          "index": "12"
+        },
+        "新潟営業所": {
+          "label": "新潟営業所",
+          "index": "13"
+        },
+        "長野営業所": {
+          "label": "長野営業所",
+          "index": "14"
+        },
+        "高崎営業所": {
+          "label": "高崎営業所",
+          "index": "15"
+        },
+        "千葉営業所": {
+          "label": "千葉営業所",
+          "index": "16"
+        },
+        "水戸営業所": {
+          "label": "水戸営業所",
+          "index": "17"
+        }
+      }
+    },
+    "phone": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "phone",
+      "label": "電話番号",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "mail": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "mail",
+      "label": "メールアドレス",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "start_date": {
+      "type": "DATE",
+      "code": "start_date",
+      "label": "利用開始日",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "end_date": {
+      "type": "DATE",
+      "code": "end_date",
+      "label": "利用終了日",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "note": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "note",
+      "label": "備考",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    }
+  }
+}

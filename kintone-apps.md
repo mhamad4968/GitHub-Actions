@@ -36,7 +36,7 @@ npm run app:fields <アプリID>
 | 687 | `2026-06-09-687-workdays-excel-v1` | **10** | `13bc24dc-a753-404a-9f03-8e7e92c43647` | 2026-06-09 工事稼働 Excel v1 |
 | 688 | `2026-06-24-688-print-5yr-rain-scale-up-v9` | **79** | `dc6ed705-941d-46c1-b57b-516dc7571db4` | 2026-06-24 過去5年降雨拡大 |
 | 735 | — | — | — | 2026-06-18 実行予算書リストマスタ（104件 seed・customize なし） |
-| 736 | `2026-06-24-736-diff-print-detail-v2c` | **131** | `93621f24-37f9-437a-85a2-99a3c207b60d` | 2026-06-24 詳細表差分印刷+削除行展開時のみ |
+| 736 | `2026-06-26-736-ux-sticky-print-badges-v1` | **134** | `ddd65ac3-b2d8-4c07-a876-cc1a11ba3064` | 2026-06-26 依頼者UX（sticky印刷・版バッジ・削除行ブロック分割） |
 | 693 | `2026-06-03-apple-id-db-block-ui-mutations` | **5** | `ca4b6489-bc6d-444c-b4a4-28b4c7f8c96c` | 2026-06-03 Apple ID DB save/delete ブロック |
 | 694 | `2026-06-08-694-device-exchange-date` | **18** | `699da986-7b14-49d0-aafe-bfe3322300e5` | 2026-06-08 端末交換日フィールド |
 | 695 | `2026-06-06-shared-mail-db-block-ui` | **5** | `afc1ca51-aeed-4a67-a3ed-9a2fac00e91a` | 2026-06-06 共有メール DB save/delete ブロック |
@@ -49,7 +49,7 @@ npm run app:fields <アプリID>
 | 711 | `2026-06-10-new-system-intro-dash-print-a4-v2` | **4** | `de21c60d-301b-49aa-91bf-d1e25d16efb2` | 2026-06-10 新規システム導入ヒアリング 印刷A4 2枚 |
 | 712 | `2026-06-11-space48-portal-v3` | **24** | `1e261ed5-bfdc-4918-bd98-eb6f2f07c24b` | 2026-06-11 開くを別タブ |
 | 698 | `2026-06-25-bi-employee-sync595-banner-v1` | **11** | `f3e129da-9591-4d7d-bf84-81f2f86ec0b4` | 2026-06-25 595同期ステータス一覧バナー |
-| 699 | `2026-06-25-bi-guide-login-aggregate-note-v3` | **113** | `38b2b37f-97f7-493c-a60a-c7b9ba7dcbc7` | 2026-06-25 ログイン能力バナー・年次集計注記 |
+| 699 | `2026-06-26-bi-guide-login-permission-lines-v1` | **115** | `38b2b37f-97f7-493c-a60a-c7b9ba7dcbc7` | 2026-06-25 ログイン能力バナー・年次集計注記 |
 | 700 | `2026-06-24-bi-proposal-number-review3` | **143** | `704c383a-f29e-4ee2-858b-70c0bc127c35` | 2026-06-24 提案番号採番・下書き申請者紐付け（レビュー#3） |
 | 713 | `2026-06-13-bi-annual-redirect-guide` | **12** | `d9baa102-67f1-4c12-a291-812ce2a794ac` | 2026-06-13 年次713→699ガイド誘導 |
 | 714 | `2026-06-14-software-ledger-db-block-ui-mutations` | **5** | `45b4c125-5d47-47a1-a373-3bbcd273b54d` | 2026-06-14 ソフトウエア台帳 DB save/delete ブロック |
@@ -60,6 +60,8 @@ npm run app:fields <アプリID>
 | 717 | `2026-06-17-storage-media-ledger-user-filter-compact` | **8** | `ed202a45-c53b-4930-bd2e-84d3d084779d` | 2026-06-17 利用者チップを社員検索絞り込みに変更 |
 | 720 | `2026-06-15-jr-ipad-db-block-ui-mutations` | **5** | `6a022180-0c57-4992-8f3c-929a93678a0f` | 2026-06-19 新規採番時下書き必須緩和（フォーム rev **7**） |
 | 721 | `2026-06-24-jr-ipad-dash-register-existing` | **13** | `1505144a-b3e2-4868-854b-3a6b9478abf7` | 2026-06-24 既存端末を登録ボタン（採番なし・保存時POST） |
+| 744 | `2026-06-26-jre-cloud-account-db-block-v1` | **5** | `125843f1-4b4b-49ce-91ad-2ae1886291fd` | 2026-06-26 JREクラウド DB save/delete ブロック |
+| 745 | `2026-06-26-jre-cloud-account-dash-dept-dash-branch-v13` | **18** | `56f39bd5-30fd-48ac-9cee-b7be8fb77c53` | 2026-06-26 集計表を開くと今月を自動表示 |
 | 733 | `2026-06-20-vpn-db-rename-message` | **11** | `252e24ee-a0c8-451c-8bff-46c967c9e9f3` | 2026-06-20 アプリ名変更・ブロックメッセージ更新 |
 | 734 | `2026-06-21-vpn-conn-pw-updated-date` | **28** | `8d2a21e0-d570-43c9-b908-1c2bab1d8c1b` | 2026-06-21 VPN接続PW横に (yyyy/mm/dd更新) 表示 |
 | 737 | `2026-06-21-total-network-db-block` | **5** | `d35de612-a6dc-484e-9881-aa603b024712` | 2026-06-21 トータルNW DB save/delete ブロック |
@@ -88,7 +90,7 @@ npm run app:fields <アプリID>
 | **工事稼働日数算出（データ正本）** | **687** | `customize/687/desktop.js` \| `npm run deploy:687` | [https://jbis-kintone.cybozu.com/k/687/](https://jbis-kintone.cybozu.com/k/687/) **Space 56**・§6.2 データ層。**BUILD=`2026-06-09-687-workdays-excel-v1`**（`estimate_year` 追加済・着工/完工任意）。仕様 **`docs/plans/2026-06-13-construction-workdays-excel-20260613.md`** |
 | **工事稼働日数ダッシュ（日常入口）** | **688** | `customize/688/desktop.js` \| `npm run deploy:688` | [https://jbis-kintone.cybozu.com/k/688/](https://jbis-kintone.cybozu.com/k/688/) **Space 56**・687 REST。**BUILD=`2026-06-24-688-print-5yr-rain-scale-up-v9`** rev **79** / fileKey **`dc6ed705-941d-46c1-b57b-516dc7571db4`**（施工主報告 **専用ウィンドウでA4横印刷**・**塗装/足場/休日各1枚**・**過去5年降雨1枚（6表横並び・拡大）**・風速別枚。**`cio:preflight:688` → `deploy:688`**）。仕様 **`docs/plans/2026-06-13-construction-workdays-excel-20260613.md`** §9–§10 |
 | **【実行予算書】リストマスタ ver.01** | **735** | （customize なし）\| `npm run jikkou-yosan:import-master` | [https://jbis-kintone.cybozu.com/k/735/](https://jbis-kintone.cybozu.com/k/735/) **Space 56 / thread 60**・コード表77＋リスト27＝104件。**M 編集=管理者のみ**（ACL 要確認）。仕様 **`docs/plans/2026-06-18-jikkou-yosan-spec.md`** |
-| **実行予算書作成支援ツール　ver.01** | **736** | `customize/736/desktop.js` \| `npm run deploy:736` | [https://jbis-kintone.cybozu.com/k/736/](https://jbis-kintone.cybozu.com/k/736/) **Space 56 / thread 60**・735 REST・688型一覧+Excel風フォーム・**合計行 薄茶色**（①⑧⑨・塗料/その他合計・外注「合計」・**注文金額**・**法定福利費（合計）**）・**諸経費・労務費明細は灰色**・**総括表印刷** ⑧⑨ **最終ページのみ**・**A4横1枚収め**・**差分付き印刷（総括表+詳細表 Step2）**・**v2c 画面差分**（版2以降は直前版と自動比較・直接編集/自動反映分離・削除行折りたたみ）。**BUILD=`2026-06-24-736-diff-print-detail-v2c`** rev **131** / fileKey **`93621f24-37f9-437a-85a2-99a3c207b60d`**。版管理仕様 **`docs/plans/2026-06-20-jikkou-yosan-version-management-spec.md`**・親仕様 **`docs/plans/2026-06-18-jikkou-yosan-spec.md`** §9 |
+| **実行予算書作成支援ツール　ver.01** | **736** | `customize/736/desktop.js` \| `npm run deploy:736` | [https://jbis-kintone.cybozu.com/k/736/](https://jbis-kintone.cybozu.com/k/736/) **Space 56 / thread 60**・735 REST・688型一覧+Excel風フォーム・**合計行 薄茶色**（①⑧⑨・塗料/その他合計・外注「合計」・**注文金額**・**法定福利費（合計）**）・**諸経費・労務費明細は灰色**・**総括表印刷** ⑧⑨ **最終ページのみ**・**A4横1枚収め**・**差分付き印刷（総括表+詳細表 Step2）**・**v2c 画面差分**（版2以降は直前版と自動比較・直接編集/自動反映分離・削除行折りたたみ）・**依頼者UX v1**（**印刷=sticky固定**・**版/種別/下書きバッジ**・**削除行=各ブロック合計直下**）。**BUILD=`2026-06-26-736-ux-sticky-print-badges-v1`** rev **134** / fileKey **`ddd65ac3-b2d8-4c07-a876-cc1a11ba3064`**。版管理仕様 **`docs/plans/2026-06-20-jikkou-yosan-version-management-spec.md`**・親仕様 **`docs/plans/2026-06-18-jikkou-yosan-spec.md`** §9 |
 | **ユーザサポート682ダッシュ**（682 の REST 参照・閲覧／集約 UI・**入力は 682 のみ**） | **683** | `customize/683/desktop.js` | [https://jbis-kintone.cybozu.com/k/683/](https://jbis-kintone.cybozu.com/k/683/) **Space 48**（**2026-05-11** `kintone-add-app` → **`deploy:683` SUCCESS**・SPEC **§6.1.1**・Runbook **`docs/runbooks/user683-weekly-summary-and-print.md`**）。`npm run cio:preflight:683 -- --note "…"` → `npm run deploy:683`。**2026-06-25 deploy** / **BUILD**: `2026-06-25-683-sixmo-chart-pagination-fix-v1` — **6 暦月棒**を暦月別クエリに変更＋REST ページングを totalCount 突合（100 件打切り欠落是正）。検証: `npm run 683:audit-six-month-chart -- --view-year 2026 --view-month 7`。**2026-05-16 deploy SUCCESS** / **BUILD**: `2026-05-16-683-print-2page-tight-v2` / fileKey **`4bb662aa-b47a-40c5-b1f7-2ba4dffa8f63`** / preview revision **`74`**（**印刷報告用**・`@media print` で **2 枚前後**を目標にレイアウト縮小。**一覧の「提出用PDF」ボタンは撤去**。**月次 PDF HTTP serve は廃止**（2026-05-17 CEO・印刷は **`window.print()` のみ**・オフライン PDF は CLI `user683:monthly-pdf` 任意）。**Claude 中継**: `?user683_claude_relay=`・`text/plain` POST。**グラフ直下 月次→週次4**・要約キャッシュ PUT/POST／`USER683_SHOW_OLLAMA_GENERATE_BTN=false`）。 |
 | **PC台帳 ver.2（旧・削除予定／正は674）** | **594** | `customize/594/desktop.js` | `npm run deploy:594`（**新機能は674**。594は移行・清掃・監査コードが残る間のみ。本番に恒久的に残す前提なし） |
 | 社員マスタ（674/714/716 連携） | 595 | `customize/595/desktop.js` | **本番 live 最終 deploy（2026-06-19）**: `npm run deploy:595` **SUCCESS** / fileKey **`6ae0fe9e-1ccd-4627-bd91-d5b0bd7b9cc0`** / preview revision **`96`** / **`BUILD=`** **`2026-06-19-595-dept-picker-680`**（新規・編集: **680 所属候補モーダル**で所属名・所属グループを一括入力・手入力も可）。**前 deploy（2026-06-17）**: rev **93** / **BUILD=`2026-06-17-595-emp-id-auto-assign`**（627 downstream 廃止 + **EMP-xxxx 保存時自動採番**） |
@@ -125,6 +127,8 @@ npm run app:fields <アプリID>
 | **記憶媒体等管理台帳ver.1**（日常 UI・716 へ REST） | **717** | `customize/storage-media-ledger-dash/desktop.js` \| `npm run deploy:717` | [https://jbis-kintone.cybozu.com/k/717/](https://jbis-kintone.cybozu.com/k/717/) **Space 21 / thread 23**・**2026-06-17**: 利用者チップを社員検索絞り込みに変更・**BUILD=`2026-06-17-storage-media-ledger-user-filter-compact`** rev **8** |
 | **JRシステム用iPad台帳DB**（端末正本・閲覧のみ） | **720** | `customize/jr-ipad-db/desktop.js` \| `npm run deploy:720` | [https://jbis-kintone.cybozu.com/k/720/](https://jbis-kintone.cybozu.com/k/720/) **Space 34 / thread 38**・**2026-06-15**: 13 フィールド・**64 台移行済**・正本 `docs/plans/2026-06-15-jr-ipad-ledger-kintone-spec.md`・**BUILD=`2026-06-15-jr-ipad-db-block-ui-mutations`** rev **5**（**2026-06-19**: フォーム rev **7** — 新規採番 POST 時 `mgmt_dept` / `phone_number` / `model` を空可。保存時必須は Dash `validateRequired` が担保） |
 | **JRシステム用iPad管理台帳 ver.1**（日常 UI・720 へ REST） | **721** | `customize/jr-ipad-dash/desktop.js` \| `npm run deploy:721` | [https://jbis-kintone.cybozu.com/k/721/](https://jbis-kintone.cybozu.com/k/721/) **Space 34 / thread 38**・**BUILD=`2026-06-24-jr-ipad-dash-register-existing`** rev **13** |
+| **JREクラウドアカウント管理台帳用DB**（正本・閲覧のみ） | **744** | `customize/jre-cloud-account-db/desktop.js` \| `npm run deploy:744` | [https://jbis-kintone.cybozu.com/k/744/](https://jbis-kintone.cybozu.com/k/744/) **Space 34 / thread 38**・**2026-06-26**: 9 フィールド・**99 件移行済**・正本 `docs/plans/2026-06-26-jre-cloud-account-kintone-spec.md`・**BUILD=`2026-06-26-jre-cloud-account-db-block-v1` rev **5**** rev **5** / fileKey **`125843f1-4b4b-49ce-91ad-2ae1886291fd`** |
+| **JREクラウドアカウント台帳**（日常 UI・744 へ REST） | **745** | `customize/jre-cloud-account-dash/desktop.js` \| `npm run deploy:745` | [https://jbis-kintone.cybozu.com/k/745/](https://jbis-kintone.cybozu.com/k/745/) **Space 34 / thread 38**・734 型 — 595 ハイブリッド（部署手選必須）・稼働中/すべて/退職バッジ・**月次集計**（開くと**今月**自動表示・拠点/部署 multi-select）・一覧/集計 **xlsx+印刷**・**BUILD=`2026-06-26-jre-cloud-account-dash-dept-dash-branch-v13` rev **18**** rev **5** / fileKey **`56f39bd5-30fd-48ac-9cee-b7be8fb77c53`** |
 | **VPNアカウント管理台帳用DB**（正本・閲覧のみ） | **733** | `customize/vpn-account-db/desktop.js` \| `npm run deploy:733` | [https://jbis-kintone.cybozu.com/k/733/](https://jbis-kintone.cybozu.com/k/733/) **Space 48 / thread 52**・**v1.2 運用中** — `vpn_domain` + snapshot フィールド・**105 件**（fre/ds/bnp）・正本 `docs/plans/2026-06-16-vpn-account-kintone-spec.md`・**BUILD=`2026-06-20-vpn-db-rename-message`** rev **11** |
 | **VPNアカウント台帳**（日常 UI・733 へ REST） | **734** | `customize/vpn-account-dash/desktop.js` \| `npm run deploy:734` | [https://jbis-kintone.cybozu.com/k/734/](https://jbis-kintone.cybozu.com/k/734/) **Space 48 / thread 52**・**v1.3 運用中** — 3ドメイン統合・595検索・PC台帳674連携・**VPN接続情報アコーディオン**（**VPNアカウント管理画面URL**・接続PW編集・**(yyyy/mm/dd更新)** 表示）・ライセンス集計・利用者印刷・**リスト出力（xlsx+印刷）** — 所属 **multi-select + 一括（全選択/全解除/本社/支店・営業所）**・ドメイン **すべて | 個別指定（複数可）**・**BUILD=`2026-06-21-vpn-conn-pw-updated-date`** rev **28**・月末リマインド **Space 48 注意書き**（JST **28日〜翌1日**のみ・`vpn-license-space48-notice` GHA） |
 | **トータルネットワークネットワーク管理DB**（正本・閲覧のみ） | **737** | `customize/total-network-db/desktop.js` \| `npm run deploy:737` | [https://jbis-kintone.cybozu.com/k/737/](https://jbis-kintone.cybozu.com/k/737/) **Space 48 / thread 52**・**v1 完成 — CLOSED** — 拠点22・使用中IP26・用途マスタ5・正本 `docs/plans/2026-06-21-total-network-kintone-spec.md`・**BUILD=`2026-06-21-total-network-db-block`** rev **5** |
@@ -773,7 +777,7 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 |--------|-----|-----------|---------------|--------|
 | 設定マスタ | **697** | — | — | `business-improvement:seed-settings` |
 | 社員マスタ | **698** | `customize/business-improvement-employee/desktop.js` | `2026-06-25-bi-employee-sync595-banner-v1` rev **11** | `deploy:698` |
-| ご利用ガイド | **699** | `customize/business-improvement-guide/desktop.bundle.js` | `2026-06-25-bi-guide-login-aggregate-note-v3` rev **113** | `deploy:699` |
+| ご利用ガイド | **699** | `customize/business-improvement-guide/desktop.bundle.js` | `2026-06-26-bi-guide-login-permission-lines-v1` rev **115** | `deploy:699` |
 | 提案申請 ver.02 | **700** | `customize/business-improvement-proposal/desktop.js` | `2026-06-24-bi-proposal-number-review3` rev143 | `deploy:700` |
 | 年次処理（新⑤） | **713** | `customize/business-improvement-annual/desktop.bundle.js` | `2026-06-13-bi-annual-redirect-guide` rev12 | `deploy:713` |
 
@@ -819,6 +823,23 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 
 ---
 
+## JREクラウド アカウント管理（Space 34 — 744–745）
+
+**仕様正本**: `docs/plans/2026-06-26-jre-cloud-account-kintone-spec.md`
+
+| アプリ | ID | customize | BUILD（本番） | deploy |
+|--------|-----|-----------|---------------|--------|
+| JREクラウドアカウント管理台帳用DB | **744** | `customize/jre-cloud-account-db/desktop.js` | `2026-06-26-jre-cloud-account-db-block-v1` rev5 | `deploy:744` |
+| JREクラウドアカウント台帳 | **745** | `customize/jre-cloud-account-dash/desktop.js`（`desktop.src.js` + SheetJS bundle） | `2026-06-26-jre-cloud-account-dash-dept-dash-branch-v13` rev18 | `deploy:745`（前に `jre-cloud:bundle-dash`） |
+
+**745 主要機能**: 734 型一覧・admin のみ CRUD（744 REST）・595 検索（氏名/メール/ID/拠点推定・**部署手選必須**）・稼働中/すべて/退職バッジ・**利用終了（退職）**ボタン・**月次集計**（当年1–12月自動・所属組織ブロック/小計/全社合計・部署「－」は支店名表示）・**所属・部署 AND 検索**・一覧/集計 **xlsx+印刷**。
+
+**npm**: `jre-cloud:setup` / `jre-cloud:migrate:xlsx` / `jre-cloud:sync-dash` — App ID 正本 `scripts/data/jre-cloud-account-app-ids.json`
+
+**状態（2026-06-26）**: **v1 実装・deploy 済** — Excel **99 件移行済**・浜田 **検索・退職運用 OK**（BUILD v13 rev18）。
+
+---
+
 ## トータルネットワーク ネットワーク管理 ver.1（Space 48 — 737–738）
 
 **仕様正本**: `docs/plans/2026-06-21-total-network-kintone-spec.md`  
@@ -839,6 +860,7 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 
 | 日付 | 変更内容 |
 |------|----------|
+| 2026-06-26 | **JREクラウド アカウント管理 v1 初回 deploy**: 744 rev5・745 rev4（595 ハイブリッド・月次集計・一覧/集計 xlsx+印刷）・Excel **99 件移行済**。仕様 `docs/plans/2026-06-26-jre-cloud-account-kintone-spec.md` |
 | 2026-06-21 | **トータルネットワーク ネットワーク管理 ver.1 v1 完成**: 737 rev5・738 rev8（一覧/マトリックス/次IP/印刷/Excel・IP数自動計算）。`docs/reports/2026-06-21-total-network-completion.md` |
 | 2026-06-15 | **JRシステム用 iPad 管理台帳 ver.1 v1 完成**: 720 rev5・721 rev8（検索クリア・集計アコーディオン・文字サイズ）。`docs/reports/2026-06-15-jr-ipad-ledger-completion.md` |
 | 2026-06-14 | **社内 Wi-Fi SSID 管理 ver.1 v1 完成**: 718 rev5・719 rev7（QR bundle・印刷ヘッダー (株）J-BISメンテナンス）。`docs/reports/2026-06-14-wifi-ssid-completion.md` |

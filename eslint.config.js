@@ -22,6 +22,8 @@ export default [
       "customize/total-network-dash/desktop.js",
       // 742 複合機: SheetJS + location master + desktop.src.js → desktop.js（lint は src のみ）
       "customize/mfp-ledger-dash/desktop.js",
+      // JREクラウド: SheetJS + desktop.src.js → desktop.js（lint は src のみ）
+      "customize/jre-cloud-account-dash/desktop.js",
     ],
   },
   {

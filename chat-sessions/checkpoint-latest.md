@@ -1,17 +1,15 @@
 # 復元チェックポイント（最新）
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-06-25 JST — **683 6暦月棒欠落是正・浜田 OK・セッション締め**
+**最終更新**: 2026-06-26 JST — **JREクラウド 744/745 v1・浜田検索/退職 OK・セッション締め**
 
-### 本日アクティブ（BUILD/rev — 2026-06-25）
+### 本日アクティブ（BUILD/rev — 2026-06-26）
 
 | 項目 | 内容 |
 |------|------|
-| **683** | BUILD=`2026-06-25-683-sixmo-chart-pagination-fix-v1` rev **85** — 6暦月棒 REST 100件打切り欠落是正（暦月別取得） |
-| **699** | BUILD=`2026-06-25-bi-guide-login-aggregate-note-v3` rev **113** — 4ロール能力バナー・年次集計注記 |
-| **698** | BUILD=`2026-06-25-bi-employee-sync595-banner-v1` rev **11** — 697 `sync595_meta` から一覧同期ステータス |
-| **697** | `sync595_meta` 追加 — 595→698 同期結果を JSON 記録 |
-| **浜田** | 698 一覧バナー **目視 OK** / **683 6暦月棒 目視 OK** |
+| **744** | BUILD=`2026-06-26-jre-cloud-account-db-block-v1` rev **5** — DB ブロック・**99 件移行済** |
+| **745** | BUILD=`2026-06-26-jre-cloud-account-dash-dept-dash-branch-v13` rev **18** — CRUD/595/集計/出力 + 検索 AND + 部署支店表示 |
+| **浜田** | **検索・退職運用 OK**（目視調整フェーズ継続可） |
 
 ## クローズ済み（`data/cio-project-closures.json` — 無断 v1 再開禁止）
 
@@ -24,7 +22,7 @@
 | **トータルネットワーク**（737/738） | closed-v1 | 2026-06-21 | `docs/reports/2026-06-21-total-network-completion.md` |
 | **複合機管理台帳**（741/742） | closed-v1 | 2026-06-22 | `docs/reports/2026-06-22-mfp-ledger-completion.md` |
 
-**業務改善のみ継続可**（浜田 2026-06-20 / R-BI GO 2026-06-25）: **軽微 UX** — 正本 `docs/runbooks/business-improvement-closed-v1-ux.md`（699/698 バナー等）。**v1 再実装は禁止**。
+**業務改善のみ継続可**（浜田 2026-06-20 / R-BI GO 2026-06-25）: **軽微 UX** — 正本 `docs/runbooks/business-improvement-closed-v1-ux.md`。**v1 再実装は禁止**。
 
 ## 保留・その他の制約
 
@@ -33,27 +31,19 @@
 | **688 保留** | 工事稼働日数ダッシュ — **触らない** |
 | **予実管理 保留** | **677/678/679** — **触らない** |
 | **SKYSEA 保留** | **2026-07 頃**計画検討 |
-| **736 担当説明 保留** | **2026-06-23 以降** — Step2-3 待ち |
+| **736 担当説明 保留** | Step2-3 待ち（customize dirty あり・別レーン） |
 
-**次の1手**: 736 Step2-3（差分サマリー印刷）または浜田指定。**688 / 677–679 / SKYSEA / 736担当説明** — 触らない  
-**Git**: `288cfcf` — 683 6暦月棒 fix push 済（浜田 OK 2026-06-25）  
-**683 検証**: `npm run 683:audit-six-month-chart -- --view-year 2026 --view-month 7`（REST 単月 vs 旧一括の差分確認）  
+**次の1手**: 浜田 **項番 -0** で決定 — JRE 745 残 UX / 736 Step2-3 / 他。**688 / 677–679 / SKYSEA** — 触らない  
+**JRE 仕様**: `docs/plans/2026-06-26-jre-cloud-account-kintone-spec.md`  
+**npm**: `jre-cloud:bundle-dash` → `deploy:745`（前に `cio:preflight:745`）  
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`  
-**736 本番**: BUILD=`2026-06-24-736-diff-print-detail-v2c` rev **131**  
-**698 本番**: BUILD=`2026-06-25-bi-employee-sync595-banner-v1` rev **11**  
-**699 本番**: BUILD=`2026-06-25-bi-guide-login-aggregate-note-v3` rev **113**  
+**736 本番**: BUILD=`2026-06-26-736-ux-sticky-print-badges-v1` rev **134**（作業ツリー dirty・未コミット）  
 **MCP**: **現状凍結**  
-**クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`  
-**ルール GO（2026-06-25）**: R-BI-01〜02 / R-SESS-01〜04 / R736-03改 — `docs/approved-changes/2026-06-25-rules-bi-sess-hamada-go.md` / 夕反省 `docs/reports/2026-06-25-evening-reflection.md`  
 **CLOSE 順（R-SESS-01）**: export-handoff → `session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync` → `session:clock:clear` → `cio:session:close-git`  
-**bootstrap（R-SESS-02/04）**: Desktop `＃重要確認事項.txt` を sync 自動復元 / bootstrap NG → L2 1回 → エスカレ・**本題禁止**  
-**BI runbook（R-BI-01）**: `docs/runbooks/business-improvement-closed-v1-ux.md` — 677–682 新規 customize 必須 appType manifest+registry / 698/699 BUILD 日付・697 sync595 meta  
-**manifest v2026-06-25**: fullCloseSteps に sync-desktop / clock-clear — `data/cio-handoff-template.json`
+**bootstrap（R-SESS-02/04）**: Desktop `＃重要確認事項.txt` sync 自動復元  
 
 ## セッション切替後の自律復元（Lifecycle v2 鏡像）
 
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`  
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
-**L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** `session-boundary-close-gate.mdc` | **履歴** `chat-sessions/checkpoints/checkpoint-archive-2026-06-21.md`
-
-<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-06-21.md -->
+**L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** `session-boundary-close-gate.mdc` | **履歴** `chat-sessions/checkpoints/checkpoint-archive-2026-06-25.md`
