@@ -3406,3 +3406,17 @@ npm run cio:morning:ready
 **触らない**: 688 / 677–679 / SKYSEA — 触らない
 
 ---
+
+### 2026-06-26 JST — **2026-06-26 締め — JRE v1 + 改善案GO push済**
+
+**要約**: 745 rev18 検索/退職OK。R-JRE-01〜R-SESS-07 反映 ec67f0c push済。736/bi/yojitsu dirty は別レーン未commit。
+
+**次の1手**: 浜田 **項番 -0** で決定 — JRE 745 残 UX / 736 Step2-3 / 他。**688 / 677–679 / SKYSEA** — 触らない
+
+**Git**: `ec67f0c` — 
+
+**GO待ち**: なし
+
+**触らない**: 688 / 677–679 / SKYSEA — 触らない
+
+---

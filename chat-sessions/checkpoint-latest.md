@@ -34,7 +34,9 @@
 | **736 担当説明 保留** | Step2-3 待ち（customize dirty あり・別レーン） |
 
 **次の1手**: 浜田 **項番 -0** で決定 — JRE 745 残 UX / 736 Step2-3 / 他。**688 / 677–679 / SKYSEA** — 触らない  
-**JRE 仕様**: `docs/plans/2026-06-26-jre-cloud-account-kintone-spec.md`  
+**Git**: `ec67f0c` — JRE v1 + 改善案 GO 反映 push 済（2026-06-26 締め）  
+**dirty（別レーン・意図的未 commit）**: 736 / bi-guide / yojitsu SPEC 等 — 次セッション **項番 -0** 指示まで触らない  
+**JRE 仕様**: `docs/plans/2026-06-26-jre-cloud-account-kintone-spec.md` §7.6  
 **npm**: `jre-cloud:bundle-dash` → `deploy:745`（前に `cio:preflight:745`）  
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`  
 **736 本番**: BUILD=`2026-06-26-736-ux-sticky-print-badges-v1` rev **134**（作業ツリー dirty・未コミット）  
