@@ -36,6 +36,8 @@ markdownify が SKIP のときは python フォールバックで続行し、チ
 | DOCX/PDF 読取 | **markdownify MCP** | `python-docx` / `pypdf` |
 | PPTX 編集 | `docs/runbooks/pptx-patch-windows.md` | MCP `user-office-powerpoint` |
 
+**PPTX 新規・図解・グラフ** → `.cursor/skills/office-pptx-doc-lane/SKILL.md`（フェーズ1）
+
 ## npm コマンド
 
 | コマンド | 用途 |
@@ -43,7 +45,7 @@ markdownify が SKIP のときは python フォールバックで続行し、チ
 | `npm run doc-lane:security-report` | 月次情報セキュリティレポート |
 | `npm run doc-lane:security-report:test` | 書式単体テスト |
 | `npm run doc-lane:patch-v5-a3` | v5 マニュアル A-3 パッチ |
-| `npm run doc-lane:verify-v5-ch3-refs` | v5 参照検証 |
+| `npm run verify:doc-lane-pptx-phase1` | PPTX フェーズ1 インフラ検証 |
 
 ## 正本 runbook
 

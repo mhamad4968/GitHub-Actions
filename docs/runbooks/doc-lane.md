@@ -21,7 +21,8 @@ npm run cio:mcp:env:extended   # markdownify = SKIP 可（Windows・TSB-029）
 |------|----------|----------------|
 | DOCX 生成 | `scripts/build-monthly-security-report.py` 等 **python-docx** | — |
 | DOCX/PDF **読取** | **markdownify MCP**（IDE 接続時） | `python-docx` / `pypdf` |
-| PPTX 編集 | `docs/runbooks/pptx-patch-windows.md` | MCP `user-office-powerpoint` |
+| **PPTX 新規・図解・グラフ** | `docs/runbooks/doc-lane-pptx-mcp.md` + MCP `office-powerpoint` | figma `generate_diagram` → 画像 |
+| PPTX **既存**編集 | `docs/runbooks/pptx-patch-windows.md` | python-pptx |
 
 **markdownify が SKIP / 未接続** のときは python フォールバックで続行し、チャットに 1 行記録: `[doc-lane] markdownify SKIP → python フォールバック`
 
@@ -32,10 +33,13 @@ npm run cio:mcp:env:extended   # markdownify = SKIP 可（Windows・TSB-029）
 | `npm run doc-lane:security-report` | 月次情報セキュリティレポート |
 | `npm run doc-lane:security-report:test` | 書式単体テスト（R5） |
 | `npm run doc-lane:patch-v5-a3` | v5 マニュアル A-3 パッチ |
+| `npm run verify:doc-lane-pptx-phase1` | PPTX フェーズ1 インフラ検証 |
 | `npm run doc-lane:verify-v5-ch3-refs` | v5 参照検証 |
 
 ## 関連 runbook
 
+- `docs/plans/2026-06-27-doc-lane-pptx-phase1-spec.md` — PPTX フェーズ1 spec
+- `docs/runbooks/doc-lane-pptx-mcp.md` — **PPTX 新規・図解（MCP）**
 - `docs/runbooks/monthly-security-report.md`
 - `docs/runbooks/docx-patch-windows.md`
 - `docs/runbooks/pptx-patch-windows.md`

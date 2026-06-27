@@ -280,18 +280,51 @@
       "id": "doc-lane",
       "category": "doc-lane",
       "phase": ["WORK"],
-      "keywords": ["docx", "pptx", "資料", "マニュアル", "セキュリティレポート"],
+      "keywords": [
+        "docx",
+        "pptx",
+        "PowerPoint",
+        "PPTX",
+        "スライド",
+        "資料",
+        "資料作成",
+        "マニュアル",
+        "セキュリティレポート",
+        "フロー図",
+        "図解",
+        "グラフ",
+        "プレゼン"
+      ],
       "priority": 10,
       "lane": "doc-lane",
       "mcp": [
-        { "server": "markdownify", "tools": ["convert"], "priority": 20 },
-        { "server": "office-powerpoint", "tools": ["create_presentation"], "priority": 10 }
+        {
+          "server": "office-powerpoint",
+          "tools": [
+            "create_presentation",
+            "create_presentation_from_templates",
+            "add_slide",
+            "add_shape",
+            "add_connector",
+            "add_chart",
+            "add_table",
+            "manage_image",
+            "manage_text",
+            "auto_generate_presentation",
+            "get_slide_info",
+            "extract_slide_text"
+          ],
+          "priority": 10
+        },
+        { "server": "figma", "tools": ["generate_diagram"], "priority": 20 },
+        { "server": "markdownify", "tools": ["convert"], "priority": 30 }
       ],
-      "npm": ["cio:doc-lane-gate"],
-      "skill": ".cursor/skills/kintone-doc-lane/SKILL.md",
-      "runbook": "docs/runbooks/doc-lane.md",
+      "npm": ["verify:doc-lane-pptx-phase1"],
+      "skill": ".cursor/skills/office-pptx-doc-lane/SKILL.md",
+      "runbook": "docs/runbooks/doc-lane-pptx-mcp.md",
       "secondReviewer": "deepseek",
-      "verify": ["cio:doc-lane-gate"]
+      "verify": ["verify:doc-lane-pptx-phase1"],
+      "specRel": "docs/plans/2026-06-27-doc-lane-pptx-phase1-spec.md"
     },
     {
       "id": "github-ci",

@@ -80,7 +80,7 @@ pre-implement-gate → tool:route → §50-3-8（該当時）→ MCP/npm 実行 
 | incident | recover | kintone + recovery runbook |
 | compliance | constitution | git-history-mcp |
 | data | migrate | kintone + verify:kintone-fields |
-| doc-lane | doc-lane | office-powerpoint |
+| doc-lane | doc-lane | office-powerpoint（図形/コネクタ/グラフ）, figma |
 | github-ci | github-ci | github |
 | design | figma | figma, colors-fonts |
 | research | internal-rag | rag, repo-tree |

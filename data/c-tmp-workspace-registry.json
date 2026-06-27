@@ -38,9 +38,9 @@
       "id": "security-report",
       "path": "C:\\tmp\\資料作成",
       "status": "on-demand",
-      "label": "月次情報セキュリティレポート（テンプレ・出力 DOCX）",
-      "runbook": "docs/runbooks/monthly-security-report.md",
-      "npm": ["doc-lane:security-report"],
+      "label": "社内資料（DOCX/PPTX — 月次セキュリティ・図解スライド等）",
+      "runbook": "docs/runbooks/doc-lane-pptx-mcp.md",
+      "npm": ["doc-lane:security-report", "verify:doc-lane-pptx-phase1"],
       "ensureBeforeUse": true,
       "note": "2026-06-14 削除済 — 月次作業開始時に再作成（builder が mkdir する）"
     },
