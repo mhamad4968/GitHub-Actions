@@ -138,6 +138,7 @@
     "sync:kintone-apps-build": "node scripts/sync-kintone-apps-build.mjs",
     "verify:cio-deploy-ledger-gate": "node scripts/verify-cio-deploy-ledger-gate.mjs",
     "verify:cio-kintone-apps-portfolio-build": "node scripts/lib/cio-kintone-apps-portfolio-build.test.mjs",
+    "verify:cio-checkpoint-mandatory-read": "node scripts/lib/cio-checkpoint-mandatory-read.test.mjs",
     "verify:kintone-app-ids": "node scripts/verify-kintone-app-ids.mjs",
     "verify:kintone-records-post-shape": "node scripts/verify-kintone-records-post-shape.mjs",
     "jikkou-yosan:import-sample": "npx dotenv -e .env -e .env.proxy -- node scripts/jikkou-yosan-import-sample.mjs",

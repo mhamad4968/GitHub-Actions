@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-06-26 JST — **JREクラウド 744/745 v1・浜田検索/退職 OK・セッション締め**
+**最終更新**: 2026-06-27 JST — **WAKE ブリーフィング・cold-start ゲート是正（R-SESS-08）**
 
 ### 本日アクティブ（BUILD/rev — 2026-06-26）
 
@@ -34,7 +34,7 @@
 | **736 担当説明 保留** | Step2-3 待ち（customize dirty あり・別レーン） |
 
 **次の1手**: 浜田 **項番 -0** で決定 — JRE 745 残 UX / 736 Step2-3 / 他。**688 / 677–679 / SKYSEA** — 触らない  
-**Git**: `ec67f0c` — JRE v1 + 改善案 GO 反映 push 済（2026-06-26 締め）  
+**Git**: `693fcca` — main=origin/main（2026-06-27 WAKE）／前セッション締め `ec67f0c`  
 **dirty（別レーン・意図的未 commit）**: 736 / bi-guide / yojitsu SPEC 等 — 次セッション **項番 -0** 指示まで触らない  
 **JRE 仕様**: `docs/plans/2026-06-26-jre-cloud-account-kintone-spec.md` §7.6  
 **npm**: `jre-cloud:bundle-dash` → `deploy:745`（前に `cio:preflight:745`）  

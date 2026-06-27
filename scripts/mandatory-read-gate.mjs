@@ -19,6 +19,7 @@ import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { validateCheckpointMandatoryRead } from './lib/cio-checkpoint-mandatory-read.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -41,25 +42,14 @@ function mtimeIso(rel) {
   return fs.statSync(abs).mtime.toISOString();
 }
 
-// --- checkpoint-latest.md ---
+// --- checkpoint-latest.md（凍結ゾーン = preamble のみ検査。全文 4000 字固定は v2 と不整合のため廃止）---
 const checkpointRel = 'chat-sessions/checkpoint-latest.md';
-const checkpoint = read(checkpointRel);
-if (checkpoint.length < 4000) {
-  fail(`${checkpointRel}: unexpectedly short (${checkpoint.length} chars)`);
+read(checkpointRel);
+const cp = validateCheckpointMandatoryRead(root);
+if (!cp.ok) {
+  for (const issue of cp.issues) fail(`${checkpointRel}: ${issue}`);
 }
-if (!checkpoint.includes('## セッション切替後の自律復元')) {
-  fail(`${checkpointRel}: missing "## セッション切替後の自律復元"`);
-}
-if (!checkpoint.includes('mandatory-read-gate.mjs')) {
-  fail(`${checkpointRel}: missing "mandatory-read-gate.mjs" (bootstrap 手順の記載を確認)`);
-}
-
-const mFinal = checkpoint.match(/^\*\*最終更新\*\*:\s*(.+)$/m);
-if (!mFinal) fail(`${checkpointRel}: missing **最終更新**: line`);
-const finalLineFull = mFinal[0].trim();
-if (!/20\d\d-\d\d-\d\d/.test(finalLineFull)) {
-  fail(`${checkpointRel}: **最終更新** has no YYYY-MM-DD`);
-}
+const finalLineFull = cp.finalUpdateLine || '';
 
 // --- handoff-log.md ---
 const handoffRel = 'chat-sessions/handoff-log.md';
@@ -149,6 +139,7 @@ console.log(`
 
 - checkpoint **最終更新**（先頭の 1 行）:
   ${finalLineFull.length > 240 ? `${finalLineFull.slice(0, 240)}…` : finalLineFull}
+- checkpoint 凍結ゾーン: ${cp.preambleLines} 行 / ${cp.preambleChars} 文字（minChars 検査 OK）
 - handoff エントリ数: ${headingMatches.length}（末尾見出し: ${lastHeading.slice(0, 100)}${lastHeading.length > 100 ? '…' : ''}）
 - HANDOFF-HUMAN / SESSION-BOOTSTRAP（冒頭）/ AGENTS / RULES-INDEX / NEW-SESSION-STARTER（冒頭）/ post-commit / gate.mdc / SESSION-SPLIT-REMINDER: 構造 OK
 - mtime: checkpoint=${mtimeIso(checkpointRel)} | handoff=${mtimeIso(handoffRel)}

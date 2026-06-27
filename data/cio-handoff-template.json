@@ -10,6 +10,8 @@
   "templateDir": "chat-sessions/templates",
   "freezeZone": {
     "maxLines": 50,
+    "minLines": 35,
+    "minChars": 2800,
     "requiredHeadings": [
       "## クローズ済み",
       "## 保留・その他の制約",

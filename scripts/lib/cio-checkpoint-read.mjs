@@ -39,14 +39,31 @@ export function readCheckpointLastUpdatedDate(root) {
   return m ? m[1] : null;
 }
 
+/** @returns {string[]} checkpoint 全文行配列 */
+export function readCheckpointLines(root) {
+  const p = path.join(root, CHECKPOINT_REL);
+  if (!fs.existsSync(p)) return [];
+  return fs.readFileSync(p, 'utf8').split('\n');
+}
+
+/** 最初の ## YYYY-MM-DD 日付セクション行 index（無ければ -1） */
+export function findCheckpointDatedSectionIndex(lines) {
+  return lines.findIndex((l, i) => i > 0 && /^## \d{4}-\d{2}-\d{2}/.test(l));
+}
+
 /** 凍結ゾーン（最初の ## YYYY-MM-DD 直前まで）の行数 */
 export function readCheckpointPreambleLineCount(root) {
-  const p = path.join(root, CHECKPOINT_REL);
-  if (!fs.existsSync(p)) return 0;
-  const lines = fs.readFileSync(p, 'utf8').split('\n');
-  const sectionIdx = lines.findIndex((l, i) => i > 0 && /^## \d{4}-\d{2}-\d{2}/.test(l));
+  const lines = readCheckpointLines(root);
+  const sectionIdx = findCheckpointDatedSectionIndex(lines);
+  return sectionIdx < 0 ? lines.length : sectionIdx;
+}
+
+/** 凍結ゾーン本文（preamble のみ — mandatory-read-gate の正本検査対象） */
+export function readCheckpointPreamble(root) {
+  const lines = readCheckpointLines(root);
+  const sectionIdx = findCheckpointDatedSectionIndex(lines);
   const end = sectionIdx < 0 ? lines.length : sectionIdx;
-  return end;
+  return lines.slice(0, end).join('\n');
 }
 
 /** @returns {string|null} first ## YYYY-MM-DD section date */

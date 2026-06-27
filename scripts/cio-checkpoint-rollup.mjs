@@ -10,6 +10,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
+import { validateCheckpointMandatoryRead } from './lib/cio-checkpoint-mandatory-read.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const CHECKPOINT = path.join(root, 'chat-sessions/checkpoint-latest.md');
@@ -92,6 +93,11 @@ function main() {
     fs.appendFileSync(archivePath, '\n\n---\n\n' + archiveDoc.split('\n').slice(2).join('\n'), 'utf8');
   }
   fs.writeFileSync(CHECKPOINT, newCheckpoint, 'utf8');
+  const post = validateCheckpointMandatoryRead(root);
+  if (!post.ok) {
+    console.error('[cio:checkpoint:rollup] NG post-rollup mandatory-read:', post.issues.join('; '));
+    process.exit(1);
+  }
   console.log('[cio:checkpoint:rollup] OK');
   console.log(`  kept: ${keep} sections`);
   console.log(`  archived: ${archived.length} -> ${path.relative(root, archivePath)}`);
