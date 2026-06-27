@@ -90,7 +90,7 @@ C:\tmp\資料作成\
 ```
 add_chart(
   slide_index=1,
-  chart_type="column_clustered",
+  chart_type="column",
   left=1.0, top=2.0, width=8.0, height=4.5,
   categories=["1月","2月","3月"],
   series_names=["件数"],
