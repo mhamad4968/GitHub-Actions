@@ -29,15 +29,23 @@ npm run verify:doc-lane-pptx-phase1
 npm run health-check
 ```
 
+**DOCX（MCP / セキュリティレポート）**:
+
+```powershell
+npm run verify:doc-lane-governance
+npm run verify:doc-lane-word-phase2
+npm run health-check
+```
+
 **v5 Word**: `npm run cio:doc-lane-gate -- --strict`
 
 いずれも **NG → 作業中止**。
 
-Skill: `.cursor/skills/office-pptx-doc-lane/SKILL.md`（PPTX）/ `kintone-doc-lane/SKILL.md`（全体）
+Skill: `.cursor/skills/office-docx-doc-lane/SKILL.md`（DOCX）/ `office-pptx-doc-lane`（PPTX）/ `kintone-doc-lane`（全体）
 
 ## 環境（R-DOC-03）
 
-- **PPTX MCP** = **Windows Cursor 必須**（WSL のみ ⏭ なら中止）
+- **PPTX / Word MCP** = **Windows Cursor 必須**（WSL のみ ⏭ なら中止）
 - 出力 = **`C:\tmp\`**（registry 準拠）— **完成バイナリを Git commit しない**（R-DOC-04）
 
 ## 編集（R-DOC-05 / R-DOC-06）
@@ -54,8 +62,9 @@ Skill: `.cursor/skills/office-pptx-doc-lane/SKILL.md`（PPTX）/ `kintone-doc-la
 
 ## MCP 選択（R-DOC-09）
 
-- 新規 PPTX + 図解 → **`user-office-powerpoint`**（descriptor 必読）
-- 複雑フロー → **figma** `generate_diagram` → 画像貼付
+- 新規 PPTX + 図解 → **`user-office-powerpoint`**
+- 新規 DOCX + 図解・グラフ → **`user-office-word`** + 月次は **`doc-lane:security-report`** 先行
+- 複雑フロー → **figma** `generate_diagram` → **`add_picture`**
 - 既存 PPTX 精密パッチ → **`pptx-patch-windows.md`**（python-pptx）
 
 `npm run cio:tool:route -- --intent "…"` で doc-lane intent を確認。

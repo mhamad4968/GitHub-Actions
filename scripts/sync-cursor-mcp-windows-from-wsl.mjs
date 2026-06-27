@@ -88,6 +88,20 @@ function buildWindowsMcp(S) {
     ...(S['office-powerpoint']?._meta ? { _meta: S['office-powerpoint']._meta } : {}),
   };
 
+  out.mcpServers['office-word'] = {
+    command:
+      'C:\\\\Users\\\\mhamada202408224\\\\.cursor\\\\Office-Word-MCP-Server\\\\.venv\\\\Scripts\\\\python.exe',
+    args: [
+      'C:\\\\Users\\\\mhamada202408224\\\\.cursor\\\\Office-Word-MCP-Server\\\\word_mcp_server.py',
+    ],
+    cwd: 'C:\\\\Users\\\\mhamada202408224\\\\.cursor\\\\Office-Word-MCP-Server',
+    env: {
+      PYTHONPATH: 'C:\\\\Users\\\\mhamada202408224\\\\.cursor\\\\Office-Word-MCP-Server',
+      MCP_TRANSPORT: 'stdio',
+    },
+    ...(S['office-word']?._meta ? { _meta: S['office-word']._meta } : {}),
+  };
+
   const fsSrv = S.filesystem;
   if (fsSrv && typeof fsSrv.command === 'string' && Array.isArray(fsSrv.args) && fsSrv.args.length >= 2) {
     const fsArgs = fsSrv.args;

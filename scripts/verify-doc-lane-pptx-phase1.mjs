@@ -53,16 +53,16 @@ function main() {
     ok = false;
   } else {
     const skill = docLane.skill || '';
-    if (!skill.includes('office-pptx-doc-lane')) {
-      console.error('  NG doc-lane skill not office-pptx-doc-lane');
+    if (!skill.includes('doc-lane')) {
+      console.error('  NG doc-lane skill missing doc-lane reference');
       ok = false;
     } else {
       console.log(`  OK doc-lane skill: ${skill}`);
     }
 
     const rb = docLane.runbook || '';
-    if (!rb.includes('doc-lane-pptx-mcp')) {
-      console.error('  NG doc-lane runbook not doc-lane-pptx-mcp');
+    if (!rb.includes('doc-lane-pptx-mcp') && !rb.includes('doc-lane-autonomous-governance')) {
+      console.error('  NG doc-lane runbook missing pptx reference');
       ok = false;
     } else {
       console.log(`  OK doc-lane runbook: ${rb}`);

@@ -15,14 +15,16 @@ const required = [
   'docs/plans/2026-06-27-doc-lane-phase2-word-spec.md',
   '.cursor/rules/doc-lane-gate.mdc',
   'docs/runbooks/doc-lane-pptx-mcp.md',
+  'docs/runbooks/doc-lane-docx-mcp.md',
+  '.cursor/skills/office-docx-doc-lane/SKILL.md',
   '.cursor/skills/office-pptx-doc-lane/SKILL.md',
 ];
 
 const needles = [
   { rel: 'docs/runbooks/doc-lane.md', needles: ['doc-lane-autonomous-governance'] },
-  { rel: '.cursor/skills/office-pptx-doc-lane/SKILL.md', needles: ['verify:doc-lane-governance'] },
-  { rel: 'data/cio-project-lanes.json', needles: ['verify:doc-lane-governance', 'doc-lane-autonomous-governance'] },
-  { rel: '.cursor/rules/mcp-server-use-triggers.mdc', needles: ['office-powerpoint'] },
+  { rel: '.cursor/skills/office-docx-doc-lane/SKILL.md', needles: ['verify:doc-lane-word-phase2'] },
+  { rel: 'data/cio-project-lanes.json', needles: ['verify:doc-lane-word-phase2', 'doc-lane-docx-mcp'] },
+  { rel: '.cursor/rules/mcp-server-use-triggers.mdc', needles: ['office-powerpoint', 'office-word'] },
   { rel: 'docs/constitution/00-preamble.md', needles: ['doc-lane'] },
 ];
 
@@ -68,6 +70,12 @@ function main() {
       console.error(`  NG ${id} missing`);
       ok = false;
     }
+  }
+  if (gov.includes('verify:doc-lane-word-phase2')) {
+    console.log('  OK verify:doc-lane-word-phase2 in governance');
+  } else {
+    console.error('  NG verify:doc-lane-word-phase2 missing in governance');
+    ok = false;
   }
 
   if (!ok) {

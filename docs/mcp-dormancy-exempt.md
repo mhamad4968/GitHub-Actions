@@ -10,6 +10,7 @@
 |-----------|----------------|
 | `github` | Windows 側 PowerShell ラッパー経由。WSL からの JSON-RPC 疎通は前提にしない。 |
 | `office-powerpoint` | Windows 側 Python venv 実行。IDE からの利用を想定。 |
+| `office-word` | Windows 側 Python venv 実行。IDE からの利用を想定。 |
 
 各エントリの詳細文は `mcp.json` 内 `_meta.exempt_reason` を参照（Unicode エスケープの場合あり）。
 

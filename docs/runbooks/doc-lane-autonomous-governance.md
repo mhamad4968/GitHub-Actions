@@ -39,8 +39,9 @@ AI チームが **浜田の逐次指示なし**に資料（PPTX / 将来 DOCX）
 |------|----------|
 | **PPTX（MCP）** | `verify:doc-lane-pptx-phase1` → `verify:doc-lane-governance` → `health-check` |
 | **PPTX（既存編集）** | 上記 + `docs/runbooks/pptx-patch-windows.md` |
+| **DOCX（MCP / セキュリティ）** | `verify:doc-lane-word-phase2` → `verify:doc-lane-governance` → `health-check` |
 | **v5 Word** | `cio:doc-lane-gate -- --strict` |
-| **月次セキュリティ DOCX** | `doc-lane:security-report:test`（該当時） |
+| **月次セキュリティ DOCX** | DOCX ゲート + `doc-lane:security-report:test` → builder 実行 |
 
 ```powershell
 npm run cio:tool:route -- --intent "<依頼要約>" --log
@@ -54,10 +55,10 @@ npm run cio:tool:route -- --intent "<依頼要約>" --log
 
 | 条件 | PPTX MCP | DOCX python | DOCX MCP（フェーズ2） |
 |------|----------|-------------|------------------------|
-| **Windows Cursor** | ✅ | ✅ | ✅（導入後） |
+| **Windows Cursor** | ✅ | ✅ | ✅ |
 | WSL のみ | ❌ 中止 | ✅ | ❌ |
 
-`office-powerpoint` は **Win 起動 + Cursor から MCP 接続**が前提。
+`office-powerpoint` / `office-word` は **Win 起動 + Cursor から MCP 接続**が前提。
 
 ---
 
@@ -131,7 +132,8 @@ npm run cio:task-complete-seal -- --lane doc-lane --scope "<件名> 浜田 OK"
 |--------------|----------|----------------|
 | 新規 PPTX + 図解 | `office-powerpoint` MCP | — |
 | 既存 PPTX 精密差替 | python-pptx | MCP（新規スライド追加のみ） |
-| 新規 DOCX（定型） | `scripts/build-*.py` | フェーズ2 Word MCP |
+| 新規 DOCX + 図解・グラフ | `office-word` MCP + builder（月次） | python-docx パッチ |
+| 既存 DOCX 精密差替 | python-docx | MCP（画像追加のみ） |
 | DOCX/PDF 読取 | markdownify MCP | python-docx / pypdf |
 | 複雑フロー図 | figma `generate_diagram` | PPT shape+connector |
 
@@ -139,12 +141,12 @@ npm run cio:task-complete-seal -- --lane doc-lane --scope "<件名> 浜田 OK"
 
 ---
 
-## §10. フェーズ2 予約（R-DOC-10）
+## §10. フェーズ2（R-DOC-10 — Word MCP）
 
-Word MCP（`docx-mcp` 等）導入後:
+**導入済**（2026-06-27）— `office-word` MCP + 月次 builder 併用。
 
-- 本 runbook §2 の DOCX 行を更新
-- `verify:doc-lane-word-phase2` を追加（未実装）
+- 正本: `docs/runbooks/doc-lane-docx-mcp.md`
+- verify: `verify:doc-lane-word-phase2`
 - **R-DOC-04〜07 は変更なし**（C:\tmp 正本・目視 OK）
 
 詳細: `docs/plans/2026-06-27-doc-lane-phase2-word-spec.md`
@@ -156,7 +158,9 @@ Word MCP（`docx-mcp` 等）導入後:
 | ファイル | 役割 |
 |----------|------|
 | `docs/plans/2026-06-27-doc-lane-pptx-phase1-spec.md` | PPTX フェーズ1 spec |
+| `docs/plans/2026-06-27-doc-lane-phase2-word-spec.md` | Word フェーズ2 spec |
 | `.cursor/skills/office-pptx-doc-lane/SKILL.md` | PPTX Skill |
+| `.cursor/skills/office-docx-doc-lane/SKILL.md` | DOCX Skill |
 | `.cursor/skills/kintone-doc-lane/SKILL.md` | doc-lane 全体 |
 | `docs/runbooks/doc-lane-completion-report.md` | 完了報告テンプレ |
 | `.cursor/rules/doc-lane-gate.mdc` | Cursor 機械リマインダ |
@@ -168,3 +172,4 @@ Word MCP（`docx-mcp` 等）導入後:
 | 日付 | 内容 |
 |------|------|
 | 2026-06-27 | 初版 R-DOC-01〜10 — フェーズ1 完了・パイロット目視 OK 後 |
+| 2026-06-27 | フェーズ2 — office-word MCP 導入・セキュリティレポート図解対応 |

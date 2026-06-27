@@ -45,6 +45,7 @@ const RECOMMENDED = [
   'kintone-dev',
   'kintone-space',
   'office-powerpoint',
+  'office-word',
   'kintone-schema-mcp',
   'git-history-mcp',
 ];

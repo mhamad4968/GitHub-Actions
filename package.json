@@ -645,6 +645,7 @@
     "doc-lane:security-report:test": "python scripts/test_docx_template_format.py",
     "verify:doc-lane-pptx-phase1": "node scripts/verify-doc-lane-pptx-phase1.mjs",
     "verify:doc-lane-governance": "node scripts/verify-doc-lane-governance.mjs",
+    "verify:doc-lane-word-phase2": "node scripts/verify-doc-lane-word-phase2.mjs",
     "verify:cio-18-countermeasures": "node scripts/verify-cio-18-countermeasures.mjs",
     "verify:mode-b-zombie-docs": "node scripts/verify-mode-b-zombie-docs.mjs",
     "cio:prune:mode-b-zombie-docs": "node scripts/cio-prune-mode-b-zombie-docs.mjs",

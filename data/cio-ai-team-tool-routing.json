@@ -317,14 +317,32 @@
           "priority": 10
         },
         { "server": "figma", "tools": ["generate_diagram"], "priority": 20 },
+        {
+          "server": "office-word",
+          "tools": [
+            "create_document",
+            "add_heading",
+            "add_paragraph",
+            "add_table",
+            "add_picture",
+            "add_page_break",
+            "insert_header_near_text",
+            "search_and_replace",
+            "get_document_text",
+            "get_document_outline",
+            "get_document_info",
+            "copy_document"
+          ],
+          "priority": 15
+        },
         { "server": "markdownify", "tools": ["convert"], "priority": 30 }
       ],
-      "npm": ["verify:doc-lane-pptx-phase1"],
-      "skill": ".cursor/skills/office-pptx-doc-lane/SKILL.md",
-      "runbook": "docs/runbooks/doc-lane-pptx-mcp.md",
+      "npm": ["verify:doc-lane-pptx-phase1", "verify:doc-lane-word-phase2", "verify:doc-lane-governance"],
+      "skill": ".cursor/skills/office-docx-doc-lane/SKILL.md",
+      "runbook": "docs/runbooks/doc-lane-autonomous-governance.md",
       "secondReviewer": "deepseek",
-      "verify": ["verify:doc-lane-pptx-phase1"],
-      "specRel": "docs/plans/2026-06-27-doc-lane-pptx-phase1-spec.md"
+      "verify": ["verify:doc-lane-word-phase2", "verify:doc-lane-governance"],
+      "specRel": "docs/plans/2026-06-27-doc-lane-phase2-word-spec.md"
     },
     {
       "id": "github-ci",

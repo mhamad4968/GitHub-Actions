@@ -59,6 +59,7 @@
       "skill": ".cursor/skills/kintone-doc-lane/SKILL.md",
       "npm": [
         "verify:doc-lane-governance",
+        "verify:doc-lane-word-phase2",
         "verify:doc-lane-pptx-phase1",
         "cio:doc-lane-gate",
         "doc-lane:security-report",
@@ -67,7 +68,9 @@
       "runbook": "docs/runbooks/doc-lane-autonomous-governance.md",
       "reference": [
         "docs/runbooks/doc-lane.md",
+        "docs/runbooks/doc-lane-docx-mcp.md",
         "docs/runbooks/doc-lane-pptx-mcp.md",
+        ".cursor/skills/office-docx-doc-lane/SKILL.md",
         ".cursor/skills/office-pptx-doc-lane/SKILL.md"
       ]
     },

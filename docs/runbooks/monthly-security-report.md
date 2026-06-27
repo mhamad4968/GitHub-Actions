@@ -40,6 +40,21 @@ python scripts/build-monthly-security-report.py --config scripts/data/monthly-se
 - **`.text` 代入禁止** — `docx_template_format.set_paragraph_text` を使用（`docs/runbooks/docx-patch-windows.md`）
 - 生成後 Word で目視。必要なら `python scripts/test_docx_template_format.py`
 
+## 図解・グラフ（フェーズ2 — 2026-06-27）
+
+1. **定型グラフ 5 枚** — builder が `_charts/*.png` を生成し DOCX 2×3 グリッドに挿入（自動）
+2. **追加フロー図** — figma `generate_diagram` → `office-word` MCP `add_picture`
+3. 正本: `docs/runbooks/doc-lane-docx-mcp.md` §3
+
+着手前:
+
+```powershell
+npm run verify:doc-lane-word-phase2
+npm run verify:doc-lane-governance
+```
+
+**DeepSeek 必須**（R-DOC-08 — 公式セキュリティ資料）。
+
 ## 新規月の追加
 
 1. `npm run cio:tmp:ensure-workspaces`（`C:\tmp\資料作成` が無ければ作成）

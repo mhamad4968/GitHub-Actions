@@ -19,6 +19,7 @@ description: >-
 ## 起動前
 
 ```powershell
+npm run verify:doc-lane-governance
 npm run health-check
 npm run cio:doc-lane-gate
 npm run cio:mcp:env:extended
@@ -32,11 +33,10 @@ markdownify が SKIP のときは python フォールバックで続行し、チ
 
 | 形式 | 第一選択 | フォールバック |
 |------|----------|----------------|
-| DOCX 生成 | `scripts/build-monthly-security-report.py` 等 | — |
+| DOCX 生成（月次） | `doc-lane:security-report`（matplotlib グラフ 5 枚） | MCP `office-word` 追加図解 |
+| DOCX 新規・図解 | `.cursor/skills/office-docx-doc-lane/SKILL.md` | python-docx パッチ |
 | DOCX/PDF 読取 | **markdownify MCP** | `python-docx` / `pypdf` |
-| PPTX 編集 | `docs/runbooks/pptx-patch-windows.md` | MCP `user-office-powerpoint` |
-
-**PPTX 新規・図解・グラフ** → `.cursor/skills/office-pptx-doc-lane/SKILL.md`（フェーズ1）
+| PPTX 新規・図解 | `.cursor/skills/office-pptx-doc-lane/SKILL.md` | python-pptx パッチ |
 
 ## npm コマンド
 
@@ -45,6 +45,7 @@ markdownify が SKIP のときは python フォールバックで続行し、チ
 | `npm run doc-lane:security-report` | 月次情報セキュリティレポート |
 | `npm run doc-lane:security-report:test` | 書式単体テスト |
 | `npm run doc-lane:patch-v5-a3` | v5 マニュアル A-3 パッチ |
+| `npm run verify:doc-lane-word-phase2` | Word フェーズ2 インフラ検証 |
 | `npm run verify:doc-lane-pptx-phase1` | PPTX フェーズ1 インフラ検証 |
 
 ## 正本 runbook
@@ -53,6 +54,8 @@ markdownify が SKIP のときは python フォールバックで続行し、チ
 |------|------|
 | doc-lane 概要 | `docs/runbooks/doc-lane.md` |
 | 月次セキュリティ | `docs/runbooks/monthly-security-report.md` |
+| DOCX MCP | `docs/runbooks/doc-lane-docx-mcp.md` |
+| PPTX MCP | `docs/runbooks/doc-lane-pptx-mcp.md` |
 | DOCX パッチ | `docs/runbooks/docx-patch-windows.md` |
 | PPTX パッチ | `docs/runbooks/pptx-patch-windows.md` |
 | 資格 PPTX | `docs/runbooks/qualification-roadmap-pptx.md` |
