@@ -43,7 +43,7 @@
 | **736 担当説明 保留** | Step2-3 待ち（customize dirty あり・別レーン） |
 
 **次の1手**: 浜田 **項番 -0** — **doc-lane** 経営会議パイロット / JRE 745 残 UX / 736 Step2-3。**688 / 677–679 / SKYSEA** — 触らない  
-**Git**: *(本締め push 後更新)* — main=origin/main  
+**Git**: `fb53135` — main=origin/main（2026-06-27 doc-lane 締め）／前 `d84ccf3`
 **dirty（別レーン・意図的未 commit）**: 736 / bi-guide / yojitsu SPEC 等 — 次セッション **項番 -0** 指示まで触らない  
 **JRE 仕様**: `docs/plans/2026-06-26-jre-cloud-account-kintone-spec.md` §7.6  
 **npm**: `jre-cloud:bundle-dash` → `deploy:745`（前に `cio:preflight:745`）  
