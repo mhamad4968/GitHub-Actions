@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-06-26T12:20:35.139Z",
-  "gitHead": "ec67f0c",
-  "gitStatus": "## main...origin/main",
-  "nextTask": "浜田 **項番 -0** で決定 — JRE 745 残 UX / 736 Step2-3 / 他。**688 / 677–679 / SKYSEA** — 触らない",
+  "exportedAt": "2026-06-27T12:43:08.181Z",
+  "gitHead": "d84fdd4",
+  "gitStatus": "## main...origin/main [ahead 1]",
+  "nextTask": "浜田 **項番 -0** — **doc-lane** 経営会議パイロット / JRE 745 残 UX / 736 Step2-3。**688 / 677–679 / SKYSEA** — 触らない",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -15,8 +15,6 @@
     ".cursor/rules/mode-b-canonical.mdc",
     "docs/knowledge/debug-tips.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=ec67f0c | 次=浜田 **項番 -0** で決定 — JRE 745 残 UX / 736 Step2-3 / 他。**688 / 677–679 / SKYSEA** — 触らない | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
-  "validatedAt": "2026-06-26T12:20:35.653Z",
-  "crosscheckOk": true
+  "promptBlock": "【SESSION-BRIDGE】git=d84fdd4 | 次=浜田 **項番 -0** — **doc-lane** 経営会議パイロット / JRE 745 残 UX / 736 Step2-3。**688 / 677–679 / SKYSEA** — 触らない | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }
