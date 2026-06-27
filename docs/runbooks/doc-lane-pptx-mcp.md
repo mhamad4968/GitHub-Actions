@@ -85,21 +85,20 @@ C:\tmp\資料作成\
 
 ---
 
-## 5. 棒グラフ例
+## 5. 棒グラフ例（Title Only レイアウト）
+
+**重要**: `create_presentation` 既定は **幅 10 in × 高 7.5 in**（`get_slide_info` で確認）。16:9 想定の 13.333 in 座標は**はみ出す**。
 
 ```
 add_chart(
-  slide_index=1,
+  slide_index=2,
   chart_type="column",
-  left=1.0, top=2.0, width=8.0, height=4.5,
-  categories=["1月","2月","3月"],
-  series_names=["件数"],
-  series_values=[[10, 15, 12]],
-  title="月次件数"
+  left=0.5, top=1.75, width=9.0, height=5.2,
+  ...
 )
 ```
 
-保存後 `update_chart_data` で数値差替可。
+**はみ出し防止**: 保存前に `Presentation.slide_width` を確認。既定 10 in なら `left + width ≤ 9.5`、`top + height ≤ 7.0`。Title Only では `top ≥ 1.7`。
 
 ---
 

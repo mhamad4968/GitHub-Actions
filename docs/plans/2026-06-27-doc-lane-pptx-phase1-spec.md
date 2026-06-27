@@ -37,7 +37,7 @@ Office 資料（主に **PowerPoint**）を AI チームが **安全・再現可
 | 3 | **markdownify** MCP | 既存 DOCX/PDF の読取（資料下書き入力） |
 | 4 | **python-pptx**（runbook 既存） | MCP 不可時・既存 PPTX の精密パッチ |
 
-**座標系**: MCP の `left`/`top`/`width`/`height` は **インチ**。16:9 スライド既定 13.333 × 7.5 in。
+**座標系**: MCP の `left`/`top`/`width`/`height` は **インチ**。**既定スライド幅は 10 in**（高 7.5 in）— `create_presentation` 直後に `get_slide_info` で確認。16:9（13.333 in）と混同しない。
 
 ---
 
