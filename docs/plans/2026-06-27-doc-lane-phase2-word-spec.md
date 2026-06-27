@@ -24,7 +24,7 @@
 
 | 項目 | 値 |
 |------|-----|
-| サーバー名 | `office-word` / Cursor `user-office-word` |
+| サーバー名 | `office-word`（Cursor UI / mcp.json）。AI 呼び出しは `user-office-word` |
 | 実体 | `C:\Users\mhamada202408224\.cursor\Office-Word-MCP-Server` |
 | 起動 | `.venv\Scripts\python.exe word_mcp_server.py` |
 | 前提 | **Windows Cursor**（PowerPoint MCP と同型） |
@@ -39,8 +39,8 @@
 - [x] `scripts/verify-doc-lane-word-phase2.mjs`
 - [x] `.cursor/skills/office-docx-doc-lane/SKILL.md`
 - [x] `docs/runbooks/doc-lane-docx-mcp.md`
-- [ ] パイロット 1 本 + 浜田目視 OK
-- [ ] R-DOC-10 クローズ（governance §2 ゲート表確定）
+- [ ] **パイロット 1 本 + 浜田目視 OK**（R-DOC-16 — infra 済・運用クローズ待ち）
+- [ ] R-DOC-10 完全クローズ（パイロット OK 後）
 
 ---
 

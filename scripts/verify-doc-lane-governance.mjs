@@ -81,6 +81,16 @@ function main() {
     ok = false;
   }
 
+  const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+  for (const script of ['verify:doc-lane-word-phase2', 'verify:doc-lane-keiei-kaigi', 'verify:doc-lane-governance']) {
+    if (pkg.scripts?.[script]) {
+      console.log(`  OK npm script: ${script}`);
+    } else {
+      console.error(`  NG npm script missing: ${script}`);
+      ok = false;
+    }
+  }
+
   if (!ok) {
     console.error('\n[verify:doc-lane-governance] NG');
     process.exit(1);
