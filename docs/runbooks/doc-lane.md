@@ -11,9 +11,18 @@
 ## 起動前
 
 ```powershell
+npm run verify:doc-lane-governance   # R-DOC 自律運用 infra（PPTX/DOCX 共通）
 npm run health-check
 npm run cio:mcp:env:extended   # markdownify = SKIP 可（Windows・TSB-029）
 ```
+
+**PPTX（MCP）追加**:
+
+```powershell
+npm run verify:doc-lane-pptx-phase1
+```
+
+**自律運用の正本**: `docs/runbooks/doc-lane-autonomous-governance.md`（R-DOC-01〜10）
 
 ## ツール選択（R6）
 
@@ -33,11 +42,13 @@ npm run cio:mcp:env:extended   # markdownify = SKIP 可（Windows・TSB-029）
 | `npm run doc-lane:security-report` | 月次情報セキュリティレポート |
 | `npm run doc-lane:security-report:test` | 書式単体テスト（R5） |
 | `npm run doc-lane:patch-v5-a3` | v5 マニュアル A-3 パッチ |
+| `npm run verify:doc-lane-governance` | R-DOC 自律運用 infra 検証 |
 | `npm run verify:doc-lane-pptx-phase1` | PPTX フェーズ1 インフラ検証 |
 | `npm run doc-lane:verify-v5-ch3-refs` | v5 参照検証 |
 
 ## 関連 runbook
 
+- `docs/runbooks/doc-lane-autonomous-governance.md` — **R-DOC 自律運用（正本）**
 - `docs/plans/2026-06-27-doc-lane-pptx-phase1-spec.md` — PPTX フェーズ1 spec
 - `docs/runbooks/doc-lane-pptx-mcp.md` — **PPTX 新規・図解（MCP）**
 - `docs/runbooks/monthly-security-report.md`

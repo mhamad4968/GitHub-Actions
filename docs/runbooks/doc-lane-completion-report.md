@@ -28,6 +28,22 @@
 - **担当者向けまとめ**が見出しのみ空だったため `patch_v5_a3_staff_summary.py` で本文挿入（Ｃ－５ 生成AI / Ｃ－６ 問い合わせ 反映）
 - 浜田 **目視 OK**
 
+## PPTX（MCP / R-DOC-07）
+
+1. `[doc-lane] レーン開始` 1 行（R-DOC-01）
+2. `verify:doc-lane-governance` + `verify:doc-lane-pptx-phase1` → OK
+3. `C:\tmp\資料作成\YYYYMMDD_<件名>\` に出力 + `*_backup.pptx`
+4. MCP 作業 → `extract_slide_text` / `get_slide_info` read-back
+5. チャット報告末尾に **固定 1 行**:
+
+```
+【浜田確認】PPTX を開いてレイアウト・図解・グラフを目視してください。問題なければ 1 行で OK を返信。
+```
+
+6. 浜田 OK 後 → `cio:task-complete-seal -- --lane doc-lane --scope "<件名> PPTX 浜田 OK"`
+
+**パイロット OK**: `20260627_pilot-kintone-flow`（スライド幅 10 in・グラフ bounds 修正済み）
+
 ## 関連
 
 - `scripts/cio-doc-lane-gate.mjs`（OK 時にも同文を stdout）

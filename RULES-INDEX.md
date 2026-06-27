@@ -27,7 +27,7 @@
 
 ## Cursor ルール逆引き（自動生成・編集禁止）
 
-**更新**: `npm run rules:sync-mdc-index`（2026-06-14 JST）
+**更新**: `npm run rules:sync-mdc-index`（2026-06-27 JST）
 
 | トピック | ファイル | description（frontmatter） |
 |----------|----------|---------------------------|
@@ -58,9 +58,11 @@
 | セッション・引き継ぎ | [`cio-handoff-export-validate-gate.mdc`](.cursor/rules/cio-handoff-export-validate-gate.mdc) | 第11層 — 15ターン export 荷造り漏れゲート（--validate-export） |
 | セッション・引き継ぎ | [`cio-project-closure-gate.mdc`](.cursor/rules/cio-project-closure-gate.mdc) | プロジェクト v1 完了・checkpoint/handoff 認識同期 — 浜田↔AI 事故防止（TSB-038 / R19） |
 | セッション・引き継ぎ | [`cio-session-close-git-gate.mdc`](.cursor/rules/cio-session-close-git-gate.mdc) | セッション締め B1/B4 — 先祖返り回避付き commit+push 必須（GO 待ち禁止） |
+| セッション・引き継ぎ | [`session-boundary-close-gate.mdc`](.cursor/rules/session-boundary-close-gate.mdc) | 区切り語 → CLOSE 二段（partial / full）— Session Lifecycle v2 §6 |
 | セッション・引き継ぎ | [`session-close-execute-first.mdc`](.cursor/rules/session-close-execute-first.mdc) | 締め・チェック依頼 — 返答より先に実行（R23/R26 浜田 GO 2026-06-13） |
+| セッション・引き継ぎ | [`cio-deploy-ledger-gate.mdc`](.cursor/rules/cio-deploy-ledger-gate.mdc) | R21 — deploy 台帳整合（registry ↔ repo ↔ kintone-apps）— セッション締め必須 |
 | セッション・引き継ぎ | [`cio-commit-msg-kimi-gate.mdc`](.cursor/rules/cio-commit-msg-kimi-gate.mdc) | 第11層 — Kimi コミット 4要素ブロック（prepare-commit-msg） |
-| セッション・引き継ぎ | [`autonomous-cold-start.mdc`](.cursor/rules/autonomous-cold-start.mdc) | 新規チャット cold-start 圧縮 — bridge + checkpoint 先頭 + Skills のみで復元 |
+| セッション・引き継ぎ | [`autonomous-cold-start.mdc`](.cursor/rules/autonomous-cold-start.mdc) | Session Lifecycle v2 — L0 cold-start（正本 runbook へ集約） |
 | セッション・引き継ぎ | [`evening-reflection-scope.mdc`](.cursor/rules/evening-reflection-scope.mdc) | 夕反省（26）のスコープ — 失敗とミス削減のみ。未来の作業は当日に聞く。 |
 | 4AI・DeepSeek・§50-3-8 | [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) | CIO×知恵袋の仕様確認分業（🎖️表の下位・予実など） |
 | 4AI・DeepSeek・§50-3-8 | [`deepseek-pre-edit-gate.mdc`](.cursor/rules/deepseek-pre-edit-gate.mdc) | U4 — customize/SPEC/本番PUT の編集前に DeepSeek 1 問必須（CEO 2026-05-17） |
@@ -80,6 +82,7 @@
 | Git履歴・先祖返り防止 | [`cio-git-history-alignment-gate.mdc`](.cursor/rules/cio-git-history-alignment-gate.mdc) | 第12層拡張案2 — Git 履歴デグレード防止（verify:git-history-alignment） |
 | ドメイン特化（glob） | [`constitutional-focus-yojitsu.mdc`](.cursor/rules/constitutional-focus-yojitsu.mdc) | AGENTS.md §50-3-8 §41 §2 — 部署予実（yojitsu）テンプレ・SPEC 変更時の追加想起（glob） |
 | ドメイン特化（glob） | [`constitutional-focus-github-workflows.mdc`](.cursor/rules/constitutional-focus-github-workflows.mdc) | AGENTS.md §18 §52-8 §35-1 — GitHub Actions / workflow 変更時の追加想起（glob） |
+| ドメイン特化（glob） | [`doc-lane-gate.mdc`](.cursor/rules/doc-lane-gate.mdc) | R-DOC-01〜09 — doc-lane 自律資料作成（PPTX/DOCX）— kintone deploy 混在禁止 |
 | ドメイン特化（glob） | [`security-news-response.mdc`](.cursor/rules/security-news-response.mdc) | セキュリティニュースの説明・要約・整理を依頼されたときの出力形式と CVE 時の調査 |
 | ドメイン特化（glob） | [`modern-web-official-docs.mdc`](.cursor/rules/modern-web-official-docs.mdc) | Next.js・React・Tailwind・TypeScript・Supabase・Prisma・Firebase・OpenAI・LangChain・Lucide・Notion API のコード生成・設計時に、公式ドキュメント索引へ誘導す |
 | ドメイン特化（glob） | [`next-session-jbis-followups.mdc`](.cursor/rules/next-session-jbis-followups.mdc) | 595・経理FAQまわりの次回フォロー（ユーザー依頼で次回に生かす提案） |
@@ -96,7 +99,7 @@
 
 ## § ↔ .mdc 双方向索引（自動生成・編集禁止）
 
-**更新**: `npm run rules:sync-section-mdc`（2026-06-21 JST）
+**更新**: `npm run rules:sync-section-mdc`（2026-06-27 JST）
 **正本**: `AGENTS.md` § 解釈 / 機械: `data/rules-index-section-mdc-map.json`
 
 ### § → .mdc（抜粋）
@@ -157,6 +160,7 @@
 | §57 | [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) |
 | §57-10 | [`mcp-server-use-triggers.mdc`](.cursor/rules/mcp-server-use-triggers.mdc) |
 | §57-5 | [`mcp-tool-discipline.mdc`](.cursor/rules/mcp-tool-discipline.mdc) |
+| §6 | [`session-boundary-close-gate.mdc`](.cursor/rules/session-boundary-close-gate.mdc) |
 | §9 | [`kintone-javascript.mdc`](.cursor/rules/kintone-javascript.mdc) |
 
 ### .mdc → §（抜粋）
@@ -173,6 +177,7 @@
 | [`cio-constitution.mdc`](.cursor/rules/cio-constitution.mdc) | §(RULES-INDEX行) · §1 · §1-2-3-1 · §1-2-3-4 · §35-1 · §36 · §50-3-11 · §56-1 |
 | [`cio-context-dissolution-interlock.mdc`](.cursor/rules/cio-context-dissolution-interlock.mdc) | §(RULES-INDEX行) · §1-2-3-4-A · §50-3-11 |
 | [`cio-debug-tips-stock-gate.mdc`](.cursor/rules/cio-debug-tips-stock-gate.mdc) | §1-2-3-4-A · §50-3-11 |
+| [`cio-deploy-ledger-gate.mdc`](.cursor/rules/cio-deploy-ledger-gate.mdc) | §(RULES-INDEX行) |
 | [`cio-discipline-always.mdc`](.cursor/rules/cio-discipline-always.mdc) | §10 · §11 · §35-7 · §36 · §50-3-11 · §50-3-2 · §50-3-8 |
 | [`cio-env-integrity-gate.mdc`](.cursor/rules/cio-env-integrity-gate.mdc) | §1-2-3-4-A · §50-3-11 · §50-3-8 |
 | [`cio-env-self-healing-gate.mdc`](.cursor/rules/cio-env-self-healing-gate.mdc) | §1-2-3-4-A · §50-3-11 |
@@ -200,9 +205,8 @@
 | [`cursor-generate-image-assets.mdc`](.cursor/rules/cursor-generate-image-assets.mdc) | §(RULES-INDEX行) · §0 · §1-2-2 · §1-2-3-4-A · §1-2-3-4-C · §1-2-4 · §41 · §50-3-11 |
 | [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) | §0 · §1-2-2 · §1-2-3-4-A · §1-2-4 · §50-3 · §50-3-10 · §50-3-11 · §50-3-2 · §50-3-8 · §50-3-9 |
 | [`deepseek-pre-edit-gate.mdc`](.cursor/rules/deepseek-pre-edit-gate.mdc) | §50-3-8 |
+| [`doc-lane-gate.mdc`](.cursor/rules/doc-lane-gate.mdc) | §(RULES-INDEX行) |
 | [`evening-reflection-scope.mdc`](.cursor/rules/evening-reflection-scope.mdc) | §(RULES-INDEX行) |
-| [`every-turn-rules-confirm.mdc`](.cursor/rules/every-turn-rules-confirm.mdc) | §(RULES-INDEX行) · §1 · §1-2-3 · §1-2-3-1 · §35-7 · §37-1 · §50-3-11 |
-| [`file-copy-exact-path.mdc`](.cursor/rules/file-copy-exact-path.mdc) | §(RULES-INDEX行) |
 
 <!-- RULES-INDEX:SECTION-MDC-AUTO:END -->
 
@@ -211,7 +215,7 @@
 
 ## § ↔ ジャンル読本 双方向索引（自動生成・編集禁止）
 
-**更新**: `npm run rules:sync-section-genre`（2026-06-10 JST）
+**更新**: `npm run rules:sync-section-genre`（2026-06-27 JST）
 **正本**: `AGENTS.md` § 解釈 / 機械: `data/constitution-section-genre-map.json`
 **カタログ**: `data/constitution-genre-catalog.json`
 

@@ -40,10 +40,36 @@
     },
     {
       "id": "doc-lane",
-      "keywords": ["docx", "pptx", "セキュリティレポート", "v5 マニュアル", "資格", "資料作成"],
+      "keywords": [
+        "docx",
+        "pptx",
+        "PowerPoint",
+        "PPTX",
+        "スライド",
+        "資料",
+        "資料作成",
+        "フロー図",
+        "図解",
+        "グラフ",
+        "セキュリティレポート",
+        "v5 マニュアル",
+        "資格",
+        "プレゼン"
+      ],
       "skill": ".cursor/skills/kintone-doc-lane/SKILL.md",
-      "npm": ["cio:doc-lane-gate", "doc-lane:security-report", "doc-lane:patch-v5-a3"],
-      "runbook": "docs/runbooks/doc-lane.md"
+      "npm": [
+        "verify:doc-lane-governance",
+        "verify:doc-lane-pptx-phase1",
+        "cio:doc-lane-gate",
+        "doc-lane:security-report",
+        "doc-lane:patch-v5-a3"
+      ],
+      "runbook": "docs/runbooks/doc-lane-autonomous-governance.md",
+      "reference": [
+        "docs/runbooks/doc-lane.md",
+        "docs/runbooks/doc-lane-pptx-mcp.md",
+        ".cursor/skills/office-pptx-doc-lane/SKILL.md"
+      ]
     },
     {
       "id": "pc-ledger-674",

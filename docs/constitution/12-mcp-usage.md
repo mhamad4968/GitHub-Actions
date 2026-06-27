@@ -29,7 +29,7 @@
 | ブラウザ自動操作 / E2E テスト | playwright | customize 動作確認時 |
 | CVE 脆弱性確認 | cve-search | 月次 + 依存追加時 |
 | サイバーセキュリティニュース | cyber-news | 週次セキュリティ巡回時 |
-| PowerPoint 自動生成 | office-powerpoint | Win 起動必要 / 月次レポート時 |
+| PowerPoint 自動生成 | office-powerpoint | Win 起動必要 / **doc-lane 自律資料**（`docs/runbooks/doc-lane-autonomous-governance.md`） |
 | GitHub Issue/PR 操作 | github（Win）／**`gh`（WSL 第一選択）** | WSL では **`gh`** を優先（浜田合意 2026-05-06） |
 | 段階的思考（複雑判断分解）| sequential-thinking | 大型設計判断時 |
 | セッション横断記憶 | memory | 確定決定事項保存時 |

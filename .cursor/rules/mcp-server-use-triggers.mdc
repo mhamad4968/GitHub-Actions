@@ -52,6 +52,7 @@ globs: "**/*"
 - **git-history-mcp**（`mcp/git-history-mcp/index.mjs`）: **憲法改定層・4要素コミット・R19/R20 締め**を Git から検索するとき（`verify:git-history-alignment` と **同一正本**）。
 - **user-cve-search** / **user-cyber-news**: **CVE 番号・脆弱性ニュース**が主題のとき（それ以外では使わない）。
 - **user-markdownify**: **長文 HTML → Markdown** の一括変換が目的のとき（小さな表は手直しでよい）。
+- **office-powerpoint** / **user-office-powerpoint**: **PowerPoint 新規・図解・グラフ・フロー**（資料作成 / doc-lane）。**Win Cursor 必須**。着手前 `verify:doc-lane-governance` + `verify:doc-lane-pptx-phase1`。正本 **`docs/runbooks/doc-lane-pptx-mcp.md`** / **`doc-lane-autonomous-governance.md`**（R-DOC）。既存 pptx 精密パッチは **python-pptx**（`pptx-patch-windows.md`）。
 - **Figma 系 MCP**（サーバ名は環境依存: 例 `figma` / `figma-desktop` / `figma-developer-mcp`）: **Figma ファイル・フレーム URL が正**で、**表やダッシュの配色・タイポ・間隔・自動レイアウト**を設計データとして取り込みたいとき。**スクリーンショットだけではトークンが不明**なときはこちらを優先。手順の正本は **`docs/mcp-design-figma.md`**。
 - **colors-fonts**（`@colorsandfonts/mcp`）: **パレット生成**・**WCAG/APCA コントラスト**・CSS / Tailwind / **Figma トークン JSON** が欲しいとき（**Figma がまだ無い**表配色のたたき台、または Figma と併用して数値検証）。**kintone 表・ダッシュ**の流れは **`docs/mcp-design-kintone-tables.md`**。
 - **user-memory**: **セッション横断で再利用すべきユーザ設定**があるとき（乱用しない・機密を書かない）。

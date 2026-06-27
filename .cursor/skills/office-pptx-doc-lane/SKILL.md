@@ -17,18 +17,20 @@ description: >-
 ## 着手前（必須）
 
 ```powershell
+npm run verify:doc-lane-governance
 npm run verify:doc-lane-pptx-phase1
 npm run health-check
 npm run cio:tool:route -- --intent "<依頼要約>" --log
 ```
 
-- `verify:doc-lane-pptx-phase1` が NG → **中止**
+- `verify:doc-lane-governance` / `verify:doc-lane-pptx-phase1` が NG → **中止**
 - `office-powerpoint` が ⏭ → **Windows Cursor で再開**
 
 ## 正本
 
 | 用途 | パス |
 |------|------|
+| **R-DOC 自律運用** | `docs/runbooks/doc-lane-autonomous-governance.md` |
 | フェーズ1 spec | `docs/plans/2026-06-27-doc-lane-pptx-phase1-spec.md` |
 | MCP runbook | `docs/runbooks/doc-lane-pptx-mcp.md` |
 | 既存 pptx パッチ | `docs/runbooks/pptx-patch-windows.md` |

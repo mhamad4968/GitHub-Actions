@@ -1,0 +1,61 @@
+---
+description: R-DOC-01〜09 — doc-lane 自律資料作成（PPTX/DOCX）— kintone deploy 混在禁止
+globs:
+  - docs/runbooks/doc-lane*.md
+  - docs/plans/*doc-lane*
+  - templates/doc-lane/**
+  - scripts/build-*-report*.py
+  - scripts/verify-doc-lane*.mjs
+alwaysApply: false
+---
+
+# doc-lane ゲート（R-DOC — 2026-06-27 浜田 GO）
+
+**承認**: `docs/approved-changes/2026-06-27-rules-doc-autonomous-hamada-go.md`  
+**正本**: `docs/runbooks/doc-lane-autonomous-governance.md`
+
+## レーン（R-DOC-01）
+
+- 資料作成（PPTX / DOCX / 資料 / マニュアル / フロー図）着手時は **`[doc-lane]` 1 行宣言**
+- **kintone deploy / customize / フィールド deploy と同一ターンで混在禁止**
+
+## 着手前（R-DOC-02）
+
+**PPTX（MCP）**:
+
+```powershell
+npm run verify:doc-lane-governance
+npm run verify:doc-lane-pptx-phase1
+npm run health-check
+```
+
+**v5 Word**: `npm run cio:doc-lane-gate -- --strict`
+
+いずれも **NG → 作業中止**。
+
+Skill: `.cursor/skills/office-pptx-doc-lane/SKILL.md`（PPTX）/ `kintone-doc-lane/SKILL.md`（全体）
+
+## 環境（R-DOC-03）
+
+- **PPTX MCP** = **Windows Cursor 必須**（WSL のみ ⏭ なら中止）
+- 出力 = **`C:\tmp\`**（registry 準拠）— **完成バイナリを Git commit しない**（R-DOC-04）
+
+## 編集（R-DOC-05 / R-DOC-06）
+
+- 既存ファイル → **backup コピー後**に編集
+- PPTX グラフ: スライド幅 **10 in** 前提 — `left+width ≤ 9.5`
+- 保存後 **read-back** 失敗 → 再保存しない
+
+## 完了（R-DOC-07）
+
+機械 verify だけで「完成」にしない。報告末尾に **浜田目視依頼 1 行**（`doc-lane-completion-report.md`）。
+
+人事・社外・公式セキュリティ資料 → **§50-3-8 DeepSeek 必須**（R-DOC-08）。
+
+## MCP 選択（R-DOC-09）
+
+- 新規 PPTX + 図解 → **`user-office-powerpoint`**（descriptor 必読）
+- 複雑フロー → **figma** `generate_diagram` → 画像貼付
+- 既存 PPTX 精密パッチ → **`pptx-patch-windows.md`**（python-pptx）
+
+`npm run cio:tool:route -- --intent "…"` で doc-lane intent を確認。
