@@ -36,6 +36,7 @@ npm run cio:tool:route -- --intent "<依頼要約>" --log
 | 用途 | パス |
 |------|------|
 | **R-DOC 自律運用** | `docs/runbooks/doc-lane-autonomous-governance.md` |
+| **経営会議セキュリティ** | `docs/runbooks/keiei-kaigi-security-report.md`（R-DOC-11 / R7） |
 | フェーズ2 spec | `docs/plans/2026-06-27-doc-lane-phase2-word-spec.md` |
 | MCP runbook | `docs/runbooks/doc-lane-docx-mcp.md` |
 | 月次 builder | `docs/runbooks/monthly-security-report.md` |
@@ -52,11 +53,12 @@ C:\tmp\資料作成\YYYYMMDD_<件名>\
 ## セキュリティレポート標準手順
 
 1. `[doc-lane] レーン開始 — DOCX / 月次セキュリティ`
-2. 浜田 1 行確認 → JSON `detection_confirmed: true`
-3. `npm run doc-lane:security-report -- --config scripts/data/monthly-security-report-YYYYMM.json`
-4. （任意）figma `generate_diagram` → `add_picture`
-5. `get_document_text` / `get_document_outline` read-back
-6. 浜田目視 OK
+2. **浜田が §1 の話題を提示**（必須）
+3. verify → 前月 DOCX copy + backup
+4. AI が **§1 本文・図解**を起稿（話題中心）
+5. AI が **§2 枠 + 事例表枠**のみ追加（数値・事例はプレースホルダ）
+6. （任意）figma / `add_picture` で §1 用図解
+7. read-back → 浜田が **§2 数値・事例を入力** → 目視 OK
 
 ## 汎用 Word 手順
 
@@ -70,9 +72,9 @@ C:\tmp\資料作成\YYYYMMDD_<件名>\
 
 ## MCP サーバー
 
-| server | 主ツール |
-|--------|----------|
-| `user-office-word` | create_document, add_heading, add_paragraph, add_table, add_picture, get_document_text |
+| server | UI 名 | 主ツール |
+|--------|-------|----------|
+| `user-office-word` | **`office-word`** | create_document, add_heading, add_paragraph, add_table, add_picture, get_document_text |
 | `user-figma` | generate_diagram（任意） |
 
 descriptor 必読（`mcps/user-office-word/tools/`）。

@@ -44,18 +44,16 @@
 
 **パイロット OK**: `20260627_pilot-kintone-flow`（スライド幅 10 in・グラフ bounds 修正済み）
 
-## DOCX — 月次セキュリティレポート（R-DOC-07 / フェーズ2）
+## DOCX — 月次セキュリティレポート（R-DOC-07 / R7）
 
 1. `[doc-lane] レーン開始 — DOCX / 月次セキュリティ`
-2. `verify:doc-lane-governance` + `verify:doc-lane-word-phase2` → OK
-3. 浜田 1 行確認 → JSON `detection_confirmed: true`
-4. `npm run doc-lane:security-report` → グラフ 5 枚 + DOCX 生成
-5. （任意）MCP `add_picture` で追加図解
-6. `get_document_text` read-back
-7. チャット報告末尾:
+2. **浜田が §1 話題を提示** → AI が §1 起稿 + 図解
+3. AI が **§2・事例表は枠のみ**（数値・事例はプレースホルダ — **AI が推測入力しない**）
+4. 浜田が Word で §2 数値・事例 2 件を入力
+5. read-back → チャット報告末尾:
 
 ```
-【浜田確認】Word でセキュリティレポートの本文・表・グラフ・図解を目視してください。OK なら 1 行で返信。
+【浜田確認】Word を開き、§1 周知を確認してください。§2 検知件数・社外事例 2 件を入力後、全体を目視してください。OK なら 1 行で返信。
 ```
 
 8. 浜田 OK 後 → `cio:task-complete-seal -- --lane doc-lane --scope "<YYYYMM> セキュリティレポート 浜田 OK"`

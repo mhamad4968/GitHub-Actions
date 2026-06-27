@@ -1,0 +1,38 @@
+{
+  "version": "2026-06-27",
+  "note": "C:\\tmp\\資料作成 内 DOCX 正本のメタデータ（バイナリは Git 外）。浜田配置分を台帳化。",
+  "recommendedTemplate": "2026-06-meeting-202605-report",
+  "templates": [
+    {
+      "id": "2026-05-meeting-202604-report",
+      "path": "C:\\\\tmp\\\\資料作成\\\\【2026年5月度経営会議資料】2026年04月情報セキュリティレポート.docx",
+      "meetingMonth": "2026-05",
+      "reportMonth": "2026-04",
+      "sizeBytes": 209469,
+      "style": "text-focused",
+      "features": ["gw-phishing-theme", "clickfix", "response-table-5x2", "cases-table-3x5"],
+      "images": 2,
+      "graphsInDoc": false,
+      "ipaTable": false,
+      "hamadaConfirmed": "2026-06-27"
+    },
+    {
+      "id": "2026-06-meeting-202605-report",
+      "path": "C:\\\\tmp\\\\資料作成\\\\【2026年6月度経営会議資料】2026年05月情報セキュリティレポート.docx",
+      "meetingMonth": "2026-06",
+      "reportMonth": "2026-05",
+      "sizeBytes": 1394580,
+      "style": "full-with-diagrams",
+      "features": ["ipa-10-threats", "ipa-table-6x3", "askul-case-study", "statistics-graphs", "cases-table-3x5"],
+      "images": 4,
+      "graphsInDoc": true,
+      "ipaTable": true,
+      "hamadaConfirmed": "2026-06-27",
+      "recommendedAsBase": true
+    }
+  ],
+  "namingPattern": {
+    "output": "【{meetingYear}年{meetingMonthKanji}月度経営会議資料】{reportYear}年{reportMonthLabel}月情報セキュリティレポート{dateSuffix}.docx",
+    "workDir": "C:\\\\tmp\\\\資料作成"
+  }
+}

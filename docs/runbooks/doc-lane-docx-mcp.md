@@ -12,7 +12,17 @@
 
 - **新規** Word 資料（見出し・表・画像）
 - **経営会議セキュリティレポート**への **追加図解**（フロー図 PNG 等）
-- MCP **`user-office-word`** で `add_picture` / `add_table` 等
+- MCP **`office-word`** で `add_picture` / `add_table` 等
+
+### MCP 名称（Cursor UI と AI 内部）
+
+| 見える場所 | 名称 |
+|------------|------|
+| **Cursor 設定 / mcp.json キー** | `office-word` ← 浜田さんが見るのはこちらで **正常** |
+| **AI エージェントの MCP 呼び出し** | `user-office-word`（Cursor が内部付与） |
+| **descriptor パス** | `mcps/user-office-word/tools/*.json` |
+
+PowerPoint も同型（UI=`office-powerpoint` / 内部=`user-office-powerpoint`）。
 
 **使わない**:
 
@@ -53,11 +63,19 @@ C:\tmp\資料作成\
 
 ## 3. 月次セキュリティレポート（経営会議）
 
-### 3.1 浜田確認（R3）
+### 3.1 役割分担（浜田確定 2026-06-27）
 
-JSON の `section2` / `external_cases` を更新し、`detection_confirmed: true` にする前に 1 行確認:
+| 部分 | AI | 浜田 |
+|------|-----|------|
+| **§1 周知** | 提示ネタを中心に **全文・図解** | 話題を出す → 目視 OK |
+| **§2 検知** | **枠のみ** | 数値入力 |
+| **社外事例表** | **表枠のみ**（2 行空欄） | 2 件入力 |
 
-> 例: 「7月 SKYSEA 0・ネットワーク 0・事例2件で OK」
+§2・事例に **AI が数値や事例を推測して埋めない**。
+
+### 3.2 浜田入力（§2・事例 — 任意タイミング）
+
+Word 上で直接編集、または JSON 更新後に builder 再実行。
 
 ### 3.2 builder 実行（グラフ自動）
 

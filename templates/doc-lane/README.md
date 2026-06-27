@@ -1,6 +1,18 @@
-# doc-lane PowerPoint テンプレート置き場
+# doc-lane テンプレート置き場
 
-> **仕様**: `docs/plans/2026-06-27-doc-lane-pptx-phase1-spec.md`
+> **仕様**: PPTX → `docs/plans/2026-06-27-doc-lane-pptx-phase1-spec.md`  
+> **経営会議 Word**: `docs/runbooks/keiei-kaigi-security-report.md`
+
+## 経営会議 — 情報セキュリティレポート（Word）
+
+| ファイル | 役割 |
+|----------|------|
+| `keiei-kaigi-security-report-structure.md` | **文書ひな形**（§1/§2/事例表） |
+| `keiei-kaigi-docx-registry.json` | `C:\tmp\資料作成` 内 DOCX 台帳 |
+
+実物 DOCX は **`C:\tmp\資料作成\`**（Git 外）。推奨ベース = 直近経営会議提出版。
+
+## PowerPoint テンプレート置き場
 
 ## リポ内（このフォルダ）
 

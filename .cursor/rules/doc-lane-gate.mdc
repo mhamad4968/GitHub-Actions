@@ -1,7 +1,8 @@
 ---
-description: R-DOC-01〜09 — doc-lane 自律資料作成（PPTX/DOCX）— kintone deploy 混在禁止
+description: R-DOC-01〜11 — doc-lane 自律資料作成（PPTX/DOCX/経営会議）— kintone deploy 混在禁止
 globs:
   - docs/runbooks/doc-lane*.md
+  - docs/runbooks/keiei-kaigi*.md
   - docs/plans/*doc-lane*
   - templates/doc-lane/**
   - scripts/build-*-report*.py
@@ -32,6 +33,7 @@ npm run health-check
 **DOCX（MCP / セキュリティレポート）**:
 
 ```powershell
+npm run verify:doc-lane-keiei-kaigi   # 経営会議セキュリティ（R-DOC-11）
 npm run verify:doc-lane-governance
 npm run verify:doc-lane-word-phase2
 npm run health-check
@@ -60,10 +62,12 @@ Skill: `.cursor/skills/office-docx-doc-lane/SKILL.md`（DOCX）/ `office-pptx-do
 
 人事・社外・公式セキュリティ資料 → **§50-3-8 DeepSeek 必須**（R-DOC-08）。
 
+**経営会議セキュリティ（R-DOC-11 / R7）**: §1 = 浜田ネタで AI 起稿。§2・社外事例 = **枠のみ**（数値・事例は浜田入力）。正本 `keiei-kaigi-security-report.md`。
+
 ## MCP 選択（R-DOC-09）
 
 - 新規 PPTX + 図解 → **`user-office-powerpoint`**
-- 新規 DOCX + 図解・グラフ → **`user-office-word`** + 月次は **`doc-lane:security-report`** 先行
+- 新規 DOCX + 図解・グラフ → **`office-word`**（AI 内部は `user-office-word`）+ 月次は **`doc-lane:security-report`** 先行
 - 複雑フロー → **figma** `generate_diagram` → **`add_picture`**
 - 既存 PPTX 精密パッチ → **`pptx-patch-windows.md`**（python-pptx）
 

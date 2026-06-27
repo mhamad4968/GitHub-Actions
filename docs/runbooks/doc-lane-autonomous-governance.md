@@ -41,7 +41,7 @@ AI チームが **浜田の逐次指示なし**に資料（PPTX / 将来 DOCX）
 | **PPTX（既存編集）** | 上記 + `docs/runbooks/pptx-patch-windows.md` |
 | **DOCX（MCP / セキュリティ）** | `verify:doc-lane-word-phase2` → `verify:doc-lane-governance` → `health-check` |
 | **v5 Word** | `cio:doc-lane-gate -- --strict` |
-| **月次セキュリティ DOCX** | DOCX ゲート + `doc-lane:security-report:test` → builder 実行 |
+| **月次セキュリティ DOCX** | keiei-kaigi verify + DOCX ゲート → `keiei-kaigi-security-report.md` |
 
 ```powershell
 npm run cio:tool:route -- --intent "<依頼要約>" --log
@@ -153,6 +153,23 @@ npm run cio:task-complete-seal -- --lane doc-lane --scope "<件名> 浜田 OK"
 
 ---
 
+## §11. 経営会議 情報セキュリティレポート（R-DOC-11 / R7）
+
+**制定**: 2026-06-27（浜田確定）
+
+| セクション | AI | 浜田 |
+|------------|-----|------|
+| **§1 周知** | 提示ネタ中心に起稿・図解 | 話題提示 → 目視 OK |
+| **§2 検知** | **枠のみ** | 数値入力 |
+| **社外事例** | **表枠のみ** | 2 件入力 |
+
+- 正本: `docs/runbooks/keiei-kaigi-security-report.md`
+- ひな形: `templates/doc-lane/keiei-kaigi-security-report-structure.md`
+- verify: `verify:doc-lane-keiei-kaigi`
+- **§2 件数・事例を AI が推測入力しない**
+
+---
+
 ## §11. 関連ファイル
 
 | ファイル | 役割 |
@@ -162,7 +179,8 @@ npm run cio:task-complete-seal -- --lane doc-lane --scope "<件名> 浜田 OK"
 | `.cursor/skills/office-pptx-doc-lane/SKILL.md` | PPTX Skill |
 | `.cursor/skills/office-docx-doc-lane/SKILL.md` | DOCX Skill |
 | `.cursor/skills/kintone-doc-lane/SKILL.md` | doc-lane 全体 |
-| `docs/runbooks/doc-lane-completion-report.md` | 完了報告テンプレ |
+| `docs/runbooks/keiei-kaigi-security-report.md` | **経営会議セキュリティ正本** |
+| `templates/doc-lane/keiei-kaigi-security-report-structure.md` | 文書ひな形 |
 | `.cursor/rules/doc-lane-gate.mdc` | Cursor 機械リマインダ |
 
 ---
@@ -172,4 +190,4 @@ npm run cio:task-complete-seal -- --lane doc-lane --scope "<件名> 浜田 OK"
 | 日付 | 内容 |
 |------|------|
 | 2026-06-27 | 初版 R-DOC-01〜10 — フェーズ1 完了・パイロット目視 OK 後 |
-| 2026-06-27 | フェーズ2 — office-word MCP 導入・セキュリティレポート図解対応 |
+| 2026-06-27 | R-DOC-11 / R7 — 経営会議セキュリティ（§1 AI / §2・事例 枠のみ） |

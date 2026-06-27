@@ -14,6 +14,7 @@
 | **R-DOC-07** | 目視 OK まで未完 — `doc-lane-completion-report.md` PPTX 追記 | 反映済 |
 | **R-DOC-08** | DeepSeek 必須区分 — §8 | 反映済 |
 | **R-DOC-09** | ツール選択表 — §9 / routing / mcp triggers | 反映済 |
-| **R-DOC-10** | フェーズ2 Word MCP — `doc-lane-phase2-word-spec.md` / `office-word` 導入 | 反映済（パイロット待ち） |
+| **R-DOC-10** | フェーズ2 Word MCP — `doc-lane-phase2-word-spec.md` / `office-word` 導入 | 反映済 |
+| **R-DOC-11** | 経営会議セキュリティ — `keiei-kaigi-security-report.md` / R7 役割分担 | 反映済 |
 
-**パイロット**: `C:\tmp\資料作成\20260627_pilot-kintone-flow\` — 浜田 **目視 OK 2026-06-27**（グラフはみ出し修正後）
+**経営会議テンプレ**: `C:\tmp\資料作成\` — 5月版・6月版確認済（2026-06-27）

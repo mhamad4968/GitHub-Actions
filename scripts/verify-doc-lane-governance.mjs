@@ -16,6 +16,9 @@ const required = [
   '.cursor/rules/doc-lane-gate.mdc',
   'docs/runbooks/doc-lane-pptx-mcp.md',
   'docs/runbooks/doc-lane-docx-mcp.md',
+  'docs/runbooks/keiei-kaigi-security-report.md',
+  'templates/doc-lane/keiei-kaigi-security-report-structure.md',
+  'templates/doc-lane/keiei-kaigi-docx-registry.json',
   '.cursor/skills/office-docx-doc-lane/SKILL.md',
   '.cursor/skills/office-pptx-doc-lane/SKILL.md',
 ];
@@ -23,7 +26,7 @@ const required = [
 const needles = [
   { rel: 'docs/runbooks/doc-lane.md', needles: ['doc-lane-autonomous-governance'] },
   { rel: '.cursor/skills/office-docx-doc-lane/SKILL.md', needles: ['verify:doc-lane-word-phase2'] },
-  { rel: 'data/cio-project-lanes.json', needles: ['verify:doc-lane-word-phase2', 'doc-lane-docx-mcp'] },
+  { rel: 'data/cio-project-lanes.json', needles: ['verify:doc-lane-keiei-kaigi', 'keiei-kaigi'] },
   { rel: '.cursor/rules/mcp-server-use-triggers.mdc', needles: ['office-powerpoint', 'office-word'] },
   { rel: 'docs/constitution/00-preamble.md', needles: ['doc-lane'] },
 ];
@@ -63,7 +66,7 @@ function main() {
     path.join(root, 'docs/runbooks/doc-lane-autonomous-governance.md'),
     'utf8'
   );
-  for (const id of ['R-DOC-01', 'R-DOC-07', 'R-DOC-09', 'R-DOC-10']) {
+  for (const id of ['R-DOC-01', 'R-DOC-07', 'R-DOC-09', 'R-DOC-10', 'R-DOC-11']) {
     if (gov.includes(id)) {
       console.log(`  OK ${id} in governance runbook`);
     } else {
