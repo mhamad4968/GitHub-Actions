@@ -5,12 +5,22 @@
 > **Skill**: `.cursor/skills/office-pptx-doc-lane/SKILL.md`  
 > **既存 PPTX パッチ**: `docs/runbooks/pptx-patch-windows.md`（python-pptx）
 
+### MCP 名称（R-DOC-12）
+
+| 見える場所 | 名称 |
+|------------|------|
+| **Cursor 設定 / mcp.json** | `office-powerpoint` |
+| **AI エージェント呼び出し** | `user-office-powerpoint` |
+| **descriptor** | `mcps/user-office-powerpoint/tools/*.json` |
+
+Word も同型（`office-word` / `user-office-word`）— `doc-lane-docx-mcp.md` 参照。
+
 ---
 
 ## 1. いつ使うか
 
 - **新規** PowerPoint 資料（説明スライド・図解・グラフ・簡易フロー）
-- MCP **`user-office-powerpoint`** でオブジェクト配置する場合
+- MCP **`office-powerpoint`** でオブジェクト配置（内部は `user-office-powerpoint`）
 
 **使わない**:
 

@@ -23,6 +23,24 @@ from lib import docx_template_format as dtf  # noqa: E402
 
 IPA_HEADER = ("順位", "脅威", "特に注意すべきポイント")
 
+GRAPH_HEADING_ANCHORS = [
+    "●ランサムウェア被害の実態（参考グラフ・警視庁令和6年統計より）",
+    "●ランサムウエア被害統計と業種別被害件数",
+]
+
+IPA_HEADING_ANCHORS = [
+    "●IPA 2026年版で特に注意すべきポイント",
+    "●IPA 2026年版で特に着目すべきポイント",
+]
+
+
+def find_paragraph_by_anchor(doc, anchors: list[str]):
+    for anchor in anchors:
+        for p in doc.paragraphs:
+            if anchor in (p.text or "").strip():
+                return p
+    return None
+
 CHART_SPECS = [
     {
         "filename": "chart-victim-scale.png",
@@ -161,32 +179,28 @@ def build_report(cfg: dict) -> Path:
     for i in range(start + len(cfg["section1"]), sec2_idx):
         dtf.clear_paragraph(paras[i])
 
-    graph_heading = next(
-        (p for p in doc.paragraphs if p.text.strip() == "●ランサムウェア被害の実態（参考グラフ・警視庁令和6年統計より）"),
-        None,
-    )
-    if graph_heading is None:
-        raise SystemExit("Graph heading not found")
-    insert_chart_grid_after(graph_heading, doc, generate_charts(charts_dir), cols=2)
-    graph_tbl = graph_heading._p.getnext()
-    while graph_tbl is not None and not graph_tbl.tag.endswith("tbl"):
-        graph_tbl = graph_tbl.getnext()
-    if graph_tbl is not None:
-        cap_p = OxmlElement("w:p")
-        graph_tbl.addnext(cap_p)
-        cap_para = Paragraph(cap_p, graph_heading._parent)
-        dtf.set_paragraph_text(
-            cap_para,
-            "（出典：警視庁「令和6年サイバー空間をめぐる脅威の情勢等について」／0024792412.pdf を基にシステム推進室が作成）",
-        )
+    graph_heading = find_paragraph_by_anchor(doc, cfg.get("graph_heading_anchors") or GRAPH_HEADING_ANCHORS)
+    if graph_heading is None and not cfg.get("skip_charts"):
+        raise SystemExit(f"Graph heading not found (tried: {GRAPH_HEADING_ANCHORS})")
+    if graph_heading is not None:
+        insert_chart_grid_after(graph_heading, doc, generate_charts(charts_dir), cols=2)
+        graph_tbl = graph_heading._p.getnext()
+        while graph_tbl is not None and not graph_tbl.tag.endswith("tbl"):
+            graph_tbl = graph_tbl.getnext()
+        if graph_tbl is not None:
+            cap_p = OxmlElement("w:p")
+            graph_tbl.addnext(cap_p)
+            cap_para = Paragraph(cap_p, graph_heading._parent)
+            dtf.set_paragraph_text(
+                cap_para,
+                "（出典：警視庁「令和6年サイバー空間をめぐる脅威の情勢等について」／0024792412.pdf を基にシステム推進室が作成）",
+            )
 
-    ipa_heading = next(
-        (p for p in doc.paragraphs if p.text.strip() == "●IPA 2026年版で特に注意すべきポイント"),
-        None,
-    )
-    if ipa_heading is None:
-        raise SystemExit("IPA heading not found")
-    dtf.insert_table_after(ipa_heading, doc, IPA_HEADER, [tuple(r) for r in cfg["ipa_threat_rows"]])
+    ipa_heading = find_paragraph_by_anchor(doc, cfg.get("ipa_heading_anchors") or IPA_HEADING_ANCHORS)
+    if ipa_heading is None and cfg.get("ipa_threat_rows"):
+        raise SystemExit(f"IPA heading not found (tried: {IPA_HEADING_ANCHORS})")
+    if ipa_heading is not None and cfg.get("ipa_threat_rows"):
+        dtf.insert_table_after(ipa_heading, doc, IPA_HEADER, [tuple(r) for r in cfg["ipa_threat_rows"]])
 
     for i, text in enumerate(cfg["section2"]):
         if sec2_idx + i < len(paras):

@@ -2,7 +2,7 @@
 
 > **起票**: 2026-06-27  
 > **GO**: 浜田 **2026-06-27**（経営会議セキュリティレポート向け・図解・グラフ）  
-> **状態**: **実装中 — office-word MCP 導入済**  
+> **状態**: **infra 済 — パイロット待ち**（R-DOC-16。浜田目視 OK 後に R-DOC-10 クローズ）
 > **上位**: `docs/runbooks/doc-lane-autonomous-governance.md`（R-DOC-10）
 
 ---
@@ -13,10 +13,10 @@
 
 | ユースケース | 第一選択 | 備考 |
 |--------------|----------|------|
-| **月次セキュリティレポート（定型）** | `scripts/build-monthly-security-report.py` | matplotlib 円グラフ・棒グラフ **5 枚自動生成** |
-| **レポートへの追加図解** | `office-word` MCP `add_picture` | Figma PNG / 手元 PNG |
-| **新規 Word 資料・章追加** | `office-word` MCP | create / heading / table |
-| **既存 DOCX 精密パッチ** | `docx-patch-windows.md`（python-docx） | v5 マニュアル等 |
+| **月次セキュリティ（R7）** | **前月 DOCX copy + MCP**（`keiei-kaigi-security-report.md`） | §1 AI / §2・事例 枠 |
+| **レポートへの追加図解** | `office-word` MCP `add_picture` | Figma PNG |
+| **builder 一括** | `doc-lane:security-report` | **JSON 全文 + detection_confirmed 時のみ**（R-DOC-14） |
+| **既存 DOCX 精密パッチ** | `docx-patch-windows.md` | v5 等 |
 
 ---
 

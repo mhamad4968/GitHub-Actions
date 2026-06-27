@@ -16,5 +16,11 @@
 | **R-DOC-09** | ツール選択表 — §9 / routing / mcp triggers | 反映済 |
 | **R-DOC-10** | フェーズ2 Word MCP — `doc-lane-phase2-word-spec.md` / `office-word` 導入 | 反映済 |
 | **R-DOC-11** | 経営会議セキュリティ — `keiei-kaigi-security-report.md` / R7 役割分担 | 反映済 |
+| **R-DOC-12** | MCP 名称対照表 — PPTX runbook + `doc-lane-gate.mdc` | **GO 2026-06-27** 反映済 |
+| **R-DOC-13** | package.json verify:* 欠落検出 — `verify-doc-lane-governance.mjs` | **GO 2026-06-27** 反映済 |
+| **R-DOC-14** | 月次 = MCP + 前月 copy 第一 / builder = JSON 全文時のみ | **GO 2026-06-27** 反映済 |
+| **R-DOC-15** | builder 複数グラフ/IPA 見出しアンカー | **GO 2026-06-27** 反映済 |
+| **R-DOC-16** | Phase2 = infra 済・パイロット待ち（浜田目視 OK 後クローズ） | **GO 2026-06-27** 反映済 |
+| **R-KEIEI-01** | 新 DOCX 配置 → registry 更新必須 | **GO 2026-06-27** 反映済 |
 
-**経営会議テンプレ**: `C:\tmp\資料作成\` — 5月版・6月版確認済（2026-06-27）
+**経営会議テンプレ**: `C:\tmp\資料作成\` — 5月版・6月版確認済（2026-06-27）。**次回 base 推奨 = 6月版**。

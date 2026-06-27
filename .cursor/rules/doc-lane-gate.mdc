@@ -64,10 +64,15 @@ Skill: `.cursor/skills/office-docx-doc-lane/SKILL.md`（DOCX）/ `office-pptx-do
 
 **経営会議セキュリティ（R-DOC-11 / R7）**: §1 = 浜田ネタで AI 起稿。§2・社外事例 = **枠のみ**（数値・事例は浜田入力）。正本 `keiei-kaigi-security-report.md`。
 
-## MCP 選択（R-DOC-09）
+## MCP 選択（R-DOC-09 / R-DOC-12）
+
+| Cursor UI / mcp.json | AI 内部呼び出し |
+|----------------------|-----------------|
+| `office-powerpoint` | `user-office-powerpoint` |
+| `office-word` | `user-office-word` |
 
 - 新規 PPTX + 図解 → **`user-office-powerpoint`**
-- 新規 DOCX + 図解・グラフ → **`office-word`**（AI 内部は `user-office-word`）+ 月次は **`doc-lane:security-report`** 先行
+- 月次セキュリティ（R7）→ **前月 DOCX copy + `office-word` MCP**（§1 AI / §2 枠）— builder は JSON 全文時のみ（R-DOC-14）
 - 複雑フロー → **figma** `generate_diagram` → **`add_picture`**
 - 既存 PPTX 精密パッチ → **`pptx-patch-windows.md`**（python-pptx）
 

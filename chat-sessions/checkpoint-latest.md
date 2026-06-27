@@ -1,9 +1,18 @@
 # 復元チェックポイント（最新）
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-06-27 JST — **WAKE ブリーフィング・cold-start ゲート是正（R-SESS-08）**
+**最終更新**: 2026-06-27 JST — **doc-lane 締め（R-DOC-12〜16 GO）+ Desktop sync**
 
-### 本日アクティブ（BUILD/rev — 2026-06-26）
+### 本日アクティブ（doc-lane — 2026-06-27）
+
+| 項目 | 内容 |
+|------|------|
+| **レーン** | doc-lane — R-DOC-01〜11 + Phase1 PPTX / Phase2 Word infra |
+| **経営会議** | R7 確定（§1 AI / §2・事例 枠）— 6月版 DOCX を次回 base 推奨 |
+| **未完了** | Phase2 Word **パイロット 1 本 + 浜田目視 OK**（R-DOC-16） |
+| **テンプレ** | `C:\tmp\資料作成\` 5月版・6月版 — registry 更新済 |
+
+### 前セッション BUILD（JRE — 2026-06-26）
 
 | 項目 | 内容 |
 |------|------|
@@ -33,8 +42,8 @@
 | **SKYSEA 保留** | **2026-07 頃**計画検討 |
 | **736 担当説明 保留** | Step2-3 待ち（customize dirty あり・別レーン） |
 
-**次の1手**: 浜田 **項番 -0** で決定 — JRE 745 残 UX / 736 Step2-3 / 他。**688 / 677–679 / SKYSEA** — 触らない  
-**Git**: `693fcca` — main=origin/main（2026-06-27 WAKE）／前セッション締め `ec67f0c`  
+**次の1手**: 浜田 **項番 -0** — **doc-lane** 経営会議パイロット / JRE 745 残 UX / 736 Step2-3。**688 / 677–679 / SKYSEA** — 触らない  
+**Git**: *(本締め push 後更新)* — main=origin/main  
 **dirty（別レーン・意図的未 commit）**: 736 / bi-guide / yojitsu SPEC 等 — 次セッション **項番 -0** 指示まで触らない  
 **JRE 仕様**: `docs/plans/2026-06-26-jre-cloud-account-kintone-spec.md` §7.6  
 **npm**: `jre-cloud:bundle-dash` → `deploy:745`（前に `cio:preflight:745`）  

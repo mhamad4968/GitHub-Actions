@@ -53,6 +53,13 @@ C:\tmp\資料作成\
 
 台帳: `templates/doc-lane/keiei-kaigi-docx-registry.json`
 
+**R-KEIEI-01**: 浜田が `C:\tmp\資料作成\` に新 DOCX を置いたら AI は **必ず registry を更新**（id / meetingMonth / reportMonth / features / recommendedAsBase）。
+
+```powershell
+# 確認
+npm run verify:doc-lane-keiei-kaigi
+```
+
 ### 2.2 ファイル命名
 
 | 要素 | 例 |
@@ -142,14 +149,16 @@ C:\tmp\資料作成\
 
 ---
 
-## §6. builder（python）との関係
+## §6. builder（python）との関係（R-DOC-14）
 
-| 方式 | 向き |
-|------|------|
-| **MCP + 手編集**（R7） | §1 ネタ都度変更 — **第一選択** |
-| **`doc-lane:security-report`** | JSON 全文指定時の一括生成（§2 数値も JSON にある場合） |
+| 優先 | 方式 | 条件 |
+|------|------|------|
+| **1** | **前月 DOCX copy + MCP**（R7） | 通常の月次 — 浜田が §1 ネタ提示 |
+| **2** | `doc-lane:security-report` | JSON に §1/§2/事例 **全文** + `detection_confirmed: true` |
 
-R7 運用では builder の `section2` / `external_cases` は **プレースホルダ JSON**（`monthly-security-report-TEMPLATE.json`）を参照。浜田が数値を先に渡す場合のみ `detection_confirmed: true` で build。
+builder は **一括 prefill 専用**。R7 通常運用では **使わない**（§2・事例は Word で浜田入力）。
+
+プレースホルダ JSON: `scripts/data/monthly-security-report-TEMPLATE.json`
 
 ---
 

@@ -1,7 +1,7 @@
 # 夕反省 — 2026-06-27
 
 正本: `docs/runbooks/evening-reflection-scope.md`  
-承認: **承認待ち** — 下記 §2 改善案（R-DOC-12〜16）
+承認: **浜田 GO 2026-06-27** — R-DOC-12〜16 + R-KEIEI-01 すべて反映済
 
 ---
 
@@ -20,16 +20,16 @@
 
 ---
 
-## 2. 改善案（ミス削減）— **承認待ち**
+## 2. 改善案（ミス削減）— **GO 2026-06-27 すべて反映済**
 
-| ID | 内容 | 反映先（案） | 種別 |
-|----|------|--------------|------|
-| **R-DOC-12** | **MCP 名称対照表**を doc-lane 全 runbook 先頭に必須（UI 名 / 内部名 / descriptor パス） | `doc-lane-docx-mcp.md` 型を PPTX runbook にも / `doc-lane-gate.mdc` | ルール |
-| **R-DOC-13** | `verify:doc-lane-governance` が **package.json の verify:* 欠落**を検出（F3 再発防止） | `verify-doc-lane-governance.mjs` | スクリプト |
-| **R-DOC-14** | 月次レポートは **R7 第一選択 = MCP + 前月 copy**、builder は **JSON 全文指定時のみ**と spec 明記 | `keiei-kaigi-security-report.md` §6 / phase2 spec | 運用 |
-| **R-DOC-15** | builder のグラフ見出しを **テンプレ台帳の recommended 版に合わせて複数アンカー対応**、または builder を「浜田数値 prefill 専用」に縮小 | `build-monthly-security-report.py` | コード |
-| **R-DOC-16** | Phase2 **クローズ条件** = 経営会議 DOCX パイロット 1 本 + 浜田目視 OK（現「導入済」表記を「infra 済・パイロット待ち」に統一） | phase2 spec チェックリスト / approved-changes | ゲート |
-| **R-KEIEI-01** | 浜田が `C:\tmp\資料作成` に新 DOCX 配置時 → **registry JSON 更新**を AI 必須手順に | `keiei-kaigi-docx-registry.json` + runbook §2 | 運用 |
+| ID | 内容 | 反映先 | 状態 |
+|----|------|--------|------|
+| **R-DOC-12** | MCP 名称対照表 | `doc-lane-pptx-mcp.md` / `doc-lane-gate.mdc` | ✅ |
+| **R-DOC-13** | verify:* 欠落検出 | `verify-doc-lane-governance.mjs` | ✅ |
+| **R-DOC-14** | R7 第一選択 = MCP + 前月 copy | `keiei-kaigi-security-report.md` §6 / phase2 spec | ✅ |
+| **R-DOC-15** | builder 複数アンカー | `build-monthly-security-report.py` | ✅ |
+| **R-DOC-16** | Phase2 クローズ = パイロット + 目視 OK | phase2 spec / approved-changes | ✅ |
+| **R-KEIEI-01** | 新 DOCX → registry 更新 | `keiei-kaigi-security-report.md` §2 | ✅ |
 
 ### §2.1 憲法・深掘り（構造問題）
 
@@ -51,12 +51,13 @@ doc-lane は **1 日で R-DOC-01〜11 + Phase1/2 + 経営会議正本**まで拡
 | `fd454cc` | R-DOC-01〜10 自律運用ルール |
 | `fa763b0` | Phase2 Word MCP infra |
 | `8b9b4f2` | R-DOC-11 経営会議正本 + R7 + テンプレ台帳 |
+| `d84ccf3` | 夕反省 + verify 復元 |
+| *(本締め)* | R-DOC-12〜16 + R-KEIEI-01 + Desktop sync |
 
 **浜田確認済**: 5月・6月 DOCX ひな形（`C:\tmp\資料作成`）、PPTX パイロット目視 OK（グラフ修正後）、R7 役割分担 OK。
 
 ---
 
-## 4. 承認依頼
+## 4. 承認記録
 
-浜田 GO 後に反映: **R-DOC-12 / R-DOC-14 / R-DOC-15 / R-DOC-16 / R-KEIEI-01**  
-**R-DOC-13** は本締めコミットに含め済み（GO 記録のみ追記可）。
+**浜田 GO 2026-06-27**: R-DOC-12 / R-DOC-14 / R-DOC-15 / R-DOC-16 / R-KEIEI-01 — 本締めで反映。R-DOC-13 は先行反映済。
