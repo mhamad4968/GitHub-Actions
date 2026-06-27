@@ -1,34 +1,37 @@
 (function () {
   "use strict";
 
-  /** JREクラウドアカウント台帳 — DB REST CRUD + 月次集計 + 一覧出力 */
-  var BUILD = "2026-06-27-jre-cloud-account-dash-v16-list-filter-clear";
-  var APP_DB = 744;
+  /** JRE-C_Hubアカウント台帳 — DB REST CRUD + 月次集計 + 一覧出力 */
+  var BUILD = "2026-06-27-jre-chub-account-dash-v6-list-filter-clear";
+  var APP_DB = 746;
   var APP_EMP_MASTER = 595;
   var PAGE_SIZE = 100;
 
-  var ORGS = ["本社", "東京支店", "東北支店", "関越支店", "湾岸工事所"];
+  var ORGS = ["本社", "東京支店", "東北支店", "関越支店"];
 
   var DEPTS = [
     "－",
-    "役員室",
-    "管理部",
-    "安全部",
-    "工事部",
-    "施工部",
-    "施工支援部",
-    "メンテナンス技術部",
-    "橋りょうリペア部",
-    "技術部",
     "仙台営業所",
+    "千葉営業所",
+    "新潟営業所",
+    "東京リペア部",
+    "東京施工部",
+    "水戸営業所",
     "盛岡営業所",
     "秋田営業所",
-    "新潟営業所",
     "長野営業所",
+    "関越施行部",
     "高崎営業所",
-    "千葉営業所",
-    "水戸営業所",
   ];
+
+  var PERMS = ["グループ管理者", "承認者", "署名代行者", "署名者", "閲覧者"];
+
+  var AGG_FIXED_FOOTNOTE =
+    "【集計の見方】\n" +
+    "・拠点小計・部署行は「レコード数」です。\n" +
+    "・全社合計は「ID（ログインID）のユニーク数」です。\n" +
+    "・同一 ID が複数拠点にある場合、小計の合算が全社合計より大きくなることがあります（イレギュラー）。\n" +
+    "・現在、アカウント棚卸が未完了のため一時的に重複が残っている場合があります。整理後は全社合計と整合します。";
 
   var GROUP595_MAP = {
     honsha: "本社",
@@ -52,8 +55,8 @@
     user_name: "user_name",
     org: "org",
     dept: "dept",
-    phone: "phone",
     mail: "mail",
+    permissions: "permissions",
     start_date: "start_date",
     end_date: "end_date",
     note: "note",
@@ -66,20 +69,20 @@
     FC.user_name,
     FC.org,
     FC.dept,
-    FC.phone,
     FC.mail,
+    FC.permissions,
     FC.start_date,
     FC.end_date,
     FC.note,
   ];
 
   var LIST_COLUMNS = [
-    { key: "user_id", label: "ユーザID" },
-    { key: "user_name", label: "ユーザ名" },
-    { key: "org", label: "所属組織" },
-    { key: "dept", label: "部署" },
-    { key: "phone", label: "電話番号" },
+    { key: "user_id", label: "ID" },
+    { key: "user_name", label: "アカウント名" },
+    { key: "org", label: "所属グループ" },
+    { key: "dept", label: "部門" },
     { key: "mail", label: "メールアドレス" },
+    { key: "permissions", label: "権限" },
     { key: "start_date", label: "利用開始日" },
     { key: "end_date", label: "利用終了日" },
     { key: "note", label: "備考" },
@@ -91,6 +94,7 @@
     records: [],
     search: "",
     lifecycleFilter: "active",
+    permFilter: "",
     loading: false,
     isAdmin: false,
     aggMonths: [],
@@ -142,6 +146,18 @@
     return rec && rec[code] && rec[code].value != null ? String(rec[code].value) : "";
   }
 
+  function parsePermissions(rec) {
+    var st = rec && rec[FC.permissions];
+    if (!st || !st.value || !Array.isArray(st.value)) return [];
+    return st.value
+      .map(function (row) {
+        return row.value && row.value.perm ? String(row.value.perm.value || "").trim() : "";
+      })
+      .filter(function (p) {
+        return p;
+      });
+  }
+
   function flatten(rec) {
     return {
       id: val(rec, "$id"),
@@ -150,8 +166,8 @@
       user_name: val(rec, FC.user_name),
       org: val(rec, FC.org),
       dept: val(rec, FC.dept),
-      phone: val(rec, FC.phone),
       mail: val(rec, FC.mail),
+      permissions: parsePermissions(rec),
       start_date: val(rec, FC.start_date),
       end_date: val(rec, FC.end_date),
       note: val(rec, FC.note),
@@ -216,8 +232,46 @@
     return d;
   }
 
-  function listFieldDisplay(row, key) {
+  /** 権限表示順（PERMS マスタ順＝重要度順） */
+  function orderedPermissions(perms) {
+    var list = (Array.isArray(perms) ? perms : [])
+      .map(function (p) {
+        return String(p || "").trim();
+      })
+      .filter(function (p) {
+        return p;
+      });
+    list.sort(function (a, b) {
+      var ia = PERMS.indexOf(a);
+      var ib = PERMS.indexOf(b);
+      return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib);
+    });
+    return list;
+  }
+
+  /** Excel/印刷 — 全権限を「、」結合 */
+  function permissionsFullText(perms) {
+    return orderedPermissions(perms).join("、");
+  }
+
+  /**
+   * 一覧セル — 1件:そのまま / 2件:両方 / 3件以上:先頭＋「他複数権限あり」
+   * （ホバーで全件 — renderTable 側 title）
+   */
+  function permissionsListText(perms) {
+    var list = orderedPermissions(perms);
+    if (!list.length) return "";
+    if (list.length === 1) return list[0];
+    if (list.length === 2) return list.join("、");
+    return list[0] + "、他複数権限あり";
+  }
+
+  function listFieldDisplay(row, key, opts) {
+    opts = opts || {};
     if (key === "dept") return formatDeptLabel(row.org, row.dept);
+    if (key === "permissions") {
+      return opts.full ? permissionsFullText(row.permissions) : permissionsListText(row.permissions);
+    }
     return row[key] != null ? String(row[key]) : "";
   }
 
@@ -234,28 +288,13 @@
     var org = String(row.org || "").trim();
     var dept = String(row.dept || "").trim();
     var deptLabel = formatDeptLabel(org, dept);
-    var parts = [
-      row.user_id,
-      row.user_name,
-      org,
-      dept,
-      deptLabel,
-      row.phone,
-      row.mail,
-      row.note,
-    ];
+    var permStr = permissionsFullText(row.permissions);
+    var parts = [row.user_id, row.user_name, org, dept, deptLabel, permStr, row.mail, row.note];
     if (org && dept) {
-      parts.push(org + " " + dept);
-      parts.push(org + dept);
-      parts.push(org + " / " + dept);
-      parts.push(org + "・" + dept);
-      parts.push(org + "／" + dept);
+      parts.push(org + " " + dept, org + dept, org + " / " + dept, org + "・" + dept, org + "／" + dept);
     }
     if (org && deptLabel && deptLabel !== dept) {
-      parts.push(org + " " + deptLabel);
-      parts.push(org + deptLabel);
-      parts.push(org + " / " + deptLabel);
-      parts.push(org + "・" + deptLabel);
+      parts.push(org + " " + deptLabel, org + deptLabel, org + " / " + deptLabel, org + "・" + deptLabel);
     }
     return normalizeSearchText(parts.join(" "));
   }
@@ -279,14 +318,13 @@
     return String(a.user_name || "").localeCompare(String(b.user_name || ""), "ja");
   }
 
-  function isValidJbisEmail(s) {
-    var v = String(s || "").trim().toLowerCase();
-    if (!v) return false;
-    return /^[a-z0-9._+-]+@j-bis\.co\.jp$/.test(v);
+  function isValidMail(s) {
+    var v = String(s || "").trim();
+    return v.length > 0 && v.indexOf("@") >= 0;
   }
 
-  function normalizeEmail(s) {
-    return String(s || "").trim().toLowerCase();
+  function normalizeUserId(s) {
+    return String(s || "").trim();
   }
 
   function resolveOrgFrom595(empRow) {
@@ -378,12 +416,14 @@
     depts.forEach(function (d) {
       deptSet[d] = true;
     });
-    var n = 0;
+    var seen = {};
     state.records.forEach(function (r) {
       if (!orgSet[r.org] || !deptSet[r.dept]) return;
-      if (isActiveAtMonthEnd(r, ym)) n += 1;
+      if (!isActiveAtMonthEnd(r, ym)) return;
+      var id = normalizeUserId(r.user_id);
+      if (id) seen[id] = true;
     });
-    return n;
+    return Object.keys(seen).length;
   }
 
   function orderedAggOrgs(selected) {
@@ -480,7 +520,7 @@
     var o = {};
     function set(code, v) {
       if (v != null && v !== "") o[code] = { value: v };
-      else if (code === FC.phone || code === FC.end_date || code === FC.note) {
+      else if (code === FC.end_date || code === FC.note) {
         o[code] = { value: v || "" };
       }
     }
@@ -488,11 +528,20 @@
     set(FC.user_name, row.user_name);
     set(FC.org, row.org);
     set(FC.dept, row.dept);
-    set(FC.phone, row.phone);
     set(FC.mail, row.mail);
     set(FC.start_date, row.start_date);
     set(FC.end_date, row.end_date);
     set(FC.note, row.note);
+    var perms = Array.isArray(row.permissions) ? row.permissions : [];
+    o[FC.permissions] = {
+      value: perms
+        .filter(function (p) {
+          return String(p || "").trim();
+        })
+        .map(function (p) {
+          return { value: { perm: { value: String(p).trim() } } };
+        }),
+    };
     return o;
   }
 
@@ -518,15 +567,37 @@
     return page();
   }
 
-  function checkDuplicateUserId(userId, excludeId) {
-    var id = normalizeEmail(userId);
+  function findActiveByUserId(userId, excludeId) {
+    var id = normalizeUserId(userId);
+    var out = [];
     for (var i = 0; i < state.records.length; i++) {
       var r = state.records[i];
       if (excludeId && r.id === excludeId) continue;
-      if (normalizeEmail(r.user_id) === id) {
-        throw new Error("ユーザID「" + userId + "」は既に登録されています");
-      }
+      if (r.end_date) continue;
+      if (normalizeUserId(r.user_id) === id) out.push(r);
     }
+    return out;
+  }
+
+  function computeMultiBranchDuplicateIds() {
+    var byId = {};
+    state.records.forEach(function (r) {
+      if (r.end_date) return;
+      var id = normalizeUserId(r.user_id);
+      if (!id) return;
+      if (!byId[id]) byId[id] = [];
+      byId[id].push(r);
+    });
+    var dups = {};
+    Object.keys(byId).forEach(function (id) {
+      if (byId[id].length < 2) return;
+      var orgs = {};
+      byId[id].forEach(function (r) {
+        orgs[r.org] = true;
+      });
+      if (Object.keys(orgs).length >= 2) dups[id] = byId[id];
+    });
+    return dups;
   }
 
   function validateRow(row, isNew) {
@@ -537,23 +608,28 @@
     var dept = String(row.dept || "").trim();
     var startDate = String(row.start_date || "").trim();
     var endDate = String(row.end_date || "").trim();
+    var perms = Array.isArray(row.permissions) ? row.permissions.filter(function (p) { return String(p || "").trim(); }) : [];
 
-    if (!userId) throw new Error("ユーザIDは必須です");
-    if (!userName) throw new Error("ユーザ名は必須です");
-    if (!org) throw new Error("所属組織は必須です");
-    if (!dept) throw new Error("部署は必須です");
+    if (!userId) throw new Error("IDは必須です");
+    if (!userName) throw new Error("アカウント名は必須です");
+    if (!org) throw new Error("所属グループは必須です");
+    if (!dept) throw new Error("部門は必須です");
     if (!mail) throw new Error("メールアドレスは必須です");
     if (!startDate) throw new Error("利用開始日は必須です");
-    if (!isValidJbisEmail(userId)) {
-      throw new Error("ユーザIDは @j-bis.co.jp 形式で入力してください");
-    }
-    if (!isValidJbisEmail(mail)) {
-      throw new Error("メールアドレスは @j-bis.co.jp 形式で入力してください");
+    if (!perms.length) throw new Error("権限を1つ以上選択してください");
+    var permSet = {};
+    var dupPerm = false;
+    perms.forEach(function (p) {
+      if (permSet[p]) dupPerm = true;
+      permSet[p] = true;
+    });
+    if (dupPerm) row._permDupWarn = true;
+    if (!isValidMail(mail)) {
+      throw new Error("メールアドレスに @ を含めてください");
     }
     if (endDate && endDate < startDate) {
       throw new Error("利用終了日は利用開始日以降にしてください");
     }
-    if (isNew) checkDuplicateUserId(userId, null);
   }
 
   function searchEmployees595(keyword, limit) {
@@ -677,19 +753,12 @@
   function apply595PickToForm(empRow) {
     var nameEl = document.getElementById("jca-f-user-name");
     var mailEl = document.getElementById("jca-f-mail");
-    var userIdEl = document.getElementById("jca-f-user-id");
     var orgEl = document.getElementById("jca-f-org");
     var orgWarn = document.getElementById("jca-f-org-warn");
-    if (!nameEl || !mailEl || !userIdEl || !orgEl) return;
+    if (!nameEl || !mailEl || !orgEl) return;
 
-    var userName = val(empRow, "user_name").trim();
-    var mail = val(empRow, "mail").trim();
-    if (!mail && userName) {
-      mail = "";
-    }
-    nameEl.value = userName;
-    mailEl.value = mail;
-    userIdEl.value = mail;
+    nameEl.value = val(empRow, "user_name").trim();
+    mailEl.value = val(empRow, "mail").trim();
     setCreate595Picked(true);
 
     var org = resolveOrgFrom595(empRow);
@@ -700,8 +769,75 @@
       orgWarn.textContent =
         "595の所属「" +
         (val(empRow, "group_name") || val(empRow, "dept_name") || "—") +
-        "」は JRE 所属組織に未マッチです。手動で選択してください。";
+        "」は所属グループに未マッチです。手動で選択してください。";
     }
+  }
+
+  function permOptionsHtml(selected) {
+    return (
+      '<option value="">—</option>' +
+      PERMS.map(function (p) {
+        return '<option value="' + esc(p) + '"' + (selected === p ? " selected" : "") + ">" + esc(p) + "</option>";
+      }).join("")
+    );
+  }
+
+  function readFormPermissions() {
+    var box = document.getElementById("jca-f-perms");
+    if (!box) return [];
+    var out = [];
+    box.querySelectorAll(".jca-perm-row select").forEach(function (sel) {
+      var v = sel.value.trim();
+      if (v) out.push(v);
+    });
+    return out;
+  }
+
+  function wirePermissionRows() {
+    var box = document.getElementById("jca-f-perms");
+    if (!box) return;
+    box.querySelectorAll(".jca-perm-add").forEach(function (btn) {
+      btn.onclick = function () {
+        var row = document.createElement("div");
+        row.className = "jca-perm-row";
+        row.innerHTML =
+          '<select class="jca-perm-select">' + permOptionsHtml("") + '</select>' +
+          '<button type="button" class="jca-perm-remove kintoneplugin-button-normal">削除</button>';
+        box.insertBefore(row, btn);
+        wirePermissionRows();
+      };
+    });
+    box.querySelectorAll(".jca-perm-remove").forEach(function (btn) {
+      btn.onclick = function () {
+        var rows = box.querySelectorAll(".jca-perm-row");
+        if (rows.length <= 1) {
+          btn.closest(".jca-perm-row").querySelector("select").value = "";
+          return;
+        }
+        btn.closest(".jca-perm-row").remove();
+      };
+    });
+  }
+
+  function permissionsFormHtml(perms) {
+    var list = Array.isArray(perms) && perms.length ? perms : [""];
+    var rows = list
+      .map(function (p) {
+        return (
+          '<div class="jca-perm-row">' +
+          '<select class="jca-perm-select">' +
+          permOptionsHtml(p) +
+          '</select>' +
+          '<button type="button" class="jca-perm-remove kintoneplugin-button-normal">削除</button>' +
+          "</div>"
+        );
+      })
+      .join("");
+    return (
+      '<label>権限<div id="jca-f-perms" class="jca-perms-box">' +
+      rows +
+      '<button type="button" class="jca-perm-add kintoneplugin-button-normal">権限を追加</button></div></label>'
+    );
   }
 
   function orgOptionsHtml(selected) {
@@ -794,8 +930,8 @@
       user_name: document.getElementById("jca-f-user-name").value.trim(),
       org: document.getElementById("jca-f-org").value.trim(),
       dept: document.getElementById("jca-f-dept").value.trim(),
-      phone: document.getElementById("jca-f-phone").value.trim(),
       mail: document.getElementById("jca-f-mail").value.trim(),
+      permissions: readFormPermissions(),
       start_date: document.getElementById("jca-f-start-date").value.trim(),
       end_date: document.getElementById("jca-f-end-date").value.trim(),
       note: document.getElementById("jca-f-note").value.trim(),
@@ -811,34 +947,32 @@
 
   function formFieldsHtml(row, isNew) {
     var r = row || {};
-    var userIdAttrs = isNew ? "" : ' readonly';
+    var userIdAttrs = isNew ? "" : " readonly";
     return (
       (isNew
         ? '<input type="hidden" id="jca-create-595-picked" value="">' +
           '<div class="jca-create-595-step">' +
           '<button type="button" id="jca-create-595-search" class="kintoneplugin-button-dialog-ok jca-create-595-btn">社員名検索（595）</button>' +
           "</div>" +
-          '<p class="jca-hint">社員名検索でユーザ名・メール・ユーザID（メールと同一）を自動入力します。</p>'
+          '<p class="jca-hint">社員名検索でアカウント名・メール・所属グループを自動入力します。ID と部門・権限は手入力です。</p>'
         : "") +
-      '<label>ユーザID<input type="email" id="jca-f-user-id" value="' +
+      '<label>ID<input type="text" id="jca-f-user-id" value="' +
       esc(r.user_id || "") +
       '"' +
       userIdAttrs +
       ' autocomplete="off"></label>' +
-      '<label>ユーザ名<input type="text" id="jca-f-user-name" value="' +
+      '<label>アカウント名<input type="text" id="jca-f-user-name" value="' +
       esc(r.user_name || "") +
       '"></label>' +
-      '<label>所属組織<select id="jca-f-org">' +
+      '<label>所属グループ<select id="jca-f-org">' +
       orgOptionsHtml(r.org) +
       '</select></label>' +
       '<div id="jca-f-org-warn" class="jca-warn"></div>' +
-      '<label>部署<select id="jca-f-dept">' +
+      '<label>部門<select id="jca-f-dept">' +
       deptOptionsHtml(r.dept || "－") +
       '</select></label>' +
-      '<p class="jca-hint">部署は JREクラウド請求用です。595 の所属とは異なります。</p>' +
-      '<label>電話番号<input type="text" id="jca-f-phone" value="' +
-      esc(r.phone || "") +
-      '"></label>' +
+      '<p class="jca-hint">部門は C-Hub 専用マスタです。595 の所属とは異なります。</p>' +
+      permissionsFormHtml(r.permissions) +
       '<label>メールアドレス<input type="email" id="jca-f-mail" value="' +
       esc(r.mail || "") +
       '"></label>' +
@@ -860,13 +994,6 @@
     btn.onclick = function () {
       open595SearchModal(apply595PickToForm);
     };
-    var mailEl = document.getElementById("jca-f-mail");
-    if (mailEl) {
-      mailEl.addEventListener("input", function () {
-        var userIdEl = document.getElementById("jca-f-user-id");
-        if (userIdEl && !userIdEl.readOnly) userIdEl.value = mailEl.value.trim();
-      });
-    }
   }
 
   function openEditModal(row, opts) {
@@ -889,6 +1016,30 @@
           } catch (e) {
             alert(e.message || e);
             return;
+          }
+          if (updated._permDupWarn) {
+            if (!window.confirm("権限に重複があります。このまま保存しますか？")) return;
+          }
+          if (isCreate) {
+            var existing = findActiveByUserId(updated.user_id, null);
+            if (existing.length) {
+              var orgs = existing
+                .map(function (r) {
+                  return r.org;
+                })
+                .join("、");
+              if (
+                !window.confirm(
+                  "同一 ID「" +
+                    updated.user_id +
+                    "」が既に登録されています（" +
+                    orgs +
+                    "）。\n\nイレギュラー（複数拠点）として登録しますか？"
+                )
+              ) {
+                return;
+              }
+            }
           }
           var savePromise = isCreate
             ? apiPost("/k/v1/record.json", {
@@ -927,12 +1078,13 @@
     var title = isCreate ? "新規作成" : "編集 — " + (row.user_name || row.user_id || "");
     openModal(title, formFieldsHtml(row, isCreate), buttons);
     if (isCreate) wireCreate595Search();
+    wirePermissionRows();
   }
 
   function retireRecord(row) {
     if (!state.isAdmin || !row || !row.id) return;
     var msg =
-      "ユーザ: " +
+      "アカウント: " +
       row.user_name +
       "（" +
       row.user_id +
@@ -965,6 +1117,10 @@
     var rows = state.records.filter(function (r) {
       if (state.lifecycleFilter === "active" && r.end_date) return false;
       if (state.lifecycleFilter === "terminated" && !r.end_date) return false;
+      if (state.permFilter) {
+        var perms = r.permissions || [];
+        if (perms.indexOf(state.permFilter) < 0) return false;
+      }
       if (!q) return true;
       return recordMatchesSearch(r, q);
     });
@@ -984,11 +1140,24 @@
     renderTable();
   }
 
+  function setPermFilter(perm) {
+    state.permFilter = perm || "";
+    var root = document.getElementById("jca-root");
+    if (root) {
+      root.querySelectorAll(".jca-perm-filter-btn").forEach(function (b) {
+        var p = b.getAttribute("data-perm") || "";
+        b.classList.toggle("active", p === state.permFilter);
+      });
+    }
+    renderTable();
+  }
+
   function clearListFilters() {
     state.search = "";
     var searchEl = document.getElementById("jca-search");
     if (searchEl) searchEl.value = "";
     setLifecycleFilter("active");
+    setPermFilter("");
   }
 
   function cellText(text) {
@@ -1005,15 +1174,20 @@
       return;
     }
     var rows = filteredRecords();
+    var dupIds = computeMultiBranchDuplicateIds();
     if (!rows.length) {
       tbody.innerHTML = '<tr><td colspan="11">該当なし</td></tr>';
       return;
     }
     tbody.innerHTML = rows
       .map(function (row) {
+        var isDup = dupIds[normalizeUserId(row.user_id)];
         var statusBadge = row.end_date
           ? '<span class="jca-badge jca-badge-terminated">終了</span>'
           : '<span class="jca-badge jca-badge-active">稼働</span>';
+        if (isDup && !row.end_date) {
+          statusBadge += ' <span class="jca-dup-warn" title="同一 ID が複数拠点に登録">⚠</span>';
+        }
         var actionBtns = "";
         if (state.isAdmin) {
           actionBtns =
@@ -1022,12 +1196,19 @@
               ? '<button type="button" class="jca-btn-retire">利用終了</button>'
               : "");
         }
+        var trCls = isDup && !row.end_date ? ' class="jca-dup-row"' : "";
         return (
-          "<tr>" +
+          "<tr" + trCls + ">" +
           "<td>" +
           statusBadge +
           "</td>" +
           LIST_COLUMNS.map(function (col) {
+            if (col.key === "permissions") {
+              var full = permissionsFullText(row.permissions);
+              var label = permissionsListText(row.permissions);
+              var titleAttr = full && full !== label ? ' title="' + esc(full) + '"' : "";
+              return "<td" + titleAttr + ">" + cellText(label) + "</td>";
+            }
             return "<td>" + cellText(listFieldDisplay(row, col.key)) + "</td>";
           }).join("") +
           '<td class="jca-actions">' +
@@ -1071,13 +1252,84 @@
   function buildAggSummaryText(sel, months) {
     var parts = ["期間=" + sel.fromYm + "～" + sel.toYm];
     if (sel.orgs.length && sel.orgs.length < ORGS.length) {
-      parts.push("所属組織=" + sel.orgs.join("、"));
+      parts.push("所属グループ=" + sel.orgs.join("、"));
     }
     if (sel.depts.length && sel.depts.length < DEPTS.length) {
-      parts.push("部署=" + sel.depts.join("、"));
+      parts.push("部門=" + sel.depts.join("、"));
     }
     parts.push("列=" + months.length + " か月");
     return parts.join(" / ");
+  }
+
+  function buildAggDuplicateNotes(sel, months) {
+    var orgSet = {};
+    sel.orgs.forEach(function (o) {
+      orgSet[o] = true;
+    });
+    var deptSet = {};
+    sel.depts.forEach(function (d) {
+      deptSet[d] = true;
+    });
+    var dupMap = {};
+    months.forEach(function (ym) {
+      var byId = {};
+      state.records.forEach(function (r) {
+        if (!orgSet[r.org] || !deptSet[r.dept]) return;
+        if (!isActiveAtMonthEnd(r, ym)) return;
+        var id = normalizeUserId(r.user_id);
+        if (!id) return;
+        if (!byId[id]) byId[id] = [];
+        byId[id].push(r);
+      });
+      Object.keys(byId).forEach(function (id) {
+        if (byId[id].length < 2) return;
+        var orgNames = {};
+        byId[id].forEach(function (r) {
+          orgNames[r.org] = true;
+        });
+        if (Object.keys(orgNames).length < 2) return;
+        if (!dupMap[id]) {
+          dupMap[id] = { name: byId[id][0].user_name, orgs: {} };
+        }
+        Object.keys(orgNames).forEach(function (o) {
+          dupMap[id].orgs[o] = true;
+        });
+      });
+    });
+    return dupMap;
+  }
+
+  function aggDuplicateFootnoteHtml(dupMap) {
+    var ids = Object.keys(dupMap);
+    if (!ids.length) return "";
+    var lines = ids.map(function (id) {
+      var d = dupMap[id];
+      var orgList = ORGS.filter(function (o) {
+        return d.orgs[o];
+      }).join("・");
+      return (
+        "※ 同一 ID の複数拠点登録: <code>" +
+        esc(id) +
+        "</code>（" +
+        esc(d.name || "—") +
+        "）— " +
+        esc(orgList) +
+        "（全社合計は ID ユニークのため小計合算と一致しない場合あり）"
+      );
+    });
+    return '<div class="jca-agg-dup-notes">' + lines.join("<br>") + "</div>";
+  }
+
+  function aggFootnotesHtml(dupMap) {
+    return (
+      '<details class="jca-agg-footnote-acc" open>' +
+      "<summary>集計の見方・備考</summary>" +
+      '<pre class="jca-agg-footnote-fixed">' +
+      esc(AGG_FIXED_FOOTNOTE) +
+      "</pre>" +
+      aggDuplicateFootnoteHtml(dupMap) +
+      "</details>"
+    );
   }
 
   function buildAggTable(sel) {
@@ -1085,8 +1337,8 @@
     if (!months.length) {
       throw new Error("期間（YYYY-MM）を正しく指定してください");
     }
-    if (!sel.orgs.length) throw new Error("所属組織を1つ以上選択してください");
-    if (!sel.depts.length) throw new Error("部署を1つ以上選択してください");
+    if (!sel.orgs.length) throw new Error("所属グループを1つ以上選択してください");
+    if (!sel.depts.length) throw new Error("部門を1つ以上選択してください");
 
     var orgList = orderedAggOrgs(sel.orgs);
     var deptList = orderedAggDepts(sel.depts);
@@ -1137,7 +1389,12 @@
       label: "全社合計",
       counts: grandCounts,
     });
-    return { months: months, rows: rows, summary: buildAggSummaryText(sel, months) };
+    return {
+      months: months,
+      rows: rows,
+      summary: buildAggSummaryText(sel, months),
+      dupMap: buildAggDuplicateNotes(sel, months),
+    };
   }
 
   function aggRowLabelCells(row) {
@@ -1250,7 +1507,7 @@
     return (
       "<thead><tr><th class=\"" +
       p +
-      '-agg-th-org">所属組織</th><th class="' +
+      '-agg-th-org">所属グループ</th><th class="' +
       p +
       '-agg-th-dept">部署</th>' +
       months
@@ -1279,7 +1536,7 @@
         wrap.innerHTML =
           '<p class="jca-hint">開くと <strong>当年（' +
           esc(currentJstYear()) +
-          "年）1月～12月</strong> の月末稼働数を表示します。所属組織・部署は必要に応じて絞り込めます。</p>";
+          "年）1月～12月</strong> の月末稼働数を表示します。所属グループ・部門は必要に応じて絞り込めます。</p>";
       }
       return;
     }
@@ -1299,7 +1556,7 @@
         ' <span class="jca-agg-legend">（<span class="jca-agg-legend-max">全社合計の最大月=青</span>・<span class="jca-agg-legend-min">最小月=赤</span>）</span>';
     }
     wrap.innerHTML =
-      '<table class="jca-agg-table">' + head + body + "</table>";
+      '<table class="jca-agg-table">' + head + body + "</table>" + aggFootnotesHtml(state.aggDupMap || {});
   }
 
   function recalcAgg(opts) {
@@ -1315,6 +1572,7 @@
       state.aggMonths = result.months;
       state.aggRows = result.rows;
       state.aggSummary = result.summary;
+      state.aggDupMap = result.dupMap || {};
       renderAggTable();
     } catch (e) {
       if (!silent) alert(e.message || e);
@@ -1335,7 +1593,7 @@
       alert("先に集計を実行してください");
       return;
     }
-    var header = ["所属組織", "部署"].concat(state.aggMonths);
+    var header = ["所属グループ", "部門"].concat(state.aggMonths);
     var matrix = [header];
     state.aggRows.forEach(function (row) {
       if (row.kind === "grand") {
@@ -1345,10 +1603,19 @@
       var labels = aggRowLabelCells(row);
       matrix.push([labels.org, labels.dept].concat(row.counts || []));
     });
+    matrix.push([]);
+    matrix.push([AGG_FIXED_FOOTNOTE.replace(/\n/g, " ")]);
+    Object.keys(state.aggDupMap || {}).forEach(function (id) {
+      var d = state.aggDupMap[id];
+      var orgList = ORGS.filter(function (o) {
+        return d.orgs[o];
+      }).join("・");
+      matrix.push(["※ 同一 ID: " + id + "（" + (d.name || "—") + "）— " + orgList]);
+    });
     var ws = XLSX.utils.aoa_to_sheet(matrix);
     var wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "月次集計");
-    XLSX.writeFile(wb, "JREクラウド月次集計_" + todayJstYmd().replace(/-/g, "") + ".xlsx", {
+    XLSX.writeFile(wb, "JRE-C_Hub月次集計_" + todayJstYmd().replace(/-/g, "") + ".xlsx", {
       bookType: "xlsx",
     });
   }
@@ -1439,7 +1706,7 @@
         .join("") +
       "</tbody>";
     var html =
-      '<header class="jcaap-header"><h1>JREクラウドアカウント — 月次数量集計</h1>' +
+      '<header class="jcaap-header"><h1>JRE-C_Hubアカウント — 月次数量集計</h1>' +
       '<p class="jcaap-meta">印刷日: ' +
       esc(todayJstYmd()) +
       " / " +
@@ -1448,9 +1715,10 @@
       '<table class="jcaap-table">' +
       head +
       body +
-      "</table>";
+      "</table>" +
+      aggFootnotesHtml(state.aggDupMap || {});
     var docHtml =
-      '<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>JRE月次集計</title><style>' +
+      '<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>JRE-C_Hub月次集計</title><style>' +
       aggPrintStylesheet() +
       "</style></head><body>" +
       html +
@@ -1479,6 +1747,7 @@
     else if (state.lifecycleFilter === "terminated") parts.push("表示=退職・無効");
     else parts.push("表示=すべて");
     if (state.search.trim()) parts.push("検索=" + state.search.trim());
+    if (state.permFilter) parts.push("権限=" + state.permFilter);
     return parts.join(" / ");
   }
 
@@ -1494,14 +1763,14 @@
     rows.forEach(function (r) {
       matrix.push(
         LIST_EXPORT_COLUMNS.map(function (c) {
-          return listFieldDisplay(r, c.key);
+          return listFieldDisplay(r, c.key, { full: true });
         }),
       );
     });
     var ws = XLSX.utils.aoa_to_sheet(matrix);
     var wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "一覧");
-    XLSX.writeFile(wb, "JREクラウドアカウント一覧_" + listExportFilenameStamp() + ".xlsx", {
+    XLSX.writeFile(wb, "JRE-C_Hubアカウント一覧_" + listExportFilenameStamp() + ".xlsx", {
       bookType: "xlsx",
     });
   }
@@ -1542,7 +1811,7 @@
           return (
             "<tr>" +
             LIST_EXPORT_COLUMNS.map(function (c) {
-              var v = listFieldDisplay(r, c.key).trim();
+              var v = listFieldDisplay(r, c.key, { full: true }).trim();
               return "<td>" + esc(v || "—") + "</td>";
             }).join("") +
             "</tr>"
@@ -1551,10 +1820,10 @@
         .join("") +
       "</tbody>";
     var docHtml =
-      '<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>JREクラウド一覧</title><style>' +
+      '<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>JRE-C_Hub一覧</title><style>' +
       listPrintStylesheet() +
       "</style></head><body>" +
-      '<header class="jcal-header"><h1>JREクラウドアカウント台帳 — 一覧</h1>' +
+      '<header class="jcal-header"><h1>JRE-C_Hubアカウント台帳 — 一覧</h1>' +
       '<p class="jcal-meta">印刷日: ' +
       esc(todayJstYmd()) +
       " / " +
@@ -1679,7 +1948,7 @@
       ".jca-agg-period-row{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end;margin-bottom:10px;}" +
       ".jca-agg-period-row label{font-size:14px;display:flex;flex-direction:column;gap:4px;}" +
       ".jca-agg-filter-row{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:flex-start;margin-bottom:8px;}" +
-      ".jca-agg-filter-label{font-size:13px;font-weight:600;color:#475569;min-width:88px;padding-top:5px;}" +
+      ".jca-agg-filter-label{font-size:13px;font-weight:600;color:#475569;min-width:92px;padding-top:5px;}" +
       ".jca-agg-chips{display:flex;flex-wrap:wrap;gap:4px;flex:1;min-width:200px;}" +
       ".jca-agg-chips-dept{max-height:64px;overflow-y:auto;padding-right:4px;}" +
       ".jca-agg-chip{padding:3px 10px;font-size:12px;border:1px solid #cbd5e1;border-radius:999px;background:#fff;cursor:pointer;line-height:1.4;}" +
@@ -1713,6 +1982,10 @@
       ".jca-lifecycle-btn{padding:8px 18px;font-size:15px;border:1px solid #cbd5e1;border-radius:999px;background:#fff;cursor:pointer;}" +
       ".jca-lifecycle-btn.active{background:#059669;color:#fff;border-color:#059669;font-weight:700;}" +
       ".jca-lifecycle-btn:hover:not(.active){background:#f1f5f9;}" +
+      ".jca-lifecycle-sep{color:#cbd5e1;margin:0 4px;font-weight:400;}" +
+      ".jca-perm-filter-btn{padding:6px 12px;font-size:13px;border:1px solid #cbd5e1;border-radius:999px;background:#fff;cursor:pointer;white-space:nowrap;}" +
+      ".jca-perm-filter-btn.active{background:#2563eb;color:#fff;border-color:#2563eb;font-weight:600;}" +
+      ".jca-perm-filter-btn:hover:not(.active){background:#eff6ff;}" +
       ".jca-table-wrap{overflow:auto;max-height:calc(100vh - 320px);border:1px solid #cbd5e1;border-radius:6px;}" +
       ".jca-table{border-collapse:collapse;width:100%;font-size:14px;min-width:1400px;}" +
       ".jca-table th,.jca-table td{border:1px solid #e2e8f0;padding:6px 8px;vertical-align:middle;line-height:1.45;}" +
@@ -1735,7 +2008,7 @@
       ".jca-create-595-btn{font-size:15px;padding:10px 18px;}" +
       ".jca-595-results{margin-top:10px;max-height:240px;overflow:auto;display:flex;flex-direction:column;gap:6px;}" +
       ".jca-595-pick{text-align:left;white-space:normal;}" +
-      ".jca-595-actions{display:flex;gap:8px;margin:8px 0;}";
+      ".jca-595-actions{display:flex;gap:8px;margin:8px 0;}"+".jca-perms-box{display:flex;flex-direction:column;gap:6px;margin-top:4px;}"+".jca-perm-row{display:flex;gap:8px;align-items:center;}"+".jca-perm-row select{flex:1;}"+".jca-dup-row td{background:#fef2f2;}"+".jca-dup-warn{color:#dc2626;font-weight:700;}"+".jca-agg-footnote-acc{margin-top:12px;border:1px solid #e2e8f0;border-radius:6px;padding:8px 12px;background:#f8fafc;}"+".jca-agg-footnote-fixed{white-space:pre-wrap;font-size:13px;color:#475569;margin:8px 0 0;}"+".jca-agg-dup-notes{margin-top:10px;font-size:13px;color:#b91c1c;line-height:1.5;}";
     document.head.appendChild(st);
   }
 
@@ -1759,7 +2032,7 @@
     var aggRange = defaultAggYearRange();
     root.innerHTML =
       '<div class="jca-toolbar">' +
-      "<strong style=\"font-size:18px\">JREクラウドアカウント台帳</strong>" +
+      "<strong style=\"font-size:18px\">JRE-C_Hubアカウント台帳</strong>" +
       '<button type="button" id="jca-reload" class="kintoneplugin-button-normal">再読込</button>' +
       "</div>" +
       '<div id="jca-meta" class="jca-meta"></div>' +
@@ -1775,9 +2048,9 @@
       '<button type="button" id="jca-agg-print" class="kintoneplugin-button-normal">印刷</button>' +
       "</div></div>" +
       '<details class="jca-agg-cond-acc" id="jca-agg-cond-acc">' +
-      "<summary>集計条件（期間・所属組織・部署）</summary>" +
+      "<summary>集計条件（期間・所属グループ・部門）</summary>" +
       '<div class="jca-agg-cond-body">' +
-      '<p class="jca-hint">条件を変えたあとは <strong>集計を更新</strong> を押してください。所属組織・部署はチップをクリックで ON/OFF（緑=対象）。</p>' +
+      '<p class="jca-hint">条件を変えたあとは <strong>集計を更新</strong> を押してください。所属グループ・部門はチップをクリックで ON/OFF（緑=対象）。</p>' +
       '<div class="jca-agg-controls">' +
       '<div class="jca-agg-period-row">' +
       '<label>期間（開始）<input type="month" id="jca-agg-from" value="' +
@@ -1791,14 +2064,14 @@
       '<button type="button" id="jca-agg-clear" class="kintoneplugin-button-normal">条件クリア</button>' +
       "</div>" +
       '<div class="jca-agg-filter-row">' +
-      '<span class="jca-agg-filter-label">所属組織</span>' +
+      '<span class="jca-agg-filter-label">所属グループ</span>' +
       '<div id="jca-agg-org" class="jca-agg-chips">' +
       aggChipBarHtml(ORGS, true) +
       "</div>" +
       '<button type="button" id="jca-agg-all-org" class="jca-agg-chip-link">すべて</button>' +
       "</div>" +
       '<div class="jca-agg-filter-row">' +
-      '<span class="jca-agg-filter-label">部署</span>' +
+      '<span class="jca-agg-filter-label">部門</span>' +
       '<div id="jca-agg-dept" class="jca-agg-chips jca-agg-chips-dept">' +
       aggChipBarHtml(DEPTS, true) +
       "</div>" +
@@ -1822,6 +2095,22 @@
       '<button type="button" class="jca-lifecycle-btn' +
       (state.lifecycleFilter === "terminated" ? " active" : "") +
       '" data-lifecycle="terminated">退職・無効</button>' +
+      '<span class="jca-lifecycle-sep">|</span>' +
+      '<span class="jca-lifecycle-label">権限:</span>' +
+      '<button type="button" class="jca-perm-filter-btn' +
+      (!state.permFilter ? " active" : "") +
+      '" data-perm="">すべて</button>' +
+      PERMS.map(function (p) {
+        return (
+          '<button type="button" class="jca-perm-filter-btn' +
+          (state.permFilter === p ? " active" : "") +
+          '" data-perm="' +
+          esc(p) +
+          '">' +
+          esc(p) +
+          "</button>"
+        );
+      }).join("") +
       "</div>" +
       '<div class="jca-table-wrap"><table class="jca-table"><thead><tr>' +
       "<th>状態</th>" +
@@ -1848,14 +2137,19 @@
         setLifecycleFilter(btn.getAttribute("data-lifecycle"));
       });
     });
+    root.querySelectorAll(".jca-perm-filter-btn").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        setPermFilter(btn.getAttribute("data-perm") || "");
+      });
+    });
+    wireAggChipBar(document.getElementById("jca-agg-org"));
+    wireAggChipBar(document.getElementById("jca-agg-dept"));
     document.getElementById("jca-agg-all-org").addEventListener("click", function () {
       setAggChipsAll(document.getElementById("jca-agg-org"), true);
     });
     document.getElementById("jca-agg-all-dept").addEventListener("click", function () {
       setAggChipsAll(document.getElementById("jca-agg-dept"), true);
     });
-    wireAggChipBar(document.getElementById("jca-agg-org"));
-    wireAggChipBar(document.getElementById("jca-agg-dept"));
     document.getElementById("jca-agg-year").addEventListener("click", function () {
       var r = defaultAggYearRange();
       var fromEl = document.getElementById("jca-agg-from");

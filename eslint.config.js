@@ -24,6 +24,8 @@ export default [
       "customize/mfp-ledger-dash/desktop.js",
       // JREクラウド: SheetJS + desktop.src.js → desktop.js（lint は src のみ）
       "customize/jre-cloud-account-dash/desktop.js",
+      // JRE-C_Hub: SheetJS + desktop.src.js → desktop.js（lint は src のみ）
+      "customize/jre-chub-account-dash/desktop.js",
     ],
   },
   {

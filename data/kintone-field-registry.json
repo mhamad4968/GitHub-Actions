@@ -190,6 +190,20 @@
         "596": ["number_top", "in_code"]
       },
       "notes": "674 customize は 670/671/672/673/595/680/596 へ REST。596 は kintone 削除済みのため relatedAppFieldCodes で監査。live-schema は関連アプリ実機スキーマをマージ監査。"
+    },
+    "746": {
+      "label": "JRE-C_Hubアカウント管理台帳用DB",
+      "customizeDirs": ["jre-chub-account-db"],
+      "specRel": "docs/plans/2026-06-27-jre-chub-account-kintone-spec.md",
+      "notes": "746 DB — save/delete block only。"
+    },
+    "747": {
+      "label": "JRE-C_Hubアカウント台帳",
+      "customizeDirs": ["jre-chub-account-dash"],
+      "inheritsRecordFieldsFrom": "746",
+      "relatedAppFieldsFrom": ["595"],
+      "specRel": "docs/plans/2026-06-27-jre-chub-account-kintone-spec.md",
+      "notes": "747 dash — REST to 746 + 595 employee search。"
     }
   }
 }

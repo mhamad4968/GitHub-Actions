@@ -38,7 +38,9 @@
     "mfp-ledger-db": "741",
     "mfp-ledger-dash": "742",
     "jre-cloud-account-db": "744",
-    "jre-cloud-account-dash": "745"
+    "jre-cloud-account-dash": "745",
+    "jre-chub-account-db": "746",
+    "jre-chub-account-dash": "747"
   },
   "bundlePatterns": {
     "wifi-ssid-dash": {
@@ -70,6 +72,11 @@
       "deployFile": "desktop.js",
       "lintFile": "desktop.src.js",
       "bundleNpm": "jre-cloud:bundle-dash"
+    },
+    "jre-chub-account-dash": {
+      "deployFile": "desktop.js",
+      "lintFile": "desktop.src.js",
+      "bundleNpm": "jre-chub:bundle-dash"
     }
   }
 }
