@@ -33,8 +33,8 @@
 | **SKYSEA 保留** | **2026-07 頃**計画検討 |
 | **736 担当説明 保留** | Step2-3 待ち（customize dirty あり・別レーン） |
 
-**次の1手（項番 -0 前提）**: **B1 未コミット整理** — 下表レーンごとに **commit+push または restore** し `verify:session-close-git-warn` を **exit 0** にする（**688 / 677–679 / SKYSEA** — 触らない）  
-**Git**: **`669d7fc`** = `origin/main` — NAS 完遂記録 push 済  
+**次の1手**: **B1 未コミット整理** — checkpoint「B1 整理メニュー」でレーン選択 → **commit+push または restore** → `verify:session-close-git-warn` **exit 0**（**688 / 677–679 / SKYSEA** — 触らない）  
+**Git**: **`f2b52c0`** = `origin/main` — 締め + B1 整理計画 push 済  
 **dirty（B1 NG · 47 件）**: 次セッションで必ず解消 — **未コミット残さない**（R20/B1）
 
 ### B1 整理メニュー（項番 -0 でレーン選択）
