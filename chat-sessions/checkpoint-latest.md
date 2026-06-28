@@ -35,7 +35,19 @@
 
 **次の1手**: **B1 未コミット整理** — checkpoint「B1 整理メニュー」でレーン選択 → **commit+push または restore** → `verify:session-close-git-warn` **exit 0**（**688 / 677–679 / SKYSEA** — 触らない）  
 **Git**: **`f2b52c0`** = `origin/main` — 締め + B1 整理計画 push 済  
-**dirty（B1 NG · 47 件）**: 次セッションで必ず解消 — **未コミット残さない**（R20/B1）
+**dirty（B1 NG · 46 件）**: 次セッションで必ず解消 — **未コミット残さない**（R20/B1）
+
+### 開口必須（浜田指示 2026-06-29）
+
+**次セッション最初の AI 返答** — 浜田の依頼・本題を受ける **前に必ず** 次を説明する（実装・調査着手 **禁止**）:
+
+1. **B1 違反**: working tree **未コミット ~46 件**（`verify:session-close-git-warn` NG）
+2. **ルール**: セッション締め時 **未コミット残さない**（R20/B1）
+3. **下表「B1 整理メニュー」** を提示 — レーン A〜F ごとに **commit+push または restore**
+4. **完了条件**: `npm run verify:session-close-git-warn` **exit 0**
+5. **その後** 項番 -0 で本題合意
+
+**禁止**: B1 説明をスキップして依頼どおり実装開始 / 一括 auto-stage で混在 commit
 
 ### B1 整理メニュー（項番 -0 でレーン選択）
 

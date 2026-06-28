@@ -3476,3 +3476,17 @@ npm run cio:morning:ready
 **触らない**: 688 / 677–679 / SKYSEA — 触らない
 
 ---
+
+### 2026-06-28 JST — **2026-06-29 浜田指示 — 開口必須 B1 説明**
+
+**要約**: 次セッション: 依頼を聞く前に必ず B1 未コミット46件・整理メニューA-F・verify:session-close-git-warn exit0 を説明。説明完了+項番-0合意まで実装着手禁止。
+
+**次の1手**: **B1 未コミット整理** — checkpoint「B1 整理メニュー」でレーン選択 → **commit+push または restore** → `verify:session-close-git-warn` **exit 0**（**688 / 677–679 / SKYSEA** — 触らない）
+
+**Git**: `a4133c9` — 
+
+**GO待ち**: なし
+
+**触らない**: 688 / 677–679 / SKYSEA — 触らない
+
+---
