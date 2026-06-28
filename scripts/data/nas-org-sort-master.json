@@ -1,0 +1,16 @@
+{
+  "version": "2026-06-28",
+  "description": "NAS管理台帳 組織ブロック並び正本（浜田 Q13″ 確定）。sort_no ブロック化の第1キー。",
+  "source": "docs/plans/2026-06-28-nas-ledger-kintone-spec.md §6.3",
+  "organizations": [
+    { "sort_no": 1, "org_name": "本社" },
+    { "sort_no": 2, "org_name": "東北支店" },
+    { "sort_no": 3, "org_name": "関越支店" },
+    { "sort_no": 4, "org_name": "東京支店" },
+    { "sort_no": 5, "org_name": "東海支店" },
+    { "sort_no": 6, "org_name": "リフォーム事業統括部" },
+    { "sort_no": 7, "org_name": "鉄構支店" },
+    { "sort_no": 8, "org_name": "湾岸工事所" },
+    { "sort_no": 9, "org_name": "子会社（株）ブリッジニアプラス" }
+  ]
+}
