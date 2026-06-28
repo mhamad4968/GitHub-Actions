@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 /**
  * NAS管理台帳 — Excel → DB REST 一括 POST（20 + 設備なし 3 = 23 件）
+ * S-NAS-01: --dry-run / --apply 前に assertNasMigrateRecords（件数・列ずれ・プレースホルダ shape）
  */
 import { existsSync } from 'node:fs';
 import {
+  assertNasMigrateRecords,
   DEFAULT_XLSX,
   fetchJson,
   getKintoneConfig,
@@ -15,7 +17,6 @@ import {
 } from './lib/nas-ledger-kintone.mjs';
 
 const BATCH = 100;
-const EXPECTED = 23;
 
 function parseArgs() {
   const dryRun = process.argv.includes('--dry-run');
@@ -53,9 +54,7 @@ async function main() {
   if (!appId) throw new Error('dbAppId missing');
 
   const rows = readExcelRows(xlsx);
-  if (rows.length !== EXPECTED) {
-    console.warn(`[warn] expected ${EXPECTED} rows, got ${rows.length}`);
-  }
+  assertNasMigrateRecords(rows);
 
   const registeredDate = todayJstYmd();
   const records = rows.map((row) => rowToKintoneRecord(row, registeredDate));

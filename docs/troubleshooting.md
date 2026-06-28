@@ -6,7 +6,7 @@
 
 ---
 
-## 目次（2026-04-25 全件再構築 / 2026-05-01 TSB-028・TSB-029 目次表追記 / 2026-05-02 TSB-030 追記 / 2026-05-04 TSB-031 追記 / 2026-05-06 TSB-032 追記 / 2026-05-09 TSB-033・TSB-034 目次表追記 / F-2 自己改善目標 #2 = 真因 1 文 + root_cause_confirmed フラグ追加）
+## 目次（2026-04-25 全件再構築 / 2026-05-01 TSB-028・TSB-029 目次表追記 / 2026-05-02 TSB-030 追記 / 2026-05-04 TSB-031 追記 / 2026-05-06 TSB-032 追記 / 2026-05-09 TSB-033・TSB-034 目次表追記 / 2026-06-28 TSB-040 追記 / F-2 自己改善目標 #2 = 真因 1 文 + root_cause_confirmed フラグ追加）
 
 > **真因 1 文ルール**: 各 TSB は **「真因を 1 文で説明できる」状態でなければ root_cause_confirmed = false** とする。false の TSB は再発監視優先。
 > **status 凡例**: ✅ Resolved（恒久対策済）/ 🟡 Mitigated（暫定対策のみ）/ 🔴 Open（未解決）/ ♻️ Recurring（同系列複数 episode）
@@ -1647,5 +1647,83 @@ Windows 上の Node/libuv が verify スクリプト終了時に非同期ハン�
 ### 関連
 
 - 夕反省 R736-01 GO（2026-06-24）
+- 夕反省 D-NAS-06 GO（2026-06-28）— NAS 748/749 deploy 時も同手順（OK 目視 → `SKIP_CIO_LIVE_SCHEMA_GUARD=1` + 理由 1 行）
 - `docs/reports/2026-06-21-evening-reflection.md` F3（R53 継続）
+
+---
+
+## TSB-041 — kintone DROP_DOWN 変更後 deploy 前 PUT で CB_VA01（2026-06-28 制定 / D-NAS-04 GO）
+
+### 事象
+
+- NAS 748 `status` ドロップダウンに **全角 `－`** を preview API で追加後、**deploy 前**に live レコード PATCH
+- kintone **`CB_VA01`**（入力値検証不一致）— 選択肢が live に未反映
+
+### 真因
+
+preview で変更した DROP_DOWN options は **deploy 完了まで live レコード PUT に反映されない**。deploy 前 PUT は preview/live の選択肢集合不一致で CB_VA01。
+
+### 恒久対策（✅ Resolved）
+
+| 手順 | 内容 |
+|------|------|
+| 1 | preview `/k/v1/preview/app/form/fields.json` で options 変更 |
+| 2 | **`deployApp`** または `npm run deploy:<appId>` で preview → live 反映 |
+| 3 | deploy SUCCESS 後に live `records.json` PUT / PATCH |
+
+**skip 禁止**: 「preview で見えているから live も OK」と推測して deploy を飛ばす。
+
+### 確認
+
+```powershell
+# deploy 後に 1 件 PATCH が 200 になること
+node scripts/nas-ledger-fix-status-none.mjs --dry-run
+```
+
+### 関連
+
+- `docs/knowledge/debug-tips.md` — DROP_DOWN deploy 後 PUT（R-NAS-04）
+- `docs/reports/2026-06-28-evening-reflection.md` F4
+- `scripts/lib/nas-ledger-kintone.mjs` — `deployApp` / `waitDeploy`
+
+---
+
+## TSB-040 — HeyGen 日本語 TTS 誤読・phonetic 長文 failed・クレジット枯渇（2026-06-28 制定 / video-gen パイロット）
+
+### 事象
+
+1. **漢字誤読**: 「メールを開いていない」→「あけてない」と読む、「身代金」「脆弱性」「情シス」等も誤読
+2. **生成 failed**: `heygen_create_video_agent` が 48〜95 秒で `status: failed`（message: Success だが video_url なし）
+3. **402 insufficient_credit**: デバッグ試行後に API クレジット不足
+4. **動画が見つからない**: ユーザーが Cursor サイドバーまたは別 cwd で探索
+
+### 真因
+
+HeyGen TTS は **漢字台本から読みを推測**するため同音異義語を誤読し、かつ `video_agent` は **phonetic 送信テキストが約 220 文字超**で failed しやすい。クレジット枯渇時は failed と区別なく 402 または create 失敗となる。
+
+### 恒久対策（✅ Resolved）
+
+| 対策 | 内容 |
+|------|------|
+| **台本二層** | `script`（人間用）+ `script_tts`（phonetic・HeyGen 送信専用） |
+| **phonetic ルール** | **選択的 phonetic** — 通常語は漢字、誤読リスク語のみ phonetic / 全面ひらがな禁止 / 読点・スペース多め |
+| **セグメント分割** | `PHONETIC_MAX_CHARS=220` で句点優先分割 → 章内 concat（`pilot-ransomware-heygen.mjs`） |
+| **クレジット** | 生成前 `heygen_get_quota` / 1 セグメント ≒ 0.5 クレジット |
+| **憲法化** | `AGENTS.md` §58 / `.cursor/rules/video-gen-lane.mdc` R-VID-04〜07 |
+| **runbook** | `docs/runbooks/video-gen-windows-mcp.md` §4〜§7 |
+
+### 確認
+
+```powershell
+cd C:\Users\mhamada202408224\kintone-ai-lab
+npm run verify:video-gen-env
+npm run video-gen:pilot-ransomware:force -- --chapter 1
+```
+
+### 関連
+
+- `AGENTS.md` §58
+- `docs/runbooks/video-gen-windows-mcp.md`
+- `.cursor/rules/video-gen-lane.mdc`
+- `assets/video-gen/01_ransomware_threat/script.json`（`script_tts` 例）
 

@@ -1,6 +1,7 @@
 # 夕反省 — 2026-06-28（NAS管理台帳 kintone 化）
 
-> **スコープ**: `docs/runbooks/evening-reflection-scope.md` — **AI 失敗** + **ミス削減**（行動変更 **および** ルール・手順・脚本・runbook）
+> **スコープ**: `docs/runbooks/evening-reflection-scope.md` — **AI 失敗** + **ミス削減**（行動変更 **および** ルール・手順・脚本・runbook）  
+> **承認**: `docs/approved-changes/2026-06-28-rules-nas-evening-improvements-hamada-go.md`（A1–A8 / S/R/D **GO — 実装**）
 
 ---
 
@@ -19,40 +20,41 @@
 
 ---
 
-## 2. 改善 — 私が次から変えること（行動）
+## 2. 改善 — 私が次から変えること（行動）— 承認済み
 
-| ID | 失敗 | 私が次から変えること | 承認 |
+| ID | 失敗 | 私が次から変えること | 状態 |
 |----|------|----------------------|------|
-| **A1** | F1 | apply 前に dry-run 必読。23 件・先頭/末尾サンプル確認。**疑わしいとき POST しない** | ☐ |
-| **A2** | F2 | §6.4 / Q14 を **実装前に再読**。プレースホルダを最初から正しく書く | ☐ |
-| **A3** | F3 | 表記符号表を **仕様確定時** に書いてから実装する | ☐ |
-| **A4** | F4 | preview 変更 → **deploy → PATCH** を最初から守る | ☐ |
-| **A5** | F5 | 最長文字列で列幅を **CSS 前に試算** | ☐ |
-| **A6** | F6 | BUILD はマイルストーン 1 本。**UI 調整は rev のみ** | ☐ |
-| **A7** | F7 | skip 時は **理由 1 行 + 代替確認** をチャットに残す | ☐ |
-| **A8** | F8 | 夕反省は **§2 行動 + §3 ルール/脚本** の二層。どちらか欠落しない | ☐ |
+| **A1** | F1 | apply 前に dry-run 必読。23 件・先頭/末尾サンプル確認。**疑わしいとき POST しない** | **GO** |
+| **A2** | F2 | §6.4 / Q14 を **実装前に再読**。プレースホルダを最初から正しく書く | **GO** |
+| **A3** | F3 | 表記符号表を **仕様確定時** に書いてから実装する | **GO** |
+| **A4** | F4 | preview 変更 → **deploy → PATCH** を最初から守る | **GO** |
+| **A5** | F5 | 最長文字列で列幅を **CSS 前に試算** | **GO** |
+| **A6** | F6 | BUILD はマイルストーン 1 本。**UI 調整は rev のみ** | **GO** |
+| **A7** | F7 | skip 時は **理由 1 行 + 代替確認** をチャットに残す | **GO** |
+| **A8** | F8 | 夕反省は **§2 行動 + §3 ルール/脚本** の二層。どちらか欠落しない | **GO** |
 
 ---
 
-## 3. ルール・手順・脚本改善（ミス削減 — 承認待ち）
+## 3. ルール・手順・脚本改善 — 承認済み・実装
 
-**趣旨**: 本日の失敗から導いた **リポへの恒久変更案**。依頼機能・残タスク・次案件テンプレではない。
-
-| ID | 対応失敗 | 概要 | 反映先（案） | 承認 |
-|----|----------|------|--------------|------|
-| **S-NAS-01** | F1 | `nas-ledger-migrate-xlsx.mjs` — **apply 前 assert**（件数 23・組織名非空・先頭/末尾サンプル）で exit 1 | `scripts/nas-ledger-migrate-xlsx.mjs` | ☐ |
-| **S-NAS-02** | F2 | `PLACEHOLDER_ROWS` と migrate dry-run で **設備なし行 shape 検証**（状態=－、設置先=-） | `scripts/lib/nas-ledger-kintone.mjs` | ☐ |
-| **R-NAS-03** | F3 | 台帳 GO 前チェック — **表記符号**（`-` / `－` / `—`）を Q&A 確定表に 1 行必須 | `docs/runbooks/kintone-ledger-spec-qa-checklist.md` または creation-timing ルール | ☐ |
-| **D-NAS-04** | F4 | **TSB** — kintone DROP_DOWN 変更は **preview deploy → live PUT**（CB_VA01 回避） | `docs/troubleshooting.md` | ☐ |
-| **R-NAS-05** | F6 | customize **BUILD 命名** — UI-only 変更は BUILD 不変・rev のみ（deploy ログに注意 1 行） | `docs/knowledge/debug-tips.md` または deploy 脚本コメント | ☐ |
-| **D-NAS-06** | F7 | Windows **`verify-kintone-live-schema` UV crash** — skip 時の証跡 1 行 + 代替手順 | `docs/troubleshooting.md` | ☐ |
-| **R-NAS-07** | F8 | **夕反省 §2/§3 二層**（行動 / ルール・脚本）を scope に 1 節追記 | `docs/runbooks/evening-reflection-scope.md` | ☐ |
+| ID | 対応失敗 | 概要 | 正本 | 状態 |
+|----|----------|------|------|------|
+| **S-NAS-01** | F1 | migrate **apply 前 assert**（件数 23・組織名非空・列ずれ・サンプル） | `scripts/nas-ledger-migrate-xlsx.mjs` / `scripts/lib/nas-ledger-kintone.mjs` | **実装** |
+| **S-NAS-02** | F2 | `PLACEHOLDER_ROWS` + migrate **設備なし shape 検証** | `scripts/lib/nas-ledger-kintone.mjs` | **実装** |
+| **R-NAS-03** | F3 | GO 前チェック **表記符号** 必須（項目 7） | `docs/runbooks/kintone-ledger-spec-qa-checklist.md` | **実装** |
+| **D-NAS-04** | F4 | **TSB-041** — DROP_DOWN 変更は preview deploy → live PUT | `docs/troubleshooting.md` | **実装** |
+| **R-NAS-05** | F6 | BUILD 命名 — UI-only は BUILD 不変・rev のみ | `docs/knowledge/debug-tips.md` / `nas-ledger-bundle-dash.mjs` | **実装** |
+| **D-NAS-06** | F7 | TSB-039 関連に NAS skip 証跡手順追記 | `docs/troubleshooting.md` TSB-039 | **実装** |
+| **R-NAS-07** | F8 | 夕反省 **§2/§3 二層** を scope 明記 | `docs/runbooks/evening-reflection-scope.md` | **実装** |
 
 ---
 
 ## 4. 承認済み
 
-（なし — 2026-06-28 時点）
+**2026-06-28 浜田 GO — すべて承認・§3 実装完了**
+
+- **行動**: A1–A8  
+- **ルール・脚本**: S-NAS-01, S-NAS-02, R-NAS-03, D-NAS-04, R-NAS-05, D-NAS-06, R-NAS-07
 
 ---
 

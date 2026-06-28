@@ -50,6 +50,10 @@ export const ORG_SORT_PATH = path.join(__dirname, '..', 'data', 'nas-org-sort-ma
 export const LOCATION_SORT_PATH = path.join(__dirname, '..', 'data', 'jbis-location-sort-master.json');
 
 export const STATUS_NONE = '－';
+export const MIGRATE_EXPECTED_COUNT = 23;
+
+/** Excel 列ずれ検知 — org 列に入りがちな値（S-NAS-01 / F1） */
+const INVALID_ORG_NAMES = new Set(['組織名', 'ステータス', '有効', '無効']);
 
 export const PLACEHOLDER_ROWS = [
   {
@@ -209,6 +213,56 @@ export function readExcelRows(xlsxPath) {
   }));
 
   return assignSortNumbers(rows.concat(placeholders));
+}
+
+/** PLACEHOLDER_ROWS 定義の shape 検証（S-NAS-02） */
+export function validatePlaceholderDefinitions() {
+  for (const p of PLACEHOLDER_ROWS) {
+    if (p.status !== STATUS_NONE) {
+      throw new Error(`PLACEHOLDER_ROWS ${p.org_name}: status must be ${STATUS_NONE}`);
+    }
+    if (p.install_place !== '-') {
+      throw new Error(`PLACEHOLDER_ROWS ${p.org_name}: install_place must be -`);
+    }
+    if (p.note !== '設備なし') {
+      throw new Error(`PLACEHOLDER_ROWS ${p.org_name}: note must be 設備なし`);
+    }
+  }
+}
+
+/** migrate --dry-run / --apply 前 assert（S-NAS-01 + S-NAS-02） */
+export function assertNasMigrateRecords(records) {
+  validatePlaceholderDefinitions();
+  const errors = [];
+  if (records.length !== MIGRATE_EXPECTED_COUNT) {
+    errors.push(`expected ${MIGRATE_EXPECTED_COUNT} rows, got ${records.length}`);
+  }
+  records.forEach((row, i) => {
+    if (!trimField(row.org_name)) errors.push(`row[${i}] org_name empty`);
+  });
+  if (records.length > 0) {
+    const first = records[0];
+    if (INVALID_ORG_NAMES.has(first.org_name)) {
+      errors.push(`row[0] org_name looks like column shift: "${first.org_name}"`);
+    }
+  }
+  const tail = records.slice(-PLACEHOLDER_ROWS.length);
+  PLACEHOLDER_ROWS.forEach((exp, i) => {
+    const row = tail[i];
+    if (!row) {
+      errors.push(`placeholder row missing at tail[${i}]`);
+      return;
+    }
+    if (row.org_name !== exp.org_name) errors.push(`placeholder[${i}] org_name "${row.org_name}" !== "${exp.org_name}"`);
+    if (row.status !== exp.status) errors.push(`placeholder[${i}] status "${row.status}" !== "${exp.status}"`);
+    if (row.install_place !== exp.install_place) {
+      errors.push(`placeholder[${i}] install_place "${row.install_place}" !== "${exp.install_place}"`);
+    }
+    if (row.note !== exp.note) errors.push(`placeholder[${i}] note "${row.note}" !== "${exp.note}"`);
+  });
+  if (errors.length) {
+    throw new Error(`[nas-migrate assert] ${errors.join('; ')}`);
+  }
 }
 
 export function rowToKintoneRecord(row, registeredDate) {

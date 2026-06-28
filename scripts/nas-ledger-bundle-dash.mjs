@@ -1,5 +1,7 @@
 #!/usr/bin/env node
-/** SheetJS + org/location master + dash source → desktop.js */
+/** SheetJS + org/location master + dash source → desktop.js
+ * R-NAS-05: UI-only 変更は BUILD 不変・deploy rev のみ。BUILD 名変更はマイルストーン時のみ。
+ */
 import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';

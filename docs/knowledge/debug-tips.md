@@ -15,6 +15,24 @@
 
 ---
 
+## [2026-06-28] customize BUILD 命名 — UI-only は rev のみ（R-NAS-05）
+
+**前提**: dash customize の `var BUILD` は kintone-apps 正本・デプロイ履歴のキー  
+**手順**: **マイルストーン 1 本**（例 `2026-06-28-nas-ledger-dash-v1`）。列幅・記号・CSS 微調整は **preview revision のみ** — BUILD 名を増やさない  
+**禁止**: UI 調整のたびに `-purchase-fields` 等の中間 BUILD を残す（NAS F6）  
+**exit**: deploy SUCCESS + kintone-apps の BUILD 行がマイルストーン 1 本
+
+---
+
+## [2026-06-28] kintone DROP_DOWN 変更 → preview deploy 後 PUT（R-NAS-04 / TSB-041）
+
+**前提**: preview API で DROP_DOWN の options を変更した直後、**deploy 前**に live `records.json` PUT  
+**手順**: ① preview で fields PUT ② **`deployApp` / `npm run deploy:<id>`** ③ live PUT（records / settings）  
+**禁止**: deploy 前の live PUT（CB_VA01 — NAS 748 status 変更 F4）  
+**exit**: PUT 200 + 選択肢値が preview と live で一致
+
+---
+
 ## [2026-06-22] kintone records.json POST — CB_VA01（R741 / D-741-01）
 
 **前提**: `POST /k/v1/records.json` で 1 件追加するとき  
@@ -34,6 +52,16 @@
 **exit**: 版2で材料1行のみ変更 → 削除0件・連携②のみ増減・⑧⑨ が ±同額
 
 <!-- CIO-DEBUG-TIPS:AUTO -->
+## [2026-06-28] セッション解体時知恵ストック
+
+**前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
+**手順**: `npm run cio:session:cold-start` → `npm run session:bootstrap` → `npm run cio:report-verify-response -- --file <下書き>`**（または `--stdin`）を **実行し exit 0 を確認**する（`package.json` の `cio:report-`
+**禁止**: customize/deploy 凍結中の無断 save・上位憲法 §50-3-11 非置換違反・本体単独完結
+**exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
+
+<!-- errors: npm run cio:session:cold-start` | npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `manda | npm run cio:report-verify-response -- --file <下書き>`**（または `--stdin`）を **実行し exit -->
+
+
 ## [2026-06-27] セッション解体時知恵ストック
 
 **前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
