@@ -33,7 +33,7 @@
 | **736 担当説明 保留** | Step2-3 待ち（customize dirty あり・別レーン） |
 
 **次の1手**: 浜田 **項番 -0** で決定。**688 / 677–679 / SKYSEA** — 触らない  
-**Git**: `2e2d0d0` — main=origin/main（NAS v1 + 夕反省 GO push 済）  
+**Git**: **`1d35f3d`** = `origin/main` — session close push 済  
 **dirty（意図的・未 commit）**: video-gen / MCP / 736 / bi-guide / yojitsu SPEC / handoff 自動更新分 — **項番 -0 指示まで触らない**  
 **736 本番**: BUILD=`2026-06-26-736-ux-sticky-print-badges-v1` rev **134**（作業ツリー dirty・未 commit）  
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **JRE 仕様**: `docs/plans/2026-06-26-jre-cloud-account-kintone-spec.md` §7.6 | **MCP**: **現状凍結**  
