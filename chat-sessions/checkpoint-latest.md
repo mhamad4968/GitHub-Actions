@@ -10,7 +10,8 @@
 | **748 NAS DB** | BUILD=`2026-06-28-nas-ledger-db-block-ui` rev **6** — **23 件移行済** |
 | **749 NAS 台帳** | BUILD=`2026-06-28-nas-ledger-dash-v1` rev **14** — 一覧/CRUD/印刷/xlsx/購入日・購入先。**浜田目視 OK** |
 | **夕反省** | A1–A8 + S-NAS/R/D **浜田 GO — 実装済**（`2e2d0d0`） |
-| **残（浜田）** | Excel 削除・Space48 ポータル712 リンク |
+| **Excel 廃止** | **完全削除済**（2026-06-28 浜田報告）— kintone **748/749 のみ正本** |
+| **712 リンク** | Space 48 → ポータル **712** リンク追加 **済**（2026-06-28 浜田手動） |
 
 ### 前セッション（参考 — 2026-06-26 JRE）
 
@@ -21,7 +22,7 @@
 
 ## クローズ済み（`data/cio-project-closures.json` — 無断 v1 再開禁止）
 
-業務改善697–713 / Wi-Fi718–719 / JR iPad720–721 / VPN733–734 / トータルネット737–738 / 複合機741–742 — いずれも **closed-v1**（詳細は json + `docs/reports/`）。**業務改善のみ軽微 UX 継続可** — 正本 `docs/runbooks/business-improvement-closed-v1-ux.md`。**v1 再実装は禁止**。
+業務改善697–713 / Wi-Fi718–719 / JR iPad720–721 / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** — いずれも **closed-v1**（詳細は json + `docs/reports/`）。**業務改善のみ軽微 UX 継続可** — 正本 `docs/runbooks/business-improvement-closed-v1-ux.md`。**v1 再実装は禁止**。
 
 ## 保留・その他の制約
 
