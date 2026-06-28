@@ -395,10 +395,10 @@
     },
     "749": {
       "build": "2026-06-28-nas-ledger-dash-v1",
-      "fileKey": "c7794652-c719-4f0a-94ce-41fc7366fa6f",
-      "revision": "5",
+      "fileKey": "2413390d-ff9c-408c-a546-95be83fcd797",
+      "revision": "14",
       "relPath": "customize/nas-ledger-dash/desktop.js",
-      "deployedAt": "2026-06-28T10:35:24.117Z",
+      "deployedAt": "2026-06-28T11:01:54.287Z",
       "note": null
     }
   }

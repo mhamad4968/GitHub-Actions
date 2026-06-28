@@ -189,6 +189,8 @@
     "nas-ledger:sync-dash": "node scripts/nas-ledger-sync-dash-db-id.mjs && npm run nas-ledger:bundle-dash",
     "nas-ledger:register-registry": "node scripts/nas-ledger-register-registry.mjs",
     "nas-ledger:migrate:xlsx": "npx dotenv -e .env -e .env.proxy -- node scripts/nas-ledger-migrate-xlsx.mjs",
+    "nas-ledger:add-purchase-fields": "npx dotenv -e .env -e .env.proxy -- node scripts/nas-ledger-add-purchase-fields.mjs",
+    "nas-ledger:add-purchase-fields:dry-run": "npx dotenv -e .env -e .env.proxy -- node scripts/nas-ledger-add-purchase-fields.mjs --dry-run",
     "nas-ledger:bundle-dash": "node scripts/nas-ledger-bundle-dash.mjs",
     "deploy:748": "node scripts/cio-deploy-preflight-guard.mjs 748 && npx dotenv -e .env -e .env.proxy -- node scripts/deploy-customization.js 748 customize/nas-ledger-db/desktop.js",
     "deploy:749": "npm run nas-ledger:bundle-dash && node scripts/cio-deploy-preflight-guard.mjs 749 && npx dotenv -e .env -e .env.proxy -- node scripts/deploy-customization.js 749 customize/nas-ledger-dash/desktop.js",

@@ -1,0 +1,34 @@
+{
+  "properties": {
+    "purchase_date": {
+      "type": "DATE",
+      "code": "purchase_date",
+      "label": "購入日",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "purchase_vendor": {
+      "type": "DROP_DOWN",
+      "code": "purchase_vendor",
+      "label": "購入先",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "大塚商会": { "label": "大塚商会", "index": "0" },
+        "富士フィルム": { "label": "富士フィルム", "index": "1" },
+        "KDDI": { "label": "KDDI", "index": "2" },
+        "その他": { "label": "その他", "index": "3" }
+      }
+    },
+    "purchase_vendor_other": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "purchase_vendor_other",
+      "label": "購入先（その他）",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    }
+  }
+}

@@ -49,26 +49,28 @@ export const STATE_PATH = path.join(__dirname, '..', 'data', 'nas-ledger-app-ids
 export const ORG_SORT_PATH = path.join(__dirname, '..', 'data', 'nas-org-sort-master.json');
 export const LOCATION_SORT_PATH = path.join(__dirname, '..', 'data', 'jbis-location-sort-master.json');
 
+export const STATUS_NONE = '－';
+
 export const PLACEHOLDER_ROWS = [
   {
     org_name: '鉄構支店',
     branch_name: '鉄構支店',
-    install_place: '鉄構支店',
-    status: '-',
+    install_place: '-',
+    status: STATUS_NONE,
     note: '設備なし',
   },
   {
     org_name: '湾岸工事所',
     branch_name: '湾岸工事所',
-    install_place: '湾岸工事所',
-    status: '-',
+    install_place: '-',
+    status: STATUS_NONE,
     note: '設備なし',
   },
   {
     org_name: '子会社（株）ブリッジニアプラス',
     branch_name: '子会社（株）ブリッジニアプラス',
-    install_place: '子会社（株）ブリッジニアプラス',
-    status: '-',
+    install_place: '-',
+    status: STATUS_NONE,
     note: '設備なし',
   },
 ];
@@ -181,6 +183,9 @@ export function readExcelRows(xlsxPath) {
       connectivity_check: trimField(r[COL.connectivity]),
       note: trimField(r[COL.note]).replace(/\r\n/g, '\n'),
       serial_no: '',
+      purchase_date: '',
+      purchase_vendor: '',
+      purchase_vendor_other: '',
     });
   }
 
@@ -198,6 +203,9 @@ export function readExcelRows(xlsxPath) {
     admin_password: '',
     connectivity_check: '',
     serial_no: '',
+    purchase_date: '',
+    purchase_vendor: '',
+    purchase_vendor_other: '',
   }));
 
   return assignSortNumbers(rows.concat(placeholders));
@@ -226,6 +234,9 @@ export function rowToKintoneRecord(row, registeredDate) {
   set('manufacturer', row.manufacturer);
   set('model_name', row.model_name);
   set('serial_no', row.serial_no);
+  set('purchase_date', row.purchase_date);
+  set('purchase_vendor', row.purchase_vendor);
+  set('purchase_vendor_other', row.purchase_vendor_other);
   set('effective_capacity', row.effective_capacity);
   set('raid_level', row.raid_level);
   set('backup_type', row.backup_type);

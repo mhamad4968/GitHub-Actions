@@ -76,6 +76,10 @@ var NAS_LOCATION_MASTER = {
 
   /** NAS管理台帳 — 742/719 型 Excel 風一覧 + REST CRUD + 印刷 + xlsx */
   var BUILD = "2026-06-28-nas-ledger-dash-v1";
+  var STATUS_NONE = "－";
+  var EMPTY_MARK = "－";
+  var PURCHASE_VENDORS = ["大塚商会", "富士フィルム", "KDDI", "その他"];
+  var PURCHASE_VENDOR_OTHER = "その他";
   var APP_DB = 748;
   var PAGE_SIZE = 100;
 
@@ -91,6 +95,9 @@ var NAS_LOCATION_MASTER = {
     manufacturer: "manufacturer",
     model_name: "model_name",
     serial_no: "serial_no",
+    purchase_date: "purchase_date",
+    purchase_vendor: "purchase_vendor",
+    purchase_vendor_other: "purchase_vendor_other",
     effective_capacity: "effective_capacity",
     raid_level: "raid_level",
     backup_type: "backup_type",
@@ -116,6 +123,9 @@ var NAS_LOCATION_MASTER = {
     FC.manufacturer,
     FC.model_name,
     FC.serial_no,
+    FC.purchase_date,
+    FC.purchase_vendor,
+    FC.purchase_vendor_other,
     FC.effective_capacity,
     FC.raid_level,
     FC.backup_type,
@@ -128,8 +138,8 @@ var NAS_LOCATION_MASTER = {
   ];
 
   var LIST_COLUMNS = [
-    { key: "org_name", label: "組織名" },
-    { key: "branch_name", label: "拠点名" },
+    { key: "org_name", label: "組織名", cls: "nasl-col-org" },
+    { key: "branch_name", label: "拠点名", cls: "nasl-col-branch" },
     { key: "status", label: "状態" },
     { key: "device_type", label: "種別" },
     { key: "install_place", label: "設置先" },
@@ -150,6 +160,9 @@ var NAS_LOCATION_MASTER = {
     { key: "manufacturer", label: "メーカー" },
     { key: "model_name", label: "機種名" },
     { key: "serial_no", label: "シリアル番号" },
+    { key: "purchase_date", label: "購入日" },
+    { key: "purchase_vendor", label: "購入先" },
+    { key: "purchase_vendor_other", label: "購入先（その他）" },
     { key: "effective_capacity", label: "実効容量" },
     { key: "raid_level", label: "RAIDレベル" },
     { key: "backup_type", label: "バックアップ種類" },
@@ -222,7 +235,7 @@ var NAS_LOCATION_MASTER = {
       revision: val(rec, "$revision"),
       sort_no: val(rec, FC.sort_no),
       org_name: val(rec, FC.org_name),
-      status: val(rec, FC.status),
+      status: val(rec, FC.status) === "-" ? STATUS_NONE : val(rec, FC.status),
       branch_name: val(rec, FC.branch_name),
       hostname: val(rec, FC.hostname),
       device_type: val(rec, FC.device_type),
@@ -231,6 +244,9 @@ var NAS_LOCATION_MASTER = {
       manufacturer: val(rec, FC.manufacturer),
       model_name: val(rec, FC.model_name),
       serial_no: val(rec, FC.serial_no),
+      purchase_date: val(rec, FC.purchase_date),
+      purchase_vendor: val(rec, FC.purchase_vendor),
+      purchase_vendor_other: val(rec, FC.purchase_vendor_other),
       effective_capacity: val(rec, FC.effective_capacity),
       raid_level: val(rec, FC.raid_level),
       backup_type: val(rec, FC.backup_type),
@@ -254,6 +270,9 @@ var NAS_LOCATION_MASTER = {
         code === FC.manufacturer ||
         code === FC.model_name ||
         code === FC.serial_no ||
+        code === FC.purchase_date ||
+        code === FC.purchase_vendor ||
+        code === FC.purchase_vendor_other ||
         code === FC.effective_capacity ||
         code === FC.raid_level ||
         code === FC.backup_type ||
@@ -276,6 +295,9 @@ var NAS_LOCATION_MASTER = {
     set(FC.manufacturer, row.manufacturer);
     set(FC.model_name, row.model_name);
     set(FC.serial_no, row.serial_no);
+    set(FC.purchase_date, row.purchase_date);
+    set(FC.purchase_vendor, row.purchase_vendor);
+    set(FC.purchase_vendor_other, row.purchase_vendor_other);
     set(FC.effective_capacity, row.effective_capacity);
     set(FC.raid_level, row.raid_level);
     set(FC.backup_type, row.backup_type);
@@ -340,6 +362,8 @@ var NAS_LOCATION_MASTER = {
       ".nasl-table{border-collapse:collapse;width:100%;font-size:12px;min-width:1200px;}" +
       ".nasl-table th,.nasl-table td{border:1px solid #e2e8f0;padding:4px 6px;vertical-align:middle;}" +
       ".nasl-table th{background:#f1f5f9;position:sticky;top:0;z-index:1;}" +
+      ".nasl-col-org{width:17em;max-width:17em;min-width:17em;white-space:normal;line-height:1.35;}" +
+      ".nasl-col-branch{width:17em;max-width:17em;min-width:17em;white-space:normal;line-height:1.35;}" +
       ".nasl-actions button{margin:0 2px;padding:2px 6px;font-size:11px;}" +
       ".nasl-none{color:#64748b;font-style:italic;}" +
       ".nasl-modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:10000;display:flex;align-items:center;justify-content:center;}" +
@@ -374,6 +398,10 @@ var NAS_LOCATION_MASTER = {
       row.hostname +
       " " +
       row.model_name +
+      " " +
+      row.purchase_vendor +
+      " " +
+      row.purchase_vendor_other +
       " " +
       row.note;
     return hay.toLowerCase().indexOf(q) >= 0;
@@ -460,7 +488,7 @@ var NAS_LOCATION_MASTER = {
   }
 
   function statusSelectHtml(selected) {
-    var values = ["有効", "保管", "廃棄", "-"];
+    var values = ["有効", "保管", "廃棄", STATUS_NONE];
     var opts = values.map(function (v) {
       return (
         '<option value="' +
@@ -492,10 +520,56 @@ var NAS_LOCATION_MASTER = {
     return '<select id="nasl-f-dtype">' + opts.join("") + "</select>";
   }
 
+  function resolvePurchaseVendorFields(row) {
+    var vendor = String((row && row.purchase_vendor) || "").trim();
+    var other = String((row && row.purchase_vendor_other) || "").trim();
+    if (vendor && PURCHASE_VENDORS.indexOf(vendor) < 0) {
+      if (!other) other = vendor;
+      vendor = PURCHASE_VENDOR_OTHER;
+    }
+    return { vendor: vendor, other: other };
+  }
+
+  function purchaseVendorSelectHtml(vendor) {
+    var opts = ['<option value="">— 空 —</option>'];
+    PURCHASE_VENDORS.forEach(function (v) {
+      opts.push(
+        '<option value="' +
+          esc(v) +
+          '"' +
+          (v === vendor ? " selected" : "") +
+          ">" +
+          esc(v) +
+          "</option>",
+      );
+    });
+    return '<select id="nasl-f-vendor">' + opts.join("") + "</select>";
+  }
+
+  function wirePurchaseVendorToggle(box) {
+    var sel = box.querySelector("#nasl-f-vendor");
+    var wrap = box.querySelector("#nasl-f-vendor-other-wrap");
+    if (!sel || !wrap) return;
+    function sync() {
+      wrap.style.display = sel.value === PURCHASE_VENDOR_OTHER ? "block" : "none";
+    }
+    sel.addEventListener("change", sync);
+    sync();
+  }
+
+  function effectivePurchaseVendor(row) {
+    if (row.purchase_vendor === PURCHASE_VENDOR_OTHER) {
+      return String(row.purchase_vendor_other || "").trim() || PURCHASE_VENDOR_OTHER;
+    }
+    return String(row.purchase_vendor || "").trim();
+  }
+
   function formFieldsHtml(row, isNew) {
     var r = row || {};
     var status = r.status || "有効";
-    var noteDefault = status === "-" && !r.note ? "設備なし" : r.note || "";
+    var noteDefault = status === STATUS_NONE && !r.note ? "設備なし" : r.note || "";
+    var purchase = resolvePurchaseVendorFields(r);
+    var vendorOtherStyle = purchase.vendor === PURCHASE_VENDOR_OTHER ? "block" : "none";
     return (
       '<label>並び順<input type="number" id="nasl-f-sort" value="' +
       esc(r.sort_no || String(nextSortNo())) +
@@ -529,6 +603,17 @@ var NAS_LOCATION_MASTER = {
       '"></label>' +
       '<label>シリアル番号<input type="text" id="nasl-f-serial" value="' +
       esc(r.serial_no || "") +
+      '"></label>' +
+      '<label>購入日<input type="date" id="nasl-f-purchase-date" value="' +
+      esc(r.purchase_date || "") +
+      '"></label>' +
+      "<label>購入先" +
+      purchaseVendorSelectHtml(purchase.vendor) +
+      "</label>" +
+      '<label id="nasl-f-vendor-other-wrap" style="display:' +
+      vendorOtherStyle +
+      '">購入先（その他）<input type="text" id="nasl-f-vendor-other" value="' +
+      esc(purchase.other || "") +
       '"></label>' +
       '<label>実効容量<input type="text" id="nasl-f-cap" value="' +
       esc(r.effective_capacity || "") +
@@ -571,6 +656,9 @@ var NAS_LOCATION_MASTER = {
       manufacturer: document.getElementById("nasl-f-mfr").value.trim(),
       model_name: document.getElementById("nasl-f-model").value.trim(),
       serial_no: document.getElementById("nasl-f-serial").value.trim(),
+      purchase_date: document.getElementById("nasl-f-purchase-date").value.trim(),
+      purchase_vendor: document.getElementById("nasl-f-vendor").value.trim(),
+      purchase_vendor_other: document.getElementById("nasl-f-vendor-other").value.trim(),
       effective_capacity: document.getElementById("nasl-f-cap").value.trim(),
       raid_level: document.getElementById("nasl-f-raid").value.trim(),
       backup_type: document.getElementById("nasl-f-backup").value.trim(),
@@ -592,6 +680,14 @@ var NAS_LOCATION_MASTER = {
     if (!o.status) throw new Error("状態は必須です");
     if (!o.install_place) throw new Error("設置先は必須です");
 
+    if (o.purchase_vendor === PURCHASE_VENDOR_OTHER) {
+      if (!o.purchase_vendor_other) {
+        throw new Error("購入先がその他の場合、購入先（その他）を入力してください");
+      }
+    } else {
+      o.purchase_vendor_other = "";
+    }
+
     if (status === "有効") {
       if (!o.device_type) throw new Error("状態が有効の場合、種別は必須です");
       if (!o.ip_address) throw new Error("状態が有効の場合、IPアドレスは必須です");
@@ -601,7 +697,7 @@ var NAS_LOCATION_MASTER = {
       if (!o.ip_address) throw new Error("状態が保管の場合、IPアドレスは必須です");
       if (!o.admin_id) throw new Error("状態が保管の場合、管理者IDは必須です");
       if (!o.admin_password) throw new Error("状態が保管の場合、パスワードは必須です");
-    } else if (status === "-") {
+    } else if (status === STATUS_NONE) {
       if (!o.note) o.note = "設備なし";
       o.device_type = "";
       o.ip_address = "";
@@ -613,7 +709,7 @@ var NAS_LOCATION_MASTER = {
   }
 
   function openNewModal() {
-    openModal("新規NAS", formFieldsHtml(null, true), [
+    var box = openModal("新規NAS", formFieldsHtml(null, true), [
       { label: "キャンセル" },
       {
         label: "登録",
@@ -637,11 +733,12 @@ var NAS_LOCATION_MASTER = {
         },
       },
     ]);
+    wirePurchaseVendorToggle(box);
   }
 
   function openEditModal(row) {
     var title = "編集 — " + (row.branch_name || row.model_name || row.org_name);
-    openModal(title, formFieldsHtml(row, false), [
+    var box = openModal(title, formFieldsHtml(row, false), [
       { label: "キャンセル" },
       {
         label: "保存",
@@ -670,6 +767,7 @@ var NAS_LOCATION_MASTER = {
         },
       },
     ]);
+    wirePurchaseVendorToggle(box);
   }
 
   function openDeleteModal(row) {
@@ -704,7 +802,7 @@ var NAS_LOCATION_MASTER = {
 
   function displayCell(v) {
     var t = String(v || "").trim();
-    if (!t) return '<span class="nasl-none">—</span>';
+    if (!t || t === "-") return '<span class="nasl-none">' + esc(EMPTY_MARK) + "</span>";
     return esc(t);
   }
 
@@ -744,7 +842,7 @@ var NAS_LOCATION_MASTER = {
         { value: "", label: "全" },
         { value: "有効", label: "有効" },
         { value: "保管", label: "保管" },
-        { value: "-", label: "-" },
+        { value: STATUS_NONE, label: STATUS_NONE },
       ],
       state.statusFilter,
       "status",
@@ -785,7 +883,7 @@ var NAS_LOCATION_MASTER = {
     var thead =
       "<tr><th>操作</th>" +
       LIST_COLUMNS.map(function (c) {
-        return "<th>" + esc(c.label) + "</th>";
+        return "<th" + (c.cls ? ' class="' + c.cls + '"' : "") + ">" + esc(c.label) + "</th>";
       }).join("") +
       "</tr>";
     var tbody = rows
@@ -798,7 +896,7 @@ var NAS_LOCATION_MASTER = {
           '<button type="button" class="nasl-btn-del">削除</button>' +
           "</td>" +
           LIST_COLUMNS.map(function (c) {
-            return "<td>" + displayCell(row[c.key]) + "</td>";
+            return "<td" + (c.cls ? ' class="' + c.cls + '"' : "") + ">" + displayCell(row[c.key]) + "</td>";
           }).join("") +
           "</tr>"
         );
@@ -851,7 +949,11 @@ var NAS_LOCATION_MASTER = {
 
   function printFieldValue(row, key, includePassword) {
     if (key === "admin_password" && !includePassword) return "（一覧印刷のため非表示）";
-    return String(row[key] || "").trim() || "—";
+    if (key === "purchase_vendor") return effectivePurchaseVendor(row) || EMPTY_MARK;
+    if (key === "purchase_vendor_other" && row.purchase_vendor !== PURCHASE_VENDOR_OTHER) return EMPTY_MARK;
+    var t = String(row[key] || "").trim();
+    if (!t || t === "-") return EMPTY_MARK;
+    return t;
   }
 
   function buildPrintTableHtml(rows, title, includePassword) {
