@@ -163,6 +163,24 @@
         "複合機管理台帳"
       ],
       "note": "36台・一覧・CRUD・印刷・xlsx。浜田目視 OK。Excel 完全削除済（2026-06-22 浜田報告）。v2: 674連携・IP重複チェック等"
+    },
+    {
+      "id": "nas-ledger",
+      "laneId": "nas-ledger",
+      "label": "NAS管理台帳",
+      "status": "closed-v1",
+      "closedAt": "2026-06-28",
+      "completionReport": "docs/reports/2026-06-28-nas-ledger-completion.md",
+      "kintoneAppsSection": "NAS管理台帳（Space 48 — 748–749）",
+      "kintoneAppsStateMarker": "v1 完成 — CLOSED",
+      "forbiddenNextTaskPatterns": [
+        "NAS管理台帳",
+        "nas-ledger",
+        "NAS一覧",
+        "748",
+        "749"
+      ],
+      "note": "23件・一覧・CRUD・印刷・xlsx・購入日/購入先。浜田目視 OK（2026-06-28）。Excel 削除は浜田手動残"
     }
   ]
 }

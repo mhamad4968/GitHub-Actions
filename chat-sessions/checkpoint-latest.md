@@ -1,37 +1,26 @@
 # 復元チェックポイント（最新）
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-06-27 JST — **doc-lane 締め（R-DOC-12〜16 GO）+ Desktop sync**
+**最終更新**: 2026-06-28 JST — **NAS管理台帳 748/749 v1 CLOSED（浜田目視 OK）**
 
-### 本日アクティブ（doc-lane — 2026-06-27）
-
-| 項目 | 内容 |
-|------|------|
-| **レーン** | doc-lane — R-DOC-01〜11 + Phase1 PPTX / Phase2 Word infra |
-| **経営会議** | R7 確定（§1 AI / §2・事例 枠）— 6月版 DOCX を次回 base 推奨 |
-| **未完了** | Phase2 Word **パイロット 1 本 + 浜田目視 OK**（R-DOC-16） |
-| **テンプレ** | `C:\tmp\資料作成\` 5月版・6月版 — registry 更新済 |
-
-### 前セッション BUILD（JRE — 2026-06-26）
+### 本日アクティブ（BUILD/rev — 2026-06-28 NAS）
 
 | 項目 | 内容 |
 |------|------|
-| **744** | BUILD=`2026-06-26-jre-cloud-account-db-block-v1` rev **5** — DB ブロック・**99 件移行済** |
-| **745** | BUILD=`2026-06-26-jre-cloud-account-dash-dept-dash-branch-v13` rev **18** — CRUD/595/集計/出力 + 検索 AND + 部署支店表示 |
-| **浜田** | **検索・退職運用 OK**（目視調整フェーズ継続可） |
+| **748 NAS DB** | BUILD=`2026-06-28-nas-ledger-db-block-ui` rev **6** — **23 件移行済** |
+| **749 NAS 台帳** | BUILD=`2026-06-28-nas-ledger-dash-v1` rev **14** — 一覧/CRUD/印刷/xlsx/購入日・購入先。**浜田目視 OK** |
+| **残（浜田）** | Excel 削除・Space48 ポータル712 リンク |
+
+### 前セッション（参考 — 2026-06-26 JRE）
+
+| 項目 | 内容 |
+|------|------|
+| **744** | BUILD=`2026-06-26-jre-cloud-account-db-block-v1` rev **5** |
+| **745** | BUILD=`2026-06-26-jre-cloud-account-dash-dept-dash-branch-v13` rev **18** |
 
 ## クローズ済み（`data/cio-project-closures.json` — 無断 v1 再開禁止）
 
-| レーン | 状態 | クローズ日 | 正本 |
-|--------|------|------------|------|
-| **業務改善提案 ver.02**（697–713） | closed-v1 | 2026-06-13 | `docs/reports/2026-06-13-business-improvement-completion.md` |
-| **社内 Wi-Fi SSID**（718/719） | closed-v1 | 2026-06-14 | `docs/reports/2026-06-14-wifi-ssid-completion.md` |
-| **JR iPad 台帳**（720/721） | closed-v1 | 2026-06-15 | `docs/reports/2026-06-15-jr-ipad-ledger-completion.md` |
-| **VPN アカウント**（733/734） | closed-v1 | 2026-06-17 | `docs/reports/2026-06-17-vpn-account-completion.md` |
-| **トータルネットワーク**（737/738） | closed-v1 | 2026-06-21 | `docs/reports/2026-06-21-total-network-completion.md` |
-| **複合機管理台帳**（741/742） | closed-v1 | 2026-06-22 | `docs/reports/2026-06-22-mfp-ledger-completion.md` |
-
-**業務改善のみ継続可**（浜田 2026-06-20 / R-BI GO 2026-06-25）: **軽微 UX** — 正本 `docs/runbooks/business-improvement-closed-v1-ux.md`。**v1 再実装は禁止**。
+業務改善697–713 / Wi-Fi718–719 / JR iPad720–721 / VPN733–734 / トータルネット737–738 / 複合機741–742 — いずれも **closed-v1**（詳細は json + `docs/reports/`）。**業務改善のみ軽微 UX 継続可** — 正本 `docs/runbooks/business-improvement-closed-v1-ux.md`。**v1 再実装は禁止**。
 
 ## 保留・その他の制約
 
@@ -42,14 +31,11 @@
 | **SKYSEA 保留** | **2026-07 頃**計画検討 |
 | **736 担当説明 保留** | Step2-3 待ち（customize dirty あり・別レーン） |
 
-**次の1手**: 浜田 **項番 -0** — **doc-lane** 経営会議パイロット / JRE 745 残 UX / 736 Step2-3。**688 / 677–679 / SKYSEA** — 触らない  
-**Git**: `fb53135` — main=origin/main（2026-06-27 doc-lane 締め）／前 `d84ccf3`
-**dirty（別レーン・意図的未 commit）**: 736 / bi-guide / yojitsu SPEC 等 — 次セッション **項番 -0** 指示まで触らない  
-**JRE 仕様**: `docs/plans/2026-06-26-jre-cloud-account-kintone-spec.md` §7.6  
-**npm**: `jre-cloud:bundle-dash` → `deploy:745`（前に `cio:preflight:745`）  
-**品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`  
-**736 本番**: BUILD=`2026-06-26-736-ux-sticky-print-badges-v1` rev **134**（作業ツリー dirty・未コミット）  
-**MCP**: **現状凍結**  
+**次の1手**: Excel 廃止（NAS）/ doc-lane R-DOC-16 / 736 Step2-3。**688 / 677–679 / SKYSEA** — 触らない  
+**Git**: `9568e59` — main=origin/main（2026-06-28 NAS v1 close）  
+**dirty（意図的）**: 736 / bi-guide / yojitsu SPEC 等 — 項番 -0 指示まで触らない  
+**736 本番**: BUILD=`2026-06-26-736-ux-sticky-print-badges-v1` rev **134**（作業ツリー dirty・未 commit）  
+**品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **JRE 仕様**: `docs/plans/2026-06-26-jre-cloud-account-kintone-spec.md` §7.6 | **MCP**: **現状凍結**  
 **CLOSE 順（R-SESS-01）**: export-handoff → `session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync` → `session:clock:clear` → `cio:session:close-git`  
 **bootstrap（R-SESS-02/04）**: Desktop `＃重要確認事項.txt` sync 自動復元  
 
