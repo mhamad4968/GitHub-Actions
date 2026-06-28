@@ -1,5 +1,5 @@
 {
-  "scoredAt": "2026-06-26T10:10:25.465Z",
+  "scoredAt": "2026-06-28T09:11:24.931Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
   "topTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
   "tasks": [
@@ -15,8 +15,8 @@
       "status": "pending"
     },
     {
-      "id": "checkpoint:736_Step2-3（差分サマリー印刷）または浜田指定。**688_/_677",
-      "text": "736 Step2-3（差分サマリー印刷）または浜田指定。**688 / 677–679 / SKYSEA / 736担当説明** — 触らない",
+      "id": "checkpoint:浜田_**項番_-0**_—_**doc-lane**_経営会議パイロット_/_",
+      "text": "浜田 **項番 -0** — **doc-lane** 経営会議パイロット / JRE 745 残 UX / 736 Step2-3。**688 / 677–679 / SKYSEA** — 触らない",
       "source": "checkpoint",
       "difficulty": 5,
       "tokens": "高",

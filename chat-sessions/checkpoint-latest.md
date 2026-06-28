@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-06-28 JST — **NAS管理台帳 748/749 v1 CLOSED（浜田目視 OK）**
+**最終更新**: 2026-06-28 JST — **NAS管理台帳 748/749 v1 CLOSED + 夕反省 GO 実装済・セッション締め**
 
 ### 本日アクティブ（BUILD/rev — 2026-06-28 NAS）
 
@@ -9,6 +9,7 @@
 |------|------|
 | **748 NAS DB** | BUILD=`2026-06-28-nas-ledger-db-block-ui` rev **6** — **23 件移行済** |
 | **749 NAS 台帳** | BUILD=`2026-06-28-nas-ledger-dash-v1` rev **14** — 一覧/CRUD/印刷/xlsx/購入日・購入先。**浜田目視 OK** |
+| **夕反省** | A1–A8 + S-NAS/R/D **浜田 GO — 実装済**（`2e2d0d0`） |
 | **残（浜田）** | Excel 削除・Space48 ポータル712 リンク |
 
 ### 前セッション（参考 — 2026-06-26 JRE）
@@ -31,9 +32,9 @@
 | **SKYSEA 保留** | **2026-07 頃**計画検討 |
 | **736 担当説明 保留** | Step2-3 待ち（customize dirty あり・別レーン） |
 
-**次の1手**: Excel 廃止（NAS）/ doc-lane R-DOC-16 / 736 Step2-3。**688 / 677–679 / SKYSEA** — 触らない  
-**Git**: `9568e59` — main=origin/main（2026-06-28 NAS v1 close）  
-**dirty（意図的）**: 736 / bi-guide / yojitsu SPEC 等 — 項番 -0 指示まで触らない  
+**次の1手**: 浜田 **項番 -0** で決定。**688 / 677–679 / SKYSEA** — 触らない  
+**Git**: `2e2d0d0` — main=origin/main（NAS v1 + 夕反省 GO push 済）  
+**dirty（意図的・未 commit）**: video-gen / MCP / 736 / bi-guide / yojitsu SPEC / handoff 自動更新分 — **項番 -0 指示まで触らない**  
 **736 本番**: BUILD=`2026-06-26-736-ux-sticky-print-badges-v1` rev **134**（作業ツリー dirty・未 commit）  
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **JRE 仕様**: `docs/plans/2026-06-26-jre-cloud-account-kintone-spec.md` §7.6 | **MCP**: **現状凍結**  
 **CLOSE 順（R-SESS-01）**: export-handoff → `session-starter:sync-desktop` → `verify:desktop-ai-emergency-sync` → `session:clock:clear` → `cio:session:close-git`  
