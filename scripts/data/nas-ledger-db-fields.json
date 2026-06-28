@@ -1,0 +1,179 @@
+{
+  "properties": {
+    "sort_no": {
+      "type": "NUMBER",
+      "code": "sort_no",
+      "label": "並び順",
+      "required": true,
+      "noLabel": false,
+      "unique": false,
+      "digit": false,
+      "defaultValue": "",
+      "displayScale": "",
+      "unit": "",
+      "unitPosition": "BEFORE"
+    },
+    "org_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "org_name",
+      "label": "組織名",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "status": {
+      "type": "DROP_DOWN",
+      "code": "status",
+      "label": "状態",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "有効": { "label": "有効", "index": "0" },
+        "廃棄": { "label": "廃棄", "index": "1" },
+        "保管": { "label": "保管", "index": "2" },
+        "-": { "label": "-", "index": "3" }
+      }
+    },
+    "branch_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "branch_name",
+      "label": "拠点名",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "hostname": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "hostname",
+      "label": "ホスト名",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "device_type": {
+      "type": "DROP_DOWN",
+      "code": "device_type",
+      "label": "種別",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "本番": { "label": "本番", "index": "0" },
+        "バックアップ": { "label": "バックアップ", "index": "1" }
+      }
+    },
+    "install_place": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "install_place",
+      "label": "設置先",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "ip_address": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "ip_address",
+      "label": "IPアドレス",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "manufacturer": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "manufacturer",
+      "label": "メーカー",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "model_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "model_name",
+      "label": "機種名/製品型番",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "serial_no": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "serial_no",
+      "label": "シリアル番号",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "effective_capacity": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "effective_capacity",
+      "label": "実効容量",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "raid_level": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "raid_level",
+      "label": "RAIDレベル",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "backup_type": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "backup_type",
+      "label": "バックアップ種類",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "admin_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "admin_id",
+      "label": "管理者ID",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "admin_password": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "admin_password",
+      "label": "パスワード",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "connectivity_check": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "connectivity_check",
+      "label": "導通確認",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "note": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "note",
+      "label": "備考",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "registered_date": {
+      "type": "DATE",
+      "code": "registered_date",
+      "label": "登録日",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "updated_date": {
+      "type": "DATE",
+      "code": "updated_date",
+      "label": "更新日",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    }
+  }
+}

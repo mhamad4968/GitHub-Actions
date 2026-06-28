@@ -384,6 +384,22 @@
       "relPath": "customize/jre-chub-account-dash/desktop.js",
       "deployedAt": "2026-06-27T11:45:20.158Z",
       "note": null
+    },
+    "748": {
+      "build": "2026-06-28-nas-ledger-db-block-ui",
+      "fileKey": "1d736e3b-bcd6-48ec-b629-29163ec08926",
+      "revision": "6",
+      "relPath": "customize/nas-ledger-db/desktop.js",
+      "deployedAt": "2026-06-28T10:35:17.104Z",
+      "note": null
+    },
+    "749": {
+      "build": "2026-06-28-nas-ledger-dash-v1",
+      "fileKey": "c7794652-c719-4f0a-94ce-41fc7366fa6f",
+      "revision": "5",
+      "relPath": "customize/nas-ledger-dash/desktop.js",
+      "deployedAt": "2026-06-28T10:35:24.117Z",
+      "note": null
     }
   }
 }

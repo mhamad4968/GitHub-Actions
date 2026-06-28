@@ -1,7 +1,8 @@
 # NAS管理台帳 — kintone 仕様書（SPEC）
 
 > **起票**: 2026-06-28 (日)  
-> **状態**: **ドラフト — 浜田確認待ち**（Q&A + AI レビュー §15 済・**実装 GO 前**）  
+> **状態**: **v1 初回 deploy — 浜田目視待ち**  
+> **App ID**: **748**（DB）/ **749**（台帳） — `scripts/data/nas-ledger-app-ids.json`  
 > **配置**: [Space 48](https://jbis-kintone.cybozu.com/k/#/space/48) **直下**（スレッドなし）  
 > **UI 参照**: [複合機管理台帳 742](https://jbis-kintone.cybozu.com/k/742/) / [719](https://jbis-kintone.cybozu.com/k/719/) 型（一覧表 + REST で DB 書込）・権限は [734](https://jbis-kintone.cybozu.com/k/734/) 型  
 > **機械分析（秘匿マスク）**: `docs/plans/tmp-nas-xlsx-structure.json`  
@@ -94,7 +95,7 @@ Space 48（スレッドなし）
 | データ | 741 / 733 | **NAS管理台帳DB** |
 | ダッシュ | 742 / 734 | **NAS管理台帳** |
 
-**App ID**: GO 後に採番 → `scripts/data/nas-ledger-app-ids.json` / `kintone-apps.md` に記録。
+**App ID**: **748**（DB）/ **749**（台帳） — `scripts/data/nas-ledger-app-ids.json` / `kintone-apps.md` に記録済。
 
 ---
 

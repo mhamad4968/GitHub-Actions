@@ -40,7 +40,9 @@
     "jre-cloud-account-db": "744",
     "jre-cloud-account-dash": "745",
     "jre-chub-account-db": "746",
-    "jre-chub-account-dash": "747"
+    "jre-chub-account-dash": "747",
+    "nas-ledger-db": "748",
+    "nas-ledger-dash": "749"
   },
   "bundlePatterns": {
     "wifi-ssid-dash": {
@@ -77,6 +79,11 @@
       "deployFile": "desktop.js",
       "lintFile": "desktop.src.js",
       "bundleNpm": "jre-chub:bundle-dash"
+    },
+    "nas-ledger-dash": {
+      "deployFile": "desktop.js",
+      "lintFile": "desktop.src.js",
+      "bundleNpm": "nas-ledger:bundle-dash"
     }
   }
 }
