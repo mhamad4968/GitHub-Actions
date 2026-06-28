@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-06-28T11:21:01.928Z",
-  "gitHead": "2e2d0d0",
+  "exportedAt": "2026-06-28T11:25:41.272Z",
+  "gitHead": "669d7fc",
   "gitStatus": "## main...origin/main",
-  "nextTask": "浜田 **項番 -0** で決定。**688 / 677–679 / SKYSEA** — 触らない",
+  "nextTask": "**B1 未コミット整理** — 下表レーンごとに **commit+push または restore** し `verify:session-close-git-warn` を **exit 0** にする（**688 / 677–679 / SKYSEA** — 触らない）",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -15,8 +15,8 @@
     ".cursor/rules/mode-b-canonical.mdc",
     "docs/knowledge/debug-tips.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=2e2d0d0 | 次=浜田 **項番 -0** で決定。**688 / 677–679 / SKYSEA** — 触らない | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "promptBlock": "【SESSION-BRIDGE】git=669d7fc | 次=**B1 未コミット整理** — 下表レーンごとに **commit+push または restore** し `verify:session-close-git-warn` を **exit 0** にする（**688 / 677–679 / SKYSEA** — 触らない） | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
-  "validatedAt": "2026-06-28T11:21:02.469Z",
+  "validatedAt": "2026-06-28T11:25:41.749Z",
   "crosscheckOk": true
 }

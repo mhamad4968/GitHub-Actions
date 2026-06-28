@@ -3462,3 +3462,17 @@ npm run cio:morning:ready
 **触らない**: 688 / 677–679 / SKYSEA — 触らない
 
 ---
+
+### 2026-06-28 JST — **2026-06-29 締め — B1 未コミット47件・次セッション整理**
+
+**要約**: NAS v1 完遂（Excel+712）記録 push 済。working tree に 47 件 dirty（video-gen/MCP/736/bi-guide/yojitsu/rag）。B1 ルール上 次セッション第1手=項番-0でレーン選択→commit+push または restore→verify:session-close-git-warn 緑。
+
+**次の1手**: **B1 未コミット整理** — 下表レーンごとに **commit+push または restore** し `verify:session-close-git-warn` を **exit 0** にする（**688 / 677–679 / SKYSEA** — 触らない）
+
+**Git**: `669d7fc` — 
+
+**GO待ち**: なし
+
+**触らない**: 688 / 677–679 / SKYSEA — 触らない
+
+---
