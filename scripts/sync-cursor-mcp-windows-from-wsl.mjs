@@ -13,6 +13,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { mergeRepoMcpOverlays, readRepoMcpOverlays } from './lib/repo-mcp-overlays.mjs';
 import { hiddenOpts } from './lib/win-hidden-spawn.mjs';
+import { pruneMcpJsonBackups } from './lib/mcp-json-backup-retention.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -252,3 +253,4 @@ if (fs.existsSync(winMcp)) {
 
 fs.writeFileSync(winMcp, `${JSON.stringify(built, null, 2)}\n`, 'utf8');
 console.log('[sync-cursor-mcp-windows] OK', winMcp, 'backup', bak);
+pruneMcpJsonBackups(path.dirname(winMcp), { logPrefix: '[sync-cursor-mcp-windows]' });

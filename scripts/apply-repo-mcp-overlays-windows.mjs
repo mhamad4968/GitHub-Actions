@@ -11,6 +11,7 @@ import {
   readRepoMcpOverlays,
   REPO_OVERLAY_SERVER_NAMES,
 } from './lib/repo-mcp-overlays.mjs';
+import { pruneMcpJsonBackups } from './lib/mcp-json-backup-retention.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const winMcp =
@@ -36,6 +37,7 @@ function main() {
     `[apply-repo-mcp-overlays-windows] OK merged: ${REPO_OVERLAY_SERVER_NAMES.filter((n) => overlays[n]).join(', ')}`,
   );
   console.log(`[apply-repo-mcp-overlays-windows] path: ${winMcp} (backup ${bak})`);
+  pruneMcpJsonBackups(path.dirname(winMcp), { logPrefix: '[apply-repo-mcp-overlays-windows]' });
 }
 
 main();
