@@ -1648,6 +1648,7 @@ Windows 上の Node/libuv が verify スクリプト終了時に非同期ハン�
 
 - 夕反省 R736-01 GO（2026-06-24）
 - 夕反省 D-NAS-06 GO（2026-06-28）— NAS 748/749 deploy 時も同手順（OK 目視 → `SKIP_CIO_LIVE_SCHEMA_GUARD=1` + 理由 1 行）
+- **メーリングリスト 750/751**（2026-06-29 / D-ML-02 GO）— `verify:kintone-live-schema` OK 表示後 UV crash → 手動 OK 確認 → `SKIP_CIO_LIVE_SCHEMA_GUARD=1 npm run deploy:750` / `deploy:751`（チャットに appId + skip 理由 1 行必須）
 - `docs/reports/2026-06-21-evening-reflection.md` F3（R53 継続）
 
 ---

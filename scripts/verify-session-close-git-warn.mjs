@@ -32,6 +32,28 @@ function failOrWarn(msg, detailLines = []) {
   return true;
 }
 
+function classifyUncommittedPath(rel) {
+  if (/^docs\/reports\//.test(rel) || /evening-reflection/.test(rel)) return 'reports';
+  if (/^chat-sessions\//.test(rel)) return 'session';
+  if (/^customize\//.test(rel) || /^scripts\//.test(rel)) return 'code';
+  if (/^docs\//.test(rel)) return 'docs';
+  if (/^\.rag\//.test(rel)) return 'rag';
+  return 'other';
+}
+
+function formatUncommittedClassification(lines) {
+  const buckets = {};
+  for (const line of lines) {
+    const rel = line.slice(3).trim().replace(/^"(.*)"$/, '$1');
+    const bucket = classifyUncommittedPath(rel);
+    buckets[bucket] = (buckets[bucket] || 0) + 1;
+  }
+  const parts = Object.entries(buckets)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([bucket, count]) => `${bucket}=${count}`);
+  return parts.length ? [`  分類（S-ML-01）: ${parts.join(', ')}`] : [];
+}
+
 function checkUncommitted() {
   const status = git(['status', '--short']);
   if (!status) return { ok: true };
@@ -41,7 +63,10 @@ function checkUncommitted() {
   });
   if (lines.length === 0) return { ok: true };
   const msg = `[verify:session-close-git-warn] NG 未コミット ${lines.length} 件 — セッション締め前に commit 必須（B1）`;
-  const detail = lines.slice(0, 15);
+  const detail = [
+    ...formatUncommittedClassification(lines),
+    ...lines.slice(0, 15),
+  ];
   if (lines.length > 15) detail.push(`  …他 ${lines.length - 15} 件`);
   const hard = failOrWarn(msg, detail);
   return { ok: false, hard };

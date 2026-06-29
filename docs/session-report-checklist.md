@@ -16,6 +16,16 @@
 > **`session:bootstrap`／棚卸し直後の経緯報告**は **`chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 7** — **応答最上段の §1 先頭4行（`[§1-2-3 ティア判定]`・`【適用憲法】`・`[🎖️ 本セッション割当]`・`[ルール確認]`）＋（1〜8・**3c**・4a）** を **別途フル充填** — **そのチェックシートのない経緯報告も認めない**（浜田 CEO 厳守・`every-turn-rules-confirm.mdc` §1e **1e-0**）。**3c**＝**`npm run verify:session-close-git-warn` 結果を必ず 1 行報告**（2026-06-29 CEO）。  
 > **順守根拠**: 行動に入る前は **§1b**（関連 § の列挙＋方針 1 文）。報告では **`【適用憲法】`＋`[ルール確認]`** で **どの正本・どの § に従ったか**を残し、**ルール違反をしていないことの根拠**とする（空宣言禁止）。
 
+### §3c-1. push 後 checkpoint Git 行（R-ML-03 GO 2026-06-29）
+
+| タイミング | 手順 |
+|------------|------|
+| **full CLOSE 後** | `cio:session:close-git` が `syncCheckpointGitAfterPush` で checkpoint **`**Git**:` 行**を HEAD hash + origin 同期に自動更新 — **手書き「origin 未 push」禁止** |
+| **案件 CLOSED のみ / partial** | push 直後に `npm run verify:session-close-git-warn` を実行し、**OK 例** `Git残件: なし（clean・origin 同期・verify exit 0）` + 短 hash を checkpoint に 1 行転記 |
+| **NG 時** | `Git残件: あり — 未コミット N 件 / ahead M / verify exit 1` + 分類（S-ML-01 reports/code）を報告。本題着手前に B1 整理 |
+
+正本: `scripts/lib/cio-checkpoint-git-sync.mjs` · `session-close-execute-first.mdc`
+
 ---
 
 ## §M. hooks 検証用フッタ（報告ターン・応答末尾に必須）

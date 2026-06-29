@@ -52,6 +52,17 @@ alwaysApply: false
 
 **partial では commit 任意**。dirty なら `次セッションで close-git` を checkpoint に明記。
 
+### 案件 CLOSED ≠ セッション締め（R-ML-01 GO 2026-06-29）
+
+| 用語 | 意味 | checkpoint に書いてよい | 書いてはいけない |
+|------|------|------------------------|------------------|
+| **案件 CLOSED** | kintone レーン v1 完了（closures.json・目視 OK・Excel 廃止等） | `750/751 v1 CLOSED` | `セッション締め` / `close-git 済` |
+| **セッション締め** | full CLOSE 儀式（export-handoff → Desktop sync → clock:clear → close-git） | `セッション締め`（**full CLOSE 実行後のみ**） | 案件 CLOSED だけで「締め済」と書く |
+
+**禁句（案件 CLOSED 直後）**: `セッション締め` · `close-git 実行中` · `close-git 済`（full CLOSE 未実行時）
+
+---
+
 ### partial CLOSE 後の dirty 分類（R-741-04）
 
 | 種別 | 例 | 扱い |

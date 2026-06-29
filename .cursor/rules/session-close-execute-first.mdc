@@ -32,7 +32,27 @@ alwaysApply: false
 
 **禁止**: 上記の前に「お疲れさまでした」「次回は…」だけ返す（F1 再発）。
 
-## 検査トリガー — 最初に実行
+## R-ML-02 — 「先走るな」のスコープ（2026-06-29 浜田 GO）
+
+浜田が **「先走るな」「締めはまだ」** と言ったとき:
+
+| 止める | 止めない |
+|--------|----------|
+| full CLOSE パイプライン（export-handoff / close-git / evening 生成 / 反省会本番） | **B1 commit+push**（浜田が「コミットして」「push」と言ったとき） |
+| checkpoint に「セッション締め」「close-git 実行中」と書く | 同一レーン dirty の **明示的 commit**（除外パスはチャット 1 行で宣言） |
+| `evening:reflect` の先走り生成 | partial CLOSE（区切り・handoff 更新） |
+
+**案件完了** と **セッション締め** は別トリガー。混同禁止 — `session-boundary-close-gate.mdc` R-ML-01。
+
+## 案件完了 commit（A-ML-03）
+
+kintone **案件 CLOSED** 宣言前の commit ターン:
+
+1. `git status --short` を読む
+2. **同一レーン**の dirty は **同一 commit に含める**（意図的除外はチャット 1 行でパス列挙）
+3. 除外したパスは **次ターン B1 として残さない**（浜田 GO または restore）
+
+---
 
 正本: `docs/runbooks/cio-health-check-turn.md`（R33）
 

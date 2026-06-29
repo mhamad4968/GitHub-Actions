@@ -18,15 +18,15 @@
 
 ---
 
-## 2. 改善 — 私が次から変えること（行動）— 承認待ち
+## 2. 改善 — 私が次から変えること（行動）— 承認済み
 
 | ID | 失敗 | 私が次から変えること | 状態 |
 |----|------|----------------------|------|
-| **A-ML-01** | F1 | **案件 CLOSED** 宣言時は checkpoint に **「セッション締め」「close-git 済」** と書かない | **承認待ち** |
-| **A-ML-02** | F2 | 浜田が **「締め」「反省」「お疲れ」** と言うまで close パイプラインを **起動しない** | **承認待ち** |
-| **A-ML-03** | F3 | **案件完了 commit** 前に `git status` を読み、**除外パスをチャット 1 行で明示**。同一レーン dirty は **同一ターンで commit** | **承認待ち** |
-| **A-ML-04** | F4 | push 直後 **checkpoint Git 行を verify 結果で更新**（手書き「未 push」禁止） | **承認待ち** |
-| **A-ML-05** | F6 | schema verify skip 時は **TSB-039 手順 1 行 + 代替確認** を残してから deploy | **承認待ち** |
+| **A-ML-01** | F1 | **案件 CLOSED** 宣言時は checkpoint に **「セッション締め」「close-git 済」** と書かない | **GO** |
+| **A-ML-02** | F2 | 浜田が **「締め」「反省」「お疲れ」** と言うまで close パイプラインを **起動しない** | **GO** |
+| **A-ML-03** | F3 | **案件完了 commit** 前に `git status` を読み、**除外パスをチャット 1 行で明示**。同一レーン dirty は **同一ターンで commit** | **GO** |
+| **A-ML-04** | F4 | push 直後 **checkpoint Git 行を verify 結果で更新**（手書き「未 push」禁止） | **GO** |
+| **A-ML-05** | F6 | schema verify skip 時は **TSB-039 手順 1 行 + 代替確認** を残してから deploy | **GO** |
 
 ### §1-N 憲法運用レビュー（2026-06-29 結論）
 
@@ -37,16 +37,16 @@
 
 ---
 
-## 3. ルール・手順・脚本改善 — 承認待ち
+## 3. ルール・手順・脚本改善 — 承認済み・実装
 
-| ID | 対応失敗 | 提案（どの失敗を防ぐか） | 正本 | 想定リスク | 自動可 |
-|----|----------|--------------------------|------|------------|--------|
-| **R-ML-01** | F1 | checkpoint テンプレに **「案件 CLOSED」≠「セッション締め」** を明記。close-git 未実行時の禁句リスト | `.cursor/rules/session-boundary-close-gate.mdc` / `checkpoint-latest.md` 冒頭コメント | 低 | ○ |
-| **R-ML-02** | F2,F3 | `session-close-execute-first.mdc` に **「先走るな」スコープ = close パイプラインのみ。B1 commit は止めない** | `.cursor/rules/session-close-execute-first.mdc` | 低 | ○ |
-| **S-ML-01** | F3 | `verify-session-close-git-warn` が untracked を **reports/ vs コード** に分類表示 | `scripts/verify-session-close-git-warn.mjs` | 低 | ○ |
-| **D-ML-01** | F5 | mailing-list spec **M7 / §712 を済** に更新（712 リンク完了 — 浜田 2026-06-29） | `docs/plans/2026-06-29-mailing-list-kintone-spec.md` | 低 | ○ |
-| **D-ML-02** | F6 | TSB-039 に **mailing-list deploy skip 事例** を 1 行追記 | `docs/troubleshooting.md` | 低 | ○ |
-| **R-ML-03** | F4 | ブリーフィング 3c: push 後は **HEAD hash + verify exit 0** を checkpoint に機械同期する runbook 1 行 | `docs/session-report-checklist.md` | 低 | ○ |
+| ID | 対応失敗 | 概要 | 正本 | 状態 |
+|----|----------|------|------|------|
+| **R-ML-01** | F1 | 「案件 CLOSED」≠「セッション締め」明記 | `session-boundary-close-gate.mdc` | **実装** |
+| **R-ML-02** | F2,F3 | 「先走るな」= close のみ。B1 は止めない | `session-close-execute-first.mdc` | **実装** |
+| **S-ML-01** | F3 | untracked 分類 reports/code | `verify-session-close-git-warn.mjs` | **実装** |
+| **D-ML-01** | F5 | spec M7 / §712 済 | mailing-list spec | **実装済** |
+| **D-ML-02** | F6 | TSB-039 mailing-list 事例 | `troubleshooting.md` | **実装** |
+| **R-ML-03** | F4 | push 後 checkpoint Git runbook | `session-report-checklist.md` §3c-1 | **実装** |
 
 ---
 
@@ -59,14 +59,13 @@
 
 ---
 
-## 5. 承認待ち
+## 5. 承認済み
 
-**2026-06-29 浜田 — 承認待ち**
+**2026-06-29 浜田 GO — すべて承認・§3 実装完了**
 
 - **行動**: A-ML-01 〜 A-ML-05  
-- **ルール・脚本**: R-ML-01, R-ML-02, S-ML-01, D-ML-01, D-ML-02, R-ML-03
-
-**応答例**: 「A-ML-01 承認」「R-ML-02 却下」「全部承認」
+- **ルール・脚本**: R-ML-01, R-ML-02, S-ML-01, D-ML-01, D-ML-02, R-ML-03  
+- **正本**: `docs/approved-changes/2026-06-29-rules-mailing-list-evening-hamada-go.md`
 
 ---
 

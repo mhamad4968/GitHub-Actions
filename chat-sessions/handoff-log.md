@@ -3520,3 +3520,10 @@ npm run cio:morning:ready
 **反省（1行）**: 案件 CLOSED をセッション締めと混同した。712 リンク済みを未完了と誤認した。
 
 ---
+
+### 2026-06-29 JST — **夕反省改善案 一括 GO（A-ML / R-ML / S-ML / D-ML）**
+
+**浜田 GO**: 全部承認 — §3 実装完了  
+**正本**: `docs/approved-changes/2026-06-29-rules-mailing-list-evening-hamada-go.md`
+
+---
