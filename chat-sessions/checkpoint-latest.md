@@ -2,7 +2,7 @@
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED**（kintone レーン v1 完了・closures 登録）≠ **セッション締め**（export-handoff / Desktop sync / close-git）。混同禁止 — R-ML-01 GO 2026-06-29 -->
 
-**最終更新**: 2026-06-29 JST — **セッション締め（メーリングリスト750/751 v1 CLOSED · NAS sync · 夕反省）**
+**最終更新**: 2026-06-29 JST — **セッション締め完了（夕反省 GO 実装 · Git clean）**
 
 ## クローズ済み（`data/cio-project-closures.json` — 無断 v1 再開禁止）
 
@@ -26,7 +26,7 @@
 | **736 担当説明 保留** | Step2-3 待ち |
 
 **次の1手**: **浜田依頼待ち**（項番 -0 で本題合意まで着手しない）
-**Git**: **`b584332`** = `origin/main` — clean（`verify:session-close-git-warn` exit 0 目標・2026-06-29 締め）
+**Git**: **`9edc9d6`** = `origin/main` — clean（`verify:session-close-git-warn` exit 0）
 **触らない**: **688 / 677–679 / SKYSEA**
 
 ### ブリーフィング必須（CEO 2026-06-29）
