@@ -3490,3 +3490,18 @@ npm run cio:morning:ready
 **触らない**: 688 / 677–679 / SKYSEA — 触らない
 
 ---
+
+### 2026-06-29 JST — **B1 完了 + ブリーフィング Git 残件報告義務（CEO）**
+
+**浜田メモ（原文）**: 今後セッション変わりのブリーフィングでもかならず未コミット→PUSH残がないかほうこくすることとします。
+
+**AI 補足（漏れ防止）**:
+- `git`: **`d458979`** = `origin/main` — **clean**（`verify:session-close-git-warn` exit 0）。B1 完了（video-gen 試行削除・MCP 維持・595/674 BUILD 同期・RAG mirror）
+- `次の1手`: **浜田依頼待ち**（736 Step2-3 等は GO 後）
+- `GO待ち`: なし
+- `session-lock`: なし
+- `関連パス`: `SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ7 **3c** / `session-bootstrap-verify.mjs` **(1e)** / `docs/session-report-checklist.md`
+
+**ルール追補**: セッション切替ブリーフィングで **`verify:session-close-git-warn` 結果を必ず 1 行報告**（NG 時は件数・次の1手）。bootstrap に非ブロック内包。
+
+---

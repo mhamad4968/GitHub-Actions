@@ -1,22 +1,18 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-06-28T11:25:41.272Z",
-  "gitHead": "669d7fc",
+  "exportedAt": "2026-06-29T09:30:00.000Z",
+  "gitHead": "d458979",
   "gitStatus": "## main...origin/main",
-  "nextTask": "**B1 未コミット整理** — 下表レーンごとに **commit+push または restore** し `verify:session-close-git-warn` を **exit 0** にする（**688 / 677–679 / SKYSEA** — 触らない）",
+  "nextTask": "**浜田依頼待ち** — ブリーフィング時 **Git残件 3c 必須報告**（736 Step2-3 等は GO 後・**688 / 677–679 / SKYSEA** 触らない）",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
     "docs/handoff/latest-session-bridge.json",
-    "docs/runbooks/session-lifecycle-v2.md",
-    "docs/runbooks/push-deploy-quality-gates-v2.md",
-    "docs/runbooks/checkpoint-handoff-template-v2.md",
-    "docs/runbooks/ai-team-tool-routing-v2.md",
-    ".cursor/rules/mode-b-canonical.mdc",
-    "docs/knowledge/debug-tips.md"
+    "chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md",
+    "docs/runbooks/session-lifecycle-v2.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=669d7fc | 次=**B1 未コミット整理** — 下表レーンごとに **commit+push または restore** し `verify:session-close-git-warn` を **exit 0** にする（**688 / 677–679 / SKYSEA** — 触らない） | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
-  "validatedAt": "2026-06-28T11:25:41.749Z",
+  "promptBlock": "【SESSION-BRIDGE】git=d458979 clean | 次=浜田依頼待ち | ブリーフィング必須: verify:session-close-git-warn 結果 1行（3c） | Read: checkpoint-latest.md, handoff-log.md 末尾",
+  "note": "B1 完了 2026-06-29。ブリーフィング Git 残件報告義務（CEO 2026-06-29）",
+  "validatedAt": "2026-06-29T09:30:00.000Z",
   "crosscheckOk": true
 }

@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-06-29 JST — **B1 未コミット整理が次セッション第1手・開口必須（浜田指示）**
+**最終更新**: 2026-06-29 JST — **B1 完了・ブリーフィング Git 残件報告義務（CEO 2026-06-29）**
 
 ## クローズ済み（`data/cio-project-closures.json` — 無断 v1 再開禁止）
 
@@ -14,41 +14,30 @@
 | **688 保留** | 工事稼働日数ダッシュ — **触らない** |
 | **予実管理 保留** | **677/678/679** — **触らない** |
 | **SKYSEA 保留** | **2026-07 頃**計画検討 |
-| **736 担当説明 保留** | Step2-3 待ち（customize dirty あり・別レーン） |
+| **736 担当説明 保留** | Step2-3 待ち（本番 BUILD=`2026-06-26-736-ux-sticky-print-badges-v1` rev **134**） |
 
-**次の1手**: **B1 未コミット整理** — 下表レーン選択 → **commit+push または restore** → `verify:session-close-git-warn` **exit 0**（**688 / 677–679 / SKYSEA** — 触らない）
-**Git**: **`00f642b`** = `origin/main` — 開口必須ルール push 済
-**dirty（B1 NG · ~46 件）**: R20/B1 — **未コミット残さない**（次セッションで必ず解消）
+**次の1手**: **浜田依頼待ち**（736 Step2-3 / bi-guide / yojitsu 等は GO 後）
+**Git**: **`d458979`** = `origin/main` — **clean**（`verify:session-close-git-warn` **exit 0**）
+**B1**: **2026-06-29 完了** — video-gen 試行削除・MCP 維持・595/674 BUILD 同期・RAG mirror（commits `3a0fc5e`〜`d458979`）。次セッション以降は **ブリーフィング 3c** で Git 状態を毎回明示（未コミット・ahead・verify exit を省略しない）。
 
-### 開口必須（浜田指示 2026-06-29）
+### ブリーフィング必須（CEO 2026-06-29）
 
-**次セッション最初の AI 返答** — 浜田の依頼・本題を受ける **前に必ず** 説明（実装・調査着手 **禁止**）:
+**セッション切替のブリーフィング**（`SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 7）で **必ず** **`npm run verify:session-close-git-warn`** を実行し **Git 残件を 1 行報告**（項目 **3c**）。`session:bootstrap` に **(1e) 非ブロック**内包。
 
-1. **B1 違反**: working tree **未コミット ~46 件**（`verify:session-close-git-warn` NG）
-2. **ルール**: セッション締め **未コミット残さない**（R20/B1）
-3. **B1 整理メニュー**（下表 A〜F）— レーンごと **commit+push または restore**
-4. **完了条件**: `npm run verify:session-close-git-warn` **exit 0** → **その後** 項番 -0
+- **OK 例**: `Git残件: なし（clean・origin 同期・verify exit 0）` ＋ HEAD 短 hash
+- **NG 例**: `Git残件: あり — 未コミット N 件 / ahead M / verify exit 1` ＋ **次の1手** 1 行
+- **NG 時**: 本題着手前に B1 整理または §41 で方針合意（checkpoint に GO がある場合は先に実施可）
 
-**禁止**: B1 説明をスキップして依頼どおり実装開始 / 一括 auto-stage で混在 commit
+**禁止**: Git 残件報告の省略・「要点だけ」・未実行の隠蔽（B1 47 件持ち越し再発防止）
 
-### B1 整理メニュー（項番 -0 でレーン選択）
+**正本**: `SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 7 項目 **3c** / `session-bootstrap-verify.mjs` **(1e)** / `docs/session-report-checklist.md` / `.cursor/rules/session-handoff.mdc`（2026-06-29 CEO 指示を恒久化）
 
-| レーン | 件数 | 主なパス | 選択 |
-|--------|------|----------|------|
-| **A video-gen** | ~15 | `assets/video-gen/` `scripts/video-gen/` `mcp/heygen-mcp/` `mcp/ffmpeg-mcp/` | GO→commit / NG→restore |
-| **B MCP** | ~12 | `.cursor/mcp.json` `health-check.mjs` `mcp-backup-prune*` | GO→commit / NG→restore |
-| **C 736** | 2 | `customize/736/desktop.js` `desktop.ui.js` | deploy→commit / restore |
-| **D bi-guide** | 2 | `customize/business-improvement-guide/*` | GO→commit / NG→restore |
-| **E yojitsu** | 1 | `templates/yojitsu-budget-lite/SPEC.md` | **原則 restore** |
-| **F 鏡像** | ~5 | `.rag/extra-docs/*` `RULES-INDEX.md` | commit 後 `rag:mirror:canonical-docs` |
-
-**736 本番**: BUILD=`2026-06-26-736-ux-sticky-print-badges-v1` rev **134**（作業ツリー dirty・本番不一致注意）
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
 
 ## セッション切替後の自律復元（Lifecycle v2 鏡像）
 
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`
-**項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **開口必須 B1 説明**（依頼前）→ **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / **`mandatory-read-gate.mjs`** / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031
+**項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** 次に着手することを **§41 一問** → **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / **`mandatory-read-gate.mjs`** / `verify:session-clock-health` / **(1e) Git 残件** / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031
 **CLOSE** `session-close-execute-first.mdc` — export-handoff → sync-desktop → clock:clear → close-git
 
 ## 2026-06-28 NAS v1 完遂（rollup 参照）

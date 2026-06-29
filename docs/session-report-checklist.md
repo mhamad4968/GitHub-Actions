@@ -13,7 +13,7 @@
 > **報告・締め・GO 前の一発ゲート（2026-05-09 抜本）**: 下書き全文に対し **`npm run cio:report-verify-response -- --file <path>`** を実行し **exit 0**（**CEO 最低基準の全行含有**＋**§1 四行先頭ウィンドウ**＋**V2**＋**□A1 最小**＋**禁止語**）。hooks は **Cursor が `.cursor/hooks.json` を起動した経路に限り**機械検証するため、**本 npm を hooks と独立に必須**とする（`CEO-MINIMUM-ABSOLUTE-BASELINE.txt` §1 報告違反ゼロ 節）。
 >
 > **依頼に CEO 最低基準全文が含まれる場合（2026-05-09）**: ユーザメッセージに **`chat-sessions/CEO-MINIMUM-ABSOLUTE-BASELINE.txt` の非空行と同一の全文**が含まれるとき、**当該応答にも同一文字列を行単位で欠かさず再掲**する（省略・要約・「依頼を読んだので省略」禁止）。**「チャットに入っているから抜けてよい」は不存在**（正本 `CEO-MINIMUM-ABSOLUTE-BASELINE.txt` 最終行）。  
-> **`session:bootstrap`／棚卸し直後の経緯報告**は **`chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 7** — **応答最上段の §1 先頭4行（`[§1-2-3 ティア判定]`・`【適用憲法】`・`[🎖️ 本セッション割当]`・`[ルール確認]`）＋（1〜8・4a）** を **別途フル充填** — **そのチェックシートのない経緯報告も認めない**（浜田 CEO 厳守・`every-turn-rules-confirm.mdc` §1e **1e-0**）。  
+> **`session:bootstrap`／棚卸し直後の経緯報告**は **`chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 7** — **応答最上段の §1 先頭4行（`[§1-2-3 ティア判定]`・`【適用憲法】`・`[🎖️ 本セッション割当]`・`[ルール確認]`）＋（1〜8・**3c**・4a）** を **別途フル充填** — **そのチェックシートのない経緯報告も認めない**（浜田 CEO 厳守・`every-turn-rules-confirm.mdc` §1e **1e-0**）。**3c**＝**`npm run verify:session-close-git-warn` 結果を必ず 1 行報告**（2026-06-29 CEO）。  
 > **順守根拠**: 行動に入る前は **§1b**（関連 § の列挙＋方針 1 文）。報告では **`【適用憲法】`＋`[ルール確認]`** で **どの正本・どの § に従ったか**を残し、**ルール違反をしていないことの根拠**とする（空宣言禁止）。
 
 ---

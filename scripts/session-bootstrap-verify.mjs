@@ -8,6 +8,7 @@
  *   1b) mandatory-read-gate.mjs（checkpoint / handoff / HUMAN / bootstrap 正本 / AGENTS の構造検査）
  *   1c) session-clock-health.mjs --strict（§51-6-2 壁時計 hooks / crontab node 整合）
  *   1d) verify-checkpoint-project-closure.mjs（R19 認識同期）
+ *   1e) verify-session-close-git-warn.mjs（非ブロック・フェーズ7 項目3c 用）
  *   2) npm run session-starter:sync-desktop（浜田 Desktop AI緊急用へ儀式・read-pack・**25/26 引継ぎ正本**をコピー）
  *   3) verify-desktop-ai-emergency-sync.mjs（コピー後のバイト一致＝メンテ確認）
  *   3b) verify-cursor-mcp-windows.mjs（Windows mcp.json 機械検査・TSB-028）
@@ -31,6 +32,7 @@ console.log(`
 (1b) node scripts/mandatory-read-gate.mjs  ← 必読ファイル構造（議論抜け対策）
 (1c) node scripts/session-clock-health.mjs --strict  ← 壁時計 hooks / crontab node 整合
 (1d) node scripts/verify-checkpoint-project-closure.mjs  ← R19 認識同期
+(1e) node scripts/verify-session-close-git-warn.mjs  ← Git 残件（非ブロック・フェーズ7 3c）
 (2) npm run session-starter:sync-desktop  ← Desktop AI緊急用
 (3) node scripts/verify-desktop-ai-emergency-sync.mjs  ← バイト一致確認
 (3b) node scripts/verify-cursor-mcp-windows.mjs  ← Windows Cursor mcp.json（TSB-028）
@@ -67,6 +69,18 @@ const closureGate = spawnSync(process.execPath, ['scripts/verify-checkpoint-proj
 });
 if (closureGate.status !== 0) {
   process.exit(typeof closureGate.status === 'number' && closureGate.status !== 0 ? closureGate.status : 2);
+}
+
+console.log('\n=== [bootstrap] Git 残件 (verify:session-close-git-warn 非ブロック) ===');
+const gitWarn = spawnSync(process.execPath, ['scripts/verify-session-close-git-warn.mjs'], {
+  cwd: root,
+  stdio: 'inherit',
+});
+if (gitWarn.status !== 0) {
+  console.log('\n[bootstrap] ⚠️  Git 残件あり — フェーズ7 項目3c で必ず報告（未コミット / ahead / サブゲート NG）');
+  console.log('  本題着手前に B1 整理または §41 で方針合意（SESSION-BOOTSTRAP-CHECKLIST.md 3c）');
+} else {
+  console.log('[bootstrap] Git残件: なし（verify:session-close-git-warn OK）');
 }
 
 const syncDesk = runNpmScriptSync(root, 'session-starter:sync-desktop', [], { stdio: 'inherit' });
