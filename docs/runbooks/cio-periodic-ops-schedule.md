@@ -10,6 +10,7 @@
 | 頻度 | リマインダ名（例） | 担当 | やること（1行） |
 |------|-------------------|------|-----------------|
 | **毎月 第1営業日** | kintone customize BUILD 監査 + live-schema portfolio | **CIO**（浜田は異常時のみ画面確認） | `npm run cio:periodic:monthly` |
+| **毎月 1 日 08:30** | Cursor mcp.json.bak-* 世代整理 | **Windows タスク自動** / 異常時 CIO | `npm run mcp:prune-backups:monthly`（タスク登録: `mcp:prune-backups:install-task`） |
 | **四半期初月 第1営業日** | kintone スナップショット＋GHA secrets | **CIO** 実施 / **浜田** secrets ローテ承認 | `npm run cio:periodic:quarterly` ＋ GitHub Settings |
 | **毎週金曜**（反省後） | MCP 利用状況更新 | **CIO** | `npm run mcp-status:refresh-usage`（`docs/mcp-status.md` 定例） |
 | **customize 変更のたび** | preflight → deploy | **CIO** | `npm run cio:preflight:<app> -- --note "…"` → `npm run deploy:<app>` |
@@ -25,6 +26,7 @@
 | 四半期スナップショット | | | |
 | GHA secrets ローテ | | | |
 | MCP usage refresh（金曜） | | | |
+| mcp.json.bak prune（毎月1日） | | | verify:mcp-backup-prune-monthly |
 
 ---
 
@@ -42,6 +44,10 @@ npm run cio:periodic:quarterly
 
 # 週次（金曜・mcp-status 表の「過去30日」）
 npm run mcp-status:refresh-usage
+
+# 月次（mcp.json.bak-* — Windows・API キー含有）
+npm run mcp:prune-backups:install-task   # 初回のみ
+npm run verify:mcp-backup-prune-monthly  # 35日以内に実行記録があるか
 ```
 
 **監査 NG 時**: `docs/runbooks/customize-deploy-recovery.md` に従い復旧 → 再監査。

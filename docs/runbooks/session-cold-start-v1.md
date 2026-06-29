@@ -18,7 +18,7 @@ npm run cio:session:cold-start
 ### 状態遷移
 
 ```
-MORNING → PREFLIGHT → ROLLUP → QUICK-HEALTH → BOOTSTRAP → IMPORT → READY
+MORNING → PREFLIGHT → ROLLUP → QUICK-HEALTH → WALL-CLOCK → BOOTSTRAP → IMPORT → READY
 ```
 
 | Phase | 内容 |
@@ -27,6 +27,7 @@ MORNING → PREFLIGHT → ROLLUP → QUICK-HEALTH → BOOTSTRAP → IMPORT → R
 | PREFLIGHT | `cio:task:score-spec` + 必要時 `export-handoff`（**gitHead 不一致**含む bridge 陳腐化） |
 | ROLLUP | 凍結ゾーン verify（`verify:checkpoint-freeze-zone --auto-rollup`）+ checkpoint rollup + export + integrity + closure |
 | QUICK-HEALTH | 朝報 ensure + kintone:test + guard:check |
+| WALL-CLOCK | **`session:clock:clear` → `session:clock:set`**（§51-6-2。前セッション `開始:` 残留で bootstrap NG を防ぐ） |
 | BOOTSTRAP | `session:bootstrap`（憲法・desktop sync・smoke 15） |
 | IMPORT | `verify:session-handoff-integrity --import` |
 
@@ -70,7 +71,7 @@ powershell -ExecutionPolicy Bypass -File scripts/install-morning-task-windows.ps
 
 ## 壁時計 trialPaused
 
-`.cio/session-clock-mode.json` で `trialPaused: true` のとき、bootstrap の cron strict は **意図的にスキップ**（`session-clock-health.mjs`）。
+`.cio/session-clock-mode.json` で `trialPaused: true` のとき、bootstrap の cron strict は **意図的にスキップ**（`session-clock-health.mjs`）。**sessionEnd hook も clear しない**ため、締め時の `session:clock:clear`（R-SESS-03）に加え、**WAKE Phase WALL-CLOCK で clear → set を必ず実行**する（2026-06-28 追補）。
 
 ## 参照
 

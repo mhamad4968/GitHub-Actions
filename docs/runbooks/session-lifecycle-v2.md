@@ -92,16 +92,18 @@ flowchart LR
 npm run cio:session:cold-start
 ```
 
-内部 Phase（変更なし）:
+内部 Phase:
 
 ```
-MORNING → PREFLIGHT → ROLLUP → QUICK-HEALTH → BOOTSTRAP → IMPORT → READY
+MORNING → PREFLIGHT → ROLLUP → QUICK-HEALTH → WALL-CLOCK → BOOTSTRAP → IMPORT → READY
 ```
 
 | サブ Phase | v2 追加 |
 |------------|---------|
 | PREFLIGHT | bridge 陳腐化時 **auto export-handoff**（gitHead 不一致含む） |
 | ROLLUP | **凍結ゾーン >50 行** → auto rollup（`verify:checkpoint-freeze-zone --auto-rollup`） |
+| WALL-CLOCK | **`session:clock:clear` → `session:clock:set`**（§51-6-2 / trialPaused 時の残留対策） |
+| BOOTSTRAP | `session:bootstrap`（従来どおり） |
 | IMPORT | `verify:session-handoff-integrity --import` |
 
 **浜田**: Desktop `00-NEW-SESSION-STARTER_yyyymmdd.txt` 貼付（項番 -1）。追加負担なし。
@@ -176,7 +178,7 @@ npm run cio:checkpoint:rollup -- --keep 3
 
 **R-SESS-01（2026-06-25 GO）**: full CLOSE では `export-handoff` 後 **`session-starter:sync-desktop` + `verify:desktop-ai-emergency-sync`** を **close-git より前**に必須。
 
-**R-SESS-03（2026-06-25 GO）**: full CLOSE では **`session:clock:clear`** を close-git 直前に実行（次 WAKE で clock 76h NG 防止）。
+**R-SESS-03（2026-06-25 GO）**: full CLOSE では **`session:clock:clear`** を close-git 直前に実行。**WAKE**（`cio:session:cold-start`）は bootstrap 直前に **clear → set** を内包（締め clear 漏れ・trialPaused 時の二重化）。
 
 **R-SESS-04（2026-06-25 GO）**: `session:bootstrap` / `cio:session:cold-start` が **exit ≠ 0** のとき — **L2 完走は1回のみ** → NG ログをチャットに貼付 → **浜田へエスカレ** → **本題・deploy に着手しない**（Lifecycle v2 §3 L2 違反＝報告違反）。
 

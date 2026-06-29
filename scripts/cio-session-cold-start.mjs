@@ -6,7 +6,10 @@
  *   npm run cio:session:cold-start -- --skip-bootstrap
  *   npm run cio:session:cold-start -- --full-morning   # 朝報をフル生成
  *
- * 状態: IDLE → MORNING → PREFLIGHT → ROLLUP → BOOTSTRAP → IMPORT → READY
+ * 状態: IDLE → MORNING → PREFLIGHT → ROLLUP → QUICK-HEALTH → WALL-CLOCK → BOOTSTRAP → IMPORT → READY
+ *
+ * WALL-CLOCK（§51-6-2）: bootstrap 直前に session:clock:clear → session:clock:set。
+ * trialPaused / manual-desktop で sessionEnd が clear しない場合の残留開始時刻を防ぐ。
  *
  * @see docs/runbooks/session-cold-start-v1.md
  */
@@ -91,13 +94,19 @@ function main() {
     console.warn('[cold-start] quick-health NG — 詳細は上記ログ。bootstrap は続行可');
   }
 
-  // Phase 5 — bootstrap + import
+  // Phase 5 — §51-6-2 壁時計（前セッション開始時刻の残留防止 → mandatory-read-gate 通過）
+  console.log('\n▶ Phase 5 WALL-CLOCK');
+  console.log('[cold-start] §51-6-2: session:clock:clear → session:clock:set（WAKE 標準）');
+  run('npm run session:clock:clear');
+  run('npm run session:clock:set');
+
+  // Phase 6 — bootstrap + import
   if (!skipBootstrap) {
-    console.log('\n▶ Phase 5 BOOTSTRAP');
+    console.log('\n▶ Phase 6 BOOTSTRAP');
     run('npm run session:bootstrap');
   }
 
-  console.log('\n▶ Phase 6 IMPORT');
+  console.log('\n▶ Phase 7 IMPORT');
   run('npm run verify:session-handoff-integrity -- --import');
 
   console.log('\n═══════════════════════════════════════');
