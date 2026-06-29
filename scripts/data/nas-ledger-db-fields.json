@@ -204,6 +204,14 @@
       "required": false,
       "noLabel": false,
       "defaultValue": ""
+    },
+    "os_type": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "os_type",
+      "label": "OS種類",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
     }
   }
 }

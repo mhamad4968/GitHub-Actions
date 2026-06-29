@@ -75,7 +75,7 @@ var NAS_LOCATION_MASTER = {
   /* global NAS_ORG_MASTER, NAS_LOCATION_MASTER */
 
   /** NAS管理台帳 — 742/719 型 Excel 風一覧 + REST CRUD + 印刷 + xlsx */
-  var BUILD = "2026-06-28-nas-ledger-dash-v1";
+  var BUILD = "2026-06-29-nas-ledger-list-hostname-v3";
   var STATUS_NONE = "－";
   var EMPTY_MARK = "－";
   var PURCHASE_VENDORS = ["大塚商会", "富士フィルム", "KDDI", "その他"];
@@ -104,6 +104,7 @@ var NAS_LOCATION_MASTER = {
     admin_id: "admin_id",
     admin_password: "admin_password",
     connectivity_check: "connectivity_check",
+    os_type: "os_type",
     note: "note",
     registered_date: "registered_date",
     updated_date: "updated_date",
@@ -132,6 +133,7 @@ var NAS_LOCATION_MASTER = {
     FC.admin_id,
     FC.admin_password,
     FC.connectivity_check,
+    FC.os_type,
     FC.note,
     FC.registered_date,
     FC.updated_date,
@@ -144,8 +146,12 @@ var NAS_LOCATION_MASTER = {
     { key: "device_type", label: "種別" },
     { key: "install_place", label: "設置先" },
     { key: "ip_address", label: "IP" },
+    { key: "hostname", label: "ホスト名" },
+    { key: "os_type", label: "OS種類" },
     { key: "manufacturer", label: "メーカー" },
     { key: "model_name", label: "機種名" },
+    { key: "purchase_date", label: "購入日" },
+    { key: "purchase_vendor", label: "購入先" },
     { key: "effective_capacity", label: "実効容量" },
   ];
 
@@ -169,6 +175,7 @@ var NAS_LOCATION_MASTER = {
     { key: "admin_id", label: "管理者ID" },
     { key: "admin_password", label: "パスワード" },
     { key: "connectivity_check", label: "導通確認" },
+    { key: "os_type", label: "OS種類" },
     { key: "note", label: "備考" },
     { key: "registered_date", label: "登録日" },
     { key: "updated_date", label: "更新日" },
@@ -253,6 +260,7 @@ var NAS_LOCATION_MASTER = {
       admin_id: val(rec, FC.admin_id),
       admin_password: val(rec, FC.admin_password),
       connectivity_check: val(rec, FC.connectivity_check),
+      os_type: val(rec, FC.os_type),
       note: val(rec, FC.note),
       registered_date: val(rec, FC.registered_date),
       updated_date: val(rec, FC.updated_date),
@@ -279,6 +287,7 @@ var NAS_LOCATION_MASTER = {
         code === FC.admin_id ||
         code === FC.admin_password ||
         code === FC.connectivity_check ||
+        code === FC.os_type ||
         code === FC.note
       ) {
         o[code] = { value: v || "" };
@@ -304,6 +313,7 @@ var NAS_LOCATION_MASTER = {
     set(FC.admin_id, row.admin_id);
     set(FC.admin_password, row.admin_password);
     set(FC.connectivity_check, row.connectivity_check);
+    set(FC.os_type, row.os_type);
     set(FC.note, row.note);
     set(FC.registered_date, row.registered_date);
     set(FC.updated_date, row.updated_date);
@@ -633,6 +643,9 @@ var NAS_LOCATION_MASTER = {
       '<label>導通確認<input type="text" id="nasl-f-conn" value="' +
       esc(r.connectivity_check || "") +
       '"></label>' +
+      '<label>OS種類<input type="text" id="nasl-f-os" value="' +
+      esc(r.os_type || "") +
+      '"></label>' +
       '<label>備考<textarea id="nasl-f-note" rows="3">' +
       esc(noteDefault) +
       "</textarea></label>" +
@@ -665,6 +678,7 @@ var NAS_LOCATION_MASTER = {
       admin_id: document.getElementById("nasl-f-aid").value.trim(),
       admin_password: document.getElementById("nasl-f-apw").value.trim(),
       connectivity_check: document.getElementById("nasl-f-conn").value.trim(),
+      os_type: document.getElementById("nasl-f-os").value.trim(),
       note: document.getElementById("nasl-f-note").value.trim(),
       updated_date: todayJstYmd(),
     };
@@ -806,6 +820,11 @@ var NAS_LOCATION_MASTER = {
     return esc(t);
   }
 
+  function listCellHtml(row, key) {
+    if (key === "purchase_vendor") return displayCell(effectivePurchaseVendor(row));
+    return displayCell(row[key]);
+  }
+
   function renderFilterGroup(containerId, label, chips, activeValue, dataAttr) {
     var el = document.getElementById(containerId);
     if (!el) return;
@@ -896,7 +915,7 @@ var NAS_LOCATION_MASTER = {
           '<button type="button" class="nasl-btn-del">削除</button>' +
           "</td>" +
           LIST_COLUMNS.map(function (c) {
-            return "<td" + (c.cls ? ' class="' + c.cls + '"' : "") + ">" + displayCell(row[c.key]) + "</td>";
+            return "<td" + (c.cls ? ' class="' + c.cls + '"' : "") + ">" + listCellHtml(row, c.key) + "</td>";
           }).join("") +
           "</tr>"
         );

@@ -12,8 +12,12 @@ export const DASH_APP_NAME = 'NAS管理台帳';
 export const SPACE_ID = Number(process.env.NAS_LEDGER_SPACE_ID || 48);
 /** Space 48 既定スレッド（専用スレッドは作らない — spec Q9′） */
 export const THREAD_ID = Number(process.env.NAS_LEDGER_THREAD_ID || process.env.SPACE48_THREAD_ID || 52);
-export const DEFAULT_XLSX = process.env.NAS_LEDGER_XLSX || 'C:\\tmp\\NAS管理台帳\\NAS一覧.xlsx';
-export const EXCEL_SHEET = 'NAS一覧';
+export const DEFAULT_XLSX =
+  process.env.NAS_LEDGER_XLSX || 'C:\\tmp\\NAS管理台帳\\NAS管理台帳_20260629.xlsx';
+export const DEFAULT_STRUCTURE_JSON =
+  process.env.NAS_LEDGER_STRUCTURE_JSON || 'docs/plans/tmp-nas-xlsx-structure.json';
+export const EXCEL_SHEET_LEGACY = 'NAS一覧';
+export const EXCEL_SHEET_V2 = '一覧';
 
 /** Excel 列 index（sheet_to_json header:1 — 組織名=col B=index 1） */
 const COL = {
@@ -52,6 +56,23 @@ export const LOCATION_SORT_PATH = path.join(__dirname, '..', 'data', 'jbis-locat
 export const STATUS_NONE = '－';
 export const MIGRATE_EXPECTED_COUNT = 23;
 
+/** 備考内の OS 表記を os_type へ分離（任意） */
+const OS_NOTE_RE = /windows\s*server|windowsserver|\bDSM\b|\bQTS\b/i;
+
+export function splitNoteAndOsType(rawNote) {
+  const note = trimField(rawNote).replace(/\r\n/g, '\n');
+  if (!note) return { note: '', os_type: '' };
+  if (!OS_NOTE_RE.test(note)) return { note, os_type: '' };
+  const idx = note.indexOf('※');
+  if (idx >= 0) {
+    return {
+      os_type: trimField(note.slice(0, idx)),
+      note: trimField(note.slice(idx)),
+    };
+  }
+  return { os_type: note, note: '' };
+}
+
 /** Excel 列ずれ検知 — org 列に入りがちな値（S-NAS-01 / F1） */
 const INVALID_ORG_NAMES = new Set(['組織名', 'ステータス', '有効', '無効']);
 
@@ -81,6 +102,24 @@ export const PLACEHOLDER_ROWS = [
 
 export function trimField(s) {
   return String(s == null ? '' : s).trim();
+}
+
+/** Excel / 画面の全角ダッシュ「－」を空扱い（状態・設備なし行は別処理） */
+export function emptyIfDash(s) {
+  const t = trimField(s);
+  if (!t || t === '－' || t === '-') return '';
+  return t;
+}
+
+export function parseExcelDateValue(raw) {
+  if (raw == null || raw === '') return '';
+  if (raw instanceof Date) {
+    return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Tokyo' }).format(raw);
+  }
+  const s = trimField(raw);
+  if (!s || s === '－' || s === '-') return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  return s;
 }
 
 export function normalizeOrgName(raw) {
@@ -143,12 +182,88 @@ export function assignSortNumbers(rows) {
   });
 }
 
-/** Parse Excel rows — passwords never logged by callers */
+/** Parse Excel rows — v2（一覧・1行目ヘッダ）優先、なければ legacy NAS一覧 */
 export function readExcelRows(xlsxPath) {
   const wb = XLSX.readFile(xlsxPath, { cellDates: true });
-  const ws = wb.Sheets[EXCEL_SHEET];
-  if (!ws) throw new Error(`Sheet not found: ${EXCEL_SHEET}`);
+  const sheetName = wb.SheetNames.includes(EXCEL_SHEET_V2)
+    ? EXCEL_SHEET_V2
+    : wb.SheetNames.includes(EXCEL_SHEET_LEGACY)
+      ? EXCEL_SHEET_LEGACY
+      : wb.SheetNames[0];
+  const ws = wb.Sheets[sheetName];
+  if (!ws) throw new Error(`Sheet not found in ${xlsxPath}`);
   const data = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+  if (detectV2Header(data[0])) return readExcelRowsV2(data);
+  return readExcelRowsLegacy(data);
+}
+
+function detectV2Header(headerRow) {
+  const h = (headerRow || []).map((c) => trimField(c));
+  return h.includes('OS種類') && h.includes('拠点名') && h.includes('状態');
+}
+
+function headerIndexMap(headerRow) {
+  const map = {};
+  (headerRow || []).forEach((label, i) => {
+    const key = trimField(label).replace(/\r\n/g, '');
+    if (key) map[key] = i;
+  });
+  return map;
+}
+
+function cell(r, idxMap, label) {
+  const i = idxMap[label];
+  if (i == null) return '';
+  return r[i];
+}
+
+function readExcelRowsV2(data) {
+  const idx = headerIndexMap(data[0]);
+  const rows = [];
+  for (let i = 1; i < data.length; i++) {
+    const r = data[i] || [];
+    const org = normalizeOrgName(cell(r, idx, '組織名'));
+    const branch = normalizeBranchName(cell(r, idx, '拠点名'), '');
+    const statusRaw = trimField(cell(r, idx, '状態'));
+    const ipProbe = pickProductionIp(cell(r, idx, 'IPアドレス'));
+    if (!org && !branch && !ipProbe && !statusRaw) continue;
+
+    const status = statusRaw || '有効';
+    const installRaw = emptyIfDash(cell(r, idx, '設置先')) || branch;
+    const install_place =
+      status === STATUS_NONE ? '-' : normalizeInstallPlace(installRaw) || branch;
+    const ip = status === STATUS_NONE ? '' : pickProductionIp(cell(r, idx, 'IPアドレス'));
+
+    rows.push({
+      org_name: org,
+      status,
+      branch_name: branch,
+      hostname: emptyIfDash(cell(r, idx, 'ホスト名')),
+      device_type: emptyIfDash(cell(r, idx, '種別')),
+      install_place,
+      ip_address: ip,
+      os_type: emptyIfDash(cell(r, idx, 'OS種類')),
+      manufacturer: emptyIfDash(cell(r, idx, 'メーカー')),
+      model_name: normalizeModelName(cell(r, idx, '機種名')),
+      serial_no: emptyIfDash(cell(r, idx, 'シリアル番号')),
+      purchase_date: parseExcelDateValue(cell(r, idx, '購入日')),
+      purchase_vendor: emptyIfDash(cell(r, idx, '購入先')),
+      purchase_vendor_other: emptyIfDash(cell(r, idx, '購入先（その他）')),
+      effective_capacity: emptyIfDash(cell(r, idx, '実効容量')),
+      raid_level: emptyIfDash(cell(r, idx, 'RAIDレベル')),
+      backup_type: emptyIfDash(cell(r, idx, 'バックアップ種類')),
+      admin_id: emptyIfDash(cell(r, idx, '管理者ID')),
+      admin_password: emptyIfDash(cell(r, idx, 'パスワード')),
+      connectivity_check: emptyIfDash(cell(r, idx, '導通確認')),
+      note: trimField(cell(r, idx, '備考')).replace(/\r\n/g, '\n'),
+      registered_date: parseExcelDateValue(cell(r, idx, '登録日')),
+      updated_date: parseExcelDateValue(cell(r, idx, '更新日')),
+    });
+  }
+  return assignSortNumbers(rows);
+}
+
+function readExcelRowsLegacy(data) {
   const headerIdx = findHeaderRowIndex(data);
   const rows = [];
   let prevOrg = '';
@@ -169,6 +284,9 @@ export function readExcelRows(xlsxPath) {
     const branch = normalizeBranchName(branchRaw, prevBranch);
     if (branch) prevBranch = branch;
 
+    const rawNote = trimField(r[COL.note]).replace(/\r\n/g, '\n');
+    const { note, os_type } = splitNoteAndOsType(rawNote);
+
     rows.push({
       org_name: org,
       status: status || '有効',
@@ -185,7 +303,8 @@ export function readExcelRows(xlsxPath) {
       admin_id: trimField(r[COL.admin_id]),
       admin_password: trimField(r[COL.password]),
       connectivity_check: trimField(r[COL.connectivity]),
-      note: trimField(r[COL.note]).replace(/\r\n/g, '\n'),
+      note,
+      os_type,
       serial_no: '',
       purchase_date: '',
       purchase_vendor: '',
@@ -206,6 +325,7 @@ export function readExcelRows(xlsxPath) {
     admin_id: '',
     admin_password: '',
     connectivity_check: '',
+    os_type: '',
     serial_no: '',
     purchase_date: '',
     purchase_vendor: '',
@@ -213,6 +333,96 @@ export function readExcelRows(xlsxPath) {
   }));
 
   return assignSortNumbers(rows.concat(placeholders));
+}
+
+/** sync 用 — kintone 既存レコードとの突合キー */
+export function nasRecordMatchKey(row) {
+  const ip = emptyIfDash(row.ip_address);
+  if (ip) return `ip:${ip}`;
+  if (row.status === STATUS_NONE) {
+    return `ph:${row.org_name}\0${row.branch_name}`;
+  }
+  const host = emptyIfDash(row.hostname);
+  return `obh:${row.org_name}\0${row.branch_name}\0${host}`;
+}
+
+function mapStructureRecord(rec, prevOrg, prevBranch) {
+  let org = normalizeOrgName(rec['組織名'] || '');
+  if (org) prevOrg.value = org;
+  else org = prevOrg.value;
+
+  const branch = normalizeBranchName(rec['拠点名'] || '', prevBranch.value);
+  if (branch) prevBranch.value = branch;
+
+  const rawNote = trimField(rec['備考'] || '').replace(/\r\n/g, '\n');
+  const { note, os_type } = splitNoteAndOsType(rawNote);
+
+  return {
+    org_name: org,
+    status: trimField(rec['ステータス'] || '') || '有効',
+    branch_name: branch,
+    hostname: trimField(rec['ホスト名'] || ''),
+    device_type: trimField(rec['種別'] || ''),
+    install_place: normalizeInstallPlace(rec['設置先'] || '') || branch,
+    ip_address: pickProductionIp(rec['ＩＰアドレス'] || rec['IPアドレス'] || ''),
+    manufacturer: trimField(rec['メーカー'] || ''),
+    model_name: normalizeModelName(rec['機種名製品型番'] || rec['機種名/製品型番'] || ''),
+    effective_capacity: trimField(rec['容量'] || ''),
+    raid_level: trimField(rec['RAIDレベル'] || ''),
+    backup_type: trimField(rec['バックアップ'] || ''),
+    admin_id: trimField(rec['管理者ＩＤ'] || rec['管理者ID'] || ''),
+    admin_password: trimField(rec['パスワード'] || ''),
+    connectivity_check: trimField(rec['導通確認'] || ''),
+    note,
+    os_type,
+    serial_no: '',
+    purchase_date: '',
+    purchase_vendor: '',
+    purchase_vendor_other: '',
+  };
+}
+
+/** Excel 不在時 — docs/plans/tmp-nas-xlsx-structure.json から同一 shape を生成 */
+export function readStructureJsonRows(jsonPath) {
+  const raw = JSON.parse(readFileSync(jsonPath, 'utf8'));
+  const records = raw.records || [];
+  const prevOrg = { value: '' };
+  const prevBranch = { value: '' };
+  const rows = records.map((rec) => mapStructureRecord(rec, prevOrg, prevBranch));
+
+  const placeholders = PLACEHOLDER_ROWS.map((p) => ({
+    ...p,
+    hostname: '',
+    device_type: '',
+    ip_address: '',
+    manufacturer: '',
+    model_name: '',
+    effective_capacity: '',
+    raid_level: '',
+    backup_type: '',
+    admin_id: '',
+    admin_password: '',
+    connectivity_check: '',
+    os_type: '',
+    serial_no: '',
+    purchase_date: '',
+    purchase_vendor: '',
+    purchase_vendor_other: '',
+  }));
+
+  return assignSortNumbers(rows.concat(placeholders));
+}
+
+/** xlsx 優先。無ければ structure JSON */
+export function readNasSourceRows({ xlsxPath, jsonPath } = {}) {
+  const xlsx = xlsxPath || DEFAULT_XLSX;
+  if (existsSync(xlsx)) return { rows: readExcelRows(xlsx), source: xlsx };
+  const json = jsonPath || DEFAULT_STRUCTURE_JSON;
+  const absJson = path.isAbsolute(json) ? json : path.join(path.dirname(__dirname), '..', json);
+  if (!existsSync(absJson)) {
+    throw new Error(`Excel not found: ${xlsx} (and structure JSON missing: ${absJson})`);
+  }
+  return { rows: readStructureJsonRows(absJson), source: absJson };
 }
 
 /** PLACEHOLDER_ROWS 定義の shape 検証（S-NAS-02） */
@@ -297,6 +507,7 @@ export function rowToKintoneRecord(row, registeredDate) {
   set('admin_id', row.admin_id);
   set('admin_password', row.admin_password);
   set('connectivity_check', row.connectivity_check);
+  set('os_type', row.os_type);
   return rec;
 }
 

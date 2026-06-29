@@ -1,11 +1,19 @@
 # 復元チェックポイント（最新）
 <!-- このファイルは「チャットが無くても今どこまで進んだか」を残す。正本（.cursor/rules・kintone-apps.md・CLAUDE.md）と矛盾したら正本を優先し、このファイルを更新すること。 -->
 
-**最終更新**: 2026-06-29 JST — **B1 完了・ブリーフィング Git 残件報告義務（CEO 2026-06-29）**
+**最終更新**: 2026-06-29 JST — **メーリングリスト750/751 v1 CLOSED + NAS 748/749 sync/deploy（セッション締め・反省会は未）**
 
 ## クローズ済み（`data/cio-project-closures.json` — 無断 v1 再開禁止）
 
-業務改善697–713 / Wi-Fi718–719 / JR iPad720–721 / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** — いずれも **closed-v1**（詳細は json + `docs/reports/`）。**業務改善のみ軽微 UX 継続可** — 正本 `docs/runbooks/business-improvement-closed-v1-ux.md`。**v1 再実装は禁止**。
+業務改善697–713 / Wi-Fi718–719 / JR iPad720–721 / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **メーリングリスト750–751** — いずれも **closed-v1**（詳細は json + `docs/reports/`）。**業務改善のみ軽微 UX 継続可** — 正本 `docs/runbooks/business-improvement-closed-v1-ux.md`。**v1 再実装は禁止**。
+
+## 本日アクティブ（BUILD/rev — 2026-06-29）
+
+| 項目 | 内容 |
+|------|------|
+| **750 メーリングリストDB** | BUILD=`2026-06-29-mailing-list-db-block-ui` rev **6** — 63件移行・本番 Excel 削除済 |
+| **751 メーリングリスト台帳** | BUILD=`2026-06-29-mailing-list-dash-clear-btn-v2` rev **5** — 目視 OK・条件クリア |
+| **749 NAS台帳** | BUILD=`2026-06-29-nas-ledger-list-hostname-v3` rev **17** — ホスト名列 + os_type Excel resync |
 
 ## 保留・その他の制約
 
@@ -14,11 +22,11 @@
 | **688 保留** | 工事稼働日数ダッシュ — **触らない** |
 | **予実管理 保留** | **677/678/679** — **触らない** |
 | **SKYSEA 保留** | **2026-07 頃**計画検討 |
-| **736 担当説明 保留** | Step2-3 待ち（本番 BUILD=`2026-06-26-736-ux-sticky-print-badges-v1` rev **134**） |
+| **736 担当説明 保留** | Step2-3 待ち |
 
-**次の1手**: **浜田依頼待ち**（736 Step2-3 / bi-guide / yojitsu 等は GO 後）
-**Git**: **`d458979`** = `origin/main` — **clean**（`verify:session-close-git-warn` **exit 0**）
-**B1**: **2026-06-29 完了** — video-gen 試行削除・MCP 維持・595/674 BUILD 同期・RAG mirror（commits `3a0fc5e`〜`d458979`）。次セッション以降は **ブリーフィング 3c** で Git 状態を毎回明示（未コミット・ahead・verify exit を省略しない）。
+**次の1手**: **浜田依頼待ち**（項番 -0 で本題合意まで着手しない）
+**Git**: NAS 748/749 実装分コミット済（`30dbe3f` 以降 · origin 未 push · close-git **未実施**）
+**触らない**: **688 / 677–679 / SKYSEA**
 
 ### ブリーフィング必須（CEO 2026-06-29）
 
