@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-06-20-674-vpn-readonly-dom-lock';
+  const BUILD = '2026-06-23-674-dept-master-sort-no';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -2597,9 +2597,22 @@
       const bar = seg.indexOf('|');
       const dept = (bar === -1 ? seg : seg.slice(0, bar)).trim();
       const grp = (bar === -1 ? '' : seg.slice(bar + 1)).trim();
-      if (dept) out.push({ dept_name: dept, group_name: grp });
+      if (dept) out.push({ dept_name: dept, group_name: grp, sort_no: i + 1 });
     }
     return out;
+  }
+
+  function sortDeptMasterRows674(rows) {
+    return rows.slice().sort(function (a, b) {
+      const sa = Number(a.sort_no);
+      const sb = Number(b.sort_no);
+      const na = Number.isFinite(sa) && sa > 0 ? sa : 99999;
+      const nb = Number.isFinite(sb) && sb > 0 ? sb : 99999;
+      if (na !== nb) return na - nb;
+      const dc = String(a.dept_name || '').localeCompare(String(b.dept_name || ''), 'ja');
+      if (dc !== 0) return dc;
+      return String(a.group_name || '').localeCompare(String(b.group_name || ''), 'ja');
+    });
   }
 
   /**
@@ -2616,8 +2629,8 @@
     }
     return kintoneApiGet('/k/v1/records.json', {
       app: app,
-      query: 'order by $id asc limit 500',
-      fields: ['dept_name', 'group_name'],
+      query: 'order by sort_no asc, $id asc limit 500',
+      fields: ['dept_name', 'group_name', 'sort_no'],
     })
       .then(function (resp) {
         const rows = [];
@@ -2625,9 +2638,18 @@
           const r = resp.records[i];
           const d = (r.dept_name && r.dept_name.value) || '';
           const g = (r.group_name && r.group_name.value) || '';
-          if (String(d).trim()) rows.push({ dept_name: String(d).trim(), group_name: String(g).trim() });
+          const sn = r.sort_no && r.sort_no.value != null && r.sort_no.value !== '' ? Number(r.sort_no.value) : NaN;
+          if (String(d).trim()) {
+            rows.push({
+              dept_name: String(d).trim(),
+              group_name: String(g).trim(),
+              sort_no: sn,
+            });
+          }
         }
-        deptMasterRowsCache674 = rows.length ? rows : parseDeptMasterFallbackRows674();
+        deptMasterRowsCache674 = rows.length
+          ? sortDeptMasterRows674(rows)
+          : parseDeptMasterFallbackRows674();
         return deptMasterRowsCache674;
       })
       .catch(function (e) {

@@ -15,7 +15,7 @@
    * - 新規・編集: 680 所属候補マスタから所属名・所属グループを選ぶモーダル（手入力も可）
    */
 
-  var BUILD = "2026-06-19-595-dept-picker-680";
+  var BUILD = "2026-06-23-595-dept-master-sort-no";
 
   /** 新・PC台帳 所属候補マスタ（674 共有・JR と共用） */
   var APP_DEPT_MASTER_595 = "680";
@@ -503,9 +503,22 @@
       var bar = seg.indexOf("|");
       var dept = (bar === -1 ? seg : seg.slice(0, bar)).trim();
       var grp = (bar === -1 ? "" : seg.slice(bar + 1)).trim();
-      if (dept) out.push({ dept_name: dept, group_name: grp });
+      if (dept) out.push({ dept_name: dept, group_name: grp, sort_no: i + 1 });
     }
     return out;
+  }
+
+  function sortDeptMasterRows595(rows) {
+    return rows.slice().sort(function (a, b) {
+      var sa = Number(a.sort_no);
+      var sb = Number(b.sort_no);
+      var na = isFinite(sa) && sa > 0 ? sa : 99999;
+      var nb = isFinite(sb) && sb > 0 ? sb : 99999;
+      if (na !== nb) return na - nb;
+      var dc = String(a.dept_name || "").localeCompare(String(b.dept_name || ""), "ja");
+      if (dc !== 0) return dc;
+      return String(a.group_name || "").localeCompare(String(b.group_name || ""), "ja");
+    });
   }
 
   function fetchDeptMasterRows595() {
@@ -521,8 +534,8 @@
     return kintone
       .api(url, "GET", {
         app: app,
-        query: "order by $id asc limit 500",
-        fields: ["dept_name", "group_name"],
+        query: "order by sort_no asc, $id asc limit 500",
+        fields: ["dept_name", "group_name", "sort_no"],
       })
       .then(function (resp) {
         var rows = [];
@@ -531,11 +544,21 @@
           var r = recs[i];
           var d = (r.dept_name && r.dept_name.value) || "";
           var g = (r.group_name && r.group_name.value) || "";
+          var sn =
+            r.sort_no && r.sort_no.value != null && r.sort_no.value !== ""
+              ? Number(r.sort_no.value)
+              : NaN;
           if (String(d).trim()) {
-            rows.push({ dept_name: String(d).trim(), group_name: String(g).trim() });
+            rows.push({
+              dept_name: String(d).trim(),
+              group_name: String(g).trim(),
+              sort_no: sn,
+            });
           }
         }
-        deptMasterRowsCache595 = rows.length ? rows : parseDeptMasterFallbackRows595();
+        deptMasterRowsCache595 = rows.length
+          ? sortDeptMasterRows595(rows)
+          : parseDeptMasterFallbackRows595();
         return deptMasterRowsCache595;
       })
       .catch(function (e) {
