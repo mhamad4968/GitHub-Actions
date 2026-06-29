@@ -394,11 +394,27 @@
       "note": null
     },
     "749": {
-      "build": "2026-06-28-nas-ledger-dash-v1",
-      "fileKey": "2413390d-ff9c-408c-a546-95be83fcd797",
-      "revision": "14",
+      "build": "2026-06-29-nas-ledger-list-hostname-v3",
+      "fileKey": "e379d04f-5f78-48ad-a445-67fbad703dbc",
+      "revision": "17",
       "relPath": "customize/nas-ledger-dash/desktop.js",
-      "deployedAt": "2026-06-28T11:01:54.287Z",
+      "deployedAt": "2026-06-29T09:56:31.822Z",
+      "note": null
+    },
+    "750": {
+      "build": "2026-06-29-mailing-list-db-block-ui",
+      "fileKey": "aab3dedf-5f21-4538-8025-694da8e0a777",
+      "revision": "6",
+      "relPath": "customize/mailing-list-db/desktop.js",
+      "deployedAt": "2026-06-29T10:58:19.959Z",
+      "note": null
+    },
+    "751": {
+      "build": "2026-06-29-mailing-list-dash-v1",
+      "fileKey": "69d2ee90-1197-43f2-bd45-d1fd681cd1ca",
+      "revision": "4",
+      "relPath": "customize/mailing-list-dash/desktop.js",
+      "deployedAt": "2026-06-29T10:58:06.073Z",
       "note": null
     }
   }

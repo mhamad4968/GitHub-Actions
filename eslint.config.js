@@ -24,6 +24,8 @@ export default [
       "customize/mfp-ledger-dash/desktop.js",
       // 749 NAS: SheetJS + org/location master + desktop.src.js → desktop.js（lint は src のみ）
       "customize/nas-ledger-dash/desktop.js",
+      // 751 メーリングリスト: SheetJS + dept master + desktop.src.js → desktop.js（lint は src のみ）
+      "customize/mailing-list-dash/desktop.js",
       // JREクラウド: SheetJS + desktop.src.js → desktop.js（lint は src のみ）
       "customize/jre-cloud-account-dash/desktop.js",
       // JRE-C_Hub: SheetJS + desktop.src.js → desktop.js（lint は src のみ）

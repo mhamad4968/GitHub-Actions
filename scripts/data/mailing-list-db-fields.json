@@ -1,17 +1,269 @@
 {
-  "description": "メーリングリストDB フィールド定義（GO 後 deploy 正本）",
-  "source": "docs/plans/2026-06-29-mailing-list-kintone-spec.md §5",
-  "fields": [
-    { "code": "sort_no", "label": "並び順", "type": "NUMBER", "required": true },
-    { "code": "legacy_no", "label": "管理番号", "type": "NUMBER", "required": false },
-    { "code": "department", "label": "利用部署", "type": "DROP_DOWN", "required": true },
-    { "code": "list_address", "label": "メールアドレス", "type": "SINGLE_LINE_TEXT", "required": true, "unique": true },
-    { "code": "purpose", "label": "利用用途", "type": "SINGLE_LINE_TEXT", "required": false },
-    { "code": "members_raw", "label": "メンバー", "type": "MULTI_LINE_TEXT", "required": true },
-    { "code": "status", "label": "状態", "type": "DROP_DOWN", "required": true, "options": ["有効", "削除"] },
-    { "code": "last_change_memo", "label": "直近変更メモ", "type": "SINGLE_LINE_TEXT", "required": false },
-    { "code": "note", "label": "備考", "type": "MULTI_LINE_TEXT", "required": false },
-    { "code": "registered_date", "label": "作成日", "type": "DATE", "required": true },
-    { "code": "updated_date", "label": "更新日", "type": "DATE", "required": true }
-  ]
+  "description": "メーリングリストDB",
+  "source": "docs/plans/2026-06-29-mailing-list-kintone-spec.md",
+  "properties": {
+    "sort_no": {
+      "type": "NUMBER",
+      "code": "sort_no",
+      "label": "並び順",
+      "required": true,
+      "noLabel": false,
+      "unique": false,
+      "digit": false,
+      "defaultValue": "",
+      "displayScale": "",
+      "unit": "",
+      "unitPosition": "BEFORE"
+    },
+    "legacy_no": {
+      "type": "NUMBER",
+      "code": "legacy_no",
+      "label": "管理番号",
+      "required": false,
+      "noLabel": false,
+      "unique": true,
+      "digit": false,
+      "defaultValue": "",
+      "displayScale": "",
+      "unit": "",
+      "unitPosition": "BEFORE"
+    },
+    "department": {
+      "type": "DROP_DOWN",
+      "code": "department",
+      "label": "利用部署",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "役員室": {
+          "label": "役員室",
+          "index": "0"
+        },
+        "顧問室": {
+          "label": "顧問室",
+          "index": "1"
+        },
+        "総務部": {
+          "label": "総務部",
+          "index": "2"
+        },
+        "経理部": {
+          "label": "経理部",
+          "index": "3"
+        },
+        "経営企画部": {
+          "label": "経営企画部",
+          "index": "4"
+        },
+        "システム推進室": {
+          "label": "システム推進室",
+          "index": "5"
+        },
+        "人事研修部": {
+          "label": "人事研修部",
+          "index": "6"
+        },
+        "人事研修部付出向者": {
+          "label": "人事研修部付出向者",
+          "index": "7"
+        },
+        "安全推進部": {
+          "label": "安全推進部",
+          "index": "8"
+        },
+        "施工推進部": {
+          "label": "施工推進部",
+          "index": "9"
+        },
+        "メンテナンス技術部": {
+          "label": "メンテナンス技術部",
+          "index": "10"
+        },
+        "塗装技術部": {
+          "label": "塗装技術部",
+          "index": "11"
+        },
+        "品質管理部": {
+          "label": "品質管理部",
+          "index": "12"
+        },
+        "東北支店": {
+          "label": "東北支店",
+          "index": "13"
+        },
+        "秋田営業所": {
+          "label": "秋田営業所",
+          "index": "14"
+        },
+        "盛岡営業所": {
+          "label": "盛岡営業所",
+          "index": "15"
+        },
+        "仙台営業所": {
+          "label": "仙台営業所",
+          "index": "16"
+        },
+        "関越支店": {
+          "label": "関越支店",
+          "index": "17"
+        },
+        "関越支店施工部": {
+          "label": "関越支店施工部",
+          "index": "18"
+        },
+        "新潟営業所": {
+          "label": "新潟営業所",
+          "index": "19"
+        },
+        "長野営業所": {
+          "label": "長野営業所",
+          "index": "20"
+        },
+        "高崎営業所": {
+          "label": "高崎営業所",
+          "index": "21"
+        },
+        "東京支店": {
+          "label": "東京支店",
+          "index": "22"
+        },
+        "東京支店施工部": {
+          "label": "東京支店施工部",
+          "index": "23"
+        },
+        "東京支店橋りょうリペア部": {
+          "label": "東京支店橋りょうリペア部",
+          "index": "24"
+        },
+        "千葉営業所": {
+          "label": "千葉営業所",
+          "index": "25"
+        },
+        "水戸営業所": {
+          "label": "水戸営業所",
+          "index": "26"
+        },
+        "東海支店": {
+          "label": "東海支店",
+          "index": "27"
+        },
+        "東京営業所": {
+          "label": "東京営業所",
+          "index": "28"
+        },
+        "静岡営業所": {
+          "label": "静岡営業所",
+          "index": "29"
+        },
+        "名古屋営業所": {
+          "label": "名古屋営業所",
+          "index": "30"
+        },
+        "関西営業所": {
+          "label": "関西営業所",
+          "index": "31"
+        },
+        "札幌支店": {
+          "label": "札幌支店",
+          "index": "32"
+        },
+        "首都圏支店": {
+          "label": "首都圏支店",
+          "index": "33"
+        },
+        "鉄構支店": {
+          "label": "鉄構支店",
+          "index": "34"
+        },
+        "湾岸工事所": {
+          "label": "湾岸工事所",
+          "index": "35"
+        },
+        "ブリッジニアプラス": {
+          "label": "ブリッジニアプラス",
+          "index": "36"
+        },
+        "鎌ヶ谷作業所": {
+          "label": "鎌ヶ谷作業所",
+          "index": "37"
+        }
+      }
+    },
+    "list_address": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "list_address",
+      "label": "メールアドレス",
+      "required": true,
+      "noLabel": false,
+      "unique": true,
+      "defaultValue": ""
+    },
+    "purpose": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "purpose",
+      "label": "利用用途",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "members_raw": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "members_raw",
+      "label": "メンバー",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "status": {
+      "type": "DROP_DOWN",
+      "code": "status",
+      "label": "状態",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "有効",
+      "options": {
+        "有効": {
+          "label": "有効",
+          "index": "0"
+        },
+        "削除": {
+          "label": "削除",
+          "index": "1"
+        }
+      }
+    },
+    "last_change_memo": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "last_change_memo",
+      "label": "直近変更メモ",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "note": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "note",
+      "label": "備考",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "registered_date": {
+      "type": "DATE",
+      "code": "registered_date",
+      "label": "作成日",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "updated_date": {
+      "type": "DATE",
+      "code": "updated_date",
+      "label": "更新日",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    }
+  }
 }
