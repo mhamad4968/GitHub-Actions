@@ -26,7 +26,7 @@
 
 - **OK 例**: `Git残件: なし（clean・origin 同期・verify exit 0）` ＋ HEAD 短 hash
 - **NG 例**: `Git残件: あり — 未コミット N 件 / ahead M / verify exit 1` ＋ **次の1手** 1 行
-- **NG 時**: 本題着手前に B1 整理または §41 で方針合意（checkpoint に GO がある場合は先に実施可）
+- **NG 時**: 本題着手前に B1 整理または §41 で方針合意（checkpoint に GO がある場合は先に実施可）。**688 / 677–679 / SKYSEA** は触らない。
 
 **禁止**: Git 残件報告の省略・「要点だけ」・未実行の隠蔽（B1 47 件持ち越し再発防止）
 
