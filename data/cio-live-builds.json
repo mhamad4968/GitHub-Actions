@@ -3,11 +3,11 @@
   "apps": {
     "595": {
       "build": "2026-06-23-595-dept-master-sort-no",
-      "fileKey": "202606231000593ED5521E0A3D4425A87C4D0851F5A689156",
-      "revision": "98",
-      "relPath": "customize/595/desktop.js",
-      "deployedAt": "2026-06-29T09:29:09.324Z",
-      "note": "tmp-sync-live-customize-build-drift 2026-06-29"
+      "fileKey": "bb0385d0-7151-486c-974d-43bbec59abcd",
+      "revision": "99",
+      "relPath": ".kintone-deploy/upload-595.js",
+      "deployedAt": "2026-06-29T09:29:53.329Z",
+      "note": null
     },
     "627": {
       "build": "2026-05-12-627-no594-rest",
@@ -27,11 +27,11 @@
     },
     "674": {
       "build": "2026-06-23-674-dept-master-sort-no",
-      "fileKey": "202606231001092FFE8CCBBC774DCB87599650DD33366F305",
-      "revision": "246",
-      "relPath": "customize/new-pc-ledger-v1/desktop.js",
-      "deployedAt": "2026-06-29T09:29:09.677Z",
-      "note": "tmp-sync-live-customize-build-drift 2026-06-29"
+      "fileKey": "4b9672c8-4166-49f1-832a-81df9a92e783",
+      "revision": "247",
+      "relPath": ".kintone-deploy/upload-674.js",
+      "deployedAt": "2026-06-29T09:29:58.536Z",
+      "note": null
     },
     "677": {
       "build": "2026-05-15-677-block-all-ui-mutations-dash678-only",

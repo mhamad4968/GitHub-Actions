@@ -203,6 +203,8 @@ npm run app:fields <アプリID>
 
 | 日時（UTC） | アプリID | customize パス |
 |-------------|----------|----------------|
+| 2026-06-29T09:29:58Z | 674 | `customize/new-pc-ledger-v1/desktop.js` |
+| 2026-06-29T09:29:58Z | 595 | `customize/595/desktop.js` |
 | 2026-06-25T13:50:56Z | 683 | `customize/683/desktop.js` |
 | 2026-06-24T12:16:45Z | 736 | `customize/736/desktop.js` |
 | 2026-06-24T11:16:57Z | 736 | `customize/736/desktop.js` |
