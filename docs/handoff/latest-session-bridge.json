@@ -1,18 +1,22 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-06-29T09:30:00.000Z",
-  "gitHead": "d458979",
+  "exportedAt": "2026-06-29T11:23:24.757Z",
+  "gitHead": "b584332",
   "gitStatus": "## main...origin/main",
-  "nextTask": "**浜田依頼待ち** — ブリーフィング時 **Git残件 3c 必須報告**（736 Step2-3 等は GO 後・**688 / 677–679 / SKYSEA** 触らない）",
+  "nextTask": "**浜田依頼待ち**（項番 -0 で本題合意まで着手しない）",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
     "docs/handoff/latest-session-bridge.json",
-    "chat-sessions/SESSION-BOOTSTRAP-CHECKLIST.md",
-    "docs/runbooks/session-lifecycle-v2.md"
+    "docs/runbooks/session-lifecycle-v2.md",
+    "docs/runbooks/push-deploy-quality-gates-v2.md",
+    "docs/runbooks/checkpoint-handoff-template-v2.md",
+    "docs/runbooks/ai-team-tool-routing-v2.md",
+    ".cursor/rules/mode-b-canonical.mdc",
+    "docs/knowledge/debug-tips.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=d458979 clean | 次=浜田依頼待ち | ブリーフィング必須: verify:session-close-git-warn 結果 1行（3c） | Read: checkpoint-latest.md, handoff-log.md 末尾",
-  "note": "B1 完了 2026-06-29。ブリーフィング Git 残件報告義務（CEO 2026-06-29）",
-  "validatedAt": "2026-06-29T09:30:00.000Z",
+  "promptBlock": "【SESSION-BRIDGE】git=b584332 | 次=**浜田依頼待ち**（項番 -0 で本題合意まで着手しない） | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
+  "validatedAt": "2026-06-29T11:23:32.455Z",
   "crosscheckOk": true
 }

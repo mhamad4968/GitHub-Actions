@@ -3505,3 +3505,18 @@ npm run cio:morning:ready
 **ルール追補**: セッション切替ブリーフィングで **`verify:session-close-git-warn` 結果を必ず 1 行報告**（NG 時は件数・次の1手）。bootstrap に非ブロック内包。
 
 ---
+
+### 2026-06-29 JST — **メーリングリスト 750/751 v1 CLOSED + NAS sync + セッション締め**
+
+**要約**: メーリングリスト spec→実装→63件移行→目視OK→v1 CLOSED。NAS os_type/xlsx resync/ホスト名列 repo 同期。夕反省で CLOSED≠締め混同・先走り・B1残置を記録。
+
+**AI 補足（漏れ防止）**:
+- `git`: **`b584332`** = `origin/main` — 締め commit 後 clean 目標
+- `次の1手`: **浜田依頼待ち**（736 Step2-3 等は GO 後）
+- `GO待ち`: 夕反省改善案 A-ML / R-ML / S-ML / D-ML — **承認待ち**
+- `触らない`: 688 / 677–679 / SKYSEA
+- `関連`: `docs/reports/2026-06-29-evening-reflection.md` / `SESSION-CLOSE-REPORT-20260629.txt`
+
+**反省（1行）**: 案件 CLOSED をセッション締めと混同した。712 リンク済みを未完了と誤認した。
+
+---
