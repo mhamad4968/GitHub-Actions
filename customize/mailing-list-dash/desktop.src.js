@@ -3,7 +3,7 @@
   /* global ML_DEPT_MASTER */
 
   /** メーリングリスト台帳 — 742/696 型 Excel 風一覧 + REST CRUD + 印刷 + xlsx */
-  var BUILD = "2026-06-29-mailing-list-dash-v1";
+  var BUILD = "2026-06-29-mailing-list-dash-clear-btn-v2";
   var LIST_DOMAIN = "@j-bis.co.jp";
   var STATUS_ACTIVE = "有効";
   var STATUS_DELETED = "削除";
@@ -987,6 +987,21 @@
     exportListXlsx(rows);
   }
 
+  function clearSearchFilters() {
+    state.search = "";
+    state.memberSearch = "";
+    state.departmentFilter = "";
+    state.statusFilter = STATUS_ACTIVE;
+    var search = document.getElementById("mll-search");
+    if (search) search.value = "";
+    var member = document.getElementById("mll-member-search");
+    if (member) member.value = "";
+    var dept = document.getElementById("mll-dept-filter");
+    if (dept) dept.value = "";
+    refreshDeptFilterOptions();
+    renderTable();
+  }
+
   function buildUi(host) {
     host.innerHTML =
       '<div class="mll-root">' +
@@ -998,6 +1013,7 @@
       '<input type="search" id="mll-search" placeholder="キーワード検索（メール・メンバー・用途・部署・備考）空白AND" style="min-width:280px;padding:6px;">' +
       '<input type="search" id="mll-member-search" placeholder="メンバー検索（部分一致）" style="min-width:180px;padding:6px;">' +
       '<select id="mll-dept-filter" aria-label="利用部署で絞り込み"><option value="">すべての部署</option></select>' +
+      '<button type="button" id="mll-clear" class="kintoneplugin-button-normal">条件クリア</button>' +
       '<button type="button" id="mll-print-list" class="kintoneplugin-button-normal">一覧印刷</button>' +
       '<button type="button" id="mll-xlsx" class="kintoneplugin-button-normal">Excel出力</button>' +
       '<span style="font-size:11px;color:#64748b;margin-left:8px">BUILD ' +
@@ -1009,6 +1025,7 @@
       "</div>";
 
     document.getElementById("mll-new").addEventListener("click", openNewModal);
+    document.getElementById("mll-clear").addEventListener("click", clearSearchFilters);
     document.getElementById("mll-print-list").addEventListener("click", printList);
     document.getElementById("mll-xlsx").addEventListener("click", exportXlsx);
     document.getElementById("mll-search").addEventListener("input", function (ev) {

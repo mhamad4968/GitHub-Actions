@@ -410,11 +410,11 @@
       "note": null
     },
     "751": {
-      "build": "2026-06-29-mailing-list-dash-v1",
-      "fileKey": "69d2ee90-1197-43f2-bd45-d1fd681cd1ca",
-      "revision": "4",
+      "build": "2026-06-29-mailing-list-dash-clear-btn-v2",
+      "fileKey": "6b5969d9-74fd-475f-8598-dc679927e444",
+      "revision": "5",
       "relPath": "customize/mailing-list-dash/desktop.js",
-      "deployedAt": "2026-06-29T10:58:06.073Z",
+      "deployedAt": "2026-06-29T11:02:18.205Z",
       "note": null
     }
   }

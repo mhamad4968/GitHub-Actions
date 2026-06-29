@@ -1,7 +1,9 @@
 # メーリングリスト台帳 — kintone 仕様書（SPEC）
 
 > **起票**: 2026-06-29 (日)  
-> **状態**: **v1 運用開始 — 目視確認待ち**（App ID **750** / **751**・63 件移行・deploy 済 **2026-06-29**）  
+> **状態**: **v1 完成 — CLOSED**（浜田目視 OK **2026-06-29**・本番 Excel 削除済）  
+> **App ID**: **750**（DB）/ **751**（台帳） — `scripts/data/mailing-list-app-ids.json`  
+> **完成報告**: `docs/reports/2026-06-29-mailing-list-completion.md`  
 > **配置**: [Space 48](https://jbis-kintone.cybozu.com/k/#/space/48) **thread 52**（NAS 748/749・VPN 733/734 と同エリア）  
 > **移行元 Excel**: `C:\tmp\メーリングリスト一覧\メーリングリスト一覧.xlsx`（シート **Sheet2**・**63 件**）  
 > **機械分析**: `docs/plans/tmp-mailing-list-xlsx-structure.json`  
@@ -300,9 +302,9 @@ BIZメール管理画面へ同内容を反映して保存
 | M2 | 浜田 **実装 GO** | **済** |
 | M3 | DB + 台帳作成・フィールド deploy | **済**（750/751） |
 | M4 | Excel 移行（63 件） | **済** |
-| M5 | 台帳 customize deploy | **済** BUILD=`2026-06-29-mailing-list-dash-v1` rev **4** |
-| M6 | 浜田目視 OK → 利用用途入力 → Excel 廃止 | **待ち** |
-| M7 | `kintone-apps.md` 更新・712 ポータルリンク（任意） | — |
+| M5 | 台帳 customize deploy | **済** BUILD=`2026-06-29-mailing-list-dash-clear-btn-v2` rev **5** |
+| M6 | 浜田目視 OK → 利用用途入力 → Excel 廃止 | **済**（目視 OK・本番 Excel 削除 **2026-06-29**） |
+| M7 | `kintone-apps.md` 更新・712 ポータルリンク（任意） | **済**（台帳 rev 5） / 712 は任意 |
 
 ---
 
@@ -350,4 +352,4 @@ BIZメール管理画面へ同内容を反映して保存
 
 | 日付 | 内容 |
 |------|------|
-| 2026-06-29 | 初版確定（浜田 Q&A Q1–Q8・AI レビュー §15・63 件移行・Space 48） |
+| 2026-06-29 | **v1 完成 — CLOSED** — 条件クリア・浜田目視 OK・本番 Excel 削除済 |

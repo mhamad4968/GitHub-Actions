@@ -181,6 +181,24 @@
         "749"
       ],
       "note": "23件・一覧・CRUD・印刷・xlsx・購入日/購入先。浜田目視 OK（2026-06-28）。Excel 完全削除済（2026-06-28 浜田報告）。Space48→712 リンク追加済（2026-06-28 浜田手動）。kintone 748/749 のみ正本"
+    },
+    {
+      "id": "mailing-list",
+      "laneId": "mailing-list",
+      "label": "メーリングリスト台帳",
+      "status": "closed-v1",
+      "closedAt": "2026-06-29",
+      "completionReport": "docs/reports/2026-06-29-mailing-list-completion.md",
+      "kintoneAppsSection": "メーリングリスト台帳（Space 48 — 750–751）",
+      "kintoneAppsStateMarker": "v1 完成 — CLOSED",
+      "forbiddenNextTaskPatterns": [
+        "メーリングリスト",
+        "mailing-list",
+        "メーリングリスト一覧",
+        "750",
+        "751"
+      ],
+      "note": "63件・メンバー検索・変更メモ・条件クリア・印刷/xlsx。浜田目視 OK（2026-06-29）。本番 Excel 削除済（2026-06-29 浜田報告）。kintone 750/751 のみ正本"
     }
   ]
 }
