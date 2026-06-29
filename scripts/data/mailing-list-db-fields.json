@@ -1,0 +1,17 @@
+{
+  "description": "メーリングリストDB フィールド定義（GO 後 deploy 正本）",
+  "source": "docs/plans/2026-06-29-mailing-list-kintone-spec.md §5",
+  "fields": [
+    { "code": "sort_no", "label": "並び順", "type": "NUMBER", "required": true },
+    { "code": "legacy_no", "label": "管理番号", "type": "NUMBER", "required": false },
+    { "code": "department", "label": "利用部署", "type": "DROP_DOWN", "required": true },
+    { "code": "list_address", "label": "メールアドレス", "type": "SINGLE_LINE_TEXT", "required": true, "unique": true },
+    { "code": "purpose", "label": "利用用途", "type": "SINGLE_LINE_TEXT", "required": false },
+    { "code": "members_raw", "label": "メンバー", "type": "MULTI_LINE_TEXT", "required": true },
+    { "code": "status", "label": "状態", "type": "DROP_DOWN", "required": true, "options": ["有効", "削除"] },
+    { "code": "last_change_memo", "label": "直近変更メモ", "type": "SINGLE_LINE_TEXT", "required": false },
+    { "code": "note", "label": "備考", "type": "MULTI_LINE_TEXT", "required": false },
+    { "code": "registered_date", "label": "作成日", "type": "DATE", "required": true },
+    { "code": "updated_date", "label": "更新日", "type": "DATE", "required": true }
+  ]
+}

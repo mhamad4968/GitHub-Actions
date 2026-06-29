@@ -1,0 +1,43 @@
+{
+  "analyzedAt": "2026-06-29",
+  "sourcePath": "C:\\\\tmp\\\\メーリングリスト一覧\\\\メーリングリスト一覧.xlsx",
+  "sheet": "Sheet2",
+  "headerRow": 0,
+  "columns": [
+    "legacy_no",
+    "department",
+    "list_address",
+    "purpose",
+    "members_raw"
+  ],
+  "rowCount": 63,
+  "uniqueMembersApprox": 201,
+  "notes": [
+    "members_raw is comma-separated in Excel",
+    "purpose column empty for all rows at analysis time",
+    "All list_address domains are @j-bis.co.jp"
+  ],
+  "sampleRows": [
+    {
+      "legacy_no": 1,
+      "department": "経理部",
+      "list_address": "jbis-keiri@j-bis.co.jp",
+      "purpose": "",
+      "members_raw": "tsuchiya,funasaki-y,s-hashiba,n-kusunoki,takebayashi,a-wada"
+    },
+    {
+      "legacy_no": 2,
+      "department": "経営企画部",
+      "list_address": "jbis-rc-renraku@j-bis.co.jp",
+      "purpose": "",
+      "members_raw": "tsukioka@bss.ne.jp,hideyuki.kimata@mitsubishi-autolease.com,miyu.toda@mitsubishi-autolease.com,sayaka.niwa@mitsubishi-autolease.com,funasaki-y,y-funasaki,hashiba,kodama,t-kodama,s-hashiba"
+    },
+    {
+      "legacy_no": 3,
+      "department": "経営企画部",
+      "list_address": "jbis-postmaster@j-bis.co.jp",
+      "purpose": "",
+      "members_raw": "hashiba,jbis-postmaster,s-hashiba"
+    }
+  ]
+}
