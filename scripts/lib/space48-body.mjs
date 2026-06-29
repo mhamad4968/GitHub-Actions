@@ -38,14 +38,49 @@ export function buildVpnLicenseNoticeHtml(ym) {
 }
 
 export function hasVpnLicenseNotice(body) {
-  return body.includes(VPN_NOTICE_MARKER);
+  return VPN_NOTICE_MARKERS.some((m) => body.includes(m));
+}
+
+/** kintone PUT 後に style が正規化されても除去できるようマーカー複数 */
+export const VPN_NOTICE_MARKERS = [
+  VPN_NOTICE_MARKER,
+  '【VPNライセンス】月末の確定をお忘れなく',
+];
+
+/** @returns {number} marker を含む div ブロックの先頭 index（無ければ -1） */
+function findVpnNoticeDivStart(body) {
+  let best = -1;
+  for (const marker of VPN_NOTICE_MARKERS) {
+    const idx = body.indexOf(marker);
+    if (idx < 0) continue;
+    const divStart = body.lastIndexOf('<div', idx);
+    if (divStart < 0) continue;
+    if (best < 0 || divStart < best) best = divStart;
+  }
+  return best;
+}
+
+/** 1 ブロックだけ除去（marker 基準・style 正規化に非依存） */
+export function removeOneVpnLicenseNotice(body) {
+  const divStart = findVpnNoticeDivStart(body);
+  if (divStart < 0) return body;
+  const divEnd = body.indexOf('</div>', divStart);
+  if (divEnd < 0) return body;
+  return body.slice(0, divStart) + body.slice(divEnd + '</div>'.length);
 }
 
 export function removeVpnLicenseNotice(body) {
+  let result = body;
+  for (;;) {
+    const next = removeOneVpnLicenseNotice(result);
+    if (next === result) break;
+    result = next;
+  }
+  // 旧形式（style 完全一致）の残骸も除去
   const styleEsc = VPN_NOTICE_BOX_STYLE.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const markerEsc = VPN_NOTICE_MARKER.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const re = new RegExp(`<div style="${styleEsc}"[^>]*>[\\s\\S]*?${markerEsc}[\\s\\S]*?<\\/div>\\s*`, 'g');
-  return body.replace(re, '');
+  return result.replace(re, '');
 }
 
 export function upsertVpnLicenseNotice(body, noticeHtml) {
