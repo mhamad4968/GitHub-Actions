@@ -25,7 +25,7 @@
 | **736 担当説明 保留** | Step2-3 待ち |
 
 **次の1手**: **浜田依頼待ち**（項番 -0 で本題合意まで着手しない）
-**Git**: **`b584332`** = `origin/main` — clean（`verify:session-close-git-warn` exit 0 目標・2026-06-29 締め）
+**Git**: **`b53faa8`** = `origin/main` — v1 CLOSED push 済
 **触らない**: **688 / 677–679 / SKYSEA**
 
 ### ブリーフィング必須（CEO 2026-06-29）
