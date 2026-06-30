@@ -3,10 +3,10 @@
   "apps": {
     "595": {
       "build": "2026-06-30-595-bulk-log-no-dup",
-      "fileKey": "15bae8b0-1d90-4d79-bbfa-2dbf3244d1f1",
-      "revision": "106",
-      "relPath": "customize/595/desktop.js",
-      "deployedAt": "2026-06-30T12:14:51.000Z",
+      "fileKey": "09b4a1a1-da57-4400-b7ee-1794b31cc4b9",
+      "revision": "107",
+      "relPath": ".kintone-deploy/upload-595.js",
+      "deployedAt": "2026-06-30T12:21:38.854Z",
       "note": null
     },
     "627": {
