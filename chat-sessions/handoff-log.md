@@ -3534,4 +3534,10 @@ npm run cio:morning:ready
 
 **次の1手**: **浜田依頼待ち**（項番 -0）
 
+**Git**: `9edc9d6` = `origin/main` — clean（`verify:session-close-git-warn` exit 0）
+
+**GO待ち**: なし
+
+**触らない**: 688 / 677–679 / SKYSEA
+
 ---
