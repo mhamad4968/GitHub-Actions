@@ -75,7 +75,7 @@ DRY_RUN_TO_APPLY_GAP: same-turn|>=1-turn|n/a
 - **`DESTRUCTIVE_OPS != none`** かつ **`DRY_RUN_TO_APPLY_GAP: same-turn`** も同様に **フォロー必須**（**`kintone-destructive-rest-guard.mdc` 違反候補**）。
 - **`CHECKSHEET_VERSION: 1`（3 行のみ）**は報告ターンでは **受理せず**、hooks が **V2 七行を要求**（`FAILED_STRICT_V1`）。
 - **直後に**（同じ末尾ブロック内でよい）**人間可読のチェックリスト**を出す — 正本 **`docs/session-report-checklist.md` §M-2**／短縮 **`chat-sessions/desktop-ai-emergency-read-pack/20-SESSION-REPORT-CHECKLIST.txt`**（`[ルール確認]` に **いずれかを Read 済み**と書く）。
-- **CEO 最低基準（絶対条件）全文（2026-05-09 CEO／機械検証）**: **すべての CIO 応答**で、`chat-sessions/CEO-MINIMUM-ABSOLUTE-BASELINE.txt`（＝ Desktop `＃重要確認事項.txt` 同ブロック）の **非空行すべて**を本文に **一字一句変えず含める**（`report-checksheet-validate.mjs` が **`head-only` と `full` の両方**で検査し、**1 行でも欠けると `CEO_MINIMUM_BLOCK`** で `stop` フォロー）。**2 語句だけの再宣言・要約・「要点のみ」は不合格**。read-pack **`chat-sessions/desktop-ai-emergency-read-pack/18-重要確認.txt`** にも同全文あり。
+- **CEO 最低基準（絶対条件）全文（2026-05-09 CEO／機械検証）**: **すべての CIO 応答**で、`chat-sessions/CEO-MINIMUM-ABSOLUTE-BASELINE.txt`（read-pack `18-重要確認.txt` と同一。**Desktop `＃重要確認事項.txt` は 2026-06-30 廃止**）の **非空行すべて**を本文に **一字一句変えず含める**（`report-checksheet-validate.mjs` が **`head-only` と `full` の両方**で検査し、**1 行でも欠けると `CEO_MINIMUM_BLOCK`** で `stop` フォロー）。**2 語句だけの再宣言・要約・「要点のみ」は不合格**。
 - **IDE 外・hooks 非経路（Composer 等）**: hooks が **当該応答を検証できない経路**でも、**最低基準・報告違反・重要確認の充足／不足を論じる応答**では **上記 CEO ブロック全文を自発で貼る**（**判否の一行だけに逃げない**。浜田が繰り返し指摘しなくて済む状態を正とする）。
 - **§P □A1・ダブルチェック要約（機械検査・2026-05-09）**: **報告ターン（`mode: full`）**では **`□ A1`** 行に **`ダブルチェック（誰と・結果）`** を含め、**`ダブルチェック要約:`** 行に **誰が**第2者チェックしたか（または **無／非該当／§50-3-8 スキップ**の明示）を書く（`report-checksheet-validate.mjs` が **`DOUBLE_CHECK_ATTRIBUTION`** で `stop` フォロー）。
 

@@ -99,7 +99,7 @@ function runReportPrecheck() {
   }));
   if (ceo.status !== 0 && ceo.status !== null) {
     violations.push(
-      'CEO 最低基準ブロック（`chat-sessions/CEO-MINIMUM-ABSOLUTE-BASELINE.txt` と Desktop `＃重要確認事項.txt` の一致）不整合 — `npm run verify:ceo-minimum-baseline`'
+      'CEO 最低基準ブロック（`chat-sessions/CEO-MINIMUM-ABSOLUTE-BASELINE.txt` と read-pack `18-重要確認.txt`）不整合 — `npm run verify:ceo-minimum-baseline`'
     );
   }
 

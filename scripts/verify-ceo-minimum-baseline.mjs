@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 /**
- * verify-ceo-minimum-baseline.mjs — Desktop「＃重要確認事項.txt」の CEO 最低基準ブロック欠落を検出
+ * verify-ceo-minimum-baseline.mjs — CEO 最低基準ブロック欠落を検出
  *
- * - リポ正本: chat-sessions/CEO-MINIMUM-ABSOLUTE-BASELINE.txt（浜田 Desktop と同旨のミラー）
- * - read-pack: chat-sessions/desktop-ai-emergency-read-pack/18-重要確認.txt にも **ミラー各行**が含まれること（緊急読取で抜け防止）
- * - Desktop にファイルがある場合は **正本の各行**が Desktop に含まれること（部分欠落禁止）
- * - Desktop が無い環境（CI 等）はミラー本文＋固定アンカーのみ検査
+ * - リポ正本: chat-sessions/CEO-MINIMUM-ABSOLUTE-BASELINE.txt
+ * - read-pack: chat-sessions/desktop-ai-emergency-read-pack/18-重要確認.txt にも **ミラー各行**が含まれること
+ * - Desktop `＃重要確認事項.txt` は 2026-06-30 廃止（存在時のみ同期検査・R-0630-02 GO）
  *
  * 終了: 0=OK / 2=NG（例外なし）
  *

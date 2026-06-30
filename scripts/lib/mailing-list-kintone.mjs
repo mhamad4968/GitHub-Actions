@@ -12,7 +12,8 @@ export const DASH_APP_NAME = 'メーリングリスト台帳';
 export const SPACE_ID = Number(process.env.MAILING_LIST_SPACE_ID || 48);
 export const THREAD_ID = Number(process.env.MAILING_LIST_THREAD_ID || 52);
 export const DEFAULT_XLSX =
-  process.env.MAILING_LIST_XLSX || 'C:\\tmp\\メーリングリスト一覧\\メーリングリスト一覧.xlsx';
+  process.env.MAILING_LIST_XLSX ||
+  'C:\\tmp\\メーリングリスト一覧\\メーリングリスト一覧更新2.xlsx';
 export const STATUS_ACTIVE = '有効';
 export const STATUS_DELETED = '削除';
 export const LIST_DOMAIN = '@j-bis.co.jp';

@@ -8,15 +8,15 @@ alwaysApply: true
 
 ## デスクトップ正本（CEO 厳守・機械検査対象）
 
-- `C:\Users\mhamada202408224\Desktop\＃重要確認事項.txt` — **運用上の最優先短冊**（リポの `AGENTS.md` と併用。食い違いは **CEO 正本優先**＋チャットに 1 行記録）。**CEO 最低基準ブロックはすべての CIO 応答に含める条件**（`CEO-MINIMUM-ABSOLUTE-BASELINE.txt` と同一）。**CIO 統合統制は浜田に作業手順を仰ぐための制度ではない**— **CIO が自律指揮し AI チームで自動実行**（**「次は何を指示しますか」と浜田に返すのは禁止**。仕様・GO／NO-GO・例外・動作確認依頼のみ浜田）。
-- `C:\Users\mhamada202408224\Desktop\AI緊急用\` — **報告・大きな完了前の参照の束**（`08-INDEX.txt` 等を Read）。**不存在**は hooks が `logs/report-precheck.log` に追記（`cio-desktop-path-guard.mjs`）。**Agent がターミナルで Desktop を列挙するとき**はワークスペース外のため **Run 確認が出やすい** — **`%USERPROFILE%\.cursor\sandbox.json`** の **`additionalReadonlyPaths`**（本フォルダ＋`Desktop`）と **`permissions.json` の `Sort-` 等**、および **Cursor Settings → Agents → Auto-Run が Ask Every Time 以外**であること（**手順の短文**: `chat-sessions/AI緊急用-README.txt` 冒頭【CIO／Agent】）。**長い `node -e` 一括ファイル書き換え**も別ゲートで **Run が残る**ことがある → **Desktop `＃重要確認事項.txt` の Cursor 節**（**`scripts/*.mjs` / `npm run` 優先**）。**MCP 名の健全性**は **`npm run verify:cio-mcp-registry`**、実プロセスは **`npm run cio:mcp:env`**（`docs/mcp-status.md` §CIO）。
+- **CEO 最低基準ブロック** — リポ正本 `chat-sessions/CEO-MINIMUM-ABSOLUTE-BASELINE.txt`（read-pack `desktop-ai-emergency-read-pack/18-重要確認.txt` と同一）。**すべての CIO 応答に含める条件**。**Desktop `＃重要確認事項.txt` は 2026-06-30 廃止**（R-0630-02 GO）。**CIO 統合統制は浜田に作業手順を仰ぐための制度ではない**— **CIO が自律指揮し AI チームで自動実行**（**「次は何を指示しますか」と浜田に返すのは禁止**。仕様・GO／NO-GO・例外・動作確認依頼のみ浜田）。
+- `C:\Users\mhamada202408224\Desktop\AI緊急用\` — **報告・大きな完了前の参照の束**（`08-INDEX.txt` 等を Read）。**不存在**は hooks が `logs/report-precheck.log` に追記（`cio-desktop-path-guard.mjs`）。**Agent がターミナルで Desktop を列挙するとき**はワークスペース外のため **Run 確認が出やすい** — **`%USERPROFILE%\.cursor\sandbox.json`** の **`additionalReadonlyPaths`**（本フォルダ＋`Desktop`）と **`permissions.json` の `Sort-` 等**、および **Cursor Settings → Agents → Auto-Run が Ask Every Time 以外**であること（**手順の短文**: `chat-sessions/AI緊急用-README.txt` 冒頭【CIO／Agent】）。**長い `node -e` 一括ファイル書き換え**も別ゲートで **Run が残る**ことがある → **`scripts/*.mjs` / `npm run` 優先**（read-pack `18-重要確認.txt` Cursor 節）。**MCP 名の健全性**は **`npm run verify:cio-mcp-registry`**、実プロセスは **`npm run cio:mcp:env`**（`docs/mcp-status.md` §CIO）。
 - **CEO 命令（2026-05-09）**: **`AI緊急用\00`〜`26` を索引どおり精読**（抜け・要約のみ禁止）。**`00`**＝ハブ v3.36 分割 Read 順、**`08`**＝read-pack 読取順、**`18`**＝浜田 Desktop 専用重要確認、**`20`**＝報告チェックシート、**`21`/`22`/`23`**＝bootstrap／人間 handoff／フォルダ README、**`24`/`25`**＝handoff／checkpoint 鏡、**`26`**＝夕反省（任意）。**毎ターンの §1 四行・§M-2**は **`18`/`20` と整合**させる。
 
 ## 異常時は本題を止める（CIO 統制）
 
-- **`npm run health-check` / `smoke:quiet` / `verify:mandatory-read-gate` / `verify-constitution-handoff`** のいずれかが **赤**のときは、**CEO の追加 GO なしに本題（仕様変更・deploy・大量コミット）に進まない**（Desktop 重要確認事項・**止めてルール修正**の精神に合致）。
+- **`npm run health-check` / `smoke:quiet` / `verify:mandatory-read-gate` / `verify-constitution-handoff`** のいずれかが **赤**のときは、**CEO の追加 GO なしに本題（仕様変更・deploy・大量コミット）に進まない**（CEO 最低基準・**止めてルール修正**の精神に合致）。
 - **是正の順**: ログを読む → **最小パッチ** → 再実行で **緑を確認** → チャットに **1 行で何を直したか**。
-- **即応・AIチーム責任（CEO／Desktop 正本 2026-05-09）**: 抜け・hooks 非経路・報告体裁の欠落を指摘されたら、**CIO が判断し同一ターンで**正本（`＃重要確認事項.txt`）・`every-turn-rules-confirm.mdc`・検証 npm を更新する（**浜田に「どうしますか」と返さない**）。**DeepSeek／Kimi／OpenRouter を含む AI チーム全体**で再発防止に取り組み、**謝罪のみで終わらせない**（`handoff`／`checkpoint`／Desktop に **何を直したか**を残す）。
+- **即応・AIチーム責任（CEO／2026-05-09）**: 抜け・hooks 非経路・報告体裁の欠落を指摘されたら、**CIO が判断し同一ターンで**正本（`CEO-MINIMUM-ABSOLUTE-BASELINE.txt`）・`every-turn-rules-confirm.mdc`・検証 npm を更新する（**浜田に「どうしますか」と返さない**）。**DeepSeek／Kimi／OpenRouter を含む AI チーム全体**で再発防止に取り組み、**謝罪のみで終わらせない**（`handoff`／`checkpoint`／Desktop に **何を直したか**を残す）。
 
 ## 薄型憲法スタック（読む順・迷い防止）
 
@@ -61,7 +61,7 @@ alwaysApply: true
 
 ### 合意の機械化（「全自動」ではなく **検証可能な 2 者＋CEO**）
 
-- **目的**: 「口頭だけの合意」を禁止し、**リポに残る JSON** で **DeepSeek＋Kimi の両スロット**（または **CEO 一行**）を満たしたことを `verify` が確認する（＝**Desktop ＃重要確認事項 の 2 名チェック**に相当する外部化）。
+- **目的**: 「口頭だけの合意」を禁止し、**リポに残る JSON** で **DeepSeek＋Kimi の両スロット**（または **CEO 一行**）を満たしたことを `verify` が確認する（＝**CEO 最低基準ブロックの 2 名チェック**に相当する外部化）。
 - **コマンド**: `npm run cio:consensus-seal -- verify` → **両者テキスト非空** または **ceoLine 非空**で **exit 0**。未充足は **exit 1**。**手元／プッシュ前**は **PR 作者（CIO）** が **`verify`（厳格）** を実行する（状態ファイル無しは **exit 2**＝シール未開始の検知）。
 - **CI**: `npm run cio:consensus-seal:verify-ci`（**`verify --if-present`**）— **追跡された** `chat-sessions/cio-consensus-seal.json` が **無い／topic 空**なら **exit 0**、**有効 topic かつ未充足**なら **exit 1**（ゲート PR のみ赤化）。
 - **Git 方針（CIO 2026-05-09）**: 作業中の **`chat-sessions/cio-consensus-seal.json`** は **`.gitignore` 既定**（ローカル汚染防止）。**CI で合意を必須にしたい PR** だけ **`git add -f`** でコミットし、マージ後は **`clear`** または別 topic で **`seal` し直し**。

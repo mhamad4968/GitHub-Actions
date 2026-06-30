@@ -41,7 +41,7 @@ const FOLLOWUP_V2 = `【hooks 自動フォロー】**V2 チェックシートの
 
 **事実と整合する値**に直し、**矛盾ゼロ**になったら \`CHECKSHEET_OK: yes\` にしてください。同一応答内で §1・§P（**□A1 ダブルチェック誰と結果**を含む）・末尾 7 行を**まとめて**再出力してください。`;
 
-const FOLLOWUP_CEO_MINIMUM = `【hooks 自動フォロー】**CEO 最低基準ブロック全文**が応答本文に **一行も欠けず**検出されませんでした（\`chat-sessions/CEO-MINIMUM-ABSOLUTE-BASELINE.txt\` ＝ Desktop \`＃重要確認事項.txt\` L7〜L20 と同一）。
+const FOLLOWUP_CEO_MINIMUM = `【hooks 自動フォロー】**CEO 最低基準ブロック全文**が応答本文に **一行も欠けず**検出されませんでした（\`chat-sessions/CEO-MINIMUM-ABSOLUTE-BASELINE.txt\` / read-pack \`18-重要確認.txt\` と同一）。
 
 **同一応答内**に、\`CEO-MINIMUM-ABSOLUTE-BASELINE.txt\` の **非空行すべて**を **そのままの文字列**で含めてください（要約・「同上」・一部省略は **すべて NG**）。§P の前後どこでもよいが **V2 七行・§1 四行と同じターンの応答本文に必須**。
 

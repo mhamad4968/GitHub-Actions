@@ -8,7 +8,6 @@ import fs from 'node:fs';
 /** @type {readonly { label: string; path: string }[]} */
 export const CIO_DESKTOP_PATH_CHECKS = [
   { label: 'AI緊急用', path: 'C:\\Users\\mhamada202408224\\Desktop\\AI緊急用' },
-  { label: '重要確認事項.txt', path: 'C:\\Users\\mhamada202408224\\Desktop\\＃重要確認事項.txt' },
 ];
 
 /**
@@ -30,7 +29,7 @@ export function verifyCioDesktopPaths() {
 export function buildCioDesktopPathGuardBlock() {
   const { ok, missing } = verifyCioDesktopPaths();
   if (ok) {
-    return '【CIO三重・層1】Desktop 正本パス実在: OK（`AI緊急用` + `＃重要確認事項.txt`）。';
+    return '【CIO三重・層1】Desktop 正本パス実在: OK（`AI緊急用`）。CEO 最低基準は `CEO-MINIMUM-ABSOLUTE-BASELINE.txt` / read-pack `18-重要確認.txt`（Desktop `＃重要確認事項.txt` は 2026-06-30 廃止）。';
   }
   return '【CIO三重・層1】**NG** — ' + missing.join(' | ') + '（報告・タスク完了前にパス復旧）。';
 }

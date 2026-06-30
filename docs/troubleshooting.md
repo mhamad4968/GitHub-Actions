@@ -1649,7 +1649,33 @@ Windows 上の Node/libuv が verify スクリプト終了時に非同期ハン�
 - 夕反省 R736-01 GO（2026-06-24）
 - 夕反省 D-NAS-06 GO（2026-06-28）— NAS 748/749 deploy 時も同手順（OK 目視 → `SKIP_CIO_LIVE_SCHEMA_GUARD=1` + 理由 1 行）
 - **メーリングリスト 750/751**（2026-06-29 / D-ML-02 GO）— `verify:kintone-live-schema` OK 表示後 UV crash → 手動 OK 確認 → `SKIP_CIO_LIVE_SCHEMA_GUARD=1 npm run deploy:750` / `deploy:751`（チャットに appId + skip 理由 1 行必須）
+- **595 社員マスタ**（2026-06-30 / S-0630-02 GO）— `deploy:595` 時も同手順。OK 目視 → `SKIP_CIO_LIVE_SCHEMA_GUARD=1 npm run deploy:595`（チャットに **TSB-039** + appId + OK 出力貼付 + skip 理由 1 行必須）
 - `docs/reports/2026-06-21-evening-reflection.md` F3（R53 継続）
+
+---
+
+## 595→674 同期ギャップ（監査優先 — S-0630-01 GO / 2026-06-30）
+
+### 事象
+
+- 595 社員マスタの所属変更が **674 PC台帳**に反映されない
+- CSV 取込・REST 一括更新後にズレが残る
+
+### 調査手順（原因を述べる前に必須 — A-0630-01）
+
+```bash
+npm run pc-ledger:audit-595-674-gaps
+```
+
+- 出力された $id ペアを確認
+- 矯正: `npm run pc-ledger:backfill-org-from-595:apply -- --dry-run` → `--apply`
+- CSV 取込後: 595 一覧 **「台帳へ一括反映」** を実行
+
+### 正本
+
+- `docs/runbooks/pc-ledger-595-674-sync.md`
+- `customize/595/desktop.js` — 保存時ミラー + 一括反映ボタン
+- 一括ログは **697 `bulk_downstream_595_log` のみ**（595 社員行に置かない — R-0630-01）
 
 ---
 
