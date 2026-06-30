@@ -59,7 +59,8 @@
 **禁止**: customize/deploy 凍結中の無断 save・上位憲法 §50-3-11 非置換違反・本体単独完結
 **exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
 
-<!-- errors: exit 1` ＋ **次の1手** 1 行 | npm run verify:session-close-git-warn`** を実行し **Git 残件を 1 行報告**（項目 **3c**）。`sess | npm run cio:session:cold-start` -->
+<!-- errors: exit 1` — **次の1手** 1 行 | npm run verify:session-close-git-warn`** を実行し **Git 残件を 1 行報告**（項番 **3c**）。`sess | npm run cio:session:cold-start` -->
+
 
 ## [2026-06-29] セッション解体時知恵ストック
 
