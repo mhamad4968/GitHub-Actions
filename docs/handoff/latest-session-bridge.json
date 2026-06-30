@@ -1,8 +1,8 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-06-30T12:21:19.917Z",
-  "gitHead": "5e33967",
-  "gitStatus": "## main...origin/main",
+  "exportedAt": "2026-06-30T12:21:43.692Z",
+  "gitHead": "6bf9686",
+  "gitStatus": "## main...origin/main [ahead 1]",
   "nextTask": "**浜田依頼待ち**（項番 -0 で本題合意まで着手しない）。**触らない**: **688 / 677–679 / SKYSEA**",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
@@ -15,6 +15,8 @@
     ".cursor/rules/mode-b-canonical.mdc",
     "docs/knowledge/debug-tips.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=5e33967 | 次=**浜田依頼待ち**（項番 -0 で本題合意まで着手しない）。**触らない**: **688 / 677–679 / SKYSEA** | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
+  "promptBlock": "【SESSION-BRIDGE】git=6bf9686 | 次=**浜田依頼待ち**（項番 -0 で本題合意まで着手しない）。**触らない**: **688 / 677–679 / SKYSEA** | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
+  "validatedAt": "2026-06-30T12:21:44.051Z",
+  "crosscheckOk": true
 }
