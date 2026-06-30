@@ -201,6 +201,8 @@
     "mailing-list:setup": "npm run mailing-list:create-db && npm run mailing-list:create-dash && npm run mailing-list:register-registry",
     "mailing-list:migrate:xlsx": "npx dotenv -e .env -e .env.proxy -- node scripts/mailing-list-migrate-xlsx.mjs",
     "mailing-list:migrate:xlsx:dry-run": "npx dotenv -e .env -e .env.proxy -- node scripts/mailing-list-migrate-xlsx.mjs --dry-run",
+    "mailing-list:sync:xlsx": "npx dotenv -e .env -e .env.proxy -- node scripts/mailing-list-sync-xlsx.mjs --apply",
+    "mailing-list:sync:xlsx:dry-run": "npx dotenv -e .env -e .env.proxy -- node scripts/mailing-list-sync-xlsx.mjs --dry-run",
     "mailing-list:sync-dash": "node scripts/mailing-list-sync-dash-db-id.mjs && npm run mailing-list:bundle-dash",
     "mailing-list:register-registry": "node scripts/mailing-list-register-registry.mjs",
     "mailing-list:bundle-dash": "node scripts/mailing-list-bundle-dash.mjs",
