@@ -88,15 +88,6 @@ if (syncDesk.status !== 0) {
   process.exit(typeof syncDesk.status === 'number' && syncDesk.status !== 0 ? syncDesk.status : 2);
 }
 
-const ceoDesktop = path.join(os.homedir(), 'Desktop', '＃重要確認事項.txt');
-if (!fs.existsSync(ceoDesktop)) {
-  console.warn('[session-bootstrap] Desktop ＃重要確認事項.txt なし → sync 再実行（R-SESS-02）');
-  const retry = runNpmScriptSync(root, 'session-starter:sync-desktop', [], { stdio: 'inherit' });
-  if (retry.status !== 0) {
-    process.exit(typeof retry.status === 'number' && retry.status !== 0 ? retry.status : 2);
-  }
-}
-
 const desk = spawnSync(process.execPath, ['scripts/verify-desktop-ai-emergency-sync.mjs'], {
   cwd: root,
   stdio: 'inherit',

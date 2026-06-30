@@ -110,6 +110,13 @@
       "required": false,
       "noLabel": false
     },
+    "bulk_downstream_595_log": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "bulk_downstream_595_log",
+      "label": "595台帳一括反映ログ（自動更新）",
+      "required": false,
+      "noLabel": false
+    },
     "eval_items": {
       "type": "SUBTABLE",
       "code": "eval_items",

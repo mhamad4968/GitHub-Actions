@@ -144,40 +144,24 @@ function syncEveningReflectionToDesktop() {
   }
 }
 
-/** Desktop 直下 `＃重要確認事項.txt` — read-pack 18 正本から復元（hooks 層1 NG 防止） */
+/** Desktop 直下 `＃重要確認事項.txt` — 2026-06-30 浜田廃止。残存ファイルのみ削除。 */
 function syncDesktopImportantConfirmFile() {
-  const readPack18 = path.join(root, readPackRelDir, '18-重要確認.txt');
-  if (!fs.existsSync(readPack18)) {
-    console.warn('[sync-session-starter-to-desktop] skip Desktop ＃重要確認事項: read-pack 18 なし');
-    return;
-  }
   const home = os.homedir();
   const candidates = [
     path.join(home, 'Desktop', '＃重要確認事項.txt'),
     'C:\\Users\\mhamada202408224\\Desktop\\＃重要確認事項.txt',
   ];
-  const srcBuf = fs.readFileSync(readPack18);
   for (const dest of [...new Set(candidates)]) {
     try {
-      const dir = path.dirname(dest);
-      if (!fs.existsSync(dir)) continue;
-      const existed = fs.existsSync(dest);
-      const same = existed && fs.readFileSync(dest).equals(srcBuf);
-      if (same) {
-        console.log(`[sync-session-starter-to-desktop] OK Desktop ＃重要確認事項.txt（既に一致）`);
-        return;
+      if (fs.existsSync(dest)) {
+        fs.unlinkSync(dest);
+        console.log(`[sync-session-starter-to-desktop] 廃止: Desktop ＃重要確認事項.txt 削除 ${dest}`);
       }
-      fs.copyFileSync(readPack18, dest);
-      console.log(
-        `[sync-session-starter-to-desktop] OK read-pack/18-重要確認.txt -> ${dest}` +
-          (existed ? '（上書き）' : '（新規復元）'),
-      );
-      return;
     } catch (e) {
-      console.warn(`[sync-session-starter-to-desktop] Desktop ＃重要確認事項 失敗 ${dest}: ${e.message}`);
+      console.warn(`[sync-session-starter-to-desktop] ＃重要確認事項 削除失敗 ${dest}: ${e.message}`);
     }
   }
-  console.warn('[sync-session-starter-to-desktop] Desktop ＃重要確認事項.txt を書けませんでした（Desktop フォルダ確認）');
+  console.log('[sync-session-starter-to-desktop] skip Desktop ＃重要確認事項.txt（2026-06-30 廃止・read-pack/18 正本は維持）');
 }
 
 function syncReadPackToDesktop() {

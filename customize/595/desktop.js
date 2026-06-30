@@ -3,7 +3,9 @@
 
   /**
    * 595 社員マスタ
-   * BUILD: 2026-06-19-595-dept-picker-680（新規・編集: 680 所属候補モーダル＋手入力併用）
+   * BUILD: 2026-06-30-595-bulk-log-no-dup（一括反映ログは最終行のみ・ステータスは完了表示）
+   * BUILD: 2026-06-30-595-bulk-downstream-btn（一覧: 台帳へ一括反映ボタン・CSV取込後用）
+   * BUILD: 2026-06-30-595-674-mirror-emp-subtable（674ミラー: mail＋emp_id＋サブテーブル紐づけ）
    * BUILD: 2026-06-17-595-emp-id-auto-assign（新規/未付番保存時に EMP-xxxx 自動採番）
    * BUILD: 2026-06-14-595-storage-media-ledger-mirror
    * BUILD: 2026-05-12-595-no594-rest（旧594への REST・リンク廃止・674同期のみ）
@@ -12,10 +14,11 @@
    * - 詳細・編集: サブテーブル（674）からレコードへのリンクをヘッダ下に表示
    * - 保存: 在籍=退職かつ退職日空→当日を退職日に設定／**emp_id 空なら EMP-xxxx 自動採番**
    * - 保存成功後: 退職時は 674 を保管＋アカウントクリア＋備考追記／それ以外は 674・714・716 所属ミラー
+   * - 一覧: 「台帳へ一括反映」— CSV 取込後など 674／714／716 へ所属ミラー（退職者除外）
    * - 新規・編集: 680 所属候補マスタから所属名・所属グループを選ぶモーダル（手入力も可）
    */
 
-  var BUILD = "2026-06-23-595-dept-master-sort-no";
+  var BUILD = "2026-06-30-595-bulk-log-no-dup";
 
   /** 新・PC台帳 所属候補マスタ（674 共有・JR と共用） */
   var APP_DEPT_MASTER_595 = "680";
@@ -35,11 +38,15 @@
   var FC595_EMP = "employment_status";
   var FC595_EMP_ID = "emp_id";
   var FC595_RETIRED = "retired_date";
+  /** 業務改善 設定マスタ — 595 台帳一括反映ログ（共通設定行） */
+  var APP_SETTINGS_697 = "697";
+  var FC697_BULK_LOG = "bulk_downstream_595_log";
 
   var FC674_MAIL = "mail";
   var FC674_NAME = "user_name";
   var FC674_DEPT = "dept_name";
   var FC674_GROUP = "group_name";
+  var FC674_EMP_ID = "emp_id";
   var FC674_TYPE = "account_type";
   var FC674_PC_STATUS = "pc_status";
   var FC674_LOGON = "logon_name";
@@ -72,6 +79,10 @@
   var DEPT_PICKER_WRAP_ID = "jbis-595-dept-picker-wrap";
   var DEPT_MASTER_MODAL_ID_595 = "jbis-595-dept-master-modal";
   var INDEX_SEARCH_WRAP_ID = "jbis-595-index-search-wrap";
+  var BULK_DOWNSTREAM_WRAP_ID = "jbis-595-bulk-downstream-wrap";
+  var BULK_DOWNSTREAM_STATUS_ID = "jbis-595-bulk-downstream-status";
+  var BULK_DOWNSTREAM_LASTLOG_ID = "jbis-595-bulk-downstream-lastlog";
+  var STORAGE_KEY_595_BULK_LOG = "jbis595-bulk-downstream-last-log";
   var STORAGE_KEY_595_IDX_KW = "jbis595-index-search-kw";
   var INDEX_SEARCH_MAX_IDS = 800;
   /** 一覧クライアント検索で全件取得する上限（超えたら標準絞り込みへ誘導） */
@@ -354,6 +365,240 @@
     }
 
     if (space.firstChild) {
+      space.insertBefore(wrap, space.firstChild);
+    } else {
+      space.appendChild(wrap);
+    }
+  }
+
+  function setBulkDownstreamStatus595(text, isError) {
+    var el = document.getElementById(BULK_DOWNSTREAM_STATUS_ID);
+    if (!el) {
+      return;
+    }
+    el.textContent = text || "";
+    el.style.color = isError ? "#b91c1c" : "#047857";
+  }
+
+  function setBulkDownstreamLastLog595(text) {
+    var el = document.getElementById(BULK_DOWNSTREAM_LASTLOG_ID);
+    if (!el) {
+      return;
+    }
+    var t = String(text || "").trim();
+    if (!t) {
+      el.textContent = "";
+      return;
+    }
+    if (t.indexOf("未実行") === 0 || t.indexOf("ログ取得失敗") === 0) {
+      el.textContent = "最終: " + t;
+      el.style.color = "#64748b";
+      el.style.fontWeight = "normal";
+      return;
+    }
+    el.style.color = "#065f46";
+    el.style.fontWeight = "600";
+    el.textContent = "最終: " + t;
+  }
+
+  function todayYmdCompact595() {
+    var parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Tokyo",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).formatToParts(new Date());
+    var g = function (t) {
+      var p = parts.find(function (x) {
+        return x.type === t;
+      });
+      return p ? p.value : "";
+    };
+    return g("year") + g("month") + g("day");
+  }
+
+  function formatBulkSyncLogLine595(stats) {
+    var ok = Math.max(0, stats.processed - stats.skippedRetired - stats.failed);
+    var line =
+      "データ更新 成功" +
+      ok +
+      "件 失敗" +
+      stats.failed +
+      "件 " +
+      todayYmdCompact595() +
+      "更新";
+    if (stats.skippedRetired > 0) {
+      line += "（退職スキップ" + stats.skippedRetired + "件）";
+    }
+    return line;
+  }
+
+  function read595BulkSyncLogLocal595() {
+    try {
+      var s = sessionStorage.getItem(STORAGE_KEY_595_BULK_LOG);
+      if (s && String(s).trim()) {
+        return String(s).trim();
+      }
+    } catch (e1) {
+      /* noop */
+    }
+    try {
+      var l = localStorage.getItem(STORAGE_KEY_595_BULK_LOG);
+      return l && String(l).trim() ? String(l).trim() : "";
+    } catch (e2) {
+      return "";
+    }
+  }
+
+  function write595BulkSyncLogLocal595(logText) {
+    var v = String(logText || "").trim();
+    if (!v) {
+      return;
+    }
+    try {
+      localStorage.setItem(STORAGE_KEY_595_BULK_LOG, v);
+    } catch (e1) {
+      /* noop */
+    }
+    try {
+      sessionStorage.setItem(STORAGE_KEY_595_BULK_LOG, v);
+    } catch (e2) {
+      /* noop */
+    }
+  }
+
+  function fetch697BulkSyncLogSettings595() {
+    var url = kintone.api.url("/k/v1/records.json", true);
+    var q = 'record_kind in ("共通設定") order by $id asc limit 1';
+    return kintone
+      .api(url, "GET", {
+        app: APP_SETTINGS_697,
+        query: q,
+        fields: ["$id", "$revision", FC697_BULK_LOG],
+      })
+      .then(function (resp) {
+        return (resp.records && resp.records[0]) || null;
+      });
+  }
+
+  function write595BulkSyncLog595(logText) {
+    write595BulkSyncLogLocal595(logText);
+    return fetch697BulkSyncLogSettings595()
+      .then(function (rec) {
+        if (!rec) {
+          console.warn("[jbis 595 bulk log] 697 共通設定レコードがありません");
+          return { ok: false, reason: "no697" };
+        }
+        var urlPut = kintone.api.url("/k/v1/record.json", true);
+        return kintone
+          .api(urlPut, "PUT", {
+            app: APP_SETTINGS_697,
+            id: rec.$id.value,
+            revision: rec.$revision.value,
+            record: {
+              [FC697_BULK_LOG]: { value: logText },
+            },
+          })
+          .then(function () {
+            return { ok: true };
+          });
+      })
+      .catch(function (e) {
+        console.warn("[jbis 595 bulk log write 697]", e);
+        return { ok: false, reason: e && e.message ? e.message : String(e) };
+      });
+  }
+
+  function refresh595BulkSyncLogDisplay595() {
+    return fetch697BulkSyncLogSettings595()
+      .then(function (rec) {
+        var txt = "";
+        if (rec) {
+          var f = rec[FC697_BULK_LOG];
+          txt = f && f.value != null ? String(f.value).trim() : "";
+        }
+        if (!txt) {
+          txt = read595BulkSyncLogLocal595();
+        }
+        if (!txt) {
+          setBulkDownstreamLastLog595("未実行 — 「台帳へ一括反映」後に表示されます");
+          return;
+        }
+        setBulkDownstreamLastLog595(txt);
+      })
+      .catch(function (e) {
+        console.warn("[jbis 595 bulk log read]", e);
+        var txt = read595BulkSyncLogLocal595();
+        if (txt) {
+          setBulkDownstreamLastLog595(txt);
+          return;
+        }
+        setBulkDownstreamLastLog595("ログ取得失敗 — 一括反映を再実行してください");
+      });
+  }
+
+  function mount595BulkDownstreamButton() {
+    var existing = document.getElementById(BULK_DOWNSTREAM_WRAP_ID);
+    if (existing) {
+      refresh595BulkSyncLogDisplay595();
+      return;
+    }
+    var space = getIndexHeaderSpace595();
+    if (!space) {
+      return;
+    }
+
+    var wrap = document.createElement("div");
+    wrap.id = BULK_DOWNSTREAM_WRAP_ID;
+    wrap.style.cssText =
+      "display:flex;flex-direction:column;gap:6px;margin:0 0 12px;padding:8px 12px;" +
+      "background:#ecfdf5;border:1px solid #6ee7b7;border-radius:6px;font-size:13px;";
+
+    var row1 = document.createElement("div");
+    row1.style.cssText = "display:flex;flex-wrap:wrap;align-items:center;gap:8px;width:100%;";
+
+    var label = document.createElement("span");
+    label.style.cssText = "font-weight:600;color:#065f46;white-space:nowrap;";
+    label.textContent = "台帳連携";
+    row1.appendChild(label);
+
+    var hint = document.createElement("span");
+    hint.style.cssText = "color:#047857;font-size:12px;";
+    hint.textContent =
+      "（CSV取込後など — 674／714／716 へ氏名・所属を一括反映。退職者は対象外）";
+    row1.appendChild(hint);
+
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.id = "jbis-595-bulk-downstream-btn";
+    btn.textContent = "台帳へ一括反映";
+    btn.setAttribute("aria-label", "台帳へ一括反映");
+    btn.style.cssText =
+      "padding:6px 14px;background:#059669;color:#fff;border:none;border-radius:4px;cursor:pointer;font-weight:600;";
+    btn.addEventListener("click", function () {
+      start595BulkDownstreamSync595(btn);
+    });
+    row1.appendChild(btn);
+
+    var status = document.createElement("span");
+    status.id = BULK_DOWNSTREAM_STATUS_ID;
+    status.style.cssText = "color:#64748b;font-size:12px;min-width:160px;flex:1;";
+    row1.appendChild(status);
+    wrap.appendChild(row1);
+
+    var lastLog = document.createElement("div");
+    lastLog.id = BULK_DOWNSTREAM_LASTLOG_ID;
+    lastLog.style.cssText = "color:#065f46;font-size:12px;font-weight:600;width:100%;";
+    wrap.appendChild(lastLog);
+
+    refresh595BulkSyncLogDisplay595();
+
+    var searchWrap = document.getElementById(INDEX_SEARCH_WRAP_ID);
+    if (searchWrap && searchWrap.nextSibling) {
+      space.insertBefore(wrap, searchWrap.nextSibling);
+    } else if (searchWrap) {
+      searchWrap.parentNode.insertBefore(wrap, searchWrap.nextSibling);
+    } else if (space.firstChild) {
       space.insertBefore(wrap, space.firstChild);
     } else {
       space.appendChild(wrap);
@@ -840,8 +1085,9 @@
   kintone.events.on(["app.record.index.show", "mobile.app.record.index.show"], function (event) {
     try {
       mount595IndexSearchBox();
+      mount595BulkDownstreamButton();
     } catch (e) {
-      console.warn("[jbis 595 index search]", e);
+      console.warn("[jbis 595 index ui]", e);
     }
     return event;
   });
@@ -1184,78 +1430,180 @@
     return updates;
   }
 
-  function fetch674PersonalTargets(mail, name, dept, grp) {
+  function fetch674IdsByMailForMirror595(mail) {
     if (!mail) {
+      return Promise.resolve([]);
+    }
+    var url = kintone.api.url("/k/v1/records.json", true);
+    var q =
+      FC674_MAIL +
+      ' = "' +
+      escapeForQuery(mail) +
+      '" and ' +
+      FC674_TYPE +
+      ' in ("' +
+      escapeForQuery(TYPE_PERSONAL) +
+      '") and ' +
+      FC674_PC_STATUS +
+      ' not in ("' +
+      escapeForQuery(PC_STATUS_STORAGE) +
+      '") order by $id asc limit 500';
+    return kintone
+      .api(url, "GET", {
+        app: APP674,
+        query: q,
+        fields: ["$id"],
+      })
+      .then(function (resp) {
+        var ids = [];
+        var rows = resp.records || [];
+        for (var i = 0; i < rows.length; i++) {
+          if (rows[i].$id && rows[i].$id.value) {
+            ids.push(String(rows[i].$id.value));
+          }
+        }
+        return ids;
+      });
+  }
+
+  function fetch674IdsByEmpIdForMirror595(empId) {
+    if (!empId) {
+      return Promise.resolve([]);
+    }
+    var url = kintone.api.url("/k/v1/records.json", true);
+    var q =
+      FC674_EMP_ID +
+      ' = "' +
+      escapeForQuery(empId) +
+      '" and ' +
+      FC674_TYPE +
+      ' in ("' +
+      escapeForQuery(TYPE_PERSONAL) +
+      '") and ' +
+      FC674_PC_STATUS +
+      ' not in ("' +
+      escapeForQuery(PC_STATUS_STORAGE) +
+      '") order by $id asc limit 500';
+    return kintone
+      .api(url, "GET", {
+        app: APP674,
+        query: q,
+        fields: ["$id"],
+      })
+      .then(function (resp) {
+        var ids = [];
+        var rows = resp.records || [];
+        for (var i = 0; i < rows.length; i++) {
+          if (rows[i].$id && rows[i].$id.value) {
+            ids.push(String(rows[i].$id.value));
+          }
+        }
+        return ids;
+      });
+  }
+
+  function collect674MirrorTargetIdsFrom595(record) {
+    var fromSub = collectSubtableNumericIds(record, FC595_PC674_SUB, FC595_PC674_ID);
+    var mail = scalarFrom595(record, FC595_MAIL).trim();
+    var empId = scalarFrom595(record, FC595_EMP_ID).trim();
+    return fetch674IdsByMailForMirror595(mail).then(function (fromMail) {
+      return fetch674IdsByEmpIdForMirror595(empId).then(function (fromEmp) {
+        return uniqueStringIds(fromSub.concat(fromMail).concat(fromEmp));
+      });
+    });
+  }
+
+  function fetch674RowsByIdsForMirror(ids) {
+    if (!ids.length) {
+      return Promise.resolve([]);
+    }
+    var urlGet = kintone.api.url("/k/v1/records.json", true);
+    var fields = [
+      "$id",
+      "$revision",
+      FC674_TYPE,
+      FC674_PC_STATUS,
+      FC674_NAME,
+      FC674_DEPT,
+      FC674_GROUP,
+    ];
+    var parts = chunk(ids, 100);
+    return parts.reduce(function (chain, part) {
+      return chain.then(function (acc) {
+        var inList = part.map(function (id) {
+          return '"' + escapeForQuery(id) + '"';
+        });
+        var q = "$id in (" + inList.join(", ") + ") order by $id asc";
+        return kintone
+          .api(urlGet, "GET", {
+            app: APP674,
+            query: q,
+            fields: fields,
+          })
+          .then(function (resp) {
+            var rows = resp.records || [];
+            for (var i = 0; i < rows.length; i++) {
+              var r = rows[i];
+              var type = scalar674FromRow(r, FC674_TYPE).trim();
+              var st = scalar674FromRow(r, FC674_PC_STATUS).trim();
+              if (type !== TYPE_PERSONAL || st === PC_STATUS_STORAGE) {
+                continue;
+              }
+              acc.push(r);
+            }
+            return acc;
+          });
+      });
+    }, Promise.resolve([]));
+  }
+
+  function put674MirrorUpdates(updates) {
+    if (!updates.length) {
       return Promise.resolve();
     }
-    var offset = 0;
-    var limit = 500;
-    var urlGet = kintone.api.url("/k/v1/records.json", true);
+    var urlPut = kintone.api.url("/k/v1/records.json", true);
+    var parts = chunk(updates, 100);
+    return parts.reduce(function (chain, part) {
+      return chain.then(function () {
+        return kintone.api(urlPut, "PUT", { app: APP674, records: part });
+      });
+    }, Promise.resolve());
+  }
 
-    function page() {
-      var q =
-        FC674_MAIL +
-        ' = "' +
-        escapeForQuery(mail) +
-        '" and ' +
-        FC674_TYPE +
-        ' in ("' +
-        escapeForQuery(TYPE_PERSONAL) +
-        '") and ' +
-        FC674_PC_STATUS +
-        ' not in ("' +
-        escapeForQuery(PC_STATUS_STORAGE) +
-        '") order by $id asc limit ' +
-        limit +
-        " offset " +
-        offset;
-      return kintone
-        .api(urlGet, "GET", {
-          app: APP674,
-          query: q,
-          fields: ["$id", "$revision", FC674_NAME, FC674_DEPT, FC674_GROUP]
-        })
-        .then(function (resp) {
-          var list = resp.records || [];
-          var updates = recordsNeedingMirror(
-            list,
-            name,
-            dept,
-            grp,
-            FC674_NAME,
-            FC674_DEPT,
-            FC674_GROUP
-          );
-          var urlPut = kintone.api.url("/k/v1/records.json", true);
-          var parts = chunk(updates, 100);
-          return parts
-            .reduce(function (chain, part) {
-              return chain.then(function () {
-                return kintone.api(urlPut, "PUT", { app: APP674, records: part });
-              });
-            }, Promise.resolve())
-            .then(function () {
-              if (list.length < limit) {
-                return;
-              }
-              offset += limit;
-              return page();
-            });
-        });
-    }
-
-    return page();
+  function fetch674PersonalTargets(mail, name, dept, grp, record) {
+    var collectPromise = record
+      ? collect674MirrorTargetIdsFrom595(record)
+      : fetch674IdsByMailForMirror595(mail);
+    return collectPromise.then(function (ids) {
+      if (!ids.length) {
+        return;
+      }
+      return fetch674RowsByIdsForMirror(ids).then(function (rows) {
+        var updates = recordsNeedingMirror(
+          rows,
+          name,
+          dept,
+          grp,
+          FC674_NAME,
+          FC674_DEPT,
+          FC674_GROUP
+        );
+        return put674MirrorUpdates(updates);
+      });
+    });
   }
 
   function sync674MirrorFrom595(record) {
     var mail = scalarFrom595(record, FC595_MAIL).trim();
-    if (!mail) {
+    var empId = scalarFrom595(record, FC595_EMP_ID).trim();
+    var fromSub = collectSubtableNumericIds(record, FC595_PC674_SUB, FC595_PC674_ID);
+    if (!mail && !empId && !fromSub.length) {
       return Promise.resolve();
     }
     var name = scalarFrom595(record, FC595_NAME);
     var dept = scalarFrom595(record, FC595_DEPT);
     var grp = scalarFrom595(record, FC595_GROUP);
-    return fetch674PersonalTargets(mail, name, dept, grp);
+    return fetch674PersonalTargets(mail, name, dept, grp, record);
   }
 
   function syncSoftwareLedgerMirrorFrom595(record) {
@@ -1404,6 +1752,140 @@
     }
 
     return page();
+  }
+
+  function fetchAll595RecordsForBulkDownstreamSync(appId) {
+    var fields = [
+      "$id",
+      FC595_MAIL,
+      FC595_NAME,
+      FC595_DEPT,
+      FC595_GROUP,
+      FC595_EMP,
+      FC595_EMP_ID,
+      FC595_RETIRED,
+      FC595_PC674_SUB,
+    ];
+    var all = [];
+    var limit = 500;
+    var url = kintone.api.url("/k/v1/records.json", true);
+
+    function page(offset) {
+      var query = "order by $id asc limit " + limit + " offset " + offset;
+      return kintone.api(url, "GET", { app: appId, query: query, fields: fields }).then(function (resp) {
+        var batch = resp.records || [];
+        for (var i = 0; i < batch.length; i++) {
+          all.push(batch[i]);
+        }
+        if (batch.length < limit) {
+          return all;
+        }
+        return page(offset + limit);
+      });
+    }
+
+    return page(0);
+  }
+
+  function run595MirrorOnlyFrom595(record) {
+    var emp = scalarFrom595(record, FC595_EMP).trim();
+    if (emp === EMP_RETIRED) {
+      return Promise.resolve({ skipped: true, reason: "retired" });
+    }
+    return sync674MirrorFrom595(record)
+      .then(function () {
+        return syncSoftwareLedgerMirrorFrom595(record);
+      })
+      .then(function () {
+        return syncStorageMediaLedgerMirrorFrom595(record);
+      })
+      .then(function () {
+        return { skipped: false };
+      });
+  }
+
+  function start595BulkDownstreamSync595(btn) {
+    if (!btn || btn.disabled) {
+      return;
+    }
+    var ok = window.confirm(
+      "595 の現在の氏名・所属を、新PC台帳（674）・ソフトウエア台帳（714）・記憶媒体等台帳（716）へ一括反映します。\n\n" +
+        "・CSV 取込後にご利用ください\n" +
+        "・退職者は対象外です（個別保存時の退職連携は従来どおり）\n" +
+        "・件数により 1〜2 分かかることがあります\n\n" +
+        "実行しますか？"
+    );
+    if (!ok) {
+      return;
+    }
+
+    var appId = kintone.app.getId();
+    btn.disabled = true;
+    btn.style.opacity = "0.65";
+    btn.style.cursor = "wait";
+    setBulkDownstreamStatus595("社員マスタを取得中…", false);
+
+    var stats = { total: 0, processed: 0, skippedRetired: 0, failed: 0, errors: [] };
+
+    fetchAll595RecordsForBulkDownstreamSync(appId)
+      .then(function (records) {
+        stats.total = records.length;
+        return records.reduce(function (chain, rec) {
+          return chain.then(function () {
+            stats.processed += 1;
+            if (stats.processed % 5 === 0 || stats.processed === stats.total) {
+              setBulkDownstreamStatus595(
+                "反映中… " + stats.processed + " / " + stats.total,
+                false
+              );
+            }
+            return run595MirrorOnlyFrom595(rec)
+              .then(function (res) {
+                if (res && res.skipped) {
+                  stats.skippedRetired += 1;
+                }
+              })
+              .catch(function (e) {
+                stats.failed += 1;
+                var rid = rec.$id && rec.$id.value != null ? String(rec.$id.value) : "?";
+                var nm = scalarFrom595(rec, FC595_NAME) || scalarFrom595(rec, FC595_MAIL);
+                var msg = (e && e.message) || String(e);
+                stats.errors.push("$id=" + rid + " " + nm + ": " + msg);
+                if (stats.errors.length > 8) {
+                  stats.errors.length = 8;
+                }
+              });
+          });
+        }, Promise.resolve());
+      })
+      .then(function () {
+        var logLine = formatBulkSyncLogLine595(stats);
+        setBulkDownstreamStatus595(stats.failed > 0 ? "完了（失敗あり）" : "完了", stats.failed > 0);
+        setBulkDownstreamLastLog595(logLine);
+        return write595BulkSyncLog595(logLine).then(function (wr) {
+          var alertMsg = logLine;
+          if (wr && wr.ok === false && wr.reason) {
+            alertMsg +=
+              "\n\n※ 697 へのログ保存に失敗しました（このブラウザには記録済み）: " + wr.reason;
+          }
+          if (stats.errors.length) {
+            alertMsg += "\n\n失敗（先頭 " + stats.errors.length + " 件）:\n" + stats.errors.join("\n");
+          }
+          window.alert(alertMsg);
+        });
+      })
+      .catch(function (e) {
+        console.error("[jbis 595 bulk downstream]", e);
+        setBulkDownstreamStatus595("一括反映に失敗しました", true);
+        window.alert(
+          "一括反映の開始に失敗しました。" + (e && e.message ? "\n" + e.message : "")
+        );
+      })
+      .then(function () {
+        btn.disabled = false;
+        btn.style.opacity = "";
+        btn.style.cursor = "pointer";
+      });
   }
 
   function run595DownstreamSync(record) {
