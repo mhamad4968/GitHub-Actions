@@ -3563,6 +3563,14 @@ npm run cio:morning:ready
 **浜田 GO**: 全部承認 — §3 実装完了  
 **正本**: `docs/approved-changes/2026-06-30-rules-evening-hamada-go.md`
 
+**次の1手**: **浜田依頼待ち**（項番 -0 で本題合意まで着手しない）。**触らない**: **688 / 677–679 / SKYSEA**
+
+**Git**: `e8026b1` = `origin/main`
+
+**GO待ち**: なし
+
+**触らない**: 688 / 677–679 / SKYSEA
+
 ---
 
 ### 2026-06-30 JST — **セッション締め（595 同期・751 更新・一括反映）**
@@ -3585,5 +3593,13 @@ npm run cio:morning:ready
 
 **浜田 GO**: 全部承認 — §3 実装完了  
 **正本**: `docs/approved-changes/2026-06-30-rules-evening-hamada-go.md`
+
+**次の1手**: **浜田依頼待ち**（項番 -0 で本題合意まで着手しない）。**触らない**: **688 / 677–679 / SKYSEA**
+
+**Git**: `e8026b1` = `origin/main`
+
+**GO待ち**: なし
+
+**触らない**: 688 / 677–679 / SKYSEA
 
 ---

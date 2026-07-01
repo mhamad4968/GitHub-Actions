@@ -10,12 +10,25 @@
 import process from 'node:process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { validateHandoffTemplate } from './lib/cio-handoff-template.mjs';
+import { validateHandoffTemplate, repairHandoffLatestBlock } from './lib/cio-handoff-template.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 function main() {
   const strict = process.argv.includes('--strict');
+  const noRepair = process.argv.includes('--no-auto-repair');
+
+  if (!noRepair) {
+    const rep = repairHandoffLatestBlock(root);
+    if (rep.repaired) {
+      console.log(
+        `[verify:checkpoint-handoff-template] auto-repair: filled ${rep.filled.join(', ')}`,
+      );
+    } else if (rep.reason) {
+      console.warn(`[verify:checkpoint-handoff-template] auto-repair skip: ${rep.reason}`);
+    }
+  }
+
   const { ok, issues } = validateHandoffTemplate(root, { strict });
 
   console.log(`[verify:checkpoint-handoff-template] strict=${strict}`);

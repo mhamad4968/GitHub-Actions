@@ -78,6 +78,7 @@ function main() {
   // Phase 3 — 凍結ゾーン + rollup + handoff 整合
   console.log('\n▶ Phase 3 ROLLUP');
   run('npm run verify:checkpoint-freeze-zone -- --auto-rollup');
+  run('npm run cio:handoff:repair-latest');
   run('npm run verify:checkpoint-handoff-template');
   if (!skipRollup) {
     run('npm run cio:checkpoint:rollup -- --keep 3');

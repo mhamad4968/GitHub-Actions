@@ -16,7 +16,7 @@ import {
 } from './lib/cio-session-bridge.mjs';
 import { stockDebugTips, TIPS_REL } from './lib/cio-debug-tips-stock.mjs';
 import { readCheckpointNextTask } from './lib/cio-checkpoint-read.mjs';
-import { getDefaultBridgeNextFiles } from './lib/cio-handoff-template.mjs';
+import { getDefaultBridgeNextFiles, repairHandoffLatestBlock } from './lib/cio-handoff-template.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -45,6 +45,11 @@ function purgeTemporaries() {
 }
 
 function main() {
+  const rep = repairHandoffLatestBlock(root);
+  if (rep.repaired) {
+    console.log(`[cio:session:export-handoff] auto-repair handoff: ${rep.filled.join(', ')}`);
+  }
+
   let gitHead = 'unknown';
   let gitStatus = '';
   try {

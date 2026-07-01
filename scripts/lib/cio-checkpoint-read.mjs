@@ -72,3 +72,10 @@ export function readCheckpointLatestSectionDate(root) {
   const m = head.match(/^## (\d{4}-\d{2}-\d{2})/m);
   return m ? m[1] : null;
 }
+
+/** @returns {string|null} **Git**: 行の値部分（バッククォート含む行末まで） */
+export function readCheckpointGitLine(root) {
+  const head = readCheckpointHead(root);
+  const m = head.match(/\*\*Git\*\*:\s*([^\n]+)/i);
+  return m ? m[1].trim() : null;
+}

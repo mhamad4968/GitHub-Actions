@@ -5,14 +5,113 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import {
   CHECKPOINT_REL,
+  readCheckpointGitLine,
   readCheckpointNextTask,
   readCheckpointPreambleLineCount,
 } from './cio-checkpoint-read.mjs';
 
 export const TEMPLATE_MANIFEST_REL = 'data/cio-handoff-template.json';
 export const HANDOFF_LOG_REL = 'chat-sessions/handoff-log.md';
+
+const HANDOFF_HEADING_RE = /^###\s+(\d{4}-\d{2}-\d{2}.+)$/gm;
+
+function gitHeadShort(root) {
+  const r = spawnSync('git', ['rev-parse', '--short', 'HEAD'], { cwd: root, encoding: 'utf8' });
+  return r.status === 0 ? String(r.stdout).trim() : 'unknown';
+}
+
+/** @returns {string|null} */
+function readHandoffField(block, key) {
+  const esc = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const m = block.match(new RegExp(`${esc}\\s*([^\\n]+)`));
+  return m ? m[1].trim() : null;
+}
+
+/** @returns {{ headings: RegExpMatchArray[], text: string, path: string }|null} */
+function loadHandoffLog(root) {
+  const p = path.join(root, HANDOFF_LOG_REL);
+  if (!fs.existsSync(p)) return null;
+  const text = fs.readFileSync(p, 'utf8');
+  const headings = [...text.matchAll(HANDOFF_HEADING_RE)];
+  return { headings, text, path: p };
+}
+
+/**
+ * 末尾 ### ブロックに必須キーが欠けていれば checkpoint / 直前完全ブロック / git から補完
+ * （夕反省 GO スタンプ等の短い追記で cold-start が落ちる再発防止）
+ * @returns {{ ok: boolean, repaired: boolean, filled: string[], reason?: string }}
+ */
+export function repairHandoffLatestBlock(root, { dryRun = false } = {}) {
+  const manifest = loadHandoffTemplate(root);
+  const loaded = loadHandoffLog(root);
+  if (!loaded) {
+    return { ok: false, repaired: false, filled: [], reason: `missing ${HANDOFF_LOG_REL}` };
+  }
+
+  const { headings, text, path: p } = loaded;
+  const requiredKeys = manifest.handoffBlock?.requiredKeys || [];
+  if (headings.length === 0) {
+    return { ok: false, repaired: false, filled: [], reason: 'handoff-log: no ### blocks' };
+  }
+
+  const lastHeading = headings[headings.length - 1][0];
+  const lastIdx = text.lastIndexOf(lastHeading);
+  const tail = text.slice(lastIdx);
+  const missing = requiredKeys.filter((k) => !tail.includes(k));
+  if (missing.length === 0) {
+    return { ok: true, repaired: false, filled: [] };
+  }
+
+  /** @type {Record<string, string>} */
+  const prev = {};
+  for (let i = headings.length - 2; i >= 0; i--) {
+    const start = text.indexOf(headings[i][0]);
+    const end = i + 1 < headings.length ? text.indexOf(headings[i + 1][0], start + 1) : lastIdx;
+    const block = text.slice(start, end);
+    if (requiredKeys.every((k) => block.includes(k))) {
+      for (const k of requiredKeys) {
+        const v = readHandoffField(block, k);
+        if (v) prev[k] = v;
+      }
+      break;
+    }
+  }
+
+  const cpNext = readCheckpointNextTask(root);
+  const cpGit = readCheckpointGitLine(root);
+  const isGoStamp = /浜田 GO/i.test(tail) && /実装完了|§3/i.test(tail);
+
+  /** @type {string[]} */
+  const insertLines = [];
+  if (missing.includes('**次の1手**:')) {
+    insertLines.push(`**次の1手**: ${cpNext || prev['**次の1手**:'] || '(checkpoint と同期)'}`);
+  }
+  if (missing.includes('**Git**:')) {
+    insertLines.push(
+      `**Git**: ${cpGit || prev['**Git**:'] || `\`${gitHeadShort(root)}\` — (auto-repair)`}`,
+    );
+  }
+  if (missing.includes('**GO待ち**:')) {
+    insertLines.push(`**GO待ち**: ${isGoStamp ? 'なし' : prev['**GO待ち**:'] || 'なし'}`);
+  }
+
+  const insertText = `\n\n${insertLines.join('\n\n')}\n`;
+  const dashIdx = tail.search(/\n---\s*$/);
+  const newTail =
+    dashIdx >= 0
+      ? `${tail.slice(0, dashIdx)}${insertText}${tail.slice(dashIdx)}`
+      : `${tail.replace(/\s*$/, '')}${insertText}\n---\n`;
+  const newText = text.slice(0, lastIdx) + newTail;
+
+  if (!dryRun) {
+    fs.writeFileSync(p, newText, 'utf8');
+  }
+
+  return { ok: true, repaired: true, filled: missing };
+}
 
 /** @returns {object} */
 export function loadHandoffTemplate(root) {
@@ -73,13 +172,12 @@ export function validateCheckpointFreezeZone(root) {
 /** handoff-log 末尾ブロック検証 */
 export function validateHandoffLatestBlock(root) {
   const manifest = loadHandoffTemplate(root);
-  const p = path.join(root, HANDOFF_LOG_REL);
+  const loaded = loadHandoffLog(root);
   const issues = [];
-  if (!fs.existsSync(p)) {
+  if (!loaded) {
     return { ok: false, issues: [`missing ${HANDOFF_LOG_REL}`] };
   }
-  const text = fs.readFileSync(p, 'utf8');
-  const headings = [...text.matchAll(/^###\s+(\d{4}-\d{2}-\d{2}.+)$/gm)];
+  const { headings, text } = loaded;
   if (headings.length === 0) {
     issues.push('handoff-log: no ### YYYY-MM-DD blocks');
     return { ok: false, issues };
@@ -159,4 +257,19 @@ export function formatHandoffBlock(opts) {
 export function appendHandoffBlock(root, blockText) {
   const p = path.join(root, HANDOFF_LOG_REL);
   fs.appendFileSync(p, blockText.startsWith('\n') ? blockText : `\n${blockText}`, 'utf8');
+}
+
+/**
+ * 必須キー欠落時は追記前に warn（append-block 経由なら通常到達しない）
+ * @param {string} blockText
+ * @param {object} manifest
+ */
+export function assertHandoffBlockComplete(blockText, manifest) {
+  const required = manifest?.handoffBlock?.requiredKeys || [];
+  const missing = required.filter((k) => !blockText.includes(k));
+  if (missing.length > 0) {
+    throw new Error(
+      `handoff block missing required keys: ${missing.join(' ')} — use formatHandoffBlock / cio:handoff:append-block`,
+    );
+  }
 }

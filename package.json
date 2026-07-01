@@ -610,6 +610,7 @@
     "verify:checkpoint-freeze-zone": "node scripts/verify-checkpoint-freeze-zone.mjs",
     "verify:checkpoint-handoff-template": "node scripts/verify-checkpoint-handoff-template.mjs",
     "cio:handoff:append-block": "node scripts/cio-handoff-append-block.mjs",
+    "cio:handoff:repair-latest": "node scripts/cio-handoff-repair-latest.mjs",
     "verify:cio-handoff-template-infra": "node scripts/verify-cio-handoff-template-infra.mjs",
     "verify:cio-quality-gate-infra": "node scripts/verify-cio-quality-gate-infra.mjs",
     "verify:cio-tool-routing-infra": "node scripts/verify-cio-tool-routing-infra.mjs",

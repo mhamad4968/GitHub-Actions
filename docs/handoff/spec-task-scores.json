@@ -1,5 +1,5 @@
 {
-  "scoredAt": "2026-06-30T11:19:42.172Z",
+  "scoredAt": "2026-07-01T10:22:28.049Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
   "topTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
   "tasks": [
@@ -15,14 +15,14 @@
       "status": "pending"
     },
     {
-      "id": "checkpoint:**浜田依頼待ち**（項番_-0_で本題合意まで着手しない）",
-      "text": "**浜田依頼待ち**（項番 -0 で本題合意まで着手しない）",
+      "id": "checkpoint:**浜田依頼待ち**（項番_-0_で本題合意まで着手しない）。**触らない**:",
+      "text": "**浜田依頼待ち**（項番 -0 で本題合意まで着手しない）。**触らない**: **688 / 677–679 / SKYSEA**",
       "source": "checkpoint",
-      "difficulty": 2,
-      "tokens": "中",
-      "tokenScore": 2,
-      "impact": 3,
-      "priority": 21,
+      "difficulty": 5,
+      "tokens": "高",
+      "tokenScore": 3,
+      "impact": 5,
+      "priority": 50,
       "status": "pending"
     }
   ]
