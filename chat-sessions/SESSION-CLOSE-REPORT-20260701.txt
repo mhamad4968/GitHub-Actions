@@ -39,12 +39,20 @@ SESSION CLOSE — 2026-07-01 JST（595/734 kintone 是正 + 情報セキュリ�
 - 勉強会資料が C:\tmp のみでリポ・次年度再利用パス未整備
 
 ================================================================================
-【改善案（承認待ち）】
+【改善案（2026-07-01 浜田 GO → 実施済）】
 ================================================================================
-R-SEC-01: 年度勉強会は Word を正本、PPT は12pテンプレから生成（scripts/ へスクリプト常置）
-R-SEC-02: kintone-apps.md の rev/BUILD 行 garble 検知を pre-commit に追加
-R-KIN-01: deploy SUCCESS → 同一セッション commit を hooks リマインド強化（R63）
-R-DOC-01: 研修スライドに個人携帯番号を載せない（システム推進室連絡のみ）を spec 化
+R-SEC-01: scripts/security-training/ + docs/training/security/（Word正本・12p PPT）
+R-SEC-02: cio-kintone-apps-garble-check.mjs + pre-commit
+R-KIN-01: deploy SUCCESS 後 R63 commit リマインド（deploy-customization.js）
+R-DOC-01: spec-2026.md + rule — 個人携帯禁止・システム推進室連絡のみ
+R-DOC-02: docs/training/security/output/ 標準化
+
+記録: docs/approved-changes/processed/2026-07-02/
+
+================================================================================
+【改善案（旧・承認待ち → 上記 GO で置換）】
+================================================================================
+（なし）
 
 ================================================================================
 【次セッション】

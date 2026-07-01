@@ -55,6 +55,14 @@ if command -v node >/dev/null 2>&1; then
     exit 1
   fi
 
+  node scripts/cio-kintone-apps-garble-check.mjs --staged
+  status=$?
+  if [ "$status" -ne 0 ]; then
+    echo "" >&2
+    echo "[pre-commit] kintone-apps.md BUILD/rev garble 検知（R-SEC-02）" >&2
+    exit 1
+  fi
+
   if git diff --cached --name-only | grep -qE '^\.cursor/rules/constitution\.mdc$'; then
     node scripts/verify-constitution-mdc-freshness.mjs
     status=$?

@@ -1,0 +1,9 @@
+{
+  "id": "R-SEC-01",
+  "category": "R",
+  "type": "file_write",
+  "note": "Word正本・12p PPT生成スクリプトを scripts/security-training/ に常置（2026-07-01 浜田承認・即時実施）",
+  "approved_at": "2026-07-01T21:15:00+09:00",
+  "implemented_at": "2026-07-01T21:15:00+09:00",
+  "status": "implemented"
+}

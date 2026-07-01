@@ -1,0 +1,9 @@
+{
+  "id": "R-DOC-01",
+  "category": "D",
+  "type": "file_write",
+  "note": "研修資料に個人携帯禁止・システム推進室連絡のみ（spec-2026.md + cursor rule）",
+  "approved_at": "2026-07-01T21:15:00+09:00",
+  "implemented_at": "2026-07-01T21:15:00+09:00",
+  "status": "implemented"
+}

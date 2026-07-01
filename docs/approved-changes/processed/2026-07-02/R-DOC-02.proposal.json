@@ -1,0 +1,9 @@
+{
+  "id": "R-DOC-02",
+  "category": "D",
+  "type": "file_write",
+  "note": "勉強会成果物パス docs/training/security/ 標準化",
+  "approved_at": "2026-07-01T21:15:00+09:00",
+  "implemented_at": "2026-07-01T21:15:00+09:00",
+  "status": "implemented"
+}

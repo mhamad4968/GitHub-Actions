@@ -1,0 +1,9 @@
+{
+  "id": "R-SEC-02",
+  "category": "S",
+  "type": "file_write",
+  "note": "kintone-apps.md BUILD/rev garble pre-commit 検知（cio-kintone-apps-garble-check.mjs）",
+  "approved_at": "2026-07-01T21:15:00+09:00",
+  "implemented_at": "2026-07-01T21:15:00+09:00",
+  "status": "implemented"
+}

@@ -1,0 +1,30 @@
+---
+description: 情報セキュリティ勉強会資料 — Word正本・12p PPT・連絡先禁止（R-SEC-01 / R-DOC-01）
+globs:
+  - docs/training/security/**
+  - scripts/security-training/**
+alwaysApply: false
+---
+
+# 情報セキュリティ勉強会資料（R-SEC-01 / R-DOC-01）
+
+**承認**: 浜田 2026-07-01
+
+## 正本
+
+- **Word** = 配布・読む用の全文正本
+- **PPT 12ページ** = 支店訪問・投影用（`scripts/security-training/build-pptx-12slides.py`）
+- 出力: `docs/training/security/output/`
+- 仕様: `docs/training/security/spec-2026.md`
+
+## 禁止
+
+- スライド・Word に **個人携帯番号** を載せない
+- 連絡先は **「システム推進室へ連絡」** のみ
+
+## 更新手順
+
+1. `spec-YYYY.md` を更新
+2. Word 生成 → 内容確認
+3. PPT 12p 生成 → 投影確認
+4. 画像差し替え（警察庁偽画面・IPA 図）は手動

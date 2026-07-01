@@ -124,6 +124,10 @@ for (let i = 0; i < 60; i++) {
     });
     console.log('Deploy SUCCESS');
     if (buildTag) console.log(`[live-build-registry] recorded BUILD=${buildTag} app=${appNum}`);
+    console.log('');
+    console.log('[R63] deploy SUCCESS — 同一セッション内に customize + kintone-apps + cio-live-builds を commit すること');
+    console.log('      （夕締め一括禁止・npm run cio:session:close-git または手動 git add/commit）');
+    console.log('');
     const sync = spawnSync(process.execPath, ['scripts/sync-kintone-apps-build.mjs', String(appNum), '--strict'], {
       cwd: process.cwd(),
       encoding: 'utf8',

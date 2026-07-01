@@ -3,7 +3,10 @@
 **/.env.local
 **/.env.*.local
 
-# ユーザサポート月次 PDF デモ出力
+# 情報セキュリティ勉強会 生成物（スクリプトは repo 内・バイナリはローカル出力）
+docs/training/security/output/*.pptx
+docs/training/security/output/*.docx
+
 scripts/user683-monthly-pdf/_*.pdf
 
 # 678 デプロイ用（SheetJS + desktop.js 結合・`npm run bundle:678` で生成）
