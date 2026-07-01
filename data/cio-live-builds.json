@@ -2,11 +2,11 @@
   "version": 1,
   "apps": {
     "595": {
-      "build": "2026-06-30-595-bulk-log-no-dup",
-      "fileKey": "09b4a1a1-da57-4400-b7ee-1794b31cc4b9",
-      "revision": "107",
-      "relPath": ".kintone-deploy/upload-595.js",
-      "deployedAt": "2026-06-30T12:21:38.854Z",
+      "build": "2026-07-01-595-index-clear-q-param",
+      "fileKey": "6e7ed3af-07b3-4802-b2cf-061b12a5968b",
+      "revision": "111",
+      "relPath": "customize/595/desktop.js",
+      "deployedAt": "2026-07-01T10:47:56.717Z",
       "note": null
     },
     "627": {
@@ -306,11 +306,11 @@
       "note": null
     },
     "734": {
-      "build": "2026-06-21-vpn-conn-pw-updated-date",
-      "fileKey": "8d2a21e0-d570-43c9-b908-1c2bab1d8c1b",
-      "revision": "28",
+      "build": "2026-07-01-vpn-delete-records-api-fix",
+      "fileKey": "4babdb64-f815-49ec-9444-82bef64fa707",
+      "revision": "30",
       "relPath": "customize/vpn-account-dash/desktop.js",
-      "deployedAt": "2026-06-20T22:40:39.978Z",
+      "deployedAt": "2026-07-01T10:25:48.584Z",
       "note": null
     },
     "736": {

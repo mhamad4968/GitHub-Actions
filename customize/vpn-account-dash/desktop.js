@@ -26,7 +26,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   "use strict";
 
   /** VPNアカウント台帳 — DB REST CRUD + ライセンス集計 + 利用者印刷 + 月次前回比 + PC台帳連携 */
-  var BUILD = "2026-06-21-vpn-conn-pw-updated-date";
+  var BUILD = "2026-07-01-vpn-delete-records-api-fix";
   var APP_DB = 733;
   var APP_EMP_MASTER = 595;
   var APP_PC_LEDGER = 674;
@@ -1463,10 +1463,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       row.dept +
       "\n\n削除後、この VPN ID は再利用できません。\nVPN 接続中の利用者がいる可能性があります。削除前に口頭確認を推奨します。\n\n削除しますか？";
     if (!window.confirm(msg)) return;
-    apiDelete("/k/v1/record.json", {
+    apiDelete("/k/v1/records.json", {
       app: APP_DB,
-      ids: [row.id],
-      revisions: [row.revision],
+      ids: [Number(row.id)],
     })
       .then(function () {
         return clearVpnFromPcLedger(row.account_label);
