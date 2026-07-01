@@ -3,10 +3,10 @@
   "apps": {
     "595": {
       "build": "2026-07-01-595-index-clear-q-param",
-      "fileKey": "6e7ed3af-07b3-4802-b2cf-061b12a5968b",
-      "revision": "111",
-      "relPath": "customize/595/desktop.js",
-      "deployedAt": "2026-07-01T10:47:56.717Z",
+      "fileKey": "15377fcc-4ef5-455a-b3e6-c401efeccd29",
+      "revision": "112",
+      "relPath": ".kintone-deploy/upload-595.js",
+      "deployedAt": "2026-07-01T12:12:15.343Z",
       "note": null
     },
     "627": {
