@@ -2,14 +2,14 @@
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED**（kintone レーン v1 完了・closures 登録）≠ **セッション締め**（export-handoff / Desktop sync / close-git）。混同禁止 -->
 
-**最終更新**: 2026-07-02 JST — **セッション締め（595 退職PCリンク解除・メーリングリスト Space21 移設）**
+**最終更新**: 2026-07-02 JST — **セッション締め済**（595 退職PCリンク解除・メーリングリスト Space21 移設）
 
 ### 本日アクティブ（BUILD/rev — 2026-07-02）
 
 | 項目 | 内容 |
 |------|------|
-| **595 社員マスタ** | BUILD=`2026-07-02-595-retire-clear-pc674-link` rev **113** — 退職時 674→保管 + 595 PC台帳サブテーブルクリア |
-| **750/751 メーリングリスト** | **Space 21 / thread 23 移設** — ACL: admin 全権 / system 閲覧+書出 / everyone 拒否 |
+| **595 社員マスタ** | BUILD=`2026-07-02-595-retire-clear-pc674-link` rev **113** — 退職時 674→保管 + 595 `pc_ledger_v1_list`/`pc_ledger_list` クリア（backfill 7件・浜田 OK） |
+| **750/751 メーリングリスト** | **Space 21 / thread 23 移設** — ACL: **admin**（USER）全権 / **system**（USER）閲覧+書出 / **everyone** 拒否 — 浜田目視 OK **2026-07-02** |
 
 ## クローズ済み（`data/cio-project-closures.json` — 無断 v1 再開禁止）
 
@@ -25,13 +25,15 @@
 | **736 担当説明 保留** | Step2-3 待ち |
 | **nodemailer 9.x** | V1 proposal 手動レビュー待ち |
 
-**次の1手**: 朝 `npm run cio:session:cold-start` → `session:bootstrap` — **浜田依頼待ち**（項番 -0）  
-**Git**: **`71f1038`** — origin 同期予定（close-git push 再試行中）  
-**品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`  
-**締め**: `SESSION-CLOSE-REPORT-20260702.txt`
+**次の1手**: 朝 `npm run cio:session:cold-start` → `session:bootstrap` — **浜田依頼待ち**（項番 -0・本題 GO まで着手しない）  
+**Git**: **`03de58d`** — `origin/main` 同期済（close-git + checkpoint fix）  
+**品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **クローズ正本**: `data/cio-project-closures.json` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`  
+**運用メモ**: 595 CSV 取込後は一覧 **「台帳へ一括反映」** を実行。595 退職 backfill: `npm run pc-ledger:backfill-595-clear-retired-pc-links:apply`。メーリングリスト移設: `npm run mailing-list:move-space21`（Space21 済なら skip）。Desktop `＃重要確認事項.txt` は **2026-06-30 廃止**（read-pack/18 正本は維持）。  
+**改善案 GO 済**: R-SEC-01/02, R-KIN-01, R-DOC-01/02 — `docs/approved-changes/processed/2026-07-02/`  
+**締め**: `SESSION-CLOSE-REPORT-20260702.txt`（OK）
 
 ## セッション切替後の自律復元（Lifecycle v2 鏡像）
 
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`  
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / **`mandatory-read-gate.mjs`** / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
-**CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **L2** bootstrap NG → NEW-SESSION-STARTER 6 部（1 回）
+**CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **L2** bootstrap NG → NEW-SESSION-STARTER 6 部（1 回）| **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）
