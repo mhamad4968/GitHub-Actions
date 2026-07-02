@@ -26,7 +26,7 @@
 | **nodemailer 9.x** | V1 proposal 手動レビュー待ち |
 
 **次の1手**: **次回セッション** — `cio:session:cold-start` → `session:bootstrap` → **浜田依頼待ち**（項番 -0）  
-**Git**: close-git 本ターンで更新（夕反省 commit 含む）  
+**Git**: **`b53faa8`** = `origin/main` — v1 CLOSED push 済
 **夕反省**: `docs/reports/2026-07-02-evening-reflection.md`  
 **Plan&Usage**: スクショ**未提出** — 直近 **7%**（2026-06-21）· stale **11日** · 次回 Total% 1行で可  
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **クローズ正本**: `data/cio-project-closures.json` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`  
