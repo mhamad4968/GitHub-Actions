@@ -210,7 +210,7 @@ function deriveStaleNudge(latest, todayJst) {
       stale: true,
       stale_threshold_days: STALE_RECORD_DAYS,
       nudge:
-        'Plan & Usage のスクショまたは Total% をチャットに送ってください（CIO が credit:set まで実行します）',
+        'Plan & Usage のスクショまたは Total% をチャットに送ってください（**3 日に 1 回**が妥当・CIO が credit:set まで実行します）',
     };
   }
   const lastDate = jstIsoDateToDate(latest.date);
@@ -221,7 +221,7 @@ function deriveStaleNudge(latest, todayJst) {
     stale,
     stale_threshold_days: STALE_RECORD_DAYS,
     nudge: stale
-      ? `最終記録から ${days} 日経過 — Plan & Usage スクショまたは Total% を1行で送付ください（§1-2-4・CIO が記録）`
+      ? `最終記録から ${days} 日経過 — Plan & Usage スクショまたは Total% を1行で送付ください（**3 日に 1 回**が妥当・§1-2-4・CIO が記録）`
       : null,
   };
 }

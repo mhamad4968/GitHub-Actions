@@ -216,7 +216,7 @@ if (rCredit.ok && rCredit.stdout) {
   sections.push('- ⚠️ `npm run credit:status` 取得失敗');
 }
 sections.push('');
-sections.push('> 1 日 1 回 30 秒: cursor.com/billing で「今月のクレジット消費 X%」を確認 → `npm run credit:set <pct>` で記録');
+sections.push('> **3 日に 1 回**が妥当: Plan & Usage の Total% 1 行 or スクショ → CIO が `npm run credit:set <pct>` で記録');
 sections.push('');
 if (creditWarn) {
   sections.push(`> ${creditWarn.warning_icon} **AI 自発警告 (§1-2-4)**: ${creditWarn.warning_label}`);

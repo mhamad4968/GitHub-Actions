@@ -472,6 +472,8 @@ flowchart LR
 
 **毎日 1 回の貼付フロー（朝ブリーフィング §0 統合 / P5-5 強化）**:
 
+**報告頻度（2026-07-02 浜田合意）**: Plan & Usage の報告は **3 日に 1 回**が妥当（毎日必須ではない）。**最終 `credit:set` から 3 日以上**経過したら **CIO は浜田へ 1 行で催促**する（同一セッション 1 回まで）。機械: `credit:status --json` の `stale_record` / `stale_nudge` · 朝 prep §0a · セッション先頭 · 締め前 `verify:session-close-git-warn`。正本 `docs/runbooks/cursor-plan-usage-watch.md`「記録催促」。
+
 1. **浜田の作業 (30 秒 / 旧プロセス)**:
    - cursor.com/billing or アカウント設定の "Usage" を開いて **「今月のクレジット消費 X%」** を 1 行コピー
    - AI に「今月 X%」とだけ伝える（または `npm run credit:set 65` で直接記録）
@@ -507,7 +509,7 @@ flowchart LR
 
 **月次リセット**:
 
-- 浜田 Cursor 課金日（例: 毎月 14 日 → 浜田が初回設定時に `npm run credit:reset -- --day=14` で記録）
+- 浜田 Cursor 課金日（**毎月 15 日** — `npm run credit:reset -- --day=15` で記録。2026-07-02 確定）
 - リセット日に AI が `data/credit-usage.json` の月次集計を `data/credit-usage-history.jsonl` に append → 当月分 reset
 
 **タイムゾーン (P1 / 2026-04-26 / off-by-one バグ修正)**:
@@ -521,7 +523,7 @@ flowchart LR
 | 項目 | AI | 浜田 |
 |---|---|---|
 | ルール維持・改訂 | ✅ | (§57 改定 GO のみ) |
-| % 入力フォーム提供 (`npm run credit:set <pct>`)| ✅ | 入力 30 秒 / 1 日 1 回 |
+| % 入力フォーム提供 (`npm run credit:set <pct>`)| ✅ | **3 日に 1 回**が妥当（Total% 1 行 or スクショ） |
 | 予測計算・JSON 保存 | ✅ | - |
 | 朝報 §0 表示 | ✅ | 朝チェック |
 | 70/85/95% 自発警告 | ✅ | 判断 |
