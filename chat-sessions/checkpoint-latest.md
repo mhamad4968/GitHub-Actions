@@ -26,7 +26,7 @@
 | **nodemailer 9.x** | V1 proposal 手動レビュー待ち |
 
 **次の1手**: 朝 `npm run cio:session:cold-start` → `session:bootstrap` — **浜田依頼待ち**（項番 -0・本題 GO まで着手しない）  
-**Git**: **`ab6c7b0`** — `origin/main` 同期済（セッション締め完了）  
+**Git**: **`3390566`** — `origin/main` 同期済み（セッション締め完了・push 済）  
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **クローズ正本**: `data/cio-project-closures.json` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`  
 **運用メモ**: 595 CSV 取込後は一覧 **「台帳へ一括反映」** を実行。595 退職 backfill: `npm run pc-ledger:backfill-595-clear-retired-pc-links:apply`。メーリングリスト移設: `npm run mailing-list:move-space21`（Space21 済なら skip）。Desktop `＃重要確認事項.txt` は **2026-06-30 廃止**（read-pack/18 正本は維持）。  
 **改善案 GO 済**: R-SEC-01/02, R-KIN-01, R-DOC-01/02 — `docs/approved-changes/processed/2026-07-02/`  
