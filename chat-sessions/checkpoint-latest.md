@@ -26,7 +26,7 @@
 | **nodemailer 9.x** | V1 proposal 手動レビュー待ち |
 
 **次の1手**: **次回セッション** — `cio:session:cold-start` → `session:bootstrap` → **Plan&Usage 1 行（§41 前）** → **浜田依頼待ち**（項番 -0）  
-**Git**: **`b53faa8`** = `origin/main` — v1 CLOSED push 済
+**Git**: **`17691d7`** = `origin/main` — 夜間締め push 済
 **夕反省**: `docs/reports/2026-07-02-evening-reflection.md`（§7 浜田 GO · 5 件実装済）  
 **Plan&Usage**: **18%**（2026-07-02 記録）· Ultra リセット **7/15**（残 13 日）· **3 日に 1 回**報告 · stale なし · 次 nudge **~7/05**  
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **クローズ正本**: `data/cio-project-closures.json` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`  

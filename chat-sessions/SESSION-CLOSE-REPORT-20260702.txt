@@ -61,5 +61,5 @@ SESSION CLOSE — 2026-07-02 JST（595 退職PCリンク解除 + メーリング
 ■ credit:session-start — bootstrap 1f · Plan&Usage を依頼前に 1 行
 ■ npm minor: @kintone/cli / eslint / globals / qrcode
 ■ Plan&Usage: 18%（2026-07-02）· Ultra reset 7/15 · stale なし
-■ Git: db2bf49 = origin/main · close-git + Desktop sync 済
+■ Git: 17691d7 = origin/main · close-git + Desktop sync 済
 ■ 次回: cold-start → bootstrap → Plan&Usage 1 行 → 浜田依頼待ち（-0）

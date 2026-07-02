@@ -52,15 +52,13 @@ export function gitShortHead(root) {
 }
 
 /**
- * push 成功後: [CLOSE] コミットがあればその hash、なければ HEAD
+ * push 成功後: origin/main（= 直前 push の HEAD）で **Git** 行を stamp
  * @returns {{ changed: boolean, hash: string|null }}
  */
-export function syncCheckpointGitAfterPush(root, { suffix } = {}) {
-  const closeHash = findRecentCloseCommitHash(root);
-  const hash = closeHash || gitShortHead(root);
+export function syncCheckpointGitAfterPush(root, { suffix = 'push 済' } = {}) {
+  const hash = gitOriginMainShort(root) || gitShortHead(root);
   if (!hash) return { changed: false, hash: null };
-  const defaultSuffix = closeHash ? 'v1 CLOSED push 済' : 'push 済';
-  const changed = updateCheckpointGitHead(root, { hash, suffix: suffix || defaultSuffix });
+  const changed = updateCheckpointGitHead(root, { hash, suffix });
   return { changed, hash };
 }
 
