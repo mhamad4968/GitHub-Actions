@@ -3,8 +3,8 @@
   "budget_usd_total": 1200,
   "budget_usd_l1_credits": 200,
   "budget_usd_l2_on_demand_cap": 1000,
-  "reset_day": 16,
-  "current_period_start": "2026-05-16",
+  "reset_day": 15,
+  "current_period_start": "2026-06-15",
   "daily_records": [
     {
       "date": "2026-04-26",
