@@ -2,7 +2,7 @@
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED**（kintone レーン v1 完了・closures 登録）≠ **セッション締め**（export-handoff / Desktop sync / close-git）。混同禁止 -->
 
-**最終更新**: 2026-07-02 JST — **セッション締め済**（595 退職PCリンク解除・メーリングリスト Space21 移設）
+**最終更新**: 2026-07-02 JST — **セッション締め済**（595/750-751 完了・doc 追記済・夜に続き）
 
 ### 本日アクティブ（BUILD/rev — 2026-07-02）
 
@@ -13,7 +13,7 @@
 
 ## クローズ済み（`data/cio-project-closures.json` — 無断 v1 再開禁止）
 
-業務改善697–713 / Wi-Fi718–719 / JR iPad720–721 / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **メーリングリスト750–751** — **closed-v1**（750/751 は Space21 移設のみ）。**触らない**: **688 / 677–679 / SKYSEA**
+業務改善697–713 / Wi-Fi718–719 / JR iPad720–721 / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **メーリングリスト750–751** — **closed-v1**（750/751 Space21 移設のみ）。**触らない**: **688 / 677–679 / SKYSEA**
 
 ## 保留・その他の制約
 
@@ -25,8 +25,8 @@
 | **736 担当説明 保留** | Step2-3 待ち |
 | **nodemailer 9.x** | V1 proposal 手動レビュー待ち |
 
-**次の1手**: 朝 `npm run cio:session:cold-start` → `session:bootstrap` — **浜田依頼待ち**（項番 -0・本題 GO まで着手しない）  
-**Git**: **`9e11f68`** — `origin/main` 同期済み（doc 追記・checkpoint 更新 commit 済）  
+**次の1手**: **夜セッション** — `cio:session:cold-start` → `session:bootstrap` → **浜田依頼待ち**（項番 -0）  
+**Git**: **`801197c`** — `origin/main` 同期済み（commit/push 残なし・verify:session-close-git-warn OK）  
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **クローズ正本**: `data/cio-project-closures.json` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`  
 **運用メモ**: 595 CSV 取込後は一覧 **「台帳へ一括反映」** を実行。595 退職 backfill: `npm run pc-ledger:backfill-595-clear-retired-pc-links:apply`。メーリングリスト移設: `npm run mailing-list:move-space21`（Space21 済なら skip）。Desktop `＃重要確認事項.txt` は **2026-06-30 廃止**（read-pack/18 正本は維持）。  
 **改善案 GO 済**: R-SEC-01/02, R-KIN-01, R-DOC-01/02 — `docs/approved-changes/processed/2026-07-02/`  

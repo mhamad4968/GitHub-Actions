@@ -55,11 +55,11 @@
 ## [2026-07-02] セッション解体時知恵ストック
 
 **前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
-**手順**: `npm run cio:session:cold-start` → `npm run pc-ledger:backfill-595-clear-retired-pc-links:apply` → `npm run mailing-list:move-space21`
+**手順**: `npm run pc-ledger:backfill-595-clear-retired-pc-links:apply` → `npm run mailing-list:move-space21` → `npm run cio:session:cold-start`
 **禁止**: customize/deploy 凍結中の無断 save・上位憲法 §50-3-11 非置換違反・本体単独完結
 **exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
 
-<!-- errors: npm run cio:session:cold-start` → `session:bootstrap` — **浜田依頼待ち**（項番 -0・本題 GO ま | npm run pc-ledger:backfill-595-clear-retired-pc-links:apply`。メーリングリスト移設: `npm ru | npm run cio:session:cold-start` -->
+<!-- errors: npm run pc-ledger:backfill-595-clear-retired-pc-links:apply`。メーリングリスト移設: `npm ru | npm run cio:session:cold-start` | npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / **`man -->
 
 
 ## [2026-07-01] セッション解体時知恵ストック
