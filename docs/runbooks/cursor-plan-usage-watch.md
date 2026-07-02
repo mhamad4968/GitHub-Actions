@@ -33,12 +33,13 @@ Plan & Usage スクリーンショットを浜田が共有したとき、CIO が
 
 | 条件 | アクション |
 |------|------------|
-| 最終 `credit:set` から **3 日以上**（`credit-budget.mjs` の `STALE_RECORD_DAYS`） | **セッション先頭**（最初の有用返答）· 朝 prep §0a · 締め前 — **いずれかで 1 行催促** |
+| **毎セッション開始**（bootstrap 後） | **`npm run credit:session-start`** — AI は **依頼を聞く前**に 1 行（stale なら催促を先） |
+| 最終 `credit:set` から **3 日以上**（`STALE_RECORD_DAYS`） | 上記第1文で **必ず催促**（同一セッション 1 回まで） |
 | 未記録（`latest_percent === null`） | 同上 |
 | 催促の内容 | 「Plan & Usage スクショまたは Total% を送付ください（**3 日に 1 回**）」— **`npm run credit:set` は CIO が実行**（§35-1） |
 | 頻度 | **同一セッションで 1 回**まで（うるさくしない）。翌日以降また 3 日超なら再催促 |
 
-機械ゲート: `npm run credit:status -- --json` の `stale_record` / `stale_nudge` · `verify:session-close-git-warn` 末尾 CREDIT 行（D-CREDIT-01）。
+機械ゲート: `npm run credit:session-start`（bootstrap 内）· `credit:status --json` · `verify:session-close-git-warn` 末尾 CREDIT 行（D-CREDIT-01）。
 
 ## 関連
 

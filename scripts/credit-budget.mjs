@@ -226,7 +226,7 @@ function deriveStaleNudge(latest, todayJst) {
   };
 }
 
-function cmdStatus(asJson = false) {
+function buildCreditStatusResult() {
   const state = loadState();
   const records = state.daily_records || [];
   const latest = records[records.length - 1] || null;
@@ -240,7 +240,7 @@ function cmdStatus(asJson = false) {
     : (state.reset_day ? computeCurrentPeriodStart(state.reset_day) : null);
   const exhaustion = predictExhaustionDate(records, periodStart);
   const staleInfo = deriveStaleNudge(latest, todayJst);
-  const result = {
+  return {
     latest_percent: pct,
     latest_date: latest ? latest.date : null,
     warning_level: w.level,
@@ -262,22 +262,61 @@ function cmdStatus(asJson = false) {
     stale_nudge: staleInfo.nudge,
     timezone: 'JST (UTC+9)',
   };
+}
+
+function cmdStatus(asJson = false) {
+  const result = buildCreditStatusResult();
+  const { latest_percent: pct, latest_date: latestDate } = result;
+  const w = {
+    level: result.warning_level,
+    icon: result.warning_icon,
+    label: result.warning_label,
+  };
+  const nextReset = result.next_reset_date ? jstIsoDateToDate(result.next_reset_date) : null;
+  const exhaustion = result.predicted_exhaustion_date
+    ? jstIsoDateToDate(result.predicted_exhaustion_date)
+    : null;
   if (asJson) {
     console.log(JSON.stringify(result, null, 2));
     return;
   }
   console.log('### Cursor Ultra クレジット予算 (§1-2-4 / JST 基準)');
   console.log('');
-  console.log(`- 直近消費: ${pct === null ? '未記録' : pct + '%'} (${latest ? latest.date : 'N/A'}) ${w.icon} ${w.label}`);
-  console.log(`- 月予算: L1 $${state.budget_usd_l1_credits} (Ultra 内) + L2 $${state.budget_usd_l2_on_demand_cap} (On-Demand cap) = $${state.budget_usd_total}`);
-  console.log(`- 課金日: ${state.reset_day ? `毎月 ${state.reset_day} 日 (JST)` : '⚠️ 未設定 (npm run credit:reset --day=14 で設定)'}`);
-  if (nextReset) console.log(`- 次回リセット: ${dateToJstIsoDate(nextReset)} (残 ${remainingDays} 日)`);
-  if (exhaustion) console.log(`- 線形回帰予測 枯渇日: ${dateToJstIsoDate(exhaustion)} ${exhaustion < nextReset ? '⚠️ リセット日より前' : 'OK'}`);
-  if (result.advice) console.log(`- AI 助言: ${result.advice}`);
-  if (staleInfo.stale && staleInfo.nudge) {
-    console.log(`- 📣 記録催促 (§1-2-4): ${staleInfo.nudge}`);
+  console.log(`- 直近消費: ${pct === null ? '未記録' : pct + '%'} (${latestDate || 'N/A'}) ${w.icon} ${w.label}`);
+  console.log(`- 月予算: L1 $${result.budget_usd_l1_credits} (Ultra 内) + L2 $${result.budget_usd_l2_on_demand_cap} (On-Demand cap) = $${result.budget_usd_total}`);
+  console.log(`- 課金日: ${result.reset_day ? `毎月 ${result.reset_day} 日 (JST)` : '⚠️ 未設定 (npm run credit:reset --day=14 で設定)'}`);
+  if (nextReset) console.log(`- 次回リセット: ${result.next_reset_date} (残 ${result.remaining_days} 日)`);
+  if (exhaustion) {
+    console.log(
+      `- 線形回帰予測 枯渇日: ${result.predicted_exhaustion_date} ${exhaustion < nextReset ? '⚠️ リセット日より前' : 'OK'}`,
+    );
   }
-  console.log(`- 履歴件数: ${records.length} 日分`);
+  if (result.advice) console.log(`- AI 助言: ${result.advice}`);
+  if (result.stale_record && result.stale_nudge) {
+    console.log(`- 📣 記録催促 (§1-2-4): ${result.stale_nudge}`);
+  }
+  console.log(`- 履歴件数: ${result.records_count} 日分`);
+}
+
+/** セッション開始 — bootstrap 内・チャット第1文（依頼前）用 */
+function cmdSessionStart() {
+  const r = buildCreditStatusResult();
+  console.log('[credit:session-start] === Plan & Usage（依頼前・§1-2-4）===');
+  if (r.latest_percent === null) {
+    console.warn(
+      '[credit:session-start] 📣 未記録 — チャット第1文で Total% 1 行 or スクショを依頼してから §41 / 依頼を聞く',
+    );
+  } else {
+    console.log(
+      `[credit:session-start] 直近 ${r.latest_percent}% (${r.latest_date}) ${r.warning_icon} | リセット ${r.next_reset_date || '—'} (残 ${r.remaining_days ?? '—'}日)`,
+    );
+  }
+  if (r.stale_nudge) {
+    console.warn(`[credit:session-start] 📣 ${r.stale_nudge}`);
+    console.warn('[credit:session-start] AI: 上記催促を**依頼を聞く前**の第1文で述べる');
+  } else if (r.latest_percent !== null) {
+    console.log('[credit:session-start] OK — stale なし（3日に1回報告で可）');
+  }
 }
 
 function deriveAdvice(level, pct, nextReset, exhaustion, today) {
@@ -341,6 +380,7 @@ function usage() {
   npm run credit:set <pct>           今日の消費 % を記録 (0-200)
   npm run credit:status              現在の状態を表示
   npm run credit:status -- --json    JSON 出力 (朝報統合用)
+  npm run credit:session-start       セッション開始（依頼前・bootstrap 内）
   npm run credit:reset -- --day=14   課金日を毎月 14 日に設定
   npm run credit:reset -- --now      当 period をリセット (月次集計を history.jsonl に append)
 
@@ -360,6 +400,9 @@ switch (cmd) {
     break;
   case 'status':
     cmdStatus(rest.includes('--json'));
+    break;
+  case 'session-start':
+    cmdSessionStart();
     break;
   case 'reset':
     cmdReset(rest);

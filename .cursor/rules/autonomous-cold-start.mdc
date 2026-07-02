@@ -22,6 +22,8 @@ WAKE → ORIENT → ALIGN → WORK → CLOSE
 npm run cio:session:cold-start
 ```
 
+**依頼前（§1-2-4）**: bootstrap 内 `npm run credit:session-start` — **Plan & Usage 1 行を依頼より先**にチャットへ。
+
 ## ORIENT — L0 必読（3 系統）
 
 1. `docs/handoff/latest-session-bridge.json`

@@ -496,6 +496,7 @@
     "audit:parallel:explain": "node scripts/parallel-session-detector.mjs --explain",
     "credit:set": "node scripts/credit-budget.mjs set",
     "credit:status": "node scripts/credit-budget.mjs status",
+    "credit:session-start": "node scripts/credit-budget.mjs session-start",
     "credit:reset": "node scripts/credit-budget.mjs reset",
     "field-spec:diff": "node scripts/field-spec-diff.mjs",
     "field-spec:generate": "node scripts/field-spec-diff.mjs --generate",

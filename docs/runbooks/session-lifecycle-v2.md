@@ -62,6 +62,7 @@ flowchart LR
 2. **凍結**（触らない app・保留レーン）
 3. **次の 1 手**（checkpoint と bridge が一致するか）
 4. 本ターンの §41 候補（あれば 1 問）
+5. **Plan & Usage 1 行**（`credit:session-start` 結果 — **依頼を聞く前**に述べる。stale なら催促を先）
 
 ### L1 — 本題決定後（WORK 着手前、10〜20 分）
 
@@ -103,13 +104,14 @@ MORNING → PREFLIGHT → ROLLUP → QUICK-HEALTH → WALL-CLOCK → BOOTSTRAP �
 | PREFLIGHT | bridge 陳腐化時 **auto export-handoff**（gitHead 不一致含む） |
 | ROLLUP | **凍結ゾーン >50 行** → auto rollup（`verify:checkpoint-freeze-zone --auto-rollup`） |
 | WALL-CLOCK | **`session:clock:clear` → `session:clock:set`**（§51-6-2 / trialPaused 時の残留対策） |
-| BOOTSTRAP | `session:bootstrap`（従来どおり） |
+| BOOTSTRAP | `session:bootstrap`（**credit:session-start** = Plan & Usage 依頼前） |
 | IMPORT | `verify:session-handoff-integrity --import` |
 
 **浜田**: Desktop `00-NEW-SESSION-STARTER_yyyymmdd.txt` 貼付（項番 -1）。追加負担なし。
 
 ### 4.2 ALIGN（合意）
 
+- **Plan & Usage（依頼前）**: bootstrap 内 `npm run credit:session-start` 後、**浜田依頼・§41 より先**に 1 行（stale なら催促）。正本 `docs/runbooks/cursor-plan-usage-watch.md`。
 - **項番 -0**: AI は §41 **一問だけ**。浜田 OK まで WAKE 以外の副作用に着手しない。
 - **OK 後**: L1 Read → WORK。
 

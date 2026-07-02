@@ -3,18 +3,18 @@
   "note": "git-history-alignment が保護するコマンド・緩和禁止パターン。verify:git-history-alignment / git-history-mcp 連動。",
   "generations": [
     {
-      "hash": "8e04a08",
+      "hash": "38e4ef0",
+      "label": "feat(credit): Plan & Usage at session start before user request (Hamada)",
+      "at": "2026-07-02"
+    },
+    {
+      "hash": "01c9cd2",
       "label": "docs(credit): Plan & Usage 3-day reporting cadence + stale nudge (Hamada GO)",
       "at": "2026-07-02"
     },
     {
       "hash": "211f96a",
       "label": "docs(constitution): §38-1 npm security update autonomy (Hamada GO 2026-07-02)",
-      "at": "2026-07-02"
-    },
-    {
-      "hash": "a069de4",
-      "label": "docs(governance): mirror A/B/C/D v2 into constitution and rules (E)",
       "at": "2026-07-02"
     }
   ],
