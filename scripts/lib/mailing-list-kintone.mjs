@@ -1,5 +1,5 @@
 /**
- * メーリングリスト kintone — shared REST helpers (Space 48).
+ * メーリングリスト kintone — shared REST helpers (Space 21).
  * 正本: docs/plans/2026-06-29-mailing-list-kintone-spec.md
  */
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
@@ -9,8 +9,10 @@ import XLSX from 'xlsx';
 
 export const DB_APP_NAME = 'メーリングリストDB';
 export const DASH_APP_NAME = 'メーリングリスト台帳';
-export const SPACE_ID = Number(process.env.MAILING_LIST_SPACE_ID || 48);
-export const THREAD_ID = Number(process.env.MAILING_LIST_THREAD_ID || 52);
+export const SPACE_ID = Number(process.env.MAILING_LIST_SPACE_ID || 21);
+export const THREAD_ID = Number(process.env.MAILING_LIST_THREAD_ID || 23);
+export const ADMIN_USER_CODE = String(process.env.MAILING_LIST_ADMIN_USER || 'admin');
+export const SYSTEM_USER_CODE = String(process.env.MAILING_LIST_SYSTEM_USER || 'system');
 export const DEFAULT_XLSX =
   process.env.MAILING_LIST_XLSX ||
   'C:\\tmp\\メーリングリスト一覧\\メーリングリスト一覧更新2.xlsx';
@@ -114,6 +116,86 @@ export function loadAppIds() {
 
 export function saveAppIds(ids) {
   writeFileSync(STATE_PATH, `${JSON.stringify(ids, null, 2)}\n`, 'utf8');
+}
+
+function denyEveryoneRights() {
+  return {
+    entity: { type: 'GROUP', code: 'everyone' },
+    includeSubs: false,
+    appEditable: false,
+    recordViewable: false,
+    recordAddable: false,
+    recordEditable: false,
+    recordDeletable: false,
+    recordImportable: false,
+    recordExportable: false,
+  };
+}
+
+export function buildMailingListAdminRights(adminCode = ADMIN_USER_CODE) {
+  return {
+    entity: { type: 'USER', code: adminCode },
+    includeSubs: false,
+    appEditable: true,
+    recordViewable: true,
+    recordAddable: true,
+    recordEditable: true,
+    recordDeletable: true,
+    recordImportable: true,
+    recordExportable: true,
+  };
+}
+
+/** system: 閲覧 + Excel 出力（印刷は customize・閲覧権で利用） */
+export function buildMailingListSystemRights(systemCode = SYSTEM_USER_CODE) {
+  return {
+    entity: { type: 'USER', code: systemCode },
+    includeSubs: false,
+    appEditable: false,
+    recordViewable: true,
+    recordAddable: false,
+    recordEditable: false,
+    recordDeletable: false,
+    recordImportable: false,
+    recordExportable: true,
+  };
+}
+
+export async function moveAppToSpace(baseUrl, headers, appId, spaceId) {
+  await fetchJson(`${baseUrl}/k/v1/app/move.json`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ app: appId, space: spaceId }),
+  });
+}
+
+export async function setMailingListAppAcl(baseUrl, headers, appId, options = {}) {
+  const adminCode = options.adminCode || ADMIN_USER_CODE;
+  const systemCode = options.systemCode || SYSTEM_USER_CODE;
+  const includeSystem = options.includeSystem !== false;
+  const rights = [buildMailingListAdminRights(adminCode)];
+  if (includeSystem) rights.push(buildMailingListSystemRights(systemCode));
+  rights.push(denyEveryoneRights());
+  const res = await fetchJson(`${baseUrl}/k/v1/preview/app/acl.json`, {
+    method: 'PUT',
+    headers,
+    body: JSON.stringify({ app: String(appId), rights }),
+  });
+  await deployApp(baseUrl, headers, appId, res.revision);
+  return res.revision;
+}
+
+export async function getAppPlacement(baseUrl, headers, appId) {
+  const s = await fetchJson(`${baseUrl}/k/v1/app.json?id=${appId}`, {
+    method: 'GET',
+    headers: { ...headers, 'Content-Type': undefined },
+  });
+  return {
+    appId: Number(appId),
+    name: s.name,
+    spaceId: s.spaceId != null ? Number(s.spaceId) : null,
+    threadId: s.threadId != null ? Number(s.threadId) : null,
+  };
 }
 
 export function todayJstYmd() {

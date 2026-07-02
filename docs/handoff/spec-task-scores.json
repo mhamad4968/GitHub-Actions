@@ -1,5 +1,5 @@
 {
-  "scoredAt": "2026-07-01T10:22:28.049Z",
+  "scoredAt": "2026-07-02T05:40:58.533Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
   "topTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
   "tasks": [
@@ -15,8 +15,8 @@
       "status": "pending"
     },
     {
-      "id": "checkpoint:**浜田依頼待ち**（項番_-0_で本題合意まで着手しない）。**触らない**:",
-      "text": "**浜田依頼待ち**（項番 -0 で本題合意まで着手しない）。**触らない**: **688 / 677–679 / SKYSEA**",
+      "id": "checkpoint:勉強会_PPT_画像差し込み・支店訪問日確定_/_朝_`session:boot",
+      "text": "勉強会 PPT 画像差し込み・支店訪問日確定 / 朝 `session:bootstrap` — **触らない**: **688 / 677–679 / SKYSEA**",
       "source": "checkpoint",
       "difficulty": 5,
       "tokens": "高",

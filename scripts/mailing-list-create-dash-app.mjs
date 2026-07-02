@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * メーリングリスト — ダッシュアプリ作成（Space 48 / thread 52）
+ * メーリングリスト — ダッシュアプリ作成（Space 21 / thread 23）
  */
 import {
   DASH_APP_NAME,

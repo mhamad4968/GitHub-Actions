@@ -3603,3 +3603,19 @@ npm run cio:morning:ready
 **触らない**: 688 / 677–679 / SKYSEA
 
 ---
+
+### 2026-07-02 JST — **2026-07-02 セッション締め**
+
+**要約**: 595 rev113 退職PCリンク解除・750/751 Space21移設+ACL・浜田OK
+
+**次の1手**: 朝 cio:session:cold-start → session:bootstrap — 浜田依頼待ち（項番-0）
+
+**Git**: `e3d5fb2` — 
+
+**BUILD**: 595:2026-07-02-595-retire-clear-pc674-link rev113
+
+**GO待ち**: なし
+
+**触らない**: 688 / 677–679 / SKYSEA — 触らない
+
+---

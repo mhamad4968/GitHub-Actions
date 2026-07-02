@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * メーリングリスト — データアプリ作成（Space 48 / thread 52）
+ * メーリングリスト — データアプリ作成（Space 21 / thread 23）
  */
 import {
   DB_APP_NAME,

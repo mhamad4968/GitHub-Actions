@@ -4,7 +4,7 @@
 > **状態**: **v1 完成 — CLOSED**（浜田目視 OK **2026-06-29**・本番 Excel 削除済）  
 > **App ID**: **750**（DB）/ **751**（台帳） — `scripts/data/mailing-list-app-ids.json`  
 > **完成報告**: `docs/reports/2026-06-29-mailing-list-completion.md`  
-> **配置**: [Space 48](https://jbis-kintone.cybozu.com/k/#/space/48) **thread 52**（NAS 748/749・VPN 733/734 と同エリア）  
+> **配置**: [Space 21](https://jbis-kintone.cybozu.com/k/#/space/21) **thread 23**（695/696 共有メール・674 PC台帳と同エリア） — **2026-07-02 移設**  
 > **移行元 Excel**: `C:\tmp\メーリングリスト一覧\メーリングリスト一覧.xlsx`（シート **Sheet2**・**63 件**）  
 > **機械分析**: `docs/plans/tmp-mailing-list-xlsx-structure.json`  
 > **UI 参照**: [共有メール 696](https://jbis-kintone.cybozu.com/k/696/) / [NAS 749](https://jbis-kintone.cybozu.com/k/749/) 型（一覧表 + REST で DB 書込）
@@ -28,7 +28,7 @@
 | **DB 標準 UI** | 保存・削除 **全面禁止**（718 型 customize） |
 | **操作入り口** | **台帳のみ**（**システム推進室**が編集・管理） |
 
-**レーン宣言**: **Space 48**（システム推進室専用）。**695/696 共有メール**とは **別台帳**（連携不要）。
+**レーン宣言**: **Space 21**（システム管理・695/696 共有メールと同エリア）。**695/696 共有メール**とは **別台帳**（連携不要）。
 
 ---
 

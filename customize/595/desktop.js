@@ -13,12 +13,12 @@
    * - 一覧: 所属グループ・所属名・社員名のいずれかに部分一致する検索窓（ヘッダスペース）
    * - 詳細・編集: サブテーブル（674）からレコードへのリンクをヘッダ下に表示
    * - 保存: 在籍=退職かつ退職日空→当日を退職日に設定／**emp_id 空なら EMP-xxxx 自動採番**
-   * - 保存成功後: 退職時は 674 を保管＋アカウントクリア＋備考追記／それ以外は 674・714・716 所属ミラー
+   * - 保存成功後: 退職時は 674 を保管＋アカウントクリア＋備考追記＋**595 側 PC台帳リンク解除**／それ以外は 674・714・716 所属ミラー
    * - 一覧: 「台帳へ一括反映」— CSV 取込後など 674／714／716 へ所属ミラー（退職者除外）
    * - 新規・編集: 680 所属候補マスタから所属名・所属グループを選ぶモーダル（手入力も可）
    */
 
-  var BUILD = "2026-07-01-595-index-clear-q-param";
+  var BUILD = "2026-07-02-595-retire-clear-pc674-link";
 
   /** 新・PC台帳 所属候補マスタ（674 共有・JR と共用） */
   var APP_DEPT_MASTER_595 = "680";
@@ -1629,6 +1629,53 @@
     });
   }
 
+  function clear595PcLedgerSubtablesOnRetire595(record) {
+    var rid =
+      record && record.$id && record.$id.value != null
+        ? String(record.$id.value).trim()
+        : "";
+    if (!rid) {
+      return Promise.resolve();
+    }
+    var has674 = collectSubtableNumericIds(record, FC595_PC674_SUB, FC595_PC674_ID).length;
+    var has594 = collectSubtableNumericIds(record, FC595_PC594_SUB, FC595_PC594_ID).length;
+    if (!has674 && !has594) {
+      return Promise.resolve();
+    }
+    var app595 = kintone.app.getId();
+    var urlGet = kintone.api.url("/k/v1/record.json", true);
+    var urlPut = kintone.api.url("/k/v1/record.json", true);
+    return kintone
+      .api(urlGet, "GET", { app: app595, id: rid })
+      .then(function (resp) {
+        var full = resp.record;
+        var rev = revisionFromKintoneGetResp595(resp);
+        if (!full || !rev) {
+          return;
+        }
+        var recPatch = {};
+        if (collectSubtableNumericIds(full, FC595_PC674_SUB, FC595_PC674_ID).length) {
+          recPatch[FC595_PC674_SUB] = { value: [] };
+        }
+        if (collectSubtableNumericIds(full, FC595_PC594_SUB, FC595_PC594_ID).length) {
+          recPatch[FC595_PC594_SUB] = { value: [] };
+        }
+        if (!Object.keys(recPatch).length) {
+          return;
+        }
+        return kintone.api(urlPut, "PUT", {
+          app: app595,
+          id: rid,
+          revision: rev,
+          record: recPatch,
+        });
+      })
+      .catch(function (e) {
+        console.warn("[jbis 595 retire] clear pc_ledger subtable failed", rid, e);
+        throw e;
+      });
+  }
+
   function retire674PcsFrom595(record) {
     var emp = scalarFrom595(record, FC595_EMP).trim();
     if (emp !== EMP_RETIRED) {
@@ -1661,6 +1708,9 @@
         }, Promise.resolve())
         .then(function () {
           return sync671MastersFrom674Retire595(masterIds);
+        })
+        .then(function () {
+          return clear595PcLedgerSubtablesOnRetire595(record);
         });
     });
   }

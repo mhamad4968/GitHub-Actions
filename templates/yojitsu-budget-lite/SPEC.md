@@ -465,6 +465,6 @@ OK → `partner_company` 入力欄の `readonly` を解除＋ `data-y678-partner
 | Rank | Task | 難易度 | Token | Impact | Priority |
 |------|------|--------|-------|--------|----------|
 | 1 | B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化） | 2/5 | 中 | 3/5 | 21 |
-| 2 | **浜田依頼待ち**（項番 -0 で本題合意まで着手しない）。**触らない**: **688 / 677–679 / SKYSEA** | 5/5 | 高 | 5/5 | 50 |
+| 2 | 勉強会 PPT 画像差し込み・支店訪問日確定 / 朝 `session:bootstrap` — **触らない**: * | 5/5 | 高 | 5/5 | 50 |
 
 <!-- CIO-TASK-PRIORITY:AUTO:END -->
