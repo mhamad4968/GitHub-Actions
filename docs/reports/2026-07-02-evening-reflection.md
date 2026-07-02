@@ -81,7 +81,8 @@
 
 ## 7. 承認
 
-**承認待ち**: §3 **R-ML-03 / S-CLOSE-01 / S-ML-05 / R-595-03 / D-CREDIT-01** — 浜田 GO/NG 後 `docs/approved-changes/` へ
+**2026-07-02 浜田 GO（夜間再開）**: §3 **R-ML-03 / S-CLOSE-01 / S-ML-05 / R-595-03 / D-CREDIT-01** — 一括承認・実装済  
+正本: `docs/approved-changes/2026-07-02-rules-evening-hamada-go.md`
 
 ---
 

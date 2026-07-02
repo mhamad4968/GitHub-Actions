@@ -8,6 +8,8 @@
  * Usage:
  *   node scripts/mailing-list-move-space21.mjs [--dry-run]
  */
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   DB_APP_NAME,
   DASH_APP_NAME,
@@ -20,6 +22,7 @@ import {
   saveAppIds,
   setMailingListAppAcl,
 } from './lib/mailing-list-kintone.mjs';
+import { syncMailingListSpaceDocs } from './lib/mailing-list-space-doc-sync.mjs';
 
 async function main() {
   const dryRun = process.argv.includes('--dry-run');
@@ -79,6 +82,19 @@ async function main() {
     spaceId: SPACE_ID,
     threadId: THREAD_ID,
   });
+
+  const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+  const docSync = syncMailingListSpaceDocs(root, {
+    spaceId: SPACE_ID,
+    threadId: THREAD_ID,
+    dbAppId,
+    dashAppId,
+  });
+  if (docSync.changed.length) {
+    console.log('[doc-sync] patched:', docSync.changed.join(', '));
+  } else {
+    console.log('[doc-sync] already current (no patch needed)');
+  }
 
   console.log('[done]');
   console.log(`DB=${baseUrl}/k/${dbAppId}/`);

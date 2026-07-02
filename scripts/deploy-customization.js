@@ -140,6 +140,22 @@ for (let i = 0; i < 60; i++) {
       );
       process.exit(sync.status || 1);
     }
+    const verify = spawnSync(process.execPath, [
+      'scripts/verify-kintone-apps-live-build-sync.mjs',
+      String(appNum),
+      '--strict',
+    ], {
+      cwd: process.cwd(),
+      encoding: 'utf8',
+    });
+    if (verify.stdout) process.stdout.write(verify.stdout);
+    if (verify.stderr) process.stderr.write(verify.stderr);
+    if (verify.status !== 0) {
+      console.error(
+        `[deploy-customization] NG verify-kintone-apps-live-build-sync app=${appNum} — garble/不一致（R-595-03）`,
+      );
+      process.exit(verify.status || 1);
+    }
     process.exit(0);
   }
   if (st === 'FAIL' || st === 'CANCEL') {

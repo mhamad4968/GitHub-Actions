@@ -137,6 +137,7 @@
     "jikkou-yosan:verify-sample": "node scripts/jikkou-yosan-sample-2623001.mjs",
     "jikkou-yosan:pre-demo-gate": "node scripts/jikkou-yosan-pre-demo-gate.mjs",
     "sync:kintone-apps-build": "node scripts/sync-kintone-apps-build.mjs",
+    "verify:kintone-apps-live-build-sync": "node scripts/verify-kintone-apps-live-build-sync.mjs",
     "verify:cio-deploy-ledger-gate": "node scripts/verify-cio-deploy-ledger-gate.mjs",
     "verify:cio-kintone-apps-portfolio-build": "node scripts/lib/cio-kintone-apps-portfolio-build.test.mjs",
     "verify:cio-checkpoint-mandatory-read": "node scripts/lib/cio-checkpoint-mandatory-read.test.mjs",

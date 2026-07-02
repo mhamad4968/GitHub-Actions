@@ -101,13 +101,21 @@ async function main() {
   });
   if (diffs.length && legacyOnlyDiffs) {
     console.log('  NOTE: diffs are legacy_no only (Excel reuse vs kintone unique 64-67) — expected');
-    process.exit(0);
+    finish(0);
+    return;
   }
 
-  process.exit(diffs.length || extraInKintone.length ? 1 : 0);
+  finish(diffs.length || extraInKintone.length ? 1 : 0);
+}
+
+/** S-ML-05 — Windows UV_HANDLE_CLOSING 回避: 照合結果を先に確定してから flush exit */
+function finish(exitCode) {
+  process.stdout.write('', () => {
+    setTimeout(() => process.exit(exitCode), 50);
+  });
 }
 
 main().catch((e) => {
   console.error(e.message || e);
-  process.exit(1);
+  finish(1);
 });

@@ -63,3 +63,34 @@ export function syncCheckpointGitAfterPush(root, { suffix } = {}) {
   const changed = updateCheckpointGitHead(root, { hash, suffix: suffix || defaultSuffix });
   return { changed, hash };
 }
+
+/** @returns {string|null} short hash of origin/main */
+export function gitOriginMainShort(root) {
+  const r = spawnSync('git', ['rev-parse', '--short', 'origin/main'], { cwd: root, encoding: 'utf8' });
+  const h = (r.stdout || '').trim();
+  return h && !h.includes('fatal') ? h : null;
+}
+
+/**
+ * S-CLOSE-01 — checkpoint Git 行が origin/main より古い（先祖返り）か
+ * @returns {{ ok: boolean, regression?: boolean, message?: string, cpHash?: string, origin?: string }}
+ */
+export function checkCheckpointGitRegression(root) {
+  const cpHash = readCheckpointGitHead(root);
+  if (!cpHash) return { ok: true };
+  const origin = gitOriginMainShort(root);
+  if (!origin) return { ok: true };
+  if (cpHash === origin) return { ok: true };
+  const anc = spawnSync('git', ['merge-base', '--is-ancestor', cpHash, origin], { cwd: root });
+  if (anc.status === 0) {
+    return {
+      ok: false,
+      regression: true,
+      cpHash,
+      origin,
+      message:
+        `checkpoint Git \`${cpHash}\` が origin/main \`${origin}\` より古い — \`npm run cio:session:close-git\` で再 sync（手動 **Git** 行編集禁止 / S-CLOSE-01）`,
+    };
+  }
+  return { ok: true };
+}

@@ -11,6 +11,7 @@ import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { isSessionCloseTempPath } from './lib/cio-session-close-temp-paths.mjs';
 import { checkHoldLaneDirtyFiles } from './lib/cio-project-closure.mjs';
+import { checkCheckpointGitRegression } from './lib/cio-checkpoint-git-sync.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const warnOnly = process.argv.includes('--warn-only');
@@ -114,6 +115,36 @@ function checkUnpushed() {
   return { ok: false, hard };
 }
 
+function printCreditStaleNudge() {
+  const credit = spawnSync('node', ['scripts/credit-budget.mjs', 'status', '--json'], {
+    cwd: root,
+    encoding: 'utf8',
+  });
+  if (credit.status !== 0) {
+    console.warn('[verify:session-close-git-warn] WARN credit:status 取得失敗（D-CREDIT-01）');
+    return;
+  }
+  try {
+    const j = JSON.parse(credit.stdout || '{}');
+    if (j.stale_nudge) {
+      console.warn(`[verify:session-close-git-warn] CREDIT: ${j.stale_nudge}`);
+    } else {
+      console.log(
+        `[verify:session-close-git-warn] CREDIT: ${j.latest_percent ?? '—'}% (${j.latest_date || 'N/A'}) ${j.warning_icon || ''} ${j.warning_label || ''}`.trim(),
+      );
+    }
+  } catch {
+    console.warn('[verify:session-close-git-warn] WARN credit:status JSON parse 失敗');
+  }
+}
+
+function checkCheckpointGitLine() {
+  const reg = checkCheckpointGitRegression(root);
+  if (!reg.regression) return { ok: true };
+  console.warn(`[verify:session-close-git-warn] WARN ${reg.message}`);
+  return { ok: true, warned: true };
+}
+
 function checkRulesIndexDirty() {
   const diff = git(['diff', '--name-only', 'HEAD', '--', 'RULES-INDEX.md']);
   if (!diff) return { ok: true };
@@ -149,6 +180,8 @@ function main() {
   if (!rulesIndex.ok) {
     process.exit(1);
   }
+
+  checkCheckpointGitLine();
 
   const unpushed = checkUnpushed();
   if (!unpushed.ok) {
@@ -212,6 +245,7 @@ function main() {
   }
 
   console.log('[verify:session-close-git-warn] OK（未コミットなし・push 済または ahead 0）');
+  printCreditStaleNudge();
   process.exit(0);
 }
 
