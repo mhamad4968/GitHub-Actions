@@ -3,10 +3,10 @@
   "apps": {
     "595": {
       "build": "2026-07-02-595-retire-clear-pc674-link",
-      "fileKey": "6c0a4177-af64-4235-8e7c-d6c00ee8c052",
-      "revision": "113",
-      "relPath": "customize/595/desktop.js",
-      "deployedAt": "2026-07-02T05:47:55.354Z",
+      "fileKey": "bbe72c0d-ff0d-4db6-a509-35dbc5d182d1",
+      "revision": "114",
+      "relPath": ".kintone-deploy/upload-595.js",
+      "deployedAt": "2026-07-02T06:09:53.834Z",
       "note": null
     },
     "627": {
