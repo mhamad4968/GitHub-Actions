@@ -1,0 +1,8 @@
+{
+  "id": "D-CREDIT-01",
+  "category": "S",
+  "type": "file_write",
+  "note": "session-close-git-warn 末尾に credit:status stale_nudge 1 行出力（Plan&Usage 未提出可視化）",
+  "status": "pending",
+  "source": "docs/reports/2026-07-02-evening-reflection.md F7"
+}

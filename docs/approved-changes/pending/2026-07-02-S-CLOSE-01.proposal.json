@@ -1,0 +1,8 @@
+{
+  "id": "S-CLOSE-01",
+  "category": "S",
+  "type": "file_write",
+  "note": "close-git の checkpoint Git 行を単一 writer に固定。手動巻き戻しを verify で warn",
+  "status": "pending",
+  "source": "docs/reports/2026-07-02-evening-reflection.md F3"
+}

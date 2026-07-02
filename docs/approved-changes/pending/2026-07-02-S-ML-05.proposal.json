@@ -1,0 +1,8 @@
+{
+  "id": "S-ML-05",
+  "category": "S",
+  "type": "file_write",
+  "note": "verify-mailing-list-751.mjs Windows UV crash 時の exit 分離（TSB-039 同型）",
+  "status": "pending",
+  "source": "docs/reports/2026-07-02-evening-reflection.md F6"
+}

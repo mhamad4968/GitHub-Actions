@@ -1,0 +1,8 @@
+{
+  "id": "R-595-03",
+  "category": "S",
+  "type": "file_write",
+  "note": "deploy 成功後 kintone-apps.md サマリ行を cio-live-builds から自動 stamp（garble 防止）",
+  "status": "pending",
+  "source": "docs/reports/2026-07-02-evening-reflection.md F4"
+}

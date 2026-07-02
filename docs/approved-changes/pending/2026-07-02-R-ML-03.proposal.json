@@ -1,0 +1,8 @@
+{
+  "id": "R-ML-03",
+  "category": "S",
+  "type": "file_write",
+  "note": "mailing-list-move-space21.mjs 完走時に SPEC/完成報告/closures.json を同時 patch（Space21 doc 漏れ防止）",
+  "status": "pending",
+  "source": "docs/reports/2026-07-02-evening-reflection.md F2"
+}
