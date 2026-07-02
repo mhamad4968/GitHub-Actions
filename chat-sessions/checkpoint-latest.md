@@ -2,14 +2,14 @@
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED**（kintone レーン v1 完了・closures 登録）≠ **セッション締め**（export-handoff / Desktop sync / close-git）。混同禁止 -->
 
-**最終更新**: 2026-07-02 JST — **セッション締め済**（595/750-751 完了・doc 追記済・夜に続き）
+**最終更新**: 2026-07-02 JST — **本日終了**（595/750-751 完了・夕反省・commit/push 済）
 
 ### 本日アクティブ（BUILD/rev — 2026-07-02）
 
 | 項目 | 内容 |
 |------|------|
-| **595 社員マスタ** | BUILD=`2026-07-02-595-retire-clear-pc674-link` rev **113** — 退職時 674→保管 + 595 `pc_ledger_v1_list`/`pc_ledger_list` クリア（backfill 7件・浜田 OK） |
-| **750/751 メーリングリスト** | **Space 21 / thread 23 移設** — ACL: **admin**（USER）全権 / **system**（USER）閲覧+書出 / **everyone** 拒否 — 浜田目視 OK **2026-07-02** |
+| **595 社員マスタ** | BUILD=`2026-07-02-595-retire-clear-pc674-link` rev **113** — 退職時 674→保管 + 595 PC台帳サブテーブルクリア（backfill 7件・浜田 OK） |
+| **750/751 メーリングリスト** | **Space 21 / thread 23 移設** — ACL: admin/system USER — 浜田目視 OK **2026-07-02** |
 
 ## クローズ済み（`data/cio-project-closures.json` — 無断 v1 再開禁止）
 
@@ -25,12 +25,15 @@
 | **736 担当説明 保留** | Step2-3 待ち |
 | **nodemailer 9.x** | V1 proposal 手動レビュー待ち |
 
-**次の1手**: **夜セッション** — `cio:session:cold-start` → `session:bootstrap` → **浜田依頼待ち**（項番 -0）  
-**Git**: **`b53faa8`** = `origin/main` — v1 CLOSED push 済
+**次の1手**: **次回セッション** — `cio:session:cold-start` → `session:bootstrap` → **浜田依頼待ち**（項番 -0）  
+**Git**: close-git 本ターンで更新（夕反省 commit 含む）  
+**夕反省**: `docs/reports/2026-07-02-evening-reflection.md`  
+**Plan&Usage**: スクショ**未提出** — 直近 **7%**（2026-06-21）· stale **11日** · 次回 Total% 1行で可  
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **クローズ正本**: `data/cio-project-closures.json` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`  
 **運用メモ**: 595 CSV 取込後は一覧 **「台帳へ一括反映」** を実行。595 退職 backfill: `npm run pc-ledger:backfill-595-clear-retired-pc-links:apply`。メーリングリスト移設: `npm run mailing-list:move-space21`（Space21 済なら skip）。Desktop `＃重要確認事項.txt` は **2026-06-30 廃止**（read-pack/18 正本は維持）。  
 **改善案 GO 済**: R-SEC-01/02, R-KIN-01, R-DOC-01/02 — `docs/approved-changes/processed/2026-07-02/`  
-**締め**: `SESSION-CLOSE-REPORT-20260702.txt`（OK）
+**改善案 承認待ち**: R-ML-03, S-CLOSE-01, S-ML-05, R-595-03, D-CREDIT-01 — `docs/approved-changes/pending/2026-07-02-*.proposal.json`  
+**締め**: `SESSION-CLOSE-REPORT-20260702.txt` + 夕反省 **2026-07-02**
 
 ## セッション切替後の自律復元（Lifecycle v2 鏡像）
 

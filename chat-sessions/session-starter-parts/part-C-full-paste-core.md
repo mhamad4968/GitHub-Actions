@@ -72,9 +72,9 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-06-29 自動更新）】
-- 進行中 plan: docs/plans/2026-06-29-mailing-list-kintone-spec.md
+【今やってる主タスク（2026-07-02 自動更新）】
+- 進行中 plan: docs/plans/2026-06-27-doc-lane-phase2-word-spec.md
 - 当日コミット (上位 3):
-  - close(mailing-list): mark v1 CLOSED after visual OK and Excel removal.
-  - feat(mailing-list): launch Space 48 ledger apps 750/751 with 63-row migration.
-  - docs(spec): add mailing list ledger kintone spec for Space 48.
+  - chore(checkpoint): sync Git line after close
+  - chore(handoff): align bridge gitHead
+  - chore(handoff): session bridge export
