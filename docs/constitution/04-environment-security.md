@@ -102,6 +102,30 @@ API トークン・パスワード・鍵を回答に不必要に再掲しない�
 
 ---
 
+## 第4章補 — ツール・依存関係（§38 / §38-1）
+
+> **正本**: `AGENTS.md` §38 / §38-1（2026-07-02 浜田 GO）
+
+### §38 ツール・依存関係の自律保守（要約）
+
+- セッション開始 / 朝ルーチンで `npm audit` / `npm outdated` を確認
+- **§38-1**: セキュリティ更新は CIO **自律可** — ただし **リスクが読めないものは無理に上げない**
+- MCP: `cio:mcp:env` OK なら **Tier B upgrade 不要**（`docs/mcp-status.md`）
+
+### §38-1 自律 vs 保留（早見）
+
+| 自律可 | 保留（報告のみ） |
+|--------|------------------|
+| semver 内 patch/minor + verify OK | major（nodemailer 9 等） |
+| `npm audit fix`（**非 `--force`**） | `npm audit fix --force` |
+| dev 限定 CVE | upstream 待ち（form-data） |
+| | 修正版なし（xlsx） |
+| | MCP `mcp.json` pin / `@latest` 一括 |
+
+**追跡**: `docs/dependency-upgrade-backlog.md`
+
+---
+
 ---
 
 ## 関連ファイル

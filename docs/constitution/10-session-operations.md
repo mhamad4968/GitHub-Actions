@@ -276,8 +276,9 @@ SKYSEA / 新機能開発 / **ユーザーから今この瞬間もらった新規
 
 #### Phase 2-4 の自動 vs 提案境界
 
-- **Phase 3 自動可**: npx キャッシュクリア / `npm audit fix` (patch only) / `npm ci` / logs ローテーション / ESLint --fix / **依存欠損検知時の `npm ci` 再実行（Phase 2 で `check-node-modules.mjs` が NG を返したら無条件で `npm ci` をリトライ / 改善案 #6 / 2026-04-22 制定）**
-- **Phase 4 提案行き（V カテゴリ）**: minor update / major update / 新規パッケージ追加・削除
+- **Phase 3 自動可**: npx キャッシュクリア / `npm audit fix` (**patch only・`--force` 禁止**) / `npm ci` / logs ローテーション / ESLint --fix / **依存欠損検知時の `npm ci` 再実行（Phase 2 で `check-node-modules.mjs` が NG を返したら無条件で `npm ci` をリトライ / 改善案 #6 / 2026-04-22 制定）**
+- **Phase 4 / §38-1 自律可**: semver 内 **minor/patch** — verify 後 **同一セッション commit**（2026-07-02 浜田 GO）
+- **Phase 4 提案行き（V カテゴリ）**: **major** / 新規パッケージ追加・削除 / `manual_only` / §38-1「保留」表
 - **Phase 2-4 で異常検出時**: 朝ブリーフィング先頭に **🚨 緊急** ヘッダーで表示し、AI は他タスクに進めない（§45 優先 0 として扱う）
 
 #### AI セッション開始時の必須宣言

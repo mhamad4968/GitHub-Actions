@@ -1,21 +1,21 @@
 {
-  "version": "2026-06-26",
+  "version": "2026-07-02",
   "note": "git-history-alignment が保護するコマンド・緩和禁止パターン。verify:git-history-alignment / git-history-mcp 連動。",
   "generations": [
     {
+      "hash": "8b9d83b",
+      "label": "docs(constitution): §38-1 npm security update autonomy (Hamada GO 2026-07-02)",
+      "at": "2026-07-02"
+    },
+    {
       "hash": "a069de4",
       "label": "docs(governance): mirror A/B/C/D v2 into constitution and rules (E)",
-      "at": "2026-06-26"
+      "at": "2026-07-02"
     },
     {
       "hash": "6a37e1d",
       "label": "feat(cio): 第12/13層 A1-C4 + 674 live-schema ガード + 許容ギャップ運用化",
-      "at": "2026-06-26"
-    },
-    {
-      "hash": "ed0fb82",
-      "label": "feat(cio): 新規配備MCPの実戦運用化・kintoneライブLinterおよび先祖返り防止監査インフラの完全統合完了",
-      "at": "2026-06-26"
+      "at": "2026-07-02"
     }
   ],
   "protectedCommands": [

@@ -1004,14 +1004,37 @@ GitHub・npm・Stack Overflow 等から外部コードを参考にする際は�
 **コミットメッセージ（論点11・`git-hooks/commit-msg`）**: 次のいずれかに該当するときは、コミット本文に **`Reviewed-by: deepseek`** / **`Reviewed-by: kimi`** / **`Reviewed-by: openrouter`** のいずれか **1 行**を含める（`constitution-enforcement-core.mdc` の第2者と整合）。**(1)** メッセージに **`SPEC_TOUCHED: yes`** 行がある（V2 フッタからのコピー想定）。**(2)** ステージに **`templates/yojitsu-budget-lite/SPEC.md`** または **`docs/plans/2026-04-21-new-pc-ledger-spec.md`** が含まれる。**Merge commit 先頭行**は検査スキップ。**バイパス**は `git commit --no-verify`（浜田承認下のみ）。
 
 ### §38 ツール・依存関係の自律保守（セルフ・アップデート義務）
-AIエージェント自身および開発環境のすべてのツール・ライブラリは、常に最新かつ安全な状態を維持する。
-1. **定期確認**: セッション開始時に `npm audit` と主要パッケージのバージョンを確認する。セキュリティ脆弱性（high/critical）があれば即対応する。
-2. **パッチ・マイナー更新**: セキュリティ修正やバグ修正は、テスト通過を確認のうえ積極的に適用する。
-3. **メジャー更新**: Breaking Change の有無を公式リリースノートで確認し、影響範囲を検証してから適用する。判断が分かれる場合はユーザーに一言報告する。
-4. **MCP サーバー**: 各MCPサーバーの新バージョンが利用可能な場合、公式READMEで変更点を確認し、問題なければ更新する。
-5. **GitHub Actions**: ワークフロー内の `actions/*` のバージョンピンを公式推奨に合わせる。
-6. **更新記録**: 更新を行った場合は `RULES-INDEX.md` に日付と内容を1行残す。大きな変更は `docs/dependency-upgrade-backlog.md` にも反映する。
-7. **ロールバック準備**: 更新前の状態に戻せることを常に確認してから適用する。
+
+AI エージェント自身および開発環境のツール・ライブラリは、可能な限り最新かつ安全な状態を維持する。
+
+**2026-07-02 浜田合意**: セキュリティ上必要な npm 更新は CIO が **自律対応**してよい。ただし **リスクが読めないものは無理に上げない**（詳細 **§38-1**）。
+
+1. **定期確認**: セッション開始時または朝ルーチン（§46）で `npm audit` / `npm outdated` を確認する。
+2. **§38-1 自律対応（事前 GO 不要）**: 同節の「自律可」表を満たす場合、**同一セッション内**に更新・検証・commit してよい。
+3. **§38-1 保留（報告のみ）**: 同節の「保留」表に該当するものは **実施しない**。`docs/dependency-upgrade-backlog.md` に理由 1 行 + チャット 1 行。
+4. **MCP サーバー**: `npm run cio:mcp:env` が **OK** なら **Tier B**（`mcp.json` pin 変更・`npx @latest` 一括）は触らない（`docs/mcp-status.md`）。必須 probe **NG** 時のみ個別修復。
+5. **メジャー更新**: Breaking Change をリリースノートで確認し、**テスト計画 + 浜田 GO**（または V 提案 `manual_only`）後にのみ適用。
+6. **GitHub Actions**: ワークフロー内 `actions/*` の pin を公式推奨に合わせる（patch/minor・副作用が読める範囲で自律可）。
+7. **更新記録**: commit に `security:` / `chore(deps):` + 理由 1 行。保留・大きな判断は `docs/dependency-upgrade-backlog.md`。任意で `RULES-INDEX.md` に日付 1 行。
+8. **ロールバック準備**: 更新前に working tree が commit 可能な状態であること。NG 時は `git restore package-lock.json` 等で戻せることを確認。
+
+#### §38-1 npm / セキュリティ更新 — 自律境界（2026-07-02 浜田 GO）
+
+| 区分 | 条件・例 | CIO の動き |
+|------|----------|------------|
+| **自律可** | **patch / minor**（`package.json` semver 内・Wanted=Latest） | `npm update` 等 → **`npm run lint:customize`** 等 verify **exit 0** → commit |
+| **自律可** | **`npm audit fix`（`--force` 禁止）** でダウングレード・peer 破壊が読めない | 適用 → verify → commit |
+| **自律可** | dev ツール限定 CVE で本番 kintone / SMTP 送信に非直結 | 同上 |
+| **保留** | **major**（例: nodemailer 7→9） | V 提案 `manual_only` または浜田 GO + regression テストまで **触らない** |
+| **保留** | **`npm audit fix --force`** | 意図しないダウングレードリスク — **禁止** |
+| **保留** | **修正版なし**（例: `xlsx` / SheetJS） | 代替ライブラリ検討まで backlog。無理に差し替えない |
+| **保留** | **upstream 待ち**（例: `@kintone/cli` → `form-data`） | Cyboze 更新待ち + 定期再評価。override は副作用大のため慎重 |
+| **保留** | **MCP Tier B**（`mcp.json` pin / `@latest` 一括） | `cio:mcp:env` OK なら **upgrade 不要**。計画書 §P3 |
+| **保留** | verify 不足・挙動不明・本番直結で regression 不明 | **無理しない** — 報告のみ |
+
+**報告形式（自律可を実施した場合）**: チャット **1 行**（パッケージ・旧→新・残 audit 件数）+ commit メッセージに理由。
+
+**正本追跡**: `docs/dependency-upgrade-backlog.md` / 承認ログ `docs/approved-changes/2026-07-02-rules-security-deps-autonomy-hamada-go.md`
 
 ### §39 発言前の日時確認（最重要・絶対遵守）
 時間・日付・曜日・時間帯（朝/昼/夕方/夜）に少しでも触れる発言を行う前に、**必ず実機で現在時刻を取得**してから言及する。推測・前回値の流用・体感での判断は禁止。
@@ -1419,8 +1442,9 @@ SKYSEA / 新機能開発 / **ユーザーから今この瞬間もらった新規
 
 #### Phase 2-4 の自動 vs 提案境界
 
-- **Phase 3 自動可**: npx キャッシュクリア / `npm audit fix` (patch only) / `npm ci` / logs ローテーション / ESLint --fix / **依存欠損検知時の `npm ci` 再実行（Phase 2 で `check-node-modules.mjs` が NG を返したら無条件で `npm ci` をリトライ / 改善案 #6 / 2026-04-22 制定）**
-- **Phase 4 提案行き（V カテゴリ）**: minor update / major update / 新規パッケージ追加・削除
+- **Phase 3 自動可**: npx キャッシュクリア / `npm audit fix` (**patch only・`--force` 禁止**) / `npm ci` / logs ローテーション / ESLint --fix / **依存欠損検知時の `npm ci` 再実行（Phase 2 で `check-node-modules.mjs` が NG を返したら無条件で `npm ci` をリトライ / 改善案 #6 / 2026-04-22 制定）**
+- **Phase 4 / §38-1 自律可**: semver 内 **minor/patch** — verify 後 **同一セッション commit**（`version-up` 提案待ち不要・2026-07-02 浜田 GO）
+- **Phase 4 提案行き（V カテゴリ）**: **major** / 新規パッケージ追加・削除 / `manual_only` / §38-1「保留」表の項目
 - **Phase 2-4 で異常検出時**: 朝ブリーフィング先頭に **🚨 緊急** ヘッダーで表示し、AI は他タスクに進めない（§45 優先 0 として扱う）
 
 #### AI セッション開始時の必須宣言

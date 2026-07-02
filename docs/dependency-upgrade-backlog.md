@@ -2,31 +2,39 @@
 
 **目的**: `npm outdated` / `npm audit` で**あえて未実施**とした項目を、チャットに頼らず追跡する。対応するときは **`RULES-INDEX.md` に日付＋1 行**で結果を残す。
 
-**最終見直し**: 実施のたびに本ファイルを更新（完了した行は打ち消し線または「済」と日付）。
+**自律境界（2026-07-02 浜田 GO）**: `AGENTS.md` **§38-1** — semver 内 minor/patch は CIO 自律可。**保留表の項目は無理に上げない**。
+
+**最終見直し**: 2026-07-02 — §38-1 制定 + eslint/globals minor 済
 
 ---
 
-## 1. ESLint 10 系へのアップグレード
+## 0. 現在の保留（2026-07-02）
 
-- **現状**: ルートは `eslint` **^9.39.4**、`@eslint/js` **^9.39.4**。`npm outdated` では **eslint 10** / **@eslint/js 10** が Latest。
-- **未実施理由**: **メジャー**のため、フラット設定・ルール互換・プラグインの対応を確認してから。
-- **検討時の作業**: リリースノート確認 → `npm run lint:customize` および必要なら設定ファイルの移行 →問題なければ `package.json` 更新。
+| パッケージ / 経路 | severity | 未実施理由 | 再評価タイミング |
+|-------------------|----------|------------|------------------|
+| **nodemailer** 7→9 | high（複数 CVE） | **major** — SMTP regression テストなし | 浜田 GO + `V1-nodemailer` 提案 |
+| **form-data** ← `@kintone/cli` | high | **upstream 待ち** — `npm audit fix` 非 force 不可 | `@kintone/cli` 更新時 |
+| **xlsx** (SheetJS) | high | **修正版なし** — 代替未選定 | 代替ライブラリ調査ターン |
 
 ---
 
-## 2. `globals` のメジャー上げ（例: 15 → 17）
+## 1. ~~ESLint 10 系へのアップグレード~~ — **済 2026-07-02**
 
-- **現状**: `globals` **^15.15.0**。Latest は **17.x**。
-- **未実施理由**: ESLint 9 環境との組み合わせ・推奨バージョンを確認してからにしたい。
-- **検討時の作業**: ESLint 公式・`eslint.config` の推奨に合わせて段階的に。
+- **実施**: `eslint` **10.6.0** / `@eslint/js` **^10.0.1** — `npm run lint:customize` OK
+
+---
+
+## 2. ~~`globals` のメジャー上げ（15 → 17）~~ — **済 2026-07-02**
+
+- **実施**: `globals` **17.7.0**
 
 ---
 
 ## 3. `npm audit` の `tmp` 経由（low ×5）と `--force`
 
 - **現状**: `tmp <=0.2.3` が `@kintone/customize-uploader` → `@inquirer/prompts` 経由で間接依存。**`npm audit fix --force`** は **@kintone/customize-uploader を 8.0.13 に下げる**案内になる（破壊的）。
-- **未実施理由**: デプロイ用 uploader の**意図しないダウングレード**を避けるため。
-- **検討時の作業**: **@kintone/customize-uploader** の新リリースで `tmp` / `@inquirer` チェーンが解消されていないか定期確認。解消後に `npm update` と `npm audit` を再実行。それまで **low はリスク許容**として運用するか、組織ポリシーに応じて判断。
+- **未実施理由**: デプロイ用 uploader の**意図しないダウングレード**を避けるため（§38-1 保留）。
+- **検討時の作業**: **@kintone/customize-uploader** の新リリースで `tmp` / `@inquirer` チェーンが解消されていないか定期確認。
 
 ---
 
@@ -39,5 +47,6 @@
 
 ## 関連
 
-- 随時更新の方針: ルート **`CLAUDE.md`「ツール・依存関係・MCP のバージョン（随時アップデート）」**
+- 自律境界: **`AGENTS.md` §38 / §38-1**
+- 承認ログ: **`docs/approved-changes/2026-07-02-rules-security-deps-autonomy-hamada-go.md`**
 - 実施ログ: **`RULES-INDEX.md`**

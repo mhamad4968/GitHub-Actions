@@ -232,8 +232,8 @@ WSL cron が `scripts/daily-morning-prep.mjs` を実行し、ブリーフィン�
 | **0** | **昨夜承認分の自動実施（最優先）** | `node scripts/apply-approved-changes.mjs` |
 | 1 | 環境ヘルス | `npm run kintone:test` |
 | 2 | 静的解析 | `npm run lint:customize` |
-| 3 | セキュリティ | `npm audit --omit=dev` |
-| 4 | 依存最新性 | `npm outdated` |
+| 3 | セキュリティ | `npm audit --omit=dev`（**§38-1**: 自律可は non-force のみ / 保留は backlog） |
+| 4 | 依存最新性 | `npm outdated`（**§38-1**: semver 内 minor は verify 後自律可） |
 | 5 | ルール整合性 | `node scripts/audit-rules.mjs` |
 | 6 | プラン進捗 | `node scripts/scan-plans.mjs` |
 | 7 | RAG 再 ingest | `npx mcp-local-rag ... ingest` |

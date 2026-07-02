@@ -6,6 +6,7 @@
  * 処理:
  *   - patch: Phase 3 の audit fix で対応済み（カウントのみ）
  *   - minor: V カテゴリ proposal を docs/approved-changes/<明日>/V<N>-<pkg>.proposal.json に書込
+ *     （§38-1: semver 内 minor は CIO が verify 後同一セッション自律可 — proposal は major/保留用）
  *   - major: manual_only proposal で破壊的変更レビュー必須
  *
  * 重複防止: pending / approved / processed / rejected を全走査して既存の同パッケージ提案を skip
