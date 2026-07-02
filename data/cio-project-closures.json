@@ -189,7 +189,7 @@
       "status": "closed-v1",
       "closedAt": "2026-06-29",
       "completionReport": "docs/reports/2026-06-29-mailing-list-completion.md",
-      "kintoneAppsSection": "メーリングリスト台帳（Space 48 — 750–751）",
+      "kintoneAppsSection": "メーリングリスト台帳（Space 21 — 750–751）",
       "kintoneAppsStateMarker": "v1 完成 — CLOSED",
       "forbiddenNextTaskPatterns": [
         "メーリングリスト",
@@ -198,7 +198,7 @@
         "750",
         "751"
       ],
-      "note": "63件・メンバー検索・変更メモ・条件クリア・印刷/xlsx。浜田目視 OK（2026-06-29）。本番 Excel 削除済（2026-06-29 浜田報告）。kintone 750/751 のみ正本"
+      "note": "63件・メンバー検索・変更メモ・条件クリア・印刷/xlsx。浜田目視 OK（2026-06-29）。本番 Excel 削除済（2026-06-29 浜田報告）。kintone 750/751 のみ正本。Space 21 移設+ACL（2026-07-02 浜田 OK）"
     }
   ]
 }
