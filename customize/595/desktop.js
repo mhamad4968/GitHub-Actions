@@ -10,6 +10,7 @@
    * BUILD: 2026-06-14-595-storage-media-ledger-mirror
    * BUILD: 2026-05-12-595-no594-rest（旧594への REST・リンク廃止・674同期のみ）
    * BUILD: 2026-05-30-595-retire-674-storage（退職→退職日自動・674保管連動）
+   * BUILD: 2026-07-04-595-index-emp-dept-filters（一覧: 在籍/退職・所属/所属グループ絞込）
    * - 一覧: 所属グループ・所属名・社員名のいずれかに部分一致する検索窓（ヘッダスペース）
    * - 詳細・編集: サブテーブル（674）からレコードへのリンクをヘッダ下に表示
    * - 保存: 在籍=退職かつ退職日空→当日を退職日に設定／**emp_id 空なら EMP-xxxx 自動採番**
@@ -18,7 +19,7 @@
    * - 新規・編集: 680 所属候補マスタから所属名・所属グループを選ぶモーダル（手入力も可）
    */
 
-  var BUILD = "2026-07-02-595-retire-clear-pc674-link";
+  var BUILD = "2026-07-04-595-index-emp-dept-filters";
 
   /** 新・PC台帳 所属候補マスタ（674 共有・JR と共用） */
   var APP_DEPT_MASTER_595 = "680";
@@ -76,6 +77,7 @@
   var PC_STATUS_STORAGE = "保管";
   var PC_STATUS_DISPOSED = "廃棄";
   var EMP_RETIRED = "退職";
+  var EMP_ACTIVE = "在籍";
 
   /** 595 上の PC 台帳紐づけ（旧594由来の列。リンクは出さず674のみ） */
   var FC595_PC594_SUB = "pc_ledger_list";
@@ -93,6 +95,9 @@
   var BULK_DOWNSTREAM_LASTLOG_ID = "jbis-595-bulk-downstream-lastlog";
   var STORAGE_KEY_595_BULK_LOG = "jbis595-bulk-downstream-last-log";
   var STORAGE_KEY_595_IDX_KW = "jbis595-index-search-kw";
+  var STORAGE_KEY_595_IDX_EMP = "jbis595-index-search-emp";
+  var STORAGE_KEY_595_IDX_DEPT = "jbis595-index-search-dept";
+  var STORAGE_KEY_595_IDX_GROUP = "jbis595-index-search-group";
   var INDEX_SEARCH_MAX_IDS = 800;
   /** 一覧クライアント検索で全件取得する上限（超えたら標準絞り込みへ誘導） */
   var INDEX_SEARCH_FULL_SCAN_MAX_RECORDS = 2000;
@@ -130,13 +135,15 @@
     return g.indexOf(kwLower) !== -1 || d.indexOf(kwLower) !== -1 || n.indexOf(kwLower) !== -1;
   }
 
-  function fetchAll595RecordsForIndexSearch(appId) {
-    var fields = ["$id", FC595_GROUP, FC595_DEPT, FC595_NAME];
+  function fetchAll595RecordsForIndexSearch(appId, filterQuery) {
+    var fields = ["$id", FC595_GROUP, FC595_DEPT, FC595_NAME, FC595_EMP];
     var all = [];
     var limit = 500;
     var url = kintone.api.url("/k/v1/records.json", true);
+    var base = String(filterQuery || "").trim();
     function page(offset) {
-      var query = "order by $id asc limit " + limit + " offset " + offset;
+      var query =
+        (base ? base + " " : "") + "order by $id asc limit " + limit + " offset " + offset;
       return kintone.api(url, "GET", { app: appId, query: query, fields: fields }).then(function (resp) {
         var batch = resp.records || [];
         for (var i = 0; i < batch.length; i++) {
@@ -151,18 +158,63 @@
     return page(0);
   }
 
-  function fetch595RecordTotalCount(appId) {
+  function fetch595RecordTotalCount(appId, filterQuery) {
     var url = kintone.api.url("/k/v1/records.json", true);
+    var q = (String(filterQuery || "").trim() ? String(filterQuery).trim() + " " : "") + "limit 1";
     return kintone
       .api(url, "GET", {
         app: appId,
-        query: "limit 1",
+        query: q,
         fields: ["$id"],
         totalCount: true
       })
       .then(function (resp) {
         return resp.totalCount != null ? Number(resp.totalCount) : 0;
       });
+  }
+
+  function build595IndexServerFilterQuery(empFilter, dept, group) {
+    var parts = [];
+    if (empFilter === "active") {
+      parts.push('employment_status in ("' + escapeForQuery(EMP_ACTIVE) + '")');
+    } else if (empFilter === "retired") {
+      parts.push('employment_status in ("' + escapeForQuery(EMP_RETIRED) + '")');
+    }
+    var d = String(dept || "").trim();
+    if (d) {
+      parts.push('dept_name = "' + escapeForQuery(d) + '"');
+    }
+    var g = String(group || "").trim();
+    if (g) {
+      parts.push('group_name = "' + escapeForQuery(g) + '"');
+    }
+    return parts.join(" and ");
+  }
+
+  function save595IndexFilterSession595(empFilter, dept, group, kw) {
+    try {
+      sessionStorage.setItem(STORAGE_KEY_595_IDX_EMP, String(empFilter || "all"));
+      sessionStorage.setItem(STORAGE_KEY_595_IDX_DEPT, String(dept || ""));
+      sessionStorage.setItem(STORAGE_KEY_595_IDX_GROUP, String(group || ""));
+      if (kw) {
+        sessionStorage.setItem(STORAGE_KEY_595_IDX_KW, kw);
+      } else {
+        sessionStorage.removeItem(STORAGE_KEY_595_IDX_KW);
+      }
+    } catch (eSs) {
+      /* noop */
+    }
+  }
+
+  function clear595IndexFilterSession595() {
+    try {
+      sessionStorage.removeItem(STORAGE_KEY_595_IDX_KW);
+      sessionStorage.removeItem(STORAGE_KEY_595_IDX_EMP);
+      sessionStorage.removeItem(STORAGE_KEY_595_IDX_DEPT);
+      sessionStorage.removeItem(STORAGE_KEY_595_IDX_GROUP);
+    } catch (eSs) {
+      /* noop */
+    }
   }
 
   function build595IdInQuery(ids) {
@@ -266,11 +318,19 @@
     if (input) {
       input.value = "";
     }
-    try {
-      sessionStorage.removeItem(STORAGE_KEY_595_IDX_KW);
-    } catch (eSs) {
-      /* noop */
+    var empBtns = wrap.querySelectorAll("[data-595-emp-filter]");
+    empBtns.forEach(function (b) {
+      b.classList.toggle("active", b.getAttribute("data-595-emp-filter") === "all");
+    });
+    var selDept = wrap.querySelector('select[data-595-dept="1"]');
+    var selGroup = wrap.querySelector('select[data-595-group="1"]');
+    if (selDept) {
+      selDept.value = "";
     }
+    if (selGroup) {
+      selGroup.value = "";
+    }
+    clear595IndexFilterSession595();
     var u;
     try {
       u = new URL(window.location.href);
@@ -340,11 +400,18 @@
   }
 
   /**
-   * 一覧を「所属グループ or 所属名 or 社員名」の部分一致で絞り込む。
-   * kintone の like は英数字が単語単位のため toh→tohoku にならない → API 全件取得後にブラウザで部分一致し $id in で反映する。
+   * 一覧を在籍/退職・所属・所属グループ・キーワードで絞り込む。
+   * キーワードは部分一致（API like 不可のため取得後にブラウザ側で判定）。
    */
-  function navigate595IndexOrSearch(keyword, btnSearch, btnClear) {
-    var kw = String(keyword || "").trim();
+  function navigate595IndexOrSearch(opts, btnSearch, btnClear) {
+    var o = opts || {};
+    var kw = String(o.keyword || "").trim();
+    var empFilter = String(o.empFilter || "all");
+    var dept = String(o.dept || "").trim();
+    var group = String(o.group || "").trim();
+    var filterQuery = build595IndexServerFilterQuery(empFilter, dept, group);
+    var hasServerFilter = !!filterQuery;
+    var hasAny = !!(kw || hasServerFilter);
 
     function setBusy(b) {
       if (btnSearch) {
@@ -360,32 +427,34 @@
       }
     }
 
-    if (!kw) {
-      try {
-        sessionStorage.removeItem(STORAGE_KEY_595_IDX_KW);
-      } catch (e0) {
-        /* noop */
-      }
+    if (!hasAny) {
+      clear595IndexFilterSession595();
       navigate595IndexList595("");
+      return;
+    }
+
+    if (!kw && hasServerFilter) {
+      save595IndexFilterSession595(empFilter, dept, group, "");
+      navigate595IndexList595(filterQuery + " order by レコード番号 asc");
       return;
     }
 
     var appId = kintone.app.getId();
     setBusy(true);
-    fetch595RecordTotalCount(appId)
+    fetch595RecordTotalCount(appId, filterQuery)
       .then(function (tc) {
         if (tc > INDEX_SEARCH_FULL_SCAN_MAX_RECORDS) {
           setBusy(false);
           window.alert(
-            "社員マスタの件数が " +
+            "該当候補が " +
               tc +
-              " 件あり、一覧検索の全件取得上限（" +
+              " 件あり、一覧検索の取得上限（" +
               INDEX_SEARCH_FULL_SCAN_MAX_RECORDS +
-              " 件）を超えています。キーワードを長くするか、kintone 一覧の標準絞り込みを利用してください。"
+              " 件）を超えています。所属・在籍で絞り込むか、キーワードを具体化してください。"
           );
           return null;
         }
-        return fetchAll595RecordsForIndexSearch(appId);
+        return fetchAll595RecordsForIndexSearch(appId, filterQuery);
       })
       .then(function (records) {
         if (!records) {
@@ -394,7 +463,7 @@
         var lower = kw.toLowerCase();
         var ids = [];
         for (var i = 0; i < records.length; i++) {
-          if (record595MatchesSubstring(records[i], lower)) {
+          if (!kw || record595MatchesSubstring(records[i], lower)) {
             var idCell = records[i].$id;
             var rid = idCell && idCell.value != null ? String(idCell.value).trim() : "";
             if (rid) {
@@ -408,20 +477,17 @@
           truncated = true;
         }
         var q = build595IdInQuery(ids);
-        try {
-          sessionStorage.setItem(STORAGE_KEY_595_IDX_KW, kw);
-        } catch (e1) {
-          /* noop */
-        }
+        save595IndexFilterSession595(empFilter, dept, group, kw);
         if (truncated) {
           window.alert(
             "該当が" +
               INDEX_SEARCH_MAX_IDS +
               "件を超えました。先頭" +
               INDEX_SEARCH_MAX_IDS +
-              "件のみ表示します。キーワードを具体化してください。"
+              "件のみ表示します。条件を具体化してください。"
           );
         }
+        setBusy(false);
         navigate595IndexList595(q + " order by レコード番号 asc");
       })
       .catch(function (e) {
@@ -442,19 +508,172 @@
     var wrap = document.createElement("div");
     wrap.id = INDEX_SEARCH_WRAP_ID;
     wrap.style.cssText =
-      "display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 12px;padding:8px 12px;" +
+      "display:flex;flex-direction:column;align-items:stretch;gap:8px;margin:0 0 12px;padding:8px 12px;" +
       "background:#f8fafc;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;";
+
+    var rowFilters = document.createElement("div");
+    rowFilters.style.cssText = "display:flex;flex-wrap:wrap;align-items:center;gap:8px;width:100%;";
+
+    var empLabel = document.createElement("span");
+    empLabel.style.cssText = "font-weight:600;color:#475569;white-space:nowrap;";
+    empLabel.textContent = "在籍:";
+    rowFilters.appendChild(empLabel);
+
+    var empFilterState = "active";
+    function mkEmpBtn(label, value) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = label;
+      b.setAttribute("data-595-emp-filter", value);
+      b.style.cssText =
+        "padding:6px 14px;font-size:13px;border:1px solid #cbd5e1;border-radius:999px;background:#fff;cursor:pointer;";
+      if (value === empFilterState) {
+        b.classList.add("active");
+        b.style.background = "#059669";
+        b.style.color = "#fff";
+        b.style.borderColor = "#059669";
+        b.style.fontWeight = "700";
+      }
+      b.addEventListener("click", function () {
+        empFilterState = value;
+        rowFilters.querySelectorAll("[data-595-emp-filter]").forEach(function (btn) {
+          var on = btn.getAttribute("data-595-emp-filter") === value;
+          btn.classList.toggle("active", on);
+          btn.style.background = on ? "#059669" : "#fff";
+          btn.style.color = on ? "#fff" : "";
+          btn.style.borderColor = on ? "#059669" : "#cbd5e1";
+          btn.style.fontWeight = on ? "700" : "";
+        });
+      });
+      return b;
+    }
+    rowFilters.appendChild(mkEmpBtn("在籍", "active"));
+    rowFilters.appendChild(mkEmpBtn("退職", "retired"));
+    rowFilters.appendChild(mkEmpBtn("すべて", "all"));
+
+    var deptLabel = document.createElement("span");
+    deptLabel.style.cssText = "font-weight:600;color:#475569;margin-left:8px;white-space:nowrap;";
+    deptLabel.textContent = "所属:";
+    rowFilters.appendChild(deptLabel);
+
+    var selDept = document.createElement("select");
+    selDept.setAttribute("data-595-dept", "1");
+    selDept.style.cssText =
+      "min-width:140px;max-width:220px;padding:5px 8px;border:1px solid #94a3b8;border-radius:4px;background:#fff;";
+    var optDept0 = document.createElement("option");
+    optDept0.value = "";
+    optDept0.textContent = "（すべて）";
+    selDept.appendChild(optDept0);
+    rowFilters.appendChild(selDept);
+
+    var grpLabel = document.createElement("span");
+    grpLabel.style.cssText = "font-weight:600;color:#475569;white-space:nowrap;";
+    grpLabel.textContent = "所属グループ:";
+    rowFilters.appendChild(grpLabel);
+
+    var selGroup = document.createElement("select");
+    selGroup.setAttribute("data-595-group", "1");
+    selGroup.style.cssText =
+      "min-width:140px;max-width:220px;padding:5px 8px;border:1px solid #94a3b8;border-radius:4px;background:#fff;";
+    var optGrp0 = document.createElement("option");
+    optGrp0.value = "";
+    optGrp0.textContent = "（すべて）";
+    selGroup.appendChild(optGrp0);
+    rowFilters.appendChild(selGroup);
+
+    wrap.appendChild(rowFilters);
+
+    var deptMasterIndex595 = { depts: [], groupsByDept: {}, allGroups: [] };
+
+    function fillGroupOptions595(deptVal) {
+      while (selGroup.options.length > 1) {
+        selGroup.remove(1);
+      }
+      var list =
+        deptVal && deptMasterIndex595.groupsByDept[deptVal]
+          ? deptMasterIndex595.groupsByDept[deptVal]
+          : deptMasterIndex595.allGroups;
+      for (var gi = 0; gi < list.length; gi++) {
+        var og = document.createElement("option");
+        og.value = list[gi];
+        og.textContent = list[gi];
+        selGroup.appendChild(og);
+      }
+    }
+
+    function populate595DeptMasterSelects595() {
+      fetchDeptMasterRows595().then(function (rows) {
+        var deptSeen = {};
+        var grpSeen = {};
+        deptMasterIndex595.depts = [];
+        deptMasterIndex595.groupsByDept = {};
+        deptMasterIndex595.allGroups = [];
+        for (var i = 0; i < rows.length; i++) {
+          var d = String(rows[i].dept_name || "").trim();
+          var g = String(rows[i].group_name || "").trim();
+          if (d && !deptSeen[d]) {
+            deptSeen[d] = true;
+            deptMasterIndex595.depts.push(d);
+          }
+          if (d) {
+            if (!deptMasterIndex595.groupsByDept[d]) {
+              deptMasterIndex595.groupsByDept[d] = [];
+            }
+            if (g && deptMasterIndex595.groupsByDept[d].indexOf(g) === -1) {
+              deptMasterIndex595.groupsByDept[d].push(g);
+            }
+          }
+          if (g && !grpSeen[g]) {
+            grpSeen[g] = true;
+            deptMasterIndex595.allGroups.push(g);
+          }
+        }
+        while (selDept.options.length > 1) {
+          selDept.remove(1);
+        }
+        for (var di = 0; di < deptMasterIndex595.depts.length; di++) {
+          var od = document.createElement("option");
+          od.value = deptMasterIndex595.depts[di];
+          od.textContent = deptMasterIndex595.depts[di];
+          selDept.appendChild(od);
+        }
+        fillGroupOptions595(selDept.value);
+        try {
+          var sd = sessionStorage.getItem(STORAGE_KEY_595_IDX_DEPT);
+          var sg = sessionStorage.getItem(STORAGE_KEY_595_IDX_GROUP);
+          if (sd) {
+            selDept.value = sd;
+            fillGroupOptions595(sd);
+          }
+          if (sg) {
+            selGroup.value = sg;
+          }
+        } catch (eRestore) {
+          /* noop */
+        }
+      });
+    }
+
+    selDept.addEventListener("change", function () {
+      fillGroupOptions595(selDept.value);
+      selGroup.value = "";
+    });
+
+    populate595DeptMasterSelects595();
+
+    var rowSearch = document.createElement("div");
+    rowSearch.style.cssText = "display:flex;flex-wrap:wrap;align-items:center;gap:8px;width:100%;";
 
     var label = document.createElement("span");
     label.style.cssText = "font-weight:600;color:#0f172a;white-space:nowrap;";
     label.textContent = "社員検索";
-    wrap.appendChild(label);
+    rowSearch.appendChild(label);
 
     var hint = document.createElement("span");
     hint.style.cssText = "color:#64748b;font-size:12px;";
     hint.textContent =
       "（所属グループ・所属名・社員名のいずれかに部分一致。英数字も途中から一致します）";
-    wrap.appendChild(hint);
+    rowSearch.appendChild(hint);
 
     var input = document.createElement("input");
     input.type = "search";
@@ -462,12 +681,12 @@
     input.placeholder = "キーワードを入力…";
     input.style.cssText =
       "min-width:200px;max-width:360px;flex:1;padding:6px 10px;border:1px solid #94a3b8;border-radius:4px;";
-    wrap.appendChild(input);
+    rowSearch.appendChild(input);
 
     var statusLine = document.createElement("span");
     statusLine.id = "jbis-595-index-search-status";
     statusLine.style.cssText = "color:#64748b;font-size:12px;min-width:140px;";
-    wrap.appendChild(statusLine);
+    rowSearch.appendChild(statusLine);
 
     var btnSearch = document.createElement("button");
     btnSearch.type = "button";
@@ -475,23 +694,50 @@
     btnSearch.setAttribute("data-label-search", "検索");
     btnSearch.style.cssText =
       "padding:6px 14px;background:#1d4ed8;color:#fff;border:none;border-radius:4px;cursor:pointer;font-weight:600;";
-    wrap.appendChild(btnSearch);
+    rowSearch.appendChild(btnSearch);
 
     var btnClear = document.createElement("button");
     btnClear.type = "button";
     btnClear.textContent = "条件クリア";
     btnClear.style.cssText =
       "padding:6px 12px;background:#fff;color:#334155;border:1px solid #94a3b8;border-radius:4px;cursor:pointer;";
-    wrap.appendChild(btnClear);
+    rowSearch.appendChild(btnClear);
+
+    wrap.appendChild(rowSearch);
+
+    function collectOpts595() {
+      return {
+        keyword: input.value,
+        empFilter: empFilterState,
+        dept: selDept.value,
+        group: selGroup.value
+      };
+    }
 
     function run() {
-      navigate595IndexOrSearch(input.value, btnSearch, btnClear);
+      navigate595IndexOrSearch(collectOpts595(), btnSearch, btnClear);
     }
 
     btnSearch.addEventListener("click", run);
     btnClear.addEventListener("click", function () {
       input.value = "";
-      navigate595IndexOrSearch("", btnSearch, btnClear);
+      empFilterState = "active";
+      rowFilters.querySelectorAll("[data-595-emp-filter]").forEach(function (btn) {
+        var on = btn.getAttribute("data-595-emp-filter") === "active";
+        btn.classList.toggle("active", on);
+        btn.style.background = on ? "#059669" : "#fff";
+        btn.style.color = on ? "#fff" : "";
+        btn.style.borderColor = on ? "#059669" : "#cbd5e1";
+        btn.style.fontWeight = on ? "700" : "";
+      });
+      selDept.value = "";
+      fillGroupOptions595("");
+      selGroup.value = "";
+      navigate595IndexOrSearch(
+        { keyword: "", empFilter: "all", dept: "", group: "" },
+        btnSearch,
+        btnClear
+      );
     });
     input.addEventListener("keydown", function (ev) {
       if (ev.key === "Enter") {
@@ -504,6 +750,21 @@
       var sk = sessionStorage.getItem(STORAGE_KEY_595_IDX_KW);
       if (sk) {
         input.value = sk;
+      }
+      var se = sessionStorage.getItem(STORAGE_KEY_595_IDX_EMP);
+      if (se === "retired" || se === "all" || se === "active") {
+        empFilterState = se;
+        rowFilters.querySelectorAll("[data-595-emp-filter]").forEach(function (btn) {
+          var on = btn.getAttribute("data-595-emp-filter") === se;
+          btn.classList.toggle("active", on);
+          btn.style.background = on ? "#059669" : "#fff";
+          btn.style.color = on ? "#fff" : "#fff";
+          btn.style.borderColor = on ? "#059669" : "#cbd5e1";
+          btn.style.fontWeight = on ? "700" : "";
+          if (!on) {
+            btn.style.color = "";
+          }
+        });
       }
     } catch (eS) {
       /* noop */
