@@ -19,6 +19,19 @@
 
 ---
 
+## §0.1 依頼タイミング（2026-07-04 追補）
+
+| 項目 | 内容 |
+|------|------|
+| **頻度** | **月次 1 本**（経営会議に提出する情報セキュリティレポート） |
+| **依頼の起点** | **経営会議の日程**に合わせ、浜田が **作成依頼**（**毎月固定日は設けない**） |
+| **浜田の入力** | §1 **注意喚起に載せる話題**（タイトル・キーワード・URL/PDF 等） |
+| **AI チームの成果** | §1 周知の全文起稿 + **図解・グラフ**（必要に応じて）+ §2・事例は **枠のみ** |
+
+**専用 ChatGPT MCP**: **見送り**（月次 doc-lane + ⑥ OpenRouter で足りる — `docs/plans/2026-07-04-ai-team-six-roles-spec.md`）。
+
+---
+
 ## §1. 憲法・ゲート（必読）
 
 | ルール | 内容 |
@@ -132,20 +145,27 @@ npm run verify:doc-lane-keiei-kaigi
 ## §5. AI 標準手順
 
 1. `[doc-lane]` 1 行宣言
-2. verify 3 本（keiei-kaigi / governance / word-phase2）
-3. 前月 DOCX → `*_backup.docx` コピー → 当月用に編集
-4. **§1** — 浜田ネタ中心に起稿（DeepSeek レビュー）
-5. **§2 + 事例表** — 枠のみ（プレースホルダ）
-6. （任意）警視庁統計グラフ / figma 図 → `add_picture`
-7. read-back（`get_document_text`）
-8. 報告末尾:
+2. `npm run cio:tool:route -- --intent "経営会議 セキュリティレポート 図解" --log`（intent: **doc-lane** / 図のみ **visual-diagram**）
+3. verify 3 本（keiei-kaigi / governance / word-phase2）
+4. 前月 DOCX → `*_backup.docx` コピー → 当月用に編集
+5. **§1** — 浜田ネタ（注意喚起話題）中心に起稿（**DeepSeek §50-3-8 必須**）
+6. **§2 + 事例表** — 枠のみ（プレースホルダ）
+7. **図解・グラフ**（必要時）:
+   | 種別 | 経路 |
+   |------|------|
+   | 統計グラフ・表 | Word MCP（`add_chart` / `add_table`）— Phase2 |
+   | フロー図・構成図 | **⑥ Visual** — `user-openrouter` V1→V2（`docs/runbooks/cio-visual-diagram-openrouter.md`）→ CIO 構文・ラベル検証 → `add_picture` |
+   | 代替 | Figma `generate_diagram`（OpenRouter 2 回 NG 時） |
+8. read-back（`get_document_text`）
+9. Kimi 精査（80 行超 or 公式引用多い場合）→ CIO 1 行要約
+10. 報告末尾:
 
 ```
 【浜田確認】C:\tmp\資料作成\<path> を Word で開いてください。
 §1 周知を確認し、§2 検知件数・社外事例 2 件を入力後、OK なら 1 行で返信。
 ```
 
-9. 浜田 OK → `cio:task-complete-seal -- --lane doc-lane --scope "経営会議セキュリティ YYYYMM 浜田 OK"`
+11. 浜田 OK → `cio:task-complete-seal -- --lane doc-lane --scope "経営会議セキュリティ YYYYMM 浜田 OK"`
 
 ---
 
@@ -179,3 +199,4 @@ builder は **一括 prefill 専用**。R7 通常運用では **使わない**�
 | 日付 | 内容 |
 |------|------|
 | 2026-06-27 | 初版 — R7 確定・6月版テンプレ確認後 |
+| 2026-07-04 | §0.1 依頼タイミング（会議スケジュール連動・固定日なし）・§5 図解/⑥ Visual 手順追補 |
