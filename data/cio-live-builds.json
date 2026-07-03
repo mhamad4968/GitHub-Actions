@@ -3,10 +3,10 @@
   "apps": {
     "595": {
       "build": "2026-07-04-595-index-emp-dept-filters",
-      "fileKey": "545039c0-091f-4fda-ba7a-9a17d3da94f9",
-      "revision": "115",
-      "relPath": "customize/595/desktop.js",
-      "deployedAt": "2026-07-03T23:50:53.130Z",
+      "fileKey": "e47d849c-7ac9-4c7f-824a-374e60dd897b",
+      "revision": "116",
+      "relPath": ".kintone-deploy/upload-595.js",
+      "deployedAt": "2026-07-03T23:58:32.632Z",
       "note": null
     },
     "627": {
