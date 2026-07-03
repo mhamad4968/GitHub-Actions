@@ -41,8 +41,8 @@ flowchart LR
 
 | 項目 | 内容 |
 |------|------|
-| 体制 | 固定4AI（CIO / Composer / Kimi / DeepSeek） |
-| CIO | Opus **4.7 ベース** — 大局判断・深検証のみ **4.8**（§1-2-3-4-B） |
+| 体制 | 固定4AI + **6役追補**（Architect / Visual — §1-2-3-6） |
+| CIO | Opus **4.8 デフォルト** — 軽量のみ **4.7**（§1-2-3-6） |
 | 非置換 | §50-3-8 / §50-3-11 / §35-1 / §1-2-2 — **削除・弱体化禁止** |
 | 画像 | GenerateImage + `assets/images/` のみ — **画像 MCP 計画削除** |
 
@@ -50,12 +50,23 @@ flowchart LR
 
 | # | 役割 | 担当 | ◯ | ✕ |
 |---|------|------|---|---|
-| ① | CIO | Opus 4.7/4.8 | 指揮・承認 | 大量 Diff 直接実務 |
+| ① | CIO | Opus **4.8 デフォルト** / 軽量 4.7 | 指揮・承認 | 大量 Diff 直接実務 |
 | ② | コード | Composer 2.5 Subagent | Diff・SPEC | §50-3-8 なし単独 save/deploy/PUT |
 | ③ | 長文 | Kimi | 精査・`kimi_review` | Diff 適用・指揮 |
 | ④ | 知恵袋 | DeepSeek | §50-3-8・盲点3点 | 指揮代行・長文主筆・コード編集 |
 
-**4.8 切替 🎖️**: `CIO=統合判断(Claude Opus 4.8適用)` — 詳細: `docs/runbooks/cio-opus48-intelligence-activation.md`
+## 6役追補（2026-07-04 · §1-2-3-6 · 4AI 非置換）
+
+| # | 役割 | 担当 | ◯ | ✕ |
+|---|------|------|---|---|
+| ② | Architect | Opus 4.8 Subagent 1-shot | 重 spec 設計 | 常時起動・deploy |
+| ⑥ | 視覚化 | OpenRouter V1→V2 | Mermaid/SVG 図 | コード diff |
+
+- **L4 Fable 5**: `docs/runbooks/cio-fable5-escalation.md`（稀・即 4.8 復帰）
+- **⑥ runbook**: `docs/runbooks/cio-visual-diagram-openrouter.md`
+- **正本**: `docs/plans/2026-07-04-ai-team-six-roles-spec.md`
+
+**4.8 切替 🎖️**: デフォルト 4.8 — 軽量時 `CIO=Opus4.7(軽量)` / L3 `CIO=統合判断(Claude Opus 4.8適用)` — 詳細: `docs/runbooks/cio-opus48-intelligence-activation.md`
 
 ## 実行手順
 

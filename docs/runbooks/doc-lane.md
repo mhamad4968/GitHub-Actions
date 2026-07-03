@@ -39,6 +39,7 @@ npm run verify:doc-lane-word-phase2
 | **PPTX 新規・図解・グラフ** | `docs/runbooks/doc-lane-pptx-mcp.md` + MCP `office-powerpoint` | figma `generate_diagram` → 画像 |
 | **DOCX 新規・図解・グラフ** | `docs/runbooks/doc-lane-docx-mcp.md` + MCP `office-word` | figma → `add_picture` |
 | **月次セキュリティ DOCX** | `doc-lane:security-report`（matplotlib グラフ 5 枚）+ MCP 追加図解 | — |
+| **年次・情報セキュリティ勉強会 PPT/Word** | `docs/runbooks/security-training-annual.md` + `security-training:sync-masters` | master 改変優先 |
 | PPTX **既存**編集 | `docs/runbooks/pptx-patch-windows.md` | python-pptx |
 
 **markdownify が SKIP / 未接続** のときは python フォールバックで続行し、チャットに 1 行記録: `[doc-lane] markdownify SKIP → python フォールバック`

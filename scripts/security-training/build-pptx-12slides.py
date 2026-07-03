@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
-"""2026年度 情報セキュリティ勉強会 PowerPoint（全12ページ構成）"""
+"""2026年度 情報セキュリティ勉強会 PowerPoint（全12ページ構成・レガシー骨格）
+
+正本は docs/training/security/masters/2026-security-training-master.pptx（15p・2026-07-04）。
+新規・年次更新は master 改変を優先 — docs/runbooks/security-training-annual.md
+"""
 from pptx import Presentation
 from pptx.util import Inches, Pt, Emu
 from pptx.enum.shapes import MSO_SHAPE

@@ -53,6 +53,15 @@
       "jsonRef": "scripts/data/qualification-roadmap.json",
       "ensureBeforeUse": true,
       "note": "2026-06-14 削除済 — 編集前にフォルダ作成し canonical PPTX を配置"
+    },
+    {
+      "id": "security-training",
+      "path": "C:\\tmp\\情報セキュリティ勉強会テキスト",
+      "status": "keep",
+      "label": "情報セキュリティ勉強会（年度 PPT/Word）",
+      "runbook": "docs/runbooks/security-training-annual.md",
+      "npm": ["security-training:sync-masters", "verify:security-training-masters"],
+      "note": "完成版確定後 sync-masters → docs/training/security/masters/（毎年）"
     }
   ],
   "adHocPyRule": "調査用は C:\\tmp\\*.py 可。完了後は scripts/ 昇格 or 削除。正本はリポ scripts/ + npm run。"

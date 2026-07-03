@@ -1,6 +1,6 @@
 {
-  "version": "2026-06-21",
-  "description": "依頼意図 → MCP / npm / 第2者 / verify — Session Lifecycle v2 WORK 連動",
+  "version": "2026-07-04",
+  "description": "依頼意図 → MCP / npm / 第2者 / verify — Session Lifecycle v2 WORK 連動（6役追補 §1-2-3-6）",
   "canonicalRunbook": "docs/runbooks/ai-team-tool-routing-v2.md",
   "relatedManifests": [
     "data/cio-mcp-manifest.json",
@@ -52,6 +52,7 @@
     "doc-lane",
     "github-ci",
     "design",
+    "visualization",
     "research"
   ],
   "intents": [
@@ -388,6 +389,37 @@
       "runbook": "docs/mcp-status.md",
       "secondReviewer": null,
       "verify": ["verify:rag-mirror-canonical"]
+    },
+    {
+      "id": "visual-diagram",
+      "category": "visualization",
+      "phase": ["WORK"],
+      "keywords": [
+        "Mermaid",
+        "フロー図",
+        "6役",
+        "視覚化",
+        "diagram",
+        "flowchart",
+        "SVG図",
+        "アーキテクチャ図",
+        "OpenRouter 図"
+      ],
+      "priority": 12,
+      "mcp": [
+        {
+          "server": "openrouter",
+          "tools": ["chat_completion"],
+          "priority": 10,
+          "note": "V1 openai/gpt-4.1-nano — CIO validates syntax/labels"
+        },
+        { "server": "figma", "tools": ["generate_diagram"], "priority": 30, "note": "OpenRouter 2x fail fallback" }
+      ],
+      "npm": [],
+      "runbook": "docs/runbooks/cio-visual-diagram-openrouter.md",
+      "secondReviewer": null,
+      "verify": [],
+      "specRel": "docs/plans/2026-07-04-ai-team-six-roles-spec.md"
     },
     {
       "id": "tool-routing-self",

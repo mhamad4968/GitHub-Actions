@@ -1,6 +1,6 @@
 # AI Team Tool Routing v2 — 依頼意図 → MCP / npm（正本）
 
-> **正本日**: 2026-06-21 JST — 運用改善 D（A/B/C 完了後）  
+> **正本日**: 2026-07-04 JST — 6役追補（visual-diagram intent）  
 > **上位**: Session Lifecycle v2 WORK / `.cursor/rules/mcp-server-use-triggers.mdc`  
 > **機械正本**: `data/cio-ai-team-tool-routing.json`
 
@@ -83,6 +83,7 @@ pre-implement-gate → tool:route → §50-3-8（該当時）→ MCP/npm 実行 
 | doc-lane | doc-lane | office-powerpoint（図形/コネクタ/グラフ）, figma |
 | github-ci | github-ci | github |
 | design | figma | figma, colors-fonts |
+| visualization | visual-diagram | **openrouter**（V1 gpt-4.1-nano）, figma fallback |
 | research | internal-rag | rag, repo-tree |
 
 ---

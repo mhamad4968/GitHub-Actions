@@ -1,6 +1,11 @@
 {
-  "version": "2026-05-29",
+  "version": "2026-07-04",
   "mode": "B",
+  "sixRoleExtension": {
+    "effective": "2026-07-04",
+    "spec": "docs/plans/2026-07-04-ai-team-six-roles-spec.md",
+    "note": "§1-2-3-4 4AI 非置換追補 — Architect + Visual + Fable L4 + CIO 4.8 default"
+  },
   "imageGenerationMcp": {
     "status": "plan_deleted",
     "note": "2026-05-29 計画完全削除・導入禁止。mcp.json 追加禁止。内蔵 GenerateImage のみ（cursor-generate-image-assets.mdc）"
@@ -19,7 +24,7 @@
   ],
   "roles": {
     "cio": {
-      "model": "Claude Opus 4.7 base (Opus 4.8 on-demand per AGENTS §1-2-3-4-B)",
+      "model": "Claude Opus 4.8 default (Opus 4.7 light turns per AGENTS §1-2-3-6)",
       "mcpAllow": [
         "deepseek",
         "kimi",
@@ -51,6 +56,11 @@
       "mcpDeny": ["image-generation-mcp"],
       "builtinAllow": ["GenerateImage"]
     },
+    "architect": {
+      "model": "Claude Opus 4.8 Subagent 1-shot (rare)",
+      "mcpAllow": ["rag", "repo-tree", "git-history-mcp", "kintone-schema-mcp", "memory"],
+      "note": "Heavy spec cross-lane design only — docs/runbooks/cio-architect-mode.md"
+    },
     "composer": {
       "model": "Composer 2.5 Subagent",
       "mcpAllow": [
@@ -80,6 +90,19 @@
       "model": "DeepSeek",
       "mcpAllow": ["deepseek", "openrouter", "memory", "sequential-thinking"],
       "note": "§50-3-8 着手前・盲点3点"
+    },
+    "visual": {
+      "model": "OpenRouter OpenAI V1→V2 (CIO selects tier)",
+      "mcpAllow": ["openrouter"],
+      "tools": ["chat_completion"],
+      "defaultModels": {
+        "V1": ["openai/gpt-4.1-nano", "openai/gpt-4.1-mini"],
+        "V2": ["openai/gpt-4.1"],
+        "V3": ["openai/gpt-4.1"],
+        "fallback": ["openai/gpt-4o"]
+      },
+      "avoidModels": ["openai/o3", "openai/gpt-5"],
+      "note": "Mermaid/SVG/HTML diagrams only — docs/runbooks/cio-visual-diagram-openrouter.md"
     }
   }
 }

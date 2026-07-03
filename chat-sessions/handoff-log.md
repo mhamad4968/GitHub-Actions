@@ -3633,3 +3633,31 @@ npm run cio:morning:ready
 **触らない**: 688 / 677–679 / SKYSEA — 触らない
 
 ---
+
+### 2026-07-04 JST — **情報セキュリティ勉強会 2026 正本 masters 登録**
+
+**要約**: 浜田 GO — `2026年度　情報セキュリティ勉強会テキスト修正.pptx`（15p）を `docs/training/security/masters/` へ sync。年次 runbook・spec-template・verify npm 追加。
+
+**次の1手**: 浜田依頼待ち（項番 -0）。commit 未実施（masters PPTX ~28MB 含む）。
+
+**Git**: 未コミット（本ターン docs/scripts/data 更新）
+
+**GO待ち**: なし
+
+**触らない**: 688 / 677–679 / SKYSEA
+
+---
+
+### 2026-07-04 JST — **6役 AI 体制 A→C 完了（§1-2-3-6）**
+
+**要約**: 浜田 GO — Phase A 憲法追補（Opus4.8デフォルト/Fable L4/Architect/⑥Visual OpenRouter V1→V2）、runbook 3本、Phase B OpenRouter パイロット（gpt-4.1-nano OK・ラベル和訳要CIO検証）、Phase C routing intent `visual-diagram` 追加。verify:mcp-four-ai-alignment / verify:cio-tool-routing-infra exit 0。
+
+**次の1手**: 浜田依頼待ち。commit 未実施（security-training masters + 本ターン追記）。
+
+**Git**: 未コミット
+
+**GO待ち**: なし
+
+**触らない**: 688 / 677–679 / SKYSEA
+
+---

@@ -693,6 +693,8 @@
     "doc-lane:patch-v5-a3": "python C:\\tmp\\マニュアル\\scripts\\patch_v5_a3_staff_summary.py",
     "doc-lane:security-report": "python scripts/build-monthly-security-report.py",
     "doc-lane:security-report:test": "python scripts/test_docx_template_format.py",
+    "security-training:sync-masters": "python scripts/security-training/sync-masters-from-tmp.py",
+    "verify:security-training-masters": "node scripts/verify-security-training-masters.mjs",
     "verify:doc-lane-pptx-phase1": "node scripts/verify-doc-lane-pptx-phase1.mjs",
     "verify:doc-lane-governance": "node scripts/verify-doc-lane-governance.mjs",
     "verify:doc-lane-word-phase2": "node scripts/verify-doc-lane-word-phase2.mjs",

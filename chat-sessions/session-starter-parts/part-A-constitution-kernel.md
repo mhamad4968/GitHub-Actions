@@ -48,16 +48,16 @@
 
 | 役割 | 担当 | 持ち場 |
 |---|---|---|
-| **CIO（指揮・判断・統合）** | チャット上の本体 AI（**Opus 4.7 ベース**・必要時 **Opus 4.8** 自律切替・§1-2-3-4-B） | 仮説立案・役割割振・結果統合・浜田向け要約・規律統制・GO 前の最終統合 |
+| **CIO（指揮・判断・統合）** | チャット上の本体 AI（**Opus 4.8 デフォルト**・軽量時 **Opus 4.7** 自律可・§1-2-3-4-B / **§1-2-3-6**） | 仮説立案・役割割振・結果統合・浜田向け要約・規律統制・GO 前の最終統合 |
 | **実務担当（コード）** | **Composer 2.5**（**Subagent / L1 実装専用**） | **diff のみ**。仕様の単独確定・**GO なしの save/deploy 禁止**（**CIO 本体または DeepSeek §50-3-8 経由後**に限る） |
 | **実務担当（長文）** | **Kimi**（`mcp_user-kimi_*`） | 長文ドラフト・`kimi_review`・`kimi_think`（**コード diff の主筆は Composer 2.5**） |
 | **知恵袋** | **DeepSeek**（`mcp_user-deepseek_chat`） | 軽量論理チェック・盲点列挙・**憲法 §50-3-8**（予実／計算ロジック／複雑 customize 着手直前の盲点3点＋**約3行突合メモ**） |
-| **バックアップ** | **OpenRouter**（`mcp_user-openrouter_chat_completion`） | 上記失敗時の代替（`provider.sort=price, allow_fallbacks=true`） |
+| **バックアップ / ⑥ 視覚化** | **OpenRouter**（`mcp_user-openrouter_chat_completion`） | ⑥: Mermaid/SVG 図（V1→V2・`docs/runbooks/cio-visual-diagram-openrouter.md`）。DeepSeek/Kimi 失敗時の **フォールバック**も可 |
 | **依頼者・確認者** | **浜田**（CEO） | 仕様提示・GO/NO-GO・kintone 画面の目視 |
 
 **CIO セッション特例（2026-05-21）**: 上表は **浜田 CEO が主導する lab チャット（本セッション）** に適用。**§1-2 最適モデル原則は廃止せず**、特例外セッションは従来どおり §1-2-3-2。**§1-2-2 silent fallback**（`Composer\s*2(?:\.5)?` 検知）と **CEO 承認の Composer Subagent 起用**は **ティア宣言＋🎖️ 割当**で区別する。
 
-**極限明文化（2026-05-21 CEO 厳命）**: 職権境界の全文は **`AGENTS.md` §1-2-3-4-A**（4AI担当明文化マトリクス）＝ **`mode-b-canonical.mdc`**（単一窓）＝ Desktop **`18-重要確認.txt`**。連携順序 4 段は **§50-3-11**（CIO→DeepSeek→Composer→Kimi→CIO 要約）と **同一**。
+**極限明文化（2026-05-21 CEO 厳命 / 2026-07-04 6役追補）**: 職権境界の全文は **`AGENTS.md` §1-2-3-4-A**（4AI）＋ **§1-2-3-6**（6役追補）＝ **`mode-b-canonical.mdc`** ＝ Desktop **`18-重要確認.txt`**。6役正本: **`docs/plans/2026-07-04-ai-team-six-roles-spec.md`**。
 
 **即時改善（2026-05-21 CEO 全提案承認）**: 実装日冒頭 **DeepSeek→5038（A1）**／**Composer Subagent（B3）**／金曜 **mcp-status:refresh-usage（A2）**／週次 **cio:env:enhance（A3）**／**19番は当日1本・過去は archive（B1）** — 詳細は **`18-重要確認.txt`** 先頭ブロック。
 

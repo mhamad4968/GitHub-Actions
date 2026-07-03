@@ -1,5 +1,5 @@
 {
-  "scoredAt": "2026-07-02T10:20:03.760Z",
+  "scoredAt": "2026-07-03T23:00:55.015Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
   "topTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
   "tasks": [
@@ -16,13 +16,13 @@
     },
     {
       "id": "checkpoint:**次回セッション**_—_`cio:session:cold-start`_→",
-      "text": "**次回セッション** — `cio:session:cold-start` → `session:bootstrap` → **浜田依頼待ち**（項番 -0）",
+      "text": "**次回セッション** — `cio:session:cold-start` → `session:bootstrap` → **Plan&Usage 1 行（§41 前）** → **浜田依頼待ち**（項番 -0）",
       "source": "checkpoint",
-      "difficulty": 2,
+      "difficulty": 3,
       "tokens": "中",
       "tokenScore": 2,
-      "impact": 3,
-      "priority": 21,
+      "impact": 5,
+      "priority": 25,
       "status": "pending"
     }
   ]

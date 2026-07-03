@@ -9,5 +9,6 @@
   { "intent": "deploy失敗 rollback 復旧", "expectId": "incident-recover" },
   { "intent": "憲法 R20 4要素 compliance", "expectId": "compliance-constitution" },
   { "intent": "PR Actions CI 5038", "expectId": "github-ci" },
-  { "intent": "PowerPoint 資料 フロー図 作成", "expectId": "doc-lane" }
+  { "intent": "PowerPoint 資料 フロー図 作成", "expectId": "doc-lane" },
+  { "intent": "Mermaid 6役フロー図", "expectId": "visual-diagram" }
 ]
