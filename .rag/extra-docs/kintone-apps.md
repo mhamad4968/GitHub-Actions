@@ -31,7 +31,7 @@ npm run app:fields <アプリID>
 
 | app | BUILD（本番） | revision | fileKey | 更新 |
 |-----|---------------|----------|---------|------|
-| 595 | `2026-07-02-595-retire-clear-pc674-link` | **114** | `6e7ed3af-07b3-4802-b2cf-061b12a5968b` | 2026-07-01 退職674連携revision修正・一覧q=クリア |
+| 595 | `2026-07-04-595-index-emp-dept-filters` | **115** | `6e7ed3af-07b3-4802-b2cf-061b12a5968b` | 2026-07-01 退職674連携revision修正・一覧q=クリア |
 | 674 | `2026-06-23-674-dept-master-sort-no` | **246** | `8578fb9c-900c-4153-8f1e-c97e3887c39c` | 2026-06-19 詳細画面 右サイドバー非表示 |
 | 687 | `2026-06-09-687-workdays-excel-v1` | **10** | `13bc24dc-a753-404a-9f03-8e7e92c43647` | 2026-06-09 工事稼働 Excel v1 |
 | 688 | `2026-06-24-688-print-5yr-rain-scale-up-v9` | **79** | `dc6ed705-941d-46c1-b57b-516dc7571db4` | 2026-06-24 過去5年降雨拡大 |
@@ -48,9 +48,9 @@ npm run app:fields <アプリID>
 | 710 | `2026-06-10-new-system-intro-db-block-ui` | **5** | `372a6214-84de-48ff-891f-2126483ed5dd` | 2026-06-10 新規システム導入ヒアリング DB ブロック |
 | 711 | `2026-06-10-new-system-intro-dash-print-a4-v2` | **4** | `de21c60d-301b-49aa-91bf-d1e25d16efb2` | 2026-06-10 新規システム導入ヒアリング 印刷A4 2枚 |
 | 712 | `2026-06-11-space48-portal-v3` | **24** | `1e261ed5-bfdc-4918-bd98-eb6f2f07c24b` | 2026-06-11 開くを別タブ |
-| 698 | `2026-06-25-bi-employee-sync595-banner-v1` | **11** | `f3e129da-9591-4d7d-bf84-81f2f86ec0b4` | 2026-06-25 595同期ステータス一覧バナー |
+| 698 | `2026-07-04-bi-employee-sync595-sort595-id` | **17** | `5ed0278f-c9b4-4046-bd24-9003d15b3cb1` | 2026-07-04 source595_id並び595揃え |
 | 699 | `2026-06-26-bi-guide-login-permission-lines-v1` | **115** | `38b2b37f-97f7-493c-a60a-c7b9ba7dcbc7` | 2026-06-25 ログイン能力バナー・年次集計注記 |
-| 700 | `2026-06-24-bi-proposal-number-review3` | **143** | `704c383a-f29e-4ee2-858b-70c0bc127c35` | 2026-06-24 提案番号採番・下書き申請者紐付け（レビュー#3） |
+| 700 | `2026-07-04-bi-proposal-hr-dept-override` | **144** | `19284fdd-716f-49f7-94eb-4a872831b6ff` | 2026-07-04 所属行 hr_director_login 優先（WFテスト admin / 本番 jinji） |
 | 713 | `2026-06-13-bi-annual-redirect-guide` | **12** | `d9baa102-67f1-4c12-a291-812ce2a794ac` | 2026-06-13 年次713→699ガイド誘導 |
 | 714 | `2026-06-14-software-ledger-db-block-ui-mutations` | **5** | `45b4c125-5d47-47a1-a373-3bbcd273b54d` | 2026-06-14 ソフトウエア台帳 DB save/delete ブロック |
 | 715 | `2026-06-17-software-ledger-user-filter-compact` | **13** | `69ab1b99-1170-4577-86d1-04c11d5b9a80` | 2026-06-17 利用者チップを社員検索絞り込みに変更 |
@@ -99,7 +99,8 @@ npm run app:fields <アプリID>
 | **実行予算書作成支援ツール　ver.01** | **736** | `customize/736/desktop.js` \| `npm run deploy:736` | [https://jbis-kintone.cybozu.com/k/736/](https://jbis-kintone.cybozu.com/k/736/) **Space 56 / thread 60**・735 REST・688型一覧+Excel風フォーム・**合計行 薄茶色**（①⑧⑨・塗料/その他合計・外注「合計」・**注文金額**・**法定福利費（合計）**）・**諸経費・労務費明細は灰色**・**総括表印刷** ⑧⑨ **最終ページのみ**・**A4横1枚収め**・**差分付き印刷（総括表+詳細表 Step2）**・**v2c 画面差分**（版2以降は直前版と自動比較・直接編集/自動反映分離・削除行折りたたみ）・**依頼者UX v1**（**印刷=sticky固定**・**版/種別/下書きバッジ**・**削除行=各ブロック合計直下**）。**BUILD=`2026-06-26-736-ux-sticky-print-badges-v1`** rev **134** / fileKey **`ddd65ac3-b2d8-4c07-a876-cc1a11ba3064`**。版管理仕様 **`docs/plans/2026-06-20-jikkou-yosan-version-management-spec.md`**・親仕様 **`docs/plans/2026-06-18-jikkou-yosan-spec.md`** §9 |
 | **ユーザサポート682ダッシュ**（682 の REST 参照・閲覧／集約 UI・**入力は 682 のみ**） | **683** | `customize/683/desktop.js` | [https://jbis-kintone.cybozu.com/k/683/](https://jbis-kintone.cybozu.com/k/683/) **Space 48**（**2026-05-11** `kintone-add-app` → **`deploy:683` SUCCESS**・SPEC **§6.1.1**・Runbook **`docs/runbooks/user683-weekly-summary-and-print.md`**）。`npm run cio:preflight:683 -- --note "…"` → `npm run deploy:683`。**2026-06-25 deploy** / **BUILD**: `2026-06-25-683-sixmo-chart-pagination-fix-v1` — **6 暦月棒**を暦月別クエリに変更＋REST ページングを totalCount 突合（100 件打切り欠落是正）。検証: `npm run 683:audit-six-month-chart -- --view-year 2026 --view-month 7`。**2026-05-16 deploy SUCCESS** / **BUILD**: `2026-05-16-683-print-2page-tight-v2` / fileKey **`4bb662aa-b47a-40c5-b1f7-2ba4dffa8f63`** / preview revision **`74`**（**印刷報告用**・`@media print` で **2 枚前後**を目標にレイアウト縮小。**一覧の「提出用PDF」ボタンは撤去**。**月次 PDF HTTP serve は廃止**（2026-05-17 CEO・印刷は **`window.print()` のみ**・オフライン PDF は CLI `user683:monthly-pdf` 任意）。**Claude 中継**: `?user683_claude_relay=`・`text/plain` POST。**グラフ直下 月次→週次4**・要約キャッシュ PUT/POST／`USER683_SHOW_OLLAMA_GENERATE_BTN=false`）。 |
 | **PC台帳 ver.2（旧・削除予定／正は674）** | **594** | `customize/594/desktop.js` | `npm run deploy:594`（**新機能は674**。594は移行・清掃・監査コードが残る間のみ。本番に恒久的に残す前提なし） |
-| 社員マスタ（674/714/716 連携） | **595** | `customize/595/desktop.js` | **本番 live 最終 deploy（2026-07-02）**: `npm run deploy:595` **SUCCESS** / fileKey **`bbe72c0d-ff0d-4db6-a509-35dbc5d182d1`** / preview revision **`114`** / **BUILD=`2026-07-02-595-retire-clear-pc674-link`** rev **114**（退職時 674→保管 + 595 `pc_ledger_v1_list`/`pc_ledger_list` クリア・backfill 7件） |
+| 社員マスタ（674/714/716 連携） | **595** | `customize/595/desktop.js` | **本番 live 最終 deploy（2026-07-02）**: `npm run deploy:595` **SUCCESS** / fileKey **`bbe72c0d-ff0d-4db6-a509-35dbc5d182d1`** / preview revision **`114`** / **BUILD=`2026-07-04-595-index-emp-dept-filters` rev ** 115 **** rev **114**（退職時 674→保管 + 595 `pc_ledger_v1_list`/`pc_ledger_list` クリア・backfill 7件） |
+| **業務改善 社員マスタ**（595 ミラー・閲覧専用） | **698** | `customize/business-improvement-employee/desktop.js` \| `npm run deploy:698` | [https://jbis-kintone.cybozu.com/k/698/](https://jbis-kintone.cybozu.com/k/698/) **Space 5**・595→698 日次同期・突合 **595.$id**・一覧 **source595_id 昇順（595 同一）**・697 バナー・手動同期・**BUILD=`2026-07-04-bi-employee-sync595-sort595-id`** rev **17** / fileKey **`5ed0278f-c9b4-4046-bd24-9003d15b3cb1`** |
 | アカウント管理台帳 | **627**（**テナント削除済・意図的**） | `customize/627/desktop.js`（**リポ参照用・deploy 対象外**） | **674 移行後に削除**（浜田確認 **2026-06-10**）。正本は **674**。portfolio 監査対象外（681 同型）。 |
 | 出張精算アプリ | **629** | `customize/shucccho-seisan/desktop.js` | `npm run deploy:629` |
 | 社内FAQ（DB） | **640** | （**FAQ レコードの本番保管先**で確定。運用ガイド **668** とは別アプリ） | [https://jbis-kintone.cybozu.com/k/640/](https://jbis-kintone.cybozu.com/k/640/) ・UI 用 HTML の作業例: `scripts/faq-portal-full.html`（640 への反映は運用で実施） |
@@ -207,6 +208,7 @@ npm run app:fields <アプリID>
 
 | 日時（UTC） | アプリID | customize パス |
 |-------------|----------|----------------|
+| 2026-07-03T23:58:32Z | 595 | `customize/595/desktop.js` |
 | 2026-07-02T06:09:53Z | 595 | `customize/595/desktop.js` |
 | 2026-06-30T12:21:38Z | 595 | `customize/595/desktop.js` |
 | 2026-06-29T09:29:58Z | 674 | `customize/new-pc-ledger-v1/desktop.js` |
@@ -791,10 +793,10 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 
 | アプリ | ID | customize | BUILD（本番） | deploy |
 |--------|-----|-----------|---------------|--------|
-| 設定マスタ | **697** | — | — | `business-improvement:seed-settings` |
-| 社員マスタ | **698** | `customize/business-improvement-employee/desktop.js` | `2026-06-25-bi-employee-sync595-banner-v1` rev **11** | `deploy:698` |
+| 設定マスタ | **697** | — | 2026-07-04 本番30行 upsert（production-2026-08.xlsx） | `business-improvement:seed-settings` |
+| 社員マスタ | **698** | `customize/business-improvement-employee/desktop.js` | `2026-07-04-bi-employee-sync595-sort595-id` rev **17** | `deploy:698` |
 | ご利用ガイド | **699** | `customize/business-improvement-guide/desktop.bundle.js` | `2026-06-26-bi-guide-login-permission-lines-v1` rev **115** | `deploy:699` |
-| 提案申請 ver.02 | **700** | `customize/business-improvement-proposal/desktop.js` | `2026-06-24-bi-proposal-number-review3` rev143 | `deploy:700` |
+| 提案申請 ver.02 | **700** | `customize/business-improvement-proposal/desktop.js` | `2026-07-04-bi-proposal-hr-dept-override` rev **144** | `deploy:700` |
 | 年次処理（新⑤） | **713** | `customize/business-improvement-annual/desktop.bundle.js` | `2026-06-13-bi-annual-redirect-guide` rev12 | `deploy:713` |
 
 **699 年次集計**: **admin のみ**「年次ポイント集計」。暗唱番号は **697 共通設定** `年次暗唱番号`（起動・集計の都度入力）。集計 UI は 699 オーバーレイ（713 はデータ保存）。

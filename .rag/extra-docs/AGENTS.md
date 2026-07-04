@@ -339,7 +339,7 @@ agent
 
 | 役割 | モデル | 制約 |
 |---|---|---|
-| **CIO（本体・本チャット）** | **Claude Opus 4.7 ベース**（大局判断等で必要と CIO が自律判断した場合は **Opus 4.8** へ随時切替可・§1-2-3-4-B） | 判断・統合・GO 前の最終統合 |
+| **CIO（本体・本チャット）** | **Claude Opus 4.8 デフォルト**（軽量ターンのみ CIO 自律で **Opus 4.7** 可・§1-2-3-4-B / **§1-2-3-6**） | 判断・統合・GO 前の最終統合 |
 | **実務担当（コード）** | **Composer 2.5**（**Subagent / L1 実装専用**） | **diff のみ**。仕様の単独確定・**GO なしの save/deploy 禁止** |
 | **知恵袋** | DeepSeek（§50-3-8） | 着手直前の盲点＋約 3 行突合メモ |
 | **実務担当（長文）** | Kimi | 長文ドラフト（コード主筆は Composer 2.5） |
@@ -415,7 +415,7 @@ flowchart LR
 
 **§1-2-3-4-B CIO ハイブリッド運用・Fast トークン防衛（2026-05-29 CEO 浜田・§50-3-11 非置換追補）**:
 
-1. **ハイブリッド**: 通常 **Opus 4.7**。難解な大局判断・深い検証が必要と CIO が自律判断したターン/セッションのみ **Opus 4.8**（IDE ピッカー切替＋🎖️ 明記）。**§1-2-2 silent fallback とは別**（4.8 は CEO 承認条項による自律切替）。
+1. **ハイブリッド（2026-07-04 改定・§1-2-3-6 整合）**: 通常 **Opus 4.8 デフォルト**。軽量・低コストターンのみ CIO 自律で **Opus 4.7**（🎖️ `CIO=Opus4.7(軽量)`）。**L4 Fable 5** は `docs/runbooks/cio-fable5-escalation.md` の切り札のみ。**§1-2-2 silent fallback とは別**。
 2. **Token Bloat 禁止**: 整理・修正は **Diff 最小**（全文 Read 回避・`offset/limit` 分割可）。
 3. **Fast 節約**: 4.8 は L3 相当の重ターンのみ。ルーチンは 4.7 のまま。
 4. **コスト確認**: 1 ターンの消費が巨大化しそうなら **§41 一問**で浜田に区切り確認（強引に続行しない）。
@@ -449,6 +449,25 @@ flowchart LR
 | **判定コード** | `verify:*` / `cio:guard:5038` の **exit 0/1** を必ず記載 |
 | **圧縮** | 毎ターン正本は **`mode-b-canonical.mdc` §AI-KERNEL**（散文 §1-2-3-4-A は監査用・削除禁止） |
 | **Opus 4.8** | L3 時 **`docs/runbooks/cio-opus48-intelligence-activation.md`** 必須 |
+
+**§1-2-3-6 6役体制追補（2026-07-04 CEO 浜田 GO / §50-3-11 非置換）**:
+
+**§1-2-3-4 の 4AI 連携プロトコル（CIO→DeepSeek→Composer→Kimi→CIO）は維持**する。以下を **追補**する。散文正本: `docs/plans/2026-07-04-ai-team-six-roles-spec.md`・`mode-b-canonical.mdc` §6役追補。
+
+| # | 役割 | モデル | 制約 |
+|---|---|---|---|
+| ① | **CIO** | **Opus 4.8 デフォルト** / 軽量 4.7 | 指揮・統合（§1-2-3-4 同） |
+| ② | **Architect** | **Opus 4.8 Subagent 1-shot**（稀） | 重 spec 横断設計のみ — `docs/runbooks/cio-architect-mode.md` |
+| ③ | **コード** | Composer 2.5 Subagent | §1-2-3-4 の ② と同一 |
+| ④ | **長文** | Kimi | §1-2-3-4 の ③ と同一 |
+| ⑤ | **知恵袋** | DeepSeek | §1-2-3-4 の ④ と同一 |
+| ⑥ | **視覚化** | OpenRouter OpenAI 系（V1→V2 自律） | Mermaid/SVG/HTML **のみ** — `docs/runbooks/cio-visual-diagram-openrouter.md` |
+
+**L4 Fable 5**: Composer↔DeepSeek 3+ デッドロック / git-history×kintone-schema 複合 / §47-A・§57 級のみ — `docs/runbooks/cio-fable5-escalation.md`。**突破後同一ターンで Opus 4.8 復帰**。
+
+**⑥ 視覚化ティア（CIO 自律・毎ターン 1 行）**: V1=`openai/gpt-4.1-nano|mini` → V2=`openai/gpt-4.1`（構文 NG 1 回）→ V3=CEO 資料 → Fallback=`openai/gpt-4o`。**o3/gpt-5 禁止**（コスト）。**§50-3-5 サニタイズ入力**・**CIO 構文/ラベル検証必須**（和訳ラベル NG）。**Composer/Kimi と並列禁止**。
+
+**ルーティング**: intent `visual-diagram` — `data/cio-ai-team-tool-routing.json`。**Phase B パイロット**: `docs/pilot/2026-07-04-openrouter-visual-v1.md`。
 
 ### §1-2-4 クレジット予算管理（2026-04-26 制定 / N-6 / 朝ブリーフィング §0 統合）
 
