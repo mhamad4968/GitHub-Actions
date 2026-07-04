@@ -1,10 +1,10 @@
 /**
- * 実行予算書作成支援ツール ver.01 — BUILD 2026-07-04-736-spec-row-menu-v0a-fix
+ * 実行予算書作成支援ツール ver.01 — BUILD 2026-07-04-736-spec-row-menu-v0b
  * Master app: 735
  */
 (function () {
   'use strict';
-  const BUILD = '2026-07-04-736-spec-row-menu-v0a-fix';
+  const BUILD = '2026-07-04-736-spec-row-menu-v0b';
   const APP_MASTER = 735;
   const DEFAULT_COST_TEMPLATE = [
   { "cost_work_type_code": "10100", "cost_work_type": "材料費", "cost_category_code": "", "cost_category": "塗料", "cost_row_kind": "link", "cost_group_key": "material", "cost_tax_rate": 0.1, "cost_unit": "－", "detail_marker": "②", "cost_basis_note": "詳細表にて内訳を記載…②" },
@@ -3000,7 +3000,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
     return renderSectionHelpBanner('jy-spec-help-panel', headerSpecHelpOpen, '仕様明細（①）の入力について（クリックで開閉）', [
       '契約・見積の<strong>仕様明細 …①</strong>です。仕様・単位・数量・単価を行ごとに入力します。',
       '金額は<strong>数量×単価</strong>で自動計算されます。表下の合計が<strong>契約合計 …①</strong>になります。',
-      '行の追加は、見出しの「末尾に追加」または各行の<strong>⋮ メニュー → 下に1行追加</strong>で行います。追加した行は薄い黄色で強調表示されます。',
+      '行の追加は、見出しの「末尾に追加」または各行の<strong>⋮ メニュー</strong>（上に1行追加 / 下に1行追加）で行います。追加した行は薄い黄色で強調表示されます。',
       '原価行（②〜⑧）との関係は、下の<strong>原価行</strong>の見方、または<strong>詳細表</strong>タブの見方を参照してください。'
     ]);
   }
@@ -3548,6 +3548,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
       '<div class="jy-row-menu jy-row-menu-spec" data-spec-row-menu-wrap="' + i + '">' +
       '<button type="button" class="jy-btn jy-row-menu-trigger" data-spec-row-menu-trigger="' + i + '" title="行の操作" aria-label="行の操作" aria-expanded="false" aria-haspopup="menu">⋮</button>' +
       '<div class="jy-row-menu-pop" role="menu" hidden data-spec-row-menu-panel="' + i + '">' +
+      '<button type="button" role="menuitem" data-spec-add-before="' + i + '">上に1行追加</button>' +
       '<button type="button" role="menuitem" data-spec-add-after="' + i + '">下に1行追加</button>' +
       '<button type="button" role="menuitem" class="jy-row-menu-del" data-spec-del="' + i + '">行を削除</button>' +
       '</div></div>'
@@ -3780,6 +3781,15 @@ function pushTotalEntry(list, field, label, info, bucket) {
 
   function blankSpecRow() {
     return { row_key: newRowKey(), spec_name: '', spec_unit: '', spec_qty: '', spec_unit_price: '', spec_amount: 0, spec_note: '' };
+  }
+
+  function insertSpecRowBefore(i) {
+    syncInputs();
+    if (!state.spec_lines[i]) return;
+    state.spec_lines.splice(i, 0, blankSpecRow());
+    markInsertedRow('spec', i);
+    markDirty();
+    render();
   }
 
   function insertSpecRowAfter(i) {
@@ -4997,6 +5007,13 @@ function pushTotalEntry(list, field, label, info, bucket) {
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
         insertSpecRowAtEnd();
+      });
+    });
+    root.querySelectorAll('[data-spec-add-before]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        closeSpecRowMenus(root);
+        insertSpecRowBefore(Number(btn.getAttribute('data-spec-add-before')));
       });
     });
     root.querySelectorAll('[data-spec-add-after]').forEach(function (btn) {

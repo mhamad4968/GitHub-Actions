@@ -314,12 +314,12 @@
       "note": null
     },
     "736": {
-      "build": "2026-07-04-736-spec-row-menu-v0a-fix",
-      "fileKey": "03dc2098-ff14-4972-9a68-63e451dfaf64",
-      "revision": "160",
-      "relPath": ".kintone-deploy/upload-736.js",
-      "deployedAt": "2026-07-04T10:41:26.149Z",
-      "note": null
+      "build": "2026-07-04-736-spec-row-menu-v0b",
+      "fileKey": "4cff9ec6-a2be-41d0-adcd-d75ebf6595b3",
+      "revision": "161",
+      "relPath": "customize/736/desktop.js",
+      "deployedAt": "2026-07-04T10:43:49.866Z",
+      "note": "Phase 0b spec row menu add above"
     },
     "737": {
       "build": "2026-06-21-total-network-db-block",

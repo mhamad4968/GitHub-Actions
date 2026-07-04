@@ -98,6 +98,11 @@
       "note": "Phase 0a 仕様明細 ⋮ 行メニュー"
     },
     {
+      "id": "spec-insert-before",
+      "needle": "function insertSpecRowBefore(i)",
+      "note": "Phase 0b 上に1行追加"
+    },
+    {
       "id": "spec-row-menu-markup",
       "needle": "data-spec-row-menu-trigger",
       "note": "仕様明細のみ ⋮ メニュー（原価/材料は未展開）"
@@ -133,6 +138,7 @@
   "syncAnchors": [
     "function ensureDiffDeletedKey(scopeKey)",
     "function renderSpecRowMenu(i)",
+    "上に1行追加",
     "下に1行追加",
     "html += renderActionBarPrintTools(printBtnId);",
     "材料明細（塗料）",
