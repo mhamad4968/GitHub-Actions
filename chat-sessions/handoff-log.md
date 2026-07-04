@@ -3747,3 +3747,20 @@ npm run cio:morning:ready
 **触らない**: 688 / 677–679 / SKYSEA · 736 担当説明（保留）
 
 ---
+
+### 2026-07-04 19:51 JST — **736 行メニュー Phase 0c 完了・セッション切替準備**
+
+**浜田メモ（原文）**: ではセッションを切り替えるので準備して
+
+**AI 補足（漏れ防止）**:
+- `git`: **`e4552fe`** = main **ahead 2**（`1bbefa9` Phase 0c rev163 + clock fix）— **push 未**
+- **736 本番**: BUILD `2026-07-04-736-spec-row-menu-v0c` **rev163** — 総括/詳細 全表 ⋮ 横展開済。**受け入れ GO 待ち**
+- **Phase 履歴**: 0a(157) ⋮+下/削除 → fix(159) クリック → 0b(161) 上追加 → **0c(163) 原価/材料/外注**
+- `次の1手`: 新チャット — **736 Phase 0c 受け入れ**（各表 上/下/削除）→ OK 後 **Phase 1**（🔍マスタ検索等）相談
+- `GO待ち`: **Phase 0c 目視受け入れ**（小計行=下のみ・外注削除不可行=削除なし）
+- `session-lock`: なし
+- `関連パス`: `customize/736/desktop.ui.js` · `docs/plans/2026-07-04-jikkou-yosan-spec-row-menu-v0a.md` · `scripts/data/jikkou-yosan-ux-invariants.json`
+
+**触らない**: 688 / 677–679 / SKYSEA · 736 担当説明（保留）
+
+---
