@@ -1,9 +1,22 @@
 {
-  "version": "2026-06-14",
-  "description": "C:\\tmp 作業領域 — 2026-06-14 棚卸し後の正本",
-  "lastCleanup": "2026-06-14",
-  "lastCleanupNote": "A/B 区分整理。維持4 + 都度作成2。ルート直下 ad-hoc .py は削除済（正本は scripts/）",
+  "version": "2026-07-04",
+  "description": "C:\\tmp 作業領域 — 2026-07-04 棚卸し後の正本",
+  "lastCleanup": "2026-07-04",
+  "lastCleanupNote": "業務改善フォルダ新設。ルート sec 調査 ad-hoc（build_sec_training_2026*.py / sec2026* / sec-*.txt / sec*.zip）削除。正本は docs/training/security/masters/ + scripts/",
   "folders": [
+    {
+      "id": "business-improvement",
+      "path": "C:\\tmp\\業務改善",
+      "status": "keep",
+      "label": "業務改善 697 設定マスタ Excel ミラー",
+      "runbook": "docs/plans/2026-05-23-business-improvement-proposal-spec.md",
+      "npm": [
+        "business-improvement:build-prod-wf-settings-xlsx",
+        "business-improvement:validate-prod-settings-xlsx",
+        "business-improvement:seed-settings"
+      ],
+      "note": "正本 xlsx は scripts/data/。C:\\tmp は編集作業用ミラー"
+    },
     {
       "id": "manual",
       "path": "C:\\tmp\\マニュアル",

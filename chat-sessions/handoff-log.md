@@ -3661,3 +3661,17 @@ npm run cio:morning:ready
 **触らない**: 688 / 677–679 / SKYSEA
 
 ---
+
+### 2026-07-04 JST — **業務改善 697 本番設定 + 700 HR 所属 override + メンテ断捨離**
+
+**要約**: 本番 Excel（30行・人事発令）確定 → 697 upsert seed → WF テスト行 admin 分離 → 700 customize 所属 `hr_director_login` 優先（rev144）。Git **`923f00a`** push 済。Desktop sync / checkpoint / session report 更新。`C:\tmp\業務改善` 新設・sec 調査 ad-hoc 削除。
+
+**次の1手**: 浜田依頼待ち（項番 -0）。8月本番前に `npm run business-improvement:validate-prod-settings-xlsx` 再実行可。
+
+**Git**: `923f00a`（BI）+ 本ターン メンテ commit 予定
+
+**GO待ち**: なし
+
+**触らない**: 688 / 677–679 / SKYSEA · pending proposals（nodemailer 等 major）は purge 未適用
+
+---
