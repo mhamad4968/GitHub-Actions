@@ -315,10 +315,10 @@
     },
     "736": {
       "build": "2026-07-04-736-print-head-layout-fix",
-      "fileKey": "b9c0d553-4097-469d-b23b-2e0db5d74d41",
-      "revision": "139",
-      "relPath": "customize/736/desktop.js",
-      "deployedAt": "2026-07-04T09:06:38.469Z",
+      "fileKey": "e3074602-7ba4-4845-a1b1-b334fa6108fb",
+      "revision": "140",
+      "relPath": ".kintone-deploy/upload-736.js",
+      "deployedAt": "2026-07-04T09:07:57.217Z",
       "note": null
     },
     "737": {
