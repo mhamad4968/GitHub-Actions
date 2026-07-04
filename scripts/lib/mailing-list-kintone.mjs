@@ -6,6 +6,7 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import XLSX from 'xlsx';
+import { archiveXlsx } from './closed-v1-migration-xlsx.mjs';
 
 export const DB_APP_NAME = 'メーリングリストDB';
 export const DASH_APP_NAME = 'メーリングリスト台帳';
@@ -14,8 +15,7 @@ export const THREAD_ID = Number(process.env.MAILING_LIST_THREAD_ID || 23);
 export const ADMIN_USER_CODE = String(process.env.MAILING_LIST_ADMIN_USER || 'admin');
 export const SYSTEM_USER_CODE = String(process.env.MAILING_LIST_SYSTEM_USER || 'system');
 export const DEFAULT_XLSX =
-  process.env.MAILING_LIST_XLSX ||
-  'C:\\tmp\\メーリングリスト一覧\\メーリングリスト一覧更新2.xlsx';
+  process.env.MAILING_LIST_XLSX || archiveXlsx('メーリングリスト一覧更新2.xlsx');
 export const STATUS_ACTIVE = '有効';
 export const STATUS_DELETED = '削除';
 export const LIST_DOMAIN = '@j-bis.co.jp';

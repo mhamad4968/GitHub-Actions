@@ -1,5 +1,5 @@
 {
-  "source": "C:\\tmp\\トータルネットワークのネットワーク情報管理台帳\\トータルネットワークのネットワーク情報管理台帳.xlsx",
+  "source": "scripts/data/archive/closed-v1-migration-sources/トータルネットワークのネットワーク情報管理台帳.xlsx",
   "analyzedAt": "2026-06-21",
   "sheets": [
     { "name": "一覧表", "role": "site_network_summary", "dataRows": 12 },

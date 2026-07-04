@@ -6,13 +6,14 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import XLSX from 'xlsx';
+import { archiveXlsx } from './closed-v1-migration-xlsx.mjs';
 
 export const DB_APP_NAME = 'JRE-C_Hubアカウント管理台帳用DB';
 export const DASH_APP_NAME = 'JRE-C_Hubアカウント台帳';
 export const SPACE_ID = Number(process.env.JRE_CHUB_SPACE_ID || 34);
 export const THREAD_NAME = process.env.JRE_CHUB_THREAD_NAME || 'JRE-C_Hubアカウント';
 export const DEFAULT_XLSX =
-  process.env.JRE_CHUB_XLSX || 'C:\\tmp\\C_Hubアカウント一覧\\C_Hubアカウント一覧.xlsx';
+  process.env.JRE_CHUB_XLSX || archiveXlsx('C_Hubアカウント一覧.xlsx');
 export const SHEET_MASTER = 'C-Hubアカウント一覧';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

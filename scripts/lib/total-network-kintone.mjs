@@ -5,6 +5,7 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { archiveXlsx } from './closed-v1-migration-xlsx.mjs';
 
 export const DB_APP_NAME = 'トータルネットワークネットワーク管理DB';
 export const DASH_APP_NAME = 'トータルネットワークネットワーク管理台帳';
@@ -12,7 +13,7 @@ export const SPACE_ID = Number(process.env.TOTAL_NETWORK_SPACE_ID || process.env
 export const THREAD_ID = Number(process.env.TOTAL_NETWORK_THREAD_ID || process.env.SPACE48_THREAD_ID || 52);
 export const DEFAULT_XLSX =
   process.env.TOTAL_NETWORK_XLSX ||
-  'C:\\tmp\\トータルネットワークのネットワーク情報管理台帳\\トータルネットワークのネットワーク情報管理台帳.xlsx';
+  archiveXlsx('トータルネットワークのネットワーク情報管理台帳.xlsx');
 
 export const RECORD_TYPE_SITE = 'site';
 export const RECORD_TYPE_IP = 'ip';

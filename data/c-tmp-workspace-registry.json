@@ -2,7 +2,17 @@
   "version": "2026-07-04",
   "description": "C:\\tmp 作業領域 — 2026-07-04 棚卸し後の正本",
   "lastCleanup": "2026-07-04",
-  "lastCleanupNote": "業務改善フォルダ新設。ルート sec 調査 ad-hoc（build_sec_training_2026*.py / sec2026* / sec-*.txt / sec*.zip）削除。正本は docs/training/security/masters/ + scripts/",
+  "lastCleanupNote": "closed-v1 完了8案件の C:\\tmp 作業フォルダ削除（Excel は scripts/data/archive/closed-v1-migration-sources/ へ移管）。業務改善フォルダ新設。sec ad-hoc 削除済。",
+  "removedClosedV1Folders": [
+    { "path": "C:\\tmp\\C_Hubアカウント一覧", "closure": "JRE-C_Hub", "removedAt": "2026-07-04" },
+    { "path": "C:\\tmp\\JREクラウドアカウント一覧", "closure": "JREクラウド", "removedAt": "2026-07-04" },
+    { "path": "C:\\tmp\\JRシステム用iPad管理台帳", "closure": "JR iPad 720-721", "removedAt": "2026-07-04" },
+    { "path": "C:\\tmp\\NAS管理台帳", "closure": "NAS 748-749", "removedAt": "2026-07-04" },
+    { "path": "C:\\tmp\\VPNアカウント管理", "closure": "VPN 733-734", "removedAt": "2026-07-04" },
+    { "path": "C:\\tmp\\トータルネットワークのネットワーク情報管理台帳", "closure": "トータルネット 737-738", "removedAt": "2026-07-04" },
+    { "path": "C:\\tmp\\メーリングリスト一覧", "closure": "メーリングリスト 750-751", "removedAt": "2026-07-04" },
+    { "path": "C:\\tmp\\複合機管理台帳", "closure": "複合機 741-742", "removedAt": "2026-07-04" }
+  ],
   "folders": [
     {
       "id": "business-improvement",

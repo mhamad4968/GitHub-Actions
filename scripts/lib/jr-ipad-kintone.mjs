@@ -5,13 +5,14 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { archiveXlsx } from './closed-v1-migration-xlsx.mjs';
 
 export const DB_APP_NAME = 'JRシステム用iPad台帳DB';
 export const DASH_APP_NAME = 'JRシステム用iPad管理台帳 ver.1';
 export const SPACE_ID = Number(process.env.JR_IPAD_SPACE_ID || 34);
 export const THREAD_ID = Number(process.env.JR_IPAD_THREAD_ID || 38);
 export const DEFAULT_XLSX =
-  process.env.JR_IPAD_XLSX || 'C:\\tmp\\JRシステム用iPad管理台帳\\JRシステム用iPad.xlsx';
+  process.env.JR_IPAD_XLSX || archiveXlsx('JRシステム用iPad.xlsx');
 
 export const STATUS_VALUES = ['待機', '貸出中', '確認中', '故障', '廃棄'];
 export const PURCHASE_VENDORS = ['au', 'ドコモ', 'ソフトバンク'];

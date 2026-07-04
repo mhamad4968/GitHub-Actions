@@ -1,5 +1,5 @@
 {
-  "source": "C:\\tmp\\複合機管理台帳\\複合機管理台帳.xlsx",
+  "source": "scripts/data/archive/closed-v1-migration-sources/複合機管理台帳.xlsx",
   "sheet": "複合機一覧",
   "headerRows": 3,
   "dataRowCount": 36,

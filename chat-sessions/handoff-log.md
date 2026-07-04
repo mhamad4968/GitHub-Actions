@@ -3675,3 +3675,17 @@ npm run cio:morning:ready
 **触らない**: 688 / 677–679 / SKYSEA · pending proposals（nodemailer 等 major）は purge 未適用
 
 ---
+
+### 2026-07-04 JST — **closed-v1 完了8案件 C:\tmp 作業フォルダ廃止**
+
+**要約**: 浜田確認 — アプリ作成完了済の8フォルダ（C_Hub / JREクラウド / JR iPad / NAS / VPN / トータルネット / メーリングリスト / 複合機）を `C:\tmp` から削除。移行元 Excel は `scripts/data/archive/closed-v1-migration-sources/` へ移管。import スクリプト既定パスを `archiveXlsx()` に更新。
+
+**次の1手**: 浜田依頼待ち（項番 -0）。
+
+**Git**: 本ターン commit 予定
+
+**GO待ち**: なし
+
+**触らない**: 688 / 677–679 / SKYSEA · closed-v1 kintone アプリ本体
+
+---

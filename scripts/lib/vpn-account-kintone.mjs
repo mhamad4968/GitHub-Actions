@@ -5,13 +5,14 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { archiveXlsx } from './closed-v1-migration-xlsx.mjs';
 
 export const DB_APP_NAME = 'VPNアカウント管理台帳用DB';
 export const DASH_APP_NAME = 'VPNアカウント台帳';
 export const SPACE_ID = Number(process.env.VPN_ACCOUNT_SPACE_ID || process.env.SPACE48_SPACE_ID || 48);
 export const THREAD_ID = Number(process.env.VPN_ACCOUNT_THREAD_ID || process.env.SPACE48_THREAD_ID || 52);
 export const DEFAULT_XLSX =
-  process.env.VPN_ACCOUNT_XLSX || 'C:\\tmp\\VPNアカウント管理\\VPNアカウント管理.xlsx';
+  process.env.VPN_ACCOUNT_XLSX || archiveXlsx('VPNアカウント管理.xlsx');
 export const VPN_DOMAIN = '@kensetsutoso.fre';
 export const VPN_DOMAINS = {
   FRE: '@kensetsutoso.fre',

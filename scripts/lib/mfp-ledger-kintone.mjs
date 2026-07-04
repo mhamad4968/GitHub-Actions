@@ -6,13 +6,14 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import XLSX from 'xlsx';
+import { archiveXlsx } from './closed-v1-migration-xlsx.mjs';
 
 export const DB_APP_NAME = '複合機管理台帳DB';
 export const DASH_APP_NAME = '複合機管理台帳';
 export const SPACE_ID = Number(process.env.MFP_LEDGER_SPACE_ID || 48);
 export const THREAD_ID = Number(process.env.MFP_LEDGER_THREAD_ID || 52);
 export const DEFAULT_XLSX =
-  process.env.MFP_LEDGER_XLSX || 'C:\\tmp\\複合機管理台帳\\複合機管理台帳.xlsx';
+  process.env.MFP_LEDGER_XLSX || archiveXlsx('複合機管理台帳.xlsx');
 export const DATA_START_ROW = 3;
 export const EXCEL_SHEET = '複合機一覧';
 

@@ -5,11 +5,10 @@ import {
   getKintoneConfig,
   fetchJson,
   STATUS_ACTIVE,
+  DEFAULT_XLSX,
 } from './lib/mailing-list-kintone.mjs';
 
-const xlsx =
-  process.argv.find((a) => a.startsWith('--xlsx='))?.slice(7) ||
-  'C:\\tmp\\メーリングリスト一覧\\メーリングリスト一覧更新2.xlsx';
+const xlsx = process.argv.find((a) => a.startsWith('--xlsx='))?.slice(7) || DEFAULT_XLSX;
 
 const val = (r, f) => String(r[f]?.value ?? '').trim();
 

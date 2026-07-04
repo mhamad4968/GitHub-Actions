@@ -6,6 +6,7 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import XLSX from 'xlsx';
+import { archiveXlsx } from './closed-v1-migration-xlsx.mjs';
 
 export const DB_APP_NAME = 'NAS管理台帳DB';
 export const DASH_APP_NAME = 'NAS管理台帳';
@@ -13,7 +14,7 @@ export const SPACE_ID = Number(process.env.NAS_LEDGER_SPACE_ID || 48);
 /** Space 48 既定スレッド（専用スレッドは作らない — spec Q9′） */
 export const THREAD_ID = Number(process.env.NAS_LEDGER_THREAD_ID || process.env.SPACE48_THREAD_ID || 52);
 export const DEFAULT_XLSX =
-  process.env.NAS_LEDGER_XLSX || 'C:\\tmp\\NAS管理台帳\\NAS管理台帳_20260629.xlsx';
+  process.env.NAS_LEDGER_XLSX || archiveXlsx('NAS管理台帳_20260629.xlsx');
 export const DEFAULT_STRUCTURE_JSON =
   process.env.NAS_LEDGER_STRUCTURE_JSON || 'docs/plans/tmp-nas-xlsx-structure.json';
 export const EXCEL_SHEET_LEGACY = 'NAS一覧';

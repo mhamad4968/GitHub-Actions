@@ -5,13 +5,14 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { archiveXlsx } from './closed-v1-migration-xlsx.mjs';
 
 export const DB_APP_NAME = 'JREクラウドアカウント管理台帳用DB';
 export const DASH_APP_NAME = 'JREクラウドアカウント台帳';
 export const SPACE_ID = Number(process.env.JRE_CLOUD_SPACE_ID || 34);
 export const THREAD_NAME = process.env.JRE_CLOUD_THREAD_NAME || 'JREクラウドアカウント';
 export const DEFAULT_XLSX =
-  process.env.JRE_CLOUD_XLSX || 'C:\\tmp\\JREクラウドアカウント一覧\\JREクラウドアカウント一覧.xlsx';
+  process.env.JRE_CLOUD_XLSX || archiveXlsx('JREクラウドアカウント一覧.xlsx');
 export const SHEET_MASTER = 'JREｸﾗｳﾄﾞ全社user';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
