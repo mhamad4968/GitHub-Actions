@@ -1,8 +1,8 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-07-04T02:08:58.406Z",
-  "gitHead": "19a90f7",
-  "gitStatus": "## main...origin/main [ahead 1]",
+  "exportedAt": "2026-07-04T02:09:07.631Z",
+  "gitHead": "faf2aaf",
+  "gitStatus": "## main...origin/main [ahead 2]",
   "nextTask": "**浜田依頼待ち**（項番 -0）— nodemailer 9.x major は pending 維持（§38-1 レビュー）",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
@@ -15,8 +15,6 @@
     ".cursor/rules/mode-b-canonical.mdc",
     "docs/knowledge/debug-tips.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=19a90f7 | 次=**浜田依頼待ち**（項番 -0）— nodemailer 9.x major は pending 維持（§38-1 レビュー） | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
-  "validatedAt": "2026-07-04T02:08:59.028Z",
-  "crosscheckOk": true
+  "promptBlock": "【SESSION-BRIDGE】git=faf2aaf | 次=**浜田依頼待ち**（項番 -0）— nodemailer 9.x major は pending 維持（§38-1 レビュー） | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }
