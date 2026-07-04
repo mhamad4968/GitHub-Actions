@@ -1,10 +1,10 @@
 /**
- * 実行予算書作成支援ツール ver.01 — BUILD 2026-06-24-736-diff-print-detail-v2c
+ * 実行予算書作成支援ツール ver.01 — BUILD 2026-07-04-736-diff-print-summary-v2d
  * Master app: 735
  */
 (function () {
   'use strict';
-  const BUILD = '2026-06-24-736-diff-print-detail-v2c';
+  const BUILD = '2026-07-04-736-diff-print-summary-v2d';
   const APP_MASTER = 735;
   const DEFAULT_COST_TEMPLATE = [
   { "cost_work_type_code": "10100", "cost_work_type": "材料費", "cost_category_code": "", "cost_category": "塗料", "cost_row_kind": "link", "cost_group_key": "material", "cost_tax_rate": 0.1, "cost_unit": "－", "detail_marker": "②", "cost_basis_note": "詳細表にて内訳を記載…②" },
@@ -1316,6 +1316,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
   let diffLoading = false;
   let diffDeletedExpanded = { spec: false, cost: false, mat: false, sub: false };
   let printDiffMode = 'normal';
+  let printSummaryLevel = 'brief';
   let jyDiffPrintBuild = false;
   let revisionBusy = false;
 
@@ -2056,6 +2057,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
       '.jy-diff-summary-totals{font-weight:600;margin:0 0 8px}' +
       '.jy-diff-summary ul{margin:4px 0;padding-left:18px}' +
       '.jy-diff-summary li{margin:4px 0}' +
+      '.jy-diff-summary-empty{margin:0;color:#64748b;font-size:12px}' +
       '.jy-diff-tag-added{color:#166534}' +
       '.jy-diff-tag-removed{color:#b91c1c}' +
       '.jy-diff-tag-changed{color:#92400e}' +
@@ -2087,6 +2089,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
       '.jy-pane-head-tools .jy-btn-print{flex-shrink:0}' +
       '.jy-print-mode-bar{display:inline-flex;align-items:center;gap:8px;font-size:12px;white-space:nowrap}' +
       '.jy-print-mode-label{font-weight:600;color:#475569}' +
+      '.jy-print-mode-sep{color:#cbd5e1;margin:0 2px}' +
       '.jy-print-mode{display:inline-flex;align-items:center;gap:4px;cursor:pointer}' +
       '.jy-print-mode input:disabled+span,.jy-print-mode input:disabled{opacity:.55;cursor:not-allowed}' +
       '@media (max-width:900px){.jy-pane-head{grid-template-columns:1fr;justify-items:stretch}.jy-sheet-title{grid-column:1;padding:14px 20px}.jy-pane-head .jy-btn-print{grid-column:1;justify-self:center;margin-top:4px}.jy-header-title-banner{padding:14px 24px}.jy-header-title-text{font-size:20px;letter-spacing:.22em}.jy-sheet-title-doc{font-size:22px}.jy-sheet-title-sheet{font-size:17px;padding:5px 18px}}' +
@@ -3246,18 +3249,17 @@ function pushTotalEntry(list, field, label, info, bucket) {
     return text;
   }
 
-  function renderDiffSummary() {
-    if (!diffIsActive() || !diffResult) return '';
-    const summary = buildDiffSummary(diffResult);
+  function formatDiffSummaryBodyHtml(summary, level, opts) {
+    opts = opts || {};
+    const brief = level === 'brief';
+    const includeFootnote = opts.includeFootnote !== false && !brief;
     if (!summary.hasChanges) {
-      return '<details class="jy-diff-summary"><summary>差分一覧 — 変更はありません</summary></details>';
+      return '<p class="jy-diff-summary-empty">変更はありません</p>';
     }
-    let html = '<details class="jy-diff-summary" open><summary>差分一覧（直接編集 / 自動反映）</summary><div class="jy-diff-summary-body">';
-
+    let html = '';
     const hasDirectRows = summary.direct.some(function (t) {
-      return t.added && t.added.length || t.changed && t.changed.length || t.removed && t.removed.length;
-    }) || summary.direct.some(function (t) { return t.field; });
-
+      return (t.added && t.added.length) || (t.changed && t.changed.length) || (t.removed && t.removed.length) || t.field;
+    });
     if (hasDirectRows) {
       html += '<div class="jy-diff-summary-totals">直接編集した行:</div><ul>';
       summary.direct.forEach(function (t) {
@@ -3267,19 +3269,24 @@ function pushTotalEntry(list, field, label, info, bucket) {
           html += '<li class="jy-diff-tag-changed">' + esc(t.label) + ': ' + esc(delta || '変更') + (arrow ? ' ' + arrow : '') + '</li>';
           return;
         }
+        const parts = [];
         if (t.added && t.added.length) {
-          html += '<li class="jy-diff-tag-added">' + esc(t.label) + ' — 追加 ' + t.added.length + '行: ' + esc(renderDiffListItems(t.added)) + '</li>';
+          parts.push(brief ? '追加 ' + t.added.length + '行' : '追加 ' + t.added.length + '行: ' + esc(renderDiffListItems(t.added)));
         }
         if (t.removed && t.removed.length) {
-          html += '<li class="jy-diff-tag-removed">' + esc(t.label) + ' — 削除 ' + t.removed.length + '行: ' + esc(renderDiffListItems(t.removed)) + '</li>';
+          parts.push(brief ? '削除 ' + t.removed.length + '行' : '削除 ' + t.removed.length + '行: ' + esc(renderDiffListItems(t.removed)));
         }
         if (t.changed && t.changed.length) {
-          html += '<li class="jy-diff-tag-changed">' + esc(t.label) + ' — 変更 ' + t.changed.length + '行: ' + esc(renderDiffListItems(t.changed)) + '</li>';
+          parts.push(brief ? '変更 ' + t.changed.length + '行' : '変更 ' + t.changed.length + '行: ' + esc(renderDiffListItems(t.changed)));
         }
+        if (!parts.length) return;
+        let tag = 'jy-diff-tag-changed';
+        if (t.removed && t.removed.length && !t.added && !t.changed) tag = 'jy-diff-tag-removed';
+        else if (t.added && t.added.length && !t.changed && !t.removed) tag = 'jy-diff-tag-added';
+        html += '<li class="' + tag + '">' + esc(t.label) + ' — ' + parts.join(' / ') + '</li>';
       });
       html += '</ul>';
     }
-
     const cascadeTotals = summary.cascade.filter(function (t) { return t.field; });
     const cascadeRows = summary.cascade.filter(function (t) { return !t.field && t.changed && t.changed.length; });
     if (cascadeTotals.length || cascadeRows.length) {
@@ -3292,13 +3299,14 @@ function pushTotalEntry(list, field, label, info, bucket) {
       cascadeRows.forEach(function (t) {
         if (t.grouped) {
           html += '<li class="jy-diff-tag-cascade">' + esc(t.label) + ' — 金額が連動（' + t.count + '行）</li>';
+        } else if (brief) {
+          html += '<li class="jy-diff-tag-cascade">' + esc(t.label) + ' — 変更 ' + t.changed.length + '行</li>';
         } else {
           html += '<li class="jy-diff-tag-cascade">' + esc(t.label) + ' — ' + esc(renderDiffListItems(t.changed)) + '</li>';
         }
       });
       html += '</ul>';
     }
-
     if (summary.impact.length) {
       html += '<div class="jy-diff-summary-totals">合計への影響:</div><ul>';
       summary.impact.forEach(function (t) {
@@ -3308,9 +3316,33 @@ function pushTotalEntry(list, field, label, info, bucket) {
       });
       html += '</ul>';
     }
+    if (includeFootnote) {
+      html += '<p style="margin:8px 0 0;font-size:11px;color:#64748b">材料・外注の変更は、総括表の連携行（②〜⑦）や小計・⑧⑨へ自動で反映されます（水色＝自動反映）。</p>';
+    }
+    return html;
+  }
 
-    html += '<p style="margin:8px 0 0;font-size:11px;color:#64748b">材料・外注の変更は、総括表の連携行（②〜⑦）や小計・⑧⑨へ自動で反映されます（水色＝自動反映）。</p>';
-    html += '</div></details>';
+  function renderDiffSummary() {
+    if (!diffIsActive() || !diffResult) return '';
+    const summary = buildDiffSummary(diffResult);
+    if (!summary.hasChanges) {
+      return '<details class="jy-diff-summary"><summary>差分一覧 — 変更はありません</summary></details>';
+    }
+    const body = formatDiffSummaryBodyHtml(summary, 'detail', { includeFootnote: true });
+    return '<details class="jy-diff-summary" open><summary>差分一覧（直接編集 / 自動反映）</summary><div class="jy-diff-summary-body">' + body + '</div></details>';
+  }
+
+  function renderPrintDiffSummaryPage() {
+    const summary = buildDiffSummary(diffResult);
+    const level = printSummaryLevel === 'detail' ? 'detail' : 'brief';
+    const modeLabel = diffCompareMode === 'original' ? '当初版' : '直前版';
+    let html = '<div class="jy-pr-diff-summary-page">';
+    html += '<p class="jy-pr-diff-summary-sheet-title">（差　分　サ　マ　リ　ー）</p>';
+    if (diffBaseMeta) {
+      html += '<p class="jy-pr-diff-summary-compare">比較: 版' + esc(String(diffBaseMeta.version_seq)) + ' ' + esc(diffBaseMeta.version_type || '') + '（' + esc(modeLabel) + '）</p>';
+    }
+    html += '<div class="jy-pr-diff-summary-body">' + formatDiffSummaryBodyHtml(summary, level, { includeFootnote: false }) + '</div>';
+    html += '</div>';
     return html;
   }
 
@@ -3345,10 +3377,17 @@ function pushTotalEntry(list, field, label, info, bucket) {
     const canDiff = diffIsActive();
     const mode = canDiff && printDiffMode === 'diff' ? 'diff' : 'normal';
     if (!canDiff && printDiffMode === 'diff') printDiffMode = 'normal';
+    const lvl = printSummaryLevel === 'detail' ? 'detail' : 'brief';
     let html = '<div class="jy-print-mode-bar" role="group" aria-label="印刷種別">';
     html += '<span class="jy-print-mode-label">印刷</span>';
     html += '<label class="jy-print-mode"><input type="radio" name="jy-print-mode" value="normal"' + (mode === 'normal' ? ' checked' : '') + '><span>通常</span></label>';
     html += '<label class="jy-print-mode"><input type="radio" name="jy-print-mode" value="diff"' + (mode === 'diff' ? ' checked' : '') + (canDiff ? '' : ' disabled') + '><span>差分付き</span></label>';
+    if (mode === 'diff') {
+      html += '<span class="jy-print-mode-sep" aria-hidden="true">|</span>';
+      html += '<span class="jy-print-mode-label">サマリー</span>';
+      html += '<label class="jy-print-mode"><input type="radio" name="jy-print-summary-level" value="brief"' + (lvl === 'brief' ? ' checked' : '') + '><span>簡潔</span></label>';
+      html += '<label class="jy-print-mode"><input type="radio" name="jy-print-summary-level" value="detail"' + (lvl === 'detail' ? ' checked' : '') + '><span>詳細</span></label>';
+    }
     html += '</div>';
     return html;
   }
@@ -3357,6 +3396,12 @@ function pushTotalEntry(list, field, label, info, bucket) {
     const el = document.querySelector('input[name="jy-print-mode"]:checked');
     if (!el || el.value !== 'diff' || !diffIsActive()) return 'normal';
     return 'diff';
+  }
+
+  function readPrintSummaryLevelFromDom() {
+    const el = document.querySelector('input[name="jy-print-summary-level"]:checked');
+    if (el && el.value === 'detail') return 'detail';
+    return 'brief';
   }
 
   function renderPrintPaneHeadTools(printBtnId) {
@@ -3899,6 +3944,14 @@ function pushTotalEntry(list, field, label, info, bucket) {
       '.jy-pr-mat .jy-col-note{width:7%}' +
       '.jy-pr-sub-table .jy-col-note{width:7%}' +
       '.jy-pr-diff-footer{margin-top:4px;font-size:9pt;color:#475569;text-align:right;line-height:1.3}' +
+      '.jy-pr-diff-summary-page{page-break-after:always;break-after:page;margin-bottom:4mm}' +
+      '.jy-pr-diff-summary-sheet-title{font-size:12pt;font-weight:700;text-align:center;margin:0 0 4px;letter-spacing:.12em}' +
+      '.jy-pr-diff-summary-compare{font-size:9pt;color:#475569;text-align:center;margin:0 0 8px}' +
+      '.jy-pr-diff-summary-body{font-size:9.5pt;line-height:1.35}' +
+      '.jy-pr-diff-summary-body .jy-diff-summary-totals{font-weight:700;margin:6px 0 4px;color:#334155}' +
+      '.jy-pr-diff-summary-body ul{margin:0 0 8px;padding-left:18px}' +
+      '.jy-pr-diff-summary-body li{margin:3px 0}' +
+      '.jy-pr-diff-summary-body .jy-diff-summary-empty{margin:0;color:#64748b}' +
       'tr.jy-diff-added td{background:#d4edda!important}' +
       'tr.jy-diff-changed td{background:#fffbeb!important}' +
       'tr.jy-diff-cascade td,td.jy-diff-cascade{background:#f0f9ff!important}' +
@@ -4184,12 +4237,15 @@ function pushTotalEntry(list, field, label, info, bucket) {
   function buildPrintSummaryHtml() {
     jyDiffPrintBuild = true;
     try {
-      return (
+      let html = '';
+      if (printDiffActive()) html += renderPrintDiffSummaryPage();
+      html += (
         renderPrintDocHead('（　総　括　表　）') +
         renderPrintSpecTable() +
         renderPrintCostTable() +
         renderPrintDiffFooter()
       );
+      return html;
     } finally {
       jyDiffPrintBuild = false;
     }
@@ -4199,7 +4255,9 @@ function pushTotalEntry(list, field, label, info, bucket) {
     jyDiffPrintBuild = true;
     try {
       ensureSubVendorRows();
-      let html = renderPrintDocHead('（　詳　細　表　）');
+      let html = '';
+      if (printDiffActive()) html += renderPrintDiffSummaryPage();
+      html += renderPrintDocHead('（　詳　細　表　）');
       html += renderPrintMatBlock('材料明細（塗料）', '塗料', '塗料合計', state.mat_total_2, '②');
       html += renderPrintMatBlock('材料明細（その他）', 'その他', 'その他合計', state.mat_total_3, '③');
       html += renderPrintDiffRemovedBlock('mat', '材料明細', function (r) {
@@ -4222,6 +4280,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
     try {
       syncDiffDeletedExpandedFromDom();
       printDiffMode = readPrintDiffModeFromDom();
+      printSummaryLevel = readPrintSummaryLevelFromDom();
       printPrepState();
       const bodyHtml = mode === 'summary' ? buildPrintSummaryHtml() : buildPrintDetailHtml();
       if (!bodyHtml || bodyHtml.indexOf('jy-pr-table') < 0) throw new Error('印刷HTMLの生成に失敗しました');
@@ -4706,6 +4765,11 @@ function pushTotalEntry(list, field, label, info, bucket) {
     root.querySelectorAll('input[name="jy-print-mode"]').forEach(function (el) {
       el.addEventListener('change', function () {
         if (el.checked) printDiffMode = el.value === 'diff' && diffIsActive() ? 'diff' : 'normal';
+      });
+    });
+    root.querySelectorAll('input[name="jy-print-summary-level"]').forEach(function (el) {
+      el.addEventListener('change', function () {
+        if (el.checked) printSummaryLevel = el.value === 'detail' ? 'detail' : 'brief';
       });
     });
 
