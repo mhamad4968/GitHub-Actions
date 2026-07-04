@@ -315,11 +315,11 @@
     },
     "736": {
       "build": "2026-07-04-736-print-summary-level-label",
-      "fileKey": "20de543f-3290-4bbe-acbe-50da98c62720",
-      "revision": "155",
-      "relPath": "customize/736/desktop.js",
-      "deployedAt": "2026-07-04T10:06:58.958Z",
-      "note": "v2d受け入れOK + print summary mode label + ux regression gates"
+      "fileKey": "ce644efe-f824-4271-b516-3a7441580001",
+      "revision": "156",
+      "relPath": ".kintone-deploy/upload-736.js",
+      "deployedAt": "2026-07-04T10:14:37.322Z",
+      "note": null
     },
     "737": {
       "build": "2026-06-21-total-network-db-block",
