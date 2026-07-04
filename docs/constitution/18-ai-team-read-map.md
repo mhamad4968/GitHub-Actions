@@ -1,7 +1,7 @@
-# 第18読本 — 4AI 役割別ナビ（誰が何を読むか）
+# 第18読本 — AI 役割別ナビ（4AI コア + 6役追補）
 
-**制定**: 2026-05-21（Phase 2・細分化）  
-**正本**: `AGENTS.md` §1-2-3-4・**§1-2-3-4-A**（担当明文化マトリクス）・§50-3-11 ／ 用語・マトリクス全文は **`mode-b-canonical.mdc`** のみ ／ 浜田視認: Desktop **`18-重要確認.txt`**  
+**制定**: 2026-05-21（Phase 2・細分化）／**6役追補**: 2026-07-04（§1-2-3-6）  
+**正本**: `AGENTS.md` §1-2-3-4・**§1-2-3-6**・§50-3-11 ／ 6役散文: `docs/plans/2026-07-04-ai-team-six-roles-spec.md` ／ 用語・マトリクス: **`mode-b-canonical.mdc`**  
 **機械検証**: `npm run verify:cio-four-ai-governance`  
 **迷ったら**: [`00-rule-hierarchy.md`](00-rule-hierarchy.md) → `AGENTS.md` 該当 §（本表はショートカットであり正本の置換ではない）
 
@@ -9,21 +9,36 @@
 
 ---
 
-## ① CIO（Claude Opus 4.7 本体）
+## ① CIO（Claude Opus 4.8 デフォルト / 軽量時 4.7）
 
 | 段階 | 読むもの |
 |------|----------|
 | **毎ターン最初** | `mode-b-canonical.mdc`（四行テンプレ）→ `every-turn-rules-confirm.mdc` §1 |
 | **新セッション** | `part-A-constitution-kernel.md` 🎖️ → `00-rule-hierarchy.md` → `RULES-INDEX.md` |
+| **6役判断** | `docs/plans/2026-07-04-ai-team-six-roles-spec.md` §2・§4（Architect / Visual 起動条件） |
 | **タスク着手** | `RULES-INDEX` で § 特定 → `docs/constitution/<ジャンル>.md` **1〜2本** → 必要時のみ `AGENTS.md` |
 | **customize/deploy** | `17-four-ai-mode-b.md` + `docs/runbooks/deepseek-pre-edit-gate.md` + **`cio:guard:5038`** |
 | **MCP** | `docs/mcp-status.md` §4AI / `mcp-server-use-triggers.mdc` §4AI |
+| **図解依頼時** | `docs/runbooks/cio-visual-diagram-openrouter.md`（⑥ へ委譲・本体は diff しない） |
+| **重 spec 時** | `docs/runbooks/cio-architect-mode.md`（② へ 1-shot 委譲） |
 
 **禁止**: 四行テンプレの他 `.mdc` へのコピー／Composer 単独 GO なし save・deploy／画像生成 MCP 追加。
 
 ---
 
-## ② Composer 2.5（Subagent・コード）
+## ②-A Architect（Opus 4.8 Subagent — **6役追補・稀**）
+
+| 段階 | 読むもの |
+|------|----------|
+| **起動時** | CIO から渡された **SPEC 抜粋のみ** + `docs/runbooks/cio-architect-mode.md` |
+| **出力** | 横断設計・spec 1-shot（**deploy / diff 禁止**） |
+| **完了** | CIO へ設計メモ → **DeepSeek §50-3-8 の後・Composer の前** |
+
+**禁止**: 常時起動・kintone save/deploy・憲法条文の改変宣言。
+
+---
+
+## ② Composer 2.5（Subagent・コード — 6役マトリクス **③**）
 
 | 段階 | 読むもの |
 |------|----------|
@@ -35,7 +50,7 @@
 
 ---
 
-## ③ Kimi（長文・レビュー）
+## ③ Kimi（長文・レビュー — 6役マトリクス **④**）
 
 | 段階 | 読むもの |
 |------|----------|
@@ -46,7 +61,7 @@
 
 ---
 
-## ④ DeepSeek（§50-3-8・知恵袋）
+## ④ DeepSeek（§50-3-8・知恵袋 — 6役マトリクス **⑤**）
 
 | 段階 | 読むもの |
 |------|----------|
@@ -54,6 +69,18 @@
 | **出力** | 盲点3点・反例・仕様乖離（各1行以上）→ CIO が **突合3行** |
 
 **禁止**: 正本 § の上書き宣言／単独 GO／Composer 代替の「コード主担当」化。
+
+---
+
+## ⑥ Visual（OpenRouter — **6役追補・図解専用**）
+
+| 段階 | 読むもの |
+|------|----------|
+| **起動時** | `docs/runbooks/cio-visual-diagram-openrouter.md` + CIO からの **サニタイズ済み spec 抜粋** |
+| **出力** | Mermaid / SVG / HTML 図（**コード diff 禁止**） |
+| **検証** | CIO が構文・ラベル英語固定・秘密なしを確認 |
+
+**禁止**: customize 編集・憲法編集・Kimi/Composer と並列起動。
 
 ---
 

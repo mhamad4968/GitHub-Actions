@@ -55,6 +55,10 @@
 | **`docs/runbooks/cio-opus48-intelligence-activation.md`** | Opus 4.8 L3 思考プロトコル |
 | **`docs/runbooks/cio-friday-mcp-status-refresh-4ai.md`** | 金曜 `mcp-status:refresh-usage` 4AI 安全手順（2026-05-29） |
 | **`docs/runbooks/cio-four-ai-governance.md`** | 4AI統制コマンド一覧 |
+| **`docs/runbooks/cio-architect-mode.md`** | 6役② Architect 1-shot（§1-2-3-6） |
+| **`docs/runbooks/cio-visual-diagram-openrouter.md`** | 6役⑥ Visual OpenRouter 図解 |
+| **`docs/runbooks/cio-fable5-escalation.md`** | L4 Fable 5 切り札 |
+| **`docs/runbooks/c-tmp-workspace-lifecycle.md`** | C:\tmp 作業領域棚卸し |
 | **`docs/runbooks/deepseek-pre-edit-gate.md`** | §50-3-8 着手前チェックリスト |
 | **`docs/plans/2026-05-21-cio-session-model-override.md`** | 方式B 決定メモ |
 | **`docs/session-report-checklist.md`** | 報告 §M-2 V2 |

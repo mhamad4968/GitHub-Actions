@@ -2,17 +2,20 @@
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED**（kintone レーン v1 完了・closures 登録）≠ **セッション締め**（export-handoff / Desktop sync / close-git）。混同禁止 -->
 
-**最終更新**: 2026-07-04 JST — **業務改善 697/700 本番設定 + メンテ断捨離**
+**最終更新**: 2026-07-04 JST — **運用体制更新（6役・697 本番・C:\tmp 断捨離）**
 
 ### 本日アクティブ（BUILD/rev — 2026-07-04）
 
 | 項目 | 内容 |
 |------|------|
-| **697 設定マスタ** | 本番 Excel `scripts/data/business-improvement-settings-master-production-2026-08.xlsx` — 30所属 upsert 済（人事発令反映） |
+| **6役 AI 体制** | §1-2-3-6 GO — Opus 4.8 デフォルト / Architect / Visual 追補（`a294c70`） |
+| **697 設定マスタ** | 本番 Excel — 30所属 upsert 済（人事発令反映） |
 | **697 共通** | id=31 `hr_director_login=jinji` / `arai-s@j-bis.co.jp` |
-| **697 WFテスト** | id=32 `【WFテスト】開発検証用` — 全ロール **admin** / jb-sys@j-bis.co.jp |
-| **700 提案申請** | BUILD=`2026-07-04-bi-proposal-hr-dept-override` rev **144** — 所属行 `hr_director_login` 優先 |
+| **697 WFテスト** | id=32 — 全ロール **admin** / jb-sys@j-bis.co.jp |
+| **700 提案申請** | BUILD=`2026-07-04-bi-proposal-hr-dept-override` rev **144** |
 | **698 社員ミラー** | 595 同期 fix（`f98b062`） |
+| **セキュリティ勉強会** | 2026 masters リポ正本（`a294c70`） |
+| **C:\tmp** | closed-v1 8 フォルダ廃止 + archive 移管（`fc66c5d`） |
 
 ## クローズ済み（`data/cio-project-closures.json` — 無断 v1 再開禁止）
 
@@ -28,8 +31,8 @@
 | **736 担当説明 保留** | Step2-3 待ち |
 | **nodemailer 9.x** | V1 proposal 手動レビュー待ち |
 
-**次の1手**: **浜田依頼待ち**（項番 -0）— WF 本番切替前に `npm run business-improvement:validate-prod-settings-xlsx` で再検証可  
-**Git**: **`37b0c27`** — メンテ commit 済（push 予定）· BI 本番 **`923f00a`**  
+**次の1手**: **浜田依頼待ち**（項番 -0）— 改善提案 GO 待ち: `docs/reports/2026-07-04-governance-improvement-proposals.md` §7  
+**Git**: **`fc66c5d`** = `origin/main`（本ターン governance 追随 commit 予定）  
 **Plan&Usage**: 前回 **18%**（2026-07-02）· Ultra リセット **7/15** · **3 日に 1 回**報告  
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **クローズ正本**: `data/cio-project-closures.json` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`  
 **運用メモ**: 本番 Excel 編集は **`設定マスタ_本番`** シートのみ。人事発令反映を正とする。`C:\tmp\業務改善\` に最新 Excel ミラー配置。Desktop `＃重要確認事項.txt` **廃止済**（`18-重要確認.txt` 正本）。595 CSV 取込後は一覧 **「台帳へ一括反映」** を実行。  

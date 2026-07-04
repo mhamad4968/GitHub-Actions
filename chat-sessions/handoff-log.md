@@ -3689,3 +3689,17 @@ npm run cio:morning:ready
 **触らない**: 688 / 677–679 / SKYSEA · closed-v1 kintone アプリ本体
 
 ---
+
+### 2026-07-04 JST — **運用・ルール改善追随（D-TMP/CLOSE/AITEAM）**
+
+**要約**: 浜田「ルール改善可否」→ 改善提案書 `2026-07-04-governance-improvement-proposals.md` 作成。18-ai-team-read-map 6役追補、c-tmp/closure runbook §G、checkpoint 本日全集約。GO 待ち 6 件（R-PENDING-01 等）。
+
+**次の1手**: 改善提案 §7 浜田 GO → 採用 ID を processed 化。
+
+**Git**: 本ターン commit 予定
+
+**GO待ち**: §7 全 ID
+
+**触らない**: 688 / 677–679 / SKYSEA · 憲法 § 本文の無断改変
+
+---

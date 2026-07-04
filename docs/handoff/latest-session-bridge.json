@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-07-03T23:00:58.688Z",
-  "gitHead": "5a5e110",
+  "exportedAt": "2026-07-04T01:58:10.134Z",
+  "gitHead": "47a981d",
   "gitStatus": "## main...origin/main",
-  "nextTask": "**次回セッション** — `cio:session:cold-start` → `session:bootstrap` → **Plan&Usage 1 行（§41 前）** → **浜田依頼待ち**（項番 -0）",
+  "nextTask": "**浜田依頼待ち**（項番 -0）— WF 本番切替前に `npm run business-improvement:validate-prod-settings-xlsx` で再検証可",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -15,6 +15,6 @@
     ".cursor/rules/mode-b-canonical.mdc",
     "docs/knowledge/debug-tips.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=5a5e110 | 次=**次回セッション** — `cio:session:cold-start` → `session:bootstrap` → **Plan&Usage 1 行（§41 前）** → **浜田依頼待ち**（項番 -0） | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "promptBlock": "【SESSION-BRIDGE】git=47a981d | 次=**浜田依頼待ち**（項番 -0）— WF 本番切替前に `npm run business-improvement:validate-prod-settings-xlsx` で再検証可 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }

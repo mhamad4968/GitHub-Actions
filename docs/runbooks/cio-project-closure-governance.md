@@ -108,3 +108,21 @@
 - クローズ済み `--project` で compare-83 / 案B1 を再実行 → **禁止**（朝 ready がスキップ）
 
 正本追記: `18-重要確認.txt` / `cio-four-ai-governance.md` / `verify:cio-project-closure-governance`
+
+---
+
+## G. v1 完了後 — C:\tmp 作業フォルダ廃止（2026-07-04）
+
+**対象**: kintone v1 移行が完了し `closed-v1` 登録済みの案件で、浜田が「C:\tmp 作業フォルダ不要」と判断したとき。
+
+**CIO 必須（メンテターン内）**:
+
+1. 移行元 Excel を `scripts/data/archive/closed-v1-migration-sources/` へコピー
+2. import スクリプト既定パスを `archiveXlsx()` に更新（`scripts/lib/closed-v1-migration-xlsx.mjs`）
+3. `data/c-tmp-workspace-registry.json` — `removedClosedV1Folders` に 1 行追加
+4. `C:\tmp\<フォルダ>` を削除
+5. `docs/runbooks/c-tmp-workspace-lifecycle.md` が最新か確認
+
+**禁止**: kintone 正本未確認のまま Excel 削除のみ実施（archive なし削除）。
+
+**関連**: `docs/reports/2026-07-04-governance-improvement-proposals.md` **S-CLOSE-02**（儀式 A への checklist 組込 — GO 待ち）
