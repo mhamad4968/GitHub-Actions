@@ -3844,7 +3844,7 @@ npm run cio:morning:ready
 
 **次の1手**: **② kintone アカウント台帳** — 現行運用ヒアリング → §41 仕様。**午後** SKYSEA 意見交換
 
-**Git**: commit/push 実施直後に HEAD 更新
+**Git**: **`50c7d4c`** — push 予定
 
 **触らない**: 688 / 677–679 / SKYSEA 実装 / 736 deploy（〜7/11 様子見）
 
