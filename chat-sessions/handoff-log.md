@@ -3717,3 +3717,17 @@ npm run cio:morning:ready
 **触らない**: 688 / 677–679 / SKYSEA
 
 ---
+
+### 2026-07-04 JST — **minor deps 3件適用 + nodemailer 9.x 保留 + push**
+
+**要約**: 浜田 GO — eslint 10.6.0 / globals 17.7.0 / @kintone/cli 1.20.0 を applied → processed 化。nodemailer 9.x major は SMTP リスクのため **保留**（pending 1件のみ）。lint:customize + smoke:quiet 16/16 OK。pre-push ゲート OK。
+
+**次の1手**: 夜セッション — 浜田依頼待ち（項番 -0）。8月本番前に `validate-prod-settings-xlsx` 再実行可。
+
+**Git**: **`02c0662`** = `origin/main` — push 済 · working tree clean
+
+**GO待ち**: nodemailer 9.x major のみ（§38-1 — 明示 GO + SMTP テスト後）
+
+**触らない**: 688 / 677–679 / SKYSEA · nodemailer 7.x 無断 major 上げ
+
+---
