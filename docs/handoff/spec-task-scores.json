@@ -1,8 +1,19 @@
 {
-  "scoredAt": "2026-07-03T23:00:55.015Z",
+  "scoredAt": "2026-07-04T02:34:29.815Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
+  "topTask": "**夜セッション** — [App 736](https://jbis-kintone.cybozu.com/k/736/) 残件 + 一部機能追加の**意見交換から**（浜田指示）。再開時 `npm run session:bootstrap`",
   "tasks": [
+    {
+      "id": "checkpoint:**夜セッション**_—_[App_736](https://jbis-kint",
+      "text": "**夜セッション** — [App 736](https://jbis-kintone.cybozu.com/k/736/) 残件 + 一部機能追加の**意見交換から**（浜田指示）。再開時 `npm run session:bootstrap`",
+      "source": "checkpoint",
+      "difficulty": 2,
+      "tokens": "低",
+      "tokenScore": 1,
+      "impact": 3,
+      "priority": 16,
+      "status": "pending"
+    },
     {
       "id": "backlog:B-MDFLOW:_**Markdown_ベースの開発フロー**（仕様・実装・レ",
       "text": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
@@ -12,17 +23,6 @@
       "tokenScore": 2,
       "impact": 3,
       "priority": 21,
-      "status": "pending"
-    },
-    {
-      "id": "checkpoint:**次回セッション**_—_`cio:session:cold-start`_→",
-      "text": "**次回セッション** — `cio:session:cold-start` → `session:bootstrap` → **Plan&Usage 1 行（§41 前）** → **浜田依頼待ち**（項番 -0）",
-      "source": "checkpoint",
-      "difficulty": 3,
-      "tokens": "中",
-      "tokenScore": 2,
-      "impact": 5,
-      "priority": 25,
       "status": "pending"
     }
   ]
