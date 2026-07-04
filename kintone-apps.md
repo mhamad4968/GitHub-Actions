@@ -50,7 +50,7 @@ npm run app:fields <アプリID>
 | 712 | `2026-06-11-space48-portal-v3` | **24** | `1e261ed5-bfdc-4918-bd98-eb6f2f07c24b` | 2026-06-11 開くを別タブ |
 | 698 | `2026-07-04-bi-employee-sync595-sort595-id` | **17** | `5ed0278f-c9b4-4046-bd24-9003d15b3cb1` | 2026-07-04 source595_id並び595揃え |
 | 699 | `2026-06-26-bi-guide-login-permission-lines-v1` | **115** | `38b2b37f-97f7-493c-a60a-c7b9ba7dcbc7` | 2026-06-25 ログイン能力バナー・年次集計注記 |
-| 700 | `2026-06-24-bi-proposal-number-review3` | **143** | `704c383a-f29e-4ee2-858b-70c0bc127c35` | 2026-06-24 提案番号採番・下書き申請者紐付け（レビュー#3） |
+| 700 | `2026-07-04-bi-proposal-hr-dept-override` | **144** | `19284fdd-716f-49f7-94eb-4a872831b6ff` | 2026-07-04 所属行 hr_director_login 優先（WFテスト admin / 本番 jinji） |
 | 713 | `2026-06-13-bi-annual-redirect-guide` | **12** | `d9baa102-67f1-4c12-a291-812ce2a794ac` | 2026-06-13 年次713→699ガイド誘導 |
 | 714 | `2026-06-14-software-ledger-db-block-ui-mutations` | **5** | `45b4c125-5d47-47a1-a373-3bbcd273b54d` | 2026-06-14 ソフトウエア台帳 DB save/delete ブロック |
 | 715 | `2026-06-17-software-ledger-user-filter-compact` | **13** | `69ab1b99-1170-4577-86d1-04c11d5b9a80` | 2026-06-17 利用者チップを社員検索絞り込みに変更 |
@@ -793,10 +793,10 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 
 | アプリ | ID | customize | BUILD（本番） | deploy |
 |--------|-----|-----------|---------------|--------|
-| 設定マスタ | **697** | — | — | `business-improvement:seed-settings` |
+| 設定マスタ | **697** | — | 2026-07-04 本番30行 upsert（production-2026-08.xlsx） | `business-improvement:seed-settings` |
 | 社員マスタ | **698** | `customize/business-improvement-employee/desktop.js` | `2026-07-04-bi-employee-sync595-sort595-id` rev **17** | `deploy:698` |
 | ご利用ガイド | **699** | `customize/business-improvement-guide/desktop.bundle.js` | `2026-06-26-bi-guide-login-permission-lines-v1` rev **115** | `deploy:699` |
-| 提案申請 ver.02 | **700** | `customize/business-improvement-proposal/desktop.js` | `2026-06-24-bi-proposal-number-review3` rev143 | `deploy:700` |
+| 提案申請 ver.02 | **700** | `customize/business-improvement-proposal/desktop.js` | `2026-07-04-bi-proposal-hr-dept-override` rev **144** | `deploy:700` |
 | 年次処理（新⑤） | **713** | `customize/business-improvement-annual/desktop.bundle.js` | `2026-06-13-bi-annual-redirect-guide` rev12 | `deploy:713` |
 
 **699 年次集計**: **admin のみ**「年次ポイント集計」。暗唱番号は **697 共通設定** `年次暗唱番号`（起動・集計の都度入力）。集計 UI は 699 オーバーレイ（713 はデータ保存）。

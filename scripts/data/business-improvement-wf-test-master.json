@@ -9,7 +9,9 @@
     "applicantLogin": "admin",
     "managerLogin": "admin",
     "branchManagerLogin": "admin",
-    "note": "dev評価UI・WF動作確認用（v3=人事部長段階追加）"
+    "hrDirectorLogin": "admin",
+    "testEmail": "jb-sys@j-bis.co.jp",
+    "note": "dev評価UI・WF動作確認用（申請者/部長/支店長/人事部長=admin、通知先=jb-sys）"
   },
   "stateLabelsJa": {
     "Draft": "未処理",

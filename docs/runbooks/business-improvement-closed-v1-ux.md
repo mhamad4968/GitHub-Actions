@@ -19,6 +19,19 @@
 
 **禁止**: WF 再設計・評価ロジック変更・新規アプリ v1 再実装・提案フロー本体の仕様変更。
 
+### 697 設定マスタ — 8月本番 Excel・WF テスト（2026-07-04）
+
+| 項目 | 正本 |
+|------|------|
+| 本番 Excel | `scripts/data/business-improvement-settings-master-production-2026-08.xlsx` |
+| seed（upsert） | `npm run business-improvement:seed-settings -- --force --xlsx=…` |
+| 検証 | `npm run business-improvement:validate-prod-settings-xlsx` |
+| マスタ変更 | **人事発令**に伴う更新として扱う |
+| 本社評価 | 共通 **`jinji`**／WF テスト行のみ **`admin`**（700 所属行 `hr_director_login` 優先） |
+| 共通 jinji 復元 | `npm run business-improvement:restore-common-hr-jinji` |
+
+仕様 §4.7.1、`scripts/data/business-improvement-wf-test-master.json`
+
 ---
 
 ## 2. R-BI-01 — 新規 customize アプリ追加チェックリスト

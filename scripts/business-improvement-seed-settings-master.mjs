@@ -48,9 +48,11 @@ function loadLabelMapFrom83Snapshot() {
 }
 
 function readExcelRows() {
-  const wb = XLSX.readFile(SETTINGS_XLSX_PATH);
-  const ws = wb.Sheets['設定マスタ'];
-  if (!ws) throw new Error('Excel: sheet 設定マスタ not found');
+  const xlsxArg = process.argv.find((a) => a.startsWith('--xlsx='));
+  const xlsxPath = xlsxArg ? xlsxArg.slice('--xlsx='.length) : SETTINGS_XLSX_PATH;
+  const wb = XLSX.readFile(xlsxPath);
+  const ws = wb.Sheets['設定マスタ'] || wb.Sheets['設定マスタ_本番'] || wb.Sheets['設定マスタ_seed用'];
+  if (!ws) throw new Error('Excel: sheet 設定マスタ / 設定マスタ_本番 not found');
   const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
   if (rows.length !== 30) throw new Error(`Excel: expected 30 rows, got ${rows.length}`);
   return rows;
@@ -67,8 +69,12 @@ function orgRecord(row) {
     applicant_login: { value: String(row['申請者'] || '').trim() },
     manager_login: { value: String(row['部長評価'] || '').trim() },
     branch_manager_login: { value: String(row['支店長評価'] || '').trim() },
-    manager_email: { value: '' },
-    branch_manager_email: { value: '' },
+    manager_email: {
+      value: String(row['部長メール'] || row['部長評価_メール'] || '').trim(),
+    },
+    branch_manager_email: {
+      value: String(row['支店長メール'] || row['支店長評価_メール'] || '').trim(),
+    },
     note: { value: String(row['備考'] || '').trim() },
     hr_director_login: { value: '' },
     hr_director_email: { value: '' },
@@ -89,7 +95,7 @@ function commonRecord(evalRows) {
     branch_manager_email: { value: '' },
     note: { value: '人事部長・評価20段階マスタ（Q-IMPL-05）' },
     hr_director_login: { value: 'jinji' },
-    hr_director_email: { value: '' },
+    hr_director_email: { value: String(process.env.BI_HR_DIRECTOR_EMAIL || '').trim() },
     eval_items: {
       value: evalRows.map((r) => ({
         value: {
@@ -110,9 +116,61 @@ async function getRecords(appId, query, headers, baseUrl) {
   params.set('query', query);
   params.set('fields[0]', 'record_kind');
   params.set('fields[1]', '$id');
+  params.set('fields[2]', 'dept_name');
   const url = `${baseUrl}/k/v1/records.json?${params.toString()}`;
   const j = await fetchJson(url, { method: 'GET', headers: { ...headers, 'Content-Type': undefined } });
   return j.records || [];
+}
+
+async function upsertRecords(appId, records, headers, baseUrl, existing) {
+  const orgExisting = existing.filter((r) => r.record_kind?.value === '所属行');
+  const commonExisting = existing.find((r) => r.record_kind?.value === '共通設定');
+  const orgRecords = records.slice(0, -1);
+  const commonRec = records[records.length - 1];
+  let updated = 0;
+  let created = 0;
+
+  for (const rec of orgRecords) {
+    const dept = rec.dept_name.value;
+    const match = orgExisting.find((r) => r.dept_name?.value === dept);
+    if (match) {
+      await fetchJson(`${baseUrl}/k/v1/record.json`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ app: String(appId), id: match.$id.value, record: rec }),
+      });
+      updated += 1;
+      console.log(`[seed] updated org: ${dept} id=${match.$id.value}`);
+    } else {
+      await fetchJson(`${baseUrl}/k/v1/record.json`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ app: String(appId), record: rec }),
+      });
+      created += 1;
+      console.log(`[seed] created org: ${dept}`);
+    }
+  }
+
+  if (commonExisting) {
+    await fetchJson(`${baseUrl}/k/v1/record.json`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({ app: String(appId), id: commonExisting.$id.value, record: commonRec }),
+    });
+    updated += 1;
+    console.log(`[seed] updated common id=${commonExisting.$id.value}`);
+  } else {
+    await fetchJson(`${baseUrl}/k/v1/record.json`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ app: String(appId), record: commonRec }),
+    });
+    created += 1;
+    console.log('[seed] created common');
+  }
+
+  return { updated, created };
 }
 
 async function main() {
@@ -138,7 +196,15 @@ async function main() {
 
   const existing = await getRecords(appId, 'order by $id asc limit 500', headers, baseUrl);
   if (existing.length > 0 && !force) {
-    console.log(`[seed] skip: ${existing.length} records already exist (use --force to add anyway)`);
+    console.log(`[seed] skip: ${existing.length} records already exist (use --force to upsert)`);
+    return;
+  }
+
+  if (existing.length > 0 && force) {
+    const { updated, created } = await upsertRecords(appId, records, headers, baseUrl, existing);
+    console.log(
+      `[seed] OK app=${appId} upserted (30 org + 1 common, eval_items=${evalRows.length}) updated=${updated} created=${created}`,
+    );
     return;
   }
 

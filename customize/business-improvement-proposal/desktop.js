@@ -2,7 +2,7 @@
   'use strict';
 
   /** 業務改善 ver.02 — 提案申請 申請UI（Phase 4b）+ 評価UI（Phase 5） */
-  var BUILD = '2026-06-24-bi-proposal-number-review3';
+  var BUILD = '2026-07-04-bi-proposal-hr-dept-override';
   var WF_ACTION_APPLY = 'Apply';
   var WF_ACTION_REAPPLY = 'reapply';
   var BI = {
@@ -266,7 +266,7 @@
       hr: wfPersonFromField(rec, '人事部長評価者'),
     };
     return resolveSettingsForApply(rec).then(function (row) {
-      return fetchHrLoginApply().then(function (hrLogin) {
+      return resolveHrLoginFromRow(row).then(function (hrLogin) {
         if (!cached.mgr && row && row.manager_login) cached.mgr = row.manager_login.value || '';
         if (!cached.branch && row && row.branch_manager_login) cached.branch = row.branch_manager_login.value || '';
         if (!cached.hr) cached.hr = hrLogin || '';
@@ -628,7 +628,7 @@
     return kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', {
       app: BI.settingsAppId,
       query: q,
-      fields: ['manager_login', 'branch_manager_login', 'dept_name', 'applicant_login'],
+      fields: ['manager_login', 'branch_manager_login', 'dept_name', 'applicant_login', 'hr_director_login'],
     }).then(function (res) { return (res.records && res.records[0]) || null; });
   }
 
@@ -638,7 +638,7 @@
     return kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', {
       app: BI.settingsAppId,
       query: q,
-      fields: ['manager_login', 'branch_manager_login', 'dept_name', 'applicant_login'],
+      fields: ['manager_login', 'branch_manager_login', 'dept_name', 'applicant_login', 'hr_director_login'],
     }).then(function (res) { return (res.records && res.records[0]) || null; });
   }
 
@@ -650,7 +650,7 @@
     });
   }
 
-  function fetchHrLoginApply() {
+  function fetchHrLoginCommon() {
     return kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', {
       app: BI.settingsAppId,
       query: 'record_kind in ("共通設定") limit 1',
@@ -661,13 +661,24 @@
     });
   }
 
+  function resolveHrLoginFromRow(row) {
+    if (row && row.hr_director_login && row.hr_director_login.value) {
+      return kintone.Promise.resolve(row.hr_director_login.value);
+    }
+    return fetchHrLoginCommon();
+  }
+
+  function fetchHrLoginApply() {
+    return fetchHrLoginCommon();
+  }
+
   function userSelect(code) {
     return code ? { type: 'USER_SELECT', value: [{ code: String(code) }] } : { type: 'USER_SELECT', value: [] };
   }
 
   function prepareRecordForApply(rec) {
     return resolveSettingsForApply(rec).then(function (row) {
-      return fetchHrLoginApply().then(function (hrLogin) {
+      return resolveHrLoginFromRow(row).then(function (hrLogin) {
         if (!val(rec, F.date)) {
           rec[F.date] = { type: 'DATE', value: todayISO() };
         }
@@ -2114,18 +2125,17 @@
     return kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', {
       app: BI.settingsAppId,
       query: q,
-      fields: ['dept_name', 'manager_login', 'branch_manager_login'],
+      fields: ['dept_name', 'manager_login', 'branch_manager_login', 'hr_director_login'],
     }).then(function (res) { return (res.records && res.records[0]) || null; });
   }
 
   function fetchHrLogin() {
-    return kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', {
-      app: BI.settingsAppId,
-      query: 'record_kind in ("共通設定") limit 1',
-      fields: ['hr_director_login'],
-    }).then(function (res) {
-      var r = res.records && res.records[0];
-      return r && r.hr_director_login ? r.hr_director_login.value : 'jinji';
+    return fetchHrLoginCommon();
+  }
+
+  function fetchHrLoginForDept(dept) {
+    return fetchSettingsForDept(dept).then(function (row) {
+      return resolveHrLoginFromRow(row);
     });
   }
 
@@ -2173,7 +2183,7 @@
   }
 
   function resolveEvalRole(rec, login) {
-    return fetchHrLogin().then(function (hrLogin) {
+    return fetchHrLoginForDept(val(rec, F.dept)).then(function (hrLogin) {
       return fetchSettingsForDept(val(rec, F.dept)).then(function (row) {
         return resolveEvalRoleForStatus(rec, login, hrLogin, row);
       });

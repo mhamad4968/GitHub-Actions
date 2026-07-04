@@ -28,8 +28,26 @@ async function fetchAll697(baseUrl, headers, appId) {
   return j.records || [];
 }
 
+async function ensureAdminTestEmail(baseUrl, headers, email) {
+  const url = `${baseUrl}/v1/users.json?codes[]=${encodeURIComponent('admin')}`;
+  const cur = await fetchJson(url, { method: 'GET', headers: { ...headers, 'Content-Type': undefined } });
+  const admin = (cur.users || [])[0];
+  if (!admin) throw new Error('kintone user admin not found');
+  if (admin.email === email) {
+    console.log('[wf-test-master] admin email 済:', email);
+    return;
+  }
+  await fetchJson(`${baseUrl}/v1/users.json`, {
+    method: 'PUT',
+    headers,
+    body: JSON.stringify({ users: [{ code: 'admin', email }] }),
+  });
+  console.log('[wf-test-master] admin email 更新:', admin.email || '(empty)', '->', email);
+}
+
 async function seedSettingsRow(baseUrl, headers, settingsAppId, master, devUser) {
   const sm = master.settingsMaster;
+  const testEmail = sm.testEmail || '';
   const records = await fetchAll697(baseUrl, headers, settingsAppId);
   const existing = records.find((r) => r.record_kind?.value === '所属行' && r.dept_name?.value === sm.deptName);
 
@@ -41,16 +59,19 @@ async function seedSettingsRow(baseUrl, headers, settingsAppId, master, devUser)
     applicant_login: { value: sm.applicantLogin || devUser },
     manager_login: { value: sm.managerLogin || devUser },
     branch_manager_login: { value: sm.branchManagerLogin || devUser },
+    manager_email: { value: testEmail },
+    branch_manager_email: { value: testEmail },
     note: {
       value: [
         sm.note,
         `wf_profile=${master.profileId}`,
         `wf_label=${master.label}`,
+        `test_email=${testEmail}`,
         `states=${Object.entries(master.stateLabelsJa).map(([k, v]) => `${k}:${v}`).join(' / ')}`,
       ].join('\n'),
     },
-    hr_director_login: { value: '' },
-    hr_director_email: { value: '' },
+    hr_director_login: { value: sm.hrDirectorLogin || '' },
+    hr_director_email: { value: testEmail },
     eval_items: { value: [] },
   };
 
@@ -79,16 +100,13 @@ async function patchCommonNote(baseUrl, headers, settingsAppId, master) {
   if (!common) return;
   const prev = common.note?.value || '';
   const tag = `wf_test_profile=${master.profileId}`;
-  const devUser = master.settingsMaster.applicantLogin || master.settingsMaster.managerLogin || 'admin';
   const recordPatch = {};
-  if (!common.hr_director_login?.value) {
-    recordPatch.hr_director_login = { value: devUser };
-  }
+  // 本社評価（人事部長）は共通設定=jinji。テスト行のみ hr_director_login=admin
   if (!prev.includes(tag)) {
     recordPatch.note = { value: `${prev}\n${tag} (${master.label})`.trim() };
   }
   if (!Object.keys(recordPatch).length) {
-    console.log('[wf-test-master] 697 共通設定 note/hr 済');
+    console.log('[wf-test-master] 697 共通設定 note 済');
     return;
   }
   await fetchJson(`${baseUrl}/k/v1/record.json`, {
@@ -100,7 +118,7 @@ async function patchCommonNote(baseUrl, headers, settingsAppId, master) {
       record: recordPatch,
     }),
   });
-  console.log('[wf-test-master] 697 共通設定 note/hr 更新', Object.keys(recordPatch).join(', '));
+  console.log('[wf-test-master] 697 共通設定 note 更新', Object.keys(recordPatch).join(', '));
 }
 
 async function syncProposalDeptOptions(baseUrl, headers, settingsAppId, proposalAppId) {
@@ -146,6 +164,11 @@ async function main() {
   if (dryRun) {
     console.log(JSON.stringify({ settingsAppId, proposalAppId, master }, null, 2));
     return;
+  }
+
+  const testEmail = master.settingsMaster.testEmail;
+  if (testEmail) {
+    await ensureAdminTestEmail(baseUrl, headers, testEmail);
   }
 
   const rowId = await seedSettingsRow(baseUrl, headers, settingsAppId, master, username);

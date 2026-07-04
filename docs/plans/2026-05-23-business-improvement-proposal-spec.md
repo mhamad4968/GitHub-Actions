@@ -702,6 +702,23 @@ npm run business-improvement:prep-83
   5. **アプリ完成後、浜田に1日**の記入期間を確保（Q34）
 - **旧84**: `manager1`〜`area_mg` 等の暗黙フィールドは**設定マスタ参照に置換**
 
+#### 4.7.1 8月本番向け設定マスタ・WF 修正（2026-07-04）
+
+| 項目 | 内容 |
+|------|------|
+| **正本 Excel** | `scripts/data/business-improvement-settings-master-production-2026-08.xlsx`（シート **`設定マスタ_本番`**） |
+| **雛形** | `scripts/data/business-improvement-settings-master-template.xlsx`（30行・開発用） |
+| **マスタ変更の意味** | **人事発令**に伴う担当者・Login ID 更新として扱う（旧 kintone ユーザー名との不一致は異動後の ID 再利用を想定） |
+| **申請者メール** | **不要**（拠点共有アカウント — Q37）。Excel 上は「不要」または空欄 |
+| **697 seed** | `npm run business-improvement:seed-settings -- --force --xlsx=scripts/data/business-improvement-settings-master-production-2026-08.xlsx`（**upsert**：部署名で UPDATE、重複 POST しない） |
+| **人事部長メール** | seed 時 `BI_HR_DIRECTOR_EMAIL`（例: `arai-s@j-bis.co.jp`）→ 共通設定 `hr_director_email` |
+| **Excel 生成** | `npm run business-improvement:build-prod-wf-settings-xlsx`（kintone ユーザメール突合・要確認列） |
+| **Excel 検証** | `npm run business-improvement:validate-prod-settings-xlsx` |
+| **WF テスト行** | `【WFテスト】開発検証用`（697 id=32 付近）— **本番30行には含めない**。seed: `business-improvement:seed-wf-test-master` |
+| **本社評価（人事部長）** | **本番**＝共通設定 **`jinji`**。**WF テスト行のみ** 所属行 `hr_director_login=admin`（700 JS が行優先・共通フォールバック） |
+| **テスト通知先** | `admin` → `jb-sys@j-bis.co.jp`（WF 動作確認用） |
+| **8/1 本番前** | テスト行削除・共通設定最終確認・700 通知・3日リマインド設定 |
+
 ### 4.8 提供資料（2026-05-23 セッション2・浜田提示）
 
 **保管場所（正）**: `C:\tmp\業務改善\`（WSL: `/mnt/c/tmp/業務改善/`）
@@ -1435,6 +1452,7 @@ npm run business-improvement:prep-83
 | 2026-06-11 | **表彰ランク（最終）上限**: 自動ランクより **格上げ不可**（自動B→最終A禁止）。A は **①～③加点で自動A** → **本社評価**。700 BUILD `2026-06-11-bi-final-rank-no-upgrade` |
 | 2026-06-11 | **部長評価**: 自動 **B/A** は **完了承認不可**（支店長へ／本社経路のみ）。自動 **C** のみ部長完結・最終も **C のみ**選択可。BUILD `2026-06-11-bi-mgr-final-rank-guard` |
 | 2026-07-04 | **§4.2 595→698 同期改定**: 突合 **595.$id→698.$id**（氏名フォールバック）・誤 POST **重複 DELETE**・698 **`source595_id` 並び**（595 レコード番号順）・697 `sync595_meta` バナー＋**手動同期**・Task **22:30** 登録。698 rev17 浜田目視 OK |
+| 2026-07-04 | **§4.7.1 8月本番設定マスタ**: 正本 Excel `business-improvement-settings-master-production-2026-08.xlsx`・697 upsert seed・人事発令扱い・WF テスト行（admin）と本番共通 jinji 分離・700 所属行 `hr_director_login` 優先 |
 | 2026-05-25 | **Q-ANN-08 確定**: 明細の **行クリック**→新①レコード詳細（表1/表2と同趣旨） |
 | 2026-05-25 | **Q-ANN-07 確定**: 表2の A/B/C **件数**クリック→新①（社員+最終ランク）。目視確認用 |
 | 2026-05-25 | **Q-ANN-06 確定**: 表1プレビュー＝2段ヘッダ（月／業務改善｜アイデア）。件数クリック→新①レコード |

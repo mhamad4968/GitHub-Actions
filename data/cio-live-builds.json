@@ -146,11 +146,11 @@
       "note": null
     },
     "700": {
-      "build": "2026-06-24-bi-proposal-number-review3",
-      "fileKey": "0b0b0706-3abc-45a1-9ae7-d70f90d148e6",
-      "revision": "143",
+      "build": "2026-07-04-bi-proposal-hr-dept-override",
+      "fileKey": "19284fdd-716f-49f7-94eb-4a872831b6ff",
+      "revision": "144",
       "relPath": "customize/business-improvement-proposal/desktop.js",
-      "deployedAt": "2026-06-24T09:46:34.698Z",
+      "deployedAt": "2026-07-04T01:36:30.789Z",
       "note": null
     },
     "701": {
