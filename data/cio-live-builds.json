@@ -130,11 +130,11 @@
       "note": null
     },
     "698": {
-      "build": "2026-07-04-bi-employee-sync595-sort595-id",
-      "fileKey": "5ed0278f-c9b4-4046-bd24-9003d15b3cb1",
-      "revision": "17",
+      "build": "2026-07-04-bi-employee-index-emp-filter",
+      "fileKey": "776e7d9f-75b6-49b1-95b6-9c5b3265443a",
+      "revision": "19",
       "relPath": "customize/business-improvement-employee/desktop.js",
-      "deployedAt": "2026-07-04T00:18:17.359Z",
+      "deployedAt": "2026-07-04T11:53:10.127Z",
       "note": null
     },
     "699": {
@@ -146,11 +146,11 @@
       "note": null
     },
     "700": {
-      "build": "2026-07-04-bi-proposal-hr-dept-override",
-      "fileKey": "afb8f889-fea0-4c44-b9d3-907b7ccd0afc",
-      "revision": "145",
+      "build": "2026-07-04-bi-proposal-late-eval-collapse",
+      "fileKey": "d128837d-6bee-4bb8-9356-97b6f3e4811e",
+      "revision": "146",
       "relPath": "customize/business-improvement-proposal/desktop.js",
-      "deployedAt": "2026-07-04T02:11:22.199Z",
+      "deployedAt": "2026-07-04T12:00:58.718Z",
       "note": null
     },
     "701": {
@@ -314,11 +314,11 @@
       "note": null
     },
     "736": {
-      "build": "2026-07-04-736-spec-row-menu-v0c",
-      "fileKey": "59e4b332-7126-47b1-bb87-c9e59c433609",
-      "revision": "163",
+      "build": "2026-07-04-736-row-menu-fixed-pop",
+      "fileKey": "6df7d826-d949-404b-b9f9-ada4617a39ce",
+      "revision": "168",
       "relPath": "customize/736/desktop.js",
-      "deployedAt": "2026-07-04T10:47:49.231Z",
+      "deployedAt": "2026-07-04T11:18:04.024Z",
       "note": null
     },
     "737": {

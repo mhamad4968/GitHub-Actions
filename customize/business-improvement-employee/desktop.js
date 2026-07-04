@@ -1,15 +1,19 @@
 (function () {
   'use strict';
 
-  /** 業務改善 ver.02 — 社員マスタ698 一覧：595同期ステータス + 手動同期 */
-  var BUILD = '2026-07-04-bi-employee-sync595-sort595-id';
+  /** 業務改善 ver.02 — 社員マスタ698 一覧：595同期 + 在籍フィルタ + sort595 */
+  var BUILD = '2026-07-04-bi-employee-index-emp-filter';
 
   var APP595 = 595;
   var SETTINGS_APP_ID = 697;
   var BANNER_ID = 'bi-employee-sync595-banner';
   var BTN_SYNC_ID = 'bi-employee-sync595-manual-btn';
+  var FILTER_WRAP_ID = 'bi-698-emp-filter-wrap';
+  var STORAGE_KEY_698_EMP = 'bi698-index-emp-filter';
   var STALE_HOURS = 26;
   var SORT595_QUERY_RE = /order by\s+source595_id\s+asc/i;
+  var EMP_ACTIVE = '在籍';
+  var EMP_RETIRED = '退職';
 
   var FIELDS_595 = ['user_name', 'dept_name', 'group_name', 'employment_status', 'mail', '$id'];
   var FIELDS_EMP = ['user_name', 'dept_name', 'group_name', 'employment_status', 'source595_id', '$id', '$revision'];
@@ -246,8 +250,63 @@
     return rec;
   }
 
-  /** 595 一覧と同じ並び（source595_id 昇順）。ユーザーが別 sort を付けた query は尊重 */
-  function ensure698IndexSortLike595() {
+  /** 595 一覧と同じ並び（source595_id 昇順）。在籍フィルタは通常デフォルト（在籍のみ） */
+  function escapeForQuery698(s) {
+    return String(s || '').replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+  }
+
+  function build698EmpFilterClause(empFilter) {
+    if (empFilter === 'active') {
+      return 'employment_status in ("' + escapeForQuery698(EMP_ACTIVE) + '")';
+    }
+    if (empFilter === 'retired') {
+      return 'employment_status in ("' + escapeForQuery698(EMP_RETIRED) + '")';
+    }
+    return '';
+  }
+
+  function parse698EmpFilterFromQuery(q) {
+    var s = String(q || '');
+    if (/employment_status\s+in\s*\(\s*"退職"\s*\)/i.test(s)) return 'retired';
+    if (/employment_status\s+in\s*\(\s*"在籍"\s*\)/i.test(s)) return 'active';
+    return null;
+  }
+
+  function get698EmpFilterIntent(q) {
+    var fromQ = parse698EmpFilterFromQuery(q);
+    if (fromQ === 'active' || fromQ === 'retired') return fromQ;
+    try {
+      var ss = sessionStorage.getItem(STORAGE_KEY_698_EMP);
+      if (ss === 'all' || ss === 'active' || ss === 'retired') return ss;
+    } catch (_eSs) {
+      /* noop */
+    }
+    return 'active';
+  }
+
+  function save698EmpFilterSession698(empFilter) {
+    try {
+      sessionStorage.setItem(STORAGE_KEY_698_EMP, String(empFilter || 'active'));
+    } catch (_eSs) {
+      /* noop */
+    }
+  }
+
+  function navigate698IndexQuery(empFilter) {
+    save698EmpFilterSession698(empFilter);
+    var u;
+    try {
+      u = new URL(location.href);
+    } catch (_eUrl) {
+      return;
+    }
+    var filterClause = build698EmpFilterClause(empFilter);
+    var nextQ = (filterClause ? filterClause + ' ' : '') + 'order by source595_id asc';
+    u.searchParams.set('query', nextQ);
+    location.replace(u.toString());
+  }
+
+  function ensure698IndexDefaultView() {
     var u;
     try {
       u = new URL(location.href);
@@ -255,13 +314,109 @@
       return false;
     }
     var q = String(u.searchParams.get('query') || '').trim();
-    if (SORT595_QUERY_RE.test(q)) return false;
-    if (/order by/i.test(q)) return false;
-    var base = q.replace(/\s*order by[\s\S]*$/i, '').trim();
-    var nextQ = (base ? base + ' ' : '') + 'order by source595_id asc';
+    if (/order by/i.test(q) && !SORT595_QUERY_RE.test(q)) return false;
+
+    var fromQ = parse698EmpFilterFromQuery(q);
+    if (fromQ === 'active' || fromQ === 'retired') {
+      if (SORT595_QUERY_RE.test(q)) return false;
+      var baseFiltered = q.replace(/\s*order by[\s\S]*$/i, '').trim();
+      u.searchParams.set('query', (baseFiltered ? baseFiltered + ' ' : '') + 'order by source595_id asc');
+      location.replace(u.toString());
+      return true;
+    }
+
+    var intent = get698EmpFilterIntent(q);
+    var filterClause = build698EmpFilterClause(intent);
+    var nextQ = (filterClause ? filterClause + ' ' : '') + 'order by source595_id asc';
+    if (q === nextQ) return false;
+
+    if (intent === 'all') {
+      if (SORT595_QUERY_RE.test(q) && !q.replace(/\s*order by[\s\S]*$/i, '').trim()) {
+        return false;
+      }
+    }
+
     u.searchParams.set('query', nextQ);
     location.replace(u.toString());
     return true;
+  }
+
+  function sync698EmpFilterButtons(wrap, activeValue) {
+    if (!wrap) return;
+    wrap.querySelectorAll('[data-698-emp-filter]').forEach(function (btn) {
+      var on = btn.getAttribute('data-698-emp-filter') === activeValue;
+      btn.classList.toggle('active', on);
+      btn.style.background = on ? '#059669' : '#fff';
+      btn.style.color = on ? '#fff' : '';
+      btn.style.borderColor = on ? '#059669' : '#cbd5e1';
+      btn.style.fontWeight = on ? '700' : '';
+    });
+  }
+
+  function mount698EmpFilterBar() {
+    var q = '';
+    try {
+      q = String(new URL(location.href).searchParams.get('query') || '').trim();
+    } catch (_eQ) {
+      q = '';
+    }
+    var current = parse698EmpFilterFromQuery(q);
+    if (current === null) current = get698EmpFilterIntent(q);
+
+    var existing = document.getElementById(FILTER_WRAP_ID);
+    if (existing) {
+      sync698EmpFilterButtons(existing, current);
+      return;
+    }
+    var space = getHeaderSpace();
+    if (!space) return;
+
+    var wrap = document.createElement('div');
+    wrap.id = FILTER_WRAP_ID;
+    wrap.style.cssText =
+      'display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 12px;padding:8px 12px;' +
+      'background:#f8fafc;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;';
+
+    var label = document.createElement('span');
+    label.style.cssText = 'font-weight:600;color:#475569;white-space:nowrap;';
+    label.textContent = '在籍:';
+    wrap.appendChild(label);
+
+    function mkBtn(text, value) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = text;
+      b.setAttribute('data-698-emp-filter', value);
+      b.style.cssText =
+        'padding:6px 14px;font-size:13px;border:1px solid #cbd5e1;border-radius:999px;background:#fff;cursor:pointer;';
+      b.addEventListener('click', function () {
+        sync698EmpFilterButtons(wrap, value);
+        navigate698IndexQuery(value);
+      });
+      return b;
+    }
+
+    wrap.appendChild(mkBtn('在籍', 'active'));
+    wrap.appendChild(mkBtn('退職', 'retired'));
+    wrap.appendChild(mkBtn('すべて', 'all'));
+    sync698EmpFilterButtons(wrap, current);
+
+    var banner = document.getElementById(BANNER_ID);
+    if (banner && banner.parentNode === space) {
+      if (banner.nextSibling) {
+        space.insertBefore(wrap, banner.nextSibling);
+      } else {
+        space.appendChild(wrap);
+      }
+    } else if (space.firstChild) {
+      space.insertBefore(wrap, space.firstChild);
+    } else {
+      space.appendChild(wrap);
+    }
+  }
+
+  function ensure698IndexSortLike595() {
+    return ensure698IndexDefaultView();
   }
 
   function getAllRecords(appId, fields, filterQuery) {
@@ -625,10 +780,12 @@
     fetchCommonSyncMeta()
       .then(function (meta) {
         mountBanner(meta, false);
+        mount698EmpFilterBar();
       })
       .catch(function (e) {
         console.warn('[bi-698 sync banner]', e);
         mountBanner(null, false);
+        mount698EmpFilterBar();
       });
     return event;
   });

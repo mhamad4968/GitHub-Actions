@@ -65,6 +65,7 @@
 | 月次確認 | 698 バナーが **成功（緑）/ 要確認（黄）/ 失敗（赤）** を正しく示すこと |
 | 突合 | **595.$id → 698.$id**（初回 seed 同一）。$id 不一致時は **氏名** でフォールバック PUT。誤 POST 重複は削除 |
 | 一覧並び | **595 と同一** — `source595_id`（595 レコード番号）昇順。698 一覧 customize が既定適用 |
+| 在籍フィルタ | **在籍 / 退職 / すべて** pill（595 同型）。**通常＝在籍**（退職非表示）。BUILD `2026-07-04-bi-employee-index-emp-filter` rev19 |
 | 差分警告 | `sync595_meta.warn` — 突合不能レコード・**26h 超 stale** |
 
 フィールド追加: `npm run business-improvement:add-sync595-meta` / `npm run business-improvement:add-employee-source595-id`

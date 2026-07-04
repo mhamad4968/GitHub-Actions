@@ -3763,4 +3763,62 @@ npm run cio:morning:ready
 
 **触らない**: 688 / 677–679 / SKYSEA · 736 担当説明（保留）
 
+
+**次の1手**: **夜セッション** — [App 736](https://jbis-kintone.cybozu.com/k/736/) 残件 + 一部機能追加の**意見交換から**（浜田指示）。再開時 `npm run session:bootstrap`
+
+**Git**: **`02c0662`** = `origin/main` — push 済
+
+**GO待ち**: 夜の意見交換後に確定
+
+---
+
+### 2026-07-04 20:19 JST — **736 Phase 0c 行メニュー 受け入れ GO**
+
+**要約**: 浜田目視 OK — 全表 ⋮ メニュー表示。受け入れ中に修正: CSS overflow（rev164）→ 小計行⋮非表示（rev165）→ sticky（rev166–167）→ **fixed popover**（rev168 `2026-07-04-736-row-menu-fixed-pop`）。
+
+**次の1手**: **Phase 1 相談** — 🔍マスタ検索 / 行並び替え / テキスト行（優先順・スコープ）。
+
+**Git**: working tree 未コミット（desktop.ui/js rev164–168）· main ahead 3 / behind 1 — push 未
+
+**触らない**: 688 / 677–679 / SKYSEA · 736 担当説明
+
+
+**GO待ち**: 夜の意見交換後に確定
+
+---
+
+### 2026-07-04 20:45 JST — **736 Phase 1 段階スケジュール GO・本日終了**
+
+**浜田 GO（Phase 1 着手順）**:
+- **7/11** — A: 🔍 マスタ検索（仕様①から）
+- **7/18** — B: テキスト行（仕様①から）
+- **7/25** — C: 行並び替え
+- **〜7/11** — Phase 0c 本番 rev168 **様子見**（追加 deploy なし）
+
+**機能たたき台（AI 整理・浜田承認）**: ⋮◎済 · 上下追加◎済 · テキスト行△7/18 · マスタ検索△7/11 · 並び替え△7/25
+
+**未決**: Step2-3 差分サマリー印刷等 — 別途優先決定要
+
+**次の1手**: **7/11** bootstrap → マスタ検索 Phase 1a 仕様 → GO 後 implement
+
+**Git**: working tree 未コミット（736 rev164–168）· ahead 3 / behind 1
+
+**触らない**: 688 / 677–679 / SKYSEA · 736 担当説明
+
+---
+
+### 2026-07-04 21:15 JST — **698 在籍フィルタ + 700 後段評価折りたたみ + 736 rev168 仕様・commit**
+
+**要約**:
+- **698** rev19 — 一覧 **在籍/退職/すべて** pill（通常=在籍）。BUILD `2026-07-04-bi-employee-index-emp-filter`
+- **700** rev146 — **Q-UX-12** 支店長/本社＝合計・自動ランク・最終決定優先、評価項目 `<details>` 初期閉。浜田目視 OK。BUILD `2026-07-04-bi-proposal-late-eval-collapse`
+- **736** rev164–168 — Phase 0c 受け入れ GO 済（fixed popover 等）。Phase 1 段階 GO（7/11/7/18/7/25）
+- 仕様: `2026-05-23-business-improvement-proposal-spec.md` Q-UX-12 / §4.2 698 フィルタ / runbook R-BI-02
+
+**次の1手**: **月曜 社内アプリレビュー（3回目）** — 698/700 フィードバック → 相談
+
+**Git**: 本ターン commit + push
+
+**触らない**: 688 / 677–679 / SKYSEA · 736 担当説明
+
 ---

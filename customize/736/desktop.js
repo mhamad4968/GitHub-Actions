@@ -1,10 +1,10 @@
 /**
- * 実行予算書作成支援ツール ver.01 — BUILD 2026-07-04-736-spec-row-menu-v0c
+ * 実行予算書作成支援ツール ver.01 — BUILD 2026-07-04-736-row-menu-fixed-pop
  * Master app: 735
  */
 (function () {
   'use strict';
-  const BUILD = '2026-07-04-736-spec-row-menu-v0c';
+  const BUILD = '2026-07-04-736-row-menu-fixed-pop';
   const APP_MASTER = 735;
   const DEFAULT_COST_TEMPLATE = [
   { "cost_work_type_code": "10100", "cost_work_type": "材料費", "cost_category_code": "", "cost_category": "塗料", "cost_row_kind": "link", "cost_group_key": "material", "cost_tax_rate": 0.1, "cost_unit": "－", "detail_marker": "②", "cost_basis_note": "詳細表にて内訳を記載…②" },
@@ -2131,6 +2131,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
       '.jy-section-head-actions .jy-btn{margin:0}' +
       '.jy-btn-sm{padding:4px 10px;font-size:12px;line-height:1.2}' +
       '.jy-excel-wrap{overflow:auto;border:1px solid #e2e8f0;margin-bottom:12px;background:#fff;border-radius:6px}' +
+      '.jy-excel-wrap:has(.jy-table-mat){scroll-padding-inline-end:36px}' +
       '.jy-table{border-collapse:collapse;width:100%;font-size:12px}' +
       '.jy-table th,.jy-table td{border:1px solid #e2e8f0;padding:4px 6px;vertical-align:middle}' +
       '.jy-table th{background:#f1f5f9;text-align:center;font-weight:600;white-space:nowrap;color:#475569}' +
@@ -2145,9 +2146,18 @@ function pushTotalEntry(list, field, label, info, bucket) {
       '.jy-summary-table-spec .jy-col-del{width:36px}' +
       '.jy-row-menu{position:relative;display:inline-block;vertical-align:middle}' +
       '.jy-summary-table-spec td.jy-row-actions{overflow:visible;position:relative;vertical-align:middle;text-align:center}' +
+      '.jy-summary-table-cost td.jy-row-actions,.jy-table-mat td.jy-row-actions,.jy-table td.jy-row-actions{overflow:visible;vertical-align:middle;text-align:center}' +
+      '.jy-table-mat thead th:last-child,.jy-table-mat td.jy-row-actions{position:sticky;right:0;z-index:2;background:#fff;box-shadow:-3px 0 6px rgba(15,23,42,.06)}' +
+      '.jy-table-mat thead th:last-child{z-index:4;background:#f1f5f9}' +
+      '.jy-summary-table-cost thead th:last-child,.jy-summary-table-cost td.jy-row-actions{position:sticky;right:0;z-index:2;background:#fff;box-shadow:-3px 0 6px rgba(15,23,42,.06)}' +
+      '.jy-summary-table-cost thead th:last-child{z-index:4;background:#f1f5f9}' +
+      '.jy-summary-table-cost tr.jy-link td.jy-row-actions{background:#ecfdf5}' +
+      '.jy-summary-table-cost tr.jy-subtotal td.jy-row-actions{background:#f0f7ff}' +
+      '.jy-summary-table-cost tr.jy-row-menu-open td.jy-row-actions,.jy-table-mat tr.jy-row-menu-open td.jy-row-actions{z-index:31}' +
       '.jy-table tr.jy-row-menu-open{position:relative;z-index:30}' +
       '.jy-row-menu-trigger{min-width:30px;padding:2px 8px;text-align:center;font-weight:700;line-height:1.3;cursor:pointer}' +
       '.jy-row-menu-pop{position:absolute;right:0;top:calc(100% + 2px);z-index:200;min-width:148px;padding:4px 0;background:#fff;border:1px solid #cbd5e1;border-radius:8px;box-shadow:0 4px 14px rgba(15,23,42,.14)}' +
+      '.jy-row-menu-pop.jy-row-menu-pop-fixed{position:fixed;right:auto;margin:0}' +
       '.jy-row-menu-pop[hidden]{display:none!important}' +
       '.jy-row-menu-pop button{display:block;width:100%;text-align:left;padding:8px 12px;border:none;background:transparent;font-size:12px;cursor:pointer;color:#334155}' +
       '.jy-row-menu-pop button:hover{background:#f1f5f9}' +
@@ -2166,7 +2176,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
       '.jy-table-mat .jy-col-amt{width:88px}' +
       '.jy-table-mat .jy-col-basis{width:11%}' +
       '.jy-table-mat .jy-col-del{width:32px}' +
-      '.jy-table-mat td{overflow:hidden}' +
+      '.jy-table-mat td:not(.jy-row-actions){overflow:hidden}' +
       '.jy-table-mat .jy-in{min-width:0}' +
       '.jy-table-mat select.jy-in{font-size:11px;padding:1px 2px}' +
       '.jy-text-cell{text-overflow:ellipsis}' +
@@ -3535,12 +3545,37 @@ function pushTotalEntry(list, field, label, info, bucket) {
       wrap.classList.remove('jy-row-menu-open');
       const panel = wrap.querySelector('.jy-row-menu-pop');
       const btn = wrap.querySelector('.jy-row-menu-trigger');
-      if (panel) panel.hidden = true;
+      if (panel) {
+        panel.hidden = true;
+        panel.classList.remove('jy-row-menu-pop-fixed');
+        panel.style.position = '';
+        panel.style.left = '';
+        panel.style.top = '';
+        panel.style.right = '';
+        panel.style.zIndex = '';
+      }
       if (btn) btn.setAttribute('aria-expanded', 'false');
     });
     (root || document).querySelectorAll('tr.jy-row-menu-open').forEach(function (tr) {
       tr.classList.remove('jy-row-menu-open');
     });
+  }
+
+  function positionRowMenuPop(btn, panel) {
+    const rect = btn.getBoundingClientRect();
+    const popW = Math.max(panel.offsetWidth || 0, 148);
+    const popH = panel.offsetHeight || 120;
+    let left = rect.right - popW;
+    if (left < 8) left = Math.max(8, rect.left);
+    if (left + popW > window.innerWidth - 8) left = window.innerWidth - popW - 8;
+    let top = rect.bottom + 2;
+    if (top + popH > window.innerHeight - 8) top = Math.max(8, rect.top - popH - 2);
+    panel.classList.add('jy-row-menu-pop-fixed');
+    panel.style.position = 'fixed';
+    panel.style.left = left + 'px';
+    panel.style.top = top + 'px';
+    panel.style.right = 'auto';
+    panel.style.zIndex = '10000';
   }
 
   function closeSpecRowMenus(root) {
@@ -3647,7 +3682,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
         html += '<td class="jy-ro jy-subtotal-note">' + esc(subtotalBasisNote(r)) + '</td>';
         html += '<td class="jy-ro"></td><td class="jy-num jy-ro">' + fmtPct(r.cost_ratio) + '</td>';
         if (!readOnly) {
-          html += '<td class="jy-row-actions">' + renderRowMenu('cost', i, { showBefore: false, showDelete: false }) + '</td>';
+          html += '<td class="jy-row-actions"></td>';
         }
       } else {
       html += '<td><input class="jy-in jy-code" list="jy-wt-code-list" data-cost-wcd="' + i + '" value="' + esc(wcdDisplay) + '"' + costRepeatCollapsedAttr(state.cost_lines, i, 'wcd') + (r.cost_work_type_code ? ' title="' + esc(r.cost_work_type_code) + '"' : '') + (ro ? ' disabled' : '') + '></td>';
@@ -5016,6 +5051,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
         closeRowMenus(root);
         if (panel && !wasOpen) {
           panel.hidden = false;
+          positionRowMenuPop(btn, panel);
           btn.setAttribute('aria-expanded', 'true');
           if (wrap) wrap.classList.add('jy-row-menu-open');
           if (tr) tr.classList.add('jy-row-menu-open');
@@ -5029,6 +5065,12 @@ function pushTotalEntry(list, field, label, info, bucket) {
         if (!rootEl || e.target.closest('.jy-row-menu')) return;
         closeRowMenus(rootEl);
       });
+    }
+    if (!root.dataset.jyRowMenuScrollClose) {
+      root.dataset.jyRowMenuScrollClose = '1';
+      root.addEventListener('scroll', function (e) {
+        if (e.target && e.target.closest && e.target.closest('.jy-excel-wrap')) closeRowMenus(root);
+      }, true);
     }
     root.querySelectorAll('.jy-row-menu-pop').forEach(function (panel) {
       panel.addEventListener('click', function (e) { e.stopPropagation(); });

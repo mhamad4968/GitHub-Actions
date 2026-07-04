@@ -2,7 +2,8 @@
   'use strict';
 
   /** 業務改善 ver.02 — 提案申請 申請UI（Phase 4b）+ 評価UI（Phase 5） */
-  var BUILD = '2026-07-04-bi-proposal-hr-dept-override';
+  var BUILD = '2026-07-04-bi-proposal-late-eval-collapse';
+  var STORAGE_KEY_EVAL_DETAIL = 'bi700-eval-detail-open';
   var WF_ACTION_APPLY = 'Apply';
   var WF_ACTION_REAPPLY = 'reapply';
   var BI = {
@@ -2834,6 +2835,62 @@
     });
   }
 
+  function evalLatePhaseCollapsedItems() {
+    return evUi.role === 'branch' || evUi.role === 'hr';
+  }
+
+  function evalDetailSectionOpen() {
+    try {
+      return sessionStorage.getItem(STORAGE_KEY_EVAL_DETAIL) === '1';
+    } catch (_eOpen) {
+      return false;
+    }
+  }
+
+  function evalCommentFieldHtml(rec, commentVal) {
+    return '<label style="display:block;margin:12px 0 0">評価コメント（任意）<br><textarea data-bi-eval-comment rows="3" style="width:100%;max-width:100%;box-sizing:border-box;display:block;padding:8px;border:1px solid #d6b896;border-radius:8px"' +
+      evalRoAttr(rec) + '>' + esc(commentVal) + '</textarea></label>';
+  }
+
+  function evalDelegateFieldHtml(rec, locked) {
+    if (evUi.role === 'manager' && !locked) {
+      return '<label style="display:block;margin:12px 0 0;padding:10px;background:#fff7ed;border-radius:8px">' +
+        '<input type="checkbox" data-bi-branch-delegate' + (branchDelegateOn(rec) ? ' checked' : '') +
+        '> 支店長へ判断を委ねる（支店長判断）</label>';
+    }
+    if (evUi.role === 'manager' && locked && branchDelegateOn(rec)) {
+      return '<p style="margin:12px 0 0;padding:10px;background:#fff7ed;border-radius:8px;color:#57534e">支店長へ判断を委ねる（支店長判断）: あり</p>';
+    }
+    return '';
+  }
+
+  function evalSummaryBlockHtml(rec, calc, type, auto, breakdown, pointsLabel, needsFinalRank, locked) {
+    return '<div style="margin-top:14px;padding:12px;background:#fef3c7;border-radius:8px">' +
+      '<div style="font-size:0.9em;color:#57534e;margin-bottom:6px">内訳: ' + esc(breakdown) + '</div>' +
+      '<div>合計点: <strong>' + esc(calc.total) + '点</strong>' +
+      (type === 'アイデア提案' ? '（満点10点）' : '（満点20点）') + '</div>' +
+      '<div>表彰ランク（自動）: <strong>' + esc(auto || '—') + '</strong></div>' +
+      (evUi.role === 'manager' && !locked && !branchDelegateOn(rec) && (auto === 'B' || auto === 'A') ?
+        managerForwardHintHtml(rec, auto) : '') +
+      (evUi.role === 'branch' && !locked && auto === 'A' ? branchForwardHintHtml() : '') +
+      (needsFinalRank && !locked ? rankReevalHintHtml(rec, auto) : '') +
+      '<div>付与ポイント: <strong>' + esc(pointsLabel) + '</strong></div></div>';
+  }
+
+  function evalItemDetailAccordionHtml(rec, cards, commentHtml) {
+    var open = evalDetailSectionOpen();
+    var fs = fontPx();
+    var summaryLabel = val(rec, F.type) === 'アイデア提案'
+      ? '評価内容を確認する（総合的審査・前段階の入力）'
+      : '評価内容を確認する（効果・工夫度・努力度・前段階の入力）';
+    return '<details data-bi-eval-detail' + (open ? ' open' : '') +
+      ' style="margin:14px 0 0;border:1px solid #cbd5e1;border-radius:10px;background:#f8fafc;overflow:hidden">' +
+      '<summary style="padding:12px 14px;cursor:pointer;font-weight:600;color:#475569;font-size:' + fs +
+      ';list-style:none">▶ ' + esc(summaryLabel) +
+      '<span style="font-weight:400;color:#64748b;font-size:0.88em;margin-left:6px">— 必要なときだけ開いてください</span></summary>' +
+      '<div style="padding:0 14px 14px;border-top:1px dashed #cbd5e1">' + cards + commentHtml + '</div></details>';
+  }
+
   function evalIntroText(rec) {
     var type = val(rec, F.type);
     var typeNote = type === 'アイデア提案'
@@ -2843,10 +2900,10 @@
       return '承認が完了した案件です。提案内容・評価内容ともに変更できません。';
     }
     if (evUi.role === 'branch') {
-      return '部長評価済みです。支店長評価を行います。評価内容を確認し、必要なら各項目を修正できます（修正後は一時保存）。' + typeNote;
+      return '部長評価済みです。下の合計点と表彰ランク（自動）を確認し、表彰ランク（最終）を選んで承認してください。各項目の内訳は「評価内容を確認する」から必要なときだけ開けます。' + typeNote;
     }
     if (evUi.role === 'hr') {
-      return '支店長評価済みです。本社評価を行います。前段階の評価を確認し、必要なら各項目を修正できます（修正後は一時保存）。' + typeNote;
+      return '支店長評価済みです。表彰ランク（最終）を確定して承認してください。各項目の内訳は「評価内容を確認する」から必要なときだけ開けます。' + typeNote;
     }
     return '部長評価を行います。各項目の審査基準を確認し、ドロップダウンから該当段階を選択してください。' + typeNote;
   }
@@ -2918,6 +2975,21 @@
     var pointsLabel = calc.points
       ? calc.points
       : (needsFinalRank ? '（表彰ランク（最終）を選択すると確定）' : '—');
+    var collapsedLate = evalLatePhaseCollapsedItems();
+    var commentHtml = evalCommentFieldHtml(rec, commentVal);
+    var delegateHtml = evalDelegateFieldHtml(rec, locked);
+    var summaryHtml = evalSummaryBlockHtml(rec, calc, type, auto, breakdown, pointsLabel, needsFinalRank, locked);
+    var rankFinalPart = (needsFinalRank && !locked ? rankFinalInputHtml(rec, auto, fin) : '') +
+      (locked && fin ? rankFinalDisplayHtml(fin) : '');
+    var footerHtml = evalFooterActionsHtml(rec);
+    var itemDetailsHtml = collapsedLate
+      ? evalItemDetailAccordionHtml(rec, cards, commentHtml)
+      : (cards + commentHtml);
+    var introHtml = '<p style="margin:0 0 12px;padding:10px 12px;background:#fff7ed;border-radius:8px;color:#57534e;font-size:0.9em;line-height:1.5">' +
+      esc(evalIntroText(rec)) + '</p>';
+    var evalPanelBody = collapsedLate
+      ? introHtml + summaryHtml + rankFinalPart + footerHtml + itemDetailsHtml
+      : introHtml + itemDetailsHtml + delegateHtml + summaryHtml + rankFinalPart + footerHtml;
 
     evUi.root.style.fontSize = fontPx();
     evUi.root.innerHTML =
@@ -2930,27 +3002,7 @@
       '<div style="display:' + (wide ? 'grid' : 'block') + ';grid-template-columns:' + (wide ? '1fr 1fr' : 'none') + ';gap:16px">' +
       '<div>' + readOnlyBlock(rec) + '</div>' +
       '<div><div style="background:#fff;border:1px solid #d6b896;border-radius:10px;padding:14px;min-width:0">' +
-      '<p style="margin:0 0 12px;padding:10px 12px;background:#fff7ed;border-radius:8px;color:#57534e;font-size:0.9em;line-height:1.5">' +
-      esc(evalIntroText(rec)) + '</p>' +
-      cards +
-      '<label style="display:block;margin:12px 0 0">評価コメント（任意）<br><textarea data-bi-eval-comment rows="3" style="width:100%;max-width:100%;box-sizing:border-box;display:block;padding:8px;border:1px solid #d6b896;border-radius:8px"' +
-      evalRoAttr(rec) + '>' + esc(commentVal) + '</textarea></label>' +
-      (evUi.role === 'manager' && !locked ? '<label style="display:block;margin:12px 0 0;padding:10px;background:#fff7ed;border-radius:8px">' +
-        '<input type="checkbox" data-bi-branch-delegate' + (branchDelegateOn(rec) ? ' checked' : '') + '> 支店長へ判断を委ねる（支店長判断）</label>' :
-        (evUi.role === 'manager' && locked && branchDelegateOn(rec) ? '<p style="margin:12px 0 0;padding:10px;background:#fff7ed;border-radius:8px;color:#57534e">支店長へ判断を委ねる（支店長判断）: あり</p>' : '')) +
-      '<div style="margin-top:14px;padding:12px;background:#fef3c7;border-radius:8px">' +
-      '<div style="font-size:0.9em;color:#57534e;margin-bottom:6px">内訳: ' + esc(breakdown) + '</div>' +
-      '<div>合計点: <strong>' + esc(calc.total) + '点</strong>' +
-      (type === 'アイデア提案' ? '（満点10点）' : '（満点20点）') + '</div>' +
-      '<div>表彰ランク（自動）: <strong>' + esc(auto || '—') + '</strong></div>' +
-      (evUi.role === 'manager' && !locked && !branchDelegateOn(rec) && (auto === 'B' || auto === 'A') ?
-        managerForwardHintHtml(rec, auto) : '') +
-      (evUi.role === 'branch' && !locked && auto === 'A' ? branchForwardHintHtml() : '') +
-      (needsFinalRank && !locked ? rankReevalHintHtml(rec, auto) : '') +
-      '<div>付与ポイント: <strong>' + esc(pointsLabel) + '</strong></div></div>' +
-      (needsFinalRank && !locked ? rankFinalInputHtml(rec, auto, fin) : '') +
-      (locked && fin ? rankFinalDisplayHtml(fin) : '') +
-      evalFooterActionsHtml(rec) +
+      evalPanelBody +
       '</div></div></div>' +
       '<div data-bi-wf-route-wrap style="margin-top:14px;padding:12px 14px;background:#fff;border:1px solid #d6b896;border-radius:10px;display:flex;flex-wrap:wrap;gap:10px;align-items:center">' +
       wfRouteHtml(rec, 'eval') +
@@ -2976,6 +3028,16 @@
         renderEval();
       };
     });
+    var det = evUi.root.querySelector('[data-bi-eval-detail]');
+    if (det) {
+      det.addEventListener('toggle', function () {
+        try {
+          sessionStorage.setItem(STORAGE_KEY_EVAL_DETAIL, det.open ? '1' : '0');
+        } catch (_eDet) {
+          /* noop */
+        }
+      });
+    }
     if (evUi.readOnly || evalIsDoneStatus(getEvalWorkingRec())) return;
     evUi.root.querySelectorAll('[data-bi-eval]').forEach(function (sel) {
       sel.onchange = function () {
