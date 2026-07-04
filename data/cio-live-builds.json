@@ -147,10 +147,10 @@
     },
     "700": {
       "build": "2026-07-04-bi-proposal-hr-dept-override",
-      "fileKey": "19284fdd-716f-49f7-94eb-4a872831b6ff",
-      "revision": "144",
+      "fileKey": "afb8f889-fea0-4c44-b9d3-907b7ccd0afc",
+      "revision": "145",
       "relPath": "customize/business-improvement-proposal/desktop.js",
-      "deployedAt": "2026-07-04T01:36:30.789Z",
+      "deployedAt": "2026-07-04T02:11:22.199Z",
       "note": null
     },
     "701": {
