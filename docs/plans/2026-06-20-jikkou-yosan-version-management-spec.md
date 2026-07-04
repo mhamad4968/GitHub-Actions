@@ -182,6 +182,8 @@ v1 一覧と同様 **更新日（`updated_at`）降順** を初期値。ヘッ�
 | **画面順** | 固定行 → 工事基本情報 → 実行予算書バナー → 表 |
 | **詳細** | [`2026-07-04-jikkou-yosan-diff-print-summary-v2d.md`](2026-07-04-jikkou-yosan-diff-print-summary-v2d.md) §1 UI |
 
+**先祖返り防止（B-3 — 2026-07-04）**: `scripts/data/jikkou-yosan-ux-invariants.json` で UI 不変条件を固定。`npm run jikkou-yosan:ux-gate` / `jikkou-yosan:ui-js-sync-gate`（push）、`jikkou-yosan:deploy-gate`（deploy 前 build 内包）。Runbook: `docs/runbooks/jikkou-yosan-ux-regression-gate.md`。
+
 ### 差分表示の用語（2026-06-23 確定 — v2c 実装と一致）
 
 | 用語 | 意味 | 画面表示 |

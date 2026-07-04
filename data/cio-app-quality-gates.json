@@ -9,7 +9,8 @@
     "label": "push 前（pre-push hook 同等）",
     "steps": [
       { "type": "npm", "script": "verify:constitution-handoff" },
-      { "type": "npm", "script": "lint:customize" }
+      { "type": "npm", "script": "lint:customize" },
+      { "type": "npm", "script": "jikkou-yosan:pre-push-gate" }
     ]
   },
   "apps": {
@@ -18,7 +19,7 @@
       "deployGate": [
         { "type": "npm", "script": "jikkou-yosan:deploy-gate" }
       ],
-      "notes": "build 後 desktop.js ESLint — isSubtotalRow 等 bundle 重複に注意"
+      "notes": "build → ux-gate → ui/js sync → calc → rowkey → lint。desktop.js 直編集禁止"
     },
     "687": {
       "label": "工事稼働日数",

@@ -35,7 +35,9 @@
 npm run jikkou-yosan:deploy-gate
 ```
 
-deploy-gate は本 runbook の存在を確認し、未実施なら WARN を出す。
+deploy-gate は **build → ux-gate → ui/js sync → calc-gate → rowkey-gate → lint** を実行し、本 runbook の存在を確認する。
+
+**UX 先祖返り**（sticky・per-block 削除行・折りたたみ初期状態）: `docs/runbooks/jikkou-yosan-ux-regression-gate.md` の U1〜U5 を追加実施。
 
 ---
 

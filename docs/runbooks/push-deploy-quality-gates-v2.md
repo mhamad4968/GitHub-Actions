@@ -66,7 +66,7 @@ flowchart LR
 
 | appId | deployGate | 備考 |
 |-------|------------|------|
-| **736** | `jikkou-yosan:deploy-gate` | build + calc-gate + lint |
+| **736** | `jikkou-yosan:deploy-gate` | build + **ux-gate** + ui/js sync + calc-gate + rowkey-gate + lint |
 | **687** | `workdays-deploy-gate.mjs 687` | UI verify + calc |
 | **688** | `workdays-deploy-gate.mjs 688` | 同上 |
 | **その他** | 未定義 | preflight + deploy guard のみ（エラーにならない） |

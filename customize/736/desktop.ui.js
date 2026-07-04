@@ -2322,9 +2322,11 @@
   function renderPrintDiffSummaryPage() {
     const summary = buildDiffSummary(diffResult);
     const level = printSummaryLevel === 'detail' ? 'detail' : 'brief';
+    const levelLabel = level === 'detail' ? '詳細' : '簡潔';
     const modeLabel = diffCompareMode === 'original' ? '当初版' : '直前版';
     let html = '<div class="jy-pr-diff-summary-page">';
     html += '<p class="jy-pr-diff-summary-sheet-title">（差　分　サ　マ　リ　ー）</p>';
+    html += '<p class="jy-pr-diff-summary-level">表示モード: ' + esc(levelLabel) + '</p>';
     if (diffBaseMeta) {
       html += '<p class="jy-pr-diff-summary-compare">比較: 版' + esc(String(diffBaseMeta.version_seq)) + ' ' + esc(diffBaseMeta.version_type || '') + '（' + esc(modeLabel) + '）</p>';
     }
@@ -2970,6 +2972,7 @@
       '.jy-pr-diff-footer{margin-top:4px;font-size:9pt;color:#475569;text-align:right;line-height:1.3}' +
       '.jy-pr-diff-summary-page{page-break-after:always;break-after:page;margin-bottom:4mm}' +
       '.jy-pr-diff-summary-sheet-title{font-size:12pt;font-weight:700;text-align:center;margin:0 0 4px;letter-spacing:.12em}' +
+      '.jy-pr-diff-summary-level{font-size:9.5pt;font-weight:700;color:#92400e;text-align:center;margin:0 0 4px;letter-spacing:.06em}' +
       '.jy-pr-diff-summary-compare{font-size:9pt;color:#475569;text-align:center;margin:0 0 8px}' +
       '.jy-pr-diff-summary-body{font-size:9.5pt;line-height:1.35}' +
       '.jy-pr-diff-summary-body .jy-diff-summary-totals{font-weight:700;margin:6px 0 4px;color:#334155}' +

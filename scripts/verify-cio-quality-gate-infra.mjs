@@ -13,6 +13,11 @@ const required = [
   'data/cio-app-quality-gates.json',
   'scripts/cio-quality-gate.mjs',
   'scripts/jikkou-yosan-deploy-gate.mjs',
+  'scripts/jikkou-yosan-ux-gate.mjs',
+  'scripts/jikkou-yosan-ui-js-sync-gate.mjs',
+  'scripts/jikkou-yosan-pre-push-gate.mjs',
+  'scripts/data/jikkou-yosan-ux-invariants.json',
+  'docs/runbooks/jikkou-yosan-ux-regression-gate.md',
   'scripts/lib/cio-eslint-report-summary.mjs',
 ];
 

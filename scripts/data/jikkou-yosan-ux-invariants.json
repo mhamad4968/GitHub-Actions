@@ -1,0 +1,134 @@
+{
+  "version": "2026-07-04",
+  "label": "依頼者UX v2 + v2d 差分印刷（BUILD 2026-07-04-736-diff-bar-prominent）",
+  "spec": "docs/plans/2026-07-04-jikkou-yosan-diff-print-summary-v2d.md",
+  "files": {
+    "ui": "customize/736/desktop.ui.js",
+    "built": "customize/736/desktop.js"
+  },
+  "must": [
+    {
+      "id": "header-default-closed",
+      "needle": "let headerOpen = false",
+      "note": "工事基本情報はデフォルト閉"
+    },
+    {
+      "id": "diff-deleted-dynamic",
+      "needle": "let diffDeletedExpanded = {}",
+      "note": "削除行 scopeKey は動的（per-block）"
+    },
+    {
+      "id": "ensure-diff-deleted-key",
+      "needle": "function ensureDiffDeletedKey(scopeKey)",
+      "note": "削除行折りたたみキー動的化"
+    },
+    {
+      "id": "sticky-top-toolbar",
+      "needle": "function renderFormActionBar()",
+      "note": "固定行 renderFormActionBar"
+    },
+    {
+      "id": "sticky-top-class",
+      "needle": "<div class=\"jy-sticky-top\">",
+      "note": "操作系を .jy-sticky-top に集約"
+    },
+    {
+      "id": "print-in-action-bar",
+      "needle": "function renderActionBarPrintTools(printBtnId)",
+      "note": "印刷 UI は action bar（文字サイズ横）"
+    },
+    {
+      "id": "print-tools-in-sticky",
+      "needle": "html += renderActionBarPrintTools(printBtnId);",
+      "note": "印刷ツールが sticky action bar 内"
+    },
+    {
+      "id": "print-summary-level-bar",
+      "needle": "function renderPrintSummaryLevelBar()",
+      "note": "差分サマリー簡潔/詳細（黄帯）"
+    },
+    {
+      "id": "diff-bar-prominent",
+      "needle": "class=\"jy-diff-mode-opt\"",
+      "note": "差分表示バー（青帯・ボタン風）"
+    },
+    {
+      "id": "print-summary-prominent",
+      "needle": "class=\"jy-print-summary-opt\"",
+      "note": "差分サマリー粒度（黄帯・ボタン風）"
+    },
+    {
+      "id": "banner-after-header",
+      "needle": "html += renderHeader();\n    if (activeTab === 'summary') {\n      html += renderSheetBannerRow();",
+      "note": "バナーは工事基本情報の下（スクロール領域）"
+    },
+    {
+      "id": "sheet-banner-fn",
+      "needle": "function renderSheetBannerRow()",
+      "note": "実行予算書バナー行"
+    },
+    {
+      "id": "mat-removed-paint",
+      "needle": "材料明細（塗料）",
+      "note": "材料削除行 per-block（塗料）"
+    },
+    {
+      "id": "mat-removed-other",
+      "needle": "材料明細（その他）",
+      "note": "材料削除行 per-block（その他）"
+    },
+    {
+      "id": "panel-open-hint-header",
+      "needle": "確認したい場合はクリックして開いてください",
+      "note": "工事基本情報の茶色案内"
+    },
+    {
+      "id": "panel-open-hint-diff",
+      "needle": "※確認時にはクリックして開いてください",
+      "note": "差分一覧の茶色案内"
+    },
+    {
+      "id": "diff-summary-default-closed",
+      "needle": "<details class=\"jy-diff-summary\"><summary>",
+      "note": "差分一覧 details（open 属性なし＝デフォルト閉）"
+    },
+    {
+      "id": "print-summary-level-label",
+      "needle": "jy-pr-diff-summary-level",
+      "note": "印刷サマリーに簡潔/詳細モード表示"
+    },
+    {
+      "id": "print-diff-summary-page",
+      "needle": "function renderPrintDiffSummaryPage",
+      "note": "v2d 差分付き印刷先頭サマリーページ"
+    }
+  ],
+  "mustNot": [
+    {
+      "id": "static-diff-deleted-map",
+      "needle": "let diffDeletedExpanded = { spec:",
+      "note": "旧: 固定 scope マップ（per-block 化前）"
+    },
+    {
+      "id": "header-default-open",
+      "needle": "let headerOpen = true",
+      "note": "工事基本情報がデフォルト開"
+    },
+    {
+      "id": "bulk-mat-removed",
+      "needle": "renderDiffRemovedBlock('mat', '材料明細',",
+      "note": "旧: 材料削除行一括（per-block 廃止）"
+    },
+    {
+      "id": "diff-summary-always-open",
+      "needle": "<details class=\"jy-diff-summary\" open>",
+      "note": "差分一覧がデフォルト開"
+    }
+  ],
+  "syncAnchors": [
+    "function ensureDiffDeletedKey(scopeKey)",
+    "html += renderActionBarPrintTools(printBtnId);",
+    "材料明細（塗料）",
+    "jy-panel-open-hint jy-panel-open-hint-inline"
+  ]
+}

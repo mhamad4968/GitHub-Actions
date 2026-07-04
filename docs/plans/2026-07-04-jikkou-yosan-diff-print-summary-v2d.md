@@ -80,7 +80,7 @@
 5. **依頼者UX v2** — 印刷/差分操作が固定行に残る・削除行が各ブロック直下・折りたたみデフォルト閉
 6. deploy 前 `docs/runbooks/jikkou-yosan-diff-smoke.md`
 
-**ステータス（2026-07-04）**: 実装・live deploy 済（rev **144–153**）。浜田受け入れ確認は継続。
+**ステータス（2026-07-04）**: 実装・live deploy 済（rev **155** `2026-07-04-736-print-summary-level-label`）。**浜田受け入れ 1/6〜6/6 OK**。
 
 ---
 
