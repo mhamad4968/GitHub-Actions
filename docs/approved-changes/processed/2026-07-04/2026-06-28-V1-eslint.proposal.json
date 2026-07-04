@@ -9,5 +9,8 @@
   "command": "npm update eslint",
   "manual_only": false,
   "created_at": "2026-06-26T21:01:43.302Z",
-  "note": "eslint 10.4.0 → 10.6.0 (minor)"
+  "note": "eslint 10.4.0 → 10.6.0 (minor)",
+  "processed_at": "2026-07-04",
+  "processed_status": "applied",
+  "applied_note": "lock 10.6.0 確認済 — package.json ^10.6.0 同期"
 }

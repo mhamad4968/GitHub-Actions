@@ -9,5 +9,8 @@
   "command": "npm update globals",
   "manual_only": false,
   "created_at": "2026-06-22T21:01:53.988Z",
-  "note": "globals 17.6.0 → 17.7.0 (minor)"
+  "note": "globals 17.6.0 → 17.7.0 (minor)",
+  "processed_at": "2026-07-04",
+  "processed_status": "applied",
+  "applied_note": "lock 17.7.0 確認済 — package.json ^17.7.0 同期"
 }

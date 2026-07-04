@@ -9,5 +9,8 @@
   "command": "npm update @kintone/cli",
   "manual_only": false,
   "created_at": "2026-06-15T08:23:56.337Z",
-  "note": "@kintone/cli 1.19.3 → 1.20.0 (minor)"
+  "note": "@kintone/cli 1.19.3 → 1.20.0 (minor)",
+  "processed_at": "2026-07-04",
+  "processed_status": "applied",
+  "applied_note": "lock 1.20.0 確認済 — package.json ^1.20.0 同期"
 }

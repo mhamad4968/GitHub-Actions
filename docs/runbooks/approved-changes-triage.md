@@ -50,10 +50,10 @@ npm run verify:approved-changes-pending  # 将来 — 重複検知
 
 | ファイル | 判定 |
 |----------|------|
-| `2026-07-02-V1-nodemailer` | **pending 維持**（major 9.0.3 レビュー待ち） |
-| `2026-06-28-V1-eslint` | **pending 維持**（minor 10.6.0） |
-| `2026-06-24-V1-globals` | **pending 維持**（minor） |
-| `2026-06-16-V1-_kintone_cli` | **pending 維持**（minor 1.20.0） |
+| `2026-07-02-V1-nodemailer` | **pending 維持**（major 9.0.3 — 浜田 2026-07-04 保留） |
+| `2026-06-28-V1-eslint` | **processed** — applied 10.6.0 |
+| `2026-06-24-V1-globals` | **processed** — applied 17.7.0 |
+| `2026-06-16-V1-_kintone_cli` | **processed** — applied 1.20.0 |
 | `2026-06-21-V1-nodemailer` | **processed** — superseded by 2026-07-02 |
 | `2026-06-16-V2-eslint` | **processed** — superseded by 2026-06-28 |
 | `2026-06-17-R49-R54-evening` | **processed** — GO 済・実装済 |
