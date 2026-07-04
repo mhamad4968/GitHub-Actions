@@ -354,7 +354,7 @@
   }
 
   function mount698EmpFilterBar() {
-    var q = '';
+    var q;
     try {
       q = String(new URL(location.href).searchParams.get('query') || '').trim();
     } catch (_eQ) {
