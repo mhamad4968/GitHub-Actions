@@ -1,0 +1,36 @@
+{
+  "version": "2026-07-04",
+  "description": "§38-1 major/minor レビュー待ち — pending/ 正本への鏡像（triage 後）",
+  "lastTriage": "2026-07-04",
+  "items": [
+    {
+      "proposal": "docs/approved-changes/pending/2026-07-02-V1-nodemailer.proposal.json",
+      "package": "nodemailer",
+      "classification": "major",
+      "target": "9.0.3",
+      "status": "review_required",
+      "note": "破壊的変更 — 浜田 GO 前に適用禁止"
+    },
+    {
+      "proposal": "docs/approved-changes/pending/2026-06-28-V1-eslint.proposal.json",
+      "package": "eslint",
+      "classification": "minor",
+      "target": "10.6.0",
+      "status": "pending_apply",
+      "note": "§38-1 自律更新ターンで適用可"
+    },
+    {
+      "proposal": "docs/approved-changes/pending/2026-06-24-V1-globals.proposal.json",
+      "package": "globals",
+      "classification": "minor",
+      "status": "pending_apply"
+    },
+    {
+      "proposal": "docs/approved-changes/pending/2026-06-16-V1-_kintone_cli.proposal.json",
+      "package": "@kintone/cli",
+      "classification": "minor",
+      "target": "1.20.0",
+      "status": "pending_apply"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "id": "S-CLOSE-02",
+  "category": "S",
+  "status": "implemented",
+  "processed_at": "2026-07-04",
+  "note": "closure 儀式 A step4 + verify:kintone-project-close-gate 連動",
+  "target": "docs/runbooks/cio-project-closure-governance.md"
+}

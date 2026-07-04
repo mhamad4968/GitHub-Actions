@@ -1,0 +1,8 @@
+{
+  "id": "R-AITEAM-02",
+  "category": "R",
+  "status": "implemented",
+  "processed_at": "2026-07-04",
+  "note": "verify:cio-tool-routing-infra visual-diagram intent 必須検査",
+  "target": "scripts/verify-cio-tool-routing-infra.mjs"
+}

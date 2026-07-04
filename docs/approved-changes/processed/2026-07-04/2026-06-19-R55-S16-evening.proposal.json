@@ -13,5 +13,7 @@
     { "id": "S16", "title": "夕反省再生成上書き禁止", "target": "scripts/evening-reflect.mjs" },
     { "id": "D1", "title": "kintone-apps 700 フォーム rev 注釈", "target": "kintone-apps.md" },
     { "id": "C1", "title": "688 dead CSS wd688pr-foot 削除", "target": "customize/688/desktop.ui.js" }
-  ]
+  ],
+  "processed_at": "2026-07-04",
+  "processed_status": "implemented"
 }

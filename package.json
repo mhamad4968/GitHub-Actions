@@ -633,6 +633,7 @@
     "cio:morning:ready": "node scripts/cio-morning-ready.mjs",
     "cio:project:close": "node scripts/cio-project-close.mjs",
     "verify:checkpoint-project-closure": "node scripts/verify-checkpoint-project-closure.mjs",
+    "verify:c-tmp-registry": "node scripts/verify-c-tmp-registry.mjs",
     "verify:cio-project-closure-governance": "node scripts/verify-cio-project-closure-governance.mjs",
     "verify:cio-r20-session-close-git-infra": "node scripts/verify-cio-r20-session-close-git-infra.mjs",
     "verify:cio-r41-r48-infra": "node scripts/verify-cio-r41-r48-infra.mjs",

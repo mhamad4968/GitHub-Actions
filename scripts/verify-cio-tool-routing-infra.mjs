@@ -76,6 +76,20 @@ function main() {
     }
   }
 
+  const visual = manifest.intents.find((i) => i.id === 'visual-diagram');
+  if (!visual) {
+    console.error('[verify:cio-tool-routing-infra] NG missing intent: visual-diagram (R-AITEAM-02)');
+    process.exit(1);
+  }
+  if (!visual.runbook?.includes('cio-visual-diagram-openrouter')) {
+    console.error('[verify:cio-tool-routing-infra] NG visual-diagram runbook invalid');
+    process.exit(1);
+  }
+  if (!fs.existsSync(path.join(root, 'docs/runbooks/cio-visual-diagram-openrouter.md'))) {
+    console.error('[verify:cio-tool-routing-infra] NG missing cio-visual-diagram-openrouter.md');
+    process.exit(1);
+  }
+
   for (const { rel, needles: ns } of needles) {
     const text = fs.readFileSync(path.join(root, rel), 'utf8');
     for (const n of ns) {

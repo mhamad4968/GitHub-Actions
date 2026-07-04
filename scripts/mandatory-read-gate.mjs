@@ -20,6 +20,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { validateCheckpointMandatoryRead } from './lib/cio-checkpoint-mandatory-read.mjs';
+import { checkCheckpointGitRegression } from './lib/cio-checkpoint-git-sync.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -50,6 +51,12 @@ if (!cp.ok) {
   for (const issue of cp.issues) fail(`${checkpointRel}: ${issue}`);
 }
 const finalLineFull = cp.finalUpdateLine || '';
+
+// D-CHKPT-02 — checkpoint Git 行が origin/main より古い場合 warn（bootstrap 非ブロック）
+const gitReg = checkCheckpointGitRegression(root);
+if (gitReg.regression && gitReg.message) {
+  console.warn(`[mandatory-read-gate] WARN D-CHKPT-02: ${gitReg.message}`);
+}
 
 // --- handoff-log.md ---
 const handoffRel = 'chat-sessions/handoff-log.md';

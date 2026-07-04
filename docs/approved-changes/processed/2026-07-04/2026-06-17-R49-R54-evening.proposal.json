@@ -36,5 +36,7 @@
       "title": "セッション締め — deploy 済み未コミットを 19 レポート必須",
       "target": "chat-sessions/desktop-ai-emergency-read-pack/20-SESSION-REPORT-CHECKLIST.txt"
     }
-  ]
+  ],
+  "processed_at": "2026-07-04",
+  "processed_status": "implemented"
 }

@@ -36,10 +36,11 @@
 1. **完成サマリー** — `docs/reports/YYYY-MM-DD-<project>-completion.md`（判定: v1 完成 / クローズ可）
 2. **SESSION-CLOSE** — `chat-sessions/SESSION-CLOSE-REPORT_YYYYMMDD.txt`（**明日の手順は書かない** — evening-reflection-scope 準拠）
 3. **closures 登録** — `data/cio-project-closures.json` に `status: closed-v1`・`forbiddenNextTaskPatterns`・`completionReport`
-4. **checkpoint 先頭更新** — `**最終更新**` を当日に / `**次の1手**` を「未確定（項番 -0）」または次レーン / **クローズ済みを明記**
-5. **handoff 末尾 1 ブロック** — 完了 BUILD・正本パス・「再開条件: 浜田 GO」
-6. **lanes 更新** — `data/cio-project-lanes.json` の `status: closed-v1`
-7. **機械検証**（すべて exit 0）:
+4. **C:\tmp 廃止（該当時）** — §G — archive → registry → フォルダ削除 → `npm run verify:c-tmp-registry`
+5. **checkpoint 先頭更新** — `**最終更新**` を当日に / `**次の1手**` を「未確定（項番 -0）」または次レーン / **クローズ済みを明記**
+6. **handoff 末尾 1 ブロック** — 完了 BUILD・正本パス・「再開条件: 浜田 GO」
+7. **lanes 更新** — `data/cio-project-lanes.json` の `status: closed-v1`
+8. **機械検証**（すべて exit 0）:
    ```powershell
    npm run verify:kintone-project-close-gate
    npm run verify:checkpoint-project-closure

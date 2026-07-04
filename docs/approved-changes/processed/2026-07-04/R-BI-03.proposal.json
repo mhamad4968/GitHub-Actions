@@ -1,0 +1,8 @@
+{
+  "id": "R-BI-03",
+  "category": "R",
+  "status": "implemented",
+  "processed_at": "2026-07-04",
+  "note": "697 人事発令ドリブン更新 runbook §4",
+  "target": "docs/runbooks/business-improvement-closed-v1-ux.md"
+}

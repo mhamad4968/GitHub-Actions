@@ -68,3 +68,23 @@
 | 差分警告 | `sync595_meta.warn` — 突合不能レコード・**26h 超 stale** |
 
 フィールド追加: `npm run business-improvement:add-sync595-meta` / `npm run business-improvement:add-employee-source595-id`
+
+---
+
+## 4. R-BI-03 — 697 人事発令ドリブン更新（年次・随時）
+
+**トリガ**: 人事発令・組織改編・評価者変更 — **Excel の内容は「正」**（kintone 旧値へ戻さない）。
+
+| # | 手順 | コマンド / 正本 |
+|---|------|-----------------|
+| 1 | 本番 Excel 編集 | `scripts/data/business-improvement-settings-master-production-2026-08.xlsx` — シート **`設定マスタ_本番`** のみ |
+| 2 | ミラー（任意） | `C:\tmp\業務改善\` へコピー |
+| 3 | 機械検証 | `npm run business-improvement:validate-prod-settings-xlsx` |
+| 4 | seed（upsert） | `npm run business-improvement:seed-settings -- --force --xlsx=scripts/data/...` |
+| 5 | WF テスト確認 | テスト行 id=32 のみ admin — 共通 jinji は `restore-common-hr-jinji` |
+| 6 | 700 確認 | 所属行 `hr_director_login` が本社評価 override になること（本番=jinji / テスト=admin） |
+| 7 | 浜田目視 | 697 一覧 + WF テスト 1 件 |
+
+**禁止**: 共通 `hr_director_login` を WF テスト用に admin 固定（テスト行のみ per-row override）。
+
+**関連**: 仕様 §4.7.1 / `scripts/data/business-improvement-wf-test-master.json`

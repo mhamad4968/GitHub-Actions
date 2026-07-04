@@ -1,0 +1,8 @@
+{
+  "id": "R-PENDING-01",
+  "category": "R",
+  "status": "implemented",
+  "processed_at": "2026-07-04",
+  "note": "approved-changes-triage runbook + pending 4件 triage + cio-pending-deps-queue.json",
+  "target": "docs/runbooks/approved-changes-triage.md"
+}

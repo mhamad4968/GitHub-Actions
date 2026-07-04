@@ -23,6 +23,7 @@
  *  13. verify:ceo-minimum-baseline — verify-ceo-minimum-baseline.mjs（CEO 最低基準・Desktop 同期）
  *  14. verify:ceo-report-hooks-e2e — verify-ceo-report-hooks-e2e.mjs（head-only/full 自動判定スモーク）
  *  15. verify:gha-periodic-workflows — verify-gha-periodic-workflows.mjs（GHA 定期ジョブ 5038 bundled 検査）
+ *  16. verify:c-tmp-registry — verify-c-tmp-registry.mjs（C:\tmp 台帳突合 S-TMP-01）
  *
  * 出力: markdown サマリ + 各検査の status (ok / warn / ng / skip)
  *
@@ -61,6 +62,7 @@ const checks = [
   { id: 'verify:ceo-minimum-baseline', cmd: 'node', args: ['scripts/verify-ceo-minimum-baseline.mjs'], label: 'CEO 最低基準・ミラー／Desktop 同期 (第13検査)' },
   { id: 'verify:ceo-report-hooks-e2e', cmd: 'node', args: ['scripts/verify-ceo-report-hooks-e2e.mjs'], label: 'CEO hooks head-only/full E2E (第14検査)' },
   { id: 'verify:gha-periodic-workflows', cmd: 'node', args: ['scripts/verify-gha-periodic-workflows.mjs'], label: 'GHA 定期 workflow 5038 bundled (第15検査)' },
+  { id: 'verify:c-tmp-registry', cmd: 'node', args: ['scripts/verify-c-tmp-registry.mjs'], label: 'C:\\tmp 台帳突合 (S-TMP-01 / 第16検査)' },
 ];
 
 const results = [];

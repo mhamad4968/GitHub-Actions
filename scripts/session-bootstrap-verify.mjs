@@ -73,6 +73,15 @@ if (closureGate.status !== 0) {
   process.exit(typeof closureGate.status === 'number' && closureGate.status !== 0 ? closureGate.status : 2);
 }
 
+console.log('\n=== [bootstrap] C:\\tmp 台帳 (verify:c-tmp-registry 非ブロック) ===');
+const tmpReg = spawnSync(process.execPath, ['scripts/verify-c-tmp-registry.mjs'], {
+  cwd: root,
+  stdio: 'inherit',
+});
+if (tmpReg.status !== 0) {
+  console.warn('[bootstrap] ⚠️ verify:c-tmp-registry NG — registry と実フォルダを突合（S-TMP-01）');
+}
+
 console.log('\n=== [bootstrap] Git 残件 (verify:session-close-git-warn 非ブロック) ===');
 const gitWarn = spawnSync(process.execPath, ['scripts/verify-session-close-git-warn.mjs'], {
   cwd: root,
