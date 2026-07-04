@@ -1,9 +1,9 @@
 # Kintone アカウント管理 — kintone 仕様書（SPEC）
 
 > **起票**: 2026-07-05 (日)  
-> **状態**: **§41 確定 — AI チームレビュー済 — 実装 GO 待ち**（浜田仕様作成指示 2026-07-05）  
-> **配置**: [Space 48](https://jbis-kintone.cybozu.com/k/#/space/48)（thread はアプリ作成時に確定）  
-> **App ID**: **未採番** — `scripts/data/kintone-account-app-ids.json`  
+> **状態**: **v1 実装・deploy 済 — 浜田目視待ち**（2026-07-05）  
+> **App ID**: **752**（DB）/ **753**（台帳）— `scripts/data/kintone-account-app-ids.json`  
+> **最終 BUILD**: DB `2026-07-05-kintone-account-db-block-v1` rev5 / 台帳 `2026-07-05-kintone-account-dash-v1` rev4  
 > **移行元 Excel**: `C:\tmp\kintoneアカウント台帳\Kintoneアカウント一覧.xlsx`（明細 **行14ヘッダ以降**）  
 > **UI 参照**: [JREクラウドアカウント台帳 745](https://jbis-kintone.cybozu.com/k/745/) 型（745型ライフサイクル・集計）+ [VPNアカウント台帳 734](https://jbis-kintone.cybozu.com/k/734/) 型（DB+台帳・REST CRUD）
 
@@ -532,6 +532,6 @@ UI ヒント: 「所属は Kintone 台帳用マスタです。595 の所属と�
 
 | 日付 | 内容 |
 |------|------|
-| 2026-07-05 | §5.0 確定 — **すべての集計を月ベース**（745 型・月末稼働判定）。アカウント集計も月列化 |
+| 2026-07-05 | **v1 deploy** — 752/753 作成・74 件移行・customize deploy |
 | 2026-07-05 | §5.2.1 追加 — 月次費用集計表直上で総契約数・月額単価を admin 編集可（価格改定対応） |
 | 2026-07-05 | 初版 — §41 Q1–Q4 確定・AI チームレビュー済・浜田 GO 待ち |

@@ -416,6 +416,22 @@
       "relPath": "customize/mailing-list-dash/desktop.js",
       "deployedAt": "2026-06-29T11:02:18.205Z",
       "note": null
+    },
+    "752": {
+      "build": "2026-07-05-kintone-account-db-block-v1",
+      "fileKey": "5d9acd05-5546-44b0-a99b-c066bb87fc96",
+      "revision": "5",
+      "relPath": "customize/kintone-account-db/desktop.js",
+      "deployedAt": "2026-07-04T23:47:20.691Z",
+      "note": null
+    },
+    "753": {
+      "build": "2026-07-05-kintone-account-dash-v1",
+      "fileKey": "261d8132-ea9a-4814-a3d2-9476ac8ae564",
+      "revision": "4",
+      "relPath": "customize/kintone-account-dash/desktop.js",
+      "deployedAt": "2026-07-04T23:47:24.970Z",
+      "note": null
     }
   }
 }

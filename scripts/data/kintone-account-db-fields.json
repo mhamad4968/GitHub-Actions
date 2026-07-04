@@ -1,0 +1,303 @@
+{
+  "properties": {
+    "pay_site": {
+      "type": "DROP_DOWN",
+      "code": "pay_site",
+      "label": "支払箇所",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "本社": {
+          "label": "本社",
+          "index": "0"
+        },
+        "首都圏支店": {
+          "label": "首都圏支店",
+          "index": "1"
+        }
+      }
+    },
+    "account_type": {
+      "type": "DROP_DOWN",
+      "code": "account_type",
+      "label": "アカウント種別",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "特権アカウント": {
+          "label": "特権アカウント",
+          "index": "0"
+        },
+        "本社共有": {
+          "label": "本社共有",
+          "index": "1"
+        },
+        "本社個人": {
+          "label": "本社個人",
+          "index": "2"
+        },
+        "首都圏支店個人": {
+          "label": "首都圏支店個人",
+          "index": "3"
+        }
+      }
+    },
+    "org": {
+      "type": "DROP_DOWN",
+      "code": "org",
+      "label": "所属グループ",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "本社": {
+          "label": "本社",
+          "index": "0"
+        },
+        "東北支店": {
+          "label": "東北支店",
+          "index": "1"
+        },
+        "関越支店": {
+          "label": "関越支店",
+          "index": "2"
+        },
+        "東京支店": {
+          "label": "東京支店",
+          "index": "3"
+        },
+        "東海支店": {
+          "label": "東海支店",
+          "index": "4"
+        },
+        "リフォーム事業統括部": {
+          "label": "リフォーム事業統括部",
+          "index": "5"
+        },
+        "鉄構支店": {
+          "label": "鉄構支店",
+          "index": "6"
+        },
+        "湾岸工事所": {
+          "label": "湾岸工事所",
+          "index": "7"
+        },
+        "ブリッジニアプラス": {
+          "label": "ブリッジニアプラス",
+          "index": "8"
+        }
+      }
+    },
+    "dept": {
+      "type": "DROP_DOWN",
+      "code": "dept",
+      "label": "所属",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "役員室": {
+          "label": "役員室",
+          "index": "0"
+        },
+        "総務部": {
+          "label": "総務部",
+          "index": "1"
+        },
+        "経理部": {
+          "label": "経理部",
+          "index": "2"
+        },
+        "経営企画部": {
+          "label": "経営企画部",
+          "index": "3"
+        },
+        "人事研修部": {
+          "label": "人事研修部",
+          "index": "4"
+        },
+        "安全推進部": {
+          "label": "安全推進部",
+          "index": "5"
+        },
+        "施工推進部": {
+          "label": "施工推進部",
+          "index": "6"
+        },
+        "メンテナンス技術部": {
+          "label": "メンテナンス技術部",
+          "index": "7"
+        },
+        "塗装技術部": {
+          "label": "塗装技術部",
+          "index": "8"
+        },
+        "品質管理部": {
+          "label": "品質管理部",
+          "index": "9"
+        },
+        "東北支店": {
+          "label": "東北支店",
+          "index": "10"
+        },
+        "秋田営業所": {
+          "label": "秋田営業所",
+          "index": "11"
+        },
+        "盛岡営業所": {
+          "label": "盛岡営業所",
+          "index": "12"
+        },
+        "仙台営業所": {
+          "label": "仙台営業所",
+          "index": "13"
+        },
+        "関越支店": {
+          "label": "関越支店",
+          "index": "14"
+        },
+        "新潟営業所": {
+          "label": "新潟営業所",
+          "index": "15"
+        },
+        "長野営業所": {
+          "label": "長野営業所",
+          "index": "16"
+        },
+        "高崎営業所": {
+          "label": "高崎営業所",
+          "index": "17"
+        },
+        "東京支店": {
+          "label": "東京支店",
+          "index": "18"
+        },
+        "千葉営業所": {
+          "label": "千葉営業所",
+          "index": "19"
+        },
+        "水戸営業所": {
+          "label": "水戸営業所",
+          "index": "20"
+        },
+        "鎌ヶ谷事務所": {
+          "label": "鎌ヶ谷事務所",
+          "index": "21"
+        },
+        "東海支店": {
+          "label": "東海支店",
+          "index": "22"
+        },
+        "東京営業所": {
+          "label": "東京営業所",
+          "index": "23"
+        },
+        "静岡営業所": {
+          "label": "静岡営業所",
+          "index": "24"
+        },
+        "名古屋営業所": {
+          "label": "名古屋営業所",
+          "index": "25"
+        },
+        "関西営業所": {
+          "label": "関西営業所",
+          "index": "26"
+        },
+        "リフォーム事業統括部": {
+          "label": "リフォーム事業統括部",
+          "index": "27"
+        },
+        "札幌支店": {
+          "label": "札幌支店",
+          "index": "28"
+        },
+        "首都圏支店": {
+          "label": "首都圏支店",
+          "index": "29"
+        },
+        "鉄構支店": {
+          "label": "鉄構支店",
+          "index": "30"
+        },
+        "湾岸工事所": {
+          "label": "湾岸工事所",
+          "index": "31"
+        },
+        "ブリッジニアプラス": {
+          "label": "ブリッジニアプラス",
+          "index": "32"
+        }
+      }
+    },
+    "display_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "display_name",
+      "label": "表示名",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "login_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "login_name",
+      "label": "ログイン名",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "login_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "login_id",
+      "label": "ログインID",
+      "required": true,
+      "noLabel": false,
+      "unique": true,
+      "defaultValue": ""
+    },
+    "status": {
+      "type": "DROP_DOWN",
+      "code": "status",
+      "label": "ステータス",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "使用中",
+      "options": {
+        "使用中": {
+          "label": "使用中",
+          "index": "0"
+        },
+        "終了": {
+          "label": "終了",
+          "index": "1"
+        }
+      }
+    },
+    "start_date": {
+      "type": "DATE",
+      "code": "start_date",
+      "label": "利用開始日",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "end_date": {
+      "type": "DATE",
+      "code": "end_date",
+      "label": "利用終了日",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    },
+    "note": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "note",
+      "label": "備考",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": ""
+    }
+  }
+}

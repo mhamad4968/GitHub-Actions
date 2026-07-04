@@ -1,7 +1,6 @@
 {
-  "_comment": "実装 GO 後に create-apps で採番して更新",
-  "dbAppId": null,
-  "dashAppId": null,
+  "dbAppId": 752,
+  "dashAppId": 753,
   "spaceId": 48,
-  "threadId": null
+  "threadId": 52
 }

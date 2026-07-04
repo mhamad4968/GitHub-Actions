@@ -39,12 +39,16 @@
     "mfp-ledger-dash": "742",
     "jre-cloud-account-db": "744",
     "jre-cloud-account-dash": "745",
+    "kintone-account-db": "752",
+    "kintone-account-dash": "753",
     "jre-chub-account-db": "746",
     "jre-chub-account-dash": "747",
     "nas-ledger-db": "748",
     "nas-ledger-dash": "749",
     "mailing-list-db": "750",
-    "mailing-list-dash": "751"
+    "mailing-list-dash": "751",
+    "kintone-account-db": "752",
+    "kintone-account-dash": "753"
   },
   "bundlePatterns": {
     "wifi-ssid-dash": {
@@ -91,6 +95,11 @@
       "deployFile": "desktop.js",
       "lintFile": "desktop.src.js",
       "bundleNpm": "mailing-list:bundle-dash"
+    },
+    "kintone-account-dash": {
+      "deployFile": "desktop.js",
+      "lintFile": "desktop.src.js",
+      "bundleNpm": "kintone-account:bundle-dash"
     }
   }
 }
