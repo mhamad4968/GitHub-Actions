@@ -15,6 +15,7 @@
 | **F-B1** | push ブロック | bundle 後 `desktop.js` の ESLint 未実行（commit 前習慣なし） |
 | **F-B2** | deploy 後 calc 不一致 | calc-gate はあったが **build → lint** 順序が push ゲートに無い |
 | **F-B3** | ゲート分散 | pre-push / preflight / calc-gate / close-gate が doc 分散 |
+| **F-B4** | kintone-apps garble | deploy 記録後 **`sync:kintone-apps-build` 未実行** → rev 重複マーカー・fileKey 不一致（2026-07-04） |
 
 **教訓（736）**: `jikkou-yosan-build-desktop.mjs` が layout + calc-core を連結するため、**ソース側で同名関数を export すると bundle 重複** → ESLint `no-redeclare`。対策は **共通関数を layout 側に 1 定義**（実装済）。
 
@@ -98,9 +99,16 @@ npm run cio:pre-push-check
 npm run cio:preflight:736 -- --note "…"
 npm run cio:deploy-gate -- 736
 npm run deploy:736
+
+# 6. deploy 後（R1 / 2026-07-04 浜田 GO — garble 再発防止）
+npm run sync:kintone-apps-build -- <appId> --strict
+npm run verify:kintone-apps-live-build-sync -- <appId> --strict
+# 複数 app なら --all --strict（時間がかかる場合は当該 app のみ）
 ```
 
 **736 `deploy:736`**: 内包で `jikkou-yosan:deploy-gate` を実行（二重 build 防止のため deploy-gate 1 本化）。
+
+**R1（2026-07-04 GO）**: customize **deploy 成功直後**に §6 の手順 6 を **同一セッション**で実行。full CLOSE 前に `kintone-apps.md` / `data/cio-live-builds.json` を commit に含める。
 
 ---
 
@@ -124,7 +132,7 @@ npm run deploy:736
 | 場面 | ゲート |
 |------|--------|
 | プロジェクト CLOSED | `verify:kintone-project-close-gate` |
-| セッション full CLOSE | `verify:session-close-git-warn` + `cio:session:close-git` |
+| セッション full CLOSE | `verify:session-close-git-warn` + `cio:session:close-git` + **当日 customize deploy ありなら R1（§5 手順 6）済み確認** |
 
 ---
 

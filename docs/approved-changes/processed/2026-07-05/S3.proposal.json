@@ -1,0 +1,8 @@
+{
+  "id": "S3",
+  "category": "S",
+  "status": "implemented",
+  "processed_at": "2026-07-05",
+  "note": "session-clock.mjs writeMdCrlf — SESSION-CLOCK.md pre-commit EOL",
+  "target": "scripts/session-clock.mjs"
+}

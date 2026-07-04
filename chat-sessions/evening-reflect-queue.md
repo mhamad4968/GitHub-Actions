@@ -10,7 +10,7 @@
 
 ## アクティブ（未消化）
 
-- [ ] **§51-6-2 壁時計**・**`[憲法適合]`** の運用（朝の習慣・区切り宣言）— **夜の反省会で議題化**（2026-05-06 浜田指示）。
+- [x] **§51-6-2 壁時計**・**`[憲法適合]`** の運用（朝の習慣・区切り宣言）— **2026-07-04 浜田 GO（#D1）**: sessionStart/sessionEnd hook + `session:clock.mjs` CRLF 書き出し（#S3）で pre-commit 違反解消。議題は **§1-N 憲法運用レビュー** に集約。
 - [ ] **朝報** `docs/reports/YYYY-MM-DD-morning-prep.md` **未生成日の扱い**（自動生成の要否・手動時のルール）— **夜の反省会で議題化**（2026-05-06 浜田指示）。
 - [x] **薄型憲法・常時枠（2026-05-09 CIO）**: **YAML 常時注入は `cio-constitution.mdc` のみ**へ集約。分割 `.mdc` は **`false` + `globs`（または glob なし）**。`npm run verify:thin-rule-messaging` を smoke に追加。旧「10→11 枚」議題は **方針転換によりクローズ**（履歴議論は `handoff-log.md` 等に残存しうるが **現行正本は `cio-constitution` + verify**）。
 

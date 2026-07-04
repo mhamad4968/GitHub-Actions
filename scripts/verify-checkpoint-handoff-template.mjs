@@ -10,7 +10,7 @@
 import process from 'node:process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { validateHandoffTemplate, repairHandoffLatestBlock } from './lib/cio-handoff-template.mjs';
+import { validateHandoffTemplate, repairHandoffLatestBlock, repairCheckpointBootstrapBlock } from './lib/cio-handoff-template.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -19,6 +19,14 @@ function main() {
   const noRepair = process.argv.includes('--no-auto-repair');
 
   if (!noRepair) {
+    const bootRep = repairCheckpointBootstrapBlock(root);
+    if (bootRep.repaired) {
+      console.log(
+        `[verify:checkpoint-handoff-template] auto-repair: checkpoint ${bootRep.filled.join(', ')}`,
+      );
+    } else if (bootRep.reason) {
+      console.warn(`[verify:checkpoint-handoff-template] checkpoint auto-repair skip: ${bootRep.reason}`);
+    }
     const rep = repairHandoffLatestBlock(root);
     if (rep.repaired) {
       console.log(

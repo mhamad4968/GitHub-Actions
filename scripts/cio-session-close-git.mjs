@@ -21,6 +21,7 @@ import { runNpmScriptSync } from './lib/win-hidden-spawn.mjs';
 import { touchesGovernance } from './lib/cio-governance-touch.mjs';
 import { syncCheckpointGitAfterPush } from './lib/cio-checkpoint-git-sync.mjs';
 import { CHECKPOINT_REL } from './lib/cio-checkpoint-read.mjs';
+import { repairCheckpointBootstrapBlock } from './lib/cio-handoff-template.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DESKTOP_DIR = process.env.SESSION_STARTER_DESKTOP_DIR || 'C:\\Users\\mhamada202408224\\Desktop\\AI緊急用';
@@ -118,6 +119,13 @@ function main() {
   if (!runNpm('cio:guard:multi-customize')) {
     console.error('[cio:session:close-git] NG R-17-1 multi-customize guard');
     process.exit(1);
+  }
+
+  const bootRep = repairCheckpointBootstrapBlock(root);
+  if (bootRep.repaired) {
+    console.log(
+      `[cio:session:close-git] checkpoint bootstrap auto-repair: ${bootRep.filled.join(', ')}`,
+    );
   }
 
   const porcelain = git(['status', '--porcelain']).out;

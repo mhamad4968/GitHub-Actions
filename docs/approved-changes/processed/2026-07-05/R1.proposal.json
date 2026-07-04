@@ -1,0 +1,8 @@
+{
+  "id": "R1",
+  "category": "R",
+  "status": "implemented",
+  "processed_at": "2026-07-05",
+  "note": "deploy 後 sync:kintone-apps-build --strict + verify — push-deploy-quality-gates-v2 §5.6 / R-SESS-05",
+  "target": "docs/runbooks/push-deploy-quality-gates-v2.md"
+}

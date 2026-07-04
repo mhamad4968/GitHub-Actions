@@ -1,6 +1,6 @@
 {
-  "version": "2026-06-25",
-  "description": "checkpoint / handoff / bridge テンプレ正本 — Session Lifecycle v2 CLOSE 連動（R-SESS-01 sync-desktop 順序）",
+  "version": "2026-07-04",
+  "description": "checkpoint / handoff / bridge テンプレ正本 — Session Lifecycle v2 CLOSE 連動（R-SESS-01 sync-desktop / R-SESS-06 bootstrap auto-repair）",
   "connectionRules": {
     "order": ["checkpoint-freeze-zone", "handoff-log-block", "bridge-export"],
     "partialClose": ["checkpoint-freeze-zone", "handoff-log-block", "export-handoff"],

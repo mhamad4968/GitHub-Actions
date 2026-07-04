@@ -113,6 +113,65 @@ export function repairHandoffLatestBlock(root, { dryRun = false } = {}) {
   return { ok: true, repaired: true, filled: missing };
 }
 
+/** テンプレ正本から bootstrap ブロック（## セッション切替後…）を抽出 */
+function extractBootstrapCanonical(root) {
+  const tpl = fs.readFileSync(
+    resolveTemplatePath(root, 'checkpoint-freeze-zone.template.md'),
+    'utf8',
+  );
+  const codeMatch = tpl.match(/```markdown\n([\s\S]*?)```/);
+  if (!codeMatch) {
+    throw new Error('checkpoint-freeze-zone.template.md: missing ```markdown block');
+  }
+  const inner = codeMatch[1];
+  const heading = '## セッション切替後の自律復元';
+  const bootIdx = inner.indexOf(heading);
+  if (bootIdx < 0) {
+    throw new Error('checkpoint-freeze-zone.template.md: missing bootstrap heading');
+  }
+  return inner.slice(bootIdx).trimEnd();
+}
+
+/**
+ * checkpoint 凍結ゾーン末尾の bootstrap ブロックをテンプレ正本で復元
+ * （手動 CLOSE で mandatory-read-gate 行削除 → preamble 2800字 NG 再発防止 / S2）
+ * @returns {{ ok: boolean, repaired: boolean, filled: string[], reason?: string }}
+ */
+export function repairCheckpointBootstrapBlock(root, { dryRun = false } = {}) {
+  const cpPath = path.join(root, CHECKPOINT_REL);
+  if (!fs.existsSync(cpPath)) {
+    return { ok: false, repaired: false, filled: [], reason: `missing ${CHECKPOINT_REL}` };
+  }
+  const full = fs.readFileSync(cpPath, 'utf8');
+  const rollSplit = full.split(/^## \d{4}-\d{2}-\d{2}/m);
+  const preamble = rollSplit[0];
+  const rollup = rollSplit.length > 1 ? full.slice(preamble.length) : '';
+
+  const needsRepair =
+    !preamble.includes('## セッション切替後の自律復元') ||
+    !preamble.includes('mandatory-read-gate.mjs') ||
+    !preamble.includes('verify:session-close-git-warn');
+
+  if (!needsRepair) {
+    return { ok: true, repaired: false, filled: [] };
+  }
+
+  const canonical = extractBootstrapCanonical(root);
+  const heading = '## セッション切替後の自律復元';
+  const bootIdx = preamble.indexOf(heading);
+  const newPreamble =
+    bootIdx >= 0
+      ? `${preamble.slice(0, bootIdx).trimEnd()}\n\n${canonical}\n`
+      : `${preamble.trimEnd()}\n\n${canonical}\n`;
+  const newFull = newPreamble + rollup;
+
+  if (!dryRun) {
+    fs.writeFileSync(cpPath, newFull, 'utf8');
+  }
+
+  return { ok: true, repaired: true, filled: ['bootstrap-block'] };
+}
+
 /** @returns {object} */
 export function loadHandoffTemplate(root) {
   const p = path.join(root, TEMPLATE_MANIFEST_REL);

@@ -1,0 +1,8 @@
+{
+  "id": "S2",
+  "category": "S",
+  "status": "implemented",
+  "processed_at": "2026-07-05",
+  "note": "repairCheckpointBootstrapBlock + R-SESS-06 close-git/verify 連動",
+  "target": "scripts/lib/cio-handoff-template.mjs"
+}

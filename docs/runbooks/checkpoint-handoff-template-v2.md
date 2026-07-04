@@ -110,9 +110,11 @@ npm run cio:handoff:append-block -- --dry-run --title "テスト"
 ### full（締め / お疲れ）
 
 1. 上記 partial 1〜3
-2. `npm run session-starter:sync-desktop` → `npm run verify:desktop-ai-emergency-sync`（**R-SESS-01**）
-3. `npm run session:clock:clear`（**R-SESS-03**）
-4. `npm run cio:session:close-git -- --execute --auto-stage --message "…"`
+2. `npm run verify:checkpoint-handoff-template`（**S2** — bootstrap ブロック欠落時 auto-repair）
+3. `npm run session-starter:sync-desktop` → `npm run verify:desktop-ai-emergency-sync`（**R-SESS-01**）
+4. `npm run session:clock:clear`（**R-SESS-03**）
+5. （当日 customize deploy あり）`push-deploy-quality-gates-v2.md` §5 手順 6（**R-SESS-05 / R1**）
+6. `npm run cio:session:close-git -- --execute --auto-stage --message "…"`
 
 ---
 

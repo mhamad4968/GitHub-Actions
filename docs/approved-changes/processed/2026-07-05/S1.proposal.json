@@ -1,0 +1,8 @@
+{
+  "id": "S1",
+  "category": "S",
+  "status": "implemented",
+  "processed_at": "2026-07-05",
+  "note": "kintone-customize-deploy deploy 記録 push 1 回リトライ",
+  "target": ".github/workflows/kintone-customize-deploy.yml"
+}

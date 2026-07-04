@@ -184,6 +184,10 @@ npm run cio:checkpoint:rollup -- --keep 3
 
 **R-SESS-04（2026-06-25 GO）**: `session:bootstrap` / `cio:session:cold-start` が **exit ≠ 0** のとき — **L2 完走は1回のみ** → NG ログをチャットに貼付 → **浜田へエスカレ** → **本題・deploy に着手しない**（Lifecycle v2 §3 L2 違反＝報告違反）。
 
+**R-SESS-05（2026-07-04 GO）**: セッション内で **customize deploy** した app がある full CLOSE 前 — `push-deploy-quality-gates-v2.md` **§5 手順 6**（`sync:kintone-apps-build --strict` + verify）を実行し、`kintone-apps.md` 整合を commit に含める。
+
+**R-SESS-06（2026-07-04 GO）**: full CLOSE の checkpoint 更新後 — `verify:checkpoint-handoff-template`（bootstrap ブロック **auto-repair** 内包）を通す。手動編集で `mandatory-read-gate.mjs` 行を削らない。
+
 **partial でも必須**: checkpoint `次の1手` / `Git` + handoff-log 末尾ブロック（**Git** キー含む）。
 
 **full でも必須**: push まで（`close-git` 内包）。
