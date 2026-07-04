@@ -1,19 +1,8 @@
 {
-  "scoredAt": "2026-07-04T02:34:29.815Z",
+  "scoredAt": "2026-07-04T21:53:41.511Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "**夜セッション** — [App 736](https://jbis-kintone.cybozu.com/k/736/) 残件 + 一部機能追加の**意見交換から**（浜田指示）。再開時 `npm run session:bootstrap`",
+  "topTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
   "tasks": [
-    {
-      "id": "checkpoint:**夜セッション**_—_[App_736](https://jbis-kint",
-      "text": "**夜セッション** — [App 736](https://jbis-kintone.cybozu.com/k/736/) 残件 + 一部機能追加の**意見交換から**（浜田指示）。再開時 `npm run session:bootstrap`",
-      "source": "checkpoint",
-      "difficulty": 2,
-      "tokens": "低",
-      "tokenScore": 1,
-      "impact": 3,
-      "priority": 16,
-      "status": "pending"
-    },
     {
       "id": "backlog:B-MDFLOW:_**Markdown_ベースの開発フロー**（仕様・実装・レ",
       "text": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
@@ -23,6 +12,17 @@
       "tokenScore": 2,
       "impact": 3,
       "priority": 21,
+      "status": "pending"
+    },
+    {
+      "id": "checkpoint:**②_kintone_アカウント台帳**_—_浜田から現行運用説明_→_利用台",
+      "text": "**② kintone アカウント台帳** — 浜田から現行運用説明 → 利用台帳把握 → §41 で仕様。**午後** SKYSEA 意見交換。**月曜** 698/700 レビュー",
+      "source": "checkpoint",
+      "difficulty": 3,
+      "tokens": "中",
+      "tokenScore": 2,
+      "impact": 5,
+      "priority": 25,
       "status": "pending"
     }
   ]
