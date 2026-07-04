@@ -1,10 +1,10 @@
 /**
- * 実行予算書作成支援ツール ver.01 — BUILD 2026-07-04-736-spec-row-menu-v0b
+ * 実行予算書作成支援ツール ver.01 — BUILD 2026-07-04-736-spec-row-menu-v0c
  * Master app: 735
  */
 (function () {
   'use strict';
-  const BUILD = '2026-07-04-736-spec-row-menu-v0b';
+  const BUILD = '2026-07-04-736-spec-row-menu-v0c';
   const APP_MASTER = 735;
   const DEFAULT_COST_TEMPLATE = [
   { "cost_work_type_code": "10100", "cost_work_type": "材料費", "cost_category_code": "", "cost_category": "塗料", "cost_row_kind": "link", "cost_group_key": "material", "cost_tax_rate": 0.1, "cost_unit": "－", "detail_marker": "②", "cost_basis_note": "詳細表にて内訳を記載…②" },
@@ -2145,7 +2145,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
       '.jy-summary-table-spec .jy-col-del{width:36px}' +
       '.jy-row-menu{position:relative;display:inline-block;vertical-align:middle}' +
       '.jy-summary-table-spec td.jy-row-actions{overflow:visible;position:relative;vertical-align:middle;text-align:center}' +
-      '.jy-summary-table-spec tr.jy-row-menu-open{position:relative;z-index:30}' +
+      '.jy-table tr.jy-row-menu-open{position:relative;z-index:30}' +
       '.jy-row-menu-trigger{min-width:30px;padding:2px 8px;text-align:center;font-weight:700;line-height:1.3;cursor:pointer}' +
       '.jy-row-menu-pop{position:absolute;right:0;top:calc(100% + 2px);z-index:200;min-width:148px;padding:4px 0;background:#fff;border:1px solid #cbd5e1;border-radius:8px;box-shadow:0 4px 14px rgba(15,23,42,.14)}' +
       '.jy-row-menu-pop[hidden]{display:none!important}' +
@@ -3530,8 +3530,8 @@ function pushTotalEntry(list, field, label, info, bucket) {
       '<button type="button" class="jy-btn jy-btn-print" id="' + printBtnId + '">印刷</button></div>';
   }
 
-  function closeSpecRowMenus(root) {
-    (root || document).querySelectorAll('.jy-row-menu-spec').forEach(function (wrap) {
+  function closeRowMenus(root) {
+    (root || document).querySelectorAll('.jy-row-menu').forEach(function (wrap) {
       wrap.classList.remove('jy-row-menu-open');
       const panel = wrap.querySelector('.jy-row-menu-pop');
       const btn = wrap.querySelector('.jy-row-menu-trigger');
@@ -3543,16 +3543,29 @@ function pushTotalEntry(list, field, label, info, bucket) {
     });
   }
 
+  function closeSpecRowMenus(root) {
+    closeRowMenus(root);
+  }
+
+  function renderRowMenu(table, i, opts) {
+    opts = opts || {};
+    const showBefore = opts.showBefore !== false;
+    const showAfter = opts.showAfter !== false;
+    const showDelete = opts.showDelete !== false;
+    let html = '<div class="jy-row-menu jy-row-menu-' + table + '">';
+    html += '<button type="button" class="jy-btn jy-row-menu-trigger"';
+    if (table === 'spec') html += ' data-spec-row-menu-trigger="' + i + '"';
+    html += ' title="行の操作" aria-label="行の操作" aria-expanded="false" aria-haspopup="menu">⋮</button>';
+    html += '<div class="jy-row-menu-pop" role="menu" hidden>';
+    if (showBefore) html += '<button type="button" role="menuitem" data-' + table + '-add-before="' + i + '">上に1行追加</button>';
+    if (showAfter) html += '<button type="button" role="menuitem" data-' + table + '-add-after="' + i + '">下に1行追加</button>';
+    if (showDelete) html += '<button type="button" role="menuitem" class="jy-row-menu-del" data-' + table + '-del="' + i + '">行を削除</button>';
+    html += '</div></div>';
+    return html;
+  }
+
   function renderSpecRowMenu(i) {
-    return (
-      '<div class="jy-row-menu jy-row-menu-spec" data-spec-row-menu-wrap="' + i + '">' +
-      '<button type="button" class="jy-btn jy-row-menu-trigger" data-spec-row-menu-trigger="' + i + '" title="行の操作" aria-label="行の操作" aria-expanded="false" aria-haspopup="menu">⋮</button>' +
-      '<div class="jy-row-menu-pop" role="menu" hidden data-spec-row-menu-panel="' + i + '">' +
-      '<button type="button" role="menuitem" data-spec-add-before="' + i + '">上に1行追加</button>' +
-      '<button type="button" role="menuitem" data-spec-add-after="' + i + '">下に1行追加</button>' +
-      '<button type="button" role="menuitem" class="jy-row-menu-del" data-spec-del="' + i + '">行を削除</button>' +
-      '</div></div>'
-    );
+    return renderRowMenu('spec', i);
   }
 
   function renderSummary() {
@@ -3634,9 +3647,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
         html += '<td class="jy-ro jy-subtotal-note">' + esc(subtotalBasisNote(r)) + '</td>';
         html += '<td class="jy-ro"></td><td class="jy-num jy-ro">' + fmtPct(r.cost_ratio) + '</td>';
         if (!readOnly) {
-          html += '<td class="jy-row-actions">';
-          html += '<button type="button" class="jy-btn" data-cost-add-after="' + i + '" title="この行の下に追加">＋</button>';
-          html += '</td>';
+          html += '<td class="jy-row-actions">' + renderRowMenu('cost', i, { showBefore: false, showDelete: false }) + '</td>';
         }
       } else {
       html += '<td><input class="jy-in jy-code" list="jy-wt-code-list" data-cost-wcd="' + i + '" value="' + esc(wcdDisplay) + '"' + costRepeatCollapsedAttr(state.cost_lines, i, 'wcd') + (r.cost_work_type_code ? ' title="' + esc(r.cost_work_type_code) + '"' : '') + (ro ? ' disabled' : '') + '></td>';
@@ -3667,10 +3678,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
       html += '<td class="jy-num jy-ro">' + fmtPct(r.cost_ratio) + '</td>';
       }
       if (!readOnly && !isSub) {
-        html += '<td class="jy-row-actions">';
-        html += '<button type="button" class="jy-btn" data-cost-add-after="' + i + '" title="この行の下に追加">＋</button>';
-        html += '<button type="button" class="jy-btn" data-cost-del="' + i + '" title="この行を削除">×</button>';
-        html += '</td>';
+        html += '<td class="jy-row-actions">' + renderRowMenu('cost', i) + '</td>';
       }
       html += '</tr>';
       if (isLink && r.detail_marker) {
@@ -3754,6 +3762,16 @@ function pushTotalEntry(list, field, label, info, bucket) {
     return insertAt;
   }
 
+  function insertMatRowBefore(i) {
+    syncInputs();
+    const r = state.mat_lines[i];
+    if (!r) return;
+    state.mat_lines.splice(i, 0, blankMatRow(r.mat_group || '塗料'));
+    markInsertedRow('mat', i);
+    markDirty();
+    render();
+  }
+
   function insertMatRowAfter(i) {
     syncInputs();
     const r = state.mat_lines[i];
@@ -3809,6 +3827,15 @@ function pushTotalEntry(list, field, label, info, bucket) {
     render();
   }
 
+  function insertCostRowBefore(i) {
+    syncInputs();
+    if (!state.cost_lines[i]) return;
+    state.cost_lines.splice(i, 0, blankCostRow({ cost_row_kind: 'detail' }));
+    markInsertedRow('cost', i);
+    markDirty();
+    render();
+  }
+
   function insertCostRowAfter(i) {
     syncInputs();
     if (!state.cost_lines[i]) return;
@@ -3840,6 +3867,17 @@ function pushTotalEntry(list, field, label, info, bucket) {
       sub_amount: 0,
       sub_basis: '',
     };
+  }
+
+  function insertSubRowBefore(i) {
+    syncInputs();
+    const r = state.subcontract_lines[i];
+    if (!r) return;
+    if (SUB_CALC.has(r.sub_row_kind) || r.sub_row_kind === 'overhead') return;
+    state.subcontract_lines.splice(i, 0, blankSubDetailRow(r.subcontract_block));
+    markInsertedRow('sub', i);
+    markDirty();
+    render();
   }
 
   function insertSubRowAfter(i) {
@@ -3908,10 +3946,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
     row += '<td class="jy-num jy-ro ' + diffCellClass('mat', rk, 'mat_amount') + '">' + fmt(r.mat_amount) + diffAmtMark('mat_amount', 'mat', rk) + '</td>';
     row += '<td><input class="jy-in" data-mat-basis="' + i + '" value="' + esc(r.mat_basis) + '"' + (readOnly ? ' disabled' : '') + '></td>';
     if (!readOnly) {
-      row += '<td class="jy-row-actions">';
-      row += '<button type="button" class="jy-btn" data-mat-add-after="' + i + '" title="この行の下に追加">＋</button>';
-      row += '<button type="button" class="jy-btn" data-mat-del="' + i + '" title="この行を削除">×</button>';
-      row += '</td>';
+      row += '<td class="jy-row-actions">' + renderRowMenu('mat', i) + '</td>';
     }
     row += '</tr>';
     return row;
@@ -4000,12 +4035,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
           html += '<td class="jy-num jy-ro ' + diffCellClass('sub', rk, 'sub_amount') + '">' + fmt(r.sub_amount) + diffAmtMark('sub_amount', 'sub', rk) + '</td>';
           html += '<td><input class="jy-in" data-sub-basis="' + i + '" value="' + esc(r.sub_basis) + '"' + (readOnly ? ' disabled' : '') + '></td>';
           if (!readOnly) {
-            html += '<td class="jy-row-actions">';
-            html += '<button type="button" class="jy-btn" data-sub-add-after="' + i + '" title="この行の下に追加">＋</button>';
-            if (canDeleteSubRow(r, b.id)) {
-              html += '<button type="button" class="jy-btn" data-sub-del="' + i + '" title="この行を削除">×</button>';
-            }
-            html += '</td>';
+            html += '<td class="jy-row-actions">' + renderRowMenu('sub', i, { showDelete: canDeleteSubRow(r, b.id) }) + '</td>';
           }
           html += '</tr>';
         }
@@ -4975,15 +5005,15 @@ function pushTotalEntry(list, field, label, info, bucket) {
       });
     });
 
-    root.querySelectorAll('[data-spec-row-menu-trigger]').forEach(function (btn) {
+    root.querySelectorAll('.jy-row-menu-trigger').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
         e.preventDefault();
-        const wrap = btn.closest('.jy-row-menu-spec');
+        const wrap = btn.closest('.jy-row-menu');
         const panel = wrap && wrap.querySelector('.jy-row-menu-pop');
         const tr = btn.closest('tr');
         const wasOpen = panel && !panel.hidden;
-        closeSpecRowMenus(root);
+        closeRowMenus(root);
         if (panel && !wasOpen) {
           panel.hidden = false;
           btn.setAttribute('aria-expanded', 'true');
@@ -4996,8 +5026,8 @@ function pushTotalEntry(list, field, label, info, bucket) {
       root.dataset.jyRowMenuDocClose = '1';
       document.addEventListener('click', function (e) {
         const rootEl = document.getElementById('jy-root');
-        if (!rootEl || e.target.closest('.jy-row-menu-spec')) return;
-        closeSpecRowMenus(rootEl);
+        if (!rootEl || e.target.closest('.jy-row-menu')) return;
+        closeRowMenus(rootEl);
       });
     }
     root.querySelectorAll('.jy-row-menu-pop').forEach(function (panel) {
@@ -5012,21 +5042,21 @@ function pushTotalEntry(list, field, label, info, bucket) {
     root.querySelectorAll('[data-spec-add-before]').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
-        closeSpecRowMenus(root);
+        closeRowMenus(root);
         insertSpecRowBefore(Number(btn.getAttribute('data-spec-add-before')));
       });
     });
     root.querySelectorAll('[data-spec-add-after]').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
-        closeSpecRowMenus(root);
+        closeRowMenus(root);
         insertSpecRowAfter(Number(btn.getAttribute('data-spec-add-after')));
       });
     });
     root.querySelectorAll('[data-spec-del]').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
-        closeSpecRowMenus(root);
+        closeRowMenus(root);
         syncInputs();
         state.spec_lines.splice(Number(btn.getAttribute('data-spec-del')), 1);
         markDirty();
@@ -5040,15 +5070,24 @@ function pushTotalEntry(list, field, label, info, bucket) {
         insertCostRowAtEnd();
       });
     });
+    root.querySelectorAll('[data-cost-add-before]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        closeRowMenus(root);
+        insertCostRowBefore(Number(btn.getAttribute('data-cost-add-before')));
+      });
+    });
     root.querySelectorAll('[data-cost-add-after]').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
+        closeRowMenus(root);
         insertCostRowAfter(Number(btn.getAttribute('data-cost-add-after')));
       });
     });
     root.querySelectorAll('[data-cost-del]').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
+        closeRowMenus(root);
         syncInputs();
         const idx = Number(btn.getAttribute('data-cost-del'));
         const r = lineAt(state.cost_lines, idx);
@@ -5065,15 +5104,24 @@ function pushTotalEntry(list, field, label, info, bucket) {
         insertMatRowAtGroupEnd(btn.getAttribute('data-mat-add') || '塗料');
       });
     });
+    root.querySelectorAll('[data-mat-add-before]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        closeRowMenus(root);
+        insertMatRowBefore(Number(btn.getAttribute('data-mat-add-before')));
+      });
+    });
     root.querySelectorAll('[data-mat-add-after]').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
+        closeRowMenus(root);
         insertMatRowAfter(Number(btn.getAttribute('data-mat-add-after')));
       });
     });
     root.querySelectorAll('[data-mat-del]').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
+        closeRowMenus(root);
         syncInputs();
         state.mat_lines.splice(Number(btn.getAttribute('data-mat-del')), 1);
         markDirty();
@@ -5087,15 +5135,24 @@ function pushTotalEntry(list, field, label, info, bucket) {
         insertSubDetailRow(btn.getAttribute('data-sub-add'));
       });
     });
+    root.querySelectorAll('[data-sub-add-before]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        closeRowMenus(root);
+        insertSubRowBefore(Number(btn.getAttribute('data-sub-add-before')));
+      });
+    });
     root.querySelectorAll('[data-sub-add-after]').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
+        closeRowMenus(root);
         insertSubRowAfter(Number(btn.getAttribute('data-sub-add-after')));
       });
     });
     root.querySelectorAll('[data-sub-del]').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
+        closeRowMenus(root);
         syncInputs();
         const idx = Number(btn.getAttribute('data-sub-del'));
         const r = state.subcontract_lines[idx];
