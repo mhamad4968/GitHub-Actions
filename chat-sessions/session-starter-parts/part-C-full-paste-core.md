@@ -72,9 +72,9 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-07-02 自動更新）】
-- 進行中 plan: docs/plans/2026-06-27-doc-lane-phase2-word-spec.md
+【今やってる主タスク（2026-07-04 自動更新）】
+- 進行中 plan: docs/plans/2026-07-04-jikkou-yosan-spec-row-menu-v0a.md
 - 当日コミット (上位 3):
-  - chore(checkpoint): sync Git line after close
-  - chore(handoff): align bridge gitHead
-  - chore(handoff): session bridge export
+  - docs(736): 機能改善予定を課題メモ §9.2.2 に追記
+  - docs(checkpoint): push済 abd971e 反映
+  - fix(698): eslint unused q init in mount698EmpFilterBar

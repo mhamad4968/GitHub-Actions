@@ -47,11 +47,16 @@ const HEADER =
 
 const alertFlagAbs = path.join(root, 'logs', '.session-clock-split-alerted');
 
+/** *.md は .gitattributes eol=crlf — pre-commit cio-eol-check 対応 */
+function writeMdCrlf(abs, content) {
+  fs.mkdirSync(path.dirname(abs), { recursive: true });
+  fs.writeFileSync(abs, content.replace(/\r?\n/g, '\r\n'), 'utf8');
+}
+
 function writeClock() {
   const line = nowTokyoYYYYMMDDHHmm();
   const body = `${HEADER}${line}\n`;
-  fs.mkdirSync(path.dirname(clockAbs), { recursive: true });
-  fs.writeFileSync(clockAbs, body, 'utf8');
+  writeMdCrlf(clockAbs, body);
   try {
     if (fs.existsSync(alertFlagAbs)) fs.unlinkSync(alertFlagAbs);
   } catch {
@@ -65,8 +70,7 @@ function writeClock() {
 /** §51-6-2 時間軸を止める（開始を未設定に。次チャットでは set から再開） */
 function clearClock() {
   const body = `${HEADER}未設定\n`;
-  fs.mkdirSync(path.dirname(clockAbs), { recursive: true });
-  fs.writeFileSync(clockAbs, body, 'utf8');
+  writeMdCrlf(clockAbs, body);
   try {
     if (fs.existsSync(alertFlagAbs)) fs.unlinkSync(alertFlagAbs);
   } catch {

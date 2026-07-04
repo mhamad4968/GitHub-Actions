@@ -265,8 +265,14 @@ jobs:
             exit 0
           fi
           git commit -m "docs(kintone): Actions デプロイ記録 [skip ci]"
-          git pull --rebase origin main
-          git push
+          push_deploy_record() {
+            git pull --rebase origin main
+            git push
+          }
+          if ! push_deploy_record; then
+            echo "::warning::deploy 記録 push 競合 — pull --rebase 後 1 回リトライ"
+            push_deploy_record
+          fi
 
       - name: ポートフォリオ BUILD 整合監査（デプロイ後）
         if: success() && steps.deploy_gate.outputs.deploy_js == '1'
