@@ -55,11 +55,11 @@
 ## [2026-07-04] セッション解体時知恵ストック
 
 **前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
-**手順**: `npm run business-improvement:validate-prod-settings-xlsx` → `npm run cio:session:cold-start` → `npm run session:bootstrap`
+**手順**: `npm run business-improvement:validate-prod-settings-xlsx` → `npm run session:bootstrap` → `npm run cio:session:cold-start`
 **禁止**: customize/deploy 凍結中の無断 save・上位憲法 §50-3-11 非置換違反・本体単独完結
 **exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
 
-<!-- errors: npm run business-improvement:validate-prod-settings-xlsx` 再実行可。 | npm run cio:session:cold-start` | npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / **`man -->
+<!-- errors: npm run business-improvement:validate-prod-settings-xlsx` 再実行可。 | npm run session:bootstrap` | npm run cio:session:cold-start` -->
 
 
 ## [2026-07-03] セッション解体時知恵ストック
