@@ -314,11 +314,11 @@
       "note": null
     },
     "736": {
-      "build": "2026-06-26-736-ux-sticky-print-badges-v1",
-      "fileKey": "ddd65ac3-b2d8-4c07-a876-cc1a11ba3064",
-      "revision": "134",
-      "relPath": "customize/736/desktop.js",
-      "deployedAt": "2026-06-26T10:28:35.124Z",
+      "build": "2026-07-04-736-diff-print-summary-v2d",
+      "fileKey": "3d0bc5f4-e97c-4601-86e4-396bc078a736",
+      "revision": "135",
+      "relPath": ".kintone-deploy/upload-736.js",
+      "deployedAt": "2026-07-04T08:56:03.519Z",
       "note": null
     },
     "737": {
