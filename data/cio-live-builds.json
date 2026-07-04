@@ -314,12 +314,12 @@
       "note": null
     },
     "736": {
-      "build": "2026-07-04-736-print-head-layout-fix",
-      "fileKey": "e3074602-7ba4-4845-a1b1-b334fa6108fb",
-      "revision": "140",
-      "relPath": ".kintone-deploy/upload-736.js",
-      "deployedAt": "2026-07-04T09:07:57.217Z",
-      "note": null
+      "build": "2026-07-04-736-diff-bar-prominent",
+      "fileKey": "016e2926-e2df-4aa4-8163-97442502fc01",
+      "revision": "153",
+      "relPath": "customize/736/desktop.js",
+      "deployedAt": "2026-07-04T09:45:13.309Z",
+      "note": "v2d+依頼者UX v2: sticky toolbar, per-block removed rows, prominent diff bars"
     },
     "737": {
       "build": "2026-06-21-total-network-db-block",

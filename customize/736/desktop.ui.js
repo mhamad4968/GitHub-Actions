@@ -189,7 +189,7 @@
   let dirty = false;
   let readOnly = false;
   let uiScreen = 'list';
-  let headerOpen = true;
+  let headerOpen = false;
   let headerLegendOpen = false;
   let headerSpecHelpOpen = false;
   let headerCostHelpOpen = false;
@@ -210,7 +210,7 @@
   let diffBaseMeta = null;
   let diffResult = null;
   let diffLoading = false;
-  let diffDeletedExpanded = { spec: false, cost: false, mat: false, sub: false };
+  let diffDeletedExpanded = {};
   let printDiffMode = 'normal';
   let printSummaryLevel = 'brief';
   let jyDiffPrintBuild = false;
@@ -734,11 +734,9 @@
     const root = document.getElementById('jy-root');
     if (!root) return 112;
     let o = 8;
-    const sticky = root.querySelector('.jy-sticky-top');
-    if (sticky) o += sticky.offsetHeight + 8;
+    const stickyTop = root.querySelector('.jy-sticky-top');
+    if (stickyTop) o += stickyTop.offsetHeight + 8;
     else root.querySelectorAll('.jy-bar').forEach(function (bar) { o += bar.offsetHeight + 6; });
-    const tabs = root.querySelector('.jy-tabs');
-    if (tabs) o += tabs.offsetHeight + 6;
     const hint = root.querySelector('.jy-tab-hint');
     if (hint) o += hint.offsetHeight + 4;
     const header = root.querySelector('.jy-header-panel[open]');
@@ -848,9 +846,25 @@
       '.jy-sticky-top{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid #e2e8f0;padding:8px 0 10px;margin-bottom:12px;box-shadow:0 2px 8px rgba(15,23,42,.06)}' +
       '.jy-sticky-top .jy-bar{margin-bottom:0}' +
       '.jy-sticky-top .jy-dirty{margin-bottom:8px}' +
+      '.jy-sticky-top .jy-tabs{margin:8px 0 4px}' +
+      '.jy-sticky-top .jy-diff-bar{margin:0 0 6px}' +
+      '.jy-sticky-top .jy-diff-summary{margin:0 0 6px}' +
+      '.jy-sticky-top .jy-pane-head-banner{margin-bottom:4px;padding-bottom:0}' +
       '.jy-action-bar{justify-content:space-between;gap:12px}' +
       '.jy-action-group{display:flex;flex-wrap:wrap;gap:8px;align-items:center}' +
       '.jy-action-bar-right{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-left:auto}' +
+      '.jy-action-bar-print{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-left:1px solid #e2e8f0;padding-left:10px;margin-left:2px}' +
+      '.jy-action-bar-print .jy-print-tools-stack{flex-direction:row;align-items:center;gap:8px;flex-wrap:wrap}' +
+      '.jy-action-bar-print .jy-btn-print{padding:8px 20px;font-size:13px;min-width:5.5em}' +
+      '.jy-print-summary-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0 8px;padding:10px 14px;background:linear-gradient(180deg,#fffbeb 0%,#fef3c7 100%);border:2px solid #f59e0b;border-radius:8px;font-size:13px;box-shadow:0 2px 8px rgba(245,158,11,.18)}' +
+      '.jy-print-summary-row .jy-print-mode-label{font-size:15px;font-weight:800;color:#92400e;letter-spacing:.04em;margin-right:4px;white-space:nowrap}' +
+      '.jy-print-summary-opts{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}' +
+      '.jy-print-summary-opt{cursor:pointer;margin:0}' +
+      '.jy-print-summary-opt input{position:absolute;opacity:0;width:0;height:0;pointer-events:none}' +
+      '.jy-print-summary-opt span{display:inline-block;padding:7px 20px;border:2px solid #fbbf24;border-radius:8px;background:#fff;color:#92400e;font-size:14px;font-weight:700;line-height:1.2;box-shadow:0 1px 3px rgba(146,64,14,.12)}' +
+      '.jy-print-summary-opt:hover span{background:#fffbeb;border-color:#f59e0b}' +
+      '.jy-print-summary-opt input:checked+span{background:#d97706;color:#fff;border-color:#b45309;box-shadow:0 2px 6px rgba(180,83,9,.28)}' +
+      '.jy-print-summary-row-hint{font-size:12px;color:#92400e;font-weight:600;margin-left:auto}' +
       '.jy-font-toggle{display:flex;align-items:center;gap:4px;flex-wrap:wrap}' +
       '.jy-font-label{font-size:12px;color:#475569;white-space:nowrap;margin-right:2px}' +
       '.jy-font-btn{padding:5px 10px;border:1px solid #cbd5e1;border-radius:6px;cursor:pointer;background:#fff;font-size:12px;font-weight:600;line-height:1.2;font-family:inherit}' +
@@ -869,8 +883,10 @@
       '.jy-header-summary::-webkit-details-marker{display:none}' +
       '.jy-header-summary::after{content:"▸";position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:14px;color:#64748b;line-height:1}' +
       '.jy-header-panel[open] .jy-header-summary::after{content:"▾"}' +
-      '.jy-header-title-banner{width:100%;max-width:960px;box-sizing:border-box;padding:16px 56px;border-radius:10px;background:linear-gradient(135deg,#f8fafc 0%,#e2e8f0 55%,#cbd5e1 100%);border:1px solid #94a3b8;box-shadow:0 3px 8px rgba(71,85,105,.16);text-align:center}' +
+      '.jy-header-title-banner{width:100%;max-width:960px;box-sizing:border-box;padding:16px 56px;border-radius:10px;background:linear-gradient(135deg,#f8fafc 0%,#e2e8f0 55%,#cbd5e1 100%);border:1px solid #94a3b8;box-shadow:0 3px 8px rgba(71,85,105,.16);text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}' +
       '.jy-header-title-text{font-size:24px;font-weight:800;letter-spacing:.32em;color:#334155;line-height:1.35}' +
+      '.jy-panel-open-hint{font-size:12px;font-weight:400;color:#92400e;letter-spacing:normal;line-height:1.4}' +
+      '.jy-panel-open-hint-inline{margin-left:10px}' +
       '.jy-header-body{padding:0 14px 14px;border-top:1px solid #e2e8f0}' +
       '.jy-help-banner{margin:0 0 10px;border:1px solid #93c5fd;border-radius:6px;background:#eff6ff;overflow:hidden}' +
       '.jy-help-banner summary{display:flex;align-items:center;gap:8px;cursor:pointer;padding:9px 12px;font-size:12px;font-weight:600;color:#1e3a8a;background:linear-gradient(180deg,#eff6ff 0%,#dbeafe 100%);list-style:none;user-select:none}' +
@@ -918,11 +934,18 @@
       '.jy-tab[data-tab="detail"].active{background:#059669;border-color:#059669}' +
       '.jy-tab[data-tab="versions"].active{background:#7c3aed;border-color:#7c3aed}' +
       '.jy-tab-hint-versions{background:#f5f3ff;border-color:#ddd6fe;color:#475569}' +
-      '.jy-diff-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:0 0 8px;padding:8px 12px;background:#fffbeb;border:1px solid #fcd34d;border-radius:6px;font-size:12px}' +
-      '.jy-diff-bar-title{font-weight:700;color:#92400e}' +
-      '.jy-diff-mode{display:inline-flex;align-items:center;gap:4px;cursor:pointer}' +
-      '.jy-diff-meta{color:#475569;font-size:11px}' +
-      '.jy-diff-legend{display:inline-flex;flex-wrap:wrap;gap:6px;margin-left:auto}' +
+      '.jy-diff-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin:0 0 8px;padding:10px 14px;background:linear-gradient(180deg,#eff6ff 0%,#dbeafe 100%);border:2px solid #3b82f6;border-radius:8px;font-size:13px;box-shadow:0 2px 8px rgba(59,130,246,.18)}' +
+      '.jy-diff-bar-title{font-size:15px;font-weight:800;color:#1e3a8a;letter-spacing:.04em;white-space:nowrap}' +
+      '.jy-diff-mode-opts{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}' +
+      '.jy-diff-mode-opt{cursor:pointer;margin:0}' +
+      '.jy-diff-mode-opt input{position:absolute;opacity:0;width:0;height:0;pointer-events:none}' +
+      '.jy-diff-mode-opt span{display:inline-block;padding:7px 16px;border:2px solid #93c5fd;border-radius:8px;background:#fff;color:#1e40af;font-size:14px;font-weight:700;line-height:1.2;box-shadow:0 1px 3px rgba(30,64,175,.12);white-space:nowrap}' +
+      '.jy-diff-mode-opt:hover span{background:#eff6ff;border-color:#3b82f6}' +
+      '.jy-diff-mode-opt input:checked+span{background:#2563eb;color:#fff;border-color:#1d4ed8;box-shadow:0 2px 6px rgba(37,99,235,.28)}' +
+      '.jy-diff-meta{font-size:13px;font-weight:700;color:#1e40af;background:#fff;border:2px solid #93c5fd;padding:5px 12px;border-radius:8px;white-space:nowrap}' +
+      '.jy-diff-meta-loading{color:#64748b;border-color:#cbd5e1;background:#f8fafc;font-weight:600}' +
+      '.jy-diff-legend{display:inline-flex;flex-wrap:wrap;gap:6px;align-items:center;margin-left:auto}' +
+      '.jy-diff-legend .jy-diff-swatch{font-size:11px;padding:3px 8px;font-weight:600}' +
       '.jy-diff-swatch{display:inline-block;padding:1px 6px;border-radius:3px;border:1px solid #cbd5e1;font-size:10px}' +
       '.jy-diff-changed,.jy-diff-swatch.jy-diff-changed{background:#fff3cd!important}' +
       '.jy-diff-cascade,.jy-diff-swatch.jy-diff-cascade{background:#f0f9ff!important}' +
@@ -947,8 +970,9 @@
       'tr.jy-diff-changed td:first-child{box-shadow:inset 4px 0 0 #f59e0b}' +
       '.jy-diff-delta{font-size:10px;font-weight:700;color:#1d4ed8;margin-left:2px;white-space:nowrap}' +
       'td.jy-diff-amt-down .jy-diff-delta{color:#b91c1c}' +
-      '.jy-diff-summary{margin:0 0 10px;border:1px solid #cbd5e1;border-radius:6px;background:#f8fafc;font-size:12px}' +
-      '.jy-diff-summary>summary{cursor:pointer;padding:8px 12px;font-weight:700;color:#334155;list-style:none}' +
+      '.jy-diff-summary{margin:0 0 10px;border:1px solid #cbd5e1;border-radius:6px;background:#f8fafc;font-size:13px}' +
+      '.jy-diff-summary>summary{cursor:pointer;padding:10px 12px;font-weight:700;color:#334155;list-style:none;display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;font-size:14px}' +
+      '.jy-diff-summary-title{font-size:14px;font-weight:700}' +
       '.jy-diff-summary-body{padding:8px 12px 12px;border-top:1px solid #e2e8f0}' +
       '.jy-diff-summary-totals{font-weight:600;margin:0 0 8px}' +
       '.jy-diff-summary ul{margin:4px 0;padding-left:18px}' +
@@ -974,22 +998,24 @@
       '.jy-pane-detail{background:linear-gradient(180deg,#f8fafc 0%,#ecfdf5 100%);border-color:#86efac;border-top:3px solid #22c55e}' +
       '.jy-pane-summary .jy-excel-wrap{border-color:#bfdbfe}' +
       '.jy-pane-detail .jy-excel-wrap,.jy-pane-detail .jy-linked-wrap{border-color:#bbf7d0}' +
-      '.jy-pane-head{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:14px;padding-bottom:6px;position:sticky;top:var(--jy-print-sticky-top,0);z-index:95;background:#fff;padding-top:4px;box-shadow:0 2px 6px rgba(15,23,42,.05);border-bottom:1px solid #e2e8f0}' +
-      '.jy-sheet-title{width:100%;max-width:960px;box-sizing:border-box;padding:18px 56px;border-radius:10px;display:flex;flex-direction:column;align-items:center;gap:10px;line-height:1.3;text-align:center}' +
+      '.jy-pane-head{display:grid;grid-template-columns:1fr minmax(280px,960px) auto;align-items:center;gap:12px 20px;margin-bottom:14px;padding-bottom:6px}' +
+      '.jy-pane-head-banner{display:flex;justify-content:center;width:100%;margin:12px 0 10px;padding-bottom:4px}' +
+      '.jy-pane-head-banner .jy-sheet-title{grid-column:unset;width:100%;max-width:960px;margin:0 auto}' +
+      '.jy-sheet-title{grid-column:2;width:100%;max-width:960px;box-sizing:border-box;padding:18px 56px;border-radius:10px;display:flex;flex-direction:column;align-items:center;gap:10px;line-height:1.3;text-align:center}' +
       '.jy-sheet-title-summary{background:linear-gradient(135deg,#eff6ff 0%,#dbeafe 55%,#bfdbfe 100%);border:1px solid #93c5fd;box-shadow:0 3px 8px rgba(37,99,235,.16)}' +
       '.jy-sheet-title-detail{background:linear-gradient(135deg,#ecfdf5 0%,#d1fae5 55%,#bbf7d0 100%);border:1px solid #86efac;box-shadow:0 3px 8px rgba(5,150,105,.16)}' +
       '.jy-sheet-title-doc{font-size:26px;font-weight:800;letter-spacing:.24em;color:#1e3a8a}' +
       '.jy-sheet-title-sheet{font-size:20px;font-weight:700;letter-spacing:.32em;padding:6px 28px;border-radius:8px;display:inline-block}' +
       '.jy-pane-head .jy-btn-print{flex-shrink:0}' +
-      '.jy-pane-head-tools{width:100%;max-width:960px;display:flex;align-items:flex-end;justify-content:flex-end;gap:8px;flex-wrap:nowrap}' +
+      '.jy-pane-head-tools{grid-column:3;justify-self:end;display:flex;align-items:center;gap:8px;flex-wrap:wrap;max-width:min(100%,420px)}' +
       '.jy-pane-head-tools .jy-btn-print{flex-shrink:0}' +
-      '.jy-print-tools-stack{display:flex;flex-direction:column;align-items:flex-end;gap:3px}' +
+      '.jy-print-tools-stack{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0}' +
       '.jy-print-mode-bar{display:inline-flex;align-items:center;gap:8px;font-size:12px;white-space:nowrap;flex-wrap:nowrap}' +
       '.jy-print-mode-label{font-weight:600;color:#475569}' +
       '.jy-print-mode-sep{color:#cbd5e1;margin:0 2px}' +
       '.jy-print-mode{display:inline-flex;align-items:center;gap:4px;cursor:pointer}' +
       '.jy-print-mode input:disabled+span,.jy-print-mode input:disabled{opacity:.55;cursor:not-allowed}' +
-      '@media (max-width:900px){.jy-pane-head{align-items:stretch}.jy-sheet-title{padding:14px 20px}.jy-pane-head-tools{justify-content:center;flex-wrap:wrap}.jy-header-title-banner{padding:14px 24px}.jy-header-title-text{font-size:20px;letter-spacing:.22em}.jy-sheet-title-doc{font-size:22px}.jy-sheet-title-sheet{font-size:17px;padding:5px 18px}}' +
+      '@media (max-width:900px){.jy-pane-head{grid-template-columns:1fr;justify-items:stretch}.jy-pane-head-banner .jy-sheet-title,.jy-sheet-title{grid-column:1;padding:14px 20px}.jy-pane-head-tools{grid-column:1;justify-self:stretch;justify-content:center;max-width:none}.jy-action-bar-print{border-left:none;padding-left:0;margin-left:0}.jy-print-summary-row-hint{margin-left:0;width:100%}.jy-diff-legend{margin-left:0;width:100%}.jy-header-title-banner{padding:14px 24px}.jy-header-title-text{font-size:20px;letter-spacing:.22em}.jy-sheet-title-doc{font-size:22px}.jy-sheet-title-sheet{font-size:17px;padding:5px 18px}}' +
       '.jy-sheet-title-summary .jy-sheet-title-sheet{background:#fff;color:#1d4ed8;border:1px solid #93c5fd}' +
       '.jy-sheet-title-detail .jy-sheet-title-doc{color:#14532d}' +
       '.jy-sheet-title-detail .jy-sheet-title-sheet{background:#fff;color:#047857;border:1px solid #86efac}' +
@@ -1906,7 +1932,7 @@
     return (
       '<details class="jy-header-panel"' + (headerOpen ? ' open' : '') + ' id="jy-header-panel">' +
       '<summary class="jy-header-summary">' +
-      '<div class="jy-header-title-banner"><span class="jy-header-title-text">工　事　基　本　情　報</span></div>' +
+      '<div class="jy-header-title-banner"><span class="jy-header-title-text">工　事　基　本　情　報</span><span class="jy-panel-open-hint">確認したい場合はクリックして開いてください</span></div>' +
       '</summary>' +
       '<div class="jy-header-body">' +
       '<details class="jy-help-banner jy-help-banner-header"' + (headerLegendOpen ? ' open' : '') + ' id="jy-header-legend-panel">' +
@@ -2104,12 +2130,28 @@
     });
   }
 
-  function renderDiffRemovedBlock(table, label, renderRowHtml) {
-    if (!diffIsActive() || !diffResult[table] || !diffResult[table].removed.length) return '';
-    const n = diffResult[table].removed.length;
-    let html = '<details class="jy-diff-removed" data-diff-removed="' + table + '">';
+  function diffRemovedItems(table, predicate) {
+    if (!diffIsActive() || !diffResult[table]) return [];
+    return diffResult[table].removed.filter(predicate || function () { return true; });
+  }
+
+  function ensureDiffDeletedKey(scopeKey) {
+    if (!Object.prototype.hasOwnProperty.call(diffDeletedExpanded, scopeKey)) {
+      diffDeletedExpanded[scopeKey] = false;
+    }
+  }
+
+  function renderDiffRemovedBlock(table, label, renderRowHtml, opts) {
+    opts = opts || {};
+    const scopeKey = opts.scopeKey || table;
+    const items = diffRemovedItems(table, opts.predicate);
+    if (!items.length) return '';
+    ensureDiffDeletedKey(scopeKey);
+    const n = items.length;
+    const openAttr = diffDeletedExpanded[scopeKey] ? ' open' : '';
+    let html = '<details class="jy-diff-removed"' + openAttr + ' data-diff-removed="' + esc(scopeKey) + '">';
     html += '<summary>削除された行（' + n + '件）</summary><table class="jy-table jy-diff-removed-table"><tbody>';
-    diffResult[table].removed.forEach(function (item) {
+    items.forEach(function (item) {
       html += '<tr class="jy-diff-removed-row">' + renderRowHtml(item.row) + '</tr>';
     });
     html += '</tbody></table></details>';
@@ -2119,23 +2161,66 @@
   function syncDiffDeletedExpandedFromDom() {
     document.querySelectorAll('details.jy-diff-removed').forEach(function (el) {
       const table = el.getAttribute('data-diff-removed');
-      if (table && Object.prototype.hasOwnProperty.call(diffDeletedExpanded, table)) {
-        diffDeletedExpanded[table] = el.open;
-      }
+      if (table) diffDeletedExpanded[table] = el.open;
     });
   }
 
-  function renderPrintDiffRemovedBlock(table, sectionLabel, renderRowHtml) {
-    if (!printDiffActive() || !diffDeletedExpanded[table]) return '';
-    if (!diffIsActive() || !diffResult[table] || !diffResult[table].removed.length) return '';
-    const n = diffResult[table].removed.length;
+  function renderPrintDiffRemovedBlock(table, sectionLabel, renderRowHtml, opts) {
+    opts = opts || {};
+    const scopeKey = opts.scopeKey || table;
+    if (!printDiffActive() || !diffDeletedExpanded[scopeKey]) return '';
+    const items = diffRemovedItems(table, opts.predicate);
+    if (!items.length) return '';
+    const n = items.length;
     let html = '<div class="jy-pr-diff-removed"><div class="jy-pr-diff-removed-head">削除された行（' + esc(sectionLabel) + '・' + n + '件）</div>';
     html += '<table class="jy-pr-table jy-pr-diff-removed-table"><tbody>';
-    diffResult[table].removed.forEach(function (item) {
+    items.forEach(function (item) {
       html += '<tr class="jy-diff-removed-row">' + renderRowHtml(item.row) + '</tr>';
     });
     html += '</tbody></table></div>';
     return html;
+  }
+
+  function matDiffRemovedRowHtml(r) {
+    return '<td>' + esc(r.mat_vendor) + '</td><td>' + esc(r.mat_name) + '</td><td>' + esc(r.mat_capacity) + '</td><td>' + esc(r.mat_maker) + '</td><td class="jy-num">' + disp(r.mat_qty) + '</td><td class="jy-num">' + esc(formatUnitPrice(r.mat_unit_price)) + '</td><td>' + esc(r.mat_group) + '</td><td class="jy-num">' + fmt(r.mat_amount) + '</td><td>' + esc(r.mat_basis) + '</td>';
+  }
+
+  function matDiffRemovedPrintRowHtml(r) {
+    return '<td class="jy-center">' + disp(r.mat_vendor) + '</td><td>' + esc(r.mat_name) + '</td><td class="jy-center">' + disp(r.mat_capacity) + '</td><td class="jy-center">' + disp(r.mat_maker) + '</td><td class="jy-num">' + disp(r.mat_qty) + '</td><td class="jy-num">' + esc(formatUnitPrice(r.mat_unit_price)) + '</td><td class="jy-center">' + disp(r.mat_group) + '</td><td class="jy-num">' + fmt(r.mat_amount) + '</td><td>' + esc(r.mat_basis) + '</td><td></td>';
+  }
+
+  function subDiffRemovedRowHtml(r) {
+    return '<td>' + esc(subLineTypeDisplay(r)) + '</td><td class="jy-center">' + disp(r.sub_unit) + '</td><td class="jy-num">' + disp(r.sub_qty) + '</td><td class="jy-num">' + esc(formatUnitPrice(r.sub_unit_price)) + '</td><td class="jy-num">' + fmt(r.sub_amount) + '</td><td>' + esc(r.sub_basis) + '</td>';
+  }
+
+  function subDiffRemovedPrintRowHtml(r) {
+    return '<td>' + esc(subLineTypeDisplay(r)) + '</td><td class="jy-center">' + disp(r.sub_unit) + '</td><td class="jy-num">' + disp(r.sub_qty) + '</td><td class="jy-num">' + esc(formatUnitPrice(r.sub_unit_price)) + '</td><td class="jy-num">' + fmt(r.sub_amount) + '</td><td>' + esc(r.sub_basis) + '</td><td></td>';
+  }
+
+  function costDiffRemovedRowHtml(r) {
+    return '<td>' + esc(r.cost_work_type_code) + '</td><td>' + esc(r.cost_work_type) + '</td><td>' + esc(r.cost_category_code) + '</td><td>' + esc(r.cost_category) + '</td><td>' + esc(rowKindDisplay(r.cost_row_kind)) + '</td><td colspan="4"></td><td class="jy-num">' + fmt(r.cost_amount) + '</td><td colspan="3"></td>';
+  }
+
+  function costDiffRemovedPrintRowHtml(r) {
+    return '<td>' + esc(r.cost_work_type_code) + '</td><td>' + esc(r.cost_work_type) + '</td><td>' + esc(r.cost_category_code) + '</td><td>' + esc(r.cost_category) + '</td><td>' + esc(rowKindDisplay(r.cost_row_kind)) + '</td><td colspan="4"></td><td class="jy-num">' + fmt(r.cost_amount) + '</td><td colspan="2"></td>';
+  }
+
+  function costRemovedScopeKey(row) {
+    if (row.cost_row_kind === '連携' && row.detail_marker) return 'cost:link:' + row.detail_marker;
+    if (row.cost_group_key) return 'cost:group:' + row.cost_group_key;
+    return 'cost:tail';
+  }
+
+  function costRemovedPredicate(scopeKey) {
+    return function (item) {
+      return costRemovedScopeKey(item.row) === scopeKey;
+    };
+  }
+
+  function renderDiffRemovedBlockRow(table, label, renderRowHtml, opts, colSpan) {
+    const inner = renderDiffRemovedBlock(table, label, renderRowHtml, opts);
+    if (!inner) return '';
+    return '<tr class="jy-diff-removed-row-wrap"><td colspan="' + colSpan + '">' + inner + '</td></tr>';
   }
 
   function renderDiffListItems(items, max) {
@@ -2219,14 +2304,19 @@
     return html;
   }
 
+  function diffSummarySummaryHtml(titleText) {
+    return '<span class="jy-diff-summary-title">' + esc(titleText) + '</span>' +
+      '<span class="jy-panel-open-hint jy-panel-open-hint-inline">※確認時にはクリックして開いてください</span>';
+  }
+
   function renderDiffSummary() {
     if (!diffIsActive() || !diffResult) return '';
     const summary = buildDiffSummary(diffResult);
     if (!summary.hasChanges) {
-      return '<details class="jy-diff-summary"><summary>差分一覧 — 変更はありません</summary></details>';
+      return '<details class="jy-diff-summary"><summary>' + diffSummarySummaryHtml('差分一覧 — 変更はありません') + '</summary></details>';
     }
     const body = formatDiffSummaryBodyHtml(summary, 'detail', { includeFootnote: true });
-    return '<details class="jy-diff-summary" open><summary>差分一覧（直接編集 / 自動反映）</summary><div class="jy-diff-summary-body">' + body + '</div></details>';
+    return '<details class="jy-diff-summary"><summary>' + diffSummarySummaryHtml('差分一覧（直接編集 / 自動反映）') + '</summary><div class="jy-diff-summary-body">' + body + '</div></details>';
   }
 
   function renderPrintDiffSummaryPage() {
@@ -2248,15 +2338,17 @@
     if (!modes.length || !state.recordId) return '';
     let html = '<div class="jy-diff-bar">';
     html += '<span class="jy-diff-bar-title">差分表示（プレビュー）</span>';
-    html += '<label class="jy-diff-mode"><input type="radio" name="jy-diff-mode" value="off"' + (diffCompareMode === 'off' ? ' checked' : '') + '> オフ</label>';
+    html += '<span class="jy-diff-mode-opts">';
+    html += '<label class="jy-diff-mode-opt"><input type="radio" name="jy-diff-mode" value="off"' + (diffCompareMode === 'off' ? ' checked' : '') + '><span>オフ</span></label>';
     if (modes.indexOf('prev') >= 0) {
-      html += '<label class="jy-diff-mode"><input type="radio" name="jy-diff-mode" value="prev"' + (diffCompareMode === 'prev' ? ' checked' : '') + '> 直前版と比較</label>';
+      html += '<label class="jy-diff-mode-opt"><input type="radio" name="jy-diff-mode" value="prev"' + (diffCompareMode === 'prev' ? ' checked' : '') + '><span>直前版と比較</span></label>';
     }
     if (modes.indexOf('original') >= 0) {
-      html += '<label class="jy-diff-mode"><input type="radio" name="jy-diff-mode" value="original"' + (diffCompareMode === 'original' ? ' checked' : '') + '> 当初版と比較</label>';
+      html += '<label class="jy-diff-mode-opt"><input type="radio" name="jy-diff-mode" value="original"' + (diffCompareMode === 'original' ? ' checked' : '') + '><span>当初版と比較</span></label>';
     }
+    html += '</span>';
     if (diffLoading) {
-      html += '<span class="jy-diff-meta">比較元を読込中…</span>';
+      html += '<span class="jy-diff-meta jy-diff-meta-loading">比較元を読込中…</span>';
     } else if (diffIsActive() && diffBaseMeta) {
       html += '<span class="jy-diff-meta">比較対象: 版' + esc(String(diffBaseMeta.version_seq)) + ' ' + esc(diffBaseMeta.version_type) + '</span>';
     }
@@ -2270,50 +2362,37 @@
     return html;
   }
 
-  function syncPrintStickyTop() {
-    window.requestAnimationFrame(function () {
-      const root = document.getElementById('jy-root');
-      if (!root || uiScreen !== 'form') return;
-      const paneHead = root.querySelector('.jy-pane-head');
-      if (!paneHead) {
-        root.style.removeProperty('--jy-print-sticky-top');
-        return;
-      }
-      let top = 0;
-      const stickyTop = root.querySelector('.jy-sticky-top');
-      if (stickyTop) top += stickyTop.offsetHeight;
-      const header = root.querySelector('.jy-header-panel');
-      if (header) top += header.offsetHeight;
-      const tabs = root.querySelector('.jy-tabs');
-      if (tabs) top += tabs.offsetHeight;
-      const diffBar = root.querySelector('.jy-diff-bar');
-      if (diffBar) top += diffBar.offsetHeight;
-      const diffSummary = root.querySelector('details.jy-diff-summary');
-      if (diffSummary) top += diffSummary.offsetHeight;
-      const hint = root.querySelector('.jy-tab-hint');
-      if (hint) top += hint.offsetHeight;
-      root.style.setProperty('--jy-print-sticky-top', top + 'px');
-    });
+  function renderFormTabs() {
+    let html = '<div class="jy-tabs"><button type="button" class="jy-tab' + (activeTab === 'summary' ? ' active' : '') + '" data-tab="summary">総括表</button>';
+    html += '<button type="button" class="jy-tab' + (activeTab === 'detail' ? ' active' : '') + '" data-tab="detail">詳細表</button>';
+    html += '<button type="button" class="jy-tab' + (activeTab === 'versions' ? ' active' : '') + '" data-tab="versions">バージョン管理</button></div>';
+    return html;
+  }
+
+  function renderPrintSummaryLevelBar() {
+    if (!diffIsActive()) return '';
+    const lvl = printSummaryLevel === 'detail' ? 'detail' : 'brief';
+    let html = '<div class="jy-print-summary-row" role="group" aria-label="差分サマリー粒度">';
+    html += '<span class="jy-print-mode-label">差分サマリー（印刷1ページ目）</span>';
+    html += '<span class="jy-print-summary-opts">';
+    html += '<label class="jy-print-summary-opt"><input type="radio" name="jy-print-summary-level" value="brief"' + (lvl === 'brief' ? ' checked' : '') + '><span>簡潔</span></label>';
+    html += '<label class="jy-print-summary-opt"><input type="radio" name="jy-print-summary-level" value="detail"' + (lvl === 'detail' ? ' checked' : '') + '><span>詳細</span></label>';
+    html += '</span>';
+    html += '<span class="jy-print-summary-row-hint">※差分付き印刷の先頭ページ</span>';
+    html += '</div>';
+    return html;
   }
 
   function renderPrintModeRadios() {
     const canDiff = diffIsActive();
     const mode = canDiff && printDiffMode === 'diff' ? 'diff' : 'normal';
     if (!canDiff && printDiffMode === 'diff') printDiffMode = 'normal';
-    const lvl = printSummaryLevel === 'detail' ? 'detail' : 'brief';
     let html = '<div class="jy-print-tools-stack">';
     html += '<div class="jy-print-mode-bar" role="group" aria-label="印刷種別">';
     html += '<span class="jy-print-mode-label">印刷</span>';
     html += '<label class="jy-print-mode"><input type="radio" name="jy-print-mode" value="normal"' + (mode === 'normal' ? ' checked' : '') + '><span>通常</span></label>';
     html += '<label class="jy-print-mode"><input type="radio" name="jy-print-mode" value="diff"' + (mode === 'diff' ? ' checked' : '') + (canDiff ? '' : ' disabled') + '><span>差分付き</span></label>';
     html += '</div>';
-    if (mode === 'diff') {
-      html += '<div class="jy-print-mode-bar jy-print-summary-bar" role="group" aria-label="サマリー粒度">';
-      html += '<span class="jy-print-mode-label">サマリー</span>';
-      html += '<label class="jy-print-mode"><input type="radio" name="jy-print-summary-level" value="brief"' + (lvl === 'brief' ? ' checked' : '') + '><span>簡潔</span></label>';
-      html += '<label class="jy-print-mode"><input type="radio" name="jy-print-summary-level" value="detail"' + (lvl === 'detail' ? ' checked' : '') + '><span>詳細</span></label>';
-      html += '</div>';
-    }
     html += '</div>';
     return html;
   }
@@ -2330,8 +2409,8 @@
     return 'brief';
   }
 
-  function renderPrintPaneHeadTools(printBtnId) {
-    return '<div class="jy-pane-head-tools">' + renderPrintModeRadios() +
+  function renderActionBarPrintTools(printBtnId) {
+    return '<div class="jy-action-bar-print">' + renderPrintModeRadios() +
       '<button type="button" class="jy-btn jy-btn-print" id="' + printBtnId + '">印刷</button></div>';
   }
 
@@ -2368,7 +2447,7 @@
     html += '</tbody><tfoot><tr class="jy-foot-sum jy-total-row"><td colspan="4" class="jy-num">合計 …①</td><td class="jy-num ' + diffScalarClass('contract_total_1') + '">' + fmt(state.contract_total_1) + diffAmtMark('contract_total_1') + '</td><td colspan="' + (readOnly ? 1 : 2) + '"></td></tr></tfoot></table>';
     html += renderDiffRemovedBlock('spec', '仕様明細', function (r) {
       return '<td>' + esc(r.spec_name) + '</td><td class="jy-center">' + disp(r.spec_unit) + '</td><td class="jy-num">' + disp(r.spec_qty) + '</td><td class="jy-num">' + esc(formatUnitPrice(r.spec_unit_price)) + '</td><td class="jy-num">' + fmt(r.spec_amount) + '</td><td>' + esc(r.spec_note) + '</td>';
-    });
+    }, { scopeKey: 'spec' });
     html += '</div>';
 
     html += detailSectionHead(
@@ -2384,6 +2463,15 @@
       '</colgroup><thead><tr>' +
       '<th>工種CD</th><th>システム入力工種</th><th>種別CD</th><th>種別</th><th>行種別</th><th class="jy-center">消費税</th><th class="jy-center">単位</th><th>数量</th><th>単価</th><th class="jy-num">金額</th><th>計算基準・備考</th><th>詳細</th><th class="jy-num">率</th>' +
       (readOnly ? '' : '<th>操作</th>') + '</tr></thead><tbody>';
+    const costRemovedEmitted = {};
+    function emitCostRemoved(scopeKey, label) {
+      if (costRemovedEmitted[scopeKey]) return '';
+      costRemovedEmitted[scopeKey] = true;
+      return renderDiffRemovedBlockRow('cost', label, costDiffRemovedRowHtml, {
+        scopeKey: scopeKey,
+        predicate: costRemovedPredicate(scopeKey),
+      }, costColSpan);
+    }
     const costColSpan = readOnly ? 13 : 14;
     state.cost_lines.forEach(function (r, i) {
       const isLink = r.cost_row_kind === '連携';
@@ -2447,14 +2535,17 @@
         html += '</td>';
       }
       html += '</tr>';
+      if (isLink && r.detail_marker) {
+        html += emitCostRemoved('cost:link:' + r.detail_marker, '原価行（' + r.detail_marker + '）');
+      } else if (isSub && r.cost_group_key) {
+        html += emitCostRemoved('cost:group:' + r.cost_group_key, '原価行');
+      }
     });
+    html += emitCostRemoved('cost:tail', '原価行');
     html += '<tr class="jy-sum-anchor-row jy-sec-anchor" id="jy-sum-ref-8"><td colspan="' + costColSpan + '"></td></tr>';
     html += '<tr class="jy-sum-anchor-row jy-sec-anchor" id="jy-sum-ref-9"><td colspan="' + costColSpan + '"></td></tr>';
     html += '</tbody><tfoot><tr class="jy-foot-sum jy-total-row"><td colspan="9">工事原価額 …⑧</td><td class="jy-num ' + diffScalarClass('cost_total_8') + '">' + fmt(state.cost_total_8) + diffAmtMark('cost_total_8') + '</td><td colspan="' + (readOnly ? 3 : 4) + '"></td></tr>';
     html += '<tr class="jy-foot-sum jy-total-row"><td colspan="9">粗利 …⑨</td><td class="jy-num ' + diffScalarClass('profit_9') + '">' + fmt(state.profit_9) + diffAmtMark('profit_9') + '</td><td colspan="2" class="jy-num ' + diffScalarClass('profit_rate') + '">' + fmtPct(state.profit_rate) + diffAmtMark('profit_rate') + '</td><td colspan="' + (readOnly ? 1 : 2) + '"></td></tr></tfoot></table>';
-    html += renderDiffRemovedBlock('cost', '原価行', function (r) {
-      return '<td>' + esc(r.cost_work_type_code) + '</td><td>' + esc(r.cost_work_type) + '</td><td>' + esc(r.cost_category_code) + '</td><td>' + esc(r.cost_category) + '</td><td>' + esc(rowKindDisplay(r.cost_row_kind)) + '</td><td colspan="4"></td><td class="jy-num">' + fmt(r.cost_amount) + '</td><td colspan="3"></td>';
-    });
     html += datalist('jy-wt-list', (masterCache && masterCache.workTypes) || []);
     html += datalist('jy-wt-code-list', (masterCache && masterCache.workTypeCodes) || []);
     html += datalist('jy-cat-list', (masterCache && masterCache.categories) || []);
@@ -2701,7 +2792,12 @@
       if (r.mat_group !== '塗料') return;
       html += renderMatRow(r, i, readOnly);
     });
-    html += '</tbody><tfoot><tr class="jy-total-row"><td colspan="7">' + refLinkToSummary('②') + ' 塗料合計</td><td class="jy-num ' + diffScalarClass('mat_total_2') + '">' + refAmountLink('②', 'summary', state.mat_total_2) + diffAmtMark('mat_total_2') + '</td><td colspan="' + (readOnly ? 1 : 2) + '"></td></tr></tfoot></table></div>';
+    html += '</tbody><tfoot><tr class="jy-total-row"><td colspan="7">' + refLinkToSummary('②') + ' 塗料合計</td><td class="jy-num ' + diffScalarClass('mat_total_2') + '">' + refAmountLink('②', 'summary', state.mat_total_2) + diffAmtMark('mat_total_2') + '</td><td colspan="' + (readOnly ? 1 : 2) + '"></td></tr></tfoot></table>';
+    html += renderDiffRemovedBlock('mat', '材料明細（塗料）', matDiffRemovedRowHtml, {
+      scopeKey: 'mat:塗料',
+      predicate: function (item) { return item.row.mat_group === '塗料'; },
+    });
+    html += '</div>';
 
     html += '<div id="jy-sec-mat-3" class="jy-sec-anchor"></div>';
     html += detailSectionHead(
@@ -2715,8 +2811,9 @@
       html += renderMatRow(r, i, readOnly);
     });
     html += '</tbody><tfoot><tr class="jy-total-row"><td colspan="7">' + refLinkToSummary('③') + ' その他合計</td><td class="jy-num ' + diffScalarClass('mat_total_3') + '">' + refAmountLink('③', 'summary', state.mat_total_3) + diffAmtMark('mat_total_3') + '</td><td colspan="' + (readOnly ? 1 : 2) + '"></td></tr></tfoot></table>';
-    html += renderDiffRemovedBlock('mat', '材料明細', function (r) {
-      return '<td>' + esc(r.mat_vendor) + '</td><td>' + esc(r.mat_name) + '</td><td>' + esc(r.mat_capacity) + '</td><td>' + esc(r.mat_maker) + '</td><td class="jy-num">' + disp(r.mat_qty) + '</td><td class="jy-num">' + esc(formatUnitPrice(r.mat_unit_price)) + '</td><td>' + esc(r.mat_group) + '</td><td class="jy-num">' + fmt(r.mat_amount) + '</td><td>' + esc(r.mat_basis) + '</td>';
+    html += renderDiffRemovedBlock('mat', '材料明細（その他）', matDiffRemovedRowHtml, {
+      scopeKey: 'mat:その他',
+      predicate: function (item) { return item.row.mat_group === 'その他'; },
     });
     html += '</div>';
 
@@ -2767,11 +2864,12 @@
         }
       });
       html += '</tbody></table>';
+      html += renderDiffRemovedBlock('sub', b.label, subDiffRemovedRowHtml, {
+        scopeKey: 'sub:' + b.id,
+        predicate: function (item) { return item.row.subcontract_block === b.id; },
+      });
       html += subLineTypeDatalist(b.id);
       html += '</details>';
-    });
-    html += renderDiffRemovedBlock('sub', '外注明細', function (r) {
-      return '<td>' + esc(subLineTypeDisplay(r)) + '</td><td class="jy-center">' + disp(r.sub_unit) + '</td><td class="jy-num">' + disp(r.sub_qty) + '</td><td class="jy-num">' + esc(formatUnitPrice(r.sub_unit_price)) + '</td><td class="jy-num">' + fmt(r.sub_amount) + '</td><td>' + esc(r.sub_basis) + '</td>';
     });
     return html;
   }
@@ -3027,7 +3125,7 @@
     html += '</tbody><tfoot><tr class="jy-pr-total-row"><td colspan="4" class="jy-num">合計 …①</td><td class="jy-num ' + diffScalarClass('contract_total_1') + '">' + fmt(state.contract_total_1) + diffAmtMark('contract_total_1') + '</td><td></td></tr></tfoot></table></div></div>';
     html += renderPrintDiffRemovedBlock('spec', '仕様明細', function (r) {
       return '<td>' + esc(r.spec_name) + '</td><td class="jy-center">' + disp(r.spec_unit) + '</td><td class="jy-num">' + disp(r.spec_qty) + '</td><td class="jy-num">' + esc(formatUnitPrice(r.spec_unit_price)) + '</td><td class="jy-num">' + fmt(r.spec_amount) + '</td><td>' + esc(r.spec_note) + '</td>';
-    });
+    }, { scopeKey: 'spec' });
     return html;
   }
 
@@ -3051,6 +3149,17 @@
       '<th class="jy-col-kind">行種別</th><th class="jy-col-tax jy-center">消費税</th><th class="jy-col-unit jy-center">単位</th><th class="jy-col-qty">数量</th>' +
       '<th class="jy-col-price">単価</th><th class="jy-col-amt jy-num">金額</th><th class="jy-col-note">計算基準・備考</th><th class="jy-col-ratio jy-num">率</th>' +
       '</tr></thead><tbody>';
+    const costRemovedEmitted = {};
+    function emitPrintCostRemoved(scopeKey, label) {
+      if (costRemovedEmitted[scopeKey]) return '';
+      costRemovedEmitted[scopeKey] = true;
+      const block = renderPrintDiffRemovedBlock('cost', label, costDiffRemovedPrintRowHtml, {
+        scopeKey: scopeKey,
+        predicate: costRemovedPredicate(scopeKey),
+      });
+      if (!block) return '';
+      return '<tr class="jy-pr-diff-removed-row-wrap"><td colspan="12">' + block + '</td></tr>';
+    }
     lines.forEach(function (r, i) {
       const origIdx = state.cost_lines.indexOf(r);
       const rowIndex = origIdx >= 0 ? origIdx : i;
@@ -3082,16 +3191,18 @@
         html += '<td class="jy-num">' + fmtPct(r.cost_ratio) + '</td>';
       }
       html += '</tr>';
+      if (isLink && r.detail_marker) {
+        html += emitPrintCostRemoved('cost:link:' + r.detail_marker, '原価行（' + r.detail_marker + '）');
+      } else if (isSub && r.cost_group_key) {
+        html += emitPrintCostRemoved('cost:group:' + r.cost_group_key, '原価行');
+      }
     });
+    html += emitPrintCostRemoved('cost:tail', '原価行');
     html += '</tbody></table>';
     html += '<table class="jy-pr-table jy-pr-cost jy-pr-cost-totals"><tbody>';
     html += '<tr class="jy-pr-total-row"><td colspan="9">工事原価額 …⑧</td><td class="jy-num ' + diffScalarClass('cost_total_8') + '">' + fmt(state.cost_total_8) + diffAmtMark('cost_total_8') + '</td><td colspan="2"></td></tr>';
     html += '<tr class="jy-pr-total-row"><td colspan="9">粗利 …⑨</td><td class="jy-num ' + diffScalarClass('profit_9') + '">' + fmt(state.profit_9) + diffAmtMark('profit_9') + '</td><td></td><td class="jy-num ' + diffScalarClass('profit_rate') + '">' + fmtPct(state.profit_rate) + diffAmtMark('profit_rate') + '</td></tr>';
-    html += '</tbody></table>';
-    html += renderPrintDiffRemovedBlock('cost', '原価行', function (r) {
-      return '<td>' + esc(r.cost_work_type_code) + '</td><td>' + esc(r.cost_work_type) + '</td><td>' + esc(r.cost_category_code) + '</td><td>' + esc(r.cost_category) + '</td><td>' + esc(rowKindDisplay(r.cost_row_kind)) + '</td><td colspan="4"></td><td class="jy-num">' + fmt(r.cost_amount) + '</td><td colspan="2"></td>';
-    });
-    html += '</div></div>';
+    html += '</tbody></table></div></div>';
     return html;
   }
 
@@ -3124,7 +3235,12 @@
       html += '<td class="jy-num ' + diffCellClass('mat', rk, 'mat_amount') + '">' + fmt(r.mat_amount) + diffAmtMark('mat_amount', 'mat', rk) + '</td>';
       html += '<td class="' + diffCellClass('mat', rk, 'mat_basis') + '">' + esc(r.mat_basis) + '</td><td></td></tr>';
     });
-    html += '</tbody><tfoot><tr class="jy-pr-total-row"><td colspan="7">' + esc(totalLabel) + '</td><td class="jy-num ' + diffScalarClass(totalField) + '">' + fmt(totalAmount) + diffAmtMark(totalField) + '</td><td colspan="2"></td></tr></tfoot></table></div></div></div></div>';
+    html += '</tbody><tfoot><tr class="jy-pr-total-row"><td colspan="7">' + esc(totalLabel) + '</td><td class="jy-num ' + diffScalarClass(totalField) + '">' + fmt(totalAmount) + diffAmtMark(totalField) + '</td><td colspan="2"></td></tr></tfoot></table>';
+    html += renderPrintDiffRemovedBlock('mat', title, matDiffRemovedPrintRowHtml, {
+      scopeKey: 'mat:' + group,
+      predicate: function (item) { return item.row.mat_group === group; },
+    });
+    html += '</div></div></div></div>';
     return html;
   }
 
@@ -3156,7 +3272,12 @@
         html += '<td class="' + diffCellClass('sub', rk, 'sub_basis') + '">' + esc(r.sub_basis) + '</td><td></td></tr>';
       }
     });
-    html += '</tbody></table></div></div></div></div>';
+    html += '</tbody></table>';
+    html += renderPrintDiffRemovedBlock('sub', b.label, subDiffRemovedPrintRowHtml, {
+      scopeKey: 'sub:' + b.id,
+      predicate: function (item) { return item.row.subcontract_block === b.id; },
+    });
+    html += '</div></div></div></div>';
     return html;
   }
 
@@ -3186,14 +3307,8 @@
       html += renderPrintDocHead('（　詳　細　表　）');
       html += renderPrintMatBlock('材料明細（塗料）', '塗料', '塗料合計', state.mat_total_2, '②');
       html += renderPrintMatBlock('材料明細（その他）', 'その他', 'その他合計', state.mat_total_3, '③');
-      html += renderPrintDiffRemovedBlock('mat', '材料明細', function (r) {
-        return '<td class="jy-center">' + disp(r.mat_vendor) + '</td><td>' + esc(r.mat_name) + '</td><td class="jy-center">' + disp(r.mat_capacity) + '</td><td class="jy-center">' + disp(r.mat_maker) + '</td><td class="jy-num">' + disp(r.mat_qty) + '</td><td class="jy-num">' + esc(formatUnitPrice(r.mat_unit_price)) + '</td><td class="jy-center">' + disp(r.mat_group) + '</td><td class="jy-num">' + fmt(r.mat_amount) + '</td><td>' + esc(r.mat_basis) + '</td><td></td>';
-      });
       SUB_BLOCKS.forEach(function (b) {
         html += renderPrintSubBlock(b);
-      });
-      html += renderPrintDiffRemovedBlock('sub', '外注明細', function (r) {
-        return '<td>' + esc(subLineTypeDisplay(r)) + '</td><td class="jy-center">' + disp(r.sub_unit) + '</td><td class="jy-num">' + disp(r.sub_qty) + '</td><td class="jy-num">' + esc(formatUnitPrice(r.sub_unit_price)) + '</td><td class="jy-num">' + fmt(r.sub_amount) + '</td><td>' + esc(r.sub_basis) + '</td><td></td>';
       });
       html += renderPrintDiffFooter();
       return html;
@@ -3432,6 +3547,10 @@
     html += '<strong>' + esc(state.project_code || '新規') + '</strong> <span class="jy-meta">版' + esc(String(state.version_seq || 1)) + ' / ' + esc(state.version_type) + ' / ' + esc(state.status) + '</span>';
     html += '<div class="jy-action-bar-right">';
     html += renderFontToggle();
+    if (activeTab === 'summary' || activeTab === 'detail') {
+      const printBtnId = activeTab === 'summary' ? 'jy-print-summary' : 'jy-print-detail';
+      html += renderActionBarPrintTools(printBtnId);
+    }
     if (!readOnly) {
       html += '<div class="jy-action-group">';
       html += '<button type="button" class="jy-btn jy-btn-primary" id="jy-save">' + esc(saveLabel) + '</button>';
@@ -3449,31 +3568,38 @@
       html += '<button type="button" class="jy-btn" id="jy-create-revision">修正版を作成</button>';
     }
     html += '</div>';
-    html += '</div></div>';
+    html += '</div>';
+    if ((activeTab === 'summary' || activeTab === 'detail') && diffIsActive()) {
+      html += renderPrintSummaryLevelBar();
+    }
+    html += renderFormTabs();
+    if (activeTab === 'summary' || activeTab === 'detail') {
+      html += renderDiffBar();
+      html += renderDiffSummary();
+    }
+    html += '</div>';
     return html;
+  }
+
+  function renderSheetBannerRow() {
+    const kind = activeTab === 'summary' ? 'summary' : 'detail';
+    return '<div class="jy-pane-head jy-pane-head-banner">' + renderSheetBanner(kind) + '</div>';
   }
 
   function renderForm() {
     prepareDiffForRender();
     let html = renderFormActionBar();
     html += renderHeader();
-    html += '<div class="jy-tabs"><button type="button" class="jy-tab' + (activeTab === 'summary' ? ' active' : '') + '" data-tab="summary">総括表</button>';
-    html += '<button type="button" class="jy-tab' + (activeTab === 'detail' ? ' active' : '') + '" data-tab="detail">詳細表</button>';
-    html += '<button type="button" class="jy-tab' + (activeTab === 'versions' ? ' active' : '') + '" data-tab="versions">バージョン管理</button></div>';
-    if (activeTab === 'summary' || activeTab === 'detail') {
-      html += renderDiffBar();
-      html += renderDiffSummary();
-    }
     if (activeTab === 'summary') {
+      html += renderSheetBannerRow();
       html += '<div class="jy-tab-hint jy-tab-hint-summary">番号または詳細表と連携行の金額をクリックすると詳細表の該当ブロックへ移動します<span class="jy-legend-linked">緑 = 詳細表と連携（②〜⑦）</span>' +
         (readOnly ? '' : '<span class="jy-legend-linked" style="margin-left:8px;background:#f1f5f9;border-color:#cbd5e1;color:#475569">見出しの「末尾に追加」または各行の ＋ で挿入</span>') + '</div>';
-      html += '<div class="jy-pane jy-pane-summary"><div class="jy-pane-head">' + renderSheetBanner('summary');
-      html += renderPrintPaneHeadTools('jy-print-summary') + '</div>' + renderSummary() + '</div>';
+      html += '<div class="jy-pane jy-pane-summary">' + renderSummary() + '</div>';
     } else if (activeTab === 'detail') {
+      html += renderSheetBannerRow();
       html += '<div class="jy-tab-hint jy-tab-hint-detail">番号または合計金額をクリックすると総括表の詳細表と連携行へ移動します<span class="jy-legend-linked">緑 = 詳細表と連携（②〜⑦）</span>' +
         (readOnly ? '' : '<span class="jy-legend-linked" style="margin-left:8px;background:#f1f5f9;border-color:#cbd5e1;color:#475569">見出しの「末尾に追加」または各行の ＋ で挿入</span>') + '</div>';
-      html += '<div class="jy-pane jy-pane-detail"><div class="jy-pane-head">' + renderSheetBanner('detail');
-      html += renderPrintPaneHeadTools('jy-print-detail') + '</div>' + renderDetail() + '</div>';
+      html += '<div class="jy-pane jy-pane-detail">' + renderDetail() + '</div>';
     } else {
       html += '<div class="jy-tab-hint jy-tab-hint-versions">同一工事の全版一覧。版番号をクリックするとその版を開き、総括表・詳細表で閲覧できます（印刷対象外）。</div>';
       html += renderVersionsHelpPanel();
@@ -3555,7 +3681,7 @@
       el.addEventListener('change', function () { syncInputs(); markDirty(); });
     });
     const panel = document.getElementById('jy-header-panel');
-    if (panel) panel.addEventListener('toggle', function () { headerOpen = panel.open; syncPrintStickyTop(); });
+    if (panel) panel.addEventListener('toggle', function () { headerOpen = panel.open; });
     const legendPanel = document.getElementById('jy-header-legend-panel');
     if (legendPanel) legendPanel.addEventListener('toggle', function () { headerLegendOpen = legendPanel.open; });
     const specHelpPanel = document.getElementById('jy-spec-help-panel');
@@ -3695,16 +3821,11 @@
         render();
       });
     });
-    root.querySelectorAll('details.jy-diff-summary').forEach(function (el) {
-      el.addEventListener('toggle', syncPrintStickyTop);
-    });
     root.querySelectorAll('input[name="jy-print-summary-level"]').forEach(function (el) {
       el.addEventListener('change', function () {
         if (el.checked) printSummaryLevel = el.value === 'detail' ? 'detail' : 'brief';
       });
     });
-
-    syncPrintStickyTop();
 
     root.querySelectorAll('[data-spec-add]').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
