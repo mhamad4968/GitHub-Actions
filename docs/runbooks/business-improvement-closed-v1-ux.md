@@ -47,7 +47,11 @@
 |------|------|
 | 保存先 | 697 共通設定 `sync595_meta`（JSON） |
 | 書込 | `npm run business-improvement:sync-595`（成功/失敗両方） |
-| 表示 | 698 一覧 customize（697 GET） |
-| 月次確認 | 698 バナーが **成功（緑）/ 失敗（赤）** を正しく示すこと（Task Scheduler 失敗時は赤） |
+| 表示 | 698 一覧 customize（697 GET）+ **手動同期ボタン**（698 一覧・595→698 反映） |
+| 日次 | `npm run business-improvement:sync-595:register-windows-task`（毎日 22:30 ローカル） |
+| 月次確認 | 698 バナーが **成功（緑）/ 要確認（黄）/ 失敗（赤）** を正しく示すこと |
+| 突合 | **595.$id → 698.$id**（初回 seed 同一）。$id 不一致時は **氏名** でフォールバック PUT。誤 POST 重複は削除 |
+| 一覧並び | **595 と同一** — `source595_id`（595 レコード番号）昇順。698 一覧 customize が既定適用 |
+| 差分警告 | `sync595_meta.warn` — 突合不能レコード・**26h 超 stale** |
 
-フィールド追加: `npm run business-improvement:add-sync595-meta`
+フィールド追加: `npm run business-improvement:add-sync595-meta` / `npm run business-improvement:add-employee-source595-id`

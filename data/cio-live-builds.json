@@ -130,11 +130,11 @@
       "note": null
     },
     "698": {
-      "build": "2026-06-25-bi-employee-sync595-banner-v1",
-      "fileKey": "f3e129da-9591-4d7d-bf84-81f2f86ec0b4",
-      "revision": "11",
+      "build": "2026-07-04-bi-employee-sync595-sort595-id",
+      "fileKey": "5ed0278f-c9b4-4046-bd24-9003d15b3cb1",
+      "revision": "17",
       "relPath": "customize/business-improvement-employee/desktop.js",
-      "deployedAt": "2026-06-25T13:20:17.733Z",
+      "deployedAt": "2026-07-04T00:18:17.359Z",
       "note": null
     },
     "699": {

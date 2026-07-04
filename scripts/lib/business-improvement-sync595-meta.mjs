@@ -18,8 +18,15 @@ export function formatJstNow(date = new Date()) {
   return `${g('year')}-${g('month')}-${g('day')} ${g('hour')}:${g('minute')}:${g('second')} JST`;
 }
 
-export function buildSync595Meta({ ok, stats, error }) {
+export function buildSync595Meta({ ok, stats, error, drift }) {
   const at = new Date().toISOString();
+  const d = drift || {};
+  const drift698Only = d.drift698Only ?? null;
+  const drift595Only = d.drift595Only ?? null;
+  const warn =
+    Boolean(d.warn) ||
+    (Number(drift698Only) > 0) ||
+    (Number(drift595Only) > 0);
   const meta = {
     at,
     atDisplay: formatJstNow(),
@@ -28,8 +35,12 @@ export function buildSync595Meta({ ok, stats, error }) {
     existingBefore: stats?.existingEmp ?? null,
     added: stats?.toPost ?? null,
     updated: stats?.toPut ?? null,
+    deleted: stats?.toDelete ?? null,
     unchanged: stats?.skipUnchanged ?? null,
     mirrorTotal: stats?.mirrorTotal ?? null,
+    drift698Only,
+    drift595Only,
+    warn,
     error: error ? String(error).slice(0, 2000) : null,
   };
   return meta;

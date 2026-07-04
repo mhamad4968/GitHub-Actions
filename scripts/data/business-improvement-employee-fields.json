@@ -32,6 +32,20 @@
         "在籍": { "label": "在籍", "index": "0" },
         "退職": { "label": "退職", "index": "1" }
       }
+    },
+    "source595_id": {
+      "type": "NUMBER",
+      "code": "source595_id",
+      "label": "595並び順",
+      "required": false,
+      "noLabel": false,
+      "digit": false,
+      "unique": false,
+      "minValue": "",
+      "maxValue": "",
+      "displayScale": "",
+      "unit": "",
+      "unitPosition": "BEFORE"
     }
   }
 }

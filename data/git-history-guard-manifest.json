@@ -1,21 +1,21 @@
 {
-  "version": "2026-07-03",
+  "version": "2026-07-04",
   "note": "git-history-alignment が保護するコマンド・緩和禁止パターン。verify:git-history-alignment / git-history-mcp 連動。",
   "generations": [
     {
-      "hash": "99c1337",
+      "hash": "a294c70",
       "label": "feat(governance): 6-role AI team §1-2-3-6 and 2026 security-training masters",
-      "at": "2026-07-03"
+      "at": "2026-07-04"
     },
     {
       "hash": "db2bf49",
       "label": "feat(credit): Plan & Usage at session start before user request (Hamada)",
-      "at": "2026-07-03"
+      "at": "2026-07-04"
     },
     {
       "hash": "01c9cd2",
       "label": "docs(credit): Plan & Usage 3-day reporting cadence + stale nudge (Hamada GO)",
-      "at": "2026-07-03"
+      "at": "2026-07-04"
     }
   ],
   "protectedCommands": [
