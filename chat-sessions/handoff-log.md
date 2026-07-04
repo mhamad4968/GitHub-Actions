@@ -3817,7 +3817,7 @@ npm run cio:morning:ready
 
 **次の1手**: **月曜 社内アプリレビュー（3回目）** — 698/700 フィードバック → 相談
 
-**Git**: 本ターン commit + push
+**Git**: **`abd971e`** = `origin/main` — push 済
 
 **触らない**: 688 / 677–679 / SKYSEA · 736 担当説明
 

@@ -30,7 +30,7 @@
 | **nodemailer 9.x** | **保留**（浜田 2026-07-04 判断 — SMTP リスク回避） |
 
 **次の1手**: **月曜 社内アプリレビュー（3回目）** — 698/700 本日反映分のフィードバック待ち。736 は **7/11** まで rev168 様子見  
-**Git**: **`e851af4`** — 本ターン commit 後 push  
+**Git**: **`abd971e`** = `origin/main` — push 済  
 **Plan&Usage**: 前回 **18%**（2026-07-02）· Ultra リセット **7/15** · **3 日に 1 回**報告  
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **クローズ正本**: `data/cio-project-closures.json` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`  
 **運用メモ**: 本番 Excel 編集は **`設定マスタ_本番`** シートのみ。人事発令反映を正とする。`C:\tmp\業務改善\` に最新 Excel ミラー配置。Desktop `＃重要確認事項.txt` **廃止済**（`18-重要確認.txt` 正本）。595 CSV 取込後は一覧 **「台帳へ一括反映」** を実行。  
