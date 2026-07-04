@@ -1,10 +1,10 @@
 /**
- * 実行予算書作成支援ツール ver.01 — BUILD 2026-07-04-736-print-summary-level-label
+ * 実行予算書作成支援ツール ver.01 — BUILD 2026-07-04-736-spec-row-menu-v0a
  * Master app: 735
  */
 (function () {
   'use strict';
-  const BUILD = '2026-07-04-736-print-summary-level-label';
+  const BUILD = '2026-07-04-736-spec-row-menu-v0a';
   const APP_MASTER = 735;
   const DEFAULT_COST_TEMPLATE = [
   { "cost_work_type_code": "10100", "cost_work_type": "材料費", "cost_category_code": "", "cost_category": "塗料", "cost_row_kind": "link", "cost_group_key": "material", "cost_tax_rate": 0.1, "cost_unit": "－", "detail_marker": "②", "cost_basis_note": "詳細表にて内訳を記載…②" },
@@ -2142,7 +2142,15 @@ function pushTotalEntry(list, field, label, info, bucket) {
       '.jy-summary-table-spec .jy-col-price{width:80px}' +
       '.jy-summary-table-spec .jy-col-amt{width:88px}' +
       '.jy-summary-table-spec .jy-col-note{width:16%}' +
-      '.jy-summary-table-spec .jy-col-del{width:32px}' +
+      '.jy-summary-table-spec .jy-col-del{width:36px}' +
+      '.jy-row-menu{position:relative;display:inline-block}' +
+      '.jy-row-menu summary.jy-row-menu-trigger{list-style:none;cursor:pointer;min-width:28px;padding:2px 6px;text-align:center;font-weight:700;line-height:1.2}' +
+      '.jy-row-menu summary.jy-row-menu-trigger::-webkit-details-marker{display:none}' +
+      '.jy-row-menu-pop{position:absolute;right:0;top:calc(100% + 2px);z-index:120;min-width:148px;padding:4px 0;background:#fff;border:1px solid #cbd5e1;border-radius:8px;box-shadow:0 4px 14px rgba(15,23,42,.14)}' +
+      '.jy-row-menu-pop button{display:block;width:100%;text-align:left;padding:8px 12px;border:none;background:transparent;font-size:12px;cursor:pointer;color:#334155}' +
+      '.jy-row-menu-pop button:hover{background:#f1f5f9}' +
+      '.jy-row-menu-pop button.jy-row-menu-del{color:#b91c1c}' +
+      '.jy-row-menu-pop button.jy-row-menu-del:hover{background:#fef2f2}' +
       '.jy-summary-table-spec td{overflow:hidden}' +
       '.jy-summary-table-spec .jy-in{min-width:0}' +
       '.jy-table-mat{table-layout:fixed;width:100%;min-width:980px}' +
@@ -2990,7 +2998,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
     return renderSectionHelpBanner('jy-spec-help-panel', headerSpecHelpOpen, '仕様明細（①）の入力について（クリックで開閉）', [
       '契約・見積の<strong>仕様明細 …①</strong>です。仕様・単位・数量・単価を行ごとに入力します。',
       '金額は<strong>数量×単価</strong>で自動計算されます。表下の合計が<strong>契約合計 …①</strong>になります。',
-      '行の追加は、見出しの「末尾に追加」または各行の<strong>＋</strong>で行います。追加した行は薄い黄色で強調表示されます。',
+      '行の追加は、見出しの「末尾に追加」または各行の<strong>⋮ メニュー → 下に1行追加</strong>で行います。追加した行は薄い黄色で強調表示されます。',
       '原価行（②〜⑧）との関係は、下の<strong>原価行</strong>の見方、または<strong>詳細表</strong>タブの見方を参照してください。'
     ]);
   }
@@ -3520,6 +3528,17 @@ function pushTotalEntry(list, field, label, info, bucket) {
       '<button type="button" class="jy-btn jy-btn-print" id="' + printBtnId + '">印刷</button></div>';
   }
 
+  function renderSpecRowMenu(i) {
+    return (
+      '<details class="jy-row-menu jy-row-menu-spec">' +
+      '<summary class="jy-btn jy-row-menu-trigger" title="行の操作" aria-label="行の操作">⋮</summary>' +
+      '<div class="jy-row-menu-pop" role="menu">' +
+      '<button type="button" role="menuitem" data-spec-add-after="' + i + '">下に1行追加</button>' +
+      '<button type="button" role="menuitem" class="jy-row-menu-del" data-spec-del="' + i + '">行を削除</button>' +
+      '</div></details>'
+    );
+  }
+
   function renderSummary() {
     recalcState(state);
     const m = masterCache || { units: SPEC_UNITS };
@@ -3542,10 +3561,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
       html += '<td class="jy-num jy-ro ' + diffCellClass('spec', rk, 'spec_amount') + '">' + fmt(r.spec_amount) + diffAmtMark('spec_amount', 'spec', rk) + '</td>';
       html += '<td class="' + diffCellClass('spec', rk, 'spec_note') + '"><input class="jy-in jy-text-cell" data-spec-note="' + i + '" value="' + esc(r.spec_note) + '"' + (r.spec_note ? ' title="' + esc(r.spec_note) + '"' : '') + (readOnly ? ' disabled' : '') + '></td>';
       if (!readOnly) {
-        html += '<td class="jy-row-actions">';
-        html += '<button type="button" class="jy-btn" data-spec-add-after="' + i + '" title="この行の下に追加">＋</button>';
-        html += '<button type="button" class="jy-btn" data-spec-del="' + i + '" title="この行を削除">×</button>';
-        html += '</td>';
+        html += '<td class="jy-row-actions">' + renderSpecRowMenu(i) + '</td>';
       }
       html += '</tr>';
     });
@@ -4700,12 +4716,12 @@ function pushTotalEntry(list, field, label, info, bucket) {
     if (activeTab === 'summary') {
       html += renderSheetBannerRow();
       html += '<div class="jy-tab-hint jy-tab-hint-summary">番号または詳細表と連携行の金額をクリックすると詳細表の該当ブロックへ移動します<span class="jy-legend-linked">緑 = 詳細表と連携（②〜⑦）</span>' +
-        (readOnly ? '' : '<span class="jy-legend-linked" style="margin-left:8px;background:#f1f5f9;border-color:#cbd5e1;color:#475569">見出しの「末尾に追加」または各行の ＋ で挿入</span>') + '</div>';
+        (readOnly ? '' : '<span class="jy-legend-linked" style="margin-left:8px;background:#f1f5f9;border-color:#cbd5e1;color:#475569">見出しの「末尾に追加」または各行 ⋮ メニューで挿入</span>') + '</div>';
       html += '<div class="jy-pane jy-pane-summary">' + renderSummary() + '</div>';
     } else if (activeTab === 'detail') {
       html += renderSheetBannerRow();
       html += '<div class="jy-tab-hint jy-tab-hint-detail">番号または合計金額をクリックすると総括表の詳細表と連携行へ移動します<span class="jy-legend-linked">緑 = 詳細表と連携（②〜⑦）</span>' +
-        (readOnly ? '' : '<span class="jy-legend-linked" style="margin-left:8px;background:#f1f5f9;border-color:#cbd5e1;color:#475569">見出しの「末尾に追加」または各行の ＋ で挿入</span>') + '</div>';
+        (readOnly ? '' : '<span class="jy-legend-linked" style="margin-left:8px;background:#f1f5f9;border-color:#cbd5e1;color:#475569">見出しの「末尾に追加」または各行 ⋮ メニューで挿入</span>') + '</div>';
       html += '<div class="jy-pane jy-pane-detail">' + renderDetail() + '</div>';
     } else {
       html += '<div class="jy-tab-hint jy-tab-hint-versions">同一工事の全版一覧。版番号をクリックするとその版を開き、総括表・詳細表で閲覧できます（印刷対象外）。</div>';
@@ -4934,6 +4950,14 @@ function pushTotalEntry(list, field, label, info, bucket) {
       });
     });
 
+    root.querySelectorAll('.jy-row-menu-spec').forEach(function (el) {
+      el.addEventListener('toggle', function () {
+        if (!el.open) return;
+        root.querySelectorAll('.jy-row-menu-spec').forEach(function (other) {
+          if (other !== el) other.open = false;
+        });
+      });
+    });
     root.querySelectorAll('[data-spec-add]').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
         e.stopPropagation();

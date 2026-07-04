@@ -93,9 +93,14 @@
       "note": "差分一覧 details（open 属性なし＝デフォルト閉）"
     },
     {
-      "id": "print-summary-level-label",
-      "needle": "jy-pr-diff-summary-level",
-      "note": "印刷サマリーに簡潔/詳細モード表示"
+      "id": "spec-row-menu-v0a",
+      "needle": "function renderSpecRowMenu(i)",
+      "note": "Phase 0a 仕様明細 ⋮ 行メニュー"
+    },
+    {
+      "id": "spec-row-menu-markup",
+      "needle": "class=\"jy-row-menu jy-row-menu-spec\"",
+      "note": "仕様明細のみ ⋮ メニュー（原価/材料は未展開）"
     },
     {
       "id": "print-diff-summary-page",
@@ -127,6 +132,8 @@
   ],
   "syncAnchors": [
     "function ensureDiffDeletedKey(scopeKey)",
+    "function renderSpecRowMenu(i)",
+    "下に1行追加",
     "html += renderActionBarPrintTools(printBtnId);",
     "材料明細（塗料）",
     "jy-panel-open-hint jy-panel-open-hint-inline"
