@@ -315,10 +315,10 @@
     },
     "736": {
       "build": "2026-07-04-736-print-sticky-layout-fix",
-      "fileKey": "69eee3e7-1720-44f6-8707-a2ae8a0560cf",
-      "revision": "137",
-      "relPath": "customize/736/desktop.js",
-      "deployedAt": "2026-07-04T09:04:08.771Z",
+      "fileKey": "027bf724-c8e1-477f-ad2c-ff9a72ba7afb",
+      "revision": "138",
+      "relPath": ".kintone-deploy/upload-736.js",
+      "deployedAt": "2026-07-04T09:04:58.112Z",
       "note": null
     },
     "737": {
