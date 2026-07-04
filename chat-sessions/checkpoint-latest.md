@@ -12,7 +12,7 @@
 | **697 設定マスタ** | 本番 Excel — 30所属 upsert 済（人事発令反映） |
 | **697 共通** | id=31 `hr_director_login=jinji` / `arai-s@j-bis.co.jp` |
 | **697 WFテスト** | id=32 — 全ロール **admin** / jb-sys@j-bis.co.jp |
-| **700 提案申請** | BUILD=`2026-07-04-bi-proposal-hr-dept-override` rev **144** |
+| **700 提案申請** | BUILD=`2026-07-04-bi-proposal-hr-dept-override` rev **145** |
 | **698 社員ミラー** | 595 同期 fix（`f98b062`） |
 | **セキュリティ勉強会** | 2026 masters リポ正本（`a294c70`） |
 | **C:\tmp** | closed-v1 8 フォルダ廃止 + archive 移管（`fc66c5d`） |
@@ -32,7 +32,7 @@
 | **nodemailer 9.x** | V1 proposal 手動レビュー待ち |
 
 **次の1手**: **浜田依頼待ち**（項番 -0）— nodemailer 9.x major は pending 維持（§38-1 レビュー）  
-**Git**: **`d0aff32`** = `origin/main` — push 済
+**Git**: **`5fec752`** = `origin/main` — push 済
 **Plan&Usage**: 前回 **18%**（2026-07-02）· Ultra リセット **7/15** · **3 日に 1 回**報告  
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **クローズ正本**: `data/cio-project-closures.json` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`  
 **運用メモ**: 本番 Excel 編集は **`設定マスタ_本番`** シートのみ。人事発令反映を正とする。`C:\tmp\業務改善\` に最新 Excel ミラー配置。Desktop `＃重要確認事項.txt` **廃止済**（`18-重要確認.txt` 正本）。595 CSV 取込後は一覧 **「台帳へ一括反映」** を実行。  
