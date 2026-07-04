@@ -29,14 +29,19 @@
 | **nodemailer 9.x** | V1 proposal 手動レビュー待ち |
 
 **次の1手**: **浜田依頼待ち**（項番 -0）— WF 本番切替前に `npm run business-improvement:validate-prod-settings-xlsx` で再検証可  
-**Git**: **`923f00a`** = `origin/main` — 697/700 本番設定 push 済（メンテ追記は本ターン commit 予定）  
-**Plan&Usage**: 前回 **18%**（2026-07-02）· Ultra リセット **7/15**  
-**品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`  
-**運用メモ**: 本番 Excel 編集は **`設定マスタ_本番`** シートのみ。人事発令反映を正とする。`C:\tmp\業務改善\` に最新 Excel ミラー配置。Desktop `＃重要確認事項.txt` **廃止済**（`18-重要確認.txt` 正本）。  
+**Git**: **`37b0c27`** — メンテ commit 済（push 予定）· BI 本番 **`923f00a`**  
+**Plan&Usage**: 前回 **18%**（2026-07-02）· Ultra リセット **7/15** · **3 日に 1 回**報告  
+**品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **クローズ正本**: `data/cio-project-closures.json` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`  
+**運用メモ**: 本番 Excel 編集は **`設定マスタ_本番`** シートのみ。人事発令反映を正とする。`C:\tmp\業務改善\` に最新 Excel ミラー配置。Desktop `＃重要確認事項.txt` **廃止済**（`18-重要確認.txt` 正本）。595 CSV 取込後は一覧 **「台帳へ一括反映」** を実行。  
 **npm**: `business-improvement:build-prod-wf-settings-xlsx` / `validate-prod-settings-xlsx` / `restore-common-hr-jinji`  
-**MCP**: Tier B 前に `cio:mcp:env` 推奨
+**憲法**: **§38-1** npm セキュリティ自律更新（minor/patch 自動 · major 保留）  
+**npm minor**: `@kintone/cli` 1.20.0 · eslint 10.6.0 · globals 17.7.0 · qrcode 1.5.4 — major 保留: nodemailer 9.x · xlsx  
+**MCP**: Tier B 前に `cio:mcp:env` 推奨（前回 **6/6 OK**）  
+**改善案 GO 済（2026-07-02 夜）**: R-ML-03, S-CLOSE-01, S-ML-05, R-595-03, D-CREDIT-01 — `docs/approved-changes/processed/2026-07-02/`  
+**締め**: Desktop sync **2026-07-04** · session report **19-SESSION-ONE-REPORT-2026-07-04.md**
 
 ## セッション切替後の自律復元（Lifecycle v2 鏡像）
 
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`  
-**項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**
+**項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / **`mandatory-read-gate.mjs`** / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
+**CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **L2** bootstrap NG → NEW-SESSION-STARTER 6 部（1 回）| **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）
