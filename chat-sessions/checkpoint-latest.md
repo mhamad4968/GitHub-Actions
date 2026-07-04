@@ -28,11 +28,11 @@
 | **688 保留** | 触らない |
 | **予実管理 保留** | **677/678/679** — 触らない |
 | **SKYSEA 保留** | 触らない |
-| **736 担当説明 保留** | Step2-3 待ち |
+| **736 実行予算** | **Step2-3 残** + 機能追加 — **夜セッション意見交換から**（担当説明は従来保留のまま触らない） |
 | **nodemailer 9.x** | **保留**（浜田 2026-07-04 判断 — SMTP リスク回避） |
 
-**次の1手**: **浜田依頼待ち**（項番 -0）— 夜セッション再開時 `npm run session:bootstrap`  
-**Git**: **`f827ffc`** = `origin/main` — push 済
+**次の1手**: **夜セッション** — [App 736](https://jbis-kintone.cybozu.com/k/736/) 残件 + 一部機能追加の**意見交換から**（浜田指示）。再開時 `npm run session:bootstrap`  
+**Git**: **`02c0662`** = `origin/main` — push 済
 **Plan&Usage**: 前回 **18%**（2026-07-02）· Ultra リセット **7/15** · **3 日に 1 回**報告  
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **クローズ正本**: `data/cio-project-closures.json` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`  
 **運用メモ**: 本番 Excel 編集は **`設定マスタ_本番`** シートのみ。人事発令反映を正とする。`C:\tmp\業務改善\` に最新 Excel ミラー配置。Desktop `＃重要確認事項.txt` **廃止済**（`18-重要確認.txt` 正本）。595 CSV 取込後は一覧 **「台帳へ一括反映」** を実行。  
