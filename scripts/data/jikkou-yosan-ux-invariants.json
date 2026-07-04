@@ -99,7 +99,7 @@
     },
     {
       "id": "spec-row-menu-markup",
-      "needle": "class=\"jy-row-menu jy-row-menu-spec\"",
+      "needle": "data-spec-row-menu-trigger",
       "note": "仕様明細のみ ⋮ メニュー（原価/材料は未展開）"
     },
     {

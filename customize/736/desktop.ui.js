@@ -1039,10 +1039,12 @@
       '.jy-summary-table-spec .jy-col-amt{width:88px}' +
       '.jy-summary-table-spec .jy-col-note{width:16%}' +
       '.jy-summary-table-spec .jy-col-del{width:36px}' +
-      '.jy-row-menu{position:relative;display:inline-block}' +
-      '.jy-row-menu summary.jy-row-menu-trigger{list-style:none;cursor:pointer;min-width:28px;padding:2px 6px;text-align:center;font-weight:700;line-height:1.2}' +
-      '.jy-row-menu summary.jy-row-menu-trigger::-webkit-details-marker{display:none}' +
-      '.jy-row-menu-pop{position:absolute;right:0;top:calc(100% + 2px);z-index:120;min-width:148px;padding:4px 0;background:#fff;border:1px solid #cbd5e1;border-radius:8px;box-shadow:0 4px 14px rgba(15,23,42,.14)}' +
+      '.jy-row-menu{position:relative;display:inline-block;vertical-align:middle}' +
+      '.jy-summary-table-spec td.jy-row-actions{overflow:visible;position:relative;vertical-align:middle;text-align:center}' +
+      '.jy-summary-table-spec tr.jy-row-menu-open{position:relative;z-index:30}' +
+      '.jy-row-menu-trigger{min-width:30px;padding:2px 8px;text-align:center;font-weight:700;line-height:1.3;cursor:pointer}' +
+      '.jy-row-menu-pop{position:absolute;right:0;top:calc(100% + 2px);z-index:200;min-width:148px;padding:4px 0;background:#fff;border:1px solid #cbd5e1;border-radius:8px;box-shadow:0 4px 14px rgba(15,23,42,.14)}' +
+      '.jy-row-menu-pop[hidden]{display:none!important}' +
       '.jy-row-menu-pop button{display:block;width:100%;text-align:left;padding:8px 12px;border:none;background:transparent;font-size:12px;cursor:pointer;color:#334155}' +
       '.jy-row-menu-pop button:hover{background:#f1f5f9}' +
       '.jy-row-menu-pop button.jy-row-menu-del{color:#b91c1c}' +
@@ -2424,14 +2426,27 @@
       '<button type="button" class="jy-btn jy-btn-print" id="' + printBtnId + '">印刷</button></div>';
   }
 
+  function closeSpecRowMenus(root) {
+    (root || document).querySelectorAll('.jy-row-menu-spec').forEach(function (wrap) {
+      wrap.classList.remove('jy-row-menu-open');
+      const panel = wrap.querySelector('.jy-row-menu-pop');
+      const btn = wrap.querySelector('.jy-row-menu-trigger');
+      if (panel) panel.hidden = true;
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    });
+    (root || document).querySelectorAll('tr.jy-row-menu-open').forEach(function (tr) {
+      tr.classList.remove('jy-row-menu-open');
+    });
+  }
+
   function renderSpecRowMenu(i) {
     return (
-      '<details class="jy-row-menu jy-row-menu-spec">' +
-      '<summary class="jy-btn jy-row-menu-trigger" title="行の操作" aria-label="行の操作">⋮</summary>' +
-      '<div class="jy-row-menu-pop" role="menu">' +
+      '<div class="jy-row-menu jy-row-menu-spec" data-spec-row-menu-wrap="' + i + '">' +
+      '<button type="button" class="jy-btn jy-row-menu-trigger" data-spec-row-menu-trigger="' + i + '" title="行の操作" aria-label="行の操作" aria-expanded="false" aria-haspopup="menu">⋮</button>' +
+      '<div class="jy-row-menu-pop" role="menu" hidden data-spec-row-menu-panel="' + i + '">' +
       '<button type="button" role="menuitem" data-spec-add-after="' + i + '">下に1行追加</button>' +
       '<button type="button" role="menuitem" class="jy-row-menu-del" data-spec-del="' + i + '">行を削除</button>' +
-      '</div></details>'
+      '</div></div>'
     );
   }
 
@@ -3846,13 +3861,33 @@
       });
     });
 
-    root.querySelectorAll('.jy-row-menu-spec').forEach(function (el) {
-      el.addEventListener('toggle', function () {
-        if (!el.open) return;
-        root.querySelectorAll('.jy-row-menu-spec').forEach(function (other) {
-          if (other !== el) other.open = false;
-        });
+    root.querySelectorAll('[data-spec-row-menu-trigger]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        const wrap = btn.closest('.jy-row-menu-spec');
+        const panel = wrap && wrap.querySelector('.jy-row-menu-pop');
+        const tr = btn.closest('tr');
+        const wasOpen = panel && !panel.hidden;
+        closeSpecRowMenus(root);
+        if (panel && !wasOpen) {
+          panel.hidden = false;
+          btn.setAttribute('aria-expanded', 'true');
+          if (wrap) wrap.classList.add('jy-row-menu-open');
+          if (tr) tr.classList.add('jy-row-menu-open');
+        }
       });
+    });
+    if (!root.dataset.jyRowMenuDocClose) {
+      root.dataset.jyRowMenuDocClose = '1';
+      document.addEventListener('click', function (e) {
+        const rootEl = document.getElementById('jy-root');
+        if (!rootEl || e.target.closest('.jy-row-menu-spec')) return;
+        closeSpecRowMenus(rootEl);
+      });
+    }
+    root.querySelectorAll('.jy-row-menu-pop').forEach(function (panel) {
+      panel.addEventListener('click', function (e) { e.stopPropagation(); });
     });
     root.querySelectorAll('[data-spec-add]').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
@@ -3863,12 +3898,14 @@
     root.querySelectorAll('[data-spec-add-after]').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
+        closeSpecRowMenus(root);
         insertSpecRowAfter(Number(btn.getAttribute('data-spec-add-after')));
       });
     });
     root.querySelectorAll('[data-spec-del]').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
+        closeSpecRowMenus(root);
         syncInputs();
         state.spec_lines.splice(Number(btn.getAttribute('data-spec-del')), 1);
         markDirty();
