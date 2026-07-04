@@ -314,11 +314,11 @@
       "note": null
     },
     "736": {
-      "build": "2026-07-04-736-diff-print-summary-v2d",
-      "fileKey": "48323798-94a1-4d48-8764-b0570c03db76",
-      "revision": "136",
+      "build": "2026-07-04-736-print-sticky-layout-fix",
+      "fileKey": "69eee3e7-1720-44f6-8707-a2ae8a0560cf",
+      "revision": "137",
       "relPath": "customize/736/desktop.js",
-      "deployedAt": "2026-07-04T08:58:35.712Z",
+      "deployedAt": "2026-07-04T09:04:08.771Z",
       "note": null
     },
     "737": {

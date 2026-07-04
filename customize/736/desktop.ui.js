@@ -974,16 +974,17 @@
       '.jy-pane-detail{background:linear-gradient(180deg,#f8fafc 0%,#ecfdf5 100%);border-color:#86efac;border-top:3px solid #22c55e}' +
       '.jy-pane-summary .jy-excel-wrap{border-color:#bfdbfe}' +
       '.jy-pane-detail .jy-excel-wrap,.jy-pane-detail .jy-linked-wrap{border-color:#bbf7d0}' +
-      '.jy-pane-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,960px) minmax(0,1fr);align-items:center;gap:12px 20px;margin-bottom:14px;padding-bottom:6px}' +
+      '.jy-pane-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,960px) minmax(0,1fr);align-items:center;gap:12px 20px;margin-bottom:14px;padding-bottom:6px;position:sticky;top:var(--jy-print-sticky-top,0);z-index:95;background:#fff;padding-top:4px;box-shadow:0 2px 6px rgba(15,23,42,.05);border-bottom:1px solid #e2e8f0}' +
       '.jy-sheet-title{grid-column:2;width:100%;max-width:960px;box-sizing:border-box;padding:18px 56px;border-radius:10px;display:flex;flex-direction:column;align-items:center;gap:10px;line-height:1.3;text-align:center}' +
       '.jy-sheet-title-summary{background:linear-gradient(135deg,#eff6ff 0%,#dbeafe 55%,#bfdbfe 100%);border:1px solid #93c5fd;box-shadow:0 3px 8px rgba(37,99,235,.16)}' +
       '.jy-sheet-title-detail{background:linear-gradient(135deg,#ecfdf5 0%,#d1fae5 55%,#bbf7d0 100%);border:1px solid #86efac;box-shadow:0 3px 8px rgba(5,150,105,.16)}' +
       '.jy-sheet-title-doc{font-size:26px;font-weight:800;letter-spacing:.24em;color:#1e3a8a}' +
       '.jy-sheet-title-sheet{font-size:20px;font-weight:700;letter-spacing:.32em;padding:6px 28px;border-radius:8px;display:inline-block}' +
       '.jy-pane-head .jy-btn-print{grid-column:3;justify-self:end}' +
-      '.jy-pane-head-tools{grid-column:3;justify-self:end;display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap}' +
+      '.jy-pane-head-tools{grid-column:3;justify-self:end;display:flex;align-items:flex-end;gap:8px;flex-wrap:nowrap}' +
       '.jy-pane-head-tools .jy-btn-print{flex-shrink:0}' +
-      '.jy-print-mode-bar{display:inline-flex;align-items:center;gap:8px;font-size:12px;white-space:nowrap}' +
+      '.jy-print-tools-stack{display:flex;flex-direction:column;align-items:flex-end;gap:3px}' +
+      '.jy-print-mode-bar{display:inline-flex;align-items:center;gap:8px;font-size:12px;white-space:nowrap;flex-wrap:nowrap}' +
       '.jy-print-mode-label{font-weight:600;color:#475569}' +
       '.jy-print-mode-sep{color:#cbd5e1;margin:0 2px}' +
       '.jy-print-mode{display:inline-flex;align-items:center;gap:4px;cursor:pointer}' +
@@ -2269,20 +2270,49 @@
     return html;
   }
 
+  function syncPrintStickyTop() {
+    window.requestAnimationFrame(function () {
+      const root = document.getElementById('jy-root');
+      if (!root || uiScreen !== 'form') return;
+      const paneHead = root.querySelector('.jy-pane-head');
+      if (!paneHead) {
+        root.style.removeProperty('--jy-print-sticky-top');
+        return;
+      }
+      let top = 0;
+      const stickyTop = root.querySelector('.jy-sticky-top');
+      if (stickyTop) top += stickyTop.offsetHeight;
+      const header = root.querySelector('.jy-header-panel');
+      if (header) top += header.offsetHeight;
+      const tabs = root.querySelector('.jy-tabs');
+      if (tabs) top += tabs.offsetHeight;
+      const diffBar = root.querySelector('.jy-diff-bar');
+      if (diffBar) top += diffBar.offsetHeight;
+      const diffSummary = root.querySelector('details.jy-diff-summary');
+      if (diffSummary) top += diffSummary.offsetHeight;
+      const hint = root.querySelector('.jy-tab-hint');
+      if (hint) top += hint.offsetHeight;
+      root.style.setProperty('--jy-print-sticky-top', top + 'px');
+    });
+  }
+
   function renderPrintModeRadios() {
     const canDiff = diffIsActive();
     const mode = canDiff && printDiffMode === 'diff' ? 'diff' : 'normal';
     if (!canDiff && printDiffMode === 'diff') printDiffMode = 'normal';
     const lvl = printSummaryLevel === 'detail' ? 'detail' : 'brief';
-    let html = '<div class="jy-print-mode-bar" role="group" aria-label="印刷種別">';
+    let html = '<div class="jy-print-tools-stack">';
+    html += '<div class="jy-print-mode-bar" role="group" aria-label="印刷種別">';
     html += '<span class="jy-print-mode-label">印刷</span>';
     html += '<label class="jy-print-mode"><input type="radio" name="jy-print-mode" value="normal"' + (mode === 'normal' ? ' checked' : '') + '><span>通常</span></label>';
     html += '<label class="jy-print-mode"><input type="radio" name="jy-print-mode" value="diff"' + (mode === 'diff' ? ' checked' : '') + (canDiff ? '' : ' disabled') + '><span>差分付き</span></label>';
+    html += '</div>';
     if (mode === 'diff') {
-      html += '<span class="jy-print-mode-sep" aria-hidden="true">|</span>';
+      html += '<div class="jy-print-mode-bar jy-print-summary-bar" role="group" aria-label="サマリー粒度">';
       html += '<span class="jy-print-mode-label">サマリー</span>';
       html += '<label class="jy-print-mode"><input type="radio" name="jy-print-summary-level" value="brief"' + (lvl === 'brief' ? ' checked' : '') + '><span>簡潔</span></label>';
       html += '<label class="jy-print-mode"><input type="radio" name="jy-print-summary-level" value="detail"' + (lvl === 'detail' ? ' checked' : '') + '><span>詳細</span></label>';
+      html += '</div>';
     }
     html += '</div>';
     return html;
@@ -3525,7 +3555,7 @@
       el.addEventListener('change', function () { syncInputs(); markDirty(); });
     });
     const panel = document.getElementById('jy-header-panel');
-    if (panel) panel.addEventListener('toggle', function () { headerOpen = panel.open; });
+    if (panel) panel.addEventListener('toggle', function () { headerOpen = panel.open; syncPrintStickyTop(); });
     const legendPanel = document.getElementById('jy-header-legend-panel');
     if (legendPanel) legendPanel.addEventListener('toggle', function () { headerLegendOpen = legendPanel.open; });
     const specHelpPanel = document.getElementById('jy-spec-help-panel');
@@ -3660,14 +3690,21 @@
     if (printDetailBtn) printDetailBtn.addEventListener('click', function () { openTabPrint('detail'); });
     root.querySelectorAll('input[name="jy-print-mode"]').forEach(function (el) {
       el.addEventListener('change', function () {
-        if (el.checked) printDiffMode = el.value === 'diff' && diffIsActive() ? 'diff' : 'normal';
+        if (!el.checked) return;
+        printDiffMode = el.value === 'diff' && diffIsActive() ? 'diff' : 'normal';
+        render();
       });
+    });
+    root.querySelectorAll('details.jy-diff-summary').forEach(function (el) {
+      el.addEventListener('toggle', syncPrintStickyTop);
     });
     root.querySelectorAll('input[name="jy-print-summary-level"]').forEach(function (el) {
       el.addEventListener('change', function () {
         if (el.checked) printSummaryLevel = el.value === 'detail' ? 'detail' : 'brief';
       });
     });
+
+    syncPrintStickyTop();
 
     root.querySelectorAll('[data-spec-add]').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
