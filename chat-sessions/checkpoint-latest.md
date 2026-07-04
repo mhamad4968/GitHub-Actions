@@ -2,7 +2,7 @@
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED**（kintone レーン v1 完了・closures 登録）≠ **セッション締め**（export-handoff / Desktop sync / close-git）。混同禁止 -->
 
-**最終更新**: 2026-07-05 JST — **朝セッション ① 課題整理完了**（task-triage · push **`42158d3`**）
+**最終更新**: 2026-07-05 JST — **Plan&Usage 21% 記録** · ① 課題整理完了 · **② 着手前**
 
 ### 本日アクティブ（BUILD/rev — 2026-07-04 夜 + 2026-07-05 ②）
 
@@ -29,8 +29,8 @@
 | **nodemailer 9.x** | **保留**（浜田 2026-07-04 判断） |
 
 **次の1手**: **② kintone アカウント台帳** — 浜田から現行運用説明 → 利用台帳把握 → §41 仕様。**午後** SKYSEA 意見交換。**月曜** 698/700 レビュー  
-**Git**: **`42158d3`** = `origin/main` — push 済  
-**Plan&Usage**: 前回 **18%**（2026-07-02）· Ultra リセット **7/15** · **3 日に 1 回**報告  
+**Git**: **`5684aca`** = `origin/main` — push 済  
+**Plan&Usage**: **21%**（2026-07-05 浜田報告）· Auto+Composer **28%** · API **5%** · On-Demand **$0/$1000** · リセット **7/15**（残 10日）  
 **整理正本**: `docs/reports/2026-07-05-morning-task-triage.md`  
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **クローズ正本**: `data/cio-project-closures.json` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`  
 **運用メモ**: 本番 Excel **`設定マスタ_本番`** のみ。595 CSV 後 **「台帳へ一括反映」**。Desktop `18-重要確認.txt` 正本  
