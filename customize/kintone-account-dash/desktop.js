@@ -25,8 +25,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 (function () {
   "use strict";
 
-  /** Kintoneアカウント管理台帳 — DB REST CRUD + 月次集計 + 利用費用集計 + 一覧出力 */
-  var BUILD = "2026-07-05-kintone-account-dash-v1";
+  /** Kintoneアカウント管理台帳 — DB REST CRUD + アカウント集計（現時点）+ 月次利用費用 + 一覧出力 */
+  var BUILD = "2026-07-05-kintone-account-dash-v19-agg-100rem-list-sort";
   var APP_DB = 752;
   var APP_EMP_MASTER = 595;
   var PAGE_SIZE = 100;
@@ -144,7 +144,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     首都圏支店個人: "首都圏支店",
   };
 
-  var SETTINGS_LS_KEY = "kintone-account-ledger-settings-v1";
+  var SETTINGS_LS_KEY = "kintone-account-ledger-settings-v2";
+  var SETTINGS_LS_KEY_V1 = "kintone-account-ledger-settings-v1";
 
   var DEFAULT_SETTINGS = { contract_total: 77, unit_price_monthly: 1800 };
 
@@ -203,7 +204,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     aggRows: [],
     aggSummary: "",
     feeAggRows: [],
+    feeAggSummaryRows: [],
+    feeAggDetailRows: [],
     feeAggMonths: [],
+    feeSettingsDraft: null,
+    feeSettingsDraftPeriod: "",
     settings: loadSettings(),
   };
 
@@ -241,37 +246,153 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     return todayJstYmd().slice(0, 4);
   }
 
-  function loadSettings() {
-    try {
-      var raw = localStorage.getItem(SETTINGS_LS_KEY);
-      if (raw) {
-        var parsed = JSON.parse(raw);
-        return {
-          contract_total: Number(parsed.contract_total) || DEFAULT_SETTINGS.contract_total,
-          unit_price_monthly: Number(parsed.unit_price_monthly) || DEFAULT_SETTINGS.unit_price_monthly,
-        };
-      }
-    } catch (e) {
-      console.warn(BUILD, e);
-    }
+  function normalizeFeeParams(raw) {
     return {
-      contract_total: DEFAULT_SETTINGS.contract_total,
-      unit_price_monthly: DEFAULT_SETTINGS.unit_price_monthly,
+      contract_total: Math.max(0, Number(raw && raw.contract_total) || DEFAULT_SETTINGS.contract_total),
+      unit_price_monthly: Math.max(
+        0,
+        Number(raw && raw.unit_price_monthly) || DEFAULT_SETTINGS.unit_price_monthly,
+      ),
     };
   }
 
-  function saveSettings(next) {
-    state.settings = {
-      contract_total: Math.max(0, Number(next.contract_total) || 0),
-      unit_price_monthly: Math.max(0, Number(next.unit_price_monthly) || 0),
+  function loadSettings() {
+    function parseKey(key) {
+      try {
+        var raw = localStorage.getItem(key);
+        if (!raw) return null;
+        return JSON.parse(raw);
+      } catch (e) {
+        console.warn(BUILD, e);
+        return null;
+      }
+    }
+
+    var parsed = parseKey(SETTINGS_LS_KEY);
+    if (parsed && parsed.defaults) {
+      var monthly = {};
+      if (parsed.monthly && typeof parsed.monthly === "object") {
+        Object.keys(parsed.monthly).forEach(function (ym) {
+          monthly[ym] = normalizeFeeParams(parsed.monthly[ym]);
+        });
+      }
+      return {
+        defaults: normalizeFeeParams(parsed.defaults),
+        monthly: monthly,
+      };
+    }
+
+    var legacy = parseKey(SETTINGS_LS_KEY_V1);
+    if (legacy && (legacy.contract_total != null || legacy.unit_price_monthly != null)) {
+      return {
+        defaults: normalizeFeeParams(legacy),
+        monthly: {},
+      };
+    }
+
+    return {
+      defaults: normalizeFeeParams(DEFAULT_SETTINGS),
+      monthly: {},
     };
+  }
+
+  function persistSettings() {
     try {
       localStorage.setItem(SETTINGS_LS_KEY, JSON.stringify(state.settings));
     } catch (e) {
       console.warn(BUILD, e);
     }
+  }
+
+  function getMonthFeeParams(ym) {
+    var m = state.settings.monthly && state.settings.monthly[ym];
+    if (m) return normalizeFeeParams(m);
+    return normalizeFeeParams(state.settings.defaults);
+  }
+
+  function setMonthFeeParams(ym, next) {
+    if (!state.settings.monthly) state.settings.monthly = {};
+    state.settings.monthly[ym] = normalizeFeeParams(next);
+    persistSettings();
+  }
+
+  function saveDefaults(next) {
+    state.settings.defaults = normalizeFeeParams(next);
+    persistSettings();
+  }
+
+  function resetFeeSettingsDraft() {
+    state.feeSettingsDraft = null;
+    state.feeSettingsDraftPeriod = "";
+  }
+
+  function ensureFeeSettingsDraft() {
+    if (!state.feeSettingsDraft) {
+      var monthly = {};
+      Object.keys(state.settings.monthly || {}).forEach(function (ym) {
+        monthly[ym] = normalizeFeeParams(state.settings.monthly[ym]);
+      });
+      state.feeSettingsDraft = {
+        defaults: normalizeFeeParams(state.settings.defaults),
+        monthly: monthly,
+      };
+    }
+    return state.feeSettingsDraft;
+  }
+
+  function getMonthFeeParamsDraft(ym) {
+    var d = ensureFeeSettingsDraft();
+    if (d.monthly[ym]) return normalizeFeeParams(d.monthly[ym]);
+    return normalizeFeeParams(d.defaults);
+  }
+
+  function fmtYmJa(ym) {
+    var p = parseYm(ym);
+    if (!p) return String(ym || "");
+    return p.y + "年" + p.m + "月";
+  }
+
+  function ymFromYearMonth(y, m) {
+    var yn = Number(y);
+    var mn = Number(m);
+    if (!yn || !mn || mn < 1 || mn > 12) return "";
+    return yn + "-" + String(mn).padStart(2, "0");
+  }
+
+  function defaultBulkFromYm(months) {
+    var cur = currentJstYm();
+    if (months.indexOf(cur) >= 0) return cur;
+    return months.length ? months[0] : cur;
+  }
+
+  function applyFeeBulkFromMonth(fromYm, contract, price, months) {
+    var d = ensureFeeSettingsDraft();
+    var params = normalizeFeeParams({
+      contract_total: contract,
+      unit_price_monthly: price,
+    });
+    months.forEach(function (ym) {
+      if (ym >= fromYm) {
+        d.monthly[ym] = params;
+      }
+    });
+  }
+
+  function commitFeeSettingsFromPanel(months) {
+    var d = ensureFeeSettingsDraft();
+    state.settings.monthly = {};
+    Object.keys(d.monthly).forEach(function (ym) {
+      state.settings.monthly[ym] = d.monthly[ym];
+    });
+    persistSettings();
+    resetFeeSettingsDraft();
     renderSummaryPanel();
     renderFeeSettingsPanel();
+    recalcFeeAgg({ silent: true });
+  }
+
+  function saveMonthlyParamsFromForm(months) {
+    commitFeeSettingsFromPanel(months);
   }
 
   function countActiveByPaySiteMonth(paySite, ym) {
@@ -293,25 +414,37 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
   function currentMonthUsageStats() {
     var ym = currentJstYm();
+    var params = getMonthFeeParams(ym);
     var honshaUse = countActiveByPaySiteMonth("本社", ym);
     var shutokenUse = countActiveByPaySiteMonth("首都圏支店", ym);
     var totalActive = countTotalActiveMonth(ym);
-    var surplus = Math.max(0, state.settings.contract_total - totalActive);
+    var surplus = Math.max(0, params.contract_total - totalActive);
+    var honshaSubtotal = honshaUse + surplus;
     return {
       ym: ym,
+      params: params,
       honshaUse: honshaUse,
       shutokenUse: shutokenUse,
       totalActive: totalActive,
       surplus: surplus,
-      honshaSubtotal: honshaUse + surplus,
+      honshaSubtotal: honshaSubtotal,
       shutokenSubtotal: shutokenUse,
-      grandTotal: honshaUse + surplus + shutokenUse,
-      monthlyTotal: state.settings.contract_total * state.settings.unit_price_monthly,
+      grandTotal: honshaSubtotal + shutokenUse,
+      monthlyTotal: params.contract_total * params.unit_price_monthly,
+      honshaFee: honshaSubtotal * params.unit_price_monthly,
+      shutokenFee: shutokenUse * params.unit_price_monthly,
     };
   }
 
   function fmtYen(n) {
     return Number(n || 0).toLocaleString("ja-JP") + " 円";
+  }
+
+  function countsToYenPerMonth(counts, months) {
+    return (counts || []).map(function (n, i) {
+      var p = getMonthFeeParams(months[i]);
+      return Number(n) * p.unit_price_monthly;
+    });
   }
 
   /** 集計既定: 当年 1月～12月（JST） */
@@ -442,7 +575,81 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     });
   }
 
+  function deptRankInOrg(org, dept) {
+    var list = DEPTS_BY_ORG[String(org || "").trim()] || [];
+    var idx = list.indexOf(String(dept || "").trim());
+    return idx < 0 ? 999 : idx;
+  }
+
+  var REFORM_ORG = "リフォーム事業統括部";
+  var HONSHA_ORG = "本社";
+
+  function isPrivilegeAdminRow(row) {
+    var login = normalizeLoginId(row.login_id).toLowerCase();
+    if (login === "admin") return true;
+    return String(row.account_type || "").trim() === "特権アカウント";
+  }
+
+  function accountTypeRankForList(row) {
+    var org = String(row.org || "").trim();
+    var t = String(row.account_type || "").trim();
+    if (org === HONSHA_ORG) {
+      if (isPrivilegeAdminRow(row)) return 0;
+      if (t === "本社個人") return 1;
+      if (t === "本社共有") return 2;
+      return 3;
+    }
+    if (isPrivilegeAdminRow(row)) return 0;
+    if (t === "本社個人" || t === "首都圏支店個人") return 1;
+    if (t === "本社共有") return 2;
+    return 3;
+  }
+
+  function reformPayGroup(row) {
+    if (String(row.org || "").trim() !== REFORM_ORG) return null;
+    return String(row.pay_site || "").trim() === "首都圏支店" ? "shutoken" : "honsha";
+  }
+
+  function listSectionKey(row) {
+    var org = String(row.org || "").trim();
+    var group = reformPayGroup(row);
+    if (group) return REFORM_ORG + ":" + group;
+    return org;
+  }
+
+  function listSectionLabel(row) {
+    var group = reformPayGroup(row);
+    if (group === "honsha") return REFORM_ORG + "（本社分）";
+    if (group === "shutoken") return REFORM_ORG + "（首都圏支店分）";
+    return String(row.org || "").trim();
+  }
+
+  function paySiteRankForList(org, paySite) {
+    if (String(org || "").trim() !== REFORM_ORG) return 0;
+    var ps = String(paySite || "").trim();
+    if (ps === "本社") return 0;
+    if (ps === "首都圏支店") return 1;
+    return 2;
+  }
+
+  /** 一覧 — 所属グループ →（リフォームのみ支払箇所）→ 本社は所属→種別(個人→共有)、他は種別(特権→個人→共有)→所属 → ログインID */
   function compareListRows(a, b) {
+    var orgDiff = orgRank(a.org) - orgRank(b.org);
+    if (orgDiff !== 0) return orgDiff;
+    var payDiff = paySiteRankForList(a.org, a.pay_site) - paySiteRankForList(b.org, b.pay_site);
+    if (payDiff !== 0) return payDiff;
+    var honshaBlock = String(a.org || "").trim() === HONSHA_ORG;
+    if (honshaBlock) {
+      var deptDiffH = deptRankInOrg(a.org, a.dept) - deptRankInOrg(b.org, b.dept);
+      if (deptDiffH !== 0) return deptDiffH;
+      var typeDiffH = accountTypeRankForList(a) - accountTypeRankForList(b);
+      if (typeDiffH !== 0) return typeDiffH;
+    } else {
+      var typeDiff = accountTypeRankForList(a) - accountTypeRankForList(b);
+      if (typeDiff !== 0) return typeDiff;
+      var deptDiff = deptRankInOrg(a.org, a.dept) - deptRankInOrg(b.org, b.dept);
+      if (deptDiff !== 0) return deptDiff;
+    }
     return String(a.login_id || "").localeCompare(String(b.login_id || ""), "ja");
   }
 
@@ -549,6 +756,45 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     return n;
   }
 
+  function countOrgDeptActive(org, dept) {
+    var n = 0;
+    state.records.forEach(function (r) {
+      if (r.org !== org || r.dept !== dept) return;
+      if (isActiveRow(r)) n += 1;
+    });
+    return n;
+  }
+
+  function countOrgDeptsActive(org, depts) {
+    var deptSet = {};
+    depts.forEach(function (d) {
+      deptSet[d] = true;
+    });
+    var n = 0;
+    state.records.forEach(function (r) {
+      if (r.org !== org || !deptSet[r.dept]) return;
+      if (isActiveRow(r)) n += 1;
+    });
+    return n;
+  }
+
+  function countGrandActiveFiltered(orgs, depts) {
+    var orgSet = {};
+    orgs.forEach(function (o) {
+      orgSet[o] = true;
+    });
+    var deptSet = {};
+    depts.forEach(function (d) {
+      deptSet[d] = true;
+    });
+    var n = 0;
+    state.records.forEach(function (r) {
+      if (!orgSet[r.org] || !deptSet[r.dept]) return;
+      if (isActiveRow(r)) n += 1;
+    });
+    return n;
+  }
+
   function orderedAggOrgs(selected) {
     var set = {};
     selected.forEach(function (o) {
@@ -629,11 +875,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   }
 
   function clearAggConditions() {
-    var r = defaultAggYearRange();
-    var fromEl = document.getElementById("kac-agg-from");
-    var toEl = document.getElementById("kac-agg-to");
-    if (fromEl) fromEl.value = r.fromYm;
-    if (toEl) toEl.value = r.toYm;
     setAggChipsAll(document.getElementById("kac-agg-org"), true);
     setAggChipsAll(document.getElementById("kac-agg-dept"), true);
     recalcAgg();
@@ -1203,6 +1444,42 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     return esc(t);
   }
 
+  function listSectionRowHtml(label) {
+    var colSpan = LIST_COLUMNS.length + 2;
+    return (
+      '<tr class="kac-list-section-row"><td colspan="' +
+      colSpan +
+      '">' +
+      esc(label) +
+      "</td></tr>"
+    );
+  }
+
+  function renderTableRowHtml(row) {
+    var statusBadge = isTerminatedRow(row)
+      ? '<span class="kac-badge kac-badge-terminated">終了</span>'
+      : '<span class="kac-badge kac-badge-active">稼働</span>';
+    var actionBtns = "";
+    if (state.isAdmin) {
+      actionBtns =
+        '<button type="button" class="kac-btn-edit">編集</button>' +
+        (isActiveRow(row) ? '<button type="button" class="kac-btn-retire">終了</button>' : "");
+    }
+    return (
+      '<tr class="kac-list-data-row" data-login-id="' +
+      esc(normalizeLoginId(row.login_id)) +
+      '"><td>' +
+      statusBadge +
+      "</td>" +
+      LIST_COLUMNS.map(function (col) {
+        return "<td>" + cellText(listFieldDisplay(row, col.key)) + "</td>";
+      }).join("") +
+      '<td class="kac-actions">' +
+      actionBtns +
+      "</td></tr>"
+    );
+  }
+
   function renderTable() {
     var tbody = document.getElementById("kac-tbody");
     if (!tbody) return;
@@ -1215,38 +1492,28 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       tbody.innerHTML = '<tr><td colspan="12">該当なし</td></tr>';
       return;
     }
-    tbody.innerHTML = rows
-      .map(function (row) {
-        var statusBadge =
-          isTerminatedRow(row)
-            ? '<span class="kac-badge kac-badge-terminated">終了</span>'
-            : '<span class="kac-badge kac-badge-active">稼働</span>';
-        var actionBtns = "";
-        if (state.isAdmin) {
-          actionBtns =
-            '<button type="button" class="kac-btn-edit">編集</button>' +
-            isActiveRow(row)
-              ? '<button type="button" class="kac-btn-retire">終了</button>'
-              : "";
-        }
-        return (
-          "<tr>" +
-          "<td>" +
-          statusBadge +
-          "</td>" +
-          LIST_COLUMNS.map(function (col) {
-            return "<td>" + cellText(listFieldDisplay(row, col.key)) + "</td>";
-          }).join("") +
-          '<td class="kac-actions">' +
-          actionBtns +
-          "</td></tr>"
-        );
-      })
-      .join("");
+    var htmlParts = [];
+    var currentSectionKey = null;
+    rows.forEach(function (row) {
+      var sectionKey = listSectionKey(row);
+      if (sectionKey !== currentSectionKey) {
+        htmlParts.push(listSectionRowHtml(listSectionLabel(row)));
+        currentSectionKey = sectionKey;
+      }
+      htmlParts.push(renderTableRowHtml(row));
+    });
+    tbody.innerHTML = htmlParts.join("");
 
-    rows.forEach(function (row, idx) {
-      var tr = tbody.rows[idx];
-      if (!tr) return;
+    tbody.querySelectorAll("tr.kac-list-data-row").forEach(function (tr) {
+      var loginId = tr.getAttribute("data-login-id");
+      var row = null;
+      for (var i = 0; i < rows.length; i++) {
+        if (normalizeLoginId(rows[i].login_id) === loginId) {
+          row = rows[i];
+          break;
+        }
+      }
+      if (!row) return;
       var editB = tr.querySelector(".kac-btn-edit");
       if (editB) {
         editB.addEventListener("click", function () {
@@ -1263,35 +1530,26 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   }
 
   function readAggSelections() {
-    var fromEl = document.getElementById("kac-agg-from");
-    var toEl = document.getElementById("kac-agg-to");
     var orgBox = document.getElementById("kac-agg-org");
     var deptBox = document.getElementById("kac-agg-dept");
     return {
-      fromYm: fromEl ? fromEl.value : "",
-      toYm: toEl ? toEl.value : "",
       orgs: selectedAggChipValues(orgBox),
       depts: selectedAggChipValues(deptBox),
     };
   }
 
-  function buildAggSummaryText(sel, months) {
-    var parts = ["期間=" + sel.fromYm + "～" + sel.toYm];
+  function buildAggSummaryText(sel) {
+    var parts = ["現時点稼働数"];
     if (sel.orgs.length && sel.orgs.length < ORGS.length) {
       parts.push("所属グループ=" + sel.orgs.join("、"));
     }
     if (sel.depts.length && sel.depts.length < DEPTS.length) {
       parts.push("所属=" + sel.depts.join("、"));
     }
-    parts.push("列=" + months.length + " か月");
     return parts.join(" / ");
   }
 
   function buildAggTable(sel) {
-    var months = enumerateMonths(sel.fromYm, sel.toYm);
-    if (!months.length) {
-      throw new Error("期間（YYYY-MM）を正しく指定してください");
-    }
     if (!sel.orgs.length) throw new Error("所属グループを1つ以上選択してください");
     if (!sel.depts.length) throw new Error("所属を1つ以上選択してください");
 
@@ -1299,18 +1557,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     var deptList = orderedAggDepts(sel.depts);
     var rows = [];
 
-    orgList.forEach(function (org) {
+    orgList.forEach(function (org, blockIdx) {
       var detailRows = [];
       deptList.forEach(function (dept) {
-        var counts = months.map(function (ym) {
-          return countOrgDeptMonth(org, dept, ym);
-        });
-        if (counts.every(function (n) {
-          return n === 0;
-        })) {
-          return;
-        }
-        detailRows.push({ dept: dept, counts: counts });
+        var n = countOrgDeptActive(org, dept);
+        if (n === 0) return;
+        detailRows.push({ dept: dept, counts: [n] });
       });
 
       detailRows.forEach(function (dr, idx) {
@@ -1321,30 +1573,26 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
           counts: dr.counts,
           orgRowspan: idx === 0 ? detailRows.length + 1 : 0,
           orgGroupStart: idx === 0,
+          orgBlockIndex: blockIdx,
         });
       });
 
-      var subCounts = months.map(function (ym) {
-        return countOrgDeptsMonth(org, deptList, ym);
-      });
       rows.push({
         kind: "subtotal",
         org: org,
-        counts: subCounts,
+        counts: [countOrgDeptsActive(org, deptList)],
         orgGroupEnd: true,
         orgCoveredByRowspan: detailRows.length > 0,
+        orgBlockIndex: blockIdx,
       });
     });
 
-    var grandCounts = months.map(function (ym) {
-      return countGrandFiltered(orgList, deptList, ym);
-    });
     rows.push({
       kind: "grand",
       label: "全社合計",
-      counts: grandCounts,
+      counts: [countGrandActiveFiltered(orgList, deptList)],
     });
-    return { months: months, rows: rows, summary: buildAggSummaryText(sel, months) };
+    return { months: ["件数"], rows: rows, summary: buildAggSummaryText(sel) };
   }
 
   function aggRowLabelCells(row) {
@@ -1418,6 +1666,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     if (row.kind === "detail") trCls += " " + p + "-agg-detail";
     if (row.orgGroupStart) trCls += " " + p + "-agg-org-start";
     if (row.orgGroupEnd) trCls += " " + p + "-agg-org-end";
+    if (row.orgBlockIndex != null) trCls += " " + p + "-agg-org-block-" + row.orgBlockIndex;
 
     var orgTd = "";
     if (row.kind === "detail") {
@@ -1462,7 +1711,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       '-agg-th-dept">所属</th>' +
       months
         .map(function (ym) {
-          return "<th>" + esc(ym) + "</th>";
+          return '<th class="' + p + '-agg-th-count">' + esc(ym) + "</th>";
         })
         .join("") +
       "</tr></thead>"
@@ -1484,9 +1733,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         wrap.innerHTML = '<p class="kac-hint">集計を計算しています…</p>';
       } else {
         wrap.innerHTML =
-          '<p class="kac-hint">開くと <strong>当年（' +
-          esc(currentJstYear()) +
-          "年）1月～12月</strong> の月末稼働数を表示します。所属グループ・所属は必要に応じて絞り込めます。</p>";
+          '<p class="kac-hint">開くと <strong>現時点の稼働数</strong>（所属グループ×所属）を表示します。必要に応じて絞り込めます。</p>';
       }
       return;
     }
@@ -1501,9 +1748,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       "</tbody>";
     var meta = document.getElementById("kac-agg-meta");
     if (meta) {
-      meta.innerHTML =
-        esc(state.aggSummary) +
-        ' <span class="kac-agg-legend">（<span class="kac-agg-legend-max">全社合計の最大月=青</span>・<span class="kac-agg-legend-min">最小月=赤</span>）</span>';
+      meta.textContent = state.aggSummary;
     }
     wrap.innerHTML =
       '<table class="kac-agg-table">' + head + body + "</table>";
@@ -1554,8 +1799,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     });
     var ws = XLSX.utils.aoa_to_sheet(matrix);
     var wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "月次集計");
-    XLSX.writeFile(wb, "Kintoneアカウント月次集計_" + todayJstYmd().replace(/-/g, "") + ".xlsx", {
+    XLSX.utils.book_append_sheet(wb, ws, "アカウント集計");
+    XLSX.writeFile(wb, "Kintoneアカウント集計_" + todayJstYmd().replace(/-/g, "") + ".xlsx", {
       bookType: "xlsx",
     });
   }
@@ -1646,7 +1891,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         .join("") +
       "</tbody>";
     var html =
-      '<header class="kacap-header"><h1>Kintoneアカウント — 月次数量集計</h1>' +
+      '<header class="kacap-header"><h1>Kintoneアカウント — アカウント集計（現時点）</h1>' +
       '<p class="kacap-meta">印刷日: ' +
       esc(todayJstYmd()) +
       " / " +
@@ -1657,7 +1902,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       body +
       "</table>";
     var docHtml =
-      '<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>Kintone月次集計</title><style>' +
+      '<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>Kintoneアカウント集計</title><style>' +
       aggPrintStylesheet() +
       "</style></head><body>" +
       html +
@@ -1857,6 +2102,52 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       });
   }
 
+  function buildAggOrgBlockCss(scope, prefix) {
+    var palettes = [
+      ["#eff6ff", "#dbeafe", "#93c5fd"],
+      ["#f0fdf4", "#dcfce7", "#86efac"],
+      ["#fefce8", "#fef9c3", "#fde047"],
+      ["#fdf4ff", "#fae8ff", "#e879f9"],
+      ["#fff7ed", "#ffedd5", "#fdba74"],
+      ["#f0fdfa", "#ccfbf1", "#5eead4"],
+      ["#fef2f2", "#fee2e2", "#fca5a5"],
+      ["#f5f3ff", "#ede9fe", "#c4b5fd"],
+      ["#ecfeff", "#cffafe", "#67e8f9"],
+    ];
+    var out = "";
+    palettes.forEach(function (p, i) {
+      out +=
+        scope +
+        " ." +
+        prefix +
+        "-agg-row." +
+        prefix +
+        "-agg-detail." +
+        prefix +
+        "-agg-org-block-" +
+        i +
+        " td{background:" +
+        p[0] +
+        ";}";
+      out +=
+        scope +
+        " ." +
+        prefix +
+        "-agg-row." +
+        prefix +
+        "-agg-subtotal." +
+        prefix +
+        "-agg-org-block-" +
+        i +
+        " td{background:" +
+        p[1] +
+        ";font-weight:700;border-top:2px solid " +
+        p[2] +
+        ";color:#334155;}";
+    });
+    return out;
+  }
+
   function injectCss() {
     if (document.getElementById("kac-dash-css")) return;
     var st = document.createElement("style");
@@ -1898,17 +2189,23 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       ".kac-agg-multi{min-width:160px;}" +
       ".kac-agg-actions{display:flex;flex-wrap:wrap;gap:8px;}" +
       ".kac-agg-table-wrap{overflow:auto;border:1px solid #e2e8f0;border-radius:6px;}" +
-      ".kac-agg-table{border-collapse:collapse;width:100%;font-size:14px;min-width:640px;}" +
+      ".kac-agg-acc-table-wrap{display:inline-block;width:auto;max-width:100%;vertical-align:top;}" +
+      ".kac-agg-acc-table-wrap .kac-agg-table{width:auto;max-width:100rem;min-width:0;font-size:14px;table-layout:auto;}" +
+      ".kac-agg-acc-table-wrap .kac-agg-table th,.kac-agg-acc-table-wrap .kac-agg-table td{padding:6px 10px;}" +
+      ".kac-agg-acc-table-wrap .kac-agg-table th.kac-agg-th-org,.kac-agg-acc-table-wrap .kac-agg-table td.kac-agg-org-cell{width:9.5rem;max-width:9.5rem;font-size:12px;line-height:1.4;}" +
+      ".kac-agg-acc-table-wrap .kac-agg-table th.kac-agg-th-dept,.kac-agg-acc-table-wrap .kac-agg-table td.kac-agg-dept-cell{width:13rem;max-width:13rem;font-size:13px;}" +
+      ".kac-agg-acc-table-wrap .kac-agg-table th.kac-agg-th-count,.kac-agg-acc-table-wrap .kac-agg-table td.kac-agg-month-cell{width:5.5rem;min-width:5.5rem;font-size:14px;font-weight:600;}" +
+      ".kac-agg-table{border-collapse:collapse;width:100%;font-size:14px;min-width:420px;table-layout:fixed;}" +
       ".kac-agg-table th,.kac-agg-table td{border:1px solid #e2e8f0;padding:6px 8px;text-align:center;}" +
       ".kac-agg-table th{background:#f1f5f9;}" +
-      ".kac-agg-table th.kac-agg-th-org,.kac-agg-table th.kac-agg-th-dept{min-width:88px;}" +
-      ".kac-agg-table td.kac-agg-org-cell,.kac-agg-table td.kac-agg-dept-cell{text-align:left;vertical-align:middle;white-space:nowrap;}" +
+      ".kac-agg-table th.kac-agg-th-org,.kac-agg-table td.kac-agg-org-cell{width:6.5em;max-width:6.5em;font-size:12px;line-height:1.35;}" +
+      ".kac-agg-table th.kac-agg-th-dept,.kac-agg-table td.kac-agg-dept-cell{width:9em;max-width:9em;font-size:13px;}" +
+      ".kac-agg-table th.kac-agg-th-count,.kac-agg-table td.kac-agg-month-cell{width:4.5em;}" +
+      ".kac-agg-table td.kac-agg-org-cell,.kac-agg-table td.kac-agg-dept-cell{text-align:left;vertical-align:middle;white-space:normal;word-break:break-all;}" +
       ".kac-agg-table td.kac-agg-org-cell{font-weight:700;background:#fff;}" +
       ".kac-agg-table tr.kac-agg-org-start td{border-top:2px solid #94a3b8;}" +
       ".kac-agg-table tr.kac-agg-org-end td{border-bottom:2px solid #cbd5e1;}" +
       ".kac-agg-table tr.kac-agg-detail td.kac-agg-dept-cell{font-weight:500;}" +
-      ".kac-agg-table tr.kac-agg-subtotal td{background:#dbeafe;color:#1e3a8a;font-weight:700;border-top:1px solid #93c5fd;}" +
-      ".kac-agg-table tr.kac-agg-subtotal td.kac-agg-dept-cell{letter-spacing:.02em;}" +
       ".kac-agg-table tr.kac-agg-grand td{background:#bbf7d0;color:#14532d;font-weight:700;border-top:2px solid #4ade80;}" +
       ".kac-agg-table tr.kac-agg-grand td.kac-agg-month-max{color:#1d4ed8;}" +
       ".kac-agg-table tr.kac-agg-grand td.kac-agg-month-min{color:#b91c1c;}" +
@@ -1930,6 +2227,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       ".kac-badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;}" +
       ".kac-badge-active{background:#dcfce7;color:#166534;}" +
       ".kac-badge-terminated{background:#fee2e2;color:#991b1b;}" +
+      ".kac-list-section-row td{background:#eef2ff;color:#4338ca;font-weight:700;font-size:13px;padding:8px 12px;border-top:2px solid #6366f1;text-align:left;}" +
       ".kac-actions button{margin:0 3px;padding:4px 10px;font-size:13px;}" +
       ".kac-hint{font-size:13px;color:#64748b;margin:6px 0;line-height:1.5;}" +
       ".kac-warn{font-size:13px;color:#b45309;margin:4px 0 8px;}" +
@@ -1944,7 +2242,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       ".kac-create-595-btn{font-size:15px;padding:10px 18px;}" +
       ".kac-595-results{margin-top:10px;max-height:240px;overflow:auto;display:flex;flex-direction:column;gap:6px;}" +
       ".kac-595-pick{text-align:left;white-space:normal;}" +
-      ".kac-595-actions{display:flex;gap:8px;margin:8px 0;}"+".kac-summary-panel{margin-bottom:14px;padding:14px 18px;border:2px solid #6366f1;border-radius:10px;background:linear-gradient(135deg,#eef2ff 0%,#e0e7ff 100%);}"+".kac-summary-grid{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-end;}"+".kac-summary-item{display:flex;flex-direction:column;gap:4px;font-size:14px;}"+".kac-summary-label{color:#475569;font-size:13px;}"+".kac-summary-breakdown{flex:1 1 100%;font-size:14px;line-height:1.6;}"+".kac-fee-settings{margin-bottom:12px;padding:10px 12px;border:1px solid #c7d2fe;border-radius:6px;background:#f8fafc;}"+".kac-fee-settings-grid{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end;}"+".kac-fee-agg-acc{margin-bottom:14px;border:1px solid #cbd5e1;border-radius:6px;background:#f8fafc;}"+".kac-fee-agg-acc>summary{cursor:pointer;padding:12px 16px;font-size:15px;font-weight:600;color:#334155;user-select:none;}"+".kac-fee-agg-body{padding:12px 16px 16px;}"+".kac-fee-agg-table{border-collapse:collapse;width:100%;font-size:14px;min-width:640px;}"+".kac-fee-agg-table th,.kac-fee-agg-table td{border:1px solid #e2e8f0;padding:6px 8px;text-align:center;}"+".kac-fee-agg-table th{background:#f1f5f9;}"+".kac-fee-agg-table td.kac-fee-pay,.kac-fee-agg-table td.kac-fee-cat{text-align:left;font-weight:600;}"+".kac-fee-agg-table tr.kac-fee-subtotal td{background:#dbeafe;font-weight:700;}"+".kac-fee-agg-table tr.kac-fee-grand td{background:#bbf7d0;font-weight:700;}";
+      ".kac-595-actions{display:flex;gap:8px;margin:8px 0;}"+".kac-summary-panel{margin-bottom:14px;padding:14px 18px;border:2px solid #6366f1;border-radius:10px;background:linear-gradient(135deg,#eef2ff 0%,#e0e7ff 100%);}"+".kac-summary-grid{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-end;}"+".kac-summary-item{display:flex;flex-direction:column;gap:4px;font-size:14px;}"+".kac-summary-label{color:#475569;font-size:13px;}"+".kac-summary-breakdown{flex:1 1 100%;font-size:14px;line-height:1.6;}"+".kac-fee-settings{margin-bottom:12px;padding:0;border:none;background:transparent;display:flex;flex-direction:column;gap:10px;}"+".kac-fee-panel-block{padding:10px 12px;border:1px solid #c7d2fe;border-radius:6px;background:#f8fafc;}"+".kac-fee-panel-title{margin:0 0 8px;font-size:14px;font-weight:700;color:#4338ca;}"+".kac-fee-bulk-fields{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:flex-end;}"+".kac-fee-bulk-field{display:flex;flex-direction:column;gap:3px;font-size:12px;color:#475569;}"+".kac-fee-bulk-field input{width:5.5em;font-size:14px;padding:5px 7px;}"+".kac-fee-bulk-field select{font-size:14px;padding:5px 7px;min-width:4.5em;}"+".kac-fee-bulk-suffix{font-size:14px;font-weight:600;color:#334155;padding-bottom:7px;}"+".kac-fee-monthly-view .kac-fee-monthly-table-view{width:auto;max-width:24rem;}"+".kac-fee-monthly-table-view td.kac-fee-view-num{text-align:right;font-variant-numeric:tabular-nums;}"+".kac-fee-save-row{margin-top:10px;}"+".kac-fee-settings-grid{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end;margin-bottom:8px;}"+".kac-fee-settings-label{font-size:13px;font-weight:600;color:#475569;flex:1 1 100%;}"+".kac-fee-monthly-section{margin-top:4px;}"+".kac-fee-monthly-heading{margin:0 0 6px;font-size:13px;font-weight:600;color:#475569;}"+".kac-fee-monthly-wrap{overflow:visible;border:1px solid #e2e8f0;border-radius:6px;}"+".kac-fee-monthly-table{border-collapse:collapse;width:100%;font-size:13px;}"+".kac-fee-monthly-table th,.kac-fee-monthly-table td{border:1px solid #e2e8f0;padding:4px 10px;text-align:center;}"+".kac-fee-monthly-table th{background:#f1f5f9;}"+".kac-fee-monthly-table td:first-child{text-align:left;font-weight:600;white-space:nowrap;}"+".kac-fee-agg-acc{margin-bottom:14px;border:1px solid #cbd5e1;border-radius:6px;background:#f8fafc;}"+".kac-fee-agg-acc>summary{cursor:pointer;padding:12px 16px;font-size:15px;font-weight:600;color:#334155;user-select:none;}"+".kac-fee-agg-body{padding:12px 16px 16px;}"+".kac-fee-agg-table{border-collapse:collapse;width:100%;font-size:13px;min-width:640px;}"+".kac-fee-agg-table th,.kac-fee-agg-table td{border:1px solid #e2e8f0;padding:5px 7px;text-align:center;}"+".kac-fee-agg-table th{background:#f1f5f9;}"+".kac-fee-agg-table th.kac-fee-th-pay,.kac-fee-agg-table td.kac-fee-pay{width:5.5em;}"+".kac-fee-agg-table th.kac-fee-th-cat,.kac-fee-agg-table td.kac-fee-cat{width:4.5em;}"+".kac-fee-agg-table th.kac-fee-th-metric,.kac-fee-agg-table td.kac-fee-metric{width:4em;font-size:12px;}"+".kac-fee-agg-table td.kac-fee-pay,.kac-fee-agg-table td.kac-fee-cat{text-align:left;font-weight:600;}"+".kac-fee-agg-table td.kac-fee-yen{text-align:right;font-size:12px;white-space:nowrap;}"+".kac-fee-agg-table tr.kac-fee-amount td.kac-fee-pay,.kac-fee-agg-table tr.kac-fee-amount td.kac-fee-cat{color:#64748b;font-weight:500;}"+".kac-fee-agg-table tr.kac-fee-subtotal td{background:#dbeafe;font-weight:700;}"+".kac-fee-agg-table tr.kac-fee-subtotal.kac-fee-amount td{background:#eff6ff;}"+".kac-fee-agg-table tr.kac-fee-grand td{background:#bbf7d0;font-weight:700;}"+".kac-fee-agg-table tr.kac-fee-grand.kac-fee-amount td{background:#dcfce7;}"+".kac-fee-recalc-hint{margin:0 0 8px;font-size:12px;line-height:1.45;}"+".kac-fee-summary-wrap{margin-bottom:12px;}"+".kac-fee-summary-table{border-collapse:collapse;width:100%;font-size:14px;min-width:480px;}"+".kac-fee-summary-table th,.kac-fee-summary-table td{border:1px solid #e2e8f0;padding:8px 10px;text-align:center;vertical-align:middle;}"+".kac-fee-summary-table th{background:#dbeafe;}"+".kac-fee-summary-table td.kac-fee-sum-label{text-align:left;font-weight:700;white-space:nowrap;min-width:8em;}"+".kac-fee-summary-table tr.kac-fee-sum-subtotal td{background:#eff6ff;}"+".kac-fee-summary-table tr.kac-fee-sum-grand td{background:#bbf7d0;font-weight:700;border-top:2px solid #4ade80;}"+".kac-fee-summary-table .kac-fee-sum-count{display:block;font-size:15px;font-weight:700;color:#0f172a;}"+".kac-fee-summary-table .kac-fee-sum-yen{display:block;font-size:12px;color:#475569;margin-top:3px;}"+".kac-fee-detail-acc{margin-top:8px;border:1px solid #cbd5e1;border-radius:6px;background:#fff;}"+".kac-fee-detail-acc>summary{cursor:pointer;padding:10px 14px;font-size:14px;font-weight:600;color:#475569;user-select:none;background:#f8fafc;border-radius:6px;}"+".kac-fee-detail-acc[open]>summary{border-bottom:1px solid #e2e8f0;border-radius:6px 6px 0 0;}"+".kac-fee-detail-body{padding:10px 12px 12px;}";
+    st.textContent += buildAggOrgBlockCss(".kac-agg-acc-table-wrap", "jca");
     document.head.appendChild(st);
   }
 
@@ -1963,10 +2262,24 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     if (!months.length) {
       throw new Error("期間（YYYY-MM）を正しく指定してください");
     }
-    var contractTotal = state.settings.contract_total;
-    var rows = [];
-    function pushRow(paySite, category, counts, kind) {
-      rows.push({ paySite: paySite, category: category, counts: counts, kind: kind || "detail" });
+    var detailRows = [];
+    function pushFeePair(paySite, category, counts, kind, target) {
+      var bucket = target || detailRows;
+      bucket.push({
+        paySite: paySite,
+        category: category,
+        metric: "件数",
+        values: counts,
+        kind: kind || "detail",
+      });
+      bucket.push({
+        paySite: paySite,
+        category: category,
+        metric: "利用料",
+        values: countsToYenPerMonth(counts, months),
+        kind: kind || "detail",
+        isAmount: true,
+      });
     }
     var honshaUse = months.map(function (ym) {
       return countActiveByPaySiteMonth("本社", ym);
@@ -1975,7 +2288,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       return countActiveByPaySiteMonth("首都圏支店", ym);
     });
     var honshaSurplus = months.map(function (ym) {
-      return Math.max(0, contractTotal - countTotalActiveMonth(ym));
+      var p = getMonthFeeParams(ym);
+      return Math.max(0, p.contract_total - countTotalActiveMonth(ym));
     });
     var honshaSub = months.map(function (ym, i) {
       return honshaUse[i] + honshaSurplus[i];
@@ -1984,22 +2298,123 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     var grand = months.map(function (ym, i) {
       return honshaSub[i] + shutokenSub[i];
     });
-    pushRow("本社", "利用分", honshaUse);
-    pushRow("本社", "余剰分", honshaSurplus);
-    pushRow("本社", "小計", honshaSub, "subtotal");
-    pushRow("首都圏支店", "利用分", shutokenUse);
-    pushRow("首都圏支店", "小計", shutokenSub, "subtotal");
-    pushRow("全社", "合計", grand, "grand");
-    var summary =
-      "期間=" +
-      sel.fromYm +
-      "～" +
-      sel.toYm +
-      " / 単価=" +
-      fmtYen(state.settings.unit_price_monthly) +
-      " / 総契約数=" +
-      contractTotal;
-    return { months: months, rows: rows, summary: summary };
+    pushFeePair("本社", "利用分", honshaUse, "detail", detailRows);
+    pushFeePair("本社", "余剰分", honshaSurplus, "detail", detailRows);
+    pushFeePair("首都圏支店", "利用分", shutokenUse, "detail", detailRows);
+
+    function makeSummaryRow(label, counts, kind) {
+      return {
+        label: label,
+        counts: counts,
+        amounts: countsToYenPerMonth(counts, months),
+        kind: kind,
+      };
+    }
+    var summaryRows = [
+      makeSummaryRow("本社", honshaSub, "subtotal"),
+      makeSummaryRow("首都圏支店", shutokenSub, "subtotal"),
+      makeSummaryRow("全社合計", grand, "grand"),
+    ];
+    var summary = "期間=" + sel.fromYm + "～" + sel.toYm + " / 契約数・単価=月別設定";
+    return {
+      months: months,
+      summaryRows: summaryRows,
+      detailRows: detailRows,
+      rows: detailRows,
+      summary: summary,
+    };
+  }
+
+  function feeSummaryLabel(row) {
+    if (row.kind === "grand") return row.label;
+    return row.label + " 小計";
+  }
+
+  function feeSummaryTableHeadHtml(months, prefix) {
+    var p = prefix || "kac";
+    return (
+      "<thead><tr><th class=\"" +
+      p +
+      '-fee-sum-th-label">項目</th>' +
+      months
+        .map(function (ym) {
+          return "<th>" + esc(ym) + "</th>";
+        })
+        .join("") +
+      "</tr></thead>"
+    );
+  }
+
+  function feeSummaryRowHtml(row, prefix) {
+    var p = prefix || "kac";
+    var trCls = p + "-fee-sum-row";
+    if (row.kind === "subtotal") trCls += " " + p + "-fee-sum-subtotal";
+    if (row.kind === "grand") trCls += " " + p + "-fee-sum-grand";
+    var cells = (row.counts || [])
+      .map(function (c, i) {
+        return (
+          '<td class="' +
+          p +
+          '-fee-sum-cell"><span class="' +
+          p +
+          '-fee-sum-count">' +
+          esc(String(c)) +
+          ' 件</span><span class="' +
+          p +
+          '-fee-sum-yen">' +
+          esc(fmtYen(row.amounts[i])) +
+          "</span></td>"
+        );
+      })
+      .join("");
+    return (
+      "<tr class=\"" +
+      trCls +
+      '"><td class="' +
+      p +
+      '-fee-sum-label">' +
+      esc(feeSummaryLabel(row)) +
+      "</td>" +
+      cells +
+      "</tr>"
+    );
+  }
+
+  function feeDetailTableHtml(months, detailRows, prefix) {
+    if (!detailRows.length) return "";
+    var p = prefix || "kac";
+    var head = feeTableHeadHtml(months, p);
+    var body =
+      "<tbody>" +
+      detailRows
+        .map(function (row) {
+          return feeRowHtml(row, p);
+        })
+        .join("") +
+      "</tbody>";
+    return '<table class="' + p + '-fee-agg-table">' + head + body + "</table>";
+  }
+
+  function formatFeeCellValue(value, row) {
+    if (row.isAmount) return fmtYen(value);
+    return String(value);
+  }
+
+  function feeCellsHtml(row, prefix) {
+    var p = prefix || "kac";
+    return (row.values || [])
+      .map(function (v) {
+        return (
+          '<td class="' +
+          p +
+          "-fee-cell" +
+          (row.isAmount ? " " + p + "-fee-yen" : "") +
+          '">' +
+          esc(formatFeeCellValue(v, row)) +
+          "</td>"
+        );
+      })
+      .join("");
   }
 
   function feeRowHtml(row, prefix) {
@@ -2007,6 +2422,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     var trCls = p + "-fee-row";
     if (row.kind === "subtotal") trCls += " " + p + "-fee-subtotal";
     if (row.kind === "grand") trCls += " " + p + "-fee-grand";
+    if (row.isAmount) trCls += " " + p + "-fee-amount";
     return (
       "<tr class=\"" +
       trCls +
@@ -2018,8 +2434,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       p +
       '-fee-cat">' +
       esc(row.category) +
+      '</td><td class="' +
+      p +
+      '-fee-metric">' +
+      esc(row.metric) +
       "</td>" +
-      aggMonthCellsHtml(row.counts, p) +
+      feeCellsHtml(row, p) +
       "</tr>"
     );
   }
@@ -2031,7 +2451,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       p +
       '-fee-th-pay">支払箇所</th><th class="' +
       p +
-      '-fee-th-cat">区分</th>' +
+      '-fee-th-cat">区分</th><th class="' +
+      p +
+      '-fee-th-metric">種別</th>' +
       months
         .map(function (ym) {
           return "<th>" + esc(ym) + "</th>";
@@ -2044,7 +2466,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   function renderFeeAggTable() {
     var wrap = document.getElementById("kac-fee-agg-table-wrap");
     if (!wrap) return;
-    if (!state.feeAggRows.length || !state.feeAggMonths.length) {
+    if (!state.feeAggSummaryRows.length || !state.feeAggMonths.length) {
       if (state.loading) {
         wrap.innerHTML = '<p class="kac-hint">読込中…</p>';
       } else if (isFeeAccordionOpen()) {
@@ -2057,46 +2479,154 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       }
       return;
     }
-    var head = feeTableHeadHtml(state.feeAggMonths, "kac");
-    var body =
+    var summaryHead = feeSummaryTableHeadHtml(state.feeAggMonths, "kac");
+    var summaryBody =
       "<tbody>" +
-      state.feeAggRows
+      state.feeAggSummaryRows
         .map(function (row) {
-          return feeRowHtml(row, "kac");
+          return feeSummaryRowHtml(row, "kac");
         })
         .join("") +
       "</tbody>";
+    var detailHtml = state.feeAggDetailRows.length
+      ? '<details class="kac-fee-detail-acc" id="kac-fee-detail-acc">' +
+        "<summary>内訳（利用分・余剰分）</summary>" +
+        '<div class="kac-fee-detail-body">' +
+        '<p class="kac-hint">本社の利用分・余剰分、首都圏支店の利用分の明細です。</p>' +
+        feeDetailTableHtml(state.feeAggMonths, state.feeAggDetailRows, "kac") +
+        "</div></details>"
+      : "";
     var meta = document.getElementById("kac-fee-agg-meta");
     if (meta) {
       meta.innerHTML =
         esc(state.feeAggSummary) +
-        ' <span class="kac-hint">（余剰 ID は本社に計上）</span>';
+        ' <span class="kac-hint">（余剰 ID は本社に計上 / 各月の契約数・単価に従って集計）</span>';
     }
-    wrap.innerHTML = '<table class="kac-fee-agg-table">' + head + body + "</table>";
+    wrap.innerHTML =
+      '<div class="kac-fee-summary-wrap">' +
+      '<table class="kac-fee-summary-table">' +
+      summaryHead +
+      summaryBody +
+      "</table></div>" +
+      detailHtml;
+  }
+
+  function feeSettingsMonths() {
+    var sel = readFeeAggSelections();
+    try {
+      return enumerateMonths(sel.fromYm, sel.toYm);
+    } catch (e) {
+      return [];
+    }
   }
 
   function renderFeeSettingsPanel() {
     var box = document.getElementById("kac-fee-settings");
     if (!box) return;
+    var months = feeSettingsMonths();
+    var periodKey = months.join(",");
+    if (state.feeSettingsDraftPeriod !== periodKey) {
+      resetFeeSettingsDraft();
+      state.feeSettingsDraftPeriod = periodKey;
+    }
+    ensureFeeSettingsDraft();
+    var bulkYm = defaultBulkFromYm(months);
+    var bulkParts = parseYm(bulkYm) || { y: currentJstYear(), m: 1 };
+    var bulkParams = getMonthFeeParamsDraft(bulkYm);
+    var monthRows = months
+      .map(function (ym) {
+        var p = getMonthFeeParamsDraft(ym);
+        return (
+          "<tr><td>" +
+          esc(fmtYmJa(ym)) +
+          '</td><td class="kac-fee-view-num">' +
+          esc(String(p.contract_total)) +
+          '</td><td class="kac-fee-view-num">' +
+          esc(Number(p.unit_price_monthly).toLocaleString("ja-JP")) +
+          "</td></tr>"
+        );
+      })
+      .join("");
     box.innerHTML =
-      '<div class="kac-fee-settings-grid">' +
-      '<label>1アカウント月額<input type="number" id="kac-fee-unit-price" min="0" step="1" value="' +
-      esc(String(state.settings.unit_price_monthly)) +
-      '"></label>' +
-      '<label>総契約数<input type="number" id="kac-fee-contract-total" min="0" step="1" value="' +
-      esc(String(state.settings.contract_total)) +
-      '"></label>' +
-      '<button type="button" id="kac-fee-settings-save" class="kintoneplugin-button-dialog-ok">設定保存</button>' +
-      '<p class="kac-hint">余剰 ID は <strong>本社</strong> に計上されます。</p>' +
-      "</div>";
+      (months.length
+        ? '<div class="kac-fee-panel-block kac-fee-bulk-panel">' +
+          '<p class="kac-fee-panel-title">契約数・月額の改定（指定月以降）</p>' +
+          '<div class="kac-fee-bulk-fields">' +
+          '<label class="kac-fee-bulk-field">年<input type="number" id="kac-fee-bulk-year" min="2000" max="2100" step="1" value="' +
+          esc(String(bulkParts.y)) +
+          '"></label>' +
+          '<label class="kac-fee-bulk-field">月<select id="kac-fee-bulk-month">' +
+          [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+            .map(function (m) {
+              return (
+                '<option value="' +
+                m +
+                '"' +
+                (m === bulkParts.m ? " selected" : "") +
+                ">" +
+                m +
+                "月</option>"
+              );
+            })
+            .join("") +
+          "</select></label>" +
+          '<span class="kac-fee-bulk-suffix">以降</span>' +
+          '<label class="kac-fee-bulk-field">契約数<input type="number" id="kac-fee-bulk-contract" min="0" step="1" value="' +
+          esc(String(bulkParams.contract_total)) +
+          '"></label>' +
+          '<label class="kac-fee-bulk-field">月額（円）<input type="number" id="kac-fee-bulk-price" min="0" step="1" value="' +
+          esc(String(bulkParams.unit_price_monthly)) +
+          '"></label>' +
+          '<button type="button" id="kac-fee-bulk-apply" class="kintoneplugin-button-dialog-ok">表に反映</button>' +
+          "</div>" +
+          '<p class="kac-hint">例: 2026年7月以降、契約数80・月額2000円 → 7月～12月が更新。表示期間すべてを同じ値にする場合は、期間の最初の月を指定してください。</p>' +
+          "</div>" +
+          '<div class="kac-fee-panel-block kac-fee-monthly-view">' +
+          '<p class="kac-fee-panel-title">表示期間の月別設定（' +
+          esc(String(months.length)) +
+          " か月）</p>" +
+          '<table class="kac-fee-monthly-table kac-fee-monthly-table-view"><thead><tr><th>月</th><th>総契約数</th><th>1アカウント月額（円）</th></tr></thead><tbody>' +
+          monthRows +
+          "</tbody></table>" +
+          '<div class="kac-fee-save-row">' +
+          '<button type="button" id="kac-fee-settings-save" class="kintoneplugin-button-dialog-ok">月別設定を保存</button>' +
+          "</div></div>"
+        : '<p class="kac-hint">期間（YYYY-MM）を指定してから月別設定を編集できます。</p>');
+
+    var bulkBtn = document.getElementById("kac-fee-bulk-apply");
+    if (bulkBtn) {
+      bulkBtn.onclick = function () {
+        var yEl = document.getElementById("kac-fee-bulk-year");
+        var mEl = document.getElementById("kac-fee-bulk-month");
+        var cEl = document.getElementById("kac-fee-bulk-contract");
+        var pEl = document.getElementById("kac-fee-bulk-price");
+        var fromYm = ymFromYearMonth(yEl ? yEl.value : "", mEl ? mEl.value : "");
+        if (!fromYm) {
+          alert("年・月を正しく指定してください");
+          return;
+        }
+        if (months.indexOf(fromYm) < 0 && fromYm > months[months.length - 1]) {
+          alert("指定月が表示期間外です");
+          return;
+        }
+        applyFeeBulkFromMonth(
+          fromYm,
+          cEl ? cEl.value : bulkParams.contract_total,
+          pEl ? pEl.value : bulkParams.unit_price_monthly,
+          months,
+        );
+        renderFeeSettingsPanel();
+      };
+    }
     var saveBtn = document.getElementById("kac-fee-settings-save");
     if (saveBtn) {
       saveBtn.onclick = function () {
-        saveSettings({
-          unit_price_monthly: document.getElementById("kac-fee-unit-price").value,
-          contract_total: document.getElementById("kac-fee-contract-total").value,
-        });
-        alert("設定を保存しました");
+        if (!months.length) {
+          alert("期間を指定してください");
+          return;
+        }
+        commitFeeSettingsFromPanel(months);
+        alert("月別設定を保存しました");
       };
     }
   }
@@ -2107,15 +2637,16 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     var st = currentMonthUsageStats();
     box.innerHTML =
       '<div class="kac-summary-grid">' +
-      '<div class="kac-summary-item"><span class="kac-summary-label">1アカウント月額</span>' +
-      '<input type="number" id="kac-summary-unit-price" min="0" step="1" value="' +
-      esc(String(state.settings.unit_price_monthly)) +
-      '"></div>' +
-      '<div class="kac-summary-item"><span class="kac-summary-label">総契約数</span>' +
-      '<input type="number" id="kac-summary-contract-total" min="0" step="1" value="' +
-      esc(String(state.settings.contract_total)) +
-      '"></div>' +
-      '<button type="button" id="kac-summary-save" class="kintoneplugin-button-dialog-ok">保存</button>' +
+      '<div class="kac-summary-item"><span class="kac-summary-label">1アカウント月額（' +
+      esc(st.ym) +
+      "）</span><strong>" +
+      esc(Number(st.params.unit_price_monthly).toLocaleString("ja-JP")) +
+      " 円</strong></div>" +
+      '<div class="kac-summary-item"><span class="kac-summary-label">総契約数（' +
+      esc(st.ym) +
+      "）</span><strong>" +
+      esc(String(st.params.contract_total)) +
+      " 件</strong></div>" +
       '<div class="kac-summary-item"><span class="kac-summary-label">利用数（' +
       esc(st.ym) +
       "）</span><strong>" +
@@ -2137,20 +2668,19 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       esc(String(st.surplus)) +
       " = " +
       esc(String(st.honshaSubtotal)) +
-      "<br>" +
+      " 件（利用料 " +
+      esc(fmtYen(st.honshaFee)) +
+      "）<br>" +
       "首都圏: 利用 " +
       esc(String(st.shutokenUse)) +
-      "</div></div>";
-    var saveBtn = document.getElementById("kac-summary-save");
-    if (saveBtn) {
-      saveBtn.onclick = function () {
-        saveSettings({
-          unit_price_monthly: document.getElementById("kac-summary-unit-price").value,
-          contract_total: document.getElementById("kac-summary-contract-total").value,
-        });
-        alert("設定を保存しました");
-      };
-    }
+      " 件（利用料 " +
+      esc(fmtYen(st.shutokenFee)) +
+      "）<br>" +
+      "全社合計: " +
+      esc(String(st.grandTotal)) +
+      " 件 / 請求 " +
+      esc(fmtYen(st.monthlyTotal)) +
+      '<br><span class="kac-hint">契約数・月額の変更は下の「月次利用費用集計」→ 月別設定で行います。</span></div></div>';
   }
 
   function readFeeAggSelections() {
@@ -2178,8 +2708,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       var result = buildFeeAggTable(sel);
       state.feeAggMonths = result.months;
       state.feeAggRows = result.rows;
+      state.feeAggSummaryRows = result.summaryRows;
+      state.feeAggDetailRows = result.detailRows;
       state.feeAggSummary = result.summary;
       renderFeeAggTable();
+      renderFeeSettingsPanel();
     } catch (e) {
       if (!silent) alert(e.message || e);
     }
@@ -2204,18 +2737,33 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       alert("Excel 出力ライブラリが読み込まれていません。ページを再読み込みしてください。");
       return;
     }
-    if (!state.feeAggRows.length) {
+    if (!state.feeAggSummaryRows.length) {
       alert("先に集計を実行してください");
       return;
     }
-    var header = ["支払箇所", "区分"].concat(state.feeAggMonths);
-    var matrix = [header];
-    state.feeAggRows.forEach(function (row) {
-      matrix.push([row.paySite, row.category].concat(row.counts || []));
+    var matrix = [];
+    matrix.push(["【サマリー】"]);
+    matrix.push(["項目"].concat(state.feeAggMonths));
+    state.feeAggSummaryRows.forEach(function (row) {
+      matrix.push([feeSummaryLabel(row) + "（件数）"].concat(row.counts || []));
+      matrix.push([feeSummaryLabel(row) + "（利用料）"].concat(row.amounts || []));
     });
     matrix.push([]);
-    matrix.push(["単価", state.settings.unit_price_monthly]);
-    matrix.push(["総契約数", state.settings.contract_total]);
+    matrix.push(["【内訳】"]);
+    matrix.push(["支払箇所", "区分", "種別"].concat(state.feeAggMonths));
+    state.feeAggDetailRows.forEach(function (row) {
+      var cells = (row.values || []).map(function (v) {
+        return Number(v);
+      });
+      matrix.push([row.paySite, row.category, row.metric].concat(cells));
+    });
+    matrix.push([]);
+    matrix.push(["月別設定"]);
+    matrix.push(["月", "総契約数", "1アカウント月額"]);
+    state.feeAggMonths.forEach(function (ym) {
+      var p = getMonthFeeParams(ym);
+      matrix.push([ym, p.contract_total, p.unit_price_monthly]);
+    });
     var ws = XLSX.utils.aoa_to_sheet(matrix);
     var wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "月次利用費用");
@@ -2225,7 +2773,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   }
 
   function openFeeAggPrintWindow() {
-    if (!state.feeAggRows.length) {
+    if (!state.feeAggSummaryRows.length) {
       alert("先に集計を実行してください");
       return;
     }
@@ -2235,15 +2783,16 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       return;
     }
     w.opener = null;
-    var head = feeTableHeadHtml(state.feeAggMonths, "kacfp");
-    var body =
+    var summaryHead = feeSummaryTableHeadHtml(state.feeAggMonths, "kacfp");
+    var summaryBody =
       "<tbody>" +
-      state.feeAggRows
+      state.feeAggSummaryRows
         .map(function (row) {
-          return feeRowHtml(row, "kacfp");
+          return feeSummaryRowHtml(row, "kacfp");
         })
         .join("") +
       "</tbody>";
+    var detailTable = feeDetailTableHtml(state.feeAggMonths, state.feeAggDetailRows, "kacfp");
     var html =
       '<header class="kacfp-header"><h1>Kintoneアカウント — 月次利用費用集計</h1>' +
       '<p class="kacfp-meta">印刷日: ' +
@@ -2251,10 +2800,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       " / " +
       esc(state.feeAggSummary) +
       "</p></header>" +
-      '<table class="kacfp-table">' +
-      head +
-      body +
-      "</table>";
+      '<table class="kacfp-summary-table">' +
+      summaryHead +
+      summaryBody +
+      "</table>" +
+      (detailTable
+        ? '<h2 class="kacfp-detail-title">内訳（利用分・余剰分）</h2>' + detailTable
+        : "");
     var styles =
       '@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap");' +
       "*{box-sizing:border-box;}" +
@@ -2266,8 +2818,18 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       ".kacfp-table th,.kacfp-table td{border:1px solid #64748b;padding:5px 6px;text-align:center;}" +
       ".kacfp-table th{background:#dbeafe;}" +
       ".kacfp-table td.kacfp-fee-pay,.kacfp-table td.kacfp-fee-cat{text-align:left;font-weight:600;}" +
+      ".kacfp-table td.kacfp-fee-yen{text-align:right;font-size:9pt;white-space:nowrap;}" +
       ".kacfp-table tr.kacfp-fee-subtotal td{background:#dbeafe;font-weight:700;}" +
-      ".kacfp-table tr.kacfp-fee-grand td{background:#bbf7d0;font-weight:700;}";
+      ".kacfp-table tr.kacfp-fee-grand td{background:#bbf7d0;font-weight:700;}" +
+      ".kacfp-summary-table{width:100%;border-collapse:collapse;font-size:10pt;margin-bottom:14px;}" +
+      ".kacfp-summary-table th,.kacfp-summary-table td{border:1px solid #64748b;padding:6px 8px;text-align:center;vertical-align:middle;}" +
+      ".kacfp-summary-table th{background:#dbeafe;}" +
+      ".kacfp-summary-table td.kacfp-fee-sum-label{text-align:left;font-weight:700;white-space:nowrap;}" +
+      ".kacfp-summary-table tr.kacfp-fee-sum-subtotal td{background:#eff6ff;}" +
+      ".kacfp-summary-table tr.kacfp-fee-sum-grand td{background:#bbf7d0;font-weight:700;}" +
+      ".kacfp-summary-table .kacfp-fee-sum-count{display:block;font-weight:700;}" +
+      ".kacfp-summary-table .kacfp-fee-sum-yen{display:block;font-size:9pt;color:#475569;margin-top:2px;}" +
+      ".kacfp-detail-title{margin:16px 0 8px;font-size:12pt;color:#334155;}";
     var docHtml =
       '<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>Kintone月次利用費用</title><style>' +
       styles +
@@ -2305,9 +2867,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       '<div id="kac-meta" class="kac-meta"></div>' +
       '<div id="kac-summary-panel" class="kac-summary-panel"></div>' +
       '<details class="kac-agg-acc" id="kac-agg-acc">' +
-      "<summary>月次アカウント数量集計（開くと <strong>" +
-      esc(currentJstYear()) +
-      "年 1月～12月</strong> を表示）</summary>" +
+      "<summary>アカウント集計（現時点稼働数）</summary>" +
       '<div class="kac-agg-body">' +
       '<div class="kac-agg-output-bar">' +
       '<p id="kac-agg-meta" class="kac-hint">集計表を読み込み中…</p>' +
@@ -2316,18 +2876,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       '<button type="button" id="kac-agg-print" class="kintoneplugin-button-normal">印刷</button>' +
       "</div></div>" +
       '<details class="kac-agg-cond-acc" id="kac-agg-cond-acc">' +
-      "<summary>集計条件（期間・所属グループ・所属）</summary>" +
+      "<summary>集計条件（所属グループ・所属）</summary>" +
       '<div class="kac-agg-cond-body">' +
       '<p class="kac-hint">条件を変えたあとは <strong>集計を更新</strong> を押してください。所属グループ・所属はチップをクリックで ON/OFF（緑=対象）。</p>' +
       '<div class="kac-agg-controls">' +
       '<div class="kac-agg-period-row">' +
-      '<label>期間（開始）<input type="month" id="kac-agg-from" value="' +
-      esc(aggRange.fromYm) +
-      '"></label>' +
-      '<label>期間（終了）<input type="month" id="kac-agg-to" value="' +
-      esc(aggRange.toYm) +
-      '"></label>' +
-      '<button type="button" id="kac-agg-year" class="kintoneplugin-button-normal">当年通年</button>' +
       '<button type="button" id="kac-agg-recalc" class="kintoneplugin-button-dialog-ok">集計を更新</button>' +
       '<button type="button" id="kac-agg-clear" class="kintoneplugin-button-normal">条件クリア</button>' +
       "</div>" +
@@ -2345,7 +2898,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       "</div>" +
       '<button type="button" id="kac-agg-all-dept" class="kac-agg-chip-link">すべて</button>' +
       "</div></div></div></details>" +
-      '<div id="kac-agg-table-wrap" class="kac-agg-table-wrap"></div>' +
+      '<div id="kac-agg-table-wrap" class="kac-agg-table-wrap kac-agg-acc-table-wrap"></div>' +
       "</div></details>" +
       '<details class="kac-fee-agg-acc" id="kac-fee-agg-acc">' +
       "<summary>月次利用費用集計（開くと <strong>" +
@@ -2423,14 +2976,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     });
     wireAggChipBar(document.getElementById("kac-agg-org"));
     wireAggChipBar(document.getElementById("kac-agg-dept"));
-    document.getElementById("kac-agg-year").addEventListener("click", function () {
-      var r = defaultAggYearRange();
-      var fromEl = document.getElementById("kac-agg-from");
-      var toEl = document.getElementById("kac-agg-to");
-      if (fromEl) fromEl.value = r.fromYm;
-      if (toEl) toEl.value = r.toYm;
-      recalcAgg();
-    });
     document.getElementById("kac-agg-recalc").addEventListener("click", function () {
       recalcAgg();
     });
