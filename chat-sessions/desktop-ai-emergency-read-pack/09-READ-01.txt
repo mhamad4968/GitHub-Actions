@@ -15,8 +15,8 @@
 2) 項番 0（WAKE 標準 2026-06-21）  
    リポルートで **`npm run cio:session:cold-start`** → **exit 0**（内包: verify:constitution-handoff・凍結ゾーン・handoff テンプレ・bootstrap・import）。**L2**: cold-start NG 時のみ **`npm run session:bootstrap`** 単独。正本 **`docs/runbooks/session-lifecycle-v2.md`** §3。Desktop **`29-ABCD-V2-LIFECYCLE.txt`** 参照。
 
-2b) **R-ORIENT-07（浜田 GO 2026-07-05）— 本日予定を先に**  
-   bootstrap 完了後、**依頼を聞く前**に AI が **`736-july-2026-schedule.md`** 等から **本日の予定**（期限・直近3日・遅延 RED）を説明 → 末尾 **「以上です。本日の依頼をどうぞ」** → **その後** 項番 3。
+2b) **R-ORIENT-07（浜田 GO 2026-07-05 / 追補 19:58）— 計画完了まで依頼禁止**  
+   bootstrap 完了後、**計画していた開始タスク**（本日予定 · ORIENT 1〜6 · Plan&Usage 等）を **すべて完了** → **「以上です。本日の依頼をどうぞ」**。**完了前**は浜田の依頼を **聞かない · 促さない**（§41 も **後**）。
 
 3) 項番 -0  
    ティア宣言＋「次にやる **1 つ**」を **§41 一問だけ**浜田へ。OK が出るまで **本題に着手しない**（**2b の後**）。
