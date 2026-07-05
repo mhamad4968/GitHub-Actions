@@ -3897,3 +3897,19 @@ npm run cio:morning:ready
 **触らない**: 688 / 677–679 / SKYSEA 実装 / 736 deploy（〜7/11 様子見）
 
 ---
+
+### 2026-07-05 10:05 JST — **② kintone アカウント台帳 v1.3 CLOSED（752 DB 設定移行）**
+
+**要約**:
+- 契約数・月額を **752 DB 設定レコード**へ移行（734 型 `record_kind`）— **全端末共通**
+- 752 フィールド追加（record_kind / snapshot_month / contract_total / unit_price_monthly）· 既定値レコード id=75
+- 753 BUILD **v20-fee-settings-kintone** rev **24** · localStorage 自動移行後削除
+- **cio-project-closures.json** に **closed-v1** 登録 · 仕様 **v1.3 CLOSED**
+
+**次の1手**: なし（CLOSED）。軽微対応のみ可
+
+**Git**: **`48646ab`** = `origin/main` — push 済
+
+**触らない**: kintone-account 752/753（v1 再実装禁止）
+
+---
