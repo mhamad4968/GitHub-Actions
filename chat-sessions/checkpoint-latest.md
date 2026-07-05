@@ -29,7 +29,7 @@
 | **712 ポータル** | **削除済**（2026-07-05 · API `GAIA_AP01` 確認）— **deploy 禁止** |
 
 **次の1手**: **736 7月カレンダー**（PH1b **7/11** 他）· **月曜** 698/700 レビュー · **SKYSEA は 8/1 から再計画**
-**Git**: **`279fb67`** = `origin/main` — push 済（2026-07-05 セッション締め）
+**Git**: **`1de246d`** = `origin/main` — push 済（2026-07-05 セッション締め）
 **Plan&Usage**（2026-07-05）: **Ultra $200/mo** · 合計 **21%** · **リセット 7/15** — **現ペース問題なし**
 **整理正本**: `docs/reports/2026-07-05-morning-task-triage.md`
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **クローズ正本**: `data/cio-project-closures.json` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
