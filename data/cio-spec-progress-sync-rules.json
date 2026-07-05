@@ -1,6 +1,6 @@
 {
   "version": "2026-07-05",
-  "description": "仕様進捗表・kintone-apps・checkpoint の先祖返り検知（R736-SPEC-SYNC / 浜田 2026-07-05）",
+  "description": "仕様進捗表・kintone-apps・checkpoint の先祖返り検知（R736-SPEC-SYNC / #R736-SYNC-01: 他案件は rules[] に 1 オブジェクト追加）",
   "rules": [
     {
       "id": "736-version-mirror-v2cd",

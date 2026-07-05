@@ -12,11 +12,14 @@
 
 1b) （任意）`chat-sessions/SESSION-CLOSE-REPORT_yyyymmdd.txt` があれば **項番 -0 前**に Read（無ければスキップ可）。
 
-2) 項番 -0  
-   ティア宣言＋「次にやる **1 つ**」を **§41 一問だけ**浜田へ。OK が出るまで **verify / bootstrap / 本題に着手しない**。
-
-3) 項番 0（WAKE 標準 2026-06-21）  
+2) 項番 0（WAKE 標準 2026-06-21）  
    リポルートで **`npm run cio:session:cold-start`** → **exit 0**（内包: verify:constitution-handoff・凍結ゾーン・handoff テンプレ・bootstrap・import）。**L2**: cold-start NG 時のみ **`npm run session:bootstrap`** 単独。正本 **`docs/runbooks/session-lifecycle-v2.md`** §3。Desktop **`29-ABCD-V2-LIFECYCLE.txt`** 参照。
+
+2b) **R-ORIENT-07（浜田 GO 2026-07-05）— 本日予定を先に**  
+   bootstrap 完了後、**依頼を聞く前**に AI が **`736-july-2026-schedule.md`** 等から **本日の予定**（期限・直近3日・遅延 RED）を説明 → 末尾 **「以上です。本日の依頼をどうぞ」** → **その後** 項番 3。
+
+3) 項番 -0  
+   ティア宣言＋「次にやる **1 つ**」を **§41 一問だけ**浜田へ。OK が出るまで **本題に着手しない**（**2b の後**）。
 
 4) 第0手（段階読解）  
    **本パック** `10-READ-02.txt` から **`15-READ-07.txt` までファイル名の番号昇順**で Read（中身が「（未使用）」のみならその番号はスキップ可＋チャットに理由 1 行）。**`14-READ-06.txt` を Read した直後**、**`28-CONSTITUTION-GENRE-MAP.txt` を Read**（ジャンル早見・4AI 役割・見落とし防止）し、チャットに **`【AI分業チェック】`** を **1 回必ず**出す（項目・表は READ-06 先頭のテンプレどおり。**省略・「同上」禁止**）。**`15-READ-07.txt`（浜田 CEO のお願い）**を Read した直後、チャットに **`【READ-07 読了】`** と **1 行**（「Project Rules 厳守・壁時計・分業・GH Actions・健全性を再確認」等、自分の言葉で要約）を残す。  

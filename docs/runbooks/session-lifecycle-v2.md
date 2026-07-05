@@ -39,8 +39,8 @@ flowchart LR
 | Phase | 誰 | やること | 副作用 |
 |-------|-----|----------|--------|
 | **WAKE** | AI | `npm run cio:session:cold-start` | 朝報・preflight・rollup・bootstrap・import |
-| **ORIENT** | AI | L0 Read + 復元 4 行報告 | なし |
-| **ALIGN** | 浜田+AI | §41 一問 → **浜田 OK** | OK 前は WORK 禁止 |
+| **ORIENT** | AI | L0 Read + **本日予定説明（R-ORIENT-07）** + 復元 4 行報告 | なし |
+| **ALIGN** | 浜田+AI | §41 一問 → **浜田 OK**（**予定説明の後**） | OK 前は WORK 禁止 |
 | **WORK** | AI | L1 Read → 実装・deploy | 本題のみ |
 | **CLOSE** | AI | partial または full（§6） | checkpoint / handoff / git |
 
@@ -57,6 +57,9 @@ flowchart LR
 | 3 | `chat-sessions/constitution-first-read-pack/00-ORDER.txt` 〜 `05-full-refs.txt` | 憲法要約（hooks 連動） |
 
 **ORIENT 第1報告（§1 先頭4行に含める内容）**
+
+> **R-ORIENT-07（浜田 GO 2026-07-05）**: **本日の予定説明を完了するまで** 浜田の依頼・本題着手 **禁止**。  
+> 流れ: bootstrap 完了 → **下記 1〜6 をチャットで提示** → **「以上です。本日の依頼をどうぞ」** → その後 §41 / 依頼受付。
 
 1. bridge gitHead 鮮度（current HEAD と一致するか）
 2. **凍結**（触らない app・保留レーン）
@@ -188,6 +191,8 @@ npm run cio:checkpoint:rollup -- --keep 3
 **R-SESS-05（2026-07-04 GO）**: セッション内で **customize deploy** した app がある full CLOSE 前 — `push-deploy-quality-gates-v2.md` **§5 手順 6**（`sync:kintone-apps-build --strict` + verify）を実行し、`kintone-apps.md` 整合を commit に含める。
 
 **R-SESS-06（2026-07-04 GO）**: full CLOSE の checkpoint 更新後 — `verify:checkpoint-handoff-template`（bootstrap ブロック **auto-repair** 内包）を通す。手動編集で `mandatory-read-gate.mjs` 行を削らない。
+
+**R-SESS-07（2026-07-05 GO）**: **partial CLOSE** でも **736 7月カレンダー / spec §9.2 / runbook** を触ったターンは **commit 必須**（dirty 放置禁止 · #S-CLOSE-02）。
 
 **partial でも必須**: checkpoint `次の1手` / `Git` + handoff-log 末尾ブロック（**Git** キー含む）。
 

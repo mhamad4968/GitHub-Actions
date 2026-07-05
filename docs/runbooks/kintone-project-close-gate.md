@@ -63,6 +63,22 @@ npm run verify:kintone-project-close-gate
 
 ---
 
+## kintone アプリ廃止（S-712-DEL-01 / 2026-07-05 GO）
+
+利用頻度低・ポータル等の **廃止**時。712 実例: `docs/plans/2026-06-11-space48-portal-spec.md`
+
+| # | 手順 | 担当 |
+|---|------|------|
+| 1 | **レコード export**（`scripts/*-export-backup.mjs` 等） | AI |
+| 2 | **正本更新** — `kintone-apps.md` 運用終了 · registry から除外 · `deploy:*` ブロック | AI |
+| 3 | **`cio-live-builds.json`** に RETIRED 注記 | AI |
+| 4 | **Space / ポータルリンク削除** | 浜田（手動） |
+| 5 | **kintone 管理画面でアプリ削除** | 浜田 |
+| 6 | **API 確認** — `GAIA_AP01` not found | AI |
+| 7 | **commit + push** 同一ターン | AI |
+
+---
+
 ## 関連
 
 - `docs/runbooks/kintone-ledger-spec-qa-checklist.md`（R19 SPEC GO 前）
