@@ -199,6 +199,24 @@
         "751"
       ],
       "note": "63件・メンバー検索・変更メモ・条件クリア・印刷/xlsx。浜田目視 OK（2026-06-29）。本番 Excel 削除済（2026-06-29 浜田報告）。kintone 750/751 のみ正本。Space 21 移設+ACL（2026-07-02 浜田 OK）"
+    },
+    {
+      "id": "kintone-account-ledger",
+      "laneId": "kintone-account",
+      "label": "Kintoneアカウント管理台帳",
+      "status": "closed-v1",
+      "closedAt": "2026-07-05",
+      "completionReport": "docs/plans/2026-07-05-kintone-account-ledger-spec.md",
+      "kintoneAppsSection": "Kintoneアカウント管理台帳（Space 48 — 752–753）",
+      "kintoneAppsStateMarker": "v1.3 完成 — CLOSED",
+      "forbiddenNextTaskPatterns": [
+        "Kintoneアカウント",
+        "kintone-account",
+        "752",
+        "753",
+        "Kintoneアカウント一覧"
+      ],
+      "note": "74件・一覧/CRUD/集計/月次利用費用・契約数/月額752 DB保存（v1.3）・Excel廃止・Space48リンク設置済（2026-07-05 浜田報告）。kintone 752/753 のみ正本"
     }
   ]
 }

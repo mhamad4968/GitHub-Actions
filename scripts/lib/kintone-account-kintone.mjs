@@ -13,6 +13,9 @@ export const THREAD_NAME = process.env.KINTONE_ACCOUNT_THREAD_NAME || 'Kintone�
 export const DEFAULT_XLSX =
   process.env.KINTONE_ACCOUNT_XLSX || 'C:\\tmp\\kintoneアカウント台帳\\Kintoneアカウント一覧.xlsx';
 export const MIGRATION_START_DATE = '2026-07-05';
+export const RECORD_KIND_SETTING = '設定';
+export const RECORD_KIND_MONTHLY = '月次設定';
+export const FEE_LOGIN_DEFAULTS = '__kac_fee_defaults__';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const FIELDS_PATH = path.join(__dirname, '..', 'data', 'kintone-account-db-fields.json');

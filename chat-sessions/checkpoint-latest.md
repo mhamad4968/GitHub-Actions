@@ -6,7 +6,7 @@
 
 
 
-**最終更新**: 2026-07-05 JST — **② kintone アカウント台帳 v1.2 本番運用 CLOSED** · Plan&Usage **21%**（リセット **7/15** 残11日）
+**最終更新**: 2026-07-05 JST — **② kintone アカウント台帳 v1.3 CLOSED** · 契約数/月額 **752 DB** · Plan&Usage **21%**
 
 
 
@@ -18,7 +18,7 @@
 
 |------|------|
 
-| **② kintone アカウント台帳** | **CLOSED v1.2 本番運用中** — 752/753 · BUILD 753=`2026-07-05-kintone-account-dash-v19-agg-100rem-list-sort` **rev22** · Excel **廃止** · Space 48 **リンク設置済** · 正本 `docs/plans/2026-07-05-kintone-account-ledger-spec.md` · git **`2d63799`** |
+| **② kintone アカウント台帳** | **CLOSED v1.3** — 752/753 · BUILD 753=`v20-fee-settings-kintone` **rev24** · 契約数/月額 **752 DB** · Excel **廃止** · `cio-project-closures.json` 登録済 |
 
 | **736 実行予算** | BUILD=`2026-07-04-736-row-menu-fixed-pop` **rev168** — Phase **0c GO** · Phase 1: 7/11 / 7/18 / 7/25 |
 
@@ -28,11 +28,11 @@
 
 
 
-## クローズ済み（`data/cio-project-closures.json` — 8件 · 7/5 再確認済）
+## クローズ済み（`data/cio-project-closures.json` — 9件 · 7/5 ②追加）
 
 
 
-業務改善697–713 / Wi-Fi718–719 / JR iPad720–721 / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **ML750–751** — **closed-v1**。**触らない**: **688 / 677–679 / SKYSEA 実装**
+業務改善697–713 / Wi-Fi718–719 / JR iPad720–721 / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **ML750–751** / **Kintoneアカウント752–753** — **closed-v1**。**触らない**: **688 / 677–679 / SKYSEA 実装**
 
 
 

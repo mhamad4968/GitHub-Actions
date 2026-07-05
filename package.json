@@ -284,6 +284,8 @@
     "kintone-account:migrate:xlsx": "npx dotenv -e .env -e .env.proxy -- node scripts/kintone-account-migrate-xlsx.mjs",
     "kintone-account:migrate:xlsx:dry-run": "npx dotenv -e .env -e .env.proxy -- node scripts/kintone-account-migrate-xlsx.mjs --dry-run",
     "kintone-account:bundle-dash": "node scripts/kintone-account-bundle-dash.mjs",
+    "kintone-account:add-fee-settings-fields": "npx dotenv -e .env -e .env.proxy -- node scripts/kintone-account-add-fee-settings-fields.mjs",
+    "kintone-account:fee-settings-backfill": "npx dotenv -e .env -e .env.proxy -- node scripts/kintone-account-fee-settings-backfill.mjs",
     "jre-chub:create-db": "npx dotenv -e .env -e .env.proxy -- node scripts/jre-chub-account-create-db-app.mjs",
     "jre-chub:create-db:dry-run": "npx dotenv -e .env -e .env.proxy -- node scripts/jre-chub-account-create-db-app.mjs --dry-run",
     "jre-chub:create-dash": "npx dotenv -e .env -e .env.proxy -- node scripts/jre-chub-account-create-dash-app.mjs",

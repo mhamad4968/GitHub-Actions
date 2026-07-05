@@ -426,11 +426,11 @@
       "note": null
     },
     "753": {
-      "build": "2026-07-05-kintone-account-dash-v19-agg-100rem-list-sort",
-      "fileKey": "ebc9f22c-6640-4f44-9449-6ce8f3f7a7c6",
-      "revision": "22",
+      "build": "2026-07-05-kintone-account-dash-v20-fee-settings-kintone",
+      "fileKey": "f31dce54-f0ac-439b-8225-54ccac2ff6b4",
+      "revision": "24",
       "relPath": "customize/kintone-account-dash/desktop.js",
-      "deployedAt": "2026-07-05T00:43:42.353Z",
+      "deployedAt": "2026-07-05T01:02:38.624Z",
       "note": null
     }
   }

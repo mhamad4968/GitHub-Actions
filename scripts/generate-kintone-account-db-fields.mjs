@@ -22,6 +22,14 @@ const accountTypes = ['特権アカウント', '本社共有', '本社個人', '
 const statuses = ['使用中', '終了'];
 
 const properties = {
+  record_kind: {
+    type: 'SINGLE_LINE_TEXT',
+    code: 'record_kind',
+    label: 'レコード種別',
+    required: false,
+    noLabel: false,
+    defaultValue: '',
+  },
   pay_site: {
     type: 'DROP_DOWN',
     code: 'pay_site',
@@ -115,6 +123,40 @@ const properties = {
     required: false,
     noLabel: false,
     defaultValue: '',
+  },
+  snapshot_month: {
+    type: 'SINGLE_LINE_TEXT',
+    code: 'snapshot_month',
+    label: '設定対象月',
+    required: false,
+    noLabel: false,
+    defaultValue: '',
+  },
+  contract_total: {
+    type: 'NUMBER',
+    code: 'contract_total',
+    label: '総契約数',
+    required: false,
+    noLabel: false,
+    unique: false,
+    digit: false,
+    defaultValue: '',
+    displayScale: '',
+    unit: '',
+    unitPosition: 'BEFORE',
+  },
+  unit_price_monthly: {
+    type: 'NUMBER',
+    code: 'unit_price_monthly',
+    label: '1アカウント月額',
+    required: false,
+    noLabel: false,
+    unique: false,
+    digit: false,
+    defaultValue: '',
+    displayScale: '',
+    unit: '円',
+    unitPosition: 'AFTER',
   },
 };
 

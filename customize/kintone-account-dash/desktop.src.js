@@ -2,7 +2,7 @@
   "use strict";
 
   /** Kintoneアカウント管理台帳 — DB REST CRUD + アカウント集計（現時点）+ 月次利用費用 + 一覧出力 */
-  var BUILD = "2026-07-05-kintone-account-dash-v19-agg-100rem-list-sort";
+  var BUILD = "2026-07-05-kintone-account-dash-v20-fee-settings-kintone";
   var APP_DB = 752;
   var APP_EMP_MASTER = 595;
   var PAGE_SIZE = 100;
@@ -122,6 +122,10 @@
 
   var SETTINGS_LS_KEY = "kintone-account-ledger-settings-v2";
   var SETTINGS_LS_KEY_V1 = "kintone-account-ledger-settings-v1";
+  var RECORD_KIND_SETTING = "設定";
+  var RECORD_KIND_MONTHLY = "月次設定";
+  var FEE_LOGIN_DEFAULTS = "__kac_fee_defaults__";
+  var FEE_SETTINGS_SYSTEM_START = "2026-07-05";
 
   var DEFAULT_SETTINGS = { contract_total: 77, unit_price_monthly: 1800 };
 
@@ -137,7 +141,21 @@
     start_date: "start_date",
     end_date: "end_date",
     note: "note",
+    record_kind: "record_kind",
+    snapshot_month: "snapshot_month",
+    contract_total: "contract_total",
+    unit_price_monthly: "unit_price_monthly",
   };
+
+  var FEE_SETTINGS_API_FIELDS = [
+    "$id",
+    "$revision",
+    FC.record_kind,
+    FC.snapshot_month,
+    FC.contract_total,
+    FC.unit_price_monthly,
+    FC.login_id,
+  ];
 
   var API_FIELDS = [
     "$id",
@@ -185,7 +203,12 @@
     feeAggMonths: [],
     feeSettingsDraft: null,
     feeSettingsDraftPeriod: "",
-    settings: loadSettings(),
+    settings: {
+      defaults: { contract_total: DEFAULT_SETTINGS.contract_total, unit_price_monthly: DEFAULT_SETTINGS.unit_price_monthly },
+      monthly: {},
+    },
+    feeSettingsRecords: { defaults: null, monthly: {} },
+    settingsReady: false,
   };
 
   function esc(s) {
@@ -232,7 +255,7 @@
     };
   }
 
-  function loadSettings() {
+  function loadSettingsFromLocalStorage() {
     function parseKey(key) {
       try {
         var raw = localStorage.getItem(key);
@@ -266,18 +289,147 @@
       };
     }
 
-    return {
-      defaults: normalizeFeeParams(DEFAULT_SETTINGS),
-      monthly: {},
-    };
+    return null;
   }
 
-  function persistSettings() {
+  function clearLocalStorageFeeSettings() {
     try {
-      localStorage.setItem(SETTINGS_LS_KEY, JSON.stringify(state.settings));
+      localStorage.removeItem(SETTINGS_LS_KEY);
+      localStorage.removeItem(SETTINGS_LS_KEY_V1);
     } catch (e) {
       console.warn(BUILD, e);
     }
+  }
+
+  function feeLoginIdForYm(ym) {
+    return "__kac_fee_" + String(ym || "").replace(/-/g, "") + "__";
+  }
+
+  function systemFeeRecordFields(kind, ym, params) {
+    var p = normalizeFeeParams(params);
+    var loginId = kind === RECORD_KIND_SETTING ? FEE_LOGIN_DEFAULTS : feeLoginIdForYm(ym);
+    return {
+      record_kind: { value: kind },
+      snapshot_month: { value: kind === RECORD_KIND_MONTHLY ? ym : "" },
+      contract_total: { value: String(p.contract_total) },
+      unit_price_monthly: { value: String(p.unit_price_monthly) },
+      login_id: { value: loginId },
+      display_name: { value: "（契約・月額設定）" },
+      login_name: { value: "システム" },
+      org: { value: "本社" },
+      dept: { value: "役員室" },
+      pay_site: { value: "本社" },
+      account_type: { value: "特権アカウント" },
+      status: { value: "使用中" },
+      start_date: { value: FEE_SETTINGS_SYSTEM_START },
+      note: { value: "システム設定（台帳753から編集）" },
+    };
+  }
+
+  function applyFeeSettingsFromRecords(records) {
+    var defaults = normalizeFeeParams(DEFAULT_SETTINGS);
+    var monthly = {};
+    var meta = { defaults: null, monthly: {} };
+    (records || []).forEach(function (rec) {
+      var kind = val(rec, FC.record_kind);
+      var params = normalizeFeeParams({
+        contract_total: val(rec, FC.contract_total),
+        unit_price_monthly: val(rec, FC.unit_price_monthly),
+      });
+      var rowMeta = { id: val(rec, "$id"), revision: val(rec, "$revision") };
+      if (kind === RECORD_KIND_SETTING) {
+        defaults = params;
+        meta.defaults = rowMeta;
+      } else if (kind === RECORD_KIND_MONTHLY) {
+        var ym = val(rec, FC.snapshot_month);
+        if (ym) {
+          monthly[ym] = params;
+          meta.monthly[ym] = rowMeta;
+        }
+      }
+    });
+    state.settings = { defaults: defaults, monthly: monthly };
+    state.feeSettingsRecords = meta;
+    state.settingsReady = true;
+  }
+
+  function fetchFeeSettingsFromKintone() {
+    return apiGet("/k/v1/records.json", {
+      app: APP_DB,
+      query:
+        'record_kind in ("' +
+        RECORD_KIND_SETTING +
+        '", "' +
+        RECORD_KIND_MONTHLY +
+        '") order by snapshot_month asc limit 500',
+      fields: FEE_SETTINGS_API_FIELDS,
+    }).then(function (resp) {
+      applyFeeSettingsFromRecords(resp.records || []);
+    });
+  }
+
+  function upsertFeeSettingsRecord(meta, kind, ym, params) {
+    var record = systemFeeRecordFields(kind, ym, params);
+    if (meta && meta.id) {
+      return apiPut("/k/v1/record.json", {
+        app: APP_DB,
+        id: meta.id,
+        revision: meta.revision,
+        record: {
+          contract_total: record.contract_total,
+          unit_price_monthly: record.unit_price_monthly,
+        },
+      }).then(function (resp) {
+        return { id: meta.id, revision: String(resp.revision || meta.revision) };
+      });
+    }
+    return apiPost("/k/v1/record.json", {
+      app: APP_DB,
+      record: record,
+    }).then(function (resp) {
+      return { id: String(resp.id || ""), revision: String(resp.revision || "") };
+    });
+  }
+
+  function persistFeeSettingsToKintone() {
+    var chain = Promise.resolve();
+    chain = chain.then(function () {
+      return upsertFeeSettingsRecord(
+        state.feeSettingsRecords.defaults,
+        RECORD_KIND_SETTING,
+        "",
+        state.settings.defaults,
+      ).then(function (meta) {
+        state.feeSettingsRecords.defaults = meta;
+      });
+    });
+    Object.keys(state.settings.monthly || {}).forEach(function (ym) {
+      chain = chain.then(function () {
+        return upsertFeeSettingsRecord(
+          state.feeSettingsRecords.monthly[ym] || null,
+          RECORD_KIND_MONTHLY,
+          ym,
+          state.settings.monthly[ym],
+        ).then(function (meta) {
+          state.feeSettingsRecords.monthly[ym] = meta;
+        });
+      });
+    });
+    return chain;
+  }
+
+  function migrateFeeSettingsFromLocalStorageIfNeeded() {
+    if (state.feeSettingsRecords.defaults && state.feeSettingsRecords.defaults.id) {
+      return Promise.resolve();
+    }
+    var ls = loadSettingsFromLocalStorage();
+    if (!ls) return Promise.resolve();
+    state.settings = ls;
+    return persistFeeSettingsToKintone()
+      .then(function () {
+        clearLocalStorageFeeSettings();
+      })
+      .then(fetchFeeSettingsFromKintone);
   }
 
   function getMonthFeeParams(ym) {
@@ -289,12 +441,12 @@
   function setMonthFeeParams(ym, next) {
     if (!state.settings.monthly) state.settings.monthly = {};
     state.settings.monthly[ym] = normalizeFeeParams(next);
-    persistSettings();
+    return persistFeeSettingsToKintone().then(fetchFeeSettingsFromKintone);
   }
 
   function saveDefaults(next) {
     state.settings.defaults = normalizeFeeParams(next);
-    persistSettings();
+    return persistFeeSettingsToKintone().then(fetchFeeSettingsFromKintone);
   }
 
   function resetFeeSettingsDraft() {
@@ -360,11 +512,14 @@
     Object.keys(d.monthly).forEach(function (ym) {
       state.settings.monthly[ym] = d.monthly[ym];
     });
-    persistSettings();
-    resetFeeSettingsDraft();
-    renderSummaryPanel();
-    renderFeeSettingsPanel();
-    recalcFeeAgg({ silent: true });
+    return persistFeeSettingsToKintone()
+      .then(fetchFeeSettingsFromKintone)
+      .then(function () {
+        resetFeeSettingsDraft();
+        renderSummaryPanel();
+        renderFeeSettingsPanel();
+        recalcFeeAgg({ silent: true });
+      });
   }
 
   function saveMonthlyParamsFromForm(months) {
@@ -882,7 +1037,15 @@
     var all = [];
     var offset = 0;
     function page() {
-      var query = "order by login_id asc limit " + PAGE_SIZE + " offset " + offset;
+      var query =
+        'record_kind not in ("' +
+        RECORD_KIND_SETTING +
+        '", "' +
+        RECORD_KIND_MONTHLY +
+        '") order by login_id asc limit ' +
+        PAGE_SIZE +
+        " offset " +
+        offset;
       return apiGet("/k/v1/records.json", {
         app: APP_DB,
         query: query,
@@ -2061,7 +2224,11 @@
   function reloadRecords() {
     state.loading = true;
     renderTable();
-    return fetchAllRecords()
+    return fetchFeeSettingsFromKintone()
+      .then(migrateFeeSettingsFromLocalStorageIfNeeded)
+      .then(function () {
+        return fetchAllRecords();
+      })
       .then(function (rows) {
         state.records = rows.map(flatten);
         state.loading = false;
@@ -2601,8 +2768,17 @@
           alert("期間を指定してください");
           return;
         }
-        commitFeeSettingsFromPanel(months);
-        alert("月別設定を保存しました");
+        saveBtn.disabled = true;
+        commitFeeSettingsFromPanel(months)
+          .then(function () {
+            alert("月別設定を保存しました（752 DB）");
+          })
+          .catch(function (e) {
+            alert("保存失敗: " + formatKintoneApiError(e));
+          })
+          .then(function () {
+            saveBtn.disabled = false;
+          });
       };
     }
   }
@@ -2656,7 +2832,7 @@
       esc(String(st.grandTotal)) +
       " 件 / 請求 " +
       esc(fmtYen(st.monthlyTotal)) +
-      '<br><span class="kac-hint">契約数・月額の変更は下の「月次利用費用集計」→ 月別設定で行います。</span></div></div>';
+      '<br><span class="kac-hint">契約数・月額の変更は「月次利用費用集計」→ 月別設定。保存先は <strong>752 DB</strong>（全端末共通）です。</span></div></div>';
   }
 
   function readFeeAggSelections() {
