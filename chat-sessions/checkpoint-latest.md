@@ -3,18 +3,18 @@
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED**（kintone レーン v1 完了・closures 登録）≠ **セッション締め**（export-handoff / Desktop sync / close-git）。混同禁止 -->
 
-**最終更新**: 2026-07-05 JST — **② kintone アカウント台帳 v1.3 CLOSED** · 契約数/月額 **752 DB** · Plan&Usage **21%**
+**最終更新**: 2026-07-05 JST — セッション締め · **② kintone v1.3 CLOSED** · **今夜 SKYSEA 意見交換**
 
 ### 本日アクティブ（BUILD/rev — 2026-07-05）
 
 | 項目 | 内容 |
 |------|------|
-| **② kintone アカウント台帳** | **CLOSED v1.3** — 752/753 · BUILD 753=`v20-fee-settings-kintone` **rev24** · 契約数/月額 **752 DB** · Excel **廃止** · `cio-project-closures.json` 登録済 |
+| **② kintone アカウント台帳** | **CLOSED v1.3** — 752/753 · 753=`v20-fee-settings-kintone` **rev24** · 752=`block-v2-viewonly` **rev7** · 契約数/月額 **752 DB** · Excel **廃止** |
 | **736 実行予算** | BUILD=`2026-07-04-736-row-menu-fixed-pop` **rev168** — Phase **0c GO** · Phase 1: 7/11 / 7/18 / 7/25 |
 | **698 社員ミラー** | BUILD=`2026-07-04-bi-employee-index-emp-filter` **rev19** |
 | **700 提案申請** | BUILD=`2026-07-04-bi-proposal-late-eval-collapse` **rev146** — Q-UX-12 浜田目視 OK |
 
-## クローズ済み（`data/cio-project-closures.json` — 9件 · 7/5 ②追加）
+## クローズ済み（`data/cio-project-closures.json` — 9件）
 
 業務改善697–713 / Wi-Fi718–719 / JR iPad720–721 / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **ML750–751** / **Kintoneアカウント752–753** — **closed-v1**。**触らない**: **688 / 677–679 / SKYSEA 実装**
 
@@ -24,13 +24,13 @@
 |------|------|
 | **688 保留** | 触らない |
 | **予実管理 保留** | **677/678/679** — 触らない |
-| **SKYSEA 保留** | **本日午後=意見交換のみ**（実装凍結） |
+| **SKYSEA** | **今夜=意見交換から開始**（浜田 2026-07-05）— **実装凍結**（合意後までコード/deploy 禁止） |
 | **736 実行予算** | **〜7/11 様子見** · deploy 追加なし |
 | **nodemailer 9.x** | **保留**（浜田 2026-07-04 判断） |
 
-**次の1手**: **736 Phase 1**（7/11 マスタ検索）まで deploy 追加なし。**月曜** 698/700 レビュー。**午後** SKYSEA 意見交換（準備のみ·実装凍結）
-**Git**: kintone-account v1.3 **`48646ab`** = `origin/main` — push 済
-**Plan&Usage**（2026-07-05）: **Ultra $200/mo** · 合計 **21%** · Auto+Composer **28%** · API **5%** · On-Demand **$0/$1000** · **リセット 7/15** — **現ペース問題なし**
+**次の1手**: **今夜 SKYSEA 意見交換**（準備・論点整理のみ · **実装/deploy 禁止**）。**736 Phase 1** は 7/11 まで deploy 追加なし。**月曜** 698/700 レビュー
+**Git**: **`b1ad500`** = `origin/main` — push 済（752 view-only rev7 含む）
+**Plan&Usage**（2026-07-05）: **Ultra $200/mo** · 合計 **21%** · **リセット 7/15** — **現ペース問題なし**
 **整理正本**: `docs/reports/2026-07-05-morning-task-triage.md`
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **クローズ正本**: `data/cio-project-closures.json` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
 **運用メモ**: 本番 Excel **`設定マスタ_本番`** のみ。595 CSV 後 **「台帳へ一括反映」**。Desktop `18-重要確認.txt` 正本

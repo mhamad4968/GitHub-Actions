@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-07-04T21:53:42.073Z",
-  "gitHead": "ec96f13",
+  "exportedAt": "2026-07-05T01:12:14.569Z",
+  "gitHead": "b1ad500",
   "gitStatus": "## main...origin/main",
-  "nextTask": "**② kintone アカウント台帳** — 浜田から現行運用説明 → 利用台帳把握 → §41 で仕様。**午後** SKYSEA 意見交換。**月曜** 698/700 レビュー",
+  "nextTask": "**今夜 SKYSEA 意見交換**（準備・論点整理のみ · **実装/deploy 禁止**）。**736 Phase 1** は 7/11 まで deploy 追加なし。**月曜** 698/700 レビュー",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -15,6 +15,6 @@
     ".cursor/rules/mode-b-canonical.mdc",
     "docs/knowledge/debug-tips.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=ec96f13 | 次=**② kintone アカウント台帳** — 浜田から現行運用説明 → 利用台帳把握 → §41 で仕様。**午後** SKYSEA 意見交換。**月曜** 698/700 レビュー | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "promptBlock": "【SESSION-BRIDGE】git=b1ad500 | 次=**今夜 SKYSEA 意見交換**（準備・論点整理のみ · **実装/deploy 禁止**）。**736 Phase 1** は 7/11 まで deploy 追加なし。**月曜** 698/700 レビュー | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }
