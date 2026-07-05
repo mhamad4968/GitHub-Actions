@@ -418,11 +418,11 @@
       "note": null
     },
     "752": {
-      "build": "2026-07-05-kintone-account-db-block-v1",
-      "fileKey": "5d9acd05-5546-44b0-a99b-c066bb87fc96",
-      "revision": "5",
+      "build": "2026-07-05-kintone-account-db-block-v2-viewonly",
+      "fileKey": "e4a4e1db-c1ba-4b83-9c3b-8acb80e47d1c",
+      "revision": "7",
       "relPath": "customize/kintone-account-db/desktop.js",
-      "deployedAt": "2026-07-04T23:47:20.691Z",
+      "deployedAt": "2026-07-05T01:09:15.160Z",
       "note": null
     },
     "753": {
