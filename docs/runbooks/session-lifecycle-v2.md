@@ -63,6 +63,7 @@ flowchart LR
 3. **次の 1 手**（checkpoint と bridge が一致するか）
 4. 本ターンの §41 候補（あれば 1 問）
 5. **Plan & Usage 1 行**（`credit:session-start` 結果 — **依頼を聞く前**に述べる。stale なら催促を先）
+6. **736 7月スケジュール**（`docs/runbooks/736-july-2026-schedule.md` — **今日の予定** · **遅れ NG**）+ **SKYSEA**（7月着手なし · 8/1以降 `skysea-2026-schedule.md`）
 
 ### L1 — 本題決定後（WORK 着手前、10〜20 分）
 

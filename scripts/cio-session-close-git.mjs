@@ -4,6 +4,7 @@
  *
  * 順序（--execute 時）:
  *   0) cio:session:close-recognition-gate --pre-commit（R19 内容突合のみ）
+ *   0b) verify:spec-progress-sync（R736-SPEC-SYNC 鏡像矛盾）
  *   1) cio:guard:multi-customize
  *   2) git add（--auto-stage）/ commit
  *   3) cio:session:export-handoff → verify:session-handoff-integrity --validate-export（amend 前）
@@ -114,6 +115,11 @@ function main() {
     }
   } else {
     console.warn('[cio:session:close-git] WARN --skip-r19（浜田 GO + 理由必須）');
+  }
+
+  if (!runNode('scripts/verify-spec-progress-sync.mjs')) {
+    console.error('[cio:session:close-git] NG R736-SPEC-SYNC — 仕様進捗表の鏡像矛盾（先祖返り）');
+    process.exit(1);
   }
 
   if (!runNpm('cio:guard:multi-customize')) {

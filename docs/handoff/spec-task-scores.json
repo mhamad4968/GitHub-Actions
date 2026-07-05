@@ -1,5 +1,5 @@
 {
-  "scoredAt": "2026-07-04T21:53:41.511Z",
+  "scoredAt": "2026-07-05T09:13:49.310Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
   "topTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
   "tasks": [
@@ -15,14 +15,14 @@
       "status": "pending"
     },
     {
-      "id": "checkpoint:**②_kintone_アカウント台帳**_—_浜田から現行運用説明_→_利用台",
-      "text": "**② kintone アカウント台帳** — 浜田から現行運用説明 → 利用台帳把握 → §41 で仕様。**午後** SKYSEA 意見交換。**月曜** 698/700 レビュー",
+      "id": "checkpoint:**今夜_SKYSEA_意見交換**（準備・論点整理のみ_·_**実装/depl",
+      "text": "**今夜 SKYSEA 意見交換**（準備・論点整理のみ · **実装/deploy 禁止**）。**736 Phase 1** は 7/11 まで deploy 追加なし。**月曜** 698/700 レビュー",
       "source": "checkpoint",
-      "difficulty": 3,
-      "tokens": "中",
-      "tokenScore": 2,
+      "difficulty": 5,
+      "tokens": "高",
+      "tokenScore": 3,
       "impact": 5,
-      "priority": 25,
+      "priority": 50,
       "status": "pending"
     }
   ]

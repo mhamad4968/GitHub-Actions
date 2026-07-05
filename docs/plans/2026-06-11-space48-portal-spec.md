@@ -1,7 +1,7 @@
 # システム推進室ポータル — 仕様正本
 
 > **作成**: 2026-06-11（浜田ヒアリング・意見交換確定）  
-> **状態**: **実装済**（App **712**・customize deploy rev **22**・2026-06-11）— Space 48 へのリンク 1 つは **手動配置**  
+> **状態**: **運用終了・テナント削除済**（2026-07-05 浜田）— バックアップ `data/snapshots/712-space48-portal-pre-delete-2026-07-05.json`  
 > **Space**: [Space 48「システム推進室」](https://jbis-kintone.cybozu.com/k/#/space/48) / thread **52**（アプリ作成想定）  
 > **台帳**: `kintone-apps.md`（実装後に追記）  
 > **コード正本（予定）**: `customize/space48-portal/desktop.js`
@@ -231,3 +231,4 @@ npm run deploy:<portalAppId>
 |------|------|
 | 2026-06-11 | 初版 — 5 タブ構成・掲載一覧・595 確定・699/700・全推進室表示・Space48=リンク1つ・サブテーブルメンテ・ポータル上に全社案内文なし（浜田確定） |
 | 2026-06-11 | **実装** — App **712** 新設・フィールド deploy・15 リンク seed・`deploy:712` **BUILD=`2026-06-11-space48-portal-v2`** |
+| 2026-07-05 | **廃止・削除完了** — 浜田が kintone 管理画面で削除 + Space 48 リンク削除。API 確認 `GAIA_AP01`（712 not found） |

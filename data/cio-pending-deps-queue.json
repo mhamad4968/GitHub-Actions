@@ -1,16 +1,31 @@
-{
-  "version": "2026-07-04",
-  "description": "§38-1 major/minor レビュー待ち — pending/ 正本への鏡像（triage 後）",
-  "lastTriage": "2026-07-04",
-  "items": [
-    {
-      "proposal": "docs/approved-changes/pending/2026-07-02-V1-nodemailer.proposal.json",
-      "package": "nodemailer",
-      "classification": "major",
-      "target": "9.0.3",
-      "status": "review_required",
-      "note": "破壊的変更 — 浜田 GO 前に適用禁止（2026-07-04 浜田判断: 保留）"
-    }
-  ]
-}
-
+{
+
+  "version": "2026-07-04",
+
+  "description": "§38-1 major/minor レビュー待ち — pending/ 正本への鏡像（triage 後）",
+
+  "lastTriage": "2026-07-04",
+
+  "items": [
+
+    {
+
+      "proposal": "docs/approved-changes/pending/2026-07-02-V1-nodemailer.proposal.json",
+
+      "package": "nodemailer",
+
+      "classification": "major",
+
+      "target": "9.0.3",
+
+      "status": "review_required",
+
+      "note": "破壊的変更 — 浜田 GO 前に適用禁止（2026-07-04 浜田判断: 保留）"
+
+    }
+
+  ]
+
+}
+
+

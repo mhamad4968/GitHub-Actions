@@ -1,0 +1,637 @@
+{
+  "exportedAt": "2026-07-05T10:21:23.797Z",
+  "appId": 712,
+  "records": [
+    {
+      "record_kind": {
+        "type": "SINGLE_LINE_TEXT",
+        "value": "共通設定"
+      },
+      "Updated_datetime": {
+        "type": "UPDATED_TIME",
+        "value": "2026-06-11T11:18:00Z"
+      },
+      "Created_datetime": {
+        "type": "CREATED_TIME",
+        "value": "2026-06-11T11:11:00Z"
+      },
+      "Record_number": {
+        "type": "RECORD_NUMBER",
+        "value": "2"
+      },
+      "Created_by": {
+        "type": "CREATOR",
+        "value": {
+          "code": "admin",
+          "name": "管理者"
+        }
+      },
+      "$revision": {
+        "type": "__REVISION__",
+        "value": "2"
+      },
+      "portal_links": {
+        "type": "SUBTABLE",
+        "value": [
+          {
+            "id": "144915",
+            "value": {
+              "link_type": {
+                "type": "DROP_DOWN",
+                "value": "アプリ"
+              },
+              "sort_no": {
+                "type": "NUMBER",
+                "value": "10"
+              },
+              "portal_tab": {
+                "type": "DROP_DOWN",
+                "value": "業務改善提案"
+              },
+              "description": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "申請・評価の入口"
+              },
+              "link_url": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": ""
+              },
+              "active": {
+                "type": "CHECK_BOX",
+                "value": [
+                  "有効"
+                ]
+              },
+              "title": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "【業務改善提案システム】ご利用ガイド"
+              },
+              "app_id": {
+                "type": "NUMBER",
+                "value": "699"
+              }
+            }
+          },
+          {
+            "id": "144917",
+            "value": {
+              "link_type": {
+                "type": "DROP_DOWN",
+                "value": "アプリ"
+              },
+              "sort_no": {
+                "type": "NUMBER",
+                "value": "20"
+              },
+              "portal_tab": {
+                "type": "DROP_DOWN",
+                "value": "業務改善提案"
+              },
+              "description": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "提案の申請・再申請"
+              },
+              "link_url": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": ""
+              },
+              "active": {
+                "type": "CHECK_BOX",
+                "value": [
+                  "有効"
+                ]
+              },
+              "title": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "【業務改善提案システム】提案申請 ver.02"
+              },
+              "app_id": {
+                "type": "NUMBER",
+                "value": "700"
+              }
+            }
+          },
+          {
+            "id": "144919",
+            "value": {
+              "link_type": {
+                "type": "DROP_DOWN",
+                "value": "アプリ"
+              },
+              "sort_no": {
+                "type": "NUMBER",
+                "value": "10"
+              },
+              "portal_tab": {
+                "type": "DROP_DOWN",
+                "value": "台帳"
+              },
+              "description": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "PC台帳用の社員マスタ"
+              },
+              "link_url": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": ""
+              },
+              "active": {
+                "type": "CHECK_BOX",
+                "value": [
+                  "有効"
+                ]
+              },
+              "title": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "社員マスタ"
+              },
+              "app_id": {
+                "type": "NUMBER",
+                "value": "595"
+              }
+            }
+          },
+          {
+            "id": "144921",
+            "value": {
+              "link_type": {
+                "type": "DROP_DOWN",
+                "value": "アプリ"
+              },
+              "sort_no": {
+                "type": "NUMBER",
+                "value": "20"
+              },
+              "portal_tab": {
+                "type": "DROP_DOWN",
+                "value": "台帳"
+              },
+              "description": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "PC・端末の台帳"
+              },
+              "link_url": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": ""
+              },
+              "active": {
+                "type": "CHECK_BOX",
+                "value": [
+                  "有効"
+                ]
+              },
+              "title": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "PC台帳（新・PC台帳 ver.1）"
+              },
+              "app_id": {
+                "type": "NUMBER",
+                "value": "674"
+              }
+            }
+          },
+          {
+            "id": "144923",
+            "value": {
+              "link_type": {
+                "type": "DROP_DOWN",
+                "value": "アプリ"
+              },
+              "sort_no": {
+                "type": "NUMBER",
+                "value": "30"
+              },
+              "portal_tab": {
+                "type": "DROP_DOWN",
+                "value": "台帳"
+              },
+              "description": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "Apple ID 管理台帳"
+              },
+              "link_url": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": ""
+              },
+              "active": {
+                "type": "CHECK_BOX",
+                "value": [
+                  "有効"
+                ]
+              },
+              "title": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "Apple ID 及び iCloud メールアドレス一覧"
+              },
+              "app_id": {
+                "type": "NUMBER",
+                "value": "694"
+              }
+            }
+          },
+          {
+            "id": "144925",
+            "value": {
+              "link_type": {
+                "type": "DROP_DOWN",
+                "value": "アプリ"
+              },
+              "sort_no": {
+                "type": "NUMBER",
+                "value": "40"
+              },
+              "portal_tab": {
+                "type": "DROP_DOWN",
+                "value": "台帳"
+              },
+              "description": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "共有メールの管理"
+              },
+              "link_url": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": ""
+              },
+              "active": {
+                "type": "CHECK_BOX",
+                "value": [
+                  "有効"
+                ]
+              },
+              "title": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "共有メールアドレス管理台帳"
+              },
+              "app_id": {
+                "type": "NUMBER",
+                "value": "696"
+              }
+            }
+          },
+          {
+            "id": "144927",
+            "value": {
+              "link_type": {
+                "type": "DROP_DOWN",
+                "value": "アプリ"
+              },
+              "sort_no": {
+                "type": "NUMBER",
+                "value": "50"
+              },
+              "portal_tab": {
+                "type": "DROP_DOWN",
+                "value": "台帳"
+              },
+              "description": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "不適合の記録・印刷"
+              },
+              "link_url": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": ""
+              },
+              "active": {
+                "type": "CHECK_BOX",
+                "value": [
+                  "有効"
+                ]
+              },
+              "title": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "不適合管理台帳"
+              },
+              "app_id": {
+                "type": "NUMBER",
+                "value": "707"
+              }
+            }
+          },
+          {
+            "id": "144929",
+            "value": {
+              "link_type": {
+                "type": "DROP_DOWN",
+                "value": "アプリ"
+              },
+              "sort_no": {
+                "type": "NUMBER",
+                "value": "60"
+              },
+              "portal_tab": {
+                "type": "DROP_DOWN",
+                "value": "台帳"
+              },
+              "description": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "導入チェック・A4印刷"
+              },
+              "link_url": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": ""
+              },
+              "active": {
+                "type": "CHECK_BOX",
+                "value": [
+                  "有効"
+                ]
+              },
+              "title": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "外部ITサービス導入チェックシート"
+              },
+              "app_id": {
+                "type": "NUMBER",
+                "value": "709"
+              }
+            }
+          },
+          {
+            "id": "144931",
+            "value": {
+              "link_type": {
+                "type": "DROP_DOWN",
+                "value": "アプリ"
+              },
+              "sort_no": {
+                "type": "NUMBER",
+                "value": "70"
+              },
+              "portal_tab": {
+                "type": "DROP_DOWN",
+                "value": "台帳"
+              },
+              "description": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "ヒアリング記録・印刷"
+              },
+              "link_url": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": ""
+              },
+              "active": {
+                "type": "CHECK_BOX",
+                "value": [
+                  "有効"
+                ]
+              },
+              "title": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "新規システム導入ヒアリング記録簿"
+              },
+              "app_id": {
+                "type": "NUMBER",
+                "value": "711"
+              }
+            }
+          },
+          {
+            "id": "144933",
+            "value": {
+              "link_type": {
+                "type": "DROP_DOWN",
+                "value": "アプリ"
+              },
+              "sort_no": {
+                "type": "NUMBER",
+                "value": "10"
+              },
+              "portal_tab": {
+                "type": "DROP_DOWN",
+                "value": "運用"
+              },
+              "description": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "日次の件数入力"
+              },
+              "link_url": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": ""
+              },
+              "active": {
+                "type": "CHECK_BOX",
+                "value": [
+                  "有効"
+                ]
+              },
+              "title": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "ユーザサポート件数日次入力"
+              },
+              "app_id": {
+                "type": "NUMBER",
+                "value": "682"
+              }
+            }
+          },
+          {
+            "id": "144935",
+            "value": {
+              "link_type": {
+                "type": "DROP_DOWN",
+                "value": "アプリ"
+              },
+              "sort_no": {
+                "type": "NUMBER",
+                "value": "20"
+              },
+              "portal_tab": {
+                "type": "DROP_DOWN",
+                "value": "運用"
+              },
+              "description": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "月次・グラフ・印刷"
+              },
+              "link_url": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": ""
+              },
+              "active": {
+                "type": "CHECK_BOX",
+                "value": [
+                  "有効"
+                ]
+              },
+              "title": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "ユーザサポートダッシュボード"
+              },
+              "app_id": {
+                "type": "NUMBER",
+                "value": "683"
+              }
+            }
+          },
+          {
+            "id": "144937",
+            "value": {
+              "link_type": {
+                "type": "DROP_DOWN",
+                "value": "アプリ"
+              },
+              "sort_no": {
+                "type": "NUMBER",
+                "value": "10"
+              },
+              "portal_tab": {
+                "type": "DROP_DOWN",
+                "value": "情報"
+              },
+              "description": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "セキュリティニュース"
+              },
+              "link_url": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": ""
+              },
+              "active": {
+                "type": "CHECK_BOX",
+                "value": [
+                  "有効"
+                ]
+              },
+              "title": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "Security NEXT ニュース掲示板"
+              },
+              "app_id": {
+                "type": "NUMBER",
+                "value": "701"
+              }
+            }
+          },
+          {
+            "id": "144939",
+            "value": {
+              "link_type": {
+                "type": "DROP_DOWN",
+                "value": "アプリ"
+              },
+              "sort_no": {
+                "type": "NUMBER",
+                "value": "20"
+              },
+              "portal_tab": {
+                "type": "DROP_DOWN",
+                "value": "情報"
+              },
+              "description": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "週次サマリー"
+              },
+              "link_url": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": ""
+              },
+              "active": {
+                "type": "CHECK_BOX",
+                "value": [
+                  "有効"
+                ]
+              },
+              "title": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "Security NEXT 週次掲示板"
+              },
+              "app_id": {
+                "type": "NUMBER",
+                "value": "702"
+              }
+            }
+          },
+          {
+            "id": "144941",
+            "value": {
+              "link_type": {
+                "type": "DROP_DOWN",
+                "value": "アプリ"
+              },
+              "sort_no": {
+                "type": "NUMBER",
+                "value": "30"
+              },
+              "portal_tab": {
+                "type": "DROP_DOWN",
+                "value": "情報"
+              },
+              "description": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "ICT トレンド収集"
+              },
+              "link_url": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": ""
+              },
+              "active": {
+                "type": "CHECK_BOX",
+                "value": [
+                  "有効"
+                ]
+              },
+              "title": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "最新ICT情報掲示板"
+              },
+              "app_id": {
+                "type": "NUMBER",
+                "value": "686"
+              }
+            }
+          },
+          {
+            "id": "144943",
+            "value": {
+              "link_type": {
+                "type": "DROP_DOWN",
+                "value": "スペース"
+              },
+              "sort_no": {
+                "type": "NUMBER",
+                "value": "10"
+              },
+              "portal_tab": {
+                "type": "DROP_DOWN",
+                "value": "その他"
+              },
+              "description": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "PC台帳・マスタ等"
+              },
+              "link_url": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "https://jbis-kintone.cybozu.com/k/#/space/21"
+              },
+              "active": {
+                "type": "CHECK_BOX",
+                "value": [
+                  "有効"
+                ]
+              },
+              "title": {
+                "type": "SINGLE_LINE_TEXT",
+                "value": "システム管理スペース"
+              },
+              "app_id": {
+                "type": "NUMBER",
+                "value": ""
+              }
+            }
+          }
+        ]
+      },
+      "Updated_by": {
+        "type": "MODIFIER",
+        "value": {
+          "code": "admin",
+          "name": "管理者"
+        }
+      },
+      "$id": {
+        "type": "__ID__",
+        "value": "2"
+      }
+    }
+  ],
+  "totalCount": null
+}

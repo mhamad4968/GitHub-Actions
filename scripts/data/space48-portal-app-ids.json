@@ -1,5 +1,8 @@
 {
   "spaceId": 48,
   "threadId": 52,
-  "portalAppId": 712
+  "portalAppId": 712,
+  "retiredAt": "2026-07-05",
+  "deletedOnTenantAt": "2026-07-05",
+  "retiredReason": "利用頻度低 — 浜田が kintone 管理画面で削除完了（API GAIA_AP01 確認）"
 }
