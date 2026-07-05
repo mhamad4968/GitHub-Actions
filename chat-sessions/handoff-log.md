@@ -3849,3 +3849,51 @@ npm run cio:morning:ready
 **触らない**: 688 / 677–679 / SKYSEA 実装 / 736 deploy（〜7/11 様子見）
 
 ---
+
+### 2026-07-05 09:55 JST — **② kintone アカウント台帳 v1.2 本番 CLOSED + Plan&Usage 報告**
+
+**要約**:
+- **752/753** 実装・deploy 完了 — BUILD 753 `v19-agg-100rem-list-sort` **rev22**
+- UI: 月別改定パネル / サマリー参照のみ / 全拠点見出し / 種別ソート / アカウント集計 100rem
+- **浜田**: Space 48 **ポータルリンク設置済** · **Excel 廃止** → kintone **正本のみ**
+- 仕様 **v1.2 本番運用中** — git **`ecd9c8b`**（customize）+ **`2d63799`**（go-live doc）
+
+**Plan&Usage**（Cursor · 浜田スクリーンショット報告）:
+- **Ultra** $200/mo · リセット **7/15**（残 **11日**）
+- 合計 **21%** / Auto+Composer **28%** / API **5%** / On-Demand **$0/$1000**（Fixed 1000）
+
+**指摘（運用）**:
+- 契約数・月額は **localStorage（端末ごと）** — 複数 PC では各端末で「月別設定を保存」要
+- Plan: **現ペース OK** — 主消費は Auto+Composer。7/15 前に heavy セッションが続く場合のみ 50% 超を目安に確認
+
+**次の1手**: **736 Phase 1**（7/11）· **月曜** 698/700 レビュー · **午後** SKYSEA 意見交換
+
+**Git**: **`2d63799`** = `origin/main`
+
+**触らない**: 688 / 677–679 / SKYSEA 実装 / 736 deploy（〜7/11 様子見）
+
+---
+
+### 2026-07-05 09:55 JST — **② kintone アカウント台帳 v1.2 本番 CLOSED + Plan&Usage 報告**
+
+**要約**:
+- **752/753** 実装・deploy 完了 — BUILD 753 `v19-agg-100rem-list-sort` **rev22**
+- UI: 月別改定パネル / サマリー参照のみ / 全拠点見出し / 種別ソート / アカウント集計 100rem
+- **浜田**: Space 48 **ポータルリンク設置済** · **Excel 廃止** → kintone **正本のみ**
+- 仕様 **v1.2 本番運用中** — git **`ecd9c8b`**（customize）+ **`2d63799`**（go-live  doc）
+
+**Plan&Usage**（Cursor · 浜田スクリーンショット報告）:
+- **Ultra** $200/mo · リセット **7/15**（残 **11日**）
+- 合計 **21%** / Auto+Composer **28%** / API **5%** / On-Demand **$0/$1000**（Fixed 1000）
+
+**指摘（運用）**:
+- 契約数・月額は **localStorage（端末ごと）** — 複数 PC では各端末で「月別設定を保存」要
+- Plan: **現ペース OK** — 主消費は Auto+Composer。7/15 前に heavy セッションが続く場合のみ 50% 超を目安に確認
+
+**次の1手**: **736 Phase 1**（7/11）· **月曜** 698/700 レビュー · **午後** SKYSEA 意見交換
+
+**Git**: **`2d63799`** = `origin/main`
+
+**触らない**: 688 / 677–679 / SKYSEA 実装 / 736 deploy（〜7/11 様子見）
+
+---

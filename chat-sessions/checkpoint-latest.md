@@ -6,11 +6,11 @@
 
 
 
-**最終更新**: 2026-07-05 JST — **② SPEC 起票 commit 済** · 実装 GO 待ち · Plan&Usage 21%
+**最終更新**: 2026-07-05 JST — **② kintone アカウント台帳 v1.2 本番運用 CLOSED** · Plan&Usage **21%**（リセット **7/15** 残11日）
 
 
 
-### 本日アクティブ（BUILD/rev — 2026-07-04 夜 + 2026-07-05 ②）
+### 本日アクティブ（BUILD/rev — 2026-07-05）
 
 
 
@@ -18,15 +18,13 @@
 
 |------|------|
 
-| **② kintone アカウント台帳** | **SPEC 済** — `docs/plans/2026-07-05-kintone-account-ledger-spec.md` · §41 Q1–Q4 確定 · **実装 GO 待ち** |
+| **② kintone アカウント台帳** | **CLOSED v1.2 本番運用中** — 752/753 · BUILD 753=`2026-07-05-kintone-account-dash-v19-agg-100rem-list-sort` **rev22** · Excel **廃止** · Space 48 **リンク設置済** · 正本 `docs/plans/2026-07-05-kintone-account-ledger-spec.md` · git **`2d63799`** |
 
 | **736 実行予算** | BUILD=`2026-07-04-736-row-menu-fixed-pop` **rev168** — Phase **0c GO** · Phase 1: 7/11 / 7/18 / 7/25 |
 
-| **698 社員ミラー** | BUILD=`2026-07-04-bi-employee-index-emp-filter` **rev19** — 在籍/退職/すべて pill |
+| **698 社員ミラー** | BUILD=`2026-07-04-bi-employee-index-emp-filter` **rev19** |
 
 | **700 提案申請** | BUILD=`2026-07-04-bi-proposal-late-eval-collapse` **rev146** — Q-UX-12 浜田目視 OK |
-
-| **697 設定マスタ** | 本番 Excel 30所属 upsert 済 |
 
 
 
@@ -58,11 +56,11 @@
 
 
 
-**次の1手**: **② kintone アカウント台帳** — 浜田 **実装 GO** → P0 アプリ作成（Space 48）。**午後** SKYSEA 意見交換。**月曜** 698/700 レビュー  
+**次の1手**: **736 Phase 1**（7/11 マスタ検索）まで deploy 追加なし。**月曜** 698/700 レビュー。**午後** SKYSEA 意見交換（準備のみ・実装凍結）  
 
-**Git**: SPEC commit 後 push — 実装前  
+**Git**: kintone 753 **`2d63799`** = `origin/main` — push 済  
 
-**Plan&Usage**: **21%**（2026-07-05 浜田報告）· Auto+Composer **28%** · API **5%** · On-Demand **$0/$1000** · リセット **7/15**（残 10日）  
+**Plan&Usage**（2026-07-05 浜田報告 ×2）: **Ultra $200/mo** · 合計 **21%** · Auto+Composer **28%** · API **5%** · On-Demand **$0/$1000**（上限 Fixed 1000）· **リセット 7/15（残11日）** — **現ペース問題なし**（Auto が主因。11日で ~79% 余裕）  
 
 **整理正本**: `docs/reports/2026-07-05-morning-task-triage.md`  
 
