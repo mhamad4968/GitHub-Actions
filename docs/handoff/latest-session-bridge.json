@@ -1,7 +1,7 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-07-05T10:46:00.000Z",
-  "gitHead": "1de246d",
+  "exportedAt": "2026-07-05T10:59:18.988Z",
+  "gitHead": "3020242",
   "gitStatus": "## main...origin/main",
   "nextTask": "**736 7月カレンダー**（PH1b **7/11** 他）· **月曜** 698/700 レビュー · **SKYSEA は 8/1 から再計画**",
   "nextFiles": [
@@ -15,6 +15,6 @@
     ".cursor/rules/mode-b-canonical.mdc",
     "docs/knowledge/debug-tips.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=1de246d | 次=**736 7月カレンダー**（PH1b **7/11** 他）· **月曜** 698/700 レビュー · **SKYSEA は 8/1 から再計画** | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "promptBlock": "【SESSION-BRIDGE】git=3020242 | 次=**736 7月カレンダー**（PH1b **7/11** 他）· **月曜** 698/700 レビュー · **SKYSEA は 8/1 から再計画** | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }
