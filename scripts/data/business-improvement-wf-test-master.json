@@ -17,14 +17,14 @@
     "Draft": "未処理",
     "Mgr": "上司承認中",
     "Branch": "支店長承認中",
-    "Hr": "人事研修部長承認中",
+    "Hr": "本社評価中",
     "Done": "完了"
   },
   "actionLabelsJa": {
     "Apply": "申請",
     "MgrToBranch": "支店長評価へ",
     "MgrToDone": "承認する",
-    "BranchToHr": "人事部長評価へ",
+    "BranchToHr": "本社評価へ",
     "BranchApprove": "承認する",
     "HrApprove": "承認する"
   },
@@ -67,7 +67,7 @@
         }
       },
       "Hr": {
-        "name": "Hr",
+        "name": "本社評価中",
         "index": "3",
         "assignee": {
           "type": "ONE",
@@ -83,6 +83,14 @@
         "name": "Done",
         "index": "4",
         "assignee": { "type": "ONE", "entities": [] }
+      },
+      "applicant_fix": {
+        "name": "申請者修正待ち",
+        "index": "5",
+        "assignee": {
+          "type": "ONE",
+          "entities": [{ "entity": { "type": "CREATOR" }, "includeSubs": false }]
+        }
       }
     },
     "actions": [
@@ -91,7 +99,11 @@
       { "name": "MgrToDone", "index": "2", "from": "Mgr", "to": "Done", "filterCond": "", "type": "PRIMARY" },
       { "name": "BranchToHr", "index": "3", "from": "Branch", "to": "Hr", "filterCond": "", "type": "PRIMARY" },
       { "name": "BranchApprove", "index": "4", "from": "Branch", "to": "Done", "filterCond": "", "type": "PRIMARY" },
-      { "name": "HrApprove", "index": "5", "from": "Hr", "to": "Done", "filterCond": "", "type": "PRIMARY" }
+      { "name": "HrApprove", "index": "5", "from": "Hr", "to": "Done", "filterCond": "", "type": "PRIMARY" },
+      { "name": "差戻し", "index": "6", "from": "Mgr", "to": "applicant_fix", "filterCond": "", "type": "SECONDARY" },
+      { "name": "差戻し_支店長", "index": "7", "from": "Branch", "to": "applicant_fix", "filterCond": "", "type": "SECONDARY" },
+      { "name": "差戻し_人事", "index": "8", "from": "Hr", "to": "applicant_fix", "filterCond": "", "type": "SECONDARY" },
+      { "name": "再申請", "index": "9", "from": "applicant_fix", "to": "Mgr", "filterCond": "", "type": "PRIMARY" }
     ]
   }
 }

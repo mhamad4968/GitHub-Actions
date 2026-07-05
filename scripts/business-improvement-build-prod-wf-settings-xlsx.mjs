@@ -26,8 +26,8 @@ const WF_STATUSES = [
   { order: 2, status: '上司承認中', action: '部長承認（C）', next: '完了', assignee: '—' },
   { order: 3, status: '上司承認中', action: '部長承認（A/B or 支店長判断）', next: '支店長承認中', assignee: '支店長評価者' },
   { order: 4, status: '支店長承認中', action: '支店長承認（B）', next: '完了', assignee: '—' },
-  { order: 5, status: '支店長承認中', action: '支店長承認（A）', next: '人事研修部長承認中', assignee: '人事部長評価者（jinji）' },
-  { order: 6, status: '人事研修部長承認中', action: '人事部長承認', next: '完了', assignee: '—' },
+  { order: 5, status: '支店長承認中', action: '支店長承認（A）', next: '本社評価中', assignee: '人事部長評価者（jinji）' },
+  { order: 6, status: '本社評価中', action: '人事部長承認', next: '完了', assignee: '—' },
   { order: '—', status: '申請者修正待ち', action: '差戻し', next: '上司承認中（再申請後）', assignee: '部長評価者' },
 ];
 

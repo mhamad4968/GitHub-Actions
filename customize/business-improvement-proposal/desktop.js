@@ -2,7 +2,7 @@
   'use strict';
 
   /** 業務改善 ver.02 — 提案申請 申請UI（Phase 4b）+ 評価UI（Phase 5） */
-  var BUILD = '2026-07-04-bi-proposal-late-eval-collapse';
+  var BUILD = '2026-07-06-bi-apply-footer-reject-clear';
   var STORAGE_KEY_EVAL_DETAIL = 'bi700-eval-detail-open';
   var WF_ACTION_APPLY = 'Apply';
   var WF_ACTION_REAPPLY = 'reapply';
@@ -70,7 +70,7 @@
     Draft: '未処理', unprocessed: '未処理', '未処理': '未処理',
     Mgr: '上司評価中', manager: '上司評価中', '上司承認中': '上司評価中',
     Branch: '支店長評価中', branch: '支店長評価中', '支店長承認中': '支店長評価中',
-    Hr: '本社評価中', hr: '本社評価中', '人事研修部長承認中': '本社評価中',
+    Hr: '本社評価中', hr: '本社評価中', '本社評価中': '本社評価中', '人事研修部長承認中': '本社評価中',
     Done: '完了', done: '完了', '完了': '完了',
     applicant_fix: '申請者修正待ち', '申請者修正待ち': '申請者修正待ち',
   };
@@ -98,6 +98,9 @@
     readOnly: false,
     allowNavigate: false,
     applyDraftRec: null,
+    applyUiReady: false,
+    applyClickRoot: null,
+    applyClickHandler: null,
     wfRoute: null,
     wfRoutePromise: null,
     wfActions: null,
@@ -172,7 +175,7 @@
       unprocessed: 'Draft', '未処理': 'Draft',
       manager: 'Mgr', '上司承認中': 'Mgr',
       branch: 'Branch', '支店長承認中': 'Branch',
-      hr: 'Hr', '人事研修部長承認中': 'Hr',
+      hr: 'Hr', '本社評価中': 'Hr', '人事研修部長承認中': 'Hr',
       done: 'Done', '完了': 'Done',
       applicant_fix: 'Draft', '申請者修正待ち': 'Draft',
     };
@@ -181,6 +184,12 @@
 
   function wfStateLabel(key) {
     return WF_STATE_LABELS[key] || key;
+  }
+
+  function recordStatusDisplayLabel(rec) {
+    var st = recordStatusKey(rec);
+    if (st === 'Hr' || st === 'hr' || st === '本社評価中' || st === '人事研修部長承認中') return '本社評価中';
+    return wfStateLabel(st);
   }
 
   function fetchWfRoute() {
@@ -227,7 +236,7 @@
       applicant_fix: '再申請', '申請者修正待ち': '再申請',
       Mgr: '上司評価', manager: '上司評価', '上司承認中': '上司評価',
       Branch: '支店長評価', branch: '支店長評価', '支店長承認中': '支店長評価',
-      Hr: '本社評価', hr: '本社評価', '人事研修部長承認中': '本社評価',
+      Hr: '本社評価', hr: '本社評価', '本社評価中': '本社評価', '人事研修部長承認中': '本社評価',
       Done: '完了', done: '完了', '完了': '完了',
     };
     return map[stateKey] || wfStateLabel(stateKey);
@@ -245,7 +254,7 @@
     if (stateKey === 'Branch' || stateKey === 'branch' || stateKey === '支店長承認中') {
       return people.branch || wfPersonFromField(rec, '支店長評価者') || '';
     }
-    if (stateKey === 'Hr' || stateKey === 'hr' || stateKey === '人事研修部長承認中') {
+    if (stateKey === 'Hr' || stateKey === 'hr' || stateKey === '本社評価中' || stateKey === '人事研修部長承認中') {
       return people.hr || wfPersonFromField(rec, '人事部長評価者') || '';
     }
     return '';
@@ -290,23 +299,21 @@
     });
   }
 
-  function resolveLogicalWfSteps(rec, variant) {
-    if (evalIsDoneStatus(rec)) return ui.wfRoute || WF_FALLBACK_ROUTE;
+  function resolveLogicalWfNeeds(rec) {
     var st = recordStatusKey(rec);
-    var steps = [
-      { key: 'Draft', label: '未処理', index: 0 },
-      { key: 'Mgr', label: '上司評価中', index: 1 },
-    ];
     var auto = val(rec, FE.rankAuto);
     if (!filled(auto) && evalItemsDone(rec)) auto = recalcEvalFields(rec).auto;
     var delegate = branchDelegateOn(rec);
     var needsBranch = false;
     var needsHr = false;
 
-    if (st === 'Branch' || st === 'branch' || st === '支店長承認中') {
+    if (evalIsDoneStatus(rec)) {
+      needsBranch = delegate || auto === 'A' || auto === 'B';
+      needsHr = auto === 'A';
+    } else if (st === 'Branch' || st === 'branch' || st === '支店長承認中') {
       needsBranch = true;
       needsHr = auto === 'A';
-    } else if (st === 'Hr' || st === 'hr' || st === '人事研修部長承認中') {
+    } else if (st === 'Hr' || st === 'hr' || st === '本社評価中' || st === '人事研修部長承認中') {
       needsBranch = true;
       needsHr = true;
     } else if (st === 'Mgr' || st === 'manager' || st === '上司承認中') {
@@ -318,22 +325,24 @@
         needsHr = auto === 'A';
       }
     }
+    return { needsBranch: needsBranch, needsHr: needsHr };
+  }
 
+  function resolveLogicalWfSteps(rec, variant) {
+    var needs = resolveLogicalWfNeeds(rec);
+    var steps = [
+      { key: 'Draft', label: '未処理', index: 0 },
+      { key: 'Mgr', label: '上司評価中', index: 1 },
+    ];
     var idx = 2;
-    if (needsBranch) steps.push({ key: 'Branch', label: '支店長評価中', index: idx++ });
-    if (needsHr) steps.push({ key: 'Hr', label: '本社評価中', index: idx++ });
+    if (needs.needsBranch) steps.push({ key: 'Branch', label: '支店長評価中', index: idx++ });
+    if (needs.needsHr) steps.push({ key: 'Hr', label: '本社評価中', index: idx++ });
     steps.push({ key: 'Done', label: '完了', index: idx });
     return steps;
   }
 
   function wfRouteSteps(rec, variant) {
-    if (variant === 'eval') return resolveLogicalWfSteps(rec, variant);
-    var st = recordStatusKey(rec);
-    var auto = val(rec, FE.rankAuto);
-    if (variant === 'apply' && (filled(auto) || st === '申請者修正待ち' || st === 'applicant_fix')) {
-      return resolveLogicalWfSteps(rec, 'eval');
-    }
-    return ui.wfRoute || WF_FALLBACK_ROUTE;
+    return resolveLogicalWfSteps(rec, variant);
   }
 
   function wfRouteHtml(rec, variant) {
@@ -376,6 +385,9 @@
           '申請ボタンで <strong>' + esc(nextChip) + '</strong> へ進み、kintone 標準メールが送信されます';
         if (nextChip.indexOf('（未設定）') >= 0) {
           hint += ' — <span style="color:#b45309">部署を選ぶと上司が表示されます</span>';
+        }
+        if (steps.length === 3 && !isReapply(rec)) {
+          hint += ' — 表彰ランク B・A の場合は支店長・本社評価が追加されます';
         }
         hint += '</div>';
       } else if (ui.readOnly && curStep) {
@@ -816,19 +828,32 @@
     }, 50);
   }
 
-  function clickKintoneSave() {
-    pushApplyDraftToForm();
-    var btn = document.querySelector('.gaia-ui-actionmenu-save') ||
-      document.querySelector('[data-cy="record-save-button"]');
-    if (btn) btn.click();
-    else alert('保存ボタンが見つかりません。画面上部の保存を押してください。');
+  function isApplyOrReapplyAction(action) {
+    return action === WF_ACTION_APPLY || action === 'Apply' || action === '申請' ||
+      action === WF_ACTION_REAPPLY || action === '再申請' || action === 'Reapply' || action === 'reapply';
+  }
+
+  function resolveApplyWfActionName(rec, reapply) {
+    var status = recordStatusKey(rec);
+    if (reapply) {
+      var re = findWfAction(status, ['再申請', 'Reapply', 'reapply'], 'Mgr') ||
+        findWfAction(status, ['再申請', 'Reapply', 'reapply'], '上司承認中');
+      return re ? re.name : '再申請';
+    }
+    var ap = findWfAction(status, ['申請', 'Apply'], 'Mgr') ||
+      findWfAction(status, ['申請', 'Apply'], '上司承認中');
+    return ap ? ap.name : WF_ACTION_APPLY;
   }
 
   function resolveWfActionAssignee(action, rec) {
-    if (action === WF_ACTION_APPLY || action === WF_ACTION_REAPPLY) {
+    if (isApplyOrReapplyAction(action)) {
       return wfPersonFromField(rec, '部長評価者') || (ui.wfPeople && ui.wfPeople.mgr) || '';
     }
     return '';
+  }
+
+  function isRejectWfAction(action) {
+    return action === '差戻し' || action === '差戻し_支店長' || action === '差戻し_人事';
   }
 
   function runWorkflowAction(recordId, action, assignee) {
@@ -837,13 +862,63 @@
       id: String(recordId),
       action: action,
     };
-    if (assignee) body.assignee = String(assignee);
+    if (assignee && !isRejectWfAction(action)) body.assignee = String(assignee);
     return kintone.api(kintone.api.url('/k/v1/record/status.json', true), 'PUT', body);
   }
 
   function afterApplySuccess(recordId) {
     try { sessionStorage.setItem('bi-apply-done', '1'); } catch (e) { /* noop */ }
     navigateAwaySafe(guideIndexUrl());
+  }
+
+  function afterDraftSaveSuccess() {
+    try { sessionStorage.setItem('bi-draft-saved', '1'); } catch (e) { /* noop */ }
+    navigateAwaySafe(guideIndexUrl());
+  }
+
+  function startApplyDraftSave() {
+    if (!ui.applyUiReady) {
+      alert('画面を読み込み中です。1〜2秒お待ちください。');
+      return;
+    }
+    syncDomToCache();
+    var rec = recForApplyCheck();
+    armNavigateAway();
+    var reapply = isReapply(rec);
+    var chain = kintone.Promise.resolve(rec);
+    if (!reapply && !val(rec, F.proposalNo) && val(rec, F.type)) {
+      chain = assignProposalNumberIfNeeded(rec);
+    }
+    chain.then(function (prepared) {
+      mergeCacheToRec(prepared);
+      prepared = syncRepToRow1(ensureProposers(prepared));
+      if (!val(prepared, F.date)) {
+        prepared[F.date] = { type: 'DATE', value: todayISO() };
+      }
+      var login = (kintone.getLoginUser() && kintone.getLoginUser().code) || '';
+      if (login && !userCodeFromField(prepared['申請者'])) {
+        prepared['申請者'] = userSelect(login);
+      }
+      return saveApplyRecordViaApi(prepared);
+    }).then(function () {
+      afterDraftSaveSuccess();
+    }).catch(function (err) {
+      ui.allowNavigate = false;
+      evUi.allowNavigate = false;
+      alert('一時保存に失敗しました。\n' + formatKintoneApiError(err));
+    });
+  }
+
+  function clickKintoneSave() {
+    if (ui.root && !ui.readOnly) {
+      startApplyDraftSave();
+      return;
+    }
+    pushApplyDraftToForm();
+    var btn = document.querySelector('.gaia-ui-actionmenu-save') ||
+      document.querySelector('[data-cy="record-save-button"]');
+    if (btn) btn.click();
+    else alert('保存ボタンが見つかりません。画面上部の保存を押してください。');
   }
 
   function fiscalYearKeyFromDate(iso) {
@@ -959,7 +1034,7 @@
         if (people.branch) preparedWithNo['支店長評価者'] = userSelect(people.branch);
         if (people.hr) preparedWithNo['人事部長評価者'] = userSelect(people.hr);
         if (people.applicant) preparedWithNo['申請者'] = userSelect(people.applicant);
-        var action = reapply ? WF_ACTION_REAPPLY : WF_ACTION_APPLY;
+        var action = resolveApplyWfActionName(preparedWithNo, reapply);
         var assignee = people.mgr || wfPersonFromField(preparedWithNo, '部長評価者');
         if (!assignee) {
           alert('申請処理に失敗しました。部長評価者が未設定です。');
@@ -978,6 +1053,10 @@
   }
 
   function promptApply() {
+    if (!ui.applyUiReady) {
+      alert('画面を読み込み中です。1〜2秒お待ちください。');
+      return;
+    }
     var rec = recForApplyCheck();
     var missing = validateApply(rec);
     if (missing.length) {
@@ -1280,21 +1359,64 @@
     var r = rec || recForApplyCheck();
     var missing = validateApply(r);
     var applyReady = missing.length === 0;
+    var tip = applyReady ? '' : ('未入力: ' + missing.join('、') + ' — 入力後に申請できます');
+    var applyBtn =
+      '<button type="button" data-bi-apply-footer' + (applyReady ? '' : ' disabled') +
+      ' style="padding:10px 18px;background:' + (applyReady ? '#15803d' : '#94a3b8') +
+      ';color:#fff;border:0;border-radius:8px;' + (applyReady ? 'cursor:pointer' : 'cursor:not-allowed') + '">' +
+      esc(applyLabel(r)) + '</button>';
+    if (!applyReady) {
+      applyBtn = '<span title="' + esc(tip) + '" style="display:inline-block;cursor:not-allowed" data-bi-apply-disabled-wrap>' +
+        applyBtn + '</span>';
+    }
     return '<button type="button" data-bi-draft-save style="padding:10px 18px;border:1px solid #64748b;background:#fff;color:#334155;border-radius:8px;cursor:pointer">一時保存</button>' +
-      '<button type="button" data-bi-apply-footer style="padding:10px 18px;background:' +
-      (applyReady ? '#15803d' : '#94a3b8') + ';color:#fff;border:0;border-radius:8px;cursor:' +
-      (applyReady ? 'pointer' : 'not-allowed') + '"' +
-      (applyReady ? '' : ' disabled') + '>' + esc(applyLabel(r)) + '</button>';
+      applyBtn;
+  }
+
+  function ensureApplyClickDelegation() {
+    if (!ui.root) return;
+    if (ui.applyClickRoot === ui.root && ui.applyClickHandler) return;
+    if (ui.applyClickRoot && ui.applyClickHandler) {
+      ui.applyClickRoot.removeEventListener('click', ui.applyClickHandler);
+    }
+    ui.applyClickHandler = function (e) {
+      var btn = e.target && e.target.closest
+        ? e.target.closest('[data-bi-apply],[data-bi-apply-footer]')
+        : null;
+      if (!btn || !ui.root.contains(btn)) return;
+      e.preventDefault();
+      promptApply();
+    };
+    ui.root.addEventListener('click', ui.applyClickHandler);
+    ui.applyClickRoot = ui.root;
+  }
+
+  function scheduleApplyRender() {
+    setTimeout(function () {
+      if (!ui.root) return;
+      render();
+    }, 0);
+  }
+
+  function seedApplyDraftFromEvent(rec) {
+    ui.applyDraftRec = cloneKintoneRec(rec);
+    refreshCacheFromRec(ui.applyDraftRec);
+  }
+
+  function renderApplyLoadingShell() {
+    if (!ui.root) return;
+    ui.applyUiReady = false;
+    ui.root.style.fontSize = fontPx();
+    ui.root.innerHTML =
+      '<div style="font-family:\'Segoe UI\',Meiryo,sans-serif;line-height:1.5;padding:24px 18px;background:linear-gradient(180deg,#eff6ff 0%,#f8fafc 100%);border-radius:12px;border:1px solid #bfdbfe;text-align:center;color:#64748b">' +
+      '<p style="margin:0 0 8px;font-size:1.05em;color:#1e3a8a">業務改善提案 — 申請画面を準備しています…</p>' +
+      '<p style="margin:0;font-size:0.92em">部署マスタ・承認ルートを読み込み中です</p></div>';
   }
 
   function bindApplyActions(scope) {
     var root = scope || ui.root;
     if (!root) return;
-    root.querySelectorAll('[data-bi-apply]').forEach(function (btn) {
-      btn.onclick = function () { promptApply(); };
-    });
-    var applyFooter = root.querySelector('[data-bi-apply-footer]');
-    if (applyFooter) applyFooter.onclick = function () { promptApply(); };
+    ensureApplyClickDelegation();
     var draftBtn = root.querySelector('[data-bi-draft-save]');
     if (draftBtn) draftBtn.onclick = function () { clickKintoneSave(); };
   }
@@ -1394,6 +1516,7 @@
     if (!ui.root || ui.rendering) return;
     ui.rendering = true;
     try {
+    ui.applyUiReady = true;
     if (!ui.readOnly && !ui.applyDraftRec) refreshCacheFromRec(getRec());
     else if (ui.readOnly) refreshCacheFromRec(recOptional || getRec());
     var rec = ui.readOnly ? ensureProposers(recOptional || getRec()) : ensureProposers(getApplyWorkingRec());
@@ -1452,15 +1575,17 @@
       (ui.readOnly ? '' : '<input type="file" data-bi-file-input style="display:none" multiple>' +
       '<button type="button" data-bi-pick-file style="padding:8px 14px;border:1px solid #93c5fd;background:#eff6ff;border-radius:8px;cursor:pointer">ファイルを選択</button>' +
       '<p style="margin:8px 0 0;color:#64748b;font-size:0.9em">添付は任意です。申請時に未添付の場合は確認ダイアログが表示されます。</p>') + '</div>' : '') + '</div>' +
-      '<div data-bi-footer-actions style="margin-top:14px;padding:14px;background:#fff;border:1px solid #93c5fd;border-radius:10px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between">' +
-      '<div data-bi-wf-route-wrap style="flex:1 1 280px;min-width:0">' + wfRouteHtml(rec, 'apply') + '</div>' +
-      '<div data-bi-footer-buttons style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:flex-end;flex:0 0 auto">' +
+      '<div data-bi-footer-actions style="margin-top:14px;padding:14px;background:#fff;border:1px solid #93c5fd;border-radius:10px;display:flex;flex-direction:column;gap:12px">' +
+      '<div data-bi-wf-route-wrap style="width:100%">' + wfRouteHtml(rec, 'apply') + '</div>' +
+      '<div data-bi-footer-buttons style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:flex-end;width:100%">' +
       footerActionsHtml(rec) +
       '</div></div>' +
       '<p style="margin:12px 0 0;color:#94a3b8;font-size:0.8em">BUILD ' + esc(BUILD) + '</p></div>';
 
     bindUi();
+    ensureApplyClickDelegation();
     maybeAutoExpand(rec);
+    updateApplyUi(rec, { skipWfRefresh: true });
     } finally {
       ui.rendering = false;
     }
@@ -1666,8 +1791,8 @@
 
   function onSubmitSuccess(event) {
     if (ui.pendingApply) {
-      var action = ui.pendingReapply ? WF_ACTION_REAPPLY : WF_ACTION_APPLY;
       var rec = event.record || getRec();
+      var action = resolveApplyWfActionName(rec, ui.pendingReapply);
       var assignee = resolveWfActionAssignee(action, rec);
       ui.pendingApply = false;
       ui.pendingReapply = false;
@@ -1859,7 +1984,7 @@
     var st = recordStatusKey(rec);
     if (st === 'Mgr' || st === 'manager' || st === '上司承認中') return '部長評価';
     if (st === 'Branch' || st === 'branch' || st === '支店長承認中') return '支店長評価';
-    if (st === 'Hr' || st === 'hr' || st === '人事研修部長承認中') return '本社評価';
+    if (st === 'Hr' || st === 'hr' || st === '本社評価中' || st === '人事研修部長承認中') return '本社評価';
     return '評価';
   }
 
@@ -2142,7 +2267,7 @@
 
   function rolePriorityForStatus(st) {
     if (st === 'Branch' || st === 'branch' || st === '支店長承認中') return ['branch', 'hr', 'manager'];
-    if (st === 'Hr' || st === 'hr' || st === '人事研修部長承認中') return ['hr', 'branch', 'manager'];
+    if (st === 'Hr' || st === 'hr' || st === '本社評価中' || st === '人事研修部長承認中') return ['hr', 'branch', 'manager'];
     if (st === 'Mgr' || st === 'manager' || st === '上司承認中') return ['manager', 'branch', 'hr'];
     return ['manager', 'branch', 'hr'];
   }
@@ -2367,7 +2492,7 @@
       return status === 'Branch' || status === 'branch' || status === '支店長承認中';
     }
     if (role === 'hr') {
-      return status === 'Hr' || status === 'hr' || status === '人事研修部長承認中';
+      return status === 'Hr' || status === 'hr' || status === '本社評価中' || status === '人事研修部長承認中';
     }
     return false;
   }
@@ -2458,6 +2583,7 @@
     if (role === 'branch') {
       if (auto === 'A') {
         var toHr = findWfAction(status, ['支店長承認_人事へ', 'BranchToHr'], 'Hr') ||
+          findWfAction(status, ['支店長承認_人事へ'], '本社評価中') ||
           findWfAction(status, ['支店長承認_人事へ'], '人事研修部長承認中');
         if (toHr) {
           return withForwardMeta(rec, {
@@ -2538,20 +2664,29 @@
     if (evUi.role === 'manager' && !branchDelegateOn(rec) && !evalItemsDone(rec)) {
       return '評価項目をすべて選択してください';
     }
-    if (evUi.role === 'manager' && !branchDelegateOn(rec) && evalItemsDone(rec)) {
-      var mgrAuto = effectiveAutoRank(rec);
-      if (mgrAuto === 'B' || mgrAuto === 'A') {
-        return managerMustForwardMessage(rec, mgrAuto);
-      }
-    }
     var fwd = resolveEvalForwardAction(rec);
     if (!fwd || !fwd.action) {
+      if (evUi.role === 'manager' && !branchDelegateOn(rec) && evalItemsDone(rec)) {
+        var mgrAutoMissing = effectiveAutoRank(rec);
+        if (mgrAutoMissing === 'B' || mgrAutoMissing === 'A') {
+          return (fwd && fwd.assigneeMissing) ? fwd.assigneeMissing : managerMustForwardMessage(rec, mgrAutoMissing);
+        }
+      }
       return (fwd && fwd.assigneeMissing) ? fwd.assigneeMissing : '利用可能な承認操作がありません';
     }
     if (fwd.assigneeRequired && !fwd.assignee) return fwd.assigneeMissing || '次の作業者が未設定です';
     if (fwd.targetsDone) {
       var doneBlock = evalCompletionBlockReason(rec);
       if (doneBlock) return doneBlock;
+      if (evUi.role === 'manager' && !branchDelegateOn(rec)) {
+        var mgrAutoDone = effectiveAutoRank(rec);
+        if (mgrAutoDone === 'B' || mgrAutoDone === 'A') {
+          return managerMustForwardMessage(rec, mgrAutoDone);
+        }
+      }
+      if (evUi.role === 'branch' && effectiveAutoRank(rec) === 'A') {
+        return branchMustForwardMessage();
+      }
     }
     return '';
   }
@@ -2697,8 +2832,34 @@
     return payload;
   }
 
-  function putEvalRecord(recordId, rec) {
+  function clearEvalFieldsOnRec(rec) {
+    rec[FE.effect] = { type: 'DROP_DOWN', value: '' };
+    rec[FE.ingenuity] = { type: 'DROP_DOWN', value: '' };
+    rec[FE.effort] = { type: 'DROP_DOWN', value: '' };
+    rec[FE.overall] = { type: 'DROP_DOWN', value: '' };
+    rec[FE.comment] = { type: 'MULTI_LINE_TEXT', value: '' };
+    rec[FE.total] = { type: 'NUMBER', value: '' };
+    rec[FE.rankAuto] = { type: 'SINGLE_LINE_TEXT', value: '' };
+    rec[FE.rankFinal] = { type: 'DROP_DOWN', value: '' };
+    rec[FE.points] = { type: 'NUMBER', value: '' };
+    rec[FE.branchDelegate] = branchDelegateRecFromDraft(false);
+  }
+
+  function evalRejectRecordPayload(rec) {
     var payload = evalRecordPayload(rec);
+    [
+      FE.effect, FE.ingenuity, FE.effort, FE.overall, FE.rankFinal,
+      FE.comment, FE.total, FE.rankAuto, FE.points,
+    ].forEach(function (code) {
+      payload[code] = { value: '' };
+    });
+    payload[FE.branchDelegate] = { value: branchDelegateRecFromDraft(false).value };
+    return payload;
+  }
+
+  function putEvalRecord(recordId, rec, opts) {
+    opts = opts || {};
+    var payload = opts.rejectClear ? evalRejectRecordPayload(rec) : evalRecordPayload(rec);
     return kintone.api(kintone.api.url('/k/v1/record.json', true), 'PUT', {
       app: kintone.app.getId(),
       id: String(recordId),
@@ -2748,13 +2909,14 @@
     armNavigateAway();
     syncEvalFormFromDom();
     var rec = getEvalWorkingRec();
+    clearEvalFieldsOnRec(rec);
+    evUi.evalDraft = null;
+    evUi.commentDraft = '';
     rec['差戻し理由'] = { type: 'MULTI_LINE_TEXT', value: reason };
     appendOperationHistory(rec, '差戻し', reason);
     var recordId = kintone.app.record.getId();
-    var people = ui.wfPeople || {};
-    var assignee = people.applicant || wfPersonFromField(rec, '申請者') || '';
-    putEvalRecord(recordId, rec).then(function () {
-      return runWorkflowAction(recordId, rej.name, assignee);
+    putEvalRecord(recordId, rec, { rejectClear: true }).then(function () {
+      return runWorkflowAction(recordId, rej.name, '');
     }).then(function () {
       afterEvalSuccess(recordId);
     }).catch(function (err) {
@@ -2804,16 +2966,11 @@
       phase + ' — 承認の確認',
       '<p style="margin:0">「' + esc(fwd.label || '承認する') + '」で進めます。よろしいですか？</p>',
       '<button type="button" id="bi-forward-yes" style="padding:8px 14px;background:#15803d;color:#fff;border:0;border-radius:8px;cursor:pointer">はい</button>' +
-      '<button type="button" id="bi-forward-reject" style="padding:8px 14px;background:#b45309;color:#fff;border:0;border-radius:8px;cursor:pointer">差戻し</button>' +
       '<button type="button" id="bi-forward-no" style="padding:8px 14px;border:1px solid #cbd5e1;background:#fff;border-radius:8px;cursor:pointer">キャンセル</button>'
     );
     wrap.querySelector('#bi-forward-yes').onclick = function () {
       closeBiModal();
       startEvalForwardSave(fwd);
-    };
-    wrap.querySelector('#bi-forward-reject').onclick = function () {
-      closeBiModal();
-      promptEvalReject(rec);
     };
     wrap.querySelector('#bi-forward-no').onclick = closeBiModal;
   }
@@ -2998,7 +3155,7 @@
       '<h2 style="margin:0;color:#78350f">' + esc(evalScreenTitle(rec, locked)) + '</h2>' +
       '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px">' +
       fontToggleHtml() +
-      '<span style="color:#78716c;font-size:0.9em">ステータス: ' + esc(wfStateLabel(recordStatusKey(rec))) + '</span></div></div>' +
+      '<span style="color:#78716c;font-size:0.9em">ステータス: ' + esc(recordStatusDisplayLabel(rec)) + '</span></div></div>' +
       '<div style="display:' + (wide ? 'grid' : 'block') + ';grid-template-columns:' + (wide ? '1fr 1fr' : 'none') + ';gap:16px">' +
       '<div>' + readOnlyBlock(rec) + '</div>' +
       '<div><div style="background:#fff;border:1px solid #d6b896;border-radius:10px;padding:14px;min-width:0">' +
@@ -3181,7 +3338,7 @@
     return fetchDepts().then(function () {
       return fetchWfRoute().then(function () {
         return resolveWfPeople(event.record).then(function () {
-          setTimeout(function () { render(); }, 0);
+          setTimeout(function () { render(event.record); }, 0);
           return event;
         });
       });
@@ -3203,16 +3360,21 @@
     ui.root = host;
     ui.readOnly = false;
     ui.allowNavigate = false;
+    ui.applyUiReady = false;
+    ui.applyClickRoot = null;
     resetApplyDraft();
     evUi.root = null;
     ui.autoPurpose = false;
     ui.attachFiles = [];
     event.record = syncRepToRow1(ensureProposers(event.record));
     refreshAttachFromRec(event.record);
+    seedApplyDraftFromEvent(event.record);
+    renderApplyLoadingShell();
+    ensureApplyClickDelegation();
     return fetchDepts().then(function () {
       return fetchWfRoute().then(function () {
         return resolveWfPeople(event.record).then(function () {
-          setTimeout(function () { render(); }, 0);
+          scheduleApplyRender();
           return event;
         });
       });

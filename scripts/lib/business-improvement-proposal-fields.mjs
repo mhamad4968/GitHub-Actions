@@ -416,7 +416,7 @@ export function buildProposalProcessManagement() {
     未処理: { name: '未処理', index: '0', assignee: creator },
     上司承認中: { name: '上司承認中', index: '1', assignee: one },
     支店長承認中: { name: '支店長承認中', index: '2', assignee: one },
-    人事研修部長承認中: { name: '人事研修部長承認中', index: '3', assignee: one },
+    本社評価中: { name: '本社評価中', index: '3', assignee: one },
     申請者修正待ち: { name: '申請者修正待ち', index: '4', assignee: one },
     完了: { name: '完了', index: '5', assignee: one },
   };
@@ -426,12 +426,12 @@ export function buildProposalProcessManagement() {
     { name: '再申請', index: '1', from: '申請者修正待ち', to: '上司承認中' },
     { name: '部長承認_支店長へ', index: '2', from: '上司承認中', to: '支店長承認中' },
     { name: '部長承認_完了', index: '3', from: '上司承認中', to: '完了' },
-    { name: '支店長承認_人事へ', index: '4', from: '支店長承認中', to: '人事研修部長承認中' },
+    { name: '支店長承認_人事へ', index: '4', from: '支店長承認中', to: '本社評価中' },
     { name: '支店長承認_完了', index: '5', from: '支店長承認中', to: '完了' },
-    { name: '人事承認_完了', index: '6', from: '人事研修部長承認中', to: '完了' },
+    { name: '人事承認_完了', index: '6', from: '本社評価中', to: '完了' },
     { name: '差戻し', index: '7', from: '上司承認中', to: '申請者修正待ち' },
     { name: '差戻し_支店長', index: '8', from: '支店長承認中', to: '申請者修正待ち' },
-    { name: '差戻し_人事', index: '9', from: '人事研修部長承認中', to: '申請者修正待ち' },
+    { name: '差戻し_人事', index: '9', from: '本社評価中', to: '申請者修正待ち' },
   ];
 
   return { enable: true, states, actions };

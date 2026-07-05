@@ -138,19 +138,19 @@
       "note": null
     },
     "699": {
-      "build": "2026-06-26-bi-guide-login-permission-lines-v1",
-      "fileKey": "481ce014-ea6f-4643-897e-5c4721d61fe4",
-      "revision": "115",
+      "build": "2026-06-25-bi-guide-login-aggregate-note-v3",
+      "fileKey": "49df2fee-9b77-4537-a902-135e7fc9c518",
+      "revision": "116",
       "relPath": "customize/business-improvement-guide/desktop.bundle.js",
-      "deployedAt": "2026-06-26T10:18:51.800Z",
+      "deployedAt": "2026-07-05T14:45:43.468Z",
       "note": null
     },
     "700": {
-      "build": "2026-07-04-bi-proposal-late-eval-collapse",
-      "fileKey": "d128837d-6bee-4bb8-9356-97b6f3e4811e",
-      "revision": "146",
+      "build": "2026-07-06-bi-apply-footer-reject-clear",
+      "fileKey": "999dc081-695c-4648-862f-c901dc97a5d4",
+      "revision": "166",
       "relPath": "customize/business-improvement-proposal/desktop.js",
-      "deployedAt": "2026-07-04T12:00:58.718Z",
+      "deployedAt": "2026-07-05T15:44:54.245Z",
       "note": null
     },
     "701": {

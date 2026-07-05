@@ -1304,7 +1304,7 @@ window.BiAnnualPanel = (function () {
 
     Branch: '支店長承認中',
 
-    Hr: '人事研修部長承認中',
+    Hr: '本社評価中',
 
     Done: '完了',
 
@@ -1314,7 +1314,7 @@ window.BiAnnualPanel = (function () {
 
     branch: '支店長承認中',
 
-    hr: '人事研修部長承認中',
+    hr: '本社評価中',
 
     done: '完了',
 
@@ -1324,7 +1324,9 @@ window.BiAnnualPanel = (function () {
 
     '支店長承認中': '支店長承認中',
 
-    '人事研修部長承認中': '人事研修部長承認中',
+    '本社評価中': '本社評価中',
+
+    '人事研修部長承認中': '本社評価中',
 
     '完了': '完了',
 
@@ -2601,7 +2603,7 @@ window.BiAnnualPanel = (function () {
 
     if (stateKey === 'Branch' || stateKey === 'branch' || stateKey === '支店長承認中') return FP.br;
 
-    if (stateKey === 'Hr' || stateKey === 'hr' || stateKey === '人事研修部長承認中') return FP.hr;
+    if (stateKey === 'Hr' || stateKey === 'hr' || stateKey === '本社評価中' || stateKey === '人事研修部長承認中') return FP.hr;
 
     return null;
 
@@ -3557,7 +3559,7 @@ window.BiAnnualPanel = (function () {
           '審査・評価について',
           '📊',
           mark,
-          '評価は部長 → 支店長（必要な場合）→ 人事研修部長（必要な場合）の順で進みます。' +
+          '評価は部長 → 支店長（必要な場合）→ 本社評価（必要な場合）の順で進みます。' +
             '各組織の審査の進め方（都度・月次まとめ等）は、各組織の運用に従ってください。'
         ) +
         guideTopic(
@@ -3608,7 +3610,7 @@ window.BiAnnualPanel = (function () {
         '<li><strong>申請</strong> — 共有IDでログインし、提案内容を入力して申請</li>' +
         '<li><strong>上司承認中</strong> — 部長（上司）が評価・承認</li>' +
         '<li><strong>支店長承認中</strong> — 評価結果に応じて、支店長の承認が必要な場合</li>' +
-        '<li><strong>人事研修部長承認中</strong> — 本店表彰（A評価）に該当する場合</li>' +
+        '<li><strong>本社評価中</strong> — 本店表彰（A評価）に該当する場合</li>' +
         '<li><strong>完了</strong> — すべての承認が終わると完了</li>' +
         '</ol>' +
         '<div style="' + box + '">' +
@@ -3654,7 +3656,7 @@ window.BiAnnualPanel = (function () {
         '<ul style="margin:8px 0;padding-left:1.4em;line-height:1.75">' +
         '<li><strong>未処理</strong> — 入力中（まだ申請していない）</li>' +
         '<li><strong>上司承認中</strong> — 部長評価待ち</li>' +
-        '<li><strong>支店長承認中</strong> / <strong>人事研修部長承認中</strong> — 上位承認待ち</li>' +
+        '<li><strong>支店長承認中</strong> / <strong>本社評価中</strong> — 上位承認待ち</li>' +
         '<li><strong>申請者修正待ち</strong> — 差戻し。内容を修正して再申請</li>' +
         '<li><strong>完了</strong> — 承認がすべて終了</li>' +
         '</ul>' +
@@ -3779,7 +3781,7 @@ window.BiAnnualPanel = (function () {
           mark,
           '1件の提案は、おおむね次の順で処理されます。<br>' +
             '<strong>上司承認中</strong>（部長評価）→ <strong>支店長承認中</strong>（必要な場合）→ ' +
-            '<strong>人事研修部長承認中</strong>（本店表彰A等）→ <strong>完了</strong><br>' +
+            '<strong>本社評価中</strong>（本店表彰A等）→ <strong>完了</strong><br>' +
             '画面下部に現在の経路が表示されます。'
         ) +
         guideScreenshot('wfRoute', 'ワークフロー経路の表示', ev) +
