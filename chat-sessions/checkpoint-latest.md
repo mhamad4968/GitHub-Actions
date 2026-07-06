@@ -29,9 +29,14 @@
 | **712** | 削除済 — deploy 禁止 |
 
 **次の1手**: **7/7** **736 PH1c** たたき台 + Q0 · **698/700** 目視 FB · **699** 受け入れ確認  
-**Git**: **`31dca6c`** = `origin/main` — 699 banner まで push 済 · **締め commit これから**  
-**夕反省**: `docs/reports/2026-07-06-evening-reflection.md`  
-**品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **736 7月**: `docs/runbooks/736-july-2026-schedule.md`
+**Git**: **`472e31c`** = `origin/main` — 2026-07-06 締め push 済  
+**夕反省**: `docs/reports/2026-07-06-evening-reflection.md` · **698/700 レビュー**: `docs/reports/2026-07-06-bi-698-700-monday-review.md`  
+**699 仕様**: Q-GUIDE-13 · `docs/plans/2026-07-06-bi-699-status-summary-spec-draft.md`  
+**736 7月**: `docs/runbooks/736-july-2026-schedule.md` · PH1b 凍結正本 `docs/plans/2026-07-06-jikkou-yosan-ph1b-label-row-spec-draft.md`  
+**品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`  
+**R-ORIENT-07**: 計画タスク完了 → 本日予定（736 7月表）→ 「以上です。本日の依頼をどうぞ」— **完了前は依頼を聞かない**  
+**Plan&Usage**（2026-07-05）: Ultra $200/mo · 合計 21% · リセット 7/15 — 現ペース問題なし  
+**運用メモ**: Desktop `18-重要確認.txt` 正本 · 本番 Excel **設定マスタ_本番** のみ · MCP `cio:mcp:env` 6/6 OK
 
 ## セッション切替後の自律復元（Lifecycle v2 鏡像）
 
