@@ -6,7 +6,7 @@
 
   /** 業務改善 ver.02 — ご利用ガイド */
 
-  var BUILD = '2026-06-25-bi-guide-login-aggregate-note-v3';
+  var BUILD = '2026-07-06-bi-guide-status-summary-table';
 
 
 
@@ -183,6 +183,7 @@
       '#bi-guide-root .bi-nav-sub{text-align:left;padding:10px 14px;border-radius:6px;border:none;cursor:pointer;font-size:1em;width:100%;font-family:inherit;line-height:1.4}' +
       '#bi-guide-root .bi-nav-sub:hover{filter:brightness(0.97)}' +
       '#bi-guide-body{scroll-margin-top:72px}' +
+      '#bi-list-unapplied,#bi-list-submitted,#bi-list-done,#bi-list-pending{scroll-margin-top:72px}' +
       '#bi-guide-root .bi-guide-topic summary{list-style:none;display:flex;align-items:flex-start;gap:8px}' +
       '#bi-guide-root .bi-guide-topic summary::-webkit-details-marker{display:none}' +
       '#bi-guide-root .bi-guide-topic[open] .bi-guide-topic-caret{transform:rotate(180deg);display:inline-block}' +
@@ -989,6 +990,254 @@
 
 
 
+  function isApplicantFixStatus(st) {
+
+    return st === 'applicant_fix' || st === '申請者修正待ち';
+
+  }
+
+
+
+  function isDraftUnappliedOnlyStatus(st) {
+
+    return st === 'Draft' || st === '未処理' || st === 'unprocessed';
+
+  }
+
+
+
+  function recordStatusDisplay(r) {
+
+    return statusLabel((r[FP.status] && r[FP.status].value) || '');
+
+  }
+
+
+
+  function countUnappliedDraft() {
+
+    return (state.unappliedList || []).filter(function (r) {
+
+      var st = (r[FP.status] && r[FP.status].value) || '';
+
+      return isDraftUnappliedOnlyStatus(st);
+
+    }).length;
+
+  }
+
+
+
+  function countApplicantFix() {
+
+    return (state.unappliedList || []).filter(function (r) {
+
+      var st = (r[FP.status] && r[FP.status].value) || '';
+
+      return isApplicantFixStatus(st);
+
+    }).length;
+
+  }
+
+
+
+  function countSubmittedWithLabel(label) {
+
+    return (state.submittedList || []).filter(function (r) {
+
+      return recordStatusDisplay(r) === label;
+
+    }).length;
+
+  }
+
+
+
+  function countDoneBuckets() {
+
+    var unprocessed = 0;
+
+    var aggregated = 0;
+
+    (state.doneList || []).forEach(function (r) {
+
+      if (isAnnualClosedForRec(r)) aggregated += 1;
+
+      else unprocessed += 1;
+
+    });
+
+    return { unprocessed: unprocessed, aggregated: aggregated };
+
+  }
+
+
+
+  function unclosedFiscalYearsForDone() {
+
+    var years = {};
+
+    (state.doneList || []).forEach(function (r) {
+
+      var completed = (r[FP.completedDate] && r[FP.completedDate].value) || '';
+
+      var fy = fiscalYearKeyForCompletion(completed);
+
+      if (fy != null && !state.closedAnnualYears[String(fy)]) {
+
+        years[String(fy)] = true;
+
+      }
+
+    });
+
+    return Object.keys(years).sort(function (a, b) {
+
+      return Number(a) - Number(b);
+
+    });
+
+  }
+
+
+
+  function summaryScrollBtn(count, anchorId) {
+
+    return (
+
+      '<button type="button" class="bi-summary-count" data-bi-scroll="' + esc(anchorId) + '" ' +
+
+      'style="border:0;background:transparent;padding:0;color:#1d4ed8;font-weight:700;cursor:pointer;text-decoration:underline;font-size:inherit;font-family:inherit">' +
+
+      String(count) + '</button>'
+
+    );
+
+  }
+
+
+
+  function statusSummaryTableHtml() {
+
+    if (state.listsLoading) {
+
+      return '<p style="color:#64748b;margin:0;font-size:0.92em">件数を読み込み中…</p>';
+
+    }
+
+    var doneCounts = countDoneBuckets();
+
+    var rows = [
+
+      { label: '未申請・下書き', count: countUnappliedDraft(), anchor: 'bi-list-unapplied' },
+
+      { label: '申請者修正待ち', count: countApplicantFix(), anchor: 'bi-list-unapplied' },
+
+      { label: '上司承認中', count: countSubmittedWithLabel('上司承認中'), anchor: 'bi-list-submitted' },
+
+      { label: '支店長承認中', count: countSubmittedWithLabel('支店長承認中'), anchor: 'bi-list-submitted' },
+
+      { label: '本社評価中', count: countSubmittedWithLabel('本社評価中'), anchor: 'bi-list-submitted' },
+
+    ];
+
+    if (state.isEvaluator) {
+
+      rows.push({
+
+        label: '未評価',
+
+        count: (state.pendingList || []).length,
+
+        anchor: 'bi-list-pending',
+
+      });
+
+    }
+
+    rows.push(
+
+      { label: '評価完了（年次未処理）', count: doneCounts.unprocessed, anchor: 'bi-list-done' },
+
+      { label: '集計完了', count: doneCounts.aggregated, anchor: 'bi-list-done' },
+
+    );
+
+    var trs = rows.map(function (row) {
+
+      return (
+
+        '<tr>' +
+
+        '<td style="padding:8px 12px;border-bottom:1px solid #e2e8f0">' + esc(row.label) + '</td>' +
+
+        '<td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;text-align:right;white-space:nowrap">' +
+
+        summaryScrollBtn(row.count, row.anchor) +
+
+        ' 件</td></tr>'
+
+      );
+
+    }).join('');
+
+    var unclosed = unclosedFiscalYearsForDone();
+
+    var note = '';
+
+    if (unclosed.length) {
+
+      note =
+
+        '<p style="margin:10px 0 0;color:#64748b;font-size:0.85em;line-height:1.5">' +
+
+        '未締め年度: ' + esc(unclosed.join(', ')) +
+
+        '（評価完了件は年度締め後「集計完了」へ移ります）</p>';
+
+    }
+
+    return (
+
+      '<p style="margin:0 0 8px;font-weight:700;font-size:0.95em;color:#334155">あなたの提案 — ステータス件数</p>' +
+
+      '<div style="overflow-x:auto">' +
+
+      '<table style="width:100%;border-collapse:collapse;min-width:280px;font-size:0.92em">' +
+
+      '<thead><tr style="background:#f8fafc;text-align:left">' +
+
+      '<th style="padding:8px 12px;border-bottom:2px solid #cbd5e1">ステータス</th>' +
+
+      '<th style="padding:8px 12px;border-bottom:2px solid #cbd5e1;text-align:right">件数</th>' +
+
+      '</tr></thead><tbody>' + trs + '</tbody></table></div>' +
+
+      note
+
+    );
+
+  }
+
+
+
+  function statusSummarySectionHtml() {
+
+    return (
+
+      '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:16px;box-shadow:0 1px 4px rgba(15,23,42,.06)">' +
+
+      statusSummaryTableHtml() +
+
+      '</div>'
+
+    );
+
+  }
+
+
+
   var PAST_SEARCH_FIELDS = ['$id', FP.date, FP.title, FP.type, FP.status, FP.dept, FP.employee];
 
 
@@ -1614,11 +1863,13 @@
 
     var html = '';
 
+    var anchorStyle = 'scroll-margin-top:72px';
+
     if (state.unappliedList.length > 0) {
 
       html +=
 
-        '<div style="margin-bottom:28px">' +
+        '<div id="bi-list-unapplied" style="' + anchorStyle + ';margin-bottom:28px">' +
 
         guideH3(
           '未申請・下書き（' + state.unappliedList.length + '件）',
@@ -1633,11 +1884,15 @@
 
         '提案番号は <strong>「申請する」</strong> を押して申請が完了したあとに付与されます（一時保存のみの段階では番号はありません）。</p></div>';
 
+    } else {
+
+      html += '<div id="bi-list-unapplied" style="' + anchorStyle + '"></div>';
+
     }
 
     html +=
 
-      '<div style="margin-bottom:28px">' +
+      '<div id="bi-list-submitted" style="' + anchorStyle + ';margin-bottom:28px">' +
 
       guideH3('申請した一覧', guideTheme().heading, '📝', '#dbeafe') +
 
@@ -1645,7 +1900,7 @@
 
     html +=
 
-      '<div style="margin-bottom:28px">' +
+      '<div id="bi-list-done" style="' + anchorStyle + ';margin-bottom:28px">' +
 
       guideH3('評価完了一覧', '#166534', '✅', '#dcfce7') +
 
@@ -1655,7 +1910,7 @@
 
       html +=
 
-        '<div style="margin-bottom:28px">' +
+        '<div id="bi-list-pending" style="' + anchorStyle + ';margin-bottom:28px">' +
 
         guideH3(
           '未評価一覧' + (state.pendingList.length ? '（' + state.pendingList.length + '件）' : ''),
@@ -2660,6 +2915,8 @@
 
       loginStatusBannerHtml() +
 
+      statusSummarySectionHtml() +
+
       '<div style="margin-bottom:20px">' +
 
       '<a href="' + esc(applyHref) + '" id="bi-btn-apply" style="display:inline-block;padding:14px 28px;margin:8px 12px 8px 0;background:#1d4ed8;color:#fff;border-radius:10px;text-decoration:none;font-weight:700;font-size:1.05em;box-shadow:0 2px 8px rgba(29,78,216,.25)">提案を出す</a>' +
@@ -2809,6 +3066,32 @@
       });
 
     }
+
+
+
+    root.querySelectorAll('[data-bi-scroll]').forEach(function (btn) {
+
+      if (btn._biScrollBound) return;
+
+      btn._biScrollBound = true;
+
+      btn.addEventListener('click', function () {
+
+        var id = btn.getAttribute('data-bi-scroll');
+
+        var target = document.getElementById(id);
+
+        if (!target) return;
+
+        window.requestAnimationFrame(function () {
+
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        });
+
+      });
+
+    });
 
 
 
