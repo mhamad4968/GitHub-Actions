@@ -1,8 +1,19 @@
 {
-  "scoredAt": "2026-07-05T09:13:49.310Z",
+  "scoredAt": "2026-07-06T12:25:00.000Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
+  "topTask": "**7/7** **736 PH1c** たたき台 + Q0 · **698/700** 目視 FB · **699** 受け入れ確認",
   "tasks": [
+    {
+      "id": "checkpoint:**7/7**_**736_PH1c**_たたき台_+_Q0_·_**698/7",
+      "text": "**7/7** **736 PH1c** たたき台 + Q0 · **698/700** 目視 FB · **699** 受け入れ確認",
+      "source": "checkpoint",
+      "difficulty": 3,
+      "tokens": "中",
+      "tokenScore": 2,
+      "impact": 4,
+      "priority": 48,
+      "status": "pending"
+    },
     {
       "id": "backlog:B-MDFLOW:_**Markdown_ベースの開発フロー**（仕様・実装・レ",
       "text": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
@@ -12,17 +23,6 @@
       "tokenScore": 2,
       "impact": 3,
       "priority": 21,
-      "status": "pending"
-    },
-    {
-      "id": "checkpoint:**今夜_SKYSEA_意見交換**（準備・論点整理のみ_·_**実装/depl",
-      "text": "**今夜 SKYSEA 意見交換**（準備・論点整理のみ · **実装/deploy 禁止**）。**736 Phase 1** は 7/11 まで deploy 追加なし。**月曜** 698/700 レビュー",
-      "source": "checkpoint",
-      "difficulty": 5,
-      "tokens": "高",
-      "tokenScore": 3,
-      "impact": 5,
-      "priority": 50,
       "status": "pending"
     }
   ]

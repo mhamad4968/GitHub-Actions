@@ -3,6 +3,14 @@
 Windows から開きやすい控え: C:\Users\mhamada202408224\Desktop\AI緊急用\HANDOFF-HUMAN.txt
 ※ C:\Users\mhamada202408224\kintone-ai-lab は chat-sessions 無しの別ツリーなので、このファイルは置かない。
 
+日時(JST): 2026-07-06（月）終了 — **699 Q-GUIDE-13 GO · 736 PH1b凍結 · 698/700レビュー**
+いま何してた（1行）: 699 ステータス件数表+バナー文案（rev121）· 736 PH1b見送り+7月表 · 698/700 機械レビュー。
+次にやる1つ: **7/7 736 PH1c** たたき台+Q0（AI §41）· **698/700 目視FB** · **699 受け入れ確認**
+GO待ち（なし／内容）: 夕反省 #R699-BANNER-01 等 4 件 — 浜田承認待ち
+触らないで（なし／内容）: 688 / 677–679 / SKYSEA 7月 / PH1b implement / §9.6 能動提案
+
+推奨フロー（セッション切替）: ① **`00-NEW-SESSION-STARTER_yyyymmdd.txt`（JST・Explorer 名前順で先頭・常にこのファイル名）全文**（**v3.27+**: **「■ 貼付単独で完走」** が **唯一の詳細正本**（項番 -1〜0・**v3.28** 以後の改定もここ優先）。checkpoint 重複貼付不要。貼付推奨は verify 最終行）② この 5 行（**任意**）③ **項番 -0** → ④ **`session:bootstrap` 一括**。**日終わり（R17 必須）**: `npm run cio:session:close-git -- --execute --auto-stage --message "…"`（desktop sync 内包）。
+
 日時(JST): 2026-07-05（日）終了 — **736 7月計画 · 752 CLOSED · SKYSEA再計画 · 712削除**
 いま何してた（1行）: 736 Phase1/B カレンダー · verify:spec-progress-sync · 712 廃止削除確認 · SKYSEA 8月再計画。
 次にやる1つ: **736 PH1b 7/11** · **月曜 698/700 レビュー** · **SKYSEA 8/1 再計画**

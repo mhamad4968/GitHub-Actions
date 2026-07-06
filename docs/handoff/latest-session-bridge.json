@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-07-05T15:52:00.000Z",
-  "gitHead": "5d4c3c9",
-  "gitStatus": "## main...origin/main",
-  "nextTask": "**700 本番前テスト**（1件ずつ）· **700 レビュー会フィードバック待ち** · **736 7月カレンダー**（PH1b **7/11** 他）· **SKYSEA は 8/1 から再計画**",
+  "exportedAt": "2026-07-06T12:24:03.269Z",
+  "gitHead": "7cd7435",
+  "gitStatus": "## main...origin/main [ahead 1]",
+  "nextTask": "**7/7** **736 PH1c** たたき台 + Q0 · **698/700** 目視 FB · **699** 受け入れ確認",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -15,6 +15,8 @@
     ".cursor/rules/mode-b-canonical.mdc",
     "docs/knowledge/debug-tips.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=5d4c3c9 | 次=**700 本番前テスト**（1件ずつ）· **700 レビュー会フィードバック待ち** · **736 7月カレンダー**（PH1b **7/11** 他）· **SKYSEA は 8/1 から再計画** | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
+  "promptBlock": "【SESSION-BRIDGE】git=7cd7435 | 次=**7/7** **736 PH1c** たたき台 + Q0 · **698/700** 目視 FB · **699** 受け入れ確認 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
+  "validatedAt": "2026-07-06T12:24:26.596Z",
+  "crosscheckOk": true
 }
