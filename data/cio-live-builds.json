@@ -138,11 +138,11 @@
       "note": null
     },
     "699": {
-      "build": "2026-07-06-bi-guide-banner-summary-hint",
-      "fileKey": "375cdfeb-e9e3-443f-9a03-1fd93d73f3f9",
-      "revision": "118",
+      "build": "2026-07-06-bi-guide-banner-bullet-list",
+      "fileKey": "ea8a6147-637b-4a53-900f-4148ed9b97e7",
+      "revision": "119",
       "relPath": "customize/business-improvement-guide/desktop.bundle.js",
-      "deployedAt": "2026-07-06T12:07:17.149Z",
+      "deployedAt": "2026-07-06T12:10:48.844Z",
       "note": null
     },
     "700": {

@@ -1246,7 +1246,7 @@ window.BiAnnualPanel = (function () {
 
   /** 業務改善 ver.02 — ご利用ガイド */
 
-  var BUILD = '2026-07-06-bi-guide-banner-summary-hint';
+  var BUILD = '2026-07-06-bi-guide-banner-bullet-list';
 
 
 
@@ -3343,23 +3343,45 @@ window.BiAnnualPanel = (function () {
 
 
 
-  function unappliedAlertHtml() {
-
+  function loginStatusBannerHtml() {
+    var profile = loginRoleProfile();
+    var box =
+      'border-radius:12px;padding:14px 18px;margin-bottom:16px;box-shadow:0 1px 4px rgba(15,23,42,.06)';
     var n = state.unappliedList.length;
-
-    if (!n) return '';
-
+    var bullets =
+      '<div style="margin:10px 0 0;font-size:0.92em;line-height:1.7;color:' +
+      profile.bodyColor +
+      '">' +
+      '<div style="margin:0 0 4px">・下の<strong>「提案を出す」</strong>から申請を始められます。</div>';
+    if (n > 0) {
+      bullets +=
+        '<div style="margin:0;color:#dc2626;font-weight:700">・未申請案件が ' +
+        n +
+        ' 件あります。申請してください。</div>';
+    }
+    bullets += '</div>';
     return (
-
-      '<p style="margin:10px 0 0;color:#dc2626;font-weight:700;font-size:1.05em;line-height:1.5">' +
-
-      '未申請案件が ' + n + ' 件あります。申請してください。</p>'
-
+      '<div style="background:' +
+      profile.bg +
+      ';border:2px solid ' +
+      profile.border +
+      ';' +
+      box +
+      '">' +
+      '<strong style="color:' +
+      profile.titleColor +
+      ';line-height:1.5">' +
+      profile.headline +
+      '</strong><br>' +
+      '<p style="margin:10px 0 0;font-size:0.92em;color:' +
+      profile.bodyColor +
+      ';line-height:1.5">' +
+      'ステータスごとの表を見て申請状況を確認してください。' +
+      '</p>' +
+      bullets +
+      '</div>'
     );
-
   }
-
-
 
   function loginRoleProfile() {
     var canEvaluate = !!state.isEvaluator;
@@ -3409,36 +3431,6 @@ window.BiAnnualPanel = (function () {
       titleColor: '#1e3a8a',
       bodyColor: '#334155',
     };
-  }
-
-  function loginStatusBannerHtml() {
-    var profile = loginRoleProfile();
-    var box =
-      'border-radius:12px;padding:14px 18px;margin-bottom:16px;box-shadow:0 1px 4px rgba(15,23,42,.06)';
-    var body =
-      '<span style="font-size:0.92em;color:' +
-      profile.bodyColor +
-      '">' +
-      'ステータスごとの表を見て申請状況を確認してください。' +
-      ' 下の<strong>「提案を出す」</strong>から申請を始められます。' +
-      '</span>';
-    return (
-      '<div style="background:' +
-      profile.bg +
-      ';border:2px solid ' +
-      profile.border +
-      ';' +
-      box +
-      '">' +
-      '<strong style="color:' +
-      profile.titleColor +
-      ';line-height:1.5">' +
-      profile.headline +
-      '</strong><br>' +
-      body +
-      unappliedAlertHtml() +
-      '</div>'
-    );
   }
 
   function applyDoneBannerHtml() {
