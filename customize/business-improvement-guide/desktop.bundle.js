@@ -1246,7 +1246,7 @@ window.BiAnnualPanel = (function () {
 
   /** 業務改善 ver.02 — ご利用ガイド */
 
-  var BUILD = '2026-07-06-bi-guide-status-summary-table';
+  var BUILD = '2026-07-06-bi-guide-banner-summary-hint';
 
 
 
@@ -3411,24 +3411,6 @@ window.BiAnnualPanel = (function () {
     };
   }
 
-  function aggregateRestrictionNoteHtml(profile) {
-    var small =
-      'font-size:0.82em;color:#64748b;margin:10px 0 0;line-height:1.55;display:block';
-    if (profile.key === 'admin' || profile.key === 'evaluator_admin') {
-      return (
-        '<span style="' +
-        small +
-        '">※ <strong>年次ポイント集計</strong>は、指定した集計担当のアカウントだけが実行出来る機能です。</span>'
-      );
-    }
-    return (
-      '<span style="' +
-      small +
-      '">※ <strong>年次ポイント集計</strong>は集計担当のアカウントでのみ実行できます。' +
-      'このアカウントでは集計ボタンは<strong>表示されません</strong>。</span>'
-    );
-  }
-
   function loginStatusBannerHtml() {
     var profile = loginRoleProfile();
     var box =
@@ -3437,19 +3419,9 @@ window.BiAnnualPanel = (function () {
       '<span style="font-size:0.92em;color:' +
       profile.bodyColor +
       '">' +
-      esc(profile.hint) +
-      ' 下の<strong>「提案を出す」</strong>から申請を始められます。';
-    if (profile.key === 'evaluator' || profile.key === 'evaluator_admin') {
-      body += ' <strong>未評価一覧</strong>から評価・承認も行えます。';
-      if (state.pendingList.length > 0) {
-        body +=
-          ' <span style="color:#b45309">（いま未評価の案件があります）</span>';
-      }
-    }
-    if (profile.key === 'admin' || profile.key === 'evaluator_admin') {
-      body += ' <strong>年次ポイント集計</strong>は下の緑ボタンから行えます。';
-    }
-    body += '</span>';
+      'ステータスごとの表を見て申請状況を確認してください。' +
+      ' 下の<strong>「提案を出す」</strong>から申請を始められます。' +
+      '</span>';
     return (
       '<div style="background:' +
       profile.bg +
@@ -3464,7 +3436,6 @@ window.BiAnnualPanel = (function () {
       profile.headline +
       '</strong><br>' +
       body +
-      aggregateRestrictionNoteHtml(profile) +
       unappliedAlertHtml() +
       '</div>'
     );
