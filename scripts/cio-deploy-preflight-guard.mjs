@@ -92,22 +92,32 @@ function main() {
     const lr = spawnSync(process.execPath, [liveScript, '--app', app], {
       cwd: root,
       encoding: 'utf8',
-      stdio: 'inherit',
+      stdio: ['inherit', 'pipe', 'pipe'],
       env: { ...process.env },
     });
+    const combined = `${lr.stdout || ''}\n${lr.stderr || ''}`;
+    if (lr.stdout) process.stdout.write(lr.stdout);
+    if (lr.stderr) process.stderr.write(lr.stderr);
+    const liveSchemaOk =
+      /\[verify:kintone-live-schema\] OK — 実機スキーマと customize 完全一致/.test(combined);
     if (lr.status !== 0) {
-      if (lr.status === 2) {
+      if (liveSchemaOk && lr.status !== 2) {
+        console.warn(
+          `[cio-deploy-preflight-guard] WARN live-schema exit=${lr.status} but stdout OK — Windows UV crash 想定 · deploy 続行 (#D-WIN-SCHEMA-01)`,
+        );
+      } else if (lr.status === 2) {
         console.error(
           `[cio-deploy-preflight-guard] ❌ verify:kintone-live-schema API/接続エラー app=${app} — 再試行後に deploy`,
         );
         console.error(`  緊急のみ: SKIP_CIO_LIVE_SCHEMA_GUARD=1 npm run deploy:${app}`);
         process.exit(2);
+      } else {
+        console.error(
+          `[cio-deploy-preflight-guard] ❌ verify:kintone-live-schema --app ${app} NG — フィールド不一致・deploy 中止`,
+        );
+        console.error(`  緊急のみ: SKIP_CIO_LIVE_SCHEMA_GUARD=1 npm run deploy:${app}`);
+        process.exit(1);
       }
-      console.error(
-        `[cio-deploy-preflight-guard] ❌ verify:kintone-live-schema --app ${app} NG — フィールド不一致・deploy 中止`,
-      );
-      console.error(`  緊急のみ: SKIP_CIO_LIVE_SCHEMA_GUARD=1 npm run deploy:${app}`);
-      process.exit(1);
     }
     console.log(`[cio-deploy-preflight-guard] OK live-schema app=${app}`);
   } else if (process.env.SKIP_CIO_LIVE_SCHEMA_GUARD === '1') {

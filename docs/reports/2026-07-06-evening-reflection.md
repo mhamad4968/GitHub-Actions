@@ -57,11 +57,12 @@
 
 | ID | 状態 |
 |----|------|
-| #R699-BANNER-01 | **承認待ち** |
-| #R699-SPEC-01 | **承認待ち** |
-| #D-WIN-SCHEMA-01 | **承認待ち** |
-| #S-CLOSE-03 | **承認待ち** |
-| #S-736-ORIENT-01 | **次セッション既定**（承認不要） |
+| #R699-BANNER-01 | **GO**（2026-07-06 浜田）→ R-BI-04 |
+| #R699-SPEC-01 | **GO** |
+| #D-WIN-SCHEMA-01 | **GO** |
+| #S-CLOSE-03 | **GO** → R-SESS-08 |
+
+実施正本: `docs/approved-changes/2026-07-06-evening-improvements-hamada-go.md`
 
 ---
 

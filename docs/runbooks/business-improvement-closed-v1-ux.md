@@ -89,3 +89,17 @@
 **禁止**: 共通 `hr_director_login` を WF テスト用に admin 固定（テスト行のみ per-row override）。
 
 **関連**: 仕様 §4.7.1 / `scripts/data/business-improvement-wf-test-master.json`
+
+---
+
+## 4. R-BI-04 — 699 ログイン UX deploy 規律（2026-07-06 GO · #R699-BANNER-01）
+
+**699** のログインバナー・サマリー表（Q-GUIDE-04 / Q-GUIDE-13）変更時:
+
+| # | ルール |
+|---|--------|
+| 1 | **§41 で文案・レイアウトを1セット確定**してから implement |
+| 2 | **1 GO = 1 deploy**（本日の5連 deploy 禁止） |
+| 3 | deploy SUCCESS 後 **同一セッション commit**（R-SESS-07 / R63） |
+
+**正本**: `docs/plans/2026-07-06-bi-699-status-summary-spec-draft.md` · `docs/approved-changes/2026-07-06-evening-improvements-hamada-go.md`

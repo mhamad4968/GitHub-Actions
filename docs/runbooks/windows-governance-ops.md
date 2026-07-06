@@ -74,7 +74,9 @@ pre-push は `git rev-parse --show-toplevel` でリポ root を解決（`.git/ho
 
 **症状**: `npm run verify:kintone-live-schema` が **OK 表示後**に Node が `UV_HANDLE_CLOSING` で落ちる（Windows 固有）。
 
-**回避（deploy 時）**:
+**2026-07-06 GO (#D-WIN-SCHEMA-01)**: `cio-deploy-preflight-guard` が **stdout に OK 行があれば deploy 続行**（skip 不要な場合が多い）。
+
+**手動回避（従来）**:
 
 ```powershell
 $env:SKIP_CIO_LIVE_SCHEMA_GUARD = "1"

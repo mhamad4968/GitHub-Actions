@@ -242,7 +242,7 @@
 ## [2026-06-17] Windows live-schema UV_HANDLE_CLOSING（R53）
 
 **前提**: Windows ネイティブ Node で `verify:kintone-live-schema` 後にプロセス異常終了することがある
-**手順**: 出力が OK なら `SKIP_CIO_LIVE_SCHEMA_GUARD=1` で deploy（`docs/runbooks/windows-governance-ops.md`）
+**手順**: 出力が OK なら deploy 続行（**2026-07-06 GO #D-WIN-SCHEMA-01** — `cio-deploy-preflight-guard` が stdout OK を検知）。従来どおり `SKIP_CIO_LIVE_SCHEMA_GUARD=1` も可
 **禁止**: 検証未実施のまま skip
 **exit**: deploy 成功 + kintone-apps BUILD 行更新
 

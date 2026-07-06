@@ -196,6 +196,8 @@ npm run cio:checkpoint:rollup -- --keep 3
 
 **R-SESS-07（2026-07-05 GO）**: **partial CLOSE** でも **736 7月カレンダー / spec §9.2 / runbook** を触ったターンは **commit 必須**（dirty 放置禁止 · #S-CLOSE-02）。
 
+**R-SESS-08（2026-07-06 GO）**: レーン **GO 受け入れ / deploy SUCCESS** 時点で **spec · report · kintone-apps** を **partial commit 可**（夕方 B1 塊回避 · #S-CLOSE-03）。699 UX は **R-BI-04**（§41 確定 → 1 deploy）を優先。
+
 **partial でも必須**: checkpoint `次の1手` / `Git` + handoff-log 末尾ブロック（**Git** キー含む）。
 
 **full でも必須**: push まで（`close-git` 内包）。

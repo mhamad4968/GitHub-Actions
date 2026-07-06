@@ -39,6 +39,8 @@ npm run verify:rag-mirror-canonical
 
 **UX 調整ループ（R-SESS-07 / R63）**: `deploy:*` **SUCCESS ごと**に customize + kintone-apps + spec を **同一セッション内 commit**。夕締め一括に寄せない。
 
+**699 ログイン UX（R-BI-04 / #R699-BANNER-01）**: §41 で文案1セット確定 → **1 deploy**（複数回 deploy 禁止）。
+
 **セッション内で複数 app deploy** した場合は **各 appId ごとに sync** してから上記 verify を **commit 前に 1 回**。
 
 ## 禁止
