@@ -1246,7 +1246,7 @@ window.BiAnnualPanel = (function () {
 
   /** 業務改善 ver.02 — ご利用ガイド */
 
-  var BUILD = '2026-07-06-bi-guide-banner-plain-copy';
+  var BUILD = '2026-07-06-bi-guide-banner-permission-label';
 
 
 
@@ -3370,9 +3370,11 @@ window.BiAnnualPanel = (function () {
       '">' +
       '<strong style="color:' +
       profile.titleColor +
-      ';line-height:1.5">' +
-      profile.headline +
-      '</strong><br>' +
+      ';line-height:1.55;display:block">' +
+      '<span style="font-size:0.88em;font-weight:600">【ログイン中のあなたのアカウント権限】</span><br>' +
+      '<span style="font-size:1.05em">' +
+      esc(profile.permissions.join(' / ')) +
+      '</span></strong><br>' +
       '<p style="margin:10px 0 0;font-size:0.92em;color:' +
       profile.bodyColor +
       ';line-height:1.5">' +
@@ -3386,11 +3388,13 @@ window.BiAnnualPanel = (function () {
   function loginRoleProfile() {
     var canEvaluate = !!state.isEvaluator;
     var canAggregate = !!state.isAdmin;
+    var permissions = ['提案を出す'];
+    if (canEvaluate) permissions.push('評価・承認');
+    if (canAggregate) permissions.push('年次ポイント集計');
     if (canEvaluate && canAggregate) {
       return {
         key: 'evaluator_admin',
-        headline: 'このアカウントでは、提案の申請・評価・年次集計が行えます。',
-        hint: '評価者かつ集計担当向けのアカウントです。',
+        permissions: permissions,
         bg: '#f5f3ff',
         border: '#c4b5fd',
         titleColor: '#5b21b6',
@@ -3400,8 +3404,7 @@ window.BiAnnualPanel = (function () {
     if (canEvaluate) {
       return {
         key: 'evaluator',
-        headline: 'このアカウントでは、提案の申請と評価が行えます。',
-        hint: '評価者用の個人アカウントです。',
+        permissions: permissions,
         bg: '#faf7f3',
         border: '#e7d5c4',
         titleColor: '#78350f',
@@ -3411,8 +3414,7 @@ window.BiAnnualPanel = (function () {
     if (canAggregate) {
       return {
         key: 'admin',
-        headline: 'このアカウントでは、提案の申請と年次集計が行えます。',
-        hint: '集計担当（管理者）向けのアカウントです。',
+        permissions: permissions,
         bg: '#f0fdf4',
         border: '#86efac',
         titleColor: '#166534',
@@ -3421,8 +3423,7 @@ window.BiAnnualPanel = (function () {
     }
     return {
       key: 'shared',
-      headline: 'このアカウント（共有ID）では、提案の申請が行えます。',
-      hint: '組織の共有アカウントです。',
+      permissions: permissions,
       bg: '#eff6ff',
       border: '#bfdbfe',
       titleColor: '#1e3a8a',
