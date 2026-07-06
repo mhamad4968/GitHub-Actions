@@ -11,7 +11,9 @@ const file = path.join(root, 'docs/runbooks/736-july-2026-schedule.md');
 const text = readFileSync(file, 'utf8');
 
 const required = [
-  { id: 'PH1b-7/11', pattern: /7\/11.*PH1b|PH1b.*7\/11/ },
+  { id: 'PH1c-7/7-9', pattern: /7\/7.*7\/9|7\/7–7\/9/ },
+  { id: 'PH1c-7/11', pattern: /7\/11.*PH1c|PH1c.*7\/11/ },
+  { id: 'PH1b-frozen', pattern: /PH1b.*凍結|凍結.*PH1b/ },
   { id: 'PH1a', pattern: /PH1a/ },
   { id: 'Phase0c', pattern: /Phase 0c/ },
   { id: 'SKYSEA-7月', pattern: /SKYSEA.*着手なし|着手なし.*SKYSEA/ },
