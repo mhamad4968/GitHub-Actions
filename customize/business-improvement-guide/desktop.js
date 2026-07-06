@@ -6,7 +6,7 @@
 
   /** 業務改善 ver.02 — ご利用ガイド */
 
-  var BUILD = '2026-07-06-bi-guide-banner-bullet-list';
+  var BUILD = '2026-07-06-bi-guide-banner-plain-copy';
 
 
 
@@ -2112,12 +2112,12 @@
       '<div style="margin:10px 0 0;font-size:0.92em;line-height:1.7;color:' +
       profile.bodyColor +
       '">' +
-      '<div style="margin:0 0 4px">・下の<strong>「提案を出す」</strong>から申請を始められます。</div>';
+      '<div style="margin:0 0 4px">・新しい提案は、下の<strong>「提案を出す」</strong>ボタンから始められます。</div>';
     if (n > 0) {
       bullets +=
-        '<div style="margin:0;color:#dc2626;font-weight:700">・未申請案件が ' +
+        '<div style="margin:0;color:#dc2626;font-weight:700">・申請がまだの提案が ' +
         n +
-        ' 件あります。申請してください。</div>';
+        ' 件あります。内容を確認して、申請してください。</div>';
     }
     bullets += '</div>';
     return (
@@ -2136,7 +2136,7 @@
       '<p style="margin:10px 0 0;font-size:0.92em;color:' +
       profile.bodyColor +
       ';line-height:1.5">' +
-      'ステータスごとの表を見て申請状況を確認してください。' +
+      '下の件数表で、あなたの提案の進み具合（未申請・承認待ち・完了など）を確認できます。' +
       '</p>' +
       bullets +
       '</div>'
@@ -2149,8 +2149,7 @@
     if (canEvaluate && canAggregate) {
       return {
         key: 'evaluator_admin',
-        headline:
-          '「提案を出す」「評価・承認する」「年次ポイント集計」ができるアカウントでログインしています。',
+        headline: 'このアカウントでは、提案の申請・評価・年次集計が行えます。',
         hint: '評価者かつ集計担当向けのアカウントです。',
         bg: '#f5f3ff',
         border: '#c4b5fd',
@@ -2161,8 +2160,7 @@
     if (canEvaluate) {
       return {
         key: 'evaluator',
-        headline:
-          '「提案を出す」と「評価・承認する」ができるアカウントでログインしています。',
+        headline: 'このアカウントでは、提案の申請と評価が行えます。',
         hint: '評価者用の個人アカウントです。',
         bg: '#faf7f3',
         border: '#e7d5c4',
@@ -2173,8 +2171,7 @@
     if (canAggregate) {
       return {
         key: 'admin',
-        headline:
-          '「提案を出す」と「年次ポイント集計」ができるアカウントでログインしています。',
+        headline: 'このアカウントでは、提案の申請と年次集計が行えます。',
         hint: '集計担当（管理者）向けのアカウントです。',
         bg: '#f0fdf4',
         border: '#86efac',
@@ -2184,7 +2181,7 @@
     }
     return {
       key: 'shared',
-      headline: '「提案を出す」ができるアカウントでログインしています。',
+      headline: 'このアカウント（共有ID）では、提案の申請が行えます。',
       hint: '組織の共有アカウントです。',
       bg: '#eff6ff',
       border: '#bfdbfe',
