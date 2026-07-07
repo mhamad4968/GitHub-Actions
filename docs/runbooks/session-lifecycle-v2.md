@@ -198,6 +198,8 @@ npm run cio:checkpoint:rollup -- --keep 3
 
 **R-SESS-08（2026-07-06 GO）**: レーン **GO 受け入れ / deploy SUCCESS** 時点で **spec · report · kintone-apps** を **partial commit 可**（夕方 B1 塊回避 · #S-CLOSE-03）。699 UX は **R-BI-04**（§41 確定 → 1 deploy）を優先。
 
+**R-LANE-PATCH-01（2026-07-07 GO · #R-SESS-09）**: GO **後**の機能追補も **§41 で1セット確定 → 1 deploy**（674 取消/595 解放型の段階 deploy 禁止）。**R-BI-04** と併記。
+
 **partial でも必須**: checkpoint `次の1手` / `Git` + handoff-log 末尾ブロック（**Git** キー含む）。
 
 **full でも必須**: push まで（`close-git` 内包）。

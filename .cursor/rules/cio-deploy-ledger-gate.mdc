@@ -41,6 +41,10 @@ npm run verify:rag-mirror-canonical
 
 **699 ログイン UX（R-BI-04 / #R699-BANNER-01）**: §41 で文案1セット確定 → **1 deploy**（複数回 deploy 禁止）。
 
+**lane 追補（R-LANE-PATCH-01 / #R-SESS-09 · 2026-07-07 GO）**: GO 後の追補（674 取消・595 等）も **§41 で差分1セット確定 → 1 deploy**。本日の 674 **249→254 連続 deploy は禁止例**。
+
+**kintone-apps garble（R-SEC-02 / #S674-DEPLOY-01）**: pre-commit **`cio-kintone-apps-garble-check.mjs --staged`** — `BUILD=` / `rev **` 混在行をブロック。
+
 **セッション内で複数 app deploy** した場合は **各 appId ごとに sync** してから上記 verify を **commit 前に 1 回**。
 
 ## 禁止

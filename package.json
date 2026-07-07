@@ -577,6 +577,7 @@
     "verify:ceo-report-hooks-e2e": "node scripts/verify-ceo-report-hooks-e2e.mjs",
     "cio:report-format-check": "node scripts/cio-report-format-check.mjs",
     "cio:kintone-apps-garble-check": "node scripts/cio-kintone-apps-garble-check.mjs",
+    "cio:checkpoint-git-precommit-stamp": "node scripts/cio-checkpoint-git-precommit-stamp.mjs",
     "cio:chat-report-selfcheck": "node scripts/cio-chat-report-selfcheck.mjs",
     "cio:report-verify-response": "node scripts/cio-chat-report-selfcheck.mjs --require-ceo-block --strict-head --require-v2 --require-a1",
     "cio:selfcheck:test": "node scripts/cio-selfcheck-smoke.mjs",

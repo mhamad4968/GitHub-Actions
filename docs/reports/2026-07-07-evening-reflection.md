@@ -56,13 +56,17 @@
 | **#S-CHECKPOINT-01** | S | `cio:session:close-git` 前に **checkpoint Git 行を `git rev-parse --short HEAD` で上書き**する 1 行 hook | 低 | ○ |
 | **#D674-OPS-01** | D | 担当者向け **「登録ミス取消の使い方」** を §4.10.7 直下に 5 行 FAQ（削除ボタンが無い理由） | 低 | 手動 |
 
-### 承認状態
+### 承認状態（2026-07-07 19:40 浜田「すべて承認」）
 
 | ID | 状態 |
 |----|------|
-| **#R674-LINK-01** | **自律実施済**（§4.10.7 連携チェック行） |
-| **#D674-OPS-01** | **自律実施済**（§4.10.7 FAQ 4 行） |
-| その他 | **承認待ち**（2026-07-07 締め） |
+| **#R674-LINK-01** · **#D674-OPS-01** | **GO 済**（`6ed26bd`） |
+| **#S674-DEPLOY-01** | **GO 済** → R-SEC-02 既存 |
+| **#R-SESS-09** | **GO 済** → R-LANE-PATCH-01 |
+| **#S-CHECKPOINT-01** | **GO 済** → pre-commit stamp |
+| **朝報キュー** | **GO 済** → `morning-prep-missing-day.md` |
+
+実施正本: `docs/approved-changes/2026-07-07-evening-improvements-hamada-go.md`
 
 ---
 
