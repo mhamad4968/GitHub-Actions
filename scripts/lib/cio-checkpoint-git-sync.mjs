@@ -12,8 +12,8 @@ const GIT_LINE_RE = /\*\*Git\*\*:\s*\*\*`([0-9a-f]+)`\*\*\s*=\s*`origin\/main`/i
 export function readCheckpointGitHead(root) {
   const p = path.join(root, CHECKPOINT_REL);
   if (!fs.existsSync(p)) return null;
-  const head = fs.readFileSync(p, 'utf8').slice(0, 1200);
-  const m = head.match(GIT_LINE_RE);
+  const text = fs.readFileSync(p, 'utf8');
+  const m = text.match(GIT_LINE_RE);
   return m ? m[1] : null;
 }
 
