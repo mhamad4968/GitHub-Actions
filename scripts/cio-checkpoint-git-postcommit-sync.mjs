@@ -54,6 +54,11 @@ function main() {
   spawnSync('git', ['add', CHECKPOINT_REL], { cwd: root, stdio: 'inherit' });
 
   if (isCheckpointSyncCommit) {
+    spawnSync('git', ['commit', '--amend', '--no-edit'], {
+      cwd: root,
+      encoding: 'utf8',
+      env: { ...process.env, CIO_POST_COMMIT_CHECKPOINT_SYNC: '1' },
+    });
     amendCheckpointGitLine();
     console.log(`[cio-checkpoint-git-postcommit-sync] OK amend Git → \`${gitShortHead(root)}\``);
     return;
