@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * post-commit — checkpoint-latest.md が含まれる commit の **Git** 行を HEAD に同期（R44）
- * amend 後 hash が変わるため、必要なら follow-up commit を 1 回だけ作成。
+ * chore(checkpoint) は amend で自己参照まで収束。それ以外は follow-up を 1 回。
  */
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
@@ -15,6 +15,20 @@ import {
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
+function amendCheckpointGitLine() {
+  for (let i = 0; i < 3; i += 1) {
+    const amended = gitShortHead(root);
+    if (amended === readCheckpointGitHead(root)) break;
+    updateCheckpointGitHead(root, { hash: amended, suffix: 'push 済' });
+    spawnSync('git', ['add', CHECKPOINT_REL], { cwd: root, stdio: 'inherit' });
+    spawnSync('git', ['commit', '--amend', '--no-edit'], {
+      cwd: root,
+      encoding: 'utf8',
+      env: { ...process.env, CIO_POST_COMMIT_CHECKPOINT_SYNC: '1' },
+    });
+  }
+}
+
 function main() {
   if (process.env.CIO_POST_COMMIT_CHECKPOINT_SYNC === '1') return;
 
@@ -22,7 +36,8 @@ function main() {
     cwd: root,
     encoding: 'utf8',
   }).stdout?.trim();
-  if (subject && /^chore\(checkpoint\): sync Git line/i.test(subject)) return;
+  const isCheckpointSyncCommit =
+    subject && /^chore\(checkpoint\): sync Git line/i.test(subject);
 
   const files = spawnSync('git', ['diff-tree', '--no-commit-id', '--name-only', '-r', 'HEAD'], {
     cwd: root,
@@ -37,6 +52,12 @@ function main() {
 
   updateCheckpointGitHead(root, { hash: head, suffix: 'push 済' });
   spawnSync('git', ['add', CHECKPOINT_REL], { cwd: root, stdio: 'inherit' });
+
+  if (isCheckpointSyncCommit) {
+    amendCheckpointGitLine();
+    console.log(`[cio-checkpoint-git-postcommit-sync] OK amend Git → \`${gitShortHead(root)}\``);
+    return;
+  }
 
   const follow = spawnSync(
     'git',
