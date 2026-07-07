@@ -18,6 +18,12 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 function main() {
   if (process.env.CIO_POST_COMMIT_CHECKPOINT_SYNC === '1') return;
 
+  const subject = spawnSync('git', ['log', '-1', '--pretty=format:%s'], {
+    cwd: root,
+    encoding: 'utf8',
+  }).stdout?.trim();
+  if (subject && /^chore\(checkpoint\): sync Git line/i.test(subject)) return;
+
   const files = spawnSync('git', ['diff-tree', '--no-commit-id', '--name-only', '-r', 'HEAD'], {
     cwd: root,
     encoding: 'utf8',
