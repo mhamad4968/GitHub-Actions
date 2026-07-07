@@ -26,11 +26,11 @@
       "note": null
     },
     "674": {
-      "build": "2026-06-23-674-dept-master-sort-no",
-      "fileKey": "4b9672c8-4166-49f1-832a-81df9a92e783",
-      "revision": "247",
-      "relPath": ".kintone-deploy/upload-674.js",
-      "deployedAt": "2026-06-29T09:29:58.536Z",
+      "build": "2026-07-07-674-cancel-unlink-595",
+      "fileKey": "cf93f3a0-f217-4ec1-8d04-fc5fb6eec50f",
+      "revision": "254",
+      "relPath": "customize/new-pc-ledger-v1/desktop.js",
+      "deployedAt": "2026-07-07T10:23:47.530Z",
       "note": null
     },
     "677": {

@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-06-23-674-dept-master-sort-no';
+  const BUILD = '2026-07-07-674-cancel-unlink-595';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -165,7 +165,29 @@
   const ENV_PC_INV_PERIOD_START = 'PC_INVENTORY_PERIOD_START';
   const ENV_PC_INV_PERIOD_END = 'PC_INVENTORY_PERIOD_END';
   const PC_STATUS_DISPOSED_674 = '廃棄';
+  const PC_STATUS_CANCELLED_674 = '取消';
   const PC_STATUS_IN_USE_674 = '利用中';
+
+  /** 廃棄・取消 — 採番・671・JBIS 重複等の「稼働対象外」 */
+  function buildPcStatusActiveOnlyQuery674() {
+    return (
+      FC_PC_STATUS +
+      ' not in ("' +
+      escapeQueryValue(PC_STATUS_DISPOSED_674) +
+      '", "' +
+      escapeQueryValue(PC_STATUS_CANCELLED_674) +
+      '")'
+    );
+  }
+
+  function isPcStatusInactive674(status) {
+    const s = String(status || '').trim();
+    return s === PC_STATUS_DISPOSED_674 || s === PC_STATUS_CANCELLED_674;
+  }
+
+  function isPcStatusCancelled674(status) {
+    return String(status || '').trim() === PC_STATUS_CANCELLED_674;
+  }
   const FC_VPN_ID = 'vpn_id';
   const FC_VPN_PW = 'vpn_pw';
   const FULL_RESET_FIELD_CODES_674 = [
@@ -831,7 +853,9 @@
     const q =
       'account_type in ("' +
       escapeQueryValue(TYPE_PERSONAL) +
-      '") and pc_status not in ("廃棄") and ' +
+      '") and ' +
+      buildPcStatusActiveOnlyQuery674() +
+      ' and ' +
       '(pc_name like "' +
       escU +
       '" or pc_name like "' +
@@ -874,7 +898,7 @@
     if (!record) return Promise.resolve();
     const type = record[FC_ACCOUNT_TYPE]?.value || '';
     const st = String(record[FC_PC_STATUS]?.value || '').trim();
-    if (type !== TYPE_PERSONAL || st === '廃棄') return Promise.resolve();
+    if (type !== TYPE_PERSONAL || isPcStatusInactive674(st)) return Promise.resolve();
     const pcn = trimmedScalarValue674(record, FC_PC_NAME);
     const core = extractPersonalJbisCore674(pcn);
     if (!core) return Promise.resolve();
@@ -1971,7 +1995,7 @@
    */
   function fetchMaxPcSerial674(kind) {
     const appId = kintone.app.getId();
-    const notDisposed = 'pc_status not in ("' + escapeQueryValue(STATUS_AFTER_REPLACE_OLD_674) + '") and ';
+    const notDisposed = buildPcStatusActiveOnlyQuery674() + ' and ';
     const serialScope =
       (kind === 'personal'
         ? 'account_type in ("' + escapeQueryValue(TYPE_PERSONAL) + '") and '
@@ -2038,7 +2062,7 @@
    */
   function fetchNextFreePersonalJbisSerial674() {
     const appId = kintone.app.getId();
-    const notDisposed = 'pc_status not in ("' + escapeQueryValue(STATUS_AFTER_REPLACE_OLD_674) + '") and ';
+    const notDisposed = buildPcStatusActiveOnlyQuery674() + ' and ';
     const nameScope =
       'account_type in ("' + escapeQueryValue(TYPE_PERSONAL) + '") and ' + notDisposed;
 
@@ -2082,7 +2106,7 @@
    */
   function fetchNextFreeSharedSjbisSerial674() {
     const appId = kintone.app.getId();
-    const notDisposed = 'pc_status not in ("' + escapeQueryValue(STATUS_AFTER_REPLACE_OLD_674) + '") and ';
+    const notDisposed = buildPcStatusActiveOnlyQuery674() + ' and ';
     const nameScope =
       'account_type in ("' + escapeQueryValue(TYPE_SHARED) + '") and ' + notDisposed;
 
@@ -3769,7 +3793,7 @@
 
   /**
    * 595 入力支援（モーダル・明示ボタン・利用者名の 595 候補ドロップダウン）が有効な条件の単一正本。
-   * `docs/plans/2026-04-21-new-pc-ledger-spec.md` §4.1a（個人×保管は 595 連携不要）・§4.4（個人用自動生成は pc_status≠保管）・§4.2.0。
+   * `docs/plans/2026-04-21-new-pc-ledger-spec.md` §4.1a（個人×保管は 595 連携不要）・§4.4（個人用自動生成は pc_status≠保管）・§4.2.0・§4.10.7（廃棄・取消は 595 リンク解除）。
    * CIO 運用: 仕様乖離時は本関数とコメントを先に直し、分岐はここに集約する。
    * @param {object} record kintone record（`get()` の holder.record を想定）
    * @returns {boolean}
@@ -3778,6 +3802,7 @@
     if (!record) return false;
     if (readAccountTypeLive674(record) !== TYPE_PERSONAL) return false;
     if (isPcStatusStorage674(record)) return false;
+    if (isPcStatusInactive674(readPcStatusLive674(record))) return false;
     return true;
   }
 
@@ -4459,7 +4484,7 @@
     if (!st) return false;
     if (st.account_type !== TYPE_SHARED && st.account_type !== TYPE_JR) return false;
     if (!st.m365_master_record_id || !st.pc_name) return false;
-    if (st.pc_status === '廃棄') return false;
+    if (isPcStatusInactive674(st.pc_status)) return false;
     return true;
   }
 
@@ -4499,7 +4524,9 @@
       return loadEnv670Map().then(function (envMap) {
         const lim = parseInt(envMap.M365_LICENSE_LIMIT || '5', 10) || 5;
         const q =
-          '(account_type in ("共有", "JR端末")) and pc_status not in ("廃棄") and m365_master_record_id = ' +
+          '(account_type in ("共有", "JR端末")) and ' +
+          buildPcStatusActiveOnlyQuery674() +
+          ' and m365_master_record_id = ' +
           midStr +
           ' limit 500';
         return kintoneApiGet('/k/v1/records.json', {
@@ -5089,9 +5116,9 @@
 
   /**
    * 595 の pc_ledger_v1_list に674 $id を追記・削除する（個人のみ）。
-   * - 個人（非保管）: mail 優先、無ければ emp_id で595を引く。リンクは最大2台。
+   * - 個人（利用中）: mail 優先、無ければ emp_id で595を引く。リンクは最大2台。
+   * - 個人（廃棄・取消・保管）: mail + emp_id で595から当該674 $id を削除試行。
    * - 共有・JR: 社員に紐付けないため595へ追記しない。削除は mail のみ試行（個人→共有で mail が残る場合の名残除去）。
-   * - 上記以外（保管の個人・NAS等）: mail + emp_id で削除試行。
    */
   function sync595PcLedgerV1Link674(event) {
     const id674 = String(
@@ -5201,6 +5228,11 @@
   function shouldBeDisposedStatus674(status) {
     const s = String(status || '').trim();
     return s.includes('廃棄') || s.includes('除却') || s.includes('廃止');
+  }
+
+  function shouldBeInactiveForReplace674(status) {
+    if (isPcStatusCancelled674(status)) return true;
+    return shouldBeDisposedStatus674(status);
   }
 
   function getCurrent674RecordId674() {
@@ -5356,7 +5388,8 @@
     const base =
       'account_type in ("' +
       escapeQueryValue(TYPE_PERSONAL) +
-      '") and pc_status not in ("廃棄")';
+      '") and ' +
+      buildPcStatusActiveOnlyQuery674();
     const qUser =
       base + ' and user_name = "' + esc + '" order by $id desc limit 20';
     const fields = ['$id', FC_PC_NAME, FC_USER_NAME, FC_MAIL, FC_EMP_ID];
@@ -5762,6 +5795,87 @@
     return btn;
   }
 
+  function createMisregistrationCancelHeaderButton674(event) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = '登録ミス取消';
+    btn.setAttribute('aria-label', '登録ミスとしてステータスを取消に変更する');
+    btn.style.cssText =
+      'margin:4px 8px 4px 0;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer;border-radius:6px;' +
+      'border:1px solid #b45309;background:linear-gradient(165deg,#fcd34d 0%,#f59e0b 55%,#d97706 100%);color:#78350f;' +
+      'box-shadow:0 2px 8px rgba(217,119,6,.35);letter-spacing:.02em;';
+    btn.addEventListener('click', function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      setTimeout(function () {
+        runMisregistrationCancel674(event);
+      }, 0);
+    });
+    return btn;
+  }
+
+  function runMisregistrationCancel674(event) {
+    const rec = event.record;
+    const rid = String((rec.$id && rec.$id.value) || '').trim();
+    if (!rid) {
+      window.alert('保存済みレコードでのみ実行できます。');
+      return Promise.resolve();
+    }
+    if (isPcStatusInactive674(readPcStatusLive674(rec))) {
+      window.alert('すでに廃棄または取消の状態です。');
+      return Promise.resolve();
+    }
+    const ok = window.confirm(
+      'このレコードを **登録ミス取消** にします。\n\n' +
+        '・ステータスを「取消」に変更（物理削除はしません）\n' +
+        '・一覧の通常ビューからは非表示になります\n' +
+        '・M365 割当がある場合は解放します\n' +
+        '・社員マスタ（595）の PC 台帳リンクも解除します\n\n' +
+        '続行しますか？',
+    );
+    if (!ok) return Promise.resolve();
+
+    const prev = snapshotBeforeEdit674[rid] || extractState674(rec);
+    const stamp = '[登録ミス取消 ' + todayYmd674() + ']';
+    const notePrev = trimmedScalarValue674(rec, FC_NOTE);
+    const noteNext = notePrev ? notePrev + '\n' + stamp : stamp;
+    const appId = kintone.app.getId();
+
+    return kintoneApiGet('/k/v1/record.json', { app: appId, id: rid })
+      .then(function (getResp) {
+        const rev = getResp.record && getResp.record.$revision && getResp.record.$revision.value;
+        return kintoneApiPut('/k/v1/record.json', {
+          app: appId,
+          id: rid,
+          revision: rev,
+          record: {
+            [FC_PC_STATUS]: { value: PC_STATUS_CANCELLED_674 },
+            [FC_NOTE]: { value: noteNext },
+          },
+        });
+      })
+      .then(function () {
+        return kintoneApiGet('/k/v1/record.json', { app: appId, id: rid });
+      })
+      .then(function (getResp2) {
+        snapshotBeforeEdit674[rid] = prev;
+        const fakeEvent = {
+          type: 'app.record.edit.submit.success',
+          record: getResp2.record,
+          recordId: rid,
+        };
+        return runPostSaveHooks674(fakeEvent);
+      })
+      .then(function () {
+        window.alert('登録ミス取消が完了しました（ステータス: 取消）。');
+        window.location.href = '/k/' + appId + '/show#record=' + rid;
+      })
+      .catch(function (e) {
+        console.error('[NEW-PC-LEDGER-V1] 登録ミス取消', e);
+        window.alert('登録ミス取消に失敗しました: ' + (e && e.message ? e.message : String(e)));
+      });
+  }
+
   function getOneRecordApp674(app, query, fields) {
     return kintoneApiGet('/k/v1/records.json', { app: app, query: query, fields: fields }).then(function (r) {
       return r.records && r.records.length ? r.records[0] : null;
@@ -5953,8 +6067,8 @@
         if (!payload0) return null;
         const src0 = payload0.record;
         const st0 = (src0[FC_PC_STATUS] && src0[FC_PC_STATUS].value) || '';
-        if (shouldBeDisposedStatus674(st0)) {
-          window.alert('このレコードはすでに廃棄等の状態です。PC買替は実行できません。');
+        if (shouldBeInactiveForReplace674(st0)) {
+          window.alert('このレコードはすでに廃棄・取消等の状態です。PC買替は実行できません。');
           return null;
         }
         return claimPcNumberFrom596ForReplacementApi674().then(function (c) {
@@ -6567,6 +6681,14 @@ ${bodyInner}\
         if (isPersonal595AssistEnabled674(event.record) && event.record && event.record[FC_NPL_TRANSFER_MANUAL]) {
           wrapper.appendChild(createTransferDisposeHeaderButton674());
         }
+        if (
+          event.record &&
+          event.record.$id &&
+          event.record.$id.value &&
+          !isPcStatusInactive674(readPcStatusLive674(event.record))
+        ) {
+          wrapper.appendChild(createMisregistrationCancelHeaderButton674(event));
+        }
         if (type === TYPE_SHARED || type === TYPE_JR) {
           wrapper.appendChild(
             createInputAssistHeaderButton674(
@@ -6580,7 +6702,7 @@ ${bodyInner}\
 
       wrapper.appendChild(createGenerateButton('🔴 全フィールドリセット', '#dc3545', () => {
         const ok = window.confirm(
-          'PC名・シリアル・利用者名・所属・各種アカウント・SKYSEA・備考など、入力欄をまとめて空にします。種別・ステータス（利用中/保管/廃棄）・作成日時（JST）は変えません。続行しますか？',
+          'PC名・シリアル・利用者名・所属・各種アカウント・SKYSEA・備考など、入力欄をまとめて空にします。種別・ステータス（利用中/保管/廃棄/取消）・作成日時（JST）は変えません。続行しますか？',
         );
         if (!ok) return;
         runClearAccountFields();
@@ -6729,6 +6851,7 @@ ${bodyInner}\
     applyM365MasterRecordIdFieldUi674(event.record, editable ? 'editable' : 'detail');
     syncVpnFieldUiToForm674(event.record, editable ? 'editable' : 'detail');
     showJrBannerIfNeeded(event.record);
+    ensure674PcStatusBanner674(event.record);
     scheduleInjectButtons674(event);
     scheduleInject595FieldAdjacent674(event.record, editable);
     if (editable) {
@@ -7410,7 +7533,7 @@ ${bodyInner}\
     { value: TYPE_OTHER, label: '📦 その他' },
   ];
 
-  /** PCステータス（全選択＝フィルタなし。保管・廃棄も検索対象に含める） */
+  /** PCステータス（全選択＝フィルタなし。取消は一覧対象外のためチップなし） */
   const SEARCH674_STATUS_CHIPS = [
     { value: PC_STATUS_IN_USE_674, label: '利用中' },
     { value: PC_STATUS_STORAGE, label: '保管' },
@@ -7439,6 +7562,13 @@ ${bodyInner}\
       })
       .join(', ');
     parts.push('(' + FC_PC_STATUS + ' in (' + quoted + '))');
+  }
+
+  /** 取消は日常一覧から常に除外 */
+  function append674HideCancelled674(parts) {
+    parts.push(
+      '(' + FC_PC_STATUS + ' not in ("' + escape674QueryLike(PC_STATUS_CANCELLED_674) + '"))',
+    );
   }
 
   /** §4.2.3a / 仕様ドロップダウンと一致 */
@@ -7859,6 +7989,7 @@ ${bodyInner}\
       parts.push('(' + FC_NPL_TRANSFER_MANUAL + ' in ("' + escape674QueryLike(FC_NPL_TRANSFER_MANUAL_OPT) + '"))');
     }
     append674StatusFilter674(parts, selectedStatuses674);
+    append674HideCancelled674(parts);
     if (cbFilterBoxes674) {
       for (let fi = 0; fi < SEARCH674_DONE_CB_FILTERS.length; fi++) {
         const defF = SEARCH674_DONE_CB_FILTERS[fi];
@@ -8576,8 +8707,15 @@ ${bodyInner}\
         const valSt = b.dataset.statusValue || '';
         const onSt = selectedStatuses.has(valSt);
         b.setAttribute('aria-pressed', onSt ? 'true' : 'false');
-        b.style.background = onSt ? '#dcfce7' : '#fff';
-        b.style.borderColor = onSt ? '#15803d' : '#94a3b8';
+        if (valSt === PC_STATUS_DISPOSED_674) {
+          b.style.background = onSt ? '#f1f5f9' : '#fff';
+          b.style.borderColor = onSt ? '#64748b' : '#94a3b8';
+          b.style.color = onSt ? '#475569' : '#0f172a';
+        } else {
+          b.style.background = onSt ? '#dcfce7' : '#fff';
+          b.style.borderColor = onSt ? '#15803d' : '#94a3b8';
+          b.style.color = '#0f172a';
+        }
       });
     }
 
@@ -8637,7 +8775,16 @@ ${bodyInner}\
       selSort.value = '';
       syncChips674();
       wrap.setAttribute('data-npl-synced-query', '');
-      navigate674ListWithQuery('', '', '');
+      const q = build674IndexListQuery(
+        '',
+        selectedTypes,
+        selectedSkysea,
+        false,
+        cbFilterBoxes,
+        null,
+        selectedStatuses,
+      );
+      navigate674ListWithQuery(q, '', '');
     });
     inpKw.addEventListener('keydown', function (ev) {
       if (ev.key === 'Enter') {
@@ -8716,6 +8863,154 @@ ${bodyInner}\
   }
 
   // 一覧では所属ヘルプを出さない（§4.2.0b 詳細・新規のみ）
+  let npl674IndexStatusById674 = Object.create(null);
+
+  function ensure674IndexStatusStyles674() {
+    if (document.getElementById('npl674-index-status-styles')) return;
+    const st = document.createElement('style');
+    st.id = 'npl674-index-status-styles';
+    st.textContent =
+      '.recordlist-gaia tr.npl674-row-cancelled,.recordlist-gaia tr.npl674-row-cancelled td{background:#fef3c7!important;}' +
+      '.recordlist-gaia tr.npl674-row-cancelled:hover,.recordlist-gaia tr.npl674-row-cancelled:hover td{background:#fde68a!important;}' +
+      '.recordlist-gaia tr.npl674-row-disposed,.recordlist-gaia tr.npl674-row-disposed td{background:#f1f5f9!important;color:#64748b!important;}' +
+      '.recordlist-gaia tr.npl674-row-disposed:hover,.recordlist-gaia tr.npl674-row-disposed:hover td{background:#e2e8f0!important;}';
+    document.head.appendChild(st);
+  }
+
+  function extract674IndexRecordIdFromRow674(tr) {
+    const a = tr.querySelector('a[href*="record="]');
+    if (!a) return '';
+    const m = String(a.getAttribute('href') || '').match(/record=(\d+)/);
+    return m ? m[1] : '';
+  }
+
+  function paint674IndexListRows674() {
+    ensure674IndexStatusStyles674();
+    const rows = document.querySelectorAll('.recordlist-gaia tbody tr, tr.recordlist-row-gaia');
+    rows.forEach(function (tr) {
+      tr.classList.remove('npl674-row-cancelled', 'npl674-row-disposed');
+      const id = extract674IndexRecordIdFromRow674(tr);
+      if (!id) return;
+      const st = npl674IndexStatusById674[id];
+      if (st === PC_STATUS_CANCELLED_674) tr.classList.add('npl674-row-cancelled');
+      else if (st === PC_STATUS_DISPOSED_674) tr.classList.add('npl674-row-disposed');
+    });
+  }
+
+  function refresh674IndexStatusMap674() {
+    const app = kintone.app.getId();
+    const map = Object.create(null);
+    function page(offset) {
+      return kintone
+        .api(kintone.api.url('/k/v1/records', true), 'GET', {
+          app: app,
+          query: '$id > 0 order by $id asc limit 500 offset ' + offset,
+          fields: ['$id', FC_PC_STATUS],
+        })
+        .then(function (res) {
+          const recs = res.records || [];
+          recs.forEach(function (rec) {
+            const id = rec.$id && rec.$id.value;
+            const st = (rec[FC_PC_STATUS] && rec[FC_PC_STATUS].value) || '';
+            if (id) map[String(id)] = String(st);
+          });
+          if (recs.length >= 500) return page(offset + 500);
+        });
+    }
+    return page(0).then(function () {
+      npl674IndexStatusById674 = map;
+      paint674IndexListRows674();
+    });
+  }
+
+  function schedule674IndexStatusPaint674() {
+    refresh674IndexStatusMap674().catch(function (e) {
+      console.warn('[NEW-PC-LEDGER-V1] index status paint', e);
+    });
+    [300, 800, 1500].forEach(function (ms) {
+      setTimeout(paint674IndexListRows674, ms);
+    });
+  }
+
+  function ensure674PcStatusBanner674(record) {
+    const existing = document.getElementById('npl674-pc-status-banner');
+    if (existing) existing.remove();
+    if (!record) return;
+    const st = readPcStatusLive674(record);
+    if (!isPcStatusCancelled674(st) && st !== PC_STATUS_DISPOSED_674) return;
+    const banner = document.createElement('div');
+    banner.id = 'npl674-pc-status-banner';
+    if (isPcStatusCancelled674(st)) {
+      banner.style.cssText =
+        'margin:8px 12px;padding:12px 16px;background:#fef3c7;border:2px solid #d97706;border-radius:8px;' +
+        'color:#92400e;font-size:14px;font-weight:700;line-height:1.55;';
+      banner.textContent =
+        '⚠ 登録ミス取消 — このレコードは誤登録として取消されています（履歴保持・物理削除不可）。';
+    } else {
+      banner.style.cssText =
+        'margin:8px 12px;padding:12px 16px;background:#f1f5f9;border:2px solid #94a3b8;border-radius:8px;' +
+        'color:#475569;font-size:14px;font-weight:700;line-height:1.55;';
+      banner.textContent = 'このレコードは廃棄済みです。';
+    }
+    const mount =
+      document.querySelector('#new-pc-ledger-buttons') ||
+      document.querySelector('.gaia-argoui-app-toolbar') ||
+      document.querySelector('.layout-gaia');
+    if (mount && mount.parentNode) {
+      mount.parentNode.insertBefore(banner, mount.nextSibling);
+    } else {
+      document.body.insertBefore(banner, document.body.firstChild);
+    }
+  }
+
+  function ensure674IndexHidesCancelledOnLoad674() {
+    const read = read674IndexSearchQueryAndKw674();
+    const urlQuery = String(read.urlQuery || '').trim();
+    const nativeQ = String(read.urlNativeQ || '').trim();
+    const effectiveQ = urlQuery || nativeQ;
+    const st = parse674ListQueryToBarState674(effectiveQ);
+    const cancelHiddenRe = new RegExp(
+      FC_PC_STATUS + '\\s+not\\s+in\\s*\\([^)]*' + escape674QueryRegex674(escape674QueryLike(PC_STATUS_CANCELLED_674)) + '[^)]*\\)',
+    );
+    if (cancelHiddenRe.test(effectiveQ)) return;
+
+    const defaultStatuses = init674DefaultStatusSet674();
+    const defaultQ = build674IndexListQuery(
+      '',
+      new Set(),
+      new Set(),
+      false,
+      null,
+      null,
+      defaultStatuses,
+    );
+    if (!defaultQ) return;
+
+    if (!effectiveQ) {
+      navigate674ListWithQuery(defaultQ, '', '');
+      return;
+    }
+
+    if (!st.statuses.length) {
+      const merged =
+        '(' +
+        FC_PC_STATUS +
+        ' not in ("' +
+        escape674QueryLike(PC_STATUS_CANCELLED_674) +
+        '")) and ' +
+        effectiveQ;
+      let kw = '';
+      if (read.urlKwParam) {
+        try {
+          kw = decodeURIComponent(read.urlKwParam);
+        } catch (_e) {
+          kw = read.urlKwParam;
+        }
+      }
+      navigate674ListWithQuery(merged, kw, read.urlSort || '');
+    }
+  }
+
   function onRecordIndexShow674(event) {
     removeDeptHelpBanner();
     const staleGuide = document.getElementById('new-pc-ledger-input-guide');
@@ -8729,6 +9024,8 @@ ${bodyInner}\
     if (wSearch) wSearch.removeAttribute('data-npl-synced-query');
     schedule674IndexSearch();
     wire674IndexInventoryButtons674();
+    schedule674IndexStatusPaint674();
+    setTimeout(ensure674IndexHidesCancelledOnLoad674, 100);
     setTimeout(request674IndexSearchHydrateFromUrl674, 200);
     return event;
   }
@@ -8908,6 +9205,26 @@ ${bodyInner}\
       ['mobile.app.record.create.submit.success', 'mobile.app.record.edit.submit.success'],
       onSubmitSuccess674,
     );
+  }
+
+  /** §4.10.7 レコード物理削除禁止（アプリ権限 OFF + customize 二重ロック） */
+  const blockDeleteEvents674 = [
+    'app.record.detail.delete.submit',
+    'app.record.index.delete.submit',
+  ];
+  const blockDeleteMessage674 =
+    'PC台帳のレコードは削除できません。' +
+    '登録ミスは「登録ミス取消」またはステータス「取消」、PC終了は「廃棄」、退職後は595連動で「保管」に変更してください。' +
+    '（レコードは履歴として保持します）';
+
+  function onBlockDelete674(event) {
+    event.error = blockDeleteMessage674;
+    return event;
+  }
+
+  kintone.events.on(blockDeleteEvents674, onBlockDelete674);
+  if (typeof kintone.mobile !== 'undefined') {
+    kintone.events.on(['mobile.app.record.detail.delete.submit'], onBlockDelete674);
   }
 
   install674EmptyFieldFocusAssist674();
