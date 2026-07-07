@@ -38,9 +38,12 @@ export function readTopScoredTask(root) {
   if (!fs.existsSync(p)) return null;
   try {
     const data = JSON.parse(fs.readFileSync(p, 'utf8'));
+    if (data.topTask) return data.topTask;
     const tasks = data.tasks || data.ranked || [];
     if (!tasks.length) return null;
-    const sorted = [...tasks].sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
+    const sorted = [...tasks].sort(
+      (a, b) => (a.priority ?? 999) - (b.priority ?? 999) || (b.impact ?? 0) - (a.impact ?? 0),
+    );
     return sorted[0]?.text || null;
   } catch {
     return null;
