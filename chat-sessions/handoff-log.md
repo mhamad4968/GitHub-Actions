@@ -4278,6 +4278,22 @@ npm run cio:morning:ready
 
 **次の1手**: 浜田目視 · R63 commit（customize + kintone-apps + cio-live-builds）
 
-**触らない**: 736
+**触らない**: 736 implement（7/11 前 GO）
+
+---
+
+### 2026-07-07 19:57 JST — **719 一覧印刷文字拡大 · commit/push 締め**
+
+**要約**:
+- [719](https://jbis-kintone.cybozu.com/k/719/) — 一覧印刷 A4 **12pt 級**・Excel — 浜田 OK
+- BUILD `2026-07-07-wifi-ssid-dash-list-print-scale2` rev **12**
+- 仕様 `docs/plans/2026-06-14-wifi-ssid-kintone-spec.md` §7.5 · Q15
+- **736 PH1c** Q0+UX 草案 · **PH1b 部分** 草案 — commit 同梱
+
+**次の1手**: **7/8–9** **736 PH1c** GO review · **698/700** 目視 · **699** 受け入れ
+
+**触らない**: 736 implement · 688/677–679/SKYSEA
+
+**Git**: **`da0d2fa`** — push 実行中
 
 ---

@@ -464,7 +464,7 @@ OK → `partner_company` 入力欄の `readonly` を解除＋ `data-y678-partner
 
 | Rank | Task | 難易度 | Token | Impact | Priority |
 |------|------|--------|-------|--------|----------|
-| 1 | B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化） | 2/5 | 中 | 3/5 | 21 |
-| 2 | **7/7** **736 PH1c** たたき台 + Q0 · **698/700** 目視 FB · **699** | 2/5 | 中 | 3/5 | 21 |
+| 1 | **7/8–9** **736 PH1c** GO review（`docs/plans/2026-07-07-jikk | 2/5 | 低 | 3/5 | 16 |
+| 2 | B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化） | 2/5 | 中 | 3/5 | 21 |
 
 <!-- CIO-TASK-PRIORITY:AUTO:END -->
