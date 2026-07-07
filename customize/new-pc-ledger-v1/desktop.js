@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-07-07-674-cancel-unlink-595';
+  const BUILD = '2026-07-08-674-sanitize-orphan-native-q';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -7489,6 +7489,56 @@ ${bodyInner}\
   /** kintone 標準ヘッダー検索・一覧 URL が載せる **`?q=`**（当 customize の **`query`** とは別名） */
   const SEARCH674_KINTONE_NATIVE_Q_PARAM = 'q';
 
+  /**
+   * 削除済みフィールドの内部ID — 標準 `?q=` に残ると GAIA_IQ11（legacy_pc_name_594 系 2026-05 削除）
+   * @see docs/plans/2026-04-21-new-pc-ledger-spec.md §4.8c
+   */
+  const NPL674_ORPHAN_NATIVE_Q_FIELD_IDS = ['f13459900'];
+
+  function nativeQ674ReferencesOrphanField674(q) {
+    const s = String(q || '');
+    if (!s) return false;
+    for (let oi = 0; oi < NPL674_ORPHAN_NATIVE_Q_FIELD_IDS.length; oi++) {
+      if (s.indexOf(NPL674_ORPHAN_NATIVE_Q_FIELD_IDS[oi]) !== -1) return true;
+    }
+    return false;
+  }
+
+  /**
+   * 標準 `?q=` が削除済み内部IDを参照しているとき URL から除去して再読込（エラー画面回避）
+   * @returns {boolean} redirect した
+   */
+  function redirect674IfOrphanNativeQ674() {
+    try {
+      if (String(location.pathname || '').indexOf('/k/674') === -1) return false;
+      const u = new URL(location.href);
+      const qSearch = String(u.searchParams.get(SEARCH674_KINTONE_NATIVE_Q_PARAM) || '');
+      let qHash = '';
+      const hashQs = get674HashQueryString674(u.hash);
+      if (hashQs) {
+        try {
+          qHash = String(new URLSearchParams(hashQs).get(SEARCH674_KINTONE_NATIVE_Q_PARAM) || '');
+        } catch (_eH) {
+          qHash = '';
+        }
+      }
+      if (!nativeQ674ReferencesOrphanField674(qSearch) && !nativeQ674ReferencesOrphanField674(qHash)) {
+        return false;
+      }
+      u.searchParams.delete(SEARCH674_KINTONE_NATIVE_Q_PARAM);
+      strip674ListFilterParamsFromUrlHash674(u);
+      if (u.hash && /sort_0=f/i.test(u.hash)) {
+        u.hash = '';
+      }
+      location.replace(u.toString());
+      return true;
+    } catch (_e) {
+      return false;
+    }
+  }
+
+  redirect674IfOrphanNativeQ674();
+
   /** `localStorage.npl674debug=1` または hash に `npl674debug=1` のとき一覧検索同期でコンソールログ */
   function is674IndexSearchDebug674() {
     try {
@@ -9012,6 +9062,7 @@ ${bodyInner}\
   }
 
   function onRecordIndexShow674(event) {
+    if (redirect674IfOrphanNativeQ674()) return event;
     removeDeptHelpBanner();
     const staleGuide = document.getElementById('new-pc-ledger-input-guide');
     if (staleGuide) staleGuide.remove();
