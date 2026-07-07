@@ -1,23 +1,23 @@
 {
-  "scoredAt": "2026-07-06T12:25:00.000Z",
+  "scoredAt": "2026-07-07T08:47:45.931Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "**7/7** **736 PH1c** たたき台 + Q0 · **698/700** 目視 FB · **699** 受け入れ確認",
+  "topTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
   "tasks": [
-    {
-      "id": "checkpoint:**7/7**_**736_PH1c**_たたき台_+_Q0_·_**698/7",
-      "text": "**7/7** **736 PH1c** たたき台 + Q0 · **698/700** 目視 FB · **699** 受け入れ確認",
-      "source": "checkpoint",
-      "difficulty": 3,
-      "tokens": "中",
-      "tokenScore": 2,
-      "impact": 4,
-      "priority": 48,
-      "status": "pending"
-    },
     {
       "id": "backlog:B-MDFLOW:_**Markdown_ベースの開発フロー**（仕様・実装・レ",
       "text": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
       "source": "backlog",
+      "difficulty": 2,
+      "tokens": "中",
+      "tokenScore": 2,
+      "impact": 3,
+      "priority": 21,
+      "status": "pending"
+    },
+    {
+      "id": "checkpoint:**7/7**_**736_PH1c**_たたき台_+_Q0_·_**698/7",
+      "text": "**7/7** **736 PH1c** たたき台 + Q0 · **698/700** 目視 FB · **699** 受け入れ確認",
+      "source": "checkpoint",
       "difficulty": 2,
       "tokens": "中",
       "tokenScore": 2,

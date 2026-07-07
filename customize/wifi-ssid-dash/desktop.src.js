@@ -1,8 +1,8 @@
 (function () {
   "use strict";
 
-  /** 社内Wi-Fi管理台帳 ver.1 — 718 REST CRUD + 会議室掲示印刷（QR） */
-  var BUILD = "2026-06-14-wifi-ssid-dash-company-jbis";
+  /** 社内Wi-Fi管理台帳 ver.1 — 718 REST CRUD + 会議室掲示印刷（QR）+ 一覧印刷・Excel */
+  var BUILD = "2026-07-07-wifi-ssid-dash-list-print-scale2";
   var PRINT_COMPANY_NAME = "(株）J-BISメンテナンス";
 
   var APP_DB = 718;
@@ -44,6 +44,15 @@
     { key: "password_2", label: "PW②" },
     { key: "registered_date", label: "登録日" },
     { key: "updated_date", label: "更新日" },
+  ];
+
+  /** 一覧印刷・Excel 出力列（浜田 2026-07-07） */
+  var LIST_EXPORT_FIELDS = [
+    { key: "location_name", label: "拠点名" },
+    { key: "ssid_1", label: "SSID①" },
+    { key: "password_1", label: "SSID①のパスワード" },
+    { key: "ssid_2", label: "SSID②" },
+    { key: "password_2", label: "SSID②のパスワード" },
   ];
 
   var state = {
@@ -214,7 +223,9 @@
       ".wfs-modal h3{margin:0 0 12px;font-size:16px;}" +
       ".wfs-modal label{display:block;margin:8px 0;font-size:13px;}" +
       ".wfs-modal input,.wfs-modal textarea{width:100%;box-sizing:border-box;padding:6px;margin-top:4px;}" +
-      ".wfs-modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;}";
+      ".wfs-modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;}" +
+      "#wfs-print-portal{display:none;}" +
+      "@media print{#wfs-print-portal{display:block!important;position:absolute;left:0;top:0;width:100%;}body *{visibility:hidden!important;}#wfs-print-portal,#wfs-print-portal *{visibility:visible!important;}.wfs-root{display:none!important;}}";
     document.head.appendChild(st);
   }
 
@@ -244,6 +255,174 @@
       return state.sortDir === "asc" ? cmp : -cmp;
     });
     return rows;
+  }
+
+  /** 一覧印刷・Excel — 検索絞込後 · sort_no 昇順（台帳順） */
+  function listExportRows() {
+    var q = state.search.trim().toLowerCase();
+    return state.records
+      .filter(function (r) {
+        if (!q) return true;
+        return String(r.location_name || "").toLowerCase().indexOf(q) >= 0;
+      })
+      .sort(function (a, b) {
+        return Number(a.sort_no || 0) - Number(b.sort_no || 0);
+      });
+  }
+
+  function exportFieldValue(row, key) {
+    return String(row[key] || "").trim() || "—";
+  }
+
+  function buildListExportTableHtml(rows, title) {
+    var head = LIST_EXPORT_FIELDS.map(function (f, idx) {
+      var cls = "wfspr-list-th";
+      if (idx === 0) cls += " wfspr-list-th-loc";
+      else if (idx === 1 || idx === 2) cls += " wfspr-list-th-g1";
+      else cls += " wfspr-list-th-g2";
+      return '<th class="' + cls + '">' + esc(f.label) + "</th>";
+    }).join("");
+    var body = rows
+      .map(function (row, ri) {
+        var none = isEquipmentNone(row);
+        var trCls = "wfspr-list-tr" + (none ? " wfspr-list-tr-none" : "") + (ri % 2 === 1 ? " wfspr-list-tr-alt" : "");
+        return (
+          '<tr class="' + trCls + '">' +
+          LIST_EXPORT_FIELDS.map(function (f, idx) {
+            var tdCls = "wfspr-list-td";
+            if (idx === 0) tdCls += " wfspr-list-td-loc";
+            else if (idx === 2 || idx === 4) tdCls += " wfspr-list-td-pw";
+            else if (idx === 1 || idx === 3) tdCls += " wfspr-list-td-ssid";
+            return '<td class="' + tdCls + '">' + esc(exportFieldValue(row, f.key)) + "</td>";
+          }).join("") +
+          "</tr>"
+        );
+      })
+      .join("");
+    return (
+      '<div class="wfspr-list-doc">' +
+      '<header class="wfspr-list-header">' +
+      '<p class="wfspr-list-org">' +
+      esc(PRINT_COMPANY_NAME) +
+      "</p>" +
+      "<h1>" +
+      esc(title) +
+      "</h1>" +
+      '<p class="wfspr-list-meta">出力日: ' +
+      esc(todayJstYmd()) +
+      "　全 " +
+      rows.length +
+      " 拠点</p>" +
+      "</header>" +
+      '<div class="wfspr-list-table-wrap">' +
+      '<table class="wfspr-list-table"><thead><tr>' +
+      head +
+      "</tr></thead><tbody>" +
+      body +
+      "</tbody></table></div>" +
+      '<footer class="wfspr-list-foot">社内限り · パスワードの取扱いに注意してください</footer>' +
+      "</div>"
+    );
+  }
+
+  function listPrintStylesheet() {
+    return (
+      '@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap");' +
+      "*{box-sizing:border-box;}" +
+      'body{margin:0;padding:16px;background:#f1f5f9;font-family:"Noto Sans JP",Meiryo,system-ui,sans-serif;color:#0f172a;-webkit-print-color-adjust:exact;print-color-adjust:exact;}' +
+      ".wfspr-list-doc{max-width:100%;margin:0 auto;}" +
+      ".wfspr-list-header{background:linear-gradient(135deg,#1d4ed8 0%,#0d9488 100%);color:#fff;border-radius:14px;padding:24px 28px 20px;margin-bottom:14px;text-align:center;box-shadow:0 4px 14px rgba(29,78,216,.25);}" +
+      ".wfspr-list-org{margin:0 0 10px;font-size:13pt;font-weight:500;opacity:.92;letter-spacing:.06em;}" +
+      ".wfspr-list-header h1{margin:0 0 10px;font-size:22pt;font-weight:700;line-height:1.3;}" +
+      ".wfspr-list-meta{margin:0;font-size:12pt;opacity:.9;}" +
+      ".wfspr-list-table-wrap{border-radius:12px;overflow:hidden;border:1px solid #cbd5e1;box-shadow:0 2px 12px rgba(15,23,42,.08);background:#fff;}" +
+      ".wfspr-list-table{border-collapse:collapse;width:100%;font-size:11.5pt;}" +
+      ".wfspr-list-table thead tr{background:linear-gradient(180deg,#1e3a8a 0%,#1e40af 100%);}" +
+      ".wfspr-list-th{padding:13px 10px;text-align:left;font-weight:700;color:#fff;border-right:1px solid rgba(255,255,255,.15);vertical-align:middle;font-size:11.5pt;}" +
+      ".wfspr-list-th:last-child{border-right:none;}" +
+      ".wfspr-list-th-loc{background:#1e3a8a;}" +
+      ".wfspr-list-th-g1{background:#2563eb;}" +
+      ".wfspr-list-th-g2{background:#0d9488;}" +
+      ".wfspr-list-tr{background:#fff;}" +
+      ".wfspr-list-tr-alt{background:#f8fafc;}" +
+      ".wfspr-list-tr-none{background:#f1f5f9;color:#64748b;}" +
+      ".wfspr-list-td{padding:11px 10px;border-bottom:1px solid #e2e8f0;border-right:1px solid #f1f5f9;vertical-align:middle;word-break:break-all;line-height:1.55;}" +
+      ".wfspr-list-td:last-child{border-right:none;}" +
+      ".wfspr-list-td-loc{font-weight:700;color:#0f172a;min-width:6em;font-size:12pt;}" +
+      ".wfspr-list-td-ssid{background:#eff6ff;color:#1e3a8a;font-weight:600;}" +
+      ".wfspr-list-td-pw{background:#fffbeb;color:#92400e;font-family:Consolas,\"Courier New\",monospace;font-size:11pt;font-weight:600;}" +
+      ".wfspr-list-tr-alt .wfspr-list-td-ssid{background:#dbeafe;}" +
+      ".wfspr-list-tr-alt .wfspr-list-td-pw{background:#fef3c7;}" +
+      ".wfspr-list-tr-none .wfspr-list-td-ssid,.wfspr-list-tr-none .wfspr-list-td-pw{background:#e2e8f0;color:#64748b;}" +
+      ".wfspr-list-foot{margin-top:14px;text-align:center;font-size:11pt;color:#64748b;}" +
+      "@media print{@page{size:A4 portrait;margin:7mm 6mm 5mm;}" +
+      "body{padding:0;background:#fff;}" +
+      ".wfspr-list-header{border-radius:8px;box-shadow:none;padding:22px 24px 18px;}" +
+      ".wfspr-list-header h1{font-size:21pt;}" +
+      ".wfspr-list-org{font-size:12.5pt;}" +
+      ".wfspr-list-meta{font-size:11.5pt;}" +
+      ".wfspr-list-table{font-size:12pt;}" +
+      ".wfspr-list-th{padding:12px 10px;font-size:12pt;}" +
+      ".wfspr-list-td{padding:12px 10px;}" +
+      ".wfspr-list-td-loc{font-size:12.5pt;}" +
+      ".wfspr-list-td-pw{font-size:11.5pt;}" +
+      ".wfspr-list-table-wrap{box-shadow:none;border-radius:6px;}" +
+      ".wfspr-list-tr{break-inside:avoid;page-break-inside:avoid;}}"
+    );
+  }
+
+  function runListPrint(html) {
+    var portal = document.getElementById("wfs-print-portal");
+    if (!portal) {
+      portal = document.createElement("div");
+      portal.id = "wfs-print-portal";
+      document.body.appendChild(portal);
+    }
+    portal.innerHTML = "<style>" + listPrintStylesheet() + "</style>" + html;
+    setTimeout(function () {
+      window.print();
+    }, 200);
+  }
+
+  function printList() {
+    var rows = listExportRows();
+    if (!rows.length) {
+      alert("印刷対象がありません");
+      return;
+    }
+    runListPrint(buildListExportTableHtml(rows, "社内 Wi-Fi 管理台帳 — 一覧"));
+  }
+
+  function exportListXlsx(rows) {
+    if (typeof XLSX === "undefined" || !XLSX.utils || !XLSX.writeFile) {
+      alert("xlsx ライブラリが読み込まれていません");
+      return;
+    }
+    var header = LIST_EXPORT_FIELDS.map(function (f) {
+      return f.label;
+    });
+    var matrix = [header];
+    rows.forEach(function (row) {
+      matrix.push(
+        LIST_EXPORT_FIELDS.map(function (f) {
+          var v = exportFieldValue(row, f.key);
+          return v === "—" ? "" : v;
+        }),
+      );
+    });
+    var ws = XLSX.utils.aoa_to_sheet(matrix);
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "一覧");
+    XLSX.writeFile(wb, "社内WiFi管理台帳_" + todayJstYmd().replace(/-/g, "") + ".xlsx", { bookType: "xlsx" });
+  }
+
+  function exportXlsx() {
+    var rows = listExportRows();
+    if (!rows.length) {
+      alert("出力対象がありません");
+      return;
+    }
+    exportListXlsx(rows);
   }
 
   function closeModal() {
@@ -769,6 +948,8 @@
       '<div class="wfs-toolbar">' +
       "<strong style=\"font-size:16px\">社内 Wi-Fi 管理台帳</strong>" +
       '<button type="button" id="wfs-reload" class="kintoneplugin-button-normal">再読込</button>' +
+      '<button type="button" id="wfs-print-list" class="kintoneplugin-button-normal">一覧印刷</button>' +
+      '<button type="button" id="wfs-xlsx" class="kintoneplugin-button-normal">Excel出力</button>' +
       "</div>" +
       '<div class="wfs-toolbar">' +
       '<input type="search" id="wfs-search" placeholder="拠点名で検索" style="min-width:220px;padding:6px">' +
@@ -801,6 +982,8 @@
     document.getElementById("wfs-reload").addEventListener("click", function () {
       reloadRecords();
     });
+    document.getElementById("wfs-print-list").addEventListener("click", printList);
+    document.getElementById("wfs-xlsx").addEventListener("click", exportXlsx);
     var search = document.getElementById("wfs-search");
     search.value = state.search;
     search.addEventListener("input", function () {

@@ -48,7 +48,7 @@ npm run app:fields <アプリID>
 | 710 | `2026-06-10-new-system-intro-db-block-ui` | **5** | `372a6214-84de-48ff-891f-2126483ed5dd` | 2026-06-10 新規システム導入ヒアリング DB ブロック |
 | 711 | `2026-06-10-new-system-intro-dash-print-a4-v2` | **4** | `de21c60d-301b-49aa-91bf-d1e25d16efb2` | 2026-06-10 新規システム導入ヒアリング 印刷A4 2枚 |
 | 698 | `2026-07-04-bi-employee-index-emp-filter` | **19** | `5ed0278f-c9b4-4046-bd24-9003d15b3cb1` | 2026-07-04 在籍/退職/すべて切替・source595_id並び |
-| 699 | `2026-06-26-bi-guide-login-permission-lines-v1` | **115** | `38b2b37f-97f7-493c-a60a-c7b9ba7dcbc7` | 2026-06-25 ログイン能力バナー・年次集計注記 |
+| 699 | `2026-07-06-bi-guide-banner-permission-label` | **121** | `9e26a16c-f32b-4d34-ae7a-c62c56818c40` | 2026-07-06 ステータス件数サマリー表 Q-GUIDE-13 |
 | 700 | `2026-07-06-bi-apply-footer-reject-clear` | **166** | `d128837d-6bee-4bb8-9356-97b6f3e4811e` | 2026-07-04 支店長/本社評価は項目折りたたみ |
 | 713 | `2026-06-13-bi-annual-redirect-guide` | **12** | `d9baa102-67f1-4c12-a291-812ce2a794ac` | 2026-06-13 年次713→699ガイド誘導 |
 | 714 | `2026-06-14-software-ledger-db-block-ui-mutations` | **5** | `45b4c125-5d47-47a1-a373-3bbcd273b54d` | 2026-06-14 ソフトウエア台帳 DB save/delete ブロック |
@@ -806,13 +806,13 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 |--------|-----|-----------|---------------|--------|
 | 設定マスタ | **697** | — | 2026-07-04 本番30行 upsert（production-2026-08.xlsx） | `business-improvement:seed-settings` |
 | 社員マスタ | **698** | `customize/business-improvement-employee/desktop.js` | **BUILD=`2026-07-04-bi-employee-index-emp-filter` rev **19** — 在籍/退職/すべて pill | `deploy:698` |
-| ご利用ガイド | **699** | `customize/business-improvement-guide/desktop.bundle.js` | `2026-06-26-bi-guide-login-permission-lines-v1` rev **115** | `deploy:699` |
+| ご利用ガイド | **699** | `customize/business-improvement-guide/desktop.bundle.js` | **BUILD=`2026-07-06-bi-guide-banner-permission-label` rev ** 121 ** — Q-GUIDE-13 ステータス件数サマリー表 | `deploy:699` |
 | 提案申請 ver.02 | **700** | `customize/business-improvement-proposal/desktop.js` | **BUILD=`2026-07-06-bi-apply-footer-reject-clear` rev ** 166 ** / fileKey **`d128837d-6bee-4bb8-9356-97b6f3e4811e`** — Q-UX-12 後段評価折りたたみ | `deploy:700` |
 | 年次処理（新⑤） | **713** | `customize/business-improvement-annual/desktop.bundle.js` | `2026-06-13-bi-annual-redirect-guide` rev12 | `deploy:713` |
 
 **699 年次集計**: **admin のみ**「年次ポイント集計」。暗唱番号は **697 共通設定** `年次暗唱番号`（起動・集計の都度入力）。集計 UI は 699 オーバーレイ（713 はデータ保存）。
 
-**699 UI**: kintone 標準一覧フッター（Record number / 0-0件中）を非表示。**申請した一覧／未評価一覧はマニュアルより上**（Q-GUIDE-10）。マニュアル小項目はアコーディオン、ナビ選択で本文へスクロール。ガイド本文に年次手順は載せない。
+**699 UI**: kintone 標準一覧フッター（Record number / 0-0件中）を非表示。**ログイン直下にステータス件数サマリー表**（Q-GUIDE-13）。**申請した一覧／未評価一覧はマニュアルより上**（Q-GUIDE-10）。マニュアル小項目はアコーディオン、ナビ選択で本文へスクロール。ガイド本文に年次手順は載せない。
 
 **713 主要機能**: 年度レコード保存。画面操作は **699** から（713 レコード画面は誘導のみ）。
 

@@ -54,7 +54,7 @@ npm run app:fields <アプリID>
 | 714 | `2026-06-14-software-ledger-db-block-ui-mutations` | **5** | `45b4c125-5d47-47a1-a373-3bbcd273b54d` | 2026-06-14 ソフトウエア台帳 DB save/delete ブロック |
 | 715 | `2026-06-17-software-ledger-user-filter-compact` | **13** | `69ab1b99-1170-4577-86d1-04c11d5b9a80` | 2026-06-17 利用者チップを社員検索絞り込みに変更 |
 | 718 | `2026-06-14-wifi-ssid-db-block-ui-mutations` | **5** | `bc1903db-3942-43d8-b4ba-89e9562988b1` | 2026-06-14 社内Wi-Fi DB save/delete ブロック |
-| 719 | `2026-06-14-wifi-ssid-dash-company-jbis` | **7** | `75478609-9bce-4d10-ac37-65de404ac7dc` | 2026-06-14 社名 (株）J-BISメンテナンス |
+| 719 | `2026-07-07-wifi-ssid-dash-list-print-scale2` | **12** | `75478609-9bce-4d10-ac37-65de404ac7dc` | 2026-07-07 一覧印刷・Excel・A4文字拡大 |
 | 716 | `2026-06-14-storage-media-ledger-db-block-ui-mutations` | **5** | `36e4bdf3-9362-4837-8f53-4135b41084d1` | 2026-06-14 記憶媒体等台帳 DB save/delete ブロック |
 | 717 | `2026-06-17-storage-media-ledger-user-filter-compact` | **8** | `ed202a45-c53b-4930-bd2e-84d3d084779d` | 2026-06-17 利用者チップを社員検索絞り込みに変更 |
 | 720 | `2026-06-15-jr-ipad-db-block-ui-mutations` | **5** | `6a022180-0c57-4992-8f3c-929a93678a0f` | 2026-06-19 新規採番時下書き必須緩和（フォーム rev **7**） |
@@ -130,7 +130,7 @@ npm run app:fields <アプリID>
 | **ソフトウエア台帳DB**（ライセンス割当正本・閲覧のみ） | **714** | `customize/software-ledger-db/desktop.js` \| `npm run deploy:714` | [https://jbis-kintone.cybozu.com/k/714/](https://jbis-kintone.cybozu.com/k/714/) **Space 21 / thread 23**・**2026-06-14**: 18 フィールド・正本 `docs/plans/2026-06-13-software-ledger-kintone-spec.md` |
 | **ソフトウエア管理台帳ver.1**（日常 UI・714 へ REST） | **715** | `customize/software-ledger-dash/desktop.js` \| `npm run deploy:715` | [https://jbis-kintone.cybozu.com/k/715/](https://jbis-kintone.cybozu.com/k/715/) **Space 21 / thread 23**・**2026-06-17**: 利用者チップを社員検索絞り込みに変更・**BUILD=`2026-06-17-software-ledger-user-filter-compact`** rev **13** |
 | **社内Wi-Fi管理DB**（拠点 SSID 正本・閲覧のみ） | **718** | `customize/wifi-ssid-db/desktop.js` \| `npm run deploy:718` | [https://jbis-kintone.cybozu.com/k/718/](https://jbis-kintone.cybozu.com/k/718/) **Space 21 / thread 23**・**2026-06-14**: 9 フィールド・22 拠点・**BUILD=`2026-06-14-wifi-ssid-db-block-ui-mutations`** rev **5** |
-| **社内Wi-Fi管理台帳 ver.1**（日常 UI・718 へ REST） | **719** | `customize/wifi-ssid-dash/desktop.js` \| `npm run deploy:719` | [https://jbis-kintone.cybozu.com/k/719/](https://jbis-kintone.cybozu.com/k/719/) **Space 21 / thread 23**・**2026-06-14**: 694 型一覧・拠点別 A4 印刷・Wi-Fi QR・**BUILD=`2026-06-14-wifi-ssid-dash-company-jbis`** rev **7** |
+| **社内Wi-Fi管理台帳 ver.1**（日常 UI・718 へ REST） | **719** | `customize/wifi-ssid-dash/desktop.js` \| `npm run deploy:719` | [https://jbis-kintone.cybozu.com/k/719/](https://jbis-kintone.cybozu.com/k/719/) **Space 21 / thread 23**・694 型一覧・拠点別 A4 印刷（Wi-Fi QR）・**一覧印刷・Excel出力**（検索絞込・PW 含む）・**BUILD=`2026-07-07-wifi-ssid-dash-list-print-scale2` rev **12** / fileKey **`75478609-9bce-4d10-ac37-65de404ac7dc`** |
 | **記憶媒体等台帳DB**（媒体・周辺機器正本・閲覧のみ） | **716** | `customize/storage-media-ledger-db/desktop.js` \| `npm run deploy:716` | [https://jbis-kintone.cybozu.com/k/716/](https://jbis-kintone.cybozu.com/k/716/) **Space 21 / thread 23**・**2026-06-14**: 19 フィールド・正本 `docs/plans/2026-06-13-storage-media-ledger-kintone-spec.md`・**BUILD=`2026-06-14-storage-media-ledger-db-block-ui-mutations`** rev **5** |
 | **記憶媒体等管理台帳ver.1**（日常 UI・716 へ REST） | **717** | `customize/storage-media-ledger-dash/desktop.js` \| `npm run deploy:717` | [https://jbis-kintone.cybozu.com/k/717/](https://jbis-kintone.cybozu.com/k/717/) **Space 21 / thread 23**・**2026-06-17**: 利用者チップを社員検索絞り込みに変更・**BUILD=`2026-06-17-storage-media-ledger-user-filter-compact`** rev **8** |
 | **JRシステム用iPad台帳DB**（端末正本・閲覧のみ） | **720** | `customize/jr-ipad-db/desktop.js` \| `npm run deploy:720` | [https://jbis-kintone.cybozu.com/k/720/](https://jbis-kintone.cybozu.com/k/720/) **Space 34 / thread 38**・**2026-06-15**: 13 フィールド・**64 台移行済**・正本 `docs/plans/2026-06-15-jr-ipad-ledger-kintone-spec.md`・**BUILD=`2026-06-15-jr-ipad-db-block-ui-mutations`** rev **5**（**2026-06-19**: フォーム rev **7** — 新規採番 POST 時 `mgmt_dept` / `phone_number` / `model` を空可。保存時必須は Dash `validateRequired` が担保） |
@@ -829,11 +829,11 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 | アプリ | ID | customize | BUILD（本番） | deploy |
 |--------|-----|-----------|---------------|--------|
 | 社内Wi-Fi管理DB | **718** | `customize/wifi-ssid-db/desktop.js` | `2026-06-14-wifi-ssid-db-block-ui-mutations` rev5 | `deploy:718` |
-| 社内Wi-Fi管理台帳 ver.1 | **719** | `customize/wifi-ssid-dash/desktop.js`（`desktop.src.js` + bundle） | `2026-06-14-wifi-ssid-dash-company-jbis` rev7 | `deploy:719`（前に `wifi-ssid:bundle-dash`） |
+| 社内Wi-Fi管理台帳 ver.1 | **719** | `customize/wifi-ssid-dash/desktop.js`（`desktop.src.js` + bundle） | `2026-07-07-wifi-ssid-dash-list-print-scale2` rev12 | `deploy:719`（前に `wifi-ssid:bundle-dash`） |
 
-**719 主要機能**: 694 型一覧・管理者のみ編集（REST→718）・拠点別 A4 印刷（Wi-Fi QR 同梱）・PW クリックコピー。設備なし（水戸・鎌ヶ谷）は印刷なし。
+**719 主要機能**: 694 型一覧・管理者のみ編集（REST→718）・拠点別 A4 印刷（Wi-Fi QR 同梱）・**一覧印刷・Excel出力**（5列・検索絞込・PW 含む）・PW クリックコピー。設備なし（水戸・鎌ヶ谷）は拠点別印刷なし（一覧印刷・Excel には含む）。
 
-**状態（2026-06-14）**: **v1 完成** — 22 拠点・印刷・QR・浜田目視 OK。移行元 Excel **完全削除済**（kintone 正本のみ）。
+**状態（2026-07-07）**: v1 運用中 — 一覧出力追加・浜田目視 OK。移行元 Excel **完全削除済**（kintone 正本のみ）。
 
 ---
 
@@ -907,6 +907,7 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 
 | 日付 | 変更内容 |
 |------|----------|
+| 2026-07-07 | **社内 Wi-Fi 台帳 719 一覧出力**: rev12（一覧印刷 A4 カラー・Excel 5列・PW 含む・文字拡大）。仕様 `docs/plans/2026-06-14-wifi-ssid-kintone-spec.md` §7.5 |
 | 2026-06-27 | **JRE-C_Hub アカウント管理 v1 完成**: 746 rev5・747 rev12（権限 ST/フィルタ・IDユニーク集計・チップ UI・各種クリア）。Excel **47 件移行済**・浜田 OK。仕様 `docs/plans/2026-06-27-jre-chub-account-kintone-spec.md` |
 | 2026-06-27 | **JREクラウド アカウント台帳 UX 更新**: 745 rev22（集計チップ UI・条件クリア・検索クリア→稼働中）。仕様 §5.3/§4.3 更新 |
 | 2026-06-26 | **JREクラウド アカウント管理 v1 初回 deploy**: 744 rev5・745 rev4（595 ハイブリッド・月次集計・一覧/集計 xlsx+印刷）・Excel **99 件移行済**。仕様 `docs/plans/2026-06-26-jre-cloud-account-kintone-spec.md` |
