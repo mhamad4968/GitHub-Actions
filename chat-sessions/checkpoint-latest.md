@@ -32,7 +32,7 @@
 | **712** | 削除済 — deploy 禁止 |
 
 **次の1手**: **7/8–9** **736 PH1c** GO review（`docs/plans/2026-07-07-jikkou-yosan-ph1c-row-reorder-spec-draft.md`）· **698/700** 目視 FB · **699** 受け入れ確認  
-**Git**: **`2377344`** = `origin/main` — push 済
+**Git**: **`3a5a3da`** = `origin/main` — push 済
 **夕反省**: `docs/reports/2026-07-07-evening-reflection.md` · **698/700 レビュー**: `docs/reports/2026-07-06-bi-698-700-monday-review.md`  
 **699 仕様**: Q-GUIDE-13 · `docs/plans/2026-07-06-bi-699-status-summary-spec-draft.md`  
 **736 7月**: `docs/runbooks/736-july-2026-schedule.md` · PH1b 凍結正本 `docs/plans/2026-07-06-jikkou-yosan-ph1b-label-row-spec-draft.md`  
