@@ -145,4 +145,7 @@ if (touchesGovernance(commitPaths)) {
   }
 }
 
+// --- checkpoint Git 行 amend 同期（R44 · #S-CHECKPOINT-01）---
+runScript('scripts/cio-checkpoint-git-postcommit-sync.mjs');
+
 process.exit(0);

@@ -8,5 +8,5 @@
 | **#D674-OPS-01** | D | §4.10.7 **担当者 FAQ**（削除不可・取消） | ✅ 同上 |
 | **#S674-DEPLOY-01** | S | `kintone-apps.md` BUILD/rev **garble 検知** | ✅ **R-SEC-02** 既存（`cio-kintone-apps-garble-check.mjs` · pre-commit） |
 | **#R-SESS-09** | R | lane GO **追補も §41 1セット → 1 deploy** | ✅ **R-LANE-PATCH-01**（`cio-deploy-ledger-gate.mdc` · `session-lifecycle-v2.md`） |
-| **#S-CHECKPOINT-01** | S | checkpoint **Git 行を HEAD で stamp** | ✅ **R44 拡張** — `close-git` 既存 + **pre-commit stamp** 新設 |
+| **#S-CHECKPOINT-01** | S | checkpoint **Git 行を HEAD で stamp** | ✅ **R44** — post-commit amend（`cio-checkpoint-git-postcommit-sync.mjs`） |
 | **朝報キュー** | D | 未生成日の扱い | ✅ `docs/runbooks/morning-prep-missing-day.md` |
