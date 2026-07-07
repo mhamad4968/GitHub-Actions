@@ -4296,7 +4296,4 @@ npm run cio:morning:ready
 
 **Git**: **`da0d2fa`** — push 実行中
 
-
-**GO待ち**: #R699-BANNER-01 等（夕反省 · 承認待ち）
-
 ---

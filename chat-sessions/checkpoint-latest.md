@@ -3,12 +3,13 @@
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED**（kintone レーン v1 完了・closures 登録）≠ **セッション締め**（export-handoff / Desktop sync / close-git）。混同禁止 -->
 
-**最終更新**: 2026-07-07 JST — **719 一覧印刷・Excel GO** · **736 PH1c Q0+UX 仕様完了（7/7）**
+**最終更新**: 2026-07-07 JST — **674 §4.10.7 削除禁止・取消 GO** · **719 一覧印刷 GO** · **736 PH1c 草案**
 
 ### 本日アクティブ（BUILD/rev — 2026-07-07）
 
 | 項目 | 内容 |
 |------|------|
+| **674 新PC台帳** | BUILD=`2026-07-07-674-cancel-unlink-595` **rev254** — **物理削除禁止** · **登録ミス取消** · **671/595 解放** · **取消一覧非表示** |
 | **719 Wi-Fi 台帳** | BUILD=`2026-07-07-wifi-ssid-dash-list-print-scale2` **rev12** — 一覧印刷（A4 カラー・12pt）・Excel 5列・浜田 OK |
 | **736 実行予算 PH1c** | 行並び替え **Q0+UX 仕様完了（7/7）** — 草案 `docs/plans/2026-07-07-jikkou-yosan-ph1c-row-reorder-spec-draft.md` · **7/8–9 GO review** |
 | **736 PH1b 部分** | 外注④〜⑦テキスト行 — 仕様起票のみ `docs/plans/2026-07-07-jikkou-yosan-ph1b-partial-subcontract-label-spec-draft.md` · **implement 7/11 以降** |
@@ -31,8 +32,8 @@
 | **712** | 削除済 — deploy 禁止 |
 
 **次の1手**: **7/8–9** **736 PH1c** GO review（`docs/plans/2026-07-07-jikkou-yosan-ph1c-row-reorder-spec-draft.md`）· **698/700** 目視 FB · **699** 受け入れ確認  
-**Git**: **`e35d9d1`** = `origin/main` — push 済
-**夕反省**: `docs/reports/2026-07-06-evening-reflection.md` · **698/700 レビュー**: `docs/reports/2026-07-06-bi-698-700-monday-review.md`  
+**Git**: **`6ed26bd`** = `origin/main` — 674 §4.10.7 push 済  
+**夕反省**: `docs/reports/2026-07-07-evening-reflection.md` · **698/700 レビュー**: `docs/reports/2026-07-06-bi-698-700-monday-review.md`  
 **699 仕様**: Q-GUIDE-13 · `docs/plans/2026-07-06-bi-699-status-summary-spec-draft.md`  
 **736 7月**: `docs/runbooks/736-july-2026-schedule.md` · PH1b 凍結正本 `docs/plans/2026-07-06-jikkou-yosan-ph1b-label-row-spec-draft.md`  
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`  
