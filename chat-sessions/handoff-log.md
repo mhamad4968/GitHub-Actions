@@ -4315,4 +4315,9 @@ npm run cio:morning:ready
 
 **草案**: `docs/plans/2026-07-08-jikkou-yosan-ph1d-optional-subcontract-blocks-spec-draft.md`
 
+
+**Git**: **`15805253`** = `origin/main` — push 済
+
+**GO待ち**: #R699-BANNER-01 等（夕反省 · 承認待ち）
+
 ---
