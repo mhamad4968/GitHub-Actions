@@ -3,13 +3,13 @@
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED**（kintone レーン v1 完了・closures 登録）≠ **セッション締め**（export-handoff / Desktop sync / close-git）。混同禁止 -->
 
-**最終更新**: 2026-07-08 JST — **736 PH1d 外注④〜⑦任意化 implement+deploy rev170**
+**最終更新**: 2026-07-09 JST — **736 PH1d 完了・差分削除行修正 OK（浜田確認済）**
 
-### 本日アクティブ（BUILD/rev — 2026-07-08）
+### 本日アクティブ（BUILD/rev — 2026-07-08〜09）
 
 | 項目 | 内容 |
 |------|------|
-| **736 実行予算 PH1d** | BUILD=`2026-07-08-736-optional-sub-blocks` **rev170** — 外注④〜⑦ **任意追加/削除（A案）** · **浜田ブラウザ確認待ち** |
+| **736 実行予算** | BUILD=`2026-07-09-736-diff-cost-removed-fix` **rev172**（live）— **PH1d** 外注④〜⑦任意化 rev170 · **差分削除行**修正 · 浜田 OK |
 | **736 PH1b 部分** | 外注④〜⑦テキスト行 — 仕様起票のみ `docs/plans/2026-07-07-jikkou-yosan-ph1b-partial-subcontract-label-spec-draft.md` · **implement 7/11 以降** |
 | **699 ご利用ガイド** | BUILD=`2026-07-06-bi-guide-banner-permission-label` **rev121** — **受け入れ確認待ち** |
 | **700 提案申請** | BUILD=`2026-07-06-bi-apply-footer-reject-clear` **rev166** — **目視待ち** |
@@ -29,8 +29,8 @@
 | **736** | **§9.6 凍結** · **7/7〜 AI 主導 §41**（736 のみ） |
 | **712** | 削除済 — deploy 禁止 |
 
-**次の1手**: **736 PH1d** 浜田ブラウザ確認（新規=④〜⑦なし・追加/削除・総括連携）· **PH1c** implement **7/9〜** · **698/700** 目視 · **699** 受け入れ確認  
-**Git**: **`aaa9cc9a`** = `origin/main` — push 済
+**次の1手**: **736 PH1c** 行並び替え implement（**7/9〜**）· **698/700** 目視 · **699** 受け入れ確認  
+**Git**: **`03e80e2e`** = `origin/main` — push 済
 **夕反省**: `docs/reports/2026-07-07-evening-reflection.md` · **698/700 レビュー**: `docs/reports/2026-07-06-bi-698-700-monday-review.md`  
 **699 仕様**: Q-GUIDE-13 · `docs/plans/2026-07-06-bi-699-status-summary-spec-draft.md`  
 **736 7月**: `docs/runbooks/736-july-2026-schedule.md` · PH1b 凍結正本 `docs/plans/2026-07-06-jikkou-yosan-ph1b-label-row-spec-draft.md`  
