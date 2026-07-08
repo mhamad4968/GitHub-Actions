@@ -4290,7 +4290,7 @@ npm run cio:morning:ready
 - 仕様 `docs/plans/2026-06-14-wifi-ssid-kintone-spec.md` §7.5 · Q15
 - **736 PH1c** Q0+UX 草案 · **PH1b 部分** 草案 — commit 同梱
 
-**次の1手**: **7/8–9** **736 PH1c** GO review · **698/700** 目視 · **699** 受け入れ
+**次の1手**: **7/8–9** **736 PH1c** GO review（`docs/plans/2026-07-07-jikkou-yosan-ph1c-row-reorder-spec-draft.md`）· **698/700** 目視 FB · **699** 受け入れ確認
 
 **触らない**: 736 implement · 688/677–679/SKYSEA
 
@@ -4298,5 +4298,21 @@ npm run cio:morning:ready
 
 
 **GO待ち**: #R699-BANNER-01 等（夕反省 · 承認待ち）
+
+---
+
+### 2026-07-08 23:45 JST — **PH1d 外注④〜⑦任意化 · 仕様起票（依頼者必須）**
+
+**要約**:
+- 依頼者要件: 詳細表④〜⑦ブロック **デフォルトなし** · 必要時追加・不要時削除 · 明細→総括自動連携
+- 浜田 **A案**: ブロック削除時 **総括連携行も行削除**
+- DeepSeek §50-3-8 レビュー済 · **implement GO 待ち**
+- **PH1c** implement は **7/9 以降**（要望・本日は仕様のみ）
+
+**次の1手**: **PH1d implement GO**（浜田指示後）· PH1c GO review 7/9〜
+
+**触らない**: PH1c 本日 implement · 688/677–679/SKYSEA
+
+**草案**: `docs/plans/2026-07-08-jikkou-yosan-ph1d-optional-subcontract-blocks-spec-draft.md`
 
 ---
