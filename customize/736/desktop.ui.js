@@ -112,9 +112,173 @@
     return idx >= 0 ? String(state.subcontract_lines[idx].sub_vendor || '') : '';
   }
 
+  function isSubBlockActive(lines, blockId) {
+    return (lines || []).some(function (r) {
+      return r.subcontract_block === blockId;
+    });
+  }
+
+  function subBlockHasNonZeroAmount(lines, blockId) {
+    return (lines || []).some(function (r) {
+      if (r.subcontract_block !== blockId || r.sub_row_kind === 'vendor') return false;
+      return num(r.sub_amount) !== 0;
+    });
+  }
+
+  function hasSubLinkCostRow(lines, marker) {
+    return (lines || []).some(function (r) {
+      return r.cost_row_kind === '連携' && r.detail_marker === marker;
+    });
+  }
+
+  function costRowFromSubLinkTemplate(marker) {
+    const tmpl = (DEFAULT_COST_TEMPLATE || []).find(function (t) {
+      return t.detail_marker === marker && t.cost_row_kind === 'link';
+    });
+    return tmpl ? blankCostRow(tmpl) : null;
+  }
+
+  function findCostLinkInsertIndex(lines, marker) {
+    const order = ['④', '⑤', '⑥', '⑦'];
+    const mi = order.indexOf(marker);
+    if (mi < 0) return lines.length;
+    let insertAt = lines.length;
+    for (let i = 0; i < lines.length; i += 1) {
+      const r = lines[i];
+      if (r.cost_row_kind === '小計' && r.cost_group_key === 'material') insertAt = i + 1;
+      const dm = r.detail_marker || '';
+      const oi = order.indexOf(dm);
+      if (r.cost_row_kind === '連携' && oi >= 0) {
+        if (oi < mi) insertAt = i + 1;
+        else return i;
+      }
+    }
+    return insertAt;
+  }
+
+  function insertSubLinkCostRow(s, marker) {
+    if (!marker || hasSubLinkCostRow(s.cost_lines, marker)) return;
+    const row = costRowFromSubLinkTemplate(marker);
+    if (!row) return;
+    const at = findCostLinkInsertIndex(s.cost_lines, marker);
+    s.cost_lines.splice(at, 0, row);
+  }
+
+  function removeSubLinkCostRow(s, marker) {
+    if (!marker) return;
+    s.cost_lines = s.cost_lines.filter(function (r) {
+      return !(r.cost_row_kind === '連携' && r.detail_marker === marker);
+    });
+  }
+
+  function makeSubcontractBlockRows(blockId) {
+    const b = SUB_BLOCKS.find(function (x) { return x.id === blockId; });
+    if (!b) return [];
+    const rows = [];
+    rows.push({
+      subcontract_block: b.id,
+      sub_row_kind: 'vendor',
+      sub_vendor: b.vendor,
+      sub_line_type: '',
+      sub_unit: '',
+      sub_qty: '',
+      sub_unit_price: '',
+      sub_amount: 0,
+      sub_basis: '',
+    });
+    (SUB_LINES[b.id] || []).forEach(function (t) {
+      const kind = subKindFromLabel(t, b.id);
+      rows.push({
+        subcontract_block: b.id,
+        sub_row_kind: kind,
+        sub_vendor: '',
+        sub_line_type: t,
+        sub_unit: t === '諸経費' ? '%' : '',
+        sub_qty: t === '諸経費' ? '0.1' : '',
+        sub_unit_price: '',
+        sub_amount: 0,
+        sub_basis: t === '諸経費' ? '上記金額合計の10%' : '',
+      });
+    });
+    return rows;
+  }
+
+  function defaultSubcontractTemplateForBlock(blockId) {
+    return makeSubcontractBlockRows(blockId).map(function (r) {
+      return Object.assign({}, r, { row_key: newRowKey() });
+    });
+  }
+
+  function insertSubcontractBlockRows(s, blockId) {
+    const newRows = defaultSubcontractTemplateForBlock(blockId);
+    const order = SUB_BLOCKS.map(function (b) { return b.id; });
+    const bi = order.indexOf(blockId);
+    let insertAt = s.subcontract_lines.length;
+    for (let i = 0; i < s.subcontract_lines.length; i += 1) {
+      const oi = order.indexOf(s.subcontract_lines[i].subcontract_block);
+      if (oi >= 0 && oi > bi) {
+        insertAt = i;
+        break;
+      }
+    }
+    s.subcontract_lines.splice.apply(s.subcontract_lines, [insertAt, 0].concat(newRows));
+  }
+
+  function reconcileSubBlocksAndLinks(s) {
+    SUB_BLOCKS.forEach(function (b) {
+      const mk = BLOCK_MARKERS[b.id];
+      const active = isSubBlockActive(s.subcontract_lines, b.id);
+      if (active && !hasSubLinkCostRow(s.cost_lines, mk)) insertSubLinkCostRow(s, mk);
+      if (!active && hasSubLinkCostRow(s.cost_lines, mk)) removeSubLinkCostRow(s, mk);
+    });
+    ensureSubVendorRows(s);
+  }
+
+  function addSubBlock(blockId) {
+    if (!blockId || isSubBlockActive(state.subcontract_lines, blockId)) return;
+    insertSubcontractBlockRows(state, blockId);
+    insertSubLinkCostRow(state, BLOCK_MARKERS[blockId]);
+    markDirty();
+    render();
+  }
+
+  function removeSubBlock(blockId) {
+    if (!blockId || !isSubBlockActive(state.subcontract_lines, blockId)) return;
+    if (subBlockHasNonZeroAmount(state.subcontract_lines, blockId)) {
+      if (!window.confirm('この外注ブロックには入力済みの金額があります。ブロックごと削除しますか？')) return;
+    }
+    state.subcontract_lines = state.subcontract_lines.filter(function (r) {
+      return r.subcontract_block !== blockId;
+    });
+    removeSubLinkCostRow(state, BLOCK_MARKERS[blockId]);
+    markDirty();
+    render();
+  }
+
+  function renderSubBlockAddPanel() {
+    if (readOnly) return '';
+    const available = SUB_BLOCKS.filter(function (b) {
+      return !isSubBlockActive(state.subcontract_lines, b.id);
+    });
+    if (!available.length) return '';
+    let html = '<div class="jy-sub-block-toolbar">';
+    html += '<span class="jy-sub-block-toolbar-label">外注ブロックを追加:</span>';
+    available.forEach(function (b) {
+      const shortLabel = String(b.label).replace(/….*$/, '');
+      html += '<button type="button" class="jy-btn jy-btn-sm" data-sub-block-add="' + esc(b.id) + '">' + esc(shortLabel) + '</button>';
+    });
+    html += '</div>';
+    return html;
+  }
+
+  function subBlockDeleteBtn(blockId) {
+    return '<button type="button" class="jy-btn jy-btn-sm" data-sub-block-remove="' + esc(blockId) + '" title="ブロック全体を削除（総括表の連携行も削除）">ブロック削除</button>';
+  }
+
   function ensureSubVendorRows(targetState) {
     const s = targetState || state;
     SUB_BLOCKS.forEach(function (b) {
+      if (!isSubBlockActive(s.subcontract_lines, b.id)) return;
       if (subVendorRowIndexIn(s.subcontract_lines, b.id) >= 0) return;
       let insertAt = s.subcontract_lines.length;
       for (let i = 0; i < s.subcontract_lines.length; i += 1) {
@@ -1146,6 +1310,8 @@
       '.jy-block-vendor{width:100%;box-sizing:border-box}' +
       '.jy-block-summary-actions{display:flex;gap:6px;flex-shrink:0;align-items:center}' +
       '.jy-block-summary-actions .jy-btn{margin-top:0}' +
+      '.jy-sub-block-toolbar{margin:12px 0 8px;padding:8px 10px;background:#f1f5f9;border:1px dashed #94a3b8;border-radius:6px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}' +
+      '.jy-sub-block-toolbar-label{font-size:12px;font-weight:600;color:#475569}' +
       '.jy-calc-row{background:#f3f4f6;font-weight:600;color:#334155}' +
       '.jy-calc-row td{border-color:#e2e8f0}' +
       '.jy-list-table tbody tr{cursor:pointer}' +
@@ -1590,7 +1756,13 @@
   }
 
   function defaultCostRows() {
-    return (DEFAULT_COST_TEMPLATE || []).map(blankCostRow);
+    return (DEFAULT_COST_TEMPLATE || [])
+      .filter(function (tmpl) {
+        if (tmpl.cost_row_kind !== 'link') return true;
+        const m = tmpl.detail_marker || '';
+        return m !== '④' && m !== '⑤' && m !== '⑥' && m !== '⑦';
+      })
+      .map(blankCostRow);
   }
 
   function subKindFromLabel(t, block) {
@@ -1604,31 +1776,7 @@
   function defaultSubcontractTemplate() {
     const rows = [];
     SUB_BLOCKS.forEach(function (b) {
-      rows.push({
-        subcontract_block: b.id,
-        sub_row_kind: 'vendor',
-        sub_vendor: b.vendor,
-        sub_line_type: '',
-        sub_unit: '',
-        sub_qty: '',
-        sub_unit_price: '',
-        sub_amount: 0,
-        sub_basis: '',
-      });
-      (SUB_LINES[b.id] || []).forEach(function (t) {
-        const kind = subKindFromLabel(t, b.id);
-        rows.push({
-          subcontract_block: b.id,
-          sub_row_kind: kind,
-          sub_vendor: '',
-          sub_line_type: t,
-          sub_unit: t === '諸経費' ? '%' : '',
-          sub_qty: t === '諸経費' ? '0.1' : '',
-          sub_unit_price: '',
-          sub_amount: 0,
-          sub_basis: t === '諸経費' ? '上記金額合計の10%' : '',
-        });
-      });
+      rows.push.apply(rows, defaultSubcontractTemplateForBlock(b.id));
     });
     return rows;
   }
@@ -1656,7 +1804,7 @@
     s.spec_lines = defaultSpecLines();
     s.cost_lines = defaultCostRows();
     s.mat_lines = [{ mat_vendor: '', mat_name: '', mat_capacity: '', mat_maker: '', mat_qty: '', mat_unit_price: '', mat_amount: 0, mat_group: '塗料', mat_basis: '' }];
-    s.subcontract_lines = defaultSubcontractTemplate();
+    s.subcontract_lines = [];
     return recalcState(s);
   }
 
@@ -1739,8 +1887,8 @@
     if (!s.cost_lines.length) s.cost_lines = defaultCostRows();
     else s.cost_lines = migrateDayNightCombinedCostLines(s.cost_lines);
     if (!s.mat_lines.length) s.mat_lines = [{ mat_vendor: '', mat_name: '', mat_capacity: '', mat_maker: '', mat_qty: '', mat_unit_price: '', mat_amount: 0, mat_group: '塗料', mat_basis: '' }];
-    if (!s.subcontract_lines.length) s.subcontract_lines = defaultSubcontractTemplate();
-    ensureSubVendorRows(s);
+    if (!s.subcontract_lines.length) s.subcontract_lines = [];
+    reconcileSubBlocksAndLinks(s);
     return recalcState(s);
   }
 
@@ -1927,7 +2075,8 @@
       '<strong>材料明細（②塗料・③その他）</strong>と<strong>外注明細（④〜⑦）</strong>を入力します。総括表の連携行（緑）と対応しています。',
       'ブロック見出しが<strong>緑</strong>のものは総括表と連携しています。番号（…②など）や<strong>合計金額</strong>をクリックすると、総括表の該当行へ移動します。',
       '<strong>材料</strong>：見出しの「末尾に追加」または各行の<strong>＋</strong>で行を追加します（区分は塗料／その他）。',
-      '<strong>外注（④〜⑦）</strong>：各ブロック見出しの<strong>会社名</strong>欄に業者名を入力します。「末尾に明細追加」、または明細行の<strong>＋</strong>で諸経費・合計の前に明細を挿入します。種別はリストから選ぶか入力できます。',
+      '<strong>外注（④〜⑦）</strong>：初期状態では表示されません。「外注ブロックを追加」から必要なブロックを選んで追加します。不要なブロックは見出しの<strong>ブロック削除</strong>で外せます（総括表の連携行も削除されます）。',
+      '追加したブロックでは見出しの<strong>会社名</strong>欄に業者名を入力。「末尾に明細追加」または明細行の<strong>＋</strong>で明細を挿入します。',
       '諸経費・合計・法定福利費（合計）・注文金額などの<strong>計算行は自動</strong>です（金額の手入力・行削除はできません）。',
       '行の追加時は、追加した行が<strong>薄い黄色</strong>で強調表示されます。'
     ]);
@@ -2885,7 +3034,6 @@
 
   function renderDetail() {
     recalcState(state);
-    ensureSubVendorRows();
     const m = masterCache || { units: SPEC_UNITS };
     const matColgroup = '<colgroup><col class="jy-col-vendor"><col class="jy-col-name"><col class="jy-col-cap"><col class="jy-col-maker">' +
       '<col class="jy-col-qty"><col class="jy-col-price"><col class="jy-col-grp"><col class="jy-col-amt"><col class="jy-col-basis">' +
@@ -2930,7 +3078,9 @@
     });
     html += '</div>';
 
+    html += renderSubBlockAddPanel();
     SUB_BLOCKS.forEach(function (b) {
+      if (!isSubBlockActive(state.subcontract_lines, b.id)) return;
       const mk = BLOCK_MARKERS[b.id];
       const vendorIdx = subVendorRowIndex(b.id);
       const vendorVal = vendorIdx >= 0 ? state.subcontract_lines[vendorIdx].sub_vendor : '';
@@ -2938,7 +3088,7 @@
       html += '<details class="jy-block jy-linked-block" open><summary class="jy-block-summary">' +
         '<span class="jy-block-summary-label">' + esc(b.label) + ' <span class="jy-ref-meta">' + refLinkToSummary(mk) + ' → 総括表</span></span>' +
         '<span class="jy-block-vendor-wrap"><input class="jy-in jy-block-vendor" data-sub-vendor="' + vendorIdx + '" value="' + esc(vendorVal) + '" placeholder="会社名"' + (readOnly ? ' disabled' : '') + '></span>' +
-        (readOnly ? '' : '<span class="jy-block-summary-actions">' + subSectionAddBtn(b.id, b.label) + '</span>') +
+        (readOnly ? '' : '<span class="jy-block-summary-actions">' + subSectionAddBtn(b.id, b.label) + subBlockDeleteBtn(b.id) + '</span>') +
         '</summary><table class="jy-table"><thead><tr><th>種別</th><th class="jy-center">単位</th><th>数量</th><th>単価</th><th class="jy-num">金額</th><th>計算基準</th>' + (readOnly ? '' : '<th>操作</th>') + '</tr></thead><tbody>';
       state.subcontract_lines.forEach(function (r, i) {
         if (r.subcontract_block !== b.id) return;
@@ -3410,13 +3560,13 @@
   function buildPrintDetailHtml() {
     jyDiffPrintBuild = true;
     try {
-      ensureSubVendorRows();
       let html = '';
       if (printDiffActive()) html += renderPrintDiffSummaryPage();
       html += renderPrintDocHead('（　詳　細　表　）');
       html += renderPrintMatBlock('材料明細（塗料）', '塗料', '塗料合計', state.mat_total_2, '②');
       html += renderPrintMatBlock('材料明細（その他）', 'その他', 'その他合計', state.mat_total_3, '③');
       SUB_BLOCKS.forEach(function (b) {
+        if (!isSubBlockActive(state.subcontract_lines, b.id)) return;
         html += renderPrintSubBlock(b);
       });
       html += renderPrintDiffFooter();
@@ -4071,6 +4221,20 @@
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
         insertSubDetailRow(btn.getAttribute('data-sub-add'));
+      });
+    });
+    root.querySelectorAll('[data-sub-block-add]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        syncInputs();
+        addSubBlock(btn.getAttribute('data-sub-block-add'));
+      });
+    });
+    root.querySelectorAll('[data-sub-block-remove]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        syncInputs();
+        removeSubBlock(btn.getAttribute('data-sub-block-remove'));
       });
     });
     root.querySelectorAll('[data-sub-add-before]').forEach(function (btn) {

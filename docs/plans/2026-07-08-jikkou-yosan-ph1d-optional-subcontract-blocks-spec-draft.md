@@ -1,7 +1,7 @@
 # 736 PH1d — 外注④〜⑦ブロック任意化 仕様たたき台
 
 **日付**: 2026-07-08 JST  
-**状態**: **仕様起票 · AIチームレビュー済 · implement GO 待ち**（浜田 2026-07-08）  
+**状態**: **implement 完了（2026-07-08）** · BUILD `2026-07-08-736-optional-sub-blocks` · 浜田ブラウザ確認待ち  
 **優先度**: **依頼者必須案件（本日）** — PH1c implement は **7/9 以降**（要望・明日以降）  
 **親 SPEC**: [`2026-06-18-jikkou-yosan-spec.md`](2026-06-18-jikkou-yosan-spec.md) §9.2.2 **736-PH1d**  
 **live**: [App 736](https://jbis-kintone.cybozu.com/k/736/) · BUILD `2026-07-04-736-row-menu-fixed-pop` rev **168**
