@@ -315,10 +315,10 @@
     },
     "736": {
       "build": "2026-07-08-736-optional-sub-blocks",
-      "fileKey": "b35002d3-b4b4-4386-ad96-ea0bd5151d7d",
-      "revision": "170",
-      "relPath": "customize/736/desktop.js",
-      "deployedAt": "2026-07-08T14:56:04.228Z",
+      "fileKey": "614a450e-457a-4bed-9fa4-9d1285e8bfc9",
+      "revision": "171",
+      "relPath": ".kintone-deploy/upload-736.js",
+      "deployedAt": "2026-07-08T14:57:33.078Z",
       "note": null
     },
     "737": {
