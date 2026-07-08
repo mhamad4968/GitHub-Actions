@@ -32,7 +32,7 @@
 | **712** | 削除済 — deploy 禁止 |
 
 **次の1手**: **PH1d** implement GO 待ち（`docs/plans/2026-07-08-jikkou-yosan-ph1d-optional-subcontract-blocks-spec-draft.md`）· **PH1c** GO review **7/9〜** · **698/700** 目視 · **699** 受け入れ確認  
-**Git**: **`744dac8`** = `origin/main` — push 済
+**Git**: **`b06c023c`** = `origin/main` — push 済
 **夕反省**: `docs/reports/2026-07-07-evening-reflection.md` · **698/700 レビュー**: `docs/reports/2026-07-06-bi-698-700-monday-review.md`  
 **699 仕様**: Q-GUIDE-13 · `docs/plans/2026-07-06-bi-699-status-summary-spec-draft.md`  
 **736 7月**: `docs/runbooks/736-july-2026-schedule.md` · PH1b 凍結正本 `docs/plans/2026-07-06-jikkou-yosan-ph1b-label-row-spec-draft.md`  
