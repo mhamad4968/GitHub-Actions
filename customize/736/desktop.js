@@ -1,10 +1,10 @@
 /**
- * 実行予算書作成支援ツール ver.01 — BUILD 2026-07-08-736-optional-sub-blocks
+ * 実行予算書作成支援ツール ver.01 — BUILD 2026-07-09-736-diff-cost-removed-fix
  * Master app: 735
  */
 (function () {
   'use strict';
-  const BUILD = '2026-07-08-736-optional-sub-blocks';
+  const BUILD = '2026-07-09-736-diff-cost-removed-fix';
   const APP_MASTER = 735;
   const DEFAULT_COST_TEMPLATE = [
   { "cost_work_type_code": "10100", "cost_work_type": "材料費", "cost_category_code": "", "cost_category": "塗料", "cost_row_kind": "link", "cost_group_key": "material", "cost_tax_rate": 0.1, "cost_unit": "－", "detail_marker": "②", "cost_basis_note": "詳細表にて内訳を記載…②" },
@@ -632,6 +632,59 @@ function isCascadeRowChange(table, r, cells) {
 
 
 
+/** 差分突合用の意味キー（行位置に依存しない） */
+function semanticCostRowKey(r) {
+  const kind = normStr(r.cost_row_kind);
+  if (kind === '小計') {
+    return 'cost:sub:' + normStr(r.cost_group_key);
+  }
+  if (kind === '連携') {
+    return 'cost:link:' + normStr(r.detail_marker);
+  }
+  return 'cost:detail:' + normStr(r.cost_work_type_code) + ':' +
+    normStr(r.cost_category_code) + ':' + normStr(r.cost_work_type) + ':' + normStr(r.cost_category);
+}
+
+/** 旧テンプレ「（昼・夜）」1行 → 昼・夜2行（差分比較前に両側へ適用） */
+function migrateDayNightCostLinesForDiff(lines) {
+  const out = [];
+  (lines || []).forEach(function (r) {
+    const cat = normStr(r.cost_category);
+    if (cat === '重機誘導員（昼・夜）') {
+      out.push(Object.assign({}, r, { cost_category: '重機誘導員（昼）' }));
+      out.push(Object.assign({}, r, {
+        row_key: '',
+        cost_category: '重機誘導員（夜）',
+        cost_qty: '',
+        cost_unit_price: '',
+        cost_amount: 0,
+        cost_basis_note: '',
+        detail_marker: '',
+      }));
+      return;
+    }
+    if (cat === '検電接地等（昼・夜）') {
+      out.push(Object.assign({}, r, { cost_category: '検電接地等（昼）' }));
+      out.push(Object.assign({}, r, {
+        row_key: '',
+        cost_category: '検電接地等（夜）',
+        cost_qty: '',
+        cost_unit_price: '',
+        cost_amount: 0,
+        cost_basis_note: '',
+        detail_marker: '',
+      }));
+      return;
+    }
+    out.push(r);
+  });
+  return out;
+}
+
+function normalizeCostLinesForDiff(lines) {
+  return migrateDayNightCostLinesForDiff(lines || []);
+}
+
 /** 差分突合用の安定キー（index ＋ 行の意味）。UI ハイライトも同じキーを使う */
 
   function structuralRowKey(table, r, index) {
@@ -752,7 +805,21 @@ function pairTableRows(baseRows, curRows, table) {
 
 
 
-  // 2) 同じ行番号かつ構造キー一致
+  // 2) 原価行: 意味キー一致（位置ずれ・小計再生成に強い）
+
+  if (table === 'cost') {
+
+    tryPair(function (bi, ci) {
+
+      return semanticCostRowKey(base[bi]) === semanticCostRowKey(cur[ci]);
+
+    });
+
+  }
+
+
+
+  // 3) 同じ行番号かつ構造キー一致
 
   tryPair(function (bi, ci) {
 
@@ -762,7 +829,7 @@ function pairTableRows(baseRows, curRows, table) {
 
 
 
-  // 3) 構造キーのみ一致
+  // 4) 構造キーのみ一致
 
   tryPair(function (bi, ci) {
 
@@ -772,7 +839,7 @@ function pairTableRows(baseRows, curRows, table) {
 
 
 
-  // 4) 行数が同じなら同じ行番号で突合（レイアウト不変の修正版向け）
+  // 5) 行数が同じなら同じ行番号で突合（レイアウト不変の修正版向け）
 
   if (base.length === cur.length) {
 
@@ -906,6 +973,9 @@ function diffScalars(base, cur, fields) {
 
   if (!base || !cur) return null;
 
+  const baseCost = normalizeCostLinesForDiff(base.cost_lines);
+  const curCost = normalizeCostLinesForDiff(cur.cost_lines);
+
   return {
 
     totals: diffScalars(base, cur, ['contract_total_1', 'cost_total_8', 'profit_9', 'profit_rate', 'mat_total_2', 'mat_total_3']),
@@ -914,7 +984,7 @@ function diffScalars(base, cur, fields) {
 
       ['spec_name', 'spec_unit', 'spec_qty', 'spec_unit_price', 'spec_amount', 'spec_note'], 'spec'),
 
-    cost: diffTableRows(base.cost_lines, cur.cost_lines,
+    cost: diffTableRows(baseCost, curCost,
 
       ['cost_work_type_code', 'cost_work_type', 'cost_category_code', 'cost_category', 'cost_row_kind',
 
@@ -3480,7 +3550,10 @@ function pushTotalEntry(list, field, label, info, bucket) {
 
   function costRemovedScopeKey(row) {
     if (row.cost_row_kind === '連携' && row.detail_marker) return 'cost:link:' + row.detail_marker;
+    if (row.cost_row_kind === '小計' && row.cost_group_key) return 'cost:group:' + row.cost_group_key;
     if (row.cost_group_key) return 'cost:group:' + row.cost_group_key;
+    const wt = String(row.cost_work_type || '').trim();
+    if (wt && wt !== '計') return 'cost:group:wt:' + wt;
     return 'cost:tail';
   }
 

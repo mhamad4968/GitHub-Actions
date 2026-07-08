@@ -2376,7 +2376,10 @@
 
   function costRemovedScopeKey(row) {
     if (row.cost_row_kind === '連携' && row.detail_marker) return 'cost:link:' + row.detail_marker;
+    if (row.cost_row_kind === '小計' && row.cost_group_key) return 'cost:group:' + row.cost_group_key;
     if (row.cost_group_key) return 'cost:group:' + row.cost_group_key;
+    const wt = String(row.cost_work_type || '').trim();
+    if (wt && wt !== '計') return 'cost:group:wt:' + wt;
     return 'cost:tail';
   }
 

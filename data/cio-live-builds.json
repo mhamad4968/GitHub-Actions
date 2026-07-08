@@ -314,11 +314,11 @@
       "note": null
     },
     "736": {
-      "build": "2026-07-08-736-optional-sub-blocks",
-      "fileKey": "614a450e-457a-4bed-9fa4-9d1285e8bfc9",
-      "revision": "171",
-      "relPath": ".kintone-deploy/upload-736.js",
-      "deployedAt": "2026-07-08T14:57:33.078Z",
+      "build": "2026-07-09-736-diff-cost-removed-fix",
+      "fileKey": "1eae88f0-6361-4227-8ddc-e87a918059ba",
+      "revision": "172",
+      "relPath": "customize/736/desktop.js",
+      "deployedAt": "2026-07-08T15:10:05.200Z",
       "note": null
     },
     "737": {
