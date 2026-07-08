@@ -30,7 +30,7 @@
 | **712** | 削除済 — deploy 禁止 |
 
 **次の1手**: **736 PH1c** 行並び替え implement（**7/9〜**）· **698/700** 目視 · **699** 受け入れ確認  
-**Git**: **`d2a84c52`** = `origin/main` — push 済
+**Git**: **`eda162fb`** = `origin/main` — push 済
 **夕反省**: `docs/reports/2026-07-07-evening-reflection.md` · **698/700 レビュー**: `docs/reports/2026-07-06-bi-698-700-monday-review.md`  
 **699 仕様**: Q-GUIDE-13 · `docs/plans/2026-07-06-bi-699-status-summary-spec-draft.md`  
 **736 7月**: `docs/runbooks/736-july-2026-schedule.md` · PH1b 凍結正本 `docs/plans/2026-07-06-jikkou-yosan-ph1b-label-row-spec-draft.md`  
