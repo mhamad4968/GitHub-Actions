@@ -30,7 +30,7 @@
 | **712** | 削除済 — deploy 禁止 |
 
 **次の1手**: **736 PH1c** 行並び替え implement（**7/10〜**）· **698/700** 目視  
-**Git**: **`a0789de6`** = `origin/main` push 済 · 承認反映 commit 予定  
+**Git**: **`3aee801a`** = `origin/main` — push 済
 **夕反省**: `docs/reports/2026-07-09-evening-reflection.md`  
 **736 7月**: `docs/runbooks/736-july-2026-schedule.md`  
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`  
