@@ -1246,7 +1246,7 @@ window.BiAnnualPanel = (function () {
 
   /** 業務改善 ver.02 — ご利用ガイド */
 
-  var BUILD = '2026-07-06-bi-guide-banner-permission-label';
+  var BUILD = '2026-07-09-bi-guide-list-accordion-exclusive';
 
 
 
@@ -1424,6 +1424,10 @@ window.BiAnnualPanel = (function () {
       '#bi-guide-root .bi-nav-sub:hover{filter:brightness(0.97)}' +
       '#bi-guide-body{scroll-margin-top:72px}' +
       '#bi-list-unapplied,#bi-list-submitted,#bi-list-done,#bi-list-pending{scroll-margin-top:72px}' +
+      '#bi-guide-root .bi-list-accordion summary{list-style:none;display:flex;align-items:flex-start;gap:8px}' +
+      '#bi-guide-root .bi-list-accordion summary::-webkit-details-marker{display:none}' +
+      '#bi-guide-root .bi-list-accordion[open] .bi-list-accordion-caret{transform:rotate(180deg);display:inline-block}' +
+      '#bi-guide-root .bi-list-accordion summary:hover{background:rgba(248,250,252,0.9)}' +
       '#bi-guide-root .bi-guide-topic summary{list-style:none;display:flex;align-items:flex-start;gap:8px}' +
       '#bi-guide-root .bi-guide-topic summary::-webkit-details-marker{display:none}' +
       '#bi-guide-root .bi-guide-topic[open] .bi-guide-topic-caret{transform:rotate(180deg);display:inline-block}' +
@@ -3093,6 +3097,52 @@ window.BiAnnualPanel = (function () {
 
 
 
+  function listAccordionSection(anchorId, titleText, color, emoji, markBg, bodyHtml) {
+
+    return (
+
+      '<details id="' + esc(anchorId) + '" class="bi-list-accordion" style="scroll-margin-top:72px;margin-bottom:20px;border:1px solid #e2e8f0;border-radius:10px;background:#fff;overflow:hidden">' +
+
+      '<summary style="padding:14px 16px;cursor:pointer;font-weight:700;font-size:1.05em;color:' + color + '">' +
+
+      guideMark(emoji, markBg) +
+
+      '<span style="flex:1">' + esc(titleText) + '</span>' +
+
+      '<span class="bi-list-accordion-caret" aria-hidden="true" style="color:#64748b;font-size:0.85em">▼</span>' +
+
+      '</summary>' +
+
+      '<div class="bi-list-accordion-body" style="padding:4px 16px 16px;border-top:1px solid #f1f5f9">' +
+
+      bodyHtml +
+
+      '</div></details>'
+
+    );
+
+  }
+
+
+
+  function openBiListAccordionExclusive(anchorId) {
+
+    var root = document.getElementById('bi-guide-root');
+
+    var scope = root || document;
+
+    scope.querySelectorAll('.bi-list-accordion').forEach(function (el) {
+
+      el.open = el.id === anchorId;
+
+    });
+
+    return document.getElementById(anchorId);
+
+  }
+
+
+
   function listsSectionHtml() {
 
     if (state.listsLoading) {
@@ -3103,63 +3153,89 @@ window.BiAnnualPanel = (function () {
 
     var html = '';
 
-    var anchorStyle = 'scroll-margin-top:72px';
+    var unappliedTitle =
 
-    if (state.unappliedList.length > 0) {
+      '未申請・下書き' +
 
-      html +=
+      (state.unappliedList.length ? '（' + state.unappliedList.length + '件）' : '');
 
-        '<div id="bi-list-unapplied" style="' + anchorStyle + ';margin-bottom:28px">' +
+    var unappliedBody =
 
-        guideH3(
-          '未申請・下書き（' + state.unappliedList.length + '件）',
-          '#b45309',
-          '⚠️',
-          '#fff7ed'
-        ) +
+      listTableHtml(state.unappliedList, 'unapplied') +
 
-        listTableHtml(state.unappliedList, 'unapplied') +
+      '<p style="margin:10px 0 0;color:#92400e;font-size:0.92em">' +
 
-        '<p style="margin:10px 0 0;color:#92400e;font-size:0.92em">' +
+      '提案番号は <strong>「申請する」</strong> を押して申請が完了したあとに付与されます（一時保存のみの段階では番号はありません）。</p>';
 
-        '提案番号は <strong>「申請する」</strong> を押して申請が完了したあとに付与されます（一時保存のみの段階では番号はありません）。</p></div>';
+    html += listAccordionSection(
 
-    } else {
+      'bi-list-unapplied',
 
-      html += '<div id="bi-list-unapplied" style="' + anchorStyle + '"></div>';
+      unappliedTitle,
 
-    }
+      '#b45309',
 
-    html +=
+      '⚠️',
 
-      '<div id="bi-list-submitted" style="' + anchorStyle + ';margin-bottom:28px">' +
+      '#fff7ed',
 
-      guideH3('申請した一覧', guideTheme().heading, '📝', '#dbeafe') +
+      unappliedBody
 
-      listTableHtml(state.submittedList, 'view') + '</div>';
+    );
 
-    html +=
+    html += listAccordionSection(
 
-      '<div id="bi-list-done" style="' + anchorStyle + ';margin-bottom:28px">' +
+      'bi-list-submitted',
 
-      guideH3('評価完了一覧', '#166534', '✅', '#dcfce7') +
+      '申請した一覧',
 
-      listTableHtml(state.doneList, 'done') + '</div>';
+      guideTheme().heading,
+
+      '📝',
+
+      '#dbeafe',
+
+      listTableHtml(state.submittedList, 'view')
+
+    );
+
+    html += listAccordionSection(
+
+      'bi-list-done',
+
+      '評価完了一覧',
+
+      '#166534',
+
+      '✅',
+
+      '#dcfce7',
+
+      listTableHtml(state.doneList, 'done')
+
+    );
 
     if (state.showPending) {
 
-      html +=
+      var pendingTitle =
 
-        '<div id="bi-list-pending" style="' + anchorStyle + ';margin-bottom:28px">' +
+        '未評価一覧' + (state.pendingList.length ? '（' + state.pendingList.length + '件）' : '');
 
-        guideH3(
-          '未評価一覧' + (state.pendingList.length ? '（' + state.pendingList.length + '件）' : ''),
-          '#78350f',
-          '⏳',
-          '#f5ebe0'
-        ) +
+      html += listAccordionSection(
 
-        listTableHtml(state.pendingList, 'eval') + '</div>';
+        'bi-list-pending',
+
+        pendingTitle,
+
+        '#78350f',
+
+        '⏳',
+
+        '#f5ebe0',
+
+        listTableHtml(state.pendingList, 'eval')
+
+      );
 
     }
 
@@ -4280,7 +4356,7 @@ window.BiAnnualPanel = (function () {
 
         var id = btn.getAttribute('data-bi-scroll');
 
-        var target = document.getElementById(id);
+        var target = openBiListAccordionExclusive(id);
 
         if (!target) return;
 

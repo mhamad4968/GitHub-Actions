@@ -119,7 +119,7 @@ function extractBootstrapCanonical(root) {
     resolveTemplatePath(root, 'checkpoint-freeze-zone.template.md'),
     'utf8',
   );
-  const codeMatch = tpl.match(/```markdown\n([\s\S]*?)```/);
+  const codeMatch = tpl.match(/```markdown\r?\n([\s\S]*?)```/);
   if (!codeMatch) {
     throw new Error('checkpoint-freeze-zone.template.md: missing ```markdown block');
   }

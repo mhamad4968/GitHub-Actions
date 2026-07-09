@@ -3,10 +3,10 @@
 Windows から開きやすい控え: C:\Users\mhamada202408224\Desktop\AI緊急用\HANDOFF-HUMAN.txt
 ※ C:\Users\mhamada202408224\kintone-ai-lab は chat-sessions 無しの別ツリーなので、このファイルは置かない。
 
-日時(JST): 2026-07-09（水）終了 — **736 PH1d 完了 · 差分削除行修正 OK**
-いま何してた（1行）: 736 外注④〜⑦任意化 implement+deploy rev170 · 差分「削除行」誤検出修正 rev172 — 浜田確認 OK。
-次にやる1つ: **736 PH1c** 行並び替え implement（7/9〜）· **698/700** 目視 · **699** 受け入れ確認
-GO待ち（なし／内容）: なし（PH1d・差分修正は浜田 OK 済）
+日時(JST): 2026-07-09（水）終了 — **674 リスト出力 · 699 アコーディオン · Grok L2b**
+いま何してた（1行）: 674 列選択+Excel rev259 · 699 件数クリックで一覧開閉 rev123 · Grok L2b governance push 済。
+次にやる1つ: **736 PH1c** 行並び替え implement（**7/10〜**）· **698/700** 目視
+GO待ち（なし／内容）: 夕反省改善案（#R674-01 等）— 浜田承認待ち
 触らないで（なし／内容）: 688 / 677–679 / SKYSEA 7月 / PH1b implement / §9.6 能動提案
 
 推奨フロー（セッション切替）: ① **`00-NEW-SESSION-STARTER_yyyymmdd.txt`（JST・Explorer 名前順で先頭・常にこのファイル名）全文**（**v3.27+**: **「■ 貼付単独で完走」** が **唯一の詳細正本**（項番 -1〜0・**v3.28** 以後の改定もここ優先）。checkpoint 重複貼付不要。貼付推奨は verify 最終行）② この 5 行（**任意**）③ **項番 -0** → ④ **`session:bootstrap` 一括**。**日終わり（R17 必須）**: `npm run cio:session:close-git -- --execute --auto-stage --message "…"`（desktop sync 内包）。

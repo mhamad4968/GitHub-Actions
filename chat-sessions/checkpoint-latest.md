@@ -3,15 +3,15 @@
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED**（kintone レーン v1 完了・closures 登録）≠ **セッション締め**（export-handoff / Desktop sync / close-git）。混同禁止 -->
 
-**最終更新**: 2026-07-09 JST — **736 PH1d 完了・差分削除行修正 OK（浜田確認済）**
+**最終更新**: 2026-07-09 JST — **セッション締め**（674 リスト出力 · 699 アコーディオン · Grok L2b governance）
 
-### 本日アクティブ（BUILD/rev — 2026-07-08〜09）
+### 本日アクティブ（BUILD/rev — 2026-07-09）
 
 | 項目 | 内容 |
 |------|------|
-| **736 実行予算** | BUILD=`2026-07-09-736-diff-cost-removed-fix` **rev172**（live）— **PH1d** 外注④〜⑦任意化 rev170 · **差分削除行**修正 · 浜田 OK |
-| **736 PH1b 部分** | 外注④〜⑦テキスト行 — 仕様起票のみ `docs/plans/2026-07-07-jikkou-yosan-ph1b-partial-subcontract-label-spec-draft.md` · **implement 7/11 以降** |
-| **699 ご利用ガイド** | BUILD=`2026-07-06-bi-guide-banner-permission-label` **rev121** — **受け入れ確認待ち** |
+| **674 PC台帳** | BUILD=`2026-07-09-674-list-export-col-order` **rev259** — リスト一覧・列選択・Excel（SheetJS bundle）· 浜田 OK |
+| **699 ご利用ガイド** | BUILD=`2026-07-09-bi-guide-list-accordion-exclusive` **rev123** — 一覧アコーディオン＋件数クリックで開閉 · 浜田 OK |
+| **736 実行予算** | BUILD=`2026-07-09-736-diff-cost-removed-fix` **rev173**（live）— **PH1c implement 7/10〜**（7/9 リスケ） |
 | **700 提案申請** | BUILD=`2026-07-06-bi-apply-footer-reject-clear` **rev166** — **目視待ち** |
 | **698 社員マスタ** | BUILD=`2026-07-04-bi-employee-index-emp-filter` **rev19** — **目視待ち** |
 
@@ -29,15 +29,12 @@
 | **736** | **§9.6 凍結** · **7/7〜 AI 主導 §41**（736 のみ） |
 | **712** | 削除済 — deploy 禁止 |
 
-**次の1手**: **736 PH1c** 行並び替え implement（**7/9〜**）· **698/700** 目視 · **699** 受け入れ確認  
-**Git**: **`eda162fb`** = `origin/main` — push 済
-**夕反省**: `docs/reports/2026-07-07-evening-reflection.md` · **698/700 レビュー**: `docs/reports/2026-07-06-bi-698-700-monday-review.md`  
-**699 仕様**: Q-GUIDE-13 · `docs/plans/2026-07-06-bi-699-status-summary-spec-draft.md`  
-**736 7月**: `docs/runbooks/736-july-2026-schedule.md` · PH1b 凍結正本 `docs/plans/2026-07-06-jikkou-yosan-ph1b-label-row-spec-draft.md`  
+**次の1手**: **736 PH1c** 行並び替え implement（**7/10〜**）· **698/700** 目視  
+**Git**: close-git 実行予定（674/699 deploy 同セッション commit）  
+**夕反省**: `docs/reports/2026-07-09-evening-reflection.md`  
+**736 7月**: `docs/runbooks/736-july-2026-schedule.md`  
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`  
-**R-ORIENT-07**: 計画タスク完了 → 本日予定（736 7月表）→ 「以上です。本日の依頼をどうぞ」— **完了前は依頼を聞かない**  
-**Plan&Usage**（2026-07-05）: Ultra $200/mo · 合計 21% · リセット 7/15 — 現ペース問題なし  
-**運用メモ**: Desktop `18-重要確認.txt` 正本 · 本番 Excel **設定マスタ_本番** のみ · MCP `cio:mcp:env` 6/6 OK
+**運用メモ**: Desktop `18-重要確認.txt` 正本 · 674 deploy は `desktop.bundle.js`（`pc-ledger:674:bundle-desktop`）
 
 ## セッション切替後の自律復元（Lifecycle v2 鏡像）
 

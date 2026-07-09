@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-07-08-674-sanitize-orphan-native-q';
+  const BUILD = '2026-07-09-674-list-export-col-order';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -6993,16 +6993,94 @@ ${bodyInner}\
     { value: TYPE_SHARED, label: '共有' },
     { value: TYPE_JR, label: 'JR端末' },
   ];
-  const LIST674_TABLE_COLS = [
-    { label: 'PC名', code: FC_PC_NAME },
-    { label: '種別', code: FC_ACCOUNT_TYPE },
-    { label: '利用者', code: FC_USER_NAME },
-    { label: '所属', code: FC_DEPT_NAME },
-    { label: 'グループ', code: FC_GROUP_NAME },
-    { label: '状態', code: FC_PC_STATUS },
-    { label: 'Windows名', code: FC_WINDOWS_NAME },
-    { label: 'メール', code: FC_MAIL },
+  /** リスト一覧・Excel・印刷で選べる列（浜田 2026-07-09・支店リスト作成向け） */
+  const LIST674_EXPORT_COL_CATALOG = [
+    { label: '種別', code: FC_ACCOUNT_TYPE, defaultOn: true },
+    { label: 'PC名', code: FC_PC_NAME, defaultOn: true },
+    { label: '所属', code: FC_DEPT_NAME, defaultOn: true },
+    { label: '利用者', code: FC_USER_NAME, defaultOn: true },
+    { label: 'WindowsID', code: FC_LOGON_NAME, defaultOn: true },
+    { label: 'Windowsパスワード', code: FC_LOGON_PW, defaultOn: true, sensitive: true },
+    { label: 'メールアドレス', code: FC_MAIL, defaultOn: true },
+    { label: 'メールアカウント', code: FC_MAIL_ACCT, defaultOn: true },
+    { label: 'メールパスワード', code: FC_MAIL_PW, defaultOn: true, sensitive: true },
+    { label: 'M365 ID', code: FC_M365_ID, defaultOn: true },
+    { label: 'M365 PW', code: FC_M365_PW, defaultOn: true, sensitive: true },
+    { label: 'VPN ID', code: FC_VPN_ID, defaultOn: true },
+    { label: 'VPN PW', code: FC_VPN_PW, defaultOn: true, sensitive: true },
+    { label: 'グループ', code: FC_GROUP_NAME, defaultOn: false },
+    { label: '状態', code: FC_PC_STATUS, defaultOn: false },
+    { label: 'Windows名', code: FC_WINDOWS_NAME, defaultOn: false },
   ];
+
+  function list674DefaultExportCols674() {
+    return LIST674_EXPORT_COL_CATALOG.filter(function (c) {
+      return c.defaultOn;
+    });
+  }
+
+  function list674ReadSelectedExportCols674() {
+    const row = document.getElementById('npl674-list-col-row');
+    if (!row) return list674DefaultExportCols674();
+    const selected = [];
+    LIST674_EXPORT_COL_CATALOG.forEach(function (colDef) {
+      const cb = row.querySelector(
+        'input[type=checkbox][data-npl-list-col][value="' + colDef.code + '"]'
+      );
+      if (cb && cb.checked) selected.push(colDef);
+    });
+    return selected;
+  }
+
+  function resetList674ColCheckboxes674() {
+    const row = document.getElementById('npl674-list-col-row');
+    if (!row) return;
+    row.querySelectorAll('input[type=checkbox][data-npl-list-col]').forEach(function (cb) {
+      const def = LIST674_EXPORT_COL_CATALOG.find(function (c) {
+        return c.code === cb.value;
+      });
+      cb.checked = !!(def && def.defaultOn);
+    });
+    updateList674SensitiveNotice674();
+  }
+
+  function updateList674SensitiveNotice674() {
+    const note = document.getElementById('npl674-list-sensitive-note');
+    if (!note) return;
+    const cols = list674ReadSelectedExportCols674();
+    const hasSensitive = cols.some(function (c) {
+      return c.sensitive;
+    });
+    note.style.display = hasSensitive ? 'block' : 'none';
+  }
+
+  function exportList674Xlsx674(records, cols) {
+    if (typeof XLSX === 'undefined' || !XLSX.utils || !XLSX.writeFile) {
+      window.alert('Excel 出力用ライブラリが読み込まれていません。管理者に連絡してください。');
+      return;
+    }
+    if (!records.length) {
+      window.alert('出力対象がありません。');
+      return;
+    }
+    const useCols = cols && cols.length ? cols : list674DefaultExportCols674();
+    const header = useCols.map(function (c) {
+      return c.label;
+    });
+    const matrix = [header];
+    for (let i = 0; i < records.length; i++) {
+      matrix.push(
+        useCols.map(function (col) {
+          return cell674PlainForSearch(records[i], col.code);
+        })
+      );
+    }
+    const ws = XLSX.utils.aoa_to_sheet(matrix);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, '一覧');
+    const ymd = todayYmd674().replace(/-/g, '');
+    XLSX.writeFile(wb, 'PC台帳674_' + ymd + '.xlsx', { bookType: 'xlsx' });
+  }
 
   function ensureList674PrintStyles674() {
     if (document.getElementById(LIST674_PRINT_STYLE_ID)) return;
@@ -7098,10 +7176,11 @@ ${bodyInner}\
     return parts.join(' and ');
   }
 
-  function fetchList674Records674(queryCond) {
+  function fetchList674Records674(queryCond, exportCols) {
     const app = kintone.app.getId();
+    const cols = exportCols && exportCols.length ? exportCols : list674DefaultExportCols674();
     const fields = ['$id'].concat(
-      LIST674_TABLE_COLS.map(function (c) {
+      cols.map(function (c) {
         return c.code;
       })
     );
@@ -7126,11 +7205,17 @@ ${bodyInner}\
     });
   }
 
-  function renderList674ResultPanel674(records, summaryText) {
+  function renderList674ResultPanel674(records, summaryText, exportCols) {
     closeList674ResultPanel674();
     ensureList674PrintStyles674();
+    const cols = exportCols && exportCols.length ? exportCols : list674DefaultExportCols674();
     const panel = document.createElement('div');
     panel.id = LIST674_PANEL_ID;
+    panel.dataset.nplListCols = JSON.stringify(
+      cols.map(function (c) {
+        return c.code;
+      })
+    );
     panel.style.cssText =
       'position:fixed;inset:0;z-index:2147482900;background:#f8fafc;display:flex;flex-direction:column;' +
       'font-family:system-ui,sans-serif;color:#0f172a;';
@@ -7154,6 +7239,15 @@ ${bodyInner}\
       titleWrap.appendChild(sub);
     }
 
+    const btnExcel = document.createElement('button');
+    btnExcel.type = 'button';
+    btnExcel.textContent = 'Excel出力';
+    btnExcel.style.cssText =
+      'padding:6px 14px;border-radius:6px;border:none;background:#2563eb;color:#fff;font-weight:700;cursor:pointer;';
+    btnExcel.addEventListener('click', function () {
+      exportList674Xlsx674(records, cols);
+    });
+
     const btnPrint = document.createElement('button');
     btnPrint.type = 'button';
     btnPrint.textContent = '印刷';
@@ -7171,6 +7265,7 @@ ${bodyInner}\
     btnClose.addEventListener('click', closeList674ResultPanel674);
 
     toolbar.appendChild(titleWrap);
+    toolbar.appendChild(btnExcel);
     toolbar.appendChild(btnPrint);
     toolbar.appendChild(btnClose);
 
@@ -7180,10 +7275,10 @@ ${bodyInner}\
 
     const table = document.createElement('table');
     table.style.cssText =
-      'width:100%;border-collapse:collapse;background:#fff;font-size:13px;box-shadow:0 1px 3px rgba(0,0,0,.08);';
+      'width:100%;border-collapse:collapse;background:#fff;font-size:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);';
     const thead = document.createElement('thead');
     const hr = document.createElement('tr');
-    LIST674_TABLE_COLS.forEach(function (col) {
+    cols.forEach(function (col) {
       const th = document.createElement('th');
       th.textContent = col.label;
       th.style.cssText =
@@ -7198,7 +7293,7 @@ ${bodyInner}\
       const rec = records[ri];
       const tr = document.createElement('tr');
       tr.style.background = ri % 2 ? '#f8fafc' : '#fff';
-      LIST674_TABLE_COLS.forEach(function (col) {
+      cols.forEach(function (col) {
         const td = document.createElement('td');
         td.textContent = cell674PlainForSearch(rec, col.code);
         td.style.cssText =
@@ -7230,6 +7325,7 @@ ${bodyInner}\
         cb.checked = true;
       });
     }
+    resetList674ColCheckboxes674();
   }
 
   function openList674CreateModal674() {
@@ -7246,8 +7342,8 @@ ${bodyInner}\
 
       const box = document.createElement('div');
       box.style.cssText =
-        'background:#fff;border-radius:10px;max-width:480px;width:100%;padding:20px 22px;' +
-        'box-shadow:0 20px 50px rgba(0,0,0,.25);font-family:system-ui,sans-serif;';
+        'background:#fff;border-radius:10px;max-width:560px;width:100%;max-height:90vh;overflow:auto;' +
+        'padding:20px 22px;box-shadow:0 20px 50px rgba(0,0,0,.25);font-family:system-ui,sans-serif;';
       box.addEventListener('click', function (ev) {
         ev.stopPropagation();
       });
@@ -7260,7 +7356,7 @@ ${bodyInner}\
       intro.style.cssText = 'margin:0 0 14px;font-size:13px;line-height:1.55;color:#475569;';
       intro.textContent =
         '条件に合うレコードをこの画面内に表で表示します（別ウィンドウは開きません）。' +
-        '所属名・所属グループ・利用者名は部分一致で検索します。';
+        '出力する列を選べます。所属名・所属グループ・利用者名は部分一致で検索します。';
 
       const lblUser = document.createElement('label');
       lblUser.style.cssText = 'display:block;font-size:12px;font-weight:700;margin-bottom:4px;color:#334155;';
@@ -7311,6 +7407,59 @@ ${bodyInner}\
         typeRow.appendChild(lab);
       });
 
+      const lblCols = document.createElement('div');
+      lblCols.style.cssText =
+        'display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;font-size:12px;font-weight:700;margin:14px 0 6px;color:#334155;';
+      lblCols.appendChild(document.createTextNode('出力する列（1つ以上必須）'));
+      const btnColAll = document.createElement('button');
+      btnColAll.type = 'button';
+      btnColAll.textContent = '全選択';
+      btnColAll.style.cssText =
+        'margin-left:auto;padding:2px 8px;border-radius:4px;border:1px solid #94a3b8;background:#fff;font-size:11px;cursor:pointer;font-weight:600;';
+      btnColAll.addEventListener('click', function () {
+        const colRow = document.getElementById('npl674-list-col-row');
+        if (colRow) {
+          colRow.querySelectorAll('input[type=checkbox][data-npl-list-col]').forEach(function (cb) {
+            cb.checked = true;
+          });
+        }
+        updateList674SensitiveNotice674();
+      });
+      const btnColDefault = document.createElement('button');
+      btnColDefault.type = 'button';
+      btnColDefault.textContent = '既定に戻す';
+      btnColDefault.style.cssText =
+        'padding:2px 8px;border-radius:4px;border:1px solid #94a3b8;background:#fff;font-size:11px;cursor:pointer;font-weight:600;';
+      btnColDefault.addEventListener('click', resetList674ColCheckboxes674);
+      lblCols.appendChild(btnColAll);
+      lblCols.appendChild(btnColDefault);
+
+      const colRow = document.createElement('div');
+      colRow.id = 'npl674-list-col-row';
+      colRow.style.cssText =
+        'display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:8px 10px;margin-bottom:10px;';
+      LIST674_EXPORT_COL_CATALOG.forEach(function (colDef) {
+        const lab = document.createElement('label');
+        lab.style.cssText = 'display:flex;align-items:flex-start;gap:6px;font-size:13px;cursor:pointer;line-height:1.35;';
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.value = colDef.code;
+        cb.checked = !!colDef.defaultOn;
+        cb.dataset.nplListCol = '1';
+        cb.addEventListener('change', updateList674SensitiveNotice674);
+        lab.appendChild(cb);
+        lab.appendChild(document.createTextNode(colDef.label));
+        colRow.appendChild(lab);
+      });
+
+      const sensitiveNote = document.createElement('p');
+      sensitiveNote.id = 'npl674-list-sensitive-note';
+      sensitiveNote.style.cssText =
+        'display:none;margin:0 0 12px;padding:8px 10px;border-radius:6px;background:#fef2f2;color:#991b1b;' +
+        'font-size:12px;line-height:1.5;border:1px solid #fecaca;';
+      sensitiveNote.textContent =
+        'パスワード列を含みます。印刷・Excel は社内管理目的のみ。取扱い・廃棄に注意してください。';
+
       const lblMerge = document.createElement('label');
       lblMerge.style.cssText =
         'display:flex;align-items:flex-start;gap:8px;font-size:13px;margin-bottom:16px;cursor:pointer;line-height:1.45;';
@@ -7356,6 +7505,11 @@ ${bodyInner}\
           window.alert('種別を1つ以上選んでください。');
           return;
         }
+        const exportCols = list674ReadSelectedExportCols674();
+        if (!exportCols.length) {
+          window.alert('出力する列を1つ以上選んでください。');
+          return;
+        }
         const q = buildList674Query674(
           inpDept.value,
           inpGrp.value,
@@ -7370,13 +7524,16 @@ ${bodyInner}\
           (String(inpDept.value || '').trim() || '（指定なし）') +
           '　／　グループ: ' +
           (String(inpGrp.value || '').trim() || '（指定なし）') +
+          '　／　列: ' +
+          exportCols.length +
+          '項目' +
           (cbMerge.checked ? '　／　現在の一覧条件を含む' : '');
         closeList674Modal674();
         showList674Loading674(true);
-        fetchList674Records674(q)
+        fetchList674Records674(q, exportCols)
           .then(function (recs) {
             showList674Loading674(false);
-            renderList674ResultPanel674(recs, summary);
+            renderList674ResultPanel674(recs, summary, exportCols);
           })
           .catch(function (e) {
             showList674Loading674(false);
@@ -7398,11 +7555,16 @@ ${bodyInner}\
       box.appendChild(inpGrp);
       box.appendChild(lblTypes);
       box.appendChild(typeRow);
+      box.appendChild(lblCols);
+      box.appendChild(colRow);
+      box.appendChild(sensitiveNote);
       box.appendChild(lblMerge);
       box.appendChild(btnRow);
       modal.appendChild(box);
       document.body.appendChild(modal);
     }
+    resetList674ColCheckboxes674();
+    updateList674SensitiveNotice674();
     modal.style.display = 'flex';
   }
 

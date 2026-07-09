@@ -11,6 +11,8 @@ scripts/user683-monthly-pdf/_*.pdf
 
 # 678 デプロイ用（SheetJS + desktop.js 結合・`npm run bundle:678` で生成）
 customize/678/desktop.bundle.js
+# 674 デプロイ用（SheetJS + desktop.js 結合・`npm run pc-ledger:674:bundle-desktop` で生成）
+customize/new-pc-ledger-v1/desktop.bundle.js
 
 # 依存キャッシュ
 node_modules/

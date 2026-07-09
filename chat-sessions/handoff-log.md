@@ -4364,3 +4364,30 @@ npm run cio:morning:ready
 **Git**: 未コミット
 
 ---
+
+### 2026-07-09 22:45 JST — **セッション締め（674 リスト · 699 アコーディオン）**
+
+**要約**:
+- **674** rev259 — 列選択・Excel・列順（所属含む）· `pc-ledger:674:bundle-desktop`
+- **699** rev123 — 一覧アコーディオン · 件数クリック exclusive open · 浜田 OK
+- **夕反省**: `docs/reports/2026-07-09-evening-reflection.md` · 改善案 5 件承認待ち
+
+**次の1手**: **736 PH1c** 7/10〜 · **698/700** 目視
+
+**Git**: close-git 実行中
+
+---
+
+### 2026-07-09 22:20 JST — **736 PH1c implement 7/10 リスケ（浜田指示）**
+
+**要約**:
+- [App 736](https://jbis-kintone.cybozu.com/k/736/) **PH1c** 行並び替え implement — **本日 7/9 実施せず → 7/10 へ**
+- 正本同期: `736-july-2026-schedule.md` · `jikkou-yosan-spec.md` §9.2.2 · checkpoint · HANDOFF-HUMAN · bridge
+
+**次の1手**: **7/10** PH1c implement GO · 698/700 目視 · 699 受け入れ
+
+**触らない**: 688 / 677–679 / SKYSEA / PH1b
+
+**Git**: 未コミット
+
+---

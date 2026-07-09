@@ -26,11 +26,11 @@
       "note": null
     },
     "674": {
-      "build": "2026-07-08-674-sanitize-orphan-native-q",
-      "fileKey": "861fccac-12b3-4ebe-9175-e2d7d8d8bbab",
-      "revision": "257",
-      "relPath": ".kintone-deploy/upload-674.js",
-      "deployedAt": "2026-07-07T15:18:26.215Z",
+      "build": "2026-07-09-674-list-export-col-order",
+      "fileKey": "70986676-e0d8-406b-8c00-b438bc240c01",
+      "revision": "259",
+      "relPath": "customize/new-pc-ledger-v1/desktop.bundle.js",
+      "deployedAt": "2026-07-09T13:28:58.312Z",
       "note": null
     },
     "677": {
@@ -138,11 +138,11 @@
       "note": null
     },
     "699": {
-      "build": "2026-07-06-bi-guide-banner-permission-label",
-      "fileKey": "f22e7786-46c1-4e2d-8ae9-306ddbced96e",
-      "revision": "121",
+      "build": "2026-07-09-bi-guide-list-accordion-exclusive",
+      "fileKey": "ea35f5a7-0182-4e4f-9941-a92f49909417",
+      "revision": "123",
       "relPath": "customize/business-improvement-guide/desktop.bundle.js",
-      "deployedAt": "2026-07-06T12:18:18.103Z",
+      "deployedAt": "2026-07-09T13:39:41.414Z",
       "note": null
     },
     "700": {

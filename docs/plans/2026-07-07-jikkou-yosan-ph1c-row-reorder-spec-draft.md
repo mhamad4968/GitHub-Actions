@@ -3,7 +3,7 @@
 **日付**: 2026-07-07 JST（月）  
 **状態**: **たたき台 · 未 GO** — Q0 対象範囲から §41 主導で確定  
 **親 SPEC**: [`2026-06-18-jikkou-yosan-spec.md`](2026-06-18-jikkou-yosan-spec.md) §9.2.2 **736-PH1c**  
-**日程**: 仕様 **7/7–7/9** · 実装 **7/11**（[`736-july-2026-schedule.md`](../runbooks/736-july-2026-schedule.md)）  
+**日程**: 仕様 **7/7–7/9** · 実装着手 **7/10〜**（**7/9→7/10 リスケ** · 浜田 2026-07-09）· deploy 目標 **7/11**（[`736-july-2026-schedule.md`](../runbooks/736-july-2026-schedule.md)）  
 **live**: [App 736](https://jbis-kintone.cybozu.com/k/736/) · BUILD `2026-07-04-736-row-menu-fixed-pop` rev **168**
 
 > **背景**: Phase 0a–0c で ⋮ から **上/下に追加・削除** は実装済み。**並び替えのみ未実装**。現状は「削除＋再入力」で順序変更するしかない。
