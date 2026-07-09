@@ -145,6 +145,16 @@ npm run cio:tool:route -- --intent "作業内容の要約" [--app <APP_ID>] [--l
 
 deploy 系: `cio:preflight:<app>` → `deploy:<app>`（`.cursor/rules/cio-discipline-always.mdc`）
 
+**Grok L2b（verify ループ・該当時のみ）**:
+
+```
+DeepSeek §50-3-8 → Composer 初回 Diff → mark-composer-diff
+  → npm verify NG → validate-diff → stamp --mode C → check-c-ready
+  → Grok Subagent（契約+contractHash）→ CIO 検収 → B v2 品質ゲート
+```
+
+正本: `docs/runbooks/cio-grok-execution-loop.md` · Skill: `.cursor/skills/grok-execution-loop/SKILL.md`
+
 ---
 
 ## 5. checkpoint 凍結ゾーン（50 行）

@@ -4321,3 +4321,33 @@ npm run cio:morning:ready
 **GO待ち**: #R699-BANNER-01 等（夕反省 · 承認待ち）
 
 ---
+
+### 2026-07-09 21:50 JST — **Grok L2b B/C ハイブリッド体制 実装（CEO 相談 GO）**
+
+**要約**:
+- **Grok 4.5 L2b** 追補: B デフォルト / **C = Composer 初回後の verify ループのみ**（実行契約+上限）
+- **Fable 5**: T4 追加（Grok C 1 回後も突破不能）· lint 赤は Grok 優先
+- 正本: `docs/plans/2026-07-09-grok-l2b-hybrid-spec.md` · runbook · `cio:grok:execution-guard` · verify 追加
+
+**次の1手**: （浜田指示待ち）— PH1c implement 時に Grok C パイロット可
+
+**触らない**: ⑥ Visual OpenRouter 置換 · Fable 常時起動
+
+**Git**: 未コミット（本エントリ含む）
+
+---
+
+### 2026-07-09 22:05 JST — **Grok L2b 体制 深掘り改善（AIチーム監査・MCP連携強化）**
+
+**要約**:
+- **DeepSeek 監査** → guard 強化: `validate-diff` / stamp 必須（5038+doneWhen+inScope）/ **contractHash**
+- **MCP read-only 許可**: eslint-mcp · kintone-schema-mcp · git-history-mcp · repo-tree（matrix/routing/triggers/18 同期）
+- Skill `grok-execution-loop` · lifecycle v2 · routing v2 · 憲法19 追補
+
+**次の1手**: （浜田指示待ち）— PH1c で Grok C パイロット
+
+**触らない**: 688 / 677–679 / SKYSEA / PH1b
+
+**Git**: 未コミット
+
+---

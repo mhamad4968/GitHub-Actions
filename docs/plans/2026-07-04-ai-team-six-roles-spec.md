@@ -103,4 +103,20 @@ npm run verify:cio-tool-routing-infra
 npm run cio:tool:route -- --intent "Mermaid 6役フロー図"
 ```
 
+---
+
+## 8. Grok 4.5 L2b 追補（2026-07-09 · §1-2-3-6 非置換）
+
+**⑥ Visual は維持**。Grok は **番号置換しない L2b 追補**。
+
+| 項目 | 内容 |
+|------|------|
+| 正本 | `docs/plans/2026-07-09-grok-l2b-hybrid-spec.md` |
+| Runbook | `docs/runbooks/cio-grok-execution-loop.md` |
+| 運用 | **B デフォルト** / **C = Composer 後の verify ループのみ**（全条件 AND） |
+| 機械 | `npm run cio:grok:execution-guard` |
+| Fable 前段 | Grok C 1 回 or 不適用 → CIO 2 回統合 → Fable T1–T4 |
+
+**連携**: `① → ⑤ → ③(初回) → npm → [L2b Grok C?] → ① → CEO` — Kimi/⑥ は従来どおり。
+
 **Phase B パイロット**: 2026-07-04 — V1 `openai/gpt-4.1-nano` 成功（ラベル和訳要 CIO 修正 — 運用で防止）。

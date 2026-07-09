@@ -3,7 +3,9 @@
   "mode": "B",
   "sixRoleExtension": {
     "effective": "2026-07-04",
+    "grokL2b": "2026-07-09",
     "spec": "docs/plans/2026-07-04-ai-team-six-roles-spec.md",
+    "grokSpec": "docs/plans/2026-07-09-grok-l2b-hybrid-spec.md",
     "note": "§1-2-3-4 4AI 非置換追補 — Architect + Visual + Fable L4 + CIO 4.8 default"
   },
   "imageGenerationMcp": {
@@ -103,6 +105,18 @@
       },
       "avoidModels": ["openai/o3", "openai/gpt-5"],
       "note": "Mermaid/SVG/HTML diagrams only — docs/runbooks/cio-visual-diagram-openrouter.md"
+    },
+    "grok": {
+      "model": "Grok 4.5 Cursor Subagent (grok-4.5-fast-xhigh)",
+      "invocation": "Task subagent — not MCP server process",
+      "modes": { "B": "default proposal/single edit", "C": "verify-loop after Composer first diff" },
+      "mcpAllow": ["eslint-mcp", "kintone-schema-mcp", "git-history-mcp", "repo-tree"],
+      "mcpReadOnly": true,
+      "mcpDeny": ["kintone", "kintone-dev", "playwright", "github", "openrouter", "deepseek", "kimi"],
+      "shellAllow": ["npm run lint:*", "npm run smoke:quiet", "npm test", "node scripts/verify-*"],
+      "shellDeny": ["deploy:*", "git push", "kintone PUT/POST/DELETE"],
+      "guard": "npm run cio:grok:execution-guard",
+      "note": "L2b read-only MCP for cross-check only — docs/runbooks/cio-grok-execution-loop.md §MCP"
     }
   }
 }

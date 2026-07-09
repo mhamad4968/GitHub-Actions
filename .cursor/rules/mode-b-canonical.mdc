@@ -60,9 +60,11 @@ flowchart LR
 | # | 役割 | 担当 | ◯ | ✕ |
 |---|------|------|---|---|
 | ② | Architect | Opus 4.8 Subagent 1-shot | 重 spec 設計 | 常時起動・deploy |
+| **L2b** | **Grok 4.5** | **検証ループ（B/C）** | Composer 後 lint/test 緑 | deploy・SPEC意味変更・指揮 |
 | ⑥ | 視覚化 | OpenRouter V1→V2 | Mermaid/SVG 図 | コード diff |
 
 - **L4 Fable 5**: `docs/runbooks/cio-fable5-escalation.md`（稀・即 4.8 復帰）
+- **L2b Grok**: `docs/runbooks/cio-grok-execution-loop.md`（B デフォルト / C 検証ループ限定）
 - **⑥ runbook**: `docs/runbooks/cio-visual-diagram-openrouter.md`
 - **正本**: `docs/plans/2026-07-04-ai-team-six-roles-spec.md`
 
@@ -74,8 +76,11 @@ flowchart LR
 
 1. CIO — 方針 + 毎ターン4行（🎖️）
 2. DeepSeek — §50-3-8 盲点3点
-3. Composer — Diff・実装
-4. Kimi — レビュー → CIO — CEO へ1行要約
+3. Composer — **初回** Diff・実装
+4. npm 検証 — NG かつ C 条件満たす → **Grok L2b(C)**（契約+上限）→ CIO 検収
+5. Kimi — レビュー（80行超等）→ CIO — CEO へ1行要約
+
+**Grok 前（C 時）**: `--mark-5038` / `--mark-composer-diff` / `--validate-diff` / `--stamp --mode C` / `--check-c-ready`
 
 ### 仕様触れ前（§50-3-11）
 
@@ -113,6 +118,9 @@ flowchart LR
 | `npm run cio:session:turn-guard -- --check` | exit 0 |
 | `npm run verify:session-handoff-integrity -- --import` | exit 0（New Chat 時） |
 | `npm run cio:composer:escalation-guard -- --check` | exit 0 |
+| `npm run cio:grok:execution-guard -- --check-c-ready` | C 時 exit 0 |
+| `npm run cio:grok:execution-guard -- --validate-diff` | C 前 exit 0 |
+| `npm run verify:cio-grok-execution-infra` | exit 0 |
 | `npm run cio:task:score-spec` | exit 0 |
 | `npm run verify:cio-autonomous-infra` | exit 0 |
 | `npm run verify:cio-env-integrity` | exit 0 |

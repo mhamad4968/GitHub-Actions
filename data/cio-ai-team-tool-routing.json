@@ -53,7 +53,8 @@
     "github-ci",
     "design",
     "visualization",
-    "research"
+    "research",
+    "implementation"
   ],
   "intents": [
     {
@@ -389,6 +390,46 @@
       "runbook": "docs/mcp-status.md",
       "secondReviewer": null,
       "verify": ["verify:rag-mirror-canonical"]
+    },
+    {
+      "id": "grok-verify-loop",
+      "category": "implementation",
+      "phase": ["WORK"],
+      "keywords": [
+        "Grok",
+        "lint 修正ループ",
+        "verify ループ",
+        "自律ループ",
+        "L2b",
+        "composer 後",
+        "test 失敗",
+        "smoke NG"
+      ],
+      "priority": 14,
+      "mcp": [
+        { "server": "eslint-mcp", "priority": 10, "readonly": true },
+        { "server": "kintone-schema-mcp", "priority": 20, "readonly": true },
+        { "server": "git-history-mcp", "priority": 30, "readonly": true },
+        { "server": "repo-tree", "priority": 40, "readonly": true }
+      ],
+      "subagent": {
+        "model": "grok-4.5-fast-xhigh",
+        "modeDefault": "B",
+        "modeCRequires": [
+          "section5038",
+          "composerFirstDiff",
+          "executionContract",
+          "inScopePaths"
+        ]
+      },
+      "npm": [
+        "cio:grok:execution-guard",
+        "cio:grok:execution-guard -- --check-c-ready"
+      ],
+      "runbook": "docs/runbooks/cio-grok-execution-loop.md",
+      "secondReviewer": "deepseek",
+      "verify": ["verify:cio-grok-execution-infra"],
+      "specRel": "docs/plans/2026-07-09-grok-l2b-hybrid-spec.md"
     },
     {
       "id": "visual-diagram",

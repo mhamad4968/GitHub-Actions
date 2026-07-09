@@ -256,3 +256,14 @@ SPEC_TOUCHED: yes のターンで SECOND_REVIEWER: deepseek|kimi|openrouter の�
   **月次（第1営業日）**: `npm run cio:periodic:monthly` — 内包 **`verify:kintone-live-schema --portfolio`**
   **Composer 前 probe**: `npm run cio:mcp:env:extended` — 第12層 MCP initialize 含む
   **正本**: `docs/constitution/12-mcp-usage.md` 第12層 / `AGENTS.md` 第13層 / `data/kintone-field-registry.json`（714〜717 登録済）
+
+【2026-07-09 追記・Grok 4.5 L2b + Fable 5 棲み分け（CEO 相談 GO）】
+  **CIO**: **Opus 4.8 デフォルト**（不変）。**Fable 5** = **L4 切り札・コスト異常のため稀**（`cio-fable5-escalation.md`）。**lint 赤のみ → Fable 禁止・Grok C 優先**。
+  **Grok L2b**: **⑥ 視覚化は置換しない**。Composer **初回 Diff 後**の **検証ループ**担当。
+    · **B（デフォルト）**: 提案・単発 Edit
+    · **C（検証ループ）**: §50-3-8 済 + Composer 初回済 + 実行契約 + in-scope 固定 + **deploy/push/PUT 禁止** + 上限（15 calls / 10min / 同一エラー3回）
+  **機械**: `npm run cio:grok:execution-guard`（`--check-c-ready` / `--validate-diff` / `--stamp --mode C` / `--mark-composer-diff` / `--mark-5038`）
+  **MCP（read-only）**: eslint-mcp · kintone-schema-mcp · git-history-mcp · repo-tree（契約に列挙した分のみ）
+  **階段**: Composer → verify NG → validate-diff → Grok C → 突破不能 → CIO 2回 → Fable T1–T4
+  **正本**: `docs/plans/2026-07-09-grok-l2b-hybrid-spec.md` / `docs/runbooks/cio-grok-execution-loop.md` / `templates/grok-execution-contract.template.md`
+  **検証**: `npm run verify:cio-grok-execution-infra`

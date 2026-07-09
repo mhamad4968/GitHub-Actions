@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-21T01:20:31.989Z",
+  "generatedAt": "2026-07-09T12:57:08.113Z",
   "sectionToMdc": {
     "§0": [
       "constitution-brief-card.mdc",
@@ -55,6 +55,9 @@
     ],
     "§1-2-3-4-C": [
       "cursor-generate-image-assets.mdc"
+    ],
+    "§1-2-3-6": [
+      "mode-b-canonical.mdc"
     ],
     "§1-2-4": [
       "cursor-generate-image-assets.mdc",
@@ -252,6 +255,10 @@
     "§57-5": [
       "mcp-tool-discipline.mdc"
     ],
+    "§6": [
+      "mode-b-canonical.mdc",
+      "session-boundary-close-gate.mdc"
+    ],
     "§9": [
       "kintone-javascript.mdc"
     ]
@@ -299,6 +306,9 @@
     "cio-debug-tips-stock-gate.mdc": [
       "§1-2-3-4-A",
       "§50-3-11"
+    ],
+    "cio-deploy-ledger-gate.mdc": [
+      "§(RULES-INDEX行)"
     ],
     "cio-discipline-always.mdc": [
       "§10",
@@ -446,6 +456,9 @@
     "deepseek-pre-edit-gate.mdc": [
       "§50-3-8"
     ],
+    "doc-lane-gate.mdc": [
+      "§(RULES-INDEX行)"
+    ],
     "evening-reflection-scope.mdc": [
       "§(RULES-INDEX行)"
     ],
@@ -497,9 +510,11 @@
       "§1-2-3-1",
       "§1-2-3-4",
       "§1-2-3-4-A",
+      "§1-2-3-6",
       "§35-7",
       "§50-3-11",
-      "§50-3-8"
+      "§50-3-8",
+      "§6"
     ],
     "mode-b-mdc-canonical-linter.mdc": [
       "§(RULES-INDEX行)"
@@ -522,6 +537,9 @@
     ],
     "security-news-response.mdc": [
       "§(RULES-INDEX行)"
+    ],
+    "session-boundary-close-gate.mdc": [
+      "§6"
     ],
     "session-close-execute-first.mdc": [
       "§(RULES-INDEX行)"

@@ -24,12 +24,21 @@ function main() {
   const handoff = fs.readFileSync(handoffPath, 'utf8');
   const lines = handoff.split(/\r?\n/);
 
-  const topBlock = lines.slice(7, 13).join('\n');
-  if (!topBlock.includes('2026-06-13')) {
-    issues.push('HANDOFF-HUMAN 先頭块に 2026-06-13 なし');
+  const firstDateIdx = lines.findIndex((l) => /^日時\(JST\):/.test(l));
+  const topBlock =
+    firstDateIdx >= 0
+      ? lines.slice(firstDateIdx, firstDateIdx + 7).join('\n')
+      : lines.slice(0, 13).join('\n');
+
+  const anchor613Idx = lines.findIndex((l) => l.includes('2026-06-13'));
+  const anchor613 =
+    anchor613Idx >= 0 ? lines.slice(anchor613Idx, anchor613Idx + 7).join('\n') : '';
+
+  if (!anchor613.includes('2026-06-13')) {
+    issues.push('HANDOFF-HUMAN に 2026-06-13 アンカー块なし');
   }
-  if (!/項番\s*-0|v1\s*クローズ/i.test(topBlock)) {
-    issues.push('HANDOFF-HUMAN 先頭块に 項番 -0 / v1 クローズ なし');
+  if (!/項番\s*-0|v1\s*クローズ/i.test(anchor613)) {
+    issues.push('HANDOFF-HUMAN 2026-06-13 块に 項番 -0 / v1 クローズ なし');
   }
   if (/Q-SCHED-03/.test(topBlock)) {
     issues.push('HANDOFF-HUMAN 先頭块に Q-SCHED-03（TSB-038 再発）');

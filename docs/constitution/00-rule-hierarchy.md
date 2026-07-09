@@ -58,6 +58,7 @@
 | **`docs/runbooks/cio-architect-mode.md`** | 6役② Architect 1-shot（§1-2-3-6） |
 | **`docs/runbooks/cio-visual-diagram-openrouter.md`** | 6役⑥ Visual OpenRouter 図解 |
 | **`docs/runbooks/cio-fable5-escalation.md`** | L4 Fable 5 切り札 |
+| **`docs/runbooks/cio-grok-execution-loop.md`** | L2b Grok 4.5 B/C ハイブリッド |
 | **`docs/runbooks/c-tmp-workspace-lifecycle.md`** | C:\tmp 作業領域棚卸し |
 | **`docs/runbooks/deepseek-pre-edit-gate.md`** | §50-3-8 着手前チェックリスト |
 | **`docs/plans/2026-05-21-cio-session-model-override.md`** | 方式B 決定メモ |

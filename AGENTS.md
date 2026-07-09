@@ -463,7 +463,9 @@ flowchart LR
 | ⑤ | **知恵袋** | DeepSeek | §1-2-3-4 の ④ と同一 |
 | ⑥ | **視覚化** | OpenRouter OpenAI 系（V1→V2 自律） | Mermaid/SVG/HTML **のみ** — `docs/runbooks/cio-visual-diagram-openrouter.md` |
 
-**L4 Fable 5**: Composer↔DeepSeek 3+ デッドロック / git-history×kintone-schema 複合 / §47-A・§57 級のみ — `docs/runbooks/cio-fable5-escalation.md`。**突破後同一ターンで Opus 4.8 復帰**。
+**Grok 4.5 L2b（2026-07-09 追補）**: Composer **初回 Diff 後**の **検証ループ**（B デフォルト / C は契約+上限+contractHash）。deploy/push/PUT 禁止。**read-only MCP**: eslint-mcp / kintone-schema-mcp / git-history-mcp / repo-tree — `docs/runbooks/cio-grok-execution-loop.md`・`docs/plans/2026-07-09-grok-l2b-hybrid-spec.md`・`npm run cio:grok:execution-guard`。
+
+**L4 Fable 5**: Composer↔DeepSeek 3+ デッドロック / git-history×kintone-schema 複合 / §47-A・§57 級 / **Grok C 1 回後も突破不能** — `docs/runbooks/cio-fable5-escalation.md`。**突破後同一ターンで Opus 4.8 復帰**。**lint 赤のみは Grok C を先に**。
 
 **⑥ 視覚化ティア（CIO 自律・毎ターン 1 行）**: V1=`openai/gpt-4.1-nano|mini` → V2=`openai/gpt-4.1`（構文 NG 1 回）→ V3=CEO 資料 → Fallback=`openai/gpt-4o`。**o3/gpt-5 禁止**（コスト）。**§50-3-5 サニタイズ入力**・**CIO 構文/ラベル検証必須**（和訳ラベル NG）。**Composer/Kimi と並列禁止**。
 

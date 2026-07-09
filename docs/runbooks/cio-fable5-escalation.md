@@ -13,13 +13,16 @@
 
 ## 2. 起動トリガ（いずれか 1 つ以上）
 
+**前提（2026-07-09 Grok L2b 追補）**: Fable の前に **Grok C（検証ループ）を 1 回**試行済み、または Grok 不適用（仕様横断・局所バグ以外）。**CIO Opus 4.8** が同一論点で **2 回**統合判断後も矛盾が残ること。
+
 | # | 条件 | 例 |
 |---|------|-----|
 | T1 | Composer ↔ DeepSeek **3 回以上**デッドロック | verify 連続 NG + §50-3-8 再監査でも方針不一致 |
 | T2 | git-history-mcp + kintone-schema-mcp **複合** | 横断 spec で CIO+DeepSeek が突破不能 |
 | T3 | §47-A / §57 級 | 憲法横断・AGENTS 改定の整合ブロック |
+| T4 | **Grok L2b(C) 1 回後**も突破不能 | `cio:grok-execution-guard --record-fail` 後の横断矛盾 |
 
-**禁止**: ルーチン実装・軽量相談・コスト節約目的の Fable 起動。
+**禁止**: ルーチン実装・軽量相談・コスト節約目的の Fable 起動。**lint 赤のみ** → `docs/runbooks/cio-grok-execution-loop.md`（Grok C）を優先。
 
 ---
 
@@ -40,7 +43,7 @@
 1. CIO — トリガ該当を 1 行宣言 + 🎖️ `Fable5=L4起動`
 2. Fable — 型継承テンプレに従い **1 問または 1 設計回答**
 3. CIO — **同一ターン**で Opus 4.8 に復帰、🎖️ `Fable5=L4使用済→4.8復帰`
-4. 必要なら DeepSeek 再突合 → Composer へ
+4. 必要なら DeepSeek 再突合 → Composer または Grok L2b(B) へ（deploy は CIO）
 
 ---
 

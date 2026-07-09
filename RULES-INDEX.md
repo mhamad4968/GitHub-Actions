@@ -99,7 +99,7 @@
 
 ## § ↔ .mdc 双方向索引（自動生成・編集禁止）
 
-**更新**: `npm run rules:sync-section-mdc`（2026-06-27 JST）
+**更新**: `npm run rules:sync-section-mdc`（2026-07-09 JST）
 **正本**: `AGENTS.md` § 解釈 / 機械: `data/rules-index-section-mdc-map.json`
 
 ### § → .mdc（抜粋）
@@ -115,6 +115,7 @@
 | §1-2-3-4 | [`cio-constitution.mdc`](.cursor/rules/cio-constitution.mdc) · [`mode-b-canonical.mdc`](.cursor/rules/mode-b-canonical.mdc) |
 | §1-2-3-4-A | [`cio-commit-msg-kimi-gate.mdc`](.cursor/rules/cio-commit-msg-kimi-gate.mdc) · [`cio-composer-escalation-interlock.mdc`](.cursor/rules/cio-composer-escalation-interlock.mdc) · [`cio-context-dissolution-interlock.mdc`](.cursor/rules/cio-context-dissolution-interlock.mdc) · [`cio-debug-tips-stock-gate.mdc`](.cursor/rules/cio-debug-tips-stock-gate.mdc) · [`cio-env-integrity-gate.mdc`](.cursor/rules/cio-env-integrity-gate.mdc) · [`cio-env-self-healing-gate.mdc`](.cursor/rules/cio-env-self-healing-gate.mdc) · [`cio-error-ticket-apply-gate.mdc`](.cursor/rules/cio-error-ticket-apply-gate.mdc) · [`cio-error-ticket-gate.mdc`](.cursor/rules/cio-error-ticket-gate.mdc) · [`cio-handoff-export-validate-gate.mdc`](.cursor/rules/cio-handoff-export-validate-gate.mdc) · [`cio-kintone-fields-gate.mdc`](.cursor/rules/cio-kintone-fields-gate.mdc) · [`cio-spec-logic-gate.mdc`](.cursor/rules/cio-spec-logic-gate.mdc) · [`cio-weekend-rollback-gate.mdc`](.cursor/rules/cio-weekend-rollback-gate.mdc) · [`composer-mcp-audit-gate.mdc`](.cursor/rules/composer-mcp-audit-gate.mdc) · [`cursor-generate-image-assets.mdc`](.cursor/rules/cursor-generate-image-assets.mdc) · [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) · [`mcp-tool-discipline.mdc`](.cursor/rules/mcp-tool-discipline.mdc) · [`mode-b-canonical.mdc`](.cursor/rules/mode-b-canonical.mdc) |
 | §1-2-3-4-C | [`cursor-generate-image-assets.mdc`](.cursor/rules/cursor-generate-image-assets.mdc) |
+| §1-2-3-6 | [`mode-b-canonical.mdc`](.cursor/rules/mode-b-canonical.mdc) |
 | §1-2-4 | [`cursor-generate-image-assets.mdc`](.cursor/rules/cursor-generate-image-assets.mdc) · [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) · [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) |
 | §10 | [`cio-discipline-always.mdc`](.cursor/rules/cio-discipline-always.mdc) · [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) |
 | §11 | [`cio-discipline-always.mdc`](.cursor/rules/cio-discipline-always.mdc) · [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) · [`kintone-javascript.mdc`](.cursor/rules/kintone-javascript.mdc) |
@@ -160,7 +161,7 @@
 | §57 | [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) |
 | §57-10 | [`mcp-server-use-triggers.mdc`](.cursor/rules/mcp-server-use-triggers.mdc) |
 | §57-5 | [`mcp-tool-discipline.mdc`](.cursor/rules/mcp-tool-discipline.mdc) |
-| §6 | [`session-boundary-close-gate.mdc`](.cursor/rules/session-boundary-close-gate.mdc) |
+| §6 | [`mode-b-canonical.mdc`](.cursor/rules/mode-b-canonical.mdc) · [`session-boundary-close-gate.mdc`](.cursor/rules/session-boundary-close-gate.mdc) |
 | §9 | [`kintone-javascript.mdc`](.cursor/rules/kintone-javascript.mdc) |
 
 ### .mdc → §（抜粋）
@@ -215,7 +216,7 @@
 
 ## § ↔ ジャンル読本 双方向索引（自動生成・編集禁止）
 
-**更新**: `npm run rules:sync-section-genre`（2026-06-27 JST）
+**更新**: `npm run rules:sync-section-genre`（2026-07-09 JST）
 **正本**: `AGENTS.md` § 解釈 / 機械: `data/constitution-section-genre-map.json`
 **カタログ**: `data/constitution-genre-catalog.json`
 
@@ -239,6 +240,7 @@
 | §1-2-3-4-A | [`01-fundamentals.md`](docs/constitution/01-fundamentals.md) · [`17-four-ai-mode-b.md`](docs/constitution/17-four-ai-mode-b.md) |
 | §1-2-3-4-B | [`01-fundamentals.md`](docs/constitution/01-fundamentals.md) · [`17-four-ai-mode-b.md`](docs/constitution/17-four-ai-mode-b.md) |
 | §1-2-3-4-C | [`01-fundamentals.md`](docs/constitution/01-fundamentals.md) · [`17-four-ai-mode-b.md`](docs/constitution/17-four-ai-mode-b.md) |
+| §1-2-3-6 | [`01-fundamentals.md`](docs/constitution/01-fundamentals.md) · [`17-four-ai-mode-b.md`](docs/constitution/17-four-ai-mode-b.md) |
 | §1-2-4 | [`17-four-ai-mode-b.md`](docs/constitution/17-four-ai-mode-b.md) |
 | §1-N | [`01-fundamentals.md`](docs/constitution/01-fundamentals.md) |
 | §10 | [`03-quality-engineering.md`](docs/constitution/03-quality-engineering.md) |
@@ -284,9 +286,8 @@
 | §35-1 | [`09-human-autonomy-reporting.md`](docs/constitution/09-human-autonomy-reporting.md) |
 | §35-5 | [`09-human-autonomy-reporting.md`](docs/constitution/09-human-autonomy-reporting.md) |
 | §35-6 | [`09-human-autonomy-reporting.md`](docs/constitution/09-human-autonomy-reporting.md) |
-| §35-7 | [`09-human-autonomy-reporting.md`](docs/constitution/09-human-autonomy-reporting.md) |
 
-_他 105 件は `data/constitution-section-genre-map.json` を参照_
+_他 107 件は `data/constitution-section-genre-map.json` を参照_
 
 ### ジャンル → §（抜粋）
 

@@ -20,12 +20,14 @@
 3. 開発3ステップ: DeepSeek → 突合 → Composer Diff（GOなし save/deploy 禁止）
 4. 報告前: `npm run cio:report-verify-response -- --file <下書き>` exit 0
 5. 機械整合: `npm run verify:cio-four-ai-governance`
-6. WORK 着手: `npm run cio:tool:route -- --intent "…"`（D v2）→ B v2 品質ゲート（`push-deploy-quality-gates-v2.md`）
+6. **Grok C（検証ループ）**: Composer 初回後のみ — `validate-diff` → `stamp --mode C` → `check-c-ready` exit 0 → Subagent Grok（**read-only MCP**: eslint-mcp / kintone-schema-mcp / git-history-mcp / repo-tree）
+7. WORK 着手: `npm run cio:tool:route -- --intent "…"`（D v2）→ B v2 品質ゲート（`push-deploy-quality-gates-v2.md`）
 
 ## 禁止事項
 
 - 本体単独完結（CIO単独で GO なし save/deploy/PUT）
 - Composer Subagent の §50-3-8 なし単独保存
+- **Grok** の deploy/push/kintone 書込・SPEC 意味変更・MCP 書込（read-only 以外）
 - §1-2-2 silent fallback 継続（4択提示・即中断）
 - 上位条文（§35-1 / §56-1a / §41 / §51 / §1-2-2 / §52）の削除・置換（§50-3-11）
 - 「軽微」「minor」のみの §50-3-8 スキップ理由

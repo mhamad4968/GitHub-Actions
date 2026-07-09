@@ -24,6 +24,7 @@ globs: "**/*"
 | **Composer 2.5** | `kintone`, `playwright`, `rag`, `markdownify`, `shadcn-ui`, `chrome-devtools`, `duckduckgo-search`, `memory`, `repo-tree`, `eslint-mcp`, `context7` |
 | **Kimi** | `kimi`, `openrouter`, `markdownify`, `rag`, `memory` |
 | **DeepSeek** | `deepseek`, `openrouter`, `memory`, `sequential-thinking` |
+| **Grok 4.5 L2b** | `eslint-mcp`, `kintone-schema-mcp`, `git-history-mcp`, `repo-tree`（**read-only・横断検証のみ**） |
 
 **registry 必須10**: `deepseek`, `kimi`, `openrouter`, `memory`, `sequential-thinking`, `rag`, `markdownify`, `kintone`, `playwright`, `duckduckgo-search`（`npm run verify:cio-mcp-registry`）
 
@@ -50,6 +51,7 @@ globs: "**/*"
 - **context7**（`https://mcp.context7.com/mcp`）: **kintone JS API / React / Tailwind / shadcn** 等の **現行ライブラリ docs** が主題のとき（WebSearch の前に試す。プロンプト末尾 `use context7` も可）。
 - **kintone-schema-mcp**（`mcp/kintone-schema-mcp/index.mjs`）: **実 kintone preview form / lookup / reference / 型**を REST で直接取得するとき（`verify:kintone-live-schema` と **同一正本**）。
 - **git-history-mcp**（`mcp/git-history-mcp/index.mjs`）: **憲法改定層・4要素コミット・R19/R20 締め**を Git から検索するとき（`verify:git-history-alignment` と **同一正本**）。
+- **Grok L2b（Subagent・2026-07-09）**: Composer 初回 Diff **後**の verify ループ。**MCP は read-only のみ** — lint 客体検証は **eslint-mcp**、フィールド型矛盾は **kintone-schema-mcp**、規律先祖返り疑いは **git-history-mcp**、パス探索は **repo-tree**。deploy/push/kintone 書込 **禁止**。正本 **`docs/runbooks/cio-grok-execution-loop.md`** · `npm run cio:grok:execution-guard`.
 - **user-cve-search** / **user-cyber-news**: **CVE 番号・脆弱性ニュース**が主題のとき（それ以外では使わない）。
 - **user-markdownify**: **長文 HTML → Markdown** の一括変換が目的のとき（小さな表は手直しでよい）。
 - **office-powerpoint** / **user-office-powerpoint**: **PowerPoint 新規・図解・グラフ・フロー**（資料作成 / doc-lane）。**Win Cursor 必須**。着手前 `verify:doc-lane-governance` + `verify:doc-lane-pptx-phase1`。正本 **`doc-lane-pptx-mcp.md`**。
