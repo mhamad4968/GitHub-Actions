@@ -4374,7 +4374,7 @@ npm run cio:morning:ready
 
 **次の1手**: **736 PH1c** 7/10〜 · **698/700** 目視
 
-**Git**: close-git 実行中
+**Git**: close-git commit `47207b4e` push 予定
 
 ---
 
@@ -4389,5 +4389,8 @@ npm run cio:morning:ready
 **触らない**: 688 / 677–679 / SKYSEA / PH1b
 
 **Git**: 未コミット
+
+
+**GO待ち**: #R699-BANNER-01 等（夕反省 · 承認待ち）
 
 ---
