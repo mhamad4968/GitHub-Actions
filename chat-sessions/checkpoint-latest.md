@@ -9,7 +9,7 @@
 
 | 項目 | 内容 |
 |------|------|
-| **674 PC台帳** | BUILD=`2026-07-09-674-list-export-col-order` **rev259** — リスト一覧・列選択・Excel（SheetJS bundle）· 浜田 OK |
+| **674 PC台帳** | BUILD=`2026-07-09-674-list-export-col-order` **rev260** — リスト一覧・列選択・Excel（SheetJS bundle）· 浜田 OK |
 | **699 ご利用ガイド** | BUILD=`2026-07-09-bi-guide-list-accordion-exclusive` **rev123** — 一覧アコーディオン＋件数クリックで開閉 · 浜田 OK |
 | **736 実行予算** | BUILD=`2026-07-09-736-diff-cost-removed-fix` **rev173**（live）— **PH1c implement 7/10〜**（7/9 リスケ） |
 | **700 提案申請** | BUILD=`2026-07-06-bi-apply-footer-reject-clear` **rev166** — **目視待ち** |
