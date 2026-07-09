@@ -192,7 +192,7 @@ _(出力から未参照ルール行を抽出できず)_
 | #S-PREFLIGHT-01 | S | `cio-preflight-stamp.mjs` 失敗時の stderr に **コピペ可能な npm 例** を既出だが、deploy runbook 先頭にも同例を鏡像 | 低 | ○ |
 | #R-ACC-DEFAULT-01 | C | 今後の dash/guide 一覧ブロックは **`<details>` 初期閉じ + サマリー数字で exclusive open** をテンプレ化（`cio-handoff-template` または bi-guide runbook） | 低 | 手動 |
 
-**承認待ち**: 上記 5 件。却下・修正指示は `#ID 承認/却下` で返答ください。
+**承認済み（2026-07-09 浜田「全部承認」）**: 上記 5 件 + **#R-AITEAM-GROK-01** → `docs/approved-changes/2026-07-09-evening-improvements-hamada-go.md`
 
 > カテゴリ: **R**=ルール改善 / **S**=スクリプト改善 / **D**=ドキュメント / **C**=customize 改修(deploy 除く) / **K**=kintone API 操作
 

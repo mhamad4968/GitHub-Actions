@@ -41,7 +41,7 @@
 **674 実装済み機能（コード・本番フィールド）**
 
 - 種別別表示・自動生成（個人/共有/JR）・595/680 入力支援・M365 5 台警告・PC買替・627 相当印刷
-- 一覧: キーワード検索・種別チップ・転用PCチップ・**リスト一覧作成**（所属/グループ/利用者名 `like`・クリア・印刷）
+- 一覧: キーワード検索・種別チップ・転用PCチップ・**リスト一覧作成**（所属/グループ/利用者名 `like`・列選択・Excel・印刷）— **2026-07-09** rev259
 - 転用（`npl_transfer_manual`）・廃棄ウィザード・`npl_disposed_pc_copy`
 - 棚卸: 670 期間ゲート・個別/一括・未棚卸一覧・`inventory_history` サブテーブル
 - 購入: `purchase_date` / `purchase_amount` / `purchase_vendor` / `purchase_vendor_other`
@@ -994,6 +994,7 @@ snapshot: `data/snapshots/594-pre-migration-scan-2026-04-22.json`
 | 棚卸（670 期間ゲート・個別/一括・未棚卸一覧・履歴サブテーブル） | **[実装]** | `BUILD` `2026-05-19-inventory-period-v1` 等 |
 | 購入 4 フィールド | **[実装]** | 本番 61 フィールド・フォーム 2026-05-14 |
 | リスト一覧作成（部分一致・クリア・印刷） | **[実装]** | `BUILD` `2026-05-21-list-create-modal-clear-btn` |
+| リスト一覧（列選択・Excel・列順） | **[実装]** | `BUILD` `2026-07-09-674-list-export-col-order` rev259 · `pc-ledger:674:bundle-desktop` |
 | SKYSEA 一覧チップ | **非表示** | `query` 互換のみ（§4.8a） |
 | `pc-ledger:verify-labels-spec` | **要修正** | `purchase_*`・`m365_pw` 指紋 — 正本 JSON 追随 |
 

@@ -210,6 +210,8 @@ npm run cio:checkpoint:rollup -- --keep 3
 
 **R-LANE-PATCH-01（2026-07-07 GO · #R-SESS-09）**: GO **後**の機能追補も **§41 で1セット確定 → 1 deploy**（674 取消/595 解放型の段階 deploy 禁止）。**R-BI-04** と併記。
 
+**R-SESS-10（2026-07-09 GO · #R63-01）**: `deploy:*` **SUCCESS** 後 **45 分以内**に当該 lane の **customize + kintone-apps + cio-live-builds** を **partial commit**（夕締め一括待ち禁止）。full CLOSE 前に未 commit が残る場合は **理由 1 行**を handoff に残す。
+
 **partial でも必須**: checkpoint `次の1手` / `Git` + handoff-log 末尾ブロック（**Git** キー含む）。
 
 **full でも必須**: push まで（`close-git` 内包）。

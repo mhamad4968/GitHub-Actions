@@ -141,3 +141,18 @@ MCP 失敗時（DeepSeek 合意 2026-06-19）:
 npm run verify:cio-tool-routing-infra
 npm run cio:tool:route:test
 ```
+
+---
+
+## 10. Grok L2b 検証ループ（2026-07-09 体制変更 · 明日以降の標準）
+
+| 段階 | 担当 | コマンド / 条件 |
+|------|------|-----------------|
+| 1 初回実装 | **Composer** | 通常 Edit · `npm run cio:grok:execution-guard -- --mark-composer-diff` |
+| 2 lint/verify NG | **Grok C** | `§50-3-8` 済 · `--check-c-ready` → `--stamp --mode C` · in-scope 固定 |
+| 3 diff 監査 | Grok / guard | `--validate-diff`（deploy/push/PUT 禁止スキャン） |
+| 4 突破不能 | CIO → Fable | `cio-grok-execution-loop.md` 階段 |
+
+**新セッション開始時**: `npm run cio:grok:session-reset`（cold-start Phase 5b 内包）  
+**意図ルーティング**: `npm run cio:tool:route -- --intent "grok verify loop lint fix"`  
+**禁止**: Grok 単独での deploy · kintone PUT · push

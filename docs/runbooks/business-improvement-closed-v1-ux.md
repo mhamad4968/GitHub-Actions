@@ -88,6 +88,21 @@
 
 **禁止**: 共通 `hr_director_login` を WF テスト用に admin 固定（テスト行のみ per-row override）。
 
+---
+
+## 5. R-BI-05 — ガイド／dash 一覧ブロック（アコーディオン + サマリージャンプ）
+
+**制定**: 2026-07-09（#R-ACC-DEFAULT-01 浜田 GO）
+
+| 項目 | 規約 |
+|------|------|
+| 初期表示 | 一覧ブロックは `<details>` **閉じ** |
+| サマリー数字クリック | 該当 `details.open=true` · **他 `.bi-list-accordion` は false** · `scrollIntoView` |
+| 手動クリック | summary クリックは **複数同時 open 可**（exclusive は件数ジャンプ時のみ） |
+| 参照実装 | 699 `openBiListAccordionExclusive` · 719/749 リスト出力パターン |
+
+**新規 dash 追加時**: 上記を implement チェックリストに含める（`business-improvement-closed-v1-ux.md` §2 と併用可）。
+
 **関連**: 仕様 §4.7.1 / `scripts/data/business-improvement-wf-test-master.json`
 
 ---

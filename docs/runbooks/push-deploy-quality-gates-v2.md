@@ -84,6 +84,15 @@ manifest 追加手順:
 
 ## 5. deploy 標準手順（WORK 内）
 
+**preflight 必須（コピペ用）**:
+
+```bash
+npm run cio:preflight:<appId> -- --note "4文字以上の一行要約"
+# 例: npm run cio:preflight:674 -- --note "一覧リスト出力に列選択とExcelを追加"
+```
+
+**45 分以内**に `deploy:<appId>` を実行（R64）。`--note` 省略時は **exit 2**。
+
 ```bash
 # 1. 編集 → build/bundle
 npm run jikkou-yosan:build-desktop   # 736 の例
