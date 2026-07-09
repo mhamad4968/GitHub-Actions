@@ -109,6 +109,7 @@ Grok Subagent が **単独で MCP を乱用しない**。CIO が契約に **Allo
 - **セッションあたり Grok C は 2 回上限**（3 回目は Fable 検討または浜田 §41）
 - **§50-3-5**: API トークン・実レコード ID を Grok 入力に含めない
 - **証跡**: `logs/cio-grok-execution/` に stamp JSON
+- **WAKE リセット**: `npm run cio:grok:session-reset`（cold-start Phase 5b 内包）
 
 ---
 
@@ -120,5 +121,6 @@ Grok Subagent が **単独で MCP を乱用しない**。CIO が契約に **Allo
 | `npm run cio:grok:execution-guard -- --validate-diff` | working diff の deploy/push/PUT 拒否 |
 | `npm run cio:grok:execution-guard -- --stamp --mode C …` | 契約スタンプ + contractHash |
 | `npm run cio:grok:execution-guard -- --record-success` | 成功リセット |
+| `npm run cio:grok:session-reset` | WAKE 時セッション境界リセット |
 | `npm run cio:grok:execution-guard -- --record-fail --reason "…"` | 失敗記録 |
 | `npm run verify:cio-grok-execution-infra` | インフラ整合 |

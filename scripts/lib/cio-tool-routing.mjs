@@ -87,6 +87,7 @@ export function buildRoutePlan(rootManifest, intentText, opts = {}) {
     mcpChain: mcpSorted,
     npm,
     skill: primary?.skill ?? null,
+    subagent: primary?.subagent ?? null,
     runbook: primary?.runbook ?? rootManifest.canonicalRunbook,
     rule: primary?.rule ?? null,
     secondReviewer: primary?.secondReviewer ?? null,
@@ -132,6 +133,10 @@ export function formatRoutePlan(plan, opts = {}) {
     }
   }
   if (plan.npm.length) lines.push(`  npm: ${plan.npm.join(' → ')}`);
+  if (plan.subagent?.model) {
+    const mode = plan.subagent.modeDefault ? ` mode=${plan.subagent.modeDefault}` : '';
+    lines.push(`  subagent: ${plan.subagent.model}${mode}`);
+  }
   if (plan.secondReviewer) lines.push(`  §50-3-8: ${plan.secondReviewer}`);
   if (plan.skill) lines.push(`  skill: ${plan.skill}`);
   if (plan.runbook) lines.push(`  runbook: ${plan.runbook}`);

@@ -32,6 +32,11 @@ const MARKERS = [
   { file: '.cursor/rules/mcp-server-use-triggers.mdc', needles: ['Grok L2b', 'eslint-mcp'] },
   { file: 'docs/runbooks/session-lifecycle-v2.md', needles: ['Grok L2b', 'validate-diff'] },
   { file: 'docs/runbooks/ai-team-tool-routing-v2.md', needles: ['grok-verify-loop'] },
+  { file: 'scripts/cio-session-cold-start.mjs', needles: ['--session-reset', 'GROK-SESSION-RESET'] },
+  { file: 'data/cio-project-lanes.json', needles: ['grok-verify-loop'] },
+  { file: 'data/cio-handoff-template.json', needles: ['cio-grok-execution-loop'] },
+  { file: 'docs/mcp-status.md', needles: ['L2b Grok'] },
+  { file: 'docs/runbooks/push-deploy-quality-gates-v2.md', needles: ['Grok L2b'] },
 ];
 
 function main() {
@@ -40,7 +45,7 @@ function main() {
     if (!fs.existsSync(path.join(root, rel))) issues.push(`missing: ${rel}`);
   }
   const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
-  for (const s of ['cio:grok:execution-guard', 'verify:cio-grok-execution-infra']) {
+  for (const s of ['cio:grok:execution-guard', 'cio:grok:session-reset', 'verify:cio-grok-execution-infra']) {
     if (!pkg.scripts?.[s]) issues.push(`package.json scripts.${s}`);
   }
   const gov = pkg.scripts?.['verify:cio-four-ai-governance'] || '';

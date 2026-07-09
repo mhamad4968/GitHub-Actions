@@ -58,6 +58,7 @@
     "docs/runbooks/push-deploy-quality-gates-v2.md",
     "docs/runbooks/checkpoint-handoff-template-v2.md",
     "docs/runbooks/ai-team-tool-routing-v2.md",
+    "docs/runbooks/cio-grok-execution-loop.md",
     ".cursor/rules/mode-b-canonical.mdc"
   ]
 }

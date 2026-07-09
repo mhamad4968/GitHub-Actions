@@ -6,6 +6,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 
 export const STATE_REL = 'logs/cio-grok-execution/state.json';
 export const STAMPS_DIR = 'logs/cio-grok-execution/stamps';
@@ -80,7 +81,7 @@ export function scanDiffForForbidden(root) {
 }
 
 export function repoRoot(fromUrl) {
-  return path.resolve(path.dirname(fromUrl), '../..');
+  return path.resolve(path.dirname(fileURLToPath(fromUrl)), '../..');
 }
 
 export function statePath(root) {
@@ -163,6 +164,22 @@ export function recordStamp(root, { mode, goal, doneWhen, inScope, note = '' }) 
 
 export function recordSuccess(root) {
   const state = defaultState();
+  saveState(root, state);
+  return state;
+}
+
+/** WAKE / 新セッション — Grok C 回数・契約状態をリセット */
+export function recordSessionReset(root, reason = 'session-boundary') {
+  const prev = loadState(root);
+  const state = defaultState();
+  state.history = [
+    {
+      t: state.updatedAt,
+      event: 'session-reset',
+      reason,
+      prevSessionCRuns: prev.sessionCRuns,
+    },
+  ];
   saveState(root, state);
   return state;
 }

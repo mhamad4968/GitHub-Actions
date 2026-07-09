@@ -101,6 +101,10 @@ function main() {
   run('npm run session:clock:clear');
   run('npm run session:clock:set');
 
+  // Phase 5b — Grok L2b セッション状態リセット（C 回数・契約スタンプ残留防止）
+  console.log('\n▶ Phase 5b GROK-SESSION-RESET');
+  run('npm run cio:grok:execution-guard -- --session-reset --reason WAKE');
+
   // Phase 6 — bootstrap + import
   if (!skipBootstrap) {
     console.log('\n▶ Phase 6 BOOTSTRAP');

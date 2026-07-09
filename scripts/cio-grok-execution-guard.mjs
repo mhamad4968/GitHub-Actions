@@ -10,6 +10,7 @@ import {
   loadState,
   MAX_C_PER_SESSION,
   recordFail,
+  recordSessionReset,
   recordStamp,
   recordSuccess,
   repoRoot,
@@ -118,6 +119,12 @@ function main() {
     process.exit(0);
   }
 
+  if (argv.includes('--session-reset')) {
+    const state = recordSessionReset(root, argValue('--reason') || 'session-boundary');
+    console.log(`[cio:grok:execution-guard] OK session-reset history=${state.history.length}`);
+    process.exit(0);
+  }
+
   if (argv.includes('--record-fail')) {
     const state = recordFail(root, argValue('--reason') || 'unknown');
     console.log(`[cio:grok:execution-guard] fail recorded sessionCRuns=${state.sessionCRuns}`);
@@ -131,6 +138,7 @@ function main() {
   npm run cio:grok:execution-guard -- --validate-diff
   npm run cio:grok:execution-guard -- --stamp --mode C --goal "…" --done-when "npm run …" --in-scope "path"
   npm run cio:grok:execution-guard -- --record-success
+  npm run cio:grok:execution-guard -- --session-reset [--reason "WAKE"]
   npm run cio:grok:execution-guard -- --record-fail --reason "…"`);
   process.exit(2);
 }

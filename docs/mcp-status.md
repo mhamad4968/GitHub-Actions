@@ -78,6 +78,7 @@
 | **② Composer** | 2.5 Subagent | kintone・playwright・rag・markdownify・shadcn-ui・chrome-devtools・duckduckgo-search・memory（**diff のみ**） |
 | **③ Kimi** | Kimi | kimi・openrouter・markdownify・rag・memory（**長文**） |
 | **④ DeepSeek** | DeepSeek | deepseek・openrouter・memory・sequential-thinking（**§50-3-8**） |
+| **L2b Grok** | Grok 4.5 Subagent | eslint-mcp・kintone-schema-mcp・git-history-mcp・repo-tree（**read-only・verify ループ**） |
 
 **registry 必須（`verify:cio-mcp-registry`）**: `deepseek`, `kimi`, `openrouter`, `memory`, `sequential-thinking`, `rag`, `markdownify`, `kintone`, `playwright`, `duckduckgo-search`
 

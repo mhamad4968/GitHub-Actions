@@ -691,6 +691,7 @@
     "cio:session:turn-guard": "node scripts/cio-session-turn-guard.mjs",
     "cio:composer:escalation-guard": "node scripts/cio-composer-escalation-guard.mjs",
     "cio:grok:execution-guard": "node scripts/cio-grok-execution-guard.mjs",
+    "cio:grok:session-reset": "node scripts/cio-grok-execution-guard.mjs -- --session-reset --reason WAKE",
     "verify:cio-grok-execution-infra": "node scripts/verify-cio-grok-execution-infra.mjs",
     "cio:task:score-spec": "node scripts/cio-task-score-spec.mjs",
     "verify:session-handoff-integrity": "node scripts/verify-session-handoff-integrity.mjs",

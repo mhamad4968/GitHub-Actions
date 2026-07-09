@@ -70,6 +70,8 @@ const CHECKLIST = `
 
 7. DB+台帳 dash: APP_DB は bundle 前 sync（R43 — \`{lane}:bundle-dash\`）— **0 禁止**
 
+8. verify NG（lint/smoke）かつ Composer 初回 Diff 済 → **Grok L2b(C)** 検討（`cio:grok:execution-guard`）— deploy は CIO のみ
+
 
 
 正本: docs/runbooks/cio-four-ai-violation-remediation.md

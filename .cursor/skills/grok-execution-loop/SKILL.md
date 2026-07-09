@@ -49,3 +49,5 @@ npm run cio:grok:execution-guard -- --record-success
 ```
 
 deploy は CIO が `cio:deploy-gate` 経由で別途実行。
+
+**WAKE**: `npm run cio:grok:session-reset`（`cio:session:cold-start` Phase 5b）

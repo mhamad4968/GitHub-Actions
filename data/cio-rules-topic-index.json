@@ -63,6 +63,17 @@
       "npm": ["cio:tool:route", "verify:cio-tool-routing-infra"]
     },
     {
+      "topic": "Grok L2b・verify ループ",
+      "rules": [".cursor/rules/mode-b-canonical.mdc", ".cursor/rules/mcp-server-use-triggers.mdc"],
+      "when": "Composer 後 lint/smoke NG・自律ループ・Grok C",
+      "runbook": "docs/runbooks/cio-grok-execution-loop.md",
+      "npm": [
+        "cio:grok:execution-guard",
+        "verify:cio-grok-execution-infra",
+        "cio:tool:route"
+      ]
+    },
+    {
       "topic": "仕様・実装前ゲート",
       "rules": [
         ".cursor/rules/cio-spec-logic-gate.mdc",

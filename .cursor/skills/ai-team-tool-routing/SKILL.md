@@ -27,6 +27,16 @@ npm run cio:tool:route -- --intent "<要約>" [--app <APP_ID>] [--log]
 5. **§50-3-8** が出力にあれば DeepSeek → 突合 → stamp
 6. npm 列を **B v2 品質ゲート**順で実行
 
+## Grok L2b（verify ループ）
+
+lint/smoke NG かつ Composer 初回 Diff 済みのとき:
+
+```bash
+npm run cio:tool:route -- --intent "lint 修正ループ Grok"
+```
+
+→ Skill: `.cursor/skills/grok-execution-loop/SKILL.md`
+
 ## 正本
 
 - Runbook: `docs/runbooks/ai-team-tool-routing-v2.md`

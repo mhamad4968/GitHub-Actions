@@ -23,6 +23,8 @@
 
 ## 2. 3 段ゲート（責務分離）
 
+**Grok L2b 注記（2026-07-09）**: Composer 初回 Diff 後の **lint/smoke NG** は **Grok C**（`cio:grok-execution-guard`）で閉じる。**deploy 段は Grok 禁止** — CIO が `cio:deploy-gate` を実行。
+
 ```
 commit 前（軽量） → push 前（標準） → deploy 前（app 固有）
 ```
