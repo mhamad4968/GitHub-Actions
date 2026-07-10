@@ -30,14 +30,14 @@
 
 | 状態 | 内容 |
 |------|------|
-| **688 保留** | 触らない |
+| **688 保留** | **猛暑日（WBGT）機能のみ部分 GO**（2026-07-10 浜田）— それ以外は触らない |
 | **予実管理 保留** | **677/678/679** — 触らない |
 | **SKYSEA** | **8/1–8/15 再計画** · **配信目標 9/15** — **7月着手禁止** |
 | **736** | **§9.6 凍結** · **7/7〜 AI 主導 §41**（736 のみ） |
 | **712** | 削除済 — deploy 禁止 |
 
-**次の1手**: 明日 **運用最適化デー**（憲法・AIチーム運用）· 7/12 UI-BACKLOG-02 準備
-**Git**: **`dc4d034c`** = `origin/main` — push 済
+**次の1手**: **688 猛暑日** — 仕様 commit/push 済 · **浜田 implement GO 待ち**
+**Git**: **`36b3de41`** — PH1c commit 済 · **push 未実施**（origin より +2）
 **夕反省**: `docs/reports/2026-07-09-evening-reflection.md`  
 **736 7月**: `docs/runbooks/736-july-2026-schedule.md`  
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`  

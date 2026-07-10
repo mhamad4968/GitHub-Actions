@@ -297,3 +297,20 @@ npm run deploy:688
 ```
 
 正本実装: `scripts/workdays-calc-core.mjs`（`holidayBreakdownInRange` 分割） / `customize/688/desktop.ui.js`
+
+---
+
+## 12. 猛暑日（WBGT）参考表示（2026-07-10 · 部分 GO）
+
+**詳細正本**: [`2026-07-10-688-wbgt-heat-reference-spec.md`](2026-07-10-688-wbgt-heat-reference-spec.md)
+
+| 項目 | 内容 |
+|------|------|
+| **目的** | 塗装・足場・休日の月別表最下行 + 過去5年タブ + 印刷に **猛暑日数（参考）** |
+| **計算** | WBGT≥31 の **時間数 ÷ 8h** → 過去5年 **月平均** |
+| **データ** | [環境省 WBGT 実測 DL](https://www.wbgt.env.go.jp/wbgt_data_download.php) · `CSV→猛暑日（WBGT）` |
+| **厳守** | **稼働可能日数・不稼働率・再算出結果に含めない** |
+| **オプション** | 画面表示 ON/OFF · 印刷 ON/OFF（既定 OFF） |
+| **688 保留** | **本件のみ部分解凍** — 他改修は触らない |
+
+AIチームレビュー: **問題なし（2026-07-10）** — implement は commit/push 後に浜田確認。
