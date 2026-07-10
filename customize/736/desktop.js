@@ -1,10 +1,10 @@
 /**
- * 実行予算書作成支援ツール ver.01 — BUILD 2026-07-10-736-cost-budget-category-ph1f
+ * 実行予算書作成支援ツール ver.01 — BUILD 2026-07-10-736-ph1c-reorder-hide-singleton
  * Master app: 735
  */
 (function () {
   'use strict';
-  const BUILD = '2026-07-10-736-cost-budget-category-ph1f';
+  const BUILD = '2026-07-10-736-ph1c-reorder-hide-singleton';
   const APP_MASTER = 735;
   const DEFAULT_COST_TEMPLATE = [
   { "cost_work_type_code": "10100", "cost_work_type": "材料費", "cost_category_code": "", "cost_category": "塗料", "cost_row_kind": "link", "cost_group_key": "material", "cost_tax_rate": 0.1, "cost_unit": "－", "detail_marker": "②", "cost_basis_note": "詳細表にて内訳を記載…②" },
@@ -894,6 +894,10 @@ function pairTableRows(baseRows, curRows, table) {
 
           cur: cur[ci],
 
+          baseIndex: bi,
+
+          curIndex: ci,
+
         });
 
         baseUsed[bi] = true;
@@ -1047,6 +1051,16 @@ function diffTableRows(baseRows, curRows, fields, table) {
       const status = isCascadeRowChange(table, p.cur, cells) ? 'cascade' : 'changed';
 
       rows[p.key] = { status: status, cells: cells, label: rowLabel(table, p.cur) };
+
+    } else if (
+
+      p.baseIndex != null && p.curIndex != null && p.baseIndex !== p.curIndex &&
+
+      normStr(p.base.row_key).length >= 8 && normStr(p.base.row_key) === normStr(p.cur.row_key)
+
+    ) {
+
+      rows[p.key] = { status: 'moved', cells: {}, label: rowLabel(table, p.cur) };
 
     }
 
@@ -1290,6 +1304,149 @@ function pushTotalEntry(list, field, label, info, bucket) {
 }
 
 
+
+  /** PH1c — 行並び替え（許可ゾーン方式）· 2026-07-10 */
+  const REORDER_LINK_MARKERS_AB = new Set(['②', '③']);
+  const REORDER_LINK_MARKERS_B = new Set(['④', '⑤', '⑥', '⑦']);
+  const REORDER_SUB_CALC = new Set(['overhead', 'block_total', 'legal_welfare', 'order_amount', 'labor_total', 'insurance']);
+  let rowMoveState = null;
+
+  function reorderNorm(s) {
+    return String(s == null ? '' : s).trim();
+  }
+
+  function reorderTableLines(table, st) {
+    if (table === 'spec') return st.spec_lines;
+    if (table === 'cost') return st.cost_lines;
+    if (table === 'mat') return st.mat_lines;
+    if (table === 'sub') return st.subcontract_lines;
+    return [];
+  }
+
+  function reorderIsSubCalc(r) {
+    return !!(r && (REORDER_SUB_CALC.has(r.sub_row_kind) || r.sub_row_kind === 'overhead'));
+  }
+
+  function costHasSubtotalGroup(gk) {
+    return !!(gk && typeof EXCEL_SUBTOTAL_GROUP_KEYS !== 'undefined' && EXCEL_SUBTOTAL_GROUP_KEYS.has(gk));
+  }
+
+  function reorderZoneCost(lines, i) {
+    const r = lines[i];
+    if (!r || r.cost_row_kind === '小計') return null;
+    const mk = reorderNorm(r.detail_marker);
+    if (r.cost_row_kind === '連携' && REORDER_LINK_MARKERS_AB.has(mk)) return 'cost:mat-ab';
+    if (r.cost_row_kind === '連携' && REORDER_LINK_MARKERS_B.has(mk)) return 'cost:sub-link-b';
+    if (r.cost_row_kind === '明細' && costHasSubtotalGroup(r.cost_group_key)) {
+      return 'cost:grp:' + r.cost_group_key;
+    }
+    if (r.cost_row_kind === '明細') return 'cost:standalone';
+    return null;
+  }
+
+  function reorderZoneId(table, idx, st) {
+    const lines = reorderTableLines(table, st);
+    const r = lines[idx];
+    if (!r) return null;
+    if (table === 'spec') return 'spec:all';
+    if (table === 'cost') return reorderZoneCost(lines, idx);
+    if (table === 'mat') {
+      const g = reorderNorm(r.mat_group);
+      return g ? 'mat:' + g : null;
+    }
+    if (table === 'sub') {
+      if (r.sub_row_kind === 'vendor' || reorderIsSubCalc(r)) return null;
+      if (reorderNorm(r.sub_row_kind) !== 'detail') return null;
+      const b = reorderNorm(r.subcontract_block);
+      return b ? 'sub:' + b : null;
+    }
+    return null;
+  }
+
+  function canReorderRow(table, idx, st) {
+    if (readOnly) return false;
+    if (reorderZoneId(table, idx, st) == null) return false;
+    return reorderDestinations(table, idx, st).length > 0;
+  }
+
+  function reorderZoneIndices(table, zoneId, st) {
+    const lines = reorderTableLines(table, st);
+    const out = [];
+    for (let i = 0; i < lines.length; i += 1) {
+      if (reorderZoneId(table, i, st) === zoneId) out.push(i);
+    }
+    return out;
+  }
+
+  function reorderRowLabel(table, r, idx) {
+    let text = '';
+    if (table === 'spec') text = reorderNorm(r.spec_name) || '（名称なし）';
+    else if (table === 'cost') {
+      text = [reorderNorm(r.cost_work_type), reorderNorm(r.cost_category)].filter(Boolean).join(' / ') || '原価行';
+    } else if (table === 'mat') text = reorderNorm(r.mat_name) || reorderNorm(r.mat_vendor) || '材料行';
+    else if (table === 'sub') text = reorderNorm(r.sub_line_type) || reorderNorm(r.sub_vendor) || '外注行';
+    if (text.length > 20) text = text.slice(0, 20) + '…';
+    return (idx + 1) + '行目: ' + text;
+  }
+
+  function reorderDestinations(table, fromIdx, st) {
+    const zoneId = reorderZoneId(table, fromIdx, st);
+    if (!zoneId) return [];
+    const lines = reorderTableLines(table, st);
+    const indices = reorderZoneIndices(table, zoneId, st);
+    const dests = [];
+    const first = indices[0];
+    if (first != null && first !== fromIdx) {
+      dests.push({ mode: 'top', refIdx: first, label: '一番上' });
+    }
+    indices.forEach(function (idx) {
+      if (idx === fromIdx) return;
+      const lbl = reorderRowLabel(table, lines[idx], idx);
+      dests.push({ mode: 'before', refIdx: idx, label: lbl + 'の上' });
+      dests.push({ mode: 'after', refIdx: idx, label: lbl + 'の下' });
+    });
+    return dests;
+  }
+
+  function reorderInsertIndex(fromIdx, mode, refIdx) {
+    if (mode === 'top') return refIdx;
+    if (mode === 'before') return fromIdx < refIdx ? refIdx - 1 : refIdx;
+    if (mode === 'after') return fromIdx < refIdx ? refIdx : refIdx + 1;
+    return refIdx;
+  }
+
+  function executeRowMove(table, fromIdx, mode, refIdx, st) {
+    const arr = reorderTableLines(table, st);
+    if (!arr || fromIdx < 0 || fromIdx >= arr.length) return false;
+    const zoneId = reorderZoneId(table, fromIdx, st);
+    if (!zoneId || reorderZoneId(table, refIdx, st) !== zoneId) return false;
+    if (mode !== 'top' && refIdx < 0) return false;
+    const row = arr.splice(fromIdx, 1)[0];
+    const insertAt = reorderInsertIndex(fromIdx, mode, refIdx);
+    arr.splice(insertAt, 0, row);
+    return true;
+  }
+
+  function clearRowMoveState() {
+    rowMoveState = null;
+  }
+
+  function isRowMoveSource(table, idx) {
+    return !!(rowMoveState && rowMoveState.table === table && rowMoveState.from === idx);
+  }
+
+  function renderRowMoveDestMenu(table, fromIdx, st) {
+    const dests = reorderDestinations(table, fromIdx, st);
+    let html = '<div class="jy-row-move-dest" role="menu">';
+    html += '<div class="jy-row-move-dest-title">移動先を選択</div>';
+    dests.forEach(function (d, di) {
+      html += '<button type="button" role="menuitem" class="jy-row-move-dest-btn" data-' + table + '-move-dest="' +
+        fromIdx + ':' + d.mode + ':' + d.refIdx + '">' + esc(d.label) + '</button>';
+    });
+    html += '<button type="button" role="menuitem" class="jy-row-move-cancel" data-' + table + '-move-cancel="1">キャンセル</button>';
+    html += '</div>';
+    return html;
+  }
 
   const FC = {
     version_type: 'version_type',
@@ -2427,6 +2584,12 @@ function pushTotalEntry(list, field, label, info, bucket) {
       'tr.jy-diff-cascade td,td.jy-diff-cascade,td.jy-diff-cascade .jy-in{background:#f0f9ff!important;border-color:#7dd3fc!important}' +
       'tr.jy-diff-cascade td:first-child{box-shadow:inset 4px 0 0 #38bdf8}' +
       '.jy-diff-added,.jy-diff-swatch.jy-diff-added{background:#d4edda!important}' +
+      '.jy-diff-moved,.jy-diff-swatch.jy-diff-moved{background:#e9d5ff!important}' +
+      'tr.jy-diff-moved td{background:#f3e8ff!important;box-shadow:inset 4px 0 0 #a855f7}' +
+      'tr.jy-row-move-src td{background:#fef9c3!important;box-shadow:inset 4px 0 0 #eab308}' +
+      '.jy-row-move-dest-title{font-size:11px;font-weight:700;color:#475569;padding:4px 8px 2px}' +
+      '.jy-row-move-dest-btn,.jy-row-move-cancel{display:block;width:100%;text-align:left}' +
+      '.jy-row-move-cancel{color:#64748b;margin-top:4px;border-top:1px solid #e2e8f0}' +
       '.jy-diff-removed,.jy-diff-swatch.jy-diff-removed{background:#f8d7da!important}' +
       '.jy-diff-amt-up,.jy-diff-swatch.jy-diff-amt-up{background:#cfe2ff!important}' +
       '.jy-diff-amt-down,.jy-diff-swatch.jy-diff-amt-down{background:#f5c2c7!important}' +
@@ -3630,6 +3793,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
     const info = diffRowInfo(table, rowKey);
     if (!info) return '';
     if (info.status === 'added') return 'jy-diff-added';
+    if (info.status === 'moved') return 'jy-diff-moved';
     if (info.status === 'cascade') return 'jy-diff-cascade';
     if (info.status === 'changed') return 'jy-diff-changed';
     return '';
@@ -3991,6 +4155,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
     html += '<span class="jy-diff-legend"><span class="jy-diff-swatch jy-diff-changed">直接変更</span>';
     html += '<span class="jy-diff-swatch jy-diff-cascade">自動反映</span>';
     html += '<span class="jy-diff-swatch jy-diff-added">追加</span>';
+    html += '<span class="jy-diff-swatch jy-diff-moved">移動</span>';
     html += '<span class="jy-diff-swatch jy-diff-removed">削除</span>';
     html += '<span class="jy-diff-swatch jy-diff-amt-up">増 ▲</span>';
     html += '<span class="jy-diff-swatch jy-diff-amt-down">減 ▼</span></span>';
@@ -4097,14 +4262,21 @@ function pushTotalEntry(list, field, label, info, bucket) {
     const showBefore = opts.showBefore !== false;
     const showAfter = opts.showAfter !== false;
     const showDelete = opts.showDelete !== false;
+    const showMove = opts.showMove !== false && canReorderRow(table, i, state);
+    const moveActive = isRowMoveSource(table, i);
     let html = '<div class="jy-row-menu jy-row-menu-' + table + '">';
-    html += '<button type="button" class="jy-btn jy-row-menu-trigger"';
+    html += '<button type="button" class="jy-btn jy-row-menu-trigger" data-' + table + '-row-menu-trigger="' + i + '"';
     if (table === 'spec') html += ' data-spec-row-menu-trigger="' + i + '"';
     html += ' title="行の操作" aria-label="行の操作" aria-expanded="false" aria-haspopup="menu">⋮</button>';
     html += '<div class="jy-row-menu-pop" role="menu" hidden>';
-    if (showBefore) html += '<button type="button" role="menuitem" data-' + table + '-add-before="' + i + '">上に1行追加</button>';
-    if (showAfter) html += '<button type="button" role="menuitem" data-' + table + '-add-after="' + i + '">下に1行追加</button>';
-    if (showDelete) html += '<button type="button" role="menuitem" class="jy-row-menu-del" data-' + table + '-del="' + i + '">行を削除</button>';
+    if (moveActive) {
+      html += renderRowMoveDestMenu(table, i, state);
+    } else {
+      if (showBefore) html += '<button type="button" role="menuitem" data-' + table + '-add-before="' + i + '">上に1行追加</button>';
+      if (showAfter) html += '<button type="button" role="menuitem" data-' + table + '-add-after="' + i + '">下に1行追加</button>';
+      if (showMove) html += '<button type="button" role="menuitem" data-' + table + '-move-start="' + i + '">行を移動</button>';
+      if (showDelete) html += '<button type="button" role="menuitem" class="jy-row-menu-del" data-' + table + '-del="' + i + '">行を削除</button>';
+    }
     html += '</div></div>';
     return html;
   }
@@ -4129,7 +4301,8 @@ function pushTotalEntry(list, field, label, info, bucket) {
       const rk = rowKeyForTable('spec', r, i);
       const dr = diffRowClass('spec', rk);
       const catMissing = isSpecCategoryMissing(r);
-      html += '<tr' + (dr ? ' class="' + dr + '"' : '') + '><td class="' + diffCellClass('spec', rk, 'spec_name') + '"><input class="jy-in jy-text-cell" data-spec-name="' + i + '" value="' + esc(r.spec_name) + '"' + (r.spec_name ? ' title="' + esc(r.spec_name) + '"' : '') + (readOnly ? ' disabled' : '') + '></td>';
+      const trCls = [dr, isRowMoveSource('spec', i) ? 'jy-row-move-src' : ''].filter(Boolean).join(' ');
+      html += '<tr' + (trCls ? ' class="' + trCls + '"' : '') + '><td class="' + diffCellClass('spec', rk, 'spec_name') + '"><input class="jy-in jy-text-cell" data-spec-name="' + i + '" value="' + esc(r.spec_name) + '"' + (r.spec_name ? ' title="' + esc(r.spec_name) + '"' : '') + (readOnly ? ' disabled' : '') + '></td>';
       html += '<td class="jy-center ' + diffCellClass('spec', rk, 'spec_category') + (catMissing ? ' jy-spec-category-missing' : '') + '"><select class="jy-in" data-spec-category="' + i + '"' + (readOnly ? ' disabled' : '') + '>' + selOpts(SPEC_CATEGORY_OPTS, r.spec_category, true) + '</select></td>';
       html += '<td class="jy-center ' + diffCellClass('spec', rk, 'spec_unit') + '"><select class="jy-in" data-spec-unit="' + i + '"' + (readOnly ? ' disabled' : '') + '>' + selOpts(m.units.concat(SPEC_UNITS).filter(function (v, idx, a) { return a.indexOf(v) === idx; }), r.spec_unit, true) + '</select></td>';
       html += '<td class="' + diffCellClass('spec', rk, 'spec_qty') + '"><input class="jy-in jy-num" data-spec-qty="' + i + '" type="number" step="any" value="' + esc(r.spec_qty) + '"' + (readOnly ? ' disabled' : '') + '></td>';
@@ -4178,7 +4351,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
       const borderCls = typeof costBorderCssClass === 'function'
         ? costBorderCssClass(r.excel_border_role || (isSub ? 'group_subtotal' : 'standalone'))
         : (isSub ? 'jy-cost-group-subtotal' : 'jy-cost-standalone');
-      const cls = [isLink ? 'jy-link' : '', isSub ? 'jy-subtotal' : 'jy-cost-detail', borderCls, diffRowClass('cost', rk)].filter(Boolean).join(' ');
+      const cls = [isLink ? 'jy-link' : '', isSub ? 'jy-subtotal' : 'jy-cost-detail', borderCls, diffRowClass('cost', rk), isRowMoveSource('cost', i) ? 'jy-row-move-src' : ''].filter(Boolean).join(' ');
       const ro = readOnly || isLink || isSub;
       const budgetRo = readOnly || isSub;
       const budgetMissing = isCostBudgetCategoryMissing(r);
@@ -4486,7 +4659,8 @@ function pushTotalEntry(list, field, label, info, bucket) {
   function renderMatRow(r, i, readOnly) {
     const rk = rowKeyForTable('mat', r, i);
     const dr = diffRowClass('mat', rk);
-    let row = '<tr' + (dr ? ' class="' + dr + '"' : '') + '><td class="jy-center"><input class="jy-in jy-text-cell" data-mat-vendor="' + i + '" value="' + esc(r.mat_vendor) + '"' + (r.mat_vendor ? ' title="' + esc(r.mat_vendor) + '"' : '') + (readOnly ? ' disabled' : '') + '></td>';
+    const trCls = [dr, isRowMoveSource('mat', i) ? 'jy-row-move-src' : ''].filter(Boolean).join(' ');
+    let row = '<tr' + (trCls ? ' class="' + trCls + '"' : '') + '><td class="jy-center"><input class="jy-in jy-text-cell" data-mat-vendor="' + i + '" value="' + esc(r.mat_vendor) + '"' + (r.mat_vendor ? ' title="' + esc(r.mat_vendor) + '"' : '') + (readOnly ? ' disabled' : '') + '></td>';
     row += '<td><input class="jy-in jy-text-cell" data-mat-name="' + i + '" value="' + esc(r.mat_name) + '"' + (r.mat_name ? ' title="' + esc(r.mat_name) + '"' : '') + (readOnly ? ' disabled' : '') + '></td>';
     row += '<td class="jy-center"><input class="jy-in" data-mat-cap="' + i + '" value="' + esc(r.mat_capacity) + '"' + (readOnly ? ' disabled' : '') + '></td>';
     row += '<td class="jy-center"><input class="jy-in" data-mat-maker="' + i + '" value="' + esc(r.mat_maker) + '"' + (readOnly ? ' disabled' : '') + '></td>';
@@ -4567,7 +4741,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
         const totalRow = isSubBlockTotalRow(r);
         const customRow = isCustomSubRow(r, b.id);
         const rk = rowKeyForTable('sub', r, i);
-        var rowCls = [totalRow ? 'jy-total-row' : (calcRow ? 'jy-calc-row' : ''), diffRowClass('sub', rk)].filter(Boolean).join(' ');
+        var rowCls = [totalRow ? 'jy-total-row' : (calcRow ? 'jy-calc-row' : ''), diffRowClass('sub', rk), isRowMoveSource('sub', i) ? 'jy-row-move-src' : ''].filter(Boolean).join(' ');
         html += '<tr class="' + rowCls + '"><td>';
         if (customRow && !readOnly) {
           html += subLineTypeInput(i, r, b.id);
@@ -5584,6 +5758,7 @@ function pushTotalEntry(list, field, label, info, bucket) {
       document.addEventListener('click', function (e) {
         const rootEl = document.getElementById('jy-root');
         if (!rootEl || e.target.closest('.jy-row-menu')) return;
+        clearRowMoveState();
         closeRowMenus(rootEl);
       });
     }
@@ -5626,6 +5801,40 @@ function pushTotalEntry(list, field, label, info, bucket) {
         render();
       });
     });
+
+    function bindRowMoveHandlers(table) {
+      root.querySelectorAll('[data-' + table + '-move-start]').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          rowMoveState = { table: table, from: Number(btn.getAttribute('data-' + table + '-move-start')) };
+          render();
+        });
+      });
+      root.querySelectorAll('[data-' + table + '-move-dest]').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          const parts = String(btn.getAttribute('data-' + table + '-move-dest') || '').split(':');
+          const fromIdx = Number(parts[0]);
+          const mode = parts[1];
+          const refIdx = Number(parts[2]);
+          syncInputs();
+          if (executeRowMove(table, fromIdx, mode, refIdx, state)) {
+            clearRowMoveState();
+            markDirty();
+          }
+          render();
+        });
+      });
+      root.querySelectorAll('[data-' + table + '-move-cancel]').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          clearRowMoveState();
+          closeRowMenus(root);
+          render();
+        });
+      });
+    }
+    ['spec', 'cost', 'mat', 'sub'].forEach(bindRowMoveHandlers);
 
     root.querySelectorAll('[data-cost-add]').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
@@ -5745,6 +5954,22 @@ function pushTotalEntry(list, field, label, info, bucket) {
     bindCostLineFieldSync(root, 'data-cost-cat', 'cat');
     bindCostLineFieldSync(root, 'data-cost-ccd', 'ccd');
     bindCostLineCollapseDisplay(root);
+
+    if (rowMoveState) {
+      const table = rowMoveState.table;
+      const from = rowMoveState.from;
+      const btn = root.querySelector('[data-' + table + '-row-menu-trigger="' + from + '"]');
+      const wrap = btn && btn.closest('.jy-row-menu');
+      const panel = wrap && wrap.querySelector('.jy-row-menu-pop');
+      const tr = btn && btn.closest('tr');
+      if (btn && panel) {
+        panel.hidden = false;
+        positionRowMenuPop(btn, panel);
+        btn.setAttribute('aria-expanded', 'true');
+        if (wrap) wrap.classList.add('jy-row-menu-open');
+        if (tr) tr.classList.add('jy-row-menu-open');
+      }
+    }
   }
 
   function bindPersonNameFields() {

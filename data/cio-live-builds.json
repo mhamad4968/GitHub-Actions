@@ -314,11 +314,11 @@
       "note": null
     },
     "736": {
-      "build": "2026-07-10-736-cost-budget-category-ph1f",
-      "fileKey": "0bf89e02-61db-41da-89a5-d0b2a1dc62a5",
-      "revision": "180",
-      "relPath": ".kintone-deploy/upload-736.js",
-      "deployedAt": "2026-07-10T07:17:27.800Z",
+      "build": "2026-07-10-736-ph1c-reorder-hide-singleton",
+      "fileKey": "1b8f4f52-b6ff-4602-8f51-0b1c9b6428cf",
+      "revision": "182",
+      "relPath": "customize/736/desktop.js",
+      "deployedAt": "2026-07-10T12:23:51.704Z",
       "note": null
     },
     "737": {

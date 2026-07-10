@@ -1134,6 +1134,12 @@
       'tr.jy-diff-cascade td,td.jy-diff-cascade,td.jy-diff-cascade .jy-in{background:#f0f9ff!important;border-color:#7dd3fc!important}' +
       'tr.jy-diff-cascade td:first-child{box-shadow:inset 4px 0 0 #38bdf8}' +
       '.jy-diff-added,.jy-diff-swatch.jy-diff-added{background:#d4edda!important}' +
+      '.jy-diff-moved,.jy-diff-swatch.jy-diff-moved{background:#e9d5ff!important}' +
+      'tr.jy-diff-moved td{background:#f3e8ff!important;box-shadow:inset 4px 0 0 #a855f7}' +
+      'tr.jy-row-move-src td{background:#fef9c3!important;box-shadow:inset 4px 0 0 #eab308}' +
+      '.jy-row-move-dest-title{font-size:11px;font-weight:700;color:#475569;padding:4px 8px 2px}' +
+      '.jy-row-move-dest-btn,.jy-row-move-cancel{display:block;width:100%;text-align:left}' +
+      '.jy-row-move-cancel{color:#64748b;margin-top:4px;border-top:1px solid #e2e8f0}' +
       '.jy-diff-removed,.jy-diff-swatch.jy-diff-removed{background:#f8d7da!important}' +
       '.jy-diff-amt-up,.jy-diff-swatch.jy-diff-amt-up{background:#cfe2ff!important}' +
       '.jy-diff-amt-down,.jy-diff-swatch.jy-diff-amt-down{background:#f5c2c7!important}' +
@@ -2337,6 +2343,7 @@
     const info = diffRowInfo(table, rowKey);
     if (!info) return '';
     if (info.status === 'added') return 'jy-diff-added';
+    if (info.status === 'moved') return 'jy-diff-moved';
     if (info.status === 'cascade') return 'jy-diff-cascade';
     if (info.status === 'changed') return 'jy-diff-changed';
     return '';
@@ -2698,6 +2705,7 @@
     html += '<span class="jy-diff-legend"><span class="jy-diff-swatch jy-diff-changed">直接変更</span>';
     html += '<span class="jy-diff-swatch jy-diff-cascade">自動反映</span>';
     html += '<span class="jy-diff-swatch jy-diff-added">追加</span>';
+    html += '<span class="jy-diff-swatch jy-diff-moved">移動</span>';
     html += '<span class="jy-diff-swatch jy-diff-removed">削除</span>';
     html += '<span class="jy-diff-swatch jy-diff-amt-up">増 ▲</span>';
     html += '<span class="jy-diff-swatch jy-diff-amt-down">減 ▼</span></span>';
@@ -2804,14 +2812,21 @@
     const showBefore = opts.showBefore !== false;
     const showAfter = opts.showAfter !== false;
     const showDelete = opts.showDelete !== false;
+    const showMove = opts.showMove !== false && canReorderRow(table, i, state);
+    const moveActive = isRowMoveSource(table, i);
     let html = '<div class="jy-row-menu jy-row-menu-' + table + '">';
-    html += '<button type="button" class="jy-btn jy-row-menu-trigger"';
+    html += '<button type="button" class="jy-btn jy-row-menu-trigger" data-' + table + '-row-menu-trigger="' + i + '"';
     if (table === 'spec') html += ' data-spec-row-menu-trigger="' + i + '"';
     html += ' title="行の操作" aria-label="行の操作" aria-expanded="false" aria-haspopup="menu">⋮</button>';
     html += '<div class="jy-row-menu-pop" role="menu" hidden>';
-    if (showBefore) html += '<button type="button" role="menuitem" data-' + table + '-add-before="' + i + '">上に1行追加</button>';
-    if (showAfter) html += '<button type="button" role="menuitem" data-' + table + '-add-after="' + i + '">下に1行追加</button>';
-    if (showDelete) html += '<button type="button" role="menuitem" class="jy-row-menu-del" data-' + table + '-del="' + i + '">行を削除</button>';
+    if (moveActive) {
+      html += renderRowMoveDestMenu(table, i, state);
+    } else {
+      if (showBefore) html += '<button type="button" role="menuitem" data-' + table + '-add-before="' + i + '">上に1行追加</button>';
+      if (showAfter) html += '<button type="button" role="menuitem" data-' + table + '-add-after="' + i + '">下に1行追加</button>';
+      if (showMove) html += '<button type="button" role="menuitem" data-' + table + '-move-start="' + i + '">行を移動</button>';
+      if (showDelete) html += '<button type="button" role="menuitem" class="jy-row-menu-del" data-' + table + '-del="' + i + '">行を削除</button>';
+    }
     html += '</div></div>';
     return html;
   }
@@ -2836,7 +2851,8 @@
       const rk = rowKeyForTable('spec', r, i);
       const dr = diffRowClass('spec', rk);
       const catMissing = isSpecCategoryMissing(r);
-      html += '<tr' + (dr ? ' class="' + dr + '"' : '') + '><td class="' + diffCellClass('spec', rk, 'spec_name') + '"><input class="jy-in jy-text-cell" data-spec-name="' + i + '" value="' + esc(r.spec_name) + '"' + (r.spec_name ? ' title="' + esc(r.spec_name) + '"' : '') + (readOnly ? ' disabled' : '') + '></td>';
+      const trCls = [dr, isRowMoveSource('spec', i) ? 'jy-row-move-src' : ''].filter(Boolean).join(' ');
+      html += '<tr' + (trCls ? ' class="' + trCls + '"' : '') + '><td class="' + diffCellClass('spec', rk, 'spec_name') + '"><input class="jy-in jy-text-cell" data-spec-name="' + i + '" value="' + esc(r.spec_name) + '"' + (r.spec_name ? ' title="' + esc(r.spec_name) + '"' : '') + (readOnly ? ' disabled' : '') + '></td>';
       html += '<td class="jy-center ' + diffCellClass('spec', rk, 'spec_category') + (catMissing ? ' jy-spec-category-missing' : '') + '"><select class="jy-in" data-spec-category="' + i + '"' + (readOnly ? ' disabled' : '') + '>' + selOpts(SPEC_CATEGORY_OPTS, r.spec_category, true) + '</select></td>';
       html += '<td class="jy-center ' + diffCellClass('spec', rk, 'spec_unit') + '"><select class="jy-in" data-spec-unit="' + i + '"' + (readOnly ? ' disabled' : '') + '>' + selOpts(m.units.concat(SPEC_UNITS).filter(function (v, idx, a) { return a.indexOf(v) === idx; }), r.spec_unit, true) + '</select></td>';
       html += '<td class="' + diffCellClass('spec', rk, 'spec_qty') + '"><input class="jy-in jy-num" data-spec-qty="' + i + '" type="number" step="any" value="' + esc(r.spec_qty) + '"' + (readOnly ? ' disabled' : '') + '></td>';
@@ -2885,7 +2901,7 @@
       const borderCls = typeof costBorderCssClass === 'function'
         ? costBorderCssClass(r.excel_border_role || (isSub ? 'group_subtotal' : 'standalone'))
         : (isSub ? 'jy-cost-group-subtotal' : 'jy-cost-standalone');
-      const cls = [isLink ? 'jy-link' : '', isSub ? 'jy-subtotal' : 'jy-cost-detail', borderCls, diffRowClass('cost', rk)].filter(Boolean).join(' ');
+      const cls = [isLink ? 'jy-link' : '', isSub ? 'jy-subtotal' : 'jy-cost-detail', borderCls, diffRowClass('cost', rk), isRowMoveSource('cost', i) ? 'jy-row-move-src' : ''].filter(Boolean).join(' ');
       const ro = readOnly || isLink || isSub;
       const budgetRo = readOnly || isSub;
       const budgetMissing = isCostBudgetCategoryMissing(r);
@@ -3193,7 +3209,8 @@
   function renderMatRow(r, i, readOnly) {
     const rk = rowKeyForTable('mat', r, i);
     const dr = diffRowClass('mat', rk);
-    let row = '<tr' + (dr ? ' class="' + dr + '"' : '') + '><td class="jy-center"><input class="jy-in jy-text-cell" data-mat-vendor="' + i + '" value="' + esc(r.mat_vendor) + '"' + (r.mat_vendor ? ' title="' + esc(r.mat_vendor) + '"' : '') + (readOnly ? ' disabled' : '') + '></td>';
+    const trCls = [dr, isRowMoveSource('mat', i) ? 'jy-row-move-src' : ''].filter(Boolean).join(' ');
+    let row = '<tr' + (trCls ? ' class="' + trCls + '"' : '') + '><td class="jy-center"><input class="jy-in jy-text-cell" data-mat-vendor="' + i + '" value="' + esc(r.mat_vendor) + '"' + (r.mat_vendor ? ' title="' + esc(r.mat_vendor) + '"' : '') + (readOnly ? ' disabled' : '') + '></td>';
     row += '<td><input class="jy-in jy-text-cell" data-mat-name="' + i + '" value="' + esc(r.mat_name) + '"' + (r.mat_name ? ' title="' + esc(r.mat_name) + '"' : '') + (readOnly ? ' disabled' : '') + '></td>';
     row += '<td class="jy-center"><input class="jy-in" data-mat-cap="' + i + '" value="' + esc(r.mat_capacity) + '"' + (readOnly ? ' disabled' : '') + '></td>';
     row += '<td class="jy-center"><input class="jy-in" data-mat-maker="' + i + '" value="' + esc(r.mat_maker) + '"' + (readOnly ? ' disabled' : '') + '></td>';
@@ -3274,7 +3291,7 @@
         const totalRow = isSubBlockTotalRow(r);
         const customRow = isCustomSubRow(r, b.id);
         const rk = rowKeyForTable('sub', r, i);
-        var rowCls = [totalRow ? 'jy-total-row' : (calcRow ? 'jy-calc-row' : ''), diffRowClass('sub', rk)].filter(Boolean).join(' ');
+        var rowCls = [totalRow ? 'jy-total-row' : (calcRow ? 'jy-calc-row' : ''), diffRowClass('sub', rk), isRowMoveSource('sub', i) ? 'jy-row-move-src' : ''].filter(Boolean).join(' ');
         html += '<tr class="' + rowCls + '"><td>';
         if (customRow && !readOnly) {
           html += subLineTypeInput(i, r, b.id);
@@ -4291,6 +4308,7 @@
       document.addEventListener('click', function (e) {
         const rootEl = document.getElementById('jy-root');
         if (!rootEl || e.target.closest('.jy-row-menu')) return;
+        clearRowMoveState();
         closeRowMenus(rootEl);
       });
     }
@@ -4333,6 +4351,40 @@
         render();
       });
     });
+
+    function bindRowMoveHandlers(table) {
+      root.querySelectorAll('[data-' + table + '-move-start]').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          rowMoveState = { table: table, from: Number(btn.getAttribute('data-' + table + '-move-start')) };
+          render();
+        });
+      });
+      root.querySelectorAll('[data-' + table + '-move-dest]').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          const parts = String(btn.getAttribute('data-' + table + '-move-dest') || '').split(':');
+          const fromIdx = Number(parts[0]);
+          const mode = parts[1];
+          const refIdx = Number(parts[2]);
+          syncInputs();
+          if (executeRowMove(table, fromIdx, mode, refIdx, state)) {
+            clearRowMoveState();
+            markDirty();
+          }
+          render();
+        });
+      });
+      root.querySelectorAll('[data-' + table + '-move-cancel]').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          clearRowMoveState();
+          closeRowMenus(root);
+          render();
+        });
+      });
+    }
+    ['spec', 'cost', 'mat', 'sub'].forEach(bindRowMoveHandlers);
 
     root.querySelectorAll('[data-cost-add]').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
@@ -4452,6 +4504,22 @@
     bindCostLineFieldSync(root, 'data-cost-cat', 'cat');
     bindCostLineFieldSync(root, 'data-cost-ccd', 'ccd');
     bindCostLineCollapseDisplay(root);
+
+    if (rowMoveState) {
+      const table = rowMoveState.table;
+      const from = rowMoveState.from;
+      const btn = root.querySelector('[data-' + table + '-row-menu-trigger="' + from + '"]');
+      const wrap = btn && btn.closest('.jy-row-menu');
+      const panel = wrap && wrap.querySelector('.jy-row-menu-pop');
+      const tr = btn && btn.closest('tr');
+      if (btn && panel) {
+        panel.hidden = false;
+        positionRowMenuPop(btn, panel);
+        btn.setAttribute('aria-expanded', 'true');
+        if (wrap) wrap.classList.add('jy-row-menu-open');
+        if (tr) tr.classList.add('jy-row-menu-open');
+      }
+    }
   }
 
   function bindPersonNameFields() {

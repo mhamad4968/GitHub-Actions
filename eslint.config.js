@@ -11,6 +11,8 @@ export default [
       // workdays 687/688: deploy 対象は desktop.js のみ（ui*.js は build 用断片）
       "customize/**/desktop.ui.js",
       "customize/**/desktop.ui.slim.js",
+      // 736 PH1c: desktop.reorder.js は build 用断片（desktop.ui.js と同様）
+      "customize/**/desktop.reorder.js",
       // 678: Vite/SheetJS ビルド成果物（.gitignore・deploy は bundle、lint 対象外）
       "customize/**/desktop.bundle.js",
       // 719 Wi-Fi: qrcode vendor + desktop.src.js → desktop.js 結合成果物（lint は src のみ）

@@ -6,7 +6,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const BUILD = process.env.JIKKOU_YOSAN_BUILD || '2026-06-20-jikkou-yosan-unit-price-comma';
+const BUILD = process.env.JIKKOU_YOSAN_BUILD || '2026-07-10-736-ph1c-reorder-hide-singleton';
 
 function injectWorkTypeAliases(uiSrc) {
   const aliasPath = path.join(root, 'scripts/data/jikkou-yosan-work-type-aliases.json');
@@ -42,6 +42,7 @@ function prepareDiffCore() {
     .replace(/^export /gm, '  ');
 }
 
+const reorder = readFileSync(path.join(root, 'customize/736/desktop.reorder.js'), 'utf8');
 let ui = readFileSync(path.join(root, 'customize/736/desktop.ui.js'), 'utf8');
 ui = injectWorkTypeAliases(ui);
 const costTemplate = readFileSync(path.join(root, 'scripts/data/jikkou-yosan-default-cost-template.json'), 'utf8');
@@ -58,6 +59,7 @@ const out = `/**
 
 ${prepareCore()}
 ${prepareDiffCore()}
+${reorder}
 ${ui}
 })();
 `;

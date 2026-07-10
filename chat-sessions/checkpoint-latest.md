@@ -3,18 +3,17 @@
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED**（kintone レーン v1 完了・closures 登録）≠ **セッション締め**（export-handoff / Desktop sync / close-git）。混同禁止 -->
 
-**最終更新**: 2026-07-10 JST — **セッション締め**（736 PH1e/PH1f 区分・サマリー）
+**最終更新**: 2026-07-10 JST — **736 PH1c / 698 / 700 浜田目視 OK**
 
 ### 本日アクティブ（BUILD/rev — 2026-07-10）
 
 | 項目 | 内容 |
 |------|------|
-| **736 実行予算** | **PH1e** 仕様明細① `spec_category`（工事費/保安費）· 合計内訳·％専用セル · rev **175–177** |
-| | **PH1e-fix** `recalcState` が `spec_total_*` を state にコピーしていなかった不具合修正 · rev **176** |
-| | **PH1f** 原価行 `cost_budget_category` · ⑧内訳 · **区分別サマリー**（売上①/原価⑧/粗利/粗利率）· 印刷対応 · rev **179** |
-| | 詳細表②〜⑦は **区分なし** のまま（合意） |
-| **698 社員マスタ** | BUILD=`2026-07-04-bi-employee-index-emp-filter` **rev19** — **目視待ち** |
-| **700 提案申請** | BUILD=`2026-07-06-bi-apply-footer-reject-clear` **rev166** — **目視待ち** |
+| **736 実行予算** | **PH1c** 行並び替え · BUILD=`2026-07-10-736-ph1c-reorder-hide-singleton` **rev182** — **浜田目視 OK**（2026-07-10 · ⋮メニュー表示・1行ゾーン非表示）· 移動操作は未実施 |
+| | **PH1e** 仕様明細① `spec_category` · rev **175–177** |
+| | **PH1f** 原価行 `cost_budget_category` · 区分別サマリー · rev **179** |
+| **698 社員マスタ** | BUILD=`2026-07-04-bi-employee-index-emp-filter` **rev19** — **浜田目視 OK**（2026-07-10） |
+| **700 提案申請** | BUILD=`2026-07-06-bi-apply-footer-reject-clear` **rev166** — **浜田目視 OK**（2026-07-10） |
 
 ### 前セッション（2026-07-09）
 
@@ -37,8 +36,8 @@
 | **736** | **§9.6 凍結** · **7/7〜 AI 主導 §41**（736 のみ） |
 | **712** | 削除済 — deploy 禁止 |
 
-**次の1手**: **736 PH1c** 行並び替え implement · **698/700** 目視  
-**Git**: **`5c601a3a`** = `origin/main` — push 済
+**次の1手**: セッション締め前 **commit 整理**（PH1c + eslint + gate 修正）
+**Git**: **`985af8e5`** = `origin/main` — push 済
 **夕反省**: `docs/reports/2026-07-09-evening-reflection.md`  
 **736 7月**: `docs/runbooks/736-july-2026-schedule.md`  
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`  

@@ -307,6 +307,10 @@ function pairTableRows(baseRows, curRows, table) {
 
           cur: cur[ci],
 
+          baseIndex: bi,
+
+          curIndex: ci,
+
         });
 
         baseUsed[bi] = true;
@@ -460,6 +464,16 @@ function diffTableRows(baseRows, curRows, fields, table) {
       const status = isCascadeRowChange(table, p.cur, cells) ? 'cascade' : 'changed';
 
       rows[p.key] = { status: status, cells: cells, label: rowLabel(table, p.cur) };
+
+    } else if (
+
+      p.baseIndex != null && p.curIndex != null && p.baseIndex !== p.curIndex &&
+
+      normStr(p.base.row_key).length >= 8 && normStr(p.base.row_key) === normStr(p.cur.row_key)
+
+    ) {
+
+      rows[p.key] = { status: 'moved', cells: {}, label: rowLabel(table, p.cur) };
 
     }
 
