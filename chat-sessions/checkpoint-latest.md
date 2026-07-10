@@ -40,7 +40,7 @@
 | **712** | 削除済 — deploy 禁止 |
 
 **次の1手**: **7/11 運用最適化デー**（憲法・AIチーム運用）— 688 新規 implement なし · **7/12** UI-BACKLOG-02（列幅ドラッグ）
-**Git**: **`21379236`** = `origin/main` — push 済
+**Git**: **`60c2bffd`** = `origin/main` — push 済
 **夕反省**: `docs/reports/2026-07-10-evening-reflection.md`（#S1〜#S3 **浜田承認済・実装済**）  
 **736 7月**: `docs/runbooks/736-july-2026-schedule.md`  
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`  
