@@ -9,7 +9,7 @@
 
 **MCP DEL-2**: **2026-07-11 完了**（mintlify + cyber-news 削除 · governance profile）
 
-**Git**: **push 予定** — implement commit 後 sync
+**Git**: **`8591b93f`** = `origin/main` — push 済
 
 ### 本日アクティブ（BUILD/rev — 2026-07-10）
 
