@@ -1,8 +1,8 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-07-10T07:16:49.865Z",
-  "gitHead": "1a890117",
-  "gitStatus": "## main...origin/main [ahead 3]",
+  "exportedAt": "2026-07-10T07:16:52.481Z",
+  "gitHead": "7fe7bcfe",
+  "gitStatus": "## main...origin/main [ahead 4]",
   "nextTask": "**736 PH1c** 行並び替え implement · **698/700** 目視",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
@@ -16,8 +16,6 @@
     ".cursor/rules/mode-b-canonical.mdc",
     "docs/knowledge/debug-tips.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=1a890117 | 次=**736 PH1c** 行並び替え implement · **698/700** 目視 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
-  "validatedAt": "2026-07-10T07:16:50.233Z",
-  "crosscheckOk": true
+  "promptBlock": "【SESSION-BRIDGE】git=7fe7bcfe | 次=**736 PH1c** 行並び替え implement · **698/700** 目視 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }
