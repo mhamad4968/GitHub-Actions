@@ -321,7 +321,7 @@ npm run verify:constitution-handoff
 8. npm run verify:session-close-git-warn
 ```
 
-**boundary-close 追記位置**: 現 step 4–5 の **前に** 上記 4–6 を挿入（既存 step 4 close-git は **step 7 へ�番号**）。
+**boundary-close 追記位置**: 現 step 4–5 の **前に** 上記 4–6 を挿入（既存 step 4 close-git は **step 7 へ繰り下げ**）。
 
 ### §10.5 persist-policies.mdc（復元テンプレ · ≤25 行）
 
