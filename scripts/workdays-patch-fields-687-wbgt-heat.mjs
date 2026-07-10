@@ -2,6 +2,9 @@
 /**
  * 687 WBGT 猛暑日参考用フィールド追加
  *   npx dotenv -e .env -e .env.proxy -- node scripts/workdays-patch-fields-687-wbgt-heat.mjs
+ *
+ * 新規フィールド（特に SUBTABLE）は preview API **POST + revision** 必須。
+ * properties 全体の PUT は GAIA_FC01 になる — 正本: scripts/workdays-add-fields-687.mjs
  */
 import 'dotenv/config';
 

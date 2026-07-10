@@ -11,7 +11,7 @@ import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { isSessionCloseTempPath } from './lib/cio-session-close-temp-paths.mjs';
 import { checkHoldLaneDirtyFiles } from './lib/cio-project-closure.mjs';
-import { checkCheckpointGitRegression } from './lib/cio-checkpoint-git-sync.mjs';
+import { checkCheckpointGitRegression, countCheckpointGitLines } from './lib/cio-checkpoint-git-sync.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const warnOnly = process.argv.includes('--warn-only');
@@ -139,6 +139,12 @@ function printCreditStaleNudge() {
 }
 
 function checkCheckpointGitLine() {
+  const gitLineCount = countCheckpointGitLines(root);
+  if (gitLineCount > 1) {
+    console.warn(
+      `[verify:session-close-git-warn] WARN checkpoint に **Git** 行が ${gitLineCount} 件 — 手動編集禁止・post-commit 同期を確認（#S3）`,
+    );
+  }
   const reg = checkCheckpointGitRegression(root);
   if (!reg.regression) return { ok: true };
   console.warn(`[verify:session-close-git-warn] WARN ${reg.message}`);

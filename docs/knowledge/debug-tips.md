@@ -6,6 +6,17 @@
 
 ---
 
+---
+
+## [2026-07-10] kintone 新規 SUBTABLE — POST+revision 必須（GAIA_FC01 / #D1）
+
+**前提**: preview で **新規** `SUBTABLE` / フィールドを追加するとき  
+**手順**: `POST /k/v1/preview/app/form/fields.json` に `{ app, properties: { code: {...} }, revision }` — 正本 `scripts/workdays-add-fields-687.mjs`  
+**禁止**: 未知 code を含む properties 全体 **PUT**（`GAIA_FC01 The field (code: wbgt_data) not found`）  
+**exit**: patch 成功 → `preview/app/deploy.json` SUCCESS
+
+---
+
 ## [2026-06-13] 業務改善 v1 クローズ — 陳腐化警告（R19 / TSB-038）
 
 **前提**: `data/cio-project-closures.json` — business-improvement **closed-v1**（2026-06-13）

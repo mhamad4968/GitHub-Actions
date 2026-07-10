@@ -69,6 +69,14 @@ export function gitOriginMainShort(root) {
   return h && !h.includes('fatal') ? h : null;
 }
 
+/** checkpoint に **Git** 行が複数あるか（手動編集・二重更新検知 #S3） */
+export function countCheckpointGitLines(root) {
+  const p = path.join(root, CHECKPOINT_REL);
+  if (!fs.existsSync(p)) return 0;
+  const text = fs.readFileSync(p, 'utf8');
+  return (text.match(/^\*\*Git\*\*:/gm) || []).length;
+}
+
 /**
  * S-CLOSE-01 — checkpoint Git 行が origin/main より古い（先祖返り）か
  * @returns {{ ok: boolean, regression?: boolean, message?: string, cpHash?: string, origin?: string }}

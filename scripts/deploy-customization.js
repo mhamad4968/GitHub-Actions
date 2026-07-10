@@ -140,16 +140,37 @@ for (let i = 0; i < 60; i++) {
       );
       process.exit(sync.status || 1);
     }
-    const verify = spawnSync(process.execPath, [
-      'scripts/verify-kintone-apps-live-build-sync.mjs',
-      String(appNum),
-      '--strict',
-    ], {
-      cwd: process.cwd(),
-      encoding: 'utf8',
-    });
+    function runVerifyKintoneAppsSync() {
+      return spawnSync(process.execPath, [
+        'scripts/verify-kintone-apps-live-build-sync.mjs',
+        String(appNum),
+        '--strict',
+      ], {
+        cwd: process.cwd(),
+        encoding: 'utf8',
+      });
+    }
+    let verify = runVerifyKintoneAppsSync();
     if (verify.stdout) process.stdout.write(verify.stdout);
     if (verify.stderr) process.stderr.write(verify.stderr);
+    if (verify.status !== 0) {
+      console.warn(
+        `[deploy-customization] verify garble — sync を 1 回リトライします（R-595-03 / #S1）`,
+      );
+      const resync = spawnSync(process.execPath, ['scripts/sync-kintone-apps-build.mjs', String(appNum), '--strict'], {
+        cwd: process.cwd(),
+        encoding: 'utf8',
+      });
+      if (resync.stdout) process.stdout.write(resync.stdout);
+      if (resync.stderr) process.stderr.write(resync.stderr);
+      if (resync.status !== 0) {
+        console.error(`[deploy-customization] NG resync:kintone-apps-build app=${appNum}`);
+        process.exit(resync.status || 1);
+      }
+      verify = runVerifyKintoneAppsSync();
+      if (verify.stdout) process.stdout.write(verify.stdout);
+      if (verify.stderr) process.stderr.write(verify.stderr);
+    }
     if (verify.status !== 0) {
       console.error(
         `[deploy-customization] NG verify-kintone-apps-live-build-sync app=${appNum} — garble/不一致（R-595-03）`,

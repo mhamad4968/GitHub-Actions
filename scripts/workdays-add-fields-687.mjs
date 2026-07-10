@@ -2,6 +2,9 @@
 /**
  * 687 に holiday_manual サブテーブルを追加してデプロイ
  *   npx dotenv -e .env -e .env.proxy -- node scripts/workdays-add-fields-687.mjs
+ *
+ * 新規フィールド追加テンプレ: **POST** `/k/v1/preview/app/form/fields.json` + `revision`。
+ * 既存フィールドの properties 全体 PUT や未知 code の PUT は GAIA_FC01。
  */
 import 'dotenv/config';
 

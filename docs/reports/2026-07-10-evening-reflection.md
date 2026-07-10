@@ -151,6 +151,8 @@ _(出力から未参照ルール行を抽出できず)_
 | #D2 | D | checkpoint に「部分 GO スコープ外 1 行」テンプレ追加 | 低 | 手動 |
 | #S3 | S | close-git 時 checkpoint Git 行の二重更新を verify で検知 | 中 | ○ |
 
+> **2026-07-10 浜田「すべて承認」** → `docs/approved-changes/2026-07-11-evening-improvements-hamada-go.md` · **実装済み**
+
 > カテゴリ: **R**=ルール改善 / **S**=スクリプト改善 / **D**=ドキュメント / **C**=customize 改修(deploy 除く) / **K**=kintone API 操作
 
 ### ユーザー応答方法
