@@ -38,7 +38,7 @@
 | **712** | 削除済 — deploy 禁止 |
 
 **次の1手**: **688 猛暑日** — **浜田目視**（CSV取込 · 画面ON/OFF · 印刷 · 過去5年タブ · 稼働日数不変確認）
-**Git**: implement 未 commit（R63 deploy 後 commit 予定）
+**Git**: **`74d61441`** = `origin/main` — push 済
 **夕反省**: `docs/reports/2026-07-09-evening-reflection.md`  
 **736 7月**: `docs/runbooks/736-july-2026-schedule.md`  
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`  
