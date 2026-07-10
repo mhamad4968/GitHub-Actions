@@ -6,7 +6,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const BUILD = process.env.WORKDAYS_BUILD || '2026-07-10-688-wbgt-heat-reference';
+const BUILD = process.env.WORKDAYS_BUILD || '2026-07-10-688-wbgt-heat-warn';
 
 function prepareRef5yrForBrowser() {
   const ref = JSON.parse(

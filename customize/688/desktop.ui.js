@@ -73,6 +73,7 @@
       csvObsWind: '',
       csvObsRain: '',
       csvObsWbgt: '',
+      lastWbgtLocationNote: '',
       wbgtMonthly: [],
       show_heat_reference: false,
       print_heat_reference: false,
@@ -369,11 +370,18 @@
   function resolveCsvObsLocation(kind, text) {
     if (kind === 'wbgt') {
       const loc = parseCsvStationName(text);
+      state.lastWbgtLocationNote = '';
       if (loc) {
         state.csvObsWbgt = loc;
-        if (!state.obs_location) state.obs_location = loc;
-        else if (state.obs_location !== loc) {
-          console.warn('WBGT CSV location mismatch:', loc, state.obs_location);
+        if (!state.obs_location) {
+          state.obs_location = loc;
+        } else if (state.obs_location !== loc) {
+          state.lastWbgtLocationNote =
+            'WBGTの地点（' +
+            loc +
+            '）は観測地点（' +
+            state.obs_location +
+            '）と異なります。猛暑日参考のみに使用します。';
         }
         return loc;
       }
@@ -2048,7 +2056,20 @@
       pastFiveYearsForEstimate(estimateYear).join('・') +
       '年</strong>' +
       (period ? '／登録データ: ' + period : '') +
+      (state.csvObsWbgt && state.obs_location && state.csvObsWbgt !== state.obs_location
+        ? '／WBGT地点: <strong>' +
+          escHtml(state.csvObsWbgt) +
+          '</strong>（観測地点 ' +
+          escHtml(state.obs_location) +
+          ' と別）'
+        : '') +
       '）</div>';
+    if (state.lastWbgtLocationNote) {
+      html +=
+        '<p style="font-size:12px;color:#b45309;margin:0 0 10px;">※ ' +
+        escHtml(state.lastWbgtLocationNote) +
+        '</p>';
+    }
     if (ref.updatedFromCsv) {
       html +=
         '<p style="font-size:12px;color:#047857;margin:0 0 10px;">CSV取込反映日: ' +
@@ -2550,12 +2571,10 @@
             syncHeatReference();
             updateObsLocationDisplay();
             markDirty();
-            let wbgtMsg =
-              '観測地点: ' +
-              loc +
-              ' / WBGT ' +
-              hourly.length +
-              ' 行 → 月別換算を更新しました。';
+            let wbgtMsg = 'WBGT ' + hourly.length + ' 行を取込み（地点: ' + loc + '）。月別換算を更新しました。';
+            if (state.lastWbgtLocationNote) {
+              wbgtMsg += '\n\n※ ' + state.lastWbgtLocationNote;
+            }
             try {
               if (state.lastResult) runCalc();
               else syncHeatReference();
