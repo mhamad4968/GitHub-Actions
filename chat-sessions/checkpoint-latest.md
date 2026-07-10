@@ -7,7 +7,7 @@
 
 **最終更新**: 2026-07-11 JST — **R5 全員 GO** · MCP spec **v3.1** + ops P0–P2 **push 予定**（implement 合図待ち）
 
-**Git**: **`53143f69`** = `origin/main` — C1 ops P0-P2（push 前）
+**Git**: **`9dca4ee7`** = `origin/main` — push 済
 
 ### 本日アクティブ（BUILD/rev — 2026-07-10）
 
