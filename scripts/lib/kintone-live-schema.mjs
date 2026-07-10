@@ -64,6 +64,29 @@ async function kintonePost(baseUrl, headers, pathSuffix, body) {
   return json;
 }
 
+/** MCP / verify 共通 — GET（query params） */
+export async function kintoneRestGet(pathSuffix, params = {}) {
+  const { baseUrl, headers } = getKintoneConfig();
+  const url = new URL(`${baseUrl}${pathSuffix}`);
+  for (const [k, v] of Object.entries(params)) url.searchParams.set(k, String(v));
+  const res = await fetch(url, { method: 'GET', headers });
+  const text = await res.text();
+  let json;
+  try {
+    json = JSON.parse(text);
+  } catch {
+    throw new Error(`Non-JSON response HTTP ${res.status}: ${text.slice(0, 200)}`);
+  }
+  if (!res.ok) throw new Error(`${json.code || res.status} ${json.message || text.slice(0, 200)}`);
+  return json;
+}
+
+/** MCP / verify 共通 — POST + X-HTTP-Method-Override GET */
+export async function kintoneRestPost(pathSuffix, body) {
+  const { baseUrl, headers } = getKintoneConfig();
+  return kintonePost(baseUrl, headers, pathSuffix, body);
+}
+
 function walkSubtableFields(code, def, out) {
   out.fieldCodes.add(code);
   out.fields[code] = { type: def.type, label: def.label, required: !!def.required };

@@ -3,11 +3,8 @@
  * monthly-security-rounds.mjs — 月次セキュリティ巡回 (改善案 #12 戦略 / S14 / 5/1 開始)
  *
  * 検査内容:
- *   1. cyber-news MCP 主要 5 feeds (過去 30 日) のサマリ取得
- *      - CISA Alerts / SANS Internet Storm Center / The Hacker News /
- *        Google Mandiant / Krebs on Security
+ *   1. cve-search MCP `vul_last_cves` + duckduckgo-search（セキュリティヘッドライン）
  *   2. cve-search MCP で主要依存パッケージの新規 CVE 検索
- *      - eslint / vite / typescript / npm / node.js
  *   3. docs/reports/<YYYY-MM>-security-rounds.md 生成
  *
  * 実行タイミング:
@@ -20,13 +17,7 @@
  * 出口コード:
  *   0: 成功 / 1: MCP 呼出失敗 / 2: 致命的エラー (mcp.json 不在等)
  *
- * 背景: 2026-04-23 MCP 強化戦略 段階 1 監査で cyber-news / cve-search が
- *       過去 30 日 0 回使用 = 死蔵と判明。本スクリプトで月次活用を継続化。
- *
- * 注意: cyber-news / cve-search MCP は spawnSync で stdio JSON-RPC 経由で
- *       呼び出す。実装の複雑性を避けるため、本スクリプトは v1 では
- *       スケルトン report 生成 + 浜田が手動で MCP CallTool 結果を貼付する
- *       運用とする。v2 (5/22 以降) で完全自動化予定。
+ * 正本: docs/plans/2026-07-11-mcp-tools-consolidation-spec.md SCR-6（cyber-news → cve-search + DDG）
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -47,35 +38,28 @@ fs.mkdirSync(REPORT_DIR, { recursive: true });
 const REPORT_TEMPLATE = `# ${yyyyMm} 月次セキュリティ巡回レポート
 
 **生成日時**: ${now.toISOString()}
-**スクリプト**: scripts/monthly-security-rounds.mjs (S14 / 改善案 #12)
+**スクリプト**: scripts/monthly-security-rounds.mjs (S14 / MCP spec v3.1)
 **対象期間**: 過去 30 日
 
 ---
 
-## 1. cyber-news 主要 feeds (過去 30 日)
+## 1. セキュリティニュース（cve-search + duckduckgo-search）
 
-### 1-1. CISA Alerts (vulnerabilities)
+### 1-1. 直近 CVE（cve-search）
 
 > **手順**: AI に以下を依頼するか手動実行
 > \`\`\`
-> mcp_user-cyber-news_get_news_briefs feed_name="CISA Alerts" limit=10
+> mcp_user-cve-search_vul_last_cves
 > \`\`\`
 
 _(ここに結果を貼付 / AI 要約を追記)_
 
-### 1-2. SANS Internet Storm Center (news)
+### 1-2. ヘッドライン補助（duckduckgo-search）
 
-_(同上)_
-
-### 1-3. The Hacker News (news)
-
-_(同上)_
-
-### 1-4. Google Intelligence Mandiant (research)
-
-_(同上)_
-
-### 1-5. Krebs on Security (research)
+> **手順**:
+> \`\`\`
+> mcp_user-duckduckgo-search_search query="CISA security advisory past 30 days"
+> \`\`\`
 
 _(同上)_
 
@@ -125,11 +109,10 @@ _(AI が 1-3 を読んで 5 行以内で要約 / 真の影響度評価)_
 
 ---
 
-_本レポートは S14 v1 スケルトンです。v2 (5/22 以降) で MCP 結果の自動取得・貼付を実装予定。_
+_本レポートは S14 v1 スケルトンです。MCP 結果の自動取得は将来 v2 で検討。_
 `;
 
 if (ARG_DRY_RUN || true) {
-  // v1 はスケルトン生成のみ
   fs.writeFileSync(REPORT_PATH, REPORT_TEMPLATE, 'utf8');
   if (ARG_JSON) {
     console.log(JSON.stringify({ status: 'ok', report_path: REPORT_PATH, mode: 'v1-skeleton' }, null, 2));
@@ -139,11 +122,9 @@ if (ARG_DRY_RUN || true) {
     console.log(`✅ レポート生成: ${path.relative(REPO_ROOT, REPORT_PATH)}`);
     console.log('');
     console.log('### 次のステップ');
-    console.log('1. AI に cyber-news / cve-search MCP 呼出を依頼してレポートに貼付');
+    console.log('1. AI に cve-search / duckduckgo-search MCP 呼出を依頼してレポートに貼付');
     console.log('2. 浜田アクションチェックリストを完了');
     console.log('3. AI 統括サマリを記入');
-    console.log('');
-    console.log('> v2 (5/22 以降) で MCP 結果自動取得を実装予定');
   }
   process.exit(0);
 }

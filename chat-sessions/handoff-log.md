@@ -4460,3 +4460,26 @@ npm run cio:morning:ready
 **次の1手**: 浜田 **implement 合図** → MCP §10 **P0**（O1）
 
 ---
+
+### 2026-07-11 08:16 JST — **P3–P5 Tier B 完了（mintlify DEL · cyber-news disabled · governance profile）**
+
+**要約**:
+- **バックアップ**: `C:\Users\mhamada202408224\.cursor\mcp.json.bak.2026-07-10T23-15-50-687Z`（profile 適用前）
+- **P3**: mintlify **削除**（user mcp.json）
+- **P4 開始**: cyber-news **`disabled: true`** · **DEL-2 禁止 until 2026-07-25**
+- **P5**: `cio:mcp:profile --apply governance` — Cold 7 件 disabled
+- **検証**: `cio:mcp:gate` OK · `cio:health` GREEN · sync 後 cyber-news 再注入なし
+
+**浜田**: **Cursor Reload Window** 必須
+
+**次の1手**: commit/push · **P6 O4 見送り**（下記）
+
+---
+
+### 2026-07-11 08:22 JST — **DEL-2 完了 · commit/push · P6 見送り**
+
+**DEL-2**: user `mcp.json` から **cyber-news 不在確認**（26 本 · mintlify もなし）— sync 後削除済
+**P6 O4**: **見送り** — kintone-space MCP + probe 48 OK · Protected · npm ラッパーは退行リスクのみで便益なし
+**検証**: verify:mcp-deleted-refs · cio:mcp:gate · cio:health 全 OK
+
+---

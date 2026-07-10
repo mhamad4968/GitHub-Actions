@@ -73,12 +73,6 @@ function buildWindowsMcp(S) {
     ...(S.github?._meta ? { _meta: S.github._meta } : {}),
   };
 
-  out.mcpServers['cyber-news'] = {
-    command: 'node',
-    args: ['C:\\\\Users\\\\mhamada202408224\\\\.cursor\\\\CyberNewsMCP\\\\dist\\\\index.js'],
-    cwd: 'C:\\\\Users\\\\mhamada202408224\\\\.cursor\\\\CyberNewsMCP',
-  };
-
   out.mcpServers['office-powerpoint'] = {
     command:
       'C:\\\\Users\\\\mhamada202408224\\\\.cursor\\\\Office-PowerPoint-MCP-Server\\\\.venv\\\\Scripts\\\\python.exe',

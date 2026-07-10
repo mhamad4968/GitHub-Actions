@@ -104,7 +104,7 @@ if (/\bnpx\b.*@iflow-mcp\/markdownify-mcp/.test(mdJoin)) {
   fail('markdownify must not use npx @iflow-mcp/markdownify-mcp (TSB-029 preinstall trap)');
 }
 
-for (const overlay of ['figma', 'colors-fonts', 'mintlify']) {
+for (const overlay of ['figma', 'colors-fonts']) {
   if (!servers[overlay]) {
     console.warn(`[verify-cursor-mcp-windows] WARN: missing overlay ${overlay} (npm run mcp:apply-repo-overlays-windows)`);
   }

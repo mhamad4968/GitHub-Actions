@@ -1,27 +1,20 @@
 /**
  * Git 履歴デグレード（先祖返り）防衛 — git-history-mcp 相当ロジック（§50-3-11 第12層・拡張案2）
  */
-import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import {
+  git,
+  parseFourElements,
+  getCommitDetail,
+} from './git-history-core.mjs';
+
+export { git, parseFourElements, getCommitDetail };
 
 const RED = '\x1b[31m';
 const RESET = '\x1b[0m';
 export const DEGRADE_BANNER =
   '【警告】過去規律とのデグレード（先祖返り）を検知しました。過去の合意ハッシュを確認し、設計を再調整してください';
-
-export function git(repoRoot, args, opts = {}) {
-  const r = spawnSync('git', args, {
-    cwd: repoRoot,
-    encoding: 'utf8',
-    maxBuffer: 8 * 1024 * 1024,
-    ...opts,
-  });
-  if (r.status !== 0 && !opts.allowFail) {
-    throw new Error((r.stderr || r.stdout || 'git failed').trim());
-  }
-  return (r.stdout || '').trim();
-}
 
 export function loadGuardManifest(repoRoot) {
   const p = path.join(repoRoot, 'data/git-history-guard-manifest.json');
@@ -72,24 +65,6 @@ export function getGovernanceGenerations(repoRoot, maxGenerations = 3) {
     if (h && !merged.includes(h)) merged.push(h);
   }
   return merged.slice(0, maxGenerations);
-}
-
-export function getCommitDetail(repoRoot, hash) {
-  const subject = git(repoRoot, ['log', '-1', '--format=%s', hash]);
-  const body = git(repoRoot, ['log', '-1', '--format=%b', hash]);
-  const files = git(repoRoot, ['show', '--name-only', '--format=', hash]).split(/\r?\n/).filter(Boolean);
-  return { hash, subject, body, files };
-}
-
-export function parseFourElements(body) {
-  const keys = ['前提', '手順', '禁止', 'exit'];
-  const out = {};
-  for (const k of keys) {
-    const re = new RegExp(`^${k}[:：]\\s*(.+)$`, 'm');
-    const m = body.match(re);
-    out[k] = m ? m[1].trim() : null;
-  }
-  return out;
 }
 
 export function collectHistoricalConstraints(repoRoot, generations) {

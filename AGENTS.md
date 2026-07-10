@@ -963,7 +963,7 @@ GitHub・npm・Stack Overflow 等から外部コードを参考にする際は�
 2. `fetch` MCP / `WebFetch` — 公式ドキュメント直接取得
 3. `duckduckgo-search` MCP — Web 検索（**`tavily` は 2026-05-06 削除済**／`docs/mcp-status.md`）
 4. `github` MCP — 実装事例・Issue 検索（WSL では **`gh`** を優先）
-5. `cve-search` MCP / `cyber-news` MCP — セキュリティ関連時のみ
+5. `cve-search` MCP / `duckduckgo-search` — セキュリティ関連時のみ（cyber-news は spec v3.1 DEL-2 予定）
 
 ---
 
@@ -1798,7 +1798,7 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 | アクセシビリティ検査 | accessibility-scanner | UI 改修時必須 |
 | ブラウザ自動操作 / E2E テスト | playwright | customize 動作確認時 |
 | CVE 脆弱性確認 | cve-search | 月次 + 依存追加時 |
-| サイバーセキュリティニュース | cyber-news | 週次セキュリティ巡回時 |
+| サイバーセキュリティニュース | cve-search + duckduckgo-search | 月次セキュリティ巡回時 |
 | PowerPoint 自動生成 | office-powerpoint | Win 起動必要 / 月次レポート時 |
 | GitHub Issue/PR 操作 | github（Win）／**`gh`（WSL 第一選択）** | WSL では **`gh`** を優先（浜田合意 2026-05-06） |
 | 段階的思考（複雑判断分解）| sequential-thinking | 大型設計判断時 |

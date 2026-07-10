@@ -766,6 +766,7 @@
     "cio:env:enhance:quick": "node scripts/cio-env-enhance.mjs --quick",
     "verify:mcp:kintone-base-url": "npx dotenv -e .env -e .env.proxy -- node scripts/verify-mcp-kintone-base-url.mjs",
     "cio:mcp:gate": "node scripts/verify-cio-mcp-registry.mjs && npx dotenv -e .env -e .env.proxy -- node scripts/verify-mcp-kintone-base-url.mjs && npx dotenv -e .env -e .env.proxy -- node scripts/cio-mcp-quickprobe.mjs && npx dotenv -e .env -e .env.proxy -- node scripts/probe-kintone-space-json.mjs 48",
+    "cio:mcp:profile": "node scripts/cio-mcp-profile.mjs",
     "kintone:ai-user:create": "npx dotenv -e .env -e .env.proxy -- node scripts/create-kintone-ai-user.mjs",
     "kintone:ai-user:apply-mcp": "node scripts/apply-kintone-ai-credentials.mjs",
     "kintone:sync-credentials-to-mcp": "npx dotenv -e .env -e .env.proxy -- node scripts/apply-kintone-ai-credentials.mjs --from-env",

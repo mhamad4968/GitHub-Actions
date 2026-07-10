@@ -27,6 +27,24 @@ function main() {
     }
   }
 
+  const profilesPath = path.join(root, 'data/cio-mcp-profiles.json');
+  if (!fs.existsSync(profilesPath)) {
+    issues.push('missing data/cio-mcp-profiles.json');
+  } else {
+    const profiles = JSON.parse(fs.readFileSync(profilesPath, 'utf8'));
+    for (const name of ['governance', 'kintone', 'fe', 'doc-lane', 'security']) {
+      if (!profiles.profiles?.[name]) issues.push(`profiles missing profile: ${name}`);
+    }
+    if (!profiles.intentToProfile || !Object.keys(profiles.intentToProfile).length) {
+      issues.push('profiles.intentToProfile empty');
+    }
+  }
+
+  const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+  if (!pkg.scripts?.['cio:mcp:profile']) {
+    issues.push('package.json missing cio:mcp:profile script');
+  }
+
   const r = spawnSync('node', ['scripts/verify-cio-mcp-registry.mjs'], {
     cwd: root,
     encoding: 'utf8',

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * リポ `.cursor/mcp.json` の figma / mintlify / colors-fonts を
+ * リポ `.cursor/mcp.json` の figma / colors-fonts を
  * Windows `%USERPROFILE%\.cursor\mcp.json` にマージ（TSB-028 補完）。
  */
 import fs from 'node:fs';

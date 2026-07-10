@@ -208,11 +208,11 @@
       "id": "security-cve",
       "category": "security",
       "phase": ["WORK"],
-      "keywords": ["CVE", "脆弱性", "セキュリティニュース", "cve-search", "cyber-news"],
+      "keywords": ["CVE", "脆弱性", "セキュリティニュース", "cve-search"],
       "priority": 10,
       "mcp": [
-        { "server": "cve-search", "tools": ["search_cve", "get_cve"], "priority": 10 },
-        { "server": "cyber-news", "tools": ["get_news"], "priority": 20 }
+        { "server": "cve-search", "tools": ["search_cve", "get_cve", "vul_last_cves"], "priority": 10 },
+        { "server": "duckduckgo-search", "tools": ["search"], "priority": 20 }
       ],
       "npm": [],
       "rule": ".cursor/rules/security-news-response.mdc",

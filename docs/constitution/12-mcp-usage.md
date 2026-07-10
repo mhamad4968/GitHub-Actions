@@ -28,7 +28,7 @@
 | アクセシビリティ検査 | accessibility-scanner | UI 改修時必須 |
 | ブラウザ自動操作 / E2E テスト | playwright | customize 動作確認時 |
 | CVE 脆弱性確認 | cve-search | 月次 + 依存追加時 |
-| サイバーセキュリティニュース | cyber-news | 週次セキュリティ巡回時 |
+| サイバーセキュリティニュース | cve-search + duckduckgo-search | 月次セキュリティ巡回時 |
 | PowerPoint 自動生成 | office-powerpoint | Win 起動必要 / **doc-lane 自律資料** |
 | Word 資料・セキュリティ図解 | office-word | Win 起動必要 / **doc-lane フェーズ2** |
 | GitHub Issue/PR 操作 | github（Win）／**`gh`（WSL 第一選択）** | WSL では **`gh`** を優先（浜田合意 2026-05-06） |

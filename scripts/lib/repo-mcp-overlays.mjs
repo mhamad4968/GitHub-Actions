@@ -8,7 +8,6 @@ import path from 'node:path';
 /** リポ側のみ定義し、WSL→Win sync 後にも載せるサーバ名 */
 export const REPO_OVERLAY_SERVER_NAMES = [
   'figma',
-  'mintlify',
   'colors-fonts',
   'repo-tree',
   'eslint-mcp',

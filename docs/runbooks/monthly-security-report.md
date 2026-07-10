@@ -100,6 +100,7 @@ npm run verify:doc-lane-governance
 
 ## 関連
 
+- `scripts/monthly-security-rounds.mjs` — 月次巡回スケルトン（cve-search + DDG · spec v3.1 SCR-6）
 - `docs/runbooks/keiei-kaigi-security-report.md` — **経営会議正本（R-DOC-11）**
 - `docs/runbooks/doc-lane.md` — markdownify フォールバック（R6）
 - `docs/runbooks/docx-patch-windows.md` — Word 共通ルール（R2/R5）

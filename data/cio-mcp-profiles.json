@@ -1,0 +1,65 @@
+{
+  "version": "2026-07-11",
+  "defaultProfile": "governance",
+  "spec": "docs/plans/2026-07-11-mcp-tools-consolidation-spec.md §4 §6.3",
+  "neverDisable": [
+    "deepseek",
+    "kimi",
+    "openrouter",
+    "memory",
+    "sequential-thinking",
+    "rag",
+    "markdownify",
+    "kintone",
+    "playwright",
+    "duckduckgo-search",
+    "office-word",
+    "office-powerpoint",
+    "kintone-space"
+  ],
+  "intentToProfile": {
+    "frontend-ui": "fe",
+    "accessibility-audit": "fe",
+    "design-figma": "fe",
+    "library-docs": "kintone",
+    "kintone-schema-live": "kintone",
+    "github-ci": "governance",
+    "security": "security",
+    "doc-lane": "doc-lane"
+  },
+  "profiles": {
+    "governance": {
+      "label": "運用日 — Core10 + Warm · Cold 6 disabled",
+      "disable": [
+        "chrome-devtools",
+        "shadcn-ui",
+        "colors-fonts",
+        "accessibility-scanner",
+        "github",
+        "kintone-dev",
+        "context7"
+      ],
+      "enable": []
+    },
+    "kintone": {
+      "label": "kintone schema / dev docs",
+      "disable": ["chrome-devtools", "shadcn-ui", "colors-fonts", "accessibility-scanner", "github"],
+      "enable": ["kintone-dev", "context7", "kintone-schema-mcp"]
+    },
+    "fe": {
+      "label": "FE customize / WCAG / DevTools",
+      "disable": ["kintone-dev", "context7", "github"],
+      "enable": ["chrome-devtools", "shadcn-ui", "colors-fonts", "accessibility-scanner"]
+    },
+    "doc-lane": {
+      "label": "Word/PPT doc-lane — office protected",
+      "disable": ["chrome-devtools", "shadcn-ui", "github"],
+      "enable": ["office-word", "office-powerpoint", "markdownify"]
+    },
+    "security": {
+      "label": "CVE / security intent",
+      "disable": ["chrome-devtools", "shadcn-ui", "colors-fonts", "figma"],
+      "enable": ["cve-search", "duckduckgo-search"]
+    }
+  }
+}

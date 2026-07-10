@@ -30,7 +30,6 @@
     "github",
     "kintone-dev",
     "kintone-space",
-    "cyber-news",
     "cve-search",
     "kintone-schema-mcp",
     "git-history-mcp"
@@ -38,7 +37,6 @@
   "repoOverlayOnly": [
     "figma",
     "colors-fonts",
-    "mintlify",
     "repo-tree",
     "eslint-mcp",
     "context7",

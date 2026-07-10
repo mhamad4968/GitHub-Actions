@@ -1,37 +1,20 @@
 #!/usr/bin/env node
 /**
  * git-history-mcp — constitution / commit 4-element context (§50-3-11 第12層)
+ * コア正本: scripts/lib/git-history-core.mjs（O2 thin 化）
  */
-import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createMcpServer } from '../lib/mcp-stdio.mjs';
+import {
+  analyzeCommitFourElements,
+  getCommitDetail,
+  searchConstitutionLayers,
+  searchGitLog,
+  searchR19R20Ritual,
+} from '../../scripts/lib/git-history-core.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-
-function git(args, opts = {}) {
-  const r = spawnSync('git', args, {
-    cwd: repoRoot,
-    encoding: 'utf8',
-    maxBuffer: 8 * 1024 * 1024,
-    ...opts,
-  });
-  if (r.status !== 0) {
-    throw new Error((r.stderr || r.stdout || 'git failed').trim());
-  }
-  return (r.stdout || '').trim();
-}
-
-function parseFourElements(body) {
-  const keys = ['前提', '手順', '禁止', 'exit'];
-  const out = {};
-  for (const k of keys) {
-    const re = new RegExp(`^${k}[:：]\\s*(.+)$`, 'm');
-    const m = body.match(re);
-    out[k] = m ? m[1].trim() : null;
-  }
-  return out;
-}
 
 const tools = [
   {
@@ -87,56 +70,16 @@ const tools = [
 ];
 
 const handlers = {
-  search_git_log({ grep, since, path: filePath, maxCount = 30 }) {
-    const args = ['log', '--oneline', `--max-count=${Math.min(maxCount || 30, 200)}`];
-    if (since) args.push(`--since=${since}`);
-    if (grep) args.push(`--grep=${grep}`);
-    if (filePath) args.push('--', filePath);
-    return git(args).split(/\r?\n/).filter(Boolean);
-  },
-  get_commit_detail({ hash }) {
-    const subject = git(['log', '-1', '--format=%s', hash]);
-    const body = git(['log', '-1', '--format=%b', hash]);
-    const files = git(['show', '--name-only', '--format=', hash]).split(/\r?\n/).filter(Boolean);
-    return { hash, subject, body, files };
-  },
-  analyze_commit_four_elements({ hash }) {
-    const body = git(['log', '-1', '--format=%b', hash]);
-    return { hash, fourElements: parseFourElements(body), rawBody: body };
-  },
-  search_constitution_layers({ layer, maxCount = 20 }) {
-    const pattern = layer ? `第${layer}層` : '§50-3-11';
-    return git([
-      'log',
-      '--oneline',
-      `--max-count=${Math.min(maxCount || 20, 100)}`,
-      `--grep=${pattern}`,
-      '--',
-      'AGENTS.md',
-    ])
-      .split(/\r?\n/)
-      .filter(Boolean);
-  },
-  search_r19_r20_ritual({ maxCount = 30 }) {
-    const patterns = ['R19', 'R20', 'session:close-git', 'cio:session:close-git'];
-    const out = {};
-    for (const p of patterns) {
-      out[p] = git([
-        'log',
-        '--oneline',
-        `--max-count=${Math.min(maxCount || 30, 100)}`,
-        `--grep=${p}`,
-      ])
-        .split(/\r?\n/)
-        .filter(Boolean);
-    }
-    return out;
-  },
+  search_git_log: (args) => searchGitLog(repoRoot, args),
+  get_commit_detail: ({ hash }) => getCommitDetail(repoRoot, hash),
+  analyze_commit_four_elements: ({ hash }) => analyzeCommitFourElements(repoRoot, hash),
+  search_constitution_layers: (args) => searchConstitutionLayers(repoRoot, args),
+  search_r19_r20_ritual: (args) => searchR19R20Ritual(repoRoot, args),
 };
 
 createMcpServer({
   name: 'git-history-mcp',
-  version: '1.0.0',
+  version: '1.0.1',
   tools,
   handlers,
 });

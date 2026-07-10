@@ -7,9 +7,6 @@
       "command": "npx",
       "args": ["-y", "@colorsandfonts/mcp@1.1.0"]
     },
-    "mintlify": {
-      "url": "https://mcp.mintlify.com"
-    },
     "repo-tree": {
       "command": "npx",
       "args": ["-y", "@andredezzy/deep-directory-tree-mcp"],

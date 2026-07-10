@@ -52,7 +52,7 @@ globs: "**/*"
 - **kintone-schema-mcp**（`mcp/kintone-schema-mcp/index.mjs`）: **実 kintone preview form / lookup / reference / 型**を REST で直接取得するとき（`verify:kintone-live-schema` と **同一正本**）。
 - **git-history-mcp**（`mcp/git-history-mcp/index.mjs`）: **憲法改定層・4要素コミット・R19/R20 締め**を Git から検索するとき（`verify:git-history-alignment` と **同一正本**）。
 - **Grok L2b（Subagent・2026-07-09）**: Composer 初回 Diff **後**の verify ループ。**MCP は read-only のみ** — lint 客体検証は **eslint-mcp**、フィールド型矛盾は **kintone-schema-mcp**、規律先祖返り疑いは **git-history-mcp**、パス探索は **repo-tree**。deploy/push/kintone 書込 **禁止**。正本 **`docs/runbooks/cio-grok-execution-loop.md`** · `npm run cio:grok:execution-guard`.
-- **user-cve-search** / **user-cyber-news**: **CVE 番号・脆弱性ニュース**が主題のとき（それ以外では使わない）。
+- **user-cve-search** / **user-duckduckgo-search**: **CVE 番号・脆弱性ニュース**が主題のとき（cyber-news は spec v3.1 DEL-2 予定 · それ以外では使わない）。
 - **user-markdownify**: **長文 HTML → Markdown** の一括変換が目的のとき（小さな表は手直しでよい）。
 - **office-powerpoint** / **user-office-powerpoint**: **PowerPoint 新規・図解・グラフ・フロー**（資料作成 / doc-lane）。**Win Cursor 必須**。着手前 `verify:doc-lane-governance` + `verify:doc-lane-pptx-phase1`。正本 **`doc-lane-pptx-mcp.md`**。
 - **office-word** / **user-office-word**: **Word 新規・表・画像・セキュリティレポート図解**（doc-lane）。**Win Cursor 必須**。着手前 `verify:doc-lane-governance` + `verify:doc-lane-word-phase2`。月次定型は **`doc-lane:security-report`** 先行。正本 **`doc-lane-docx-mcp.md`**。既存 docx 精密パッチは **python-docx**（`docx-patch-windows.md`）。
@@ -68,7 +68,8 @@ globs: "**/*"
 - **brave-search**: **Web 横断**の最新仕様・事例・リリース情報が主題のとき（**mcp.json 未導入** — **duckduckgo-search** を第一選択）。
 - **firecrawl**（`firecrawl-mcp`）: **公式ドキュサイトの本文・構造取得**が主題で、軽量 fetch では足りないとき（**mcp.json 未導入** — **WebFetch** / **context7** を優先）。
 - **puppeteer**（`@modelcontextprotocol/server-puppeteer`）: **Web UI の DOM 実検証**・**ログイン後画面**が主題のとき（**user-playwright** と重なる場合は descriptor 読みのうえ **どちらか＋理由 1 行**）。
-- **mintlify**（`https://mcp.mintlify.com`）: **連携 Mintlify プロジェクトのドキュ更新**が主題のとき（checkout / PR フローに従う）。
+- **mintlify**（`https://mcp.mintlify.com`）: **削除予定（MCP spec v3.1 DEL-1）** — 代替: リポ `docs/` 直接編集 · Mintlify Web。
+- **MCP プロファイル**: intent に応じて Cold ON/OFF — `npm run cio:mcp:profile -- --intent "<意図>" --dry-run`（適用は `--apply` · Tier B · 正本 `data/cio-mcp-profiles.json`）。
 - **harness**（`harness-mcp-v2`）: **Harness / CI/CD パイプライン**の事実確認・設定整合が主題のとき。
 
 ## CIO 運用メモ（合意反映）

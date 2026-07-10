@@ -23,7 +23,7 @@ const DORMANCY = path.join(REPO_ROOT, 'scripts', 'check-mcp-dormancy.mjs');
 /** 表の行番号（# 列）→ mcp.json キー（null は列を触らない／固定文） */
 const ROW_KEY = {
   1: 'github',
-  2: 'cyber-news',
+  2: 'cve-search',
   3: 'office-powerpoint',
   4: 'duckduckgo-search',
   5: 'filesystem',
