@@ -1,8 +1,8 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-07-10T13:30:14.258Z",
-  "gitHead": "07893953",
-  "gitStatus": "## main...origin/main [ahead 5]",
+  "exportedAt": "2026-07-10T13:30:16.875Z",
+  "gitHead": "903cd056",
+  "gitStatus": "## main...origin/main [ahead 6]",
   "nextTask": "**7/11 運用最適化デー**（憲法・AIチーム運用）— 688 新規 implement なし · **7/12** UI-BACKLOG-02（列幅ドラッグ）",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
@@ -16,8 +16,6 @@
     ".cursor/rules/mode-b-canonical.mdc",
     "docs/knowledge/debug-tips.md"
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=07893953 | 次=**7/11 運用最適化デー**（憲法・AIチーム運用）— 688 新規 implement なし · **7/12** UI-BACKLOG-02（列幅ドラッグ） | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
-  "validatedAt": "2026-07-10T13:30:14.629Z",
-  "crosscheckOk": true
+  "promptBlock": "【SESSION-BRIDGE】git=903cd056 | 次=**7/11 運用最適化デー**（憲法・AIチーム運用）— 688 新規 implement なし · **7/12** UI-BACKLOG-02（列幅ドラッグ） | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }
