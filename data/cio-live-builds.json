@@ -90,11 +90,11 @@
       "note": null
     },
     "688": {
-      "build": "2026-06-24-688-print-5yr-rain-scale-up-v9",
-      "fileKey": "b1efd51b-22e7-4f1e-b419-aea9665cc289",
-      "revision": "80",
-      "relPath": ".kintone-deploy/upload-688.js",
-      "deployedAt": "2026-06-24T10:51:10.157Z",
+      "build": "2026-07-10-688-wbgt-heat-reference",
+      "fileKey": "a4a2a80e-221f-4a4c-ae31-654723b53aaa",
+      "revision": "81",
+      "relPath": "customize/688/desktop.js",
+      "deployedAt": "2026-07-10T13:05:11.144Z",
       "note": null
     },
     "693": {

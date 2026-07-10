@@ -24,11 +24,18 @@
     resPaint: 'result_paint_days',
     calcAt: 'calculated_at',
     note: 'calc_note',
+    wbgtTbl: 'wbgt_data',
+    wbgtYear: 'wbgt_year',
+    wbgtMonth: 'wbgt_month',
+    wbgtDays: 'wbgt_converted_days',
+    showHeat: 'show_heat_reference',
+    printHeat: 'print_heat_reference',
   };
 
   const OBS_OPTIONS = ['東京', 'さいたま', '熊谷', '宇都宮', '前橋', '横浜', '千葉', 'その他'];
   const OBS_ALIASES = { 埼玉: 'さいたま', さきたま: 'さいたま', 大宮: 'さいたま' };
   const JMA_OBSDL = 'https://www.data.jma.go.jp/risk/obsdl/';
+  const WBGT_ENV_DL = 'https://www.wbgt.env.go.jp/wbgt_data_download.php';
   const SESSION_RECORD_KEY = 'workdays688_last_record_id';
 
   let state = emptyState();
@@ -65,6 +72,12 @@
       calculated_at: '',
       csvObsWind: '',
       csvObsRain: '',
+      csvObsWbgt: '',
+      wbgtMonthly: [],
+      show_heat_reference: false,
+      print_heat_reference: false,
+      heatRef: null,
+      heatAnnualAvg: null,
       showSaturdayAutoNotice: false,
       lastResult: null,
     };
@@ -132,6 +145,76 @@
     });
   }
 
+  function checkboxFieldOn(rec, code) {
+    const v = gv(rec, code);
+    if (Array.isArray(v)) return v.length > 0;
+    return String(v) === '表示' || String(v) === '含める';
+  }
+
+  function checkboxToKintone(on, optionLabel) {
+    return { value: on ? [optionLabel] : [] };
+  }
+
+  function readWbgtMonthlyFromKintone(rec) {
+    const rows = (rec[FC.wbgtTbl] && rec[FC.wbgtTbl].value) || [];
+    const out = [];
+    for (let i = 0; i < rows.length; i += 1) {
+      const v = rows[i].value || {};
+      const year = Number(v[FC.wbgtYear] && v[FC.wbgtYear].value);
+      const month = Number(v[FC.wbgtMonth] && v[FC.wbgtMonth].value);
+      const converted_days = Number(v[FC.wbgtDays] && v[FC.wbgtDays].value);
+      if (!year || !month || month < 1 || month > 12) continue;
+      out.push({ year: year, month: month, converted_days: converted_days || 0 });
+    }
+    return out;
+  }
+
+  function wbgtMonthlyToKintone(rows) {
+    return (rows || []).map(function (r) {
+      return {
+        value: {
+          [FC.wbgtYear]: { value: String(r.year) },
+          [FC.wbgtMonth]: { value: String(r.month) },
+          [FC.wbgtDays]: { value: String(r.converted_days != null ? r.converted_days : 0) },
+        },
+      };
+    });
+  }
+
+  function syncHeatReference() {
+    const y = currentEstimateYear();
+    if (!y || Number.isNaN(y)) {
+      state.heatRef = null;
+      state.heatAnnualAvg = null;
+      return;
+    }
+    const ref = getRef5yr();
+    state.heatRef = buildHeatReferenceAverages(ref, y);
+    state.heatAnnualAvg = buildHeatAnnualReferenceAvg(ref, y);
+  }
+
+  function heatMonthAvgMap() {
+    const map = {};
+    const built = state.heatRef;
+    if (!built || !built.months) return map;
+    built.months.forEach(function (row) {
+      map[row.m] = row.avg != null ? row.avg : 0;
+    });
+    return map;
+  }
+
+  function heatYearAvgTotal() {
+    if (state.heatAnnualAvg != null && !Number.isNaN(state.heatAnnualAvg)) {
+      return state.heatAnnualAvg;
+    }
+    const map = heatMonthAvgMap();
+    const keys = Object.keys(map);
+    if (!keys.length) return null;
+    return keys.reduce(function (s, k) {
+      return s + (Number(map[k]) || 0);
+    }, 0);
+  }
+
   function stateFromKintone(rec) {
     const s = emptyState();
     s.recordId = rec.$id && rec.$id.value != null ? String(rec.$id.value) : null;
@@ -152,6 +235,9 @@
     s.holiday_fiscal_year = fyLegacy !== '' ? Number(fyLegacy) : s.estimate_year;
     s.wind = readSubFromKintone(rec, FC.windTbl, FC.windDate, FC.windVal);
     s.rain = readSubFromKintone(rec, FC.rainTbl, FC.rainDate, FC.rainVal);
+    s.wbgtMonthly = readWbgtMonthlyFromKintone(rec);
+    s.show_heat_reference = checkboxFieldOn(rec, FC.showHeat);
+    s.print_heat_reference = checkboxFieldOn(rec, FC.printHeat);
     s.holidayManual = readHolidayManualFromKintone(rec);
     const rs = gv(rec, FC.resScaffold);
     const rp = gv(rec, FC.resPaint);
@@ -184,6 +270,9 @@
     }
     rec[FC.windTbl] = { value: subToKintone(s.wind, FC.windDate, FC.windVal) };
     rec[FC.rainTbl] = { value: subToKintone(s.rain, FC.rainDate, FC.rainVal) };
+    rec[FC.wbgtTbl] = { value: wbgtMonthlyToKintone(s.wbgtMonthly) };
+    rec[FC.showHeat] = checkboxToKintone(s.show_heat_reference, '表示');
+    rec[FC.printHeat] = checkboxToKintone(s.print_heat_reference, '含める');
     rec[FC.holTbl] = { value: holidayManualToKintone(s.holidayManual) };
     if (includeResults && s.lastResult) {
       rec[FC.resScaffold] = { value: String(Math.round(s.lastResult.scaffold * 100) / 100) };
@@ -278,6 +367,18 @@
   }
 
   function resolveCsvObsLocation(kind, text) {
+    if (kind === 'wbgt') {
+      const loc = parseCsvStationName(text);
+      if (loc) {
+        state.csvObsWbgt = loc;
+        if (!state.obs_location) state.obs_location = loc;
+        else if (state.obs_location !== loc) {
+          console.warn('WBGT CSV location mismatch:', loc, state.obs_location);
+        }
+        return loc;
+      }
+      return state.obs_location || '（CSVに地点なし）';
+    }
     const loc = parseCsvStationName(text);
     if (!loc) {
       throw new Error('CSVから観測地点を読み取れませんでした（地点名が一覧にない可能性があります）');
@@ -336,7 +437,13 @@
   }
 
   function syncRef5yrFromDaily() {
-    state.ref5yr = rebuildRef5yrFromDailyCsv(cloneRef5yr(REF5YR), state.wind, state.rain);
+    let ref = rebuildRef5yrFromDailyCsv(cloneRef5yr(REF5YR), state.wind, state.rain);
+    if (state.wbgtMonthly && state.wbgtMonthly.length) {
+      ref = JSON.parse(JSON.stringify(ref));
+      ref[HEAT_REF5YR_KEY] = monthlyRowsToHeatBlock(state.wbgtMonthly);
+    }
+    state.ref5yr = ref;
+    syncHeatReference();
   }
 
   function decodeCsvArrayBuffer(buf) {
@@ -466,6 +573,7 @@
     state.result_paint_days = Math.round(bundle.paint * 100) / 100;
     state.estimate_year = estimateYear;
     state.holiday_fiscal_year = estimateYear;
+    syncHeatReference();
     state.dirty = true;
     return state.lastResult;
   }
@@ -496,6 +604,10 @@
     state.obs_location = state.obs_location || '';
     state.threshold_wind_ms = Number(g('wd688-wind-th')) || 10;
     state.threshold_rain_mm = Number(g('wd688-rain-th')) || 10;
+    const showHeatEl = document.getElementById('wd688-show-heat');
+    const printHeatEl = document.getElementById('wd688-print-heat');
+    state.show_heat_reference = showHeatEl ? showHeatEl.checked : false;
+    state.print_heat_reference = printHeatEl ? printHeatEl.checked : false;
     readHolidayManualFromForm();
     markDirty();
   }
@@ -510,6 +622,10 @@
     updateObsLocationDisplay();
     s('wd688-wind-th', state.threshold_wind_ms);
     s('wd688-rain-th', state.threshold_rain_mm);
+    const showHeatEl = document.getElementById('wd688-show-heat');
+    const printHeatEl = document.getElementById('wd688-print-heat');
+    if (showHeatEl) showHeatEl.checked = !!state.show_heat_reference;
+    if (printHeatEl) printHeatEl.checked = !!state.print_heat_reference;
     for (let m = 1; m <= 12; m += 1) {
       const row = state.holidayManual[m - 1];
       s('wd688-hm-saturday-' + m, row.saturday);
@@ -918,6 +1034,17 @@
           return paintPdfMonth(r).ratePct;
         },
         { rainPctInt: true, yearVal: pdfYear.ratePct },
+      );
+    }
+    if (state.show_heat_reference) {
+      const hMap = heatMonthAvgMap();
+      const hYear = heatYearAvgTotal();
+      addRow(
+        '猛暑日（参考）<br><span class="wd688-sub">(WBGT≥31・換算日数・過去5年月平均)</span>',
+        function (r) {
+          return hMap[r.m] != null ? hMap[r.m] : 0;
+        },
+        { fixed: 2, yearVal: hYear != null ? hYear : 0 },
       );
     }
 
@@ -1471,13 +1598,26 @@
         '</tr>';
     }
 
+    if (opts.printHeat) {
+      const hMap = heatMonthAvgMap();
+      const hYear = heatYearAvgTotal();
+      sum +=
+        '<tr><td class="wd688pr-lab">猛暑日（参考）<br><span style="font-size:8pt;font-weight:normal">(WBGT≥31・換算日数・参考のみ)</span></td>' +
+        monthCells(function (r) {
+          return hMap[r.m] != null ? hMap[r.m] : 0;
+        }, { fixed: 2 }) +
+        yearCell(hYear != null ? hYear : 0, { fixed: 2 }) +
+        '</tr>';
+    }
+
     sum += '</tbody></table>';
     return sum;
   }
 
-  function buildPrintFootnotes(mode, pastLabel, rainTh, windTh) {
+  function buildPrintFootnotes(mode, pastLabel, rainTh, windTh, printHeat) {
+    let html;
     if (mode === 'scaffold') {
-      return (
+      html =
         '<div class="wd688pr-notes">' +
         '<p>※1　風速日数は、見積作成年の過去5年間（' +
         escHtml(pastLabel) +
@@ -1487,32 +1627,36 @@
         '<p>※2　休日数と風速日数のダブり＝風速日数×（休日数÷暦日数）</p>' +
         '<p>※3　稼働可能日数＝暦日数－（休日数＋風速日数－ダブり）</p>' +
         '<p>※4　不稼働率＝（休日数＋風速日数－ダブり）÷稼働可能日数</p>' +
-        '</div>'
-      );
-    }
-    if (mode === 'holiday') {
-      return (
+        '</div>';
+    } else if (mode === 'holiday') {
+      html =
         '<div class="wd688pr-notes">' +
         '<p>※1　上段表は休日数のみ（降雨日数は0）。カレンダーは降雨・休日の色分けです。</p>' +
         '<p>※2　休日数と降雨日数のダブり＝降雨日数×（休日数÷暦日数）</p>' +
         '<p>※3　稼働可能日数＝暦日数－休日数（休日シート上段）</p>' +
         '<p>※4　不稼働率＝休日数÷稼働可能日数（休日シート上段）</p>' +
-        '</div>'
-      );
+        '</div>';
+    } else {
+      html =
+        '<div class="wd688pr-notes">' +
+        '<p>※1　降雨日数は、見積作成年の過去5年間（' +
+        escHtml(pastLabel) +
+        '）の月平均日数（' +
+        escHtml(rainTh) +
+        'mm以上の日数）です。</p>' +
+        '<p>※2　休日数と降雨日数のダブり＝降雨日数×（休日数÷暦日数）</p>' +
+        '<p>※3　稼働可能日数＝暦日数－休日数－降雨日数＋ダブり</p>' +
+        '<p>※4　不稼働率＝（休日数＋降雨日数－ダブり）÷稼働可能日数</p>' +
+        '<p>　　雨休率（％）＝（休日数＋降雨日数－ダブり）÷稼働可能日数（整数％・工期設定資料p.94）</p>' +
+        '</div>';
     }
-    return (
-      '<div class="wd688pr-notes">' +
-      '<p>※1　降雨日数は、見積作成年の過去5年間（' +
-      escHtml(pastLabel) +
-      '）の月平均日数（' +
-      escHtml(rainTh) +
-      'mm以上の日数）です。</p>' +
-      '<p>※2　休日数と降雨日数のダブり＝降雨日数×（休日数÷暦日数）</p>' +
-      '<p>※3　稼働可能日数＝暦日数－休日数－降雨日数＋ダブり</p>' +
-      '<p>※4　不稼働率＝（休日数＋降雨日数－ダブり）÷稼働可能日数</p>' +
-      '<p>　　雨休率（％）＝（休日数＋降雨日数－ダブり）÷稼働可能日数（整数％・工期設定資料p.94）</p>' +
-      '</div>'
-    );
+    if (printHeat) {
+      html =
+        html.replace('</div>', '') +
+        '<p>※5　猛暑日（参考）はWBGT≥31の換算日数（過去5年月平均）。稼働可能日数・不稼働率・雨休率には含めません。</p>' +
+        '</div>';
+    }
+    return html;
   }
 
   function buildWorkdaysMgmtPrintSection(config) {
@@ -1532,10 +1676,11 @@
       buildPrintSummaryTable(rows, mode, {
         rainTh: config.rainTh,
         windTh: config.windTh,
+        printHeat: config.printHeat,
       }) +
       buildOver100CommentPanel(rows, mode) +
       '</div>' +
-      buildPrintFootnotes(mode, config.pastLabel, config.rainTh, config.windTh) +
+      buildPrintFootnotes(mode, config.pastLabel, config.rainTh, config.windTh, config.printHeat) +
       '<section class="wd688pr-cal-section">' +
       renderCalendarYearSection(calYear, rows, calMode, markSet, 6) +
       '</section>' +
@@ -1607,9 +1752,41 @@
     return html;
   }
 
-  /** 施工主報告 過去5年（降雨 or 風速）1枚分 */
+  /** 施工主報告 過去5年（降雨 or 風速 or 猛暑日）1枚分 */
   function buildPrint5yrSheet(kind, estYear, pastLabel) {
     const ref = getRef5yr();
+    if (kind === 'heat') {
+      const sheetTab = '過去5年(猛暑日)';
+      const metaLine =
+        escHtml(ref.location || '大宮地区') +
+        '　環境省WBGT（見積作成年 ' +
+        escHtml(estYear) +
+        '年 → ' +
+        escHtml(pastLabel) +
+        '）';
+      let inner = renderPrintOne5yrTable(ref[HEAT_REF5YR_KEY], '>=31 WBGT', estYear);
+      const ann = buildHeatAnnualReferenceAvg(ref, estYear);
+      if (ann != null) {
+        inner +=
+          '<p class="wd688pr-meta-line">年間参考平均: <strong>' + fmtNum(ann, 2) + ' 日</strong></p>';
+      }
+      inner +=
+        '<p class="wd688pr-meta-line" style="font-size:8pt;color:#555;">※ 参考表示のみ。稼働可能日数・不稼働率には含めません。</p>';
+      return (
+        '<div class="wd688pr-5yr-combined">' +
+        '<div class="wd688pr-5yr-group wd688pr-5yr-group-heat">' +
+        '<div class="wd688pr-5yr-head">' +
+        '<h1 class="wd688pr-title">' +
+        escHtml(sheetTab) +
+        '</h1>' +
+        '<p class="wd688pr-meta-line">' +
+        metaLine +
+        '</p></div>' +
+        '<div class="wd688pr-5yr-grid wd688pr-5yr-grid-heat">' +
+        inner +
+        '</div></div></div>'
+      );
+    }
     const isWind = kind === 'wind';
     const sheetTab = isWind ? '過去5年月別風速日数' : '過去5年月別降雨日数';
     const metaLine =
@@ -1681,9 +1858,10 @@
       pastLabel: pastLabel,
       rainTh: rainTh,
       windTh: windTh,
+      printHeat: state.print_heat_reference,
     };
 
-    return (
+    let reportHtml =
       '<div class="wd688pr-sheet wd688pr-sheet-work">' +
       meta +
       buildWorkdaysMgmtPrintSection(
@@ -1720,8 +1898,16 @@
       '</div>' +
       '<div class="wd688pr-sheet wd688pr-sheet-5yr wd688pr-sheet-5yr-wind">' +
       buildPrint5yrSheet('wind', estYear, pastLabel) +
-      '</div>'
-    );
+      '</div>';
+
+    if (state.print_heat_reference) {
+      reportHtml +=
+        '<div class="wd688pr-sheet wd688pr-sheet-5yr wd688pr-sheet-5yr-heat">' +
+        buildPrint5yrSheet('heat', estYear, pastLabel) +
+        '</div>';
+    }
+
+    return reportHtml;
   }
 
   function buildPaintClientReportHtml() {
@@ -1847,6 +2033,45 @@
     return html;
   }
 
+  function render5yrHeatReferenceTable() {
+    const estimateYear = currentEstimateYear();
+    const ref = getRef5yr();
+    const period = ref.heatPeriod || '';
+
+    let html =
+      '<div style="font-size:13px;line-height:1.6;margin-bottom:10px;">' +
+      '<strong>過去5年(猛暑日)</strong>（' +
+      ref.location +
+      '・見積作成年 <strong>' +
+      estimateYear +
+      '年</strong> → 対象 <strong>' +
+      pastFiveYearsForEstimate(estimateYear).join('・') +
+      '年</strong>' +
+      (period ? '／登録データ: ' + period : '') +
+      '）</div>';
+    if (ref.updatedFromCsv) {
+      html +=
+        '<p style="font-size:12px;color:#047857;margin:0 0 10px;">CSV取込反映日: ' +
+        ref.updatedFromCsv +
+        '</p>';
+    }
+
+    html += renderOne5yrTable(ref[HEAT_REF5YR_KEY], '>=31 WBGT (換算日数)', estimateYear);
+    const ann = buildHeatAnnualReferenceAvg(ref, estimateYear);
+    if (ann != null) {
+      html +=
+        '<p style="font-size:13px;margin:8px 0;">年間参考平均: <strong>' +
+        fmtNum(ann, 2) +
+        ' 日</strong></p>';
+    }
+    html +=
+      '<p style="font-size:12px;color:#64748b;margin:12px 0 0;">' +
+      '※ WBGT≥31 の時間数÷8hで月別換算日数を算出し、見積作成年の過去5年同月平均を表示します。' +
+      ' <strong>参考表示のみ</strong> — 稼働可能日数・不稼働率・雨休率・算出結果には含めません。' +
+      '</p>';
+    return html;
+  }
+
   function render5yrReferenceTable(kind) {
     const estimateYear = currentEstimateYear();
     const ref = getRef5yr();
@@ -1910,6 +2135,10 @@
       host.innerHTML = render5yrReferenceTable('rain');
       return;
     }
+    if (activeTab === 'ref-heat') {
+      host.innerHTML = render5yrHeatReferenceTable();
+      return;
+    }
 
     if (!state.lastResult) {
       host.innerHTML =
@@ -1962,7 +2191,7 @@
   }
 
   function updateTabButtons() {
-    ['scaffold', 'paint', 'holiday', 'ref-wind', 'ref-rain'].forEach(function (tab) {
+    ['scaffold', 'paint', 'holiday', 'ref-wind', 'ref-rain', 'ref-heat'].forEach(function (tab) {
       const btn = document.getElementById('wd688-tab-' + tab);
       if (!btn) return;
       if (tab === activeTab) {
@@ -2147,8 +2376,19 @@
       'CSV形式：<strong>日付・降水量の2列</strong><br>' +
       '<button type="button" id="wd688-csv-rain" class="wd688-csv-btn">CSV→降雨</button>' +
       '</p>' +
+      '<p style="margin:0 0 12px;line-height:1.75;">' +
+      '<strong>③ 猛暑日（WBGT・参考のみ）</strong><br>' +
+      'データ源：<a href="' +
+      WBGT_ENV_DL +
+      '" target="_blank" rel="noopener">環境省 WBGT ダウンロード</a>（実況・実測・時間別）<br>' +
+      '気象要素：<strong>暑さ指数（WBGT）</strong>のみ（湿球・黒球は不要）<br>' +
+      '数え方：各時間の WBGT が <strong>31 以上</strong> の時間数を集計 → <strong>÷8h</strong> で月別換算日数 → 5年分の同月平均<br>' +
+      'CSV形式：環境省形式（L4: 日付,時間,暑さ指数）<br>' +
+      '<button type="button" id="wd688-csv-wbgt" class="wd688-csv-btn">CSV→猛暑日（WBGT）</button>' +
+      '</p>' +
       '<p style="margin:0;line-height:1.75;font-size:12px;color:#475569;">' +
-      '<strong>過去5年表の見方</strong> … タブ「過去5年(風速)」「過去5年(降雨)」に Excel シートと同じ<strong>全閾値表</strong>（風速: ≧10/15/20/30m/s、降雨: ≧1/10/30/50/70/100mm）を表示します。' +
+      '<strong>過去5年表の見方</strong> … タブ「過去5年(風速)」「過去5年(降雨)」「過去5年(猛暑日)」に参照表を表示します。' +
+      ' 猛暑日は<strong>参考のみ</strong>（稼働可能日数・不稼働率には含めません）。' +
       ' CSV を取込むと登録済みデータが更新され、見積作成年に応じた5年分の平均列が再計算されます。' +
       '</p>'
     );
@@ -2186,7 +2426,9 @@
       '<label>見積作成年<br><input id="wd688-estimate" type="number" min="2000" max="2100" step="1" style="width:100%"></label>' +
       '<label>観測地点<br><div id="wd688-obs-display" class="wd688-obs-unset">未設定</div></label>' +
       '<label>風速閾値(m/s)<br><input id="wd688-wind-th" type="number" step="0.1" style="width:100%"></label>' +
-      '<label>降雨閾値(mm)<br><input id="wd688-rain-th" type="number" step="0.1" style="width:100%"></label></div>' +
+      '<label>降雨閾値(mm)<br><input id="wd688-rain-th" type="number" step="0.1" style="width:100%"></label>' +
+      '<label style="display:flex;align-items:center;gap:6px;margin-top:22px;font-size:13px;"><input type="checkbox" id="wd688-show-heat"> 猛暑日行を画面表示</label>' +
+      '<label style="display:flex;align-items:center;gap:6px;margin-top:22px;font-size:13px;"><input type="checkbox" id="wd688-print-heat"> 猛暑日行を印刷に含める</label></div>' +
       '<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0;padding:12px;background:#e8f4fc;border-radius:8px;">' +
       '<div><span style="font-size:12px;color:#555">足場 稼働可能日数</span><br><strong id="wd688-scaffold" style="font-size:22px">—</strong></div>' +
       '<div><span style="font-size:12px;color:#555">塗装 稼働可能日数</span><br><strong id="wd688-paint" style="font-size:22px">—</strong></div>' +
@@ -2201,14 +2443,15 @@
       '<button type="button" class="wd688-tab" id="wd688-tab-paint">塗装</button>' +
       '<button type="button" class="wd688-tab" id="wd688-tab-holiday">休日</button>' +
       '<button type="button" class="wd688-tab" id="wd688-tab-ref-wind">過去5年(風速)</button>' +
-      '<button type="button" class="wd688-tab" id="wd688-tab-ref-rain">過去5年(降雨)</button></div>' +
+      '<button type="button" class="wd688-tab" id="wd688-tab-ref-rain">過去5年(降雨)</button>' +
+      '<button type="button" class="wd688-tab" id="wd688-tab-ref-heat">過去5年(猛暑日)</button></div>' +
       '<div id="wd688-meta" style="font-size:12px;color:#666;margin-bottom:8px"></div>' +
       '<div id="wd688-monthly"></div>' +
       '<input type="file" id="wd688-csv-file" accept=".csv,.txt" style="display:none">';
 
     header.appendChild(root);
 
-    ['wd688-project', 'wd688-estimate', 'wd688-wind-th', 'wd688-rain-th'].forEach(
+    ['wd688-project', 'wd688-estimate', 'wd688-wind-th', 'wd688-rain-th', 'wd688-show-heat', 'wd688-print-heat'].forEach(
       function (id) {
         const el = document.getElementById(id);
         if (el) el.addEventListener('change', markDirty);
@@ -2229,6 +2472,14 @@
     });
     document.getElementById('wd688-tab-ref-rain').addEventListener('click', function () {
       switchTab('ref-rain');
+    });
+    document.getElementById('wd688-tab-ref-heat').addEventListener('click', function () {
+      switchTab('ref-heat');
+    });
+
+    document.getElementById('wd688-show-heat').addEventListener('change', function () {
+      readFormIntoState();
+      renderMonthlyTable();
     });
 
     document.getElementById('wd688-load').addEventListener('click', function () {
@@ -2275,6 +2526,9 @@
     document.getElementById('wd688-csv-rain').addEventListener('click', function () {
       pickCsv('rain');
     });
+    document.getElementById('wd688-csv-wbgt').addEventListener('click', function () {
+      pickCsv('wbgt');
+    });
 
     fileInput.addEventListener('change', function () {
       const file = fileInput.files && fileInput.files[0];
@@ -2285,6 +2539,36 @@
           const text = decodeCsvArrayBuffer(reader.result);
           readFormIntoState();
           const loc = resolveCsvObsLocation(pendingCsvKind, text);
+          if (pendingCsvKind === 'wbgt') {
+            const hourly = parseCsvWbgtHourly(text);
+            if (!hourly.length) {
+              alert('有効なWBGTデータ行がありません');
+              return;
+            }
+            state.ref5yr = mergeWbgtCsvIntoRef5yr(getRef5yr(), hourly);
+            state.wbgtMonthly = heatBlockToMonthlyRows(state.ref5yr[HEAT_REF5YR_KEY]);
+            syncHeatReference();
+            updateObsLocationDisplay();
+            markDirty();
+            let wbgtMsg =
+              '観測地点: ' +
+              loc +
+              ' / WBGT ' +
+              hourly.length +
+              ' 行 → 月別換算を更新しました。';
+            try {
+              if (state.lastResult) runCalc();
+              else syncHeatReference();
+              fillFormFromState();
+              wbgtMsg += ' 表示を更新しました。';
+            } catch (calcErr) {
+              wbgtMsg += ' 表示更新: ' + (calcErr.message || calcErr);
+            }
+            if (activeTab === 'ref-heat') renderMonthlyTable();
+            alert(wbgtMsg + ' 「保存」で記録に反映されます。');
+            pendingCsvKind = null;
+            return;
+          }
           const rows = parseCsvTwoColumn(text);
           if (!rows.length) {
             alert('有効なデータ行がありません');
@@ -2312,7 +2596,7 @@
           } catch (calcErr) {
             msg += ' 再算出: ' + (calcErr.message || calcErr);
           }
-          if (activeTab === 'ref-wind' || activeTab === 'ref-rain') renderMonthlyTable();
+          if (activeTab === 'ref-wind' || activeTab === 'ref-rain' || activeTab === 'ref-heat') renderMonthlyTable();
           alert(msg + ' 「保存」で記録に反映されます。');
         } catch (e) {
           alert('CSVエラー: ' + (e.message || e));

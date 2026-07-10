@@ -122,6 +122,8 @@
     "workdays:patch-fields-687-20260623": "npx dotenv -e .env -e .env.proxy -- node scripts/workdays-patch-fields-687-20260623.mjs",
     "workdays:calc-test": "node scripts/workdays-calc-test.mjs",
     "workdays:calc-gate": "node scripts/workdays-calc-gate.mjs",
+    "workdays:heat-reference-gate": "node scripts/workdays-heat-reference-gate.mjs",
+    "workdays:patch-fields-687-wbgt-heat": "npx dotenv -e .env -e .env.proxy -- node scripts/workdays-patch-fields-687-wbgt-heat.mjs",
     "workdays:deploy-gate": "node scripts/workdays-deploy-gate.mjs",
     "workdays:verify-built-ui": "node scripts/workdays-verify-built-ui.mjs",
     "workdays:create-dash-app": "npx dotenv -e .env -e .env.proxy -- node scripts/workdays-create-dash-app.mjs",

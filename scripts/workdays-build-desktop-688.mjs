@@ -6,7 +6,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const BUILD = process.env.WORKDAYS_BUILD || '2026-06-13-688-ref5yr-zero-year-register';
+const BUILD = process.env.WORKDAYS_BUILD || '2026-07-10-688-wbgt-heat-reference';
 
 function prepareRef5yrForBrowser() {
   const ref = JSON.parse(
@@ -34,6 +34,18 @@ function prepareCoreForBrowser() {
   return holidayBlock + core;
 }
 
+function prepareHeatForBrowser() {
+  let heat = readFileSync(path.join(root, 'scripts/workdays-heat-reference.mjs'), 'utf8');
+  const marker = '// BROWSER_HEAT_START';
+  const cut = heat.indexOf(marker);
+  if (cut < 0) throw new Error('BROWSER_HEAT_START marker missing in workdays-heat-reference.mjs');
+  heat = heat.slice(0, cut);
+  heat = heat.replace(/^import[\s\S]*?;\s*\r?\n/gm, '');
+  heat = heat.replace(/^export const /gm, '  const ');
+  heat = heat.replace(/^export function /gm, '  function ');
+  return heat + '\n';
+}
+
 const ui = readFileSync(path.join(root, 'customize/688/desktop.ui.js'), 'utf8');
 
 const out = `/**
@@ -46,7 +58,7 @@ const out = `/**
 
   const BUILD = '${BUILD}';
 
-${prepareRef5yrForBrowser()}${prepareCoreForBrowser()}
+${prepareRef5yrForBrowser()}${prepareCoreForBrowser()}${prepareHeatForBrowser()}
 ${ui}
 })();
 `;

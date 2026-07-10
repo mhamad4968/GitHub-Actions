@@ -17,6 +17,9 @@ const steps = [
   ['scripts/workdays-verify-built-ui.mjs', app],
   ['scripts/workdays-calc-gate.mjs'],
 ];
+if (app === '688') {
+  steps.push(['scripts/workdays-heat-reference-gate.mjs']);
+}
 
 for (const args of steps) {
   const r = spawnSync(node, args, { stdio: 'inherit' });
