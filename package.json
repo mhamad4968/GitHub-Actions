@@ -690,6 +690,7 @@
     "cio:second-reviewer:capture": "node scripts/cio-second-reviewer-capture.mjs",
     "verify:cio-env-upgrade": "node scripts/verify-cio-env-upgrade.mjs",
     "verify:cio-mcp-manifest": "node scripts/verify-cio-mcp-manifest.mjs",
+    "verify:mcp-deleted-refs": "node scripts/verify-mcp-deleted-refs.mjs",
     "rag:sync-business-improvement": "node scripts/rag-sync-business-improvement.mjs",
     "smoke:bi-demo": "node scripts/smoke-business-improvement-demo.mjs",
     "cio:cursor-automation:prefill": "node scripts/cio-cursor-automation-prefill.mjs",

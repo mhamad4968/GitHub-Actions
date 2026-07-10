@@ -5,7 +5,9 @@
 
 <!-- 部分GOスコープ（D2）例: **触らない** — 688 の猛暑日以外 / 677–679 / SKYSEA 7月 -->
 
-**最終更新**: 2026-07-11 JST — **AI チーム運用最適化 spec v3 GO**（3R 合議 · 実装 P0–P3 は浜田合図後）
+**最終更新**: 2026-07-11 JST — **R5 全員 GO** · MCP spec **v3.1** + ops P0–P2 **push 予定**（implement 合図待ち）
+
+**Git**: **`53143f69`** = `origin/main` — C1 ops P0-P2（push 前）
 
 ### 本日アクティブ（BUILD/rev — 2026-07-10）
 
@@ -39,8 +41,7 @@
 | **736** | **§9.6 凍結** · **7/7〜 AI 主導 §41**（736 のみ） |
 | **712** | 削除済 — deploy 禁止 |
 
-**次の1手**: **AI チーム運用 P0–P3 実装** — 浜田合図後（`docs/plans/2026-07-11-ai-team-ops-optimization-spec.md` §10）· **7/12** UI-BACKLOG-02（列幅ドラッグ）
-**Git**: **`33479bc5`** = `origin/main` — push 済
+**次の1手**: 浜田 **implement 合図** → MCP §10 **P0**（O1 kintone thin）· SCR/DEL は P2.5 以降
 **夕反省**: `docs/reports/2026-07-10-evening-reflection.md`（#S1〜#S3 **浜田承認済・実装済**）  
 **736 7月**: `docs/runbooks/736-july-2026-schedule.md`  
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`  

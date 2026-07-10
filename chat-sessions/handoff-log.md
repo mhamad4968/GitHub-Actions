@@ -4408,4 +4408,55 @@ npm run cio:morning:ready
 
 **Git**: commit push 本ターン
 
+
+**GO待ち**: #R699-BANNER-01 等（夕反省 · 承認待ち）
+
+---
+
+### 2026-07-11 07:20 JST — **AI チーム運用 P0–P2 実装完了（浜田 GO）**
+
+**要約**:
+- **P0** — `bridge.lastFailures[]`（最大3）+ export 原子化（repair→bridge→tips 同一 try）
+- **P1a** — `cio-turn-start` 契約3行（Goal / Touch / SPEC_TOUCHED）
+- **P1b** — `verify:cio-miss-reduction-governance` spec needles 追加
+- **P1c** — `#S1` garble リトライ配線監査（portfolio-build test）
+- **P2** — `cio-four-ai-governance.md` R41 追補
+
+**verify**: `session-handoff-integrity --import` · `cio-18-countermeasures` · `miss-reduction-governance` · `kintone-apps-portfolio-build` · `cio-four-ai-governance` **全 OK**
+
+**次の1手**: **7/12 UI-BACKLOG-02** · **P3**（任意）· commit/push は浜田指示待ち
+
+**触らない**: 688 新規 implement / 677–679 / SKYSEA 7月
+
+---
+
+### 2026-07-11 07:40 JST — **MCP/ツール統廃合 spec v1（R2 合議 · 浜田全承認予定）**
+
+**要約**:
+- **R2 合議** — DeepSeek / OpenRouter + CIO 突合 · Kimi 代行（doc-lane 維持確認）
+- **正本**: `docs/plans/2026-07-11-mcp-tools-consolidation-spec.md`
+- **確定**: 削除 **mintlify + cyber-news**（退行なし）· Cold **6 グループ** · Protected **office-* / kintone-space** · O1–O4 コード統合
+- **日常 ON 目標**: ≈15 本（プロファイル `governance`）
+- **△8 + R01/R02** 対策表 §8 確定 · ロールバック 5 行 §8.1
+
+**次の1手**: §10 P0（O1 kintone MCP thin 化）→ P6 順 · **実装 GO**（浜田全承認予定）
+
+**R3 追記（07:45）**: △9 sync 硬编码 cyber-news · △10 mintlify overlay 復活 — **SCR 先行** を spec v2 §6.0 に確定
+
+**触らない**: registry 必須 10 削減 · doc-lane MCP 削除
+
+---
+
+### 2026-07-11 07:55 JST — **R5 全員 GO · spec v3.1 push（implement 合図待ち）**
+
+**要約**:
+- **R5 合議** — DeepSeek GO · OpenRouter GO · Kimi 代行 GO · CIO GO
+- **MCP 正本**: `docs/plans/2026-07-11-mcp-tools-consolidation-spec.md` **v3.1**（△13–17 · §8.2–8.4 · DEL 前ゲート · §10.1 commit 分割）
+- **ops**: P0–P2 実装 **C1 commit** · verify 5 本 OK
+- **新規 verify**: `verify:mcp-deleted-refs`（DEL 2 件スコープ · SCR 前 NG=正常）
+
+**push**: C1 ops 実装 + C2 MCP spec v3.1（**mcp.json 変更なし**）
+
+**次の1手**: 浜田 **implement 合図** → MCP §10 **P0**（O1）
+
 ---
