@@ -32,27 +32,36 @@ export function updatePortfolioMachineBuild(md, appId, build, revision) {
   return { md: next, changed: next !== md };
 }
 
+/** 詳細行 tail 先頭の rev ** N ** / **** garble を除去 */
+function stripDetailRevPrefix(tail) {
+  let t = String(tail);
+  let changed = true;
+  while (changed) {
+    changed = false;
+    if (/^\s*rev\s*\*\*\s*\d+\s*\*\*/i.test(t)) {
+      t = t.replace(/^\s*rev\s*\*\*\s*\d+\s*\*\*\s*/i, ' ');
+      changed = true;
+      continue;
+    }
+    if (/^\s*\*+\s*/.test(t)) {
+      t = t.replace(/^\s*\*+\s*/, ' ');
+      changed = true;
+    }
+  }
+  return t;
+}
+
 export function updatePortfolioDetailBuild(md, appId, build, revision) {
   const id = String(appId).trim();
   const lineRe = new RegExp(
-    `^(\\|[^\\n]*\\*\\*${id}\\*\\*[^\\n]*)\\*\\*BUILD=\`([^\`]+)\`(\\s*rev\\s*\\*\\*)([^*]+)(\\*\\*[^\\n]*\\|)\\s*$`,
+    `^(\\|[^\\n]*\\*\\*${id}\\*\\*[^\\n]*?)\\*\\*BUILD=\`[^\`]+\`([^\\n]*\\|)\\s*$`,
     'm',
   );
-  if (lineRe.test(md)) {
-    const next = md.replace(lineRe, (_m, p1, _oldBuild, p3, _oldRev, p5) => {
-      const revCell = revision != null ? ` ${revision} ` : _oldRev;
-      return `${p1}**BUILD=\`${build}\`${p3}${revCell}${p5}`;
-    });
-    return { md: next, changed: next !== md };
-  }
-  const buildOnly = new RegExp(
-    `^(\\|[^\\n]*\\*\\*${id}\\*\\*[^\\n]*)\\*\\*BUILD=\`([^\`]+)\`([^\\n]*\\|)\\s*$`,
-    'm',
-  );
-  if (!buildOnly.test(md)) return { md, changed: false };
-  const next = md.replace(buildOnly, (_m, p1, _old, tail) => {
-    const revSuffix = revision != null ? ` rev **${revision}**` : '';
-    return `${p1}**BUILD=\`${build}\`${revSuffix}${tail}`;
+  if (!lineRe.test(md)) return { md, changed: false };
+  const next = md.replace(lineRe, (_m, p1, tail) => {
+    const cleanTail = stripDetailRevPrefix(tail);
+    const revPart = revision != null ? ` rev **${revision}**` : '';
+    return `${p1}**BUILD=\`${build}\`${revPart}${cleanTail}`;
   });
   return { md: next, changed: next !== md };
 }

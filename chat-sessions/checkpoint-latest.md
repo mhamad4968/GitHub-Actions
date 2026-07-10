@@ -3,13 +3,13 @@
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED**（kintone レーン v1 完了・closures 登録）≠ **セッション締め**（export-handoff / Desktop sync / close-git）。混同禁止 -->
 
-**最終更新**: 2026-07-10 JST — **688 猛暑日 implement deploy 済** · **736 PH1c / 698 / 700 浜田目視 OK**
+**最終更新**: 2026-07-10 JST — **688 猛暑日 浜田目視 OK** · **736 PH1c / 698 / 700 浜田目視 OK**
 
 ### 本日アクティブ（BUILD/rev — 2026-07-10）
 
 | 項目 | 内容 |
 |------|------|
-| **688 稼働日数** | **WBGT 猛暑日参考** · BUILD=`2026-07-10-688-wbgt-heat-reference` **rev81** — deploy 済（2026-07-10）· 687 `wbgt_data` / `show_heat_reference` / `print_heat_reference` 追加済 · **浜田目視待ち** |
+| **688 稼働日数** | **WBGT 猛暑日参考** · BUILD=`2026-07-10-688-wbgt-heat-warn` **rev82** — **浜田目視 OK**（2026-07-10 · 東京WBGT CSV取込 · 画面反映 · 印刷3枚+過去5年猛暑日1枚） |
 | **736 実行予算** | **PH1c** 行並び替え · BUILD=`2026-07-10-736-ph1c-reorder-hide-singleton` **rev182** — **浜田目視 OK**（2026-07-10 · ⋮メニュー表示・1行ゾーン非表示）· 移動操作は未実施 |
 | | **PH1e** 仕様明細① `spec_category` · rev **175–177** |
 | | **PH1f** 原価行 `cost_budget_category` · 区分別サマリー · rev **179** |
@@ -31,15 +31,14 @@
 
 | 状態 | 内容 |
 |------|------|
-| **688 保留** | **猛暑日（WBGT）のみ部分 GO** — **implement deploy 済**（2026-07-10）· それ以外は触らない |
+| **688 保留** | **猛暑日（WBGT）のみ部分 GO** — **implement + 浜田目視 OK**（2026-07-10）· それ以外は触らない |
 | **予実管理 保留** | **677/678/679** — 触らない |
 | **SKYSEA** | **8/1–8/15 再計画** · **配信目標 9/15** — **7月着手禁止** |
 | **736** | **§9.6 凍結** · **7/7〜 AI 主導 §41**（736 のみ） |
 | **712** | 削除済 — deploy 禁止 |
 
-**次の1手**: **688 猛暑日** — **浜田目視**（CSV取込 · 画面ON/OFF · 印刷 · 過去5年タブ · 稼働日数不変確認）
-**Git**: **`74d61441`** = `origin/main` — push 済
-**夕反省**: `docs/reports/2026-07-09-evening-reflection.md`  
+**次の1手**: **7/11 運用最適化デー**（憲法・AIチーム運用）— 688 新規 implement なし · **7/12** UI-BACKLOG-02（列幅ドラッグ）
+**夕反省**: `docs/reports/2026-07-10-evening-reflection.md`（#S1〜#D2 承認待ち）  
 **736 7月**: `docs/runbooks/736-july-2026-schedule.md`  
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`  
 **運用メモ**: Desktop `18-重要確認.txt` 正本 · 674 deploy は `desktop.bundle.js`（`pc-ledger:674:bundle-desktop`）
