@@ -2,7 +2,8 @@
 
 **制定**: 2026-05-21（CEO 浜田指令）  
 **階層**: **第3 runbook**（憲法は `AGENTS.md` §50-3-11＝第1 / 本書＝手順）— [`docs/constitution/00-rule-hierarchy.md`](../constitution/00-rule-hierarchy.md)  
-**前提**: Phase 1 方式B 正本（`AGENTS.md` §1-2-3-4・`part-A-constitution-kernel.md`）を **破壊せず拡張**する。
+**前提**: Phase 1 方式B 正本（`AGENTS.md` §1-2-3-4・`part-A-constitution-kernel.md`）を **破壊せず拡張**する。  
+**2026-07-11 追補**: 運用最適化完全仕様 → [`docs/plans/2026-07-11-ai-team-ops-optimization-spec.md`](../plans/2026-07-11-ai-team-ops-optimization-spec.md)（4+1+1 柱 · 実装は合図後）
 
 ## 固定4AI体制
 
