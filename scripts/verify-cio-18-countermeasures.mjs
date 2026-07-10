@@ -55,6 +55,13 @@ function main() {
     issues.push('verify:cio-four-ai-governance に verify:cio-18-countermeasures 未連結');
   }
 
+  const turnStart = fs.readFileSync(path.join(root, 'scripts/cio-turn-start.mjs'), 'utf8');
+  for (const needle of ['【ターン契約', 'Goal:', 'Touch:', 'SPEC_TOUCHED:']) {
+    if (!turnStart.includes(needle)) {
+      issues.push(`cio-turn-start.mjs missing turn contract: ${needle}`);
+    }
+  }
+
   if (issues.length) {
     console.error('[verify:cio-18-countermeasures] NG');
     for (const i of issues) console.error(`  - ${i}`);

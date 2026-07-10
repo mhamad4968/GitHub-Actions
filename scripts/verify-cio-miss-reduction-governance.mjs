@@ -15,11 +15,15 @@ const REQUIRED = [
   { rel: 'docs/runbooks/windows-spawn-flash-triage.md', needles: ['R32', '試験'] },
   { rel: 'docs/runbooks/cio-health-check-turn.md', needles: ['R33', 'health-check'] },
   { rel: 'docs/runbooks/evening-reflection-scope.md', needles: ['R26', '混ぜ禁止'] },
-  { rel: 'docs/runbooks/cio-four-ai-governance.md', needles: ['R31', 'bridge.gitHead'] },
+  { rel: 'docs/runbooks/cio-four-ai-governance.md', needles: ['R31', 'bridge.gitHead', 'R41', 'lastFailures'] },
   { rel: 'docs/runbooks/session-clock-cursor-lifecycle.md', needles: ['R25', 'trialPaused'] },
   { rel: 'scripts/lib/win-hidden-spawn.mjs', needles: ['resolveNpmCliJs', 'npm-cli.js'] },
   { rel: 'scripts/lib/cio-handoff-export-validate.mjs', needles: ['lastCommitTouchesOnlyBridge', 'r31BridgeFold'] },
   { rel: 'scripts/lib/session-clock-process.mjs', needles: ['taskkill', 'R22'] },
+  { rel: 'docs/plans/2026-07-11-ai-team-ops-optimization-spec.md', needles: ['lastFailures', 'export 原子化', '柱 A'] },
+  { rel: 'scripts/cio-session-export-handoff.mjs', needles: ['collectLastFailures', '同一 try'] },
+  { rel: 'scripts/lib/cio-bridge-last-failures.mjs', needles: ['collectLastFailures', 'MAX_FAILURES'] },
+  { rel: 'scripts/cio-turn-start.mjs', needles: ['【ターン契約', 'SPEC_TOUCHED:'] },
 ];
 
 function main() {

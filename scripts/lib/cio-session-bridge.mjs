@@ -3,6 +3,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { lastFailuresArrayOk } from './cio-bridge-last-failures.mjs';
 
 export const BRIDGE_REL = 'docs/handoff/latest-session-bridge.json';
 export const STATE_REL = 'logs/cio-session-dissolution/state.json';
@@ -66,6 +67,7 @@ export function bridgeSchemaOk(obj) {
     typeof obj.exportedAt === 'string' &&
     typeof obj.gitHead === 'string' &&
     Array.isArray(obj.nextFiles) &&
-    typeof obj.nextTask === 'string'
+    typeof obj.nextTask === 'string' &&
+    lastFailuresArrayOk(obj.lastFailures)
   );
 }

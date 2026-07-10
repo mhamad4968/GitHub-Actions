@@ -48,7 +48,7 @@ GO · 仕様判断 · 画面目視 · §41 一問。**npm / deploy 依頼なし*
 | ② Architect | — | N/A | 本 spec は 2 レーン未満・200 行未満のため Architect 起動不要 |
 | **CEO** | 浜田 | **GO** | 仕様書作成・commit push（実装は確認後合図） |
 
-**合議ラウンド**: 3（2026-07-11 JST）。第3ラウンド △ 全件に対策を付与済み。
+**合議ラウンド**: 4（2026-07-11 JST）。R5: MCP v3.1 合議 · **C1=本 P0–P2 実装 commit** で全員 GO。
 
 ---
 
@@ -260,7 +260,7 @@ ORIENT
 | **P2** | `cio-four-ai-governance.md` 追補 | `verify:cio-four-ai-governance` |
 | **P3** | 運用 1 週後 — strict 遵守を夕反省 #S 化 | 任意 |
 
-**本コミット範囲**: **本 spec + checkpoint/handoff 更新のみ**（P0–P3 コード未着手）。
+**実装状態（2026-07-11）**: **P0–P2 完了（C1 push 予定）** · P3 未着手 · **MCP §10 implement は浜田 post-push 合図**
 
 ---
 

@@ -3,7 +3,24 @@
 **制定**: 2026-05-21（CEO 浜田指令）  
 **階層**: **第3 runbook**（憲法は `AGENTS.md` §50-3-11＝第1 / 本書＝手順）— [`docs/constitution/00-rule-hierarchy.md`](../constitution/00-rule-hierarchy.md)  
 **前提**: Phase 1 方式B 正本（`AGENTS.md` §1-2-3-4・`part-A-constitution-kernel.md`）を **破壊せず拡張**する。  
-**2026-07-11 追補**: 運用最適化完全仕様 → [`docs/plans/2026-07-11-ai-team-ops-optimization-spec.md`](../plans/2026-07-11-ai-team-ops-optimization-spec.md)（4+1+1 柱 · 実装は合図後）
+**2026-07-11 追補**: 運用最適化完全仕様 → [`docs/plans/2026-07-11-ai-team-ops-optimization-spec.md`](../plans/2026-07-11-ai-team-ops-optimization-spec.md)（4+1+1 柱 · **P0–P2 実装済 2026-07-11**）  
+**2026-07-11 MCP 追補**: [`docs/plans/2026-07-11-mcp-tools-consolidation-spec.md`](../plans/2026-07-11-mcp-tools-consolidation-spec.md)（削除2 + Cold6 + O1–O4 · **浜田全承認予定**）
+
+## R41 — AI チーム運用最適化（4+1+1 柱 · 2026-07-11 GO）
+
+| 柱 | 内容 | 正本 npm / スクリプト |
+|----|------|------------------------|
+| **A** | ターン契約（implement 1 件） | `npm run cio:turn-start -- --strict` → 契約 3 行（Goal / Touch / SPEC_TOUCHED） |
+| **B** | 役割境界 + 外部 AI 検収 | `cio:tool:route` · `[EXTERNAL-AI-DRAFT]` CIO 突合 |
+| **C** | 記憶外部化 | `bridge.lastFailures[]` · `cio:session:export-handoff` 原子化 |
+| **D** | Tier 安全弁 | Tier A→B（kintone PUT / deploy / 憲法改定） |
+| **E** | 観測 | `cio:health` · `report:pipeline-status` · 朝 prep |
+| **F** | 回復 | #S1 garble リトライ · F3 rollback · `cio:error:generate-ticket` |
+
+**状態機械**: ORIENT → TURN_OPEN → TURN_CLOSED → SESSION_EXPORTING → SESSION_CLOSED  
+**禁止**: TURN_OPEN 中の `export-handoff`（implement 途中荷造り）
+
+**Grok C**: `docs/runbooks/cio-grok-execution-loop.md` C1–C7 — CIO が【Grok 実行契約】代行
 
 ## 固定4AI体制
 

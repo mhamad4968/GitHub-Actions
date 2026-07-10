@@ -104,6 +104,12 @@ function main() {
     console.log(`nextTask: ${bridge.nextTask}`);
     console.log('nextFiles:');
     for (const f of bridge.nextFiles) console.log(`  @${f}`);
+    if (Array.isArray(bridge.lastFailures) && bridge.lastFailures.length) {
+      console.log('lastFailures:');
+      for (const f of bridge.lastFailures) {
+        console.log(`  - ${f.id}: ${f.note.slice(0, 80)} (${f.verify})`);
+      }
+    }
     console.log('━━━━━━━━ ロケットスタート OK — New Chat 本題へ ━━━━━━━━');
 
     if (process.env.SKIP_CIO_GIT_HISTORY_HANDOFF !== '1') {

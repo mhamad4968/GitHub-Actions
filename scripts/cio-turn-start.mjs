@@ -14,6 +14,8 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { collect5038EvidenceFromLogs, read5038Stamp } from './lib/cio-four-ai-governance.mjs';
+import { readCheckpointNextTask } from './lib/cio-checkpoint-read.mjs';
+import { getDefaultBridgeNextFiles } from './lib/cio-handoff-template.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -48,6 +50,24 @@ function parseArgs(argv) {
   return out;
 }
 
+function inferSpecTouched(lane) {
+  if (lane === 'doc-lane') return 'yes';
+  if (lane === 'report') return 'no';
+  return 'no';
+}
+
+function printTurnContract(lane) {
+  const goal = readCheckpointNextTask(root) || '(checkpoint-latest.md を Read)';
+  const touchFiles = getDefaultBridgeNextFiles(root).slice(0, 2);
+  const specTouched = inferSpecTouched(lane);
+
+  console.log('【ターン契約 — 応答先頭 §1 の直後に 3 行を転記（形骸化防止）】');
+  console.log(`Goal: ${goal.slice(0, 120)}`);
+  console.log(`Touch: ${touchFiles.join(', ') || '(未設定 — checkpoint を Read)'}`);
+  console.log(`SPEC_TOUCHED: ${specTouched}（予定）`);
+  console.log('');
+}
+
 function runNpm(script, extraArgs = []) {
   const isWin = process.platform === 'win32';
   const cmd = isWin ? 'npm.cmd' : 'npm';
@@ -66,6 +86,7 @@ function main() {
   console.log('【§1 四行 — 応答先頭にこの順で貼付（欠落＝報告違反）】');
   for (const line of lines) console.log(line);
   console.log('');
+  printTurnContract(args.lane);
 
   const evidence = collect5038EvidenceFromLogs(root);
   const stamp = read5038Stamp(root);

@@ -1,12 +1,14 @@
 #!/usr/bin/env node
-/** R-KAP-01 — kintone-apps BUILD パーサ回帰テスト */
+/** R-KAP-01 — kintone-apps BUILD パーサ回帰テスト + #S1 配線監査 */
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   parsePortfolioDetailBuild,
   parsePortfolioMachineBuild,
   updatePortfolioDetailBuild,
 } from './cio-kintone-apps-portfolio-build.mjs';
-
 const sample736 =
   '| **実行予算書作成支援ツール　ver.01** | **736** | `customize/736/desktop.js` \\| `npm run deploy:736` | [link](url) **BUILD=`2026-06-26-736-ux-sticky-print-badges-v1`** rev **134** / fileKey **`abc`** |';
 
@@ -29,5 +31,13 @@ assert.equal(
   '2026-06-26-jre-cloud-account-dash-dept-dash-branch-v13',
 );
 assert.match(updated.md, /rev \*\*18\*\*/);
+
+// R-595-03 / #S1 — deploy garble 1 回リトライ配線監査（柱 F · spec P1c）
+const deployRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const deployJs = fs.readFileSync(path.join(deployRoot, 'deploy-customization.js'), 'utf8');
+assert.match(deployJs, /#S1/);
+assert.match(deployJs, /verify garble/);
+assert.match(deployJs, /sync-kintone-apps-build\.mjs/);
+assert.match(deployJs, /verify-kintone-apps-live-build-sync\.mjs/);
 
 console.log('[verify:cio-kintone-apps-portfolio-build] OK');

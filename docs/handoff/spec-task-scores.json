@@ -1,19 +1,8 @@
 {
-  "scoredAt": "2026-07-10T13:29:54.209Z",
+  "scoredAt": "2026-07-10T21:47:32.771Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "**7/11 運用最適化デー**（憲法・AIチーム運用）— 688 新規 implement なし · **7/12** UI-BACKLOG-02（列幅ドラッグ）",
+  "topTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
   "tasks": [
-    {
-      "id": "checkpoint:**7/11_運用最適化デー**（憲法・AIチーム運用）—_688_新規_imp",
-      "text": "**7/11 運用最適化デー**（憲法・AIチーム運用）— 688 新規 implement なし · **7/12** UI-BACKLOG-02（列幅ドラッグ）",
-      "source": "checkpoint",
-      "difficulty": 3,
-      "tokens": "中",
-      "tokenScore": 2,
-      "impact": 5,
-      "priority": 25,
-      "status": "pending"
-    },
     {
       "id": "backlog:B-MDFLOW:_**Markdown_ベースの開発フロー**（仕様・実装・レ",
       "text": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
@@ -23,6 +12,17 @@
       "tokenScore": 2,
       "impact": 3,
       "priority": 21,
+      "status": "pending"
+    },
+    {
+      "id": "checkpoint:**7/11_運用最適化デー**（憲法・AIチーム運用）—_688_新規_imp",
+      "text": "**7/11 運用最適化デー**（憲法・AIチーム運用）— 688 新規 implement なし · **7/12** UI-BACKLOG-02（列幅ドラッグ）",
+      "source": "checkpoint",
+      "difficulty": 3,
+      "tokens": "中",
+      "tokenScore": 2,
+      "impact": 5,
+      "priority": 25,
       "status": "pending"
     }
   ]
