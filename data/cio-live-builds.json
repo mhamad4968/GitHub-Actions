@@ -91,10 +91,10 @@
     },
     "688": {
       "build": "2026-07-10-688-wbgt-heat-warn",
-      "fileKey": "9208dc04-5940-4378-87b6-e73d318dd993",
-      "revision": "82",
-      "relPath": "customize/688/desktop.js",
-      "deployedAt": "2026-07-10T13:10:22.951Z",
+      "fileKey": "45d3729b-99a6-4641-bb30-601d65ec6030",
+      "revision": "83",
+      "relPath": ".kintone-deploy/upload-688.js",
+      "deployedAt": "2026-07-10T13:31:46.032Z",
       "note": null
     },
     "693": {
