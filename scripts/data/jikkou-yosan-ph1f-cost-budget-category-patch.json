@@ -1,0 +1,21 @@
+{
+  "properties": {
+    "cost_lines": {
+      "type": "SUBTABLE",
+      "code": "cost_lines",
+      "label": "原価行",
+      "fields": {
+        "cost_budget_category": {
+          "type": "DROP_DOWN",
+          "code": "cost_budget_category",
+          "label": "区分",
+          "required": false,
+          "options": {
+            "工事費": { "label": "工事費", "index": "0" },
+            "保安費": { "label": "保安費", "index": "1" }
+          }
+        }
+      }
+    }
+  }
+}

@@ -659,6 +659,24 @@
     return toHalfWidthAscii((Number(n) * 100).toFixed(2) + '%');
   }
 
+  /** フッター・サマリー: 分母に対する構成比（分母 0 は空欄） */
+  function sharePct(part, total) {
+    const t = Number(total);
+    if (!t) return '';
+    return fmtPct(Number(part || 0) / t);
+  }
+
+  function specSharePct(part, total) {
+    return sharePct(part, total);
+  }
+
+  function isCostBudgetCategoryMissing(r) {
+    const kind = r.cost_row_kind;
+    if (kind !== '明細' && kind !== '連携') return false;
+    const cat = typeof normalizeBudgetCategory === 'function' ? normalizeBudgetCategory(r.cost_budget_category) : String(r.cost_budget_category || '').trim();
+    return !cat;
+  }
+
   /** kintone CREATED_TIME / UPDATED_TIME → JST YYYY-MM-DD（App 736 は英語コード Created_datetime） */
   function kintoneDatetimeToJstYmd(v) {
     const s = String(v || '').trim();
@@ -1284,7 +1302,25 @@
       '.jy-block .jy-btn{margin-top:6px}' +
       '.jy-legend-linked{display:inline-block;margin-left:10px;padding:1px 8px;background:#ecfdf5;border:1px solid #86efac;border-radius:4px;color:#166534;font-size:11px;font-weight:600}' +
       '.jy-summary-table tr.jy-foot-sum td{background:#f5ebe0;color:#44372a;border-color:#d4b896;border-top:2px solid #c4a574;font-size:12px;padding:5px 8px}' +
+      '.jy-summary-table tr.jy-foot-sum.jy-foot-sub td{background:#faf6f1;font-weight:500}' +
       '.jy-summary-table tr.jy-foot-sum td.jy-num{font-size:13px;color:#3d2f24}' +
+      '.jy-summary-table tr.jy-spec-category-warn td{background:#fff5f5;color:#b91c1c;font-weight:600;font-size:12px;padding:6px 8px;border-color:#fecaca}' +
+      '.jy-summary-table tr.jy-cost-budget-warn td{background:#fff5f5;color:#b91c1c;font-weight:600;font-size:12px;padding:6px 8px;border-color:#fecaca}' +
+      '.jy-summary-table td.jy-spec-category-missing,.jy-summary-table td.jy-cost-budget-missing{background:#fff1f2}' +
+      '.jy-col-budget-cat{width:5.5em;min-width:5.5em}' +
+      '.jy-budget-summary{margin:10px 0 4px;border:1px solid #c4a574;border-radius:6px;background:#fffdf9;break-inside:avoid;page-break-inside:avoid}' +
+      '.jy-budget-summary-head{background:linear-gradient(180deg,#f5ebe0,#efe3d4);color:#44372a;font-weight:700;font-size:13px;padding:8px 12px;border-bottom:1px solid #d4b896;border-radius:5px 5px 0 0}' +
+      '.jy-budget-summary-wrap{padding:8px 10px 10px}' +
+      '.jy-budget-summary-table{width:100%;border-collapse:collapse;font-size:12px}' +
+      '.jy-budget-summary-table th,.jy-budget-summary-table td{border:1px solid #d4b896;padding:6px 8px}' +
+      '.jy-budget-summary-table th{background:#f5ebe0;color:#44372a;font-weight:600;text-align:center}' +
+      '.jy-budget-summary-table td.jy-budget-col-label{font-weight:600;color:#3d2f24;white-space:nowrap}' +
+      '.jy-budget-summary-table tr.jy-budget-row-uncat td{background:#fff8f8;color:#7f1d1d}' +
+      '.jy-budget-summary-table tr.jy-budget-total-row td{background:#f5ebe0;font-weight:700;border-top:2px solid #c4a574}' +
+      '.jy-budget-summary-warn{margin:8px 0 0;font-size:11px;color:#b91c1c;font-weight:600}' +
+      '.jy-budget-summary-note{margin:6px 0 0;font-size:10px;color:#64748b;line-height:1.45}' +
+      '.jy-col-category{width:5.5em;min-width:5.5em}' +
+      '.jy-col-pct{width:4.5em;min-width:4.5em;white-space:nowrap}' +
       '.jy-num{text-align:right;font-variant-numeric:tabular-nums}' +
       '.jy-center{text-align:center}' +
       '.jy-table th.jy-center{text-align:center}' +
@@ -1713,6 +1749,7 @@
       cost_work_type: tmpl.cost_work_type || '',
       cost_category_code: tmpl.cost_category_code || '',
       cost_category: tmpl.cost_category || '',
+      cost_budget_category: tmpl.cost_budget_category || '',
       cost_row_kind: tmpl.cost_row_kind === 'link' ? '連携' : tmpl.cost_row_kind === 'subtotal' ? '小計' : tmpl.cost_row_kind === 'group_header' ? '見出し' : '明細',
       cost_group_key: tmpl.cost_group_key || '',
       cost_tax_rate: tmpl.cost_tax_rate != null ? tmpl.cost_tax_rate : '',
@@ -1784,9 +1821,107 @@
   function defaultSpecLines() {
     const rows = [];
     for (let i = 0; i < 8; i += 1) {
-      rows.push({ spec_name: '', spec_unit: '', spec_qty: '', spec_unit_price: '', spec_amount: 0, spec_note: '' });
+      rows.push({ spec_name: '', spec_category: '', spec_unit: '', spec_qty: '', spec_unit_price: '', spec_amount: 0, spec_note: '' });
     }
     return rows;
+  }
+
+  function resolveSpecCategoryOnRead(rawCategory, specName) {
+    const c = typeof normalizeSpecCategory === 'function' ? normalizeSpecCategory(rawCategory) : String(rawCategory || '').trim();
+    if (c) return c;
+    return typeof inferSpecCategoryFromName === 'function' ? inferSpecCategoryFromName(specName) : '';
+  }
+
+  function isSpecCategoryMissing(r) {
+    return !(typeof normalizeSpecCategory === 'function' ? normalizeSpecCategory(r.spec_category) : String(r.spec_category || '').trim());
+  }
+
+  function renderSpecTableFoot(readOnly) {
+    const tailCols = readOnly ? 1 : 2;
+    const total1 = state.contract_total_1 || 0;
+    let html = '';
+    html += '<tr class="jy-foot-sum jy-total-row"><td colspan="5" class="jy-num">合計 …①</td><td class="jy-num ' + diffScalarClass('contract_total_1') + '">' + fmt(total1) + diffAmtMark('contract_total_1') + '</td><td class="jy-num jy-col-pct"></td><td colspan="' + tailCols + '"></td></tr>';
+    html += '<tr class="jy-foot-sum"><td colspan="5" class="jy-num">工事費合計</td><td class="jy-num">' + fmt(state.spec_total_construction || 0) + '</td><td class="jy-num jy-col-pct">' + specSharePct(state.spec_total_construction, total1) + '</td><td colspan="' + tailCols + '"></td></tr>';
+    html += '<tr class="jy-foot-sum"><td colspan="5" class="jy-num">保安費合計</td><td class="jy-num">' + fmt(state.spec_total_security || 0) + '</td><td class="jy-num jy-col-pct">' + specSharePct(state.spec_total_security, total1) + '</td><td colspan="' + tailCols + '"></td></tr>';
+    if ((state.spec_uncategorized_count || 0) > 0) {
+      html += '<tr class="jy-spec-category-warn"><td colspan="5">区分が未選択の行があります（不明）</td><td class="jy-num">' + fmt(state.spec_total_uncategorized || 0) + '</td><td class="jy-num jy-col-pct">' + specSharePct(state.spec_total_uncategorized, total1) + '</td><td colspan="' + tailCols + '"></td></tr>';
+    }
+    return html;
+  }
+
+  function renderCostTableFoot(readOnly) {
+    const tailOps = readOnly ? '' : '<td></td>';
+    const total8 = state.cost_total_8 || 0;
+    let html = '';
+    html += '<tr class="jy-foot-sum jy-total-row"><td colspan="10" class="jy-num">工事原価額 …⑧</td><td class="jy-num ' + diffScalarClass('cost_total_8') + '">' + fmt(total8) + diffAmtMark('cost_total_8') + '</td><td colspan="2"></td><td class="jy-num jy-col-pct"></td>' + tailOps + '</tr>';
+    html += '<tr class="jy-foot-sum jy-foot-sub"><td colspan="10" class="jy-num">　工事費合計</td><td class="jy-num">' + fmt(state.cost_budget_construction || 0) + '</td><td colspan="2"></td><td class="jy-num jy-col-pct">' + sharePct(state.cost_budget_construction, total8) + '</td>' + tailOps + '</tr>';
+    html += '<tr class="jy-foot-sum jy-foot-sub"><td colspan="10" class="jy-num">　保安費合計</td><td class="jy-num">' + fmt(state.cost_budget_security || 0) + '</td><td colspan="2"></td><td class="jy-num jy-col-pct">' + sharePct(state.cost_budget_security, total8) + '</td>' + tailOps + '</tr>';
+    if ((state.cost_budget_uncategorized_count || 0) > 0) {
+      html += '<tr class="jy-cost-budget-warn"><td colspan="10">区分が未選択の原価行があります（不明）</td><td class="jy-num">' + fmt(state.cost_budget_uncategorized || 0) + '</td><td colspan="2"></td><td class="jy-num jy-col-pct">' + sharePct(state.cost_budget_uncategorized, total8) + '</td>' + tailOps + '</tr>';
+    }
+    html += '<tr class="jy-foot-sum jy-total-row"><td colspan="10">粗利 …⑨</td><td class="jy-num ' + diffScalarClass('profit_9') + '">' + fmt(state.profit_9) + diffAmtMark('profit_9') + '</td><td colspan="2"></td><td class="jy-num jy-col-pct ' + diffScalarClass('profit_rate') + '">' + fmtPct(state.profit_rate) + diffAmtMark('profit_rate') + '</td>' + tailOps + '</tr>';
+    return html;
+  }
+
+  function renderBudgetCategorySummary() {
+    const showUncat = (state.spec_uncategorized_count || 0) > 0
+      || (state.cost_budget_uncategorized_count || 0) > 0;
+    const warnSpec = (state.spec_uncategorized_count || 0) > 0;
+    const warnCost = (state.cost_budget_uncategorized_count || 0) > 0;
+    function sumRow(label, sales, cost, profit, rate, rowCls) {
+      return '<tr class="' + (rowCls || '') + '">' +
+        '<td class="jy-budget-col-label">' + esc(label) + '</td>' +
+        '<td class="jy-num">' + fmt(sales) + '</td>' +
+        '<td class="jy-num">' + fmt(cost) + '</td>' +
+        '<td class="jy-num">' + fmt(profit) + '</td>' +
+        '<td class="jy-num jy-col-pct">' + (rate != null && rate !== '' ? fmtPct(rate) : '') + '</td>' +
+        '</tr>';
+    }
+    let html = '<div class="jy-budget-summary">';
+    html += '<div class="jy-budget-summary-head">区分別サマリー（売上①・原価⑧・粗利⑨）</div>';
+    html += '<div class="jy-budget-summary-wrap"><table class="jy-budget-summary-table">';
+    html += '<thead><tr>' +
+      '<th class="jy-budget-col-label">区分</th>' +
+      '<th class="jy-num">売上（①）</th>' +
+      '<th class="jy-num">原価（⑧）</th>' +
+      '<th class="jy-num">粗利</th>' +
+      '<th class="jy-num">粗利率</th>' +
+      '</tr></thead><tbody>';
+    html += sumRow('工事費',
+      state.spec_total_construction,
+      state.cost_budget_construction,
+      state.profit_budget_construction,
+      state.profit_rate_budget_construction);
+    html += sumRow('保安費',
+      state.spec_total_security,
+      state.cost_budget_security,
+      state.profit_budget_security,
+      state.profit_rate_budget_security);
+    if (showUncat) {
+      html += sumRow('不明（区分未選択）',
+        state.spec_total_uncategorized,
+        state.cost_budget_uncategorized,
+        state.profit_budget_uncategorized,
+        state.profit_rate_budget_uncategorized,
+        'jy-budget-row-uncat');
+    }
+    html += '</tbody><tfoot><tr class="jy-budget-total-row">' +
+      '<td class="jy-budget-col-label">合計 …⑨</td>' +
+      '<td class="jy-num">' + fmt(state.contract_total_1) + '</td>' +
+      '<td class="jy-num">' + fmt(state.cost_total_8) + '</td>' +
+      '<td class="jy-num ' + diffScalarClass('profit_9') + '">' + fmt(state.profit_9) + diffAmtMark('profit_9') + '</td>' +
+      '<td class="jy-num jy-col-pct ' + diffScalarClass('profit_rate') + '">' + fmtPct(state.profit_rate) + diffAmtMark('profit_rate') + '</td>' +
+      '</tr></tfoot></table>';
+    if (warnSpec || warnCost) {
+      html += '<p class="jy-budget-summary-warn">';
+      if (warnSpec) html += '仕様明細①に区分未選択の行があります。';
+      if (warnSpec && warnCost) html += ' ';
+      if (warnCost) html += '原価行に区分未選択の行があります。';
+      html += ' 内訳の合計が⑨と一致しない場合があります。</p>';
+    }
+    html += '<p class="jy-budget-summary-note">粗利率＝区分ごとの粗利 ÷ その区分の売上（①）。最下行は全体粗利⑨ ÷ 契約合計①。</p>';
+    html += '</div></div>';
+    return html;
   }
 
   function newDraftState() {
@@ -1855,11 +1990,21 @@
     s.is_locked = isLockedFromRecord(rec);
     s.revision_note = String(gv(rec, FC.revision_note) || '');
     s.spec_lines = readSub(rec, FC.spec_lines, function (v) {
-      return { row_key: readRowKey(v, FC.spec_lines), spec_name: gv(v, 'spec_name'), spec_unit: gv(v, 'spec_unit'), spec_qty: gv(v, 'spec_qty'), spec_unit_price: gv(v, 'spec_unit_price'), spec_amount: num(gv(v, 'spec_amount')), spec_note: gv(v, 'spec_note') };
+      const specName = gv(v, 'spec_name');
+      return {
+        row_key: readRowKey(v, FC.spec_lines),
+        spec_name: specName,
+        spec_category: resolveSpecCategoryOnRead(gv(v, 'spec_category'), specName),
+        spec_unit: gv(v, 'spec_unit'),
+        spec_qty: gv(v, 'spec_qty'),
+        spec_unit_price: gv(v, 'spec_unit_price'),
+        spec_amount: num(gv(v, 'spec_amount')),
+        spec_note: gv(v, 'spec_note'),
+      };
     });
     s.cost_lines = readSub(rec, FC.cost_lines, function (v) {
       const mk = gv(v, 'cost_row_kind') || '明細';
-      return {
+      const row = {
         row_key: readRowKey(v, FC.cost_lines),
         cost_work_type_code: gv(v, 'cost_work_type_code'),
         cost_work_type: gv(v, 'cost_work_type'),
@@ -1876,6 +2021,10 @@
         detail_marker: gv(v, 'detail_marker') === 'なし' ? '' : gv(v, 'detail_marker'),
         cost_ratio: num(gv(v, 'cost_ratio')),
       };
+      row.cost_budget_category = typeof resolveCostBudgetCategoryOnRead === 'function'
+        ? resolveCostBudgetCategoryOnRead(gv(v, 'cost_budget_category'), row)
+        : String(gv(v, 'cost_budget_category') || '').trim();
+      return row;
     });
     s.mat_lines = readSub(rec, FC.mat_lines, function (v) {
       return { row_key: readRowKey(v, FC.mat_lines), mat_vendor: gv(v, 'mat_vendor'), mat_name: gv(v, 'mat_name'), mat_capacity: gv(v, 'mat_capacity'), mat_maker: gv(v, 'mat_maker'), mat_qty: gv(v, 'mat_qty'), mat_unit_price: gv(v, 'mat_unit_price'), mat_amount: num(gv(v, 'mat_amount')), mat_group: gv(v, 'mat_group') || '塗料', mat_basis: gv(v, 'mat_basis') };
@@ -1906,6 +2055,7 @@
       cost_work_type: r.cost_work_type || '',
       cost_category_code: r.cost_category_code || '',
       cost_category: r.cost_category || '',
+      cost_budget_category: r.cost_budget_category || '',
       cost_row_kind: KIND_FROM_CALC[r.cost_row_kind] || r.cost_row_kind,
       cost_group_key: r.cost_group_key || '',
       cost_tax_rate: r.cost_tax_rate != null && r.cost_tax_rate !== '' ? r.cost_tax_rate : '',
@@ -1936,6 +2086,10 @@
     s.mat_lines = calc.mat_lines;
     s.subcontract_lines = calc.subcontract_lines;
     s.contract_total_1 = calc.contract_total_1;
+    s.spec_total_construction = calc.spec_total_construction;
+    s.spec_total_security = calc.spec_total_security;
+    s.spec_total_uncategorized = calc.spec_total_uncategorized;
+    s.spec_uncategorized_count = calc.spec_uncategorized_count;
     s.mat_total_2 = calc.mat_total_2;
     s.mat_total_3 = calc.mat_total_3;
     s.sub_repair_order_amount = calc.sub_repair_order_amount;
@@ -1943,8 +2097,18 @@
     s.sub_paint_order_amount = calc.sub_paint_order_amount;
     s.sub_labor_total = calc.sub_labor_total;
     s.cost_total_8 = calc.cost_total_8;
+    s.cost_budget_construction = calc.cost_budget_construction;
+    s.cost_budget_security = calc.cost_budget_security;
+    s.cost_budget_uncategorized = calc.cost_budget_uncategorized;
+    s.cost_budget_uncategorized_count = calc.cost_budget_uncategorized_count;
     s.profit_9 = calc.profit_9;
     s.profit_rate = calc.profit_rate;
+    s.profit_budget_construction = calc.profit_budget_construction;
+    s.profit_budget_security = calc.profit_budget_security;
+    s.profit_budget_uncategorized = calc.profit_budget_uncategorized;
+    s.profit_rate_budget_construction = calc.profit_rate_budget_construction;
+    s.profit_rate_budget_security = calc.profit_rate_budget_security;
+    s.profit_rate_budget_uncategorized = calc.profit_rate_budget_uncategorized;
     return s;
   }
 
@@ -1988,7 +2152,7 @@
     body[FC.profit_rate] = { value: String(s.profit_rate) };
     body[FC.spec_lines] = {
       value: s.spec_lines.map(function (r) {
-        return { value: Object.assign({}, rowKeyBody(FC.spec_lines, r.row_key), { spec_name: { value: r.spec_name }, spec_unit: { value: r.spec_unit }, spec_qty: { value: String(r.spec_qty || '') }, spec_unit_price: { value: String(r.spec_unit_price || '') }, spec_amount: { value: String(r.spec_amount || 0) }, spec_note: { value: r.spec_note } }) };
+        return { value: Object.assign({}, rowKeyBody(FC.spec_lines, r.row_key), { spec_name: { value: r.spec_name }, spec_category: { value: r.spec_category || '' }, spec_unit: { value: r.spec_unit }, spec_qty: { value: String(r.spec_qty || '') }, spec_unit_price: { value: String(r.spec_unit_price || '') }, spec_amount: { value: String(r.spec_amount || 0) }, spec_note: { value: r.spec_note } }) };
       }),
     };
     body[FC.cost_lines] = {
@@ -1999,6 +2163,7 @@
             cost_work_type: { value: r.cost_work_type },
             cost_category_code: { value: r.cost_category_code },
             cost_category: { value: r.cost_category },
+            cost_budget_category: { value: r.cost_budget_category || '' },
             cost_row_kind: { value: r.cost_row_kind },
             cost_group_key: { value: r.cost_group_key },
             cost_tax_rate: { value: String(r.cost_tax_rate || '') },
@@ -2052,8 +2217,9 @@
 
   function renderSpecHelpPanel() {
     return renderSectionHelpBanner('jy-spec-help-panel', headerSpecHelpOpen, '仕様明細（①）の入力について（クリックで開閉）', [
-      '契約・見積の<strong>仕様明細 …①</strong>です。仕様・単位・数量・単価を行ごとに入力します。',
+      '契約・見積の<strong>仕様明細 …①</strong>です。仕様・<strong>区分（工事費/保安費）</strong>・単位・数量・単価を行ごとに入力します。',
       '金額は<strong>数量×単価</strong>で自動計算されます。表下の合計が<strong>契約合計 …①</strong>になります。',
+      '区分未選択の行は工事費合計・保安費合計に含まれません（赤警告表示）。',
       '行の追加は、見出しの「末尾に追加」または各行の<strong>⋮ メニュー</strong>（上に1行追加 / 下に1行追加）で行います。追加した行は薄い黄色で強調表示されます。',
       '原価行（②〜⑧）との関係は、下の<strong>原価行</strong>の見方、または<strong>詳細表</strong>タブの見方を参照してください。'
     ]);
@@ -2061,9 +2227,12 @@
 
   function renderCostHelpPanel() {
     return renderSectionHelpBanner('jy-cost-help-panel', headerCostHelpOpen, '原価行の入力について（クリックで開閉）', [
-      '総括表の<strong>原価行（②〜⑧）</strong>です。システム入力工種・種別・数量・単価などを入力します。',
+      '総括表の<strong>原価行（②〜⑧）</strong>です。システム入力工種・種別・<strong>区分（工事費/保安費）</strong>・数量・単価などを入力します。',
+      '<strong>種別</strong>の右の<strong>区分</strong>は、仕様明細①と同じ工事費/保安費です。詳細表と連携行（緑）も区分を選べます（金額は自動）。',
+      '表下の<strong>工事原価額 …⑧</strong>の内訳と、<strong>区分別サマリー</strong>で売上①・原価⑧・粗利⑨を区分ごとに確認できます。',
       '<strong>同じシステム入力工種が2行以上続く</strong>と、その直後に<strong>「計」行が自動表示</strong>されます（1行だけの工種には出ません）。',
       '「計」行の金額は<strong>明細・連携行（②〜⑦の緑行含む）の合算</strong>で自動更新されます。手入力・削除はできません。',
+      '区分未選択の原価行は工事費/保安費合計に含まれず、赤文字で警告されます（保存は可能）。',
       '工種・種別が空白に見える行は、直上行と同じ値の<strong>繰り上げ表示</strong>です（保存データは各行に保持されています）。',
       '行の追加は、見出しの「末尾に追加」または各行の<strong>＋</strong>で行います。追加した行は薄い黄色で強調表示されます。',
       '番号（…②など）や連携行の金額をクリックすると、総括表と詳細表の該当ブロックへ移動します。詳細表の内容は<strong>詳細表</strong>タブの見方を参照してください。'
@@ -2367,11 +2536,11 @@
   }
 
   function costDiffRemovedRowHtml(r) {
-    return '<td>' + esc(r.cost_work_type_code) + '</td><td>' + esc(r.cost_work_type) + '</td><td>' + esc(r.cost_category_code) + '</td><td>' + esc(r.cost_category) + '</td><td>' + esc(rowKindDisplay(r.cost_row_kind)) + '</td><td colspan="4"></td><td class="jy-num">' + fmt(r.cost_amount) + '</td><td colspan="3"></td>';
+    return '<td>' + esc(r.cost_work_type_code) + '</td><td>' + esc(r.cost_work_type) + '</td><td>' + esc(r.cost_category_code) + '</td><td>' + esc(r.cost_category) + '</td><td class="jy-center">' + disp(r.cost_budget_category) + '</td><td>' + esc(rowKindDisplay(r.cost_row_kind)) + '</td><td colspan="4"></td><td class="jy-num">' + fmt(r.cost_amount) + '</td><td colspan="3"></td>';
   }
 
   function costDiffRemovedPrintRowHtml(r) {
-    return '<td>' + esc(r.cost_work_type_code) + '</td><td>' + esc(r.cost_work_type) + '</td><td>' + esc(r.cost_category_code) + '</td><td>' + esc(r.cost_category) + '</td><td>' + esc(rowKindDisplay(r.cost_row_kind)) + '</td><td colspan="4"></td><td class="jy-num">' + fmt(r.cost_amount) + '</td><td colspan="2"></td>';
+    return '<td>' + esc(r.cost_work_type_code) + '</td><td>' + esc(r.cost_work_type) + '</td><td>' + esc(r.cost_category_code) + '</td><td>' + esc(r.cost_category) + '</td><td class="jy-center">' + disp(r.cost_budget_category) + '</td><td>' + esc(rowKindDisplay(r.cost_row_kind)) + '</td><td colspan="4"></td><td class="jy-num">' + fmt(r.cost_amount) + '</td><td colspan="2"></td>';
   }
 
   function costRemovedScopeKey(row) {
@@ -2660,13 +2829,15 @@
     );
     html += renderSpecHelpPanel();
     html += '<div class="jy-excel-wrap jy-summary-wrap"><table class="jy-table jy-summary-table jy-summary-table-spec"><colgroup>' +
-      '<col class="jy-col-spec"><col class="jy-col-unit"><col class="jy-col-qty"><col class="jy-col-price"><col class="jy-col-amt"><col class="jy-col-note">' +
+      '<col class="jy-col-spec"><col class="jy-col-category"><col class="jy-col-unit"><col class="jy-col-qty"><col class="jy-col-price"><col class="jy-col-amt"><col class="jy-col-note">' +
       (readOnly ? '' : '<col class="jy-col-del">') +
-      '</colgroup><thead><tr><th>仕様</th><th class="jy-center">単位</th><th>数量</th><th>単価</th><th class="jy-num">金額</th><th>備考</th>' + (readOnly ? '' : '<th>操作</th>') + '</tr></thead><tbody>';
+      '</colgroup><thead><tr><th>仕様</th><th class="jy-center">区分</th><th class="jy-center">単位</th><th>数量</th><th>単価</th><th class="jy-num">金額</th><th>備考</th>' + (readOnly ? '' : '<th>操作</th>') + '</tr></thead><tbody>';
     state.spec_lines.forEach(function (r, i) {
       const rk = rowKeyForTable('spec', r, i);
       const dr = diffRowClass('spec', rk);
+      const catMissing = isSpecCategoryMissing(r);
       html += '<tr' + (dr ? ' class="' + dr + '"' : '') + '><td class="' + diffCellClass('spec', rk, 'spec_name') + '"><input class="jy-in jy-text-cell" data-spec-name="' + i + '" value="' + esc(r.spec_name) + '"' + (r.spec_name ? ' title="' + esc(r.spec_name) + '"' : '') + (readOnly ? ' disabled' : '') + '></td>';
+      html += '<td class="jy-center ' + diffCellClass('spec', rk, 'spec_category') + (catMissing ? ' jy-spec-category-missing' : '') + '"><select class="jy-in" data-spec-category="' + i + '"' + (readOnly ? ' disabled' : '') + '>' + selOpts(SPEC_CATEGORY_OPTS, r.spec_category, true) + '</select></td>';
       html += '<td class="jy-center ' + diffCellClass('spec', rk, 'spec_unit') + '"><select class="jy-in" data-spec-unit="' + i + '"' + (readOnly ? ' disabled' : '') + '>' + selOpts(m.units.concat(SPEC_UNITS).filter(function (v, idx, a) { return a.indexOf(v) === idx; }), r.spec_unit, true) + '</select></td>';
       html += '<td class="' + diffCellClass('spec', rk, 'spec_qty') + '"><input class="jy-in jy-num" data-spec-qty="' + i + '" type="number" step="any" value="' + esc(r.spec_qty) + '"' + (readOnly ? ' disabled' : '') + '></td>';
       html += '<td class="' + diffCellClass('spec', rk, 'spec_unit_price') + '">' + unitPriceInput('data-spec-price', i, r.spec_unit_price, readOnly) + '</td>';
@@ -2677,10 +2848,10 @@
       }
       html += '</tr>';
     });
-    html += '<tr class="jy-sum-anchor-row jy-sec-anchor" id="jy-sum-ref-1"><td colspan="' + (readOnly ? 6 : 7) + '"></td></tr>';
-    html += '</tbody><tfoot><tr class="jy-foot-sum jy-total-row"><td colspan="4" class="jy-num">合計 …①</td><td class="jy-num ' + diffScalarClass('contract_total_1') + '">' + fmt(state.contract_total_1) + diffAmtMark('contract_total_1') + '</td><td colspan="' + (readOnly ? 1 : 2) + '"></td></tr></tfoot></table>';
+    html += '<tr class="jy-sum-anchor-row jy-sec-anchor" id="jy-sum-ref-1"><td colspan="' + (readOnly ? 7 : 8) + '"></td></tr>';
+    html += '</tbody><tfoot>' + renderSpecTableFoot(readOnly) + '</tfoot></table>';
     html += renderDiffRemovedBlock('spec', '仕様明細', function (r) {
-      return '<td>' + esc(r.spec_name) + '</td><td class="jy-center">' + disp(r.spec_unit) + '</td><td class="jy-num">' + disp(r.spec_qty) + '</td><td class="jy-num">' + esc(formatUnitPrice(r.spec_unit_price)) + '</td><td class="jy-num">' + fmt(r.spec_amount) + '</td><td>' + esc(r.spec_note) + '</td>';
+      return '<td>' + esc(r.spec_name) + '</td><td class="jy-center">' + disp(r.spec_category) + '</td><td class="jy-center">' + disp(r.spec_unit) + '</td><td class="jy-num">' + disp(r.spec_qty) + '</td><td class="jy-num">' + esc(formatUnitPrice(r.spec_unit_price)) + '</td><td class="jy-num">' + fmt(r.spec_amount) + '</td><td>' + esc(r.spec_note) + '</td>';
     }, { scopeKey: 'spec' });
     html += '</div>';
 
@@ -2690,12 +2861,12 @@
     );
     html += renderCostHelpPanel();
     html += '<div class="jy-excel-wrap jy-summary-wrap"><table class="jy-table jy-summary-table jy-summary-table-cost"><colgroup>' +
-      '<col class="jy-col-wcd"><col class="jy-col-wt"><col class="jy-col-ccd"><col class="jy-col-cat"><col class="jy-col-kind">' +
+      '<col class="jy-col-wcd"><col class="jy-col-wt"><col class="jy-col-ccd"><col class="jy-col-cat"><col class="jy-col-budget-cat"><col class="jy-col-kind">' +
       '<col class="jy-col-tax"><col class="jy-col-unit"><col class="jy-col-qty"><col class="jy-col-price"><col class="jy-col-amt">' +
       '<col class="jy-col-note"><col class="jy-col-ref"><col class="jy-col-ratio">' +
       (readOnly ? '' : '<col class="jy-col-del">') +
       '</colgroup><thead><tr>' +
-      '<th>工種CD</th><th>システム入力工種</th><th>種別CD</th><th>種別</th><th>行種別</th><th class="jy-center">消費税</th><th class="jy-center">単位</th><th>数量</th><th>単価</th><th class="jy-num">金額</th><th>計算基準・備考</th><th>詳細</th><th class="jy-num">率</th>' +
+      '<th>工種CD</th><th>システム入力工種</th><th>種別CD</th><th>種別</th><th class="jy-center">区分</th><th>行種別</th><th class="jy-center">消費税</th><th class="jy-center">単位</th><th>数量</th><th>単価</th><th class="jy-num">金額</th><th>計算基準・備考</th><th>詳細</th><th class="jy-num">率</th>' +
       (readOnly ? '' : '<th>操作</th>') + '</tr></thead><tbody>';
     const costRemovedEmitted = {};
     function emitCostRemoved(scopeKey, label) {
@@ -2706,7 +2877,7 @@
         predicate: costRemovedPredicate(scopeKey),
       }, costColSpan);
     }
-    const costColSpan = readOnly ? 13 : 14;
+    const costColSpan = readOnly ? 14 : 15;
     state.cost_lines.forEach(function (r, i) {
       const isLink = r.cost_row_kind === '連携';
       const isSub = r.cost_row_kind === '小計';
@@ -2716,6 +2887,8 @@
         : (isSub ? 'jy-cost-group-subtotal' : 'jy-cost-standalone');
       const cls = [isLink ? 'jy-link' : '', isSub ? 'jy-subtotal' : 'jy-cost-detail', borderCls, diffRowClass('cost', rk)].filter(Boolean).join(' ');
       const ro = readOnly || isLink || isSub;
+      const budgetRo = readOnly || isSub;
+      const budgetMissing = isCostBudgetCategoryMissing(r);
       const sumId = isLink && r.detail_marker && REF_SUMMARY_IDS[r.detail_marker] ? REF_SUMMARY_IDS[r.detail_marker] : '';
       const wtDisplay = isSub ? '' : (r.cost_work_type === '計' ? '' : costCollapsedDisplay(state.cost_lines, i, 'wt', 'cost_work_type'));
       const wcdDisplay = costCollapsedDisplay(state.cost_lines, i, 'wcd', 'cost_work_type_code');
@@ -2725,7 +2898,7 @@
       if (sumId) html += '<tr class="jy-sum-anchor-row jy-sec-anchor" id="' + sumId + '"><td colspan="' + costColSpan + '"></td></tr>';
       html += '<tr class="' + cls + '">';
       if (isSub) {
-        html += '<td colspan="9" class="jy-ro jy-subtotal-label"><span class="jy-subtotal-badge">計</span></td>';
+        html += '<td colspan="10" class="jy-ro jy-subtotal-label"><span class="jy-subtotal-badge">計</span></td>';
         html += '<td class="jy-num jy-ro jy-subtotal-col ' + diffCellClass('cost', rk, 'cost_amount') + '">' + fmt(subAmt) + diffAmtMark('cost_amount', 'cost', rk) + '</td>';
         html += '<td class="jy-ro jy-subtotal-note">' + esc(subtotalBasisNote(r)) + '</td>';
         html += '<td class="jy-ro"></td><td class="jy-num jy-ro">' + fmtPct(r.cost_ratio) + '</td>';
@@ -2737,6 +2910,7 @@
       html += '<td' + (isLink ? ' class="jy-link-wt"' : '') + '><input class="jy-in jy-text-cell" list="jy-wt-list" data-cost-wt="' + i + '" value="' + esc(wtDisplay) + '"' + costRepeatCollapsedAttr(state.cost_lines, i, 'wt') + (r.cost_work_type ? ' title="' + esc(r.cost_work_type) + '"' : '') + (ro ? ' disabled' : '') + '></td>';
       html += '<td><input class="jy-in jy-code" list="jy-cat-code-list" data-cost-ccd="' + i + '" value="' + esc(ccdDisplay) + '"' + costRepeatCollapsedAttr(state.cost_lines, i, 'ccd') + (r.cost_category_code ? ' title="' + esc(r.cost_category_code) + '"' : '') + (ro ? ' disabled' : '') + '></td>';
       html += '<td><input class="jy-in jy-text-cell" list="jy-cat-list" data-cost-cat="' + i + '" value="' + esc(catDisplay) + '"' + costRepeatCollapsedAttr(state.cost_lines, i, 'cat') + (r.cost_category ? ' title="' + esc(r.cost_category) + '"' : '') + (ro ? ' disabled' : '') + '></td>';
+      html += '<td class="jy-center ' + diffCellClass('cost', rk, 'cost_budget_category') + (budgetMissing ? ' jy-cost-budget-missing' : '') + '"><select class="jy-in" data-cost-budget-category="' + i + '"' + (budgetRo ? ' disabled' : '') + '>' + selOpts(SPEC_CATEGORY_OPTS, r.cost_budget_category, true) + '</select></td>';
       html += '<td><select class="jy-in" data-cost-kind="' + i + '"' + (ro ? ' disabled' : '') + '>' + ROW_KIND_OPTS.map(function (k) {
         return '<option value="' + esc(k) + '"' + (r.cost_row_kind === k ? ' selected' : '') + '>' + esc(rowKindDisplay(k)) + '</option>';
       }).join('') + '</select></td>';
@@ -2773,8 +2947,8 @@
     html += emitCostRemoved('cost:tail', '原価行');
     html += '<tr class="jy-sum-anchor-row jy-sec-anchor" id="jy-sum-ref-8"><td colspan="' + costColSpan + '"></td></tr>';
     html += '<tr class="jy-sum-anchor-row jy-sec-anchor" id="jy-sum-ref-9"><td colspan="' + costColSpan + '"></td></tr>';
-    html += '</tbody><tfoot><tr class="jy-foot-sum jy-total-row"><td colspan="9">工事原価額 …⑧</td><td class="jy-num ' + diffScalarClass('cost_total_8') + '">' + fmt(state.cost_total_8) + diffAmtMark('cost_total_8') + '</td><td colspan="' + (readOnly ? 3 : 4) + '"></td></tr>';
-    html += '<tr class="jy-foot-sum jy-total-row"><td colspan="9">粗利 …⑨</td><td class="jy-num ' + diffScalarClass('profit_9') + '">' + fmt(state.profit_9) + diffAmtMark('profit_9') + '</td><td colspan="2" class="jy-num ' + diffScalarClass('profit_rate') + '">' + fmtPct(state.profit_rate) + diffAmtMark('profit_rate') + '</td><td colspan="' + (readOnly ? 1 : 2) + '"></td></tr></tfoot></table>';
+    html += '</tbody><tfoot>' + renderCostTableFoot(readOnly) + '</tfoot></table>';
+    html += renderBudgetCategorySummary();
     html += datalist('jy-wt-list', (masterCache && masterCache.workTypes) || []);
     html += datalist('jy-wt-code-list', (masterCache && masterCache.workTypeCodes) || []);
     html += datalist('jy-cat-list', (masterCache && masterCache.categories) || []);
@@ -2881,7 +3055,7 @@
   }
 
   function blankSpecRow() {
-    return { row_key: newRowKey(), spec_name: '', spec_unit: '', spec_qty: '', spec_unit_price: '', spec_amount: 0, spec_note: '' };
+    return { row_key: newRowKey(), spec_name: '', spec_category: '', spec_unit: '', spec_qty: '', spec_unit_price: '', spec_amount: 0, spec_note: '' };
   }
 
   function insertSpecRowBefore(i) {
@@ -3197,6 +3371,10 @@
       '.jy-pr-table tr.jy-pr-total-row td,.jy-pr-cost-totals tr.jy-pr-total-row td{background:#f5ebe0;color:#44372a;font-weight:700;border-top:2px solid #c4a574;border-color:#d4b896;padding:2px 3px}' +
       '.jy-pr-table tr.jy-pr-calc-row td{background:#f3f4f6;font-weight:600;color:#334155;padding:2px 3px}' +
       '.jy-pr-cost-totals{margin-top:0;break-inside:avoid;page-break-inside:avoid}' +
+      '.jy-pr-budget-summary{margin-top:6px;break-inside:avoid;page-break-inside:avoid}' +
+      '.jy-pr-budget-summary .jy-budget-summary-head{font-size:11px;padding:4px 8px}' +
+      '.jy-pr-budget-summary .jy-budget-summary-table th,.jy-pr-budget-summary .jy-budget-summary-table td{padding:3px 5px;font-size:10px}' +
+      '.jy-pr-budget-summary .jy-budget-summary-note{font-size:9px}' +
       '.jy-pr-table tr.jy-pr-link td{background:#f0fdf4}' +
       '.jy-pr-table tr.jy-pr-link td:first-child{box-shadow:inset 3px 0 0 #6ee7b7}' +
       '.jy-pr-table tr.jy-pr-sub td{background:#eff6ff}' +
@@ -3208,8 +3386,9 @@
       '.jy-pr-cost .jy-col-wcd{width:6%}' +
       '.jy-pr-cost .jy-col-wt{width:14%}' +
       '.jy-pr-cost .jy-col-ccd{width:6%}' +
-      '.jy-pr-cost .jy-col-cat{width:12%}' +
-      '.jy-pr-cost .jy-col-kind{width:9%}' +
+      '.jy-pr-cost .jy-col-cat{width:11%}' +
+      '.jy-pr-cost .jy-col-budget-cat{width:5%}' +
+      '.jy-pr-cost .jy-col-kind{width:8%}' +
       '.jy-pr-cost .jy-col-tax{width:5%}' +
       '.jy-pr-cost .jy-col-unit{width:5%}' +
       '.jy-pr-cost .jy-col-qty{width:6%}' +
@@ -3371,22 +3550,23 @@
   function renderPrintSpecTable() {
     let html = '<div class="jy-pr-section"><div class="jy-pr-sec-head">仕様明細（①）</div><div class="jy-pr-wrap">';
     html += '<table class="jy-pr-table jy-pr-spec"><thead><tr>' +
-      '<th class="jy-col-spec">仕様</th><th class="jy-center">単位</th><th>数量</th><th>単価</th><th class="jy-num">金額</th><th>備考</th>' +
+      '<th class="jy-col-spec">仕様</th><th class="jy-center">区分</th><th class="jy-center">単位</th><th>数量</th><th>単価</th><th class="jy-num">金額</th><th>備考</th>' +
       '</tr></thead><tbody>';
     state.spec_lines.forEach(function (r, i) {
       const rk = rowKeyForTable('spec', r, i);
       const dr = diffRowClass('spec', rk);
       html += '<tr' + (dr ? ' class="' + dr + '"' : '') + '>';
       html += '<td class="' + diffCellClass('spec', rk, 'spec_name') + '">' + esc(r.spec_name) + '</td>';
+      html += '<td class="jy-center ' + diffCellClass('spec', rk, 'spec_category') + '">' + disp(r.spec_category) + '</td>';
       html += '<td class="jy-center ' + diffCellClass('spec', rk, 'spec_unit') + '">' + disp(r.spec_unit) + '</td>';
       html += '<td class="jy-num ' + diffCellClass('spec', rk, 'spec_qty') + '">' + disp(r.spec_qty) + '</td>';
       html += '<td class="jy-num ' + diffCellClass('spec', rk, 'spec_unit_price') + '">' + esc(formatUnitPrice(r.spec_unit_price)) + '</td>';
       html += '<td class="jy-num ' + diffCellClass('spec', rk, 'spec_amount') + '">' + fmt(r.spec_amount) + diffAmtMark('spec_amount', 'spec', rk) + '</td>';
       html += '<td class="' + diffCellClass('spec', rk, 'spec_note') + '">' + esc(r.spec_note) + '</td></tr>';
     });
-    html += '</tbody><tfoot><tr class="jy-pr-total-row"><td colspan="4" class="jy-num">合計 …①</td><td class="jy-num ' + diffScalarClass('contract_total_1') + '">' + fmt(state.contract_total_1) + diffAmtMark('contract_total_1') + '</td><td></td></tr></tfoot></table></div></div>';
+    html += '</tbody><tfoot>' + renderSpecTableFoot(true) + '</tfoot></table></div></div>';
     html += renderPrintDiffRemovedBlock('spec', '仕様明細', function (r) {
-      return '<td>' + esc(r.spec_name) + '</td><td class="jy-center">' + disp(r.spec_unit) + '</td><td class="jy-num">' + disp(r.spec_qty) + '</td><td class="jy-num">' + esc(formatUnitPrice(r.spec_unit_price)) + '</td><td class="jy-num">' + fmt(r.spec_amount) + '</td><td>' + esc(r.spec_note) + '</td>';
+      return '<td>' + esc(r.spec_name) + '</td><td class="jy-center">' + disp(r.spec_category) + '</td><td class="jy-center">' + disp(r.spec_unit) + '</td><td class="jy-num">' + disp(r.spec_qty) + '</td><td class="jy-num">' + esc(formatUnitPrice(r.spec_unit_price)) + '</td><td class="jy-num">' + fmt(r.spec_amount) + '</td><td>' + esc(r.spec_note) + '</td>';
     }, { scopeKey: 'spec' });
     return html;
   }
@@ -3407,7 +3587,7 @@
     const lines = state.cost_lines.filter(isCostLinePrintable);
     let html = '<div class="jy-pr-section"><div class="jy-pr-sec-head">原価行（②〜⑧）</div><div class="jy-pr-wrap">';
     html += '<table class="jy-pr-table jy-pr-cost"><thead><tr>' +
-      '<th class="jy-col-wcd">工種CD</th><th class="jy-col-wt">システム入力工種</th><th class="jy-col-ccd">種別CD</th><th class="jy-col-cat">種別</th>' +
+      '<th class="jy-col-wcd">工種CD</th><th class="jy-col-wt">システム入力工種</th><th class="jy-col-ccd">種別CD</th><th class="jy-col-cat">種別</th><th class="jy-center jy-col-budget-cat">区分</th>' +
       '<th class="jy-col-kind">行種別</th><th class="jy-col-tax jy-center">消費税</th><th class="jy-col-unit jy-center">単位</th><th class="jy-col-qty">数量</th>' +
       '<th class="jy-col-price">単価</th><th class="jy-col-amt jy-num">金額</th><th class="jy-col-note">計算基準・備考</th><th class="jy-col-ratio jy-num">率</th>' +
       '</tr></thead><tbody>';
@@ -3420,7 +3600,7 @@
         predicate: costRemovedPredicate(scopeKey),
       });
       if (!block) return '';
-      return '<tr class="jy-pr-diff-removed-row-wrap"><td colspan="12">' + block + '</td></tr>';
+      return '<tr class="jy-pr-diff-removed-row-wrap"><td colspan="13">' + block + '</td></tr>';
     }
     lines.forEach(function (r, i) {
       const origIdx = state.cost_lines.indexOf(r);
@@ -3432,7 +3612,7 @@
       const subAmt = costPrintRowAmount(r);
       html += '<tr' + (rowCls ? ' class="' + rowCls + '"' : '') + '>';
       if (isSub) {
-        html += '<td colspan="9" class="jy-pr-sub-label"><span class="jy-pr-sub-badge">計</span></td>';
+        html += '<td colspan="10" class="jy-pr-sub-label"><span class="jy-pr-sub-badge">計</span></td>';
         html += '<td class="jy-num jy-pr-sub-amt ' + diffCellClass('cost', rk, 'cost_amount') + '">' + fmt(subAmt) + diffAmtMark('cost_amount', 'cost', rk) + '</td>';
         html += '<td>' + esc(subtotalBasisNote(r)) + '</td><td class="jy-num">' + fmtPct(r.cost_ratio) + '</td>';
       } else {
@@ -3444,6 +3624,7 @@
         html += '<td class="' + (wt === '〃' ? 'jy-pr-ditto' : '') + ' ' + diffCellClass('cost', rk, 'cost_work_type') + '">' + esc(wt) + '</td>';
         html += '<td class="' + (ccd === '〃' ? 'jy-pr-ditto' : '') + ' ' + diffCellClass('cost', rk, 'cost_category_code') + '">' + esc(ccd) + '</td>';
         html += '<td class="' + (cat === '〃' ? 'jy-pr-ditto' : '') + ' ' + diffCellClass('cost', rk, 'cost_category') + '">' + esc(cat) + '</td>';
+        html += '<td class="jy-center ' + diffCellClass('cost', rk, 'cost_budget_category') + '">' + disp(r.cost_budget_category) + '</td>';
         html += '<td class="' + diffCellClass('cost', rk, 'cost_row_kind') + '">' + esc(rowKindDisplay(r.cost_row_kind)) + '</td>';
         html += '<td class="jy-center ' + diffCellClass('cost', rk, 'cost_tax_rate') + '">' + esc(fmtTaxRate(r.cost_tax_rate)) + '</td><td class="jy-center ' + diffCellClass('cost', rk, 'cost_unit') + '">' + disp(r.cost_unit) + '</td>';
         html += '<td class="jy-num ' + diffCellClass('cost', rk, 'cost_qty') + '">' + disp(r.cost_qty) + '</td>';
@@ -3460,11 +3641,9 @@
       }
     });
     html += emitPrintCostRemoved('cost:tail', '原価行');
-    html += '</tbody></table>';
-    html += '<table class="jy-pr-table jy-pr-cost jy-pr-cost-totals"><tbody>';
-    html += '<tr class="jy-pr-total-row"><td colspan="9">工事原価額 …⑧</td><td class="jy-num ' + diffScalarClass('cost_total_8') + '">' + fmt(state.cost_total_8) + diffAmtMark('cost_total_8') + '</td><td colspan="2"></td></tr>';
-    html += '<tr class="jy-pr-total-row"><td colspan="9">粗利 …⑨</td><td class="jy-num ' + diffScalarClass('profit_9') + '">' + fmt(state.profit_9) + diffAmtMark('profit_9') + '</td><td></td><td class="jy-num ' + diffScalarClass('profit_rate') + '">' + fmtPct(state.profit_rate) + diffAmtMark('profit_rate') + '</td></tr>';
-    html += '</tbody></table></div></div>';
+    html += '</tbody><tfoot>' + renderCostTableFoot(true) + '</tfoot></table>';
+    html += '<div class="jy-pr-budget-summary">' + renderBudgetCategorySummary() + '</div>';
+    html += '</div></div>';
     return html;
   }
 
@@ -4342,6 +4521,10 @@
       const r = lineAt(state.spec_lines, Number(el.getAttribute('data-spec-name')));
       if (r) r.spec_name = el.value;
     });
+    document.querySelectorAll('[data-spec-category]').forEach(function (el) {
+      const r = lineAt(state.spec_lines, Number(el.getAttribute('data-spec-category')));
+      if (r) r.spec_category = el.value;
+    });
     document.querySelectorAll('[data-spec-unit]').forEach(function (el) {
       const r = lineAt(state.spec_lines, Number(el.getAttribute('data-spec-unit')));
       if (r) r.spec_unit = el.value;
@@ -4370,6 +4553,10 @@
     });
     document.querySelectorAll('[data-cost-cat]').forEach(function (el) {
       syncCostLineFieldFromInput(el, 'data-cost-cat', 'cost_category');
+    });
+    document.querySelectorAll('[data-cost-budget-category]').forEach(function (el) {
+      const r = lineAt(state.cost_lines, Number(el.getAttribute('data-cost-budget-category')));
+      if (r) r.cost_budget_category = el.value;
     });
     document.querySelectorAll('[data-cost-kind]').forEach(function (el) {
       const r = lineAt(state.cost_lines, Number(el.getAttribute('data-cost-kind')));

@@ -133,6 +133,8 @@
     "jikkou-yosan:create-budget": "npx dotenv -e .env -e .env.proxy -- node scripts/jikkou-yosan-create-budget-app.mjs",
     "jikkou-yosan:add-budget-fields": "npx dotenv -e .env -e .env.proxy -- node scripts/jikkou-yosan-add-budget-fields.mjs",
     "jikkou-yosan:add-v2-fields": "npx dotenv -e .env -e .env.proxy -- node scripts/jikkou-yosan-add-v2-fields.mjs",
+    "jikkou-yosan:add-ph1e-spec-category": "npx dotenv -e .env -e .env.proxy -- node scripts/jikkou-yosan-add-ph1e-spec-category.mjs",
+    "jikkou-yosan:add-ph1f-cost-budget-category": "npx dotenv -e .env -e .env.proxy -- node scripts/jikkou-yosan-add-ph1f-cost-budget-category.mjs",
     "jikkou-yosan:v2-backfill": "npx dotenv -e .env -e .env.proxy -- node scripts/jikkou-yosan-v2-backfill.mjs",
     "jikkou-yosan:build-desktop": "node scripts/jikkou-yosan-build-desktop.mjs",
     "jikkou-yosan:calc-gate": "node scripts/jikkou-yosan-calc-gate.mjs",

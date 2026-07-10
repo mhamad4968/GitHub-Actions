@@ -106,7 +106,17 @@ export function recalcCostLinesPreserveKeys(state, recalcAllFn) {
   state.sub_paint_order_amount = calc.sub_paint_order_amount;
   state.sub_labor_total = calc.sub_labor_total;
   state.cost_total_8 = calc.cost_total_8;
+  state.cost_budget_construction = calc.cost_budget_construction;
+  state.cost_budget_security = calc.cost_budget_security;
+  state.cost_budget_uncategorized = calc.cost_budget_uncategorized;
+  state.cost_budget_uncategorized_count = calc.cost_budget_uncategorized_count;
   state.profit_9 = calc.profit_9;
   state.profit_rate = calc.profit_rate;
+  state.profit_budget_construction = calc.profit_budget_construction;
+  state.profit_budget_security = calc.profit_budget_security;
+  state.profit_budget_uncategorized = calc.profit_budget_uncategorized;
+  state.profit_rate_budget_construction = calc.profit_rate_budget_construction;
+  state.profit_rate_budget_security = calc.profit_rate_budget_security;
+  state.profit_rate_budget_uncategorized = calc.profit_rate_budget_uncategorized;
   return state;
 }

@@ -1,0 +1,21 @@
+{
+  "properties": {
+    "spec_lines": {
+      "type": "SUBTABLE",
+      "code": "spec_lines",
+      "label": "仕様明細",
+      "fields": {
+        "spec_category": {
+          "type": "DROP_DOWN",
+          "code": "spec_category",
+          "label": "区分",
+          "required": false,
+          "options": {
+            "工事費": { "label": "工事費", "index": "0" },
+            "保安費": { "label": "保安費", "index": "1" }
+          }
+        }
+      }
+    }
+  }
+}

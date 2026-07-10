@@ -283,6 +283,16 @@
           "noLabel": false,
           "defaultValue": ""
         },
+        "spec_category": {
+          "type": "DROP_DOWN",
+          "code": "spec_category",
+          "label": "区分",
+          "required": false,
+          "options": {
+            "工事費": { "label": "工事費", "index": "0" },
+            "保安費": { "label": "保安費", "index": "1" }
+          }
+        },
         "spec_unit": {
           "type": "SINGLE_LINE_TEXT",
           "code": "spec_unit",
@@ -367,6 +377,16 @@
           "required": false,
           "noLabel": false,
           "defaultValue": ""
+        },
+        "cost_budget_category": {
+          "type": "DROP_DOWN",
+          "code": "cost_budget_category",
+          "label": "区分",
+          "required": false,
+          "options": {
+            "工事費": { "label": "工事費", "index": "0" },
+            "保安費": { "label": "保安費", "index": "1" }
+          }
         },
         "cost_row_kind": {
           "type": "DROP_DOWN",

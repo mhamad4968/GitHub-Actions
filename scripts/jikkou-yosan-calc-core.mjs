@@ -43,6 +43,112 @@ export function sumSpecLines(lines) {
   return t;
 }
 
+export const SPEC_CATEGORY_OPTS = ['工事費', '保安費'];
+
+export function normalizeSpecCategory(v) {
+  const s = String(v || '').trim();
+  if (s === '工事費' || s === '保安費') return s;
+  return '';
+}
+
+/** 読込時のみ — spec_name が「保安費」で始まる行 */
+export function inferSpecCategoryFromName(specName) {
+  const n = String(specName || '').trim();
+  if (n.startsWith('保安費')) return '保安費';
+  return '';
+}
+
+export function sumSpecLinesByCategory(lines, category) {
+  let t = 0;
+  for (let i = 0; i < lines.length; i += 1) {
+    if (normalizeSpecCategory(lines[i].spec_category) === category) t += num(lines[i].spec_amount);
+  }
+  return t;
+}
+
+export function sumSpecLinesUncategorized(lines) {
+  let t = 0;
+  for (let i = 0; i < lines.length; i += 1) {
+    if (!normalizeSpecCategory(lines[i].spec_category)) t += num(lines[i].spec_amount);
+  }
+  return t;
+}
+
+export function countSpecLinesUncategorized(lines) {
+  let n = 0;
+  for (let i = 0; i < lines.length; i += 1) {
+    if (!normalizeSpecCategory(lines[i].spec_category)) n += 1;
+  }
+  return n;
+}
+
+/** 工事費/保安費区分（仕様・原価共通） */
+export function normalizeBudgetCategory(v) {
+  return normalizeSpecCategory(v);
+}
+
+export function isCostTotal8Row(c) {
+  if (c.cost_row_kind !== 'detail' && c.cost_row_kind !== 'link') return false;
+  if (String(c.cost_work_type || '').indexOf('追加工事⑤') >= 0) return false;
+  if (c.cost_group_key === 'addon5_excluded') return false;
+  return true;
+}
+
+/** 読込時のみ — 工種・種別から保安費を推定 */
+export function inferCostBudgetCategoryFromRow(r) {
+  const wt = String(r.cost_work_type || '').trim();
+  const cat = String(r.cost_category || '').trim();
+  if (wt.includes('保安費') || cat.includes('保安費')) return '保安費';
+  if (wt.includes('（保）') || cat.includes('（保）')) return '保安費';
+  if (wt === '重機誘導員' || wt === '検電接地' || wt === '列車見張員' || wt === '線閉責任者' || wt === '交通整理員等') {
+    return '保安費';
+  }
+  return '';
+}
+
+/** 読込時のみ — 詳細表連携行は工事費 */
+export function resolveCostBudgetCategoryOnRead(rawCategory, row) {
+  const c = normalizeBudgetCategory(rawCategory);
+  if (c) return c;
+  const inferred = inferCostBudgetCategoryFromRow(row);
+  if (inferred) return inferred;
+  const kind = row.cost_row_kind;
+  if ((kind === 'link' || kind === '連携') && row.detail_marker && /^[②③④⑤⑥⑦]$/.test(String(row.detail_marker))) {
+    return '工事費';
+  }
+  return '';
+}
+
+export function sumCostLinesByCategory(lines, category) {
+  let t = 0;
+  for (let i = 0; i < lines.length; i += 1) {
+    const c = lines[i];
+    if (!isCostTotal8Row(c)) continue;
+    if (normalizeBudgetCategory(c.cost_budget_category) === category) t += num(c.cost_amount);
+  }
+  return t;
+}
+
+export function sumCostLinesUncategorized(lines) {
+  let t = 0;
+  for (let i = 0; i < lines.length; i += 1) {
+    const c = lines[i];
+    if (!isCostTotal8Row(c)) continue;
+    if (!normalizeBudgetCategory(c.cost_budget_category)) t += num(c.cost_amount);
+  }
+  return t;
+}
+
+export function countCostLinesUncategorized(lines) {
+  let n = 0;
+  for (let i = 0; i < lines.length; i += 1) {
+    const c = lines[i];
+    if (!isCostTotal8Row(c)) continue;
+    if (!normalizeBudgetCategory(c.cost_budget_category)) n += 1;
+  }
+  return n;
+}
+
 export function sumMatGroup(lines, group) {
   let t = 0;
   for (let i = 0; i < lines.length; i += 1) {
@@ -105,11 +211,7 @@ export function blockOrderAmount(lines, block) {
 export function calcCostTotal8(costLines) {
   let t = 0;
   for (let i = 0; i < costLines.length; i += 1) {
-    const c = costLines[i];
-    if (c.cost_row_kind !== 'detail' && c.cost_row_kind !== 'link') continue;
-    if (String(c.cost_work_type || '').indexOf('追加工事⑤') >= 0) continue;
-    if (c.cost_group_key === 'addon5_excluded') continue;
-    t += num(c.cost_amount);
+    if (isCostTotal8Row(costLines[i])) t += num(costLines[i].cost_amount);
   }
   return t;
 }
@@ -172,6 +274,10 @@ export function recalcAll(state) {
   }
   const contract_total_1 = sumSpecLines(state.spec_lines);
   state.contract_total_1 = contract_total_1;
+  state.spec_total_construction = sumSpecLinesByCategory(state.spec_lines, '工事費');
+  state.spec_total_security = sumSpecLinesByCategory(state.spec_lines, '保安費');
+  state.spec_total_uncategorized = sumSpecLinesUncategorized(state.spec_lines);
+  state.spec_uncategorized_count = countSpecLinesUncategorized(state.spec_lines);
 
   for (let i = 0; i < state.mat_lines.length; i += 1) {
     const m = state.mat_lines[i];
@@ -211,8 +317,21 @@ export function recalcAll(state) {
   }
 
   state.cost_total_8 = calcCostTotal8(state.cost_lines);
+  state.cost_budget_construction = sumCostLinesByCategory(state.cost_lines, '工事費');
+  state.cost_budget_security = sumCostLinesByCategory(state.cost_lines, '保安費');
+  state.cost_budget_uncategorized = sumCostLinesUncategorized(state.cost_lines);
+  state.cost_budget_uncategorized_count = countCostLinesUncategorized(state.cost_lines);
   state.profit_9 = contract_total_1 - state.cost_total_8;
   state.profit_rate = contract_total_1 > 0 ? state.profit_9 / contract_total_1 : 0;
+  state.profit_budget_construction = state.spec_total_construction - state.cost_budget_construction;
+  state.profit_budget_security = state.spec_total_security - state.cost_budget_security;
+  state.profit_budget_uncategorized = state.spec_total_uncategorized - state.cost_budget_uncategorized;
+  state.profit_rate_budget_construction = state.spec_total_construction > 0
+    ? state.profit_budget_construction / state.spec_total_construction : 0;
+  state.profit_rate_budget_security = state.spec_total_security > 0
+    ? state.profit_budget_security / state.spec_total_security : 0;
+  state.profit_rate_budget_uncategorized = state.spec_total_uncategorized > 0
+    ? state.profit_budget_uncategorized / state.spec_total_uncategorized : 0;
   return state;
 }
 

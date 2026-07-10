@@ -3,17 +3,25 @@
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED**（kintone レーン v1 完了・closures 登録）≠ **セッション締め**（export-handoff / Desktop sync / close-git）。混同禁止 -->
 
-**最終更新**: 2026-07-09 JST — **セッション締め**（674 リスト出力 · 699 アコーディオン · Grok L2b governance）
+**最終更新**: 2026-07-10 JST — **セッション締め**（736 PH1e/PH1f 区分・サマリー）
 
-### 本日アクティブ（BUILD/rev — 2026-07-09）
+### 本日アクティブ（BUILD/rev — 2026-07-10）
 
 | 項目 | 内容 |
 |------|------|
-| **674 PC台帳** | BUILD=`2026-07-09-674-list-export-col-order` **rev260** — リスト一覧・列選択・Excel（SheetJS bundle）· 浜田 OK |
-| **699 ご利用ガイド** | BUILD=`2026-07-09-bi-guide-list-accordion-exclusive` **rev123** — 一覧アコーディオン＋件数クリックで開閉 · 浜田 OK |
-| **736 実行予算** | BUILD=`2026-07-09-736-diff-cost-removed-fix` **rev173**（live）— **PH1c implement 7/10〜**（7/9 リスケ） |
-| **700 提案申請** | BUILD=`2026-07-06-bi-apply-footer-reject-clear` **rev166** — **目視待ち** |
+| **736 実行予算** | **PH1e** 仕様明細① `spec_category`（工事費/保安費）· 合計内訳·％専用セル · rev **175–177** |
+| | **PH1e-fix** `recalcState` が `spec_total_*` を state にコピーしていなかった不具合修正 · rev **176** |
+| | **PH1f** 原価行 `cost_budget_category` · ⑧内訳 · **区分別サマリー**（売上①/原価⑧/粗利/粗利率）· 印刷対応 · rev **179** |
+| | 詳細表②〜⑦は **区分なし** のまま（合意） |
 | **698 社員マスタ** | BUILD=`2026-07-04-bi-employee-index-emp-filter` **rev19** — **目視待ち** |
+| **700 提案申請** | BUILD=`2026-07-06-bi-apply-footer-reject-clear` **rev166** — **目視待ち** |
+
+### 前セッション（2026-07-09）
+
+| 項目 | 内容 |
+|------|------|
+| **674 PC台帳** | BUILD=`2026-07-09-674-list-export-col-order` **rev260** |
+| **699 ご利用ガイド** | BUILD=`2026-07-09-bi-guide-list-accordion-exclusive` **rev123** |
 
 ## クローズ済み（`data/cio-project-closures.json` — 9件）
 
@@ -29,8 +37,8 @@
 | **736** | **§9.6 凍結** · **7/7〜 AI 主導 §41**（736 のみ） |
 | **712** | 削除済 — deploy 禁止 |
 
-**次の1手**: **736 PH1c** 行並び替え implement（**7/10〜**）· **698/700** 目視  
-**Git**: **`87929247`** = `origin/main` — push 済
+**次の1手**: **736 PH1c** 行並び替え implement · **698/700** 目視  
+**Git**: **（close-git 後に更新）** = `origin/main`
 **夕反省**: `docs/reports/2026-07-09-evening-reflection.md`  
 **736 7月**: `docs/runbooks/736-july-2026-schedule.md`  
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`  

@@ -51,7 +51,28 @@
 **禁止**: 差分比較前の `ensureRowKeysOnState`（比較元・現行で別 UUID になる）  
 **exit**: 版2で材料1行のみ変更 → 削除0件・連携②のみ増減・⑧⑨ が ±同額
 
+---
+
+## [2026-07-10] 736 PH1e/PH1f — recalcState 集計コピー漏れ
+
+**前提**: `recalcAll` で `calc` にだけセットした新フィールド（`spec_total_*` / `cost_budget_*` / `profit_budget_*`）  
+**手順**: `recalcState` 内で `calc` → `state` に **同名フィールドをすべて代入**してから `renderSummary`  
+**禁止**: calc だけ更新して UI が常に 0・警告非表示のまま deploy  
+**exit**: 2623001 で仕様/原価の区分合計・赤警告・区分別サマリーが画面と一致
+
+---
+
 <!-- CIO-DEBUG-TIPS:AUTO -->
+## [2026-07-10] セッション解体時知恵ストック
+
+**前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
+**手順**: `npm run cio:session:cold-start` → `npm run session:bootstrap` → `npm run cio:report-verify-response -- --file <下書き>`**（または `--stdin`）を **実行し exit 0 を確認**する（`package.json` の `cio:report-`
+**禁止**: customize/deploy 凍結中の無断 save・上位憲法 §50-3-11 非置換違反・本体単独完結
+**exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
+
+<!-- errors: npm run cio:session:cold-start` | npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `manda | npm run cio:report-verify-response -- --file <下書き>`**（または `--stdin`）を **実行し exit -->
+
+
 ## [2026-07-09] セッション解体時知恵ストック
 
 **前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出

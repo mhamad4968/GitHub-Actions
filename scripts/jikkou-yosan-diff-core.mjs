@@ -514,11 +514,11 @@ export function computeBudgetDiff(base, cur) {
 
     spec: diffTableRows(base.spec_lines, cur.spec_lines,
 
-      ['spec_name', 'spec_unit', 'spec_qty', 'spec_unit_price', 'spec_amount', 'spec_note'], 'spec'),
+      ['spec_name', 'spec_category', 'spec_unit', 'spec_qty', 'spec_unit_price', 'spec_amount', 'spec_note'], 'spec'),
 
     cost: diffTableRows(baseCost, curCost,
 
-      ['cost_work_type_code', 'cost_work_type', 'cost_category_code', 'cost_category', 'cost_row_kind',
+      ['cost_work_type_code', 'cost_work_type', 'cost_category_code', 'cost_category', 'cost_budget_category', 'cost_row_kind',
 
         'cost_tax_rate', 'cost_unit', 'cost_qty', 'cost_unit_price', 'cost_amount', 'cost_basis_note'], 'cost'),
 
