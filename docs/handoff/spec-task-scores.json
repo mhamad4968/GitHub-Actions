@@ -1,12 +1,12 @@
 {
-  "scoredAt": "2026-07-10T06:10:54.851Z",
+  "scoredAt": "2026-07-10T07:20:00.000Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
+  "topTask": "**736 PH1c** 行並び替え implement · **698/700** 目視",
   "tasks": [
     {
-      "id": "backlog:B-MDFLOW:_**Markdown_ベースの開発フロー**（仕様・実装・レ",
-      "text": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
-      "source": "backlog",
+      "id": "checkpoint:**736_PH1c**_行並び替え_implement",
+      "text": "**736 PH1c** 行並び替え implement · **698/700** 目視",
+      "source": "checkpoint",
       "difficulty": 2,
       "tokens": "中",
       "tokenScore": 2,
@@ -15,9 +15,9 @@
       "status": "pending"
     },
     {
-      "id": "checkpoint:**736_PH1c**_行並び替え_implement（**7/10〜**）·",
-      "text": "**736 PH1c** 行並び替え implement（**7/10〜**）· **698/700** 目視",
-      "source": "checkpoint",
+      "id": "backlog:B-MDFLOW:_**Markdown_ベースの開発フロー**（仕様・実装・レ",
+      "text": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
+      "source": "backlog",
       "difficulty": 2,
       "tokens": "中",
       "tokenScore": 2,

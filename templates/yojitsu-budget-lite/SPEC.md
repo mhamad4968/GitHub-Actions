@@ -465,6 +465,6 @@ OK → `partner_company` 入力欄の `readonly` を解除＋ `data-y678-partner
 | Rank | Task | 難易度 | Token | Impact | Priority |
 |------|------|--------|-------|--------|----------|
 | 1 | B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化） | 2/5 | 中 | 3/5 | 21 |
-| 2 | **736 PH1c** 行並び替え implement（**7/10〜**）· **698/700** 目視 | 2/5 | 中 | 3/5 | 21 |
+| 2 | **736 PH1c** 行並び替え implement · **698/700** 目視 | 2/5 | 中 | 3/5 | 21 |
 
 <!-- CIO-TASK-PRIORITY:AUTO:END -->
