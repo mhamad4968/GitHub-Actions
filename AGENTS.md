@@ -4,7 +4,17 @@
 **Cursor 上の本リポジトリ作業**は **§1-2** の単一モデル前提に従う。Claude Code / Codex 等の別環境は、利用時も本ファイルの手前に **§1-2 を読み、Opus 4.7 単一会話に相当する運用**に寄せる。
 個別の詳細ルールは `.cursorrules` および `.cursor/rules/*.mdc` に委任する。
 
-> **AI 向け（2026-05-17）**: 全文通読は不要。**`RULES-INDEX.md` → `docs/constitution/README.md`** でジャンル別に読む。§ 番号の解釈正本は **本ファイル**。再分割は `npm run constitution:extract-genres`。
+> **AI 向け（2026-05-17 / 2026-07-11 lifecycle-v2）**: **索引優先**（§条文の削除・弱体化なし）。**3 入口**に従う（正本 `data/cio-rule-entry-points.json` · ナビ `docs/constitution/27-constitution-navigation-charter.md`）。
+>
+> | 入口 | いつ | 最初にやること |
+> |------|------|----------------|
+> | **1 毎ターン** | 全応答 | `npm run cio:turn-start` → `mode-b-canonical.mdc` |
+> | **2 タスク** | 着手前 | `npm run cio:tool:route -- --intent "…"` → `RULES-INDEX.md` → `docs/constitution/<ジャンル>.md` **1〜2 本** |
+> | **3 セッション** | WAKE/CLOSE | `npm run cio:session:cold-start` / `cio:session:close-git` |
+>
+> **WAKE 先読み**（`constitution-first-read-pack` 00–06）· **Part A** · **18-重要確認** は **3 入口で免除しない**（`mandatory_reads` 正本は entry-points.json）。
+>
+> § 番号の解釈正本は **本ファイル**。ジャンル再分割は `npm run constitution:extract-genres`。現役ゲートのみ `data/cio-formalization-registry.json`（寿命規約 `26-formalization-lifecycle-charter.md`）。
 
 ### 作業レーンの切り替え（CIO メモ・2026-05-04）
 
@@ -266,7 +276,7 @@ agent
 
 | ティア | 実モデル名 | 適用条件 (AI 判断基準) | 月コスト目安 |
 |---|---|---|---|
-| **L1: Composer 2** | composer-2 (Cursor 独自) | ① 既知の定型タスク (lint 結果整形 / RAG 同期確認 / chat-sessions 記録更新 / commit message 起草 / 単純ファイル追記 / 朝報整形 / npm script 別名追加) ② 浜田の指示が **2-3 文以下の短いタスク** ③ 創造的判断不要 | 最安 (~1/10) |
+| **L1: Composer 2** | composer-2 (Cursor 独自) | ① 既知の定型タスク (lint 結果整形 / RAG 同期確認 / chat-sessions 記録更新 / commit message 起草 / 単純ファイル追記 / 朝報整形 / npm script 別名追加) ② 浜田の指示が **2-3 文以下の短いタスク** ③ 創造的判断不要 ④ **doc-lane lite**（`cio:turn-start --lane doc-lane --tier lite` 済 · 1 path · +≤20 行 · customize/AGENTS/.mdc 禁止 — 2026-07-11 H8） | 最安 (~1/10) |
 | **L2: Extra High** | claude-opus-4-7-thinking-xhigh | ① 通常の実装・調査・設計 ② kintone Day N の **Tier A 範囲** ③ §57 改定の文章編集 (起案ではない) ④ TSB 整形 | 中 (基準) |
 | **L3: Max Thinking** | claude-opus-4-7-max-thinking | ① §47-A 100% 証明要求 ② §57 改定 **起案** ③ TSB 真因究明 ④ 重大インシデント分析 ⑤ kintone Day N の **Tier B / 不可逆操作前** ⑥ §48 Best Options 起案 ⑦ 複雑な抽象設計 | 高 (~1.5x) |
 

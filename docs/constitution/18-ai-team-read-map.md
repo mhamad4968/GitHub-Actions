@@ -3,7 +3,15 @@
 **制定**: 2026-05-21（Phase 2・細分化）／**6役追補**: 2026-07-04（§1-2-3-6）  
 **正本**: `AGENTS.md` §1-2-3-4・**§1-2-3-6**・§50-3-11 ／ 6役散文: `docs/plans/2026-07-04-ai-team-six-roles-spec.md` ／ 用語・マトリクス: **`mode-b-canonical.mdc`**  
 **機械検証**: `npm run verify:cio-four-ai-governance`  
-**迷ったら**: [`00-rule-hierarchy.md`](00-rule-hierarchy.md) → `AGENTS.md` 該当 §（本表はショートカットであり正本の置換ではない）
+**迷ったら**: [`27-constitution-navigation-charter.md`](27-constitution-navigation-charter.md) → [`00-rule-hierarchy.md`](00-rule-hierarchy.md) → `AGENTS.md` 該当 §（本表はショートカットであり正本の置換ではない）
+
+## L0 入口（全員 · 毎ターン）
+
+| 段階 | 読むもの |
+|------|----------|
+| **毎ターン** | `cio:turn-start` → `mode-b-canonical.mdc` |
+| **WAKE** | `constitution-first-read-pack` 00–06 · Part A · 18-重要確認（**免除しない**） |
+| **タスク** | `cio:tool:route` → `27-navigation` → ジャンル 1–2 本 |
 
 > **1人作業禁止**: 本表の更新・憲法意味の変更は **DeepSeek 1問 → CIO 突合3行 → `cio:guard:5038`** のあと PR/commit。
 

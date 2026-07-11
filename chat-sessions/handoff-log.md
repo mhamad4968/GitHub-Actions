@@ -4545,6 +4545,32 @@ npm run cio:morning:ready
 **触らない**: 688 / 677–679 / SKYSEA · 憲法完了前の依頼効率化ツール
 
 
-**Git**: **`d888b827`** = `origin/main` — push 済
+---
+
+### 2026-07-11 18:20 JST — **憲法夜レーン 4 論点 実装完了**
+
+**要約**:
+- 正本 `docs/plans/2026-07-11-constitution-evening-spec.md` · データ `cio-formalization-registry.json` · `cio-rule-entry-points.json`
+- H8: doc-lane lite=L1 · AGENTS 3入口TOC · 新憲法不要(25-charter) · §50-3-8スコープ+休眠ラベル
+- verify: constitution-evening + constitution-handoff + rules-optimization + smoke:quiet **全 exit 0**
+- Desktop sync + verify OK
+
+**次の1手**: **依頼効率化ツール** 開発要否 · commit/push は浜田指示待ち
+
+**触らない**: 688 / 677–679 / SKYSEA
 
 ---
+
+### 2026-07-11 18:45 JST — **憲法 lifecycle-v2 全員GO 実装・push**
+
+**要約**:
+- AIチーム Round-FINAL→2: DeepSeek/Kimi/CIO **全員 GO**（lite は憲法系パスのみ追加禁止）
+- 新チャーター `26-formalization-lifecycle-charter.md` · `27-constitution-navigation-charter.md`
+- registry 13→6（H4/H6/H0/H3/C3/H7 retired · verifyProbe 必須）
+- entry-points: `supplements` + `mandatory_reads` · I11 lifecycle-v2
+- verify:constitution-evening 強化（E1–E9 · antihollow spawn）
+
+**次の1手**: **依頼効率化ツール** 開発要否
+
+**触らない**: 688 / 677–679 / SKYSEA
+

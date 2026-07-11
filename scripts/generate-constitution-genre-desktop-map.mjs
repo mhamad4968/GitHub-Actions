@@ -41,7 +41,8 @@ function main() {
   lines.push(`生成: ${ymd} JST — npm run constitution:sync-genre-desktop-map`);
   lines.push('正本: data/constitution-genre-catalog.json／リポ AGENTS.md（§ 番号の正）');
   lines.push('');
-  lines.push('■■ 読み方（見落とし防止・3ステップ）');
+  lines.push('■■ 読み方（見落とし防止 · L0→L2）');
+  lines.push('  0) 27-navigation-charter（3入口・mandatory_reads）');
   lines.push('  1) 本ファイル（28）でタスク→ジャンルを特定');
   lines.push('  2) リポ docs/constitution/<ファイル>.md を Read（1〜2本だけ）');
   lines.push('  3) 必要時のみ AGENTS.md 該当 § を正本確認');
@@ -58,7 +59,7 @@ function main() {
     lines.push(`${pad(id, 22)} ${pad(summary, 28)} ${pad(when, 16)} ${owner}`);
   }
   lines.push('');
-  lines.push('■■ Phase2 手動カーネル（00/17/18/19-24）');
+  lines.push('■■ Phase2 手動 + META チャーター（00/17/18/19-27）');
   lines.push(`${pad('ID', 22)} ${pad('概要', 28)} ${pad('いつ', 16)} 主担当`);
   lines.push('-'.repeat(88));
   for (const [id, summary, when, owner] of MANUAL) {

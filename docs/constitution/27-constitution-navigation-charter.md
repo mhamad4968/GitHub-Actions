@@ -1,0 +1,46 @@
+# 憲法ナビゲーション — チャーター（2026-07-11 · META）
+
+**地位**: AI 向け **読み方の単一窓**（`AGENTS.md` § 意味は非置換）  
+**機械正本**: `data/cio-rule-entry-points.json` · `data/constitution-genre-catalog.json`
+
+## 4 層モデル
+
+```
+L0 入口 … cio:turn-start · mode-b-canonical · entry-points.json
+L1 索引 … 00-rule-hierarchy · RULES-INDEX · 28-genre-map
+L2 ミラー … docs/constitution/01–16（AGENTS 抽出）
+L3 運用+META … 17–18（4AI）· 19–24（KERNEL）· 25–27（チャーター）
+```
+
+## 3 入口（索引短縮 — 必読免除ではない）
+
+| 入口 | いつ | 最初にやること |
+|------|------|----------------|
+| **E1 毎ターン** | 全応答 | `npm run cio:turn-start` → mode-b-canonical |
+| **E2 タスク** | 着手前 | `cio:tool:route` → RULES-INDEX → ジャンル **1〜2 本** |
+| **E3 セッション** | WAKE/CLOSE | `cio:session:cold-start` / close-git |
+
+## mandatory_reads（免除しない）
+
+| タイミング | 読むもの |
+|------------|----------|
+| **WAKE 毎セッション** | `constitution-first-read-pack/00-ORDER.txt` 〜 `06` |
+| **セッション単位** | `part-A-constitution-kernel.md` · Desktop `18-重要確認.txt` |
+
+> 「全文通読は不要」= **索引優先**。上表の必読は **3 入口で置換しない**。
+
+## タスク別ショートカット
+
+| タスク | L2 ジャンル |
+|--------|-------------|
+| kintone customize | 02 + 17 + 19 |
+| 報告・締め | 09 + 19 |
+| MCP 選定 | 12 + mcp-status |
+| 憲法改定議論 | 16 + 25 + 26 + 27 |
+
+## 検証
+
+```powershell
+npm run verify:constitution-evening
+npm run verify:constitution-genre-kernels
+```

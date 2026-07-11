@@ -40,6 +40,10 @@
     {
       "id": "I10",
       "summary": "完了宣言 = verify:rules-optimization 全緑 + 浜田 ACK"
+    },
+    {
+      "id": "I11",
+      "summary": "2026-07-11 lifecycle-v2: METAチャーター(25–27)はAGENTS非置換で追加可 · 3入口(entry-points) · formalization-registryは現役ゲートのみ・verifyProbe必須・廃止ラベルはspec§2 retired表へ（dormant廃止）"
     }
   ]
 }

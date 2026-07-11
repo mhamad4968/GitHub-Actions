@@ -1,0 +1,59 @@
+{
+  "version": "2026-07-11-lifecycle-v2",
+  "description": "3 入口 — 索引短縮（必読免除ではない）",
+  "entrances": [
+    {
+      "id": "E1-every-turn",
+      "when": "毎ターン・報告",
+      "commands": ["npm run cio:turn-start", "npm run cio:turn-start -- --strict"],
+      "read": [".cursor/rules/mode-b-canonical.mdc", ".cursor/rules/every-turn-rules-confirm.mdc"],
+      "supplements": ["手書き四行のみ"],
+      "mandatory_reads": {
+        "note": "3入口は散読の短縮。WAKE先読み・Part A・18は免除しない",
+        "wake_once_per_session": [
+          "chat-sessions/constitution-first-read-pack/00-ORDER.txt",
+          "chat-sessions/constitution-first-read-pack/01-report-gate.txt",
+          "chat-sessions/constitution-first-read-pack/02-cio-second-reviewer.txt",
+          "chat-sessions/constitution-first-read-pack/03-minimum-m-baseline.txt",
+          "chat-sessions/constitution-first-read-pack/04-hooks-pipeline.txt",
+          "chat-sessions/constitution-first-read-pack/05-full-refs.txt",
+          "chat-sessions/constitution-first-read-pack/06-abcd-v2-runbooks.txt"
+        ],
+        "every_session": [
+          "chat-sessions/session-starter-parts/part-A-constitution-kernel.md",
+          "chat-sessions/desktop-ai-emergency-read-pack/18-重要確認.txt"
+        ]
+      }
+    },
+    {
+      "id": "E2-task",
+      "when": "タスク着手・MCP選定",
+      "commands": ["npm run cio:tool:route -- --intent \"…\" --log"],
+      "read": [
+        "data/cursor-rules-topic-index.json",
+        "docs/constitution/README.md",
+        "docs/constitution/27-constitution-navigation-charter.md",
+        "chat-sessions/desktop-ai-emergency-read-pack/28-CONSTITUTION-GENRE-MAP.txt"
+      ],
+      "supplements": ["62 .mdc 総当り", "AGENTS 線形通読", "RULES-INDEX 無差別"]
+    },
+    {
+      "id": "E3-session",
+      "when": "WAKE / CLOSE",
+      "commands": [
+        "npm run cio:session:cold-start",
+        "npm run cio:session:close-git -- --execute"
+      ],
+      "read": ["docs/runbooks/session-lifecycle-v2.md", "data/cio-session-close-chain.json"],
+      "supplements": ["session:bootstrap 単独（L2のみ）", "handoff/checkpoint 手動散読"]
+    }
+  ],
+  "mirrors": {
+    "note": "鏡像は削除しない — sync で整合",
+    "pairs": [
+      ["chat-sessions/checkpoint-latest.md", "Desktop/25-checkpoint-latest.md"],
+      ["chat-sessions/handoff-log.md", "Desktop/24-handoff-log.md"],
+      ["docs/handoff/latest-session-bridge.json", "export-handoff 出力"]
+    ]
+  }
+}

@@ -46,6 +46,12 @@ const TEMPLATES = {
     '[🎖️ 本セッション割当] CIO=Opus4.8 | Composer=doc-lane | DeepSeek=§50-3-8 | Kimi=review',
     '[ルール確認] DOC_LANE_4AI.md cio-18-zero-tolerance.mdc',
   ],
+  'doc-lane-lite': [
+    '[§1-2-3 ティア判定: L1] doc-lane lite · 1 path · +≤20行（H8 2026-07-11）',
+    '【適用憲法】§1-2-3-2 L1 · §50-3-11',
+    '[🎖️ 本セッション割当] CIO=Opus4.8 | Composer=doc-lane | DeepSeek=未使用(lite) | Kimi=未使用',
+    '[ルール確認] 27-constitution-navigation-charter.md · formalization-registry H8',
+  ],
   report: [
     '[§1-2-3 ティア判定: L2] 報告・締め',
     '【適用憲法】§1-2-3 §50-3-8 CEO最低基準',
@@ -98,7 +104,9 @@ function main() {
     process.exit(gate.exitCode || 2);
   }
 
-  const lines = TEMPLATES[args.lane] || TEMPLATES.default;
+  const templateKey =
+    tier === 'lite' && args.lane === 'doc-lane' ? 'doc-lane-lite' : args.lane;
+  const lines = TEMPLATES[templateKey] || TEMPLATES.default;
 
   console.log('=== CIO ターン開始（18 遵守）===\n');
   console.log(`[tier: ${tier}]`);

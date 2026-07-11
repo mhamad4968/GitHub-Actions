@@ -32,6 +32,7 @@ const RULES_INDEX_GENRE_ROWS = [
 
 const DESKTOP_MAP_MARKERS = [
   '【28-CONSTITUTION-GENRE-MAP】',
+  '27-navigation-charter',
   '4AI — 誰が何を読む',
   '19-governance-four-ai-kernel',
   'verify:constitution-genre-kernels',
@@ -62,8 +63,11 @@ function main() {
   if (!readmeText.includes('18-ai-team-read-map')) {
     issues.push('README.md missing 18-ai-team-read-map');
   }
-  if (!readmeText.includes('23-project-closure-recognition-kernel')) {
-    issues.push('README.md missing 23-project-closure-recognition-kernel');
+  if (!readmeText.includes('27-constitution-navigation-charter')) {
+    issues.push('README.md missing 27-constitution-navigation-charter');
+  }
+  if (!readmeText.includes('26-formalization-lifecycle-charter')) {
+    issues.push('README.md missing 26-formalization-lifecycle-charter');
   }
 
   const rulesIndex = fs.readFileSync(path.join(root, 'RULES-INDEX.md'), 'utf8');
@@ -73,6 +77,11 @@ function main() {
   const catalogPath = path.join(root, 'data', 'constitution-genre-catalog.json');
   if (!fs.existsSync(catalogPath)) {
     issues.push('missing data/constitution-genre-catalog.json');
+  } else {
+    const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
+    if (!Array.isArray(catalog.metaCharters) || catalog.metaCharters.length < 3) {
+      issues.push('catalog.metaCharters incomplete');
+    }
   }
   for (const row of RULES_INDEX_GENRE_ROWS) {
     if (!rulesIndex.includes(row)) {

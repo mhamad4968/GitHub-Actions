@@ -1,0 +1,68 @@
+# 憲法ライフサイクル v2 — 完全仕様（2026-07-11 夜 · CEO GO）
+
+> **CEO 指示**: AIチーム全員合意後 → 仕様 → commit → push → 実装 → verify  
+> **地位**: formalization 整理 · 3入口再設計 · ジャンル4層 · 新チャーター 26/27 の正本
+
+## AI チーム最終合議（Round-FINAL → Round-2 解消）
+
+| 役割 | 判定 | 解消 |
+|------|:----:|------|
+| DeepSeek | 条件付きGO | mandatory_reads + registry 参照パッチ → **GO** |
+| Kimi | lite NO-GO | package.json 禁止を外し憲法系パスのみ追加禁止 → **GO** |
+| CIO | GO | E1–E9 needles · verify probe 連鎖 |
+| **合議** | **全員 GO** | 2026-07-11 18:42 JST |
+
+## §1 Formalization Lifecycle（L1–L5）
+
+| # | 原則 |
+|---|------|
+| L1 | registry は **verify が probe する現役ゲートのみ** |
+| L2 | 代替 gate が verify PASS → **registry から削除可** |
+| L3 | 履歴は **本 spec §2 retired 表 + git**（dormant ラベル廃止） |
+| L4 | `reviewDate` 必須項目は期限後 GREEN→削除 / RED→昇格 |
+| L5 | 残す＝`gate` + `verifyProbe` 必須 |
+
+## §2 Retired ラベル（registry から削除済み）
+
+| 旧 ID | 旧リスク | 代替 gate（憲法本体） |
+|-------|----------|----------------------|
+| H4 | verify needle のみ | `verify:team-ops-antihollow` |
+| H6 | pre-implement 表示のみ | `cio-pre-implement-gate --strict` × last-tier |
+| H3 | 5038 stamp 形だけ | H1 に統合 |
+| H0 | ターン契約3行 | turn-start strict + report-verify |
+| C3 | §1 四行手書き | `cio:report-verify-response` |
+| H7 | report-verify 形だけ | `cio-team-ops-metrics` 指標#4 |
+
+## §3 現役 registry（6 件）
+
+H1 · H5 · H8 · H9（review 2026-07-25）· C1 · C2
+
+## §4 新憲法チャーター
+
+| ファイル | 役割 |
+|----------|------|
+| `26-formalization-lifecycle-charter.md` | L1–L5 運用 |
+| `27-constitution-navigation-charter.md` | 4層ナビ · 3入口 |
+
+## §5 entry-points 再設計
+
+- `replaces` 廃止 → `supplements` + `mandatory_reads`
+- WAKE: constitution-first-read-pack 00–06 **免除しない**
+
+## §6 doc-lane lite 禁止パス
+
+v3.2 4本 + **憲法系のみ**（package.json は一般 L1 で従来どおり）
+
+```
+customize/ · .cursor/rules/ · AGENTS.md · deploy:*
+data/cio-* · data/rules-* · scripts/verify-constitution*
+docs/constitution/25-*.md · 26-*.md · 27-*.md
+```
+
+## §7 verify 強化
+
+`verify:constitution-evening`: registry≤8 · no replaces · charters · E1–E9 · antihollow spawn
+
+## §8 実装バッチ
+
+B0 spec+charters · B1 registry · B2 entry+AGENTS+lite · B3 catalog/nav · B4 verify · B5 commit

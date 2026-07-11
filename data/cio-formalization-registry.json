@@ -1,0 +1,43 @@
+{
+  "version": "2026-07-11-lifecycle-v2",
+  "description": "現役ゲートのみ — verify probe 必須。廃止ラベルは lifecycle-v2-spec §2",
+  "items": [
+    {
+      "id": "H1",
+      "label": "§50-3-8 customize/SPEC/deploy/憲法改定",
+      "gate": "cio:guard:5038 + deepseek-pre-edit-gate",
+      "verifyProbe": "verify:team-ops-antihollow"
+    },
+    {
+      "id": "H5",
+      "label": "Grok C 契約ループ",
+      "gate": "cio:grok:execution-guard",
+      "verifyProbe": "verify:team-ops-v2"
+    },
+    {
+      "id": "H8",
+      "label": "ティア L2 + doc-lane lite 例外",
+      "gate": "cio:turn-start --lane doc-lane --tier lite",
+      "verifyProbe": "verify:constitution-evening"
+    },
+    {
+      "id": "H9",
+      "label": "turn-start strict 監査",
+      "gate": "evening #S-OPS-STRICT-AUDIT",
+      "verifyProbe": "verify:team-ops-v2",
+      "reviewDate": "2026-07-25"
+    },
+    {
+      "id": "C1",
+      "label": "discoveryOnly 12 mdc",
+      "gate": "cursor-index 明示 Read",
+      "verifyProbe": "verify:cursor-rules-index"
+    },
+    {
+      "id": "C2",
+      "label": "四重鏡像 sync",
+      "gate": "desktop:sync-and-verify",
+      "verifyProbe": "verify:desktop-ai-emergency-sync"
+    }
+  ]
+}

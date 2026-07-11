@@ -1,6 +1,6 @@
 {
-  "version": "2026-06-10-phase2d",
-  "note": "GENRES 単一正本。extract / desktop-map / §↔genre sync が参照。AGENTS.md 本文は変更しない。",
+  "version": "2026-07-11-lifecycle-v2",
+  "note": "GENRES 単一正本。extract / desktop-map / §↔genre sync が参照。manifest.json は本 catalog へのポインタのみ。",
   "extractedGenres": [
     {
       "file": "00-preamble.md",
@@ -177,7 +177,28 @@
     {
       "file": "24-db-dash-scaffold-kernel.md",
       "title": "DB+Dash 新規台帳",
-      "when": "718/734型 新規"
+      "when": "718/734型 新規",
+      "layer": "L3-kernel"
+    }
+  ],
+  "metaCharters": [
+    {
+      "file": "25-constitution-no-replacement-charter.md",
+      "title": "AGENTS 非置換",
+      "when": "憲法改定議論",
+      "layer": "L3-meta"
+    },
+    {
+      "file": "26-formalization-lifecycle-charter.md",
+      "title": "ゲート寿命 L1–L5",
+      "when": "registry 整理",
+      "layer": "L3-meta"
+    },
+    {
+      "file": "27-constitution-navigation-charter.md",
+      "title": "4層ナビ · 3入口",
+      "when": "迷ったら最初",
+      "layer": "L0-nav"
     }
   ],
   "specialSectionToGenre": {

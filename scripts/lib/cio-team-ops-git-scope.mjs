@@ -3,11 +3,25 @@
  */
 import { spawnSync } from 'node:child_process';
 
+/** v3.2 doc-lane lite コア禁止 */
 export const LITE_FORBIDDEN_PREFIXES = [
   'customize/',
   '.cursor/rules/',
   'AGENTS.md',
 ];
+
+/** 憲法系パス（一般 L1 の package.json 別名追加は対象外） */
+export const LITE_FORBIDDEN_CONSTITUTION_PREFIXES = [
+  'data/cio-',
+  'data/rules-',
+  'scripts/verify-constitution',
+  'docs/constitution/25-',
+  'docs/constitution/26-',
+  'docs/constitution/27-',
+  'docs/plans/2026-07-11-constitution',
+];
+
+export const LITE_FORBIDDEN_EXACT = ['scripts/cio-turn-start.mjs'];
 
 export const LITE_MAX_LINES = 20;
 
@@ -58,6 +72,8 @@ export function sessionTouchesCustomize(root) {
 export function pathForbiddenForLite(relPath) {
   const p = String(relPath || '').replace(/\\/g, '/');
   if (LITE_FORBIDDEN_PREFIXES.some((pre) => p === pre || p.startsWith(pre))) return true;
+  if (LITE_FORBIDDEN_CONSTITUTION_PREFIXES.some((pre) => p.startsWith(pre))) return true;
+  if (LITE_FORBIDDEN_EXACT.includes(p)) return true;
   if (/deploy:/i.test(p)) return true;
   return false;
 }

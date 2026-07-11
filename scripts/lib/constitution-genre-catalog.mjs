@@ -40,10 +40,17 @@ export function getDesktopGenres() {
 
 export function getDesktopManual() {
   const catalog = loadGenreCatalog();
-  return catalog.manualPhase2.map((m) => [
+  const manual = catalog.manualPhase2.map((m) => [
     m.file.replace('.md', ''),
     m.title,
     m.when,
     '全員',
   ]);
+  const meta = (catalog.metaCharters || []).map((m) => [
+    m.file.replace('.md', ''),
+    m.title,
+    m.when,
+    '全員',
+  ]);
+  return [...manual, ...meta];
 }

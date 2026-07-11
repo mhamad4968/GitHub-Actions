@@ -564,6 +564,7 @@
     "smoke:json": "node scripts/smoke-test.mjs --json",
     "smoke:quiet": "node scripts/smoke-test.mjs --quiet",
     "verify:constitution-handoff": "node scripts/verify-constitution-handoff.mjs",
+    "verify:constitution-evening": "node scripts/verify-constitution-evening.mjs",
     "verify:ci-rule-integrity": "node scripts/verify-ci-rule-integrity.mjs",
     "verify:thin-rule-messaging": "node scripts/verify-thin-rule-messaging.mjs",
     "cio:verify-desktop": "node scripts/cio-verify-desktop-gates.mjs",

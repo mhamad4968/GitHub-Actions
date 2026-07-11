@@ -14,7 +14,10 @@
 | `docs/plans/*-spec.md`・`**/SPEC*.md` の意味変更 | **必須** |
 | kintone 本番 PUT / `deploy:*` / レコード大量更新スクリプト | **必須** |
 | README 誤字・コメントのみ・リネームのみ | **スキップ可**（理由 1 行） |
-| 純メタ（handoff・checkpoint・本 Runbook の追記のみ） | **スキップ可** |
+| 純メタ（handoff・checkpoint・本 Runbook の追記のみ） | **スキップ可**（`§50-3-8 スキップ理由:` 1 行） |
+| ORIENT / Read のみ（編集なし） | **スキップ可** |
+| doc-lane **lite**（`cio:turn-start --lane doc-lane --tier lite` 済） | **スキップ可**（turn-start が理由を出力） |
+| **憲法 § 改定**・AGENTS 意味変更 | **必須**（L3 推奨） |
 
 ---
 

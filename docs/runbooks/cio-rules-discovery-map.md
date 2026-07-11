@@ -29,6 +29,8 @@
 
 **discoveryOnly: true** の .mdc は globs 未注入 — **索引から明示 Read**。
 
+**3 入口（lifecycle-v2）**: 正本 `data/cio-rule-entry-points.json` · ナビ `docs/constitution/27-constitution-navigation-charter.md`。現役ゲート `data/cio-formalization-registry.json`（`26-formalization-lifecycle-charter.md`）。
+
 ---
 
 ## 入口 3 — セッション（WAKE / CLOSE）

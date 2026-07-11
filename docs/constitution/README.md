@@ -5,13 +5,16 @@
 
 ---
 
-## AI の読み方（推奨順）
+## AI の読み方（4 層 · 2026-07-11 lifecycle-v2）
 
-1. **階層** — [`00-rule-hierarchy.md`](00-rule-hierarchy.md)（第1憲法 / 第2機械 / 第3 runbook）
-2. **入口（常時）** — `.cursor/rules/cio-constitution.mdc` + **`.cursor/rules/mode-b-canonical.mdc`**（4AI・四行テンプレ）
-3. **状況索引** — `RULES-INDEX.md`
-4. **ジャンル本文** — 下表を **1〜2 本だけ** Read
-5. **正本確認** — `AGENTS.md` 該当 §（§1-2-3-4・§50-3-11 含む）
+**単一ナビ**: [`27-constitution-navigation-charter.md`](27-constitution-navigation-charter.md)
+
+1. **L0 入口** — `cio:turn-start` · `data/cio-rule-entry-points.json`
+2. **L1 索引** — 本表 [`00-rule-hierarchy.md`](00-rule-hierarchy.md) · `RULES-INDEX.md`
+3. **L2 ジャンル** — 下表 **1〜2 本** Read
+4. **L3 カーネル/META** — 19–24 KERNEL · 25–27 チャーター
+
+**WAKE 必読**（3 入口で免除しない）: `constitution-first-read-pack` 00–06 · Part A · 18-重要確認
 
 ```text
 タスク受領
@@ -59,6 +62,9 @@
 | [22-error-handling-kernel.md](22-error-handling-kernel.md) | **エラーハンドリング**（エスカレーション・3択） | verify 失敗・チケット |
 | [23-project-closure-recognition-kernel.md](23-project-closure-recognition-kernel.md) | **完了・認識同期**（浜田↔AI 事故防止） | 締め・ブリーフィング前 |
 | [24-db-dash-scaffold-kernel.md](24-db-dash-scaffold-kernel.md) | **DB+Dash 新規台帳**（10 項チェック） | 718/734 型 新規作成 |
+| [25-constitution-no-replacement-charter.md](25-constitution-no-replacement-charter.md) | **新憲法不要**（CEO 2026-07-11 夜） | 憲法改定議論時 |
+| [26-formalization-lifecycle-charter.md](26-formalization-lifecycle-charter.md) | **ゲート寿命 L1–L5** | registry 整理時 |
+| [27-constitution-navigation-charter.md](27-constitution-navigation-charter.md) | **4層ナビ · 3入口** | **迷ったら最初** |
 
 **機械検証**: `npm run verify:constitution-genre-kernels`
 

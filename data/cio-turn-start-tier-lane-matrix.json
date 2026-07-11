@@ -1,6 +1,6 @@
 {
-  "version": "v3.3",
-  "description": "tier×lane マトリクス — v3.3 A-2 正本",
+  "version": "v3.3.1-evening",
+  "description": "tier×lane マトリクス — v3.3 A-2 + 2026-07-11 H8 doc-lane lite=L1",
   "lanes": {
     "default": {
       "quick": true,

@@ -1,6 +1,8 @@
 {
-  "generatedAt": "2026-06-10T10:53:48.199Z",
+  "generatedAt": "2026-07-11T18:45:00.000Z",
   "source": "AGENTS.md",
+  "catalog": "data/constitution-genre-catalog.json",
+  "note": "manifest は catalog へのポインタ。ジャンル一覧の正本は catalog.json（lifecycle-v2）",
   "extractedFromAgents": [
     "00-preamble.md",
     "01-fundamentals.md",
@@ -28,9 +30,12 @@
     "20-cost-token-defense-kernel.md",
     "21-autonomous-patrol-kernel.md",
     "22-error-handling-kernel.md",
-    "23-project-closure-recognition-kernel.md"
+    "23-project-closure-recognition-kernel.md",
+    "24-db-dash-scaffold-kernel.md",
+    "25-constitution-no-replacement-charter.md",
+    "26-formalization-lifecycle-charter.md",
+    "27-constitution-navigation-charter.md"
   ],
   "desktopMap": "chat-sessions/desktop-ai-emergency-read-pack/28-CONSTITUTION-GENRE-MAP.txt",
-  "catalog": "data/constitution-genre-catalog.json",
   "sectionGenreMap": "data/constitution-section-genre-map.json"
 }
