@@ -91,10 +91,10 @@
     },
     "688": {
       "build": "2026-07-11-688-dirty-banner-fix",
-      "fileKey": "84e60d82-9223-46f5-94d8-0d58cb5663d1",
-      "revision": "85",
-      "relPath": "customize/688/desktop.js",
-      "deployedAt": "2026-07-11T11:17:39.632Z",
+      "fileKey": "4bb8c585-bbf8-4076-8e38-840a2853fdd9",
+      "revision": "86",
+      "relPath": ".kintone-deploy/upload-688.js",
+      "deployedAt": "2026-07-11T11:23:21.149Z",
       "note": null
     },
     "693": {
