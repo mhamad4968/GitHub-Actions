@@ -5,11 +5,13 @@
 
 <!-- 部分GOスコープ（D2）例: **触らない** — 688 の猛暑日以外 / 677–679 / SKYSEA 7月 -->
 
-**最終更新**: 2026-07-11 20:30 JST — **688 WBGT 完了**（rev85）· セッション締め
+**最終更新**: 2026-07-11 20:35 JST — **688 WBGT 完了**（rev85）· セッション締め
 
-**Git**: **`36c65dd5`** = `origin/main` — push 済
+**Git**: **`4317a6f2`** = `origin/main` — push 済
 
 **次の1手**: 日常レーン継続 · `cio:request:compose` 試用 · **≈2026-07-25** 憲法クローズ可否の再確認（観測期間）
+
+**GO待ち**: 夕反省 #R-688-DEPLOY-01 等 — 浜田承認待ち · 憲法正式クローズ — 観測後（≈7/25）
 
 ### 観測期間（2026-07-11 浜田指示 · 正式クローズは今日しない）
 
@@ -24,11 +26,15 @@
 
 **今日やらないこと**: 正式クローズ宣言 · rules-opt §18 ACK
 
+**運用メモ（688・2026-07-11）**: kintone customize 修正後は **同一セッション内** `cio:preflight:688` → `deploy:688` 必須。目視依頼より先にデプロイ。
+
 ## セッション切替後の自律復元（Lifecycle v2 鏡像）
 
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`  
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
-**L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
+**L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`  
+**Desktop LITE**: 浜田メモ帳は **`34-handoff-log-LITE.txt`** / **`35-checkpoint-latest-LITE.txt`** のみ（24/25 .md は AI 同期専用）
+
 ## 2026-07-11 完了（688 WBGT 部分 GO）
 
 | 項目 | BUILD/rev | 検収 |
@@ -51,16 +57,11 @@
 | **736** | §9.6 凍結 · 7/7〜 AI 主導 §41 |
 | **712** | 削除済 — deploy 禁止 |
 
-## セッション切替後の自律復元（Lifecycle v2 鏡像）
-
-**正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`  
-**項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**  
-**日終わり** `cio:session:close-git` / Desktop sync / `SESSION-CLOCK.md`  
-**Desktop LITE**: **`34-handoff-log-LITE.txt`** / **`35-checkpoint-latest-LITE.txt`** のみ（24/25 .md は AI 同期専用）
-
 ## 2026-07-10（BUILD/rev · 浜田目視 OK）
 
 | 項目 | BUILD/rev |
 |------|-----------|
 | **688 稼働日数** | `2026-07-10-688-wbgt-heat-warn` **rev82**（→ 7/11 に reload-fix / dirty-fix で更新） |
 | **736 PH1c** | `2026-07-10-736-ph1c-reorder-hide-singleton` **rev182** |
+| **698** | `2026-07-04-bi-employee-index-emp-filter` **rev19** |
+| **700** | `2026-07-06-bi-apply-footer-reject-clear` **rev166** |
