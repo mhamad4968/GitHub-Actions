@@ -1,5 +1,5 @@
 /**
- * Desktop 24/25 全文ミラーに加え、浜田がメモ帳で開く **LITE 要約**（行数上限）を生成する。
+ * Desktop 24/25 全文ミラーに加え、浜田がメモ帳で開く **LITE 要約**（専用番号 34/35）を生成する。
  * 全文 .md は AI 同期専用（メモ帳非推奨 — Application Hang 再発防止）。
  *
  * @see scripts/sync-session-starter-to-desktop.mjs
@@ -20,6 +20,7 @@ export const MIRROR_LITE_MAX_BYTES = 32 * 1024;
  * @type {Array<{
  *   srcRel: string;
  *   destName: string;
+ *   fullMirrorDestName: string;
  *   slice: MirrorLiteSliceMode;
  *   headerNote: string;
  * }>}
@@ -27,14 +28,16 @@ export const MIRROR_LITE_MAX_BYTES = 32 * 1024;
 export const SESSION_DESKTOP_MIRROR_LITE_SPECS = [
   {
     srcRel: 'chat-sessions/handoff-log.md',
-    destName: '24-handoff-log-LITE.txt',
+    destName: '34-handoff-log-LITE.txt',
+    fullMirrorDestName: '24-handoff-log.md',
     slice: 'tail',
     headerNote:
       '抽出: **末尾100行**（直近引き継ぎブロック）。全文は chat-sessions/handoff-log.md（AI Read）',
   },
   {
     srcRel: 'chat-sessions/checkpoint-latest.md',
-    destName: '25-checkpoint-latest-LITE.txt',
+    destName: '35-checkpoint-latest-LITE.txt',
+    fullMirrorDestName: '25-checkpoint-latest.md',
     slice: 'head',
     headerNote: '抽出: **先頭100行**（最新 checkpoint 表）。全文は chat-sessions/checkpoint-latest.md（AI Read）',
   },
@@ -75,7 +78,7 @@ export function sliceBodyLines(text, slice, limit = MIRROR_LITE_BODY_LINE_LIMIT)
 export function buildMirrorLiteContent(root, spec) {
   const srcPath = path.join(root, spec.srcRel);
   const raw = fs.readFileSync(srcPath, 'utf8');
-  const fullMirror = path.basename(spec.destName).replace(/-LITE\.txt$/i, '.md');
+  const fullMirror = spec.fullMirrorDestName || path.basename(spec.destName).replace(/-LITE\.txt$/i, '.md');
   const body = sliceBodyLines(raw, spec.slice);
   return [...bannerLines(fullMirror, spec.headerNote), ...body].join('\n');
 }

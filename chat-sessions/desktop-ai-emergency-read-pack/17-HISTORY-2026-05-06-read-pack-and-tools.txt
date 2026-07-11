@@ -136,6 +136,12 @@
 - **実装**: `scripts/lib/desktop-ai-emergency-mirror-lite.mjs` — sync で生成、verify で検証。
 - **索引**: `08-INDEX.txt` / `23-AI緊急用-README.txt` / `13-READ-05.txt` を追従。
 
+## 2026-07-11（追記）LITE 専用番号 34/35 — 24/25 重複解消
+
+- **問題**: `24-handoff-log.md` と `24-handoff-log-LITE.txt`（同様 25）で **同一番号が2ファイル**。
+- **対応**: LITE を **`34-handoff-log-LITE.txt`** / **`35-checkpoint-latest-LITE.txt`** に移動。全文ミラーは **24/25 のまま**。
+- **verify**: 番号 **00〜35 連続**（`META_CHARTER_DESKTOP_MAX_PREFIX=35`）。
+
 ## 2026-05-08（追記）682 ユーザサポート日次＋hooks 厳格化＋憲法先読みパック
 
 - **kintone**: アプリ **682**（ユーザサポート件数日次）Space **48** / thread **52**・`record_date`・`am_count`・`pm_count`・`day_total`（CALC）・`am_correspondence` / `pm_correspondence`・`customize/682/desktop.js`（行数→件数）。SPEC: `docs/plans/2026-05-08-user-support-daily-counts-spec.md`。

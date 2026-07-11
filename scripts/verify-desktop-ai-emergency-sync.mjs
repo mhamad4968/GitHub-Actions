@@ -6,7 +6,7 @@
  * **`chat-sessions/desktop-ai-emergency-read-pack/`** の **`.txt` と `NN-*.md`** も Desktop 同名とバイト一致検査。
  * 成功時、**貼付推奨ファイル名**を 1 行で出す（項番 -1 / 案 D）。
  * **`24-handoff-log.md` / `25-checkpoint-latest.md`** … リポ `chat-sessions/` 正本とバイト一致（**AI 同期専用・メモ帳非推奨**）。
- * **`24-handoff-log-LITE.txt` / `25-checkpoint-latest-LITE.txt`** … 浜田用要約（生成内容一致）。
+ * **`34-handoff-log-LITE.txt` / `35-checkpoint-latest-LITE.txt`** … 浜田用要約（生成内容一致）。
  *
  * @see scripts/lib/session-starter-desktop-dir.mjs（同期先パス解決）
  */
@@ -253,12 +253,12 @@ function main() {
   const numbering = verifyDesktopNumberingContinuity(expected);
   if (!numbering.ok) {
     console.warn(
-      `[verify-desktop-ai-emergency-sync] NG: 番号歯抜け 00〜33（欠番: ${numbering.missing.join(', ')}）\n` +
+      `[verify-desktop-ai-emergency-sync] NG: 番号歯抜け 00〜35（欠番: ${numbering.missing.join(', ')}）\n` +
         '  先に: read-pack / sync を整備して session-starter:sync-desktop'
     );
     bad = true;
   } else {
-    console.log('[verify-desktop-ai-emergency-sync] OK 番号 00〜33 連続（26=夕反省、28=ジャンル早見、31–33=METAチャーター26–28）');
+    console.log('[verify-desktop-ai-emergency-sync] OK 番号 00〜35 連続（26=夕反省、28=ジャンル早見、31–33=METAチャーター、34–35=LITE）');
   }
 
   if (bad) {

@@ -204,7 +204,7 @@ SPEC_TOUCHED: yes のターンで SECOND_REVIEWER: deepseek|kimi|openrouter の�
 
 【2026-05-31 追記・夕反省改善案 全 GO（浜田）— 実施済】
 
-  **メモ帳（C1）**: 開くのは **`24-handoff-log-LITE.txt`** / **`25-checkpoint-latest-LITE.txt` のみ**。
+  **メモ帳（C1）**: 開くのは **`34-handoff-log-LITE.txt`** / **`35-checkpoint-latest-LITE.txt` のみ**。
     **`24-handoff-log.md` / `25-checkpoint-latest.md` は AI 同期専用 — メモ帳で開かない**（Application Hang 再発防止）。
 
   **sync 前（C2 / E1）**: `session-starter:sync-desktop` 実行前 — Notepad 終了推奨（RAM **≥80%** は強く推奨）。

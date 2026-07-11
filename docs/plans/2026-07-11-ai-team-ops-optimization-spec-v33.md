@@ -11,7 +11,7 @@
 | 質問 | 答え |
 |------|------|
 | v3.2 は終わった？ | **はい**（A–J+K コア · push 済） |
-| 考えられる改善は全部？ | **いいえ** — 本書 A–D が残り |
+| 考えられる改善は全部？ | **実装はほぼ完了** — **残りは ACK・観測・Tier B**（§6 総括） |
 | 今日やる？ | **白天=本書 Batch 1–4** · **夜=憲法（C-夜）** |
 
 **浜田**: GO-B で Batch 実装指示 · Tier B は MCP（C）のみ · 画面目視は Desktop 30番 §9 更新後。
@@ -248,22 +248,25 @@ A-5 指標 4 + D-1 で **観測 CLOSED**。
 
 ---
 
-## §6 △クリア総括表（v3.3 目標）
+## §6 △クリア総括表（v3.3 · 2026-07-11 夜 突合）
 
-| △ID | v3.2 | v3.3 CLOSED 策 | Batch |
-|-----|------|----------------|-------|
-| △C1 | 未 | validate-contract | 3 |
-| △D2 | 未 | matrix JSON + pre-implement | 1 |
-| △H1 | 部分 | probe 3 本 subprocess | 1 |
-| △G1 | 部分 | evening 連携 + 週1 | 2 |
-| △E1/X6 | 部分 | 5 指標 + RED | 2 |
-| △I1 | 部分 | flagReviewDate | 1 |
-| △A1 | 監視のみ | KPI RED >20% | 2 |
-| 形骸化-2 | 未 | warn-streak → strict | 2 |
-| K3 | 未 | medal WARN | 3 |
-| v3 △2 | 中 | 2 週運用後に低へ | B-1 |
-| rules T1–17 | 未 | GO-B P1–P3 | C-1 |
-| MCP △1–17 | 各種 | SCR + Tier B | C-2 |
+| △ID | v3.2 | v3.3 状態 | CLOSED 策 | Batch |
+|-----|------|-----------|-----------|-------|
+| △C1 | 未 | **CLOSED** | validate-contract | 3 |
+| △D2 | 未 | **CLOSED** | matrix JSON + pre-implement | 1 |
+| △H1 | 部分 | **CLOSED** | probe 3 本 subprocess | 1 |
+| △G1 | 部分 | **CLOSED** | evening 連携 + 週1 | 2 |
+| △E1/X6 | 部分 | **CLOSED** | 5 指標 + RED | 2 |
+| △I1 | 部分 | **CLOSED** | flagReviewDate | 1 |
+| △A1 | 監視のみ | **CLOSED**（観測） | KPI RED >20% | 2 |
+| 形骸化-2 | 未 | **CLOSED** | warn-streak → strict | 2 |
+| K3 | 未 | **CLOSED**（WARN 級） | medal WARN | 3 |
+| v3 △2 | 中 | **監視中** | 2 週運用後に低へ（≈2026-07-25） | B-1 |
+| rules T1–17 | 未 | **CLOSED**（verify OK） | GO-B P1–P3 · **浜田 ACK 待ち** | C-1 |
+| MCP △1–17 | 各種 | **Tier B 待ち** | SCR + Reload Window | C-2 |
+| Desktop 24/25 重複 | — | **CLOSED** | LITE → **34/35** 専用番号 | ops |
+
+**verify 突合（2026-07-11 夜）**: `verify:team-ops-v2` · `verify:cio-grok-execution-infra` · `verify:rules-optimization` · `verify:constitution-evening` · `verify:desktop-ai-emergency-sync` → **exit 0**。`smoke:quiet` のみ **§51-6-2 セッション4h超**で NG（コード欠陥ではない）。
 
 ---
 
@@ -306,4 +309,4 @@ npm run verify:desktop-ai-emergency-sync
 
 ---
 
-**版**: v3.3 · 2026-07-11 JST · 実装完了（Batch 1–4 · rules-opt 既存 verify OK）
+**版**: v3.3 · 2026-07-11 JST · 実装完了（Batch 1–4 · rules-opt verify OK · **正式クローズ=浜田 ACK + 新セッション smoke:quiet**）

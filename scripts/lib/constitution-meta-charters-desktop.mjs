@@ -23,4 +23,4 @@ export const META_CHARTER_DESKTOP_SYNC = [
   },
 ];
 
-export const META_CHARTER_DESKTOP_MAX_PREFIX = 33;
+export const META_CHARTER_DESKTOP_MAX_PREFIX = 35;

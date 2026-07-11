@@ -84,7 +84,7 @@ export function runDesktopSyncPrecheck(destDir, { strict = false } = {}) {
     console.warn(`[desktop-sync-precheck] WARN ${w}`);
   }
   console.warn(
-    '[desktop-sync-precheck] 浜田: メモ帳で開くのは **24-handoff-log-LITE.txt** / **25-checkpoint-latest-LITE.txt** のみ'
+    '[desktop-sync-precheck] 浜田: メモ帳で開くのは **34-handoff-log-LITE.txt** / **35-checkpoint-latest-LITE.txt** のみ'
   );
 
   if (strict) {

@@ -28,7 +28,7 @@
   22-HANDOFF-HUMAN.txt  
   23-AI緊急用-README.txt  
   **24-handoff-log.md**（リポ `chat-sessions/handoff-log.md`）／**25-checkpoint-latest.md**（リポ `chat-sessions/checkpoint-latest.md`）… **常時**バイト同期（**AI 同期専用 — メモ帳非推奨**）  
-  **24-handoff-log-LITE.txt**（末尾100行）／**25-checkpoint-latest-LITE.txt**（先頭100行）… **浜田用要約**（sync 時自動生成）  
+  **34-handoff-log-LITE.txt**（末尾100行）／**35-checkpoint-latest-LITE.txt**（先頭100行）… **浜田用要約**（sync 時自動生成）  
   26 … 夕反省 **`26-evening-reflection-YYYY-MM-DD.md`**（リポにレポートがある日）または **`26-evening-reflection-SLOT.txt`**（未作成日・歯抜け防止）  
   **27-USER683-CLAUDE-RELAY-SESSION.txt**（read-pack）  
   **28-CONSTITUTION-GENRE-MAP.txt**（read-pack・憲法ジャンル早見）  
