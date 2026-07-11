@@ -5,9 +5,9 @@
 
 <!-- 部分GOスコープ（D2）例: **触らない** — 688 の猛暑日以外 / 677–679 / SKYSEA 7月 -->
 
-**最終更新**: 2026-07-11 20:35 JST — **688 WBGT 完了**（rev85）· セッション締め
+**最終更新**: 2026-07-11 20:42 JST — **F0 改善案 全承認・実施** · push 済
 
-**Git**: **`c0255feb`** = `origin/main` — push 済
+**Git**: **`24bcefee`** = `origin/main` — push 済
 
 **次の1手**: 日常レーン継続 · `cio:request:compose` 試用 · **≈2026-07-25** 憲法クローズ可否の再確認（観測期間）
 
@@ -26,7 +26,21 @@
 
 **今日やらないこと**: 正式クローズ宣言 · rules-opt §18 ACK
 
-**運用メモ（688・2026-07-11）**: kintone customize 修正後は **同一セッション内** `cio:preflight:688` → `deploy:688` 必須。目視依頼より先にデプロイ。
+**運用メモ（688・2026-07-11）**: kintone customize 修正後は **同一セッション内** `cio:preflight:688` → `deploy:688` 必須。目視依頼より先にデプロイ。**実装 GO 後のみ**（#R-688-DEPLOY-01）。
+
+**運用メモ（GO 段階 · F0 · #R-GO-BOUNDARY-01）**: **確認A（compose OK）≠ 実装GO**。「調査から」= G0 のみ（コード変更・deploy 禁止）。実装は浜田の明示 GO 後。正本: `28-ceo-go-phases-charter.md` · `36-REQUEST-COMPOSE-INDEX.txt` · `cio:request:compose --phase investigate`。
+
+## 2026-07-11 F0 改善（浜田全承認 · 実施済）
+
+| ID | 内容 |
+|----|------|
+| #R-GO-BOUNDARY-01 | charter / 18-重要確認 / AGENTS — 確認A·G0·G2 分離 |
+| #R-REQUEST-COMPOSE-02 | compose runbook/spec — OK後≠実装 |
+| #D-GO-COMPOSE-MAP-01 | Desktop 36 段階対応表 |
+| #S-COMPOSE-PHASE-01 | `--phase investigate\|implement` |
+| #R-688-DEPLOY-01 | 実装GO後 · 688 deploy 必須 |
+
+記録: `docs/approved-changes/2026-07-11-evening-f0-improvements-hamada-go.md`
 
 ## セッション切替後の自律復元（Lifecycle v2 鏡像）
 
