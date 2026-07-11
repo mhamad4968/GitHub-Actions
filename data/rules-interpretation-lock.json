@@ -1,0 +1,45 @@
+{
+  "version": "2026-07-11",
+  "locks": [
+    {
+      "id": "I1",
+      "summary": "auto-read description の alwaysApply は YAML false のみ（description 文言は想起補助）"
+    },
+    {
+      "id": "I2",
+      "summary": "partial CLOSE の OK は implement GO ではない — checkpoint に分離記載"
+    },
+    {
+      "id": "I3",
+      "summary": "案件 CLOSED ≠ セッション締め — close-git 済みと書くのは full CLOSE 後のみ"
+    },
+    {
+      "id": "I4",
+      "summary": "cio:session:cold-start は session:bootstrap を内包 — 単独 bootstrap は L2 フォールバック"
+    },
+    {
+      "id": "I5",
+      "summary": "alwaysApply true 2 本（cio-constitution + cio-18-zero-tolerance）は CEO 2026-05-30 正式例外"
+    },
+    {
+      "id": "I6",
+      "summary": "開発=AI — Tier B・破壊操作は浜田 GO"
+    },
+    {
+      "id": "I7",
+      "summary": "user commit 依頼 < 憲法 B1/セッション締め — GO-B 明示ターンのみ commit"
+    },
+    {
+      "id": "I8",
+      "summary": "runbook が手順の正 — .mdc は想起・トリガー（runbook に無い手順を .mdc だけに書かない）"
+    },
+    {
+      "id": "I9",
+      "summary": "RULES-INDEX は AGENTS § 軸 — cursor-index は .mdc 発見軸"
+    },
+    {
+      "id": "I10",
+      "summary": "完了宣言 = verify:rules-optimization 全緑 + 浜田 ACK"
+    }
+  ]
+}

@@ -13,6 +13,12 @@ const RULES_DIR = path.join(root, '.cursor', 'rules');
 const RULES_INDEX = path.join(root, 'RULES-INDEX.md');
 const BEGIN = '<!-- RULES-INDEX:CURSOR-RULES-AUTO:BEGIN -->';
 
+/** @param {string | { name: string; discoveryOnly?: boolean }} entry */
+function fileName(entry) {
+  const n = typeof entry === 'string' ? entry : entry.name;
+  return n.endsWith('.mdc') ? n : `${n}.mdc`;
+}
+
 function main() {
   const issues = [];
   const index = JSON.parse(fs.readFileSync(TOPIC_INDEX, 'utf8'));
@@ -22,7 +28,7 @@ function main() {
   const listed = new Set();
   for (const t of index.topics) {
     for (const f of t.files) {
-      const name = f.endsWith('.mdc') ? f : `${f}.mdc`;
+      const name = fileName(f);
       listed.add(name);
       if (!onDiskSet.has(name)) {
         issues.push(`topic-index lists missing file: ${name}`);

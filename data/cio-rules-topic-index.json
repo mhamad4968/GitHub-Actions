@@ -1,5 +1,5 @@
 {
-  "version": "2026-06-06",
+  "version": "2026-07-11-rules-opt-v1",
   "description": "50+ .mdc ルールのトピック別索引 — 発見コスト削減",
   "entryPoint": ".cursor/rules/constitution-brief-card.mdc",
   "topics": [
@@ -12,9 +12,11 @@
         ".cursor/rules/constitution-enforcement-core.mdc",
         ".cursor/rules/mode-b-canonical.mdc",
         ".cursor/rules/autonomous-with-mandatory-asks.mdc",
-        ".cursor/rules/creation-timing-ask.mdc"
+        ".cursor/rules/creation-timing-ask.mdc",
+        ".cursor/rules/persist-policies.mdc",
+        ".cursor/rules/file-copy-exact-path.mdc"
       ],
-      "when": "Tier 判定・浜田 GO・禁句・4AI 役割"
+      "when": "Tier 判定・浜田 GO・禁句・4AI 役割・恒久方針"
     },
     {
       "topic": "セッション・handoff",
@@ -24,9 +26,14 @@
         ".cursor/rules/autonomous-cold-start.mdc",
         ".cursor/rules/session-read-ladder-two-phase.mdc",
         ".cursor/rules/auto-read-by-topic.mdc",
-        ".cursor/rules/cio-handoff-export-validate-gate.mdc"
+        ".cursor/rules/cio-handoff-export-validate-gate.mdc",
+        ".cursor/rules/session-boundary-close-gate.mdc",
+        ".cursor/rules/session-close-execute-first.mdc",
+        ".cursor/rules/cio-session-close-git-gate.mdc",
+        ".cursor/rules/cio-deploy-ledger-gate.mdc",
+        ".cursor/rules/cio-project-closure-gate.mdc"
       ],
-      "when": "新規チャット・checkpoint・bridge・確認ログ",
+      "when": "新規チャット・checkpoint・bridge·CLOSE·確認ログ",
       "runbook": "docs/runbooks/session-lifecycle-v2.md",
       "npm": ["cio:session:cold-start", "verify:checkpoint-handoff-template"]
     },
@@ -37,16 +44,19 @@
         ".cursor/rules/kintone-javascript.mdc",
         ".cursor/rules/kintone-schema-trust.mdc",
         ".cursor/rules/kintone-destructive-rest-guard.mdc",
-        ".cursor/rules/cio-kintone-fields-gate.mdc"
+        ".cursor/rules/cio-kintone-fields-gate.mdc",
+        ".cursor/rules/cio-kintone-live-schema-gate.mdc"
       ],
-      "when": "フィールド・REST・スキーマ・削除ガード"
+      "when": "フィールド・REST・スキーマ・削除ガード・live schema"
     },
     {
       "topic": "kintone customize・deploy",
       "rules": [
         ".cursor/rules/constitutional-focus-kintone-customize.mdc",
         ".cursor/rules/cio-composer-escalation-interlock.mdc",
-        ".cursor/rules/composer-mcp-audit-gate.mdc"
+        ".cursor/rules/composer-mcp-audit-gate.mdc",
+        ".cursor/rules/mode-b-mdc-canonical-linter.mdc",
+        ".cursor/rules/preflight-checklist.mdc"
       ],
       "when": "desktop.js 変更・preflight・4AI 相互ロック"
     },
@@ -56,7 +66,8 @@
         ".cursor/rules/mcp-server-use-triggers.mdc",
         ".cursor/rules/mcp-tool-discipline.mdc",
         ".cursor/rules/mcp-frontend-shadcn-chrome.mdc",
-        ".cursor/rules/ai-agent-tools-constitution.mdc"
+        ".cursor/rules/ai-agent-tools-constitution.mdc",
+        ".cursor/rules/cursor-generate-image-assets.mdc"
       ],
       "when": "MCP 呼出・descriptor 必読・フロント検証",
       "runbook": "docs/runbooks/ai-team-tool-routing-v2.md",
@@ -94,10 +105,24 @@
     {
       "topic": "doc-lane・資料",
       "rules": [
+        ".cursor/rules/doc-lane-gate.mdc",
         ".cursor/rules/evening-reflection-scope.mdc",
         ".cursor/rules/cio-report-min-format.mdc"
       ],
       "when": "DOCX/PPTX・夕反省・レポート形式"
+    },
+    {
+      "topic": "Git履歴・先祖返り",
+      "rules": [".cursor/rules/cio-git-history-alignment-gate.mdc"],
+      "when": "git-history-mcp · 4要素 · 憲法層検索"
+    },
+    {
+      "topic": "Web・公式ドキュメント",
+      "rules": [
+        ".cursor/rules/modern-web-official-docs.mdc",
+        ".cursor/rules/next-session-jbis-followups.mdc"
+      ],
+      "when": "フロント公式 Read · JBIS フォローアップ"
     },
     {
       "topic": "環境・自己修復",
@@ -115,7 +140,8 @@
       "topic": "セキュリティ",
       "rules": [
         ".cursor/rules/snyk-security.mdc",
-        ".cursor/rules/security-news-response.mdc"
+        ".cursor/rules/security-news-response.mdc",
+        ".cursor/rules/security-training-materials.mdc"
       ],
       "when": "CVE・セキュリティニュース対応"
     },
@@ -143,12 +169,18 @@
     ".cursor/skills/kintone-create-app/SKILL.md",
     ".cursor/skills/kintone-doc-lane/SKILL.md",
     ".cursor/skills/kintone-cursor-automation-register/SKILL.md",
-    ".cursor/skills/ai-team-tool-routing/SKILL.md"
+    ".cursor/skills/ai-team-tool-routing/SKILL.md",
+    ".cursor/skills/grok-execution-loop/SKILL.md",
+    ".cursor/skills/office-pptx-doc-lane/SKILL.md",
+    ".cursor/skills/office-docx-doc-lane/SKILL.md"
   ],
   "dataIndexes": [
     "data/cio-project-lanes.json",
     "data/cio-mcp-manifest.json",
     "data/cio-ai-team-tool-routing.json",
-    "data/cursor-environment-upgrade.json"
+    "data/cursor-environment-upgrade.json",
+    "data/cio-session-close-chain.json",
+    "data/rules-interpretation-lock.json",
+    "data/cio-rules-topic-meta.json"
   ]
 }

@@ -21,13 +21,15 @@ alwaysApply: false
 締め | 終わり | お疲れ | 今日はここまで | 反省 | セッション終了 | 日終わり
 ```
 
-**最初の tool call 順**:
+**最初の tool call 順**（**R-SESS-01 / R-SESS-03** — `session-close-execute-first.mdc` · `data/cio-session-close-chain.json` と同一）:
 
 1. `chat-sessions/checkpoint-latest.md` / `handoff-log.md` 更新
 2. `npm run cio:session:export-handoff`
 3. `npm run verify:session-handoff-integrity -- --validate-export`
-4. `npm run cio:session:close-git -- --execute --auto-stage --message "…"`
-5. `npm run verify:session-close-git-warn`
+4. **`npm run session-starter:sync-desktop` → `npm run verify:desktop-ai-emergency-sync`**（**R-SESS-01** — close-git より前）
+5. **`npm run session:clock:clear`**（**R-SESS-03** — 次セッション bootstrap NG 防止）
+6. `npm run cio:session:close-git -- --execute --auto-stage --message "…"`
+7. `npm run verify:session-close-git-warn`
 
 **禁止**: 上記前に「お疲れさまでした」だけ返す。
 

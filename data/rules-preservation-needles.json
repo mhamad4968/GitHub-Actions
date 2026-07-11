@@ -1,0 +1,27 @@
+{
+  "version": "2026-07-11-rules-opt-v1",
+  "description": "P1 変更 .mdc の MUST 句 — 消失防止 needle（部分文字列）",
+  "files": {
+    "session-boundary-close-gate.mdc": [
+      "session-starter:sync-desktop",
+      "verify:desktop-ai-emergency-sync",
+      "session:clock:clear",
+      "R-SESS-01",
+      "R-SESS-03",
+      "partial CLOSE",
+      "案件 CLOSED"
+    ],
+    "persist-policies.mdc": [
+      "完全に人として扱う",
+      "さん」付け不要",
+      "OneDrive は使用禁止",
+      "RULES-INDEX.md",
+      "整合性チェックプロセス"
+    ],
+    "preflight-checklist.mdc": [
+      "cio-discipline-always",
+      "cio:preflight",
+      "45 分以内"
+    ]
+  }
+}

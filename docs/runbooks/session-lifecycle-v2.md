@@ -198,6 +198,8 @@ npm run cio:checkpoint:rollup -- --keep 3
 
 **R-SESS-03（2026-06-25 GO）**: full CLOSE では **`session:clock:clear`** を close-git 直前に実行。**WAKE**（`cio:session:cold-start`）は bootstrap 直前に **clear → set** を内包（締め clear 漏れ・trialPaused 時の二重化）。
 
+**R-SESS-03b（2026-07-11 rules-opt GO）**: full CLOSE では **`npm run verify:session-close-git-warn`** を **close-git 直後**に必須（R21 台帳 + deploy 漏れ三重照合 — `session-close-execute-first.mdc` と同一）。
+
 **R-SESS-04（2026-06-25 GO）**: `session:bootstrap` / `cio:session:cold-start` が **exit ≠ 0** のとき — **L2 完走は1回のみ** → NG ログをチャットに貼付 → **浜田へエスカレ** → **本題・deploy に着手しない**（Lifecycle v2 §3 L2 違反＝報告違反）。
 
 **R-SESS-05（2026-07-04 GO）**: セッション内で **customize deploy** した app がある full CLOSE 前 — `push-deploy-quality-gates-v2.md` **§5 手順 6**（`sync:kintone-apps-build --strict` + verify）を実行し、`kintone-apps.md` 整合を commit に含める。

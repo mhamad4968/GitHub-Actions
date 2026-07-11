@@ -10,6 +10,8 @@
 
 > 更新: **2026-07-02** — §38-1 npm セキュリティ更新自律境界（浜田 GO）を AGENTS / WORKFLOW / backlog に反映
 
+> **ルール最適化（2026-07-11）**: `.mdc` 発見 3 入口 — [`docs/runbooks/cio-rules-discovery-map.md`](docs/runbooks/cio-rules-discovery-map.md) · 15 ジャンル [`data/cursor-rules-topic-index.json`](data/cursor-rules-topic-index.json) · 一括 verify `npm run verify:rules-optimization`。**AGENTS.md フロー図の `preflight-checklist.mdc alwaysApply` 表記は陳腐** — 正本 `.cursor/rules/preflight-checklist.mdc`（`alwaysApply: false` + globs）。
+
 ---
 
 | 階層 | 代表ファイル | いつ |
@@ -27,69 +29,72 @@
 
 ## Cursor ルール逆引き（自動生成・編集禁止）
 
-**更新**: `npm run rules:sync-mdc-index`（2026-06-27 JST）
+**更新**: `npm run rules:sync-mdc-index`（2026-07-11 JST）
 
 | トピック | ファイル | description（frontmatter） |
 |----------|----------|---------------------------|
-| CIO核・方式B・毎ターン | [`cio-constitution.mdc`](.cursor/rules/cio-constitution.mdc) | >- |
-| CIO核・方式B・毎ターン | [`mode-b-canonical.mdc`](.cursor/rules/mode-b-canonical.mdc) | 方式B・固定4AI — 用語・四行テンプレ・役割の単一窓（AI読み込み最適化・2026-05-29） |
-| CIO核・方式B・毎ターン | [`every-turn-rules-confirm.mdc`](.cursor/rules/every-turn-rules-confirm.mdc) | AGENTS.md §1-2-3-1 §35-7 §50-3-11 — 毎ターン先頭4行（正テンプレは mode-b-canonical.mdc）＋§1e |
-| CIO核・方式B・毎ターン | [`constitution-enforcement-core.mdc`](.cursor/rules/constitution-enforcement-core.mdc) | AGENTS.md §35-1 §56-1a（TSB-024）— 違反＝失敗・CIO体制2者ダブルチェックの定義正本（常時想起） |
-| CIO核・方式B・毎ターン | [`constitution-brief-card.mdc`](.cursor/rules/constitution-brief-card.mdc) | AGENTS.md §0 §3 §50 — 憲法薄型カード＋CIO三角＋MCP先出し（網羅版は Read） |
-| CIO核・方式B・毎ターン | [`cio-discipline-always.mdc`](.cursor/rules/cio-discipline-always.mdc) | §35-7 規律先行＋各 customize deploy 前スタンプ（条件付きではなく機械＋常時想起） |
-| CIO核・方式B・毎ターン | [`cio-18-zero-tolerance.mdc`](.cursor/rules/cio-18-zero-tolerance.mdc) | 18-重要確認 遵守ゼロ容認 — 毎ターン turn-start・編集前 strict gate・報告前 verify（2026-05-30 CEO命令） |
-| CIO核・方式B・毎ターン | [`cio-report-min-format.mdc`](.cursor/rules/cio-report-min-format.mdc) | 論点9 — §1 先頭4行のリポ／PR 向け機械検証（B スコープ）とチャット先頭ブロックの正本参照 |
-| CIO核・方式B・毎ターン | [`mode-b-mdc-canonical-linter.mdc`](.cursor/rules/mode-b-mdc-canonical-linter.mdc) | 方式B — .mdc 正本参照 + AI-KERNEL 4要素 Linter（2026-05-29 永久ロック） |
-| CIO核・方式B・毎ターン | [`composer-mcp-audit-gate.mdc`](.cursor/rules/composer-mcp-audit-gate.mdc) | 方式B — Composer 2.5 必須 MCP 監査（eslint-mcp / repo-tree）§50-3-11 第4ステップ |
-| セッション・引き継ぎ | [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) | セッション切替時の引き継ぎ（人間5行テンプレ＋AIが handoff-log へ必ず追記して漏れ防止） |
-| セッション・引き継ぎ | [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) | §35-1 / §56-1a / TSB-024 / §1-2-3-1（TSB-024 ゲート・`globs` 全リポ注入。常時 YAML true は cio-constitution.mdc のみ。網羅条文は AGENTS.md / c |
-| セッション・引き継ぎ | [`session-read-ladder-two-phase.mdc`](.cursor/rules/session-read-ladder-two-phase.mdc) | セッション復元は二段階（事前準備A→本題確認B）＋ラダー正本を Read で取り込む（glob・常時想起は憲法カード等に委譲） |
-| セッション・引き継ぎ | [`cio-operating-loop.mdc`](.cursor/rules/cio-operating-loop.mdc) | CIO 運用の一本線（正シェル・朝ブリーフィング・軽検査・Desktop 同期の判断） |
-| セッション・引き継ぎ | [`auto-read-by-topic.mdc`](.cursor/rules/auto-read-by-topic.mdc) | 確認ログ+マルチAI・CIOレポート毎ターン+§41一問+Read義務+役割分担（alwaysApply） |
-| セッション・引き継ぎ | [`cio-context-dissolution-interlock.mdc`](.cursor/rules/cio-context-dissolution-interlock.mdc) | 3重インターロック型コンテキスト強制解体（15ターン・40k・Diffループ・export-handoff） |
-| セッション・引き継ぎ | [`cio-composer-escalation-interlock.mdc`](.cursor/rules/cio-composer-escalation-interlock.mdc) | 方針1 — Composer verify 連続失敗時の DeepSeek 自律エスカレーション §50-3-11 第6層 |
-| セッション・引き継ぎ | [`cio-env-integrity-gate.mdc`](.cursor/rules/cio-env-integrity-gate.mdc) | 改善案1 — 環境変数・MCP 秘密鍵セルフ監査 §50-3-11 第7層 |
-| セッション・引き継ぎ | [`cio-error-ticket-gate.mdc`](.cursor/rules/cio-error-ticket-gate.mdc) | 改善案3 — 3択提案付き自律エラーチケット §50-3-11 第7層 |
-| セッション・引き継ぎ | [`cio-error-ticket-apply-gate.mdc`](.cursor/rules/cio-error-ticket-apply-gate.mdc) | 第8層 — CEO 3択チケット自動承認・再駆動 §50-3-11 |
-| セッション・引き継ぎ | [`cio-env-self-healing-gate.mdc`](.cursor/rules/cio-env-self-healing-gate.mdc) | 第8層 — Self-Healing Env 暗号化復元 §50-3-11 |
-| セッション・引き継ぎ | [`cio-weekend-rollback-gate.mdc`](.cursor/rules/cio-weekend-rollback-gate.mdc) | 第9層 — 週末自律修正自動ロールバック §50-3-11 |
-| セッション・引き継ぎ | [`cio-spec-logic-gate.mdc`](.cursor/rules/cio-spec-logic-gate.mdc) | 第9層 — SPEC.md 日本語論理矛盾 Linter §50-3-11 |
-| セッション・引き継ぎ | [`cio-debug-tips-stock-gate.mdc`](.cursor/rules/cio-debug-tips-stock-gate.mdc) | 第9層 — 15ターン解体デバッグ知恵自動ストック §50-3-11 |
-| セッション・引き継ぎ | [`cio-handoff-export-validate-gate.mdc`](.cursor/rules/cio-handoff-export-validate-gate.mdc) | 第11層 — 15ターン export 荷造り漏れゲート（--validate-export） |
-| セッション・引き継ぎ | [`cio-project-closure-gate.mdc`](.cursor/rules/cio-project-closure-gate.mdc) | プロジェクト v1 完了・checkpoint/handoff 認識同期 — 浜田↔AI 事故防止（TSB-038 / R19） |
-| セッション・引き継ぎ | [`cio-session-close-git-gate.mdc`](.cursor/rules/cio-session-close-git-gate.mdc) | セッション締め B1/B4 — 先祖返り回避付き commit+push 必須（GO 待ち禁止） |
-| セッション・引き継ぎ | [`session-boundary-close-gate.mdc`](.cursor/rules/session-boundary-close-gate.mdc) | 区切り語 → CLOSE 二段（partial / full）— Session Lifecycle v2 §6 |
-| セッション・引き継ぎ | [`session-close-execute-first.mdc`](.cursor/rules/session-close-execute-first.mdc) | 締め・チェック依頼 — 返答より先に実行（R23/R26 浜田 GO 2026-06-13） |
-| セッション・引き継ぎ | [`cio-deploy-ledger-gate.mdc`](.cursor/rules/cio-deploy-ledger-gate.mdc) | R21 — deploy 台帳整合（registry ↔ repo ↔ kintone-apps）— セッション締め必須 |
-| セッション・引き継ぎ | [`cio-commit-msg-kimi-gate.mdc`](.cursor/rules/cio-commit-msg-kimi-gate.mdc) | 第11層 — Kimi コミット 4要素ブロック（prepare-commit-msg） |
-| セッション・引き継ぎ | [`autonomous-cold-start.mdc`](.cursor/rules/autonomous-cold-start.mdc) | Session Lifecycle v2 — L0 cold-start（正本 runbook へ集約） |
-| セッション・引き継ぎ | [`evening-reflection-scope.mdc`](.cursor/rules/evening-reflection-scope.mdc) | 夕反省（26）のスコープ — 失敗とミス削減のみ。未来の作業は当日に聞く。 |
-| 4AI・DeepSeek・§50-3-8 | [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) | CIO×知恵袋の仕様確認分業（🎖️表の下位・予実など） |
-| 4AI・DeepSeek・§50-3-8 | [`deepseek-pre-edit-gate.mdc`](.cursor/rules/deepseek-pre-edit-gate.mdc) | U4 — customize/SPEC/本番PUT の編集前に DeepSeek 1 問必須（CEO 2026-05-17） |
+| 毎ターン・四行 | [`cio-constitution.mdc`](.cursor/rules/cio-constitution.mdc) | >- |
+| 毎ターン・四行 | [`mode-b-canonical.mdc`](.cursor/rules/mode-b-canonical.mdc) | 方式B・固定4AI — 用語・四行テンプレ・役割の単一窓（AI読み込み最適化・2026-05-29） |
+| 毎ターン・四行 | [`every-turn-rules-confirm.mdc`](.cursor/rules/every-turn-rules-confirm.mdc) | AGENTS.md §1-2-3-1 §35-7 §50-3-11 — 毎ターン先頭4行（正テンプレは mode-b-canonical.mdc）＋§1e |
+| 毎ターン・四行 | [`constitution-enforcement-core.mdc`](.cursor/rules/constitution-enforcement-core.mdc) | AGENTS.md §35-1 §56-1a（TSB-024）— 違反＝失敗・CIO体制2者ダブルチェックの定義正本（常時想起） |
+| 毎ターン・四行 | [`constitution-brief-card.mdc`](.cursor/rules/constitution-brief-card.mdc) | AGENTS.md §0 §3 §50 — 憲法薄型カード＋CIO三角＋MCP先出し（網羅版は Read） |
+| 毎ターン・四行 | [`cio-discipline-always.mdc`](.cursor/rules/cio-discipline-always.mdc) | §35-7 規律先行＋各 customize deploy 前スタンプ（条件付きではなく機械＋常時想起） |
+| 毎ターン・四行 | [`cio-18-zero-tolerance.mdc`](.cursor/rules/cio-18-zero-tolerance.mdc) | 18-重要確認 遵守ゼロ容認 — 毎ターン turn-start・編集前 strict gate・報告前 verify（2026-05-30 CEO命令） |
+| 毎ターン・四行 | [`cio-report-min-format.mdc`](.cursor/rules/cio-report-min-format.mdc) | 論点9 — §1 先頭4行のリポ／PR 向け機械検証（B スコープ）とチャット先頭ブロックの正本参照 |
+| 毎ターン・四行 | [`mode-b-mdc-canonical-linter.mdc`](.cursor/rules/mode-b-mdc-canonical-linter.mdc) | 方式B — .mdc 正本参照 + AI-KERNEL 4要素 Linter（2026-05-29 永久ロック） |
+| セッション WAKE | [`autonomous-cold-start.mdc`](.cursor/rules/autonomous-cold-start.mdc) | Session Lifecycle v2 — L0 cold-start（正本 runbook へ集約） |
+| セッション WAKE | [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) | §35-1 / §56-1a / TSB-024 / §1-2-3-1（TSB-024 ゲート・`globs` 全リポ注入。常時 YAML true は cio-constitution.mdc のみ。網羅条文は AGENTS.md / c |
+| セッション WAKE | [`session-read-ladder-two-phase.mdc`](.cursor/rules/session-read-ladder-two-phase.mdc) | セッション復元は二段階（事前準備A→本題確認B）＋ラダー正本を Read で取り込む（glob・常時想起は憲法カード等に委譲） |
+| セッション WAKE | [`auto-read-by-topic.mdc`](.cursor/rules/auto-read-by-topic.mdc) | 確認ログ+マルチAI・CIOレポート毎ターン+§41一問+Read義務+役割分担（alwaysApply） |
+| セッション CLOSE | [`session-boundary-close-gate.mdc`](.cursor/rules/session-boundary-close-gate.mdc) | 区切り語 → CLOSE 二段（partial / full）— Session Lifecycle v2 §6 |
+| セッション CLOSE | [`session-close-execute-first.mdc`](.cursor/rules/session-close-execute-first.mdc) | 締め・チェック依頼 — 返答より先に実行（R23/R26 浜田 GO 2026-06-13） |
+| セッション CLOSE | [`cio-session-close-git-gate.mdc`](.cursor/rules/cio-session-close-git-gate.mdc) | セッション締め B1/B4 — 先祖返り回避付き commit+push 必須（GO 待ち禁止） |
+| セッション CLOSE | [`cio-deploy-ledger-gate.mdc`](.cursor/rules/cio-deploy-ledger-gate.mdc) | R21 — deploy 台帳整合（registry ↔ repo ↔ kintone-apps）— セッション締め必須 |
+| handoff・bridge | [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) | セッション切替時の引き継ぎ（人間5行テンプレ＋AIが handoff-log へ必ず追記して漏れ防止） |
+| handoff・bridge | [`cio-handoff-export-validate-gate.mdc`](.cursor/rules/cio-handoff-export-validate-gate.mdc) | 第11層 — 15ターン export 荷造り漏れゲート（--validate-export） |
+| handoff・bridge | [`cio-operating-loop.mdc`](.cursor/rules/cio-operating-loop.mdc) | CIO 運用の一本線（正シェル・朝ブリーフィング・軽検査・Desktop 同期の判断） |
+| handoff・bridge | [`cio-context-dissolution-interlock.mdc`](.cursor/rules/cio-context-dissolution-interlock.mdc) | 3重インターロック型コンテキスト強制解体（15ターン・40k・Diffループ・export-handoff） |
+| 案件クローズ | [`cio-project-closure-gate.mdc`](.cursor/rules/cio-project-closure-gate.mdc) | プロジェクト v1 完了・checkpoint/handoff 認識同期 — 浜田↔AI 事故防止（TSB-038 / R19） |
+| Git履歴・先祖返り | [`cio-git-history-alignment-gate.mdc`](.cursor/rules/cio-git-history-alignment-gate.mdc) | 第12層拡張案2 — Git 履歴デグレード防止（verify:git-history-alignment） |
+| kintone 実装 | [`kintone.mdc`](.cursor/rules/kintone.mdc) | kintone 周辺・ニュース収集・LLM 連係の補足（重要度判定・フィールド等） |
+| kintone 実装 | [`kintone-javascript.mdc`](.cursor/rules/kintone-javascript.mdc) | kintone の JS カスタマイズ・API 連係（フィールド・保存先・レート制限・uploader・コマンド） |
+| kintone 実装 | [`kintone-schema-trust.mdc`](.cursor/rules/kintone-schema-trust.mdc) | フィールド正本の優先順位・kintone.events.on 前の確認（迷子防止） |
+| kintone 実装 | [`kintone-destructive-rest-guard.mdc`](.cursor/rules/kintone-destructive-rest-guard.mdc) | kintone REST の DELETE・全件入替・本番アプリ破壊級の前に dry-run＋CEO GO（2026-05-06 浜田承認） |
+| kintone 実装 | [`cio-kintone-fields-gate.mdc`](.cursor/rules/cio-kintone-fields-gate.mdc) | 第11層 — kintone フィールドコード Linter（verify:kintone-fields） |
+| kintone 実装 | [`cio-kintone-live-schema-gate.mdc`](.cursor/rules/cio-kintone-live-schema-gate.mdc) | 第12層拡張案1 — kintone 実機ライブスキーマ Linter（verify:kintone-live-schema） |
+| customize deploy | [`constitutional-focus-kintone-customize.mdc`](.cursor/rules/constitutional-focus-kintone-customize.mdc) | AGENTS.md §35-7 §50-3-8 §52 — customize 編集・本番 deploy 時の追加想起（glob） |
+| customize deploy | [`cio-composer-escalation-interlock.mdc`](.cursor/rules/cio-composer-escalation-interlock.mdc) | 方針1 — Composer verify 連続失敗時の DeepSeek 自律エスカレーション §50-3-11 第6層 |
+| customize deploy | [`composer-mcp-audit-gate.mdc`](.cursor/rules/composer-mcp-audit-gate.mdc) | 方式B — Composer 2.5 必須 MCP 監査（eslint-mcp / repo-tree）§50-3-11 第4ステップ |
+| customize deploy | [`preflight-checklist.mdc`](.cursor/rules/preflight-checklist.mdc) | deploy 前 preflight — 正本 cio-discipline-always + push-deploy-quality-gates-v2 |
 | MCP・ツール | [`mcp-server-use-triggers.mdc`](.cursor/rules/mcp-server-use-triggers.mdc) | MCP §50 — 先出し義務・1行トリガー表（descriptor は mcp-tool-discipline） |
 | MCP・ツール | [`mcp-tool-discipline.mdc`](.cursor/rules/mcp-tool-discipline.mdc) | MCP descriptor 必読・認証順序・curl 優先度 + アイドル時間の有効活用（メンテ枠） |
 | MCP・ツール | [`mcp-frontend-shadcn-chrome.mdc`](.cursor/rules/mcp-frontend-shadcn-chrome.mdc) | Shadcn UI MCP を必ず参照・Chrome DevTools MCP で事実確認・不明時は関連 MCP で先に調査（mcp.json 同期手順付き） |
-| MCP・ツール | [`ai-agent-tools-constitution.mdc`](.cursor/rules/ai-agent-tools-constitution.mdc) | AIエージェント活用憲法（Rules for Tools）— 憲法適合判断の記録・CIO役割内の多AI協議・Exa/Brave/Firecrawl・課題管理・Puppeteer・Mintlify/Harness・禁止事項（2026-05-0 |
+| MCP・ツール | [`ai-agent-tools-constitution.mdc`](.cursor/rules/ai-agent-tools-constitution.mdc) | AIエージェント活用憲法（Rules for Tools）— 多AI協議・DDG/context7·Playwright·docs正本・禁止事項（2026-07-11 rules-opt）6 施行） |
 | MCP・ツール | [`cursor-generate-image-assets.mdc`](.cursor/rules/cursor-generate-image-assets.mdc) | Cursor 内蔵 GenerateImage と assets/images/（画像 MCP 見送り・2026-05-21） |
-| kintone・customize | [`kintone.mdc`](.cursor/rules/kintone.mdc) | kintone 周辺・ニュース収集・LLM 連係の補足（重要度判定・フィールド等） |
-| kintone・customize | [`kintone-javascript.mdc`](.cursor/rules/kintone-javascript.mdc) | kintone の JS カスタマイズ・API 連係（フィールド・保存先・レート制限・uploader・コマンド） |
-| kintone・customize | [`kintone-schema-trust.mdc`](.cursor/rules/kintone-schema-trust.mdc) | フィールド正本の優先順位・kintone.events.on 前の確認（迷子防止） |
-| kintone・customize | [`kintone-destructive-rest-guard.mdc`](.cursor/rules/kintone-destructive-rest-guard.mdc) | kintone REST の DELETE・全件入替・本番アプリ破壊級の前に dry-run＋CEO GO（2026-05-06 浜田承認） |
-| kintone・customize | [`constitutional-focus-kintone-customize.mdc`](.cursor/rules/constitutional-focus-kintone-customize.mdc) | AGENTS.md §35-7 §50-3-8 §52 — customize 編集・本番 deploy 時の追加想起（glob） |
-| kintone・customize | [`creation-timing-ask.mdc`](.cursor/rules/creation-timing-ask.mdc) | アプリ新規作成前に「今すぐ／後日」と配置先スペースを浜田へ確認。未決なら作成に着手しない（浜田指示 2026-04-28） |
-| kintone・customize | [`cio-kintone-fields-gate.mdc`](.cursor/rules/cio-kintone-fields-gate.mdc) | 第11層 — kintone フィールドコード Linter（verify:kintone-fields） |
-| kintone・customize | [`cio-kintone-live-schema-gate.mdc`](.cursor/rules/cio-kintone-live-schema-gate.mdc) | 第12層拡張案1 — kintone 実機ライブスキーマ Linter（verify:kintone-live-schema） |
-| Git履歴・先祖返り防止 | [`cio-git-history-alignment-gate.mdc`](.cursor/rules/cio-git-history-alignment-gate.mdc) | 第12層拡張案2 — Git 履歴デグレード防止（verify:git-history-alignment） |
-| ドメイン特化（glob） | [`constitutional-focus-yojitsu.mdc`](.cursor/rules/constitutional-focus-yojitsu.mdc) | AGENTS.md §50-3-8 §41 §2 — 部署予実（yojitsu）テンプレ・SPEC 変更時の追加想起（glob） |
-| ドメイン特化（glob） | [`constitutional-focus-github-workflows.mdc`](.cursor/rules/constitutional-focus-github-workflows.mdc) | AGENTS.md §18 §52-8 §35-1 — GitHub Actions / workflow 変更時の追加想起（glob） |
-| ドメイン特化（glob） | [`doc-lane-gate.mdc`](.cursor/rules/doc-lane-gate.mdc) | R-DOC-01〜09 — doc-lane 自律資料作成（PPTX/DOCX）— kintone deploy 混在禁止 |
-| ドメイン特化（glob） | [`security-news-response.mdc`](.cursor/rules/security-news-response.mdc) | セキュリティニュースの説明・要約・整理を依頼されたときの出力形式と CVE 時の調査 |
-| ドメイン特化（glob） | [`modern-web-official-docs.mdc`](.cursor/rules/modern-web-official-docs.mdc) | Next.js・React・Tailwind・TypeScript・Supabase・Prisma・Firebase・OpenAI・LangChain・Lucide・Notion API のコード生成・設計時に、公式ドキュメント索引へ誘導す |
-| ドメイン特化（glob） | [`next-session-jbis-followups.mdc`](.cursor/rules/next-session-jbis-followups.mdc) | 595・経理FAQまわりの次回フォロー（ユーザー依頼で次回に生かす提案） |
-| その他・運用補助 | [`file-copy-exact-path.mdc`](.cursor/rules/file-copy-exact-path.mdc) | ユーザーが指定したフォルダへファイルをコピーするときはその直下に置く |
-| その他・運用補助 | [`autonomous-with-mandatory-asks.mdc`](.cursor/rules/autonomous-with-mandatory-asks.mdc) | 開発は自律実行するが、確認が必要なら着手前に浜田へ聞く（浜田指示） |
-| その他・運用補助 | [`snyk-security.mdc`](.cursor/rules/snyk-security.mdc) | Snyk で生成・変更コードをスキャンする（Secure at Inception 相当） |
-| その他・運用補助 | [`constitution.mdc`](.cursor/rules/constitution.mdc) | 網羅統合版 — 憲法・索引・WORKFLOW・全mdc・予実・plans・chat・handoff・docs全（plans除く重複）・security-next・yojitsu README等（再生成=本スクリプト）。Cursor 常時枠の |
+| 4AI・DeepSeek | [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) | CIO×知恵袋の仕様確認分業（🎖️表の下位・予実など） |
+| 4AI・DeepSeek | [`deepseek-pre-edit-gate.mdc`](.cursor/rules/deepseek-pre-edit-gate.mdc) | U4 — customize/SPEC/本番PUT の編集前に DeepSeek 1 問必須（CEO 2026-05-17） |
+| 4AI・DeepSeek | [`cio-spec-logic-gate.mdc`](.cursor/rules/cio-spec-logic-gate.mdc) | 第9層 — SPEC.md 日本語論理矛盾 Linter §50-3-11 |
+| doc-lane | [`doc-lane-gate.mdc`](.cursor/rules/doc-lane-gate.mdc) | R-DOC-01〜11 — doc-lane 自律資料作成（PPTX/DOCX/経営会議）— kintone deploy 混在禁止 |
+| doc-lane | [`evening-reflection-scope.mdc`](.cursor/rules/evening-reflection-scope.mdc) | 夕反省（26）のスコープ — 失敗とミス削減のみ。未来の作業は当日に聞く。 |
+| 環境・障害 | [`cio-env-integrity-gate.mdc`](.cursor/rules/cio-env-integrity-gate.mdc) | 改善案1 — 環境変数・MCP 秘密鍵セルフ監査 §50-3-11 第7層 |
+| 環境・障害 | [`cio-env-self-healing-gate.mdc`](.cursor/rules/cio-env-self-healing-gate.mdc) | 第8層 — Self-Healing Env 暗号化復元 §50-3-11 |
+| 環境・障害 | [`cio-weekend-rollback-gate.mdc`](.cursor/rules/cio-weekend-rollback-gate.mdc) | 第9層 — 週末自律修正自動ロールバック §50-3-11 |
+| 環境・障害 | [`cio-error-ticket-gate.mdc`](.cursor/rules/cio-error-ticket-gate.mdc) | 改善案3 — 3択提案付き自律エラーチケット §50-3-11 第7層 |
+| 環境・障害 | [`cio-error-ticket-apply-gate.mdc`](.cursor/rules/cio-error-ticket-apply-gate.mdc) | 第8層 — CEO 3択チケット自動承認・再駆動 §50-3-11 |
+| 環境・障害 | [`cio-debug-tips-stock-gate.mdc`](.cursor/rules/cio-debug-tips-stock-gate.mdc) | 第9層 — 15ターン解体デバッグ知恵自動ストック §50-3-11 |
+| セキュリティ | [`snyk-security.mdc`](.cursor/rules/snyk-security.mdc) | Snyk で生成・変更コードをスキャンする（Secure at Inception 相当） |
+| セキュリティ | [`security-news-response.mdc`](.cursor/rules/security-news-response.mdc) | セキュリティニュースの説明・要約・整理を依頼されたときの出力形式と CVE 時の調査 |
+| セキュリティ | [`security-training-materials.mdc`](.cursor/rules/security-training-materials.mdc) | 情報セキュリティ勉強会資料 — Word正本・12p PPT・連絡先禁止（R-SEC-01 / R-DOC-01） |
+| CI・GitHub | [`constitutional-focus-github-workflows.mdc`](.cursor/rules/constitutional-focus-github-workflows.mdc) | AGENTS.md §18 §52-8 §35-1 — GitHub Actions / workflow 変更時の追加想起（glob） |
+| CI・GitHub | [`cio-commit-msg-kimi-gate.mdc`](.cursor/rules/cio-commit-msg-kimi-gate.mdc) | 第11層 — Kimi コミット 4要素ブロック（prepare-commit-msg） |
+| ドメイン特化・その他 | [`constitutional-focus-yojitsu.mdc`](.cursor/rules/constitutional-focus-yojitsu.mdc) | AGENTS.md §50-3-8 §41 §2 — 部署予実（yojitsu）テンプレ・SPEC 変更時の追加想起（glob） |
+| ドメイン特化・その他 | [`modern-web-official-docs.mdc`](.cursor/rules/modern-web-official-docs.mdc) | Next.js・React・Tailwind・TypeScript・Supabase・Prisma・Firebase・OpenAI・LangChain・Lucide・Notion API のコード生成・設計時に、公式ドキュメント索引へ誘導す |
+| ドメイン特化・その他 | [`next-session-jbis-followups.mdc`](.cursor/rules/next-session-jbis-followups.mdc) | 595・経理FAQまわりの次回フォロー（ユーザー依頼で次回に生かす提案） |
+| ドメイン特化・その他 | [`file-copy-exact-path.mdc`](.cursor/rules/file-copy-exact-path.mdc) | ユーザーが指定したフォルダへファイルをコピーするときはその直下に置く |
+| ドメイン特化・その他 | [`autonomous-with-mandatory-asks.mdc`](.cursor/rules/autonomous-with-mandatory-asks.mdc) | 開発は自律実行するが、確認が必要なら着手前に浜田へ聞く（浜田指示） |
+| ドメイン特化・その他 | [`creation-timing-ask.mdc`](.cursor/rules/creation-timing-ask.mdc) | アプリ新規作成前に「今すぐ／後日」と配置先スペースを浜田へ確認。未決なら作成に着手しない（浜田指示 2026-04-28） |
+| ドメイン特化・その他 | [`persist-policies.mdc`](.cursor/rules/persist-policies.mdc) | 恒久方針の永続化 — 正本は .rag/extra-docs/persist-policies.md |
+| ドメイン特化・その他 | [`constitution.mdc`](.cursor/rules/constitution.mdc) | 網羅統合版 — 憲法・索引・WORKFLOW・全mdc・予実・plans・chat・handoff・docs全（plans除く重複）・security-next・yojitsu README等（再生成=本スクリプト）。Cursor 常時枠の |
 
 索引: [`.cursor/rules/README.md`](.cursor/rules/README.md) / [`data/cursor-rules-topic-index.json`](data/cursor-rules-topic-index.json)
 
@@ -99,7 +104,7 @@
 
 ## § ↔ .mdc 双方向索引（自動生成・編集禁止）
 
-**更新**: `npm run rules:sync-section-mdc`（2026-07-09 JST）
+**更新**: `npm run rules:sync-section-mdc`（2026-07-11 JST）
 **正本**: `AGENTS.md` § 解釈 / 機械: `data/rules-index-section-mdc-map.json`
 
 ### § → .mdc（抜粋）
@@ -204,8 +209,8 @@
 | [`constitutional-focus-yojitsu.mdc`](.cursor/rules/constitutional-focus-yojitsu.mdc) | §2 · §41 · §50-3-8 |
 | [`creation-timing-ask.mdc`](.cursor/rules/creation-timing-ask.mdc) | §(RULES-INDEX行) · §41 |
 | [`cursor-generate-image-assets.mdc`](.cursor/rules/cursor-generate-image-assets.mdc) | §(RULES-INDEX行) · §0 · §1-2-2 · §1-2-3-4-A · §1-2-3-4-C · §1-2-4 · §41 · §50-3-11 |
-| [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) | §0 · §1-2-2 · §1-2-3-4-A · §1-2-4 · §50-3 · §50-3-10 · §50-3-11 · §50-3-2 · §50-3-8 · §50-3-9 |
-| [`deepseek-pre-edit-gate.mdc`](.cursor/rules/deepseek-pre-edit-gate.mdc) | §50-3-8 |
+| [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) | §(RULES-INDEX行) · §0 · §1-2-2 · §1-2-3-4-A · §1-2-4 · §50-3 · §50-3-10 · §50-3-11 · §50-3-2 · §50-3-8 · §50-3-9 |
+| [`deepseek-pre-edit-gate.mdc`](.cursor/rules/deepseek-pre-edit-gate.mdc) | §(RULES-INDEX行) · §50-3-8 |
 | [`doc-lane-gate.mdc`](.cursor/rules/doc-lane-gate.mdc) | §(RULES-INDEX行) |
 | [`evening-reflection-scope.mdc`](.cursor/rules/evening-reflection-scope.mdc) | §(RULES-INDEX行) |
 
@@ -216,7 +221,7 @@
 
 ## § ↔ ジャンル読本 双方向索引（自動生成・編集禁止）
 
-**更新**: `npm run rules:sync-section-genre`（2026-07-09 JST）
+**更新**: `npm run rules:sync-section-genre`（2026-07-11 JST）
 **正本**: `AGENTS.md` § 解釈 / 機械: `data/constitution-section-genre-map.json`
 **カタログ**: `data/constitution-genre-catalog.json`
 

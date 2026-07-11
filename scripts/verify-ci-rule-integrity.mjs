@@ -34,6 +34,9 @@ if (!fs.existsSync(rulesDir)) fail(`missing ${rulesDir}`);
 const mdcFiles = fs.readdirSync(rulesDir).filter((f) => f.endsWith('.mdc'));
 const alwaysTrue = [];
 
+// 2026-07-11 rules-opt: CEO 2026-05-30 恒久対策 — cio-18 も alwaysApply true 正式例外（verify-ci whitelist）
+const ALLOWED_ALWAYS_APPLY = new Set(['cio-constitution.mdc', 'cio-18-zero-tolerance.mdc']);
+
 for (const f of mdcFiles) {
   const rel = path.join('.cursor/rules', f);
   const fm = firstYamlFrontmatter(rel);
@@ -69,6 +72,13 @@ if (!/alwaysApply:\s*false/.test(conFm)) {
   fail('constitution.mdc: 第1 frontmatter に alwaysApply: false がありません');
 }
 
-console.log(`[verify-ci-rule-integrity] ✅ OK（alwaysApply:true ${alwaysTrue.length} 件 / 上限 ${MAX_ALWAYS}）`);
+const unexpectedAlways = alwaysTrue.filter((f) => !ALLOWED_ALWAYS_APPLY.has(f));
+if (unexpectedAlways.length) {
+  fail(
+    `alwaysApply:true が許可外: ${unexpectedAlways.join(', ')} — 許可は ${[...ALLOWED_ALWAYS_APPLY].join(', ')} のみ`,
+  );
+}
+
+console.log(`[verify-ci-rule-integrity] ✅ OK（alwaysApply:true ${alwaysTrue.length} 件 / 許可 ${ALLOWED_ALWAYS_APPLY.size}）`);
 console.log(`  alwaysApply:true: ${alwaysTrue.sort().join(', ')}`);
 process.exit(0);

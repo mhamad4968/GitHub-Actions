@@ -1,0 +1,17 @@
+{
+  "version": "2026-07-11",
+  "topics": {
+    "セッション・handoff": {
+      "npm": ["cio:session:cold-start", "verify:checkpoint-handoff-template"],
+      "runbook": "docs/runbooks/session-lifecycle-v2.md"
+    },
+    "MCP 選択・ツール": {
+      "npm": ["cio:tool:route", "verify:cio-tool-routing-infra"],
+      "runbook": "docs/runbooks/ai-team-tool-routing-v2.md"
+    },
+    "Grok L2b・verify ループ": {
+      "npm": ["cio:grok:execution-guard", "verify:cio-grok-execution-infra", "cio:tool:route"],
+      "runbook": "docs/runbooks/cio-grok-execution-loop.md"
+    }
+  }
+}

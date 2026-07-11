@@ -15,6 +15,12 @@ const RULES_DIR = path.join(root, '.cursor', 'rules');
 const BEGIN = '<!-- RULES-INDEX:CURSOR-RULES-AUTO:BEGIN -->';
 const END = '<!-- RULES-INDEX:CURSOR-RULES-AUTO:END -->';
 
+/** @param {string | { name: string; discoveryOnly?: boolean }} entry */
+function fileName(entry) {
+  const n = typeof entry === 'string' ? entry : entry.name;
+  return n.endsWith('.mdc') ? n : `${n}.mdc`;
+}
+
 function parseDescription(content) {
   const m = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!m) return '(no frontmatter)';
@@ -45,7 +51,7 @@ function buildAutoBlock() {
   const indexed = new Set();
   for (const topic of index.topics) {
     for (const file of topic.files) {
-      const name = file.endsWith('.mdc') ? file : `${file}.mdc`;
+      const name = fileName(file);
       if (!onDisk.has(name)) continue;
       indexed.add(name);
       const content = fs.readFileSync(path.join(RULES_DIR, name), 'utf8');

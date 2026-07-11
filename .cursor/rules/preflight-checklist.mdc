@@ -1,0 +1,20 @@
+---
+description: deploy 前 preflight — 正本 cio-discipline-always + push-deploy-quality-gates-v2
+alwaysApply: false
+globs:
+  - customize/**
+  - package.json
+---
+
+# deploy 前 preflight — ルータ（2026-07-11 復元）
+
+> **正本**: `.cursor/rules/cio-discipline-always.mdc`  
+> **runbook**: `docs/runbooks/push-deploy-quality-gates-v2.md`
+
+## 機械ゲート（想起）
+
+- **`npm run cio:preflight:<app> -- --note "…"`** — **45 分以内**スタンプ必須（`logs/cio-preflight/<appId>.json`）  
+- **`deploy:*`** は preflight 後のみ — 緊急 **`SKIP_CIO_DEPLOY_GUARD=1`** は浜田 GO + 理由 1 行  
+- **品質 B v2**: `cio:pre-commit-check` / `cio:pre-push-check` / `cio:deploy-gate -- <appId>`
+
+詳細手順は **正本 .mdc + runbook** を Read（本ファイルは索引のみ）。

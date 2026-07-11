@@ -1,5 +1,5 @@
 ---
-description: AIエージェント活用憲法（Rules for Tools）— 憲法適合判断の記録・CIO役割内の多AI協議・Exa/Brave/Firecrawl・課題管理・Puppeteer・Mintlify/Harness・禁止事項（2026-05-06 施行）
+description: AIエージェント活用憲法（Rules for Tools）— 多AI協議・DDG/context7·Playwright·docs正本・禁止事項（2026-07-11 rules-opt）6 施行）
 alwaysApply: false
 globs: "**/*"
 ---
@@ -23,24 +23,24 @@ globs: "**/*"
 - 協議のあとチャットに **短く残す**（**相手（どの経路か）**・**質問の要旨**・**返答の要旨**・**第1者が採用した結論と理由**）。**根拠のない相互称賛だけ**は避け、**反例・リスク・未検証点**を書く（**CIO の「検証の 2 者」精神に資する記録**とする）。
 - **秘密情報の持ち出し**は禁止。相手先が **CIO 体制外の無契約サービス**になる場合は、**公開情報・擬似コード・ログのマスク**に限る。
 
-## 1. 情報収集と調査（Exa / Brave Search / Firecrawl）
+## 1. 情報収集と調査（公式ドキュメント · DDG · context7）
 
-- **実装・設計に着手する前**に、**最新ベストプラクティス**または**対象ライブラリの現行仕様**を **Exa または Brave Search のいずれかで確認する**（両方必須ではない。**重複調査は避け、採用した根拠 URL または引用範囲をチャットに短く残す**）。
-- **公式ドキュのページ全文・構造**が必要なときは **Firecrawl** を使い、**最新 API 仕様に従って**コード・設定を書く（単一 URL の軽取得は `user-fetch` も可・`mcp-server-use-triggers.mdc` と整合）。
+- **実装・設計に着手する前**に、**最新ベストプラクティス**または**対象ライブラリの現行仕様**を確認する。優先: **`user-context7` MCP（context7）** または **`user-duckduckgo-search` MCP**（`docs/mcp-status.md` · `cio:tool:route` 正本）。**採用した根拠 URL または引用範囲をチャットに短く残す**。
+- **公式ドキュのページ全文**が必要なときは **Firecrawl / markdownify / WebFetch** を使い、最新 API 仕様に従って書く（`mcp-server-use-triggers.mdc` と整合）。
 
 ## 2. タスク管理と報告（Linear）
 
 - **Linear が利用可能なとき**（MCP または組織で許可された Web/API）: 着手前に **関連 Issue を確認**し、背景を把握してから作業する。完了時は **チケット更新またはコメント**で、**何を・なぜ・どう検証したか**を簡潔に残す。
 - **Linear が未接続のとき**: 同等の **背景・受入条件・完了**を **GitHub Issue** またはリポ内 **`docs/` の該当メモ**に 1 箇所に残し、チャットに **その参照 1 行**を書く（無断スキップ禁止）。
 
-## 3. ブラウザ自動操作と検証（Puppeteer）
+## 3. ブラウザ自動操作と検証（Playwright 優先）
 
-- **Web UI の実装検証**、**ログイン後画面**、**DOM の存在確認**が主題のときは **`@modelcontextprotocol/server-puppeteer`（Puppeteer MCP）** を用い、**自律的に**期待動作または要素の有無を確認する。
-- **Playwright MCP** と用途が重なる場合は **`mcp-tool-discipline.mdc`** に従い **descriptor を読んだうえで**どちらを使うか決め、**チャットに 1 行の理由**を残す。
+- **Web UI の実装検証**、**ログイン後画面**、**DOM の存在確認**が主題のときは **`user-playwright` MCP** を優先し、自律的に期待動作または要素の有無を確認する。
+- **Chrome DevTools MCP** は性能・Lighthouse 等で補助。**descriptor 必読**は **`mcp-tool-discipline.mdc`** — チャットに **1 行の理由**を残す。
 
-## 4. ドキュメントとリリース（Mintlify / Harness）
+## 4. ドキュメントとリリース（リポ docs · 2026-07-11 Mintlify DEL）
 
-- **コード変更に伴う利用者向け説明**は、連携している **Mintlify** の形式（MDX / `docs.json` / ナビ）に沿って更新する。MCP 利用可能なら **Mintlify MCP** のフロー（checkout → 編集 → save/PR）を優先し、**チャットだけで完結と称しない**。
+- **コード変更に伴う利用者向け説明**は、**リポ内 `docs/`** および **`RULES-INDEX.md`** を正本とする。**Mintlify MCP は 2026-07-11 DEL-1 削除済** — 外部 Mintlify フローは使わない。
 - **Harness（または CI/CD パイプライン）に影響する変更**では、**設定が現行の社内基準**（テンプレート・秘密の扱い・承認ゲート）を満たすかを確認する。不明点は **憲法上の Tier / GO** に従う。
 
 ## 5. 禁止事項とセキュリティ

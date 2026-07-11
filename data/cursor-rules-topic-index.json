@@ -1,10 +1,10 @@
 {
-  "version": "2026-06-10-phase2d-hygiene",
-  "note": "Cursor は .cursor/rules/*.mdc 直下のみ読む。サブフォルダ移動はしない。",
+  "version": "2026-07-11-rules-opt-v1",
+  "note": "Cursor は .cursor/rules/*.mdc 直下のみ読む。サブフォルダ移動はしない。discoveryOnly=true は globs なし・索引発見用。",
   "topics": [
     {
-      "id": "cio-core",
-      "label": "CIO核・方式B・毎ターン",
+      "id": "g01-every-turn",
+      "label": "毎ターン・四行",
       "files": [
         "cio-constitution.mdc",
         "mode-b-canonical.mdc",
@@ -14,98 +14,134 @@
         "cio-discipline-always.mdc",
         "cio-18-zero-tolerance.mdc",
         "cio-report-min-format.mdc",
-        "mode-b-mdc-canonical-linter.mdc",
-        "composer-mcp-audit-gate.mdc"
+        "mode-b-mdc-canonical-linter.mdc"
       ]
     },
     {
-      "id": "session-handoff",
-      "label": "セッション・引き継ぎ",
+      "id": "g02-session-wake",
+      "label": "セッション WAKE",
       "files": [
-        "session-handoff.mdc",
+        "autonomous-cold-start.mdc",
         "constitution-handoff-gate.mdc",
         "session-read-ladder-two-phase.mdc",
-        "cio-operating-loop.mdc",
-        "auto-read-by-topic.mdc",
-        "cio-context-dissolution-interlock.mdc",
-        "cio-composer-escalation-interlock.mdc",
-        "cio-env-integrity-gate.mdc",
-        "cio-error-ticket-gate.mdc",
-        "cio-error-ticket-apply-gate.mdc",
-        "cio-env-self-healing-gate.mdc",
-        "cio-weekend-rollback-gate.mdc",
-        "cio-spec-logic-gate.mdc",
-        "cio-debug-tips-stock-gate.mdc",
-        "cio-handoff-export-validate-gate.mdc",
-        "cio-project-closure-gate.mdc",
-        "cio-session-close-git-gate.mdc",
+        "auto-read-by-topic.mdc"
+      ]
+    },
+    {
+      "id": "g03-session-close",
+      "label": "セッション CLOSE",
+      "files": [
         "session-boundary-close-gate.mdc",
         "session-close-execute-first.mdc",
-        "cio-deploy-ledger-gate.mdc",
-        "cio-commit-msg-kimi-gate.mdc",
-        "autonomous-cold-start.mdc",
-        "evening-reflection-scope.mdc"
+        "cio-session-close-git-gate.mdc",
+        "cio-deploy-ledger-gate.mdc"
       ]
     },
     {
-      "id": "four-ai-deepseek",
-      "label": "4AI・DeepSeek・§50-3-8",
+      "id": "g04-handoff-bridge",
+      "label": "handoff・bridge",
       "files": [
-        "deepseek-cursor-spec-division.mdc",
-        "deepseek-pre-edit-gate.mdc"
+        { "name": "session-handoff.mdc", "discoveryOnly": true },
+        "cio-handoff-export-validate-gate.mdc",
+        "cio-operating-loop.mdc",
+        "cio-context-dissolution-interlock.mdc"
       ]
     },
     {
-      "id": "mcp",
+      "id": "g05-project-close",
+      "label": "案件クローズ",
+      "files": ["cio-project-closure-gate.mdc"]
+    },
+    {
+      "id": "g06-git-history",
+      "label": "Git履歴・先祖返り",
+      "files": ["cio-git-history-alignment-gate.mdc"]
+    },
+    {
+      "id": "g07-kintone",
+      "label": "kintone 実装",
+      "files": [
+        { "name": "kintone.mdc", "discoveryOnly": true },
+        { "name": "kintone-javascript.mdc", "discoveryOnly": true },
+        "kintone-schema-trust.mdc",
+        "kintone-destructive-rest-guard.mdc",
+        "cio-kintone-fields-gate.mdc",
+        "cio-kintone-live-schema-gate.mdc"
+      ]
+    },
+    {
+      "id": "g08-customize-deploy",
+      "label": "customize deploy",
+      "files": [
+        "constitutional-focus-kintone-customize.mdc",
+        "cio-composer-escalation-interlock.mdc",
+        "composer-mcp-audit-gate.mdc",
+        "preflight-checklist.mdc"
+      ]
+    },
+    {
+      "id": "g09-mcp",
       "label": "MCP・ツール",
       "files": [
         "mcp-server-use-triggers.mdc",
-        "mcp-tool-discipline.mdc",
+        { "name": "mcp-tool-discipline.mdc", "discoveryOnly": true },
         "mcp-frontend-shadcn-chrome.mdc",
         "ai-agent-tools-constitution.mdc",
         "cursor-generate-image-assets.mdc"
       ]
     },
     {
-      "id": "kintone",
-      "label": "kintone・customize",
+      "id": "g10-four-ai",
+      "label": "4AI・DeepSeek",
       "files": [
-        "kintone.mdc",
-        "kintone-javascript.mdc",
-        "kintone-schema-trust.mdc",
-        "kintone-destructive-rest-guard.mdc",
-        "constitutional-focus-kintone-customize.mdc",
-        "creation-timing-ask.mdc",
-        "cio-kintone-fields-gate.mdc",
-        "cio-kintone-live-schema-gate.mdc"
+        "deepseek-cursor-spec-division.mdc",
+        "deepseek-pre-edit-gate.mdc",
+        "cio-spec-logic-gate.mdc"
       ]
     },
     {
-      "id": "governance-history",
-      "label": "Git履歴・先祖返り防止",
-      "files": ["cio-git-history-alignment-gate.mdc"]
+      "id": "g11-doc-lane",
+      "label": "doc-lane",
+      "files": ["doc-lane-gate.mdc", "evening-reflection-scope.mdc"]
     },
     {
-      "id": "domain-focus",
-      "label": "ドメイン特化（glob）",
+      "id": "g12-env-incident",
+      "label": "環境・障害",
+      "files": [
+        "cio-env-integrity-gate.mdc",
+        "cio-env-self-healing-gate.mdc",
+        "cio-weekend-rollback-gate.mdc",
+        "cio-error-ticket-gate.mdc",
+        "cio-error-ticket-apply-gate.mdc",
+        "cio-debug-tips-stock-gate.mdc"
+      ]
+    },
+    {
+      "id": "g13-security",
+      "label": "セキュリティ",
+      "files": [
+        { "name": "snyk-security.mdc", "discoveryOnly": true },
+        { "name": "security-news-response.mdc", "discoveryOnly": true },
+        "security-training-materials.mdc"
+      ]
+    },
+    {
+      "id": "g14-ci-github",
+      "label": "CI・GitHub",
+      "files": ["constitutional-focus-github-workflows.mdc", "cio-commit-msg-kimi-gate.mdc"]
+    },
+    {
+      "id": "g15-domain-misc",
+      "label": "ドメイン特化・その他",
       "files": [
         "constitutional-focus-yojitsu.mdc",
-        "constitutional-focus-github-workflows.mdc",
-        "doc-lane-gate.mdc",
-        "security-training-materials.mdc",
-        "security-news-response.mdc",
-        "modern-web-official-docs.mdc",
-        "next-session-jbis-followups.mdc"
-      ]
-    },
-    {
-      "id": "misc",
-      "label": "その他・運用補助",
-      "files": [
-        "file-copy-exact-path.mdc",
-        "autonomous-with-mandatory-asks.mdc",
-        "snyk-security.mdc",
-        "constitution.mdc"
+        { "name": "modern-web-official-docs.mdc", "discoveryOnly": true },
+        { "name": "next-session-jbis-followups.mdc", "discoveryOnly": true },
+        { "name": "file-copy-exact-path.mdc", "discoveryOnly": true },
+        { "name": "autonomous-with-mandatory-asks.mdc", "discoveryOnly": true },
+        { "name": "creation-timing-ask.mdc", "discoveryOnly": true },
+        "persist-policies.mdc",
+        { "name": "constitution.mdc", "discoveryOnly": true }
       ]
     }
   ]
