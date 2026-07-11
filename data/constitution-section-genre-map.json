@@ -1,12 +1,13 @@
 {
-  "generatedAt": "2026-07-11T00:09:36.011Z",
-  "catalogVersion": "2026-06-10-phase2d",
+  "generatedAt": "2026-07-11T10:08:31.696Z",
+  "catalogVersion": "2026-07-11-lifecycle-v2",
   "sectionToGenre": {
     "§(階層)": [
       "00-rule-hierarchy.md"
     ],
     "§0": [
-      "01-fundamentals.md"
+      "01-fundamentals.md",
+      "27-constitution-navigation-charter.md"
     ],
     "§1": [
       "01-fundamentals.md"
@@ -120,7 +121,8 @@
       "05-knowledge-rag.md"
     ],
     "§2": [
-      "01-fundamentals.md"
+      "01-fundamentals.md",
+      "26-formalization-lifecycle-charter.md"
     ],
     "§20": [
       "05-knowledge-rag.md"
@@ -370,13 +372,15 @@
       "12-mcp-usage.md"
     ],
     "§50-3-8": [
-      "12-mcp-usage.md"
+      "12-mcp-usage.md",
+      "28-ceo-go-phases-charter.md"
     ],
     "§50-3-9": [
       "12-mcp-usage.md"
     ],
     "§51": [
-      "13-parallel-session.md"
+      "13-parallel-session.md",
+      "28-ceo-go-phases-charter.md"
     ],
     "§51-2": [
       "13-parallel-session.md"
@@ -469,7 +473,10 @@
       "15-raci-responsibility.md"
     ],
     "§57": [
-      "16-amendment-process.md"
+      "16-amendment-process.md",
+      "25-constitution-no-replacement-charter.md",
+      "26-formalization-lifecycle-charter.md",
+      "28-ceo-go-phases-charter.md"
     ],
     "§57-1": [
       "16-amendment-process.md"
@@ -727,6 +734,21 @@
       "§1-2-3-6",
       "§1-2-4",
       "§50-3-11"
+    ],
+    "25-constitution-no-replacement-charter.md": [
+      "§57"
+    ],
+    "26-formalization-lifecycle-charter.md": [
+      "§2",
+      "§57"
+    ],
+    "27-constitution-navigation-charter.md": [
+      "§0"
+    ],
+    "28-ceo-go-phases-charter.md": [
+      "§50-3-8",
+      "§51",
+      "§57"
     ]
   }
 }

@@ -47,7 +47,7 @@ const TEMPLATES = {
     '[ルール確認] DOC_LANE_4AI.md cio-18-zero-tolerance.mdc',
   ],
   'doc-lane-lite': [
-    '[§1-2-3 ティア判定: L1] doc-lane lite · 1 path · +≤20行（H8 2026-07-11）',
+    '[§1-2-3 ティア判定: L1] doc-lane lite · 1 path · +≤20行（H8 · data/cio-doc-lane-lite-scope.json）',
     '【適用憲法】§1-2-3-2 L1 · §50-3-11',
     '[🎖️ 本セッション割当] CIO=Opus4.8 | Composer=doc-lane | DeepSeek=未使用(lite) | Kimi=未使用',
     '[ルール確認] 27-constitution-navigation-charter.md · formalization-registry H8',

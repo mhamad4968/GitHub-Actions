@@ -26,9 +26,10 @@ alwaysApply: false
 2. `npm run cio:session:export-handoff`
 3. `npm run verify:session-handoff-integrity -- --validate-export`
 4. **`npm run session-starter:sync-desktop` → `npm run verify:desktop-ai-emergency-sync`**（**R-SESS-01** — close-git より前）
-5. **`npm run session:clock:clear`**（**R-SESS-03** — 次セッション bootstrap NG 防止）
-6. `npm run cio:session:close-git -- --execute --auto-stage --message "…"` **または** B1/B4 整備後 `desktop:sync-and-verify`
-7. **deploy 漏れ防止**: `npm run verify:session-close-git-warn`（R21 台帳 + R55 本番 BUILD 三重照合 — close-git 手順 5 でも実行）
+5. **`npm run verify:constitution-evening`**（**R-SESS-11** — lifecycle-v2 · close-git より前）
+6. **`npm run session:clock:clear`**（**R-SESS-03** — 次セッション bootstrap NG 防止）
+7. `npm run cio:session:close-git -- --execute --auto-stage --message "…"` **または** B1/B4 整備後 `desktop:sync-and-verify`
+8. **deploy 漏れ防止**: `npm run verify:session-close-git-warn`（R21 台帳 + R55 本番 BUILD 三重照合 — close-git 手順 5 でも実行）
 
 **禁止**: 上記の前に「お疲れさまでした」「次回は…」だけ返す（F1 再発）。
 

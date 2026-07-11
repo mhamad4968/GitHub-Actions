@@ -48,6 +48,11 @@
       "supplements": ["session:bootstrap 単独（L2のみ）", "handoff/checkpoint 手動散読"]
     }
   ],
+  "phase1Essence": {
+    "checklist": "docs/constitution/phase1-essence-preservation-checklist.md",
+    "needles": "data/cio-e1-e9-needles.json",
+    "verify": "verify:constitution-e1-e9-needles"
+  },
   "mirrors": {
     "note": "鏡像は削除しない — sync で整合",
     "pairs": [

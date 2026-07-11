@@ -9,6 +9,7 @@ import { getJstYyyymmdd } from './session-starter-desktop.mjs';
 import { SESSION_STARTER_PART_SYNC } from './session-starter-parts.mjs';
 import { SESSION_DESKTOP_MIRROR_FILES } from './desktop-ai-emergency-session-docs.mjs';
 import { mirrorLiteExpectedDestNames } from './desktop-ai-emergency-mirror-lite.mjs';
+import { META_CHARTER_DESKTOP_SYNC, META_CHARTER_DESKTOP_MAX_PREFIX } from './constitution-meta-charters-desktop.mjs';
 
 /** 夕反省レポートが無い日に Desktop へ置くプレースホルダ（read-pack 正本） */
 export const EVENING_REFLECTION_SLOT_NAME = '26-evening-reflection-SLOT.txt';
@@ -66,6 +67,10 @@ export function buildExpectedDesktopAiEmergencyFilenames(root, ymd = getJstYyyym
     expected.add(EVENING_REFLECTION_SLOT_NAME);
   }
 
+  for (const { desktop } of META_CHARTER_DESKTOP_SYNC) {
+    expected.add(desktop);
+  }
+
   return expected;
 }
 
@@ -107,7 +112,8 @@ export function verifyDesktopNumberingContinuity(expected) {
     if (m) prefixes.add(Number(m[1], 10));
   }
   const missing = [];
-  for (let i = 0; i <= 30; i += 1) {
+  const max = META_CHARTER_DESKTOP_MAX_PREFIX;
+  for (let i = 0; i <= max; i += 1) {
     if (!prefixes.has(i)) missing.push(i);
   }
   return { ok: missing.length === 0, missing };

@@ -102,6 +102,10 @@ function main() {
   run('npm run session:clock:clear');
   run('npm run session:clock:set');
 
+  // Phase 5c — mandatory_reads スタンプ（entry-points E1 正本 · G4 配線）
+  console.log('\n▶ Phase 5c MANDATORY_READS');
+  run('npm run cio:mandatory-reads:stamp');
+
   // Phase 5b — Grok L2b セッション状態リセット（C 回数・契約スタンプ残留防止）
   console.log('\n▶ Phase 5b GROK-SESSION-RESET');
   run('npm run cio:grok:execution-guard -- --session-reset --reason WAKE');

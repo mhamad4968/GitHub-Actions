@@ -25,7 +25,8 @@
       "label": "turn-start strict 監査",
       "gate": "evening #S-OPS-STRICT-AUDIT",
       "verifyProbe": "verify:team-ops-v2",
-      "reviewDate": "2026-07-25"
+      "reviewDate": "2026-07-25",
+      "reviewSpec": "data/cio-formalization-h9-review.json"
     },
     {
       "id": "C1",

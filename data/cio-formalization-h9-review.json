@@ -1,0 +1,38 @@
+{
+  "version": "2026-07-11-r3-10",
+  "registryId": "H9",
+  "label": "turn-start strict 監査",
+  "reviewDate": "2026-07-25",
+  "metricsWindowDays": 7,
+  "metricsEligibleAfter": "2026-07-18",
+  "eveningTopic": "#S-OPS-STRICT-AUDIT",
+  "thresholdsRef": "data/cio-team-ops-kpi-thresholds.json",
+  "metricsHistory": "logs/cio-team-ops/metrics-daily.jsonl",
+  "runbook": "docs/runbooks/cio-formalization-h9-review.md",
+  "criteria": {
+    "green": {
+      "summary": "7 日窓で監査対象 RED 0 · skip/Lite 閾値内",
+      "maxRedMetricDays": 0,
+      "useThresholdsRef": true
+    },
+    "red": {
+      "summary": "7 日窓で RED が閾値超 — gate 昇格候補",
+      "minRedMetricDays": 2
+    }
+  },
+  "outcomes": {
+    "green": {
+      "action": "retire_registry_row",
+      "note": "lifecycle-v2 §2 retired 表へ追記 · verify probe 維持",
+      "requires": "CEO_GO_G3"
+    },
+    "red": {
+      "action": "escalate_gate",
+      "note": "CIO_TURN_TIER_STRICT 等 · evening #S 週次継続",
+      "requires": "CEO_GO_G3"
+    }
+  },
+  "status": "scheduled",
+  "ceoDecision": null,
+  "ceoDecisionAt": null
+}

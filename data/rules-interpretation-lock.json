@@ -44,6 +44,10 @@
     {
       "id": "I11",
       "summary": "2026-07-11 lifecycle-v2: METAチャーター(25–27)はAGENTS非置換で追加可 · 3入口(entry-points) · formalization-registryは現役ゲートのみ・verifyProbe必須・廃止ラベルはspec§2 retired表へ（dormant廃止）"
+    },
+    {
+      "id": "I12",
+      "summary": "2026-07-11 R3-1: CEO GO段階分離 — 合議GO(G0)≠spec GO(G1)≠実装GO(G2)≠commit/push GO(G3) · 合議・verify緑だけではコード/data/hooks変更不可 · 正本28-ceo-go-phases-charter.md · I7はタイミングと併読"
     }
   ]
 }

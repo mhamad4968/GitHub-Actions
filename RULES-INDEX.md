@@ -6,11 +6,11 @@
 > **3階層（2026-05-21）**: **[`docs/constitution/00-rule-hierarchy.md`](docs/constitution/00-rule-hierarchy.md)** — 第1憲法 / 第2機械検証 / 第3 runbook。  
 > **方式B 用語の単一窓**: **`.cursor/rules/mode-b-canonical.mdc`**（4AI定義・先頭4行テンプレ）。
 >
-> **ジャンル別読本（2026-05-31 更新）**: 長文回避用の分割版は **`docs/constitution/README.md`**（**17 ジャンル + 階層 + 4AI + 4 AI-KERNEL**）。索引で § を特定 → 該当ジャンル `.md` を Read → 必要時のみ `AGENTS.md` 正本。**Desktop 早見**: `28-CONSTITUTION-GENRE-MAP.txt`。
+> **ジャンル別読本（2026-07-11 lifecycle-v2）**: 長文回避用の分割版は **`docs/constitution/README.md`**（**17 ジャンル + 階層 + 4AI + 4 AI-KERNEL + META 25–28**）。索引で § を特定 → 該当ジャンル `.md` を Read → 必要時のみ `AGENTS.md` 正本。**3 入口機械正本**: [`data/cio-rule-entry-points.json`](data/cio-rule-entry-points.json) · **Desktop 早見**: `28-CONSTITUTION-GENRE-MAP.txt`。
 
 > 更新: **2026-07-02** — §38-1 npm セキュリティ更新自律境界（浜田 GO）を AGENTS / WORKFLOW / backlog に反映
 
-> **ルール最適化（2026-07-11）**: `.mdc` 発見 3 入口 — [`docs/runbooks/cio-rules-discovery-map.md`](docs/runbooks/cio-rules-discovery-map.md) · 15 ジャンル [`data/cursor-rules-topic-index.json`](data/cursor-rules-topic-index.json) · 一括 verify `npm run verify:rules-optimization`。**AGENTS.md フロー図の `preflight-checklist.mdc alwaysApply` 表記は陳腐** — 正本 `.cursor/rules/preflight-checklist.mdc`（`alwaysApply: false` + globs）。
+> **ルール最適化（2026-07-11）**: `.mdc` 発見 3 入口 — [`docs/runbooks/cio-rules-discovery-map.md`](docs/runbooks/cio-rules-discovery-map.md) · [`data/cio-rule-entry-points.json`](data/cio-rule-entry-points.json)（E1/E2/E3 · mandatory_reads）· 15 ジャンル [`data/cursor-rules-topic-index.json`](data/cursor-rules-topic-index.json) · 一括 verify `npm run verify:rules-optimization`。**AGENTS.md フロー図の `preflight-checklist.mdc alwaysApply` 表記は陳腐** — 正本 `.cursor/rules/preflight-checklist.mdc`（`alwaysApply: false` + globs）。
 
 ---
 
@@ -231,7 +231,7 @@
 
 | § | ジャンル読本 |
 |---|-------------|
-| §0 | [`01-fundamentals.md`](docs/constitution/01-fundamentals.md) |
+| §0 | [`01-fundamentals.md`](docs/constitution/01-fundamentals.md) · [`27-constitution-navigation-charter.md`](docs/constitution/27-constitution-navigation-charter.md) |
 | §1 | [`01-fundamentals.md`](docs/constitution/01-fundamentals.md) |
 | §1-2 | [`17-four-ai-mode-b.md`](docs/constitution/17-four-ai-mode-b.md) |
 | §1-2-1 | [`17-four-ai-mode-b.md`](docs/constitution/17-four-ai-mode-b.md) |
@@ -266,7 +266,7 @@
 | §17-3 | [`04-environment-security.md`](docs/constitution/04-environment-security.md) |
 | §18 | [`04-environment-security.md`](docs/constitution/04-environment-security.md) |
 | §19 | [`05-knowledge-rag.md`](docs/constitution/05-knowledge-rag.md) |
-| §2 | [`01-fundamentals.md`](docs/constitution/01-fundamentals.md) |
+| §2 | [`01-fundamentals.md`](docs/constitution/01-fundamentals.md) · [`26-formalization-lifecycle-charter.md`](docs/constitution/26-formalization-lifecycle-charter.md) |
 | §20 | [`05-knowledge-rag.md`](docs/constitution/05-knowledge-rag.md) |
 | §21 | [`05-knowledge-rag.md`](docs/constitution/05-knowledge-rag.md) |
 | §22 | [`06-mcp-disaster-recovery.md`](docs/constitution/06-mcp-disaster-recovery.md) |
@@ -316,6 +316,10 @@ _他 107 件は `data/constitution-section-genre-map.json` を参照_
 | [`15-raci-responsibility.md`](docs/constitution/15-raci-responsibility.md) | §52 · §52-1 · §52-2 · §52-3 · §52-4 · §52-5 · §52-6 · §52-7 … |
 | [`16-amendment-process.md`](docs/constitution/16-amendment-process.md) | §57 · §57-1 · §57-10 · §57-2 · §57-3 · §57-4 · §57-5 · §57-6 … |
 | [`17-four-ai-mode-b.md`](docs/constitution/17-four-ai-mode-b.md) | §1-2 · §1-2-1 · §1-2-2 · §1-2-2-1 · §1-2-3 · §1-2-3-1 · §1-2-3-2 · §1-2-3-3 … |
+| [`25-constitution-no-replacement-charter.md`](docs/constitution/25-constitution-no-replacement-charter.md) | §57 |
+| [`26-formalization-lifecycle-charter.md`](docs/constitution/26-formalization-lifecycle-charter.md) | §2 · §57 |
+| [`27-constitution-navigation-charter.md`](docs/constitution/27-constitution-navigation-charter.md) | §0 |
+| [`28-ceo-go-phases-charter.md`](docs/constitution/28-ceo-go-phases-charter.md) | §50-3-8 · §51 · §57 |
 
 <!-- RULES-INDEX:SECTION-GENRE-AUTO:END -->
 
@@ -348,6 +352,10 @@ _他 107 件は `data/constitution-section-genre-map.json` を参照_
 | 週末監査（AI-KERNEL） | [21-autonomous-patrol-kernel.md](docs/constitution/21-autonomous-patrol-kernel.md) |
 | エスカレ・3択（AI-KERNEL） | [22-error-handling-kernel.md](docs/constitution/22-error-handling-kernel.md) |
 | 完了・認識同期（AI-KERNEL） | [23-project-closure-recognition-kernel.md](docs/constitution/23-project-closure-recognition-kernel.md) |
+| 憲法非置換（META） | [25-constitution-no-replacement-charter.md](docs/constitution/25-constitution-no-replacement-charter.md) |
+| ゲート寿命 L1–L5（META） | [26-formalization-lifecycle-charter.md](docs/constitution/26-formalization-lifecycle-charter.md) |
+| 4層ナビ · 3入口（META） | [27-constitution-navigation-charter.md](docs/constitution/27-constitution-navigation-charter.md) · [`data/cio-rule-entry-points.json`](data/cio-rule-entry-points.json) |
+| CEO GO G0–G3（META） | [28-ceo-go-phases-charter.md](docs/constitution/28-ceo-go-phases-charter.md) |
 | Desktop 早見（28番） | `chat-sessions/desktop-ai-emergency-read-pack/28-CONSTITUTION-GENRE-MAP.txt` |
 
 検証: `npm run constitution:verify-coverage` / `npm run verify:constitution-genre-kernels` / `npm run verify:cio-four-ai-governance`

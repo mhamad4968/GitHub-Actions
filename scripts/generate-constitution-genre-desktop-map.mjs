@@ -42,7 +42,8 @@ function main() {
   lines.push('正本: data/constitution-genre-catalog.json／リポ AGENTS.md（§ 番号の正）');
   lines.push('');
   lines.push('■■ 読み方（見落とし防止 · L0→L2）');
-  lines.push('  0) 27-navigation-charter（3入口・mandatory_reads）');
+  lines.push('  0) **32-META-27-constitution-navigation-charter.txt**（3入口・mandatory_reads 全文）');
+  lines.push('  0b) 憲法改定時 **33-META-28-ceo-go-phases-charter.txt**（G0–G3）');
   lines.push('  1) 本ファイル（28）でタスク→ジャンルを特定');
   lines.push('  2) リポ docs/constitution/<ファイル>.md を Read（1〜2本だけ）');
   lines.push('  3) 必要時のみ AGENTS.md 該当 § を正本確認');

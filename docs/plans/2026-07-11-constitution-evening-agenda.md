@@ -52,5 +52,8 @@ npm run verify:desktop-ai-emergency-sync
 
 ## 関連正本
 
+- `data/cio-constitution-spec-index.json`（spec 統合索引 · R3-8）
+- `docs/plans/2026-07-11-constitution-lifecycle-v2-spec.md`
+- `docs/plans/2026-07-11-constitution-round3-master-spec.md`
 - `docs/plans/2026-07-11-rules-optimization-spec.md`
 - `docs/plans/2026-07-11-ai-team-ops-optimization-spec-v33.md` §4 C-3

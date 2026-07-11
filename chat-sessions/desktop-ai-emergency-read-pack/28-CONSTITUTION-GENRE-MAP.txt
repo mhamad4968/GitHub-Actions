@@ -3,7 +3,8 @@
 正本: data/constitution-genre-catalog.json／リポ AGENTS.md（§ 番号の正）
 
 ■■ 読み方（見落とし防止 · L0→L2）
-  0) 27-navigation-charter（3入口・mandatory_reads）
+  0) **32-META-27-constitution-navigation-charter.txt**（3入口・mandatory_reads 全文）
+  0b) 憲法改定時 **33-META-28-ceo-go-phases-charter.txt**（G0–G3）
   1) 本ファイル（28）でタスク→ジャンルを特定
   2) リポ docs/constitution/<ファイル>.md を Read（1〜2本だけ）
   3) 必要時のみ AGENTS.md 該当 § を正本確認
@@ -49,6 +50,7 @@ ID                     概要                           いつ               主
 25-constitution-no-replacement-charter AGENTS 非置換                   憲法改定議論           全員
 26-formalization-lifecycle-charter ゲート寿命 L1–L5                  registry 整理      全員
 27-constitution-navigation-charter 4層ナビ · 3入口                   迷ったら最初           全員
+28-ceo-go-phases-charter CEO GO 段階 G0–G3              憲法・ルール変更前        全員
 
 ■■ タスク → 読本（1〜2本）
 タスク                          読本                   主担当

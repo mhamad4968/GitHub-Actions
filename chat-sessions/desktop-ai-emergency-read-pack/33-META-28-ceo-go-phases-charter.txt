@@ -1,0 +1,66 @@
+【Desktop 控え · META チャーター】
+生成: 2026-07-11 JST — npm run constitution:sync-meta-charters-desktop
+正本: docs/constitution/28-ceo-go-phases-charter.md
+※ AGENTS.md 非置換 · 矛盾時はリポ正本を優先
+# CEO GO 段階分離 — チャーター（2026-07-11 · META · Round-3 R3-1）
+
+**地位**: `AGENTS.md` **非置換** · 憲法・ルール・AIチーム運用の **変更許可** の正本  
+**機械補足**: `data/rules-interpretation-lock.json` **I12**（I7 と併読）
+
+## なぜ必要か
+
+- **AIチーム合議 GO** ≠ **浜田さんの実装許可**
+- **verify 全緑** ≠ **touch してよい**
+- 段階を混同すると **判断前の commit/push・実装** が起きる（2026-07-11 教訓）
+
+## 3 段階（この順・飛ばし禁止）
+
+| 段階 | 名称 | 浜田さんの GO の意味 | AI がしてよいこと | 禁止 |
+|:----:|------|---------------------|-------------------|------|
+| **G0** | **合議 GO** | 「方針・リスク・順序に合意」 | 調査 · AIチーム意見交換 · 影響整理 · **報告** | 憲法/ルール/スクリプトの **変更** · commit/push |
+| **G1** | **spec GO** | 「spec・METAチャーター起草してよい」 | `docs/plans/` spec · `docs/constitution/*-charter.md` 起草 · verify **読取のみ** | ゲート配線変更 · `package.json` scripts 追加 · commit/push（**G2 まで**） |
+| **G2** | **実装 GO** | 「コード・データ・配線を変えてよい」 | 当該項目スコープの実装 · 項目用 verify | スコープ外ファイル · 次項目への先回り |
+| **G3** | **commit/push GO** | 「リモートへ出してよい」 | `git commit` · `git push` | G2 未完了のまま push · 依頼外ファイルの同梱 |
+
+> **1 Round-3 項目 = G1（spec）→ G2（実装）→ 報告 → G3（commit）** が基本。G0 は複数項目に共通しうる。
+
+## I7 との関係（解釈固定）
+
+| ロック | 内容 |
+|--------|------|
+| **I7** | commit/push は **浜田明示ターンのみ**（セッション締め B1 除く） |
+| **I12** | 合議 GO だけでは **G2/G3 に進めない** |
+
+→ I7 は **タイミング** · I12 は **段階** — 矛盾しない。
+
+## 憲法・ルール・運用レーンでの適用
+
+| 領域 | G0 | G1 | G2 | G3 |
+|------|:--:|:--:|:--:|:--:|
+| `AGENTS.md` § 本文 | 合議のみ | 起案 spec | **浜田 GO 後のみ**（§57） | commit GO |
+| `docs/constitution/*` チャーター | 合議 | spec GO で起草 | 配線・索引変更 | commit GO |
+| `data/*.json` 正本 | 合議 | spec に記載 | 実装 GO | commit GO |
+| `scripts/verify-*` | 合議 | spec に記載 | 実装 GO | commit GO |
+| hooks / `.mdc` | 合議 | spec に記載 | 実装 GO | commit GO |
+
+## 報告フォーマット（各 Round-3 項目終了時）
+
+```text
+[R3-N 完了]
+- 実装: （ファイル一覧）
+- verify: （コマンドと結果）
+- リスク/△: （残なし / 内容）
+- 次: R3-(N+1) へ進むには G2/G3 または次項目 G1 が必要
+```
+
+## 禁止
+
+- 「全員 GO」「verify 緑」を **G2/G3 の代替** とすること
+- G1 と G2 を **同一ターンで混ぜる**こと（§51 並列と同趣旨）
+- 浜田さんの「進めて」と **実装 GO** を同一視すること（**項目番号付き GO** を要する）
+
+## 検証
+
+```powershell
+npm run verify:rules-interpretation-lock   # I12 存在
+```

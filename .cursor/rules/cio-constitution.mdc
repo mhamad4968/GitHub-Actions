@@ -32,6 +32,22 @@ alwaysApply: true
 
 **誤読禁止**: 分割 `.mdc` を **YAML の常時注入の第二正本** のように書かない（**`npm run verify:thin-rule-messaging`** が `alwaysApply` 表記を検査）。
 
+## Phase 1 E1–E9（薄型アンカー · 非削除）
+
+**機械正本**: `data/cio-e1-e9-needles.json` · **検証**: `npm run verify:constitution-e1-e9-needles` · 人間表: `docs/constitution/phase1-essence-preservation-checklist.md`
+
+| ID | エッセンス | 薄型 .mdc |
+|----|-----------|-----------|
+| E1 | 開発=AI・確認=浜田 | `constitution-enforcement-core.mdc` |
+| E2 | §41 一問一答 | `creation-timing-ask.mdc` |
+| E3 | §50-3-8 盲点3点 | `deepseek-cursor-spec-division.mdc` |
+| E4 | 2者検証 | `constitution-enforcement-core.mdc` |
+| E5 | 報告 §1e V2 七行 | `every-turn-rules-confirm.mdc` |
+| E6 | §1-2-2 fallback 禁止 | `cio-composer-escalation-interlock.mdc` |
+| E7 | §51 並列禁止 | `cio-context-dissolution-interlock.mdc` |
+| E8 | Tier B GO | `mcp-tool-discipline.mdc` |
+| E9 | 方式B 4AI | `mode-b-canonical.mdc` |
+
 ## Multi-Agent（MCP）— CEO に「役割は？」と聞かせない
 
 **4AI定義の単一窓**: **`.cursor/rules/mode-b-canonical.mdc`**（表記ゆれ禁止）。

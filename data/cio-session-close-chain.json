@@ -11,6 +11,7 @@
       { "id": "VALIDATE", "npm": "verify:session-handoff-integrity", "args": ["--validate-export"] },
       { "id": "SYNC", "npm": "session-starter:sync-desktop" },
       { "id": "DESKTOP", "npm": "verify:desktop-ai-emergency-sync" },
+      { "id": "CONSTITUTION", "npm": "verify:constitution-evening" },
       { "id": "CLOCK", "npm": "session:clock:clear" },
       { "id": "CLOSE_GIT", "npm": "cio:session:close-git", "args": ["--execute", "--auto-stage"] },
       { "id": "WARN", "npm": "verify:session-close-git-warn" }

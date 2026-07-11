@@ -15,6 +15,7 @@ const REQUIRED = [
   { rel: 'docs/plans/2026-07-11-ai-team-ops-optimization-spec-v32.md', needles: ['形骸化防止原則', 'verify:team-ops-v2', 'Phase 1'] },
   { rel: 'docs/plans/2026-07-11-ai-team-ops-optimization-spec-v33.md', needles: ['A–D', 'validate-contract', 'last-tier.json'] },
   { rel: 'data/cio-turn-start-tier-lane-matrix.json', needles: ['doc-lane', 'lite'] },
+  { rel: 'data/cio-doc-lane-lite-scope.json', needles: ['maxPaths', 'e4Boundary', 'doc-lane'] },
   { rel: 'data/cio-team-ops-kpi-thresholds.json', needles: ['flagReviewDate', 'red'] },
   { rel: 'scripts/lib/cio-team-ops-skip-quality.mjs', needles: ['SKIP_BANNED_PHRASES', 'validateSkipReason'] },
   { rel: 'scripts/lib/cio-team-ops-flags.mjs', needles: ['CIO_LITE_LANE', 'CIO_TURN_TIER_STRICT'] },

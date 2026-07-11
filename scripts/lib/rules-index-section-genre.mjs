@@ -142,6 +142,25 @@ export function buildMergedSectionGenreMap(root) {
     for (const f of files) ingest(section, f);
   }
 
+  const metaLinks = {
+    '25-constitution-no-replacement-charter.md': ['§57'],
+    '26-formalization-lifecycle-charter.md': ['§57'],
+    '27-constitution-navigation-charter.md': ['§0'],
+    '28-ceo-go-phases-charter.md': ['§57', '§50-3-8'],
+  };
+  for (const m of catalog.metaCharters || []) {
+    const genreFile = m.file;
+    const charterPath = path.join(constitutionDir, genreFile);
+    if (fs.existsSync(charterPath)) {
+      for (const s of extractSections(fs.readFileSync(charterPath, 'utf8'))) {
+        ingest(s, genreFile);
+      }
+    }
+    for (const s of metaLinks[genreFile] || []) {
+      ingest(s, genreFile);
+    }
+  }
+
   return { sectionToGenre, genreToSection, catalogVersion: catalog.version };
 }
 

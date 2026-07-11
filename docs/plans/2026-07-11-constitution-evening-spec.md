@@ -2,7 +2,8 @@
 
 > **CEO 指示**: やり残し禁止 · **完全な改善**（議論のみ終了禁止）  
 > **GO**: 2026-07-11 浜田「今日は完全な改善を目的としている」  
-> **地位**: 論点 1–4 の合意・実装・verify の正本
+> **地位**: 論点 1–4 の合意・実装・verify の**歴史正本**（現役配線は lifecycle-v2 + round3-master）  
+> **統合**: `data/cio-constitution-spec-index.json`
 
 ## AI チーム合議（5 ラウンド記録）
 
@@ -85,3 +86,11 @@
 - `scripts/verify-constitution-evening.mjs`
 - `package.json`（verify script）
 - `docs/plans/2026-07-11-constitution-evening-agenda.md`（[x] 更新）
+
+## 統合先（R3-8 以降）
+
+| 現役 | パス |
+|------|------|
+| spec 索引 | `data/cio-constitution-spec-index.json` |
+| lifecycle 仕様 | `docs/plans/2026-07-11-constitution-lifecycle-v2-spec.md` |
+| Round-3 トラッカー | `docs/plans/2026-07-11-constitution-round3-master-spec.md` |

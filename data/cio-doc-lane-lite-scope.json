@@ -1,0 +1,54 @@
+{
+  "version": "2026-07-11-r3-7",
+  "description": "doc-lane lite 機械スコープ正本（H8 · G7 E4 境界明示）",
+  "entry": {
+    "lane": "doc-lane",
+    "tier": "lite",
+    "command": "npm run cio:turn-start -- --lane doc-lane --tier lite",
+    "declaration": "[§1-2-3 ティア判定: L1] doc-lane lite · <1 path>"
+  },
+  "limits": {
+    "maxPaths": 1,
+    "maxAddedLines": 20
+  },
+  "forbiddenPrefixes": [
+    "customize/",
+    ".cursor/rules/",
+    "AGENTS.md"
+  ],
+  "forbiddenConstitutionPrefixes": [
+    "data/cio-",
+    "data/rules-",
+    "scripts/verify-constitution",
+    "docs/constitution/25-",
+    "docs/constitution/26-",
+    "docs/constitution/27-",
+    "docs/constitution/28-",
+    "docs/plans/2026-07-11-constitution"
+  ],
+  "forbiddenExact": [
+    "scripts/cio-turn-start.mjs"
+  ],
+  "forbiddenPatterns": [
+    "deploy:"
+  ],
+  "laneMatrix": {
+    "allowedLanes": ["default", "doc-lane"],
+    "docLaneLiteOnly": true
+  },
+  "e4Boundary": {
+    "summary": "lite は軽微 doc 追記用。憲法・ルール・registry 変更レーンではない。",
+    "e4StillApplies": "仕様の言い切り・完了宣言の2者検証（E4）は lite でも維持",
+    "liteDoesNotReplace": ["憲法改定", "rules-optimization", "package.json scripts 追加", "verify 配線変更"],
+    "skip5038When": ["handoff/checkpoint 追記", "ORIENT/Read のみ", "本スコープ内の docs 軽微追記"]
+  },
+  "allowedExamples": [
+    "docs/plans/",
+    "docs/runbooks/",
+    "docs/reports/",
+    "chat-sessions/checkpoint-latest.md",
+    "chat-sessions/handoff-log.md",
+    "templates/"
+  ],
+  "verifyProbe": "verify:doc-lane-lite-scope"
+}

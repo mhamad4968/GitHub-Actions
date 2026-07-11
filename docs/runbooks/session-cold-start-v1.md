@@ -18,7 +18,7 @@ npm run cio:session:cold-start
 ### 状態遷移
 
 ```
-MORNING → PREFLIGHT → ROLLUP → QUICK-HEALTH → WALL-CLOCK → BOOTSTRAP → IMPORT → READY
+MORNING → PREFLIGHT → ROLLUP → QUICK-HEALTH → WALL-CLOCK → **MANDATORY_READS** → BOOTSTRAP → IMPORT → READY
 ```
 
 | Phase | 内容 |
@@ -28,6 +28,7 @@ MORNING → PREFLIGHT → ROLLUP → QUICK-HEALTH → WALL-CLOCK → BOOTSTRAP �
 | ROLLUP | 凍結ゾーン verify（`verify:checkpoint-freeze-zone --auto-rollup`）+ checkpoint rollup + export + integrity + closure |
 | QUICK-HEALTH | 朝報 ensure + kintone:test + guard:check |
 | WALL-CLOCK | **`session:clock:clear` → `session:clock:set`**（§51-6-2。前セッション `開始:` 残留で bootstrap NG を防ぐ） |
+| MANDATORY_READS | **`cio:mandatory-reads:stamp`**（`data/cio-rule-entry-points.json` E1 · wake 7 + session 2 実在検査） |
 | BOOTSTRAP | `session:bootstrap`（憲法・desktop sync・smoke 15） |
 | IMPORT | `verify:session-handoff-integrity --import` |
 

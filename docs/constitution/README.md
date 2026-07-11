@@ -65,6 +65,7 @@
 | [25-constitution-no-replacement-charter.md](25-constitution-no-replacement-charter.md) | **新憲法不要**（CEO 2026-07-11 夜） | 憲法改定議論時 |
 | [26-formalization-lifecycle-charter.md](26-formalization-lifecycle-charter.md) | **ゲート寿命 L1–L5** | registry 整理時 |
 | [27-constitution-navigation-charter.md](27-constitution-navigation-charter.md) | **4層ナビ · 3入口** | **迷ったら最初** |
+| [28-ceo-go-phases-charter.md](28-ceo-go-phases-charter.md) | **CEO GO 段階 G0–G3** | **憲法・ルール変更前** |
 
 **機械検証**: `npm run verify:constitution-genre-kernels`
 

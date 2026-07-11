@@ -192,13 +192,15 @@ npm run cio:checkpoint:rollup -- --keep 3
 | 種別 | トリガー例 | 実行 |
 |------|------------|------|
 | **partial** | 一旦終わり / 一旦区切り / OK（区切り） / GO 待ち / 保留 | checkpoint 更新 → **`cio:handoff:append-block`** → `export-handoff` → 復元 1 行 |
-| **full** | 締め / 終わり / お疲れ / 今日はここまで / 反省 | checkpoint → handoff → export → **sync-desktop** → clock:clear → **close-git** |
+| **full** | 締め / 終わり / お疲れ / 今日はここまで / 反省 | checkpoint → handoff → export → **sync-desktop** → **verify:constitution-evening** → clock:clear → **close-git** |
 
 **R-SESS-01（2026-06-25 GO）**: full CLOSE では `export-handoff` 後 **`session-starter:sync-desktop` + `verify:desktop-ai-emergency-sync`** を **close-git より前**に必須。
 
 **R-SESS-03（2026-06-25 GO）**: full CLOSE では **`session:clock:clear`** を close-git 直前に実行。**WAKE**（`cio:session:cold-start`）は bootstrap 直前に **clear → set** を内包（締め clear 漏れ・trialPaused 時の二重化）。
 
 **R-SESS-03b（2026-07-11 rules-opt GO）**: full CLOSE では **`npm run verify:session-close-git-warn`** を **close-git 直後**に必須（R21 台帳 + deploy 漏れ三重照合 — `session-close-execute-first.mdc` と同一）。
+
+**R-SESS-11（2026-07-11 Round-3 R3-2）**: full CLOSE では **`npm run verify:constitution-evening`** を **Desktop sync 後・close-git 前**に必須（lifecycle-v2 · `verify:rules-optimization` 連鎖と同一）。
 
 **R-SESS-04（2026-06-25 GO）**: `session:bootstrap` / `cio:session:cold-start` が **exit ≠ 0** のとき — **L2 完走は1回のみ** → NG ログをチャットに貼付 → **浜田へエスカレ** → **本題・deploy に着手しない**（Lifecycle v2 §3 L2 違反＝報告違反）。
 

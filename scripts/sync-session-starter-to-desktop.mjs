@@ -279,6 +279,16 @@ function main() {
     }
   }
 
+  const metaChartersGen = path.join(root, 'scripts/generate-constitution-meta-charters-desktop.mjs');
+  if (fs.existsSync(metaChartersGen)) {
+    const m = spawnSync(process.execPath, [metaChartersGen], { cwd: root, encoding: 'utf8' });
+    if (m.stdout) process.stdout.write(m.stdout);
+    if (m.stderr) process.stderr.write(m.stderr);
+    if (m.status !== 0) {
+      console.warn('[sync-session-starter-to-desktop] 31–33 META チャーター生成 NG（sync 続行）');
+    }
+  }
+
   const starterSrc = path.join(root, 'chat-sessions/NEW-SESSION-STARTER.md');
   if (!fs.existsSync(starterSrc)) {
     console.warn('[sync-session-starter-to-desktop] スキップ: 元ファイルなし chat-sessions/NEW-SESSION-STARTER.md');

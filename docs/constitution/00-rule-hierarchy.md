@@ -70,6 +70,7 @@
 | **`docs/constitution/25-constitution-no-replacement-charter.md`** | 新憲法不要（CEO 2026-07-11 夜） |
 | **`docs/constitution/26-formalization-lifecycle-charter.md`** | ゲート寿命 L1–L5（lifecycle-v2） |
 | **`docs/constitution/27-constitution-navigation-charter.md`** | 4層ナビ · 3入口（AI 読み方正本） |
+| **`docs/constitution/28-ceo-go-phases-charter.md`** | CEO GO 段階 G0–G3（Round-3 R3-1） |
 | **`docs/plans/2026-07-11-constitution-lifecycle-v2-spec.md`** | lifecycle-v2 完全実装 spec |
 | **`docs/plans/2026-07-11-constitution-evening-spec.md`** | 夜レーン完全実装 spec |
 | **`docs/troubleshooting.md`** | TSB 系 |

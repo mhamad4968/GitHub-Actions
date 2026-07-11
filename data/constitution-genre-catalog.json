@@ -199,6 +199,12 @@
       "title": "4層ナビ · 3入口",
       "when": "迷ったら最初",
       "layer": "L0-nav"
+    },
+    {
+      "file": "28-ceo-go-phases-charter.md",
+      "title": "CEO GO 段階 G0–G3",
+      "when": "憲法・ルール変更前",
+      "layer": "L3-meta"
     }
   ],
   "specialSectionToGenre": {

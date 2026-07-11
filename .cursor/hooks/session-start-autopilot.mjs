@@ -119,8 +119,32 @@ function main() {
     mcpStamp = 'MCPスキップ: 未接続（stamp 実行例外・チャット経路は未検証）';
   }
 
+  let mandatoryReadsStamp = '';
+  try {
+    const mrScript = path.join(root, 'scripts', 'cio-mandatory-reads-stamp.mjs');
+    const mr = spawnSync(process.execPath, [mrScript], hiddenOpts({
+      cwd: root,
+      encoding: 'utf8',
+      shell: false,
+    }));
+    mandatoryReadsStamp = (mr.stdout || '').trim().split('\n').pop() || '';
+    if (mr.status !== 0) {
+      logLine(`cio-mandatory-reads-stamp.mjs exit=${mr.status} stderr=${(mr.stderr || '').slice(0, 200)}`);
+      if (!mandatoryReadsStamp) {
+        mandatoryReadsStamp = '必読WAKE: NG（entry-points E1 · stamp 実行失敗）';
+      }
+    }
+  } catch (e) {
+    logLine(`cio-mandatory-reads-stamp spawn error ${e?.message || e}`);
+    mandatoryReadsStamp = '必読WAKE: NG（stamp 実行例外）';
+  }
+
   const mcpBlock = mcpStamp
     ? ` 【MCP貼付1行・sessionStart】\`${mcpStamp}\`（外部正ターンの [ルール確認] にそのまま追記可。手動再発行: \`npm run mcp:chat-stamp\`）`
+    : '';
+
+  const mandatoryReadsBlock = mandatoryReadsStamp
+    ? ` 【必読WAKE・sessionStart】\`${mandatoryReadsStamp}\`（正本 \`data/cio-rule-entry-points.json\` E1 · cold-start Phase 5c と同一）`
     : '';
 
   const capPath = path.join(root, 'chat-sessions', 'cloud-agent-last-intent.json');
@@ -137,6 +161,7 @@ function main() {
   const additional_context =
     clockBlock +
     mcpBlock +
+    mandatoryReadsBlock +
     cloudHandoffHint +
     buildCioDesktopPathGuardBlock() +
     buildSessionStartConstitutionReadBlock();

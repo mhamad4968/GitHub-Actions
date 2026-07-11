@@ -35,4 +35,11 @@
 ```powershell
 npm run verify:constitution-evening
 npm run verify:team-ops-antihollow
+npm run verify:formalization-h9-review
 ```
+
+## H9 review（2026-07-25 · R3-10）
+
+- **正本**: `data/cio-formalization-h9-review.json`
+- **runbook**: `docs/runbooks/cio-formalization-h9-review.md`
+- **L4 適用**: 期限後 CEO が GREEN/RED を `--record-decision` で記録 → G3 で registry 反映

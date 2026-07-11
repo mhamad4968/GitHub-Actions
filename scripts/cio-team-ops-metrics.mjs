@@ -10,6 +10,7 @@ import { read5038Stamp } from './lib/cio-four-ai-governance.mjs';
 import { loadState } from './lib/cio-grok-execution.mjs';
 import { liteUsageLogPath, lastTierPath } from './lib/cio-turn-start-tier.mjs';
 import { sessionTouchesCustomize } from './lib/cio-team-ops-git-scope.mjs';
+import { appendMetricsDaily } from './lib/cio-formalization-h9-review.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -142,6 +143,7 @@ function main() {
   fs.mkdirSync(outDir, { recursive: true });
   const outPath = path.join(outDir, 'metrics-snapshot.json');
   fs.writeFileSync(outPath, `${JSON.stringify(snapshot, null, 2)}\n`, 'utf8');
+  appendMetricsDaily(root, snapshot);
 
   console.log('[cio:team-ops-metrics] snapshot →', outPath);
   console.log(`  skip5038Rate=${skip5038Rate}% liteUsage=${liteRate}% reportFails=${reportFails}`);

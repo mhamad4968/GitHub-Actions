@@ -1,0 +1,73 @@
+{
+  "version": "2026-07-11-r3-9",
+  "description": "Phase 1 E1–E9 エッセンス — 薄型 .mdc needle アンカー（削除・弱体化禁止）",
+  "checklist": "docs/constitution/phase1-essence-preservation-checklist.md",
+  "verify": "verify:constitution-e1-e9-needles",
+  "entries": [
+    {
+      "id": "E1",
+      "essence": "開発=AI・確認=浜田",
+      "mdc": "constitution-enforcement-core.mdc",
+      "needles": ["§35-1", "§56-1a"]
+    },
+    {
+      "id": "E2",
+      "essence": "§41 一問一答",
+      "mdc": "creation-timing-ask.mdc",
+      "needles": ["§41"]
+    },
+    {
+      "id": "E3",
+      "essence": "§50-3-8 盲点3点＋約3行突合",
+      "mdc": "deepseek-cursor-spec-division.mdc",
+      "needles": ["§50-3-8", "約 3 行突合"]
+    },
+    {
+      "id": "E4",
+      "essence": "2者検証（DeepSeek/Kimi）",
+      "mdc": "constitution-enforcement-core.mdc",
+      "needles": ["2者", "ダブルチェック"]
+    },
+    {
+      "id": "E5",
+      "essence": "報告 V2 七行・§1e",
+      "mdc": "every-turn-rules-confirm.mdc",
+      "needles": ["§1e", "CHECKSHEET_VERSION: 2"]
+    },
+    {
+      "id": "E6",
+      "essence": "§1-2-2 silent fallback 禁止",
+      "mdc": "cio-composer-escalation-interlock.mdc",
+      "needles": ["§1-2-2"]
+    },
+    {
+      "id": "E7",
+      "essence": "§51 並列禁止（書込並列）",
+      "mdc": "cio-context-dissolution-interlock.mdc",
+      "needles": ["§51"]
+    },
+    {
+      "id": "E8",
+      "essence": "Tier B GO",
+      "mdc": "mcp-tool-discipline.mdc",
+      "needles": ["Tier B"]
+    },
+    {
+      "id": "E9",
+      "essence": "方式B 4AI（上乗せ）",
+      "mdc": "mode-b-canonical.mdc",
+      "needles": ["§1-2-3-4", "方式B"]
+    }
+  ],
+  "agentsNeedles": [
+    { "id": "E1", "needle": "§35-1" },
+    { "id": "E2", "needle": "§41" },
+    { "id": "E3", "needle": "§50-3-8" },
+    { "id": "E4", "needle": "2者" },
+    { "id": "E5", "needle": "§1e" },
+    { "id": "E6", "needle": "§1-2-2" },
+    { "id": "E7", "needle": "§51" },
+    { "id": "E8", "needle": "Tier B" },
+    { "id": "E9", "needle": "§1-2-3-4" }
+  ]
+}

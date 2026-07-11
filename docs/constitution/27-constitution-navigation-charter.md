@@ -1,7 +1,8 @@
 # 憲法ナビゲーション — チャーター（2026-07-11 · META）
 
 **地位**: AI 向け **読み方の単一窓**（`AGENTS.md` § 意味は非置換）  
-**機械正本**: `data/cio-rule-entry-points.json` · `data/constitution-genre-catalog.json`
+**機械正本**: `data/cio-rule-entry-points.json` · `data/constitution-genre-catalog.json`  
+**変更許可**: `28-ceo-go-phases-charter.md`（G0–G3 · 憲法変更前に必読）
 
 ## 4 層モデル
 
@@ -43,4 +44,10 @@ L3 運用+META … 17–18（4AI）· 19–24（KERNEL）· 25–27（チャー�
 ```powershell
 npm run verify:constitution-evening
 npm run verify:constitution-genre-kernels
+npm run verify:constitution-e1-e9-needles
 ```
+
+## Phase 1 E1–E9（エッセンス保全）
+
+**正本**: `data/cio-e1-e9-needles.json`（各 ID → 薄型 `.mdc` needle）· 人間表 `phase1-essence-preservation-checklist.md`  
+**3 入口（E1/E2/E3）と別系統** — Phase 1 は **憲法エッセンス退行防止**（削除・弱体化禁止）。

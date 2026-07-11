@@ -2,28 +2,22 @@
  * Git working tree scope — Lite lane / session audit
  */
 import { spawnSync } from 'node:child_process';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import {
+  getLiteLimits,
+  loadDocLaneLiteScope,
+  pathForbiddenForLiteScope,
+} from './cio-doc-lane-lite-scope.mjs';
 
-/** v3.2 doc-lane lite コア禁止 */
-export const LITE_FORBIDDEN_PREFIXES = [
-  'customize/',
-  '.cursor/rules/',
-  'AGENTS.md',
-];
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+const _scope = loadDocLaneLiteScope(root);
 
-/** 憲法系パス（一般 L1 の package.json 別名追加は対象外） */
-export const LITE_FORBIDDEN_CONSTITUTION_PREFIXES = [
-  'data/cio-',
-  'data/rules-',
-  'scripts/verify-constitution',
-  'docs/constitution/25-',
-  'docs/constitution/26-',
-  'docs/constitution/27-',
-  'docs/plans/2026-07-11-constitution',
-];
-
-export const LITE_FORBIDDEN_EXACT = ['scripts/cio-turn-start.mjs'];
-
-export const LITE_MAX_LINES = 20;
+/** v3.2 doc-lane lite コア禁止（JSON 正本と同期 — verify:doc-lane-lite-scope） */
+export const LITE_FORBIDDEN_PREFIXES = _scope.forbiddenPrefixes;
+export const LITE_FORBIDDEN_CONSTITUTION_PREFIXES = _scope.forbiddenConstitutionPrefixes;
+export const LITE_FORBIDDEN_EXACT = _scope.forbiddenExact;
+export const LITE_MAX_LINES = getLiteLimits(_scope).maxAddedLines;
 
 function gitDiff(root) {
   const r = spawnSync('git', ['diff', 'HEAD'], { cwd: root, encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 });
@@ -70,19 +64,15 @@ export function sessionTouchesCustomize(root) {
 }
 
 export function pathForbiddenForLite(relPath) {
-  const p = String(relPath || '').replace(/\\/g, '/');
-  if (LITE_FORBIDDEN_PREFIXES.some((pre) => p === pre || p.startsWith(pre))) return true;
-  if (LITE_FORBIDDEN_CONSTITUTION_PREFIXES.some((pre) => p.startsWith(pre))) return true;
-  if (LITE_FORBIDDEN_EXACT.includes(p)) return true;
-  if (/deploy:/i.test(p)) return true;
-  return false;
+  return pathForbiddenForLiteScope(_scope, relPath);
 }
 
 export function validateLiteScope(root) {
   const paths = listChangedPaths(root);
+  const { maxPaths, maxAddedLines } = getLiteLimits(_scope);
   if (paths.length === 0) return { ok: true, paths: [] };
-  if (paths.length > 1) {
-    return { ok: false, reason: `Lite は 1 path のみ（現在 ${paths.length}）` };
+  if (paths.length > maxPaths) {
+    return { ok: false, reason: `Lite は ${maxPaths} path のみ（現在 ${paths.length}）` };
   }
   const only = paths[0];
   if (pathForbiddenForLite(only)) {
@@ -90,8 +80,8 @@ export function validateLiteScope(root) {
   }
   const diff = gitDiff(root);
   const added = countAddedLines(diff);
-  if (added > LITE_MAX_LINES) {
-    return { ok: false, reason: `Lite は追加 ${LITE_MAX_LINES} 行以下（現在 +${added}）` };
+  if (added > maxAddedLines) {
+    return { ok: false, reason: `Lite は追加 ${maxAddedLines} 行以下（現在 +${added}）` };
   }
   return { ok: true, paths: [only], addedLines: added };
 }

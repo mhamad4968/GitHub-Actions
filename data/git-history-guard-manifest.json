@@ -3,7 +3,7 @@
   "note": "git-history-alignment が保護するコマンド・緩和禁止パターン。verify:git-history-alignment / git-history-mcp 連動。",
   "generations": [
     {
-      "hash": "1ebbd789",
+      "hash": "fa7ace6b",
       "label": "feat(constitution): lifecycle-v2 registry slim, charters 26/27, verify probes",
       "at": "2026-07-11"
     },

@@ -43,10 +43,19 @@ function main() {
   }
 
   const must = ['§41', '§50-3-8', '§50-3-11', '§35-1'];
+  const mustGenres = [
+    '26-formalization-lifecycle-charter.md',
+    '27-constitution-navigation-charter.md',
+    '28-ceo-go-phases-charter.md',
+  ];
   if (fs.existsSync(mapPath)) {
-    const m = JSON.parse(fs.readFileSync(mapPath, 'utf8')).sectionToGenre;
+    const m = JSON.parse(fs.readFileSync(mapPath, 'utf8'));
     for (const s of must) {
-      if (!m[s]?.length) issues.push(`map missing required ${s}`);
+      if (!m.sectionToGenre[s]?.length) issues.push(`map missing required ${s}`);
+    }
+    const g2s = m.genreToSection || {};
+    for (const g of mustGenres) {
+      if (!g2s[g]?.length) issues.push(`map missing genre ${g}`);
     }
   }
 

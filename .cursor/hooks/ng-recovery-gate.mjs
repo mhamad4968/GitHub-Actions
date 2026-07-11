@@ -100,7 +100,7 @@ export function buildSessionStartConstitutionReadBlock() {
   return (
     '\n\n【憲法・最重要ルール・先読み（CEO 指示・省略禁止）】\n' +
     '**本セッションで本題に入る前に**、次を **この順で** Read ツールで通読する（細分化・必ず最初）。\n' +
-    `- 正本: \`${CONSTITUTION_FIRST_READ_ORDER_REL}\`（番号順に列挙された各ファイルを **1 件ずつ** Read）。${orderHint}\n` +
+    `- 正本: \`data/cio-rule-entry-points.json\` **E1 mandatory_reads**（wake 7 + session 2）および \`${CONSTITUTION_FIRST_READ_ORDER_REL}\`（番号順に列挙された各ファイルを **1 件ずつ** Read）。${orderHint}\n` +
     '- 併せて `chat-sessions/checkpoint-latest.md` があれば **先頭 200 行**を Read（長い場合は要約方針に従い分割）。\n' +
     '完了後、`[ルール確認]` に **実際に Read したパス**を列挙する。'
   );

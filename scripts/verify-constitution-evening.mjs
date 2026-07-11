@@ -9,17 +9,13 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
-const E1_E9_NEEDLES = [
-  { id: 'E1', needle: '§35-1' },
-  { id: 'E2', needle: '§41' },
-  { id: 'E3', needle: '§50-3-8' },
-  { id: 'E4', needle: '2者' },
-  { id: 'E5', needle: '§1e' },
-  { id: 'E6', needle: '§1-2-2' },
-  { id: 'E7', needle: '§51' },
-  { id: 'E8', needle: 'Tier B' },
-  { id: 'E9', needle: '§1-2-3-4' },
-];
+const E1_E9_JSON = path.join(root, 'data', 'cio-e1-e9-needles.json');
+
+function loadE1E9AgentsNeedles() {
+  if (!fs.existsSync(E1_E9_JSON)) return null;
+  const data = JSON.parse(fs.readFileSync(E1_E9_JSON, 'utf8'));
+  return data.agentsNeedles || null;
+}
 
 const RETIRED_IDS = ['H0', 'H3', 'H4', 'H6', 'H7', 'C3'];
 
@@ -63,8 +59,14 @@ function main() {
     fail('AGENTS.md missing navigation charter pointer');
   }
 
-  for (const { id, needle } of E1_E9_NEEDLES) {
+  const e1e9Needles = loadE1E9AgentsNeedles();
+  if (!e1e9Needles) fail('missing data/cio-e1-e9-needles.json agentsNeedles');
+  for (const { id, needle } of e1e9Needles) {
     if (!agents.includes(needle)) fail(`E1-E9: AGENTS.md missing ${id} needle "${needle}"`);
+  }
+
+  if (!runNpm('verify:constitution-e1-e9-needles')) {
+    fail('verify:constitution-e1-e9-needles failed (Phase 1 .mdc anchors)');
   }
 
   for (const rel of [
@@ -88,6 +90,9 @@ function main() {
     if (!item.gate || !item.verifyProbe) {
       fail(`registry ${item.id} missing gate or verifyProbe`);
     }
+    if (item.reviewDate && !item.reviewSpec) {
+      fail(`registry ${item.id} has reviewDate but missing reviewSpec`);
+    }
     const probe = String(item.verifyProbe);
     if (!probe.startsWith('verify:') && !probe.startsWith('cio:')) {
       fail(`registry ${item.id} invalid verifyProbe`);
@@ -103,6 +108,9 @@ function main() {
   const e1 = entries.entrances.find((e) => e.id === 'E1-every-turn');
   if (!e1?.mandatory_reads?.wake_once_per_session?.length) {
     fail('E1 missing mandatory_reads.wake_once_per_session');
+  }
+  if (!entries.phase1Essence?.needles?.includes('cio-e1-e9-needles.json')) {
+    fail('entry-points missing phase1Essence needles pointer');
   }
 
   const charter = path.join(root, 'docs/constitution/25-constitution-no-replacement-charter.md');
@@ -131,8 +139,42 @@ function main() {
     fail('git-scope missing constitution lite forbidden prefixes');
   }
 
-  if (!runNpm('verify:team-ops-antihollow')) {
-    fail('verify:team-ops-antihollow failed (H4 retired replacement)');
+  const liteScopePath = path.join(root, 'data/cio-doc-lane-lite-scope.json');
+  if (!fs.existsSync(liteScopePath)) fail('missing data/cio-doc-lane-lite-scope.json');
+
+  if (!runNpm('verify:doc-lane-lite-scope')) {
+    fail('verify:doc-lane-lite-scope failed');
+  }
+
+  if (!runNpm('verify:formalization-registry-probes')) {
+    fail('verify:formalization-registry-probes failed (registry probe spawn)');
+  }
+
+  if (!runNpm('verify:mandatory-reads-stamp')) {
+    fail('verify:mandatory-reads-stamp failed (mandatory_reads cold-start wiring)');
+  }
+
+  if (!runNpm('verify:constitution-meta-charters-desktop')) {
+    fail('verify:constitution-meta-charters-desktop failed (Desktop META 26–28)');
+  }
+
+  if (!runNpm('verify:constitution-spec-integration')) {
+    fail('verify:constitution-spec-integration failed (spec index · DoD 6)');
+  }
+
+  if (!runNpm('verify:formalization-h9-review')) {
+    fail('verify:formalization-h9-review failed (H9 review wiring)');
+  }
+
+  const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+  const rulesOpt = pkg.scripts?.['verify:rules-optimization'] || '';
+  if (!rulesOpt.includes('verify-constitution-evening')) {
+    fail('verify:rules-optimization missing verify-constitution-evening');
+  }
+
+  const chain = readJson('data/cio-session-close-chain.json');
+  if (!chain.fullClose?.steps?.some((s) => s.npm === 'verify:constitution-evening')) {
+    fail('cio-session-close-chain.fullClose missing verify:constitution-evening step');
   }
 
   const agenda = fs.readFileSync(

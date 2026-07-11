@@ -5,17 +5,19 @@
 
 ## 必須継承（削除・弱体化禁止）
 
-| ID | エッセンス | 正本 |
-|----|-----------|------|
-| E1 | 開発=AI・確認=浜田 | §35-1 / §56-1a |
-| E2 | §41 一問一答 | AGENTS §41 |
-| E3 | §50-3-8 盲点3点＋約3行突合 | §50-3-8 / §50-3-11 ステップ1-2 |
-| E4 | 2者検証（DeepSeek/Kimi） | constitution-enforcement-core |
-| E5 | 報告 V2 七行・§1e | every-turn-rules-confirm |
-| E6 | §1-2-2 silent fallback 禁止 | §1-2-2 / cio:guard:composer-interlock |
-| E7 | §51 並列禁止（書込並列） | AGENTS §51 |
-| E8 | Tier B GO | §52 |
-| E9 | 方式B 4AI（上乗せ） | §1-2-3-4 / mode-b-canonical |
+| ID | エッセンス | 正本 | 薄型 .mdc（R3-9） |
+|----|-----------|------|-------------------|
+| E1 | 開発=AI・確認=浜田 | §35-1 / §56-1a | `constitution-enforcement-core.mdc` |
+| E2 | §41 一問一答 | AGENTS §41 | `creation-timing-ask.mdc` |
+| E3 | §50-3-8 盲点3点＋約3行突合 | §50-3-8 / §50-3-11 ステップ1-2 | `deepseek-cursor-spec-division.mdc` |
+| E4 | 2者検証（DeepSeek/Kimi） | constitution-enforcement-core | `constitution-enforcement-core.mdc` |
+| E5 | 報告 V2 七行・§1e | every-turn-rules-confirm | `every-turn-rules-confirm.mdc` |
+| E6 | §1-2-2 silent fallback 禁止 | §1-2-2 / cio:guard:composer-interlock | `cio-composer-escalation-interlock.mdc` |
+| E7 | §51 並列禁止（書込並列） | AGENTS §51 | `cio-context-dissolution-interlock.mdc` |
+| E8 | Tier B GO | §52 | `mcp-tool-discipline.mdc` |
+| E9 | 方式B 4AI（上乗せ） | §1-2-3-4 / mode-b-canonical | `mode-b-canonical.mdc` |
+
+**機械検証**: `npm run verify:constitution-e1-e9-needles` · `data/cio-e1-e9-needles.json`
 
 ## 整理で行ったこと（削除ではない）
 
