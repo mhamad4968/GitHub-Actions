@@ -3,6 +3,14 @@
 Windows から開きやすい控え: C:\Users\mhamada202408224\Desktop\AI緊急用\HANDOFF-HUMAN.txt
 ※ C:\Users\mhamada202408224\kintone-ai-lab は chat-sessions 無しの別ツリーなので、このファイルは置かない。
 
+日時(JST): 2026-07-11（土）白天終了 — **体制 v3.3 完了 · MCP 完了**
+いま何してた（1行）: AI チーム運用最適化 v3.3 Batch 1–4 push 済 · MCP governance 26 本 · 白天体制 verify 全緑。
+次にやる1つ: **夜セッション — 憲法改善をすべてやり切る（やり残し禁止）** — 論点 1–4 合意→実装→verify→commit 完走（`docs/plans/2026-07-11-constitution-evening-agenda.md`）
+GO待ち（なし／内容）: 憲法 — 論点ごと CEO GO（4 件すべて実装まで）
+触らないで（なし／内容）: 688 / 677–679 / SKYSEA · kintone implement · 憲法完了前の依頼効率化ツール
+
+推奨フロー（セッション切替）: ① **`00-NEW-SESSION-STARTER_yyyymmdd.txt`（JST・Explorer 名前順で先頭・常にこのファイル名）全文**（**v3.27+**: **「■ 貼付単独で完走」** が **唯一の詳細正本**（項番 -1〜0・**v3.28** 以後の改定もここ優先）。checkpoint 重複貼付不要。貼付推奨は verify 最終行）② この 5 行（**任意**）③ **項番 -0** → ④ **`session:bootstrap` 一括**。**日終わり（R17 必須）**: `npm run cio:session:close-git -- --execute --auto-stage --message "…"`（desktop sync 内包）。
+
 日時(JST): 2026-07-09（水）終了 — **674 リスト出力 · 699 アコーディオン · Grok L2b**
 いま何してた（1行）: 674 列選択+Excel rev259 · 699 件数クリックで一覧開閉 rev123 · Grok L2b governance push 済。
 次にやる1つ: **736 PH1c** 行並び替え implement（**7/10〜**）· **698/700** 目視

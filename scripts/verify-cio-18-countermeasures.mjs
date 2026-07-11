@@ -56,9 +56,11 @@ function main() {
   }
 
   const turnStart = fs.readFileSync(path.join(root, 'scripts/cio-turn-start.mjs'), 'utf8');
+  const turnTier = fs.readFileSync(path.join(root, 'scripts/lib/cio-turn-start-tier.mjs'), 'utf8');
+  const turnBundle = `${turnStart}\n${turnTier}`;
   for (const needle of ['【ターン契約', 'Goal:', 'Touch:', 'SPEC_TOUCHED:']) {
-    if (!turnStart.includes(needle)) {
-      issues.push(`cio-turn-start.mjs missing turn contract: ${needle}`);
+    if (!turnBundle.includes(needle)) {
+      issues.push(`turn-start bundle missing turn contract: ${needle}`);
     }
   }
 

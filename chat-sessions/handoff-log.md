@@ -4509,3 +4509,39 @@ npm run cio:morning:ready
 **触らない**: 688 / 677–679 / SKYSEA / 憲法条文（今夜まで）
 
 ---
+
+### 2026-07-11 15:53 JST — **MCP §8.3 DEL 前ゲート再検証 · 白天レーン完了確認**
+
+**要約**:
+- **P2.5 SCR〜P5**: 朝セッション（08:16–08:22）で **完了済** — mintlify DEL · cyber-news DEL-2 · governance profile · 26 本
+- **§8.3 全 9 コマンド exit 0**（本ターン再実行）+ `cio:mcp:gate` · `cio:health` GREEN
+- **SCR-2 残**: `repo-mcp-overlays.mjs` コメント mintlify 除去（コード本体は既に OK）
+- **user mcp.json**: mintlify / cyber-news **不在**（grep 0 件）
+
+**次の1手**: **夜レーン** — 憲法改善 **議論→実装→verify→commit 完走**（`docs/plans/2026-07-11-constitution-evening-agenda.md` 論点 1–4）
+
+**GO待ち**: 憲法改善 — 論点ごと CEO GO（実装完走が DoD · 議論のみで終了しない）
+
+**触らない**: 688 / 677–679 / SKYSEA
+
+---
+
+### 2026-07-11 16:02 JST — **夜レーン必達記録 — 憲法改善すべてやり切り（浜田指示）**
+
+**CEO 指示**: 夜は憲法を重点的に · **やり残し禁止** · **憲法の改善をすべてやり切る**
+
+**記録先**:
+- `docs/plans/2026-07-11-constitution-evening-agenda.md` — 4 論点チェックリスト + DoD
+- `chat-sessions/checkpoint-latest.md` — 夜レーン必達表
+- `chat-sessions/evening-reflect-queue.md` — アクティブ未消化 1 件
+- `chat-sessions/HANDOFF-HUMAN.txt` — 次にやる1つ 更新
+
+**夜の DoD**: 論点 1–4 各 **合意→実装→verify→commit** · チェックリスト全 [x] · `verify:constitution-handoff` 等 exit 0 · Desktop sync まで
+
+**次の1手**: 夜セッション開始 → **論点 1（H8 ティア）** から着手 · 4 件すべて完走まで継続
+
+**GO待ち**: 論点ごと CEO GO
+
+**触らない**: 688 / 677–679 / SKYSEA · 憲法完了前の依頼効率化ツール
+
+---

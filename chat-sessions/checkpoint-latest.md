@@ -5,9 +5,9 @@
 
 <!-- 部分GOスコープ（D2）例: **触らない** — 688 の猛暑日以外 / 677–679 / SKYSEA 7月 -->
 
-**最終更新**: 2026-07-11 JST — **非憲法ルール最適化 GO-B 完了**（spec v1.0 · P1–P3 · `verify:rules-optimization` OK）· **MCP DEL-2 済**（governance profile · 26 本）
+**最終更新**: 2026-07-11 16:05 JST — **白天体制レーン完了**（v3.3 · MCP · rules-opt verify 全緑）· **夜=憲法改善すべてやり切り（必達）**
 
-**Git**: **`384bde11`** = `origin/main` — push 済
+**Git**: **`b1882645`** = `origin/main` — push 済（本セッション close commit 後に更新）
 
 ### 本日アクティブ（BUILD/rev — 2026-07-10）
 
@@ -41,7 +41,16 @@
 | **736** | **§9.6 凍結** · **7/7〜 AI 主導 §41**（736 のみ） |
 | **712** | 削除済 — deploy 禁止 |
 
-**次の1手**: **夜セッション** — **憲法改善・統合・新憲法要否**（重点検討）→ その後 **依頼効率化ツール** 開発要否 · MCP は **governance profile** 維持 · kintone implement は別レーン
+**次の1手**: **夜セッション — 憲法改善をすべてやり切る（やり残し禁止）** — 論点 1–4 各 **合意→実装→verify→commit** 完走 · 正本 `docs/plans/2026-07-11-constitution-evening-agenda.md` チェックリスト全 [x] が DoD → その後 **依頼効率化ツール** 開発要否 · MCP は **governance profile** 維持 · kintone implement は別レーン
+
+### 夜レーン必達（2026-07-11 浜田指示 · 忘れ禁止）
+
+| 優先 | 内容 |
+|:----:|------|
+| **1** | 憲法改善 **4 論点すべて** 実装まで完走（議論のみ終了 **禁止**） |
+| **2** | `verify:constitution-handoff` + `verify:rules-optimization` + `smoke:quiet` exit 0 |
+| **3** | commit/push · handoff · Desktop sync まで締め |
+| **後** | 依頼効率化ツール要否（憲法 **完了後のみ**） |
 **ルール最適化**: `npm run verify:rules-optimization` · discovery map `docs/runbooks/cio-rules-discovery-map.md` · **浜田 ACK** で spec §18 完了宣言
 **736 7月**: `docs/runbooks/736-july-2026-schedule.md` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
 

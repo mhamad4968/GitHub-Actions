@@ -1,5 +1,5 @@
 /**
- * リポ `.cursor/mcp.json` のワークスペース専用 MCP（figma / colors-fonts / mintlify）を
+ * リポ `.cursor/mcp.json` のワークスペース専用 MCP（figma / colors-fonts / repo-tree 等）を
  * Windows 正本へマージするための正規化ヘルパ。
  */
 import fs from 'node:fs';

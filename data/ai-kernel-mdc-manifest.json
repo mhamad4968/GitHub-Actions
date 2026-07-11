@@ -7,7 +7,9 @@
     "session-boundary-close-gate.mdc": "2026-06-21 Lifecycle v2 CLOSE 正本は runbook（AI-KERNEL 4要素対象外）",
     "cio-deploy-ledger-gate.mdc": "2026-06-21 B v2 deploy ledger 正本は runbook（AI-KERNEL 4要素対象外）",
     "doc-lane-gate.mdc": "2026-06-27 doc-lane ドメイン glob（R-DOC 正本は runbook・AI-KERNEL 4要素対象外）",
-    "security-training-materials.mdc": "2026-07-01 セキュリティ勉強会資料 glob（R-SEC 正本は spec・AI-KERNEL 4要素対象外）"
+    "security-training-materials.mdc": "2026-07-01 セキュリティ勉強会資料 glob（R-SEC 正本は spec・AI-KERNEL 4要素対象外）",
+    "persist-policies.mdc": "2026-07-11 薄型ルータ（正本 .rag/extra-docs/persist-policies.md・AI-KERNEL 4要素対象外）",
+    "preflight-checklist.mdc": "2026-07-11 deploy 前索引ルータ（正本 cio-discipline-always + runbook・AI-KERNEL 4要素対象外）"
   },
   "requiredHeadings": {
     "premise": "## 前提条件",
@@ -77,7 +79,9 @@
     "cio-kintone-live-schema-gate.mdc",
     "cio-git-history-alignment-gate.mdc",
     "doc-lane-gate.mdc",
-    "security-training-materials.mdc"
+    "security-training-materials.mdc",
+    "persist-policies.mdc",
+    "preflight-checklist.mdc"
   ],
   "exemptMarker": "AI-KERNEL-EXEMPT:"
 }
