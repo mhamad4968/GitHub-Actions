@@ -182,16 +182,23 @@
     });
   }
 
-  function syncHeatReference() {
-    const y = currentEstimateYear();
+  function syncHeatReferenceForState(s) {
+    const y =
+      s.estimate_year != null && !Number.isNaN(s.estimate_year)
+        ? s.estimate_year
+        : currentEstimateYear();
     if (!y || Number.isNaN(y)) {
-      state.heatRef = null;
-      state.heatAnnualAvg = null;
+      s.heatRef = null;
+      s.heatAnnualAvg = null;
       return;
     }
-    const ref = getRef5yr();
-    state.heatRef = buildHeatReferenceAverages(ref, y);
-    state.heatAnnualAvg = buildHeatAnnualReferenceAvg(ref, y);
+    const ref = s.ref5yr || REF5YR;
+    s.heatRef = buildHeatReferenceAverages(ref, y);
+    s.heatAnnualAvg = buildHeatAnnualReferenceAvg(ref, y);
+  }
+
+  function syncHeatReference() {
+    syncHeatReferenceForState(state);
   }
 
   function heatMonthAvgMap() {
@@ -250,7 +257,8 @@
       s.csvObsWind = s.obs_location;
       s.csvObsRain = s.obs_location;
     }
-    syncRef5yrFromDaily();
+    applyRef5yrFromPersisted(s);
+    syncHeatReferenceForState(s);
     return s;
   }
 
@@ -444,13 +452,32 @@
     return state.ref5yr || REF5YR;
   }
 
-  function syncRef5yrFromDaily() {
-    let ref = rebuildRef5yrFromDailyCsv(cloneRef5yr(REF5YR), state.wind, state.rain);
-    if (state.wbgtMonthly && state.wbgtMonthly.length) {
+  function applyRef5yrFromPersisted(s) {
+    let ref = rebuildRef5yrFromDailyCsv(cloneRef5yr(REF5YR), s.wind, s.rain);
+    if (s.wbgtMonthly && s.wbgtMonthly.length) {
       ref = JSON.parse(JSON.stringify(ref));
-      ref[HEAT_REF5YR_KEY] = monthlyRowsToHeatBlock(state.wbgtMonthly);
+      ref[HEAT_REF5YR_KEY] = monthlyRowsToHeatBlock(s.wbgtMonthly);
+      const years = [];
+      const seen = {};
+      s.wbgtMonthly.forEach(function (r) {
+        if (!seen[r.year]) {
+          seen[r.year] = true;
+          years.push(r.year);
+        }
+      });
+      years.sort(function (a, b) {
+        return a - b;
+      });
+      if (years.length) {
+        ref.heatPeriod =
+          years.length === 1 ? String(years[0]) : years[0] + '〜' + years[years.length - 1];
+      }
     }
-    state.ref5yr = ref;
+    s.ref5yr = ref;
+  }
+
+  function syncRef5yrFromDaily() {
+    applyRef5yrFromPersisted(state);
     syncHeatReference();
   }
 
@@ -554,7 +581,8 @@
     }
   }
 
-  function runCalc() {
+  function runCalc(opts) {
+    opts = opts || {};
     readHolidayManualFromForm({ skipSaturday: true });
     applySaturdayAutoToHolidayManual();
     fillSaturdayInputsFromState();
@@ -582,7 +610,7 @@
     state.estimate_year = estimateYear;
     state.holiday_fiscal_year = estimateYear;
     syncHeatReference();
-    state.dirty = true;
+    if (opts.markDirty !== false) state.dirty = true;
     return state.lastResult;
   }
 
@@ -602,7 +630,8 @@
     }
   }
 
-  function readFormIntoState() {
+  function readFormIntoState(opts) {
+    opts = opts || {};
     const g = function (id) {
       const el = document.getElementById(id);
       return el ? el.value : '';
@@ -617,7 +646,7 @@
     state.show_heat_reference = showHeatEl ? showHeatEl.checked : false;
     state.print_heat_reference = printHeatEl ? printHeatEl.checked : false;
     readHolidayManualFromForm();
-    markDirty();
+    if (opts.markDirty !== false) markDirty();
   }
 
   function fillFormFromState() {
@@ -1967,8 +1996,8 @@
 
   function openPaintClientReportPrint() {
     try {
-      readFormIntoState();
-      runCalc();
+      readFormIntoState({ markDirty: false });
+      runCalc({ markDirty: false });
       if (
         !state.lastResult ||
         !state.lastResult.monthlyRain ||
@@ -2087,8 +2116,8 @@
     }
     html +=
       '<p style="font-size:12px;color:#64748b;margin:12px 0 0;">' +
-      '※ WBGT≥31 の時間数÷8hで月別換算日数を算出し、見積作成年の過去5年同月平均を表示します。' +
-      ' <strong>参考表示のみ</strong> — 稼働可能日数・不稼働率・雨休率・算出結果には含めません。' +
+      '※ WBGT ≥ 31の時間数 ÷ 8hで月別換算日数を算出し、見積作成年の過去5年同月平均を表示します。' +
+      ' 参考表示のみであり、稼働可能日数・不稼働率・雨休率・算出結果には含まれません。' +
       '</p>';
     return html;
   }
@@ -2265,19 +2294,21 @@
       }
       fillFormFromState();
       try {
-        runCalc();
+        runCalc({ markDirty: false });
         fillFormFromState();
       } catch (_e2) {
         /* 再算出不可時は保存値のみ表示 */
       }
+      state.dirty = false;
+      updateDirtyBanner();
     });
   }
 
   function saveTo687() {
-    readFormIntoState();
+    readFormIntoState({ markDirty: false });
     if (!state.project_name.trim()) throw new Error('工事名を入力してください');
     if (state.estimate_year == null) throw new Error('見積作成年を入力してください');
-    if (!state.lastResult) runCalc();
+    if (!state.lastResult) runCalc({ markDirty: false });
     const record = stateToKintoneRecord(state, true);
     if (state.recordId) {
       return apiPutRecord(state.recordId, state.revision, record).then(function (resp) {
@@ -2286,7 +2317,9 @@
         state.calculated_at = new Date().toISOString();
         updateDirtyBanner();
         alert('保存しました（案件ID: ' + state.recordId + '）');
-        return loadProjectList();
+        return loadProjectList().then(function () {
+          return loadRecord(state.recordId);
+        });
       });
     }
     return apiPostRecord(record).then(function (resp) {
@@ -2326,6 +2359,11 @@
     fillFormFromState();
     const sel = document.getElementById('wd688-project-select');
     if (sel) sel.value = '';
+    try {
+      sessionStorage.removeItem(SESSION_RECORD_KEY);
+    } catch (_e) {
+      /* noop */
+    }
   }
 
   function injectHideListCss() {
@@ -2558,7 +2596,7 @@
       reader.onload = function () {
         try {
           const text = decodeCsvArrayBuffer(reader.result);
-          readFormIntoState();
+          readFormIntoState({ markDirty: false });
           const loc = resolveCsvObsLocation(pendingCsvKind, text);
           if (pendingCsvKind === 'wbgt') {
             const hourly = parseCsvWbgtHourly(text);
@@ -2576,7 +2614,7 @@
               wbgtMsg += '\n\n※ ' + state.lastWbgtLocationNote;
             }
             try {
-              if (state.lastResult) runCalc();
+              if (state.lastResult) runCalc({ markDirty: false });
               else syncHeatReference();
               fillFormFromState();
               wbgtMsg += ' 表示を更新しました。';
@@ -2609,7 +2647,7 @@
             rows.length +
             ' 行取込みました。過去5年表（全閾値）を更新しました。';
           try {
-            runCalc();
+            runCalc({ markDirty: false });
             fillFormFromState();
             msg += ' 再算出も完了しました。';
           } catch (calcErr) {

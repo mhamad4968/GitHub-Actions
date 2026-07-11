@@ -9,6 +9,8 @@ import {
   mergeWbgtCsvIntoRef5yr,
   buildHeatReferenceAverages,
   buildHeatAnnualReferenceAvg,
+  heatBlockToMonthlyRows,
+  monthlyRowsToHeatBlock,
   HEAT_REF5YR_KEY,
 } from './workdays-heat-reference.mjs';
 
@@ -48,6 +50,16 @@ const bundleAfter = calcWorkdaysBundleForEstimate({
 });
 assert(bundleBefore.scaffold === bundleAfter.scaffold, 'scaffold unchanged with heat data');
 assert(bundleBefore.paint === bundleAfter.paint, 'paint unchanged with heat data');
+
+// 687 wbgt_data 再読込経路: 月別行 → heat block → 過去5年表
+const persistedRows = heatBlockToMonthlyRows(merged[HEAT_REF5YR_KEY]);
+assert(persistedRows.length > 0, 'heatBlockToMonthlyRows for persist');
+const reloadedBlock = monthlyRowsToHeatBlock(persistedRows);
+const reloadedRef = { [HEAT_REF5YR_KEY]: reloadedBlock };
+const reloadedHeat = buildHeatReferenceAverages(reloadedRef, 2026);
+assert(reloadedHeat && reloadedHeat.months.length === 12, 'reloaded heat monthly averages');
+const reloadedJuly = reloadedHeat.months.find((r) => r.m === 7);
+assert(reloadedJuly && reloadedJuly.avg > 0, 'reloaded July heat avg > 0');
 
 console.log('[workdays:heat-reference-gate] OK', {
   hourly_rows: hourly.length,
