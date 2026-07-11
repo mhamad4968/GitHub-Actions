@@ -1,0 +1,8 @@
+{
+  "id": "R-688-DEPLOY-01",
+  "category": "R",
+  "status": "implemented",
+  "processed_at": "2026-07-11",
+  "note": "実装GO後 · 688 customize 修正＝同一セッション deploy 必須",
+  "target": "docs/runbooks/workdays-deploy-checklist.md"
+}

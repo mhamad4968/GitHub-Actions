@@ -1,0 +1,8 @@
+{
+  "id": "R-GO-BOUNDARY-01",
+  "category": "R",
+  "status": "implemented",
+  "processed_at": "2026-07-11",
+  "note": "F0: 確認A/G0調査/G2実装GO — charter + 18-重要確認 + AGENTS",
+  "target": "docs/constitution/28-ceo-go-phases-charter.md"
+}

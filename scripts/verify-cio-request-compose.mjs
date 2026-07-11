@@ -30,7 +30,11 @@ const needles = [
   },
   {
     rel: 'docs/runbooks/cio-request-compose.md',
-    needles: ['浜田 OK', 'cio:request:compose', '【レーン】'],
+    needles: ['浜田 OK', 'cio:request:compose', '【レーン】', '確認 A', 'G0'],
+  },
+  {
+    rel: 'chat-sessions/desktop-ai-emergency-read-pack/36-REQUEST-COMPOSE-INDEX.txt',
+    needles: ['GO 段階対応表', '--phase investigate'],
   },
 ];
 
@@ -72,6 +76,25 @@ function main() {
   }
   if (!sample.block.includes('app 736')) {
     console.error('[verify:cio-request-compose] NG app not in block');
+    bad = true;
+  }
+
+  const investigate = buildComposeBlock(root, {
+    laneId: 'kintone',
+    intent: 'verify investigate',
+    app: '688',
+    phase: 'investigate',
+  });
+  if (!investigate.block.includes('調査のみ')) {
+    console.error('[verify:cio-request-compose] NG investigate phase missing 調査のみ');
+    bad = true;
+  }
+  if (!investigate.block.includes('実装GOまで')) {
+    console.error('[verify:cio-request-compose] NG investigate phase missing 実装GO');
+    bad = true;
+  }
+  if (investigate.block.includes('pre-implement-gate')) {
+    console.error('[verify:cio-request-compose] NG investigate should not suggest pre-implement-gate in hint');
     bad = true;
   }
 

@@ -1989,6 +1989,8 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 
 **開発時の絶対3ステップ**（`customize/**`・仕様書・`deploy:*` に触れる **前**・上記 2〜3 の機械化）:
 
+> **GO 段階（2026-07-11 #R-GO-BOUNDARY-01）**: **確認 A（依頼 compose OK）≠ 実装 GO**。「調査から」は **G0 調査のみ**（コード変更・deploy・commit 禁止）。**浜田の明示実装 GO 後**のみ G2。**688 customize**: 実装 GO 後の修正は **同一セッション内** `cio:preflight:688` → `deploy:688` 必須（#R-688-DEPLOY-01）。正本: `docs/constitution/28-ceo-go-phases-charter.md` · `docs/runbooks/cio-request-compose.md`。
+
 1. **DeepSeek 1 問** — 盲点・反例・仕様乖離（§50-3-8 一次。省略時は `§50-3-8 スキップ理由:` **具体1行**）
 2. **突合 3 行** — CIO が `SPEC.md` 等正本と照合しチャットに記録（`[役割: CIO セカンドオピニオン / §50-3-8 突合]` 推奨）
 3. **機械スタンプ** — `npm run cio:guard:5038 -- --stamp --text "…"` または `--skip "理由"`（45分有効・`logs/cio-four-ai-governance/5038-stamp.json`）

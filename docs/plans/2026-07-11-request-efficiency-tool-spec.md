@@ -19,8 +19,10 @@
 1. 浜田: 自然文（例「736 PH1d 続き」）
 2. AI: 不足のみ聞き返し（最大4問: レーン / intent / app / GO待ち）
 3. AI: `npm run cio:request:compose -- --lane … --intent "…"` 実行
-4. AI: ブロックをチャット提示 → **浜田 OK 待ち**
-5. OK 後: pre-implement-gate → tool:route → 実装
+4. AI: ブロックをチャット提示 → **浜田 OK 待ち（確認 A）**
+5. **確認 A 完了後**: 浜田の **調査指示（G0）** または **実装 GO（G2）** を待つ — **確認 A だけでは着手しない**
+6. **G0 調査**: 読取・報告のみ（`--phase investigate`）。**コード変更・deploy 禁止**
+7. **G2 実装 GO 後**: pre-implement-gate → tool:route → 実装 →（customize 時）preflight → deploy
 
 ## 3. 貼付ブロック（5行固定）
 

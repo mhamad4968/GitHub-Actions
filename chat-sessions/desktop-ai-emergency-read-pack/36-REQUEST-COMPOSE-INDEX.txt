@@ -1,11 +1,32 @@
-【依頼効率化ツール v0.1 — 早見】2026-07-11
+【依頼効率化ツール v0.1 — 早見】2026-07-11（#R-GO-BOUNDARY-01 追補）
 
 **使い方（浜田）**: チャットで「依頼文を作って」+ やりたいことを自然文で。
 
 **AI の役割**:
   1. 足りない項目だけ聞き返し（レーン / 一行 / app / GO）
   2. `npm run cio:request:compose` でブロック生成
-  3. **5行ブロックを提示 → 浜田 OK 後に本題**
+  3. **5行ブロックを提示 → 浜田 OK（確認A）**
+  4. **確認A ≠ 実装GO** — 次は浜田の調査指示 or 実装GOを待つ
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【GO 段階対応表 — 忘れないこと（F0 教訓）】
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+| 浜田 | 段階 | AI がしてよい | 禁止 |
+|------|------|---------------|------|
+| compose **OK** | 確認A | 依頼文確定 | コード変更 |
+| **「調査から」** | G0調査 | 読取・報告・修正案 | 実装・deploy・commit |
+| **「実装GO」**等 | G2実装 | コード変更・gate・deploy | スコープ外 |
+
+正本: docs/constitution/28-ceo-go-phases-charter.md（依頼 compose 接続節）
+
+**調査時の compose**:
+  npm run cio:request:compose -- --lane kintone --intent "…" --app NNN --phase investigate
+
+**実装GO後**（--phase implement が既定）:
+  cio:pre-implement-gate → tool:route → 実装 → preflight → deploy
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 **レーン一覧**（`--lane`）:
   kintone      … customize / deploy（--app 必須）
@@ -16,8 +37,12 @@
 
 **触らない（既定）**: 688 / 677–679 / SKYSEA
 
+**688 customize 運用（#R-688-DEPLOY-01）**:
+  実装GO後 · コード修正したら同一セッション内 cio:preflight:688 → deploy:688 必須
+
 **正本**: docs/runbooks/cio-request-compose.md
 **spec**: docs/plans/2026-07-11-request-efficiency-tool-spec.md
 
 **例（AI が実行）**:
   npm run cio:request:compose -- --lane kintone --intent "736 PH1d" --app 736
+  npm run cio:request:compose -- --lane kintone --intent "688 WBGT調査" --app 688 --phase investigate

@@ -53,6 +53,14 @@ L4 Fable5: docs/runbooks/cio-fable5-escalation.md（稀・即4.8復帰）
   正本: docs/runbooks/cio-four-ai-violation-remediation.md
   変更 80 行超 or customize/** → [🎖️] に Composer=Subagent実施済。CIO 本体が大量 Diff しない。
 
+【GO 段階 — 依頼 compose 接続（#R-GO-BOUNDARY-01 · 2026-07-11 F0 教訓）】
+  確認A（compose OK）≠ 実装GO。「調査から」= G0調査のみ（コード変更・deploy・commit 禁止）。
+  実装GO（浜田明示）後のみ customize/** 編集・deploy:* 可。
+  正本: docs/constitution/28-ceo-go-phases-charter.md · docs/runbooks/cio-request-compose.md · 36-REQUEST-COMPOSE-INDEX.txt
+
+【688 customize deploy（#R-688-DEPLOY-01 · 2026-07-11）】
+  実装GO後 · customize/688 修正したら同一セッション内 npm run cio:preflight:688 → npm run deploy:688 必須（目視依頼より先）。
+
 【定例（CEO承認 A2/A3）】
   金曜反省後: npm run mcp-status:refresh-usage（差分あれば commit）
   週次: npm run cio:env:enhance（大変更時 --full）

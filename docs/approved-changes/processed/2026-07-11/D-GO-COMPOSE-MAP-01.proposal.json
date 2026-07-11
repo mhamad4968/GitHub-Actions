@@ -1,0 +1,8 @@
+{
+  "id": "D-GO-COMPOSE-MAP-01",
+  "category": "D",
+  "status": "implemented",
+  "processed_at": "2026-07-11",
+  "note": "36-REQUEST-COMPOSE-INDEX GO段階対応表",
+  "target": "chat-sessions/desktop-ai-emergency-read-pack/36-REQUEST-COMPOSE-INDEX.txt"
+}

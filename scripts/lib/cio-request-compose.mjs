@@ -65,29 +65,35 @@ export function validateComposeInput(templates, laneId, opts) {
  * @param {object} templates
  * @param {object} lane
  * @param {string} laneId
- * @param {{ intent: string, app?: string|null, noTouch?: string[], goWait?: string|null }} opts
+ * @param {{ intent: string, app?: string|null, noTouch?: string[], goWait?: string|null, phase?: string }} opts
  */
 export function buildAiHintLine(root, templates, lane, laneId, opts) {
-  let hint = lane.aiHint || '';
-  if (opts.app) {
+  const phase = opts.phase === 'investigate' ? 'investigate' : 'implement';
+  let hint =
+    phase === 'investigate' && lane.aiHintInvestigate
+      ? lane.aiHintInvestigate
+      : lane.aiHint || '';
+  if (phase === 'implement' && opts.app) {
     hint = hint.replace(/<APP>/g, String(opts.app));
   }
-  try {
-    const manifest = loadToolRoutingManifest(root);
-    const routeIntent = `${opts.intent} ${(lane.routeKeywords || []).join(' ')}`;
-    const plan = buildRoutePlan(manifest, routeIntent, {
-      phase: 'WORK',
-      appId: opts.app || null,
-    });
-    if (plan.npm.length) {
-      const npmShort = plan.npm
-        .slice(0, 3)
-        .map((c) => c.replace(/:preflight:<APP_ID>/, `:preflight:${opts.app}`).replace(/deploy:<APP_ID>/, `deploy:${opts.app}`))
-        .join(' → ');
-      hint = `${hint} | route: ${npmShort}`;
+  if (phase === 'implement') {
+    try {
+      const manifest = loadToolRoutingManifest(root);
+      const routeIntent = `${opts.intent} ${(lane.routeKeywords || []).join(' ')}`;
+      const plan = buildRoutePlan(manifest, routeIntent, {
+        phase: 'WORK',
+        appId: opts.app || null,
+      });
+      if (plan.npm.length) {
+        const npmShort = plan.npm
+          .slice(0, 3)
+          .map((c) => c.replace(/:preflight:<APP_ID>/, `:preflight:${opts.app}`).replace(/deploy:<APP_ID>/, `deploy:${opts.app}`))
+          .join(' → ');
+        hint = `${hint} | route: ${npmShort}`;
+      }
+    } catch {
+      /* routing manifest optional at compose time */
     }
-  } catch {
-    /* routing manifest optional at compose time */
   }
   return hint;
 }
@@ -101,9 +107,11 @@ export function buildAiHintLine(root, templates, lane, laneId, opts) {
  * @param {string[]} [opts.noTouch]
  * @param {string} [opts.goWait]
  * @param {boolean} [opts.withCeoBaseline]
+ * @param {'investigate'|'implement'} [opts.phase]
  */
 export function buildComposeBlock(root, opts) {
   const templates = loadRequestComposeTemplates(root);
+  const phase = opts.phase === 'investigate' ? 'investigate' : 'implement';
   const validation = validateComposeInput(templates, opts.laneId, opts);
   if (!validation.ok) {
     const err = new Error(validation.issues.join('; '));
@@ -112,9 +120,14 @@ export function buildComposeBlock(root, opts) {
   }
   const lane = validation.lane;
   const noTouch = [...new Set([...(templates.defaultNoTouch || []), ...(opts.noTouch || [])])];
-  const goWait = opts.goWait?.trim() || lane.defaultGoWait || '—';
+  const phaseMeta = templates.phases?.[phase];
+  const goWait =
+    opts.goWait?.trim() ||
+    (phase === 'investigate' && phaseMeta?.goWaitOverride) ||
+    lane.defaultGoWait ||
+    '—';
   const laneLine = opts.app ? `${lane.label} · app ${opts.app}` : lane.label;
-  const aiHint = buildAiHintLine(root, templates, lane, opts.laneId, opts);
+  const aiHint = buildAiHintLine(root, templates, lane, opts.laneId, { ...opts, phase });
 
   const lines = [
     `【レーン】${laneLine}`,
@@ -134,6 +147,7 @@ export function buildComposeBlock(root, opts) {
 
   return {
     laneId: opts.laneId,
+    phase,
     block: lines.join('\n'),
     lines,
     ceoBaseline,

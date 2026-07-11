@@ -4,7 +4,7 @@
 
 表 UI または `workdays-calc-core.mjs` を触ったセッションは **deploy 前に必読**。
 
-
+**運用（#R-688-DEPLOY-01 · 2026-07-11）**: **浜田の実装 GO 後**に `customize/688` を修正したら、**同一セッション内**で `cio:preflight:688` → `deploy:688` まで完走してから目視依頼する（deploy 忘れ禁止）。
 
 仕様（Excel 20260613）: `docs/plans/2026-06-13-construction-workdays-excel-20260613.md`
 

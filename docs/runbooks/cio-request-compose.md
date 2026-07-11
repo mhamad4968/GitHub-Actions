@@ -49,35 +49,83 @@ npm run cio:request:compose -- --list
 
 ---
 
-## 5. 確認 A（必須）
+## 5. 確認 A と GO 段階（必須 · #R-GO-BOUNDARY-01）
 
-1. AI が **5行ブロック**をチャットに提示  
-2. 浜田が **OK** または修正1行  
-3. **OK 後のみ** `cio:pre-implement-gate` / `cio:tool:route` / 実装
+**確認 A ≠ 実装 GO ≠ 調査 GO**。正本: `docs/constitution/28-ceo-go-phases-charter.md`（依頼 compose 接続節）
 
-**禁止**: ブロック提示前に本題着手 · 浜田 OK なしに deploy/commit。
+| 段階 | 浜田 | AI |
+|------|------|-----|
+| **確認 A** | compose ブロック **OK** | 依頼文確定のみ。**着手しない** |
+| **G0 調査** | 「調査から」等 | 読取・報告・修正案提示。**コード変更・commit・deploy 禁止** |
+| **G2 実装** | 「実装GO」「修正して」等（明示） | 当該スコープの実装 · gate · deploy |
+
+調査依頼時は `--phase investigate` を付けてブロック生成（§4 参照）。
 
 ---
 
-## 6. 出力例
+## 6. 確認 A の手順
+
+1. AI が **5行ブロック**をチャットに提示  
+2. 浜田が **OK** または修正1行  
+3. **確認 A 完了** — ここではまだ本題に入らない（次は浜田の **調査指示** または **実装 GO** を待つ）
+
+**禁止**: ブロック提示前に本題着手 · **確認 A OK だけで** customize 編集 / deploy / commit · **「調査から」だけで** 実装・デプロイ
+
+---
+
+## 7. 調査フェーズ（G0）
+
+浜田が「調査から」等と言った **後**:
+
+```bash
+npm run cio:request:compose -- --lane kintone --intent "…" --app 688 --phase investigate
+```
+
+- **可**: API/ログ読取 · 原因報告 · 修正案の提示  
+- **禁止**: `customize/**` 編集 · `deploy:*` · commit/push
+
+---
+
+## 8. 実装フェーズ（G2）
+
+浜田の **明示実装 GO** の **後**:
+
+```bash
+npm run cio:pre-implement-gate -- --strict
+npm run cio:tool:route -- --app <APP>
+# customize 時: §50-3-8 → 実装 → preflight → deploy
+```
+
+`--phase implement`（既定）でブロック再生成可。
+
+---
+
+## 9. 出力例（実装 GO 後）
 
 ```
 【レーン】kintone-customize · app 736
 【やりたいこと】PH1d 外注④〜⑦ブロック任意化の続き
 【触らない】688 / 677–679 / SKYSEA
 【GO待ち】浜田目視 OK まで deploy しない
-【AIへ】着手前: cio:pre-implement-gate → cio:tool:route --app 736 → §50-3-8（customize 時） | route: …
+【AIへ】実装GO後: cio:pre-implement-gate → cio:tool:route --app 736 → §50-3-8（customize 時） | route: …
+```
+
+**調査時の出力例**（`--phase investigate`）:
+
+```
+【GO待ち】浜田の実装GOまで customize 編集・commit・deploy 禁止
+【AIへ】調査のみ · 実装GO待ち — API/ログ読取・原因報告・修正案提示可
 ```
 
 ---
 
-## 7. Desktop 早見
+## 10. Desktop 早見
 
 `36-REQUEST-COMPOSE-INDEX.txt`（`session-starter:sync-desktop` で同期）
 
 ---
 
-## 8. verify
+## 11. verify
 
 ```bash
 npm run verify:cio-request-compose

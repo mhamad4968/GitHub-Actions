@@ -1,0 +1,8 @@
+{
+  "id": "R-REQUEST-COMPOSE-02",
+  "category": "R",
+  "status": "implemented",
+  "processed_at": "2026-07-11",
+  "note": "compose runbook/spec/templates — OK後≠実装",
+  "target": "docs/runbooks/cio-request-compose.md"
+}

@@ -40,6 +40,7 @@ function parseArgs(argv) {
     copy: false,
     json: false,
     list: false,
+    phase: 'implement',
   };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -48,6 +49,7 @@ function parseArgs(argv) {
     else if (a === '--app') out.app = argv[++i] || null;
     else if (a === '--no-touch') out.noTouch.push(argv[++i] || '');
     else if (a === '--go-wait') out.goWait = argv[++i] || null;
+    else if (a === '--phase') out.phase = argv[++i] || 'implement';
     else if (a === '--with-ceo-baseline') out.withCeoBaseline = true;
     else if (a === '--copy') out.copy = true;
     else if (a === '--json') out.json = true;
@@ -74,8 +76,13 @@ function main() {
 
   if (!args.lane || !args.intent) {
     console.error(
-      'Usage: npm run cio:request:compose -- --lane <kintone|doc-lane|constitution|ops|report> --intent "<一行>" [--app NNN] [--no-touch X] [--go-wait "..."] [--with-ceo-baseline] [--copy] [--json] [--list]'
+      'Usage: npm run cio:request:compose -- --lane <kintone|doc-lane|constitution|ops|report> --intent "<一行>" [--app NNN] [--phase investigate|implement] [--no-touch X] [--go-wait "..."] [--with-ceo-baseline] [--copy] [--json] [--list]'
     );
+    process.exit(1);
+  }
+
+  if (args.phase !== 'investigate' && args.phase !== 'implement') {
+    console.error('[cio:request:compose] NG --phase must be investigate or implement');
     process.exit(1);
   }
 
@@ -87,17 +94,22 @@ function main() {
       noTouch: args.noTouch.filter(Boolean),
       goWait: args.goWait,
       withCeoBaseline: args.withCeoBaseline,
+      phase: args.phase,
     });
 
     if (args.json) {
       console.log(JSON.stringify(result, null, 2));
     } else {
-      console.log('━━ 依頼ブロック（浜田確認用 · OK 後に本題）━━\n');
+      console.log('━━ 依頼ブロック（浜田確認用 · 確認A）━━\n');
       console.log(result.block);
       console.log('\n━━ 運用 ━━');
       console.log('1. 上記を浜田に提示');
-      console.log('2. 浜田 OK（または修正1行）');
-      console.log('3. OK 後のみ pre-implement / tool:route / 実装へ');
+      console.log('2. 浜田 OK（または修正1行）→ 確認A完了');
+      if (args.phase === 'investigate') {
+        console.log('3. G0調査のみ — コード変更・deploy 禁止 · 実装GOを待つ');
+      } else {
+        console.log('3. 浜田の実装GO後のみ pre-implement / tool:route / 実装へ');
+      }
       if (result.ceoBaseline) {
         console.log('\n（CEO最低基準全文を末尾に同梱済）');
       }
