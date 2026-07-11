@@ -4,7 +4,17 @@
 **Cursor 上の本リポジトリ作業**は **§1-2** の単一モデル前提に従う。Claude Code / Codex 等の別環境は、利用時も本ファイルの手前に **§1-2 を読み、Opus 4.7 単一会話に相当する運用**に寄せる。
 個別の詳細ルールは `.cursorrules` および `.cursor/rules/*.mdc` に委任する。
 
-> **AI 向け（2026-05-17）**: 全文通読は不要。**`RULES-INDEX.md` → `docs/constitution/README.md`** でジャンル別に読む。§ 番号の解釈正本は **本ファイル**。再分割は `npm run constitution:extract-genres`。
+> **AI 向け（2026-05-17 / 2026-07-11 lifecycle-v2）**: **索引優先**（§条文の削除・弱体化なし）。**3 入口**に従う（正本 `data/cio-rule-entry-points.json` · ナビ `docs/constitution/27-constitution-navigation-charter.md`）。
+>
+> | 入口 | いつ | 最初にやること |
+> |------|------|----------------|
+> | **1 毎ターン** | 全応答 | `npm run cio:turn-start` → `mode-b-canonical.mdc` |
+> | **2 タスク** | 着手前 | `npm run cio:tool:route -- --intent "…"` → `RULES-INDEX.md` → `docs/constitution/<ジャンル>.md` **1〜2 本** |
+> | **3 セッション** | WAKE/CLOSE | `npm run cio:session:cold-start` / `cio:session:close-git` |
+>
+> **WAKE 先読み**（`constitution-first-read-pack` 00–06）· **Part A** · **18-重要確認** は **3 入口で免除しない**（`mandatory_reads` 正本は entry-points.json）。
+>
+> § 番号の解釈正本は **本ファイル**。ジャンル再分割は `npm run constitution:extract-genres`。現役ゲートのみ `data/cio-formalization-registry.json`（寿命規約 `26-formalization-lifecycle-charter.md`）。
 
 ### 作業レーンの切り替え（CIO メモ・2026-05-04）
 
@@ -266,7 +276,7 @@ agent
 
 | ティア | 実モデル名 | 適用条件 (AI 判断基準) | 月コスト目安 |
 |---|---|---|---|
-| **L1: Composer 2** | composer-2 (Cursor 独自) | ① 既知の定型タスク (lint 結果整形 / RAG 同期確認 / chat-sessions 記録更新 / commit message 起草 / 単純ファイル追記 / 朝報整形 / npm script 別名追加) ② 浜田の指示が **2-3 文以下の短いタスク** ③ 創造的判断不要 | 最安 (~1/10) |
+| **L1: Composer 2** | composer-2 (Cursor 独自) | ① 既知の定型タスク (lint 結果整形 / RAG 同期確認 / chat-sessions 記録更新 / commit message 起草 / 単純ファイル追記 / 朝報整形 / npm script 別名追加) ② 浜田の指示が **2-3 文以下の短いタスク** ③ 創造的判断不要 ④ **doc-lane lite**（`cio:turn-start --lane doc-lane --tier lite` 済 · 1 path · +≤20 行 · customize/AGENTS/.mdc 禁止 — 2026-07-11 H8） | 最安 (~1/10) |
 | **L2: Extra High** | claude-opus-4-7-thinking-xhigh | ① 通常の実装・調査・設計 ② kintone Day N の **Tier A 範囲** ③ §57 改定の文章編集 (起案ではない) ④ TSB 整形 | 中 (基準) |
 | **L3: Max Thinking** | claude-opus-4-7-max-thinking | ① §47-A 100% 証明要求 ② §57 改定 **起案** ③ TSB 真因究明 ④ 重大インシデント分析 ⑤ kintone Day N の **Tier B / 不可逆操作前** ⑥ §48 Best Options 起案 ⑦ 複雑な抽象設計 | 高 (~1.5x) |
 
@@ -963,7 +973,7 @@ GitHub・npm・Stack Overflow 等から外部コードを参考にする際は�
 2. `fetch` MCP / `WebFetch` — 公式ドキュメント直接取得
 3. `duckduckgo-search` MCP — Web 検索（**`tavily` は 2026-05-06 削除済**／`docs/mcp-status.md`）
 4. `github` MCP — 実装事例・Issue 検索（WSL では **`gh`** を優先）
-5. `cve-search` MCP / `cyber-news` MCP — セキュリティ関連時のみ
+5. `cve-search` MCP / `duckduckgo-search` — セキュリティ関連時のみ（cyber-news は spec v3.1 DEL-2 予定）
 
 ---
 
@@ -1798,7 +1808,7 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 | アクセシビリティ検査 | accessibility-scanner | UI 改修時必須 |
 | ブラウザ自動操作 / E2E テスト | playwright | customize 動作確認時 |
 | CVE 脆弱性確認 | cve-search | 月次 + 依存追加時 |
-| サイバーセキュリティニュース | cyber-news | 週次セキュリティ巡回時 |
+| サイバーセキュリティニュース | cve-search + duckduckgo-search | 月次セキュリティ巡回時 |
 | PowerPoint 自動生成 | office-powerpoint | Win 起動必要 / 月次レポート時 |
 | GitHub Issue/PR 操作 | github（Win）／**`gh`（WSL 第一選択）** | WSL では **`gh`** を優先（浜田合意 2026-05-06） |
 | 段階的思考（複雑判断分解）| sequential-thinking | 大型設計判断時 |
@@ -1978,6 +1988,8 @@ AGENTS.md のルール総量が肥大化すると **「ルール疲労」**（§
 4. 成果物を **【Kimi】** が精査（レビュー）し、最終結果を **【CIO】** が浜田へ1行要約して報告する。
 
 **開発時の絶対3ステップ**（`customize/**`・仕様書・`deploy:*` に触れる **前**・上記 2〜3 の機械化）:
+
+> **GO 段階（2026-07-11 #R-GO-BOUNDARY-01）**: **確認 A（依頼 compose OK）≠ 実装 GO**。「調査から」は **G0 調査のみ**（コード変更・deploy・commit 禁止）。**浜田の明示実装 GO 後**のみ G2。**688 customize**: 実装 GO 後の修正は **同一セッション内** `cio:preflight:688` → `deploy:688` 必須（#R-688-DEPLOY-01）。正本: `docs/constitution/28-ceo-go-phases-charter.md` · `docs/runbooks/cio-request-compose.md`。
 
 1. **DeepSeek 1 問** — 盲点・反例・仕様乖離（§50-3-8 一次。省略時は `§50-3-8 スキップ理由:` **具体1行**）
 2. **突合 3 行** — CIO が `SPEC.md` 等正本と照合しチャットに記録（`[役割: CIO セカンドオピニオン / §50-3-8 突合]` 推奨）

@@ -13,9 +13,11 @@
 | 2 | **`chat-sessions/session-starter-parts/part-A-constitution-kernel.md`** | 🎖️ 役割表・実行/確認分離・ティア（スターター正本） |
 | 3 | **`RULES-INDEX.md`** | § 逆引き・タスク開始時の索引 |
 | 4 | **`.cursor/rules/mode-b-canonical.mdc`** | **用語・四行テンプレ・4AI担当明文化マトリクスの単一窓**（`AGENTS.md` §1-2-3-4-A と同一・重複コピー禁止） |
-| 4b | **`.cursor/rules/mcp-server-use-triggers.mdc`** | MCP 選択・**§4AI**（`data/cio-mcp-four-ai-matrix.json` と同期） |
-| 4c | **`.cursor/rules/cursor-generate-image-assets.mdc`** | 画像 MCP 計画削除・内蔵 GenerateImage のみ |
-| 4d | **`.cursor/rules/mode-b-mdc-canonical-linter.mdc`** | `.mdc` → `mode-b-canonical` 参照 Linter 規律 |
+| 4a | **`data/cio-rule-entry-points.json`** | **3 入口**（毎ターン / タスク / セッション — mandatory_reads 正本） |
+| 4b | **`data/cio-formalization-registry.json`** | **現役ゲートのみ**（`verifyProbe` 必須 — `26-formalization-lifecycle-charter.md`） |
+| 4c | **`.cursor/rules/mcp-server-use-triggers.mdc`** | MCP 選択・**§4AI**（`data/cio-mcp-four-ai-matrix.json` と同期） |
+| 4d | **`.cursor/rules/cursor-generate-image-assets.mdc`** | 画像 MCP 計画削除・内蔵 GenerateImage のみ |
+| 4e | **`.cursor/rules/mode-b-mdc-canonical-linter.mdc`** | `.mdc` → `mode-b-canonical` 参照 Linter 規律 |
 | 5 | **`.cursor/rules/cio-constitution.mdc`** | 唯一 `alwaysApply: true` 核（四行・Multi-Agent 要約） |
 | 6 | **`.cursor/rules/every-turn-rules-confirm.mdc`** | 毎ターン・報告チェックシート・§1e |
 | 7 | **`.cursor/rules/constitution-enforcement-core.mdc`** | 違反＝失敗・2者チェック |
@@ -40,6 +42,7 @@
 | 10 | **`npm run rules:sync-index-all`** | Phase 2-C: mdc 逆引き + §↔mdc 双方向 |
 | 11 | **`npm run verify:constitution-mdc-freshness`** | Phase 2-C: `constitution.mdc` 手編集検知 |
 | 12 | **`npm run verify:cio-four-ai-governance`** | 一括（上記 + turn-head + MCP + section-mdc） |
+| 12 | **`npm run verify:constitution-evening`** | 2026-07-11 夜レーン成果物検証 |
 | 13 | **`.cursor/hooks/cio-four-ai-interlock.mjs`** | deploy / commit 前の deny |
 | 14 | **`git-hooks/pre-commit`** | staged: 5038 + Composer + constitution 鮮度 |
 
@@ -64,6 +67,12 @@
 | **`docs/plans/2026-05-21-cio-session-model-override.md`** | 方式B 決定メモ |
 | **`docs/session-report-checklist.md`** | 報告 §M-2 V2 |
 | **`docs/constitution/*.md`** | AGENTS 分割読本（§ 特定後に Read） |
+| **`docs/constitution/25-constitution-no-replacement-charter.md`** | 新憲法不要（CEO 2026-07-11 夜） |
+| **`docs/constitution/26-formalization-lifecycle-charter.md`** | ゲート寿命 L1–L5（lifecycle-v2） |
+| **`docs/constitution/27-constitution-navigation-charter.md`** | 4層ナビ · 3入口（AI 読み方正本） |
+| **`docs/constitution/28-ceo-go-phases-charter.md`** | CEO GO 段階 G0–G3（Round-3 R3-1） |
+| **`docs/plans/2026-07-11-constitution-lifecycle-v2-spec.md`** | lifecycle-v2 完全実装 spec |
+| **`docs/plans/2026-07-11-constitution-evening-spec.md`** | 夜レーン完全実装 spec |
 | **`docs/troubleshooting.md`** | TSB 系 |
 | **`docs/mcp-status.md`** | MCP 台帳・§見送り（画像生成 MCP）・§4AI マトリクス |
 | **`data/cio-mcp-four-ai-matrix.json`** | 4AI×MCP 機械正本 |

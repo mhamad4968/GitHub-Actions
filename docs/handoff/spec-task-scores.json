@@ -1,7 +1,7 @@
 {
-  "scoredAt": "2026-07-11T10:30:00.000Z",
+  "scoredAt": "2026-07-11T23:05:28.056Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "日常レーン継続 · cio:request:compose 試用 · 観測期間（≈2026-07-25 クローズ再確認）",
+  "topTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
   "tasks": [
     {
       "id": "backlog:B-MDFLOW:_**Markdown_ベースの開発フロー**（仕様・実装・レ",
@@ -15,15 +15,15 @@
       "status": "pending"
     },
     {
-      "id": "checkpoint:Round-3_憲法配線完走",
-      "text": "**Round-3 憲法配線完走**（R3-1〜10 · push `60fe66fd`）→ **依頼効率化ツール** 開発要否 · H9 review 2026-07-25",
+      "id": "checkpoint:日常レーン継続_·_`cio:request:compose`_試用_·_**≈",
+      "text": "日常レーン継続 · `cio:request:compose` 試用 · **≈2026-07-25** 憲法クローズ可否の再確認（観測期間）",
       "source": "checkpoint",
-      "difficulty": 2,
+      "difficulty": 3,
       "tokens": "中",
       "tokenScore": 2,
       "impact": 5,
       "priority": 25,
-      "status": "completed"
+      "status": "pending"
     }
   ]
 }
