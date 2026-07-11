@@ -45,6 +45,11 @@ import {
   formatRoutePlan,
   loadToolRoutingManifest,
 } from './lib/cio-tool-routing.mjs';
+import { readLastTier } from './lib/cio-turn-start-tier.mjs';
+import {
+  evaluateWarnEscalation,
+  recordWarnEvent,
+} from './lib/cio-team-ops-warn-escalation.mjs';
 
 
 
@@ -209,6 +214,11 @@ function main() {
   } else {
 
     console.warn('\n[cio-pre-implement-gate] WARN: §50-3-8 evidence なし — DeepSeek→突合→stamp を先に');
+    recordWarnEvent(root, '5038-missing');
+    const esc = evaluateWarnEscalation(root);
+    if (esc.escalated) {
+      console.warn('[cio-pre-implement-gate] WARN: 2セッション連続 — strict 昇格 active');
+    }
 
   }
 
@@ -262,6 +272,15 @@ function main() {
 
     process.exit(2);
 
+  }
+
+  const lastTier = readLastTier(root);
+  if (args.includes('--strict') && lastTier && lastTier.tier !== 'strict') {
+    console.error(`[cio-pre-implement-gate] NG --strict: last-tier=${lastTier.tier} — npm run cio:turn-start -- --strict 先`);
+    process.exit(2);
+  }
+  if (!lastTier) {
+    console.warn('[cio-pre-implement-gate] WARN: last-tier 未記録 — npm run cio:turn-start を先に');
   }
 
 

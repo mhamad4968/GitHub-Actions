@@ -174,20 +174,21 @@
   30-AI-TEAM-ORG-CHART.txt … 本ファイル（体制図）
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-■ 9. 運用レビュー・確定閾値（v3.2 · 2026-07-11）
+■ 9. 運用レビュー・確定閾値（v3.3 · 2026-07-11）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  正本: docs/plans/2026-07-11-ai-team-ops-optimization-spec-v32.md
+  正本: docs/plans/2026-07-11-ai-team-ops-optimization-spec-v33.md
+        docs/plans/2026-07-11-ai-team-ops-optimization-spec-v32.md（実装 db059346）
 
   【確定閾値】
     L1 Lite … 1path・非customize・TierA・20行以下・deployなし
     B1 5038 … customize変更セッションの close-git 前 audit
-    C1 Grok … 最初2回は dry-run のみ
+    C1 Grok … 最初2回は dry-run のみ · validate-contract
 
-  【実装順】Phase1 H+K → 2 D+J → 3 B → 4 A → 5 C → 6 E+G+F
-  【形骸化5原則】v3.2 §2（チャット証跡無効・runtime probe 必須 等）
-  【実装GO】浜田 §41 待ち（spec commit/push 済み後）
+  【v3.3 Batch】1 tier配線 · 2 KPI/evening · 3 Grok/K3 · 4 rules-opt
+  【形骸化5原則】v3.2 §2 + WARN 2セッション→strict（v3.3）
+  【実装】v3.2 db059346 + v3.3 実装 GO 済（2026-07-11）
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-最終更新: 2026-07-11 JST — v1.1（§9 v3.2 閾値追記）
+最終更新: 2026-07-11 JST — v1.2（§9 v3.3 追記）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

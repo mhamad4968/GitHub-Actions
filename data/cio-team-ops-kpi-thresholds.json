@@ -1,0 +1,17 @@
+{
+  "version": "v3.3",
+  "flagReviewDate": "2026-08-11",
+  "flags": {
+    "CIO_LITE_LANE": { "default": "1", "reviewBy": "2026-08-11" },
+    "CIO_TURN_TIER_STRICT": { "default": "0", "reviewBy": null }
+  },
+  "red": {
+    "skip5038RateCustomizePct": 30,
+    "grokCSuccessRatePctMin": 50,
+    "liteUsageRatePct": 20,
+    "reportVerifyFailuresPerWeek": 3,
+    "bridgeLastFailuresCount": 5
+  },
+  "eveningProposalMaxPerWeek": 1,
+  "strictAuditEligibleAfter": "2026-07-18"
+}

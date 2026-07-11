@@ -2,7 +2,7 @@
 
 > **地位**: `2026-07-11-ai-team-ops-optimization-spec-v32.md`（v3.2 · **実装完了 `db059346`**) の追補。  
 > **スコープ**: 残タスク **A–D** の最善改善案 + **△全件 CLOSED 策**。憲法 § / `AGENTS.md` 条文改定は **夜レーン**（本書は runbook / script / data 層）。  
-> **実装**: **spec commit 済み待ち** · 浜田 **実装 GO は報告後** · Batch 順（§8）。
+> **実装**: **GO 済 `2026-07-11`** — Batch 1–4 完了（憲法改定は夜レーン agenda のみ）
 
 ---
 
@@ -30,7 +30,7 @@
 | ④ Kimi | **GO** | 外部 AI 出力は引き続き CIO 検収。**K3 は WARN のみ**（ブロックは report-verify 過負荷） |
 | Grok L2b | **GO** | △C1 は **inScope 外 diff で contractHash 不一致 → exit 2**。deploy 禁止は既存 scan 維持 |
 | ② Architect | N/A | 本書は 2 レーン・200 行未満 — discovery map で完結（F は v3.2 runbook 参照） |
-| **CEO 浜田** | **spec GO** | 本書（v3.3 spec）commit/push 指示 · **実装 GO は報告後に別途** |
+| **CEO 浜田** | **GO 済** | v3.3 実装 GO · Batch 1–4 完了 |
 
 **合議ラウンド**: 5（2026-07-11 JST · A–D 最善案 · △CLOSED 策確定 · **全員自信をもって GO**）
 
@@ -306,4 +306,4 @@ npm run verify:desktop-ai-emergency-sync
 
 ---
 
-**版**: v3.3 · 2026-07-11 JST · AI チーム Round 5 全員 GO（**spec commit 済み待ち** · 実装 GO は浜田 報告後）
+**版**: v3.3 · 2026-07-11 JST · 実装完了（Batch 1–4 · rules-opt 既存 verify OK）

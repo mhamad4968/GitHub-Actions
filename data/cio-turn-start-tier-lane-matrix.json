@@ -1,0 +1,30 @@
+{
+  "version": "v3.3",
+  "description": "tier×lane マトリクス — v3.3 A-2 正本",
+  "lanes": {
+    "default": {
+      "quick": true,
+      "standard": true,
+      "strict": true,
+      "lite": true
+    },
+    "doc-lane": {
+      "quick": true,
+      "standard": true,
+      "strict": true,
+      "lite": true
+    },
+    "report": {
+      "quick": true,
+      "standard": true,
+      "strict": true,
+      "lite": false
+    },
+    "customize": {
+      "quick": false,
+      "standard": false,
+      "strict": true,
+      "lite": false
+    }
+  }
+}

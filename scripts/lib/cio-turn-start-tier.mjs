@@ -1,5 +1,5 @@
 /**
- * turn-start tier — quick / standard / strict（v3.2 D）
+ * turn-start tier — quick / standard / strict / lite（v3.2 D · v3.3 A-2）
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -11,11 +11,41 @@ import {
   workingTreeHasChanges,
 } from './cio-team-ops-git-scope.mjs';
 import { readTeamOpsFlags } from './cio-team-ops-flags.mjs';
+import { isForceStrictActive } from './cio-team-ops-warn-escalation.mjs';
 
 export const TIERS = ['quick', 'standard', 'strict'];
+export const LAST_TIER_REL = 'logs/cio-turn-start/last-tier.json';
+export const MATRIX_REL = 'data/cio-turn-start-tier-lane-matrix.json';
 
-export function resolveTier(requested, root, flags = readTeamOpsFlags()) {
-  if (flags.forceStrictTier) return 'strict';
+export function lastTierPath(root) {
+  return path.join(root, LAST_TIER_REL);
+}
+
+export function loadLaneMatrix(root) {
+  const p = path.join(root, MATRIX_REL);
+  if (!fs.existsSync(p)) return { lanes: { default: { quick: true, standard: true, strict: true, lite: true } } };
+  return JSON.parse(fs.readFileSync(p, 'utf8'));
+}
+
+export function validateLaneTier(lane, tier, root) {
+  if (sessionTouchesCustomize(root)) {
+    if (tier !== 'strict') {
+      return { ok: false, exitCode: 2, message: 'customize/** は strict のみ' };
+    }
+    return { ok: true };
+  }
+  const matrix = loadLaneMatrix(root);
+  const laneKey = String(lane || 'default');
+  const row = matrix.lanes?.[laneKey];
+  if (!row) return { ok: true };
+  if (row[tier] === false) {
+    return { ok: false, exitCode: 2, message: `lane=${laneKey} tier=${tier} はマトリクス禁止` };
+  }
+  return { ok: true };
+}
+
+export function resolveTier(requested, root, flags = readTeamOpsFlags(process.env, root)) {
+  if (flags.forceStrictTier || isForceStrictActive(root)) return 'strict';
   if (sessionTouchesCustomize(root)) return 'strict';
   const t = String(requested || 'standard').toLowerCase();
   if (t === 'lite' || t === 'micro') return 'lite';
@@ -23,12 +53,15 @@ export function resolveTier(requested, root, flags = readTeamOpsFlags()) {
 }
 
 export function tierAllowsEdit(tier) {
-  return tier === 'standard' || tier === 'strict';
+  return tier === 'standard' || tier === 'strict' || tier === 'lite';
 }
 
 export function tierAllowsShell(tier, scriptName) {
   if (tier === 'quick') {
     return /^verify:|^cio:health|^session:/.test(scriptName || '');
+  }
+  if (tier === 'lite') {
+    return /^verify:|^cio:health|^session:|^cio:turn-start/.test(scriptName || '');
   }
   if (tier === 'standard') {
     return !/^deploy:/.test(scriptName || '');
@@ -36,7 +69,10 @@ export function tierAllowsShell(tier, scriptName) {
   return true;
 }
 
-export function validateTierGate(root, tier) {
+export function validateTierGate(root, tier, lane = 'default') {
+  const laneCheck = validateLaneTier(lane, tier, root);
+  if (!laneCheck.ok) return laneCheck;
+
   if (tier === 'quick' && workingTreeHasChanges(root)) {
     return { ok: false, exitCode: 2, message: 'quick tier: working tree に変更あり — standard/strict を使用' };
   }
@@ -53,6 +89,40 @@ export function validateTierGate(root, tier) {
     }
   }
   return { ok: true };
+}
+
+export function writeLastTier(root, { tier, lane }) {
+  const p = lastTierPath(root);
+  fs.mkdirSync(path.dirname(p), { recursive: true });
+  const payload = { tier, lane: lane || 'default', at: new Date().toISOString() };
+  fs.writeFileSync(p, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
+  return payload;
+}
+
+export function readLastTier(root) {
+  const p = lastTierPath(root);
+  if (!fs.existsSync(p)) return null;
+  try {
+    return JSON.parse(fs.readFileSync(p, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+export function recordTurnStartEvent(root, meta = {}) {
+  const logPath = path.join(root, 'logs/cio-turn-start/events.json');
+  fs.mkdirSync(path.dirname(logPath), { recursive: true });
+  let data = { events: [] };
+  if (fs.existsSync(logPath)) {
+    try {
+      data = JSON.parse(fs.readFileSync(logPath, 'utf8'));
+    } catch {
+      data = { events: [] };
+    }
+  }
+  data.events.push({ at: new Date().toISOString(), ...meta });
+  if (data.events.length > 300) data.events = data.events.slice(-300);
+  fs.writeFileSync(logPath, `${JSON.stringify(data, null, 2)}\n`, 'utf8');
 }
 
 export function liteUsageLogPath(root) {
@@ -87,4 +157,15 @@ export function printContractForTier(tier, goal, touchFiles, specTouched) {
   console.log(`Touch: ${touchFiles.join(', ') || '(未設定 — checkpoint を Read)'}`);
   console.log(`SPEC_TOUCHED: ${specTouched}（予定）`);
   console.log('');
+}
+
+/** turn-start TEMPLATES と整合（K3 medal 検査用） */
+export const LANE_MEDAL_LINES = {
+  default: '[🎖️ 本セッション割当] CIO=Opus4.8 | Composer=実装 | DeepSeek=§50-3-8 | Kimi=review',
+  'doc-lane': '[🎖️ 本セッション割当] CIO=Opus4.8 | Composer=doc-lane | DeepSeek=§50-3-8 | Kimi=review',
+  report: '[🎖️ 本セッション割当] CIO=Opus4.8 | Composer=— | DeepSeek=突合 | Kimi=review',
+};
+
+export function expectedMedalLine(lane) {
+  return LANE_MEDAL_LINES[lane] || LANE_MEDAL_LINES.default;
 }

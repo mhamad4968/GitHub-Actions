@@ -295,6 +295,19 @@ if (fs.existsSync(eveningQueuePath)) {
   eveningQueueSection = qRaw.length > 0 ? qRaw : '_(空)_';
 }
 
+// ── Team ops 夕反省候補（v3.3 G1 · 週1上限）────────────────
+let teamOpsProposalSection = '_（候補なし — metrics 閾値内 or 週上限）_';
+const metricsRes = spawnSync(process.execPath, ['scripts/cio-team-ops-metrics.mjs', '--propose-evening'], {
+  cwd: REPO_ROOT,
+  encoding: 'utf8',
+  env: process.env,
+});
+const metricsOut = `${metricsRes.stdout || ''}${metricsRes.stderr || ''}`;
+const propMatch = metricsOut.match(/- (#S-[^\n]+)/);
+if (propMatch) {
+  teamOpsProposalSection = `- ${propMatch[1]}（v3.3 自動候補 · **手動採用** · evening-reflection-scope 厳守）`;
+}
+
 // ── 1-G. 未参照ルール統廃合候補 (#S4) ───────────────
 let unrefSection = '_(audit-rules 出力取得失敗)_';
 const auditRes = run('node scripts/audit-rules.mjs 2>&1');
@@ -392,6 +405,10 @@ ${checkpointFreshness}
 ---
 
 ## ✅ 3. うまくいったこと（AI が記入）
+
+### 3-A. Team ops 自動候補（v3.3 · 週1上限 · 手動採用のみ）
+
+${teamOpsProposalSection}
 
 <!-- AI が記入 -->
 

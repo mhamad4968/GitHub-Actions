@@ -19,10 +19,16 @@ import { readCheckpointNextTask } from './lib/cio-checkpoint-read.mjs';
 import { getDefaultBridgeNextFiles } from './lib/cio-handoff-template.mjs';
 import { readTeamOpsFlags } from './lib/cio-team-ops-flags.mjs';
 import {
+  evaluateWarnEscalation,
+  recordWarnEvent,
+} from './lib/cio-team-ops-warn-escalation.mjs';
+import {
   printContractForTier,
   recordLiteUsage,
+  recordTurnStartEvent,
   resolveTier,
   validateTierGate,
+  writeLastTier,
 } from './lib/cio-turn-start-tier.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -77,7 +83,8 @@ function runNpm(script, extraArgs = []) {
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
-  const flags = readTeamOpsFlags();
+  const probeNoEvidence = process.env.CIO_TURN_START_PROBE_NO_EVIDENCE === '1';
+  const flags = readTeamOpsFlags(process.env, root);
   const tier = resolveTier(args.tier || (args.strict ? 'strict' : 'standard'), root, flags);
 
   if ((tier === 'lite' || tier === 'micro') && !flags.liteLaneEnabled) {
@@ -85,7 +92,7 @@ function main() {
     process.exit(2);
   }
 
-  const gate = validateTierGate(root, tier);
+  const gate = validateTierGate(root, tier, args.lane);
   if (!gate.ok) {
     console.error(`[cio:turn-start] NG ${gate.message}`);
     process.exit(gate.exitCode || 2);
@@ -109,14 +116,21 @@ function main() {
     console.log('[cio:turn-start] Lite — §50-3-8 スキップ理由: L1 doc-only micro edit（customize 非接触）');
   }
 
-  const evidence = collect5038EvidenceFromLogs(root);
-  const stamp = read5038Stamp(root);
+  const evidence = probeNoEvidence ? [] : collect5038EvidenceFromLogs(root);
+  const stamp = probeNoEvidence ? null : read5038Stamp(root);
   if (stamp?.stampedAt) {
     console.log(`[cio:turn-start] 5038 stamp: ${stamp.stampedAt}`);
   } else if (evidence.length) {
     console.log(`[cio:turn-start] 5038 evidence: ${evidence.join(', ')}`);
   } else {
     console.warn('[cio:turn-start] WARN: §50-3-8 証跡なし — 編集前に DeepSeek→突合→stamp');
+    if (!probeNoEvidence) {
+      recordWarnEvent(root, '5038-missing');
+      const esc = evaluateWarnEscalation(root);
+      if (esc.escalated) {
+        console.warn('[cio:turn-start] WARN: 2セッション連続 WARN — 次回から strict 強制');
+      }
+    }
   }
 
   console.log('\n【編集・Shell 前】npm run cio:pre-implement-gate -- --strict');
@@ -149,6 +163,11 @@ function main() {
   if ((args.strict || tier === 'strict') && !stamp?.stampedAt && evidence.length === 0) {
     console.error('[cio:turn-start] NG strict: 5038 証跡なし（編集前に DeepSeek 実施）');
     process.exit(2);
+  }
+
+  if (!probeNoEvidence) {
+    writeLastTier(root, { tier, lane: args.lane });
+    recordTurnStartEvent(root, { tier, lane: args.lane });
   }
 
   console.log(`\n[cio:turn-start] OK tier=${tier} — ツール着手前に上記 §1 を応答先頭へ`);

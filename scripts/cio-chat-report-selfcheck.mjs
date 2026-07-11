@@ -14,12 +14,14 @@
  *   --require-v2           本文に V2 チェックシート（VERSION:2 + OK:yes）必須
  *   --require-ceo-block    `CEO-MINIMUM-ABSOLUTE-BASELINE.txt` の非空行すべてが本文に含まれること（hooks の detectCeoMinimumBlock と同旨）
  *   --require-a1           §P □A1＋`ダブルチェック（誰`＋`ダブルチェック要約:`（report-checksheet-validate と同旨の最小検査）
+ *   --check-medal-line     🎖️ 行が last-tier lane と不一致なら WARN（exit 0）
  *
- * Exit: 0 = OK / 1 = NG（禁止語 or オプション検査失敗）
+ * last-tier=strict 時は Goal/Touch/SPEC_TOUCHED 3 行を自動必須（D-1）
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { readLastTier, expectedMedalLine } from './lib/cio-turn-start-tier.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const TURN_HEAD_WINDOW = 6500;
@@ -100,6 +102,15 @@ function requireA1Ok(text) {
   );
 }
 
+function requireTurnContractOk(text) {
+  const t = String(text || '');
+  const missing = [];
+  if (!/^Goal:\s*.+/m.test(t)) missing.push('Goal');
+  if (!/^Touch:\s*.+/m.test(t)) missing.push('Touch');
+  if (!/^SPEC_TOUCHED:\s*(yes|no)/im.test(t)) missing.push('SPEC_TOUCHED');
+  return { ok: missing.length === 0, missing };
+}
+
 function main() {
   const argv = process.argv.slice(2);
   if (argv.includes('--help')) {
@@ -172,6 +183,31 @@ function main() {
         '[cio-chat-report-selfcheck] NG --require-a1: □A1・ダブルチェック（誰と・結果）・ダブルチェック要約:（6文字以上・許容語）が必要（docs/session-report-checklist.md §P A1）'
       );
       ng++;
+    }
+  }
+
+  const lastTier = readLastTier(root);
+  const requireContract =
+    argv.includes('--require-turn-contract') || lastTier?.tier === 'strict';
+  if (requireContract) {
+    const tc = requireTurnContractOk(body);
+    if (!tc.ok) {
+      console.error(
+        `[cio-chat-report-selfcheck] NG turn-contract missing: ${tc.missing.join(', ')} (strict tier)`
+      );
+      ng++;
+    }
+  }
+
+  if (argv.includes('--check-medal-line') || lastTier?.lane) {
+    const lane = lastTier?.lane || 'default';
+    const expected = expectedMedalLine(lane);
+    const medalRe = /\[🎖️\s*本セッション割当\][^\n]*/u;
+    const m = body.match(medalRe);
+    if (m && m[0].trim() !== expected) {
+      console.warn(`[cio-chat-report-selfcheck] WARN medal-line mismatch (expected lane=${lane})`);
+      console.warn(`  expected: ${expected}`);
+      console.warn(`  found:    ${m[0].trim()}`);
     }
   }
 

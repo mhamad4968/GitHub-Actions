@@ -7,6 +7,7 @@ import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import {
   formatCReadyReport,
+  hashContract,
   loadState,
   MAX_C_PER_SESSION,
   recordFail,
@@ -19,6 +20,8 @@ import {
   validateDoneWhen,
   validateInScope,
 } from './lib/cio-grok-execution.mjs';
+import { listChangedPaths } from './lib/cio-team-ops-git-scope.mjs';
+import { validateSkipReason } from './lib/cio-team-ops-skip-quality.mjs';
 
 const RED = '\x1b[31m';
 const RESET = '\x1b[0m';
@@ -44,6 +47,39 @@ function main() {
       fail('禁止パターンを working diff に検知 — Grok C 停止');
     }
     console.log('[cio:grok:execution-guard] OK diff scan (no deploy/push/PUT patterns)');
+    process.exit(0);
+  }
+
+  if (argv.includes('--validate-contract')) {
+    const state = loadState(root);
+    const inScope = String(state.lastInScope || '').replace(/\\/g, '/').replace(/\/$/, '');
+    const override = argValue('--contract-override');
+    if (!inScope) fail('--validate-contract: lastInScope 未設定 — --stamp 先');
+
+    const paths = listChangedPaths(root);
+    const outOfScope = paths.filter((p) => {
+      if (!inScope) return true;
+      return p !== inScope && !p.startsWith(`${inScope}/`);
+    });
+    if (outOfScope.length) {
+      console.error(`  out-of-scope: ${outOfScope.join(', ')}`);
+      if (!override) {
+        fail('--validate-contract: inScope 外の diff — Grok C 停止');
+      }
+      const v = validateSkipReason(override);
+      if (!v.ok) fail(`--contract-override 品質 NG: ${v.message}`);
+    }
+
+    const expected = hashContract({
+      mode: state.lastMode || 'C',
+      goal: state.lastGoal || '',
+      doneWhen: state.lastDoneWhen || '',
+      inScope: state.lastInScope || '',
+    });
+    if (state.lastContractHash && expected !== state.lastContractHash && !override) {
+      fail('--validate-contract: contractHash 不一致 — preset/stamp を再確認');
+    }
+    console.log('[cio:grok:execution-guard] OK validate-contract');
     process.exit(0);
   }
 
@@ -136,6 +172,7 @@ function main() {
   npm run cio:grok:execution-guard -- --mark-composer-diff
   npm run cio:grok:execution-guard -- --mark-5038
   npm run cio:grok:execution-guard -- --validate-diff
+  npm run cio:grok:execution-guard -- --validate-contract [--contract-override "理由"]
   npm run cio:grok:execution-guard -- --stamp --mode C --goal "…" --done-when "npm run …" --in-scope "path"
   npm run cio:grok:execution-guard -- --record-success
   npm run cio:grok:execution-guard -- --session-reset [--reason "WAKE"]
