@@ -1,7 +1,7 @@
 {
-  "scoredAt": "2026-07-11T09:04:31.564Z",
+  "scoredAt": "2026-07-11T10:30:00.000Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
+  "topTask": "依頼効率化ツール — 開発要否検討（Round-3 完了後）",
   "tasks": [
     {
       "id": "backlog:B-MDFLOW:_**Markdown_ベースの開発フロー**（仕様・実装・レ",
@@ -15,15 +15,15 @@
       "status": "pending"
     },
     {
-      "id": "checkpoint:**夜セッション_—_憲法改善をすべてやり切る（やり残し禁止）**_—_論点_1",
-      "text": "**夜セッション — 憲法改善をすべてやり切る（やり残し禁止）** — 論点 1–4 各 **合意→実装→verify→commit** 完走 · 正本 `docs/plans/2026-07-11-constitution-evening-agenda.md` チェックリスト全 [x] が DoD → その後 **依頼効率化ツール** 開発要否 · MCP は **governance prof",
+      "id": "checkpoint:Round-3_憲法配線完走",
+      "text": "**Round-3 憲法配線完走**（R3-1〜10 · push `60fe66fd`）→ **依頼効率化ツール** 開発要否 · H9 review 2026-07-25",
       "source": "checkpoint",
-      "difficulty": 3,
+      "difficulty": 2,
       "tokens": "中",
       "tokenScore": 2,
       "impact": 5,
       "priority": 25,
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }
