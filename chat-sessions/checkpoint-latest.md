@@ -5,11 +5,9 @@
 
 <!-- 部分GOスコープ（D2）例: **触らない** — 688 の猛暑日以外 / 677–679 / SKYSEA 7月 -->
 
-**最終更新**: 2026-07-11 JST — **MCP §10 P0–P5 完了** · **DEL-2 cyber-news 削除済**（user mcp.json 26 本）· **P6 O4 見送り**
+**最終更新**: 2026-07-11 JST — **非憲法ルール最適化 GO-B 完了**（spec v1.0 · P1–P3 · `verify:rules-optimization` OK）· **MCP DEL-2 済**（governance profile · 26 本）
 
-**MCP DEL-2**: **2026-07-11 完了**（mintlify + cyber-news 削除 · governance profile）
-
-**Git**: **`8591b93f`** = `origin/main` — push 済
+**Git**: **`026d43ed`** = `origin/main` — push 済 · 正本 `docs/plans/2026-07-11-rules-optimization-spec.md`
 
 ### 本日アクティブ（BUILD/rev — 2026-07-10）
 
@@ -43,11 +41,9 @@
 | **736** | **§9.6 凍結** · **7/7〜 AI 主導 §41**（736 のみ） |
 | **712** | 削除済 — deploy 禁止 |
 
-**次の1手**: 運用日は **governance profile** 維持 · intent 時 `cio:mcp:profile --apply <profile>` · kintone implement は別レーン
-**夕反省**: `docs/reports/2026-07-10-evening-reflection.md`（#S1〜#S3 **浜田承認済・実装済**）  
-**736 7月**: `docs/runbooks/736-july-2026-schedule.md`  
-**品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`  
-**運用メモ**: Desktop `18-重要確認.txt` 正本 · 674 deploy は `desktop.bundle.js`（`pc-ledger:674:bundle-desktop`）
+**次の1手**: **夜セッション** — **憲法改善・統合・新憲法要否**（重点検討）→ その後 **依頼効率化ツール** 開発要否 · MCP は **governance profile** 維持 · kintone implement は別レーン
+**ルール最適化**: `npm run verify:rules-optimization` · discovery map `docs/runbooks/cio-rules-discovery-map.md` · **浜田 ACK** で spec §18 完了宣言
+**736 7月**: `docs/runbooks/736-july-2026-schedule.md` | **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
 
 ## セッション切替後の自律復元（Lifecycle v2 鏡像）
 

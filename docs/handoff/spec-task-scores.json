@@ -1,8 +1,30 @@
 {
-  "scoredAt": "2026-07-10T21:47:32.771Z",
-  "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
+  "scoredAt": "2026-07-11T00:23:00.000Z",
+  "specPath": "chat-sessions/checkpoint-latest.md",
+  "topTask": "**夜セッション** — **憲法改善・統合・新憲法要否**（重点検討）→ その後 **依頼効率化ツール** 開発要否",
   "tasks": [
+    {
+      "id": "checkpoint:constitution-evening-review-2026-07-11",
+      "text": "**夜セッション** — **憲法改善・統合・新憲法要否**（重点検討）→ その後 **依頼効率化ツール** 開発要否",
+      "source": "checkpoint",
+      "difficulty": 4,
+      "tokens": "高",
+      "tokenScore": 3,
+      "impact": 5,
+      "priority": 60,
+      "status": "pending"
+    },
+    {
+      "id": "checkpoint:rules-opt-ack-2026-07-11",
+      "text": "非憲法ルール最適化 spec §18 浜田 ACK（026d43ed 実装済）",
+      "source": "checkpoint",
+      "difficulty": 1,
+      "tokens": "低",
+      "tokenScore": 1,
+      "impact": 4,
+      "priority": 40,
+      "status": "pending"
+    },
     {
       "id": "backlog:B-MDFLOW:_**Markdown_ベースの開発フロー**（仕様・実装・レ",
       "text": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
@@ -12,17 +34,6 @@
       "tokenScore": 2,
       "impact": 3,
       "priority": 21,
-      "status": "pending"
-    },
-    {
-      "id": "checkpoint:**7/11_運用最適化デー**（憲法・AIチーム運用）—_688_新規_imp",
-      "text": "**7/11 運用最適化デー**（憲法・AIチーム運用）— 688 新規 implement なし · **7/12** UI-BACKLOG-02（列幅ドラッグ）",
-      "source": "checkpoint",
-      "difficulty": 3,
-      "tokens": "中",
-      "tokenScore": 2,
-      "impact": 5,
-      "priority": 25,
       "status": "pending"
     }
   ]
