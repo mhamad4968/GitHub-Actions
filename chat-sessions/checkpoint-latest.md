@@ -7,7 +7,7 @@
 
 **最終更新**: 2026-07-11 20:42 JST — **F0 改善案 全承認・実施** · push 済
 
-**Git**: **`24bcefee`** = `origin/main` — push 済
+**Git**: **`8c28b903`** = `origin/main` — push 済
 
 **次の1手**: 日常レーン継続 · `cio:request:compose` 試用 · **≈2026-07-25** 憲法クローズ可否の再確認（観測期間）
 
