@@ -1,7 +1,7 @@
 {
   "scoredAt": "2026-07-11T10:30:00.000Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "依頼効率化ツール — 開発要否検討（Round-3 完了後）",
+  "topTask": "日常レーン継続 · cio:request:compose 試用 · 観測期間（≈2026-07-25 クローズ再確認）",
   "tasks": [
     {
       "id": "backlog:B-MDFLOW:_**Markdown_ベースの開発フロー**（仕様・実装・レ",
