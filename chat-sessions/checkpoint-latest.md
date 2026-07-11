@@ -7,7 +7,7 @@
 
 **最終更新**: 2026-07-11 JST — **非憲法ルール最適化 GO-B 完了**（spec v1.0 · P1–P3 · `verify:rules-optimization` OK）· **MCP DEL-2 済**（governance profile · 26 本）
 
-**Git**: **`026d43ed`** = `origin/main` — push 済 · 正本 `docs/plans/2026-07-11-rules-optimization-spec.md`
+**Git**: **`9460df3e`** = `origin/main` — push 済
 
 ### 本日アクティブ（BUILD/rev — 2026-07-10）
 
