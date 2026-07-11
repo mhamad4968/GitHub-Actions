@@ -1,7 +1,7 @@
 {
   "version": "2026-05-30",
   "exportedAt": "2026-07-11T10:30:00.000Z",
-  "gitHead": "9a3e7f41",
+  "gitHead": "145bec0d",
   "gitStatus": "## main...origin/main",
   "nextTask": "**Round-3 憲法配線完走・push 済**（R3-1〜10 · `60fe66fd`）→ **依頼効率化ツール** 開発要否 · **H9 review** 2026-07-25（`cio:formalization-h9-review --evaluate`）",
   "nextFiles": [
@@ -34,6 +34,6 @@
       "note": "R1: #R1 R 688 部分 GO の「触らないコード一覧」を仕様 §8 に 1 表で明記 低 手動"
     }
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=9a3e7f41 | 次=Round-3 push 済（R3-1〜10）→ 依頼効率化ツール要否 · H9 review 2026-07-25 | Read: checkpoint-latest.md, constitution-round3-master-spec.md | lastFailures=3",
+  "promptBlock": "【SESSION-BRIDGE】git=145bec0d | 次=Round-3 push 済（R3-1〜10）→ 依頼効率化ツール要否 · H9 review 2026-07-25 | Read: checkpoint-latest.md, constitution-round3-master-spec.md | lastFailures=3",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }
