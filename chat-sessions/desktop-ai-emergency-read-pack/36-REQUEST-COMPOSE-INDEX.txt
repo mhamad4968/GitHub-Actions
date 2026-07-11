@@ -1,0 +1,23 @@
+【依頼効率化ツール v0.1 — 早見】2026-07-11
+
+**使い方（浜田）**: チャットで「依頼文を作って」+ やりたいことを自然文で。
+
+**AI の役割**:
+  1. 足りない項目だけ聞き返し（レーン / 一行 / app / GO）
+  2. `npm run cio:request:compose` でブロック生成
+  3. **5行ブロックを提示 → 浜田 OK 後に本題**
+
+**レーン一覧**（`--lane`）:
+  kintone      … customize / deploy（--app 必須）
+  doc-lane     … Word / PPT / 経営会議資料
+  constitution … 憲法・ルール・verify
+  ops          … bootstrap / handoff / 壁時計
+  report       … 報告・棚卸し・合議
+
+**触らない（既定）**: 688 / 677–679 / SKYSEA
+
+**正本**: docs/runbooks/cio-request-compose.md
+**spec**: docs/plans/2026-07-11-request-efficiency-tool-spec.md
+
+**例（AI が実行）**:
+  npm run cio:request:compose -- --lane kintone --intent "736 PH1d" --app 736

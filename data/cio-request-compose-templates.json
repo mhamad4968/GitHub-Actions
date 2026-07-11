@@ -1,0 +1,49 @@
+{
+  "version": "2026-07-11",
+  "description": "依頼効率化 — チャット貼付ブロック正本（5レーン）",
+  "canonicalRunbook": "docs/runbooks/cio-request-compose.md",
+  "defaultNoTouch": ["688", "677–679", "SKYSEA"],
+  "sections": ["レーン", "やりたいこと", "触らない", "GO待ち", "AIへ"],
+  "lanes": {
+    "kintone": {
+      "label": "kintone-customize",
+      "turnStartLane": "customize",
+      "routeKeywords": ["deploy", "customize", "desktop.js"],
+      "requiredApp": true,
+      "defaultGoWait": "浜田目視 OK まで deploy しない",
+      "aiHint": "着手前: cio:pre-implement-gate → cio:tool:route --app <APP> → §50-3-8（customize 時）"
+    },
+    "doc-lane": {
+      "label": "doc-lane",
+      "turnStartLane": "doc-lane",
+      "routeKeywords": ["doc-lane", "Word", "PPT", "経営会議"],
+      "requiredApp": false,
+      "defaultGoWait": "浜田が Word/PPT で開いて確認するまで seal しない",
+      "aiHint": "着手前: [doc-lane] 宣言 → cio:tool:route --intent doc-lane → verify:keiei-kaigi（該当時）"
+    },
+    "constitution": {
+      "label": "constitution",
+      "turnStartLane": "default",
+      "routeKeywords": ["憲法", "constitution", "verify:rules"],
+      "requiredApp": false,
+      "defaultGoWait": "浜田 GO または観測期間方針に従う",
+      "aiHint": "着手前: verify:constitution-handoff → スコープ明示（今日のみ等）→ commit は浜田依頼時のみ"
+    },
+    "ops": {
+      "label": "ops",
+      "turnStartLane": "default",
+      "routeKeywords": ["bootstrap", "handoff", "session:clock", "checkpoint"],
+      "requiredApp": false,
+      "defaultGoWait": null,
+      "aiHint": "着手前: session:bootstrap または該当 npm のみ（本題と混同しない）"
+    },
+    "report": {
+      "label": "report",
+      "turnStartLane": "report",
+      "routeKeywords": ["報告", "棚卸し", "合議", "レビュー"],
+      "requiredApp": false,
+      "defaultGoWait": "報告のみ — implement 禁止（明示時除く）",
+      "aiHint": "着手前: cio:chat-report-selfcheck --strict-head（報告ターン時）"
+    }
+  }
+}

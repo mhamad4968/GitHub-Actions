@@ -673,6 +673,8 @@
     "verify:cio-tool-routing-infra": "node scripts/verify-cio-tool-routing-infra.mjs",
     "cio:tool:route": "node scripts/cio-tool-route.mjs",
     "cio:tool:route:test": "node scripts/verify-cio-tool-routing-infra.mjs",
+    "cio:request:compose": "node scripts/cio-request-compose.mjs",
+    "verify:cio-request-compose": "node scripts/verify-cio-request-compose.mjs",
     "cio:morning:pre-implement": "node scripts/cio-morning-pre-implement.mjs",
     "cio:morning:ready": "node scripts/cio-morning-ready.mjs",
     "cio:project:close": "node scripts/cio-project-close.mjs",
