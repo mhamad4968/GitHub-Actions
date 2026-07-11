@@ -7,7 +7,7 @@
 
 **最終更新**: 2026-07-12 JST — **新セッション WAKE** · checkpoint 凍結ゾーン修復
 
-**Git**: **`24bcefee`** = `origin/main` — push 済
+**Git**: **`d00a2fdc`** = `origin/main` — push 済
 
 **次の1手**: 日常レーン継続 · `cio:request:compose` 試用 · **≈2026-07-25** 憲法クローズ可否の再確認（観測期間）
 
