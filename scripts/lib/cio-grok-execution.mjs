@@ -91,6 +91,7 @@ export function statePath(root) {
 export function defaultState() {
   return {
     sessionCRuns: 0,
+    dryRunCount: 0,
     lastMode: null,
     lastGoal: null,
     lastDoneWhen: null,

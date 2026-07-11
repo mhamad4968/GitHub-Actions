@@ -1,7 +1,7 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-07-11T00:23:21.643Z",
-  "gitHead": "026d43ed",
+  "exportedAt": "2026-07-11T06:03:10.185Z",
+  "gitHead": "2775fc6b",
   "gitStatus": "## main...origin/main",
   "nextTask": "**夜セッション** — **憲法改善・統合・新憲法要否**（重点検討）→ その後 **依頼効率化ツール** 開発要否 · MCP は **governance profile** 維持 · kintone implement は別レーン",
   "nextFiles": [
@@ -19,25 +19,23 @@
   "lastFailures": [
     {
       "id": "evening-S1",
-      "at": "2026-07-11T00:23:21.643Z",
+      "at": "2026-07-11T06:03:10.185Z",
       "verify": "npm run evening:reflect",
       "note": "S1: #S1 S deploy-customization: verify garble 時に sync を 1 回リトライしてから exit 低 ○"
     },
     {
       "id": "evening-S2",
-      "at": "2026-07-11T00:23:21.643Z",
+      "at": "2026-07-11T06:03:10.185Z",
       "verify": "npm run evening:reflect",
       "note": "S2: #S2 S 687 フィールド追加スクリプト先頭に「POST+revision 必須・PUT 禁止」を固定コメント 低 ○"
     },
     {
       "id": "evening-R1",
-      "at": "2026-07-11T00:23:21.643Z",
+      "at": "2026-07-11T06:03:10.185Z",
       "verify": "npm run evening:reflect",
       "note": "R1: #R1 R 688 部分 GO の「触らないコード一覧」を仕様 §8 に 1 表で明記 低 手動"
     }
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=026d43ed | 次=**夜セッション** — **憲法改善・統合・新憲法要否**（重点検討）→ その後 **依頼効率化ツール** 開発要否 · MCP は **governance profile** 維持 · kintone implement は別レーン | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json | lastFailures=3",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
-  "validatedAt": "2026-07-11T00:23:22.199Z",
-  "crosscheckOk": true
+  "promptBlock": "【SESSION-BRIDGE】git=2775fc6b | 次=**夜セッション** — **憲法改善・統合・新憲法要否**（重点検討）→ その後 **依頼効率化ツール** 開発要否 · MCP は **governance profile** 維持 · kintone implement は別レーン | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json | lastFailures=3",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }

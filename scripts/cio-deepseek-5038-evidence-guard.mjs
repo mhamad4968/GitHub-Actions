@@ -17,6 +17,7 @@ import {
   read5038Stamp,
   write5038Stamp,
 } from './lib/cio-four-ai-governance.mjs';
+import { validateSkipReason } from './lib/cio-team-ops-skip-quality.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const MAX_AGE_MS = 45 * 60 * 1000;
@@ -39,10 +40,18 @@ function main() {
   if (args.includes('--stamp')) {
     const textIdx = args.indexOf('--text');
     const skipIdx = args.indexOf('--skip');
+    const skipReason = skipIdx >= 0 ? args[skipIdx + 1] : '';
+    if (skipIdx >= 0) {
+      const v = validateSkipReason(skipReason);
+      if (!v.ok) {
+        console.error(`[cio-deepseek-5038-evidence-guard] NG skip 理由品質: ${v.message}`);
+        process.exit(1);
+      }
+    }
     const payload = {
       mode: skipIdx >= 0 ? 'skip' : 'deepseek',
       text: textIdx >= 0 ? args[textIdx + 1] : '',
-      skipReason: skipIdx >= 0 ? args[skipIdx + 1] : '',
+      skipReason,
       note: 'CIO stamped via npm run cio:guard:5038 -- --stamp',
     };
     write5038Stamp(root, payload);

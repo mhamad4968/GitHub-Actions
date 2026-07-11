@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 /**
  * 毎ターン開始ゲート（18 遵守・2026-05-30）
- * §1 四行テンプレ表示 + 着手前リマインド + 任意 strict 検査
+ * §1 四行テンプレ表示 + 着手前リマインド + tier quick/standard/strict/lite（v3.2 D）
  *
  * Usage:
  *   npm run cio:turn-start
  *   npm run cio:turn-start -- --lane doc-lane --strict
+ *   npm run cio:turn-start -- --tier quick|standard|strict|lite
  *   npm run cio:turn-start -- --complete   # セッション区切り（Desktop verify リマインド）
  */
 import { spawnSync } from 'node:child_process';
@@ -16,6 +17,13 @@ import { fileURLToPath } from 'node:url';
 import { collect5038EvidenceFromLogs, read5038Stamp } from './lib/cio-four-ai-governance.mjs';
 import { readCheckpointNextTask } from './lib/cio-checkpoint-read.mjs';
 import { getDefaultBridgeNextFiles } from './lib/cio-handoff-template.mjs';
+import { readTeamOpsFlags } from './lib/cio-team-ops-flags.mjs';
+import {
+  printContractForTier,
+  recordLiteUsage,
+  resolveTier,
+  validateTierGate,
+} from './lib/cio-turn-start-tier.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -41,11 +49,12 @@ const TEMPLATES = {
 };
 
 function parseArgs(argv) {
-  const out = { lane: 'default', strict: false, complete: false };
+  const out = { lane: 'default', strict: false, complete: false, tier: null };
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--lane' && argv[i + 1]) out.lane = argv[++i];
     else if (argv[i] === '--strict') out.strict = true;
     else if (argv[i] === '--complete') out.complete = true;
+    else if (argv[i] === '--tier' && argv[i + 1]) out.tier = argv[++i];
   }
   return out;
 }
@@ -54,18 +63,6 @@ function inferSpecTouched(lane) {
   if (lane === 'doc-lane') return 'yes';
   if (lane === 'report') return 'no';
   return 'no';
-}
-
-function printTurnContract(lane) {
-  const goal = readCheckpointNextTask(root) || '(checkpoint-latest.md を Read)';
-  const touchFiles = getDefaultBridgeNextFiles(root).slice(0, 2);
-  const specTouched = inferSpecTouched(lane);
-
-  console.log('【ターン契約 — 応答先頭 §1 の直後に 3 行を転記（形骸化防止）】');
-  console.log(`Goal: ${goal.slice(0, 120)}`);
-  console.log(`Touch: ${touchFiles.join(', ') || '(未設定 — checkpoint を Read)'}`);
-  console.log(`SPEC_TOUCHED: ${specTouched}（予定）`);
-  console.log('');
 }
 
 function runNpm(script, extraArgs = []) {
@@ -80,13 +77,37 @@ function runNpm(script, extraArgs = []) {
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
+  const flags = readTeamOpsFlags();
+  const tier = resolveTier(args.tier || (args.strict ? 'strict' : 'standard'), root, flags);
+
+  if ((tier === 'lite' || tier === 'micro') && !flags.liteLaneEnabled) {
+    console.error('[cio:turn-start] NG Lite 無効（CIO_LITE_LANE=0）— standard/strict を使用');
+    process.exit(2);
+  }
+
+  const gate = validateTierGate(root, tier);
+  if (!gate.ok) {
+    console.error(`[cio:turn-start] NG ${gate.message}`);
+    process.exit(gate.exitCode || 2);
+  }
+
   const lines = TEMPLATES[args.lane] || TEMPLATES.default;
 
   console.log('=== CIO ターン開始（18 遵守）===\n');
+  console.log(`[tier: ${tier}]`);
   console.log('【§1 四行 — 応答先頭にこの順で貼付（欠落＝報告違反）】');
   for (const line of lines) console.log(line);
   console.log('');
-  printTurnContract(args.lane);
+
+  const goal = readCheckpointNextTask(root) || '(checkpoint-latest.md を Read)';
+  const touchFiles = getDefaultBridgeNextFiles(root).slice(0, 2);
+  const specTouched = inferSpecTouched(args.lane);
+  printContractForTier(tier, goal, touchFiles, specTouched);
+
+  if (tier === 'lite') {
+    recordLiteUsage(root, { lane: args.lane, tier: 'lite' });
+    console.log('[cio:turn-start] Lite — §50-3-8 スキップ理由: L1 doc-only micro edit（customize 非接触）');
+  }
 
   const evidence = collect5038EvidenceFromLogs(root);
   const stamp = read5038Stamp(root);
@@ -100,6 +121,9 @@ function main() {
 
   console.log('\n【編集・Shell 前】npm run cio:pre-implement-gate -- --strict');
   console.log('【報告・締め送信前】npm run cio:report-verify-response -- --file <下書き.md>');
+  if (tier === 'quick') {
+    console.log('\n【quick tier】Edit/Shell 禁止 — Read / verify / health のみ');
+  }
 
   if (args.lane === 'doc-lane') {
     console.log('\n【doc-lane】npm run cio:doc-lane-gate -- --strict');
@@ -122,12 +146,12 @@ function main() {
     if (args.strict) process.exit(2);
   }
 
-  if (args.strict && !stamp?.stampedAt && evidence.length === 0) {
-    console.error('[cio:turn-start] NG --strict: 5038 証跡なし（編集前に DeepSeek 実施）');
+  if ((args.strict || tier === 'strict') && !stamp?.stampedAt && evidence.length === 0) {
+    console.error('[cio:turn-start] NG strict: 5038 証跡なし（編集前に DeepSeek 実施）');
     process.exit(2);
   }
 
-  console.log('\n[cio:turn-start] OK — ツール着手前に上記 §1 を応答先頭へ');
+  console.log(`\n[cio:turn-start] OK tier=${tier} — ツール着手前に上記 §1 を応答先頭へ`);
   process.exit(0);
 }
 

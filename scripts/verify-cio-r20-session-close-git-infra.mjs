@@ -36,6 +36,9 @@ function main() {
   }
 
   const closeGit = fs.readFileSync(path.join(root, 'scripts/cio-session-close-git.mjs'), 'utf8');
+  if (!closeGit.includes('cio-guard-5038-session-audit')) {
+    issues.push('cio-session-close-git.mjs に v3.2 5038 session audit 未連結');
+  }
   if (
     !closeGit.includes('verify-checkpoint-project-closure') &&
     !closeGit.includes('cio-session-close-recognition-gate.mjs')

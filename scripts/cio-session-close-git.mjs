@@ -5,6 +5,7 @@
  * 順序（--execute 時）:
  *   0) cio:session:close-recognition-gate --pre-commit（R19 内容突合のみ）
  *   0b) verify:spec-progress-sync（R736-SPEC-SYNC 鏡像矛盾）
+ *   0c) cio:guard:5038-session-audit（v3.2 B1 — customize セッションのみ）
  *   1) cio:guard:multi-customize
  *   2) git add（--auto-stage）/ commit
  *   3) cio:session:export-handoff → verify:session-handoff-integrity --validate-export（amend 前）
@@ -119,6 +120,11 @@ function main() {
 
   if (!runNode('scripts/verify-spec-progress-sync.mjs')) {
     console.error('[cio:session:close-git] NG R736-SPEC-SYNC — 仕様進捗表の鏡像矛盾（先祖返り）');
+    process.exit(1);
+  }
+
+  if (!runNode('scripts/cio-guard-5038-session-audit.mjs')) {
+    console.error('[cio:session:close-git] NG §50-3-8 session audit（customize セッション）');
     process.exit(1);
   }
 
