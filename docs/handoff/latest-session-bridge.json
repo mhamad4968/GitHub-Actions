@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-07-11T06:03:10.185Z",
-  "gitHead": "2775fc6b",
+  "exportedAt": "2026-07-11T07:05:59.395Z",
+  "gitHead": "8d1e25a1",
   "gitStatus": "## main...origin/main",
-  "nextTask": "**夜セッション** — **憲法改善・統合・新憲法要否**（重点検討）→ その後 **依頼効率化ツール** 開発要否 · MCP は **governance profile** 維持 · kintone implement は別レーン",
+  "nextTask": "**夜セッション — 憲法改善をすべてやり切る（やり残し禁止）** — 論点 1–4 各 **合意→実装→verify→commit** 完走 · 正本 `docs/plans/2026-07-11-constitution-evening-agenda.md` チェックリスト全 [x] が DoD → その後 **依頼効率化ツール** 開発要否 · MCP は **governance prof",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -19,23 +19,23 @@
   "lastFailures": [
     {
       "id": "evening-S1",
-      "at": "2026-07-11T06:03:10.185Z",
+      "at": "2026-07-11T07:05:59.395Z",
       "verify": "npm run evening:reflect",
       "note": "S1: #S1 S deploy-customization: verify garble 時に sync を 1 回リトライしてから exit 低 ○"
     },
     {
       "id": "evening-S2",
-      "at": "2026-07-11T06:03:10.185Z",
+      "at": "2026-07-11T07:05:59.395Z",
       "verify": "npm run evening:reflect",
       "note": "S2: #S2 S 687 フィールド追加スクリプト先頭に「POST+revision 必須・PUT 禁止」を固定コメント 低 ○"
     },
     {
       "id": "evening-R1",
-      "at": "2026-07-11T06:03:10.185Z",
+      "at": "2026-07-11T07:05:59.395Z",
       "verify": "npm run evening:reflect",
       "note": "R1: #R1 R 688 部分 GO の「触らないコード一覧」を仕様 §8 に 1 表で明記 低 手動"
     }
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=2775fc6b | 次=**夜セッション** — **憲法改善・統合・新憲法要否**（重点検討）→ その後 **依頼効率化ツール** 開発要否 · MCP は **governance profile** 維持 · kintone implement は別レーン | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json | lastFailures=3",
+  "promptBlock": "【SESSION-BRIDGE】git=8d1e25a1 | 次=**夜セッション — 憲法改善をすべてやり切る（やり残し禁止）** — 論点 1–4 各 **合意→実装→verify→commit** 完走 · 正本 `docs/plans/2026-07-11-constitution-evening-agenda.md` チェックリスト全 [x] が DoD → その後 **依頼効率化ツール** 開発要否 · MCP は **governance prof | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json | lastFailures=3",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }
