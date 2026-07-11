@@ -260,7 +260,8 @@ ORIENT
 | **P2** | `cio-four-ai-governance.md` 追補 | `verify:cio-four-ai-governance` |
 | **P3** | 運用 1 週後 — strict 遵守を夕反省 #S 化 | 任意 |
 
-**実装状態（2026-07-11）**: **P0–P2 完了（C1 push 予定）** · P3 未着手 · **MCP §10 implement は浜田 post-push 合図**
+**実装状態（2026-07-11）**: **P0–P2 完了（C1 push 予定）** · P3 未着手 · **MCP §10 implement は浜田 post-push 合図**  
+**追補**: **`docs/plans/2026-07-11-ai-team-ops-optimization-spec-v32.md`**（体制改善 A–J+K · 形骸化対策 · 浜田実装 GO 待ち）
 
 ---
 
@@ -269,7 +270,7 @@ ORIENT
 | ID | 対策 | 残留 |
 |----|------|------|
 | △1 Grok 煩雑 | CIO 契約代行 + 決定木 | 低 |
-| △2 turn-start 形骸化 | `--strict` + 契約 3 行 | 低 |
+| △2 turn-start 形骸化 | `--strict` + 契約 3 行 + **v3.2 runtime probe** | **中**（v3.2 §4 △H1 で CLOSED 目標） |
 | △3 状態不整合 | §9 状態機械 | 低 |
 | △4 hallucination | 外部 AI 検収表 | 低 |
 | △5 P0 単独不足 | P0+P1 バンドル | 低 |

@@ -37,7 +37,7 @@ AI緊急用 フォルダ（Desktop）— 使い方メモ（正本はリポ `chat
 
   **25-checkpoint-latest-LITE.txt** … 浜田用要約（**先頭100行・最新表**）。メモ帳で開くのは **LITE のみ**。
 
-  26-evening-reflection-YYYY-MM-DD.md … 当日夕反省がリポにあるとき。無い日は **26-evening-reflection-SLOT.txt**（プレースホルダ）で **00〜28 の番号を連続**に保つ。
+  26-evening-reflection-YYYY-MM-DD.md … 当日夕反省がリポにあるとき。無い日は **26-evening-reflection-SLOT.txt**（プレースホルダ）で **00〜30 の番号を連続**に保つ。
 
   **28-CONSTITUTION-GENRE-MAP.txt** … 憲法・ルール ジャンル早見（4AI・**14-READ-06 直後**推奨）。
 
@@ -45,7 +45,7 @@ AI緊急用 フォルダ（Desktop）— 使い方メモ（正本はリポ `chat
 
 【番号付き読み取り（浜田貼付の控え・read-pack）】
 
-  08-INDEX.txt … 索引（**読取順の正本**）。続けて 09-READ-01.txt … 15-READ-07.txt（**本文見出しは READ-01〜READ-07 のまま**。**15＝浜田 CEO のお願い**＋ツール憲法 §6）/ 16-README-read-pack.txt / 17-HISTORY-… / 18-重要確認.txt / 19-SESSION-ONE-REPORT-…md / 20-SESSION-REPORT-CHECKLIST.txt … **リポ `chat-sessions/desktop-ai-emergency-read-pack/` と同名**。**27-USER683-CLAUDE-RELAY-SESSION.txt** … **kintone 683 × Claude 中継**。**28-CONSTITUTION-GENRE-MAP.txt** … **憲法ジャンル早見**。
+  08-INDEX.txt … 索引（**読取順の正本**）。続けて 09-READ-01.txt … 15-READ-07.txt（**本文見出しは READ-01〜READ-07 のまま**。**15＝浜田 CEO のお願い**＋ツール憲法 §6）/ 16-README-read-pack.txt / 17-HISTORY-… / 18-重要確認.txt / 19-SESSION-ONE-REPORT-…md / 20-SESSION-REPORT-CHECKLIST.txt … **リポ `chat-sessions/desktop-ai-emergency-read-pack/` と同名**。**27-USER683-CLAUDE-RELAY-SESSION.txt** … **kintone 683 × Claude 中継**。**28-CONSTITUTION-GENRE-MAP.txt** … **憲法ジャンル早見**。**30-AI-TEAM-ORG-CHART.txt** … **AI チーム体制図**（たまに確認用）。
 
   セッション終了時: `npm run session-starter:sync-desktop` で本フォルダへコピー。`verify:desktop-ai-emergency-sync` でバイト一致確認。
 

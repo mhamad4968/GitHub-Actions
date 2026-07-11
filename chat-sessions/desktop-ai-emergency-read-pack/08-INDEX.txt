@@ -45,6 +45,8 @@
 
 29-ABCD-V2-LIFECYCLE.txt … **Session Lifecycle v2 A/B/C/D 索引**（2026-06-21。**09-READ-01 項番 0 の後**または **28 の直後**に Read 推奨）
 
+30-AI-TEAM-ORG-CHART.txt … **AI チーム体制図**（6役 + Grok L2b + Fable · **浜田たまに確認用** · 2026-07-11）
+
 **ルール索引メンテ（2026-05-31）**: `npm run constitution:sync-genre-desktop-map` → `npm run rules:sync-index-all` → `npm run rules:regenerate-constitution` → `npm run verify:constitution-genre-kernels` → `npm run verify:constitution-mdc-freshness` → `npm run verify:cio-four-ai-governance`
 
 **`memo（削除禁止）/` フォルダ** … **浜田個人メモ専用**。read-pack / sync / 番号付けの **対象外**。

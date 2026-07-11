@@ -253,12 +253,12 @@ function main() {
   const numbering = verifyDesktopNumberingContinuity(expected);
   if (!numbering.ok) {
     console.warn(
-      `[verify-desktop-ai-emergency-sync] NG: 番号歯抜け 00〜28（欠番: ${numbering.missing.join(', ')}）\n` +
+      `[verify-desktop-ai-emergency-sync] NG: 番号歯抜け 00〜30（欠番: ${numbering.missing.join(', ')}）\n` +
         '  先に: read-pack / sync を整備して session-starter:sync-desktop'
     );
     bad = true;
   } else {
-    console.log('[verify-desktop-ai-emergency-sync] OK 番号 00〜28 連続（26=夕反省 md または SLOT、28=憲法ジャンル早見）');
+    console.log('[verify-desktop-ai-emergency-sync] OK 番号 00〜30 連続（26=夕反省 md または SLOT、28=憲法ジャンル早見、30=体制図）');
   }
 
   if (bad) {

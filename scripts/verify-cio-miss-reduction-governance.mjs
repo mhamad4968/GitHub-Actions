@@ -21,6 +21,7 @@ const REQUIRED = [
   { rel: 'scripts/lib/cio-handoff-export-validate.mjs', needles: ['lastCommitTouchesOnlyBridge', 'r31BridgeFold'] },
   { rel: 'scripts/lib/session-clock-process.mjs', needles: ['taskkill', 'R22'] },
   { rel: 'docs/plans/2026-07-11-ai-team-ops-optimization-spec.md', needles: ['lastFailures', 'export 原子化', '柱 A'] },
+  { rel: 'docs/plans/2026-07-11-ai-team-ops-optimization-spec-v32.md', needles: ['形骸化防止原則', 'verify:team-ops-v2', 'L1', 'Phase 1'] },
   { rel: 'scripts/cio-session-export-handoff.mjs', needles: ['collectLastFailures', '同一 try'] },
   { rel: 'scripts/lib/cio-bridge-last-failures.mjs', needles: ['collectLastFailures', 'MAX_FAILURES'] },
   { rel: 'scripts/cio-turn-start.mjs', needles: ['【ターン契約', 'SPEC_TOUCHED:'] },
