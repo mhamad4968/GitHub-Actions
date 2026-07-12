@@ -1,8 +1,8 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-07-12T10:01:41.766Z",
-  "gitHead": "abf09e5b",
-  "gitStatus": "## main...origin/main [ahead 1]",
+  "exportedAt": "2026-07-12T10:01:44.356Z",
+  "gitHead": "b2fe4c83",
+  "gitStatus": "## main...origin/main [ahead 2]",
   "nextTask": "**7/13〜** — **UI-BACKLOG-03** ブロック選択 DD 仕様確認（**7/13–7/14** · implement **7/16** · **NO-GO 可**）— 浜田 **スケジュール通りで GO**",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
@@ -19,19 +19,17 @@
   "lastFailures": [
     {
       "id": "debug-tip-npm-run-doc-lane-verify",
-      "at": "2026-07-12T10:01:41.766Z",
+      "at": "2026-07-12T10:01:44.356Z",
       "verify": "npm run cio:session:export-handoff",
       "note": "npm run doc-lane:verify-v5-ch3-refs`）+ `add_reading_guide.py` 修正。v5 読み方1行は **Wor | npm run doc-lane:patch-v5-a3`・`cio:do"
     },
     {
       "id": "debug-tip-npm-run-session-starter",
-      "at": "2026-07-12T10:01:41.766Z",
+      "at": "2026-07-12T10:01:44.356Z",
       "verify": "npm run cio:session:export-handoff",
       "note": "npm run session-starter:sync-desktop` + verify 済。旧 `19-SESSION-ONE-REPORT-2026-0 | npm run cio:session:export-handoff` →"
     }
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=abf09e5b | 次=**7/13〜** — **UI-BACKLOG-03** ブロック選択 DD 仕様確認（**7/13–7/14** · implement **7/16** · **NO-GO 可**）— 浜田 **スケジュール通りで GO** | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json | lastFailures=2",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
-  "validatedAt": "2026-07-12T10:01:42.130Z",
-  "crosscheckOk": true
+  "promptBlock": "【SESSION-BRIDGE】git=b2fe4c83 | 次=**7/13〜** — **UI-BACKLOG-03** ブロック選択 DD 仕様確認（**7/13–7/14** · implement **7/16** · **NO-GO 可**）— 浜田 **スケジュール通りで GO** | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json | lastFailures=2",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }
