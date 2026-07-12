@@ -3,6 +3,12 @@
 Windows から開きやすい控え: C:\Users\mhamada202408224\Desktop\AI緊急用\HANDOFF-HUMAN.txt
 ※ C:\Users\mhamada202408224\kintone-ai-lab は chat-sessions 無しの別ツリーなので、このファイルは置かない。
 
+日時(JST): 2026-07-12（日）昼 — **経営会議資料 MCP · セッション締め**
+いま何してた（1行）: shiryo-sakusei MCP + SPEC + 依頼書テンプレ · push 9e2b18e8 · MCP ready 確認 · 月次依頼フロー確立。
+次にやる1つ: **夜** — **736 UI-BACKLOG-02** 列幅ドラッグ（§41）· 体制更新の verify 不具合があれば修正
+GO待ち（なし／内容）: 憲法正式クローズ · rules-opt §18 — **観測後（≈7/25）**
+触らないで（なし／内容）: 688（WBGT以外）/ 677–679 / SKYSEA 7月
+
 日時(JST): 2026-07-11（土）終了 — **F0 改善案 全承認・実施**
 いま何してた（1行）: 夕反省 F0（実装GO前の越境）改善 #R-GO-BOUNDARY-01 等 8件実装 · compose --phase · Desktop sync · verify OK
 次にやる1つ: **（翌日 項番 -0 で合意）** · **≈2026-07-25** クローズ可否再確認

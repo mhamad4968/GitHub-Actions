@@ -4593,3 +4593,17 @@ npm run cio:morning:ready
 **触らない**: 688（WBGT以外）/ 677–679 / SKYSEA 7月
 
 ---
+
+### 2026-07-12 JST — **2026-07-12 昼 — 経営会議資料 MCP · セッション締め**
+
+**要約**: shiryo-sakusei MCP + SPEC + 依頼書テンプレ commit push 9e2b18e8 · Cursor 再起動で MCP ready · 月次依頼フロー（作成日テンプレ貼付→記入）確立
+
+**次の1手**: 夜: 736 UI-BACKLOG-02 列幅ドラッグ §41 · 体制更新 verify 不具合修正
+
+**Git**: `9e2b18e8` — feat(mcp): shiryo-sakusei
+
+**GO待ち**: 憲法正式クローズ — 観測後（≈7/25）
+
+**触らない**: 688（WBGT以外）/ 677–679 / SKYSEA 7月
+
+---
