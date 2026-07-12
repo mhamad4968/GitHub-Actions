@@ -236,7 +236,8 @@ function main() {
   console.log('[cio:session:close-git] push OK');
 
   if (!skipCheckpointGit) {
-    const { changed, hash } = syncCheckpointGitAfterPush(root);
+    git(['fetch', 'origin', branch]);
+    const { changed, hash } = syncCheckpointGitAfterPush(root, { suffix: 'push 済' });
     if (changed && hash) {
       git(['add', CHECKPOINT_REL]);
       const cpCommit = git(['commit', '-m', 'chore(checkpoint): sync Git line after close']);

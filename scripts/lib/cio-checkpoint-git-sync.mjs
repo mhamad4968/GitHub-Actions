@@ -107,7 +107,16 @@ export function checkCheckpointGitRegression(root) {
       return { ok: true, offByOne: true, cpHash, origin };
     }
   }
-  return { ok: true };
+  // S-CHKPT-CLOSE-01: 先祖でも off-by-one でもない = 陳腐化（rebase/amend 後の無関係 hash）
+  return {
+    ok: false,
+    regression: true,
+    cpHash,
+    origin,
+    diverged: true,
+    message:
+      `checkpoint Git \`${cpHash}\` が origin/main \`${origin}\` と不一致（先祖でもない）— \`npm run cio:session:close-git\` で再 sync（S-CHKPT-CLOSE-01）`,
+  };
 }
 
 /**
