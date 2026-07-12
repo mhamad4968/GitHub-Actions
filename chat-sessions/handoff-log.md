@@ -4659,4 +4659,7 @@ npm run cio:morning:ready
 
 **触らない**: 688（WBGT以外）/ 677–679 / SKYSEA 7月
 
+
+**Git**: **`16bbaff8`** = `origin/main` — push 済
+
 ---
