@@ -11,7 +11,7 @@ import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { isSessionCloseTempPath } from './lib/cio-session-close-temp-paths.mjs';
 import { checkHoldLaneDirtyFiles } from './lib/cio-project-closure.mjs';
-import { checkCheckpointGitRegression, countCheckpointGitLines } from './lib/cio-checkpoint-git-sync.mjs';
+import { checkCheckpointGitRegression, countCheckpointGitLines, checkCheckpointGitExactMatch } from './lib/cio-checkpoint-git-sync.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const warnOnly = process.argv.includes('--warn-only');
@@ -145,6 +145,12 @@ function checkCheckpointGitLine() {
       `[verify:session-close-git-warn] WARN checkpoint に **Git** 行が ${gitLineCount} 件 — 手動編集禁止・post-commit 同期を確認（#S3）`,
     );
   }
+  const exact = checkCheckpointGitExactMatch(root);
+  if (!exact.ok && !exact.skip) {
+    const msg = `[verify:session-close-git-warn] NG ${exact.message}`;
+    const hard = failOrWarn(msg);
+    return { ok: false, hard };
+  }
   const reg = checkCheckpointGitRegression(root);
   if (!reg.regression) return { ok: true };
   console.warn(`[verify:session-close-git-warn] WARN ${reg.message}`);
@@ -187,7 +193,10 @@ function main() {
     process.exit(1);
   }
 
-  checkCheckpointGitLine();
+  const checkpointGit = checkCheckpointGitLine();
+  if (!checkpointGit.ok) {
+    process.exit(warnOnly ? 0 : 1);
+  }
 
   const unpushed = checkUnpushed();
   if (!unpushed.ok) {

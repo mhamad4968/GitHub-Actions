@@ -3,6 +3,11 @@
   "note": "git-history-alignment が保護するコマンド・緩和禁止パターン。verify:git-history-alignment / git-history-mcp 連動。",
   "generations": [
     {
+      "hash": "de709917",
+      "label": "feat(evening): §5 approved — Cursor v2.5, Models 6-role, CHKPT-CLOSE-01, E1 README",
+      "at": "2026-07-12"
+    },
+    {
       "hash": "c0255feb",
       "label": "feat(go-boundary): implement F0 evening improvements (浜田全承認)",
       "at": "2026-07-12"
@@ -10,11 +15,6 @@
     {
       "hash": "fa7ace6b",
       "label": "feat(constitution): lifecycle-v2 registry slim, charters 26/27, verify probes",
-      "at": "2026-07-12"
-    },
-    {
-      "hash": "8591b93f",
-      "label": "feat(governance): MCP consolidation P0-P5 implement (O1-O3, SCR, profiles)",
       "at": "2026-07-12"
     }
   ],

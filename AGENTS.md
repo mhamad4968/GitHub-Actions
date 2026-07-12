@@ -114,8 +114,10 @@ AI エージェントはビジネス・エンジニアリングの共同責任�
 
 | 環境 | 設定場所 | 選択する実モデル名 | 備考 |
 |---|---|---|---|
-| Cursor IDE（Windows） | チャット欄のモデルピッカー / 設定 → Models | **Opus 4.7 1M Extra High** (デフォルト) + **Opus 4.7 1M Max Thinking** (重い設計用) + **Composer 2** (ルーチン用) | 他モデル（Sonnet / GPT / Gemini / Auto 等）は **OFF**。Composer 2 は §1-2-3-2 で AI 自律選択時のみ使用 (silent fallback とは区別) |
+| Cursor IDE（Windows） | チャット欄のモデルピッカー / 設定 → Models | **§1-2-3-6 六役 ON のみ**: **Opus 4.8**（CIO 既定）+ **Opus 4.7**（軽量）+ **Composer 2.5**（実装）+ **Grok 4.5**（検証ループ）+ **Fable 5**（L4 切り札）| **GPT / Sonnet / Gemini / Auto 等は OFF**。Explore Subagent = **Composer 2.5 Fast**。DeepSeek・Kimi は **MCP**（Models 一覧外）。§1-2-3-2 自律選択と §1-2-2 silent fallback は区別 |
 | Cursor Agent CLI（WSL） | `agent` 起動後 `/model` | **Opus 4.7 1M Max Thinking** | CLI 側に "Extra High" は無いため、最上段の "Max Thinking" を選ぶ。 |
+
+**2026-07-12 改定 (#R-1-2-3-6-MODELS-01)**: §1-2-3-6 六役体制に整合。Cursor IDE Models は **Opus 4.8 / 4.7 / Composer 2.5 / Grok 4.5 / Fable 5** のみ ON（浜田 2026-07-12 実測）。Auto-fallback UI トグルは新 Cursor で廃止 → **有効一覧の絞り込み + Protection ON** で代替（`CURSOR-トラブル対応メモ` v2.5）。
 
 **2026-04-26 改定 (P5-5)**: §1-2 の「最適モデル原則」を満たすため、Cursor IDE では **3 モデル (Extra High / Max Thinking / Composer 2)** を ON にしておく。AI が §1-2-3-2 に従って自律選択し、§1-2-3-1 で都度ティア判定を宣言する。CLI を使う場合は最新版へ更新してから `/model` を確認する：
 
@@ -133,9 +135,8 @@ agent
 | 設定 | 必須状態 | 理由 |
 |---|---|---|
 | `Auto` モデルピッカー | **OFF** | 「Auto」は実モデル名を隠して安価モデルを選ぶため §1-2 違反の温床 |
-| `Auto-fallback to Composer/Sonnet on rate limit` 系 | **OFF** | `composer-2` への silent switch 元 |
-| `Use Auto model when limits reached` 系 | **OFF** | 同上 |
-| 有効モデル一覧 | **`Opus 4.7 1M Extra High` のみ ON** | 他モデル全 OFF → 強制的に Opus 単独 |
+| `Auto-fallback` / `Use Auto on limits` 系 | **該当 UI なし（2026-07-12）** — 代替 = 下記「有効モデル一覧」の絞り込み | 新 Cursor UI ではトグル廃止。`CURSOR-トラブル対応メモ` v2.5 参照 |
+| 有効モデル一覧 | **§1-2-3-6 六役 ON のみ**（Opus 4.8 / 4.7 / Composer 2.5 / Grok 4.5 / Fable 5）| 他モデル全 OFF → silent fallback 完封 |
 | `Background agents` モデル | **Opus 4.7 系に固定**（または無効化）| 別モデル常時起動禁止（§1-2-2 + §51）|
 
 **API 制限到達時の正しい動作（§1-2-2 適用後）**:
@@ -174,8 +175,8 @@ agent
 
 | # | 設定 | 必須状態 | TSB-018 関連 |
 |---|---|---|---|
-| 3 | **有効モデル一覧** | **Opus 4.7 1M Extra High + Opus 4.7 1M Max Thinking のみ ON / 他は全 OFF** | 標準 "Opus 4.7" は OFF（§1-2-3 2 段階明確化のため）/ Composer 系・GPT 系・Auto は OFF（silent fallback 完封）|
-| 4 | **Add or search model** で追加 | Cursor は標準で `Opus 4.7 1M Extra High` `Opus 4.7 1M Max Thinking` を **add で明示追加** する必要がある（2026/03〜の UI 仕様変更）| 知らないと「リストに無い → 諦める」罠 |
+| 3 | **有効モデル一覧** | **§1-2-3-6 六役 ON のみ**: Opus 4.8 / Opus 4.7 / Composer 2.5 / Grok 4.5 / Fable 5 — **他は全 OFF** | Auto-fallback UI 廃止（2026-07-12）→ 一覧絞り込みで代替 / Composer 系・GPT 系・Sonnet 系・Auto は OFF |
+| 4 | **Add or search model** で追加 | 上記 5 モデルを **add で明示追加** する必要がある場合あり（UI 仕様変更に注意）| 知らないと「リストに無い → 諦める」罠 |
 
 **C. Agents (Settings → Agents → Auto-Run section / TSB-019 連動 / 2026-04-26 Q1 追加)**:
 

@@ -25,6 +25,7 @@ import {
   syncCheckpointGitAfterPush,
   readCheckpointGitHead,
   updateCheckpointGitHead,
+  checkCheckpointGitExactMatch,
 } from './lib/cio-checkpoint-git-sync.mjs';
 import { CHECKPOINT_REL } from './lib/cio-checkpoint-read.mjs';
 import { repairCheckpointBootstrapBlock } from './lib/cio-handoff-template.mjs';
@@ -252,6 +253,36 @@ function main() {
         git(['fetch', 'origin', branch]);
         const finalHash = git(['rev-parse', '--short', 'origin/main']).out || hash;
         console.log(`[cio:session:close-git] checkpoint Git synced → ${finalHash}`);
+      }
+    }
+    // S-CHKPT-CLOSE-01: bridge 連鎖後の終端 stamp（amend 収束後も 1 世代ずれを解消）
+    git(['fetch', 'origin', branch]);
+    const exact = checkCheckpointGitExactMatch(root);
+    if (!exact.ok && !exact.skip) {
+      const origin = git(['rev-parse', '--short', 'origin/main']).out;
+      if (origin) {
+        updateCheckpointGitHead(root, { hash: origin, suffix: 'push 済' });
+        git(['add', CHECKPOINT_REL]);
+        const finCommit = git(['commit', '-m', 'chore(checkpoint): final Git line stamp (S-CHKPT-CLOSE-01)']);
+        if (finCommit.ok) {
+          for (let i = 0; i < 5; i += 1) {
+            const head = git(['rev-parse', '--short', 'HEAD']).out;
+            const cpHash = readCheckpointGitHead(root);
+            if (!head || head === cpHash) break;
+            updateCheckpointGitHead(root, { hash: head, suffix: 'push 済' });
+            git(['add', CHECKPOINT_REL]);
+            git(['commit', '--amend', '--no-edit'], {
+              env: { ...process.env, CIO_POST_COMMIT_CHECKPOINT_SYNC: '1' },
+            });
+          }
+          const pushFin = git(['push', 'origin', 'HEAD']);
+          if (!pushFin.ok) {
+            console.error('[cio:session:close-git] NG final checkpoint stamp push', pushFin.err || pushFin.out);
+            process.exit(pushFin.status || 1);
+          }
+          git(['fetch', 'origin', branch]);
+          console.log(`[cio:session:close-git] final checkpoint stamp → ${git(['rev-parse', '--short', 'origin/main']).out}`);
+        }
       }
     }
   }

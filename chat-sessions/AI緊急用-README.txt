@@ -1,5 +1,10 @@
 AI緊急用 フォルダ（Desktop）— 使い方メモ（正本はリポ `chat-sessions/` 配下。`npm run session-starter:sync-desktop` で **`23-AI緊急用-README.txt`** 名でコピーされる）
 
+【⚠️ Desktop sync 前チェック — 浜田向け（2026-07-12 #D-E1-NOTEPAD-01）】
+- **メモ帳**: **24-handoff-log.md / 25-checkpoint-latest.md は開かない**（sync 競合で固まる）。開くのは **34-LITE / 35-LITE のみ**。
+- **RAM**: sync 前に **80% 未満**を推奨。`desktop-sync-precheck` が WARN したら不要アプリを終了してから再 sync。
+- **確認**: `npm run session-starter:sync-desktop` 冒頭の `[desktop-sync-precheck] OK RAM=… Notepad=…` を見る。
+
 【CIO／Agent — Auto-Run／ターミナル承認（2026-05-11 CEO／CIO 更新）】
 （**CIO の自律判断・インフラは提案止まりにしない**等の CEO 短冊は Desktop **`＃重要確認事項.txt`** の **「CIO の自律判断」** 節を正本。MCP 名チェックはリポ **`npm run verify:cio-mcp-registry`**、疎通は **`npm run cio:mcp:env`** — **日常は Windows ネイティブで実行して `SUMMARY: OK 6/6` を正**、WSL `/mnt/c/...` は月次ベストエフォート／kimi のみ落ちるときは **`CIO_MCP_PROBE_KIMI_TIMEOUT_MS`** とネット。詳細 **`docs/mcp-status.md` §CIO**。）
 0. **CIO 自律パス（UI の最後の一手をファイルで補完）**: `%APPDATA%\Cursor\User\globalStorage\state.vscdb` の `ItemTable` キー **`src.vs.platform.reactivestorage.browser.reactiveStorageServiceImpl.persistentStorage.applicationUser`** 内 JSON の **`composerState.yoloEnableRunEverything`** を **`true`** にする作業は、リポ **`scripts/apply_cursor_run_everything_state_vscdb.py`** で実施する（**実行前にバックアップ**・**Cursor 完全終了推奨**・失敗時はバックアップから `state.vscdb` を戻す）。**製品 UI（Ctrl+Shift+J → Agents）と矛盾した場合は UI を正**とする。

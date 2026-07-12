@@ -161,10 +161,10 @@ _（候補なし — metrics 閾値内 or 週上限）_
 
 | ID | カテゴリ | 提案（どの失敗を防ぐか） | 想定リスク | 翌朝自動実施可? |
 |---|---|---|---|---|
-| **#D-CURSOR-UI-01** | D | **Auto-fallback / Use Auto on limits が新 UI に無い**旨を `CURSOR-トラブル対応メモ` v2.5 に追記。代替 = Models 有効一覧絞り込み + Protection ON（F1 再発時の浜田迷子防止） | 低 | ✅ |
-| **#R-1-2-3-6-MODELS-01** | R | `AGENTS.md` §1-2-2-1 の Models 表を **§1-2-3-6 六役 ON 一覧**（Opus 4.8/4.7 · Composer 2.5 · Grok · Fable）に更新。旧「Opus 4.7 のみ ON」との矛盾解消 | 低 | ✅ |
-| **#S-CHKPT-CLOSE-01** | S | `close-git` 終端で **bridge export 後に checkpoint Git を再 stamp 1 回**（amend ループ後）を verify に組込み、F1 の silent ずれを exit 1 に（`verify:session-close-git-warn` 強化） | 中 | ○ |
-| **#D-E1-NOTEPAD-01** | D | Desktop sync precheck の **Notepad/RAM WARN** を `23-AI緊急用-README.txt` 先頭に 1 行追記（浜田向け・F3） | 低 | ✅ |
+| **#D-CURSOR-UI-01** | D | **Auto-fallback / Use Auto on limits が新 UI に無い**旨を `CURSOR-トラブル対応メモ` v2.5 に追記。代替 = Models 有効一覧絞り込み + Protection ON（F1 再発時の浜田迷子防止） | 低 | ✅ **浜田承認 2026-07-12 夜** |
+| **#R-1-2-3-6-MODELS-01** | R | `AGENTS.md` §1-2-2-1 の Models 表を **§1-2-3-6 六役 ON 一覧**（Opus 4.8/4.7 · Composer 2.5 · Grok · Fable）に更新。旧「Opus 4.7 のみ ON」との矛盾解消 | 低 | ✅ **浜田承認 2026-07-12 夜** |
+| **#S-CHKPT-CLOSE-01** | S | `close-git` 終端で **bridge export 後に checkpoint Git を再 stamp 1 回**（amend ループ後）を verify に組込み、F1 の silent ずれを exit 1 に（`verify:session-close-git-warn` 強化） | 中 | ✅ **浜田承認 2026-07-12 夜** |
+| **#D-E1-NOTEPAD-01** | D | Desktop sync precheck の **Notepad/RAM WARN** を `23-AI緊急用-README.txt` 先頭に 1 行追記（浜田向け・F3） | 低 | ✅ **浜田承認 2026-07-12 夜** |
 
 ### ユーザー応答方法
 - 個別: 「#D-CURSOR-UI-01 承認」「#S-CHKPT-CLOSE-01 却下」

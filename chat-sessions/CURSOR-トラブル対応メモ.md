@@ -77,6 +77,18 @@ v2.4 (2026-04-26 07:55) Cursor IDE Auto-Run + RACI bypass 防御（Q1 / TSB-019 
 - **TSB-019 詳細**: `docs/troubleshooting.md` 末尾セクション参照（事象 / 真因 / 影響 / 暫定 / 恒久 / 教訓 5 件）
 - **後続**: Q-series 包括 Cursor 設定監査（残 5 タブ Hooks / Tools & MCPs / Rules-Skills-Subagents / Indexing & Docs / Plan & Usage）= PC 台帳完了後に実施
 
+v2.5 (2026-07-12) Cursor Models UI 変更 — Auto-fallback 項目の廃止（§1-2-2-1 追補 / #D-CURSOR-UI-01）:
+- **事実（2026-07-12 浜田実測）**: Cursor IDE **Settings → Models** に、v2.2 手順の  
+  `Auto-fallback to Composer/Sonnet on rate limit` / `Use Auto model when limits reached` **トグルが存在しない**（UI 刷新で削除 or 統合済み）
+- **代替防御（§1-2-2 意図は維持）**:
+  1. **有効モデル一覧を §1-2-3-6 六役 ON のみに絞る**（Opus 4.8 / Opus 4.7 / Composer 2.5 / Grok 4.5 / Fable 5 — 他は全 OFF）
+  2. **`Auto` モデルピッカーは OFF**（残っていれば）
+  3. **Agents タブ**: Browser Protection **ON** + MCP Tools Protection **ON**（v2.4 維持）
+  4. **Explore Subagent** は **Composer 2.5 Fast** に固定（六役③ の軽量経路）
+- **枯渇時**: 変わらず **エラー停止が正常** → AI が §1-2-2 4 択 A-D を提示（v2.3 維持）
+- **検知文言**: `Switched to Composer 2 after reaching API limit.` 等が出たら **即中断**（v2.2 維持）
+- **正本**: `AGENTS.md` §1-2-2-1 B. Models（2026-07-12 改定）
+
 【浜田が違反検知したら / 例: AI が rm -rf を勝手に実行したら】
 1. 即座にチャットで **「§52-8 違反です」** と AI に伝える
 2. AI は §47-E 連動で即時謝罪 + 影響評価 + 復旧手順提示

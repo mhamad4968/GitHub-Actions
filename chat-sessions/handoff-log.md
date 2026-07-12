@@ -4655,11 +4655,18 @@ npm run cio:morning:ready
 
 **次の1手**: **7/13** — UI-BACKLOG-03 ブロック選択 DD 仕様確認開始
 
-**GO待ち**: §5 — `#D-CURSOR-UI-01` `#R-1-2-3-6-MODELS-01` `#S-CHKPT-CLOSE-01` `#D-E1-NOTEPAD-01`（個別 or 一括承認）
+**GO待ち**: §5 — **全件承認済 2026-07-12 夜** → `docs/approved-changes/2026-07-12-evening-improvements-hamada-go.md`
 
 **触らない**: 688（WBGT以外）/ 677–679 / SKYSEA 7月
 
+---
 
-**Git**: **`16bbaff8`** = `origin/main` — push 済
+### 2026-07-12 JST（夜）— **§5 改善案 全件承認・実装**
+
+**要約**: 浜田「改善提案すべて承認」— #D-CURSOR-UI-01 · #R-1-2-3-6-MODELS-01 · #S-CHKPT-CLOSE-01 · #D-E1-NOTEPAD-01 実装 · RAM/Notepad precheck **OK**（RAM 70% · Notepad 0）
+
+**次の1手**: **7/13** — UI-BACKLOG-03 ブロック選択 DD 仕様確認開始
+
+**触らない**: 688（WBGT以外）/ 677–679 / SKYSEA 7月
 
 ---

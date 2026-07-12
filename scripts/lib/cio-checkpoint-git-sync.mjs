@@ -109,3 +109,22 @@ export function checkCheckpointGitRegression(root) {
   }
   return { ok: true };
 }
+
+/**
+ * S-CHKPT-CLOSE-01 — checkpoint **Git** 行が origin/main と完全一致するか（終端検証用）
+ * @returns {{ ok: boolean, skip?: boolean, cpHash?: string, origin?: string, message?: string }}
+ */
+export function checkCheckpointGitExactMatch(root) {
+  const cpHash = readCheckpointGitHead(root);
+  if (!cpHash) return { ok: true, skip: true };
+  const origin = gitOriginMainShort(root);
+  if (!origin) return { ok: true, skip: true };
+  if (cpHash === origin) return { ok: true, cpHash, origin };
+  return {
+    ok: false,
+    cpHash,
+    origin,
+    message:
+      `checkpoint Git \`${cpHash}\` ≠ origin/main \`${origin}\` — \`npm run cio:session:close-git\` 終端 stamp を再実行（S-CHKPT-CLOSE-01）`,
+  };
+}
