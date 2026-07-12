@@ -11,8 +11,8 @@
 ## アクティブ（未消化）
 
 - [x] **【夜必達 · 2026-07-11 浜田】憲法改善をすべてやり切る** — 7/11 夜完了（lifecycle-v2 · verify 全緑 · push 済）
-- [ ] **【夜 · 2026-07-12】736 UI-BACKLOG-02** 列幅ドラッグ — §41 仕様 · App 736 のみ
-- [ ] **【夜 · 2026-07-12】体制更新の不具合修正** — evening-reflect-queue 整理済 · cold-start / verify 再確認
+- [x] **【夜 · 2026-07-12】736 UI-BACKLOG-02** 列幅ドラッグ — 浜田目視 OK · CLOSED · rev186
+- [x] **【夜 · 2026-07-12】体制更新の不具合修正** — WARN 整頓 · D-CHKPT-02 · smoke/bootstrap GREEN
 
 - [x] **§51-6-2 壁時計**・**`[憲法適合]`** の運用（朝の習慣・区切り宣言）— **2026-07-04 浜田 GO（#D1）**: sessionStart/sessionEnd hook + `session:clock.mjs` CRLF 書き出し（#S3）で pre-commit 違反解消。議題は **§1-N 憲法運用レビュー** に集約。
 - [x] **朝報** `docs/reports/YYYY-MM-DD-morning-prep.md` **未生成日の扱い** — **2026-07-07 GO**: `docs/runbooks/morning-prep-missing-day.md`

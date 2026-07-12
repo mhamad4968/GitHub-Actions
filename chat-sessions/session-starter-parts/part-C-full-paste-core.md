@@ -72,9 +72,9 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-07-11 自動更新）】
-- 進行中 plan: docs/plans/2026-07-11-request-efficiency-tool-spec.md
+【今やってる主タスク（2026-07-12 自動更新）】
+- 進行中 plan: docs/plans/2026-07-12-jikkou-yosan-ui-backlog-02-col-resize-spec.md
 - 当日コミット (上位 3):
-  - chore(checkpoint): sync Git line after commit
-  - feat(request-compose): add chat-style request efficiency tool v0.1
-  - chore(checkpoint): sync Git line after commit
+  - chore(checkpoint): sync Git line after close
+  - chore(handoff): align bridge gitHead
+  - chore(handoff): session bridge export
