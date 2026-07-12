@@ -87,6 +87,15 @@ export function checkCheckpointGitRegression(root) {
   const origin = gitOriginMainShort(root);
   if (!origin) return { ok: true };
   if (cpHash === origin) return { ok: true };
+  // R44 off-by-one を先祖判定より先に（checkpoint tip + Git 行 = origin^ は正常）
+  const parentEarly = spawnSync('git', ['rev-parse', '--short', `${origin}^`], { cwd: root, encoding: 'utf8' });
+  const parentEarlyShort = (parentEarly.stdout || '').trim();
+  if (parentEarlyShort === cpHash) {
+    const subjEarly = spawnSync('git', ['log', '-1', '--pretty=format:%s', origin], { cwd: root, encoding: 'utf8' });
+    if (/^chore\(checkpoint\): (sync Git line|final Git line stamp)/i.test((subjEarly.stdout || '').trim())) {
+      return { ok: true, offByOne: true, cpHash, origin };
+    }
+  }
   const anc = spawnSync('git', ['merge-base', '--is-ancestor', cpHash, origin], { cwd: root });
   if (anc.status === 0) {
     return {
@@ -98,16 +107,7 @@ export function checkCheckpointGitRegression(root) {
         `checkpoint Git \`${cpHash}\` が origin/main \`${origin}\` より古い — \`npm run cio:session:close-git\` で再 sync（手動 **Git** 行編集禁止 / S-CLOSE-01）`,
     };
   }
-  // R44: checkpoint sync commit 直後は **Git** 行が 1 世代遅れることがある（amend 収束限界）
-  const parent = spawnSync('git', ['rev-parse', '--short', `${origin}^`], { cwd: root, encoding: 'utf8' });
-  const parentShort = (parent.stdout || '').trim();
-  if (parentShort === cpHash) {
-    const subj = spawnSync('git', ['log', '-1', '--pretty=format:%s', origin], { cwd: root, encoding: 'utf8' });
-    if (/^chore\(checkpoint\): (sync Git line|final Git line stamp)/i.test((subj.stdout || '').trim())) {
-      return { ok: true, offByOne: true, cpHash, origin };
-    }
-  }
-  // S-CHKPT-CLOSE-01: 先祖でも off-by-one でもない = 陳腐化（rebase/amend 後の無関係 hash）
+  // S-CHKPT-CLOSE-01: 先祖でも off-by-one でもない = 陳腐化
   return {
     ok: false,
     regression: true,
