@@ -25,7 +25,6 @@ import {
   syncCheckpointGitAfterPush,
   readCheckpointGitHead,
   updateCheckpointGitHead,
-  gitShortHead,
 } from './lib/cio-checkpoint-git-sync.mjs';
 import { CHECKPOINT_REL } from './lib/cio-checkpoint-read.mjs';
 import { repairCheckpointBootstrapBlock } from './lib/cio-handoff-template.mjs';
@@ -33,12 +32,31 @@ import { repairCheckpointBootstrapBlock } from './lib/cio-handoff-template.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DESKTOP_DIR = process.env.SESSION_STARTER_DESKTOP_DIR || 'C:\\Users\\mhamada202408224\\Desktop\\AI緊急用';
 
-/** R44 — checkpoint sync commit 内 **Git** 行を直近 HEAD に 1 回 stamp（完全収束は off-by-one 許容） */
-function stampCheckpointGitToHead() {
-  const head = gitShortHead(root);
-  if (!head) return;
-  updateCheckpointGitHead(root, { hash: head, suffix: 'push 済' });
+/** R44 — checkpoint tip 時は **Git** 行を origin^ に stamp（off-by-one 許容点に正規化） */
+function normalizeCheckpointGitOffByOne(branch) {
+  git(['fetch', 'origin', branch]);
+  const origin = git(['rev-parse', '--short', 'origin/main']).out;
+  if (!origin) return;
+  const subj = git(['log', '-1', '--pretty=format:%s', 'origin/main']).out || '';
+  if (!/^chore\(checkpoint\):/.test(subj)) return;
+  const parent = git(['rev-parse', '--short', `${origin}^`]).out;
+  if (!parent) return;
+  const cpHash = readCheckpointGitHead(root);
+  if (cpHash === parent || cpHash === origin) return;
+  updateCheckpointGitHead(root, { hash: parent, suffix: 'push 済' });
   git(['add', CHECKPOINT_REL]);
+  const amended = git(['commit', '--amend', '--no-edit'], {
+    env: { ...process.env, CIO_POST_COMMIT_CHECKPOINT_SYNC: '1' },
+  });
+  if (amended.ok) {
+    const pushFix = git(['push', 'origin', 'HEAD']);
+    if (!pushFix.ok) {
+      console.error('[cio:session:close-git] NG checkpoint off-by-one normalize push', pushFix.err || pushFix.out);
+      process.exit(pushFix.status || 1);
+    }
+    git(['fetch', 'origin', branch]);
+    console.log(`[cio:session:close-git] checkpoint Git off-by-one normalized → ${parent}`);
+  }
 }
 
 const execute = process.argv.includes('--execute');
@@ -242,7 +260,6 @@ function main() {
       git(['add', CHECKPOINT_REL]);
       const cpCommit = git(['commit', '-m', 'chore(checkpoint): sync Git line after close']);
       if (cpCommit.ok) {
-        stampCheckpointGitToHead();
         const amended = git(['commit', '--amend', '--no-edit'], {
           env: { ...process.env, CIO_POST_COMMIT_CHECKPOINT_SYNC: '1' },
         });
@@ -259,6 +276,7 @@ function main() {
         console.log(`[cio:session:close-git] checkpoint Git synced → ${finalHash}`);
       }
     }
+    normalizeCheckpointGitOffByOne(branch);
   }
 
   if (!runNode('scripts/verify-session-close-git-warn.mjs')) {
