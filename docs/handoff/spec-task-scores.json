@@ -1,8 +1,19 @@
 {
-  "scoredAt": "2026-07-11T23:05:28.056Z",
+  "scoredAt": "2026-07-12T11:15:00.000+09:00",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
+  "topTask": "**736 UI-BACKLOG-02** 列幅ドラッグ — §41 仕様から · 体制更新の verify 不具合があれば修正",
   "tasks": [
+    {
+      "id": "checkpoint:**736_UI-BACKLOG-02**_列幅ドラッグ_—_§41_仕様から_",
+      "text": "**736 UI-BACKLOG-02** 列幅ドラッグ — §41 仕様から · 体制更新の verify 不具合があれば修正",
+      "source": "checkpoint",
+      "difficulty": 3,
+      "tokens": "中",
+      "tokenScore": 2,
+      "impact": 5,
+      "priority": 15,
+      "status": "pending"
+    },
     {
       "id": "backlog:B-MDFLOW:_**Markdown_ベースの開発フロー**（仕様・実装・レ",
       "text": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
@@ -12,18 +23,7 @@
       "tokenScore": 2,
       "impact": 3,
       "priority": 21,
-      "status": "pending"
-    },
-    {
-      "id": "checkpoint:日常レーン継続_·_`cio:request:compose`_試用_·_**≈",
-      "text": "日常レーン継続 · `cio:request:compose` 試用 · **≈2026-07-25** 憲法クローズ可否の再確認（観測期間）",
-      "source": "checkpoint",
-      "difficulty": 3,
-      "tokens": "中",
-      "tokenScore": 2,
-      "impact": 5,
-      "priority": 25,
-      "status": "pending"
+      "status": "deferred"
     }
   ]
 }
