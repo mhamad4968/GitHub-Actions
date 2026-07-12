@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-12 JST（夜）— **736 UI-BACKLOG-02 列幅ドラッグ deploy rev 185**
 
-**Git**: **（commit 後更新）** = `origin/main` — push 予定
+**Git**: **`b4e89dc9`** = `origin/main` — push 済
 
 **次の1手**: **浜田目視** — UI-BACKLOG-02 列幅ドラッグ（ACC-01〜08）· 問題なければ UI-BACKLOG-03 仕様 7/13 へ
 
