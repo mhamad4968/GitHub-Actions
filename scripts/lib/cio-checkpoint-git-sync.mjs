@@ -98,5 +98,14 @@ export function checkCheckpointGitRegression(root) {
         `checkpoint Git \`${cpHash}\` が origin/main \`${origin}\` より古い — \`npm run cio:session:close-git\` で再 sync（手動 **Git** 行編集禁止 / S-CLOSE-01）`,
     };
   }
+  // R44: checkpoint sync commit 直後は **Git** 行が 1 世代遅れることがある（amend 収束限界）
+  const parent = spawnSync('git', ['rev-parse', '--short', `${origin}^`], { cwd: root, encoding: 'utf8' });
+  const parentShort = (parent.stdout || '').trim();
+  if (parentShort === cpHash) {
+    const subj = spawnSync('git', ['log', '-1', '--pretty=format:%s', origin], { cwd: root, encoding: 'utf8' });
+    if (/^chore\(checkpoint\): sync Git line/i.test((subj.stdout || '').trim())) {
+      return { ok: true, offByOne: true, cpHash, origin };
+    }
+  }
   return { ok: true };
 }
