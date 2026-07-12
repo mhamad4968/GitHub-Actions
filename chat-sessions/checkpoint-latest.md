@@ -1,11 +1,11 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-12 JST（昼）— **経営会議資料 MCP · shiryo-sakusei 完走 · セッション締め**
+**最終更新**: 2026-07-12 JST（夜）— **736 UI-BACKLOG-02 仕様 GO · 起票**
 
-**Git**: **`88bcfcfa`** = `origin/main` — push 済
+**Git**: **（commit 後更新）** = `origin/main` — push 予定
 
-**次の1手**: **夜** — **736 UI-BACKLOG-02** 列幅ドラッグ §41 · 体制更新 verify 不具合があれば修正
+**次の1手**: **736 UI-BACKLOG-02** 列幅ドラッグ — **実装 GO**（`cio:pre-implement-gate` → implement → deploy）
 
 **GO待ち**: 憲法正式クローズ — 観測後（≈7/25）· rules-opt §18 ACK
 
