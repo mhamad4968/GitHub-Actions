@@ -3,6 +3,7 @@
   "category": "D",
   "status": "implemented",
   "processed_at": "2026-07-04",
-  "note": "mandatory-read-gate bootstrap WARN when checkpoint Git stale",
+  "resolved_at": "2026-07-12",
+  "note": "mandatory-read-gate bootstrap WARN when checkpoint Git stale; 解消手順は session-report-checklist.md §3c-1 D-CHKPT-02 行",
   "target": "scripts/mandatory-read-gate.mjs"
 }

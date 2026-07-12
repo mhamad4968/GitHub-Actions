@@ -21,6 +21,7 @@
 | タイミング | 手順 |
 |------------|------|
 | **full CLOSE 後** | `cio:session:close-git` が `syncCheckpointGitAfterPush` で checkpoint **`**Git**:` 行**を HEAD hash + origin 同期に自動更新 — **手書き「origin 未 push」禁止** |
+| **D-CHKPT-02 WARN** | bootstrap で `mandatory-read-gate` が **checkpoint Git 行 stale** を検知したら **`npm run cio:session:close-git -- --execute --auto-stage --message "…"`** を再実行（**手動 `**Git**:` 行編集禁止**）。3 点検: `mandatory-read-gate`（WARN 消滅）· `verify:session-close-git-warn` · `checkCheckpointGitRegression`（`scripts/lib/cio-checkpoint-git-sync.mjs`） |
 | **案件 CLOSED のみ / partial** | push 直後に `npm run verify:session-close-git-warn` を実行し、**OK 例** `Git残件: なし（clean・origin 同期・verify exit 0）` + 短 hash を checkpoint に 1 行転記 |
 | **NG 時** | `Git残件: あり — 未コミット N 件 / ahead M / verify exit 1` + 分類（S-ML-01 reports/code）を報告。本題着手前に B1 整理 |
 

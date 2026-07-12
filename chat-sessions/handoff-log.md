@@ -4636,3 +4636,15 @@ npm run cio:morning:ready
 **Git**: **`70ef82da`** = `origin/main` — push 済
 
 ---
+
+### 2026-07-12 JST（夜）— **D-CHKPT-02 checkpoint Git 行 sync 完了**
+
+**要約**: WARN（checkpoint `**Git**:` 行 stale `f9c674a3` → `origin/main`）— `cio:session:close-git --execute` で R44 同期 · 3 点検 OK · 仕様 §3c-1 追記
+
+**次の1手**: **7/13〜** — **UI-BACKLOG-03** ブロック選択 DD 仕様確認（**7/13–7/14** · implement **7/16** · **NO-GO 可**）— 浜田 **スケジュール通りで GO**
+
+**GO待ち**: 憲法正式クローズ — 観測後（≈7/25）
+
+**触らない**: 688（WBGT以外）/ 677–679 / SKYSEA 7月
+
+---
