@@ -39,6 +39,7 @@
     source_record_id: 'source_record_id',
     is_locked: 'is_locked',
     revision_note: 'revision_note',
+    ui_col_layout_json: 'ui_col_layout_json',
   };
 
   const VERSION_TYPES = ['当初', '仕様変更', '価格変更', '仕様・価格変更', 'その他'];
@@ -434,6 +435,336 @@
     });
   }
 
+  const COL_LAYOUT_JSON_MAX = 65536;
+  const COL_LAYOUT_KEYS = ['spec', 'cost', 'mat', 'sub'];
+  const COL_LAYOUT_PRINT_PREFIX = {
+    spec: '.jy-pr-spec',
+    cost: '.jy-pr-cost',
+    mat: '.jy-pr-mat',
+    sub: '.jy-pr-sub-table',
+  };
+  const COL_LAYOUT_DEFAULTS = {
+    spec: {
+      'jy-col-spec': '38%',
+      'jy-col-category': '5.5em',
+      'jy-col-unit': '64px',
+      'jy-col-qty': '72px',
+      'jy-col-price': '80px',
+      'jy-col-amt': '88px',
+      'jy-col-note': '16%',
+      'jy-col-del': '36px',
+    },
+    cost: {
+      'jy-col-wcd': '68px',
+      'jy-col-wt': '12%',
+      'jy-col-ccd': '68px',
+      'jy-col-cat': '16%',
+      'jy-col-budget-cat': '5.5em',
+      'jy-col-kind': '92px',
+      'jy-col-tax': '52px',
+      'jy-col-unit': '48px',
+      'jy-col-qty': '64px',
+      'jy-col-price': '80px',
+      'jy-col-amt': '88px',
+      'jy-col-note': '11%',
+      'jy-col-ref': '40px',
+      'jy-col-ratio': '48px',
+      'jy-col-del': '32px',
+    },
+    mat: {
+      'jy-col-vendor': '11%',
+      'jy-col-name': '28%',
+      'jy-col-cap': '9%',
+      'jy-col-maker': '11%',
+      'jy-col-qty': '72px',
+      'jy-col-price': '80px',
+      'jy-col-grp': '64px',
+      'jy-col-amt': '88px',
+      'jy-col-basis': '11%',
+      'jy-col-del': '32px',
+    },
+    sub: {
+      'col-kind': '22%',
+      'col-unit': '56px',
+      'col-qty': '72px',
+      'col-price': '80px',
+      'col-amt': '88px',
+      'col-basis': '18%',
+      'col-del': '32px',
+    },
+  };
+  let colLayoutPutBusy = false;
+  const colLayoutMinPx = {};
+
+  function parseColLayoutJson(raw) {
+    if (!raw || !String(raw).trim()) return null;
+    try {
+      const o = JSON.parse(String(raw));
+      if (!o || typeof o !== 'object' || o.v !== 1) return null;
+      return o;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function emptyColLayout() {
+    return { v: 1 };
+  }
+
+  function normalizeColLayout(layout) {
+    const base = emptyColLayout();
+    if (!layout || typeof layout !== 'object') return base;
+    COL_LAYOUT_KEYS.forEach(function (key) {
+      if (layout[key] && typeof layout[key] === 'object') {
+        base[key] = Object.assign({}, layout[key]);
+      }
+    });
+    if (layout.print && typeof layout.print === 'object') {
+      base.print = Object.assign({}, layout.print);
+    }
+    return base;
+  }
+
+  function serializeColLayout(layout) {
+    const norm = normalizeColLayout(layout);
+    const hasData = COL_LAYOUT_KEYS.some(function (k) {
+      return norm[k] && Object.keys(norm[k]).length;
+    }) || (norm.print && Object.keys(norm.print).length);
+    return hasData ? JSON.stringify(norm) : '';
+  }
+
+  function colLayoutKnownClass(key, cls) {
+    const defs = COL_LAYOUT_DEFAULTS[key];
+    return !!(defs && Object.prototype.hasOwnProperty.call(defs, cls));
+  }
+
+  function parseWidthToPx(widthStr, tableWidth) {
+    const s = String(widthStr || '').trim();
+    if (!s) return null;
+    if (s.endsWith('px')) return parseFloat(s) || null;
+    if (s.endsWith('%')) return (tableWidth * (parseFloat(s) || 0)) / 100;
+    if (s.endsWith('em')) return (parseFloat(s) || 0) * 16;
+    const n = parseFloat(s);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  function formatColWidth(px) {
+    return Math.max(1, Math.round(px)) + 'px';
+  }
+
+  function ensureColLayoutMinPx(table, layoutKey, colEl, cls) {
+    const mapKey = layoutKey + ':' + cls;
+    if (colLayoutMinPx[mapKey] != null) return colLayoutMinPx[mapKey];
+    const def = (COL_LAYOUT_DEFAULTS[layoutKey] || {})[cls];
+    const tableW = table ? table.getBoundingClientRect().width || 800 : 800;
+    let minW = def ? parseWidthToPx(def, tableW) : null;
+    if (minW == null || minW < 24) {
+      const w = colEl ? colEl.getBoundingClientRect().width : 0;
+      minW = w > 0 ? Math.max(24, Math.round(w * 0.45)) : 24;
+    } else {
+      minW = Math.max(24, Math.round(minW * 0.45));
+    }
+    colLayoutMinPx[mapKey] = minW;
+    return minW;
+  }
+
+  function applyColWidthsToTable(table, layoutKey, widths) {
+    if (!table || !widths) return;
+    const cols = table.querySelectorAll('colgroup col');
+    cols.forEach(function (col) {
+      const cls = (col.className || '').trim().split(/\s+/)[0];
+      if (!cls || !colLayoutKnownClass(layoutKey, cls)) return;
+      const w = widths[cls];
+      if (w) col.style.width = w;
+    });
+  }
+
+  function captureColWidthsFromTable(table, layoutKey) {
+    const out = {};
+    if (!table) return out;
+    const cols = table.querySelectorAll('colgroup col');
+    cols.forEach(function (col) {
+      const cls = (col.className || '').trim().split(/\s+/)[0];
+      if (!cls || !colLayoutKnownClass(layoutKey, cls)) return;
+      const w = col.style.width || window.getComputedStyle(col).width;
+      if (w && w !== 'auto') out[cls] = w;
+    });
+    return out;
+  }
+
+  function applyColLayouts(root) {
+    if (!root) return;
+    const layout = normalizeColLayout(state.ui_col_layout);
+    root.querySelectorAll('[data-jy-col-layout]').forEach(function (table) {
+      const key = table.getAttribute('data-jy-col-layout');
+      const widths = layout[key] || null;
+      applyColWidthsToTable(table, key, widths);
+    });
+  }
+
+  function buildColLayoutPrintCss(layout) {
+    const norm = normalizeColLayout(layout);
+    let css = '';
+    COL_LAYOUT_KEYS.forEach(function (key) {
+      const widths = norm[key];
+      const prefix = COL_LAYOUT_PRINT_PREFIX[key];
+      if (!widths || !prefix) return;
+      Object.keys(widths).forEach(function (cls) {
+        if (!colLayoutKnownClass(key, cls)) return;
+        css += prefix + ' col.' + cls + '{width:' + widths[cls] + '!important}';
+        css += prefix + ' .' + cls + '{width:' + widths[cls] + '!important}';
+      });
+    });
+    return css;
+  }
+
+  function injectColLayoutPrintCss(layout) {
+    let st = document.getElementById('jy-col-layout-print-css');
+    if (!st) {
+      st = document.createElement('style');
+      st.id = 'jy-col-layout-print-css';
+      document.head.appendChild(st);
+    }
+    st.textContent = buildColLayoutPrintCss(layout);
+  }
+
+  function showColLayoutToast(msg) {
+    let el = document.getElementById('jy-col-layout-toast');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'jy-col-layout-toast';
+      el.className = 'jy-col-layout-toast';
+      document.body.appendChild(el);
+    }
+    el.textContent = msg;
+    el.classList.add('visible');
+    clearTimeout(showColLayoutToast._t);
+    showColLayoutToast._t = setTimeout(function () {
+      el.classList.remove('visible');
+    }, 3200);
+  }
+
+  function refreshColLayoutRevision() {
+    if (!state.recordId) return Promise.resolve();
+    const appId = kintone.app.getId();
+    return kintone.api(kintone.api.url('/k/v1/record.json', true), 'GET', {
+      app: appId,
+      id: state.recordId,
+      fields: ['$revision'],
+    }).then(function (resp) {
+      if (resp.record && resp.record.$revision) {
+        state.revision = String(resp.record.$revision.value);
+      }
+    });
+  }
+
+  function putColLayoutJson(jsonStr, retry) {
+    if (!state.recordId) {
+      state.ui_col_layout = parseColLayoutJson(jsonStr) || emptyColLayout();
+      return Promise.resolve();
+    }
+    if (colLayoutPutBusy) return Promise.resolve();
+    colLayoutPutBusy = true;
+    const appId = kintone.app.getId();
+    const attempt = function (n) {
+      return kintone.api(kintone.api.url('/k/v1/record.json', true), 'PUT', {
+        app: appId,
+        id: state.recordId,
+        record: { ui_col_layout_json: { value: jsonStr } },
+        revision: state.revision,
+      }).then(function (resp) {
+        if (resp.revision) state.revision = String(resp.revision);
+        colLayoutPutBusy = false;
+      }).catch(function (e) {
+        const code = e && (e.code || e.id);
+        const is409 = String(code) === 'GAIA_CO02' || (e.message && String(e.message).indexOf('409') >= 0);
+        if (is409 && n < 3) {
+          const delay = Math.pow(2, n) * 1000;
+          return new Promise(function (r) { setTimeout(r, delay); })
+            .then(refreshColLayoutRevision)
+            .then(function () { return attempt(n + 1); });
+        }
+        colLayoutPutBusy = false;
+        showColLayoutToast('列幅の保存に失敗しました');
+        console.warn(BUILD, 'col layout PUT failed', e);
+        throw e;
+      });
+    };
+    return attempt(0);
+  }
+
+  function persistColLayoutFromDom(root) {
+    if (!state.ui_col_layout) state.ui_col_layout = emptyColLayout();
+    const layout = normalizeColLayout(state.ui_col_layout);
+    root.querySelectorAll('[data-jy-col-layout]').forEach(function (table) {
+      const key = table.getAttribute('data-jy-col-layout');
+      if (COL_LAYOUT_KEYS.indexOf(key) < 0) return;
+      layout[key] = captureColWidthsFromTable(table, key);
+    });
+    state.ui_col_layout = layout;
+    const jsonStr = serializeColLayout(layout);
+    if (jsonStr.length >= COL_LAYOUT_JSON_MAX) {
+      showColLayoutToast('列幅データが大きすぎます（保存できません）');
+      return Promise.resolve();
+    }
+    return putColLayoutJson(jsonStr, 0);
+  }
+
+  function resetColLayout() {
+    if (!window.confirm('列幅を初期値に戻しますか？')) return;
+    state.ui_col_layout = emptyColLayout();
+    const jsonStr = '';
+    putColLayoutJson(jsonStr, 0).then(function () {
+      render();
+    }).catch(function () {
+      render();
+    });
+  }
+
+  function bindColResize(root) {
+    if (readOnly || state.is_locked) return;
+    root.querySelectorAll('[data-jy-col-layout]').forEach(function (table) {
+      const layoutKey = table.getAttribute('data-jy-col-layout');
+      if (COL_LAYOUT_KEYS.indexOf(layoutKey) < 0) return;
+      const ths = table.querySelectorAll('thead tr:first-child th');
+      const cols = table.querySelectorAll('colgroup col');
+      ths.forEach(function (th, idx) {
+        const col = cols[idx];
+        if (!col) return;
+        const cls = (col.className || '').trim().split(/\s+/)[0];
+        if (!cls || cls === 'jy-col-del' || cls === 'col-del') return;
+        if (th.querySelector('.jy-col-resize-handle')) return;
+        th.style.position = 'relative';
+        const handle = document.createElement('div');
+        handle.className = 'jy-col-resize-handle';
+        handle.setAttribute('aria-hidden', 'true');
+        handle.addEventListener('mousedown', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          const startX = e.clientX;
+          const startW = col.getBoundingClientRect().width;
+          const minW = ensureColLayoutMinPx(table, layoutKey, col, cls);
+          table.classList.add('jy-col-resizing');
+          function onMove(ev) {
+            const w = Math.max(minW, startW + (ev.clientX - startX));
+            col.style.width = formatColWidth(w);
+          }
+          function onUp() {
+            document.removeEventListener('mousemove', onMove);
+            document.removeEventListener('mouseup', onUp);
+            table.classList.remove('jy-col-resizing');
+            persistColLayoutFromDom(root);
+          }
+          document.addEventListener('mousemove', onMove);
+          document.addEventListener('mouseup', onUp);
+        });
+        th.appendChild(handle);
+      });
+    });
+    const resetBtn = document.getElementById('jy-col-layout-reset');
+    if (resetBtn) resetBtn.addEventListener('click', resetColLayout);
+  }
+
   function validatePersonNameField(label, name) {
     const normalized = normalizePersonName(name);
     if (!isValidPersonNameFormat(normalized)) {
@@ -512,6 +843,7 @@
       source_record_id: '',
       is_locked: false,
       revision_note: '',
+      ui_col_layout: null,
     };
   }
 
@@ -1048,6 +1380,20 @@
       '.jy-print-summary-opt input:checked+span{background:#d97706;color:#fff;border-color:#b45309;box-shadow:0 2px 6px rgba(180,83,9,.28)}' +
       '.jy-print-summary-row-hint{font-size:12px;color:#92400e;font-weight:600;margin-left:auto}' +
       '.jy-font-toggle{display:flex;align-items:center;gap:4px;flex-wrap:wrap}' +
+      '.jy-col-layout-toast{position:fixed;bottom:24px;right:24px;z-index:9999;padding:10px 16px;background:#1e293b;color:#fff;border-radius:8px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s}' +
+      '.jy-col-layout-toast.visible{opacity:1}' +
+      '.jy-table th{position:relative}' +
+      '.jy-col-resize-handle{position:absolute;top:0;right:-3px;width:6px;height:100%;cursor:col-resize;z-index:6;user-select:none}' +
+      '.jy-col-resize-handle:hover{background:rgba(37,99,235,.15)}' +
+      '.jy-table.jy-col-resizing,.jy-table.jy-col-resizing *{cursor:col-resize!important;user-select:none}' +
+      '.jy-table-sub{table-layout:fixed;width:100%}' +
+      '.jy-table-sub .col-kind{width:22%}' +
+      '.jy-table-sub .col-unit{width:56px}' +
+      '.jy-table-sub .col-qty{width:72px}' +
+      '.jy-table-sub .col-price{width:80px}' +
+      '.jy-table-sub .col-amt{width:88px}' +
+      '.jy-table-sub .col-basis{width:18%}' +
+      '.jy-table-sub .col-del{width:32px}' +
       '.jy-font-label{font-size:12px;color:#475569;white-space:nowrap;margin-right:2px}' +
       '.jy-font-btn{padding:5px 10px;border:1px solid #cbd5e1;border-radius:6px;cursor:pointer;background:#fff;font-size:12px;font-weight:600;line-height:1.2;font-family:inherit}' +
       '.jy-font-btn.active{background:#dbeafe;border-color:#2563eb;color:#1d4ed8}' +
@@ -1995,6 +2341,7 @@
     s.source_record_id = String(gv(rec, FC.source_record_id) || '');
     s.is_locked = isLockedFromRecord(rec);
     s.revision_note = String(gv(rec, FC.revision_note) || '');
+    s.ui_col_layout = parseColLayoutJson(gv(rec, FC.ui_col_layout_json));
     s.spec_lines = readSub(rec, FC.spec_lines, function (v) {
       const specName = gv(v, 'spec_name');
       return {
@@ -2129,6 +2476,7 @@
     if (s.source_record_id) body[FC.source_record_id] = { value: String(s.source_record_id) };
     body[FC.is_locked] = { value: s.is_locked ? [LOCK_CHECK_LABEL] : [] };
     body[FC.revision_note] = { value: s.revision_note || '' };
+    body[FC.ui_col_layout_json] = { value: serializeColLayout(s.ui_col_layout) };
     body[FC.site_entry_date] = { value: s.site_entry_date || null };
     body[FC.draft_date] = { value: s.draft_date || null };
     body[FC.record_created_date] = { value: s.record_created_date || null };
@@ -2843,7 +3191,7 @@
       readOnly ? '' : specSectionAddBtn()
     );
     html += renderSpecHelpPanel();
-    html += '<div class="jy-excel-wrap jy-summary-wrap"><table class="jy-table jy-summary-table jy-summary-table-spec"><colgroup>' +
+    html += '<div class="jy-excel-wrap jy-summary-wrap"><table class="jy-table jy-summary-table jy-summary-table-spec" data-jy-col-layout="spec"><colgroup>' +
       '<col class="jy-col-spec"><col class="jy-col-category"><col class="jy-col-unit"><col class="jy-col-qty"><col class="jy-col-price"><col class="jy-col-amt"><col class="jy-col-note">' +
       (readOnly ? '' : '<col class="jy-col-del">') +
       '</colgroup><thead><tr><th>仕様</th><th class="jy-center">区分</th><th class="jy-center">単位</th><th>数量</th><th>単価</th><th class="jy-num">金額</th><th>備考</th>' + (readOnly ? '' : '<th>操作</th>') + '</tr></thead><tbody>';
@@ -2876,7 +3224,7 @@
       readOnly ? '' : costSectionAddBtn()
     );
     html += renderCostHelpPanel();
-    html += '<div class="jy-excel-wrap jy-summary-wrap"><table class="jy-table jy-summary-table jy-summary-table-cost"><colgroup>' +
+    html += '<div class="jy-excel-wrap jy-summary-wrap"><table class="jy-table jy-summary-table jy-summary-table-cost" data-jy-col-layout="cost"><colgroup>' +
       '<col class="jy-col-wcd"><col class="jy-col-wt"><col class="jy-col-ccd"><col class="jy-col-cat"><col class="jy-col-budget-cat"><col class="jy-col-kind">' +
       '<col class="jy-col-tax"><col class="jy-col-unit"><col class="jy-col-qty"><col class="jy-col-price"><col class="jy-col-amt">' +
       '<col class="jy-col-note"><col class="jy-col-ref"><col class="jy-col-ratio">' +
@@ -3242,7 +3590,7 @@
       readOnly ? '' : matSectionAddBtn('塗料'),
       'jy-linked-title'
     );
-    html += '<div class="jy-excel-wrap jy-linked-wrap"><table class="jy-table jy-table-mat">' + matHead + '<tbody>';
+    html += '<div class="jy-excel-wrap jy-linked-wrap"><table class="jy-table jy-table-mat" data-jy-col-layout="mat">' + matHead + '<tbody>';
     state.mat_lines.forEach(function (r, i) {
       if (r.mat_group !== '塗料') return;
       html += renderMatRow(r, i, readOnly);
@@ -3260,7 +3608,7 @@
       readOnly ? '' : matSectionAddBtn('その他'),
       'jy-linked-title'
     );
-    html += '<div class="jy-excel-wrap jy-linked-wrap"><table class="jy-table jy-table-mat">' + matHead + '<tbody>';
+    html += '<div class="jy-excel-wrap jy-linked-wrap"><table class="jy-table jy-table-mat" data-jy-col-layout="mat">' + matHead + '<tbody>';
     state.mat_lines.forEach(function (r, i) {
       if (r.mat_group !== 'その他') return;
       html += renderMatRow(r, i, readOnly);
@@ -3283,7 +3631,10 @@
         '<span class="jy-block-summary-label">' + esc(b.label) + ' <span class="jy-ref-meta">' + refLinkToSummary(mk) + ' → 総括表</span></span>' +
         '<span class="jy-block-vendor-wrap"><input class="jy-in jy-block-vendor" data-sub-vendor="' + vendorIdx + '" value="' + esc(vendorVal) + '" placeholder="会社名"' + (readOnly ? ' disabled' : '') + '></span>' +
         (readOnly ? '' : '<span class="jy-block-summary-actions">' + subSectionAddBtn(b.id, b.label) + subBlockDeleteBtn(b.id) + '</span>') +
-        '</summary><table class="jy-table"><thead><tr><th>種別</th><th class="jy-center">単位</th><th>数量</th><th>単価</th><th class="jy-num">金額</th><th>計算基準</th>' + (readOnly ? '' : '<th>操作</th>') + '</tr></thead><tbody>';
+        '</summary><table class="jy-table jy-table-sub" data-jy-col-layout="sub"><colgroup>' +
+        '<col class="col-kind"><col class="col-unit"><col class="col-qty"><col class="col-price"><col class="col-amt"><col class="col-basis">' +
+        (readOnly ? '' : '<col class="col-del">') +
+        '</colgroup><thead><tr><th>種別</th><th class="jy-center">単位</th><th>数量</th><th>単価</th><th class="jy-num">金額</th><th>計算基準</th>' + (readOnly ? '' : '<th>操作</th>') + '</tr></thead><tbody>';
       state.subcontract_lines.forEach(function (r, i) {
         if (r.subcontract_block !== b.id) return;
         if (r.sub_row_kind === 'vendor') return;
@@ -3784,10 +4135,12 @@
       const bodyHtml = mode === 'summary' ? buildPrintSummaryHtml() : buildPrintDetailHtml();
       if (!bodyHtml || bodyHtml.indexOf('jy-pr-table') < 0) throw new Error('印刷HTMLの生成に失敗しました');
       injectPrintPortalCss();
+      injectColLayoutPrintCss(state.ui_col_layout);
       bindPrintPortalCleanup();
       const portal = ensurePrintPortal();
       const prCls = 'jy-pr jy-pr-doc jy-pr-mode-' + mode + (printDiffActive() ? ' jy-pr-mode-diff' : '');
       portal.innerHTML = '<div class="' + prCls + '">' + bodyHtml + '</div>';
+      applyColLayouts(portal);
       window.requestAnimationFrame(function () {
         window.requestAnimationFrame(function () {
           try {
@@ -4005,6 +4358,9 @@
     html += '<strong>' + esc(state.project_code || '新規') + '</strong> <span class="jy-meta">版' + esc(String(state.version_seq || 1)) + ' / ' + esc(state.version_type) + ' / ' + esc(state.status) + '</span>';
     html += '<div class="jy-action-bar-right">';
     html += renderFontToggle();
+    if (!readOnly && !state.is_locked) {
+      html += '<button type="button" class="jy-btn jy-btn-sm" id="jy-col-layout-reset" title="列幅を初期値に戻す">列幅リセット</button>';
+    }
     if (activeTab === 'summary' || activeTab === 'detail') {
       const printBtnId = activeTab === 'summary' ? 'jy-print-summary' : 'jy-print-detail';
       html += renderActionBarPrintTools(printBtnId);
@@ -4152,6 +4508,11 @@
     if (versionsHelpPanel) versionsHelpPanel.addEventListener('toggle', function () { headerVersionsHelpOpen = versionsHelpPanel.open; });
 
     bindFontToggle(root);
+
+    if (uiScreen === 'form' && (activeTab === 'summary' || activeTab === 'detail')) {
+      applyColLayouts(root);
+      bindColResize(root);
+    }
 
     bindUnitPriceInputs(root);
 

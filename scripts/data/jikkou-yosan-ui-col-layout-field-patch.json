@@ -1,0 +1,10 @@
+{
+  "properties": {
+    "ui_col_layout_json": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "ui_col_layout_json",
+      "label": "列幅レイアウト",
+      "required": false
+    }
+  }
+}

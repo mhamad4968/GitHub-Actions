@@ -314,11 +314,11 @@
       "note": null
     },
     "736": {
-      "build": "2026-07-10-736-ph1c-reorder-hide-singleton",
-      "fileKey": "57749601-971f-4b5e-83f6-6b62773647e9",
-      "revision": "183",
-      "relPath": ".kintone-deploy/upload-736.js",
-      "deployedAt": "2026-07-10T12:58:49.617Z",
+      "build": "2026-07-12-736-ui-backlog-02-col-resize",
+      "fileKey": "5e9a9154-4da4-422e-8191-1dcb15217bcd",
+      "revision": "185",
+      "relPath": "customize/736/desktop.js",
+      "deployedAt": "2026-07-12T08:43:16.298Z",
       "note": null
     },
     "737": {

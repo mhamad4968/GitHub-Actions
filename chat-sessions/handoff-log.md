@@ -4608,13 +4608,17 @@ npm run cio:morning:ready
 
 ---
 
-### 2026-07-12 JST — **736 UI-BACKLOG-02 列幅ドラッグ · 仕様 GO**
+**触らない**: 688（WBGT以外）/ 677–679 / SKYSEA 7月
 
-**要約**: Q0-1〜8 確定 · AIチーム合議（DeepSeek 最終 APPROVE）· 仕様起票 [`2026-07-12-jikkou-yosan-ui-backlog-02-col-resize-spec.md`](../docs/plans/2026-07-12-jikkou-yosan-ui-backlog-02-col-resize-spec.md) · 親 SPEC §9.2.3 更新
+---
 
-**次の1手**: **実装 GO** — `cio:pre-implement-gate` → `ui_col_layout_json` フィールド追加 → `desktop.ui.js` リサイズ · 部分 PUT → build → deploy:736
+### 2026-07-12 JST — **736 UI-BACKLOG-02 列幅ドラッグ · implement+deploy**
 
-**GO待ち**: 実装 GO（浜田）· 憲法正式クローズ — 観測後（≈7/25）
+**要約**: `ui_col_layout_json` フィールド追加 rev **184** · 列幅ドラッグ・部分 PUT・リセット · BUILD `2026-07-12-736-ui-backlog-02-col-resize` deploy rev **185** · calc/ux/sync ゲート全通過
+
+**次の1手**: **浜田目視** — ACC-01〜08（仕様書 §7）· OK なら UI-BACKLOG-03 仕様 7/13
+
+**GO待ち**: 憲法正式クローズ — 観測後（≈7/25）
 
 **触らない**: 688（WBGT以外）/ 677–679 / SKYSEA 7月
 

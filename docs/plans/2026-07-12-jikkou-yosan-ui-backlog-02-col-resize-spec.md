@@ -1,10 +1,10 @@
 # 736 UI-BACKLOG-02 — 列幅ドラッグ調整 仕様
 
 **日付**: 2026-07-12 JST  
-**状態**: **仕様 GO 済（浜田 2026-07-12）** · 実装未着手  
+**状態**: **implement 完了（2026-07-12）** · BUILD `2026-07-12-736-ui-backlog-02-col-resize` rev **185** · 浜田ブラウザ確認待ち  
 **親 SPEC**: [`2026-06-18-jikkou-yosan-spec.md`](2026-06-18-jikkou-yosan-spec.md) §9.2.3 **UI-BACKLOG-02**  
 **日程**: [`736-july-2026-schedule.md`](../runbooks/736-july-2026-schedule.md) **7/12 期限**  
-**live**: [App 736](https://jbis-kintone.cybozu.com/k/736/) · BUILD `2026-07-10-736-ph1c-reorder-hide-singleton` rev **182**
+**live**: [App 736](https://jbis-kintone.cybozu.com/k/736/) · BUILD `2026-07-12-736-ui-backlog-02-col-resize` rev **185**
 
 > **背景**: v1 は CSS 固定幅（`.jy-col-*` / `table-layout:fixed`）。浜田要望で **列境界ドラッグ**による幅調整を追加。PH1c（行並び替え）とは **別バックログ**（PH1c 非スコープ）。
 
@@ -204,4 +204,4 @@
 
 | 日付 | 内容 |
 |------|------|
-| 2026-07-12 | 初版 — Q0 全確定 · AIチーム合議 APPROVE · 仕様 GO |
+| 2026-07-12 | implement 完了 · deploy rev **185** · 浜田目視待ち |

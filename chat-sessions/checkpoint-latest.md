@@ -1,11 +1,11 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-12 JST（夜）— **736 UI-BACKLOG-02 仕様 GO · 起票**
+**最終更新**: 2026-07-12 JST（夜）— **736 UI-BACKLOG-02 列幅ドラッグ deploy rev 185**
 
-**Git**: **`d171cc65`** = `origin/main` — push 済
+**Git**: **（commit 後更新）** = `origin/main` — push 予定
 
-**次の1手**: **736 UI-BACKLOG-02** 列幅ドラッグ — **実装 GO**（`cio:pre-implement-gate` → implement → deploy）
+**次の1手**: **浜田目視** — UI-BACKLOG-02 列幅ドラッグ（ACC-01〜08）· 問題なければ UI-BACKLOG-03 仕様 7/13 へ
 
 **GO待ち**: 憲法正式クローズ — 観測後（≈7/25）· rules-opt §18 ACK
 
@@ -17,7 +17,7 @@
 
 **688 本番**: BUILD=`2026-07-11-688-dirty-banner-fix` rev **85** — 浜田目視 OK
 
-**736 本番**: BUILD=`2026-07-10-736-ph1c-reorder-hide-singleton` rev **182** — 7/12 **UI-BACKLOG-02** 期限
+**736 本番**: BUILD=`2026-07-12-736-ui-backlog-02-col-resize` rev **185** — 浜田目視待ち
 
 ## 本日完了サマリー（昼）
 
