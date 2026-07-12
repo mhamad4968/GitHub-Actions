@@ -1,25 +1,33 @@
 # 復元チェックポイント（最新）
-
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-
 **最終更新**: 2026-07-12 JST（昼）— **経営会議資料 MCP · shiryo-sakusei 完走 · セッション締め**
 
-**Git**: **`0346e212`** = `origin/main` — push 済
+**Git**: **`2f05b02c`** = `origin/main` — push 済（昼セッション締め完走）
 
-**次の1手（夜）**: **736 UI-BACKLOG-02** 列幅ドラッグ — §41 仕様から · 体制更新の verify 不具合があれば修正
+**次の1手**: **夜** — **736 UI-BACKLOG-02** 列幅ドラッグ §41 · 体制更新 verify 不具合があれば修正
 
 **GO待ち**: 憲法正式クローズ — 観測後（≈7/25）· rules-opt §18 ACK
 
 **観測期間（≈7/25）**: 正式クローズ宣言は **今日やらない**
 
-**運用メモ**: 経営会議資料 — 作成日「作成したい」→ 依頼書テンプレ貼付 → 記入。**MCP `shiryo-sakusei` ready**（Cursor 再起動済）
+**運用メモ**: 経営会議資料 — 作成日「作成したい」→ 依頼書テンプレ貼付 → 記入。**MCP `shiryo-sakusei` ready**（Cursor 再起動済）· 正本 `mcp/shiryo-sakusei-mcp/SPEC.md` · 依頼書 `docs/依頼書テンプレート.txt`
 
-**品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` · **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
+**品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` · **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md` · **クローズ正本**: `data/cio-project-closures.json`
 
 **688 本番**: BUILD=`2026-07-11-688-dirty-banner-fix` rev **85** — 浜田目視 OK
 
 **736 本番**: BUILD=`2026-07-10-736-ph1c-reorder-hide-singleton` rev **182** — 7/12 **UI-BACKLOG-02** 期限
+
+## 本日完了サマリー（昼）
+
+| 項目 | 内容 |
+|------|------|
+| **shiryo-sakusei MCP** | `mcp/shiryo-sakusei-mcp/` · SPEC · 依頼書テンプレ · commit `9e2b18e8` |
+| **経営会議資料運用** | `C:\tmp\資料作成\依頼書テンプレート.txt` · 作成日テンプレ貼付→記入フロー確立 |
+| **MCP 有効化** | Cursor 再起動 · `user-shiryo-sakusei` **ready** 確認済 |
+| **セッション締め** | checkpoint/handoff · Desktop sync · handoff bridge 整合 · push `2f05b02c` |
+| **夜レーン予定** | 736 UI-BACKLOG-02 列幅ドラッグ §41 · 体制更新 verify 不具合があれば修正 |
 
 ## クローズ済み（`data/cio-project-closures.json` — 9件）
 
