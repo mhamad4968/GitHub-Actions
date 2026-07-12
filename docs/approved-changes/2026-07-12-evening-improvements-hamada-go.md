@@ -6,7 +6,7 @@
 |----|----------|------|------|
 | **#D-CURSOR-UI-01** | D | `CURSOR-トラブル対応メモ` v2.5 — Auto-fallback UI 廃止・六役 Models 絞り込み代替 | ✅ |
 | **#R-1-2-3-6-MODELS-01** | R | `AGENTS.md` §1-2-1 / §1-2-2 / §1-2-2-1 Models 表を六役 ON 一覧に更新 | ✅ |
-| **#S-CHKPT-CLOSE-01** | S | `checkCheckpointGitExactMatch` + close-git 終端 stamp + verify exit 1 | ✅ |
+| **#S-CHKPT-CLOSE-01** | S | `checkCheckpointGitExactMatch` + verify **regression → exit 1** + off-by-one R44 許容 + post-commit `final stamp` 対応 | ✅ |
 | **#D-E1-NOTEPAD-01** | D | `AI緊急用-README.txt` 先頭に Notepad/RAM precheck 追記 | ✅ |
 
 ## 正本
