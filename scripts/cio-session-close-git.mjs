@@ -21,7 +21,11 @@ import { fileURLToPath } from 'node:url';
 import { isSessionCloseTempPath } from './lib/cio-session-close-temp-paths.mjs';
 import { runNpmScriptSync } from './lib/win-hidden-spawn.mjs';
 import { touchesGovernance } from './lib/cio-governance-touch.mjs';
-import { syncCheckpointGitAfterPush } from './lib/cio-checkpoint-git-sync.mjs';
+import {
+  syncCheckpointGitAfterPush,
+  readCheckpointGitHead,
+  updateCheckpointGitHead,
+} from './lib/cio-checkpoint-git-sync.mjs';
 import { CHECKPOINT_REL } from './lib/cio-checkpoint-read.mjs';
 import { repairCheckpointBootstrapBlock } from './lib/cio-handoff-template.mjs';
 
@@ -228,12 +232,26 @@ function main() {
       git(['add', CHECKPOINT_REL]);
       const cpCommit = git(['commit', '-m', 'chore(checkpoint): sync Git line after close']);
       if (cpCommit.ok) {
+        // push 前に amend で **Git** 行 = HEAD に収束（R44 · D-CHKPT-02）
+        for (let i = 0; i < 5; i += 1) {
+          const head = git(['rev-parse', '--short', 'HEAD']).out;
+          const cpHash = readCheckpointGitHead(root);
+          if (!head || head === cpHash) break;
+          updateCheckpointGitHead(root, { hash: head, suffix: 'push 済' });
+          git(['add', CHECKPOINT_REL]);
+          const amended = git(['commit', '--amend', '--no-edit'], {
+            env: { ...process.env, CIO_POST_COMMIT_CHECKPOINT_SYNC: '1' },
+          });
+          if (!amended.ok) break;
+        }
         const push2 = git(['push', 'origin', 'HEAD']);
         if (!push2.ok) {
           console.error('[cio:session:close-git] NG checkpoint Git sync push', push2.err || push2.out);
           process.exit(push2.status || 1);
         }
-        console.log(`[cio:session:close-git] checkpoint Git synced → ${hash}`);
+        git(['fetch', 'origin', branch]);
+        const finalHash = git(['rev-parse', '--short', 'origin/main']).out || hash;
+        console.log(`[cio:session:close-git] checkpoint Git synced → ${finalHash}`);
       }
     }
   }
