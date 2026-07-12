@@ -51,7 +51,11 @@ function scoreTask(text, source) {
   }
 
   const tokenLabel = tokens === 1 ? '低' : tokens === 2 ? '中' : '高';
-  const priority = difficulty * 10 + tokens * 5 - impact * 3;
+  let priority = difficulty * 10 + tokens * 5 - impact * 3;
+  if (source === 'checkpoint') {
+    impact = Math.max(impact, 5);
+    priority = Math.min(priority, difficulty * 10 + tokens * 5 - impact * 3) - 5;
+  }
 
   return {
     id: `${source}:${text.slice(0, 40).replace(/\s+/g, '_')}`,

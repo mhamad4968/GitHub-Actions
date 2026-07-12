@@ -464,7 +464,7 @@ OK → `partner_company` 入力欄の `readonly` を解除＋ `data-y678-partner
 
 | Rank | Task | 難易度 | Token | Impact | Priority |
 |------|------|--------|-------|--------|----------|
-| 1 | B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化） | 2/5 | 中 | 3/5 | 21 |
-| 2 | **736 UI-BACKLOG-02** 列幅ドラッグ — §41 仕様から · 体制更新の verify 不具合があ | 3/5 | 中 | 5/5 | 25 |
+| 1 | **7/13〜** — **UI-BACKLOG-03** ブロック選択 DD 仕様確認（**7/13–7/14** · | 2/5 | 中 | 5/5 | 10 |
+| 2 | B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化） | 2/5 | 中 | 3/5 | 21 |
 
 <!-- CIO-TASK-PRIORITY:AUTO:END -->

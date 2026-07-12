@@ -6,7 +6,7 @@
 
 ---
 
-## 目次（2026-04-25 全件再構築 / 2026-05-01 TSB-028・TSB-029 目次表追記 / 2026-05-02 TSB-030 追記 / 2026-05-04 TSB-031 追記 / 2026-05-06 TSB-032 追記 / 2026-05-09 TSB-033・TSB-034 目次表追記 / 2026-06-28 TSB-040 追記 / F-2 自己改善目標 #2 = 真因 1 文 + root_cause_confirmed フラグ追加）
+## 目次（2026-04-25 全件再構築 / 2026-07-12 TSB-037・039–041 目次表追記 / F-2 自己改善目標 #2 = 真因 1 文 + root_cause_confirmed フラグ追加）
 
 > **真因 1 文ルール**: 各 TSB は **「真因を 1 文で説明できる」状態でなければ root_cause_confirmed = false** とする。false の TSB は再発監視優先。
 > **status 凡例**: ✅ Resolved（恒久対策済）/ 🟡 Mitigated（暫定対策のみ）/ 🔴 Open（未解決）/ ♻️ Recurring（同系列複数 episode）
@@ -46,7 +46,11 @@
 | TSB-034 | 2026-05-09 | Windows で `health-check` の stdio MCP が偽陰性／`permissions.json` で RUN 省略 | **IDE 外 CLI** と **Cursor IDE 内**で MCP 疎通が食い違い `smoke` 連鎖 NG 等 | ✅ | true | `health-check.mjs` / `permissions.json` / MCP env |
 | TSB-035 | 2026-05-16 | 複数アプリ `customize/**` push で GHA deploy スキップ → 本番先祖返り（678） | **1 push で複数アプリ変更時に旧 GHA が API deploy を全スキップ**し CI 緑でも本番 JS が更新されない | ✅ | true | `kintone-customize-deploy` / R-17 / `cio-live-builds.json` |
 | TSB-036 | 2026-05-26 | 予実 678→677 支払保存後も **月次実績だけ別月に残る**（光ダイレクト等） | **旧 `buildMonthlyTableForPayments` が支払ロールアップ時に「支払のない月」の `month_actual` を維持**し、移行・手入力の月次だけが 677 に残った | ✅ | true | `customize/678/desktop.js` / 677 `monthly_breakdown` |
+| TSB-037 | 2026-05-27 | 朝ブリーフィングが毎日強制終了される | **RAG ingest 15 分超 + health-check 合計が Cursor `block_until_ms` を超え Stop-Process 相当で kill** | ✅ | true | `morning:ensure` / RAG |
 | TSB-038 | 2026-06-13 | 業務改善 v1 完了後も **checkpoint/handoff が Q-SCHED-03 のまま** → 新セッション誤ブリーフィング | **締めで closures/checkpoint/handoff を同ターン更新せず**、朝 ready が stale レーンを復元。副因: `次の1手`/`次回 1 手` 表記ゆれ | ✅ | true | R19 / `cio-project-closures.json` / TSB-038 |
+| TSB-039 | 2026-06-24 | Windows で `verify:kintone-live-schema` OK 後に Node UV assertion crash | **Windows Node/libuv 終了時クラッシュ**（スキーマ検証結果自体は正 · D-WIN-SCHEMA-01） | ✅ | true | deploy preflight / 736 |
+| TSB-040 | 2026-06-28 | HeyGen 日本語 TTS 誤読・phonetic 長文 failed・クレジット枯渇 | **漢字 TTS 限界 + 長文 phonetic + API クレジット枯渇** | ✅ | true | video-gen パイロット |
+| TSB-041 | 2026-06-28 | kintone DROP_DOWN 変更後 deploy 前 PUT で CB_VA01 | **preview で追加した options が deploy 完了まで live PUT に未反映** | ✅ | true | NAS 748 / DROP_DOWN |
 
 **集計** (2026-06-13 時点 / TSB-038 目次追記):
 - 全 **31** 件中 **root_cause_confirmed = true: 30 件** / **false (孤児): 1 件**

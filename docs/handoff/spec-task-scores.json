@@ -1,17 +1,17 @@
 {
-  "scoredAt": "2026-07-12T11:15:00.000+09:00",
+  "scoredAt": "2026-07-12T08:58:53.201Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "**736 UI-BACKLOG-02** 列幅ドラッグ — §41 仕様から · 体制更新の verify 不具合があれば修正",
+  "topTask": "**7/13〜** — **UI-BACKLOG-03** ブロック選択 DD 仕様確認（**7/13–7/14** · implement **7/16** · **NO-GO 可**）— 浜田 **スケジュール通りで GO**",
   "tasks": [
     {
-      "id": "checkpoint:**736_UI-BACKLOG-02**_列幅ドラッグ_—_§41_仕様から_",
-      "text": "**736 UI-BACKLOG-02** 列幅ドラッグ — §41 仕様から · 体制更新の verify 不具合があれば修正",
+      "id": "checkpoint:**7/13〜**_—_**UI-BACKLOG-03**_ブロック選択_DD_",
+      "text": "**7/13〜** — **UI-BACKLOG-03** ブロック選択 DD 仕様確認（**7/13–7/14** · implement **7/16** · **NO-GO 可**）— 浜田 **スケジュール通りで GO**",
       "source": "checkpoint",
-      "difficulty": 3,
+      "difficulty": 2,
       "tokens": "中",
       "tokenScore": 2,
       "impact": 5,
-      "priority": 15,
+      "priority": 10,
       "status": "pending"
     },
     {
@@ -23,7 +23,7 @@
       "tokenScore": 2,
       "impact": 3,
       "priority": 21,
-      "status": "deferred"
+      "status": "pending"
     }
   ]
 }

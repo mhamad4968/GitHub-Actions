@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-07-12T02:14:59.705Z",
-  "gitHead": "69d570d1",
-  "gitStatus": "## main...origin/main [ahead 2]",
-  "nextTask": "**736 UI-BACKLOG-02** 列幅ドラッグ — §41 仕様から · 体制更新の verify 不具合があれば修正",
+  "exportedAt": "2026-07-12T08:58:53.670Z",
+  "gitHead": "cd89ea2f",
+  "gitStatus": "## main...origin/main",
+  "nextTask": "**7/13〜** — **UI-BACKLOG-03** ブロック選択 DD 仕様確認（**7/13–7/14** · implement **7/16** · **NO-GO 可**）— 浜田 **スケジュール通りで GO**",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -19,19 +19,19 @@
   "lastFailures": [
     {
       "id": "debug-tip-npm-run-doc-lane-verify",
-      "at": "2026-07-12T02:14:59.705Z",
+      "at": "2026-07-12T08:58:53.670Z",
       "verify": "npm run cio:session:export-handoff",
       "note": "npm run doc-lane:verify-v5-ch3-refs`）+ `add_reading_guide.py` 修正。v5 読み方1行は **Wor | npm run doc-lane:patch-v5-a3`・`cio:do"
     },
     {
       "id": "debug-tip-npm-run-session-starter",
-      "at": "2026-07-12T02:14:59.705Z",
+      "at": "2026-07-12T08:58:53.670Z",
       "verify": "npm run cio:session:export-handoff",
       "note": "npm run session-starter:sync-desktop` + verify 済。旧 `19-SESSION-ONE-REPORT-2026-0 | npm run cio:session:export-handoff` →"
     }
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=69d570d1 | 次=**736 UI-BACKLOG-02** 列幅ドラッグ — §41 仕様から · 体制更新の verify 不具合があれば修正 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json | lastFailures=2",
+  "promptBlock": "【SESSION-BRIDGE】git=cd89ea2f | 次=**7/13〜** — **UI-BACKLOG-03** ブロック選択 DD 仕様確認（**7/13–7/14** · implement **7/16** · **NO-GO 可**）— 浜田 **スケジュール通りで GO** | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json | lastFailures=2",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
-  "validatedAt": "2026-07-12T02:15:00.196Z",
+  "validatedAt": "2026-07-12T08:58:54.575Z",
   "crosscheckOk": true
 }

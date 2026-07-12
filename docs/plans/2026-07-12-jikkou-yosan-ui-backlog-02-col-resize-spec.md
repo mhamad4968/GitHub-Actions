@@ -1,7 +1,7 @@
 # 736 UI-BACKLOG-02 — 列幅ドラッグ調整 仕様
 
 **日付**: 2026-07-12 JST  
-**状態**: **implement 完了（2026-07-12）** · BUILD `2026-07-12-736-ui-backlog-02-col-resize` rev **185** · 浜田ブラウザ確認待ち  
+**状態**: **完了（2026-07-12）** · BUILD `2026-07-12-736-ui-backlog-02-col-resize` rev **185** · **浜田確認 OK（2026-07-12）**  
 **親 SPEC**: [`2026-06-18-jikkou-yosan-spec.md`](2026-06-18-jikkou-yosan-spec.md) §9.2.3 **UI-BACKLOG-02**  
 **日程**: [`736-july-2026-schedule.md`](../runbooks/736-july-2026-schedule.md) **7/12 期限**  
 **live**: [App 736](https://jbis-kintone.cybozu.com/k/736/) · BUILD `2026-07-12-736-ui-backlog-02-col-resize` rev **185**
