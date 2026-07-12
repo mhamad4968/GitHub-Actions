@@ -5,7 +5,7 @@
 
 **最終更新**: 2026-07-12 JST（昼）— **経営会議資料 MCP · shiryo-sakusei 完走 · セッション締め**
 
-**Git**: **`9e2b18e8`** = `origin/main` — push 済（feat shiryo-sakusei MCP）
+**Git**: **`0346e212`** = `origin/main` — push 済
 
 **次の1手（夜）**: **736 UI-BACKLOG-02** 列幅ドラッグ — §41 仕様から · 体制更新の verify 不具合があれば修正
 
