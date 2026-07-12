@@ -9,7 +9,7 @@
 
 **GO待ち**: 憲法正式クローズ — 観測後（≈7/25）· rules-opt §18 ACK
 
-**観測期間（≈7/25）**: 正式クローズ宣言は **今日やらない**
+**観測期間（≈7/25 再確認）**: 憲法 Round-3 · rules-opt §18 ACK · turn-start △2 — **正式クローズ宣言は今日やらない**
 
 **運用メモ**: 経営会議資料 — 作成日「作成したい」→ 依頼書テンプレ貼付 → 記入。**MCP `shiryo-sakusei` ready**（Cursor 再起動済）· 正本 `mcp/shiryo-sakusei-mcp/SPEC.md` · 依頼書 `docs/依頼書テンプレート.txt`
 
