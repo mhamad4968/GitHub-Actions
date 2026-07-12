@@ -103,7 +103,7 @@ export function checkCheckpointGitRegression(root) {
   const parentShort = (parent.stdout || '').trim();
   if (parentShort === cpHash) {
     const subj = spawnSync('git', ['log', '-1', '--pretty=format:%s', origin], { cwd: root, encoding: 'utf8' });
-    if (/^chore\(checkpoint\): sync Git line/i.test((subj.stdout || '').trim())) {
+    if (/^chore\(checkpoint\): (sync Git line|final Git line stamp)/i.test((subj.stdout || '').trim())) {
       return { ok: true, offByOne: true, cpHash, origin };
     }
   }

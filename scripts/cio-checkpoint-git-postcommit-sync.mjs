@@ -37,7 +37,7 @@ function main() {
     encoding: 'utf8',
   }).stdout?.trim();
   const isCheckpointSyncCommit =
-    subject && /^chore\(checkpoint\): sync Git line/i.test(subject);
+    subject && /^chore\(checkpoint\): (sync Git line|final Git line stamp)/i.test(subject);
 
   const files = spawnSync('git', ['diff-tree', '--no-commit-id', '--name-only', '-r', 'HEAD'], {
     cwd: root,

@@ -25,13 +25,21 @@ import {
   syncCheckpointGitAfterPush,
   readCheckpointGitHead,
   updateCheckpointGitHead,
-  checkCheckpointGitExactMatch,
+  gitShortHead,
 } from './lib/cio-checkpoint-git-sync.mjs';
 import { CHECKPOINT_REL } from './lib/cio-checkpoint-read.mjs';
 import { repairCheckpointBootstrapBlock } from './lib/cio-handoff-template.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DESKTOP_DIR = process.env.SESSION_STARTER_DESKTOP_DIR || 'C:\\Users\\mhamada202408224\\Desktop\\AI緊急用';
+
+/** R44 — checkpoint sync commit 内 **Git** 行を直近 HEAD に 1 回 stamp（完全収束は off-by-one 許容） */
+function stampCheckpointGitToHead() {
+  const head = gitShortHead(root);
+  if (!head) return;
+  updateCheckpointGitHead(root, { hash: head, suffix: 'push 済' });
+  git(['add', CHECKPOINT_REL]);
+}
 
 const execute = process.argv.includes('--execute');
 const autoStage = process.argv.includes('--auto-stage');
@@ -233,18 +241,12 @@ function main() {
       git(['add', CHECKPOINT_REL]);
       const cpCommit = git(['commit', '-m', 'chore(checkpoint): sync Git line after close']);
       if (cpCommit.ok) {
-        // push 前に amend で **Git** 行 = HEAD に収束（R44 · D-CHKPT-02）
-        for (let i = 0; i < 5; i += 1) {
-          const head = git(['rev-parse', '--short', 'HEAD']).out;
-          updateCheckpointGitHead(root, { hash: head, suffix: 'push 済' });
-          git(['add', CHECKPOINT_REL]);
-          const amended = git(['commit', '--amend', '--no-edit'], {
-            env: { ...process.env, CIO_POST_COMMIT_CHECKPOINT_SYNC: '1' },
-          });
-          if (!amended.ok) break;
-          const newHead = git(['rev-parse', '--short', 'HEAD']).out;
-          const cpHash = readCheckpointGitHead(root);
-          if (newHead && newHead === cpHash) break;
+        stampCheckpointGitToHead();
+        const amended = git(['commit', '--amend', '--no-edit'], {
+          env: { ...process.env, CIO_POST_COMMIT_CHECKPOINT_SYNC: '1' },
+        });
+        if (!amended.ok) {
+          console.warn('[cio:session:close-git] WARN checkpoint amend — post-commit に委譲');
         }
         const push2 = git(['push', 'origin', 'HEAD']);
         if (!push2.ok) {
@@ -254,38 +256,6 @@ function main() {
         git(['fetch', 'origin', branch]);
         const finalHash = git(['rev-parse', '--short', 'origin/main']).out || hash;
         console.log(`[cio:session:close-git] checkpoint Git synced → ${finalHash}`);
-      }
-    }
-    // S-CHKPT-CLOSE-01: bridge 連鎖後の終端 stamp（amend 収束後も 1 世代ずれを解消）
-    git(['fetch', 'origin', branch]);
-    const exact = checkCheckpointGitExactMatch(root);
-    if (!exact.ok && !exact.skip) {
-      updateCheckpointGitHead(root, {
-        hash: git(['rev-parse', '--short', 'HEAD']).out || exact.origin,
-        suffix: 'push 済',
-      });
-      git(['add', CHECKPOINT_REL]);
-      const finCommit = git(['commit', '-m', 'chore(checkpoint): final Git line stamp (S-CHKPT-CLOSE-01)']);
-      if (finCommit.ok) {
-        for (let i = 0; i < 5; i += 1) {
-          const head = git(['rev-parse', '--short', 'HEAD']).out;
-          updateCheckpointGitHead(root, { hash: head, suffix: 'push 済' });
-          git(['add', CHECKPOINT_REL]);
-          const amended = git(['commit', '--amend', '--no-edit'], {
-            env: { ...process.env, CIO_POST_COMMIT_CHECKPOINT_SYNC: '1' },
-          });
-          if (!amended.ok) break;
-          const newHead = git(['rev-parse', '--short', 'HEAD']).out;
-          const cpHash = readCheckpointGitHead(root);
-          if (newHead && newHead === cpHash) break;
-        }
-        const pushFin = git(['push', 'origin', 'HEAD']);
-        if (!pushFin.ok) {
-          console.error('[cio:session:close-git] NG final checkpoint stamp push', pushFin.err || pushFin.out);
-          process.exit(pushFin.status || 1);
-        }
-        git(['fetch', 'origin', branch]);
-        console.log(`[cio:session:close-git] final checkpoint stamp → ${git(['rev-parse', '--short', 'origin/main']).out}`);
       }
     }
   }

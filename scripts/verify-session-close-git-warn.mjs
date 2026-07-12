@@ -147,14 +147,21 @@ function checkCheckpointGitLine() {
   }
   const exact = checkCheckpointGitExactMatch(root);
   if (!exact.ok && !exact.skip) {
-    const msg = `[verify:session-close-git-warn] NG ${exact.message}`;
+    const regOff = checkCheckpointGitRegression(root);
+    if (regOff.offByOne) {
+      console.warn(
+        `[verify:session-close-git-warn] WARN checkpoint Git off-by-one \`${exact.cpHash}\` vs origin \`${exact.origin}\` — R44 許容（S-CHKPT-CLOSE-01）`,
+      );
+      return { ok: true, warned: true };
+    }
+  }
+  const reg = checkCheckpointGitRegression(root);
+  if (reg.regression) {
+    const msg = `[verify:session-close-git-warn] NG ${reg.message}`;
     const hard = failOrWarn(msg);
     return { ok: false, hard };
   }
-  const reg = checkCheckpointGitRegression(root);
-  if (!reg.regression) return { ok: true };
-  console.warn(`[verify:session-close-git-warn] WARN ${reg.message}`);
-  return { ok: true, warned: true };
+  return { ok: true };
 }
 
 function checkRulesIndexDirty() {
