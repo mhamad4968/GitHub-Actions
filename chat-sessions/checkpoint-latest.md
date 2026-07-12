@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-12 JST（夜）— **736 UI-BACKLOG-02 仕様 GO · 起票**
 
-**Git**: **（commit 後更新）** = `origin/main` — push 予定
+**Git**: **`d171cc65`** = `origin/main` — push 済
 
 **次の1手**: **736 UI-BACKLOG-02** 列幅ドラッグ — **実装 GO**（`cio:pre-implement-gate` → implement → deploy）
 
