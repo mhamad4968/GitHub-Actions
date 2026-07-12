@@ -3,7 +3,7 @@
   "note": "git-history-alignment が保護するコマンド・緩和禁止パターン。verify:git-history-alignment / git-history-mcp 連動。",
   "generations": [
     {
-      "hash": "de709917",
+      "hash": "868121da",
       "label": "feat(evening): §5 approved — Cursor v2.5, Models 6-role, CHKPT-CLOSE-01, E1 README",
       "at": "2026-07-12"
     },
