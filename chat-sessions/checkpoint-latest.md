@@ -1,9 +1,11 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-13 JST（夕）— **688 気象UI折りたたみ OK** · **736 UI-BACKLOG-03 仕様草案 GO**
+**最終更新**: 2026-07-13 JST（締め）— **688 気象UI OK** · **改善案5件 implement** · **736 BACKLOG-03 仕様草案**
 
-**Git**: **`1631e626`** = `origin/main` — push 済
+**Git**: **`f4cee2c4`** = `origin/main` — push 済（改善 implement はこのあと push）
+
+**レーン変更**: 736 UI-BACKLOG-03 仕様草案 → 688 気象 UI 実装（午後）
 
 **次の1手**: **7/14** — **UI-BACKLOG-03** AIチームレビュー → 浜田追問 → **7/16 implement**
 
@@ -25,7 +27,7 @@
 |------|------|
 | **688 気象UI** | 気象データヘルプ・猛暑日オプションを `<details>` 折りたたみ · deploy rev89 · spec `2026-07-13-688-weather-ui-accordion-spec.md` |
 | **736 BACKLOG-03** | ブロック選択 DD 仕様草案 GO（implement **7/16**）· `2026-07-13-jikkou-yosan-ui-backlog-03-block-select-dd-spec.md` |
-| **commit** | `82b7e968` feat(688) · `c176ac25` docs(736) |
+| **改善（夕）** | #I-688-GHA-01〜#I-SESSION-LANE-01 全 GO · `docs/approved-changes/2026-07-13-evening-improvements-hamada-go.md` |
 
 ## クローズ済み（`data/cio-project-closures.json` — 9件）
 

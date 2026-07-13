@@ -1,9 +1,10 @@
 # 688 気象データヘルプ・猛暑日オプション UI — 仕様（2026-07-13 GO）
 
 **親 SPEC**: [`2026-06-13-construction-workdays-excel-20260613.md`](2026-06-13-construction-workdays-excel-20260613.md) §11 · [`2026-07-10-688-wbgt-heat-reference-spec.md`](2026-07-10-688-wbgt-heat-reference-spec.md) §3  
+**UI アコーデオン共通**: [`_templates/ui-details-accordion-checklist.md`](_templates/ui-details-accordion-checklist.md)（#I-SPEC-ACC-01）  
 **アプリ**: [688 工事稼働日数ダッシュ](https://jbis-kintone.cybozu.com/k/688/)  
 **状態**: **仕様 GO · implement 完了**（浜田目視 OK 2026-07-13）  
-**BUILD**: `2026-07-13-688-heat-closed` · rev **89**
+**BUILD**: `2026-07-13-688-heat-closed` · rev **90**
 
 ---
 

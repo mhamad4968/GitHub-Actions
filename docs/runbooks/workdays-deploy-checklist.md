@@ -28,42 +28,48 @@ npm run workdays:deploy-gate -- 688   # または 687
 
 ## 1. ビルド
 
-
+**bash（Linux / Git Bash）**
 
 ```bash
-
 npm run workdays:build-desktop      # 687
-
 npm run workdays:build-desktop:688  # 688（REF5YR JSON を desktop.js に同梱）
-
 ```
 
+**PowerShell（Windows · #I-RUNBOOK-PS-01）**
 
+```powershell
+cd C:\Users\mhamada202408224\kintone-ai-lab
+$env:WORKDAYS_BUILD = "2026-07-13-688-your-tag"
+npm run workdays:build-desktop:688
+```
+
+> `&&` は PowerShell 5 では使えない。**`;` で区切る**か、上記のように 1 行ずつ実行する。
 
 参照 JSON 更新（気象庁 CSV → リポ）:
 
-
-
 ```bash
-
 npm run workdays:import-jma-csv
-
 npm run workdays:build-desktop:688  # 再ビルド必須
-
 ```
 
-
+```powershell
+npm run workdays:import-jma-csv; npm run workdays:build-desktop:688
+```
 
 ## 2. preflight → deploy
 
-
+**bash**
 
 ```bash
-
 npm run cio:preflight:688 -- --note "（規律一行）"
-
 npm run deploy:688
+```
 
+**PowerShell**
+
+```powershell
+npm run cio:preflight:688 -- --note "（規律一行）"
+npm run deploy:688
 ```
 
 

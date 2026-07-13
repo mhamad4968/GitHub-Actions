@@ -25,6 +25,7 @@
 #     未設定・その他の値 → **ESLint のみ**（意図しない本番 JS 投入を抑止）。
 #   - 同一 push 差分に **異なる 2 アプリ以上**の `customize/<数字>/desktop.js` が含まれる → **各アプリ ID を順に API デプロイ**（2026-05-16: スキップ廃止・先祖返り防止）。
 #   - **workflow_dispatch** は従来どおり **手動で API デプロイ可**（運用者が対象を確認して実行）。
+#   - **同一 BUILD スキップ**（#I-688-GHA-01 · 2026-07-13）: push 時、ソース `var BUILD` が `data/cio-live-builds.json` と一致 → **kintone API 再アップロードをスキップ**（手動 deploy 後の二重 rev 防止）。`workflow_dispatch` は `--force` 相当で従来どおりデプロイ可。
 #   - 正本: `docs/runbooks/kintone-ci-push-deploy-guard.md`
 
 name: kintone-customize-deploy
@@ -40,6 +41,7 @@ on:
       - "eslint.config.js"
       - "scripts/record-kintone-apps-deploy.js"
       - "scripts/deploy-customize-api-token.js"
+      - "scripts/ci-kintone-deploy-skip-same-build.mjs"
 
 permissions:
   contents: write
@@ -239,23 +241,47 @@ jobs:
             echo "::error::KINTONE_BASE_URL が未設定です（KINTONE_DOMAIN を確認してください）"
             exit 1
           fi
+          DEPLOYED_MANIFEST=""
+          FORCE_FLAG=""
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            FORCE_FLAG="--force"
+          fi
           for DEPLOY_ID in ${{ env.KINTONE_DEPLOY_APP_IDS }}; do
+            UPLOAD=".kintone-deploy/upload-${DEPLOY_ID}.js"
+            if ! node scripts/ci-kintone-deploy-skip-same-build.mjs "${DEPLOY_ID}" "${UPLOAD}" ${FORCE_FLAG}; then
+              echo "::notice::app ${DEPLOY_ID} — 同一 BUILD のため kintone API デプロイをスキップ（#I-688-GHA-01）"
+              continue
+            fi
             echo "::group::deploy app ${DEPLOY_ID}"
-            node scripts/deploy-customize-api-token.js "${DEPLOY_ID}" ".kintone-deploy/upload-${DEPLOY_ID}.js"
+            node scripts/deploy-customize-api-token.js "${DEPLOY_ID}" "${UPLOAD}"
             echo "::endgroup::"
+            for pair in ${KINTONE_DEPLOY_MANIFEST}; do
+              [[ -n "${pair}" ]] || continue
+              APP_ID="${pair%%:*}"
+              REL="${pair#*:}"
+              if [[ "${APP_ID}" == "${DEPLOY_ID}" ]]; then
+                DEPLOYED_MANIFEST="${DEPLOYED_MANIFEST}${DEPLOY_ID}:${REL} "
+                break
+              fi
+            done
           done
+          echo "KINTONE_DEPLOYED_MANIFEST=${DEPLOYED_MANIFEST}" >> "${GITHUB_ENV}"
+          if [[ -z "${DEPLOYED_MANIFEST//[[:space:]]/}" ]]; then
+            echo "::notice::デプロイ対象はすべて同一 BUILD スキップ — 記録・監査ステップもスキップします"
+          fi
 
       - name: kintone-apps.md にデプロイ記録（必要ならメイン表に 1 行追加）
-        if: success() && steps.deploy_gate.outputs.deploy_js == '1'
+        if: success() && steps.deploy_gate.outputs.deploy_js == '1' && env.KINTONE_DEPLOYED_MANIFEST != ''
         env:
-          KINTONE_DEPLOY_MANIFEST: ${{ env.KINTONE_DEPLOY_MANIFEST }}
+          KINTONE_DEPLOYED_MANIFEST: ${{ env.KINTONE_DEPLOYED_MANIFEST }}
         run: |
           set -euo pipefail
-          for pair in ${KINTONE_DEPLOY_MANIFEST}; do
+          for pair in ${KINTONE_DEPLOYED_MANIFEST}; do
             [[ -n "${pair}" ]] || continue
             APP_ID="${pair%%:*}"
             REL="${pair#*:}"
             node scripts/record-kintone-apps-deploy.js "${APP_ID}" "${REL}"
+            npm run sync:kintone-apps-build -- "${APP_ID}"
           done
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -275,7 +301,9 @@ jobs:
           fi
 
       - name: ポートフォリオ BUILD 整合監査（デプロイ後）
-        if: success() && steps.deploy_gate.outputs.deploy_js == '1'
+        if: success() && steps.deploy_gate.outputs.deploy_js == '1' && env.KINTONE_DEPLOYED_MANIFEST != ''
+        env:
+          KINTONE_DEPLOYED_MANIFEST: ${{ env.KINTONE_DEPLOYED_MANIFEST }}
         env:
           KINTONE_DOMAIN: ${{ secrets.KINTONE_DOMAIN }}
           KINTONE_USERNAME: ${{ secrets.KINTONE_USERNAME }}

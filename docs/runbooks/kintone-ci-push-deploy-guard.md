@@ -22,6 +22,14 @@
 4. **`github.event.before` が空の push**（稀な初回系）  
    - **`KINTONE_PUSH_AUTO_DEPLOY=true` のときだけ** `deploy_js=1` を許可。それ以外はスキップ。
 
+5. **同一 BUILD スキップ**（#I-688-GHA-01 · 2026-07-13 浜田 GO）  
+   - push / dispatch いずれも、ソースの `var BUILD` が **`data/cio-live-builds.json` の当該 app と一致** → **kintone API 再アップロードをスキップ**（記録・監査もスキップ）。  
+   - 手動 `npm run deploy:<app>` 済みのあと customize を push しても **rev が無駄に増えない**。  
+   - 実装: `scripts/ci-kintone-deploy-skip-same-build.mjs` · 強制デプロイは `--force`。
+
+6. **デプロイ記録後の kintone-apps 同期**（#I-688-SYNC-01 · 2026-07-13）  
+   - GHA が実デプロイした app について `npm run sync:kintone-apps-build -- <app>` を **記録 commit 前**に実行。
+
 ## 運用チェックリスト（浜田 CEO / 管理者）
 
 - [ ] GitHub リポジトリ → **Settings** → **Secrets and variables** → **Actions** → **Variables** タブ  
@@ -36,4 +44,4 @@
 ## 変更履歴
 
 - **2026-05-16**: CIO 導入（変数ゲート + 複数アプリ push 拒否）。DeepSeek 方針 (A) + 複数アプリ (B) を統合。
-- **2026-05-16**: 678 先祖返り対応 — 複数アプリ push 時は **スキップせず全 ID デプロイ**に変更。手動復旧例: `deploy:678` rev 155。
+- **2026-07-13**: #I-688-GHA-01 同一 BUILD スキップ · #I-688-SYNC-01 記録後 sync-kintone-apps-build（浜田 GO）。
