@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-13 JST（夕）— **688 気象UI折りたたみ OK** · **736 UI-BACKLOG-03 仕様草案 GO**
 
-**Git**: **`a8004a2a`** = `origin/main` — push 済
+**Git**: **`5944fad7`** = `origin/main` — push 済
 
 **次の1手**: **7/14** — **UI-BACKLOG-03** AIチームレビュー → 浜田追問 → **7/16 implement**
 
@@ -15,7 +15,7 @@
 
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` · **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md` · **クローズ正本**: `data/cio-project-closures.json`
 
-**688 本番**: BUILD=`2026-07-13-688-heat-closed` rev **89** — 気象ヘルプ・猛暑日オプション折りたたみ · 浜田目視 OK
+**688 本番**: BUILD=`2026-07-13-688-heat-closed` rev **90** — 気象ヘルプ・猛暑日オプション折りたたみ · 浜田目視 OK（GHA push 後 rev90 記録）
 
 **736 本番**: BUILD=`2026-07-12-736-ui-backlog-02-col-resize` rev **186** — **UI-BACKLOG-02 完了** · **BACKLOG-03 仕様草案 commit 済**
 
@@ -35,7 +35,7 @@
 
 | 状態 | 内容 |
 |------|------|
-| **688** | WBGT UI 折りたたみ完了（rev89）· **それ以外触らない** |
+| **688** | WBGT UI 折りたたみ完了（rev90）· **それ以外触らない** |
 | **677–679** | 触らない |
 | **SKYSEA** | 8/1 再計画 · 7月着手禁止 |
 | **736** | §9.6 凍結 · **UI-BACKLOG-03 仕様草案 GO** · implement **7/16** |
