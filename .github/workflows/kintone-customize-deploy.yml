@@ -304,7 +304,6 @@ jobs:
         if: success() && steps.deploy_gate.outputs.deploy_js == '1' && env.KINTONE_DEPLOYED_MANIFEST != ''
         env:
           KINTONE_DEPLOYED_MANIFEST: ${{ env.KINTONE_DEPLOYED_MANIFEST }}
-        env:
           KINTONE_DOMAIN: ${{ secrets.KINTONE_DOMAIN }}
           KINTONE_USERNAME: ${{ secrets.KINTONE_USERNAME }}
           KINTONE_PASSWORD: ${{ secrets.KINTONE_PASSWORD }}
