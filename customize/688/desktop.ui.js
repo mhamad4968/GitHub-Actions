@@ -663,6 +663,8 @@
     const printHeatEl = document.getElementById('wd688-print-heat');
     if (showHeatEl) showHeatEl.checked = !!state.show_heat_reference;
     if (printHeatEl) printHeatEl.checked = !!state.print_heat_reference;
+    const heatDetails = document.getElementById('wd688-heat-details');
+    if (heatDetails) heatDetails.open = false;
     for (let m = 1; m <= 12; m += 1) {
       const row = state.holidayManual[m - 1];
       s('wd688-hm-saturday-' + m, row.saturday);
@@ -2397,13 +2399,26 @@
       '.wd688-obs-set{font-weight:600;}' +
       '.wd688-saturday-auto-notice{margin:0 0 10px;padding:8px 10px;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;color:#dc2626;font-size:12px;line-height:1.55;}' +
       '.wd688-csv-btn{margin:8px 0 0;padding:6px 14px;border:1px solid #94a3b8;border-radius:6px;background:#e8eef4;color:#334155;font-size:13px;cursor:pointer;}' +
-      '.wd688-csv-btn:hover{background:#dbe4ee;}';
+      '.wd688-csv-btn:hover{background:#dbe4ee;}' +
+      '.wd688-csv-help-details{margin:0 0 14px;border:1px solid #d0d7de;border-radius:8px;background:#fff;}' +
+      '.wd688-csv-help-details>summary{padding:10px 14px;cursor:pointer;font-weight:700;font-size:14px;color:#1e293b;list-style-position:outside;}' +
+      '.wd688-csv-help-details[open]>summary{border-bottom:1px solid #e2e8f0;background:#f8fafc;border-radius:8px 8px 0 0;}' +
+      '.wd688-csv-help-body{padding:12px 14px;font-size:13px;line-height:1.7;color:#1e293b;}' +
+      '.wd688-heat-details{grid-column:1/-1;margin-top:2px;border:2px solid #fdba74;border-radius:8px;background:linear-gradient(135deg,#fff7ed 0%,#ffedd5 100%);}' +
+      '.wd688-heat-details>summary{padding:10px 14px;cursor:pointer;font-size:13px;color:#9a3412;line-height:1.55;list-style-position:outside;}' +
+      '.wd688-heat-details[open]>summary{border-bottom:1px solid #fed7aa;font-weight:700;color:#c2410c;}' +
+      '.wd688-heat-options{padding:12px 14px 4px;border:none;background:transparent;margin:0;}' +
+      '.wd688-heat-options-title{font-weight:700;font-size:14px;color:#c2410c;margin-bottom:6px;}' +
+      '.wd688-heat-options-hint{font-size:11px;color:#9a3412;margin-bottom:8px;line-height:1.5;}' +
+      '.wd688-heat-check{display:flex;align-items:flex-start;gap:10px;padding:9px 12px;margin:6px 0;background:#fff;border:1px solid #fed7aa;border-radius:6px;cursor:pointer;font-size:13px;line-height:1.45;}' +
+      '.wd688-heat-check:hover{border-color:#fb923c;background:#fffaf5;}' +
+      '.wd688-heat-check input{margin-top:2px;width:17px;height:17px;flex-shrink:0;accent-color:#ea580c;}' +
+      '.wd688-heat-check strong{color:#9a3412;}';
     document.head.appendChild(st);
   }
 
   function csvHelpHtml() {
     return (
-      '<div style="font-weight:bold;margin-bottom:10px;font-size:14px;">気象データの入手（過去5年・気象庁）</div>' +
       '<p style="margin:0 0 12px;line-height:1.75;">' +
       '※1 の気象日数は、<strong>見積作成年の直前5年間</strong>の日別データから求めた<strong>月別平均日数</strong>です。' +
       '見積作成年を入力すると対象年が決まります（例: <strong>2026年</strong>見積 → <strong>2021・2022・2023・2024・2025年</strong>）。' +
@@ -2446,9 +2461,10 @@
       '<button type="button" id="wd688-csv-wbgt" class="wd688-csv-btn">CSV→猛暑日（WBGT）</button>' +
       '</p>' +
       '<p style="margin:0;line-height:1.75;font-size:12px;color:#475569;">' +
-      '<strong>過去5年表の見方</strong> … タブ「過去5年(風速)」「過去5年(降雨)」「過去5年(猛暑日)」に参照表を表示します。' +
-      ' 猛暑日は<strong>参考のみ</strong>（稼働可能日数・不稼働率には含めません）。' +
+      '<strong>過去5年表の見方</strong> … 下のタブ「過去5年(風速)」「過去5年(降雨)」「過去5年(猛暑日)」に参照表を表示します。' +
+      ' 猛暑日は<strong>参考のみ</strong>（稼働可能日数・不稼働率・雨休率には含めません）。' +
       ' CSV を取込むと登録済みデータが更新され、見積作成年に応じた5年分の平均列が再計算されます。' +
+      ' 本手順は通常は折りたたみ、照合・監査時のみ開いてください。' +
       '</p>'
     );
   }
@@ -2486,17 +2502,27 @@
       '<label>観測地点<br><div id="wd688-obs-display" class="wd688-obs-unset">未設定</div></label>' +
       '<label>風速閾値(m/s)<br><input id="wd688-wind-th" type="number" step="0.1" style="width:100%"></label>' +
       '<label>降雨閾値(mm)<br><input id="wd688-rain-th" type="number" step="0.1" style="width:100%"></label>' +
-      '<label style="display:flex;align-items:center;gap:6px;margin-top:22px;font-size:13px;"><input type="checkbox" id="wd688-show-heat"> 猛暑日行を画面表示</label>' +
-      '<label style="display:flex;align-items:center;gap:6px;margin-top:22px;font-size:13px;"><input type="checkbox" id="wd688-print-heat"> 猛暑日行を印刷に含める</label></div>' +
+      '<details class="wd688-heat-details" id="wd688-heat-details">' +
+      '<summary class="wd688-heat-summary">猛暑日（WBGT・参考のみ）をオプションで追加したい場合は開いて設定をしてください</summary>' +
+      '<div class="wd688-heat-options">' +
+      '<div class="wd688-heat-options-title">猛暑日（WBGT・参考のみ）</div>' +
+      '<div class="wd688-heat-options-hint">稼働可能日数・不稼働率・雨休率には<strong>含めません</strong>。必要なときだけ下記をオンにしてください。</div>' +
+      '<label class="wd688-heat-check" for="wd688-show-heat"><input type="checkbox" id="wd688-show-heat">' +
+      '<span><strong>画面表示</strong> — 足場／塗装／休日の月別表に「猛暑日（参考）」行を出す</span></label>' +
+      '<label class="wd688-heat-check" for="wd688-print-heat"><input type="checkbox" id="wd688-print-heat">' +
+      '<span><strong>印刷に含める</strong> — 施工主報告用印刷の集計表に猛暑日の行を出す</span></label>' +
+      '</div></details></div>' +
       '<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0;padding:12px;background:#e8f4fc;border-radius:8px;">' +
       '<div><span style="font-size:12px;color:#555">足場 稼働可能日数</span><br><strong id="wd688-scaffold" style="font-size:22px">—</strong></div>' +
       '<div><span style="font-size:12px;color:#555">塗装 稼働可能日数</span><br><strong id="wd688-paint" style="font-size:22px">—</strong></div>' +
       '<button type="button" id="wd688-calc" class="kintoneplugin-button-dialog-ok">再算出</button>' +
       '<button type="button" id="wd688-save" class="kintoneplugin-button-dialog-ok">保存</button>' +
       '<button type="button" id="wd688-print-paint" class="kintoneplugin-button-normal">施工主報告用印刷</button></div>' +
-      '<div id="wd688-csv-help" style="margin:0 0 14px;padding:12px 14px;background:#fff;border:1px solid #d0d7de;border-radius:8px;font-size:13px;line-height:1.7;color:#1e293b;">' +
+      '<details class="wd688-csv-help-details" id="wd688-csv-help">' +
+      '<summary>気象データの入手（過去5年・気象庁）— 照合・監査用（通常は閉じる）</summary>' +
+      '<div class="wd688-csv-help-body">' +
       csvHelpHtml() +
-      '</div>' +
+      '</div></details>' +
       '<div class="wd688-tabs">' +
       '<button type="button" class="wd688-tab wd688-tab-active" id="wd688-tab-scaffold">足場</button>' +
       '<button type="button" class="wd688-tab" id="wd688-tab-paint">塗装</button>' +

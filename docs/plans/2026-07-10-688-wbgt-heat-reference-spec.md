@@ -2,7 +2,7 @@
 
 **親 SPEC**: [`2026-06-13-construction-workdays-excel-20260613.md`](2026-06-13-construction-workdays-excel-20260613.md) §12  
 **アプリ**: [688 工事稼働日数ダッシュ](https://jbis-kintone.cybozu.com/k/688/) · データ正本 [687](https://jbis-kintone.cybozu.com/k/687/)  
-**状態**: **仕様 GO**（浜田 2026-07-10）· **implement 前**（commit/push 後に着手確認）  
+**状態**: **implement 完了**（浜田 2026-07-10 GO · 2026-07-13 UI 追補 GO）  
 **688 保留**: 本件のみ **部分解凍**（他改修は触らない）
 
 ---
@@ -98,6 +98,8 @@
 
 OFF 時は行自体を **非表示**（グレーアウト不可）。
 
+**UI 配置（2026-07-13）**: フォーム内 `<details>` アコーデオン · **常に閉じた状態**（サマリー「猛暑日（WBGT・参考のみ）をオプションで追加したい場合は開いて設定をしてください」）。詳細は [`2026-07-13-688-weather-ui-accordion-spec.md`](2026-07-13-688-weather-ui-accordion-spec.md) §2。
+
 ### 3.4 過去5年タブ
 
 - 新タブ: **「過去5年(猛暑日)」**（`ref-heat`）
@@ -183,3 +185,4 @@ npm run deploy:688
 |------|------|
 | 2026-07-10 | 初版 · 浜田 GO · AIチームレビュー GO |
 | 2026-07-10 | **浜田目視 OK** — 東京WBGT CSV · 画面/印刷 · 過去5年(猛暑日) rev82 |
+| 2026-07-13 | **UI 追補 GO** — 気象データヘルプ・猛暑日オプションをアコーデオン化 · [`2026-07-13-688-weather-ui-accordion-spec.md`](2026-07-13-688-weather-ui-accordion-spec.md) · rev89 |
