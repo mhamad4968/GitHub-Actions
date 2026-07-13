@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-13 JST（夕）— **688 気象UI折りたたみ OK** · **736 UI-BACKLOG-03 仕様草案 GO**
 
-**Git**: **`c176ac25`** — push 前（688 feat + 736 spec draft）
+**Git**: **`a8004a2a`** = `origin/main` — push 済
 
 **次の1手**: **7/14** — **UI-BACKLOG-03** AIチームレビュー → 浜田追問 → **7/16 implement**
 
