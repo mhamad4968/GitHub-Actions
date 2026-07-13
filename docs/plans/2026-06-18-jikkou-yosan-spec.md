@@ -217,7 +217,7 @@
 | ID | 内容 | 状態 | 備考 |
 |----|------|------|------|
 | UI-BACKLOG-02 | 列幅のドラッグ調整 | **完了**（2026-07-12 deploy rev **185**） | [`2026-07-12-jikkou-yosan-ui-backlog-02-col-resize-spec.md`](2026-07-12-jikkou-yosan-ui-backlog-02-col-resize-spec.md) |
-| UI-BACKLOG-03 | 詳細表 — 追加先ブロックをドロップダウンで選んでから行挿入 | **再検討** · **仕様 7/13–7/14 · 実装 7/16**（7/21–23 から前倒し） | 2026-06-20 見送り · **NO-GO 可**（浜田 2026-07-05） |
+| UI-BACKLOG-03 | 詳細表 — 追加先ブロックをドロップダウンで選んでから行挿入 | **仕様草案 GO（2026-07-13）** · implement **7/16**（7/21–23 から前倒し） | [`2026-07-13-jikkou-yosan-ui-backlog-03-block-select-dd-spec.md`](2026-07-13-jikkou-yosan-ui-backlog-03-block-select-dd-spec.md) · 2026-06-20 見送り解除 · **NO-GO 可** |
 
 #### 詳細表 — 入力蓄積マスタ（構想のみ · 浜田 2026-07-05）
 
