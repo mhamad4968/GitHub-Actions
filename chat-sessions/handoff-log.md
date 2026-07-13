@@ -4670,7 +4670,7 @@ npm run cio:morning:ready
 **触らない**: 688（WBGT以外）/ 677–679 / SKYSEA 7月
 
 
-**Git**: **`cc6e8a89`** = `origin/main` — push 済
+**Git**: **`8dc1aa1a`** = `origin/main` — push 済
 
 **GO待ち**: 憲法正式クローズ — 観測後（≈7/25）· **§5 改善提案**（夕反省 2026-07-12）— 浜田承認待ち
 

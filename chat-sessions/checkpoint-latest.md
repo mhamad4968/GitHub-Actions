@@ -1,11 +1,11 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-12 JST（夜）— **736 UI-BACKLOG-02 浜田確認 OK**
+**最終更新**: 2026-07-13 JST（夕）— **688 気象UI折りたたみ OK** · **736 UI-BACKLOG-03 仕様草案 GO**
 
-**Git**: **`978c48d1`** = `origin/main` — push 済
+**Git**: **`c176ac25`** — push 前（688 feat + 736 spec draft）
 
-**次の1手**: **7/13〜** — **UI-BACKLOG-03** ブロック選択 DD 仕様確認（**7/13–7/14** · implement **7/16** · **NO-GO 可**）— 浜田 **スケジュール通りで GO**
+**次の1手**: **7/14** — **UI-BACKLOG-03** AIチームレビュー → 浜田追問 → **7/16 implement**
 
 **GO待ち**: 憲法正式クローズ — 観測後（≈7/25）· rules-opt §18 ACK
 
@@ -15,19 +15,17 @@
 
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` · **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md` · **クローズ正本**: `data/cio-project-closures.json`
 
-**688 本番**: BUILD=`2026-07-11-688-dirty-banner-fix` rev **85** — 浜田目視 OK
+**688 本番**: BUILD=`2026-07-13-688-heat-closed` rev **89** — 気象ヘルプ・猛暑日オプション折りたたみ · 浜田目視 OK
 
-**736 本番**: BUILD=`2026-07-12-736-ui-backlog-02-col-resize` rev **185** — **UI-BACKLOG-02 完了**
+**736 本番**: BUILD=`2026-07-12-736-ui-backlog-02-col-resize` rev **186** — **UI-BACKLOG-02 完了** · **BACKLOG-03 仕様草案 commit 済**
 
-## 本日完了サマリー（昼）
+## 本日完了サマリー（2026-07-13）
 
 | 項目 | 内容 |
 |------|------|
-| **shiryo-sakusei MCP** | `mcp/shiryo-sakusei-mcp/` · SPEC · 依頼書テンプレ · commit `9e2b18e8` |
-| **経営会議資料運用** | `C:\tmp\資料作成\依頼書テンプレート.txt` · 作成日テンプレ貼付→記入フロー確立 |
-| **MCP 有効化** | Cursor 再起動 · `user-shiryo-sakusei` **ready** 確認済 |
-| **セッション締め** | checkpoint/handoff · Desktop sync · handoff bridge 整合 · push `2f05b02c` |
-| **夜レーン予定** | 736 UI-BACKLOG-02 列幅ドラッグ §41 · 体制更新 verify 不具合があれば修正 |
+| **688 気象UI** | 気象データヘルプ・猛暑日オプションを `<details>` 折りたたみ · deploy rev89 · spec `2026-07-13-688-weather-ui-accordion-spec.md` |
+| **736 BACKLOG-03** | ブロック選択 DD 仕様草案 GO（implement **7/16**）· `2026-07-13-jikkou-yosan-ui-backlog-03-block-select-dd-spec.md` |
+| **commit** | `82b7e968` feat(688) · `c176ac25` docs(736) |
 
 ## クローズ済み（`data/cio-project-closures.json` — 9件）
 
@@ -37,10 +35,10 @@
 
 | 状態 | 内容 |
 |------|------|
-| **688** | WBGT 完了 · **それ以外触らない** |
+| **688** | WBGT UI 折りたたみ完了（rev89）· **それ以外触らない** |
 | **677–679** | 触らない |
 | **SKYSEA** | 8/1 再計画 · 7月着手禁止 |
-| **736** | §9.6 凍結 · **UI-BACKLOG-02 7/12** |
+| **736** | §9.6 凍結 · **UI-BACKLOG-03 仕様草案 GO** · implement **7/16** |
 | **712** | 削除済 — deploy 禁止 |
 
 ## セッション切替後の自律復元（Lifecycle v2 鏡像）
