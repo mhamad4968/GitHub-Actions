@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-14 JST — **736 UI-BACKLOG-03 仕様 v1 確定**（第3R AI再検証 GO · implement **7/16**）
 
-**Git**: **`bed4a882`** = `origin/main` — push 済（本ターン commit 後に sync）
+**Git**: **`7c628a94`** = `origin/main` — push 済
 
 **レーン変更**: UI-BACKLOG-03 レビュー・Q0 確定 → **仕様 v1**（customize 実装は 7/16）
 
