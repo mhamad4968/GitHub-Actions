@@ -217,7 +217,7 @@
 | ID | 内容 | 状態 | 備考 |
 |----|------|------|------|
 | UI-BACKLOG-02 | 列幅のドラッグ調整 | **完了**（2026-07-12 deploy rev **185**） | [`2026-07-12-jikkou-yosan-ui-backlog-02-col-resize-spec.md`](2026-07-12-jikkou-yosan-ui-backlog-02-col-resize-spec.md) |
-| UI-BACKLOG-03 | 詳細表 — 追加先ブロックをドロップダウンで選んでから行挿入 | **仕様草案 GO（2026-07-13）** · implement **7/16**（7/21–23 から前倒し） | [`2026-07-13-jikkou-yosan-ui-backlog-03-block-select-dd-spec.md`](2026-07-13-jikkou-yosan-ui-backlog-03-block-select-dd-spec.md) · 2026-06-20 見送り解除 · **NO-GO 可** |
+| UI-BACKLOG-03 | 詳細表 — 追加先ブロックをドロップダウンで選んでから行挿入 | **仕様 v1 確定（2026-07-14）** · implement **7/16** | [`2026-07-13-jikkou-yosan-ui-backlog-03-block-select-dd-spec.md`](2026-07-13-jikkou-yosan-ui-backlog-03-block-select-dd-spec.md) · Q0-1〜13 · 第3R AI再検証 GO |
 
 #### 詳細表 — 入力蓄積マスタ（構想のみ · 浜田 2026-07-05）
 
@@ -270,7 +270,7 @@
 | ID | 仕様検討 | 実装目標 | 備考 |
 |----|----------|----------|------|
 | UI-BACKLOG-02 | **完了**（7/12） | **7/12** | deploy rev **185** |
-| UI-BACKLOG-03 | **7/13–7/14** | **7/16** | **NO-GO 可** |
+| UI-BACKLOG-03 | **7/13–7/14**（**v1 確定 7/14**） | **7/16** | 仕様完了 · implement 待ち |
 | BL-DETAIL-01 | **7/17–7/19** | **7/20** | **軽量 GO**（仕入先 datalist から） |
 
 ### 9.2.4 進捗表の同期（反省会・セッション締め — 浜田 2026-07-05）

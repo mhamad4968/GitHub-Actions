@@ -4689,3 +4689,17 @@ npm run cio:morning:ready
 **触らない**: 688（WBGT以外）/ 677–679 / SKYSEA 7月
 
 ---
+
+### 2026-07-14 JST — **736 UI-BACKLOG-03 仕様 v1 確定**
+
+**要約**: 第3R DeepSeek/Kimi/CIO GO · Q0-1〜13 · 親SPEC/schedule同期 · customize未着手 · 次は7/16 implement
+
+**次の1手**: **7/16** — **UI-BACKLOG-03** implement
+
+**Git**: `bed4a882` — 
+
+**GO待ち**: なし
+
+**触らない**: 688 / 677–679 / SKYSEA — 触らない
+
+---
