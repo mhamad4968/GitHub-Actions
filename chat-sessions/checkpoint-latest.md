@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-13 JST（締め）— **688 気象UI OK** · **改善案5件 implement** · **736 BACKLOG-03 仕様草案**
 
-**Git**: **`0ddfb1ee`** = `origin/main` — push 済
+**Git**: **`804ffb75`** = `origin/main` — push 済
 
 **レーン変更**: 736 UI-BACKLOG-03 仕様草案 → 688 気象 UI 実装（午後）
 
