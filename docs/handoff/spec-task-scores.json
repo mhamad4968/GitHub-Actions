@@ -1,11 +1,11 @@
 {
-  "scoredAt": "2026-07-13T09:27:24.514Z",
+  "scoredAt": "2026-07-14T09:32:13.069Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "**7/13〜** — **UI-BACKLOG-03** ブロック選択 DD 仕様確認（**7/13–7/14** · implement **7/16** · **NO-GO 可**）— 浜田 **スケジュール通りで GO**",
+  "topTask": "**7/14** — **UI-BACKLOG-03** AIチームレビュー → 浜田追問 → **7/16 implement**",
   "tasks": [
     {
-      "id": "checkpoint:**7/13〜**_—_**UI-BACKLOG-03**_ブロック選択_DD_",
-      "text": "**7/13〜** — **UI-BACKLOG-03** ブロック選択 DD 仕様確認（**7/13–7/14** · implement **7/16** · **NO-GO 可**）— 浜田 **スケジュール通りで GO**",
+      "id": "checkpoint:**7/14**_—_**UI-BACKLOG-03**_AIチームレビュー_→",
+      "text": "**7/14** — **UI-BACKLOG-03** AIチームレビュー → 浜田追問 → **7/16 implement**",
       "source": "checkpoint",
       "difficulty": 2,
       "tokens": "中",

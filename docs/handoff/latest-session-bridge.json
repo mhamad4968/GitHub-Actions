@@ -1,7 +1,7 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-07-13T10:24:26.392Z",
-  "gitHead": "1babef48",
+  "exportedAt": "2026-07-14T09:32:19.666Z",
+  "gitHead": "b1d535ce",
   "gitStatus": "## main...origin/main",
   "nextTask": "**7/14** — **UI-BACKLOG-03** AIチームレビュー → 浜田追問 → **7/16 implement**",
   "nextFiles": [
@@ -19,17 +19,17 @@
   "lastFailures": [
     {
       "id": "debug-tip-npm-run-doc-lane-verify",
-      "at": "2026-07-13T10:24:26.392Z",
+      "at": "2026-07-14T09:32:19.666Z",
       "verify": "npm run cio:session:export-handoff",
       "note": "npm run doc-lane:verify-v5-ch3-refs`）+ `add_reading_guide.py` 修正。v5 読み方1行は **Wor | npm run doc-lane:patch-v5-a3`・`cio:do"
     },
     {
       "id": "debug-tip-npm-run-session-starter",
-      "at": "2026-07-13T10:24:26.392Z",
+      "at": "2026-07-14T09:32:19.666Z",
       "verify": "npm run cio:session:export-handoff",
       "note": "npm run session-starter:sync-desktop` + verify 済。旧 `19-SESSION-ONE-REPORT-2026-0 | npm run cio:session:export-handoff` →"
     }
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=1babef48 | 次=**7/14** — **UI-BACKLOG-03** AIチームレビュー → 浜田追問 → **7/16 implement** | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json | lastFailures=2",
+  "promptBlock": "【SESSION-BRIDGE】git=b1d535ce | 次=**7/14** — **UI-BACKLOG-03** AIチームレビュー → 浜田追問 → **7/16 implement** | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json | lastFailures=2",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }
