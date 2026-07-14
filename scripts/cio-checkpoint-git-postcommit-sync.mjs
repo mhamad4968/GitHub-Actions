@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 /**
- * post-commit — checkpoint-latest.md が含まれる commit の **Git** 行を HEAD に同期（R44）
- * chore(checkpoint) は amend で自己参照まで収束。それ以外は follow-up を 1 回。
+ * post-commit — checkpoint-latest.md が含まれる commit の **Git** 行同期（R44）
+ *
+ * #S-POSTCOMMIT-ORPHAN-01 (2026-07-14):
+ *   chore(checkpoint): sync / final stamp 系は **amend 禁止**（off-by-one = tip^1 を維持）。
+ *   それ以外で checkpoint を触った場合のみ、SKIP=1 の follow-up 1 回で sync。
  */
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
@@ -14,20 +17,6 @@ import {
 } from './lib/cio-checkpoint-git-sync.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-
-function amendCheckpointGitLine() {
-  for (let i = 0; i < 3; i += 1) {
-    const amended = gitShortHead(root);
-    if (amended === readCheckpointGitHead(root)) break;
-    updateCheckpointGitHead(root, { hash: amended, suffix: 'push 済' });
-    spawnSync('git', ['add', CHECKPOINT_REL], { cwd: root, stdio: 'inherit' });
-    spawnSync('git', ['commit', '--amend', '--no-edit'], {
-      cwd: root,
-      encoding: 'utf8',
-      env: { ...process.env, CIO_POST_COMMIT_CHECKPOINT_SYNC: '1' },
-    });
-  }
-}
 
 function main() {
   if (process.env.CIO_POST_COMMIT_CHECKPOINT_SYNC === '1') return;
@@ -46,23 +35,20 @@ function main() {
   const paths = (files.stdout || '').split(/\r?\n/).filter(Boolean);
   if (!paths.includes(CHECKPOINT_REL)) return;
 
+  // R44: checkpoint sync tip は Git=親 が正。amend すると orphan stamp / NF push の温床。
+  if (isCheckpointSyncCommit) {
+    console.log(
+      '[cio-checkpoint-git-postcommit-sync] R44 SKIP — checkpoint sync commit は amend 禁止（#S-POSTCOMMIT-ORPHAN-01）',
+    );
+    return;
+  }
+
   const head = gitShortHead(root);
   const cpHash = readCheckpointGitHead(root);
   if (!head || head === cpHash) return;
 
   updateCheckpointGitHead(root, { hash: head, suffix: 'push 済' });
   spawnSync('git', ['add', CHECKPOINT_REL], { cwd: root, stdio: 'inherit' });
-
-  if (isCheckpointSyncCommit) {
-    spawnSync('git', ['commit', '--amend', '--no-edit'], {
-      cwd: root,
-      encoding: 'utf8',
-      env: { ...process.env, CIO_POST_COMMIT_CHECKPOINT_SYNC: '1' },
-    });
-    amendCheckpointGitLine();
-    console.log(`[cio-checkpoint-git-postcommit-sync] OK amend Git → \`${gitShortHead(root)}\``);
-    return;
-  }
 
   const follow = spawnSync(
     'git',
@@ -74,7 +60,7 @@ function main() {
     },
   );
   if (follow.status === 0) {
-    console.log(`[cio-checkpoint-git-postcommit-sync] OK Git → \`${gitShortHead(root)}\``);
+    console.log(`[cio-checkpoint-git-postcommit-sync] OK follow-up Git → \`${gitShortHead(root)}\` (R44 tip^1)`);
   }
 }
 

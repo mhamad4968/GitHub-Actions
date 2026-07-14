@@ -20,6 +20,12 @@ alwaysApply: false
 **R-17-1**: customize 2アプリ以上 → `cio:guard:multi-customize` を **commit 前**  
 **順序**: `cio:session:close-git -- --execute --auto-stage --message "…"`（R19 pre-commit + B1/B4 + desktop sync **一括**）
 
+## R44 checkpoint Git（#R-R44-CLOSE-01 · 2026-07-14）
+
+1. **R44 復旧は SKIP 経路** — `CIO_POST_COMMIT_CHECKPOINT_SYNC=1` で tip の親を stamp（amend / normalize 禁止）
+2. **force-push 禁止** — main への `--force` は使わない
+3. **push NF 時は origin に合わせる** — `git fetch` → `git reset --hard origin/main` → SKIP sync 1 回（手で orphan hash を書かない）
+
 ## 禁止
 
 - 締めターンで「commit GO 待ち」「push は次セッション」

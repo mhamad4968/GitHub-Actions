@@ -37,7 +37,7 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 gh run list --branch main --limit 5
 ```
 
-`close-git` は push 後 **checkpoint `**Git**` 行を自動同期**（R44）→ 変更があれば `chore(checkpoint): sync Git line after close` を追加 push。
+`close-git` は push 後 **checkpoint `**Git**` 行を自動同期**（R44 · **#S-R44-SKIP-01**: `CIO_POST_COMMIT_CHECKPOINT_SYNC=1` 新規 commit · amend/normalize 禁止）。変更があれば `chore(checkpoint): sync Git line after close` を追加 push。復旧手順: `docs/runbooks/session-close-multi-session.md` R44 節。
 
 ---
 

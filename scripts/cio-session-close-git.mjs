@@ -10,8 +10,9 @@
  *   2) git add（--auto-stage）/ commit
  *   3) cio:session:export-handoff → verify:session-handoff-integrity --validate-export（amend 前）
  *   4) bridge を amend fold → git pull --rebase → git push
- *   5) verify:session-close-git-warn
- *   6) desktop:sync-and-verify（--skip-desktop-sync で省略可・浜田 GO 時のみ）
+ *   5) R44 checkpoint Git（SKIP 新規 commit · amend/normalize 禁止 · #S-R44-SKIP-01）
+ *   6) verify:session-close-git-warn
+ *   7) desktop:sync-and-verify（--skip-desktop-sync で省略可・浜田 GO 時のみ）
  */
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -23,8 +24,6 @@ import { runNpmScriptSync } from './lib/win-hidden-spawn.mjs';
 import { touchesGovernance } from './lib/cio-governance-touch.mjs';
 import {
   syncCheckpointGitAfterPush,
-  readCheckpointGitHead,
-  updateCheckpointGitHead,
 } from './lib/cio-checkpoint-git-sync.mjs';
 import { CHECKPOINT_REL } from './lib/cio-checkpoint-read.mjs';
 import { repairCheckpointBootstrapBlock } from './lib/cio-handoff-template.mjs';
@@ -32,31 +31,38 @@ import { repairCheckpointBootstrapBlock } from './lib/cio-handoff-template.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DESKTOP_DIR = process.env.SESSION_STARTER_DESKTOP_DIR || 'C:\\Users\\mhamada202408224\\Desktop\\AI緊急用';
 
-/** R44 — checkpoint tip 時は **Git** 行を origin^ に stamp（off-by-one 許容点に正規化） */
-function normalizeCheckpointGitOffByOne(branch) {
+/**
+ * R44 (#S-R44-SKIP-01) — push 後に origin tip を **Git** 行へ stamp し、
+ * `CIO_POST_COMMIT_CHECKPOINT_SYNC=1` で **新規 commit のみ**（amend / normalize 禁止）。
+ * 結果 tip=T・Git=親(T^1) = R44 off-by-one 正常。force-push 禁止。
+ */
+function syncCheckpointGitR44Skip(branch) {
   git(['fetch', 'origin', branch]);
-  const origin = git(['rev-parse', '--short', 'origin/main']).out;
-  if (!origin) return;
-  const subj = git(['log', '-1', '--pretty=format:%s', 'origin/main']).out || '';
-  if (!/^chore\(checkpoint\):/.test(subj)) return;
-  const parent = git(['rev-parse', '--short', `${origin}^`]).out;
-  if (!parent) return;
-  const cpHash = readCheckpointGitHead(root);
-  if (cpHash === parent || cpHash === origin) return;
-  updateCheckpointGitHead(root, { hash: parent, suffix: 'push 済' });
+  const { changed, hash } = syncCheckpointGitAfterPush(root, { suffix: 'push 済' });
+  if (!changed || !hash) {
+    console.log('[cio:session:close-git] checkpoint Git 行は既に origin と整合（R44 stamp スキップ）');
+    return;
+  }
   git(['add', CHECKPOINT_REL]);
-  const amended = git(['commit', '--amend', '--no-edit'], {
+  const cpCommit = git(['commit', '-m', 'chore(checkpoint): sync Git line after close'], {
     env: { ...process.env, CIO_POST_COMMIT_CHECKPOINT_SYNC: '1' },
   });
-  if (amended.ok) {
-    const pushFix = git(['push', 'origin', 'HEAD']);
-    if (!pushFix.ok) {
-      console.error('[cio:session:close-git] NG checkpoint off-by-one normalize push', pushFix.err || pushFix.out);
-      process.exit(pushFix.status || 1);
-    }
-    git(['fetch', 'origin', branch]);
-    console.log(`[cio:session:close-git] checkpoint Git off-by-one normalized → ${parent}`);
+  if (!cpCommit.ok) {
+    console.error('[cio:session:close-git] NG checkpoint Git R44 SKIP commit', cpCommit.err || cpCommit.out);
+    process.exit(cpCommit.status || 1);
   }
+  const push2 = git(['push', 'origin', 'HEAD']);
+  if (!push2.ok) {
+    console.error(
+      '[cio:session:close-git] NG checkpoint Git R44 SKIP push — force 禁止。`git fetch` 後 `git reset --hard origin/main` してから再 sync（#R-R44-CLOSE-01）',
+      push2.err || push2.out,
+    );
+    process.exit(push2.status || 1);
+  }
+  git(['fetch', 'origin', branch]);
+  const finalHash = git(['rev-parse', '--short', 'origin/main']).out || hash;
+  const parent = git(['rev-parse', '--short', `${finalHash}^`]).out || hash;
+  console.log(`[cio:session:close-git] checkpoint Git R44 SKIP synced → tip=${finalHash} Git≈${parent}`);
 }
 
 const execute = process.argv.includes('--execute');
@@ -254,29 +260,7 @@ function main() {
   console.log('[cio:session:close-git] push OK');
 
   if (!skipCheckpointGit) {
-    git(['fetch', 'origin', branch]);
-    const { changed, hash } = syncCheckpointGitAfterPush(root, { suffix: 'push 済' });
-    if (changed && hash) {
-      git(['add', CHECKPOINT_REL]);
-      const cpCommit = git(['commit', '-m', 'chore(checkpoint): sync Git line after close']);
-      if (cpCommit.ok) {
-        const amended = git(['commit', '--amend', '--no-edit'], {
-          env: { ...process.env, CIO_POST_COMMIT_CHECKPOINT_SYNC: '1' },
-        });
-        if (!amended.ok) {
-          console.warn('[cio:session:close-git] WARN checkpoint amend — post-commit に委譲');
-        }
-        const push2 = git(['push', 'origin', 'HEAD']);
-        if (!push2.ok) {
-          console.error('[cio:session:close-git] NG checkpoint Git sync push', push2.err || push2.out);
-          process.exit(push2.status || 1);
-        }
-        git(['fetch', 'origin', branch]);
-        const finalHash = git(['rev-parse', '--short', 'origin/main']).out || hash;
-        console.log(`[cio:session:close-git] checkpoint Git synced → ${finalHash}`);
-      }
-    }
-    normalizeCheckpointGitOffByOne(branch);
+    syncCheckpointGitR44Skip(branch);
   }
 
   if (!runNode('scripts/verify-session-close-git-warn.mjs')) {
