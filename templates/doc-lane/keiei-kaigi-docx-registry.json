@@ -1,7 +1,7 @@
 {
-  "version": "2026-06-27",
+  "version": "2026-07-15",
   "note": "C:\\tmp\\資料作成 内 DOCX 正本のメタデータ（バイナリは Git 外）。浜田配置分を台帳化。",
-  "recommendedTemplate": "2026-06-meeting-202605-report",
+  "recommendedTemplate": "2026-07-meeting-202606-report",
   "templates": [
     {
       "id": "2026-05-meeting-202604-report",
@@ -27,8 +27,23 @@
       "images": 4,
       "graphsInDoc": true,
       "ipaTable": true,
-      "hamadaConfirmed": "2026-06-27",
-      "recommendedAsBase": true
+      "hamadaConfirmed": "2026-06-27"
+    },
+    {
+      "id": "2026-07-meeting-202606-report",
+      "path": "C:\\\\tmp\\\\資料作成\\\\【2026年7月度経営会議資料】2026年06月情報セキュリティレポート.docx",
+      "meetingMonth": "2026-07",
+      "reportMonth": "2026-06",
+      "sizeBytes": 1681927,
+      "style": "full-with-diagrams",
+      "features": ["july-2026-meeting", "june-2026-security-report"],
+      "images": null,
+      "graphsInDoc": null,
+      "ipaTable": null,
+      "hamadaConfirmed": "2026-07-15",
+      "fileMtime": "2026-07-12",
+      "recommendedAsBase": true,
+      "status": "completed"
     }
   ],
   "namingPattern": {

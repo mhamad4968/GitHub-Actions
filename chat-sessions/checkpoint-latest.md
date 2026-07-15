@@ -13,7 +13,7 @@
 
 **観測期間（≈7/25 再確認）**: 憲法 Round-3 · rules-opt §18 ACK · turn-start △2 — **正式クローズ宣言は今日やらない**
 
-**運用メモ**: 経営会議資料 — 作成日「作成したい」→ 依頼書テンプレ貼付 → 記入。**MCP `shiryo-sakusei` ready**（Cursor 再起動済）· 正本 `mcp/shiryo-sakusei-mcp/SPEC.md` · 依頼書 `docs/依頼書テンプレート.txt`
+**運用メモ**: **経営会議資料 2026年7月度 — 完了**（浜田 2026-07-15 確認 · DOCX mtime 2026-07-12 · 対象=6月セキュリティレポート）。正本 `C:\tmp\資料作成\【2026年7月度経営会議資料】2026年06月情報セキュリティレポート.docx`。**次月まで新規作成不要**。フロー維持: MCP `shiryo-sakusei` ready · `mcp/shiryo-sakusei-mcp/SPEC.md` · 依頼書 `docs/依頼書テンプレート.txt`
 
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` · **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md` · **クローズ正本**: `data/cio-project-closures.json`
 
