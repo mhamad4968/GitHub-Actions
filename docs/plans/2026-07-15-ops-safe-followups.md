@@ -16,17 +16,15 @@
 
 | 項目 | 理由 |
 |------|------|
-| **cyber-news 再操作 / DEL 宣言の広げ** | 既に mcp.json 不在だが runbook 正式クローズは別 GO |
-| **Cold profile P5 適用** | mcp.json 大量 `disabled` · Reload 必須 · 736 前に危険 |
+| **P5 Cold profile 適用** | mcp.json 大量 `disabled` · Reload 必須 · **736 前に危険**（合議 NO） |
+| **H9 / △2 早期判定** | reviewDate=**2026-07-25** · early GREEN **禁止**（R2 で Kimi/OpenRouter 初推しを CIO 却下） |
 | **AGENTS.md / constitution 昼間改定** | 憲法 daytime 原則禁止 |
-| **hooks 改変による PENDING 自動強制** | 報告パイプライン退行リスク |
-| **736 / 688 / 677–679 / SKYSEA** | レーン凍結 |
+| **hooks 改変** | 報告パイプライン退行リスク |
 
-## 次回浜田 GO 候補（要再確認）
+## 次回（736 後など）
 
-1. **P4 cyber-news** — 正式クローズ文言 · security dry-run 証跡 · Reload
-2. **P5 Cold** — profile dry-run → 適用は別セッション推奨
-3. **H9 / △2** — **2026-07-25** のみ判定（early GREEN 禁止）
+1. **P5 Cold** — `cio:mcp:profile -- --dry-run` 先行 · 適用は別セッション
+2. **H9 / △2** — **2026-07-25** のみ
 
 ## 検証コマンド
 

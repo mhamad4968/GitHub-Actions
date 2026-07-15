@@ -52,7 +52,7 @@ globs: "**/*"
 - **kintone-schema-mcp**（`mcp/kintone-schema-mcp/index.mjs`）: **実 kintone preview form / lookup / reference / 型**を REST で直接取得するとき（`verify:kintone-live-schema` と **同一正本**）。
 - **git-history-mcp**（`mcp/git-history-mcp/index.mjs`）: **憲法改定層・4要素コミット・R19/R20 締め**を Git から検索するとき（`verify:git-history-alignment` と **同一正本**）。
 - **Grok L2b（Subagent・2026-07-09）**: Composer 初回 Diff **後**の verify ループ。**MCP は read-only のみ** — lint 客体検証は **eslint-mcp**、フィールド型矛盾は **kintone-schema-mcp**、規律先祖返り疑いは **git-history-mcp**、パス探索は **repo-tree**。deploy/push/kintone 書込 **禁止**。正本 **`docs/runbooks/cio-grok-execution-loop.md`** · `npm run cio:grok:execution-guard`.
-- **user-cve-search** / **user-duckduckgo-search**: **CVE 番号・脆弱性ニュース**が主題のとき（cyber-news は spec v3.1 DEL-2 予定 · それ以外では使わない）。
+- **user-cve-search** / **user-duckduckgo-search**: **CVE 番号・脆弱性ニュース**が主題のとき（**cyber-news は DEL-2 完了 · 2026-07-11 削除 · 浜田正式クローズ GO 2026-07-15** · 再追加禁止 · 代替は本2 MCP）。
 - **user-markdownify**: **長文 HTML → Markdown** の一括変換が目的のとき（小さな表は手直しでよい）。
 - **office-powerpoint** / **user-office-powerpoint**: **PowerPoint 新規・図解・グラフ・フロー**（資料作成 / doc-lane）。**Win Cursor 必須**。着手前 `verify:doc-lane-governance` + `verify:doc-lane-pptx-phase1`。正本 **`doc-lane-pptx-mcp.md`**。
 - **office-word** / **user-office-word**: **Word 新規・表・画像・セキュリティレポート図解**（doc-lane）。**Win Cursor 必須**。着手前 `verify:doc-lane-governance` + `verify:doc-lane-word-phase2`。月次定型は **`doc-lane:security-report`** 先行。正本 **`doc-lane-docx-mcp.md`**。既存 docx 精密パッチは **python-docx**（`docx-patch-windows.md`）。

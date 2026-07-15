@@ -33,8 +33,8 @@
 |----|------|------|
 | B1 | MCP 統廃合 **P2.5 SCR**（DEL 前ゲート全緑） | ✅ dry 2026-07-15（DELなし） |
 | B2 | **P3 DEL-1 mintlify** | ✅ 実削除済（7/11）· 浜田追認 GO 2026-07-15 · 台帳/triggers/再注入防止 |
-| B3 | **P4 cyber-news disabled→DEL-2** | GO待ち |
-| B4 | **P5 Cold profile** 6グループ | GO待ち |
+| B3 | **P4 cyber-news DEL-2** | ✅ 実削除済（7/11）· 浜田正式クローズ GO 2026-07-15 |
+| B4 | **P5 Cold profile** 6グループ | **NO-GO 本日**（736前 · 合議） |
 
 ### C — ルール／記録（憲法本文は触らない）
 
