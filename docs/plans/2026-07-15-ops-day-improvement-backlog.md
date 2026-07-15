@@ -33,7 +33,7 @@
 | ID | 内容 | 備考 |
 |----|------|------|
 | B1 | MCP 統廃合 **P2.5 SCR**（DEL 前ゲート全緑） | ✅ dry 2026-07-15（DELなし） |
-| B2 | **P3 DEL-1 mintlify** | **浜田明示GO待ち**（CIO却下: 本日DEL不可） |
+| B2 | **P3 DEL-1 mintlify** | ✅ 実削除済（7/11）· 浜田追認 GO 2026-07-15 · 台帳/triggers/再注入防止 |
 | B3 | **P4 cyber-news disabled→DEL-2** | GO待ち |
 | B4 | **P5 Cold profile** 6グループ | GO待ち |
 

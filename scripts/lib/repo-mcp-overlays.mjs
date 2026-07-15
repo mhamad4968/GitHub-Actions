@@ -1,6 +1,8 @@
 /**
  * リポ `.cursor/mcp.json` のワークスペース専用 MCP（figma / colors-fonts / repo-tree 等）を
  * Windows 正本へマージするための正規化ヘルパ。
+ *
+ * ⚠ mintlify は DEL-1（2026-07-11 · 浜田追認 2026-07-15）済み — REPO_OVERLAY に戻さない（△10）。
  */
 import fs from 'node:fs';
 import path from 'node:path';

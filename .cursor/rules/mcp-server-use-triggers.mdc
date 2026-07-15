@@ -68,7 +68,7 @@ globs: "**/*"
 - **brave-search**: **Web 横断**の最新仕様・事例・リリース情報が主題のとき（**mcp.json 未導入** — **duckduckgo-search** を第一選択）。
 - **firecrawl**（`firecrawl-mcp`）: **公式ドキュサイトの本文・構造取得**が主題で、軽量 fetch では足りないとき（**mcp.json 未導入** — **WebFetch** / **context7** を優先）。
 - **puppeteer**（`@modelcontextprotocol/server-puppeteer`）: **Web UI の DOM 実検証**・**ログイン後画面**が主題のとき（**user-playwright** と重なる場合は descriptor 読みのうえ **どちらか＋理由 1 行**）。
-- **mintlify**（`https://mcp.mintlify.com`）: **削除予定（MCP spec v3.1 DEL-1）** — 代替: リポ `docs/` 直接編集 · Mintlify Web。
+- **mintlify**（`https://mcp.mintlify.com`）: **削除済（MCP spec v3.1 DEL-1 · 2026-07-11 実施 · 浜田追認 GO 2026-07-15）** — 代替: リポ `docs/` 直接編集 · Mintlify Web。**再追加禁止**（`verify:mcp-deleted-refs` / overlay 非掲載）。
 - **MCP プロファイル**: intent に応じて Cold ON/OFF — `npm run cio:mcp:profile -- --intent "<意図>" --dry-run`（適用は `--apply` · Tier B · 正本 `data/cio-mcp-profiles.json`）。
 - **harness**（`harness-mcp-v2`）: **Harness / CI/CD パイプライン**の事実確認・設定整合が主題のとき。
 

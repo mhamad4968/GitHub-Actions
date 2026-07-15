@@ -302,7 +302,7 @@ DevTools / Lighthouse / 深コンソール → chrome-devtools（intent 時 prof
 | **P1** | O2 git-history-core 抽出 | A | `verify:git-history-alignment` |
 | **P2** | O3 profiles JSON + `cio:mcp:profile` + 決定木 doc | A | `verify:cio-mcp-manifest` · `verify:cio-tool-routing-infra` |
 | **P2.5** | **SCR スクリプト正本**（§6.0 SCR-1〜8） | A | **§8.3 DEL 前ゲート全 OK** |
-| **P3** | DEL-1 mintlify 削除（**SCR 後**） | B | §6.1 検証 |
+| **P3** | DEL-1 mintlify 削除（**SCR 後**） | B | ✅ **CLOSED** 2026-07-11 実施 · **浜田追認 GO 2026-07-15**（稼働正本ゼロ · `verify:mcp-deleted-refs`） |
 | **P4** | runbook 改定 + cyber-news **disabled 2 週**（§8.2 #3 日付記録）→ DEL-2（**SCR + 前ゲート後**） | B | §6.2 + §8.3 + §8.4 + dry-run |
 | **P5** | COLD プロファイル適用 · **Cold 6 グループ一括検証** | B | §6.3 検証 + `check-mcp-dormancy` + profile 適用後 gate |
 | **P6** | O4 kintone-space npm ラッパー（任意 · 保険） | A | `kintone:probe-space` |
