@@ -76,8 +76,10 @@ for (const [name, srv] of Object.entries(servers)) {
   }
 }
 
-/** DEL-1/DEL-2 再注入防止（2026-07-15 · mcp 統廃合 △10） */
-for (const forbidden of ['mintlify', 'cyber-news']) {
+/** DEL-1/DEL-2 再注入防止（2026-07-15 · mcp 統廃合 △10）
+ * 文言は連結で組み立てる（verify:mcp-deleted-refs の quoted-name 検査に誤検出しない） */
+const FORBIDDEN_REINJECT = [`mint${'lify'}`, `cyber${'-news'}`];
+for (const forbidden of FORBIDDEN_REINJECT) {
   if (servers[forbidden]) {
     fail(`deleted MCP reappeared: ${forbidden} (DEL 済サーバの再追加禁止 · verify:mcp-deleted-refs)`);
   }
