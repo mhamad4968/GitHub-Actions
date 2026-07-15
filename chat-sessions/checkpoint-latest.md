@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-15 JST — ops残件対応（A6 R44 Git同期 · H9/△2 運用ロック · 早期GREEN禁止）
 
-**Git**: **`6005ccbc`** = `origin/main` — push 済
+**Git**: **`6c089b80`** = `origin/main` — push 済
 
 **レーン変更**: UI-BACKLOG-03 レビュー・Q0 確定 → **仕様 v1**（customize 実装は 7/16）
 
