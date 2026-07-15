@@ -87,6 +87,12 @@
       "date": "2026-07-12",
       "percent": 29,
       "recorded_at": "2026-07-12T18:27:01.930+09:00"
+    },
+    {
+      "date": "2026-07-15",
+      "percent": 30,
+      "recorded_at": "2026-07-15T15:03:49.815+09:00",
+      "note": "Plan & Usage スクショ(浜田提示): Ultra /mo · Total 30% · Auto+Composer 42% · API 5% · On-Demand / Fixed · UI表示 Resets 7/15(1d) · credit側次回 2026-08-15"
     }
   ]
 }
