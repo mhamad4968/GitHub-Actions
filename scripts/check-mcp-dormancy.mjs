@@ -12,6 +12,12 @@
  *   3. 各 MCP の使用回数集計
  *   4. 過去 N 日 0 回 = 死蔵警告 ⚠ 表示
  *
+ * ⚠ 2026-07-15 F1（AIチーム合議）:
+ *   現行 Cursor agent-transcripts は role=user/assistant/turn_ended のみで
+ *   tool call が保存されない。上記 grep だけでは overlay 低頻度 MCP が
+ *   恒常 dormant 誤検知になる。→ REPO_OVERLAY_SERVER_NAMES は policy exempt
+ *   （ledger 本格化は別チケット。DEL と混ぜない）。
+ *
  * オプション:
  *   --days=7        : 検査期間日数 (デフォルト 7)
  *   --json          : JSON のみ出力
@@ -28,6 +34,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
+import { REPO_OVERLAY_SERVER_NAMES } from './lib/repo-mcp-overlays.mjs';
 
 const args = process.argv.slice(2);
 const ARG_JSON = args.includes('--json');
@@ -80,7 +87,20 @@ const DORMANCY_POLICY_EXEMPT_REASON = new Map([
   ['duckduckgo-search', 'CEO 2026-05-30: Web検索は必要時のみ（7d dormant 許容）'],
   ['repo-tree', 'CEO 2026-05-29: §50-3-11 Composer 監査用・低頻度（7d dormant 許容）'],
   ['eslint-mcp', 'CEO 2026-05-29: §50-3-11 Composer 監査用・低頻度（7d dormant 許容）'],
+  // 2026-07-15 F1 — transcript に tool が載らない時代の overlay 誤検知止め（合議 A）
+  ['context7', '2026-07-15 F1: overlay·docs参照・transcript は tool 非保存（7d=0 は誤検知・許容）'],
+  ['kintone-schema-mcp', '2026-07-15 F1: overlay·schema参照・transcript は tool 非保存（7d=0 は誤検知・許容）'],
+  ['git-history-mcp', '2026-07-15 F1: overlay·git履歴・transcript は tool 非保存（7d=0 は誤検知・許容）'],
 ]);
+
+/** 再発防止: overlay 新規追加時に Map 漏れがあっても自動 exempt（理由は共通文） */
+const OVERLAY_TRANSCRIPT_GAP_REASON =
+  '2026-07-15 F1: REPO_OVERLAY — Cursor transcripts omit tool calls（7d dormant WARN=誤検知・許容）';
+for (const name of REPO_OVERLAY_SERVER_NAMES) {
+  if (!DORMANCY_POLICY_EXEMPT_REASON.has(name)) {
+    DORMANCY_POLICY_EXEMPT_REASON.set(name, OVERLAY_TRANSCRIPT_GAP_REASON);
+  }
+}
 
 // ───── 2. agent transcripts grep ─────
 const projectsDir = path.join(os.homedir(), '.cursor', 'projects');

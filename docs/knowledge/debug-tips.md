@@ -8,6 +8,15 @@
 
 ---
 
+## [2026-07-15] handoff-log / UTF-8 — PowerShell Set-Content 禁止（ops-day C1）
+
+**前提**: `chat-sessions/handoff-log.md` ほか日本語・絵文字を含む引き継ぎ系ファイルを編集するとき  
+**手順**: **Node スクリプト**（`fs.readFileSync` / `writeFileSync` · `cio:handoff:append-block` · 専用 patch スクリプト）で UTF-8 のまま更新する。Git 行の差し替えも node 固定。  
+**禁止**: PowerShell `Set-Content` / `Out-File`（既定エンコーディングで **文字化け**）・雑な `-replace` 一括。壊したら **良い commit から復元**してからやり直す（上書き続き禁止）。  
+**exit**: `git diff` で日本語が壊れないこと · `npm run verify:constitution-handoff`（対象時）OK
+
+---
+
 ## [2026-07-10] kintone 新規 SUBTABLE — POST+revision 必須（GAIA_FC01 / #D1）
 
 **前提**: preview で **新規** `SUBTABLE` / フィールドを追加するとき  
