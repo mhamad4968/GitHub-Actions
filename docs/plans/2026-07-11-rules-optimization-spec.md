@@ -557,7 +557,7 @@ globs:
 - verify:constitution-handoff: exit 0
 - smoke:quiet: exit 0
 - 未実施: なし
-- 浜田 ACK: （1 行）
+- 浜田 ACK: **2026-07-15** — 確認のうえ問題なければクローズでよい（正本 `docs/approved-changes/2026-07-15-constitution-rules-opt-formal-close-hamada-ack.md`）
 ```
 
 **「完了」は上記 + 浜田 ACK まで。**
@@ -568,4 +568,5 @@ globs:
 
 | 版 | 日付 | 内容 |
 |----|------|------|
+| v1.1 | 2026-07-15 | §18 浜田 ACK · 正式クローズ（H9/△2 は 7/25 据え置き） |
 | v1.0 | 2026-07-11 | R1–R5 合議 · GO-A spec 正本 · △17 CLOSED |

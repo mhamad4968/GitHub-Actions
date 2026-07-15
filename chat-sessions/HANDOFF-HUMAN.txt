@@ -1,3 +1,9 @@
+日時(JST): 2026-07-15（水）— **憲法・rules-opt 正式クローズ**
+いま何してた（1行）: 浜田 ACK · rules-opt §18 / Round-3 配線 CLOSED · H9 は 7/25 据え置き · verify 全緑
+次にやる1つ: **7/16** UI-BACKLOG-03 implement
+GO待ち（なし／内容）: H9 最終判定 — 2026-07-25
+触らないで（なし／内容）: 688（WBGT以外）/ 677–679 / SKYSEA 7月
+
 （そのままチャットに貼る。日時だけ直す）
 正本: WSL 内 ~/kintone-ai-lab/chat-sessions/HANDOFF-HUMAN.txt
 Windows から開きやすい控え: C:\Users\mhamada202408224\Desktop\AI緊急用\HANDOFF-HUMAN.txt

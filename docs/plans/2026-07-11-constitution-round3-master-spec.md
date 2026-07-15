@@ -25,6 +25,8 @@
 | D6 | G6 Desktop + G7 lite | R3-6, R3-7 | `verify:constitution-meta-charters-desktop` · `verify:doc-lane-lite-scope` |
 
 > **浜田 ACK「最高でOK」** は D1–D6 + R3-1〜10 配線完了後（H9 **最終判定**は 2026-07-25 CEO）。
+>
+> **正式クローズ（2026-07-15）**: 配線 DoD + rules-opt §18 — **CLOSED**（浜田 ACK）。**H9 最終判定は 2026-07-25 維持**（`metricsEligibleAfter` 2026-07-18）。正本: `docs/approved-changes/2026-07-15-constitution-rules-opt-formal-close-hamada-ack.md`
 
 ## AIチーム合議（Round-3 完走レビュー · 2026-07-11）
 

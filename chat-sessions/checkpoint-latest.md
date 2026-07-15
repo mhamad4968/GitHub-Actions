@@ -1,17 +1,17 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-14 JST — **736 UI-BACKLOG-03 仕様 v1 確定**（第3R AI再検証 GO · implement **7/16**）
+**最終更新**: 2026-07-15 JST — **憲法・rules-opt 正式クローズ**（浜田 ACK · H9 は 7/25 据え置き）
 
-**Git**: **`f3c219a7`** = `origin/main` — push 済
+**Git**: **`85b0f7f7`** = `origin/main` — push 済（クローズ commit 後に再同期）
 
 **レーン変更**: UI-BACKLOG-03 レビュー・Q0 確定 → **仕様 v1**（customize 実装は 7/16）
 
 **次の1手**: **7/16** — **UI-BACKLOG-03** implement（`§7` チェックリスト · 本日 736 live 作業なし）
 
-**GO待ち**: 憲法正式クローズ — 観測後（≈7/25）· rules-opt §18 ACK
+**GO待ち**: H9 最終判定 — **2026-07-25**（turn-start △2 / formalization review）
 
-**観測期間（≈7/25 再確認）**: 憲法 Round-3 · rules-opt §18 ACK · turn-start △2 — **正式クローズ宣言は今日やらない**
+**観測期間**: ~~憲法 Round-3 · rules-opt §18~~ **CLOSED 2026-07-15**。残: **H9 / △2 降格判定 = 2026-07-25**（metrics 7日窓）
 
 **運用メモ**: **経営会議資料 2026年7月度 — 完了**（浜田 2026-07-15 確認 · DOCX mtime 2026-07-12 · 対象=6月セキュリティレポート）。正本 `C:\tmp\資料作成\【2026年7月度経営会議資料】2026年06月情報セキュリティレポート.docx`。**次月まで新規作成不要**。フロー維持: MCP `shiryo-sakusei` ready · `mcp/shiryo-sakusei-mcp/SPEC.md` · 依頼書 `docs/依頼書テンプレート.txt`
 

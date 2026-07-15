@@ -4717,3 +4717,17 @@ npm run cio:morning:ready
 **触らない**: 688（WBGT以外）/ 677–679 / SKYSEA 7月
 
 ---
+
+### 2026-07-15 JST — **憲法・rules-opt 正式クローズ（浜田 ACK）**
+
+**要約**: 浜田「問題なければクローズでよい」→ verify 群緑（rules-opt / constitution-evening / smoke 17/17 / team-ops-v2）。§18 ACK 記入。Round-3 配線 DoD CLOSED。**H9・△2 降格は 7/25 維持**（metricsEligibleAfter 7/18 · 早期 GREEN 不可）。正本 `docs/approved-changes/2026-07-15-constitution-rules-opt-formal-close-hamada-ack.md`
+
+**次の1手**: **7/16** — **UI-BACKLOG-03** implement（`§7` チェックリスト）
+
+**Git**: **`85b0f7f7`** = `origin/main` — （続 commit で更新）
+
+**GO待ち**: H9 最終判定 **2026-07-25**
+
+**触らない**: 688（WBGT以外）/ 677–679 / SKYSEA 7月
+
+---
