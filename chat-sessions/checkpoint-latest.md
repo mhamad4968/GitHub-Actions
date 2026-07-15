@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-15 JST — ops残件対応（A6 R44 Git同期 · H9/△2 運用ロック · 早期GREEN禁止）
+**最終更新**: 2026-07-15 JST — **セッション締め**（空き日ops完走 · △18 profile CLI 契約 · Reload後gate緑）
 
 **Git**: **`512ffc76`** = `origin/main` — push 済
 
@@ -20,6 +20,16 @@
 **688 本番**: BUILD=`2026-07-13-688-heat-closed` rev **90** — 気象ヘルプ・猛暑日オプション折りたたみ · 浜田目視 OK（GHA push 後 rev90 記録）
 
 **736 本番**: BUILD=`2026-07-12-736-ui-backlog-02-col-resize` rev **186** — **UI-BACKLOG-02 完了** · **BACKLOG-03 仕様草案 commit 済**
+
+## 本日完了サマリー（2026-07-15 ops）
+
+| 項目 | 内容 |
+|------|------|
+| **憲法/rules-opt** | 正式クローズ済 · H9/△2 は 7/25（early GREEN 禁止） |
+| **MCP** | mintlify DEL追認 · cyber-news DEL-2 正式クローズ · 再注入ガード |
+| **F1/A6** | dormant false-positive 修正 · R44 Git 同期 |
+| **△18** | profile --dry-run/--apply 同時禁止（仕様 v3.2） |
+| **Cold誤適用** | bak復元済 · disabled=0 · gate 6/6 |
 
 ## 本日完了サマリー（2026-07-13）
 

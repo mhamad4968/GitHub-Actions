@@ -1,0 +1,21 @@
+# SESSION-CLOSE-REPORT 2026-07-15
+
+## 1. 本日の結論
+空き日 ops / ルール・MCP 衛生・合議付き改善を完走し、セッションを full CLOSE した。
+
+## 2. 完了
+- 憲法/rules-opt 正式クローズ（H9/△2 は 7/25 据え置き）
+- F1 MCP dormancy 誤検知修正 · A6 R44
+- mintlify DEL 追認 · cyber-news DEL-2 正式クローズ
+- profile CLI △18（dry-run/apply 同時禁止）仕様 v3.2
+- Cold 誤適用は即復旧 · Reload 後 gate OK 6/6
+
+## 3. 未実施・据え置き
+- P5 Cold 本番 apply（736 後推奨）
+- H9/△2 判定（2026-07-25）
+
+## 4. 次の1手
+**2026-07-16** — UI-BACKLOG-03 implement（§7）
+
+## 5. Git
+締め時点 tip は close-git 後に確定（事前 HEAD 523bceb4）
