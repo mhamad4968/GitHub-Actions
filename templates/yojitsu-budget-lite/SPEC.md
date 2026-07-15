@@ -464,7 +464,7 @@ OK → `partner_company` 入力欄の `readonly` を解除＋ `data-y678-partner
 
 | Rank | Task | 難易度 | Token | Impact | Priority |
 |------|------|--------|-------|--------|----------|
-| 1 | **7/14** — **UI-BACKLOG-03** AIチームレビュー → 浜田追問 → **7/16 imple | 2/5 | 中 | 5/5 | 10 |
+| 1 | **7/16** — **UI-BACKLOG-03** implement（`§7` チェックリスト · 本日 736 | 2/5 | 中 | 5/5 | 10 |
 | 2 | B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化） | 2/5 | 中 | 3/5 | 21 |
 
 <!-- CIO-TASK-PRIORITY:AUTO:END -->

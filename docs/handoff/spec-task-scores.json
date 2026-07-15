@@ -1,11 +1,11 @@
 {
-  "scoredAt": "2026-07-14T09:32:13.069Z",
+  "scoredAt": "2026-07-15T05:52:14.695Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "**7/14** — **UI-BACKLOG-03** AIチームレビュー → 浜田追問 → **7/16 implement**",
+  "topTask": "**7/16** — **UI-BACKLOG-03** implement（`§7` チェックリスト · 本日 736 live 作業なし）",
   "tasks": [
     {
-      "id": "checkpoint:**7/14**_—_**UI-BACKLOG-03**_AIチームレビュー_→",
-      "text": "**7/14** — **UI-BACKLOG-03** AIチームレビュー → 浜田追問 → **7/16 implement**",
+      "id": "checkpoint:**7/16**_—_**UI-BACKLOG-03**_implement（`",
+      "text": "**7/16** — **UI-BACKLOG-03** implement（`§7` チェックリスト · 本日 736 live 作業なし）",
       "source": "checkpoint",
       "difficulty": 2,
       "tokens": "中",
