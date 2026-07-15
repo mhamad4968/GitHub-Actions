@@ -171,9 +171,22 @@ Protected … office-word, office-powerpoint, kintone-space（削除・Cold 常�
 | C5 | github | `github-ci` · **gh 失敗時のみ** ON |
 | C6 | kintone-dev, context7 | `kintone-schema-live` · `library-docs` |
 
-**新規**: `data/cio-mcp-profiles.json` + `npm run cio:mcp:profile -- --apply governance|kintone|fe|doc-lane|security`
+**新規**: `data/cio-mcp-profiles.json` + `npm run cio:mcp:profile`
 
-| 検証 | `verify:cio-mcp-manifest` needles · 適用後 `cio:mcp:env` · `node scripts/check-mcp-dormancy.mjs` |
+**CLI 契約（2026-07-15 確定 · O3）**:
+
+| 使い方 | 結果 |
+|--------|------|
+| `--profile <名> --dry-run`（または引数なし＝既定 dry-run） | **書込なし** · 予定 disable 一覧のみ表示 |
+| `--profile <名> --apply`（または `--intent … --apply`） | Tier B · `mcp.json` 更新 · 自動 `.bak.<ISO>` |
+| **`--dry-run` と `--apply` 同時** | **禁止** · **exit 2（書込拒否）** — 旧実装は apply 優先で誤本番化した（2026-07-15 事故→即復旧） |
+
+```powershell
+npm run cio:mcp:profile -- --profile governance --dry-run
+npm run cio:mcp:profile -- --intent frontend-ui --apply   # 736後など明示 GO 後のみ推奨
+```
+
+| 検証 | `verify:cio-mcp-manifest` needles · 適用後 `cio:mcp:env` / `cio:mcp:gate` · `node scripts/check-mcp-dormancy.mjs` |
 
 ### 6.4 Protected — 触らない
 
@@ -188,7 +201,7 @@ Protected … office-word, office-powerpoint, kintone-space（削除・Cold 常�
 |----|------|------|------|
 | **O1** | kintone REST 統合 — `scripts/lib/kintone-live-schema.mjs` の `getKintoneConfig` / POST を MCP から import（**新規 lib 乱立禁止**） | `mcp/kintone-schema-mcp/index.mjs` thin 化 | `verify:kintone-live-schema` |
 | **O2** | git-history 統合 — `git-history-core.mjs` 抽出 ← `git-history-alignment.mjs` + MCP handlers | `mcp/git-history-mcp/index.mjs` | `verify:git-history-alignment` |
-| **O3** | `cio:mcp:profile` — Cold ON/OFF 機械化 | `data/cio-mcp-profiles.json` | `verify:cio-mcp-manifest` |
+| **O3** | `cio:mcp:profile` — Cold ON/OFF 機械化 · **dry-run/apply 排他（同時=exit 2）** | `data/cio-mcp-profiles.json` · `scripts/cio-mcp-profile.mjs` | `verify:cio-mcp-manifest` · dual-flag 拒否 |
 | **O4** | kintone-space npm REST ラッパー（**将来** MCP 削減の保険 · 本フェーズでは space MCP 維持） | `scripts/kintone-space-api.mjs` 新規 | `kintone:probe-space -- 48` |
 
 ---
@@ -199,7 +212,8 @@ Protected … office-word, office-powerpoint, kintone-space（削除・Cold 常�
 |----|------------|------|------|
 | △1 | mcp.json 変更で IDE 旧プロセス残留 | 変更後 **Reload Window** 1 行を runbook 固定 | 低 |
 | △2 | DEL-2 で月次セキュリティ手順が cyber-news 前提 | runbook **先行改定** + dry-run 1 回 | 低 |
-| △3 | Cold 化で intent 時に MCP 未 ON | `cio:mcp:profile` が intent→profile マップ · 失敗時 `MCPスキップ` テンプレ | 低 |
+| **△3** | Cold 化で intent 時に MCP 未 ON | `cio:mcp:profile` が intent→profile マップ · 失敗時 `MCPスキップ` テンプレ | 低 |
+| **△18** | **`--dry-run --apply` 同時で誤本番適用**（旧: apply 優先） | **同時指定は exit 2 で書込拒否**（2026-07-15）· 誤適用時は `mcp.json.bak.<ISO>` 即復元 → gate | **高→低** |
 | △4 | O1/O2 統合で MCP と npm 結果不一致 | **同一 lib import** · フェーズごと verify | 低 |
 | △5 | WSL/Win 二重 mcp.json ドリフト | DEL/COLD 後 **`mcp:sync-cursor-windows` 必須** | 中→低 |
 | △6 | github 削除 vs gh 代替 | **github は Cold のみ**（DEL しない）· WSL は gh 第一 | 低 |
@@ -355,3 +369,4 @@ node scripts/check-mcp-dormancy.mjs
 | 2026-07-11 | v1 — R2 合議 · 浜田全承認予定 · 能力退行なし確定 |
 | 2026-07-11 | v2 — R3 合議 · △9–12 · SCR 先行 · 退行定義 §2.1 · cyber-news 2週 disabled 経由 |
 | 2026-07-11 | v3.1 — R5 合議 · 全員 GO · verify スコープ · Cold=P5 · §8.2/8.4 · §10.1 commit 分割 |
+| 2026-07-15 | v3.2 — §6.3/O3 CLI 契約 · △18 dry-run+apply 同時禁止 · P3/P4 CLOSED 追記 |

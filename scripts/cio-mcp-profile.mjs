@@ -5,6 +5,8 @@
  *   npm run cio:mcp:profile -- --list
  *   npm run cio:mcp:profile -- --profile governance --dry-run
  *   npm run cio:mcp:profile -- --intent frontend-ui --apply
+ *
+ * 禁止: --dry-run と --apply の同時指定（exit 2 · 書込拒否 / △18）
  */
 import fs from 'node:fs';
 import path from 'node:path';
