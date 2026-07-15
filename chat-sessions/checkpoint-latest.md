@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-15 JST — **憲法・rules-opt 正式クローズ**（浜田 ACK · H9 は 7/25 据え置き）
 
-**Git**: **`85b0f7f7`** = `origin/main` — push 済（クローズ commit 後に再同期）
+**Git**: **`e7d2f425`** = `origin/main` — push 済
 
 **レーン変更**: UI-BACKLOG-03 レビュー・Q0 確定 → **仕様 v1**（customize 実装は 7/16）
 
