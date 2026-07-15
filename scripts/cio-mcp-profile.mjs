@@ -111,9 +111,20 @@ function main() {
 
   for (const c of changes) console.log(`  · ${c.action}: ${c.name}`);
 
-  if (args.dryRun && !args.apply) {
+  // 2026-07-15 事故対策: --dry-run と --apply 同時指定時は書込を拒否（apply 優先だと誤本番化）
+  if (args.dryRun && args.apply) {
+    console.error('[cio:mcp:profile] NG --dry-run と --apply の同時指定は禁止（書込拒否）— どちらか一方のみ');
+    process.exit(2);
+  }
+
+  if (args.dryRun) {
     console.log('[cio:mcp:profile] dry-run only — add --apply for Tier B write');
     process.exit(0);
+  }
+
+  if (!args.apply) {
+    console.error('[cio:mcp:profile] NG --apply が無いため書込しません（既定は dry-run）');
+    process.exit(2);
   }
 
   const iso = new Date().toISOString().replace(/[:.]/g, '-');

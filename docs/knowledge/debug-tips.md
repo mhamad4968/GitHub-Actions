@@ -8,6 +8,15 @@
 
 ---
 
+## [2026-07-15] cio:mcp:profile — dry-run と apply 同時禁止
+
+**前提**: Cold プロファイルを試すとき  
+**手順**: `npm run cio:mcp:profile -- --profile governance --dry-run` のみ。本番は **736 後など明示 GO 後**に `--apply` 単体。  
+**禁止**: `--dry-run --apply` 同時（旧実装は apply が勝ち誤本番化）。現在は **exit 2 で書込拒否**。誤適用したら即 `mcp.json.bak.<ISO>` から復元 → `cio:mcp:gate`。  
+**exit**: dry-run は書込なし · 同時指定は exit 2 · disabled 一覧が空（通常運用）
+
+---
+
 ## [2026-07-15] report-pipeline PENDING 残留 — SUPERSEDED 掃除（ops C2）
 
 **前提**: `npm run report:pipeline-status` が `outcome: in_progress`（前回の「報告します」が未完了）のまま残っているとき  
