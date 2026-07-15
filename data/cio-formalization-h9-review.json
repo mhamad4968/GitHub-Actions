@@ -34,5 +34,9 @@
   },
   "status": "scheduled",
   "ceoDecision": null,
-  "ceoDecisionAt": null
+  "ceoDecisionAt": null,
+  "opsResidualHandledAt": "2026-07-15",
+  "opsResidualNote": "A6 R44 sync + metrics lock; early GREEN / △2 demotion forbidden until reviewDate",
+  "delta2LinkedReviewDate": "2026-07-25",
+  "earlyGreenForbidden": true
 }

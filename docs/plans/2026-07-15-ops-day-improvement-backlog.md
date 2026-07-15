@@ -26,7 +26,7 @@
 | A3 | 死蔵3件に実戦1呼出（context7 / kintone-schema / git-history） | ✅ · F1 修正で恒常誤検知解消 |
 | A4 | `cio:env:enhance`（週次軽量・非 --full） | ✅ |
 | A5 | `verify:mcp-deleted-refs` + `cio:mcp:gate` 健全性確認 | ✅ |
-| A6 | R44 checkpoint Git off-by-one 正規化 | 文書化のみ（強制normalize禁止） |
+| A6 | R44 checkpoint Git 同期（#D-R44-RECOVERY） | ✅ 2026-07-15 |
 
 ### B — 浜田 GO 後（mcp.json 変更あり）
 
@@ -51,7 +51,7 @@
 |----|------|------|
 | F1 | Cursor `agent-transcripts` は **tool call を保存しない** → dormancy 誤検知 | ✅ policy exempt + overlay 自動免 · 記録 `docs/approved-changes/2026-07-15-ops-f1-dormancy-false-positive-fix.md` |
 | F2 | `report-pipeline-current` が `in_progress` 残留 | ✅ SUPERSEDED 掃除済 |
-| F3 | checkpoint R44 Git 行は HEAD より古いことが多い | 文書化のみ（強制normalize禁止） |
+| F3 | checkpoint R44 Git 多数遅れ | ✅ A6 RECOVERY stamp · off-by-one 正常化 |
 
 ### 触らない
 

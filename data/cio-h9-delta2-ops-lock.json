@@ -1,0 +1,29 @@
+{
+  "version": "2026-07-15-ops",
+  "updatedAt": "2026-07-15",
+  "h9": {
+    "registryId": "H9",
+    "status": "scheduled",
+    "reviewDate": "2026-07-25",
+    "metricsEligibleAfter": "2026-07-18",
+    "earlyGreenForbidden": true,
+    "opsHandledAt": "2026-07-15"
+  },
+  "delta2": {
+    "label": "△2 形骸化残留 → 低への降格可否",
+    "linkedTo": "H9",
+    "reviewDate": "2026-07-25",
+    "earlyDemotionForbidden": true,
+    "metricsEligibleAfter": "2026-07-18",
+    "specRefs": [
+      "docs/plans/2026-07-11-ai-team-ops-optimization-spec-v33.md",
+      "docs/plans/2026-07-11-constitution-evening-spec.md",
+      "docs/runbooks/cio-formalization-h9-review.md"
+    ]
+  },
+  "prohibits": [
+    "cio:formalization-h9-review --record-decision green before 2026-07-25",
+    "registry H9 row delete before CEO G3 on reviewDate",
+    "manual checkpoint **Git** line edit"
+  ]
+}
