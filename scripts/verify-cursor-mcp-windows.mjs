@@ -76,6 +76,13 @@ for (const [name, srv] of Object.entries(servers)) {
   }
 }
 
+/** DEL-1/DEL-2 再注入防止（2026-07-15 · mcp 統廃合 △10） */
+for (const forbidden of ['mintlify', 'cyber-news']) {
+  if (servers[forbidden]) {
+    fail(`deleted MCP reappeared: ${forbidden} (DEL 済サーバの再追加禁止 · verify:mcp-deleted-refs)`);
+  }
+}
+
 function argsJoin(srv) {
   return (srv.args || []).join(' ');
 }

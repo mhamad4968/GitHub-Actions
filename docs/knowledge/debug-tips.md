@@ -8,6 +8,15 @@
 
 ---
 
+## [2026-07-15] report-pipeline PENDING 残留 — SUPERSEDED 掃除（ops C2）
+
+**前提**: `npm run report:pipeline-status` が `outcome: in_progress`（前回の「報告します」が未完了）のまま残っているとき  
+**手順**: リポで `node --input-type=module -e "import { setOutcome } from './.cursor/hooks/report-pipeline-audit.mjs'; setOutcome('<correlationId>', 'SUPERSEDED', { reason: 'stale PENDING clear' });"` → 再実行で `SUPERSEDED` を確認。新報告ターンでは hooks が自動で前 PENDING を SUPERSEDED にする。  
+**禁止**: `report-pipeline-current.json` を手で空にする／不正な SUCCESS 偽装。hooks 本体の安易な改変。  
+**exit**: `npm run report:pipeline-status` が in_progress 以外（SUCCESS / SUPERSEDED / 記録なし）
+
+---
+
 ## [2026-07-15] handoff-log / UTF-8 — PowerShell Set-Content 禁止（ops-day C1）
 
 **前提**: `chat-sessions/handoff-log.md` ほか日本語・絵文字を含む引き継ぎ系ファイルを編集するとき  

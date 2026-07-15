@@ -8,12 +8,11 @@
 | 検査 | 結果 |
 |------|------|
 | cio:mcp:env | SUMMARY OK 6/6 |
-| health-check | ~97% · Memory 82% WARN級 · S12 死蔵3 |
-| quick-health | OK（kintone 疎通 + wipe + rag mirror） |
+| smoke:quiet | **17/17 OK**（2026-07-15 再確認） |
+| health-check | ~97%（Memory WARN級は許容） |
 | GHA 直近 | success |
-| handoff integrity | GIT_HEAD_DRIFT → **export-handoff で解消済** |
-| mcp-status refresh | **3行更新・commit 対象** |
-| MCP 統廃合 spec | P0–P2/C1–C2 済 · **P3+ Tier B 未** |
+| handoff / R44 | OK（off-by-one 許容） |
+| MCP 統廃合 | P3 mintlify **CLOSED** · P4/P5 は再GO待ち |
 
 ## 改善案（優先度順）
 
@@ -42,8 +41,9 @@
 | ID | 内容 |
 |----|------|
 | C1 | PowerShell `Set-Content` による handoff 文字化け再発防止 — 編集は node スクリプト固定（debug-tips 追記） | ✅ |
-| C2 | `report:pipeline-status` PENDING 残留の掃除 | ✅ SUPERSEDED（2026-07-15） |
+| C2 | `report:pipeline-status` PENDING 残留の掃除 | ✅ SUPERSEDED + debug-tips 手順追記 |
 | C3 | H9 metrics 継続蓄積（`cio:team-ops-metrics`）— 7/25 判定準備 | ✅ skip5038=0% · liteUsage=0% |
+| C4 | mcp-status 現行バナー + 安全フォローボード + Win mcp 再注入ガード | ✅ 2026-07-15 合議 |
 
 ## 発見（本日）
 
