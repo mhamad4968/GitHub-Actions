@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-15 JST — **セッション締め**（空き日ops完走 · △18 profile CLI 契約 · Reload後gate緑）
 
-**Git**: **`512ffc76`** = `origin/main` — push 済
+**Git**: **`72e5535f`** = `origin/main` — push 済
 
 **レーン変更**: UI-BACKLOG-03 レビュー・Q0 確定 → **仕様 v1**（customize 実装は 7/16）
 
