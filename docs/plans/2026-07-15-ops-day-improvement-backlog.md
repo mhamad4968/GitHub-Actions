@@ -23,9 +23,9 @@
 |----|------|------|
 | A1 | `cio:session:export-handoff` で bridge drift 解消 | ✅ |
 | A2 | `mcp-status:refresh-usage`（S12 / 金曜定例前倒し） | ✅ |
-| A3 | 死蔵3件に実戦1呼出（context7 / kintone-schema / git-history） | ✅ 呼出済（transcript反映は次 refresh） |
-| A4 | `cio:env:enhance`（週次軽量・非 --full） | 提案・実行可 |
-| A5 | `verify:mcp-deleted-refs` + `cio:mcp:gate` 健全性確認 | 提案・実行可 |
+| A3 | 死蔵3件に実戦1呼出（context7 / kintone-schema / git-history） | ✅ 呼出済 · **WARN残存は F1** |
+| A4 | `cio:env:enhance`（週次軽量・非 --full） | ✅ |
+| A5 | `verify:mcp-deleted-refs` + `cio:mcp:gate` 健全性確認 | ✅ |
 | A6 | R44 checkpoint Git off-by-one 正規化 | 低 · 任意 |
 
 ### B — 浜田 GO 後（mcp.json 変更あり）
@@ -41,9 +41,17 @@
 
 | ID | 内容 |
 |----|------|
-| C1 | PowerShell `Set-Content` による handoff 文字化け再発防止 — 編集は node スクリプト固定（debug-tips 追記） |
-| C2 | `report:pipeline-status` PENDING 残留の掃除 runbook 1行 |
-| C3 | H9 metrics 継続蓄積（`cio:team-ops-metrics` を空き日に1回）— 7/25 判定準備 |
+| C1 | PowerShell `Set-Content` による handoff 文字化け再発防止 — 編集は node スクリプト固定（debug-tips 追記） | 未 |
+| C2 | `report:pipeline-status` PENDING 残留の掃除 | ✅ SUPERSEDED（2026-07-15） |
+| C3 | H9 metrics 継続蓄積（`cio:team-ops-metrics`）— 7/25 判定準備 | ✅ skip5038=0% · liteUsage=0% |
+
+## 発見（本日）
+
+| ID | 内容 | 推奨 |
+|----|------|------|
+| F1 | Cursor `agent-transcripts` は **tool call を保存しない**（user/assistant のみ）→ `check-mcp-dormancy` の server/`mcp_` パターンは **実質誤検知**（実戦呼出しても WARN 残存） | Tier B: 用法ログ併用 **または** overlay MCP を policy exempt |
+| F2 | `report-pipeline-current` が `in_progress` 残留 | ✅ SUPERSEDED 掃除済 |
+| F3 | checkpoint R44 Git 行は HEAD より古いことが多い（intentional off-by-one 傾向） | A6 任意 |
 
 ### 触らない
 
