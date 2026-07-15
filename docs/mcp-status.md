@@ -155,14 +155,14 @@
 | 3 | office-powerpoint | ⏭ Win-skip | 0 回（exempt） | PPT 自動生成 (Win 起動必要) | 5/13 後（本番運用後の月次レポート用検討）|
 | 4 | ~~google-search~~ → **duckduckgo-search** | ✅ active (4/23 21:35 入替 / TSB-015 解消) | 0 回（exempt） | DuckDuckGo Web 検索 (uvx duckduckgo-mcp-server / Bing ベース / DDG_REGION=jp-ja / API key 不要 / bot 検知緩) | 5/1 月次巡回 + 必要時随時 |
 | 5 | ~~filesystem~~ | 🗑 **削除済 2026-05-06** | — | （除去）`~/.cursor/mcp.json` から除去・Cursor 標準 Read／WSL で代替 | — |
-| 6 | memory | ✅ **active 化済** | **6 回** | セッション横断記憶 (現在 10 entities + 11 relations) | PC 台帳 PJ で実戦投入後判断（5/13 頃）|
+| 6 | memory | ✅ **active 化済** | **23 回** | セッション横断記憶 (現在 10 entities + 11 relations) | PC 台帳 PJ で実戦投入後判断（5/13 頃）|
 | 7 | ~~fetch~~ | 🗑 **削除済 2026-05-06** | — | （除去）Cursor **WebFetch**／`user-fetch` で代替 | — |
 | 8 | sequential-thinking | ✅ active | **15 回** | 段階的思考 | PC 台帳 PJ で実戦投入後判断 |
-| 9 | **kintone (公式)** | ✅ active | **7 回** | kintone API CRUD | 5/13 後（本番運用後）|
+| 9 | **kintone (公式)** | ✅ active | **10 回** | kintone API CRUD | 5/13 後（本番運用後）|
 | 10 | **kintone-dev (自作)** | ✅ active | 0 回（exempt） | API 仕様参照 (アプリ作成 MCP ではない / 4/23 早朝訂正済) | **4/26 PC 台帳 Day 4 後判断** |
 | 11 | **kintone-space (自作)** | ✅ active | **2 回** | kintone スペース操作 | **4/24 環境設定マスタ作成時に実戦投入予定** |
 | 12 | ~~tavily~~ | 🗑 **削除済 2026-05-06** | 0 回（削除済） | （除去）Web 検索は **duckduckgo-search** | — |
-| 13 | playwright | ✅ active (4/23 21:30 Chrome 147.0.7727.116 install + 実 call 動作確認済) | 0 回（exempt） | ブラウザ自動操作 / E2E | 4/26 PC 台帳 customize テスト時 |
+| 13 | playwright | ✅ active (4/23 21:30 Chrome 147.0.7727.116 install + 実 call 動作確認済) | **1 回** | ブラウザ自動操作 / E2E | 4/26 PC 台帳 customize テスト時 |
 | 14 | cve-search | ✅ **active 化済** | 0 回（exempt） | CVE 脆弱性検索 | 5/1（月次セキュリティ巡回時 / S14）|
 | 15 | rag | ✅ **強化済** | 0 回（exempt） | LanceDB ローカル RAG (現在 76 docs / 3429 chunks) | **§50 + §21 強化（R24/R25）後再評価 / 4/30 判断** |
 | 16 | accessibility-scanner | ✅ active (4/23 21:30 同 Chrome で実 call 動作確認済) | 0 回（exempt） | アクセシビリティ検査 | 4/26 PC 台帳 customize 時 |
