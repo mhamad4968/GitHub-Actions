@@ -6,7 +6,7 @@
 
   /** 業務改善 ver.02 — ご利用ガイド */
 
-  var BUILD = '2026-07-17-manual-correction-3b';
+  var BUILD = '2026-07-17-manual-correction-4';
 
 
 
@@ -2039,7 +2039,7 @@
         label: '評価編',
         subs: [
           { id: 'fields', label: '評価の入力項目' },
-          { id: 'flow', label: 'メールと評価の流れ' },
+          { id: 'flow', label: '通知と評価の流れ' },
         ],
       });
 
@@ -2682,7 +2682,9 @@
           '通知',
           '✉️',
           mark,
-          '申請・承認の各段階で、担当者にメール通知されます。未承認が残る場合、一定期間ごとにリマインドメールも送られます。'
+          '評価段階が変わると、担当評価者にkintoneの通知が届きます。メールでも届くかどうかは、' +
+            '各ユーザーのkintoneのメール通知設定によって異なります。定期的なリマインド通知は現在設定されていないため、' +
+            '評価者はこのガイドの<strong>未評価一覧</strong>を定期的に確認してください。'
         ) +
         '<p style="color:#78716c;font-size:0.92em;margin-top:14px">' +
         guideMark('📖', markSoft) +
@@ -2751,7 +2753,8 @@
         guideH2('評価の入力項目', th, '📋', mark) +
         '<p>評価は <strong>各段階の評価者</strong> が <strong>自身のkintoneアカウント</strong> でログインして行います。' +
         'ガイド画面の <strong>未評価一覧</strong> から <strong>評価する</strong> を押すか、' +
-        '<strong>メール通知のリンク</strong> をクリックしてログインして評価を行ってください。</p>' +
+        '<strong>kintoneの通知</strong> から開いて評価を行ってください。メール通知を有効にしている場合は、' +
+        'メール内のリンクからも開けます。担当分を確実に確認するには、いつでも利用できる <strong>未評価一覧</strong> が便利です。</p>' +
         guideScreenshot('overview', '評価画面の全体（左：提案内容／右：評価入力）', ev) +
         '<div style="' +
         box +
@@ -2852,13 +2855,14 @@
 
     if (state.sub === 'flow') {
       return (
-        guideH2('メールと評価の流れ', th, '✉️', mark) +
-        '<p>提案が申請されると、担当評価者に <strong>メール通知</strong> が届きます。' +
-        'このガイド画面の <strong>未評価一覧</strong> にも表示されます。</p>' +
+        guideH2('通知と評価の流れ', th, '✉️', mark) +
+        '<p>評価段階が変わると、担当評価者に <strong>kintoneの通知</strong> が届きます。' +
+        'メールでも届くかどうかは、各ユーザーのkintoneのメール通知設定によって異なります。' +
+        '担当分は、このガイド画面の <strong>未評価一覧</strong> からいつでも確認できます。</p>' +
         guideScreenshot('pendingList', 'ガイド画面の未評価一覧と「評価する」ボタン', ev) +
         '<ol style="margin:12px 0;padding-left:1.5em;line-height:1.8">' +
-        '<li><strong>通知を受け取る</strong> — メールまたはガイドの未評価一覧</li>' +
-        '<li><strong>評価画面を開く</strong> — 一覧の <strong>評価する</strong> またはメール内リンク</li>' +
+        '<li><strong>担当分を確認する</strong> — kintoneの通知またはガイドの <strong>未評価一覧</strong>。メールは各ユーザーの設定により届きます</li>' +
+        '<li><strong>評価画面を開く</strong> — kintoneの通知、一覧の <strong>評価する</strong>、またはメール通知を有効にしている場合はメール内のリンク</li>' +
         '<li><strong>内容を確認する</strong> — 上司は提案内容、支店長・本社はそれまでの評価結果を確認</li>' +
         '<li><strong>段階に合った操作をする</strong> — 上司は評価項目を入力。支店長・本社は再入力せず、合計点・自動ランク等を確認</li>' +
         '<li><strong>一時保存</strong> — 途中保存のみ（WFは進みません）</li>' +
@@ -2899,11 +2903,11 @@
             '未評価一覧から該当件は消え、次の案件を評価できます。'
         ) +
         guideTopic(
-          'リマインドメール',
+          '定期リマインドについて',
           '📧',
           mark,
-          '未承認が残る場合、一定期間ごとにリマインドメールが送られます。' +
-            '未評価一覧も併せて確認してください。'
+          '定期的なリマインド通知は現在設定されていません。評価を見落とさないよう、' +
+            'このガイドの<strong>未評価一覧</strong>を定期的に確認してください。'
         ) +
         '<p style="color:#78716c;font-size:0.92em;margin-top:14px">' +
         guideMark('📖', markSoft) +
