@@ -1246,7 +1246,7 @@ window.BiAnnualPanel = (function () {
 
   /** 業務改善 ver.02 — ご利用ガイド */
 
-  var BUILD = '2026-07-17-manual-correction-3';
+  var BUILD = '2026-07-17-manual-correction-3a';
 
 
 
@@ -4005,9 +4005,9 @@ window.BiAnnualPanel = (function () {
           mark,
           '<strong>上司（部長・営業所長等）評価</strong> では、提案内容を確認して評価項目を入力します。' +
             '業務改善提案は <strong>効果・工夫度・努力度</strong>、アイデア提案は <strong>総合的審査</strong> を入力します。<br>' +
-            '<strong>支店長・本社評価</strong> では、評価項目をもう一度入力しません。' +
-            'それまでの評価内容・合計点・表彰ランク（自動）を確認し、その段階で完了する場合は担当評価者が ' +
-            '<strong>表彰ランク（最終）</strong> を確認して承認します。'
+            '<strong>支店長・本社評価</strong> では、それまでの評価内容・合計点・表彰ランク（自動）を確認します。' +
+            'その段階で評価が完了する場合は、担当評価者が <strong>表彰ランク（最終）</strong> を入力して承認します。' +
+            '評価項目の再入力はありません。'
         ) +
         guideLabel('上司評価画面の構成（右側・上から順）', '', '📋', markSoft, '10px') +
         '<ol style="margin:8px 0 0;padding-left:1.5em;line-height:1.8">' +
