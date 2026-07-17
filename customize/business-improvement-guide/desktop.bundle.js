@@ -1246,7 +1246,7 @@ window.BiAnnualPanel = (function () {
 
   /** 業務改善 ver.02 — ご利用ガイド */
 
-  var BUILD = '2026-07-17-hide-empty-other-menu';
+  var BUILD = '2026-07-17-manual-evaluation-email';
 
 
 
@@ -3922,9 +3922,9 @@ window.BiAnnualPanel = (function () {
           '通知',
           '✉️',
           mark,
-          '評価段階が変わると、担当評価者にkintoneの通知が届きます。メールでも届くかどうかは、' +
-            '各ユーザーのkintoneのメール通知設定によって異なります。定期的なリマインド通知は現在設定されていないため、' +
-            '評価者はこのガイドの<strong>未評価一覧</strong>を定期的に確認してください。'
+          '評価段階が変わると、その段階の評価者にkintoneの通知が届きます。メール通知を有効にしている場合は、' +
+            'メールの件名に提案件名と依頼された評価段階が表示されます。対象の提案は、メールまたはkintoneの通知にあるリンクから開いてください。' +
+            '定期的なリマインド通知は現在設定されていないため、評価者はこのガイドの<strong>未評価一覧</strong>も定期的に確認してください。'
         ) +
         '<p style="color:#78716c;font-size:0.92em;margin-top:14px">' +
         guideMark('📖', markSoft) +
@@ -3992,9 +3992,9 @@ window.BiAnnualPanel = (function () {
       return (
         guideH2('評価の入力項目', th, '📋', mark) +
         '<p>評価は <strong>各段階の評価者</strong> が <strong>自身のkintoneアカウント</strong> でログインして行います。' +
-        'ガイド画面の <strong>未評価一覧</strong> から <strong>評価する</strong> を押すか、' +
-        '<strong>kintoneの通知</strong> から開いて評価を行ってください。メール通知を有効にしている場合は、' +
-        'メール内のリンクからも開けます。担当分を確実に確認するには、いつでも利用できる <strong>未評価一覧</strong> が便利です。</p>' +
+        '対象の提案は、ガイド画面の <strong>未評価一覧</strong>、<strong>kintoneの通知</strong>、またはメール通知を有効にしている場合は' +
+        'メール内のリンクから開けます。メールの件名で提案件名と評価依頼の内容を確認し、評価を行ってください。' +
+        '担当分を確実に確認するには、いつでも利用できる <strong>未評価一覧</strong> が便利です。</p>' +
         guideScreenshot('overview', '評価画面の全体（左：提案内容／右：評価入力）', ev) +
         '<div style="' +
         box +
@@ -4096,13 +4096,24 @@ window.BiAnnualPanel = (function () {
     if (state.sub === 'flow') {
       return (
         guideH2('通知と評価の流れ', th, '✉️', mark) +
-        '<p>評価段階が変わると、担当評価者に <strong>kintoneの通知</strong> が届きます。' +
-        'メールでも届くかどうかは、各ユーザーのkintoneのメール通知設定によって異なります。' +
-        '担当分は、このガイド画面の <strong>未評価一覧</strong> からいつでも確認できます。</p>' +
+        '<p>評価段階が変わると、その段階の評価者に <strong>kintoneの通知</strong> が届きます。' +
+        'メール通知を有効にしている場合は、提案件名と評価依頼の内容が件名に表示されるため、対象と必要な対応を確認できます。' +
+        'メールが届かない場合も、kintoneの通知またはこのガイド画面の <strong>未評価一覧</strong> から確認できます。</p>' +
+        '<div style="' +
+        box +
+        '">' +
+        guideLabel('通知タイトル', '', '🔔', markSoft, '8px') +
+        '<ul style="margin:0;padding-left:1.4em;line-height:1.75">' +
+        '<li>【評価依頼】上司評価をお願いします</li>' +
+        '<li>【評価依頼】支店長評価をお願いします</li>' +
+        '<li>【評価依頼】本社評価をお願いします</li>' +
+        '</ul>' +
+        '<p style="margin:10px 0 0"><strong>メール件名の例：</strong><br>' +
+        '[kintone] [【業務改善提案システム】提案申請ver.02] 提案件名 - 【評価依頼】上司評価をお願いします</p></div>' +
         guideScreenshot('pendingList', 'ガイド画面の未評価一覧と「評価する」ボタン', ev) +
         '<ol style="margin:12px 0;padding-left:1.5em;line-height:1.8">' +
-        '<li><strong>担当分を確認する</strong> — kintoneの通知またはガイドの <strong>未評価一覧</strong>。メールは各ユーザーの設定により届きます</li>' +
-        '<li><strong>評価画面を開く</strong> — kintoneの通知、一覧の <strong>評価する</strong>、またはメール通知を有効にしている場合はメール内のリンク</li>' +
+        '<li><strong>担当分を確認する</strong> — 通知のタイトルやメールの件名で、提案件名と依頼された評価段階を確認します。メールが届くかどうかは各ユーザーの設定によって異なります</li>' +
+        '<li><strong>評価画面を開く</strong> — kintoneの通知またはメール内のリンクを開きます。ガイドの <strong>未評価一覧</strong> にある <strong>評価する</strong> からも開けます</li>' +
         '<li><strong>内容を確認する</strong> — 上司は提案内容、支店長・本社はそれまでの評価結果を確認</li>' +
         '<li><strong>段階に合った操作をする</strong> — 上司は評価項目を入力。支店長・本社は再入力せず、合計点・自動ランク等を確認</li>' +
         '<li><strong>一時保存</strong> — 途中保存のみ（WFは進みません）</li>' +

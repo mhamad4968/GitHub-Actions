@@ -138,11 +138,11 @@
       "note": null
     },
     "699": {
-      "build": "2026-07-17-hide-empty-other-menu",
-      "fileKey": "01b09a2f-72c5-4dbf-8786-7f7b890e6361",
-      "revision": "131",
+      "build": "2026-07-17-manual-evaluation-email",
+      "fileKey": "608c158e-6451-4d6e-ba08-b0e33767aafd",
+      "revision": "132",
       "relPath": "customize/business-improvement-guide/desktop.bundle.js",
-      "deployedAt": "2026-07-17T11:12:25.002Z",
+      "deployedAt": "2026-07-17T11:42:43.379Z",
       "note": null
     },
     "700": {
