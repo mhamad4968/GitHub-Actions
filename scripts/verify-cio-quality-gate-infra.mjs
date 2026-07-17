@@ -19,12 +19,20 @@ const required = [
   'scripts/data/jikkou-yosan-ux-invariants.json',
   'docs/runbooks/jikkou-yosan-ux-regression-gate.md',
   'scripts/lib/cio-eslint-report-summary.mjs',
+  '.github/workflows/kintone-customize-deploy.yml',
 ];
 
 const needles = [
   { rel: 'scripts/git-hook-pre-push.mjs', needles: ['cio-quality-gate.mjs', '--push'] },
   { rel: 'data/cio-app-quality-gates.json', needles: ['736', '687', '688', 'jikkou-yosan:deploy-gate'] },
   { rel: 'docs/runbooks/session-lifecycle-v2.md', needles: ['cio:pre-commit-check', 'push-deploy-quality-gates-v2'] },
+  {
+    rel: '.github/workflows/kintone-customize-deploy.yml',
+    needles: [
+      'customize/new-pc-ledger-v1/desktop.bundle.js',
+      'npm run pc-ledger:674:bundle-desktop',
+    ],
+  },
 ];
 
 function main() {

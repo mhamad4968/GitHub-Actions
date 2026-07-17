@@ -159,13 +159,14 @@ jobs:
 
           set_src_for_app() {
             local id="$1"
-            if [[ -n "${KINTONE_CUSTOMIZE_SRC:-}" ]]; then
+            if [[ "${id}" == "674" ]]; then
+              # 674 の Excel 出力は SheetJS 同梱 bundle が必須。source-only 配備を禁止する。
+              SRC="customize/new-pc-ledger-v1/desktop.bundle.js"
+            elif [[ -n "${KINTONE_CUSTOMIZE_SRC:-}" ]]; then
               SRC="$(printf '%s' "${KINTONE_CUSTOMIZE_SRC}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
               echo "使用するソース（KINTONE_CUSTOMIZE_SRC 上書き）: ${SRC}（app=${id}）"
             elif [[ "${id}" == "629" ]]; then
               SRC="customize/shucccho-seisan/desktop.js"
-            elif [[ "${id}" == "674" ]]; then
-              SRC="customize/new-pc-ledger-v1/desktop.js"
             else
               SRC="customize/${id}/desktop.js"
             fi
@@ -202,6 +203,9 @@ jobs:
           DEPLOY_MANIFEST=""
           for DEPLOY_ID in ${DEPLOY_IDS}; do
             set_src_for_app "${DEPLOY_ID}"
+            if [[ "${DEPLOY_ID}" == "674" ]]; then
+              npm run pc-ledger:674:bundle-desktop
+            fi
             if [[ ! -f "${SRC}" ]]; then
               echo "::error::アップロード元がありません: ${SRC}（app=${DEPLOY_ID}）。631 等で browser JS が無いと失敗します。"
               ls -la customize/*/desktop.js 2>/dev/null || true
