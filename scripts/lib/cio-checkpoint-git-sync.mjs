@@ -6,7 +6,13 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { CHECKPOINT_REL } from './cio-checkpoint-read.mjs';
 
-const GIT_LINE_RE = /\*\*Git\*\*:\s*\*\*`([0-9a-f]+)`\*\*\s*=\s*`origin\/main`/i;
+// 2026-07-17 migration: accept an older descriptive label such as
+// **Git（close records 作成前）**: and normalize it on the next sync.
+const GIT_LINE_LABEL = String.raw`\*\*Git(?:（[^）\r\n]+）)?\*\*:`;
+const GIT_LINE_RE = new RegExp(
+  `${GIT_LINE_LABEL}\\s*\\*\\*\`([0-9a-f]+)\`\\*\\*\\s*=\\s*\`origin/main\``,
+  'i',
+);
 
 /** @returns {string|null} */
 export function readCheckpointGitHead(root) {
@@ -27,7 +33,7 @@ export function updateCheckpointGitHead(root, { hash, suffix = 'push 済' }) {
   if (!fs.existsSync(p)) return false;
   const text = fs.readFileSync(p, 'utf8');
   const line = `**Git**: **\`${hash}\`** = \`origin/main\` — ${suffix}`;
-  const lineRe = /^\*\*Git\*\*:.*$/m;
+  const lineRe = new RegExp(`^${GIT_LINE_LABEL}.*$`, 'm');
   if (!lineRe.test(text)) return false;
   const updated = text.replace(lineRe, line);
   if (updated === text) return false;
@@ -74,7 +80,7 @@ export function countCheckpointGitLines(root) {
   const p = path.join(root, CHECKPOINT_REL);
   if (!fs.existsSync(p)) return 0;
   const text = fs.readFileSync(p, 'utf8');
-  return (text.match(/^\*\*Git\*\*:/gm) || []).length;
+  return (text.match(new RegExp(`^${GIT_LINE_LABEL}`, 'gm')) || []).length;
 }
 
 /**

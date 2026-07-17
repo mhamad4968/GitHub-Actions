@@ -51,13 +51,14 @@ SESSION CLOSE — 2026-07-17 JST（App 674修正 · 業務改善運用準備OK�
 - major / downgrade / no-fix を自動適用せず、本日の package 変更なし
 
 ================================================================================
-【反省・未承認改善提案】
+【反省・承認済み改善】
 ================================================================================
 - 詳細: docs/reports/2026-07-17-evening-reflection.md
 - #S1-EVENING-HELP-01: evening:reflect --help の完全な副作用除去
 - #S2-BI-READINESS-INVARIANT-01: 業務改善 readiness 正本間 invariant verifier
 - #S3-REPORT-DRAFT-01: verifier 準拠 report draft skeleton 生成
-- 上記3件は浜田承認待ち。未実装
+- 上記3件は浜田「すべて承認します」により実装・回帰検証済み
+- 証跡: docs/approved-changes/2026-07-17-evening-improvements-hamada-go.md
 
 ================================================================================
 【次の1手】

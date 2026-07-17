@@ -1,11 +1,11 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-17 JST — **セッション締め**（App 674 修正 · 業務改善システム側運用準備 OK）
+**最終更新**: 2026-07-17 JST — **承認済み改善3件の実装完了**（夕反省 #S1〜#S3）
 
 **Git（close records 作成前）**: **`5a30669a`** = `origin/main` — push 済。必要に応じて `cio:session:close-git` が最終化する。
 
-**本日状態**: App 674 は Excel 出力（SheetJS bundle）と備考検索を修正し、浜田目視 OK。業務改善 Apps 697/698/699/700/713 は検証済みで、システム側運用準備 OK。
+**本日状態**: App 674 は Excel 出力（SheetJS bundle）と備考検索を修正し、浜田目視 OK。業務改善 Apps 697/698/699/700/713 は検証済みで、システム側運用準備 OK。夕反省改善 `#S1-EVENING-HELP-01` / `#S2-BI-READINESS-INVARIANT-01` / `#S3-REPORT-DRAFT-01` は浜田承認・実装・回帰検証済み。
 
 **次の1手**: **次回は浜田の指示待ち。App 736 ver.02 は依頼者 Excel 受領後に現行版を残して再設計**
 
@@ -35,6 +35,7 @@
 | **App 699** | マニュアルを現行 apply/list/evaluation/notification 挙動へ整合 · rev 132 |
 | **App 700** | 通知明確化 · WF テスト部署 admin 限定 · rev 170 |
 | **業務改善** | Apps 697/698/699/700/713 のシステム側運用準備 OK · 正本群と closure ledger 同期 |
+| **承認済み改善** | evening help 無副作用化 · readiness正本照合 · verifier準拠report draft生成を実装・回帰検証 |
 | **GitHub/health** | Actions 最新10件 success · PR 0 · issue 0 · health score 100% |
 | **依存関係** | npm audit high 5件を既知リスクとして記録 · package 変更なし |
 

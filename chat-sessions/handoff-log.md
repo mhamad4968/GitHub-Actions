@@ -4752,7 +4752,7 @@ npm run cio:morning:ready
 
 **次の1手**: **次回は浜田の指示待ち。App 736 ver.02 は依頼者 Excel 受領後に現行版を残して再設計**
 
-**改善提案（浜田承認待ち・未実装）**: `#S1-EVENING-HELP-01` / `#S2-BI-READINESS-INVARIANT-01` / `#S3-REPORT-DRAFT-01`
+**改善提案（2026-07-17 浜田「すべて承認します」・実装検証済み）**: `#S1-EVENING-HELP-01` / `#S2-BI-READINESS-INVARIANT-01` / `#S3-REPORT-DRAFT-01` — 証跡 `docs/approved-changes/2026-07-17-evening-improvements-hamada-go.md`
 
 **Git（close records 作成前）**: **`5a30669a`** = `origin/main` — push 済。必要なら close-git が最終化する。
 

@@ -23,6 +23,7 @@
 最新デプロイ後、次の5コマンドはすべて合格済み。再確認時も同じ順で実行する。
 
 ```text
+npm run business-improvement:verify-readiness-docs
 npm run business-improvement:verify-settings
 npm run business-improvement:verify-employee
 npm run business-improvement:verify-guide

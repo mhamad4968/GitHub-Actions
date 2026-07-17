@@ -26,6 +26,7 @@
 
 次の検証は最新デプロイ後にすべて合格した。
 
+- `npm run business-improvement:verify-readiness-docs`（正本文書・closure・live-build 不変条件）
 - `npm run business-improvement:verify-settings`
 - `npm run business-improvement:verify-employee`
 - `npm run business-improvement:verify-guide`

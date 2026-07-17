@@ -38,6 +38,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
 
+if (process.argv.slice(2).includes('--help')) {
+  console.log(`Usage: node scripts/evening-reflect.mjs [--help]
+
+With no arguments, generates today's evening-reflection scaffold and overwrites it only when the filled-report guard permits.
+--help prints this message and exits successfully with no filesystem, Git, subprocess, Desktop, or report-generation side effects.`);
+  process.exit(0);
+}
+
 const today = (() => {
   const d = new Date();
   const yyyy = d.getFullYear();
