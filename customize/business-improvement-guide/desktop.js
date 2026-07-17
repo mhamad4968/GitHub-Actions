@@ -6,7 +6,7 @@
 
   /** 業務改善 ver.02 — ご利用ガイド */
 
-  var BUILD = '2026-07-17-manual-correction-1';
+  var BUILD = '2026-07-17-manual-correction-2';
 
 
 
@@ -2694,23 +2694,38 @@
     if (state.sub === 'lists') {
       return (
         guideH2('一覧の見方', th, '📑', mark) +
-        '<p>このガイド画面の上部には、ログイン中のアカウントに関係する一覧が表示されます。</p>' +
+        '<p>このガイド画面の上部には、ログイン中のアカウントに関係する件数のまとめと一覧が表示されます。</p>' +
+        '<p>件数のまとめには、0件の項目も含めて、<strong>未申請・下書き</strong>、<strong>申請者修正待ち</strong>、' +
+        '各承認段階、<strong>評価完了（年次未処理）</strong>、<strong>集計完了</strong>などが常に並びます。' +
+        '評価者には <strong>未評価</strong> も表示されます。</p>' +
+        '<p>件数を押すと、対応する一覧が開き、その場所まで画面が移動します。一覧は最初は閉じています。' +
+        '<strong>未申請・下書き</strong> と <strong>申請者修正待ち</strong> の件数は、どちらも同じ ' +
+        '<strong>「未申請・下書き」</strong> 一覧を開きます。</p>' +
         '<div style="' + box + '">' +
+        guideLabel('未申請・下書き', '（全員）', '✏️', '#fef3c7', '10px') +
+        '<p style="margin:0 0 14px;padding-left:2.5em">一覧は常に表示されます。一時保存した提案や、差戻されて修正が必要な提案がある場合は、一覧内に並びます。' +
+        '提案を開き、申請または再申請してください。</p>' +
         guideLabel('申請した一覧', '（全員）', '📝', '#dbeafe', '10px') +
-        '<p style="margin:0 0 14px;padding-left:2.5em">共有IDで提出した提案が一覧表示されます。' +
-        '各行の <strong>提案書を見る</strong> から内容を確認できます。' +
-        '差戻し中の提案はステータスが <strong>申請者修正待ち</strong> と表示されます。</p>' +
-        guideLabel('未評価一覧', '（評価者のみ・該当があるとき）', '⏳', '#f5ebe0', '10px') +
-        '<p style="margin:0;padding-left:2.5em">評価者がログインした際に、まだ評価が済んでいないものがリストで表示されます。' +
-        '評価者は未評価の提案があったら速やかに対応をしてください。' +
+        '<p style="margin:0 0 14px;padding-left:2.5em">申請後、現在承認が進んでいる提案が表示されます。' +
+        '各行の <strong>提案書を見る</strong> から内容を確認できます。</p>' +
+        guideLabel('評価完了一覧', '（全員）', '✅', '#dcfce7', '10px') +
+        '<p style="margin:0 0 14px;padding-left:2.5em">承認が完了した提案が表示されます。' +
+        '該当する年度が年次処理で締められている場合は、<strong>年次処理済み</strong> のバッジが付きます。' +
+        '<strong>評価完了（年次未処理）</strong> は年次締め前、<strong>集計完了</strong> は年次締め後を表し、' +
+        '別々の承認ステータスではありません。</p>' +
+        guideLabel('未評価一覧', '（評価者のみ）', '⏳', '#f5ebe0', '10px') +
+        '<p style="margin:0;padding-left:2.5em">評価者に表示され、割り当てられた未評価の提案が一覧内に並びます。対象がない場合は0件です。' +
         '各行の <strong>評価する</strong> から評価画面が開きます。</p></div>' +
         guideLabel('ステータスの読み方（主なもの）', '', '🏷️', markSoft, '8px') +
         '<ul style="margin:8px 0;padding-left:1.4em;line-height:1.75">' +
-        '<li><strong>未処理</strong> — 入力中（まだ申請していない）</li>' +
+        '<li><strong>未申請・下書き</strong> — 一時保存中、またはまだ申請していない提案</li>' +
+        '<li><strong>申請者修正待ち</strong> — 差戻し。内容を修正して再申請</li>' +
         '<li><strong>上司承認中</strong> — 部長評価待ち</li>' +
         '<li><strong>支店長承認中</strong> / <strong>本社評価中</strong> — 上位承認待ち</li>' +
-        '<li><strong>申請者修正待ち</strong> — 差戻し。内容を修正して再申請</li>' +
         '<li><strong>完了</strong> — 承認がすべて終了</li>' +
+        '<li><strong>評価完了（年次未処理）</strong> — 承認完了後、年度の年次締め前</li>' +
+        '<li><strong>集計完了</strong> — 該当年度の年次締め後</li>' +
+        '<li><strong>未評価</strong>（評価者のみ）— 自分の評価待ち</li>' +
         '</ul>' +
         '<p style="color:#78716c;font-size:0.92em;margin-top:14px">' +
         guideMark('🔄', markSoft) +
