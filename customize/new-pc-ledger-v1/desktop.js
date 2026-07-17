@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-07-09-674-list-export-col-order';
+  const BUILD = '2026-07-17-674-xlsx-remarks-all-statuses';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -8134,6 +8134,10 @@ ${bodyInner}\
       for (let sti = 0; sti < st.statuses.length; sti++) {
         ref.selectedStatuses.add(st.statuses[sti]);
       }
+    } else if (split674IndexKeywords674(kw).length) {
+      init674AllStatusSet674().forEach(function (sv) {
+        ref.selectedStatuses.add(sv);
+      });
     } else {
       init674DefaultStatusSet674().forEach(function (sv) {
         ref.selectedStatuses.add(sv);
@@ -9033,6 +9037,13 @@ ${bodyInner}\
     fetch674IndexNextSerialPreview674().then(render674NextSerialBar674);
 
     inpKw.addEventListener('input', function () {
+      if (split674IndexKeywords674(inpKw.value).length) {
+        selectedStatuses.clear();
+        init674AllStatusSet674().forEach(function (sv) {
+          selectedStatuses.add(sv);
+        });
+        syncChips674();
+      }
       ensure674SearchCache()
         .then(function (recs) {
           update674SearchDatalist(recs, inpKw.value);

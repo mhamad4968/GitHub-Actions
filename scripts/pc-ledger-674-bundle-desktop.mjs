@@ -19,10 +19,15 @@ const banner =
 writeFileSync(path.join(dir, 'desktop.bundle.js'), banner + xlsx + '\n' + src, 'utf8');
 console.log('bundled customize/new-pc-ledger-v1/desktop.bundle.js');
 
-const lint = spawnSync('npm', ['run', 'lint:customize', '--silent'], {
+const isWindows = process.platform === 'win32';
+const lintCommand = isWindows ? process.env.ComSpec || 'cmd.exe' : 'npm';
+const lintArgs = isWindows
+  ? ['/d', '/s', '/c', 'npm.cmd', 'run', 'lint:customize', '--silent']
+  : ['run', 'lint:customize', '--silent'];
+const lint = spawnSync(lintCommand, lintArgs, {
   cwd: root,
   encoding: 'utf8',
-  shell: true,
+  shell: false,
 });
 if (lint.status !== 0) {
   console.error('[pc-ledger:674:bundle-desktop] lint:customize NG — desktop.js を修正して再実行');

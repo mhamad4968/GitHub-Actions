@@ -21,6 +21,12 @@ const MARKERS = [
   "リスト作成の条件をクリア",
 ];
 
+/** deploy:674 が載せる SheetJS 同梱 bundle にのみ存在する印 */
+const LIVE_BUNDLE_MARKERS = [
+  "kintone-ai-lab bundle: SheetJS 0.18.5",
+  "xlsx.js (C) 2013-present SheetJS",
+];
+
 function kintoneBase() {
   let base = String(process.env.KINTONE_BASE_URL || "").trim().replace(/\/+$/, "");
   if (!base && process.env.KINTONE_DOMAIN) {
@@ -60,13 +66,13 @@ async function fetchLive() {
   };
 }
 
-function markerReport(label, src) {
+function markerReport(label, src, markers = MARKERS) {
   if (!src) {
     console.log(`  ${label}: (no source)`);
     return 0;
   }
   let miss = 0;
-  for (const m of MARKERS) {
+  for (const m of markers) {
     const ok = src.includes(m);
     if (!ok) miss++;
     console.log(`  ${ok ? "[OK]" : "[MISS]"} ${m}`);
@@ -111,6 +117,8 @@ async function main() {
 
   console.log("[cio-audit-674] === 機能マーカー（live JS）===");
   const liveMiss = markerReport("live", live.src);
+  console.log("[cio-audit-674] === SheetJS bundle マーカー（live JS）===");
+  const liveBundleMiss = markerReport("live bundle", live.src, LIVE_BUNDLE_MARKERS);
   if (repoBuild !== live.build && live.src && repoSrc) {
     console.log("[cio-audit-674] === repo にあって live に無いマーカー ===");
     for (const m of MARKERS) {
@@ -118,8 +126,8 @@ async function main() {
     }
   }
 
-  if (issues.length || liveMiss > 0) process.exit(2);
-  console.log("[cio-audit-674] 先祖返りなし（BUILD一致・マーカー全て live に存在）");
+  if (issues.length || liveMiss > 0 || liveBundleMiss > 0) process.exit(2);
+  console.log("[cio-audit-674] 先祖返りなし（BUILD一致・機能/SheetJS bundle マーカー全て live に存在）");
 }
 
 main().catch((e) => {

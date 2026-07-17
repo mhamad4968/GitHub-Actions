@@ -14,7 +14,7 @@ export function parsePortfolioMachineBuild(md, appId) {
 export function parsePortfolioDetailBuild(md, appId) {
   const id = String(appId).trim();
   const re = new RegExp(
-    `^\\|[^\\n]*\\*\\*${id}\\*\\*[^\\n]*\\*\\*BUILD=\`([^\`]+)\``,
+    `^\\|[^\\n]*?\\*\\*${id}\\*\\*[^\\n]*?\\*\\*BUILD=\`([^\`]+)\``,
     'm',
   );
   const m = md.match(re);

@@ -14,6 +14,8 @@ const sample736 =
 
 const sample745 =
   '| **JREクラウドアカウント台帳**（日常 UI・744 へ REST） | **745** | `customize/jre-cloud-account-dash/desktop.js` \\| `npm run deploy:745` | [link](url) **BUILD=`2026-06-26-jre-cloud-account-dash-agg-auto-open-v1`** rev **5** / fileKey **`def`** |';
+const sample674WithHistory =
+  '| 新・PC台帳 | **674** | `desktop.bundle.js` | **BUILD=`2026-07-17-674-current`** rev **261**。前 deploy **BUILD=`2026-06-19-674-history`** rev **243** |';
 
 const machineMd =
   '| 736 | `2026-06-26-736-ux-sticky-print-badges-v1` | **134** | `abc` | note |\n' +
@@ -21,6 +23,7 @@ const machineMd =
 
 assert.equal(parsePortfolioDetailBuild(sample736, '736'), '2026-06-26-736-ux-sticky-print-badges-v1');
 assert.equal(parsePortfolioDetailBuild(sample745, '745'), '2026-06-26-jre-cloud-account-dash-agg-auto-open-v1');
+assert.equal(parsePortfolioDetailBuild(sample674WithHistory, '674'), '2026-07-17-674-current');
 assert.equal(parsePortfolioMachineBuild(machineMd, '736'), '2026-06-26-736-ux-sticky-print-badges-v1');
 assert.equal(parsePortfolioMachineBuild(machineMd, '745'), '2026-06-26-jre-cloud-account-dash-dept-dash-branch-v13');
 
