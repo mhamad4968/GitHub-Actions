@@ -6,7 +6,7 @@
 
   /** 業務改善 ver.02 — ご利用ガイド */
 
-  var BUILD = '2026-07-09-bi-guide-list-accordion-exclusive';
+  var BUILD = '2026-07-17-manual-correction-1';
 
 
 
@@ -2461,7 +2461,7 @@
         '評価・承認は個人IDです。詳しくは <strong>はじめに → ログインについて</strong> を参照してください。</p></div>' +
         guideLabel('画面の構成（上から順）', '', '📋', markSoft, '10px') +
         '<ol style="margin:8px 0 0;padding-left:1.5em;line-height:1.8">' +
-        '<li><strong>上段3項目</strong> — 社員名（代表・検索）→ 部署（自動入力）→ 提案種別</li>' +
+        '<li><strong>上段3項目</strong> — 部署 → 社員名（代表・検索）→ 提案種別</li>' +
         '<li><strong>提案件名</strong> — 提案のタイトル</li>' +
         '<li><strong>提案者一覧</strong> — グループ提案の場合入力する欄（提案者全員入力すること）</li>' +
         '<li><strong>5つのアコーディオン</strong> — 目的 → 現状 → 問題点 → 改善案 → 効果（各最大120文字）</li>' +
@@ -2471,11 +2471,11 @@
           '上段3項目',
           '①',
           mark,
-          '<strong>社員名</strong> — 代表提案者です。横の <strong>検索</strong> ボタンを押し、' +
-            '<strong>苗字または名前</strong> の一部を入力して社員名で検索します（部分一致）。' +
-            '検索すると候補が表示されるので、該当する人を選びます。<br>' +
-            '<strong>部署</strong> — 候補を選ぶと、社員マスタの所属に基づき <strong>自動入力</strong> されます。' +
-            '（画面上は社員名の左に表示されます。必要な場合のみ手動で変更できます。）<br>' +
+          '<strong>部署</strong> — 画面上で左端に表示されます。社員名の検索結果から該当する人を選ぶと、' +
+            '社員マスタの所属に基づき <strong>自動入力</strong> されます。必要な場合は手動で変更できます。<br>' +
+            '<strong>社員名（代表）</strong> — 代表提案者です。横の <strong>検索</strong> ボタンを押し、' +
+            '<strong>苗字または名前</strong> の一部を入力して検索します（部分一致）。' +
+            '候補が表示されたら、該当する人を選びます。<br>' +
             '<strong>提案種別</strong> — <strong>業務改善提案</strong> または <strong>アイデア提案</strong> を選びます。'
         ) +
         guideTopic(
@@ -2505,7 +2505,7 @@
         '<li><span style="color:#c2410c;font-weight:600">橙＝必須・未入力</span></li>' +
         '<li><span style="color:#64748b">灰＝任意・未入力</span></li>' +
         '</ul>' +
-        '<p style="margin:10px 0 0;color:#57534e;font-size:0.95em">画面上部に <strong>「入力 n/5」</strong> と未入力の項目名が表示されます。</p></div>' +
+        '<p style="margin:10px 0 0;color:#57534e;font-size:0.95em">入力状況は、各アコーディオン見出しのバッジで確認します。</p></div>' +
         guideScreenshot('start', '申請画面の全体') +
         guideScreenshot('fields', '上段3項目・提案件名・提案者一覧') +
         guideScreenshot('accordion', 'アコーディオン（目的〜効果）の展開例') +
@@ -2554,7 +2554,7 @@
         '">' +
         guideLabel('申請の手順', '', '📝', markSoft, '10px') +
         '<ol style="margin:0;padding-left:1.5em;line-height:1.8">' +
-        '<li>必須項目をすべて入力する（未入力があると「申請する」は表示されず、不足項目が表示されます）</li>' +
+        '<li>必須項目をすべて入力する（未入力がある間も「申請する」ボタンは表示されますが、押すことはできません。ボタンにカーソルを合わせると不足項目が表示されます）</li>' +
         '<li><strong>一時保存</strong> — 途中保存のみ（WFは進みません）</li>' +
         '<li><strong>申請する</strong> — 確認ダイアログ「申請しますか？」→ <strong>はい</strong> で正式に提出</li>' +
         '<li>申請完了後、このガイドに戻り <strong>「申請が完了しました」</strong> の表示と <strong>申請した一覧</strong> に件名が出ます</li>' +

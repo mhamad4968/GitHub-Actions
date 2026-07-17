@@ -138,11 +138,11 @@
       "note": null
     },
     "699": {
-      "build": "2026-07-09-bi-guide-list-accordion-exclusive",
-      "fileKey": "ea35f5a7-0182-4e4f-9941-a92f49909417",
-      "revision": "123",
+      "build": "2026-07-17-manual-correction-1",
+      "fileKey": "67fe537d-a832-4ad5-a90b-2ad9ff6cba9a",
+      "revision": "124",
       "relPath": "customize/business-improvement-guide/desktop.bundle.js",
-      "deployedAt": "2026-07-09T13:39:41.414Z",
+      "deployedAt": "2026-07-17T09:59:11.805Z",
       "note": null
     },
     "700": {
