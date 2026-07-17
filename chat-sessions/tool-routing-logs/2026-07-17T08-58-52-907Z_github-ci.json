@@ -1,0 +1,49 @@
+{
+  "timestamp": "2026-07-17T08:58:52.907Z",
+  "intent": "github-ci",
+  "phase": null,
+  "appId": null,
+  "matchedRules": [
+    {
+      "id": "github-ci",
+      "score": 1,
+      "priority": 10
+    }
+  ],
+  "primaryIntentId": "github-ci",
+  "category": "github-ci",
+  "selectedMcp": {
+    "server": "github",
+    "tools": [
+      "list_pull_requests",
+      "get_pull_request",
+      "list_workflow_runs"
+    ],
+    "priority": 10
+  },
+  "mcpChain": [
+    {
+      "server": "github",
+      "tools": [
+        "list_pull_requests",
+        "get_pull_request",
+        "list_workflow_runs"
+      ],
+      "priority": 10
+    }
+  ],
+  "npm": [
+    "cio:gha-periodic-5038-stamp",
+    "cio:guard:5038"
+  ],
+  "skill": null,
+  "subagent": null,
+  "runbook": "docs/runbooks/cio-gha-periodic-5038-stamp.md",
+  "rule": null,
+  "secondReviewer": null,
+  "verify": [
+    "verify:cio-r41-r48-infra"
+  ],
+  "lane": "gha-5038",
+  "reason": "intent=github-ci score=1 mcp priority=10"
+}

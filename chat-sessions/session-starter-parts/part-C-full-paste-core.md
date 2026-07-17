@@ -72,9 +72,9 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-07-14 自動更新）】
-- 進行中 plan: docs/plans/2026-07-13-jikkou-yosan-ui-backlog-03-block-select-dd-spec.md
+【今やってる主タスク（2026-07-17 自動更新）】
+- 進行中 plan: docs/plans/2026-05-23-business-improvement-proposal-spec.md
 - 当日コミット (上位 3):
-  - chore(checkpoint): sync Git line after close
-  - chore(rag): mirror kintone-apps + align session bridge
-  - chore(checkpoint): sync Git line after close
+  - docs(business-improvement): record readiness in closure ledger
+  - docs(business-improvement): mark operation readiness ok
+  - feat: restrict workflow test department

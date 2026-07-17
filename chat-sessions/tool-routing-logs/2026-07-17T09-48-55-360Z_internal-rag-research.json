@@ -1,0 +1,56 @@
+{
+  "timestamp": "2026-07-17T09:48:55.360Z",
+  "intent": "699 manual current specification audit",
+  "phase": null,
+  "appId": "699",
+  "matchedRules": [
+    {
+      "id": "internal-rag-research",
+      "score": 2,
+      "priority": 10
+    },
+    {
+      "id": "github-ci",
+      "score": 1,
+      "priority": 10
+    }
+  ],
+  "primaryIntentId": "internal-rag-research",
+  "category": "research",
+  "selectedMcp": {
+    "server": "rag",
+    "tools": [
+      "search"
+    ],
+    "priority": 10
+  },
+  "mcpChain": [
+    {
+      "server": "rag",
+      "tools": [
+        "search"
+      ],
+      "priority": 10
+    },
+    {
+      "server": "repo-tree",
+      "tools": [
+        "get_directory_tree"
+      ],
+      "priority": 20
+    }
+  ],
+  "npm": [
+    "verify:rag-mirror-canonical"
+  ],
+  "skill": null,
+  "subagent": null,
+  "runbook": "docs/mcp-status.md",
+  "rule": null,
+  "secondReviewer": null,
+  "verify": [
+    "verify:rag-mirror-canonical"
+  ],
+  "lane": null,
+  "reason": "intent=internal-rag-research score=2 mcp priority=10"
+}

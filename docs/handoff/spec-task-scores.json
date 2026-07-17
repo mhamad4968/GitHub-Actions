@@ -1,11 +1,11 @@
 {
-  "scoredAt": "2026-07-15T05:52:14.695Z",
+  "scoredAt": "2026-07-17T12:29:37.644Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "**7/16** — **UI-BACKLOG-03** implement（`§7` チェックリスト · 本日 736 live 作業なし）",
+  "topTask": "**次回は浜田の指示待ち。App 736 ver.02 は依頼者 Excel 受領後に現行版を残して再設計**",
   "tasks": [
     {
-      "id": "checkpoint:**7/16**_—_**UI-BACKLOG-03**_implement（`",
-      "text": "**7/16** — **UI-BACKLOG-03** implement（`§7` チェックリスト · 本日 736 live 作業なし）",
+      "id": "checkpoint:**次回は浜田の指示待ち。App_736_ver.02_は依頼者_Excel_受",
+      "text": "**次回は浜田の指示待ち。App 736 ver.02 は依頼者 Excel 受領後に現行版を残して再設計**",
       "source": "checkpoint",
       "difficulty": 2,
       "tokens": "中",

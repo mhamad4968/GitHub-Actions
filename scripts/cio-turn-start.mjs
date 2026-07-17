@@ -91,7 +91,15 @@ function main() {
   const args = parseArgs(process.argv.slice(2));
   const probeNoEvidence = process.env.CIO_TURN_START_PROBE_NO_EVIDENCE === '1';
   const flags = readTeamOpsFlags(process.env, root);
-  const tier = resolveTier(args.tier || (args.strict ? 'strict' : 'standard'), root, flags);
+  const requestedTier = args.tier || (args.strict ? 'strict' : 'standard');
+  if (String(requestedTier).toLowerCase() === 'quick') {
+    const requestedGate = validateTierGate(root, 'quick', args.lane);
+    if (!requestedGate.ok) {
+      console.error(`[cio:turn-start] NG ${requestedGate.message}`);
+      process.exit(requestedGate.exitCode || 2);
+    }
+  }
+  const tier = resolveTier(requestedTier, root, flags);
 
   if ((tier === 'lite' || tier === 'micro') && !flags.liteLaneEnabled) {
     console.error('[cio:turn-start] NG Lite 無効（CIO_LITE_LANE=0）— standard/strict を使用');

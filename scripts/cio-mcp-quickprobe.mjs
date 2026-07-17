@@ -206,12 +206,14 @@ function probeOnce(name, spec, timeoutMs) {
     const spawnOpts = {
       env: { ...process.env, ...spec.env, ...tune.extraEnv, ...extraEnvForTarget(name) },
       stdio: ["pipe", "pipe", "pipe"],
-      // Windows: `npx` は多くの環境で `.cmd` ラッパーのため **shell 必須**（`shell:false` は ENOENT）。
-      // Node DEP0190 警告は出るが、引数は固定配列のため実運用リスクは低い。
-      shell: process.platform === "win32",
+      // Windows の `.cmd` は直接 spawn できないため、固定引数で cmd.exe を明示起動する。
+      shell: false,
     };
     if (tune.cwd) spawnOpts.cwd = tune.cwd;
-    const proc = spawn(spec.cmd, spec.args, spawnOpts);
+    const isWindowsNpx = process.platform === "win32" && spec.cmd === "npx";
+    const command = isWindowsNpx ? process.env.ComSpec || "cmd.exe" : spec.cmd;
+    const args = isWindowsNpx ? ["/d", "/s", "/c", "npx.cmd", ...spec.args] : spec.args;
+    const proc = spawn(command, args, spawnOpts);
     let buf = "";
     const pending = new Map();
     let nextId = 1;

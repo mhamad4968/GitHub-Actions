@@ -1,13 +1,13 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-15 JST — **セッション締め**（空き日ops完走 · △18 profile CLI 契約 · Reload後gate緑）
+**最終更新**: 2026-07-17 JST — **セッション締め**（App 674 修正 · 業務改善システム側運用準備 OK）
 
-**Git**: **`10b81922`** = `origin/main` — push 済
+**Git（close records 作成前）**: **`5a30669a`** = `origin/main` — push 済。必要に応じて `cio:session:close-git` が最終化する。
 
-**レーン変更**: UI-BACKLOG-03 レビュー・Q0 確定 → **仕様 v1**（customize 実装は 7/16）
+**本日状態**: App 674 は Excel 出力（SheetJS bundle）と備考検索を修正し、浜田目視 OK。業務改善 Apps 697/698/699/700/713 は検証済みで、システム側運用準備 OK。
 
-**次の1手**: **7/16** — **UI-BACKLOG-03** implement（`§7` チェックリスト · 本日 736 live 作業なし）
+**次の1手**: **次回は浜田の指示待ち。App 736 ver.02 は依頼者 Excel 受領後に現行版を残して再設計**
 
 **GO待ち**: H9 / △2 最終判定 — **2026-07-25 のみ**（本日は判定不可 · 運用側対応済: metrics蓄積+verify:formalization-h9-review scheduled）
 
@@ -19,7 +19,24 @@
 
 **688 本番**: BUILD=`2026-07-13-688-heat-closed` rev **90** — 気象ヘルプ・猛暑日オプション折りたたみ · 浜田目視 OK（GHA push 後 rev90 記録）
 
-**736 本番**: BUILD=`2026-07-12-736-ui-backlog-02-col-resize` rev **186** — **UI-BACKLOG-02 完了** · **BACKLOG-03 仕様草案 commit 済**
+**674 本番**: BUILD=`2026-07-17-674-note-search-checkbox` rev **262** — Excel 出力復旧（SheetJS bundle）· 明示チェックボックスによる備考あり全件／キーワード検索 · 浜田目視 OK
+
+**699 本番**: BUILD=`2026-07-17-manual-evaluation-email` rev **132** — 現行挙動に整合したマニュアル · 未評価件数付き評価者アクション · 空の「その他」非表示
+
+**700 本番**: BUILD=`2026-07-17-hide-wf-test-dept` rev **170** — 提案件名 · 3段階通知 · 汎用 Assignee 通知なし · 定期リマインドなし · WF テスト部署 admin 限定
+
+**736 本番**: BUILD=`2026-07-12-736-ui-backlog-02-col-resize` rev **186** — 現行版を保持。ver.02 は依頼者 Excel 受領後に再設計し、本日は実装・deploy なし。
+
+## 本日完了サマリー（2026-07-17）
+
+| 項目 | 内容 |
+|------|------|
+| **App 674** | Excel 出力と備考検索を修正 · 浜田目視 OK |
+| **App 699** | マニュアルを現行 apply/list/evaluation/notification 挙動へ整合 · rev 132 |
+| **App 700** | 通知明確化 · WF テスト部署 admin 限定 · rev 170 |
+| **業務改善** | Apps 697/698/699/700/713 のシステム側運用準備 OK · 正本群と closure ledger 同期 |
+| **GitHub/health** | Actions 最新10件 success · PR 0 · issue 0 · health score 100% |
+| **依存関係** | npm audit high 5件を既知リスクとして記録 · package 変更なし |
 
 ## 本日完了サマリー（2026-07-15 ops）
 
@@ -50,7 +67,7 @@
 | **688** | WBGT UI 折りたたみ完了（rev90）· **それ以外触らない** |
 | **677–679** | 触らない |
 | **SKYSEA** | 8/1 再計画 · 7月着手禁止 |
-| **736** | §9.6 凍結 · **UI-BACKLOG-03 仕様草案 GO** · implement **7/16** |
+| **736** | 現行版を保持 · ver.02 は依頼者 Excel 受領後に再設計 · 本日実装/deploy なし |
 | **712** | 削除済 — deploy 禁止 |
 
 ## セッション切替後の自律復元（Lifecycle v2 鏡像）

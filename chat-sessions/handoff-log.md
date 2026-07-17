@@ -4745,3 +4745,22 @@ npm run cio:morning:ready
 **触らない**: 688（WBGT以外）/ 677–679 / SKYSEA 7月 · 736 live は明日まで
 
 ---
+
+### 2026-07-17 JST — **最終セッションクローズ**
+
+**要約**: App 674 の Excel 出力（SheetJS bundle）と備考検索を修正し、明示チェックボックスで備考あり全件／キーワード検索を切替可能にして浜田目視 OK。App 699 は現行の申請・一覧・評価・通知挙動へマニュアルを整合し rev132、App 700 は提案件名・3段階通知・汎用 Assignee 通知なし・定期リマインドなし・WF テスト部署 admin 限定で rev170。業務改善 Apps 697/698/699/700/713 は検証済みで、システム側運用準備 OK。正本仕様・runbook・readiness report・kintone-apps・closure ledger を同期済み。
+
+**次の1手**: **次回は浜田の指示待ち。App 736 ver.02 は依頼者 Excel 受領後に現行版を残して再設計**
+
+**改善提案（浜田承認待ち・未実装）**: `#S1-EVENING-HELP-01` / `#S2-BI-READINESS-INVARIANT-01` / `#S3-REPORT-DRAFT-01`
+
+**Git（close records 作成前）**: **`5a30669a`** = `origin/main` — push 済。必要なら close-git が最終化する。
+
+**確認**: GitHub 最新 Actions 10件 success / open PR 0 / open issue 0。health-check exit 0、normal 34、abnormal 0、warnings 0、skipped 2、score 100%。npm audit は exit 1 / high 5件であり、package 自動変更なし。
+
+
+**Git**: `523bceb4` = origin/main — push 済（締め後 R44 sync）
+
+**GO待ち**: H9/△2 **2026-07-25** · P5 Cold（736後推奨）
+
+---

@@ -1,0 +1,67 @@
+SESSION CLOSE — 2026-07-17 JST（App 674修正 · 業務改善運用準備OK）
+（本日唯一の最終クローズ報告。復元時の現行状態は checkpoint-latest.md 先頭を参照）
+
+================================================================================
+【本日の成果（事実）】
+================================================================================
+■ App 674
+  - Excel 出力を SheetJS bundle 方式で復旧
+  - 備考検索を修正し、明示チェックボックスで「備考が空でない全件」と
+    「キーワード検索」を切替可能にした
+  - 浜田目視 OK
+
+■ App 699
+  - マニュアルを現行の申請・一覧・評価・通知挙動へ反復的に整合
+  - 評価者向け未評価件数付きアクションボタン、空の「その他」非表示
+  - 本番 rev 132 / BUILD=2026-07-17-manual-evaluation-email
+
+■ App 700
+  - レコードタイトルフィールドを「提案件名」に設定
+  - 汎用 Assignee ステータス変更通知を削除し、レコード単位の3段階通知へ整理
+  - 承認済み運用どおり定期リマインドなし
+  - WF テスト部署は厳密に admin のみに表示
+  - 本番 rev 170 / BUILD=2026-07-17-hide-wf-test-dept
+  - 実際の評価メール受信までは本日テストしていない
+
+■ 業務改善
+  - Apps 697/698/699/700/713 を検証し、システム側運用準備 OK
+  - 正本仕様、runbook、readiness report、kintone-apps、closure ledger を同期
+  - commit 4e9c516b、5a30669a まで push 済み
+
+■ App 736
+  - 現行版を保持
+  - ver.02 は依頼者 Excel 受領後に再設計
+  - 本日の実装・deploy なし
+
+================================================================================
+【クローズ時確認】
+================================================================================
+- GitHub: 直近 Actions 10件 success / open PR 0 / open issue 0
+- Git: close records 作成前 main=origin/main=5a30669a
+  （必要なら parent の close-git が最終化）
+- health-check: exit 0 / normal 34 / abnormal 0 / warnings 0 /
+  skipped 2（URL-only MCP）/ score 100%
+- Memory 84%: health threshold 内
+- npm audit: exit 1 / high 5件。クリーンではない
+  - nodemailer 7.0.13→9.0.3 major:
+    docs/approved-changes/pending/2026-07-02-V1-nodemailer.proposal.json で保留中
+  - xlsx: high advisory、npm fix なし
+  - @kintone/cli: advisory fix は 1.19.2 への downgrade
+- npm outdated: eslint 10.6→10.7、nodemailer 7→9
+- major / downgrade / no-fix を自動適用せず、本日の package 変更なし
+
+================================================================================
+【反省・未承認改善提案】
+================================================================================
+- 詳細: docs/reports/2026-07-17-evening-reflection.md
+- #S1-EVENING-HELP-01: evening:reflect --help の完全な副作用除去
+- #S2-BI-READINESS-INVARIANT-01: 業務改善 readiness 正本間 invariant verifier
+- #S3-REPORT-DRAFT-01: verifier 準拠 report draft skeleton 生成
+- 上記3件は浜田承認待ち。未実装
+
+================================================================================
+【次の1手】
+================================================================================
+- 次回は浜田の指示待ち
+- App 736 ver.02 は依頼者 Excel 受領後、現行版を残して再設計
+- 本日の締め記録は `cio:session:close-git` で commit・push・最終整合する
