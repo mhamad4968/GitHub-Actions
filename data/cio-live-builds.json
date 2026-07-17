@@ -146,12 +146,12 @@
       "note": null
     },
     "700": {
-      "build": "2026-07-06-bi-apply-footer-reject-clear",
-      "fileKey": "999dc081-695c-4648-862f-c901dc97a5d4",
-      "revision": "169",
+      "build": "2026-07-17-hide-wf-test-dept",
+      "fileKey": "e80a9ea8-601a-42ee-8e78-a620136b0738",
+      "revision": "170",
       "relPath": "customize/business-improvement-proposal/desktop.js",
-      "deployedAt": "2026-07-17T11:32:55.378Z",
-      "note": "evaluation notification settings"
+      "deployedAt": "2026-07-17T11:51:02.201Z",
+      "note": null
     },
     "701": {
       "build": "2026-06-08-sn-news-board-v4-digest-labels",

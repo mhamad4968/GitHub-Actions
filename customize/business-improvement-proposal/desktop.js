@@ -2,10 +2,12 @@
   'use strict';
 
   /** 業務改善 ver.02 — 提案申請 申請UI（Phase 4b）+ 評価UI（Phase 5） */
-  var BUILD = '2026-07-06-bi-apply-footer-reject-clear';
+  var BUILD = '2026-07-17-hide-wf-test-dept';
   var STORAGE_KEY_EVAL_DETAIL = 'bi700-eval-detail-open';
   var WF_ACTION_APPLY = 'Apply';
   var WF_ACTION_REAPPLY = 'reapply';
+  var WF_TEST_DEPARTMENT = '【WFテスト】開発検証用';
+  var ADMIN_LOGIN_CODE = 'admin';
   var BI = {
     settingsAppId: 697,
     employeeAppId: 698,
@@ -1167,9 +1169,14 @@
     return kintone.api(kintone.api.url('/k/v1/app/form/fields', true), 'GET', { app: kintone.app.getId() })
       .then(function (res) {
         var p = res.properties && res.properties[F.dept];
-        ui.depts = p && p.options ? Object.keys(p.options).sort(function (a, b) {
+        var depts = p && p.options ? Object.keys(p.options).sort(function (a, b) {
           return Number(p.options[a].index) - Number(p.options[b].index);
         }) : [];
+        var loginCode = (kintone.getLoginUser() || {}).code;
+        // The underlying option is retained for admin-only WF verification.
+        ui.depts = loginCode === ADMIN_LOGIN_CODE ? depts : depts.filter(function (dept) {
+          return dept !== WF_TEST_DEPARTMENT;
+        });
         return ui.depts;
       })
       .catch(function () { ui.depts = []; return ui.depts; });
