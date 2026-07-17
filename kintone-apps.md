@@ -49,7 +49,7 @@ npm run app:fields <アプリID>
 | 711 | `2026-06-10-new-system-intro-dash-print-a4-v2` | **4** | `de21c60d-301b-49aa-91bf-d1e25d16efb2` | 2026-06-10 新規システム導入ヒアリング 印刷A4 2枚 |
 | 698 | `2026-07-04-bi-employee-index-emp-filter` | **19** | `5ed0278f-c9b4-4046-bd24-9003d15b3cb1` | 2026-07-04 在籍/退職/すべて切替・source595_id並び |
 | 699 | `2026-07-17-manual-evaluation-email` | **132** | `ea35f5a7-0182-4e4f-9941-a92f49909417` | 2026-07-09 一覧アコーディオン+件数クリック開閉 |
-| 700 | `2026-07-17-hide-wf-test-dept` | **170** | `d128837d-6bee-4bb8-9356-97b6f3e4811e` | 2026-07-04 支店長/本社評価は項目折りたたみ |
+| 700 | `2026-07-17-hide-wf-test-dept` | **170** | `e80a9ea8-601a-42ee-8e78-a620136b0738` | 2026-07-17 WFテスト部署をadmin限定表示・段階別評価依頼通知 |
 | 713 | `2026-06-13-bi-annual-redirect-guide` | **12** | `d9baa102-67f1-4c12-a291-812ce2a794ac` | 2026-06-13 年次713→699ガイド誘導 |
 | 714 | `2026-06-14-software-ledger-db-block-ui-mutations` | **5** | `45b4c125-5d47-47a1-a373-3bbcd273b54d` | 2026-06-14 ソフトウエア台帳 DB save/delete ブロック |
 | 715 | `2026-06-17-software-ledger-user-filter-compact` | **13** | `69ab1b99-1170-4577-86d1-04c11d5b9a80` | 2026-06-17 利用者チップを社員検索絞り込みに変更 |
@@ -809,15 +809,16 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 
 **仕様正本**: `docs/plans/2026-05-23-business-improvement-proposal-spec.md` §11  
 **完成サマリー**: `docs/reports/2026-06-13-business-improvement-completion.md`  
+**運用準備証跡**: `docs/reports/2026-07-17-business-improvement-operation-readiness.md` — `SYSTEM_SIDE_OPERATION_READINESS: OK`
 **実装報告**: `docs/reports/2026-06-07-bi-phase4-5-session.md`  
 **WF テスト**: `scripts/data/business-improvement-wf-test-master.json`（test_v3）
 
 | アプリ | ID | customize | BUILD（本番） | deploy |
 |--------|-----|-----------|---------------|--------|
-| 設定マスタ | **697** | — | 2026-07-04 本番30行 upsert（production-2026-08.xlsx） | `business-improvement:seed-settings` |
+| 設定マスタ | **697** | — | rev11・32件（本番30部署＋admin専用WFテスト1件＋共通1件） | `business-improvement:seed-settings` |
 | 社員マスタ | **698** | `customize/business-improvement-employee/desktop.js` | **BUILD=`2026-07-04-bi-employee-index-emp-filter` rev **19** — 在籍/退職/すべて pill | `deploy:698` |
 | ご利用ガイド | **699** | `customize/business-improvement-guide/desktop.bundle.js` | **BUILD=`2026-07-17-manual-evaluation-email` rev **132** — Q-GUIDE-13 サマリー表 + **一覧アコーディオン**（件数クリックで該当のみ開く） | `deploy:699` |
-| 提案申請 ver.02 | **700** | `customize/business-improvement-proposal/desktop.js` | **BUILD=`2026-07-17-hide-wf-test-dept` rev **170** / fileKey **`d128837d-6bee-4bb8-9356-97b6f3e4811e`** — Q-UX-12 後段評価折りたたみ | `deploy:700` |
+| 提案申請 ver.02 | **700** | `customize/business-improvement-proposal/desktop.js` | **BUILD=`2026-07-17-hide-wf-test-dept` rev **170** / fileKey **`e80a9ea8-601a-42ee-8e78-a620136b0738`** — WFテスト部署admin限定・段階別評価依頼通知 | `deploy:700` |
 | 年次処理（新⑤） | **713** | `customize/business-improvement-annual/desktop.bundle.js` | `2026-06-13-bi-annual-redirect-guide` rev12 | `deploy:713` |
 
 **699 年次集計**: **admin のみ**「年次ポイント集計」。暗唱番号は **697 共通設定** `年次暗唱番号`（起動・集計の都度入力）。集計 UI は 699 オーバーレイ（713 はデータ保存）。
@@ -826,7 +827,7 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 
 **713 主要機能**: 年度レコード保存。画面操作は **699** から（713 レコード画面は誘導のみ）。
 
-**状態（2026-06-13）**: **v1 完成** — 申請・評価・年次集計まで浜田確認済。  
+**状態（2026-07-17）**: **v1 完成・システム側運用準備 OK** — 697/698/699/700/713と評価依頼通知を全検証し、浜田承認済み。実メール初回受信は利用者設定に依存する運用時観察事項。
 **軽微 UX 継続可（2026-06-25 GO）**: 一覧バナー・ログイン案内・同期可視化 — 正本 `docs/runbooks/business-improvement-closed-v1-ux.md`
 
 ---
