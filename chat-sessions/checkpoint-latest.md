@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-17 JST — **承認済み改善3件の実装完了**（夕反省 #S1〜#S3）
 
-**Git（close records 作成前）**: **`5a30669a`** = `origin/main` — push 済。必要に応じて `cio:session:close-git` が最終化する。
+**Git**: **`1ac0c5f9`** = `origin/main` — push 済
 
 **本日状態**: App 674 は Excel 出力（SheetJS bundle）と備考検索を修正し、浜田目視 OK。業務改善 Apps 697/698/699/700/713 は検証済みで、システム側運用準備 OK。夕反省改善 `#S1-EVENING-HELP-01` / `#S2-BI-READINESS-INVARIANT-01` / `#S3-REPORT-DRAFT-01` は浜田承認・実装・回帰検証済み。
 
