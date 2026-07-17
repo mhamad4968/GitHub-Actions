@@ -138,11 +138,11 @@
       "note": null
     },
     "699": {
-      "build": "2026-07-17-manual-correction-4",
-      "fileKey": "0bd3b23d-2013-43ad-ba12-4cd14a88bc2c",
-      "revision": "129",
+      "build": "2026-07-17-evaluator-action-button",
+      "fileKey": "07049450-6f15-4375-aa07-4fa8feda4223",
+      "revision": "130",
       "relPath": "customize/business-improvement-guide/desktop.bundle.js",
-      "deployedAt": "2026-07-17T10:51:01.020Z",
+      "deployedAt": "2026-07-17T11:05:45.368Z",
       "note": null
     },
     "700": {

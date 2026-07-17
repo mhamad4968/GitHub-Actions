@@ -1246,7 +1246,7 @@ window.BiAnnualPanel = (function () {
 
   /** 業務改善 ver.02 — ご利用ガイド */
 
-  var BUILD = '2026-07-17-manual-correction-4';
+  var BUILD = '2026-07-17-evaluator-action-button';
 
 
 
@@ -4198,6 +4198,17 @@ window.BiAnnualPanel = (function () {
 
 
 
+  function evaluatorActionButtonHtml() {
+    if (!state.isEvaluator) return '';
+    var count = (state.pendingList || []).length;
+    if (count === 0) {
+      return '<button type="button" id="bi-btn-evaluator-action" disabled aria-label="現在、評価待ちのレコードはありません" style="display:inline-block;padding:14px 22px;margin:8px 0 8px 12px;background:#d1d5db;color:#6b7280;border:0;border-radius:10px;font-weight:700;font-size:1.05em;cursor:not-allowed;box-shadow:none">評価待ちはありません</button>';
+    }
+    return '<button type="button" id="bi-btn-evaluator-action" data-bi-scroll="bi-list-pending" style="display:inline-block;padding:14px 22px;margin:8px 0 8px 12px;background:#78350f;color:#fff;border:0;border-radius:10px;font-weight:700;font-size:1.05em;cursor:pointer;box-shadow:0 2px 8px rgba(120,53,15,.25)">評価・承認する（' + String(count) + '件）</button>';
+  }
+
+
+
   function render(root) {
 
     applyFontSize(root);
@@ -4247,6 +4258,8 @@ window.BiAnnualPanel = (function () {
       '<a href="' + esc(applyHref) + '" id="bi-btn-apply" style="display:inline-block;padding:14px 28px;margin:8px 12px 8px 0;background:#1d4ed8;color:#fff;border-radius:10px;text-decoration:none;font-weight:700;font-size:1.05em;box-shadow:0 2px 8px rgba(29,78,216,.25)">提案を出す</a>' +
 
       '<button type="button" id="bi-btn-past-search" style="display:inline-block;padding:14px 22px;margin:8px 0;background:#fff;color:#1d4ed8;border:2px solid #1d4ed8;border-radius:10px;font-weight:700;font-size:1.05em;cursor:pointer;box-shadow:0 2px 8px rgba(29,78,216,.12)">過去の提案を探す</button>' +
+
+      evaluatorActionButtonHtml() +
 
       (state.isAdmin
 
