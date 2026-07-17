@@ -1246,7 +1246,7 @@ window.BiAnnualPanel = (function () {
 
   /** 業務改善 ver.02 — ご利用ガイド */
 
-  var BUILD = '2026-07-17-manual-correction-3a';
+  var BUILD = '2026-07-17-manual-correction-3b';
 
 
 
@@ -4111,9 +4111,9 @@ window.BiAnnualPanel = (function () {
           '🔁',
           mark,
           '1件の提案は、自動ランクに応じて完了する段階が変わります。<br>' +
-            '<strong>自動C</strong> — 上司評価で完了<br>' +
-            '<strong>自動B</strong> — 上司評価から支店長評価へ進み、支店長評価で完了<br>' +
-            '<strong>自動A</strong> — 上司評価から支店長評価を経て本社評価へ進み、本社評価で完了<br>' +
+            '<strong>評価結果がCの場合</strong> — 上司評価で完了<br>' +
+            '<strong>評価結果がBの場合</strong> — 支店長評価で完了<br>' +
+            '<strong>評価結果がAの場合</strong> — 支店長評価を経て本社評価で完了<br>' +
             'つまり、Bは支店長で完了し、Aは支店長から本社へ引き継がれる点が異なります。画面下部に現在の経路が表示されます。'
         ) +
         guideScreenshot('wfRoute', 'ワークフロー経路の表示', ev) +
