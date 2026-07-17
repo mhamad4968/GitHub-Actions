@@ -53,6 +53,9 @@
       "status": "closed-v1",
       "closedAt": "2026-06-13",
       "completionReport": "docs/reports/2026-06-13-business-improvement-completion.md",
+      "operationReadiness": "system-side-ready",
+      "operationReadinessAt": "2026-07-17",
+      "operationReadinessReport": "docs/reports/2026-07-17-business-improvement-operation-readiness.md",
       "sessionCloseReport": "chat-sessions/SESSION-CLOSE-REPORT-20260613.txt",
       "kintoneAppsSection": "業務改善 ver.02（Space 5 — 697–713）",
       "kintoneAppsStateMarker": "v1 完成",
@@ -64,7 +67,7 @@
         "compare-83",
         "設定マスタ Excel 30行"
       ],
-      "note": "申請・評価・年次集計・ガイド UX（C案）まで浜田確認済。v1 再実装は禁止。継続可: 業務改善提案レーンの軽微対応・完成条件外（FAQその他・本番6段WF・RAG・Wordマニュアル）— 2026-06-20 浜田確認"
+      "note": "2026-07-17 追補完了。Apps 697/698/699/700/713、段階別評価依頼通知、現行ガイド、admin専用WFテスト行を検証し、システム側運用準備OK（浜田承認）。定期リマインドなし・未評価一覧確認を正とし、初回実メール受信は運用時観察事項。v1再実装は禁止、FAQ等の軽微UX追補は継続可"
     },
     {
       "id": "wifi-ssid",
