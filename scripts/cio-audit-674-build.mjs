@@ -19,6 +19,20 @@ const MARKERS = [
   "JBIS674_PRINT_LAYOUT",
   "purchase_vendor",
   "リスト作成の条件をクリア",
+  "npl674note",
+  "備考検索",
+];
+
+/** 備考検索の UI・query・URL 永続化に必要な source-only 回帰マーカー */
+const REPO_NOTE_SEARCH_MARKERS = [
+  "2026-07-17-674-note-search-checkbox",
+  "const SEARCH674_NOTE_URL_PARAM = 'npl674note'",
+  "noteSearchBox.setAttribute('aria-label', '備考検索')",
+  "FC_NOTE + ' is not empty)'",
+  "FC_NOTE + ' like \"'",
+  "ref.noteSearchBox.checked = noteSearchOnly674",
+  "clear674NoteSearchUiAndUrl674()",
+  "navigate674ListWithQuery(q, inpKw.value, selSort.value, noteSearchBox.checked)",
 ];
 
 /** deploy:674 が載せる SheetJS 同梱 bundle にのみ存在する印 */
@@ -83,6 +97,13 @@ function markerReport(label, src, markers = MARKERS) {
 async function main() {
   const repoSrc = readFileSync(REL, "utf8");
   const repoBuild = extractBuildFromSource(repoSrc);
+  console.log("[cio-audit-674] === 備考検索 repo 回帰マーカー ===");
+  const repoNoteMiss = markerReport("repo note search", repoSrc, REPO_NOTE_SEARCH_MARKERS);
+  if (process.argv.includes("--repo-only")) {
+    if (repoNoteMiss > 0) process.exit(2);
+    console.log("[cio-audit-674] repo-only OK（備考検索 UI・query・URL マーカー）");
+    return;
+  }
   const ledger = readLiveBuildRegistry().apps?.[APP] || null;
   const live = await fetchLive();
 
@@ -126,7 +147,7 @@ async function main() {
     }
   }
 
-  if (issues.length || liveMiss > 0 || liveBundleMiss > 0) process.exit(2);
+  if (repoNoteMiss > 0 || issues.length || liveMiss > 0 || liveBundleMiss > 0) process.exit(2);
   console.log("[cio-audit-674] 先祖返りなし（BUILD一致・機能/SheetJS bundle マーカー全て live に存在）");
 }
 

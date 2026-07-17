@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-07-17-674-xlsx-remarks-all-statuses';
+  const BUILD = '2026-07-17-674-note-search-checkbox';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -7570,10 +7570,12 @@ ${bodyInner}\
 
   // --- 一覧：§4.8a 検索（キーワード + 種別チップ + 転用PC + M365切替/資産台帳 済・未 + datalist。SKYSEA チップは当面非表示・query 互換は維持） ---
   const SEARCH674_WRAP_ID = 'new-pc-ledger-674-index-search';
-  const SEARCH674_WRAP_VER = '2026-06-09-v8-next-serial-label';
+  const SEARCH674_WRAP_VER = '2026-07-17-v9-note-search';
   const SEARCH674_DL_ID = 'new-pc-ledger-674-search-datalist';
   /** 一覧 URL: キーワード原文（空白区切り AND 用）を query と併せて復元する */
   const SEARCH674_URL_KW_PARAM = 'npl674kw';
+  /** 一覧 URL: 備考検索チェック（ON は `1`。キーワード空でも保持） */
+  const SEARCH674_NOTE_URL_PARAM = 'npl674note';
   /** 一覧並び（`field:asc` / `field:desc`）。`query` の order by と併用して UI 復元 */
   const SEARCH674_SORT_URL_PARAM = 'npl674sort';
 
@@ -8098,6 +8100,7 @@ ${bodyInner}\
     const urlKwParam = read.urlKwParam;
     const urlNativeQ = read.urlNativeQ || '';
     const urlSortParam = read.urlSort || '';
+    const noteSearchOnly674 = read.urlNote === '1';
     let urlKwDecoded = '';
     if (urlKwParam) {
       try {
@@ -8106,7 +8109,16 @@ ${bodyInner}\
         urlKwDecoded = urlKwParam;
       }
     }
-    const syncKey = urlQuery + '\n' + urlKwDecoded + '\n' + urlNativeQ + '\n' + urlSortParam;
+    const syncKey =
+      urlQuery +
+      '\n' +
+      urlKwDecoded +
+      '\n' +
+      urlNativeQ +
+      '\n' +
+      urlSortParam +
+      '\n' +
+      (noteSearchOnly674 ? '1' : '');
     if (wrap.getAttribute('data-npl-synced-query') === syncKey) return;
 
     const effectiveListQuery = urlQuery || urlNativeQ;
@@ -8117,6 +8129,7 @@ ${bodyInner}\
     }
     const ref = wrap.__npl674;
     ref.inp.value = kw;
+    if (ref.noteSearchBox) ref.noteSearchBox.checked = noteSearchOnly674;
     ref.selectedTypes.clear();
     for (let ti = 0; ti < st.types.length; ti++) ref.selectedTypes.add(st.types[ti]);
     ref.selectedSkysea.clear();
@@ -8134,7 +8147,7 @@ ${bodyInner}\
       for (let sti = 0; sti < st.statuses.length; sti++) {
         ref.selectedStatuses.add(st.statuses[sti]);
       }
-    } else if (split674IndexKeywords674(kw).length) {
+    } else if (noteSearchOnly674 || split674IndexKeywords674(kw).length) {
       init674AllStatusSet674().forEach(function (sv) {
         ref.selectedStatuses.add(sv);
       });
@@ -8181,6 +8194,7 @@ ${bodyInner}\
     cbFilterBoxes674,
     recordsForKeyword674,
     selectedStatuses674,
+    noteSearchOnly674,
   ) {
     const parts = [];
     const types = selectedTypes instanceof Set ? [...selectedTypes] : [];
@@ -8222,20 +8236,29 @@ ${bodyInner}\
       .map(function (t) {
         return t.length > 40 ? t.slice(0, 40) : t;
       });
-    if (tokens.length) {
-      const useIdQuery =
-        Array.isArray(recordsForKeyword674) && recordsForKeyword674.length > 0;
-      const tokenParts = tokens.map(function (tok) {
-        if (useIdQuery) {
-          return '(' + build674TokenIdQuery674(recordsForKeyword674, tok) + ')';
-        }
-        const e = escape674QueryLike(tok);
-        const ors = SEARCH674_HINT_FIELDS.map(function (c) {
-          return '(' + c + ' like "' + e + '")';
+    if (noteSearchOnly674 && !tokens.length) {
+      parts.push('(' + FC_NOTE + ' is not empty)');
+    } else if (tokens.length) {
+      if (noteSearchOnly674) {
+        const noteTokenParts = tokens.map(function (tok) {
+          return '(' + FC_NOTE + ' like "' + escape674QueryLike(tok) + '")';
         });
-        return '(' + ors.join(' or ') + ')';
-      });
-      parts.push('(' + tokenParts.join(' and ') + ')');
+        parts.push('(' + noteTokenParts.join(' and ') + ')');
+      } else {
+        const useIdQuery =
+          Array.isArray(recordsForKeyword674) && recordsForKeyword674.length > 0;
+        const tokenParts = tokens.map(function (tok) {
+          if (useIdQuery) {
+            return '(' + build674TokenIdQuery674(recordsForKeyword674, tok) + ')';
+          }
+          const e = escape674QueryLike(tok);
+          const ors = SEARCH674_HINT_FIELDS.map(function (c) {
+            return '(' + c + ' like "' + e + '")';
+          });
+          return '(' + ors.join(' or ') + ')';
+        });
+        parts.push('(' + tokenParts.join(' and ') + ')');
+      }
     }
     if (!parts.length) return '';
     return parts.join(' and ');
@@ -8253,11 +8276,12 @@ ${bodyInner}\
       const qs = h.slice(qm + 1);
       if (!qs) return;
       const hp = new URLSearchParams(qs);
-      if (!hp.has('query') && !hp.has(SEARCH674_URL_KW_PARAM) && !hp.has(SEARCH674_KINTONE_NATIVE_Q_PARAM) && !hp.has(SEARCH674_SORT_URL_PARAM)) return;
+      if (!hp.has('query') && !hp.has(SEARCH674_URL_KW_PARAM) && !hp.has(SEARCH674_KINTONE_NATIVE_Q_PARAM) && !hp.has(SEARCH674_SORT_URL_PARAM) && !hp.has(SEARCH674_NOTE_URL_PARAM)) return;
       hp.delete('query');
       hp.delete(SEARCH674_URL_KW_PARAM);
       hp.delete(SEARCH674_KINTONE_NATIVE_Q_PARAM);
       hp.delete(SEARCH674_SORT_URL_PARAM);
+      hp.delete(SEARCH674_NOTE_URL_PARAM);
       const next = hp.toString();
       u.hash = next ? path + '?' + next : path;
     } catch (_e) {
@@ -8273,21 +8297,58 @@ ${bodyInner}\
     return h.slice(qi + 1);
   }
 
+  /** search 側を正として、hash に残った備考検索フラグだけを除去する */
+  function strip674NoteSearchParamFromUrlHash674(u) {
+    try {
+      const h = u.hash;
+      if (!h || h.indexOf('?') === -1) return;
+      const qm = h.indexOf('?');
+      const path = h.slice(0, qm);
+      const hp = new URLSearchParams(h.slice(qm + 1));
+      if (!hp.has(SEARCH674_NOTE_URL_PARAM)) return;
+      hp.delete(SEARCH674_NOTE_URL_PARAM);
+      const next = hp.toString();
+      u.hash = next ? path + '?' + next : path;
+    } catch (_e) {
+      /* noop */
+    }
+  }
+
+  /** ネイティブ条件クリアの画面遷移を妨げず、備考検索の UI と専用 URL フラグを先に解除する */
+  function clear674NoteSearchUiAndUrl674() {
+    const wrap = document.getElementById(SEARCH674_WRAP_ID);
+    if (wrap && wrap.__npl674 && wrap.__npl674.noteSearchBox) {
+      wrap.__npl674.noteSearchBox.checked = false;
+      wrap.removeAttribute('data-npl-synced-query');
+    }
+    try {
+      const u = new URL(location.href);
+      u.searchParams.delete(SEARCH674_NOTE_URL_PARAM);
+      strip674NoteSearchParamFromUrlHash674(u);
+      if (typeof history.replaceState === 'function') {
+        history.replaceState(history.state, '', u.toString());
+      }
+    } catch (_e) {
+      /* noop */
+    }
+  }
+
   /**
-   * 一覧の **`query` / `npl674kw` / 標準 `q`** を **search と hash の両方**から読む（閲覧→戻る・絞り込み UI で片方だけ変わる場合のずれ対策）。
-   * @returns {{ urlQuery: string, urlKwParam: string, urlNativeQ: string, urlSort: string }}
+   * 一覧の **`query` / `npl674kw` / `npl674note` / 標準 `q`** を **search と hash の両方**から読む（閲覧→戻る・絞り込み UI で片方だけ変わる場合のずれ対策）。
+   * @returns {{ urlQuery: string, urlKwParam: string, urlNativeQ: string, urlSort: string, urlNote: string }}
    */
   function read674IndexSearchQueryAndKw674() {
     let u;
     try {
       u = new URL(location.href);
     } catch (_e) {
-      return { urlQuery: '', urlKwParam: '', urlNativeQ: '', urlSort: '' };
+      return { urlQuery: '', urlKwParam: '', urlNativeQ: '', urlSort: '', urlNote: '' };
     }
     let urlQuery = String(u.searchParams.get('query') || '').trim();
     let urlKwParam = String(u.searchParams.get(SEARCH674_URL_KW_PARAM) || '').trim();
     let urlNativeQ = String(u.searchParams.get(SEARCH674_KINTONE_NATIVE_Q_PARAM) || '').trim();
     let urlSort = String(u.searchParams.get(SEARCH674_SORT_URL_PARAM) || '').trim();
+    let urlNote = String(u.searchParams.get(SEARCH674_NOTE_URL_PARAM) || '').trim();
     const qh = get674HashQueryString674(u.hash);
     if (qh) {
       try {
@@ -8296,11 +8357,12 @@ ${bodyInner}\
         if (!urlKwParam) urlKwParam = String(hp.get(SEARCH674_URL_KW_PARAM) || '').trim();
         if (!urlNativeQ) urlNativeQ = String(hp.get(SEARCH674_KINTONE_NATIVE_Q_PARAM) || '').trim();
         if (!urlSort) urlSort = String(hp.get(SEARCH674_SORT_URL_PARAM) || '').trim();
+        if (!urlNote) urlNote = String(hp.get(SEARCH674_NOTE_URL_PARAM) || '').trim();
       } catch (_e2) {
         /* noop */
       }
     }
-    return { urlQuery: urlQuery, urlKwParam: urlKwParam, urlNativeQ: urlNativeQ, urlSort: urlSort };
+    return { urlQuery: urlQuery, urlKwParam: urlKwParam, urlNativeQ: urlNativeQ, urlSort: urlSort, urlNote: urlNote };
   }
 
   /** カスタム検索バーの入力・チップのみ空にする（一覧の実効条件は触らない） */
@@ -8308,6 +8370,7 @@ ${bodyInner}\
     const ref = wrap.__npl674;
     if (!ref) return;
     ref.inp.value = '';
+    if (ref.noteSearchBox) ref.noteSearchBox.checked = false;
     ref.selectedTypes.clear();
     ref.selectedSkysea.clear();
     ref.selectedStatuses.clear();
@@ -8364,8 +8427,8 @@ ${bodyInner}\
     });
     if (!condTrim) {
       clear674IndexSearchBarUi674(wrap);
-      if (readSnap.urlQuery || readSnap.urlKwParam || readSnap.urlNativeQ) {
-        navigate674ListWithQuery('', '');
+      if (readSnap.urlQuery || readSnap.urlKwParam || readSnap.urlNativeQ || readSnap.urlNote) {
+        navigate674ListWithQuery('', '', '', false);
       }
       return true;
     }
@@ -8431,6 +8494,7 @@ ${bodyInner}\
           blob.indexOf('フィルタ') !== -1 ||
           /\bfilter\b/i.test(blob);
         if (!hasClear || !hasCondWord) return;
+        clear674NoteSearchUiAndUrl674();
         [120, 400, 900].forEach(function (ms) {
           setTimeout(request674IndexSearchHydrateFromUrl674, ms);
         });
@@ -8439,7 +8503,7 @@ ${bodyInner}\
     );
   }
 
-  function navigate674ListWithQuery(queryStr, rawKeywordForUrl, sortSpecStr) {
+  function navigate674ListWithQuery(queryStr, rawKeywordForUrl, sortSpecStr, noteSearchOnly674) {
     let u;
     try {
       u = new URL(location.href);
@@ -8450,6 +8514,7 @@ ${bodyInner}\
     const sortVal = String(sortSpecStr != null ? sortSpecStr : '').trim();
     const sortParsed = parse674SortSpec674(sortVal);
     const fullQ = append674IndexOrderBy674(filterQ, sortParsed);
+    strip674NoteSearchParamFromUrlHash674(u);
     if (fullQ) {
       u.searchParams.set('query', fullQ);
     } else {
@@ -8467,7 +8532,12 @@ ${bodyInner}\
     } else {
       u.searchParams.delete(SEARCH674_SORT_URL_PARAM);
     }
-    if (fullQ || kwPlain) {
+    if (noteSearchOnly674) {
+      u.searchParams.set(SEARCH674_NOTE_URL_PARAM, '1');
+    } else {
+      u.searchParams.delete(SEARCH674_NOTE_URL_PARAM);
+    }
+    if (fullQ || kwPlain || noteSearchOnly674) {
       /* カスタム `query`／`npl674kw` と標準 `?q=` が併存すると二重絞り込みになるため除去 */
       u.searchParams.delete(SEARCH674_KINTONE_NATIVE_Q_PARAM);
     } else {
@@ -8690,6 +8760,17 @@ ${bodyInner}\
     const dl = document.createElement('datalist');
     dl.id = SEARCH674_DL_ID;
 
+    const noteSearchLabel = document.createElement('label');
+    noteSearchLabel.style.cssText =
+      'display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border:1px solid #94a3b8;' +
+      'border-radius:6px;background:#fff;font-size:12px;font-weight:700;color:#334155;cursor:pointer;';
+    const noteSearchBox = document.createElement('input');
+    noteSearchBox.type = 'checkbox';
+    noteSearchBox.id = 'npl674-index-note-search';
+    noteSearchBox.setAttribute('aria-label', '備考検索');
+    noteSearchLabel.appendChild(noteSearchBox);
+    noteSearchLabel.appendChild(document.createTextNode('備考検索'));
+
     const sortWrap = document.createElement('label');
     sortWrap.style.cssText =
       'display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#334155;';
@@ -8748,6 +8829,7 @@ ${bodyInner}\
 
     row.appendChild(inpKw);
     row.appendChild(dl);
+    row.appendChild(noteSearchLabel);
     row.appendChild(sortWrap);
     row.appendChild(btnGo);
     row.appendChild(btnClr);
@@ -8952,8 +9034,9 @@ ${bodyInner}\
             cbFilterBoxes,
             recs,
             selectedStatuses,
+            noteSearchBox.checked,
           );
-          navigate674ListWithQuery(q, inpKw.value, selSort.value);
+          navigate674ListWithQuery(q, inpKw.value, selSort.value, noteSearchBox.checked);
         })
         .catch(function (e) {
           console.warn('[NEW-PC-LEDGER-V1] index search apply', e);
@@ -8965,8 +9048,9 @@ ${bodyInner}\
             cbFilterBoxes,
             null,
             selectedStatuses,
+            noteSearchBox.checked,
           );
-          navigate674ListWithQuery(q, inpKw.value, selSort.value);
+          navigate674ListWithQuery(q, inpKw.value, selSort.value, noteSearchBox.checked);
         });
     };
 
@@ -8977,8 +9061,18 @@ ${bodyInner}\
     btnGo.addEventListener('click', function () {
       apply674();
     });
+    noteSearchBox.addEventListener('change', function () {
+      if (noteSearchBox.checked) {
+        selectedStatuses.clear();
+        init674AllStatusSet674().forEach(function (sv) {
+          selectedStatuses.add(sv);
+        });
+        syncChips674();
+      }
+    });
     btnClr.addEventListener('click', function () {
       inpKw.value = '';
+      noteSearchBox.checked = false;
       selectedTypes.clear();
       selectedSkysea.clear();
       selectedStatuses.clear();
@@ -8999,8 +9093,9 @@ ${bodyInner}\
         cbFilterBoxes,
         null,
         selectedStatuses,
+        false,
       );
-      navigate674ListWithQuery(q, '', '');
+      navigate674ListWithQuery(q, '', '', false);
     });
     inpKw.addEventListener('keydown', function (ev) {
       if (ev.key === 'Enter') {
@@ -9019,6 +9114,7 @@ ${bodyInner}\
 
     wrap.__npl674 = {
       inp: inpKw,
+      noteSearchBox: noteSearchBox,
       sortSel: selSort,
       selectedTypes: selectedTypes,
       selectedSkysea: selectedSkysea,
@@ -9206,11 +9302,12 @@ ${bodyInner}\
       null,
       null,
       defaultStatuses,
+      false,
     );
     if (!defaultQ) return;
 
     if (!effectiveQ) {
-      navigate674ListWithQuery(defaultQ, '', '');
+      navigate674ListWithQuery(defaultQ, '', '', false);
       return;
     }
 
@@ -9230,7 +9327,7 @@ ${bodyInner}\
           kw = read.urlKwParam;
         }
       }
-      navigate674ListWithQuery(merged, kw, read.urlSort || '');
+      navigate674ListWithQuery(merged, kw, read.urlSort || '', read.urlNote === '1');
     }
   }
 
