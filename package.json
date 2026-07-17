@@ -35,6 +35,7 @@
     "business-improvement:create-proposal-app:dry-run": "npx dotenv -e .env -e .env.proxy -- node scripts/business-improvement-create-proposal-app.mjs --dry-run",
     "business-improvement:verify-proposal": "npx dotenv -e .env -e .env.proxy -- node scripts/business-improvement-verify-proposal.mjs",
     "business-improvement:setup-proposal-wf": "npx dotenv -e .env -e .env.proxy -- node scripts/business-improvement-setup-proposal-wf.mjs",
+    "business-improvement:configure-evaluation-notifications": "npx dotenv -e .env -e .env.proxy -- node scripts/business-improvement-configure-evaluation-notifications.mjs",
     "business-improvement:cleanup-proposal-probes": "npx dotenv -e .env -e .env.proxy -- node scripts/business-improvement-cleanup-proposal-probe-fields.mjs",
     "business-improvement:cleanup-proposal-probes:dry-run": "npx dotenv -e .env -e .env.proxy -- node scripts/business-improvement-cleanup-proposal-probe-fields.mjs --dry-run",
     "business-improvement:setup-eval-test-user": "npx dotenv -e .env -e .env.proxy -- node scripts/business-improvement-setup-eval-test-user.mjs",

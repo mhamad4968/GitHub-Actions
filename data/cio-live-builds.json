@@ -148,10 +148,10 @@
     "700": {
       "build": "2026-07-06-bi-apply-footer-reject-clear",
       "fileKey": "999dc081-695c-4648-862f-c901dc97a5d4",
-      "revision": "166",
+      "revision": "169",
       "relPath": "customize/business-improvement-proposal/desktop.js",
-      "deployedAt": "2026-07-05T15:44:54.245Z",
-      "note": null
+      "deployedAt": "2026-07-17T11:32:55.378Z",
+      "note": "evaluation notification settings"
     },
     "701": {
       "build": "2026-06-08-sn-news-board-v4-digest-labels",
