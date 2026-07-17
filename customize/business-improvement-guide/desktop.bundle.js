@@ -1246,7 +1246,7 @@ window.BiAnnualPanel = (function () {
 
   /** 業務改善 ver.02 — ご利用ガイド */
 
-  var BUILD = '2026-07-17-evaluator-action-button';
+  var BUILD = '2026-07-17-hide-empty-other-menu';
 
 
 
@@ -3285,7 +3285,7 @@ window.BiAnnualPanel = (function () {
 
     }
 
-    items.push({ id: 'other', label: 'その他', subs: [{ id: 'empty', label: '（準備中）' }] });
+    // 運用開始後にFAQを追加する際は、「その他」メニューを復元する。
 
     return items;
 
