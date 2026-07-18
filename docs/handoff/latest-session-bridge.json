@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-07-18T09:04:50.892Z",
-  "gitHead": "ed9140dd",
-  "gitStatus": "## main...origin/main",
-  "nextTask": "**App 747 完了。次回は浜田の指示待ち**",
+  "exportedAt": "2026-07-18T11:12:01.007Z",
+  "gitHead": "08097c11",
+  "gitStatus": "## main...origin/main [ahead 2]",
+  "nextTask": "**次回は浜田の指示待ち**。SKYSEAは8/3問い合わせまで実装・GPO変更・本番配信を行わない。",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -18,24 +18,26 @@
   ],
   "lastFailures": [
     {
-      "id": "evening-S1-EVENING-HELP-01",
-      "at": "2026-07-18T09:04:50.892Z",
+      "id": "evening-S1",
+      "at": "2026-07-18T11:12:01.007Z",
       "verify": "npm run evening:reflect",
-      "note": "S1-EVENING-HELP-01: #S1-EVENING-HELP-01 S `npm run evening:reflect -- --help` を early return と回帰テストで完全に副作用なしにし、意図しないレポート"
+      "note": "S1: #S1 S **AIチーム管理アプリの単一JSON正本を新設**し、`kintone-apps.md`・BUILD/field/customize各台帳の和集合推定を置換する。F1の対象範囲誤認と、697型の登録漏れを防ぐ 中（既存"
     },
     {
-      "id": "evening-S2-BI-READINESS-INVARIANT-01",
-      "at": "2026-07-18T09:04:50.892Z",
+      "id": "evening-S2",
+      "at": "2026-07-18T11:12:01.007Z",
       "verify": "npm run evening:reflect",
-      "note": "S2-BI-READINESS-INVARIANT-01: #S2-BI-READINESS-INVARIANT-01 S 業務改善の正本仕様、runbook、readiness report、`kintone-apps.md`、closu"
+      "note": "S2: #S2 S Desktop同期に`SESSION-CLOSE-REPORT_YYYYMMDD.txt`のpruneを追加し、当日版だけ保持（当日版がなければ旧版全削除）。F3の過去ファイル残存を防ぐ 低（命名規則外ファイルを誤削除し"
     },
     {
-      "id": "evening-S3-REPORT-DRAFT-01",
-      "at": "2026-07-18T09:04:50.892Z",
+      "id": "evening-S3",
+      "at": "2026-07-18T11:12:01.007Z",
       "verify": "npm run evening:reflect",
-      "note": "S3-REPORT-DRAFT-01: #S3-REPORT-DRAFT-01 S 現行 CEO baseline、A1 labels、Goal/Touch/SPEC contract、V2 footer を正確に含む report dra"
+      "note": "S3: #S3 S `evening-reflect.mjs`のtranscript探索をOS別にし、Windows Cursor projects配下もread-onlyで集計する。F4の「会話履歴未取得」を防ぐ 低（個人パス依存・巨大フ"
     }
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=ed9140dd | 次=**App 747 完了。次回は浜田の指示待ち** | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json | lastFailures=3",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
+  "promptBlock": "【SESSION-BRIDGE】git=08097c11 | 次=**次回は浜田の指示待ち**。SKYSEAは8/3問い合わせまで実装・GPO変更・本番配信を行わない。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json | lastFailures=3",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
+  "validatedAt": "2026-07-18T11:12:01.409Z",
+  "crosscheckOk": true
 }
