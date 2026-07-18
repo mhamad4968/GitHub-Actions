@@ -54,7 +54,9 @@ function scoreTask(text, source) {
   let priority = difficulty * 10 + tokens * 5 - impact * 3;
   if (source === 'checkpoint') {
     impact = Math.max(impact, 5);
-    priority = Math.min(priority, difficulty * 10 + tokens * 5 - impact * 3) - 5;
+    // checkpoint の「次の1手」は実行コスト評価より Lifecycle の明示順を優先する。
+    // 禁止文（例: deploy しない）を高難度タスクと誤認して backlog より下げない。
+    priority = 0;
   }
 
   return {
@@ -153,6 +155,11 @@ function main() {
   const dryRun = process.argv.includes('--dry-run');
   const tasks = collectTasks();
   tasks.sort((a, b) => a.priority - b.priority || b.impact - a.impact);
+  const checkpointTask = tasks.find((task) => task.source === 'checkpoint');
+  if (checkpointTask && tasks[0] !== checkpointTask) {
+    console.error('[cio:task:score-spec] NG checkpoint nextTask must remain Rank1');
+    process.exit(1);
+  }
 
   const payload = {
     scoredAt: new Date().toISOString(),

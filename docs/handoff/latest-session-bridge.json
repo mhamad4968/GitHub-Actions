@@ -1,8 +1,8 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-07-18T22:50:28.948Z",
-  "gitHead": "6b65b12f",
-  "gitStatus": "## main...origin/main",
+  "exportedAt": "2026-07-18T22:58:13.244Z",
+  "gitHead": "907abd1f",
+  "gitStatus": "## main...origin/main [ahead 3]",
   "nextTask": "**次回は浜田の指示待ち**。SKYSEAは8/3問い合わせまで実装・GPO変更・本番配信を行わない。",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
@@ -19,23 +19,25 @@
   "lastFailures": [
     {
       "id": "evening-S1",
-      "at": "2026-07-18T22:50:28.948Z",
+      "at": "2026-07-18T22:58:13.244Z",
       "verify": "npm run evening:reflect",
       "note": "S1: #S1 S **AIチーム管理アプリの単一JSON正本を新設**し、`kintone-apps.md`・BUILD/field/customize各台帳の和集合推定を置換する。F1の対象範囲誤認と、697型の登録漏れを防ぐ 中（既存"
     },
     {
       "id": "evening-S2",
-      "at": "2026-07-18T22:50:28.948Z",
+      "at": "2026-07-18T22:58:13.244Z",
       "verify": "npm run evening:reflect",
       "note": "S2: #S2 S Desktop同期に`SESSION-CLOSE-REPORT_YYYYMMDD.txt`のpruneを追加し、当日版だけ保持（当日版がなければ旧版全削除）。F3の過去ファイル残存を防ぐ 低（命名規則外ファイルを誤削除し"
     },
     {
       "id": "evening-S3",
-      "at": "2026-07-18T22:50:28.948Z",
+      "at": "2026-07-18T22:58:13.244Z",
       "verify": "npm run evening:reflect",
       "note": "S3: #S3 S `evening-reflect.mjs`のtranscript探索をOS別にし、Windows Cursor projects配下もread-onlyで集計する。F4の「会話履歴未取得」を防ぐ 低（個人パス依存・巨大フ"
     }
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=6b65b12f | 次=**次回は浜田の指示待ち**。SKYSEAは8/3問い合わせまで実装・GPO変更・本番配信を行わない。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json | lastFailures=3",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
+  "promptBlock": "【SESSION-BRIDGE】git=907abd1f | 次=**次回は浜田の指示待ち**。SKYSEAは8/3問い合わせまで実装・GPO変更・本番配信を行わない。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json | lastFailures=3",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
+  "validatedAt": "2026-07-18T22:58:13.798Z",
+  "crosscheckOk": true
 }
