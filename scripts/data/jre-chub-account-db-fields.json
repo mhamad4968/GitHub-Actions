@@ -28,7 +28,8 @@
         "本社": { "label": "本社", "index": "0" },
         "東京支店": { "label": "東京支店", "index": "1" },
         "東北支店": { "label": "東北支店", "index": "2" },
-        "関越支店": { "label": "関越支店", "index": "3" }
+        "関越支店": { "label": "関越支店", "index": "3" },
+        "湾岸工事所": { "label": "湾岸工事所", "index": "4" }
       }
     },
     "dept": {
@@ -50,7 +51,8 @@
         "秋田営業所": { "label": "秋田営業所", "index": "8" },
         "長野営業所": { "label": "長野営業所", "index": "9" },
         "関越施行部": { "label": "関越施行部", "index": "10" },
-        "高崎営業所": { "label": "高崎営業所", "index": "11" }
+        "高崎営業所": { "label": "高崎営業所", "index": "11" },
+        "湾岸工事所": { "label": "湾岸工事所", "index": "12" }
       }
     },
     "mail": {
@@ -81,6 +83,30 @@
             "署名者": { "label": "署名者", "index": "3" },
             "閲覧者": { "label": "閲覧者", "index": "4" }
           }
+        }
+      }
+    },
+    "proxy_targets": {
+      "type": "SUBTABLE",
+      "code": "proxy_targets",
+      "label": "署名代行対象",
+      "noLabel": false,
+      "fields": {
+        "proxy_name": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "proxy_name",
+          "label": "社員名",
+          "required": true,
+          "noLabel": false,
+          "defaultValue": ""
+        },
+        "proxy_mail": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "proxy_mail",
+          "label": "メールアドレス",
+          "required": true,
+          "noLabel": false,
+          "defaultValue": ""
         }
       }
     },

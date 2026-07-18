@@ -2,12 +2,12 @@
   "use strict";
 
   /** JRE-C_Hubアカウント台帳 — DB REST CRUD + 月次集計 + 一覧出力 */
-  var BUILD = "2026-06-27-jre-chub-account-dash-v6-list-filter-clear";
+  var BUILD = "2026-07-18-jre-chub-account-dash-v7-proxy-restore";
   var APP_DB = 746;
   var APP_EMP_MASTER = 595;
   var PAGE_SIZE = 100;
 
-  var ORGS = ["本社", "東京支店", "東北支店", "関越支店"];
+  var ORGS = ["本社", "東京支店", "東北支店", "関越支店", "湾岸工事所"];
 
   var DEPTS = [
     "－",
@@ -22,6 +22,7 @@
     "長野営業所",
     "関越施行部",
     "高崎営業所",
+    "湾岸工事所",
   ];
 
   var PERMS = ["グループ管理者", "承認者", "署名代行者", "署名者", "閲覧者"];
@@ -57,6 +58,7 @@
     dept: "dept",
     mail: "mail",
     permissions: "permissions",
+    proxy_targets: "proxy_targets",
     start_date: "start_date",
     end_date: "end_date",
     note: "note",
@@ -71,6 +73,7 @@
     FC.dept,
     FC.mail,
     FC.permissions,
+    FC.proxy_targets,
     FC.start_date,
     FC.end_date,
     FC.note,
@@ -83,12 +86,13 @@
     { key: "dept", label: "部門" },
     { key: "mail", label: "メールアドレス" },
     { key: "permissions", label: "権限" },
+    { key: "proxy_targets", label: "代行対象" },
     { key: "start_date", label: "利用開始日" },
     { key: "end_date", label: "利用終了日" },
     { key: "note", label: "備考" },
   ];
 
-  var LIST_EXPORT_COLUMNS = LIST_COLUMNS.slice(0, 8);
+  var LIST_EXPORT_COLUMNS = LIST_COLUMNS.slice(0, 9);
 
   var state = {
     records: [],
@@ -158,6 +162,22 @@
       });
   }
 
+  function parseProxyTargets(rec) {
+    var st = rec && rec[FC.proxy_targets];
+    if (!st || !st.value || !Array.isArray(st.value)) return [];
+    return st.value
+      .map(function (row) {
+        var fields = row.value || {};
+        return {
+          name: fields.proxy_name ? String(fields.proxy_name.value || "").trim() : "",
+          mail: fields.proxy_mail ? String(fields.proxy_mail.value || "").trim() : "",
+        };
+      })
+      .filter(function (target) {
+        return target.name || target.mail;
+      });
+  }
+
   function flatten(rec) {
     return {
       id: val(rec, "$id"),
@@ -168,6 +188,7 @@
       dept: val(rec, FC.dept),
       mail: val(rec, FC.mail),
       permissions: parsePermissions(rec),
+      proxy_targets: parseProxyTargets(rec),
       start_date: val(rec, FC.start_date),
       end_date: val(rec, FC.end_date),
       note: val(rec, FC.note),
@@ -266,11 +287,39 @@
     return list[0] + "、他複数権限あり";
   }
 
+  function proxyTargetsNames(targets) {
+    return (Array.isArray(targets) ? targets : [])
+      .map(function (target) {
+        return String(target && target.name ? target.name : "").trim();
+      })
+      .filter(function (name) {
+        return name;
+      })
+      .join("、");
+  }
+
+  function proxyTargetsFullText(targets) {
+    return (Array.isArray(targets) ? targets : [])
+      .map(function (target) {
+        var name = String(target && target.name ? target.name : "").trim();
+        var mail = String(target && target.mail ? target.mail : "").trim();
+        if (name && mail) return name + " <" + mail + ">";
+        return name || mail;
+      })
+      .filter(function (text) {
+        return text;
+      })
+      .join("、");
+  }
+
   function listFieldDisplay(row, key, opts) {
     opts = opts || {};
     if (key === "dept") return formatDeptLabel(row.org, row.dept);
     if (key === "permissions") {
       return opts.full ? permissionsFullText(row.permissions) : permissionsListText(row.permissions);
+    }
+    if (key === "proxy_targets") {
+      return opts.full ? proxyTargetsFullText(row.proxy_targets) : proxyTargetsNames(row.proxy_targets);
     }
     return row[key] != null ? String(row[key]) : "";
   }
@@ -289,7 +338,8 @@
     var dept = String(row.dept || "").trim();
     var deptLabel = formatDeptLabel(org, dept);
     var permStr = permissionsFullText(row.permissions);
-    var parts = [row.user_id, row.user_name, org, dept, deptLabel, permStr, row.mail, row.note];
+    var proxyStr = proxyTargetsFullText(row.proxy_targets);
+    var parts = [row.user_id, row.user_name, org, dept, deptLabel, permStr, proxyStr, row.mail, row.note];
     if (org && dept) {
       parts.push(org + " " + dept, org + dept, org + " / " + dept, org + "・" + dept, org + "／" + dept);
     }
@@ -542,6 +592,17 @@
           return { value: { perm: { value: String(p).trim() } } };
         }),
     };
+    var proxyTargets = Array.isArray(row.proxy_targets) ? row.proxy_targets : [];
+    o[FC.proxy_targets] = {
+      value: proxyTargets.map(function (target) {
+        return {
+          value: {
+            proxy_name: { value: String(target.name || "").trim() },
+            proxy_mail: { value: String(target.mail || "").trim() },
+          },
+        };
+      }),
+    };
     return o;
   }
 
@@ -609,6 +670,7 @@
     var startDate = String(row.start_date || "").trim();
     var endDate = String(row.end_date || "").trim();
     var perms = Array.isArray(row.permissions) ? row.permissions.filter(function (p) { return String(p || "").trim(); }) : [];
+    var proxyTargets = Array.isArray(row.proxy_targets) ? row.proxy_targets : [];
 
     if (!userId) throw new Error("IDは必須です");
     if (!userName) throw new Error("アカウント名は必須です");
@@ -630,6 +692,32 @@
     if (endDate && endDate < startDate) {
       throw new Error("利用終了日は利用開始日以降にしてください");
     }
+    if (perms.indexOf("署名代行者") >= 0 && !proxyTargets.length) {
+      throw new Error("権限に「署名代行者」を含む場合、署名代行対象を1名以上選択してください");
+    }
+    if (perms.indexOf("署名代行者") < 0 && proxyTargets.length) {
+      throw new Error("署名代行対象を設定するには、権限に「署名代行者」を追加してください");
+    }
+    var targetKeys = {};
+    var normalizedAccountMail = mail.toLowerCase();
+    proxyTargets.forEach(function (target) {
+      var targetName = String(target && target.name ? target.name : "").trim();
+      var targetMail = String(target && target.mail ? target.mail : "").trim();
+      if (!targetName || !targetMail) {
+        throw new Error("署名代行対象の社員名とメールアドレスは必須です");
+      }
+      if (!isValidMail(targetMail)) {
+        throw new Error("署名代行対象「" + targetName + "」のメールアドレスに @ を含めてください");
+      }
+      var key = targetMail.toLowerCase() || normalizeSearchText(targetName);
+      if (targetKeys[key]) {
+        throw new Error("署名代行対象が重複しています: " + targetName);
+      }
+      targetKeys[key] = true;
+      if (normalizedAccountMail && targetMail.toLowerCase() === normalizedAccountMail) {
+        throw new Error("アカウント本人を署名代行対象には設定できません: " + targetName);
+      }
+    });
   }
 
   function searchEmployees595(keyword, limit) {
@@ -840,6 +928,101 @@
     );
   }
 
+  function proxyTargetKey(target) {
+    var mail = String(target && target.mail ? target.mail : "").trim().toLowerCase();
+    if (mail) return "mail:" + mail;
+    return "name:" + normalizeSearchText(target && target.name ? target.name : "");
+  }
+
+  function proxyTargetRowHtml(target) {
+    return (
+      '<div class="jca-proxy-row" data-name="' +
+      esc(target && target.name ? target.name : "") +
+      '" data-mail="' +
+      esc(target && target.mail ? target.mail : "") +
+      '">' +
+      '<span class="jca-proxy-person"><strong>' +
+      esc(target && target.name ? target.name : "—") +
+      "</strong><small>" +
+      esc(target && target.mail ? target.mail : "—") +
+      "</small></span>" +
+      '<button type="button" class="jca-proxy-remove kintoneplugin-button-normal">削除</button>' +
+      "</div>"
+    );
+  }
+
+  function proxyTargetsFormHtml(targets) {
+    var list = Array.isArray(targets) ? targets : [];
+    return (
+      '<section class="jca-proxy-section"><div class="jca-proxy-heading">署名代行対象</div>' +
+      '<p class="jca-hint">権限に「署名代行者」を含む場合のみ必須です。App 595 の社員検索から複数名を選択できます。</p>' +
+      '<div id="jca-f-proxy-targets" class="jca-proxy-targets">' +
+      list.map(proxyTargetRowHtml).join("") +
+      "</div>" +
+      '<button type="button" id="jca-proxy-search" class="kintoneplugin-button-normal">社員名検索（595）</button></section>'
+    );
+  }
+
+  function readFormProxyTargets() {
+    var box = document.getElementById("jca-f-proxy-targets");
+    if (!box) return [];
+    return Array.prototype.slice.call(box.querySelectorAll(".jca-proxy-row")).map(function (row) {
+      return {
+        name: row.getAttribute("data-name") || "",
+        mail: row.getAttribute("data-mail") || "",
+      };
+    });
+  }
+
+  function wireProxyTargetRows() {
+    var box = document.getElementById("jca-f-proxy-targets");
+    if (!box) return;
+    box.querySelectorAll(".jca-proxy-remove").forEach(function (btn) {
+      btn.onclick = function () {
+        var row = btn.closest(".jca-proxy-row");
+        if (row) row.remove();
+      };
+    });
+  }
+
+  function addProxyTargetFrom595(empRow) {
+    var box = document.getElementById("jca-f-proxy-targets");
+    if (!box) return;
+    var target = {
+      name: val(empRow, "user_name").trim(),
+      mail: val(empRow, "mail").trim(),
+    };
+    if (!target.name || !target.mail) {
+      alert("選択した社員に社員名またはメールアドレスがないため追加できません");
+      return;
+    }
+    var accountMailEl = document.getElementById("jca-f-mail");
+    var accountMail = accountMailEl ? accountMailEl.value.trim().toLowerCase() : "";
+    if (accountMail && target.mail.toLowerCase() === accountMail) {
+      alert("アカウント本人を署名代行対象には設定できません");
+      return;
+    }
+    var key = proxyTargetKey(target);
+    var duplicate = readFormProxyTargets().some(function (existing) {
+      return proxyTargetKey(existing) === key;
+    });
+    if (duplicate) {
+      alert("この社員は既に署名代行対象に追加されています");
+      return;
+    }
+    box.insertAdjacentHTML("beforeend", proxyTargetRowHtml(target));
+    wireProxyTargetRows();
+  }
+
+  function wireProxyTargetSearch() {
+    var btn = document.getElementById("jca-proxy-search");
+    if (!btn) return;
+    btn.onclick = function () {
+      open595SearchModal(addProxyTargetFrom595);
+    };
+    wireProxyTargetRows();
+  }
+
   function orgOptionsHtml(selected) {
     return (
       '<option value="">—</option>' +
@@ -932,6 +1115,7 @@
       dept: document.getElementById("jca-f-dept").value.trim(),
       mail: document.getElementById("jca-f-mail").value.trim(),
       permissions: readFormPermissions(),
+      proxy_targets: readFormProxyTargets(),
       start_date: document.getElementById("jca-f-start-date").value.trim(),
       end_date: document.getElementById("jca-f-end-date").value.trim(),
       note: document.getElementById("jca-f-note").value.trim(),
@@ -973,6 +1157,7 @@
       '</select></label>' +
       '<p class="jca-hint">部門は C-Hub 専用マスタです。595 の所属とは異なります。</p>' +
       permissionsFormHtml(r.permissions) +
+      proxyTargetsFormHtml(r.proxy_targets) +
       '<label>メールアドレス<input type="email" id="jca-f-mail" value="' +
       esc(r.mail || "") +
       '"></label>' +
@@ -1075,10 +1260,20 @@
         },
       });
     }
+    if (row && row.id && !isCreate && row.end_date) {
+      buttons.unshift({
+        label: "利用再開",
+        primary: true,
+        onClick: function () {
+          restoreRecord(row);
+        },
+      });
+    }
     var title = isCreate ? "新規作成" : "編集 — " + (row.user_name || row.user_id || "");
     openModal(title, formFieldsHtml(row, isCreate), buttons);
     if (isCreate) wireCreate595Search();
     wirePermissionRows();
+    wireProxyTargetSearch();
   }
 
   function retireRecord(row) {
@@ -1109,6 +1304,35 @@
       })
       .catch(function (e) {
         alert("退職処理失敗: " + formatKintoneApiError(e));
+      });
+  }
+
+  function restoreRecord(row) {
+    if (!state.isAdmin || !row || !row.id || !row.end_date) return;
+    var msg =
+      "アカウント: " +
+      row.user_name +
+      "（" +
+      row.user_id +
+      "）\n\n利用終了日をクリアして利用を再開します。\n\nよろしいですか？";
+    if (!window.confirm(msg)) return;
+    apiPut("/k/v1/record.json", {
+      app: APP_DB,
+      id: Number(row.id),
+      revision: Number(row.revision),
+      record: {
+        end_date: { value: "" },
+      },
+    })
+      .then(function () {
+        closeModal();
+        return reloadRecords();
+      })
+      .then(function () {
+        alert("利用を再開しました");
+      })
+      .catch(function (e) {
+        alert("利用再開失敗: " + formatKintoneApiError(e));
       });
   }
 
@@ -1170,13 +1394,13 @@
     var tbody = document.getElementById("jca-tbody");
     if (!tbody) return;
     if (state.loading) {
-      tbody.innerHTML = '<tr><td colspan="11">読込中…</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="' + (LIST_COLUMNS.length + 2) + '">読込中…</td></tr>';
       return;
     }
     var rows = filteredRecords();
     var dupIds = computeMultiBranchDuplicateIds();
     if (!rows.length) {
-      tbody.innerHTML = '<tr><td colspan="11">該当なし</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="' + (LIST_COLUMNS.length + 2) + '">該当なし</td></tr>';
       return;
     }
     tbody.innerHTML = rows
@@ -1194,7 +1418,7 @@
             '<button type="button" class="jca-btn-edit">編集</button>' +
             (!row.end_date
               ? '<button type="button" class="jca-btn-retire">利用終了</button>'
-              : "");
+              : '<button type="button" class="jca-btn-restore">利用再開</button>');
         }
         var trCls = isDup && !row.end_date ? ' class="jca-dup-row"' : "";
         return (
@@ -1208,6 +1432,12 @@
               var label = permissionsListText(row.permissions);
               var titleAttr = full && full !== label ? ' title="' + esc(full) + '"' : "";
               return "<td" + titleAttr + ">" + cellText(label) + "</td>";
+            }
+            if (col.key === "proxy_targets") {
+              var proxyNames = proxyTargetsNames(row.proxy_targets);
+              var proxyFull = proxyTargetsFullText(row.proxy_targets);
+              var proxyTitle = proxyFull ? ' title="' + esc(proxyFull) + '"' : "";
+              return "<td" + proxyTitle + ">" + cellText(proxyNames) + "</td>";
             }
             return "<td>" + cellText(listFieldDisplay(row, col.key)) + "</td>";
           }).join("") +
@@ -1231,6 +1461,12 @@
       if (retireB) {
         retireB.addEventListener("click", function () {
           retireRecord(row);
+        });
+      }
+      var restoreB = tr.querySelector(".jca-btn-restore");
+      if (restoreB) {
+        restoreB.addEventListener("click", function () {
+          restoreRecord(row);
         });
       }
     });
@@ -1987,7 +2223,7 @@
       ".jca-perm-filter-btn.active{background:#2563eb;color:#fff;border-color:#2563eb;font-weight:600;}" +
       ".jca-perm-filter-btn:hover:not(.active){background:#eff6ff;}" +
       ".jca-table-wrap{overflow:auto;max-height:calc(100vh - 320px);border:1px solid #cbd5e1;border-radius:6px;}" +
-      ".jca-table{border-collapse:collapse;width:100%;font-size:14px;min-width:1400px;}" +
+      ".jca-table{border-collapse:collapse;width:100%;font-size:14px;min-width:1540px;}" +
       ".jca-table th,.jca-table td{border:1px solid #e2e8f0;padding:6px 8px;vertical-align:middle;line-height:1.45;}" +
       ".jca-table th{background:#f1f5f9;position:sticky;top:0;z-index:1;}" +
       ".jca-none{color:#64748b;font-style:italic;}" +
@@ -2008,7 +2244,7 @@
       ".jca-create-595-btn{font-size:15px;padding:10px 18px;}" +
       ".jca-595-results{margin-top:10px;max-height:240px;overflow:auto;display:flex;flex-direction:column;gap:6px;}" +
       ".jca-595-pick{text-align:left;white-space:normal;}" +
-      ".jca-595-actions{display:flex;gap:8px;margin:8px 0;}"+".jca-perms-box{display:flex;flex-direction:column;gap:6px;margin-top:4px;}"+".jca-perm-row{display:flex;gap:8px;align-items:center;}"+".jca-perm-row select{flex:1;}"+".jca-dup-row td{background:#fef2f2;}"+".jca-dup-warn{color:#dc2626;font-weight:700;}"+".jca-agg-footnote-acc{margin-top:12px;border:1px solid #e2e8f0;border-radius:6px;padding:8px 12px;background:#f8fafc;}"+".jca-agg-footnote-fixed{white-space:pre-wrap;font-size:13px;color:#475569;margin:8px 0 0;}"+".jca-agg-dup-notes{margin-top:10px;font-size:13px;color:#b91c1c;line-height:1.5;}";
+      ".jca-595-actions{display:flex;gap:8px;margin:8px 0;}"+".jca-perms-box{display:flex;flex-direction:column;gap:6px;margin-top:4px;}"+".jca-perm-row{display:flex;gap:8px;align-items:center;}"+".jca-perm-row select{flex:1;}"+".jca-proxy-section{margin:14px 0;padding:12px;border:1px solid #bfdbfe;border-radius:6px;background:#eff6ff;}"+".jca-proxy-heading{font-weight:700;color:#1e3a8a;}"+".jca-proxy-targets{display:flex;flex-direction:column;gap:6px;margin:8px 0;}"+".jca-proxy-row{display:flex;align-items:center;gap:8px;padding:7px 9px;border:1px solid #dbeafe;border-radius:6px;background:#fff;}"+".jca-proxy-person{display:flex;flex-direction:column;flex:1;min-width:0;}"+".jca-proxy-person small{color:#64748b;overflow-wrap:anywhere;}"+".jca-dup-row td{background:#fef2f2;}"+".jca-dup-warn{color:#dc2626;font-weight:700;}"+".jca-agg-footnote-acc{margin-top:12px;border:1px solid #e2e8f0;border-radius:6px;padding:8px 12px;background:#f8fafc;}"+".jca-agg-footnote-fixed{white-space:pre-wrap;font-size:13px;color:#475569;margin:8px 0 0;}"+".jca-agg-dup-notes{margin-top:10px;font-size:13px;color:#b91c1c;line-height:1.5;}";
     document.head.appendChild(st);
   }
 
@@ -2081,7 +2317,7 @@
       "</div></details>" +
       '<div class="jca-filters">' +
       '<span class="jca-filter-label">検索</span>' +
-      '<input type="search" id="jca-search" placeholder="ユーザID / 氏名 / 所属・部署 / 備考（スペース区切りで AND）">' +
+      '<input type="search" id="jca-search" placeholder="ユーザID / 氏名 / 所属・部署 / 代行対象 / 備考（スペース区切りで AND）">' +
       '<button type="button" id="jca-search-clear" class="kintoneplugin-button-normal">クリア</button>' +
       "</div>" +
       '<div class="jca-lifecycle-bar">' +

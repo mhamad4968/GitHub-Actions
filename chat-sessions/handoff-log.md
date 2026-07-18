@@ -4773,3 +4773,20 @@ npm run cio:morning:ready
 **Git**: close records 作成前 **`5a30669a`** = `origin/main` — push 済。必要に応じて `cio:session:close-git` が最終化する。
 
 ---
+
+### 2026-07-18 JST — **App 746/747 署名代行対象・利用再開・湾岸工事所**
+
+**要約**: App 746フォーム rev8へ `proxy_targets` サブテーブル（社員名・メール）と所属/部門「湾岸工事所」を追加。App 747はApp 595社員検索による複数代行対象、署名代行者との整合検証、重複/本人防止、一覧・検索・Excel/印刷、終了済みの利用再開を実装し、BUILD `2026-07-18-jre-chub-account-dash-v7-proxy-restore` rev13へdeploy。既存48件は一括更新せず空ST互換を実機確認。
+
+**確認**: DeepSeek着手前監査・Composer実装・KimiレビューをCIO突合。live schema Warning 0、build registry 746/747 OK、smoke 17/17、lint・diff check OK。ブラウザ自動目視はログイン画面のため未実施。
+
+**次の1手**: **浜田による App 747 目視確認待ち。次の依頼があれば対応**
+
+**GO待ち**: H9 / △2 最終判定 — **2026-07-25 のみ**
+
+**触らない**: 688（WBGT以外）/ 677–679 / SKYSEA 7月 / 712 deploy / 736 ver.02（Excel受領前）
+
+
+**Git**: **`c5975f89`** = `origin/main` — push 済
+
+---

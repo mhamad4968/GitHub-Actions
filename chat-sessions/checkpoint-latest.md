@@ -1,13 +1,13 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-18 JST — **WAKE・AI緊急用00〜36通読・健康監査と即時是正を完了**
+**最終更新**: 2026-07-18 JST — **App 746/747 署名代行対象・利用再開・湾岸工事所を本番反映**
 
 **Git**: **`c5975f89`** = `origin/main` — push 済
 
-**本日状態**: cold-start READY。Desktop `AI緊急用` 00〜36を全件通読し、DeepSeek/Kimi照合・MCP 26 active・GitHub・healthを確認。healthのGit偽clean、19番当日化、HANDOFF-HUMAN最新化、handoff末尾重複を是正済み。
+**本日状態**: cold-start READY。Desktop通読・健康監査後、App 746フォーム rev8へ署名代行対象STと所属/部門「湾岸工事所」を追加。App 747は社員検索・複数代行対象・利用再開・一覧/検索/出力対応を rev13 でdeploy済み。live schema・48件空ST互換・smoke 17/17を確認。
 
-**次の1手**: **次回は浜田の指示待ち。App 736 ver.02 は依頼者 Excel 受領後に現行版を残して再設計**
+**次の1手**: **浜田による App 747 目視確認待ち。次の依頼があれば対応**
 
 **GO待ち**: H9 / △2 最終判定 — **2026-07-25 のみ**（本日は判定不可 · 運用側対応済: metrics蓄積+verify:formalization-h9-review scheduled）
 
@@ -26,6 +26,7 @@
 **700 本番**: BUILD=`2026-07-17-hide-wf-test-dept` rev **170** — 提案件名 · 3段階通知 · 汎用 Assignee 通知なし · 定期リマインドなし · WF テスト部署 admin 限定
 
 **736 本番**: BUILD=`2026-07-12-736-ui-backlog-02-col-resize` rev **186** — 現行版を保持。ver.02 は依頼者 Excel 受領後に再設計し、本日は実装・deploy なし。
+**746/747 本番**: DBフォーム rev **8** / Dash BUILD=`2026-07-18-jre-chub-account-dash-v7-proxy-restore` rev **13** — 署名代行対象（App 595社員検索・複数）・終了済み利用再開・所属/部門「湾岸工事所」。
 
 ## クローズ済み（`data/cio-project-closures.json` — 9件）
 
