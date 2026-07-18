@@ -378,11 +378,11 @@
       "note": null
     },
     "747": {
-      "build": "2026-07-18-jre-chub-account-dash-v7-proxy-restore",
-      "fileKey": "08698457-d0e0-4c92-a835-2c8fe4be15b9",
-      "revision": "13",
+      "build": "2026-07-18-jre-chub-account-dash-v8-edge-autofill-fix",
+      "fileKey": "f013dbed-13ec-4c5d-8137-f9acb3589ba8",
+      "revision": "14",
       "relPath": "customize/jre-chub-account-dash/desktop.js",
-      "deployedAt": "2026-07-18T04:38:20.959Z",
+      "deployedAt": "2026-07-18T04:59:32.673Z",
       "note": null
     },
     "748": {

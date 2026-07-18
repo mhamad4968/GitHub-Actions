@@ -4790,3 +4790,19 @@ npm run cio:morning:ready
 **Git**: **`c5975f89`** = `origin/main` — push 済
 
 ---
+
+### 2026-07-18 JST — **App 747 Edge「パスポート保存」誤認抑止**
+
+**要約**: Edgeが新規・編集モーダルの「ID」を旅券番号と誤認する実画面証跡を受領。DB `user_id` は維持したまま、表示名を「C-Hubアカウントコード」、入力型をsearch、DOM識別子を中立化し、form/inputへautofill抑止属性を設定。BUILD `2026-07-18-jre-chub-account-dash-v8-edge-autofill-fix` rev14へdeploy。
+
+**確認**: DeepSeek着手前監査、Composer実装、CIO差分突合。live schema Warning 0、smoke 17/17、lint OK。ブラウザ固有ポップアップの最終確認は浜田のログイン済みEdgeで実施する。
+
+**次の1手**: **浜田による App 747 再読込後の「パスポート保存」非表示確認待ち**
+
+**Git**: `0b8b0840` = origin/main（本修正commit前）
+
+**GO待ち**: H9 / △2 最終判定 — **2026-07-25 のみ**
+
+**触らない**: 688（WBGT以外）/ 677–679 / SKYSEA 7月 / 712 deploy / 736 ver.02（Excel受領前）
+
+---

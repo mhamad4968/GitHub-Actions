@@ -26,7 +26,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   "use strict";
 
   /** JRE-C_Hubアカウント台帳 — DB REST CRUD + 月次集計 + 一覧出力 */
-  var BUILD = "2026-07-18-jre-chub-account-dash-v7-proxy-restore";
+  var BUILD = "2026-07-18-jre-chub-account-dash-v8-edge-autofill-fix";
   var APP_DB = 746;
   var APP_EMP_MASTER = 595;
   var PAGE_SIZE = 100;
@@ -1133,7 +1133,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   function readFormRow(existing) {
     var isNew = !existing || !existing.id;
     var row = {
-      user_id: document.getElementById("jca-f-user-id").value.trim(),
+      user_id: document.getElementById("jca-f-account-key").value.trim(),
       user_name: document.getElementById("jca-f-user-name").value.trim(),
       org: document.getElementById("jca-f-org").value.trim(),
       dept: document.getElementById("jca-f-dept").value.trim(),
@@ -1157,21 +1157,22 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     var r = row || {};
     var userIdAttrs = isNew ? "" : " readonly";
     return (
+      '<form id="jca-account-entry" autocomplete="off">' +
       (isNew
         ? '<input type="hidden" id="jca-create-595-picked" value="">' +
           '<div class="jca-create-595-step">' +
           '<button type="button" id="jca-create-595-search" class="kintoneplugin-button-dialog-ok jca-create-595-btn">社員名検索（595）</button>' +
           "</div>" +
-          '<p class="jca-hint">社員名検索でアカウント名・メール・所属グループを自動入力します。ID と部門・権限は手入力です。</p>'
+          '<p class="jca-hint">社員名検索でアカウント名・メール・所属グループを自動入力します。アカウントコードと部門・権限は手入力です。</p>'
         : "") +
-      '<label>ID<input type="text" id="jca-f-user-id" value="' +
+      '<label>C-Hubアカウントコード<input type="search" id="jca-f-account-key" value="' +
       esc(r.user_id || "") +
       '"' +
       userIdAttrs +
-      ' autocomplete="off"></label>' +
+      ' autocomplete="off" data-form-type="other" data-1p-ignore data-lpignore="true" data-bwignore="true" spellcheck="false"></label>' +
       '<label>アカウント名<input type="text" id="jca-f-user-name" value="' +
       esc(r.user_name || "") +
-      '"></label>' +
+      '" autocomplete="off" data-form-type="other"></label>' +
       '<label>所属グループ<select id="jca-f-org">' +
       orgOptionsHtml(r.org) +
       '</select></label>' +
@@ -1184,17 +1185,25 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       proxyTargetsFormHtml(r.proxy_targets) +
       '<label>メールアドレス<input type="email" id="jca-f-mail" value="' +
       esc(r.mail || "") +
-      '"></label>' +
+      '" autocomplete="off" data-form-type="other"></label>' +
       '<label>利用開始日<input type="date" id="jca-f-start-date" value="' +
       esc(r.start_date || todayJstYmd()) +
-      '"></label>' +
+      '" autocomplete="off"></label>' +
       '<label>利用終了日<input type="date" id="jca-f-end-date" value="' +
       esc(r.end_date || "") +
-      '"></label>' +
-      '<label>備考<textarea id="jca-f-note" rows="3">' +
+      '" autocomplete="off"></label>' +
+      '<label>備考<textarea id="jca-f-note" rows="3" autocomplete="off">' +
       esc(r.note || "") +
-      "</textarea></label>"
+      "</textarea></label></form>"
     );
+  }
+
+  function wireAccountEntryForm() {
+    var form = document.getElementById("jca-account-entry");
+    if (!form) return;
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+    });
   }
 
   function wireCreate595Search() {
@@ -1295,6 +1304,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     }
     var title = isCreate ? "新規作成" : "編集 — " + (row.user_name || row.user_id || "");
     openModal(title, formFieldsHtml(row, isCreate), buttons);
+    wireAccountEntryForm();
     if (isCreate) wireCreate595Search();
     wirePermissionRows();
     wireProxyTargetSearch();

@@ -10,12 +10,12 @@
 | **MCP** | Cursor設定 26/26 active。extended probe は OK 8/9・Windows既知制約によるSKIP 1・NG 0 |
 | **GitHub** | 最新run success・open PR 0・open issue 0。直近警告1件は後続pushで置換されたcancelled run |
 | **軽微是正** | healthのGit偽clean、HANDOFF-HUMAN最新化、handoff末尾重複、19番当日1本ルールを修正 |
-| **App 746/747** | 署名代行対象のApp 595社員検索・利用再開・所属/部門「湾岸工事所」を本番反映。DBフォーム rev8 / Dash rev13 |
+| **App 746/747** | 署名代行対象・利用再開・所属/部門「湾岸工事所」を本番反映。さらにEdge「パスポート保存」誤認を抑止。DBフォーム rev8 / Dash rev14 |
 | **検証** | live schema Warning 0・既存48件の空サブテーブル互換・smoke 17/17・Desktop同期一致 |
 
 ## 現在の判断
 
-- App 747 は浜田の目視確認待ち。自動ブラウザはログイン画面までのため、実画面のクリック確認は未実施。
+- App 747は再読込後、Edgeの「パスポート保存」が出ないことを浜田が最終確認する。
 - App 736 ver.02 は依頼者Excel受領後に現行版を残して再設計する。
 - H9 / △2 の最終判定は2026-07-25のみ。早期GREENは禁止。
 - npm audit high 5件は既知リスク。破壊的な自動更新は行わない。

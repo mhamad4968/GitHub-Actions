@@ -4,7 +4,7 @@
 > **状態**: **運用中 — 2026-07-18 署名代行対象・利用再開・湾岸工事所を本番反映済み**
 > **配置**: [Space 34 — JRシステム関連](https://jbis-kintone.cybozu.com/k/#/space/34) / thread **38**  
 > **App ID**: **746**（DB）/ **747**（台帳）— `scripts/data/jre-chub-account-app-ids.json`  
-> **BUILD**: DB customize `2026-06-27-jre-chub-account-db-block-v1` rev6（フォーム rev8）/ 台帳 `2026-07-18-jre-chub-account-dash-v7-proxy-restore` rev13
+> **BUILD**: DB customize `2026-06-27-jre-chub-account-db-block-v1` rev6（フォーム rev8）/ 台帳 `2026-07-18-jre-chub-account-dash-v8-edge-autofill-fix` rev14
 > **移行元 Excel**: `C:\tmp\C_Hubアカウント一覧\C_Hubアカウント一覧.xlsx`（シート **`C-Hubアカウント一覧`** のみ）  
 > **UI 参照**: [JREクラウドアカウント台帳 745](https://jbis-kintone.cybozu.com/k/745/) 型 + 権限サブテーブル・複数拠点警告
 
@@ -377,6 +377,7 @@ JRE745 / VPN734 同型（IT 管理者のみ・一般非表示）
 
 | 日付 | 内容 |
 |------|------|
+| 2026-07-18 | **本番反映・台帳 rev14** — Edge がアカウント ID 入力をパスポート番号と誤判定する問題を抑止。モーダルの DOM ID・表示ラベル・入力型・autofill 抑止属性を変更し、入力欄を `autocomplete="off"` の form で囲んで submit を抑止。DB schema・`user_id`・API payload は変更なし。BUILD v8 |
 | 2026-07-18 | **本番反映** — DBフォーム rev8 / 台帳 rev13。署名代行対象サブテーブル・App 595 複数検索・必須/重複/本人検証・一覧/検索/出力・利用再開・湾岸工事所追加。既存48レコードは一括更新せず、空サブテーブル互換を実機確認 |
 | 2026-06-27 | **完了** — 権限フィルタ・集計チップ UI・各種クリア（検索→稼働中+権限すべて）。BUILD v6 |
 | 2026-06-27 | 権限表示短縮・Excel 続行行の権限 sync（17 件更新） |
