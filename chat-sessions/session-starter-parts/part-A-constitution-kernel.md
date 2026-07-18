@@ -149,7 +149,7 @@ CEO 浜田 4/29 朝指示（「Claude Code v2.1.111 準拠」）を、Cursor + �
 
 ```
 [§1-2-3 ティア判定: L2 Extra High] 引き継ぎ直後・憲法確認フェーズ（§1-2-3-2 デフォルト）
-[🎖️ 本セッション割当] CIO=Opus4.7本体 | Composer=Subagent未使用 | DeepSeek=項番0後の仕様確認で起用予定 | Kimi=長文時 | OpenRouter=未使用
+[🎖️ 本セッション割当] CIO=Opus4.8デフォルト（軽量時4.7） | Composer=Subagent未使用 | DeepSeek=項番0後の仕様確認で起用予定 | Kimi=長文時 | OpenRouter=未使用
 (7) 役割宣言: deploy / apply / push / 検証コマンドの実行は私（AI）が行います。
     浜田には GO と画面目視の確認のみ依頼します（§35-1 / §56-1a / TSB-024）。
 ```

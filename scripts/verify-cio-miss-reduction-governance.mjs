@@ -50,6 +50,17 @@ function main() {
     issues.push('verify-win-hidden-spawn-hotpaths に R29 smoke 用 --warn-only 未使用');
   }
 
+  const lastFailuresSource = fs.readFileSync(
+    path.join(root, 'scripts/lib/cio-bridge-last-failures.mjs'),
+    'utf8',
+  );
+  if (lastFailuresSource.includes('extractEveningApproved')) {
+    issues.push('bridge.lastFailures に承認済み夕反省を混入する extractor が再導入された');
+  }
+  if (lastFailuresSource.includes("slugId('debug-tip'")) {
+    issues.push('bridge.lastFailures に未判定の debug-tip errors コメントを混入する extractor が再導入された');
+  }
+
   if (issues.length) {
     console.error('[verify:cio-miss-reduction-governance] NG', issues.length);
     for (const i of issues) console.error('  -', i);

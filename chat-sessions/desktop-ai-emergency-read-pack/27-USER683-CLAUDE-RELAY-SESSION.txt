@@ -26,6 +26,7 @@
   2) 683 で Claude 要約を使う日の「PC 側」:
        npm run user683:claude-relay:public
      （中継＋HTTPS トンネル。表示に従う。終了時はターミナルで Ctrl+C）
+     ⚠ 公開トンネルはローカル中継をインターネットへ公開する。機密 corpus・秘密情報を流さず、利用後は必ず Ctrl+C で停止する。
 
      すでに別ターミナルで中継だけ動かしているなら:
        npm run user683:claude-relay:public -- --no-spawn

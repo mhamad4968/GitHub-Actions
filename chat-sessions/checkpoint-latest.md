@@ -56,8 +56,8 @@
 | **kintone棚卸** | AIチーム管理75 IDだけを月次監査 · 現役63/63・削除済み12/12でOK · 一般部門アプリは比較対象外 |
 | **旧アプリ** | 594/626/627/638/639/651/652/653/667/668/681/712のlive不在を正本化 · 主要deploy経路へ安全栓 |
 | **SKYSEA** | 前段90項目をplan §11へ確定 · 8/3問い合わせ · 9月段階展開 · 10/30完了目標 · 実装は8月GO後 |
-| **GitHub** | Actions主要ゲート成功 · mainはlinear/force-push禁止/deletion禁止 · required checksは#R2承認待ち |
-| **夕反省** | F1〜F5を記録 · 改善案#S1〜#S3/#R1〜#R2は未承認・未適用 |
+| **GitHub** | Actions主要ゲート成功 · mainはlinear/force-push禁止/deletion禁止 · required checksは互換性評価済み、現行direct-push締め維持のため設定変更なし |
+| **夕反省** | F1〜F5を記録 · 改善案#S1〜#S3/#R1〜#R2は浜田承認・反映済み |
 
 
 ## 2026-07-17 本日完了サマリー

@@ -41,7 +41,7 @@ npm run cio:session:cold-start
 |------|----------|------|
 | 1 | `docs/handoff/latest-session-bridge.json` | gitHead・次タスク |
 | 2 | `chat-sessions/checkpoint-latest.md`（**先頭 50 行**） | 凍結・直近完了 |
-| 3 | `chat-sessions/constitution-first-read-pack/00-ORDER.txt` 〜 `05-full-refs.txt` | 憲法要約 |
+| 3 | `chat-sessions/constitution-first-read-pack/00-ORDER.txt` 〜 `06-abcd-v2-runbooks.txt` | 憲法要約 |
 
 ## L2 フォールバック（bootstrap NG 時のみ）
 

@@ -36,7 +36,7 @@ AI緊急用 フォルダ（Desktop）— 使い方メモ（正本はリポ `chat
 
   07-HANDOFF-AI-FIVE-BLOCKS.md / 21-SESSION-BOOTSTRAP-CHECKLIST.txt / 22-HANDOFF-HUMAN.txt … リポと同名で上書き同期。
 
-  24-handoff-log.md / 25-checkpoint-latest.md … リポ **`chat-sessions/handoff-log.md`** と **`chat-sessions/checkpoint-latest.md`** を **常に**同名バイトで Desktop へ同期（verify も検査）。**AI 同期専用 — メモ帗で開かない**（sync 競合で固まりやすい）。
+  24-handoff-log.md / 25-checkpoint-latest.md … リポ **`chat-sessions/handoff-log.md`** と **`chat-sessions/checkpoint-latest.md`** を **常に**同名バイトで Desktop へ同期（verify も検査）。**AI 同期専用 — メモ帳で開かない**（sync 競合で固まりやすい）。
 
   **34-handoff-log-LITE.txt** … 浜田用要約（**末尾100行・直近引き継ぎ**）。メモ帳で開くのは **LITE のみ**。
 

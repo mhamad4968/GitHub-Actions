@@ -2,6 +2,7 @@
 
 > 正本ハブ: `chat-sessions/NEW-SESSION-STARTER.md`（貼付用・短縮版）
 > 親ファイル: v3.35 まで monolithic → **v3.36** より分割（2026-05-07 CIO）
+> **現行位置づけ（Lifecycle v2）**: Part A〜F は **cold-start/bootstrap NG 時の L2 フォールバック専用**。通常 WAKE は `docs/runbooks/session-lifecycle-v2.md` の `cio:session:cold-start → ORIENT → ALIGN` を優先し、下記の旧「OK 前 bootstrap 禁止」順序を適用しない。
 
 ---
 
@@ -21,7 +22,7 @@
 2. **スターター分割パートの通読（必須・読み飛ばし禁止）**: 浜田が **ハブのみ**貼っていても、**チャット貼付だけを「読んだ」とみなさない**。必ず **`chat-sessions/session-starter-parts/part-A`〜`part-F` をこの順で** Read する（各ファイルが長いときは **`offset` / `limit` を繰り返し**、**抜け・重複を残さない**）。**要約や記憶だけで手順 3 以降に進まない**。
 2b. **前日の締め報告（任意・2026-05-04）**: 同じ JST 日付または直前の営業日に **`chat-sessions/SESSION-CLOSE-REPORT_yyyymmdd.txt`**（または Desktop 同名）があれば、**項番 -0 の前**に **Read ツールで通読**（反省・次アクションの取りこぼし防止。無ければスキップ可＋チャットに「CLOSE 無し」1 語でよい）。
 3. **項番 -0（開始ゲート）**: 手順 2（および任意 2b）完了後、ツールで `chat-sessions/checkpoint-latest.md` の **「最終更新」先頭 1 行**と `chat-sessions/handoff-log.md` の **末尾見出し 1 ブロック**を読む。浜田が `HANDOFF-HUMAN` を貼っていればその **「次にやる1つ」** も採用。**§41 で一問だけ**: 「本日の本題（これから着手する次の一手）は ○○で合っていますか？」**浜田の OK**（はい／OK／進めて／1 行の修正指示）が返るまで、`verify:*`・**`npm run session:bootstrap`**・本題の **副作用**（Tier B・deploy・kintone 本番書込等）に **着手しない**。
-4. **項番 0（機械ゲート一括）**: リポルートで **`npm run session:bootstrap` を 1 回実行**するだけでよい。内部の直列は **`(1)`** `verify:constitution-handoff` → **`(1b)`** `verify:mandatory-read-gate`（必読構造＋ `session:split-check` 等）→ **`(1c)`** `verify:session-clock-health --strict`（**hooks・crontab の session-split 行・`logs/.session-clock-install-node` と cron 行の node 整合**）→ **`npm run session-starter:sync-desktop`** → **`verify:desktop-ai-emergency-sync`** → **`(4)`** `smoke:quiet`（11 連）。終了コードと WARN/NG をチャットに **短く要約**（詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 7）。
+4. **項番 0（機械ゲート一括）**: リポルートで **`npm run session:bootstrap` を 1 回実行**するだけでよい。内部の直列は **`(1)`** `verify:constitution-handoff` → **`(1b)`** `verify:mandatory-read-gate`（必読構造＋ `session:split-check` 等）→ **`(1c)`** `verify:session-clock-health --strict`（**hooks・crontab の session-split 行・`logs/.session-clock-install-node` と cron 行の node 整合**）→ **`npm run session-starter:sync-desktop`** → **`verify:desktop-ai-emergency-sync`** → **`(4)`** `smoke:quiet`（検査数は `scripts/smoke-test.mjs` の現行出力を正とする）。終了コードと WARN/NG をチャットに **短く要約**（詳細は `SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 7）。
 5. **壁時計（客観起点・2026-04-29 CIO 運用 / `AGENTS.md` §51-6 遵守事項 6）**: **新チャット（セッション切替）ごとに、AI は `npm run session:clock:set` を必ず実行する**（hook が先に走っていても再実行してよい。実行後 **`SESSION-CLOCK.md` の `開始:` をチャットに 1 行報告**）。続けて **`npm run session:clock:web` をバックグラウンド起動**し、ターミナルに出た **`[session-clock-web] 開く: http://127.0.0.1:…` をチャットへ転記**し、浜田に **ブラウザで開く**よう促す（**毎回表示 URL を正とする**／`SESSION-SPLIT-REMINDER.md`）。**実行タイミング**: 項番 0（`session:bootstrap`）の **直後**が既定（health が壁時計を読む流れと両立）。bootstrap 前に set する必要がある特殊環境は §41 一問。**セッション終了時**は遵守事項 **7** に従い **`npm run session:clock:clear`**（**開始:** を **未設定**）＋ **`session:clock:web` ターミナルは Ctrl+C**。
 
 **文脈復元（@ Read）**: **項番 0 が通ったあと**、本題に入る前に **下記「■ フル版」内の @ リスト**を読む（パスはファイル内の通り。PC 台帳を触らない日は仕様書の @ はスキップ可）。**Read だけで終わらず**、合意した本題へ進む。

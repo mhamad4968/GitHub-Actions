@@ -8,7 +8,7 @@
 - **パス**: `C:\Users\mhamada202408224\Desktop\AI緊急用\`（**セッション切替・新チャット開始時**に浜田が開き、**`00-NEW-SESSION-STARTER_yyyymmdd.txt`（ハブ）**を最初の 1 メッセージに貼る。**詳細 6 本**は **`01`〜`06`-STARTER-part-*.txt** で任意参照。同日のハブ正本は **日付 8 桁の 1 本**）。
 - このフォルダの **09〜15-READ-…・08-INDEX・16-README-read-pack・17〜20（read-pack 末尾）** 等は **リポの `desktop-ai-emergency-read-pack/` と同期された控え**（**21〜23** は別リポ正本から同名コピー。順序は **`08-INDEX.txt`**）。**切替直後はチャット貼付＋必要ならここをメモ帳で開く** → CIO は **`chat-sessions/session-starter-parts/part-A`〜`part-F`** を **この順で** Read（スターター Part B「貼付単独で完走」節どおり。ハブのみ貼付でも可）。
 - CIO は **Desktop だけ更新して放置しない**。**`npm run session-starter:sync-desktop`** は、正本（本 READ・`NEW-SESSION-STARTER.md`・`session-starter-parts/*.md`・`desktop-ai-emergency-read-pack/*.txt` 等）を変えた **同一ターンまたは直後のターンで CIO が自発実行**する（**浜田に「npm を実行して」と書かなくてよい**。チャットは **実行した事実 1 行**で足りる）。`/mnt/c` が無い等でスキップしたら **理由 1 行**。**可能なら**続けて **`npm run verify:desktop-ai-emergency-sync`**。依存順を揃えるなら **`npm run desktop:sync-and-verify`** を優先してよい（憲法 TSB-024）。
-- **CIO 定常（マルチエージェント環境）**: **`npm run verify:cio-mcp-registry`**／必要なら **`npm run cio:mcp:env`**／週次の **`npm run mcp-status:refresh-usage`**（`docs/mcp-status.md` 更新まで）も **浜田に依頼せず CIO が実行**（`mcp.json` 変更後は **`npm run mcp:sync-cursor-windows`**）。**`cio:mcp:env` の日常正本は Windows ネイティブ**（`SUMMARY: OK 6/6`）；WSL `/mnt/c/...` は **月次ベストエフォート**／kimi のみ落ちるときは **`CIO_MCP_PROBE_KIMI_TIMEOUT_MS`** とネット（`docs/mcp-status.md` §CIO）。Desktop **`＃重要確認事項.txt`** の **CIO の自律判断**節と併読。
+- **CIO 定常（マルチエージェント環境）**: **`npm run verify:cio-mcp-registry`**／必要なら **`npm run cio:mcp:env`**／週次の **`npm run mcp-status:refresh-usage`**（`docs/mcp-status.md` 更新まで）も **浜田に依頼せず CIO が実行**（`mcp.json` 変更後は **`npm run mcp:sync-cursor-windows`**）。**`cio:mcp:env` の日常正本は Windows ネイティブ**（`SUMMARY: OK 6/6`）；WSL `/mnt/c/...` は **月次ベストエフォート**／kimi のみ落ちるときは **`CIO_MCP_PROBE_KIMI_TIMEOUT_MS`** とネット（`docs/mcp-status.md` §CIO）。Desktop **`18-重要確認.txt`** の **CIO の自律判断**節と併読。
 - **第12層（2026-06-14）**: customize 変更・deploy 前は **`npm run verify:kintone-live-schema -- --app <id>`**（Warning 0）。New Chat import 後は **`verify:git-history-alignment --handoff`** が **import 内で自動連鎖**。月次は **`npm run verify:kintone-live-schema -- --portfolio`**（`cio:periodic:monthly` 内包）。
 - **毎回のメンテ時に正本と合わせる（2026-05-02 CEO 指示）**: **メンテ**＝`NEW-SESSION-STARTER.md`・`session-starter-parts/*.md`・read-pack・`HANDOFF-HUMAN.txt`・`SESSION-BOOTSTRAP-CHECKLIST.md`・`checkpoint-latest.md`・`handoff-log.md` など **Desktop 控えの元**をリポで触った**そのターンの締め**、**日終わり**、**push 直前**、**セッション締め**のいずれも含む。**`C:\Users\mhamada202408224\Desktop\AI緊急用\`** を **リポとバイト一致**まで更新する（上記 npm。**セッション切替時だけ**に限定しない）。
 
@@ -33,11 +33,11 @@
 
 ## 3. 🎖️ AI 内部の役割分担（2026-05-21 方式B / `AGENTS.md` §1-2-3-4）
 
-「**開発=AI**」をさらに細分化。**CIO=Opus 4.7 本体固定**・**コード=Composer 2.5 Subagent（diff のみ）**・長文=Kimi・論理=DeepSeek。新セッション **1 ターン目**で **`[🎖️ 本セッション割当]`** 1 行必須（**Composer=** 含む）。正本: `part-A-constitution-kernel.md` / `NEW-SESSION-STARTER.md`。
+「**開発=AI**」をさらに細分化。**CIO=Opus 4.8 デフォルト（軽量時のみ 4.7）**・**コード=Composer 2.5 Subagent（diff のみ）**・長文=Kimi・論理=DeepSeek。新セッション **1 ターン目**で **`[🎖️ 本セッション割当]`** 1 行必須（**Composer=** 含む）。正本: `mode-b-canonical.mdc` / `part-A-constitution-kernel.md` / `NEW-SESSION-STARTER.md`。
 
 | 役割 | 担当 | 持ち場 |
 |---|---|---|
-| **CIO** | Opus 4.7 ベース / 必要時 **4.8**（ピッカー切替） | 判断・統合・規律 |
+| **CIO** | Opus **4.8 デフォルト** / 軽量時 4.7 | 判断・統合・規律 |
 | **実務（コード）** | **Composer 2.5** Subagent | diff のみ・GO なし save/deploy 禁止 |
 | **実務（長文）** | **Kimi** | 長文・`kimi_review` |
 | **知恵袋** | **DeepSeek** | §50-3-8 |
@@ -68,6 +68,6 @@
 
 ## 6. ツール活用憲法・憲法適合の記録（2026-05-06 CIO 追補・**朝イチでも可**）
 
-- **正本**: **`.cursor/rules/ai-agent-tools-constitution.mdc`**（`alwaysApply: true`）。**CIO 体制の役割のまま**、Exa/Brave/Firecrawl・Linear 相当・Puppeteer・Mintlify/Harness・秘密禁止・**CIO 内での他AI協議（§0.5）**・**作業区切りの `[憲法適合]` 1 行（§7）**を固定した。
+- **正本**: **`.cursor/rules/ai-agent-tools-constitution.mdc`**（`alwaysApply: false` + `globs: "**/*"`）。**CIO 体制の役割のまま**、MCP ツール選択・秘密禁止・**CIO 内での他AI協議（§0.5）**・**作業区切りの `[憲法適合]` 1 行（§7）**を固定した。
 - **毎ターン先頭の 4 行**（`every-turn-rules-confirm.mdc`）は **そのまま**。**PR 前・deploy 前・一段落・完了前**に **`[憲法適合]`** で Tier・触れた §・第2者/MCP・§52-8 を **自己宣言**（詳細は同ファイル §7）。**憲法カード**（`constitution-brief-card.mdc`）にも 1 行追記済み。
 - **変更履歴の控え**: Desktop 同フォルダの **`17-HISTORY-2026-05-06-read-pack-and-tools.txt`**（read-pack 正本と同名。`npm run session-starter:sync-desktop` でコピー）。

@@ -86,78 +86,10 @@ function extractVerifyFailures(text, exportedAt) {
   return items;
 }
 
-function latestEveningReflection(root) {
-  const dir = path.join(root, 'docs/reports');
-  if (!fs.existsSync(dir)) return '';
-  const files = fs
-    .readdirSync(dir)
-    .filter((n) => /evening-reflection\.md$/i.test(n))
-    .sort()
-    .reverse();
-  if (!files.length) return '';
-  return fs.readFileSync(path.join(dir, files[0]), 'utf8');
-}
-
-/** @param {string} root @param {string} exportedAt @returns {LastFailure[]} */
-function extractEveningApproved(root, exportedAt) {
-  /** @type {LastFailure[]} */
-  const items = [];
-  const text = latestEveningReflection(root);
-  if (!text) return items;
-
-  const approved =
-    /承認済み|すべて承認|全部承認|浜田.*承認/i.test(text) ||
-    /docs\/approved-changes\/[^\s`]+\/[^\s`]+\.md/i.test(text);
-
-  if (!approved) return items;
-
-  for (const m of text.matchAll(/\|\s*(#[SR]\d+[A-Z0-9-]*)\s*\|[^\n]*/gi)) {
-    const id = m[1].replace('#', '');
-    const row = m[0];
-    if (/却下|保留/i.test(row) && !/承認/i.test(row)) continue;
-    const note = row.replace(/\|/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 120);
-    items.push({
-      id: slugId('evening', id),
-      at: exportedAt,
-      verify: 'npm run evening:reflect',
-      note: `${id}: ${note}`.slice(0, 120),
-    });
-  }
-
-  const approvedDir = path.join(root, 'docs/approved-changes');
-  if (fs.existsSync(approvedDir)) {
-    for (const name of fs.readdirSync(approvedDir).sort().reverse().slice(0, 5)) {
-      if (!/hamada-go|evening-improvements/i.test(name)) continue;
-      const body = fs.readFileSync(path.join(approvedDir, name), 'utf8').slice(0, 4000);
-      for (const m of body.matchAll(/"(#[SR][^"]+)"/g)) {
-        const id = m[1].replace('#', '');
-        items.push({
-          id: slugId('approved', id),
-          at: exportedAt,
-          verify: `docs/approved-changes/${name}`,
-          note: `${m[1]} 承認済`.slice(0, 120),
-        });
-      }
-    }
-  }
-
-  return items;
-}
-
 /** @param {string} text @param {string} exportedAt @returns {LastFailure[]} */
 function extractDebugTipCandidates(text, exportedAt) {
   /** @type {LastFailure[]} */
   const items = [];
-  for (const m of text.matchAll(/<!-- errors: ([^>]+) -->/g)) {
-    const chunk = m[1].trim();
-    if (!chunk) continue;
-    items.push({
-      id: slugId('debug-tip', chunk.slice(0, 24)),
-      at: exportedAt,
-      verify: 'npm run cio:session:export-handoff',
-      note: chunk.slice(0, 120),
-    });
-  }
   for (const m of text.matchAll(/\[verify:[^\]]+\][^\n]*/gi)) {
     const line = m[0].trim();
     if (!/NG|exit\s*1|Error/i.test(line)) continue;
@@ -197,7 +129,6 @@ export function collectLastFailures(root, { exportedAt = new Date().toISOString(
 
   const merged = [
     ...extractVerifyFailures(sessionText, exportedAt),
-    ...extractEveningApproved(root, exportedAt),
     ...extractDebugTipCandidates(`${sessionText}\n${tipsText}`, exportedAt),
   ];
 

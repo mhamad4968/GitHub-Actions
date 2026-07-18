@@ -54,7 +54,7 @@ flowchart LR
 |---|----------|------|
 | 1 | `docs/handoff/latest-session-bridge.json` | gitHead・次タスク |
 | 2 | `chat-sessions/checkpoint-latest.md` **先頭 50 行** | 凍結・次の1手・保留 |
-| 3 | `chat-sessions/constitution-first-read-pack/00-ORDER.txt` 〜 `05-full-refs.txt` | 憲法要約（hooks 連動） |
+| 3 | `chat-sessions/constitution-first-read-pack/00-ORDER.txt` 〜 `06-abcd-v2-runbooks.txt` | 憲法要約（hooks 連動） |
 
 **ORIENT 第1報告（§1 先頭4行に含める内容）**
 
