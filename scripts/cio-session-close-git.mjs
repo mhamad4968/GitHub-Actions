@@ -13,6 +13,8 @@
  *   5) R44 checkpoint Git（SKIP 新規 commit · amend/normalize 禁止 · #S-R44-SKIP-01）
  *   6) verify:session-close-git-warn
  *   7) desktop:sync-and-verify（--skip-desktop-sync で省略可・浜田 GO 時のみ）
+ *
+ * SPEC を含む場合: --reviewed-by deepseek|kimi|openrouter で commit trailer を付与。
  */
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -72,6 +74,9 @@ const skipCheckpointGit = process.argv.includes('--skip-checkpoint-git-sync');
 const skipR19 = process.argv.includes('--skip-r19');
 const msgIdx = process.argv.indexOf('--message');
 const message = msgIdx >= 0 ? process.argv[msgIdx + 1] : '';
+const reviewerIdx = process.argv.indexOf('--reviewed-by');
+const reviewedBy = reviewerIdx >= 0 ? process.argv[reviewerIdx + 1] : '';
+const allowedReviewers = new Set(['deepseek', 'kimi', 'openrouter']);
 
 function git(args, opts = {}) {
   const r = spawnSync('git', args, { cwd: root, encoding: 'utf8', ...opts });
@@ -145,6 +150,10 @@ function main() {
     console.error('[cio:session:close-git] NG --execute には --message "…" 必須');
     process.exit(1);
   }
+  if (reviewedBy && !allowedReviewers.has(reviewedBy)) {
+    console.error('[cio:session:close-git] NG --reviewed-by は deepseek|kimi|openrouter のみ');
+    process.exit(1);
+  }
 
   if (!skipR19) {
     if (!runNode('scripts/cio-session-close-recognition-gate.mjs', ['--pre-commit'])) {
@@ -194,7 +203,9 @@ function main() {
   }
 
   if (stagedAfter) {
-    const commit = git(['commit', '-m', message]);
+    const commitArgs = ['commit', '-m', message];
+    if (reviewedBy) commitArgs.push('-m', `Reviewed-by: ${reviewedBy}`);
+    const commit = git(commitArgs);
     if (!commit.ok) {
       console.error('[cio:session:close-git] NG commit 失敗（pre-commit 等）');
       process.exit(commit.status || 1);
