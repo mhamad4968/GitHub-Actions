@@ -71,10 +71,10 @@ export function gitHeadShort(root) {
   }
 }
 
-/** R31 — amend fold 後: 直近 commit が bridge のみ かつ gitHead === HEAD~1 を許容 */
-export function gitParentHeadShort(root) {
+/** R31/R44 — HEAD から指定世代前の短縮 hash */
+export function gitAncestorHeadShort(root, generations = 1) {
   try {
-    return execFileSync('git', ['rev-parse', '--short', 'HEAD~1'], {
+    return execFileSync('git', ['rev-parse', '--short', `HEAD~${generations}`], {
       cwd: root,
       encoding: 'utf8',
       stdio: ['pipe', 'pipe', 'pipe'],
@@ -84,9 +84,9 @@ export function gitParentHeadShort(root) {
   }
 }
 
-export function lastCommitTouchesOnlyBridge(root) {
+export function commitTouchesOnly(root, ref, allowedFiles) {
   try {
-    const names = execFileSync('git', ['diff-tree', '--no-commit-id', '--name-only', '-r', 'HEAD'], {
+    const names = execFileSync('git', ['diff-tree', '--no-commit-id', '--name-only', '-r', ref], {
       cwd: root,
       encoding: 'utf8',
       stdio: ['pipe', 'pipe', 'pipe'],
@@ -95,15 +95,19 @@ export function lastCommitTouchesOnlyBridge(root) {
       .split(/\r?\n/)
       .filter(Boolean);
     if (!names.length) return false;
-    const bridgeOnly = names.every(
-      (n) =>
-        n === 'docs/handoff/latest-session-bridge.json' ||
-        n === 'docs/knowledge/debug-tips.md',
-    );
-    return bridgeOnly;
+    const allowed = new Set(allowedFiles);
+    return names.every((n) => allowed.has(n));
   } catch {
     return false;
   }
+}
+
+/** R31 — 直近 commit が bridge のみ */
+export function lastCommitTouchesOnlyBridge(root) {
+  return commitTouchesOnly(root, 'HEAD', [
+    'docs/handoff/latest-session-bridge.json',
+    'docs/knowledge/debug-tips.md',
+  ]);
 }
 
 /** DeepSeek 職分 — 決定論セマンティック監査（API 可用時は強化可能） */
@@ -181,12 +185,21 @@ export function validateExportHandoff(root, options = {}) {
 
   const currentHead = gitHeadShort(root);
   if (currentHead && bridge.gitHead && bridge.gitHead !== 'unknown' && currentHead !== bridge.gitHead) {
-    const parentHead = gitParentHeadShort(root);
+    const parentHead = gitAncestorHeadShort(root, 1);
     const r31BridgeFold =
       parentHead &&
       bridge.gitHead === parentHead &&
       lastCommitTouchesOnlyBridge(root);
-    if (!options.allowHeadDrift && !r31BridgeFold) {
+    const grandparentHead = gitAncestorHeadShort(root, 2);
+    const r44CheckpointAfterBridge =
+      grandparentHead &&
+      bridge.gitHead === grandparentHead &&
+      commitTouchesOnly(root, 'HEAD~1', [
+        'docs/handoff/latest-session-bridge.json',
+        'docs/knowledge/debug-tips.md',
+      ]) &&
+      commitTouchesOnly(root, 'HEAD', ['chat-sessions/checkpoint-latest.md']);
+    if (!options.allowHeadDrift && !r31BridgeFold && !r44CheckpointAfterBridge) {
       issues.push({
         code: 'GIT_HEAD_DRIFT',
         message: `gitHead 不一致: bridge=${bridge.gitHead} current=${currentHead}`,

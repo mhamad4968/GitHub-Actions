@@ -37,5 +37,7 @@
     }
   ],
   "promptBlock": "【SESSION-BRIDGE】git=692dff16 | 次=**App 747 完了。次回は浜田の指示待ち** | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json | lastFailures=3",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
+  "validatedAt": "2026-07-18T05:15:11.622Z",
+  "crosscheckOk": true
 }
