@@ -4,6 +4,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -41,6 +42,26 @@ function main() {
       }
     }
   }
+
+  const handoffPath = path.join(root, 'chat-sessions', 'handoff-log.md');
+  const beforeHelp = fs.readFileSync(handoffPath, 'utf8');
+  for (const helpFlag of ['--help', '-h']) {
+    const help = spawnSync(
+      process.execPath,
+      [path.join(root, 'scripts', 'cio-handoff-append-block.mjs'), helpFlag],
+      { cwd: root, encoding: 'utf8' },
+    );
+    if (help.status !== 0 || !help.stdout.includes('Usage:')) {
+      console.error(`[verify:cio-handoff-template-infra] NG append-block ${helpFlag} help output`);
+      process.exit(1);
+    }
+  }
+  const afterHelp = fs.readFileSync(handoffPath, 'utf8');
+  if (afterHelp !== beforeHelp) {
+    console.error('[verify:cio-handoff-template-infra] NG append-block --help must be non-mutating');
+    process.exit(1);
+  }
+
   console.log('[verify:cio-handoff-template-infra] OK C v2 checkpoint/handoff template');
   process.exit(0);
 }

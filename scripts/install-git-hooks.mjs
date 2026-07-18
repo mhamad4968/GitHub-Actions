@@ -84,7 +84,17 @@ for (const name of hooks) {
       }
     }
   }
-  fs.copyFileSync(from, to);
+  const source = fs.readFileSync(from);
+  if (source.subarray(0, 2).toString('utf8') === '#!') {
+    const normalized = source.toString('utf8').replace(/\r\n?/g, '\n');
+    fs.writeFileSync(to, normalized, 'utf8');
+    if (fs.readFileSync(to).includes(0x0d)) {
+      console.error(`  ❌ ${name}: shell hook の CR 除去に失敗`);
+      process.exit(1);
+    }
+  } else {
+    fs.copyFileSync(from, to);
+  }
   try {
     fs.chmodSync(to, 0o755);
   } catch {

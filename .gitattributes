@@ -1,5 +1,6 @@
 # LF 強制（POSIX shell・Linux ツール用）
 *.sh text eol=lf
+/git-hooks/* text eol=lf
 
 # CRLF 強制（Cursor リロード等の auto-normalize 防衛・2026-05-07 浜田承認 A1 / Q33=C）
 # 全 *.md を CRLF 強制（拡張: 2026-05-07 22:38 JST CEO 判断で C 採用）。

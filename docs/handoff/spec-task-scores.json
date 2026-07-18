@@ -1,19 +1,8 @@
 {
-  "scoredAt": "2026-07-18T08:59:40.757Z",
+  "scoredAt": "2026-07-18T22:43:08.363Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "**App 747 完了。次回は浜田の指示待ち**",
+  "topTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
   "tasks": [
-    {
-      "id": "checkpoint:**App_747_完了。次回は浜田の指示待ち**",
-      "text": "**App 747 完了。次回は浜田の指示待ち**",
-      "source": "checkpoint",
-      "difficulty": 2,
-      "tokens": "中",
-      "tokenScore": 2,
-      "impact": 5,
-      "priority": 10,
-      "status": "pending"
-    },
     {
       "id": "backlog:B-MDFLOW:_**Markdown_ベースの開発フロー**（仕様・実装・レ",
       "text": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
@@ -23,6 +12,17 @@
       "tokenScore": 2,
       "impact": 3,
       "priority": 21,
+      "status": "pending"
+    },
+    {
+      "id": "checkpoint:**次回は浜田の指示待ち**。SKYSEAは8/3問い合わせまで実装・GPO変更",
+      "text": "**次回は浜田の指示待ち**。SKYSEAは8/3問い合わせまで実装・GPO変更・本番配信を行わない。",
+      "source": "checkpoint",
+      "difficulty": 5,
+      "tokens": "高",
+      "tokenScore": 3,
+      "impact": 5,
+      "priority": 45,
       "status": "pending"
     }
   ]

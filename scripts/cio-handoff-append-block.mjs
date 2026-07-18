@@ -19,6 +19,24 @@ import { readCheckpointNextTask } from './lib/cio-checkpoint-read.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
+function printUsage() {
+  console.log(`Usage:
+  npm run cio:handoff:append-block -- --title "..." --summary "..." [options]
+  npm run cio:handoff:append-block -- --dry-run --title "..."
+
+Options:
+  --title <text>          Block title
+  --summary <text>        Block summary
+  --next <text>           Next task (defaults to checkpoint)
+  --git <hash>            Git hash (defaults to HEAD)
+  --git-msg <text>        Git status/message
+  --build <text>          Optional BUILD line
+  --go-wait <text>        GO-wait status
+  --do-not-touch <text>   Frozen lanes
+  --dry-run               Print without appending
+  --help, -h              Show this help without appending`);
+}
+
 function arg(name) {
   const idx = process.argv.indexOf(`--${name}`);
   return idx >= 0 ? process.argv[idx + 1] : '';
@@ -30,6 +48,11 @@ function gitHead() {
 }
 
 function main() {
+  if (process.argv.includes('--help') || process.argv.includes('-h')) {
+    printUsage();
+    process.exit(0);
+  }
+
   const dryRun = process.argv.includes('--dry-run');
   const title = arg('title') || 'セッション区切り';
   const summary = arg('summary') || '(要約未指定)';

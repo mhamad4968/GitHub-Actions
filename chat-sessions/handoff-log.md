@@ -4820,3 +4820,17 @@ npm run cio:morning:ready
 **触らない**: 688（WBGT以外）/ 677–679 / SKYSEA 7月 / 712 deploy / 736 ver.02（Excel受領前）
 
 ---
+
+### 2026-07-19 JST — **WAKE・ブリーフィング・開始警告整理**
+
+**要約**: cold-start READY 後、Desktop AI緊急用 00〜36、憲法先読みパック、health・MCP・GitHub・開始警告を AI チームで精査。開始時の自動生成差分と handoff 次手を現 checkpoint に同期し、SKYSEA・736 凍結を維持。
+
+**次の1手**: **次回は浜田の指示待ち**。SKYSEAは8/3問い合わせまで実装・GPO変更・本番配信を行わない。
+
+**Git**: `6b65b12f` — cold-start 整理 commit 前
+
+**GO待ち**: H9 / △2 最終判定 — **2026-07-25 のみ**
+
+**触らない**: 688（WBGT以外）/ 677–679 / SKYSEA（8/3 問い合わせ前の実装・GPO変更・本番配信）/ 712 deploy / 736 ver.02（依頼者 Excel 受領前）
+
+---

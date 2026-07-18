@@ -28,3 +28,20 @@ checkpoint 凍結ゾーン修復（`d00a2fdc`）· cold-start OK
 
 記録: `docs/approved-changes/2026-07-11-evening-f0-improvements-hamada-go.md`
 
+
+
+---
+
+> rollup from checkpoint-latest.md — 1 sections
+
+## 2026-07-13 本日完了サマリー
+
+| 項目 | 内容 |
+|------|------|
+| **688 気象UI** | 気象データヘルプ・猛暑日オプションを `<details>` 折りたたみ · deploy rev89 · spec `2026-07-13-688-weather-ui-accordion-spec.md` |
+| **736 BACKLOG-03** | ブロック選択 DD 仕様草案 GO（implement **7/16**）· `2026-07-13-jikkou-yosan-ui-backlog-03-block-select-dd-spec.md` |
+| **改善（夕）** | #I-688-GHA-01〜#I-SESSION-LANE-01 全 GO · `docs/approved-changes/2026-07-13-evening-improvements-hamada-go.md` |
+
+
+<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-07-18.md -->
+

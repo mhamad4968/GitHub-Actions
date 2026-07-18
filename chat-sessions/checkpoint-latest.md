@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-18 JST — **夕反省改善5件すべて浜田GO・反映**
 
-**Git**: **`f8fb15df`** = `origin/main` — push 済
+**Git**: **`1fb5d0ff`** = `origin/main` — push 済
 
 **本日状態**: cold-start READY。kintone月次棚卸・SKYSEA前段仕様に加え、夕反省 #S1〜#S3/#R1〜#R2 は浜田がすべて承認。AI管理appId単一JSON正本、Desktop旧締めレポートprune、Windows transcript探索、10問決定チェックポイントを実装。required checksは互換性評価の結果、現行direct-push締めと両立しないためGitHub設定変更なし。
 
@@ -59,6 +59,7 @@
 | **GitHub** | Actions主要ゲート成功 · mainはlinear/force-push禁止/deletion禁止 · required checksは#R2承認待ち |
 | **夕反省** | F1〜F5を記録 · 改善案#S1〜#S3/#R1〜#R2は未承認・未適用 |
 
+
 ## 2026-07-17 本日完了サマリー
 
 | 項目 | 内容 |
@@ -72,6 +73,7 @@
 | **依存関係** | npm audit high 5件を既知リスクとして記録 · package 変更なし |
 
 
+
 ## 2026-07-15 本日完了サマリー（ops）
 
 | 項目 | 内容 |
@@ -82,14 +84,6 @@
 | **△18** | profile --dry-run/--apply 同時禁止（仕様 v3.2） |
 | **Cold誤適用** | bak復元済 · disabled=0 · gate 6/6 |
 
-
-## 2026-07-13 本日完了サマリー
-
-| 項目 | 内容 |
-|------|------|
-| **688 気象UI** | 気象データヘルプ・猛暑日オプションを `<details>` 折りたたみ · deploy rev89 · spec `2026-07-13-688-weather-ui-accordion-spec.md` |
-| **736 BACKLOG-03** | ブロック選択 DD 仕様草案 GO（implement **7/16**）· `2026-07-13-jikkou-yosan-ui-backlog-03-block-select-dd-spec.md` |
-| **改善（夕）** | #I-688-GHA-01〜#I-SESSION-LANE-01 全 GO · `docs/approved-changes/2026-07-13-evening-improvements-hamada-go.md` |
 
 
 <!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-07-18.md -->
