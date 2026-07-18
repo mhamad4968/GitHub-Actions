@@ -1,0 +1,1356 @@
+{
+  "version": 1,
+  "generatedAt": "2026-07-18T11:06:39.909Z",
+  "ok": true,
+  "counts": {
+    "live": 63,
+    "tenantFetched": 244,
+    "scope": 75,
+    "managed": 68,
+    "activePresent": 63,
+    "activeMissing": 0,
+    "retiredAbsent": 12,
+    "retiredPresent": 0,
+    "trackedMissing": 0,
+    "unlistedLive": 0,
+    "newSinceLast": 0,
+    "removedSinceLast": 0,
+    "nameChanges": 0
+  },
+  "result": {
+    "activePresent": [
+      {
+        "appId": "595",
+        "logicalName": "社員マスタ（674/714/716 連携）",
+        "live": {
+          "appId": "595",
+          "name": "社員情報マスタ",
+          "spaceId": "21",
+          "threadId": "23",
+          "createdAt": "2026-03-21T06:32:46.000Z",
+          "modifiedAt": "2026-07-06T22:58:29.000Z"
+        }
+      },
+      {
+        "appId": "629",
+        "logicalName": "出張精算アプリ",
+        "live": {
+          "appId": "629",
+          "name": "出張精算アプリ",
+          "spaceId": "48",
+          "threadId": "52",
+          "createdAt": "2026-03-28T12:06:48.000Z",
+          "modifiedAt": "2026-04-10T09:52:43.000Z"
+        }
+      },
+      {
+        "appId": "631",
+        "logicalName": "Security NEXT ニュース（収集・正本 DB）",
+        "live": {
+          "appId": "631",
+          "name": "Security NEXT ニュース",
+          "spaceId": "48",
+          "threadId": "52",
+          "createdAt": "2026-03-28T14:32:13.000Z",
+          "modifiedAt": "2026-05-16T11:18:50.000Z"
+        }
+      },
+      {
+        "appId": "632",
+        "logicalName": "ニュース週次要約（週次 LLM・正本 DB）",
+        "live": {
+          "appId": "632",
+          "name": "Security NEXT ニュース週次要約用アプリ",
+          "spaceId": "48",
+          "threadId": "52",
+          "createdAt": "2026-03-28T14:41:19.000Z",
+          "modifiedAt": "2026-05-02T06:49:31.000Z"
+        }
+      },
+      {
+        "appId": "640",
+        "logicalName": "社内FAQ（DB）",
+        "live": {
+          "appId": "640",
+          "name": "社内FAQDB",
+          "spaceId": "52",
+          "threadId": "56",
+          "createdAt": "2026-04-02T22:33:32.000Z",
+          "modifiedAt": "2026-04-14T07:15:56.000Z"
+        }
+      },
+      {
+        "appId": "670",
+        "logicalName": "環境設定マスタ（新・PC台帳ver.1 用 / Day 1）",
+        "live": {
+          "appId": "670",
+          "name": "環境設定マスタ",
+          "spaceId": "21",
+          "threadId": "23",
+          "createdAt": "2026-04-24T09:20:37.000Z",
+          "modifiedAt": "2026-04-24T09:23:22.000Z"
+        }
+      },
+      {
+        "appId": "671",
+        "logicalName": "M365管理マスタ（新・PC台帳ver.1 用 / Day 2 / 5 台ライセンス厳守）",
+        "live": {
+          "appId": "671",
+          "name": "M365管理マスタ",
+          "spaceId": "21",
+          "threadId": "23",
+          "createdAt": "2026-04-24T09:34:22.000Z",
+          "modifiedAt": "2026-04-24T09:35:56.000Z"
+        }
+      },
+      {
+        "appId": "672",
+        "logicalName": "新個人WindowsID採番マスタ（新・PC台帳ver.1 用 / 旧 626 置換）",
+        "live": {
+          "appId": "672",
+          "name": "新個人WindowsID採番マスタ",
+          "spaceId": "21",
+          "threadId": "23",
+          "createdAt": "2026-04-24T22:42:59.000Z",
+          "modifiedAt": "2026-06-04T06:45:58.000Z"
+        }
+      },
+      {
+        "appId": "673",
+        "logicalName": "新共有WindowsID採番マスタ（新・PC台帳ver.1 用 / 旧 667 置換）",
+        "live": {
+          "appId": "673",
+          "name": "新共有WindowsID採番マスタ",
+          "spaceId": "21",
+          "threadId": "23",
+          "createdAt": "2026-04-24T22:47:34.000Z",
+          "modifiedAt": "2026-04-24T22:47:44.000Z"
+        }
+      },
+      {
+        "appId": "674",
+        "logicalName": "新・PC台帳ver.1（本体・本番運用中）",
+        "live": {
+          "appId": "674",
+          "name": "新・PC台帳ver.1",
+          "spaceId": "21",
+          "threadId": "23",
+          "createdAt": "2026-04-26T08:21:50.000Z",
+          "modifiedAt": "2026-07-17T09:39:33.000Z"
+        }
+      },
+      {
+        "appId": "677",
+        "logicalName": "部署予実・入力（明細・新フォーマット 全列・支払内訳 サブテーブル・月次 12 行）",
+        "live": {
+          "appId": "677",
+          "name": "システム推進室予実管理システム入力アプリ",
+          "spaceId": "54",
+          "threadId": "58",
+          "createdAt": "2026-04-29T10:09:55.000Z",
+          "modifiedAt": "2026-05-16T10:59:44.000Z"
+        }
+      },
+      {
+        "appId": "678",
+        "logicalName": "部署予実・ダッシュ（集計管理の主画面・俯瞰・入力アプリ参照）",
+        "live": {
+          "appId": "678",
+          "name": "システム推進室予実管理システム",
+          "spaceId": "54",
+          "threadId": "58",
+          "createdAt": "2026-04-29T10:09:55.000Z",
+          "modifiedAt": "2026-05-27T11:13:52.000Z"
+        }
+      },
+      {
+        "appId": "679",
+        "logicalName": "部署予実クイックマニュアル（HTML・表中心・一覧カスタマイズのみ）",
+        "live": {
+          "appId": "679",
+          "name": "システム推進室予実アプリガイド",
+          "spaceId": "54",
+          "threadId": "58",
+          "createdAt": "2026-05-04T11:03:01.000Z",
+          "modifiedAt": "2026-05-16T10:47:11.000Z"
+        }
+      },
+      {
+        "appId": "680",
+        "logicalName": "新・PC台帳 所属候補マスタ（674 共有・JR・595 社員マスタの「所属候補から選ぶ」モーダル。API 失敗時は674 JS の埋め込み一覧にフォールバック）",
+        "live": {
+          "appId": "680",
+          "name": "新・PC台帳 所属候補マスタ",
+          "spaceId": "21",
+          "threadId": "23",
+          "createdAt": "2026-05-05T00:43:24.000Z",
+          "modifiedAt": "2026-06-23T09:54:24.000Z"
+        }
+      },
+      {
+        "appId": "682",
+        "logicalName": "ユーザサポート件数日次（記録日・午前/午後件数・日合計 CALC・対応内容→件数 JS）",
+        "live": {
+          "appId": "682",
+          "name": "ユーザサポート件数日次",
+          "spaceId": "48",
+          "threadId": "52",
+          "createdAt": "2026-05-08T07:35:36.000Z",
+          "modifiedAt": "2026-07-01T16:27:56.000Z"
+        }
+      },
+      {
+        "appId": "683",
+        "logicalName": "ユーザサポート682ダッシュ（682 の REST 参照・閲覧／集約 UI・入力は 682 のみ）",
+        "live": {
+          "appId": "683",
+          "name": "ユーザサポートダッシュボード",
+          "spaceId": "48",
+          "threadId": "52",
+          "createdAt": "2026-05-10T08:11:13.000Z",
+          "modifiedAt": "2026-06-25T13:50:55.000Z"
+        }
+      },
+      {
+        "appId": "685",
+        "logicalName": "最新ICT情報掲示板（収集用）（RSS×Gemini 自動登録・正本 DB）",
+        "live": {
+          "appId": "685",
+          "name": "最新ICT情報掲示板（収集用）",
+          "spaceId": "48",
+          "threadId": "52",
+          "createdAt": "2026-05-16T08:22:58.000Z",
+          "modifiedAt": "2026-05-19T12:37:07.000Z"
+        }
+      },
+      {
+        "appId": "686",
+        "logicalName": "最新ICT情報掲示板（685 REST 閲覧・過去検索ダッシュ）",
+        "live": {
+          "appId": "686",
+          "name": "最新ICT情報掲示板",
+          "spaceId": "48",
+          "threadId": "52",
+          "createdAt": "2026-05-16T08:23:02.000Z",
+          "modifiedAt": "2026-06-11T21:58:21.000Z"
+        }
+      },
+      {
+        "appId": "687",
+        "logicalName": "工事稼働日数算出（データ正本）",
+        "live": {
+          "appId": "687",
+          "name": "工事稼働日数算出",
+          "spaceId": "56",
+          "threadId": "60",
+          "createdAt": "2026-05-17T06:34:50.000Z",
+          "modifiedAt": "2026-07-10T13:04:53.000Z"
+        }
+      },
+      {
+        "appId": "688",
+        "logicalName": "工事稼働日数ダッシュ（日常入口）",
+        "live": {
+          "appId": "688",
+          "name": "工事稼働日数計算ツール",
+          "spaceId": "56",
+          "threadId": "60",
+          "createdAt": "2026-05-17T06:47:43.000Z",
+          "modifiedAt": "2026-07-13T10:21:02.000Z"
+        }
+      },
+      {
+        "appId": "693",
+        "logicalName": "Apple ID管理台帳用DB（Excel icloud 正本・閲覧のみ）",
+        "live": {
+          "appId": "693",
+          "name": "Apple ID管理台帳用DB",
+          "spaceId": "21",
+          "threadId": "23",
+          "createdAt": "2026-06-03T07:34:52.000Z",
+          "modifiedAt": "2026-06-08T09:17:46.000Z"
+        }
+      },
+      {
+        "appId": "694",
+        "logicalName": "Apple ID管理台帳（日常 UI・693 へ REST）",
+        "live": {
+          "appId": "694",
+          "name": "Apple ID管理台帳",
+          "spaceId": "21",
+          "threadId": "23",
+          "createdAt": "2026-06-03T07:57:23.000Z",
+          "modifiedAt": "2026-06-08T22:26:41.000Z"
+        }
+      },
+      {
+        "appId": "695",
+        "logicalName": "共有メールアドレス管理用DB（Excel 正本・閲覧のみ）",
+        "live": {
+          "appId": "695",
+          "name": "共有メールアドレス管理用DB",
+          "spaceId": "21",
+          "threadId": "23",
+          "createdAt": "2026-06-06T06:35:52.000Z",
+          "modifiedAt": "2026-06-21T11:30:17.000Z"
+        }
+      },
+      {
+        "appId": "696",
+        "logicalName": "メールアドレス管理台帳（日常 UI・695 へ REST）",
+        "live": {
+          "appId": "696",
+          "name": "メールアドレス管理台帳",
+          "spaceId": "21",
+          "threadId": "23",
+          "createdAt": "2026-06-06T06:36:02.000Z",
+          "modifiedAt": "2026-06-21T11:49:57.000Z"
+        }
+      },
+      {
+        "appId": "697",
+        "logicalName": "【業務改善提案システム】設定マスタ",
+        "live": {
+          "appId": "697",
+          "name": "【業務改善提案システム】設定マスタ",
+          "spaceId": "5",
+          "threadId": "7",
+          "createdAt": "2026-06-06T23:57:49.000Z",
+          "modifiedAt": "2026-06-30T12:01:24.000Z"
+        }
+      },
+      {
+        "appId": "698",
+        "logicalName": "業務改善 社員マスタ（595 ミラー・閲覧専用）",
+        "live": {
+          "appId": "698",
+          "name": "【業務改善提案システム】社員マスタ",
+          "spaceId": "5",
+          "threadId": "7",
+          "createdAt": "2026-06-07T00:10:34.000Z",
+          "modifiedAt": "2026-07-04T11:53:10.000Z"
+        }
+      },
+      {
+        "appId": "699",
+        "logicalName": "【業務改善提案システム】ご利用ガイド",
+        "live": {
+          "appId": "699",
+          "name": "【業務改善提案システム】ご利用ガイド",
+          "spaceId": "5",
+          "threadId": "7",
+          "createdAt": "2026-06-07T00:18:04.000Z",
+          "modifiedAt": "2026-07-17T11:42:43.000Z"
+        }
+      },
+      {
+        "appId": "700",
+        "logicalName": "【業務改善提案システム】提案申請ver.02",
+        "live": {
+          "appId": "700",
+          "name": "【業務改善提案システム】提案申請ver.02",
+          "spaceId": "5",
+          "threadId": "7",
+          "createdAt": "2026-06-07T00:21:46.000Z",
+          "modifiedAt": "2026-07-17T11:50:59.000Z"
+        }
+      },
+      {
+        "appId": "701",
+        "logicalName": "Security NEXT ニュース掲示板（631 REST 閲覧・CVE/パッチ除外）",
+        "live": {
+          "appId": "701",
+          "name": "Security NEXT ニュース掲示板",
+          "spaceId": "48",
+          "threadId": "52",
+          "createdAt": "2026-06-07T07:40:50.000Z",
+          "modifiedAt": "2026-06-11T21:57:19.000Z"
+        }
+      },
+      {
+        "appId": "702",
+        "logicalName": "Security NEXT 週次掲示板（632 REST 閲覧）",
+        "live": {
+          "appId": "702",
+          "name": "Security NEXT 週次掲示板",
+          "spaceId": "48",
+          "threadId": "52",
+          "createdAt": "2026-06-07T07:40:53.000Z",
+          "modifiedAt": "2026-06-11T21:57:49.000Z"
+        }
+      },
+      {
+        "appId": "706",
+        "logicalName": "不適合管理台帳用DB（正本・閲覧のみ）",
+        "live": {
+          "appId": "706",
+          "name": "不適合管理台帳用DB",
+          "spaceId": "48",
+          "threadId": "52",
+          "createdAt": "2026-06-10T09:32:28.000Z",
+          "modifiedAt": "2026-06-10T09:34:59.000Z"
+        }
+      },
+      {
+        "appId": "707",
+        "logicalName": "不適合管理台帳（日常 UI・706 へ REST）",
+        "live": {
+          "appId": "707",
+          "name": "不適合管理台帳",
+          "spaceId": "48",
+          "threadId": "52",
+          "createdAt": "2026-06-10T09:33:03.000Z",
+          "modifiedAt": "2026-06-11T21:55:35.000Z"
+        }
+      },
+      {
+        "appId": "708",
+        "logicalName": "外部ITサービス導入チェック用DB（正本・閲覧のみ）",
+        "live": {
+          "appId": "708",
+          "name": "外部ITサービス導入チェック用DB",
+          "spaceId": "48",
+          "threadId": "52",
+          "createdAt": "2026-06-10T09:57:16.000Z",
+          "modifiedAt": "2026-06-10T09:58:43.000Z"
+        }
+      },
+      {
+        "appId": "709",
+        "logicalName": "外部ITサービス導入チェックシート（日常 UI・708 へ REST）",
+        "live": {
+          "appId": "709",
+          "name": "外部ITサービス導入チェックシート",
+          "spaceId": "48",
+          "threadId": "52",
+          "createdAt": "2026-06-10T09:57:21.000Z",
+          "modifiedAt": "2026-06-11T21:56:15.000Z"
+        }
+      },
+      {
+        "appId": "710",
+        "logicalName": "新規システム導入ヒアリング用DB（正本・閲覧のみ）",
+        "live": {
+          "appId": "710",
+          "name": "新規システム導入ヒアリング用DB",
+          "spaceId": "48",
+          "threadId": "52",
+          "createdAt": "2026-06-10T10:23:36.000Z",
+          "modifiedAt": "2026-06-10T10:26:51.000Z"
+        }
+      },
+      {
+        "appId": "711",
+        "logicalName": "新規システム導入ヒアリング記録（日常 UI・710 へ REST）",
+        "live": {
+          "appId": "711",
+          "name": "新規システム導入ヒアリング記録",
+          "spaceId": "48",
+          "threadId": "52",
+          "createdAt": "2026-06-10T10:23:41.000Z",
+          "modifiedAt": "2026-06-11T21:56:46.000Z"
+        }
+      },
+      {
+        "appId": "713",
+        "logicalName": "【業務改善提案システム】年次処理",
+        "live": {
+          "appId": "713",
+          "name": "【業務改善提案システム】年次処理",
+          "spaceId": "5",
+          "threadId": "7",
+          "createdAt": "2026-06-12T22:09:15.000Z",
+          "modifiedAt": "2026-06-12T22:20:24.000Z"
+        }
+      },
+      {
+        "appId": "714",
+        "logicalName": "ソフトウエア台帳DB（ライセンス割当正本・閲覧のみ）",
+        "live": {
+          "appId": "714",
+          "name": "ソフトウエア台帳DB",
+          "spaceId": "21",
+          "threadId": "23",
+          "createdAt": "2026-06-13T23:13:38.000Z",
+          "modifiedAt": "2026-06-13T23:14:38.000Z"
+        }
+      },
+      {
+        "appId": "715",
+        "logicalName": "ソフトウエア管理台帳ver.1（日常 UI・714 へ REST）",
+        "live": {
+          "appId": "715",
+          "name": "ソフトウエア管理台帳ver.1",
+          "spaceId": "21",
+          "threadId": "23",
+          "createdAt": "2026-06-13T23:13:50.000Z",
+          "modifiedAt": "2026-06-17T12:52:53.000Z"
+        }
+      },
+      {
+        "appId": "716",
+        "logicalName": "記憶媒体等台帳DB（媒体・周辺機器正本・閲覧のみ）",
+        "live": {
+          "appId": "716",
+          "name": "記憶媒体等台帳DB",
+          "spaceId": "21",
+          "threadId": "23",
+          "createdAt": "2026-06-13T23:53:02.000Z",
+          "modifiedAt": "2026-06-13T23:54:13.000Z"
+        }
+      },
+      {
+        "appId": "717",
+        "logicalName": "記憶媒体等管理台帳ver.1（日常 UI・716 へ REST）",
+        "live": {
+          "appId": "717",
+          "name": "記憶媒体等管理台帳ver.1",
+          "spaceId": "21",
+          "threadId": "23",
+          "createdAt": "2026-06-13T23:53:08.000Z",
+          "modifiedAt": "2026-06-17T12:54:23.000Z"
+        }
+      },
+      {
+        "appId": "718",
+        "logicalName": "社内Wi-Fi管理DB（拠点 SSID 正本・閲覧のみ）",
+        "live": {
+          "appId": "718",
+          "name": "社内Wi-Fi管理DB",
+          "spaceId": "21",
+          "threadId": "23",
+          "createdAt": "2026-06-14T07:38:51.000Z",
+          "modifiedAt": "2026-06-14T07:40:10.000Z"
+        }
+      },
+      {
+        "appId": "719",
+        "logicalName": "社内Wi-Fi管理台帳 ver.1（日常 UI・718 へ REST）",
+        "live": {
+          "appId": "719",
+          "name": "社内Wi-Fi管理台帳 ver.1",
+          "spaceId": "21",
+          "threadId": "23",
+          "createdAt": "2026-06-14T07:38:57.000Z",
+          "modifiedAt": "2026-07-07T09:55:33.000Z"
+        }
+      },
+      {
+        "appId": "720",
+        "logicalName": "JRシステム用iPad台帳DB（端末正本・閲覧のみ）",
+        "live": {
+          "appId": "720",
+          "name": "JRシステム用iPad台帳DB",
+          "spaceId": "34",
+          "threadId": "38",
+          "createdAt": "2026-06-15T09:27:54.000Z",
+          "modifiedAt": "2026-06-19T12:03:52.000Z"
+        }
+      },
+      {
+        "appId": "721",
+        "logicalName": "JRシステム用iPad管理台帳 ver.1（日常 UI・720 へ REST）",
+        "live": {
+          "appId": "721",
+          "name": "JRシステム用iPad管理台帳 ver.1",
+          "spaceId": "34",
+          "threadId": "38",
+          "createdAt": "2026-06-15T09:27:59.000Z",
+          "modifiedAt": "2026-06-24T10:14:08.000Z"
+        }
+      },
+      {
+        "appId": "733",
+        "logicalName": "VPNアカウント管理台帳用DB（正本・閲覧のみ）",
+        "live": {
+          "appId": "733",
+          "name": "VPNアカウント管理台帳用DB",
+          "spaceId": "48",
+          "threadId": "52",
+          "createdAt": "2026-06-16T11:41:58.000Z",
+          "modifiedAt": "2026-06-20T12:04:23.000Z"
+        }
+      },
+      {
+        "appId": "734",
+        "logicalName": "VPNアカウント台帳（日常 UI・733 へ REST）",
+        "live": {
+          "appId": "734",
+          "name": "VPNアカウント台帳",
+          "spaceId": "48",
+          "threadId": "52",
+          "createdAt": "2026-06-16T11:42:04.000Z",
+          "modifiedAt": "2026-07-01T10:25:48.000Z"
+        }
+      },
+      {
+        "appId": "735",
+        "logicalName": "【実行予算書】リストマスタ ver.01",
+        "live": {
+          "appId": "735",
+          "name": "【実行予算書】リストマスタ ver.01",
+          "spaceId": "56",
+          "threadId": "60",
+          "createdAt": "2026-06-18T10:37:32.000Z",
+          "modifiedAt": "2026-06-18T10:39:21.000Z"
+        }
+      },
+      {
+        "appId": "736",
+        "logicalName": "実行予算書作成支援ツール ver.01",
+        "live": {
+          "appId": "736",
+          "name": "実行予算書作成支援ツール　ver.01",
+          "spaceId": "56",
+          "threadId": "60",
+          "createdAt": "2026-06-18T10:47:08.000Z",
+          "modifiedAt": "2026-07-12T08:44:24.000Z"
+        }
+      },
+      {
+        "appId": "737",
+        "logicalName": "トータルネットワークネットワーク管理DB（正本・閲覧のみ）",
+        "live": {
+          "appId": "737",
+          "name": "トータルネットワークネットワーク管理DB",
+          "spaceId": "48",
+          "threadId": "52",
+          "createdAt": "2026-06-21T10:43:23.000Z",
+          "modifiedAt": "2026-06-21T10:54:40.000Z"
+        }
+      },
+      {
+        "appId": "738",
+        "logicalName": "トータルネットワークネットワーク管理台帳（日常 UI・737 へ REST）",
+        "live": {
+          "appId": "738",
+          "name": "トータルネットワークネットワーク管理台帳",
+          "spaceId": "48",
+          "threadId": "52",
+          "createdAt": "2026-06-21T10:43:31.000Z",
+          "modifiedAt": "2026-06-21T11:04:40.000Z"
+        }
+      },
+      {
+        "appId": "741",
+        "logicalName": "複合機管理台帳DB（正本・閲覧のみ）",
+        "live": {
+          "appId": "741",
+          "name": "複合機管理台帳DB",
+          "spaceId": "48",
+          "threadId": "52",
+          "createdAt": "2026-06-22T10:39:56.000Z",
+          "modifiedAt": "2026-06-22T10:43:21.000Z"
+        }
+      },
+      {
+        "appId": "742",
+        "logicalName": "複合機管理台帳（日常 UI・741 へ REST）",
+        "live": {
+          "appId": "742",
+          "name": "複合機管理台帳",
+          "spaceId": "48",
+          "threadId": "52",
+          "createdAt": "2026-06-22T10:40:47.000Z",
+          "modifiedAt": "2026-06-22T10:46:39.000Z"
+        }
+      },
+      {
+        "appId": "744",
+        "logicalName": "JREクラウドアカウント管理台帳用DB（正本・閲覧のみ）",
+        "live": {
+          "appId": "744",
+          "name": "JREクラウドアカウント管理台帳用DB",
+          "spaceId": "34",
+          "threadId": "38",
+          "createdAt": "2026-06-26T11:09:30.000Z",
+          "modifiedAt": "2026-06-26T11:10:08.000Z"
+        }
+      },
+      {
+        "appId": "745",
+        "logicalName": "JREクラウドアカウント台帳（日常 UI・744 へ REST）",
+        "live": {
+          "appId": "745",
+          "name": "JREクラウドアカウント台帳",
+          "spaceId": "34",
+          "threadId": "38",
+          "createdAt": "2026-06-26T11:09:35.000Z",
+          "modifiedAt": "2026-06-27T11:45:11.000Z"
+        }
+      },
+      {
+        "appId": "746",
+        "logicalName": "JRE-C_Hubアカウント管理台帳用DB（正本・閲覧のみ）",
+        "live": {
+          "appId": "746",
+          "name": "JRE-C_Hubアカウント管理台帳用DB",
+          "spaceId": "34",
+          "threadId": "38",
+          "createdAt": "2026-06-27T11:15:13.000Z",
+          "modifiedAt": "2026-07-18T04:37:43.000Z"
+        }
+      },
+      {
+        "appId": "747",
+        "logicalName": "JRE-C_Hubアカウント台帳（日常 UI・746 へ REST）",
+        "live": {
+          "appId": "747",
+          "name": "JRE-C_Hubアカウント台帳",
+          "spaceId": "34",
+          "threadId": "38",
+          "createdAt": "2026-06-27T11:15:26.000Z",
+          "modifiedAt": "2026-07-18T04:59:31.000Z"
+        }
+      },
+      {
+        "appId": "748",
+        "logicalName": "NAS管理台帳DB（正本・閲覧のみ）",
+        "live": {
+          "appId": "748",
+          "name": "NAS管理台帳DB",
+          "spaceId": "48",
+          "threadId": "52",
+          "createdAt": "2026-06-28T10:31:39.000Z",
+          "modifiedAt": "2026-06-29T09:45:40.000Z"
+        }
+      },
+      {
+        "appId": "749",
+        "logicalName": "NAS管理台帳（日常 UI・748 へ REST）",
+        "live": {
+          "appId": "749",
+          "name": "NAS管理台帳",
+          "spaceId": "48",
+          "threadId": "52",
+          "createdAt": "2026-06-28T10:31:48.000Z",
+          "modifiedAt": "2026-06-29T09:56:31.000Z"
+        }
+      },
+      {
+        "appId": "750",
+        "logicalName": "メーリングリストDB（正本・閲覧のみ）",
+        "live": {
+          "appId": "750",
+          "name": "メーリングリストDB",
+          "spaceId": "21",
+          "threadId": "23",
+          "createdAt": "2026-06-29T10:55:18.000Z",
+          "modifiedAt": "2026-07-02T06:02:30.000Z"
+        }
+      },
+      {
+        "appId": "751",
+        "logicalName": "メーリングリスト台帳（日常 UI・750 へ REST）",
+        "live": {
+          "appId": "751",
+          "name": "メーリングリスト台帳",
+          "spaceId": "21",
+          "threadId": "23",
+          "createdAt": "2026-06-29T10:55:23.000Z",
+          "modifiedAt": "2026-07-02T06:02:32.000Z"
+        }
+      },
+      {
+        "appId": "752",
+        "logicalName": "Kintoneアカウント管理台帳DB（正本・閲覧のみ）",
+        "live": {
+          "appId": "752",
+          "name": "Kintoneアカウント管理台帳DB",
+          "spaceId": "48",
+          "threadId": "52",
+          "createdAt": "2026-07-04T23:45:28.000Z",
+          "modifiedAt": "2026-07-05T01:09:16.000Z"
+        }
+      },
+      {
+        "appId": "753",
+        "logicalName": "Kintoneアカウント管理台帳（日常 UI・752 へ REST）",
+        "live": {
+          "appId": "753",
+          "name": "Kintoneアカウント管理台帳",
+          "spaceId": "48",
+          "threadId": "52",
+          "createdAt": "2026-07-04T23:45:35.000Z",
+          "modifiedAt": "2026-07-05T01:02:39.000Z"
+        }
+      }
+    ],
+    "activeMissing": [],
+    "retiredAbsent": [
+      {
+        "appId": "594",
+        "logicalName": "PC台帳 ver.2（旧・テナント削除済／正は674）",
+        "live": null
+      },
+      {
+        "appId": "626",
+        "logicalName": "AIチーム管理・削除済みID",
+        "live": null
+      },
+      {
+        "appId": "627",
+        "logicalName": "アカウント管理台帳",
+        "live": null
+      },
+      {
+        "appId": "638",
+        "logicalName": "AIチーム管理・削除済みID",
+        "live": null
+      },
+      {
+        "appId": "639",
+        "logicalName": "AIチーム管理・削除済みID",
+        "live": null
+      },
+      {
+        "appId": "651",
+        "logicalName": "AIチーム管理・削除済みID",
+        "live": null
+      },
+      {
+        "appId": "652",
+        "logicalName": "AIチーム管理・削除済みID",
+        "live": null
+      },
+      {
+        "appId": "653",
+        "logicalName": "AIチーム管理・削除済みID",
+        "live": null
+      },
+      {
+        "appId": "667",
+        "logicalName": "AIチーム管理・削除済みID",
+        "live": null
+      },
+      {
+        "appId": "668",
+        "logicalName": "運用ガイド（旧・PC台帳／アカウント操作手順）",
+        "live": null
+      },
+      {
+        "appId": "681",
+        "logicalName": "681（運用終了・旧 PC台帳簡単ガイドライン）",
+        "live": null
+      },
+      {
+        "appId": "712",
+        "logicalName": "712（運用終了・システム推進室ポータル）",
+        "live": null
+      }
+    ],
+    "retiredPresent": [],
+    "unlistedLive": [],
+    "trackedMissing": [],
+    "newSinceLast": [],
+    "removedSinceLast": [],
+    "nameChanges": [],
+    "ok": true
+  },
+  "liveApps": [
+    {
+      "appId": "595",
+      "name": "社員情報マスタ",
+      "spaceId": "21",
+      "threadId": "23",
+      "createdAt": "2026-03-21T06:32:46.000Z",
+      "modifiedAt": "2026-07-06T22:58:29.000Z"
+    },
+    {
+      "appId": "629",
+      "name": "出張精算アプリ",
+      "spaceId": "48",
+      "threadId": "52",
+      "createdAt": "2026-03-28T12:06:48.000Z",
+      "modifiedAt": "2026-04-10T09:52:43.000Z"
+    },
+    {
+      "appId": "631",
+      "name": "Security NEXT ニュース",
+      "spaceId": "48",
+      "threadId": "52",
+      "createdAt": "2026-03-28T14:32:13.000Z",
+      "modifiedAt": "2026-05-16T11:18:50.000Z"
+    },
+    {
+      "appId": "632",
+      "name": "Security NEXT ニュース週次要約用アプリ",
+      "spaceId": "48",
+      "threadId": "52",
+      "createdAt": "2026-03-28T14:41:19.000Z",
+      "modifiedAt": "2026-05-02T06:49:31.000Z"
+    },
+    {
+      "appId": "640",
+      "name": "社内FAQDB",
+      "spaceId": "52",
+      "threadId": "56",
+      "createdAt": "2026-04-02T22:33:32.000Z",
+      "modifiedAt": "2026-04-14T07:15:56.000Z"
+    },
+    {
+      "appId": "670",
+      "name": "環境設定マスタ",
+      "spaceId": "21",
+      "threadId": "23",
+      "createdAt": "2026-04-24T09:20:37.000Z",
+      "modifiedAt": "2026-04-24T09:23:22.000Z"
+    },
+    {
+      "appId": "671",
+      "name": "M365管理マスタ",
+      "spaceId": "21",
+      "threadId": "23",
+      "createdAt": "2026-04-24T09:34:22.000Z",
+      "modifiedAt": "2026-04-24T09:35:56.000Z"
+    },
+    {
+      "appId": "672",
+      "name": "新個人WindowsID採番マスタ",
+      "spaceId": "21",
+      "threadId": "23",
+      "createdAt": "2026-04-24T22:42:59.000Z",
+      "modifiedAt": "2026-06-04T06:45:58.000Z"
+    },
+    {
+      "appId": "673",
+      "name": "新共有WindowsID採番マスタ",
+      "spaceId": "21",
+      "threadId": "23",
+      "createdAt": "2026-04-24T22:47:34.000Z",
+      "modifiedAt": "2026-04-24T22:47:44.000Z"
+    },
+    {
+      "appId": "674",
+      "name": "新・PC台帳ver.1",
+      "spaceId": "21",
+      "threadId": "23",
+      "createdAt": "2026-04-26T08:21:50.000Z",
+      "modifiedAt": "2026-07-17T09:39:33.000Z"
+    },
+    {
+      "appId": "677",
+      "name": "システム推進室予実管理システム入力アプリ",
+      "spaceId": "54",
+      "threadId": "58",
+      "createdAt": "2026-04-29T10:09:55.000Z",
+      "modifiedAt": "2026-05-16T10:59:44.000Z"
+    },
+    {
+      "appId": "678",
+      "name": "システム推進室予実管理システム",
+      "spaceId": "54",
+      "threadId": "58",
+      "createdAt": "2026-04-29T10:09:55.000Z",
+      "modifiedAt": "2026-05-27T11:13:52.000Z"
+    },
+    {
+      "appId": "679",
+      "name": "システム推進室予実アプリガイド",
+      "spaceId": "54",
+      "threadId": "58",
+      "createdAt": "2026-05-04T11:03:01.000Z",
+      "modifiedAt": "2026-05-16T10:47:11.000Z"
+    },
+    {
+      "appId": "680",
+      "name": "新・PC台帳 所属候補マスタ",
+      "spaceId": "21",
+      "threadId": "23",
+      "createdAt": "2026-05-05T00:43:24.000Z",
+      "modifiedAt": "2026-06-23T09:54:24.000Z"
+    },
+    {
+      "appId": "682",
+      "name": "ユーザサポート件数日次",
+      "spaceId": "48",
+      "threadId": "52",
+      "createdAt": "2026-05-08T07:35:36.000Z",
+      "modifiedAt": "2026-07-01T16:27:56.000Z"
+    },
+    {
+      "appId": "683",
+      "name": "ユーザサポートダッシュボード",
+      "spaceId": "48",
+      "threadId": "52",
+      "createdAt": "2026-05-10T08:11:13.000Z",
+      "modifiedAt": "2026-06-25T13:50:55.000Z"
+    },
+    {
+      "appId": "685",
+      "name": "最新ICT情報掲示板（収集用）",
+      "spaceId": "48",
+      "threadId": "52",
+      "createdAt": "2026-05-16T08:22:58.000Z",
+      "modifiedAt": "2026-05-19T12:37:07.000Z"
+    },
+    {
+      "appId": "686",
+      "name": "最新ICT情報掲示板",
+      "spaceId": "48",
+      "threadId": "52",
+      "createdAt": "2026-05-16T08:23:02.000Z",
+      "modifiedAt": "2026-06-11T21:58:21.000Z"
+    },
+    {
+      "appId": "687",
+      "name": "工事稼働日数算出",
+      "spaceId": "56",
+      "threadId": "60",
+      "createdAt": "2026-05-17T06:34:50.000Z",
+      "modifiedAt": "2026-07-10T13:04:53.000Z"
+    },
+    {
+      "appId": "688",
+      "name": "工事稼働日数計算ツール",
+      "spaceId": "56",
+      "threadId": "60",
+      "createdAt": "2026-05-17T06:47:43.000Z",
+      "modifiedAt": "2026-07-13T10:21:02.000Z"
+    },
+    {
+      "appId": "693",
+      "name": "Apple ID管理台帳用DB",
+      "spaceId": "21",
+      "threadId": "23",
+      "createdAt": "2026-06-03T07:34:52.000Z",
+      "modifiedAt": "2026-06-08T09:17:46.000Z"
+    },
+    {
+      "appId": "694",
+      "name": "Apple ID管理台帳",
+      "spaceId": "21",
+      "threadId": "23",
+      "createdAt": "2026-06-03T07:57:23.000Z",
+      "modifiedAt": "2026-06-08T22:26:41.000Z"
+    },
+    {
+      "appId": "695",
+      "name": "共有メールアドレス管理用DB",
+      "spaceId": "21",
+      "threadId": "23",
+      "createdAt": "2026-06-06T06:35:52.000Z",
+      "modifiedAt": "2026-06-21T11:30:17.000Z"
+    },
+    {
+      "appId": "696",
+      "name": "メールアドレス管理台帳",
+      "spaceId": "21",
+      "threadId": "23",
+      "createdAt": "2026-06-06T06:36:02.000Z",
+      "modifiedAt": "2026-06-21T11:49:57.000Z"
+    },
+    {
+      "appId": "697",
+      "name": "【業務改善提案システム】設定マスタ",
+      "spaceId": "5",
+      "threadId": "7",
+      "createdAt": "2026-06-06T23:57:49.000Z",
+      "modifiedAt": "2026-06-30T12:01:24.000Z"
+    },
+    {
+      "appId": "698",
+      "name": "【業務改善提案システム】社員マスタ",
+      "spaceId": "5",
+      "threadId": "7",
+      "createdAt": "2026-06-07T00:10:34.000Z",
+      "modifiedAt": "2026-07-04T11:53:10.000Z"
+    },
+    {
+      "appId": "699",
+      "name": "【業務改善提案システム】ご利用ガイド",
+      "spaceId": "5",
+      "threadId": "7",
+      "createdAt": "2026-06-07T00:18:04.000Z",
+      "modifiedAt": "2026-07-17T11:42:43.000Z"
+    },
+    {
+      "appId": "700",
+      "name": "【業務改善提案システム】提案申請ver.02",
+      "spaceId": "5",
+      "threadId": "7",
+      "createdAt": "2026-06-07T00:21:46.000Z",
+      "modifiedAt": "2026-07-17T11:50:59.000Z"
+    },
+    {
+      "appId": "701",
+      "name": "Security NEXT ニュース掲示板",
+      "spaceId": "48",
+      "threadId": "52",
+      "createdAt": "2026-06-07T07:40:50.000Z",
+      "modifiedAt": "2026-06-11T21:57:19.000Z"
+    },
+    {
+      "appId": "702",
+      "name": "Security NEXT 週次掲示板",
+      "spaceId": "48",
+      "threadId": "52",
+      "createdAt": "2026-06-07T07:40:53.000Z",
+      "modifiedAt": "2026-06-11T21:57:49.000Z"
+    },
+    {
+      "appId": "706",
+      "name": "不適合管理台帳用DB",
+      "spaceId": "48",
+      "threadId": "52",
+      "createdAt": "2026-06-10T09:32:28.000Z",
+      "modifiedAt": "2026-06-10T09:34:59.000Z"
+    },
+    {
+      "appId": "707",
+      "name": "不適合管理台帳",
+      "spaceId": "48",
+      "threadId": "52",
+      "createdAt": "2026-06-10T09:33:03.000Z",
+      "modifiedAt": "2026-06-11T21:55:35.000Z"
+    },
+    {
+      "appId": "708",
+      "name": "外部ITサービス導入チェック用DB",
+      "spaceId": "48",
+      "threadId": "52",
+      "createdAt": "2026-06-10T09:57:16.000Z",
+      "modifiedAt": "2026-06-10T09:58:43.000Z"
+    },
+    {
+      "appId": "709",
+      "name": "外部ITサービス導入チェックシート",
+      "spaceId": "48",
+      "threadId": "52",
+      "createdAt": "2026-06-10T09:57:21.000Z",
+      "modifiedAt": "2026-06-11T21:56:15.000Z"
+    },
+    {
+      "appId": "710",
+      "name": "新規システム導入ヒアリング用DB",
+      "spaceId": "48",
+      "threadId": "52",
+      "createdAt": "2026-06-10T10:23:36.000Z",
+      "modifiedAt": "2026-06-10T10:26:51.000Z"
+    },
+    {
+      "appId": "711",
+      "name": "新規システム導入ヒアリング記録",
+      "spaceId": "48",
+      "threadId": "52",
+      "createdAt": "2026-06-10T10:23:41.000Z",
+      "modifiedAt": "2026-06-11T21:56:46.000Z"
+    },
+    {
+      "appId": "713",
+      "name": "【業務改善提案システム】年次処理",
+      "spaceId": "5",
+      "threadId": "7",
+      "createdAt": "2026-06-12T22:09:15.000Z",
+      "modifiedAt": "2026-06-12T22:20:24.000Z"
+    },
+    {
+      "appId": "714",
+      "name": "ソフトウエア台帳DB",
+      "spaceId": "21",
+      "threadId": "23",
+      "createdAt": "2026-06-13T23:13:38.000Z",
+      "modifiedAt": "2026-06-13T23:14:38.000Z"
+    },
+    {
+      "appId": "715",
+      "name": "ソフトウエア管理台帳ver.1",
+      "spaceId": "21",
+      "threadId": "23",
+      "createdAt": "2026-06-13T23:13:50.000Z",
+      "modifiedAt": "2026-06-17T12:52:53.000Z"
+    },
+    {
+      "appId": "716",
+      "name": "記憶媒体等台帳DB",
+      "spaceId": "21",
+      "threadId": "23",
+      "createdAt": "2026-06-13T23:53:02.000Z",
+      "modifiedAt": "2026-06-13T23:54:13.000Z"
+    },
+    {
+      "appId": "717",
+      "name": "記憶媒体等管理台帳ver.1",
+      "spaceId": "21",
+      "threadId": "23",
+      "createdAt": "2026-06-13T23:53:08.000Z",
+      "modifiedAt": "2026-06-17T12:54:23.000Z"
+    },
+    {
+      "appId": "718",
+      "name": "社内Wi-Fi管理DB",
+      "spaceId": "21",
+      "threadId": "23",
+      "createdAt": "2026-06-14T07:38:51.000Z",
+      "modifiedAt": "2026-06-14T07:40:10.000Z"
+    },
+    {
+      "appId": "719",
+      "name": "社内Wi-Fi管理台帳 ver.1",
+      "spaceId": "21",
+      "threadId": "23",
+      "createdAt": "2026-06-14T07:38:57.000Z",
+      "modifiedAt": "2026-07-07T09:55:33.000Z"
+    },
+    {
+      "appId": "720",
+      "name": "JRシステム用iPad台帳DB",
+      "spaceId": "34",
+      "threadId": "38",
+      "createdAt": "2026-06-15T09:27:54.000Z",
+      "modifiedAt": "2026-06-19T12:03:52.000Z"
+    },
+    {
+      "appId": "721",
+      "name": "JRシステム用iPad管理台帳 ver.1",
+      "spaceId": "34",
+      "threadId": "38",
+      "createdAt": "2026-06-15T09:27:59.000Z",
+      "modifiedAt": "2026-06-24T10:14:08.000Z"
+    },
+    {
+      "appId": "733",
+      "name": "VPNアカウント管理台帳用DB",
+      "spaceId": "48",
+      "threadId": "52",
+      "createdAt": "2026-06-16T11:41:58.000Z",
+      "modifiedAt": "2026-06-20T12:04:23.000Z"
+    },
+    {
+      "appId": "734",
+      "name": "VPNアカウント台帳",
+      "spaceId": "48",
+      "threadId": "52",
+      "createdAt": "2026-06-16T11:42:04.000Z",
+      "modifiedAt": "2026-07-01T10:25:48.000Z"
+    },
+    {
+      "appId": "735",
+      "name": "【実行予算書】リストマスタ ver.01",
+      "spaceId": "56",
+      "threadId": "60",
+      "createdAt": "2026-06-18T10:37:32.000Z",
+      "modifiedAt": "2026-06-18T10:39:21.000Z"
+    },
+    {
+      "appId": "736",
+      "name": "実行予算書作成支援ツール　ver.01",
+      "spaceId": "56",
+      "threadId": "60",
+      "createdAt": "2026-06-18T10:47:08.000Z",
+      "modifiedAt": "2026-07-12T08:44:24.000Z"
+    },
+    {
+      "appId": "737",
+      "name": "トータルネットワークネットワーク管理DB",
+      "spaceId": "48",
+      "threadId": "52",
+      "createdAt": "2026-06-21T10:43:23.000Z",
+      "modifiedAt": "2026-06-21T10:54:40.000Z"
+    },
+    {
+      "appId": "738",
+      "name": "トータルネットワークネットワーク管理台帳",
+      "spaceId": "48",
+      "threadId": "52",
+      "createdAt": "2026-06-21T10:43:31.000Z",
+      "modifiedAt": "2026-06-21T11:04:40.000Z"
+    },
+    {
+      "appId": "741",
+      "name": "複合機管理台帳DB",
+      "spaceId": "48",
+      "threadId": "52",
+      "createdAt": "2026-06-22T10:39:56.000Z",
+      "modifiedAt": "2026-06-22T10:43:21.000Z"
+    },
+    {
+      "appId": "742",
+      "name": "複合機管理台帳",
+      "spaceId": "48",
+      "threadId": "52",
+      "createdAt": "2026-06-22T10:40:47.000Z",
+      "modifiedAt": "2026-06-22T10:46:39.000Z"
+    },
+    {
+      "appId": "744",
+      "name": "JREクラウドアカウント管理台帳用DB",
+      "spaceId": "34",
+      "threadId": "38",
+      "createdAt": "2026-06-26T11:09:30.000Z",
+      "modifiedAt": "2026-06-26T11:10:08.000Z"
+    },
+    {
+      "appId": "745",
+      "name": "JREクラウドアカウント台帳",
+      "spaceId": "34",
+      "threadId": "38",
+      "createdAt": "2026-06-26T11:09:35.000Z",
+      "modifiedAt": "2026-06-27T11:45:11.000Z"
+    },
+    {
+      "appId": "746",
+      "name": "JRE-C_Hubアカウント管理台帳用DB",
+      "spaceId": "34",
+      "threadId": "38",
+      "createdAt": "2026-06-27T11:15:13.000Z",
+      "modifiedAt": "2026-07-18T04:37:43.000Z"
+    },
+    {
+      "appId": "747",
+      "name": "JRE-C_Hubアカウント台帳",
+      "spaceId": "34",
+      "threadId": "38",
+      "createdAt": "2026-06-27T11:15:26.000Z",
+      "modifiedAt": "2026-07-18T04:59:31.000Z"
+    },
+    {
+      "appId": "748",
+      "name": "NAS管理台帳DB",
+      "spaceId": "48",
+      "threadId": "52",
+      "createdAt": "2026-06-28T10:31:39.000Z",
+      "modifiedAt": "2026-06-29T09:45:40.000Z"
+    },
+    {
+      "appId": "749",
+      "name": "NAS管理台帳",
+      "spaceId": "48",
+      "threadId": "52",
+      "createdAt": "2026-06-28T10:31:48.000Z",
+      "modifiedAt": "2026-06-29T09:56:31.000Z"
+    },
+    {
+      "appId": "750",
+      "name": "メーリングリストDB",
+      "spaceId": "21",
+      "threadId": "23",
+      "createdAt": "2026-06-29T10:55:18.000Z",
+      "modifiedAt": "2026-07-02T06:02:30.000Z"
+    },
+    {
+      "appId": "751",
+      "name": "メーリングリスト台帳",
+      "spaceId": "21",
+      "threadId": "23",
+      "createdAt": "2026-06-29T10:55:23.000Z",
+      "modifiedAt": "2026-07-02T06:02:32.000Z"
+    },
+    {
+      "appId": "752",
+      "name": "Kintoneアカウント管理台帳DB",
+      "spaceId": "48",
+      "threadId": "52",
+      "createdAt": "2026-07-04T23:45:28.000Z",
+      "modifiedAt": "2026-07-05T01:09:16.000Z"
+    },
+    {
+      "appId": "753",
+      "name": "Kintoneアカウント管理台帳",
+      "spaceId": "48",
+      "threadId": "52",
+      "createdAt": "2026-07-04T23:45:35.000Z",
+      "modifiedAt": "2026-07-05T01:02:39.000Z"
+    }
+  ]
+}

@@ -72,9 +72,9 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-07-17 自動更新）】
-- 進行中 plan: docs/plans/2026-05-23-business-improvement-proposal-spec.md
+【今やってる主タスク（2026-07-18 自動更新）】
+- 進行中 plan: docs/plans/2026-04-18-skysea-installer.md
 - 当日コミット (上位 3):
-  - docs(business-improvement): record readiness in closure ledger
-  - docs(business-improvement): mark operation readiness ok
-  - feat: restrict workflow test department
+  - fix(governance): enforce canonical RAG mirrors
+  - chore(checkpoint): sync Git line after close
+  - chore(handoff): align bridge gitHead

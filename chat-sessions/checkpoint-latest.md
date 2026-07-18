@@ -1,15 +1,15 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-18 JST — **App 746/747 署名代行対象・利用再開・湾岸工事所を本番反映**
+**最終更新**: 2026-07-18 JST — **kintone月次棚卸・SKYSEA 8月前段仕様・夕反省**
 
 **Git**: **`358994c2`** = `origin/main` — push 済
 
-**本日状態**: cold-start READY。App 746フォーム rev8 / App 747 rev14を本番反映。浜田が部署・署名代行者設定・利用再開・Edge「パスポート保存」非表示を目視確認し、全項目OK。
+**本日状態**: cold-start READY。App 746/747完了後、kintone live 244件を照会しAIチーム管理75 ID（現役63・削除済み12）を月次監査する仕組みを追加。旧594等の削除状態・deploy安全栓を正本へ反映。SKYSEA前段90項目をplan §11へ確定し、8/3問い合わせ・9月展開・10/30完了目標へ更新。
 
-**次の1手**: **App 747 完了。次回は浜田の指示待ち**
+**次の1手**: **次回は浜田の指示待ち**。SKYSEAは8/3問い合わせまで実装・GPO変更・本番配信を行わない。
 
-**GO待ち**: H9 / △2 最終判定 — **2026-07-25 のみ**（本日は判定不可 · 運用側対応済: metrics蓄積+verify:formalization-h9-review scheduled）
+**GO待ち**: 夕反省 **#S1〜#S3 / #R1〜#R2**（`docs/reports/2026-07-18-evening-reflection.md`）の承認可否。H9 / △2 最終判定は **2026-07-25 のみ**（本日は判定不可）。
 
 **観測期間**: ~~憲法 Round-3 · rules-opt §18~~ **CLOSED 2026-07-15**。**H9/△2**: metricsEligibleAfter=**2026-07-18** · reviewDate=**2026-07-25** · early GREEN/降格 **禁止**（ops lock 2026-07-15）
 
@@ -38,7 +38,7 @@
 |------|------|
 | **688** | WBGT UI 折りたたみ完了（rev90）· **それ以外触らない** |
 | **677–679** | 触らない |
-| **SKYSEA** | 8/1 再計画 · 7月着手禁止 |
+| **SKYSEA** | 7/18 前段仕様確定（plan §11）· 8/3 SKY社問い合わせ · 8月準備/試験 · 9月展開 · **10/30 完了目標** · 実装/配信は8月GO後 |
 | **736** | 現行版を保持 · ver.02 は依頼者 Excel 受領後に再設計 · 本日実装/deploy なし |
 | **712** | 削除済 — deploy 禁止 |
 
@@ -47,6 +47,17 @@
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
+
+## 2026-07-18 本日完了サマリー
+
+| 項目 | 内容 |
+|------|------|
+| **RAG** | 正本ミラー drift 修復 · staged pre-commit + GitHub Actionsゲート追加 |
+| **kintone棚卸** | AIチーム管理75 IDだけを月次監査 · 現役63/63・削除済み12/12でOK · 一般部門アプリは比較対象外 |
+| **旧アプリ** | 594/626/627/638/639/651/652/653/667/668/681/712のlive不在を正本化 · 主要deploy経路へ安全栓 |
+| **SKYSEA** | 前段90項目をplan §11へ確定 · 8/3問い合わせ · 9月段階展開 · 10/30完了目標 · 実装は8月GO後 |
+| **GitHub** | Actions主要ゲート成功 · mainはlinear/force-push禁止/deletion禁止 · required checksは#R2承認待ち |
+| **夕反省** | F1〜F5を記録 · 改善案#S1〜#S3/#R1〜#R2は未承認・未適用 |
 
 ## 2026-07-17 本日完了サマリー
 

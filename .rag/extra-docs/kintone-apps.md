@@ -77,7 +77,7 @@ npm run app:fields <アプリID>
 | 751 | `2026-06-29-mailing-list-dash-clear-btn-v2` | **5** | `6b5969d9-74fd-475f-8598-dc679927e444` | 2026-06-29 メーリングリスト台帳 v1 CLOSED |
 | 701 | `2026-06-08-sn-news-board-v4-digest-labels` | **7** | `313ce558-6a11-4e5c-90b2-85d49426cfa8` | 2026-06-08 SN ニュース掲示板 v4 |
 | 627 | `2026-05-12-627-no594-rest` | 150 | `9fc3efc8-2a22-4585-881f-0ee3c2a0fbf2` | **削除済**（674 移行後・浜田確認 2026-06-10）— 台帳参照用 |
-| 668 | `2026-05-16-668-ops-guide-portfolio-audit` | 42 | `106126f5-7249-4104-8b43-405c85ddfa51` | 2026-05-16 portfolio 拡張・`deploy:668` |
+| 668 | `2026-05-16-668-ops-guide-portfolio-audit` | 42 | `106126f5-7249-4104-8b43-405c85ddfa51` | **削除済**（2026-07-18 live 全件一覧・ID 指定照会で不在確認）— 旧 BUILD の監査記録のみ |
 | 677 | `2026-05-15-677-block-all-ui-mutations-dash678-only` | 20 | `6eb02e6f-4319-4bed-97ee-245ee0869a01` | 2026-05-16 registry 整合 |
 | 678 | `2026-05-15-678-hide-native-pager-zero-label` | **157** | `33343967-1f61-4981-88fe-924a090918b3` | 2026-05-16 registry 整合 |
 | 679 | `2026-05-15-679-manual-no-677-nav` | 32 | `3c757dfa-9704-47d5-b607-66ae78a423ef` | 2026-05-16 registry 整合 |
@@ -89,6 +89,10 @@ npm run app:fields <アプリID>
 
 ## アプリ一覧
 
+> **live 実在監査（2026-07-18）**: kintone の全アプリ一覧（`kintone-get-apps`, offset 0/100/200）と ID 指定照会を突合した。リポジトリに履歴・customize が残るものの、現テナントに存在しないアプリは **594 / 626 / 627 / 638 / 639 / 651 / 652 / 653 / 667 / 668 / 681 / 712**。以下で「削除済」とした行・節は、フィールドスナップショットと監査履歴を保持するための記録であり、**URL 参照・REST・deploy・SKYSEA 突合の対象にしない**。PC 台帳の現行正本は **674**。
+>
+> **継続棚卸**: `npm run audit:kintone-app-inventory`（読み取り専用）を月次 `cio:periodic:monthly` の先頭で実行する。対象は **AIチームと作成・管理したアプリのみ**（本表・BUILD台帳・field/customizeレジストリ掲載 appIdと、上記の削除済み12 ID）。一般部門・利用者作成アプリは対象外。これらは棚卸範囲を定める管理証跡であり、PC台帳の業務データ正本が674だけであることとは区別する。基準更新は `npm run audit:kintone-app-inventory:write`。現役消失／削除済み再出現は NG、AIチーム管理証跡あり・一覧未掲載／追加／削除／名称変更は要確認（自動削除なし）。latest は `docs/reports/kintone-app-inventory-latest.md`。
+
 | アプリ名（論理名） | アプリID | customize パス | デプロイ例（npm） |
 |-------------------|---------|----------------|------------------|
 | **ユーザサポート件数日次**（記録日・午前/午後件数・日合計 CALC・**対応内容→件数 JS**） | **682** | `customize/682/desktop.js`（**グラフ／ダッシュ／AI／§7 二枚印刷** は §9.1 C〜F） | [https://jbis-kintone.cybozu.com/k/682/](https://jbis-kintone.cybozu.com/k/682/) **Space 48 / thread 52**。`npm run cio:preflight:682 -- --note "…"` → `npm run deploy:682`。初回のみ `node --env-file=.env scripts/user-support-682-add-correspondence-fields.mjs`（`am_correspondence` / `pm_correspondence` 追加）。**月次欠日・重複の機械確認**: `npm run 682:audit-month -- --year 2026 --month 4`（`.env`）。**2026-05-12 deploy SUCCESS** / fileKey **`50783c0f-1aed-4dbe-a183-84e78b121e05`** / preview revision **`21`** / **BUILD=`2026-05-12-682-hide-rolling7m-dashboard683`**（**同一暦日は 1 レコード**・REST 重複検査。**7 暦月 REST 棒は非表示**・月次は **[683 ダッシュ](https://jbis-kintone.cybozu.com/k/683/)** を正。欠日バナー等 **§6.2.1** は従来どおり）（一覧 **§6.2.1**: 欠日は **JST 昨日まで**（**当月**）・**ヘッダで対象暦月を前月／次月／今月に戻す**・`sessionStorage` 保持・欠日列挙 **`yyyy/mm/dd(曜)`**・重複は暦月フル・offset ループ。**対応日セル**も **`yyyy/mm/dd(曜)`**・詳細・新規編集は補助行）。`npm run cio:preflight:682 -- --note "…"` → `npm run deploy:682`。**Runbook（§9.1 フェーズ C–D）**: `docs/runbooks/user-support-682-phase-c-and-space48-phase-d.md`。**フェーズ C（REST）**: `npm run 682:graph-monthly` — グラフ **`682_day_total_monthly`**（`day_total` SUM・`record_date` MONTH・**COLUMN 縦棒**・**JST 直近 7 暦月** `filterCond`）を維持（初回 **2026-05-10** revision **12**、以降は再実行で窓更新）。**自動窓更新**: GitHub Actions **`682-graph-monthly-refresh.yml`**（月初・**Repository secrets**・Runbook §1.0）。**7 暦月 0 埋め棒**: `customize/682/desktop.js`（**BUILD** 行参照・`deploy:682`）。**仕様** §4.1・§6.1・§6.2・§6.2.1・§7: `docs/plans/2026-05-08-user-support-daily-counts-spec.md` |
@@ -99,9 +103,13 @@ npm run app:fields <アプリID>
 | **【実行予算書】リストマスタ ver.01** | **735** | （customize なし）\| `npm run jikkou-yosan:import-master` | [https://jbis-kintone.cybozu.com/k/735/](https://jbis-kintone.cybozu.com/k/735/) **Space 56 / thread 60**・コード表77＋リスト27＝104件。**M 編集=管理者のみ**（ACL 要確認）。仕様 **`docs/plans/2026-06-18-jikkou-yosan-spec.md`** |
 | **実行予算書作成支援ツール　ver.01** | **736** | `customize/736/desktop.js` \| `npm run deploy:736` | [https://jbis-kintone.cybozu.com/k/736/](https://jbis-kintone.cybozu.com/k/736/) **Space 56 / thread 60**・735 REST・688型一覧+Excel風フォーム・**合計行 薄茶色**・**差分付き印刷+v2dサマリー**・**v2c 画面差分**・**依頼者UX v2**・**Phase 0c 行メニュー rev168**・Phase 1 **1a→1b→1c 未 GO**（反省会フック）。**BUILD=`2026-07-12-736-ui-backlog-02-col-resize` rev **186** / fileKey **`6df7d826-d949-404b-b9f9-ada4617a39ce`**。版管理 **`docs/plans/2026-06-20-jikkou-yosan-version-management-spec.md`**・v2d **`docs/plans/2026-07-04-jikkou-yosan-diff-print-summary-v2d.md`** |
 | **ユーザサポート682ダッシュ**（682 の REST 参照・閲覧／集約 UI・**入力は 682 のみ**） | **683** | `customize/683/desktop.js` | [https://jbis-kintone.cybozu.com/k/683/](https://jbis-kintone.cybozu.com/k/683/) **Space 48**（**2026-05-11** `kintone-add-app` → **`deploy:683` SUCCESS**・SPEC **§6.1.1**・Runbook **`docs/runbooks/user683-weekly-summary-and-print.md`**）。`npm run cio:preflight:683 -- --note "…"` → `npm run deploy:683`。**2026-06-25 deploy** / **BUILD**: `2026-06-25-683-sixmo-chart-pagination-fix-v1` — **6 暦月棒**を暦月別クエリに変更＋REST ページングを totalCount 突合（100 件打切り欠落是正）。検証: `npm run 683:audit-six-month-chart -- --view-year 2026 --view-month 7`。**2026-05-16 deploy SUCCESS** / **BUILD**: `2026-05-16-683-print-2page-tight-v2` / fileKey **`4bb662aa-b47a-40c5-b1f7-2ba4dffa8f63`** / preview revision **`74`**（**印刷報告用**・`@media print` で **2 枚前後**を目標にレイアウト縮小。**一覧の「提出用PDF」ボタンは撤去**。**月次 PDF HTTP serve は廃止**（2026-05-17 CEO・印刷は **`window.print()` のみ**・オフライン PDF は CLI `user683:monthly-pdf` 任意）。**Claude 中継**: `?user683_claude_relay=`・`text/plain` POST。**グラフ直下 月次→週次4**・要約キャッシュ PUT/POST／`USER683_SHOW_OLLAMA_GENERATE_BTN=false`）。 |
-| **PC台帳 ver.2（旧・削除予定／正は674）** | **594** | `customize/594/desktop.js` | `npm run deploy:594`（**新機能は674**。594は移行・清掃・監査コードが残る間のみ。本番に恒久的に残す前提なし） |
+| **PC台帳 ver.2（旧・テナント削除済／正は674）** | **594**（**削除済**） | `customize/594/desktop.js`（**リポ参照用・deploy 対象外**） | **2026-07-18** live 全件一覧・ID 指定照会で不在確認。SKYSEA を含む現行運用・新機能・REST は **674 のみ**。 |
 | 社員マスタ（674/714/716 連携） | **595** | `customize/595/desktop.js` | **本番 live 最終 deploy（2026-07-04）**: `npm run deploy:595` **SUCCESS** / fileKey **`e47d849c-7ac9-4c7f-824a-374e60dd897b`** / preview revision **`116`** / **BUILD=`2026-07-04-595-index-emp-dept-filters` rev **116**（退職時 674→保管 + 595 `pc_ledger_v1_list`/`pc_ledger_list` クリア・backfill 7件） |
 | **業務改善 社員マスタ**（595 ミラー・閲覧専用） | **698** | `customize/business-improvement-employee/desktop.js` \| `npm run deploy:698` | [https://jbis-kintone.cybozu.com/k/698/](https://jbis-kintone.cybozu.com/k/698/) **Space 5**・595→698 日次同期・突合 **595.$id**・一覧 **source595_id 昇順（595 同一）**・**在籍/退職/すべて 切替（通常=在籍）**・697 バナー・手動同期・**BUILD=`2026-07-04-bi-employee-index-emp-filter` rev **19** / fileKey **`776e7d9f-75b6-49b1-95b6-9c5b3265443a`** |
+| **【業務改善提案システム】設定マスタ** | **697** | （customize なし・設定正本） | [https://jbis-kintone.cybozu.com/k/697/](https://jbis-kintone.cybozu.com/k/697/) **Space 5 / thread 7**・所属＋共通設定・仕様 `docs/plans/2026-05-23-business-improvement-proposal-spec.md` |
+| **【業務改善提案システム】ご利用ガイド** | **699** | `customize/business-improvement-guide/desktop.js` \| `npm run deploy:699` | [https://jbis-kintone.cybozu.com/k/699/](https://jbis-kintone.cybozu.com/k/699/) **Space 5 / thread 7**・700 の利用ガイド・**BUILD=`2026-07-17-manual-evaluation-email` rev **132** |
+| **【業務改善提案システム】提案申請ver.02** | **700** | `customize/business-improvement-proposal/desktop.js` \| `npm run deploy:700` | [https://jbis-kintone.cybozu.com/k/700/](https://jbis-kintone.cybozu.com/k/700/) **Space 5 / thread 7**・提案申請本体・**BUILD=`2026-07-17-hide-wf-test-dept` rev **170** |
+| **【業務改善提案システム】年次処理** | **713** | `customize/business-improvement-annual/desktop.bundle.js` \| `npm run deploy:713` | [https://jbis-kintone.cybozu.com/k/713/](https://jbis-kintone.cybozu.com/k/713/) **Space 5 / thread 7**・699 ガイド誘導・**BUILD=`2026-06-13-bi-annual-redirect-guide` rev **12** |
 | アカウント管理台帳 | **627**（**テナント削除済・意図的**） | `customize/627/desktop.js`（**リポ参照用・deploy 対象外**） | **674 移行後に削除**（浜田確認 **2026-06-10**）。正本は **674**。portfolio 監査対象外（681 同型）。 |
 | 出張精算アプリ | **629** | `customize/shucccho-seisan/desktop.js` | `npm run deploy:629` |
 | 社内FAQ（DB） | **640** | （**FAQ レコードの本番保管先**で確定。運用ガイド **668** とは別アプリ） | [https://jbis-kintone.cybozu.com/k/640/](https://jbis-kintone.cybozu.com/k/640/) ・UI 用 HTML の作業例: `scripts/faq-portal-full.html`（640 への反映は運用で実施） |
@@ -116,7 +124,7 @@ npm run app:fields <アプリID>
 | **新規システム導入ヒアリング用DB**（正本・閲覧のみ） | **710** | `customize/new-system-intro-db/desktop.js` \| `npm run deploy:710` | [https://jbis-kintone.cybozu.com/k/710/](https://jbis-kintone.cybozu.com/k/710/) **Space 48 / thread 52**・19 フィールド・**初回 0 件**・浜田 **目視 OK**（2026-06-10）・正本 `docs/plans/2026-06-10-new-system-intro-hearing-spec.md`・**BUILD=`2026-06-10-new-system-intro-db-block-ui`** rev **5** |
 | **新規システム導入ヒアリング記録**（日常 UI・710 へ REST） | **711** | `customize/new-system-intro-dash/desktop.js` \| `npm run deploy:711` | [https://jbis-kintone.cybozu.com/k/711/](https://jbis-kintone.cybozu.com/k/711/) **Space 48 / thread 52**・一覧 + ヒアリングモーダル + **印刷（A4 2枚・稟議添付）**・浜田 **目視 OK**（2026-06-10）・**BUILD=`2026-06-10-new-system-intro-dash-print-a4-v2`** rev **4** |
 | **712（運用終了・システム推進室ポータル）** | **712**（**テナント上は削除済** 2026-07-05） | `customize/space48-portal/desktop.js`（**リポに参照用で残置**・**deploy 対象外**） | **2026-06-11** 新設 → **2026-07-05** 廃止・**浜田が管理画面で削除完了**（API `GAIA_AP01` 確認済）。バックアップ: `data/snapshots/712-space48-portal-pre-delete-2026-07-05.json`。仕様 **`docs/plans/2026-06-11-space48-portal-spec.md`**。**Space 48 → 712 リンク削除済**（浜田）。旧 BUILD=`2026-06-11-space48-portal-v3` rev **24** |
-| 運用ガイド（PC台帳・アカウント周りの操作手順） | **668** | `customize/ops-guide/desktop.js` | `npm run ops-guide:publish`（HTML レコード同期＋desktop.js デプロイ） |
+| **運用ガイド（旧・PC台帳／アカウント操作手順）** | **668**（**テナント削除済**） | `customize/ops-guide/desktop.js`（**リポ参照用・deploy 対象外**） | **2026-07-18** live 全件一覧・ID 指定照会で不在確認。`ops-guide:publish` / `deploy:668` は実行しない。 |
 | 環境設定マスタ（新・PC台帳ver.1 用 / Day 1） | **670** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-24 作成 / 12 レコード（M365 ドメイン・固定文字・上限値）|
 | M365管理マスタ（新・PC台帳ver.1 用 / Day 2 / 5 台ライセンス厳守） | **671** | （まだなし / Day 4 で customize 開始予定） | Space 21 / 2026-04-24 作成 / 10 レコード（sjm-001~sjm-010 / X 案 5 台節約）|
 | **新・PC台帳 所属候補マスタ**（674 共有・JR・**595 社員マスタ**の「所属候補から選ぶ」モーダル。API 失敗時は674 JS の埋め込み一覧にフォールバック） | **680** | （customize なし） | **Space 21 / thread 23**・[スペース 21](https://jbis-kintone.cybozu.com/k/#/space/21)。**2026-05-05**: `npm run pc-ledger:dept-master:create-app:seed` で作成＋`dept_name`・`group_name`・`sort_no`＋シード31件。**674** の `APP_DEPT_MASTER_674='680'`。**595** も `APP_DEPT_MASTER_595='680'`（2026-06-19）。再投入: `npm run pc-ledger:dept-master:seed-records` / 不足分のみ: `--merge` |
@@ -196,7 +204,7 @@ npm run app:fields <アプリID>
 
 **FAQ（640）**: 社内 FAQ の **DB はアプリ 640**（[https://jbis-kintone.cybozu.com/k/640/](https://jbis-kintone.cybozu.com/k/640/)）で確定。運用ガイド（668）や PC 台帳系アプリとは **別アプリ**。
 
-**638 / 639**: アプリ台帳上も論理名は **「社内FAQDB」** と同一だが、**容量・件数は実質空に近く**、**640 が運用中の正本**（台帳: 640 は DB 保管・日付・利用指標が立っている）。638・639 は **旧枠・未移行の残骸**の可能性が高い → ルックアップ等の依存なし確認済。**2026-05-20 頃**まで様子見のうえ **削除予定**（その前に CSV バックアップ推奨）。このリポのコードからは未参照。
+**638 / 639**: **本番テナントから削除済**（2026-07-18 ID 指定照会で不在確認）。旧「社内FAQDB」枠であり、現行正本は **640**。リポの現行コードからは未参照。
 
 ### デイリーヘルスチェック（廃止）
 
@@ -473,7 +481,7 @@ App 632 fields（上表のカスタム＋システムフィールド）。カス
 
 ## 594（PC台帳 ver.2・旧）
 
-> **方針（2026-05-12 浜田 CEO）**: **594 は今後削除する**。仕様・運用の **正本は 674**。**594 を前提にした新規は採用しない**。**本番に参照専用で恒久的に残す前提もない**（移行・627/595 の参照切替・アプリ削除は `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§1.5**・**§9**）。下記フィールド一覧は **レガシー監査用**。
+> **現在状態（2026-07-18）**: **594 は本番テナントから削除済**（live 全件一覧・ID 指定照会で不在確認）。仕様・運用の **正本は 674**。594 の URL・REST・deploy・SKYSEA 突合は行わない。下記フィールド一覧とコードは **レガシー監査用**。
 
 `npm run app:fields 594` の取得結果（抜粋なし・全件・本番 2026-04-18 時点）:
 
@@ -556,7 +564,7 @@ user_name	SINGLE_LINE_TEXT	社員名
 
 ## 626（アカウント採番）
 
-**本番テナントではアプリ削除済（2026-05 確認）。** `## アプリ一覧` 表からは除外。個人 Windows ID 採番は **672** を参照。
+**本番テナントではアプリ削除済（2026-05 確認、2026-07-18 ID 指定照会で再確認）。** `## アプリ一覧` 表からは除外。個人 Windows ID 採番は **672** を参照。
 
 `npm run app:fields 626`（本番 2026-04-18 時点・削除前のスナップショット）:
 
@@ -651,11 +659,11 @@ Updated_datetime	UPDATED_TIME	Updated datetime
 
 ---
 
-## 668（運用ガイド・ops-guide）
+## 668（旧・運用ガイド・ops-guide）— **削除済**
 
-- **アプリID**: 668（環境変数 `KINTONE_OPS_GUIDE_APP` が正本）
-- **本番 URL 例**: `KINTONE_BASE_URL` のドメイン + `/k/668/`
-- **目的**: PC台帳／アカウント台帳／社員マスタ等の操作手順を社内向け HTML として配信。`docs/ops-guide/*.html` がソース、Kintone レコードに同期して iframe で表示。
+- **現在状態**: **本番テナントから削除済**（2026-07-18 live 全件一覧・ID 指定照会で不在確認）
+- **禁止**: `/k/668/` 参照、REST、`ops-guide:publish`、`deploy:668`
+- **履歴上の目的**: PC台帳／アカウント台帳／社員マスタ等の操作手順を社内向け HTML として配信。`docs/ops-guide/*.html` と以下の記録は監査・再利用判断用に残す。
 - **カスタマイズ方針** (2026-04-18 v4.1):
   - 主要メニュー（💻 PC管理台帳 / 🔑 アカウント台帳 等）は **iframe の外** に Kintone DOM 直下のテキストリンクとして描画（`buildQuickLinkBar` / `jbis-ops-quick-link-bar`）。iframe 内クリッピング問題の根本回避策。
   - iframe は **最低 1500px** 固定、postMessage (`jbis-ops-guide-iframe-resize`) による grow-only オートリサイズ。auto-resize 失敗時のフォールバックとして iframe 自身のスクロールも許可。

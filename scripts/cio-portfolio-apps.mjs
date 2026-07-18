@@ -3,7 +3,8 @@
  * 監査: cio-audit-customize-portfolio.mjs / 同期: cio-sync-portfolio-deploy.mjs / 快照: cio-snapshot-portfolio-apps.mjs
  *
  * 627: 674 移行後に削除済（浜田確認 2026-06-10）— 監査対象外。リポ customize/627 は参照用に残置。
- * 668: kintone 上削除済（2026-06）— 監査対象外。リポ customize/ops-guide は参照用に残置。
+ * 594/626/627/638/639/651/652/653/667/668/681/712: live 不在を 2026-07-18 に全件一覧 + ID 指定で再確認。
+ * 削除済み app のリポ customize/・スナップショットは参照用に残置。
  */
 export const PORTFOLIO_CUSTOMIZE = [
   { id: "677", rel: "customize/677/desktop.js", deploy: "deploy:677" },
@@ -34,7 +35,20 @@ export const LIVE_SCHEMA_MONTHLY_IDS = [
  * kintone 削除済み・参照のみ — live-schema / 月次から除外。
  * リポ customize/ は残置可（git 履歴・Runbook 参照用）。
  */
-export const LIVE_SCHEMA_EXCLUDED_IDS = ['594', '626', '627', '651', '652', '653', '668', '681'];
+export const LIVE_SCHEMA_EXCLUDED_IDS = [
+  '594',
+  '626',
+  '627',
+  '638',
+  '639',
+  '651',
+  '652',
+  '653',
+  '667',
+  '668',
+  '681',
+  '712',
+];
 
 /** revision スナップショット対象（予実＋ユーザサポート） */
 export const PORTFOLIO_SNAPSHOT_IDS = ["677", "678", "679", "682", "683"];
