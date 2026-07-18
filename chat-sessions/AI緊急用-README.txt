@@ -42,7 +42,7 @@ AI緊急用 フォルダ（Desktop）— 使い方メモ（正本はリポ `chat
 
   **35-checkpoint-latest-LITE.txt** … 浜田用要約（**先頭100行・最新表**）。メモ帳で開くのは **LITE のみ**。
 
-  26-evening-reflection-YYYY-MM-DD.md … 当日夕反省がリポにあるとき。無い日は **26-evening-reflection-SLOT.txt**（プレースホルダ）で **00〜35 の番号を連続**に保つ。
+  26-evening-reflection-YYYY-MM-DD.md … 当日夕反省がリポにあるとき。無い日は **26-evening-reflection-SLOT.txt**（プレースホルダ）で **00〜36 の番号を連続**に保つ。
 
   **28-CONSTITUTION-GENRE-MAP.txt** … 憲法・ルール ジャンル早見（4AI・**14-READ-06 直後**推奨）。
 

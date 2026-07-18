@@ -5,7 +5,7 @@
 | 項目 | 内容 |
 |------|------|
 | **WAKE** | `cio:session:cold-start` READY・quick-health・smoke 17/17・Desktop同期全件一致 |
-| **通読** | Desktop `AI緊急用` 00〜36を番号順に全件確認。24番は全4,767行を分割通読 |
+| **通読** | Desktop `AI緊急用` 00〜36を番号順に全件確認。24番は全行を分割通読 |
 | **AIチーム監査** | DeepSeekで盲点確認、Kimiで正本・生成物の優先順位を照合 |
 | **MCP** | Cursor設定 26/26 active。extended probe は OK 8/9・Windows既知制約によるSKIP 1・NG 0 |
 | **GitHub** | 最新run success・open PR 0・open issue 0。直近警告1件は後続pushで置換されたcancelled run |

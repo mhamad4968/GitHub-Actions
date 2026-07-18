@@ -22,6 +22,14 @@ on:
       - 'scripts/session-bootstrap-verify.mjs'
       - 'AGENTS.md'
       - 'RULES-INDEX.md'
+      - 'WORKFLOW.md'
+      - 'kintone-apps.md'
+      - 'docs/plans/2026-05-23-business-improvement-proposal-spec.md'
+      - 'docs/constitution/00-rule-hierarchy.md'
+      - 'docs/constitution/17-four-ai-mode-b.md'
+      - 'docs/constitution/18-ai-team-read-map.md'
+      - '.rag/extra-docs/**'
+      - 'scripts/rag-mirror-canonical-docs.mjs'
       - 'chat-sessions/NEW-SESSION-STARTER.md'
       - 'chat-sessions/checkpoint-latest.md'
       - 'chat-sessions/session-starter-parts/**'
@@ -76,6 +84,9 @@ jobs:
 
       - name: verify-constitution-handoff（needle 生存）
         run: node scripts/verify-constitution-handoff.mjs
+
+      - name: verify-rag-mirror-canonical（正本と副本文）
+        run: npm run verify:rag-mirror-canonical
 
       - name: verify-ci-rule-integrity（薄型憲法・alwaysApply 上限）
         run: node scripts/verify-ci-rule-integrity.mjs

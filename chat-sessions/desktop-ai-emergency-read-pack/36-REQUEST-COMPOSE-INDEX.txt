@@ -35,7 +35,7 @@
   ops          … bootstrap / handoff / 壁時計
   report       … 報告・棚卸し・合議
 
-**触らない（既定）**: 688 / 677–679 / SKYSEA
+**触らない（現行 checkpoint 優先）**: 688（許可範囲外）/ 677–679 / SKYSEA 7月 / 712 deploy / 736 ver.02（依頼者 Excel 受領前）
 
 **688 customize 運用（#R-688-DEPLOY-01）**:
   実装GO後 · コード修正したら同一セッション内 cio:preflight:688 → deploy:688 必須

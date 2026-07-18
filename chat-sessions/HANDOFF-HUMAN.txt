@@ -31,7 +31,7 @@ GO待ち（なし／内容）: H9 最終判定 — 2026-07-25
 （そのままチャットに貼る。日時だけ直す）
 正本: WSL 内 ~/kintone-ai-lab/chat-sessions/HANDOFF-HUMAN.txt
 Windows から開きやすい控え: C:\Users\mhamada202408224\Desktop\AI緊急用\HANDOFF-HUMAN.txt
-※ C:\Users\mhamada202408224\kintone-ai-lab は chat-sessions 無しの別ツリーなので、このファイルは置かない。
+※ 正本は C:\Users\mhamada202408224\kintone-ai-lab\chat-sessions\HANDOFF-HUMAN.txt。Desktop 側は同期された控え。
 
 日時(JST): 2026-07-12（日）昼 — **経営会議資料 MCP · セッション締め**
 いま何してた（1行）: shiryo-sakusei MCP + SPEC + 依頼書テンプレ · push 9e2b18e8 · MCP ready 確認 · 月次依頼フロー確立。

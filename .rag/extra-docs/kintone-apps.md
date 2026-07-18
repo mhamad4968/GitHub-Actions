@@ -61,8 +61,8 @@ npm run app:fields <アプリID>
 | 721 | `2026-06-24-jr-ipad-dash-register-existing` | **13** | `1505144a-b3e2-4868-854b-3a6b9478abf7` | 2026-06-24 既存端末を登録ボタン（採番なし・保存時POST） |
 | 744 | `2026-06-26-jre-cloud-account-db-block-v1` | **5** | `125843f1-4b4b-49ce-91ad-2ae1886291fd` | 2026-06-26 JREクラウド DB save/delete ブロック |
 | 745 | `2026-06-27-jre-cloud-account-dash-v16-list-filter-clear` | **22** | `56f39bd5-30fd-48ac-9cee-b7be8fb77c53` | 2026-06-26 集計表を開くと今月を自動表示 |
-| 746 | `2026-06-27-jre-chub-account-db-block-v1` | **5** | `8537bd74-300b-4a43-9bef-877cfebaa5be` | 2026-06-27 JRE-C_Hub DB save/delete ブロック |
-| 747 | `2026-06-27-jre-chub-account-dash-v6-list-filter-clear` | **12** | `8fe84c68-b55d-493c-9855-3ee7ad946afa` | 2026-06-27 JRE-C_Hub 台帳 v1（権限ST・IDユニーク集計） |
+| 746 | `2026-06-27-jre-chub-account-db-block-v1` | **6** | `4e078e50-6c53-4124-aa15-94f241c9082e` | 2026-07-18 フォーム設定8（署名代行対象ST・湾岸工事所） |
+| 747 | `2026-07-18-jre-chub-account-dash-v8-edge-autofill-fix` | **14** | `f013dbed-13ec-4c5d-8137-f9acb3589ba8` | 2026-07-18 全機能・Edge誤認抑止 浜田目視OK |
 | 733 | `2026-06-20-vpn-db-rename-message` | **11** | `252e24ee-a0c8-451c-8bff-46c967c9e9f3` | 2026-06-20 アプリ名変更・ブロックメッセージ更新 |
 | 734 | `2026-07-01-vpn-delete-records-api-fix` | **30** | `4babdb64-f815-49ec-9444-82bef64fa707` | 2026-07-01 DELETE records.json API修正 |
 | 752 | `2026-07-05-kintone-account-db-block-v2-viewonly` | **7** | `e4a4e1db-c1ba-4b83-9c3b-8acb80e47d1c` | 2026-07-05 Kintoneアカウント DB 閲覧専用ブロック |
@@ -137,8 +137,8 @@ npm run app:fields <アプリID>
 | **JRシステム用iPad管理台帳 ver.1**（日常 UI・720 へ REST） | **721** | `customize/jr-ipad-dash/desktop.js` \| `npm run deploy:721` | [https://jbis-kintone.cybozu.com/k/721/](https://jbis-kintone.cybozu.com/k/721/) **Space 34 / thread 38**・**BUILD=`2026-06-24-jr-ipad-dash-register-existing`** rev **13** |
 | **JREクラウドアカウント管理台帳用DB**（正本・閲覧のみ） | **744** | `customize/jre-cloud-account-db/desktop.js` \| `npm run deploy:744` | [https://jbis-kintone.cybozu.com/k/744/](https://jbis-kintone.cybozu.com/k/744/) **Space 34 / thread 38**・**2026-06-26**: 9 フィールド・**99 件移行済**・正本 `docs/plans/2026-06-26-jre-cloud-account-kintone-spec.md`・**BUILD=`2026-06-26-jre-cloud-account-db-block-v1`** rev **5** / fileKey **`125843f1-4b4b-49ce-91ad-2ae1886291fd`** |
 | **JREクラウドアカウント台帳**（日常 UI・744 へ REST） | **745** | `customize/jre-cloud-account-dash/desktop.js` \| `npm run deploy:745` | [https://jbis-kintone.cybozu.com/k/745/](https://jbis-kintone.cybozu.com/k/745/) **Space 34 / thread 38**・734 型 — 595 ハイブリッド・稼働中/すべて/退職・**月次集計**（チップ絞込・条件クリア）・検索クリア→稼働中・一覧/集計 **xlsx+印刷**・**BUILD=`2026-06-27-jre-cloud-account-dash-v16-list-filter-clear`** rev **22** / fileKey **`56f39bd5-30fd-48ac-9cee-b7be8fb77c53`** |
-| **JRE-C_Hubアカウント管理台帳用DB**（正本・閲覧のみ） | **746** | `customize/jre-chub-account-db/desktop.js` \| `npm run deploy:746` | [https://jbis-kintone.cybozu.com/k/746/](https://jbis-kintone.cybozu.com/k/746/) **Space 34 / thread 38**・**2026-06-27**: 権限サブテーブル・**47 件移行済**・正本 `docs/plans/2026-06-27-jre-chub-account-kintone-spec.md`・**BUILD=`2026-06-27-jre-chub-account-db-block-v1` rev **5** / fileKey **`8537bd74-300b-4a43-9bef-877cfebaa5be`** |
-| **JRE-C_Hubアカウント台帳**（日常 UI・746 へ REST） | **747** | `customize/jre-chub-account-dash/desktop.js` \| `npm run deploy:747` | [https://jbis-kintone.cybozu.com/k/747/](https://jbis-kintone.cybozu.com/k/747/) **Space 34 / thread 38**・745 型 — 権限 ST/フィルタ・IDユニーク集計・検索クリア→稼働中+権限すべて・**BUILD=`2026-06-27-jre-chub-account-dash-v6-list-filter-clear` rev **12** / fileKey **`8fe84c68-b55d-493c-9855-3ee7ad946afa`** |
+| **JRE-C_Hubアカウント管理台帳用DB**（正本・閲覧のみ） | **746** | `customize/jre-chub-account-db/desktop.js` \| `npm run deploy:746` | [https://jbis-kintone.cybozu.com/k/746/](https://jbis-kintone.cybozu.com/k/746/) **Space 34 / thread 38**・権限/署名代行対象サブテーブル・**48件**・フォーム設定 **8**・正本 `docs/plans/2026-06-27-jre-chub-account-kintone-spec.md`・**BUILD=`2026-06-27-jre-chub-account-db-block-v1` rev **6** / fileKey **`4e078e50-6c53-4124-aa15-94f241c9082e`** |
+| **JRE-C_Hubアカウント台帳**（日常 UI・746 へ REST） | **747** | `customize/jre-chub-account-dash/desktop.js` \| `npm run deploy:747` | [https://jbis-kintone.cybozu.com/k/747/](https://jbis-kintone.cybozu.com/k/747/) **Space 34 / thread 38**・745 型 — 権限 ST/フィルタ・署名代行対象の社員検索・利用再開・湾岸工事所・Edge「パスポート保存」誤認抑止・IDユニーク集計・一覧/集計 xlsx+印刷・**BUILD=`2026-07-18-jre-chub-account-dash-v8-edge-autofill-fix` rev **14** / fileKey **`f013dbed-13ec-4c5d-8137-f9acb3589ba8`** |
 | **VPNアカウント管理台帳用DB**（正本・閲覧のみ） | **733** | `customize/vpn-account-db/desktop.js` \| `npm run deploy:733` | [https://jbis-kintone.cybozu.com/k/733/](https://jbis-kintone.cybozu.com/k/733/) **Space 48 / thread 52**・**v1.2 運用中** — `vpn_domain` + snapshot フィールド・**105 件**（fre/ds/bnp）・正本 `docs/plans/2026-06-16-vpn-account-kintone-spec.md`・**BUILD=`2026-06-20-vpn-db-rename-message`** rev **11** |
 | **VPNアカウント台帳**（日常 UI・733 へ REST） | **734** | `customize/vpn-account-dash/desktop.js` \| `npm run deploy:734` | [https://jbis-kintone.cybozu.com/k/734/](https://jbis-kintone.cybozu.com/k/734/) **Space 48 / thread 52**・**v1.3 運用中** — 3ドメイン統合・595検索・PC台帳674連携・**VPN接続情報アコーディオン**（**VPNアカウント管理画面URL**・接続PW編集・**(yyyy/mm/dd更新)** 表示）・ライセンス集計・利用者印刷・**リスト出力（xlsx+印刷）** — 所属 **multi-select + 一括（全選択/全解除/本社/支店・営業所）**・ドメイン **すべて | 個別指定（複数可）**・**BUILD=`2026-07-01-vpn-delete-records-api-fix` rev **30** / fileKey **`4babdb64-f815-49ec-9444-82bef64fa707`**（DELETE `/k/v1/records.json` 修正）・月末リマインド **Space 48 注意書き**（JST **28日〜翌1日**のみ・`vpn-license-space48-notice` GHA） |
 | **Kintoneアカウント管理台帳DB**（正本・閲覧のみ） | **752** | `customize/kintone-account-db/desktop.js` \| `npm run deploy:752` | [https://jbis-kintone.cybozu.com/k/752/](https://jbis-kintone.cybozu.com/k/752/) **Space 48 / thread 52**・**2026-07-05**: 11 フィールド・**74 件移行済**・正本 `docs/plans/2026-07-05-kintone-account-ledger-spec.md`・**BUILD=`2026-07-05-kintone-account-db-block-v2-viewonly`** rev **7** / fileKey **`e4a4e1db-c1ba-4b83-9c3b-8acb80e47d1c`** |
@@ -887,10 +887,10 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 
 | アプリ | ID | customize | BUILD（本番） | deploy |
 |--------|-----|-----------|---------------|--------|
-| JRE-C_Hubアカウント管理台帳用DB | **746** | `customize/jre-chub-account-db/desktop.js` | `2026-06-27-jre-chub-account-db-block-v1` rev5 | `deploy:746` |
-| JRE-C_Hubアカウント台帳 | **747** | `customize/jre-chub-account-dash/desktop.js`（`desktop.src.js` + SheetJS bundle） | `2026-06-27-jre-chub-account-dash-v6-list-filter-clear` rev12 | `deploy:747`（前に `jre-chub:bundle-dash`） |
+| JRE-C_Hubアカウント管理台帳用DB | **746** | `customize/jre-chub-account-db/desktop.js` | `2026-06-27-jre-chub-account-db-block-v1` rev6（フォーム設定8） | `deploy:746` |
+| JRE-C_Hubアカウント台帳 | **747** | `customize/jre-chub-account-dash/desktop.js`（`desktop.src.js` + SheetJS bundle） | `2026-07-18-jre-chub-account-dash-v8-edge-autofill-fix` rev14 | `deploy:747`（前に `jre-chub:bundle-dash`） |
 
-**747 主要機能**: 745 型 + 権限 ST・**権限フィルタ**（青チップ）・権限表示短縮（tooltip）・複数拠点同一 ID **赤字警告**・月次集計（小計=レコード数・**全社合計=IDユニーク**・重複 ID 自動備考・チップ絞込）・**検索クリア**（稼働中+権限すべて）・一覧/集計 **xlsx+印刷**。
+**747 主要機能**: 745 型 + 権限 ST・**権限フィルタ**（青チップ）・署名代行対象のApp 595社員検索（複数）・終了済みの**利用再開**・所属/部門の**湾岸工事所**・複数拠点同一 ID **赤字警告**・月次集計（小計=レコード数・**全社合計=IDユニーク**・重複 ID 自動備考・チップ絞込）・**検索クリア**（稼働中+権限すべて）・一覧/集計 **xlsx+印刷**。
 
 **npm**: `jre-chub:setup` / `jre-chub:migrate:xlsx` / `jre-chub:sync-perms:xlsx` / `jre-chub:sync-dash` — App ID 正本 `scripts/data/jre-chub-account-app-ids.json`
 
@@ -918,6 +918,7 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 
 | 日付 | 変更内容 |
 |------|----------|
+| 2026-07-18 | **JRE-C_Hub 746/747更新**: 746フォーム rev8（署名代行対象ST・湾岸工事所）、747 rev14（社員検索・利用再開・一覧/検索/出力・Edge「パスポート保存」誤認抑止）。既存48件は一括更新なし |
 | 2026-07-07 | **社内 Wi-Fi 台帳 719 一覧出力**: rev12（一覧印刷 A4 カラー・Excel 5列・PW 含む・文字拡大）。仕様 `docs/plans/2026-06-14-wifi-ssid-kintone-spec.md` §7.5 |
 | 2026-06-27 | **JRE-C_Hub アカウント管理 v1 完成**: 746 rev5・747 rev12（権限 ST/フィルタ・IDユニーク集計・チップ UI・各種クリア）。Excel **47 件移行済**・浜田 OK。仕様 `docs/plans/2026-06-27-jre-chub-account-kintone-spec.md` |
 | 2026-06-27 | **JREクラウド アカウント台帳 UX 更新**: 745 rev22（集計チップ UI・条件クリア・検索クリア→稼働中）。仕様 §5.3/§4.3 更新 |

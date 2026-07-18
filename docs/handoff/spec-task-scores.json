@@ -1,11 +1,11 @@
 {
-  "scoredAt": "2026-07-18T03:31:59.824Z",
+  "scoredAt": "2026-07-18T08:59:40.757Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "**次回は浜田の指示待ち。App 736 ver.02 は依頼者 Excel 受領後に現行版を残して再設計**",
+  "topTask": "**App 747 完了。次回は浜田の指示待ち**",
   "tasks": [
     {
-      "id": "checkpoint:**次回は浜田の指示待ち。App_736_ver.02_は依頼者_Excel_受",
-      "text": "**次回は浜田の指示待ち。App 736 ver.02 は依頼者 Excel 受領後に現行版を残して再設計**",
+      "id": "checkpoint:**App_747_完了。次回は浜田の指示待ち**",
+      "text": "**App 747 完了。次回は浜田の指示待ち**",
       "source": "checkpoint",
       "difficulty": 2,
       "tokens": "中",

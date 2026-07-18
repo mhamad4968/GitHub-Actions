@@ -11,6 +11,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -35,6 +36,71 @@ const CONSTITUTION_MIRROR = [
 const argv = process.argv.slice(2);
 const CHECK = argv.includes('--check');
 const DRY = argv.includes('--dry-run');
+const STAGED = argv.includes('--staged');
+
+function git(args) {
+  return spawnSync('git', args, {
+    cwd: ROOT,
+    encoding: null,
+    maxBuffer: 10 * 1024 * 1024,
+  });
+}
+
+function verifyStaged() {
+  const pairs = [
+    ...FILES.map((name) => ({ src: name, dest: `.rag/extra-docs/${name}` })),
+    ...PROJECT_DOCS_MIRROR.map(({ src, dest }) => ({
+      src,
+      dest: `.rag/extra-docs/${dest}`,
+    })),
+    ...CONSTITUTION_MIRROR.map(({ src, dest }) => ({
+      src,
+      dest: `.rag/extra-docs/${dest}`,
+    })),
+  ];
+  const stagedResult = git(['diff', '--cached', '--name-only', '--no-renames', '-z']);
+  if (stagedResult.status !== 0) {
+    console.error('❌ rag-mirror-canonical-docs: staged ファイル一覧を取得できません');
+    process.exit(2);
+  }
+  const staged = new Set(
+    stagedResult.stdout
+      .toString('utf8')
+      .split('\0')
+      .filter(Boolean)
+      .map((name) => name.replaceAll('\\', '/')),
+  );
+  const touched = pairs.filter(({ src, dest }) => staged.has(src) || staged.has(dest));
+  if (touched.length === 0) {
+    console.log('✅ rag-mirror-canonical-docs: staged ミラー対象なし');
+    return;
+  }
+
+  const diffs = [];
+  for (const { src, dest } of touched) {
+    const srcBlob = git(['show', `:${src}`]);
+    const destBlob = git(['show', `:${dest}`]);
+    if (
+      srcBlob.status !== 0 ||
+      destBlob.status !== 0 ||
+      !Buffer.from(srcBlob.stdout).equals(Buffer.from(destBlob.stdout))
+    ) {
+      diffs.push(`${src} ↔ ${dest}`);
+    }
+  }
+  if (diffs.length > 0) {
+    console.error('❌ rag-mirror-canonical-docs: staged 正本と RAG ミラーが一致しません:');
+    for (const pair of diffs) console.error(`   - ${pair}`);
+    console.error('   対応: npm run rag:mirror:canonical-docs && git add <正本> .rag/extra-docs/');
+    process.exit(1);
+  }
+  console.log(`✅ rag-mirror-canonical-docs: staged ミラー一致 (${touched.length} 組)`);
+}
+
+if (STAGED) {
+  verifyStaged();
+  process.exit(0);
+}
 
 function readBuf(rel) {
   const p = path.join(ROOT, rel);
