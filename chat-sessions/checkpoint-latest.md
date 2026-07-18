@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-18 JST — **夕反省改善5件すべて浜田GO・反映**
 
-**Git**: **`1fb5d0ff`** = `origin/main` — push 済
+**Git**: **`59b33996`** = `origin/main` — push 済
 
 **本日状態**: cold-start READY。kintone月次棚卸・SKYSEA前段仕様に加え、夕反省 #S1〜#S3/#R1〜#R2 は浜田がすべて承認。AI管理appId単一JSON正本、Desktop旧締めレポートprune、Windows transcript探索、10問決定チェックポイントを実装。required checksは互換性評価の結果、現行direct-push締めと両立しないためGitHub設定変更なし。
 
