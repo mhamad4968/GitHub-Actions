@@ -62,7 +62,7 @@ npm run app:fields <アプリID>
 | 744 | `2026-06-26-jre-cloud-account-db-block-v1` | **5** | `125843f1-4b4b-49ce-91ad-2ae1886291fd` | 2026-06-26 JREクラウド DB save/delete ブロック |
 | 745 | `2026-06-27-jre-cloud-account-dash-v16-list-filter-clear` | **22** | `56f39bd5-30fd-48ac-9cee-b7be8fb77c53` | 2026-06-26 集計表を開くと今月を自動表示 |
 | 746 | `2026-06-27-jre-chub-account-db-block-v1` | **6** | `4e078e50-6c53-4124-aa15-94f241c9082e` | 2026-07-18 フォーム設定8（署名代行対象ST・湾岸工事所） |
-| 747 | `2026-07-18-jre-chub-account-dash-v8-edge-autofill-fix` | **14** | `f013dbed-13ec-4c5d-8137-f9acb3589ba8` | 2026-07-18 Edge「パスポート保存」誤認抑止 |
+| 747 | `2026-07-18-jre-chub-account-dash-v8-edge-autofill-fix` | **14** | `f013dbed-13ec-4c5d-8137-f9acb3589ba8` | 2026-07-18 全機能・Edge誤認抑止 浜田目視OK |
 | 733 | `2026-06-20-vpn-db-rename-message` | **11** | `252e24ee-a0c8-451c-8bff-46c967c9e9f3` | 2026-06-20 アプリ名変更・ブロックメッセージ更新 |
 | 734 | `2026-07-01-vpn-delete-records-api-fix` | **30** | `4babdb64-f815-49ec-9444-82bef64fa707` | 2026-07-01 DELETE records.json API修正 |
 | 752 | `2026-07-05-kintone-account-db-block-v2-viewonly` | **7** | `e4a4e1db-c1ba-4b83-9c3b-8acb80e47d1c` | 2026-07-05 Kintoneアカウント DB 閲覧専用ブロック |

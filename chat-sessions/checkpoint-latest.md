@@ -3,11 +3,11 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-18 JST — **App 746/747 署名代行対象・利用再開・湾岸工事所を本番反映**
 
-**Git**: **`8b748321`** = `origin/main` — push 済
+**Git**: **`6b1c3af5`** = `origin/main` — push 済
 
-**本日状態**: cold-start READY。App 746フォーム rev8へ署名代行対象STと所属/部門「湾岸工事所」を追加。App 747は社員検索・複数代行対象・利用再開・一覧/検索/出力に加え、Edge「パスポート保存」誤認抑止を rev14 でdeploy済み。live schema・48件空ST互換・smoke 17/17を確認。
+**本日状態**: cold-start READY。App 746フォーム rev8 / App 747 rev14を本番反映。浜田が部署・署名代行者設定・利用再開・Edge「パスポート保存」非表示を目視確認し、全項目OK。
 
-**次の1手**: **浜田による App 747 再読込後の「パスポート保存」非表示確認待ち**
+**次の1手**: **App 747 完了。次回は浜田の指示待ち**
 
 **GO待ち**: H9 / △2 最終判定 — **2026-07-25 のみ**（本日は判定不可 · 運用側対応済: metrics蓄積+verify:formalization-h9-review scheduled）
 
@@ -26,7 +26,7 @@
 **700 本番**: BUILD=`2026-07-17-hide-wf-test-dept` rev **170** — 提案件名 · 3段階通知 · 汎用 Assignee 通知なし · 定期リマインドなし · WF テスト部署 admin 限定
 
 **736 本番**: BUILD=`2026-07-12-736-ui-backlog-02-col-resize` rev **186** — 現行版を保持。ver.02 は依頼者 Excel 受領後に再設計し、本日は実装・deploy なし。
-**746/747 本番**: DBフォーム rev **8** / Dash BUILD=`2026-07-18-jre-chub-account-dash-v8-edge-autofill-fix` rev **14** — 署名代行対象・利用再開・湾岸工事所・Edge旅券情報保存の誤認抑止。
+**746/747 本番**: DBフォーム rev **8** / Dash BUILD=`2026-07-18-jre-chub-account-dash-v8-edge-autofill-fix` rev **14** — 署名代行対象・利用再開・湾岸工事所・Edge旅券情報保存の誤認抑止。**浜田目視 OK（2026-07-18）**。
 
 ## クローズ済み（`data/cio-project-closures.json` — 9件）
 
