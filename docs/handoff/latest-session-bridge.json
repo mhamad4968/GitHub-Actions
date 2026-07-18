@@ -1,8 +1,8 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-07-18T05:12:05.445Z",
-  "gitHead": "692dff16",
-  "gitStatus": "## main...origin/main [ahead 2]",
+  "exportedAt": "2026-07-18T05:15:40.295Z",
+  "gitHead": "4669bd34",
+  "gitStatus": "## main...origin/main [ahead 1]",
   "nextTask": "**App 747 完了。次回は浜田の指示待ち**",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
@@ -19,25 +19,25 @@
   "lastFailures": [
     {
       "id": "evening-S1-EVENING-HELP-01",
-      "at": "2026-07-18T05:12:05.445Z",
+      "at": "2026-07-18T05:15:40.295Z",
       "verify": "npm run evening:reflect",
       "note": "S1-EVENING-HELP-01: #S1-EVENING-HELP-01 S `npm run evening:reflect -- --help` を early return と回帰テストで完全に副作用なしにし、意図しないレポート"
     },
     {
       "id": "evening-S2-BI-READINESS-INVARIANT-01",
-      "at": "2026-07-18T05:12:05.445Z",
+      "at": "2026-07-18T05:15:40.295Z",
       "verify": "npm run evening:reflect",
       "note": "S2-BI-READINESS-INVARIANT-01: #S2-BI-READINESS-INVARIANT-01 S 業務改善の正本仕様、runbook、readiness report、`kintone-apps.md`、closu"
     },
     {
       "id": "evening-S3-REPORT-DRAFT-01",
-      "at": "2026-07-18T05:12:05.445Z",
+      "at": "2026-07-18T05:15:40.295Z",
       "verify": "npm run evening:reflect",
       "note": "S3-REPORT-DRAFT-01: #S3-REPORT-DRAFT-01 S 現行 CEO baseline、A1 labels、Goal/Touch/SPEC contract、V2 footer を正確に含む report dra"
     }
   ],
-  "promptBlock": "【SESSION-BRIDGE】git=692dff16 | 次=**App 747 完了。次回は浜田の指示待ち** | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json | lastFailures=3",
+  "promptBlock": "【SESSION-BRIDGE】git=4669bd34 | 次=**App 747 完了。次回は浜田の指示待ち** | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json | lastFailures=3",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
-  "validatedAt": "2026-07-18T05:15:11.622Z",
+  "validatedAt": "2026-07-18T05:15:40.746Z",
   "crosscheckOk": true
 }
