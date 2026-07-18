@@ -170,16 +170,16 @@ _（候補なし — metrics 閾値内 or 週上限）_
 
 | ID | 事象 | 根本原因 | 是正・学び |
 |---|---|---|---|
-| F1 | 初回kintone棚卸でAIチーム外のアプリ28件まで「要確認」に含めた | 「AIチーム作成」の境界をappId範囲で近似した | ユーザー訂正後、アプリ台帳・BUILD台帳・field/customizeレジストリの証跡和集合だけへ限定。対象境界は先に明文化する |
+| F1 | 初回kintone棚卸でAIチーム外のアプリ28件まで「要確認」に含めた | 「AIチーム作成」の境界をappId範囲で近似した | ユーザー訂正後に証跡和集合へ限定し、#S1承認後は単一JSON正本へ移行。対象境界は先に明文化する |
 | F2 | 594/668等が削除済みでもdeployコマンドやpath mappingに残っていた | 文書上の退役と実行経路停止が同一チェックリストで完了していなかった | preflight/deploy/publishをexit 1安全栓へ変更し、現行mappingから668を除外。退役は文書・実行経路・監査台帳を同時に閉じる |
-| F3 | Desktop AI緊急用に`SESSION-CLOSE-REPORT_20260715.txt`が残存 | 同期スクリプトのprune規則が番号付き夕反省等に限定され、旧close reportを扱わない | 今回は手動削除。自動prune拡張は#S2として承認待ち |
-| F4 | 夕反省の会話履歴量が`transcripts 未取得`になった | `evening-reflect.mjs`がWSL固定パスとbash `find`に依存し、Windows側Cursor transcriptを発見できない | Windows対応探索は#S3として承認待ち。反省本文はGit差分と本チャットの確定事項で補完 |
+| F3 | Desktop AI緊急用に`SESSION-CLOSE-REPORT_20260715.txt`が残存 | 同期スクリプトのprune規則が番号付き夕反省等に限定され、旧close reportを扱わない | 今回は手動削除。#S2承認後、当日以外を自動pruneするテスト付き処理を実装 |
+| F4 | 夕反省の会話履歴量が`transcripts 未取得`になった | `evening-reflect.mjs`がWSL固定パスとbash `find`に依存し、Windows側Cursor transcriptを発見できない | #S3承認後、OS共通のCursor projects探索へ変更。個人パス固定を廃止 |
 | F5 | PowerShellで`&&`を使いRAG同期コマンドが一度構文エラーになった | Windows PowerShell 5系でのコマンド連結規則を取り違えた | 依存コマンドを別Shell呼出しへ分離。Windowsでは`&&`を前提にしない |
 | F6 | 初版の月次棚卸は表から除外済みの削除ID（626/638/639/651/652/653/667等）の再出現を検知できなかった | AI管理スコープへ現役台帳・各registryだけを足し、退役ID一覧を足していなかった | 締め前監査で発見し、削除済み全12 IDをscopeへ追加。表に行がなくても`retiredPresent`に分類するテストを追加 |
 
 ---
 
-## 🚀 5. 改善提案（**ミス削減限定**・AI が記入。ユーザー承認待ち）
+## 🚀 5. 改善提案（**ミス削減限定**・2026-07-18 浜田すべて承認）
 
 > **2026-05-30（浜田）**: 夕反省のアップデート案は **AI の失敗を減らすものだけ**。明日のレーン・第1手・タスク計画は **書かない**（→ checkpoint / 当日 -0）。正本: `docs/runbooks/evening-reflection-scope.md`
 
@@ -190,6 +190,9 @@ _（候補なし — metrics 閾値内 or 週上限）_
 | #S3 | S | `evening-reflect.mjs`のtranscript探索をOS別にし、Windows Cursor projects配下もread-onlyで集計する。F4の「会話履歴未取得」を防ぐ | 低（個人パス依存・巨大ファイル走査に注意） | 手動 |
 | #R1 | R | 長時間の一問一答は**10問ごとに決定事項を一時正本へ追記・確認**する運用を制定する。90問終了時の転記漏れ・文脈喪失を防ぐ | 低（会話テンポ低下） | 手動 |
 | #R2 | R | GitHub mainのrequired status checksが未設定のため、`constitution-gates`と`cursor-env-gates`をrequired化できるか、現在のdirect-push/close儀式との両立を検証する。未検証のまま設定変更しない | 高（main直push・自動handoff commitを停止させる可能性） | × |
+
+> **浜田GO（2026-07-18 20:20 JST）**: 「承認待ち改善案:はすべて承認します。」
+> 5件すべて実装・制定・評価済み。正本: `docs/approved-changes/2026-07-18-evening-improvements-hamada-go.md`。#R2は互換性評価の結果、required checksの即時設定変更は行わない。
 
 > カテゴリ: **R**=ルール改善 / **S**=スクリプト改善 / **D**=ドキュメント / **C**=customize 改修(deploy 除く) / **K**=kintone API 操作
 

@@ -31,6 +31,7 @@ import {
   SESSION_STARTER_PART_C_DESKTOP,
 } from './lib/session-starter-parts.mjs';
 import { resolveSessionStarterDesktopDir } from './lib/session-starter-desktop-dir.mjs';
+import { discoverRecentTranscripts } from './lib/evening-transcript-discovery.mjs';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
@@ -161,11 +162,17 @@ if (fs.existsSync(logPath)) {
 }
 
 // ── 5. agent-transcripts のボリューム（参考値） ──────
-const tsBase = '/home/mhamada202408224/.cursor/projects';
 let tsSection = '_(transcripts 未取得)_';
-const tsCmd = run(`find ${tsBase} -name '*.jsonl' -newermt '${today.iso} 00:00' 2>/dev/null | head -5`);
-if (tsCmd.ok && tsCmd.stdout) {
-  tsSection = '本日更新された transcripts（参考）:\n```\n' + tsCmd.stdout + '\n```';
+const localMidnight = new Date();
+localMidnight.setHours(0, 0, 0, 0);
+const recentTranscripts = discoverRecentTranscripts({ sinceMs: localMidnight.getTime(), limit: 5 });
+if (recentTranscripts.length) {
+  tsSection = [
+    '本日更新された transcripts（参考）:',
+    '```text',
+    ...recentTranscripts.map((item) => `${item.path} (${item.bytes} bytes)`),
+    '```',
+  ].join('\n');
 }
 
 // ── 6. 保留中の改善提案 ────────────────────────────

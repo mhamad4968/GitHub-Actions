@@ -18,7 +18,7 @@
 - 出力:
   - `data/kintone-app-inventory-latest.json`（前回差分判定用の機械正本）
   - `docs/reports/kintone-app-inventory-latest.md`（人間向け latest）
-- **対象はAIチームと作成・管理したアプリのみ**: `kintone-apps.md`、`data/cio-live-builds.json`、field/customize レジストリに掲載された appId と、`LIVE_SCHEMA_EXCLUDED_IDS` の和集合。表から除外済みの退役IDも再出現監視を継続する。一般部門・利用者が作成したその他のテナントアプリは比較・レポート保存の対象外。
+- **対象はAIチームと作成・管理したアプリのみ**: appId範囲の単一正本は `data/kintone-ai-team-app-registry.json`。`activeAppIds` と `retiredAppIds` を分け、表から除外済みの退役IDも再出現監視を継続する。一般部門・利用者が作成したその他のテナントアプリは比較・レポート保存の対象外。
 - 判定:
   - **NG**: `kintone-apps.md` の現役管理対象が live にない／削除済み appId が live に再出現
   - **要確認（非ブロック）**: AIチーム管理証跡はあるがアプリ一覧未掲載、前回からの追加・削除・名称変更

@@ -9,7 +9,7 @@
  * **`SESSION_DESKTOP_MIRROR_FILES`**（`handoff-log.md`→**`24-handoff-log.md`**、`checkpoint-latest.md`→**`25-checkpoint-latest.md`**）も Desktop へコピーする。
  * **`SESSION_DESKTOP_MIRROR_LITE_SPECS`** … **`34-handoff-log-LITE.txt`**（末尾100行）／**`35-checkpoint-latest-LITE.txt`**（先頭100行）を **浜田用要約**として生成（全文 .md は AI 同期専用・メモ帳非推奨）。
  * **26**: 当日夕反省 `docs/reports/YYYY-MM-DD-evening-reflection.md` があれば **`26-evening-reflection-YYYY-MM-DD.md`**。無い日は **`26-evening-reflection-SLOT.txt`**（read-pack 正本）で **25→27 の歯抜けを防ぐ**。
- * 同期の最後に **旧番号ファイル**（`00p01`〜、旧 read-pack `02`〜`19` 帯、旧 **`14-evening-…`** 等）を Desktop から削除する。
+ * 同期の最後に **旧番号ファイル**（`00p01`〜、旧 read-pack `02`〜`19` 帯、旧 **`14-evening-…`** 等）と、当日以外の `SESSION-CLOSE-REPORT_YYYYMMDD.txt` を Desktop から削除する。
  *
  * @see chat-sessions/NEW-SESSION-STARTER.md 冒頭
  * @see scripts/lib/session-starter-desktop-dir.mjs（Desktop 同期先の解決・Windows ネイティブ対応）
@@ -36,6 +36,7 @@ import {
   pruneUnexpectedNumberedDesktopFiles,
 } from './lib/desktop-ai-emergency-expected-files.mjs';
 import { runDesktopSyncPrecheck } from './lib/desktop-ai-emergency-sync-precheck.mjs';
+import { pruneStaleSessionCloseReports } from './lib/desktop-session-close-report-prune.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -332,6 +333,9 @@ function main() {
   syncDesktopImportantConfirmFile();
   syncEveningReflectionToDesktop();
   pruneLegacyDesktopAiEmergency(destDir);
+  for (const n of pruneStaleSessionCloseReports(destDir, getJstYyyymmdd())) {
+    console.log(`[sync-session-starter-to-desktop] 旧締めレポート削除: ${n}`);
+  }
   const expected = buildExpectedDesktopAiEmergencyFilenames(root);
   for (const n of pruneUnexpectedNumberedDesktopFiles(destDir, expected)) {
     console.log(`[sync-session-starter-to-desktop] 期待外番号ファイル削除: ${n}`);

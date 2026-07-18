@@ -124,3 +124,23 @@ PAT のみ使う場合: GitHub → Settings → Developer settings → **Fine-gr
 ### 6.3 将来: CI で `main` に常時付く check を 1 本足す
 
 §3 のとおり、**`pull_request` + `push` branches: [main]** で `npm run verify:agent-env`（または `verify:all` のみ）を走らせる workflow を追加してから、その **job 名を Rules に必須化**するのが安全な順序。
+
+## 7. required checks 互換性評価（2026-07-18・#R2 浜田GO）
+
+**結論**: 現行のセッション締めは `main` へ複数commitを直接pushするため、`constitution-gates` / `cursor-env-gates` のrequired化は **現時点では適用しない**。
+
+根拠:
+
+- 両workflowは `pull_request: main` では全PRに発火するため、**PR運用へ移行した後**のrequired check候補にはできる。
+- `push: main` は両方ともpaths限定。最終checkpoint commitでは`constitution-gates`だけが発火し、`cursor-env-gates`は最終HEADに付かない場合がある。
+- close儀式は本体・handoff・gitHead整合・checkpointを連続pushする。`cancel-in-progress: true`により中間runがcancelされることも正常で、各中間commitをrequired化すると締めを阻害する。
+- required checksを管理者にも強制すると、check未生成のcommitをmainへ直接pushできず、現在の`cio:session:close-git`と両立しない。
+
+required化の前提:
+
+1. 日常変更をPR経由へ移行する。
+2. close儀式の自動生成commitをPR内へ畳むか、最終HEADに必須jobが必ず付く常時workflowを作る。
+3. テスト用branch/rulesetでdirect push、handoff、checkpoint、緊急時バイパスを検証する。
+4. 浜田が結果を確認してからGitHub設定を変更する。
+
+本評価ではGitHub設定の書き換えは行っていない。

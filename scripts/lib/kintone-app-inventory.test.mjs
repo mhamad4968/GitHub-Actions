@@ -4,6 +4,15 @@ import {
   classifyInventory,
   parseManagedAppsFromMarkdown,
 } from './kintone-app-inventory.mjs';
+import {
+  KINTONE_AI_TEAM_ACTIVE_IDS,
+  KINTONE_AI_TEAM_RETIRED_IDS,
+  KINTONE_AI_TEAM_SCOPE_IDS,
+} from './kintone-ai-team-app-registry.mjs';
+
+assert.equal(KINTONE_AI_TEAM_ACTIVE_IDS.length, 63);
+assert.equal(KINTONE_AI_TEAM_RETIRED_IDS.length, 12);
+assert.equal(KINTONE_AI_TEAM_SCOPE_IDS.length, 75);
 
 const markdown = `
 # apps

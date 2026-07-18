@@ -6,6 +6,8 @@
  * 594/626/627/638/639/651/652/653/667/668/681/712: live 不在を 2026-07-18 に全件一覧 + ID 指定で再確認。
  * 削除済み app のリポ customize/・スナップショットは参照用に残置。
  */
+import { KINTONE_AI_TEAM_RETIRED_IDS } from './lib/kintone-ai-team-app-registry.mjs';
+
 export const PORTFOLIO_CUSTOMIZE = [
   { id: "677", rel: "customize/677/desktop.js", deploy: "deploy:677" },
   { id: "678", rel: "customize/678/desktop.js", deploy: "deploy:678" },
@@ -35,20 +37,7 @@ export const LIVE_SCHEMA_MONTHLY_IDS = [
  * kintone 削除済み・参照のみ — live-schema / 月次から除外。
  * リポ customize/ は残置可（git 履歴・Runbook 参照用）。
  */
-export const LIVE_SCHEMA_EXCLUDED_IDS = [
-  '594',
-  '626',
-  '627',
-  '638',
-  '639',
-  '651',
-  '652',
-  '653',
-  '667',
-  '668',
-  '681',
-  '712',
-];
+export const LIVE_SCHEMA_EXCLUDED_IDS = KINTONE_AI_TEAM_RETIRED_IDS;
 
 /** revision スナップショット対象（予実＋ユーザサポート） */
 export const PORTFOLIO_SNAPSHOT_IDS = ["677", "678", "679", "682", "683"];

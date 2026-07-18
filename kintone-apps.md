@@ -91,7 +91,7 @@ npm run app:fields <アプリID>
 
 > **live 実在監査（2026-07-18）**: kintone の全アプリ一覧（`kintone-get-apps`, offset 0/100/200）と ID 指定照会を突合した。リポジトリに履歴・customize が残るものの、現テナントに存在しないアプリは **594 / 626 / 627 / 638 / 639 / 651 / 652 / 653 / 667 / 668 / 681 / 712**。以下で「削除済」とした行・節は、フィールドスナップショットと監査履歴を保持するための記録であり、**URL 参照・REST・deploy・SKYSEA 突合の対象にしない**。PC 台帳の現行正本は **674**。
 >
-> **継続棚卸**: `npm run audit:kintone-app-inventory`（読み取り専用）を月次 `cio:periodic:monthly` の先頭で実行する。対象は **AIチームと作成・管理したアプリのみ**（本表・BUILD台帳・field/customizeレジストリ掲載 appIdと、上記の削除済み12 ID）。一般部門・利用者作成アプリは対象外。これらは棚卸範囲を定める管理証跡であり、PC台帳の業務データ正本が674だけであることとは区別する。基準更新は `npm run audit:kintone-app-inventory:write`。現役消失／削除済み再出現は NG、AIチーム管理証跡あり・一覧未掲載／追加／削除／名称変更は要確認（自動削除なし）。latest は `docs/reports/kintone-app-inventory-latest.md`。
+> **継続棚卸**: `npm run audit:kintone-app-inventory`（読み取り専用）を月次 `cio:periodic:monthly` の先頭で実行する。対象は **AIチームと作成・管理したアプリのみ**で、appId範囲の単一正本は `data/kintone-ai-team-app-registry.json`（現役／削除済みを明示）。一般部門・利用者作成アプリは対象外。このregistryは棚卸範囲の正本であり、PC台帳の業務データ正本が674だけであることとは区別する。基準更新は `npm run audit:kintone-app-inventory:write`。現役消失／削除済み再出現は NG、AIチーム管理証跡あり・一覧未掲載／追加／削除／名称変更は要確認（自動削除なし）。latest は `docs/reports/kintone-app-inventory-latest.md`。
 
 | アプリ名（論理名） | アプリID | customize パス | デプロイ例（npm） |
 |-------------------|---------|----------------|------------------|

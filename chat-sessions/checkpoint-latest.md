@@ -1,15 +1,15 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-18 JST — **kintone月次棚卸・SKYSEA 8月前段仕様・夕反省**
+**最終更新**: 2026-07-18 JST — **夕反省改善5件すべて浜田GO・反映**
 
-**Git**: **`ad94e4b2`** = `origin/main` — push 済
+**Git**: **`1fb5d0ff`** = `origin/main` — push 済
 
-**本日状態**: cold-start READY。App 746/747完了後、kintone live 244件を照会しAIチーム管理75 ID（現役63・削除済み12）を月次監査する仕組みを追加。旧594等の削除状態・deploy安全栓を正本へ反映。SKYSEA前段90項目をplan §11へ確定し、8/3問い合わせ・9月展開・10/30完了目標へ更新。
+**本日状態**: cold-start READY。kintone月次棚卸・SKYSEA前段仕様に加え、夕反省 #S1〜#S3/#R1〜#R2 は浜田がすべて承認。AI管理appId単一JSON正本、Desktop旧締めレポートprune、Windows transcript探索、10問決定チェックポイントを実装。required checksは互換性評価の結果、現行direct-push締めと両立しないためGitHub設定変更なし。
 
 **次の1手**: **次回は浜田の指示待ち**。SKYSEAは8/3問い合わせまで実装・GPO変更・本番配信を行わない。
 
-**GO待ち**: 夕反省 **#S1〜#S3 / #R1〜#R2**（`docs/reports/2026-07-18-evening-reflection.md`）の承認可否。H9 / △2 最終判定は **2026-07-25 のみ**（本日は判定不可）。
+**GO待ち**: H9 / △2 最終判定は **2026-07-25 のみ**（本日は判定不可）。夕反省 #S1〜#S3/#R1〜#R2 は承認・反映済み。
 
 **観測期間**: ~~憲法 Round-3 · rules-opt §18~~ **CLOSED 2026-07-15**。**H9/△2**: metricsEligibleAfter=**2026-07-18** · reviewDate=**2026-07-25** · early GREEN/降格 **禁止**（ops lock 2026-07-15）
 

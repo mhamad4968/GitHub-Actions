@@ -11,7 +11,10 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { kintoneGetJson } from './lib/kintone-read-client.mjs';
-import { LIVE_SCHEMA_EXCLUDED_IDS } from './cio-portfolio-apps.mjs';
+import {
+  KINTONE_AI_TEAM_RETIRED_IDS,
+  KINTONE_AI_TEAM_SCOPE_IDS,
+} from './lib/kintone-ai-team-app-registry.mjs';
 import {
   classifyInventory,
   normalizeLiveApp,
@@ -25,20 +28,15 @@ const mdReportPath = path.join(root, 'docs', 'reports', 'kintone-app-inventory-l
 const write = process.argv.includes('--write');
 const resetBaseline = process.argv.includes('--reset-baseline');
 
-function readJson(relativePath) {
-  return JSON.parse(fs.readFileSync(path.join(root, relativePath), 'utf8'));
-}
-
 function loadAiTeamScopeIds(managedApps) {
-  const ids = new Set(managedApps.map((app) => String(app.appId)));
-  for (const appId of LIVE_SCHEMA_EXCLUDED_IDS) ids.add(String(appId));
-  const liveBuilds = readJson('data/cio-live-builds.json');
-  const fieldRegistry = readJson('data/kintone-field-registry.json');
-  const customizeRegistry = readJson('data/kintone-customize-path-registry.json');
-  for (const appId of Object.keys(liveBuilds.apps || {})) ids.add(String(appId));
-  for (const appId of Object.keys(fieldRegistry.apps || {})) ids.add(String(appId));
-  for (const appId of Object.values(customizeRegistry.mappings || {})) ids.add(String(appId));
-  return [...ids].sort((a, b) => Number(a) - Number(b));
+  const scope = new Set(KINTONE_AI_TEAM_SCOPE_IDS);
+  const missing = managedApps.map((app) => String(app.appId)).filter((appId) => !scope.has(appId));
+  if (missing.length) {
+    throw new Error(
+      `kintone-apps.md の管理IDが data/kintone-ai-team-app-registry.json に未登録: ${missing.join(', ')}`,
+    );
+  }
+  return [...KINTONE_AI_TEAM_SCOPE_IDS];
 }
 
 async function fetchAllApps() {
@@ -77,7 +75,8 @@ function renderMarkdown(report) {
     `- AIチーム管理対象（live）: ${report.counts.live}`,
     `- リポジトリ管理対象: ${report.counts.managed}`,
     `- テナント全件取得数: ${report.counts.tenantFetched}（比較・保存対象外を含む）`,
-    '- 対象範囲: アプリ台帳・BUILD台帳・field/customizeレジストリに掲載されたappIdのみ',
+    '- 対象範囲: data/kintone-ai-team-app-registry.json 登録appIdのみ',
+    `- registry外: ${report.counts.tenantFetched - report.counts.live}件（比較・保存・停止判定の対象外）`,
     `- 判定: **${report.ok ? 'OK' : 'NG'}**`,
     '- 自動削除: **なし**（要確認項目は人が判断）',
     '',
@@ -127,6 +126,10 @@ function renderMarkdown(report) {
   return `${lines.join('\n')}\n`;
 }
 
+function toCrlf(text) {
+  return text.replace(/\r?\n/g, '\r\n');
+}
+
 function printList(label, rows, suffix) {
   if (!rows.length) return;
   console.log(`[audit:kintone-app-inventory] ${label} ${rows.length}`);
@@ -146,7 +149,7 @@ async function main() {
   const liveApps = tenantLiveApps.filter((app) => scope.has(String(app.appId)));
   const result = classifyInventory({
     managedApps,
-    retiredIds: LIVE_SCHEMA_EXCLUDED_IDS,
+    retiredIds: KINTONE_AI_TEAM_RETIRED_IDS,
     scopeIds,
     liveApps,
     previousLiveApps,
@@ -195,7 +198,7 @@ async function main() {
   if (write) {
     fs.mkdirSync(path.dirname(mdReportPath), { recursive: true });
     fs.writeFileSync(jsonReportPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
-    fs.writeFileSync(mdReportPath, renderMarkdown(report), 'utf8');
+    fs.writeFileSync(mdReportPath, toCrlf(renderMarkdown(report)), 'utf8');
     console.log(
       `[audit:kintone-app-inventory] wrote ${path.relative(root, jsonReportPath)}, ${path.relative(root, mdReportPath)}`,
     );

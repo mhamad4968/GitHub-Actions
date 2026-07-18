@@ -155,6 +155,14 @@ DeepSeek §50-3-8 → Composer 初回 Diff → mark-composer-diff
 
 正本: `docs/runbooks/cio-grok-execution-loop.md` · Skill: `.cursor/skills/grok-execution-loop/SKILL.md`
 
+#### 長時間の一問一答 — 10問決定チェックポイント（2026-07-18 浜田GO）
+
+- 連続する仕様ヒアリング・フリートークは、**確定回答10問ごと**に決定事項を既存planの作業節または案件別decision logへ追記する。
+- 次の質問ブロックへ進む前に、AIは追記内容を短く提示し、浜田の訂正があればその場で正本を直す。
+- 記録は **確定／未確認／保留** を分け、推測を確定事項へ混ぜない。
+- 終了時は全チェックポイントを仕様正本へ統合し、会話transcriptだけを唯一の根拠として残さない。
+- 10問未満で終了した場合も、セッション終了前に同じ記録を1回行う。
+
 ---
 
 ## 5. checkpoint 凍結ゾーン（50 行）
