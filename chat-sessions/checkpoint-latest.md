@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-18 JST — **kintone月次棚卸・SKYSEA 8月前段仕様・夕反省**
 
-**Git**: **`7ba740a1`** = `origin/main` — push 済
+**Git**: **`ad94e4b2`** = `origin/main` — push 済
 
 **本日状態**: cold-start READY。App 746/747完了後、kintone live 244件を照会しAIチーム管理75 ID（現役63・削除済み12）を月次監査する仕組みを追加。旧594等の削除状態・deploy安全栓を正本へ反映。SKYSEA前段90項目をplan §11へ確定し、8/3問い合わせ・9月展開・10/30完了目標へ更新。
 
