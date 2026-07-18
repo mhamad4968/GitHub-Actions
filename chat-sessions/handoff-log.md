@@ -4758,9 +4758,18 @@ npm run cio:morning:ready
 
 **確認**: GitHub 最新 Actions 10件 success / open PR 0 / open issue 0。health-check exit 0、normal 34、abnormal 0、warnings 0、skipped 2、score 100%。npm audit は exit 1 / high 5件であり、package 自動変更なし。
 
+---
 
-**Git**: `523bceb4` = origin/main — push 済（締め後 R44 sync）
+### 2026-07-18 JST — **WAKE・AI緊急用00〜36通読・健康監査**
 
-**GO待ち**: H9/△2 **2026-07-25** · P5 Cold（736後推奨）
+**要約**: cold-start READY。Desktop 00〜36を番号順に全件通読（24番は全4,767行）。DeepSeek/Kimiで正本整合を照合し、MCP 26 active、extended probe OK 8/9・SKIP 1・NG 0、GitHub latest success・PR 0・issue 0を確認。healthのWSL→Windows Git偽cleanとcancelled run誤集計、19番当日化、HANDOFF-HUMAN最新化、末尾重複を即時是正。
+
+**次の1手**: **次回は浜田の指示待ち。App 736 ver.02 は依頼者 Excel 受領後に現行版を残して再設計**
+
+**GO待ち**: H9 / △2 最終判定 — **2026-07-25 のみ**
+
+**触らない**: 688（WBGT以外）/ 677–679 / SKYSEA 7月 / 712 deploy / 736 ver.02（Excel受領前）
+
+**Git**: close records 作成前 **`5a30669a`** = `origin/main` — push 済。必要に応じて `cio:session:close-git` が最終化する。
 
 ---

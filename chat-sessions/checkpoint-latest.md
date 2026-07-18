@@ -1,11 +1,11 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-17 JST — **承認済み改善3件の実装完了**（夕反省 #S1〜#S3）
+**最終更新**: 2026-07-18 JST — **WAKE・AI緊急用00〜36通読・健康監査と即時是正を完了**
 
-**Git**: **`2f60d99d`** = `origin/main` — push 済
+**Git**: close records 作成前 **`5a30669a`** = `origin/main` — push 済。必要に応じて `cio:session:close-git` が最終化する。
 
-**本日状態**: App 674 は Excel 出力（SheetJS bundle）と備考検索を修正し、浜田目視 OK。業務改善 Apps 697/698/699/700/713 は検証済みで、システム側運用準備 OK。夕反省改善 `#S1-EVENING-HELP-01` / `#S2-BI-READINESS-INVARIANT-01` / `#S3-REPORT-DRAFT-01` は浜田承認・実装・回帰検証済み。
+**本日状態**: cold-start READY。Desktop `AI緊急用` 00〜36を全件通読し、DeepSeek/Kimi照合・MCP 26 active・GitHub・healthを確認。healthのGit偽clean、19番当日化、HANDOFF-HUMAN最新化、handoff末尾重複を是正済み。
 
 **次の1手**: **次回は浜田の指示待ち。App 736 ver.02 は依頼者 Excel 受領後に現行版を残して再設計**
 
@@ -27,36 +27,6 @@
 
 **736 本番**: BUILD=`2026-07-12-736-ui-backlog-02-col-resize` rev **186** — 現行版を保持。ver.02 は依頼者 Excel 受領後に再設計し、本日は実装・deploy なし。
 
-## 本日完了サマリー（2026-07-17）
-
-| 項目 | 内容 |
-|------|------|
-| **App 674** | Excel 出力と備考検索を修正 · 浜田目視 OK |
-| **App 699** | マニュアルを現行 apply/list/evaluation/notification 挙動へ整合 · rev 132 |
-| **App 700** | 通知明確化 · WF テスト部署 admin 限定 · rev 170 |
-| **業務改善** | Apps 697/698/699/700/713 のシステム側運用準備 OK · 正本群と closure ledger 同期 |
-| **承認済み改善** | evening help 無副作用化 · readiness正本照合 · verifier準拠report draft生成を実装・回帰検証 |
-| **GitHub/health** | Actions 最新10件 success · PR 0 · issue 0 · health score 100% |
-| **依存関係** | npm audit high 5件を既知リスクとして記録 · package 変更なし |
-
-## 本日完了サマリー（2026-07-15 ops）
-
-| 項目 | 内容 |
-|------|------|
-| **憲法/rules-opt** | 正式クローズ済 · H9/△2 は 7/25（early GREEN 禁止） |
-| **MCP** | mintlify DEL追認 · cyber-news DEL-2 正式クローズ · 再注入ガード |
-| **F1/A6** | dormant false-positive 修正 · R44 Git 同期 |
-| **△18** | profile --dry-run/--apply 同時禁止（仕様 v3.2） |
-| **Cold誤適用** | bak復元済 · disabled=0 · gate 6/6 |
-
-## 本日完了サマリー（2026-07-13）
-
-| 項目 | 内容 |
-|------|------|
-| **688 気象UI** | 気象データヘルプ・猛暑日オプションを `<details>` 折りたたみ · deploy rev89 · spec `2026-07-13-688-weather-ui-accordion-spec.md` |
-| **736 BACKLOG-03** | ブロック選択 DD 仕様草案 GO（implement **7/16**）· `2026-07-13-jikkou-yosan-ui-backlog-03-block-select-dd-spec.md` |
-| **改善（夕）** | #I-688-GHA-01〜#I-SESSION-LANE-01 全 GO · `docs/approved-changes/2026-07-13-evening-improvements-hamada-go.md` |
-
 ## クローズ済み（`data/cio-project-closures.json` — 9件）
 
 業務改善697–713 / Wi-Fi718–719 / JR iPad720–721 / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **ML750–751** / **Kintoneアカウント752–753** — **closed-v1**
@@ -73,29 +43,41 @@
 
 ## セッション切替後の自律復元（Lifecycle v2 鏡像）
 
-**正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`  
-**項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
+**正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`
+**項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
-## 2026-07-12 昼セッション完了
+
+## 2026-07-17 本日完了サマリー
 
 | 項目 | 内容 |
 |------|------|
-| **shiryo-sakusei MCP** | `mcp/shiryo-sakusei-mcp/` · SPEC · 依頼書テンプレ · commit `9e2b18e8` push 済 |
-| **経営会議資料運用** | `C:\tmp\資料作成\依頼書テンプレート.txt` · 作成日テンプレ貼付→記入フロー確立 |
-| **MCP 有効化** | Cursor 再起動 · `user-shiryo-sakusei` **ready** 確認済 |
+| **App 674** | Excel 出力と備考検索を修正 · 浜田目視 OK |
+| **App 699** | マニュアルを現行 apply/list/evaluation/notification 挙動へ整合 · rev 132 |
+| **App 700** | 通知明確化 · WF テスト部署 admin 限定 · rev 170 |
+| **業務改善** | Apps 697/698/699/700/713 のシステム側運用準備 OK · 正本群と closure ledger 同期 |
+| **承認済み改善** | evening help 無副作用化 · readiness正本照合 · verifier準拠report draft生成を実装・回帰検証 |
+| **GitHub/health** | Actions 最新10件 success · PR 0 · issue 0 · health score 100% |
+| **依存関係** | npm audit high 5件を既知リスクとして記録 · package 変更なし |
 
-## 2026-07-12 朝（WAKE）
 
-checkpoint 凍結ゾーン修復（`d00a2fdc`）· cold-start OK
+## 2026-07-15 本日完了サマリー（ops）
 
-## 2026-07-11 F0 改善（浜田全承認 · 実施済）
+| 項目 | 内容 |
+|------|------|
+| **憲法/rules-opt** | 正式クローズ済 · H9/△2 は 7/25（early GREEN 禁止） |
+| **MCP** | mintlify DEL追認 · cyber-news DEL-2 正式クローズ · 再注入ガード |
+| **F1/A6** | dormant false-positive 修正 · R44 Git 同期 |
+| **△18** | profile --dry-run/--apply 同時禁止（仕様 v3.2） |
+| **Cold誤適用** | bak復元済 · disabled=0 · gate 6/6 |
 
-| ID | 内容 |
-|----|------|
-| #R-GO-BOUNDARY-01 | charter / 18-重要確認 / AGENTS — 確認A·G0·G2 分離 |
-| #R-REQUEST-COMPOSE-02 | compose runbook/spec — OK後≠実装 |
-| #D-GO-COMPOSE-MAP-01 | Desktop 36 段階対応表 |
-| #S-COMPOSE-PHASE-01 | `--phase investigate\|implement` |
-| #R-688-DEPLOY-01 | 実装GO後 · 688 deploy 必須 |
 
-記録: `docs/approved-changes/2026-07-11-evening-f0-improvements-hamada-go.md`
+## 2026-07-13 本日完了サマリー
+
+| 項目 | 内容 |
+|------|------|
+| **688 気象UI** | 気象データヘルプ・猛暑日オプションを `<details>` 折りたたみ · deploy rev89 · spec `2026-07-13-688-weather-ui-accordion-spec.md` |
+| **736 BACKLOG-03** | ブロック選択 DD 仕様草案 GO（implement **7/16**）· `2026-07-13-jikkou-yosan-ui-backlog-03-block-select-dd-spec.md` |
+| **改善（夕）** | #I-688-GHA-01〜#I-SESSION-LANE-01 全 GO · `docs/approved-changes/2026-07-13-evening-improvements-hamada-go.md` |
+
+
+<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-07-18.md -->

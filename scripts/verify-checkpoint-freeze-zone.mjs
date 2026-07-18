@@ -44,8 +44,14 @@ function main() {
     console.log('[verify:checkpoint-freeze-zone] auto-rollup 実行...');
     if (runRollup(root)) {
       const after = readCheckpointPreambleLineCount(root);
-      console.log(`[verify:checkpoint-freeze-zone] OK after rollup lines=${after}`);
-      process.exit(after <= FREEZE_WARN ? 0 : 1);
+      if (after <= FREEZE_WARN) {
+        console.log(`[verify:checkpoint-freeze-zone] OK after rollup lines=${after}`);
+        process.exit(0);
+      }
+      console.error(
+        `[verify:checkpoint-freeze-zone] NG after rollup lines=${after} > ${FREEZE_WARN} — checkpoint の日付付き履歴見出しを確認`,
+      );
+      process.exit(1);
     }
     console.error('[verify:checkpoint-freeze-zone] NG rollup 失敗');
     process.exit(2);

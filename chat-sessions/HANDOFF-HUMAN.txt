@@ -1,3 +1,9 @@
+日時(JST): 2026-07-18（土）— **WAKE・AI緊急用00〜36通読・健康監査**
+いま何してた（1行）: cold-start READY・Desktop全件通読・MCP/GitHub/health監査・軽微不整合の即時是正。
+次にやる1つ: **浜田の指示待ち**。App 736 ver.02 は依頼者 Excel 受領後に現行版を残して再設計。
+GO待ち（なし／内容）: H9 / △2 最終判定 — **2026-07-25 のみ**。
+触らないで（なし／内容）: 688（WBGT以外）/ 677–679 / SKYSEA 7月 / 712 deploy / 736 ver.02（Excel受領前）。
+
 日時(JST): 2026-07-15（水）— **憲法・rules-opt 正式クローズ**
 いま何してた（1行）: 浜田 ACK · rules-opt §18 / Round-3 配線 CLOSED · H9 は 7/25 据え置き · verify 全緑
 次にやる1つ: **7/16** UI-BACKLOG-03 implement

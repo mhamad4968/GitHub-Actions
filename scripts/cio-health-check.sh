@@ -120,11 +120,13 @@ fi
 # 5. git status / branch（§51-6: SESSION-CLOCK.md は session:clock:set で毎セッション更新＝正常 dirty）
 _git_porcelain() {
   if pwd | grep -qiE '^/mnt/[a-z]/'; then
-    if command -v wslpath >/dev/null 2>&1 && command -v cmd.exe >/dev/null 2>&1; then
+    if command -v wslpath >/dev/null 2>&1 && command -v git.exe >/dev/null 2>&1; then
       winpath=$(wslpath -w "$(pwd)" 2>/dev/null || true)
       if [ -n "$winpath" ]; then
-        cmd.exe /c "cd /d \"$winpath\" && git status --porcelain" 2>/dev/null | tr -d '\r'
-        return
+        if win_git_status=$(git.exe -C "$winpath" status --porcelain 2>/dev/null); then
+          printf '%s\n' "$win_git_status" | tr -d '\r'
+          return
+        fi
       fi
     fi
   fi
@@ -157,7 +159,7 @@ import json,sys
 xs=json.load(sys.stdin)
 if not xs:
   print('0|0|unknown'); raise SystemExit
-bad=lambda c: c not in ('success',None,'skipped')
+bad=lambda c: c in ('failure','timed_out','action_required','startup_failure')
 last30=sum(1 for x in xs if bad(x.get('conclusion')))
 last5=sum(1 for x in xs[:5] if bad(x.get('conclusion')))
 latest=xs[0].get('conclusion') or 'unknown'

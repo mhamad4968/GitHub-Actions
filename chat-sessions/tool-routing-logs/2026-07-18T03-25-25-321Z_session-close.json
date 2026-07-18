@@ -1,0 +1,33 @@
+{
+  "timestamp": "2026-07-18T03:25:25.321Z",
+  "intent": "Fix verify checkpoint freeze-zone auto-rollup exit-code inconsistency",
+  "phase": null,
+  "appId": null,
+  "matchedRules": [
+    {
+      "id": "session-close",
+      "score": 2,
+      "priority": 10
+    }
+  ],
+  "primaryIntentId": "session-close",
+  "category": "session",
+  "selectedMcp": null,
+  "mcpChain": [],
+  "npm": [
+    "cio:handoff:append-block",
+    "cio:session:export-handoff",
+    "cio:session:close-git"
+  ],
+  "skill": null,
+  "subagent": null,
+  "runbook": "docs/runbooks/checkpoint-handoff-template-v2.md",
+  "rule": null,
+  "secondReviewer": null,
+  "verify": [
+    "verify:checkpoint-handoff-template",
+    "verify:checkpoint-freeze-zone"
+  ],
+  "lane": null,
+  "reason": "intent=session-close score=2 npm-only"
+}
