@@ -99,6 +99,18 @@ MCP 失敗時（DeepSeek 合意 2026-06-19）:
 2. `fallback.mcpFailureChain`: deepseek → openrouter
 3. 不可ならチャット 1 行: `MCPスキップ: <server> — <理由>`
 
+### 5.1 Kimi ローカルファイル経路（#R-KIMI-01 / 2026-07-19 浜田 GO）
+
+Windows Cursor から Kimi の `kimi_read_file` / `kimi_review` / `kimi_shell` を使う場合、
+Kimi MCP は WSL Ubuntu 内で動作するため、Windows パスを直接渡さない。
+
+1. `C:\Users\...\repo\...` を `/mnt/c/Users/.../repo/...` に変換し、`path` と `workFolder` を統一する。
+2. `kimi_read_file`、必要時は `kimi_shell` の `test -e` で対象を確認する。
+3. 指定された Kimi レビューを実行する。
+4. Windows パスの `ENOENT` は **経路障害**、代替AIの結果は **代替レビュー** と記録する。
+5. 代替レビュー後も経路を修復し、Kimi本人の読取＋レビュー成功を **復旧完了** とする。
+6. `/mnt/...` でも `ENOENT` なら実ファイル欠落またはマウント障害として fallback。`EACCES` は権限エラーとして扱う。
+
 ---
 
 ## 6. npm ゲートとの対応（B v2 連動）

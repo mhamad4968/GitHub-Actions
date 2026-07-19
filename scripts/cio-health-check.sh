@@ -151,33 +151,48 @@ if git fetch origin --quiet 2>/dev/null; then
   report+=$'\n'"  ✅ branch  $branch"
 fi
 
-# 6. GitHub Actions（直近5件がすべて success かつ latest=success → 運用 OK。last30 の古い failure は参考）
+# 6. GitHub Actions（failure は既存判定を維持。安全に superseded と確認できない cancelled は WARN）
 if command -v gh >/dev/null 2>&1; then
-  gh_json=$(gh run list --limit 30 --json conclusion,createdAt,name 2>/dev/null || echo '[]')
-  gh_stats=$(echo "$gh_json" | python3 -c "
-import json,sys
-xs=json.load(sys.stdin)
-if not xs:
-  print('0|0|unknown'); raise SystemExit
-bad=lambda c: c in ('failure','timed_out','action_required','startup_failure')
-last30=sum(1 for x in xs if bad(x.get('conclusion')))
-last5=sum(1 for x in xs[:5] if bad(x.get('conclusion')))
-latest=xs[0].get('conclusion') or 'unknown'
-print(f'{last30}|{last5}|{latest}')
-" 2>/dev/null || echo '0|0|unknown')
-  gh_fail30=$(echo "$gh_stats" | cut -d'|' -f1)
-  gh_fail5=$(echo "$gh_stats" | cut -d'|' -f2)
-  gh_latest=$(echo "$gh_stats" | cut -d'|' -f3)
-  if [ "$gh_fail30" = "0" ]; then
-    report+=$'\n'"  ✅ gh-actions  last30 failures=0  latest=$gh_latest"
-  elif [ "$gh_latest" = "success" ] && [ "$gh_fail5" = "0" ]; then
-    report+=$'\n'"  ✅ gh-actions  last5 failures=0  last30 historical=$gh_fail30  latest=$gh_latest"
-  elif [ "$gh_latest" = "success" ]; then
-    report+=$'\n'"  ⚠️  gh-actions  last5 failures=$gh_fail5  last30=$gh_fail30  latest=$gh_latest"
+  if ! gh_json=$(gh run list --limit 30 --json databaseId,conclusion,createdAt,workflowDatabaseId,workflowName,name,headSha,headBranch,url 2>/dev/null); then
+    report+=$'\n'"  ⚠️  gh-actions  run query failed (authentication/network/CLI error)"
+    warn_count=$((warn_count + 1))
+  elif ! gh_stats=$(printf '%s' "$gh_json" | node scripts/lib/gh-run-classifier.mjs --health-summary); then
+    report+=$'\n'"  ⚠️  gh-actions  run classification failed"
+    warn_count=$((warn_count + 1))
+  elif ! printf '%s\n' "$gh_stats" | grep -qE '^[0-9]+\|[0-9]+\|[^|]+\|[0-9]+\|[0-9]+$'; then
+    report+=$'\n'"  ⚠️  gh-actions  invalid classifier output"
     warn_count=$((warn_count + 1))
   else
-    report+=$'\n'"  ❌ gh-actions  last5 failures=$gh_fail5  last30=$gh_fail30  latest=$gh_latest"
-    red_count=$((red_count + 1))
+    gh_fail30=$(echo "$gh_stats" | cut -d'|' -f1)
+    gh_fail5=$(echo "$gh_stats" | cut -d'|' -f2)
+    gh_latest=$(echo "$gh_stats" | cut -d'|' -f3)
+    gh_cancel_superseded=$(echo "$gh_stats" | cut -d'|' -f4)
+    gh_cancel_unresolved=$(echo "$gh_stats" | cut -d'|' -f5)
+    gh_cancel_detail="cancelled: superseded=$gh_cancel_superseded unresolved=$gh_cancel_unresolved"
+    if [ "$gh_latest" = "unknown" ]; then
+      report+=$'\n'"  ⚠️  gh-actions  no run data available  $gh_cancel_detail"
+      warn_count=$((warn_count + 1))
+    elif [ "$gh_fail30" = "0" ]; then
+      if [ "$gh_cancel_unresolved" = "0" ]; then
+        report+=$'\n'"  ✅ gh-actions  last30 failures=0  latest=$gh_latest  $gh_cancel_detail"
+      else
+        report+=$'\n'"  ⚠️  gh-actions  last30 failures=0  latest=$gh_latest  $gh_cancel_detail"
+        warn_count=$((warn_count + 1))
+      fi
+    elif [ "$gh_latest" = "success" ] && [ "$gh_fail5" = "0" ]; then
+      if [ "$gh_cancel_unresolved" = "0" ]; then
+        report+=$'\n'"  ✅ gh-actions  last5 failures=0  last30 historical=$gh_fail30  latest=$gh_latest  $gh_cancel_detail"
+      else
+        report+=$'\n'"  ⚠️  gh-actions  last5 failures=0  last30 historical=$gh_fail30  latest=$gh_latest  $gh_cancel_detail"
+        warn_count=$((warn_count + 1))
+      fi
+    elif [ "$gh_latest" = "success" ]; then
+      report+=$'\n'"  ⚠️  gh-actions  last5 failures=$gh_fail5  last30=$gh_fail30  latest=$gh_latest  $gh_cancel_detail"
+      warn_count=$((warn_count + 1))
+    else
+      report+=$'\n'"  ❌ gh-actions  last5 failures=$gh_fail5  last30=$gh_fail30  latest=$gh_latest  $gh_cancel_detail"
+      red_count=$((red_count + 1))
+    fi
   fi
 else
   report+=$'\n'"  ⚠️  gh-actions  gh CLI not found"

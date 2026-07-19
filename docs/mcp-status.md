@@ -102,6 +102,15 @@
 - **`npm run cio:mcp:env:extended`**（**2026-05-21**）… 必須 6 件に加え **playwright / markdownify / duckduckgo-search** を initialize プローブ（Composer 実務系の事前確認）。
 - **`npm run cio:env:enhance`**（**2026-05-21**）… **環境増強ワンショット**: `health-check` → `cio:mcp:gate` → **`mcp:apply-repo-overlays-windows`**（figma / colors-fonts / repo-tree / eslint-mcp / context7 / kintone-schema-mcp / git-history-mcp を Win `%USERPROFILE%\.cursor\mcp.json` へ · **mintlify は DEL-1 済で非同梱**）→ `verify:cursor-mcp-windows` → `verify:mcp-four-ai-alignment`。`--full` で `verify:cio-four-ai-governance`・`--desktop` で Desktop 同期連鎖・`--quick` で gate 省略。
 - **実行経路（2026-05-11 CEO 合意）**: **日常の健康ゲートは Windows ネイティブ**で `Set-Location C:\Users\<you>\kintone-ai-lab; npm run cio:mcp:env`（**`SUMMARY: OK 6/6`** を正）。**WSL の `/mnt/c/...` は月次のベストエフォート**（drvfs ＋並列 `npx` で **kimi のみ TIMEOUT** になり得る）。**WSL で kimi だけ落ちるとき**は **`CIO_MCP_PROBE_KIMI_TIMEOUT_MS`**（`scripts/cio-mcp-quickprobe.mjs`）と **ネット（VPN／FW／mirrored）**を先に切り分ける。
+- **3AIシークレット保管（2026-07-19 浜田 GO）**: Kimi / DeepSeek / OpenRouter のAPIシークレットは、Windows・WSL双方の `mcp.json` の `command` / `env` へ直書きせず、WSL **`~/.config/cursor-mcp/ai-secrets.env`（mode 0600）**を各ランチャーが `source` する。移行は `npm run mcp:secrets:migrate`（dry-run）→ `npm run mcp:secrets:migrate:apply`、検査は `npm run verify:mcp-ai-secret-storage`。`cio:mcp:env` は同ファイルを値非表示で読んで6/6を検証する。提供元側のキー再発行は各サービスの認証済み管理画面で行い、ローカル移行とは別の人間確認操作とする。
+
+#### 3AI APIキーの安全なローテーション
+
+1. Moonshot・DeepSeek・OpenRouter の各提供元ダッシュボードで新しいキーを作成する。**キーをチャットへ貼り付けない**。
+2. Windows PowerShell でリポジトリルートから `.\scripts\update-mcp-ai-secrets-interactive.ps1` を実行し、3つのキーを個別の保護入力へ入力する。コマンドライン引数では渡さない。
+3. ヘルパーが表示する **ローカル更新成功**と `cio:mcp:env` の **6/6 成功**を確認する。検証失敗時は旧ファイルへ自動ロールバックされるため、古いキーをまだ失効させない。
+4. 6/6 成功後に限り、各提供元ダッシュボードで古いキーを人間が失効させる。ブラウザ自動操作には委ねない。
+
 - **監査メモ（2026-05-11、2026-07-17 更新）**: **`npm run health-check`** は Windows の **非 IDE CLI** では多くの MCP が **意図的に ⏭**（`HEALTH_CHECK_STRICT_WIN=1` で厳格化可）。**実 initialize の正**は引き続き **`cio:mcp:env`**。**S12 死蔵 WARN** は週次 `mcp-status:refresh-usage` で是正判断。**`main` が `origin/main` より遅れ**ているときは `git fetch` / `git pull` で正本を揃えてから再検証。Windows の `cio-mcp-quickprobe` は **`cmd.exe /d /s /c npx.cmd` を固定引数で明示起動**し、Node DEP0190（`shell:true` + args）を回避する。
 - **`kintone-space`（自作・WSL）— 2026-05-11 CIO**: **`KINTONE_BASE_URL` が `https://cybozu.com`（汎用 LP）のまま**だと API が **HTML** を返し、MCP が **`Unexpected token <`** になる。**本番テナント**（例: `https://<tenant>.cybozu.com`、**末尾スラッシュ無し**）へ **`~/.cursor/mcp.json` の `kintone` と `kintone-space`（bash `-lc` 内の export 含む）**を揃える。加えて **`~/.cursor/kintone-space-mcp/index.mjs`** の GET で **`Content-Type: application/json` を付けない**修正（`CB_IL02` 回避）— リポ **`npm run kintone:patch-space-mcp-get-headers`**（WSL・`HOME` 固定）。疎通は **`npm run kintone:probe-space -- 48`**（`.env`）。**Cursor は MCP 子プロセスを再起動**（ウィンドウ再読み込み等）するまで旧コードが残る場合あり。
 - **WSL 正本** `~/.cursor/mcp.json` を編集したら Windows へ **`npm run mcp:sync-cursor-windows`**（TSB-028）。

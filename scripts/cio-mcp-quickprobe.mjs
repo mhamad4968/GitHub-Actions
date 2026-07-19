@@ -23,6 +23,7 @@ import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
+import { fillMissingApprovedAiEnv } from "./lib/mcp-ai-secret-env.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -62,6 +63,11 @@ function applyCioEnvFromMcpJson() {
 }
 
 applyCioEnvFromMcpJson();
+try {
+  fillMissingApprovedAiEnv(process.env);
+} catch {
+  // Keep the existing missing-env NG path when secure storage is unavailable or invalid.
+}
 
 /** `/mnt/c/...` 等 drvfs 上のリポで、WSL 上の Node から実行されているか */
 function isWslDrvfsRepo(repoRoot) {
@@ -197,7 +203,7 @@ function probeOnce(name, spec, timeoutMs) {
     return Promise.resolve({
       name,
       status: "NG",
-      detail: `missing env after mcp.json merge: ${missing.join(",")}`,
+      detail: `missing env after approved source merge: ${missing.join(",")}`,
       elapsed: 0,
     });
   }
