@@ -7,7 +7,7 @@
  *   npm run shared-mail:migrate:xlsx -- --apply
  */
 import { existsSync } from 'node:fs';
-import XLSX from 'xlsx';
+import XLSX from './lib/xlsx-node.mjs';
 import {
   DEFAULT_XLSX,
   STATUS_ACTIVE,

@@ -6,7 +6,7 @@
  *   npm run vpn-account:migrate:xlsx -- --apply --incremental
  */
 import { existsSync } from 'node:fs';
-import XLSX from 'xlsx';
+import XLSX from './lib/xlsx-node.mjs';
 import {
   DEFAULT_XLSX,
   domainForDept,

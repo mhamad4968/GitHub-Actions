@@ -10,7 +10,7 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import XLSX from 'xlsx';
+import XLSX from './lib/xlsx-node.mjs';
 import {
   SETTINGS_XLSX_PATH,
   fetchJson,

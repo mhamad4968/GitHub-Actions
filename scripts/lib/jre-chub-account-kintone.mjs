@@ -5,7 +5,7 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import XLSX from 'xlsx';
+import XLSX from './xlsx-node.mjs';
 import { archiveXlsx } from './closed-v1-migration-xlsx.mjs';
 
 export const DB_APP_NAME = 'JRE-C_Hubアカウント管理台帳用DB';

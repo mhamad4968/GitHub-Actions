@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /** Kintoneアカウント — Excel → DB REST */
 import { existsSync } from 'node:fs';
-import XLSX from 'xlsx';
+import XLSX from './lib/xlsx-node.mjs';
 import {
   DEFAULT_XLSX,
   MIGRATION_START_DATE,

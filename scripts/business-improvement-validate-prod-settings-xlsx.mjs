@@ -4,7 +4,7 @@
  * - マスタ変更は原則「人事発令」に伴う担当者・Login ID 更新として扱う
  * - Login ID とメールの不一致は異動後の ID 再利用では WARN のみ（ERROR にしない）
  */
-import XLSX from 'xlsx';
+import XLSX from './lib/xlsx-node.mjs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { fetchJson, getKintoneConfig } from './lib/business-improvement-kintone.mjs';

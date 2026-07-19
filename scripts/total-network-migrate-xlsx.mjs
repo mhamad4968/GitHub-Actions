@@ -8,7 +8,7 @@
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import XLSX from 'xlsx';
+import XLSX from './lib/xlsx-node.mjs';
 import {
   DEFAULT_XLSX,
   DEVICE_TYPE_SEED,

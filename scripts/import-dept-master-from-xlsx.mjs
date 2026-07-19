@@ -15,7 +15,7 @@ import 'dotenv/config';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import XLSX from 'xlsx';
+import XLSX from './lib/xlsx-node.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const APP = Number(process.env.PC_LEDGER_DEPT_MASTER_APP || 680);

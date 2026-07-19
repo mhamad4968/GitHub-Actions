@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /** JREクラウド — Excel 全社user → DB REST */
 import { existsSync } from 'node:fs';
-import XLSX from 'xlsx';
+import XLSX from './lib/xlsx-node.mjs';
 import {
   DEFAULT_XLSX,
   SHEET_MASTER,

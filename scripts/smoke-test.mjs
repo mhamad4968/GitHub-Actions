@@ -25,6 +25,7 @@
  *  15. verify:gha-periodic-workflows — verify-gha-periodic-workflows.mjs（GHA 定期ジョブ 5038 bundled 検査）
  *  16. verify:c-tmp-registry — verify-c-tmp-registry.mjs（C:\tmp 台帳突合 S-TMP-01）
  *  17. verify:spec-progress-sync — verify-spec-progress-sync.mjs（仕様進捗鏡像 R736-SPEC-SYNC）
+ *  18. verify:xlsx-node — xlsx-node.test.mjs（SheetJS 公式修正版・Node read/write 回帰）
  *
  * 出力: markdown サマリ + 各検査の status (ok / warn / ng / skip)
  *
@@ -65,6 +66,7 @@ const checks = [
   { id: 'verify:gha-periodic-workflows', cmd: 'node', args: ['scripts/verify-gha-periodic-workflows.mjs'], label: 'GHA 定期 workflow 5038 bundled (第15検査)' },
   { id: 'verify:c-tmp-registry', cmd: 'node', args: ['scripts/verify-c-tmp-registry.mjs'], label: 'C:\\tmp 台帳突合 (S-TMP-01 / 第16検査)' },
   { id: 'verify:spec-progress-sync', cmd: 'node', args: ['scripts/verify-spec-progress-sync.mjs'], label: '仕様進捗鏡像・先祖返り検知 (R736-SPEC-SYNC / 第17検査)' },
+  { id: 'verify:xlsx-node', cmd: 'node', args: ['scripts/lib/xlsx-node.test.mjs'], label: 'SheetJS 0.20.3・Node read/write 回帰 (第18検査)' },
 ];
 
 const results = [];

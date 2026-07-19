@@ -7,7 +7,7 @@
  *   npm run wifi-ssid:migrate:xlsx -- --apply
  */
 import { existsSync } from 'node:fs';
-import XLSX from 'xlsx';
+import XLSX from './lib/xlsx-node.mjs';
 import {
   DEFAULT_XLSX,
   EQUIPMENT_NONE,
