@@ -1,15 +1,15 @@
 {
-  "scoredAt": "2026-07-19T07:54:08.487Z",
+  "scoredAt": "2026-07-19T08:42:47.864Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "**2026-07-19夜、システム推進室向け各自タスク管理kintoneアプリの要件ヒアリング**。アプリ作成は2026-07-20。SKYSEAは8月本格着手だが、8/3問い合わせ・回答前の実PC配信禁止を維持。",
+  "topTask": "**2026-07-20、受領Excel `C:\\tmp\\実行予算ver2\\工事予算（実行予算）(案) (1).xlsx` と現行App 736 Ver.01を突合し、Ver.02の仕様を一問ずつ確定する**。実装は仕様確定・浜田GO後の最短2026-07-21。現行rev186を保持し、仕様確定前の実装・deployは行わない。システム推進室タスク管理アプリ案は取消。",
   "tasks": [
     {
-      "id": "checkpoint:**2026-07-19夜、システム推進室向け各自タスク管理kintoneアプリ",
-      "text": "**2026-07-19夜、システム推進室向け各自タスク管理kintoneアプリの要件ヒアリング**。アプリ作成は2026-07-20。SKYSEAは8月本格着手だが、8/3問い合わせ・回答前の実PC配信禁止を維持。",
+      "id": "checkpoint:**2026-07-20、受領Excel_`C:\\tmp\\実行予算ver2\\工事",
+      "text": "**2026-07-20、受領Excel `C:\\tmp\\実行予算ver2\\工事予算（実行予算）(案) (1).xlsx` と現行App 736 Ver.01を突合し、Ver.02の仕様を一問ずつ確定する**。実装は仕様確定・浜田GO後の最短2026-07-21。現行rev186を保持し、仕様確定前の実装・deployは行わない。システム推進室タスク管理アプリ案は取消。",
       "source": "checkpoint",
-      "difficulty": 2,
-      "tokens": "中",
-      "tokenScore": 2,
+      "difficulty": 5,
+      "tokens": "高",
+      "tokenScore": 3,
       "impact": 5,
       "priority": 0,
       "status": "pending"
