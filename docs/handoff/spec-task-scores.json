@@ -1,15 +1,15 @@
 {
-  "scoredAt": "2026-07-18T22:58:12.710Z",
+  "scoredAt": "2026-07-19T01:07:00.989Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "**次回は浜田の指示待ち**。SKYSEAは8/3問い合わせまで実装・GPO変更・本番配信を行わない。",
+  "topTask": "**2026-07-19夜、システム推進室向け各自タスク管理kintoneアプリの要件ヒアリング**。アプリ作成は2026-07-20。SKYSEAは8月本格着手だが、8/3問い合わせ・回答前の実PC配信禁止を維持。",
   "tasks": [
     {
-      "id": "checkpoint:**次回は浜田の指示待ち**。SKYSEAは8/3問い合わせまで実装・GPO変更",
-      "text": "**次回は浜田の指示待ち**。SKYSEAは8/3問い合わせまで実装・GPO変更・本番配信を行わない。",
+      "id": "checkpoint:**2026-07-19夜、システム推進室向け各自タスク管理kintoneアプリ",
+      "text": "**2026-07-19夜、システム推進室向け各自タスク管理kintoneアプリの要件ヒアリング**。アプリ作成は2026-07-20。SKYSEAは8月本格着手だが、8/3問い合わせ・回答前の実PC配信禁止を維持。",
       "source": "checkpoint",
-      "difficulty": 5,
-      "tokens": "高",
-      "tokenScore": 3,
+      "difficulty": 2,
+      "tokens": "中",
+      "tokenScore": 2,
       "impact": 5,
       "priority": 0,
       "status": "pending"
