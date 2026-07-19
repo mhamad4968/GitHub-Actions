@@ -61,6 +61,28 @@ export function repairHandoffLatestBlock(root, { dryRun = false } = {}) {
   const lastIdx = text.lastIndexOf(lastHeading);
   const tail = text.slice(lastIdx);
   const missing = requiredKeys.filter((k) => !tail.includes(k));
+  const cpNext = readCheckpointNextTask(root);
+  const norm = (s) => String(s || '').replace(/\*\*/g, '').replace(/\s+/g, ' ').trim();
+  const handoffNext = readHandoffField(tail, '**次の1手**:');
+  const nextMismatch =
+    Boolean(cpNext) &&
+    Boolean(handoffNext) &&
+    norm(handoffNext) !== norm(cpNext) &&
+    norm(handoffNext).slice(0, 40) !== norm(cpNext).slice(0, 40);
+
+  // 欠落なしでも checkpoint と末尾「次の1手」がズレていれば同期（cold-start WARN 恒久対策）
+  if (missing.length === 0 && nextMismatch) {
+    const syncedTail = tail.replace(
+      /\*\*次の1手\*\*:\s*[^\n]+/,
+      `**次の1手**: ${cpNext}`,
+    );
+    const newText = text.slice(0, lastIdx) + syncedTail;
+    if (!dryRun) {
+      fs.writeFileSync(p, newText, 'utf8');
+    }
+    return { ok: true, repaired: true, filled: ['**次の1手**: (sync-from-checkpoint)'] };
+  }
+
   if (missing.length === 0) {
     return { ok: true, repaired: false, filled: [] };
   }
@@ -80,7 +102,6 @@ export function repairHandoffLatestBlock(root, { dryRun = false } = {}) {
     }
   }
 
-  const cpNext = readCheckpointNextTask(root);
   const cpGit = readCheckpointGitLine(root);
   const isGoStamp = /浜田 GO/i.test(tail) && /実装完了|§3/i.test(tail);
 
