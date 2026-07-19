@@ -1,13 +1,13 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-18 JST — **夕反省改善5件すべて浜田GO・反映**
+**最終更新**: 2026-07-19 JST — **SKYSEA現況突合・ライセンス確認完了**
 
 **Git**: **`84fd1922`** = `origin/main` — push 済
 
-**本日状態**: cold-start READY。kintone月次棚卸・SKYSEA前段仕様に加え、夕反省 #S1〜#S3/#R1〜#R2 は浜田がすべて承認。AI管理appId単一JSON正本、Desktop旧締めレポートprune、Windows transcript探索、10問決定チェックポイントを実装。required checksは互換性評価の結果、現行direct-push締めと両立しないためGitHub設定変更なし。
+**本日状態**: SKYSEA全件ExcelとApp 674をPC名・利用者で読取突合し、名称修正・旧PC削除を浜田が整理。管理画面ライブ値はライセンス171/301、Windows164。利用中・個人266台、未導入候補117台、全台導入後は保守的に288/301・残13。羽柴さん2台目 `KS0248-202305` はSKYSEA導入済み・App 674登録待ち。
 
-**次の1手**: **次回は浜田の指示待ち**。SKYSEAは8/3問い合わせまで実装・GPO変更・本番配信を行わない。
+**次の1手**: **2026-07-19夜、システム推進室向け各自タスク管理kintoneアプリの要件ヒアリング**。アプリ作成は2026-07-20。SKYSEAは8月本格着手だが、8/3問い合わせ・回答前の実PC配信禁止を維持。
 
 **GO待ち**: H9 / △2 最終判定は **2026-07-25 のみ**（本日は判定不可）。夕反省 #S1〜#S3/#R1〜#R2 は承認・反映済み。
 
@@ -38,7 +38,7 @@
 |------|------|
 | **688** | WBGT UI 折りたたみ完了（rev90）· **それ以外触らない** |
 | **677–679** | 触らない |
-| **SKYSEA** | 7/18 前段仕様確定（plan §11）· 8/3 SKY社問い合わせ · 8月準備/試験 · 9月展開 · **10/30 完了目標** · 実装/配信は8月GO後 |
+| **SKYSEA** | 7/19 現況突合完了（plan §11）· live 171/301、Windows164 · App 674個人266、未導入候補117 · 全台後288/301（残13）· 8/3 SKY社問い合わせ · 8月本格着手 · 回答前の実PC配信禁止 |
 | **736** | 現行版を保持 · ver.02 は依頼者 Excel 受領後に再設計 · 本日実装/deploy なし |
 | **712** | 削除済 — deploy 禁止 |
 
@@ -47,6 +47,16 @@
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
+
+## 2026-07-19 本日完了サマリー
+
+| 項目 | 内容 |
+|------|------|
+| **SKYSEA突合** | `C:\tmp\Skysea` の全件ExcelとApp 674を読取突合。個人/共有・サーバーを分離し、名称不一致・旧PC・台帳未登録を浜田確認で整理 |
+| **PC台帳** | 利用中・個人266台。2台持ちもPCレコード単位ですべて導入対象。羽柴さん2台目は今後登録し267台想定 |
+| **ライセンス** | 管理画面171/301、Windows164。未導入候補117台を全台追加して288/301、残13の保守的見込み |
+| **成果物** | `C:\tmp\Skysea\SKYSEA-PC台帳突合_20260719_ライセンス確認済.xlsx`（元Excel・kintoneはAIから更新なし） |
+| **次案件** | 7/19夜にシステム推進室タスク管理kintoneアプリをヒアリング、7/20に設計・作成・テスト |
 
 ## 2026-07-18 本日完了サマリー
 
