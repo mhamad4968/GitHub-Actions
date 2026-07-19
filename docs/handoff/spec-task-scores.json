@@ -1,15 +1,15 @@
 {
-  "scoredAt": "2026-07-19T08:42:47.864Z",
+  "scoredAt": "2026-07-19T09:17:59.049Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "**2026-07-20、受領Excel `C:\\tmp\\実行予算ver2\\工事予算（実行予算）(案) (1).xlsx` と現行App 736 Ver.01を突合し、Ver.02の仕様を一問ずつ確定する**。実装は仕様確定・浜田GO後の最短2026-07-21。現行rev186を保持し、仕様確定前の実装・deployは行わない。システム推進室タスク管理アプリ案は取消。",
+  "topTask": "**2026-07-20、[`Ver.02 再設計仕様ドラフト`](../docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md) §15を基に、受領Excelと現行App 736 Ver.01を突合し、仕様を一問ずつ確定する**。コア計算・データモデル確定かつ浜田GO後の最短2026-07-21に実装し、2026-07-25",
   "tasks": [
     {
-      "id": "checkpoint:**2026-07-20、受領Excel_`C:\\tmp\\実行予算ver2\\工事",
-      "text": "**2026-07-20、受領Excel `C:\\tmp\\実行予算ver2\\工事予算（実行予算）(案) (1).xlsx` と現行App 736 Ver.01を突合し、Ver.02の仕様を一問ずつ確定する**。実装は仕様確定・浜田GO後の最短2026-07-21。現行rev186を保持し、仕様確定前の実装・deployは行わない。システム推進室タスク管理アプリ案は取消。",
+      "id": "checkpoint:**2026-07-20、[`Ver.02_再設計仕様ドラフト`](../doc",
+      "text": "**2026-07-20、[`Ver.02 再設計仕様ドラフト`](../docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md) §15を基に、受領Excelと現行App 736 Ver.01を突合し、仕様を一問ずつ確定する**。コア計算・データモデル確定かつ浜田GO後の最短2026-07-21に実装し、2026-07-25",
       "source": "checkpoint",
-      "difficulty": 5,
-      "tokens": "高",
-      "tokenScore": 3,
+      "difficulty": 2,
+      "tokens": "低",
+      "tokenScore": 1,
       "impact": 5,
       "priority": 0,
       "status": "pending"

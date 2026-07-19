@@ -5,6 +5,8 @@
 **親 SPEC**: [`2026-06-18-jikkou-yosan-spec.md`](2026-06-18-jikkou-yosan-spec.md) Q5  
 **対象アプリ**: **736**（実行予算書 B）
 
+> **Ver.02 再設計の優先正本（2026-07-19）**: [`2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md`](2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md) の **CONFIRMED** 事項を優先する。同ドラフトは実装 GO ではない。特に本書 R-12 の「版確定後も次版作成までは編集可」は Ver.02 へ適用せず、**版確定直後から予算を変更不可**とする。
+
 ---
 
 ## 1. 目的
