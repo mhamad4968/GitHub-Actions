@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-20 JST — **WAKE・AI緊急用00〜36通読・開始警告是正**
 
-**Git**: **`83a05f01`** = `origin/main` — push 済
+**Git**: **`3f7c79e9`** = `origin/main` — push 済
 
 **本日状態**: cold-start READY。Desktop AI緊急用 00〜36 通読・health/MCP/GitHub 監査済。handoff 次手を checkpoint に同期。壁時計 web/watch 起動。SKYSEAは8/3問い合わせまで実装・GPO・本番配信なし。App 736 Ver.02はExcel受領済・仕様確定前は実装/deployなし。
 
