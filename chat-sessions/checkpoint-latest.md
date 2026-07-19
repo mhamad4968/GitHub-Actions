@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-19 JST — **SKYSEA現況突合・ライセンス確認完了**
 
-**Git**: **`c77e43e9`** = `origin/main` — push 済
+**Git**: **`9c0ea284`** = `origin/main` — push 済
 
 **本日状態**: SKYSEA全件ExcelとApp 674をPC名・利用者で読取突合し、名称修正・旧PC削除を浜田が整理。管理画面ライブ値はライセンス171/301、Windows164。利用中・個人266台、未導入候補117台、全台導入後は保守的に288/301・残13。羽柴さん2台目 `KS0248-202305` はSKYSEA導入済み・App 674登録待ち。
 
@@ -58,6 +58,7 @@
 | **成果物** | `C:\tmp\Skysea\SKYSEA-PC台帳突合_20260719_ライセンス確認済.xlsx`（元Excel・kintoneはAIから更新なし） |
 | **次案件** | 7/19夜にシステム推進室タスク管理kintoneアプリをヒアリング、7/20に設計・作成・テスト |
 
+
 ## 2026-07-18 本日完了サマリー
 
 | 項目 | 内容 |
@@ -68,6 +69,7 @@
 | **SKYSEA** | 前段90項目をplan §11へ確定 · 8/3問い合わせ · 9月段階展開 · 10/30完了目標 · 実装は8月GO後 |
 | **GitHub** | Actions主要ゲート成功 · mainはlinear/force-push禁止/deletion禁止 · required checksは互換性評価済み、現行direct-push締め維持のため設定変更なし |
 | **夕反省** | F1〜F5を記録 · 改善案#S1〜#S3/#R1〜#R2は浜田承認・反映済み |
+
 
 
 ## 2026-07-17 本日完了サマリー
@@ -84,16 +86,5 @@
 
 
 
-## 2026-07-15 本日完了サマリー（ops）
 
-| 項目 | 内容 |
-|------|------|
-| **憲法/rules-opt** | 正式クローズ済 · H9/△2 は 7/25（early GREEN 禁止） |
-| **MCP** | mintlify DEL追認 · cyber-news DEL-2 正式クローズ · 再注入ガード |
-| **F1/A6** | dormant false-positive 修正 · R44 Git 同期 |
-| **△18** | profile --dry-run/--apply 同時禁止（仕様 v3.2） |
-| **Cold誤適用** | bak復元済 · disabled=0 · gate 6/6 |
-
-
-
-<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-07-18.md -->
+<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-07-19.md -->
