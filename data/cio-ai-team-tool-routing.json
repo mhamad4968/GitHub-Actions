@@ -91,7 +91,12 @@
       "priority": 10,
       "mcp": [
         { "server": "deepseek", "tools": ["chat"], "priority": 10 },
-        { "server": "kimi", "tools": ["kimi_review"], "priority": 20 },
+        {
+          "server": "kimi",
+          "tools": ["kimi_review"],
+          "priority": 20,
+          "note": "Windows CursorではKimi MCPはWSL起動。path/workFolderを C:\\... ではなく /mnt/c/... に変換する"
+        },
         { "server": "openrouter", "tools": ["chat"], "priority": 30 }
       ],
       "npm": ["cio:pre-implement-gate", "cio:guard:5038"],
