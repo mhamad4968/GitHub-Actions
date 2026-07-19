@@ -1,90 +1,90 @@
-﻿# 蠕ｩ蜈・メ繧ｧ繝・け繝昴う繝ｳ繝茨ｼ域怙譁ｰ・・
-<!-- 豁｣譛ｬ縺ｨ遏帷崟縺励◆繧画ｭ｣譛ｬ繧貞━蜈医＠縲√％縺ｮ繝輔ぃ繧､繝ｫ繧呈峩譁ｰ縺吶ｋ縺薙→縲・-->
-<!-- **譯井ｻｶ CLOSED** 竕 **繧ｻ繝・す繝ｧ繝ｳ邱繧・*縲よｷｷ蜷檎ｦ∵ｭ｢ -->
-**譛邨よ峩譁ｰ**: 2026-07-20 JST 窶・**WAKE繝ｻAI邱頑･逕ｨ00縲・6騾夊ｪｭ繝ｻ髢句ｧ玖ｭｦ蜻頑弍豁｣**
+# 復元チェックポイント（最新）
+<!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
+<!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
+**最終更新**: 2026-07-20 JST — **WAKE・AI緊急用00〜36通読・開始警告是正**
 
-**Git**: **`83a05f01`** = `origin/main` 窶・push 貂・
+**Git**: **`83a05f01`** = `origin/main` — push 済
 
-**譛ｬ譌･迥ｶ諷・*: cold-start READY縲・esktop AI邱頑･逕ｨ 00縲・6 騾夊ｪｭ繝ｻhealth/MCP/GitHub 逶｣譟ｻ貂医Ｉandoff 谺｡謇九ｒ checkpoint 縺ｫ蜷梧悄縲ょ｣∵凾險・web/watch 襍ｷ蜍輔４KYSEA縺ｯ8/3蝠上＞蜷医ｏ縺帙∪縺ｧ螳溯｣・・GPO繝ｻ譛ｬ逡ｪ驟堺ｿ｡縺ｪ縺励・pp 736 Ver.02縺ｯExcel蜿鈴俶ｸ医・莉墓ｧ倡｢ｺ螳壼燕縺ｯ螳溯｣・deploy縺ｪ縺励・
+**本日状態**: cold-start READY。Desktop AI緊急用 00〜36 通読・health/MCP/GitHub 監査済。handoff 次手を checkpoint に同期。壁時計 web/watch 起動。SKYSEAは8/3問い合わせまで実装・GPO・本番配信なし。App 736 Ver.02はExcel受領済・仕様確定前は実装/deployなし。
 
-**谺｡縺ｮ1謇・*: **2026-07-20縲ー`Ver.02 蜀崎ｨｭ險井ｻ墓ｧ倥ラ繝ｩ繝輔ヨ`](../docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md) ﾂｧ15繧貞渕縺ｫ縲∝女鬆櫓xcel縺ｨ迴ｾ陦窟pp 736 Ver.01繧堤ｪ∝粋縺励∽ｻ墓ｧ倥ｒ荳蝠上★縺､遒ｺ螳壹☆繧・*縲ゅさ繧｢險育ｮ励・繝・・繧ｿ繝｢繝・Ν遒ｺ螳壹°縺､豬懃伐GO蠕後・譛遏ｭ2026-07-21縺ｫ螳溯｣・＠縲・026-07-25縺ｾ縺ｧ縺ｫ萓晞ｼ閠・署遉ｺ逕ｨ繝励Ο繝医ち繧､繝励ｒ逶ｮ謖・☆縲・O譛ｪ蜿門ｾ玲凾縺ｮ7/25謌先棡迚ｩ縺ｯ逕ｻ髱｢繝｢繝・け繝ｻ繝・・繧ｿ蟇ｾ蠢懆｡ｨ繝ｻ隧ｦ鬨薙す繝翫Μ繧ｪ繝ｻ譛ｪ豎ｺ莠矩・ｸ隕ｧ縺ｨ縺吶ｋ縲ら樟陦罫ev186繧剃ｿ晄戟縺励∽ｻ墓ｧ倡｢ｺ螳壼燕縺ｮ螳溯｣・・deploy縺ｯ陦後ｏ縺ｪ縺・ゅす繧ｹ繝・Β謗ｨ騾ｲ螳､繧ｿ繧ｹ繧ｯ邂｡逅・い繝励Μ譯医・蜿匁ｶ医・
+**次の1手**: **2026-07-20、[`Ver.02 再設計仕様ドラフト`](../docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md) §15を基に、受領Excelと現行App 736 Ver.01を突合し、仕様を一問ずつ確定する**。コア計算・データモデル確定かつ浜田GO後の最短2026-07-21に実装し、2026-07-25までに依頼者提示用プロトタイプを目指す。GO未取得時の7/25成果物は画面モック・データ対応表・試験シナリオ・未決事項一覧とする。現行rev186を保持し、仕様確定前の実装・deployは行わない。システム推進室タスク管理アプリ案は取消。
 
-**GO蠕・■**: H9 / 笆ｳ2 譛邨ょ愛螳壹・ **2026-07-25 縺ｮ縺ｿ**・域悽譌･縺ｯ蛻､螳壻ｸ榊庄・峨ょ､募渚逵・#S1縲・S3/#R1縲・R2 縺ｯ謇ｿ隱阪・蜿肴丐貂医∩縲・
+**GO待ち**: H9 / △2 最終判定は **2026-07-25 のみ**（本日は判定不可）。夕反省 #S1〜#S3/#R1〜#R2 は承認・反映済み。
 
-**隕ｳ貂ｬ譛滄俣**: ~~諞ｲ豕・Round-3 ﾂｷ rules-opt ﾂｧ18~~ **CLOSED 2026-07-15**縲・*H9/笆ｳ2**: metricsEligibleAfter=**2026-07-18** ﾂｷ reviewDate=**2026-07-25** ﾂｷ early GREEN/髯肴ｼ **遖∵ｭ｢**・・ps lock 2026-07-15・・
+**観測期間**: ~~憲法 Round-3 · rules-opt §18~~ **CLOSED 2026-07-15**。**H9/△2**: metricsEligibleAfter=**2026-07-18** · reviewDate=**2026-07-25** · early GREEN/降格 **禁止**（ops lock 2026-07-15）
 
-**驕狗畑繝｡繝｢**: **邨悟霧莨夊ｭｰ雉・侭 2026蟷ｴ7譛亥ｺｦ 窶・螳御ｺ・*・域ｵ懃伐 2026-07-15 遒ｺ隱・ﾂｷ DOCX mtime 2026-07-12 ﾂｷ 蟇ｾ雎｡=6譛医そ繧ｭ繝･繝ｪ繝・ぅ繝ｬ繝昴・繝茨ｼ峨よｭ｣譛ｬ `C:\tmp\雉・侭菴懈・\縲・026蟷ｴ7譛亥ｺｦ邨悟霧莨夊ｭｰ雉・侭縲・026蟷ｴ06譛域ュ蝣ｱ繧ｻ繧ｭ繝･繝ｪ繝・ぅ繝ｬ繝昴・繝・docx`縲・*谺｡譛医∪縺ｧ譁ｰ隕丈ｽ懈・荳崎ｦ・*縲ゅヵ繝ｭ繝ｼ邯ｭ謖・ MCP `shiryo-sakusei` ready ﾂｷ `mcp/shiryo-sakusei-mcp/SPEC.md` ﾂｷ 萓晞ｼ譖ｸ `docs/萓晞ｼ譖ｸ繝・Φ繝励Ξ繝ｼ繝・txt`
+**運用メモ**: **経営会議資料 2026年7月度 — 完了**（浜田 2026-07-15 確認 · DOCX mtime 2026-07-12 · 対象=6月セキュリティレポート）。正本 `C:\tmp\資料作成\【2026年7月度経営会議資料】2026年06月情報セキュリティレポート.docx`。**次月まで新規作成不要**。フロー維持: MCP `shiryo-sakusei` ready · `mcp/shiryo-sakusei-mcp/SPEC.md` · 依頼書 `docs/依頼書テンプレート.txt`
 
-**蜩∬ｳｪ繧ｲ繝ｼ繝・*: `docs/runbooks/push-deploy-quality-gates-v2.md` ﾂｷ **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md` ﾂｷ **繧ｯ繝ｭ繝ｼ繧ｺ豁｣譛ｬ**: `data/cio-project-closures.json`
+**品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` · **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md` · **クローズ正本**: `data/cio-project-closures.json`
 
-**688 譛ｬ逡ｪ**: BUILD=`2026-07-13-688-heat-closed` rev **90** 窶・豌苓ｱ｡繝倥Ν繝励・迪帶囁譌･繧ｪ繝励す繝ｧ繝ｳ謚倥ｊ縺溘◆縺ｿ ﾂｷ 豬懃伐逶ｮ隕・OK・・HA push 蠕・rev90 險倬鹸・・
+**688 本番**: BUILD=`2026-07-13-688-heat-closed` rev **90** — 気象ヘルプ・猛暑日オプション折りたたみ · 浜田目視 OK（GHA push 後 rev90 記録）
 
-**674 譛ｬ逡ｪ**: BUILD=`2026-07-17-674-note-search-checkbox` rev **262** 窶・Excel 蜃ｺ蜉帛ｾｩ譌ｧ・・heetJS bundle・可ｷ 譏守､ｺ繝√ぉ繝・け繝懊ャ繧ｯ繧ｹ縺ｫ繧医ｋ蛯呵・≠繧雁・莉ｶ・上く繝ｼ繝ｯ繝ｼ繝画､懃ｴ｢ ﾂｷ 豬懃伐逶ｮ隕・OK
+**674 本番**: BUILD=`2026-07-17-674-note-search-checkbox` rev **262** — Excel 出力復旧（SheetJS bundle）· 明示チェックボックスによる備考あり全件／キーワード検索 · 浜田目視 OK
 
-**699 譛ｬ逡ｪ**: BUILD=`2026-07-17-manual-evaluation-email` rev **132** 窶・迴ｾ陦梧嫌蜍輔↓謨ｴ蜷医＠縺溘・繝九Η繧｢繝ｫ ﾂｷ 譛ｪ隧穂ｾ｡莉ｶ謨ｰ莉倥″隧穂ｾ｡閠・い繧ｯ繧ｷ繝ｧ繝ｳ ﾂｷ 遨ｺ縺ｮ縲後◎縺ｮ莉悶埼撼陦ｨ遉ｺ
+**699 本番**: BUILD=`2026-07-17-manual-evaluation-email` rev **132** — 現行挙動に整合したマニュアル · 未評価件数付き評価者アクション · 空の「その他」非表示
 
-**700 譛ｬ逡ｪ**: BUILD=`2026-07-17-hide-wf-test-dept` rev **170** 窶・謠先｡井ｻｶ蜷・ﾂｷ 3谿ｵ髫朱夂衍 ﾂｷ 豎守畑 Assignee 騾夂衍縺ｪ縺・ﾂｷ 螳壽悄繝ｪ繝槭う繝ｳ繝峨↑縺・ﾂｷ WF 繝・せ繝磯Κ鄂ｲ admin 髯仙ｮ・
+**700 本番**: BUILD=`2026-07-17-hide-wf-test-dept` rev **170** — 提案件名 · 3段階通知 · 汎用 Assignee 通知なし · 定期リマインドなし · WF テスト部署 admin 限定
 
-**736 譛ｬ逡ｪ**: BUILD=`2026-07-12-736-ui-backlog-02-col-resize` rev **186** 窶・迴ｾ陦檎沿繧剃ｿ晄戟縲Ｗer.02 縺ｯ萓晞ｼ閠・Excel 蜿鈴伜ｾ後↓蜀崎ｨｭ險医＠縲∵悽譌･縺ｯ螳溯｣・・deploy 縺ｪ縺励・
-**746/747 譛ｬ逡ｪ**: DB繝輔か繝ｼ繝 rev **8** / Dash BUILD=`2026-07-18-jre-chub-account-dash-v8-edge-autofill-fix` rev **14** 窶・鄂ｲ蜷堺ｻ｣陦悟ｯｾ雎｡繝ｻ蛻ｩ逕ｨ蜀埼幕繝ｻ貉ｾ蟯ｸ蟾･莠区園繝ｻEdge譌・虻諠・ｱ菫晏ｭ倥・隱､隱肴椛豁｢縲・*豬懃伐逶ｮ隕・OK・・026-07-18・・*縲・
+**736 本番**: BUILD=`2026-07-12-736-ui-backlog-02-col-resize` rev **186** — 現行版を保持。ver.02 は依頼者 Excel 受領後に再設計し、本日は実装・deploy なし。
+**746/747 本番**: DBフォーム rev **8** / Dash BUILD=`2026-07-18-jre-chub-account-dash-v8-edge-autofill-fix` rev **14** — 署名代行対象・利用再開・湾岸工事所・Edge旅券情報保存の誤認抑止。**浜田目視 OK（2026-07-18）**。
 
-## 繧ｯ繝ｭ繝ｼ繧ｺ貂医∩・・data/cio-project-closures.json` 窶・9莉ｶ・・
+## クローズ済み（`data/cio-project-closures.json` — 9件）
 
-讌ｭ蜍呎隼蝟・97窶・13 / Wi-Fi718窶・19 / JR iPad720窶・21 / VPN733窶・34 / 繝医・繧ｿ繝ｫ繝阪ャ繝・37窶・38 / 隍・粋讖・41窶・42 / **NAS748窶・49** / **ML750窶・51** / **Kintone繧｢繧ｫ繧ｦ繝ｳ繝・52窶・53** 窶・**closed-v1**
+業務改善697–713 / Wi-Fi718–719 / JR iPad720–721 / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **ML750–751** / **Kintoneアカウント752–753** — **closed-v1**
 
-## 菫晉蕗繝ｻ縺昴・莉悶・蛻ｶ邏・
+## 保留・その他の制約
 
-| 迥ｶ諷・| 蜀・ｮｹ |
+| 状態 | 内容 |
 |------|------|
-| **688** | WBGT UI 謚倥ｊ縺溘◆縺ｿ螳御ｺ・ｼ・ev90・可ｷ **縺昴ｌ莉･螟冶ｧｦ繧峨↑縺・* |
-| **677窶・79** | 隗ｦ繧峨↑縺・|
-| **SKYSEA** | 7/19 迴ｾ豕∫ｪ∝粋螳御ｺ・ｼ・lan ﾂｧ11・可ｷ live 171/301縲仝indows164 ﾂｷ App 674蛟倶ｺｺ266縲∵悴蟆主・蛟呵｣・17 ﾂｷ 蜈ｨ蜿ｰ蠕・88/301・域ｮ・3・可ｷ 8/3 SKY遉ｾ蝠上＞蜷医ｏ縺・ﾂｷ 8譛域悽譬ｼ逹謇・ﾂｷ 蝗樒ｭ泌燕縺ｮ螳蘖C驟堺ｿ｡遖∵ｭ｢ |
-| **736** | 迴ｾ陦檎沿 rev186 菫晄戟 ﾂｷ Ver.02 Excel 蜿鈴俶ｸ・ﾂｷ 莉墓ｧ倡｢ｺ螳壼燕縺ｯ螳溯｣・deploy 縺ｪ縺・|
-| **712** | 蜑企勁貂・窶・deploy 遖∵ｭ｢ |
+| **688** | WBGT UI 折りたたみ完了（rev90）· **それ以外触らない** |
+| **677–679** | 触らない |
+| **SKYSEA** | 7/19 現況突合完了（plan §11）· live 171/301、Windows164 · App 674個人266、未導入候補117 · 全台後288/301（残13）· 8/3 SKY社問い合わせ · 8月本格着手 · 回答前の実PC配信禁止 |
+| **736** | 現行版 rev186 保持 · Ver.02 Excel 受領済 · 仕様確定前は実装/deploy なし |
+| **712** | 削除済 — deploy 禁止 |
 
-## 繧ｻ繝・す繝ｧ繝ｳ蛻・崛蠕後・閾ｪ蠕句ｾｩ蜈・ｼ・ifecycle v2 髀｡蜒擾ｼ・
+## セッション切替後の自律復元（Lifecycle v2 鏡像）
 
-**豁｣譛ｬ** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`
-**鬆・分 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI邱頑･逕ｨ` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **雋ｼ莉俶耳螂ｨ** | **鬆・分 -0** **OK 縺瑚ｿ斐ｋ縺ｾ縺ｧ** **逹謇九＠縺ｪ縺・* | **鬆・分 0** **`npm run session:bootstrap`**・・*Read 繧医ｊ蜑・* `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`・榎 **鬆・分 0.9** | **譌･邨ゅｏ繧・* `cio:session:close-git` / `23-AI邱頑･逕ｨ-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / ﾂｧ35-6 / ﾂｧ35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031
-**L2** bootstrap NG 竊・`NEW-SESSION-STARTER.md` 6 驛ｨ・・ 蝗橸ｼ榎 **CLOSE** export-handoff 竊・sync-desktop 竊・clock:clear 竊・close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 陦悟ｱ蜻雁ｿ・茨ｼ・K/NG・榎 **螻･豁ｴ** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
+**正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`
+**項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031
+**L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
 
-## 2026-07-19 譛ｬ譌･螳御ｺ・し繝槭Μ繝ｼ
+## 2026-07-19 本日完了サマリー
 
-| 鬆・岼 | 蜀・ｮｹ |
+| 項目 | 内容 |
 |------|------|
-| **SKYSEA遯∝粋** | `C:\tmp\Skysea` 縺ｮ蜈ｨ莉ｶExcel縺ｨApp 674繧定ｪｭ蜿也ｪ∝粋縲ょ倶ｺｺ/蜈ｱ譛峨・繧ｵ繝ｼ繝舌・繧貞・髮｢縺励∝錐遘ｰ荳堺ｸ閾ｴ繝ｻ譌ｧPC繝ｻ蜿ｰ蟶ｳ譛ｪ逋ｻ骭ｲ繧呈ｵ懃伐遒ｺ隱阪〒謨ｴ逅・|
-| **PC蜿ｰ蟶ｳ** | 蛻ｩ逕ｨ荳ｭ繝ｻ蛟倶ｺｺ266蜿ｰ縲・蜿ｰ謖√■繧１C繝ｬ繧ｳ繝ｼ繝牙腰菴阪〒縺吶∋縺ｦ蟆主・蟇ｾ雎｡縲らｾｽ譟ｴ縺輔ｓ2蜿ｰ逶ｮ縺ｯ莉雁ｾ檎匳骭ｲ縺・67蜿ｰ諠ｳ螳・|
-| **繝ｩ繧､繧ｻ繝ｳ繧ｹ** | 邂｡逅・判髱｢171/301縲仝indows164縲よ悴蟆主・蛟呵｣・17蜿ｰ繧貞・蜿ｰ霑ｽ蜉縺励※288/301縲∵ｮ・3縺ｮ菫晏ｮ育噪隕玖ｾｼ縺ｿ |
-| **謌先棡迚ｩ** | `C:\tmp\Skysea\SKYSEA-PC蜿ｰ蟶ｳ遯∝粋_20260719_繝ｩ繧､繧ｻ繝ｳ繧ｹ遒ｺ隱肴ｸ・xlsx`・亥・Excel繝ｻkintone縺ｯAI縺九ｉ譖ｴ譁ｰ縺ｪ縺暦ｼ・|
-| **谺｡譯井ｻｶ** | 繧ｿ繧ｹ繧ｯ邂｡逅・い繝励Μ譯医・蜿匁ｶ医・pp 736 Ver.02 縺ｯ蜿鈴櫓xcelﾃ礼樟陦祁er.01遯∝粋縺ｧ莉墓ｧ倅ｸ蝠冗｢ｺ螳夲ｼ亥ｮ溯｣・・豬懃伐GO蠕鯉ｼ・|
+| **SKYSEA突合** | `C:\tmp\Skysea` の全件ExcelとApp 674を読取突合。個人/共有・サーバーを分離し、名称不一致・旧PC・台帳未登録を浜田確認で整理 |
+| **PC台帳** | 利用中・個人266台。2台持ちもPCレコード単位ですべて導入対象。羽柴さん2台目は今後登録し267台想定 |
+| **ライセンス** | 管理画面171/301、Windows164。未導入候補117台を全台追加して288/301、残13の保守的見込み |
+| **成果物** | `C:\tmp\Skysea\SKYSEA-PC台帳突合_20260719_ライセンス確認済.xlsx`（元Excel・kintoneはAIから更新なし） |
+| **次案件** | タスク管理アプリ案は取消。App 736 Ver.02 は受領Excel×現行Ver.01突合で仕様一問確定（実装は浜田GO後） |
 
 
-## 2026-07-18 譛ｬ譌･螳御ｺ・し繝槭Μ繝ｼ
+## 2026-07-18 本日完了サマリー
 
-| 鬆・岼 | 蜀・ｮｹ |
+| 項目 | 内容 |
 |------|------|
-| **RAG** | 豁｣譛ｬ繝溘Λ繝ｼ drift 菫ｮ蠕ｩ ﾂｷ staged pre-commit + GitHub Actions繧ｲ繝ｼ繝郁ｿｽ蜉 |
-| **kintone譽壼査** | AI繝√・繝邂｡逅・5 ID縺縺代ｒ譛域ｬ｡逶｣譟ｻ ﾂｷ 迴ｾ蠖ｹ63/63繝ｻ蜑企勁貂医∩12/12縺ｧOK ﾂｷ 荳闊ｬ驛ｨ髢繧｢繝励Μ縺ｯ豈碑ｼ・ｯｾ雎｡螟・|
-| **譌ｧ繧｢繝励Μ** | 594/626/627/638/639/651/652/653/667/668/681/712縺ｮlive荳榊惠繧呈ｭ｣譛ｬ蛹・ﾂｷ 荳ｻ隕‥eploy邨瑚ｷｯ縺ｸ螳牙・譬・|
-| **SKYSEA** | 蜑肴ｮｵ90鬆・岼繧恥lan ﾂｧ11縺ｸ遒ｺ螳・ﾂｷ 8/3蝠上＞蜷医ｏ縺・ﾂｷ 9譛域ｮｵ髫主ｱ暮幕 ﾂｷ 10/30螳御ｺ・岼讓・ﾂｷ 螳溯｣・・8譛・O蠕・|
-| **GitHub** | Actions荳ｻ隕√ご繝ｼ繝域・蜉・ﾂｷ main縺ｯlinear/force-push遖∵ｭ｢/deletion遖∵ｭ｢ ﾂｷ required checks縺ｯ莠呈鋤諤ｧ隧穂ｾ｡貂医∩縲∫樟陦慧irect-push邱繧∫ｶｭ謖√・縺溘ａ險ｭ螳壼､画峩縺ｪ縺・|
-| **螟募渚逵・* | F1縲廡5繧定ｨ倬鹸 ﾂｷ 謾ｹ蝟・｡・S1縲・S3/#R1縲・R2縺ｯ豬懃伐謇ｿ隱阪・蜿肴丐貂医∩ |
+| **RAG** | 正本ミラー drift 修復 · staged pre-commit + GitHub Actionsゲート追加 |
+| **kintone棚卸** | AIチーム管理75 IDだけを月次監査 · 現役63/63・削除済み12/12でOK · 一般部門アプリは比較対象外 |
+| **旧アプリ** | 594/626/627/638/639/651/652/653/667/668/681/712のlive不在を正本化 · 主要deploy経路へ安全栓 |
+| **SKYSEA** | 前段90項目をplan §11へ確定 · 8/3問い合わせ · 9月段階展開 · 10/30完了目標 · 実装は8月GO後 |
+| **GitHub** | Actions主要ゲート成功 · mainはlinear/force-push禁止/deletion禁止 · required checksは互換性評価済み、現行direct-push締め維持のため設定変更なし |
+| **夕反省** | F1〜F5を記録 · 改善案#S1〜#S3/#R1〜#R2は浜田承認・反映済み |
 
 
 
-## 2026-07-17 譛ｬ譌･螳御ｺ・し繝槭Μ繝ｼ
+## 2026-07-17 本日完了サマリー
 
-| 鬆・岼 | 蜀・ｮｹ |
+| 項目 | 内容 |
 |------|------|
-| **App 674** | Excel 蜃ｺ蜉帙→蛯呵・､懃ｴ｢繧剃ｿｮ豁｣ ﾂｷ 豬懃伐逶ｮ隕・OK |
-| **App 699** | 繝槭ル繝･繧｢繝ｫ繧堤樟陦・apply/list/evaluation/notification 謖吝虚縺ｸ謨ｴ蜷・ﾂｷ rev 132 |
-| **App 700** | 騾夂衍譏守｢ｺ蛹・ﾂｷ WF 繝・せ繝磯Κ鄂ｲ admin 髯仙ｮ・ﾂｷ rev 170 |
-| **讌ｭ蜍呎隼蝟・* | Apps 697/698/699/700/713 縺ｮ繧ｷ繧ｹ繝・Β蛛ｴ驕狗畑貅門ｙ OK ﾂｷ 豁｣譛ｬ鄒､縺ｨ closure ledger 蜷梧悄 |
-| **謇ｿ隱肴ｸ医∩謾ｹ蝟・* | evening help 辟｡蜑ｯ菴懃畑蛹・ﾂｷ readiness豁｣譛ｬ辣ｧ蜷・ﾂｷ verifier貅匁侠report draft逕滓・繧貞ｮ溯｣・・蝗槫ｸｰ讀懆ｨｼ |
-| **GitHub/health** | Actions 譛譁ｰ10莉ｶ success ﾂｷ PR 0 ﾂｷ issue 0 ﾂｷ health score 100% |
-| **萓晏ｭ倬未菫・* | npm audit high 5莉ｶ繧呈里遏･繝ｪ繧ｹ繧ｯ縺ｨ縺励※險倬鹸 ﾂｷ package 螟画峩縺ｪ縺・|
+| **App 674** | Excel 出力と備考検索を修正 · 浜田目視 OK |
+| **App 699** | マニュアルを現行 apply/list/evaluation/notification 挙動へ整合 · rev 132 |
+| **App 700** | 通知明確化 · WF テスト部署 admin 限定 · rev 170 |
+| **業務改善** | Apps 697/698/699/700/713 のシステム側運用準備 OK · 正本群と closure ledger 同期 |
+| **承認済み改善** | evening help 無副作用化 · readiness正本照合 · verifier準拠report draft生成を実装・回帰検証 |
+| **GitHub/health** | Actions 最新10件 success · PR 0 · issue 0 · health score 100% |
+| **依存関係** | npm audit high 5件を既知リスクとして記録 · package 変更なし |
 
 
 
 
-<!-- 蜿､縺・ｱ･豁ｴ: chat-sessions/checkpoints/checkpoint-archive-2026-07-19.md -->
+<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-07-19.md -->
