@@ -110,6 +110,7 @@
 
 <!-- errors: exit 1 / high 5件であり、package 自動変更なし。 | npm run cio:session:cold-start` | npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `manda -->
 
+
 ## [2026-07-18] セッション解体時知恵ストック
 
 **前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
