@@ -1,8 +1,8 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-07-19T08:05:20.381Z",
-  "gitHead": "b321a12c",
-  "gitStatus": "## main...origin/main [ahead 3]",
+  "exportedAt": "2026-07-19T08:10:17.094Z",
+  "gitHead": "314b99a7",
+  "gitStatus": "## main...origin/main [ahead 1]",
   "nextTask": "**2026-07-19夜、システム推進室向け各自タスク管理kintoneアプリの要件ヒアリング**。アプリ作成は2026-07-20。SKYSEAは8月本格着手だが、8/3問い合わせ・回答前の実PC配信禁止を維持。",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
@@ -17,6 +17,8 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=b321a12c | 次=**2026-07-19夜、システム推進室向け各自タスク管理kintoneアプリの要件ヒアリング**。アプリ作成は2026-07-20。SKYSEAは8月本格着手だが、8/3問い合わせ・回答前の実PC配信禁止を維持。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
+  "promptBlock": "【SESSION-BRIDGE】git=314b99a7 | 次=**2026-07-19夜、システム推進室向け各自タスク管理kintoneアプリの要件ヒアリング**。アプリ作成は2026-07-20。SKYSEAは8月本格着手だが、8/3問い合わせ・回答前の実PC配信禁止を維持。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
+  "validatedAt": "2026-07-19T08:10:17.498Z",
+  "crosscheckOk": true
 }
