@@ -18,5 +18,7 @@
   ],
   "lastFailures": [],
   "promptBlock": "【SESSION-BRIDGE】git=2da0be69 | 次=**2026-07-20、受領Excel `C:\\tmp\\実行予算ver2\\工事予算（実行予算）(案) (1).xlsx` と現行App 736 Ver.01を突合し、Ver.02の仕様を一問ずつ確定する**。実装は仕様確定・浜田GO後の最短2026-07-21。現行rev186を保持し、仕様確定前の実装・deployは行わない。システム推進室タスク管理アプリ案は取消。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
+  "validatedAt": "2026-07-19T08:45:03.288Z",
+  "crosscheckOk": true
 }
