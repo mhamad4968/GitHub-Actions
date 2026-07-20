@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-07-20T03:16:35.366Z",
-  "gitHead": "c59f80de",
-  "gitStatus": "## main...origin/main [ahead 3]",
-  "nextTask": "**2026-07-20 昼、[`Ver.02 再設計仕様ドラフト`](../docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md) の内訳ラウンド**（工種ブロック・単位混在投影・同一合計複数参照・`#REF!` 等を一問ずつ確定）。総括はクローズ済み。実装・deploy は GO 後。",
+  "exportedAt": "2026-07-20T04:48:29.159Z",
+  "gitHead": "ed8af74d",
+  "gitStatus": "## main...origin/main [ahead 2]",
+  "nextTask": "**2026-07-20 夜**、[`Ver.02 再設計仕様ドラフト`](../docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md) の **予実ラウンド**（§9・実績手入力・残予算／消化率・版との監査を一問ずつ確定）。内訳はクローズ済み。実装・deploy は GO 後。",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -17,6 +17,8 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=c59f80de | 次=**2026-07-20 昼、[`Ver.02 再設計仕様ドラフト`](../docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md) の内訳ラウンド**（工種ブロック・単位混在投影・同一合計複数参照・`#REF!` 等を一問ずつ確定）。総括はクローズ済み。実装・deploy は GO 後。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
+  "promptBlock": "【SESSION-BRIDGE】git=ed8af74d | 次=**2026-07-20 夜**、[`Ver.02 再設計仕様ドラフト`](../docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md) の **予実ラウンド**（§9・実績手入力・残予算／消化率・版との監査を一問ずつ確定）。内訳はクローズ済み。実装・deploy は GO 後。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
+  "validatedAt": "2026-07-20T04:48:29.750Z",
+  "crosscheckOk": true
 }
