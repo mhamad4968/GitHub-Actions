@@ -117,6 +117,15 @@ function main() {
     run('npm run session:bootstrap');
   }
 
+  // Phase 6b — D-CHKPT-02 恒久 heal（bootstrap 後の dirty/stale Git を sync commit）
+  // push は best-effort（失敗しても cold-start は続行 · ahead WARN）
+  console.log('\n▶ Phase 6b CHECKPOINT-GIT-HEAL');
+  try {
+    run('npm run cio:checkpoint:git-heal -- --commit --push');
+  } catch {
+    console.warn('[cold-start] checkpoint:git-heal NG — 手動で npm run cio:checkpoint:git-heal -- --commit');
+  }
+
   console.log('\n▶ Phase 7 IMPORT');
   run('npm run verify:session-handoff-integrity -- --import');
 

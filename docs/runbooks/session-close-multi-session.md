@@ -23,15 +23,28 @@
 4. **先祖返りガード + 締め一括** — `npm run cio:session:close-git -- --execute --auto-stage --message "…"`（R19 + B1/B4 + **R44 checkpoint Git 同期（SKIP）** + desktop sync 内包）
 5. `verify:session-handoff-integrity -- --validate-export`（close-git 内で export 直後に実行）
 
-## R44 checkpoint Git 針（#R-R44-CLOSE-01 · 2026-07-14）
+## R44 checkpoint Git 針（#R-R44-CLOSE-01 · 2026-07-14 · **2026-07-20 抜本**）
 
 1. **復旧は SKIP 経路** — `CIO_POST_COMMIT_CHECKPOINT_SYNC=1` + tip 親 stamp（amend / normalize 禁止）
 2. **force-push 禁止**
 3. **normalize / sync が NF なら** `git fetch` → `git reset --hard origin/main` → SKIP sync 1 回
+4. **#S-CHKPT-PARENT-01** — `Git === origin^1` は sync subject 不問で許容（1 世代ラグ）
+5. **自動 heal** — post-commit は回帰 NG 時に常時 follow-up · cold-start Phase 6b · `npm run cio:checkpoint:git-heal -- --commit --push`
+6. **テスト** — `npm run test:checkpoint-git-heal`（5 シナリオ）
 
 ## R44 復旧コピペ（#D-R44-RECOVERY-01）
 
 D-CHKPT / orphan Git / close-git NF のとき（**手動 `**Git**:` 行編集禁止**）:
+
+**推奨（2026-07-20）**:
+
+```powershell
+cd C:\Users\mhamada202408224\kintone-ai-lab
+npm run cio:checkpoint:git-heal -- --commit --push
+npm run verify:session-close-git-warn
+```
+
+**従来（ハードリセットが必要なとき）**:
 
 ```powershell
 cd C:\Users\mhamada202408224\kintone-ai-lab
@@ -54,4 +67,5 @@ bridge が dirty なら続けて `git add docs/handoff/latest-session-bridge.jso
 
 - B4: `verify:session-close-git-warn`（未 push も NG）
 - C1/C2: `18-重要確認.txt` — LITE のみ・sync 前 Notepad 警告
-- #S-R44-SKIP-01 / #S-POSTCOMMIT-ORPHAN-01: `cio-session-close-git.mjs` / `cio-checkpoint-git-postcommit-sync.mjs`
+- #S-R44-SKIP-01 / #S-POSTCOMMIT-ORPHAN-01 / **#S-CHKPT-PARENT-01**: `cio-session-close-git.mjs` / `cio-checkpoint-git-postcommit-sync.mjs` / `cio-checkpoint-git-heal.mjs`
+- 回帰テスト: `npm run test:checkpoint-git-heal`

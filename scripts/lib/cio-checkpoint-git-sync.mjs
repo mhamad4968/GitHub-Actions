@@ -84,8 +84,30 @@ export function countCheckpointGitLines(root) {
 }
 
 /**
+ * origin/main の親（短ハッシュ）。取得失敗時 null。
+ * @returns {string|null}
+ */
+export function gitOriginMainParentShort(root) {
+  const origin = gitOriginMainShort(root);
+  if (!origin) return null;
+  const parent = spawnSync('git', ['rev-parse', '--short', `${origin}^`], {
+    cwd: root,
+    encoding: 'utf8',
+  });
+  const h = (parent.stdout || '').trim();
+  return h && !h.includes('fatal') ? h : null;
+}
+
+/**
  * S-CLOSE-01 — checkpoint Git 行が origin/main より古い（先祖返り）か
- * @returns {{ ok: boolean, regression?: boolean, message?: string, cpHash?: string, origin?: string }}
+ *
+ * 許容:
+ *   - Git === origin（完全一致）
+ *   - Git === origin^1（#S-CHKPT-PARENT-01 — R44 off-by-one。subject 不問）
+ * 非許容:
+ *   - Git が origin の2世代以上前 / 分岐
+ *
+ * @returns {{ ok: boolean, regression?: boolean, offByOne?: boolean, message?: string, cpHash?: string, origin?: string }}
  */
 export function checkCheckpointGitRegression(root) {
   const cpHash = readCheckpointGitHead(root);
@@ -93,14 +115,10 @@ export function checkCheckpointGitRegression(root) {
   const origin = gitOriginMainShort(root);
   if (!origin) return { ok: true };
   if (cpHash === origin) return { ok: true };
-  // R44 off-by-one を先祖判定より先に（checkpoint tip + Git 行 = origin^ は正常）
-  const parentEarly = spawnSync('git', ['rev-parse', '--short', `${origin}^`], { cwd: root, encoding: 'utf8' });
-  const parentEarlyShort = (parentEarly.stdout || '').trim();
-  if (parentEarlyShort === cpHash) {
-    const subjEarly = spawnSync('git', ['log', '-1', '--pretty=format:%s', origin], { cwd: root, encoding: 'utf8' });
-    if (/^chore\(checkpoint\): (sync Git line|final Git line stamp)/i.test((subjEarly.stdout || '').trim())) {
-      return { ok: true, offByOne: true, cpHash, origin };
-    }
+  // #S-CHKPT-PARENT-01: tip^1 は sync subject でなくても正常（1世代ラグ）
+  const parentEarlyShort = gitOriginMainParentShort(root);
+  if (parentEarlyShort && parentEarlyShort === cpHash) {
+    return { ok: true, offByOne: true, cpHash, origin };
   }
   const anc = spawnSync('git', ['merge-base', '--is-ancestor', cpHash, origin], { cwd: root });
   if (anc.status === 0) {
@@ -110,7 +128,7 @@ export function checkCheckpointGitRegression(root) {
       cpHash,
       origin,
       message:
-        `checkpoint Git \`${cpHash}\` が origin/main \`${origin}\` より古い — \`npm run cio:session:close-git\` で再 sync（手動 **Git** 行編集禁止 / S-CLOSE-01）`,
+        `checkpoint Git \`${cpHash}\` が origin/main \`${origin}\` より古い — \`npm run cio:checkpoint:git-heal -- --commit\` または close-git で再 sync（手動 **Git** 行編集禁止 / S-CLOSE-01）`,
     };
   }
   // S-CHKPT-CLOSE-01: 先祖でも off-by-one でもない = 陳腐化
@@ -121,8 +139,29 @@ export function checkCheckpointGitRegression(root) {
     origin,
     diverged: true,
     message:
-      `checkpoint Git \`${cpHash}\` が origin/main \`${origin}\` と不一致（先祖でもない）— \`npm run cio:session:close-git\` で再 sync（S-CHKPT-CLOSE-01）`,
+      `checkpoint Git \`${cpHash}\` が origin/main \`${origin}\` と不一致（先祖でもない）— \`npm run cio:checkpoint:git-heal -- --commit\` で再 sync（S-CHKPT-CLOSE-01）`,
   };
+}
+
+/**
+ * 作業ツリーの **Git** 行を是正（commit はしない）。
+ * @param {string} root
+ * @param {{ target?: 'head' | 'origin', suffix?: string }} [opts]
+ * @returns {{ healed: boolean, skipped: boolean, hash: string|null, before: string|null, reason?: string }}
+ */
+export function healCheckpointGitWorktree(root, { target = 'head', suffix = 'push 済' } = {}) {
+  const before = readCheckpointGitHead(root);
+  const reg = checkCheckpointGitRegression(root);
+  if (reg.ok) {
+    return { healed: false, skipped: true, hash: before, before, reason: reg.offByOne ? 'off-by-one-ok' : 'exact-or-missing' };
+  }
+  const hash =
+    target === 'origin' ? gitOriginMainShort(root) || gitShortHead(root) : gitShortHead(root) || gitOriginMainShort(root);
+  if (!hash) {
+    return { healed: false, skipped: false, hash: null, before, reason: 'no-hash' };
+  }
+  const changed = updateCheckpointGitHead(root, { hash, suffix });
+  return { healed: changed, skipped: false, hash, before, reason: changed ? 'stamped' : 'unchanged' };
 }
 
 /**

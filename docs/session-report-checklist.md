@@ -21,7 +21,7 @@
 | タイミング | 手順 |
 |------------|------|
 | **full CLOSE 後** | `cio:session:close-git` が `syncCheckpointGitAfterPush` で checkpoint **`**Git**:` 行**を HEAD hash + origin 同期に自動更新 — **手書き「origin 未 push」禁止** |
-| **D-CHKPT-02 WARN** | bootstrap で `mandatory-read-gate` が **checkpoint Git 行 stale** を検知したら **`npm run cio:session:close-git -- --execute --auto-stage --message "…"`** を再実行（**手動 `**Git**:` 行編集禁止**）。3 点検: `mandatory-read-gate`（WARN 消滅）· `verify:session-close-git-warn` · `checkCheckpointGitRegression`。**2026-07-14 #S-R44-SKIP-01**: close-git は **SKIP + tip 親 stamp**（amend/normalize 禁止）。復旧手順は `docs/runbooks/session-close-multi-session.md` R44 節 |
+| **D-CHKPT-02 WARN** | bootstrap で `mandatory-read-gate` が **checkpoint Git 行 stale** を検知したら **`npm run cio:checkpoint:git-heal -- --commit --push`**（または close-git）。**2026-07-20 抜本**: post-commit は回帰 NG 時に常時 follow-up heal（checkpoint 非含有 commit も含む）· `#S-CHKPT-PARENT-01` で tip^1 を subject 不問で許容 · cold-start Phase 6b で自動 heal。3 点検: `cio:checkpoint:git-heal -- --check` · `mandatory-read-gate` · `verify:session-close-git-warn`。amend/force 禁止は維持（#S-R44-SKIP-01） |
 | **案件 CLOSED のみ / partial** | push 直後に `npm run verify:session-close-git-warn` を実行し、**OK 例** `Git残件: なし（clean・origin 同期・verify exit 0）` + 短 hash を checkpoint に 1 行転記 |
 | **NG 時** | `Git残件: あり — 未コミット N 件 / ahead M / verify exit 1` + 分類（S-ML-01 reports/code）を報告。本題着手前に B1 整理 |
 

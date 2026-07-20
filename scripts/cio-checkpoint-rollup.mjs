@@ -12,9 +12,7 @@ import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { validateCheckpointMandatoryRead } from './lib/cio-checkpoint-mandatory-read.mjs';
 import {
-  checkCheckpointGitRegression,
-  readCheckpointGitHead,
-  syncCheckpointGitAfterPush,
+  healCheckpointGitWorktree,
 } from './lib/cio-checkpoint-git-sync.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -59,15 +57,11 @@ function main() {
   const raw = fs.readFileSync(CHECKPOINT, 'utf8');
   const { preamble, sections } = splitSections(raw);
   if (sections.length <= keep) {
-    const gitReg = checkCheckpointGitRegression(root);
-    if (!gitReg.ok) {
-      const before = readCheckpointGitHead(root);
-      const { changed, hash } = syncCheckpointGitAfterPush(root, { suffix: 'push 済' });
-      if (changed) {
-        console.warn(
-          `[cio:checkpoint:rollup] healed stale Git \`${before}\` → \`${hash}\` (no-op path / D-CHKPT-02)`,
-        );
-      }
+    const heal = healCheckpointGitWorktree(root, { target: 'origin' });
+    if (heal.healed) {
+      console.warn(
+        `[cio:checkpoint:rollup] healed stale Git \`${heal.before}\` → \`${heal.hash}\` (no-op path / D-CHKPT-02)`,
+      );
     }
     console.log(`[cio:checkpoint:rollup] OK no-op sections=${sections.length} keep=${keep}`);
     return;
@@ -108,17 +102,12 @@ function main() {
     fs.appendFileSync(archivePath, '\n\n---\n\n' + archiveDoc.split('\n').slice(2).join('\n'), 'utf8');
   }
   fs.writeFileSync(CHECKPOINT, newCheckpoint, 'utf8');
-  // D-CHKPT-02 再発防止: rollup は preamble を保持するが、作業ツリーに古い **Git** 行が
-  // 残っていると WARN のまま WAKE が進む。origin と先祖判定で NG なら stamp で是正する。
-  const gitReg = checkCheckpointGitRegression(root);
-  if (!gitReg.ok) {
-    const before = readCheckpointGitHead(root);
-    const { changed, hash } = syncCheckpointGitAfterPush(root, { suffix: 'push 済' });
-    if (changed) {
-      console.warn(
-        `[cio:checkpoint:rollup] healed stale Git \`${before}\` → \`${hash}\` (D-CHKPT-02 / S-CLOSE-01)`,
-      );
-    }
+  // D-CHKPT-02: preamble 保持でも古い Git 行が残る場合は stamp（commit は WAKE heal / close-git）
+  const heal = healCheckpointGitWorktree(root, { target: 'origin' });
+  if (heal.healed) {
+    console.warn(
+      `[cio:checkpoint:rollup] healed stale Git \`${heal.before}\` → \`${heal.hash}\` (D-CHKPT-02 / S-CLOSE-01)`,
+    );
   }
   const post = validateCheckpointMandatoryRead(root);
   if (!post.ok) {
