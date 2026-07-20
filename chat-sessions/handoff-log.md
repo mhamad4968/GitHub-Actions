@@ -4897,7 +4897,7 @@ npm run cio:morning:ready
 
 **要約**: cold-start READY後、Desktop AI緊急用00〜36通読、health 100%、MCP registry 26・probe 6/6、GitHub最新 success（cancelledはsuperseded）。DeepSeek第2者。checkpoint Git先祖返り（aaac2300）を是正。`cio-checkpoint-rollup.mjs` に D-CHKPT-02 自動 heal を追加。close-git push 済。
 
-**次の1手**: **浜田の指示待ち**（予実ラウンドは指示があるまで着手しない）
+**次の1手**: **2026-07-20 夜**、[`Ver.02 再設計仕様ドラフト`](../docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md) の **予実ラウンド**（§9・一問ずつ）。**予実完了後**: 依頼者確認メール用リスト作成（R-11/12/13 等）。内訳はクローズ済み。実装・deploy は GO 後。
 
 **Git**: `3f83c81a` = origin/main
 
