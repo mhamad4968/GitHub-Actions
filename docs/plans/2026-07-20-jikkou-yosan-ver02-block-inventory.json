@@ -1,0 +1,333 @@
+{
+  "source": "C:\\tmp\\実行予算ver2\\工事予算（実行予算）(案) (1).xlsx",
+  "extracted_at": "2026-07-20",
+  "status": "excel-observed",
+  "uchiwake_blocks": [
+    {
+      "uchiwake_no": "No.1",
+      "section": "施工",
+      "work_type_code": 10100,
+      "work_type_name": "材料費",
+      "summary_row": 38
+    },
+    {
+      "uchiwake_no": "No.2",
+      "section": "施工",
+      "work_type_code": null,
+      "work_type_name": "その他材料費",
+      "summary_row": 39
+    },
+    {
+      "uchiwake_no": "No.3",
+      "section": "施工",
+      "work_type_code": 10200,
+      "work_type_name": "塗装工事",
+      "summary_row": 40
+    },
+    {
+      "uchiwake_no": "No.4",
+      "section": "施工",
+      "work_type_code": 10300,
+      "work_type_name": "足場工事",
+      "summary_row": 41
+    },
+    {
+      "uchiwake_no": "No.5",
+      "section": "施工",
+      "work_type_code": 10400,
+      "work_type_name": "塗装及び足場工事",
+      "summary_row": 42
+    },
+    {
+      "uchiwake_no": "No.6",
+      "section": "施工",
+      "work_type_code": 10600,
+      "work_type_name": "修繕等工事",
+      "summary_row": 43
+    },
+    {
+      "uchiwake_no": "No.7",
+      "section": "施工",
+      "work_type_code": 10700,
+      "work_type_name": "塗装付帯工事",
+      "summary_row": 44
+    },
+    {
+      "uchiwake_no": "No.8",
+      "section": "施工",
+      "work_type_code": null,
+      "work_type_name": "軌道工事",
+      "summary_row": 45
+    },
+    {
+      "uchiwake_no": "No.9",
+      "section": "施工",
+      "work_type_code": null,
+      "work_type_name": "調査設計費",
+      "summary_row": 46
+    },
+    {
+      "uchiwake_no": "No.10",
+      "section": "施工",
+      "work_type_code": null,
+      "work_type_name": "外注試験費",
+      "summary_row": 47
+    },
+    {
+      "uchiwake_no": "No.11",
+      "section": "施工",
+      "work_type_code": null,
+      "work_type_name": "交通規制費",
+      "summary_row": 48
+    },
+    {
+      "uchiwake_no": "No.12",
+      "section": "施工",
+      "work_type_code": 14100,
+      "work_type_name": "追加工事①",
+      "summary_row": 49
+    },
+    {
+      "uchiwake_no": "No.13",
+      "section": "施工",
+      "work_type_code": 14200,
+      "work_type_name": "追加工事②",
+      "summary_row": 50
+    },
+    {
+      "uchiwake_no": "No.14",
+      "section": "施工",
+      "work_type_code": 14300,
+      "work_type_name": "追加工事③",
+      "summary_row": 51
+    },
+    {
+      "uchiwake_no": "No.15",
+      "section": "施工",
+      "work_type_code": 14400,
+      "work_type_name": "追加工事④",
+      "summary_row": 52
+    },
+    {
+      "uchiwake_no": "No.16",
+      "section": "施工",
+      "work_type_code": 14500,
+      "work_type_name": "追加工事⑤",
+      "summary_row": 53
+    },
+    {
+      "uchiwake_no": "No.17",
+      "section": "施工",
+      "work_type_code": 10900,
+      "work_type_name": "工事管理者賃金",
+      "summary_row": 54
+    },
+    {
+      "uchiwake_no": "No.18",
+      "section": "施工",
+      "work_type_code": null,
+      "work_type_name": "建設機械オペレーター",
+      "summary_row": 55
+    },
+    {
+      "uchiwake_no": "No.19",
+      "section": "施工",
+      "work_type_code": 10800,
+      "work_type_name": "鎌ヶ谷資材使用料",
+      "summary_row": 57
+    },
+    {
+      "uchiwake_no": "No.20",
+      "section": "施工",
+      "work_type_code": 11600,
+      "work_type_name": "レンタル",
+      "summary_row": 58
+    },
+    {
+      "uchiwake_no": "No.21",
+      "section": "施工",
+      "work_type_code": 11700,
+      "work_type_name": "運送費",
+      "summary_row": 60
+    },
+    {
+      "uchiwake_no": "No.22",
+      "section": "施工",
+      "work_type_code": 11800,
+      "work_type_name": "産業廃棄物処理費",
+      "summary_row": 61
+    },
+    {
+      "uchiwake_no": "No.23",
+      "section": "施工",
+      "work_type_code": 11900,
+      "work_type_name": "租税公課",
+      "summary_row": 62
+    },
+    {
+      "uchiwake_no": "No.24",
+      "section": "施工",
+      "work_type_code": 12000,
+      "work_type_name": "借地料等",
+      "summary_row": 63
+    },
+    {
+      "uchiwake_no": "No.25",
+      "section": "施工",
+      "work_type_code": 12100,
+      "work_type_name": "消耗品費",
+      "summary_row": 64
+    },
+    {
+      "uchiwake_no": "No.26",
+      "section": "施工",
+      "work_type_code": 12200,
+      "work_type_name": "事務費",
+      "summary_row": 65
+    },
+    {
+      "uchiwake_no": "No.27",
+      "section": "施工",
+      "work_type_code": 12300,
+      "work_type_name": "通信費",
+      "summary_row": 66
+    },
+    {
+      "uchiwake_no": "No.28",
+      "section": "施工",
+      "work_type_code": 12400,
+      "work_type_name": "旅費交通費",
+      "summary_row": 67
+    },
+    {
+      "uchiwake_no": "No.29",
+      "section": "施工",
+      "work_type_code": 12600,
+      "work_type_name": "履行保証保険料",
+      "summary_row": 68
+    },
+    {
+      "uchiwake_no": "No.30",
+      "section": "施工",
+      "work_type_code": 12700,
+      "work_type_name": "建退共証紙購入費",
+      "summary_row": 69
+    },
+    {
+      "uchiwake_no": "No.31",
+      "section": "施工",
+      "work_type_code": 12900,
+      "work_type_name": "諸雑費",
+      "summary_row": 70
+    },
+    {
+      "uchiwake_no": "No.32",
+      "section": "施工",
+      "work_type_code": 13100,
+      "work_type_name": "諸会費",
+      "summary_row": 71
+    },
+    {
+      "uchiwake_no": "No.33",
+      "section": "施工",
+      "work_type_code": 13620,
+      "work_type_name": "会議費",
+      "summary_row": 72
+    },
+    {
+      "uchiwake_no": "No.34",
+      "section": "施工",
+      "work_type_code": 12800,
+      "work_type_name": "補償費",
+      "summary_row": 73
+    },
+    {
+      "uchiwake_no": "No.35",
+      "section": "施工",
+      "work_type_code": 13600,
+      "work_type_name": "交際費",
+      "summary_row": 74
+    },
+    {
+      "uchiwake_no": "No.36",
+      "section": "保安",
+      "work_type_code": 11000,
+      "work_type_name": "工事安全専任管理者賃金",
+      "summary_row": 76
+    },
+    {
+      "uchiwake_no": "No.37",
+      "section": "保安",
+      "work_type_code": 11100,
+      "work_type_name": "線閉責任者",
+      "summary_row": 77
+    },
+    {
+      "uchiwake_no": "No.38",
+      "section": "保安",
+      "work_type_code": 11200,
+      "work_type_name": "列車見張員",
+      "summary_row": 78
+    },
+    {
+      "uchiwake_no": "No.39",
+      "section": "保安",
+      "work_type_code": 11300,
+      "work_type_name": "交通整理員等",
+      "summary_row": 79
+    },
+    {
+      "uchiwake_no": "No.40",
+      "section": "保安",
+      "work_type_code": 13500,
+      "work_type_name": "重機誘導員",
+      "summary_row": 80
+    },
+    {
+      "uchiwake_no": "No.41",
+      "section": "保安",
+      "work_type_code": 11400,
+      "work_type_name": "検電接地",
+      "summary_row": 81
+    },
+    {
+      "uchiwake_no": "No.42",
+      "section": "保安",
+      "work_type_code": 11500,
+      "work_type_name": "その他保安費",
+      "summary_row": 82
+    }
+  ],
+  "salary_rows": [
+    {
+      "role": "現場代理人",
+      "summary_row": 84,
+      "section": "給与手当",
+      "amount_tax_excl": 7610400
+    },
+    {
+      "role": "監理技術者",
+      "summary_row": 85,
+      "section": "給与手当",
+      "amount_tax_excl": 7610400
+    },
+    {
+      "role": "工事担当者①",
+      "summary_row": 86,
+      "section": "給与手当",
+      "amount_tax_excl": 7610400
+    },
+    {
+      "role": "工事担当者②",
+      "summary_row": 87,
+      "section": "給与手当",
+      "amount_tax_excl": 7610400
+    },
+    {
+      "role": "工事担当者②",
+      "summary_row": 88,
+      "section": "給与手当",
+      "amount_tax_excl": 7610400
+    }
+  ]
+}
