@@ -4892,3 +4892,16 @@ npm run cio:morning:ready
 **触らない**: 688（WBGT以外）/ 677–679 / SKYSEA実装・GPO・本番配信（8/3前）/ 712 deploy / 736現行rev186（仕様確定前の実装・deploy禁止）
 
 ---
+
+### 2026-07-20 JST — **WAKE・ブリーフィング・D-CHKPT-02恒久化**
+
+**要約**: cold-start READY後、Desktop AI緊急用00〜36通読、health 100%、MCP registry 26・probe 6/6、GitHub最新 success（cancelledはsuperseded）。DeepSeek第2者。checkpoint Git先祖返り（aaac2300）を是正。`cio-checkpoint-rollup.mjs` に D-CHKPT-02 自動 heal を追加。close-git push 済。
+
+**次の1手**: **浜田の指示待ち**（予実ラウンドは指示があるまで着手しない）
+
+**Git**: `3f83c81a` = origin/main
+
+**GO待ち**: H9 / △2 は 2026-07-25のみ。736実装GO別途。
+
+**触らない**: 688（WBGT以外）/ 677–679 / SKYSEA（8/3前）/ 712 / 736現行rev186
+
