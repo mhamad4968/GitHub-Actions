@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-20 JST — **Ver.02 内訳ラウンド CLOSED**（昼・AI最終合意）。夜=予実
 
-**Git**: **`11fc75fa`** = `origin/main` — push 済
+**Git**: **`e3c9d1ff`** = `origin/main` — push 済
 
 **本日状態**: Ver.02 **総括 CLOSED**＋**内訳 CLOSED**（§8.0–8.6・U1–U30）。次は **予実管理仕様**（夜）。実装/deploy/App作成は浜田GO後。現行736 rev186 不変。SKYSEAは8/3問い合わせまで実装・GPO・本番配信なし。
 
