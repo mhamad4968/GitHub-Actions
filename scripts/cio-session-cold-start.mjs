@@ -9,6 +9,7 @@
  * 状態: IDLE → MORNING → PREFLIGHT → ROLLUP → QUICK-HEALTH → WALL-CLOCK → BOOTSTRAP → IMPORT → READY
  *
  * WALL-CLOCK（§51-6-2）: bootstrap 直前に session:clock:clear → session:clock:set。
+ * 続けて watch / web を確保（manual-desktop / trialPaused でも WAKE 後の stale watch を防ぐ）。
  * trialPaused / manual-desktop で sessionEnd が clear しない場合の残留開始時刻を防ぐ。
  *
  * @see docs/runbooks/session-cold-start-v1.md
@@ -25,6 +26,11 @@ import {
   runSessionPreflight,
 } from './lib/cio-session-preflight.mjs';
 import { clearWarnEscalation } from './lib/cio-team-ops-warn-escalation.mjs';
+import {
+  readWebUrl,
+  spawnWatch,
+  spawnWebServer,
+} from './lib/session-clock-process.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -101,6 +107,19 @@ function main() {
   console.log('[cold-start] §51-6-2: session:clock:clear → session:clock:set（WAKE 標準）');
   run('npm run session:clock:clear');
   run('npm run session:clock:set');
+  // manual-desktop / trialPaused では sessionStart hook が watch/web を起動しないため、
+  // WAKE 後に stale pid 警告が出るのを防ぐ（Desktop bat と併用可・既稼働なら no-op）
+  try {
+    const watch = spawnWatch();
+    console.log(`[cold-start] watch ${watch.message}${watch.pid != null ? ` pid=${watch.pid}` : ''}`);
+    const web = spawnWebServer();
+    const url = web.url || readWebUrl();
+    console.log(
+      `[cold-start] web ${web.message}${url ? ` → ${url}` : ''}${web.pid != null ? ` pid=${web.pid}` : ''}`,
+    );
+  } catch (e) {
+    console.warn(`[cold-start] watch/web ensure WARN: ${e?.message || e}`);
+  }
 
   // Phase 5c — mandatory_reads スタンプ（entry-points E1 正本 · G4 配線）
   console.log('\n▶ Phase 5c MANDATORY_READS');

@@ -4905,3 +4905,17 @@ npm run cio:morning:ready
 
 **触らない**: 688（WBGT以外）/ 677–679 / SKYSEA（8/3前）/ 712 / 736現行rev186
 
+### 2026-07-21 JST — **WAKE・ブリーフィング・開始警告是正**
+
+**要約**: cold-start READY後、Desktop AI緊急用00〜36通読、Plan&Usage Total6%をcredit:set、health/MCP registry26・probe6/6、GHA failures=0。watch staleはmanual-desktop下でcold-startがwatch未起動だったため起動復旧。`cio-session-cold-start.mjs` Phase5にwatch/web確保を恒久追加。checkpointの夕反省「承認待ち」表記を全部承認・反映済に同期。
+
+**次の1手**: **浜田の指示待ち**（当日 -0）。候補のみ: 依頼者回答の取り込み／仕様再確認／実装可否の検討。実装着手は GO 後。
+
+**Git**: close-git 前
+
+**GO待ち**: H9 / △2 は 2026-07-25のみ。736実装GO別途。
+
+**触らない**: 688（WBGT以外）/ 677–679 / SKYSEA（8/3前）/ 712 / 736現行rev186
+
+---
+
