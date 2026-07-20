@@ -1,6 +1,6 @@
-日時(JST): 2026-07-20（月）— **WAKE・AI緊急用00〜36通読・開始警告是正**
-いま何してた（1行）: cold-start READY後、Desktop 00〜36通読・health/MCP/GitHub監査・handoff≠checkpoint同期・壁時計起動。
-次にやる1つ: **浜田の指示待ち**（bridge上の候補は App 736 Ver.02 §15 突合だが、本日は指示があるまで着手しない）。
+日時(JST): 2026-07-20（月）— **WAKE・ブリーフィング完了・開始残件是正**
+いま何してた（1行）: cold-start READY後、Desktop 00〜36通読・health/MCP/GitHub監査・DeepSeek第2者・close-gitでdirty8件とcheckpoint Git同期を是正。
+次にやる1つ: **浜田の指示待ち**（候補は Ver.02 内訳ラウンドだが、指示があるまで着手しない）。
 GO待ち（なし／内容）: H9 / △2 は **2026-07-25のみ**。App 736 Ver.02 詳細仕様・実装GO。
 触らないで（なし／内容）: 688（WBGT以外）/ 677–679 / SKYSEA実装・GPO・本番配信（8/3問い合わせ前）/ 712 deploy / 736 現行rev186（仕様確定前の実装・deploy禁止）。
 
