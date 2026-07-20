@@ -1,8 +1,8 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-07-20T07:53:02.505Z",
-  "gitHead": "a3ded6de",
-  "gitStatus": "## main...origin/main [ahead 2]",
+  "exportedAt": "2026-07-20T07:53:06.498Z",
+  "gitHead": "aa9d18b7",
+  "gitStatus": "## main...origin/main [ahead 3]",
   "nextTask": "**2026-07-20 夜**、[`Ver.02 再設計仕様ドラフト`](../docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md) の **予実ラウンド**（§9・一問ずつ）。**予実完了後**: 依頼者確認メール用リスト作成（R-11/12/13 等）。内訳はクローズ済み。実装・deploy は GO 後。",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
@@ -17,8 +17,6 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=a3ded6de | 次=**2026-07-20 夜**、[`Ver.02 再設計仕様ドラフト`](../docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md) の **予実ラウンド**（§9・一問ずつ）。**予実完了後**: 依頼者確認メール用リスト作成（R-11/12/13 等）。内訳はクローズ済み。実装・deploy は GO 後。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
-  "validatedAt": "2026-07-20T07:53:03.261Z",
-  "crosscheckOk": true
+  "promptBlock": "【SESSION-BRIDGE】git=aa9d18b7 | 次=**2026-07-20 夜**、[`Ver.02 再設計仕様ドラフト`](../docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md) の **予実ラウンド**（§9・一問ずつ）。**予実完了後**: 依頼者確認メール用リスト作成（R-11/12/13 等）。内訳はクローズ済み。実装・deploy は GO 後。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }
