@@ -11,6 +11,7 @@ globs: "**/*"
 - **「Cursor の標準だけで足りる」前提は禁止**。GitHub の事実・本番/検証 kintone・単一 URL の正・横断調査・社内 RAG・UI 実機 等が主題なら、**下表を先にスキャン**し、該当サーバを **試さずに「できない」**と言わない。
 - **「AIでは無理」**は、**MCP 不在**ではなく **権限・Tier B・認証・憲法上の禁止**など、**チャットに 1 行で理由**を書いたうえで限定的に使う。
 - **`call_mcp_tool` 直前**は必ず **`.cursor/rules/mcp-tool-discipline.mdc`**（descriptor 必読・認証順）。
+- **#S-MCP-01（2026-07-20）**: DeepSeek / OpenRouter 等の **長文 chat** は `scripts/lib/mcp-chat-message-sanitize.mjs` の `prepareMcpChatMessage` で短文化／一時ファイル化。失敗時は **1回リトライ**してから `MCPスキップ:`。
 
 **descriptor 必読は別紙**: `call_mcp_tool` の **直前に** `mcps/<server>/tools/*.json` を読む義務は **`.cursor/rules/mcp-tool-discipline.mdc`**。本条は **サーバ選択**を固定する。
 

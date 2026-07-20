@@ -31,6 +31,8 @@ alwaysApply: false
 7. `npm run cio:session:close-git -- --execute --auto-stage --message "…"` **または** B1/B4 整備後 `desktop:sync-and-verify`
 8. **deploy 漏れ防止**: `npm run verify:session-close-git-warn`（R21 台帳 + R55 本番 BUILD 三重照合 — close-git 手順 5 でも実行）
 
+**#D-CLOSE-01（2026-07-20 浜田 GO）**: 依頼者確認メール送付後でも `git status` が dirty なら、締めを待たず **即 commit**（同一レーンの仕様追記を落とさない）。
+
 **禁止**: 上記の前に「お疲れさまでした」「次回は…」だけ返す（F1 再発）。
 
 ## R-ML-02 — 「先走るな」のスコープ（2026-06-29 浜田 GO）

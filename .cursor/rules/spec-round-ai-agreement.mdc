@@ -1,0 +1,14 @@
+---
+description: 仕様ラウンド無条件合意・依頼者リスト4見出し（#R-SPEC-01/#R-REQ-01）
+globs:
+  - docs/plans/**
+  - docs/reports/**
+alwaysApply: false
+---
+
+# 仕様ラウンド合意・依頼者リスト
+
+正本: `docs/runbooks/spec-round-ai-agreement-and-requester-list.md`
+
+- 浜田が **無条件合意のみ** と明示 → 条件付き判定は **不合格**。残 OPEN を固定してから再投票。
+- 依頼者確認リストは **総括／内訳／予実管理／版管理** の4見出し必須（空なら「確認事項なし」）。平易文を既定。

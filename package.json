@@ -744,6 +744,7 @@
     "test:mcp-ai-secret-env": "node scripts/lib/mcp-ai-secret-env.test.mjs",
     "mcp:secrets:rotate-interactive": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/update-mcp-ai-secrets-interactive.ps1",
     "test:mcp-ai-secret-rotation": "node scripts/test-update-mcp-ai-secrets-interactive.mjs",
+    "test:mcp-chat-message-sanitize": "node --test scripts/lib/mcp-chat-message-sanitize.test.mjs",
     "verify:session-handoff-integrity": "node scripts/verify-session-handoff-integrity.mjs",
     "verify:kintone-fields": "node scripts/verify-kintone-fields.mjs",
     "verify:kintone-live-schema": "node scripts/verify-kintone-live-schema.mjs",

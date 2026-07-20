@@ -49,6 +49,8 @@
 7. 仕上げ後: `npm run verify:evening-reflection-scope`
 8. 承認後 → runbook / rules / scripts へ反映（**実装タイミングは別途**）
 
+**#D-CLOSE-01（2026-07-20）**: 依頼者メール送付後も dirty なら即 commit（`session-close-execute-first.mdc` 同旨）。
+
 ## 二層構造（R-NAS-07 — 2026-06-28 浜田 GO）
 
 夕反省の **改善案** は次の **2 節** に分ける（どちらか欠落禁止）:
