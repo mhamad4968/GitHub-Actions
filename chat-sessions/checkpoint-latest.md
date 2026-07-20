@@ -1,13 +1,13 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-20 JST — **Ver.02 総括ラウンド CLOSED**（矛盾深掘り・浜田合意）
+**最終更新**: 2026-07-20 JST — **Ver.02 内訳ラウンド CLOSED**（昼・AI最終合意）。夜=予実
 
-**Git**: **`973b179c`** = `origin/main` — push 済
+**Git**: （close-git 後に stamp）
 
-**本日状態**: Ver.02 総括仕様ラウンド CLOSED（§7.0–7.5・B1–B5・X/Q解消）。昼=内訳、夜=予実・版管理の予定。実装/deploy/App作成は浜田GO後。現行736 rev186 不変。SKYSEAは8/3問い合わせまで実装・GPO・本番配信なし。
+**本日状態**: Ver.02 **総括 CLOSED**＋**内訳 CLOSED**（§8.0–8.6・U1–U30）。次は **予実管理仕様**（夜）。実装/deploy/App作成は浜田GO後。現行736 rev186 不変。SKYSEAは8/3問い合わせまで実装・GPO・本番配信なし。
 
-**次の1手**: **2026-07-20 昼、[`Ver.02 再設計仕様ドラフト`](../docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md) の内訳ラウンド**（工種ブロック・単位混在投影・同一合計複数参照・`#REF!` 等を一問ずつ確定）。総括はクローズ済み。実装・deploy は GO 後。
+**次の1手**: **2026-07-20 夜**、[`Ver.02 再設計仕様ドラフト`](../docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md) の **予実ラウンド**（§9・実績手入力・残予算／消化率・版との監査を一問ずつ確定）。内訳はクローズ済み。実装・deploy は GO 後。
 
 **GO待ち**: H9 / △2 最終判定は **2026-07-25 のみ**（本日は判定不可）。夕反省 #S1〜#S3/#R1〜#R2 は承認・反映済み。
 
@@ -39,7 +39,7 @@
 | **688** | WBGT UI 折りたたみ完了（rev90）· **それ以外触らない** |
 | **677–679** | 触らない |
 | **SKYSEA** | 7/19 現況突合完了（plan §11）· live 171/301、Windows164 · App 674個人266、未導入候補117 · 全台後288/301（残13）· 8/3 SKY社問い合わせ · 8月本格着手 · 回答前の実PC配信禁止 |
-| **736** | 現行版 rev186 保持 · Ver.02 Excel 受領済 · 仕様確定前は実装/deploy なし |
+| **736** | 現行版 rev186 保持 · Ver.02 Excel 受領済 · **総括+内訳仕様 CLOSED** · 予実は夜 · 実装/deploy は GO 後 |
 | **712** | 削除済 — deploy 禁止 |
 
 ## セッション切替後の自律復元（Lifecycle v2 鏡像）
@@ -47,6 +47,15 @@
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
+
+## 2026-07-20 昼完了サマリー（内訳）
+
+| 項目 | 内容 |
+|------|------|
+| **内訳仕様** | U1–U30 / §8.5–8.6 CLOSED。スキャン `docs/plans/2026-07-20-jikkou-list-source-scan.md` |
+| **要点** | №左・区分（取引先左）・データマスタ J/H/C・コンボ＋将来リスト・フルフッタ・小計/計・保存時クリーンアップ・3色全体 |
+| **残置** | R-11/12/13（依頼者）。実装 GO なし |
+| **次** | 夜=予実ラウンド |
 
 ## 2026-07-19 本日完了サマリー
 
