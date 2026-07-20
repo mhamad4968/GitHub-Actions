@@ -4883,7 +4883,7 @@ npm run cio:morning:ready
 
 **要約**: cold-start READY後、Desktop AI緊急用00〜36通読、health/MCP/GitHub監査、handoff次手のcheckpoint同期（repair恒久化）、壁時計web/watch起動。DeepSeek等はCLI probe OKだが本Cursor agent表面では未露出のためSequential Thinkingで第2者監査。
 
-**次の1手**: **2026-07-20、[`Ver.02 再設計仕様ドラフト`](../docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md) §15を基に、受領Excelと現行App 736 Ver.01を突合し、仕様を一問ずつ確定する**。コア計算・データモデル確定かつ浜田GO後の最短2026-07-21に実装し、2026-07-25
+**次の1手**: **2026-07-20 昼、[`Ver.02 再設計仕様ドラフト`](../docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md) の内訳ラウンド**（工種ブロック・単位混在投影・同一合計複数参照・`#REF!` 等を一問ずつ確定）。総括はクローズ済み。実装・deploy は GO 後。
 
 **Git**: `3c597407` — 
 
