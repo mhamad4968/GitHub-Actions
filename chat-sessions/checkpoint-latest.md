@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-20 JST — **Ver.02 内訳ラウンド CLOSED**（昼・AI最終合意）。夜=予実
 
-**Git**: **`56c1f3ed`** = `origin/main` — push 済
+**Git**: **`463d1497`** = `origin/main` — push 済
 
 **本日状態**: Ver.02 **総括 CLOSED**＋**内訳 CLOSED**（§8.0–8.6・U1–U30）。次は **予実管理仕様**（夜）。実装/deploy/App作成は浜田GO後。現行736 rev186 不変。SKYSEAは8/3問い合わせまで実装・GPO・本番配信なし。
 
@@ -57,6 +57,7 @@
 | **残置** | R-11/12/13（依頼者）。実装 GO なし |
 | **次** | 夜=予実ラウンド |
 
+
 ## 2026-07-19 本日完了サマリー
 
 | 項目 | 内容 |
@@ -66,6 +67,7 @@
 | **ライセンス** | 管理画面171/301、Windows164。未導入候補117台を全台追加して288/301、残13の保守的見込み |
 | **成果物** | `C:\tmp\Skysea\SKYSEA-PC台帳突合_20260719_ライセンス確認済.xlsx`（元Excel・kintoneはAIから更新なし） |
 | **次案件** | タスク管理アプリ案は取消。App 736 Ver.02 は受領Excel×現行Ver.01突合で仕様一問確定（実装は浜田GO後） |
+
 
 
 ## 2026-07-18 本日完了サマリー
@@ -81,19 +83,5 @@
 
 
 
-## 2026-07-17 本日完了サマリー
 
-| 項目 | 内容 |
-|------|------|
-| **App 674** | Excel 出力と備考検索を修正 · 浜田目視 OK |
-| **App 699** | マニュアルを現行 apply/list/evaluation/notification 挙動へ整合 · rev 132 |
-| **App 700** | 通知明確化 · WF テスト部署 admin 限定 · rev 170 |
-| **業務改善** | Apps 697/698/699/700/713 のシステム側運用準備 OK · 正本群と closure ledger 同期 |
-| **承認済み改善** | evening help 無副作用化 · readiness正本照合 · verifier準拠report draft生成を実装・回帰検証 |
-| **GitHub/health** | Actions 最新10件 success · PR 0 · issue 0 · health score 100% |
-| **依存関係** | npm audit high 5件を既知リスクとして記録 · package 変更なし |
-
-
-
-
-<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-07-19.md -->
+<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-07-20.md -->
