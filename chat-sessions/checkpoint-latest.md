@@ -1,13 +1,13 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-21 JST — **WAKE・ブリーフィング（New Chat）**。00〜36通読・health100%・MCP26/probe6/6・GHA success。web stale を再起動＋cold-start Phase6c／killWebOrphan 恒久化。Ver.02 仕様 CLOSED・依頼者回答待ち。実装は GO 後。
+**最終更新**: 2026-07-21 夜 JST — **Ver.02 実装 GO → Phase 0〜C 完走・セッション締め**。App1=**756**/App2=**757**/App3=**758** LIVE（Space56）。保存経路（bulkRequest 原子保存）・総括/内訳保存・版複製・everyone ACL 開放+App2 locked 行読取専用まで LIVE 検証済。735/736 不変。夕反省 `docs/reports/2026-07-21-evening-reflection.md` **承認待ち（#S1/#S2/#R1/#D1）**。
 
 **Git**: **`6bc0f94d`** = `origin/main` — push 済
 
-**本日状態**: Ver.02 **総括・内訳・予実・版管理すべて CLOSED**（§7–§10・§21）。§7.1c 行操作帯ガード。依頼者へ確認メール送付済（R-*/RY-*・名称規格／取引先リスト＝R-19/20）。実装/deploy/App作成は浜田GO後。現行736 rev186 不変。SKYSEAは8/3問い合わせまで実装・GPO・本番配信なし。
+**本日状態**: Ver.02 **実装 Phase 0〜C 完了**。756/757/758 は BUILD 同期・カスタマイズ deploy 済・everyone 書込み開放（import/export 閉・App2 locked 行は record-level 読取専用）。テストレコード seeding で保存経路 LIVE 検証済。offline テスト 189件 pass。現行736 rev186 不変。SKYSEAは8/3問い合わせまで実装・GPO・本番配信なし。
 
-**次の1手**: **浜田の指示待ち**（当日 -0）。候補のみ: 依頼者回答の取り込み／仕様再確認／実装可否の検討。実装着手は GO 後。
+**次の1手**: **浜田の指示待ち**（当日 -0）。候補: 夕反省 #S1/#S2/#R1/#D1 の承認判断 → Ver.02 残タスク（予実保存配線・新規工事作成フロー・版種別選択UI・**736→Ver.02 データ移行**・756 見た目を 736 テイストへ→依頼者レビュー）。
 
 **GO待ち**: H9 / △2 最終判定は **2026-07-25 のみ**（本日は判定不可）。Ver.02 実装 GO は別途。夕反省 #R-SPEC-01 / #R-REQ-01 / #S-MCP-01 / #D-CLOSE-01 は **全部承認・反映済**（2026-07-20）。
 
@@ -25,7 +25,8 @@
 
 **700 本番**: BUILD=`2026-07-17-hide-wf-test-dept` rev **170** — 提案件名 · 3段階通知 · 汎用 Assignee 通知なし · 定期リマインドなし · WF テスト部署 admin 限定
 
-**736 本番**: BUILD=`2026-07-12-736-ui-backlog-02-col-resize` rev **186** — 現行版を保持。ver.02 は依頼者 Excel 受領後に再設計し、本日は実装・deploy なし。
+**736 本番**: BUILD=`2026-07-12-736-ui-backlog-02-col-resize` rev **186** — 現行版を保持（Ver.02 実装後も不変・触らない）。
+**756/757/758 本番（Ver.02）**: App1=756（親/総括）・App2=757（内訳明細）・App3=758（実績）。BUILD=`2026-07-21-ver02-phase6-*` 系 deploy 済 · everyone 書込み開放（import/export 閉・App2 locked 行読取専用）· 保存/版複製 LIVE 検証済。残: 予実保存配線・新規工事フロー・版種別UI・データ移行・見た目調整。
 **746/747 本番**: DBフォーム rev **8** / Dash BUILD=`2026-07-18-jre-chub-account-dash-v8-edge-autofill-fix` rev **14** — 署名代行対象・利用再開・湾岸工事所・Edge旅券情報保存の誤認抑止。**浜田目視 OK（2026-07-18）**。
 
 ## クローズ済み（`data/cio-project-closures.json` — 9件）
@@ -39,7 +40,8 @@
 | **688** | WBGT UI 折りたたみ完了（rev90）· **それ以外触らない** |
 | **677–679** | 触らない |
 | **SKYSEA** | 7/19 現況突合完了（plan §11）· live 171/301、Windows164 · App 674個人266、未導入候補117 · 全台後288/301（残13）· 8/3 SKY社問い合わせ · 8月本格着手 · 回答前の実PC配信禁止 |
-| **736** | 現行版 rev186 保持 · Ver.02 Excel 受領済 · **総括+内訳+予実+版管理仕様 CLOSED** · 依頼者回答待ち · 実装/deploy は GO 後 |
+| **736** | 現行版 rev186 保持・**Ver.02 実装後も触らない**（読取専用ソース）。Ver.02 本体は 756/757/758 |
+| **756/757/758** | Ver.02 LIVE。データ移行（736→Ver.02）と残タスクは次セッション（浜田 GO 後） |
 | **712** | 削除済 — deploy 禁止 |
 
 ## セッション切替後の自律復元（Lifecycle v2 鏡像）
@@ -47,6 +49,17 @@
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
+
+## 2026-07-21 本日完了サマリー（Ver.02 実装 Phase 0〜C）
+
+| 項目 | 内容 |
+|------|------|
+| **アプリ新設** | Space56 に 756/757/758 を作成・スキーマ deploy・fail-closed 読取専用から開始（735/736 不変） |
+| **保存経路** | planner→executor（bulkRequest 原子保存・revision CAS・ConflictAbortError）→client-adapter→save-model。offline 189件 pass 後に LIVE 検証 |
+| **UI 配線** | 内訳保存ボタン・総括サブテーブル保存/復元・版複製を desktop.ui.js に配線し 3 アプリ deploy |
+| **ACL** | everyone に record add/edit/delete 開放（import/export 閉）+ App2 locked 行 record-level 読取専用 |
+| **是正** | bundle ヘルパー名重複（eslint no-redeclare）修正・compactUuid（64字制限対応）・seed の業務キー時刻粒度化 |
+| **残タスク** | 予実保存配線 / 新規工事作成フロー / 版種別選択UI / 736→Ver.02 データ移行 / 756 見た目を 736 テイストへ→依頼者レビュー |
 
 ## 2026-07-20 昼完了サマリー（内訳）
 
