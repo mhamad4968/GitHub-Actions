@@ -432,6 +432,30 @@
       "relPath": "customize/kintone-account-dash/desktop.js",
       "deployedAt": "2026-07-05T01:02:38.624Z",
       "note": null
+    },
+    "756": {
+      "build": "2026-07-21-ver02-phasec2b-save-02",
+      "fileKey": "965894d6-4c5b-49cd-9e7b-b452b4462621",
+      "revision": "24",
+      "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
+      "deployedAt": "2026-07-21T11:15:25.211Z",
+      "note": null
+    },
+    "757": {
+      "build": "2026-07-21-ver02-phase6-app2-readonly-guard",
+      "fileKey": "41192956-d040-4d9d-b59f-0d70faaa83db",
+      "revision": "9",
+      "relPath": "customize/jikkou-yosan-v2-app2/desktop.js",
+      "deployedAt": "2026-07-21T11:15:28.289Z",
+      "note": null
+    },
+    "758": {
+      "build": "2026-07-21-ver02-phase6-app3-readonly-guard",
+      "fileKey": "b45186c2-816d-4286-a593-e31cfb086103",
+      "revision": "9",
+      "relPath": "customize/jikkou-yosan-v2-app3/desktop.js",
+      "deployedAt": "2026-07-21T11:15:30.493Z",
+      "note": null
     }
   }
 }

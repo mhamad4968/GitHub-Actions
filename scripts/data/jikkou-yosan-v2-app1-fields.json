@@ -1,0 +1,688 @@
+{
+  "_meta": {
+    "app": "実行予算書作成支援ツールver02",
+    "source": "docs/plans/2026-07-21-jikkou-yosan-ver02-3app-field-catalog.md §1",
+    "notes": [
+      "A1: 対①率の集計フィールドは contract_construction_rate_to_1 等の確定コードを使用する。",
+      "A2: summary_unit は共通単位DD（㎡/式/回/人/日/箇月/－）。",
+      "A5: 消費税率の選択肢は全角％（0％/8％/10％・初期値10％）。",
+      "project_days・各集計・summary_amount_excl_tax 等はJS再計算の表示キャッシュ。編集不可制御と自動計算はPhase3（カスタムUI/保存ガード）で実装する。",
+      "version_seq の初版=1、series_guard_key/version_record_key の組み立ては保存ロジック（Phase3）が行い、フィールド既定値では表現しない。"
+    ]
+  },
+  "properties": {
+    "project_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "project_id",
+      "label": "工事ID",
+      "required": true,
+      "defaultValue": ""
+    },
+    "project_business_key": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "project_business_key",
+      "label": "工事業務キー",
+      "required": true,
+      "defaultValue": ""
+    },
+    "budget_version_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "budget_version_id",
+      "label": "予算版ID",
+      "required": true,
+      "unique": true,
+      "defaultValue": ""
+    },
+    "series_guard_key": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "series_guard_key",
+      "label": "系列一意ガード",
+      "required": true,
+      "unique": true,
+      "defaultValue": ""
+    },
+    "version_record_key": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "version_record_key",
+      "label": "工事版キー",
+      "required": true,
+      "unique": true,
+      "defaultValue": ""
+    },
+    "version_seq": {
+      "type": "NUMBER",
+      "code": "version_seq",
+      "label": "版連番",
+      "required": true,
+      "defaultValue": ""
+    },
+    "source_record_id": {
+      "type": "NUMBER",
+      "code": "source_record_id",
+      "label": "複製元レコードID",
+      "required": false,
+      "defaultValue": ""
+    },
+    "version_type": {
+      "type": "DROP_DOWN",
+      "code": "version_type",
+      "label": "版種別",
+      "required": true,
+      "options": {
+        "当初": { "label": "当初", "index": "0" },
+        "仕様変更": { "label": "仕様変更", "index": "1" },
+        "価格変更": { "label": "価格変更", "index": "2" },
+        "仕様・価格変更": { "label": "仕様・価格変更", "index": "3" },
+        "その他": { "label": "その他", "index": "4" }
+      },
+      "defaultValue": ""
+    },
+    "status": {
+      "type": "DROP_DOWN",
+      "code": "status",
+      "label": "ステータス",
+      "required": true,
+      "options": {
+        "下書き": { "label": "下書き", "index": "0" },
+        "版確定": { "label": "版確定", "index": "1" }
+      },
+      "defaultValue": "下書き"
+    },
+    "is_locked": {
+      "type": "CHECK_BOX",
+      "code": "is_locked",
+      "label": "版ロック表示",
+      "required": false,
+      "options": {
+        "ロック": { "label": "ロック", "index": "0" }
+      },
+      "defaultValue": []
+    },
+    "derived_lock_state": {
+      "type": "DROP_DOWN",
+      "code": "derived_lock_state",
+      "label": "導出ロック状態",
+      "required": true,
+      "options": {
+        "editable": { "label": "editable", "index": "0" },
+        "budget_locked": { "label": "budget_locked", "index": "1" },
+        "full_locked": { "label": "full_locked", "index": "2" }
+      },
+      "defaultValue": "editable"
+    },
+    "revision_note": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "revision_note",
+      "label": "修正理由メモ",
+      "required": false,
+      "defaultValue": ""
+    },
+    "actual_write_seq": {
+      "type": "NUMBER",
+      "code": "actual_write_seq",
+      "label": "予実保存CAS連番",
+      "required": true,
+      "defaultValue": "0"
+    },
+    "project_code": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "project_code",
+      "label": "工事コード",
+      "required": true,
+      "defaultValue": ""
+    },
+    "project_branch": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "project_branch",
+      "label": "工事コード枝番",
+      "required": false,
+      "defaultValue": ""
+    },
+    "client_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "client_name",
+      "label": "発注者",
+      "required": false,
+      "defaultValue": ""
+    },
+    "project_official_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "project_official_name",
+      "label": "工事正式名称",
+      "required": false,
+      "defaultValue": ""
+    },
+    "project_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "project_name",
+      "label": "工事名称",
+      "required": false,
+      "defaultValue": ""
+    },
+    "start_date": {
+      "type": "DATE",
+      "code": "start_date",
+      "label": "着手日",
+      "required": false,
+      "defaultValue": "",
+      "defaultNowValue": false
+    },
+    "end_date": {
+      "type": "DATE",
+      "code": "end_date",
+      "label": "竣工日",
+      "required": false,
+      "defaultValue": "",
+      "defaultNowValue": false
+    },
+    "project_days": {
+      "type": "NUMBER",
+      "code": "project_days",
+      "label": "工期日数",
+      "required": false,
+      "defaultValue": ""
+    },
+    "site_entry_date": {
+      "type": "DATE",
+      "code": "site_entry_date",
+      "label": "現場入場予定日",
+      "required": false,
+      "defaultValue": "",
+      "defaultNowValue": false
+    },
+    "draft_date": {
+      "type": "DATE",
+      "code": "draft_date",
+      "label": "立案日",
+      "required": false,
+      "defaultValue": "",
+      "defaultNowValue": false
+    },
+    "girder_type": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "girder_type",
+      "label": "桁種別",
+      "required": false,
+      "defaultValue": ""
+    },
+    "order_branch": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "order_branch",
+      "label": "発注支社",
+      "required": false,
+      "defaultValue": ""
+    },
+    "department": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "department",
+      "label": "部門",
+      "required": false,
+      "defaultValue": ""
+    },
+    "safety_rule_88": {
+      "type": "RADIO_BUTTON",
+      "code": "safety_rule_88",
+      "label": "安衛則88条",
+      "required": true,
+      "options": {
+        "有": { "label": "有", "index": "0" },
+        "無": { "label": "無", "index": "1" }
+      },
+      "defaultValue": "有",
+      "align": "HORIZONTAL"
+    },
+    "person_in_charge": {
+      "type": "USER_SELECT",
+      "code": "person_in_charge",
+      "label": "担当者",
+      "required": false,
+      "entities": [],
+      "defaultValue": []
+    },
+    "note": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "note",
+      "label": "備考",
+      "required": false,
+      "defaultValue": ""
+    },
+    "contract_lines": {
+      "type": "SUBTABLE",
+      "code": "contract_lines",
+      "label": "請負明細",
+      "fields": {
+        "contract_row_key": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "contract_row_key",
+          "label": "行キー",
+          "required": false,
+          "defaultValue": ""
+        },
+        "contract_section": {
+          "type": "DROP_DOWN",
+          "code": "contract_section",
+          "label": "区分",
+          "required": false,
+          "options": {
+            "施工": { "label": "施工", "index": "0" },
+            "保安": { "label": "保安", "index": "1" }
+          },
+          "defaultValue": ""
+        },
+        "contract_work_name": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "contract_work_name",
+          "label": "契約工種",
+          "required": false,
+          "defaultValue": ""
+        },
+        "contract_unit": {
+          "type": "DROP_DOWN",
+          "code": "contract_unit",
+          "label": "単位",
+          "required": false,
+          "options": {
+            "㎡": { "label": "㎡", "index": "0" },
+            "式": { "label": "式", "index": "1" },
+            "回": { "label": "回", "index": "2" },
+            "人": { "label": "人", "index": "3" },
+            "日": { "label": "日", "index": "4" },
+            "箇月": { "label": "箇月", "index": "5" },
+            "－": { "label": "－", "index": "6" }
+          },
+          "defaultValue": ""
+        },
+        "contract_qty": {
+          "type": "NUMBER",
+          "code": "contract_qty",
+          "label": "数量",
+          "required": false,
+          "defaultValue": ""
+        },
+        "contract_unit_price": {
+          "type": "NUMBER",
+          "code": "contract_unit_price",
+          "label": "単価",
+          "required": false,
+          "defaultValue": ""
+        },
+        "contract_amount": {
+          "type": "NUMBER",
+          "code": "contract_amount",
+          "label": "金額（税抜・内部値）",
+          "required": false,
+          "defaultValue": ""
+        },
+        "contract_rate_to_1": {
+          "type": "NUMBER",
+          "code": "contract_rate_to_1",
+          "label": "対①率",
+          "required": false,
+          "defaultValue": ""
+        },
+        "contract_note": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "contract_note",
+          "label": "備考",
+          "required": false,
+          "defaultValue": ""
+        },
+        "contract_sort_order": {
+          "type": "NUMBER",
+          "code": "contract_sort_order",
+          "label": "表示順",
+          "required": false,
+          "defaultValue": ""
+        }
+      }
+    },
+    "salary_lines": {
+      "type": "SUBTABLE",
+      "code": "salary_lines",
+      "label": "給与手当",
+      "fields": {
+        "salary_row_key": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "salary_row_key",
+          "label": "行キー",
+          "required": false,
+          "defaultValue": ""
+        },
+        "salary_role": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "salary_role",
+          "label": "役職／名称",
+          "required": false,
+          "defaultValue": ""
+        },
+        "salary_unit": {
+          "type": "DROP_DOWN",
+          "code": "salary_unit",
+          "label": "単位",
+          "required": false,
+          "options": {
+            "㎡": { "label": "㎡", "index": "0" },
+            "式": { "label": "式", "index": "1" },
+            "回": { "label": "回", "index": "2" },
+            "人": { "label": "人", "index": "3" },
+            "日": { "label": "日", "index": "4" },
+            "箇月": { "label": "箇月", "index": "5" },
+            "－": { "label": "－", "index": "6" }
+          },
+          "defaultValue": "箇月"
+        },
+        "salary_qty": {
+          "type": "NUMBER",
+          "code": "salary_qty",
+          "label": "数量",
+          "required": false,
+          "defaultValue": ""
+        },
+        "salary_unit_price": {
+          "type": "NUMBER",
+          "code": "salary_unit_price",
+          "label": "単価",
+          "required": false,
+          "defaultValue": ""
+        },
+        "salary_amount": {
+          "type": "NUMBER",
+          "code": "salary_amount",
+          "label": "金額（税抜・内部値）",
+          "required": false,
+          "defaultValue": ""
+        },
+        "salary_rate_to_1": {
+          "type": "NUMBER",
+          "code": "salary_rate_to_1",
+          "label": "対①率",
+          "required": false,
+          "defaultValue": ""
+        },
+        "salary_note": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "salary_note",
+          "label": "備考",
+          "required": false,
+          "defaultValue": ""
+        },
+        "salary_sort_order": {
+          "type": "NUMBER",
+          "code": "salary_sort_order",
+          "label": "表示順",
+          "required": false,
+          "defaultValue": ""
+        }
+      }
+    },
+    "summary_cost_lines": {
+      "type": "SUBTABLE",
+      "code": "summary_cost_lines",
+      "label": "総括原価投影",
+      "fields": {
+        "summary_stable_block_id": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "summary_stable_block_id",
+          "label": "安定ブロックID",
+          "required": false,
+          "defaultValue": ""
+        },
+        "summary_block_no": {
+          "type": "NUMBER",
+          "code": "summary_block_no",
+          "label": "内訳№",
+          "required": false,
+          "defaultValue": ""
+        },
+        "summary_cost_category": {
+          "type": "DROP_DOWN",
+          "code": "summary_cost_category",
+          "label": "費用区分",
+          "required": false,
+          "options": {
+            "施工": { "label": "施工", "index": "0" },
+            "保安": { "label": "保安", "index": "1" }
+          },
+          "defaultValue": ""
+        },
+        "summary_work_type_code": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "summary_work_type_code",
+          "label": "工種番号",
+          "required": false,
+          "defaultValue": ""
+        },
+        "summary_work_type_name": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "summary_work_type_name",
+          "label": "システム入力工種",
+          "required": false,
+          "defaultValue": ""
+        },
+        "summary_line_type": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "summary_line_type",
+          "label": "種別",
+          "required": false,
+          "defaultValue": ""
+        },
+        "summary_unit": {
+          "type": "DROP_DOWN",
+          "code": "summary_unit",
+          "label": "単位",
+          "required": false,
+          "options": {
+            "㎡": { "label": "㎡", "index": "0" },
+            "式": { "label": "式", "index": "1" },
+            "回": { "label": "回", "index": "2" },
+            "人": { "label": "人", "index": "3" },
+            "日": { "label": "日", "index": "4" },
+            "箇月": { "label": "箇月", "index": "5" },
+            "－": { "label": "－", "index": "6" }
+          },
+          "defaultValue": ""
+        },
+        "summary_qty": {
+          "type": "NUMBER",
+          "code": "summary_qty",
+          "label": "数量",
+          "required": false,
+          "defaultValue": ""
+        },
+        "summary_unit_price": {
+          "type": "NUMBER",
+          "code": "summary_unit_price",
+          "label": "単価",
+          "required": false,
+          "defaultValue": ""
+        },
+        "summary_amount_excl_tax": {
+          "type": "NUMBER",
+          "code": "summary_amount_excl_tax",
+          "label": "金額（税抜）",
+          "required": false,
+          "defaultValue": ""
+        },
+        "summary_tax_rate": {
+          "type": "DROP_DOWN",
+          "code": "summary_tax_rate",
+          "label": "消費税率",
+          "required": false,
+          "options": {
+            "0％": { "label": "0％", "index": "0" },
+            "8％": { "label": "8％", "index": "1" },
+            "10％": { "label": "10％", "index": "2" }
+          },
+          "defaultValue": "10％"
+        },
+        "summary_amount_incl_tax": {
+          "type": "NUMBER",
+          "code": "summary_amount_incl_tax",
+          "label": "金額（税込）",
+          "required": false,
+          "defaultValue": ""
+        },
+        "summary_rate_to_1": {
+          "type": "NUMBER",
+          "code": "summary_rate_to_1",
+          "label": "対①率",
+          "required": false,
+          "defaultValue": ""
+        },
+        "summary_calc_basis": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "summary_calc_basis",
+          "label": "計算基準",
+          "required": false,
+          "defaultValue": ""
+        },
+        "summary_note": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "summary_note",
+          "label": "備考",
+          "required": false,
+          "defaultValue": ""
+        },
+        "summary_sort_order": {
+          "type": "NUMBER",
+          "code": "summary_sort_order",
+          "label": "表示順",
+          "required": false,
+          "defaultValue": ""
+        }
+      }
+    },
+    "contract_construction_total": {
+      "type": "NUMBER",
+      "code": "contract_construction_total",
+      "label": "請負・施工計",
+      "required": false,
+      "defaultValue": ""
+    },
+    "contract_safety_total": {
+      "type": "NUMBER",
+      "code": "contract_safety_total",
+      "label": "請負・保安計",
+      "required": false,
+      "defaultValue": ""
+    },
+    "contract_total_1": {
+      "type": "NUMBER",
+      "code": "contract_total_1",
+      "label": "請負合計①",
+      "required": false,
+      "defaultValue": ""
+    },
+    "cost_construction_total": {
+      "type": "NUMBER",
+      "code": "cost_construction_total",
+      "label": "原価・施工計",
+      "required": false,
+      "defaultValue": ""
+    },
+    "cost_safety_total": {
+      "type": "NUMBER",
+      "code": "cost_safety_total",
+      "label": "原価・保安計",
+      "required": false,
+      "defaultValue": ""
+    },
+    "salary_total": {
+      "type": "NUMBER",
+      "code": "salary_total",
+      "label": "給与計",
+      "required": false,
+      "defaultValue": ""
+    },
+    "cost_total_8": {
+      "type": "NUMBER",
+      "code": "cost_total_8",
+      "label": "工事原価合計⑧",
+      "required": false,
+      "defaultValue": ""
+    },
+    "profit_9": {
+      "type": "NUMBER",
+      "code": "profit_9",
+      "label": "粗利⑨",
+      "required": false,
+      "defaultValue": ""
+    },
+    "contract_construction_rate_to_1": {
+      "type": "NUMBER",
+      "code": "contract_construction_rate_to_1",
+      "label": "請負・施工計 対①率",
+      "required": false,
+      "defaultValue": ""
+    },
+    "contract_safety_rate_to_1": {
+      "type": "NUMBER",
+      "code": "contract_safety_rate_to_1",
+      "label": "請負・保安計 対①率",
+      "required": false,
+      "defaultValue": ""
+    },
+    "cost_construction_rate_to_1": {
+      "type": "NUMBER",
+      "code": "cost_construction_rate_to_1",
+      "label": "原価・施工計 対①率",
+      "required": false,
+      "defaultValue": ""
+    },
+    "cost_safety_rate_to_1": {
+      "type": "NUMBER",
+      "code": "cost_safety_rate_to_1",
+      "label": "原価・保安計 対①率",
+      "required": false,
+      "defaultValue": ""
+    },
+    "salary_total_rate_to_1": {
+      "type": "NUMBER",
+      "code": "salary_total_rate_to_1",
+      "label": "給与計 対①率",
+      "required": false,
+      "defaultValue": ""
+    },
+    "cost_total_8_rate_to_1": {
+      "type": "NUMBER",
+      "code": "cost_total_8_rate_to_1",
+      "label": "工事原価⑧ 対①率",
+      "required": false,
+      "defaultValue": ""
+    },
+    "profit_9_rate_to_1": {
+      "type": "NUMBER",
+      "code": "profit_9_rate_to_1",
+      "label": "粗利⑨ 対①率",
+      "required": false,
+      "defaultValue": ""
+    },
+    "summary_projection_status": {
+      "type": "DROP_DOWN",
+      "code": "summary_projection_status",
+      "label": "総括投影状態",
+      "required": false,
+      "options": {
+        "synced": { "label": "synced", "index": "0" },
+        "dirty": { "label": "dirty", "index": "1" },
+        "error": { "label": "error", "index": "2" }
+      },
+      "defaultValue": "synced"
+    },
+    "summary_projection_checked_at": {
+      "type": "DATETIME",
+      "code": "summary_projection_checked_at",
+      "label": "総括投影検査日時",
+      "required": false,
+      "defaultValue": "",
+      "defaultNowValue": false
+    },
+    "ui_col_layout_json": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "ui_col_layout_json",
+      "label": "UI列レイアウトJSON",
+      "required": false,
+      "defaultValue": ""
+    }
+  }
+}

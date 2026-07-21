@@ -1,0 +1,504 @@
+import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
+import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import test from "node:test";
+import { fileURLToPath } from "node:url";
+
+import {
+  ACTUAL_COST_CATEGORY_KEYS,
+  ACTUAL_EDITABLE_KINDS,
+  ACTUAL_READ_ONLY_FIELDS,
+  ACTUAL_RECORD_KINDS,
+  ACTUAL_SOURCE_KIND,
+  ACTUAL_WRITE_CHANNEL,
+  createActualsMatrixModel,
+  monthRange,
+  monthStartDate,
+  normalizeMonth,
+  pivotActualRows,
+} from "./actuals-matrix.mjs";
+import { LOCK_STATES } from "./lock.mjs";
+
+const root = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "../../..",
+);
+
+function read(relativePath) {
+  return readFileSync(path.join(root, relativePath), "utf8");
+}
+
+function protected736Digest() {
+  const hash = createHash("sha256");
+  for (const name of ["desktop.js", "desktop.reorder.js", "desktop.ui.js"]) {
+    hash.update(name);
+    hash.update(read(`customize/736/${name}`));
+  }
+  return hash.digest("hex");
+}
+
+const BLOCK_A = Object.freeze({
+  stableBlockId: "blk-a",
+  status: "active",
+  costCategory: "施工",
+  workTypeCode: "K-1",
+  workTypeName: "けた橋",
+  blockNo: 1,
+  total: "100",
+});
+const BLOCK_B = Object.freeze({
+  stableBlockId: "blk-b",
+  status: "active",
+  costCategory: "保安",
+  workTypeCode: "H-1",
+  workTypeName: "交通誘導",
+  blockNo: 2,
+  total: "500",
+});
+const BLOCK_RETIRED = Object.freeze({
+  stableBlockId: "blk-r",
+  status: "retired",
+  costCategory: "施工",
+  workTypeCode: "K-9",
+  workTypeName: "旧工種",
+  blockNo: null,
+  total: "99999",
+});
+
+function editableModel(overrides = {}) {
+  return createActualsMatrixModel({
+    lockState: LOCK_STATES.EDITABLE,
+    startMonth: "2026-02",
+    ...overrides,
+  });
+}
+
+test("catalogs match schema §5 / field catalog §3 (Y4/Y10)", () => {
+  assert.deepEqual(ACTUAL_COST_CATEGORY_KEYS, ["施工", "保安"]);
+  assert.deepEqual(ACTUAL_RECORD_KINDS, ["monthly_consumption", "final_budget"]);
+  assert.equal(ACTUAL_SOURCE_KIND, "手入力");
+  assert.equal(ACTUAL_WRITE_CHANNEL, "app1_custom_ui");
+  assert.deepEqual(ACTUAL_EDITABLE_KINDS, ["monthly", "finalBudget"]);
+  for (const field of ["currentBudget", "workTypeName", "consumptionRatio"]) {
+    assert.ok(ACTUAL_READ_ONLY_FIELDS.includes(field));
+  }
+});
+
+test("month range follows Excel: start month + 1-month steps, default 12 (Y5/Y6)", () => {
+  assert.deepEqual(monthRange("2026-02"), [
+    "2026-02",
+    "2026-03",
+    "2026-04",
+    "2026-05",
+    "2026-06",
+    "2026-07",
+    "2026-08",
+    "2026-09",
+    "2026-10",
+    "2026-11",
+    "2026-12",
+    "2027-01",
+  ]);
+  // P-30/P-37: App3 stores 月初日; both spellings normalize to YYYY-MM.
+  assert.deepEqual(monthRange("2026-11-01", 3), ["2026-11", "2026-12", "2027-01"]);
+  assert.equal(normalizeMonth("2026-02-01"), "2026-02");
+  assert.equal(monthStartDate("2026-02"), "2026-02-01");
+  assert.throws(() => monthRange("2026/02"), /YYYY-MM/);
+  assert.throws(() => monthRange("2026-13"), /YYYY-MM/);
+  assert.throws(() => monthRange("2026-02", 0), /positive safe integer/);
+});
+
+test("pivot round-trip: vertical App3 rows → wide matrix → App3 write records", () => {
+  const model = editableModel();
+  model.setMonthlyAmount("blk-a", "施工", "2026-02", "40");
+  model.setMonthlyAmount("blk-a", "施工", "2026-03-01", "80");
+  model.setFinalBudget("blk-a", "施工", "120");
+  const records = model.toApp3Records({ projectId: "prj-1" });
+  assert.equal(records.length, 3);
+  assert.deepEqual(
+    records.map((record) => record.actual_record_key),
+    [
+      "prj-1|blk-a|施工|monthly|2026-02",
+      "prj-1|blk-a|施工|monthly|2026-03",
+      "prj-1|blk-a|施工|final",
+    ],
+  );
+  assert.deepEqual(
+    records.map((record) => record.target_month ?? null),
+    ["2026-02-01", "2026-03-01", null],
+  );
+  for (const record of records) {
+    assert.equal(record.source_kind, "手入力");
+    assert.equal(record.write_channel, "app1_custom_ui");
+    // §3.2: computed values are never stored on App3.
+    for (const forbidden of [
+      "current_budget",
+      "remaining_budget",
+      "consumption_ratio",
+      "future_required",
+    ]) {
+      assert.equal(forbidden in record, false);
+    }
+  }
+
+  // Feeding the write shape back in reproduces the same matrix.
+  const reloaded = editableModel({ actualRows: records });
+  const [row] = reloaded.matrixRows([BLOCK_A]);
+  assert.equal(row.monthly["2026-02"], "40");
+  assert.equal(row.monthly["2026-03"], "80");
+  assert.equal(row.actual, "120");
+  assert.equal(row.finalBudget, "120");
+  assert.equal(row.finalBudgetManual, true);
+  // Preloaded rows are not dirty — nothing is re-written unmodified.
+  assert.deepEqual(reloaded.toApp3Records({ projectId: "prj-1" }), []);
+
+  // Data months outside the configured range stay visible.
+  const shifted = editableModel({ startMonth: "2027-01", monthCount: 2, actualRows: records });
+  assert.deepEqual(shifted.months(), ["2026-02", "2026-03", "2027-01", "2027-02"]);
+});
+
+test("metrics follow §9.0b 案B: 実績/残予算/今後必要額/消化率 via calc.actualMetrics", () => {
+  const model = editableModel();
+  model.setMonthlyAmount("blk-a", "施工", "2026-02", "70");
+  model.setMonthlyAmount("blk-a", "施工", "2026-03", "50");
+
+  // Numeric example from the spec: current 100, actual 120, final still 100.
+  let [row] = model.matrixRows([BLOCK_A]);
+  assert.equal(row.currentBudget, "100");
+  assert.equal(row.actual, "120");
+  assert.equal(row.finalBudget, "100"); // default = 現行予算 (initial)
+  assert.equal(row.finalBudgetManual, false);
+  assert.equal(row.futureRequired, "20"); // max(0, 実績−最終)
+  assert.equal(row.remainingBudget, "-20"); // 現行−実績
+  assert.equal(row.consumptionRatio, "1.2"); // 120.0%
+
+  // Raising 最終予算額 zeroes 今後必要額; 消化率/残予算 stay current-based.
+  model.setFinalBudget("blk-a", "施工", "120");
+  [row] = model.matrixRows([BLOCK_A]);
+  assert.equal(row.finalBudget, "120");
+  assert.equal(row.futureRequired, "0");
+  assert.equal(row.remainingBudget, "-20");
+  assert.equal(row.consumptionRatio, "1.2");
+
+  // Zero budget → 消化率 not applicable (「—」, never numeric 0). §15.7.
+  const zeroRow = model
+    .matrixRows([{ ...BLOCK_A, stableBlockId: "blk-z", total: "0" }])
+    .at(0);
+  assert.equal(zeroRow.consumptionRatio, null);
+
+  // 施工計/保安計 aggregate per column (Y7 partial scope in 4d).
+  model.setMonthlyAmount("blk-b", "保安", "2026-02", "10");
+  const totals = model.sectionTotals([BLOCK_A, BLOCK_B]);
+  assert.equal(totals["施工"].actual, "120");
+  assert.equal(totals["施工"].monthly["2026-02"], "70");
+  assert.equal(totals["保安"].currentBudget, "500");
+  assert.equal(totals["保安"].actual, "10");
+  assert.equal(totals["保安"].consumptionRatio, "0.02");
+});
+
+test("Y9 (M2): BC率＝現行予算÷①・EC率＝最終予算額÷① via calc.ratio, ①=0 → 0", () => {
+  const model = editableModel();
+  // Without contract context ① is unknown → rates stay null (「－」).
+  let [row] = model.matrixRows([BLOCK_A]);
+  assert.equal(row.bcRate, null);
+  assert.equal(row.ecRate, null);
+
+  // ① = 2000: BC = 100÷2000, EC defaults to BC while 最終＝現行.
+  [row] = model.matrixRows([BLOCK_A], { contractTotal1: "2000" });
+  assert.equal(row.bcRate, "0.05");
+  assert.equal(row.ecRate, "0.05");
+
+  // Raising 最終予算額 moves EC率 only; BC率 stays budget-based.
+  model.setFinalBudget("blk-a", "施工", "120");
+  [row] = model.matrixRows([BLOCK_A], { contractTotal1: "2000" });
+  assert.equal(row.bcRate, "0.05");
+  assert.equal(row.ecRate, "0.06");
+
+  // Q12/D-47: ①=0 → rate 0 (not 「－」, unlike 消化率's zero-budget rule).
+  [row] = model.matrixRows([BLOCK_A], { contractTotal1: "0" });
+  assert.equal(row.bcRate, "0");
+  assert.equal(row.ecRate, "0");
+
+  // Retired blocks carry 現行予算 0 → BC率 0 (P-39/R-11).
+  const [retired] = model.matrixRows([BLOCK_RETIRED], { contractTotal1: "2000" });
+  assert.equal(retired.bcRate, "0");
+
+  // 施工計/保安計 carry the same section-level rates (Y7/Y9).
+  const totals = model.sectionTotals([BLOCK_A, BLOCK_B], {
+    contractTotal1: "2000",
+  });
+  assert.equal(totals["施工"].bcRate, "0.05");
+  assert.equal(totals["施工"].ecRate, "0.06");
+  assert.equal(totals["保安"].bcRate, "0.25");
+  assert.equal(totals["保安"].ecRate, "0.25");
+  // Rates are 表示のみ on the 予実 tab (Y10).
+  for (const field of ["bcRate", "ecRate"]) {
+    assert.ok(ACTUAL_READ_ONLY_FIELDS.includes(field));
+    assert.throws(
+      () => model.updateActualRow("blk-a", "施工", { [field]: "1" }),
+      /read-only on the 予実 tab \(Y10\)/,
+    );
+  }
+});
+
+test("mutations are gated by editActuals, not editBudget (③ vs ①②)", () => {
+  // budget_locked (版確定・最新版): budget frozen, actuals still editable.
+  const budgetLocked = createActualsMatrixModel({
+    lockState: LOCK_STATES.BUDGET_LOCKED,
+    startMonth: "2026-02",
+  });
+  assert.equal(budgetLocked.allowedOperations.editBudget, false);
+  assert.equal(budgetLocked.allowedOperations.editActuals, true);
+  budgetLocked.setMonthlyAmount("blk-a", "施工", "2026-02", "5");
+  budgetLocked.setFinalBudget("blk-a", "施工", "105");
+  assert.equal(budgetLocked.matrixRows([BLOCK_A])[0].actual, "5");
+
+  // full_locked (旧版): every actual mutation is rejected.
+  const fullLocked = createActualsMatrixModel({
+    lockState: LOCK_STATES.FULL_LOCKED,
+    startMonth: "2026-02",
+  });
+  const locked = /actuals are locked/;
+  assert.throws(() => fullLocked.setMonthlyAmount("blk-a", "施工", "2026-02", "5"), locked);
+  assert.throws(() => fullLocked.setFinalBudget("blk-a", "施工", "105"), locked);
+  assert.throws(
+    () => fullLocked.updateActualRow("blk-a", "施工", { "2026-02": "5" }),
+    locked,
+  );
+  // Display stays readable while locked.
+  assert.equal(fullLocked.matrixRows([BLOCK_A])[0].currentBudget, "100");
+});
+
+test("Y10: budget attributes are read-only on the 予実 tab; amounts are integer yen", () => {
+  const model = editableModel();
+  for (const field of [
+    "currentBudget",
+    "workTypeName",
+    "quantity",
+    "unitPrice",
+    "actual",
+    "remainingBudget",
+    "consumptionRatio",
+  ]) {
+    assert.throws(
+      () => model.updateActualRow("blk-a", "施工", { [field]: "1" }),
+      /read-only on the 予実 tab \(Y10\)/,
+    );
+  }
+  // The patch route accepts exactly the 予実入力列: months + finalBudget.
+  model.updateActualRow("blk-a", "施工", { "2026-02": "30", finalBudget: "130" });
+  const [row] = model.matrixRows([BLOCK_A]);
+  assert.equal(row.monthly["2026-02"], "30");
+  assert.equal(row.finalBudget, "130");
+  assert.throws(
+    () => model.setMonthlyAmount("blk-a", "施工", "2026-02", "1.5"),
+    /integer yen/,
+  );
+  assert.throws(
+    () => model.setFinalBudget("blk-a", "施工", "12,000"),
+    /integer yen/,
+  );
+  // Clearing a cell reverts it locally and drops the pending write.
+  model.setMonthlyAmount("blk-a", "施工", "2026-02", "");
+  assert.equal(model.matrixRows([BLOCK_A])[0].monthly["2026-02"], null);
+  assert.deepEqual(
+    model
+      .toApp3Records({ projectId: "prj-1" })
+      .map((record) => record.record_kind),
+    ["final_budget"],
+  );
+});
+
+test("Y4: salary never enters the actuals matrix", () => {
+  const model = editableModel();
+  // Blocks outside 施工/保安 (e.g. a 区分-less block) are held back.
+  const rows = model.matrixRows([
+    BLOCK_A,
+    { ...BLOCK_B, stableBlockId: "blk-s", costCategory: "給与" },
+    { ...BLOCK_B, stableBlockId: "blk-n", costCategory: null },
+  ]);
+  assert.deepEqual(rows.map((row) => row.stableBlockId), ["blk-a"]);
+  // App3 rows carrying a salary category are corrupt data → pivot aborts.
+  assert.throws(
+    () =>
+      pivotActualRows([
+        {
+          record_kind: "monthly_consumption",
+          stable_block_id: "blk-s",
+          cost_category_key: "給与",
+          target_month: "2026-02-01",
+          amount: "1",
+        },
+      ]),
+    /施工 or 保安/,
+  );
+  assert.throws(
+    () => model.setMonthlyAmount("blk-s", "給与", "2026-02", "1"),
+    /施工 or 保安/,
+  );
+});
+
+test("R-11: retired blocks stay visible with 現行予算 0 but months stay editable", () => {
+  const model = editableModel({
+    actualRows: [
+      {
+        record_kind: "monthly_consumption",
+        stable_block_id: "blk-r",
+        cost_category_key: "施工",
+        target_month: "2026-02-01",
+        amount: "60",
+      },
+    ],
+  });
+  let [row] = model.matrixRows([BLOCK_RETIRED]);
+  assert.equal(row.status, "retired");
+  assert.equal(row.currentBudget, "0"); // P-39: retired contributes 0 budget
+  assert.equal(row.actual, "60");
+  assert.equal(row.finalBudget, "0"); // default = current = 0
+  assert.equal(row.futureRequired, "60");
+  assert.equal(row.consumptionRatio, null); // budget 0 → 「—」
+
+  // Actuals continuity: the retired row still accepts monthly/final input.
+  model.setMonthlyAmount("blk-r", "施工", "2026-03", "40");
+  model.setFinalBudget("blk-r", "施工", "100");
+  [row] = model.matrixRows([BLOCK_RETIRED]);
+  assert.equal(row.actual, "100");
+  assert.equal(row.finalBudget, "100");
+  assert.equal(row.futureRequired, "0");
+});
+
+test("pivot rejects duplicates and malformed vertical rows (unique actual_record_key)", () => {
+  const monthly = {
+    record_kind: "monthly_consumption",
+    stable_block_id: "blk-a",
+    cost_category_key: "施工",
+    target_month: "2026-02-01",
+    amount: "1",
+  };
+  assert.throws(() => pivotActualRows([monthly, { ...monthly }]), /duplicate monthly/);
+  const final = {
+    record_kind: "final_budget",
+    stable_block_id: "blk-a",
+    cost_category_key: "施工",
+    amount: "1",
+  };
+  assert.throws(() => pivotActualRows([final, { ...final }]), /duplicate final_budget/);
+  assert.throws(
+    () => pivotActualRows([{ ...monthly, record_kind: "daily" }]),
+    /record_kind/,
+  );
+  assert.throws(() => pivotActualRows([{ ...monthly, amount: "" }]), /amount is required/);
+  // kintone-style { value } wrappers are unwrapped.
+  const wrapped = pivotActualRows([
+    {
+      record_kind: { value: "monthly_consumption" },
+      stable_block_id: { value: "blk-a" },
+      cost_category_key: { value: "施工" },
+      target_month: { value: "2026-02-01" },
+      amount: { value: "9" },
+    },
+  ]);
+  assert.equal(wrapped.get("blk-a|施工").monthly.get("2026-02"), "9");
+});
+
+test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", () => {
+  const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
+  assert.match(source, /jy2-actual-table/);
+  assert.match(source, /jy2-actual-scroll/);
+  assert.match(source, /jy2RenderActualPane/);
+  assert.match(source, /createActualsMatrixModel/);
+  assert.match(source, /refreshActuals\(\)/);
+  assert.match(source, /allowedOperations\.editActuals/);
+  for (const label of [
+    "現行予算",
+    "BC率",
+    "実績",
+    "最終予算額",
+    "EC率",
+    "今後必要額",
+    "残予算",
+    "消化率",
+  ]) {
+    assert.match(source, new RegExp(label));
+  }
+  // Y9/M2: ① is read live from the 総括 contract lines into the rates.
+  assert.match(source, /contractTotal1/);
+  assert.match(source, /row\.bcRate/);
+  assert.match(source, /row\.ecRate/);
+  // Y10 note + Y4 exclusion are stated on the pane.
+  assert.match(source, /予算属性は表示のみ/);
+  assert.match(source, /給与手当は対象外/);
+  // 内訳 mutations refresh the 予実 current budgets too.
+  assert.match(source, /refreshSummary\(\);\s*refreshActuals\(\);/);
+  assert.doesNotMatch(source, /className\s*=\s*["']jy-/);
+});
+
+test("phase 4d sources never target customize/736 / App 735/736 / kintone REST", () => {
+  {
+    const source = read("scripts/lib/jikkou-yosan-v2/actuals-matrix.mjs");
+    assert.doesNotMatch(source, /customize\/736/);
+    assert.doesNotMatch(source, /\b73[56]\b/);
+    assert.doesNotMatch(source, /kintone\.api|bulkRequest/);
+  }
+  // C-2b: the UI saves only through the executor (no raw record writes).
+  const uiSource = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
+  assert.doesNotMatch(uiSource, /customize\/736/);
+  assert.doesNotMatch(uiSource, /\b73[56]\b/);
+  assert.doesNotMatch(uiSource, /kintone\.api\((["'])\/k\/v1\/record/);
+  assert.doesNotMatch(
+    read("scripts/lib/jikkou-yosan-v2/actuals-matrix.mjs"),
+    /kintone\.mjs/,
+  );
+});
+
+test("rebuild bundles actuals-matrix before the UI, 736 untouched", () => {
+  const state = JSON.parse(read("scripts/data/jikkou-yosan-v2-app-ids.json"));
+  for (const key of ["app1", "app2", "app3"]) {
+    const appId = state.apps[key].appId;
+    assert.ok(appId === null || (Number.isSafeInteger(appId) && appId > 0), key);
+    assert.ok(appId !== 735 && appId !== 736, `${key}: appId must never be 735/736`);
+  }
+  const before736 = protected736Digest();
+  const tempDirectory = mkdtempSync(path.join(tmpdir(), "jy2-phase4d-"));
+  const tempBundle = path.join(tempDirectory, "desktop.js");
+  try {
+    execFileSync(
+      process.execPath,
+      [path.join(root, "scripts/jikkou-yosan-v2-build-desktop.mjs")],
+      {
+        cwd: root,
+        stdio: "pipe",
+        env: { ...process.env, JIKKOU_YOSAN_V2_OUTPUT: tempBundle },
+      },
+    );
+    const bundle = readFileSync(tempBundle, "utf8");
+    for (const marker of ["APP1", "APP2", "APP3"]) {
+      const m = bundle.match(new RegExp(`/\\* @JY_V2_${marker} \\*/ (null|\\d+)`));
+      assert.ok(m, `${marker} marker must be present`);
+      assert.ok(m[1] !== "735" && m[1] !== "736", `${marker} must never be 735/736`);
+    }
+    for (const symbol of [
+      "createActualsMatrixModel",
+      "pivotActualRows",
+      "monthRange",
+      "ACTUAL_COST_CATEGORY_KEYS",
+      "jy2RenderActualPane",
+      "jy2ActualRow",
+    ]) {
+      assert.match(bundle, new RegExp(symbol));
+    }
+    assert.doesNotMatch(bundle, /kintone\.mjs/);
+    assert.doesNotMatch(bundle, /APP[123]_ID\s*=\s*(?:735|736)\b/);
+    // Module lands before the UI shell source (build order).
+    assert.ok(
+      bundle.indexOf("function createActualsMatrixModel") <
+        bundle.indexOf("function jy2RenderShell"),
+    );
+  } finally {
+    rmSync(tempDirectory, { recursive: true, force: true });
+  }
+  assert.equal(protected736Digest(), before736);
+});

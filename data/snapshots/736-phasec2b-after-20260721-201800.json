@@ -1,0 +1,2563 @@
+{
+  "snapshot_timestamp_jst": "20260721-201800",
+  "snapshot_label": "phasec2b-after",
+  "app_id": 736,
+  "preview_environment_only": false,
+  "app": {
+    "appId": "736",
+    "code": "",
+    "name": "実行予算書作成支援ツール　ver.01",
+    "description": "<div>実行予算書作成支援ツール</div>",
+    "createdAt": "2026-06-18T10:47:08.000Z",
+    "creator": {
+      "code": "admin",
+      "name": "管理者"
+    },
+    "modifiedAt": "2026-07-12T08:44:24.000Z",
+    "modifier": {
+      "code": "admin",
+      "name": "管理者"
+    },
+    "spaceId": "56",
+    "threadId": "60"
+  },
+  "settings": {
+    "name": "実行予算書作成支援ツール　ver.01",
+    "description": "<div>実行予算書作成支援ツール</div>",
+    "icon": {
+      "type": "PRESET",
+      "key": "APP39"
+    },
+    "theme": "BLUE",
+    "titleField": {
+      "selectionMode": "AUTO",
+      "code": "project_code"
+    },
+    "enableThumbnails": true,
+    "enableBulkDeletion": false,
+    "enableComments": true,
+    "enableDuplicateRecord": true,
+    "enableInlineRecordEditing": true,
+    "numberPrecision": {
+      "digits": "16",
+      "decimalPlaces": "4",
+      "roundingMode": "HALF_EVEN"
+    },
+    "firstMonthOfFiscalYear": "4",
+    "revision": "186"
+  },
+  "form_fields_live": {
+    "revision": "186",
+    "properties": {
+      "order_branch": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "order_branch",
+        "label": "発注支社",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "end_date": {
+        "type": "DATE",
+        "code": "end_date",
+        "label": "竣工日",
+        "noLabel": false,
+        "required": false,
+        "unique": false,
+        "defaultValue": "",
+        "defaultNowValue": false
+      },
+      "note": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "note",
+        "label": "備考",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "cost_lines": {
+        "type": "SUBTABLE",
+        "code": "cost_lines",
+        "noLabel": false,
+        "label": "原価行",
+        "fields": {
+          "cost_unit_price": {
+            "type": "NUMBER",
+            "code": "cost_unit_price",
+            "label": "単価",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "cost_budget_category": {
+            "type": "DROP_DOWN",
+            "code": "cost_budget_category",
+            "label": "区分",
+            "noLabel": false,
+            "required": false,
+            "options": {
+              "保安費": {
+                "label": "保安費",
+                "index": "1"
+              },
+              "工事費": {
+                "label": "工事費",
+                "index": "0"
+              }
+            },
+            "defaultValue": ""
+          },
+          "cost_category_code": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "cost_category_code",
+            "label": "種別コード",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "cost_ratio": {
+            "type": "NUMBER",
+            "code": "cost_ratio",
+            "label": "率",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "cost_group_key": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "cost_group_key",
+            "label": "グループキー",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "cost_category": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "cost_category",
+            "label": "種別",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "detail_marker": {
+            "type": "DROP_DOWN",
+            "code": "detail_marker",
+            "label": "詳細",
+            "noLabel": false,
+            "required": false,
+            "options": {
+              "②": {
+                "label": "②",
+                "index": "1"
+              },
+              "③": {
+                "label": "③",
+                "index": "2"
+              },
+              "④": {
+                "label": "④",
+                "index": "3"
+              },
+              "⑤": {
+                "label": "⑤",
+                "index": "4"
+              },
+              "⑥": {
+                "label": "⑥",
+                "index": "5"
+              },
+              "⑦": {
+                "label": "⑦",
+                "index": "6"
+              },
+              "なし": {
+                "label": "なし",
+                "index": "0"
+              }
+            },
+            "defaultValue": ""
+          },
+          "cost_basis_note": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "cost_basis_note",
+            "label": "計算基準・備考",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "cost_qty": {
+            "type": "NUMBER",
+            "code": "cost_qty",
+            "label": "数量",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "cost_work_type": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "cost_work_type",
+            "label": "システム入力工種",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "cost_tax_rate": {
+            "type": "NUMBER",
+            "code": "cost_tax_rate",
+            "label": "消費税",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "cost_amount": {
+            "type": "NUMBER",
+            "code": "cost_amount",
+            "label": "金額（税抜）",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "cost_work_type_code": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "cost_work_type_code",
+            "label": "工種コード",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "cost_row_kind": {
+            "type": "DROP_DOWN",
+            "code": "cost_row_kind",
+            "label": "行種別",
+            "noLabel": false,
+            "required": false,
+            "options": {
+              "小計": {
+                "label": "小計",
+                "index": "1"
+              },
+              "見出し": {
+                "label": "見出し",
+                "index": "2"
+              },
+              "連携": {
+                "label": "連携",
+                "index": "3"
+              },
+              "明細": {
+                "label": "明細",
+                "index": "0"
+              }
+            },
+            "defaultValue": ""
+          },
+          "cost_row_key": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "cost_row_key",
+            "label": "行キー",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "cost_unit": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "cost_unit",
+            "label": "単位",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          }
+        }
+      },
+      "is_locked": {
+        "type": "CHECK_BOX",
+        "code": "is_locked",
+        "label": "版ロック",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "ロック": {
+            "label": "ロック",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "person_in_charge_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "person_in_charge_name",
+        "label": "担当者",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "contract_total_1": {
+        "type": "NUMBER",
+        "code": "contract_total_1",
+        "label": "契約合計（①）",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "mat_total_3": {
+        "type": "NUMBER",
+        "code": "mat_total_3",
+        "label": "材料合計（③）",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "mat_total_2": {
+        "type": "NUMBER",
+        "code": "mat_total_2",
+        "label": "材料合計（②）",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "project_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "project_name",
+        "label": "工事名称",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "profit_rate": {
+        "type": "NUMBER",
+        "code": "profit_rate",
+        "label": "粗利率",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "person_in_charge": {
+        "type": "USER_SELECT",
+        "code": "person_in_charge",
+        "label": "担当者",
+        "noLabel": false,
+        "required": false,
+        "entities": [],
+        "defaultValue": []
+      },
+      "created_by_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "created_by_name",
+        "label": "作成者",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "Updated_by": {
+        "type": "MODIFIER",
+        "code": "Updated_by",
+        "label": "Updated by",
+        "noLabel": false
+      },
+      "Created_datetime": {
+        "type": "CREATED_TIME",
+        "code": "Created_datetime",
+        "label": "Created datetime",
+        "noLabel": false
+      },
+      "sub_scaffold_order_amount": {
+        "type": "NUMBER",
+        "code": "sub_scaffold_order_amount",
+        "label": "外注・足場・注文金額",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "sub_labor_total": {
+        "type": "NUMBER",
+        "code": "sub_labor_total",
+        "label": "外注・労務・合計",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "Record_number": {
+        "type": "RECORD_NUMBER",
+        "code": "Record_number",
+        "label": "Record number",
+        "noLabel": false
+      },
+      "girder_type": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "girder_type",
+        "label": "桁種別",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "subcontract_lines": {
+        "type": "SUBTABLE",
+        "code": "subcontract_lines",
+        "noLabel": false,
+        "label": "外注明細",
+        "fields": {
+          "subcontract_block": {
+            "type": "DROP_DOWN",
+            "code": "subcontract_block",
+            "label": "ブロック",
+            "noLabel": false,
+            "required": false,
+            "options": {
+              "repair": {
+                "label": "repair",
+                "index": "0"
+              },
+              "scaffold": {
+                "label": "scaffold",
+                "index": "1"
+              },
+              "paint": {
+                "label": "paint",
+                "index": "2"
+              },
+              "labor": {
+                "label": "labor",
+                "index": "3"
+              }
+            },
+            "defaultValue": ""
+          },
+          "sub_vendor": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "sub_vendor",
+            "label": "会社名",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "sub_qty": {
+            "type": "NUMBER",
+            "code": "sub_qty",
+            "label": "数量",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "sub_row_key": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "sub_row_key",
+            "label": "行キー",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "sub_row_kind": {
+            "type": "DROP_DOWN",
+            "code": "sub_row_kind",
+            "label": "行種別",
+            "noLabel": false,
+            "required": false,
+            "options": {
+              "insurance": {
+                "label": "insurance",
+                "index": "3"
+              },
+              "legal_welfare": {
+                "label": "legal_welfare",
+                "index": "5"
+              },
+              "block_total": {
+                "label": "block_total",
+                "index": "4"
+              },
+              "vendor": {
+                "label": "vendor",
+                "index": "0"
+              },
+              "overhead": {
+                "label": "overhead",
+                "index": "2"
+              },
+              "order_amount": {
+                "label": "order_amount",
+                "index": "6"
+              },
+              "labor_total": {
+                "label": "labor_total",
+                "index": "7"
+              },
+              "detail": {
+                "label": "detail",
+                "index": "1"
+              }
+            },
+            "defaultValue": ""
+          },
+          "sub_amount": {
+            "type": "NUMBER",
+            "code": "sub_amount",
+            "label": "金額（税抜）",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "sub_basis": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "sub_basis",
+            "label": "計算基準",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "sub_unit_price": {
+            "type": "NUMBER",
+            "code": "sub_unit_price",
+            "label": "単価",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "sub_line_type": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "sub_line_type",
+            "label": "種別",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "sub_unit": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "sub_unit",
+            "label": "単位",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          }
+        }
+      },
+      "Created_by": {
+        "type": "CREATOR",
+        "code": "Created_by",
+        "label": "Created by",
+        "noLabel": false
+      },
+      "sub_paint_order_amount": {
+        "type": "NUMBER",
+        "code": "sub_paint_order_amount",
+        "label": "外注・塗装・注文金額",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "department": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "department",
+        "label": "部門",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "client_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "client_name",
+        "label": "発注者",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "draft_date": {
+        "type": "DATE",
+        "code": "draft_date",
+        "label": "立案日",
+        "noLabel": false,
+        "required": false,
+        "unique": false,
+        "defaultValue": "",
+        "defaultNowValue": false
+      },
+      "start_date": {
+        "type": "DATE",
+        "code": "start_date",
+        "label": "着手日",
+        "noLabel": false,
+        "required": false,
+        "unique": false,
+        "defaultValue": "",
+        "defaultNowValue": false
+      },
+      "revision_note": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "revision_note",
+        "label": "修正理由メモ",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "Status": {
+        "type": "STATUS",
+        "code": "Status",
+        "label": "Status",
+        "enabled": false
+      },
+      "record_created_date": {
+        "type": "DATE",
+        "code": "record_created_date",
+        "label": "作成日",
+        "noLabel": false,
+        "required": false,
+        "unique": false,
+        "defaultValue": "",
+        "defaultNowValue": false
+      },
+      "ui_col_layout_json": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "ui_col_layout_json",
+        "label": "列幅レイアウト",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "Assignee": {
+        "type": "STATUS_ASSIGNEE",
+        "code": "Assignee",
+        "label": "Assignee",
+        "enabled": false
+      },
+      "site_entry_date": {
+        "type": "DATE",
+        "code": "site_entry_date",
+        "label": "現場入場予定日",
+        "noLabel": false,
+        "required": false,
+        "unique": false,
+        "defaultValue": "",
+        "defaultNowValue": false
+      },
+      "source_record_id": {
+        "type": "NUMBER",
+        "code": "source_record_id",
+        "label": "複製元レコードID",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "Categories": {
+        "type": "CATEGORY",
+        "code": "Categories",
+        "label": "Categories",
+        "enabled": false
+      },
+      "version_type": {
+        "type": "DROP_DOWN",
+        "code": "version_type",
+        "label": "版種別",
+        "noLabel": false,
+        "required": true,
+        "options": {
+          "仕様変更": {
+            "label": "仕様変更",
+            "index": "1"
+          },
+          "当初": {
+            "label": "当初",
+            "index": "0"
+          },
+          "価格変更": {
+            "label": "価格変更",
+            "index": "2"
+          },
+          "仕様・価格変更": {
+            "label": "仕様・価格変更",
+            "index": "3"
+          },
+          "その他": {
+            "label": "その他",
+            "index": "4"
+          }
+        },
+        "defaultValue": ""
+      },
+      "mat_lines": {
+        "type": "SUBTABLE",
+        "code": "mat_lines",
+        "noLabel": false,
+        "label": "材料明細",
+        "fields": {
+          "mat_amount": {
+            "type": "NUMBER",
+            "code": "mat_amount",
+            "label": "金額",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "mat_row_key": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "mat_row_key",
+            "label": "行キー",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "mat_capacity": {
+            "type": "NUMBER",
+            "code": "mat_capacity",
+            "label": "容量",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "mat_group": {
+            "type": "DROP_DOWN",
+            "code": "mat_group",
+            "label": "材料区分",
+            "noLabel": false,
+            "required": false,
+            "options": {
+              "塗料": {
+                "label": "塗料",
+                "index": "0"
+              },
+              "その他": {
+                "label": "その他",
+                "index": "1"
+              }
+            },
+            "defaultValue": ""
+          },
+          "mat_name": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "mat_name",
+            "label": "品名",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "mat_maker": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "mat_maker",
+            "label": "メーカー",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "mat_basis": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "mat_basis",
+            "label": "計算基準",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "mat_unit_price": {
+            "type": "NUMBER",
+            "code": "mat_unit_price",
+            "label": "単価",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "mat_qty": {
+            "type": "NUMBER",
+            "code": "mat_qty",
+            "label": "所要量",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "mat_vendor": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "mat_vendor",
+            "label": "仕入先",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          }
+        }
+      },
+      "project_code": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "project_code",
+        "label": "工事コード",
+        "noLabel": false,
+        "required": true,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "created_by": {
+        "type": "USER_SELECT",
+        "code": "created_by",
+        "label": "作成者",
+        "noLabel": false,
+        "required": false,
+        "entities": [],
+        "defaultValue": []
+      },
+      "version_seq": {
+        "type": "NUMBER",
+        "code": "version_seq",
+        "label": "版連番",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "safety_rule_88": {
+        "type": "RADIO_BUTTON",
+        "code": "safety_rule_88",
+        "label": "安衛則88条",
+        "noLabel": false,
+        "required": true,
+        "options": {
+          "無": {
+            "label": "無",
+            "index": "1"
+          },
+          "有": {
+            "label": "有",
+            "index": "0"
+          }
+        },
+        "defaultValue": "有",
+        "align": "HORIZONTAL"
+      },
+      "Updated_datetime": {
+        "type": "UPDATED_TIME",
+        "code": "Updated_datetime",
+        "label": "Updated datetime",
+        "noLabel": false
+      },
+      "cost_total_8": {
+        "type": "NUMBER",
+        "code": "cost_total_8",
+        "label": "工事原価額（⑧）",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "project_official_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "project_official_name",
+        "label": "工事正式名称",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "spec_lines": {
+        "type": "SUBTABLE",
+        "code": "spec_lines",
+        "noLabel": false,
+        "label": "仕様明細",
+        "fields": {
+          "spec_unit": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "spec_unit",
+            "label": "単位",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "spec_amount": {
+            "type": "NUMBER",
+            "code": "spec_amount",
+            "label": "金額",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "spec_note": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "spec_note",
+            "label": "備考",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "spec_row_key": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "spec_row_key",
+            "label": "行キー",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "spec_qty": {
+            "type": "NUMBER",
+            "code": "spec_qty",
+            "label": "数量",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "spec_name": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "spec_name",
+            "label": "仕様",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "spec_unit_price": {
+            "type": "NUMBER",
+            "code": "spec_unit_price",
+            "label": "単価",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "spec_category": {
+            "type": "DROP_DOWN",
+            "code": "spec_category",
+            "label": "区分",
+            "noLabel": false,
+            "required": false,
+            "options": {
+              "保安費": {
+                "label": "保安費",
+                "index": "1"
+              },
+              "工事費": {
+                "label": "工事費",
+                "index": "0"
+              }
+            },
+            "defaultValue": ""
+          }
+        }
+      },
+      "sub_repair_order_amount": {
+        "type": "NUMBER",
+        "code": "sub_repair_order_amount",
+        "label": "外注・修繕・注文金額",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "profit_9": {
+        "type": "NUMBER",
+        "code": "profit_9",
+        "label": "粗利額（⑨）",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "status": {
+        "type": "DROP_DOWN",
+        "code": "status",
+        "label": "ステータス",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "下書き": {
+            "label": "下書き",
+            "index": "0"
+          },
+          "版確定": {
+            "label": "版確定",
+            "index": "1"
+          },
+          "初版確定": {
+            "label": "初版確定",
+            "index": "2"
+          }
+        },
+        "defaultValue": ""
+      }
+    }
+  },
+  "form_fields_preview": {
+    "revision": "186",
+    "properties": {
+      "order_branch": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "order_branch",
+        "label": "発注支社",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "end_date": {
+        "type": "DATE",
+        "code": "end_date",
+        "label": "竣工日",
+        "noLabel": false,
+        "required": false,
+        "unique": false,
+        "defaultValue": "",
+        "defaultNowValue": false
+      },
+      "note": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "note",
+        "label": "備考",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "cost_lines": {
+        "type": "SUBTABLE",
+        "code": "cost_lines",
+        "noLabel": false,
+        "label": "原価行",
+        "fields": {
+          "cost_unit_price": {
+            "type": "NUMBER",
+            "code": "cost_unit_price",
+            "label": "単価",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "cost_budget_category": {
+            "type": "DROP_DOWN",
+            "code": "cost_budget_category",
+            "label": "区分",
+            "noLabel": false,
+            "required": false,
+            "options": {
+              "保安費": {
+                "label": "保安費",
+                "index": "1"
+              },
+              "工事費": {
+                "label": "工事費",
+                "index": "0"
+              }
+            },
+            "defaultValue": ""
+          },
+          "cost_category_code": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "cost_category_code",
+            "label": "種別コード",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "cost_ratio": {
+            "type": "NUMBER",
+            "code": "cost_ratio",
+            "label": "率",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "cost_group_key": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "cost_group_key",
+            "label": "グループキー",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "cost_category": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "cost_category",
+            "label": "種別",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "detail_marker": {
+            "type": "DROP_DOWN",
+            "code": "detail_marker",
+            "label": "詳細",
+            "noLabel": false,
+            "required": false,
+            "options": {
+              "②": {
+                "label": "②",
+                "index": "1"
+              },
+              "③": {
+                "label": "③",
+                "index": "2"
+              },
+              "④": {
+                "label": "④",
+                "index": "3"
+              },
+              "⑤": {
+                "label": "⑤",
+                "index": "4"
+              },
+              "⑥": {
+                "label": "⑥",
+                "index": "5"
+              },
+              "⑦": {
+                "label": "⑦",
+                "index": "6"
+              },
+              "なし": {
+                "label": "なし",
+                "index": "0"
+              }
+            },
+            "defaultValue": ""
+          },
+          "cost_basis_note": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "cost_basis_note",
+            "label": "計算基準・備考",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "cost_qty": {
+            "type": "NUMBER",
+            "code": "cost_qty",
+            "label": "数量",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "cost_work_type": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "cost_work_type",
+            "label": "システム入力工種",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "cost_tax_rate": {
+            "type": "NUMBER",
+            "code": "cost_tax_rate",
+            "label": "消費税",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "cost_amount": {
+            "type": "NUMBER",
+            "code": "cost_amount",
+            "label": "金額（税抜）",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "cost_work_type_code": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "cost_work_type_code",
+            "label": "工種コード",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "cost_row_kind": {
+            "type": "DROP_DOWN",
+            "code": "cost_row_kind",
+            "label": "行種別",
+            "noLabel": false,
+            "required": false,
+            "options": {
+              "小計": {
+                "label": "小計",
+                "index": "1"
+              },
+              "見出し": {
+                "label": "見出し",
+                "index": "2"
+              },
+              "連携": {
+                "label": "連携",
+                "index": "3"
+              },
+              "明細": {
+                "label": "明細",
+                "index": "0"
+              }
+            },
+            "defaultValue": ""
+          },
+          "cost_row_key": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "cost_row_key",
+            "label": "行キー",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "cost_unit": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "cost_unit",
+            "label": "単位",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          }
+        }
+      },
+      "is_locked": {
+        "type": "CHECK_BOX",
+        "code": "is_locked",
+        "label": "版ロック",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "ロック": {
+            "label": "ロック",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "person_in_charge_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "person_in_charge_name",
+        "label": "担当者",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "contract_total_1": {
+        "type": "NUMBER",
+        "code": "contract_total_1",
+        "label": "契約合計（①）",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "mat_total_3": {
+        "type": "NUMBER",
+        "code": "mat_total_3",
+        "label": "材料合計（③）",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "mat_total_2": {
+        "type": "NUMBER",
+        "code": "mat_total_2",
+        "label": "材料合計（②）",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "project_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "project_name",
+        "label": "工事名称",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "profit_rate": {
+        "type": "NUMBER",
+        "code": "profit_rate",
+        "label": "粗利率",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "person_in_charge": {
+        "type": "USER_SELECT",
+        "code": "person_in_charge",
+        "label": "担当者",
+        "noLabel": false,
+        "required": false,
+        "entities": [],
+        "defaultValue": []
+      },
+      "created_by_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "created_by_name",
+        "label": "作成者",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "Updated_by": {
+        "type": "MODIFIER",
+        "code": "Updated_by",
+        "label": "Updated by",
+        "noLabel": false
+      },
+      "Created_datetime": {
+        "type": "CREATED_TIME",
+        "code": "Created_datetime",
+        "label": "Created datetime",
+        "noLabel": false
+      },
+      "sub_scaffold_order_amount": {
+        "type": "NUMBER",
+        "code": "sub_scaffold_order_amount",
+        "label": "外注・足場・注文金額",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "sub_labor_total": {
+        "type": "NUMBER",
+        "code": "sub_labor_total",
+        "label": "外注・労務・合計",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "Record_number": {
+        "type": "RECORD_NUMBER",
+        "code": "Record_number",
+        "label": "Record number",
+        "noLabel": false
+      },
+      "girder_type": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "girder_type",
+        "label": "桁種別",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "subcontract_lines": {
+        "type": "SUBTABLE",
+        "code": "subcontract_lines",
+        "noLabel": false,
+        "label": "外注明細",
+        "fields": {
+          "subcontract_block": {
+            "type": "DROP_DOWN",
+            "code": "subcontract_block",
+            "label": "ブロック",
+            "noLabel": false,
+            "required": false,
+            "options": {
+              "repair": {
+                "label": "repair",
+                "index": "0"
+              },
+              "scaffold": {
+                "label": "scaffold",
+                "index": "1"
+              },
+              "paint": {
+                "label": "paint",
+                "index": "2"
+              },
+              "labor": {
+                "label": "labor",
+                "index": "3"
+              }
+            },
+            "defaultValue": ""
+          },
+          "sub_vendor": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "sub_vendor",
+            "label": "会社名",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "sub_qty": {
+            "type": "NUMBER",
+            "code": "sub_qty",
+            "label": "数量",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "sub_row_key": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "sub_row_key",
+            "label": "行キー",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "sub_row_kind": {
+            "type": "DROP_DOWN",
+            "code": "sub_row_kind",
+            "label": "行種別",
+            "noLabel": false,
+            "required": false,
+            "options": {
+              "insurance": {
+                "label": "insurance",
+                "index": "3"
+              },
+              "legal_welfare": {
+                "label": "legal_welfare",
+                "index": "5"
+              },
+              "block_total": {
+                "label": "block_total",
+                "index": "4"
+              },
+              "vendor": {
+                "label": "vendor",
+                "index": "0"
+              },
+              "overhead": {
+                "label": "overhead",
+                "index": "2"
+              },
+              "order_amount": {
+                "label": "order_amount",
+                "index": "6"
+              },
+              "labor_total": {
+                "label": "labor_total",
+                "index": "7"
+              },
+              "detail": {
+                "label": "detail",
+                "index": "1"
+              }
+            },
+            "defaultValue": ""
+          },
+          "sub_amount": {
+            "type": "NUMBER",
+            "code": "sub_amount",
+            "label": "金額（税抜）",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "sub_basis": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "sub_basis",
+            "label": "計算基準",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "sub_unit_price": {
+            "type": "NUMBER",
+            "code": "sub_unit_price",
+            "label": "単価",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "sub_line_type": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "sub_line_type",
+            "label": "種別",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "sub_unit": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "sub_unit",
+            "label": "単位",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          }
+        }
+      },
+      "Created_by": {
+        "type": "CREATOR",
+        "code": "Created_by",
+        "label": "Created by",
+        "noLabel": false
+      },
+      "sub_paint_order_amount": {
+        "type": "NUMBER",
+        "code": "sub_paint_order_amount",
+        "label": "外注・塗装・注文金額",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "department": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "department",
+        "label": "部門",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "client_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "client_name",
+        "label": "発注者",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "draft_date": {
+        "type": "DATE",
+        "code": "draft_date",
+        "label": "立案日",
+        "noLabel": false,
+        "required": false,
+        "unique": false,
+        "defaultValue": "",
+        "defaultNowValue": false
+      },
+      "start_date": {
+        "type": "DATE",
+        "code": "start_date",
+        "label": "着手日",
+        "noLabel": false,
+        "required": false,
+        "unique": false,
+        "defaultValue": "",
+        "defaultNowValue": false
+      },
+      "revision_note": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "revision_note",
+        "label": "修正理由メモ",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "Status": {
+        "type": "STATUS",
+        "code": "Status",
+        "label": "Status",
+        "enabled": false
+      },
+      "record_created_date": {
+        "type": "DATE",
+        "code": "record_created_date",
+        "label": "作成日",
+        "noLabel": false,
+        "required": false,
+        "unique": false,
+        "defaultValue": "",
+        "defaultNowValue": false
+      },
+      "ui_col_layout_json": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "ui_col_layout_json",
+        "label": "列幅レイアウト",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "Assignee": {
+        "type": "STATUS_ASSIGNEE",
+        "code": "Assignee",
+        "label": "Assignee",
+        "enabled": false
+      },
+      "site_entry_date": {
+        "type": "DATE",
+        "code": "site_entry_date",
+        "label": "現場入場予定日",
+        "noLabel": false,
+        "required": false,
+        "unique": false,
+        "defaultValue": "",
+        "defaultNowValue": false
+      },
+      "source_record_id": {
+        "type": "NUMBER",
+        "code": "source_record_id",
+        "label": "複製元レコードID",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "Categories": {
+        "type": "CATEGORY",
+        "code": "Categories",
+        "label": "Categories",
+        "enabled": false
+      },
+      "version_type": {
+        "type": "DROP_DOWN",
+        "code": "version_type",
+        "label": "版種別",
+        "noLabel": false,
+        "required": true,
+        "options": {
+          "仕様変更": {
+            "label": "仕様変更",
+            "index": "1"
+          },
+          "当初": {
+            "label": "当初",
+            "index": "0"
+          },
+          "価格変更": {
+            "label": "価格変更",
+            "index": "2"
+          },
+          "仕様・価格変更": {
+            "label": "仕様・価格変更",
+            "index": "3"
+          },
+          "その他": {
+            "label": "その他",
+            "index": "4"
+          }
+        },
+        "defaultValue": ""
+      },
+      "mat_lines": {
+        "type": "SUBTABLE",
+        "code": "mat_lines",
+        "noLabel": false,
+        "label": "材料明細",
+        "fields": {
+          "mat_amount": {
+            "type": "NUMBER",
+            "code": "mat_amount",
+            "label": "金額",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "mat_row_key": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "mat_row_key",
+            "label": "行キー",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "mat_capacity": {
+            "type": "NUMBER",
+            "code": "mat_capacity",
+            "label": "容量",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "mat_group": {
+            "type": "DROP_DOWN",
+            "code": "mat_group",
+            "label": "材料区分",
+            "noLabel": false,
+            "required": false,
+            "options": {
+              "塗料": {
+                "label": "塗料",
+                "index": "0"
+              },
+              "その他": {
+                "label": "その他",
+                "index": "1"
+              }
+            },
+            "defaultValue": ""
+          },
+          "mat_name": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "mat_name",
+            "label": "品名",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "mat_maker": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "mat_maker",
+            "label": "メーカー",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "mat_basis": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "mat_basis",
+            "label": "計算基準",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "mat_unit_price": {
+            "type": "NUMBER",
+            "code": "mat_unit_price",
+            "label": "単価",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "mat_qty": {
+            "type": "NUMBER",
+            "code": "mat_qty",
+            "label": "所要量",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "mat_vendor": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "mat_vendor",
+            "label": "仕入先",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          }
+        }
+      },
+      "project_code": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "project_code",
+        "label": "工事コード",
+        "noLabel": false,
+        "required": true,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "created_by": {
+        "type": "USER_SELECT",
+        "code": "created_by",
+        "label": "作成者",
+        "noLabel": false,
+        "required": false,
+        "entities": [],
+        "defaultValue": []
+      },
+      "version_seq": {
+        "type": "NUMBER",
+        "code": "version_seq",
+        "label": "版連番",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "safety_rule_88": {
+        "type": "RADIO_BUTTON",
+        "code": "safety_rule_88",
+        "label": "安衛則88条",
+        "noLabel": false,
+        "required": true,
+        "options": {
+          "無": {
+            "label": "無",
+            "index": "1"
+          },
+          "有": {
+            "label": "有",
+            "index": "0"
+          }
+        },
+        "defaultValue": "有",
+        "align": "HORIZONTAL"
+      },
+      "Updated_datetime": {
+        "type": "UPDATED_TIME",
+        "code": "Updated_datetime",
+        "label": "Updated datetime",
+        "noLabel": false
+      },
+      "cost_total_8": {
+        "type": "NUMBER",
+        "code": "cost_total_8",
+        "label": "工事原価額（⑧）",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "project_official_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "project_official_name",
+        "label": "工事正式名称",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "spec_lines": {
+        "type": "SUBTABLE",
+        "code": "spec_lines",
+        "noLabel": false,
+        "label": "仕様明細",
+        "fields": {
+          "spec_unit": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "spec_unit",
+            "label": "単位",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "spec_amount": {
+            "type": "NUMBER",
+            "code": "spec_amount",
+            "label": "金額",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "spec_note": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "spec_note",
+            "label": "備考",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "spec_row_key": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "spec_row_key",
+            "label": "行キー",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "spec_qty": {
+            "type": "NUMBER",
+            "code": "spec_qty",
+            "label": "数量",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "spec_name": {
+            "type": "SINGLE_LINE_TEXT",
+            "code": "spec_name",
+            "label": "仕様",
+            "noLabel": false,
+            "required": false,
+            "minLength": "",
+            "maxLength": "",
+            "expression": "",
+            "hideExpression": false,
+            "unique": false,
+            "defaultValue": ""
+          },
+          "spec_unit_price": {
+            "type": "NUMBER",
+            "code": "spec_unit_price",
+            "label": "単価",
+            "noLabel": false,
+            "required": false,
+            "minValue": "",
+            "maxValue": "",
+            "digit": false,
+            "unique": false,
+            "defaultValue": "",
+            "displayScale": "0",
+            "unit": "",
+            "unitPosition": "BEFORE"
+          },
+          "spec_category": {
+            "type": "DROP_DOWN",
+            "code": "spec_category",
+            "label": "区分",
+            "noLabel": false,
+            "required": false,
+            "options": {
+              "保安費": {
+                "label": "保安費",
+                "index": "1"
+              },
+              "工事費": {
+                "label": "工事費",
+                "index": "0"
+              }
+            },
+            "defaultValue": ""
+          }
+        }
+      },
+      "sub_repair_order_amount": {
+        "type": "NUMBER",
+        "code": "sub_repair_order_amount",
+        "label": "外注・修繕・注文金額",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "profit_9": {
+        "type": "NUMBER",
+        "code": "profit_9",
+        "label": "粗利額（⑨）",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      },
+      "status": {
+        "type": "DROP_DOWN",
+        "code": "status",
+        "label": "ステータス",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "下書き": {
+            "label": "下書き",
+            "index": "0"
+          },
+          "版確定": {
+            "label": "版確定",
+            "index": "1"
+          },
+          "初版確定": {
+            "label": "初版確定",
+            "index": "2"
+          }
+        },
+        "defaultValue": ""
+      }
+    }
+  }
+}

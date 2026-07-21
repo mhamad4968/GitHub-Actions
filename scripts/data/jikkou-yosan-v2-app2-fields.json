@@ -1,0 +1,246 @@
+{
+  "_meta": {
+    "app": "実行予算ver02_内訳明細",
+    "source": "docs/plans/2026-07-21-jikkou-yosan-ver02-3app-field-catalog.md §2",
+    "notes": [
+      "1行=1レコード。row_kind ごとに使わないフィールドは空のまま保存する。",
+      "A4: write_channel の選択肢は app1_custom_ui のみ（初回値も同じ）。",
+      "parent_lock_snapshot のレコード権限マッピング（P-35）はPhase2ではACL未設定。後続フェーズで実装する。"
+    ]
+  },
+  "properties": {
+    "detail_record_key": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "detail_record_key",
+      "label": "内訳行レコードキー",
+      "required": true,
+      "unique": true,
+      "defaultValue": ""
+    },
+    "project_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "project_id",
+      "label": "工事ID",
+      "required": true,
+      "defaultValue": ""
+    },
+    "project_business_key": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "project_business_key",
+      "label": "工事業務キー",
+      "required": true,
+      "defaultValue": ""
+    },
+    "budget_version_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "budget_version_id",
+      "label": "所属予算版ID",
+      "required": true,
+      "defaultValue": ""
+    },
+    "stable_block_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "stable_block_id",
+      "label": "安定ブロックID",
+      "required": true,
+      "defaultValue": ""
+    },
+    "row_key": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "row_key",
+      "label": "行キー",
+      "required": true,
+      "defaultValue": ""
+    },
+    "row_kind": {
+      "type": "DROP_DOWN",
+      "code": "row_kind",
+      "label": "行種別",
+      "required": true,
+      "options": {
+        "block_header": { "label": "block_header", "index": "0" },
+        "detail": { "label": "detail", "index": "1" },
+        "overhead": { "label": "overhead", "index": "2" },
+        "insurance": { "label": "insurance", "index": "3" },
+        "subtotal": { "label": "subtotal", "index": "4" },
+        "legal_welfare": { "label": "legal_welfare", "index": "5" },
+        "block_total": { "label": "block_total", "index": "6" }
+      },
+      "defaultValue": ""
+    },
+    "block_no": {
+      "type": "NUMBER",
+      "code": "block_no",
+      "label": "内訳№",
+      "required": true,
+      "defaultValue": ""
+    },
+    "block_sort_order": {
+      "type": "NUMBER",
+      "code": "block_sort_order",
+      "label": "ブロック順",
+      "required": true,
+      "defaultValue": ""
+    },
+    "row_sort_order": {
+      "type": "NUMBER",
+      "code": "row_sort_order",
+      "label": "行順",
+      "required": true,
+      "defaultValue": ""
+    },
+    "block_status": {
+      "type": "DROP_DOWN",
+      "code": "block_status",
+      "label": "ブロック状態",
+      "required": true,
+      "options": {
+        "active": { "label": "active", "index": "0" },
+        "retired": { "label": "retired", "index": "1" }
+      },
+      "defaultValue": "active"
+    },
+    "retired_at_version_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "retired_at_version_id",
+      "label": "廃止時予算版ID",
+      "required": false,
+      "defaultValue": ""
+    },
+    "cost_category_key": {
+      "type": "DROP_DOWN",
+      "code": "cost_category_key",
+      "label": "費用区分",
+      "required": false,
+      "options": {
+        "施工": { "label": "施工", "index": "0" },
+        "保安": { "label": "保安", "index": "1" }
+      },
+      "defaultValue": ""
+    },
+    "work_type_code": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "work_type_code",
+      "label": "工種番号",
+      "required": false,
+      "defaultValue": ""
+    },
+    "work_type_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "work_type_name",
+      "label": "システム入力工種",
+      "required": false,
+      "defaultValue": ""
+    },
+    "vendor_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "vendor_name",
+      "label": "取引先",
+      "required": false,
+      "defaultValue": ""
+    },
+    "name_1": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "name_1",
+      "label": "名称・規格1",
+      "required": false,
+      "defaultValue": ""
+    },
+    "name_2": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "name_2",
+      "label": "名称・規格2",
+      "required": false,
+      "defaultValue": ""
+    },
+    "name_3": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "name_3",
+      "label": "名称・規格3",
+      "required": false,
+      "defaultValue": ""
+    },
+    "name_spec_group": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "name_spec_group",
+      "label": "名称規格グループ",
+      "required": false,
+      "defaultValue": ""
+    },
+    "unit": {
+      "type": "DROP_DOWN",
+      "code": "unit",
+      "label": "単位",
+      "required": false,
+      "options": {
+        "㎡": { "label": "㎡", "index": "0" },
+        "式": { "label": "式", "index": "1" },
+        "回": { "label": "回", "index": "2" },
+        "人": { "label": "人", "index": "3" },
+        "日": { "label": "日", "index": "4" },
+        "箇月": { "label": "箇月", "index": "5" },
+        "－": { "label": "－", "index": "6" },
+        "缶": { "label": "缶", "index": "7" },
+        "枚": { "label": "枚", "index": "8" },
+        "％": { "label": "％", "index": "9" }
+      },
+      "defaultValue": ""
+    },
+    "quantity": {
+      "type": "NUMBER",
+      "code": "quantity",
+      "label": "数量",
+      "required": false,
+      "defaultValue": ""
+    },
+    "unit_price": {
+      "type": "NUMBER",
+      "code": "unit_price",
+      "label": "単価",
+      "required": false,
+      "defaultValue": ""
+    },
+    "amount": {
+      "type": "NUMBER",
+      "code": "amount",
+      "label": "金額（税抜）",
+      "required": false,
+      "defaultValue": ""
+    },
+    "note": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "note",
+      "label": "備考",
+      "required": false,
+      "defaultValue": ""
+    },
+    "calc_basis": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "calc_basis",
+      "label": "計算基準",
+      "required": false,
+      "defaultValue": ""
+    },
+    "parent_lock_snapshot": {
+      "type": "DROP_DOWN",
+      "code": "parent_lock_snapshot",
+      "label": "親ロック派生状態",
+      "required": true,
+      "options": {
+        "editable": { "label": "editable", "index": "0" },
+        "locked": { "label": "locked", "index": "1" }
+      },
+      "defaultValue": "editable"
+    },
+    "write_channel": {
+      "type": "DROP_DOWN",
+      "code": "write_channel",
+      "label": "書込経路",
+      "required": true,
+      "options": {
+        "app1_custom_ui": { "label": "app1_custom_ui", "index": "0" }
+      },
+      "defaultValue": "app1_custom_ui"
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "_meta": {
+    "purpose": "Jikkou Yosan Ver.02 3-app lifecycle state. Saved immediately after create and after deploy so a partial failure never loses an app ID. status=deployed means schema+settings+fail-closed read-only ACL deployed (shell only). customizationStatus tracks customization JS deploy separately and never claims deployed falsely.",
+    "statuses": [
+      "uncreated",
+      "created",
+      "deployed",
+      "error"
+    ],
+    "customizationStatuses": [
+      "unconfigured",
+      "deployed",
+      "error"
+    ],
+    "forbiddenAppIds": [
+      735,
+      736
+    ]
+  },
+  "apps": {
+    "app1": {
+      "name": "実行予算書作成支援ツールver02",
+      "appId": 756,
+      "status": "deployed",
+      "customizationStatus": "deployed",
+      "updatedAt": "2026-07-21T11:15:25.345Z",
+      "error": null
+    },
+    "app2": {
+      "name": "実行予算ver02_内訳明細",
+      "appId": 757,
+      "status": "deployed",
+      "customizationStatus": "deployed",
+      "updatedAt": "2026-07-21T11:15:28.416Z",
+      "error": null
+    },
+    "app3": {
+      "name": "実行予算ver02_実績",
+      "appId": 758,
+      "status": "deployed",
+      "customizationStatus": "deployed",
+      "updatedAt": "2026-07-21T11:15:30.627Z",
+      "error": null
+    }
+  }
+}

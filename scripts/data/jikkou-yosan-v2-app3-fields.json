@@ -1,0 +1,119 @@
+{
+  "_meta": {
+    "app": "実行予算ver02_実績",
+    "source": "docs/plans/2026-07-21-jikkou-yosan-ver02-3app-field-catalog.md §3",
+    "notes": [
+      "record_kind=monthly_consumption は target_month・registered_version_id 必須、final_budget は last_changed_version_id 必須。条件必須は保存ロジック（Phase3）で強制し、フィールド定義では任意とする。",
+      "A4: source_kind の選択肢は 手入力 のみ（初回値も同じ）。write_channel は app1_custom_ui のみ。"
+    ]
+  },
+  "properties": {
+    "actual_record_key": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "actual_record_key",
+      "label": "予実レコードキー",
+      "required": true,
+      "unique": true,
+      "defaultValue": ""
+    },
+    "project_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "project_id",
+      "label": "工事ID",
+      "required": true,
+      "defaultValue": ""
+    },
+    "project_business_key": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "project_business_key",
+      "label": "工事業務キー",
+      "required": true,
+      "defaultValue": ""
+    },
+    "record_kind": {
+      "type": "DROP_DOWN",
+      "code": "record_kind",
+      "label": "レコード種別",
+      "required": true,
+      "options": {
+        "monthly_consumption": { "label": "monthly_consumption", "index": "0" },
+        "final_budget": { "label": "final_budget", "index": "1" }
+      },
+      "defaultValue": ""
+    },
+    "stable_block_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "stable_block_id",
+      "label": "工種キー",
+      "required": true,
+      "defaultValue": ""
+    },
+    "cost_category_key": {
+      "type": "DROP_DOWN",
+      "code": "cost_category_key",
+      "label": "費用区分キー",
+      "required": true,
+      "options": {
+        "施工": { "label": "施工", "index": "0" },
+        "保安": { "label": "保安", "index": "1" }
+      },
+      "defaultValue": ""
+    },
+    "target_month": {
+      "type": "DATE",
+      "code": "target_month",
+      "label": "対象月",
+      "required": false,
+      "defaultValue": "",
+      "defaultNowValue": false
+    },
+    "amount": {
+      "type": "NUMBER",
+      "code": "amount",
+      "label": "金額（税抜）",
+      "required": true,
+      "defaultValue": ""
+    },
+    "note": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "note",
+      "label": "内容",
+      "required": false,
+      "defaultValue": ""
+    },
+    "source_kind": {
+      "type": "DROP_DOWN",
+      "code": "source_kind",
+      "label": "取込元種別",
+      "required": true,
+      "options": {
+        "手入力": { "label": "手入力", "index": "0" }
+      },
+      "defaultValue": "手入力"
+    },
+    "registered_version_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "registered_version_id",
+      "label": "登録時予算版ID",
+      "required": false,
+      "defaultValue": ""
+    },
+    "last_changed_version_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "last_changed_version_id",
+      "label": "最終変更時予算版ID",
+      "required": false,
+      "defaultValue": ""
+    },
+    "write_channel": {
+      "type": "DROP_DOWN",
+      "code": "write_channel",
+      "label": "書込経路",
+      "required": true,
+      "options": {
+        "app1_custom_ui": { "label": "app1_custom_ui", "index": "0" }
+      },
+      "defaultValue": "app1_custom_ui"
+    }
+  }
+}
