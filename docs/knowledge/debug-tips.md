@@ -108,7 +108,7 @@
 **禁止**: customize/deploy 凍結中の無断 save・上位憲法 §50-3-11 非置換違反・本体単独完結
 **exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
 
-<!-- errors: npm run cio:session:cold-start` | npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `manda | npm run cio:report-verify-response -- --file <下書き>`**（または `--stdin`）を **実行し exit -->
+<!-- errors: Error）→client-adapter→save-model。offline 189件 pass 後に LIVE 検証 | | npm run cio:session:cold-start` | npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `manda -->
 
 
 ## [2026-07-20] セッション解体時知恵ストック

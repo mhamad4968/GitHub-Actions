@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-07-21T11:56:38.838Z",
-  "gitHead": "8550c08a",
-  "gitStatus": "## main...origin/main [ahead 16]",
-  "nextTask": "**浜田の指示待ち**（当日 -0）。候補のみ: 依頼者回答の取り込み／仕様再確認／実装可否の検討。実装着手は GO 後。",
+  "exportedAt": "2026-07-21T12:02:26.573Z",
+  "gitHead": "fab9da80",
+  "gitStatus": "## main...origin/main [ahead 1]",
+  "nextTask": "**浜田の指示待ち**（当日 -0）。候補: 夕反省 #S1/#S2/#R1/#D1 の承認判断 → Ver.02 残タスク（予実保存配線・新規工事作成フロー・版種別選択UI・**736→Ver.02 データ移行**・756 見た目を 736 テイストへ→依頼者レビュー）。",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -17,6 +17,6 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=8550c08a | 次=**浜田の指示待ち**（当日 -0）。候補のみ: 依頼者回答の取り込み／仕様再確認／実装可否の検討。実装着手は GO 後。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "promptBlock": "【SESSION-BRIDGE】git=fab9da80 | 次=**浜田の指示待ち**（当日 -0）。候補: 夕反省 #S1/#S2/#R1/#D1 の承認判断 → Ver.02 残タスク（予実保存配線・新規工事作成フロー・版種別選択UI・**736→Ver.02 データ移行**・756 見た目を 736 テイストへ→依頼者レビュー）。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }
