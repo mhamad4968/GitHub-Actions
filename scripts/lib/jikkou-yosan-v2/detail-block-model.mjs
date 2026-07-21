@@ -63,15 +63,15 @@ const DETAIL_EDITABLE_FIELDS = Object.freeze([
 ]);
 const COST_CATEGORIES = Object.freeze(["施工", "保安"]);
 
-function hasText(value) {
+function detailHasText(value) {
   return value !== undefined && value !== null && value !== "";
 }
 
-function normalizedOptional(value) {
-  return hasText(value) ? String(value) : null;
+function detailNormalizedOptional(value) {
+  return detailHasText(value) ? String(value) : null;
 }
 
-function defaultUuidFactory() {
+function detailDefaultUuidFactory() {
   const cryptoRef = globalThis.crypto;
   if (cryptoRef && typeof cryptoRef.randomUUID === "function") {
     return cryptoRef.randomUUID();
@@ -79,7 +79,7 @@ function defaultUuidFactory() {
   throw new Error("crypto.randomUUID unavailable — pass uuidFactory");
 }
 
-function assertPatchKeys(patch, editableFields, context) {
+function detailAssertPatchKeys(patch, editableFields, context) {
   if (!patch || typeof patch !== "object") {
     throw new TypeError(`${context}: patch must be an object`);
   }
@@ -91,7 +91,7 @@ function assertPatchKeys(patch, editableFields, context) {
 }
 
 function normalizedCostCategory(value, context) {
-  if (!hasText(value)) return null;
+  if (!detailHasText(value)) return null;
   const category = String(value);
   if (!COST_CATEGORIES.includes(category)) {
     throw new RangeError(`${context}: costCategory must be 施工 or 保安`);
@@ -100,7 +100,7 @@ function normalizedCostCategory(value, context) {
 }
 
 function normalizedUnit(value, context) {
-  if (!hasText(value)) return null;
+  if (!detailHasText(value)) return null;
   const unit = String(value);
   if (!DETAIL_UNITS.includes(unit)) {
     throw new RangeError(`${context}: unknown unit ${JSON.stringify(unit)} (U16)`);
@@ -121,7 +121,7 @@ export function detailRowAmount(row) {
 export function createDetailBlockModel({
   lockState,
   blocks = [],
-  uuidFactory = defaultUuidFactory,
+  uuidFactory = detailDefaultUuidFactory,
 } = {}) {
   const operations = allowedOperations(lockState);
 
@@ -169,48 +169,48 @@ export function createDetailBlockModel({
     if (!input || typeof input !== "object") {
       throw new TypeError(`${where}: block must be an object`);
     }
-    const status = hasText(input.status) ? String(input.status) : "active";
+    const status = detailHasText(input.status) ? String(input.status) : "active";
     if (!BLOCK_STATUSES.includes(status)) {
       throw new RangeError(`${where}: block_status must be active or retired`);
     }
     const block = blankBlock();
-    block.stableBlockId = hasText(input.stableBlockId)
+    block.stableBlockId = detailHasText(input.stableBlockId)
       ? String(input.stableBlockId)
       : block.stableBlockId;
     // Round-trip stability (P-24): rows loaded from App2 keep their original
     // header/footer row_key so a later save diffs as updates, not delete+add.
-    block.headerRowKey = hasText(input.headerRowKey)
+    block.headerRowKey = detailHasText(input.headerRowKey)
       ? String(input.headerRowKey)
       : block.headerRowKey;
     if (input.footerRowKeys && typeof input.footerRowKeys === "object") {
       for (const kind of BLOCK_FOOTER_KINDS) {
-        if (hasText(input.footerRowKeys[kind])) {
+        if (detailHasText(input.footerRowKeys[kind])) {
           block.footer[kind].rowKey = String(input.footerRowKeys[kind]);
         }
       }
     }
     block.status = status;
     block.hasActuals = input.hasActuals === true;
-    block.workTypeCode = normalizedOptional(input.workTypeCode);
-    block.workTypeName = normalizedOptional(input.workTypeName);
+    block.workTypeCode = detailNormalizedOptional(input.workTypeCode);
+    block.workTypeName = detailNormalizedOptional(input.workTypeName);
     block.costCategory = normalizedCostCategory(input.costCategory, where);
-    block.vendorName = normalizedOptional(input.vendorName);
+    block.vendorName = detailNormalizedOptional(input.vendorName);
     const detailRows = Array.isArray(input.detailRows) ? input.detailRows : [];
     block.detailRows = detailRows.map((row) => ({
-      rowKey: hasText(row.rowKey) ? String(row.rowKey) : createRowKey(uuidFactory),
-      name1: normalizedOptional(row.name1),
-      name2: normalizedOptional(row.name2),
-      name3: normalizedOptional(row.name3),
+      rowKey: detailHasText(row.rowKey) ? String(row.rowKey) : createRowKey(uuidFactory),
+      name1: detailNormalizedOptional(row.name1),
+      name2: detailNormalizedOptional(row.name2),
+      name3: detailNormalizedOptional(row.name3),
       unit: normalizedUnit(row.unit, where),
-      quantity: normalizedOptional(row.quantity),
-      unitPrice: normalizedOptional(row.unitPrice),
-      note: normalizedOptional(row.note),
+      quantity: detailNormalizedOptional(row.quantity),
+      unitPrice: detailNormalizedOptional(row.unitPrice),
+      note: detailNormalizedOptional(row.note),
     }));
     // U8/U12: a block always has at least one detail row.
     if (block.detailRows.length === 0) block.detailRows.push(blankDetailRow());
     for (const kind of MANUAL_FOOTER_KINDS) {
       const camel = kind === "legal_welfare" ? "legalWelfare" : kind;
-      block.footer[kind].amount = normalizedOptional(input[camel]);
+      block.footer[kind].amount = detailNormalizedOptional(input[camel]);
     }
     return block;
   });
@@ -266,7 +266,7 @@ export function createDetailBlockModel({
   function nameSpecGroups(block) {
     let group = null;
     return block.detailRows.map((row) => {
-      if (hasText(row.name1)) group = row.name1;
+      if (detailHasText(row.name1)) group = row.name1;
       return group;
     });
   }
@@ -329,10 +329,10 @@ export function createDetailBlockModel({
     const rows = block.detailRows;
     if (rows.length === 0) return null;
     const { unit, unitPrice } = rows[0];
-    if (!hasText(unit) || !hasText(unitPrice)) return null;
+    if (!detailHasText(unit) || !detailHasText(unitPrice)) return null;
     for (const row of rows) {
       if (row.unit !== unit || row.unitPrice !== unitPrice) return null;
-      if (!hasText(row.quantity)) return null;
+      if (!detailHasText(row.quantity)) return null;
     }
     for (const kind of MANUAL_FOOTER_KINDS) {
       if (block.footer[kind].amount !== null) return null;
@@ -496,13 +496,13 @@ export function createDetailBlockModel({
     },
     updateBlockHeader(stableBlockId, patch) {
       assertEditable("updateBlockHeader");
-      assertPatchKeys(patch, HEADER_EDITABLE_FIELDS, "updateBlockHeader");
+      detailAssertPatchKeys(patch, HEADER_EDITABLE_FIELDS, "updateBlockHeader");
       const { block } = findBlock(stableBlockId, "updateBlockHeader");
       for (const [key, value] of Object.entries(patch)) {
         block[key] =
           key === "costCategory"
             ? normalizedCostCategory(value, "updateBlockHeader")
-            : normalizedOptional(value);
+            : detailNormalizedOptional(value);
       }
       return stableBlockId;
     },
@@ -516,14 +516,14 @@ export function createDetailBlockModel({
     },
     updateDetailRow(stableBlockId, rowKey, patch) {
       assertEditable("updateDetailRow");
-      assertPatchKeys(patch, DETAIL_EDITABLE_FIELDS, "updateDetailRow");
+      detailAssertPatchKeys(patch, DETAIL_EDITABLE_FIELDS, "updateDetailRow");
       const { block } = findBlock(stableBlockId, "updateDetailRow");
       const { row } = findDetail(block, rowKey, "updateDetailRow");
       for (const [key, value] of Object.entries(patch)) {
         row[key] =
           key === "unit"
             ? normalizedUnit(value, "updateDetailRow")
-            : normalizedOptional(value);
+            : detailNormalizedOptional(value);
       }
       return rowKey;
     },
@@ -562,7 +562,7 @@ export function createDetailBlockModel({
         );
       }
       const { block } = findBlock(stableBlockId, "updateFooterAmount");
-      block.footer[kind].amount = normalizedOptional(amount);
+      block.footer[kind].amount = detailNormalizedOptional(amount);
       return stableBlockId;
     },
 

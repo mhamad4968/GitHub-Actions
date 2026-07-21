@@ -42,11 +42,11 @@ export const ACTUAL_READ_ONLY_FIELDS = Object.freeze([
 const KEY_DELIMITER = "|";
 const MONTH_PATTERN = /^(\d{4})-(0[1-9]|1[0-2])(?:-01)?$/;
 
-function hasText(value) {
+function actualsHasText(value) {
   return value !== undefined && value !== null && value !== "";
 }
 
-function fieldValue(record, code) {
+function actualsFieldValue(record, code) {
   const field = record?.[code];
   return field && typeof field === "object" && "value" in field
     ? field.value
@@ -94,7 +94,7 @@ function rowStateKey(stableBlockId, costCategoryKey) {
 
 // 整数円 (§15.3): actual amounts are integer-yen strings (tax exclusive).
 function normalizedAmount(value, context) {
-  if (!hasText(value)) return null;
+  if (!actualsHasText(value)) return null;
   const text = String(value).trim();
   if (!/^[+-]?\d+$/.test(text)) {
     throw new RangeError(`${context}: amount must be an integer yen string`);
@@ -121,21 +121,21 @@ export function pivotActualRows(rows) {
   const seen = new Set();
   rows.forEach((record, index) => {
     const where = `rows[${index}]`;
-    const recordKind = fieldValue(record, "record_kind");
+    const recordKind = actualsFieldValue(record, "record_kind");
     if (!ACTUAL_RECORD_KINDS.includes(recordKind)) {
       throw new RangeError(
         `${where}: record_kind must be monthly_consumption or final_budget`,
       );
     }
-    const stableBlockId = fieldValue(record, "stable_block_id");
-    if (!hasText(stableBlockId)) {
+    const stableBlockId = actualsFieldValue(record, "stable_block_id");
+    if (!actualsHasText(stableBlockId)) {
       throw new RangeError(`${where}: stable_block_id is required`);
     }
     const costCategoryKey = assertCostCategoryKey(
-      fieldValue(record, "cost_category_key"),
+      actualsFieldValue(record, "cost_category_key"),
       where,
     );
-    const amount = normalizedAmount(fieldValue(record, "amount"), where);
+    const amount = normalizedAmount(actualsFieldValue(record, "amount"), where);
     if (amount === null) throw new RangeError(`${where}: amount is required`);
     const key = rowStateKey(stableBlockId, costCategoryKey);
     if (!pivot.has(key)) {
@@ -148,7 +148,7 @@ export function pivotActualRows(rows) {
     }
     const entry = pivot.get(key);
     if (recordKind === "monthly_consumption") {
-      const month = normalizeMonth(fieldValue(record, "target_month"), where);
+      const month = normalizeMonth(actualsFieldValue(record, "target_month"), where);
       const cellKey = `${key}${KEY_DELIMITER}${month}`;
       if (seen.has(cellKey)) {
         throw new RangeError(`${where}: duplicate monthly cell for ${month}`);
@@ -200,7 +200,7 @@ export function createActualsMatrixModel({
   }
 
   function entryFor(stableBlockId, costCategoryKey, context) {
-    if (!hasText(stableBlockId)) {
+    if (!actualsHasText(stableBlockId)) {
       throw new RangeError(`${context}: stableBlockId is required`);
     }
     assertCostCategoryKey(costCategoryKey, context);
