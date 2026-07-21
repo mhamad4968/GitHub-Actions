@@ -1,0 +1,577 @@
+{
+  "snapshot_timestamp_jst": "20260721-203613",
+  "snapshot_label": "phasec3-final",
+  "app_id": 735,
+  "preview_environment_only": false,
+  "app": {
+    "appId": "735",
+    "code": "",
+    "name": "【実行予算書】リストマスタ ver.01",
+    "description": "",
+    "createdAt": "2026-06-18T10:37:32.000Z",
+    "creator": {
+      "code": "admin",
+      "name": "管理者"
+    },
+    "modifiedAt": "2026-06-18T10:39:21.000Z",
+    "modifier": {
+      "code": "admin",
+      "name": "管理者"
+    },
+    "spaceId": "56",
+    "threadId": "60"
+  },
+  "settings": {
+    "name": "【実行予算書】リストマスタ ver.01",
+    "description": "",
+    "icon": {
+      "type": "PRESET",
+      "key": "APP39"
+    },
+    "theme": "WHITE",
+    "titleField": {
+      "selectionMode": "AUTO",
+      "code": "item_group"
+    },
+    "enableThumbnails": true,
+    "enableBulkDeletion": false,
+    "enableComments": true,
+    "enableDuplicateRecord": true,
+    "enableInlineRecordEditing": true,
+    "numberPrecision": {
+      "digits": "16",
+      "decimalPlaces": "4",
+      "roundingMode": "HALF_EVEN"
+    },
+    "firstMonthOfFiscalYear": "4",
+    "revision": "3"
+  },
+  "form_fields_live": {
+    "revision": "3",
+    "properties": {
+      "Status": {
+        "type": "STATUS",
+        "code": "Status",
+        "label": "Status",
+        "enabled": false
+      },
+      "Assignee": {
+        "type": "STATUS_ASSIGNEE",
+        "code": "Assignee",
+        "label": "Assignee",
+        "enabled": false
+      },
+      "is_active": {
+        "type": "CHECK_BOX",
+        "code": "is_active",
+        "label": "有効",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "有効": {
+            "label": "有効",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "Categories": {
+        "type": "CATEGORY",
+        "code": "Categories",
+        "label": "Categories",
+        "enabled": false
+      },
+      "expense_code": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "expense_code",
+        "label": "費目コード",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "item_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "item_name",
+        "label": "名称",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "source": {
+        "type": "DROP_DOWN",
+        "code": "source",
+        "label": "出所",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手入力": {
+            "label": "手入力",
+            "index": "2"
+          },
+          "コード表取込": {
+            "label": "コード表取込",
+            "index": "0"
+          },
+          "リスト取込": {
+            "label": "リスト取込",
+            "index": "1"
+          }
+        },
+        "defaultValue": ""
+      },
+      "work_type_code": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "work_type_code",
+        "label": "工種コード",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "Updated_by": {
+        "type": "MODIFIER",
+        "code": "Updated_by",
+        "label": "Updated by",
+        "noLabel": false
+      },
+      "item_group": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "item_group",
+        "label": "項目",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "work_type_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "work_type_name",
+        "label": "工種名称",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "list_category": {
+        "type": "DROP_DOWN",
+        "code": "list_category",
+        "label": "カテゴリ",
+        "noLabel": false,
+        "required": true,
+        "options": {
+          "消費税": {
+            "label": "消費税",
+            "index": "5"
+          },
+          "部門": {
+            "label": "部門",
+            "index": "2"
+          },
+          "コード表行": {
+            "label": "コード表行",
+            "index": "0"
+          },
+          "発注支社": {
+            "label": "発注支社",
+            "index": "1"
+          },
+          "桁種別": {
+            "label": "桁種別",
+            "index": "3"
+          },
+          "単位": {
+            "label": "単位",
+            "index": "4"
+          }
+        },
+        "defaultValue": ""
+      },
+      "Updated_datetime": {
+        "type": "UPDATED_TIME",
+        "code": "Updated_datetime",
+        "label": "Updated datetime",
+        "noLabel": false
+      },
+      "Created_datetime": {
+        "type": "CREATED_TIME",
+        "code": "Created_datetime",
+        "label": "Created datetime",
+        "noLabel": false
+      },
+      "expense_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "expense_name",
+        "label": "費目名称",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "sub_type_code": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "sub_type_code",
+        "label": "種別コード",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "Record_number": {
+        "type": "RECORD_NUMBER",
+        "code": "Record_number",
+        "label": "Record number",
+        "noLabel": false
+      },
+      "definition": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "definition",
+        "label": "定義及び品名",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "Created_by": {
+        "type": "CREATOR",
+        "code": "Created_by",
+        "label": "Created by",
+        "noLabel": false
+      },
+      "item_sub_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "item_sub_name",
+        "label": "サブ名称",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "sub_type_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "sub_type_name",
+        "label": "種別名称",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "sort_order": {
+        "type": "NUMBER",
+        "code": "sort_order",
+        "label": "表示順",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      }
+    }
+  },
+  "form_fields_preview": {
+    "revision": "3",
+    "properties": {
+      "Status": {
+        "type": "STATUS",
+        "code": "Status",
+        "label": "Status",
+        "enabled": false
+      },
+      "Assignee": {
+        "type": "STATUS_ASSIGNEE",
+        "code": "Assignee",
+        "label": "Assignee",
+        "enabled": false
+      },
+      "is_active": {
+        "type": "CHECK_BOX",
+        "code": "is_active",
+        "label": "有効",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "有効": {
+            "label": "有効",
+            "index": "0"
+          }
+        },
+        "defaultValue": [],
+        "align": "HORIZONTAL"
+      },
+      "Categories": {
+        "type": "CATEGORY",
+        "code": "Categories",
+        "label": "Categories",
+        "enabled": false
+      },
+      "expense_code": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "expense_code",
+        "label": "費目コード",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "item_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "item_name",
+        "label": "名称",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "source": {
+        "type": "DROP_DOWN",
+        "code": "source",
+        "label": "出所",
+        "noLabel": false,
+        "required": false,
+        "options": {
+          "手入力": {
+            "label": "手入力",
+            "index": "2"
+          },
+          "コード表取込": {
+            "label": "コード表取込",
+            "index": "0"
+          },
+          "リスト取込": {
+            "label": "リスト取込",
+            "index": "1"
+          }
+        },
+        "defaultValue": ""
+      },
+      "work_type_code": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "work_type_code",
+        "label": "工種コード",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "Updated_by": {
+        "type": "MODIFIER",
+        "code": "Updated_by",
+        "label": "Updated by",
+        "noLabel": false
+      },
+      "item_group": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "item_group",
+        "label": "項目",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "work_type_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "work_type_name",
+        "label": "工種名称",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "list_category": {
+        "type": "DROP_DOWN",
+        "code": "list_category",
+        "label": "カテゴリ",
+        "noLabel": false,
+        "required": true,
+        "options": {
+          "消費税": {
+            "label": "消費税",
+            "index": "5"
+          },
+          "部門": {
+            "label": "部門",
+            "index": "2"
+          },
+          "コード表行": {
+            "label": "コード表行",
+            "index": "0"
+          },
+          "発注支社": {
+            "label": "発注支社",
+            "index": "1"
+          },
+          "桁種別": {
+            "label": "桁種別",
+            "index": "3"
+          },
+          "単位": {
+            "label": "単位",
+            "index": "4"
+          }
+        },
+        "defaultValue": ""
+      },
+      "Updated_datetime": {
+        "type": "UPDATED_TIME",
+        "code": "Updated_datetime",
+        "label": "Updated datetime",
+        "noLabel": false
+      },
+      "Created_datetime": {
+        "type": "CREATED_TIME",
+        "code": "Created_datetime",
+        "label": "Created datetime",
+        "noLabel": false
+      },
+      "expense_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "expense_name",
+        "label": "費目名称",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "sub_type_code": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "sub_type_code",
+        "label": "種別コード",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "Record_number": {
+        "type": "RECORD_NUMBER",
+        "code": "Record_number",
+        "label": "Record number",
+        "noLabel": false
+      },
+      "definition": {
+        "type": "MULTI_LINE_TEXT",
+        "code": "definition",
+        "label": "定義及び品名",
+        "noLabel": false,
+        "required": false,
+        "defaultValue": ""
+      },
+      "Created_by": {
+        "type": "CREATOR",
+        "code": "Created_by",
+        "label": "Created by",
+        "noLabel": false
+      },
+      "item_sub_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "item_sub_name",
+        "label": "サブ名称",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "sub_type_name": {
+        "type": "SINGLE_LINE_TEXT",
+        "code": "sub_type_name",
+        "label": "種別名称",
+        "noLabel": false,
+        "required": false,
+        "minLength": "",
+        "maxLength": "",
+        "expression": "",
+        "hideExpression": false,
+        "unique": false,
+        "defaultValue": ""
+      },
+      "sort_order": {
+        "type": "NUMBER",
+        "code": "sort_order",
+        "label": "表示順",
+        "noLabel": false,
+        "required": false,
+        "minValue": "",
+        "maxValue": "",
+        "digit": false,
+        "unique": false,
+        "defaultValue": "",
+        "displayScale": "0",
+        "unit": "",
+        "unitPosition": "BEFORE"
+      }
+    }
+  }
+}

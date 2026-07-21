@@ -1130,6 +1130,7 @@
     versionModel,
     projectId,
     detailRowCountProvider,
+    liveCopy,
   ) {
     pane.textContent = "";
     pane.appendChild(
@@ -1189,8 +1190,38 @@
       cta.textContent = "次版作成";
       // CTA gate: only the latest confirmed version with no draft (V7).
       cta.disabled = !version.allowedOperations.createNextVersion;
-      cta.addEventListener("click", () => {
+      cta.addEventListener("click", async () => {
         if (cta.disabled) return;
+        // 残B: LIVE 文脈では P-29 の確認ダイアログを経て planVersionCopy を
+        // 1回の bulkRequest で実行する。オフラインでは従来どおり計画のみ。
+        if (typeof liveCopy === "function") {
+          const view = documentRef.defaultView;
+          const confirmed =
+            view && typeof view.confirm === "function"
+              ? view.confirm(VERSION_DUPLICATE_MESSAGES["next-version"])
+              : false;
+          if (!confirmed) return;
+          cta.disabled = true;
+          status.className = "jy2-version-status";
+          status.textContent = "次版を複製中…";
+          try {
+            const { plan } = await liveCopy(version);
+            if (view && typeof view.alert === "function") {
+              view.alert(
+                `第${plan.versionSeq}版（下書き）を作成しました。内訳${plan.copies.detailRows}行を複製し、旧版行をロックしました。`,
+              );
+            }
+            if (view && view.location) view.location.reload();
+          } catch (error) {
+            const conflict = error && error.action === "abort_reload";
+            status.className = "jy2-warning jy2-version-status";
+            status.textContent = conflict
+              ? "他の更新と競合したため中止しました。再読込してください。"
+              : `次版作成失敗: ${(error && error.message) || error}`;
+            cta.disabled = false;
+          }
+          return;
+        }
         try {
           const plan = versionModel.planNextVersionDraft(
             version,
@@ -1238,19 +1269,67 @@
         });
         return app2RecordsToBlocks(records);
       },
-      async save(detailModel) {
+      // 残B: 同一工事の版一覧（App1 レコード）を LIVE から読む。
+      async loadVersions() {
+        const escaped = keys.projectId.replace(/"/g, "");
+        const response = await api("/k/v1/records.json", "GET", {
+          app: APP1_ID,
+          query: `project_id = "${escaped}" order by version_seq asc limit 500`,
+        });
+        return Array.isArray(response.records) ? response.records : [];
+      },
+      // 残A: 総括（請負/給与）サブテーブルは親 PUT に同乗して原子保存される。
+      async save(detailModel, summaryModel) {
+        const parentRecord = summaryModel
+          ? summarySnapshotToSubtables(summaryModel.snapshot())
+          : {};
         const existing = await fetchExistingDetailRows(api, APP2_ID, keys.budgetVersionId);
         const inputs = buildDetailSaveInputs({
           app1Id: APP1_ID,
           app2Id: APP2_ID,
           parentRecordId: String(recordId),
           parentRevision: String(revision),
+          parentRecord,
           keys,
           rows: detailModel.toApp2Rows(),
           existingRecords: existing,
         });
         const plan = planAtomicBudgetSave(inputs);
         return executePlan(plan, createKintoneApiClient(api));
+      },
+      // 残B: 最新確定版からの次版複製（1回の bulkRequest・実績は複製しない）。
+      async createNextVersion(versionModel, version) {
+        const oldRows = await fetchExistingDetailRows(
+          api,
+          APP2_ID,
+          version.budgetVersionId,
+          { fields: null },
+        );
+        const plan = versionModel.planNextVersionDraft(version, oldRows.length);
+        const escapedBv = version.budgetVersionId.replace(/"/g, "");
+        const parents = await api("/k/v1/records.json", "GET", {
+          app: APP1_ID,
+          query: `budget_version_id = "${escapedBv}" limit 2`,
+        });
+        if (!parents.records || parents.records.length !== 1) {
+          throw new Error(
+            `複製元の親レコードを特定できません（budget_version_id=${version.budgetVersionId}）`,
+          );
+        }
+        const oldParentRecord = parents.records[0];
+        const inputs = buildVersionCopyInputs({
+          app1Id: APP1_ID,
+          app2Id: APP2_ID,
+          plan,
+          oldParent: {
+            id: oldParentRecord.$id.value,
+            revision: oldParentRecord.$revision.value,
+            record: oldParentRecord,
+          },
+          oldDetailRecords: oldRows,
+        });
+        const bulkPlan = planVersionCopy(inputs);
+        return { outcome: await executePlan(bulkPlan, createKintoneApiClient(api)), plan };
       },
     });
   }
@@ -1338,9 +1417,9 @@
         saveButton.textContent = "保存中…";
         const view = documentRef.defaultView;
         try {
-          const outcome = await saveController.save(detailModel);
+          const outcome = await saveController.save(detailModel, summaryModel);
           if (view && typeof view.alert === "function") {
-            view.alert(`内訳を保存しました（${outcome.requestCount}リクエスト）`);
+            view.alert(`総括・内訳を保存しました（${outcome.requestCount}リクエスト）`);
           }
           if (view && view.location) view.location.reload();
         } catch (error) {
@@ -1444,6 +1523,9 @@
         versionModel,
         versionProjectId,
         detailRowCount,
+        saveController
+          ? (version) => saveController.createNextVersion(versionModel, version)
+          : undefined,
       );
     refreshSummary();
     refreshActuals();
@@ -1505,11 +1587,17 @@
             ? jy2CreateSaveController(kintone.api.bind(kintone), record, event.recordId)
             : null;
         if (controller) {
-          controller
-            .loadBlocks()
-            .then((detailBlocks) => {
+          Promise.all([controller.loadBlocks(), controller.loadVersions()])
+            .then(([detailBlocks, versions]) => {
+              // 残A: 総括は開いている親レコードのサブテーブルから復元。
+              const summaryLines = app1RecordToSummaryLines(record || {});
               jy2RenderShell(space, record, {
                 detailBlocks,
+                versions,
+                contractLines: summaryLines.contractLines.filter(
+                  (line) => line.section,
+                ),
+                salaryLines: summaryLines.salaryLines,
                 saveController: controller,
                 projectId: controller.keys.projectId,
               });

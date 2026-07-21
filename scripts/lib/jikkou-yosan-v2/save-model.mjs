@@ -169,6 +169,90 @@ export function buildDetailSaveInputs({
   };
 }
 
+// ---------------------------------------------------------------------------
+// 総括（請負/給与）サブテーブル: モデル ⇔ App1 レコードの相互変換（残A）
+// ---------------------------------------------------------------------------
+
+/**
+ * contract-salary-model の snapshot() → App1 の contract_lines / salary_lines
+ * サブテーブル値。全行置換（kintone のサブテーブル PUT は value 配列で全置換）。
+ * amount は snapshot の計算済み値（ROUND 済み）をそのまま書く。
+ */
+export function summarySnapshotToSubtables(summarySnapshot) {
+  if (!summarySnapshot || typeof summarySnapshot !== "object") {
+    throw new TypeError("summarySnapshot must be a contract-salary snapshot");
+  }
+  const contractRows = [];
+  let contractSort = 0;
+  for (const section of ["施工", "保安"]) {
+    for (const line of summarySnapshot.contractSections?.[section] ?? []) {
+      contractSort += 1;
+      contractRows.push({
+        value: {
+          contract_row_key: TEXT(line.rowKey),
+          contract_section: TEXT(line.section),
+          contract_work_name: TEXT(line.workName ?? ""),
+          contract_unit: TEXT(line.unit ?? ""),
+          contract_qty: TEXT(line.quantity ?? ""),
+          contract_unit_price: TEXT(line.unitPrice ?? ""),
+          contract_amount: TEXT(line.amount ?? ""),
+          contract_note: TEXT(line.note ?? ""),
+          contract_sort_order: TEXT(contractSort),
+        },
+      });
+    }
+  }
+  const salaryRows = (summarySnapshot.salaryLines ?? []).map((line, index) => ({
+    value: {
+      salary_row_key: TEXT(line.rowKey),
+      salary_role: TEXT(line.role ?? ""),
+      salary_unit: TEXT(line.unit ?? ""),
+      salary_qty: TEXT(line.quantity ?? ""),
+      salary_unit_price: TEXT(line.unitPrice ?? ""),
+      salary_amount: TEXT(line.amount ?? ""),
+      salary_note: TEXT(line.note ?? ""),
+      salary_sort_order: TEXT(index + 1),
+    },
+  }));
+  return {
+    contract_lines: { value: contractRows },
+    salary_lines: { value: salaryRows },
+  };
+}
+
+/**
+ * App1 レコード → createContractSalaryModel 入力（contractLines/salaryLines）。
+ * row_key を保持するのでラウンドトリップしても行識別が変わらない。
+ */
+export function app1RecordToSummaryLines(record) {
+  const rows = (code) => {
+    const field = record?.[code];
+    return Array.isArray(field?.value) ? field.value : [];
+  };
+  const cell = (row, code) => {
+    const value = row?.value?.[code]?.value;
+    return value === undefined || value === null || value === "" ? null : String(value);
+  };
+  const contractLines = rows("contract_lines").map((row) => ({
+    rowKey: cell(row, "contract_row_key"),
+    section: cell(row, "contract_section"),
+    workName: cell(row, "contract_work_name"),
+    unit: cell(row, "contract_unit"),
+    quantity: cell(row, "contract_qty"),
+    unitPrice: cell(row, "contract_unit_price"),
+    note: cell(row, "contract_note"),
+  }));
+  const salaryLines = rows("salary_lines").map((row) => ({
+    rowKey: cell(row, "salary_row_key"),
+    role: cell(row, "salary_role"),
+    unit: cell(row, "salary_unit"),
+    quantity: cell(row, "salary_qty"),
+    unitPrice: cell(row, "salary_unit_price"),
+    note: cell(row, "salary_note"),
+  }));
+  return { contractLines, salaryLines };
+}
+
 const FOOTER_KINDS = ["overhead", "insurance", "subtotal", "legal_welfare", "block_total"];
 const MANUAL_FOOTER_CAMEL = { overhead: "overhead", insurance: "insurance", legal_welfare: "legalWelfare" };
 

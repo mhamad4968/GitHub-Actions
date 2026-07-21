@@ -30,6 +30,7 @@ const sourceNames = [
   "detail-block-model.mjs",
   "actuals-matrix.mjs",
   "version-series-model.mjs",
+  "version-copy-model.mjs",
 ];
 
 function stripEsm(source, name) {
