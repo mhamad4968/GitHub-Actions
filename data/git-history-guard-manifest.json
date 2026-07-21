@@ -3,7 +3,7 @@
   "note": "git-history-alignment が保護するコマンド・緩和禁止パターン。verify:git-history-alignment / git-history-mcp 連動。",
   "generations": [
     {
-      "hash": "8f65be65",
+      "hash": "5e99d740",
       "label": "夕反省2026-07-21 改善提案 全承認・実施: #S1 build内eslint / #S2 close-git bridge常時stage / #R1 AGENTS.md多バイト置換禁止 / #D1 TSB-042制定",
       "at": "2026-07-21"
     },
