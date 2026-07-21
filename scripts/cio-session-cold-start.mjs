@@ -10,6 +10,7 @@
  *
  * WALL-CLOCK（§51-6-2）: bootstrap 直前に session:clock:clear → session:clock:set。
  * 続けて watch / web を確保（manual-desktop / trialPaused でも WAKE 後の stale watch を防ぐ）。
+ * Phase 6c: bootstrap 後に watch/web を再確保（cio:health 二重起動による stale 防止）。
  * trialPaused / manual-desktop で sessionEnd が clear しない場合の残留開始時刻を防ぐ。
  *
  * @see docs/runbooks/session-cold-start-v1.md
@@ -143,6 +144,21 @@ function main() {
     run('npm run cio:checkpoint:git-heal -- --commit --push');
   } catch {
     console.warn('[cold-start] checkpoint:git-heal NG — 手動で npm run cio:checkpoint:git-heal -- --commit');
+  }
+
+  // Phase 6c — bootstrap 内 cio:health が WSL /tmp 経路で web を二重起動し、
+  // Windows pid/url と食い違って stale になるのを防ぐ（WAKE 後に再確保）
+  console.log('\n▶ Phase 6c WALL-CLOCK-REEENSURE');
+  try {
+    const watch = spawnWatch();
+    console.log(`[cold-start] re-ensure watch ${watch.message}${watch.pid != null ? ` pid=${watch.pid}` : ''}`);
+    const web = spawnWebServer();
+    const url = web.url || readWebUrl();
+    console.log(
+      `[cold-start] re-ensure web ${web.message}${url ? ` → ${url}` : ''}${web.pid != null ? ` pid=${web.pid}` : ''}`,
+    );
+  } catch (e) {
+    console.warn(`[cold-start] wall-clock re-ensure WARN: ${e?.message || e}`);
   }
 
   console.log('\n▶ Phase 7 IMPORT');

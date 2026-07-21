@@ -213,12 +213,28 @@ function readUrlFromWebLog() {
   }
 }
 
+/** web のみ残骸掃除（OS 割当ポートの孤児含む・watch は触らない） */
+export function killWebOrphanProcesses() {
+  killNodeListenersInPortRange(47931, 48060);
+  const envBase = Number(process.env.SESSION_CLOCK_WEB_PORT);
+  if (Number.isFinite(envBase) && (envBase < 47931 || envBase > 48060)) {
+    killNodeListenersInPortRange(envBase, envBase + 29);
+  }
+  if (process.platform === 'win32') {
+    killNodeProcessesByCmdFragment('session-clock-web.mjs');
+  } else {
+    spawnSync('pkill', ['-f', 'session-clock-web.mjs'], { encoding: 'utf8' });
+  }
+}
+
 /** 前回 web 残骸を止めてから web を起動（detached）。watch は止めない */
 export function spawnWebServer() {
   if (webAlreadyRunning()) {
     return { started: false, url: readWebUrl(), message: 'web already running' };
   }
   stopWebOnly();
+  // pid ファイル外の孤児（OS フォールバックポート / cio:health auto-heal 二重起動）を掃除
+  killWebOrphanProcesses();
 
   fs.mkdirSync(path.dirname(paths.webLog), { recursive: true });
   const out = fs.openSync(paths.webLog, 'a');

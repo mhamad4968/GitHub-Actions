@@ -4917,5 +4917,17 @@ npm run cio:morning:ready
 
 **触らない**: 688（WBGT以外）/ 677–679 / SKYSEA（8/3前）/ 712 / 736現行rev186
 
+### 2026-07-21 JST — **WAKE・ブリーフィング・web stale 恒久是正**
+
+**要約**: New Chat で Desktop AI緊急用00〜36通読・認識ゲートOK・health 100%・MCP registry26・probe6/6・GHA latest success（cancelled=superseded）。壁時計 web が bootstrap 後 stale（cio:health 二重起動＋OS フォールバックポート孤児）。`session:clock:web` 再起動で復旧。`killWebOrphanProcesses`＋cold-start Phase 6c re-ensure を恒久追加。DeepSeek §50-3-8 突合済。
+
+**次の1手**: **浜田の指示待ち**（当日 -0）。候補のみ: 依頼者回答の取り込み／仕様再確認／実装可否の検討。実装着手は GO 後。
+
+**Git**: close-git 前
+
+**GO待ち**: H9 / △2 は 2026-07-25のみ。736実装GO別途。
+
+**触らない**: 688（WBGT以外）/ 677–679 / SKYSEA（8/3前）/ 712 / 736現行rev186
+
 ---
 
