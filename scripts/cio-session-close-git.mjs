@@ -229,6 +229,9 @@ function main() {
   }
 
   if (autoStage) stageSessionChanges();
+  // #S2 (2026-07-21 夕反省承認): export-handoff が bridge を再生成した場合、
+  // --auto-stage 無しだと unstaged のまま pull --rebase が停止する。bridge のみ常に stage する。
+  git(['add', 'docs/handoff/latest-session-bridge.json']);
   const bridgeStaged = git(['diff', '--cached', '--name-only']).out;
   if (bridgeStaged) {
     // R31: amend fold 後 gitHead === HEAD~1 を許容 — bridge は単独 commit（amend 禁止）
@@ -240,6 +243,7 @@ function main() {
     console.log('[cio:session:close-git] bridge export を単独 commit（R31）');
     runNpm('cio:session:export-handoff');
     if (autoStage) stageSessionChanges();
+    git(['add', 'docs/handoff/latest-session-bridge.json']); // #S2 同上
     const bridgeRefresh = git(['diff', '--cached', '--name-only']).out;
     if (bridgeRefresh) {
       const refreshCommit = git(['commit', '-m', 'chore(handoff): align bridge gitHead']);

@@ -1,21 +1,21 @@
 {
-  "version": "2026-07-12",
+  "version": "2026-07-21",
   "note": "git-history-alignment が保護するコマンド・緩和禁止パターン。verify:git-history-alignment / git-history-mcp 連動。",
   "generations": [
     {
+      "hash": "8f65be65",
+      "label": "夕反省2026-07-21 改善提案 全承認・実施: #S1 build内eslint / #S2 close-git bridge常時stage / #R1 AGENTS.md多バイト置換禁止 / #D1 TSB-042制定",
+      "at": "2026-07-21"
+    },
+    {
       "hash": "868121da",
       "label": "feat(evening): §5 approved — Cursor v2.5, Models 6-role, CHKPT-CLOSE-01, E1 README",
-      "at": "2026-07-12"
+      "at": "2026-07-21"
     },
     {
       "hash": "c0255feb",
       "label": "feat(go-boundary): implement F0 evening improvements (浜田全承認)",
-      "at": "2026-07-12"
-    },
-    {
-      "hash": "fa7ace6b",
-      "label": "feat(constitution): lifecycle-v2 registry slim, charters 26/27, verify probes",
-      "at": "2026-07-12"
+      "at": "2026-07-21"
     }
   ],
   "protectedCommands": [

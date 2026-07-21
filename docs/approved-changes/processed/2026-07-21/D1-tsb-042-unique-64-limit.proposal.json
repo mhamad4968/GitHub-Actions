@@ -1,0 +1,8 @@
+{
+  "id": "D1",
+  "category": "D",
+  "status": "implemented",
+  "processed_at": "2026-07-21",
+  "note": "TSB-042 制定: kintone 一意 SINGLE_LINE_TEXT の 64 字制限（CB_VA01）と compactUuid 対策・offline テストにフィールド長検証を含める指針。浜田承認 2026-07-21 夜・即時実施",
+  "target": "docs/troubleshooting.md"
+}

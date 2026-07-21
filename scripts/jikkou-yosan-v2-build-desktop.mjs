@@ -73,4 +73,18 @@ ${uiSource}
 
 writeFileSync(outputPath, output, "utf8");
 execFileSync(process.execPath, ["--check", outputPath], { stdio: "inherit" });
+// #S1 (2026-07-21 夕反省承認): 束ねでモジュール私有ヘルパーが同名衝突すると
+// node --check では通るため、push ゲートまで検知が遅れる。build 直後に lint する。
+// --config 明示: テストが出力を repo 外 (%TEMP%) に逃がしても flat config を解決できるように。
+execFileSync(
+  process.execPath,
+  [
+    path.join(root, "node_modules/eslint/bin/eslint.js"),
+    "--config",
+    path.join(root, "eslint.config.js"),
+    "--no-warn-ignored",
+    outputPath,
+  ],
+  { stdio: "inherit", cwd: root },
+);
 console.log(`Wrote ${outputPath}`);

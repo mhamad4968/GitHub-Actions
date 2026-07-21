@@ -1758,3 +1758,38 @@ npm run video-gen:pilot-ransomware:force -- --chapter 1
 - `.cursor/rules/video-gen-lane.mdc`
 - `assets/video-gen/01_ransomware_threat/script.json`（`script_tts` 例）
 
+---
+
+## TSB-042 — kintone 一意 SINGLE_LINE_TEXT の 64 字制限で CB_VA01（2026-07-21 制定 / 実行予算 Ver.02 Phase C）
+
+### 事象
+
+- App2（757）の一意フィールド `detail_record_key` に **UUID×2 連結（73 字）** を保存しようとして `bulkRequest` が **HTTP 400 `CB_VA01` "Enter less than 65 characters."** で失敗
+- offline テスト（モック client）は全通過しており、**LIVE 実行で初検知**
+
+### 真因
+
+kintone の SINGLE_LINE_TEXT は `unique: true` 時に **64 文字上限**。フル UUID（36 字）を 2 本連結するキー設計は必ず超過する。offline テストはフィールド長制約をモデル化していなかった。
+
+### 恒久対策（✅ Resolved）
+
+| 手順 | 内容 |
+|------|------|
+| 1 | キー生成は `scripts/lib/jikkou-yosan-v2/keys.mjs` の **`compactUuid` / `compactUuidFactory`**（UUID → base36 16 字）を使う |
+| 2 | `save-model.mjs` に **64 字超過を保存前に throw するガード**あり — 新キー設計時も同様のガードを入れる |
+| 3 | 一意フィールドを新設するときは「最長ケースの文字数 ≤ 64」を設計時に確認し、offline テストにフィールド長検証を含める |
+
+**skip 禁止**: 「UUID だから一意で安全」とだけ考えて長さを確認しない。
+
+### 確認
+
+```powershell
+npm run jikkou-yosan:v2-phasec:test   # save-model の 64 字ガードテスト含む
+```
+
+### 関連
+
+- `scripts/lib/jikkou-yosan-v2/keys.mjs` — `compactUuid`
+- `scripts/lib/jikkou-yosan-v2/save-model.mjs` — 長さガード
+- `docs/reports/2026-07-21-evening-reflection.md` §4-2
+

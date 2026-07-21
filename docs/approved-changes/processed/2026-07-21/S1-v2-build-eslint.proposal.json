@@ -1,0 +1,8 @@
+{
+  "id": "S1",
+  "category": "S",
+  "status": "implemented",
+  "processed_at": "2026-07-21",
+  "note": "jikkou-yosan:v2-build-desktop の最後に生成 bundle への eslint を組み込み（push 時初検知 → build 直後検知へ前倒し）。浜田「改善提案はすべて承認します」（2026-07-21 夜）で即時実施",
+  "target": "scripts/jikkou-yosan-v2-build-desktop.mjs"
+}
