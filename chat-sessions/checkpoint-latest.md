@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-21 JST — **WAKE・ブリーフィング（New Chat）**。00〜36通読・health100%・MCP26/probe6/6・GHA success。web stale を再起動＋cold-start Phase6c／killWebOrphan 恒久化。Ver.02 仕様 CLOSED・依頼者回答待ち。実装は GO 後。
 
-**Git**: **`45e281c3`** = `origin/main` — push 済
+**Git**: **`1e0211b1`** = `origin/main` — push 済
 
 **本日状態**: Ver.02 **総括・内訳・予実・版管理すべて CLOSED**（§7–§10・§21）。§7.1c 行操作帯ガード。依頼者へ確認メール送付済（R-*/RY-*・名称規格／取引先リスト＝R-19/20）。実装/deploy/App作成は浜田GO後。現行736 rev186 不変。SKYSEAは8/3問い合わせまで実装・GPO・本番配信なし。
 
