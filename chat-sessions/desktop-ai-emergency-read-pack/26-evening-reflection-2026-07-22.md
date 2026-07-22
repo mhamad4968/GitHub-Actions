@@ -19,18 +19,19 @@
 | A2 | 736 移行・Excel 移行の名称は **必ず name_1/2/3 マッピング表＋1行サンプル突合** を migrate テストに入れる |
 | A3 | App756 deploy 成功後は **同一ターンで R63 commit**（夕締め一括禁止の徹底） |
 
-## §3 ルール・脚本（承認待ち）
+## §3 ルール・脚本（**浜田全件 GO 2026-07-22 20:45**）
 
-| ID | 種別 | 提案 | 根拠 |
-|----|------|------|------|
-| #R-NAME-01 | ルール | Ver.02 内訳の名称候補は **Excel データマスタ正本のみ**（仮シード禁止）。仮置きする場合は UI に「仮」明示＋checkpoint 残課題必須 | F1/F3 |
-| #S-NAME-01 | 脚本 | `verify:jikkou-name-lists-excel` — UI/シードと `docs/plans/2026-07-20-jikkou-list-source-scan.md`（または抽出 JSON）の集合差分を exit 1 | F1 |
-| #S-MIG-01 | 脚本 | migrate テストに「細目が name_1 のみ・name_2 空」を **回帰禁止** assert | F2 |
-| #D-R63-01 | 規律 | 756/757/758 の customize deploy 後、**未 commit で次タスク禁止**（既定 R63 の運用強化・hooks warn） | F4 |
-| #R-OPS-01 | 運用 | 仕様総点検とリスト正本突合は **別チェックリスト行**にし、どちらか欠けると「仕様どおり完了」と書かない | F3 |
-| #R-CONST-01 | 憲法想起 | CLOSED 仕様の「当面コンボ」は **候補源まで含む**。UI だけコンボ化して候補源が仮、は未完了扱い | F1 |
+| ID | 種別 | 提案 | 根拠 | 状態 |
+|----|------|------|------|------|
+| #R-NAME-01 | ルール | Ver.02 内訳の名称候補は **Excel データマスタ正本のみ**（仮シード禁止）。仮置きする場合は UI に「仮」明示＋checkpoint 残課題必須 | F1/F3 | **GO** |
+| #S-NAME-01 | 脚本 | `verify:jikkou-name-lists-excel` — UI/シードと `docs/plans/2026-07-20-jikkou-list-source-scan.md`（または抽出 JSON）の集合差分を exit 1 | F1 | **GO** |
+| #S-MIG-01 | 脚本 | migrate テストに「細目が name_1 のみ・name_2 空」を **回帰禁止** assert | F2 | **GO** |
+| #D-R63-01 | 規律 | 756/757/758 の customize deploy 後、**未 commit で次タスク禁止**（既定 R63 の運用強化・hooks warn） | F4 | **GO** |
+| #R-OPS-01 | 運用 | 仕様総点検とリスト正本突合は **別チェックリスト行**にし、どちらか欠けると「仕様どおり完了」と書かない | F3 | **GO** |
+| #R-CONST-01 | 憲法想起 | CLOSED 仕様の「当面コンボ」は **候補源まで含む**。UI だけコンボ化して候補源が仮、は未完了扱い | F1 | **GO** |
 
-**承認後**: `docs/approved-changes/` に GO 記録 → S/R 実装。
+**GO 証跡**: `docs/approved-changes/2026-07-22-evening-reflection-hamada-go.md`  
+**実装**: 継続作業（当日 -0）と合わせて実施。
 
 ## 検証
 
