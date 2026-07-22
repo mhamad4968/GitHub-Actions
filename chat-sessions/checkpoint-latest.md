@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-22 夜 JST — セッション締め。夕反省改善案 **全件 GO**（`docs/approved-changes/2026-07-22-evening-reflection-hamada-go.md`）。**継続作業は当日 -0 で再確認**（下「継続メモ」）。
 
-**Git**: **`f2de699c`+** — GO 記録 commit 後に heal。
+**Git**: **`5521b6ee`** = `origin/main` — push 済（夕反省 GO 記録含む）
 
 **本日状態（2026-07-22）**:
 - App **756** LIVE BUILD=`2026-07-22-ver02-name-col-align` **rev56**（sticky・タブ保持・消費率2段・原価累計・薄い赤・税率DD・↑↓・Y7/Y9・工種コンボ・名称3列コンボ等）
