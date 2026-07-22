@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-22 夜 JST — 夕反省 GO **全件実装済**（#R-NAME-01〜#R-CONST-01）。App756 LIVE BUILD=`2026-07-22-ver02-excel-name-lists` rev57。
 
-**Git**: **`9cfe2fb7`** = `origin/main` — Excel name lists + R63
+**Git**: **`9e7674b1`** = `origin/main` — push 済
 
 **本日状態（2026-07-22）**:
 - App **756** LIVE BUILD=`2026-07-22-ver02-excel-name-lists` **rev57**（名称候補＝Excel 正本 JSON / verify:jikkou-name-lists-excel）
