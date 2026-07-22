@@ -1,59 +1,59 @@
-# 復允E��ェチE��ポイント（最新�E�E
-<!-- 正本と矛盾したら正本を優先し、このファイルを更新すること、E-->
-<!-- **案件 CLOSED** ≠ **セチE��ョン締めE*。混同禁止 -->
-**最終更新**: 2026-07-22 夁EJST  E夕反省EGO **全件実裁E��E*�E�ER-NAME-01、ER-CONST-01�E�、Epp756 LIVE BUILD=`2026-07-22-ver02-excel-name-lists` rev57、E
+# 復元チェックポイント（最新）
+<!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
+<!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
+**最終更新**: 2026-07-22 夜 JST — 夕反省 GO **全件実装済**（#R-NAME-01〜#R-CONST-01）。App756 LIVE BUILD=`2026-07-22-ver02-excel-name-lists` rev57。
 
-**Git**: �E�Eommit 後に本行を宁ESHA へ更新�E�E
+**Git**: **`9cfe2fb7`** = `origin/main` — Excel name lists + R63
 
-**本日状態！E026-07-22�E�E*:
-- App **756** LIVE BUILD=`2026-07-22-ver02-excel-name-lists` **rev57**�E�名称候補＝Excel 正本 JSON / verify:jikkou-name-lists-excel�E�E
-- 名称・規格 **列ずめE*パイロチE��付け替え済！Ebv-elrkxqezuoe8m4x7`�E�E
-- 夕反省改喁E��E**GO�E�実裁E��E*: `docs/approved-changes/2026-07-22-evening-reflection-hamada-go.md`
-- 正本リスチE `scripts/data/jikkou-yosan-v2-excel-name-lists.json`
-- 735/736 **書込なぁE*
+**本日状態（2026-07-22）**:
+- App **756** LIVE BUILD=`2026-07-22-ver02-excel-name-lists` **rev57**（名称候補＝Excel 正本 JSON / verify:jikkou-name-lists-excel）
+- 名称・規格 **列ずれ**パイロット付け替え済（`bv-elrkxqezuoe8m4x7`）
+- 夕反省改善案 **GO＋実装済**: `docs/approved-changes/2026-07-22-evening-reflection-hamada-go.md`
+- 正本リスト: `scripts/data/jikkou-yosan-v2-excel-name-lists.json`
+- 735/736 **書込なし**
 
-**継続メモ�E�次セチE��ョン -0�E�E*:
-1. ~~名称リスチEExcel 突合~~ **済！ER-NAME-01/#S-NAME-01�E�E*  E忁E��なめEC/H 全件の再スキャン拡張
-2. 仕様総点検！E1–U30 / D-* / Y1–Y11�E�残ギャチE�E�E�チェチE��リスチEA 行！E
-3. 忁E��なら仁Emig736 版にも名称列付け替ぁE
-4. **Excel と同じチE�Eタの完�E移衁E*�E�壊れた関数は憶測チE�Eタ可�E�E
+**継続メモ（次セッション -0）**:
+1. ~~名称リスト Excel 突合~~ **済（#R-NAME-01/#S-NAME-01）** — 必要なら C/H 全件の再スキャン拡張
+2. 仕様総点検（U1–U30 / D-* / Y1–Y11）残ギャップ（チェックリスト A 行）
+3. 必要なら他 mig736 版にも名称列付け替え
+4. **Excel と同じデータの完全移行**（壊れた関数は憶測データ可）
 
-**GO征E��**: H9 / △2 最終判定�E **2026-07-25 のみ**、E
+**GO待ち**: H9 / △2 最終判定は **2026-07-25 のみ**。
 
-**次の1扁E*: 継続メモ **2 E**�E�仕様総点検�E仁EBV 名称列�EExcel 完�E移行）、E
+**次の1手**: 継続メモ **2–4**（仕様総点検・他 BV 名称列・Excel 完全移行）。
 
-**観測期間**: ~~憲況ERound-3 · rules-opt §18~~ **CLOSED 2026-07-15**、E*H9/△2**: metricsEligibleAfter=**2026-07-18** · reviewDate=**2026-07-25** · early GREEN/降格 **禁止**
+**観測期間**: ~~憲法 Round-3 · rules-opt §18~~ **CLOSED 2026-07-15**。**H9/△2**: metricsEligibleAfter=**2026-07-18** · reviewDate=**2026-07-25** · early GREEN/降格 **禁止**
 
-**運用メモ**: **経営会議賁E�� 2026年7月度  E完亁E*�E�浜田 2026-07-15 確認）。正本 `C:\tmp\賁E��作�E\、E026年7月度経営会議賁E��、E026年06月情報セキュリチE��レポ�EチEdocx`、E*次月まで新規作�E不要E*、E
+**運用メモ**: **経営会議資料 2026年7月度 — 完了**（浜田 2026-07-15 確認）。正本 `C:\tmp\資料作成\【2026年7月度経営会議資料】2026年06月情報セキュリティレポート.docx`。**次月まで新規作成不要**。
 
-**品質ゲーチE*: `docs/runbooks/push-deploy-quality-gates-v2.md` · **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md` · **クローズ正本**: `data/cio-project-closures.json`
+**品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` · **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md` · **クローズ正本**: `data/cio-project-closures.json`
 
-**688**: BUILD=`2026-07-13-688-heat-closed` rev90  Eそれ以外触らなぁE 
-**674**: rev262  E目要EOK  
+**688**: BUILD=`2026-07-13-688-heat-closed` rev90 — それ以外触らない  
+**674**: rev262 — 目視 OK  
 **699**: rev132 · **700**: rev170  
-**736**: rev186 保持・**触らなぁE*  
-**756/757/758**: Ver.02 LIVE。リスト正本�E�Excel。継続メモ 2 E  
-**746/747**: Dash rev14  E目要EOK�E�E026-07-18�E�E
+**736**: rev186 保持・**触らない**  
+**756/757/758**: Ver.02 LIVE。リスト正本＝Excel。継続メモ 2–4  
+**746/747**: Dash rev14 — 目視 OK（2026-07-18）
 
-## クローズ済み�E�Edata/cio-project-closures.json`  E9件�E�E
+## クローズ済み（`data/cio-project-closures.json` — 9件）
 
-業務改喁E97 E13 / Wi-Fi718 E19 / JR iPad720 E21 / VPN733 E34 / ト�EタルネッチE37 E38 / 褁E��橁E41 E42 / **NAS748 E49** / **ML750 E51** / **KintoneアカウンチE52 E53**  E**closed-v1**
+業務改善697–713 / Wi-Fi718–719 / JR iPad720–721 / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **ML750–751** / **Kintoneアカウント752–753** — **closed-v1**
 
-## 保留・そ�E他�E制紁E
+## 保留・その他の制約
 
-| 状慁E| 冁E�� |
+| 状態 | 内容 |
 |------|------|
-| **688** | WBGT 以外触らなぁE|
-| **677 E79** | 触らなぁE|
+| **688** | WBGT 以外触らない |
+| **677–679** | 触らない |
 | **SKYSEA** | 8/3 問い合わせまで実PC配信禁止 |
-| **736** | 現行版保持・Ver.02 後も触らなぁE|
-| **756/757/758** | 継続メモ 2 E |
-| **712** | 削除渁E Edeploy 禁止 |
+| **736** | 現行版保持・Ver.02 後も触らない |
+| **756/757/758** | 継続メモ 2–4 |
+| **712** | 削除済 — deploy 禁止 |
 
-## セチE��ョン刁E��後�E自律復允E��Eifecycle v2 鏡像！E
+## セッション切替後の自律復元（Lifecycle v2 鏡像）
 
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`  
-**頁E�� -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **頁E�� -0** **OK が返るまで** **着手しなぁE* | **頁E�� 0** **`npm run session:bootstrap`**�E�E*Read より剁E* `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`�E�| **頁E�� 0.9** | **日終わめE* `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
-**L2** bootstrap NG ↁE`NEW-SESSION-STARTER.md` 6 部�E�E 回）| **CLOSE** export-handoff ↁEsync-desktop ↁEclock:clear ↁEclose-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告忁E��！EK/NG�E�| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
+**項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
+**L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
 
 <!-- archive: chat-sessions/checkpoints/checkpoint-archive-2026-07-22.md -->
