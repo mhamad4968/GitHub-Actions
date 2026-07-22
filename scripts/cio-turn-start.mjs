@@ -181,6 +181,20 @@ function main() {
     process.exit(2);
   }
 
+  // #D-R63-01: Ver.02 deploy 後未 commit なら次作業を止める
+  {
+    const r63 = spawnSync(process.execPath, ['scripts/cio-guard-r63-v2-dirty.mjs'], {
+      cwd: root,
+      encoding: 'utf8',
+    });
+    if (r63.stdout) process.stdout.write(r63.stdout);
+    if (r63.stderr) process.stderr.write(r63.stderr);
+    if ((r63.status ?? 1) !== 0) {
+      console.error('[cio:turn-start] NG #D-R63-01 R63 Ver.02 dirty after deploy');
+      process.exit(r63.status ?? 2);
+    }
+  }
+
   if (!probeNoEvidence) {
     writeLastTier(root, { tier, lane: args.lane });
     recordTurnStartEvent(root, { tier, lane: args.lane });

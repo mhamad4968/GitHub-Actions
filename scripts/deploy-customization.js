@@ -127,6 +127,16 @@ for (let i = 0; i < 60; i++) {
     console.log('');
     console.log('[R63] deploy SUCCESS — 同一セッション内に customize + kintone-apps + cio-live-builds を commit すること');
     console.log('      （夕締め一括禁止・npm run cio:session:close-git または手動 git add/commit）');
+    if ([756, 757, 758].includes(appNum)) {
+      const mark = spawnSync(
+        process.execPath,
+        ['scripts/cio-guard-r63-v2-dirty.mjs', '--mark-pending', String(appNum)],
+        { cwd: process.cwd(), encoding: 'utf8' },
+      );
+      if (mark.stdout) process.stdout.write(mark.stdout);
+      if (mark.stderr) process.stderr.write(mark.stderr);
+      console.log('[R63/#D-R63-01] Ver.02 pending stamp 記録 — dirty のまま次作業禁止（cio-guard-r63-v2-dirty）');
+    }
     console.log('');
     const sync = spawnSync(process.execPath, ['scripts/sync-kintone-apps-build.mjs', String(appNum), '--strict'], {
       cwd: process.cwd(),

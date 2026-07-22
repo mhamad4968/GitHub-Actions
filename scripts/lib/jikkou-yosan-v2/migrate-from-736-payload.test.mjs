@@ -196,3 +196,74 @@ test("migrationIdempotencyQuery uses mig736 note tag", () => {
   assert.equal(migrationIdempotencyQuery("12"), 'note like "[mig736:#12]"');
   assert.throws(() => migrationIdempotencyQuery('1"2'), /numeric/);
 });
+
+test("#S-MIG-01 subcontract detail lands in name_2 (not name_1-only empty name_2)", () => {
+  const record = {
+    $id: cell("21", "__ID__"),
+    project_code: cell("2623001-001"),
+    version_seq: cell("1", "NUMBER"),
+    version_type: cell("当初", "DROP_DOWN"),
+    status: cell("下書き", "DROP_DOWN"),
+    safety_rule_88: cell("無", "RADIO_BUTTON"),
+    spec_lines: subtable([]),
+    cost_lines: subtable([]),
+    mat_lines: subtable([]),
+    subcontract_lines: subtable([
+      {
+        sub_row_key: "vh",
+        subcontract_block: "B1",
+        sub_row_kind: "vendor",
+        sub_vendor: "業者A",
+        sub_line_type: "",
+        sub_unit: "",
+        sub_qty: "",
+        sub_unit_price: "",
+        sub_amount: "",
+        sub_basis: "",
+      },
+      {
+        sub_row_key: "d1",
+        subcontract_block: "B1",
+        sub_row_kind: "detail",
+        sub_vendor: "",
+        sub_line_type: "事前打合せ費等",
+        sub_unit: "式",
+        sub_qty: "1",
+        sub_unit_price: "10",
+        sub_amount: "10",
+        sub_basis: "",
+      },
+      {
+        sub_row_key: "d2",
+        subcontract_block: "B1",
+        sub_row_kind: "detail",
+        sub_vendor: "",
+        sub_line_type: "塗装工事一式",
+        sub_unit: "式",
+        sub_qty: "1",
+        sub_unit_price: "20",
+        sub_amount: "20",
+        sub_basis: "",
+      },
+    ]),
+  };
+  const payload = buildMigrationPayload(record, { uuidFactory });
+  const details = payload.app2Rows.filter((r) => r.row_kind === "detail");
+  assert.ok(details.length >= 2);
+  for (const row of details) {
+    // 細目が name_1 だけに残り name_2 空、という回帰を禁止
+    const onlyName1 =
+      String(row.name_1 || "") !== "" && String(row.name_2 || "") === "";
+    if (onlyName1) {
+      assert.fail(
+        `#S-MIG-01 regression: detail-only-in-name_1 empty name_2: ${JSON.stringify(row)}`,
+      );
+    }
+  }
+  const meet = details.find((r) => r.name_2 === "事前打合せ費等");
+  assert.ok(meet, "事前打合せ費等 must be in name_2");
+  assert.equal(meet.name_1, "工具･機械使用料");
+  const paint = details.find((r) => r.name_2 === "塗装工事一式");
+  assert.ok(paint);
+  assert.equal(paint.name_1, "材料費");
+});

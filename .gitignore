@@ -105,3 +105,6 @@ docs/reports/*-morning-prep.md
 .cursor/hooks/after-agent-response.js
 .cursor/hooks/before-submit-prompt.js
 .cursor/cursor-notifier-start.json
+
+# #D-R63-01 runtime stamp (local only)
+data/cio-r63-v2-pending.json
