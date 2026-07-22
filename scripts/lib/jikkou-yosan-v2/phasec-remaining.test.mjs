@@ -7,10 +7,13 @@ import { LOCK_STATES } from "./lock.mjs";
 import { planVersionCopy } from "./planner.mjs";
 import {
   app1RecordToSummaryLines,
+  app1RecordToProjectionPreviousLines,
   buildDetailSaveInputs,
   detailRowToRecord,
+  projectionRowsToSubtable,
   summarySnapshotToSubtables,
 } from "./save-model.mjs";
+import { regenerateSummaryCostLines } from "./projection.mjs";
 import { buildVersionCopyInputs } from "./version-copy-model.mjs";
 import { createVersionSeriesModel } from "./version-series-model.mjs";
 
@@ -76,6 +79,42 @@ test("残A: App1 record round-trips back into the summary model", () => {
     a.contractSections["施工"][0].rowKey,
   );
   assert.equal(b.salaryLines[0].rowKey, a.salaryLines[0].rowKey);
+});
+
+test("残A: projectionRowsToSubtable writes summary_cost_lines (種別手入力を含む)", () => {
+  const detail = createDetailBlockModel({
+    lockState: LOCK_STATES.EDITABLE,
+    uuidFactory,
+    blocks: [
+      {
+        costCategory: "施工",
+        workTypeCode: "K-1",
+        workTypeName: "けた橋",
+        detailRows: [{ name1: "塗装", unit: "㎡", quantity: "10", unitPrice: "80" }],
+      },
+    ],
+  });
+  const blocks = detail.projectionBlocks();
+  const rows = regenerateSummaryCostLines(blocks, {
+    contractTotal1: "1000",
+    previousLines: [
+      {
+        summary_stable_block_id: blocks[0].stableBlockId,
+        summary_line_type: "外注",
+        summary_calc_basis: "実測",
+        summary_note: "メモ",
+      },
+    ],
+  });
+  const field = projectionRowsToSubtable(rows);
+  assert.ok(field.summary_cost_lines, "must key by summary_cost_lines, not bare value");
+  assert.equal(field.value, undefined);
+  const cell = field.summary_cost_lines.value[0].value;
+  assert.equal(cell.summary_line_type.value, "外注");
+  assert.equal(cell.summary_calc_basis.value, "実測");
+  assert.equal(cell.summary_note.value, "メモ");
+  const previous = app1RecordToProjectionPreviousLines(field);
+  assert.equal(previous[0].summary_line_type, "外注");
 });
 
 test("残A: subtables ride the parentPut of an atomic detail save", () => {

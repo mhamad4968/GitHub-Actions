@@ -496,6 +496,62 @@ test("App 1 detail tab renders jy2-* block editor wired to the summary refresh",
   assert.doesNotMatch(source, /className\s*=\s*["']jy-/);
 });
 
+test("U4 name1/name2 are combo (datalist); name3 remains free text", () => {
+  const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
+  assert.match(source, /function jy2ComboInput\b/);
+  assert.match(source, /jy2-input jy2-combo/);
+  assert.match(source, /createElement\("datalist"\)/);
+  assert.match(source, /jy2CollectDetailSuggestions/);
+  assert.match(source, /JY2_NAME1_SEEDS/);
+  // name1 + name2 use combo; name3 stays jy2TextInput
+  assert.match(
+    source,
+    /jy2ComboInput\(documentRef, row\.name1, suggest\.name1/,
+  );
+  assert.match(
+    source,
+    /jy2ComboInput\(documentRef, row\.name2, suggest\.name2/,
+  );
+  assert.match(
+    source,
+    /jy2ToFullWidthKana\(value\)/,
+  );
+  // U3 vendor also combo
+  assert.match(
+    source,
+    /jy2ComboInput\(\s*documentRef,\s*block\.vendorName,\s*suggest\.vendors/,
+  );
+});
+
+test("U28 prepareForSave prunes empty detail rows and blank blocks", () => {
+  const model = editableModel({
+    blocks: [
+      {
+        stableBlockId: "blk-empty",
+        detailRows: [{ name1: null }, { name1: null }, { name1: null }],
+      },
+      {
+        stableBlockId: "blk-content",
+        workTypeName: "足場",
+        detailRows: [
+          { name1: "材料", unit: "式", quantity: "1", unitPrice: "100" },
+          { name1: null },
+          { name1: null },
+        ],
+      },
+      {
+        stableBlockId: "blk-prune",
+        detailRows: [{ name1: null }],
+      },
+    ],
+  });
+  model.prepareForSave();
+  const ids = model.snapshot().blocks.map((block) => block.stableBlockId);
+  assert.deepEqual(ids, ["blk-content"]);
+  assert.equal(model.snapshot().blocks[0].detailRows.length, 2);
+  assert.equal(model.toApp2Rows().filter((row) => row.row_kind === "detail").length, 2);
+});
+
 test("phase 4c sources never target customize/736 / App 735/736 / kintone REST", () => {
   {
     const source = read("scripts/lib/jikkou-yosan-v2/detail-block-model.mjs");

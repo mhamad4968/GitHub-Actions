@@ -52,6 +52,12 @@ test("decimal arithmetic is canonical and exact from strings", () => {
   assert.throws(() => add(0.1, "0.2"), /must be strings/);
 });
 
+test("decimal parse accepts thousand separators from migrated kintone values", () => {
+  assert.equal(canonical("634,200"), "634200");
+  assert.equal(multiply("1", "634,200"), "634200");
+  assert.equal(salaryTotal([{ quantity: "1", unitPrice: "634,200" }]), "634200");
+});
+
 test("Excel ROUND is half-away-from-zero, including negatives", () => {
   assert.equal(round("100.49"), "100");
   assert.equal(round("100.5"), "101");

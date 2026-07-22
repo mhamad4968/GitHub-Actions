@@ -260,6 +260,17 @@ test("projection rows are frozen, summary_*-only, and carry manual columns forwa
   assert.equal(rows[0].summary_line_type, "手入力種別");
   assert.equal(rows[0].summary_calc_basis, "計算基準メモ");
   assert.equal(rows[0].summary_note, "備考メモ");
+  // D-26/D-43: manual summary_tax_rate in previousLines wins over block/default.
+  const [taxRow] = regenerateSummaryCostLines([mockBlock()], {
+    previousLines: [
+      {
+        summary_stable_block_id: "blk-a",
+        summary_tax_rate: "0.08",
+      },
+    ],
+  });
+  assert.equal(taxRow.summary_tax_rate, "0.08");
+  assert.equal(taxRow.summary_amount_incl_tax, "864");
   // ① omitted → rate stays null; ①=0 → rate 0 (Q12).
   assert.equal(rows[0].summary_rate_to_1, null);
   assert.equal(
@@ -294,6 +305,8 @@ test("App 1 summary tab renders 請負/給与/投影 tables and ①⑧⑨ footer
   assert.match(source, /jy2-salary-table/);
   assert.match(source, /jy2-projection-table/);
   assert.match(source, /jy2-summary-footer/);
+  assert.match(source, /jy2-budget-summary/);
+  assert.match(source, /区分別サマリー/);
   // M1 (Phase5): contract-line 対①率 is computed via ratio, no longer a stub.
   assert.doesNotMatch(source, /jy2-rate-stub/);
   assert.match(source, /jy2Percent\(rateTo1\(line\.amount\)\)/);

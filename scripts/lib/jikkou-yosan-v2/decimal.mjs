@@ -8,7 +8,8 @@ function parse(value) {
   if (typeof value !== "string") {
     throw new TypeError("Decimal values must be strings");
   }
-  const text = value.trim();
+  // kintone / 移行データに千区切り（634,200）が混入しても受理する。
+  const text = value.trim().replace(/[,，]/g, "");
   const match = DECIMAL_PATTERN.exec(text);
   if (!match) {
     throw new TypeError(`Invalid decimal: ${value}`);

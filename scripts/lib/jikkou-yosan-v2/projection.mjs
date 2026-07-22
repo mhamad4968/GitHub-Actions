@@ -1,4 +1,4 @@
-import { ratio, taxInclusive } from "./calc.mjs";
+import { displayInteger, ratio, taxInclusive } from "./calc.mjs";
 
 // P-21/P-33/P-39 (schema §3.3): App2 block_total is the single source of truth.
 // summary_cost_lines is a regenerable display cache in App1. Amounts must never
@@ -83,9 +83,13 @@ export function regenerateSummaryCostLines(
         presentValue(block.unit) &&
         presentValue(block.quantity) &&
         presentValue(block.unitPrice);
-      const taxRate = presentValue(block.taxRate)
-        ? block.taxRate
-        : defaultTaxRate;
+      const taxRate = presentValue(previous.summary_tax_rate)
+        ? previous.summary_tax_rate
+        : presentValue(block.taxRate)
+          ? block.taxRate
+          : defaultTaxRate;
+      // P-22/Y10: 原価行金額は円整数。移行データの半端円は Excel ROUND で揃える。
+      const amountExcl = displayInteger(block.total);
       const row = Object.freeze({
         summary_stable_block_id: block.stableBlockId,
         summary_block_no: displayIndex + 1,
@@ -95,14 +99,16 @@ export function regenerateSummaryCostLines(
         summary_line_type: block.lineType ?? previous.summary_line_type ?? "",
         summary_unit: uniform ? block.unit : SUMMARY_MIXED_UNIT,
         summary_qty: uniform ? block.quantity : "1",
-        summary_unit_price: uniform ? block.unitPrice : block.total,
-        summary_amount_excl_tax: block.total,
+        summary_unit_price: uniform
+          ? block.unitPrice
+          : amountExcl,
+        summary_amount_excl_tax: amountExcl,
         summary_tax_rate: taxRate,
-        summary_amount_incl_tax: taxInclusive(block.total, taxRate),
+        summary_amount_incl_tax: taxInclusive(amountExcl, taxRate),
         summary_rate_to_1:
           contractTotal1 === null
             ? null
-            : ratio(block.total, contractTotal1, { zero: "zero" }),
+            : ratio(amountExcl, contractTotal1, { zero: "zero" }),
         summary_calc_basis:
           block.calcBasis ?? previous.summary_calc_basis ?? "",
         summary_note: block.note ?? previous.summary_note ?? "",

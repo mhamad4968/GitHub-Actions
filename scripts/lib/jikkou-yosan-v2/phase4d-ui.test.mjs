@@ -244,6 +244,51 @@ test("Y9 (M2): BC率＝現行予算÷①・EC率＝最終予算額÷① via calc
   }
 });
 
+test("Y7: ⑧⑨ aggregate rows — budget includes salary, consumption excludes salary", () => {
+  const model = editableModel();
+  model.setMonthlyAmount("blk-a", "施工", "2026-02", "40");
+  model.setMonthlyAmount("blk-b", "保安", "2026-02", "10");
+  const totals = model.sectionTotals([BLOCK_A, BLOCK_B], { contractTotal1: "2000" });
+  const grand8 = model.grandCost8Totals(totals, "300", "2000");
+  assert.equal(grand8.currentBudget, "900");
+  assert.equal(grand8.actual, "50");
+  assert.equal(grand8.monthly["2026-02"], "50");
+  assert.equal(grand8.bcRate, "0.45");
+  const profit9 = model.profit9Totals(grand8, "2000");
+  assert.equal(profit9.currentBudget, "1100");
+  assert.equal(profit9.actual, "1950");
+  assert.equal(profit9.bcRate, "0.55");
+});
+
+test("Y9: budget attribute columns flow from projection lines into matrix rows", () => {
+  const model = editableModel();
+  const attrs = new Map([
+    [
+      "blk-a",
+      {
+        summary_line_type: "材料費",
+        summary_tax_rate: "0.1",
+        summary_unit: "式",
+        summary_qty: "1",
+        summary_unit_price: "100",
+        summary_amount_excl_tax: "100",
+        summary_calc_basis: "見積",
+        summary_note: "備考A",
+      },
+    ],
+  ]);
+  const [row] = model.matrixRows([BLOCK_A], {
+    contractTotal1: "2000",
+    budgetAttrsByBlockId: attrs,
+  });
+  assert.equal(row.budgetLineType, "材料費");
+  assert.equal(row.budgetTaxRate, "0.1");
+  assert.equal(row.budgetUnit, "式");
+  assert.equal(row.budgetQty, "1");
+  assert.equal(row.budgetCalcBasis, "見積");
+  assert.equal(row.budgetNote, "備考A");
+});
+
 test("mutations are gated by editActuals, not editBudget (③ vs ①②)", () => {
   // budget_locked (版確定・最新版): budget frozen, actuals still editable.
   const budgetLocked = createActualsMatrixModel({
@@ -310,6 +355,12 @@ test("Y10: budget attributes are read-only on the 予実 tab; amounts are intege
       .map((record) => record.record_kind),
     ["final_budget"],
   );
+
+  // Half-yen block totals (e.g. migrated footers) round to integer yen for 現行予算.
+  const [halfYenRow] = model.matrixRows([
+    { ...BLOCK_A, total: "58017951.5" },
+  ]);
+  assert.equal(halfYenRow.currentBudget, "58017952");
 });
 
 test("Y4: salary never enters the actuals matrix", () => {
@@ -414,16 +465,23 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /allowedOperations\.editActuals/);
   for (const label of [
     "現行予算",
-    "BC率",
-    "実績",
+    "予算額",
+    "消費率",
+    "原価累計",
     "最終予算額",
-    "EC率",
     "今後必要額",
     "残予算",
     "消化率",
   ]) {
     assert.match(source, new RegExp(label));
   }
+  assert.match(source, /jy2ActualHead/);
+  assert.match(source, /colSpan:\s*2/);
+  assert.doesNotMatch(source, /th\("実績"/);
+  assert.doesNotMatch(source, /消費率（現予算）/);
+  assert.doesNotMatch(source, /消費率（最終予算）/);
+  assert.doesNotMatch(source, /"BC率"/);
+  assert.doesNotMatch(source, /"EC率"/);
   // Y9/M2: ① is read live from the 総括 contract lines into the rates.
   assert.match(source, /contractTotal1/);
   assert.match(source, /row\.bcRate/);

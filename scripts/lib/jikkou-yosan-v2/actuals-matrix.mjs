@@ -1,5 +1,5 @@
-import { actualMetrics, ratio } from "./calc.mjs";
-import { sum } from "./decimal.mjs";
+import { actualMetrics, displayInteger, ratio } from "./calc.mjs";
+import { subtract, sum } from "./decimal.mjs";
 import { actualRecordKey } from "./keys.mjs";
 import { allowedOperations } from "./lock.mjs";
 
@@ -286,13 +286,16 @@ export function createActualsMatrixModel({
     return ratio(amount, contractTotal1, { zero: "zero" });
   }
 
-  function rowFromBlock(block, monthList, contractTotal1) {
+  function rowFromBlock(block, monthList, contractTotal1, budgetAttrs = null) {
     const key = rowStateKey(block.stableBlockId, block.costCategory);
     const entry = state.get(key);
     const retired = block.status === "retired";
     // P-39/R-11: retired blocks keep their actuals anchor but no longer carry
     // budget — the current budget contribution is 0.
-    const currentBudget = retired ? "0" : block.total;
+    // Y10 / P-22: 予実の現行予算は円整数（原価行の displayInteger と同じ丸め）。
+    const currentBudget = retired
+      ? "0"
+      : displayInteger(block.total) ?? "0";
     const monthly = {};
     for (const month of monthList) {
       monthly[month] = entry?.monthly.get(month) ?? null;
@@ -302,6 +305,7 @@ export function createActualsMatrixModel({
     // Y3 案B: default final = current budget until manually raised.
     const finalBudget = finalBudgetInput ?? currentBudget;
     const metrics = actualMetrics({ monthlyAmounts, currentBudget, finalBudget });
+    const attrs = budgetAttrs && typeof budgetAttrs === "object" ? budgetAttrs : {};
     return Object.freeze({
       stableBlockId: block.stableBlockId,
       status: block.status,
@@ -309,6 +313,14 @@ export function createActualsMatrixModel({
       costCategory: block.costCategory,
       workTypeCode: block.workTypeCode ?? "",
       workTypeName: block.workTypeName ?? "",
+      budgetLineType: attrs.summary_line_type ?? "",
+      budgetTaxRate: attrs.summary_tax_rate ?? "",
+      budgetUnit: attrs.summary_unit ?? "",
+      budgetQty: attrs.summary_qty ?? "",
+      budgetUnitPrice: attrs.summary_unit_price ?? "",
+      budgetAmountExclTax: attrs.summary_amount_excl_tax ?? "",
+      budgetCalcBasis: attrs.summary_calc_basis ?? "",
+      budgetNote: attrs.summary_note ?? "",
       currentBudget,
       bcRate: rateTo1(currentBudget, contractTotal1),
       monthly: Object.freeze(monthly),
@@ -327,13 +339,25 @@ export function createActualsMatrixModel({
   // same way the summary projection holds them, and salary never enters here
   // because salary lives on App1 salary_lines, not in 内訳 blocks.
   // contractTotal1 (①, from the 総括 contract lines) feeds the Y9 BC/EC rates.
-  function matrixRows(blocks, { contractTotal1 = null } = {}) {
+  function matrixRows(
+    blocks,
+    { contractTotal1 = null, budgetAttrsByBlockId = null } = {},
+  ) {
     if (!Array.isArray(blocks)) throw new TypeError("blocks must be an array");
     const monthList = months();
+    const attrsMap =
+      budgetAttrsByBlockId instanceof Map ? budgetAttrsByBlockId : null;
     return Object.freeze(
       blocks
         .filter((block) => ACTUAL_COST_CATEGORY_KEYS.includes(block.costCategory))
-        .map((block) => rowFromBlock(block, monthList, contractTotal1)),
+        .map((block) =>
+          rowFromBlock(
+            block,
+            monthList,
+            contractTotal1,
+            attrsMap?.get(block.stableBlockId) ?? null,
+          ),
+        ),
     );
   }
 
@@ -367,6 +391,71 @@ export function createActualsMatrixModel({
       });
     }
     return Object.freeze(totals);
+  }
+
+  // Y7: ⑧ budget side includes 給与; consumption (monthly/actual/final) is 施工+保安 only.
+  function grandCost8Totals(sectionTotals, salaryAmount, contractTotal1) {
+    const construction = sectionTotals["施工"];
+    const safety = sectionTotals["保安"];
+    const monthList = months();
+    const monthly = {};
+    for (const month of monthList) {
+      monthly[month] = sum([
+        construction.monthly[month] ?? "0",
+        safety.monthly[month] ?? "0",
+      ]);
+    }
+    const consumptionCurrent = sum([
+      construction.currentBudget,
+      safety.currentBudget,
+    ]);
+    const salary = salaryAmount ?? "0";
+    const currentBudget = sum([consumptionCurrent, salary]);
+    const actual = sum([construction.actual, safety.actual]);
+    const finalBudget = sum([construction.finalBudget, safety.finalBudget]);
+    return Object.freeze({
+      label: "工事原価額及び率",
+      currentBudget,
+      bcRate: rateTo1(currentBudget, contractTotal1),
+      monthly: Object.freeze(monthly),
+      actual,
+      finalBudget,
+      ecRate: rateTo1(finalBudget, contractTotal1),
+      futureRequired: sum([
+        construction.futureRequired,
+        safety.futureRequired,
+      ]),
+      remainingBudget: sum([
+        construction.remainingBudget,
+        safety.remainingBudget,
+      ]),
+      consumptionRatio: ratio(actual, consumptionCurrent, { zero: "not_applicable" }),
+    });
+  }
+
+  // Y7: ⑨ = ① − ⑧ (budget uses ⑧ with salary; actual uses consumption-only ⑧).
+  function profit9Totals(grand8, contractTotal1) {
+    const total1 = contractTotal1 ?? "0";
+    const consumptionActual = grand8.actual;
+    const budgetProfit = subtract(total1, grand8.currentBudget);
+    const actualProfit = subtract(total1, consumptionActual);
+    const finalProfit = subtract(total1, grand8.finalBudget);
+    const monthList = months();
+    const monthly = Object.freeze(
+      Object.fromEntries(monthList.map((month) => [month, null])),
+    );
+    return Object.freeze({
+      label: "粗利額及び率",
+      currentBudget: budgetProfit,
+      bcRate: rateTo1(budgetProfit, contractTotal1),
+      monthly,
+      actual: actualProfit,
+      finalBudget: finalProfit,
+      ecRate: rateTo1(finalProfit, contractTotal1),
+      futureRequired: null,
+      remainingBudget: null,
+      consumptionRatio: null,
+    });
   }
 
   // App3 write-shaped records for the cells mutated through this model
@@ -434,6 +523,8 @@ export function createActualsMatrixModel({
     updateActualRow,
     matrixRows,
     sectionTotals,
+    grandCost8Totals,
+    profit9Totals,
     toApp3Records,
   });
 }

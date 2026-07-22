@@ -1,8 +1,8 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-07-21T12:15:36.639Z",
-  "gitHead": "cf2deb7f",
-  "gitStatus": "## main...origin/main [ahead 4]",
+  "exportedAt": "2026-07-22T09:02:19.035Z",
+  "gitHead": "405ecac7",
+  "gitStatus": "## main...origin/main",
   "nextTask": "**浜田の指示待ち**（当日 -0）。候補: Ver.02 残タスク（予実保存配線・新規工事作成フロー・版種別選択UI・**736→Ver.02 データ移行**・756 見た目を 736 テイストへ→依頼者レビュー）。",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
@@ -17,6 +17,6 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=cf2deb7f | 次=**浜田の指示待ち**（当日 -0）。候補: Ver.02 残タスク（予実保存配線・新規工事作成フロー・版種別選択UI・**736→Ver.02 データ移行**・756 見た目を 736 テイストへ→依頼者レビュー）。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "promptBlock": "【SESSION-BRIDGE】git=405ecac7 | 次=**浜田の指示待ち**（当日 -0）。候補: Ver.02 残タスク（予実保存配線・新規工事作成フロー・版種別選択UI・**736→Ver.02 データ移行**・756 見た目を 736 テイストへ→依頼者レビュー）。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }

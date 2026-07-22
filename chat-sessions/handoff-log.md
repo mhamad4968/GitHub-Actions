@@ -4945,3 +4945,31 @@ npm run cio:morning:ready
 **触らない**: 735/736（rev186）・677-679・688（rev90以外）・712
 
 ---
+
+### 2026-07-22 JST — **2026-07-22 JST — WAKE・ブリーフィング・rag-mirror Self-Heal**
+
+**要約**: cold-start READY。Desktop 00-36通読。health OK。MCP registry26 probe6/6。GHA latest success。rag-mirror不一致を即時同期し cio-quick-health に1回Self-Heal恒久化(#S-RAG-WAKE-02)。DeepSeek§50-3-8済。HANDOFF-HUMAN先頭更新。
+
+**次の1手**: **浜田の指示待ち**（当日 -0）。候補: Ver.02 残タスク（予実保存配線・新規工事作成フロー・版種別選択UI・**736→Ver.02 データ移行**・756 見た目を 736 テイストへ→依頼者レビュー）。
+
+**Git**: `dirty(WAKE残+Self-Heal)` — 
+
+**GO待ち**: なし
+
+**触らない**: 688 / 677–679 / SKYSEA — 触らない
+
+---
+
+### 2026-07-22 JST — **2026-07-22 stop: tomorrow name-list Excel audit**
+
+**要約**: (要約未指定)
+
+**次の1手**: **浜田の指示待ち**（当日 -0）。候補: Ver.02 残タスク（予実保存配線・新規工事作成フロー・版種別選択UI・**736→Ver.02 データ移行**・756 見た目を 736 テイストへ→依頼者レビュー）。
+
+**Git**: `405ecac7` — 
+
+**GO待ち**: なし
+
+**触らない**: 688 / 677–679 / SKYSEA — 触らない
+
+---

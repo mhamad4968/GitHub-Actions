@@ -12,8 +12,22 @@
  * - retired_at_version_id / calc_basis はこのレイヤの管理外なので record に
  *   含めない（既存値を上書きしない）。
  */
+import {
+  ACTUAL_SOURCE_KIND,
+  ACTUAL_WRITE_CHANNEL,
+  monthStartDate,
+  normalizeMonth,
+} from "./actuals-matrix.mjs";
 import { assertAllowedAppId } from "./guard.mjs";
-import { detailRecordKey } from "./keys.mjs";
+import {
+  createBudgetVersionId,
+  createProjectId,
+  detailRecordKey,
+  projectBusinessKey,
+  seriesGuardKey,
+  versionRecordKey,
+} from "./keys.mjs";
+import { RECORDS_PER_REQUEST } from "./planner.mjs";
 
 const RECORD_API = "/k/v1/record.json";
 const RECORDS_API_GET = "/k/v1/records.json";
@@ -233,15 +247,23 @@ export function app1RecordToSummaryLines(record) {
     const value = row?.value?.[code]?.value;
     return value === undefined || value === null || value === "" ? null : String(value);
   };
-  const contractLines = rows("contract_lines").map((row) => ({
-    rowKey: cell(row, "contract_row_key"),
-    section: cell(row, "contract_section"),
-    workName: cell(row, "contract_work_name"),
-    unit: cell(row, "contract_unit"),
-    quantity: cell(row, "contract_qty"),
-    unitPrice: cell(row, "contract_unit_price"),
-    note: cell(row, "contract_note"),
-  }));
+  const inferSection = (raw, workName) => {
+    if (raw === "施工" || raw === "保安") return raw;
+    if (String(workName || "").includes("保安")) return "保安";
+    return workName ? "施工" : null;
+  };
+  const contractLines = rows("contract_lines").map((row) => {
+    const workName = cell(row, "contract_work_name");
+    return {
+      rowKey: cell(row, "contract_row_key"),
+      section: inferSection(cell(row, "contract_section"), workName),
+      workName,
+      unit: cell(row, "contract_unit"),
+      quantity: cell(row, "contract_qty"),
+      unitPrice: cell(row, "contract_unit_price"),
+      note: cell(row, "contract_note"),
+    };
+  });
   const salaryLines = rows("salary_lines").map((row) => ({
     rowKey: cell(row, "salary_row_key"),
     role: cell(row, "salary_role"),
@@ -251,6 +273,70 @@ export function app1RecordToSummaryLines(record) {
     note: cell(row, "salary_note"),
   }));
   return { contractLines, salaryLines };
+}
+
+/**
+ * App1 summary_cost_lines → 投影の previousLines（手入力列の引き継ぎ用）。
+ * 種別 / 計算基準 / 備考のみを stable_block_id キーで運ぶ。
+ */
+export function app1RecordToProjectionPreviousLines(record) {
+  const field = record?.summary_cost_lines;
+  const rows = Array.isArray(field?.value) ? field.value : [];
+  const cell = (row, code) => {
+    const value = row?.value?.[code]?.value;
+    return value === undefined || value === null ? "" : String(value);
+  };
+  return rows.map((row) => ({
+    summary_stable_block_id: cell(row, "summary_stable_block_id").trim(),
+    summary_work_type_code: cell(row, "summary_work_type_code").trim(),
+    summary_line_type: cell(row, "summary_line_type"),
+    summary_calc_basis: cell(row, "summary_calc_basis"),
+    summary_note: cell(row, "summary_note"),
+  }));
+}
+
+/** regenerateSummaryCostLines の行 → App1 summary_cost_lines サブテーブル */
+export function projectionRowsToSubtable(projectionRows) {
+  if (!Array.isArray(projectionRows)) {
+    throw new TypeError("projectionRows must be an array");
+  }
+  const taxOption = (rate) => {
+    const raw = String(rate ?? "").trim();
+    if (raw === "0" || raw === "0％") return "0％";
+    if (raw === "0.08" || raw === "8％") return "8％";
+    if (raw === "0.1" || raw === "10％") return "10％";
+    return "10％";
+  };
+  const unitOption = (unit) => {
+    const allowed = ["㎡", "式", "回", "人", "日", "箇月", "－"];
+    return allowed.includes(String(unit)) ? String(unit) : "－";
+  };
+  // contract_lines / salary_lines と同じく「フィールドコード → { value: rows }」。
+  // `{ value: rows }` だけ返すと parentRecord.value に載り、summary_cost_lines が PUT されない。
+  return {
+    summary_cost_lines: {
+      value: projectionRows.map((line, index) => ({
+        value: {
+          summary_stable_block_id: TEXT(line.summary_stable_block_id ?? ""),
+          summary_block_no: TEXT(line.summary_block_no ?? index + 1),
+          summary_cost_category: TEXT(line.summary_cost_category ?? ""),
+          summary_work_type_code: TEXT(line.summary_work_type_code ?? ""),
+          summary_work_type_name: TEXT(line.summary_work_type_name ?? ""),
+          summary_line_type: TEXT(line.summary_line_type ?? ""),
+          summary_unit: TEXT(unitOption(line.summary_unit)),
+          summary_qty: TEXT(line.summary_qty ?? ""),
+          summary_unit_price: TEXT(line.summary_unit_price ?? ""),
+          summary_amount_excl_tax: TEXT(line.summary_amount_excl_tax ?? ""),
+          summary_tax_rate: TEXT(taxOption(line.summary_tax_rate)),
+          summary_amount_incl_tax: TEXT(line.summary_amount_incl_tax ?? ""),
+          summary_rate_to_1: TEXT(line.summary_rate_to_1 ?? ""),
+          summary_calc_basis: TEXT(line.summary_calc_basis ?? ""),
+          summary_note: TEXT(line.summary_note ?? ""),
+          summary_sort_order: TEXT(line.summary_sort_order ?? index + 1),
+        },
+      })),
+    },
+  };
 }
 
 const FOOTER_KINDS = ["overhead", "insurance", "subtotal", "legal_welfare", "block_total"];
@@ -348,4 +434,266 @@ export async function fetchExistingDetailRows(api, app2Id, budgetVersionId, opti
   throw new RangeError(
     "fetchExistingDetailRows: more than 1500 rows for one budget_version_id — aborting (P-27 limit exceeded)",
   );
+}
+
+// ---------------------------------------------------------------------------
+// 予実（App3）保存: モデル ⇔ App3 レコード、planActualsSave 入力生成
+// ---------------------------------------------------------------------------
+
+/** toApp3Records の1件 → kintone POST/PUT record オブジェクト。 */
+export function app3RowToRecord(row, keys) {
+  const projectId = requireText(keys.projectId, "projectId");
+  const businessKey = requireText(keys.projectBusinessKey, "projectBusinessKey");
+  const recordKey = requireText(row.actual_record_key, "row.actual_record_key");
+  if (recordKey.length > 64) {
+    throw new RangeError(
+      `actual_record_key exceeds kintone's 64-char unique limit (${recordKey.length})`,
+    );
+  }
+  const record = {
+    actual_record_key: TEXT(recordKey),
+    project_id: TEXT(projectId),
+    project_business_key: TEXT(businessKey),
+    stable_block_id: TEXT(requireText(row.stable_block_id, "row.stable_block_id")),
+    cost_category_key: TEXT(requireText(row.cost_category_key, "row.cost_category_key")),
+    record_kind: TEXT(requireText(row.record_kind, "row.record_kind")),
+    amount: TEXT(requireText(row.amount, "row.amount")),
+    source_kind: TEXT(row.source_kind ?? ACTUAL_SOURCE_KIND),
+    write_channel: TEXT(row.write_channel ?? ACTUAL_WRITE_CHANNEL),
+  };
+  if (row.record_kind === "monthly_consumption") {
+    const month = row.target_month ?? row.targetMonth;
+    record.target_month = TEXT(monthStartDate(normalizeMonth(String(month), "target_month")));
+    if (row.registered_version_id != null) {
+      record.registered_version_id = TEXT(row.registered_version_id);
+    }
+  } else if (row.record_kind === "final_budget" && row.last_changed_version_id != null) {
+    record.last_changed_version_id = TEXT(row.last_changed_version_id);
+  }
+  return record;
+}
+
+/** LIVE App3 レコード → pivotActualRows / createActualsMatrixModel 入力。 */
+export function app3RecordsToActualRows(records) {
+  if (!Array.isArray(records)) throw new TypeError("records must be an array");
+  return records.map((record, index) => {
+    const kind = v(record, "record_kind");
+    const row = {
+      stable_block_id: v(record, "stable_block_id"),
+      cost_category_key: v(record, "cost_category_key"),
+      record_kind: kind,
+      amount: v(record, "amount"),
+    };
+    if (kind === "monthly_consumption") {
+      row.target_month = v(record, "target_month");
+    }
+    if (!row.stable_block_id || !row.cost_category_key || !row.amount) {
+      throw new TypeError(`records[${index}] missing required actual fields`);
+    }
+    return row;
+  });
+}
+
+function existingActualByKey(existingRecords) {
+  const map = new Map();
+  for (const [index, record] of existingRecords.entries()) {
+    const id = record?.$id?.value;
+    const revision = record?.$revision?.value;
+    const key = v(record, "actual_record_key");
+    if (!id || !revision || !key) {
+      throw new TypeError(
+        `existingRecords[${index}] must carry $id, $revision and actual_record_key`,
+      );
+    }
+    if (map.has(key)) {
+      throw new RangeError(`existingRecords: duplicate actual_record_key ${key}`);
+    }
+    map.set(key, { id: String(id), revision: String(revision) });
+  }
+  return map;
+}
+
+function chunkRecordsRequest(method, appId, records) {
+  const requests = [];
+  for (let start = 0; start < records.length; start += RECORDS_PER_REQUEST) {
+    const slice = records.slice(start, start + RECORDS_PER_REQUEST);
+    requests.push({
+      method,
+      api: RECORDS_API_GET,
+      payload: { app: appId, records: slice },
+    });
+  }
+  return requests;
+}
+
+/**
+ * 現行 project_id の App3 行を全件取得（offset ページング）。
+ */
+export async function fetchExistingActualRows(api, app3Id, projectId, options = {}) {
+  if (typeof api !== "function") {
+    throw new TypeError("api must be a kintone.api-compatible function");
+  }
+  const appId = assertAllowedAppId(app3Id, "fetchExistingActualRows.app3Id");
+  const pid = requireText(projectId, "projectId");
+  if (pid.includes('"')) throw new RangeError("projectId must not contain double quotes");
+  const fields =
+    options.fields === null
+      ? undefined
+      : options.fields ?? ["$id", "$revision", "actual_record_key", "project_id"];
+  const all = [];
+  for (let offset = 0; offset <= 1000; offset += FETCH_PAGE_SIZE) {
+    const response = await api(RECORDS_API_GET, "GET", {
+      app: appId,
+      query: `project_id = "${pid}" order by $id asc limit ${FETCH_PAGE_SIZE} offset ${offset}`,
+      ...(fields ? { fields } : {}),
+    });
+    const records = Array.isArray(response?.records) ? response.records : [];
+    all.push(...records);
+    if (records.length < FETCH_PAGE_SIZE) return all;
+  }
+  throw new RangeError(
+    "fetchExistingActualRows: more than 1500 rows for one project_id — aborting",
+  );
+}
+
+/**
+ * planActualsSave へ渡す入力を作る。
+ * parent の actual_write_seq を CAS インクリメントし、dirty な App3 行だけ
+ * POST/PUT する（actual_record_key で突合）。
+ */
+export function buildActualsSaveInputs({
+  app1Id,
+  app3Id,
+  parentRecordId,
+  parentRevision,
+  currentActualWriteSeq,
+  keys,
+  rows,
+  existingRecords,
+}) {
+  const parentAppId = assertAllowedAppId(app1Id, "buildActualsSaveInputs.app1Id");
+  const actualAppId = assertAllowedAppId(app3Id, "buildActualsSaveInputs.app3Id");
+  if (!Array.isArray(rows)) throw new TypeError("rows must be an array");
+  if (!Array.isArray(existingRecords)) {
+    throw new TypeError("existingRecords must be an array");
+  }
+  if (parentRecordId === null || parentRecordId === undefined || parentRecordId === "") {
+    throw new TypeError("parentRecordId is required");
+  }
+  const revision = String(parentRevision ?? "");
+  if (revision === "") throw new TypeError("parentRevision is required (CAS)");
+  const seqText = String(currentActualWriteSeq ?? "0");
+  if (!/^\d+$/.test(seqText)) {
+    throw new TypeError("currentActualWriteSeq must be a non-negative integer string");
+  }
+  const nextSeq = String(BigInt(seqText) + 1n);
+
+  const existing = existingActualByKey(existingRecords);
+  const seenKeys = new Set();
+  const adds = [];
+  const updates = [];
+  for (const row of rows) {
+    const record = app3RowToRecord(row, keys);
+    const recordKey = record.actual_record_key.value;
+    if (seenKeys.has(recordKey)) {
+      throw new RangeError(`rows: duplicate actual_record_key ${recordKey}`);
+    }
+    seenKeys.add(recordKey);
+    const found = existing.get(recordKey);
+    if (found) {
+      updates.push({ id: found.id, revision: found.revision, record });
+    } else {
+      adds.push(record);
+    }
+  }
+
+  const actualWriteSeqPut = {
+    method: "PUT",
+    api: RECORD_API,
+    payload: {
+      app: parentAppId,
+      id: String(parentRecordId),
+      revision,
+      record: { actual_write_seq: TEXT(nextSeq) },
+    },
+  };
+  const actualWrites = [
+    ...chunkRecordsRequest("POST", actualAppId, adds),
+    ...chunkRecordsRequest("PUT", actualAppId, updates),
+  ];
+  return { actualWriteSeqPut, actualAppId, actualWrites, nextActualWriteSeq: nextSeq };
+}
+
+/** app.record.create.show: 初版キーを event.record に書き込む（純関数）。 */
+export function seedApp1CreateRecord(record, { uuidFactory, versionType = "当初" } = {}) {
+  if (!record || typeof record !== "object") {
+    throw new TypeError("record must be an object");
+  }
+  if (typeof uuidFactory !== "function") {
+    throw new TypeError("uuidFactory must be a function");
+  }
+  if (!["当初", "仕様変更", "価格変更", "仕様・価格変更", "その他"].includes(versionType)) {
+    throw new RangeError(`unknown versionType ${JSON.stringify(versionType)}`);
+  }
+  // 再表示で二重 seed しない（既存キーを尊重）。
+  const existingProjectId = v(record, "project_id");
+  if (existingProjectId) {
+    return Object.freeze({
+      projectId: String(existingProjectId),
+      budgetVersionId: String(v(record, "budget_version_id") || ""),
+      versionType: String(v(record, "version_type") || versionType),
+      alreadySeeded: true,
+    });
+  }
+  const projectId = createProjectId(uuidFactory);
+  const budgetVersionId = createBudgetVersionId(uuidFactory);
+  // 必須フィールドを空にしないため仮の業務キーを置き、submit で正式値へ差し替える。
+  const provisionalBusinessKey = projectBusinessKey("TMP", projectId.replace(/^prj-/, ""));
+  // LIVE create.show の event.record は各フィールドに type 付き。value だけ書き換え、
+  // type を落とすと「event.record['…'].type が不正」でカスタマイズが落ちる。
+  const assign = (code, value) => {
+    const text = value === null || value === undefined ? "" : String(value);
+    const field = record[code];
+    if (field && typeof field === "object") {
+      field.value = text;
+      return;
+    }
+    record[code] = { value: text };
+  };
+  assign("project_id", projectId);
+  assign("budget_version_id", budgetVersionId);
+  assign("version_seq", "1");
+  assign("status", "下書き");
+  assign("actual_write_seq", "0");
+  assign("version_type", versionType);
+  assign("derived_lock_state", "editable");
+  assign("version_record_key", versionRecordKey(projectId, 1));
+  assign("project_business_key", provisionalBusinessKey);
+  assign(
+    "series_guard_key",
+    seriesGuardKey({ initial: true, projectBusinessKey: provisionalBusinessKey }),
+  );
+  return Object.freeze({ projectId, budgetVersionId, versionType, alreadySeeded: false });
+}
+
+/** create.submit: 入力された工事コードから business/guard キーを補完。 */
+export function completeApp1CreateBusinessKeys(record) {
+  const projectCode = v(record, "project_code");
+  const branch = v(record, "project_branch") ?? "";
+  const businessKey = projectBusinessKey(projectCode, branch);
+  const assign = (code, value) => {
+    const text = String(value);
+    const field = record[code];
+    if (field && typeof field === "object") {
+      field.value = text;
+      return;
+    }
+    record[code] = { value: text };
+  };
+  assign("project_business_key", businessKey);
+  assign(
+    "series_guard_key",
+    seriesGuardKey({ initial: true, projectBusinessKey: businessKey }),
+  );
+  return businessKey;
 }

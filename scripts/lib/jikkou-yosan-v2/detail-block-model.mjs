@@ -386,6 +386,57 @@ export function createDetailBlockModel({
     );
   }
 
+  function isDetailRowFullyEmpty(row) {
+    return (
+      !detailHasText(row.name1) &&
+      !detailHasText(row.name2) &&
+      !detailHasText(row.name3) &&
+      !detailHasText(row.unit) &&
+      !detailHasText(row.quantity) &&
+      !detailHasText(row.unitPrice) &&
+      !detailHasText(row.note)
+    );
+  }
+
+  function blockHasMeaningfulContent(block) {
+    if (
+      detailHasText(block.workTypeCode) ||
+      detailHasText(block.workTypeName) ||
+      detailHasText(block.costCategory) ||
+      detailHasText(block.vendorName)
+    ) {
+      return true;
+    }
+    for (const row of block.detailRows) {
+      if (!isDetailRowFullyEmpty(row)) return true;
+    }
+    for (const kind of MANUAL_FOOTER_KINDS) {
+      if (detailHasText(block.footer[kind].amount)) return true;
+    }
+    return false;
+  }
+
+  // U28: prune empty detail rows / blank blocks before save; renumber display order.
+  function prepareForSave() {
+    for (let blockIndex = list.length - 1; blockIndex >= 0; blockIndex -= 1) {
+      const block = list[blockIndex];
+      const emptyRows = block.detailRows.filter(isDetailRowFullyEmpty);
+      const nonEmptyRows = block.detailRows.filter((row) => !isDetailRowFullyEmpty(row));
+      if (nonEmptyRows.length === 0) {
+        block.detailRows = emptyRows.slice(0, 1);
+        if (block.detailRows.length === 0) block.detailRows.push(blankDetailRow());
+      } else {
+        block.detailRows = [...nonEmptyRows, ...emptyRows.slice(0, 1)];
+      }
+      if (!blockHasMeaningfulContent(block)) {
+        list.splice(blockIndex, 1);
+      }
+    }
+    if (list.length === 0) {
+      list.push(blankBlock());
+    }
+  }
+
   // Flat App2-catalog-shaped rows (§2). budget_version_id stays null offline;
   // the save layer fills it and derives detail_record_key (P-24/P-25).
   function toApp2Rows() {
@@ -569,6 +620,7 @@ export function createDetailBlockModel({
     snapshot,
     projectionBlocks,
     categoryWarnings,
+    prepareForSave,
     toApp2Rows,
   });
 }

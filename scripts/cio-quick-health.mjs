@@ -33,10 +33,27 @@ function main() {
   }
 
   // #S-RAG-WAKE-01 — RAG 正本ミラー不一致を朝路径で検知（close-git-warn まで見逃さない）
-  const rag = runNpmScript(root, 'verify:rag-mirror-canonical');
+  // #S-RAG-WAKE-02 — WAKE 時は正本→ミラー方向で 1 回だけ Self-Heal（無限ループ禁止・未コミット差分は残しうる）
+  let rag = runNpmScript(root, 'verify:rag-mirror-canonical');
   if (!rag.ok) {
-    console.error('[cio:quick-health] ❌ verify:rag-mirror-canonical 失敗 — `npm run rag:mirror:canonical-docs`');
-    process.exit(rag.code ?? 2);
+    console.warn(
+      '[cio:quick-health] ⚠ verify:rag-mirror-canonical NG → rag:mirror:canonical-docs を 1 回実行（正本→.rag 同期）',
+    );
+    const heal = runNpmScript(root, 'rag:mirror:canonical-docs');
+    if (!heal.ok) {
+      console.error('[cio:quick-health] ❌ rag:mirror:canonical-docs Self-Heal 失敗');
+      process.exit(heal.code ?? 2);
+    }
+    rag = runNpmScript(root, 'verify:rag-mirror-canonical');
+    if (!rag.ok) {
+      console.error(
+        '[cio:quick-health] ❌ Self-Heal 後も verify:rag-mirror-canonical 失敗 — 手動確認: npm run rag:mirror:canonical-docs -- --dry-run',
+      );
+      process.exit(rag.code ?? 2);
+    }
+    console.warn(
+      '[cio:quick-health] ✅ rag-mirror Self-Heal 成功 — .rag/extra-docs 差分は締め前に commit 対象へ含めること',
+    );
   }
 
   console.log('[cio:quick-health] ✅ OK');
