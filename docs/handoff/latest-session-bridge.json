@@ -1,8 +1,8 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-07-22T11:59:54.804Z",
-  "gitHead": "e2422174",
-  "gitStatus": "## main...origin/main [ahead 1]",
+  "exportedAt": "2026-07-22T11:59:57.774Z",
+  "gitHead": "3fb3c3cb",
+  "gitStatus": "## main...origin/main [ahead 2]",
   "nextTask": "当日 -0。継続メモ 2–4（仕様総点検・他 BV 名称列・**736→Ver.02 / Excel データ移行**）。浜田指示の Ver.02 残と整合。",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
@@ -17,8 +17,6 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=e2422174 | 次=当日 -0。継続メモ 2–4（仕様総点検・他 BV 名称列・**736→Ver.02 / Excel データ移行**）。浜田指示の Ver.02 残と整合。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
-  "validatedAt": "2026-07-22T11:59:55.181Z",
-  "crosscheckOk": true
+  "promptBlock": "【SESSION-BRIDGE】git=3fb3c3cb | 次=当日 -0。継続メモ 2–4（仕様総点検・他 BV 名称列・**736→Ver.02 / Excel データ移行**）。浜田指示の Ver.02 残と整合。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }
