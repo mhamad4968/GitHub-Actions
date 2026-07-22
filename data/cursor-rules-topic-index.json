@@ -141,6 +141,7 @@
         { "name": "autonomous-with-mandatory-asks.mdc", "discoveryOnly": true },
         { "name": "creation-timing-ask.mdc", "discoveryOnly": true },
         "persist-policies.mdc",
+        { "name": "spec-round-ai-agreement.mdc", "discoveryOnly": true },
         { "name": "constitution.mdc", "discoveryOnly": true }
       ]
     }

@@ -4973,3 +4973,16 @@ npm run cio:morning:ready
 **触らない**: 688 / 677–679 / SKYSEA — 触らない
 
 ---
+
+### 2026-07-22 JST — **session close: evening GO implemented**
+- **Done**: #R-NAME-01〜#R-CONST-01 実装。756 LIVE BUILD=`2026-07-22-ver02-excel-name-lists` rev57。tip ~`4e53800f`
+- **Next (-0)**: 継続メモ 2–4（仕様総点検・他BV名称列・Excel完全移行）
+- **Do not**: 735/736 WRITE、仮シードに戻すこと
+
+**次の1手**: 当日 -0。継続メモ 2–4（仕様総点検・他 BV 名称列・**736→Ver.02 / Excel データ移行**）。浜田指示の Ver.02 残と整合。
+
+**Git**: **`9e7674b1`** = `origin/main` — push 済
+
+**GO待ち**: なし
+
+---
