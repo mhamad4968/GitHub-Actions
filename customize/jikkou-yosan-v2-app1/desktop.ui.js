@@ -1619,11 +1619,13 @@
 
   // 総括原価投影 (P-21/P-33): amounts are read-only from App2.
   // 種別 / 計算基準 / 備考 only are App1 hand-entry (previousLines).
+  // X5: 表下に原価・施工計／原価・保安計を出す（⑧は給与計込みでフッタ）。
   function jy2ProjectionTable(
     documentRef,
     projectionRows,
     editable,
     onManualPatch,
+    totals = null,
   ) {
     const table = documentRef.createElement("table");
     table.className = "jy2-table jy2-projection-table";
@@ -1760,6 +1762,35 @@
       row.appendChild(noteCell);
       body.appendChild(row);
     }
+
+    if (totals) {
+      const rateTo1 = (amount) =>
+        amount === null || amount === undefined
+          ? null
+          : ratio(amount, totals.total1, { zero: "zero" });
+      const appendCostTotal = (label, amount) => {
+        const totalRow = documentRef.createElement("tr");
+        totalRow.className = "jy2-total-row";
+        const totalLabel = jy2Cell(documentRef, "td", "", label);
+        totalLabel.colSpan = 8;
+        totalRow.appendChild(totalLabel);
+        totalRow.appendChild(
+          jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(amount)),
+        );
+        totalRow.appendChild(jy2Cell(documentRef, "td", "", ""));
+        totalRow.appendChild(jy2Cell(documentRef, "td", "", ""));
+        totalRow.appendChild(
+          jy2Cell(documentRef, "td", "jy2-num", jy2Percent(rateTo1(amount))),
+        );
+        const totalTail = jy2Cell(documentRef, "td", "", "");
+        totalTail.colSpan = 2;
+        totalRow.appendChild(totalTail);
+        body.appendChild(totalRow);
+      };
+      appendCostTotal("原価・施工計", totals.costConstruction);
+      appendCostTotal("原価・保安計", totals.costSafety);
+    }
+
     table.appendChild(body);
     return jy2WrapTable(documentRef, table);
   }
@@ -1962,6 +1993,7 @@
           }
           rerender();
         },
+        totals,
       ),
       salaryTitle,
       jy2SalaryTable(documentRef, summaryModel, editable, rerender),
