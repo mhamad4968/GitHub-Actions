@@ -1,16 +1,17 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-07-23T11:56:49.293Z",
-  "gitHead": "98b90f91",
+  "exportedAt": "2026-07-23T12:05:00.000Z",
+  "gitHead": "404d4654",
   "gitStatus": "## main...origin/main",
   "nextTask": "当日 -0。残 R-11/12/13（依頼者）・LIVE目視。Excel案件追加投入。§6.2 クロム維持（overflow-x:clip／fixed メニュー）。",
   "nextFiles": [
+    "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
     "docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md",
     "docs/handoff/latest-session-bridge.json",
     "kintone-apps.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=98b90f91 | 次=当日 -0。残 R-11/12/13・LIVE目視・Excel投入。§6.2 維持。 | Read: chat-sessions/handoff-log.md, docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md",
+  "promptBlock": "【SESSION-BRIDGE】git=404d4654 | 次=当日 -0。残 R-11/12/13・LIVE目視・Excel投入。§6.2 維持。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }

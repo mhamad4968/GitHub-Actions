@@ -1,26 +1,26 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-22 夜 JST — **セッション締め**。夕反省 GO 全件実装済。756 LIVE `2026-07-22-ver02-excel-name-lists` rev57。次は継続メモ 2–4。
+**最終更新**: 2026-07-23 夜 JST — **セッション締め**。Ver.02 UIクロム（§6.2）SPEC化＋App756 LIVE固定メニュー等。GitHub Actions 当日 push は成功。
 
-**Git**: **`3820e54e`** = `origin/main` — push 済
+**Git**: **`404d4654`** = `origin/main` — push 済
 
-**本日状態（2026-07-22）**:
-- App **756** LIVE BUILD=`2026-07-22-ver02-excel-name-lists` **rev57**（名称候補＝Excel 正本 JSON / verify:jikkou-name-lists-excel）
-- 名称・規格 **列ずれ**パイロット付け替え済（`bv-elrkxqezuoe8m4x7`）
-- 夕反省改善案 **GO＋実装済**: `docs/approved-changes/2026-07-22-evening-reflection-hamada-go.md`
-- 正本リスト: `scripts/data/jikkou-yosan-v2-excel-name-lists.json`
+**本日状態（2026-07-23）**:
+- App **756** LIVE BUILD=`2026-07-23-ver02-fixed-action-menu` **rev90** / fileKey `ed56aa92-02a3-4fc4-8969-99d40cdfb0f5`
+- SPEC **§6.2 C1–C10**・U31・D-78 反映（操作バー fixed、シート見出し、hscroll、見出しタグ、予実月列、フッタ、原価施工／保安計）
+- Excel 内訳差し替え CLI 追加（`jikkou-yosan:v2-replace-detail-from-excel`）
 - 735/736 **書込なし**
+- GitHub: 当日 `constitution-gates` / `cursor-env-gates` / `kintone-customize-deploy` **success**（open PR なし）
 
 **継続メモ（次セッション -0）**:
-1. ~~名称リスト Excel 突合~~ **済（#R-NAME-01/#S-NAME-01）** — 必要なら C/H 全件の再スキャン拡張
-2. 仕様総点検（U1–U30 / D-* / Y1–Y11）残ギャップ（チェックリスト A 行）
-3. 必要なら他 mig736 版にも名称列付け替え
-4. **Excel と同じデータの完全移行**（壊れた関数は憶測データ可）
+1. ~~名称リスト Excel 突合~~ **済**
+2. ~~仕様総点検 S1–S3 / §6.2 UIクロム~~ **済（重大L2是正＋クロムSPEC化）** — 残 L1=R-11/12/13
+3. LIVE 目視継続（固定メニュー・横スクロール・表題帯）
+4. Excel 案件の追加投入／完全移行（依頼者データ待ち）
 
 **GO待ち**: H9 / △2 最終判定は **2026-07-25 のみ**。
 
-**次の1手**: 当日 -0。継続メモ 2–4（仕様総点検・他 BV 名称列・**736→Ver.02 / Excel データ移行**）。浜田指示の Ver.02 残と整合。
+**次の1手**: 当日 -0。残 R-11/12/13（依頼者）・LIVE目視・Excel案件追加投入。§6.2 クロム維持（`overflow-x:clip`／fixed メニュー）。
 
 **観測期間**: ~~憲法 Round-3 · rules-opt §18~~ **CLOSED 2026-07-15**。**H9/△2**: metricsEligibleAfter=**2026-07-18** · reviewDate=**2026-07-25** · early GREEN/降格 **禁止**
 
@@ -32,7 +32,7 @@
 **674**: rev262 — 目視 OK  
 **699**: rev132 · **700**: rev170  
 **736**: rev186 保持・**触らない**  
-**756/757/758**: Ver.02 LIVE。リスト正本＝Excel。継続メモ 2–4  
+**756/757/758**: Ver.02 LIVE。§6.2 クロム正。残 R-11/12/13・Excel投入  
 **746/747**: Dash rev14 — 目視 OK（2026-07-18）
 
 ## クローズ済み（`data/cio-project-closures.json` — 9件）
@@ -47,7 +47,7 @@
 | **677–679** | 触らない |
 | **SKYSEA** | 8/3 問い合わせまで実PC配信禁止 |
 | **736** | 現行版保持・Ver.02 後も触らない |
-| **756/757/758** | 継続メモ 2–4 |
+| **756/757/758** | R-11/12/13・LIVE目視・Excel投入 |
 | **712** | 削除済 — deploy 禁止 |
 
 ## セッション切替後の自律復元（Lifecycle v2 鏡像）
