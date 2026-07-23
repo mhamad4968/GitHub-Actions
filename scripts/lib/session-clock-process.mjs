@@ -130,9 +130,25 @@ function killNodeProcessesByCmdFragment(fragment) {
   }
 }
 
+/** WSL 側 session-clock-web 残骸（Windows ミラーで 47931 帯がゴースト EADDRINUSE になる再発防止） */
+export function killWslWebOrphans() {
+  if (process.platform !== 'win32') {
+    spawnSync('pkill', ['-f', 'session-clock-web.mjs'], { encoding: 'utf8' });
+    return;
+  }
+  // best effort — wsl 未導入・停止中は無視
+  spawnSync(
+    'wsl.exe',
+    ['-e', 'bash', '-lc', "pkill -f 'session-clock-web.mjs' 2>/dev/null || true"],
+    hiddenOpts({ encoding: 'utf8', timeout: 8000 }),
+  );
+}
+
 /** pid ファイル無しの node 残骸（Windows 中心・best effort） */
 export function killOrphanClockProcesses() {
+  killWslWebOrphans();
   killNodeListenersInPortRange(47931, 48060);
+  killNodeListenersInPortRange(38473, 38502);
   const envBase = Number(process.env.SESSION_CLOCK_WEB_PORT);
   if (Number.isFinite(envBase) && (envBase < 47931 || envBase > 48060)) {
     killNodeListenersInPortRange(envBase, envBase + 29);
@@ -213,9 +229,11 @@ function readUrlFromWebLog() {
   }
 }
 
-/** web のみ残骸掃除（OS 割当ポートの孤児含む・watch は触らない） */
+/** web のみ残骸掃除（WSL ミラー孤児 + OS 割当ポート・watch は触らない） */
 export function killWebOrphanProcesses() {
+  killWslWebOrphans();
   killNodeListenersInPortRange(47931, 48060);
+  killNodeListenersInPortRange(38473, 38502);
   const envBase = Number(process.env.SESSION_CLOCK_WEB_PORT);
   if (Number.isFinite(envBase) && (envBase < 47931 || envBase > 48060)) {
     killNodeListenersInPortRange(envBase, envBase + 29);

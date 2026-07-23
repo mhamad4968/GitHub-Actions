@@ -32,6 +32,7 @@ import { resolveSessionStarterDesktopDir } from './lib/session-starter-desktop-d
 import {
   EVENING_REFLECTION_SLOT_NAME,
   buildExpectedDesktopAiEmergencyFilenames,
+  isReadPackFileSyncedToDesktop,
   jstYmdToIso,
   pruneUnexpectedNumberedDesktopFiles,
 } from './lib/desktop-ai-emergency-expected-files.mjs';
@@ -171,15 +172,12 @@ function syncReadPackToDesktop() {
     console.log(`[sync-session-starter-to-desktop] read-pack スキップ: フォルダなし ${readPackRelDir}`);
     return;
   }
-  const txtNames = fs.readdirSync(readPackDir).filter((n) => n.endsWith('.txt')).sort();
-  for (const n of txtNames) {
-    copyReadPackFileToDesktop(readPackDir, n);
-  }
-  const mdNames = fs
+  // SLOT / 過去日 26-evening-reflection-*.md は syncEveningReflectionToDesktop が正（コピーしない）
+  const names = fs
     .readdirSync(readPackDir)
-    .filter((n) => /^\d{2}-.+\.md$/.test(n))
+    .filter((n) => isReadPackFileSyncedToDesktop(n))
     .sort();
-  for (const n of mdNames) {
+  for (const n of names) {
     copyReadPackFileToDesktop(readPackDir, n);
   }
 }

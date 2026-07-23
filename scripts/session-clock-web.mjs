@@ -25,13 +25,23 @@ import { writeTickerFile } from './lib/session-clock-write-ticker.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const { tickerAbs } = pathsFromRoot(root);
 
-function writeWebMeta(url, pid) {
+function writeWebMeta(url, pid, { persistPid = true } = {}) {
   try {
     fs.mkdirSync(path.dirname(clockPaths.webUrl), { recursive: true });
     fs.writeFileSync(clockPaths.webUrl, `${url}\n`, 'utf8');
-    fs.writeFileSync(clockPaths.webPid, `${pid}\n`, 'utf8');
+    if (persistPid) {
+      fs.writeFileSync(clockPaths.webPid, `${pid}\n`, 'utf8');
+    }
   } catch (e) {
     console.warn('[session-clock-web] meta write warn:', e?.message || e);
+  }
+}
+
+function clearWebPidFile() {
+  try {
+    if (fs.existsSync(clockPaths.webPid)) fs.unlinkSync(clockPaths.webPid);
+  } catch {
+    /* noop */
   }
 }
 
@@ -46,6 +56,8 @@ const BIND_HOST = resolveBindHost();
 /** ブラウザに見せる URL（0.0.0.0 待受でも同マシンは 127.0.0.1 で開けることが多い） */
 const DISPLAY_HOST = BIND_HOST === '0.0.0.0' ? '127.0.0.1' : BIND_HOST === '::1' ? '[::1]' : BIND_HOST;
 const PORT_RANGE = 30;
+/** 一次帯（47931）が WSL ミラー・ゴースト EADDRINUSE のとき試す二次帯 */
+const SECONDARY_BASE = 38473;
 
 function firstNonInternalIPv4() {
   const nets = os.networkInterfaces();
@@ -158,9 +170,10 @@ function createHandler(boundPort) {
 
 /**
  * @param {number} p
+ * @param {{ persistPid?: boolean }} [opts]
  * @returns {Promise<import('node:http').Server | null>}
  */
-function tryListenOnce(p) {
+function tryListenOnce(p, { persistPid = true } = {}) {
   return new Promise((resolve, reject) => {
     const server = http.createServer(createHandler(p));
     const onErr = err => {
@@ -186,7 +199,7 @@ function tryListenOnce(p) {
       const bound =
         typeof addr === 'object' && addr && 'port' in addr ? addr.port : p;
       const url = `http://${DISPLAY_HOST}:${bound}/`;
-      writeWebMeta(url, process.pid);
+      writeWebMeta(url, process.pid, { persistPid });
       resolve(server);
     });
   });
@@ -195,50 +208,82 @@ function tryListenOnce(p) {
 const PRINT_URL_ONLY =
   process.argv.includes('--print-url') || process.argv.includes('--url-only');
 
-async function main() {
-  const base = Math.min(65535, Math.max(1024, Number(process.env.SESSION_CLOCK_WEB_PORT || 47931)));
+/**
+ * @param {number} base
+ * @param {{ persistPid?: boolean, label?: string }} [opts]
+ * @returns {Promise<{ server: import('node:http').Server, port: number } | null>}
+ */
+async function tryListenRange(base, { persistPid = true, label = '' } = {}) {
   const max = Math.min(65535, base + PORT_RANGE - 1);
   for (let p = base; p <= max; p++) {
-    try {
-      const server = await tryListenOnce(p);
-      if (server) {
-        const url = `http://${DISPLAY_HOST}:${p}/`;
-        console.log(`[session-clock-web] 開く: ${url}`);
-        if (p !== base) {
-          console.log(`  （起点 ${base} は使用中のため ${p} にフォールバック）`);
-        }
-        if (BIND_HOST === '0.0.0.0') {
-          const lan = firstNonInternalIPv4();
-          if (lan) console.log(`  （同一 LAN の別端末用の例）http://${lan}:${p}/`);
-        }
-        if (PRINT_URL_ONLY) {
-          console.log(
-            '  ※ 別ターミナルで `session:clock:web` が既に動いているときは、そのターミナルの「開く:」行が正。ここは「いまから新規起動した場合」の URL です。',
-          );
-          server.close(() => process.exit(0));
-          return;
-        }
-        console.log('  止める: Ctrl+C');
-        console.log('  ※ ERR_CONNECTION_REFUSED → サーバ未起動かポート違い。ターミナルを閉じると止まる。URL は毎回このログに合わせる。');
-        if (BIND_HOST === '127.0.0.1') {
-          console.log('  ※ WSL で Windows ブラウザから繋がらないとき: SESSION_CLOCK_WEB_HOST=0.0.0.0 npm run session:clock:web');
-        }
-        return;
-      }
-    } catch (e) {
-      console.error('[session-clock-web] ❌', e.message);
-      process.exit(1);
-    }
+    const server = await tryListenOnce(p, { persistPid });
+    if (server) return { server, port: p, base, max, label };
   }
+  return null;
+}
+
+async function main() {
+  const persistPid = !PRINT_URL_ONLY;
+  const primaryBase = Math.min(
+    65535,
+    Math.max(1024, Number(process.env.SESSION_CLOCK_WEB_PORT || 47931)),
+  );
+
+  let hit = null;
   try {
-    const server = await tryListenOnce(0);
+    hit = await tryListenRange(primaryBase, { persistPid, label: 'primary' });
+    if (!hit && primaryBase !== SECONDARY_BASE) {
+      hit = await tryListenRange(SECONDARY_BASE, { persistPid, label: 'secondary' });
+    }
+  } catch (e) {
+    console.error('[session-clock-web] ❌', e.message);
+    process.exit(1);
+  }
+
+  if (hit) {
+    const { server, port, base, label } = hit;
+    const url = `http://${DISPLAY_HOST}:${port}/`;
+    console.log(`[session-clock-web] 開く: ${url}`);
+    if (port !== base) {
+      console.log(`  （起点 ${base} は使用中のため ${port} にフォールバック）`);
+    }
+    if (label === 'secondary') {
+      console.log(
+        `  （一次帯 ${primaryBase}〜${Math.min(65535, primaryBase + PORT_RANGE - 1)} が使用中のため二次帯 ${SECONDARY_BASE} を使用）`,
+      );
+    }
+    if (BIND_HOST === '0.0.0.0') {
+      const lan = firstNonInternalIPv4();
+      if (lan) console.log(`  （同一 LAN の別端末用の例）http://${lan}:${port}/`);
+    }
+    if (PRINT_URL_ONLY) {
+      console.log(
+        '  ※ 別ターミナルで `session:clock:web` が既に動いているときは、そのターミナルの「開く:」行が正。ここは「いまから新規起動した場合」の URL です。',
+      );
+      clearWebPidFile();
+      server.close(() => process.exit(0));
+      return;
+    }
+    console.log('  止める: Ctrl+C');
+    console.log('  ※ ERR_CONNECTION_REFUSED → サーバ未起動かポート違い。ターミナルを閉じると止まる。URL は毎回このログに合わせる。');
+    if (BIND_HOST === '127.0.0.1') {
+      console.log('  ※ WSL で Windows ブラウザから繋がらないとき: SESSION_CLOCK_WEB_HOST=0.0.0.0 npm run session:clock:web');
+    }
+    return;
+  }
+
+  try {
+    const server = await tryListenOnce(0, { persistPid });
     if (server) {
       const addr = server.address();
       const p = typeof addr === 'object' && addr ? addr.port : 0;
       const url = `http://${DISPLAY_HOST}:${p}/`;
       console.log(`[session-clock-web] 開く: ${url}`);
-      console.log(`  （${base}〜${max} が使用中のため OS 割当ポート ${p} にフォールバック）`);
+      console.log(
+        `  （${primaryBase} 帯と二次帯 ${SECONDARY_BASE} が使用中のため OS 割当ポート ${p} にフォールバック）`,
+      );
       if (PRINT_URL_ONLY) {
+        clearWebPidFile();
         server.close(() => process.exit(0));
         return;
       }
@@ -249,7 +294,7 @@ async function main() {
     console.error('[session-clock-web] ❌ port 0 fallback', e.message);
   }
   console.error(
-    `[session-clock-web] ❌ ${base}〜${max} に空きポートがありません。npm run session:clock:stop を実行してから再試行:`,
+    `[session-clock-web] ❌ ${primaryBase} 帯・二次帯 ${SECONDARY_BASE} に空きポートがありません。npm run session:clock:stop を実行してから再試行:`,
   );
   process.exit(1);
 }

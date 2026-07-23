@@ -14,6 +14,23 @@ import { META_CHARTER_DESKTOP_SYNC, META_CHARTER_DESKTOP_MAX_PREFIX } from './co
 /** 夕反省レポートが無い日に Desktop へ置くプレースホルダ（read-pack 正本） */
 export const EVENING_REFLECTION_SLOT_NAME = '26-evening-reflection-SLOT.txt';
 
+/** read-pack に残る過去日の `26-evening-reflection-YYYY-MM-DD.md`（Desktop 26 番は当日のみ） */
+export function isDatedEveningReflectionMd(name) {
+  return /^26-evening-reflection-\d{4}-\d{2}-\d{2}\.md$/i.test(name);
+}
+
+/**
+ * Desktop / expected に載せる read-pack ファイルか。
+ * 26 番 dated md と SLOT は `docs/reports` 有無で別経路（syncEveningReflection / verify evening 節）が正。
+ * @param {string} name
+ * @returns {boolean}
+ */
+export function isReadPackFileSyncedToDesktop(name) {
+  if (name === EVENING_REFLECTION_SLOT_NAME) return false;
+  if (isDatedEveningReflectionMd(name)) return false;
+  return name.endsWith('.txt') || /^\d{2}-.+\.md$/i.test(name);
+}
+
 const OTHER_DESKTOP_NAMES = [
   '07-HANDOFF-AI-FIVE-BLOCKS.md',
   '21-SESSION-BOOTSTRAP-CHECKLIST.txt',
@@ -52,10 +69,9 @@ export function buildExpectedDesktopAiEmergencyFilenames(root, ymd = getJstYyyym
   if (fs.existsSync(readPackDir)) {
     for (const n of fs.readdirSync(readPackDir)) {
       if (!fs.statSync(path.join(readPackDir, n)).isFile()) continue;
-      if (n.endsWith('.txt') || /^\d{2}-.+\.md$/i.test(n)) {
-        if (n === EVENING_REFLECTION_SLOT_NAME) continue;
-        expected.add(n);
-      }
+      // SLOT / 過去日 26-*.md は Desktop 期待に入れない（当日 26 は下記 eveningSrc 分岐）
+      if (!isReadPackFileSyncedToDesktop(n)) continue;
+      expected.add(n);
     }
   }
 

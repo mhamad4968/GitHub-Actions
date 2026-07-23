@@ -48,6 +48,14 @@ clock_get_url() {
     grep -oE 'http://[0-9a-zA-Z.]+:[0-9]+/' /tmp/session-clock-web.log | head -1
   fi
 }
+# Windows ネイティブ WAKE が書いた URL（WSL ミラー二重起動を避ける）
+clock_get_windows_url() {
+  local win_url_file
+  win_url_file="$(git rev-parse --show-toplevel 2>/dev/null)/logs/.session-clock-web.url"
+  if [ -f "$win_url_file" ]; then
+    head -1 "$win_url_file" | tr -d '\r\n'
+  fi
+}
 clock_http_status() {
   local url="$1"
   if [ -z "$url" ]; then echo "000"; return; fi
@@ -57,8 +65,13 @@ clock_pid() {
   pgrep -f 'session-clock-web' 2>/dev/null | head -1
 }
 clock_auto_start() {
+  # 2026-07-23: WSL 0.0.0.0:47931 起動は Windows 側 47931 帯をゴースト占有し
+  # spawnWebServer が OS 割当ポートへ落ちる（#S-CLOCK-WSL-MIRROR-01）。既定は起動しない。
+  if [ "${CIO_HEALTH_ALLOW_WSL_CLOCK_START:-0}" != "1" ]; then
+    return 1
+  fi
   rm -f /tmp/session-clock-web.log
-  setsid -f bash -c "SESSION_CLOCK_WEB_HOST=0.0.0.0 npm run session:clock:web > /tmp/session-clock-web.log 2>&1" </dev/null >/dev/null 2>&1 || true
+  setsid -f bash -c "SESSION_CLOCK_WEB_HOST=127.0.0.1 SESSION_CLOCK_WEB_PORT=38473 npm run session:clock:web > /tmp/session-clock-web.log 2>&1" </dev/null >/dev/null 2>&1 || true
   local i
   for i in 1 2 3 4 5 6; do
     sleep 1
@@ -68,8 +81,12 @@ clock_auto_start() {
   done
   return 1
 }
-clock_url=$(clock_get_url)
+clock_url=$(clock_get_windows_url)
 clock_status=$(clock_http_status "$clock_url")
+if [ "$clock_status" != "200" ]; then
+  clock_url=$(clock_get_url)
+  clock_status=$(clock_http_status "$clock_url")
+fi
 clock_healed=""
 if [ "$clock_status" != "200" ]; then
   if clock_auto_start; then

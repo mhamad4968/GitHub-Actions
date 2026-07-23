@@ -4986,3 +4986,17 @@ npm run cio:morning:ready
 **GO待ち**: なし
 
 ---
+
+### 2026-07-23 JST — **WAKE・ブリーフィング・WSL壁時計ミラー恒久是正**
+
+**要約**: cold-start READY後、Desktop AI緊急用00〜36通読。health 100%、MCP registry26・probe 6/6、GHA latest success（cancelled=superseded、failureは過去で現在緑）。真因: cio:health(WSL)が 0.0.0.0:47931 で web 起動し Windows 帯をゴースト占有。`killWslWebOrphans`・二次帯38473・print-url pid非永続・cio:health 既定で WSL auto-start 禁止を恒久化。壁時計 http://127.0.0.1:38473/ HTTP200。DeepSeek§50-3-8済。
+
+**次の1手**: **浜田の指示待ち**（当日 -0）。今日の本題は指示があるまで確認しない。
+
+**Git**: close-git 前
+
+**GO待ち**: H9 / △2 は 2026-07-25のみ。
+
+**触らない**: 688（WBGT以外）/ 677–679 / SKYSEA（8/3前）/ 712 / 736現行rev186
+
+---

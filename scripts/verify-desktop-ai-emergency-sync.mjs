@@ -29,6 +29,7 @@ import { resolveSessionStarterDesktopDir } from './lib/session-starter-desktop-d
 import {
   EVENING_REFLECTION_SLOT_NAME,
   buildExpectedDesktopAiEmergencyFilenames,
+  isReadPackFileSyncedToDesktop,
   verifyDesktopNumberingContinuity,
 } from './lib/desktop-ai-emergency-expected-files.mjs';
 
@@ -218,12 +219,12 @@ function main() {
   const readPackRelDir = 'chat-sessions/desktop-ai-emergency-read-pack';
   const readPackDir = path.join(root, readPackRelDir);
   if (fs.existsSync(readPackDir)) {
+    // 26 SLOT / 過去日 dated md は evening 節で検査（Desktop は当日 26 のみ）
     const names = fs
       .readdirSync(readPackDir)
-      .filter((n) => n.endsWith('.txt') || /^\d{2}-.+\.md$/i.test(n))
+      .filter((n) => isReadPackFileSyncedToDesktop(n))
       .sort();
     for (const outName of names) {
-      if (outName === EVENING_REFLECTION_SLOT_NAME) continue;
       const src = path.join(readPackDir, outName);
       if (!fs.statSync(src).isFile()) continue;
       const dest = path.join(destDir, outName);
