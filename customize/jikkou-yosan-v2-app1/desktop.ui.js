@@ -109,7 +109,10 @@
       "@media (max-width:900px){.jy2-sheet-title{padding:8px 16px}.jy2-sheet-title-doc{font-size:17px;letter-spacing:.14em}.jy2-sheet-title-sheet{font-size:13px;letter-spacing:.14em;padding:3px 12px}}",
       ".jy2-empty{color:#64748b;font-size:13px}",
       ".jy2-section-title{margin:14px 0 6px;font-size:14px;font-weight:700;padding:4px 8px;background:#e8eef4;border-left:4px solid #2563eb;color:#1e3a8a}",
-      ".jy2-table{border-collapse:collapse;width:100%;margin:0 0 16px;font-size:12px;background:#fff;border-radius:6px;overflow:hidden}",
+      // 表は親の overflow-x:hidden で切れないよう横スクロール枠へ
+      ".jy2-table-scroll{overflow-x:auto;overflow-y:visible;max-width:100%;width:100%;margin:0 0 16px;-webkit-overflow-scrolling:touch}",
+      ".jy2-table-scroll>.jy2-table{margin-bottom:0;min-width:max-content}",
+      ".jy2-table{border-collapse:collapse;width:100%;margin:0 0 16px;font-size:12px;background:#fff;border-radius:6px;overflow:visible}",
       ".jy2-table th,.jy2-table td{border:1px solid #e2e8f0;padding:4px 6px;text-align:left;vertical-align:middle}",
       ".jy2-table th{background:#f1f5f9;font-weight:600;color:#475569;text-align:center;white-space:nowrap}",
       ".jy2-band-row th{background:#eef3fa;text-align:left;color:#1e3a8a}",
@@ -146,7 +149,7 @@
       ".jy2-budget-summary-keys .jy2-sub-row td{font-size:11px;color:#5c4a3a;background:#fffdf9}",
       ".jy2-budget-summary-note{margin:6px 0 0;font-size:10px;color:#64748b;line-height:1.45}",
       ".jy2-summary-footer{margin-top:8px}",
-      ".jy2-detail-block{border:1px solid #cbd5e1;border-radius:8px;margin:0 0 16px;background:#fff;overflow:hidden;box-shadow:0 1px 3px rgba(15,23,42,.04)}",
+      ".jy2-detail-block{border:1px solid #cbd5e1;border-radius:8px;margin:0 0 16px;background:#fff;overflow-x:auto;overflow-y:visible;box-shadow:0 1px 3px rgba(15,23,42,.04)}",
       ".jy2-detail-block[data-block-status='retired']{opacity:.6}",
       ".jy2-detail-block-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 10px;background:linear-gradient(180deg,#ecfdf5,#d1fae5);font-size:12px;border-bottom:1px solid #bbf7d0}",
       ".jy2-detail-block-head label{display:flex;align-items:center;gap:4px}",
@@ -208,10 +211,10 @@
       "#jy2-host{margin:0 0 12px;overflow-x:hidden;overflow-y:visible;max-width:100%;width:100%;box-sizing:border-box}",
       ".jy2-panes,.jy2-pane{max-width:100%;box-sizing:border-box}",
       // 見出し: タグ（上）＋項目名（下）。th 自体は table-cell のまま（flex にすると列が縦崩れする）
-      ".jy2-th-stack{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;line-height:1.2;width:100%}",
-      "th.jy2-th-stacked{white-space:normal!important;vertical-align:bottom;text-align:center;padding-top:6px!important;padding-bottom:6px!important}",
-      ".jy2-th-stack .jy2-hf-tag{display:inline-flex;align-items:center;justify-content:center;margin:0!important;font-size:10px;font-weight:800;letter-spacing:.06em;padding:2px 8px;border-radius:999px;line-height:1.2;box-shadow:0 1px 0 rgba(15,23,42,.08)}",
-      ".jy2-th-stack .jy2-th-label{display:block;font-size:11px;font-weight:700;color:#0f172a;line-height:1.3;letter-spacing:.02em}",
+      ".jy2-th-stack{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;line-height:1.25;width:max-content;max-width:100%;margin:0 auto;box-sizing:border-box}",
+      "th.jy2-th-stacked{white-space:normal!important;vertical-align:bottom;text-align:center;padding:8px 8px!important;min-width:4.75rem}",
+      ".jy2-th-stack .jy2-hf-tag{display:inline-flex;align-items:center;justify-content:center;margin:0!important;font-size:10px;font-weight:800;letter-spacing:.06em;padding:2px 8px;border-radius:999px;line-height:1.2;box-shadow:0 1px 0 rgba(15,23,42,.08);flex:0 0 auto}",
+      ".jy2-th-stack .jy2-th-label{display:block;font-size:11px;font-weight:700;color:#0f172a;line-height:1.35;letter-spacing:.02em;white-space:nowrap}",
       ".jy2-table th.jy2-th-mode-auto{background:#eff6ff}",
       ".jy2-table th.jy2-th-mode-select{background:#ecfdf5}",
       ".jy2-table th.jy2-th-mode-input{background:#fffbeb}",
@@ -763,6 +766,13 @@
     button.textContent = label;
     button.addEventListener("click", onClick);
     return button;
+  }
+
+  function jy2WrapTable(documentRef, table) {
+    const wrap = documentRef.createElement("div");
+    wrap.className = "jy2-table-scroll";
+    wrap.appendChild(table);
+    return wrap;
   }
 
   function jy2HeadRow(documentRef, labels) {
@@ -1473,7 +1483,7 @@
     body.appendChild(grandRow);
 
     table.appendChild(body);
-    return table;
+    return jy2WrapTable(documentRef, table);
   }
 
   // 給与手当 (D-30/X7): 総括直入力, 消費税・税込は「－」, at least 1 row.
@@ -1601,7 +1611,7 @@
     body.appendChild(footRow);
 
     table.appendChild(body);
-    return table;
+    return jy2WrapTable(documentRef, table);
   }
 
   // 総括原価投影 (P-21/P-33): amounts are read-only from App2.
@@ -1748,7 +1758,7 @@
       body.appendChild(row);
     }
     table.appendChild(body);
-    return table;
+    return jy2WrapTable(documentRef, table);
   }
 
   // D-31 + Ver.01 区分別サマリー: ①⑧⑨主表示＋区分マトリクス（同テイスト）
@@ -2269,7 +2279,7 @@
     }
 
     table.appendChild(body);
-    section.appendChild(table);
+    section.appendChild(jy2WrapTable(documentRef, table));
     return section;
   }
 
@@ -2784,7 +2794,7 @@
       body.appendChild(tr);
     }
     table.appendChild(body);
-    pane.appendChild(table);
+    pane.appendChild(jy2WrapTable(documentRef, table));
     pane.appendChild(status);
   }
 
