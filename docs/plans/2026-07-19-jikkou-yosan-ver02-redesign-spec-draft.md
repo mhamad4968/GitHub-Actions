@@ -139,7 +139,8 @@ App1 カスタムUI（`customize/jikkou-yosan-v2-app1`）の見た目・固定�
 | **C9** | **総括・原価投影表の下**に **原価・施工計／原価・保安計** 行を出す（X5・⑧内訳の区分計。給与は別帯）。⑧合計との混同を避けるラベル | **CONFIRMED** |
 | **C10** | 合計行は薄茶系。角丸ボタン・slate 基調（736同趣旨） | **CONFIRMED** |
 
-**実装メモ（保守）**: 親に `overflow-x:hidden` を戻すと C1 の固定が再び壊れる。横はみ出し対策は **clip＋表ラッパ scroll** を維持する。
+**実装メモ（保守）**: 親に `overflow-x:hidden` を戻すと C1 の固定が再び壊れる。横はみ出し対策は **clip＋表ラッパ scroll** を維持する。  
+**受け入れ前**: `docs/runbooks/jikkou-yosan-v2-chrome-accept-checklist.md` を自己消化。不変条件は `docs/constitution/jikkou-yosan-v2-ui-chrome-invariants.md`（#R-UI-01/02/03・#R-SPEC-01）。機械ゲート: `npm run verify:jikkou-v2-chrome-css` / `verify:jikkou-v2-ui-spec-same-turn`。
 
 ## 7. 総括表
 

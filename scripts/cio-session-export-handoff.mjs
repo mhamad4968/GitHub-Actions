@@ -22,6 +22,23 @@ import { getDefaultBridgeNextFiles, repairHandoffLatestBlock } from './lib/cio-h
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
+/** #S-HANDOFF-01 — --help / 未知フラグでは本体副作用禁止 */
+function guardCliArgs(argv) {
+  const known = new Set(['--help', '-h']);
+  if (argv.includes('--help') || argv.includes('-h')) {
+    console.log(`Usage: node scripts/cio-session-export-handoff.mjs
+  (no args)  repair handoff + write bridge + stock tips
+  --help     print this help and exit 0 (no writes)`);
+    process.exit(0);
+  }
+  const unknown = argv.filter((a) => a.startsWith('-') && !known.has(a));
+  if (unknown.length) {
+    console.error('[cio:session:export-handoff] NG unknown args:', unknown.join(' '));
+    console.error('  → --help のみ許可。未知フラグでは bridge を書かない（#S-HANDOFF-01）');
+    process.exit(2);
+  }
+}
+
 function sh(cmd) {
   return execSync(cmd, { cwd: root, encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] }).trim();
 }
@@ -47,6 +64,8 @@ function purgeTemporaries() {
 }
 
 function main() {
+  guardCliArgs(process.argv.slice(2));
+
   let gitHead = 'unknown';
   let gitStatus = '';
   try {

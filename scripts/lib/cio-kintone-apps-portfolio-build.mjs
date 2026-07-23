@@ -21,6 +21,30 @@ export function parsePortfolioDetailBuild(md, appId) {
   return m ? m[1].trim() : null;
 }
 
+/** 機械表: | app | `BUILD` | **rev** | `fileKey` | */
+export function parsePortfolioMachineFileKey(md, appId) {
+  const id = String(appId).trim();
+  const re = new RegExp(
+    `^\\|\\s*${id}\\s*\\|\\s*\`[^\`]+\`\\s*\\|\\s*\\*\\*[^*]+\\*\\*\\s*\\|\\s*\`([^\`]+)\``,
+    'm',
+  );
+  const m = md.match(re);
+  if (!m) return null;
+  const key = m[1].trim();
+  if (!key || key === '—' || key === '-') return null;
+  return key;
+}
+
+/** 詳細行: fileKey **`…`** */
+export function parsePortfolioDetailFileKey(md, appId) {
+  const id = String(appId).trim();
+  const lineRe = new RegExp(`^\\|[^\\n]*\\*\\*${id}\\*\\*[^\\n]*\\|`, 'm');
+  const line = md.match(lineRe)?.[0];
+  if (!line) return null;
+  const m = line.match(/fileKey\s+\*\*`([^`]+)`\*\*/i);
+  return m ? m[1].trim() : null;
+}
+
 export function updatePortfolioMachineBuild(md, appId, build, revision) {
   const id = String(appId).trim();
   const re = new RegExp(`^(\\|\\s*${id}\\s*\\|\\s*\`)([^\`]+)(\`\\s*\\|)([^|]*)(\\|)`, 'm');

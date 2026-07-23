@@ -91,6 +91,9 @@ jobs:
       - name: test-evening-improvements-2026-07-18（承認済み再発防止）
         run: npm run test:evening-improvements-2026-07-18
 
+      - name: test-evening-improvements-2026-07-23（Ver.02 chrome / handoff）
+        run: npm run test:evening-improvements-2026-07-23
+
       - name: verify-ci-rule-integrity（薄型憲法・alwaysApply 上限）
         run: node scripts/verify-ci-rule-integrity.mjs
 

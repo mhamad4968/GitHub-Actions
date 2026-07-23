@@ -71,6 +71,24 @@ if command -v node >/dev/null 2>&1; then
     exit 1
   fi
 
+  # #R-UI-01/02 #S-UI-01/02 — Ver.02 chrome CSS 不変条件
+  node scripts/verify-jikkou-v2-chrome-css.mjs
+  status=$?
+  if [ "$status" -ne 0 ]; then
+    echo "" >&2
+    echo "[pre-commit] Ver.02 chrome CSS ゲート NG（#S-UI-01/#S-UI-02）" >&2
+    exit 1
+  fi
+
+  # #R-SPEC-01 — UI 変更時は redesign SPEC 同一ターン
+  node scripts/verify-jikkou-v2-ui-spec-same-turn.mjs --cached-only
+  status=$?
+  if [ "$status" -ne 0 ]; then
+    echo "" >&2
+    echo "[pre-commit] Ver.02 UI↔SPEC 同一ターン NG（#R-SPEC-01）" >&2
+    exit 1
+  fi
+
   if git diff --cached --name-only | grep -qE '^\.cursor/rules/constitution\.mdc$'; then
     node scripts/verify-constitution-mdc-freshness.mjs
     status=$?

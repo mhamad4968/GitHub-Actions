@@ -205,6 +205,21 @@ function main() {
     process.exit(warnOnly ? 0 : 1);
   }
 
+  // #D-CLOSE-02 — checkpoint 当日更新 + bridge.gitHead ∈ {HEAD, parent}
+  if (!process.argv.includes('--skip-handoff-freshness')) {
+    const fresh = spawnSync(
+      process.execPath,
+      [
+        path.join(root, 'scripts/verify-session-close-handoff-freshness.mjs'),
+        ...(warnOnly ? ['--warn-only'] : []),
+      ],
+      { cwd: root, stdio: 'inherit' },
+    );
+    if (fresh.status !== 0) {
+      process.exit(warnOnly ? 0 : 1);
+    }
+  }
+
   const unpushed = checkUnpushed();
   if (!unpushed.ok) {
     process.exit(warnOnly ? 0 : 1);

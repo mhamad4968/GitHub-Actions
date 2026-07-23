@@ -40,17 +40,21 @@
 
 | ID | 種別 | 提案 | 根拠 | 状態 |
 |----|------|------|------|------|
-| **#R-UI-01** | ルール | Ver.02 App1 の sticky／固定クロム祖先に **`overflow-x:hidden` 禁止**。横は `clip` または表ラッパ `overflow-x:scroll` のみ。違反はレビュー差し戻し | F1/F2 | **承認待ち** |
-| **#R-UI-02** | ルール | 表ヘッダの見た目変更で **`th`/`td` の `display` 変更禁止**（内側スタックのみ可） | F3 | **承認待ち** |
-| **#R-SPEC-01** | ルール | App756 のユーザー可視 UI 変更は **同一ターンで redesign SPEC（最低 §6.2 または該当 U/D）更新**しないと次の UI タスク禁止（既存「同一ターン SPEC」の運用強化） | F7/F11/F12 | **承認待ち** |
-| **#S-UI-01** | 脚本 | `verify:jikkou-v2-chrome-overflow` — `desktop.ui.js` の sticky 祖先セレクタに `overflow-x:hidden` が残っていたら exit 1（`clip`/`visible` のみ許可） | F1 | **承認待ち** |
-| **#S-UI-02** | 脚本 | `verify:jikkou-v2-th-display` — CSS 文字列に `th`＋`display:flex`（または grid）の組み合わせがあれば exit 1 | F3 | **承認待ち** |
-| **#S-SYNC-01** | 脚本 | deploy 後 verify で **kintone-apps.md の fileKey ＝ cio-live-builds.json** を必須化（BUILD/rev 一致だけでは不足） | F8 | **承認待ち** |
-| **#D-CLOSE-02** | 規律 | `cio:session:close-git`／締め完了判定に **checkpoint「最終更新」日付＝当日** と **bridge.gitHead∈{HEAD, parent}** を必須 | F9 | **承認待ち** |
-| **#S-HANDOFF-01** | 脚本 | `cio-session-export-handoff.mjs` は未知引数／`--help` だけで **本体副作用禁止**（help なら exit 0・書込なし） | F10 | **承認待ち** |
-| **#R-UI-03** | ルール | 光学中央・字間変更時、**バナー幅（min/max/width）を同時に縮めない**（別コミットまたは明示レビュー） | F4 | **承認待ち** |
+| **#R-UI-01** | ルール | Ver.02 App1 の sticky／固定クロム祖先に **`overflow-x:hidden` 禁止**。横は `clip` または表ラッパ `overflow-x:scroll` のみ。違反はレビュー差し戻し | F1/F2 | **GO・実装済** |
+| **#R-UI-02** | ルール | 表ヘッダの見た目変更で **`th`/`td` の `display` 変更禁止**（内側スタックのみ可） | F3 | **GO・実装済** |
+| **#R-SPEC-01** | ルール | App756 のユーザー可視 UI 変更は **同一ターンで redesign SPEC（最低 §6.2 または該当 U/D）更新**しないと次の UI タスク禁止（既存「同一ターン SPEC」の運用強化） | F7/F11/F12 | **GO・実装済** |
+| **#S-UI-01** | 脚本 | `verify:jikkou-v2-chrome-css` — sticky 祖先セレクタに `overflow-x:hidden` が残っていたら exit 1 | F1 | **GO・実装済** |
+| **#S-UI-02** | 脚本 | 同上 — `th`＋`display:flex|grid` で exit 1 | F3 | **GO・実装済** |
+| **#S-SYNC-01** | 脚本 | deploy 後 verify で **kintone-apps.md の fileKey ＝ cio-live-builds.json** を必須化 | F8 | **GO・実装済** |
+| **#D-CLOSE-02** | 規律 | 締め完了判定に **checkpoint「最終更新」日付＝当日** と **bridge.gitHead∈{HEAD, parent}** を必須 | F9 | **GO・実装済** |
+| **#S-HANDOFF-01** | 脚本 | `cio-session-export-handoff.mjs` は未知引数／`--help` だけで **本体副作用禁止** | F10 | **GO・実装済** |
+| **#R-UI-03** | ルール | 光学中央・字間変更時、**バナー幅（min/max/width）を同時に縮めない** | F4 | **GO・実装済** |
+
+**GO 証跡**: `docs/approved-changes/2026-07-23-evening-reflection-hamada-go.md`  
+**実装**: 同セッション完了（pre-commit / pushGate / deployGate756 / constitution-gates）。
 
 ## 検証
 
 - `npm run verify:evening-reflection-scope`（本ファイル）
+- `npm run test:evening-improvements-2026-07-23`
 - 当日 tip の GitHub Actions（constitution-gates / cursor-env-gates）success 確認済

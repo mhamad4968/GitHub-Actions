@@ -10,10 +10,21 @@
     "steps": [
       { "type": "npm", "script": "verify:constitution-handoff" },
       { "type": "npm", "script": "lint:customize" },
-      { "type": "npm", "script": "jikkou-yosan:pre-push-gate" }
+      { "type": "npm", "script": "jikkou-yosan:pre-push-gate" },
+      { "type": "npm", "script": "verify:jikkou-v2-chrome-css" },
+      { "type": "npm", "script": "verify:jikkou-v2-ui-spec-same-turn" }
     ]
   },
   "apps": {
+    "756": {
+      "label": "実行予算 Ver.02 App1",
+      "deployGate": [
+        { "type": "npm", "script": "verify:jikkou-v2-chrome-css" },
+        { "type": "npm", "script": "verify:jikkou-v2-ui-spec-same-turn" },
+        { "type": "node", "script": "scripts/verify-kintone-apps-live-build-sync.mjs", "args": ["756", "--strict"] }
+      ],
+      "notes": "chrome overflow/th 不変・SPEC同一ターン・fileKey三点（#R-UI/#S-SYNC-01）"
+    },
     "736": {
       "label": "実行予算書",
       "deployGate": [

@@ -1,0 +1,29 @@
+---
+description: Ver.02 App756 UI クロム不変条件（overflow×sticky / th display / SPEC同一ターン）
+globs:
+  - customize/jikkou-yosan-v2-app1/**
+  - docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md
+alwaysApply: false
+---
+
+# Ver.02 UI クロム（2026-07-23 浜田 GO）
+
+正本: `docs/constitution/jikkou-yosan-v2-ui-chrome-invariants.md`  
+チェックリスト: `docs/runbooks/jikkou-yosan-v2-chrome-accept-checklist.md`
+
+## 必須
+
+1. sticky / fixed メニュー祖先に **`overflow-x:hidden` 禁止** → `clip` または表ラッパ scroll（#R-UI-01）
+2. **`th`/`td` の display を flex/grid にしない** — 内側 `.jy2-th-stack` のみ（#R-UI-02）
+3. 光学中央とバナー幅を **同時に縮めない**（#R-UI-03）
+4. `desktop.ui.js` を変えたら **同じターンで redesign SPEC（§6.2 等）**（#R-SPEC-01）
+5. deploy 後は BUILD / rev / **fileKey** 三点照合（#S-SYNC-01）
+6. 浜田に見せる前に chrome 受け入れチェックリストを自己消化
+
+## 機械
+
+```bash
+npm run verify:jikkou-v2-chrome-css
+npm run verify:jikkou-v2-ui-spec-same-turn
+npm run verify:kintone-apps-live-build-sync -- 756 --strict
+```

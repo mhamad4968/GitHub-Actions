@@ -1,0 +1,29 @@
+# Ver.02 App756 クロム受け入れチェック（自己消化）
+
+**根拠**: 2026-07-23 夕反省 F6 / A5 / §6.2  
+**いつ**: App756 の見た目 deploy を浜田に出す **前**（必須）
+
+## 必須チェック
+
+| # | 項目 | 合格条件 |
+|---|------|----------|
+| 1 | 操作バー固定 | 縦スクロールしても保存・タブ・表題が画面上に残る |
+| 2 | 表題帯 | 「実　行　予　算　書」が十分な幅の帯（縮みすぎない）・光学中央 |
+| 3 | 横スクロール | ズーム100%で表が切れてもラッパに横スクロールが出る。タブ切替後も消えない |
+| 4 | 見出しタグ | タグ上＋名下。`th` は table-cell。列が縦崩れしない |
+| 5 | 予実月列 | 狭幅・`YY/M`・月列に入力タグなし・自動タグなし |
+| 6 | 消化率右端 | 右端がクリップされない |
+| 7 | 内訳フッタ | 左寄せ・金額入力が十分な幅 |
+| 8 | 原価計 | 投影表下に原価・施工計／原価・保安計 |
+| 9 | overflow | 祖先に `overflow-x:hidden` を足していない（`npm run verify:jikkou-v2-chrome-css`） |
+| 10 | SPEC | 見た目変更と同じターンで redesign SPEC（§6.2 等）更新 |
+
+## 機械ゲート
+
+```bash
+npm run verify:jikkou-v2-chrome-css
+npm run verify:jikkou-v2-ui-spec-same-turn
+npm run verify:kintone-apps-live-build-sync -- 756 --strict
+```
+
+deploy 後は BUILD / rev / **fileKey** 三点が `cio-live-builds.json` と一致すること（#S-SYNC-01）。

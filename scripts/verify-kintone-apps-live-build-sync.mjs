@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
  * R-595-03 — kintone-apps.md の BUILD/rev が cio-live-builds.json と一致するか（garble 検知）
+ * #S-SYNC-01 — fileKey もレジストリと三点照合（BUILD/rev だけでは不足）
  *
  * Usage:
  *   node scripts/verify-kintone-apps-live-build-sync.mjs <appId> [--strict]
@@ -12,7 +13,9 @@ import process from 'node:process';
 import { readLiveBuildRegistry } from './cio-live-build-registry.mjs';
 import {
   parsePortfolioDetailBuild,
+  parsePortfolioDetailFileKey,
   parsePortfolioMachineBuild,
+  parsePortfolioMachineFileKey,
 } from './lib/cio-kintone-apps-portfolio-build.mjs';
 
 const strict = process.argv.includes('--strict');
@@ -62,6 +65,20 @@ function verifyOne(id) {
     const revCell = revM ? revM[1].trim() : null;
     if (revCell && revCell !== String(entry.revision)) {
       issues.push(`machine rev mismatch (${revCell} vs ${entry.revision})`);
+    }
+  }
+
+  // #S-SYNC-01 — fileKey 三点（レジストリに fileKey があるアプリのみ必須）
+  if (entry.fileKey) {
+    const machineKey = parsePortfolioMachineFileKey(md, id);
+    const detailKey = parsePortfolioDetailFileKey(md, id);
+    if (!machineKey) issues.push('machine fileKey missing (#S-SYNC-01)');
+    else if (machineKey !== entry.fileKey) {
+      issues.push(`machine fileKey mismatch (${machineKey} vs ${entry.fileKey}) (#S-SYNC-01)`);
+    }
+    if (!detailKey) issues.push('detail fileKey missing (#S-SYNC-01)');
+    else if (detailKey !== entry.fileKey) {
+      issues.push(`detail fileKey mismatch (${detailKey} vs ${entry.fileKey}) (#S-SYNC-01)`);
     }
   }
   return issues;

@@ -62,6 +62,7 @@
     style.textContent = [
       // A-07 / Ver.01テイスト: slate chrome・色分けタブ・シート見出し・薄茶合計
       // overflow-x:hidden は overflow-y を auto 化し sticky を壊す → clip で横だけ切る
+      // #R-UI-01 / #S-UI-01: sticky/fixed メニュー祖先に overflow-x:hidden 禁止（verify:jikkou-v2-chrome-css）
       ".jy2-shell{font-family:'Segoe UI',Meiryo,sans-serif;background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;color:#334155;overflow-x:clip;overflow-y:visible;padding:0 0 12px;max-width:100%;width:100%;min-width:0;box-sizing:border-box}",
       ".jy2-header{display:none}",
       ".jy2-title{margin:0;font-size:22px;font-weight:800;letter-spacing:.28em;color:#334155;line-height:1.35}",

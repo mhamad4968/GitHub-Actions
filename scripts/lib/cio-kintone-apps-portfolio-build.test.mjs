@@ -6,7 +6,9 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
   parsePortfolioDetailBuild,
+  parsePortfolioDetailFileKey,
   parsePortfolioMachineBuild,
+  parsePortfolioMachineFileKey,
   updatePortfolioDetailBuild,
 } from './cio-kintone-apps-portfolio-build.mjs';
 const sample736 =
@@ -26,6 +28,11 @@ assert.equal(parsePortfolioDetailBuild(sample745, '745'), '2026-06-26-jre-cloud-
 assert.equal(parsePortfolioDetailBuild(sample674WithHistory, '674'), '2026-07-17-674-current');
 assert.equal(parsePortfolioMachineBuild(machineMd, '736'), '2026-06-26-736-ux-sticky-print-badges-v1');
 assert.equal(parsePortfolioMachineBuild(machineMd, '745'), '2026-06-26-jre-cloud-account-dash-dept-dash-branch-v13');
+
+assert.equal(parsePortfolioMachineFileKey(machineMd, '736'), 'abc');
+assert.equal(parsePortfolioMachineFileKey(machineMd, '745'), 'def');
+assert.equal(parsePortfolioDetailFileKey(sample736, '736'), 'abc');
+assert.equal(parsePortfolioDetailFileKey(sample745, '745'), 'def');
 
 const updated = updatePortfolioDetailBuild(sample745, '745', '2026-06-26-jre-cloud-account-dash-dept-dash-branch-v13', '18');
 assert.equal(updated.changed, true);
