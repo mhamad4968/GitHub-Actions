@@ -61,7 +61,8 @@
     style.id = JY2_STYLE_ID;
     style.textContent = [
       // A-07 / Ver.01テイスト: slate chrome・色分けタブ・シート見出し・薄茶合計
-      ".jy2-shell{font-family:'Segoe UI',Meiryo,sans-serif;background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;color:#334155;overflow-x:hidden;overflow-y:visible;padding:0 0 12px;max-width:100%;width:100%;min-width:0;box-sizing:border-box}",
+      // overflow-x:hidden は overflow-y を auto 化し sticky を壊す → clip で横だけ切る
+      ".jy2-shell{font-family:'Segoe UI',Meiryo,sans-serif;background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;color:#334155;overflow-x:clip;overflow-y:visible;padding:0 0 12px;max-width:100%;width:100%;min-width:0;box-sizing:border-box}",
       ".jy2-header{display:none}",
       ".jy2-title{margin:0;font-size:22px;font-weight:800;letter-spacing:.28em;color:#334155;line-height:1.35}",
       ".jy2-header-stub{font-size:11px;color:#64748b;letter-spacing:normal;opacity:1}",
@@ -79,7 +80,7 @@
       ".jy2-tab[data-tab-id='version'][aria-selected='true']{background:#7c3aed;color:#fff;border-color:#7c3aed}",
       ".jy2-tab[data-tab-id='header'][aria-selected='true']{background:#64748b;color:#fff;border-color:#64748b}",
       ".jy2-tab[data-read-only='true']::after{content:' 🔒';font-size:11px}",
-      ".jy2-pane{display:none;min-height:200px;padding:10px 12px 14px;background:#fff;border:1px solid #cbd5e1;border-top:none;border-radius:0 0 8px 8px;max-width:100%;min-width:0;width:100%;box-sizing:border-box;overflow-x:hidden;overflow-y:visible}",
+      ".jy2-pane{display:none;min-height:200px;padding:10px 12px 14px;background:#fff;border:1px solid #cbd5e1;border-top:none;border-radius:0 0 8px 8px;max-width:100%;min-width:0;width:100%;box-sizing:border-box;overflow-x:clip;overflow-y:visible}",
       ".jy2-pane[data-active='true']{display:block}",
       ".jy2-pane[data-tab-id='header'][data-active='true']{border-color:#94a3b8;border-top:3px solid #64748b;background:#fff}",
       ".jy2-pane[data-tab-id='summary'][data-active='true']{border-color:#93c5fd;border-top:3px solid #3b82f6;background:#fff}",
@@ -150,7 +151,7 @@
       ".jy2-budget-summary-keys .jy2-sub-row td{font-size:11px;color:#5c4a3a;background:#fffdf9}",
       ".jy2-budget-summary-note{margin:6px 0 0;font-size:10px;color:#64748b;line-height:1.45}",
       ".jy2-summary-footer{margin-top:8px}",
-      ".jy2-detail-block{border:1px solid #cbd5e1;border-radius:8px;margin:0 0 16px;background:#fff;overflow-x:hidden;overflow-y:visible;box-shadow:0 1px 3px rgba(15,23,42,.04);max-width:100%;min-width:0;box-sizing:border-box}",
+      ".jy2-detail-block{border:1px solid #cbd5e1;border-radius:8px;margin:0 0 16px;background:#fff;overflow-x:clip;overflow-y:visible;box-shadow:0 1px 3px rgba(15,23,42,.04);max-width:100%;min-width:0;box-sizing:border-box}",
       ".jy2-detail-block[data-block-status='retired']{opacity:.6}",
       ".jy2-detail-block-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 10px;background:linear-gradient(180deg,#ecfdf5,#d1fae5);font-size:12px;border-bottom:1px solid #bbf7d0}",
       ".jy2-detail-block-head label{display:flex;align-items:center;gap:4px}",
@@ -171,7 +172,7 @@
       ".jy2-warning{color:#b91c1c;font-size:12px;margin:4px 0;font-weight:600}",
       ".jy2-retired-tag{color:#b91c1c;font-weight:700}",
       // 予実: 1スクロール枠 + 左4列固定 + ヘッダ固定
-      ".jy2-pane[data-tab-id='actual']{overflow-x:hidden;overflow-y:visible;padding:8px}",
+      ".jy2-pane[data-tab-id='actual']{overflow-x:clip;overflow-y:visible;padding:8px}",
       ".jy2-actual-scroll{display:block;overflow-x:scroll;overflow-y:auto;border:1px solid #e2e8f0;border-radius:6px;background:#fff;max-width:100%;width:100%;min-width:0;max-height:min(70vh,720px);box-sizing:border-box;padding:0 12px 8px 0;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-gutter:stable}",
       ".jy2-actual-table{white-space:nowrap;margin:0;border-collapse:separate;border-spacing:0;font-size:11px;width:max-content;min-width:max-content;max-width:none}",
       ".jy2-actual-table th,.jy2-actual-table td{padding:3px 5px}",
@@ -211,6 +212,9 @@
       ".jy2-save-button{border:1px solid #1d4ed8;background:#2563eb;color:#fff;padding:8px 18px;font-weight:700;cursor:pointer;border-radius:6px;box-shadow:0 1px 2px rgba(37,99,235,.35)}",
       ".jy2-save-button[disabled]{opacity:.5;cursor:not-allowed}",
       ".jy2-sticky-top{position:sticky;top:0;z-index:1200;background:#fff;border:1px solid #cbd5e1;border-bottom:1px solid #94a3b8;border-radius:8px 8px 0 0;padding:4px 8px 0;margin:0;box-shadow:0 4px 12px rgba(15,23,42,.12);max-width:100%;box-sizing:border-box;overflow:visible}",
+      // fixed 化時の高さ確保（親 overflow で sticky が無効でもメニューを画面に残す）
+      ".jy2-sticky-spacer{display:block;width:100%;flex:0 0 auto;pointer-events:none;visibility:hidden}",
+      ".jy2-sticky-top.is-fixed{position:fixed;margin:0}",
       ".jy2-sticky-top .jy2-header{display:none}",
       ".jy2-action-bar{display:flex;flex-wrap:nowrap;gap:6px 8px;align-items:center;justify-content:flex-start;margin-bottom:4px;width:100%;box-sizing:border-box;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:6px 8px}",
       ".jy2-action-bar-right{display:flex;flex-wrap:nowrap;gap:6px 8px;align-items:center;flex:0 0 auto;order:0;margin-left:0}",
@@ -226,8 +230,8 @@
       ".jy2-action-meta{font-size:12px;color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1 1 auto}",
       ".jy2-sticky-top .jy2-tabs{margin:4px 0 0;padding:0;background:transparent}",
       ".jy2-action-bar .jy2-btn[hidden]{display:none!important}",
-      "#jy2-host{margin:0 0 12px;padding:0;overflow-x:hidden;overflow-y:visible;max-width:100%;width:100%;min-width:0;box-sizing:border-box}",
-      ".jy2-panes{max-width:100%;min-width:0;width:100%;box-sizing:border-box;overflow-x:hidden}",
+      "#jy2-host{margin:0 0 12px;padding:0;overflow-x:clip;overflow-y:visible;max-width:100%;width:100%;min-width:0;box-sizing:border-box}",
+      ".jy2-panes{max-width:100%;min-width:0;width:100%;box-sizing:border-box;overflow-x:clip;overflow-y:visible}",
       // 見出し: タグ（上）＋項目名（下）。th 自体は table-cell のまま（flex にすると列が縦崩れする）
       ".jy2-th-stack{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;line-height:1.25;width:max-content;max-width:100%;margin:0 auto;box-sizing:border-box}",
       "th.jy2-th-stacked{white-space:normal!important;vertical-align:bottom;text-align:center;padding:8px 8px!important;min-width:4.75rem}",
@@ -308,12 +312,13 @@
       ".gaia-argoui-app-show-sidebar-comments{display:none!important}",
       ".ocean-ui-comments{display:none!important}",
       ".converter-sidebar-gaia{display:none!important}",
-      ".gaia-argoui-app-show-contents{margin:0!important;padding-top:0!important;width:100%!important;max-width:100%!important;min-width:0!important;overflow-x:hidden!important;box-sizing:border-box!important}",
-      ".contents-gaia{margin:0!important;padding-top:0!important;max-width:100%!important;min-width:0!important;overflow-x:hidden!important;box-sizing:border-box!important}",
-      ".record-detail-gaia,.record-edit-gaia,.record-create-gaia{margin-top:0!important;padding-top:0!important;max-width:100%!important;min-width:0!important;overflow-x:hidden!important}",
-      "body.jy2-detail-shell{overflow-x:hidden!important}",
-      "body.jy2-detail-shell .container-gaia{max-width:100%!important;min-width:0!important;overflow-x:hidden!important;padding-top:0!important}",
-      "body.jy2-detail-shell #jy2-host{margin-top:0!important;padding-top:0!important;overflow-x:hidden!important;max-width:100%!important;width:100%!important}",
+      // clip: 横は切るが scroll container にせず、.jy2-sticky-top の縦 sticky を維持
+      ".gaia-argoui-app-show-contents{margin:0!important;padding-top:0!important;width:100%!important;max-width:100%!important;min-width:0!important;overflow-x:clip!important;overflow-y:visible!important;box-sizing:border-box!important}",
+      ".contents-gaia{margin:0!important;padding-top:0!important;max-width:100%!important;min-width:0!important;overflow-x:clip!important;overflow-y:visible!important;box-sizing:border-box!important}",
+      ".record-detail-gaia,.record-edit-gaia,.record-create-gaia{margin-top:0!important;padding-top:0!important;max-width:100%!important;min-width:0!important;overflow-x:clip!important;overflow-y:visible!important}",
+      "body.jy2-detail-shell{overflow-x:clip!important}",
+      "body.jy2-detail-shell .container-gaia{max-width:100%!important;min-width:0!important;overflow-x:clip!important;overflow-y:visible!important;padding-top:0!important}",
+      "body.jy2-detail-shell #jy2-host{margin-top:0!important;padding-top:0!important;overflow-x:clip!important;overflow-y:visible!important;max-width:100%!important;width:100%!important}",
     ].join("");
     if (doc.body) doc.body.classList.add("jy2-detail-shell");
 
@@ -3648,9 +3653,12 @@
     const saveController = summaryData.saveController || null;
     const canEditBudget = detailModel.allowedOperations.editBudget;
 
-    // Ver.01 同趣旨: 保存等を先頭に置き sticky 固定（装飾見出しの下に押し出さない）
+    // Ver.01 同趣旨: 保存等を先頭に置き sticky/fixed 固定（装飾見出しの下に押し出さない）
     const sticky = documentRef.createElement("div");
     sticky.className = "jy2-sticky-top";
+    const stickySpacer = documentRef.createElement("div");
+    stickySpacer.className = "jy2-sticky-spacer";
+    stickySpacer.setAttribute("aria-hidden", "true");
     if (!canEditBudget) {
       const lockBanner = documentRef.createElement("div");
       lockBanner.className = "jy2-lock-banner";
@@ -3737,11 +3745,12 @@
 
     // 画面上端に残る fixed/sticky だけを top に使う。
     // （スクロールで消える app-toolbar 高さを入れると、固定時に上へ空白が空く）
+    // 親の overflow で position:sticky が無効化されるため、layout は fixed + spacer で固定する。
     const syncStickyTop = () => {
       const win = documentRef.defaultView;
       if (!win || typeof win.getComputedStyle !== "function") {
         sticky.style.top = "0px";
-        return;
+        return 0;
       }
       let offset = 0;
       const candidates = [
@@ -3760,13 +3769,24 @@
         if (rect.top > 2) continue;
         offset = Math.max(offset, Math.ceil(rect.bottom));
       }
-      sticky.style.top = `${Math.max(0, offset)}px`;
+      const topPx = Math.max(0, offset);
+      sticky.style.top = `${topPx}px`;
+      return topPx;
     };
-    syncStickyTop();
+    const syncStickyLayout = () => {
+      syncStickyTop();
+      const anchor = shell.getBoundingClientRect();
+      sticky.classList.add("is-fixed");
+      sticky.style.position = "fixed";
+      sticky.style.left = `${Math.round(anchor.left)}px`;
+      sticky.style.width = `${Math.max(0, Math.round(anchor.width))}px`;
+      sticky.style.right = "auto";
+      stickySpacer.style.height = `${Math.ceil(sticky.offsetHeight || 0)}px`;
+    };
     const view = documentRef.defaultView;
     if (view && typeof view.addEventListener === "function") {
-      view.addEventListener("resize", syncStickyTop);
-      view.addEventListener("scroll", syncStickyTop, { passive: true });
+      view.addEventListener("resize", syncStickyLayout);
+      view.addEventListener("scroll", syncStickyLayout, { passive: true });
     }
 
     const panes = documentRef.createElement("div");
@@ -3793,11 +3813,13 @@
       jy2StoreActiveTab(documentRef.defaultView, tabId);
       syncStickyActions(tabId);
       jy2SyncStickySheetBanner(stickySheetBanner, documentRef, tabId);
+      syncStickyLayout();
       // タブ表示後に幅を測り直す（非表示時に測ると横スクロールが消える）
       const syncScroll = () => jy2SyncAllHScroll(documentRef);
       syncScroll();
       if (view && typeof view.requestAnimationFrame === "function") {
         view.requestAnimationFrame(() => {
+          syncStickyLayout();
           syncScroll();
           view.requestAnimationFrame(syncScroll);
         });
@@ -4005,8 +4027,15 @@
       });
     }
 
-    shell.append(sticky, panes);
+    shell.append(stickySpacer, sticky, panes);
     container.appendChild(shell);
+    syncStickyLayout();
+    if (view && typeof view.requestAnimationFrame === "function") {
+      view.requestAnimationFrame(() => {
+        syncStickyLayout();
+        view.requestAnimationFrame(syncStickyLayout);
+      });
+    }
     return Object.freeze({
       model,
       summaryModel,
