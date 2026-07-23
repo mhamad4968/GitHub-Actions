@@ -791,7 +791,8 @@
     return cell;
   }
 
-  /** 予実ヘッダ2段: 現行予算・最終予算額の下に 予算額 | 消化率（÷①） */
+  /** 予実ヘッダ2段: 現行予算・最終予算額の下に 予算額 | 消化率（÷①）
+   * 自動列が多いので「自動」タグは付けず、入力列だけタグ表示（見栄え優先）。 */
   function jy2ActualHead(documentRef, months) {
     const thead = documentRef.createElement("thead");
     const top = documentRef.createElement("tr");
@@ -804,39 +805,34 @@
       if (opts.freeze != null) jy2MarkFreeze(cell, opts.freeze);
       return cell;
     };
-    [
-      "内訳№（自動）",
-      "区分（自動）",
-      "工種番号（自動）",
-      "システム入力工種（自動）",
-    ].forEach((label, index) => {
+    ["内訳№", "区分", "工種番号", "システム入力工種"].forEach((label, index) => {
       top.appendChild(th(label, { rowSpan: 2, freeze: index }));
     });
     for (const label of [
-      "種別（自動）",
-      "消費税（自動）",
-      "単位（自動）",
-      "数量（自動）",
-      "単価（自動）",
-      "金額（自動）",
-      "計算基準（自動）",
-      "備考（自動）",
+      "種別",
+      "消費税",
+      "単位",
+      "数量",
+      "単価",
+      "金額",
+      "計算基準",
+      "備考",
     ]) {
       top.appendChild(th(label, { rowSpan: 2 }));
     }
-    top.appendChild(th("現行予算（自動）", { colSpan: 2 }));
+    top.appendChild(th("現行予算", { colSpan: 2 }));
     for (const month of months) {
       top.appendChild(th(`${jy2MonthLabel(month)}（入力）`, { rowSpan: 2 }));
     }
-    top.appendChild(th("原価累計（自動）", { rowSpan: 2 }));
+    top.appendChild(th("原価累計", { rowSpan: 2 }));
     top.appendChild(th("最終予算額", { colSpan: 2 }));
-    for (const label of ["今後必要額（自動）", "残予算（自動）", "消化率（自動）"]) {
+    for (const label of ["今後必要額", "残予算", "消化率"]) {
       top.appendChild(th(label, { rowSpan: 2 }));
     }
-    bottom.appendChild(th("予算額（自動）"));
-    bottom.appendChild(th("消化率（自動）"));
+    bottom.appendChild(th("予算額"));
+    bottom.appendChild(th("消化率"));
     bottom.appendChild(th("予算額（入力）"));
-    bottom.appendChild(th("消化率（自動）"));
+    bottom.appendChild(th("消化率"));
     thead.append(top, bottom);
     return thead;
   }
