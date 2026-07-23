@@ -1,22 +1,16 @@
-{
+﻿{
   "version": "2026-05-30",
-  "exportedAt": "2026-07-23T08:52:09.080Z",
-  "gitHead": "33cbaa19",
-  "gitStatus": "## main...origin/main",
-  "nextTask": "当日 -0。継続メモ 2–4（仕様総点検・他 BV 名称列・**736→Ver.02 / Excel データ移行**）。浜田指示の Ver.02 残と整合。",
+  "exportedAt": "2026-07-23T11:56:00.000Z",
+  "gitHead": "d5f9cf35",
+  "gitStatus": "## main...origin/main [ahead 28]",
+  "nextTask": "当日 -0。残 R-11/12/13（依頼者）・LIVE目視。Excel案件追加投入。§6.2 クロム維持（overflow-x:clip／fixed メニュー）。",
   "nextFiles": [
-    "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
+    "docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md",
     "docs/handoff/latest-session-bridge.json",
-    "docs/runbooks/session-lifecycle-v2.md",
-    "docs/runbooks/push-deploy-quality-gates-v2.md",
-    "docs/runbooks/checkpoint-handoff-template-v2.md",
-    "docs/runbooks/ai-team-tool-routing-v2.md",
-    "docs/runbooks/cio-grok-execution-loop.md",
-    ".cursor/rules/mode-b-canonical.mdc",
-    "docs/knowledge/debug-tips.md"
+    "kintone-apps.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=33cbaa19 | 次=当日 -0。継続メモ 2–4（仕様総点検・他 BV 名称列・**736→Ver.02 / Excel データ移行**）。浜田指示の Ver.02 残と整合。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "promptBlock": "【SESSION-BRIDGE】git=d5f9cf35 | 次=当日 -0。残 R-11/12/13・LIVE目視・Excel投入。§6.2 維持。 | Read: chat-sessions/handoff-log.md, docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }

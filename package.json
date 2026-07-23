@@ -872,7 +872,8 @@
     "ops-guide:publish": "node -e \"console.error('RETIRED app 668 — deleted from tenant; ops-guide publish disabled');process.exit(1)\"",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev:cli-versions": "node scripts/dev-cli-versions.mjs",
-    "postinstall": "node scripts/patch-localtunnel-axios-dedupe.mjs"
+    "postinstall": "node scripts/patch-localtunnel-axios-dedupe.mjs",
+    "jikkou-yosan:v2-replace-detail-from-excel": "npx dotenv -e .env -e .env.proxy -- node scripts/jikkou-yosan-v2-replace-detail-from-excel.mjs"
   },
   "keywords": [],
   "author": "",

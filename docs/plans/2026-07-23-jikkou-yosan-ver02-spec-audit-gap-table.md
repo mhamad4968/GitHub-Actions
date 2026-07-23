@@ -5,7 +5,7 @@
 **多パス正本**: `docs/plans/2026-07-23-jikkou-yosan-ver02-multi-pass-audit.md`  
 **根拠**: #R-OPS-01 / `docs/plans/2026-07-22-jikkou-yosan-ver02-spec-audit-checklist.md` 行 A  
 **正本 SPEC**: `docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md`  
-**LIVE**: App756 BUILD=`2026-07-23-ver02-spec-s1s2s3`（735/736 WRITE なし）  
+**LIVE**: App756 BUILD=`2026-07-23-ver02-fixed-action-menu` rev **90**（735/736 WRITE なし）  
 **監査体制**: CIO + Explore×6パス + DeepSeek + Sequential + OpenRouter  
 **行 B**: `npm run verify:jikkou-name-lists-excel` → **OK**
 
@@ -53,7 +53,8 @@
 | R-11/12/13 | L1 | high* | P1,P4 | *意図的。依頼者待ち・手入力正 |
 | Imp-04 / R-19,20 将来 | L1 | low | P1 | 依頼者・将来 |
 | Imp-06 印刷メタ | L1 | none | P1 | 試作外 |
-| kintone-apps.md ドリフト | L3 | low | P1,P4 | deploy 後に更新 |
+| kintone-apps.md ドリフト | L3 | low | P1,P4 | deploy 後に更新（2026-07-23 夕 BUILD=`ver02-fixed-action-menu` 同期） |
+| **§6.2 画面クロム** | L0 | — | 浜田レビュー | **2026-07-23 夕 SPEC化** — 操作バー固定・シート見出し・hscroll・見出しタグ・予実月列／消化率・フッタ・原価計行 |
 | phase4d R-11 誤名 | L3 | — | P4 | **改名済** → P-39 |
 
 ## 3. 安心してよい範囲
@@ -63,10 +64,10 @@
 
 ## 4. 次アクション
 
-1. ~~App756 customize deploy~~ **済**（BUILD=`2026-07-23-ver02-spec-s1s2s3` rev58）＋浜田目視  
+1. ~~App756 customize deploy~~ **済**（夕締め時点 BUILD=`2026-07-23-ver02-fixed-action-menu` rev90）＋浜田目視継続  
 2. ~~メモ3: 他BV名称列揃え~~ **済**（2623001 下書き18行＋TEST下書き。版確定TESTは ACL で PUT 拒否＝残確認）  
 3. ~~メモ4: 736→Ver.02~~ **済（736在庫分）** — 工事 `2623001-001` の2版とも already_migrated。追加 Excel 案件は依頼者投入待ち  
 
 ---
 
-**改訂**: 2026-07-23 初版 → 同日多パス版 → 同日 **S1–S3 是正反映** → 同日メモ3/4クローズ（736在庫）
+**改訂**: 2026-07-23 初版 → 同日多パス版 → 同日 **S1–S3 是正反映** → 同日メモ3/4クローズ（736在庫）→ 同日夕 **§6.2 UIクロム SPEC化／LIVE BUILD 更新**

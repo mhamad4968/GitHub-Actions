@@ -4991,12 +4991,26 @@ npm run cio:morning:ready
 
 **要約**: cold-start READY後、Desktop AI緊急用00〜36通読。health 100%、MCP registry26・probe 6/6、GHA latest success（cancelled=superseded、failureは過去で現在緑）。真因: cio:health(WSL)が 0.0.0.0:47931 で web 起動し Windows 帯をゴースト占有。`killWslWebOrphans`・二次帯38473・print-url pid非永続・cio:health 既定で WSL auto-start 禁止を恒久化。壁時計 http://127.0.0.1:38473/ HTTP200。DeepSeek§50-3-8済。
 
-**次の1手**: **浜田の指示待ち**（当日 -0）。今日の本題は指示があるまで確認しない。
+**次の1手**: 当日 -0。継続メモ 2–4（仕様総点検・他 BV 名称列・**736→Ver.02 / Excel データ移行**）。浜田指示の Ver.02 残と整合。
 
 **Git**: close-git 前
 
 **GO待ち**: H9 / △2 は 2026-07-25のみ。
 
 **触らない**: 688（WBGT以外）/ 677–679 / SKYSEA（8/3前）/ 712 / 736現行rev186
+
+---
+
+### 2026-07-23 JST — **session close: Ver.02 UIクロム SPEC化＋push**
+
+**要約**: App756 UIレビュー（見出しタグ／シート見出し／hscroll／フッタ／原価計／予実月列／操作バー固定）を LIVE 反映。SPEC に **§6.2 C1–C10**・U31・D-78・A-07/U21/Y5 更新。Excel内訳差し替えCLI・migration plan 追記込み。735/736 WRITE なし。
+
+**次の1手**: 当日 -0。残は R-11/12/13（依頼者）・LIVE目視継続・Excel案件追加投入。操作バー固定／表横スクロールの再発防止は §6.2 実装メモ（overflow-x:clip）。
+
+**Git**: tip = push 後の origin/main（本締め commit）
+
+**GO待ち**: H9 / △2 は 2026-07-25のみ。
+
+**触らない**: 688（WBGT以外）/ 677–679 / SKYSEA（8/3前）/ 712 / 735・736 WRITE / customize/736
 
 ---

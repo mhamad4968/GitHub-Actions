@@ -275,6 +275,17 @@ npm run jikkou-yosan:v2-migrate-from-736 -- --project-code 2423101 --sample-limi
 JIKKOU_YOSAN_V2_IMPLEMENTATION_GO=1 npm run jikkou-yosan:v2-migrate-from-736 -- --execute
 ```
 
+### 5.5 Excel 内訳差し替え（2026-07-23）
+
+既存 **下書き版**の App2 を Excel `内訳` で全置換する。版確定は拒否。
+
+```bash
+npm run jikkou-yosan:v2-replace-detail-from-excel -- --dry-run --budget-version-id <bv-...>
+JIKKOU_YOSAN_V2_IMPLEMENTATION_GO=1 npm run jikkou-yosan:v2-replace-detail-from-excel -- --execute --budget-version-id <bv-...>
+```
+
+LIVE 実施例（2026-07-23）: `2623001|001` 下書き `bv-6vcv52ijumj0rosn` → Excel No.1–42（435 App2行）。サンプル原本の `#REF!`／単価欠落は金額空白のまま。
+
 ---
 
 ## 6. 実装ファイル
@@ -287,6 +298,8 @@ JIKKOU_YOSAN_V2_IMPLEMENTATION_GO=1 npm run jikkou-yosan:v2-migrate-from-736 -- 
 | `scripts/lib/jikkou-yosan-v2/kintone.mjs` | getKintoneConfig / assertAllowedAppId / loadState |
 | `scripts/lib/jikkou-yosan-v2/keys.mjs` | project_id / businessKey 生成 |
 | `scripts/lib/jikkou-yosan-v2/save-model.mjs` + `executor.mjs` | execute フェーズで再利用予定 |
+| `scripts/jikkou-yosan-v2-replace-detail-from-excel.mjs` | Excel 内訳 → App2 差し替え CLI |
+| `scripts/lib/jikkou-yosan-v2/parse-excel-uchiwake.mjs` | Excel 内訳パーサ |
 
 ---
 
