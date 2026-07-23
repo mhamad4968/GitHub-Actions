@@ -205,13 +205,21 @@
       ".jy2-action-bar .jy2-btn[hidden]{display:none!important}",
       "#jy2-host{margin:0 0 12px;overflow-x:hidden;overflow-y:visible;max-width:100%;width:100%;box-sizing:border-box}",
       ".jy2-panes,.jy2-pane{max-width:100%;box-sizing:border-box}",
-      ".jy2-th-stacked{white-space:normal!important;line-height:1.25;vertical-align:bottom;text-align:center}",
-      ".jy2-th-stacked .jy2-hf-tag{display:inline-block;margin:0 0 3px}",
-      ".jy2-th-stacked .jy2-th-label{display:block}",
-      ".jy2-detail-block-head label.jy2-th-stacked,.jy2-detail-block-head .jy2-th-stacked{display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px;line-height:1.2}",
-      ".jy2-detail-block-head .jy2-th-stacked br{display:none}",
-      ".jy2-detail-block-head .jy2-th-stacked .jy2-hf-tag{margin:0}",
-      ".jy2-detail-block-head .jy2-th-stacked .jy2-th-label{display:inline}",
+      // 見出し: タグ（上）＋項目名（下）。色は U21 と同系で視認性優先
+      ".jy2-th-stacked{display:flex!important;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;white-space:normal!important;line-height:1.2;vertical-align:bottom;text-align:center;padding-top:6px!important;padding-bottom:6px!important}",
+      ".jy2-th-stacked .jy2-hf-tag{display:inline-flex;align-items:center;justify-content:center;margin:0!important;font-size:10px;font-weight:800;letter-spacing:.06em;padding:2px 8px;border-radius:999px;line-height:1.2;box-shadow:0 1px 0 rgba(15,23,42,.08)}",
+      ".jy2-th-stacked .jy2-th-label{display:block;font-size:11px;font-weight:700;color:#0f172a;line-height:1.3;letter-spacing:.02em}",
+      ".jy2-table th.jy2-th-mode-auto{background:#eff6ff}",
+      ".jy2-table th.jy2-th-mode-select{background:#ecfdf5}",
+      ".jy2-table th.jy2-th-mode-input{background:#fffbeb}",
+      ".jy2-table th.jy2-th-mode-date{background:#fff7ed}",
+      ".jy2-actual-table thead th.jy2-th-mode-auto{background:#eff6ff}",
+      ".jy2-actual-table thead th.jy2-th-mode-select{background:#ecfdf5}",
+      ".jy2-actual-table thead th.jy2-th-mode-input{background:#fffbeb}",
+      ".jy2-actual-table thead th.jy2-th-mode-date{background:#fff7ed}",
+      ".jy2-detail-block-head label.jy2-th-stacked,.jy2-detail-block-head .jy2-th-stacked{align-items:flex-start;justify-content:flex-start;padding-top:0!important;padding-bottom:0!important}",
+      ".jy2-detail-block-head .jy2-th-stacked .jy2-th-label{font-size:12px}",
+      ".jy2-footer-label.jy2-th-stacked,.jy2-footer-label .jy2-th-stacked{flex-direction:row;align-items:center;gap:4px;justify-content:flex-start}",
       ".jy2-list-root{padding:12px 16px;background:#f8fafc;min-height:320px;font-family:'Segoe UI',Meiryo,sans-serif}",
       ".jy2-list-title{margin:0 0 4px;font-size:22px;font-weight:800;letter-spacing:.2em;color:#334155}",
       ".jy2-list-sub{margin:0 0 12px;font-size:12px;color:#64748b}",
@@ -230,19 +238,17 @@
       ".jy2-version-type-bar label{display:flex;align-items:center;gap:6px}",
       ".jy2-version-type-bar select{min-width:160px;padding:3px 6px;border-radius:4px}",
       ".jy2-header-legend{font-size:11px;color:#64748b;padding:0 0 10px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}",
-      ".jy2-hf-tag{display:inline-block;font-size:10px;font-weight:700;padding:1px 6px;border-radius:3px;margin-right:5px;vertical-align:middle;line-height:1.4}",
-      ".jy2-hf-tag-input{background:#fff;border:1px solid #93c5fd;color:#1d4ed8}",
-      ".jy2-hf-tag-select{background:#f1f5f9;border:1px solid #94a3b8;color:#475569}",
-      ".jy2-hf-tag-date{background:#fffbeb;border:1px solid #fcd34d;color:#b45309}",
-      ".jy2-hf-tag-auto{background:#f8fafc;border:1px solid #cbd5e1;color:#64748b}",
-      ".jy2-table th .jy2-hf-tag,.jy2-detail-block-head .jy2-hf-tag,.jy2-footer-label .jy2-hf-tag{margin-right:4px}",
+      ".jy2-hf-tag{display:inline-block;font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px;margin-right:5px;vertical-align:middle;line-height:1.3;letter-spacing:.04em}",
+      ".jy2-hf-tag-input{background:#FEF3C7;border:1px solid #F59E0B;color:#B45309}",
+      ".jy2-hf-tag-select{background:#D1FAE5;border:1px solid #10B981;color:#047857}",
+      ".jy2-hf-tag-date{background:#FFEDD5;border:1px solid #F97316;color:#C2410C}",
+      ".jy2-hf-tag-auto{background:#DBEAFE;border:1px solid #3B82F6;color:#1D4ED8}",
+      ".jy2-table th .jy2-hf-tag,.jy2-detail-block-head .jy2-hf-tag,.jy2-footer-label .jy2-hf-tag{margin-right:0}",
       ".jy2-header-grid{display:grid;grid-template-columns:repeat(4,minmax(140px,1fr));gap:8px 12px;padding:4px 0 12px}",
       ".jy2-header-grid>div{min-width:0}",
       ".jy2-header-grid label{display:block;font-size:11px;color:#475569;margin-bottom:4px;line-height:1.35}",
-      ".jy2-header-grid label.jy2-th-stacked{display:flex;flex-direction:column;align-items:flex-start;gap:2px}",
-      ".jy2-header-grid label.jy2-th-stacked br{display:none}",
-      ".jy2-header-grid label.jy2-th-stacked .jy2-hf-tag{margin:0}",
-      ".jy2-header-grid label.jy2-th-stacked .jy2-th-label{display:inline;font-size:11px}",
+      ".jy2-header-grid label.jy2-th-stacked{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:3px;padding:0!important}",
+      ".jy2-header-grid label.jy2-th-stacked .jy2-th-label{display:block;font-size:12px;font-weight:700;color:#334155}",
       ".jy2-header-grid input,.jy2-header-grid select,.jy2-header-grid textarea{width:100%;box-sizing:border-box;font-size:13px;padding:5px 8px;border-radius:4px}",
       ".jy2-header-grid input.jy2-hf-text,.jy2-header-grid textarea.jy2-hf-text{background:#fff;border:1px solid #93c5fd;border-left:3px solid #2563eb}",
       ".jy2-header-grid select.jy2-hf-select{background-color:#f1f5f9;border:1px solid #94a3b8;border-left:3px solid #64748b;cursor:pointer;appearance:none;-webkit-appearance:none;padding-right:26px;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M2 4l4 4 4-4z'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 8px center}",
@@ -853,9 +859,8 @@
   function jy2AppendModeLabel(documentRef, parent, raw) {
     const { label, mode } = jy2ParseModeLabel(raw);
     if (mode) {
-      parent.classList.add("jy2-th-stacked");
+      parent.classList.add("jy2-th-stacked", `jy2-th-mode-${mode}`);
       parent.appendChild(jy2HfTag(documentRef, mode));
-      parent.appendChild(documentRef.createElement("br"));
     }
     const text = documentRef.createElement("span");
     text.className = "jy2-th-label";
@@ -865,9 +870,8 @@
 
   function jy2HfLabel(documentRef, kind, text) {
     const label = documentRef.createElement("label");
-    label.classList.add("jy2-th-stacked");
+    label.classList.add("jy2-th-stacked", `jy2-th-mode-${kind}`);
     label.appendChild(jy2HfTag(documentRef, kind));
-    label.appendChild(documentRef.createElement("br"));
     const span = documentRef.createElement("span");
     span.className = "jy2-th-label";
     span.textContent = text;
