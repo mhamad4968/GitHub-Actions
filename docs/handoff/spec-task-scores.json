@@ -1,11 +1,11 @@
 {
-  "scoredAt": "2026-07-23T08:52:06.251Z",
+  "scoredAt": "2026-07-23T12:22:07.982Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "当日 -0。継続メモ 2–4（仕様総点検・他 BV 名称列・**736→Ver.02 / Excel データ移行**）。浜田指示の Ver.02 残と整合。",
+  "topTask": "当日 -0。残 R-11/12/13（依頼者）・LIVE目視・Excel案件追加投入。§6.2 クロム維持（`overflow-x:clip`／fixed メニュー）。",
   "tasks": [
     {
-      "id": "checkpoint:当日_-0。継続メモ_2–4（仕様総点検・他_BV_名称列・**736→Ver.",
-      "text": "当日 -0。継続メモ 2–4（仕様総点検・他 BV 名称列・**736→Ver.02 / Excel データ移行**）。浜田指示の Ver.02 残と整合。",
+      "id": "checkpoint:当日_-0。残_R-11/12/13（依頼者）・LIVE目視・Excel案件追加",
+      "text": "当日 -0。残 R-11/12/13（依頼者）・LIVE目視・Excel案件追加投入。§6.2 クロム維持（`overflow-x:clip`／fixed メニュー）。",
       "source": "checkpoint",
       "difficulty": 2,
       "tokens": "中",
