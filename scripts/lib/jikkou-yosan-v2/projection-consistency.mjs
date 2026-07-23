@@ -1,5 +1,8 @@
 import { compare } from "./decimal.mjs";
-import { regenerateSummaryCostLines } from "./projection.mjs";
+import {
+  normalizeSummaryTaxRate,
+  regenerateSummaryCostLines,
+} from "./projection.mjs";
 
 // Phase 5 M4: offline consistency check between the App1 summary_cost_lines
 // display cache and the projection regenerated from the active App2 blocks
@@ -39,6 +42,11 @@ function projectionLineFieldValue(line, code) {
 }
 
 function valuesDiffer(field, expected, cached) {
+  if (field === "summary_tax_rate") {
+    return (
+      normalizeSummaryTaxRate(expected) !== normalizeSummaryTaxRate(cached)
+    );
+  }
   if (DECIMAL_FIELDS.has(field)) {
     try {
       return compare(String(expected), String(cached)) !== 0;

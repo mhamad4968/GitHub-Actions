@@ -349,8 +349,21 @@
       option.textContent = JY2_TAX_RATE_LABELS[rate] || rate;
       select.appendChild(option);
     }
-    const current = value === null || value === undefined ? "" : String(value);
-    select.value = JY2_TAX_RATE_VALUES.includes(current) ? current : JY2_TAX_RATE_VALUES[2];
+    // App1 キャッシュの「10％」等も 0.1 に揃えて選択する。
+    let current = value === null || value === undefined ? "" : String(value);
+    if (current === "0％" || current === "0%") current = "0";
+    else if (current === "8％" || current === "8%" || current === "8") current = "0.08";
+    else if (
+      current === "10％" ||
+      current === "10%" ||
+      current === "10" ||
+      current === "0.10"
+    ) {
+      current = "0.1";
+    }
+    select.value = JY2_TAX_RATE_VALUES.includes(current)
+      ? current
+      : JY2_TAX_RATE_VALUES[2];
     select.addEventListener("change", () => onCommit(select.value));
     return select;
   }

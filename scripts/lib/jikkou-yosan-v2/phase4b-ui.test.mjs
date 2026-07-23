@@ -271,6 +271,17 @@ test("projection rows are frozen, summary_*-only, and carry manual columns forwa
   });
   assert.equal(taxRow.summary_tax_rate, "0.08");
   assert.equal(taxRow.summary_amount_incl_tax, "864");
+  // App1 DROP_DOWN「10％」が previousLines に残っていても計算できる。
+  const [labelTaxRow] = regenerateSummaryCostLines([mockBlock()], {
+    previousLines: [
+      {
+        summary_stable_block_id: "blk-a",
+        summary_tax_rate: "10％",
+      },
+    ],
+  });
+  assert.equal(labelTaxRow.summary_tax_rate, "0.1");
+  assert.equal(labelTaxRow.summary_amount_incl_tax, "880");
   // ① omitted → rate stays null; ①=0 → rate 0 (Q12).
   assert.equal(rows[0].summary_rate_to_1, null);
   assert.equal(

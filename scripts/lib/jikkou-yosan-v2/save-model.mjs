@@ -301,10 +301,17 @@ export function projectionRowsToSubtable(projectionRows) {
     throw new TypeError("projectionRows must be an array");
   }
   const taxOption = (rate) => {
-    const raw = String(rate ?? "").trim();
+    const raw = String(rate ?? "").trim().replace(/%/g, "％");
     if (raw === "0" || raw === "0％") return "0％";
-    if (raw === "0.08" || raw === "8％") return "8％";
-    if (raw === "0.1" || raw === "10％") return "10％";
+    if (raw === "0.08" || raw === "8" || raw === "8％") return "8％";
+    if (
+      raw === "0.1" ||
+      raw === "0.10" ||
+      raw === "10" ||
+      raw === "10％"
+    ) {
+      return "10％";
+    }
     return "10％";
   };
   const unitOption = (unit) => {

@@ -99,6 +99,20 @@ test("synced: an up-to-date cache matches the regenerated projection 1:1", () =>
     "synced",
   );
 
+  // App1 DROP_DOWN「10％」と内部「0.1」は同一税率として synced。
+  const labeled = freshCache(blocks).map((line) => ({
+    ...line,
+    summary_tax_rate: "10％",
+  }));
+  assert.equal(
+    checkSummaryProjection({
+      blocks,
+      cachedLines: labeled,
+      contractTotal1: "2000",
+    }).status,
+    "synced",
+  );
+
   // Manual-only App1 columns (種別/計算基準/備考) never make the cache dirty
   // — they carry over via previousLines (P-33: no reverse sync into App2).
   const annotated = freshCache(blocks).map((line) => ({

@@ -12,6 +12,31 @@ function presentValue(value) {
   return value !== undefined && value !== null && value !== "";
 }
 
+/**
+ * App1 DROP_DOWN は「0％/8％/10％」、画面・計算は「0/0.08/0.1」。
+ * 移行・キャッシュどちらが来ても計算可能な小数税率へ揃える。
+ */
+export function normalizeSummaryTaxRate(
+  rate,
+  fallback = SUMMARY_DEFAULT_TAX_RATE,
+) {
+  const raw = String(rate ?? "")
+    .trim()
+    .replace(/%/g, "％");
+  if (!raw) return fallback;
+  if (raw === "0" || raw === "0％") return "0";
+  if (raw === "0.08" || raw === "8" || raw === "8％") return "0.08";
+  if (
+    raw === "0.1" ||
+    raw === "0.10" ||
+    raw === "10" ||
+    raw === "10％"
+  ) {
+    return "0.1";
+  }
+  return fallback;
+}
+
 function projectionSortValue(block, index) {
   if (presentValue(block.blockSortOrder)) return Number(block.blockSortOrder);
   if (presentValue(block.blockNo)) return Number(block.blockNo);
@@ -83,11 +108,14 @@ export function regenerateSummaryCostLines(
         presentValue(block.unit) &&
         presentValue(block.quantity) &&
         presentValue(block.unitPrice);
-      const taxRate = presentValue(previous.summary_tax_rate)
-        ? previous.summary_tax_rate
-        : presentValue(block.taxRate)
-          ? block.taxRate
-          : defaultTaxRate;
+      const taxRate = normalizeSummaryTaxRate(
+        presentValue(previous.summary_tax_rate)
+          ? previous.summary_tax_rate
+          : presentValue(block.taxRate)
+            ? block.taxRate
+            : defaultTaxRate,
+        defaultTaxRate,
+      );
       // P-22/Y10: 原価行金額は円整数。移行データの半端円は Excel ROUND で揃える。
       const amountExcl = displayInteger(block.total);
       const row = Object.freeze({
