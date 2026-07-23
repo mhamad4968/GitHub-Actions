@@ -61,7 +61,7 @@
     style.id = JY2_STYLE_ID;
     style.textContent = [
       // A-07 / Ver.01テイスト: slate chrome・色分けタブ・シート見出し・薄茶合計
-      ".jy2-shell{font-family:'Segoe UI',Meiryo,sans-serif;background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;color:#334155;overflow:visible;padding:0 0 12px;max-width:100%;width:100%;min-width:0;box-sizing:border-box}",
+      ".jy2-shell{font-family:'Segoe UI',Meiryo,sans-serif;background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;color:#334155;overflow-x:hidden;overflow-y:visible;padding:0 0 12px;max-width:100%;width:100%;min-width:0;box-sizing:border-box}",
       ".jy2-header{display:none}",
       ".jy2-title{margin:0;font-size:22px;font-weight:800;letter-spacing:.28em;color:#334155;line-height:1.35}",
       ".jy2-header-stub{font-size:11px;color:#64748b;letter-spacing:normal;opacity:1}",
@@ -79,7 +79,7 @@
       ".jy2-tab[data-tab-id='version'][aria-selected='true']{background:#7c3aed;color:#fff;border-color:#7c3aed}",
       ".jy2-tab[data-tab-id='header'][aria-selected='true']{background:#64748b;color:#fff;border-color:#64748b}",
       ".jy2-tab[data-read-only='true']::after{content:' 🔒';font-size:11px}",
-      ".jy2-pane{display:none;min-height:200px;padding:10px 12px 14px;background:#fff;border:1px solid #cbd5e1;border-top:none;border-radius:0 0 8px 8px;max-width:100%;min-width:0;box-sizing:border-box;overflow-x:auto;overflow-y:visible;-webkit-overflow-scrolling:touch}",
+      ".jy2-pane{display:none;min-height:200px;padding:10px 12px 14px;background:#fff;border:1px solid #cbd5e1;border-top:none;border-radius:0 0 8px 8px;max-width:100%;min-width:0;width:100%;box-sizing:border-box;overflow-x:hidden;overflow-y:visible}",
       ".jy2-pane[data-active='true']{display:block}",
       ".jy2-pane[data-tab-id='header'][data-active='true']{border-color:#94a3b8;border-top:3px solid #64748b;background:#fff}",
       ".jy2-pane[data-tab-id='summary'][data-active='true']{border-color:#93c5fd;border-top:3px solid #3b82f6;background:#fff}",
@@ -109,8 +109,8 @@
       "@media (max-width:900px){.jy2-sheet-title{padding:8px 16px}.jy2-sheet-title-doc{font-size:17px;letter-spacing:.14em}.jy2-sheet-title-sheet{font-size:13px;letter-spacing:.14em;padding:3px 12px}}",
       ".jy2-empty{color:#64748b;font-size:13px}",
       ".jy2-section-title{margin:14px 0 6px;font-size:14px;font-weight:700;padding:4px 8px;background:#e8eef4;border-left:4px solid #2563eb;color:#1e3a8a}",
-      // 表の横スクロール: 親の overflow に潰されないよう幅を拘束して auto を効かせる
-      ".jy2-table-scroll{display:block;overflow-x:auto;overflow-y:visible;max-width:100%;width:100%;min-width:0;margin:0 0 16px;box-sizing:border-box;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}",
+      // 表の横スクロール: 親は幅固定・子だけ overflow-x（親が表幅に広がるとスクロールが出ない）
+      ".jy2-table-scroll{display:block;overflow-x:scroll;overflow-y:visible;max-width:100%;width:100%;min-width:0;margin:0 0 16px;box-sizing:border-box;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}",
       ".jy2-table-scroll>.jy2-table{display:table;width:max-content;min-width:100%;max-width:none;margin-bottom:0;box-sizing:border-box}",
       ".jy2-table{border-collapse:collapse;width:100%;margin:0 0 16px;font-size:12px;background:#fff;border-radius:6px;overflow:visible}",
       ".jy2-table th,.jy2-table td{border:1px solid #e2e8f0;padding:4px 6px;text-align:left;vertical-align:middle}",
@@ -170,9 +170,9 @@
       ".jy2-warning{color:#b91c1c;font-size:12px;margin:4px 0;font-weight:600}",
       ".jy2-retired-tag{color:#b91c1c;font-weight:700}",
       // 予実: 1スクロール枠 + 左4列固定 + ヘッダ固定
-      ".jy2-pane[data-tab-id='actual']{overflow-x:auto;overflow-y:visible;padding:8px}",
-      ".jy2-actual-scroll{display:block;overflow:auto;border:1px solid #e2e8f0;border-radius:6px;background:#fff;max-width:100%;width:100%;min-width:0;max-height:min(70vh,720px);box-sizing:border-box;padding:0 10px 6px 0;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-gutter:stable}",
-      ".jy2-actual-table{white-space:nowrap;margin:0;border-collapse:separate;border-spacing:0;font-size:11px;width:max-content;min-width:100%;padding-right:4px}",
+      ".jy2-pane[data-tab-id='actual']{overflow-x:hidden;overflow-y:visible;padding:8px}",
+      ".jy2-actual-scroll{display:block;overflow-x:scroll;overflow-y:auto;border:1px solid #e2e8f0;border-radius:6px;background:#fff;max-width:100%;width:100%;min-width:0;max-height:min(70vh,720px);box-sizing:border-box;padding:0 12px 8px 0;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-gutter:stable}",
+      ".jy2-actual-table{white-space:nowrap;margin:0;border-collapse:separate;border-spacing:0;font-size:11px;width:max-content;min-width:max-content;max-width:none}",
       ".jy2-actual-table th,.jy2-actual-table td{padding:3px 5px}",
       ".jy2-actual-table .jy2-input{min-width:48px;font-size:11px}",
       ".jy2-actual-table .jy2-actual-month{width:3.6rem;min-width:3.6rem;max-width:3.8rem;padding:2px 3px;box-sizing:border-box}",
@@ -225,8 +225,8 @@
       ".jy2-action-meta{font-size:12px;color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1 1 auto}",
       ".jy2-sticky-top .jy2-tabs{margin:4px 0 0;padding:0;background:transparent}",
       ".jy2-action-bar .jy2-btn[hidden]{display:none!important}",
-      "#jy2-host{margin:0 0 12px;padding:0;overflow:visible;max-width:100%;width:100%;min-width:0;box-sizing:border-box}",
-      ".jy2-panes{max-width:100%;min-width:0;box-sizing:border-box;overflow:visible}",
+      "#jy2-host{margin:0 0 12px;padding:0;overflow-x:hidden;overflow-y:visible;max-width:100%;width:100%;min-width:0;box-sizing:border-box}",
+      ".jy2-panes{max-width:100%;min-width:0;width:100%;box-sizing:border-box;overflow-x:hidden}",
       // 見出し: タグ（上）＋項目名（下）。th 自体は table-cell のまま（flex にすると列が縦崩れする）
       ".jy2-th-stack{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;line-height:1.25;width:max-content;max-width:100%;margin:0 auto;box-sizing:border-box}",
       "th.jy2-th-stacked{white-space:normal!important;vertical-align:bottom;text-align:center;padding:8px 8px!important;min-width:4.75rem}",
@@ -307,12 +307,12 @@
       ".gaia-argoui-app-show-sidebar-comments{display:none!important}",
       ".ocean-ui-comments{display:none!important}",
       ".converter-sidebar-gaia{display:none!important}",
-      ".gaia-argoui-app-show-contents{margin:0!important;padding-top:0!important;width:100%!important;max-width:100%!important;min-width:0!important;overflow-x:visible!important;box-sizing:border-box!important}",
-      ".contents-gaia{margin:0!important;padding-top:0!important;max-width:100%!important;min-width:0!important;overflow-x:visible!important;box-sizing:border-box!important}",
-      ".record-detail-gaia,.record-edit-gaia,.record-create-gaia{margin-top:0!important;padding-top:0!important;max-width:100%!important;min-width:0!important;overflow-x:visible!important}",
+      ".gaia-argoui-app-show-contents{margin:0!important;padding-top:0!important;width:100%!important;max-width:100%!important;min-width:0!important;overflow-x:hidden!important;box-sizing:border-box!important}",
+      ".contents-gaia{margin:0!important;padding-top:0!important;max-width:100%!important;min-width:0!important;overflow-x:hidden!important;box-sizing:border-box!important}",
+      ".record-detail-gaia,.record-edit-gaia,.record-create-gaia{margin-top:0!important;padding-top:0!important;max-width:100%!important;min-width:0!important;overflow-x:hidden!important}",
       "body.jy2-detail-shell{overflow-x:hidden!important}",
-      "body.jy2-detail-shell .container-gaia{max-width:100%!important;min-width:0!important;overflow-x:visible!important;padding-top:0!important}",
-      "body.jy2-detail-shell #jy2-host{margin-top:0!important;padding-top:0!important;overflow:visible!important}",
+      "body.jy2-detail-shell .container-gaia{max-width:100%!important;min-width:0!important;overflow-x:hidden!important;padding-top:0!important}",
+      "body.jy2-detail-shell #jy2-host{margin-top:0!important;padding-top:0!important;overflow-x:hidden!important;max-width:100%!important;width:100%!important}",
     ].join("");
     if (doc.body) doc.body.classList.add("jy2-detail-shell");
 
@@ -786,10 +786,49 @@
     return button;
   }
 
+  function jy2BindHScroll(scrollEl) {
+    const doc = scrollEl.ownerDocument;
+    const win = doc && doc.defaultView;
+    if (!win) return scrollEl;
+    const sync = () => {
+      const host = doc.getElementById("jy2-host");
+      const pane = scrollEl.closest(".jy2-pane");
+      const shell = scrollEl.closest(".jy2-shell");
+      const basisEl = pane || shell || host || scrollEl.parentElement;
+      let basis = 0;
+      if (basisEl) {
+        const style = win.getComputedStyle(basisEl);
+        const padX =
+          (Number.parseFloat(style.paddingLeft) || 0) +
+          (Number.parseFloat(style.paddingRight) || 0);
+        basis = Math.floor(basisEl.clientWidth - padX);
+      }
+      if (!(basis > 0)) basis = Math.floor(win.innerWidth * 0.92);
+      const width = Math.max(240, basis - 8);
+      scrollEl.style.setProperty("width", `${width}px`, "important");
+      scrollEl.style.setProperty("max-width", `${width}px`, "important");
+      scrollEl.style.setProperty("min-width", "0", "important");
+      scrollEl.style.setProperty("overflow-x", "scroll", "important");
+    };
+    sync();
+    win.requestAnimationFrame(sync);
+    win.addEventListener("resize", sync);
+    if (typeof win.ResizeObserver === "function") {
+      const observer = new win.ResizeObserver(() => sync());
+      const host = doc.getElementById("jy2-host");
+      if (host) observer.observe(host);
+      if (scrollEl.parentElement) observer.observe(scrollEl.parentElement);
+      const pane = scrollEl.closest(".jy2-pane");
+      if (pane) observer.observe(pane);
+    }
+    return scrollEl;
+  }
+
   function jy2WrapTable(documentRef, table) {
     const wrap = documentRef.createElement("div");
     wrap.className = "jy2-table-scroll";
     wrap.appendChild(table);
+    jy2BindHScroll(wrap);
     return wrap;
   }
 
@@ -2723,6 +2762,7 @@
     table.appendChild(body);
     scroll.appendChild(table);
     pane.appendChild(scroll);
+    jy2BindHScroll(scroll);
   }
 
   function jy2LockBadge(documentRef, version) {
