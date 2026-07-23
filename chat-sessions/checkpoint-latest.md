@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-23 夜 JST — **セッション締め**。Ver.02 UIクロム（§6.2）SPEC化＋App756 LIVE固定メニュー等。GitHub Actions 当日 push は成功。
 
-**Git**: **`bc03e7d3`** = `origin/main` — push 済
+**Git**: **`79f06a76`** = `origin/main` — push 済
 
 **本日状態（2026-07-23）**:
 - App **756** LIVE BUILD=`2026-07-23-ver02-fixed-action-menu` **rev90** / fileKey `ed56aa92-02a3-4fc4-8969-99d40cdfb0f5`
