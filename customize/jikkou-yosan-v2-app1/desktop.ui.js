@@ -375,7 +375,8 @@
 
   // #R-NAME-01 / #R-CONST-01: 候補源は Excel データマスタ正本のみ（仮シード禁止）。
   // 正本: scripts/data/jikkou-yosan-v2-excel-name-lists.json（verify:jikkou-name-lists-excel）
-  const JY2_NAME1_SEEDS = Object.freeze([
+  // 内訳DVプロファイル切替。違いは後日リスト差し替え可。
+  const JY2_POOL_KIND_CORE8 = Object.freeze([
     "材料費",
     "労務費",
     "外注費",
@@ -385,7 +386,58 @@
     "各種保険料(任意保険）",
     "法定福利費",
   ]);
-  const JY2_NAME2_SEEDS = Object.freeze([
+  const JY2_POOL_KIND_LONG = Object.freeze([
+    "材料費",
+    "労務費",
+    "外注費",
+    "仮設機械経費",
+    "現場経費",
+    "諸経費",
+    "各種保険料(任意保険）",
+    "法定福利費",
+    "事前打合せ費等",
+    "仮設・工具費等",
+    "運送費",
+    "宿泊費",
+    "交通費",
+    "防護服",
+    "電動ファン用フィルター",
+    "旧塗膜含有量試験費",
+    "軌陸車オペレーター賃金　昼間",
+    "軌陸車オペレーター賃金　夜間",
+    "出向工事管理者賃金　　昼間",
+    "出向工事管理者賃金　　夜間",
+    "仮設材レンタル",
+    "敷き鉄板レンタル",
+    "仮設ハウス･仮設トイレ",
+    "建設機械レンタル",
+    "その他レンタル",
+    "工場製品運搬費",
+    "建設機械運搬費",
+    "仮設資材運搬費",
+    "その他資材運搬費",
+    "特別産業廃棄物",
+    "一般産業廃棄物",
+    "収入印紙",
+    "県証紙",
+    "防護服･ペール缶",
+    "線閉責任者　　昼間",
+    "線閉責任者　　夜間",
+    "工事安全専任管理者　　　昼間",
+    "工事安全専任管理者　　　夜間",
+    "列車見張員　　昼間",
+    "列車見張員　　夜間",
+    "交通整理員　　昼間",
+    "交通整理員　　夜間",
+    "重機誘導員　　　　　　昼間",
+    "重機誘導員　　　　　　夜間",
+    "停電作業者　　　　　　夜間",
+    "検電接地作業者　　　　昼間",
+    "検電接地作業者　　　　夜間",
+    "安全帯監視人　　　　　昼間",
+    "安全帯監視人　　　　　夜間",
+  ]);
+  const JY2_POOL_MATERIAL_CATS = Object.freeze([
     "塗料",
     "鋼材費",
     "二次製品費",
@@ -394,12 +446,8 @@
     "鋼製製品費･ゴム製品等",
     "その他材料費",
     "塗装記録表示シール",
-    "事前打合せ費等",
-    "仮設・工具費等",
-    "運送費",
-    "宿泊費",
   ]);
-  const JY2_NAME3_HINTS = Object.freeze([
+  const JY2_POOL_PAINT_PRODUCTS = Object.freeze([
     "厚膜型変性ｴﾎﾟｷｼ樹脂系塗料 赤さび",
     "厚膜型変性ｴﾎﾟｷｼ樹脂系塗料 ｸﾞﾚｰ",
     "厚膜型変性ｴﾎﾟｷｼ樹脂系塗料 青緑、淡",
@@ -423,19 +471,167 @@
     "仙台銘板",
     "協力会社",
     "abit",
+    "今岡塗装",
+    "大沼塗装工業",
+    "金田塗装工業",
+    "菊正塗装店",
+    "クオリティ・ジャパン",
+    "桜庭塗装工業",
+    "塩里塗装",
+    "進興エンジニアリング",
+    "高木塗装",
+    "東海塗装",
+    "中西工業",
+    "浜翔建設",
+    "原塗装",
+    "ブリッジニアプラス",
+    "丸翔加藤塗装",
+    "三橋塗装店",
+    "六角塗装店",
+    "姉崎工業",
+    "ＮＲ",
+    "オオイ",
+    "共和工業",
+    "ビーエムシー",
+    "ヘイセイ工業",
+    "レンタル",
+    "鎌ヶ谷倉庫",
+    "アクティオ",
+    "カナモト",
+    "サコス",
+    "レンタルのニッケン",
+    "三鋼仮設",
+    "杉孝",
+    "産業廃棄物業者",
+    "ジャパンウェスト",
+    "タケエイ",
+    "山仁不動産",
+    "保安要員関係会社",
+    "SmB",
+    "エスジーアイ鉄道",
+    "オリエンタル警備",
+    "シンコーハイウェイ",
+    "テイケイ",
+    "みはりや",
+    "関東メンテナンス",
+    "事業開発者",
+    "大光電産",
+    "プロスタエクセキューション",
+    "ニシオワークサポート",
   ]);
+  const JY2_NAME1_SEEDS = JY2_POOL_KIND_CORE8;
+  const JY2_NAME2_SEEDS = JY2_POOL_MATERIAL_CATS;
+  const JY2_NAME3_HINTS = JY2_POOL_PAINT_PRODUCTS;
+  const JY2_NAME_PROFILES = Object.freeze({
+    "material": Object.freeze({
+      name1: JY2_POOL_MATERIAL_CATS,
+      name2: JY2_POOL_PAINT_PRODUCTS,
+      name3: Object.freeze([]),
+    }),
+    "kind8": Object.freeze({
+      name1: JY2_POOL_KIND_CORE8,
+      name2: Object.freeze(["事前打合せ費等", "仮設・工具費等", "運送費", "宿泊費", "交通費", "防護服", "電動ファン用フィルター", "旧塗膜含有量試験費", "軌陸車オペレーター賃金　昼間", "軌陸車オペレーター賃金　夜間", "出向工事管理者賃金　　昼間", "出向工事管理者賃金　　夜間", "仮設材レンタル", "敷き鉄板レンタル", "仮設ハウス･仮設トイレ", "建設機械レンタル", "その他レンタル", "工場製品運搬費", "建設機械運搬費", "仮設資材運搬費", "その他資材運搬費", "特別産業廃棄物", "一般産業廃棄物", "収入印紙", "県証紙", "防護服･ペール缶", "線閉責任者　　昼間", "線閉責任者　　夜間", "工事安全専任管理者　　　昼間", "工事安全専任管理者　　　夜間", "列車見張員　　昼間", "列車見張員　　夜間", "交通整理員　　昼間", "交通整理員　　夜間", "重機誘導員　　　　　　昼間", "重機誘導員　　　　　　夜間", "停電作業者　　　　　　夜間", "検電接地作業者　　　　昼間", "検電接地作業者　　　　夜間", "安全帯監視人　　　　　昼間", "安全帯監視人　　　　　夜間"]),
+      name3: Object.freeze([]),
+    }),
+    "kindLong": Object.freeze({
+      name1: JY2_POOL_KIND_LONG,
+      name2: Object.freeze([]),
+      name3: Object.freeze([]),
+    }),
+    "labor": Object.freeze({
+      name1: Object.freeze(["労務費"]),
+      name2: Object.freeze(["労務費", "軌陸車オペレーター賃金　昼間", "軌陸車オペレーター賃金　夜間", "出向工事管理者賃金　　昼間", "出向工事管理者賃金　　夜間"]),
+      name3: Object.freeze([]),
+    }),
+    "temp": Object.freeze({
+      name1: Object.freeze(["仮設機械経費"]),
+      name2: Object.freeze(["仮設機械経費", "仮設・工具費等", "仮設材レンタル", "敷き鉄板レンタル", "仮設ハウス･仮設トイレ", "建設機械レンタル", "その他レンタル", "工場製品運搬費", "建設機械運搬費", "仮設資材運搬費", "その他資材運搬費"]),
+      name3: Object.freeze([]),
+    }),
+    "site": Object.freeze({
+      name1: Object.freeze(["現場経費"]),
+      name2: Object.freeze(["事前打合せ費等", "仮設・工具費等", "運送費", "宿泊費", "交通費", "防護服", "電動ファン用フィルター", "旧塗膜含有量試験費", "軌陸車オペレーター賃金　昼間", "軌陸車オペレーター賃金　夜間", "出向工事管理者賃金　　昼間", "出向工事管理者賃金　　夜間", "仮設材レンタル", "敷き鉄板レンタル", "仮設ハウス･仮設トイレ", "建設機械レンタル", "その他レンタル", "工場製品運搬費", "建設機械運搬費", "仮設資材運搬費", "その他資材運搬費", "特別産業廃棄物", "一般産業廃棄物", "収入印紙", "県証紙", "防護服･ペール缶", "線閉責任者　　昼間", "線閉責任者　　夜間", "工事安全専任管理者　　　昼間", "工事安全専任管理者　　　夜間", "列車見張員　　昼間", "列車見張員　　夜間", "交通整理員　　昼間", "交通整理員　　夜間", "重機誘導員　　　　　　昼間", "重機誘導員　　　　　　夜間", "停電作業者　　　　　　夜間", "検電接地作業者　　　　昼間", "検電接地作業者　　　　夜間", "安全帯監視人　　　　　昼間", "安全帯監視人　　　　　夜間"]),
+      name3: Object.freeze([]),
+    }),
+  });
+  const JY2_PROFILE_BY_WORK_TYPE_CODE = Object.freeze({
+    "10100": "material",
+    "10200": "kind8",
+    "10300": "kind8",
+    "10400": "kind8",
+    "10600": "kind8",
+    "10700": "kind8",
+    "13200": "kind8",
+    "14000": "kind8",
+    "14100": "kind8",
+    "14200": "kind8",
+    "14300": "kind8",
+    "14400": "kind8",
+    "14500": "kind8",
+    "10500": "labor",
+    "10900": "labor",
+    "13300": "labor",
+    "13700": "labor",
+    "10800": "temp",
+    "11600": "temp",
+    "11700": "site",
+    "11800": "site",
+    "11900": "site",
+    "12000": "site",
+    "12100": "site",
+    "12200": "site",
+    "12300": "site",
+    "12400": "site",
+    "12500": "site",
+    "12600": "site",
+    "12700": "site",
+    "12900": "site",
+    "13100": "site",
+    "13620": "site",
+    "12800": "site",
+    "13600": "site",
+    "11000": "kindLong",
+    "11100": "kindLong",
+    "11200": "kindLong",
+    "11300": "kindLong",
+    "11400": "kindLong",
+    "11500": "kindLong",
+    "13500": "kindLong",
+  });
+  const JY2_DEFAULT_NAME_PROFILE = "kindLong";
 
-  function jy2CollectDetailSuggestions(detailModel) {
+  function jy2ResolveNameProfile(block) {
+    const code = String((block && block.workTypeCode) || "").trim();
+    if (code && JY2_PROFILE_BY_WORK_TYPE_CODE[code]) {
+      return JY2_PROFILE_BY_WORK_TYPE_CODE[code];
+    }
+    const name = String((block && block.workTypeName) || "");
+    if (/材料/.test(name)) return "material";
+    if (/労務|賃金|直轄施工|直轄下請/.test(name)) return "labor";
+    if (/レンタル|仮設機械|資材使用/.test(name)) return "temp";
+    if (/運送|産業廃棄物|租税|借地|消耗|事務費|通信費|旅費|保険料|法定福利|雑費|諸会|会議|補償|交際|現場経費/.test(name)) {
+      return "site";
+    }
+    if (/塗装|足場|修繕|付帯|追加|暫定|軌道|調査|試験|交通規制|外注/.test(name)) return "kind8";
+    return JY2_DEFAULT_NAME_PROFILE;
+  }
+
+  function jy2CollectDetailSuggestions(detailModel, block) {
     // name1/name2 は Excel 正本のみ（レコード値で候補を汚染しない）。現行値は jy2ComboInput が追加。
     const vendors = new Set(JY2_VENDOR_SEEDS);
-    for (const block of detailModel.snapshot().blocks) {
-      if (block.vendorName) vendors.add(String(block.vendorName));
+    if (detailModel) {
+      for (const b of detailModel.snapshot().blocks) {
+        if (b.vendorName) vendors.add(String(b.vendorName));
+      }
     }
     const sortJa = (left, right) => String(left).localeCompare(String(right), "ja");
+    const profileKey = jy2ResolveNameProfile(block || {});
+    const profile = JY2_NAME_PROFILES[profileKey] || JY2_NAME_PROFILES[JY2_DEFAULT_NAME_PROFILE];
     return {
-      name1: [...JY2_NAME1_SEEDS].sort(sortJa),
-      name2: [...JY2_NAME2_SEEDS].sort(sortJa),
-      name3: [...JY2_NAME3_HINTS].sort(sortJa),
+      profile: profileKey,
+      name1: [...profile.name1].sort(sortJa),
+      name2: [...profile.name2].sort(sortJa),
+      name3: [...profile.name3].sort(sortJa),
       vendors: [...vendors].sort(sortJa),
     };
   }
@@ -1873,7 +2069,6 @@
       refreshSummary();
     };
     const snapshot = detailModel.snapshot();
-    const suggestions = jy2CollectDetailSuggestions(detailModel);
 
     for (const warning of detailModel.categoryWarnings()) {
       pane.appendChild(jy2Cell(documentRef, "p", "jy2-warning", warning));
@@ -1897,7 +2092,7 @@
           block,
           editable,
           rerender,
-          suggestions,
+          jy2CollectDetailSuggestions(detailModel, block),
           masterLists,
         ),
       );

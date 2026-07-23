@@ -434,27 +434,27 @@
       "note": null
     },
     "756": {
-      "build": "2026-07-23-ver02-label-shoka-ritsu",
-      "fileKey": "e4b86c44-4086-46ca-a09e-9c5a88ee864b",
-      "revision": "60",
+      "build": "2026-07-23-ver02-name-profiles",
+      "fileKey": "8a0bc271-c5ef-48ec-b914-759f1ef58455",
+      "revision": "61",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-07-23T09:48:13.428Z",
+      "deployedAt": "2026-07-23T10:04:15.700Z",
       "note": null
     },
     "757": {
       "build": "2026-07-21-ver02-phase6-app2-readonly-guard",
-      "fileKey": "8ae7046d-3978-46c0-9c39-48dbeba4cb9a",
-      "revision": "14",
+      "fileKey": "6a1227d1-1ab1-45d1-9bc4-98a8a0e954f8",
+      "revision": "15",
       "relPath": "customize/jikkou-yosan-v2-app2/desktop.js",
-      "deployedAt": "2026-07-22T09:16:26.025Z",
+      "deployedAt": "2026-07-23T10:04:17.791Z",
       "note": null
     },
     "758": {
       "build": "2026-07-21-ver02-phase6-app3-readonly-guard",
-      "fileKey": "245cb316-73df-49b6-b41b-30df187a13f6",
-      "revision": "13",
+      "fileKey": "93e1c094-8642-47da-b3cc-63274d74fe29",
+      "revision": "14",
       "relPath": "customize/jikkou-yosan-v2-app3/desktop.js",
-      "deployedAt": "2026-07-22T09:16:29.092Z",
+      "deployedAt": "2026-07-23T10:04:19.883Z",
       "note": null
     }
   }

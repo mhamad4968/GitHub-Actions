@@ -503,6 +503,8 @@ test("U4 name1/name2 are combo (datalist); name3 remains free text", () => {
   assert.match(source, /createElement\("datalist"\)/);
   assert.match(source, /jy2CollectDetailSuggestions/);
   assert.match(source, /JY2_NAME1_SEEDS/);
+  assert.match(source, /JY2_NAME_PROFILES/);
+  assert.match(source, /jy2ResolveNameProfile/);
   // name1 + name2 use combo; name3 stays jy2TextInput
   assert.match(
     source,

@@ -1,5 +1,5 @@
 /**
- * #S-NAME-01 — UI の JY2_NAME* シードが Excel 正本 JSON と一致するか検証。
+ * #S-NAME-01 — UI の名称候補プール／プロファイルが Excel 正本 JSON と一致するか検証。
  * #R-NAME-01 — 仮シード禁止の機械ゲート。
  */
 import assert from "node:assert/strict";
@@ -38,14 +38,49 @@ function sameSet(a, b, label) {
 const canon = JSON.parse(fs.readFileSync(jsonPath, "utf8"));
 const ui = fs.readFileSync(uiPath, "utf8");
 
-sameSet(extractFrozenArray(ui, "JY2_NAME1_SEEDS"), canon.name1, "name1");
-sameSet(extractFrozenArray(ui, "JY2_NAME2_SEEDS"), canon.name2, "name2");
-sameSet(extractFrozenArray(ui, "JY2_NAME3_HINTS"), canon.name3Hints, "name3Hints");
+assert.ok(canon.profiles, "JSON must have profiles");
+assert.equal(canon.defaultProfile, "kindLong");
+
+sameSet(
+  extractFrozenArray(ui, "JY2_POOL_KIND_CORE8"),
+  canon.pools.kindCore8,
+  "pool.kindCore8",
+);
+sameSet(
+  extractFrozenArray(ui, "JY2_POOL_KIND_LONG"),
+  canon.pools.kindLong,
+  "pool.kindLong",
+);
+sameSet(
+  extractFrozenArray(ui, "JY2_POOL_MATERIAL_CATS"),
+  canon.pools.materialCats,
+  "pool.materialCats",
+);
+sameSet(
+  extractFrozenArray(ui, "JY2_POOL_PAINT_PRODUCTS"),
+  canon.pools.paintProducts,
+  "pool.paintProducts",
+);
 sameSet(extractFrozenArray(ui, "JY2_VENDOR_SEEDS"), canon.vendors, "vendors");
 
+// legacy aliases still resolve to pools
+assert.match(ui, /const JY2_NAME1_SEEDS = JY2_POOL_KIND_CORE8/);
+assert.match(ui, /const JY2_NAME2_SEEDS = JY2_POOL_MATERIAL_CATS/);
+assert.match(ui, /const JY2_NAME3_HINTS = JY2_POOL_PAINT_PRODUCTS/);
+
+assert.match(ui, /const JY2_NAME_PROFILES = Object\.freeze/);
+assert.match(ui, /function jy2ResolveNameProfile\b/);
+assert.match(ui, /function jy2CollectDetailSuggestions\(detailModel, block\)/);
+assert.match(ui, /jy2CollectDetailSuggestions\(detailModel, block\)/);
+
+// profile keys present
+for (const key of Object.keys(canon.profiles)) {
+  assert.match(ui, new RegExp(`"${key}"\\s*:`), `profile ${key} missing in UI`);
+}
+
 // #R-NAME-01: レコード内値を name1/name2 候補に混ぜない
-assert.match(ui, /name1:\s*\[\.\.\.JY2_NAME1_SEEDS\]\.sort/);
-assert.match(ui, /name2:\s*\[\.\.\.JY2_NAME2_SEEDS\]\.sort/);
+assert.match(ui, /name1:\s*\[\.\.\.profile\.name1\]\.sort/);
+assert.match(ui, /name2:\s*\[\.\.\.profile\.name2\]\.sort/);
 assert.doesNotMatch(
   ui,
   /if \(row\.name1\) name1\.add/,
@@ -57,4 +92,15 @@ assert.doesNotMatch(
   "must not pollute name2 candidates from row values (#R-NAME-01)",
 );
 
-console.log("[verify:jikkou-name-lists-excel] OK — UI seeds match Excel JSON");
+// workType code map size
+for (const [code, profile] of Object.entries(canon.workTypeCodeToProfile)) {
+  assert.match(
+    ui,
+    new RegExp(`"${code}"\\s*:\\s*"${profile}"`),
+    `code map ${code}->${profile}`,
+  );
+}
+
+console.log(
+  "[verify:jikkou-name-lists-excel] OK — UI pools/profiles match Excel JSON",
+);
