@@ -5007,7 +5007,7 @@ npm run cio:morning:ready
 
 **次の1手**: 当日 -0。残は R-11/12/13（依頼者）・LIVE目視継続・Excel案件追加投入。操作バー固定／表横スクロールの再発防止は §6.2 実装メモ（overflow-x:clip）。
 
-**Git**: tip = push 後の origin/main（本締め commit）
+**Git**: `80c6b7c4` — push 済（本締め）
 
 **GO待ち**: H9 / △2 は 2026-07-25のみ。
 
