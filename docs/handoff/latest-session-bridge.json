@@ -1,7 +1,7 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-07-23T12:23:04.519Z",
-  "gitHead": "008fc65e",
+  "exportedAt": "2026-07-23T12:23:56.417Z",
+  "gitHead": "8ee39cb3",
   "gitStatus": "## main...origin/main",
   "nextTask": "当日 -0。残 R-11/12/13（依頼者）・LIVE目視・Excel案件追加投入。§6.2 クロム維持（`overflow-x:clip`／fixed メニュー）。",
   "nextFiles": [
@@ -17,6 +17,6 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=008fc65e | 次=当日 -0。残 R-11/12/13（依頼者）・LIVE目視・Excel案件追加投入。§6.2 クロム維持（`overflow-x:clip`／fixed メニュー）。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "promptBlock": "【SESSION-BRIDGE】git=8ee39cb3 | 次=当日 -0。残 R-11/12/13（依頼者）・LIVE目視・Excel案件追加投入。§6.2 クロム維持（`overflow-x:clip`／fixed メニュー）。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }
