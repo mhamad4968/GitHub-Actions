@@ -21,13 +21,6 @@
     if (!view || !view.sessionStorage || !Array.isArray(allowedIds)) return null;
     try {
       const raw = view.sessionStorage.getItem(JY2_ACTIVE_TAB_KEY);
-      if (raw === "header") {
-        if (allowedIds.includes("summary")) {
-          view.sessionStorage.setItem(JY2_ACTIVE_TAB_KEY, "summary");
-          return "summary";
-        }
-        return null;
-      }
       return raw && allowedIds.includes(raw) ? raw : null;
     } catch {
       return null;
@@ -2196,7 +2189,7 @@
         "p",
         "jy2-actual-note",
         "予算属性は表示のみ（編集は内訳・総括）。手入力は月別消化と最終予算額の予算額のみ。" +
-          "現行予算・最終予算額は「予算額｜対①率」の2段（対①率＝各予算÷請負①）。消化率＝原価累計÷現行予算。",
+          "現行予算・最終予算額は「予算額｜対①率」の2段（対①率＝各予算÷請負①）。消化率＝原価累計÷現行予算（旧称消費率は使わない）。",
       ),
     );
     if (rows.length === 0) {
@@ -3208,8 +3201,8 @@
       syncStickyActions(tabId);
     }
 
-    let summaryHeaderMount = null;
-    let summaryBody = null;
+    let headerPane = null;
+    let summaryPane = null;
     let detailPane = null;
     let actualPane = null;
     let versionPane = null;
@@ -3231,12 +3224,10 @@
       pane.dataset.active = String(index === 0);
       pane.dataset.readOnly = String(tab.readOnly);
       pane.setAttribute("role", "tabpanel");
-      if (tab.id === "summary") {
-        summaryHeaderMount = documentRef.createElement("div");
-        summaryHeaderMount.className = "jy2-summary-header-mount";
-        summaryBody = documentRef.createElement("div");
-        summaryBody.className = "jy2-summary-body";
-        pane.append(summaryHeaderMount, summaryBody);
+      if (tab.id === "header") {
+        headerPane = pane;
+      } else if (tab.id === "summary") {
+        summaryPane = pane;
       } else if (tab.id === "detail") {
         detailPane = pane;
       } else if (tab.id === "actual") {
@@ -3250,11 +3241,11 @@
     const restoredTab =
       jy2ReadStoredActiveTab(documentRef.defaultView, allowedTabIds) ||
       model.tabs[0]?.id ||
-      "summary";
+      "header";
     activate(restoredTab);
 
-    if (summaryHeaderMount) {
-      summaryHeaderMount.appendChild(
+    if (headerPane) {
+      headerPane.appendChild(
         jy2RenderHeaderPane(
           documentRef,
           record || {},
@@ -3267,7 +3258,7 @@
     const refreshSummary = () =>
       jy2RenderSummaryPane(
         documentRef,
-        summaryBody,
+        summaryPane,
         summaryModel,
         currentBlocks,
         () => refreshActuals(),
@@ -3387,7 +3378,7 @@
               `工事基本情報・総括・内訳を保存しました（${outcome.requestCount}リクエスト）`,
             );
           }
-          jy2ReloadPreservingTab(view, sticky.dataset.activeTab || "summary");
+          jy2ReloadPreservingTab(view, sticky.dataset.activeTab || "header");
         } catch (error) {
           const conflict = error && error.action === "abort_reload";
           const message = conflict
@@ -3395,7 +3386,7 @@
             : `保存に失敗しました: ${(error && error.message) || error}`;
           if (view && typeof view.alert === "function") view.alert(message);
           if (conflict) {
-            jy2ReloadPreservingTab(view, sticky.dataset.activeTab || "summary");
+            jy2ReloadPreservingTab(view, sticky.dataset.activeTab || "header");
           } else {
             saveButton.disabled = false;
             saveButton.textContent = "保存";
