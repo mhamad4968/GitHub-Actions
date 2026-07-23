@@ -82,6 +82,9 @@
       ".jy2-amount{text-align:right;background:#F3F8FC}",
       ".jy2-input{width:100%;box-sizing:border-box;border:1px solid #c4cfdd;padding:2px 4px;background:#FFFCF3}",
       ".jy2-input.jy2-combo{background:#F4FAF4}",
+      ".jy2-combo-wrap{display:flex;align-items:stretch;gap:0;width:100%;min-width:0}",
+      ".jy2-combo-wrap>.jy2-input{flex:1;min-width:0;border-top-right-radius:0;border-bottom-right-radius:0}",
+      ".jy2-combo-wrap>.jy2-combo-select{flex:0 0 2rem;width:2rem;max-width:2rem;padding:0;margin:0;border:1px solid #cbd5e1;border-left:0;background:#F4FAF4;cursor:pointer;font-size:11px;line-height:1}",
       ".jy2-select{width:100%;box-sizing:border-box;border:1px solid #c4cfdd;padding:2px 4px;background:#F4FAF4}",
       // D-19/D-48/U17/U30: thin red incomplete (priority over yellow/green).
       ".jy2-incomplete{background:#FFF5F5!important}",
@@ -344,19 +347,25 @@
     return input;
   }
 
-  // U4/U26: 候補＋手入力可コンボ（datalist）。常にリスト緑。
-  let jy2DatalistSeq = 0;
+  // U4/U26: 候補選択＋手入力可コンボ。常にリスト緑。
+  // Chrome の input[list]/datalist は現行値で候補を絞るため ▼ が空に見えることがある。
+  // → 右の <select> で全候補を出し、左 input は手入力も可。
   function jy2ComboInput(documentRef, value, options, onCommit) {
-    const frag = documentRef.createDocumentFragment();
-    const listId = `jy2-dl-${++jy2DatalistSeq}`;
+    const wrap = documentRef.createElement("span");
+    wrap.className = "jy2-combo-wrap";
     const input = documentRef.createElement("input");
     input.type = "text";
     input.className = "jy2-input jy2-combo";
-    input.setAttribute("list", listId);
     input.autocomplete = "off";
     input.value = value === null || value === undefined ? "" : String(value);
-    const datalist = documentRef.createElement("datalist");
-    datalist.id = listId;
+    const select = documentRef.createElement("select");
+    select.className = "jy2-combo-select";
+    select.title = "リストから選択";
+    select.setAttribute("aria-label", "リストから選択");
+    const blank = documentRef.createElement("option");
+    blank.value = "";
+    blank.textContent = "▼";
+    select.appendChild(blank);
     const seen = new Set();
     for (const option of options || []) {
       const text = String(option || "").trim();
@@ -364,13 +373,25 @@
       seen.add(text);
       const opt = documentRef.createElement("option");
       opt.value = text;
-      datalist.appendChild(opt);
+      opt.textContent = text;
+      select.appendChild(opt);
+    }
+    if (seen.size === 0) {
+      select.disabled = true;
+      select.title = "このブロックに候補リストがありません";
     }
     const commit = () => onCommit(input.value.trim());
     input.addEventListener("change", commit);
     input.addEventListener("blur", commit);
-    frag.append(input, datalist);
-    return frag;
+    select.addEventListener("change", () => {
+      const picked = select.value;
+      if (!picked) return;
+      input.value = picked;
+      onCommit(picked);
+      select.selectedIndex = 0;
+    });
+    wrap.append(input, select);
+    return wrap;
   }
 
   // #R-NAME-01 / #R-CONST-01: 候補源は Excel データマスタ正本のみ（仮シード禁止）。
@@ -1892,9 +1913,9 @@
     const body = documentRef.createElement("tbody");
     body.appendChild(
       jy2HeadRow(documentRef, [
-        "名称・規格1",
-        "名称・規格2",
-        "名称・規格3",
+        "名称・規格1（選択）",
+        "名称・規格2（選択）",
+        "名称・規格3（入力）",
         "単位",
         "数量",
         "単価",
@@ -1914,7 +1935,7 @@
         rerender();
       };
       if (blockEditable) {
-        // U4: 3列とも候補＋手入力。候補源は Excel 正本（#R-NAME-01）。name3 は全角カナ正規化。
+        // U4: 左2列＝候補選択＋手入力可、3列目＝手入力（全角カナ正規化）。#R-NAME-01
         const name1 = jy2Cell(documentRef, "td", "", "");
         name1.appendChild(
           jy2ComboInput(documentRef, row.name1, suggest.name1, commit("name1")),
@@ -1927,7 +1948,7 @@
         tr.appendChild(name2);
         const name3 = jy2Cell(documentRef, "td", "", "");
         name3.appendChild(
-          jy2ComboInput(documentRef, row.name3, suggest.name3, (value) =>
+          jy2TextInput(documentRef, row.name3, (value) =>
             commit("name3")(jy2ToFullWidthKana(value)),
           ),
         );

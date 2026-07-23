@@ -496,16 +496,18 @@ test("App 1 detail tab renders jy2-* block editor wired to the summary refresh",
   assert.doesNotMatch(source, /className\s*=\s*["']jy-/);
 });
 
-test("U4 name1/name2 are combo (datalist); name3 remains free text", () => {
+test("U4 name1/name2 are combo (select+input); name3 is free text input", () => {
   const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
   assert.match(source, /function jy2ComboInput\b/);
   assert.match(source, /jy2-input jy2-combo/);
-  assert.match(source, /createElement\("datalist"\)/);
+  assert.match(source, /jy2-combo-select/);
+  assert.match(source, /名称・規格1（選択）/);
+  assert.match(source, /名称・規格2（選択）/);
+  assert.match(source, /名称・規格3（入力）/);
   assert.match(source, /jy2CollectDetailSuggestions/);
   assert.match(source, /JY2_NAME1_SEEDS/);
   assert.match(source, /JY2_NAME_PROFILES/);
   assert.match(source, /jy2ResolveNameProfile/);
-  // name1 + name2 use combo; name3 stays jy2TextInput
   assert.match(
     source,
     /jy2ComboInput\(documentRef, row\.name1, suggest\.name1/,
@@ -514,11 +516,8 @@ test("U4 name1/name2 are combo (datalist); name3 remains free text", () => {
     source,
     /jy2ComboInput\(documentRef, row\.name2, suggest\.name2/,
   );
-  assert.match(
-    source,
-    /jy2ToFullWidthKana\(value\)/,
-  );
-  // U3 vendor also combo
+  assert.match(source, /jy2TextInput\(documentRef, row\.name3/);
+  assert.match(source, /jy2ToFullWidthKana\(value\)/);
   assert.match(
     source,
     /jy2ComboInput\(\s*documentRef,\s*block\.vendorName,\s*suggest\.vendors/,
