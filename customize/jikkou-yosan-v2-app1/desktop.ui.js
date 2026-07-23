@@ -86,25 +86,27 @@
       ".jy2-pane[data-tab-id='detail'][data-active='true']{border-color:#86efac;border-top:3px solid #22c55e;background:#fff}",
       ".jy2-pane[data-tab-id='actual'][data-active='true']{border-color:#fcd34d;border-top:3px solid #f59e0b;background:#fff}",
       ".jy2-pane[data-tab-id='version'][data-active='true']{border-color:#c4b5fd;border-top:3px solid #7c3aed;background:#fff}",
-      ".jy2-pane-head-banner{display:flex;justify-content:flex-start;width:100%;margin:0 0 8px}",
-      ".jy2-sheet-title{width:100%;max-width:100%;box-sizing:border-box;padding:7px 12px;border-radius:8px;display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:flex-start;gap:6px 8px;line-height:1.3;text-align:left}",
-      ".jy2-sheet-title-header{background:linear-gradient(135deg,#f8fafc 0%,#e2e8f0 100%);border:1px solid #94a3b8}",
-      ".jy2-sheet-title-summary{background:linear-gradient(135deg,#eff6ff 0%,#dbeafe 100%);border:1px solid #93c5fd}",
-      ".jy2-sheet-title-detail{background:linear-gradient(135deg,#ecfdf5 0%,#d1fae5 100%);border:1px solid #86efac}",
-      ".jy2-sheet-title-actual{background:linear-gradient(135deg,#fffbeb 0%,#fef3c7 100%);border:1px solid #fcd34d}",
-      ".jy2-sheet-title-version{background:linear-gradient(135deg,#f5f3ff 0%,#ede9fe 100%);border:1px solid #c4b5fd}",
-      ".jy2-sheet-title-doc{font-size:13px;font-weight:800;letter-spacing:.06em;color:#1e3a8a}",
+      // A-07: 736同趣旨のシート見出し。sticky 下に常時表示しスクロールで隠れない
+      ".jy2-sticky-sheet-banner{display:flex;justify-content:center;width:100%;margin:6px 0 0;padding:0 0 6px;box-sizing:border-box}",
+      ".jy2-pane-head-banner{display:none}",
+      ".jy2-sheet-title{width:100%;max-width:960px;box-sizing:border-box;padding:10px 28px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;line-height:1.3;text-align:center;box-shadow:0 2px 6px rgba(15,23,42,.1)}",
+      ".jy2-sheet-title-header{background:linear-gradient(135deg,#f8fafc 0%,#e2e8f0 55%,#cbd5e1 100%);border:1px solid #94a3b8}",
+      ".jy2-sheet-title-summary{background:linear-gradient(135deg,#eff6ff 0%,#dbeafe 55%,#bfdbfe 100%);border:1px solid #93c5fd}",
+      ".jy2-sheet-title-detail{background:linear-gradient(135deg,#ecfdf5 0%,#d1fae5 55%,#bbf7d0 100%);border:1px solid #86efac}",
+      ".jy2-sheet-title-actual{background:linear-gradient(135deg,#fffbeb 0%,#fef3c7 55%,#fde68a 100%);border:1px solid #fcd34d}",
+      ".jy2-sheet-title-version{background:linear-gradient(135deg,#f5f3ff 0%,#ede9fe 55%,#ddd6fe 100%);border:1px solid #c4b5fd}",
+      ".jy2-sheet-title-doc{font-size:20px;font-weight:800;letter-spacing:.2em;color:#1e3a8a;padding-right:.2em}",
       ".jy2-sheet-title-detail .jy2-sheet-title-doc{color:#14532d}",
       ".jy2-sheet-title-actual .jy2-sheet-title-doc{color:#92400e}",
       ".jy2-sheet-title-version .jy2-sheet-title-doc{color:#5b21b6}",
       ".jy2-sheet-title-header .jy2-sheet-title-doc{color:#334155}",
-      ".jy2-sheet-title-sep{color:#94a3b8;font-weight:700;font-size:12px}",
-      ".jy2-sheet-title-sheet{font-size:13px;font-weight:700;letter-spacing:.08em;padding:2px 10px;border-radius:6px;display:inline-block;background:#fff}",
+      ".jy2-sheet-title-sheet{font-size:15px;font-weight:700;letter-spacing:.22em;padding:4px 18px;border-radius:8px;display:inline-block;background:#fff;padding-right:calc(18px + .22em)}",
       ".jy2-sheet-title-summary .jy2-sheet-title-sheet{color:#1d4ed8;border:1px solid #93c5fd}",
       ".jy2-sheet-title-detail .jy2-sheet-title-sheet{color:#047857;border:1px solid #86efac}",
       ".jy2-sheet-title-actual .jy2-sheet-title-sheet{color:#b45309;border:1px solid #fcd34d}",
       ".jy2-sheet-title-version .jy2-sheet-title-sheet{color:#6d28d9;border:1px solid #c4b5fd}",
       ".jy2-sheet-title-header .jy2-sheet-title-sheet{color:#475569;border:1px solid #94a3b8}",
+      "@media (max-width:900px){.jy2-sheet-title{padding:8px 16px}.jy2-sheet-title-doc{font-size:17px;letter-spacing:.14em}.jy2-sheet-title-sheet{font-size:13px;letter-spacing:.14em;padding:3px 12px}}",
       ".jy2-empty{color:#64748b;font-size:13px}",
       ".jy2-section-title{margin:14px 0 6px;font-size:14px;font-weight:700;padding:4px 8px;background:#e8eef4;border-left:4px solid #2563eb;color:#1e3a8a}",
       ".jy2-table{border-collapse:collapse;width:100%;margin:0 0 16px;font-size:12px;background:#fff;border-radius:6px;overflow:hidden}",
@@ -1101,27 +1103,49 @@
     return option;
   }
 
-  /** A-07: タブ見出しは1行コンパクト（縦に場所を取らない） */
+  /** A-07 / 736同趣旨: 字間を空けた「実行予算書」＋シート名を縦積みで目立たせる */
+  const JY2_IDEO = "\u3000";
+  const JY2_SHEET_LABELS = {
+    header: "工事基本情報",
+    summary: `総${JY2_IDEO}括${JY2_IDEO}表`,
+    detail: `内${JY2_IDEO}訳`,
+    actual: `予${JY2_IDEO}実${JY2_IDEO}管${JY2_IDEO}理`,
+    version: "バージョン管理",
+  };
+
   function jy2PaneBanner(documentRef, tabId, sheetLabel) {
     const wrap = documentRef.createElement("div");
     wrap.className = "jy2-pane-head-banner";
+    wrap.appendChild(
+      jy2SheetTitleEl(
+        documentRef,
+        tabId,
+        sheetLabel || JY2_SHEET_LABELS[tabId] || tabId,
+      ),
+    );
+    return wrap;
+  }
+
+  function jy2SheetTitleEl(documentRef, tabId, sheetLabel) {
     const title = documentRef.createElement("div");
     title.className = `jy2-sheet-title jy2-sheet-title-${tabId}`;
     title.setAttribute("role", "heading");
     title.setAttribute("aria-level", "2");
     const doc = documentRef.createElement("span");
     doc.className = "jy2-sheet-title-doc";
-    doc.textContent = "実行予算書";
-    const sep = documentRef.createElement("span");
-    sep.className = "jy2-sheet-title-sep";
-    sep.setAttribute("aria-hidden", "true");
-    sep.textContent = "／";
+    doc.textContent = `実${JY2_IDEO}行${JY2_IDEO}予${JY2_IDEO}算${JY2_IDEO}書`;
     const sheet = documentRef.createElement("span");
     sheet.className = "jy2-sheet-title-sheet";
     sheet.textContent = sheetLabel;
-    title.append(doc, sep, sheet);
-    wrap.appendChild(title);
-    return wrap;
+    title.append(doc, sheet);
+    return title;
+  }
+
+  function jy2SyncStickySheetBanner(host, documentRef, tabId) {
+    if (!host) return;
+    host.textContent = "";
+    const label = JY2_SHEET_LABELS[tabId] || tabId;
+    host.appendChild(jy2SheetTitleEl(documentRef, tabId, label));
   }
 
   function jy2RenderHeaderPane(documentRef, record, editable, masterLists) {
@@ -3458,8 +3482,8 @@
     const shell = documentRef.createElement("section");
     shell.className = "jy2-shell";
 
-    // 大きなタイトル帯は sticky に入れない（狭い窓で保存ボタンが隠れるため）。
-    // 見出しは各タブのシートバナーに任せ、BUILD は操作バー meta に出す。
+    // シート見出しは sticky 下部に常時表示（スクロールで隠れない）。
+    // BUILD は操作バー meta に出す。
     const saveController = summaryData.saveController || null;
     const canEditBudget = detailModel.allowedOperations.editBudget;
 
@@ -3546,6 +3570,10 @@
     tabList.setAttribute("role", "tablist");
     sticky.appendChild(tabList);
 
+    const stickySheetBanner = documentRef.createElement("div");
+    stickySheetBanner.className = "jy2-sticky-sheet-banner";
+    sticky.appendChild(stickySheetBanner);
+
     // kintone 固定ツールバー高さに合わせて sticky の top を合わせる
     const syncStickyTop = () => {
       const toolbar =
@@ -3585,6 +3613,7 @@
       sticky.dataset.activeTab = tabId;
       jy2StoreActiveTab(documentRef.defaultView, tabId);
       syncStickyActions(tabId);
+      jy2SyncStickySheetBanner(stickySheetBanner, documentRef, tabId);
     }
 
     let headerPane = null;
