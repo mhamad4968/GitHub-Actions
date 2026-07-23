@@ -191,23 +191,47 @@ function buildDryRunReport({ mode, targets, fetchResult, sampleLimit }) {
   };
 }
 
-async function findExistingMigration(api, app1Id, sourceRecordId) {
-  const query = `${migrationIdempotencyQuery(sourceRecordId)} limit 1`;
-  const result = await api("/k/v1/records.json", "GET", {
+const MIGRATION_LOOKUP_FIELDS = Object.freeze([
+  "$id",
+  "$revision",
+  "source_record_id",
+  "project_code",
+  "project_id",
+  "project_business_key",
+  "budget_version_id",
+  "version_seq",
+  "note",
+]);
+
+async function findExistingMigration(api, app1Id, sourceRecordId, hint = {}) {
+  const byNote = await api("/k/v1/records.json", "GET", {
     app: app1Id,
-    query,
-    fields: [
-      "$id",
-      "$revision",
-      "source_record_id",
-      "project_code",
-      "project_id",
-      "project_business_key",
-      "budget_version_id",
-      "version_seq",
-    ],
+    query: `${migrationIdempotencyQuery(sourceRecordId)} limit 1`,
+    fields: [...MIGRATION_LOOKUP_FIELDS],
   });
-  return (result.records && result.records[0]) || null;
+  if (byNote.records?.[0]) return byNote.records[0];
+
+  // UI 次版作成済みなど note タグ無しでも、同一工事＋版連番なら冪等スキップ。
+  const businessKey = String(hint.projectBusinessKey || "").trim();
+  const versionSeq = String(hint.versionSeq || "").trim();
+  if (businessKey && versionSeq) {
+    const escaped = businessKey.replace(/"/g, '\\"');
+    const byKey = await api("/k/v1/records.json", "GET", {
+      app: app1Id,
+      query: `project_business_key = "${escaped}" and version_seq = "${versionSeq}" limit 1`,
+      fields: [...MIGRATION_LOOKUP_FIELDS],
+    });
+    if (byKey.records?.[0]) return byKey.records[0];
+  }
+
+  // 736 $id が source_record_id に載っている場合（複製経路）も拾う。
+  const bySource = await api("/k/v1/records.json", "GET", {
+    app: app1Id,
+    query: `source_record_id = "${sourceRecordId}" limit 2`,
+    fields: [...MIGRATION_LOOKUP_FIELDS],
+  });
+  if (bySource.records?.length === 1) return bySource.records[0];
+  return null;
 }
 
 async function saveApp2Rows({
@@ -251,7 +275,17 @@ async function migrateOneVersion({
   newerVersionExists,
 }) {
   const sourceId = String(record.$id?.value || "");
-  const existing = await findExistingMigration(api, targets.app1, sourceId);
+  // 先に payload 骨格だけ作り、冪等ヒント（businessKey / version_seq）を得る。
+  // UUID は既存ヒット時に捨てるだけで副作用なし。
+  const probe = buildMigrationPayload(record, {
+    uuidFactory,
+    projectId,
+    newerVersionExists,
+  });
+  const existing = await findExistingMigration(api, targets.app1, sourceId, {
+    projectBusinessKey: probe.projectBusinessKey,
+    versionSeq: String(probe.versionSeq),
+  });
 
   if (existing) {
     const budgetVersionId = String(existing.budget_version_id?.value || "");
