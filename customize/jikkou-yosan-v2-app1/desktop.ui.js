@@ -21,6 +21,13 @@
     if (!view || !view.sessionStorage || !Array.isArray(allowedIds)) return null;
     try {
       const raw = view.sessionStorage.getItem(JY2_ACTIVE_TAB_KEY);
+      if (raw === "header") {
+        if (allowedIds.includes("summary")) {
+          view.sessionStorage.setItem(JY2_ACTIVE_TAB_KEY, "summary");
+          return "summary";
+        }
+        return null;
+      }
       return raw && allowedIds.includes(raw) ? raw : null;
     } catch {
       return null;
@@ -472,7 +479,7 @@
     return row;
   }
 
-  /** 予実ヘッダ2段: 現行予算・最終予算額の下に 予算額 | 消費率 */
+  /** 予実ヘッダ2段: 現行予算・最終予算額の下に 予算額 | 対①率 */
   function jy2ActualHead(documentRef, months) {
     const thead = documentRef.createElement("thead");
     const top = documentRef.createElement("tr");
@@ -508,9 +515,9 @@
       top.appendChild(th(label, { rowSpan: 2 }));
     }
     bottom.appendChild(th("予算額"));
-    bottom.appendChild(th("消費率"));
+    bottom.appendChild(th("対①率"));
     bottom.appendChild(th("予算額"));
-    bottom.appendChild(th("消費率"));
+    bottom.appendChild(th("対①率"));
     thead.append(top, bottom);
     return thead;
   }
@@ -694,6 +701,43 @@
       out[code] = { value };
     }
     return out;
+  }
+
+  /** App1 summary_cost_lines → checkSummaryProjection 用のフラット行 */
+  function jy2SummaryCostLinesFromRecord(record) {
+    const field = record?.summary_cost_lines;
+    const rows = Array.isArray(field?.value) ? field.value : [];
+    const cell = (row, code) => {
+      const value = row?.value?.[code]?.value;
+      return value === undefined || value === null ? "" : value;
+    };
+    const codes = [
+      "summary_stable_block_id",
+      "summary_block_no",
+      "summary_cost_category",
+      "summary_work_type_code",
+      "summary_work_type_name",
+      "summary_line_type",
+      "summary_unit",
+      "summary_qty",
+      "summary_unit_price",
+      "summary_amount_excl_tax",
+      "summary_tax_rate",
+      "summary_amount_incl_tax",
+      "summary_rate_to_1",
+      "summary_calc_basis",
+      "summary_note",
+      "summary_sort_order",
+    ];
+    return rows.map((row) => {
+      const flat = {};
+      for (const code of codes) flat[code] = cell(row, code);
+      return flat;
+    });
+  }
+
+  function jy2ProjectionCheckedAtIso() {
+    return new Date().toISOString();
   }
 
   function jy2FillSelect(select, options, current) {
@@ -1044,6 +1088,7 @@
         "単価",
         "金額（税抜）",
         "消費税",
+        "金額（税込）",
         "備考",
         "",
       ]),
@@ -1081,6 +1126,7 @@
           jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(line.amount)),
         );
         row.appendChild(jy2Cell(documentRef, "td", "", SALARY_TAX_DISPLAY));
+        row.appendChild(jy2Cell(documentRef, "td", "", SALARY_TAX_DISPLAY));
         row.appendChild(note);
         const action = jy2Cell(documentRef, "td", "", "");
         action.appendChild(
@@ -1113,6 +1159,7 @@
           jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(line.amount)),
         );
         row.appendChild(jy2Cell(documentRef, "td", "", SALARY_TAX_DISPLAY));
+        row.appendChild(jy2Cell(documentRef, "td", "", SALARY_TAX_DISPLAY));
         row.appendChild(jy2Cell(documentRef, "td", "", line.note));
         row.appendChild(jy2Cell(documentRef, "td", "", ""));
       }
@@ -1133,13 +1180,13 @@
       ),
     );
     const totalTail = jy2Cell(documentRef, "td", "", "");
-    totalTail.colSpan = 3;
+    totalTail.colSpan = 4;
     totalRow.appendChild(totalTail);
     body.appendChild(totalRow);
 
     const footRow = documentRef.createElement("tr");
     const footCell = jy2Cell(documentRef, "td", "", "");
-    footCell.colSpan = 8;
+    footCell.colSpan = 9;
     if (editable) {
       footCell.appendChild(
         jy2RowButton(documentRef, "行追加", () => {
@@ -2149,7 +2196,7 @@
         "p",
         "jy2-actual-note",
         "予算属性は表示のみ（編集は内訳・総括）。手入力は月別消化と最終予算額の予算額のみ。" +
-          "現行予算・最終予算額は「予算額｜消費率」の2段（消費率＝各予算÷請負①）。消化率＝原価累計÷現行予算。",
+          "現行予算・最終予算額は「予算額｜対①率」の2段（対①率＝各予算÷請負①）。消化率＝原価累計÷現行予算。",
       ),
     );
     if (rows.length === 0) {
@@ -2218,7 +2265,7 @@
         documentRef,
         "h3",
         "jy2-section-title",
-        "版管理（版一覧・次版作成）",
+        "バージョン管理（版一覧・次版作成）",
       ),
     );
     pane.appendChild(
@@ -2795,8 +2842,10 @@
       projectBusinessKey: String(businessKey),
       budgetVersionId: String(versionId),
     };
+    const initialStatus = String(jy2FieldValue(record, "status") || "下書き");
     return Object.freeze({
       keys,
+      initialStatus,
       get actualWriteSeq() {
         return String(jy2FieldValue(record, "actual_write_seq") ?? "0");
       },
@@ -2822,7 +2871,7 @@
         return Array.isArray(response.records) ? response.records : [];
       },
       // 残A: 工事基本情報 + 総括（請負/給与/原価投影手入力）は親 PUT に同乗。
-      async save(detailModel, summaryModel, projectionManual) {
+      async save(detailModel, summaryModel, projectionManual, options = {}) {
         detailModel.prepareForSave();
         const parentRecord = {
           ...(summaryModel
@@ -2830,11 +2879,43 @@
             : {}),
           ...jy2CollectHeaderFields(record),
         };
+        const blocks = detailModel.projectionBlocks();
+        const totals = summaryModel ? summaryModel.totals(blocks) : null;
+        const contractTotal1 = totals ? totals.total1 : null;
+        const projectionCheck = checkSummaryProjection({
+          blocks,
+          cachedLines: jy2SummaryCostLinesFromRecord(record),
+          contractTotal1,
+        });
+        parentRecord.summary_projection_status = {
+          value: projectionCheck.status,
+        };
+        parentRecord.summary_projection_checked_at = {
+          value: jy2ProjectionCheckedAtIso(),
+        };
+        if (projectionCheck.status === "error") {
+          throw new Error(
+            `総括原価投影の整合性チェックに失敗しました: ${projectionCheck.reason}`,
+          );
+        }
+        const collectedStatus =
+          parentRecord.status?.value ?? jy2FieldValue(record, "status") ?? "下書き";
+        const isVersionConfirmAttempt =
+          collectedStatus === "版確定" && initialStatus === "下書き";
+        let projectionRepaired = false;
+        if (isVersionConfirmAttempt) {
+          if (!options.confirmingVersion) {
+            throw new Error("JY2_CONFIRM_VERSION_REQUIRED");
+          }
+          if (projectionCheck.status !== "synced") {
+            parentRecord.status = { value: "下書き" };
+            jy2ApplyHeaderField(record, "status", "下書き");
+            projectionRepaired = true;
+          }
+        }
         if (summaryModel && projectionManual) {
-          const blocks = detailModel.projectionBlocks();
-          const totals = summaryModel.totals(blocks);
           const projectionRows = regenerateSummaryCostLines(blocks, {
-            contractTotal1: totals.total1,
+            contractTotal1,
             previousLines: projectionManual.previousLines(),
           });
           Object.assign(parentRecord, projectionRowsToSubtable(projectionRows));
@@ -2851,12 +2932,31 @@
           existingRecords: existing,
         });
         const plan = planAtomicBudgetSave(inputs);
-        return executePlan(plan, createKintoneApiClient(api));
+        const outcome = await executePlan(plan, createKintoneApiClient(api));
+        return Object.freeze({
+          ...outcome,
+          projectionRepaired,
+          projectionStatus: projectionCheck.status,
+        });
       },
       async saveActuals(actualsModel) {
+        const versionRecords = await this.loadVersions();
+        const openVersion = pickOpenVersion(
+          versionRecords.map((row) => ({
+            status: jy2FieldValue(row, "status"),
+            version_seq: jy2FieldValue(row, "version_seq"),
+            budget_version_id: jy2FieldValue(row, "budget_version_id"),
+          })),
+        );
+        if (
+          !openVersion ||
+          String(openVersion.budget_version_id) !== keys.budgetVersionId
+        ) {
+          throw new Error("現行版以外からは予実保存不可");
+        }
         const rows = actualsModel.toApp3Records({
           projectId: keys.projectId,
-          registeredVersionId: keys.budgetVersionId,
+          registeredVersionId: String(openVersion.budget_version_id),
         });
         if (rows.length === 0) {
           return { outcome: null, requestCount: 0, skipped: true };
@@ -3108,8 +3208,8 @@
       syncStickyActions(tabId);
     }
 
-    let headerPane = null;
-    let summaryPane = null;
+    let summaryHeaderMount = null;
+    let summaryBody = null;
     let detailPane = null;
     let actualPane = null;
     let versionPane = null;
@@ -3131,10 +3231,12 @@
       pane.dataset.active = String(index === 0);
       pane.dataset.readOnly = String(tab.readOnly);
       pane.setAttribute("role", "tabpanel");
-      if (tab.id === "header") {
-        headerPane = pane;
-      } else if (tab.id === "summary") {
-        summaryPane = pane;
+      if (tab.id === "summary") {
+        summaryHeaderMount = documentRef.createElement("div");
+        summaryHeaderMount.className = "jy2-summary-header-mount";
+        summaryBody = documentRef.createElement("div");
+        summaryBody.className = "jy2-summary-body";
+        pane.append(summaryHeaderMount, summaryBody);
       } else if (tab.id === "detail") {
         detailPane = pane;
       } else if (tab.id === "actual") {
@@ -3148,11 +3250,11 @@
     const restoredTab =
       jy2ReadStoredActiveTab(documentRef.defaultView, allowedTabIds) ||
       model.tabs[0]?.id ||
-      "header";
+      "summary";
     activate(restoredTab);
 
-    if (headerPane) {
-      headerPane.appendChild(
+    if (summaryHeaderMount) {
+      summaryHeaderMount.appendChild(
         jy2RenderHeaderPane(
           documentRef,
           record || {},
@@ -3165,7 +3267,7 @@
     const refreshSummary = () =>
       jy2RenderSummaryPane(
         documentRef,
-        summaryPane,
+        summaryBody,
         summaryModel,
         currentBlocks,
         () => refreshActuals(),
@@ -3235,21 +3337,57 @@
     if (saveController) {
       saveButton.addEventListener("click", async () => {
         if (saveButton.disabled) return;
+        const view = documentRef.defaultView;
+        const startDate = jy2FieldValue(record, "start_date");
+        const endDate = jy2FieldValue(record, "end_date");
+        if (
+          startDate &&
+          endDate &&
+          String(startDate) > String(endDate) &&
+          view &&
+          typeof view.confirm === "function" &&
+          !view.confirm(
+            "着手日が竣工日より後になっています。このまま保存しますか？",
+          )
+        ) {
+          return;
+        }
+        const currentStatus = jy2FieldValue(record, "status") || "下書き";
+        const isVersionConfirm =
+          currentStatus === "版確定" &&
+          saveController.initialStatus === "下書き";
+        let confirmingVersion = false;
+        if (isVersionConfirm) {
+          if (
+            !view ||
+            typeof view.confirm !== "function" ||
+            !view.confirm(
+              "版を確定します。確定後も編集は可能ですが、ステータスは「版確定」になります。よろしいですか？",
+            )
+          ) {
+            return;
+          }
+          confirmingVersion = true;
+        }
         saveButton.disabled = true;
         saveButton.textContent = "保存中…";
-        const view = documentRef.defaultView;
         try {
           const outcome = await saveController.save(
             detailModel,
             summaryModel,
             projectionManual,
+            { confirmingVersion },
           );
-          if (view && typeof view.alert === "function") {
+          if (outcome.projectionRepaired && view && typeof view.alert === "function") {
+            view.alert(
+              "総括原価投影に差分があったため修復しました。版確定はキャンセルされました。内容を確認のうえ、再度保存から版確定してください。",
+            );
+          } else if (view && typeof view.alert === "function") {
             view.alert(
               `工事基本情報・総括・内訳を保存しました（${outcome.requestCount}リクエスト）`,
             );
           }
-          jy2ReloadPreservingTab(view, sticky.dataset.activeTab || "header");
+          jy2ReloadPreservingTab(view, sticky.dataset.activeTab || "summary");
         } catch (error) {
           const conflict = error && error.action === "abort_reload";
           const message = conflict
@@ -3257,7 +3395,7 @@
             : `保存に失敗しました: ${(error && error.message) || error}`;
           if (view && typeof view.alert === "function") view.alert(message);
           if (conflict) {
-            jy2ReloadPreservingTab(view, sticky.dataset.activeTab || "header");
+            jy2ReloadPreservingTab(view, sticky.dataset.activeTab || "summary");
           } else {
             saveButton.disabled = false;
             saveButton.textContent = "保存";
@@ -3343,13 +3481,75 @@
       return event;
     });
 
-    kintone.events.on("app.record.create.submit", function (event) {
+    kintone.events.on("app.record.create.submit", async function (event) {
       try {
         completeApp1CreateBusinessKeys(event.record);
       } catch (error) {
         event.error =
           (error && error.message) ||
           "工事コードを入力してください（business key 生成に必要）";
+        return event;
+      }
+      const businessKey = jy2FieldValue(event.record, "project_business_key");
+      if (!businessKey) return event;
+      try {
+        const escaped = String(businessKey).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+        const response = await kintone.api("/k/v1/records.json", "GET", {
+          app: APP1_ID,
+          query: `project_business_key = "${escaped}" limit 500`,
+        });
+        const records = Array.isArray(response.records) ? response.records : [];
+        const existingVersions = records.map((row) => ({
+          project_id: jy2FieldValue(row, "project_id"),
+          version_seq: Number(jy2FieldValue(row, "version_seq")),
+          status: jy2FieldValue(row, "status"),
+          budget_version_id: jy2FieldValue(row, "budget_version_id"),
+        }));
+        let decision = duplicateSeriesDecision({ existingVersions });
+        if (decision.seriesExists) {
+          const view = typeof window !== "undefined" ? window : null;
+          const accepted =
+            view && typeof view.confirm === "function"
+              ? view.confirm(decision.message)
+              : false;
+          decision = duplicateSeriesDecision({ existingVersions, accepted });
+          if (decision.outcome === "save-blocked") {
+            event.error = "保存を中止しました。";
+            return event;
+          }
+          const findRecordId = (budgetVersionId) => {
+            const match = records.find(
+              (row) =>
+                jy2FieldValue(row, "budget_version_id") === budgetVersionId,
+            );
+            return match ? jy2FieldValue(match, "$id") : null;
+          };
+          if (decision.outcome === "open-draft") {
+            event.error = "既存の下書きを開きます。";
+            const draftId = findRecordId(decision.draftBudgetVersionId);
+            if (draftId && view && view.location) {
+              view.location.href = `/k/${APP1_ID}/show#record=${draftId}`;
+            }
+            return event;
+          }
+          if (decision.outcome === "next-version") {
+            event.error =
+              "次版はバージョン管理の「次版作成」から作成してください。";
+            if (view && typeof view.alert === "function") {
+              view.alert(
+                "次版はバージョン管理の「次版作成」から作成してください。",
+              );
+            }
+            const sourceId = findRecordId(decision.copySourceBudgetVersionId);
+            if (sourceId && view && view.location) {
+              view.location.href = `/k/${APP1_ID}/show#record=${sourceId}`;
+            }
+            return event;
+          }
+        }
+      } catch (error) {
+        event.error =
+          (error && error.message) || "工事系列の重複確認に失敗しました。";
       }
       return event;
     });

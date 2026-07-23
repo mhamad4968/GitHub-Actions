@@ -563,7 +563,8 @@ test("phase 4c sources never target customize/736 / App 735/736 / kintone REST",
   const uiSource = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
   assert.doesNotMatch(uiSource, /customize\/736/);
   assert.doesNotMatch(uiSource, /\b73[56]\b/);
-  assert.doesNotMatch(uiSource, /kintone\.api\((["'])\/k\/v1\/record/);
+  // P-29 may GET /k/v1/records.json; forbid single-record REST writes only.
+  assert.doesNotMatch(uiSource, /kintone\.api\((["'])\/k\/v1\/record\.json/);
   assert.doesNotMatch(
     read("scripts/lib/jikkou-yosan-v2/detail-block-model.mjs"),
     /kintone\.mjs/,

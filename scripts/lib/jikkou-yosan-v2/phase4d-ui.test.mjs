@@ -222,7 +222,7 @@ test("Y9 (M2): BC率＝現行予算÷①・EC率＝最終予算額÷① via calc
   assert.equal(row.bcRate, "0");
   assert.equal(row.ecRate, "0");
 
-  // Retired blocks carry 現行予算 0 → BC率 0 (P-39/R-11).
+  // Retired blocks carry 現行予算 0 → BC率 0 (P-39).
   const [retired] = model.matrixRows([BLOCK_RETIRED], { contractTotal1: "2000" });
   assert.equal(retired.bcRate, "0");
 
@@ -392,7 +392,7 @@ test("Y4: salary never enters the actuals matrix", () => {
   );
 });
 
-test("R-11: retired blocks stay visible with 現行予算 0 but months stay editable", () => {
+test("P-39: retired blocks stay visible with 現行予算 0 but months stay editable", () => {
   const model = editableModel({
     actualRows: [
       {
@@ -466,7 +466,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   for (const label of [
     "現行予算",
     "予算額",
-    "消費率",
+    "対①率",
     "原価累計",
     "最終予算額",
     "今後必要額",
@@ -480,6 +480,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.doesNotMatch(source, /th\("実績"/);
   assert.doesNotMatch(source, /消費率（現予算）/);
   assert.doesNotMatch(source, /消費率（最終予算）/);
+  assert.doesNotMatch(source, /th\("消費率"\)/);
   assert.doesNotMatch(source, /"BC率"/);
   assert.doesNotMatch(source, /"EC率"/);
   // Y9/M2: ① is read live from the 総括 contract lines into the rates.
@@ -505,7 +506,8 @@ test("phase 4d sources never target customize/736 / App 735/736 / kintone REST",
   const uiSource = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
   assert.doesNotMatch(uiSource, /customize\/736/);
   assert.doesNotMatch(uiSource, /\b73[56]\b/);
-  assert.doesNotMatch(uiSource, /kintone\.api\((["'])\/k\/v1\/record/);
+  // P-29 may GET /k/v1/records.json; forbid single-record REST writes only.
+  assert.doesNotMatch(uiSource, /kintone\.api\((["'])\/k\/v1\/record\.json/);
   assert.doesNotMatch(
     read("scripts/lib/jikkou-yosan-v2/actuals-matrix.mjs"),
     /kintone\.mjs/,

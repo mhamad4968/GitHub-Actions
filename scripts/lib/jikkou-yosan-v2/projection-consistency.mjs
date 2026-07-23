@@ -31,7 +31,7 @@ const DECIMAL_FIELDS = new Set([
   "summary_amount_incl_tax",
 ]);
 
-function fieldValue(line, code) {
+function projectionLineFieldValue(line, code) {
   const field = line?.[code];
   return field && typeof field === "object" && "value" in field
     ? field.value
@@ -74,7 +74,7 @@ export function checkSummaryProjection({
     if (!line || typeof line !== "object") {
       return errorResult(`cachedLines[${index}] must be an object`);
     }
-    const stableBlockId = fieldValue(line, "summary_stable_block_id");
+    const stableBlockId = projectionLineFieldValue(line, "summary_stable_block_id");
     if (typeof stableBlockId !== "string" || !stableBlockId) {
       return errorResult(
         `cachedLines[${index}]: summary_stable_block_id is required`,
@@ -124,7 +124,7 @@ export function checkSummaryProjection({
       );
     }
     for (const field of SUMMARY_COMPARED_FIELDS) {
-      const cachedValue = fieldValue(entry.line, field);
+      const cachedValue = projectionLineFieldValue(entry.line, field);
       if (valuesDiffer(field, expected[field], cachedValue)) {
         differences.push(
           Object.freeze({

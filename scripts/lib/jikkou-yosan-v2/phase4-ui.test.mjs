@@ -28,13 +28,12 @@ function protected736Digest() {
   return hash.digest("hex");
 }
 
-test("App 1 exposes the five detail tabs (header/summary/detail/actual/version)", () => {
+test("App 1 exposes SPEC §6.1 four tabs (summary embeds header / 予実 / バージョン)", () => {
   assert.deepEqual(UI_TABS, [
-    { id: "header", label: "工事基本情報" },
-    { id: "summary", label: "総括" },
+    { id: "summary", label: "総括表" },
     { id: "detail", label: "内訳" },
-    { id: "actual", label: "実績管理" },
-    { id: "version", label: "版管理" },
+    { id: "actual", label: "予実管理" },
+    { id: "version", label: "バージョン管理" },
   ]);
 });
 
@@ -44,7 +43,6 @@ test("tab readOnly flags come from the three-state allowed operations", () => {
     const model = createUiModel(state);
     assert.deepEqual(model.allowedOperations, operations);
     assert.deepEqual(tabEditability(state), {
-      header: !operations.editBudget,
       summary: !operations.editBudget,
       detail: !operations.editBudget,
       actual: !operations.editActuals,

@@ -338,7 +338,7 @@ test("new modules never target customize/736 or App 735/736 as write targets", (
   assert.doesNotMatch(uiSource, /\b73[56]\b/);
   assert.match(uiSource, /executePlan\(/);
   assert.match(uiSource, /createKintoneApiClient\(/);
-  assert.doesNotMatch(uiSource, /kintone\.api\((["'])\/k\/v1\/record/);
+  assert.doesNotMatch(uiSource, /kintone\.api\((["'])\/k\/v1\/record\.json/);
   assert.match(
     read("scripts/jikkou-yosan-v2-build-desktop.mjs"),
     /Ver\.02 build must never write customize\/736/,

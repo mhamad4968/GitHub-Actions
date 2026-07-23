@@ -26,6 +26,7 @@ const sourceNames = [
   "client-adapter.mjs",
   "ui-model.mjs",
   "projection.mjs",
+  "projection-consistency.mjs",
   "contract-salary-model.mjs",
   "detail-block-model.mjs",
   "actuals-matrix.mjs",
