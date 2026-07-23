@@ -174,7 +174,13 @@
       ".jy2-actual-scroll{display:block;overflow:auto;border:1px solid #e2e8f0;border-radius:6px;background:#fff;max-width:100%;width:100%;min-width:0;max-height:min(70vh,720px);box-sizing:border-box;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}",
       ".jy2-actual-table{white-space:nowrap;margin:0;border-collapse:separate;border-spacing:0;font-size:11px;width:max-content;min-width:100%}",
       ".jy2-actual-table th,.jy2-actual-table td{padding:3px 5px}",
-      ".jy2-actual-table .jy2-input{min-width:68px;font-size:11px}",
+      ".jy2-actual-table .jy2-input{min-width:48px;font-size:11px}",
+      ".jy2-actual-table .jy2-actual-month{width:3.6rem;min-width:3.6rem;max-width:3.8rem;padding:2px 3px;box-sizing:border-box}",
+      ".jy2-actual-table thead th.jy2-actual-month{padding:4px 2px;vertical-align:bottom}",
+      ".jy2-actual-table thead th.jy2-actual-month .jy2-th-stack{gap:2px;width:100%;max-width:100%;margin:0 auto}",
+      ".jy2-actual-table thead th.jy2-actual-month .jy2-th-label{font-size:10px;font-weight:700;white-space:normal;line-height:1.15;max-width:3.6rem}",
+      ".jy2-actual-table thead th.jy2-actual-month .jy2-hf-tag{font-size:9px;padding:1px 4px;letter-spacing:0}",
+      ".jy2-actual-table .jy2-actual-month .jy2-input{min-width:0;width:100%;padding:2px 3px;font-size:10px}",
       ".jy2-actual-note-details{margin:0 0 8px;font-size:12px;color:#64748b}",
       ".jy2-actual-note-details>summary{cursor:pointer;font-weight:600;color:#475569;padding:4px 0}",
       ".jy2-actual-note{color:#64748b;font-size:11px;margin:4px 0 0;line-height:1.45}",
@@ -831,7 +837,11 @@
     }
     top.appendChild(th("現行予算", { colSpan: 2 }));
     for (const month of months) {
-      top.appendChild(th(`${jy2MonthLabel(month)}（入力）`, { rowSpan: 2 }));
+      // 月次は列が多いので「入力」タグ無し・短いラベル（横スクロール短縮）
+      const monthTh = th(jy2MonthLabel(month), { rowSpan: 2 });
+      monthTh.classList.add("jy2-actual-month");
+      monthTh.title = `${month}（入力）`;
+      top.appendChild(monthTh);
     }
     top.appendChild(th("原価累計", { rowSpan: 2 }));
     top.appendChild(th("最終予算額", { colSpan: 2 }));
@@ -2372,7 +2382,8 @@
 
   function jy2MonthLabel(month) {
     const [year, monthNumber] = month.split("-");
-    return `${year}年${Number(monthNumber)}月`;
+    // 予実の月列は幅を抑える（例: 24/6）
+    return `${String(year).slice(-2)}/${Number(monthNumber)}`;
   }
 
   // One 予実 cost row (Y3/Y9): budget attributes read-only (Y10), month cells
@@ -2435,7 +2446,7 @@
       rerender();
     };
     for (const month of months) {
-      const cell = jy2Cell(documentRef, "td", "jy2-num", "");
+      const cell = jy2Cell(documentRef, "td", "jy2-num jy2-actual-month", "");
       if (editable) {
         cell.appendChild(
           jy2TextInput(documentRef, row.monthly[month], (value) =>
@@ -2443,7 +2454,7 @@
           ),
         );
       } else {
-        cell.className = "jy2-amount";
+        cell.className = "jy2-amount jy2-actual-month";
         cell.textContent = jy2AmountDisplay(row.monthly[month]);
       }
       tr.appendChild(cell);
@@ -2500,7 +2511,7 @@
         jy2Cell(
           documentRef,
           "td",
-          "jy2-amount",
+          "jy2-amount jy2-actual-month",
           monthAmount === null || monthAmount === undefined
             ? "－"
             : jy2AmountDisplay(monthAmount),
