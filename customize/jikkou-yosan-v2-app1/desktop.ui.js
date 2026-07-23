@@ -207,10 +207,11 @@
       ".jy2-action-bar .jy2-btn[hidden]{display:none!important}",
       "#jy2-host{margin:0 0 12px;overflow-x:hidden;overflow-y:visible;max-width:100%;width:100%;box-sizing:border-box}",
       ".jy2-panes,.jy2-pane{max-width:100%;box-sizing:border-box}",
-      // 見出し: タグ（上）＋項目名（下）。色は U21 と同系で視認性優先
-      ".jy2-th-stacked{display:flex!important;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;white-space:normal!important;line-height:1.2;vertical-align:bottom;text-align:center;padding-top:6px!important;padding-bottom:6px!important}",
-      ".jy2-th-stacked .jy2-hf-tag{display:inline-flex;align-items:center;justify-content:center;margin:0!important;font-size:10px;font-weight:800;letter-spacing:.06em;padding:2px 8px;border-radius:999px;line-height:1.2;box-shadow:0 1px 0 rgba(15,23,42,.08)}",
-      ".jy2-th-stacked .jy2-th-label{display:block;font-size:11px;font-weight:700;color:#0f172a;line-height:1.3;letter-spacing:.02em}",
+      // 見出し: タグ（上）＋項目名（下）。th 自体は table-cell のまま（flex にすると列が縦崩れする）
+      ".jy2-th-stack{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;line-height:1.2;width:100%}",
+      "th.jy2-th-stacked{white-space:normal!important;vertical-align:bottom;text-align:center;padding-top:6px!important;padding-bottom:6px!important}",
+      ".jy2-th-stack .jy2-hf-tag{display:inline-flex;align-items:center;justify-content:center;margin:0!important;font-size:10px;font-weight:800;letter-spacing:.06em;padding:2px 8px;border-radius:999px;line-height:1.2;box-shadow:0 1px 0 rgba(15,23,42,.08)}",
+      ".jy2-th-stack .jy2-th-label{display:block;font-size:11px;font-weight:700;color:#0f172a;line-height:1.3;letter-spacing:.02em}",
       ".jy2-table th.jy2-th-mode-auto{background:#eff6ff}",
       ".jy2-table th.jy2-th-mode-select{background:#ecfdf5}",
       ".jy2-table th.jy2-th-mode-input{background:#fffbeb}",
@@ -219,9 +220,13 @@
       ".jy2-actual-table thead th.jy2-th-mode-select{background:#ecfdf5}",
       ".jy2-actual-table thead th.jy2-th-mode-input{background:#fffbeb}",
       ".jy2-actual-table thead th.jy2-th-mode-date{background:#fff7ed}",
-      ".jy2-detail-block-head label.jy2-th-stacked,.jy2-detail-block-head .jy2-th-stacked{align-items:flex-start;justify-content:flex-start;padding-top:0!important;padding-bottom:0!important}",
-      ".jy2-detail-block-head .jy2-th-stacked .jy2-th-label{font-size:12px}",
-      ".jy2-footer-label.jy2-th-stacked,.jy2-footer-label .jy2-th-stacked{flex-direction:row;align-items:center;gap:4px;justify-content:flex-start}",
+      ".jy2-detail-block-head label.jy2-th-stacked{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:3px}",
+      ".jy2-detail-block-head .jy2-th-stack{align-items:flex-start}",
+      ".jy2-detail-block-head .jy2-th-stack .jy2-th-label,.jy2-detail-block-head .jy2-th-label{font-size:12px}",
+      ".jy2-footer-label .jy2-th-stack{flex-direction:row;align-items:center;gap:4px;justify-content:flex-start}",
+      "label.jy2-th-stacked{display:flex;flex-direction:column;align-items:flex-start;gap:3px}",
+      "label.jy2-th-stacked > .jy2-hf-tag{margin:0}",
+      "label.jy2-th-stacked > .jy2-th-label{display:block;font-size:12px;font-weight:700;color:#334155}",
       ".jy2-list-root{padding:12px 16px;background:#f8fafc;min-height:320px;font-family:'Segoe UI',Meiryo,sans-serif}",
       ".jy2-list-title{margin:0 0 4px;font-size:22px;font-weight:800;letter-spacing:.2em;color:#334155}",
       ".jy2-list-sub{margin:0 0 12px;font-size:12px;color:#64748b}",
@@ -860,14 +865,18 @@
 
   function jy2AppendModeLabel(documentRef, parent, raw) {
     const { label, mode } = jy2ParseModeLabel(raw);
+    // th/td に display:flex すると table-cell が壊れ列が縦積みになるため、内側に積む
+    const stack = documentRef.createElement("div");
+    stack.className = "jy2-th-stack";
     if (mode) {
       parent.classList.add("jy2-th-stacked", `jy2-th-mode-${mode}`);
-      parent.appendChild(jy2HfTag(documentRef, mode));
+      stack.appendChild(jy2HfTag(documentRef, mode));
     }
     const text = documentRef.createElement("span");
     text.className = "jy2-th-label";
     text.textContent = label;
-    parent.appendChild(text);
+    stack.appendChild(text);
+    parent.appendChild(stack);
   }
 
   function jy2HfLabel(documentRef, kind, text) {
