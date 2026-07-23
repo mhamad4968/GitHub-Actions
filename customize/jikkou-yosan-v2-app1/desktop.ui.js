@@ -256,7 +256,8 @@
       : jy2Comma(displayInteger(decimalAmount));
   }
 
-  // D-31/D-32: 対①率 = 金額÷①, shown as percent with 1 decimal, ①=0 → 0.
+  // D-31/D-32: 率(÷①) = 金額÷①。画面ラベルは「消化率」（浜田 2026-07-23）。
+  // shown as percent with 1 decimal, ①=0 → 0.
   function jy2Percent(fraction) {
     if (fraction === null || fraction === undefined) return "－";
     return `${round(multiply(fraction, "100"), 1)}%`;
@@ -472,7 +473,7 @@
     return row;
   }
 
-  /** 予実ヘッダ2段: 現行予算・最終予算額の下に 予算額 | 対①率 */
+  /** 予実ヘッダ2段: 現行予算・最終予算額の下に 予算額 | 消化率（÷①） */
   function jy2ActualHead(documentRef, months) {
     const thead = documentRef.createElement("thead");
     const top = documentRef.createElement("tr");
@@ -508,9 +509,9 @@
       top.appendChild(th(label, { rowSpan: 2 }));
     }
     bottom.appendChild(th("予算額"));
-    bottom.appendChild(th("対①率"));
+    bottom.appendChild(th("消化率"));
     bottom.appendChild(th("予算額"));
-    bottom.appendChild(th("対①率"));
+    bottom.appendChild(th("消化率"));
     thead.append(top, bottom);
     return thead;
   }
@@ -899,7 +900,7 @@
   }
 
   // 請負金額 (§7.1a): 施工/保安 bands, amount = auto decimal shown as integer,
-  // 対①率 = 行金額÷①（D-31/D-32: ①=0 → 0, 金額なし → 「－」）.
+  // 消化率列（÷①）= 行金額÷①（D-31/D-32: ①=0 → 0, 金額なし → 「－」）.
   function jy2ContractTable(documentRef, summaryModel, editable, rerender) {
     const snapshot = summaryModel.snapshot();
     const rateTo1 = (amount) =>
@@ -917,7 +918,7 @@
         "数量",
         "単価",
         "金額（税抜）",
-        "対①率",
+        "消化率",
         "備考",
         "",
       ]),
@@ -1219,7 +1220,7 @@
         "金額（税抜）",
         "消費税率",
         "金額（税込）",
-        "対①率",
+        "消化率",
         "計算基準",
         "備考",
       ]),
@@ -1360,11 +1361,11 @@
     const wrap = documentRef.createElement("div");
     wrap.className = "jy2-budget-summary-wrap";
 
-    // ①⑧⑨ + 内訳（対①率）— D-31
+    // ①⑧⑨ + 内訳（消化率＝÷①）— D-31
     const keys = documentRef.createElement("table");
     keys.className = "jy2-budget-summary-keys";
     const keysBody = documentRef.createElement("tbody");
-    keysBody.appendChild(jy2HeadRow(documentRef, ["項目", "金額（税抜）", "対①率"]));
+    keysBody.appendChild(jy2HeadRow(documentRef, ["項目", "金額（税抜）", "消化率"]));
     const keyRows = [
       ["① 請負金額合計", totals.total1, "jy2-key-row"],
       ["請負・施工計", totals.construction, "jy2-sub-row"],
@@ -1464,7 +1465,7 @@
     note.className = "jy2-budget-summary-note";
     note.textContent =
       "粗利率＝区分ごとの粗利 ÷ その区分の売上（①）。最下行は全体粗利⑨ ÷ 契約合計①。" +
-      " 給与計は⑧合計に含め、区分（施工/保安）には按分しません。対①率＝金額÷①（①=0は0）。";
+      " 給与計は⑧合計に含め、区分（施工/保安）には按分しません。消化率＝金額÷①（①=0は0）。";
     wrap.appendChild(note);
 
     root.appendChild(wrap);
@@ -2189,7 +2190,7 @@
         "p",
         "jy2-actual-note",
         "予算属性は表示のみ（編集は内訳・総括）。手入力は月別消化と最終予算額の予算額のみ。" +
-          "現行予算・最終予算額は「予算額｜対①率」の2段（対①率＝各予算÷請負①）。消化率＝原価累計÷現行予算（旧称消費率は使わない）。",
+          "現行予算・最終予算額は「予算額｜消化率」の2段（ここでの消化率＝各予算÷請負①）。右端の消化率＝原価累計÷現行予算。",
       ),
     );
     if (rows.length === 0) {

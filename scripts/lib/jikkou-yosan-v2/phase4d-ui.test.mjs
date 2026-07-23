@@ -466,7 +466,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   for (const label of [
     "現行予算",
     "予算額",
-    "対①率",
+    "消化率",
     "原価累計",
     "最終予算額",
     "今後必要額",
@@ -481,6 +481,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.doesNotMatch(source, /消費率（現予算）/);
   assert.doesNotMatch(source, /消費率（最終予算）/);
   assert.doesNotMatch(source, /th\("消費率"\)/);
+  assert.doesNotMatch(source, /th\("対①率"\)/);
   assert.doesNotMatch(source, /"BC率"/);
   assert.doesNotMatch(source, /"EC率"/);
   // Y9/M2: ① is read live from the 総括 contract lines into the rates.
