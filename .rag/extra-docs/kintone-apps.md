@@ -37,7 +37,7 @@ npm run app:fields <アプリID>
 | 688 | `2026-07-13-688-heat-closed` | **90** | `b44d6720-4fd7-4118-b456-b85bb0ec9bbd` | 2026-07-13 気象ヘルプ・猛暑日オプション折りたたみ |
 | 735 | — | — | — | 2026-06-18 実行予算書リストマスタ（104件 seed・customize なし） |
 | 736 | `2026-07-12-736-ui-backlog-02-col-resize` | **186** | `4cff9ec6-a2be-41d0-adcd-d75ebf6595b3` | Phase 0b ⋮ 上/下追加 |
-| 756 | `2026-07-23-ver02-readable-dense` | **72** | `6381097e-4088-41fb-a501-8b209bc70137` | Ver.02 App1 fail-closed read-only shell |
+| 756 | `2026-07-23-ver02-readable-dense` | **72** | `3f51e200-cfc2-46b5-8e8c-7572f3f699ed` | Ver.02 App1 fail-closed read-only shell |
 | 757 | `2026-07-21-ver02-phase6-app2-readonly-guard` | **15** | `62efd690-efa5-4a79-b769-9219af3f8f16` | Ver.02 App2 direct-write guard / fail-closed read-only shell |
 | 758 | `2026-07-21-ver02-phase6-app3-readonly-guard` | **14** | `4766245e-c46d-432b-bf0a-aae189ffd183` | Ver.02 App3 direct-write guard / fail-closed read-only shell |
 | 693 | `2026-06-03-apple-id-db-block-ui-mutations` | **5** | `ca4b6489-bc6d-444c-b4a4-28b4c7f8c96c` | 2026-06-03 Apple ID DB save/delete ブロック |
