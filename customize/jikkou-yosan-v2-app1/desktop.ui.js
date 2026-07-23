@@ -701,34 +701,34 @@
       if (opts.colSpan) cell.colSpan = opts.colSpan;
       return cell;
     };
-    for (const label of ["内訳№", "区分", "工種番号", "システム入力工種"]) {
+    for (const label of ["内訳№（自動）", "区分（自動）", "工種番号（自動）", "システム入力工種（自動）"]) {
       top.appendChild(th(label, { rowSpan: 2 }));
     }
     for (const label of [
-      "種別",
-      "消費税",
-      "単位",
-      "数量",
-      "単価",
-      "金額（税抜）",
-      "計算基準",
-      "備考",
+      "種別（自動）",
+      "消費税（自動）",
+      "単位（自動）",
+      "数量（自動）",
+      "単価（自動）",
+      "金額（自動）",
+      "計算基準（自動）",
+      "備考（自動）",
     ]) {
       top.appendChild(th(label, { rowSpan: 2 }));
     }
-    top.appendChild(th("現行予算", { colSpan: 2 }));
+    top.appendChild(th("現行予算（自動）", { colSpan: 2 }));
     for (const month of months) {
-      top.appendChild(th(jy2MonthLabel(month), { rowSpan: 2 }));
+      top.appendChild(th(`${jy2MonthLabel(month)}（入力）`, { rowSpan: 2 }));
     }
-    top.appendChild(th("原価累計", { rowSpan: 2 }));
+    top.appendChild(th("原価累計（自動）", { rowSpan: 2 }));
     top.appendChild(th("最終予算額", { colSpan: 2 }));
-    for (const label of ["今後必要額", "残予算", "消化率"]) {
+    for (const label of ["今後必要額（自動）", "残予算（自動）", "消化率（自動）"]) {
       top.appendChild(th(label, { rowSpan: 2 }));
     }
-    bottom.appendChild(th("予算額"));
-    bottom.appendChild(th("消化率"));
-    bottom.appendChild(th("予算額"));
-    bottom.appendChild(th("消化率"));
+    bottom.appendChild(th("予算額（自動）"));
+    bottom.appendChild(th("消化率（自動）"));
+    bottom.appendChild(th("予算額（入力）"));
+    bottom.appendChild(th("消化率（自動）"));
     thead.append(top, bottom);
     return thead;
   }
@@ -1130,13 +1130,13 @@
     body.appendChild(
       jy2HeadRow(documentRef, [
         "区分",
-        "契約工種",
-        "単位",
-        "数量",
-        "単価",
-        "金額（税抜）",
-        "消化率",
-        "備考",
+        "契約工種（入力）",
+        "単位（選択）",
+        "数量（入力）",
+        "単価（入力）",
+        "金額（自動）",
+        "消化率（自動）",
+        "備考（入力）",
         "",
       ]),
     );
@@ -1293,14 +1293,14 @@
     const body = documentRef.createElement("tbody");
     body.appendChild(
       jy2HeadRow(documentRef, [
-        "役職・名称",
-        "単位",
-        "数量",
-        "単価",
-        "金額（税抜）",
-        "消費税",
-        "金額（税込）",
-        "備考",
+        "役職・名称（入力）",
+        "単位（選択）",
+        "数量（入力）",
+        "単価（入力）",
+        "金額（自動）",
+        "消費税（自動）",
+        "金額税込（自動）",
+        "備考（入力）",
         "",
       ]),
     );
@@ -1426,20 +1426,20 @@
     const body = documentRef.createElement("tbody");
     body.appendChild(
       jy2HeadRow(documentRef, [
-        "内訳№",
-        "費用区分",
-        "工種番号",
-        "システム入力工種",
-        "種別",
-        "単位",
-        "数量",
-        "単価",
-        "金額（税抜）",
-        "消費税率",
-        "金額（税込）",
-        "消化率",
-        "計算基準",
-        "備考",
+        "内訳№（自動）",
+        "費用区分（自動）",
+        "工種番号（自動）",
+        "システム入力工種（自動）",
+        "種別（入力）",
+        "単位（自動）",
+        "数量（自動）",
+        "単価（自動）",
+        "金額（自動）",
+        "消費税率（選択）",
+        "金額税込（自動）",
+        "消化率（自動）",
+        "計算基準（入力）",
+        "備考（入力）",
       ]),
     );
     if (projectionRows.length === 0) {
@@ -1820,7 +1820,7 @@
         rerender();
       };
       headerField(
-        "工種番号",
+        "工種番号（選択）",
         jy2ComboInput(
           documentRef,
           block.workTypeCode,
@@ -1829,7 +1829,7 @@
         ),
       );
       headerField(
-        "システム入力工種",
+        "システム入力工種（選択）",
         jy2ComboInput(
           documentRef,
           block.workTypeName,
@@ -1839,7 +1839,7 @@
       );
       // U29: 区分 sits left of 取引先; list-select colored (green).
       headerField(
-        "区分",
+        "区分（選択）",
         jy2UnitSelect(
           documentRef,
           block.costCategory,
@@ -1857,7 +1857,7 @@
           commitHeader("vendorName"),
         ),
       );
-      headerField("取引先", vendorWrap);
+      headerField("取引先（選択）", vendorWrap);
       const actions = documentRef.createElement("div");
       actions.className = "jy2-block-actions";
       actions.appendChild(
@@ -1916,11 +1916,11 @@
         "名称・規格1（選択）",
         "名称・規格2（選択）",
         "名称・規格3（入力）",
-        "単位",
-        "数量",
-        "単価",
-        "金額（税抜）",
-        "備考",
+        "単位（選択）",
+        "数量（入力）",
+        "単価（入力）",
+        "金額（自動）",
+        "備考（入力）",
         "",
       ]),
     );
@@ -2045,15 +2045,16 @@
           : "jy2-footer-row";
       tr.dataset.rowKind = kind;
       tr.dataset.rowKey = footerRow.rowKey;
+      const manual = MANUAL_FOOTER_KINDS.includes(kind);
+      const footerMode = manual ? "入力" : "自動";
       const label = jy2Cell(
         documentRef,
         "td",
         "jy2-footer-label",
-        BLOCK_FOOTER_LABELS[kind],
+        `${BLOCK_FOOTER_LABELS[kind]}（${footerMode}）`,
       );
       label.colSpan = 6;
       tr.appendChild(label);
-      const manual = MANUAL_FOOTER_KINDS.includes(kind);
       if (manual && blockEditable) {
         const amount = jy2Cell(documentRef, "td", "jy2-num", "");
         amount.appendChild(
