@@ -888,6 +888,19 @@
         else if (cat === "発注支社") lists.branches.push(name);
         else if (cat === "部門") lists.departments.push(name);
       }
+      // 工種番号は若い順（数値意識の昇順）。名称候補も同じコード順に揃える。
+      const codeAsc = (a, b) =>
+        String(a).localeCompare(String(b), "ja", {
+          numeric: true,
+          sensitivity: "base",
+        });
+      lists.workTypeCodes.sort(codeAsc);
+      lists.workTypeNames.sort((a, b) => {
+        const ca = lists.workTypeByName[a] || "";
+        const cb = lists.workTypeByName[b] || "";
+        const byCode = codeAsc(ca, cb);
+        return byCode !== 0 ? byCode : codeAsc(a, b);
+      });
       jy2MasterListsCache = lists;
       return lists;
     } catch (error) {
