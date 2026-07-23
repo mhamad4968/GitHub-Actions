@@ -1,17 +1,22 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-07-23T12:13:57.010Z",
-  "gitHead": "71dcf52d",
+  "exportedAt": "2026-07-23T12:21:40.130Z",
+  "gitHead": "82563d84",
   "gitStatus": "## main...origin/main",
-  "nextTask": "当日 -0。残 R-11/12/13（依頼者）・LIVE目視。Excel案件追加投入。§6.2 クロム維持（overflow-x:clip／fixed メニュー）。",
+  "nextTask": "当日 -0。残 R-11/12/13（依頼者）・LIVE目視・Excel案件追加投入。§6.2 クロム維持（`overflow-x:clip`／fixed メニュー）。",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
-    "docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md",
     "docs/handoff/latest-session-bridge.json",
-    "docs/approved-changes/2026-07-23-evening-reflection-hamada-go.md"
+    "docs/runbooks/session-lifecycle-v2.md",
+    "docs/runbooks/push-deploy-quality-gates-v2.md",
+    "docs/runbooks/checkpoint-handoff-template-v2.md",
+    "docs/runbooks/ai-team-tool-routing-v2.md",
+    "docs/runbooks/cio-grok-execution-loop.md",
+    ".cursor/rules/mode-b-canonical.mdc",
+    "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=71dcf52d | 次=当日 -0。残 R-11/12/13（依頼者）・LIVE目視。Excel案件追加投入。§6.2 クロム維持（overflow-x:clip／fixed メニュー）。 | Read: chat-sessions/checkpoint-latest.md, docs/reports/2026-07-23-evening-reflection.md",
+  "promptBlock": "【SESSION-BRIDGE】git=82563d84 | 次=当日 -0。残 R-11/12/13（依頼者）・LIVE目視・Excel案件追加投入。§6.2 クロム維持（`overflow-x:clip`／fixed メニュー）。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }

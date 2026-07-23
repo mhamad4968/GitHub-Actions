@@ -5005,7 +5005,7 @@ npm run cio:morning:ready
 
 **要約**: App756 UIレビュー（見出しタグ／シート見出し／hscroll／フッタ／原価計／予実月列／操作バー固定）を LIVE 反映。SPEC に **§6.2 C1–C10**・U31・D-78・A-07/U21/Y5 更新。Excel内訳差し替えCLI・migration plan 追記込み。735/736 WRITE なし。
 
-**次の1手**: 当日 -0。継続メモ 2–4（仕様総点検・他 BV 名称列・**736→Ver.02 / Excel データ移行**）。浜田指示の Ver.02 残と整合。
+**次の1手**: 当日 -0。残 R-11/12/13（依頼者）・LIVE目視・Excel案件追加投入。§6.2 クロム維持（`overflow-x:clip`／fixed メニュー）。
 
 **Git**: `404d4654` = `origin/main` — push 済（本締め）
 
