@@ -501,6 +501,8 @@ test("U4 name1/name2 are combo (select+input); name3 is free text input", () => 
   assert.match(source, /function jy2ComboInput\b/);
   assert.match(source, /jy2-input jy2-combo/);
   assert.match(source, /jy2-combo-select/);
+  assert.match(source, /jy2AppendModeLabel/);
+  assert.match(source, /jy2-hf-tag-select/);
   assert.match(source, /名称・規格1（選択）/);
   assert.match(source, /名称・規格2（選択）/);
   assert.match(source, /名称・規格3（入力）/);

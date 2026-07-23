@@ -180,13 +180,15 @@
       ".jy2-version-type-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 18px;background:#eaf0f8;border-bottom:1px solid #a6b7ca;font-size:13px}",
       ".jy2-version-type-bar label{display:flex;align-items:center;gap:6px}",
       ".jy2-version-type-bar select{min-width:160px;padding:3px 6px}",
-      // 工事基本情報（Ver.01 テイスト: 入力/選択/日付/自動の色分け）
+      // 項目種別タグ（工事基本情報と同型。U21: 選択=緑 / 入力=黄 / 自動=青 / 日付=橙）
       ".jy2-header-legend{font-size:11px;color:#64748b;padding:0 0 10px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}",
-      ".jy2-hf-tag{display:inline-block;font-size:10px;font-weight:700;padding:1px 6px;border-radius:3px;margin-right:5px;vertical-align:middle;line-height:1.4}",
-      ".jy2-hf-tag-input{background:#fff;border:1px solid #93c5fd;color:#1d4ed8}",
-      ".jy2-hf-tag-select{background:#f1f5f9;border:1px solid #94a3b8;color:#475569}",
-      ".jy2-hf-tag-date{background:#fffbeb;border:1px solid #fcd34d;color:#b45309}",
-      ".jy2-hf-tag-auto{background:#f8fafc;border:1px solid #cbd5e1;color:#64748b}",
+      ".jy2-hf-tag{display:inline-block;font-size:10px;font-weight:700;padding:1px 6px;border-radius:3px;margin-right:5px;vertical-align:middle;line-height:1.4;letter-spacing:.02em}",
+      ".jy2-hf-tag-input{background:#FEF3C7;border:1px solid #F59E0B;color:#B45309}",
+      ".jy2-hf-tag-select{background:#D1FAE5;border:1px solid #10B981;color:#047857}",
+      ".jy2-hf-tag-date{background:#FFEDD5;border:1px solid #F97316;color:#C2410C}",
+      ".jy2-hf-tag-auto{background:#DBEAFE;border:1px solid #3B82F6;color:#1D4ED8}",
+      ".jy2-table th .jy2-hf-tag,.jy2-detail-block-head .jy2-hf-tag,.jy2-footer-label .jy2-hf-tag{margin-right:4px}",
+      ".jy2-table th{white-space:nowrap}",
       ".jy2-header-grid{display:grid;grid-template-columns:repeat(4,minmax(140px,1fr));gap:8px 12px;padding:4px 0 12px}",
       ".jy2-header-grid>div{min-width:0}",
       ".jy2-header-grid label{display:block;font-size:11px;color:#475569;margin-bottom:4px;line-height:1.35}",
@@ -686,7 +688,11 @@
 
   function jy2HeadRow(documentRef, labels) {
     const row = documentRef.createElement("tr");
-    for (const label of labels) row.appendChild(jy2Cell(documentRef, "th", "", label));
+    for (const raw of labels) {
+      const th = documentRef.createElement("th");
+      jy2AppendModeLabel(documentRef, th, raw);
+      row.appendChild(th);
+    }
     return row;
   }
 
@@ -696,7 +702,8 @@
     const top = documentRef.createElement("tr");
     const bottom = documentRef.createElement("tr");
     const th = (label, opts = {}) => {
-      const cell = jy2Cell(documentRef, "th", "", label);
+      const cell = documentRef.createElement("th");
+      jy2AppendModeLabel(documentRef, cell, label);
       if (opts.rowSpan) cell.rowSpan = opts.rowSpan;
       if (opts.colSpan) cell.colSpan = opts.colSpan;
       return cell;
@@ -749,6 +756,26 @@
     span.className = `jy2-hf-tag ${pair[0]}`;
     span.textContent = pair[1];
     return span;
+  }
+
+  /** 「単位（選択）」形式 → { label, mode }。タグ無しはそのまま。 */
+  function jy2ParseModeLabel(raw) {
+    const text = String(raw ?? "");
+    const match = /^(.*)（(選択|入力|自動|日付)）$/.exec(text);
+    if (!match) return { label: text, mode: null };
+    const modeByJa = {
+      選択: "select",
+      入力: "input",
+      自動: "auto",
+      日付: "date",
+    };
+    return { label: match[1], mode: modeByJa[match[2]] || null };
+  }
+
+  function jy2AppendModeLabel(documentRef, parent, raw) {
+    const { label, mode } = jy2ParseModeLabel(raw);
+    if (mode) parent.appendChild(jy2HfTag(documentRef, mode));
+    parent.appendChild(documentRef.createTextNode(label));
   }
 
   function jy2HfLabel(documentRef, kind, text) {
@@ -973,13 +1000,13 @@
     legend.className = "jy2-header-legend";
     legend.append(
       jy2HfTag(documentRef, "input"),
-      documentRef.createTextNode("手入力（白・青枠）"),
+      documentRef.createTextNode("手入力（黄）"),
       jy2HfTag(documentRef, "select"),
-      documentRef.createTextNode("リスト選択（灰）"),
+      documentRef.createTextNode("リスト選択（緑）"),
       jy2HfTag(documentRef, "date"),
-      documentRef.createTextNode("日付（薄黄）"),
+      documentRef.createTextNode("日付（橙）"),
       jy2HfTag(documentRef, "auto"),
-      documentRef.createTextNode("自動・参照のみ"),
+      documentRef.createTextNode("自動・参照のみ（青）"),
     );
     wrap.appendChild(legend);
 
@@ -1798,7 +1825,7 @@
     };
     const headerField = (labelText, control) => {
       const label = documentRef.createElement("label");
-      label.appendChild(jy2Cell(documentRef, "span", "", labelText));
+      jy2AppendModeLabel(documentRef, label, labelText);
       label.appendChild(control);
       head.appendChild(label);
     };
@@ -2047,10 +2074,11 @@
       tr.dataset.rowKey = footerRow.rowKey;
       const manual = MANUAL_FOOTER_KINDS.includes(kind);
       const footerMode = manual ? "入力" : "自動";
-      const label = jy2Cell(
+      const label = documentRef.createElement("td");
+      label.className = "jy2-footer-label";
+      jy2AppendModeLabel(
         documentRef,
-        "td",
-        "jy2-footer-label",
+        label,
         `${BLOCK_FOOTER_LABELS[kind]}（${footerMode}）`,
       );
       label.colSpan = 6;
