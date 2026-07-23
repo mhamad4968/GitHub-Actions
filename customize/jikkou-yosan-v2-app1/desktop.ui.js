@@ -150,7 +150,7 @@
       ".jy2-budget-summary-keys .jy2-sub-row td{font-size:11px;color:#5c4a3a;background:#fffdf9}",
       ".jy2-budget-summary-note{margin:6px 0 0;font-size:10px;color:#64748b;line-height:1.45}",
       ".jy2-summary-footer{margin-top:8px}",
-      ".jy2-detail-block{border:1px solid #cbd5e1;border-radius:8px;margin:0 0 16px;background:#fff;overflow-x:auto;overflow-y:visible;box-shadow:0 1px 3px rgba(15,23,42,.04)}",
+      ".jy2-detail-block{border:1px solid #cbd5e1;border-radius:8px;margin:0 0 16px;background:#fff;overflow-x:hidden;overflow-y:visible;box-shadow:0 1px 3px rgba(15,23,42,.04);max-width:100%;min-width:0;box-sizing:border-box}",
       ".jy2-detail-block[data-block-status='retired']{opacity:.6}",
       ".jy2-detail-block-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 10px;background:linear-gradient(180deg,#ecfdf5,#d1fae5);font-size:12px;border-bottom:1px solid #bbf7d0}",
       ".jy2-detail-block-head label{display:flex;align-items:center;gap:4px}",
@@ -787,40 +787,76 @@
     return button;
   }
 
+  function jy2MeasureHScrollBasis(scrollEl) {
+    const doc = scrollEl.ownerDocument;
+    const win = doc && doc.defaultView;
+    if (!win) return 0;
+    const host = doc.getElementById("jy2-host");
+    const pane = scrollEl.closest(".jy2-pane");
+    const shell = scrollEl.closest(".jy2-shell");
+    const padOf = (el) => {
+      if (!el) return 0;
+      const style = win.getComputedStyle(el);
+      return (
+        (Number.parseFloat(style.paddingLeft) || 0) +
+        (Number.parseFloat(style.paddingRight) || 0)
+      );
+    };
+    // display:none の pane.clientWidth は 0 → 誤って窓幅を使うと
+    // wrap が広すぎて表が収まりスクロールが出ず、親で見切れる。
+    if (pane && pane.dataset.active === "true" && pane.clientWidth > 40) {
+      return Math.floor(pane.clientWidth - padOf(pane));
+    }
+    if (shell && shell.clientWidth > 40) {
+      return Math.floor(shell.clientWidth - padOf(shell) - 4);
+    }
+    if (host && host.clientWidth > 40) {
+      return Math.floor(host.clientWidth - 16);
+    }
+    const docWidth = doc.documentElement
+      ? doc.documentElement.clientWidth
+      : win.innerWidth;
+    return Math.floor(Math.min(win.innerWidth, docWidth) - 48);
+  }
+
+  function jy2SyncHScroll(scrollEl) {
+    if (!scrollEl || !scrollEl.style) return scrollEl;
+    const basis = jy2MeasureHScrollBasis(scrollEl);
+    const width = Math.max(240, (basis || 240) - 4);
+    scrollEl.style.setProperty("width", `${width}px`, "important");
+    scrollEl.style.setProperty("max-width", `${width}px`, "important");
+    scrollEl.style.setProperty("min-width", "0", "important");
+    scrollEl.style.setProperty("overflow-x", "scroll", "important");
+    scrollEl.style.setProperty("box-sizing", "border-box", "important");
+    return scrollEl;
+  }
+
+  function jy2SyncAllHScroll(documentRef) {
+    const doc = documentRef || (typeof document !== "undefined" ? document : null);
+    if (!doc) return;
+    doc
+      .querySelectorAll(".jy2-table-scroll, .jy2-actual-scroll")
+      .forEach((el) => jy2SyncHScroll(el));
+  }
+
   function jy2BindHScroll(scrollEl) {
     const doc = scrollEl.ownerDocument;
     const win = doc && doc.defaultView;
     if (!win) return scrollEl;
-    const sync = () => {
-      const host = doc.getElementById("jy2-host");
-      const pane = scrollEl.closest(".jy2-pane");
-      const shell = scrollEl.closest(".jy2-shell");
-      const basisEl = pane || shell || host || scrollEl.parentElement;
-      let basis = 0;
-      if (basisEl) {
-        const style = win.getComputedStyle(basisEl);
-        const padX =
-          (Number.parseFloat(style.paddingLeft) || 0) +
-          (Number.parseFloat(style.paddingRight) || 0);
-        basis = Math.floor(basisEl.clientWidth - padX);
-      }
-      if (!(basis > 0)) basis = Math.floor(win.innerWidth * 0.92);
-      const width = Math.max(240, basis - 8);
-      scrollEl.style.setProperty("width", `${width}px`, "important");
-      scrollEl.style.setProperty("max-width", `${width}px`, "important");
-      scrollEl.style.setProperty("min-width", "0", "important");
-      scrollEl.style.setProperty("overflow-x", "scroll", "important");
-    };
+    const sync = () => jy2SyncHScroll(scrollEl);
     sync();
-    win.requestAnimationFrame(sync);
+    win.requestAnimationFrame(() => {
+      sync();
+      win.requestAnimationFrame(sync);
+    });
     win.addEventListener("resize", sync);
     if (typeof win.ResizeObserver === "function") {
       const observer = new win.ResizeObserver(() => sync());
       const host = doc.getElementById("jy2-host");
       if (host) observer.observe(host);
+      const shell = scrollEl.closest(".jy2-shell");
+      if (shell) observer.observe(shell);
       if (scrollEl.parentElement) observer.observe(scrollEl.parentElement);
-      const pane = scrollEl.closest(".jy2-pane");
-      if (pane) observer.observe(pane);
     }
     return scrollEl;
   }
@@ -3757,6 +3793,15 @@
       jy2StoreActiveTab(documentRef.defaultView, tabId);
       syncStickyActions(tabId);
       jy2SyncStickySheetBanner(stickySheetBanner, documentRef, tabId);
+      // タブ表示後に幅を測り直す（非表示時に測ると横スクロールが消える）
+      const syncScroll = () => jy2SyncAllHScroll(documentRef);
+      syncScroll();
+      if (view && typeof view.requestAnimationFrame === "function") {
+        view.requestAnimationFrame(() => {
+          syncScroll();
+          view.requestAnimationFrame(syncScroll);
+        });
+      }
     }
 
     let headerPane = null;
@@ -3868,6 +3913,13 @@
     refreshActuals();
     refreshVersions();
     refreshDetail();
+    jy2SyncAllHScroll(documentRef);
+    if (view && typeof view.requestAnimationFrame === "function") {
+      view.requestAnimationFrame(() => {
+        jy2SyncAllHScroll(documentRef);
+        view.requestAnimationFrame(() => jy2SyncAllHScroll(documentRef));
+      });
+    }
 
     addBlockBtn.addEventListener("click", () => {
       if (addBlockBtn.disabled) return;
