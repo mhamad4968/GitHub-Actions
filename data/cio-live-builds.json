@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-07-23-ver02-tax-rate-normalize",
-      "fileKey": "ac00af99-f41a-4192-b664-21c44f9760ae",
-      "revision": "70",
+      "build": "2026-07-23-ver02-ux-scroll-labels",
+      "fileKey": "6381097e-4088-41fb-a501-8b209bc70137",
+      "revision": "71",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-07-23T11:02:38.650Z",
+      "deployedAt": "2026-07-23T11:07:41.262Z",
       "note": null
     },
     "757": {

@@ -61,12 +61,12 @@
     style.id = JY2_STYLE_ID;
     style.textContent = [
       // A-07 / Ver.01テイスト: slate chrome・色分けタブ・シート見出し・薄茶合計
-      ".jy2-shell{font-family:'Segoe UI',Meiryo,sans-serif;background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;color:#334155;overflow:visible;padding:0 0 12px;max-width:100%;box-sizing:border-box}",
+      ".jy2-shell{font-family:'Segoe UI',Meiryo,sans-serif;background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;color:#334155;overflow-x:hidden;overflow-y:visible;padding:0 0 12px;max-width:100%;width:100%;box-sizing:border-box}",
       ".jy2-header{display:none}",
       ".jy2-title{margin:0;font-size:22px;font-weight:800;letter-spacing:.28em;color:#334155;line-height:1.35}",
       ".jy2-header-stub{font-size:11px;color:#64748b;letter-spacing:normal;opacity:1}",
-      ".jy2-tabs{display:flex;gap:4px;padding:6px 0 0;background:transparent;flex-wrap:wrap}",
-      ".jy2-tab{border:1px solid #cbd5e1;border-bottom:0;border-radius:6px 6px 0 0;background:#f1f5f9;padding:7px 12px;cursor:pointer;font-size:12px;font-weight:600;color:#475569;white-space:nowrap}",
+      ".jy2-tabs{display:flex;gap:4px;padding:6px 0 0;background:transparent;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}",
+      ".jy2-tab{border:1px solid #cbd5e1;border-bottom:0;border-radius:6px 6px 0 0;background:#f1f5f9;padding:7px 12px;cursor:pointer;font-size:12px;font-weight:600;color:#475569;white-space:nowrap;flex:0 0 auto}",
       ".jy2-tab[data-tab-id='header']{background:#f8fafc;color:#475569;border-color:#94a3b8}",
       ".jy2-tab[data-tab-id='summary']{background:#eff6ff;color:#1e40af;border-color:#93c5fd}",
       ".jy2-tab[data-tab-id='detail']{background:#ecfdf5;color:#166534;border-color:#86efac}",
@@ -155,8 +155,14 @@
       ".jy2-footer-row .jy2-footer-label{font-weight:700}",
       ".jy2-warning{color:#b91c1c;font-size:12px;margin:4px 0;font-weight:600}",
       ".jy2-retired-tag{color:#b91c1c;font-weight:700}",
-      ".jy2-actual-scroll{overflow-x:auto;border:1px solid #e2e8f0;border-radius:6px;background:#fff}",
-      ".jy2-actual-table{white-space:nowrap}",
+      // 予実: 横スクロールは表ラッパ1本のみ（親との二重スクロール防止）
+      ".jy2-pane[data-tab-id='actual']{overflow:visible;padding:10px 8px 14px}",
+      ".jy2-pane[data-tab-id='actual'] .jy2-pane-head-banner{margin:0 0 8px}",
+      ".jy2-pane[data-tab-id='actual'] .jy2-sheet-title{padding:10px 18px;gap:4px}",
+      ".jy2-pane[data-tab-id='actual'] .jy2-sheet-title-doc{font-size:16px;letter-spacing:.12em}",
+      ".jy2-pane[data-tab-id='actual'] .jy2-sheet-title-sheet{font-size:14px;letter-spacing:.14em;padding:3px 14px}",
+      ".jy2-actual-scroll{overflow-x:auto;overflow-y:visible;border:1px solid #e2e8f0;border-radius:6px;background:#fff;max-width:100%;width:100%;-webkit-overflow-scrolling:touch}",
+      ".jy2-actual-table{white-space:nowrap;margin:0}",
       ".jy2-actual-table .jy2-input{min-width:72px}",
       ".jy2-actual-note{color:#64748b;font-size:11px;margin:2px 0 8px}",
       ".jy2-actual-table thead th{text-align:center;vertical-align:middle}",
@@ -172,12 +178,13 @@
       ".jy2-version-status{font-size:12px;margin:6px 0;color:#334155}",
       ".jy2-save-button{border:1px solid #2563eb;background:#2563eb;color:#fff;padding:8px 18px;font-weight:700;cursor:pointer;border-radius:6px}",
       ".jy2-save-button[disabled]{opacity:.5;cursor:not-allowed}",
-      ".jy2-sticky-top{position:sticky;top:48px;z-index:1000;background:#fff;border-bottom:1px solid #e2e8f0;padding:6px 8px 0;margin:0;box-shadow:0 2px 8px rgba(15,23,42,.06);max-width:100%;box-sizing:border-box}",
+      ".jy2-sticky-top{position:sticky;top:48px;z-index:1000;background:#fff;border-bottom:1px solid #e2e8f0;padding:6px 8px 0;margin:0;box-shadow:0 2px 8px rgba(15,23,42,.06);max-width:100%;box-sizing:border-box;overflow:visible}",
       ".jy2-sticky-top .jy2-header{display:none}",
-      ".jy2-action-bar{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;justify-content:flex-start;margin-bottom:2px;width:100%;box-sizing:border-box}",
-      ".jy2-action-group{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;min-width:0;flex:1 1 12rem}",
-      ".jy2-action-bar-right{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;margin-left:auto;flex:0 1 auto;order:2}",
-      ".jy2-btn{border:1px solid #94a3b8;background:#f8fafc;color:#0f172a;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;border-radius:6px;white-space:nowrap}",
+      // 保存等は常に左端（狭い窓でも最初に見える）
+      ".jy2-action-bar{display:flex;flex-wrap:nowrap;gap:6px 8px;align-items:center;justify-content:flex-start;margin-bottom:2px;width:100%;box-sizing:border-box;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}",
+      ".jy2-action-bar-right{display:flex;flex-wrap:nowrap;gap:6px 8px;align-items:center;flex:0 0 auto;order:0;margin-left:0}",
+      ".jy2-action-group{display:flex;flex-wrap:nowrap;gap:6px 8px;align-items:center;min-width:0;flex:1 1 auto;order:1}",
+      ".jy2-btn{border:1px solid #94a3b8;background:#f8fafc;color:#0f172a;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;border-radius:6px;white-space:nowrap;flex:0 0 auto}",
       ".jy2-btn:hover{background:#f1f5f9}",
       ".jy2-btn[disabled]{opacity:.45;cursor:not-allowed}",
       ".jy2-btn-primary{border-color:#2563eb;background:#2563eb;color:#fff}",
@@ -185,11 +192,19 @@
       ".jy2-btn-accent{border-color:#059669;background:#059669;color:#fff}",
       ".jy2-btn-accent:hover{background:#047857}",
       ".jy2-lock-banner{margin:0 0 6px;padding:6px 10px;background:#fff3cd;border:1px solid #ffc107;color:#92400e;font-size:12px;font-weight:700;border-radius:6px}",
-      ".jy2-action-meta{font-size:12px;color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:min(42vw,22rem)}",
+      ".jy2-action-meta{font-size:12px;color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1 1 auto}",
       ".jy2-sticky-top .jy2-tabs{margin:6px 0 0;padding:0;background:transparent}",
       ".jy2-action-bar .jy2-btn[hidden]{display:none!important}",
-      "@media (max-width:960px){.jy2-action-bar-right{margin-left:0;width:100%;order:1;justify-content:flex-start}.jy2-action-group{order:2;flex:1 1 100%}.jy2-action-meta{max-width:100%;white-space:normal}}",
-      "#jy2-host{margin:0 0 12px;overflow:visible;max-width:100%;box-sizing:border-box}",
+      "#jy2-host{margin:0 0 12px;overflow-x:hidden;overflow-y:visible;max-width:100%;width:100%;box-sizing:border-box}",
+      ".jy2-panes,.jy2-pane{max-width:100%;box-sizing:border-box}",
+      // 見出し: タグ改行＋項目名（例: 自動 / 内訳№）
+      ".jy2-th-stacked{white-space:normal!important;line-height:1.25;vertical-align:bottom;text-align:center}",
+      ".jy2-th-stacked .jy2-hf-tag{display:inline-block;margin:0 0 3px}",
+      ".jy2-th-stacked .jy2-th-label{display:block}",
+      ".jy2-detail-block-head label.jy2-th-stacked,.jy2-detail-block-head .jy2-th-stacked{display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px;line-height:1.2}",
+      ".jy2-detail-block-head .jy2-th-stacked br{display:none}",
+      ".jy2-detail-block-head .jy2-th-stacked .jy2-hf-tag{margin:0}",
+      ".jy2-detail-block-head .jy2-th-stacked .jy2-th-label{display:inline}",
       ".jy2-list-root{padding:12px 16px;background:#f8fafc;min-height:320px;font-family:'Segoe UI',Meiryo,sans-serif}",
       ".jy2-list-title{margin:0 0 4px;font-size:22px;font-weight:800;letter-spacing:.2em;color:#334155}",
       ".jy2-list-sub{margin:0 0 12px;font-size:12px;color:#64748b}",
@@ -217,6 +232,10 @@
       ".jy2-header-grid{display:grid;grid-template-columns:repeat(4,minmax(140px,1fr));gap:8px 12px;padding:4px 0 12px}",
       ".jy2-header-grid>div{min-width:0}",
       ".jy2-header-grid label{display:block;font-size:11px;color:#475569;margin-bottom:4px;line-height:1.35}",
+      ".jy2-header-grid label.jy2-th-stacked{display:flex;flex-direction:column;align-items:flex-start;gap:2px}",
+      ".jy2-header-grid label.jy2-th-stacked br{display:none}",
+      ".jy2-header-grid label.jy2-th-stacked .jy2-hf-tag{margin:0}",
+      ".jy2-header-grid label.jy2-th-stacked .jy2-th-label{display:inline;font-size:11px}",
       ".jy2-header-grid input,.jy2-header-grid select,.jy2-header-grid textarea{width:100%;box-sizing:border-box;font-size:13px;padding:5px 8px;border-radius:4px}",
       ".jy2-header-grid input.jy2-hf-text,.jy2-header-grid textarea.jy2-hf-text{background:#fff;border:1px solid #93c5fd;border-left:3px solid #2563eb}",
       ".jy2-header-grid select.jy2-hf-select{background-color:#f1f5f9;border:1px solid #94a3b8;border-left:3px solid #64748b;cursor:pointer;appearance:none;-webkit-appearance:none;padding-right:26px;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M2 4l4 4 4-4z'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 8px center}",
@@ -249,8 +268,10 @@
       ".gaia-argoui-app-show-sidebar-comments{display:none!important}",
       ".ocean-ui-comments{display:none!important}",
       ".converter-sidebar-gaia{display:none!important}",
-      ".gaia-argoui-app-show-contents{margin-right:0!important;width:100%!important;max-width:100%!important}",
-      ".contents-gaia{margin-right:0!important}",
+      ".gaia-argoui-app-show-contents{margin-right:0!important;width:100%!important;max-width:100%!important;overflow-x:hidden!important;box-sizing:border-box!important}",
+      ".contents-gaia{margin-right:0!important;max-width:100%!important;overflow-x:hidden!important;box-sizing:border-box!important}",
+      "body.jy2-detail-shell{overflow-x:hidden!important}",
+      "body.jy2-detail-shell .container-gaia{max-width:100%!important;overflow-x:hidden!important}",
     ].join("");
     if (doc.body) doc.body.classList.add("jy2-detail-shell");
 
@@ -812,14 +833,26 @@
 
   function jy2AppendModeLabel(documentRef, parent, raw) {
     const { label, mode } = jy2ParseModeLabel(raw);
-    if (mode) parent.appendChild(jy2HfTag(documentRef, mode));
-    parent.appendChild(documentRef.createTextNode(label));
+    if (mode) {
+      parent.classList.add("jy2-th-stacked");
+      parent.appendChild(jy2HfTag(documentRef, mode));
+      parent.appendChild(documentRef.createElement("br"));
+    }
+    const text = documentRef.createElement("span");
+    text.className = "jy2-th-label";
+    text.textContent = label;
+    parent.appendChild(text);
   }
 
   function jy2HfLabel(documentRef, kind, text) {
     const label = documentRef.createElement("label");
+    label.classList.add("jy2-th-stacked");
     label.appendChild(jy2HfTag(documentRef, kind));
-    label.appendChild(documentRef.createTextNode(text));
+    label.appendChild(documentRef.createElement("br"));
+    const span = documentRef.createElement("span");
+    span.className = "jy2-th-label";
+    span.textContent = text;
+    label.appendChild(span);
     return label;
   }
 
@@ -3434,12 +3467,16 @@
       verSeq ? `版${verSeq}` : "",
       verType,
       status,
+    ]
+      .filter(Boolean)
+      .join(" / ");
+    meta.title = [
+      meta.textContent,
       `BUILD ${BUILD}`,
       model.lockState,
     ]
       .filter(Boolean)
       .join(" / ");
-    meta.title = meta.textContent;
     leftGroup.appendChild(meta);
 
     const rightGroup = documentRef.createElement("div");
@@ -3466,8 +3503,9 @@
     saveButton.disabled = !saveController || !canEditBudget;
     saveButton.title = "工事基本情報・総括・内訳を保存";
 
-    rightGroup.append(addBlockBtn, addSalaryBtn, saveButton);
-    actionBar.append(leftGroup, rightGroup);
+    // 保存等を DOM 先頭に置き、狭い幅でも左端に見えるようにする。
+    rightGroup.append(saveButton, addBlockBtn, addSalaryBtn);
+    actionBar.append(rightGroup, leftGroup);
     sticky.appendChild(actionBar);
 
     const tabList = documentRef.createElement("nav");
