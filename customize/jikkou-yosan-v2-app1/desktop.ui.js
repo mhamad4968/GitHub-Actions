@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-25-ver02-actual-right-pad
+  // @JY_V2_BUILD 2026-07-25-ver02-actual-one-scroll
 
   const JY2_STYLE_ID = "jy2-shell-style";
   const JY2_ACTIVE_TAB_KEY = `jy2:${APP1_ID}:activeTab`;
@@ -202,9 +202,9 @@
       ".jy2-detail-table th:nth-child(7),.jy2-detail-table td.jy2-amount{min-width:7.5rem}",
       ".jy2-warning{color:#b91c1c;font-size:12px;margin:4px 0;font-weight:600}",
       ".jy2-retired-tag{color:#b91c1c;font-weight:700}",
-      // 予実: 1スクロール枠 + 左4列固定 + ヘッダ固定
+      // 予実: 横スクロール1本のみ（縦はページスクロール。二重縦スクロール禁止＝C7）
       ".jy2-pane[data-tab-id='actual']{overflow-x:clip;overflow-y:visible;padding:8px}",
-      ".jy2-actual-scroll{display:block;overflow-x:scroll;overflow-y:auto;border:1px solid #e2e8f0;border-radius:6px;background:#fff;max-width:100%;width:100%;min-width:0;max-height:min(70vh,720px);box-sizing:border-box;padding:0 6px 6px 0;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-gutter:stable}",
+      ".jy2-actual-scroll{display:block;overflow-x:scroll;overflow-y:visible;border:1px solid #e2e8f0;border-radius:6px;background:#fff;max-width:100%;width:100%;min-width:0;max-height:none;box-sizing:border-box;padding:0 2px 4px 0;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}",
       ".jy2-actual-table{white-space:nowrap;margin:0;border-collapse:separate;border-spacing:0;font-size:11px;width:max-content;min-width:max-content;max-width:none}",
       ".jy2-actual-table th,.jy2-actual-table td{padding:3px 5px}",
       ".jy2-actual-table .jy2-input{min-width:48px;font-size:11px}",
@@ -214,14 +214,14 @@
       ".jy2-actual-table thead th.jy2-actual-month .jy2-th-label{font-size:10px;font-weight:700;white-space:normal;line-height:1.15;max-width:3.6rem}",
       ".jy2-actual-table thead th.jy2-actual-month .jy2-hf-tag{font-size:9px;padding:1px 4px;letter-spacing:0}",
       ".jy2-actual-table .jy2-actual-month .jy2-input{min-width:0;width:100%;padding:2px 3px;font-size:10px}",
-      /* 右端消化率: 見切れ防止の余白は最小限（大きな白帯にしない） */
-      ".jy2-actual-table th.jy2-actual-rate-end,.jy2-actual-table td.jy2-actual-rate-end{min-width:4.5rem;width:4.5rem;padding:4px 8px 4px 6px!important;box-sizing:border-box;text-align:right}",
+      /* 右端消化率: 罫線が見える最小余白（白帯を出さない） */
+      ".jy2-actual-table th.jy2-actual-rate-end,.jy2-actual-table td.jy2-actual-rate-end{min-width:4.25rem;width:4.25rem;padding:4px 6px 4px 4px!important;box-sizing:border-box;text-align:right}",
       ".jy2-actual-table thead th.jy2-actual-rate-end .jy2-th-stack{width:100%;margin:0;align-items:flex-end}",
       ".jy2-actual-table thead th.jy2-actual-rate-end .jy2-th-label{white-space:nowrap;font-size:11px}",
       ".jy2-actual-note-details{margin:0 0 8px;font-size:12px;color:#64748b}",
       ".jy2-actual-note-details>summary{cursor:pointer;font-weight:600;color:#475569;padding:4px 0}",
       ".jy2-actual-note{color:#64748b;font-size:11px;margin:4px 0 0;line-height:1.45}",
-      ".jy2-actual-table thead th{text-align:center;vertical-align:bottom;position:sticky;top:0;z-index:5;background:#f1f5f9;box-shadow:0 1px 0 #e2e8f0}",
+      ".jy2-actual-table thead th{text-align:center;vertical-align:bottom;position:sticky;top:var(--jy2-chrome-h,0px);z-index:5;background:#f1f5f9;box-shadow:0 1px 0 #e2e8f0}",
       ".jy2-actual-table thead th[colspan]{background:#fef3c7}",
       ".jy2-actual-table thead tr:last-child th{background:#f1f5f9;font-size:10px}",
       ".jy2-actual-table .jy2-freeze{position:sticky;z-index:3;background:#fff}",
@@ -919,8 +919,8 @@
   function jy2SyncHScroll(scrollEl) {
     if (!scrollEl || !scrollEl.style) return scrollEl;
     const basis = jy2MeasureHScrollBasis(scrollEl);
-    // 予実は右余白を抑えめ、一般表は罫線確保のため少し広めに差し引く
-    const gutter = scrollEl.classList.contains("jy2-actual-scroll") ? 8 : 16;
+    // 予実は右余白を最小、一般表は罫線確保のため少し差し引く
+    const gutter = scrollEl.classList.contains("jy2-actual-scroll") ? 4 : 16;
     const width = Math.max(240, (basis || 240) - gutter);
     scrollEl.style.setProperty("width", `${width}px`, "important");
     scrollEl.style.setProperty("max-width", `${width}px`, "important");
@@ -3917,6 +3917,7 @@
         sticky.style.width = "";
         sticky.style.right = "";
         stickySpacer.style.height = "0px";
+        shell.style.setProperty("--jy2-chrome-h", `${gaiaTop + stickyH}px`);
         return;
       }
       sticky.classList.add("is-fixed");
@@ -3926,6 +3927,7 @@
       sticky.style.top = `${gaiaTop}px`;
       sticky.style.right = "auto";
       stickySpacer.style.height = `${stickyH}px`;
+      shell.style.setProperty("--jy2-chrome-h", `${gaiaTop + stickyH}px`);
     };
     const view = documentRef.defaultView;
     if (view && typeof view.addEventListener === "function") {
