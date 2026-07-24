@@ -1,9 +1,12 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
+  // @JY_V2_BUILD 2026-07-25-ver02-font-scale
 
   const JY2_STYLE_ID = "jy2-shell-style";
   const JY2_ACTIVE_TAB_KEY = `jy2:${APP1_ID}:activeTab`;
+  const JY2_FONT_SCALE_KEY = "jy2-font-scale";
+  const JY2_FONT_SCALES = Object.freeze(["standard", "large", "xlarge"]);
   const JY2_TAX_RATE_LABELS = { "0": "0％", "0.08": "8％", "0.1": "10％" };
   const JY2_TAX_RATE_VALUES = Object.freeze(["0", "0.08", "0.1"]);
   const JY2_ACTUAL_ATTR_COLS = 8;
@@ -30,6 +33,31 @@
   function jy2ReloadPreservingTab(view, tabId) {
     jy2StoreActiveTab(view, tabId);
     if (view && view.location) view.location.reload();
+  }
+
+  function jy2ReadStoredFontScale(view) {
+    if (!view || !view.localStorage) return "standard";
+    try {
+      const raw = view.localStorage.getItem(JY2_FONT_SCALE_KEY);
+      return raw && JY2_FONT_SCALES.includes(raw) ? raw : "standard";
+    } catch {
+      return "standard";
+    }
+  }
+
+  function jy2StoreFontScale(view, scale) {
+    if (!scale || !view || !view.localStorage) return;
+    try {
+      view.localStorage.setItem(JY2_FONT_SCALE_KEY, String(scale));
+    } catch {
+      // private mode / quota — ignore
+    }
+  }
+
+  function jy2ApplyFontScale(shell, scale) {
+    if (!shell) return;
+    shell.dataset.fontScale =
+      scale && JY2_FONT_SCALES.includes(scale) ? scale : "standard";
   }
 
   function jy2FieldValue(record, code) {
@@ -88,7 +116,7 @@
       ".jy2-pane[data-tab-id='detail'][data-active='true']{border-color:#86efac;border-top:3px solid #22c55e;background:#fff}",
       ".jy2-pane[data-tab-id='actual'][data-active='true']{border-color:#fcd34d;border-top:3px solid #f59e0b;background:#fff}",
       ".jy2-pane[data-tab-id='version'][data-active='true']{border-color:#c4b5fd;border-top:3px solid #7c3aed;background:#fff}",
-      // A-07: 736同趣旨のシート見出し。sticky 下に常時表示しスクロールで隠れない
+      // A-07: Ver.01同趣旨のシート見出し。sticky 下に常時表示しスクロールで隠れない
       ".jy2-sticky-sheet-banner{display:flex;justify-content:center;align-items:center;width:100%;margin:6px 0 0;padding:0 8px 8px;box-sizing:border-box}",
       ".jy2-pane-head-banner{display:none}",
       ".jy2-sheet-title{width:100%;max-width:960px;box-sizing:border-box;padding:14px 48px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;line-height:1.3;text-align:center;box-shadow:0 3px 8px rgba(15,23,42,.12);margin:0 auto}",
@@ -288,6 +316,48 @@
       ".jy2-header-grid input.jy2-hf-readonly,.jy2-header-grid select:disabled{background:#f8fafc;border:1px solid #e2e8f0;border-left:3px solid #cbd5e1;color:#64748b;cursor:default}",
       ".jy2-header-grid .jy2-span-2{grid-column:span 2}",
       ".jy2-header-grid .jy2-row-start{grid-column:1}",
+      ".jy2-shell{--jy2-fs-k:1}",
+      ".jy2-shell[data-font-scale='large']{--jy2-fs-k:1.15}",
+      ".jy2-shell[data-font-scale='xlarge']{--jy2-fs-k:1.3}",
+      ".jy2-font-scale{display:flex;flex-wrap:nowrap;align-items:center;gap:4px;flex:0 0 auto}",
+      ".jy2-font-scale-label{font-size:11px;font-weight:600;color:#64748b;white-space:nowrap}",
+      ".jy2-font-scale-btns{display:inline-flex;flex-wrap:nowrap;gap:2px}",
+      ".jy2-font-scale-btns .jy2-btn{padding:4px 7px;font-size:11px;min-width:0}",
+      ".jy2-font-scale-btns .jy2-btn[aria-pressed='true']{border-color:#2563eb;background:#dbeafe;color:#1e40af}",
+      ".jy2-shell .jy2-panes .jy2-table{font-size:calc(12px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-input{font-size:calc(12px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-select{font-size:calc(12px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-combo-wrap>.jy2-combo-select{font-size:calc(11px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-row-button{font-size:calc(11px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-btn{font-size:calc(13px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-section-title{font-size:calc(14px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-empty{font-size:calc(13px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-warning{font-size:calc(12px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-detail-block-head{font-size:calc(12px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-budget-summary-head{font-size:calc(13px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-budget-summary-table{font-size:calc(12px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-budget-summary-keys{font-size:calc(12px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-budget-summary-note{font-size:calc(10px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-budget-summary-keys .jy2-sub-row td{font-size:calc(11px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-actual-table{font-size:calc(11px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-actual-table .jy2-input{font-size:calc(11px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-actual-table thead th.jy2-actual-month .jy2-th-label{font-size:calc(10px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-actual-table .jy2-actual-month .jy2-input{font-size:calc(10px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-actual-table thead tr:last-child th{font-size:calc(10px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-actual-note-details{font-size:calc(12px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-actual-note{font-size:calc(11px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-header-grid label{font-size:calc(11px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-header-grid input,.jy2-shell .jy2-panes .jy2-header-grid select,.jy2-shell .jy2-panes .jy2-header-grid textarea{font-size:calc(13px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-header-grid label.jy2-th-stacked .jy2-th-label,.jy2-shell .jy2-panes label.jy2-th-stacked>.jy2-th-label{font-size:calc(12px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-th-stack .jy2-th-label{font-size:calc(11px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-th-stack .jy2-hf-tag{font-size:calc(10px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-footer-row .jy2-footer-label .jy2-th-label{font-size:calc(12px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-footer-row .jy2-input{font-size:calc(13px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-detail-block-head .jy2-th-stack .jy2-th-label,.jy2-shell .jy2-panes .jy2-detail-block-head .jy2-th-label{font-size:calc(12px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-version-status{font-size:calc(12px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-version-type-bar{font-size:calc(13px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-header-legend{font-size:calc(11px * var(--jy2-fs-k))}",
+      ".jy2-shell .jy2-panes .jy2-hf-tag{font-size:calc(10px * var(--jy2-fs-k))}",
     ].join("");
     documentRef.head.appendChild(style);
   }
@@ -1226,7 +1296,7 @@
     return option;
   }
 
-  /** A-07 / 736同趣旨: 字間を空けた「実行予算書」＋シート名を縦積みで目立たせる */
+  /** A-07 / Ver.01同趣旨: 字間を空けた「実行予算書」＋シート名を縦積みで目立たせる */
   const JY2_IDEO = "\u3000";
   const JY2_SHEET_LABELS = {
     header: "工事基本情報",
@@ -3648,6 +3718,8 @@
 
     const shell = documentRef.createElement("section");
     shell.className = "jy2-shell";
+    const initialFontScale = jy2ReadStoredFontScale(documentRef.defaultView);
+    jy2ApplyFontScale(shell, initialFontScale);
 
     // シート見出しは sticky 下部に常時表示（スクロールで隠れない）。
     // BUILD は操作バー meta に出す。
@@ -3681,6 +3753,49 @@
       if (view && view.location) view.location.href = `/k/${APP1_ID}/`;
     });
     leftGroup.appendChild(backBtn);
+
+    const fontScaleWrap = documentRef.createElement("div");
+    fontScaleWrap.className = "jy2-font-scale";
+    const fontScaleLabel = documentRef.createElement("span");
+    fontScaleLabel.className = "jy2-font-scale-label";
+    fontScaleLabel.textContent = "文字サイズ";
+    const fontScaleBtns = documentRef.createElement("div");
+    fontScaleBtns.className = "jy2-font-scale-btns";
+    fontScaleBtns.setAttribute("role", "group");
+    fontScaleBtns.setAttribute("aria-label", "文字サイズ");
+    const fontScaleOptions = [
+      { scale: "standard", label: "標準" },
+      { scale: "large", label: "大" },
+      { scale: "xlarge", label: "特大" },
+    ];
+    const fontScaleButtons = fontScaleOptions.map(({ scale, label }) => {
+      const button = documentRef.createElement("button");
+      button.type = "button";
+      button.className = "jy2-btn";
+      button.dataset.scale = scale;
+      button.textContent = label;
+      button.setAttribute("aria-pressed", String(scale === initialFontScale));
+      button.addEventListener("click", () => {
+        if (scale === shell.dataset.fontScale) return;
+        jy2StoreFontScale(documentRef.defaultView, scale);
+        jy2ApplyFontScale(shell, scale);
+        for (const node of fontScaleButtons) {
+          node.setAttribute(
+            "aria-pressed",
+            String(node.dataset.scale === scale),
+          );
+        }
+        syncStickyLayout();
+        const win = documentRef.defaultView;
+        if (win && typeof win.requestAnimationFrame === "function") {
+          win.requestAnimationFrame(syncStickyLayout);
+        }
+      });
+      return button;
+    });
+    fontScaleBtns.append(...fontScaleButtons);
+    fontScaleWrap.append(fontScaleLabel, fontScaleBtns);
+    leftGroup.appendChild(fontScaleWrap);
 
     const meta = documentRef.createElement("span");
     meta.className = "jy2-action-meta";

@@ -89,3 +89,26 @@ export function updatePortfolioDetailBuild(md, appId, build, revision) {
   });
   return { md: next, changed: next !== md };
 }
+
+/** 機械表 fileKey セル更新（#S-SYNC-01） */
+export function updatePortfolioMachineFileKey(md, appId, fileKey) {
+  if (!fileKey) return { md, changed: false };
+  const id = String(appId).trim();
+  const re = new RegExp(
+    `^(\\|\\s*${id}\\s*\\|\\s*\`[^\`]+\`\\s*\\|\\s*\\*\\*[^*]+\\*\\*\\s*\\|\\s*\`)([^\`]+)(\`)`,
+    'm',
+  );
+  if (!re.test(md)) return { md, changed: false };
+  const next = md.replace(re, (_m, p1, _old, p3) => `${p1}${fileKey}${p3}`);
+  return { md: next, changed: next !== md };
+}
+
+/** 詳細行 fileKey **`…`** 更新（#S-SYNC-01） */
+export function updatePortfolioDetailFileKey(md, appId, fileKey) {
+  if (!fileKey) return { md, changed: false };
+  const id = String(appId).trim();
+  const lineRe = new RegExp(`^(\\|[^\\n]*\\*\\*${id}\\*\\*[^\\n]*fileKey\\s+\\*\\*\`)([^\`]+)(\`\\*\\*[^\\n]*\\|)\\s*$`, 'mi');
+  if (!lineRe.test(md)) return { md, changed: false };
+  const next = md.replace(lineRe, (_m, p1, _old, p3) => `${p1}${fileKey}${p3}`);
+  return { md: next, changed: next !== md };
+}

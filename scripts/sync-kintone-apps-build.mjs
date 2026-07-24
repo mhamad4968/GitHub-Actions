@@ -7,6 +7,8 @@ import {
   parsePortfolioMachineBuild,
   updatePortfolioMachineBuild,
   updatePortfolioDetailBuild,
+  updatePortfolioMachineFileKey,
+  updatePortfolioDetailFileKey,
 } from './lib/cio-kintone-apps-portfolio-build.mjs';
 
 const appId = String(process.argv[2] || '').trim();
@@ -23,6 +25,7 @@ const reg = readLiveBuildRegistry();
 const entry = reg.apps?.[appId] || null;
 let build = entry?.build || null;
 let revision = entry?.revision || null;
+const fileKey = entry?.fileKey || null;
 if (!build) {
   const rel = appId === '688' ? 'customize/688/desktop.js' : appId === '687' ? 'customize/687/desktop.js' : null;
   if (rel) {
@@ -70,6 +73,22 @@ if (!rowRe.test(md)) {
     console.log(
       `[sync-kintone-apps-build] detail row app=${appId} BUILD=${build} rev=${revision || '—'}`,
     );
+  }
+}
+
+// #S-SYNC-01 — BUILD 一致でも fileKey が古い場合があるので必ず同期
+if (fileKey) {
+  const machineKeyUpdate = updatePortfolioMachineFileKey(md, appId, fileKey);
+  if (machineKeyUpdate.changed) {
+    md = machineKeyUpdate.md;
+    changed = true;
+    console.log(`[sync-kintone-apps-build] machine fileKey app=${appId}`);
+  }
+  const detailKeyUpdate = updatePortfolioDetailFileKey(md, appId, fileKey);
+  if (detailKeyUpdate.changed) {
+    md = detailKeyUpdate.md;
+    changed = true;
+    console.log(`[sync-kintone-apps-build] detail fileKey app=${appId}`);
   }
 }
 
