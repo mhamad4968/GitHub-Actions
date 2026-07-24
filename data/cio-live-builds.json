@@ -435,10 +435,10 @@
     },
     "756": {
       "build": "2026-07-25-ver02-chrome-gap-hscroll",
-      "fileKey": "cd725c8b-27c3-401f-87fb-a6d94db9a0f1",
-      "revision": "93",
+      "fileKey": "81543177-e4c5-451f-b45b-ac45ee7a74df",
+      "revision": "94",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-07-24T22:28:29.796Z",
+      "deployedAt": "2026-07-24T22:30:42.062Z",
       "note": null
     },
     "757": {

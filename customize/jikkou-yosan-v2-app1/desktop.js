@@ -4093,7 +4093,7 @@ function buildVersionCopyInputs({
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-25-ver02-chrome-gap-hscroll
+  // @JY_V2_BUILD 2026-07-25-ver02-chrome-fit-100
 
   const JY2_STYLE_ID = "jy2-shell-style";
   const JY2_ACTIVE_TAB_KEY = `jy2:${APP1_ID}:activeTab`;
@@ -4958,6 +4958,14 @@ function buildVersionCopyInputs({
     return button;
   }
 
+  function jy2VisibleClientWidth(el, win) {
+    if (!el || !win) return 0;
+    const rect = el.getBoundingClientRect();
+    const left = Math.max(0, rect.left);
+    const right = Math.min(win.innerWidth, rect.right);
+    return Math.max(0, Math.floor(right - left));
+  }
+
   function jy2MeasureHScrollBasis(scrollEl) {
     const doc = scrollEl.ownerDocument;
     const win = doc && doc.defaultView;
@@ -4973,27 +4981,37 @@ function buildVersionCopyInputs({
         (Number.parseFloat(style.paddingRight) || 0)
       );
     };
-    // display:none の pane.clientWidth は 0 → 誤って窓幅を使うと
-    // wrap が広すぎて表が収まりスクロールが出ず、親で見切れる。
-    if (pane && pane.dataset.active === "true" && pane.clientWidth > 40) {
-      return Math.floor(pane.clientWidth - padOf(pane));
+    // 可視幅の最小を取る（pane が表で膨らむと clientWidth が過大 → wrap が広すぎて
+    // スクロールが出ず親 clip で100%時に右端が見切れる。90%だと偶然収まる）
+    const candidates = [];
+    const hostVis = jy2VisibleClientWidth(host, win);
+    const shellVis = jy2VisibleClientWidth(shell, win);
+    if (hostVis > 40) candidates.push(hostVis);
+    if (shellVis > 40) candidates.push(shellVis);
+    if (pane && pane.dataset.active === "true") {
+      const paneVis = jy2VisibleClientWidth(pane, win);
+      if (
+        paneVis > 40 &&
+        (!hostVis || paneVis <= hostVis + 4) &&
+        (!shellVis || paneVis <= shellVis + 4)
+      ) {
+        candidates.push(Math.max(0, paneVis - padOf(pane)));
+      }
     }
-    if (shell && shell.clientWidth > 40) {
-      return Math.floor(shell.clientWidth - padOf(shell) - 4);
+    if (!candidates.length) {
+      const docWidth = doc.documentElement
+        ? doc.documentElement.clientWidth
+        : win.innerWidth;
+      return Math.floor(Math.min(win.innerWidth, docWidth) - 48);
     }
-    if (host && host.clientWidth > 40) {
-      return Math.floor(host.clientWidth - 16);
-    }
-    const docWidth = doc.documentElement
-      ? doc.documentElement.clientWidth
-      : win.innerWidth;
-    return Math.floor(Math.min(win.innerWidth, docWidth) - 48);
+    return Math.max(0, Math.min(...candidates));
   }
 
   function jy2SyncHScroll(scrollEl) {
     if (!scrollEl || !scrollEl.style) return scrollEl;
     const basis = jy2MeasureHScrollBasis(scrollEl);
-    const width = Math.max(240, (basis || 240) - 2);
+    // ボーダー・スクロールバー・右端罫線用パディング分を差し引く（100%でも収める）
+    const width = Math.max(240, (basis || 240) - 20);
     scrollEl.style.setProperty("width", `${width}px`, "important");
     scrollEl.style.setProperty("max-width", `${width}px`, "important");
     scrollEl.style.setProperty("min-width", "0", "important");
@@ -7980,14 +7998,18 @@ function buildVersionCopyInputs({
       return topPx;
     };
     const syncStickyLayout = () => {
-      syncStickyTop();
+      const topPx = syncStickyTop();
       const anchor = shell.getBoundingClientRect();
       sticky.classList.add("is-fixed");
       sticky.style.position = "fixed";
       sticky.style.left = `${Math.round(anchor.left)}px`;
       sticky.style.width = `${Math.max(0, Math.round(anchor.width))}px`;
+      sticky.style.top = `${topPx}px`;
       sticky.style.right = "auto";
-      stickySpacer.style.height = `${Math.ceil(sticky.offsetHeight || 0)}px`;
+      // spacer = シェル先頭〜 sticky 下端。height=stickyのみだと top ずれで表題下に大余白
+      const stickyH = Math.ceil(sticky.offsetHeight || 0);
+      const spacerH = Math.max(0, Math.ceil(topPx + stickyH - anchor.top));
+      stickySpacer.style.height = `${spacerH}px`;
     };
     const view = documentRef.defaultView;
     if (view && typeof view.addEventListener === "function") {
