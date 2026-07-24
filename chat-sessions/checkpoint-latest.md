@@ -5,6 +5,10 @@
 
 **Git（締め時に更新）**: 締め処理で `origin/main` と一致させる（ahead 放置禁止・force禁止・stash pop 禁止＝先祖返り防止）。
 
+**次の1手**: 夕方再開 → Desktop スターター貼付 → bootstrap OK → 756 LIVE が `ver02-actual-right-10px`/rev103 か確認 → §41 で④DD（R-19/20）または依頼者回答反映または H9。
+
+**GO待ち**: H9 / △2 最終判定は **2026-07-25 のみ**（early GREEN/降格禁止）。
+
 ## 本日状態（2026-07-25）
 
 ### App 756（実行予算 Ver.02）LIVE 正
@@ -68,10 +72,27 @@
 - 案件クローズ9件: `data/cio-project-closures.json`
 - 688 WBGT以外触らない / 677–679触らない / SKYSEA 8/3まで実PC禁止 / 736触らない / 712 deploy禁止
 
-## セッション切替（Lifecycle v2）
+## クローズ済み（`data/cio-project-closures.json` — 9件）
 
-**正本** `docs/runbooks/session-lifecycle-v2.md`  
-**WAKE** `npm run cio:session:cold-start` → **項番 -0** → `npm run session:bootstrap`  
-**禁止**: stash pop で古い tree を被せる／force push／旧756 customize を再deployして今日の UI を潰す
+業務改善697–713 / Wi-Fi718–719 / JR iPad720–721 / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **ML750–751** / **Kintoneアカウント752–753** — **closed-v1**
 
-<!-- archive hint: 夕方再開後に日締めするとき archive へ退避可 -->
+## 保留・その他の制約
+
+| 状態 | 内容 |
+|------|------|
+| **688** | WBGT 以外触らない |
+| **677–679** | 触らない |
+| **SKYSEA** | 8/3 問い合わせまで実PC配信禁止 |
+| **736** | 現行版保持・Ver.02 後も触らない |
+| **756/757/758** | R-11/12/13・依頼者回答・Excel投入（UIクロム本日OK） |
+| **712** | 削除済 — deploy 禁止 |
+
+## セッション切替後の自律復元（Lifecycle v2 鏡像）
+
+**正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`  
+**項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
+**L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
+
+**禁止（本中断）**: stash pop で古い tree を被せる／force push／旧756 customize を再deployして今日の UI（right-10px / rev103）を潰す＝**先祖返り禁止**
+
+<!-- archive: chat-sessions/checkpoints/checkpoint-archive-2026-07-22.md -->
