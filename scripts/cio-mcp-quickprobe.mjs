@@ -170,9 +170,14 @@ const TARGETS = {
     },
   },
   deepseek: {
-    cmd: "npx",
-    args: ["-y", "mcp-deepseek@latest"],
-    env: { DEEPSEEK_API_KEY: process.env.DEEPSEEK_API_KEY },
+    // 2026-07-25: do not probe mcp-deepseek@latest (defaults deepseek-chat → API 400)
+    cmd: process.execPath,
+    args: [path.join(root, "scripts", "mcp-deepseek-v4", "entry.mjs")],
+    env: {
+      DEEPSEEK_API_KEY: process.env.DEEPSEEK_API_KEY,
+      DEEPSEEK_DEFAULT_MODEL:
+        process.env.DEEPSEEK_DEFAULT_MODEL || "deepseek-v4-flash",
+    },
   },
   kimi: {
     cmd: "npx",

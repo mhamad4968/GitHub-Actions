@@ -24,13 +24,21 @@
           "label": "大塚商会",
           "index": "0"
         },
-        "ＦＢＪ": {
-          "label": "ＦＢＪ",
+        "FBJ": {
+          "label": "FBJ",
           "index": "1"
         },
-        "ＫＤＤＩ": {
-          "label": "ＫＤＤＩ",
+        "KDDI": {
+          "label": "KDDI",
           "index": "2"
+        },
+        "コジマ": {
+          "label": "コジマ",
+          "index": "3"
+        },
+        "ツクモ": {
+          "label": "ツクモ",
+          "index": "4"
         }
       },
       "defaultValue": ""

@@ -8,6 +8,15 @@
 
 ---
 
+## [2026-07-25] DeepSeek MCP — deepseek-chat 廃止（v4 必須）
+
+**前提**: `user-deepseek` / `mcp-deepseek@latest` が `model` 未指定だと `deepseek-chat` を送り **HTTP 400**（supported: `deepseek-v4-pro` / `deepseek-v4-flash`）になるとき  
+**手順**: (1) CallMcpTool で必ず `model: "deepseek-v4-flash"`（または pro）を渡す。(2) 恒久: `scripts/mcp-deepseek-v4/entry.mjs` を mcp.json の deepseek command に切替（既定 v4-flash）。(3) OpenRouter フォールバック時は `model: "deepseek/deepseek-chat"` 等を明示（DEFAULT 未設定だと失敗）。  
+**禁止**: model 省略のまま §50-3-8 を「実施済」と書くこと。npx キャッシュの deepseek-chat ハードコードを黙認すること。  
+**exit**: DeepSeek chat が非空の日本語応答を返す · `npm run cio:mcp:env` SUMMARY OK
+
+---
+
 ## [2026-07-15] cio:mcp:profile — dry-run と apply 同時禁止
 
 **前提**: Cold プロファイルを試すとき  
@@ -101,6 +110,16 @@
 ---
 
 <!-- CIO-DEBUG-TIPS:AUTO -->
+## [2026-07-24] セッション解体時知恵ストック
+
+**前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
+**手順**: `npm run cio:session:cold-start` → `npm run session:bootstrap` → `npm run cio:report-verify-response -- --file <下書き>`**（または `--stdin`）を **実行し exit 0 を確認**する（`package.json` の `cio:report-`
+**禁止**: customize/deploy 凍結中の無断 save・上位憲法 §50-3-11 非置換違反・本体単独完結
+**exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
+
+<!-- errors: npm run cio:session:cold-start` | npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `manda | npm run cio:report-verify-response -- --file <下書き>`**（または `--stdin`）を **実行し exit -->
+
+
 ## [2026-07-23] セッション解体時知恵ストック
 
 **前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出

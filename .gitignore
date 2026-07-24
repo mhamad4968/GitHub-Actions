@@ -108,3 +108,5 @@ docs/reports/*-morning-prep.md
 
 # #D-R63-01 runtime stamp (local only)
 data/cio-r63-v2-pending.json
+
+scripts/mcp-deepseek-v4/node_modules/

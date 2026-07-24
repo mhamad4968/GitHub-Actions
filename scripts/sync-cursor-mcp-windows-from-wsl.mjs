@@ -208,11 +208,20 @@ export function buildWindowsMcp(S) {
     "MOONSHOT_API_KEY",
     "npx -y kimi-api-mcp@latest",
   );
-  out.mcpServers.deepseek = aiWindowsServer(
-    S.deepseek,
-    "DEEPSEEK_API_KEY",
-    "npx -y mcp-deepseek@latest",
-  );
+  // 2026-07-25: upstream mcp-deepseek@latest defaults to deepseek-chat (API 400).
+  // Lab wrapper defaults to deepseek-v4-flash — sync で Windows を旧 npx に戻さない。
+  // DEEPSEEK_DEFAULT_MODEL は bash -lc 内でも export（WSL へ Windows env が渡らない場合がある）。
+  out.mcpServers.deepseek = {
+    ...wslBash(
+      `set -a && source ${AI_SECRET_FILE} && set +a && ` +
+        `export PATH=/home/mhamada202408224/.nvm/versions/node/v25.8.2/bin:$PATH DEEPSEEK_DEFAULT_MODEL=deepseek-v4-flash && ` +
+        `exec node /mnt/c/Users/mhamada202408224/kintone-ai-lab/scripts/mcp-deepseek-v4/entry.mjs`,
+    ),
+    env: {
+      PATH: "/home/mhamada202408224/.nvm/versions/node/v25.8.2/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+      DEEPSEEK_DEFAULT_MODEL: "deepseek-v4-flash",
+    },
+  };
   out.mcpServers.openrouter = aiWindowsServer(
     S.openrouter,
     "OPENROUTER_API_KEY",

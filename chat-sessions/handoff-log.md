@@ -5014,3 +5014,33 @@ npm run cio:morning:ready
 **触らない**: 688（WBGT以外）/ 677–679 / SKYSEA（8/3前）/ 712 / 735・736 WRITE / customize/736
 
 ---
+
+### 2026-07-25 08:25 JST — セッション中断（夕方再開）
+
+**浜田メモ（原文）**:
+> OKです。再度メールをしました。ではこのセッションはここで切ります。続きは夕方から再開したいので仕様等の更新と引継ぎは次のセッションで迷子にならないように詳細を引き継いでほしい。未コミットは間違いなくコミットとPUSHをしてほしい。先祖返りは絶対だめです。
+
+**経緯**:
+- App **674**: 購入先にコジマ／ツクモ追加・目視OK
+- App **756**: 文字サイズC11・UIクロム（表題余白／右端／スクロール／予実ヘッダ沈み／右息抜き10px）をLIVE反映。浜田目視OK（右余白ちょうどよい）
+- LIVE: BUILD=`2026-07-25-ver02-actual-right-10px` **rev103** fileKey=`61178d0c-7268-4147-a3da-885cbeed3ee0`
+- 依頼者確認メールを SPEC突合のうえ再整理し **再送済**（下書き `docs/plans/2026-07-25-jikkou-yosan-ver02-requester-meeting-email-draft.md`）
+- DeepSeek MCP v4 ラッパ整備（空応答時は理由付きスキップ）
+- 優先: ①文字サイズ済 ②LIVE目視済 ③メール済 → 次④DD(R-19/20) ⑤Excel
+
+**AI補足（迷子・先祖返り防止）**:
+- `git`: 本ブロック追記後に **working tree を commit → `git push origin main`（force禁止）**。`stash@{0} session-dirty` は **popしない**
+- `次の1手（夕方）`: bootstrap OK後、756 registry が rev103/right-10px か確認 → §41で④DD or 依頼者回答反映 or H9
+- `GO待ち`: なし（実装GO済みレーンの続き）。依頼者回答待ちは R-11〜13/19/20 等
+- `関連パス`:
+  - SPEC: `docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md` §6.2 C7/C11・§20.4 再送注記
+  - customize: `customize/jikkou-yosan-v2-app1/desktop.ui.js` / `desktop.js`
+  - registry: `data/cio-live-builds.json` app 756
+  - メール下書き: `docs/plans/2026-07-25-jikkou-yosan-ver02-requester-meeting-email-draft.md`
+  - 674 JSON: `scripts/data/pc-ledger-674-add-purchase-fields.json`
+  - DeepSeek: `scripts/mcp-deepseek-v4/` / `verify:deepseek-mcp-v4`
+
+**次セッションへの1行**: 756を旧BUILDに戻さない。夕方は checkpoint の「夕方再開時の次の1手」から。push済を `git status` で確認してから作業。
+
+---
+

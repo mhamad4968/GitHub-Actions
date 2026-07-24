@@ -1,59 +1,77 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-23 夜 JST — **セッション締め**。Ver.02 UIクロム（§6.2）SPEC化＋App756 LIVE固定メニュー等。GitHub Actions 当日 push は成功。
+**最終更新**: 2026-07-25 朝〜昼 JST — **セッション中断（夕方再開）**。App756 UIクロム目視OK＋依頼者確認メール再送済。未push分は本締め前に commit/push 必須。
 
-**Git**: **`8ee39cb3`** = `origin/main` — push 済
+**Git（締め時に更新）**: 締め処理で `origin/main` と一致させる（ahead 放置禁止・force禁止・stash pop 禁止＝先祖返り防止）。
 
-**本日状態（2026-07-23）**:
-- App **756** LIVE BUILD=`2026-07-23-ver02-fixed-action-menu` **rev90** / fileKey `ed56aa92-02a3-4fc4-8969-99d40cdfb0f5`
-- SPEC **§6.2 C1–C10**・U31・D-78 反映（操作バー fixed、シート見出し、hscroll、見出しタグ、予実月列、フッタ、原価施工／保安計）
-- Excel 内訳差し替え CLI 追加（`jikkou-yosan:v2-replace-detail-from-excel`）
-- 735/736 **書込なし**
-- GitHub: 当日 `constitution-gates` / `cursor-env-gates` / `kintone-customize-deploy` **success**（open PR なし）
+## 本日状態（2026-07-25）
 
-**継続メモ（次セッション -0）**:
-1. ~~名称リスト Excel 突合~~ **済**
-2. ~~仕様総点検 S1–S3 / §6.2 UIクロム~~ **済（重大L2是正＋クロムSPEC化）** — 残 L1=R-11/12/13
-3. LIVE 目視継続（固定メニュー・横スクロール・表題帯）
-4. Excel 案件の追加投入／完全移行（依頼者データ待ち）
+### App 756（実行予算 Ver.02）LIVE 正
+| 項目 | 値 |
+|------|-----|
+| BUILD | `2026-07-25-ver02-actual-right-10px` |
+| revision | **103** |
+| fileKey | `61178d0c-7268-4147-a3da-885cbeed3ee0` |
+| customize | `customize/jikkou-yosan-v2-app1/desktop.js`（ui → build） |
+| SPEC | `docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md` §6.2 |
 
-**GO待ち**: H9 / △2 最終判定は **2026-07-25 のみ**。
+**浜田目視 OK（本日）**
+- 文字サイズ 標準／大／特大（固定メニュー・`localStorage` `jy2-font-scale`）… C11
+- 縦スクロール（sticky spacer 揺れ修正後）
+- 表題下の大余白解消
+- 右端罫線・横スクロール（100%ズーム）
+- 予実: ヘッダ沈み解消（縦 sticky 禁止）・一重スクロール・右息抜き **10px**（6pxから左へ+4の意図。2pxは逆で不採用）
 
-**次の1手**: 当日 -0。残 R-11/12/13（依頼者）・LIVE目視・Excel案件追加投入。§6.2 クロム維持（`overflow-x:clip`／fixed メニュー）。
+**触らない**
+- 735/736 WRITE 禁止・736 保持
+- 688（許可外）・677–679・SKYSEA 実PC・712 deploy 禁止
 
-**観測期間**: ~~憲法 Round-3 · rules-opt §18~~ **CLOSED 2026-07-15**。**H9/△2**: metricsEligibleAfter=**2026-07-18** · reviewDate=**2026-07-25** · early GREEN/降格 **禁止**
+### 依頼者（7/27）
+- **確認メール再送済**（浜田 2026-07-25）
+- 下書き正本: `docs/plans/2026-07-25-jikkou-yosan-ver02-requester-meeting-email-draft.md`
+- 7/27: 口頭確認＋メール回答依頼
+- 優先合意（本日）: ①文字サイズ済 → ②LIVE目視済 → ③依頼者メール済 → 次④DD（R-19/20）→ ⑤Excel投入（データ待ち）
 
-**運用メモ**: **経営会議資料 2026年7月度 — 完了**（浜田 2026-07-15 確認）。正本 `C:\tmp\資料作成\【2026年7月度経営会議資料】2026年06月情報セキュリティレポート.docx`。**次月まで新規作成不要**。
+### App 674（PC台帳）
+- 購入先 DROP_DOWN に **コジマ／ツクモ** 追加・浜田目視OK（本日朝）
+- 控えJSON: `scripts/data/pc-ledger-674-add-purchase-fields.json`（UTF-8・大塚商会/FBJ/KDDI/コジマ/ツクモ）
 
-**品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` · **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md` · **クローズ正本**: `data/cio-project-closures.json`
+### 環境
+- DeepSeek MCP: 旧 `deepseek-chat` 廃止対応で **v4 ラッパ**（`scripts/mcp-deepseek-v4/` + `verify:deepseek-mcp-v4`）。空応答が出ることがある → §50-3-8 は理由付きスキップ可／OpenRouterフォールバック
+- H9 / △2: reviewDate=**2026-07-25**（早期 GREEN/降格禁止の観測日）。夕方再開時に評価結果を確認可
 
-**688**: BUILD=`2026-07-13-688-heat-closed` rev90 — それ以外触らない  
-**674**: rev262 — 目視 OK  
-**699**: rev132 · **700**: rev170  
-**736**: rev186 保持・**触らない**  
-**756/757/758**: Ver.02 LIVE。§6.2 クロム正。残 R-11/12/13・Excel投入  
-**746/747**: Dash rev14 — 目視 OK（2026-07-18）
+## 夕方再開時の次の1手（迷子防止）
 
-## クローズ済み（`data/cio-project-closures.json` — 9件）
+1. Desktop `00-NEW-SESSION-STARTER_yyyymmdd.txt` 貼付 → `npm run session:bootstrap`（OKまで着手しない）
+2. 本ファイル＋ `handoff-log.md` 末尾ブロック Read
+3. **LIVE BUILD 確認**: `data/cio-live-builds.json` の 756 が `ver02-actual-right-10px` / rev103 であること。違う＝先祖返り疑い → **旧 BUILD を載せ直さない**。正は本日コミット群＋registry
+4. 次作業候補（§41で1つ選ぶ）:
+   - ④ DD整理（R-19 名称規格1/2＋工種別切替一覧 / R-20 取引先）— 依頼者回答待ちでも社内棚卸し可
+   - 依頼者回答のSPEC反映（来たら）
+   - Excel案件追加投入（依頼者データ待ち）
+   - H9 正式評価記録（本日が reviewDate）
+5. 756 を触るなら: env `JIKKOU_YOSAN_V2_BUILD` を消してから build。deploy 後は **同一セッションで R63 commit**（customize + kintone-apps + cio-live-builds）
 
-業務改善697–713 / Wi-Fi718–719 / JR iPad720–721 / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **ML750–751** / **Kintoneアカウント752–753** — **closed-v1**
+## 継続メモ（残）
 
-## 保留・その他の制約
+| # | 内容 | 状態 |
+|---|------|------|
+| R-11/12/13 | 諸経費・法定福利・各種保険の正式式 | 依頼者回答待ち（再送済） |
+| R-19/20 | 名称規格・取引先リスト | 依頼者整理依頼済 |
+| R-05/07 | 空工種番号・未使用候補 | 同上 |
+| Excel投入 | 追加案件 | データ待ち |
+| 版管理 | 確認事項なしとメール記載 | 打合せで追加があれば受領 |
 
-| 状態 | 内容 |
-|------|------|
-| **688** | WBGT 以外触らない |
-| **677–679** | 触らない |
-| **SKYSEA** | 8/3 問い合わせまで実PC配信禁止 |
-| **736** | 現行版保持・Ver.02 後も触らない |
-| **756/757/758** | R-11/12/13・LIVE目視・Excel投入 |
-| **712** | 削除済 — deploy 禁止 |
+## クローズ済み・制約（要約）
 
-## セッション切替後の自律復元（Lifecycle v2 鏡像）
+- 案件クローズ9件: `data/cio-project-closures.json`
+- 688 WBGT以外触らない / 677–679触らない / SKYSEA 8/3まで実PC禁止 / 736触らない / 712 deploy禁止
 
-**正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`  
-**項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
-**L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
+## セッション切替（Lifecycle v2）
 
-<!-- archive: chat-sessions/checkpoints/checkpoint-archive-2026-07-22.md -->
+**正本** `docs/runbooks/session-lifecycle-v2.md`  
+**WAKE** `npm run cio:session:cold-start` → **項番 -0** → `npm run session:bootstrap`  
+**禁止**: stash pop で古い tree を被せる／force push／旧756 customize を再deployして今日の UI を潰す
+
+<!-- archive hint: 夕方再開後に日締めするとき archive へ退避可 -->
