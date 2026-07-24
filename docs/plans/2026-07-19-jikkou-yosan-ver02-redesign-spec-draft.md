@@ -124,7 +124,7 @@
 ### 6.2 画面クロム・レイアウト — CONFIRMED（浜田 2026-07-23・App756 LIVE）
 
 App1 カスタムUI（`customize/jikkou-yosan-v2-app1`）の見た目・固定領域。736のピクセル一致は求めない（A-07）。  
-**LIVE 正**（締め時点）: App **756** BUILD=`2026-07-25-ver02-actual-one-scroll`（予実スクロール1本化＋右余白再詰・deploy後に rev/fileKey 更新）。
+**LIVE 正**（締め時点）: App **756** BUILD=`2026-07-25-ver02-actual-one-scroll` rev **98** / fileKey `4a520887-3278-4444-b675-83821873b06a`。
 
 | # | 内容 | 状態 |
 |---|---|---|
