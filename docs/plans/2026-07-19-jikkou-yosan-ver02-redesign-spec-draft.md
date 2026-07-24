@@ -124,11 +124,11 @@
 ### 6.2 画面クロム・レイアウト — CONFIRMED（浜田 2026-07-23・App756 LIVE）
 
 App1 カスタムUI（`customize/jikkou-yosan-v2-app1`）の見た目・固定領域。736のピクセル一致は求めない（A-07）。  
-**LIVE 正**（締め時点）: App **756** BUILD=`2026-07-25-ver02-chrome-fit-100` rev **95** / fileKey `b84680f2-4ba2-413c-b4a7-b86e7c270d37`。
+**LIVE 正**（締め時点）: App **756** BUILD=`2026-07-25-ver02-chrome-scroll-fix`（スクロール復帰バグ是正・deploy後に rev/fileKey 更新）。
 
 | # | 内容 | 状態 |
 |---|---|---|
-| **C1** | **操作バー＋タブ＋シート見出し**は縦スクロール中も画面上端に残す。実装は `position:fixed`＋等高スペーサー（親の `overflow-x` が sticky を無効化するため）。`top` は **現に fixed/sticky で画面上端に残っている** gaia ヘッダ等のみ加算（スクロールで消える toolbar 高は入れない＝上空き禁止）。DOM 順は **sticky → spacer → panes**。spacer 高さは **`top + sticky高さ − shell上端`**（sticky 高さのみだと表題下に大余白） | **CONFIRMED** |
+| **C1** | **操作バー＋タブ＋シート見出し**は縦スクロール中も画面上端に残す。実装は閾値で `relative`↔`position:fixed`＋等高スペーサー（親の `overflow-x` が sticky を無効化するため）。`top` は gaia 等の残存ヘッダ下端。**spacer 高さは sticky 実測のみ**（scroll 毎に `top+H−shell上端` で変えない＝文書高揺れでスクロール不能になるため禁止）。DOM 順は **sticky → spacer → panes** | **CONFIRMED** |
 | **C2** | 操作バーは薄く（青系帯）。**保存を左端**、工種ブロック追加／給与行追加はタブ文脈で出し分け。狭い幅では横スクロール可 | **CONFIRMED** |
 | **C3** | **シート見出し**「実　行　予　算　書」（全角スペース字間）＋タブ名サブ帯。操作バー直下に **常時表示**（各ペイン先頭には置かない・二重表示と表題下の空白帯を禁止）。帯は幅いっぱい（最大960px）・タブ色に合わせたグラデ。字間の視覚ズレは `margin-inline-end` で光学中央 | **CONFIRMED** |
 | **C4** | タブは5色分け（基本情報／総括／内訳／予実／版）。選択時は塗りつぶし | **CONFIRMED** |
