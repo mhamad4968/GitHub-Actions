@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-25 朝〜昼 JST — **セッション中断（夕方再開）**。App756 UIクロム目視OK＋依頼者確認メール再送済。未push分は本締め前に commit/push 必須。
 
-**Git（締め時に更新）**: 締め処理で `origin/main` と一致させる（ahead 放置禁止・force禁止・stash pop 禁止＝先祖返り防止）。
+**Git**: **`a94ac7df`**（push 後に `origin/main` と一致させる。ahead 放置禁止・force禁止・stash pop 禁止＝先祖返り防止）。
 
 **次の1手**: 夕方再開 → Desktop スターター貼付 → bootstrap OK → 756 LIVE が `ver02-actual-right-10px`/rev103 か確認 → §41 で④DD（R-19/20）または依頼者回答反映または H9。
 

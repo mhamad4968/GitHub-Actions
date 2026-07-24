@@ -5042,5 +5042,12 @@ npm run cio:morning:ready
 
 **次セッションへの1行**: 756を旧BUILDに戻さない。夕方は checkpoint の「夕方再開時の次の1手」から。push済を `git status` で確認してから作業。
 
+
+**次の1手**: 夕方再開 → Desktop スターター貼付 → bootstrap OK → 756 LIVE が `ver02-actual-right-10px`/rev103 か確認 → §41 で④DD（R-19/20）または依頼者回答反映または H9。
+
+**Git**: `404d4654` = `origin/main` — push 済（本締め）
+
+**GO待ち**: H9 / △2 は 2026-07-25のみ。
+
 ---
 
