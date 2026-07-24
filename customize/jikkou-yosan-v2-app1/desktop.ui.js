@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-25-ver02-actual-head-fix
+  // @JY_V2_BUILD 2026-07-25-ver02-actual-right-breath
 
   const JY2_STYLE_ID = "jy2-shell-style";
   const JY2_ACTIVE_TAB_KEY = `jy2:${APP1_ID}:activeTab`;
@@ -204,8 +204,8 @@
       ".jy2-retired-tag{color:#b91c1c;font-weight:700}",
       // 予実: 横スクロール1本のみ（縦はページスクロール。二重縦スクロール禁止＝C7）
       ".jy2-pane[data-tab-id='actual']{overflow-x:clip;overflow-y:visible;padding:8px 8px 8px 8px}",
-      ".jy2-actual-scroll{display:block;overflow-x:auto;overflow-y:visible;border:1px solid #e2e8f0;border-radius:6px;background:#fff;max-width:100%;width:100%;min-width:0;max-height:none;box-sizing:border-box;padding:0;margin:0;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}",
-      /* min-width:100% で枠幅まで伸ばし右白帯を埋める。内容が広いときは max-content */
+      /* 右息抜き ~10px（0は窮屈・14pxは白帯に戻る）。min-width:100% は維持 */
+      ".jy2-actual-scroll{display:block;overflow-x:auto;overflow-y:visible;border:1px solid #e2e8f0;border-radius:6px;background:#fff;max-width:100%;width:100%;min-width:0;max-height:none;box-sizing:border-box;padding:0 10px 6px 0;margin:0;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}",
       ".jy2-actual-table{white-space:nowrap;margin:0;border-collapse:separate;border-spacing:0;font-size:11px;width:max-content;min-width:100%;max-width:none;box-sizing:border-box}",
       ".jy2-actual-table th,.jy2-actual-table td{padding:3px 5px}",
       ".jy2-actual-table .jy2-input{min-width:48px;font-size:11px}",
@@ -920,8 +920,8 @@
   function jy2SyncHScroll(scrollEl) {
     if (!scrollEl || !scrollEl.style) return scrollEl;
     const basis = jy2MeasureHScrollBasis(scrollEl);
-    // 予実は枠いっぱい（gutter 0）。一般表は罫線確保のため差し引く
-    const gutter = scrollEl.classList.contains("jy2-actual-scroll") ? 0 : 16;
+    // 予実は右息抜き10px。一般表は罫線確保のため16
+    const gutter = scrollEl.classList.contains("jy2-actual-scroll") ? 10 : 16;
     const width = Math.max(240, (basis || 240) - gutter);
     scrollEl.style.setProperty("width", `${width}px`, "important");
     scrollEl.style.setProperty("max-width", `${width}px`, "important");
