@@ -5,8 +5,20 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const uiPathForBuild = path.join(root, "customize/jikkou-yosan-v2-app1/desktop.ui.js");
+function readUiBuildTag() {
+  try {
+    const ui = readFileSync(uiPathForBuild, "utf8");
+    const m = ui.match(/@JY_V2_BUILD\s+(\S+)/);
+    return m ? m[1].trim() : null;
+  } catch {
+    return null;
+  }
+}
 const BUILD =
-  process.env.JIKKOU_YOSAN_V2_BUILD || "2026-07-21-ver02-phase5-m2m4";
+  process.env.JIKKOU_YOSAN_V2_BUILD ||
+  readUiBuildTag() ||
+  "2026-07-21-ver02-phase5-m2m4";
 const moduleDirectory = path.join(root, "scripts/lib/jikkou-yosan-v2");
 // Tests may redirect the bundle (e.g. to a temp file) so parallel test files
 // never race on the committed artifact. customize/736 stays forbidden below.

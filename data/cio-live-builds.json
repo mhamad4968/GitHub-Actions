@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-07-25-ver02-font-scale",
-      "fileKey": "9ab46599-ee6e-4262-8dc9-ca2562ab2555",
-      "revision": "91",
+      "build": "2026-07-25-ver02-chrome-gap-hscroll",
+      "fileKey": "cd725c8b-27c3-401f-87fb-a6d94db9a0f1",
+      "revision": "93",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-07-24T22:14:15.868Z",
+      "deployedAt": "2026-07-24T22:28:29.796Z",
       "note": null
     },
     "757": {
