@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-25-ver02-chrome-scroll-fix
+  // @JY_V2_BUILD 2026-07-25-ver02-actual-right-pad
 
   const JY2_STYLE_ID = "jy2-shell-style";
   const JY2_ACTIVE_TAB_KEY = `jy2:${APP1_ID}:activeTab`;
@@ -204,7 +204,7 @@
       ".jy2-retired-tag{color:#b91c1c;font-weight:700}",
       // 予実: 1スクロール枠 + 左4列固定 + ヘッダ固定
       ".jy2-pane[data-tab-id='actual']{overflow-x:clip;overflow-y:visible;padding:8px}",
-      ".jy2-actual-scroll{display:block;overflow-x:scroll;overflow-y:auto;border:1px solid #e2e8f0;border-radius:6px;background:#fff;max-width:100%;width:100%;min-width:0;max-height:min(70vh,720px);box-sizing:border-box;padding:0 16px 8px 0;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-gutter:stable}",
+      ".jy2-actual-scroll{display:block;overflow-x:scroll;overflow-y:auto;border:1px solid #e2e8f0;border-radius:6px;background:#fff;max-width:100%;width:100%;min-width:0;max-height:min(70vh,720px);box-sizing:border-box;padding:0 6px 6px 0;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-gutter:stable}",
       ".jy2-actual-table{white-space:nowrap;margin:0;border-collapse:separate;border-spacing:0;font-size:11px;width:max-content;min-width:max-content;max-width:none}",
       ".jy2-actual-table th,.jy2-actual-table td{padding:3px 5px}",
       ".jy2-actual-table .jy2-input{min-width:48px;font-size:11px}",
@@ -214,7 +214,8 @@
       ".jy2-actual-table thead th.jy2-actual-month .jy2-th-label{font-size:10px;font-weight:700;white-space:normal;line-height:1.15;max-width:3.6rem}",
       ".jy2-actual-table thead th.jy2-actual-month .jy2-hf-tag{font-size:9px;padding:1px 4px;letter-spacing:0}",
       ".jy2-actual-table .jy2-actual-month .jy2-input{min-width:0;width:100%;padding:2px 3px;font-size:10px}",
-      ".jy2-actual-table th.jy2-actual-rate-end,.jy2-actual-table td.jy2-actual-rate-end{min-width:4.75rem;width:4.75rem;padding:4px 14px 4px 8px!important;box-sizing:border-box;text-align:right}",
+      /* 右端消化率: 見切れ防止の余白は最小限（大きな白帯にしない） */
+      ".jy2-actual-table th.jy2-actual-rate-end,.jy2-actual-table td.jy2-actual-rate-end{min-width:4.5rem;width:4.5rem;padding:4px 8px 4px 6px!important;box-sizing:border-box;text-align:right}",
       ".jy2-actual-table thead th.jy2-actual-rate-end .jy2-th-stack{width:100%;margin:0;align-items:flex-end}",
       ".jy2-actual-table thead th.jy2-actual-rate-end .jy2-th-label{white-space:nowrap;font-size:11px}",
       ".jy2-actual-note-details{margin:0 0 8px;font-size:12px;color:#64748b}",
@@ -918,8 +919,9 @@
   function jy2SyncHScroll(scrollEl) {
     if (!scrollEl || !scrollEl.style) return scrollEl;
     const basis = jy2MeasureHScrollBasis(scrollEl);
-    // ボーダー・スクロールバー・右端罫線用パディング分を差し引く（100%でも収める）
-    const width = Math.max(240, (basis || 240) - 20);
+    // 予実は右余白を抑えめ、一般表は罫線確保のため少し広めに差し引く
+    const gutter = scrollEl.classList.contains("jy2-actual-scroll") ? 8 : 16;
+    const width = Math.max(240, (basis || 240) - gutter);
     scrollEl.style.setProperty("width", `${width}px`, "important");
     scrollEl.style.setProperty("max-width", `${width}px`, "important");
     scrollEl.style.setProperty("min-width", "0", "important");
