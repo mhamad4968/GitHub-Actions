@@ -503,9 +503,18 @@ test("U4 name1/name2 are combo (select+input); name3 is free text input", () => 
   assert.match(source, /jy2-combo-select/);
   assert.match(source, /jy2AppendModeLabel/);
   assert.match(source, /jy2-hf-tag-select/);
-  assert.match(source, /名称・規格1（選択）/);
-  assert.match(source, /名称・規格2（選択）/);
-  assert.match(source, /名称・規格3（入力）/);
+  assert.match(source, /分類（選択）/);
+  assert.match(source, /品目（選択）/);
+  assert.match(source, /規格（補助）/);
+  assert.match(source, /jy2-hf-tag-aux/);
+  assert.match(
+    source,
+    /const anchor = jy2HasText\(row\.name1\) \|\| jy2HasText\(row\.name2\);/,
+  );
+  assert.doesNotMatch(
+    source,
+    /jy2MarkIncompleteIfAnchor\(name3, anchor, row\.name3\)/,
+  );
   assert.match(source, /jy2CollectDetailSuggestions/);
   assert.match(source, /JY2_NAME1_SEEDS/);
   assert.match(source, /JY2_NAME_PROFILES/);

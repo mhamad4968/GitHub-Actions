@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-25-ver02-actual-right-10px
+  // @JY_V2_BUILD 2026-07-25-ver02-bunrui-hinmoku-kikaku-aux
 
   const JY2_STYLE_ID = "jy2-shell-style";
   const JY2_ACTIVE_TAB_KEY = `jy2:${APP1_ID}:activeTab`;
@@ -307,6 +307,7 @@
       ".jy2-hf-tag-select{background:#D1FAE5;border:1px solid #10B981;color:#047857}",
       ".jy2-hf-tag-date{background:#FFEDD5;border:1px solid #F97316;color:#C2410C}",
       ".jy2-hf-tag-auto{background:#DBEAFE;border:1px solid #3B82F6;color:#1D4ED8}",
+      ".jy2-hf-tag-aux{background:#F1F5F9;border:1px solid #94A3B8;color:#475569}",
       ".jy2-table th .jy2-hf-tag,.jy2-detail-block-head .jy2-hf-tag,.jy2-footer-label .jy2-hf-tag{margin-right:0}",
       /* モニタ幅に合わせて折り返し（1行押し出しで右端見切れを防ぐ） */
       ".jy2-header-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(11.5rem,1fr));gap:8px 12px;padding:2px 0 10px;width:100%;max-width:100%;box-sizing:border-box}",
@@ -448,7 +449,7 @@
     return cell;
   }
 
-  // U5: 半角カナ → 全角（名称・規格3）
+  // U5: 半角カナ → 全角（規格＝補助・name3）
   function jy2ToFullWidthKana(str) {
     if (str === null || str === undefined) return str;
     const text = String(str);
@@ -1049,6 +1050,7 @@
       select: ["jy2-hf-tag-select", "選択"],
       date: ["jy2-hf-tag-date", "日付"],
       auto: ["jy2-hf-tag-auto", "自動"],
+      aux: ["jy2-hf-tag-aux", "補助"],
     };
     const pair = tags[kind] || tags.input;
     const span = documentRef.createElement("span");
@@ -1060,13 +1062,14 @@
   /** 「単位（選択）」形式 → { label, mode }。タグ無しはそのまま。 */
   function jy2ParseModeLabel(raw) {
     const text = String(raw ?? "");
-    const match = /^(.*)（(選択|入力|自動|日付)）$/.exec(text);
+    const match = /^(.*)（(選択|入力|自動|日付|補助)）$/.exec(text);
     if (!match) return { label: text, mode: null };
     const modeByJa = {
       選択: "select",
       入力: "input",
       自動: "auto",
       日付: "date",
+      補助: "aux",
     };
     return { label: match[1], mode: modeByJa[match[2]] || null };
   }
@@ -2343,9 +2346,9 @@
     const body = documentRef.createElement("tbody");
     body.appendChild(
       jy2HeadRow(documentRef, [
-        "名称・規格1（選択）",
-        "名称・規格2（選択）",
-        "名称・規格3（入力）",
+        "分類（選択）",
+        "品目（選択）",
+        "規格（補助）",
         "単位（選択）",
         "数量（入力）",
         "単価（入力）",
@@ -2398,11 +2401,10 @@
           jy2TextInput(documentRef, row.unitPrice, commit("unitPrice")),
         );
         tr.appendChild(unitPriceCell);
-        const anchor =
-          jy2HasText(row.name1) || jy2HasText(row.name2) || jy2HasText(row.name3);
+        // U17: 薄い赤の起点は分類/品目のみ。規格（補助・name3）は必須扱いにしない。
+        const anchor = jy2HasText(row.name1) || jy2HasText(row.name2);
         jy2MarkIncompleteIfAnchor(name1, anchor, row.name1);
         jy2MarkIncompleteIfAnchor(name2, anchor, row.name2);
-        jy2MarkIncompleteIfAnchor(name3, anchor, row.name3);
         jy2MarkIncompleteIfAnchor(unit, anchor, row.unit);
         jy2MarkIncompleteIfAnchor(quantityCell, anchor, row.quantity);
         jy2MarkIncompleteIfAnchor(unitPriceCell, anchor, row.unitPrice);
