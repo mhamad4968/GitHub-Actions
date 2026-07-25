@@ -5108,4 +5108,7 @@ npm run cio:morning:ready
 
 **触らない**: 688 / 677–679 / SKYSEA / 735–736。
 
+
+**Git**: （close-git / heal で tip 同期）
+
 ---

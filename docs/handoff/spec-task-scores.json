@@ -1,11 +1,11 @@
 {
-  "scoredAt": "2026-07-25T10:20:22.041Z",
+  "scoredAt": "2026-07-25T11:55:21.729Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "夜=LOTO7 バックテスト／理論見直し（一致数 vs ランダム期待1.32・戦略別実績）。lab次=7/27確認パック送付。",
+  "topTask": "明日=756 再確認・微調整。lab次=7/27確認パック送付。",
   "tasks": [
     {
-      "id": "checkpoint:夜=LOTO7_バックテスト／理論見直し（一致数_vs_ランダム期待1.32・戦",
-      "text": "夜=LOTO7 バックテスト／理論見直し（一致数 vs ランダム期待1.32・戦略別実績）。lab次=7/27確認パック送付。",
+      "id": "checkpoint:明日=756_再確認・微調整。lab次=7/27確認パック送付。",
+      "text": "明日=756 再確認・微調整。lab次=7/27確認パック送付。",
       "source": "checkpoint",
       "difficulty": 2,
       "tokens": "中",
