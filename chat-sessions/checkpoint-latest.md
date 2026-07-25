@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-25 夕 JST — ④DD Step1–2 済＋Ver.01再利用調査一覧化。756 LIVE確認済。DeepSeek #S-DS-EMPTY-01解消済。
 
-**Git**: **`27a754c4`** = `origin/main` — push 済 ※本ターン調査追記後に再同期
+**Git**: **`f5816320`** = `origin/main` — push 済（R-20＋Ver.01再利用調査）
 
 **本日状態（要約）**: App **756** LIVE **確認済**。④DD: R-19穴2語OPEN／R-20は明細I⊂vendors(J)で取引先正＝J。Ver.01再利用: 735コード表・支社・部門・桁種別は読取可、**735に取引先なし**、取引先はExcel J。一覧 `docs/plans/2026-07-25-jikkou-v01-reuse-and-r20-role-inventory.md`。735/736書込禁止。依頼者回答7/27以降。
 
