@@ -143,10 +143,15 @@
       ".jy2-section-title{margin:14px 0 6px;font-size:14px;font-weight:700;padding:4px 8px;background:#e8eef4;border-left:4px solid #2563eb;color:#1e3a8a}",
       // 表の横スクロール: 親は幅固定・子だけ overflow-x（親が表幅に広がるとスクロールが出ない）
       // 右端パディングで最終列の縦罫線が clip されないようにする（C5/C12）
-      // ラッパ幅の最終決定は jy2SyncHScroll（viewport 天井の固定px）。ここは初期フォールバック。
-      // 表の広幅フル埋めは JS で min-width=max(下限, wrap.clientWidth) px。CSS の max(100%,…) は狭幅で縮むため使わない。
-      ".jy2-table-scroll{display:block;overflow-x:scroll;overflow-y:visible;max-width:100%;width:100%;min-width:0;margin:0 0 16px;padding:0 14px 10px 0;box-sizing:border-box;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-gutter:stable both-edges}",
-      ".jy2-table-scroll>.jy2-table{display:table;width:max-content;min-width:1100px;max-width:none;margin:0;box-sizing:border-box}",
+      // ラッパ幅の最終決定は jy2SyncHScroll（viewport 天井の固定px）。タブ内は原則1本（pane-hscroll）。
+      // 表は子孫でも max-content+下限。width:100% の .jy2-table より詳細度を上げて縮み防止。
+      ".jy2-table-scroll{display:block;overflow-x:auto;overflow-y:visible;max-width:100%;width:100%;min-width:0;margin:0 0 16px;padding:0 14px 10px 0;box-sizing:border-box;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-gutter:stable}",
+      ".jy2-pane-hscroll{margin:0}",
+      ".jy2-table-scroll .jy2-table,.jy2-table-scroll .jy2-detail-table{display:table;width:max-content!important;min-width:1100px;max-width:none!important;margin:0 0 16px;box-sizing:border-box;table-layout:auto}",
+      ".jy2-contract-table .jy2-input,.jy2-salary-table .jy2-input,.jy2-projection-table .jy2-input{min-width:4.75rem}",
+      ".jy2-contract-table .jy2-select,.jy2-salary-table .jy2-select,.jy2-projection-table .jy2-select{min-width:4.25rem}",
+      ".jy2-contract-table th:nth-child(2),.jy2-contract-table td:nth-child(2){min-width:9.5rem}",
+      ".jy2-salary-table th:nth-child(1),.jy2-salary-table td:nth-child(1){min-width:8rem}",
       ".jy2-table{border-collapse:collapse;width:100%;margin:0 0 16px;font-size:12px;background:#fff;border-radius:6px;overflow:visible}",
       ".jy2-table th,.jy2-table td{border:1px solid #e2e8f0;padding:4px 6px;text-align:left;vertical-align:middle}",
       ".jy2-table th{background:#f1f5f9;font-weight:600;color:#475569;text-align:center;white-space:nowrap}",
@@ -184,7 +189,8 @@
       ".jy2-budget-summary-keys .jy2-sub-row td{font-size:11px;color:#5c4a3a;background:#fffdf9}",
       ".jy2-budget-summary-note{margin:6px 0 0;font-size:10px;color:#64748b;line-height:1.45}",
       ".jy2-summary-footer{margin-top:8px}",
-      ".jy2-detail-block{border:1px solid #cbd5e1;border-radius:8px;margin:0 0 16px;background:#fff;overflow-x:clip;overflow-y:visible;box-shadow:0 1px 3px rgba(15,23,42,.04);max-width:100%;min-width:0;box-sizing:border-box}",
+      // 横スクロールは pane-hscroll 1本。ブロック個別の clip/wrap は禁止（スクロールがブロックごとになる）
+      ".jy2-detail-block{border:1px solid #cbd5e1;border-radius:8px;margin:0 0 16px;background:#fff;overflow:visible;box-shadow:0 1px 3px rgba(15,23,42,.04);max-width:none;min-width:1100px;width:max-content;box-sizing:border-box}",
       ".jy2-detail-block[data-block-status='retired']{opacity:.6}",
       ".jy2-detail-block-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 10px;background:linear-gradient(180deg,#ecfdf5,#d1fae5);font-size:12px;border-bottom:1px solid #bbf7d0}",
       ".jy2-detail-block-head label{display:flex;align-items:center;gap:4px}",
@@ -192,8 +198,8 @@
       ".jy2-block-no{font-weight:800;background:#fff;color:#047857;padding:3px 10px;border:1px solid #86efac;border-radius:6px}",
       ".jy2-block-actions{margin-left:auto;display:flex;gap:4px}",
       ".jy2-detail-table{margin:0}",
-      // C5: 内訳も下限1100px固定。広幅フル埋めは jy2ForceTableMinWidth が px で上書き
-      ".jy2-table-scroll>.jy2-detail-table{display:table;width:max-content;min-width:1100px;max-width:none;table-layout:auto}",
+      ".jy2-hscroll-inner>.jy2-detail-block{min-width:1100px;width:max-content;max-width:none}",
+      ".jy2-hscroll-inner>.jy2-budget-summary{min-width:1100px;width:max-content;max-width:none;box-sizing:border-box}",
       ".jy2-detail-table th.jy2-th-stacked{min-width:4.5rem;padding:6px 4px!important}",
       ".jy2-detail-table .jy2-th-stack .jy2-th-label{white-space:normal;max-width:6.5rem;line-height:1.25}",
       ".jy2-detail-table .jy2-combo-wrap{min-width:8.5rem}",
@@ -211,7 +217,7 @@
       // 予実: 横スクロール1本のみ（縦はページスクロール。二重縦スクロール禁止＝C7）
       ".jy2-pane[data-tab-id='actual']{overflow-x:clip;overflow-y:visible;padding:8px 8px 8px 8px}",
       /* 右息抜き ~10px（6px基準から左へ+4px＝浜田意図。2pxは逆方向だった） */
-      ".jy2-actual-scroll{display:block;overflow-x:scroll;overflow-y:visible;border:1px solid #e2e8f0;border-radius:6px;background:#fff;max-width:100%;width:100%;min-width:0;max-height:none;box-sizing:border-box;padding:0 10px 10px 0;margin:0;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-gutter:stable both-edges}",
+      ".jy2-actual-scroll{display:block;overflow-x:auto;overflow-y:visible;border:1px solid #e2e8f0;border-radius:6px;background:#fff;max-width:100%;width:100%;min-width:0;max-height:none;box-sizing:border-box;padding:0 10px 10px 0;margin:0;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-gutter:stable}",
       ".jy2-actual-table{white-space:nowrap;margin:0;border-collapse:separate;border-spacing:0;font-size:11px;width:max-content;min-width:1600px;max-width:none;box-sizing:border-box}",
       ".jy2-actual-table th,.jy2-actual-table td{padding:3px 5px}",
       ".jy2-actual-table .jy2-input{min-width:48px;font-size:11px}",
@@ -996,27 +1002,37 @@
   }
 
   function jy2ForceTableMinWidth(scrollEl) {
-    const table = scrollEl.querySelector(":scope > .jy2-table, :scope > table");
-    if (table && table.style) {
-      const isActual = scrollEl.classList.contains("jy2-actual-scroll");
-      const forceMin = isActual ? 1600 : 1100;
-      // 広幅: wrap 幅まで伸ばす。狭幅: 下限を維持してラッパ内横スクロール（% 指定は縮むので禁止）
-      const wrapInner = Math.max(0, Math.floor(scrollEl.clientWidth || 0));
-      const tableMin = Math.max(forceMin, wrapInner);
-      table.style.setProperty("min-width", `${tableMin}px`, "important");
-      table.style.setProperty("width", "max-content", "important");
-      table.style.setProperty("max-width", "none", "important");
-    }
+    const isActual = scrollEl.classList.contains("jy2-actual-scroll");
+    const forceMin = isActual ? 1600 : 1100;
+    const wrapInner = Math.max(0, Math.floor(scrollEl.clientWidth || 0));
+    const floor = Math.max(forceMin, wrapInner);
     const inner = scrollEl.querySelector(":scope > .jy2-hscroll-inner");
     if (inner && inner.style) {
-      const forceMin = Number(inner.dataset.minWidth) || 920;
-      const wrapInner = Math.max(0, Math.floor(scrollEl.clientWidth || 0));
-      const innerMin = Math.max(forceMin, wrapInner);
+      const dataMin = Number(inner.dataset.minWidth) || forceMin;
+      const innerMin = Math.max(dataMin, floor);
       inner.style.setProperty("min-width", `${innerMin}px`, "important");
       inner.style.setProperty("width", "max-content", "important");
       inner.style.setProperty("max-width", "none", "important");
       inner.style.setProperty("box-sizing", "border-box", "important");
     }
+    scrollEl
+      .querySelectorAll(".jy2-table, .jy2-detail-table, .jy2-actual-table")
+      .forEach((table) => {
+        if (!table.style) return;
+        const tableFloor = table.classList.contains("jy2-actual-table")
+          ? Math.max(1600, wrapInner)
+          : floor;
+        table.style.setProperty("min-width", `${tableFloor}px`, "important");
+        table.style.setProperty("width", "max-content", "important");
+        table.style.setProperty("max-width", "none", "important");
+      });
+    scrollEl.querySelectorAll(".jy2-detail-block").forEach((block) => {
+      if (!block.style) return;
+      block.style.setProperty("min-width", `${floor}px`, "important");
+      block.style.setProperty("width", "max-content", "important");
+      block.style.setProperty("max-width", "none", "important");
+      block.style.setProperty("overflow", "visible", "important");
+    });
   }
 
   function jy2SyncHScroll(scrollEl) {
@@ -1031,7 +1047,7 @@
     scrollEl.style.setProperty("width", `${width}px`, "important");
     scrollEl.style.setProperty("max-width", `${width}px`, "important");
     scrollEl.style.setProperty("min-width", "0", "important");
-    scrollEl.style.setProperty("overflow-x", "scroll", "important");
+    scrollEl.style.setProperty("overflow-x", "auto", "important");
     scrollEl.style.setProperty("overflow-y", "visible", "important");
     scrollEl.style.setProperty("box-sizing", "border-box", "important");
     jy2ForceTableMinWidth(scrollEl);
@@ -1083,6 +1099,23 @@
 
   function jy2WrapTable(documentRef, table) {
     return jy2WrapHScroll(documentRef, table);
+  }
+
+  /**
+   * タブ(pane)内の横スクロールを1本にする（表・工種ブロックごとの個別ラッパ禁止）。
+   * @returns {HTMLElement} コンテンツを積む .jy2-hscroll-inner
+   */
+  function jy2MountPaneHScroll(documentRef, pane, options = {}) {
+    const minWidth = Number(options.minWidth) || 1100;
+    const wrap = documentRef.createElement("div");
+    wrap.className = "jy2-table-scroll jy2-pane-hscroll";
+    const inner = documentRef.createElement("div");
+    inner.className = "jy2-hscroll-inner";
+    inner.dataset.minWidth = String(minWidth);
+    wrap.appendChild(inner);
+    pane.appendChild(wrap);
+    jy2BindHScroll(wrap);
+    return inner;
   }
 
   function jy2HeadRow(documentRef, labels) {
@@ -1800,7 +1833,8 @@
     body.appendChild(grandRow);
 
     table.appendChild(body);
-    return jy2WrapTable(documentRef, table);
+    // 横スクロールは jy2RenderSummaryPane の pane-hscroll 1本（個別 wrap 禁止）
+    return table;
   }
 
   // 給与手当 (D-30/X7): 総括直入力, 消費税・税込は「－」, at least 1 row.
@@ -1928,7 +1962,7 @@
     body.appendChild(footRow);
 
     table.appendChild(body);
-    return jy2WrapTable(documentRef, table);
+    return table;
   }
 
   // 総括原価投影 (P-21/P-33): amounts are read-only from App2.
@@ -2106,7 +2140,7 @@
     }
 
     table.appendChild(body);
-    return jy2WrapTable(documentRef, table);
+    return table;
   }
 
   // D-31 + Ver.01 区分別サマリー: ①⑧⑨主表示＋区分マトリクス（同テイスト）
@@ -2292,7 +2326,9 @@
       "jy2-section-title",
       "原価行",
     );
-    pane.append(
+    // C5: 総括タブは横スクロール1本（請負/原価/給与を個別 wrap しない）
+    const scroller = jy2MountPaneHScroll(documentRef, pane, { minWidth: 1100 });
+    scroller.append(
       contractTitle,
       jy2ContractTable(documentRef, summaryModel, editable, rerender),
       projectionTitle,
@@ -2626,7 +2662,8 @@
     }
 
     table.appendChild(body);
-    section.appendChild(jy2WrapTable(documentRef, table));
+    // 横スクロールは jy2RenderDetailPane の pane-hscroll 1本
+    section.appendChild(table);
     return section;
   }
 
@@ -2646,8 +2683,11 @@
       pane.appendChild(jy2Cell(documentRef, "p", "jy2-warning", warning));
     }
 
+    // C5: 内訳タブも横スクロール1本（工種ブロックごとの個別 wrap 禁止）
+    const scroller = jy2MountPaneHScroll(documentRef, pane, { minWidth: 1100 });
+
     if (snapshot.blocks.length === 0) {
-      pane.appendChild(
+      scroller.appendChild(
         jy2Cell(
           documentRef,
           "p",
@@ -2657,7 +2697,7 @@
       );
     }
     for (const block of snapshot.blocks) {
-      pane.appendChild(
+      scroller.appendChild(
         jy2DetailBlock(
           documentRef,
           detailModel,
@@ -2670,7 +2710,7 @@
       );
     }
     if (editable) {
-      pane.appendChild(
+      scroller.appendChild(
         jy2RowButton(documentRef, "工種ブロック追加", () => {
           detailModel.addBlock();
           rerender();
