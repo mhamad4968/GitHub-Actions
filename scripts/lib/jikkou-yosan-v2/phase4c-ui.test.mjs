@@ -496,13 +496,19 @@ test("App 1 detail tab renders jy2-* block editor wired to the summary refresh",
   assert.doesNotMatch(source, /className\s*=\s*["']jy-/);
 });
 
-test("C12 header pane wraps content in h-scroll with min-width inner", () => {
+test("C12 header pane is fluid full-width; span-2 is full row", () => {
   const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
   assert.match(source, /function jy2RenderHeaderPane\b/);
-  assert.match(source, /jy2-hscroll-inner jy2-header-inner/);
-  assert.match(source, /return jy2WrapHScroll\(documentRef, inner\)/);
-  assert.match(source, /function jy2WrapHScroll\b/);
-  assert.match(source, /\.jy2-header-inner \.jy2-header-grid\{[^}]*min-width:920px/);
+  assert.match(source, /wrap\.className = "jy2-header-pane"/);
+  assert.doesNotMatch(source, /jy2-header-inner/);
+  assert.doesNotMatch(
+    source,
+    /jy2RenderHeaderPane[\s\S]*?return jy2WrapHScroll/,
+  );
+  assert.match(
+    source,
+    /\.jy2-header-grid \.jy2-span-2\{grid-column:1\/-1\}/,
+  );
 });
 
 test("C5 detail table uses max-content inside jy2-table-scroll (narrow window h-scroll)", () => {

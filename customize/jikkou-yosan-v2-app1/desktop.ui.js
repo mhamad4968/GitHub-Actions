@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-25-ver02-hscroll-header-pane
+  // @JY_V2_BUILD 2026-07-25-ver02-header-fluid-fullrow
 
   const JY2_STYLE_ID = "jy2-shell-style";
   const JY2_ACTIVE_TAB_KEY = `jy2:${APP1_ID}:activeTab`;
@@ -307,10 +307,8 @@
       ".jy2-version-type-bar label{display:flex;align-items:center;gap:6px}",
       ".jy2-version-type-bar select{min-width:160px;padding:3px 6px;border-radius:4px}",
       ".jy2-header-legend{font-size:11px;color:#64748b;padding:0 0 10px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}",
-      // 工事基本情報: 狭幅でも見切れず横スクロール（C5/C12）。広いときは内側920px上で auto-fit
-      ".jy2-hscroll-inner{display:block;box-sizing:border-box;min-width:920px;width:max-content;max-width:none}",
-      ".jy2-header-inner{min-width:920px}",
-      ".jy2-header-inner .jy2-header-grid{min-width:920px;width:920px;max-width:none;box-sizing:border-box}",
+      // 表・予実用の横スクロール内側（工事基本情報は使わない）
+      ".jy2-hscroll-inner{display:block;box-sizing:border-box;width:max-content;max-width:none}",
       ".jy2-hf-tag{display:inline-block;font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px;margin-right:5px;vertical-align:middle;line-height:1.3;letter-spacing:.04em}",
       ".jy2-hf-tag-input{background:#FEF3C7;border:1px solid #F59E0B;color:#B45309}",
       ".jy2-hf-tag-select{background:#D1FAE5;border:1px solid #10B981;color:#047857}",
@@ -318,7 +316,7 @@
       ".jy2-hf-tag-auto{background:#DBEAFE;border:1px solid #3B82F6;color:#1D4ED8}",
       ".jy2-hf-tag-aux{background:#F1F5F9;border:1px solid #94A3B8;color:#475569}",
       ".jy2-table th .jy2-hf-tag,.jy2-detail-block-head .jy2-hf-tag,.jy2-footer-label .jy2-hf-tag{margin-right:0}",
-      /* モニタ幅に合わせて折り返し（1行押し出しで右端見切れを防ぐ） */
+      /* C12: 工事基本情報はモニタ幅いっぱいで折り返し（固定幅＋横スクロールにしない） */
       ".jy2-header-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(11.5rem,1fr));gap:8px 12px;padding:2px 0 10px;width:100%;max-width:100%;box-sizing:border-box}",
       ".jy2-header-grid>div{min-width:0;max-width:100%}",
       ".jy2-header-grid label{display:block;font-size:11px;color:#475569;margin-bottom:4px;line-height:1.35}",
@@ -329,7 +327,8 @@
       ".jy2-header-grid select.jy2-hf-select{background-color:#f1f5f9;border:1px solid #94a3b8;border-left:3px solid #64748b;cursor:pointer;appearance:none;-webkit-appearance:none;padding-right:26px;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M2 4l4 4 4-4z'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 8px center}",
       ".jy2-header-grid input.jy2-hf-date{background:#fffbeb;border:1px solid #fcd34d;border-left:3px solid #f59e0b}",
       ".jy2-header-grid input.jy2-hf-readonly,.jy2-header-grid select:disabled{background:#f8fafc;border:1px solid #e2e8f0;border-left:3px solid #cbd5e1;color:#64748b;cursor:default}",
-      ".jy2-header-grid .jy2-span-2{grid-column:span 2}",
+      /* メモ系は常に1行独占（工事コードと横並びになるのを防ぐ） */
+      ".jy2-header-grid .jy2-span-2{grid-column:1/-1}",
       ".jy2-header-grid .jy2-row-start{grid-column:1}",
       ".jy2-shell{--jy2-fs-k:1}",
       ".jy2-shell[data-font-scale='large']{--jy2-fs-k:1.15}",
@@ -1409,9 +1408,8 @@
   }
 
   function jy2RenderHeaderPane(documentRef, record, editable, masterLists) {
-    const inner = documentRef.createElement("div");
-    inner.className = "jy2-hscroll-inner jy2-header-inner";
-    inner.dataset.minWidth = "920";
+    const wrap = documentRef.createElement("div");
+    wrap.className = "jy2-header-pane";
     const legend = documentRef.createElement("div");
     legend.className = "jy2-header-legend";
     legend.append(
@@ -1424,7 +1422,7 @@
       jy2HfTag(documentRef, "auto"),
       documentRef.createTextNode("自動・参照のみ"),
     );
-    inner.appendChild(legend);
+    wrap.appendChild(legend);
 
     const grid = documentRef.createElement("div");
     grid.className = "jy2-header-grid";
@@ -1555,9 +1553,9 @@
 
     addText("input", "備考", "note", { span2: true, textarea: true, rows: 2 });
 
-    inner.appendChild(grid);
-    // C5/C12: 狭幅では横スクロール。広いときは内側920px上で auto-fit 折り返し
-    return jy2WrapHScroll(documentRef, inner);
+    wrap.appendChild(grid);
+    // C12: フル幅 auto-fit。狭幅は折り返し（横スクロールは総括・内訳・予実の表側）
+    return wrap;
   }
 
   // 請負金額 (§7.1a): 施工/保安 bands, amount = auto decimal shown as integer,
