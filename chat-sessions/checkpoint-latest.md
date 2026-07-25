@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-25 朝 JST — **セッション中断（夕方再開）**。756 UI目視OK＋依頼者メール再送済。push済・force/stash-pop禁止＝先祖返り防止。
 
-**Git**: **`9086798c`** = `origin/main` — push 済
+**Git**: **`6a2822c7`** = `origin/main` — push 済
 
 **本日状態（要約）**: App **756** LIVE **確認済** BUILD=`2026-07-25-ver02-actual-right-10px` **rev103**（JS `@JY_V2_BUILD` 一致。GET fileKey は download 形で registry UUID と表記差あり・内容は同一BUILD）。App **674** 購入先OK。依頼者メール再送済・回答は **7/27以降**。④DD(R-19/20) は 736 READ-ONLY ヒントで棚卸し開始（`docs/plans/2026-07-25-jikkou-r19-r20-dd-from-736-hints.md`）。735/736書込禁止・688/677–679/SKYSEA/712制約継続。H9/△2 reviewDate=**2026-07-25**（early GREEN/降格禁止）。
 
