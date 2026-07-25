@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-25 15:05 JST — 工事基本情報に横スクロール枠追加。756 LIVE rev108。
 
-**Git**: tip は本ターン R63 commit 後に同期
+**Git**: **062b90f4** = origin/main — header h-scroll R63
 
 **本日状態（要約）**: App **756** LIVE BUILD=`2026-07-25-ver02-hscroll-header-pane` rev**108**。工事基本情報も `jy2-table-scroll`＋内側 min-width 920px。狭幅で横スクロール。他タブは表 min-width＋viewport天井。735/736書込禁止。
 
