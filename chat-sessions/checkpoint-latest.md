@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-25 16:15 JST — 本セッション full CLOSE。夜枠=LOTO7。756 LIVE rev120。
 
-**Git**: **`c5fa437d`** = `origin/main` — push 済（本締め）
+**Git**: **`9253a292`** = `origin/main` — push 済
 
 **本日状態（要約）**: App **756** LIVE BUILD=`2026-07-25-ver02-project-days-nichi` rev**120**。C13/C14/C15・C5・U32 は浜田目視確認済（AI追加検証不要）。735/736書込禁止。7/27確認パック準備済（送付は浜田GO後）。
 
