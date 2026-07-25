@@ -502,12 +502,19 @@ test("C5 detail table uses max-content inside jy2-table-scroll (narrow window h-
     source,
     /\.jy2-table-scroll>\.jy2-detail-table\{[^}]*width:max-content/,
   );
+  assert.match(
+    source,
+    /\.jy2-table-scroll>\.jy2-detail-table\{[^}]*min-width:1100px/,
+  );
   assert.doesNotMatch(
     source,
     /\.jy2-table-scroll>\.jy2-detail-table\{width:100%/,
   );
   assert.match(source, /function jy2WrapTable\b/);
   assert.match(source, /function jy2SyncHScroll\b/);
+  assert.match(source, /function jy2ViewportHScrollCeiling\b/);
+  assert.match(source, /function jy2ForceTableMinWidth\b/);
+  assert.match(source, /const forceMin = isActual \? 1600 : 1100/);
 });
 
 test("U4 name1/name2 are combo (select+input); name3 is free text input", () => {

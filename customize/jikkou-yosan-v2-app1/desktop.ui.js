@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-25-ver02-hscroll-detail-maxcontent
+  // @JY_V2_BUILD 2026-07-25-ver02-hscroll-viewport-cap
 
   const JY2_STYLE_ID = "jy2-shell-style";
   const JY2_ACTIVE_TAB_KEY = `jy2:${APP1_ID}:activeTab`;
@@ -143,8 +143,9 @@
       ".jy2-section-title{margin:14px 0 6px;font-size:14px;font-weight:700;padding:4px 8px;background:#e8eef4;border-left:4px solid #2563eb;color:#1e3a8a}",
       // 表の横スクロール: 親は幅固定・子だけ overflow-x（親が表幅に広がるとスクロールが出ない）
       // 右端パディングで最終列の縦罫線が clip されないようにする（C5/C12）
-      ".jy2-table-scroll{display:block;overflow-x:scroll;overflow-y:visible;max-width:100%;width:100%;min-width:0;margin:0 0 16px;padding:0 14px 6px 0;box-sizing:border-box;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-gutter:stable}",
-      ".jy2-table-scroll>.jy2-table{display:table;width:max-content;min-width:100%;max-width:none;margin:0 0 0 0;box-sizing:border-box}",
+      // ラッパ幅の最終決定は jy2SyncHScroll（viewport 天井）。ここは初期フォールバック。
+      ".jy2-table-scroll{display:block;overflow-x:scroll;overflow-y:visible;max-width:100%;width:100%;min-width:0;margin:0 0 16px;padding:0 14px 10px 0;box-sizing:border-box;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-gutter:stable both-edges}",
+      ".jy2-table-scroll>.jy2-table{display:table;width:max-content;min-width:1100px;max-width:none;margin:0 0 0 0;box-sizing:border-box}",
       ".jy2-table{border-collapse:collapse;width:100%;margin:0 0 16px;font-size:12px;background:#fff;border-radius:6px;overflow:visible}",
       ".jy2-table th,.jy2-table td{border:1px solid #e2e8f0;padding:4px 6px;text-align:left;vertical-align:middle}",
       ".jy2-table th{background:#f1f5f9;font-weight:600;color:#475569;text-align:center;white-space:nowrap}",
@@ -190,8 +191,8 @@
       ".jy2-block-no{font-weight:800;background:#fff;color:#047857;padding:3px 10px;border:1px solid #86efac;border-radius:6px}",
       ".jy2-block-actions{margin-left:auto;display:flex;gap:4px}",
       ".jy2-detail-table{margin:0}",
-      // C5: 内訳も他表と同様 max-content。width:100% だと狭幅で列が縮み横スクロールが出ない
-      ".jy2-table-scroll>.jy2-detail-table{display:table;width:max-content;min-width:100%;max-width:none;table-layout:auto}",
+      // C5: 内訳も max-content + 下限幅。狭幅でもラッパ内で横スクロールを出す
+      ".jy2-table-scroll>.jy2-detail-table{display:table;width:max-content;min-width:1100px;max-width:none;table-layout:auto}",
       ".jy2-detail-table th.jy2-th-stacked{min-width:4.5rem;padding:6px 4px!important}",
       ".jy2-detail-table .jy2-th-stack .jy2-th-label{white-space:normal;max-width:6.5rem;line-height:1.25}",
       ".jy2-detail-table .jy2-combo-wrap{min-width:8.5rem}",
@@ -209,8 +210,8 @@
       // 予実: 横スクロール1本のみ（縦はページスクロール。二重縦スクロール禁止＝C7）
       ".jy2-pane[data-tab-id='actual']{overflow-x:clip;overflow-y:visible;padding:8px 8px 8px 8px}",
       /* 右息抜き ~10px（6px基準から左へ+4px＝浜田意図。2pxは逆方向だった） */
-      ".jy2-actual-scroll{display:block;overflow-x:auto;overflow-y:visible;border:1px solid #e2e8f0;border-radius:6px;background:#fff;max-width:100%;width:100%;min-width:0;max-height:none;box-sizing:border-box;padding:0 10px 6px 0;margin:0;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}",
-      ".jy2-actual-table{white-space:nowrap;margin:0;border-collapse:separate;border-spacing:0;font-size:11px;width:max-content;min-width:100%;max-width:none;box-sizing:border-box}",
+      ".jy2-actual-scroll{display:block;overflow-x:scroll;overflow-y:visible;border:1px solid #e2e8f0;border-radius:6px;background:#fff;max-width:100%;width:100%;min-width:0;max-height:none;box-sizing:border-box;padding:0 10px 10px 0;margin:0;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-gutter:stable both-edges}",
+      ".jy2-actual-table{white-space:nowrap;margin:0;border-collapse:separate;border-spacing:0;font-size:11px;width:max-content;min-width:1600px;max-width:none;box-sizing:border-box}",
       ".jy2-actual-table th,.jy2-actual-table td{padding:3px 5px}",
       ".jy2-actual-table .jy2-input{min-width:48px;font-size:11px}",
       ".jy2-actual-table .jy2-actual-month{width:3.6rem;min-width:3.6rem;max-width:3.8rem;padding:2px 3px;box-sizing:border-box}",
@@ -881,6 +882,22 @@
     return Math.max(0, Math.floor(right - left));
   }
 
+  /** ウィンドウに収まる絶対天井。親が表幅に膨らんでもこれ以上広げない（C5）。 */
+  function jy2ViewportHScrollCeiling(doc, win, host) {
+    const docWidth = doc.documentElement
+      ? doc.documentElement.clientWidth
+      : win.innerWidth;
+    const viewport = Math.min(win.innerWidth, docWidth);
+    let leftInset = 24;
+    if (host) {
+      const left = host.getBoundingClientRect().left;
+      if (Number.isFinite(left) && left > 0) {
+        leftInset = Math.max(12, Math.min(Math.floor(left), 120));
+      }
+    }
+    return Math.max(240, viewport - leftInset - 16);
+  }
+
   function jy2MeasureHScrollBasis(scrollEl) {
     const doc = scrollEl.ownerDocument;
     const win = doc && doc.defaultView;
@@ -888,6 +905,7 @@
     const host = doc.getElementById("jy2-host");
     const pane = scrollEl.closest(".jy2-pane");
     const shell = scrollEl.closest(".jy2-shell");
+    const ceiling = jy2ViewportHScrollCeiling(doc, win, host);
     const padOf = (el) => {
       if (!el) return 0;
       const style = win.getComputedStyle(el);
@@ -896,30 +914,29 @@
         (Number.parseFloat(style.paddingRight) || 0)
       );
     };
-    // 可視幅の最小を取る（pane が表で膨らむと clientWidth が過大 → wrap が広すぎて
-    // スクロールが出ず親 clip で100%時に右端が見切れる。90%だと偶然収まる）
-    const candidates = [];
+    // 可視幅の最小を取る。ただし親 clientWidth は表で膨らむので天井で必ず切る。
+    const candidates = [ceiling];
     const hostVis = jy2VisibleClientWidth(host, win);
     const shellVis = jy2VisibleClientWidth(shell, win);
-    if (hostVis > 40) candidates.push(hostVis);
-    if (shellVis > 40) candidates.push(shellVis);
+    if (hostVis > 40) candidates.push(Math.min(hostVis, ceiling));
+    if (shellVis > 40) candidates.push(Math.min(shellVis, ceiling));
     if (pane && pane.dataset.active === "true") {
       const paneVis = jy2VisibleClientWidth(pane, win);
-      if (
-        paneVis > 40 &&
-        (!hostVis || paneVis <= hostVis + 4) &&
-        (!shellVis || paneVis <= shellVis + 4)
-      ) {
-        candidates.push(Math.max(0, paneVis - padOf(pane)));
+      if (paneVis > 40) {
+        candidates.push(Math.min(Math.max(0, paneVis - padOf(pane)), ceiling));
       }
     }
-    if (!candidates.length) {
-      const docWidth = doc.documentElement
-        ? doc.documentElement.clientWidth
-        : win.innerWidth;
-      return Math.floor(Math.min(win.innerWidth, docWidth) - 48);
-    }
-    return Math.max(0, Math.min(...candidates));
+    return Math.max(240, Math.min(...candidates));
+  }
+
+  function jy2ForceTableMinWidth(scrollEl) {
+    const table = scrollEl.querySelector(":scope > .jy2-table, :scope > table");
+    if (!table || !table.style) return;
+    const isActual = scrollEl.classList.contains("jy2-actual-scroll");
+    const forceMin = isActual ? 1600 : 1100;
+    table.style.setProperty("min-width", `${forceMin}px`, "important");
+    table.style.setProperty("width", "max-content", "important");
+    table.style.setProperty("max-width", "none", "important");
   }
 
   function jy2SyncHScroll(scrollEl) {
@@ -932,7 +949,9 @@
     scrollEl.style.setProperty("max-width", `${width}px`, "important");
     scrollEl.style.setProperty("min-width", "0", "important");
     scrollEl.style.setProperty("overflow-x", "scroll", "important");
+    scrollEl.style.setProperty("overflow-y", "visible", "important");
     scrollEl.style.setProperty("box-sizing", "border-box", "important");
+    jy2ForceTableMinWidth(scrollEl);
     return scrollEl;
   }
 
