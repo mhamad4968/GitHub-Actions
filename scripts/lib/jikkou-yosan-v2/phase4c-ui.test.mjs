@@ -511,27 +511,18 @@ test("C12 header pane is fluid full-width; span-2 is full row", () => {
   );
 });
 
-test("C5 pane h-scroll keeps natural table width when window narrows", () => {
+test("C5 fixed bottom h-rail and viewport-only wrap width", () => {
   const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
   assert.match(source, /function jy2MountPaneHScroll\b/);
   assert.match(source, /function jy2MeasureNaturalTableWidth\b/);
-  assert.match(source, /jy2-pane-hscroll/);
-  assert.match(source, /dataset\.naturalWidth/);
+  assert.match(source, /function jy2SyncFixedHRail\b/);
+  assert.match(source, /jy2-fixed-hrail/);
+  assert.match(source, /contain:inline-size/);
   assert.match(
     source,
-    /const innerW = Math\.max\(floor, natural, wrapInner\)/,
+    /return jy2ViewportHScrollCeiling\(doc, win, host\)/,
   );
-  assert.match(
-    source,
-    /jy2RenderSummaryPane[\s\S]*?jy2MountPaneHScroll/,
-  );
-  assert.match(
-    source,
-    /jy2RenderDetailPane[\s\S]*?jy2MountPaneHScroll/,
-  );
-  assert.match(source, /function jy2SyncHScroll\b/);
-  assert.match(source, /hardCap/);
-  assert.match(source, /const forceMin = isActual \? 1600 : 1200/);
+  assert.match(source, /const forceMin = isActual \? 1600 : 1400/);
 });
 
 test("U4 name1/name2 are combo (select+input); name3 is free text input", () => {
