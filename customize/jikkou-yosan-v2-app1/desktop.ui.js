@@ -1492,6 +1492,49 @@
     return String(value);
   }
 
+  /** Ver.01同趣旨: 氏名は空白除去。空なら空文字。 */
+  function jy2NormalizePersonName(value) {
+    return String(value == null ? "" : value).replace(/\s+/g, " ").trim();
+  }
+
+  function jy2LoginDisplayName() {
+    try {
+      if (typeof kintone !== "undefined" && typeof kintone.getLoginUser === "function") {
+        const user = kintone.getLoginUser();
+        if (user) return jy2NormalizePersonName(user.name || user.code || "");
+      }
+    } catch (_err) {
+      /* ignore */
+    }
+    return "";
+  }
+
+  /**
+   * 作成者・担当者の手入力名を record に用意する（created_by_name / person_in_charge_name）。
+   * 空なら CREATOR／USER_SELECT／ログイン名から初期値を埋める。
+   */
+  function jy2EnsurePersonNameFields(record) {
+    if (!record) return;
+    if (!record.created_by_name) record.created_by_name = { value: "" };
+    if (!record.person_in_charge_name) record.person_in_charge_name = { value: "" };
+    let created = jy2NormalizePersonName(record.created_by_name.value);
+    if (!created) {
+      created = jy2NormalizePersonName(
+        jy2UserSelectDisplay(record.Created_by && record.Created_by.value) ||
+          jy2LoginDisplayName(),
+      );
+      record.created_by_name.value = created;
+    }
+    let person = jy2NormalizePersonName(record.person_in_charge_name.value);
+    if (!person) {
+      person = jy2NormalizePersonName(
+        jy2UserSelectDisplay(record.person_in_charge && record.person_in_charge.value) ||
+          created,
+      );
+      record.person_in_charge_name.value = person;
+    }
+  }
+
   function jy2EmptyMasterLists() {
     return {
       girderTypes: [],
@@ -1602,6 +1645,8 @@
     "start_date",
     "end_date",
     "project_days",
+    "created_by_name",
+    "person_in_charge_name",
     "note",
   ]);
 
@@ -1624,12 +1669,16 @@
   }
 
   function jy2CollectHeaderFields(record) {
+    jy2EnsurePersonNameFields(record);
     const out = {};
     for (const code of JY2_HEADER_EDITABLE_CODES) {
       if (!record || !record[code]) continue;
       let value = record[code].value ?? "";
       if (code === "project_official_name") {
         value = jy2NormalizeFiscalYearText(value);
+      }
+      if (code === "created_by_name" || code === "person_in_charge_name") {
+        value = jy2NormalizePersonName(value);
       }
       out[code] = { value };
     }
@@ -1755,6 +1804,7 @@
     grid.className = "jy2-header-grid";
     const lists = masterLists || jy2EmptyMasterLists();
     const canEdit = Boolean(editable);
+    jy2EnsurePersonNameFields(record);
 
     function cell(span2, rowStart) {
       const div = documentRef.createElement("div");
@@ -1841,8 +1891,12 @@
     addText("date", "現場入場予定日", "site_entry_date");
     addText("date", "立案日", "draft_date");
     addText("auto", "作成日", "Created_datetime");
-    addText("auto", "作成者", "Created_by");
-    addText("auto", "担当者", "person_in_charge");
+    addText("input", "作成者", "created_by_name", {
+      transform: jy2NormalizePersonName,
+    });
+    addText("input", "担当者", "person_in_charge_name", {
+      transform: jy2NormalizePersonName,
+    });
     addSelect("ステータス", "status", ["下書き", "版確定"], { allowBlank: false });
     addText("input", "修正理由メモ", "revision_note", {
       span2: true,
@@ -4273,12 +4327,23 @@
     const saveButton = documentRef.createElement("button");
     saveButton.type = "button";
     saveButton.className = "jy2-btn jy2-btn-primary jy2-save-button";
-    saveButton.textContent = "保存";
+    const isDraftStatus = (jy2FieldValue(record, "status") || "下書き") !== "版確定";
+    saveButton.textContent = isDraftStatus ? "一時保存" : "保存";
     saveButton.disabled = !saveController || !canEditBudget;
-    saveButton.title = "工事基本情報・総括・内訳を保存";
+    saveButton.title = isDraftStatus
+      ? "下書きとして工事基本情報・総括・内訳を一時保存"
+      : "工事基本情報・総括・内訳を保存";
+
+    const confirmButton = documentRef.createElement("button");
+    confirmButton.type = "button";
+    confirmButton.className = "jy2-btn jy2-confirm-button";
+    confirmButton.textContent = "版を確定";
+    confirmButton.disabled = !saveController || !canEditBudget || !isDraftStatus;
+    confirmButton.hidden = !isDraftStatus;
+    confirmButton.title = "下書きを版確定します（確認ダイアログあり）";
 
     // 保存等を DOM 先頭に置き、狭い幅でも左端に見えるようにする。
-    rightGroup.append(saveButton, addBlockBtn, addSalaryBtn);
+    rightGroup.append(saveButton, confirmButton, addBlockBtn, addSalaryBtn);
     actionBar.append(rightGroup, leftGroup);
     sticky.appendChild(actionBar);
 
@@ -4519,8 +4584,11 @@
       activate("summary");
     });
     if (saveController) {
-      saveButton.addEventListener("click", async () => {
-        if (saveButton.disabled) return;
+      const defaultSaveLabel = () =>
+        (jy2FieldValue(record, "status") || "下書き") !== "版確定"
+          ? "一時保存"
+          : "保存";
+      const runBudgetSave = async ({ confirmingVersion, busyLabel, doneAlert }) => {
         const view = documentRef.defaultView;
         const startDate = jy2FieldValue(record, "start_date");
         const endDate = jy2FieldValue(record, "end_date");
@@ -4536,31 +4604,42 @@
         ) {
           return;
         }
-        const currentStatus = jy2FieldValue(record, "status") || "下書き";
-        const isVersionConfirm =
-          currentStatus === "版確定" &&
-          saveController.initialStatus === "下書き";
-        let confirmingVersion = false;
-        if (isVersionConfirm) {
-          if (
-            !view ||
-            typeof view.confirm !== "function" ||
-            !view.confirm(
-              "版を確定します。確定後も編集は可能ですが、ステータスは「版確定」になります。よろしいですか？",
-            )
-          ) {
-            return;
+        jy2EnsurePersonNameFields(record);
+        const createdName = jy2NormalizePersonName(
+          jy2FieldValue(record, "created_by_name"),
+        );
+        const personName = jy2NormalizePersonName(
+          jy2FieldValue(record, "person_in_charge_name"),
+        );
+        if (!createdName) {
+          if (view && typeof view.alert === "function") {
+            view.alert("作成者を入力してください");
           }
-          confirmingVersion = true;
+          return;
+        }
+        if (!personName) {
+          if (view && typeof view.alert === "function") {
+            view.alert("担当者を入力してください");
+          }
+          return;
+        }
+        jy2ApplyHeaderField(record, "created_by_name", createdName);
+        jy2ApplyHeaderField(record, "person_in_charge_name", personName);
+        if (confirmingVersion) {
+          jy2ApplyHeaderField(record, "status", "版確定");
+        } else if (saveController.initialStatus === "下書き") {
+          // 一時保存はステータスDDを触っていても下書きを維持（確定は「版を確定」専用）
+          jy2ApplyHeaderField(record, "status", "下書き");
         }
         saveButton.disabled = true;
-        saveButton.textContent = "保存中…";
+        confirmButton.disabled = true;
+        saveButton.textContent = busyLabel || "保存中…";
         try {
           const outcome = await saveController.save(
             detailModel,
             summaryModel,
             projectionManual,
-            { confirmingVersion },
+            { confirmingVersion: Boolean(confirmingVersion) },
           );
           if (outcome.projectionRepaired && view && typeof view.alert === "function") {
             view.alert(
@@ -4568,7 +4647,8 @@
             );
           } else if (view && typeof view.alert === "function") {
             view.alert(
-              `工事基本情報・総括・内訳を保存しました（${outcome.requestCount}リクエスト）`,
+              doneAlert ||
+                `工事基本情報・総括・内訳を保存しました（${outcome.requestCount}リクエスト）`,
             );
           }
           jy2ReloadPreservingTab(view, sticky.dataset.activeTab || "header");
@@ -4582,9 +4662,37 @@
             jy2ReloadPreservingTab(view, sticky.dataset.activeTab || "header");
           } else {
             saveButton.disabled = false;
-            saveButton.textContent = "保存";
+            confirmButton.disabled = !isDraftStatus;
+            saveButton.textContent = defaultSaveLabel();
           }
         }
+      };
+
+      saveButton.addEventListener("click", async () => {
+        if (saveButton.disabled) return;
+        await runBudgetSave({
+          confirmingVersion: false,
+          busyLabel: "一時保存中…",
+          doneAlert: "一時保存しました",
+        });
+      });
+      confirmButton.addEventListener("click", async () => {
+        if (confirmButton.disabled) return;
+        const view = documentRef.defaultView;
+        if (
+          !view ||
+          typeof view.confirm !== "function" ||
+          !view.confirm(
+            "版を確定します。確定後も編集は可能ですが、ステータスは「版確定」になります。よろしいですか？",
+          )
+        ) {
+          return;
+        }
+        await runBudgetSave({
+          confirmingVersion: true,
+          busyLabel: "確定中…",
+          doneAlert: "版を確定しました",
+        });
       });
     }
 

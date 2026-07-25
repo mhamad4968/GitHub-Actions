@@ -511,6 +511,22 @@ test("C12 header pane is fluid full-width; span-2 is full row", () => {
   );
 });
 
+test("C13/C14 person names are hand input; temp-save and confirm buttons", () => {
+  const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
+  const fields = JSON.parse(read("scripts/data/jikkou-yosan-v2-app1-fields.json"));
+  assert.equal(fields.properties.created_by_name?.type, "SINGLE_LINE_TEXT");
+  assert.equal(fields.properties.person_in_charge_name?.type, "SINGLE_LINE_TEXT");
+  assert.match(source, /function jy2EnsurePersonNameFields\b/);
+  assert.match(source, /addText\("input", "作成者", "created_by_name"/);
+  assert.match(source, /addText\("input", "担当者", "person_in_charge_name"/);
+  assert.doesNotMatch(source, /addText\("auto", "作成者", "Created_by"\)/);
+  assert.doesNotMatch(source, /addText\("auto", "担当者", "person_in_charge"\)/);
+  assert.match(source, /一時保存/);
+  assert.match(source, /版を確定/);
+  assert.match(source, /jy2-confirm-button/);
+  assert.match(source, /confirmingVersion: true/);
+});
+
 test("C5 fixed bottom h-rail and viewport-only wrap width", () => {
   const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
   assert.match(source, /function jy2MountPaneHScroll\b/);

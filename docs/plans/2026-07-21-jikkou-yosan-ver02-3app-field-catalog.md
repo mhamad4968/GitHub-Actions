@@ -59,7 +59,9 @@
 | `site_entry_date` / `draft_date` | 現場入場予定日／立案日 | 日付 | 任意 |
 | `girder_type` / `order_branch` / `department` | 桁種別／発注支社／部門 | 文字列(1行) | 736踏襲 |
 | `safety_rule_88` | 安衛則88条 | ラジオ | **必須**・既定「有」 |
-| `person_in_charge` | 担当者 | ユーザー選択 | 任意 |
+| `person_in_charge` | 担当者（ユーザー） | ユーザー選択 | 任意・監査／互換。UI手入力は `person_in_charge_name` |
+| `created_by_name` | 作成者 | 文字列(1行) | 任意・**手入力**（736同趣旨・C13） |
+| `person_in_charge_name` | 担当者 | 文字列(1行) | 任意・**手入力**（736同趣旨・C13） |
 | `note` | 備考 | 文字列(複数行) | 任意 |
 
 ### 1.3 請負明細サブテーブル `contract_lines`

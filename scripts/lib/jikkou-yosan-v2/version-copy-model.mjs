@@ -41,6 +41,8 @@ export const APP1_COPY_FIELDS = Object.freeze([
   "department",
   "safety_rule_88",
   "person_in_charge",
+  "created_by_name",
+  "person_in_charge_name",
   "note",
   "contract_lines",
   "salary_lines",
