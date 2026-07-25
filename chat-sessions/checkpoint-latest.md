@@ -1,28 +1,28 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-25 16:15 JST — 本セッション full CLOSE。夜枠=LOTO7。756 LIVE rev120。
+**最終更新**: 2026-07-25 20:40 JST — 夜枠 CLOSE。756 UI4件＋LOTO7 B+C 済。明日=756微調整。
 
-**Git**: **`571fe010`** = `origin/main` — push 済
+**Git**: （close-git / heal で tip 同期）
 
-**本日状態（要約）**: App **756** LIVE BUILD=`2026-07-25-ver02-project-days-nichi` rev**120**。C13/C14/C15・C5・U32 は浜田目視確認済（AI追加検証不要）。735/736書込禁止。7/27確認パック準備済（送付は浜田GO後）。
+**本日状態（要約）**: App **756** LIVE=`2026-07-25-ver02-preserve-scroll` rev**125**（C16/U27/U33/U26-2/U34・浜田確認済）。LOTO7 B+C 実装済（正本 Desktop、SPEC控 `docs/plans/2026-07-25-loto7-bc-improvement-spec.md`）。735/736書込禁止。
 
 **継続メモ（次セッション -0）**:
-1. **夜（優先）**: Desktop `Loto7` — LOTO7 AI ANALYZER の統計・理論見直し（当選率向上意図）。正本パス `C:\Users\mhamada202408224\Desktop\Loto7`（DB=`loto7_advanced.db`）
-2. **7/27（lab）**: 依頼者レビュー／確認パック送付（浜田「送ってよい」後）。正本 `docs/plans/2026-07-25-jikkou-requester-confirm-pack-pre-0727.md`
-3. 回答後: R-19 JSON追記・実装は GO 後。残意図的: R-11/12/13・Excel本投入
+1. **明日（優先）**: [App756](https://jbis-kintone.cybozu.com/k/756/) 再確認して微調整
+2. **7/27（lab）**: 確認パック送付（浜田「送ってよい」後）。正本 `docs/plans/2026-07-25-jikkou-requester-confirm-pack-pre-0727.md`
+3. LOTO7: 運用観察（`backtest_report.py`／抽選後 fetch）。追加改修は依頼時
 
-**GO待ち**: 確認パック送付＝浜田一言。リストJSON追記＝依頼者回答 or 浜田GO。LOTO7コード改修は夜セッションで方針GO後。
+**GO待ち**: 確認パック送付＝浜田一言。リストJSON追記＝依頼者回答 or 浜田GO。
 
-**次の1手**: 夜=LOTO7 バックテスト／理論見直し（一致数 vs ランダム期待1.32・戦略別実績）。lab次=7/27確認パック送付。
+**次の1手**: 明日=756 再確認・微調整。lab次=7/27確認パック送付。
 
-**調査正本**: SPEC §6.2 C5/C12–C15・U32 ＋ BUILD `2026-07-25-ver02-project-days-nichi`（rev120）。LOTO7: `loto7_predict.py` / `loto7_stats.py` / README-DEV.txt。
+**調査正本**: SPEC C16/U26-2/U33/U34・BUILD preserve-scroll rev125。LOTO7: `docs/plans/2026-07-25-loto7-bc-improvement-spec.md` + Desktop README-DEV.txt。
 
 **観測期間**: **H9/△2**: metricsEligibleAfter=**2026-07-18** · reviewDate=**2026-07-25** · early GREEN/降格 **禁止**
 
-**運用メモ**: 経営会議資料7月度は完了（次月まで新規不要）。品質ゲート `docs/runbooks/push-deploy-quality-gates-v2.md` · Lifecycle v2 · クローズ正本 `data/cio-project-closures.json`。
+**運用メモ**: 経営会議資料7月度は完了。品質ゲート `docs/runbooks/push-deploy-quality-gates-v2.md` · Lifecycle v2 · `data/cio-project-closures.json`。
 
-**688**: heat-closed 以外触らない · **674**: 購入先OK · **736**: 触らない · **756/757/758**: UIクロム本日OK・残R-11/12/13・Excel · **712**: deploy禁止
+**688**: heat-closed 以外触らない · **674**: 購入先OK · **736**: 触らない · **756/757/758**: UI本日OK・残R-11/12/13・Excel · **712**: deploy禁止
 
 ## クローズ済み（`data/cio-project-closures.json` — 9件）
 
@@ -36,19 +36,24 @@
 | **677–679** | 触らない |
 | **SKYSEA** | 8/3 問い合わせまで実PC配信禁止 |
 | **736** | 現行版保持・Ver.02 後も触らない |
-| **756/757/758** | LIVE rev120（C5/C13–C15/U32）・7/27レビュー準備OK・残R-11/12/13・依頼者回答・Excel投入 |
+| **756/757/758** | LIVE rev125（preserve-scroll）・明日微調整・残R-11/12/13・Excel |
 | **712** | 削除済 — deploy 禁止 |
 ## セッション切替後の自律復元（Lifecycle v2 鏡像）
 
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`  
-**項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
+**項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session:starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
-**禁止（本中断）**: stash pop／force push／旧756 customize再deployで今日の UI（blockno-nav / rev117・hscroll-rail）を潰す＝**先祖返り禁止**。env `JIKKOU_YOSAN_V2_BUILD` は build 前に消す。deploy後は同一セッションで R63 commit。735/736書込禁止。
-**凍結ゾーンpad**: 7/27準備・rev117・Git `9cc2c8fc`・BUILD blockno-nav — minChars≥2800 維持。
+**禁止（本中断）**: stash pop／force push／旧756 customize再deployで今日の UI を潰す＝**先祖返り禁止**。env `JIKKOU_YOSAN_V2_BUILD` は build 前に消す。deploy後は同一セッションで R63 commit。735/736書込禁止。
+**凍結ゾーンpad**: 7/27準備・rev125・LOTO7 B+C — minChars≥2800 維持。
 
 <!-- archive: chat-sessions/checkpoints/checkpoint-archive-2026-07-22.md -->
 
 ## 2026-07-25
+
+### 2026-07-25 夜（本セッション）
+- **756**: C16列幅 / U27・U33空白視覚 / U26-2 datalist / U34スクロール維持 → LIVE rev**125** `preserve-scroll`（浜田確認OK）
+- **LOTO7**: B+C（walk-forward・アンサンブル再設計・対極戦略）。KPI=平均一致/P(k≥4)。SPEC控追加。コードは Desktop 正本（Git外）
+- 次: 明日756微調整 / 7/27確認パック送付
 
 ### 2026-07-25 夕（セッション終了準備）
 - BUILD=`2026-07-25-ver02-project-days-nichi` rev**120** — C13手入力氏名／C14一時保存・版確定／C15工期日数N日

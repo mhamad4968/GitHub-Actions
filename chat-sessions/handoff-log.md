@@ -5081,3 +5081,17 @@ npm run cio:morning:ready
 **触らない**: 688 / 677–679 / SKYSEA — 触らない
 
 ---
+
+### 2026-07-25 JST — **2026-07-25 夜 CLOSE — 756 UI4件＋LOTO7 B+C**
+
+**要約**: 夜枠完了。756 LIVE rev125 `preserve-scroll`（C16/U27/U33/U26-2/U34・浜田確認OK）。LOTO7 B+C 実装（walk-forward・アンサンブル再設計・対極戦略・KPI=平均一致/P(k≥4)）。コード正本は Desktop（Git外）。lab に SPEC控 `docs/plans/2026-07-25-loto7-bc-improvement-spec.md` 追加。
+
+**次の1手**: 明日=756 再確認・微調整。lab次=7/27確認パック送付。
+
+**Git**: （本エントリ commit 後 tip）
+
+**GO待ち**: 確認パック送付=浜田一言。
+
+**触らない**: 688 / 677–679 / SKYSEA / 735–736 — 触らない
+
+---
