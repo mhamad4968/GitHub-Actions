@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-25 16:00 JST — セッション終了準備。756 LIVE rev120。working tree 同期。
 
-**Git**: **`55135d5c`** = `origin/main` — push 済
+**Git**: **`efc7a0e4`** = `origin/main` — push 済
 
 **本日状態（要約）**: App **756** LIVE BUILD=`2026-07-25-ver02-project-days-nichi` rev**120**。C5固定横スクロールレール／U32内訳№相互ジャンプ／C13作成者・担当手入力（created_by_name／person_in_charge_name）／C14一時保存＋版を確定／C15工期日数「N日」表示。列名=分類/品目/補助項目。735/736書込禁止。7/27確認パック準備済（送付は浜田GO後）。
 
