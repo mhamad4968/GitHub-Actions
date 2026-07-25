@@ -525,6 +525,17 @@ test("C5 fixed bottom h-rail and viewport-only wrap width", () => {
   assert.match(source, /const forceMin = isActual \? 1600 : 1400/);
 });
 
+test("U32 内訳№ jumps between summary projection and detail block", () => {
+  const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
+  assert.match(source, /function jy2GotoDetailBlock\b/);
+  assert.match(source, /function jy2GotoSummaryProjection\b/);
+  assert.match(source, /function jy2FlashNavTarget\b/);
+  assert.match(source, /jy2-nav-block-no/);
+  assert.match(source, /shell\._jy2ActivateTab = activate/);
+  assert.match(source, /内訳タブの該当ブロックへ移動/);
+  assert.match(source, /総括タブの該当内訳№へ移動/);
+});
+
 test("U4 name1/name2 are combo (select+input); name3 is free text input", () => {
   const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
   assert.match(source, /function jy2ComboInput\b/);
