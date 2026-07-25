@@ -511,17 +511,14 @@ test("C12 header pane is fluid full-width; span-2 is full row", () => {
   );
 });
 
-test("C5 pane has one h-scroll; tables stay max-content (not per-block wraps)", () => {
+test("C5 pane has one h-scroll; inner uses fixed px so narrow windows scroll", () => {
   const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
   assert.match(source, /function jy2MountPaneHScroll\b/);
   assert.match(source, /jy2-pane-hscroll/);
+  assert.match(source, /\.jy2-hscroll-inner\{[^}]*min-width:1100px/);
   assert.match(
     source,
-    /\.jy2-table-scroll \.jy2-table,\.jy2-table-scroll \.jy2-detail-table\{[^}]*width:max-content/,
-  );
-  assert.match(
-    source,
-    /\.jy2-table-scroll \.jy2-table,\.jy2-table-scroll \.jy2-detail-table\{[^}]*min-width:1100px/,
+    /inner\.style\.setProperty\("width", `\$\{innerW\}px`/,
   );
   assert.match(
     source,
@@ -531,14 +528,11 @@ test("C5 pane has one h-scroll; tables stay max-content (not per-block wraps)", 
     source,
     /jy2RenderDetailPane[\s\S]*?jy2MountPaneHScroll/,
   );
-  assert.match(
-    source,
-    /function jy2ContractTable[\s\S]*?return table;/,
-  );
   assert.match(source, /function jy2SyncHScroll\b/);
   assert.match(source, /function jy2ViewportHScrollCeiling\b/);
   assert.match(source, /function jy2ForceTableMinWidth\b/);
   assert.match(source, /const forceMin = isActual \? 1600 : 1100/);
+  assert.match(source, /hardCap/);
 });
 
 test("U4 name1/name2 are combo (select+input); name3 is free text input", () => {
