@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-25-ver02-bunrui-hinmoku-kikaku-aux
+  // @JY_V2_BUILD 2026-07-25-ver02-hojo-komoku-input
 
   const JY2_STYLE_ID = "jy2-shell-style";
   const JY2_ACTIVE_TAB_KEY = `jy2:${APP1_ID}:activeTab`;
@@ -449,7 +449,7 @@
     return cell;
   }
 
-  // U5: 半角カナ → 全角（規格＝補助・name3）
+  // U5: 半角カナ → 全角（補助項目・name3）
   function jy2ToFullWidthKana(str) {
     if (str === null || str === undefined) return str;
     const text = String(str);
@@ -2348,7 +2348,7 @@
       jy2HeadRow(documentRef, [
         "分類（選択）",
         "品目（選択）",
-        "規格（補助）",
+        "補助項目（入力）",
         "単位（選択）",
         "数量（入力）",
         "単価（入力）",
@@ -2401,7 +2401,7 @@
           jy2TextInput(documentRef, row.unitPrice, commit("unitPrice")),
         );
         tr.appendChild(unitPriceCell);
-        // U17: 薄い赤の起点は分類/品目のみ。規格（補助・name3）は必須扱いにしない。
+        // U17: 薄い赤の起点は分類/品目のみ。補助項目（name3）は必須扱いにしない。
         const anchor = jy2HasText(row.name1) || jy2HasText(row.name2);
         jy2MarkIncompleteIfAnchor(name1, anchor, row.name1);
         jy2MarkIncompleteIfAnchor(name2, anchor, row.name2);

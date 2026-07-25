@@ -505,8 +505,7 @@ test("U4 name1/name2 are combo (select+input); name3 is free text input", () => 
   assert.match(source, /jy2-hf-tag-select/);
   assert.match(source, /分類（選択）/);
   assert.match(source, /品目（選択）/);
-  assert.match(source, /規格（補助）/);
-  assert.match(source, /jy2-hf-tag-aux/);
+  assert.match(source, /補助項目（入力）/);
   assert.match(
     source,
     /const anchor = jy2HasText\(row\.name1\) \|\| jy2HasText\(row\.name2\);/,

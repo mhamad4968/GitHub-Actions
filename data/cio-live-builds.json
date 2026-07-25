@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-07-25-ver02-bunrui-hinmoku-kikaku-aux",
-      "fileKey": "2c39e43f-557f-424a-a18d-554b2475fe9e",
-      "revision": "104",
+      "build": "2026-07-25-ver02-hojo-komoku-input",
+      "fileKey": "2a979078-aabc-4309-a3f7-dc0f0a891c26",
+      "revision": "105",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-07-25T05:41:43.480Z",
+      "deployedAt": "2026-07-25T05:44:14.166Z",
       "note": null
     },
     "757": {
