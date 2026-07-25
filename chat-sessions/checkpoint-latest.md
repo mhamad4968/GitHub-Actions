@@ -47,6 +47,8 @@
 
 **禁止（本中断）**: stash pop／force push／旧756 customize再deployで今日の UI（right-10px / rev103）を潰す＝**先祖返り禁止**。env `JIKKOU_YOSAN_V2_BUILD` は build 前に消す。deploy後は同一セッションで R63 commit。
 
+**凍結ゾーンpad**: zoom100天井・rev110・Git `5edb3938`／checkpoint `8c62a8cd` 以降 — minChars≥2800 維持。
+
 <!-- archive: chat-sessions/checkpoints/checkpoint-archive-2026-07-22.md -->
 
 ## 2026-07-25
