@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-25 朝 JST — **セッション中断（夕方再開）**。756 UI目視OK＋依頼者メール再送済。push済・force/stash-pop禁止＝先祖返り防止。
 
-**Git**: **bd2ecf04** = origin/main — push 済
+**Git**: **`e0bed39b`** = `origin/main` — push 済
 
 **本日状態（要約）**: App **756** LIVE BUILD=`2026-07-25-ver02-actual-right-10px` **rev103** / fileKey `61178d0c-7268-4147-a3da-885cbeed3ee0`。§6.2 C7右息抜き10px・C11文字サイズ・ヘッダ沈み解消・一重スクロールを浜田目視OK。App **674** 購入先コジマ／ツクモ追加・目視OK。依頼者確認メール再送済（下書き `docs/plans/2026-07-25-jikkou-yosan-ver02-requester-meeting-email-draft.md`）。優先①文字サイズ②LIVE目視③メール＝済 → 次④DD(R-19/20)⑤Excel。735/736書込禁止・688/677–679/SKYSEA/712制約継続。DeepSeek MCP v4ラッパあり（空応答時は理由付きスキップ）。H9/△2 reviewDate=**2026-07-25**（early GREEN/降格禁止）。
 

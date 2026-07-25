@@ -1,13 +1,13 @@
 {
-  "scoredAt": "2026-07-24T21:41:45.752Z",
+  "scoredAt": "2026-07-25T04:35:07.544Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "当日 -0。残 R-11/12/13（依頼者）・LIVE目視・Excel案件追加投入。§6.2 クロム維持（`overflow-x:clip`／fixed メニュー）。",
+  "topTask": "夕方再開 → Desktop スターター貼付 → bootstrap OK → 756 LIVE が `ver02-actual-right-10px`/rev103 か確認 → §41 で④DD（R-19/20）または依頼者回答反映または H9。",
   "tasks": [
     {
-      "id": "checkpoint:当日_-0。残_R-11/12/13（依頼者）・LIVE目視・Excel案件追加",
-      "text": "当日 -0。残 R-11/12/13（依頼者）・LIVE目視・Excel案件追加投入。§6.2 クロム維持（`overflow-x:clip`／fixed メニュー）。",
+      "id": "checkpoint:夕方再開_→_Desktop_スターター貼付_→_bootstrap_OK_→_",
+      "text": "夕方再開 → Desktop スターター貼付 → bootstrap OK → 756 LIVE が `ver02-actual-right-10px`/rev103 か確認 → §41 で④DD（R-19/20）または依頼者回答反映または H9。",
       "source": "checkpoint",
-      "difficulty": 2,
+      "difficulty": 3,
       "tokens": "中",
       "tokenScore": 2,
       "impact": 5,
