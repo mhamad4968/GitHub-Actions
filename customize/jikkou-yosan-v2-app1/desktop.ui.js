@@ -143,10 +143,10 @@
       ".jy2-section-title{margin:14px 0 6px;font-size:14px;font-weight:700;padding:4px 8px;background:#e8eef4;border-left:4px solid #2563eb;color:#1e3a8a}",
       // 表の横スクロール: 親は幅固定・子だけ overflow-x（親が表幅に広がるとスクロールが出ない）
       // 右端パディングで最終列の縦罫線が clip されないようにする（C5/C12）
-      // ラッパ幅の最終決定は jy2SyncHScroll（viewport 天井）。ここは初期フォールバック。
-      // 広幅: min-width max(100%,1100) で右白帯を埋める。狭幅: max-content が勝ち横スクロール（C5）。
+      // ラッパ幅の最終決定は jy2SyncHScroll（viewport 天井の固定px）。ここは初期フォールバック。
+      // 表の広幅フル埋めは JS で min-width=max(下限, wrap.clientWidth) px。CSS の max(100%,…) は狭幅で縮むため使わない。
       ".jy2-table-scroll{display:block;overflow-x:scroll;overflow-y:visible;max-width:100%;width:100%;min-width:0;margin:0 0 16px;padding:0 14px 10px 0;box-sizing:border-box;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-gutter:stable both-edges}",
-      ".jy2-table-scroll>.jy2-table{display:table;width:max-content;min-width:max(100%,1100px);max-width:none;margin:0 0 0 0;box-sizing:border-box}",
+      ".jy2-table-scroll>.jy2-table{display:table;width:max-content;min-width:1100px;max-width:none;margin:0;box-sizing:border-box}",
       ".jy2-table{border-collapse:collapse;width:100%;margin:0 0 16px;font-size:12px;background:#fff;border-radius:6px;overflow:visible}",
       ".jy2-table th,.jy2-table td{border:1px solid #e2e8f0;padding:4px 6px;text-align:left;vertical-align:middle}",
       ".jy2-table th{background:#f1f5f9;font-weight:600;color:#475569;text-align:center;white-space:nowrap}",
@@ -192,8 +192,8 @@
       ".jy2-block-no{font-weight:800;background:#fff;color:#047857;padding:3px 10px;border:1px solid #86efac;border-radius:6px}",
       ".jy2-block-actions{margin-left:auto;display:flex;gap:4px}",
       ".jy2-detail-table{margin:0}",
-      // C5: 内訳も広幅はラッパ幅まで伸ばし、狭幅は max-content で横スクロール
-      ".jy2-table-scroll>.jy2-detail-table{display:table;width:max-content;min-width:max(100%,1100px);max-width:none;table-layout:auto}",
+      // C5: 内訳も下限1100px固定。広幅フル埋めは jy2ForceTableMinWidth が px で上書き
+      ".jy2-table-scroll>.jy2-detail-table{display:table;width:max-content;min-width:1100px;max-width:none;table-layout:auto}",
       ".jy2-detail-table th.jy2-th-stacked{min-width:4.5rem;padding:6px 4px!important}",
       ".jy2-detail-table .jy2-th-stack .jy2-th-label{white-space:normal;max-width:6.5rem;line-height:1.25}",
       ".jy2-detail-table .jy2-combo-wrap{min-width:8.5rem}",
@@ -212,7 +212,7 @@
       ".jy2-pane[data-tab-id='actual']{overflow-x:clip;overflow-y:visible;padding:8px 8px 8px 8px}",
       /* 右息抜き ~10px（6px基準から左へ+4px＝浜田意図。2pxは逆方向だった） */
       ".jy2-actual-scroll{display:block;overflow-x:scroll;overflow-y:visible;border:1px solid #e2e8f0;border-radius:6px;background:#fff;max-width:100%;width:100%;min-width:0;max-height:none;box-sizing:border-box;padding:0 10px 10px 0;margin:0;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-gutter:stable both-edges}",
-      ".jy2-actual-table{white-space:nowrap;margin:0;border-collapse:separate;border-spacing:0;font-size:11px;width:max-content;min-width:max(100%,1600px);max-width:none;box-sizing:border-box}",
+      ".jy2-actual-table{white-space:nowrap;margin:0;border-collapse:separate;border-spacing:0;font-size:11px;width:max-content;min-width:1600px;max-width:none;box-sizing:border-box}",
       ".jy2-actual-table th,.jy2-actual-table td{padding:3px 5px}",
       ".jy2-actual-table .jy2-input{min-width:48px;font-size:11px}",
       ".jy2-actual-table .jy2-actual-month{width:3.6rem;min-width:3.6rem;max-width:3.8rem;padding:2px 3px;box-sizing:border-box}",
@@ -1000,23 +1000,19 @@
     if (table && table.style) {
       const isActual = scrollEl.classList.contains("jy2-actual-scroll");
       const forceMin = isActual ? 1600 : 1100;
-      // 広幅で右白帯を出さない: ラッパ幅と下限の大きい方まで伸ばす
-      table.style.setProperty(
-        "min-width",
-        `max(100%, ${forceMin}px)`,
-        "important",
-      );
+      // 広幅: wrap 幅まで伸ばす。狭幅: 下限を維持してラッパ内横スクロール（% 指定は縮むので禁止）
+      const wrapInner = Math.max(0, Math.floor(scrollEl.clientWidth || 0));
+      const tableMin = Math.max(forceMin, wrapInner);
+      table.style.setProperty("min-width", `${tableMin}px`, "important");
       table.style.setProperty("width", "max-content", "important");
       table.style.setProperty("max-width", "none", "important");
     }
     const inner = scrollEl.querySelector(":scope > .jy2-hscroll-inner");
     if (inner && inner.style) {
       const forceMin = Number(inner.dataset.minWidth) || 920;
-      inner.style.setProperty(
-        "min-width",
-        `max(100%, ${forceMin}px)`,
-        "important",
-      );
+      const wrapInner = Math.max(0, Math.floor(scrollEl.clientWidth || 0));
+      const innerMin = Math.max(forceMin, wrapInner);
+      inner.style.setProperty("min-width", `${innerMin}px`, "important");
       inner.style.setProperty("width", "max-content", "important");
       inner.style.setProperty("max-width", "none", "important");
       inner.style.setProperty("box-sizing", "border-box", "important");
@@ -1028,11 +1024,11 @@
     const doc = scrollEl.ownerDocument;
     if (doc) jy2SyncHostViewportCap(doc);
     const basis = jy2MeasureHScrollBasis(scrollEl);
-    // 予実は右息抜き10px。一般表は罫線確保のため12（過大 gutter はフル画面の右白帯になる）
+    // 予実は右息抜き10px。一般表は罫線確保のため12
     const gutter = scrollEl.classList.contains("jy2-actual-scroll") ? 10 : 12;
     const width = Math.max(240, (basis || 240) - gutter);
-    // width:100% で親が正しいときはフル埋め。max-width 天井で親膨張時は横スクロール維持。
-    scrollEl.style.setProperty("width", "100%", "important");
+    // 固定px 天井＝狭幅でもラッパが表に引きずられて広がらず、横スクロールが出る
+    scrollEl.style.setProperty("width", `${width}px`, "important");
     scrollEl.style.setProperty("max-width", `${width}px`, "important");
     scrollEl.style.setProperty("min-width", "0", "important");
     scrollEl.style.setProperty("overflow-x", "scroll", "important");
