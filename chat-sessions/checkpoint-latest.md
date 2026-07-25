@@ -1,9 +1,9 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-25 15:50 JST — 7/27依頼者レビュー準備完了。756 LIVE rev117。
+**最終更新**: 2026-07-25 15:55 JST — 7/27依頼者レビュー準備完了・docsコミット済。756 LIVE rev117。
 
-**Git**: **`164bdb35`** = origin/main — blockno-nav（内訳№相互ジャンプ）
+**Git**: **`9cc2c8fc`** = origin/main — 7/27レビュー用 SPEC／確認パック／checkpoint 同期（UI tip は `164bdb35` blockno-nav）
 
 **本日状態（要約）**: App **756** LIVE BUILD=`2026-07-25-ver02-blockno-nav` rev**117**。C5 画面下固定横スクロールレール／自然幅維持／pane1本。U32 内訳№相互ジャンプ（総括⇄内訳）浜田目視OK。総括・内訳・予実の狭幅スクロールOK。列名=分類/品目/補助項目。735/736書込禁止。
 
@@ -47,7 +47,7 @@
 
 **禁止（本中断）**: stash pop／force push／旧756 customize再deployで今日の UI（blockno-nav / rev117・hscroll-rail）を潰す＝**先祖返り禁止**。env `JIKKOU_YOSAN_V2_BUILD` は build 前に消す。deploy後は同一セッションで R63 commit。735/736書込禁止。
 
-**凍結ゾーンpad**: 7/27準備・rev117・Git `164bdb35`・BUILD blockno-nav — minChars≥2800 維持。
+**凍結ゾーンpad**: 7/27準備・rev117・Git `9cc2c8fc`・BUILD blockno-nav — minChars≥2800 維持。
 
 <!-- archive: chat-sessions/checkpoints/checkpoint-archive-2026-07-22.md -->
 
