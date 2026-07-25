@@ -210,16 +210,19 @@ export function buildWindowsMcp(S) {
   );
   // 2026-07-25: upstream mcp-deepseek@latest defaults to deepseek-chat (API 400).
   // Lab wrapper defaults to deepseek-v4-flash — sync で Windows を旧 npx に戻さない。
-  // DEEPSEEK_DEFAULT_MODEL は bash -lc 内でも export（WSL へ Windows env が渡らない場合がある）。
+  // #S-DS-EMPTY-01: DEEPSEEK_THINKING_DEFAULT=disabled（thinking ON + max_tokens≈400 → content空「无响应」）。
+  // DEEPSEEK_* は bash -lc 内でも export（WSL へ Windows env が渡らない場合がある）。
   out.mcpServers.deepseek = {
     ...wslBash(
       `set -a && source ${AI_SECRET_FILE} && set +a && ` +
-        `export PATH=/home/mhamada202408224/.nvm/versions/node/v25.8.2/bin:$PATH DEEPSEEK_DEFAULT_MODEL=deepseek-v4-flash && ` +
+        `export PATH=/home/mhamada202408224/.nvm/versions/node/v25.8.2/bin:$PATH ` +
+        `DEEPSEEK_DEFAULT_MODEL=deepseek-v4-flash DEEPSEEK_THINKING_DEFAULT=disabled && ` +
         `exec node /mnt/c/Users/mhamada202408224/kintone-ai-lab/scripts/mcp-deepseek-v4/entry.mjs`,
     ),
     env: {
       PATH: "/home/mhamada202408224/.nvm/versions/node/v25.8.2/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
       DEEPSEEK_DEFAULT_MODEL: "deepseek-v4-flash",
+      DEEPSEEK_THINKING_DEFAULT: "disabled",
     },
   };
   out.mcpServers.openrouter = aiWindowsServer(

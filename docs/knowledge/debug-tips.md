@@ -17,6 +17,16 @@
 
 ---
 
+## [2026-07-25] DeepSeek MCP — 空応答「无响应」(#S-DS-EMPTY-01)
+
+**前提**: CallMcpTool `user-deepseek` `chat` が **`无响应`** のみ返す／午前の v4 ラッパ導入後も §50-3-8 が空に見えるとき  
+**真因**: DeepSeek v4 は **thinking 既定 ON**。`max_tokens`（例: 400）が **reasoning_tokens に全消費**され `finish=length`・`content=""`。旧ラッパは `content || "无响应"` で黙って成功扱いしていた。  
+**手順**: (1) `scripts/mcp-deepseek-v4/entry.mjs` を最新化（thinking 既定 `disabled`・空 content は `isError`+診断）。(2) mcp.json に `DEEPSEEK_THINKING_DEFAULT=disabled`（`npm run mcp:sync-cursor-windows`）。(3) Cursor で DeepSeek MCP を再接続。(4) `npm run verify:deepseek-mcp-chat -- --require-live`（任意 `--prove-bug` で旧条件を実測）。thinking が必要なときだけ `thinking: "enabled"` + `maxTokens`≥2048。  
+**禁止**: 空応答を「MCP死」と決めつけ OpenRouter へ常時逃がすこと／「无响应」を成功と書くこと。  
+**exit**: `verify:deepseek-mcp-v4` + `verify:deepseek-mcp-chat --require-live` exit 0 · CallMcpTool chat が日本語非空
+
+---
+
 ## [2026-07-15] cio:mcp:profile — dry-run と apply 同時禁止
 
 **前提**: Cold プロファイルを試すとき  

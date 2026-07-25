@@ -59,7 +59,20 @@ function check(label, server) {
       detail: `${label}: missing scripts/mcp-deepseek-v4/entry.mjs`,
     };
   }
-  return { ok: true, detail: `${label}: v4 wrapper OK` };
+  const env = server.env && typeof server.env === "object" ? server.env : {};
+  const thinkingDefault = String(
+    env.DEEPSEEK_THINKING_DEFAULT || "",
+  ).toLowerCase();
+  const blobHasThinkingOff =
+    /DEEPSEEK_THINKING_DEFAULT=disabled/.test(blob) ||
+    thinkingDefault === "disabled";
+  if (!blobHasThinkingOff) {
+    return {
+      ok: false,
+      detail: `${label}: missing DEEPSEEK_THINKING_DEFAULT=disabled (#S-DS-EMPTY-01)`,
+    };
+  }
+  return { ok: true, detail: `${label}: v4 wrapper OK + thinking default off` };
 }
 
 const home = process.env.USERPROFILE || process.env.HOME || "";

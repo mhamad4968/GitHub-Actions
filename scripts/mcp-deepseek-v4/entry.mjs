@@ -3,6 +3,9 @@
  * DeepSeek MCP wrapper — default model deepseek-v4-flash
  * (upstream mcp-deepseek@1.0.2 hardcodes deepseek-chat which API rejected 2026-07).
  *
+ * #S-DS-EMPTY-01 (2026-07-25): v4 thinking 既定 ON のとき max_tokens が reasoning に吸われ
+ * content="" → 旧実装が「无响应」を返していた。thinking 既定 OFF + 診断付き抽出に変更。
+ *
  * Usage (mcp.json command):
  *   node scripts/mcp-deepseek-v4/entry.mjs
  * Requires DEEPSEEK_API_KEY in env (same as upstream).
@@ -10,9 +13,15 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
+import {
+  buildChatBody,
+  extractAssistantText,
+  resolveThinking,
+} from "./lib-reply.mjs";
 
 const DEFAULT_MODEL = process.env.DEEPSEEK_DEFAULT_MODEL || "deepseek-v4-flash";
 const API_BASE = process.env.DEEPSEEK_API_BASE || "https://api.deepseek.com";
+const THINKING_DEFAULT = process.env.DEEPSEEK_THINKING_DEFAULT || "disabled";
 
 const apiKey = process.env.DEEPSEEK_API_KEY;
 if (!apiKey) {
@@ -20,19 +29,14 @@ if (!apiKey) {
   process.exit(1);
 }
 
-async function chatCompletion({ model, messages, temperature, max_tokens }) {
+async function chatCompletion(body) {
   const res = await fetch(`${API_BASE}/chat/completions`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      model: model || DEFAULT_MODEL,
-      messages,
-      temperature: temperature ?? 0.7,
-      max_tokens,
-    }),
+    body: JSON.stringify(body),
   });
   const json = await res.json();
   if (!res.ok) {
@@ -45,16 +49,39 @@ async function chatCompletion({ model, messages, temperature, max_tokens }) {
   return json;
 }
 
+async function runChat({ message, model, temperature, maxTokens, thinking }) {
+  const thinkingToggle = resolveThinking(thinking, THINKING_DEFAULT);
+  const body = buildChatBody({
+    model: model || DEFAULT_MODEL,
+    message,
+    temperature,
+    maxTokens,
+    thinking: thinkingToggle,
+  });
+  const response = await chatCompletion(body);
+  const choice = response.choices?.[0];
+  const extracted = extractAssistantText(choice?.message, {
+    finish_reason: choice?.finish_reason,
+    usage: response.usage,
+  });
+  return {
+    content: [{ type: "text", text: extracted.text }],
+    isError: !extracted.ok,
+  };
+}
+
 const server = new McpServer({
   name: "deepseek-mcp-server",
-  version: "1.0.0-v4-default",
+  version: "1.1.0-v4-thinking-default-off",
 });
 
 server.registerTool(
   "chat",
   {
     title: "DeepSeek 聊天对话",
-    description: "与DeepSeek模型进行对话（默认 deepseek-v4-flash）",
+    description:
+      "与DeepSeek模型进行对话（默认 deepseek-v4-flash / thinking=disabled）。" +
+      "thinking 既定ONだと max_tokens が reasoning に吸われ空応答になるため lab 既定は disabled。",
     inputSchema: {
       message: z.string().describe("用户消息"),
       model: z
@@ -63,20 +90,15 @@ server.registerTool(
         .describe(`模型名称，默认为 ${DEFAULT_MODEL}`),
       temperature: z.number().min(0).max(2).optional(),
       maxTokens: z.number().positive().optional(),
+      thinking: z
+        .enum(["enabled", "disabled"])
+        .optional()
+        .describe(`thinking モード（既定 ${THINKING_DEFAULT}）`),
     },
   },
-  async ({ message, model, temperature, maxTokens }) => {
+  async (args) => {
     try {
-      const response = await chatCompletion({
-        model: model || DEFAULT_MODEL,
-        messages: [{ role: "user", content: message }],
-        temperature,
-        max_tokens: maxTokens,
-      });
-      const reply = response.choices?.[0]?.message?.content || "无响应";
-      return {
-        content: [{ type: "text", text: reply }],
-      };
+      return await runChat(args);
     } catch (error) {
       return {
         content: [
@@ -151,17 +173,13 @@ server.registerTool(
       message: z.string(),
       model: z.string().optional(),
       temperature: z.number().min(0).max(2).optional(),
+      maxTokens: z.number().positive().optional(),
+      thinking: z.enum(["enabled", "disabled"]).optional(),
     },
   },
-  async ({ message, model, temperature }) => {
+  async (args) => {
     try {
-      const response = await chatCompletion({
-        model: model || DEFAULT_MODEL,
-        messages: [{ role: "user", content: message }],
-        temperature,
-      });
-      const reply = response.choices?.[0]?.message?.content || "无响应";
-      return { content: [{ type: "text", text: reply }] };
+      return await runChat(args);
     } catch (error) {
       return {
         content: [
