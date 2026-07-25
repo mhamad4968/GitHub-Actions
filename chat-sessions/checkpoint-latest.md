@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-25 15:05 JST — 工事基本情報に横スクロール枠追加。756 LIVE rev108。
 
-**Git**: **062b90f4** = origin/main — header h-scroll R63
+**Git**: **`a07d7a81`** = origin/main — header h-scroll R63
 
 **本日状態（要約）**: App **756** LIVE BUILD=`2026-07-25-ver02-hscroll-header-pane` rev**108**。工事基本情報も `jy2-table-scroll`＋内側 min-width 920px。狭幅で横スクロール。他タブは表 min-width＋viewport天井。735/736書込禁止。
 
@@ -12,11 +12,11 @@
 2. 浜田: Ctrl+F5 後、工事基本情報で狭幅横スクロール確認 → 続けて総括・内訳
 3. 確認パック送付は7/27以降
 
-**GO待ち**: 依頼者送付は **7/27以降**。
+**GO待ち**: 依頼者送付は **7/27以降**。リストJSON追記は回答 or 浜田GO後。
 
-**次の1手**: 756を Ctrl+F5 し工事基本情報で横スクロール目視。
+**次の1手**: 756を Ctrl+F5 し工事基本情報で横スクロール目視。まだならスクショ共有。
 
-**調査正本**: SPEC C5/C12。
+**調査正本**: SPEC C5/C12 ＋ BUILD `2026-07-25-ver02-hscroll-header-pane`（rev108）。
 
 **観測期間**: **H9/△2**: metricsEligibleAfter=**2026-07-18** · reviewDate=**2026-07-25** · early GREEN/降格 **禁止**
 
