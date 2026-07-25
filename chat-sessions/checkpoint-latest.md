@@ -1,22 +1,22 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-25 15:08 JST — 浜田目視OK（100%ズーム右枠）。756 LIVE rev110。
+**最終更新**: 2026-07-25 15:50 JST — 7/27依頼者レビュー準備完了。756 LIVE rev117。
 
-**Git**: **`92f9875a`** = origin/main — checkpoint pad after zoom100
+**Git**: **`164bdb35`** = origin/main — blockno-nav（内訳№相互ジャンプ）
 
-**本日状態（要約）**: App **756** LIVE BUILD=`2026-07-25-ver02-hscroll-zoom100` rev**110**。C5 zoom100% 右枠切れ **浜田目視OK**。工事基本情報フル幅fluid維持。735/736書込禁止。
+**本日状態（要約）**: App **756** LIVE BUILD=`2026-07-25-ver02-blockno-nav` rev**117**。C5 画面下固定横スクロールレール／自然幅維持／pane1本。U32 内訳№相互ジャンプ（総括⇄内訳）浜田目視OK。総括・内訳・予実の狭幅スクロールOK。列名=分類/品目/補助項目。735/736書込禁止。
 
 **継続メモ（次セッション -0）**:
-1. ~~100%ズーム右枠目視~~ → **済（浜田OK）**
-2. 確認パック送付は7/27以降（浜田「送ってよい／直す」待ち）
-3. 残: R-11/12/13・依頼者回答・Excel投入
+1. **7/27**: 依頼者レビュー／確認パック送付（浜田「送ってよい」後）。正本 `docs/plans/2026-07-25-jikkou-requester-confirm-pack-pre-0727.md`
+2. 回答後: R-19 JSON追記（労務費夜間／工具･機械使用料）・必要なら単位。実装は GO 後
+3. 残意図的: R-11/12/13（諸経費等自動式＝手入力のまま）・Excel本投入
 
-**GO待ち**: 依頼者送付は **7/27以降**。
+**GO待ち**: 確認パック送付＝浜田一言。リストJSON追記＝依頼者回答 or 浜田GO。
 
-**次の1手**: 依頼者確認パックは7/27以降。次UI指示があればそちら優先。
+**次の1手**: 7/27に確認パック送付＋口頭レビュー。UI追加指示がなければ依頼者待ち。
 
-**調査正本**: SPEC C5 ＋ BUILD `2026-07-25-ver02-hscroll-zoom100`（rev110・目視OK）。
+**調査正本**: SPEC §6.2 C5/C12・U32 ＋ BUILD `2026-07-25-ver02-blockno-nav`（rev117）。
 
 **観測期間**: **H9/△2**: metricsEligibleAfter=**2026-07-18** · reviewDate=**2026-07-25** · early GREEN/降格 **禁止**
 
@@ -36,7 +36,7 @@
 | **677–679** | 触らない |
 | **SKYSEA** | 8/3 問い合わせまで実PC配信禁止 |
 | **736** | 現行版保持・Ver.02 後も触らない |
-| **756/757/758** | R-11/12/13・依頼者回答・Excel投入（UIクロム本日OK） |
+| **756/757/758** | 7/27レビュー準備OK（rev117）・残R-11/12/13・依頼者回答・Excel投入 |
 | **712** | 削除済 — deploy 禁止 |
 
 ## セッション切替後の自律復元（Lifecycle v2 鏡像）
@@ -45,13 +45,19 @@
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
 
-**禁止（本中断）**: stash pop／force push／旧756 customize再deployで今日の UI（right-10px / rev103）を潰す＝**先祖返り禁止**。env `JIKKOU_YOSAN_V2_BUILD` は build 前に消す。deploy後は同一セッションで R63 commit。
+**禁止（本中断）**: stash pop／force push／旧756 customize再deployで今日の UI（blockno-nav / rev117・hscroll-rail）を潰す＝**先祖返り禁止**。env `JIKKOU_YOSAN_V2_BUILD` は build 前に消す。deploy後は同一セッションで R63 commit。735/736書込禁止。
 
-**凍結ゾーンpad**: zoom100天井・rev110・Git `5edb3938`／checkpoint `8c62a8cd` 以降 — minChars≥2800 維持。
+**凍結ゾーンpad**: 7/27準備・rev117・Git `164bdb35`・BUILD blockno-nav — minChars≥2800 維持。
 
 <!-- archive: chat-sessions/checkpoints/checkpoint-archive-2026-07-22.md -->
 
 ## 2026-07-25
+
+### 2026-07-25 午後（7/27準備）
+- BUILD=`2026-07-25-ver02-blockno-nav` rev**117** — C5固定レール・U32内訳№ジャンプ・浜田OK
+- 確認パック: `docs/plans/2026-07-25-jikkou-requester-confirm-pack-pre-0727.md`（送付は7/27以降）
+- SPEC: C5/U32 更新済。working tree は本更新コミットで同期
+
 
 ### 756 LIVE（目視OK詳細）
 - BUILD=`2026-07-25-ver02-actual-right-10px` rev**103** fileKey=`61178d0c-7268-4147-a3da-885cbeed3ee0`
