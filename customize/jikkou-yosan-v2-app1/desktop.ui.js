@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-25-ver02-hojo-komoku-input
+  // @JY_V2_BUILD 2026-07-25-ver02-hscroll-detail-maxcontent
 
   const JY2_STYLE_ID = "jy2-shell-style";
   const JY2_ACTIVE_TAB_KEY = `jy2:${APP1_ID}:activeTab`;
@@ -190,9 +190,13 @@
       ".jy2-block-no{font-weight:800;background:#fff;color:#047857;padding:3px 10px;border:1px solid #86efac;border-radius:6px}",
       ".jy2-block-actions{margin-left:auto;display:flex;gap:4px}",
       ".jy2-detail-table{margin:0}",
-      ".jy2-table-scroll>.jy2-detail-table{width:100%;min-width:100%;max-width:none}",
-      ".jy2-detail-table th.jy2-th-stacked{min-width:3.25rem;padding:6px 4px!important}",
-      ".jy2-detail-table .jy2-th-stack .jy2-th-label{white-space:normal;max-width:5.5rem;line-height:1.25}",
+      // C5: 内訳も他表と同様 max-content。width:100% だと狭幅で列が縮み横スクロールが出ない
+      ".jy2-table-scroll>.jy2-detail-table{display:table;width:max-content;min-width:100%;max-width:none;table-layout:auto}",
+      ".jy2-detail-table th.jy2-th-stacked{min-width:4.5rem;padding:6px 4px!important}",
+      ".jy2-detail-table .jy2-th-stack .jy2-th-label{white-space:normal;max-width:6.5rem;line-height:1.25}",
+      ".jy2-detail-table .jy2-combo-wrap{min-width:8.5rem}",
+      ".jy2-detail-table td .jy2-input{min-width:5.5rem}",
+      ".jy2-detail-table td .jy2-select{min-width:4.5rem}",
       ".jy2-footer-row td{background:#f8fafc}",
       ".jy2-footer-row .jy2-footer-label{font-weight:700;text-align:left!important;vertical-align:middle;padding:4px 8px!important}",
       ".jy2-footer-row .jy2-footer-label .jy2-th-stack{flex-direction:row!important;align-items:center;justify-content:flex-start;gap:6px;margin:0!important;width:auto;max-width:100%}",

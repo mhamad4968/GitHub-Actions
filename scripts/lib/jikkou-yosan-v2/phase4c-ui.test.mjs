@@ -496,6 +496,20 @@ test("App 1 detail tab renders jy2-* block editor wired to the summary refresh",
   assert.doesNotMatch(source, /className\s*=\s*["']jy-/);
 });
 
+test("C5 detail table uses max-content inside jy2-table-scroll (narrow window h-scroll)", () => {
+  const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
+  assert.match(
+    source,
+    /\.jy2-table-scroll>\.jy2-detail-table\{[^}]*width:max-content/,
+  );
+  assert.doesNotMatch(
+    source,
+    /\.jy2-table-scroll>\.jy2-detail-table\{width:100%/,
+  );
+  assert.match(source, /function jy2WrapTable\b/);
+  assert.match(source, /function jy2SyncHScroll\b/);
+});
+
 test("U4 name1/name2 are combo (select+input); name3 is free text input", () => {
   const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
   assert.match(source, /function jy2ComboInput\b/);
