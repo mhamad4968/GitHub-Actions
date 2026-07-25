@@ -20,6 +20,10 @@ const checks = [
   ['reload後スクロール復元', /function\s+jy2ConsumeStoredScroll\s*\(/],
   ['再描画前後スクロール保持', /function\s+jy2CaptureScroll\s*\([\s\S]*?function\s+jy2ApplyScroll\s*\(/],
   ['非表示pane縦移動抑止', /function\s+jy2PaneIsVisible\s*\(/],
+  ['工種→区分マップ', /JY2_COST_CATEGORY_BY_WORK_TYPE_CODE/],
+  ['工種→区分解決', /function\s+jy2ResolveCostCategoryFromWorkType\s*\(/],
+  ['11100は保安', /["']11100["']\s*:\s*["']保安["']/],
+  ['10100は施工', /["']10100["']\s*:\s*["']施工["']/],
 ];
 
 const missing = checks.filter(([, re]) => !re.test(source)).map(([name]) => name);
@@ -28,4 +32,4 @@ if (missing.length) {
   process.exit(1);
 }
 
-console.log('[verify-jikkou-v2-ui-smoke] OK datalist + scroll-preserve');
+console.log('[verify-jikkou-v2-ui-smoke] OK datalist + scroll-preserve + worktype-cost-auto');

@@ -2,7 +2,7 @@
 
 **作成日**: 2026-07-19  
 **状態**: **DRAFT / 総括 CLOSED／内訳 CLOSED／予実 CLOSED／版管理 CLOSED／試作 LIVE（App756）／本稼働 GO なし**  
-**2026-07-26 朝（依頼者回答①＋コード表）**: §7.2 明細帰属を **CONFIRMED**。正本=`C:\tmp\実行予算ver2\内訳で使うコード表.xlsx` の A列（項目）。**保安費→保安／施工費・現場経費・その他費用→施工／現場管理費→給与手当**。またがり無し。  
+**2026-07-26 朝（依頼者回答①＋コード表＋実装）**: §7.2 明細帰属 **CONFIRMED**。A列線引き＋**工種番号／システム工種選択で区分自動セット**（BUILD `worktype-cost-auto`）。マップ正本 `scripts/data/jikkou-yosan-v2-code-table-cost-category.json`。給与（現場管理費）は区分クリア。手修正は U29 で可。  
 **2026-07-25 夜（保存・編集でスクロール維持）**: LIVE BUILD `2026-07-25-ver02-preserve-scroll`。保存後 reload／セル編集の pane 再描画でページ上部へ跳ばない（縦 window＋横 hscroll を復元）。§8.5 U34。  
 **2026-07-25 夜（分類/品目 打鍵候補 datalist）**: LIVE BUILD `2026-07-25-ver02-name-datalist-suggest` rev124。分類/品目コンボ欄の左 input に `datalist` を紐付け、打鍵で候補が絞り込み表示（右▼ select は全候補列挙のまま）。datalist id は行ごとに一意採番（DeepSeek §50-3-8 盲点1）。§8.5 U26。  
 **2026-07-25 夜（U27同値空白表示）**: LIVE BUILD `2026-07-25-ver02-name-blank-display`。分類/品目が直前と同値なら画面を空白（薄青）＋フォーカスで実値。C16列幅も継続。  

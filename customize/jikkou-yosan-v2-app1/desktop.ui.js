@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-25-ver02-preserve-scroll
+  // @JY_V2_BUILD 2026-07-26-ver02-worktype-cost-auto
   // U34: 保存・セル編集の再描画／reload でページ上部へ跳ばない（縦・横位置を維持）
 
   const JY2_STYLE_ID = "jy2-shell-style";
@@ -999,7 +999,113 @@
     "11500": "kindLong",
     "13500": "kindLong",
   });
+  const JY2_COST_CATEGORY_BY_WORK_TYPE_CODE = Object.freeze({
+    "10100": "施工",
+    "10200": "施工",
+    "10300": "施工",
+    "10400": "施工",
+    "10500": "施工",
+    "10600": "施工",
+    "10700": "施工",
+    "10800": "施工",
+    "10900": "施工",
+    "11000": "施工",
+    "11100": "保安",
+    "11200": "保安",
+    "11300": "保安",
+    "11400": "保安",
+    "11500": "保安",
+    "11700": "施工",
+    "11800": "施工",
+    "11900": "施工",
+    "12000": "施工",
+    "12100": "施工",
+    "12200": "施工",
+    "12300": "施工",
+    "12400": "施工",
+    "12500": "施工",
+    "12600": "施工",
+    "12700": "施工",
+    "12800": "施工",
+    "12900": "施工",
+    "13100": "施工",
+    "13200": "施工",
+    "13300": "施工",
+    "13400": "給与",
+    "13500": "保安",
+    "13600": "施工",
+    "13620": "施工",
+    "13700": "施工",
+    "14000": "施工",
+    "14100": "施工",
+    "14200": "施工",
+    "14300": "施工",
+    "14400": "施工",
+  });
+  const JY2_COST_CATEGORY_BY_WORK_TYPE_NAME = Object.freeze({
+    "（塗）材料費": "施工",
+    "（塗）塗装工事": "施工",
+    "（塗）足場工事": "施工",
+    "（塗）塗装及び足場工事": "施工",
+    "（塗）修繕等工事": "施工",
+    "（塗）塗装付帯工事": "施工",
+    "（塗）暫定実行予算総額": "施工",
+    "（塗）追加工事？": "施工",
+    "（塗）追加工事①": "施工",
+    "（塗）追加工事②": "施工",
+    "（塗）追加工事③": "施工",
+    "（塗）追加工事④": "施工",
+    "（塗）軌道工事": "施工",
+    "（塗）調査設計費": "施工",
+    "（塗）外注試験費": "施工",
+    "（塗）交通規制費": "施工",
+    "（塗）直轄施工班": "施工",
+    "（塗）工事管理者賃金": "施工",
+    "（塗）建設機械オペレーター賃金": "施工",
+    "（塗）その他労務者賃金": "施工",
+    "（塗）直轄下請助勢代": "施工",
+    "（塗）社内工事発注": "施工",
+    "（塗）鎌ヶ谷資材使用料": "施工",
+    "（塗）レンタル": "施工",
+    "（塗）建設機械油脂類": "施工",
+    "（塗）運送費": "施工",
+    "（塗）産業廃棄物処理費": "施工",
+    "（塗）租税公課": "施工",
+    "（塗）借地料等": "施工",
+    "（塗）消耗品費": "施工",
+    "（塗）事務費": "施工",
+    "（塗）通信費": "施工",
+    "（塗）旅費交通費": "施工",
+    "（塗）借上げ自動車費": "施工",
+    "（塗）履行保証保険料": "施工",
+    "（塗）建退共証紙購入費": "施工",
+    "（塗）諸雑費": "施工",
+    "（塗）諸会費": "施工",
+    "（塗）会議費": "施工",
+    "（塗）補償費": "施工",
+    "（塗）交際費": "施工",
+    "（塗）工事安全専任管理者": "施工",
+    "（塗）線閉責任者": "保安",
+    "（塗）列車見張員": "保安",
+    "（塗）交通整理員等": "保安",
+    "（塗）検電接地": "保安",
+    "（塗）その他保安費": "保安",
+    "（塗）重機誘導員": "保安",
+    "（塗）社員助勢費用": "給与",
+    "（塗）現場代理人･監理技術者給与手当": "給与",
+    "（塗）工事担当者給与手当": "給与",
+    "（塗）社員工事管理者給与手当": "給与",
+    "（塗）社員保安要員給与手当": "給与",
+  });
   const JY2_DEFAULT_NAME_PROFILE = "kindLong";
+
+  function jy2ResolveCostCategoryFromWorkType(code, name) {
+    const c = String(code || "").trim();
+    if (c && JY2_COST_CATEGORY_BY_WORK_TYPE_CODE[c]) return JY2_COST_CATEGORY_BY_WORK_TYPE_CODE[c];
+    const n = String(name || "").trim();
+    if (n && JY2_COST_CATEGORY_BY_WORK_TYPE_NAME[n]) return JY2_COST_CATEGORY_BY_WORK_TYPE_NAME[n];
+    return null;
+  }
 
   function jy2ResolveNameProfile(block) {
     const code = String((block && block.workTypeCode) || "").trim();
@@ -2883,18 +2989,36 @@
     };
     if (blockEditable) {
       const commitWorkTypeCode = (value) => {
-        detailModel.updateBlockHeader(block.stableBlockId, { workTypeCode: value });
+        const id = block.stableBlockId;
+        detailModel.updateBlockHeader(id, { workTypeCode: value });
         const mapped = codeMaster.workTypeByCode[value];
+        let newName = block.workTypeName;
         if (mapped) {
-          detailModel.updateBlockHeader(block.stableBlockId, { workTypeName: mapped });
+          detailModel.updateBlockHeader(id, { workTypeName: mapped });
+          newName = mapped;
+        }
+        const costCat = jy2ResolveCostCategoryFromWorkType(value, newName);
+        if (costCat === "施工" || costCat === "保安") {
+          detailModel.updateBlockHeader(id, { costCategory: costCat });
+        } else if (costCat === "給与") {
+          detailModel.updateBlockHeader(id, { costCategory: null });
         }
         rerender();
       };
       const commitWorkTypeName = (value) => {
-        detailModel.updateBlockHeader(block.stableBlockId, { workTypeName: value });
+        const id = block.stableBlockId;
+        detailModel.updateBlockHeader(id, { workTypeName: value });
         const mapped = codeMaster.workTypeByName[value];
+        let newCode = block.workTypeCode;
         if (mapped) {
-          detailModel.updateBlockHeader(block.stableBlockId, { workTypeCode: mapped });
+          detailModel.updateBlockHeader(id, { workTypeCode: mapped });
+          newCode = mapped;
+        }
+        const costCat = jy2ResolveCostCategoryFromWorkType(newCode, value);
+        if (costCat === "施工" || costCat === "保安") {
+          detailModel.updateBlockHeader(id, { costCategory: costCat });
+        } else if (costCat === "給与") {
+          detailModel.updateBlockHeader(id, { costCategory: null });
         }
         rerender();
       };
