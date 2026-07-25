@@ -172,7 +172,9 @@ function main() {
   if (stagedAfter) {
     const commitArgs = ['commit', '-m', message];
     if (reviewedBy) commitArgs.push('-m', `Reviewed-by: ${reviewedBy}`);
-    const commit = git(commitArgs);
+    const commit = git(commitArgs, {
+      env: { ...process.env, CIO_POST_COMMIT_CHECKPOINT_SYNC: '1' },
+    });
     if (!commit.ok) {
       console.error('[cio:session:close-git] NG commit 失敗（pre-commit 等）');
       process.exit(commit.status || 1);
@@ -208,11 +210,10 @@ function main() {
   git(['add', 'docs/handoff/latest-session-bridge.json', CHECKPOINT_REL]);
   const closeMetaStaged = git(['diff', '--cached', '--name-only']).out;
   if (closeMetaStaged) {
-    const metaCommit = git([
-      'commit',
-      '-m',
-      'chore(session): sync checkpoint Git + handoff bridge',
-    ]);
+    const metaCommit = git(
+      ['commit', '-m', 'chore(session): sync checkpoint Git + handoff bridge'],
+      { env: { ...process.env, CIO_POST_COMMIT_CHECKPOINT_SYNC: '1' } },
+    );
     if (!metaCommit.ok) {
       console.error('[cio:session:close-git] NG 締めメタ commit 失敗');
       process.exit(metaCommit.status || 1);
