@@ -104,11 +104,11 @@
 
 ---
 
-## 3. 次の調査候補（未着手）
+## 3. 次の調査（2026-07-25 追完了）
 
-1. 735 `unit` 5件 vs Ver.02 確認済み単位セットの差分表
-2. 735 code_row の `sub_type_name` と Excel `kindLong` / material の表記ゆれ突合
-3. 依頼者確認用1枚: 「明細Iは取引先と同義でよいか／別マスタが要るか」
+1. ~~735 `unit` vs Ver.02 単位~~ → **`docs/plans/2026-07-25-jikkou-unit-and-kindlong-diff.md` §1**
+2. ~~code_row × kindLong / material~~ → **同ファイル §2**
+3. ~~依頼者確認~~ → 負担減の3問パック **`docs/plans/2026-07-25-jikkou-requester-confirm-pack-pre-0727.md`**（送付は7/27以降）
 
 ---
 

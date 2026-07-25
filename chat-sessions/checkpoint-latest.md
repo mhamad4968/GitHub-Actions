@@ -1,65 +1,65 @@
-# 復元チェックポイント（最新）
-<!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
-<!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-25 夕 JST — ④DD Step1–2 済＋Ver.01再利用調査一覧化。756 LIVE確認済。DeepSeek #S-DS-EMPTY-01解消済。
+# 復允E��ェチE��ポイント（最新�E�E
+<!-- 正本と矛盾したら正本を優先し、このファイルを更新すること、E-->
+<!-- **案件 CLOSED** ≠ **セチE��ョン締めE*。混同禁止 -->
+**最終更新**: 2026-07-25 14:10 JST  E④DD Step1 E 済（単位�E表記ゆれ�E依頼老E問パチE���E�、E56 LIVE確認済、E
 
-**Git**: **`f5816320`** = `origin/main` — push 済（R-20＋Ver.01再利用調査）
+**Git**: tip 更新予宁E EStep3 docs push 後に同期
 
-**本日状態（要約）**: App **756** LIVE **確認済**。④DD: R-19穴2語OPEN／R-20は明細I⊂vendors(J)で取引先正＝J。Ver.01再利用: 735コード表・支社・部門・桁種別は読取可、**735に取引先なし**、取引先はExcel J。一覧 `docs/plans/2026-07-25-jikkou-v01-reuse-and-r20-role-inventory.md`。735/736書込禁止。依頼者回答7/27以降。
+**本日状態（要紁E��E*: ④DD Step3: 単位�EVer.02 CONFIRMED正�E�E35は月�Ekgのみ余剰。表記�EExcel正・735はCD裏取り。依頼老E��け�E **確誁E点のみ**�E�Ejikkou-requester-confirm-pack-pre-0727.md`�E�。送付�E7/27以降、E35/736書込禁止、E
 
-**継続メモ（次セッション -0）**:
-1. ~~756 LIVE / Step1 R-19 / Step2 R-20+V01再利用~~ → **済**
-2. 次調査候補: 735単位差分／code_row×kindLong／依頼者「明細I＝取引先と同義か」
-3. Excel案件追加は依頼者データ待ち / H9 評価記録
+**継続メモ�E�次セチE��ョン -0�E�E*:
+1. ~~Step1 E�E�E-19/R-20/単位�E表記�E確認パチE���E�~~ ↁE**渁E*
+2. 次: 返信チE��プレ or JSON追記手頁E��モ�E�実裁E�E回筁EGO後！E
+3. 浜田: 確認パチE��本斁E�E「送ってよい」目視�Eみ
 
-**GO待ち**: H9 / △2 最終判定は **2026-07-25 のみ**。依頼者リスト確定は 7/27以降。
+**GO征E��**: 依頼老E��付�E **7/27以陁E*。リスチESON追記�E回筁Eor 浜田GO後、E
 
-**次の1手**: §41で次調査を1つ選ぶ（単位差分 or 表記ゆれ or 依頼者確認文案）。735/736 WRITE 禁止。
+**次の1扁E*: 浜田が確認パチE��をざっと見てOKなら、返信チE��プレ作�Eまで進めてよい�E�送付�E体�E7/27�E�、E
 
 **観測期間**: **H9/△2**: metricsEligibleAfter=**2026-07-18** · reviewDate=**2026-07-25** · early GREEN/降格 **禁止**
 
-**運用メモ**: 経営会議資料7月度は完了（次月まで新規不要）。品質ゲート `docs/runbooks/push-deploy-quality-gates-v2.md` · Lifecycle v2 · クローズ正本 `data/cio-project-closures.json`。
+**運用メモ**: 経営会議賁E��7月度は完亁E��次月まで新規不要E��。品質ゲーチE`docs/runbooks/push-deploy-quality-gates-v2.md` · Lifecycle v2 · クローズ正本 `data/cio-project-closures.json`、E
 
-**688**: heat-closed 以外触らない · **674**: 購入先OK · **736**: 触らない · **756/757/758**: UIクロム本日OK・残R-11/12/13・Excel · **712**: deploy禁止
+**688**: heat-closed 以外触らなぁE· **674**: 購入允EK · **736**: 触らなぁE· **756/757/758**: UIクロム本日OK・残R-11/12/13・Excel · **712**: deploy禁止
 
-## クローズ済み（`data/cio-project-closures.json` — 9件）
+## クローズ済み�E�Edata/cio-project-closures.json`  E9件�E�E
 
-業務改善697–713 / Wi-Fi718–719 / JR iPad720–721 / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **ML750–751** / **Kintoneアカウント752–753** — **closed-v1**
+業務改喁E97 E13 / Wi-Fi718 E19 / JR iPad720 E21 / VPN733 E34 / ト�EタルネッチE37 E38 / 褁E��橁E41 E42 / **NAS748 E49** / **ML750 E51** / **KintoneアカウンチE52 E53**  E**closed-v1**
 
-## 保留・その他の制約
+## 保留・そ�E他�E制紁E
 
-| 状態 | 内容 |
+| 状慁E| 冁E�� |
 |------|------|
-| **688** | WBGT 以外触らない |
-| **677–679** | 触らない |
+| **688** | WBGT 以外触らなぁE|
+| **677 E79** | 触らなぁE|
 | **SKYSEA** | 8/3 問い合わせまで実PC配信禁止 |
-| **736** | 現行版保持・Ver.02 後も触らない |
-| **756/757/758** | R-11/12/13・依頼者回答・Excel投入（UIクロム本日OK） |
-| **712** | 削除済 — deploy 禁止 |
+| **736** | 現行版保持・Ver.02 後も触らなぁE|
+| **756/757/758** | R-11/12/13・依頼老E��答�EExcel投�E�E�EIクロム本日OK�E�E|
+| **712** | 削除渁E Edeploy 禁止 |
 
-## セッション切替後の自律復元（Lifecycle v2 鏡像）
+## セチE��ョン刁E��後�E自律復允E��Eifecycle v2 鏡像！E
 
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`  
-**項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
-**L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
+**頁E�� -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **頁E�� -0** **OK が返るまで** **着手しなぁE* | **頁E�� 0** **`npm run session:bootstrap`**�E�E*Read より剁E* `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`�E�| **頁E�� 0.9** | **日終わめE* `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
+**L2** bootstrap NG ↁE`NEW-SESSION-STARTER.md` 6 部�E�E 回）| **CLOSE** export-handoff ↁEsync-desktop ↁEclock:clear ↁEclose-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告忁E��！EK/NG�E�| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
 
-**禁止（本中断）**: stash pop／force push／旧756 customize再deployで今日の UI（right-10px / rev103）を潰す＝**先祖返り禁止**。env `JIKKOU_YOSAN_V2_BUILD` は build 前に消す。deploy後は同一セッションで R63 commit。
+**禁止�E�本中断�E�E*: stash pop�E�force push�E�旧756 customize再deployで今日の UI�E�Eight-10px / rev103�E�を潰す！E*先祖返り禁止**。env `JIKKOU_YOSAN_V2_BUILD` は build 前に消す。deploy後�E同一セチE��ョンで R63 commit、E
 
 <!-- archive: chat-sessions/checkpoints/checkpoint-archive-2026-07-22.md -->
 
 ## 2026-07-25
 
-### 756 LIVE（目視OK詳細）
+### 756 LIVE�E�目視OK詳細�E�E
 - BUILD=`2026-07-25-ver02-actual-right-10px` rev**103** fileKey=`61178d0c-7268-4147-a3da-885cbeed3ee0`
-- 文字サイズC11 / 表題余白 / 右端罫線 / スクロール / 予実ヘッダ縦sticky禁止 / 右息抜き10px（6→左+4。2pxは逆で不採用）
-- SPEC: `docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md` §6.2・§20.4 再送注記
-- customize: `customize/jikkou-yosan-v2-app1/desktop.ui.js` → `desktop.js`
+- 斁E��サイズC11 / 表題余白 / 右端罫緁E/ スクロール / 予実�EチE��縦sticky禁止 / 右息抜き10px�E�E→左+4、Epxは送E��不採用�E�E
+- SPEC: `docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md` §6.2・§20.4 再送注訁E
+- customize: `customize/jikkou-yosan-v2-app1/desktop.ui.js` ↁE`desktop.js`
 
-### 依頼者メール
-- 再送済（浜田）。下書き: `docs/plans/2026-07-25-jikkou-yosan-ver02-requester-meeting-email-draft.md`
-- 7/27口頭＋メール回答。名称規格1/2＋工種別切替一覧を明記済
+### 依頼老E��ール
+- 再送済（浜田�E�。下書ぁE `docs/plans/2026-07-25-jikkou-yosan-ver02-requester-meeting-email-draft.md`
+- 7/27口頭�E�メール回答。名称規格1/2�E�工種別刁E��一覧を�E記渁E
 
-### 674 / 環境
-- 購入先JSON: `scripts/data/pc-ledger-674-add-purchase-fields.json`
+### 674 / 環墁E
+- 購入允ESON: `scripts/data/pc-ledger-674-add-purchase-fields.json`
 - DeepSeek: `scripts/mcp-deepseek-v4/` · `verify:deepseek-mcp-v4`
-- handoff末尾: `### 2026-07-25 08:25 JST — セッション中断（夕方再開）`
+- handoff末尾: `### 2026-07-25 08:25 JST  EセチE��ョン中断�E�夕方再開�E�`
