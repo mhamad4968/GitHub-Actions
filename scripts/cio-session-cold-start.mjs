@@ -146,6 +146,15 @@ function main() {
     console.warn('[cold-start] checkpoint:git-heal NG — 手動で npm run cio:checkpoint:git-heal -- --commit');
   }
 
+  // Phase 6b2 — export-handoff / score-spec 成果物を commit（bootstrap 3c 偽陽性の恒久）
+  // SESSION-CLOCK は意図的 dirty のため対象外（verify-session-close-git-warn と同趣旨）
+  console.log('\n▶ Phase 6b2 WAKE-HANDOFF-COMMIT');
+  try {
+    run('npm run cio:wake:handoff-commit -- --push');
+  } catch {
+    console.warn('[cold-start] wake:handoff-commit NG — 手動で npm run cio:wake:handoff-commit -- --push');
+  }
+
   // Phase 6c — bootstrap 内 cio:health が WSL /tmp 経路で web を二重起動し、
   // Windows pid/url と食い違って stale になるのを防ぐ（WAKE 後に再確保）
   console.log('\n▶ Phase 6c WALL-CLOCK-REEENSURE');

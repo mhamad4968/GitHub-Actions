@@ -708,6 +708,7 @@
     "cio:mandatory-reads:stamp": "node scripts/cio-mandatory-reads-stamp.mjs",
     "cio:checkpoint:rollup": "node scripts/cio-checkpoint-rollup.mjs",
     "cio:checkpoint:git-heal": "node scripts/cio-checkpoint-git-heal.mjs",
+    "cio:wake:handoff-commit": "node scripts/cio-wake-handoff-commit.mjs",
     "cio:checkpoint:render-lifecycle": "node scripts/cio-checkpoint-render-lifecycle.mjs",
     "test:checkpoint-git-heal": "node scripts/lib/cio-checkpoint-git-heal.test.mjs",
     "verify:checkpoint-freeze-zone": "node scripts/verify-checkpoint-freeze-zone.mjs",

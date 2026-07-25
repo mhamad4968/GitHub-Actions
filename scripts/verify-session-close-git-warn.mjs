@@ -6,6 +6,7 @@
  * --skip-push-check … push 未実施チェックをスキップ（通常は使わない）
  */
 import { spawnSync } from 'node:child_process';
+import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
@@ -16,10 +17,34 @@ import { checkCheckpointGitRegression, countCheckpointGitLines, checkCheckpointG
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const warnOnly = process.argv.includes('--warn-only');
 const skipPushCheck = process.argv.includes('--skip-push-check');
+const CLOCK_REL = 'chat-sessions/SESSION-CLOCK.md';
 
 function git(args) {
   const res = spawnSync('git', args, { cwd: root, encoding: 'utf8' });
   return (res.stdout || '').trim();
+}
+
+/** status --short は先頭行の leading space（XY の X）を trim で消さない */
+function gitStatusShort() {
+  const res = spawnSync('git', ['status', '--short'], { cwd: root, encoding: 'utf8' });
+  return (res.stdout || '').replace(/\s+$/, '');
+}
+
+/**
+ * WAKE 中の SESSION-CLOCK.md dirty は意図的（cio-health と同趣旨）。
+ * 開始: が未設定以外なら未コミット件数から除外。clear 後の dirty は締め対象のまま。
+ */
+function isActiveSessionClockPath(rel) {
+  const p = String(rel || '').replace(/\\/g, '/');
+  if (p !== CLOCK_REL) return false;
+  try {
+    const text = fs.readFileSync(path.join(root, CLOCK_REL), 'utf8');
+    const m = text.match(/^開始:\s*(.+)$/m);
+    if (!m) return false;
+    return m[1].trim() !== '未設定';
+  } catch {
+    return false;
+  }
 }
 
 function failOrWarn(msg, detailLines = []) {
@@ -56,11 +81,13 @@ function formatUncommittedClassification(lines) {
 }
 
 function checkUncommitted() {
-  const status = git(['status', '--short']);
+  const status = gitStatusShort();
   if (!status) return { ok: true };
   const lines = status.split(/\r?\n/).filter(Boolean).filter((line) => {
     const rel = line.slice(3).trim().replace(/^"(.*)"$/, '$1');
-    return !isSessionCloseTempPath(rel);
+    if (isSessionCloseTempPath(rel)) return false;
+    if (isActiveSessionClockPath(rel)) return false;
+    return true;
   });
   if (lines.length === 0) return { ok: true };
   const msg = `[verify:session-close-git-warn] NG 未コミット ${lines.length} 件 — セッション締め前に commit 必須（B1）`;
@@ -78,12 +105,12 @@ function checkHoldLaneDirty() {
     console.log('[verify:session-close-git-warn] SKIP hold-lane（CIO_ALLOW_HOLD_LANE_DIRTY=1）');
     return { ok: true };
   }
-  const status = git(['status', '--short']);
+  const status = gitStatusShort();
   if (!status) return { ok: true };
   const relPaths = status.split(/\r?\n/).filter(Boolean).map((line) => {
     const raw = line.slice(3).trim().replace(/^"(.*)"$/, '$1');
     return raw;
-  }).filter((rel) => rel && !isSessionCloseTempPath(rel));
+  }).filter((rel) => rel && !isSessionCloseTempPath(rel) && !isActiveSessionClockPath(rel));
   const { ok, issues } = checkHoldLaneDirtyFiles(root, relPaths);
   if (ok) return { ok: true };
   const msg = `[verify:session-close-git-warn] NG 保留レーン ${issues.length} 件 — restore または CIO_ALLOW_HOLD_LANE_DIRTY=1（R58）`;
