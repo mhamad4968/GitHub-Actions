@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-07-25-ver02-project-days-nichi",
-      "fileKey": "e48b642a-5757-4585-a34c-ec3b590f7933",
-      "revision": "120",
+      "build": "2026-07-25-ver02-contract-col-name-blank",
+      "fileKey": "e6371dd7-5147-4a2a-a822-606b55015cca",
+      "revision": "121",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-07-25T06:57:38.967Z",
+      "deployedAt": "2026-07-25T10:36:18.855Z",
       "note": null
     },
     "757": {
