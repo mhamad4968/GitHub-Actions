@@ -54,8 +54,12 @@ function main() {
   if (!closeGit.includes('runNpmScriptSync') || closeGit.includes('shell: true')) {
     issues.push('cio-session-close-git.mjs が Windows hidden npm spawn 未適用');
   }
-  if (!closeGit.includes('R31') && !closeGit.includes('bridge export を単独 commit')) {
-    issues.push('cio-session-close-git.mjs に R31 bridge 単独 commit 未実装');
+  // P3 (2026-07-25): bridge + checkpoint を1メタcommitへ集約（旧R31単独commitは廃止）
+  if (
+    !closeGit.includes('checkpoint + bridge を1 commitに集約') &&
+    !closeGit.includes('chore(session): sync checkpoint Git + handoff bridge')
+  ) {
+    issues.push('cio-session-close-git.mjs に P3 checkpoint+bridge 1メタcommit 未実装');
   }
 
   const desktop = pkg.scripts?.['desktop:sync-and-verify'] || '';
