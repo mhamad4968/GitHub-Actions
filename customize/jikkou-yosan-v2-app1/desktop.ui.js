@@ -877,28 +877,71 @@
     return button;
   }
 
+  /**
+   * レイアウト可視矩形（ブラウザ拡大率 100%/80% 差の主因を吸収）。
+   * Ctrl± ズームでは visualViewport と layout が連動。ピンチ時は小さい方を使う。
+   */
+  function jy2LayoutViewportBox(win) {
+    const innerW = win.innerWidth || 0;
+    const innerH = win.innerHeight || 0;
+    const vv = win.visualViewport;
+    if (vv && Number.isFinite(vv.width) && vv.width > 0) {
+      const left = Number.isFinite(vv.offsetLeft) ? vv.offsetLeft : 0;
+      const top = Number.isFinite(vv.offsetTop) ? vv.offsetTop : 0;
+      const width = Math.min(innerW || vv.width, vv.width);
+      const height = Math.min(innerH || vv.height, vv.height);
+      return {
+        left,
+        top,
+        right: left + width,
+        bottom: top + height,
+        width,
+        height,
+      };
+    }
+    return {
+      left: 0,
+      top: 0,
+      right: innerW,
+      bottom: innerH,
+      width: innerW,
+      height: innerH,
+    };
+  }
+
+  /** 要素とレイアウト可視域の交差幅（親が表で膨らんでも窓外は数えない）。 */
   function jy2VisibleClientWidth(el, win) {
     if (!el || !win) return 0;
     const rect = el.getBoundingClientRect();
-    const left = Math.max(0, rect.left);
-    const right = Math.min(win.innerWidth, rect.right);
+    const box = jy2LayoutViewportBox(win);
+    const left = Math.max(box.left, rect.left);
+    const right = Math.min(box.right, rect.right);
     return Math.max(0, Math.floor(right - left));
   }
 
-  /** ウィンドウに収まる絶対天井。親が表幅に膨らんでもこれ以上広げない（C5）。 */
+  /**
+   * ウィンドウに収まる絶対天井。
+   * 旧: leftInset を 120px で頭打ち → kintone 左ナビが広いと天井過大 → 100% で右枠切れ（80% では誤って収まる）。
+   */
   function jy2ViewportHScrollCeiling(doc, win, host) {
+    const box = jy2LayoutViewportBox(win);
     const docWidth = doc.documentElement
       ? doc.documentElement.clientWidth
-      : win.innerWidth;
-    const viewport = Math.min(win.innerWidth, docWidth);
+      : box.width;
+    const viewport = Math.min(box.width, docWidth || box.width);
     let leftInset = 24;
+    let rightInset = 20;
     if (host) {
-      const left = host.getBoundingClientRect().left;
-      if (Number.isFinite(left) && left > 0) {
-        leftInset = Math.max(12, Math.min(Math.floor(left), 120));
+      const hr = host.getBoundingClientRect();
+      if (Number.isFinite(hr.left)) {
+        // 実左端を使う（120 上限は撤廃。過大 left は viewport 側で自然に潰れる）
+        leftInset = Math.max(8, Math.floor(Math.max(0, hr.left - box.left)));
+      }
+      if (Number.isFinite(hr.right) && hr.right < box.right) {
+        rightInset = Math.max(12, Math.floor(box.right - hr.right) + 8);
       }
     }
-    return Math.max(240, viewport - leftInset - 16);
+    return Math.max(240, Math.floor(viewport - leftInset - rightInset));
   }
 
   function jy2MeasureHScrollBasis(scrollEl) {
@@ -917,7 +960,7 @@
         (Number.parseFloat(style.paddingRight) || 0)
       );
     };
-    // 可視幅の最小を取る。ただし親 clientWidth は表で膨らむので天井で必ず切る。
+    // 可視交差幅の最小。親 clientWidth（表で膨張）は使わない。
     const candidates = [ceiling];
     const hostVis = jy2VisibleClientWidth(host, win);
     const shellVis = jy2VisibleClientWidth(shell, win);
@@ -930,6 +973,25 @@
       }
     }
     return Math.max(240, Math.min(...candidates));
+  }
+
+  /** host 自体が窓より食み出さないよう max-width を同期（外枠切れ防止）。 */
+  function jy2SyncHostViewportCap(doc) {
+    const win = doc && doc.defaultView;
+    const host = doc && doc.getElementById("jy2-host");
+    if (!win || !host || !host.style) return;
+    const box = jy2LayoutViewportBox(win);
+    const hr = host.getBoundingClientRect();
+    const left = Math.max(box.left, hr.left);
+    const cap = Math.max(240, Math.floor(box.right - left - 8));
+    host.style.setProperty("max-width", `${cap}px`, "important");
+    host.style.setProperty("width", "100%", "important");
+    host.style.setProperty("box-sizing", "border-box", "important");
+    const shell = host.querySelector(".jy2-shell");
+    if (shell && shell.style) {
+      shell.style.setProperty("max-width", "100%", "important");
+      shell.style.setProperty("box-sizing", "border-box", "important");
+    }
   }
 
   function jy2ForceTableMinWidth(scrollEl) {
@@ -953,9 +1015,11 @@
 
   function jy2SyncHScroll(scrollEl) {
     if (!scrollEl || !scrollEl.style) return scrollEl;
+    const doc = scrollEl.ownerDocument;
+    if (doc) jy2SyncHostViewportCap(doc);
     const basis = jy2MeasureHScrollBasis(scrollEl);
-    // 予実は右息抜き10px（6pxから左へ+4px）。一般表は罫線確保のため16
-    const gutter = scrollEl.classList.contains("jy2-actual-scroll") ? 10 : 16;
+    // 予実は右息抜き10px。一般表は罫線+スクロールバー確保のため20
+    const gutter = scrollEl.classList.contains("jy2-actual-scroll") ? 10 : 20;
     const width = Math.max(240, (basis || 240) - gutter);
     scrollEl.style.setProperty("width", `${width}px`, "important");
     scrollEl.style.setProperty("max-width", `${width}px`, "important");
@@ -970,6 +1034,7 @@
   function jy2SyncAllHScroll(documentRef) {
     const doc = documentRef || (typeof document !== "undefined" ? document : null);
     if (!doc) return;
+    jy2SyncHostViewportCap(doc);
     doc
       .querySelectorAll(".jy2-table-scroll, .jy2-actual-scroll")
       .forEach((el) => jy2SyncHScroll(el));
@@ -986,6 +1051,10 @@
       win.requestAnimationFrame(sync);
     });
     win.addEventListener("resize", sync);
+    if (win.visualViewport) {
+      win.visualViewport.addEventListener("resize", sync);
+      win.visualViewport.addEventListener("scroll", sync);
+    }
     if (typeof win.ResizeObserver === "function") {
       const observer = new win.ResizeObserver(() => sync());
       const host = doc.getElementById("jy2-host");
