@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-07-25T07:06:43.945Z",
-  "gitHead": "84700834",
+  "exportedAt": "2026-07-25T07:13:24.926Z",
+  "gitHead": "4796c024",
   "gitStatus": "## main...origin/main",
-  "nextTask": "7/27に確認パック送付＋口頭レビュー。UI追加指示がなければ依頼者待ち。",
+  "nextTask": "夜=LOTO7 バックテスト／理論見直し（一致数 vs ランダム期待1.32・戦略別実績）。lab次=7/27確認パック送付。",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -17,6 +17,8 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=84700834 | 次=7/27に確認パック送付＋口頭レビュー。UI追加指示がなければ依頼者待ち。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
+  "promptBlock": "【SESSION-BRIDGE】git=4796c024 | 次=夜=LOTO7 バックテスト／理論見直し（一致数 vs ランダム期待1.32・戦略別実績）。lab次=7/27確認パック送付。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
+  "validatedAt": "2026-07-25T07:14:41.232Z",
+  "crosscheckOk": true
 }

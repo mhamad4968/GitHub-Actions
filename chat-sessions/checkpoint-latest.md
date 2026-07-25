@@ -1,22 +1,22 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-25 16:00 JST — セッション終了準備。756 LIVE rev120。working tree 同期。
+**最終更新**: 2026-07-25 16:15 JST — 本セッション full CLOSE。夜枠=LOTO7。756 LIVE rev120。
 
-**Git**: **`efc7a0e4`** = `origin/main` — push 済
+**Git**: **`4796c024`** = `origin/main` — tip（close 後に更新）
 
-**本日状態（要約）**: App **756** LIVE BUILD=`2026-07-25-ver02-project-days-nichi` rev**120**。C5固定横スクロールレール／U32内訳№相互ジャンプ／C13作成者・担当手入力（created_by_name／person_in_charge_name）／C14一時保存＋版を確定／C15工期日数「N日」表示。列名=分類/品目/補助項目。735/736書込禁止。7/27確認パック準備済（送付は浜田GO後）。
+**本日状態（要約）**: App **756** LIVE BUILD=`2026-07-25-ver02-project-days-nichi` rev**120**。C13/C14/C15・C5・U32 は浜田目視確認済（AI追加検証不要）。735/736書込禁止。7/27確認パック準備済（送付は浜田GO後）。
 
 **継続メモ（次セッション -0）**:
-1. **7/27**: 依頼者レビュー／確認パック送付（浜田「送ってよい」後）。正本 `docs/plans/2026-07-25-jikkou-requester-confirm-pack-pre-0727.md`
-2. 回答後: R-19 JSON追記（労務費夜間／工具･機械使用料）・必要なら単位。実装は GO 後
-3. 残意図的: R-11/12/13（諸経費等自動式＝手入力のまま）・Excel本投入
+1. **夜（優先）**: Desktop `Loto7` — LOTO7 AI ANALYZER の統計・理論見直し（当選率向上意図）。正本パス `C:\Users\mhamada202408224\Desktop\Loto7`（DB=`loto7_advanced.db`）
+2. **7/27（lab）**: 依頼者レビュー／確認パック送付（浜田「送ってよい」後）。正本 `docs/plans/2026-07-25-jikkou-requester-confirm-pack-pre-0727.md`
+3. 回答後: R-19 JSON追記・実装は GO 後。残意図的: R-11/12/13・Excel本投入
 
-**GO待ち**: 確認パック送付＝浜田一言。リストJSON追記＝依頼者回答 or 浜田GO。
+**GO待ち**: 確認パック送付＝浜田一言。リストJSON追記＝依頼者回答 or 浜田GO。LOTO7コード改修は夜セッションで方針GO後。
 
-**次の1手**: 7/27に確認パック送付＋口頭レビュー。UI追加指示がなければ依頼者待ち。
+**次の1手**: 夜=LOTO7 バックテスト／理論見直し（一致数 vs ランダム期待1.32・戦略別実績）。lab次=7/27確認パック送付。
 
-**調査正本**: SPEC §6.2 C5/C12–C15・U32 ＋ BUILD `2026-07-25-ver02-project-days-nichi`（rev120）。
+**調査正本**: SPEC §6.2 C5/C12–C15・U32 ＋ BUILD `2026-07-25-ver02-project-days-nichi`（rev120）。LOTO7: `loto7_predict.py` / `loto7_stats.py` / README-DEV.txt。
 
 **観測期間**: **H9/△2**: metricsEligibleAfter=**2026-07-18** · reviewDate=**2026-07-25** · early GREEN/降格 **禁止**
 
