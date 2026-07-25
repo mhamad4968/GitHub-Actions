@@ -3,18 +3,18 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-25 朝 JST — **セッション中断（夕方再開）**。756 UI目視OK＋依頼者メール再送済。push済・force/stash-pop禁止＝先祖返り防止。
 
-**Git**: **`e0bed39b`** = `origin/main` — push 済
+**Git**: **`9086798c`** = `origin/main` — push 済
 
-**本日状態（要約）**: App **756** LIVE BUILD=`2026-07-25-ver02-actual-right-10px` **rev103** / fileKey `61178d0c-7268-4147-a3da-885cbeed3ee0`。§6.2 C7右息抜き10px・C11文字サイズ・ヘッダ沈み解消・一重スクロールを浜田目視OK。App **674** 購入先コジマ／ツクモ追加・目視OK。依頼者確認メール再送済（下書き `docs/plans/2026-07-25-jikkou-yosan-ver02-requester-meeting-email-draft.md`）。優先①文字サイズ②LIVE目視③メール＝済 → 次④DD(R-19/20)⑤Excel。735/736書込禁止・688/677–679/SKYSEA/712制約継続。DeepSeek MCP v4ラッパあり（空応答時は理由付きスキップ）。H9/△2 reviewDate=**2026-07-25**（early GREEN/降格禁止）。
+**本日状態（要約）**: App **756** LIVE **確認済** BUILD=`2026-07-25-ver02-actual-right-10px` **rev103**（JS `@JY_V2_BUILD` 一致。GET fileKey は download 形で registry UUID と表記差あり・内容は同一BUILD）。App **674** 購入先OK。依頼者メール再送済・回答は **7/27以降**。④DD(R-19/20) は 736 READ-ONLY ヒントで棚卸し開始（`docs/plans/2026-07-25-jikkou-r19-r20-dd-from-736-hints.md`）。735/736書込禁止・688/677–679/SKYSEA/712制約継続。H9/△2 reviewDate=**2026-07-25**（early GREEN/降格禁止）。
 
 **継続メモ（次セッション -0）**:
-1. 756 registry が right-10px/rev103 か確認（旧BUILD再deploy禁止）
-2. §41で④DD棚卸し or 依頼者回答SPEC反映 or H9評価記録
-3. Excel案件追加は依頼者データ待ち
+1. ~~756 LIVE right-10px/rev103 確認~~ → **済（2026-07-25 夕）**
+2. ④DD(R-19/20) 棚卸し続行（736書込なし・依頼者回答待ちと並行可）
+3. Excel案件追加は依頼者データ待ち / H9 評価記録
 
-**GO待ち**: H9 / △2 最終判定は **2026-07-25 のみ**。
+**GO待ち**: H9 / △2 最終判定は **2026-07-25 のみ**。依頼者リスト確定は 7/27以降。
 
-**次の1手**: 夕方再開 → Desktop スターター貼付 → bootstrap OK → 756 LIVE が `ver02-actual-right-10px`/rev103 か確認 → §41 で④DD（R-19/20）または依頼者回答反映または H9。
+**次の1手**: ④DD(R-19/20) — Excel JSON × list-source-scan × 736 datalist の差分を1表に閉じる（736/735 WRITE 禁止）。
 
 **観測期間**: **H9/△2**: metricsEligibleAfter=**2026-07-18** · reviewDate=**2026-07-25** · early GREEN/降格 **禁止**
 
