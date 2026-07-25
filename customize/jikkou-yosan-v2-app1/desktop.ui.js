@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-25-ver02-contract-col-name-blank
+  // @JY_V2_BUILD 2026-07-25-ver02-name-blank-display
 
   const JY2_STYLE_ID = "jy2-shell-style";
   const JY2_ACTIVE_TAB_KEY = `jy2:${APP1_ID}:activeTab`;
@@ -505,6 +505,19 @@
     }
   }
 
+  // U27: 直前行と同じ分類/品目は画面上を空白にする（保存値は保持可）。
+  function jy2SameText(a, b) {
+    if (!jy2HasText(a) || !jy2HasText(b)) return false;
+    return String(a).trim() === String(b).trim();
+  }
+
+  function jy2PrevFilled(rows, index, field) {
+    for (let i = index - 1; i >= 0; i--) {
+      if (jy2HasText(rows[i][field])) return rows[i][field];
+    }
+    return null;
+  }
+
   // U5: 半角カナ → 全角（補助項目・name3）
   function jy2ToFullWidthKana(str) {
     if (str === null || str === undefined) return str;
@@ -591,14 +604,18 @@
   // U4/U26: 候補選択＋手入力可コンボ。常にリスト緑。
   // Chrome の input[list]/datalist は現行値で候補を絞るため ▼ が空に見えることがある。
   // → 右の <select> で全候補を出し、左 input は手入力も可。
-  function jy2ComboInput(documentRef, value, options, onCommit) {
+  // opts.displayBlank: U27 連続同値は初期表示を空にし、focus で保存値を一時表示。
+  function jy2ComboInput(documentRef, value, options, onCommit, opts = {}) {
     const wrap = documentRef.createElement("span");
     wrap.className = "jy2-combo-wrap";
+    const stored = value === null || value === undefined ? "" : String(value);
+    const displayBlank = Boolean(opts.displayBlank) && jy2HasText(stored);
     const input = documentRef.createElement("input");
     input.type = "text";
     input.className = "jy2-input jy2-combo";
     input.autocomplete = "off";
-    input.value = value === null || value === undefined ? "" : String(value);
+    input.value = displayBlank ? "" : stored;
+    let revealed = false;
     const select = documentRef.createElement("select");
     select.className = "jy2-combo-select";
     select.title = "リストから選択";
@@ -621,12 +638,23 @@
       select.disabled = true;
       select.title = "このブロックに候補リストがありません";
     }
-    const commit = () => onCommit(input.value.trim());
+    const commit = () => {
+      // 未フォーカスの空表示を「クリア保存」と誤認しない
+      if (displayBlank && !revealed) return;
+      const next = input.value.trim();
+      onCommit(next);
+      if (displayBlank && next === stored) input.value = "";
+    };
+    input.addEventListener("focus", () => {
+      revealed = true;
+      if (displayBlank && input.value === "") input.value = stored;
+    });
     input.addEventListener("change", commit);
     input.addEventListener("blur", commit);
     select.addEventListener("change", () => {
       const picked = select.value;
       if (!picked) return;
+      revealed = true;
       input.value = picked;
       onCommit(picked);
       select.selectedIndex = 0;
@@ -2872,35 +2900,47 @@
         });
         rerender();
       };
-      let inheritedName2 = null;
-      for (let i = rowIndex - 1; i >= 0; i--) {
-        if (jy2HasText(block.detailRows[i].name2)) {
-          inheritedName2 = block.detailRows[i].name2;
-          break;
-        }
-      }
+      const prevName1 = jy2PrevFilled(block.detailRows, rowIndex, "name1");
+      const prevName2 = jy2PrevFilled(block.detailRows, rowIndex, "name2");
+      // U27: 保存値が埋まっていても直前と同値なら画面は空白（Excel寄り）
+      const name1SameAsAbove = jy2SameText(row.name1, prevName1);
+      const name2SameAsAbove = jy2SameText(row.name2, prevName2);
+      const name1DisplayBlank =
+        !jy2HasText(row.name1) || name1SameAsAbove;
+      const name2DisplayBlank =
+        !jy2HasText(row.name2) || name2SameAsAbove;
       const name1BlankVisual = {
-        blank: !jy2HasText(row.name1),
-        continued: !jy2HasText(row.name1) && jy2HasText(row.nameSpecGroup),
-        label: row.nameSpecGroup,
+        blank: name1DisplayBlank,
+        continued:
+          name1SameAsAbove ||
+          (!jy2HasText(row.name1) && jy2HasText(row.nameSpecGroup)),
+        label: name1SameAsAbove
+          ? String(prevName1).trim()
+          : row.nameSpecGroup,
         kind: "分類",
       };
       const name2BlankVisual = {
-        blank: !jy2HasText(row.name2),
-        continued: !jy2HasText(row.name2) && jy2HasText(inheritedName2),
-        label: inheritedName2,
+        blank: name2DisplayBlank,
+        continued:
+          name2SameAsAbove ||
+          (!jy2HasText(row.name2) && jy2HasText(prevName2)),
+        label: prevName2,
         kind: "品目",
       };
       if (blockEditable) {
         // U4: 左2列＝候補選択＋手入力可、3列目＝手入力（全角カナ正規化）。#R-NAME-01
         const name1 = jy2Cell(documentRef, "td", "", "");
         name1.appendChild(
-          jy2ComboInput(documentRef, row.name1, suggest.name1, commit("name1")),
+          jy2ComboInput(documentRef, row.name1, suggest.name1, commit("name1"), {
+            displayBlank: name1SameAsAbove,
+          }),
         );
         tr.appendChild(name1);
         const name2 = jy2Cell(documentRef, "td", "", "");
         name2.appendChild(
-          jy2ComboInput(documentRef, row.name2, suggest.name2, commit("name2")),
+          jy2ComboInput(documentRef, row.name2, suggest.name2, commit("name2"), {
+            displayBlank: name2SameAsAbove,
+          }),
         );
         tr.appendChild(name2);
         const name3 = jy2Cell(documentRef, "td", "", "");
@@ -2961,8 +3001,18 @@
         );
         tr.appendChild(ops);
       } else {
-        const name1Cell = jy2Cell(documentRef, "td", "", row.name1);
-        const name2Cell = jy2Cell(documentRef, "td", "", row.name2);
+        const name1Cell = jy2Cell(
+          documentRef,
+          "td",
+          "",
+          name1SameAsAbove ? "" : row.name1,
+        );
+        const name2Cell = jy2Cell(
+          documentRef,
+          "td",
+          "",
+          name2SameAsAbove ? "" : row.name2,
+        );
         jy2MarkNameBlankVisual(name1Cell, name1BlankVisual);
         jy2MarkNameBlankVisual(name2Cell, name2BlankVisual);
         tr.appendChild(name1Cell);
