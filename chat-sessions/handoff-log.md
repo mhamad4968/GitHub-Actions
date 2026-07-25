@@ -5051,3 +5051,19 @@ npm run cio:morning:ready
 
 ---
 
+
+### 2026-07-25 JST — **2026-07-25 夕 — Ver.02 UI同期・セッション終了準備**
+
+**要約**: 756 LIVE rev120 BUILD project-days-nichi。C5固定レール・U32内訳№ジャンプ・C13作成者担当手入力・C14一時保存/版確定・C15工期日数N日。7/27確認パック準備済（送付は浜田GO）。
+
+**次の1手**: 7/27 確認パック送付（浜田送ってよい後）＋口頭レビュー。回答後 R-19 JSON。R-11/12/13・Excelは意図的残。
+
+**Git**: `1a56068c` — tip will be close-prep commit
+
+**BUILD**: 2026-07-25-ver02-project-days-nichi rev120
+
+**GO待ち**: 確認パック送付=浜田一言。R-19リスト=依頼者回答or浜田GO
+
+**触らない**: 735/736書込禁止。旧756 BUILD再deployでUI後退禁止。
+
+---

@@ -1,0 +1,22 @@
+{
+  "timestamp": "2026-07-25T06:52:37.986Z",
+  "intent": "jikkou v2 header creator owner manual input temp save confirm buttons",
+  "phase": null,
+  "appId": null,
+  "matchedRules": [],
+  "primaryIntentId": null,
+  "category": null,
+  "selectedMcp": null,
+  "mcpChain": [],
+  "npm": [
+    "cio:pre-implement-gate"
+  ],
+  "skill": null,
+  "subagent": null,
+  "runbook": "docs/runbooks/ai-team-tool-routing-v2.md",
+  "rule": null,
+  "secondReviewer": null,
+  "verify": [],
+  "lane": null,
+  "reason": "no keyword match — fallback npm"
+}

@@ -1,0 +1,38 @@
+{
+  "timestamp": "2026-07-25T06:58:35.152Z",
+  "intent": "session close prepare checkpoint handoff",
+  "phase": null,
+  "appId": null,
+  "matchedRules": [
+    {
+      "id": "session-close",
+      "score": 6,
+      "priority": 10
+    },
+    {
+      "id": "github-ci",
+      "score": 1,
+      "priority": 10
+    }
+  ],
+  "primaryIntentId": "session-close",
+  "category": "session",
+  "selectedMcp": null,
+  "mcpChain": [],
+  "npm": [
+    "cio:handoff:append-block",
+    "cio:session:export-handoff",
+    "cio:session:close-git"
+  ],
+  "skill": null,
+  "subagent": null,
+  "runbook": "docs/runbooks/checkpoint-handoff-template-v2.md",
+  "rule": null,
+  "secondReviewer": null,
+  "verify": [
+    "verify:checkpoint-handoff-template",
+    "verify:checkpoint-freeze-zone"
+  ],
+  "lane": null,
+  "reason": "intent=session-close score=6 npm-only"
+}
