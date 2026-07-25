@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-25-ver02-hscroll-viewport-cap
+  // @JY_V2_BUILD 2026-07-25-ver02-hscroll-header-pane
 
   const JY2_STYLE_ID = "jy2-shell-style";
   const JY2_ACTIVE_TAB_KEY = `jy2:${APP1_ID}:activeTab`;
@@ -307,6 +307,10 @@
       ".jy2-version-type-bar label{display:flex;align-items:center;gap:6px}",
       ".jy2-version-type-bar select{min-width:160px;padding:3px 6px;border-radius:4px}",
       ".jy2-header-legend{font-size:11px;color:#64748b;padding:0 0 10px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}",
+      // 工事基本情報: 狭幅でも見切れず横スクロール（C5/C12）。広いときは内側920px上で auto-fit
+      ".jy2-hscroll-inner{display:block;box-sizing:border-box;min-width:920px;width:max-content;max-width:none}",
+      ".jy2-header-inner{min-width:920px}",
+      ".jy2-header-inner .jy2-header-grid{min-width:920px;width:920px;max-width:none;box-sizing:border-box}",
       ".jy2-hf-tag{display:inline-block;font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px;margin-right:5px;vertical-align:middle;line-height:1.3;letter-spacing:.04em}",
       ".jy2-hf-tag-input{background:#FEF3C7;border:1px solid #F59E0B;color:#B45309}",
       ".jy2-hf-tag-select{background:#D1FAE5;border:1px solid #10B981;color:#047857}",
@@ -931,12 +935,21 @@
 
   function jy2ForceTableMinWidth(scrollEl) {
     const table = scrollEl.querySelector(":scope > .jy2-table, :scope > table");
-    if (!table || !table.style) return;
-    const isActual = scrollEl.classList.contains("jy2-actual-scroll");
-    const forceMin = isActual ? 1600 : 1100;
-    table.style.setProperty("min-width", `${forceMin}px`, "important");
-    table.style.setProperty("width", "max-content", "important");
-    table.style.setProperty("max-width", "none", "important");
+    if (table && table.style) {
+      const isActual = scrollEl.classList.contains("jy2-actual-scroll");
+      const forceMin = isActual ? 1600 : 1100;
+      table.style.setProperty("min-width", `${forceMin}px`, "important");
+      table.style.setProperty("width", "max-content", "important");
+      table.style.setProperty("max-width", "none", "important");
+    }
+    const inner = scrollEl.querySelector(":scope > .jy2-hscroll-inner");
+    if (inner && inner.style) {
+      const forceMin = Number(inner.dataset.minWidth) || 920;
+      inner.style.setProperty("min-width", `${forceMin}px`, "important");
+      inner.style.setProperty("width", "max-content", "important");
+      inner.style.setProperty("max-width", "none", "important");
+      inner.style.setProperty("box-sizing", "border-box", "important");
+    }
   }
 
   function jy2SyncHScroll(scrollEl) {
@@ -985,12 +998,16 @@
     return scrollEl;
   }
 
-  function jy2WrapTable(documentRef, table) {
+  function jy2WrapHScroll(documentRef, child) {
     const wrap = documentRef.createElement("div");
     wrap.className = "jy2-table-scroll";
-    wrap.appendChild(table);
+    wrap.appendChild(child);
     jy2BindHScroll(wrap);
     return wrap;
+  }
+
+  function jy2WrapTable(documentRef, table) {
+    return jy2WrapHScroll(documentRef, table);
   }
 
   function jy2HeadRow(documentRef, labels) {
@@ -1392,7 +1409,9 @@
   }
 
   function jy2RenderHeaderPane(documentRef, record, editable, masterLists) {
-    const wrap = documentRef.createElement("div");
+    const inner = documentRef.createElement("div");
+    inner.className = "jy2-hscroll-inner jy2-header-inner";
+    inner.dataset.minWidth = "920";
     const legend = documentRef.createElement("div");
     legend.className = "jy2-header-legend";
     legend.append(
@@ -1405,7 +1424,7 @@
       jy2HfTag(documentRef, "auto"),
       documentRef.createTextNode("自動・参照のみ"),
     );
-    wrap.appendChild(legend);
+    inner.appendChild(legend);
 
     const grid = documentRef.createElement("div");
     grid.className = "jy2-header-grid";
@@ -1536,8 +1555,9 @@
 
     addText("input", "備考", "note", { span2: true, textarea: true, rows: 2 });
 
-    wrap.appendChild(grid);
-    return wrap;
+    inner.appendChild(grid);
+    // C5/C12: 狭幅では横スクロール。広いときは内側920px上で auto-fit 折り返し
+    return jy2WrapHScroll(documentRef, inner);
   }
 
   // 請負金額 (§7.1a): 施工/保安 bands, amount = auto decimal shown as integer,

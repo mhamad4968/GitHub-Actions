@@ -139,7 +139,7 @@ App1 カスタムUI（`customize/jikkou-yosan-v2-app1`）の見た目・固定�
 | **C9** | **総括・原価投影表の下**に **原価・施工計／原価・保安計** 行を出す（X5・⑧内訳の区分計。給与は別帯）。⑧合計との混同を避けるラベル | **CONFIRMED** |
 | **C10** | 合計行は薄茶系。角丸ボタン・slate 基調（Ver.01同趣旨） | **CONFIRMED** |
 | **C11** | **文字サイズ切替**（標準／大／特大）を固定操作メニュー（`.jy2-action-bar`）に置く。選択は `localStorage` キー `jy2-font-scale`（`standard`／`large`／`xlarge`、既定 `standard`）で保持し、`.jy2-shell` の `data-font-scale` で表・入力・ボタン等のフォントを倍率スケール（約 1／1.15／1.3）。固定メニュー本体のレイアウトは崩さない。切替後は C1 の spacer 高さ同期を再実行 | **CONFIRMED**（浜田 2026-07-25） |
-| **C12** | **工事基本情報**グリッドはモニタ幅で折り返す（`auto-fit`）。1行押し出しで右端が見切れないこと。表題帯直下の大きな空白帯を出さない（C1/C3） | **CONFIRMED**（浜田 2026-07-25 目視） |
+| **C12** | **工事基本情報**は内側に **min-width 920px** を持ち、**狭幅では横スクロール**（表と同様 `jy2-table-scroll`＋viewport天井）。広いときはその内側幅の上で `auto-fit` 折り返し。親 `overflow-x:clip` だけで見切れて操作不能にしない。表題帯直下の大きな空白帯を出さない（C1/C3） | **CONFIRMED**（2026-07-25・狭幅スクロール） |
 
 **実装メモ（保守）**: 親に `overflow-x:hidden` を戻すと C1 の固定が再び壊れる。横はみ出し対策は **clip＋表ラッパ scroll** を維持する。  
 **受け入れ前**: `docs/runbooks/jikkou-yosan-v2-chrome-accept-checklist.md` を自己消化。不変条件は `docs/constitution/jikkou-yosan-v2-ui-chrome-invariants.md`（#R-UI-01/02/03・#R-SPEC-01）。機械ゲート: `npm run verify:jikkou-v2-chrome-css` / `verify:jikkou-v2-ui-spec-same-turn`。
