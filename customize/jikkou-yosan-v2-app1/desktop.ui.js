@@ -1480,6 +1480,21 @@
     return days > 0 ? String(days) : "";
   }
 
+  /** 工期日数: 保存は数値、表示は「N日」（C15） */
+  function jy2FormatProjectDaysDisplay(value) {
+    const raw = String(value == null ? "" : value).trim();
+    if (!raw) return "";
+    const num = raw.replace(/日\s*$/u, "").trim();
+    return num ? `${num}日` : "";
+  }
+
+  function jy2NormalizeProjectDaysValue(value) {
+    const raw = String(value == null ? "" : value).trim();
+    if (!raw) return "";
+    const num = raw.replace(/日\s*$/u, "").trim();
+    return /^\d+(\.\d+)?$/.test(num) ? num : "";
+  }
+
   function jy2UserSelectDisplay(value) {
     if (!value) return "";
     if (Array.isArray(value)) {
@@ -1679,6 +1694,9 @@
       }
       if (code === "created_by_name" || code === "person_in_charge_name") {
         value = jy2NormalizePersonName(value);
+      }
+      if (code === "project_days") {
+        value = jy2NormalizeProjectDaysValue(value);
       }
       out[code] = { value };
     }
@@ -1917,13 +1935,13 @@
     addText("input", "発注者", "client_name");
     addSelect("安衛則88条", "safety_rule_88", ["有", "無"], { allowBlank: false });
 
-    // 1行: 着手日 → 竣工日 → 工期日数（自動）
+    // 1行: 着手日 → 竣工日 → 工期日数（自動・表示は「N日」）
     const startInput = addText("date", "着手日", "start_date", { rowStart: true });
     const endInput = addText("date", "竣工日", "end_date");
     const daysInput = addText("auto", "工期日数", "project_days");
     const refreshDays = () => {
       const days = jy2CalcProjectDays(startInput.value, endInput.value);
-      daysInput.value = days;
+      daysInput.value = jy2FormatProjectDaysDisplay(days);
       jy2ApplyHeaderField(record, "project_days", days);
     };
     if (canEdit) {

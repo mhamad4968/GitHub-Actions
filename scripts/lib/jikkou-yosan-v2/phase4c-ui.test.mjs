@@ -527,6 +527,14 @@ test("C13/C14 person names are hand input; temp-save and confirm buttons", () =>
   assert.match(source, /confirmingVersion: true/);
 });
 
+test("C15 project days display appends 日 while saving numeric value", () => {
+  const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
+  assert.match(source, /function jy2FormatProjectDaysDisplay\b/);
+  assert.match(source, /function jy2NormalizeProjectDaysValue\b/);
+  assert.match(source, /daysInput\.value = jy2FormatProjectDaysDisplay\(days\)/);
+  assert.match(source, /jy2ApplyHeaderField\(record, "project_days", days\)/);
+});
+
 test("C5 fixed bottom h-rail and viewport-only wrap width", () => {
   const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
   assert.match(source, /function jy2MountPaneHScroll\b/);
