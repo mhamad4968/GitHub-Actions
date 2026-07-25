@@ -5100,7 +5100,7 @@ npm run cio:morning:ready
 
 **要約**: 浜田全件承認に基づき、App756 BUILD/UI deploy前検査、締めメタcommit集約、checkpoint Lifecycle生成、UI受入3行、LOTO7 Git正本化、報告規律軽量化を実装。DeepSeek監査済。LOTO7正本は `external/loto7/`、Desktopは実行ミラーへ変更。
 
-**次の1手**: 明日=App756再確認・微調整。LOTO7は現行B+Cを観察。
+**次の1手**: 明日=756 再確認・微調整。lab次=7/27確認パック送付。
 
 **検証**: App756 Phase4c 20/20、BUILD/UI smoke、LOTO7 smoke、CEO hooks E2E、constitution handoff、checkpoint freeze-zone OK。
 
