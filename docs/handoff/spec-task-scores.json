@@ -1,13 +1,13 @@
 {
-  "scoredAt": "2026-07-25T04:35:07.544Z",
+  "scoredAt": "2026-07-25T07:00:22.693Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "夕方再開 → Desktop スターター貼付 → bootstrap OK → 756 LIVE が `ver02-actual-right-10px`/rev103 か確認 → §41 で④DD（R-19/20）または依頼者回答反映または H9。",
+  "topTask": "7/27に確認パック送付＋口頭レビュー。UI追加指示がなければ依頼者待ち。",
   "tasks": [
     {
-      "id": "checkpoint:夕方再開_→_Desktop_スターター貼付_→_bootstrap_OK_→_",
-      "text": "夕方再開 → Desktop スターター貼付 → bootstrap OK → 756 LIVE が `ver02-actual-right-10px`/rev103 か確認 → §41 で④DD（R-19/20）または依頼者回答反映または H9。",
+      "id": "checkpoint:7/27に確認パック送付＋口頭レビュー。UI追加指示がなければ依頼者待ち。",
+      "text": "7/27に確認パック送付＋口頭レビュー。UI追加指示がなければ依頼者待ち。",
       "source": "checkpoint",
-      "difficulty": 3,
+      "difficulty": 2,
       "tokens": "中",
       "tokenScore": 2,
       "impact": 5,
