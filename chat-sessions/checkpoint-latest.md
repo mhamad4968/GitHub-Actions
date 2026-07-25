@@ -1,20 +1,20 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-25 朝 JST — **セッション中断（夕方再開）**。756 UI目視OK＋依頼者メール再送済。push済・force/stash-pop禁止＝先祖返り防止。
+**最終更新**: 2026-07-25 夕 JST — DeepSeek空応答#S-DS-EMPTY-01解消。756 LIVE確認済。④DD Step1（R-19リスト外×JSON）完了。
 
-**Git**: **`6a2822c7`** = `origin/main` — push 済
+**Git**: **`23bed4d2`** = `origin/main` — push 済（DeepSeek fix）※本ターン DD 追記後に再同期
 
-**本日状態（要約）**: App **756** LIVE **確認済** BUILD=`2026-07-25-ver02-actual-right-10px` **rev103**（JS `@JY_V2_BUILD` 一致。GET fileKey は download 形で registry UUID と表記差あり・内容は同一BUILD）。App **674** 購入先OK。依頼者メール再送済・回答は **7/27以降**。④DD(R-19/20) は 736 READ-ONLY ヒントで棚卸し開始（`docs/plans/2026-07-25-jikkou-r19-r20-dd-from-736-hints.md`）。735/736書込禁止・688/677–679/SKYSEA/712制約継続。H9/△2 reviewDate=**2026-07-25**（early GREEN/降格禁止）。
+**本日状態（要約）**: App **756** LIVE **確認済** BUILD=`2026-07-25-ver02-actual-right-10px` **rev103**。依頼者回答は **7/27以降**。④DD Step1 済（`労務費（夜間）`/`工具･機械使用料` が JSON未収録の主OPEN）。次は Step2 R-20。735/736書込禁止継続。H9/△2 reviewDate=**2026-07-25**。
 
 **継続メモ（次セッション -0）**:
-1. ~~756 LIVE right-10px/rev103 確認~~ → **済（2026-07-25 夕）**
-2. ④DD(R-19/20) 棚卸し続行（736書込なし・依頼者回答待ちと並行可）
+1. ~~756 LIVE right-10px/rev103 確認~~ → **済**
+2. ~~④DD Step1 R-19 棚卸し~~ → **済** → **Step2 R-20 vendors×明細I**
 3. Excel案件追加は依頼者データ待ち / H9 評価記録
 
 **GO待ち**: H9 / △2 最終判定は **2026-07-25 のみ**。依頼者リスト確定は 7/27以降。
 
-**次の1手**: ④DD(R-19/20) — Excel JSON × list-source-scan × 736 datalist の差分を1表に閉じる（736/735 WRITE 禁止）。
+**次の1手**: ④DD Step2 — R-20 `vendors` と明細列 I（警備系）の役割分担表（736/735 WRITE 禁止）。
 
 **観測期間**: **H9/△2**: metricsEligibleAfter=**2026-07-18** · reviewDate=**2026-07-25** · early GREEN/降格 **禁止**
 
