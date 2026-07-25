@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 /**
  * afterAgentResponse — `pending-report-checksheet.json` があるとき検証する。
- * - `mode: head-only`（全ターン既定）: **§1 先頭4行**＋**`CEO-MINIMUM-ABSOLUTE-BASELINE.txt` 全文（非空行すべて）**（先頭ウィンドウ＋全文）。V2・§P 本文は不要。
- * - `mode: full`（報告意図）: V2 七行・矛盾・§1 四行・**CEO 最低基準全文**に加え **§P □A1＋ダブルチェック（誰と・結果）＋`ダブルチェック要約:`（誰が／無の明示）**を必須。
+ * - `mode: head-only`（全ターン既定）: **§1 先頭4行**。V2・§P・CEO全文は不要。
+ * - `mode: full`（報告意図）: V2 七行・矛盾・§1 四行・§P □A1を必須。
+ * - `requireCeoBlock: true`（締め・GO仰ぎ）: 上記にCEO最低基準全文を追加。
  * 欠落時は stop フォロー用フラグを立てる（stdout は空 JSON）。
  * 各判定を logs/report-turn-head-audit.log に 1 行 JSON で追記（git 対象外）。
  *
@@ -262,6 +263,7 @@ function main() {
   }
 
   const mode = pending.mode === 'head-only' ? 'head-only' : 'full';
+  const requireCeoBlock = pending.requireCeoBlock === true;
 
   if (mode === 'head-only') {
     if (!turnHead.ok) {
@@ -300,42 +302,6 @@ function main() {
         mode: 'head-only',
       });
       setNgGate('TURN_HEAD_ONLY', { missing: turnHead.missing });
-      process.stdout.write('{}\n');
-      return;
-    }
-    if (!detectCeoMinimumBlock(text)) {
-      appendTurnHeadAudit({
-        correlationId,
-        event: 'FAILED_CEO_MINIMUM_BLOCK_HEAD_ONLY',
-        turnHead,
-        responseChars: text.length,
-      });
-      logViolation('CEO_MINIMUM_BLOCK_HEAD_ONLY', text.slice(0, 1200));
-      pipelineStep(correlationId, 'CEO_MINIMUM_BLOCK_HEAD_ONLY', {});
-      try {
-        fs.writeFileSync(
-          followPath,
-          JSON.stringify(
-            { ts: Date.now(), reason: 'CEO_MINIMUM_BLOCK', correlationId },
-            null,
-            2
-          ),
-          'utf8'
-        );
-      } catch {
-        /* noop */
-      }
-      setOutcome(correlationId, 'FAILED_CEO_MINIMUM_BLOCK', {
-        checksheet: false,
-        strictTurnHead: true,
-        mode: 'head-only',
-      });
-      setNgGate('CEO_MINIMUM_BLOCK');
-      try {
-        fs.unlinkSync(pendingPath);
-      } catch {
-        /* noop */
-      }
       process.stdout.write('{}\n');
       return;
     }
@@ -450,7 +416,7 @@ function main() {
     }
 
     if (evalRes.version === 2) {
-      if (!detectCeoMinimumBlock(text)) {
+      if (requireCeoBlock && !detectCeoMinimumBlock(text)) {
         appendTurnHeadAudit({
           correlationId,
           event: 'FAILED_CEO_MINIMUM_BLOCK',

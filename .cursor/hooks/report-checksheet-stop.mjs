@@ -66,8 +66,8 @@ const FOLLOWUP_TURN_HEAD = `【hooks 自動フォロー】**報告ターン厳�
 
 **判定ログ**: 各検証で \`logs/report-turn-head-audit.log\` に 1 行 JSON が追記されます（抜けコード: TIER_LINE / CONSTITUTION_LINE / ASSIGN_LINE / RULES_CONFIRM_LINE）。`;
 
-/** 非報告ターン（head-only）: §1 四行のみ再出力。V2・§P 本文は不要。 */
-const FOLLOWUP_TURN_HEAD_ONLY = `【hooks 自動フォロー】**全ターン検証（head-only）**: 応答**先頭付近**に **§1 四行**のいずれかが欠けている、**または** \`chat-sessions/CEO-MINIMUM-ABSOLUTE-BASELINE.txt\` の **CEO 最低基準ブロック全文（非空行すべて）**が本文に欠けていました。
+/** 非報告ターン（head-only）: §1 四行のみ再出力。V2・§P・CEO全文は不要。 */
+const FOLLOWUP_TURN_HEAD_ONLY = `【hooks 自動フォロー】**全ターン検証（head-only）**: 応答**先頭付近**に **§1 四行**のいずれかが欠けていました。
 
 **同一応答の最上段**（ツール結果や長文の**前**）に、次を **この順で各 1 行**で出し直してください（**V2 七行・チェックシート本文はこのフォローでは不要**）:
 
@@ -75,8 +75,6 @@ const FOLLOWUP_TURN_HEAD_ONLY = `【hooks 自動フォロー】**全ターン検
 2. \`【適用憲法】\`（§ 列挙の 1 行）
 3. \`[🎖️ 本セッション割当]\`（割当の 1 行）
 4. \`[ルール確認]\`（Read 済みパス等の 1 行）
-
-**CEO 最低基準（絶対条件）**: 続けて \`CEO-MINIMUM-ABSOLUTE-BASELINE.txt\` と **同一の非空行すべて**を **省略せず**本文に含める（**全応答の条件**。**判否一行のみ禁止**）。
 
 **埋もれ対策**: 長いログやコードを出す場合でも、**最初のブロックを §1 四行にすること**（ウィンドウ先頭のみ機械検査）。`;
 

@@ -1,0 +1,8 @@
+# メイン UI（ai_server.py + index.html）
+flask>=3.0
+flask-cors>=4.0
+numpy>=1.24
+pandas>=2.0
+
+# 別起動の LSTM 予測（app.py）を使う場合のみ
+# pip install tensorflow scikit-learn

@@ -1,22 +1,22 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-25 20:40 JST — 夜枠 CLOSE。756 UI4件＋LOTO7 B+C 済。明日=756微調整。
+**最終更新**: 2026-07-25 21:00 JST — 夜枠 CLOSE。反省改善P1–P7実装済。明日=756微調整。
 
 **Git**: （close-git / heal で tip 同期）
 
-**本日状態（要約）**: App **756** LIVE=`2026-07-25-ver02-preserve-scroll` rev**125**（C16/U27/U33/U26-2/U34・浜田確認済）。LOTO7 B+C 実装済（正本 Desktop、SPEC控 `docs/plans/2026-07-25-loto7-bc-improvement-spec.md`）。735/736書込禁止。
+**本日状態（要約）**: App **756** LIVE=`2026-07-25-ver02-preserve-scroll` rev**125**（浜田確認済）。反省改善P1–P7実装済。LOTO7 B+C は `external/loto7/` がGit正本、Desktopは実行ミラー。735/736書込禁止。
 
 **継続メモ（次セッション -0）**:
 1. **明日（優先）**: [App756](https://jbis-kintone.cybozu.com/k/756/) 再確認して微調整
 2. **7/27（lab）**: 確認パック送付（浜田「送ってよい」後）。正本 `docs/plans/2026-07-25-jikkou-requester-confirm-pack-pre-0727.md`
-3. LOTO7: 運用観察（`backtest_report.py`／抽選後 fetch）。追加改修は依頼時
+3. LOTO7: 運用観察（`external/loto7/backtest_report.py`／抽選後 fetch）。追加改修は依頼時
 
 **GO待ち**: 確認パック送付＝浜田一言。リストJSON追記＝依頼者回答 or 浜田GO。
 
 **次の1手**: 明日=756 再確認・微調整。lab次=7/27確認パック送付。
 
-**調査正本**: SPEC C16/U26-2/U33/U34・BUILD preserve-scroll rev125。LOTO7: `docs/plans/2026-07-25-loto7-bc-improvement-spec.md` + Desktop README-DEV.txt。
+**調査正本**: SPEC C16/U26-2/U33/U34・BUILD preserve-scroll rev125。LOTO7: `docs/plans/2026-07-25-loto7-bc-improvement-spec.md` + `external/loto7/`。
 
 **観測期間**: **H9/△2**: metricsEligibleAfter=**2026-07-18** · reviewDate=**2026-07-25** · early GREEN/降格 **禁止**
 
@@ -52,7 +52,8 @@
 
 ### 2026-07-25 夜（本セッション）
 - **756**: C16列幅 / U27・U33空白視覚 / U26-2 datalist / U34スクロール維持 → LIVE rev**125** `preserve-scroll`（浜田確認OK）
-- **LOTO7**: B+C（walk-forward・アンサンブル再設計・対極戦略）。KPI=平均一致/P(k≥4)。SPEC控追加。コードは Desktop 正本（Git外）
+- **LOTO7**: B+C（walk-forward・アンサンブル再設計・対極戦略）。KPI=平均一致/P(k≥4)。`external/loto7/`をGit正本化
+- **反省改善 P1–P7**: BUILD/UI deploy前検査、締めメタ1commit、Lifecycle生成、UI受入3行、LOTO7 Git化、報告全文軽量化を実装
 - 次: 明日756微調整 / 7/27確認パック送付
 
 ### 2026-07-25 夕（セッション終了準備）

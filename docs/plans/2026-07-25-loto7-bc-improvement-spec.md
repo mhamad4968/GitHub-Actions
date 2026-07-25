@@ -1,11 +1,12 @@
 # LOTO7 AI ANALYZER — 2026-07-25 B+C 改善 SPEC（控）
 
 **状態**: CONFIRMED（浜田 GO 2026-07-25・方針 B+C）  
-**コード正本**: `C:\Users\mhamada202408224\Desktop\Loto7`（**Git 管理外**。本ファイルは lab 側の仕様控のみ）  
-**運用メモ**: `Desktop/Loto7/README-DEV.txt`  
+**コード正本**: `external/loto7/`（Git管理）  
+**実行ミラー**: `C:\Users\mhamada202408224\Desktop\Loto7`  
+**運用メモ**: `external/loto7/README-DEV.txt`  
 **DB**: `loto7_advanced.db`（2026-07-25 取込時点・第687回）
 
-> **二重管理注意（DeepSeek §50-3-8）**: 実装の正本は Desktop。lab にコードコピーは置かない。乖離時は Desktop を優先し、本 SPEC／checkpoint を追従更新する。
+> **P6（浜田承認 2026-07-25）**: Git正本から `npm run loto7:sync-to-desktop` で実行ミラーへ同期し、`npm run loto7:verify-sync` で一致を確認する。DB・学習モデル・pid・cache は運用データとしてGit管理しない。
 
 ---
 

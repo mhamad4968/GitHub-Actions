@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8"><title>LOTO7 AI ANALYZER v5.0</title>
+    <style>
+        :root { --bg: #f0f4f8; --card: #ffffff; --accent: #2563eb; --red: #dc2626;
+                --green: #16a34a; --amber: #d97706; --text: #1e293b; --muted: #64748b;
+                --border: #e2e8f0; --card-shadow: 0 1px 3px rgba(0,0,0,.08); }
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding: 16px; margin: 0; }
+        .container { max-width: 960px; margin: auto; }
+        h1 { text-align: center; color: var(--accent); margin-bottom: 4px; }
+        .subtitle { text-align: center; color: var(--muted); font-size: .85rem; margin-bottom: 20px; }
+        .panel { background: var(--card); border-radius: 12px; padding: 20px; margin-bottom: 16px;
+                 border: 1px solid var(--border); box-shadow: var(--card-shadow); }
+        .panel h2 { margin: 0 0 12px; font-size: 1.1rem; color: var(--text); }
+        .ball-row { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0; }
+        .ball { width: 36px; height: 36px; border-radius: 50%; line-height: 36px; text-align: center;
+                font-weight: bold; font-size: .9rem; color: #fff;
+                background: linear-gradient(135deg, #ef4444, #dc2626);
+                box-shadow: 0 2px 6px rgba(220,38,38,.3); }
+        .ball.blue { background: linear-gradient(135deg, #3b82f6, #2563eb);
+                     box-shadow: 0 2px 6px rgba(37,99,235,.3); }
+        .btn { background: linear-gradient(135deg, #2563eb, #3b82f6); color: #fff; padding: 14px 44px;
+               border-radius: 50px; border: none; font-weight: bold; cursor: pointer; display: block;
+               margin: 0 auto 20px; font-size: 1.05rem; box-shadow: 0 4px 16px rgba(37,99,235,.3);
+               transition: transform .15s, box-shadow .15s; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(37,99,235,.4); }
+        .btn:active { transform: translateY(0); }
+        .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+        .mini-card { background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid var(--border); }
+        .mini-card h3 { margin: 0 0 8px; font-size: .9rem; color: var(--accent); }
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: .75rem; margin: 2px; }
+        .tag.hot { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+        .tag.cold { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+        .tag.overdue { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+        .bar-bg { background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden; margin: 4px 0 8px; }
+        .bar-fill { height: 100%; border-radius: 5px; transition: width .6s ease; }
+        .bar-label { font-size: .75rem; color: var(--muted); }
+        .stat-num { font-size: 1.6rem; font-weight: bold; color: var(--accent); }
+        .stat-label { font-size: .75rem; color: var(--muted); }
+        .pred-card { background: #f8fafc; padding: 16px; border-radius: 10px;
+                     border: 1px solid var(--border); transition: border-color .2s, box-shadow .2s; }
+        .pred-card:hover { border-color: var(--accent); box-shadow: 0 2px 8px rgba(37,99,235,.12); }
+        .pred-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .pred-strategy { font-size: .8rem; color: var(--accent); font-weight: bold; }
+        .pred-desc { font-size: .72rem; color: var(--muted); margin-top: 6px; line-height: 1.4; }
+        .confidence { padding: 3px 10px; border-radius: 20px; font-size: .8rem; font-weight: bold; }
+        .conf-high { background: #f0fdf4; color: var(--green); border: 1px solid #bbf7d0; }
+        .conf-mid { background: #fffbeb; color: var(--amber); border: 1px solid #fde68a; }
+        .conf-low { background: #fef2f2; color: var(--red); border: 1px solid #fecaca; }
+        .pred-meta { display: flex; gap: 12px; margin-top: 8px; font-size: .72rem; color: var(--muted); }
+        .pair-item { display: inline-flex; gap: 3px; align-items: center; margin: 3px 4px; }
+        .pair-ball { width: 24px; height: 24px; border-radius: 50%; line-height: 24px; text-align: center;
+                     font-size: .7rem; font-weight: bold; color: #fff; background: #94a3b8; }
+        .pair-count { font-size: .7rem; color: var(--muted); }
+        .section-divider { border: none; border-top: 1px solid var(--border); margin: 8px 0; }
+        .ball.range-1  { background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 2px 6px rgba(220,38,38,.3); }
+        .ball.range-10 { background: linear-gradient(135deg, #3b82f6, #2563eb); box-shadow: 0 2px 6px rgba(37,99,235,.3); }
+        .ball.range-20 { background: linear-gradient(135deg, #16a34a, #15803d); box-shadow: 0 2px 6px rgba(22,163,74,.3); }
+        .ball.range-30 { background: linear-gradient(135deg, #d97706, #b45309); box-shadow: 0 2px 6px rgba(217,119,6,.3); }
+        .loading-spinner { display:inline-block; width:18px; height:18px; border:3px solid var(--border);
+                           border-top-color:var(--accent); border-radius:50%; animation:spin .6s linear infinite; vertical-align:middle; margin-right:6px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .fade-in { animation: fadeIn .4s ease; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+        footer { text-align:center; color:var(--muted); font-size:.72rem; padding:16px 0 8px; }
+        @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
+        .ensemble-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-top: 12px; }
+        .ensemble-table th, .ensemble-table td {
+            border: 1px solid var(--border); padding: 10px 12px; text-align: left; vertical-align: middle;
+        }
+        .ensemble-table th { background: #f0fdf4; color: #166534; font-weight: 600; }
+        .ensemble-table tbody tr { background: #fff; }
+        .pred-balls-cell .ball { width: 34px; height: 34px; line-height: 34px; font-size: 0.88rem; }
+        .predict-status { text-align: center; font-size: 0.82rem; color: var(--muted); margin: 0 0 14px; padding: 8px 12px;
+            background: #f8fafc; border-radius: 10px; border: 1px solid var(--border); }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>LOTO7 AI ANALYZER v5.0</h1>
+    <p class="subtitle">過去全回の実データに基づく統計分析。画面上の<strong>表形式の予想</strong>はアンサンブルのみです。</p>
+
+    <!-- 操作 -->
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;">
+        <button class="btn" onclick="runPredict()" style="margin:0;">候補を保存（8 戦略・非表示）</button>
+        <button class="btn" onclick="runEnsemble()" style="margin:0;background:linear-gradient(135deg,#16a34a,#22c55e);">🧠 アンサンブル予想を表示</button>
+    </div>
+    <p style="text-align:center;font-size:.78rem;color:var(--muted);margin:0 0 16px;max-width:640px;margin-left:auto;margin-right:auto;">
+        左ボタンはアンサンブル用の内部データ更新のみ（各戦略の組は表に出しません。対極＝ホット×コールド含む）。買い目の表は右ボタン実行後に表示されます。
+    </p>
+    <div id="predictStatus" class="predict-status" style="display:none;"></div>
+
+    <!-- 前回結果 -->
+    <div class="panel" style="border-top: 3px solid var(--red);">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+            <h2 id="lastRound" style="margin:0;">前回 結果分析</h2>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <span id="dataSource" class="tag" style="font-size:.75rem;"></span>
+                <button onclick="refreshData()" id="refreshBtn"
+                    style="background:none;border:1px solid var(--accent);color:var(--accent);padding:4px 12px;
+                           border-radius:20px;cursor:pointer;font-size:.75rem;">最新データ取得</button>
+            </div>
+        </div>
+        <div id="lastNums" class="ball-row" style="margin-top:10px;"><span class="loading-spinner"></span>サーバー接続中...</div>
+        <div id="comment" style="color:var(--muted); font-size:.85rem; margin-top:8px;"></div>
+    </div>
+
+    <!-- アンサンブル予想のみ表で表示（分析の直後） -->
+    <div id="ensemblePanel" style="display:none;">
+        <div class="panel" style="border-top:3px solid #16a34a;">
+            <h2 style="margin-bottom:4px;">🧠 アンサンブル予想</h2>
+            <p style="font-size:.78rem;color:var(--muted);margin:0 0 4px;">ここに表示されるのは合成結果のみです。保存されたアンサンブル7個は、次回以降の合成スコアにも反映されます（1回の表示は従来どおり1口）。</p>
+            <div style="overflow-x:auto;">
+            <table class="ensemble-table">
+                <thead>
+                    <tr>
+                        <th>対象回</th>
+                        <th>予想番号（7 個）</th>
+                        <th>合計</th>
+                        <th>信頼度</th>
+                        <th>メモ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="etRound">—</td>
+                        <td id="etBalls" class="pred-balls-cell"><span style="color:var(--muted);">未実行</span></td>
+                        <td id="etSum">—</td>
+                        <td id="etConf">—</td>
+                        <td id="etNote" style="font-size:.78rem;color:var(--muted);">—</td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+            <details style="margin-top:14px;font-size:.82rem;">
+                <summary style="cursor:pointer;color:var(--accent);font-weight:600;">戦略ウェイト（参考・折りたたみ）</summary>
+                <div id="ensembleWeights" style="margin-top:10px;"></div>
+            </details>
+            <p style="font-size:.76rem;color:var(--muted);margin:16px 0 0;padding-top:14px;border-top:1px solid var(--border);">
+                抽選7個は<strong>本アプリ内の統計ロジックのみ</strong>で算出しています（この画面から外部の生成 AI API は呼びません）。
+                ソースを改修するときに別途セカンドオピニオンを取る運用は <code>README-DEV.txt</code> を参照してください。
+            </p>
+        </div>
+    </div>
+
+    <!-- 統計ダッシュボード -->
+    <div id="statsArea" style="display:none;">
+        <div class="grid2">
+            <div class="mini-card">
+                <h3>🔥 ホットナンバー（出現頻度 TOP10）</h3>
+                <p style="font-size:.72rem;color:var(--muted);margin:0 0 8px;">※番号の出現回数ランキング（戦略名ではありません）</p>
+                <div id="hotNums"></div>
+            </div>
+            <div class="mini-card">
+                <h3>❄️ コールドナンバー（出現頻度 LOW10）</h3>
+                <p style="font-size:.72rem;color:var(--muted);margin:0 0 8px;">※出現が少ない番号（戦略「対極」とは別物）</p>
+                <div id="coldNums"></div>
+            </div>
+            <div class="mini-card">
+                <h3>⏳ ご無沙汰ナンバー（未出現回数 TOP10）</h3>
+                <div id="overdueNums"></div>
+            </div>
+            <div class="mini-card">
+                <h3>📈 直近トレンド（20回）</h3>
+                <div id="trendNums"></div>
+            </div>
+        </div>
+
+        <div class="grid2" style="margin-top:12px;">
+            <div class="mini-card">
+                <h3>📊 合計値の統計</h3>
+                <div id="sumStats"></div>
+                <div id="sumBars" style="margin-top:10px;"></div>
+            </div>
+            <div class="mini-card">
+                <h3>🎯 バランス指標</h3>
+                <div id="balanceStats"></div>
+            </div>
+        </div>
+
+        <div class="grid2" style="margin-top:12px;">
+            <div class="mini-card">
+                <h3>🎰 番号帯分布</h3>
+                <div id="decadeDist"></div>
+            </div>
+            <div class="mini-card">
+                <h3>📍 ポジション別傾向（第1〜第7数字）</h3>
+                <div id="posStats"></div>
+            </div>
+        </div>
+
+        <div class="mini-card" style="margin-top:12px;">
+            <h3>🤝 よく一緒に出るペア TOP10</h3>
+            <div id="pairList"></div>
+        </div>
+    </div>
+    <!-- C: グラフセクション -->
+    <div id="chartArea" style="display:none;">
+        <div class="grid2" style="margin-top:12px;">
+            <div class="panel">
+                <h2>📈 出現頻度トレンド（30回ウィンドウ）</h2>
+                <canvas id="trendChart" height="200"></canvas>
+            </div>
+            <div class="panel">
+                <h2>🎯 番号帯レーダーチャート</h2>
+                <canvas id="radarChart" height="200"></canvas>
+            </div>
+        </div>
+        <div class="panel" style="margin-top:12px;">
+            <h2>🔗 番号間の相関 TOP15（同時出現しやすいペア）</h2>
+            <div id="corrPositive" style="margin-bottom:12px;"></div>
+            <h3 style="font-size:.9rem;color:var(--red);">逆相関 TOP15（同時に出にくいペア）</h3>
+            <div id="corrNegative"></div>
+        </div>
+        <div class="panel" style="margin-top:12px;">
+            <h2>🔄 番号別 出現周期分析</h2>
+            <p style="font-size:.8rem;color:var(--muted);margin-bottom:10px;">due_score = (現在の未出現回数 − 平均出現間隔) ÷ 標準偏差。高いほど「出る頃」</p>
+            <div id="cycleData"></div>
+        </div>
+    </div>
+
+    <!-- D: 的中検証（アンサンブルのみ表示） -->
+    <div id="hitArea" style="display:none;">
+        <div class="panel" style="border-top:3px solid var(--amber);">
+            <h2>🎯 的中検証（アンサンブル予想のみ）</h2>
+            <p style="font-size:.78rem;color:var(--muted);margin:0 0 10px;">個別戦略（対極＝ホット×コールド含む）の履歴は表には出しません（分析・統計は上記のとおり利用できます）。</p>
+            <div style="display:flex;gap:8px;margin-bottom:12px;">
+                <button class="btn" onclick="loadHitCheck()" style="margin:0;padding:8px 20px;font-size:.85rem;">検証データ読み込み</button>
+            </div>
+            <div id="hitSummary" class="grid3"></div>
+            <div id="hitChartWrap" style="margin-top:16px;display:none;">
+                <canvas id="hitChart" height="160"></canvas>
+            </div>
+            <h3 style="font-size:.9rem;margin-top:16px;color:var(--muted);">最近のアンサンブル予想</h3>
+            <div id="hitRecent"></div>
+        </div>
+    </div>
+</div>
+<footer>LOTO7 AI ANALYZER v5.0 &mdash; 統計は過去の傾向であり当選を保証するものではありません</footer>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+
+<script>
+/** 同一オリジン（Flask が index を配信するポート）— ポート変更時も動く */
+const API = "/api";
+
+/** Chart.js 再描画で「Canvas is already in use」を防ぐ */
+window._loto7Charts = window._loto7Charts || [];
+function destroyLoto7Charts() {
+    window._loto7Charts.forEach((c) => {
+        try {
+            c.destroy();
+        } catch (e) {
+            /* noop */
+        }
+    });
+    window._loto7Charts = [];
+}
+
+function ballClass(n) {
+    if (n <= 9)  return 'ball range-1';
+    if (n <= 19) return 'ball range-10';
+    if (n <= 29) return 'ball range-20';
+    return 'ball range-30';
+}
+
+function makeBall(n) { return `<div class="${ballClass(n)}">${n}</div>`; }
+
+window.onload = function () {
+    load();
+};
+
+async function load() {
+    try {
+        const res = await fetch(`${API}/analysis`);
+        const d = await res.json();
+        if (!d.hit_info) { document.getElementById('comment').innerText = d.comment || "データなし"; return; }
+
+        document.getElementById('lastRound').innerText = `第${d.hit_info.round}回 結果分析`;
+        document.getElementById('lastNums').innerHTML = d.hit_info.nums.map(makeBall).join('');
+        document.getElementById('comment').innerText = d.comment;
+
+        if (!d.full_stats) return;
+        document.getElementById('statsArea').style.display = 'block';
+        document.getElementById('statsArea').classList.add('fade-in');
+        const fs = d.full_stats;
+
+        document.getElementById('hotNums').innerHTML = fs.hot.map(h =>
+            `<span class="tag hot">${h.num} <small>(${h.count}回)</small></span>`).join('');
+        document.getElementById('coldNums').innerHTML = fs.cold.map(c =>
+            `<span class="tag cold">${c.num} <small>(${c.count}回)</small></span>`).join('');
+        document.getElementById('overdueNums').innerHTML = fs.overdue.map(o =>
+            `<span class="tag overdue">${o.num} <small>(${o.gap}回前)</small></span>`).join('');
+        document.getElementById('trendNums').innerHTML = fs.trending.map(t =>
+            `<span class="tag hot">${t.num} <small>(${t.count}回)</small></span>`).join('');
+
+        const ss = fs.sum_stats;
+        document.getElementById('sumStats').innerHTML = `
+            <div style="display:flex;gap:20px;flex-wrap:wrap;">
+                <div><div class="stat-num">${ss.mean}</div><div class="stat-label">平均</div></div>
+                <div><div class="stat-num">${ss.median}</div><div class="stat-label">中央値</div></div>
+                <div><div class="stat-num">&plusmn;${ss.std}</div><div class="stat-label">標準偏差</div></div>
+                <div><div class="stat-num">${ss.min}-${ss.max}</div><div class="stat-label">範囲</div></div>
+            </div>`;
+        const maxSum = 220;
+        document.getElementById('sumBars').innerHTML = ss.recent5.map((v, i) =>
+            `<div class="bar-label">直近${ss.recent5.length - i}回前: ${v}</div>
+             <div class="bar-bg"><div class="bar-fill" style="width:${(v/maxSum)*100}%;background:var(--accent);"></div></div>`
+        ).join('');
+
+        const oe = fs.odd_even;
+        const hl = fs.high_low;
+        let balHtml = `<div style="margin-bottom:10px;"><b>奇数/偶数の分布</b></div>`;
+        for (let k = 0; k <= 7; k++) {
+            const cnt = oe[k] || 0;
+            const pct = fs.total_draws > 0 ? (cnt / fs.total_draws * 100).toFixed(1) : 0;
+            if (cnt > 0) balHtml += `<div class="bar-label">奇${k}:偶${7-k} → ${cnt}回 (${pct}%)</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:var(--green);"></div></div>`;
+        }
+        balHtml += `<hr class="section-divider"><div style="margin-bottom:6px;"><b>高(20-37)/低(1-19)の分布</b></div>`;
+        for (let k = 0; k <= 7; k++) {
+            const cnt = hl[k] || 0;
+            const pct = fs.total_draws > 0 ? (cnt / fs.total_draws * 100).toFixed(1) : 0;
+            if (cnt > 0) balHtml += `<div class="bar-label">高${k}:低${7-k} → ${cnt}回 (${pct}%)</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:var(--amber);"></div></div>`;
+        }
+        balHtml += `<hr class="section-divider"><div class="bar-label">連番ペア出現率: <b style="color:var(--text)">${fs.consecutive_pct}%</b></div>`;
+        document.getElementById('balanceStats').innerHTML = balHtml;
+
+        if (fs.decade_distribution) {
+            const dd = fs.decade_distribution;
+            const colors = {"1-9":"var(--red)","10-19":"var(--accent)","20-29":"var(--green)","30-37":"var(--amber)"};
+            document.getElementById('decadeDist').innerHTML = Object.entries(dd).map(([band, pct]) =>
+                `<div class="bar-label">${band}: ${pct}%</div>
+                 <div class="bar-bg"><div class="bar-fill" style="width:${pct * 2}%;background:${colors[band] || 'var(--accent)'};"></div></div>`
+            ).join('');
+        }
+
+        if (fs.position_stats && fs.position_stats.length) {
+            document.getElementById('posStats').innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:6px;">` +
+                fs.position_stats.map(p =>
+                    `<div style="text-align:center;padding:6px;background:#f8fafc;border-radius:8px;border:1px solid var(--border);">
+                        <div style="font-size:.7rem;color:var(--muted);">第${p.pos}数字</div>
+                        <div style="font-size:1.1rem;font-weight:bold;color:var(--accent);">${p.mean}</div>
+                        <div style="font-size:.65rem;color:var(--muted);">&plusmn;${p.std} (${p.min}-${p.max})</div>
+                    </div>`
+                ).join('') + `</div>`;
+        }
+
+        document.getElementById('pairList').innerHTML = fs.top_pairs.map(p =>
+            `<span class="pair-item">
+                <span class="pair-ball" style="background:${p.pair[0]<=19?'#3b82f6':'#16a34a'}">${p.pair[0]}</span>
+                <span class="pair-ball" style="background:${p.pair[1]<=19?'#3b82f6':'#16a34a'}">${p.pair[1]}</span>
+                <span class="pair-count">&times;${p.count}</span>
+             </span>`).join('');
+
+        const srcEl = document.getElementById('dataSource');
+        const src = d.data_source || '';
+        if (src.includes('実データ')) {
+            srcEl.textContent = `\u{1F7E2} ${src}\uFF08${fs.total_draws}回分\uFF09`;
+            srcEl.style.background = '#f0fdf4'; srcEl.style.color = 'var(--green)';
+            srcEl.style.border = '1px solid #bbf7d0';
+        } else {
+            srcEl.textContent = `\u{1F7E1} ${src}\uFF08${fs.total_draws}回分\uFF09`;
+            srcEl.style.background = '#fffbeb'; srcEl.style.color = 'var(--amber)';
+            srcEl.style.border = '1px solid #fde68a';
+        }
+
+        // グラフ完了後に的中検証（Chart の destroy 順序の競合を避ける）
+        document.getElementById('hitArea').style.display = 'block';
+        setTimeout(async () => {
+            await loadCharts();
+            await loadHitCheck().catch(() => {});
+        }, 500);
+
+    } catch(e) {
+        document.getElementById('lastNums').innerHTML = '';
+        document.getElementById('comment').innerHTML =
+            'エラー: サーバーに接続できません。<button onclick="location.reload()" style="margin-left:8px;padding:2px 10px;border-radius:12px;border:1px solid var(--accent);color:var(--accent);background:none;cursor:pointer;">再試行</button>';
+    }
+}
+
+async function refreshData() {
+    const btn = document.getElementById('refreshBtn');
+    btn.innerText = '取得中...'; btn.disabled = true;
+    try {
+        const res = await fetch(`${API}/refresh`);
+        const j = await res.json();
+        if (j.status === 'success') {
+            btn.innerText = '完了！';
+            setTimeout(() => { location.reload(); }, 800);
+        } else {
+            btn.innerText = '失敗';
+            alert(j.message || 'データ取得に失敗しました');
+            setTimeout(() => { btn.innerText = '最新データ取得'; btn.disabled = false; }, 2000);
+        }
+    } catch(e) { btn.innerText = '接続エラー'; setTimeout(() => { btn.innerText = '最新データ取得'; btn.disabled = false; }, 2000); }
+}
+
+function confClass(score) {
+    if (score >= 75) return 'conf-high';
+    if (score >= 55) return 'conf-mid';
+    return 'conf-low';
+}
+
+function isEnsembleStrategy(name) {
+    return name && String(name).indexOf('アンサンブル') >= 0;
+}
+
+// ===================== アンサンブル AI（表のみ） =====================
+async function runEnsemble() {
+    const btn = document.querySelectorAll('.btn')[1];
+    btn.innerHTML = '<span class="loading-spinner"></span>計算中...';
+    btn.disabled = true;
+    try {
+        const res = await fetch(`${API}/ensemble`);
+        const d = await res.json();
+        if (d.status === 'error' || !Array.isArray(d.numbers) || d.numbers.length !== 7) {
+            alert(d.message || 'アンサンブル予想に失敗しました。データ取得を試してください。');
+            return;
+        }
+        const panel = document.getElementById('ensemblePanel');
+        panel.style.display = 'block';
+        panel.classList.add('fade-in');
+        const sum = d.numbers.reduce((a, b) => a + b, 0);
+        document.getElementById('etRound').textContent = `第${d.next_round}回`;
+        document.getElementById('etBalls').innerHTML = `<div class="ball-row" style="margin:0;">${d.numbers.map(makeBall).join('')}</div>`;
+        document.getElementById('etSum').textContent = String(sum);
+        document.getElementById('etConf').innerHTML = `<span class="confidence ${confClass(d.confidence)}">${d.confidence}%</span>`;
+        let note = '';
+        if (typeof d.overlap_same_target === 'number') {
+            note += `同一目標回の過去予想と <b>${d.overlap_same_target}</b> 個重複。`;
+        }
+        if (d.saved_to_history) {
+            note += '<span style="color:var(--green);">履歴に保存済み</span>';
+        }
+        document.getElementById('etNote').innerHTML = note || '—';
+        let wHtml = '';
+        for (const [strat, w] of Object.entries(d.strategy_weights)) {
+            const pct = (w * 100).toFixed(1);
+            wHtml += `<div class="bar-label">${strat}: ${pct}%</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:var(--green);"></div></div>`;
+        }
+        document.getElementById('ensembleWeights').innerHTML = wHtml;
+        panel.scrollIntoView({ behavior: 'smooth' });
+    } catch(e) { alert('エラー: ' + e.message); }
+    finally { btn.innerHTML = '🧠 アンサンブル予想を表示'; btn.disabled = false; }
+}
+
+// ===================== グラフ読み込み =====================
+async function loadCharts() {
+    document.getElementById('chartArea').style.display = 'block';
+    destroyLoto7Charts();
+    // 頻度トレンド
+    try {
+        const tres = await fetch(`${API}/frequency-trend`);
+        const td = await tres.json();
+        const ctx = document.getElementById('trendChart').getContext('2d');
+        const colors = ['#ef4444','#3b82f6','#16a34a','#d97706','#8b5cf6','#ec4899','#06b6d4'];
+        const ch1 = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: td.trend.map(p => p.x),
+                datasets: td.tracked_numbers.map((n, i) => ({
+                    label: 'No.' + n, data: td.trend.map(p => p[n]),
+                    borderColor: colors[i % colors.length], borderWidth: 2,
+                    pointRadius: 1, tension: 0.3, fill: false,
+                }))
+            },
+            options: { responsive: true, plugins: { legend: { labels: { font: { size: 10 } } } },
+                scales: { x: { title: { display: true, text: '回数' } }, y: { title: { display: true, text: '出現数 (30回中)' } } } }
+        });
+        window._loto7Charts.push(ch1);
+    } catch(e) { console.error('trend chart error', e); }
+
+    // レーダーチャート（番号帯分布）
+    try {
+        const ares = await fetch(`${API}/analysis`);
+        const ad = await ares.json();
+        if (ad.full_stats && ad.full_stats.decade_distribution) {
+            const dd = ad.full_stats.decade_distribution;
+            const rctx = document.getElementById('radarChart').getContext('2d');
+            const ch2 = new Chart(rctx, {
+                type: 'radar',
+                data: {
+                    labels: Object.keys(dd),
+                    datasets: [{
+                        label: '出現率 (%)', data: Object.values(dd),
+                        backgroundColor: 'rgba(37,99,235,.15)', borderColor: '#2563eb', borderWidth: 2,
+                        pointBackgroundColor: '#2563eb',
+                    }]
+                },
+                options: { responsive: true, scales: { r: { beginAtZero: true, max: 40 } } }
+            });
+            window._loto7Charts.push(ch2);
+        }
+    } catch(e) { console.error('radar chart error', e); }
+
+    // 相関分析
+    try {
+        const cres = await fetch(`${API}/correlation`);
+        const cd = await cres.json();
+        document.getElementById('corrPositive').innerHTML = cd.top_positive.map(p =>
+            `<span class="pair-item"><span class="pair-ball" style="background:#16a34a">${p.a}</span>` +
+            `<span class="pair-ball" style="background:#16a34a">${p.b}</span>` +
+            `<span class="pair-count">r=${p.r}</span></span>`
+        ).join('');
+        document.getElementById('corrNegative').innerHTML = cd.top_negative.map(p =>
+            `<span class="pair-item"><span class="pair-ball" style="background:#dc2626">${p.a}</span>` +
+            `<span class="pair-ball" style="background:#dc2626">${p.b}</span>` +
+            `<span class="pair-count">r=${p.r}</span></span>`
+        ).join('');
+    } catch(e) { console.error('correlation error', e); }
+
+    // 周期分析
+    try {
+        const cyres = await fetch(`${API}/cycles`);
+        const cy = await cyres.json();
+        let html = '<div class="grid2">';
+        html += '<div class="mini-card"><h3>⏰ 最も "出る頃" な番号</h3>';
+        html += cy.most_overdue.map(n =>
+            `<span class="tag overdue">${n.num} <small>(due=${n.due_score}, gap=${n.current_gap}回, avg=${n.avg_gap}回)</small></span>`
+        ).join('') + '</div>';
+        html += '<div class="mini-card"><h3>🎯 最も規則的な番号</h3>';
+        html += cy.most_regular.map(n =>
+            `<span class="tag cold">${n.num} <small>(σ=${n.std_gap}, avg=${n.avg_gap}回)</small></span>`
+        ).join('') + '</div></div>';
+        document.getElementById('cycleData').innerHTML = html;
+    } catch(e) { console.error('cycle error', e); }
+}
+
+// ===================== 的中検証 =====================
+async function loadHitCheck() {
+    try {
+        const hitCanvas = document.getElementById('hitChart');
+        const oldHit = typeof Chart !== 'undefined' && Chart.getChart ? Chart.getChart(hitCanvas) : null;
+        if (oldHit) {
+            try {
+                oldHit.destroy();
+            } catch (e) {
+                /* noop */
+            }
+            window._loto7Charts = (window._loto7Charts || []).filter((c) => c !== oldHit);
+        }
+        const res = await fetch(`${API}/hit-check`);
+        const d = await res.json();
+        document.getElementById('hitArea').style.display = 'block';
+        const ensSummary = (d.summary || []).filter((s) => isEnsembleStrategy(s.strategy));
+        const ensRecent = (d.recent || []).filter((r) => isEnsembleStrategy(r.strategy));
+        if (ensSummary.length === 0) {
+            document.getElementById('hitSummary').innerHTML =
+                '<p style="color:var(--muted);font-size:.85rem;margin:0;">アンサンブルの検証データがまだありません。「アンサンブル予想を表示」を実行し、抽選後に実績が入ってから再度お試しください。</p>';
+        } else {
+            document.getElementById('hitSummary').innerHTML = ensSummary.map((s) => {
+                const cls = s.avg_hits >= 2 ? 'conf-high' : s.avg_hits >= 1.5 ? 'conf-mid' : 'conf-low';
+                return `<div class="pred-card">
+                <div class="pred-header">
+                    <span class="pred-strategy">${s.strategy}</span>
+                    <span class="confidence ${cls}">平均${s.avg_hits}個一致</span>
+                </div>
+                <div class="pred-meta"><span>検証数: ${s.predictions}回</span><span>最高: ${s.best_hit}個一致</span></div>
+            </div>`;
+            }).join('');
+        }
+        if (ensSummary.length > 0) {
+            document.getElementById('hitChartWrap').style.display = 'block';
+            const hctx = document.getElementById('hitChart').getContext('2d');
+            const ch3 = new Chart(hctx, {
+                type: 'bar',
+                data: {
+                    labels: ensSummary.map((s) => s.strategy.slice(0, 12)),
+                    datasets: [{
+                        label: '平均一致数', data: ensSummary.map((s) => s.avg_hits),
+                        backgroundColor: ensSummary.map((s) => s.avg_hits >= 2 ? '#16a34a' : s.avg_hits >= 1.5 ? '#d97706' : '#dc2626'),
+                        borderRadius: 6,
+                    }]
+                },
+                options: { responsive: true, scales: { y: { beginAtZero: true, max: 5, title: { display: true, text: '平均一致数' } } },
+                    plugins: { legend: { display: false } } }
+            });
+            window._loto7Charts.push(ch3);
+        } else {
+            document.getElementById('hitChartWrap').style.display = 'none';
+        }
+        document.getElementById('hitRecent').innerHTML = ensRecent.length
+            ? ensRecent.map((r) => {
+            const hitBalls = new Set(r.hits);
+            return `<div class="pred-card" style="margin-top:6px;">
+                <div style="font-size:.75rem;color:var(--muted);">第${r.round}回 ｜ ${r.strategy}</div>
+                <div style="display:flex;gap:12px;margin-top:6px;flex-wrap:wrap;">
+                    <div><small style="color:var(--muted);">予測:</small><div class="ball-row">${r.predicted.map(n =>
+                        `<div class="ball${hitBalls.has(n) ? ' range-20' : ''}" style="width:28px;height:28px;line-height:28px;font-size:.75rem;${hitBalls.has(n)?'':'background:#94a3b8;box-shadow:none;'}">${n}</div>`
+                    ).join('')}</div></div>
+                    <div><small style="color:var(--muted);">実際:</small><div class="ball-row">${r.actual.map(n =>
+                        `<div class="ball range-10" style="width:28px;height:28px;line-height:28px;font-size:.75rem;">${n}</div>`
+                    ).join('')}</div></div>
+                </div>
+                <div style="font-size:.8rem;margin-top:4px;"><b style="color:${r.hit_count >= 3 ? 'var(--green)' : r.hit_count >= 2 ? 'var(--amber)' : 'var(--muted)'}">${r.hit_count}個一致</b></div>
+            </div>`;
+        }).join('')
+            : '<p style="color:var(--muted);font-size:.85rem;margin:0;">アンサンブルの検証履歴はまだありません。</p>';
+    } catch(e) {
+        console.error('hit-check', e);
+        document.getElementById('hitRecent').innerHTML =
+            '<p style="color:var(--muted);font-size:.85rem;">的中検証の読み込みに失敗しました。しばらくしてから「検証データ読み込み」を押してください。</p>';
+    }
+}
+
+async function runPredict() {
+    const btn = document.querySelector('.btn');
+    const statusEl = document.getElementById('predictStatus');
+    btn.innerHTML = '<span class="loading-spinner"></span>保存中...';
+    btn.disabled = true;
+    const t0 = performance.now();
+    try {
+        const res = await fetch(`${API}/predict`);
+        const j = await res.json();
+        const elapsed = ((performance.now() - t0) / 1000).toFixed(1);
+        if (j.status === "success") {
+            statusEl.style.display = 'block';
+            statusEl.innerHTML =
+                `第<strong>${j.next_round}</strong>回向けに、8 戦略（対極含む）の候補を内部保存しました（${elapsed} 秒）。表には出していません。続けて「アンサンブル予想を表示」を押してください。`;
+            statusEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else {
+            statusEl.style.display = 'block';
+            statusEl.textContent = j.message || '保存に失敗しました。';
+        }
+    } catch(e) {
+        statusEl.style.display = 'block';
+        statusEl.textContent = 'サーバーに接続できません。';
+        alert('サーバーに接続できません。');
+    }
+    finally { btn.innerHTML = '候補を保存（8 戦略・非表示）'; btn.disabled = false; }
+}
+</script>
+</body>
+</html>

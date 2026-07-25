@@ -8,9 +8,9 @@
  *   0c) cio:guard:5038-session-audit（v3.2 B1 — customize セッションのみ）
  *   1) cio:guard:multi-customize
  *   2) git add（--auto-stage）/ commit
- *   3) cio:session:export-handoff → verify:session-handoff-integrity --validate-export（amend 前）
- *   4) bridge を amend fold → git pull --rebase → git push
- *   5) R44 checkpoint Git（SKIP 新規 commit · amend/normalize 禁止 · #S-R44-SKIP-01）
+ *   3) export-handoff + checkpoint Git(parent) → verify
+ *   4) bridge + checkpoint を1メタcommit → git pull --rebase → git push
+ *   5) R44 off-by-one（tipの親）を検証
  *   6) verify:session-close-git-warn
  *   7) desktop:sync-and-verify（--skip-desktop-sync で省略可・浜田 GO 時のみ）
  *
@@ -25,47 +25,14 @@ import { isSessionCloseTempPath } from './lib/cio-session-close-temp-paths.mjs';
 import { runNpmScriptSync } from './lib/win-hidden-spawn.mjs';
 import { touchesGovernance } from './lib/cio-governance-touch.mjs';
 import {
-  syncCheckpointGitAfterPush,
+  gitShortHead,
+  updateCheckpointGitHead,
 } from './lib/cio-checkpoint-git-sync.mjs';
 import { CHECKPOINT_REL } from './lib/cio-checkpoint-read.mjs';
 import { repairCheckpointBootstrapBlock } from './lib/cio-handoff-template.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DESKTOP_DIR = process.env.SESSION_STARTER_DESKTOP_DIR || 'C:\\Users\\mhamada202408224\\Desktop\\AI緊急用';
-
-/**
- * R44 (#S-R44-SKIP-01) — push 後に origin tip を **Git** 行へ stamp し、
- * `CIO_POST_COMMIT_CHECKPOINT_SYNC=1` で **新規 commit のみ**（amend / normalize 禁止）。
- * 結果 tip=T・Git=親(T^1) = R44 off-by-one 正常。force-push 禁止。
- */
-function syncCheckpointGitR44Skip(branch) {
-  git(['fetch', 'origin', branch]);
-  const { changed, hash } = syncCheckpointGitAfterPush(root, { suffix: 'push 済' });
-  if (!changed || !hash) {
-    console.log('[cio:session:close-git] checkpoint Git 行は既に origin と整合（R44 stamp スキップ）');
-    return;
-  }
-  git(['add', CHECKPOINT_REL]);
-  const cpCommit = git(['commit', '-m', 'chore(checkpoint): sync Git line after close'], {
-    env: { ...process.env, CIO_POST_COMMIT_CHECKPOINT_SYNC: '1' },
-  });
-  if (!cpCommit.ok) {
-    console.error('[cio:session:close-git] NG checkpoint Git R44 SKIP commit', cpCommit.err || cpCommit.out);
-    process.exit(cpCommit.status || 1);
-  }
-  const push2 = git(['push', 'origin', 'HEAD']);
-  if (!push2.ok) {
-    console.error(
-      '[cio:session:close-git] NG checkpoint Git R44 SKIP push — force 禁止。`git fetch` 後 `git reset --hard origin/main` してから再 sync（#R-R44-CLOSE-01）',
-      push2.err || push2.out,
-    );
-    process.exit(push2.status || 1);
-  }
-  git(['fetch', 'origin', branch]);
-  const finalHash = git(['rev-parse', '--short', 'origin/main']).out || hash;
-  const parent = git(['rev-parse', '--short', `${finalHash}^`]).out || hash;
-  console.log(`[cio:session:close-git] checkpoint Git R44 SKIP synced → tip=${finalHash} Git≈${parent}`);
-}
 
 const execute = process.argv.includes('--execute');
 const autoStage = process.argv.includes('--auto-stage');
@@ -219,7 +186,16 @@ function main() {
     console.log('[cio:session:close-git] 新規 commit なし（既に commit 済）');
   }
 
+  // P3 (2026-07-25 浜田承認): bridge と checkpoint を同じ「締めメタ commit」に集約。
+  // どちらも直前の内容 commit（= 最終tipの親）を記録するため、R44 off-by-one が
+  // 意図どおり1世代に固定され、追いかけ同期 commit を増殖させない。
   runNpm('cio:session:export-handoff');
+  if (!skipCheckpointGit) {
+    const parentHash = gitShortHead(root);
+    if (parentHash) {
+      updateCheckpointGitHead(root, { hash: parentHash, suffix: 'push 済（R44 parent）' });
+    }
+  }
 
   if (fs.existsSync(path.join(root, 'docs/handoff/latest-session-bridge.json'))) {
     if (!runNpm('verify:session-handoff-integrity', ['--validate-export'])) {
@@ -229,30 +205,19 @@ function main() {
   }
 
   if (autoStage) stageSessionChanges();
-  // #S2 (2026-07-21 夕反省承認): export-handoff が bridge を再生成した場合、
-  // --auto-stage 無しだと unstaged のまま pull --rebase が停止する。bridge のみ常に stage する。
-  git(['add', 'docs/handoff/latest-session-bridge.json']);
-  const bridgeStaged = git(['diff', '--cached', '--name-only']).out;
-  if (bridgeStaged) {
-    // R31: amend fold 後 gitHead === HEAD~1 を許容 — bridge は単独 commit（amend 禁止）
-    const bridgeCommit = git(['commit', '-m', 'chore(handoff): session bridge export']);
-    if (!bridgeCommit.ok) {
-      console.error('[cio:session:close-git] NG bridge export commit 失敗');
-      process.exit(bridgeCommit.status || 1);
+  git(['add', 'docs/handoff/latest-session-bridge.json', CHECKPOINT_REL]);
+  const closeMetaStaged = git(['diff', '--cached', '--name-only']).out;
+  if (closeMetaStaged) {
+    const metaCommit = git([
+      'commit',
+      '-m',
+      'chore(session): sync checkpoint Git + handoff bridge',
+    ]);
+    if (!metaCommit.ok) {
+      console.error('[cio:session:close-git] NG 締めメタ commit 失敗');
+      process.exit(metaCommit.status || 1);
     }
-    console.log('[cio:session:close-git] bridge export を単独 commit（R31）');
-    runNpm('cio:session:export-handoff');
-    if (autoStage) stageSessionChanges();
-    git(['add', 'docs/handoff/latest-session-bridge.json']); // #S2 同上
-    const bridgeRefresh = git(['diff', '--cached', '--name-only']).out;
-    if (bridgeRefresh) {
-      const refreshCommit = git(['commit', '-m', 'chore(handoff): align bridge gitHead']);
-      if (!refreshCommit.ok) {
-        console.error('[cio:session:close-git] NG bridge gitHead refresh 失敗');
-        process.exit(refreshCommit.status || 1);
-      }
-      console.log('[cio:session:close-git] bridge gitHead refresh commit（R31）');
-    }
+    console.log('[cio:session:close-git] checkpoint + bridge を1 commitに集約（P3/R44）');
   }
 
   const branch = git(['rev-parse', '--abbrev-ref', 'HEAD']).out || 'main';
@@ -273,10 +238,6 @@ function main() {
     process.exit(push.status || 1);
   }
   console.log('[cio:session:close-git] push OK');
-
-  if (!skipCheckpointGit) {
-    syncCheckpointGitR44Skip(branch);
-  }
 
   if (!runNode('scripts/verify-session-close-git-warn.mjs')) {
     process.exit(1);

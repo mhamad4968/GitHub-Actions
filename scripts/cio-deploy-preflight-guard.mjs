@@ -87,6 +87,26 @@ function main() {
     }
   }
 
+  // P1/P2 (2026-07-25 浜田承認): App756 は deploy 前に BUILD と最小UI配線を機械突合。
+  if (app === '756') {
+    for (const script of [
+      'verify-jikkou-v2-build-tag.mjs',
+      'verify-jikkou-v2-ui-smoke.mjs',
+    ]) {
+      const r = spawnSync(process.execPath, [path.join(root, 'scripts', script)], {
+        cwd: root,
+        encoding: 'utf8',
+        stdio: ['inherit', 'pipe', 'pipe'],
+      });
+      if (r.stdout) process.stdout.write(r.stdout);
+      if (r.stderr) process.stderr.write(r.stderr);
+      if (r.status !== 0) {
+        console.error(`[cio-deploy-preflight-guard] ❌ App756 deploy前検査 NG: ${script}`);
+        process.exit(1);
+      }
+    }
+  }
+
   if (hasCustomizeForApp(app) && process.env.SKIP_CIO_LIVE_SCHEMA_GUARD !== '1') {
     const liveScript = path.join(root, 'scripts', 'verify-kintone-live-schema.mjs');
     const lr = spawnSync(process.execPath, [liveScript, '--app', app], {

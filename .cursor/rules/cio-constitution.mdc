@@ -8,7 +8,7 @@ alwaysApply: true
 
 ## デスクトップ正本（CEO 厳守・機械検査対象）
 
-- **CEO 最低基準ブロック** — リポ正本 `chat-sessions/CEO-MINIMUM-ABSOLUTE-BASELINE.txt`（read-pack `desktop-ai-emergency-read-pack/18-重要確認.txt` と同一）。**すべての CIO 応答に含める条件**。**Desktop `＃重要確認事項.txt` は 2026-06-30 廃止**（R-0630-02 GO）。**CIO 統合統制は浜田に作業手順を仰ぐための制度ではない**— **CIO が自律指揮し AI チームで自動実行**（**「次は何を指示しますか」と浜田に返すのは禁止**。仕様・GO／NO-GO・例外・動作確認依頼のみ浜田）。
+- **CEO 最低基準ブロック** — リポ正本 `chat-sessions/CEO-MINIMUM-ABSOLUTE-BASELINE.txt`。全文再掲は **締め・GO仰ぎ**のみ。通常応答は§1四行、通常報告はV2＋A1まで（2026-07-25 浜田承認）。**CIO 統合統制は浜田に作業手順を仰ぐための制度ではない**— CIOが自律指揮する。
 - `C:\Users\mhamada202408224\Desktop\AI緊急用\` — **報告・大きな完了前の参照の束**（`08-INDEX.txt` 等を Read）。**不存在**は hooks が `logs/report-precheck.log` に追記（`cio-desktop-path-guard.mjs`）。**Agent がターミナルで Desktop を列挙するとき**はワークスペース外のため **Run 確認が出やすい** — **`%USERPROFILE%\.cursor\sandbox.json`** の **`additionalReadonlyPaths`**（本フォルダ＋`Desktop`）と **`permissions.json` の `Sort-` 等**、および **Cursor Settings → Agents → Auto-Run が Ask Every Time 以外**であること（**手順の短文**: `chat-sessions/AI緊急用-README.txt` 冒頭【CIO／Agent】）。**長い `node -e` 一括ファイル書き換え**も別ゲートで **Run が残る**ことがある → **`scripts/*.mjs` / `npm run` 優先**（read-pack `18-重要確認.txt` Cursor 節）。**MCP 名の健全性**は **`npm run verify:cio-mcp-registry`**、実プロセスは **`npm run cio:mcp:env`**（`docs/mcp-status.md` §CIO）。
 - **CEO 命令（2026-05-09）**: **`AI緊急用\00`〜`26` を索引どおり精読**（抜け・要約のみ禁止）。**`00`**＝ハブ v3.36 分割 Read 順、**`08`**＝read-pack 読取順、**`18`**＝浜田 Desktop 専用重要確認、**`20`**＝報告チェックシート、**`21`/`22`/`23`**＝bootstrap／人間 handoff／フォルダ README、**`24`/`25`**＝handoff／checkpoint 鏡、**`26`**＝夕反省（任意）。**毎ターンの §1 四行・§M-2**は **`18`/`20` と整合**させる。
 

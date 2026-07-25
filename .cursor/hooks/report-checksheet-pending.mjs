@@ -2,7 +2,8 @@
 /**
  * beforeSubmitPrompt — ユーザ送信ごとに afterAgentResponse 用 pending を立てる（既定）。
  * - **報告意図** (`isReportIntentPrompt`): `mode: full` — 報告前自動判定（session-clock / report-pipeline）＋ V2 厳格（validate 側）。
- * - **その他の全ターン**: `mode: head-only` — **§1 先頭4行**に加え **`CEO-MINIMUM-ABSOLUTE-BASELINE.txt` 全文（非空行すべて）**を機械検証（V2・§P は不要）。CEO 最低基準は **全応答の条件**。
+ * - **その他の全ターン**: `mode: head-only` — **§1 先頭4行**を機械検証（V2・§P・CEO全文は不要）。
+ * - **締め・GO仰ぎ**: `requireCeoBlock: true` — CEO最低基準全文も検証。
  *
  * 緊急で従来（報告意図ターンのみ pending）へ戻す: 環境変数 **`HOOKS_STRICT_HEAD_EVERY_TURN=0`**
  *
@@ -150,6 +151,11 @@ function isReportIntentPrompt(prompt) {
   return false;
 }
 
+function isCloseOrGoPrompt(prompt) {
+  const p = String(prompt || '');
+  return /日終わり|セッション終了|終わります|終了手順|締め|GO\s*仰ぎ|GO\s*判断|承認を求め/i.test(p);
+}
+
 function writePendingFile(prompt, mode) {
   const prev = readCurrent();
   if (prev && prev.correlationId && prev.outcome === 'in_progress') {
@@ -167,6 +173,7 @@ function writePendingFile(prompt, mode) {
         ts,
         correlationId,
         mode,
+        requireCeoBlock: mode === 'full' && isCloseOrGoPrompt(prompt),
         promptPreview: String(prompt).slice(0, 400),
       },
       null,

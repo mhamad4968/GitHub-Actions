@@ -58,7 +58,7 @@ function readFollowReason() {
   }
 }
 
-function runValidate(mode, body) {
+function runValidate(mode, body, requireCeoBlock = false) {
   clearFollow();
   try {
     fs.unlinkSync(pendingPath);
@@ -72,6 +72,7 @@ function runValidate(mode, body) {
       ts: Date.now(),
       correlationId: `e2e-${mode}-${Date.now()}`,
       mode,
+      requireCeoBlock,
     }),
     'utf8'
   );
@@ -95,12 +96,10 @@ function ok(msg) {
 
 const ceo = readCeoBlock();
 
-// 1) head-only: §1 のみ → CEO 欠落で follow + CEO_MINIMUM_BLOCK
+// 1) head-only: §1 のみ → 成功（CEO全文は不要）
 const r1 = runValidate('head-only', `${head}\n本文のみ・CEOブロックなし。\n`);
-if (r1.reason !== 'CEO_MINIMUM_BLOCK') {
-  fail(`head-only CEO 欠落: follow.reason 期待 CEO_MINIMUM_BLOCK 実際=${JSON.stringify(r1.reason)}`);
-}
-ok('head-only: CEO 全文なし → follow.reason=CEO_MINIMUM_BLOCK');
+if (r1.reason !== null) fail(`head-only: follow不要 実際=${JSON.stringify(r1.reason)}`);
+ok('head-only: §1のみ → 成功');
 
 // 2) head-only: §1 + CEO 全文 → 成功（follow 無し）
 const r2 = runValidate('head-only', `${head}\n${ceo}\n`);
@@ -108,13 +107,13 @@ clearFollow();
 if (readFollowReason() !== null) fail('head-only CEO 充足: follow が残っている');
 ok('head-only: §1 + CEO 全文 → follow なし（成功）');
 
-// 3) full: V2+§1 だが CEO の1行削除 → CEO_MINIMUM_BLOCK
+// 3) 締めfull: V2+§1 だが CEO の1行削除 → CEO_MINIMUM_BLOCK
 const ceoBroken = ceo.split(/\r?\n/).filter((l) => !l.includes('1. 報告違反ゼロ')).join('\n');
-const r3 = runValidate('full', `${head}\n${ceoBroken}\n${v2}\n`);
+const r3 = runValidate('full', `${head}\n${ceoBroken}\n${sectionA1}\n${v2}\n`, true);
 if (r3.reason !== 'CEO_MINIMUM_BLOCK') {
   fail(`full CEO 1行欠: 期待 CEO_MINIMUM_BLOCK 実際=${JSON.stringify(r3.reason)}`);
 }
-ok('full: CEO 1行欠け → follow.reason=CEO_MINIMUM_BLOCK');
+ok('締めfull: CEO 1行欠け → follow.reason=CEO_MINIMUM_BLOCK');
 
 // 3b) full: §1 + CEO + V2 だが □A1／要約なし → DOUBLE_CHECK_ATTRIBUTION
 const r3b = runValidate('full', `${head}\n${ceo}\n${v2}\n`);
@@ -123,11 +122,11 @@ if (r3b.reason !== 'DOUBLE_CHECK_ATTRIBUTION') {
 }
 ok('full: □A1／ダブルチェック要約なし → follow.reason=DOUBLE_CHECK_ATTRIBUTION');
 
-// 4) full: §1 + CEO + §P A1 + V2 → 成功
-const r4 = runValidate('full', `${head}\n${ceo}\n${sectionA1}\n${v2}\n`);
+// 4) 締めfull: §1 + CEO + §P A1 + V2 → 成功
+const r4 = runValidate('full', `${head}\n${ceo}\n${sectionA1}\n${v2}\n`, true);
 clearFollow();
 if (readFollowReason() !== null) fail('full 正常: follow が残っている');
-ok('full: §1 + CEO + □A1+要約 + V2 → follow なし（成功）');
+ok('締めfull: §1 + CEO + □A1+要約 + V2 → follow なし（成功）');
 
 // 5) pending hook（stdin 経路）
 const smoke = spawnSync(process.execPath, ['scripts/hook-smoke-report-pending.mjs', '本日の報告をします'], {
@@ -153,6 +152,6 @@ if (clear.status !== 0) {
 }
 
 console.log(
-  '[verify-ceo-report-hooks-e2e] 全ケース OK（報告 full: §1+CEO+□A1+ダブルチェック要約+V2 を hooks が検査）'
+  '[verify-ceo-report-hooks-e2e] 全ケース OK（通常は§1+V2+A1、締め・GOのみCEO全文を追加検査）'
 );
 process.exit(0);

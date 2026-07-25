@@ -75,7 +75,7 @@ DRY_RUN_TO_APPLY_GAP: same-turn|>=1-turn|n/a
 - **`DESTRUCTIVE_OPS != none`** かつ **`DRY_RUN_TO_APPLY_GAP: same-turn`** も同様に **フォロー必須**（**`kintone-destructive-rest-guard.mdc` 違反候補**）。
 - **`CHECKSHEET_VERSION: 1`（3 行のみ）**は報告ターンでは **受理せず**、hooks が **V2 七行を要求**（`FAILED_STRICT_V1`）。
 - **直後に**（同じ末尾ブロック内でよい）**人間可読のチェックリスト**を出す — 正本 **`docs/session-report-checklist.md` §M-2**／短縮 **`chat-sessions/desktop-ai-emergency-read-pack/20-SESSION-REPORT-CHECKLIST.txt`**（`[ルール確認]` に **いずれかを Read 済み**と書く）。
-- **CEO 最低基準（絶対条件）全文（2026-05-09 CEO／機械検証）**: **すべての CIO 応答**で、`chat-sessions/CEO-MINIMUM-ABSOLUTE-BASELINE.txt`（read-pack `18-重要確認.txt` と同一。**Desktop `＃重要確認事項.txt` は 2026-06-30 廃止**）の **非空行すべて**を本文に **一字一句変えず含める**（`report-checksheet-validate.mjs` が **`head-only` と `full` の両方**で検査し、**1 行でも欠けると `CEO_MINIMUM_BLOCK`** で `stop` フォロー）。**2 語句だけの再宣言・要約・「要点のみ」は不合格**。
+- **CEO 最低基準（2026-07-25 浜田承認・軽量化）**: `chat-sessions/CEO-MINIMUM-ABSOLUTE-BASELINE.txt` 全文の再掲は **締め・GO仰ぎ**に限定する。通常応答は§1四行、通常報告は§1四行＋V2七行＋A1を下限とする。
 - **IDE 外・hooks 非経路（Composer 等）**: hooks が **当該応答を検証できない経路**でも、**最低基準・報告違反・重要確認の充足／不足を論じる応答**では **上記 CEO ブロック全文を自発で貼る**（**判否の一行だけに逃げない**。浜田が繰り返し指摘しなくて済む状態を正とする）。
 - **§P □A1・ダブルチェック要約（機械検査・2026-05-09）**: **報告ターン（`mode: full`）**では **`□ A1`** 行に **`ダブルチェック（誰と・結果）`** を含め、**`ダブルチェック要約:`** 行に **誰が**第2者チェックしたか（または **無／非該当／§50-3-8 スキップ**の明示）を書く（`report-checksheet-validate.mjs` が **`DOUBLE_CHECK_ATTRIBUTION`** で `stop` フォロー）。
 
@@ -83,7 +83,7 @@ DRY_RUN_TO_APPLY_GAP: same-turn|>=1-turn|n/a
 
 - **細分化・先読みパック（2026-05-08 CEO 追補）**: `chat-sessions/constitution-first-read-pack/00-ORDER.txt` に **憲法・最重要ルールを小分けファイルで順序固定**した正本がある。**`sessionStart` hook** が `additional_context` で **本題前にこの順で Read** を指示する。**NG 時**は同パック＋ `C:\Users\mhamada202408224\Desktop\AI緊急用` **全件**再Readが **必須**（`ng-recovery-gate.mjs`・`report-checksheet-stop.mjs` の追記文）。
 - **NG＝失敗・ゲート（2026-05-08 CEO 追補）**: 自動検証が不合格のとき **`.cursor/hooks/state/ng-require-full-restart.json`** を立てる。次ユーザ送信から `beforeSubmitPrompt` が **回復手順を先頭注入**する。**合格 SUCCESS** で自動消去。手動のみ: **`npm run hooks:gate-clear`**。
-- **全ターン対象（2026-05-08 CEO 追補 + 2026-05-09 CEO 最低基準）**: `report-checksheet-pending.mjs` は **報告意図でない通常のユーザ送信でも**（既定）`pending` を **`mode: head-only`** で作成する。**`report-checksheet-validate.mjs`** はそのとき **応答先頭ウィンドウの §1 四行**に加え **`CEO-MINIMUM-ABSOLUTE-BASELINE.txt` 全文（非空行すべて）**を検証する（**CEO 最低基準は報告に限らず全応答の条件**）。V2・§P 本文は head-only では不要。**報告意図**のときは従来どおり **`mode: full`**（報告前 precheck ＋ V2 厳格）。**緊急で従来動作（報告ターンのみ pending）**へ戻す: 環境変数 **`HOOKS_STRICT_HEAD_EVERY_TURN=0`**（`report-checksheet-pending.mjs` 先頭コメント参照）。**埋もれ対策**: 長文・ツール結果を出すターンでも **§1 四行を応答の最初のブロック**に置く（先頭ウィンドウのみ機械検査）。ウィンドウ長の調整が必要なら `report-checksheet-validate.mjs` の `TURN_HEAD_WINDOW` をリポで検討。
+- **全ターン対象（2026-07-25 軽量化）**: `mode: head-only` は§1四行だけを検証する。通常報告の `mode: full` はV2＋A1まで、締め・GO仰ぎだけ `requireCeoBlock: true` でCEO全文も検証する。**埋もれ対策**: 長文・ツール結果を出すターンでも§1四行を最初のブロックに置く。
 - **`.cursor/hooks.json`**: `beforeSubmitPrompt` → `afterAgentResponse` → `stop` が連携し、**報告意図があるのに V2 七行が無い・V1 のみ・V2 矛盾・§1 四行欠落（厳格）**の応答に対して **`stop` が自動ユーザメッセージ**を投入（再回答を強制。`loop_limit` 上限あり）。
 - **`stop` と `completed`**: Cursor が **`status !== completed`** で `stop` を呼ぶことがある。**そのときはフォロー用フラグを消さず**、**`completed` の `stop` まで保持**する（誤って自動フォローを捨てない・2026-05-07 改修。正本: `report-checksheet-stop.mjs`）。
 - **`pending` の TTL**: 長時間タスクでも検証が効くよう **8 時間**。TTL 切れは **`logs/report-checksheet-violations.log` に `PENDING_EXPIRED_TTL` として記録**（黙捨て禁止・正本: `report-checksheet-validate.mjs`）。

@@ -37,8 +37,8 @@ const REQUIRED_ANCHORS = [
   'SPEC_TOUCHED: yes のターンで SECOND_REVIEWER',
   'none(reason=純メタ)',
   '適用範囲（CEO',
-  'すべての CIO 応答に含める条件',
-  'head-only',
+  '締め・GO 仰ぎ',
+  '通常応答・通常報告',
 ];
 
 function desktopCandidates() {
