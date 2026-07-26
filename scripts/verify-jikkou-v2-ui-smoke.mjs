@@ -66,6 +66,7 @@ const checks = [
   ['タブ名は工事原価管理', /工事原価管理/],
   ['追加工事⑤は工事メニュー', /"workTypeName":\s*"（塗）追加工事⑤"[\s\S]{0,400}"constructionMenu":\s*true/],
   ['追加工事⑤コード14500', /"14500"\s*:\s*"施工"/],
+  ['会社名はI∪J', /データマスタ I∪J|I∪J（会社名リスト/],
 ];
 
 const missing = checks.filter(([, re]) => !re.test(source)).map(([name]) => name);

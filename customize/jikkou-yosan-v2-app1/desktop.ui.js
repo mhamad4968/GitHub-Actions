@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-26-ver02-hide-summary-basis-rate
+  // @JY_V2_BUILD 2026-07-26-ver02-vendor-ij-merge
   // U34: 保存・セル編集の再描画／reload でページ上部へ跳ばない（縦・横位置を維持）
 
   const JY2_STYLE_ID = "jy2-shell-style";
@@ -809,6 +809,8 @@
   // #R-NAME-01 / #R-07: 明細候補の正本は「内訳で使うコード表.xlsx」。
   // ラベル: 費目 / 種別（補助） / 定義及び品名（フィールドコード name_1/2/3 は据え置き）。
   // 生成: node scripts/jikkou-yosan-v2-sync-code-table-name-hierarchy.mjs
+  // 会社名（取引先コンボ）: データマスタ I∪J を1本化（依頼者確認 2026-07-26）。
+  // 生成: node scripts/jikkou-yosan-v2-sync-vendor-list.mjs
 
   const JY2_VENDOR_SEEDS = Object.freeze([
     "ＡＣＣＥＳＳ",
