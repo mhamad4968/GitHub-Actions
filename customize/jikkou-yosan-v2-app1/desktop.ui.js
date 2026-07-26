@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-26-ver02-name-hierarchy
+  // @JY_V2_BUILD 2026-07-26-ver02-construction-himoku
   // U34: 保存・セル編集の再描画／reload でページ上部へ跳ばない（縦・横位置を維持）
 
   const JY2_STYLE_ID = "jy2-shell-style";
@@ -853,12 +853,23 @@
   const JY2_NAME_HIERARCHY = Object.freeze({
   "source": "C:/tmp/実行予算ver2/内訳で使うコード表.xlsx",
   "sourceFile": "内訳で使うコード表.xlsx",
-  "generatedAt": "2026-07-26T10:01:05",
+  "generatedAt": "2026-07-26T10:09:28",
   "labels": {
     "name1": "費目",
     "name2": "種別（補助）",
     "name3": "定義及び品名"
   },
+  "constructionHimokuMenu": [
+    "材料費",
+    "労務費",
+    "外注費",
+    "工具･機械使用料",
+    "現場経費",
+    "諸経費",
+    "法定福利費",
+    "予備費"
+  ],
+  "constructionNamePattern": "工事|調査設計|外注試験|交通規制",
   "byWorkTypeCode": {
     "10100": {
       "workTypeCode": "10100",
@@ -896,28 +907,44 @@
       ],
       "himokuCodes": {
         "材料費": "100"
-      }
+      },
+      "constructionMenu": false
     },
     "10200": {
       "workTypeCode": "10200",
       "workTypeName": "（塗）塗装工事",
       "sectionA": "施工費",
       "himoku": [
-        "外注費"
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
       ],
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": true
     },
     "10300": {
       "workTypeCode": "10300",
       "workTypeName": "（塗）足場工事",
       "sectionA": "施工費",
       "himoku": [
+        "材料費",
+        "労務費",
         "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費",
         "仮設機械経費"
       ],
       "himokuDefault": "外注費",
@@ -939,21 +966,30 @@
       "allDefinitions": [
         "社外から借り受けた仮設ハウスや仮設トイレ、重機、機械器具、仮設用資材などの賃借料や",
         "運搬費"
-      ]
+      ],
+      "constructionMenu": true
     },
     "10400": {
       "workTypeCode": "10400",
       "workTypeName": "（塗）塗装及び足場工事",
       "sectionA": "施工費",
       "himoku": [
-        "外注費"
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
       ],
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": true
     },
     "10500": {
       "workTypeCode": "10500",
@@ -967,35 +1003,52 @@
         "労務費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": false
     },
     "10600": {
       "workTypeCode": "10600",
       "workTypeName": "（塗）修繕等工事",
       "sectionA": "施工費",
       "himoku": [
-        "外注費"
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
       ],
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": true
     },
     "10700": {
       "workTypeCode": "10700",
       "workTypeName": "（塗）塗装付帯工事",
       "sectionA": "施工費",
       "himoku": [
-        "外注費"
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
       ],
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": true
     },
     "10800": {
       "workTypeCode": "10800",
@@ -1015,14 +1068,22 @@
       ],
       "allDefinitions": [
         "倉庫資材の社内損料など"
-      ]
+      ],
+      "constructionMenu": false
     },
     "10900": {
       "workTypeCode": "10900",
       "workTypeName": "（塗）工事管理者賃金",
       "sectionA": "施工費",
       "himoku": [
-        "労務費"
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
       ],
       "himokuDefault": "労務費",
       "typesByHimoku": {
@@ -1035,13 +1096,22 @@
       ],
       "allDefinitions": [
         "出向工事管理者賃金や工事に直接従事する労務者賃金であり、社員及び契約社員は除く"
-      ]
+      ],
+      "constructionMenu": true
     },
     "11000": {
       "workTypeCode": "11000",
       "workTypeName": "（塗）工事安全専任管理者",
       "sectionA": "その他費用",
       "himoku": [
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費",
         "外注労務費"
       ],
       "himokuDefault": "外注労務費",
@@ -1056,7 +1126,8 @@
       "allDefinitions": [],
       "himokuCodes": {
         "外注労務費": "211"
-      }
+      },
+      "constructionMenu": true
     },
     "11100": {
       "workTypeCode": "11100",
@@ -1077,7 +1148,8 @@
       "allDefinitions": [],
       "himokuCodes": {
         "外注労務費": "211"
-      }
+      },
+      "constructionMenu": false
     },
     "11200": {
       "workTypeCode": "11200",
@@ -1098,7 +1170,8 @@
       "allDefinitions": [],
       "himokuCodes": {
         "外注労務費": "211"
-      }
+      },
+      "constructionMenu": false
     },
     "11300": {
       "workTypeCode": "11300",
@@ -1119,7 +1192,8 @@
       "allDefinitions": [],
       "himokuCodes": {
         "外注労務費": "211"
-      }
+      },
+      "constructionMenu": false
     },
     "11400": {
       "workTypeCode": "11400",
@@ -1142,7 +1216,8 @@
       "allDefinitions": [],
       "himokuCodes": {
         "外注労務費": "211"
-      }
+      },
+      "constructionMenu": false
     },
     "11500": {
       "workTypeCode": "11500",
@@ -1161,7 +1236,8 @@
       ],
       "himokuCodes": {
         "外注労務費": "211"
-      }
+      },
+      "constructionMenu": false
     },
     "11700": {
       "workTypeCode": "11700",
@@ -1180,7 +1256,8 @@
       ],
       "himokuCodes": {
         "運送費": "437"
-      }
+      },
+      "constructionMenu": false
     },
     "11800": {
       "workTypeCode": "11800",
@@ -1196,7 +1273,8 @@
       "allTypes": [],
       "allDefinitions": [
         "産業廃棄物処理を委託した費用"
-      ]
+      ],
+      "constructionMenu": false
     },
     "11900": {
       "workTypeCode": "11900",
@@ -1215,7 +1293,8 @@
       ],
       "himokuCodes": {
         "租税公課": "433"
-      }
+      },
+      "constructionMenu": false
     },
     "12000": {
       "workTypeCode": "12000",
@@ -1234,7 +1313,8 @@
       ],
       "himokuCodes": {
         "地代家賃": "431"
-      }
+      },
+      "constructionMenu": false
     },
     "12100": {
       "workTypeCode": "12100",
@@ -1253,7 +1333,8 @@
       ],
       "himokuCodes": {
         "消耗品費": "426"
-      }
+      },
+      "constructionMenu": false
     },
     "12200": {
       "workTypeCode": "12200",
@@ -1272,7 +1353,8 @@
       ],
       "himokuCodes": {
         "事務費": "436"
-      }
+      },
+      "constructionMenu": false
     },
     "12300": {
       "workTypeCode": "12300",
@@ -1291,7 +1373,8 @@
       ],
       "himokuCodes": {
         "通信費": "427"
-      }
+      },
+      "constructionMenu": false
     },
     "12400": {
       "workTypeCode": "12400",
@@ -1323,7 +1406,8 @@
         "（塗）出張旅費特例": "12401",
         "（塗）３万円未満公共交通機関特例": "12402",
         "（塗）その他旅費交通費": "12403"
-      }
+      },
+      "constructionMenu": false
     },
     "12500": {
       "workTypeCode": "12500",
@@ -1342,7 +1426,8 @@
       ],
       "himokuCodes": {
         "旅費交通費": "428"
-      }
+      },
+      "constructionMenu": false
     },
     "12600": {
       "workTypeCode": "12600",
@@ -1368,7 +1453,8 @@
       },
       "typeCodes": {
         "（塗）労災保険料": "12601"
-      }
+      },
+      "constructionMenu": false
     },
     "12700": {
       "workTypeCode": "12700",
@@ -1385,7 +1471,8 @@
       "allDefinitions": [],
       "himokuCodes": {
         "法定福利費": "421"
-      }
+      },
+      "constructionMenu": false
     },
     "12800": {
       "workTypeCode": "12800",
@@ -1404,7 +1491,8 @@
       ],
       "himokuCodes": {
         "補償費": "432"
-      }
+      },
+      "constructionMenu": false
     },
     "12900": {
       "workTypeCode": "12900",
@@ -1423,7 +1511,8 @@
       ],
       "himokuCodes": {
         "雑費": "445"
-      }
+      },
+      "constructionMenu": false
     },
     "13100": {
       "workTypeCode": "13100",
@@ -1442,7 +1531,8 @@
       ],
       "himokuCodes": {
         "諸会費": "434"
-      }
+      },
+      "constructionMenu": false
     },
     "13200": {
       "workTypeCode": "13200",
@@ -1456,7 +1546,8 @@
         "外注費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": false
     },
     "13300": {
       "workTypeCode": "13300",
@@ -1470,7 +1561,8 @@
         "労務費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": false
     },
     "13400": {
       "workTypeCode": "13400",
@@ -1489,7 +1581,8 @@
       ],
       "himokuCodes": {
         "給与手当": "412"
-      }
+      },
+      "constructionMenu": false
     },
     "13500": {
       "workTypeCode": "13500",
@@ -1510,7 +1603,8 @@
       "allDefinitions": [],
       "himokuCodes": {
         "外注労務費": "211"
-      }
+      },
+      "constructionMenu": false
     },
     "13600": {
       "workTypeCode": "13600",
@@ -1542,7 +1636,8 @@
         "（塗）得意先接待交際費（甲）": "13601",
         "（塗）得意先接待交際費（乙）": "13602",
         "（塗）その他接待交際費": "13603"
-      }
+      },
+      "constructionMenu": false
     },
     "13620": {
       "workTypeCode": "13620",
@@ -1559,91 +1654,140 @@
       "allDefinitions": [],
       "himokuCodes": {
         "会議費": "441"
-      }
+      },
+      "constructionMenu": false
     },
     "13700": {
       "workTypeCode": "13700",
       "workTypeName": "（塗）社内工事発注",
       "sectionA": "施工費",
       "himoku": [
-        "労務費"
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
       ],
       "himokuDefault": "労務費",
       "typesByHimoku": {
         "労務費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": true
     },
     "14000": {
       "workTypeCode": "14000",
       "workTypeName": "（塗）追加工事？",
       "sectionA": "施工費",
       "himoku": [
-        "外注費"
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
       ],
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": true
     },
     "14100": {
       "workTypeCode": "14100",
       "workTypeName": "（塗）追加工事①",
       "sectionA": "施工費",
       "himoku": [
-        "外注費"
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
       ],
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": true
     },
     "14200": {
       "workTypeCode": "14200",
       "workTypeName": "（塗）追加工事②",
       "sectionA": "施工費",
       "himoku": [
-        "外注費"
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
       ],
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": true
     },
     "14300": {
       "workTypeCode": "14300",
       "workTypeName": "（塗）追加工事③",
       "sectionA": "施工費",
       "himoku": [
-        "外注費"
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
       ],
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": true
     },
     "14400": {
       "workTypeCode": "14400",
       "workTypeName": "（塗）追加工事④",
       "sectionA": "施工費",
       "himoku": [
-        "外注費"
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
       ],
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": true
     }
   },
   "byWorkTypeName": {
@@ -1680,28 +1824,44 @@
         "アスファルト合材・舗装材料",
         "工場製作品･ゴム沓･ゴム製伸縮装置など",
         "塗装記録表示シールなど"
-      ]
+      ],
+      "constructionMenu": false
     },
     "（塗）塗装工事": {
       "workTypeCode": "10200",
       "workTypeName": "（塗）塗装工事",
       "sectionA": "施工費",
       "himoku": [
-        "外注費"
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
       ],
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": true
     },
     "（塗）足場工事": {
       "workTypeCode": "10300",
       "workTypeName": "（塗）足場工事",
       "sectionA": "施工費",
       "himoku": [
+        "材料費",
+        "労務費",
         "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費",
         "仮設機械経費"
       ],
       "himokuDefault": "外注費",
@@ -1723,49 +1883,74 @@
       "allDefinitions": [
         "社外から借り受けた仮設ハウスや仮設トイレ、重機、機械器具、仮設用資材などの賃借料や",
         "運搬費"
-      ]
+      ],
+      "constructionMenu": true
     },
     "（塗）塗装及び足場工事": {
       "workTypeCode": "10400",
       "workTypeName": "（塗）塗装及び足場工事",
       "sectionA": "施工費",
       "himoku": [
-        "外注費"
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
       ],
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": true
     },
     "（塗）修繕等工事": {
       "workTypeCode": "10600",
       "workTypeName": "（塗）修繕等工事",
       "sectionA": "施工費",
       "himoku": [
-        "外注費"
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
       ],
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": true
     },
     "（塗）塗装付帯工事": {
       "workTypeCode": "10700",
       "workTypeName": "（塗）塗装付帯工事",
       "sectionA": "施工費",
       "himoku": [
-        "外注費"
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
       ],
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": true
     },
     "（塗）暫定実行予算総額": {
       "workTypeCode": "13200",
@@ -1779,133 +1964,206 @@
         "外注費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": false
     },
     "（塗）追加工事？": {
       "workTypeCode": "14000",
       "workTypeName": "（塗）追加工事？",
       "sectionA": "施工費",
       "himoku": [
-        "外注費"
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
       ],
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": true
     },
     "（塗）追加工事①": {
       "workTypeCode": "14100",
       "workTypeName": "（塗）追加工事①",
       "sectionA": "施工費",
       "himoku": [
-        "外注費"
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
       ],
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": true
     },
     "（塗）追加工事②": {
       "workTypeCode": "14200",
       "workTypeName": "（塗）追加工事②",
       "sectionA": "施工費",
       "himoku": [
-        "外注費"
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
       ],
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": true
     },
     "（塗）追加工事③": {
       "workTypeCode": "14300",
       "workTypeName": "（塗）追加工事③",
       "sectionA": "施工費",
       "himoku": [
-        "外注費"
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
       ],
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": true
     },
     "（塗）追加工事④": {
       "workTypeCode": "14400",
       "workTypeName": "（塗）追加工事④",
       "sectionA": "施工費",
       "himoku": [
-        "外注費"
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
       ],
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": true
     },
     "（塗）軌道工事": {
       "workTypeCode": "",
       "workTypeName": "（塗）軌道工事",
       "sectionA": "施工費",
       "himoku": [
-        "外注費"
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
       ],
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": true
     },
     "（塗）調査設計費": {
       "workTypeCode": "",
       "workTypeName": "（塗）調査設計費",
       "sectionA": "施工費",
       "himoku": [
-        "外注費"
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
       ],
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": true
     },
     "（塗）外注試験費": {
       "workTypeCode": "",
       "workTypeName": "（塗）外注試験費",
       "sectionA": "施工費",
       "himoku": [
-        "外注費"
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
       ],
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": true
     },
     "（塗）交通規制費": {
       "workTypeCode": "",
       "workTypeName": "（塗）交通規制費",
       "sectionA": "施工費",
       "himoku": [
-        "外注費"
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
       ],
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": true
     },
     "（塗）直轄施工班": {
       "workTypeCode": "10500",
@@ -1919,14 +2177,22 @@
         "労務費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": false
     },
     "（塗）工事管理者賃金": {
       "workTypeCode": "10900",
       "workTypeName": "（塗）工事管理者賃金",
       "sectionA": "施工費",
       "himoku": [
-        "労務費"
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
       ],
       "himokuDefault": "労務費",
       "typesByHimoku": {
@@ -1939,7 +2205,8 @@
       ],
       "allDefinitions": [
         "出向工事管理者賃金や工事に直接従事する労務者賃金であり、社員及び契約社員は除く"
-      ]
+      ],
+      "constructionMenu": true
     },
     "（塗）建設機械オペレーター賃金": {
       "workTypeCode": "",
@@ -1959,7 +2226,8 @@
       ],
       "allDefinitions": [
         "工事に直接従事する軌陸車などの運転手賃金であり、社員及び契約社員は除く"
-      ]
+      ],
+      "constructionMenu": false
     },
     "（塗）その他労務者賃金": {
       "workTypeCode": "",
@@ -1979,7 +2247,8 @@
       ],
       "allDefinitions": [
         "工事に直接従事する労務者などの賃金であり、社員及び契約社員は除く"
-      ]
+      ],
+      "constructionMenu": false
     },
     "（塗）直轄下請助勢代": {
       "workTypeCode": "13300",
@@ -1993,21 +2262,30 @@
         "労務費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": false
     },
     "（塗）社内工事発注": {
       "workTypeCode": "13700",
       "workTypeName": "（塗）社内工事発注",
       "sectionA": "施工費",
       "himoku": [
-        "労務費"
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
       ],
       "himokuDefault": "労務費",
       "typesByHimoku": {
         "労務費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": true
     },
     "（塗）鎌ヶ谷資材使用料": {
       "workTypeCode": "10800",
@@ -2027,14 +2305,22 @@
       ],
       "allDefinitions": [
         "倉庫資材の社内損料など"
-      ]
+      ],
+      "constructionMenu": false
     },
     "（塗）レンタル": {
       "workTypeCode": "10300",
       "workTypeName": "（塗）足場工事",
       "sectionA": "施工費",
       "himoku": [
+        "材料費",
+        "労務費",
         "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費",
         "仮設機械経費"
       ],
       "himokuDefault": "外注費",
@@ -2056,7 +2342,8 @@
       "allDefinitions": [
         "社外から借り受けた仮設ハウスや仮設トイレ、重機、機械器具、仮設用資材などの賃借料や",
         "運搬費"
-      ]
+      ],
+      "constructionMenu": true
     },
     "（塗）建設機械油脂類": {
       "workTypeCode": "",
@@ -2072,7 +2359,8 @@
       "allTypes": [],
       "allDefinitions": [
         "建設機械等の燃料などの代金"
-      ]
+      ],
+      "constructionMenu": false
     },
     "（塗）運送費": {
       "workTypeCode": "11700",
@@ -2088,7 +2376,8 @@
       "allTypes": [],
       "allDefinitions": [
         "運送会社に依頼した建設機械等・仮設材等の運搬費"
-      ]
+      ],
+      "constructionMenu": false
     },
     "（塗）産業廃棄物処理費": {
       "workTypeCode": "11800",
@@ -2104,7 +2393,8 @@
       "allTypes": [],
       "allDefinitions": [
         "産業廃棄物処理を委託した費用"
-      ]
+      ],
+      "constructionMenu": false
     },
     "（塗）租税公課": {
       "workTypeCode": "11900",
@@ -2120,7 +2410,8 @@
       "allTypes": [],
       "allDefinitions": [
         "収入印紙・県証紙など"
-      ]
+      ],
+      "constructionMenu": false
     },
     "（塗）借地料等": {
       "workTypeCode": "12000",
@@ -2136,7 +2427,8 @@
       "allTypes": [],
       "allDefinitions": [
         "事務所･資材置場･駐車場などの賃借料"
-      ]
+      ],
+      "constructionMenu": false
     },
     "（塗）消耗品費": {
       "workTypeCode": "12100",
@@ -2152,7 +2444,8 @@
       "allTypes": [],
       "allDefinitions": [
         "ヘルメット･手袋･マスクフィルター･防護服･サンダー刃････ペール缶"
-      ]
+      ],
+      "constructionMenu": false
     },
     "（塗）事務費": {
       "workTypeCode": "12200",
@@ -2168,7 +2461,8 @@
       "allTypes": [],
       "allDefinitions": [
         "事務用品購入代金及びリース料、什器備品のうち固定資産に計上されないもの"
-      ]
+      ],
+      "constructionMenu": false
     },
     "（塗）通信費": {
       "workTypeCode": "12300",
@@ -2184,7 +2478,8 @@
       "allTypes": [],
       "allDefinitions": [
         "電話･ＦＡＸ料･切手代･はがき代"
-      ]
+      ],
+      "constructionMenu": false
     },
     "（塗）旅費交通費": {
       "workTypeCode": "12400",
@@ -2208,7 +2503,8 @@
       ],
       "allDefinitions": [
         "駐車場代金"
-      ]
+      ],
+      "constructionMenu": false
     },
     "（塗）借上げ自動車費": {
       "workTypeCode": "12500",
@@ -2224,7 +2520,8 @@
       "allTypes": [],
       "allDefinitions": [
         "借上げ車損料･ガソリン代･軽油代ほか"
-      ]
+      ],
+      "constructionMenu": false
     },
     "（塗）履行保証保険料": {
       "workTypeCode": "12600",
@@ -2244,7 +2541,8 @@
       ],
       "allDefinitions": [
         "労災保険関係成立届(単独有期事業)"
-      ]
+      ],
+      "constructionMenu": false
     },
     "（塗）建退共証紙購入費": {
       "workTypeCode": "12700",
@@ -2258,7 +2556,8 @@
         "法定福利費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": false
     },
     "（塗）諸雑費": {
       "workTypeCode": "12900",
@@ -2274,7 +2573,8 @@
       "allTypes": [],
       "allDefinitions": [
         "寄付金･安全祈願祭･汲み取り料･日用雑貨等で他の費目に属さないもの"
-      ]
+      ],
+      "constructionMenu": false
     },
     "（塗）諸会費": {
       "workTypeCode": "13100",
@@ -2290,7 +2590,8 @@
       "allTypes": [],
       "allDefinitions": [
         "安全協議会及び諸団体に対する会費など"
-      ]
+      ],
+      "constructionMenu": false
     },
     "（塗）会議費": {
       "workTypeCode": "13620",
@@ -2304,7 +2605,8 @@
         "会議費": []
       },
       "allTypes": [],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": false
     },
     "（塗）補償費": {
       "workTypeCode": "12800",
@@ -2320,7 +2622,8 @@
       "allTypes": [],
       "allDefinitions": [
         "工事施工に伴う漁協･水利組合などや道路･河川･田畑･立木等の瑕損補修費、隣接物瑕損補償費、その他補償費"
-      ]
+      ],
+      "constructionMenu": false
     },
     "（塗）交際費": {
       "workTypeCode": "13600",
@@ -2344,13 +2647,22 @@
       ],
       "allDefinitions": [
         "接待費･挨拶用贈答品･得意先慶弔見舞金など"
-      ]
+      ],
+      "constructionMenu": false
     },
     "（塗）工事安全専任管理者": {
       "workTypeCode": "11000",
       "workTypeName": "（塗）工事安全専任管理者",
       "sectionA": "その他費用",
       "himoku": [
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費",
         "外注労務費"
       ],
       "himokuDefault": "外注労務費",
@@ -2362,7 +2674,8 @@
       "allTypes": [
         "出向工事安全専任管理者"
       ],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": true
     },
     "（塗）線閉責任者": {
       "workTypeCode": "11100",
@@ -2380,7 +2693,8 @@
       "allTypes": [
         "外注線閉責任者"
       ],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": false
     },
     "（塗）列車見張員": {
       "workTypeCode": "11200",
@@ -2398,7 +2712,8 @@
       "allTypes": [
         "外注列車見張員"
       ],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": false
     },
     "（塗）交通整理員等": {
       "workTypeCode": "11300",
@@ -2416,7 +2731,8 @@
       "allTypes": [
         "外注交通整理員"
       ],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": false
     },
     "（塗）検電接地": {
       "workTypeCode": "11400",
@@ -2436,7 +2752,8 @@
         "外注停電責任者",
         "外注検電接地作業者"
       ],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": false
     },
     "（塗）その他保安費": {
       "workTypeCode": "11500",
@@ -2452,7 +2769,8 @@
       "allTypes": [],
       "allDefinitions": [
         "河川監視員･架線監視員及びその他保安要員関係"
-      ]
+      ],
+      "constructionMenu": false
     },
     "（塗）重機誘導員": {
       "workTypeCode": "13500",
@@ -2470,7 +2788,8 @@
       "allTypes": [
         "外注重機誘導員"
       ],
-      "allDefinitions": []
+      "allDefinitions": [],
+      "constructionMenu": false
     },
     "（塗）社員助勢費用": {
       "workTypeCode": "13400",
@@ -2486,7 +2805,8 @@
       "allTypes": [],
       "allDefinitions": [
         "他支店などからの工事管理者に対する給与など"
-      ]
+      ],
+      "constructionMenu": false
     },
     "（塗）現場代理人･監理技術者給与手当": {
       "workTypeCode": "",
@@ -2502,13 +2822,22 @@
       "allTypes": [],
       "allDefinitions": [
         "現場代理人や監理技術者の給与や手当"
-      ]
+      ],
+      "constructionMenu": false
     },
     "（塗）工事担当者給与手当": {
       "workTypeCode": "",
       "workTypeName": "（塗）工事担当者給与手当",
       "sectionA": "現場管理費",
       "himoku": [
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費",
         "給与手当"
       ],
       "himokuDefault": "給与手当",
@@ -2518,13 +2847,22 @@
       "allTypes": [],
       "allDefinitions": [
         "工事担当者の給与や手当"
-      ]
+      ],
+      "constructionMenu": true
     },
     "（塗）社員工事管理者給与手当": {
       "workTypeCode": "",
       "workTypeName": "（塗）社員工事管理者給与手当",
       "sectionA": "現場管理費",
       "himoku": [
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費",
         "給与手当"
       ],
       "himokuDefault": "給与手当",
@@ -2538,7 +2876,8 @@
       ],
       "allDefinitions": [
         "社員名を入れたい"
-      ]
+      ],
+      "constructionMenu": true
     },
     "（塗）社員保安要員給与手当": {
       "workTypeCode": "",
@@ -2570,7 +2909,8 @@
       ],
       "allDefinitions": [
         "社員名を入れたい"
-      ]
+      ],
+      "constructionMenu": false
     }
   },
   "allHimoku": [
@@ -2595,7 +2935,10 @@
     "補償費",
     "接待交際費",
     "外注労務費",
-    "給与手当"
+    "給与手当",
+    "現場経費",
+    "諸経費",
+    "予備費"
   ],
   "typesByHimoku": {
     "材料費": [
@@ -2835,6 +3178,7 @@
   }
 
   // R-07 / コード表階層: システム工種 → 費目 → 種別（補助） → 定義及び品名。
+  // 工事系工種は依頼者説明文の費目メニュー（材料費〜法定福利費＋予備費）を合成済み。
   function jy2ResolveNameHierarchy(block) {
     const code = String((block && block.workTypeCode) || "").trim();
     const name = String((block && block.workTypeName) || "").trim();
@@ -2845,11 +3189,29 @@
     return null;
   }
 
+  function jy2HimokuChoicesForEntry(entry) {
+    if (!entry) return [];
+    // sync 済み himoku に工事系メニューが含まれる。順序は constructionHimokuMenu 優先。
+    const menu = JY2_NAME_HIERARCHY.constructionHimokuMenu || [];
+    const fromEntry = Array.isArray(entry.himoku) ? entry.himoku : [];
+    if (!entry.constructionMenu) return [...fromEntry];
+    const merged = [];
+    for (const h of [...menu, ...fromEntry]) {
+      if (h && !merged.includes(h)) merged.push(h);
+    }
+    return merged;
+  }
+
   function jy2HimokuDefaultForBlock(block) {
     const entry = jy2ResolveNameHierarchy(block);
     if (!entry) return null;
-    if (entry.himokuDefault) return entry.himokuDefault;
-    if (Array.isArray(entry.himoku) && entry.himoku.length === 1) return entry.himoku[0];
+    const choices = jy2HimokuChoicesForEntry(entry);
+    if (entry.himokuDefault && choices.includes(entry.himokuDefault)) {
+      return entry.himokuDefault;
+    }
+    if (choices.length === 1) return choices[0];
+    // 工事系は複数費目が並ぶので空行へは既定（外注費）だけ入れる。
+    if (entry.constructionMenu && choices.includes("外注費")) return "外注費";
     return null;
   }
 
@@ -2860,7 +3222,8 @@
     const himoku = jy2HimokuDefaultForBlock(snap);
     if (!himoku) return;
     const entry = jy2ResolveNameHierarchy(snap);
-    const allowed = new Set(entry && entry.himoku ? entry.himoku : [himoku]);
+    const allowed = new Set(jy2HimokuChoicesForEntry(entry));
+    if (allowed.size === 0) allowed.add(himoku);
     for (const row of snap.detailRows) {
       const current = row.name1 == null ? "" : String(row.name1).trim();
       if (!current || !allowed.has(current)) {
@@ -2870,7 +3233,7 @@
   }
 
   function jy2CollectDetailSuggestions(detailModel, block, row) {
-    // 候補源はコード表のみ（レコード値で汚染しない）。現行値は jy2ComboInput が追加。
+    // 候補源はコード表＋工事系費目メニュー（レコード値で汚染しない）。
     const vendors = new Set(JY2_VENDOR_SEEDS);
     if (detailModel) {
       for (const b of detailModel.snapshot().blocks) {
@@ -2889,8 +3252,8 @@
     let name2;
     let name3;
     if (entry) {
-      // システム工種あり → その工種配下に絞る（依頼者: 工種をキーにメニュー）。
-      name1 = [...(entry.himoku || [])];
+      // システム工種あり → その工種配下（工事系は説明文メニュー込み）。
+      name1 = jy2HimokuChoicesForEntry(entry);
       if (selectedHimoku && entry.typesByHimoku && entry.typesByHimoku[selectedHimoku]) {
         name2 = [...entry.typesByHimoku[selectedHimoku]];
       } else {
@@ -2914,12 +3277,16 @@
           : [];
     }
     return {
-      profile: entry ? "code-table" : "no-work-type",
+      profile: entry
+        ? entry.constructionMenu
+          ? "construction-menu"
+          : "code-table"
+        : "no-work-type",
       name1: name1.sort(sortJa),
       name2: name2.sort(sortJa),
       name3: name3.sort(sortJa),
       vendors: [...vendors].sort(sortJa),
-      himokuLocked: Boolean(entry && entry.himoku && entry.himoku.length === 1),
+      himokuLocked: Boolean(entry && !entry.constructionMenu && name1.length === 1),
     };
   }
 

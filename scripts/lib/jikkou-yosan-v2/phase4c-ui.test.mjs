@@ -626,6 +626,9 @@ test("U4 name1/name2 are combo (select+input); name3 is free text input", () => 
   assert.match(source, /JY2_NAME_HIERARCHY/);
   assert.match(source, /jy2ResolveNameHierarchy/);
   assert.match(source, /jy2ApplyHimokuDefaultToDetails/);
+  assert.match(source, /jy2HimokuChoicesForEntry/);
+  assert.match(source, /constructionHimokuMenu/);
+  assert.match(source, /予備費/);
   assert.match(
     source,
     /jy2ComboInput\(documentRef, row\.name1, rowSuggest\.name1/,

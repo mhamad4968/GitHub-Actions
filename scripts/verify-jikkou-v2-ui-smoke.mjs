@@ -38,6 +38,8 @@ const checks = [
   ['定義及び品名列ラベル', /定義及び品名（入力）/],
   ['コード表階層マスタ', /JY2_NAME_HIERARCHY/],
   ['費目自動セット', /jy2ApplyHimokuDefaultToDetails/],
+  ['工事系費目メニュー', /constructionHimokuMenu/],
+  ['予備費費目', /"予備費"/],
 ];
 
 const missing = checks.filter(([, re]) => !re.test(source)).map(([name]) => name);
@@ -46,4 +48,4 @@ if (missing.length) {
   process.exit(1);
 }
 
-console.log('[verify-jikkou-v2-ui-smoke] OK + overhead-basis-note + name-hierarchy');
+console.log('[verify-jikkou-v2-ui-smoke] OK + name-hierarchy + construction-himoku');

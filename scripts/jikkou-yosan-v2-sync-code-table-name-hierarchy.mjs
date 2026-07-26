@@ -133,6 +133,45 @@ for r in range(2, ws.max_row + 1):
         if type_code and not is_blank_or_dash(type_name):
             entry.setdefault("typeCodes", {})[type_name] = type_code
 
+# 依頼者説明文: 塗装工事・修繕等工事・軌道工事などには、
+# 材料費〜法定福利費の費目メニューを出す。予備費も一旦ここに含める。
+CONSTRUCTION_HIMOKU_MENU = [
+    "材料費",
+    "労務費",
+    "外注費",
+    "工具･機械使用料",
+    "現場経費",
+    "諸経費",
+    "法定福利費",
+    "予備費",
+]
+import re
+CONSTRUCTION_NAME_RE = re.compile(r"工事|調査設計|外注試験|交通規制")
+
+def expand_construction(entry):
+    name = entry.get("workTypeName") or ""
+    if not CONSTRUCTION_NAME_RE.search(name):
+        entry["constructionMenu"] = False
+        return entry
+    merged = []
+    for h in CONSTRUCTION_HIMOKU_MENU + list(entry.get("himoku") or []):
+        if h and h not in merged:
+            merged.append(h)
+    entry["himoku"] = merged
+    entry["constructionMenu"] = True
+    if not entry.get("himokuDefault"):
+        entry["himokuDefault"] = "外注費" if "外注費" in merged else (merged[0] if merged else "")
+    return entry
+
+for key, entry in list(by_code.items()):
+    by_code[key] = expand_construction(entry)
+for key, entry in list(by_name.items()):
+    by_name[key] = expand_construction(entry)
+
+for h in CONSTRUCTION_HIMOKU_MENU:
+    if h not in all_himoku:
+        all_himoku.append(h)
+
 out = {
     "source": str(path).replace("\\\\", "/"),
     "sourceFile": path.name,
@@ -142,6 +181,8 @@ out = {
         "name2": "種別（補助）",
         "name3": "定義及び品名",
     },
+    "constructionHimokuMenu": CONSTRUCTION_HIMOKU_MENU,
+    "constructionNamePattern": "工事|調査設計|外注試験|交通規制",
     "byWorkTypeCode": by_code,
     "byWorkTypeName": {
         k: {
@@ -153,6 +194,7 @@ out = {
             "typesByHimoku": v["typesByHimoku"],
             "allTypes": v["allTypes"],
             "allDefinitions": v["allDefinitions"],
+            "constructionMenu": v.get("constructionMenu", False),
         }
         for k, v in by_name.items()
     },
