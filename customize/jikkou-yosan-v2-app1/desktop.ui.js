@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-26-ver02-add-block-focus
+  // @JY_V2_BUILD 2026-07-26-ver02-himoku-type-link
   // U34: 保存・セル編集の再描画／reload でページ上部へ跳ばない（縦・横位置を維持）
 
   const JY2_STYLE_ID = "jy2-shell-style";
@@ -853,7 +853,7 @@
   const JY2_NAME_HIERARCHY = Object.freeze({
   "source": "C:/tmp/実行予算ver2/内訳で使うコード表.xlsx",
   "sourceFile": "内訳で使うコード表.xlsx",
-  "generatedAt": "2026-07-26T10:12:45",
+  "generatedAt": "2026-07-26T10:14:38",
   "labels": {
     "name1": "費目",
     "name2": "種別（補助）",
@@ -2995,6 +2995,21 @@
       "直轄停電責任者",
       "直轄検電接地作業者",
       "直轄重機誘導員"
+    ],
+    "現場経費": [
+      "運送費",
+      "産業廃棄物処理",
+      "租税公課",
+      "地代家賃",
+      "消耗品費",
+      "事務費",
+      "通信費",
+      "旅費交通費",
+      "保険料",
+      "法定福利費",
+      "雑費",
+      "諸会費",
+      "会議費"
     ]
   },
   "definitionsByType": {
@@ -3232,6 +3247,44 @@
     }
   }
 
+  // 費目 → 種別（補助）の候補。工種ローカルが空ならコード表全体の紐付けを使う
+  // （工事系メニューで材料費等を出したとき、10100側の種別が使えるようにする）。
+  function jy2TypesForHimoku(entry, himoku) {
+    const key = String(himoku || "").trim();
+    if (!key) return [];
+    const local =
+      entry && entry.typesByHimoku && Array.isArray(entry.typesByHimoku[key])
+        ? entry.typesByHimoku[key]
+        : [];
+    if (local.length) return [...local];
+    const globalMap = JY2_NAME_HIERARCHY.typesByHimoku || {};
+    const global = Array.isArray(globalMap[key]) ? globalMap[key] : [];
+    return global.length ? [...global] : [];
+  }
+
+  function jy2DefinitionsForType(typeName, himoku, entry) {
+    const defsByType = JY2_NAME_HIERARCHY.definitionsByType || {};
+    const typeKey = String(typeName || "").trim();
+    if (typeKey && Array.isArray(defsByType[typeKey]) && defsByType[typeKey].length) {
+      return [...defsByType[typeKey]];
+    }
+    // 種別未選択時: 選んだ費目の各種別の定義を候補にまとめる。
+    const himokuKey = String(himoku || "").trim();
+    if (!himokuKey) {
+      return entry && Array.isArray(entry.allDefinitions)
+        ? [...entry.allDefinitions]
+        : [];
+    }
+    const types = jy2TypesForHimoku(entry, himokuKey);
+    const merged = [];
+    for (const t of types) {
+      for (const d of defsByType[t] || []) {
+        if (d && !merged.includes(d)) merged.push(d);
+      }
+    }
+    return merged;
+  }
+
   function jy2CollectDetailSuggestions(detailModel, block, row) {
     // 候補源はコード表＋工事系費目メニュー（レコード値で汚染しない）。
     const vendors = new Set(JY2_VENDOR_SEEDS);
@@ -3243,8 +3296,6 @@
     const sortJa = (left, right) => String(left).localeCompare(String(right), "ja");
     const entry = jy2ResolveNameHierarchy(block || {});
     const himokuAll = JY2_NAME_HIERARCHY.allHimoku || [];
-    const typesByHimoku = JY2_NAME_HIERARCHY.typesByHimoku || {};
-    const defsByType = JY2_NAME_HIERARCHY.definitionsByType || {};
     const selectedHimoku = row && row.name1 ? String(row.name1).trim() : "";
     const selectedType = row && row.name2 ? String(row.name2).trim() : "";
 
@@ -3252,29 +3303,16 @@
     let name2;
     let name3;
     if (entry) {
-      // システム工種あり → その工種配下（工事系は説明文メニュー込み）。
+      // システム工種あり → 費目はその工種（工事系は説明文メニュー込み）。
+      // 種別は選んだ費目に紐づく候補のみ（未選択時は空＝紐付けを明示）。
       name1 = jy2HimokuChoicesForEntry(entry);
-      if (selectedHimoku && entry.typesByHimoku && entry.typesByHimoku[selectedHimoku]) {
-        name2 = [...entry.typesByHimoku[selectedHimoku]];
-      } else {
-        name2 = [...(entry.allTypes || [])];
-      }
-      if (selectedType && defsByType[selectedType]) {
-        name3 = [...defsByType[selectedType]];
-      } else {
-        name3 = [...(entry.allDefinitions || [])];
-      }
+      name2 = selectedHimoku ? jy2TypesForHimoku(entry, selectedHimoku) : [];
+      name3 = jy2DefinitionsForType(selectedType, selectedHimoku, entry);
     } else {
-      // 工種空（R-05）: 費目は全候補。種別は費目選択後。定義は手入力＋種別起点。
+      // 工種空（R-05）: 費目は全候補。種別は費目選択後。
       name1 = [...himokuAll];
-      name2 =
-        selectedHimoku && typesByHimoku[selectedHimoku]
-          ? [...typesByHimoku[selectedHimoku]]
-          : [];
-      name3 =
-        selectedType && defsByType[selectedType]
-          ? [...defsByType[selectedType]]
-          : [];
+      name2 = selectedHimoku ? jy2TypesForHimoku(null, selectedHimoku) : [];
+      name3 = jy2DefinitionsForType(selectedType, selectedHimoku, null);
     }
     return {
       profile: entry
@@ -5290,9 +5328,21 @@
       const tr = documentRef.createElement("tr");
       tr.dataset.rowKey = row.rowKey;
       const commit = (field) => (value) => {
-        detailModel.updateDetailRow(block.stableBlockId, row.rowKey, {
-          [field]: value,
-        });
+        const patch = { [field]: value };
+        // 費目変更時: 新しい費目に紐づかない種別はクリア（カスケード整合）。
+        if (field === "name1") {
+          const nextSuggest = jy2CollectDetailSuggestions(detailModel, block, {
+            ...row,
+            name1: value,
+          });
+          const currentType = row.name2 == null ? "" : String(row.name2).trim();
+          if (currentType && !nextSuggest.name2.includes(currentType)) {
+            patch.name2 = null;
+          }
+        }
+        // 種別変更時: 定義候補に無い値は残してよい（手入力可）が、
+        // 種別クリア時は定義はそのまま（自由記述のため）。
+        detailModel.updateDetailRow(block.stableBlockId, row.rowKey, patch);
         rerender();
       };
       // 行ごとのカスケード候補（費目→種別→定義及び品名）。

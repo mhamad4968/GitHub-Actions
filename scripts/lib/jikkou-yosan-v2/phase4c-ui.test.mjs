@@ -631,8 +631,11 @@ test("U4 name1/name2 are combo (select+input); name3 is free text input", () => 
   assert.match(source, /jy2ResolveNameHierarchy/);
   assert.match(source, /jy2ApplyHimokuDefaultToDetails/);
   assert.match(source, /jy2HimokuChoicesForEntry/);
+  assert.match(source, /jy2TypesForHimoku/);
   assert.match(source, /constructionHimokuMenu/);
   assert.match(source, /予備費/);
+  // 費目変更で紐づかない種別をクリアするカスケード。
+  assert.match(source, /patch\.name2 = null/);
   assert.match(
     source,
     /jy2ComboInput\(documentRef, row\.name1, rowSuggest\.name1/,

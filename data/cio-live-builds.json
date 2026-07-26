@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-07-26-ver02-add-block-focus",
-      "fileKey": "d7cb7351-63bb-4721-adc2-3a723b571472",
-      "revision": "134",
+      "build": "2026-07-26-ver02-himoku-type-link",
+      "fileKey": "4887b5cb-53c2-4439-bb5b-ab8ca958fe12",
+      "revision": "135",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-07-26T01:12:59.453Z",
+      "deployedAt": "2026-07-26T01:14:55.047Z",
       "note": null
     },
     "757": {

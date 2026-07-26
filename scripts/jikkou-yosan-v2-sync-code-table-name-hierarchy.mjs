@@ -54,6 +54,8 @@ by_name = {}
 all_himoku = []
 types_by_himoku = {}
 defs_by_type = {}
+# セクション（項目列）→ その配下の費目名。工事系メニューの「現場経費」種別候補に使う。
+section_to_himoku = {}
 
 def ensure_work(bucket, key, *, code, name, section):
     if key not in bucket:
@@ -93,6 +95,11 @@ for r in range(2, ws.max_row + 1):
 
     if himoku and himoku not in all_himoku:
         all_himoku.append(himoku)
+
+    if himoku and last_section:
+        section_to_himoku.setdefault(last_section, [])
+        if himoku not in section_to_himoku[last_section]:
+            section_to_himoku[last_section].append(himoku)
 
     if himoku and not is_blank_or_dash(type_name):
         types_by_himoku.setdefault(himoku, [])
@@ -171,6 +178,14 @@ for key, entry in list(by_name.items()):
 for h in CONSTRUCTION_HIMOKU_MENU:
     if h not in all_himoku:
         all_himoku.append(h)
+
+# 工事系メニューの「現場経費」はコード表ではセクション名。
+# 配下費目（運送費・旅費交通費など）を種別（補助）候補として紐付ける。
+if "現場経費" in section_to_himoku:
+    types_by_himoku.setdefault("現場経費", [])
+    for h in section_to_himoku["現場経費"]:
+        if h not in types_by_himoku["現場経費"]:
+            types_by_himoku["現場経費"].append(h)
 
 out = {
     "source": str(path).replace("\\\\", "/"),
