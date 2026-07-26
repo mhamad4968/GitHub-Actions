@@ -207,6 +207,37 @@ for key, entry in list(by_code.items()):
 for key, entry in list(by_name.items()):
     by_name[key] = expand_construction(entry)
 
+# Excel コード表は追加工事？〜④まで。Ver.01／現場の 追加工事⑤(14500) が無いと
+# 工事系費目メニューが付かないため、④と同じ契約工事型として補完する。
+import copy
+ADDON5_TEMPLATE = by_name.get("（塗）追加工事④")
+SYNTHETIC_ADDON5 = [
+    # リスト掲載は（塗）付き。Ver.01 表記は解決用エイリアスのみ。
+    {"workTypeCode": "14500", "workTypeName": "（塗）追加工事⑤", "inList": True},
+    {"workTypeCode": "14500", "workTypeName": "追加工事⑤", "inList": False},
+]
+if ADDON5_TEMPLATE:
+    for syn in SYNTHETIC_ADDON5:
+        name = syn["workTypeName"]
+        code = syn["workTypeCode"]
+        if name not in by_name:
+            entry = copy.deepcopy(ADDON5_TEMPLATE)
+            entry["workTypeCode"] = code
+            entry["workTypeName"] = name
+            by_name[name] = entry
+        if code and code not in by_code:
+            entry = copy.deepcopy(by_name[name])
+            by_code[code] = entry
+        if not syn.get("inList"):
+            continue
+        # リスト順: ④の直後へ
+        if "（塗）追加工事④" in excel_work_type_name_order:
+            idx = excel_work_type_name_order.index("（塗）追加工事④") + 1
+            if name not in excel_work_type_name_order:
+                excel_work_type_name_order.insert(idx, name)
+        elif name not in excel_work_type_name_order:
+            excel_work_type_name_order.append(name)
+
 for h in CONSTRUCTION_HIMOKU_MENU:
     if h not in all_himoku:
         all_himoku.append(h)

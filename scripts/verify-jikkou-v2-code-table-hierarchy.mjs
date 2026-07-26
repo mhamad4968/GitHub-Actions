@@ -150,12 +150,22 @@ for (const [name, e] of excelByName) {
 
 // ---- 検証2: JSON → Excel 由来でない値の混入なし ----
 const menu = data.constructionHimokuMenu || [];
-const ALLOWED_EXTRA_WORK_TYPES = new Set(["予備費"]); // 依頼者リストで追加
+// 予備費=依頼者リスト追加。追加工事⑤=Excel欠落の Ver.01 補完（④と同メニュー）。
+const ALLOWED_EXTRA_WORK_TYPES = new Set([
+  "予備費",
+  "（塗）追加工事⑤",
+  "追加工事⑤",
+]);
 for (const [name, entry] of Object.entries(data.byWorkTypeName || {})) {
   const e = excelByName.get(name);
   if (!e) {
     if (!ALLOWED_EXTRA_WORK_TYPES.has(name)) {
       problems.push(`[混入] byWorkTypeName に Excel にない工種「${name}」`);
+    } else if (
+      (name === "（塗）追加工事⑤" || name === "追加工事⑤") &&
+      !entry.constructionMenu
+    ) {
+      problems.push(`[メニュー] 補完工種「${name}」に工事メニューが付いていない`);
     }
     continue;
   }
@@ -190,7 +200,12 @@ for (const n of expectedMenuNames) {
   if (!actualMenuNames.includes(n)) problems.push(`[メニュー] 「${n}」に工事メニューが付いていない`);
 }
 for (const n of actualMenuNames) {
-  if (!expectedMenuNames.includes(n)) problems.push(`[メニュー] 「${n}」に工事メニューが誤って付いている`);
+  if (
+    !expectedMenuNames.includes(n) &&
+    !ALLOWED_EXTRA_WORK_TYPES.has(n)
+  ) {
+    problems.push(`[メニュー] 「${n}」に工事メニューが誤って付いている`);
+  }
 }
 for (const n of actualMenuNames) {
   const entry = data.byWorkTypeName[n];
@@ -317,6 +332,19 @@ expectedOrder.push(
   "（塗）その他保安費",
   "（塗）重機誘導員",
 );
+// Excel 欠落の追加工事⑤を④の直後へ（同期スクリプトと同趣旨）。
+const addon4Idx = expectedOrder.indexOf("（塗）追加工事④");
+if (addon4Idx >= 0 && !expectedOrder.includes("（塗）追加工事⑤")) {
+  expectedOrder.splice(addon4Idx + 1, 0, "（塗）追加工事⑤");
+}
+const addon5 = (data.byWorkTypeName || {})["（塗）追加工事⑤"];
+const addon5Alias = (data.byWorkTypeName || {})["追加工事⑤"];
+if (!addon5 || !addon5.constructionMenu || addon5.workTypeCode !== "14500") {
+  problems.push("[補完] （塗）追加工事⑤ が 14500／工事メニュー付きでない");
+}
+if (!addon5Alias || !addon5Alias.constructionMenu) {
+  problems.push("[補完] Ver.01表記「追加工事⑤」の階層エイリアスがない");
+}
 // 依頼者訂正: （塗）レンタルは Excel=10300 誤記 → 11600
 const rental = (data.byWorkTypeName || {})["（塗）レンタル"];
 if (!rental || rental.workTypeCode !== "11600") {

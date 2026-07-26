@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-26-ver02-sole-type-cost-tab
+  // @JY_V2_BUILD 2026-07-26-ver02-addon5-construction-menu
   // U34: 保存・セル編集の再描画／reload でページ上部へ跳ばない（縦・横位置を維持）
 
   const JY2_STYLE_ID = "jy2-shell-style";
@@ -875,7 +875,7 @@
   const JY2_NAME_HIERARCHY = Object.freeze({
   "source": "C:/tmp/実行予算ver2/内訳で使うコード表.xlsx",
   "sourceFile": "内訳で使うコード表.xlsx",
-  "generatedAt": "2026-07-26T11:17:15",
+  "generatedAt": "2026-07-26T12:00:54",
   "labels": {
     "name1": "費目",
     "name2": "種別（補助）",
@@ -905,6 +905,7 @@
     "（塗）追加工事②",
     "（塗）追加工事③",
     "（塗）追加工事④",
+    "（塗）追加工事⑤",
     "（塗）軌道工事",
     "（塗）調査設計費",
     "（塗）外注試験費",
@@ -1990,6 +1991,31 @@
       "allTypes": [],
       "allDefinitions": [],
       "constructionMenu": true
+    },
+    "14500": {
+      "workTypeCode": "14500",
+      "workTypeName": "（塗）追加工事⑤",
+      "sectionA": "施工費",
+      "himoku": [
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
+      ],
+      "himokuDefault": "外注費",
+      "typesByHimoku": {
+        "外注費": []
+      },
+      "dashTypeByHimoku": {
+        "外注費": true
+      },
+      "allTypes": [],
+      "allDefinitions": [],
+      "constructionMenu": true
     }
   },
   "byWorkTypeName": {
@@ -2285,6 +2311,31 @@
     "（塗）追加工事④": {
       "workTypeCode": "14400",
       "workTypeName": "（塗）追加工事④",
+      "sectionA": "施工費",
+      "himoku": [
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
+      ],
+      "himokuDefault": "外注費",
+      "typesByHimoku": {
+        "外注費": []
+      },
+      "dashTypeByHimoku": {
+        "外注費": true
+      },
+      "allTypes": [],
+      "allDefinitions": [],
+      "constructionMenu": true
+    },
+    "（塗）追加工事⑤": {
+      "workTypeCode": "14500",
+      "workTypeName": "（塗）追加工事⑤",
       "sectionA": "施工費",
       "himoku": [
         "材料費",
@@ -3225,6 +3276,31 @@
       ],
       "allDefinitions": [],
       "constructionMenu": false
+    },
+    "追加工事⑤": {
+      "workTypeCode": "14500",
+      "workTypeName": "追加工事⑤",
+      "sectionA": "施工費",
+      "himoku": [
+        "材料費",
+        "労務費",
+        "外注費",
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
+      ],
+      "himokuDefault": "外注費",
+      "typesByHimoku": {
+        "外注費": []
+      },
+      "dashTypeByHimoku": {
+        "外注費": true
+      },
+      "allTypes": [],
+      "allDefinitions": [],
+      "constructionMenu": true
     }
   },
   "allHimoku": [
@@ -3458,6 +3534,7 @@
     "14200": "施工",
     "14300": "施工",
     "14400": "施工",
+    "14500": "施工",
   });
   const JY2_COST_CATEGORY_BY_WORK_TYPE_NAME = Object.freeze({
     "（塗）材料費": "施工",
@@ -3472,6 +3549,8 @@
     "（塗）追加工事②": "施工",
     "（塗）追加工事③": "施工",
     "（塗）追加工事④": "施工",
+    "（塗）追加工事⑤": "施工",
+    "追加工事⑤": "施工",
     "（塗）軌道工事": "施工",
     "（塗）調査設計費": "施工",
     "（塗）外注試験費": "施工",

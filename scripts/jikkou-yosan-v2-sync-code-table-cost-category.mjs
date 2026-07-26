@@ -85,6 +85,14 @@ for r in range(2, ws.max_row + 1):
         else:
             by_name[name] = entry
 
+# Excel に無い追加工事⑤(14500) を④と同じ施工区分で補完（階層マスタと同趣旨）。
+for name, code in (("（塗）追加工事⑤", "14500"), ("追加工事⑤", "14500")):
+    entry = {"sectionA": "施工費", "costCategory": "施工", "workTypeName": name}
+    if code not in by_code:
+        by_code[code] = entry
+    if name not in by_name:
+        by_name[name] = entry
+
 out = {
     "source": str(path).replace("\\\\", "/"),
     "sourceFile": path.name,
