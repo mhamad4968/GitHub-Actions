@@ -45,6 +45,8 @@ const checks = [
   ['工種解決は名称優先', /if \(name && byName\[name\]\) return byName\[name\];\s*\n\s*if \(code && byCode\[code\]\) return byCode\[code\];/],
   ['工事メニュー厳密判定', /契約工事型/],
   ['候補順はコード表順', /五十音ソートはしない/],
+  ['システム工種リスト順', /jy2ApplyWorkTypeCodeTableOrder/],
+  ['workTypeNameOrder', /workTypeNameOrder/],
 ];
 
 const missing = checks.filter(([, re]) => !re.test(source)).map(([name]) => name);
@@ -53,4 +55,4 @@ if (missing.length) {
   process.exit(1);
 }
 
-console.log('[verify-jikkou-v2-ui-smoke] OK + code-table-order');
+console.log('[verify-jikkou-v2-ui-smoke] OK + worktype-list-order');

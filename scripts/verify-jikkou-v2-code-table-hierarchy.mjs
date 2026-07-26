@@ -149,10 +149,13 @@ for (const [name, e] of excelByName) {
 
 // ---- 検証2: JSON → Excel 由来でない値の混入なし ----
 const menu = data.constructionHimokuMenu || [];
+const ALLOWED_EXTRA_WORK_TYPES = new Set(["予備費"]); // 依頼者リストで追加
 for (const [name, entry] of Object.entries(data.byWorkTypeName || {})) {
   const e = excelByName.get(name);
   if (!e) {
-    problems.push(`[混入] byWorkTypeName に Excel にない工種「${name}」`);
+    if (!ALLOWED_EXTRA_WORK_TYPES.has(name)) {
+      problems.push(`[混入] byWorkTypeName に Excel にない工種「${name}」`);
+    }
     continue;
   }
   for (const h of entry.himoku || []) {
@@ -264,12 +267,59 @@ for (const n of actualMenuNames) {
   }
 }
 
+// ---- 検証5: システム工種リスト順（依頼者確認: 現場管理費→予備費→保安費） ----
+const deferredTail = new Set([
+  "（塗）線閉責任者",
+  "（塗）列車見張員",
+  "（塗）交通整理員等",
+  "（塗）検電接地",
+  "（塗）その他保安費",
+  "（塗）重機誘導員",
+  "（塗）社員助勢費用",
+  "（塗）現場代理人･監理技術者給与手当",
+  "（塗）工事担当者給与手当",
+  "（塗）社員工事管理者給与手当",
+  "（塗）社員保安要員給与手当",
+]);
+const expectedOrder = [];
+for (const [name] of excelByName) {
+  if (!deferredTail.has(name)) expectedOrder.push(name);
+}
+expectedOrder.push(
+  "（塗）社員助勢費用",
+  "（塗）現場代理人･監理技術者給与手当",
+  "（塗）工事担当者給与手当",
+  "（塗）社員工事管理者給与手当",
+  "（塗）社員保安要員給与手当",
+  "予備費",
+  "（塗）線閉責任者",
+  "（塗）列車見張員",
+  "（塗）交通整理員等",
+  "（塗）検電接地",
+  "（塗）その他保安費",
+  "（塗）重機誘導員",
+);
+const actualOrder = data.workTypeNameOrder || [];
+if (JSON.stringify(actualOrder) !== JSON.stringify(expectedOrder)) {
+  problems.push("[順序] workTypeNameOrder が依頼者確認リストと不一致");
+  const max = Math.max(actualOrder.length, expectedOrder.length);
+  for (let i = 0; i < max; i++) {
+    if (actualOrder[i] !== expectedOrder[i]) {
+      problems.push(
+        `  @${i + 1}: expected=${expectedOrder[i] || "(なし)"} actual=${actualOrder[i] || "(なし)"}`,
+      );
+    }
+  }
+}
+
 // ---- 監査出力 ----
 console.log(`[verify-code-table-hierarchy] source=${excel.source} 工種=${excelByName.size}`);
 console.log("--- 工事メニュー対象（施工費×外注費） ---");
 for (const n of expectedMenuNames) console.log(`  MENU: ${n}`);
 console.log("--- メニュー費目 → 種別（補助） ---");
 for (const n of notes) console.log(`  ${n}`);
+console.log("--- システム工種リスト順 ---");
+actualOrder.forEach((n, i) => console.log(`  ${String(i + 1).padStart(2)} ${n}`));
 if (problems.length) {
   console.error(`--- NG ${problems.length}件 ---`);
   for (const p of problems) console.error(`  ${p}`);

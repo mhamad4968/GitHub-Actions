@@ -56,6 +56,8 @@ types_by_himoku = {}
 defs_by_type = {}
 # セクション（項目列）→ その配下の費目名。工事系メニューの「現場経費」種別候補に使う。
 section_to_himoku = {}
+# Excel 行の初出順（システム工種リストのベース）
+excel_work_type_name_order = []
 
 def ensure_work(bucket, key, *, code, name, section):
     if key not in bucket:
@@ -120,6 +122,8 @@ for r in range(2, ws.max_row + 1):
         if wname:
             nentry = ensure_work(by_name, wname, code=code, name=wname, section=last_section or "")
             targets.append(nentry)
+            if wname not in excel_work_type_name_order:
+                excel_work_type_name_order.append(wname)
     # himoku-only rows (no work type): still contribute to global lists above
 
     for entry in targets:
@@ -191,6 +195,60 @@ if "現場経費" in section_to_himoku:
         if h not in types_by_himoku["現場経費"]:
             types_by_himoku["現場経費"].append(h)
 
+# 予備費: コード表にシステム工種行はないが、依頼者リストでは給与手当群の直後・
+# 保安費の直前に置く。費目候補は「予備費」のみ。
+if "予備費" not in by_name:
+    by_name["予備費"] = {
+        "workTypeCode": "",
+        "workTypeName": "予備費",
+        "sectionA": "予備費",
+        "himoku": ["予備費"],
+        "himokuDefault": "予備費",
+        "typesByHimoku": {},
+        "allTypes": [],
+        "allDefinitions": [],
+        "constructionMenu": False,
+    }
+
+# システム工種ドロップダウン順（依頼者確認リスト）:
+# Excel 初出順を基本に、末尾だけ 現場管理費→予備費→保安費 へ並べ替える。
+SECURITY_NAMES = [
+    "（塗）線閉責任者",
+    "（塗）列車見張員",
+    "（塗）交通整理員等",
+    "（塗）検電接地",
+    "（塗）その他保安費",
+    "（塗）重機誘導員",
+]
+SALARY_NAMES = [
+    "（塗）社員助勢費用",
+    "（塗）現場代理人･監理技術者給与手当",
+    "（塗）工事担当者給与手当",
+    "（塗）社員工事管理者給与手当",
+    "（塗）社員保安要員給与手当",
+]
+security_set = set(SECURITY_NAMES)
+salary_set = set(SALARY_NAMES)
+head = [n for n in excel_work_type_name_order if n not in security_set and n not in salary_set]
+# head 末尾は「工事安全専任管理者」のまま（Excel・依頼者リスト共通）
+work_type_name_order = head + [n for n in SALARY_NAMES if n in by_name] + ["予備費"] + [
+    n for n in SECURITY_NAMES if n in by_name
+]
+# Excel にだけある残り（将来追加）を末尾へ
+for n in excel_work_type_name_order:
+    if n not in work_type_name_order:
+        work_type_name_order.append(n)
+
+# byWorkTypeName も同じ順で出力（Object キー順＝リスト順）
+by_name_ordered = {}
+for n in work_type_name_order:
+    if n in by_name:
+        by_name_ordered[n] = by_name[n]
+for n, v in by_name.items():
+    if n not in by_name_ordered:
+        by_name_ordered[n] = v
+by_name = by_name_ordered
+
 out = {
     "source": str(path).replace("\\\\", "/"),
     "sourceFile": path.name,
@@ -202,6 +260,8 @@ out = {
     },
     "constructionHimokuMenu": CONSTRUCTION_HIMOKU_MENU,
     "constructionRule": "sectionA=施工費 かつ Excel費目=外注費のみ（契約工事型）",
+    "workTypeNameOrder": work_type_name_order,
+    "workTypeOrderNote": "依頼者確認リスト順（現場管理費→予備費→保安費）。Excel名（塗）追加工事？はコード表表記のまま",
     "byWorkTypeCode": by_code,
     "byWorkTypeName": {
         k: {
