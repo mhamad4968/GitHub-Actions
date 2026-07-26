@@ -85,6 +85,7 @@ const excel = JSON.parse(run.stdout);
 const data = JSON.parse(fs.readFileSync(jsonPath, "utf8"));
 
 const isDash = (s) => !s || s === "-" || s === "－" || s === "—";
+const isExplicitDash = (s) => s === "-" || s === "－" || s === "—";
 const problems = [];
 const notes = [];
 
@@ -207,8 +208,15 @@ if (!menu.includes("予備費")) problems.push("[メニュー] 予備費がメ�
 // ---- 検証4: メニュー費目→種別のグローバル紐付けが Excel 由来と一致 ----
 const globalTypesFromExcel = new Map();
 const sectionHimoku = new Map();
+const typePresence = new Map();
 for (const r of excel.rows) {
   if (r.himoku) {
+    if (!typePresence.has(r.himoku)) {
+      typePresence.set(r.himoku, { hasDash: false, hasRealType: false });
+    }
+    const presence = typePresence.get(r.himoku);
+    if (isExplicitDash(r.typeName)) presence.hasDash = true;
+    else if (r.typeName) presence.hasRealType = true;
     if (!globalTypesFromExcel.has(r.himoku)) globalTypesFromExcel.set(r.himoku, []);
     if (!isDash(r.typeName) && !globalTypesFromExcel.get(r.himoku).includes(r.typeName)) {
       globalTypesFromExcel.get(r.himoku).push(r.typeName);
@@ -218,6 +226,16 @@ for (const r of excel.rows) {
       sectionHimoku.get(r.section).push(r.himoku);
     }
   }
+}
+const expectedDashOnly = [...typePresence]
+  .filter(([, p]) => p.hasDash && !p.hasRealType)
+  .map(([h]) => h);
+if (
+  JSON.stringify(data.dashOnlyHimoku || []) !== JSON.stringify(expectedDashOnly)
+) {
+  problems.push(
+    `[種別－] dashOnlyHimoku不一致 Excel=[${expectedDashOnly.join("/")}] JSON=[${(data.dashOnlyHimoku || []).join("/")}])`,
+  );
 }
 // 現場経費はコード表ではセクション名 → 配下費目を種別候補とする合成仕様
 const expectedGenba = sectionHimoku.get("現場経費") || [];

@@ -49,6 +49,18 @@ const checks = [
   ['workTypeNameOrder', /workTypeNameOrder/],
   ['レンタルは11600', /"11600"\s*:\s*\{[\s\S]{0,160}"workTypeName":\s*"（塗）レンタル"/],
   ['区分マップに11600', /"11600"\s*:\s*"施工"/],
+  ['工種番号完全一致で即時反映', /commitExactOption/],
+  ['重複commit抑止', /lastCommitted/],
+  ['再描画を次フレームに集約', /scheduleRerender/],
+  ['非表示予実の遅延更新', /actualsDirty/],
+  ['保存時App2再GET省略', /loadedDetailRecords/],
+  ['種別ダッシュ固定判定', /jy2HimokuUsesDashType/],
+  ['種別ダッシュ自動補完', /jy2NormalizeDashTypeDetails/],
+  ['種別ダッシュ選択不可', /コード表で種別（補助）が「－」のため自動固定/],
+  ['ブロック部分差し替え', /replaceOneBlock|onlyBlockId/],
+  ['フォーカス復元', /jy2RestoreFieldFocus/],
+  ['総括遅延更新', /summaryDirty/],
+  ['タブ表示時flush', /flushSummaryIfDirty/],
 ];
 
 const missing = checks.filter(([, re]) => !re.test(source)).map(([name]) => name);
@@ -57,4 +69,4 @@ if (missing.length) {
   process.exit(1);
 }
 
-console.log('[verify-jikkou-v2-ui-smoke] OK + rental-11600');
+console.log('[verify-jikkou-v2-ui-smoke] OK + partial-block-render');

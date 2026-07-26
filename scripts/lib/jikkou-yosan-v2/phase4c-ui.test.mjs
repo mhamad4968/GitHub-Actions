@@ -532,10 +532,13 @@ test("App 1 detail tab renders jy2-* block editor wired to the summary refresh",
   assert.match(source, /jy2-warning/);
   assert.match(source, /createDetailBlockModel/);
   assert.match(source, /jy2RenderDetailPane/);
-  assert.match(source, /refreshSummary\(\)/);
+  // 内訳セル編集は総括を dirty 遅延（タブ表示/保存時に refreshSummary(true)）。
+  assert.match(source, /refreshSummary\(false\)/);
+  assert.match(source, /refreshSummary\(true\)/);
+  assert.match(source, /onlyBlockId/);
   assert.match(source, /工種ブロック追加/);
   assert.match(source, /明細行追加/);
-  // Detail mutations refresh the summary projection + ①⑧⑨ pane.
+  // Detail mutations feed the summary projection + ①⑧⑨ pane (deferred).
   assert.match(source, /detailModel\.projectionBlocks\(\)/);
   assert.doesNotMatch(source, /className\s*=\s*["']jy-/);
 });
@@ -605,7 +608,7 @@ test("U32 内訳№ jumps between summary projection and detail block", () => {
   // 工種ブロック追加後は新規ブロックへスクロール（旧位置復元を抑止）。
   assert.match(source, /focusBlockId/);
   assert.match(source, /const id = detailModel\.addBlock\(\)/);
-  assert.match(source, /rerender\(id\)/);
+  assert.match(source, /rerender\(\{\s*focusBlockId:\s*id,\s*full:\s*true\s*\}\)/);
 });
 
 test("U4 name1/name2 are combo (select+input); name3 is free text input", () => {
@@ -638,11 +641,11 @@ test("U4 name1/name2 are combo (select+input); name3 is free text input", () => 
   assert.match(source, /patch\.name2 = null/);
   assert.match(
     source,
-    /jy2ComboInput\(documentRef, row\.name1, rowSuggest\.name1/,
+    /jy2ComboInput\(\s*documentRef,\s*row\.name1,\s*rowSuggest\.name1/,
   );
   assert.match(
     source,
-    /jy2ComboInput\(documentRef, row\.name2, rowSuggest\.name2/,
+    /jy2ComboInput\(\s*documentRef,\s*row\.name2,\s*rowSuggest\.name2/,
   );
   assert.match(source, /rowSuggest\.name3/);
   assert.match(source, /jy2ToFullWidthKana\(value\)/);

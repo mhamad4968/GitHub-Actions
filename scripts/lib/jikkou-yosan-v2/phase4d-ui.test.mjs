@@ -492,7 +492,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /予算属性は表示のみ/);
   assert.match(source, /給与手当は対象外/);
   // 内訳 mutations refresh the 予実 current budgets too.
-  assert.match(source, /refreshSummary\(\);\s*refreshActuals\(\);/);
+  assert.match(source, /refreshSummary\(true\);\s*refreshActuals\(\);/);
   assert.doesNotMatch(source, /className\s*=\s*["']jy-/);
 });
 

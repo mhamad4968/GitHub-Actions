@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-26-ver02-rental-11600
+  // @JY_V2_BUILD 2026-07-26-ver02-partial-block-render
   // U34: 保存・セル編集の再描画／reload でページ上部へ跳ばない（縦・横位置を維持）
 
   const JY2_STYLE_ID = "jy2-shell-style";
@@ -701,7 +701,13 @@
     input.type = "text";
     input.className = "jy2-input";
     input.value = value === null || value === undefined ? "" : String(value);
-    const commit = () => onCommit(input.value.trim());
+    let lastCommitted = input.value.trim();
+    const commit = () => {
+      const next = input.value.trim();
+      if (next === lastCommitted) return;
+      lastCommitted = next;
+      onCommit(next);
+    };
     input.addEventListener("change", commit);
     // 保存クリック直前の blur でも確実にストアへ反映する
     input.addEventListener("blur", commit);
@@ -727,6 +733,8 @@
     input.autocomplete = "off";
     input.value = displayBlank ? "" : stored;
     let revealed = false;
+    let composing = false;
+    let lastCommitted = stored.trim();
     // 打鍵候補用 datalist（右 select と同一候補）。id は一意採番。
     const listId = `jy2-dl-${++JY2_COMBO_UID}`;
     const datalist = documentRef.createElement("datalist");
@@ -762,6 +770,8 @@
       // 未フォーカスの空表示を「クリア保存」と誤認しない
       if (displayBlank && !revealed) return;
       const next = input.value.trim();
+      if (next === lastCommitted) return;
+      lastCommitted = next;
       onCommit(next);
       if (displayBlank && next === stored) input.value = "";
     };
@@ -771,11 +781,23 @@
     });
     input.addEventListener("change", commit);
     input.addEventListener("blur", commit);
+    input.addEventListener("compositionstart", () => {
+      composing = true;
+    });
+    input.addEventListener("compositionend", () => {
+      composing = false;
+      if (opts.commitExactOption && seen.has(input.value.trim())) commit();
+    });
+    input.addEventListener("input", () => {
+      // 工種番号など既知候補と完全一致した時点で、Tab/blurを待たず即時反映。
+      if (!composing && opts.commitExactOption && seen.has(input.value.trim())) commit();
+    });
     select.addEventListener("change", () => {
       const picked = select.value;
       if (!picked) return;
       revealed = true;
       input.value = picked;
+      lastCommitted = picked;
       onCommit(picked);
       select.selectedIndex = 0;
     });
@@ -853,7 +875,7 @@
   const JY2_NAME_HIERARCHY = Object.freeze({
   "source": "C:/tmp/実行予算ver2/内訳で使うコード表.xlsx",
   "sourceFile": "内訳で使うコード表.xlsx",
-  "generatedAt": "2026-07-26T10:52:10",
+  "generatedAt": "2026-07-26T11:17:15",
   "labels": {
     "name1": "費目",
     "name2": "種別（補助）",
@@ -949,6 +971,9 @@
           "その他材料費"
         ]
       },
+      "dashTypeByHimoku": {
+        "材料費": false
+      },
       "allTypes": [
         "塗料",
         "鋼材･二次製品費など",
@@ -988,6 +1013,9 @@
       "typesByHimoku": {
         "外注費": []
       },
+      "dashTypeByHimoku": {
+        "外注費": true
+      },
       "allTypes": [],
       "allDefinitions": [],
       "constructionMenu": true
@@ -1009,6 +1037,9 @@
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
+      },
+      "dashTypeByHimoku": {
+        "外注費": true
       },
       "allTypes": [],
       "allDefinitions": [],
@@ -1032,6 +1063,9 @@
       "typesByHimoku": {
         "外注費": []
       },
+      "dashTypeByHimoku": {
+        "外注費": true
+      },
       "allTypes": [],
       "allDefinitions": [],
       "constructionMenu": true
@@ -1046,6 +1080,9 @@
       "himokuDefault": "労務費",
       "typesByHimoku": {
         "労務費": []
+      },
+      "dashTypeByHimoku": {
+        "労務費": true
       },
       "allTypes": [],
       "allDefinitions": [],
@@ -1069,6 +1106,9 @@
       "typesByHimoku": {
         "外注費": []
       },
+      "dashTypeByHimoku": {
+        "外注費": true
+      },
       "allTypes": [],
       "allDefinitions": [],
       "constructionMenu": true
@@ -1091,6 +1131,9 @@
       "typesByHimoku": {
         "外注費": []
       },
+      "dashTypeByHimoku": {
+        "外注費": true
+      },
       "allTypes": [],
       "allDefinitions": [],
       "constructionMenu": true
@@ -1107,6 +1150,9 @@
         "仮設機械経費": [
           "鎌ヶ谷資材使用料"
         ]
+      },
+      "dashTypeByHimoku": {
+        "仮設機械経費": false
       },
       "allTypes": [
         "鎌ヶ谷資材使用料"
@@ -1129,6 +1175,9 @@
           "出向工事管理者賃金"
         ]
       },
+      "dashTypeByHimoku": {
+        "労務費": false
+      },
       "allTypes": [
         "出向工事管理者賃金"
       ],
@@ -1149,6 +1198,9 @@
         "外注労務費": [
           "出向工事安全専任管理者"
         ]
+      },
+      "dashTypeByHimoku": {
+        "外注労務費": false
       },
       "allTypes": [
         "出向工事安全専任管理者"
@@ -1172,6 +1224,9 @@
           "外注線閉責任者"
         ]
       },
+      "dashTypeByHimoku": {
+        "外注労務費": false
+      },
       "allTypes": [
         "外注線閉責任者"
       ],
@@ -1194,6 +1249,9 @@
           "外注列車見張員"
         ]
       },
+      "dashTypeByHimoku": {
+        "外注労務費": false
+      },
       "allTypes": [
         "外注列車見張員"
       ],
@@ -1215,6 +1273,9 @@
         "外注労務費": [
           "外注交通整理員"
         ]
+      },
+      "dashTypeByHimoku": {
+        "外注労務費": false
       },
       "allTypes": [
         "外注交通整理員"
@@ -1239,6 +1300,9 @@
           "外注検電接地作業者"
         ]
       },
+      "dashTypeByHimoku": {
+        "外注労務費": false
+      },
       "allTypes": [
         "外注停電責任者",
         "外注検電接地作業者"
@@ -1260,6 +1324,7 @@
       "typesByHimoku": {
         "外注労務費": []
       },
+      "dashTypeByHimoku": {},
       "allTypes": [],
       "allDefinitions": [
         "河川監視員･架線監視員及びその他保安要員関係"
@@ -1285,6 +1350,9 @@
           "その他"
         ]
       },
+      "dashTypeByHimoku": {
+        "仮設機械経費": false
+      },
       "allTypes": [
         "仮設材",
         "建設機械",
@@ -1308,6 +1376,9 @@
       "typesByHimoku": {
         "運送費": []
       },
+      "dashTypeByHimoku": {
+        "運送費": true
+      },
       "allTypes": [],
       "allDefinitions": [
         "運送会社に依頼した建設機械等・仮設材等の運搬費"
@@ -1328,6 +1399,9 @@
       "typesByHimoku": {
         "産業廃棄物処理": []
       },
+      "dashTypeByHimoku": {
+        "産業廃棄物処理": true
+      },
       "allTypes": [],
       "allDefinitions": [
         "産業廃棄物処理を委託した費用"
@@ -1344,6 +1418,9 @@
       "himokuDefault": "租税公課",
       "typesByHimoku": {
         "租税公課": []
+      },
+      "dashTypeByHimoku": {
+        "租税公課": true
       },
       "allTypes": [],
       "allDefinitions": [
@@ -1365,6 +1442,9 @@
       "typesByHimoku": {
         "地代家賃": []
       },
+      "dashTypeByHimoku": {
+        "地代家賃": true
+      },
       "allTypes": [],
       "allDefinitions": [
         "事務所･資材置場･駐車場などの賃借料"
@@ -1384,6 +1464,9 @@
       "himokuDefault": "消耗品費",
       "typesByHimoku": {
         "消耗品費": []
+      },
+      "dashTypeByHimoku": {
+        "消耗品費": true
       },
       "allTypes": [],
       "allDefinitions": [
@@ -1405,6 +1488,9 @@
       "typesByHimoku": {
         "事務費": []
       },
+      "dashTypeByHimoku": {
+        "事務費": true
+      },
       "allTypes": [],
       "allDefinitions": [
         "事務用品購入代金及びリース料、什器備品のうち固定資産に計上されないもの"
@@ -1424,6 +1510,9 @@
       "himokuDefault": "通信費",
       "typesByHimoku": {
         "通信費": []
+      },
+      "dashTypeByHimoku": {
+        "通信費": true
       },
       "allTypes": [],
       "allDefinitions": [
@@ -1448,6 +1537,9 @@
           "（塗）３万円未満公共交通機関特例",
           "（塗）その他旅費交通費"
         ]
+      },
+      "dashTypeByHimoku": {
+        "旅費交通費": false
       },
       "allTypes": [
         "（塗）出張旅費特例",
@@ -1478,6 +1570,9 @@
       "typesByHimoku": {
         "旅費交通費": []
       },
+      "dashTypeByHimoku": {
+        "旅費交通費": true
+      },
       "allTypes": [],
       "allDefinitions": [
         "借上げ車損料･ガソリン代･軽油代ほか"
@@ -1499,6 +1594,9 @@
         "保険料": [
           "（塗）労災保険料"
         ]
+      },
+      "dashTypeByHimoku": {
+        "保険料": false
       },
       "allTypes": [
         "（塗）労災保険料"
@@ -1525,6 +1623,9 @@
       "typesByHimoku": {
         "法定福利費": []
       },
+      "dashTypeByHimoku": {
+        "法定福利費": true
+      },
       "allTypes": [],
       "allDefinitions": [],
       "himokuCodes": {
@@ -1542,6 +1643,9 @@
       "himokuDefault": "補償費",
       "typesByHimoku": {
         "補償費": []
+      },
+      "dashTypeByHimoku": {
+        "補償費": true
       },
       "allTypes": [],
       "allDefinitions": [
@@ -1563,6 +1667,9 @@
       "typesByHimoku": {
         "雑費": []
       },
+      "dashTypeByHimoku": {
+        "雑費": true
+      },
       "allTypes": [],
       "allDefinitions": [
         "寄付金･安全祈願祭･汲み取り料･日用雑貨等で他の費目に属さないもの"
@@ -1582,6 +1689,9 @@
       "himokuDefault": "諸会費",
       "typesByHimoku": {
         "諸会費": []
+      },
+      "dashTypeByHimoku": {
+        "諸会費": true
       },
       "allTypes": [],
       "allDefinitions": [
@@ -1610,6 +1720,9 @@
       "typesByHimoku": {
         "外注費": []
       },
+      "dashTypeByHimoku": {
+        "外注費": true
+      },
       "allTypes": [],
       "allDefinitions": [],
       "constructionMenu": true
@@ -1624,6 +1737,9 @@
       "himokuDefault": "労務費",
       "typesByHimoku": {
         "労務費": []
+      },
+      "dashTypeByHimoku": {
+        "労務費": true
       },
       "allTypes": [],
       "allDefinitions": [],
@@ -1640,6 +1756,7 @@
       "typesByHimoku": {
         "給与手当": []
       },
+      "dashTypeByHimoku": {},
       "allTypes": [],
       "allDefinitions": [
         "他支店などからの工事管理者に対する給与など"
@@ -1661,6 +1778,9 @@
         "外注労務費": [
           "外注重機誘導員"
         ]
+      },
+      "dashTypeByHimoku": {
+        "外注労務費": false
       },
       "allTypes": [
         "外注重機誘導員"
@@ -1685,6 +1805,9 @@
           "（塗）得意先接待交際費（乙）",
           "（塗）その他接待交際費"
         ]
+      },
+      "dashTypeByHimoku": {
+        "接待交際費": false
       },
       "allTypes": [
         "（塗）得意先接待交際費（甲）",
@@ -1715,6 +1838,9 @@
       "typesByHimoku": {
         "会議費": []
       },
+      "dashTypeByHimoku": {
+        "会議費": true
+      },
       "allTypes": [],
       "allDefinitions": [],
       "himokuCodes": {
@@ -1732,6 +1858,9 @@
       "himokuDefault": "労務費",
       "typesByHimoku": {
         "労務費": []
+      },
+      "dashTypeByHimoku": {
+        "労務費": true
       },
       "allTypes": [],
       "allDefinitions": [],
@@ -1755,6 +1884,9 @@
       "typesByHimoku": {
         "外注費": []
       },
+      "dashTypeByHimoku": {
+        "外注費": true
+      },
       "allTypes": [],
       "allDefinitions": [],
       "constructionMenu": true
@@ -1776,6 +1908,9 @@
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
+      },
+      "dashTypeByHimoku": {
+        "外注費": true
       },
       "allTypes": [],
       "allDefinitions": [],
@@ -1799,6 +1934,9 @@
       "typesByHimoku": {
         "外注費": []
       },
+      "dashTypeByHimoku": {
+        "外注費": true
+      },
       "allTypes": [],
       "allDefinitions": [],
       "constructionMenu": true
@@ -1821,6 +1959,9 @@
       "typesByHimoku": {
         "外注費": []
       },
+      "dashTypeByHimoku": {
+        "外注費": true
+      },
       "allTypes": [],
       "allDefinitions": [],
       "constructionMenu": true
@@ -1842,6 +1983,9 @@
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
+      },
+      "dashTypeByHimoku": {
+        "外注費": true
       },
       "allTypes": [],
       "allDefinitions": [],
@@ -1866,6 +2010,9 @@
           "鋼製製品費･ゴム製品等",
           "その他材料費"
         ]
+      },
+      "dashTypeByHimoku": {
+        "材料費": false
       },
       "allTypes": [
         "塗料",
@@ -1903,6 +2050,9 @@
       "typesByHimoku": {
         "外注費": []
       },
+      "dashTypeByHimoku": {
+        "外注費": true
+      },
       "allTypes": [],
       "allDefinitions": [],
       "constructionMenu": true
@@ -1924,6 +2074,9 @@
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
+      },
+      "dashTypeByHimoku": {
+        "外注費": true
       },
       "allTypes": [],
       "allDefinitions": [],
@@ -1947,6 +2100,9 @@
       "typesByHimoku": {
         "外注費": []
       },
+      "dashTypeByHimoku": {
+        "外注費": true
+      },
       "allTypes": [],
       "allDefinitions": [],
       "constructionMenu": true
@@ -1968,6 +2124,9 @@
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
+      },
+      "dashTypeByHimoku": {
+        "外注費": true
       },
       "allTypes": [],
       "allDefinitions": [],
@@ -1991,6 +2150,9 @@
       "typesByHimoku": {
         "外注費": []
       },
+      "dashTypeByHimoku": {
+        "外注費": true
+      },
       "allTypes": [],
       "allDefinitions": [],
       "constructionMenu": true
@@ -2012,6 +2174,9 @@
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
+      },
+      "dashTypeByHimoku": {
+        "外注費": true
       },
       "allTypes": [],
       "allDefinitions": [],
@@ -2035,6 +2200,9 @@
       "typesByHimoku": {
         "外注費": []
       },
+      "dashTypeByHimoku": {
+        "外注費": true
+      },
       "allTypes": [],
       "allDefinitions": [],
       "constructionMenu": true
@@ -2056,6 +2224,9 @@
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
+      },
+      "dashTypeByHimoku": {
+        "外注費": true
       },
       "allTypes": [],
       "allDefinitions": [],
@@ -2079,6 +2250,9 @@
       "typesByHimoku": {
         "外注費": []
       },
+      "dashTypeByHimoku": {
+        "外注費": true
+      },
       "allTypes": [],
       "allDefinitions": [],
       "constructionMenu": true
@@ -2100,6 +2274,9 @@
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
+      },
+      "dashTypeByHimoku": {
+        "外注費": true
       },
       "allTypes": [],
       "allDefinitions": [],
@@ -2123,6 +2300,9 @@
       "typesByHimoku": {
         "外注費": []
       },
+      "dashTypeByHimoku": {
+        "外注費": true
+      },
       "allTypes": [],
       "allDefinitions": [],
       "constructionMenu": true
@@ -2144,6 +2324,9 @@
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
+      },
+      "dashTypeByHimoku": {
+        "外注費": true
       },
       "allTypes": [],
       "allDefinitions": [],
@@ -2167,6 +2350,9 @@
       "typesByHimoku": {
         "外注費": []
       },
+      "dashTypeByHimoku": {
+        "外注費": true
+      },
       "allTypes": [],
       "allDefinitions": [],
       "constructionMenu": true
@@ -2188,6 +2374,9 @@
       "himokuDefault": "外注費",
       "typesByHimoku": {
         "外注費": []
+      },
+      "dashTypeByHimoku": {
+        "外注費": true
       },
       "allTypes": [],
       "allDefinitions": [],
@@ -2211,6 +2400,9 @@
       "typesByHimoku": {
         "外注費": []
       },
+      "dashTypeByHimoku": {
+        "外注費": true
+      },
       "allTypes": [],
       "allDefinitions": [],
       "constructionMenu": true
@@ -2225,6 +2417,9 @@
       "himokuDefault": "労務費",
       "typesByHimoku": {
         "労務費": []
+      },
+      "dashTypeByHimoku": {
+        "労務費": true
       },
       "allTypes": [],
       "allDefinitions": [],
@@ -2242,6 +2437,9 @@
         "労務費": [
           "出向工事管理者賃金"
         ]
+      },
+      "dashTypeByHimoku": {
+        "労務費": false
       },
       "allTypes": [
         "出向工事管理者賃金"
@@ -2264,6 +2462,9 @@
           "建設機械オペレーター"
         ]
       },
+      "dashTypeByHimoku": {
+        "労務費": false
+      },
       "allTypes": [
         "建設機械オペレーター"
       ],
@@ -2285,6 +2486,9 @@
           "その他労務者"
         ]
       },
+      "dashTypeByHimoku": {
+        "労務費": false
+      },
       "allTypes": [
         "その他労務者"
       ],
@@ -2304,6 +2508,9 @@
       "typesByHimoku": {
         "労務費": []
       },
+      "dashTypeByHimoku": {
+        "労務費": true
+      },
       "allTypes": [],
       "allDefinitions": [],
       "constructionMenu": false
@@ -2318,6 +2525,9 @@
       "himokuDefault": "労務費",
       "typesByHimoku": {
         "労務費": []
+      },
+      "dashTypeByHimoku": {
+        "労務費": true
       },
       "allTypes": [],
       "allDefinitions": [],
@@ -2335,6 +2545,9 @@
         "仮設機械経費": [
           "鎌ヶ谷資材使用料"
         ]
+      },
+      "dashTypeByHimoku": {
+        "仮設機械経費": false
       },
       "allTypes": [
         "鎌ヶ谷資材使用料"
@@ -2360,6 +2573,9 @@
           "その他"
         ]
       },
+      "dashTypeByHimoku": {
+        "仮設機械経費": false
+      },
       "allTypes": [
         "仮設材",
         "建設機械",
@@ -2383,6 +2599,9 @@
       "typesByHimoku": {
         "仮設機械経費": []
       },
+      "dashTypeByHimoku": {
+        "仮設機械経費": true
+      },
       "allTypes": [],
       "allDefinitions": [
         "建設機械等の燃料などの代金"
@@ -2399,6 +2618,9 @@
       "himokuDefault": "運送費",
       "typesByHimoku": {
         "運送費": []
+      },
+      "dashTypeByHimoku": {
+        "運送費": true
       },
       "allTypes": [],
       "allDefinitions": [
@@ -2417,6 +2639,9 @@
       "typesByHimoku": {
         "産業廃棄物処理": []
       },
+      "dashTypeByHimoku": {
+        "産業廃棄物処理": true
+      },
       "allTypes": [],
       "allDefinitions": [
         "産業廃棄物処理を委託した費用"
@@ -2433,6 +2658,9 @@
       "himokuDefault": "租税公課",
       "typesByHimoku": {
         "租税公課": []
+      },
+      "dashTypeByHimoku": {
+        "租税公課": true
       },
       "allTypes": [],
       "allDefinitions": [
@@ -2451,6 +2679,9 @@
       "typesByHimoku": {
         "地代家賃": []
       },
+      "dashTypeByHimoku": {
+        "地代家賃": true
+      },
       "allTypes": [],
       "allDefinitions": [
         "事務所･資材置場･駐車場などの賃借料"
@@ -2467,6 +2698,9 @@
       "himokuDefault": "消耗品費",
       "typesByHimoku": {
         "消耗品費": []
+      },
+      "dashTypeByHimoku": {
+        "消耗品費": true
       },
       "allTypes": [],
       "allDefinitions": [
@@ -2485,6 +2719,9 @@
       "typesByHimoku": {
         "事務費": []
       },
+      "dashTypeByHimoku": {
+        "事務費": true
+      },
       "allTypes": [],
       "allDefinitions": [
         "事務用品購入代金及びリース料、什器備品のうち固定資産に計上されないもの"
@@ -2501,6 +2738,9 @@
       "himokuDefault": "通信費",
       "typesByHimoku": {
         "通信費": []
+      },
+      "dashTypeByHimoku": {
+        "通信費": true
       },
       "allTypes": [],
       "allDefinitions": [
@@ -2523,6 +2763,9 @@
           "（塗）その他旅費交通費"
         ]
       },
+      "dashTypeByHimoku": {
+        "旅費交通費": false
+      },
       "allTypes": [
         "（塗）出張旅費特例",
         "（塗）３万円未満公共交通機関特例",
@@ -2544,6 +2787,9 @@
       "typesByHimoku": {
         "旅費交通費": []
       },
+      "dashTypeByHimoku": {
+        "旅費交通費": true
+      },
       "allTypes": [],
       "allDefinitions": [
         "借上げ車損料･ガソリン代･軽油代ほか"
@@ -2562,6 +2808,9 @@
         "保険料": [
           "（塗）労災保険料"
         ]
+      },
+      "dashTypeByHimoku": {
+        "保険料": false
       },
       "allTypes": [
         "（塗）労災保険料"
@@ -2582,6 +2831,9 @@
       "typesByHimoku": {
         "法定福利費": []
       },
+      "dashTypeByHimoku": {
+        "法定福利費": true
+      },
       "allTypes": [],
       "allDefinitions": [],
       "constructionMenu": false
@@ -2596,6 +2848,9 @@
       "himokuDefault": "雑費",
       "typesByHimoku": {
         "雑費": []
+      },
+      "dashTypeByHimoku": {
+        "雑費": true
       },
       "allTypes": [],
       "allDefinitions": [
@@ -2614,6 +2869,9 @@
       "typesByHimoku": {
         "諸会費": []
       },
+      "dashTypeByHimoku": {
+        "諸会費": true
+      },
       "allTypes": [],
       "allDefinitions": [
         "安全協議会及び諸団体に対する会費など"
@@ -2631,6 +2889,9 @@
       "typesByHimoku": {
         "会議費": []
       },
+      "dashTypeByHimoku": {
+        "会議費": true
+      },
       "allTypes": [],
       "allDefinitions": [],
       "constructionMenu": false
@@ -2645,6 +2906,9 @@
       "himokuDefault": "補償費",
       "typesByHimoku": {
         "補償費": []
+      },
+      "dashTypeByHimoku": {
+        "補償費": true
       },
       "allTypes": [],
       "allDefinitions": [
@@ -2666,6 +2930,9 @@
           "（塗）得意先接待交際費（乙）",
           "（塗）その他接待交際費"
         ]
+      },
+      "dashTypeByHimoku": {
+        "接待交際費": false
       },
       "allTypes": [
         "（塗）得意先接待交際費（甲）",
@@ -2690,6 +2957,9 @@
           "出向工事安全専任管理者"
         ]
       },
+      "dashTypeByHimoku": {
+        "外注労務費": false
+      },
       "allTypes": [
         "出向工事安全専任管理者"
       ],
@@ -2707,6 +2977,7 @@
       "typesByHimoku": {
         "給与手当": []
       },
+      "dashTypeByHimoku": {},
       "allTypes": [],
       "allDefinitions": [
         "他支店などからの工事管理者に対する給与など"
@@ -2724,6 +2995,7 @@
       "typesByHimoku": {
         "給与手当": []
       },
+      "dashTypeByHimoku": {},
       "allTypes": [],
       "allDefinitions": [
         "現場代理人や監理技術者の給与や手当"
@@ -2741,6 +3013,7 @@
       "typesByHimoku": {
         "給与手当": []
       },
+      "dashTypeByHimoku": {},
       "allTypes": [],
       "allDefinitions": [
         "工事担当者の給与や手当"
@@ -2759,6 +3032,9 @@
         "給与手当": [
           "社員工事管理者"
         ]
+      },
+      "dashTypeByHimoku": {
+        "給与手当": false
       },
       "allTypes": [
         "社員工事管理者"
@@ -2787,6 +3063,9 @@
           "直轄重機誘導員"
         ]
       },
+      "dashTypeByHimoku": {
+        "給与手当": false
+      },
       "allTypes": [
         "直轄工事安全専任管理者(昼)",
         "直轄線閉責任者",
@@ -2810,6 +3089,9 @@
       ],
       "himokuDefault": "予備費",
       "typesByHimoku": {},
+      "dashTypeByHimoku": {
+        "予備費": false
+      },
       "allTypes": [],
       "allDefinitions": [],
       "constructionMenu": false
@@ -2826,6 +3108,9 @@
         "外注労務費": [
           "外注線閉責任者"
         ]
+      },
+      "dashTypeByHimoku": {
+        "外注労務費": false
       },
       "allTypes": [
         "外注線閉責任者"
@@ -2846,6 +3131,9 @@
           "外注列車見張員"
         ]
       },
+      "dashTypeByHimoku": {
+        "外注労務費": false
+      },
       "allTypes": [
         "外注列車見張員"
       ],
@@ -2864,6 +3152,9 @@
         "外注労務費": [
           "外注交通整理員"
         ]
+      },
+      "dashTypeByHimoku": {
+        "外注労務費": false
       },
       "allTypes": [
         "外注交通整理員"
@@ -2885,6 +3176,9 @@
           "外注検電接地作業者"
         ]
       },
+      "dashTypeByHimoku": {
+        "外注労務費": false
+      },
       "allTypes": [
         "外注停電責任者",
         "外注検電接地作業者"
@@ -2903,6 +3197,7 @@
       "typesByHimoku": {
         "外注労務費": []
       },
+      "dashTypeByHimoku": {},
       "allTypes": [],
       "allDefinitions": [
         "河川監視員･架線監視員及びその他保安要員関係"
@@ -2921,6 +3216,9 @@
         "外注労務費": [
           "外注重機誘導員"
         ]
+      },
+      "dashTypeByHimoku": {
+        "外注労務費": false
       },
       "allTypes": [
         "外注重機誘導員"
@@ -3028,6 +3326,21 @@
       "会議費"
     ]
   },
+  "dashOnlyHimoku": [
+    "外注費",
+    "運送費",
+    "産業廃棄物処理",
+    "租税公課",
+    "地代家賃",
+    "消耗品費",
+    "事務費",
+    "通信費",
+    "法定福利費",
+    "雑費",
+    "諸会費",
+    "会議費",
+    "補償費"
+  ],
   "definitionsByType": {
     "塗料": [
       "剥離剤･塗料･希釈剤･その他材料"
@@ -3259,8 +3572,18 @@
     if (allowed.size === 0) allowed.add(himoku);
     for (const row of snap.detailRows) {
       const current = row.name1 == null ? "" : String(row.name1).trim();
+      const nextHimoku = !current || !allowed.has(current) ? himoku : current;
+      const patch = {};
       if (!current || !allowed.has(current)) {
-        detailModel.updateDetailRow(stableBlockId, row.rowKey, { name1: himoku });
+        patch.name1 = himoku;
+      }
+      if (jy2HimokuUsesDashType(entry, nextHimoku)) {
+        patch.name2 = "－";
+      } else if (String(row.name2 || "").trim() === "－") {
+        patch.name2 = null;
+      }
+      if (Object.keys(patch).length) {
+        detailModel.updateDetailRow(stableBlockId, row.rowKey, patch);
       }
     }
   }
@@ -3278,6 +3601,33 @@
     const globalMap = JY2_NAME_HIERARCHY.typesByHimoku || {};
     const global = Array.isArray(globalMap[key]) ? globalMap[key] : [];
     return global.length ? [...global] : [];
+  }
+
+  function jy2HimokuUsesDashType(entry, himoku) {
+    const key = String(himoku || "").trim();
+    if (!key) return false;
+    const local = entry && entry.dashTypeByHimoku;
+    if (local && Object.prototype.hasOwnProperty.call(local, key)) {
+      return local[key] === true;
+    }
+    return (JY2_NAME_HIERARCHY.dashOnlyHimoku || []).includes(key);
+  }
+
+  function jy2NormalizeDashTypeDetails(detailModel) {
+    const snapshot = detailModel.snapshot();
+    for (const block of snapshot.blocks) {
+      const entry = jy2ResolveNameHierarchy(block);
+      for (const row of block.detailRows) {
+        if (
+          jy2HimokuUsesDashType(entry, row.name1) &&
+          String(row.name2 || "").trim() !== "－"
+        ) {
+          detailModel.updateDetailRow(block.stableBlockId, row.rowKey, {
+            name2: "－",
+          });
+        }
+      }
+    }
   }
 
   function jy2DefinitionsForType(typeName, himoku, entry) {
@@ -5176,6 +5526,67 @@
 
   // 内訳ブロック1つ分 (Phase 4c): App2-shaped in-memory block with U20 full
   // footer. 小計・計 are system totals (U25) and never editable.
+  function jy2CaptureFieldFocus(documentRef, root) {
+    const active = documentRef && documentRef.activeElement;
+    if (!active || !root || typeof root.contains !== "function" || !root.contains(active)) {
+      return null;
+    }
+    const row = active.closest("tr[data-row-key]");
+    const footer = active.closest("tr[data-row-kind]");
+    const fieldHost = active.closest("[data-jy2-field]");
+    const workType = active.closest("[data-jy2-worktype-field]");
+    return {
+      rowKey: row ? row.dataset.rowKey : "",
+      footerKind: footer ? footer.dataset.rowKind : "",
+      field: fieldHost ? fieldHost.dataset.jy2Field : "",
+      workTypeField: workType ? workType.dataset.jy2WorktypeField : "",
+      selectionStart:
+        typeof active.selectionStart === "number" ? active.selectionStart : null,
+      selectionEnd:
+        typeof active.selectionEnd === "number" ? active.selectionEnd : null,
+    };
+  }
+
+  function jy2RestoreFieldFocus(root, hint) {
+    if (!hint || !root || typeof root.querySelector !== "function") return;
+    let target = null;
+    if (hint.workTypeField) {
+      target = root.querySelector(
+        `[data-jy2-worktype-field="${hint.workTypeField}"] input, [data-jy2-worktype-field="${hint.workTypeField}"] select`,
+      );
+    } else if (hint.footerKind && hint.field) {
+      const footer = root.querySelector(`tr[data-row-kind="${hint.footerKind}"]`);
+      target =
+        footer &&
+        footer.querySelector(
+          `[data-jy2-field="${hint.field}"] input, [data-jy2-field="${hint.field}"] select, [data-jy2-field="${hint.field}"]`,
+        );
+    } else if (hint.rowKey && hint.field) {
+      const row = root.querySelector(`tr[data-row-key="${hint.rowKey}"]`);
+      target =
+        row &&
+        row.querySelector(
+          `[data-jy2-field="${hint.field}"] input, [data-jy2-field="${hint.field}"] select, [data-jy2-field="${hint.field}"]`,
+        );
+    }
+    if (!target || typeof target.focus !== "function") return;
+    target.focus();
+    if (
+      typeof hint.selectionStart === "number" &&
+      typeof target.setSelectionRange === "function"
+    ) {
+      try {
+        const end =
+          typeof hint.selectionEnd === "number"
+            ? hint.selectionEnd
+            : hint.selectionStart;
+        target.setSelectionRange(hint.selectionStart, end);
+      } catch {
+        // type=number 等は selection 非対応
+      }
+    }
+  }
+
   function jy2DetailBlock(
     documentRef,
     detailModel,
@@ -5193,6 +5604,23 @@
     const blockEditable = editable && !retired;
     const suggest = suggestions || { name1: [], name2: [], name3: [], vendors: [] };
     const codeMaster = masterLists || jy2EmptyMasterLists();
+    let rerenderPending = false;
+    // セル編集は当該ブロックだけ差し替え（全ペイン再構築を避ける）。
+    const scheduleRerender = () => {
+      if (rerenderPending) return;
+      rerenderPending = true;
+      const view = documentRef.defaultView;
+      const run = () => {
+        rerenderPending = false;
+        rerender({ onlyBlockId: block.stableBlockId });
+      };
+      if (view && typeof view.requestAnimationFrame === "function") {
+        view.requestAnimationFrame(run);
+      } else {
+        setTimeout(run, 0);
+      }
+    };
+    const rerenderFull = () => rerender({ full: true });
 
     const head = documentRef.createElement("div");
     head.className = "jy2-detail-block-head";
@@ -5223,7 +5651,7 @@
 
     const commitHeader = (field) => (value) => {
       detailModel.updateBlockHeader(block.stableBlockId, { [field]: value });
-      rerender();
+      scheduleRerender();
     };
     const headerField = (labelText, control) => {
       const label = documentRef.createElement("label");
@@ -5240,6 +5668,10 @@
         if (mapped) {
           detailModel.updateBlockHeader(id, { workTypeName: mapped });
           newName = mapped;
+          const nameInput = section.querySelector(
+            '[data-jy2-worktype-field="name"] input',
+          );
+          if (nameInput) nameInput.value = mapped;
         }
         const costCat = jy2ResolveCostCategoryFromWorkType(value, newName);
         if (costCat === "施工" || costCat === "保安") {
@@ -5249,7 +5681,7 @@
         }
         // コード表: システム工種 → 費目を明細へ自動セット。
         jy2ApplyHimokuDefaultToDetails(detailModel, id);
-        rerender();
+        scheduleRerender();
       };
       const commitWorkTypeName = (value) => {
         const id = block.stableBlockId;
@@ -5259,6 +5691,10 @@
         if (mapped) {
           detailModel.updateBlockHeader(id, { workTypeCode: mapped });
           newCode = mapped;
+          const codeInput = section.querySelector(
+            '[data-jy2-worktype-field="code"] input',
+          );
+          if (codeInput) codeInput.value = mapped;
         }
         const costCat = jy2ResolveCostCategoryFromWorkType(newCode, value);
         if (costCat === "施工" || costCat === "保安") {
@@ -5267,25 +5703,31 @@
           detailModel.updateBlockHeader(id, { costCategory: null });
         }
         jy2ApplyHimokuDefaultToDetails(detailModel, id);
-        rerender();
+        scheduleRerender();
       };
+      const workTypeCodeControl = jy2ComboInput(
+        documentRef,
+        block.workTypeCode,
+        codeMaster.workTypeCodes,
+        commitWorkTypeCode,
+        { commitExactOption: true },
+      );
+      workTypeCodeControl.dataset.jy2WorktypeField = "code";
       headerField(
         "工種番号（選択）",
-        jy2ComboInput(
-          documentRef,
-          block.workTypeCode,
-          codeMaster.workTypeCodes,
-          commitWorkTypeCode,
-        ),
+        workTypeCodeControl,
       );
+      const workTypeNameControl = jy2ComboInput(
+        documentRef,
+        block.workTypeName,
+        codeMaster.workTypeNames,
+        commitWorkTypeName,
+        { commitExactOption: true },
+      );
+      workTypeNameControl.dataset.jy2WorktypeField = "name";
       headerField(
         "システム入力工種（選択）",
-        jy2ComboInput(
-          documentRef,
-          block.workTypeName,
-          codeMaster.workTypeNames,
-          commitWorkTypeName,
-        ),
+        workTypeNameControl,
       );
       // U29: 区分 sits left of 取引先; list-select colored (green).
       headerField(
@@ -5313,13 +5755,13 @@
       actions.appendChild(
         jy2RowButton(documentRef, "↑", () => {
           detailModel.moveBlock(block.stableBlockId, -1);
-          rerender();
+          rerenderFull();
         }),
       );
       actions.appendChild(
         jy2RowButton(documentRef, "↓", () => {
           detailModel.moveBlock(block.stableBlockId, 1);
-          rerender();
+          rerenderFull();
         }),
       );
       // P-39: blocks with actuals are retired, never physically deleted.
@@ -5327,14 +5769,14 @@
         actions.appendChild(
           jy2RowButton(documentRef, "廃止", () => {
             detailModel.retireBlock(block.stableBlockId);
-            rerender();
+            rerenderFull();
           }),
         );
       } else {
         actions.appendChild(
           jy2RowButton(documentRef, "ブロック削除", () => {
             detailModel.removeBlock(block.stableBlockId);
-            rerender();
+            rerenderFull();
           }),
         );
       }
@@ -5382,22 +5824,34 @@
         const patch = { [field]: value };
         // 費目変更時: 新しい費目に紐づかない種別はクリア（カスケード整合）。
         if (field === "name1") {
-          const nextSuggest = jy2CollectDetailSuggestions(detailModel, block, {
-            ...row,
-            name1: value,
-          });
-          const currentType = row.name2 == null ? "" : String(row.name2).trim();
-          if (currentType && !nextSuggest.name2.includes(currentType)) {
-            patch.name2 = null;
+          const entry = jy2ResolveNameHierarchy(block);
+          if (jy2HimokuUsesDashType(entry, value)) {
+            patch.name2 = "－";
+          } else {
+            const nextSuggest = jy2CollectDetailSuggestions(null, block, {
+              ...row,
+              name1: value,
+            });
+            const currentType = row.name2 == null ? "" : String(row.name2).trim();
+            if (
+              currentType === "－" ||
+              (currentType && !nextSuggest.name2.includes(currentType))
+            ) {
+              patch.name2 = null;
+            }
           }
         }
         // 種別変更時: 定義候補に無い値は残してよい（手入力可）が、
         // 種別クリア時は定義はそのまま（自由記述のため）。
         detailModel.updateDetailRow(block.stableBlockId, row.rowKey, patch);
-        rerender();
+        scheduleRerender();
       };
       // 行ごとのカスケード候補（費目→種別→定義及び品名）。
-      const rowSuggest = jy2CollectDetailSuggestions(detailModel, block, row);
+      const rowSuggest = jy2CollectDetailSuggestions(null, block, row);
+      const dashTypeFixed = jy2HimokuUsesDashType(
+        jy2ResolveNameHierarchy(block),
+        row.name1,
+      );
       const prevName1 = jy2PrevFilled(block.detailRows, rowIndex, "name1");
       const prevName2 = jy2PrevFilled(block.detailRows, rowIndex, "name2");
       // U27: 保存値が埋まっていても直前と同値なら画面は空白（Excel寄り）
@@ -5428,43 +5882,70 @@
       if (blockEditable) {
         // U4: 費目/種別（補助）＝候補選択＋手入力可。定義及び品名＝手入力＋候補（全角カナ正規化）。
         const name1 = jy2Cell(documentRef, "td", "", "");
-        name1.appendChild(
-          jy2ComboInput(documentRef, row.name1, rowSuggest.name1, commit("name1"), {
-            displayBlank: name1SameAsAbove,
-          }),
+        const name1Ctrl = jy2ComboInput(
+          documentRef,
+          row.name1,
+          rowSuggest.name1,
+          commit("name1"),
+          { displayBlank: name1SameAsAbove },
         );
+        name1Ctrl.dataset.jy2Field = "name1";
+        name1.appendChild(name1Ctrl);
         tr.appendChild(name1);
         const name2 = jy2Cell(documentRef, "td", "", "");
-        name2.appendChild(
-          jy2ComboInput(documentRef, row.name2, rowSuggest.name2, commit("name2"), {
-            displayBlank: name2SameAsAbove,
-          }),
-        );
+        if (dashTypeFixed) {
+          name2.classList.add("jy2-readonly");
+          name2.textContent = "－";
+          name2.title = "コード表で種別（補助）が「－」のため自動固定";
+        } else {
+          const name2Ctrl = jy2ComboInput(
+            documentRef,
+            row.name2,
+            rowSuggest.name2,
+            commit("name2"),
+            { displayBlank: name2SameAsAbove },
+          );
+          name2Ctrl.dataset.jy2Field = "name2";
+          name2.appendChild(name2Ctrl);
+        }
         tr.appendChild(name2);
         const name3 = jy2Cell(documentRef, "td", "", "");
-        name3.appendChild(
-          jy2ComboInput(
-            documentRef,
-            row.name3,
-            rowSuggest.name3,
-            (value) => commit("name3")(jy2ToFullWidthKana(value)),
-          ),
+        const name3Ctrl = jy2ComboInput(
+          documentRef,
+          row.name3,
+          rowSuggest.name3,
+          (value) => commit("name3")(jy2ToFullWidthKana(value)),
         );
+        name3Ctrl.dataset.jy2Field = "name3";
+        name3.appendChild(name3Ctrl);
         tr.appendChild(name3);
         const unit = jy2Cell(documentRef, "td", "", "");
-        unit.appendChild(
-          jy2UnitSelect(documentRef, row.unit, commit("unit"), DETAIL_UNITS),
+        const unitCtrl = jy2UnitSelect(
+          documentRef,
+          row.unit,
+          commit("unit"),
+          DETAIL_UNITS,
         );
+        unitCtrl.dataset.jy2Field = "unit";
+        unit.appendChild(unitCtrl);
         tr.appendChild(unit);
         const quantityCell = jy2Cell(documentRef, "td", "jy2-num", "");
-        quantityCell.appendChild(
-          jy2TextInput(documentRef, row.quantity, commit("quantity")),
+        const qtyCtrl = jy2TextInput(
+          documentRef,
+          row.quantity,
+          commit("quantity"),
         );
+        qtyCtrl.dataset.jy2Field = "quantity";
+        quantityCell.appendChild(qtyCtrl);
         tr.appendChild(quantityCell);
         const unitPriceCell = jy2Cell(documentRef, "td", "jy2-num", "");
-        unitPriceCell.appendChild(
-          jy2TextInput(documentRef, row.unitPrice, commit("unitPrice")),
+        const priceCtrl = jy2TextInput(
+          documentRef,
+          row.unitPrice,
+          commit("unitPrice"),
         );
+        priceCtrl.dataset.jy2Field = "unitPrice";
+        unitPriceCell.appendChild(priceCtrl);
         tr.appendChild(unitPriceCell);
         // U17: 薄い赤の起点は費目/種別（補助）のみ。定義及び品名（name3）は必須扱いにしない。
         const anchor = jy2HasText(row.name1) || jy2HasText(row.name2);
@@ -5474,30 +5955,32 @@
         jy2MarkIncompleteIfAnchor(quantityCell, anchor, row.quantity);
         jy2MarkIncompleteIfAnchor(unitPriceCell, anchor, row.unitPrice);
         jy2MarkNameBlankVisual(name1, name1BlankVisual);
-        jy2MarkNameBlankVisual(name2, name2BlankVisual);
+        if (!dashTypeFixed) jy2MarkNameBlankVisual(name2, name2BlankVisual);
         tr.appendChild(
           jy2Cell(documentRef, "td", "jy2-amount", jy2Comma(row.amount)),
         );
         const note = jy2Cell(documentRef, "td", "", "");
-        note.appendChild(jy2TextInput(documentRef, row.note, commit("note")));
+        const noteCtrl = jy2TextInput(documentRef, row.note, commit("note"));
+        noteCtrl.dataset.jy2Field = "note";
+        note.appendChild(noteCtrl);
         tr.appendChild(note);
         const ops = jy2Cell(documentRef, "td", "", "");
         ops.appendChild(
           jy2RowButton(documentRef, "↑", () => {
             detailModel.moveDetailRow(block.stableBlockId, row.rowKey, -1);
-            rerender();
+            scheduleRerender();
           }),
         );
         ops.appendChild(
           jy2RowButton(documentRef, "↓", () => {
             detailModel.moveDetailRow(block.stableBlockId, row.rowKey, 1);
-            rerender();
+            scheduleRerender();
           }),
         );
         ops.appendChild(
           jy2RowButton(documentRef, "削除", () => {
             detailModel.removeDetailRow(block.stableBlockId, row.rowKey);
-            rerender();
+            scheduleRerender();
           }),
         );
         tr.appendChild(ops);
@@ -5541,7 +6024,7 @@
         jy2RowButton(documentRef, "明細行追加", () => {
           detailModel.addDetailRow(block.stableBlockId);
           jy2ApplyHimokuDefaultToDetails(detailModel, block.stableBlockId);
-          rerender();
+          scheduleRerender();
         }),
       );
       addRow.appendChild(addCell);
@@ -5612,12 +6095,12 @@
       tr.appendChild(label);
       if (manual && blockEditable) {
         const amount = jy2Cell(documentRef, "td", "jy2-num", "");
-        amount.appendChild(
-          jy2TextInput(documentRef, footerRow.amount, (value) => {
-            detailModel.updateFooterAmount(block.stableBlockId, kind, value);
-            rerender();
-          }),
-        );
+        const amountCtrl = jy2TextInput(documentRef, footerRow.amount, (value) => {
+          detailModel.updateFooterAmount(block.stableBlockId, kind, value);
+          scheduleRerender();
+        });
+        amountCtrl.dataset.jy2Field = "footerAmount";
+        amount.appendChild(amountCtrl);
         tr.appendChild(amount);
       } else {
         tr.appendChild(
@@ -5637,8 +6120,8 @@
   }
 
   // 内訳 tab (Phase 4c): offline in-memory editor over App2-shaped blocks.
-  // Every mutation re-renders this pane and refreshes the summary projection
-  // (投影キャッシュ) and ①⑧⑨ via refreshSummary.
+  // セル編集は該当ブロック差し替え。ブロック追加/移動/削除のみ全ペイン再描画。
+  // 総括再描画は refreshSummary（shell側で dirty 遅延）に委譲。
   // options.focusBlockId: 再描画後にそのブロックへスクロール（工種ブロック追加用）。
   function jy2RenderDetailPane(
     documentRef,
@@ -5648,18 +6131,84 @@
     masterLists,
     options = {},
   ) {
+    const notifySummary =
+      typeof refreshSummary === "function" ? refreshSummary : () => {};
+
+    const collectPaneSuggestions = () => {
+      const paneVendors = new Set(JY2_VENDOR_SEEDS);
+      for (const block of detailModel.snapshot().blocks) {
+        if (block.vendorName) paneVendors.add(String(block.vendorName));
+      }
+      return { vendors: [...paneVendors] };
+    };
+
+    function replaceOneBlock(onlyBlockId) {
+      const id = String(onlyBlockId || "").trim();
+      if (!id) return false;
+      const old = pane.querySelector(
+        `.jy2-detail-block[data-stable-block-id="${id}"]`,
+      );
+      if (!old) return false;
+      const scroll = jy2CaptureScroll(documentRef, pane);
+      const focusHint = jy2CaptureFieldFocus(documentRef, old);
+      // 当該ブロックの「－」固定だけ先に正規化（全ブロック走査はしない）。
+      const entryBlock = detailModel
+        .snapshot()
+        .blocks.find((b) => b.stableBlockId === id);
+      if (entryBlock) {
+        const entry = jy2ResolveNameHierarchy(entryBlock);
+        for (const row of entryBlock.detailRows) {
+          if (
+            jy2HimokuUsesDashType(entry, row.name1) &&
+            String(row.name2 || "").trim() !== "－"
+          ) {
+            detailModel.updateDetailRow(id, row.rowKey, { name2: "－" });
+          }
+        }
+      }
+      const block = detailModel.snapshot().blocks.find((b) => b.stableBlockId === id);
+      if (!block) return false;
+      const next = jy2DetailBlock(
+        documentRef,
+        detailModel,
+        block,
+        detailModel.allowedOperations.editBudget,
+        rerender,
+        collectPaneSuggestions(),
+        masterLists,
+      );
+      old.replaceWith(next);
+      if (scroll) jy2ApplyScroll(documentRef, pane, scroll);
+      jy2RestoreFieldFocus(next, focusHint);
+      notifySummary();
+      return true;
+    }
+
+    function rerender(arg) {
+      let opts = {};
+      if (typeof arg === "string") {
+        opts = { focusBlockId: arg, full: true };
+      } else if (arg && typeof arg === "object") {
+        opts = arg;
+      }
+      const onlyBlockId = String(opts.onlyBlockId || "").trim();
+      if (onlyBlockId && !opts.full) {
+        if (replaceOneBlock(onlyBlockId)) return;
+      }
+      jy2RenderDetailPane(documentRef, pane, detailModel, refreshSummary, masterLists, {
+        focusBlockId: opts.focusBlockId,
+      });
+      notifySummary();
+    }
+
     const focusBlockId = String((options && options.focusBlockId) || "").trim();
     // フォーカス指定時は旧スクロール復元を抑止し、追加ブロックへ移動できるようにする。
     const scroll = focusBlockId ? null : jy2CaptureScroll(documentRef, pane);
     pane.textContent = "";
     const editable = detailModel.allowedOperations.editBudget;
-    const rerender = (nextFocusBlockId) => {
-      jy2RenderDetailPane(documentRef, pane, detailModel, refreshSummary, masterLists, {
-        focusBlockId: nextFocusBlockId,
-      });
-      refreshSummary();
-    };
+    jy2NormalizeDashTypeDetails(detailModel);
     const snapshot = detailModel.snapshot();
+    const paneSuggestions = collectPaneSuggestions();
 
     for (const warning of detailModel.categoryWarnings()) {
       pane.appendChild(jy2Cell(documentRef, "p", "jy2-warning", warning));
@@ -5686,7 +6235,7 @@
           block,
           editable,
           rerender,
-          jy2CollectDetailSuggestions(detailModel, block),
+          paneSuggestions,
           masterLists,
         ),
       );
@@ -5695,7 +6244,7 @@
       scroller.appendChild(
         jy2RowButton(documentRef, "工種ブロック追加", () => {
           const id = detailModel.addBlock();
-          rerender(id);
+          rerender({ focusBlockId: id, full: true });
         }),
       );
     }
@@ -6652,6 +7201,7 @@
       budgetVersionId: String(versionId),
     };
     const initialStatus = String(jy2FieldValue(record, "status") || "下書き");
+    let loadedDetailRecords = null;
     return Object.freeze({
       keys,
       initialStatus,
@@ -6662,6 +7212,7 @@
         const records = await fetchExistingDetailRows(api, APP2_ID, keys.budgetVersionId, {
           fields: null,
         });
+        loadedDetailRecords = records;
         return app2RecordsToBlocks(records);
       },
       async loadActuals() {
@@ -6729,7 +7280,11 @@
           });
           Object.assign(parentRecord, projectionRowsToSubtable(projectionRows));
         }
-        const existing = await fetchExistingDetailRows(api, APP2_ID, keys.budgetVersionId);
+        // 初期表示で取得済みのApp2行を再利用し、保存直前の重複GETを省く。
+        // 各行revisionと親revisionはbulk保存時に検証されるため、競合検知は維持される。
+        const existing =
+          loadedDetailRecords ||
+          (await fetchExistingDetailRows(api, APP2_ID, keys.budgetVersionId));
         const inputs = buildDetailSaveInputs({
           app1Id: APP1_ID,
           app2Id: APP2_ID,
@@ -7106,6 +7661,12 @@
       addSalaryBtn.hidden = tabId !== "summary";
     }
 
+    let actualsDirty = true;
+    let summaryDirty = true;
+    // activate 定義時点では未代入。後で実体を差し込む。
+    let flushSummaryIfDirty = () => {};
+    let flushActualsIfDirty = () => {};
+
     function activate(tabId) {
       for (const button of tabList.querySelectorAll(".jy2-tab")) {
         button.setAttribute(
@@ -7121,6 +7682,12 @@
       syncStickyActions(tabId);
       jy2SyncStickySheetBanner(stickySheetBanner, documentRef, tabId);
       syncStickyLayout();
+      // 内訳タブ入力中は総括/予実を遅延。タブ表示（クリック・No.ジャンプ）時に反映。
+      if (tabId === "summary") flushSummaryIfDirty();
+      if (tabId === "actual") {
+        flushSummaryIfDirty();
+        flushActualsIfDirty();
+      }
       // タブ表示後に幅を測り直す（非表示時に測ると横スクロールが消える）
       const syncScroll = () => jy2SyncAllHScroll(documentRef);
       syncScroll();
@@ -7188,18 +7755,28 @@
       );
     }
 
-    const refreshSummary = () =>
+    // force=true で即再描画。通常は dirty マークのみ（内訳入力の体感を優先）。
+    const refreshSummary = (force = false) => {
+      if (!force) {
+        summaryDirty = true;
+        actualsDirty = true;
+        return;
+      }
       jy2RenderSummaryPane(
         documentRef,
         summaryPane,
         summaryModel,
         currentBlocks,
-        () => refreshActuals(),
+        () => {
+          actualsDirty = true;
+        },
         projectionManual,
       );
+      summaryDirty = false;
+    };
     const contractTotal1 = () => summaryModel.snapshot().totals.total1;
     const summaryTotalsProvider = () => summaryModel.totals(currentBlocks());
-    const refreshActuals = () =>
+    const refreshActuals = () => {
       jy2RenderActualPane(
         documentRef,
         actualPane,
@@ -7210,6 +7787,14 @@
         projectionManual,
         summaryTotalsProvider,
       );
+      actualsDirty = false;
+    };
+    flushSummaryIfDirty = () => {
+      if (summaryDirty) refreshSummary(true);
+    };
+    flushActualsIfDirty = () => {
+      if (actualsDirty) refreshActuals();
+    };
     const detailRowCount = () =>
       detailModel
         .snapshot()
@@ -7232,14 +7817,14 @@
         detailPane,
         detailModel,
         () => {
-          refreshSummary();
-          refreshActuals();
+          // 明細セル変更 → 総括/予実は dirty のみ（タブ表示・保存時に反映）
+          refreshSummary(false);
         },
         summaryData.masterLists || null,
       );
     };
 
-    refreshSummary();
+    refreshSummary(true);
     refreshActuals();
     refreshVersions();
     refreshDetail();
@@ -7269,21 +7854,19 @@
         detailPane,
         detailModel,
         () => {
-          refreshSummary();
-          refreshActuals();
+          refreshSummary(false);
         },
         summaryData.masterLists || null,
         { focusBlockId: id },
       );
-      refreshSummary();
-      refreshActuals();
+      refreshSummary(false);
       activate("detail");
       jy2GotoDetailBlock(shell, documentRef, id);
     });
     addSalaryBtn.addEventListener("click", () => {
       if (addSalaryBtn.disabled) return;
       summaryModel.addSalaryLine();
-      refreshSummary();
+      refreshSummary(true);
       activate("summary");
     });
     if (saveController) {
@@ -7307,6 +7890,8 @@
         ) {
           return;
         }
+        // 保存前に遅延していた総括投影を確定しておく（画面上の差分をなくす）。
+        flushSummaryIfDirty();
         jy2EnsurePersonNameFields(record);
         const createdName = jy2NormalizePersonName(
           jy2FieldValue(record, "created_by_name"),

@@ -47,6 +47,9 @@ def cell(r, c):
 def is_blank_or_dash(s):
     return (not s) or s == "-" or s == "－" or s == "—"
 
+def is_explicit_dash(s):
+    return s == "-" or s == "－" or s == "—"
+
 last_section = None
 # key = workTypeCode or "__name__:" + workTypeName when code empty
 by_code = {}
@@ -54,6 +57,7 @@ by_name = {}
 all_himoku = []
 types_by_himoku = {}
 defs_by_type = {}
+type_presence_by_himoku = {}
 # セクション（項目列）→ その配下の費目名。工事系メニューの「現場経費」種別候補に使う。
 section_to_himoku = {}
 # Excel 行の初出順（システム工種リストのベース）
@@ -72,6 +76,7 @@ def ensure_work(bucket, key, *, code, name, section):
             "himoku": [],
             "himokuDefault": "",
             "typesByHimoku": {},
+            "dashTypeByHimoku": {},
             "allTypes": [],
             "allDefinitions": [],
         }
@@ -118,6 +123,14 @@ for r in range(2, ws.max_row + 1):
             defs_by_type.setdefault(type_name, [])
             if definition not in defs_by_type[type_name]:
                 defs_by_type[type_name].append(definition)
+    if himoku:
+        presence = type_presence_by_himoku.setdefault(
+            himoku, {"hasDash": False, "hasRealType": False}
+        )
+        if is_explicit_dash(type_name):
+            presence["hasDash"] = True
+        elif type_name:
+            presence["hasRealType"] = True
 
     targets = []
     if code or wname:
@@ -140,8 +153,12 @@ for r in range(2, ws.max_row + 1):
             if not entry["himokuDefault"]:
                 entry["himokuDefault"] = himoku
             entry["typesByHimoku"].setdefault(himoku, [])
-            if not is_blank_or_dash(type_name) and type_name not in entry["typesByHimoku"][himoku]:
-                entry["typesByHimoku"][himoku].append(type_name)
+            if not is_blank_or_dash(type_name):
+                entry["dashTypeByHimoku"][himoku] = False
+                if type_name not in entry["typesByHimoku"][himoku]:
+                    entry["typesByHimoku"][himoku].append(type_name)
+            elif is_explicit_dash(type_name) and himoku not in entry["dashTypeByHimoku"]:
+                entry["dashTypeByHimoku"][himoku] = True
             if not is_blank_or_dash(type_name) and type_name not in entry["allTypes"]:
                 entry["allTypes"].append(type_name)
         if definition and definition not in entry["allDefinitions"]:
@@ -212,6 +229,7 @@ if "予備費" not in by_name:
         "himoku": ["予備費"],
         "himokuDefault": "予備費",
         "typesByHimoku": {},
+        "dashTypeByHimoku": {"予備費": False},
         "allTypes": [],
         "allDefinitions": [],
         "constructionMenu": False,
@@ -279,6 +297,7 @@ out = {
             "himoku": v["himoku"],
             "himokuDefault": v["himokuDefault"],
             "typesByHimoku": v["typesByHimoku"],
+            "dashTypeByHimoku": v.get("dashTypeByHimoku", {}),
             "allTypes": v["allTypes"],
             "allDefinitions": v["allDefinitions"],
             "constructionMenu": v.get("constructionMenu", False),
@@ -287,6 +306,11 @@ out = {
     },
     "allHimoku": all_himoku,
     "typesByHimoku": types_by_himoku,
+    "dashOnlyHimoku": [
+        h for h in all_himoku
+        if type_presence_by_himoku.get(h, {}).get("hasDash")
+        and not type_presence_by_himoku.get(h, {}).get("hasRealType")
+    ],
     "definitionsByType": defs_by_type,
 }
 print(json.dumps(out, ensure_ascii=False, indent=2))
