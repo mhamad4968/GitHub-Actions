@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-26-ver02-partial-block-render
+  // @JY_V2_BUILD 2026-07-26-ver02-block-delete-fix
   // U34: 保存・セル編集の再描画／reload でページ上部へ跳ばない（縦・横位置を維持）
 
   const JY2_STYLE_ID = "jy2-shell-style";
@@ -3721,7 +3721,24 @@
     button.type = "button";
     button.className = "jy2-row-button";
     button.textContent = label;
-    button.addEventListener("click", onClick);
+    // 入力フォーカス中に押したとき、blur→commit が先に走って click が潰れるのを防ぐ。
+    button.addEventListener("mousedown", (event) => {
+      if (typeof event.preventDefault === "function") event.preventDefault();
+    });
+    button.addEventListener("click", (event) => {
+      try {
+        onClick(event);
+      } catch (error) {
+        const view = documentRef && documentRef.defaultView;
+        const message =
+          error && error.message ? String(error.message) : String(error || "操作に失敗しました");
+        if (view && typeof view.alert === "function") {
+          view.alert(message);
+        } else if (typeof console !== "undefined" && console.error) {
+          console.error(message, error);
+        }
+      }
+    });
     return button;
   }
 
@@ -5605,14 +5622,19 @@
     const suggest = suggestions || { name1: [], name2: [], name3: [], vendors: [] };
     const codeMaster = masterLists || jy2EmptyMasterLists();
     let rerenderPending = false;
+    let partialEpoch = 0;
     // セル編集は当該ブロックだけ差し替え（全ペイン再構築を避ける）。
     const scheduleRerender = () => {
       if (rerenderPending) return;
       rerenderPending = true;
+      const epoch = partialEpoch;
+      const onlyBlockId = block.stableBlockId;
       const view = documentRef.defaultView;
       const run = () => {
         rerenderPending = false;
-        rerender({ onlyBlockId: block.stableBlockId });
+        // ブロック削除/移動など構造変更後の古い partial は破棄。
+        if (epoch !== partialEpoch) return;
+        rerender({ onlyBlockId });
       };
       if (view && typeof view.requestAnimationFrame === "function") {
         view.requestAnimationFrame(run);
@@ -5620,7 +5642,11 @@
         setTimeout(run, 0);
       }
     };
-    const rerenderFull = () => rerender({ full: true });
+    const rerenderFull = () => {
+      partialEpoch += 1;
+      rerenderPending = false;
+      rerender({ full: true });
+    };
 
     const head = documentRef.createElement("div");
     head.className = "jy2-detail-block-head";
@@ -5775,7 +5801,11 @@
       } else {
         actions.appendChild(
           jy2RowButton(documentRef, "ブロック削除", () => {
-            detailModel.removeBlock(block.stableBlockId);
+            const id = block.stableBlockId;
+            detailModel.removeBlock(id);
+            // 先に DOM から外し、古い partial 差し替えが残像を作らないようにする。
+            if (typeof section.remove === "function") section.remove();
+            else if (section.parentNode) section.parentNode.removeChild(section);
             rerenderFull();
           }),
         );
@@ -5979,7 +6009,16 @@
         );
         ops.appendChild(
           jy2RowButton(documentRef, "削除", () => {
-            detailModel.removeDetailRow(block.stableBlockId, row.rowKey);
+            try {
+              detailModel.removeDetailRow(block.stableBlockId, row.rowKey);
+            } catch (error) {
+              if (/at least 1 detail row/i.test(String(error && error.message))) {
+                throw new Error("明細行は1行以上必要なため削除できません", {
+                  cause: error,
+                });
+              }
+              throw error;
+            }
             scheduleRerender();
           }),
         );
@@ -6142,12 +6181,23 @@
       return { vendors: [...paneVendors] };
     };
 
+    function findDetailBlockEl(onlyBlockId) {
+      const id = String(onlyBlockId || "").trim();
+      if (!id || !pane || typeof pane.querySelectorAll !== "function") return null;
+      // 属性セレクタは特殊文字で壊れることがあるため dataset で突合する。
+      const nodes = pane.querySelectorAll(".jy2-detail-block");
+      for (const node of nodes) {
+        if (node && node.dataset && String(node.dataset.stableBlockId || "") === id) {
+          return node;
+        }
+      }
+      return null;
+    }
+
     function replaceOneBlock(onlyBlockId) {
       const id = String(onlyBlockId || "").trim();
       if (!id) return false;
-      const old = pane.querySelector(
-        `.jy2-detail-block[data-stable-block-id="${id}"]`,
-      );
+      const old = findDetailBlockEl(id);
       if (!old) return false;
       const scroll = jy2CaptureScroll(documentRef, pane);
       const focusHint = jy2CaptureFieldFocus(documentRef, old);
@@ -6192,7 +6242,8 @@
         opts = arg;
       }
       const onlyBlockId = String(opts.onlyBlockId || "").trim();
-      if (onlyBlockId && !opts.full) {
+      // full は厳密に true のときのみ部分更新を抑止（truthy 以外の誤指定を避ける）。
+      if (onlyBlockId && opts.full !== true) {
         if (replaceOneBlock(onlyBlockId)) return;
       }
       jy2RenderDetailPane(documentRef, pane, detailModel, refreshSummary, masterLists, {
