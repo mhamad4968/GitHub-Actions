@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-26-ver02-date-order-warn
+  // @JY_V2_BUILD 2026-07-26-ver02-vendor-list-only
   // U34: 保存・セル編集の再描画／reload でページ上部へ跳ばない（縦・横位置を維持）
 
   const JY2_STYLE_ID = "jy2-shell-style";
@@ -5885,7 +5885,7 @@
           CONTRACT_SECTIONS,
         ),
       );
-      // U3: 取引先は候補＋手入力可コンボ
+      // U3: 取引先は候補リストのみ（打鍵で絞り込み・リスト外は拒否して赤字表示）
       const vendorWrap = documentRef.createElement("span");
       vendorWrap.appendChild(
         jy2ComboInput(
@@ -5893,6 +5893,7 @@
           block.vendorName,
           suggest.vendors,
           commitHeader("vendorName"),
+          { listOnly: true },
         ),
       );
       headerField("取引先（選択）", vendorWrap);

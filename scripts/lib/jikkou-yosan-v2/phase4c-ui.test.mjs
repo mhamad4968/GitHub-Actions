@@ -676,6 +676,16 @@ test("U4 name1/name2 are combo (select+input); name3 is free text input", () => 
   );
 });
 
+test("U36 取引先もリストのみ（候補は打鍵で絞り込み・リスト外は赤字で拒否）", () => {
+  const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
+  assert.match(
+    source,
+    /jy2ComboInput\(\s*documentRef,\s*block\.vendorName,\s*suggest\.vendors,\s*commitHeader\("vendorName"\),\s*\{ listOnly: true \}/,
+  );
+  assert.match(source, /jy2-combo-miss/);
+  assert.match(source, /リストにありません/);
+});
+
 test("U5 jy2ToFullWidthKana normalizes halfwidth kana with NFKC (not code offset)", () => {
   const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
   assert.match(
