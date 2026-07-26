@@ -112,12 +112,34 @@ for (const [name, e] of excelByName) {
     problems.push(`[漏れ] 工種「${name}」が byWorkTypeName にない`);
     continue;
   }
+  // 費目・種別の順序も Excel 行順と一致させる（集合一致だけでは不十分）。
+  const excelHimoku = e.himoku;
+  const jsonHimokuExcelOnly = (entry.himoku || []).filter((h) =>
+    excelHimoku.includes(h),
+  );
+  if (JSON.stringify(jsonHimokuExcelOnly) !== JSON.stringify(excelHimoku)) {
+    problems.push(
+      `[順序] ${name}: 費目順が不一致 Excel=[${excelHimoku.join("/")}] JSON(Excel由来)=[${jsonHimokuExcelOnly.join("/")}]`,
+    );
+  }
   for (const h of e.himoku) {
     if (!(entry.himoku || []).includes(h)) {
       problems.push(`[漏れ] ${name}: 費目「${h}」が himoku にない`);
     }
-    for (const t of e.types.get(h) || []) {
-      const local = (entry.typesByHimoku || {})[h] || [];
+    const excelTypes = e.types.get(h) || [];
+    const local = (entry.typesByHimoku || {})[h] || [];
+    if (JSON.stringify(local) !== JSON.stringify(excelTypes)) {
+      // 漏れ／混入は別検証でも拾うが、順序ズレも明示する
+      if (
+        excelTypes.every((t) => local.includes(t)) &&
+        local.every((t) => excelTypes.includes(t))
+      ) {
+        problems.push(
+          `[順序] ${name}: 費目「${h}」の種別順が不一致 Excel=[${excelTypes.join("/")}] JSON=[${local.join("/")}]`,
+        );
+      }
+    }
+    for (const t of excelTypes) {
       if (!local.includes(t)) {
         problems.push(`[漏れ] ${name}: 費目「${h}」の種別「${t}」が typesByHimoku にない`);
       }
@@ -204,7 +226,42 @@ for (const h of menu) {
   const extra = actual.filter((t) => !expected.includes(t));
   if (missing.length) problems.push(`[紐付け] 費目「${h}」: 種別が不足 → ${missing.join("/")}`);
   if (extra.length) problems.push(`[紐付け] 費目「${h}」: Excel にない種別 → ${extra.join("/")}`);
+  if (
+    !missing.length &&
+    !extra.length &&
+    JSON.stringify(actual) !== JSON.stringify(expected)
+  ) {
+    problems.push(
+      `[順序] 費目「${h}」の種別順が不一致 Excel=[${expected.join("/")}] JSON=[${actual.join("/")}]`,
+    );
+  }
   notes.push(`費目「${h}」 → 種別（補助）: ${actual.length ? actual.join(" / ") : "（なし＝手入力）"}`);
+}
+
+// 工事メニュー費目の並び＝依頼者説明文順（材料費→…→予備費）
+const menuExpected = [
+  "材料費",
+  "労務費",
+  "外注費",
+  "工具･機械使用料",
+  "現場経費",
+  "諸経費",
+  "法定福利費",
+  "予備費",
+];
+if (JSON.stringify(menu) !== JSON.stringify(menuExpected)) {
+  problems.push(
+    `[順序] constructionHimokuMenu が説明文順でない → [${(menu || []).join("/")}]`,
+  );
+}
+for (const n of actualMenuNames) {
+  const entry = data.byWorkTypeName[n];
+  const head = (entry.himoku || []).slice(0, menuExpected.length);
+  if (JSON.stringify(head) !== JSON.stringify(menuExpected)) {
+    problems.push(
+      `[順序] 「${n}」の費目先頭がメニュー順でない → [${(entry.himoku || []).join("/")}]`,
+    );
+  }
 }
 
 // ---- 監査出力 ----

@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-26-ver02-strict-code-table
+  // @JY_V2_BUILD 2026-07-26-ver02-code-table-order
   // U34: 保存・セル編集の再描画／reload でページ上部へ跳ばない（縦・横位置を維持）
 
   const JY2_STYLE_ID = "jy2-shell-style";
@@ -3218,6 +3218,8 @@
         if (b.vendorName) vendors.add(String(b.vendorName));
       }
     }
+    // 費目／種別／定義の並びはコード表（JY2_NAME_HIERARCHY）の出現順を維持する。
+    // 五十音ソートはしない（依頼者：リスト順＝コード表順）。
     const sortJa = (left, right) => String(left).localeCompare(String(right), "ja");
     const entry = jy2ResolveNameHierarchy(block || {});
     const himokuAll = JY2_NAME_HIERARCHY.allHimoku || [];
@@ -3245,9 +3247,9 @@
           ? "construction-menu"
           : "code-table"
         : "no-work-type",
-      name1: name1.sort(sortJa),
-      name2: name2.sort(sortJa),
-      name3: name3.sort(sortJa),
+      name1,
+      name2,
+      name3,
       vendors: [...vendors].sort(sortJa),
       himokuLocked: Boolean(entry && !entry.constructionMenu && name1.length === 1),
     };
