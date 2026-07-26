@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-26-ver02-labor-day-night-types
+  // @JY_V2_BUILD 2026-07-26-ver02-himoku-list-only
   // U34: 保存・セル編集の再描画／reload でページ上部へ跳ばない（縦・横位置を維持）
 
   const JY2_STYLE_ID = "jy2-shell-style";
@@ -719,10 +719,12 @@
   // 行が多いと同一 ID で最初の datalist しか参照されないため行ごとに一意化）。
   let JY2_COMBO_UID = 0;
 
-  // U4/U26/U26-2: 候補選択＋手入力可コンボ。常にリスト緑。
-  // 左 input は打鍵で候補が絞り込み表示（datalist）＋手入力可。
+  // U4/U26/U26-2: 候補選択コンボ。常にリスト緑。
+  // 左 input は打鍵で候補が絞り込み表示（datalist）。
   // 右 <select>(▼) は全候補を常時列挙（datalist が現行値で絞られても選べる）。
   // opts.displayBlank: U27 連続同値は初期表示を空にし、focus で保存値を一時表示。
+  // opts.listOnly: 候補あり時はリスト外の非空値を blur/change で拒否（空クリアは可）。
+  //   既存保存値がリスト外でも編集するまで維持。拒否時は lastCommitted へ復元。
   function jy2ComboInput(documentRef, value, options, onCommit, opts = {}) {
     const wrap = documentRef.createElement("span");
     wrap.className = "jy2-combo-wrap";
@@ -771,6 +773,22 @@
       // 未フォーカスの空表示を「クリア保存」と誤認しない
       if (displayBlank && !revealed) return;
       const next = input.value.trim();
+      if (
+        opts.listOnly &&
+        seen.size > 0 &&
+        next !== "" &&
+        !seen.has(next)
+      ) {
+        const restored = lastCommitted;
+        input.value =
+          displayBlank && restored === stored ? "" : restored;
+        const prevTitle = input.title;
+        input.title = "リストにある候補だけ選べます";
+        window.setTimeout(() => {
+          input.title = prevTitle;
+        }, 2000);
+        return;
+      }
       if (next === lastCommitted) return;
       lastCommitted = next;
       onCommit(next);
@@ -6001,14 +6019,14 @@
         kind: "種別（補助）",
       };
       if (blockEditable) {
-        // U4: 費目/種別（補助）＝候補選択＋手入力可。定義及び品名＝手入力＋候補（全角カナ正規化）。
+        // U4: 費目/種別（補助）＝リストのみ（打鍵候補は維持）。定義及び品名＝手入力＋候補（全角カナ正規化）。
         const name1 = jy2Cell(documentRef, "td", "", "");
         const name1Ctrl = jy2ComboInput(
           documentRef,
           row.name1,
           rowSuggest.name1,
           commit("name1"),
-          { displayBlank: name1SameAsAbove },
+          { displayBlank: name1SameAsAbove, listOnly: true },
         );
         name1Ctrl.dataset.jy2Field = "name1";
         name1.appendChild(name1Ctrl);
@@ -6024,7 +6042,7 @@
             row.name2,
             rowSuggest.name2,
             commit("name2"),
-            { displayBlank: name2SameAsAbove },
+            { displayBlank: name2SameAsAbove, listOnly: true },
           );
           name2Ctrl.dataset.jy2Field = "name2";
           name2.appendChild(name2Ctrl);

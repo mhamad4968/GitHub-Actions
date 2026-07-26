@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-07-26-ver02-labor-day-night-types",
-      "fileKey": "b10ef110-2209-48ee-9447-468e50210c03",
-      "revision": "149",
+      "build": "2026-07-26-ver02-himoku-list-only",
+      "fileKey": "4cf2763e-32e0-4801-8a53-1f8a9ea2b863",
+      "revision": "150",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-07-26T03:34:20.070Z",
+      "deployedAt": "2026-07-26T09:28:46.213Z",
       "note": null
     },
     "757": {

@@ -172,6 +172,7 @@
     "jikkou-yosan:v2-create-apps": "npx dotenv -e .env -e .env.proxy -- node scripts/jikkou-yosan-v2-create-apps.mjs",
     "jikkou-yosan:v2-deploy-customizations": "node scripts/jikkou-yosan-v2-deploy-customizations.mjs",
     "cio:preflight:756": "node scripts/cio-preflight-stamp.mjs --app 756",
+    "deploy:756": "node scripts/cio-deploy-preflight-guard.mjs 756 && npx dotenv -e .env -e .env.proxy -- node scripts/deploy-customization.js 756 customize/jikkou-yosan-v2-app1/desktop.js",
     "jikkou-yosan:v2-phase6:test": "node --test scripts/lib/jikkou-yosan-v2/phase6.test.mjs",
     "jikkou-yosan:v2-phasec:test": "node --test scripts/lib/jikkou-yosan-v2/phasec-executor.test.mjs scripts/lib/jikkou-yosan-v2/phasec-adapter.test.mjs scripts/lib/jikkou-yosan-v2/phasec-save-model.test.mjs scripts/lib/jikkou-yosan-v2/phasec-remaining.test.mjs scripts/lib/jikkou-yosan-v2/phasec-list-actuals.test.mjs",
     "jikkou-yosan:v2-open-admin-write-acl": "node scripts/jikkou-yosan-v2-open-admin-write-acl.mjs",
