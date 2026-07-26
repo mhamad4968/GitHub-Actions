@@ -1,5 +1,5 @@
-import { blockTotals, detailLineAmount } from "./calc.mjs";
-import { add } from "./decimal.mjs";
+import { blockTotals, detailLineAmount, overheadFromDetails } from "./calc.mjs";
+import { add, sum } from "./decimal.mjs";
 import { COMMON_UNITS } from "./contract-salary-model.mjs";
 import { createRowKey, createStableBlockId } from "./keys.mjs";
 import { allowedOperations } from "./lock.mjs";
@@ -39,12 +39,17 @@ export const BLOCK_FOOTER_LABELS = Object.freeze({
   legal_welfare: "法定福利費",
   block_total: "計",
 });
-// C-U15/C-U16: only these footer amounts are manual until R-11/R-12/R-13.
+// C-U16: 手入力のフッタ金額。諸経費(overhead)は R-11 回答(2026-07-26)で
+// 「明細合計×10%」の自動計算に確定したため手入力から除外(読取専用)。
+// 各種保険料(insurance)・法定福利費(legal_welfare)は R-12/R-13 未確定のため手入力のまま。
 export const MANUAL_FOOTER_KINDS = Object.freeze([
-  "overhead",
   "insurance",
   "legal_welfare",
 ]);
+
+// R-11: 諸経費率 = 10%（依頼者確定 2026-07-26）。表示用の百分率も併記。
+export const OVERHEAD_RATE = "0.1";
+export const OVERHEAD_RATE_PERCENT = "10";
 
 const HEADER_EDITABLE_FIELDS = Object.freeze([
   "workTypeCode",
@@ -247,17 +252,24 @@ export function createDetailBlockModel({
   }
 
   // U25: 小計 = 明細金額計 + 諸経費 + 各種保険料; 計 = 小計 + 法定福利費.
-  // Blank manual amounts count as 0 but stay blank on screen.
+  // R-11: 諸経費は自動 = ROUND(明細金額合計 × 10%, 0)。明細金額が無ければ空欄。
+  // 手入力の各種保険料・法定福利費が空なら 0 扱い(表示は空白のまま)。
   function computedTotals(block) {
     const detailAmounts = block.detailRows
       .map((row) => detailRowAmount(row))
       .filter((amount) => amount !== null);
-    return blockTotals({
-      detailAmounts,
-      overhead: block.footer.overhead.amount,
-      insurance: block.footer.insurance.amount,
-      legalWelfare: block.footer.legal_welfare.amount,
-    });
+    const overheadBase = detailAmounts.length ? sum(detailAmounts) : null;
+    const overhead = overheadFromDetails(detailAmounts, OVERHEAD_RATE);
+    return {
+      ...blockTotals({
+        detailAmounts,
+        overhead,
+        insurance: block.footer.insurance.amount,
+        legalWelfare: block.footer.legal_welfare.amount,
+      }),
+      overhead,
+      overheadBase,
+    };
   }
 
   // U13/U24: rows with a blank 1st column inherit the group of the closest
@@ -294,7 +306,14 @@ export function createDetailBlockModel({
         ),
       ),
       footer: Object.freeze({
-        overhead: Object.freeze({ ...block.footer.overhead }),
+        // R-11: 諸経費は自動(読取専用)。case B: 根拠(base=明細合計, rate=10%)も公開。
+        overhead: Object.freeze({
+          rowKey: block.footer.overhead.rowKey,
+          amount: totals.overhead,
+          base: totals.overheadBase,
+          rate: OVERHEAD_RATE,
+          ratePercent: OVERHEAD_RATE_PERCENT,
+        }),
         insurance: Object.freeze({ ...block.footer.insurance }),
         subtotal: Object.freeze({
           rowKey: block.footer.subtotal.rowKey,
@@ -480,7 +499,7 @@ export function createDetailBlockModel({
       push({
         row_kind: "overhead",
         row_key: block.footer.overhead.rowKey,
-        amount: block.footer.overhead.amount ?? "",
+        amount: totals.overhead ?? "",
       });
       push({
         row_kind: "insurance",

@@ -349,7 +349,9 @@ export function projectionRowsToSubtable(projectionRows) {
 }
 
 const FOOTER_KINDS = ["overhead", "insurance", "subtotal", "legal_welfare", "block_total"];
-const MANUAL_FOOTER_CAMEL = { overhead: "overhead", insurance: "insurance", legal_welfare: "legalWelfare" };
+// R-11: overhead は自動計算(読取専用)になったため手入力金額を復元しない
+// (rowKey は footerRowKeys で保持=round-trip安定)。insurance/legal_welfare のみ手入力復元。
+const MANUAL_FOOTER_CAMEL = { insurance: "insurance", legal_welfare: "legalWelfare" };
 
 function v(record, code) {
   const field = record?.[code];

@@ -28,6 +28,9 @@ const checks = [
   ['給与氏名保存', /salary_person_name/],
   ['給与氏名全角空白正規化', /normalizedSalaryPersonName/],
   ['給与氏名空白なし警告', /jy2MarkSalaryNameSpaceWarning/],
+  ['諸経費自動計算(R-11)', /overheadFromDetails/],
+  ['諸経費率10%', /OVERHEAD_RATE_PERCENT/],
+  ['諸経費根拠の行内表示(案B)', /jy2-footer-basis/],
 ];
 
 const missing = checks.filter(([, re]) => !re.test(source)).map(([name]) => name);
@@ -36,4 +39,4 @@ if (missing.length) {
   process.exit(1);
 }
 
-console.log('[verify-jikkou-v2-ui-smoke] OK datalist + scroll-preserve + worktype-cost-auto + salary-name-space');
+console.log('[verify-jikkou-v2-ui-smoke] OK datalist + scroll-preserve + worktype-cost-auto + salary-name-space + overhead-auto-10pct');

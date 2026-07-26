@@ -147,7 +147,7 @@ test("dirty: amount drift, missing/extra rows and reorders are all reported", ()
       type: "field_mismatch",
       stableBlockId: cache[0].summary_stable_block_id,
       field: "summary_amount_excl_tax",
-      expected: "800",
+      expected: "880", // 塗装 800 + 諸経費(自動 10%)80 (R-11)
       cached: "801",
     },
   ]);

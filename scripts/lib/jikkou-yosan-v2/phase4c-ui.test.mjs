@@ -82,7 +82,8 @@ test("row_kind / unit / status catalogs match the App2 field catalog (§2, U16)"
     "legal_welfare",
     "block_total",
   ]);
-  assert.deepEqual(MANUAL_FOOTER_KINDS, ["overhead", "insurance", "legal_welfare"]);
+  // R-11: 諸経費(overhead)は自動計算(読取専用)になったので手入力から除外。
+  assert.deepEqual(MANUAL_FOOTER_KINDS, ["insurance", "legal_welfare"]);
   assert.equal(BLOCK_FOOTER_LABELS.block_total, "計");
 });
 
@@ -162,7 +163,7 @@ test("detail amounts follow P-22 ROUND: 数量×単価 and ％=単価×数量÷1
   );
 });
 
-test("U25 totals: 小計=明細+諸経費+保険料, 計=小計+法定福利費; blank footer = 0 but stays blank", () => {
+test("U25/R-11 totals: 諸経費=明細×10%(自動), 小計=明細+諸経費+保険料, 計=小計+法定福利費", () => {
   const model = editableModel();
   const blockId = model.addBlock();
   const rowKey = model.snapshot().blocks[0].detailRows[0].rowKey;
@@ -173,28 +174,35 @@ test("U25 totals: 小計=明細+諸経費+保険料, 計=小計+法定福利費;
     unitPrice: "1000",
   });
 
-  // All manual footer amounts blank → count as 0, display stays blank.
+  // R-11: 諸経費は自動 = ROUND(明細合計2000 × 10%, 0) = 200。案B: base/rate も公開。
   let block = model.snapshot().blocks[0];
-  assert.equal(block.footer.overhead.amount, null);
+  assert.equal(block.footer.overhead.amount, "200");
+  assert.equal(block.footer.overhead.base, "2000");
+  assert.equal(block.footer.overhead.rate, "0.1");
+  assert.equal(block.footer.overhead.ratePercent, "10");
+  // 手入力の保険料・法定福利費が空なら 0 扱い(表示は空白のまま)。
   assert.equal(block.footer.insurance.amount, null);
   assert.equal(block.footer.legal_welfare.amount, null);
-  assert.equal(block.footer.subtotal.amount, "2000");
-  assert.equal(block.footer.block_total.amount, "2000");
+  assert.equal(block.footer.subtotal.amount, "2200"); // 2000 + 200
+  assert.equal(block.footer.block_total.amount, "2200");
 
-  model.updateFooterAmount(blockId, "overhead", "300");
   model.updateFooterAmount(blockId, "insurance", "50");
   model.updateFooterAmount(blockId, "legal_welfare", "111");
   block = model.snapshot().blocks[0];
-  assert.equal(block.footer.subtotal.amount, "2350");
-  assert.equal(block.footer.block_total.amount, "2461");
+  assert.equal(block.footer.subtotal.amount, "2250"); // 2000 + 200 + 50
+  assert.equal(block.footer.block_total.amount, "2361"); // 2250 + 111
 
   // Blanking a manual amount reverts to 0-in-totals / blank-on-screen.
   model.updateFooterAmount(blockId, "legal_welfare", "");
   block = model.snapshot().blocks[0];
   assert.equal(block.footer.legal_welfare.amount, null);
-  assert.equal(block.footer.block_total.amount, "2350");
+  assert.equal(block.footer.block_total.amount, "2250");
 
-  // 小計・計 are system totals, never manually editable (U25).
+  // R-11: 諸経費は自動なので手入力不可。小計・計もシステム集計(U25)。
+  assert.throws(
+    () => model.updateFooterAmount(blockId, "overhead", "1"),
+    /not manually editable/,
+  );
   assert.throws(
     () => model.updateFooterAmount(blockId, "subtotal", "1"),
     /not manually editable/,
@@ -203,6 +211,26 @@ test("U25 totals: 小計=明細+諸経費+保険料, 計=小計+法定福利費;
     () => model.updateFooterAmount(blockId, "block_total", "1"),
     /not manually editable/,
   );
+});
+
+test("R-11: 諸経費は明細金額が無いブロックでは空欄(0でなくblank)", () => {
+  const model = editableModel();
+  const blockId = model.addBlock();
+  // 明細未入力のブロック → 諸経費は空欄、計は 0。
+  let block = model.snapshot().blocks[0];
+  assert.equal(block.footer.overhead.amount, null);
+  assert.equal(block.footer.overhead.base, null);
+  assert.equal(block.footer.block_total.amount, "0");
+
+  // 明細合計が小さく 10% が四捨五入で 0 になる場合も blank ではなく "0"。
+  const rowKey = block.detailRows[0].rowKey;
+  model.updateDetailRow(blockId, rowKey, {
+    name1: "端数", unit: "式", quantity: "1", unitPrice: "2",
+  });
+  block = model.snapshot().blocks[0];
+  assert.equal(block.footer.overhead.base, "2");
+  assert.equal(block.footer.overhead.amount, "0"); // ROUND(0.2) = 0
+  assert.equal(block.footer.block_total.amount, "2");
 });
 
 test("retire vs delete (P-39) and block reorder renumber 内訳№ (U14)", () => {
@@ -311,8 +339,9 @@ test("editBudget=false freezes every 内訳 mutation while display stays readabl
     assert.throws(() => model.updateDetailRow(blockId, rowKey, { quantity: "9" }), locked);
     assert.throws(() => model.removeDetailRow(blockId, rowKey), locked);
     assert.throws(() => model.moveDetailRow(blockId, rowKey, 1), locked);
-    assert.throws(() => model.updateFooterAmount(blockId, "overhead", "1"), locked);
-    assert.equal(model.snapshot().blocks[0].footer.block_total.amount, "2000");
+    assert.throws(() => model.updateFooterAmount(blockId, "insurance", "1"), locked);
+    // 足場 2×1000=2000 + 諸経費(自動 10%)200 = 2200。
+    assert.equal(model.snapshot().blocks[0].footer.block_total.amount, "2200");
   }
 });
 
@@ -344,16 +373,15 @@ test("projection feeds summary from active blocks only; header patches are guard
   assert.deepEqual(
     projected.map((block) => [block.status, block.costCategory, block.total]),
     [
-      ["active", "施工", "800"],
-      ["active", "保安", "200"],
-      ["retired", "施工", "99999"],
+      ["active", "施工", "880"], // 800 + 諸経費80 (R-11)
+      ["active", "保安", "220"], // 200 + 諸経費20
+      ["retired", "施工", "109999"], // 99999 + 諸経費10000
     ],
   );
-  // Q8/M3: single-unit blocks pass 単位/数量/単価 through to the summary.
-  assert.equal(projected[0].mixedUnits, false);
-  assert.equal(projected[0].unit, "㎡");
-  assert.equal(projected[0].quantity, "10");
-  assert.equal(projected[0].unitPrice, "80");
+  // R-11/Q8: 諸経費が計に乗るため 数量×単価 ≠ 計。全ブロックが 式×1×計 に投影される
+  // (金額整合ルール = 表示 数量×単価 が 計 を再現できないときは 式×1×計 に落ちる)。
+  assert.equal(projected[0].mixedUnits, true);
+  assert.equal("unit" in projected[0], false);
   // Retired block carries no №, so the 4th block displays as No.3 (U14/P-39).
   assert.deepEqual(model.categoryWarnings(), ["No.3の区分が未入力です"]);
 
@@ -362,13 +390,13 @@ test("projection feeds summary from active blocks only; header patches are guard
   assert.deepEqual(
     rows.map((row) => [row.summary_block_no, row.summary_amount_excl_tax]),
     [
-      [1, "800"],
-      [2, "200"],
+      [1, "880"],
+      [2, "220"],
     ],
   );
-  assert.equal(rows[0].summary_unit, "㎡");
-  assert.equal(rows[0].summary_qty, "10");
-  assert.equal(rows[0].summary_unit_price, "80");
+  assert.equal(rows[0].summary_unit, "式");
+  assert.equal(rows[0].summary_qty, "1");
+  assert.equal(rows[0].summary_unit_price, "880");
   assert.equal(rows[0].summary_work_type_code, "K-1");
 
   // ⑧⑨ combine active 内訳 totals with the summary model (U25 → P-33).
@@ -380,10 +408,10 @@ test("projection feeds summary from active blocks only; header patches are guard
     ],
   });
   const totals = summaryModel.totals(projected);
-  assert.equal(totals.costConstruction, "800");
-  assert.equal(totals.costSafety, "200");
-  assert.equal(totals.total8, "1000");
-  assert.equal(totals.profit9, "1000");
+  assert.equal(totals.costConstruction, "880"); // 諸経費込み (R-11)
+  assert.equal(totals.costSafety, "220");
+  assert.equal(totals.total8, "1100"); // 880 + 220
+  assert.equal(totals.profit9, "900"); // total1 2000 - total8 1100
 
   assert.throws(
     () => model.updateBlockHeader(projected[0].stableBlockId, { costCategory: "給与" }),
@@ -395,14 +423,15 @@ test("projection feeds summary from active blocks only; header patches are guard
   );
 });
 
-test("Q8/M3: uniform-unit blocks pass through; any drift falls back to 式×1×計", () => {
+test("R-11/Q8/M3: 諸経費が計に乗るため実データは式×1×計; 諸経費0の微小額のみ数量×単価パススルー", () => {
   const projectedOf = (blocks) =>
     editableModel({
       blocks: blocks.map((block) => ({ costCategory: "施工", ...block })),
     }).projectionBlocks();
 
-  // Multi-row, same unit + same unit price → qty sums, 金額整合 holds:
-  // 250 + 150 = 400 = ROUND((2.5+1.5)×100).
+  // R-11 supersedes Q8 for real data: 単位・単価が揃うブロックでも、諸経費
+  // (明細×10%)が計に乗るため 数量×単価 ≠ 計 となり、金額整合ルールで
+  // 式×1×計 に落ちる。明細 250 + 150 = 400、諸経費 40 → 計 440。
   const [summed] = projectedOf([
     {
       detailRows: [
@@ -411,18 +440,16 @@ test("Q8/M3: uniform-unit blocks pass through; any drift falls back to 式×1×�
       ],
     },
   ]);
-  assert.equal(summed.mixedUnits, false);
-  assert.deepEqual(
-    [summed.unit, summed.quantity, summed.unitPrice, summed.total],
-    ["㎡", "4", "100", "400"],
-  );
+  assert.equal(summed.mixedUnits, true);
+  assert.equal("unit" in summed, false);
+  assert.equal(summed.total, "440");
   const [line] = regenerateSummaryCostLines([summed]);
-  assert.equal(line.summary_unit, "㎡");
-  assert.equal(line.summary_qty, "4");
-  assert.equal(line.summary_unit_price, "100");
-  assert.equal(line.summary_amount_excl_tax, "400");
+  assert.equal(line.summary_unit, "式");
+  assert.equal(line.summary_qty, "1");
+  assert.equal(line.summary_unit_price, "440");
+  assert.equal(line.summary_amount_excl_tax, "440");
 
-  // ％ rows keep the U19 formula through the passthrough consistency check.
+  // ％行のブロックも同様に諸経費が乗る: 明細 550、諸経費 55 → 計 605 → 式×1×計。
   const [percent] = projectedOf([
     {
       detailRows: [
@@ -430,9 +457,19 @@ test("Q8/M3: uniform-unit blocks pass through; any drift falls back to 式×1×�
       ],
     },
   ]);
-  assert.equal(percent.mixedUnits, false);
-  assert.equal(percent.quantity, "5.5");
-  assert.equal(percent.total, "550");
+  assert.equal(percent.mixedUnits, true);
+  assert.equal(percent.total, "605");
+
+  // 金額整合パススルー(Q8)が残る唯一のケース: 諸経費が四捨五入で 0 になる微小額。
+  // 明細 1×2 = 2、諸経費 ROUND(0.2)=0 → 計 2 = 数量×単価 なので 単位×数量×単価 表示。
+  const [tiny] = projectedOf([
+    { detailRows: [{ name1: "端数", unit: "式", quantity: "1", unitPrice: "2" }] },
+  ]);
+  assert.equal(tiny.mixedUnits, false);
+  assert.deepEqual(
+    [tiny.unit, tiny.quantity, tiny.unitPrice, tiny.total],
+    ["式", "1", "2", "2"],
+  );
 
   // Every drift case falls back to Q8 mixed = 式 × 1 × 計.
   const mixedCases = {
@@ -455,7 +492,7 @@ test("Q8/M3: uniform-unit blocks pass through; any drift falls back to 式×1×�
       detailRows: [{ name1: "a", quantity: "1", unitPrice: "100" }],
     },
     "manual footer amount joins the total": {
-      overhead: "300",
+      insurance: "300",
       detailRows: [{ name1: "a", unit: "㎡", quantity: "10", unitPrice: "80" }],
     },
     // Per-row ROUND drift: 30 + 30 = 60 ≠ ROUND(0.6×101) = 61 (金額整合).
@@ -485,6 +522,9 @@ test("App 1 detail tab renders jy2-* block editor wired to the summary refresh",
   assert.match(source, /jy2-block-no/);
   assert.match(source, /jy2-footer-row/);
   assert.match(source, /jy2-block-total-row/);
+  // R-11(案B): 諸経費行に根拠(明細合計 ×率%)を行内表示。
+  assert.match(source, /jy2-footer-basis/);
+  assert.match(source, /明細合計 ×\$\{footerRow\.ratePercent\}%/);
   assert.match(source, /jy2-warning/);
   assert.match(source, /createDetailBlockModel/);
   assert.match(source, /jy2RenderDetailPane/);

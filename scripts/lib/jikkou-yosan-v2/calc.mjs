@@ -80,6 +80,15 @@ export function blockTotals({
   };
 }
 
+// R-11 (依頼者回答 2026-07-26): 諸経費 = ROUND(明細金額合計 × 率, 0)。
+// 「上段の各経費の合計の10%」= 直上の明細行合計の10%。明細金額が1つも無い
+// ときは空欄（null）。率は 0.1 を既定とする（諸経費率10%）。
+export function overheadFromDetails(detailAmounts, rate) {
+  const present_ = amounts(detailAmounts).filter((value) => present(value));
+  if (present_.length === 0) return null;
+  return round(multiply(sum(present_), rate), 0);
+}
+
 export function taxInclusive(exclusiveAmount, taxRate) {
   return round(multiply(exclusiveAmount, add("1", taxRate)), 0);
 }

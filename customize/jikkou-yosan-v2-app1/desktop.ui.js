@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-26-ver02-salary-name-space
+  // @JY_V2_BUILD 2026-07-26-ver02-overhead-auto-10pct
   // U34: 保存・セル編集の再描画／reload でページ上部へ跳ばない（縦・横位置を維持）
 
   const JY2_STYLE_ID = "jy2-shell-style";
@@ -336,6 +336,7 @@
       ".jy2-footer-row .jy2-footer-label .jy2-th-label{white-space:nowrap;font-size:12px;text-align:left}",
       ".jy2-footer-row .jy2-num,.jy2-footer-row .jy2-amount{min-width:9.5rem;width:9.5rem;max-width:12rem;white-space:nowrap;padding:4px 8px;box-sizing:border-box}",
       ".jy2-footer-row .jy2-input{width:100%;min-width:8.5rem;box-sizing:border-box;padding:4px 6px;font-size:13px;text-align:right}",
+      ".jy2-footer-row .jy2-footer-basis{color:#64748b;font-size:11px;white-space:nowrap;text-align:left;padding:4px 8px}",
       ".jy2-detail-table th:nth-child(7),.jy2-detail-table td.jy2-amount{min-width:7.5rem}",
       ".jy2-warning{color:#b91c1c;font-size:12px;margin:4px 0;font-weight:600}",
       ".jy2-retired-tag{color:#b91c1c;font-weight:700}",
@@ -3310,6 +3311,40 @@
           : "jy2-footer-row";
       tr.dataset.rowKind = kind;
       tr.dataset.rowKey = footerRow.rowKey;
+
+      // R-11(案B): 諸経費は自動(明細合計×10%・読取専用)。根拠を行内に表示する。
+      // 列対応: ラベル(4列) | 数量列=率% | 単価列=明細合計 | 金額列=諸経費 | 備考=式.
+      if (kind === "overhead") {
+        const label = documentRef.createElement("td");
+        label.className = "jy2-footer-label";
+        jy2AppendModeLabel(
+          documentRef,
+          label,
+          `${BLOCK_FOOTER_LABELS[kind]}（自動）`,
+        );
+        label.colSpan = 4;
+        tr.appendChild(label);
+        tr.appendChild(
+          jy2Cell(documentRef, "td", "jy2-num", `${footerRow.ratePercent}%`),
+        );
+        tr.appendChild(
+          jy2Cell(documentRef, "td", "jy2-num", jy2Comma(footerRow.base)),
+        );
+        tr.appendChild(
+          jy2Cell(documentRef, "td", "jy2-amount", jy2Comma(footerRow.amount)),
+        );
+        const basis = jy2Cell(
+          documentRef,
+          "td",
+          "jy2-footer-basis",
+          `明細合計 ×${footerRow.ratePercent}%`,
+        );
+        basis.colSpan = 2;
+        tr.appendChild(basis);
+        body.appendChild(tr);
+        continue;
+      }
+
       const manual = MANUAL_FOOTER_KINDS.includes(kind);
       const footerMode = manual ? "入力" : "自動";
       const label = documentRef.createElement("td");
