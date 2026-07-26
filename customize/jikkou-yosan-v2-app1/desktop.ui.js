@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-26-ver02-worktype-list-order
+  // @JY_V2_BUILD 2026-07-26-ver02-rental-11600
   // U34: 保存・セル編集の再描画／reload でページ上部へ跳ばない（縦・横位置を維持）
 
   const JY2_STYLE_ID = "jy2-shell-style";
@@ -853,7 +853,7 @@
   const JY2_NAME_HIERARCHY = Object.freeze({
   "source": "C:/tmp/実行予算ver2/内訳で使うコード表.xlsx",
   "sourceFile": "内訳で使うコード表.xlsx",
-  "generatedAt": "2026-07-26T10:49:10",
+  "generatedAt": "2026-07-26T10:52:10",
   "labels": {
     "name1": "費目",
     "name2": "種別（補助）",
@@ -927,6 +927,9 @@
     "（塗）重機誘導員"
   ],
   "workTypeOrderNote": "依頼者確認リスト順（現場管理費→予備費→保安費）。Excel名（塗）追加工事？はコード表表記のまま",
+  "codeOverridesByName": {
+    "（塗）レンタル": "11600"
+  },
   "byWorkTypeCode": {
     "10100": {
       "workTypeCode": "10100",
@@ -994,30 +997,22 @@
       "workTypeName": "（塗）足場工事",
       "sectionA": "施工費",
       "himoku": [
+        "材料費",
+        "労務費",
         "外注費",
-        "仮設機械経費"
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
       ],
       "himokuDefault": "外注費",
       "typesByHimoku": {
-        "外注費": [],
-        "仮設機械経費": [
-          "仮設材",
-          "建設機械",
-          "保安用機材類",
-          "その他"
-        ]
+        "外注費": []
       },
-      "allTypes": [
-        "仮設材",
-        "建設機械",
-        "保安用機材類",
-        "その他"
-      ],
-      "allDefinitions": [
-        "社外から借り受けた仮設ハウスや仮設トイレ、重機、機械器具、仮設用資材などの賃借料や",
-        "運搬費"
-      ],
-      "constructionMenu": false
+      "allTypes": [],
+      "allDefinitions": [],
+      "constructionMenu": true
     },
     "10400": {
       "workTypeCode": "10400",
@@ -1272,6 +1267,34 @@
       "himokuCodes": {
         "外注労務費": "211"
       },
+      "constructionMenu": false
+    },
+    "11600": {
+      "workTypeCode": "11600",
+      "workTypeName": "（塗）レンタル",
+      "sectionA": "施工費",
+      "himoku": [
+        "仮設機械経費"
+      ],
+      "himokuDefault": "仮設機械経費",
+      "typesByHimoku": {
+        "仮設機械経費": [
+          "仮設材",
+          "建設機械",
+          "保安用機材類",
+          "その他"
+        ]
+      },
+      "allTypes": [
+        "仮設材",
+        "建設機械",
+        "保安用機材類",
+        "その他"
+      ],
+      "allDefinitions": [
+        "社外から借り受けた仮設ハウスや仮設トイレ、重機、機械器具、仮設用資材などの賃借料や",
+        "運搬費"
+      ],
       "constructionMenu": false
     },
     "11700": {
@@ -2322,7 +2345,7 @@
       "constructionMenu": false
     },
     "（塗）レンタル": {
-      "workTypeCode": "10300",
+      "workTypeCode": "11600",
       "workTypeName": "（塗）レンタル",
       "sectionA": "施工費",
       "himoku": [
@@ -3095,6 +3118,7 @@
     "11300": "保安",
     "11400": "保安",
     "11500": "保安",
+    "11600": "施工",
     "11700": "施工",
     "11800": "施工",
     "11900": "施工",
@@ -3192,8 +3216,7 @@
     const name = String((block && block.workTypeName) || "").trim();
     const byCode = JY2_NAME_HIERARCHY.byWorkTypeCode || {};
     const byName = JY2_NAME_HIERARCHY.byWorkTypeName || {};
-    // 名称優先: Excel コード表はコード 10300 が足場工事／レンタルで重複しており、
-    // コード先引きだと併合エントリになるため、名称で正確に引く。
+    // 名称優先（同一コードの衝突や誤記訂正後も名称で正確に引く）。
     if (name && byName[name]) return byName[name];
     if (code && byCode[code]) return byCode[code];
     return null;
@@ -4016,21 +4039,24 @@
   }
 
   // システム工種／工種番号の並びをコード表の依頼者確認リスト順にする。
-  // マスタアプリ由来の候補に、階層マスタの欠落分（例: 予備費）を補完する。
+  // 階層マスタのコードを優先（例: レンタル=11600＝Excel誤記10300の訂正）。
   function jy2ApplyWorkTypeCodeTableOrder(lists) {
     const order = Array.isArray(JY2_NAME_HIERARCHY.workTypeNameOrder)
       ? JY2_NAME_HIERARCHY.workTypeNameOrder
       : Object.keys(JY2_NAME_HIERARCHY.byWorkTypeName || {});
     const byName = JY2_NAME_HIERARCHY.byWorkTypeName || {};
+    const seenCodes = new Set();
     for (const name of order) {
       if (!name) continue;
       if (!lists.workTypeNames.includes(name)) lists.workTypeNames.push(name);
       const entry = byName[name];
       const code = entry && entry.workTypeCode ? String(entry.workTypeCode).trim() : "";
       if (code) {
-        if (lists.workTypeByName[name] == null) lists.workTypeByName[name] = code;
-        if (!lists.workTypeCodes.includes(code)) lists.workTypeCodes.push(code);
-        if (!lists.workTypeByCode[code]) lists.workTypeByCode[code] = name;
+        lists.workTypeByName[name] = code;
+        if (!seenCodes.has(code)) {
+          lists.workTypeByCode[code] = name;
+          seenCodes.add(code);
+        }
       }
     }
     const rank = new Map(order.map((n, i) => [n, i]));

@@ -299,6 +299,21 @@ expectedOrder.push(
   "（塗）その他保安費",
   "（塗）重機誘導員",
 );
+// 依頼者訂正: （塗）レンタルは Excel=10300 誤記 → 11600
+const rental = (data.byWorkTypeName || {})["（塗）レンタル"];
+if (!rental || rental.workTypeCode !== "11600") {
+  problems.push("[訂正] （塗）レンタルの workTypeCode が 11600 でない");
+}
+if ((data.byWorkTypeCode || {})["11600"]?.workTypeName !== "（塗）レンタル") {
+  problems.push("[訂正] byWorkTypeCode[11600] が（塗）レンタルでない");
+}
+if ((data.byWorkTypeCode || {})["10300"]?.workTypeName === "（塗）レンタル") {
+  problems.push("[訂正] byWorkTypeCode[10300] にレンタルが残っている");
+}
+if ((data.codeOverridesByName || {})["（塗）レンタル"] !== "11600") {
+  problems.push("[訂正] codeOverridesByName にレンタル→11600 がない");
+}
+
 const actualOrder = data.workTypeNameOrder || [];
 if (JSON.stringify(actualOrder) !== JSON.stringify(expectedOrder)) {
   problems.push("[順序] workTypeNameOrder が依頼者確認リストと不一致");

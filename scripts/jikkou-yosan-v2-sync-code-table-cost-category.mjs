@@ -62,6 +62,10 @@ for r in range(2, ws.max_row + 1):
     if code.endswith(".0"):
         code = code[:-2]
     name = str(name_raw).strip() if name_raw is not None else ""
+    # 依頼者訂正: （塗）レンタルの Excel コード 10300 は誤記。正は 11600。
+    CODE_OVERRIDES_BY_NAME = {"（塗）レンタル": "11600"}
+    if name in CODE_OVERRIDES_BY_NAME:
+        code = CODE_OVERRIDES_BY_NAME[name]
     section = last
     SECTION_TO_CATEGORY = ${JSON.stringify(SECTION_TO_CATEGORY)}
     cat = SECTION_TO_CATEGORY.get(section)

@@ -47,6 +47,8 @@ const checks = [
   ['候補順はコード表順', /五十音ソートはしない/],
   ['システム工種リスト順', /jy2ApplyWorkTypeCodeTableOrder/],
   ['workTypeNameOrder', /workTypeNameOrder/],
+  ['レンタルは11600', /"11600"\s*:\s*\{[\s\S]{0,160}"workTypeName":\s*"（塗）レンタル"/],
+  ['区分マップに11600', /"11600"\s*:\s*"施工"/],
 ];
 
 const missing = checks.filter(([, re]) => !re.test(source)).map(([name]) => name);
@@ -55,4 +57,4 @@ if (missing.length) {
   process.exit(1);
 }
 
-console.log('[verify-jikkou-v2-ui-smoke] OK + worktype-list-order');
+console.log('[verify-jikkou-v2-ui-smoke] OK + rental-11600');

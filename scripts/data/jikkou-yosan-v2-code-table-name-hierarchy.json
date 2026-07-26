@@ -1,7 +1,7 @@
 {
   "source": "C:/tmp/実行予算ver2/内訳で使うコード表.xlsx",
   "sourceFile": "内訳で使うコード表.xlsx",
-  "generatedAt": "2026-07-26T10:49:10",
+  "generatedAt": "2026-07-26T10:52:10",
   "labels": {
     "name1": "費目",
     "name2": "種別（補助）",
@@ -75,6 +75,9 @@
     "（塗）重機誘導員"
   ],
   "workTypeOrderNote": "依頼者確認リスト順（現場管理費→予備費→保安費）。Excel名（塗）追加工事？はコード表表記のまま",
+  "codeOverridesByName": {
+    "（塗）レンタル": "11600"
+  },
   "byWorkTypeCode": {
     "10100": {
       "workTypeCode": "10100",
@@ -142,30 +145,22 @@
       "workTypeName": "（塗）足場工事",
       "sectionA": "施工費",
       "himoku": [
+        "材料費",
+        "労務費",
         "外注費",
-        "仮設機械経費"
+        "工具･機械使用料",
+        "現場経費",
+        "諸経費",
+        "法定福利費",
+        "予備費"
       ],
       "himokuDefault": "外注費",
       "typesByHimoku": {
-        "外注費": [],
-        "仮設機械経費": [
-          "仮設材",
-          "建設機械",
-          "保安用機材類",
-          "その他"
-        ]
+        "外注費": []
       },
-      "allTypes": [
-        "仮設材",
-        "建設機械",
-        "保安用機材類",
-        "その他"
-      ],
-      "allDefinitions": [
-        "社外から借り受けた仮設ハウスや仮設トイレ、重機、機械器具、仮設用資材などの賃借料や",
-        "運搬費"
-      ],
-      "constructionMenu": false
+      "allTypes": [],
+      "allDefinitions": [],
+      "constructionMenu": true
     },
     "10400": {
       "workTypeCode": "10400",
@@ -420,6 +415,34 @@
       "himokuCodes": {
         "外注労務費": "211"
       },
+      "constructionMenu": false
+    },
+    "11600": {
+      "workTypeCode": "11600",
+      "workTypeName": "（塗）レンタル",
+      "sectionA": "施工費",
+      "himoku": [
+        "仮設機械経費"
+      ],
+      "himokuDefault": "仮設機械経費",
+      "typesByHimoku": {
+        "仮設機械経費": [
+          "仮設材",
+          "建設機械",
+          "保安用機材類",
+          "その他"
+        ]
+      },
+      "allTypes": [
+        "仮設材",
+        "建設機械",
+        "保安用機材類",
+        "その他"
+      ],
+      "allDefinitions": [
+        "社外から借り受けた仮設ハウスや仮設トイレ、重機、機械器具、仮設用資材などの賃借料や",
+        "運搬費"
+      ],
       "constructionMenu": false
     },
     "11700": {
@@ -1470,7 +1493,7 @@
       "constructionMenu": false
     },
     "（塗）レンタル": {
-      "workTypeCode": "10300",
+      "workTypeCode": "11600",
       "workTypeName": "（塗）レンタル",
       "sectionA": "施工費",
       "himoku": [

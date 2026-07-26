@@ -384,7 +384,7 @@
       "item_group": "施工費",
       "expense_code": "100",
       "expense_name": "仮設機械経費",
-      "work_type_code": "10300",
+      "work_type_code": "11600",
       "work_type_name": "（塗）レンタル",
       "sub_type_code": "",
       "sub_type_name": "仮設材",

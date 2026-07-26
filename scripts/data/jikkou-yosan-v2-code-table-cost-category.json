@@ -1,7 +1,7 @@
 {
   "source": "C:/tmp/実行予算ver2/内訳で使うコード表.xlsx",
   "sourceFile": "内訳で使うコード表.xlsx",
-  "generatedAt": "2026-07-26T08:43:34",
+  "generatedAt": "2026-07-26T10:52:11",
   "rule": {
     "保安費": "保安",
     "施工費": "施工",
@@ -69,6 +69,10 @@
     "11500": {
       "sectionA": "保安費",
       "costCategory": "保安"
+    },
+    "11600": {
+      "sectionA": "施工費",
+      "costCategory": "施工"
     },
     "11700": {
       "sectionA": "現場経費",

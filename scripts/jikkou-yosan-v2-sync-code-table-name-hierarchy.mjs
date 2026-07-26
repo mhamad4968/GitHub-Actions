@@ -58,6 +58,10 @@ defs_by_type = {}
 section_to_himoku = {}
 # Excel 行の初出順（システム工種リストのベース）
 excel_work_type_name_order = []
+# 依頼者訂正: Excel 誤記の工種番号を名称キーで上書きする。
+CODE_OVERRIDES_BY_NAME = {
+    "（塗）レンタル": "11600",  # Excel=10300 は足場工事との重複誤記
+}
 
 def ensure_work(bucket, key, *, code, name, section):
     if key not in bucket:
@@ -92,6 +96,9 @@ for r in range(2, ws.max_row + 1):
     type_name = cell(r, 7)
     definition = cell(r, 8)
 
+    if wname in CODE_OVERRIDES_BY_NAME:
+        code = CODE_OVERRIDES_BY_NAME[wname]
+
     if not code and not wname and not himoku and not type_name and not definition:
         continue
 
@@ -114,8 +121,8 @@ for r in range(2, ws.max_row + 1):
 
     targets = []
     if code or wname:
-        # by_code はコード単位（Excel の 10300 重複＝足場工事/レンタルは併合される）。
-        # by_name は名称単位の独立エントリ（UI は名称優先で解決し混線を避ける）。
+        # by_code はコード単位、by_name は名称単位。
+        # （塗）レンタルは CODE_OVERRIDES で 11600 に分離済み（Excel 誤記 10300 を訂正）。
         if code:
             entry = ensure_work(by_code, code, code=code, name=wname, section=last_section or "")
             targets.append(entry)
@@ -262,6 +269,7 @@ out = {
     "constructionRule": "sectionA=施工費 かつ Excel費目=外注費のみ（契約工事型）",
     "workTypeNameOrder": work_type_name_order,
     "workTypeOrderNote": "依頼者確認リスト順（現場管理費→予備費→保安費）。Excel名（塗）追加工事？はコード表表記のまま",
+    "codeOverridesByName": CODE_OVERRIDES_BY_NAME,
     "byWorkTypeCode": by_code,
     "byWorkTypeName": {
         k: {
