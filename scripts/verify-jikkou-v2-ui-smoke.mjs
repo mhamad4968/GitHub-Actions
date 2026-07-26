@@ -33,6 +33,11 @@ const checks = [
   ['諸経費根拠の行内表示(案B)', /jy2-footer-basis/],
   ['諸経費単価注意書き', /諸経費の単価は明細金額の合計です/],
   ['諸経費根拠文言', /明細金額合計 ×\$\{footerRow\.ratePercent\}%/],
+  ['費目列ラベル', /費目（選択）/],
+  ['種別（補助）列ラベル', /種別（補助）（選択）/],
+  ['定義及び品名列ラベル', /定義及び品名（入力）/],
+  ['コード表階層マスタ', /JY2_NAME_HIERARCHY/],
+  ['費目自動セット', /jy2ApplyHimokuDefaultToDetails/],
 ];
 
 const missing = checks.filter(([, re]) => !re.test(source)).map(([name]) => name);
@@ -41,4 +46,4 @@ if (missing.length) {
   process.exit(1);
 }
 
-console.log('[verify-jikkou-v2-ui-smoke] OK datalist + scroll-preserve + worktype-cost-auto + salary-name-space + overhead-basis-note');
+console.log('[verify-jikkou-v2-ui-smoke] OK + overhead-basis-note + name-hierarchy');
