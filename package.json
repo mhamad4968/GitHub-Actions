@@ -549,6 +549,7 @@
     "rag:ingest:troubleshooting": "cp docs/troubleshooting.md .rag/extra-docs/troubleshooting.md 2>/dev/null && /home/mhamada202408224/.nvm/versions/node/v24.14.1/bin/npx --yes mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest .rag/extra-docs/troubleshooting.md",
     "rag:ingest:sessions:recent": "node scripts/rag-ingest-sessions.mjs --days=7 && /home/mhamada202408224/.nvm/versions/node/v24.14.1/bin/npx --yes mcp-local-rag --db-path .rag/lancedb --cache-dir .rag/models ingest .rag/extra-docs/sessions/",
     "rag:ingest:all": "npm run rag:ingest:rules && npm run rag:ingest:troubleshooting && npm run rag:ingest:sessions:recent",
+    "rag:ingest:constitution-aide-trial": "node scripts/rag-ingest-constitution-aide-trial.mjs",
     "restore:wiped": "node scripts/restore-wiped.mjs",
     "restore:wiped:dry": "node scripts/restore-wiped.mjs --dry",
     "watcher:start": "nohup node scripts/file-watcher.mjs > logs/file-watcher/watcher.log 2>&1 &",

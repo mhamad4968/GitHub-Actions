@@ -1,22 +1,23 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-25 21:00 JST — 夜枠 CLOSE。反省改善P1–P7実装済。明日=756微調整。
+**最終更新**: 2026-07-26 19:47 JST — 夕枠 CLOSE。756 U35/U36 LIVE・夕反省GO実装済・RAG aide試行開始。
 
-**Git**: **`e6e6eef4`** = `origin/main` — push 済
+**Git**: **（close-git 後 tip）** = `origin/main` — push 予定
 
-**本日状態（要約）**: App **756** LIVE=`2026-07-25-ver02-preserve-scroll` rev**125**（浜田確認済）。反省改善P1–P7実装済。LOTO7 B+C は `external/loto7/` がGit正本、Desktopは実行ミラー。735/736書込禁止。
+**本日状態（要約）**: App **756** LIVE=`2026-07-26-ver02-vendor-list-only` rev**154**（U35着手日警告／U36取引先リストのみ・SPEC同期済）。夕反省GO（R63/medal/#CON）実装・push済。RAG憲法・運用 aide 試行（AIチーム・〜8/9・CIO判定委任）。LOTO7 B+C は `external/loto7/` がGit正本。735/736書込禁止。
 
 **継続メモ（次セッション -0）**:
-1. **明日（優先）**: [App756](https://jbis-kintone.cybozu.com/k/756/) 再確認して微調整
+1. [App756](https://jbis-kintone.cybozu.com/k/756/) 運用観察・依頼あれば微調整
 2. **7/27（lab）**: 確認パック送付（浜田「送ってよい」後）。正本 `docs/plans/2026-07-25-jikkou-requester-confirm-pack-pre-0727.md`
-3. LOTO7: 運用観察（`external/loto7/backtest_report.py`／抽選後 fetch）。追加改修は依頼時
+3. RAG aide 試行観察（`docs/runbooks/rag-constitution-aide-trial.md`）。継続／縮小／終了は CIO 判定
+4. LOTO7: 運用観察。追加改修は依頼時
 
 **GO待ち**: 確認パック送付＝浜田一言。リストJSON追記＝依頼者回答 or 浜田GO。
 
-**次の1手**: 明日=756 再確認・微調整。lab次=7/27確認パック送付。
+**次の1手**: 項番 -0 で浜田確認。lab控=7/27確認パック送付。
 
-**調査正本**: SPEC C16/U26-2/U33/U34・BUILD preserve-scroll rev125。LOTO7: `docs/plans/2026-07-25-loto7-bc-improvement-spec.md` + `external/loto7/`。
+**調査正本**: SPEC U35/U36・BUILD vendor-list-only rev154。RAG試行: `docs/runbooks/rag-constitution-aide-trial.md`。LOTO7: `docs/plans/2026-07-25-loto7-bc-improvement-spec.md` + `external/loto7/`。
 
 **観測期間**: **H9/△2**: metricsEligibleAfter=**2026-07-18** · reviewDate=**2026-07-25** · early GREEN/降格 **禁止**
 
@@ -36,7 +37,7 @@
 | **677–679** | 触らない |
 | **SKYSEA** | 8/3 問い合わせまで実PC配信禁止 |
 | **736** | 現行版保持・Ver.02 後も触らない |
-| **756/757/758** | LIVE rev125（preserve-scroll）・明日微調整・残R-11/12/13・Excel |
+| **756/757/758** | LIVE rev154（vendor-list-only）・残R-11/12/13・Excel |
 | **712** | 削除済 — deploy 禁止 |
 ## セッション切替後の自律復元（Lifecycle v2 鏡像）
 
@@ -48,9 +49,15 @@
 
 <!-- archive: chat-sessions/checkpoints/checkpoint-archive-2026-07-22.md -->
 
-## 2026-07-25
+## 2026-07-26
 
-### 2026-07-25 夜（本セッション）
+### 2026-07-26 夕（本セッション CLOSE）
+- **756**: U35（着手日＞竣工日・ヘッダ警告／版確定不可）rev**153** → U36（取引先リストのみ）rev**154** LIVE。SPEC草案 U3/U4/U35/U36 同期済（先行 commit）
+- **夕反省GO**: R63 dirty block / medal mismatch exit1 / #CON-01/02 等実装・push済（`e6e6eef4` 系）
+- **RAG aide 試行**: AIチーム 1–2週・正本 `docs/runbooks/rag-constitution-aide-trial.md`・判定は CIO 委任。`mcp.json` rag を Windows 正本 `/mnt/c/.../kintone-ai-lab` に再ターゲット（**MCP再起動要**）
+- 確認パック DOCX レビュー（施工部向け・1件ずつ）継続メモのみ
+
+### 2026-07-25 夜（前セッション）
 - **756**: C16列幅 / U27・U33空白視覚 / U26-2 datalist / U34スクロール維持 → LIVE rev**125** `preserve-scroll`（浜田確認OK）
 - **LOTO7**: B+C（walk-forward・アンサンブル再設計・対極戦略）。KPI=平均一致/P(k≥4)。`external/loto7/`をGit正本化
 - **反省改善 P1–P7**: BUILD/UI deploy前検査、締めメタ1commit、Lifecycle生成、UI受入3行、LOTO7 Git化、報告全文軽量化を実装

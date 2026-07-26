@@ -85,7 +85,7 @@ pre-implement-gate → tool:route → §50-3-8（該当時）→ MCP/npm 実行 
 | design | figma | figma, colors-fonts |
 | visualization | visual-diagram | **openrouter**（V1 gpt-4.1-nano）, figma fallback |
 | **implementation** | **grok-verify-loop** | **Grok Subagent** + eslint-mcp / kintone-schema-mcp（read-only） |
-| research | internal-rag | rag, repo-tree |
+| research | internal-rag | rag (`query_documents`), repo-tree |
 
 ---
 

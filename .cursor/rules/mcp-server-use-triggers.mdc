@@ -47,7 +47,7 @@ globs: "**/*"
 - **user-playwright**: **ログイン後 UI・E2E・実画面 DOM**が必要なとき（kintone 画面・自社アプリ）。
 - **shadcn-ui**（`@jpisnice/shadcn-ui-mcp-server`）: **Shadcn／Radix 系コンポーネント**の追加・変更で、**現行の使い方・API**を正にしたいとき（詳細運用は **`mcp-frontend-shadcn-chrome.mdc`**）。
 - **chrome-devtools**（`chrome-devtools-mcp`）: **フロントのバグ調査・表示・コンソール**が主題のとき。**実ブラウザの事実**を取る（Playwright との使い分け: E2E／ログイン後画面なら Playwright、DevTools プロトコルで深掘りするなら本サーバも検討）。
-- **user-rag**: **`kintone-ai-lab` 内ドキュメント**の根拠検索（TSB / 手順 / spec）。憲法 §50 系と併用。
+- **user-rag**: **`kintone-ai-lab` 内ドキュメント**の根拠検索（TSB / 手順 / spec）。憲法 §50 系と併用。**2026-07-26〜試行**: ルール／夕反省／runbook 断定前は `query_documents` → **正本 Read**（RAG は aide のみ・権威禁止）。正本 `docs/runbooks/rag-constitution-aide-trial.md`／再 ingest `npm run rag:ingest:constitution-aide-trial`。
 - **repo-tree**（`@andredezzy/deep-directory-tree-mcp`）: **リポ構造の俯瞰**・depth 指定ツリー（画像 MCP 代替・2026-05-29）。
 - **eslint-mcp**（`@eslint/mcp`）: **lint 実行・fix 候補・品質監査**（JS/TS 変更後の客体検証）。
 - **context7**（`https://mcp.context7.com/mcp`）: **kintone JS API / React / Tailwind / shadcn** 等の **現行ライブラリ docs** が主題のとき（WebSearch の前に試す。プロンプト末尾 `use context7` も可）。

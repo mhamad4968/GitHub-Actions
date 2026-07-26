@@ -77,7 +77,8 @@
         "cio-composer-escalation-interlock.mdc",
         "composer-mcp-audit-gate.mdc",
         "preflight-checklist.mdc",
-        "jikkou-yosan-v2-ui-chrome.mdc"
+        "jikkou-yosan-v2-ui-chrome.mdc",
+        "ui-acceptance-smoke.mdc"
       ]
     },
     {

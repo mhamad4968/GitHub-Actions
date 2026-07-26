@@ -385,14 +385,14 @@
       "id": "internal-rag-research",
       "category": "research",
       "phase": ["WORK", "ORIENT"],
-      "keywords": ["spec", "手順", "TSB", "社内ドキュ", "横断調査", "RAG"],
+      "keywords": ["spec", "手順", "TSB", "社内ドキュ", "横断調査", "RAG", "夕反省", "憲法ルール"],
       "priority": 10,
       "mcp": [
-        { "server": "rag", "tools": ["search"], "priority": 10 },
+        { "server": "rag", "tools": ["query_documents"], "priority": 10 },
         { "server": "repo-tree", "tools": ["get_directory_tree"], "priority": 20 }
       ],
-      "npm": ["verify:rag-mirror-canonical"],
-      "runbook": "docs/mcp-status.md",
+      "npm": ["verify:rag-mirror-canonical", "rag:ingest:constitution-aide-trial"],
+      "runbook": "docs/runbooks/rag-constitution-aide-trial.md",
       "secondReviewer": null,
       "verify": ["verify:rag-mirror-canonical"]
     },

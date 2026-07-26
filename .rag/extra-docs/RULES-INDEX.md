@@ -29,7 +29,7 @@
 
 ## Cursor ルール逆引き（自動生成・編集禁止）
 
-**更新**: `npm run rules:sync-mdc-index`（2026-07-22 JST）
+**更新**: `npm run rules:sync-mdc-index`（2026-07-26 JST）
 
 | トピック | ファイル | description（frontmatter） |
 |----------|----------|---------------------------|
@@ -66,6 +66,7 @@
 | customize deploy | [`cio-composer-escalation-interlock.mdc`](.cursor/rules/cio-composer-escalation-interlock.mdc) | 方針1 — Composer verify 連続失敗時の DeepSeek 自律エスカレーション §50-3-11 第6層 |
 | customize deploy | [`composer-mcp-audit-gate.mdc`](.cursor/rules/composer-mcp-audit-gate.mdc) | 方式B — Composer 2.5 必須 MCP 監査（eslint-mcp / repo-tree）§50-3-11 第4ステップ |
 | customize deploy | [`preflight-checklist.mdc`](.cursor/rules/preflight-checklist.mdc) | deploy 前 preflight — 正本 cio-discipline-always + push-deploy-quality-gates-v2 |
+| customize deploy | [`jikkou-yosan-v2-ui-chrome.mdc`](.cursor/rules/jikkou-yosan-v2-ui-chrome.mdc) | Ver.02 App756 UI クロム不変条件（overflow×sticky / th display / SPEC同一ターン） |
 | MCP・ツール | [`mcp-server-use-triggers.mdc`](.cursor/rules/mcp-server-use-triggers.mdc) | MCP §50 — 先出し義務・1行トリガー表（descriptor は mcp-tool-discipline） |
 | MCP・ツール | [`mcp-tool-discipline.mdc`](.cursor/rules/mcp-tool-discipline.mdc) | MCP descriptor 必読・認証順序・curl 優先度 + アイドル時間の有効活用（メンテ枠） |
 | MCP・ツール | [`mcp-frontend-shadcn-chrome.mdc`](.cursor/rules/mcp-frontend-shadcn-chrome.mdc) | Shadcn UI MCP を必ず参照・Chrome DevTools MCP で事実確認・不明時は関連 MCP で先に調査（mcp.json 同期手順付き） |
@@ -96,6 +97,7 @@
 | ドメイン特化・その他 | [`persist-policies.mdc`](.cursor/rules/persist-policies.mdc) | 恒久方針の永続化 — 正本は .rag/extra-docs/persist-policies.md |
 | ドメイン特化・その他 | [`spec-round-ai-agreement.mdc`](.cursor/rules/spec-round-ai-agreement.mdc) | 仕様ラウンド無条件合意・依頼者リスト4見出し（#R-SPEC-01/#R-REQ-01） |
 | ドメイン特化・その他 | [`constitution.mdc`](.cursor/rules/constitution.mdc) | 網羅統合版 — 憲法・索引・WORKFLOW・全mdc・予実・plans・chat・handoff・docs全（plans除く重複）・security-next・yojitsu README等（再生成=本スクリプト）。Cursor 常時枠の |
+| （未分類） | [`ui-acceptance-smoke.mdc`](.cursor/rules/ui-acceptance-smoke.mdc) | UI変更の受け入れ条件と最小スモークを先に固定する |
 
 索引: [`.cursor/rules/README.md`](.cursor/rules/README.md) / [`data/cursor-rules-topic-index.json`](data/cursor-rules-topic-index.json)
 
@@ -379,7 +381,7 @@ _他 107 件は `data/constitution-section-genre-map.json` を参照_
 | （Cursor）**`constitutional-focus-kintone-customize.mdc`** | **glob: `customize/**`** — §35-7 §50-3-8 §52・`kintone-apps.md` の追加想起（**alwaysApply: false**） |
 | （Cursor）**`constitutional-focus-yojitsu.mdc`** | **glob: `templates/yojitsu-budget-lite/**`** — §50-3-8 §41 §2 の追加想起（**alwaysApply: false**） |
 | （Cursor）**`constitutional-focus-github-workflows.mdc`** | **glob: `.github/workflows/**`** — §18 §52-8 §35-1 の追加想起（**alwaysApply: false**） |
-| （Cursor）**`mcp-server-use-triggers.mdc`** | **MCP サーバ選択（1 行トリガー）**＋**標準ツールだけで足りる前提禁止**（2026-05-02 / 2026-05-06）— GitHub・kintone 本番/開発/スペース・fetch・Tavily/DDG・Playwright・**shadcn-ui**・**chrome-devtools**・RAG・CVE/ニュース・markdownify・memory・sequential-thinking・OpenRouter（**`model` 必須**）。**descriptor 必読**は **`mcp-tool-discipline.mdc`**／**`MCPスキップ: 未接続` 貼付1行**は **`npm run mcp:chat-stamp`** または **sessionStart hook の `additional_context`** |
+| （Cursor）**`mcp-server-use-triggers.mdc`** | **MCP サーバ選択（1 行トリガー）**＋**標準ツールだけで足りる前提禁止**（2026-05-02 / 2026-05-06）— GitHub・kintone 本番/開発/スペース・fetch・Tavily/DDG・Playwright・**shadcn-ui**・**chrome-devtools**・RAG・CVE/ニュース・markdownify・memory・sequential-thinking・OpenRouter（**`model` 必須**）。**descriptor 必読**は **`mcp-tool-discipline.mdc`**／**`MCPスキップ: 未接続` 貼付1行**は **`npm run mcp:chat-stamp`** または **sessionStart hook の `additional_context`**。**2026-07-26**: RAG 憲法 aide 試行 `docs/runbooks/rag-constitution-aide-trial.md`（`npm run rag:ingest:constitution-aide-trial`） |
 | （Cursor）**`mcp-frontend-shadcn-chrome.mdc`** | **glob: `customize/**`・`*.tsx`・`*.jsx`**（2026-05-07）— **Shadcn UI MCP 優先**／**Chrome DevTools MCP** で FE 事実確認／**`mcp:sync-cursor-windows`**。チェックシートは **`SESSION-BOOTSTRAP-CHECKLIST.md` フェーズ 7 の 4a** |
 | §1 / §1-2 / §1-2-2 / §1-2-3 / §1-2-3-1 / §1-2-3-2 / §1-2-3-3 / §1-2-4 | 役割定義 + **最適モデル原則 / Opus 4.7 デフォルト枠**（§1-2 / 2026-04-26 R-3 改定 = 「Opus 統一」を「最適モデル」に転換 / 浜田指示「絶対にこのモデルを使うというこだわりはしない」/ 別モデルへの常時切替・レビュー用サブエージェント禁止は維持 / 例外は §1-2）+ **API 制限到達時の自動フォールバック禁止**（§1-2-2 / N-3 / N-4 で 4 択 A-D 提示の枠組み + §1-2-2-1 Cursor IDE 必須設定 = Q1 で 4 → 8 項目 + Browser Protection ON + MCP Tools Protection ON + Monthly Limit $1000 / TSB-019 連動）+ **Opus 内モデル使い分け**（§1-2-3 / N-5 / 既定 Extra High / Max Thinking は §47-A 100% 証明・設計判断・複雑バグ修正のみ）+ **AI 自己宣言義務**（§1-2-3-1 / P5-5 / タスク冒頭で `[§1-2-3 ティア判定: Extra High/Max Thinking]` を 1 行明示 = 形骸化対策 / F-13 教訓）+ **AI 自律モデル選択原則**（§1-2-3-2 / R-3 / 3 段階 L1 Composer 2 / L2 Extra High / L3 Max Thinking / 1 秒判定フロー / 不可逆操作は L3 強制 / silent fallback と区別 = ティア宣言で証跡 / F-14 対策 = Max Thinking 59.4% → 20-30% 想定）+ **CIO によるモデル最終判断**（§1-2-3-3 / 2026-04-29 / 浜田 CIO が明示したティアは §1-2-3-2 に優先 / 未指定時は §1-2-3-1/2）+ **クレジット予算管理 改定**（§1-2-4 / P5-5 / 月予算 $200+$1000 引上げ / 3 系統 (Total/API/On-Demand) / 70-80-85-95% 4 段階自発警告 / Spending スクショ抽出 / 朝報 §0 統合 / TSB-018/TSB-021 連動）|
 | §51 / §51-3 / §51-6 / §51-6-2 | **並列禁止 + セッション分割推奨 + AI 自律セッション切り命令権**（§51-3 並列禁止 / §51-6 提案レベル + **遵守事項 5** = 2026-04-29 切替直後 **`session:clock:set` 必須** + **`session:clock:web` URL をチャットに転記し浜田にブラウザで開くよう促す** / **§51-6-2 命令権** = 2026-04-26 R-4 / 浜田 10:30「セッションを切ることは重要 / 命令指示権限を与える」/ 6 つの自律発動条件 (4h / 200 tool call / 重作業完了直後 / コスト 2x / Tier B 直前 / API 100%) / 浜田却下時は §47-D で逆却下 / 引き継ぎを checkpoint-latest.md へ追記義務 / **次チャット初手で遵守事項 5**）|

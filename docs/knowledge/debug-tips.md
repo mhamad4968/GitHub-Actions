@@ -127,7 +127,7 @@
 **禁止**: customize/deploy 凍結中の無断 save・上位憲法 §50-3-11 非置換違反・本体単独完結
 **exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
 
-<!-- errors: npm run cio:session:cold-start` | npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `manda | npm run cio:report-verify-response -- --file <下書き>`**、締め・GO 仰ぎは **`npm run cio:c -->
+<!-- errors: exit1 / #CON-01/02 等実装・push済（`e6e6eef4` 系） | npm run cio:session:cold-start` | npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `manda -->
 
 
 ## [2026-07-25] セッション解体時知恵ストック

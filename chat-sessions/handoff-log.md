@@ -5112,3 +5112,19 @@ npm run cio:morning:ready
 **Git**: （close-git / heal で tip 同期）
 
 ---
+
+### 2026-07-26 JST — **2026-07-26 夕 CLOSE — 756 U35/U36 + RAG aide試行**
+
+**要約**: 756 LIVE vendor-list-only rev154（U35/U36）。夕反省GO実装済。RAG憲法aide試行開始（AIチーム・CIO判定委任）。mcp.json rag→Windows正本（MCP再起動要）。SPEC漏れなし。
+
+**次の1手**: 項番 -0 で浜田確認。lab控=7/27確認パック送付。
+
+**Git**: `42f0ed82` — 
+
+**BUILD**: 756=2026-07-26-ver02-vendor-list-only rev154
+
+**GO待ち**: 確認パック送付=浜田一言。リストJSON=依頼者or浜田GO
+
+**触らない**: 688 / 677-679 / SKYSEA / 735-736
+
+---
