@@ -14,7 +14,8 @@
  *   --require-v2           本文に V2 チェックシート（VERSION:2 + OK:yes）必須
  *   --require-ceo-block    `CEO-MINIMUM-ABSOLUTE-BASELINE.txt` の非空行すべてが本文に含まれること（hooks の detectCeoMinimumBlock と同旨）
  *   --require-a1           §P □A1＋`ダブルチェック（誰`＋`ダブルチェック要約:`（report-checksheet-validate と同旨の最小検査）
- *   --check-medal-line     🎖️ 行が last-tier lane と不一致なら WARN（exit 0）
+ *   --check-medal-line     🎖️ 行が last-tier lane と不一致なら NG（exit 1）— #S-REPORT-01
+ *                          lane 自動チェックのみのときは従来どおり WARN（exit 0）
  *
  * last-tier=strict 時は Goal/Touch/SPEC_TOUCHED 3 行を自動必須（D-1）
  */
@@ -205,9 +206,19 @@ function main() {
     const medalRe = /\[🎖️\s*本セッション割当\][^\n]*/u;
     const m = body.match(medalRe);
     if (m && m[0].trim() !== expected) {
-      console.warn(`[cio-chat-report-selfcheck] WARN medal-line mismatch (expected lane=${lane})`);
-      console.warn(`  expected: ${expected}`);
-      console.warn(`  found:    ${m[0].trim()}`);
+      const strictMedal = argv.includes('--check-medal-line');
+      const lines = [
+        `[cio-chat-report-selfcheck] ${strictMedal ? 'NG' : 'WARN'} medal-line mismatch (expected lane=${lane})`,
+        `  expected: ${expected}`,
+        `  found:    ${m[0].trim()}`,
+      ];
+      if (strictMedal) {
+        // #S-REPORT-01: 報告経路（--check-medal-line）は不一致で失敗
+        for (const line of lines) console.error(line);
+        ng++;
+      } else {
+        for (const line of lines) console.warn(line);
+      }
     }
   }
 

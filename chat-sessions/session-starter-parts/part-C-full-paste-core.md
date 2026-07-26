@@ -72,9 +72,9 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-07-21 自動更新）】
-- 進行中 plan: docs/plans/2026-07-21-jikkou-yosan-ver02-preimplementation-test-plan.md
+【今やってる主タスク（2026-07-26 自動更新）】
+- 進行中 plan: docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md
 - 当日コミット (上位 3):
-  - chore(checkpoint): sync Git line after close
   - chore(checkpoint): sync Git line after commit
-  - chore(handoff): align bridge gitHead
+  - chore: remove leftover one-off rebase helper scripts
+  - docs(jikkou-v2): align final 7/26 operating decisions

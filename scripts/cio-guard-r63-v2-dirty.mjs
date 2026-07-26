@@ -1,10 +1,12 @@
 /**
  * #D-R63-01 — 756/757/758 deploy 後、Ver.02 customize が dirty なら次作業を止める。
+ * #S-R63-01 — `--clear` は Ver.02 customize が dirty のとき拒否（commit 失敗直後の誤 clear 防止）。
  *
  * Usage:
  *   node scripts/cio-guard-r63-v2-dirty.mjs              # pending+dirty → exit 1
  *   node scripts/cio-guard-r63-v2-dirty.mjs --mark-pending 756
- *   node scripts/cio-guard-r63-v2-dirty.mjs --clear       # 強制クリア
+ *   node scripts/cio-guard-r63-v2-dirty.mjs --clear       # clean 時のみ stamp 削除
+ *   node scripts/cio-guard-r63-v2-dirty.mjs --clear --force  # dirty でも強制（緊急・浜田明示時のみ）
  */
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
@@ -66,8 +68,21 @@ if (args[0] === "--mark-pending") {
 }
 
 if (args[0] === "--clear") {
+  const dirtyOnClear = listDirtyV2();
+  const force = args.includes("--force");
+  if (dirtyOnClear.length > 0 && !force) {
+    console.error(
+      "[cio-guard-r63-v2-dirty] NG — #S-R63-01: Ver.02 customize が dirty のまま --clear 禁止。先に commit（緊急のみ --force）:",
+    );
+    for (const h of dirtyOnClear) console.error(`  ${h}`);
+    process.exit(1);
+  }
   if (fs.existsSync(stampPath)) fs.unlinkSync(stampPath);
-  console.log("[cio-guard-r63-v2-dirty] cleared pending stamp");
+  console.log(
+    force && dirtyOnClear.length > 0
+      ? "[cio-guard-r63-v2-dirty] cleared pending stamp (--force with dirty)"
+      : "[cio-guard-r63-v2-dirty] cleared pending stamp",
+  );
   process.exit(0);
 }
 

@@ -177,21 +177,20 @@ _（候補なし — metrics 閾値内 or 週上限）_
 | **A5** | 報告送信前に `cio:report-verify-response` で **medal-line 一致**まで取る |
 | **A6** | commit 失敗時は **R63 clear 禁止**。成功後の status 確認後のみ clear |
 
-### §3 ルール・脚本（承認待ち）
+### §3 ルール・脚本（GO・実装済 2026-07-26）
 
-| ID | カテゴリ | 提案（どの失敗を防ぐか） | 想定リスク | 翌朝自動実施可? |
+| ID | カテゴリ | 提案（どの失敗を防ぐか） | 想定リスク | 状態 |
 |---|---|---|---|---|
-| **#R-REVIEW-01** | R | 依頼者／施工部向け資料レビューは **1指摘＝1応答**。複数指摘を同一応答に載せたら差し戻し | 低 | 手動 |
-| **#R-UI-READ-01** | R | 区分・自動判定など「画面ラベル」系の断定は **update／commit 関数 Read 必須**（未読なら「未確認」と書く） | 低 | 手動 |
-| **#S-R63-01** | S | `cio-guard-r63-v2-dirty --clear` は **直近 deploy 関連 commit 成功（exit0）かつ working tree に当該 customize が無い**ときだけ許可。失敗直後 clear を exit 1 | 中 | ○ |
-| **#D-DOCX-01** | D | DOCX レビュー runbook に「粗抽出の数字／制御文字は画面突合必須」を1行追記 | 低 | 手動 |
-| **#S-REPORT-01** | S | `cio:report-verify-response` の medal-line mismatch を WARN から **exit 1（報告経路）**へ（または `--strict-medal` 既定ON） | 中 | ○ |
+| **#R-REVIEW-01** | R | 依頼者／施工部向け資料レビューは **1指摘＝1応答**。複数指摘を同一応答に載せたら差し戻し | 低 | **GO・実装済** |
+| **#R-UI-READ-01** | R | 区分・自動判定など「画面ラベル」系の断定は **update／commit 関数 Read 必須**（未読なら「未確認」と書く） | 低 | **GO・実装済** |
+| **#S-R63-01** | S | `cio-guard-r63-v2-dirty --clear` は dirty 時拒否（`--force` のみ例外） | 中 | **GO・実装済** |
+| **#D-DOCX-01** | D | DOCX レビュー runbook に「粗抽出の数字／制御文字は画面突合必須」を追記 | 低 | **GO・実装済** |
+| **#S-REPORT-01** | S | `cio:report-verify-response` の medal-line mismatch を **exit 1（報告経路）** | 中 | **GO・実装済** |
+| **#CON-01** | 憲法 | evening-reflection-scope に画面挙動断定条 | 低 | **GO・実装済** |
+| **#CON-02** | 憲法 | §1c に外部提出物レビュートリガー＋§50-3-8例外 | 中 | **GO・実装済** |
 
-> カテゴリ: **R**=ルール改善 / **S**=スクリプト改善 / **D**=ドキュメント / **C**=customize 改修(deploy 除く) / **K**=kintone API 操作
-
-### ユーザー応答方法
-- 個別: 「#R1 承認」「#S1 却下」「#D1 修正して: <修正内容>」
-- 一括: 「全部承認」「Rカテゴリだけ承認」
+**GO 証跡**: `docs/approved-changes/2026-07-26-evening-reflection-hamada-go.md`  
+**検証**: `npm run test:evening-improvements-2026-07-26`
 
 ---
 

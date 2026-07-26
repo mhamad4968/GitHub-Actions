@@ -161,6 +161,7 @@
     "verify:jikkou-v2-ui-spec-same-turn": "node scripts/verify-jikkou-v2-ui-spec-same-turn.mjs",
     "verify:session-close-handoff-freshness": "node scripts/verify-session-close-handoff-freshness.mjs",
     "test:evening-improvements-2026-07-23": "node scripts/test-evening-improvements-2026-07-23.mjs",
+    "test:evening-improvements-2026-07-26": "node scripts/test-evening-improvements-2026-07-26.mjs",
     "cio:guard-r63-v2": "node scripts/cio-guard-r63-v2-dirty.mjs",
     "jikkou-yosan:v2-sync-app-ids": "node scripts/jikkou-yosan-v2-sync-app-ids.mjs",
     "jikkou-yosan:v2-phase4:test": "node --test scripts/lib/jikkou-yosan-v2/phase4-ui.test.mjs scripts/lib/jikkou-yosan-v2/phase4b-ui.test.mjs scripts/lib/jikkou-yosan-v2/phase4c-ui.test.mjs scripts/lib/jikkou-yosan-v2/phase4d-ui.test.mjs scripts/lib/jikkou-yosan-v2/phase4e-ui.test.mjs",
