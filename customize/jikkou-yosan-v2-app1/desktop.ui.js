@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-26-ver02-name3-kana-nfkc
+  // @JY_V2_BUILD 2026-07-26-ver02-date-order-warn
   // U34: 保存・セル編集の再描画／reload でページ上部へ跳ばない（縦・横位置を維持）
 
   const JY2_STYLE_ID = "jy2-shell-style";
@@ -4457,6 +4457,13 @@
     return days > 0 ? String(days) : "";
   }
 
+  /** 着手日・竣工日が両方あり、着手日が竣工日より後なら true（U35） */
+  function jy2IsStartDateAfterEndDate(startDate, endDate) {
+    const start = String(startDate || "").trim();
+    const end = String(endDate || "").trim();
+    return Boolean(start && end && start > end);
+  }
+
   /** 工期日数: 保存は数値、表示は「N日」（C15） */
   function jy2FormatProjectDaysDisplay(value) {
     const raw = String(value == null ? "" : value).trim();
@@ -4947,14 +4954,24 @@
     const startInput = addText("date", "着手日", "start_date", { rowStart: true });
     const endInput = addText("date", "竣工日", "end_date");
     const daysInput = addText("auto", "工期日数", "project_days");
+    const dateOrderWarn = documentRef.createElement("p");
+    dateOrderWarn.className = "jy2-warning jy2-span-2";
+    dateOrderWarn.hidden = true;
+    dateOrderWarn.textContent =
+      "着手日が竣工日より後になっています（一時保存は可・版の確定は不可）";
+    grid.appendChild(dateOrderWarn);
     const refreshDays = () => {
       const days = jy2CalcProjectDays(startInput.value, endInput.value);
       daysInput.value = jy2FormatProjectDaysDisplay(days);
       jy2ApplyHeaderField(record, "project_days", days);
+      const inverted = jy2IsStartDateAfterEndDate(startInput.value, endInput.value);
+      dateOrderWarn.hidden = !inverted;
     };
     if (canEdit) {
       startInput.addEventListener("change", refreshDays);
       endInput.addEventListener("change", refreshDays);
+      startInput.addEventListener("input", refreshDays);
+      endInput.addEventListener("input", refreshDays);
     }
     refreshDays();
 
@@ -8042,16 +8059,14 @@
         const view = documentRef.defaultView;
         const startDate = jy2FieldValue(record, "start_date");
         const endDate = jy2FieldValue(record, "end_date");
-        if (
-          startDate &&
-          endDate &&
-          String(startDate) > String(endDate) &&
-          view &&
-          typeof view.confirm === "function" &&
-          !view.confirm(
-            "着手日が竣工日より後になっています。このまま保存しますか？",
-          )
-        ) {
+        const dateOrderInverted = jy2IsStartDateAfterEndDate(startDate, endDate);
+        // U35: 着手日>竣工日 → 版確定は拒否。一時保存／保存は赤字警告のみで続行可。
+        if (confirmingVersion && dateOrderInverted) {
+          if (view && typeof view.alert === "function") {
+            view.alert(
+              "着手日が竣工日より後のため、版を確定できません。日付を修正するか、一時保存のみ行ってください。",
+            );
+          }
           return;
         }
         // 保存前に遅延していた総括投影を確定しておく（画面上の差分をなくす）。

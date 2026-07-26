@@ -582,6 +582,24 @@ test("C15 project days display appends 日 while saving numeric value", () => {
   assert.match(source, /jy2ApplyHeaderField\(record, "project_days", days\)/);
 });
 
+test("U35 start>end: draft save allowed with red warn; version confirm blocked", () => {
+  const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
+  assert.match(source, /function jy2IsStartDateAfterEndDate\b/);
+  assert.match(
+    source,
+    /着手日が竣工日より後になっています（一時保存は可・版の確定は不可）/,
+  );
+  assert.match(
+    source,
+    /着手日が竣工日より後のため、版を確定できません/,
+  );
+  assert.match(source, /confirmingVersion && dateOrderInverted/);
+  assert.doesNotMatch(
+    source,
+    /着手日が竣工日より後になっています。このまま保存しますか？/,
+  );
+});
+
 test("C5 fixed bottom h-rail and viewport-only wrap width", () => {
   const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
   assert.match(source, /function jy2MountPaneHScroll\b/);
