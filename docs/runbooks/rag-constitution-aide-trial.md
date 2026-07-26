@@ -62,7 +62,8 @@ ingest 対象は `npm run rag:ingest:constitution-aide-trial`（`scripts/rag-ing
 ### MCP 経路（2026-07-26 修正）
 
 - `~/.cursor/mcp.json` の rag は **`BASE_DIR` / `DB_PATH` / `CACHE_DIR` = `/mnt/c/Users/mhamada202408224/kintone-ai-lab`**（旧 `/home/.../kintone-ai-lab` は別クローンで stale）。
-- **mcp.json 変更後は Cursor の MCP 再起動**が必要。再起動前は MCP 検索が古い DB のままになる。
+- **正本は `scripts/sync-cursor-mcp-windows-from-wsl.mjs`**（close-git の `mcp:sync-cursor-windows` が Windows mcp.json を上書きするため、脚本側を直さないと戻る）。
+- **mcp.json 変更後は Cursor の MCP 再起動**が必要。
 
 ## 7. GO 記録
 

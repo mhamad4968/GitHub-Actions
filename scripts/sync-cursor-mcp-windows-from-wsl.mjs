@@ -188,11 +188,12 @@ export function buildWindowsMcp(S) {
     "cd /home/mhamada202408224/.cursor/cve-search_mcp && exec uv run main.py",
   );
 
+  // 2026-07-26: Windows 正本リポ（/mnt/c/...）。旧 /home/.../kintone-ai-lab は別クローンで stale。
   out.mcpServers.rag = wslBash(
     "export PATH=/home/mhamada202408224/.nvm/versions/node/v24.14.1/bin:$PATH " +
-      "DB_PATH=/home/mhamada202408224/kintone-ai-lab/.rag/lancedb " +
-      "CACHE_DIR=/home/mhamada202408224/kintone-ai-lab/.rag/models " +
-      "BASE_DIR=/home/mhamada202408224/kintone-ai-lab && exec npx -y mcp-local-rag",
+      "DB_PATH=/mnt/c/Users/mhamada202408224/kintone-ai-lab/.rag/lancedb " +
+      "CACHE_DIR=/mnt/c/Users/mhamada202408224/kintone-ai-lab/.rag/models " +
+      "BASE_DIR=/mnt/c/Users/mhamada202408224/kintone-ai-lab && exec npx -y mcp-local-rag",
   );
 
   out.mcpServers["accessibility-scanner"] = wslBash(
