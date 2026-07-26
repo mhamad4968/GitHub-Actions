@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-26-ver02-construction-himoku
+  // @JY_V2_BUILD 2026-07-26-ver02-add-block-focus
   // U34: 保存・セル編集の再描画／reload でページ上部へ跳ばない（縦・横位置を維持）
 
   const JY2_STYLE_ID = "jy2-shell-style";
@@ -853,7 +853,7 @@
   const JY2_NAME_HIERARCHY = Object.freeze({
   "source": "C:/tmp/実行予算ver2/内訳で使うコード表.xlsx",
   "sourceFile": "内訳で使うコード表.xlsx",
-  "generatedAt": "2026-07-26T10:09:28",
+  "generatedAt": "2026-07-26T10:12:45",
   "labels": {
     "name1": "費目",
     "name2": "種別（補助）",
@@ -5538,12 +5538,24 @@
   // 内訳 tab (Phase 4c): offline in-memory editor over App2-shaped blocks.
   // Every mutation re-renders this pane and refreshes the summary projection
   // (投影キャッシュ) and ①⑧⑨ via refreshSummary.
-  function jy2RenderDetailPane(documentRef, pane, detailModel, refreshSummary, masterLists) {
-    const scroll = jy2CaptureScroll(documentRef, pane);
+  // options.focusBlockId: 再描画後にそのブロックへスクロール（工種ブロック追加用）。
+  function jy2RenderDetailPane(
+    documentRef,
+    pane,
+    detailModel,
+    refreshSummary,
+    masterLists,
+    options = {},
+  ) {
+    const focusBlockId = String((options && options.focusBlockId) || "").trim();
+    // フォーカス指定時は旧スクロール復元を抑止し、追加ブロックへ移動できるようにする。
+    const scroll = focusBlockId ? null : jy2CaptureScroll(documentRef, pane);
     pane.textContent = "";
     const editable = detailModel.allowedOperations.editBudget;
-    const rerender = () => {
-      jy2RenderDetailPane(documentRef, pane, detailModel, refreshSummary, masterLists);
+    const rerender = (nextFocusBlockId) => {
+      jy2RenderDetailPane(documentRef, pane, detailModel, refreshSummary, masterLists, {
+        focusBlockId: nextFocusBlockId,
+      });
       refreshSummary();
     };
     const snapshot = detailModel.snapshot();
@@ -5581,12 +5593,16 @@
     if (editable) {
       scroller.appendChild(
         jy2RowButton(documentRef, "工種ブロック追加", () => {
-          detailModel.addBlock();
-          rerender();
+          const id = detailModel.addBlock();
+          rerender(id);
         }),
       );
     }
-    jy2ApplyScroll(documentRef, pane, scroll);
+    if (scroll) jy2ApplyScroll(documentRef, pane, scroll);
+    if (focusBlockId) {
+      const shell = pane.closest ? pane.closest(".jy2-shell") : null;
+      jy2GotoDetailBlock(shell, documentRef, focusBlockId);
+    }
   }
 
   function jy2MonthLabel(month) {
@@ -7145,11 +7161,23 @@
 
     addBlockBtn.addEventListener("click", () => {
       if (addBlockBtn.disabled) return;
-      detailModel.addBlock();
-      refreshDetail();
+      const id = detailModel.addBlock();
+      // 追加ブロックへスクロールするため、内訳再描画に focusBlockId を渡す。
+      jy2RenderDetailPane(
+        documentRef,
+        detailPane,
+        detailModel,
+        () => {
+          refreshSummary();
+          refreshActuals();
+        },
+        summaryData.masterLists || null,
+        { focusBlockId: id },
+      );
       refreshSummary();
       refreshActuals();
       activate("detail");
+      jy2GotoDetailBlock(shell, documentRef, id);
     });
     addSalaryBtn.addEventListener("click", () => {
       if (addSalaryBtn.disabled) return;

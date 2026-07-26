@@ -40,6 +40,7 @@ const checks = [
   ['費目自動セット', /jy2ApplyHimokuDefaultToDetails/],
   ['工事系費目メニュー', /constructionHimokuMenu/],
   ['予備費費目', /"予備費"/],
+  ['ブロック追加フォーカス', /focusBlockId/],
 ];
 
 const missing = checks.filter(([, re]) => !re.test(source)).map(([name]) => name);
@@ -48,4 +49,4 @@ if (missing.length) {
   process.exit(1);
 }
 
-console.log('[verify-jikkou-v2-ui-smoke] OK + name-hierarchy + construction-himoku');
+console.log('[verify-jikkou-v2-ui-smoke] OK + construction-himoku + add-block-focus');

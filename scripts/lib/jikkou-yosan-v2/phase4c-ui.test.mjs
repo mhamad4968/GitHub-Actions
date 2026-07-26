@@ -602,6 +602,10 @@ test("U32 内訳№ jumps between summary projection and detail block", () => {
   assert.match(source, /shell\._jy2ActivateTab = activate/);
   assert.match(source, /内訳タブの該当ブロックへ移動/);
   assert.match(source, /総括タブの該当内訳№へ移動/);
+  // 工種ブロック追加後は新規ブロックへスクロール（旧位置復元を抑止）。
+  assert.match(source, /focusBlockId/);
+  assert.match(source, /const id = detailModel\.addBlock\(\)/);
+  assert.match(source, /rerender\(id\)/);
 });
 
 test("U4 name1/name2 are combo (select+input); name3 is free text input", () => {
