@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-26-ver02-salary-person-name
+  // @JY_V2_BUILD 2026-07-26-ver02-salary-name-space
   // U34: 保存・セル編集の再描画／reload でページ上部へ跳ばない（縦・横位置を維持）
 
   const JY2_STYLE_ID = "jy2-shell-style";
@@ -583,6 +583,14 @@
   function jy2MarkIncompleteIfAnchor(cell, anchorPresent, fieldValue) {
     if (anchorPresent && !jy2HasText(fieldValue)) {
       cell.classList.add("jy2-incomplete");
+    }
+    return cell;
+  }
+
+  function jy2MarkSalaryNameSpaceWarning(cell, personName) {
+    if (jy2HasText(personName) && !String(personName).includes("　")) {
+      cell.classList.add("jy2-incomplete");
+      cell.title = "姓と名の間に全角スペースを入力してください";
     }
     return cell;
   }
@@ -2434,6 +2442,7 @@
         personName.appendChild(
           jy2TextInput(documentRef, line.personName, commit("personName")),
         );
+        jy2MarkSalaryNameSpaceWarning(personName, line.personName);
         const unit = jy2Cell(documentRef, "td", "", "");
         unit.appendChild(jy2UnitSelect(documentRef, line.unit, commit("unit")));
         const quantity = jy2Cell(documentRef, "td", "jy2-num", "");

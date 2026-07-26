@@ -47,6 +47,13 @@ function normalizedOptional(value) {
   return hasText(value) ? String(value) : null;
 }
 
+// 給与氏名: 姓名間の空白は、半角・全角・連続を問わず全角1文字に統一する。
+// 空白なしの氏名は境界を推測できないため、そのまま保持してUIで警告する。
+function normalizedSalaryPersonName(value) {
+  if (!hasText(value)) return null;
+  return String(value).trim().replace(/\s+/g, "　");
+}
+
 function assertPatchKeys(patch, editableFields, context) {
   if (!patch || typeof patch !== "object") {
     throw new TypeError(`${context}: patch must be an object`);
@@ -138,7 +145,7 @@ export function createContractSalaryModel({
   const salary = salaryLines.map((line) => ({
     rowKey: hasText(line.rowKey) ? line.rowKey : createRowKey(uuidFactory),
     role: normalizedOptional(line.role),
-    personName: normalizedOptional(line.personName),
+    personName: normalizedSalaryPersonName(line.personName),
     unit: hasText(line.unit) ? String(line.unit) : SALARY_DEFAULT_UNIT,
     quantity: normalizedOptional(line.quantity),
     unitPrice: normalizedOptional(line.unitPrice),
@@ -284,7 +291,9 @@ export function createContractSalaryModel({
         line[key] =
           key === "unit" && !hasText(value)
             ? SALARY_DEFAULT_UNIT
-            : normalizedOptional(value);
+            : key === "personName"
+              ? normalizedSalaryPersonName(value)
+              : normalizedOptional(value);
       }
       return rowKey;
     },

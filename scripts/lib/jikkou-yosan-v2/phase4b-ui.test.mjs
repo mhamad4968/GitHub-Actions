@@ -110,6 +110,16 @@ test("common units dropdown and salary defaults follow D-29/X7", () => {
   assert.equal(model.snapshot().salaryLines[0].unit, "箇月");
 });
 
+test("salary person name spaces normalize to one fullwidth space", () => {
+  const model = editableModel();
+  const rowKey = model.snapshot().salaryLines[0].rowKey;
+  model.updateSalaryLine(rowKey, { personName: "山田  太郎" });
+  assert.equal(model.snapshot().salaryLines[0].personName, "山田　太郎");
+
+  model.updateSalaryLine(rowKey, { personName: "山田太郎" });
+  assert.equal(model.snapshot().salaryLines[0].personName, "山田太郎");
+});
+
 test("each contract section and salary keep a minimum of 1 row (D-16/D-30)", () => {
   const model = editableModel();
   const snapshot = model.snapshot();
@@ -316,6 +326,8 @@ test("App 1 summary tab renders 請負/給与/投影 tables and ①⑧⑨ footer
   assert.match(source, /jy2-salary-table/);
   assert.match(source, /氏名（入力）/);
   assert.match(source, /personName/);
+  assert.match(source, /jy2MarkSalaryNameSpaceWarning/);
+  assert.match(source, /姓と名の間に全角スペースを入力してください/);
   assert.match(source, /jy2-projection-table/);
   assert.match(source, /jy2-summary-footer/);
   assert.match(source, /jy2-budget-summary/);

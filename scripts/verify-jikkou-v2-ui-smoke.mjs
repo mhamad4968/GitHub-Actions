@@ -26,6 +26,8 @@ const checks = [
   ['10100は施工', /["']10100["']\s*:\s*["']施工["']/],
   ['給与氏名列', /氏名（入力）/],
   ['給与氏名保存', /salary_person_name/],
+  ['給与氏名全角空白正規化', /normalizedSalaryPersonName/],
+  ['給与氏名空白なし警告', /jy2MarkSalaryNameSpaceWarning/],
 ];
 
 const missing = checks.filter(([, re]) => !re.test(source)).map(([name]) => name);
@@ -34,4 +36,4 @@ if (missing.length) {
   process.exit(1);
 }
 
-console.log('[verify-jikkou-v2-ui-smoke] OK datalist + scroll-preserve + worktype-cost-auto + salary-person-name');
+console.log('[verify-jikkou-v2-ui-smoke] OK datalist + scroll-preserve + worktype-cost-auto + salary-name-space');
