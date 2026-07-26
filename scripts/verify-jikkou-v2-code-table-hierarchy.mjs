@@ -254,10 +254,19 @@ if (
 }
 // 現場経費はコード表ではセクション名 → 配下費目を種別候補とする合成仕様
 const expectedGenba = sectionHimoku.get("現場経費") || [];
+// 労務費: 依頼者要望（2026-07-26）の昼夜区分をコード表由来の末尾へ合成する仕様
+const SYNTHETIC_TYPES_BY_HIMOKU = {
+  労務費: ["労務費（昼間）", "労務費（夜間）"],
+};
 for (const h of menu) {
   const actual = (data.typesByHimoku || {})[h] || [];
   const expected =
-    h === "現場経費" ? expectedGenba : globalTypesFromExcel.get(h) || [];
+    h === "現場経費"
+      ? [...expectedGenba]
+      : [...(globalTypesFromExcel.get(h) || [])];
+  for (const t of SYNTHETIC_TYPES_BY_HIMOKU[h] || []) {
+    if (!expected.includes(t)) expected.push(t);
+  }
   const missing = expected.filter((t) => !actual.includes(t));
   const extra = actual.filter((t) => !expected.includes(t));
   if (missing.length) problems.push(`[紐付け] 費目「${h}」: 種別が不足 → ${missing.join("/")}`);

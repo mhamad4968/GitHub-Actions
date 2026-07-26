@@ -250,6 +250,15 @@ if "現場経費" in section_to_himoku:
         if h not in types_by_himoku["現場経費"]:
             types_by_himoku["現場経費"].append(h)
 
+# 依頼者要望 (2026-07-26): 費目=労務費 の種別（補助）候補に昼夜区分を追加する。
+# コード表に行はない合成候補。工種ローカルに種別がある工種（工事管理者賃金など）は
+# 従来どおりローカル優先のため影響しない（グローバルフォールバック時のみ表示）。
+SYNTHETIC_LABOR_TYPES = ["労務費（昼間）", "労務費（夜間）"]
+types_by_himoku.setdefault("労務費", [])
+for t in SYNTHETIC_LABOR_TYPES:
+    if t not in types_by_himoku["労務費"]:
+        types_by_himoku["労務費"].append(t)
+
 # 予備費: コード表にシステム工種行はないが、依頼者リストでは給与手当群の直後・
 # 保安費の直前に置く。費目候補は「予備費」のみ。
 if "予備費" not in by_name:

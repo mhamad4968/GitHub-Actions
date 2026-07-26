@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-26-ver02-vendor-ij-merge
+  // @JY_V2_BUILD 2026-07-26-ver02-labor-day-night-types
   // U34: 保存・セル編集の再描画／reload でページ上部へ跳ばない（縦・横位置を維持）
 
   const JY2_STYLE_ID = "jy2-shell-style";
@@ -878,7 +878,7 @@
   const JY2_NAME_HIERARCHY = Object.freeze({
   "source": "C:/tmp/実行予算ver2/内訳で使うコード表.xlsx",
   "sourceFile": "内訳で使うコード表.xlsx",
-  "generatedAt": "2026-07-26T12:00:54",
+  "generatedAt": "2026-07-26T12:33:12",
   "labels": {
     "name1": "費目",
     "name2": "種別（補助）",
@@ -3345,7 +3345,9 @@
     "労務費": [
       "出向工事管理者賃金",
       "建設機械オペレーター",
-      "その他労務者"
+      "その他労務者",
+      "労務費（昼間）",
+      "労務費（夜間）"
     ],
     "仮設機械経費": [
       "鎌ヶ谷資材使用料",

@@ -434,27 +434,27 @@
       "note": null
     },
     "756": {
-      "build": "2026-07-26-ver02-vendor-ij-merge",
-      "fileKey": "bc91525b-b648-4921-aee6-628588fdaecf",
-      "revision": "147",
+      "build": "2026-07-26-ver02-labor-day-night-types",
+      "fileKey": "b10ef110-2209-48ee-9447-468e50210c03",
+      "revision": "149",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-07-26T03:23:54.678Z",
+      "deployedAt": "2026-07-26T03:34:20.070Z",
       "note": null
     },
     "757": {
       "build": "2026-07-21-ver02-phase6-app2-readonly-guard",
-      "fileKey": "9548c854-5c8e-4692-92a4-e6eaa2c0d318",
-      "revision": "28",
+      "fileKey": "ca97ae0c-856f-496f-95fb-08276fe63f6a",
+      "revision": "30",
       "relPath": "customize/jikkou-yosan-v2-app2/desktop.js",
-      "deployedAt": "2026-07-26T03:23:57.913Z",
+      "deployedAt": "2026-07-26T03:34:22.238Z",
       "note": null
     },
     "758": {
       "build": "2026-07-21-ver02-phase6-app3-readonly-guard",
-      "fileKey": "a6c919a2-0b44-4fb5-b4ce-b77c60db46bd",
-      "revision": "27",
+      "fileKey": "711a1e09-f905-4420-b52b-8cae48c4d42d",
+      "revision": "29",
       "relPath": "customize/jikkou-yosan-v2-app3/desktop.js",
-      "deployedAt": "2026-07-26T03:24:00.109Z",
+      "deployedAt": "2026-07-26T03:34:25.718Z",
       "note": null
     }
   }
