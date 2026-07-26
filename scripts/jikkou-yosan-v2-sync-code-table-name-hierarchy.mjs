@@ -112,14 +112,14 @@ for r in range(2, ws.max_row + 1):
 
     targets = []
     if code or wname:
+        # by_code はコード単位（Excel の 10300 重複＝足場工事/レンタルは併合される）。
+        # by_name は名称単位の独立エントリ（UI は名称優先で解決し混線を避ける）。
         if code:
             entry = ensure_work(by_code, code, code=code, name=wname, section=last_section or "")
             targets.append(entry)
-            if wname:
-                by_name[wname] = entry
-        elif wname:
-            entry = ensure_work(by_name, wname, code="", name=wname, section=last_section or "")
-            targets.append(entry)
+        if wname:
+            nentry = ensure_work(by_name, wname, code=code, name=wname, section=last_section or "")
+            targets.append(nentry)
     # himoku-only rows (no work type): still contribute to global lists above
 
     for entry in targets:
@@ -152,22 +152,26 @@ CONSTRUCTION_HIMOKU_MENU = [
     "法定福利費",
     "予備費",
 ]
-import re
-CONSTRUCTION_NAME_RE = re.compile(r"工事|調査設計|外注試験|交通規制")
 
 def expand_construction(entry):
-    name = entry.get("workTypeName") or ""
-    if not CONSTRUCTION_NAME_RE.search(name):
-        entry["constructionMenu"] = False
+    # 契約工事型の厳密判定: Excel コード表でその工種の費目が「外注費」のみ、
+    # かつ 施工費 セクション（塗装工事・足場工事・修繕等工事・軌道工事・
+    # 追加工事・暫定実行予算総額・調査設計費・外注試験費・交通規制費 等）。
+    # 名称の「工事」文字での判定はしない（工事管理者賃金・社内工事発注・
+    # 工事安全専任管理者・給与手当系の誤爆を防ぐ）。
+    original = list(entry.get("himoku") or [])
+    is_construction = (
+        entry.get("sectionA") == "施工費" and original == ["外注費"]
+    )
+    entry["constructionMenu"] = is_construction
+    if not is_construction:
         return entry
     merged = []
-    for h in CONSTRUCTION_HIMOKU_MENU + list(entry.get("himoku") or []):
+    for h in CONSTRUCTION_HIMOKU_MENU + original:
         if h and h not in merged:
             merged.append(h)
     entry["himoku"] = merged
-    entry["constructionMenu"] = True
-    if not entry.get("himokuDefault"):
-        entry["himokuDefault"] = "外注費" if "外注費" in merged else (merged[0] if merged else "")
+    entry["himokuDefault"] = "外注費"
     return entry
 
 for key, entry in list(by_code.items()):
@@ -197,7 +201,7 @@ out = {
         "name3": "定義及び品名",
     },
     "constructionHimokuMenu": CONSTRUCTION_HIMOKU_MENU,
-    "constructionNamePattern": "工事|調査設計|外注試験|交通規制",
+    "constructionRule": "sectionA=施工費 かつ Excel費目=外注費のみ（契約工事型）",
     "byWorkTypeCode": by_code,
     "byWorkTypeName": {
         k: {

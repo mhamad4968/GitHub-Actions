@@ -42,6 +42,8 @@ const checks = [
   ['予備費費目', /"予備費"/],
   ['ブロック追加フォーカス', /focusBlockId/],
   ['費目→種別紐付け', /jy2TypesForHimoku/],
+  ['工種解決は名称優先', /if \(name && byName\[name\]\) return byName\[name\];\s*\n\s*if \(code && byCode\[code\]\) return byCode\[code\];/],
+  ['工事メニュー厳密判定', /契約工事型/],
 ];
 
 const missing = checks.filter(([, re]) => !re.test(source)).map(([name]) => name);
@@ -50,4 +52,4 @@ if (missing.length) {
   process.exit(1);
 }
 
-console.log('[verify-jikkou-v2-ui-smoke] OK + add-block-focus + himoku-type-link');
+console.log('[verify-jikkou-v2-ui-smoke] OK + add-block-focus + strict-code-table');
