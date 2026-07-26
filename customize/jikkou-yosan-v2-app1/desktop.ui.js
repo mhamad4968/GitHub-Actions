@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-26-ver02-himoku-list-only
+  // @JY_V2_BUILD 2026-07-26-ver02-himoku-list-miss-msg
   // U34: 保存・セル編集の再描画／reload でページ上部へ跳ばない（縦・横位置を維持）
 
   const JY2_STYLE_ID = "jy2-shell-style";
@@ -276,7 +276,7 @@
       ".jy2-input{width:100%;box-sizing:border-box;border:1px solid #e2e8f0;padding:2px 4px;background:#FFFCF3;border-radius:4px;font-size:12px}",
       ".jy2-input:focus{border-color:#2563eb;outline:none}",
       ".jy2-input.jy2-combo{background:#F4FAF4}",
-      ".jy2-combo-wrap{display:flex;align-items:stretch;gap:0;width:100%;min-width:0}",
+      ".jy2-combo-wrap{display:flex;align-items:stretch;flex-wrap:wrap;gap:0;width:100%;min-width:0}",
       ".jy2-combo-wrap>.jy2-input{flex:1;min-width:0;border-top-right-radius:0;border-bottom-right-radius:0}",
       ".jy2-combo-wrap>.jy2-combo-select{flex:0 0 2rem;width:2rem;max-width:2rem;padding:0;margin:0;border:1px solid #cbd5e1;border-left:0;border-radius:0 4px 4px 0;background:#F4FAF4;cursor:pointer;font-size:11px;line-height:1}",
       ".jy2-select{width:100%;box-sizing:border-box;border:1px solid #cbd5e1;padding:2px 4px;background:#f1f5f9;border-radius:4px;cursor:pointer}",
@@ -340,6 +340,8 @@
       ".jy2-footer-row .jy2-footer-basis{color:#64748b;font-size:11px;white-space:nowrap;text-align:left;padding:4px 8px}",
       ".jy2-detail-table th:nth-child(7),.jy2-detail-table td.jy2-amount{min-width:7.5rem}",
       ".jy2-warning{color:#b91c1c;font-size:12px;margin:4px 0;font-weight:600}",
+      ".jy2-combo-miss{display:block;flex:0 0 100%;width:100%;color:#b91c1c;font-size:11px;font-weight:600;margin-top:2px;line-height:1.2}",
+      ".jy2-combo-miss[hidden]{display:none}",
       ".jy2-retired-tag{color:#b91c1c;font-weight:700}",
       // 予実: 横スクロール1本のみ（縦はページスクロール。二重縦スクロール禁止＝C7）
       ".jy2-pane[data-tab-id='actual']{overflow-x:clip;overflow-y:visible;padding:8px 8px 8px 8px}",
@@ -769,6 +771,19 @@
       select.title = "このブロックに候補リストがありません";
       input.removeAttribute("list");
     }
+    const miss = documentRef.createElement("span");
+    miss.className = "jy2-combo-miss";
+    miss.hidden = true;
+    const clearMiss = () => {
+      miss.hidden = true;
+      miss.textContent = "";
+      input.title = "";
+    };
+    const showMiss = (msg = "リストにありません") => {
+      miss.textContent = msg;
+      miss.hidden = false;
+      input.title = msg;
+    };
     const commit = () => {
       // 未フォーカスの空表示を「クリア保存」と誤認しない
       if (displayBlank && !revealed) return;
@@ -782,20 +797,18 @@
         const restored = lastCommitted;
         input.value =
           displayBlank && restored === stored ? "" : restored;
-        const prevTitle = input.title;
-        input.title = "リストにある候補だけ選べます";
-        window.setTimeout(() => {
-          input.title = prevTitle;
-        }, 2000);
+        showMiss();
         return;
       }
       if (next === lastCommitted) return;
+      clearMiss();
       lastCommitted = next;
       onCommit(next);
       if (displayBlank && next === stored) input.value = "";
     };
     input.addEventListener("focus", () => {
       revealed = true;
+      clearMiss();
       if (displayBlank && input.value === "") input.value = stored;
     });
     input.addEventListener("change", commit);
@@ -815,12 +828,13 @@
       const picked = select.value;
       if (!picked) return;
       revealed = true;
+      clearMiss();
       input.value = picked;
       lastCommitted = picked;
       onCommit(picked);
       select.selectedIndex = 0;
     });
-    wrap.append(input, datalist, select);
+    wrap.append(input, datalist, select, miss);
     return wrap;
   }
 
