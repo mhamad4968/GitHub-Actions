@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-26-ver02-addon5-construction-menu
+  // @JY_V2_BUILD 2026-07-26-ver02-hide-summary-basis-rate
   // U34: 保存・セル編集の再描画／reload でページ上部へ跳ばない（縦・横位置を維持）
 
   const JY2_STYLE_ID = "jy2-shell-style";
@@ -12,7 +12,8 @@
   const JY2_FONT_SCALES = Object.freeze(["standard", "large", "xlarge"]);
   const JY2_TAX_RATE_LABELS = { "0": "0％", "0.08": "8％", "0.1": "10％" };
   const JY2_TAX_RATE_VALUES = Object.freeze(["0", "0.08", "0.1"]);
-  const JY2_ACTUAL_ATTR_COLS = 8;
+  // 種別・消費税・単位・数量・単価・金額・備考（計算基準は非表示）
+  const JY2_ACTUAL_ATTR_COLS = 7;
 
   function jy2StoreActiveTab(view, tabId) {
     if (!tabId || !view || !view.sessionStorage) return;
@@ -4333,7 +4334,6 @@
       "数量",
       "単価",
       "金額",
-      "計算基準",
       "備考",
     ]) {
       top.appendChild(th(label, { rowSpan: 2 }));
@@ -5252,7 +5252,8 @@
   }
 
   // 総括原価投影 (P-21/P-33): amounts are read-only from App2.
-  // 種別 / 計算基準 / 備考 only are App1 hand-entry (previousLines).
+  // 種別 / 備考 are App1 hand-entry (previousLines)。計算基準・消化率は非表示
+  // （消化率は工事原価管理タブで管理）。
   // X5: 表下に原価・施工計／原価・保安計を出す（⑧は給与計込みでフッタ）。
   function jy2ProjectionTable(
     documentRef,
@@ -5277,8 +5278,6 @@
         "金額（自動）",
         "消費税率（選択）",
         "金額税込（自動）",
-        "消化率（自動）",
-        "計算基準（入力）",
         "備考（入力）",
       ]),
     );
@@ -5290,7 +5289,7 @@
         "jy2-empty",
         "内訳ブロックなし（内訳タブで追加すると自動反映されます）",
       );
-      emptyCell.colSpan = 14;
+      emptyCell.colSpan = 12;
       emptyRow.appendChild(emptyCell);
       body.appendChild(emptyRow);
     }
@@ -5377,27 +5376,6 @@
           jy2AmountDisplay(line.summary_amount_incl_tax),
         ),
       );
-      row.appendChild(
-        jy2Cell(
-          documentRef,
-          "td",
-          "jy2-num",
-          jy2Percent(line.summary_rate_to_1),
-        ),
-      );
-      const basisCell = jy2Cell(documentRef, "td", "", "");
-      if (editable) {
-        basisCell.appendChild(
-          jy2TextInput(documentRef, line.summary_calc_basis, (value) => {
-            onManualPatch(line.summary_stable_block_id, {
-              summary_calc_basis: value,
-            });
-          }),
-        );
-      } else {
-        basisCell.textContent = line.summary_calc_basis || "";
-      }
-      row.appendChild(basisCell);
       const noteCell = jy2Cell(documentRef, "td", "", "");
       if (editable) {
         noteCell.appendChild(
@@ -5415,10 +5393,6 @@
     }
 
     if (totals) {
-      const rateTo1 = (amount) =>
-        amount === null || amount === undefined
-          ? null
-          : ratio(amount, totals.total1, { zero: "zero" });
       const appendCostTotal = (label, amount) => {
         const totalRow = documentRef.createElement("tr");
         totalRow.className = "jy2-total-row";
@@ -5430,12 +5404,7 @@
         );
         totalRow.appendChild(jy2Cell(documentRef, "td", "", ""));
         totalRow.appendChild(jy2Cell(documentRef, "td", "", ""));
-        totalRow.appendChild(
-          jy2Cell(documentRef, "td", "jy2-num", jy2Percent(rateTo1(amount))),
-        );
-        const totalTail = jy2Cell(documentRef, "td", "", "");
-        totalTail.colSpan = 2;
-        totalRow.appendChild(totalTail);
+        totalRow.appendChild(jy2Cell(documentRef, "td", "", ""));
         body.appendChild(totalRow);
       };
       appendCostTotal("原価・施工計", totals.costConstruction);
@@ -6481,7 +6450,6 @@
         jy2AmountDisplay(row.budgetAmountExclTax),
       ),
     );
-    tr.appendChild(jy2Cell(documentRef, "td", "", row.budgetCalcBasis || ""));
     tr.appendChild(jy2Cell(documentRef, "td", "", row.budgetNote || ""));
     // 現行予算: auto from 内訳 block totals; retired blocks show 0 (P-39/R-11).
     tr.appendChild(
