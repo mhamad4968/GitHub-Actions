@@ -5,7 +5,7 @@ export const UI_TABS = Object.freeze([
   Object.freeze({ id: "header", label: "工事基本情報" }),
   Object.freeze({ id: "summary", label: "総括表" }),
   Object.freeze({ id: "detail", label: "内訳" }),
-  Object.freeze({ id: "actual", label: "予実管理" }),
+  Object.freeze({ id: "actual", label: "工事原価管理" }),
   Object.freeze({ id: "version", label: "バージョン管理" }),
 ]);
 

@@ -62,6 +62,8 @@ const checks = [
   ['フォーカス復元', /jy2RestoreFieldFocus/],
   ['総括遅延更新', /summaryDirty/],
   ['タブ表示時flush', /flushSummaryIfDirty/],
+  ['単一種別の自動選択', /jy2SoleTypeForHimoku|jy2NormalizeSoleTypeDetails/],
+  ['タブ名は工事原価管理', /工事原価管理/],
 ];
 
 const missing = checks.filter(([, re]) => !re.test(source)).map(([name]) => name);

@@ -639,6 +639,9 @@ test("U4 name1/name2 are combo (select+input); name3 is free text input", () => 
   assert.match(source, /予備費/);
   // 費目変更で紐づかない種別をクリアするカスケード。
   assert.match(source, /patch\.name2 = null/);
+  // 種別候補が1件だけの費目は自動選択。
+  assert.match(source, /jy2SoleTypeForHimoku/);
+  assert.match(source, /jy2NormalizeSoleTypeDetails/);
   assert.match(
     source,
     /jy2ComboInput\(\s*documentRef,\s*row\.name1,\s*rowSuggest\.name1/,

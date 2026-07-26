@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-26-ver02-block-delete-fix
+  // @JY_V2_BUILD 2026-07-26-ver02-sole-type-cost-tab
   // U34: 保存・セル編集の再描画／reload でページ上部へ跳ばない（縦・横位置を維持）
 
   const JY2_STYLE_ID = "jy2-shell-style";
@@ -3579,8 +3579,14 @@
       }
       if (jy2HimokuUsesDashType(entry, nextHimoku)) {
         patch.name2 = "－";
-      } else if (String(row.name2 || "").trim() === "－") {
-        patch.name2 = null;
+      } else {
+        const sole = jy2SoleTypeForHimoku(entry, nextHimoku);
+        const currentType = String(row.name2 || "").trim();
+        if (sole) {
+          if (currentType !== sole) patch.name2 = sole;
+        } else if (currentType === "－") {
+          patch.name2 = null;
+        }
       }
       if (Object.keys(patch).length) {
         detailModel.updateDetailRow(stableBlockId, row.rowKey, patch);
@@ -3601,6 +3607,15 @@
     const globalMap = JY2_NAME_HIERARCHY.typesByHimoku || {};
     const global = Array.isArray(globalMap[key]) ? globalMap[key] : [];
     return global.length ? [...global] : [];
+  }
+
+  // 候補がちょうど1件ならそれを返す（「－」固定費目は別経路）。
+  function jy2SoleTypeForHimoku(entry, himoku) {
+    if (jy2HimokuUsesDashType(entry, himoku)) return null;
+    const types = jy2TypesForHimoku(entry, himoku).filter(
+      (t) => t && String(t).trim() && String(t).trim() !== "－",
+    );
+    return types.length === 1 ? String(types[0]).trim() : null;
   }
 
   function jy2HimokuUsesDashType(entry, himoku) {
@@ -3624,6 +3639,26 @@
         ) {
           detailModel.updateDetailRow(block.stableBlockId, row.rowKey, {
             name2: "－",
+          });
+        }
+      }
+    }
+  }
+
+  // 費目に対する種別（補助）が1件だけの行は、空／「－」なら自動セット。
+  function jy2NormalizeSoleTypeDetails(detailModel) {
+    const snapshot = detailModel.snapshot();
+    for (const block of snapshot.blocks) {
+      const entry = jy2ResolveNameHierarchy(block);
+      for (const row of block.detailRows) {
+        const himoku = String(row.name1 || "").trim();
+        if (!himoku) continue;
+        const sole = jy2SoleTypeForHimoku(entry, himoku);
+        if (!sole) continue;
+        const current = String(row.name2 || "").trim();
+        if (!current || current === "－") {
+          detailModel.updateDetailRow(block.stableBlockId, row.rowKey, {
+            name2: sole,
           });
         }
       }
@@ -4636,7 +4671,7 @@
     header: "工事基本情報",
     summary: `総${JY2_IDEO}括${JY2_IDEO}表`,
     detail: `内${JY2_IDEO}訳`,
-    actual: `予${JY2_IDEO}実${JY2_IDEO}管${JY2_IDEO}理`,
+    actual: `工${JY2_IDEO}事${JY2_IDEO}原${JY2_IDEO}価${JY2_IDEO}管${JY2_IDEO}理`,
     version: "バージョン管理",
   };
 
@@ -5858,12 +5893,16 @@
           if (jy2HimokuUsesDashType(entry, value)) {
             patch.name2 = "－";
           } else {
+            const sole = jy2SoleTypeForHimoku(entry, value);
             const nextSuggest = jy2CollectDetailSuggestions(null, block, {
               ...row,
               name1: value,
             });
             const currentType = row.name2 == null ? "" : String(row.name2).trim();
-            if (
+            if (sole) {
+              // 候補が1件だけの費目は種別（補助）を自動選択。
+              patch.name2 = sole;
+            } else if (
               currentType === "－" ||
               (currentType && !nextSuggest.name2.includes(currentType))
             ) {
@@ -6201,7 +6240,7 @@
       if (!old) return false;
       const scroll = jy2CaptureScroll(documentRef, pane);
       const focusHint = jy2CaptureFieldFocus(documentRef, old);
-      // 当該ブロックの「－」固定だけ先に正規化（全ブロック走査はしない）。
+      // 当該ブロックの「－」固定／単一種別だけ先に正規化（全ブロック走査はしない）。
       const entryBlock = detailModel
         .snapshot()
         .blocks.find((b) => b.stableBlockId === id);
@@ -6213,6 +6252,12 @@
             String(row.name2 || "").trim() !== "－"
           ) {
             detailModel.updateDetailRow(id, row.rowKey, { name2: "－" });
+            continue;
+          }
+          const sole = jy2SoleTypeForHimoku(entry, row.name1);
+          const current = String(row.name2 || "").trim();
+          if (sole && (!current || current === "－")) {
+            detailModel.updateDetailRow(id, row.rowKey, { name2: sole });
           }
         }
       }
@@ -6258,6 +6303,7 @@
     pane.textContent = "";
     const editable = detailModel.allowedOperations.editBudget;
     jy2NormalizeDashTypeDetails(detailModel);
+    jy2NormalizeSoleTypeDetails(detailModel);
     const snapshot = detailModel.snapshot();
     const paneSuggestions = collectPaneSuggestions();
 
@@ -6549,7 +6595,7 @@
         documentRef,
         "h3",
         "jy2-section-title",
-        "予実管理（原価行対比・給与手当は対象外）",
+        "工事原価管理（原価行対比・給与手当は対象外）",
       ),
     );
     if (saveController && editable) {
