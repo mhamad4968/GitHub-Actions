@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-07-26-ver02-himoku-list-miss-msg",
-      "fileKey": "638b39e2-508c-4537-9357-d822e30ef9be",
-      "revision": "151",
+      "build": "2026-07-26-ver02-name3-kana-nfkc",
+      "fileKey": "ffbe5148-f343-4644-9b90-93e6ac2b36b0",
+      "revision": "152",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-07-26T09:40:54.775Z",
+      "deployedAt": "2026-07-26T09:42:54.804Z",
       "note": null
     },
     "757": {

@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-26-ver02-himoku-list-miss-msg
+  // @JY_V2_BUILD 2026-07-26-ver02-name3-kana-nfkc
   // U34: 保存・セル編集の再描画／reload でページ上部へ跳ばない（縦・横位置を維持）
 
   const JY2_STYLE_ID = "jy2-shell-style";
@@ -629,28 +629,12 @@
   }
 
   // U5: 半角カナ → 全角（定義及び品名・name3）
+  // 単純 code オフセットは濁点位置で崩れる（ｶ→ガ等）。半角カナ塊だけ NFKC する。
   function jy2ToFullWidthKana(str) {
     if (str === null || str === undefined) return str;
     const text = String(str);
     if (!text) return text;
-    return text.replace(/[\uFF61-\uFF9F]/g, (ch) => {
-      const code = ch.charCodeAt(0);
-      if (code === 0xff61) return "。";
-      if (code === 0xff62) return "「";
-      if (code === 0xff63) return "」";
-      if (code === 0xff64) return "、";
-      if (code === 0xff65) return "・";
-      if (code === 0xff66) return "ヲ";
-      if (code >= 0xff67 && code <= 0xff6f) {
-        return String.fromCharCode(code - 0xff67 + 0x30a1);
-      }
-      if (code >= 0xff71 && code <= 0xff9d) {
-        return String.fromCharCode(code - 0xff71 + 0x30a2);
-      }
-      if (code === 0xff9e) return "゛";
-      if (code === 0xff9f) return "゜";
-      return ch;
-    });
+    return text.replace(/[\uFF61-\uFF9F]+/g, (chunk) => chunk.normalize("NFKC"));
   }
 
   // D-17: 請負数量は小数第1位まで（四捨五入）

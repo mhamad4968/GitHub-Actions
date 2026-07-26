@@ -658,6 +658,18 @@ test("U4 name1/name2 are combo (select+input); name3 is free text input", () => 
   );
 });
 
+test("U5 jy2ToFullWidthKana normalizes halfwidth kana with NFKC (not code offset)", () => {
+  const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
+  assert.match(
+    source,
+    /function jy2ToFullWidthKana\b[\s\S]*?normalize\(["']NFKC["']\)/,
+  );
+  assert.doesNotMatch(
+    source,
+    /function jy2ToFullWidthKana\b[\s\S]*?0xff71\s*\+\s*0x30a2/,
+  );
+});
+
 test("U28 prepareForSave prunes empty detail rows and blank blocks", () => {
   const model = editableModel({
     blocks: [
