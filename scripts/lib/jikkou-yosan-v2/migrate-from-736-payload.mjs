@@ -240,6 +240,7 @@ export function buildMigrationPayload(record, options = {}) {
       salary_role: TEXT(
         cellValue(row, "cost_work_type") || cellValue(row, "cost_category"),
       ),
+      salary_person_name: TEXT(""),
       salary_unit: TEXT(unitOk ? unitRaw : "－"),
       salary_qty: TEXT(cellValue(row, "cost_qty")),
       salary_unit_price: TEXT(cellValue(row, "cost_unit_price")),

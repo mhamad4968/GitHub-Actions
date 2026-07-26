@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-26-ver02-worktype-cost-auto
+  // @JY_V2_BUILD 2026-07-26-ver02-salary-person-name
   // U34: 保存・セル編集の再描画／reload でページ上部へ跳ばない（縦・横位置を維持）
 
   const JY2_STYLE_ID = "jy2-shell-style";
@@ -2398,7 +2398,8 @@
     return table;
   }
 
-  // 給与手当 (D-30/X7): 総括直入力, 消費税・税込は「－」, at least 1 row.
+  // 給与手当 (D-30/X7/Imp-04): 総括直入力, 消費税・税込は「－」, at least 1 row.
+  // 氏名は専用列（複数人は行追加運用）。
   function jy2SalaryTable(documentRef, summaryModel, editable, rerender) {
     const snapshot = summaryModel.snapshot();
     const table = documentRef.createElement("table");
@@ -2407,6 +2408,7 @@
     body.appendChild(
       jy2HeadRow(documentRef, [
         "役職・名称（入力）",
+        "氏名（入力）",
         "単位（選択）",
         "数量（入力）",
         "単価（入力）",
@@ -2428,6 +2430,10 @@
       if (editable) {
         const role = jy2Cell(documentRef, "td", "", "");
         role.appendChild(jy2TextInput(documentRef, line.role, commit("role")));
+        const personName = jy2Cell(documentRef, "td", "", "");
+        personName.appendChild(
+          jy2TextInput(documentRef, line.personName, commit("personName")),
+        );
         const unit = jy2Cell(documentRef, "td", "", "");
         unit.appendChild(jy2UnitSelect(documentRef, line.unit, commit("unit")));
         const quantity = jy2Cell(documentRef, "td", "jy2-num", "");
@@ -2445,7 +2451,7 @@
         jy2MarkIncompleteIfAnchor(unitPrice, anchor, line.unitPrice);
         const note = jy2Cell(documentRef, "td", "", "");
         note.appendChild(jy2TextInput(documentRef, line.note, commit("note")));
-        row.append(role, unit, quantity, unitPrice);
+        row.append(role, personName, unit, quantity, unitPrice);
         row.appendChild(
           jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(line.amount)),
         );
@@ -2474,6 +2480,7 @@
         row.appendChild(action);
       } else {
         row.appendChild(jy2Cell(documentRef, "td", "", line.role));
+        row.appendChild(jy2Cell(documentRef, "td", "", line.personName));
         row.appendChild(jy2Cell(documentRef, "td", "", line.unit));
         row.appendChild(jy2Cell(documentRef, "td", "jy2-num", line.quantity));
         row.appendChild(
@@ -2493,7 +2500,7 @@
     const totalRow = documentRef.createElement("tr");
     totalRow.className = "jy2-total-row";
     const totalLabel = jy2Cell(documentRef, "td", "", "給与計");
-    totalLabel.colSpan = 4;
+    totalLabel.colSpan = 5;
     totalRow.appendChild(totalLabel);
     totalRow.appendChild(
       jy2Cell(
@@ -2510,7 +2517,7 @@
 
     const footRow = documentRef.createElement("tr");
     const footCell = jy2Cell(documentRef, "td", "", "");
-    footCell.colSpan = 9;
+    footCell.colSpan = 10;
     if (editable) {
       footCell.appendChild(
         jy2RowButton(documentRef, "行追加", () => {

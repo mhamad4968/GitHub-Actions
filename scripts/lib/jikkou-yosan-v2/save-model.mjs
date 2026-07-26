@@ -220,6 +220,7 @@ export function summarySnapshotToSubtables(summarySnapshot) {
     value: {
       salary_row_key: TEXT(line.rowKey),
       salary_role: TEXT(line.role ?? ""),
+      salary_person_name: TEXT(line.personName ?? ""),
       salary_unit: TEXT(line.unit ?? ""),
       salary_qty: TEXT(line.quantity ?? ""),
       salary_unit_price: TEXT(line.unitPrice ?? ""),
@@ -267,6 +268,7 @@ export function app1RecordToSummaryLines(record) {
   const salaryLines = rows("salary_lines").map((row) => ({
     rowKey: cell(row, "salary_row_key"),
     role: cell(row, "salary_role"),
+    personName: cell(row, "salary_person_name"),
     unit: cell(row, "salary_unit"),
     quantity: cell(row, "salary_qty"),
     unitPrice: cell(row, "salary_unit_price"),

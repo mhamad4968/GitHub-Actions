@@ -32,6 +32,7 @@ const CONTRACT_EDITABLE_FIELDS = Object.freeze([
 ]);
 const SALARY_EDITABLE_FIELDS = Object.freeze([
   "role",
+  "personName",
   "unit",
   "quantity",
   "unitPrice",
@@ -102,6 +103,7 @@ export function createContractSalaryModel({
     return {
       rowKey: createRowKey(uuidFactory),
       role: null,
+      personName: null,
       unit: SALARY_DEFAULT_UNIT,
       quantity: null,
       unitPrice: null,
@@ -136,6 +138,7 @@ export function createContractSalaryModel({
   const salary = salaryLines.map((line) => ({
     rowKey: hasText(line.rowKey) ? line.rowKey : createRowKey(uuidFactory),
     role: normalizedOptional(line.role),
+    personName: normalizedOptional(line.personName),
     unit: hasText(line.unit) ? String(line.unit) : SALARY_DEFAULT_UNIT,
     quantity: normalizedOptional(line.quantity),
     unitPrice: normalizedOptional(line.unitPrice),

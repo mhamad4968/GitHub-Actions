@@ -369,6 +369,13 @@
           "required": false,
           "defaultValue": ""
         },
+        "salary_person_name": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "salary_person_name",
+          "label": "氏名",
+          "required": false,
+          "defaultValue": ""
+        },
         "salary_unit": {
           "type": "DROP_DOWN",
           "code": "salary_unit",

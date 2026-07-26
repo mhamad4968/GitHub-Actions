@@ -314,6 +314,8 @@ test("App 1 summary tab renders 請負/給与/投影 tables and ①⑧⑨ footer
   const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
   assert.match(source, /jy2-contract-table/);
   assert.match(source, /jy2-salary-table/);
+  assert.match(source, /氏名（入力）/);
+  assert.match(source, /personName/);
   assert.match(source, /jy2-projection-table/);
   assert.match(source, /jy2-summary-footer/);
   assert.match(source, /jy2-budget-summary/);

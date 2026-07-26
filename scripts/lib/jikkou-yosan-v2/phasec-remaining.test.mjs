@@ -41,6 +41,7 @@ function summaryModel() {
   const salaryKey = model.snapshot().salaryLines[0].rowKey;
   model.updateSalaryLine(salaryKey, {
     role: "現場代理人",
+    personName: "山田太郎",
     quantity: "2",
     unitPrice: "650000",
   });
@@ -59,6 +60,7 @@ test("残A: summary snapshot converts to App1 subtable values with amounts", () 
   const salaryRows = subtables.salary_lines.value;
   assert.equal(salaryRows.length, 1);
   assert.equal(salaryRows[0].value.salary_amount.value, "1300000");
+  assert.equal(salaryRows[0].value.salary_person_name.value, "山田太郎");
 });
 
 test("残A: App1 record round-trips back into the summary model", () => {
@@ -79,6 +81,7 @@ test("残A: App1 record round-trips back into the summary model", () => {
     a.contractSections["施工"][0].rowKey,
   );
   assert.equal(b.salaryLines[0].rowKey, a.salaryLines[0].rowKey);
+  assert.equal(b.salaryLines[0].personName, "山田太郎");
 });
 
 test("残A: projectionRowsToSubtable writes summary_cost_lines (種別手入力を含む)", () => {
