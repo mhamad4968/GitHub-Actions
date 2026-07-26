@@ -522,9 +522,13 @@ test("App 1 detail tab renders jy2-* block editor wired to the summary refresh",
   assert.match(source, /jy2-block-no/);
   assert.match(source, /jy2-footer-row/);
   assert.match(source, /jy2-block-total-row/);
-  // R-11(案B): 諸経費行に根拠(明細合計 ×率%)を行内表示。
+  // R-11(案B): 諸経費行に根拠(明細金額合計 ×率%)＋単価注意書きを行内表示。
   assert.match(source, /jy2-footer-basis/);
-  assert.match(source, /明細合計 ×\$\{footerRow\.ratePercent\}%/);
+  assert.match(
+    source,
+    /明細金額合計 ×\$\{footerRow\.ratePercent\}%（単価は明細金額の合計）/,
+  );
+  assert.match(source, /諸経費の単価は明細金額の合計です/);
   assert.match(source, /jy2-warning/);
   assert.match(source, /createDetailBlockModel/);
   assert.match(source, /jy2RenderDetailPane/);

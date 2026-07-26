@@ -31,6 +31,8 @@ const checks = [
   ['諸経費自動計算(R-11)', /overheadFromDetails/],
   ['諸経費率10%', /OVERHEAD_RATE_PERCENT/],
   ['諸経費根拠の行内表示(案B)', /jy2-footer-basis/],
+  ['諸経費単価注意書き', /諸経費の単価は明細金額の合計です/],
+  ['諸経費根拠文言', /明細金額合計 ×\$\{footerRow\.ratePercent\}%/],
 ];
 
 const missing = checks.filter(([, re]) => !re.test(source)).map(([name]) => name);
@@ -39,4 +41,4 @@ if (missing.length) {
   process.exit(1);
 }
 
-console.log('[verify-jikkou-v2-ui-smoke] OK datalist + scroll-preserve + worktype-cost-auto + salary-name-space + overhead-auto-10pct');
+console.log('[verify-jikkou-v2-ui-smoke] OK datalist + scroll-preserve + worktype-cost-auto + salary-name-space + overhead-basis-note');
