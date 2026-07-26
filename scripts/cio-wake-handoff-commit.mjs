@@ -48,14 +48,18 @@ function dirtyAllowlist() {
     .filter((rel) => ALLOWLIST.includes(rel));
 }
 
-function commitAllowlist(paths, message) {
+function commitAllowlist(paths, message, { checkpointSync = false } = {}) {
   const add = git(['add', '--', ...paths]);
   if (!add.ok) {
     console.error('[cio:wake:handoff-commit] NG git add', add.err);
     process.exit(1);
   }
+  // 追従 commit で post-commit checkpoint sync を入れると tip が再度ずれて bridge 追従が終わらない
   const commit = git(['commit', '-m', message], {
-    env: { ...process.env, CIO_POST_COMMIT_CHECKPOINT_SYNC: '1' },
+    env: {
+      ...process.env,
+      CIO_POST_COMMIT_CHECKPOINT_SYNC: checkpointSync ? '1' : '0',
+    },
   });
   if (!commit.ok) {
     console.error('[cio:wake:handoff-commit] NG commit', commit.err || commit.out);
@@ -86,16 +90,24 @@ function main() {
   if (paths.length === 0) {
     console.log('[cio:wake:handoff-commit] OK no-op（allowlist clean）');
   } else {
-    commitAllowlist(paths, 'chore(handoff): sync bridge + WAKE artifacts after cold-start');
+    commitAllowlist(
+      paths,
+      'chore(handoff): sync bridge + WAKE artifacts after cold-start',
+      { checkpointSync: false },
+    );
   }
 
-  // commit で tip が動いたあと bridge.gitHead を再同期（最大 1 追従）
+  // tip 更新後に bridge.gitHead を 1 回だけ再同期（checkpoint sync OFF で追従打ち止め）
   if (reexportBridge()) {
-    const follow = dirtyAllowlist().filter((p) => p === 'docs/handoff/latest-session-bridge.json'
-      || p === 'chat-sessions/checkpoint-latest.md'
-      || p === 'docs/knowledge/debug-tips.md');
+    const follow = dirtyAllowlist().filter(
+      (p) =>
+        p === 'docs/handoff/latest-session-bridge.json'
+        || p === 'docs/knowledge/debug-tips.md',
+    );
     if (follow.length > 0) {
-      commitAllowlist(follow, 'chore(handoff): realign bridge/checkpoint after WAKE tip');
+      commitAllowlist(follow, 'chore(handoff): realign bridge after WAKE tip', {
+        checkpointSync: false,
+      });
     }
   }
 
