@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-25 21:00 JST — 夜枠 CLOSE。反省改善P1–P7実装済。明日=756微調整。
 
-**Git**: **`5a42fb53`** = `origin/main` — push 済
+**Git**: **`19cfdceb`** = `origin/main` — push 済
 
 **本日状態（要約）**: App **756** LIVE=`2026-07-25-ver02-preserve-scroll` rev**125**（浜田確認済）。反省改善P1–P7実装済。LOTO7 B+C は `external/loto7/` がGit正本、Desktopは実行ミラー。735/736書込禁止。
 
