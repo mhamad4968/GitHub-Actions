@@ -16,9 +16,9 @@
 import 'dotenv/config';
 import http from 'node:http';
 import { URL } from 'node:url';
-import { getKintoneConfig, LOCATIONS } from './lib/tokai-ipad-kintone.mjs';
+import { getKintoneConfig, LOCATIONS, resolvePcLedgerCredentialHits } from './lib/tokai-ipad-kintone.mjs';
 
-const RELAY_BUILD = '2026-07-28-tokai-ipad-sync-relay-v1';
+const RELAY_BUILD = '2026-07-28-tokai-ipad-sync-relay-v2';
 const PORT = Number(process.env.TOKAI_IPAD_RELAY_PORT || 17969);
 const HOST = process.env.TOKAI_IPAD_RELAY_HOST || '127.0.0.1';
 const ALLOW_ORIGIN = process.env.TOKAI_IPAD_RELAY_CORS_ORIGIN || '*';
@@ -155,35 +155,40 @@ async function handleSyncCredentials(payload) {
   if (!name) {
     return { status: 400, body: { ok: false, code: 'MISSING_USER_NAME', message: '利用者が未指定です' } };
   }
-  const query = `user_name = "${escapeQueryValue(name)}" order by $id asc limit 5`;
+  const query = `user_name = "${escapeQueryValue(name)}" order by $id asc limit 20`;
   const resp = await kintoneGet('/v1/records.json', {
     app: APP_PC_LEDGER,
     query,
-    fields: ['$id', 'user_name', 'm365_id', 'm365_pw', 'vpn_id', 'vpn_pw'],
+    fields: ['$id', 'user_name', 'pc_status', 'pc_name', 'm365_id', 'm365_pw', 'vpn_id', 'vpn_pw'],
   });
   const rows = resp.records || [];
-  if (!rows.length) {
+  const resolved = resolvePcLedgerCredentialHits(rows);
+  if (resolved.code === 'NO_HIT') {
     return {
       status: 200,
       body: {
         ok: false,
         code: 'NO_HIT',
-        message: `674(PC台帳) に「${name}」がヒットしませんでした`,
+        message:
+          `674(PC台帳) に「${name}」の稼働候補がありません` +
+          (resolved.discardedInactive ? `（廃棄/取消 ${resolved.discardedInactive} 件除外）` : ''),
+        discardedInactive: resolved.discardedInactive || 0,
       },
     };
   }
-  if (rows.length > 1) {
+  if (resolved.code === 'MULTI_HIT') {
     return {
       status: 200,
       body: {
         ok: false,
         code: 'MULTI_HIT',
-        message: `674(PC台帳) に「${name}」が複数ヒット（${rows.length} 件）— 浜田相談`,
-        count: rows.length,
+        message: `674(PC台帳) に「${name}」の稼働候補が複数（${resolved.candidates.length} 件）— 浜田相談`,
+        count: resolved.candidates.length,
+        discardedInactive: resolved.discardedInactive || 0,
       },
     };
   }
-  const r = rows[0];
+  const r = resolved.record;
   return {
     status: 200,
     body: {
@@ -193,6 +198,8 @@ async function handleSyncCredentials(payload) {
       m365_pw: safeString(r.m365_pw?.value),
       vpn_id: safeString(r.vpn_id?.value),
       vpn_pw: safeString(r.vpn_pw?.value),
+      pc_status: safeString(r.pc_status?.value).trim(),
+      discardedInactive: resolved.discardedInactive || 0,
     },
   };
 }

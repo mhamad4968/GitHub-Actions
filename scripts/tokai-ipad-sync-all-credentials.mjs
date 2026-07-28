@@ -13,7 +13,7 @@
  */
 import 'dotenv/config';
 import process from 'node:process';
-import { getKintoneConfig, fetchJson, loadAppIds } from './lib/tokai-ipad-kintone.mjs';
+import { getKintoneConfig, fetchJson, loadAppIds, resolvePcLedgerCredentialHits } from './lib/tokai-ipad-kintone.mjs';
 
 const PROTECTED_APPS = new Set(['720', '721']);
 const APP_PC_LEDGER = String(process.env.TOKAI_IPAD_PC_APP || '674');
@@ -72,8 +72,8 @@ async function fetchAllDbRecords(baseUrl, headers, appId) {
 }
 
 async function lookup674(baseUrl, headers, userName) {
-  const q = encodeURIComponent(`user_name = "${escapeQueryValue(userName)}" order by $id asc limit 5`);
-  const fields = ['$id', 'user_name', 'm365_id', 'm365_pw', 'vpn_id', 'vpn_pw']
+  const q = encodeURIComponent(`user_name = "${escapeQueryValue(userName)}" order by $id asc limit 20`);
+  const fields = ['$id', 'user_name', 'pc_status', 'pc_name', 'm365_id', 'm365_pw', 'vpn_id', 'vpn_pw']
     .map(function (f, i) { return `&fields[${i}]=${encodeURIComponent(f)}`; })
     .join('');
   const url = `${baseUrl}/k/v1/records.json?app=${APP_PC_LEDGER}&query=${q}${fields}`;
@@ -139,12 +139,29 @@ async function main() {
       console.log(` [${id}] ${device} / ${name}: 674 ヒットなし`);
       continue;
     }
-    if (hits.length > 1) {
-      summary.multiHit += 1;
-      console.log(` [${id}] ${device} / ${name}: 674 複数ヒット (${hits.length}) — 浜田相談`);
+    const resolved = resolvePcLedgerCredentialHits(hits);
+    if (resolved.code === 'NO_HIT') {
+      summary.noHit += 1;
+      console.log(
+        ` [${id}] ${device} / ${name}: 674 稼働候補なし` +
+          (resolved.discardedInactive ? `（廃棄/取消 ${resolved.discardedInactive} 件除外）` : ''),
+      );
       continue;
     }
-    const src = hits[0];
+    if (resolved.code === 'MULTI_HIT') {
+      summary.multiHit += 1;
+      const ids = (resolved.candidates || []).map((r) => val(r, '$id')).join(',');
+      console.log(
+        ` [${id}] ${device} / ${name}: 674 稼働中が複数 (${resolved.candidates.length}) ids=${ids} — 浜田相談`,
+      );
+      continue;
+    }
+    const src = resolved.record;
+    if (resolved.discardedInactive) {
+      console.log(
+        ` [${id}] ${device} / ${name}: 廃棄/取消 ${resolved.discardedInactive} 件を除外し 674#${val(src, '$id')} を採用`,
+      );
+    }
     const cur = {
       m365_id: val(rec, 'm365_id'),
       m365_pw: val(rec, 'm365_pw'),

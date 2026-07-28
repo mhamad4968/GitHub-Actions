@@ -252,3 +252,51 @@ export function formatTokaiDeviceName(n) {
   if (!Number.isFinite(num) || num < 1) throw new Error(`invalid tokai seq: ${n}`);
   return `tokai${String(num).padStart(2, '0')}`;
 }
+
+/** 674 PC台帳 — 稼働対象外（new-pc-ledger と同義） */
+export const PC_STATUS_INACTIVE_674 = ['廃棄', '取消'];
+export const PC_STATUS_IN_USE_674 = '利用中';
+
+export function isPcStatusInactive674(status) {
+  const s = trimCell(status);
+  return PC_STATUS_INACTIVE_674.includes(s);
+}
+
+/**
+ * 同氏名で 674 が複数ヒットしたときの AI チーム判定ルール:
+ * 1) pc_status が 廃棄/取消 の行は除外
+ * 2) 残りの中に 利用中 があれば 利用中のみに絞る
+ * 3) 1件 → 採用 / 0件 → NO_HIT / 2件以上 → MULTI_HIT（浜田相談）
+ *
+ * @param {Array} rows kintone records（pc_status / $id / m365_* / vpn_* を含む想定）
+ * @returns {{ code: 'OK'|'NO_HIT'|'MULTI_HIT', record?: object, candidates?: object[], discardedInactive?: number }}
+ */
+export function resolvePcLedgerCredentialHits(rows) {
+  const list = Array.isArray(rows) ? rows : [];
+  if (!list.length) return { code: 'NO_HIT', discardedInactive: 0 };
+
+  const active = [];
+  let discardedInactive = 0;
+  for (const r of list) {
+    const st = r?.pc_status?.value != null ? String(r.pc_status.value) : r?.pc_status != null ? String(r.pc_status) : '';
+    if (isPcStatusInactive674(st)) {
+      discardedInactive += 1;
+      continue;
+    }
+    active.push(r);
+  }
+
+  if (!active.length) return { code: 'NO_HIT', discardedInactive };
+
+  const inUse = active.filter((r) => {
+    const st = r?.pc_status?.value != null ? String(r.pc_status.value).trim() : String(r?.pc_status || '').trim();
+    return st === PC_STATUS_IN_USE_674;
+  });
+  const preferred = inUse.length ? inUse : active;
+
+  if (preferred.length === 1) {
+    return { code: 'OK', record: preferred[0], discardedInactive, narrowedToInUse: inUse.length > 0 };
+  }
+  return { code: 'MULTI_HIT', candidates: preferred, discardedInactive, narrowedToInUse: inUse.length > 0 };
+}
+

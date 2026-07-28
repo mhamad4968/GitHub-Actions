@@ -2,7 +2,7 @@
   "use strict";
 
   /** 東海支店 iPad 管理台帳 — DB(769) REST CRUD + 595/674 同期 + A4 印刷 + Excel 出力 */
-  var BUILD = "2026-07-28-tokai-ipad-dash-v1";
+  var BUILD = "2026-07-28-tokai-ipad-dash-v2-pc-status-resolve";
 
   var APP_DB = 769;
   var APP_EMP_MASTER = 595;
@@ -340,11 +340,11 @@
       var q =
         'user_name = "' +
         escapeQueryValue(name) +
-        '" order by $id asc limit 5';
+        '" order by $id asc limit 20';
       return apiGet("/k/v1/records.json", {
         app: APP_PC_LEDGER,
         query: q,
-        fields: ["$id", "user_name", "m365_id", "m365_pw", "vpn_id", "vpn_pw"],
+        fields: ["$id", "user_name", "pc_status", "pc_name", "m365_id", "m365_pw", "vpn_id", "vpn_pw"],
       }).then(function (resp) {
         var rows = resp.records || [];
         return interpretCredentialHits(name, rows);
@@ -382,13 +382,46 @@
     };
   }
 
+  /** 674 pc_status: 廃棄/取消は除外。利用中があれば優先。残り1件のみ自動採用。 */
+  function resolvePcLedgerHits(name, rows) {
+    var list = rows || [];
+    var discardedInactive = 0;
+    var active = [];
+    var i;
+    for (i = 0; i < list.length; i++) {
+      var st = val(list[i], "pc_status");
+      if (st === "廃棄" || st === "取消") {
+        discardedInactive += 1;
+        continue;
+      }
+      active.push(list[i]);
+    }
+    if (!active.length) {
+      return { code: "NO_HIT", discardedInactive: discardedInactive };
+    }
+    var inUse = [];
+    for (i = 0; i < active.length; i++) {
+      if (val(active[i], "pc_status") === "利用中") inUse.push(active[i]);
+    }
+    var preferred = inUse.length ? inUse : active;
+    if (preferred.length === 1) {
+      return { code: "OK", record: preferred[0], discardedInactive: discardedInactive };
+    }
+    return { code: "MULTI_HIT", candidates: preferred, discardedInactive: discardedInactive };
+  }
+
   function interpretCredentialHits(name, rows) {
-    if (!rows.length) {
+    var resolved = resolvePcLedgerHits(name, rows);
+    if (resolved.code === "NO_HIT") {
       if (
         !window.confirm(
           '674(PC台帳) に「' +
             name +
-            '」がヒットしませんでした。\nM365/VPN を空のまま保存しますか？\n（氏名の表記ゆれの場合はキャンセルして修正してください）',
+            '」の稼働候補がありません' +
+            (resolved.discardedInactive
+              ? "（廃棄/取消 " + resolved.discardedInactive + " 件除外）"
+              : "") +
+            "。\nM365/VPN を空のまま保存しますか？\n（氏名の表記ゆれの場合はキャンセルして修正してください）",
         )
       ) {
         var err0 = new Error("674 同期をキャンセルしました（ヒットなし）");
@@ -397,18 +430,18 @@
       }
       return emptyCredentials();
     }
-    if (rows.length > 1) {
+    if (resolved.code === "MULTI_HIT") {
       var errM = new Error(
         '674(PC台帳) に「' +
           name +
-          '」が複数ヒット（' +
-          rows.length +
-          ' 件）しました。同姓同名は浜田に事前相談してください（自動採用しません）。',
+          '」の稼働候補が複数（' +
+          resolved.candidates.length +
+          ' 件）あります。同姓同名や複数PCは浜田に事前相談してください（自動採用しません）。',
       );
       errM.syncCode = "MULTI_HIT";
       throw errM;
     }
-    var r = rows[0];
+    var r = resolved.record;
     return {
       m365_id: val(r, "m365_id"),
       m365_pw: val(r, "m365_pw"),
