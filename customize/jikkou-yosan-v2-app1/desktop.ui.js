@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-28-ver02-name3-wide-title
+  // @JY_V2_BUILD 2026-07-28-ver02-pane-tint
   // U34: 保存・セル編集の再描画／reload でページ上部へ跳ばない（縦・横位置を維持）
 
   const JY2_STYLE_ID = "jy2-shell-style";
@@ -214,11 +214,14 @@
       ".jy2-tab[data-read-only='true']::after{content:' 🔒';font-size:11px}",
       ".jy2-pane{display:none;min-height:0;padding:8px 12px 14px;background:#fff;border:1px solid #cbd5e1;border-top:none;border-radius:0 0 8px 8px;max-width:100%;min-width:0;width:100%;box-sizing:border-box;overflow-x:clip;overflow-y:visible}",
       ".jy2-pane[data-active='true']{display:block}",
-      ".jy2-pane[data-tab-id='header'][data-active='true']{border-color:#94a3b8;border-top:3px solid #64748b;background:#fff}",
-      ".jy2-pane[data-tab-id='summary'][data-active='true']{border-color:#93c5fd;border-top:3px solid #3b82f6;background:#fff}",
-      ".jy2-pane[data-tab-id='detail'][data-active='true']{border-color:#86efac;border-top:3px solid #22c55e;background:#fff}",
-      ".jy2-pane[data-tab-id='actual'][data-active='true']{border-color:#fcd34d;border-top:3px solid #f59e0b;background:#fff}",
-      ".jy2-pane[data-tab-id='version'][data-active='true']{border-color:#c4b5fd;border-top:3px solid #7c3aed;background:#fff}",
+      // U38: タブ切替が分かるようペイン全体を薄い色面に（表セルは白維持）
+      ".jy2-pane[data-tab-id='header'][data-active='true']{border-color:#94a3b8;border-top:3px solid #64748b;background:#f1f5f9}",
+      ".jy2-pane[data-tab-id='summary'][data-active='true']{border-color:#93c5fd;border-top:3px solid #3b82f6;background:#e8f4fd}",
+      ".jy2-pane[data-tab-id='detail'][data-active='true']{border-color:#86efac;border-top:3px solid #22c55e;background:#e8f5e9}",
+      ".jy2-pane[data-tab-id='actual'][data-active='true']{border-color:#fcd34d;border-top:3px solid #f59e0b;background:#fff3e0}",
+      ".jy2-pane[data-tab-id='version'][data-active='true']{border-color:#c4b5fd;border-top:3px solid #7c3aed;background:#f3e8ff}",
+      ".jy2-pane[data-active='true'] .jy2-table,.jy2-pane[data-active='true'] .jy2-detail-table,.jy2-pane[data-active='true'] .jy2-actual-table,.jy2-pane[data-active='true'] .jy2-version-table,.jy2-pane[data-active='true'] .jy2-budget-summary,.jy2-pane[data-active='true'] .jy2-detail-block{background:#fff}",
+      ".jy2-pane[data-active='true'] .jy2-table-scroll,.jy2-pane[data-active='true'] .jy2-actual-scroll{background:transparent}",
       // A-07: Ver.01同趣旨のシート見出し。sticky 下に常時表示しスクロールで隠れない
       ".jy2-sticky-sheet-banner{display:flex;justify-content:center;align-items:center;width:100%;margin:4px 0 0;padding:0 8px 6px;box-sizing:border-box}",
       /* シート見出しは sticky のみ。ペイン内バナーは Dom に残さない／残っても空間ゼロ */

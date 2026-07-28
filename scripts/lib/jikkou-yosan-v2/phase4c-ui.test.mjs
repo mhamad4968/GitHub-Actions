@@ -699,6 +699,26 @@ test("U37 定義及び品名は列幅拡大＋fullTitleホバー全文", () => {
   );
 });
 
+test("U38 タブ別ペイン色面（総括青・内訳緑・原価橙・版紫）", () => {
+  const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
+  assert.match(
+    source,
+    /data-tab-id='summary'\]\[data-active='true'\]\{[^}]*background:#e8f4fd/,
+  );
+  assert.match(
+    source,
+    /data-tab-id='detail'\]\[data-active='true'\]\{[^}]*background:#e8f5e9/,
+  );
+  assert.match(
+    source,
+    /data-tab-id='actual'\]\[data-active='true'\]\{[^}]*background:#fff3e0/,
+  );
+  assert.match(
+    source,
+    /data-tab-id='version'\]\[data-active='true'\]\{[^}]*background:#f3e8ff/,
+  );
+});
+
 test("U5 jy2ToFullWidthKana normalizes halfwidth kana with NFKC (not code offset)", () => {
   const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
   assert.match(
