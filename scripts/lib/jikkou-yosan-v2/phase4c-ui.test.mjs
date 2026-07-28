@@ -686,6 +686,19 @@ test("U36 取引先もリストのみ（候補は打鍵で絞り込み・リス�
   assert.match(source, /リストにありません/);
 });
 
+test("U37 定義及び品名は列幅拡大＋fullTitleホバー全文", () => {
+  const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
+  assert.match(
+    source,
+    /\.jy2-detail-table th:nth-child\(3\),\s*\.jy2-detail-table td:nth-child\(3\)\{min-width:16rem\}/,
+  );
+  assert.match(source, /opts\.fullTitle/);
+  assert.match(
+    source,
+    /jy2ComboInput\(\s*documentRef,\s*row\.name3,\s*rowSuggest\.name3,[\s\S]*?\{ fullTitle: true \}/,
+  );
+});
+
 test("U5 jy2ToFullWidthKana normalizes halfwidth kana with NFKC (not code offset)", () => {
   const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
   assert.match(

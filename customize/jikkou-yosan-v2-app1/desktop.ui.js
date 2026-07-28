@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-26-ver02-vendor-list-only
+  // @JY_V2_BUILD 2026-07-28-ver02-name3-wide-title
   // U34: 保存・セル編集の再描画／reload でページ上部へ跳ばない（縦・横位置を維持）
 
   const JY2_STYLE_ID = "jy2-shell-style";
@@ -329,6 +329,10 @@
       ".jy2-detail-table th.jy2-th-stacked{min-width:4.5rem;padding:6px 4px!important}",
       ".jy2-detail-table .jy2-th-stack .jy2-th-label{white-space:normal;max-width:6.5rem;line-height:1.25}",
       ".jy2-detail-table .jy2-combo-wrap{min-width:8.5rem}",
+      // 定義及び品名(3列目): 長文見切れ緩和（契約工種 C16 と同趣旨・ホバー全文は fullTitle）
+      ".jy2-detail-table th:nth-child(3),.jy2-detail-table td:nth-child(3){min-width:16rem}",
+      ".jy2-detail-table td:nth-child(3) .jy2-combo-wrap{min-width:16rem}",
+      ".jy2-detail-table td:nth-child(3) .jy2-input{min-width:14rem}",
       ".jy2-detail-table td .jy2-input{min-width:5.5rem}",
       ".jy2-detail-table td .jy2-select{min-width:4.5rem}",
       ".jy2-footer-row td{background:#f8fafc}",
@@ -711,11 +715,13 @@
   // opts.displayBlank: U27 連続同値は初期表示を空にし、focus で保存値を一時表示。
   // opts.listOnly: 候補あり時はリスト外の非空値を blur/change で拒否（空クリアは可）。
   //   既存保存値がリスト外でも編集するまで維持。拒否時は lastCommitted へ復元。
+  // opts.fullTitle: 見切れ時ホバーで全文（定義及び品名など長文列）。listOnly 拒否中は miss 文言優先。
   function jy2ComboInput(documentRef, value, options, onCommit, opts = {}) {
     const wrap = documentRef.createElement("span");
     wrap.className = "jy2-combo-wrap";
     const stored = value === null || value === undefined ? "" : String(value);
     const displayBlank = Boolean(opts.displayBlank) && jy2HasText(stored);
+    const fullTitle = Boolean(opts.fullTitle);
     const input = documentRef.createElement("input");
     input.type = "text";
     input.className = "jy2-input jy2-combo";
@@ -724,6 +730,13 @@
     let revealed = false;
     let composing = false;
     let lastCommitted = stored.trim();
+    const syncFullTitle = () => {
+      if (!fullTitle) return;
+      const shown = input.value.trim();
+      const tip = shown || (displayBlank ? stored.trim() : "");
+      input.title = tip;
+    };
+    if (fullTitle) syncFullTitle();
     // 打鍵候補用 datalist（右 select と同一候補）。id は一意採番。
     const listId = `jy2-dl-${++JY2_COMBO_UID}`;
     const datalist = documentRef.createElement("datalist");
@@ -761,7 +774,8 @@
     const clearMiss = () => {
       miss.hidden = true;
       miss.textContent = "";
-      input.title = "";
+      if (fullTitle) syncFullTitle();
+      else input.title = "";
     };
     const showMiss = (msg = "リストにありません") => {
       miss.textContent = msg;
@@ -805,6 +819,7 @@
       if (opts.commitExactOption && seen.has(input.value.trim())) commit();
     });
     input.addEventListener("input", () => {
+      if (fullTitle) syncFullTitle();
       // 工種番号など既知候補と完全一致した時点で、Tab/blurを待たず即時反映。
       if (!composing && opts.commitExactOption && seen.has(input.value.trim())) commit();
     });
@@ -815,6 +830,7 @@
       clearMiss();
       input.value = picked;
       lastCommitted = picked;
+      if (fullTitle) syncFullTitle();
       onCommit(picked);
       select.selectedIndex = 0;
     });
@@ -6070,6 +6086,7 @@
           row.name3,
           rowSuggest.name3,
           (value) => commit("name3")(jy2ToFullWidthKana(value)),
+          { fullTitle: true },
         );
         name3Ctrl.dataset.jy2Field = "name3";
         name3.appendChild(name3Ctrl);
@@ -6165,7 +6182,15 @@
         jy2MarkNameBlankVisual(name2Cell, name2BlankVisual);
         tr.appendChild(name1Cell);
         tr.appendChild(name2Cell);
-        tr.appendChild(jy2Cell(documentRef, "td", "", row.name3));
+        {
+          const name3Ro = jy2Cell(documentRef, "td", "", row.name3);
+          const name3Text =
+            row.name3 === null || row.name3 === undefined
+              ? ""
+              : String(row.name3).trim();
+          if (name3Text) name3Ro.title = name3Text;
+          tr.appendChild(name3Ro);
+        }
         tr.appendChild(jy2Cell(documentRef, "td", "", row.unit));
         tr.appendChild(jy2Cell(documentRef, "td", "jy2-num", row.quantity));
         tr.appendChild(

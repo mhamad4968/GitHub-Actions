@@ -1,11 +1,11 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-28 18:31 JST — 756依頼者レビューは**明日(7/29)**。メール未回答は回収後・**7/29夜に報告見込み**。
+**最終更新**: 2026-07-28 18:45 JST — 756 U37（定義及び品名見切れ緩和）LIVE rev**155**。依頼者レビューは**明日(7/29)**。
 
-**Git**: **`d6df3690`** = `origin/main` — push 済
+**Git**: **`f71d4b86`** = `origin/main` — push 済
 
-**本日状態（要約）**: **東海支店iPad** DB**769**/Dash**770** M1–M7 完了・浜田目視OK。SPEC 確定版。App **756** LIVE rev**154**（[一覧](https://jbis-kintone.cybozu.com/k/756/)）。確認パック送付 **完了扱い**。依頼者レビュー＝**7/29**。RAG aide / LOTO7。720/721 非触。
+**本日状態（要約）**: **東海支店iPad** DB**769**/Dash**770** M1–M7 完了・浜田目視OK。SPEC 確定版。App **756** LIVE rev**155** BUILD `name3-wide-title`（U37見切れ緩和）。確認パック送付 **完了扱い**。依頼者レビュー＝**7/29**。RAG aide / LOTO7。720/721 非触。
 
 **継続メモ**:
 1. 東海iPad — 運用観察（中継 bat・tokai 保存時同期）
@@ -18,13 +18,13 @@
 
 **案内規律（浜田 2026-07-28）**: **完了済の件を GO待ち／次の1手／質問に出さない**（履歴ログに残っていても現行待ちと混同禁止。浜田の勘違い防止）。
 
-**調査正本**: 東海iPad SPEC確定版・769/770。756 SPEC U35/U36 rev154。確認パック `…confirm-pack-pre-0727.md`＝送付不要確定。RAG aide runbook。LOTO7 B+C。
+**調査正本**: 東海iPad SPEC確定版・769/770。756 SPEC U35–U37 rev155。確認パック `…confirm-pack-pre-0727.md`＝送付不要確定。RAG aide runbook。LOTO7 B+C。
 
 **観測期間**: **H9/△2**: metricsEligibleAfter=**2026-07-18** · reviewDate=**2026-07-25** · early GREEN/降格 **禁止**
 
 **運用メモ**: 経営会議7月度完了。品質ゲート `push-deploy-quality-gates-v2.md` · Lifecycle v2 · closures=9。
 
-**688**: heat-closed以外触らない · **674**: 購入先OK · **736**: 触らない · **756/757/758**: LIVE rev154・R-11済／残R-12/13（依頼者確認中） · **712**: deploy禁止
+**688**: heat-closed以外触らない · **674**: 購入先OK · **736**: 触らない · **756/757/758**: LIVE rev155・U37済／R-11済／残R-12/13（依頼者確認中） · **712**: deploy禁止
 
 ## クローズ済み（`data/cio-project-closures.json` — 9件）
 業務改善697–713 / Wi-Fi718–719 / JR iPad720–721 / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **ML750–751** / **Kintoneアカウント752–753** — **closed-v1**
@@ -36,14 +36,14 @@
 | **677–679** | 触らない |
 | **SKYSEA** | 8/3 問い合わせまで実PC配信禁止 |
 | **736** | 現行版保持・Ver.02 後も触らない |
-| **756/757/758** | LIVE rev154（vendor-list-only）・R-11済／残R-12/13（確認中）・Excel |
+| **756/757/758** | LIVE rev155（name3-wide-title／U37）・R-11済／残R-12/13（確認中）・Excel |
 | **712** | 削除済 — deploy 禁止 |
 ## セッション切替後の自律復元（Lifecycle v2 鏡像）
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
 **禁止（本中断）**: stash pop／force push／旧756 customize再deployで今日の UI を潰す＝**先祖返り禁止**。env `JIKKOU_YOSAN_V2_BUILD` は build 前に消す。deploy後は同一セッションで R63 commit。735/736書込禁止。
-**凍結ゾーンpad**: rev154・LOTO7 B+C・RAG aide — minChars≥2800・行数≤50。確認パック＝送付不要確定。完了済をGO待ちに載せない。
+**凍結ゾーンpad**: rev155・U37・LOTO7 B+C・RAG aide — minChars≥2800・行数≤50。確認パック＝送付不要確定。完了済をGO待ちに載せない。
 <!-- archive: chat-sessions/checkpoints/checkpoint-archive-2026-07-22.md -->
 
 ## 2026-07-28
