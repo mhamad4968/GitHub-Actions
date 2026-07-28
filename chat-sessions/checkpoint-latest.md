@@ -39,10 +39,10 @@
 | **712** | 削除済 — deploy 禁止 |
 ## セッション切替後の自律復元（Lifecycle v2 鏡像）
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`
-**項番 -1** Desktop `AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** | **項番 -0** OKまで着手しない | **項番 0** `session:bootstrap`（verify:constitution-handoff / mandatory-read-gate / session-clock-health / sync-desktop / verify:desktop）| **日終わり** `cio:session:close-git`
-**L2** bootstrap NG → NEW-SESSION-STARTER 6部 | **CLOSE** export-handoff → sync → clock:clear → close-git | **3c** session-close-git-warn 報告必須
-**禁止**: stash pop／force push／旧756再deploy＝先祖返り禁止。env `JIKKOU_YOSAN_V2_BUILD` は build 前に消す。735/736書込禁止。deploy後同一セッションで R63 commit。
-**凍結ゾーンpad**: 7/27確認パック準備・756 LIVE rev154 vendor-list-only（U35着手日警告／U36取引先リストのみ）・LOTO7 B+C=`external/loto7/`（walk-forward・アンサンブル）・RAG aide 試行（〜8/9・CIO判定委任）・壁時計 http://127.0.0.1:38473/ — minChars≥2800・行数≤50 維持（空行肥大は `cio:checkpoint:rollup` が圧縮・D-CHKPT-02／WAKE恒久・2026-07-28是正済OK!!）。
+**項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031
+**L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
+**禁止（本中断）**: stash pop／force push／旧756 customize再deployで今日の UI を潰す＝**先祖返り禁止**。env `JIKKOU_YOSAN_V2_BUILD` は build 前に消す。deploy後は同一セッションで R63 commit。735/736書込禁止。
+**凍結ゾーンpad**: 7/27確認パック・rev154・LOTO7 B+C・RAG aide — minChars≥2800・行数≤50（空行は rollup 圧縮・2026-07-28是正）。
 <!-- archive: chat-sessions/checkpoints/checkpoint-archive-2026-07-22.md -->
 
 ## 2026-07-28
