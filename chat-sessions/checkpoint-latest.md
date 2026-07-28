@@ -1,23 +1,23 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-28 14:10 JST — WAKE・ブリーフィング。Desktop00–36通読・health/MCP/GHA緑。preamble≤50是正。
+**最終更新**: 2026-07-28 16:55 JST — 東海iPad台帳 SPEC確定・commit/push・セッション締め。
 
-**Git**: **`f8ac869f`** = `origin/main` — push 済
+**Git**: **`981a482e`**（締め中・push 予定）— SPEC 確定版 `df9b6485`
 
-**本日状態（要約）**: App **756** LIVE=`2026-07-26-ver02-vendor-list-only` rev**154**（U35/U36）。RAG aide 試行中（CIO判定委任）。LOTO7 B+C=`external/loto7/`。cold-start READY・壁時計 http://127.0.0.1:38473/。新アプリ作成は浜田相談後。
+**本日状態（要約）**: **東海支店iPad** DB**769**/Dash**770** M1–M7 完了・浜田目視OK。SPEC 確定版 `docs/plans/2026-07-28-tokai-ipad-ledger-kintone-spec.md`。App **756** LIVE rev**154**。RAG aide 試行中。LOTO7 B+C。720/721 非触。
 
 **継続メモ**:
-1. App756 運用観察・依頼あれば微調整
-2. 確認パック送付（浜田「送ってよい」後）`docs/plans/2026-07-25-jikkou-requester-confirm-pack-pre-0727.md`
-3. RAG aide 観察（`docs/runbooks/rag-constitution-aide-trial.md`）
-4. LOTO7 運用観察。**新アプリ**＝指示後に着手
+1. 東海iPad — 運用観察（中継 bat・tokai 保存時同期）
+2. App756 運用観察・依頼あれば微調整
+3. 確認パック送付（浜田「送ってよい」後）
+4. RAG aide / LOTO7 観察。**新アプリ**＝指示後
 
-**GO待ち**: 確認パック送付＝浜田一言。リストJSON＝依頼者or浜田GO。新アプリ＝相談・GO後。
+**GO待ち**: 確認パック送付＝浜田一言。新アプリ＝相談・GO後。
 
 **次の1手**: 浜田指示待ち（新アプリ作成の相談可）。確認パックは「送ってよい」後。
 
-**調査正本**: SPEC U35/U36・BUILD vendor-list-only rev154。RAG: `docs/runbooks/rag-constitution-aide-trial.md`。LOTO7: `docs/plans/2026-07-25-loto7-bc-improvement-spec.md` + `external/loto7/`。
+**調査正本**: 東海iPad SPEC確定版・769/770。756 SPEC U35/U36 rev154。RAG aide runbook。LOTO7 B+C。
 
 **観測期間**: **H9/△2**: metricsEligibleAfter=**2026-07-18** · reviewDate=**2026-07-25** · early GREEN/降格 **禁止**
 
@@ -46,6 +46,12 @@
 <!-- archive: chat-sessions/checkpoints/checkpoint-archive-2026-07-22.md -->
 
 ## 2026-07-28
+
+### 2026-07-28 夕（東海iPad・セッションCLOSE）
+- **東海支店iPad台帳**: DB **769** / Dash **770**（Space32/thread34）。M1–M7・浜田目視OK
+- SPEC **確定版** `docs/plans/2026-07-28-tokai-ipad-ledger-kintone-spec.md`（`df9b6485` push 済）
+- 中継: `docs/runbooks/tokai-ipad-sync-relay.md` / Desktop bat。720/721 非触
+- セッション締め: close-git（本エントリ）
 
 ### 2026-07-28 WAKE（ブリーフィング）
 - Desktop AI緊急用 **00〜36** 通読・理解報告済。憲法先読みパック E1 mandatory_reads 済
