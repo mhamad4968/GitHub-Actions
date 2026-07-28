@@ -466,11 +466,11 @@
       "note": null
     },
     "770": {
-      "build": "2026-07-28-tokai-ipad-dash-v3-summary-closed",
-      "fileKey": "25cd87f2-ac31-4352-afde-bf60b052fe59",
-      "revision": "9",
+      "build": "2026-07-28-tokai-ipad-dash-v3-list-pw-cols",
+      "fileKey": "f1e1be10-b616-4ae3-9099-8074e0758ce7",
+      "revision": "12",
       "relPath": "customize/tokai-ipad-dash/desktop.js",
-      "deployedAt": "2026-07-28T07:32:31.074Z",
+      "deployedAt": "2026-07-28T07:35:10.356Z",
       "note": null
     }
   }

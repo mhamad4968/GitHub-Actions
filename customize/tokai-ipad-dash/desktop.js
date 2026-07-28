@@ -28,7 +28,7 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
   "use strict";
 
   /** 東海支店 iPad 管理台帳 — DB(769) REST CRUD + 595/674 同期 + A4 印刷 + Excel 出力 */
-  var BUILD = "2026-07-28-tokai-ipad-dash-v3-summary-closed";
+  var BUILD = "2026-07-28-tokai-ipad-dash-v3-list-pw-cols";
 
   var APP_DB = 769;
   var APP_EMP_MASTER = 595;
@@ -97,7 +97,9 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
     { key: "rental_start_date", label: "レンタル開始" },
     { key: "shared_passcode", label: "共有パスコード" },
     { key: "m365_id", label: "M365 ID" },
+    { key: "m365_pw", label: "M365 PW" },
     { key: "vpn_id", label: "VPN ID" },
+    { key: "vpn_pw", label: "VPN PW" },
   ];
 
   /** Excel/印刷は PW も含む — SPEC §9, §14 */
@@ -573,7 +575,7 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
       ".tip-lifecycle-btn.active{background:#ea580c;color:#fff;border-color:#ea580c;font-weight:700;}" +
       ".tip-lifecycle-btn:hover:not(.active){background:#fff7ed;}" +
       ".tip-table-wrap{overflow:auto;max-height:calc(100vh - 300px);border:1px solid #cbd5e1;border-radius:6px;}" +
-      ".tip-table{border-collapse:collapse;width:100%;font-size:14px;min-width:1400px;}" +
+      ".tip-table{border-collapse:collapse;width:100%;font-size:14px;min-width:1680px;}" +
       ".tip-table th,.tip-table td{border:1px solid #e2e8f0;padding:6px 8px;vertical-align:middle;line-height:1.45;}" +
       ".tip-table th{background:#f1f5f9;position:sticky;top:0;z-index:1;font-size:14px;}" +
       ".tip-none{color:#64748b;font-style:italic;}" +
