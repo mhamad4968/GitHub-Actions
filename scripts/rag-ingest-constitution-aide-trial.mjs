@@ -26,6 +26,8 @@ const FIXED = [
   'docs/runbooks/checkpoint-handoff-template-v2.md',
   'docs/runbooks/ai-team-tool-routing-v2.md',
   'docs/runbooks/rag-constitution-aide-trial.md',
+  // 直近の案内規律（完了済≠GO待ち 等）— 夕反省に載るまで穴を埋める
+  'chat-sessions/checkpoint-latest.md',
 ];
 
 function copyFile(rel) {

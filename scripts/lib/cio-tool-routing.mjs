@@ -18,13 +18,30 @@ export function loadToolRoutingManifest(root) {
   return JSON.parse(fs.readFileSync(p, 'utf8'));
 }
 
+/**
+ * Short ASCII keywords (e.g. "CI") must not substring-hit inside longer words
+ * ("effectiveness"). CJK / longer tokens keep includes().
+ * @param {string} haystackLower
+ * @param {string} kwLower
+ */
+export function keywordMatches(haystackLower, kwLower) {
+  if (!kwLower) return false;
+  if (kwLower.length >= 4 || /[^\x00-\x7f]/.test(kwLower)) {
+    return haystackLower.includes(kwLower);
+  }
+  const escaped = kwLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`(?:^|[^a-z0-9_])${escaped}(?:$|[^a-z0-9_])`, 'i').test(
+    haystackLower,
+  );
+}
+
 /** @param {string} haystack @param {string[]} keywords */
 export function scoreIntent(haystack, keywords) {
   const lower = haystack.toLowerCase();
   let score = 0;
   for (const kw of keywords) {
     const k = kw.toLowerCase();
-    if (lower.includes(k)) score += k.length >= 4 ? 2 : 1;
+    if (keywordMatches(lower, k)) score += k.length >= 4 ? 2 : 1;
   }
   return score;
 }

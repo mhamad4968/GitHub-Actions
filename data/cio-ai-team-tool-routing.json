@@ -355,7 +355,7 @@
       "id": "github-ci",
       "category": "github-ci",
       "phase": ["WORK"],
-      "keywords": ["PR", "Actions", "CI", "workflow", "5038", "check失敗"],
+      "keywords": ["PR", "Actions", "GitHub CI", "workflow", "5038", "check失敗", "Actions CI"],
       "priority": 10,
       "lane": "gha-5038",
       "mcp": [
@@ -385,7 +385,20 @@
       "id": "internal-rag-research",
       "category": "research",
       "phase": ["WORK", "ORIENT"],
-      "keywords": ["spec", "手順", "TSB", "社内ドキュ", "横断調査", "RAG", "夕反省", "憲法ルール"],
+      "keywords": [
+        "spec",
+        "手順",
+        "TSB",
+        "社内ドキュ",
+        "横断調査",
+        "RAG",
+        "夕反省",
+        "憲法ルール",
+        "query_documents",
+        "aide",
+        "効き目",
+        "ナレッジ"
+      ],
       "priority": 10,
       "mcp": [
         { "server": "rag", "tools": ["query_documents"], "priority": 10 },

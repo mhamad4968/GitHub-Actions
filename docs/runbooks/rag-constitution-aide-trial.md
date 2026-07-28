@@ -53,11 +53,22 @@ ingest 対象は `npm run rag:ingest:constitution-aide-trial`（`scripts/rag-ing
 
 **広げ方（GO 後）**: troubleshooting 全量・session 直近・SPEC レーン別 — 一括ではなく **レーン単位**。
 
+## 5b. 中間観測（2026-07-28 · CIO）
+
+| 観測 | 判定 |
+|------|------|
+| 索引規模 | hybrid · docs≈276 · chunks≈14k — **稼働している** |
+| 当たり良い例 | tool-routing / R63 / aide runbook 自体 — **当たりやすい** |
+| 当たり弱い例 | 曖昧クエリ「§1 四行」「完了済をGO待ち」→ 旧反省・無関係に偏る。**Exact / 固有語**だと checkpoint が当たる（再 ingest 後） |
+| ルート誤配 | intent に `effectiveness` があると github-ci の短語 `CI` が部分一致（**修正済**: 短 ASCII は単語境界） |
+| scope 注意 | MCP base は `/mnt/c/...`。Windows 風 `C:\...` scope は **マッチ0**（相対扱い） |
+| 結論（中間） | **効き目は「当たり付け」としては出ている**。正本の代替にはなっていない（設計どおり）。**クエリの具体性**と**現行案内の ingest**が効きを左右。フル拡大は 8/9 判定後 |
+
 ## 6. 週次メンテ（CIO）
 
 1. 正本 4 + constitution ミラー: `npm run rag:mirror:canonical-docs`
 2. 試行パック再 ingest: `npm run rag:ingest:constitution-aide-trial`（**Windows リポ**＝正本）
-3. スモーク: MCP `query_documents` で「夕反省 明日やること 禁止」等が当たること
+3. スモーク: `npm run rag:aide-smoke`（または MCP `query_documents` で「夕反省 明日やること 禁止」「完了済をGO待ちに出さない」）
 
 ### MCP 経路（2026-07-26 修正）
 
