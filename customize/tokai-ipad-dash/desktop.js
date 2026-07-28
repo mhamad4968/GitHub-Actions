@@ -28,7 +28,7 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
   "use strict";
 
   /** 東海支店 iPad 管理台帳 — DB(769) REST CRUD + 595/674 同期 + A4 印刷 + Excel 出力 */
-  var BUILD = "2026-07-28-tokai-ipad-dash-v3-location-summary";
+  var BUILD = "2026-07-28-tokai-ipad-dash-v3-summary-closed";
 
   var APP_DB = 769;
   var APP_EMP_MASTER = 595;
@@ -1577,7 +1577,7 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
       '<button type="button" id="tip-reload" class="kintoneplugin-button-normal">再読込</button>' +
       "</div>" +
       '<div id="tip-meta" class="tip-meta"></div>' +
-      '<details class="tip-summary-acc" id="tip-summary-acc" open>' +
+      '<details class="tip-summary-acc" id="tip-summary-acc">' +
       "<summary>拠点別台数（利用＝有効）</summary>" +
       '<div class="tip-summary-wrap"><table class="tip-summary"><thead><tr>' +
       "<th>拠点</th><th>利用中（有効）</th><th>廃棄</th><th>合計</th>" +
