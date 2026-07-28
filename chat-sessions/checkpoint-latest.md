@@ -24,7 +24,7 @@
 
 **運用メモ**: 経営会議7月度完了。品質ゲート `push-deploy-quality-gates-v2.md` · Lifecycle v2 · closures=9。
 
-**688**: heat-closed以外触らない · **674**: 購入先OK · **736**: 触らない · **756/757/758**: LIVE rev154・残R-11/12/13 · **712**: deploy禁止
+**688**: heat-closed以外触らない · **674**: 購入先OK · **736**: 触らない · **756/757/758**: LIVE rev154・R-11済／残R-12/13（依頼者確認中） · **712**: deploy禁止
 
 ## クローズ済み（`data/cio-project-closures.json` — 9件）
 業務改善697–713 / Wi-Fi718–719 / JR iPad720–721 / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **ML750–751** / **Kintoneアカウント752–753** — **closed-v1**
@@ -36,7 +36,7 @@
 | **677–679** | 触らない |
 | **SKYSEA** | 8/3 問い合わせまで実PC配信禁止 |
 | **736** | 現行版保持・Ver.02 後も触らない |
-| **756/757/758** | LIVE rev154（vendor-list-only）・残R-11/12/13・Excel |
+| **756/757/758** | LIVE rev154（vendor-list-only）・R-11済／残R-12/13（確認中）・Excel |
 | **712** | 削除済 — deploy 禁止 |
 ## セッション切替後の自律復元（Lifecycle v2 鏡像）
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`
