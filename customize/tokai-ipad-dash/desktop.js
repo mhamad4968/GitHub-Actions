@@ -28,7 +28,7 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
   "use strict";
 
   /** 東海支店 iPad 管理台帳 — DB(769) REST CRUD + 595/674 同期 + A4 印刷 + Excel 出力 */
-  var BUILD = "2026-07-28-tokai-ipad-dash-v3-list-pw-cols";
+  var BUILD = "2026-07-28-tokai-ipad-dash-v3-list-intro-date";
 
   var APP_DB = 769;
   var APP_EMP_MASTER = 595;
@@ -94,7 +94,7 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
     { key: "device_name", label: "端末名" },
     { key: "phone_number", label: "電話番号" },
     { key: "model", label: "機種" },
-    { key: "rental_start_date", label: "レンタル開始" },
+    { key: "rental_start_date", label: "導入日" },
     { key: "shared_passcode", label: "共有パスコード" },
     { key: "m365_id", label: "M365 ID" },
     { key: "m365_pw", label: "M365 PW" },
@@ -108,7 +108,7 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
     { key: "location", label: "拠点" },
     { key: "user_name", label: "利用者" },
     { key: "device_name", label: "端末名" },
-    { key: "rental_start_date", label: "レンタル開始日" },
+    { key: "rental_start_date", label: "導入日" },
     { key: "model", label: "機種" },
     { key: "phone_number", label: "電話番号" },
     { key: "imei", label: "IMEI" },
@@ -795,7 +795,7 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
       '<label>端末名<input type="text" id="tip-f-device" value="' +
       esc(r.device_name || "") +
       '" readonly class="tip-readonly"></label>' +
-      '<label>レンタル開始日<input type="date" id="tip-f-rental-start" value="' +
+      '<label>導入日<input type="date" id="tip-f-rental-start" value="' +
       esc(r.rental_start_date || "") +
       '"></label>' +
       '<label>機種<input type="text" id="tip-f-model" value="' +
@@ -1429,7 +1429,7 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
       { label: "拠点", value: row.location },
       { label: "利用者", value: row.user_name },
       { label: "端末名", value: row.device_name },
-      { label: "レンタル開始日", value: row.rental_start_date },
+      { label: "導入日", value: row.rental_start_date },
       { label: "機種", value: row.model },
       { label: "電話番号", value: row.phone_number },
       { label: "IMEI", value: row.imei },
