@@ -168,3 +168,17 @@ npm run cio:tool:route:test
 **新セッション開始時**: `npm run cio:grok:session-reset`（cold-start Phase 5b 内包）  
 **意図ルーティング**: `npm run cio:tool:route -- --intent "grok verify loop lint fix"`  
 **禁止**: Grok 単独での deploy · kintone PUT · push
+
+---
+
+## 11. RAG `query_documents` の scope（2026-07-28）
+
+MCP rag の `BASE_DIR` は **`/mnt/c/Users/.../kintone-ai-lab`**（WSL 経由）。
+
+| 指定 | 結果 |
+|------|------|
+| scope 省略 | 全索引（通常これ） |
+| `/mnt/c/Users/.../kintone-ai-lab/.rag/extra-docs/...` | プレフィックス一致可 |
+| `C:\Users\...` | **マッチ0**（絶対パス扱いにならない） |
+
+正本はリポ Read。RAG は当たり付けのみ（`docs/runbooks/rag-constitution-aide-trial.md`）。

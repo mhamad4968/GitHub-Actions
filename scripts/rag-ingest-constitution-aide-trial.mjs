@@ -60,6 +60,11 @@ function recentEveningReflections() {
 }
 
 function main() {
+  const syncOnly =
+    process.argv.includes('--sync-only') ||
+    process.env.RAG_AIDE_SYNC_ONLY === '1' ||
+    process.env.RAG_AIDE_SYNC_ONLY === 'true';
+
   fs.mkdirSync(DEST, { recursive: true });
   for (const f of fs.readdirSync(DEST)) {
     fs.unlinkSync(path.join(DEST, f));
@@ -73,7 +78,14 @@ function main() {
     if (copyFile(rel)) n += 1;
   }
 
-  console.log(`[constitution-aide-trial] ${n} files → ${path.relative(ROOT, DEST)}`);
+  console.log(
+    `[constitution-aide-trial] ${n} files → ${path.relative(ROOT, DEST)}${syncOnly ? ' (sync-only)' : ''}`,
+  );
+  if (syncOnly) {
+    console.log('[constitution-aide-trial] skip vector ingest (--sync-only)');
+    process.exit(0);
+  }
+
   const r = spawnSync(process.execPath, [path.join(__dirname, 'rag-ingest-path.mjs'), DEST], {
     cwd: ROOT,
     stdio: 'inherit',

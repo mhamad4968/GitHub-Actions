@@ -468,8 +468,22 @@ if (!FAST) {
   rag = runMorningPrepRag(runCmd, log);
   r7 = {
     ok: rag.ok,
-    stdout: [rag.rMirror.stdout, rag.rExtra.stdout, rag.rDocs.stdout].filter(Boolean).join('\n---\n'),
-    stderr: [rag.rMirror.stderr, rag.rExtra.stderr, rag.rDocs.stderr].filter(Boolean).join('\n'),
+    stdout: [
+      rag.rMirror.stdout,
+      rag.rExtra.stdout,
+      rag.rDocs.stdout,
+      rag.rAide?.stdout,
+    ]
+      .filter(Boolean)
+      .join('\n---\n'),
+    stderr: [
+      rag.rMirror.stderr,
+      rag.rExtra.stderr,
+      rag.rDocs.stderr,
+      rag.rAide?.stderr,
+    ]
+      .filter(Boolean)
+      .join('\n'),
     exit: rag.ok ? 0 : 1,
   };
   if (!rag.fullDocs) {
@@ -482,6 +496,9 @@ if (!FAST) {
       '> ℹ️ **Windows RAG ingest**: 既定は **ミラーのみ**（数秒）。DB 反映は WSL cron 06:00。午後に ingest する場合は `MORNING_PREP_RAG_INGEST=1 npm run morning:ensure`\n',
     );
   }
+  sections.push(
+    `> ℹ️ **constitution-aide**: ${rag.aideFull ? '月曜/強制のため **フル smoke（ingest）**' : '毎回 **sync-only**'}（\`MORNING_PREP_RAG_AIDE=1\` でフル）。月曜フル後は MCP で2クエリ目視。\n`,
+  );
   sections.push(summary('RAG ingest', r7, { ok: '✅', ng: '⚠️', limit: 12 }));
   if (rag.ragHasInnerError) {
     sections.push('> ⚠ 内側エラー検知: stdout/stderr に `Error/ERR_/Exception` を含むためヘルススコアを失敗扱いに降格しました。\n');

@@ -9,8 +9,18 @@
  * - Windows: extra-docs のみ（憲法ミラー。通常 1〜3 分）
  * - Linux/WSL cron: extra-docs + docs/（フル。タイムアウト長め）
  * - フル docs/ を Windows で走らせるときのみ MORNING_PREP_RAG_DOCS=1
+ * - constitution-aide: 毎回 --sync-only。月曜 JST または MORNING_PREP_RAG_AIDE=1 でフル smoke
  */
 import { IS_WIN } from './repo-node-env.mjs';
+
+/** @returns {boolean} 月曜（Asia/Tokyo） */
+export function isMondayJst(now = new Date()) {
+  const wd = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Tokyo',
+    weekday: 'short',
+  }).format(now);
+  return wd === 'Mon';
+}
 
 /**
  * @param {(label: string, cmd: string, opts?: { timeoutMs?: number }) => { ok: boolean; stdout: string; stderr: string; exit: number }} runCmd
@@ -27,8 +37,13 @@ export function runMorningPrepRag(runCmd, log) {
     process.env.MORNING_PREP_RAG_INGEST === 'true' ||
     !IS_WIN;
 
+  const aideFull =
+    process.env.MORNING_PREP_RAG_AIDE === '1' ||
+    process.env.MORNING_PREP_RAG_AIDE === 'true' ||
+    isMondayJst();
+
   log(
-    `rag mode: mirror=always ingest=${runIngest ? 'yes' : 'skip(win-default)'} docs/=${fullDocs ? 'yes' : 'skip'}`,
+    `rag mode: mirror=always ingest=${runIngest ? 'yes' : 'skip(win-default)'} docs/=${fullDocs ? 'yes' : 'skip'} aide=${aideFull ? 'full-smoke' : 'sync-only'}`,
   );
 
   const rMirror = runCmd('rag-mirror', 'node scripts/rag-mirror-canonical-docs.mjs', {
@@ -65,12 +80,28 @@ export function runMorningPrepRag(runCmd, log) {
     });
   }
 
-  const ragOutput = [rMirror.stdout, rMirror.stderr, rExtra.stdout, rExtra.stderr, rDocs.stdout, rDocs.stderr]
+  const aideCmd = aideFull
+    ? 'node scripts/rag-aide-smoke.mjs'
+    : 'node scripts/rag-aide-smoke.mjs --sync-only';
+  const rAide = runCmd('rag-aide-smoke', aideCmd, {
+    timeoutMs: aideFull ? 180_000 : 60_000,
+  });
+
+  const ragOutput = [
+    rMirror.stdout,
+    rMirror.stderr,
+    rExtra.stdout,
+    rExtra.stderr,
+    rDocs.stdout,
+    rDocs.stderr,
+    rAide.stdout,
+    rAide.stderr,
+  ]
     .filter(Boolean)
     .join('\n');
   const ragHasInnerError = /\b(?:Error|ERR_[A-Z_]+|Exception|Traceback)\b/.test(ragOutput);
 
-  const ok = rMirror.ok && rExtra.ok && rDocs.ok && !ragHasInnerError;
+  const ok = rMirror.ok && rExtra.ok && rDocs.ok && rAide.ok && !ragHasInnerError;
 
   return {
     ok,
@@ -78,6 +109,8 @@ export function runMorningPrepRag(runCmd, log) {
     rMirror,
     rExtra,
     rDocs,
+    rAide,
+    aideFull,
     fullDocs,
     ragOutput,
   };

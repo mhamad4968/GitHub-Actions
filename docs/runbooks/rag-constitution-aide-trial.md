@@ -67,8 +67,11 @@ ingest 対象は `npm run rag:ingest:constitution-aide-trial`（`scripts/rag-ing
 ## 6. 週次メンテ（CIO）
 
 1. 正本 4 + constitution ミラー: `npm run rag:mirror:canonical-docs`
-2. 試行パック再 ingest: `npm run rag:ingest:constitution-aide-trial`（**Windows リポ**＝正本）
-3. スモーク: `npm run rag:aide-smoke`（または MCP `query_documents` で「夕反省 明日やること 禁止」「完了済をGO待ちに出さない」）
+2. 朝 prep: **毎回** `rag:aide-smoke --sync-only`／**月曜 JST**（または `MORNING_PREP_RAG_AIDE=1`）でフル `rag:aide-smoke`
+3. フル後の MCP 目視 2 クエリ:
+   - `夕反省 明日やること 禁止`
+   - `完了済を GO待ち／次の1手／質問に出さない`（Exact 寄り）
+4. scope を絞るときは **`/mnt/c/...` 形式**（`C:\` はマッチ0）— `ai-team-tool-routing-v2.md` §11
 
 ### MCP 経路（2026-07-26 修正）
 

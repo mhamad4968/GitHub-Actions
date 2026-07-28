@@ -570,6 +570,8 @@
     "rag:ingest:all": "npm run rag:ingest:rules && npm run rag:ingest:troubleshooting && npm run rag:ingest:sessions:recent",
     "rag:ingest:constitution-aide-trial": "node scripts/rag-ingest-constitution-aide-trial.mjs",
     "rag:aide-smoke": "node scripts/rag-aide-smoke.mjs",
+    "rag:aide-smoke:sync": "node scripts/rag-aide-smoke.mjs --sync-only",
+    "verify:mcp-chat-stamp": "node scripts/verify-mcp-chat-stamp.mjs",
     "restore:wiped": "node scripts/restore-wiped.mjs",
     "restore:wiped:dry": "node scripts/restore-wiped.mjs --dry",
     "watcher:start": "nohup node scripts/file-watcher.mjs > logs/file-watcher/watcher.log 2>&1 &",
