@@ -10,9 +10,31 @@ import {
   KINTONE_AI_TEAM_SCOPE_IDS,
 } from './kintone-ai-team-app-registry.mjs';
 
-assert.equal(KINTONE_AI_TEAM_ACTIVE_IDS.length, 66);
-assert.equal(KINTONE_AI_TEAM_RETIRED_IDS.length, 12);
-assert.equal(KINTONE_AI_TEAM_SCOPE_IDS.length, 78);
+// Golden counts — bump ONLY in the same commit that changes KINTONE_AI_TEAM_APP_REGISTRY
+// (2026-07-28: +769/770 東海支店iPad → active 66→68, scope 78→80). Drift = constitution-gates RED.
+const EXPECTED_ACTIVE = 68;
+const EXPECTED_RETIRED = 12;
+const EXPECTED_SCOPE = 80;
+assert.equal(
+  KINTONE_AI_TEAM_ACTIVE_IDS.length,
+  EXPECTED_ACTIVE,
+  `ACTIVE count drift: registry=${KINTONE_AI_TEAM_ACTIVE_IDS.length} expected=${EXPECTED_ACTIVE} — update this golden in the same commit as registry`,
+);
+assert.equal(
+  KINTONE_AI_TEAM_RETIRED_IDS.length,
+  EXPECTED_RETIRED,
+  `RETIRED count drift: registry=${KINTONE_AI_TEAM_RETIRED_IDS.length} expected=${EXPECTED_RETIRED}`,
+);
+assert.equal(
+  KINTONE_AI_TEAM_SCOPE_IDS.length,
+  EXPECTED_SCOPE,
+  `SCOPE count drift: registry=${KINTONE_AI_TEAM_SCOPE_IDS.length} expected=${EXPECTED_SCOPE}`,
+);
+assert.equal(
+  EXPECTED_ACTIVE + EXPECTED_RETIRED,
+  EXPECTED_SCOPE,
+  'EXPECTED_* golden invariant: active+retired must equal scope',
+);
 
 const markdown = `
 # apps

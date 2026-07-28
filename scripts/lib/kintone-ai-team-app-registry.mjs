@@ -1,6 +1,11 @@
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
+/**
+ * When editing data/kintone-ai-team-app-registry.json active/retired lists,
+ * bump EXPECTED_* golden counts in scripts/lib/kintone-app-inventory.test.mjs
+ * in the SAME commit — otherwise constitution-gates RED (e.g. 68 !== 66).
+ */
 const registryPath = fileURLToPath(
   new URL('../../data/kintone-ai-team-app-registry.json', import.meta.url),
 );
