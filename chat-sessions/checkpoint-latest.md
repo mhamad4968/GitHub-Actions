@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-28 16:55 JST — 東海iPad台帳 SPEC確定・commit/push・セッション締め。
 
-**Git**: **`c39cdbf6`** = `origin/main` — push 済
+**Git**: **`1947bdd6`** = `origin/main` — push 済（R44 parent）
 
 **本日状態（要約）**: **東海支店iPad** DB**769**/Dash**770** M1–M7 完了・浜田目視OK。SPEC 確定版 `docs/plans/2026-07-28-tokai-ipad-ledger-kintone-spec.md`。App **756** LIVE rev**154**。RAG aide 試行中。LOTO7 B+C。720/721 非触。
 
