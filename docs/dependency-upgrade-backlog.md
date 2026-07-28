@@ -4,7 +4,7 @@
 
 **自律境界（2026-07-02 浜田 GO）**: `AGENTS.md` **§38-1** — semver 内 minor/patch は CIO 自律可。**保留表の項目は無理に上げない**。
 
-**最終見直し**: 2026-07-02 — §38-1 制定 + eslint/globals minor 済
+**最終見直し**: 2026-07-28 — `globals` 17.8.0（pending V1 消化）
 
 ---
 
@@ -15,6 +15,7 @@
 | **nodemailer** 7→9 | high（複数 CVE） | **major** — SMTP regression テストなし | 浜田 GO + `V1-nodemailer` 提案 |
 | **form-data** ← `@kintone/cli` | high | **upstream 待ち** — `npm audit fix` 非 force 不可 | `@kintone/cli` 更新時 |
 | **xlsx** (SheetJS) | high | **修正版なし** — 代替未選定 | 代替ライブラリ調査ターン |
+| **axios / tar** ← `@kintone/cli` | high/moderate | **force のみ**（cli 破壊的ダウングレード案内） | `@kintone/cli` / rest-api-client 上流更新 |
 
 ---
 
@@ -24,10 +25,9 @@
 
 ---
 
-## 2. ~~`globals` のメジャー上げ（15 → 17）~~ — **済 2026-07-02**
+## 2. ~~`globals` のメジャー上げ（15 → 17）~~ — **済 2026-07-02**／patch **17.8.0 済 2026-07-28**
 
-- **実施**: `globals` **17.7.0**
-
+- **実施**: `globals` **17.8.0**（17.7.0 → 17.8.0 minor/patch・§38-1）
 ---
 
 ## 3. `npm audit` の `tmp` 経由（low ×5）と `--force`

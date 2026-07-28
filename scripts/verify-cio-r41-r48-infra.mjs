@@ -56,7 +56,12 @@ const MARKERS = {
 
   'scripts/cio-pre-implement-gate.mjs': ['R47', '--project', 'APP_DB'],
 
-  'scripts/cio-session-close-git.mjs': ['syncCheckpointGitAfterPush', 'skip-checkpoint-git-sync'],
+  'scripts/cio-session-close-git.mjs': [
+    'updateCheckpointGitHead',
+    'skip-checkpoint-git-sync',
+    'R44 parent',
+    'syncCheckpointGitAfterPush',
+  ],
 
 };
 

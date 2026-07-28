@@ -27,6 +27,8 @@ import { touchesGovernance } from './lib/cio-governance-touch.mjs';
 import {
   gitShortHead,
   updateCheckpointGitHead,
+  // syncCheckpointGitAfterPush — P3 では push 後 tip stamp すると chase commit が増えるため未使用。
+  // 締めは push 前に updateCheckpointGitHead(parent)（R44）で固定する。
 } from './lib/cio-checkpoint-git-sync.mjs';
 import { CHECKPOINT_REL } from './lib/cio-checkpoint-read.mjs';
 import { repairCheckpointBootstrapBlock } from './lib/cio-handoff-template.mjs';
