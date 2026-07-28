@@ -45,7 +45,8 @@
     "nas-ledger-dash": "749",
     "mailing-list-db": "750",
     "mailing-list-dash": "751",
-    "tokai-ipad-db": "769"
+    "tokai-ipad-db": "769",
+    "tokai-ipad-dash": "770"
   },
   "bundlePatterns": {
     "wifi-ssid-dash": {
@@ -97,6 +98,11 @@
       "deployFile": "desktop.js",
       "lintFile": "desktop.src.js",
       "bundleNpm": "kintone-account:bundle-dash"
+    },
+    "tokai-ipad-dash": {
+      "deployFile": "desktop.js",
+      "lintFile": "desktop.src.js",
+      "bundleNpm": "tokai-ipad:bundle-dash"
     }
   }
 }

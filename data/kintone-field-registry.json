@@ -387,11 +387,11 @@
     },
     "770": {
       "label": "東海支店iPad管理台帳",
-      "customizeDirs": [],
+      "customizeDirs": ["tokai-ipad-dash"],
       "inheritsRecordFieldsFrom": "769",
       "relatedAppFieldsFrom": ["595", "674"],
       "specRel": "docs/plans/2026-07-28-tokai-ipad-ledger-kintone-spec.md",
-      "notes": "Dash UI 未着手。REST to 769 + 裏側同期 595/674。Lookup 禁止。"
+      "notes": "Dash UI v1. REST to 769. admin=595/674 direct; tokai=sync-relay. Lookup 禁止。"
     }
   }
 }
