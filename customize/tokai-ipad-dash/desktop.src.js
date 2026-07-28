@@ -2,7 +2,7 @@
   "use strict";
 
   /** 東海支店 iPad 管理台帳 — DB(769) REST CRUD + 595/674 同期 + A4 印刷 + Excel 出力 */
-  var BUILD = "2026-07-28-tokai-ipad-dash-v3-list-intro-date";
+  var BUILD = "2026-07-28-tokai-ipad-dash-v3-user-print-landscape";
 
   var APP_DB = 769;
   var APP_EMP_MASTER = 595;
@@ -1384,17 +1384,24 @@
     return (
       '@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap");' +
       "*{box-sizing:border-box;}" +
-      'body{margin:0;padding:24px;background:#f8fafc;font-family:"Noto Sans JP",system-ui,sans-serif;color:#0f172a;-webkit-print-color-adjust:exact;print-color-adjust:exact;}' +
-      ".tippr-page{max-width:720px;margin:0 auto;}" +
-      ".tippr-header{background:linear-gradient(135deg,#ffedd5 0%,#fff7ed 100%);border:1px solid #fdba74;border-radius:16px;padding:24px 28px 20px;margin-bottom:20px;text-align:center;}" +
-      ".tippr-header h1{margin:0;font-size:20pt;font-weight:700;color:#7c2d12;}" +
-      ".tippr-header p{margin:6px 0 0;font-size:11pt;color:#9a3412;}" +
-      ".tippr-body{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px 24px;box-shadow:0 4px 16px rgba(15,23,42,.06);}" +
-      ".tippr-row{margin-bottom:14px;}" +
-      ".tippr-row:last-child{margin-bottom:0;}" +
-      ".tippr-lab{display:block;font-size:11pt;font-weight:700;color:#64748b;margin-bottom:3px;}" +
-      ".tippr-val{display:block;font-size:16pt;font-weight:700;line-height:1.35;word-break:break-all;}" +
-      "@media print{@page{size:A4 portrait;margin:10mm;}body{padding:0;background:#fff;}.tippr-header{border-radius:0;}.tippr-body{box-shadow:none;}.tippr-header h1{font-size:18pt;}.tippr-val{font-size:14pt;}}"
+      'body{margin:0;padding:12px 16px;background:#fff;font-family:"Noto Sans JP",system-ui,sans-serif;color:#0f172a;-webkit-print-color-adjust:exact;print-color-adjust:exact;}' +
+      ".tippr-page{width:100%;max-width:100%;page-break-inside:avoid;}" +
+      ".tippr-header{background:linear-gradient(135deg,#ffedd5 0%,#fff7ed 100%);border:1px solid #fdba74;border-radius:8px;padding:10px 16px;margin-bottom:10px;display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 16px;}" +
+      ".tippr-header h1{margin:0;font-size:14pt;font-weight:700;color:#7c2d12;}" +
+      ".tippr-header p{margin:0;font-size:11pt;font-weight:700;color:#9a3412;}" +
+      ".tippr-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px;background:#fff;}" +
+      ".tippr-cell{min-width:0;padding:4px 2px;border-bottom:1px dashed #e2e8f0;}" +
+      ".tippr-cell:nth-last-child(-n+3){border-bottom:none;}" +
+      ".tippr-lab{display:block;font-size:8.5pt;font-weight:700;color:#64748b;margin-bottom:2px;}" +
+      ".tippr-val{display:block;font-size:11pt;font-weight:700;line-height:1.3;word-break:break-word;overflow-wrap:anywhere;}" +
+      ".tippr-span2{grid-column:span 2;}" +
+      "@media print{" +
+      "@page{size:A4 landscape;margin:8mm;}" +
+      "body{padding:0;}" +
+      ".tippr-page{page-break-inside:avoid;}" +
+      ".tippr-header{border-radius:0;}" +
+      ".tippr-grid{border-radius:0;}" +
+      "}"
     );
   }
 
@@ -1404,22 +1411,24 @@
       { label: "利用者", value: row.user_name },
       { label: "端末名", value: row.device_name },
       { label: "導入日", value: row.rental_start_date },
-      { label: "機種", value: row.model },
+      { label: "ステータス", value: row.status },
       { label: "電話番号", value: row.phone_number },
+      { label: "機種", value: row.model, span2: true },
+      { label: "共有パスコード", value: row.shared_passcode },
       { label: "IMEI", value: row.imei },
       { label: "ICCID", value: row.iccid },
       { label: "Apple シリアル", value: row.apple_serial },
-      { label: "共有パスコード", value: row.shared_passcode },
       { label: "M365 ID", value: row.m365_id },
       { label: "M365 PW", value: row.m365_pw },
       { label: "VPN ID", value: row.vpn_id },
       { label: "VPN PW", value: row.vpn_pw },
-      { label: "ステータス", value: row.status },
     ];
     var body = items
       .map(function (it) {
         return (
-          '<div class="tippr-row"><span class="tippr-lab">' +
+          '<div class="tippr-cell' +
+          (it.span2 ? " tippr-span2" : "") +
+          '"><span class="tippr-lab">' +
           esc(it.label) +
           '</span><span class="tippr-val">' +
           esc(printVal(it.value)) +
@@ -1430,12 +1439,12 @@
     return (
       '<div class="tippr-page">' +
       '<header class="tippr-header"><h1>東海支店 iPad アカウント情報</h1>' +
-      '<p>' +
+      "<p>" +
       esc(row.device_name || "") +
       " ／ " +
       esc(row.user_name || "—") +
       "</p></header>" +
-      '<div class="tippr-body">' +
+      '<div class="tippr-grid">' +
       body +
       "</div></div>"
     );
