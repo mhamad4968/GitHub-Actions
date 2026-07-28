@@ -12,6 +12,10 @@
 ## 画面挙動の断定（#CON-01 / #R-UI-READ-01・2026-07-26）
 
 **画面ラベルや見た目だけで「手動／自動」等を断定しない。** 断定するときは該当の **commit／判定関数を Read した根拠**があること。未読なら「未確認」と書く。資料レビューは `docs/runbooks/requester-doc-review-one-at-a-time.md`。
+
+## 依頼者レビュー前の UI（#R-UI-VIS-01・2026-07-28）
+
+App756 等の見た目レーンで依頼者／浜田レビューに出す前は、`docs/runbooks/jikkou-yosan-v2-chrome-accept-checklist.md` の **視覚1巡（#11）** を自分で完了してから「コード上問題なし」と書かない。
 ## 書かないもの（別ファイルへ）
 
 | 内容 | 正本 |

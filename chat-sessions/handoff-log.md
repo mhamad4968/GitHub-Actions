@@ -5156,3 +5156,17 @@ npm run cio:morning:ready
 **触らない**: 688 / 677–679 / SKYSEA — 触らない
 
 ---
+
+### 2026-07-28 JST — **GHA / gates 是正（#D-GHA-01）**
+
+**要約**: GHA是正: inventory ACTIVE 68≠66 → f211185e （workflow=constitution-gates）
+
+**次の1手**: 浜田指示待ち（新アプリ作成の相談可）。
+
+**Git**: `f211185e` — GHA是正: inventory ACTIVE 68≠66 → f211185e （workflow=constitution-gates）
+
+**GO待ち**: なし
+
+**触らない**: 688 / 677–679 / SKYSEA — 触らない
+
+---
