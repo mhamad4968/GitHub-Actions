@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-07-28-ver02-pane-tint",
-      "fileKey": "41e1b7ca-60cc-48e7-bf4b-175fd0a20a3b",
-      "revision": "156",
+      "build": "2026-07-28-ver02-visual-polish",
+      "fileKey": "3a08788b-2599-46b2-a459-c7adb34d1a62",
+      "revision": "157",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-07-28T09:46:47.875Z",
+      "deployedAt": "2026-07-28T09:51:28.550Z",
       "note": null
     },
     "757": {

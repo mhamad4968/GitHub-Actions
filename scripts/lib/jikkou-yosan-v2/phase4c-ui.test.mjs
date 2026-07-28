@@ -719,6 +719,23 @@ test("U38 タブ別ペイン色面（総括青・内訳緑・原価橙・版紫�
   );
 });
 
+test("U39 視覚磨き（focus-visible・備考幅・節見出し連動）", () => {
+  const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
+  assert.match(source, /:focus-visible/);
+  assert.match(
+    source,
+    /\.jy2-detail-table th:nth-child\(8\),\s*\.jy2-detail-table td:nth-child\(8\)\{min-width:12rem\}/,
+  );
+  assert.match(
+    source,
+    /jy2TextInput\(documentRef, row\.note, commit\("note"\), \{\s*fullTitle: true/,
+  );
+  assert.match(
+    source,
+    /data-tab-id='detail'\] \.jy2-section-title\{[^}]*border-left-color:#059669/,
+  );
+});
+
 test("U5 jy2ToFullWidthKana normalizes halfwidth kana with NFKC (not code offset)", () => {
   const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
   assert.match(
