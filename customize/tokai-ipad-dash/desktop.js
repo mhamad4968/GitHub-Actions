@@ -28,7 +28,7 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
   "use strict";
 
   /** 東海支店 iPad 管理台帳 — DB(769) REST CRUD + 595/674 同期 + A4 印刷 + Excel 出力 */
-  var BUILD = "2026-07-28-tokai-ipad-dash-v3-user-print-landscape";
+  var BUILD = "2026-07-28-tokai-ipad-dash-v3-print-dense-design";
 
   var APP_DB = 769;
   var APP_EMP_MASTER = 595;
@@ -1408,71 +1408,121 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
 
   function userPrintStylesheet() {
     return (
-      '@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap");' +
+      '@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700&display=swap");' +
       "*{box-sizing:border-box;}" +
-      'body{margin:0;padding:12px 16px;background:#fff;font-family:"Noto Sans JP",system-ui,sans-serif;color:#0f172a;-webkit-print-color-adjust:exact;print-color-adjust:exact;}' +
-      ".tippr-page{width:100%;max-width:100%;page-break-inside:avoid;}" +
-      ".tippr-header{background:linear-gradient(135deg,#ffedd5 0%,#fff7ed 100%);border:1px solid #fdba74;border-radius:8px;padding:10px 16px;margin-bottom:10px;display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 16px;}" +
-      ".tippr-header h1{margin:0;font-size:14pt;font-weight:700;color:#7c2d12;}" +
-      ".tippr-header p{margin:0;font-size:11pt;font-weight:700;color:#9a3412;}" +
-      ".tippr-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px;background:#fff;}" +
-      ".tippr-cell{min-width:0;padding:4px 2px;border-bottom:1px dashed #e2e8f0;}" +
-      ".tippr-cell:nth-last-child(-n+3){border-bottom:none;}" +
-      ".tippr-lab{display:block;font-size:8.5pt;font-weight:700;color:#64748b;margin-bottom:2px;}" +
-      ".tippr-val{display:block;font-size:11pt;font-weight:700;line-height:1.3;word-break:break-word;overflow-wrap:anywhere;}" +
-      ".tippr-span2{grid-column:span 2;}" +
+      'html,body{margin:0;padding:0;background:#fff;color:#0f172a;font-family:"Noto Sans JP",system-ui,sans-serif;' +
+      "-webkit-print-color-adjust:exact;print-color-adjust:exact;}" +
+      ".tippr-page{width:100%;min-height:100%;page-break-inside:avoid;display:flex;flex-direction:column;}" +
+      ".tippr-hero{position:relative;display:flex;align-items:stretch;min-height:52px;background:#0f172a;color:#fff;overflow:hidden;}" +
+      ".tippr-hero::before{content:'';position:absolute;left:0;top:0;bottom:0;width:8px;background:#f97316;}" +
+      ".tippr-hero::after{content:'';position:absolute;right:-40px;top:-30px;width:140px;height:140px;" +
+      "border-radius:50%;background:rgba(249,115,22,.18);}" +
+      ".tippr-hero-main{flex:1;padding:10px 18px 10px 22px;display:flex;flex-direction:column;justify-content:center;gap:2px;z-index:1;}" +
+      ".tippr-kicker{margin:0;font-size:8pt;letter-spacing:.14em;font-weight:700;color:#fdba74;}" +
+      ".tippr-title{margin:0;font-size:15pt;font-weight:900;line-height:1.15;}" +
+      ".tippr-hero-side{min-width:210px;padding:8px 16px;background:rgba(15,23,42,.35);border-left:1px solid rgba(255,255,255,.12);" +
+      "display:flex;flex-direction:column;justify-content:center;gap:4px;z-index:1;}" +
+      ".tippr-device{margin:0;font-family:JetBrains Mono,Consolas,monospace;font-size:16pt;font-weight:700;color:#fff7ed;}" +
+      ".tippr-user{margin:0;font-size:11pt;font-weight:700;}" +
+      ".tippr-badge{display:inline-block;align-self:flex-start;padding:2px 8px;border-radius:999px;font-size:8pt;font-weight:700;" +
+      "background:#166534;color:#dcfce7;}" +
+      ".tippr-badge.is-disposed{background:#7f1d1d;color:#fee2e2;}" +
+      ".tippr-body{flex:1;display:grid;grid-template-columns:1.15fr .85fr;gap:8px;padding:8px;background:#f1f5f9;}" +
+      ".tippr-panel{background:#fff;border:1px solid #cbd5e1;border-radius:6px;overflow:hidden;display:flex;flex-direction:column;}" +
+      ".tippr-panel-h{margin:0;padding:6px 10px;font-size:9pt;font-weight:800;letter-spacing:.06em;color:#0f172a;" +
+      "background:linear-gradient(90deg,#ffedd5,#fff);border-bottom:2px solid #f97316;}" +
+      ".tippr-panel-b{padding:4px 0;flex:1;}" +
+      ".tippr-dl{display:grid;grid-template-columns:88px 1fr;gap:0;margin:0;}" +
+      ".tippr-dl dt,.tippr-dl dd{margin:0;padding:5px 10px;border-bottom:1px solid #e2e8f0;font-size:10pt;line-height:1.25;}" +
+      ".tippr-dl dt{color:#64748b;font-weight:700;background:#f8fafc;}" +
+      ".tippr-dl dd{font-weight:700;word-break:break-word;overflow-wrap:anywhere;}" +
+      ".tippr-dl dt:last-of-type,.tippr-dl dd:last-of-type{border-bottom:none;}" +
+      ".tippr-mono{font-family:JetBrains Mono,Consolas,monospace;font-size:10.5pt;letter-spacing:.02em;}" +
+      ".tippr-pw{color:#9a3412;background:#fff7ed;}" +
+      ".tippr-foot{display:flex;justify-content:space-between;align-items:center;padding:4px 10px 6px;font-size:7.5pt;color:#64748b;background:#fff;}" +
+      ".tippr-foot strong{color:#334155;}" +
       "@media print{" +
-      "@page{size:A4 landscape;margin:8mm;}" +
-      "body{padding:0;}" +
-      ".tippr-page{page-break-inside:avoid;}" +
-      ".tippr-header{border-radius:0;}" +
-      ".tippr-grid{border-radius:0;}" +
+      "@page{size:A4 landscape;margin:5mm;}" +
+      "html,body{height:100%;}" +
+      ".tippr-page{min-height:calc(210mm - 10mm);height:100%;page-break-inside:avoid;}" +
+      ".tippr-body{flex:1;}" +
       "}"
     );
   }
 
+  function buildUserPrintDl(pairs) {
+    return (
+      '<dl class="tippr-dl">' +
+      pairs
+        .map(function (p) {
+          return (
+            "<dt>" +
+            esc(p.label) +
+            '</dt><dd class="' +
+            esc(p.cls || "") +
+            '">' +
+            esc(printVal(p.value)) +
+            "</dd>"
+          );
+        })
+        .join("") +
+      "</dl>"
+    );
+  }
+
   function buildUserPrintPageHtml(row) {
-    var items = [
+    var disposed = row.status === STATUS_DISPOSED;
+    var devicePairs = [
       { label: "拠点", value: row.location },
       { label: "利用者", value: row.user_name },
-      { label: "端末名", value: row.device_name },
+      { label: "端末名", value: row.device_name, cls: "tippr-mono" },
       { label: "導入日", value: row.rental_start_date },
-      { label: "ステータス", value: row.status },
-      { label: "電話番号", value: row.phone_number },
-      { label: "機種", value: row.model, span2: true },
-      { label: "共有パスコード", value: row.shared_passcode },
-      { label: "IMEI", value: row.imei },
-      { label: "ICCID", value: row.iccid },
-      { label: "Apple シリアル", value: row.apple_serial },
-      { label: "M365 ID", value: row.m365_id },
-      { label: "M365 PW", value: row.m365_pw },
-      { label: "VPN ID", value: row.vpn_id },
-      { label: "VPN PW", value: row.vpn_pw },
+      { label: "電話番号", value: row.phone_number, cls: "tippr-mono" },
+      { label: "機種", value: row.model },
+      { label: "IMEI", value: row.imei, cls: "tippr-mono" },
+      { label: "ICCID", value: row.iccid, cls: "tippr-mono" },
+      { label: "Apple S/N", value: row.apple_serial, cls: "tippr-mono" },
     ];
-    var body = items
-      .map(function (it) {
-        return (
-          '<div class="tippr-cell' +
-          (it.span2 ? " tippr-span2" : "") +
-          '"><span class="tippr-lab">' +
-          esc(it.label) +
-          '</span><span class="tippr-val">' +
-          esc(printVal(it.value)) +
-          "</span></div>"
-        );
-      })
-      .join("");
+    var accountPairs = [
+      { label: "共有PW", value: row.shared_passcode, cls: "tippr-mono tippr-pw" },
+      { label: "M365 ID", value: row.m365_id, cls: "tippr-mono" },
+      { label: "M365 PW", value: row.m365_pw, cls: "tippr-mono tippr-pw" },
+      { label: "VPN ID", value: row.vpn_id, cls: "tippr-mono" },
+      { label: "VPN PW", value: row.vpn_pw, cls: "tippr-mono tippr-pw" },
+      { label: "状態", value: row.status },
+    ];
     return (
       '<div class="tippr-page">' +
-      '<header class="tippr-header"><h1>東海支店 iPad アカウント情報</h1>' +
-      "<p>" +
-      esc(row.device_name || "") +
-      " ／ " +
+      '<header class="tippr-hero">' +
+      '<div class="tippr-hero-main">' +
+      '<p class="tippr-kicker">TOKAI BRANCH · iPad LEDGER</p>' +
+      '<h1 class="tippr-title">東海支店 iPad アカウント情報</h1>' +
+      "</div>" +
+      '<div class="tippr-hero-side">' +
+      '<p class="tippr-device">' +
+      esc(row.device_name || "—") +
+      "</p>" +
+      '<p class="tippr-user">' +
       esc(row.user_name || "—") +
-      "</p></header>" +
-      '<div class="tippr-grid">' +
-      body +
-      "</div></div>"
+      "</p>" +
+      '<span class="tippr-badge' +
+      (disposed ? " is-disposed" : "") +
+      '">' +
+      esc(row.status || "—") +
+      "</span>" +
+      "</div></header>" +
+      '<div class="tippr-body">' +
+      '<section class="tippr-panel"><h2 class="tippr-panel-h">端末情報</h2><div class="tippr-panel-b">' +
+      buildUserPrintDl(devicePairs) +
+      "</div></section>" +
+      '<section class="tippr-panel"><h2 class="tippr-panel-h">アカウント / 認証</h2><div class="tippr-panel-b">' +
+      buildUserPrintDl(accountPairs) +
+      "</div></section>" +
+      "</div>" +
+      '<footer class="tippr-foot"><span>印刷日 <strong>' +
+      esc(todayJstYmd()) +
+      "</strong></span><span>Space 32 · App 770 · DB 769</span></footer>" +
+      "</div>"
     );
   }
 

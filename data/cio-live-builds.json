@@ -466,11 +466,11 @@
       "note": null
     },
     "770": {
-      "build": "2026-07-28-tokai-ipad-dash-v3-user-print-landscape",
-      "fileKey": "6e54973b-71d9-4f24-8411-c308f29472a8",
-      "revision": "14",
+      "build": "2026-07-28-tokai-ipad-dash-v3-print-dense-design",
+      "fileKey": "9c11a03d-a1cf-473d-824c-28ebd16e0477",
+      "revision": "15",
       "relPath": "customize/tokai-ipad-dash/desktop.js",
-      "deployedAt": "2026-07-28T07:37:42.148Z",
+      "deployedAt": "2026-07-28T07:46:14.479Z",
       "note": null
     }
   }
