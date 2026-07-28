@@ -1,21 +1,20 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-28 16:55 JST — 東海iPad台帳 SPEC確定・commit/push・セッション締め。
+**最終更新**: 2026-07-28 17:10 JST — 確認パック送付待ちを取消（7/26実装確認OKで充足・浜田「もういい」）。
 
 **Git**: **`1947bdd6`** = `origin/main` — push 済（R44 parent）
 
-**本日状態（要約）**: **東海支店iPad** DB**769**/Dash**770** M1–M7 完了・浜田目視OK。SPEC 確定版 `docs/plans/2026-07-28-tokai-ipad-ledger-kintone-spec.md`。App **756** LIVE rev**154**。RAG aide 試行中。LOTO7 B+C。720/721 非触。
+**本日状態（要約）**: **東海支店iPad** DB**769**/Dash**770** M1–M7 完了・浜田目視OK。SPEC 確定版。App **756** LIVE rev**154**。確認パック送付 **不要**（7/26充足）。RAG aide / LOTO7。720/721 非触。
 
 **継続メモ**:
 1. 東海iPad — 運用観察（中継 bat・tokai 保存時同期）
 2. App756 運用観察・依頼あれば微調整
-3. 確認パック送付（浜田「送ってよい」後）
-4. RAG aide / LOTO7 観察。**新アプリ**＝指示後
+3. RAG aide / LOTO7 観察。**新アプリ**＝指示後
 
-**GO待ち**: 確認パック送付＝浜田一言。新アプリ＝相談・GO後。
+**GO待ち**: 新アプリ＝相談・GO後。
 
-**次の1手**: 浜田指示待ち（新アプリ作成の相談可）。確認パックは「送ってよい」後。
+**次の1手**: 浜田指示待ち（新アプリ作成の相談可）。
 
 **調査正本**: 東海iPad SPEC確定版・769/770。756 SPEC U35/U36 rev154。RAG aide runbook。LOTO7 B+C。
 
@@ -42,10 +41,14 @@
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
 **禁止（本中断）**: stash pop／force push／旧756 customize再deployで今日の UI を潰す＝**先祖返り禁止**。env `JIKKOU_YOSAN_V2_BUILD` は build 前に消す。deploy後は同一セッションで R63 commit。735/736書込禁止。
-**凍結ゾーンpad**: 7/27確認パック・rev154・LOTO7 B+C・RAG aide — minChars≥2800・行数≤50（空行は rollup 圧縮・2026-07-28是正）。
+**凍結ゾーンpad**: rev154・LOTO7 B+C・RAG aide — minChars≥2800・行数≤50（空行は rollup 圧縮・2026-07-28是正）。確認パック送付は不要確定（2026-07-28）。
 <!-- archive: chat-sessions/checkpoints/checkpoint-archive-2026-07-22.md -->
 
 ## 2026-07-28
+
+### 2026-07-28 夕（確認パック待ち取消）
+- 浜田「もういい」— 7/27確認パック送付待ちを取消（7/26実装確認OKで充足）
+- 次の1手から「送ってよい」後を削除。正本パックに送付不要を追記
 
 ### 2026-07-28 夕（東海iPad・セッションCLOSE）
 - **東海支店iPad台帳**: DB **769** / Dash **770**（Space32/thread34）。M1–M7・浜田目視OK

@@ -1,11 +1,11 @@
 {
-  "scoredAt": "2026-07-28T07:55:00.000Z",
+  "scoredAt": "2026-07-28T08:10:00.000Z",
   "specPath": "docs/plans/2026-07-28-tokai-ipad-ledger-kintone-spec.md",
-  "topTask": "浜田指示待ち（新アプリ作成の相談可）。確認パックは「送ってよい」後。",
+  "topTask": "浜田指示待ち（新アプリ作成の相談可）。",
   "tasks": [
     {
-      "id": "checkpoint:浜田指示待ち（新アプリ作成の相談可）。確認パックは「送ってよい」後。",
-      "text": "浜田指示待ち（新アプリ作成の相談可）。確認パックは「送ってよい」後。",
+      "id": "checkpoint:浜田指示待ち（新アプリ作成の相談可）。",
+      "text": "浜田指示待ち（新アプリ作成の相談可）。",
       "source": "checkpoint",
       "difficulty": 1,
       "tokens": "少",
