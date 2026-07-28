@@ -359,6 +359,39 @@
       "relatedAppFieldsFrom": ["595"],
       "specRel": "docs/plans/2026-06-27-jre-chub-account-kintone-spec.md",
       "notes": "747 dash — REST to 746 + 595 employee search。"
+    },
+    "769": {
+      "label": "東海支店iPad台帳DB",
+      "customizeDirs": ["tokai-ipad-db"],
+      "specRel": "docs/plans/2026-07-28-tokai-ipad-ledger-kintone-spec.md",
+      "recordFields": [
+        "location",
+        "user_name",
+        "device_name",
+        "rental_start_date",
+        "model",
+        "phone_number",
+        "imei",
+        "iccid",
+        "apple_serial",
+        "shared_passcode",
+        "m365_id",
+        "m365_pw",
+        "vpn_id",
+        "vpn_pw",
+        "status",
+        "employee_record_id",
+        "pc_ledger_record_id"
+      ],
+      "notes": "Space 32 / thread 34 — DB UI lock; Dash REST only. Do not touch 720/721."
+    },
+    "770": {
+      "label": "東海支店iPad管理台帳",
+      "customizeDirs": [],
+      "inheritsRecordFieldsFrom": "769",
+      "relatedAppFieldsFrom": ["595", "674"],
+      "specRel": "docs/plans/2026-07-28-tokai-ipad-ledger-kintone-spec.md",
+      "notes": "Dash UI 未着手。REST to 769 + 裏側同期 595/674。Lookup 禁止。"
     }
   }
 }

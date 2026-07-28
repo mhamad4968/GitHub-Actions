@@ -456,6 +456,14 @@
       "relPath": "customize/jikkou-yosan-v2-app3/desktop.js",
       "deployedAt": "2026-07-26T03:34:25.718Z",
       "note": null
+    },
+    "769": {
+      "build": "2026-07-28-tokai-ipad-db-block-ui-mutations",
+      "fileKey": "3ba2892d-f523-4945-9a82-181e9feb8ddb",
+      "revision": "6",
+      "relPath": "customize/tokai-ipad-db/desktop.js",
+      "deployedAt": "2026-07-28T06:04:15.070Z",
+      "note": null
     }
   }
 }

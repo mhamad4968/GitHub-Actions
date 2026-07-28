@@ -1,9 +1,10 @@
 # 東海支店 iPad 管理台帳 — kintone 仕様書（SPEC 草案）
 
 > **起票**: 2026-07-28 (火)  
-> **状態**: **草案 — 実装 GO 待ち**（浜田 §41 Q1–Q19 確定・AIチーム突合済）  
-> **配置**: [Space 32](https://jbis-kintone.cybozu.com/k/#/space/32)（thread は作成時に確定・未指定なら Space 既定）  
-> **移行元 Excel**: `C:\tmp\東海支店iPad管理台帳\iPad管理台帳（26.7～）.xlsx`（Sheet1・**25 台**）  
+> **状態**: **実装中**（M1–M3 済・M4 Dash UI 待ち）— 浜田実装 GO 2026-07-28  
+> **配置**: [Space 32](https://jbis-kintone.cybozu.com/k/#/space/32) / thread **34**  
+> **アプリ**: DB **[769](https://jbis-kintone.cybozu.com/k/769/)** / Dash **[770](https://jbis-kintone.cybozu.com/k/770/)**  
+> **移行元 Excel**: `C:\tmp\東海支店iPad管理台帳\iPad管理台帳（26.7～）.xlsx`（Sheet1・**25 台**・**移行済**）  
 > **UI 参照**: [JR iPad 管理台帳 721](https://jbis-kintone.cybozu.com/k/721/) 型（DB＋Dash・有効/廃棄トグル・A4 印刷）  
 > **境界**: JR iPad **720/721 は closed-v1・触らない**。本案件は **別新設**。
 
@@ -240,3 +241,4 @@
 | 日付 | 内容 |
 |------|------|
 | 2026-07-28 | 草案。浜田 Q1–Q19・AIチーム突合反映 |
+| 2026-07-28 | 実装 GO。Space32 に DB **769** / Dash **770** 作成・ACL・DB UI lock・Excel 25 台移行。次は M4 Dash UI |

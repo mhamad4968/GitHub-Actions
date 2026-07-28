@@ -1,0 +1,223 @@
+{
+  "properties": {
+    "location": {
+      "type": "DROP_DOWN",
+      "code": "location",
+      "label": "拠点",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "東海支店": { "label": "東海支店", "index": "0" },
+        "東京営業所": { "label": "東京営業所", "index": "1" },
+        "静岡営業所": { "label": "静岡営業所", "index": "2" },
+        "名古屋営業所": { "label": "名古屋営業所", "index": "3" },
+        "関西営業所": { "label": "関西営業所", "index": "4" }
+      }
+    },
+    "user_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "user_name",
+      "label": "利用者",
+      "required": true,
+      "noLabel": false,
+      "unique": false,
+      "maxLength": "100",
+      "minLength": "",
+      "defaultValue": "",
+      "expression": "",
+      "hideExpression": false
+    },
+    "device_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "device_name",
+      "label": "端末名",
+      "required": true,
+      "noLabel": false,
+      "unique": true,
+      "maxLength": "40",
+      "minLength": "",
+      "defaultValue": "",
+      "expression": "",
+      "hideExpression": false
+    },
+    "rental_start_date": {
+      "type": "DATE",
+      "code": "rental_start_date",
+      "label": "レンタル開始日",
+      "required": false,
+      "noLabel": false,
+      "unique": false,
+      "defaultValue": "",
+      "defaultExpression": ""
+    },
+    "model": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "model",
+      "label": "機種",
+      "required": false,
+      "noLabel": false,
+      "unique": false,
+      "maxLength": "200",
+      "minLength": "",
+      "defaultValue": "",
+      "expression": "",
+      "hideExpression": false
+    },
+    "phone_number": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "phone_number",
+      "label": "端末認識電話番号",
+      "required": false,
+      "noLabel": false,
+      "unique": false,
+      "maxLength": "40",
+      "minLength": "",
+      "defaultValue": "",
+      "expression": "",
+      "hideExpression": false
+    },
+    "imei": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "imei",
+      "label": "IMEI",
+      "required": false,
+      "noLabel": false,
+      "unique": false,
+      "maxLength": "40",
+      "minLength": "",
+      "defaultValue": "",
+      "expression": "",
+      "hideExpression": false
+    },
+    "iccid": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "iccid",
+      "label": "ICCID",
+      "required": false,
+      "noLabel": false,
+      "unique": false,
+      "maxLength": "40",
+      "minLength": "",
+      "defaultValue": "",
+      "expression": "",
+      "hideExpression": false
+    },
+    "apple_serial": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "apple_serial",
+      "label": "Appleシリアル番号",
+      "required": false,
+      "noLabel": false,
+      "unique": false,
+      "maxLength": "40",
+      "minLength": "",
+      "defaultValue": "",
+      "expression": "",
+      "hideExpression": false
+    },
+    "shared_passcode": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "shared_passcode",
+      "label": "共有パスコード",
+      "required": false,
+      "noLabel": false,
+      "unique": false,
+      "maxLength": "40",
+      "minLength": "",
+      "defaultValue": "",
+      "expression": "",
+      "hideExpression": false
+    },
+    "m365_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "m365_id",
+      "label": "M365 ID",
+      "required": false,
+      "noLabel": false,
+      "unique": false,
+      "maxLength": "200",
+      "minLength": "",
+      "defaultValue": "",
+      "expression": "",
+      "hideExpression": false
+    },
+    "m365_pw": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "m365_pw",
+      "label": "M365 パスワード",
+      "required": false,
+      "noLabel": false,
+      "unique": false,
+      "maxLength": "200",
+      "minLength": "",
+      "defaultValue": "",
+      "expression": "",
+      "hideExpression": false
+    },
+    "vpn_id": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "vpn_id",
+      "label": "VPN ID",
+      "required": false,
+      "noLabel": false,
+      "unique": false,
+      "maxLength": "200",
+      "minLength": "",
+      "defaultValue": "",
+      "expression": "",
+      "hideExpression": false
+    },
+    "vpn_pw": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "vpn_pw",
+      "label": "VPN パスワード",
+      "required": false,
+      "noLabel": false,
+      "unique": false,
+      "maxLength": "200",
+      "minLength": "",
+      "defaultValue": "",
+      "expression": "",
+      "hideExpression": false
+    },
+    "status": {
+      "type": "DROP_DOWN",
+      "code": "status",
+      "label": "ステータス",
+      "required": true,
+      "noLabel": false,
+      "defaultValue": "有効",
+      "options": {
+        "有効": { "label": "有効", "index": "0" },
+        "廃棄": { "label": "廃棄", "index": "1" }
+      }
+    },
+    "employee_record_id": {
+      "type": "NUMBER",
+      "code": "employee_record_id",
+      "label": "595レコード番号",
+      "required": false,
+      "noLabel": false,
+      "unique": false,
+      "digit": false,
+      "defaultValue": "",
+      "displayScale": "",
+      "unit": "",
+      "unitPosition": "BEFORE"
+    },
+    "pc_ledger_record_id": {
+      "type": "NUMBER",
+      "code": "pc_ledger_record_id",
+      "label": "674レコード番号",
+      "required": false,
+      "noLabel": false,
+      "unique": false,
+      "digit": false,
+      "defaultValue": "",
+      "displayScale": "",
+      "unit": "",
+      "unitPosition": "BEFORE"
+    }
+  }
+}

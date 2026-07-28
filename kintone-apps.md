@@ -38,6 +38,7 @@ npm run app:fields <アプリID>
 | 735 | — | — | — | 2026-06-18 実行予算書リストマスタ（104件 seed・customize なし） |
 | 736 | `2026-07-12-736-ui-backlog-02-col-resize` | **186** | `4cff9ec6-a2be-41d0-adcd-d75ebf6595b3` | Phase 0b ⋮ 上/下追加 |
 | 756 | `2026-07-26-ver02-vendor-list-only` | **154** | `49197af6-87fc-4080-9a95-c5ce2659a911` | Ver.02 App1 fail-closed read-only shell |
+| 769 | `2026-07-28-tokai-ipad-db-block-ui-mutations` | **6** | `3ba2892d-f523-4945-9a82-181e9feb8ddb` | 2026-07-28 東海支店iPad DB UI lock・25台移行済 |
 | 757 | `2026-07-21-ver02-phase6-app2-readonly-guard` | **30** | `ca97ae0c-856f-496f-95fb-08276fe63f6a` | Ver.02 App2 direct-write guard / fail-closed read-only shell |
 | 758 | `2026-07-21-ver02-phase6-app3-readonly-guard` | **29** | `711a1e09-f905-4420-b52b-8cae48c4d42d` | Ver.02 App3 direct-write guard / fail-closed read-only shell |
 | 693 | `2026-06-03-apple-id-db-block-ui-mutations` | **5** | `ca4b6489-bc6d-444c-b4a4-28b4c7f8c96c` | 2026-06-03 Apple ID DB save/delete ブロック |
@@ -149,6 +150,8 @@ npm run app:fields <アプリID>
 | **記憶媒体等管理台帳ver.1**（日常 UI・716 へ REST） | **717** | `customize/storage-media-ledger-dash/desktop.js` \| `npm run deploy:717` | [https://jbis-kintone.cybozu.com/k/717/](https://jbis-kintone.cybozu.com/k/717/) **Space 21 / thread 23**・**2026-06-17**: 利用者チップを社員検索絞り込みに変更・**BUILD=`2026-06-17-storage-media-ledger-user-filter-compact`** rev **8** |
 | **JRシステム用iPad台帳DB**（端末正本・閲覧のみ） | **720** | `customize/jr-ipad-db/desktop.js` \| `npm run deploy:720` | [https://jbis-kintone.cybozu.com/k/720/](https://jbis-kintone.cybozu.com/k/720/) **Space 34 / thread 38**・**2026-06-15**: 13 フィールド・**64 台移行済**・正本 `docs/plans/2026-06-15-jr-ipad-ledger-kintone-spec.md`・**BUILD=`2026-06-15-jr-ipad-db-block-ui-mutations`** rev **5**（**2026-06-19**: フォーム rev **7** — 新規採番 POST 時 `mgmt_dept` / `phone_number` / `model` を空可。保存時必須は Dash `validateRequired` が担保） |
 | **JRシステム用iPad管理台帳 ver.1**（日常 UI・720 へ REST） | **721** | `customize/jr-ipad-dash/desktop.js` \| `npm run deploy:721` | [https://jbis-kintone.cybozu.com/k/721/](https://jbis-kintone.cybozu.com/k/721/) **Space 34 / thread 38**・**BUILD=`2026-06-24-jr-ipad-dash-register-existing`** rev **13** |
+| **東海支店iPad台帳DB**（端末正本・閲覧のみ） | **769** | `customize/tokai-ipad-db/desktop.js` \| `npm run deploy:769` | [https://jbis-kintone.cybozu.com/k/769/](https://jbis-kintone.cybozu.com/k/769/) **Space 32 / thread 34**・**2026-07-28**: 17 フィールド・**25 台移行済**・正本 `docs/plans/2026-07-28-tokai-ipad-ledger-kintone-spec.md`・**BUILD=`2026-07-28-tokai-ipad-db-block-ui-mutations` rev **6** ・**720/721 非対象** |
+| **東海支店iPad管理台帳**（日常 UI・769 へ REST） | **770** | （Dash customize 未着手） | [https://jbis-kintone.cybozu.com/k/770/](https://jbis-kintone.cybozu.com/k/770/) **Space 32 / thread 34**・ACL=tokai+admin・Lookup なし・595/674 は裏側同期予定 |
 | **JREクラウドアカウント管理台帳用DB**（正本・閲覧のみ） | **744** | `customize/jre-cloud-account-db/desktop.js` \| `npm run deploy:744` | [https://jbis-kintone.cybozu.com/k/744/](https://jbis-kintone.cybozu.com/k/744/) **Space 34 / thread 38**・**2026-06-26**: 9 フィールド・**99 件移行済**・正本 `docs/plans/2026-06-26-jre-cloud-account-kintone-spec.md`・**BUILD=`2026-06-26-jre-cloud-account-db-block-v1`** rev **5** / fileKey **`125843f1-4b4b-49ce-91ad-2ae1886291fd`** |
 | **JREクラウドアカウント台帳**（日常 UI・744 へ REST） | **745** | `customize/jre-cloud-account-dash/desktop.js` \| `npm run deploy:745` | [https://jbis-kintone.cybozu.com/k/745/](https://jbis-kintone.cybozu.com/k/745/) **Space 34 / thread 38**・734 型 — 595 ハイブリッド・稼働中/すべて/退職・**月次集計**（チップ絞込・条件クリア）・検索クリア→稼働中・一覧/集計 **xlsx+印刷**・**BUILD=`2026-06-27-jre-cloud-account-dash-v16-list-filter-clear`** rev **22** / fileKey **`56f39bd5-30fd-48ac-9cee-b7be8fb77c53`** |
 | **JRE-C_Hubアカウント管理台帳用DB**（正本・閲覧のみ） | **746** | `customize/jre-chub-account-db/desktop.js` \| `npm run deploy:746` | [https://jbis-kintone.cybozu.com/k/746/](https://jbis-kintone.cybozu.com/k/746/) **Space 34 / thread 38**・権限/署名代行対象サブテーブル・**48件**・フォーム設定 **8**・正本 `docs/plans/2026-06-27-jre-chub-account-kintone-spec.md`・**BUILD=`2026-06-27-jre-chub-account-db-block-v1` rev **6** / fileKey **`4e078e50-6c53-4124-aa15-94f241c9082e`** |
@@ -870,6 +873,8 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 |--------|-----|-----------|---------------|--------|
 | JRシステム用iPad台帳DB | **720** | `customize/jr-ipad-db/desktop.js` | `2026-06-15-jr-ipad-db-block-ui-mutations` rev5（**フォーム rev 7** — 2026-06-19 新規採番時下書き必須緩和） | `deploy:720` / `jr-ipad:relax-draft-required-fields` |
 | JRシステム用iPad管理台帳 ver.1 | **721** | `customize/jr-ipad-dash/desktop.js`（`desktop.src.js` + bundle） | `2026-06-24-jr-ipad-dash-register-existing` rev13 | `deploy:721`（前に `jr-ipad:bundle-dash`） |
+| 東海支店iPad台帳DB | **769** | `customize/tokai-ipad-db/desktop.js` | `2026-07-28-tokai-ipad-db-block-ui-mutations` rev6（25台移行済） | `deploy:769` |
+| 東海支店iPad管理台帳 | **770** | （未着手） | — | Space32・ACL済・Dash UI は M4 以降 |
 
 **721 主要機能**: 694 型一覧・admin のみ・2 系統採番（JBIS### + jb###m）・**既存端末を登録**（採番なし）・**集計表はアコーディオン（初期閉じ）**・端末別 A4 印刷・モデルコンボボックス + NFKC 正規化・**検索・絞込クリアボタン**・**一覧 有効/廃止トグル（デフォルト有効＝廃棄非表示）**。
 
