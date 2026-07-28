@@ -1,11 +1,11 @@
 {
-  "scoredAt": "2026-07-26T09:03:43.090Z",
+  "scoredAt": "2026-07-28T05:02:45.760Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "明日=756 再確認・微調整。lab次=7/27確認パック送付。",
+  "topTask": "項番 -0 で浜田確認。lab控=7/27確認パック送付。",
   "tasks": [
     {
-      "id": "checkpoint:明日=756_再確認・微調整。lab次=7/27確認パック送付。",
-      "text": "明日=756 再確認・微調整。lab次=7/27確認パック送付。",
+      "id": "checkpoint:項番_-0_で浜田確認。lab控=7/27確認パック送付。",
+      "text": "項番 -0 で浜田確認。lab控=7/27確認パック送付。",
       "source": "checkpoint",
       "difficulty": 2,
       "tokens": "中",

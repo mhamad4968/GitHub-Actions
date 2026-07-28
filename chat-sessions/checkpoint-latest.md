@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-26 19:47 JST — 夕枠 CLOSE。756 U35/U36 LIVE・夕反省GO実装済・RAG aide試行開始。
 
-**Git**: **`dad5aa88`** = `origin/main` — push 済（R44 parent）
+**Git**: **`35949ad6`** = `origin/main` — push 済
 
 **本日状態（要約）**: App **756** LIVE=`2026-07-26-ver02-vendor-list-only` rev**154**（U35着手日警告／U36取引先リストのみ・SPEC同期済）。夕反省GO（R63/medal/#CON）実装・push済。RAG憲法・運用 aide 試行（AIチーム・〜8/9・CIO判定委任）。LOTO7 B+C は `external/loto7/` がGit正本。735/736書込禁止。
 
