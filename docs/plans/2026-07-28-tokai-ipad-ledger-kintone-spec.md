@@ -1,9 +1,9 @@
 # 東海支店 iPad 管理台帳 — kintone 仕様書（SPEC 草案）
 
 > **起票**: 2026-07-28 (火)  
-> **状態**: **実装完了（M1–M6）— 浜田目視待ち（M7）** — 浜田実装 GO 2026-07-28  
+> **状態**: **浜田目視OK（M7）** — 2026-07-28 一覧・集計・PW列・導入日・個別印刷A4横ほか検収済  
 > **配置**: [Space 32](https://jbis-kintone.cybozu.com/k/#/space/32) / thread **34**  
-> **アプリ**: DB **[769](https://jbis-kintone.cybozu.com/k/769/)** / Dash **[770](https://jbis-kintone.cybozu.com/k/770/)**  
+> **アプリ**: DB **[769](https://jbis-kintone.cybozu.com/k/769/)** / Dash **[770](https://jbis-kintone.cybozu.com/k/770/)** BUILD `2026-07-28-tokai-ipad-dash-v3-print-dense-design` rev**15**  
 > **移行元 Excel**: `C:\tmp\東海支店iPad管理台帳\iPad管理台帳（26.7～）.xlsx`（Sheet1・**25 台**・**移行済**）  
 > **UI 参照**: [JR iPad 管理台帳 721](https://jbis-kintone.cybozu.com/k/721/) 型（DB＋Dash・有効/廃棄トグル・A4 印刷）  
 > **境界**: JR iPad **720/721 は closed-v1・触らない**。本案件は **別新設**。  
@@ -261,3 +261,4 @@
 | 2026-07-28 | M4–M6 完了。Dash v1 deploy・同期中継・674→M365/VPN 23/25 反映。残ギャップ: tokai20 複数ヒット・tokai22 未ヒット |
 | 2026-07-28 | §3.2a: 674 複数ヒット時は廃棄/取消除外・利用中優先を AI 判定可に。tokai20=272 反映済 |
 | 2026-07-28 | Dash v3: 拠点別台数集計（有効/廃棄/合計・行クリック絞込） |
+| 2026-07-28 | **浜田目視OK（M7）**。個別印刷A4横密デザイン・一覧PW/導入日・集計閉じ既定ほか検収。720/721非触 |
