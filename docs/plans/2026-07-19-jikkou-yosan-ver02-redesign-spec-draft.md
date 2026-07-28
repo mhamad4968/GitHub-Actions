@@ -3,7 +3,7 @@
 **作成日**: 2026-07-19  
 **状態**: **DRAFT / 総括 CLOSED／内訳 CLOSED／予実 CLOSED／版管理 CLOSED／試作 LIVE（App756）／本稼働 GO なし**  
 **2026-07-26 夜（原価行・内訳の端数確認）**: 明日の施工部確認資料では、原価行・内訳のサンプルに数量／単価／金額の端数がなく、**業務上の丸め処理は不要**として説明する。通常の明細金額は数量×単価。現行の円単位確定処理は対象データでは結果不変のため本日は変更しない。**諸経費（上段明細合計×10%）の円単位ROUNDは別規則として維持**。小数を伴う内訳入力を正式運用する場合のみP-22を再確認する。
-**2026-07-28 夕（U39・視覚磨きパック）**: フォーカス可視／行ホバー／節見出しのタブ連動色／備考列幅＋title／空状態・retired破線。BUILD `2026-07-28-ver02-visual-polish`。  
+**2026-07-28 夕（U39・視覚磨きパック）**: フォーカス可視／行ホバー／節見出しのタブ連動色／備考列幅＋title／空状態・retired破線。BUILD `2026-07-28-ver02-visual-polish`。受け入れ前は chrome-accept **#11 視覚1巡（#R-UI-VIS-01）**。  
 **2026-07-28 夕（U38・タブペイン色面）**: 総括＝薄青／内訳＝薄緑／工事原価管理＝薄橙／バージョン＝薄紫のペイン背景（表は白維持）。タブ＋色面で切替を明示。BUILD `2026-07-28-ver02-pane-tint`。  
 **2026-07-28 夕（U37・定義及び品名の見切れ）**: 内訳3列目「定義及び品名」を幅広げ（min≈16rem）＋`title` ホバーで全文。BUILD `2026-07-28-ver02-name3-wide-title`。textarea 化は見送り（最小修正）。  
 **2026-07-26 夕（U36・取引先リストのみ）**: 取引先も**リストのみ**（打鍵で候補絞り込みは維持・リスト外は確定拒否＋赤字「リストにありません」）。従来の手入力可コンボから変更（浜田 2026-07-26）。BUILD `2026-07-26-ver02-vendor-list-only`。  
@@ -170,7 +170,7 @@ App1 カスタムUI（`customize/jikkou-yosan-v2-app1`）の見た目・固定�
 | **C16** | **請負金額表の列幅**: 契約工種列を優先して広げ（`min-width` ≈14rem）、数量・単価・金額列は狭くして契約工種の見切れを防ぐ。給与表・原価投影の共通入力幅は変えない | **CONFIRMED**（浜田 2026-07-25） |
 
 **実装メモ（保守）**: 親に `overflow-x:hidden` を戻すと C1 の固定が再び壊れる。横はみ出し対策は **clip＋表ラッパ scroll** を維持する。  
-**受け入れ前**: `docs/runbooks/jikkou-yosan-v2-chrome-accept-checklist.md` を自己消化。不変条件は `docs/constitution/jikkou-yosan-v2-ui-chrome-invariants.md`（#R-UI-01/02/03・#R-SPEC-01）。機械ゲート: `npm run verify:jikkou-v2-chrome-css` / `verify:jikkou-v2-ui-spec-same-turn`。
+**受け入れ前**: `docs/runbooks/jikkou-yosan-v2-chrome-accept-checklist.md` を自己消化（**#11 視覚1巡＝#R-UI-VIS-01** 含む）。不変条件は `docs/constitution/jikkou-yosan-v2-ui-chrome-invariants.md`（#R-UI-01/02/03・#R-SPEC-01）。機械ゲート: `npm run verify:jikkou-v2-chrome-css` / `verify:jikkou-v2-ui-spec-same-turn`。
 
 ## 7. 総括表
 

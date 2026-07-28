@@ -1,9 +1,9 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-28 19:20 JST — GitHub確認（Actions緑・PR/Issueなし）。globals 17.8.0。756レビューは**明日(7/29)**。
+**最終更新**: 2026-07-28 19:30 JST — 夕反省全GO実装・SPEC #R-UI-VIS-01 追記。756レビューは**明日(7/29)**。
 
-**Git**: **（commit後同期）** = `origin/main` — push 予定
+**Git**: **`23882733`** = `origin/main` — push 済
 
 **本日状態（要約）**: **東海支店iPad** DB**769**/Dash**770** M1–M7 完了・浜田目視OK。SPEC 確定版。App **756** LIVE rev**157** BUILD `visual-polish`（U37–U39）。確認パック送付 **完了扱い**。依頼者レビュー＝**7/29**。RAG aide / LOTO7。720/721 非触。GitHub: 朝の inventory 失敗は是正済・直近 success。
 
@@ -48,6 +48,10 @@
 <!-- archive: chat-sessions/checkpoints/checkpoint-archive-2026-07-22.md -->
 
 ## 2026-07-28
+
+### 2026-07-28 夕（夕反省全GO）
+- `#R-UI-VIS-01` / `#D-GHA-01` 実装・`test:evening-improvements-2026-07-28` OK
+- SPEC §6.2 受け入れ前に視覚1巡を明記。GO: `docs/approved-changes/2026-07-28-evening-reflection-hamada-go.md`
 
 ### 2026-07-28 夕（756 U39 視覚磨き）
 - BUILD `2026-07-28-ver02-visual-polish` LIVE rev**157**

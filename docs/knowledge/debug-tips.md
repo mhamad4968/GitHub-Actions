@@ -122,12 +122,12 @@
 <!-- CIO-DEBUG-TIPS:AUTO -->
 ## [2026-07-28] セッション解体時知恵ストック
 
-**前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
-**手順**: `npm run session:bootstrap` → `npm run cio:report-verify-response -- --file <下書き>`**、締め・GO 仰ぎは **`npm run cio:close-report-verify-response -- --file <下` → `npm run cio:report-verify-response -- --file <下書き>`**、締め・GO 仰ぎは **`npm run cio:close-report-verify-response -- --file <下`
-**禁止**: customize/deploy 凍結中の無断 save・上位憲法 §50-3-11 非置換違反・本体単独完結
-**exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
+**前提**: 756 UI 視覚磨き・RAG aide 中間・GHA 是正・夕反省全 GO の同一セッション
+**手順**: レビュー前は chrome-accept **#11 視覚1巡** → `npm run cio:handoff:gha-fix`（gates 是正時）→ `npm run verify:evening-reflection-scope`
+**禁止**: 「コード上問題なし」だけで視覚残渣を先送りする／tool:route の短語誤配を疑わず従う／RAG 曖昧ヒットを正本扱い
+**exit**: `npm run test:evening-improvements-2026-07-28` と constitution-gates success
 
-<!-- errors: exit1 / #CON-01/02 等実装・push済（`e6e6eef4` 系） | npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `manda | npm run cio:report-verify-response -- --file <下書き>`**、締め・GO 仰ぎは **`npm run cio:c -->
+<!-- errors: tool:route CI⊂effectiveness | mcp-chat-stamp 常時未接続 | R41 syncCheckpointGitAfterPush 旧針 | inventory 68≠66 -->
 
 
 ## [2026-07-26] セッション解体時知恵ストック
