@@ -28,7 +28,7 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
   "use strict";
 
   /** 東海支店 iPad 管理台帳 — DB(769) REST CRUD + 595/674 同期 + A4 印刷 + Excel 出力 */
-  var BUILD = "2026-07-28-tokai-ipad-dash-v2-pc-status-resolve";
+  var BUILD = "2026-07-28-tokai-ipad-dash-v3-location-summary";
 
   var APP_DB = 769;
   var APP_EMP_MASTER = 595;
@@ -600,7 +600,20 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
       ".tip-595-modal{max-width:720px;}" +
       ".tip-595-results{margin-top:10px;max-height:280px;overflow:auto;display:flex;flex-direction:column;gap:6px;}" +
       ".tip-595-pick{text-align:left;white-space:normal;padding:8px 10px;}" +
-      ".tip-595-actions{display:flex;gap:8px;margin:8px 0;flex-wrap:wrap;}";
+      ".tip-595-actions{display:flex;gap:8px;margin:8px 0;flex-wrap:wrap;}" +
+      ".tip-summary-acc{margin-bottom:14px;border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;}" +
+      ".tip-summary-acc>summary{cursor:pointer;padding:12px 16px;font-size:15px;font-weight:700;color:#334155;user-select:none;}" +
+      ".tip-summary-acc[open]>summary{border-bottom:1px solid #e2e8f0;}" +
+      ".tip-summary-wrap{overflow:auto;}" +
+      ".tip-summary{border-collapse:collapse;width:100%;font-size:14px;min-width:420px;}" +
+      ".tip-summary th,.tip-summary td{border:1px solid #e2e8f0;padding:8px 12px;text-align:center;}" +
+      ".tip-summary th{background:#f1f5f9;}" +
+      ".tip-summary td.tip-loc{text-align:left;font-weight:600;white-space:nowrap;}" +
+      ".tip-summary tr.tip-summary-total td{font-weight:700;background:#fff7ed;}" +
+      ".tip-summary .tip-n-active{font-weight:700;color:#166534;font-size:16px;}" +
+      ".tip-summary-hint{margin:0;padding:8px 16px 12px;font-size:13px;color:#64748b;line-height:1.45;}" +
+      ".tip-summary tr.tip-summary-clickable{cursor:pointer;}" +
+      ".tip-summary tr.tip-summary-clickable:hover td{background:#ffedd5;}";
     document.head.appendChild(st);
   }
 
@@ -1158,6 +1171,87 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
     });
   }
 
+  function buildSummaryCounts() {
+    var grid = {};
+    LOCATIONS.forEach(function (loc) {
+      grid[loc] = { active: 0, disposed: 0 };
+    });
+    var unknown = { active: 0, disposed: 0 };
+    state.records.forEach(function (r) {
+      var loc = String(r.location || "").trim();
+      var bucket = grid[loc] || unknown;
+      if (r.status === STATUS_DISPOSED) bucket.disposed += 1;
+      else bucket.active += 1;
+    });
+    return { grid: grid, unknown: unknown };
+  }
+
+  function renderSummary() {
+    var el = document.getElementById("tip-summary-tbody");
+    if (!el) return;
+    var built = buildSummaryCounts();
+    var grid = built.grid;
+    var unknown = built.unknown;
+    var totActive = 0;
+    var totDisposed = 0;
+    var rowsHtml = LOCATIONS.map(function (loc) {
+      var row = grid[loc] || { active: 0, disposed: 0 };
+      var total = row.active + row.disposed;
+      totActive += row.active;
+      totDisposed += row.disposed;
+      return (
+        '<tr class="tip-summary-clickable" data-location="' +
+        esc(loc) +
+        '"><td class="tip-loc">' +
+        esc(loc) +
+        '</td><td class="tip-n-active">' +
+        esc(String(row.active)) +
+        "</td><td>" +
+        esc(String(row.disposed)) +
+        "</td><td><strong>" +
+        esc(String(total)) +
+        "</strong></td></tr>"
+      );
+    }).join("");
+    if (unknown.active + unknown.disposed > 0) {
+      rowsHtml +=
+        '<tr><td class="tip-loc">（拠点未設定）</td><td class="tip-n-active">' +
+        esc(String(unknown.active)) +
+        "</td><td>" +
+        esc(String(unknown.disposed)) +
+        "</td><td><strong>" +
+        esc(String(unknown.active + unknown.disposed)) +
+        "</strong></td></tr>";
+      totActive += unknown.active;
+      totDisposed += unknown.disposed;
+    }
+    rowsHtml +=
+      '<tr class="tip-summary-total"><td class="tip-loc">合計</td><td class="tip-n-active">' +
+      esc(String(totActive)) +
+      "</td><td>" +
+      esc(String(totDisposed)) +
+      "</td><td><strong>" +
+      esc(String(totActive + totDisposed)) +
+      "</strong></td></tr>";
+    el.innerHTML = rowsHtml;
+    el.querySelectorAll("tr.tip-summary-clickable").forEach(function (tr) {
+      tr.addEventListener("click", function () {
+        var loc = tr.getAttribute("data-location") || "";
+        state.filterLocation = loc;
+        state.lifecycleFilter = "active";
+        var locSel = document.getElementById("tip-filter-location");
+        if (locSel) locSel.value = loc;
+        var root = document.getElementById("tip-root");
+        if (root) {
+          root.querySelectorAll(".tip-lifecycle-btn").forEach(function (b) {
+            b.classList.toggle("active", b.getAttribute("data-lifecycle") === "active");
+          });
+        }
+        renderTable();
+      });
+    });
+  }
+
   function updateMeta() {
     var el = document.getElementById("tip-meta");
     if (!el) return;
@@ -1211,6 +1305,7 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
       .then(function (rows) {
         state.records = rows.map(flatten);
         state.loading = false;
+        renderSummary();
         renderTable();
         updateMeta();
       })
@@ -1482,6 +1577,13 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
       '<button type="button" id="tip-reload" class="kintoneplugin-button-normal">再読込</button>' +
       "</div>" +
       '<div id="tip-meta" class="tip-meta"></div>' +
+      '<details class="tip-summary-acc" id="tip-summary-acc" open>' +
+      "<summary>拠点別台数（利用＝有効）</summary>" +
+      '<div class="tip-summary-wrap"><table class="tip-summary"><thead><tr>' +
+      "<th>拠点</th><th>利用中（有効）</th><th>廃棄</th><th>合計</th>" +
+      '</tr></thead><tbody id="tip-summary-tbody"></tbody></table></div>' +
+      '<p class="tip-summary-hint">行をクリックすると、その拠点の「有効」一覧に絞り込みます。</p>' +
+      "</details>" +
       '<div class="tip-filters">' +
       '<input type="search" id="tip-search" placeholder="利用者・端末名・電話・IMEI・機種・M365/VPN ID">' +
       '<select id="tip-filter-location"><option value="">拠点: すべて</option>' +
