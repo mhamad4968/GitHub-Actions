@@ -3,7 +3,7 @@
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-28 14:10 JST — WAKE・ブリーフィング。Desktop00–36通読・health/MCP/GHA緑。preamble≤50是正。
 
-**Git**: **`97463ac4`** = `origin/main` — push 済
+**Git**: **`2a0b2320`** = `origin/main` — push 済
 
 **本日状態（要約）**: App **756** LIVE=`2026-07-26-ver02-vendor-list-only` rev**154**（U35/U36）。RAG aide 試行中（CIO判定委任）。LOTO7 B+C=`external/loto7/`。cold-start READY・壁時計 http://127.0.0.1:38473/。新アプリ作成は浜田相談後。
 
