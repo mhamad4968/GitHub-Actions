@@ -26,6 +26,13 @@ function parseArgs() {
   return { dryRun, keep: Number.isFinite(keep) && keep > 0 ? keep : 5 };
 }
 
+/** 凍結ゾーン行数超過の再発防止: 連続空行を1行に、末尾空行を除去（内容は落とさない） */
+function compactPreambleBlankLines(preamble) {
+  return String(preamble || '')
+    .replace(/\n{3,}/g, '\n\n')
+    .replace(/\n+$/g, '');
+}
+
 function splitSections(text) {
   const lines = text.split('\n');
   const headerEnd = lines.findIndex((l, i) => i > 0 && /^## \d{4}-\d{2}-\d{2}/.test(l));
@@ -55,7 +62,28 @@ function main() {
     process.exit(1);
   }
   const raw = fs.readFileSync(CHECKPOINT, 'utf8');
-  const { preamble, sections } = splitSections(raw);
+  let { preamble, sections } = splitSections(raw);
+  const FREEZE_MAX = 50;
+  const preambleLinesBefore = preamble.split('\n').length;
+  if (preambleLinesBefore > FREEZE_MAX) {
+    const compacted = compactPreambleBlankLines(preamble);
+    if (compacted !== preamble && !dryRun) {
+      const rebuilt =
+        compacted +
+        '\n\n' +
+        sections.map((s) => s.title + '\n' + s.body.join('\n')).join('\n\n') +
+        (raw.endsWith('\n') ? '\n' : '');
+      fs.writeFileSync(CHECKPOINT, rebuilt, 'utf8');
+      preamble = compacted;
+      console.log(
+        `[cio:checkpoint:rollup] compacted preamble blanks ${preambleLinesBefore} → ${preamble.split('\n').length}`,
+      );
+    } else if (compacted !== preamble && dryRun) {
+      console.log(
+        `[cio:checkpoint:rollup] dry-run would compact preamble ${preambleLinesBefore} → ${compacted.split('\n').length}`,
+      );
+    }
+  }
   if (sections.length <= keep) {
     const heal = healCheckpointGitWorktree(root, { target: 'origin' });
     if (heal.healed) {

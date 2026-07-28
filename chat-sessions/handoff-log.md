@@ -5117,7 +5117,7 @@ npm run cio:morning:ready
 
 **要約**: 756 LIVE vendor-list-only rev154（U35/U36）。夕反省GO実装済。RAG憲法aide試行開始（AIチーム・CIO判定委任）。mcp.json rag→Windows正本（MCP再起動要）。SPEC漏れなし。
 
-**次の1手**: 項番 -0 で浜田確認。lab控=7/27確認パック送付。
+**次の1手**: 浜田指示待ち（新アプリ作成の相談可）。確認パックは「送ってよい」後。
 
 **Git**: `42f0ed82` — 
 
