@@ -250,12 +250,11 @@ if "現場経費" in section_to_himoku:
         if h not in types_by_himoku["現場経費"]:
             types_by_himoku["現場経費"].append(h)
 
-# 依頼者要望 (2026-07-26 / 2026-07-29 追記): 費目=労務費 の種別（補助）候補に
-# 昼夜区分を追加する。コード表に行はない合成候補。工種ローカルに種別がある工種
-# （工事管理者賃金など）は従来どおりローカル優先のため影響しない
-# （グローバルフォールバック時のみ表示）。
-# 2026-07-29: 出向工事管理者賃金／建設機械オペレーター／その他労務者の昼・夜を追加。
-# 表記は依頼者どおり「昼」「夜」（既存の労務費（昼間）／（夜間）は据え置き）。
+# 依頼者要望 (2026-07-26 / 2026-07-29): 費目=労務費 の種別（補助）は昼夜区分。
+# コード表由来の括弧なし3種は候補から外し、（昼）（夜）合成に置き換える
+# （依頼者: もともとの出向工事管理者賃金等が残っているのは不要）。
+# 既存の「労務費（昼間）」「労務費（夜間）」は据え置き。
+# 工種ローカル（工事管理者賃金など）も同置換し、括弧なし単独候補を残さない。
 SYNTHETIC_LABOR_TYPES = [
     "労務費（昼間）",
     "労務費（夜間）",
@@ -266,10 +265,53 @@ SYNTHETIC_LABOR_TYPES = [
     "その他労務者（昼）",
     "その他労務者（夜）",
 ]
+LABOR_BARE_TYPES = [
+    "出向工事管理者賃金",
+    "建設機械オペレーター",
+    "その他労務者",
+]
+LABOR_BARE_TO_DAY_NIGHT = {
+    "出向工事管理者賃金": ["出向工事管理者賃金（昼）", "出向工事管理者賃金（夜）"],
+    "建設機械オペレーター": ["建設機械オペレーター（昼）", "建設機械オペレーター（夜）"],
+    "その他労務者": ["その他労務者（昼）", "その他労務者（夜）"],
+}
+
+def replace_labor_bare_types(type_list):
+    out = []
+    for t in type_list or []:
+        if t in LABOR_BARE_TO_DAY_NIGHT:
+            for syn in LABOR_BARE_TO_DAY_NIGHT[t]:
+                if syn not in out:
+                    out.append(syn)
+        elif t not in out:
+            out.append(t)
+    return out
+
 types_by_himoku.setdefault("労務費", [])
+types_by_himoku["労務費"] = replace_labor_bare_types(types_by_himoku["労務費"])
 for t in SYNTHETIC_LABOR_TYPES:
     if t not in types_by_himoku["労務費"]:
         types_by_himoku["労務費"].append(t)
+
+for bag in (by_code, by_name):
+    for entry in bag.values():
+        local = entry.get("typesByHimoku", {}).get("労務費")
+        if local is not None:
+            entry["typesByHimoku"]["労務費"] = replace_labor_bare_types(local)
+            if entry["typesByHimoku"]["労務費"]:
+                entry["dashTypeByHimoku"]["労務費"] = False
+        entry["allTypes"] = replace_labor_bare_types(entry.get("allTypes") or [])
+
+# 定義候補: 括弧なしの定義を（昼）（夜）キーへ複製（種別選択時の定義候補用）
+for bare, pair in LABOR_BARE_TO_DAY_NIGHT.items():
+    defs = list(defs_by_type.get(bare) or [])
+    if not defs:
+        continue
+    for syn in pair:
+        defs_by_type.setdefault(syn, [])
+        for d in defs:
+            if d not in defs_by_type[syn]:
+                defs_by_type[syn].append(d)
 
 # 予備費: コード表にシステム工種行はないが、依頼者リストでは給与手当群の直後・
 # 保安費の直前に置く。費目候補は「予備費」のみ。

@@ -84,6 +84,36 @@ if (run.status !== 0) {
 const excel = JSON.parse(run.stdout);
 const data = JSON.parse(fs.readFileSync(jsonPath, "utf8"));
 
+// 労務費: 括弧なし3種は候補から外し、（昼）（夜）合成に置換（依頼者 2026-07-29）
+const LABOR_BARE_TO_DAY_NIGHT = {
+  出向工事管理者賃金: ["出向工事管理者賃金（昼）", "出向工事管理者賃金（夜）"],
+  建設機械オペレーター: ["建設機械オペレーター（昼）", "建設機械オペレーター（夜）"],
+  その他労務者: ["その他労務者（昼）", "その他労務者（夜）"],
+};
+const LABOR_SYNTHETIC_TYPES = new Set([
+  "労務費（昼間）",
+  "労務費（夜間）",
+  ...Object.values(LABOR_BARE_TO_DAY_NIGHT).flat(),
+]);
+
+function expandLaborTypes(excelTypes) {
+  const out = [];
+  for (const t of excelTypes || []) {
+    if (LABOR_BARE_TO_DAY_NIGHT[t]) {
+      for (const syn of LABOR_BARE_TO_DAY_NIGHT[t]) {
+        if (!out.includes(syn)) out.push(syn);
+      }
+    } else if (!out.includes(t)) {
+      out.push(t);
+    }
+  }
+  return out;
+}
+
+function isAllowedLaborTypeExtra(himoku, typeName) {
+  return himoku === "労務費" && LABOR_SYNTHETIC_TYPES.has(typeName);
+}
+
 const isDash = (s) => !s || s === "-" || s === "－" || s === "—";
 const isExplicitDash = (s) => s === "-" || s === "－" || s === "—";
 const problems = [];
@@ -128,19 +158,21 @@ for (const [name, e] of excelByName) {
       problems.push(`[漏れ] ${name}: 費目「${h}」が himoku にない`);
     }
     const excelTypes = e.types.get(h) || [];
+    const expectedTypes =
+      h === "労務費" ? expandLaborTypes(excelTypes) : excelTypes;
     const local = (entry.typesByHimoku || {})[h] || [];
-    if (JSON.stringify(local) !== JSON.stringify(excelTypes)) {
+    if (JSON.stringify(local) !== JSON.stringify(expectedTypes)) {
       // 漏れ／混入は別検証でも拾うが、順序ズレも明示する
       if (
-        excelTypes.every((t) => local.includes(t)) &&
-        local.every((t) => excelTypes.includes(t))
+        expectedTypes.every((t) => local.includes(t)) &&
+        local.every((t) => expectedTypes.includes(t))
       ) {
         problems.push(
-          `[順序] ${name}: 費目「${h}」の種別順が不一致 Excel=[${excelTypes.join("/")}] JSON=[${local.join("/")}]`,
+          `[順序] ${name}: 費目「${h}」の種別順が不一致 Excel=[${expectedTypes.join("/")}] JSON=[${local.join("/")}]`,
         );
       }
     }
-    for (const t of excelTypes) {
+    for (const t of expectedTypes) {
       if (!local.includes(t)) {
         problems.push(`[漏れ] ${name}: 費目「${h}」の種別「${t}」が typesByHimoku にない`);
       }
@@ -178,8 +210,10 @@ for (const [name, entry] of Object.entries(data.byWorkTypeName || {})) {
   }
   for (const [h, types] of Object.entries(entry.typesByHimoku || {})) {
     const excelTypes = e.types.get(h) || [];
+    const expectedTypes =
+      h === "労務費" ? expandLaborTypes(excelTypes) : excelTypes;
     for (const t of types) {
-      if (!excelTypes.includes(t)) {
+      if (!expectedTypes.includes(t) && !isAllowedLaborTypeExtra(h, t)) {
         problems.push(`[混入] ${name}: 費目「${h}」の種別「${t}」は Excel のこの工種行にない`);
       }
     }
@@ -254,28 +288,17 @@ if (
 }
 // 現場経費はコード表ではセクション名 → 配下費目を種別候補とする合成仕様
 const expectedGenba = sectionHimoku.get("現場経費") || [];
-// 労務費: 依頼者要望の昼夜区分をコード表由来の末尾へ合成する仕様
-// （2026-07-26: 労務費昼／夜 → 2026-07-29: 出向工事管理者賃金等の昼／夜を追加）
-const SYNTHETIC_TYPES_BY_HIMOKU = {
-  労務費: [
-    "労務費（昼間）",
-    "労務費（夜間）",
-    "出向工事管理者賃金（昼）",
-    "出向工事管理者賃金（夜）",
-    "建設機械オペレーター（昼）",
-    "建設機械オペレーター（夜）",
-    "その他労務者（昼）",
-    "その他労務者（夜）",
-  ],
-};
 for (const h of menu) {
   const actual = (data.typesByHimoku || {})[h] || [];
-  const expected =
+  let expected =
     h === "現場経費"
       ? [...expectedGenba]
       : [...(globalTypesFromExcel.get(h) || [])];
-  for (const t of SYNTHETIC_TYPES_BY_HIMOKU[h] || []) {
-    if (!expected.includes(t)) expected.push(t);
+  if (h === "労務費") {
+    expected = expandLaborTypes(expected);
+    for (const t of LABOR_SYNTHETIC_TYPES) {
+      if (!expected.includes(t)) expected.push(t);
+    }
   }
   const missing = expected.filter((t) => !actual.includes(t));
   const extra = actual.filter((t) => !expected.includes(t));

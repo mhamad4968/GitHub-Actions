@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-07-29-ver02-labor-type-day-night-extend",
-      "fileKey": "12c14e28-3114-41bb-90d0-bf5ac1655f3e",
-      "revision": "159",
+      "build": "2026-07-29-ver02-labor-type-day-night-only",
+      "fileKey": "76c528ea-e611-47df-9458-c313f1d1eae6",
+      "revision": "160",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-07-29T09:56:30.674Z",
+      "deployedAt": "2026-07-29T10:00:23.831Z",
       "note": null
     },
     "757": {
