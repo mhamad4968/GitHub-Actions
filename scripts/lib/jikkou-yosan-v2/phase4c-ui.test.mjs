@@ -83,7 +83,7 @@ test("row_kind / unit / status catalogs match the App2 field catalog (§2, U16)"
     "block_total",
   ]);
   // R-11: 諸経費(overhead)は自動計算(読取専用)になったので手入力から除外。
-  assert.deepEqual(MANUAL_FOOTER_KINDS, ["insurance", "legal_welfare"]);
+  assert.deepEqual(MANUAL_FOOTER_KINDS, ["insurance"]);
   assert.equal(BLOCK_FOOTER_LABELS.block_total, "計");
 });
 
@@ -163,7 +163,7 @@ test("detail amounts follow P-22 ROUND: 数量×単価 and ％=単価×数量÷1
   );
 });
 
-test("U25/R-11 totals: 諸経費=明細×10%(自動), 小計=明細+諸経費+保険料, 計=小計+法定福利費", () => {
+test("U25/R-11/R-12 totals: 諸経費=明細×10%(自動), 法定福利費=労務費明細合計(自動), 小計=明細+諸経費+保険料, 計=小計+法定福利費", () => {
   const model = editableModel();
   const blockId = model.addBlock();
   const rowKey = model.snapshot().blocks[0].detailRows[0].rowKey;
@@ -180,27 +180,47 @@ test("U25/R-11 totals: 諸経費=明細×10%(自動), 小計=明細+諸経費+�
   assert.equal(block.footer.overhead.base, "2000");
   assert.equal(block.footer.overhead.rate, "0.1");
   assert.equal(block.footer.overhead.ratePercent, "10");
-  // 手入力の保険料・法定福利費が空なら 0 扱い(表示は空白のまま)。
+  // 手入力の保険料が空・労務費明細が無ければ法定福利費は空欄。
   assert.equal(block.footer.insurance.amount, null);
   assert.equal(block.footer.legal_welfare.amount, null);
   assert.equal(block.footer.subtotal.amount, "2200"); // 2000 + 200
   assert.equal(block.footer.block_total.amount, "2200");
 
   model.updateFooterAmount(blockId, "insurance", "50");
-  model.updateFooterAmount(blockId, "legal_welfare", "111");
   block = model.snapshot().blocks[0];
   assert.equal(block.footer.subtotal.amount, "2250"); // 2000 + 200 + 50
-  assert.equal(block.footer.block_total.amount, "2361"); // 2250 + 111
-
-  // Blanking a manual amount reverts to 0-in-totals / blank-on-screen.
-  model.updateFooterAmount(blockId, "legal_welfare", "");
-  block = model.snapshot().blocks[0];
-  assert.equal(block.footer.legal_welfare.amount, null);
   assert.equal(block.footer.block_total.amount, "2250");
 
-  // R-11: 諸経費は自動なので手入力不可。小計・計もシステム集計(U25)。
+  // R-12: 費目「労務費」の明細金額合計が法定福利費（外注労務費は除外）。
+  const laborKey = model.addDetailRow(blockId);
+  model.updateDetailRow(blockId, laborKey, {
+    name1: "労務費",
+    name2: "労務費（昼間）",
+    unit: "式",
+    quantity: "1",
+    unitPrice: "111",
+  });
+  const outsourceKey = model.addDetailRow(blockId);
+  model.updateDetailRow(blockId, outsourceKey, {
+    name1: "外注労務費",
+    unit: "式",
+    quantity: "1",
+    unitPrice: "999",
+  });
+  block = model.snapshot().blocks[0];
+  assert.equal(block.footer.legal_welfare.amount, "111");
+  // 明細 2000+111+999=3110, 諸経費=311, 保険=50 → 小計=3471, 計=3471+111=3582
+  assert.equal(block.footer.overhead.amount, "311");
+  assert.equal(block.footer.subtotal.amount, "3471");
+  assert.equal(block.footer.block_total.amount, "3582");
+
+  // R-11/R-12: 諸経費・法定福利費は自動なので手入力不可。小計・計もシステム集計(U25)。
   assert.throws(
     () => model.updateFooterAmount(blockId, "overhead", "1"),
+    /not manually editable/,
+  );
+  assert.throws(
+    () => model.updateFooterAmount(blockId, "legal_welfare", "1"),
     /not manually editable/,
   );
   assert.throws(

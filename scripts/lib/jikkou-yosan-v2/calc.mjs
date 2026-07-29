@@ -89,6 +89,15 @@ export function overheadFromDetails(detailAmounts, rate) {
   return round(multiply(sum(present_), rate), 0);
 }
 
+// R-12 (依頼者確定 2026-07-29): 法定福利費 = 費目(name1)が「労務費」の明細金額合計。
+// 外注労務費は含めない。労務費明細の金額が1つも無ければ空欄（null）。
+// 各明細金額は既に U18/P-22 で円単位に丸め済みのため、ここでは再丸めしない。
+export function legalWelfareFromLaborAmounts(laborAmounts) {
+  const present_ = amounts(laborAmounts).filter((value) => present(value));
+  if (present_.length === 0) return null;
+  return sum(present_);
+}
+
 export function taxInclusive(exclusiveAmount, taxRate) {
   return round(multiply(exclusiveAmount, add("1", taxRate)), 0);
 }

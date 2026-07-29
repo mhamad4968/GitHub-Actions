@@ -1,4 +1,9 @@
-import { blockTotals, detailLineAmount, overheadFromDetails } from "./calc.mjs";
+import {
+  blockTotals,
+  detailLineAmount,
+  legalWelfareFromLaborAmounts,
+  overheadFromDetails,
+} from "./calc.mjs";
 import { add, sum } from "./decimal.mjs";
 import { COMMON_UNITS } from "./contract-salary-model.mjs";
 import { createRowKey, createStableBlockId } from "./keys.mjs";
@@ -39,13 +44,13 @@ export const BLOCK_FOOTER_LABELS = Object.freeze({
   legal_welfare: "法定福利費",
   block_total: "計",
 });
-// C-U16: 手入力のフッタ金額。諸経費(overhead)は R-11 回答(2026-07-26)で
-// 「明細合計×10%」の自動計算に確定したため手入力から除外(読取専用)。
-// 各種保険料(insurance)・法定福利費(legal_welfare)は R-12/R-13 未確定のため手入力のまま。
-export const MANUAL_FOOTER_KINDS = Object.freeze([
-  "insurance",
-  "legal_welfare",
-]);
+// C-U16: 手入力のフッタ金額。諸経費(overhead)は R-11、法定福利費(legal_welfare)は
+// R-12 で自動確定したため手入力から除外(読取専用)。各種保険料(insurance)のみ手入力
+// （R-13 未確定）。
+export const MANUAL_FOOTER_KINDS = Object.freeze(["insurance"]);
+
+// R-12: 法定福利費の対象費目（name1 厳密一致。外注労務費は含めない）。
+export const LEGAL_WELFARE_NAME1 = "労務費";
 
 // R-11: 諸経費率 = 10%（依頼者確定 2026-07-26）。表示用の百分率も併記。
 export const OVERHEAD_RATE = "0.1";
@@ -253,22 +258,29 @@ export function createDetailBlockModel({
 
   // U25: 小計 = 明細金額計 + 諸経費 + 各種保険料; 計 = 小計 + 法定福利費.
   // R-11: 諸経費は自動 = ROUND(明細金額合計 × 10%, 0)。明細金額が無ければ空欄。
-  // 手入力の各種保険料・法定福利費が空なら 0 扱い(表示は空白のまま)。
+  // R-12: 法定福利費は自動 = 費目「労務費」の明細金額合計。対象が無ければ空欄。
+  // 手入力の各種保険料が空なら 0 扱い(表示は空白のまま)。
   function computedTotals(block) {
     const detailAmounts = block.detailRows
       .map((row) => detailRowAmount(row))
       .filter((amount) => amount !== null);
     const overheadBase = detailAmounts.length ? sum(detailAmounts) : null;
     const overhead = overheadFromDetails(detailAmounts, OVERHEAD_RATE);
+    const laborAmounts = block.detailRows
+      .filter((row) => row.name1 === LEGAL_WELFARE_NAME1)
+      .map((row) => detailRowAmount(row))
+      .filter((amount) => amount !== null);
+    const legalWelfare = legalWelfareFromLaborAmounts(laborAmounts);
     return {
       ...blockTotals({
         detailAmounts,
         overhead,
         insurance: block.footer.insurance.amount,
-        legalWelfare: block.footer.legal_welfare.amount,
+        legalWelfare,
       }),
       overhead,
       overheadBase,
+      legalWelfare,
     };
   }
 
@@ -319,7 +331,11 @@ export function createDetailBlockModel({
           rowKey: block.footer.subtotal.rowKey,
           amount: totals.subtotal,
         }),
-        legal_welfare: Object.freeze({ ...block.footer.legal_welfare }),
+        // R-12: 法定福利費は自動(読取専用)。保存値は再計算で上書き。
+        legal_welfare: Object.freeze({
+          rowKey: block.footer.legal_welfare.rowKey,
+          amount: totals.legalWelfare,
+        }),
         block_total: Object.freeze({
           rowKey: block.footer.block_total.rowKey,
           amount: totals.total,
@@ -514,7 +530,7 @@ export function createDetailBlockModel({
       push({
         row_kind: "legal_welfare",
         row_key: block.footer.legal_welfare.rowKey,
-        amount: block.footer.legal_welfare.amount ?? "",
+        amount: totals.legalWelfare ?? "",
       });
       push({
         row_kind: "block_total",
