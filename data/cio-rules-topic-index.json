@@ -11,6 +11,7 @@
         ".cursor/rules/cio-constitution.mdc",
         ".cursor/rules/constitution-enforcement-core.mdc",
         ".cursor/rules/mode-b-canonical.mdc",
+        ".cursor/rules/cio-ops-hard-request-clarity.mdc",
         ".cursor/rules/autonomous-with-mandatory-asks.mdc",
         ".cursor/rules/creation-timing-ask.mdc",
         ".cursor/rules/persist-policies.mdc",
@@ -53,6 +54,8 @@
       "topic": "kintone customize・deploy",
       "rules": [
         ".cursor/rules/constitutional-focus-kintone-customize.mdc",
+        ".cursor/rules/jikkou-yosan-v2-ui-chrome.mdc",
+        ".cursor/rules/ui-acceptance-smoke.mdc",
         ".cursor/rules/cio-composer-escalation-interlock.mdc",
         ".cursor/rules/composer-mcp-audit-gate.mdc",
         ".cursor/rules/mode-b-mdc-canonical-linter.mdc",
@@ -88,6 +91,7 @@
       "topic": "仕様・実装前ゲート",
       "rules": [
         ".cursor/rules/cio-spec-logic-gate.mdc",
+        ".cursor/rules/spec-round-ai-agreement.mdc",
         ".cursor/rules/deepseek-cursor-spec-division.mdc",
         ".cursor/rules/deepseek-pre-edit-gate.mdc",
         ".cursor/rules/cio-18-zero-tolerance.mdc"

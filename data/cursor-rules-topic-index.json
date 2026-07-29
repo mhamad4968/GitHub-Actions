@@ -14,7 +14,8 @@
         "cio-discipline-always.mdc",
         "cio-18-zero-tolerance.mdc",
         "cio-report-min-format.mdc",
-        "mode-b-mdc-canonical-linter.mdc"
+        "mode-b-mdc-canonical-linter.mdc",
+        "cio-ops-hard-request-clarity.mdc"
       ]
     },
     {
