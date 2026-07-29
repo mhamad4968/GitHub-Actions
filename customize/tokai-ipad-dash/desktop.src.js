@@ -2,7 +2,7 @@
   "use strict";
 
   /** 東海支店 iPad 管理台帳 — DB(769) REST CRUD + 595/674 同期 + A4 印刷 + Excel 出力 */
-  var BUILD = "2026-07-28-tokai-ipad-dash-v3-print-dense-design";
+  var BUILD = "2026-07-29-tokai-ipad-dash-shared-passcode-fixed";
 
   var APP_DB = 769;
   var APP_EMP_MASTER = 595;
@@ -17,6 +17,7 @@
   var STATUS_ACTIVE = "有効";
   var STATUS_DISPOSED = "廃棄";
   var STATUS_VALUES = [STATUS_ACTIVE, STATUS_DISPOSED];
+  var SHARED_PASSCODE_FIXED = "251100";
 
   var FC = {
     location: "location",
@@ -788,8 +789,8 @@
       esc(r.apple_serial || "") +
       '"></label>' +
       '<label>共有パスコード<input type="text" id="tip-f-shared-passcode" value="' +
-      esc(r.shared_passcode || "") +
-      '" autocomplete="off"></label>' +
+      esc(SHARED_PASSCODE_FIXED) +
+      '" readonly class="tip-readonly" autocomplete="off"></label>' +
       '<label>ステータス<select id="tip-f-status">' +
       statusOptionsHtml(r.status || STATUS_ACTIVE) +
       "</select></label>" +
@@ -825,7 +826,7 @@
       imei: document.getElementById("tip-f-imei").value.trim(),
       iccid: document.getElementById("tip-f-iccid").value.trim(),
       apple_serial: document.getElementById("tip-f-apple-serial").value.trim(),
-      shared_passcode: document.getElementById("tip-f-shared-passcode").value.trim(),
+      shared_passcode: SHARED_PASSCODE_FIXED,
       status: document.getElementById("tip-f-status").value.trim(),
       employee_record_id: document.getElementById("tip-f-employee-record-id").value.trim(),
       m365_id: document.getElementById("tip-f-m365-id").value.trim(),
@@ -1022,6 +1023,7 @@
       status: STATUS_ACTIVE,
       location: "",
       user_name: "",
+      shared_passcode: SHARED_PASSCODE_FIXED,
     };
     // Draft POST 前に user_name 必須なので、ドラフト作成せず先に編集モーダルを開いて必須入力させる方式に変更。
     // ただし SPEC は「新規: 次 tokaiNN 表示＋作成」なので、端末名だけ確定した空レコードを画面上に持たせる。
