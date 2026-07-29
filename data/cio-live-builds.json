@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-07-29-ver02-legal-welfare-labor-sum",
-      "fileKey": "228130b8-2ff0-444e-a4fb-b685fa0f212b",
-      "revision": "158",
+      "build": "2026-07-29-ver02-labor-type-day-night-extend",
+      "fileKey": "12c14e28-3114-41bb-90d0-bf5ac1655f3e",
+      "revision": "159",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-07-29T09:51:34.839Z",
+      "deployedAt": "2026-07-29T09:56:30.674Z",
       "note": null
     },
     "757": {

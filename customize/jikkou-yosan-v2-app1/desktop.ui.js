@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-29-ver02-legal-welfare-labor-sum
+  // @JY_V2_BUILD 2026-07-29-ver02-labor-type-day-night-extend
   // U34: 保存・セル編集の再描画／reload でページ上部へ跳ばない（縦・横位置を維持）
 
   const JY2_STYLE_ID = "jy2-shell-style";
@@ -934,7 +934,7 @@
   const JY2_NAME_HIERARCHY = Object.freeze({
   "source": "C:/tmp/実行予算ver2/内訳で使うコード表.xlsx",
   "sourceFile": "内訳で使うコード表.xlsx",
-  "generatedAt": "2026-07-26T12:33:12",
+  "generatedAt": "2026-07-29T18:56:16",
   "labels": {
     "name1": "費目",
     "name2": "種別（補助）",
@@ -959,7 +959,6 @@
     "（塗）修繕等工事",
     "（塗）塗装付帯工事",
     "（塗）暫定実行予算総額",
-    "（塗）追加工事？",
     "（塗）追加工事①",
     "（塗）追加工事②",
     "（塗）追加工事③",
@@ -995,6 +994,7 @@
     "（塗）補償費",
     "（塗）交際費",
     "（塗）工事安全専任管理者",
+    "予備費",
     "（塗）社員助勢費用",
     "（塗）現場代理人･監理技術者給与手当",
     "（塗）工事担当者給与手当",
@@ -1926,31 +1926,6 @@
       "allDefinitions": [],
       "constructionMenu": false
     },
-    "14000": {
-      "workTypeCode": "14000",
-      "workTypeName": "（塗）追加工事？",
-      "sectionA": "施工費",
-      "himoku": [
-        "材料費",
-        "労務費",
-        "外注費",
-        "工具･機械使用料",
-        "現場経費",
-        "諸経費",
-        "法定福利費",
-        "予備費"
-      ],
-      "himokuDefault": "外注費",
-      "typesByHimoku": {
-        "外注費": []
-      },
-      "dashTypeByHimoku": {
-        "外注費": true
-      },
-      "allTypes": [],
-      "allDefinitions": [],
-      "constructionMenu": true
-    },
     "14100": {
       "workTypeCode": "14100",
       "workTypeName": "（塗）追加工事①",
@@ -2245,31 +2220,6 @@
     "（塗）暫定実行予算総額": {
       "workTypeCode": "13200",
       "workTypeName": "（塗）暫定実行予算総額",
-      "sectionA": "施工費",
-      "himoku": [
-        "材料費",
-        "労務費",
-        "外注費",
-        "工具･機械使用料",
-        "現場経費",
-        "諸経費",
-        "法定福利費",
-        "予備費"
-      ],
-      "himokuDefault": "外注費",
-      "typesByHimoku": {
-        "外注費": []
-      },
-      "dashTypeByHimoku": {
-        "外注費": true
-      },
-      "allTypes": [],
-      "allDefinitions": [],
-      "constructionMenu": true
-    },
-    "（塗）追加工事？": {
-      "workTypeCode": "14000",
-      "workTypeName": "（塗）追加工事？",
       "sectionA": "施工費",
       "himoku": [
         "材料費",
@@ -3076,6 +3026,18 @@
       "allDefinitions": [],
       "constructionMenu": false
     },
+    "予備費": {
+      "workTypeCode": "",
+      "workTypeName": "予備費",
+      "sectionA": "予備費",
+      "himoku": [],
+      "himokuDefault": "",
+      "typesByHimoku": {},
+      "dashTypeByHimoku": {},
+      "allTypes": [],
+      "allDefinitions": [],
+      "constructionMenu": false
+    },
     "（塗）社員助勢費用": {
       "workTypeCode": "13400",
       "workTypeName": "（塗）社員助勢費用",
@@ -3188,22 +3150,6 @@
       "allDefinitions": [
         "社員名を入れたい"
       ],
-      "constructionMenu": false
-    },
-    "予備費": {
-      "workTypeCode": "",
-      "workTypeName": "予備費",
-      "sectionA": "予備費",
-      "himoku": [
-        "予備費"
-      ],
-      "himokuDefault": "予備費",
-      "typesByHimoku": {},
-      "dashTypeByHimoku": {
-        "予備費": false
-      },
-      "allTypes": [],
-      "allDefinitions": [],
       "constructionMenu": false
     },
     "（塗）線閉責任者": {
@@ -3403,7 +3349,13 @@
       "建設機械オペレーター",
       "その他労務者",
       "労務費（昼間）",
-      "労務費（夜間）"
+      "労務費（夜間）",
+      "出向工事管理者賃金（昼）",
+      "出向工事管理者賃金（夜）",
+      "建設機械オペレーター（昼）",
+      "建設機械オペレーター（夜）",
+      "その他労務者（昼）",
+      "その他労務者（夜）"
     ],
     "仮設機械経費": [
       "鎌ヶ谷資材使用料",
