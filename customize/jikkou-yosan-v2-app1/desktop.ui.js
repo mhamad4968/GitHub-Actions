@@ -1,8 +1,11 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-29-ver02-hide-actual-attr-cols
-  // 工事原価管理: 消費税・単位・数量・金額・備考を非表示（依頼者要望）。種別・単価は残す。
+  // @JY_V2_BUILD 2026-07-29-ver02-actual-detail-expand
+  // 工事原価管理: 親行＝内訳№単位は合計表示のみ・編集不可。＋/－で明細行
+  // （費目/種別/定義）を開き、月別消化と最終予算額は明細行に入力する
+  // （Hamada 確定 2026-07-29 夕）。明細行が1つでも値を持つ列は親=子の合計、
+  // 空のときはレガシー（旧・親単位）値を親で表示するフォールバック。
 
   const JY2_STYLE_ID = "jy2-shell-style";
   const JY2_ACTIVE_TAB_KEY = `jy2:${APP1_ID}:activeTab`;
@@ -381,6 +384,14 @@
       ".jy2-actual-note-details{margin:0 0 8px;font-size:12px;color:#64748b}",
       ".jy2-actual-note-details>summary{cursor:pointer;font-weight:600;color:#475569;padding:4px 0}",
       ".jy2-actual-note{color:#64748b;font-size:11px;margin:4px 0 0;line-height:1.45}",
+      /* 2026-07-29-ver02-actual-detail-expand: 親行の＋/－ボタン・明細子行の見た目 */
+      ".jy2-actual-expand-btn{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;padding:0;margin-right:4px;font-size:11px;font-weight:700;line-height:1;border:1px solid #94a3b8;border-radius:3px;background:#f8fafc;color:#334155;cursor:pointer}",
+      ".jy2-actual-expand-btn:hover{background:#e2e8f0;border-color:#64748b}",
+      ".jy2-actual-parent-num{display:inline-block;min-width:1.5rem}",
+      ".jy2-actual-child-row td{background:#fafafa}",
+      ".jy2-actual-child-row .jy2-freeze{background:#fafafa}",
+      ".jy2-actual-child-row td.jy2-actual-child-name{color:#475569;font-size:11px;padding-left:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
+      ".jy2-actual-child-indent{color:#94a3b8;margin-right:2px}",
       /* 縦 sticky 禁止（2段見出しが同じ top でデータ行に沈む）。左固定列のみ sticky */
       ".jy2-actual-table thead th{text-align:center;vertical-align:bottom;position:static;top:auto;z-index:auto;background:#f1f5f9;box-shadow:none}",
       ".jy2-actual-table thead th[colspan]{background:#fef3c7}",
@@ -6503,25 +6514,73 @@
     return `${String(year).slice(-2)}/${Number(monthNumber)}`;
   }
 
-  // One 予実 cost row (Y3/Y9): budget attributes read-only (Y10), month cells
-  // and 最終予算額 editable when editActuals, metrics always auto. Y9 rates:
-  // BC率＝現行予算÷①（現行予算の隣）・EC率＝最終予算額÷①（最終の隣）.
-  function jy2ActualRow(documentRef, actualsModel, row, months, editable, rerender) {
+  // 2026-07-29-ver02-actual-detail-expand: 継続（〃）を実値へ解決するヘルパ。
+  // detail-block-model の resolveContinuedField を UI ローカルでも用意して、
+  // 子行の費目/種別/定義及び品名を上位行から埋め戻す。
+  function jy2ActualResolveContinuedField(rows, index, field) {
+    if (!Array.isArray(rows) || index < 0) return null;
+    for (let i = index; i >= 0; i -= 1) {
+      const raw = rows[i] && rows[i][field];
+      if (!jy2HasText(raw) || jy2IsDitto(raw)) continue;
+      return String(raw).trim();
+    }
+    return null;
+  }
+
+  // Parent 予実 row (2026-07-29-ver02-actual-detail-expand): 内訳№単位で
+  // 合計を表示する。手入力欄は明細行にあるためここは全カラム readonly。
+  // 先頭に ＋/－ トグルを置き、click で当該ブロックの明細行が展開される。
+  function jy2ActualRow(
+    documentRef,
+    actualsModel,
+    row,
+    months,
+    editable,
+    rerender,
+    expandState,
+  ) {
     const tr = documentRef.createElement("tr");
+    tr.className = "jy2-actual-parent-row";
     tr.dataset.stableBlockId = row.stableBlockId;
     tr.dataset.costCategory = row.costCategory;
     tr.dataset.blockStatus = row.status;
-    tr.appendChild(
-      jy2MarkFreeze(
-        jy2Cell(
-          documentRef,
-          "td",
-          row.status === "retired" ? "jy2-retired-tag" : "jy2-num",
-          row.status === "retired" ? "廃止" : row.blockNo,
-        ),
-        0,
-      ),
+    if (row.hasChildren) tr.dataset.hasChildren = "true";
+
+    const idCell = jy2Cell(
+      documentRef,
+      "td",
+      row.status === "retired" ? "jy2-retired-tag" : "jy2-num",
+      "",
     );
+    const expanded =
+      expandState && typeof expandState.isExpanded === "function"
+        ? expandState.isExpanded(row.stableBlockId)
+        : false;
+    if (row.hasChildren) {
+      const toggle = documentRef.createElement("button");
+      toggle.type = "button";
+      toggle.className = "jy2-actual-expand-btn";
+      toggle.textContent = expanded ? "－" : "＋";
+      toggle.setAttribute(
+        "aria-label",
+        expanded ? "明細行を閉じる" : "明細行を開く",
+      );
+      toggle.title = expanded ? "明細行を閉じる" : "明細行を開く";
+      toggle.addEventListener("click", () => {
+        if (!expandState) return;
+        expandState.toggle(row.stableBlockId);
+        rerender();
+      });
+      idCell.appendChild(toggle);
+      const labelText = documentRef.createElement("span");
+      labelText.className = "jy2-actual-parent-num";
+      labelText.textContent = row.status === "retired" ? "廃止" : String(row.blockNo ?? "");
+      idCell.appendChild(labelText);
+    } else {
+      idCell.textContent = row.status === "retired" ? "廃止" : String(row.blockNo ?? "");
+    }
+    tr.appendChild(jy2MarkFreeze(idCell, 0));
+
     tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "", row.costCategory), 1));
     tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "", row.workTypeCode), 2));
     tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "", row.workTypeName), 3));
@@ -6534,48 +6593,22 @@
       jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(row.currentBudget)),
     );
     tr.appendChild(jy2Cell(documentRef, "td", "jy2-num", jy2Percent(row.bcRate)));
-    const commit = (patch) => {
-      try {
-        actualsModel.updateActualRow(row.stableBlockId, row.costCategory, patch);
-      } catch {
-        // Invalid input (non-integer) is discarded; rerender restores the cell.
-      }
-      rerender();
-    };
     for (const month of months) {
-      const cell = jy2Cell(documentRef, "td", "jy2-num jy2-actual-month", "");
-      if (editable) {
-        cell.appendChild(
-          jy2TextInput(documentRef, row.monthly[month], (value) =>
-            commit({ [month]: value }),
-          ),
-        );
-      } else {
-        cell.className = "jy2-amount jy2-actual-month";
-        cell.textContent = jy2AmountDisplay(row.monthly[month]);
-      }
-      tr.appendChild(cell);
+      tr.appendChild(
+        jy2Cell(
+          documentRef,
+          "td",
+          "jy2-amount jy2-actual-month",
+          jy2AmountDisplay(row.monthly[month]),
+        ),
+      );
     }
     tr.appendChild(
       jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(row.actual)),
     );
-    const finalCell = jy2Cell(documentRef, "td", "jy2-num", "");
-    if (editable) {
-      finalCell.appendChild(
-        jy2TextInput(
-          documentRef,
-          row.finalBudgetManual ? row.finalBudget : "",
-          (value) => commit({ finalBudget: value }),
-        ),
-      );
-      if (!row.finalBudgetManual) {
-        finalCell.firstChild.placeholder = jy2AmountDisplay(row.finalBudget);
-      }
-    } else {
-      finalCell.className = "jy2-amount";
-      finalCell.textContent = jy2AmountDisplay(row.finalBudget);
-    }
-    tr.appendChild(finalCell);
+    tr.appendChild(
+      jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(row.finalBudget)),
+    );
     tr.appendChild(jy2Cell(documentRef, "td", "jy2-num", jy2Percent(row.ecRate)));
     tr.appendChild(
       jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(row.futureRequired)),
@@ -6592,6 +6625,146 @@
       ),
     );
     return tr;
+  }
+
+  // Child 予実 row (2026-07-29-ver02-actual-detail-expand): 内訳の明細行に
+  // 対応。編集は月別消化と最終予算額のみ。費目/種別/定義及び品名は継続
+  // （〃）を上位行から解決した実値で表示する。
+  function jy2ActualChildRow(
+    documentRef,
+    actualsModel,
+    parent,
+    child,
+    detailRows,
+    detailIndex,
+    months,
+    editable,
+    rerender,
+  ) {
+    const tr = documentRef.createElement("tr");
+    tr.className = "jy2-actual-child-row";
+    tr.dataset.stableBlockId = parent.stableBlockId;
+    tr.dataset.costCategory = parent.costCategory;
+    tr.dataset.rowKey = child.rowKey;
+    // 左4列: 内訳№/区分/工種番号 は空欄。システム入力工種の位置に費目を
+    // 表示（横スクロール固定領域内）。
+    tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "jy2-num", ""), 0));
+    tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "", ""), 1));
+    tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "", ""), 2));
+    const name1Resolved =
+      jy2ActualResolveContinuedField(detailRows, detailIndex, "name1") ?? "";
+    const nameCell = jy2Cell(documentRef, "td", "jy2-actual-child-name", "");
+    const indent = documentRef.createElement("span");
+    indent.className = "jy2-actual-child-indent";
+    indent.textContent = "└ ";
+    nameCell.appendChild(indent);
+    const nameLabel = documentRef.createElement("span");
+    const name2Resolved =
+      jy2ActualResolveContinuedField(detailRows, detailIndex, "name2") ?? "";
+    const nameParts = [name1Resolved, name2Resolved, child.name3 || ""]
+      .map((part) => String(part).trim())
+      .filter((part) => part.length > 0);
+    nameLabel.textContent = nameParts.join(" / ") || "（明細）";
+    nameLabel.title = nameParts.join(" / ");
+    nameCell.appendChild(nameLabel);
+    tr.appendChild(jy2MarkFreeze(nameCell, 3));
+
+    tr.appendChild(jy2Cell(documentRef, "td", "", child.unit || ""));
+    tr.appendChild(
+      jy2Cell(documentRef, "td", "jy2-num", jy2AmountDisplay(child.unitPrice)),
+    );
+    tr.appendChild(
+      jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(child.currentBudget)),
+    );
+    tr.appendChild(jy2Cell(documentRef, "td", "jy2-num", jy2Percent(child.bcRate)));
+
+    const commit = (patch) => {
+      try {
+        actualsModel.updateActualRow(
+          parent.stableBlockId,
+          parent.costCategory,
+          patch,
+          { rowKey: child.rowKey },
+        );
+      } catch {
+        // Invalid input (non-integer) is discarded; rerender restores the cell.
+      }
+      rerender();
+    };
+    for (const month of months) {
+      const cell = jy2Cell(documentRef, "td", "jy2-num jy2-actual-month", "");
+      if (editable) {
+        cell.appendChild(
+          jy2TextInput(documentRef, child.monthly[month], (value) =>
+            commit({ [month]: value }),
+          ),
+        );
+      } else {
+        cell.className = "jy2-amount jy2-actual-month";
+        cell.textContent = jy2AmountDisplay(child.monthly[month]);
+      }
+      tr.appendChild(cell);
+    }
+    tr.appendChild(
+      jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(child.actual)),
+    );
+    const finalCell = jy2Cell(documentRef, "td", "jy2-num", "");
+    if (editable) {
+      finalCell.appendChild(
+        jy2TextInput(
+          documentRef,
+          child.finalBudgetManual ? child.finalBudget : "",
+          (value) => commit({ finalBudget: value }),
+        ),
+      );
+      if (!child.finalBudgetManual) {
+        finalCell.firstChild.placeholder = jy2AmountDisplay(child.finalBudget);
+      }
+    } else {
+      finalCell.className = "jy2-amount";
+      finalCell.textContent = jy2AmountDisplay(child.finalBudget);
+    }
+    tr.appendChild(finalCell);
+    tr.appendChild(jy2Cell(documentRef, "td", "jy2-num", jy2Percent(child.ecRate)));
+    tr.appendChild(
+      jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(child.futureRequired)),
+    );
+    tr.appendChild(
+      jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(child.remainingBudget)),
+    );
+    tr.appendChild(
+      jy2Cell(
+        documentRef,
+        "td",
+        "jy2-num jy2-actual-rate-end",
+        jy2Percent(child.consumptionRatio),
+      ),
+    );
+    return tr;
+  }
+
+  // Pane スコープの展開状態管理（stableBlockId の Set を pane 要素に保持）。
+  // rerender 経由でも Set が保持されるので、＋/－の状態がタブ切替まで残る。
+  function jy2ActualExpandState(pane) {
+    if (!pane) {
+      return {
+        isExpanded: () => false,
+        toggle: () => {},
+        expand: () => {},
+      };
+    }
+    if (!pane.__jy2ExpandedActuals) {
+      pane.__jy2ExpandedActuals = new Set();
+    }
+    const set = pane.__jy2ExpandedActuals;
+    return {
+      isExpanded: (id) => set.has(id),
+      toggle: (id) => {
+        if (set.has(id)) set.delete(id);
+        else set.add(id);
+      },
+      expand: (id) => set.add(id),
+    };
   }
 
   function jy2ActualTotalRow(documentRef, total, label, months) {
@@ -6659,6 +6832,10 @@
   // 実績 tab (Phase 4d): offline 予実 matrix over App3-shaped actual cells.
   // Rows are the 施工/保安 cost rows only (Y4 — no salary), pivoted wide by
   // month (Y5/Y6). Y7 adds ⑧⑨ aggregate rows; Y9 adds budget attribute cols.
+  // 2026-07-29-ver02-actual-detail-expand: detailBlocksProvider は
+  // detailModel.snapshot().blocks（明細行付き）を返し、親行の＋展開時に
+  // 子行として月別消化・最終予算額の入力欄を提供する。省略時はレガシー
+  // （親のみ）動作。
   function jy2RenderActualPane(
     documentRef,
     pane,
@@ -6668,10 +6845,12 @@
     saveController,
     projectionManual,
     summaryTotalsProvider,
+    detailBlocksProvider,
   ) {
     const scroll = jy2CaptureScroll(documentRef, pane);
     pane.textContent = "";
     const editable = actualsModel.allowedOperations.editActuals;
+    const expandState = jy2ActualExpandState(pane);
     const rerender = () =>
       jy2RenderActualPane(
         documentRef,
@@ -6682,6 +6861,7 @@
         saveController,
         projectionManual,
         summaryTotalsProvider,
+        detailBlocksProvider,
       );
     const months = actualsModel.months();
     const blocks = blocksProvider();
@@ -6697,11 +6877,23 @@
     const budgetAttrsByBlockId = new Map(
       projectionLines.map((line) => [line.summary_stable_block_id, line]),
     );
+    const detailBlocks =
+      typeof detailBlocksProvider === "function" ? detailBlocksProvider() : [];
+    const detailRowsByBlockId = new Map();
+    for (const block of detailBlocks || []) {
+      if (block && block.stableBlockId && Array.isArray(block.detailRows)) {
+        detailRowsByBlockId.set(block.stableBlockId, block.detailRows);
+      }
+    }
     const rows = actualsModel.matrixRows(blocks, {
       contractTotal1,
       budgetAttrsByBlockId,
+      detailRowsByBlockId,
     });
-    const totals = actualsModel.sectionTotals(blocks, { contractTotal1 });
+    const totals = actualsModel.sectionTotals(blocks, {
+      contractTotal1,
+      detailRowsByBlockId,
+    });
     const summaryTotals = summaryTotalsProvider ? summaryTotalsProvider() : null;
     const salaryAmount = summaryTotals ? summaryTotals.salary : "0";
     const grand8 = actualsModel.grandCost8Totals(
@@ -6771,7 +6963,8 @@
     const noteBody = documentRef.createElement("p");
     noteBody.className = "jy2-actual-note";
     noteBody.textContent =
-      "表示する予算属性は種別・単価のみ（編集は内訳・総括）。手入力は月別消化と最終予算額の予算額のみ。" +
+      "表示する予算属性は種別・単価のみ（編集は内訳・総括）。予算属性は表示のみ。" +
+      "親行（内訳№単位）は合計表示のみで編集不可。＋ボタンで内訳の明細行を開き、月別消化と最終予算額は明細行に入力してください（親＝子の合計）。" +
       "現行予算・最終予算額は「予算額｜消化率」の2段（ここでの消化率＝各予算÷請負①）。右端の消化率＝原価累計÷現行予算。" +
       "横スクロール時も左の内訳№〜工種名は固定表示されます。";
     note.append(summary, noteBody);
@@ -6797,8 +6990,37 @@
     const body = documentRef.createElement("tbody");
     for (const row of rows) {
       body.appendChild(
-        jy2ActualRow(documentRef, actualsModel, row, months, editable, rerender),
+        jy2ActualRow(
+          documentRef,
+          actualsModel,
+          row,
+          months,
+          editable,
+          rerender,
+          expandState,
+        ),
       );
+      if (row.hasChildren && expandState.isExpanded(row.stableBlockId)) {
+        const detailRows = detailRowsByBlockId.get(row.stableBlockId) || [];
+        row.children.forEach((child) => {
+          const detailIndex = detailRows.findIndex(
+            (candidate) => candidate && candidate.rowKey === child.rowKey,
+          );
+          body.appendChild(
+            jy2ActualChildRow(
+              documentRef,
+              actualsModel,
+              row,
+              child,
+              detailRows,
+              detailIndex,
+              months,
+              editable,
+              rerender,
+            ),
+          );
+        });
+      }
     }
     for (const category of ACTUAL_COST_CATEGORY_KEYS) {
       body.appendChild(
@@ -7998,6 +8220,7 @@
     };
     const contractTotal1 = () => summaryModel.snapshot().totals.total1;
     const summaryTotalsProvider = () => summaryModel.totals(currentBlocks());
+    const currentDetailBlocks = () => detailModel.snapshot().blocks;
     const refreshActuals = () => {
       jy2RenderActualPane(
         documentRef,
@@ -8008,6 +8231,7 @@
         saveController,
         projectionManual,
         summaryTotalsProvider,
+        currentDetailBlocks,
       );
       actualsDirty = false;
     };

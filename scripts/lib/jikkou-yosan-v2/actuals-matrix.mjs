@@ -1,4 +1,4 @@
-import { actualMetrics, displayInteger, ratio } from "./calc.mjs";
+import { actualMetrics, detailLineAmount, displayInteger, ratio } from "./calc.mjs";
 import { subtract, sum } from "./decimal.mjs";
 import { actualRecordKey } from "./keys.mjs";
 import { allowedOperations } from "./lock.mjs";
@@ -88,8 +88,24 @@ export function monthRange(startMonth, monthCount = DEFAULT_MONTH_COUNT) {
   return Object.freeze(months);
 }
 
-function rowStateKey(stableBlockId, costCategoryKey) {
-  return `${stableBlockId}${KEY_DELIMITER}${costCategoryKey}`;
+// 2026-07-29-ver02-actual-detail-expand: 内訳№親（rowKey="" / null）に加えて、
+// 明細行（App757 row_key）単位でも予実セルを持てるようにする。旧レガシー行
+// は rowKey 空セグメントとして共存し、ロード時にそのまま親側で表示される。
+function rowStateKey(stableBlockId, costCategoryKey, rowKey = "") {
+  const rowSegment = rowKey === null || rowKey === undefined ? "" : String(rowKey);
+  return `${stableBlockId}${KEY_DELIMITER}${costCategoryKey}${KEY_DELIMITER}${rowSegment}`;
+}
+
+function normalizedRowKey(value) {
+  if (value === undefined || value === null || value === "") return "";
+  if (typeof value !== "string") {
+    throw new TypeError("rowKey must be a string");
+  }
+  const text = value.trim();
+  if (text.includes(KEY_DELIMITER)) {
+    throw new RangeError(`rowKey must not contain "${KEY_DELIMITER}"`);
+  }
+  return text;
 }
 
 // 整数円 (§15.3): actual amounts are integer-yen strings (tax exclusive).
@@ -110,11 +126,12 @@ function assertCostCategoryKey(value, context) {
   return value;
 }
 
-// Pivots vertical App3-shaped rows into { "blockId|category": { monthly:
-// { "YYYY-MM": amount }, finalBudget } }. Rows whose cost_category_key is not
-// 施工/保安 (e.g. 給与) are rejected — Y4 keeps salary out of actuals, so such
-// rows can only be corrupt data. Duplicate keys violate the App3 unique
-// actual_record_key constraint and abort the pivot.
+// Pivots vertical App3-shaped rows into
+// { "blockId|category|rowKey?": { monthly: { "YYYY-MM": amount }, finalBudget } }.
+// Rows whose cost_category_key is not 施工/保安 (e.g. 給与) are rejected — Y4
+// keeps salary out of actuals, so such rows can only be corrupt data. Detail
+// row records carry `detail_row_key`; legacy block-level records omit it and
+// pivot at the parent grain.
 export function pivotActualRows(rows) {
   if (!Array.isArray(rows)) throw new TypeError("rows must be an array");
   const pivot = new Map();
@@ -137,11 +154,13 @@ export function pivotActualRows(rows) {
     );
     const amount = normalizedAmount(actualsFieldValue(record, "amount"), where);
     if (amount === null) throw new RangeError(`${where}: amount is required`);
-    const key = rowStateKey(stableBlockId, costCategoryKey);
+    const rowKey = normalizedRowKey(actualsFieldValue(record, "detail_row_key"));
+    const key = rowStateKey(stableBlockId, costCategoryKey, rowKey);
     if (!pivot.has(key)) {
       pivot.set(key, {
         stableBlockId,
         costCategoryKey,
+        rowKey,
         monthly: new Map(),
         finalBudget: null,
       });
@@ -199,16 +218,18 @@ export function createActualsMatrixModel({
     }
   }
 
-  function entryFor(stableBlockId, costCategoryKey, context) {
+  function entryFor(stableBlockId, costCategoryKey, context, rowKey = "") {
     if (!actualsHasText(stableBlockId)) {
       throw new RangeError(`${context}: stableBlockId is required`);
     }
     assertCostCategoryKey(costCategoryKey, context);
-    const key = rowStateKey(stableBlockId, costCategoryKey);
+    const normalizedKey = normalizedRowKey(rowKey);
+    const key = rowStateKey(stableBlockId, costCategoryKey, normalizedKey);
     if (!state.has(key)) {
       state.set(key, {
         stableBlockId,
         costCategoryKey,
+        rowKey: normalizedKey,
         monthly: new Map(),
         finalBudget: null,
       });
@@ -216,13 +237,20 @@ export function createActualsMatrixModel({
     return { key, entry: state.get(key) };
   }
 
-  function setMonthlyAmount(stableBlockId, costCategoryKey, month, amount) {
+  function setMonthlyAmount(
+    stableBlockId,
+    costCategoryKey,
+    month,
+    amount,
+    { rowKey = "" } = {},
+  ) {
     assertEditable("setMonthlyAmount");
     const normalizedMonth = normalizeMonth(month, "setMonthlyAmount");
     const { key, entry } = entryFor(
       stableBlockId,
       costCategoryKey,
       "setMonthlyAmount",
+      rowKey,
     );
     const value = normalizedAmount(amount, "setMonthlyAmount");
     const dirtyKey = `${key}${KEY_DELIMITER}monthly${KEY_DELIMITER}${normalizedMonth}`;
@@ -240,12 +268,18 @@ export function createActualsMatrixModel({
 
   // Y3 案B: 最終予算額 is manual, default = 現行予算. Clearing it reverts to
   // the default (no App3 write remains pending for the row).
-  function setFinalBudget(stableBlockId, costCategoryKey, amount) {
+  function setFinalBudget(
+    stableBlockId,
+    costCategoryKey,
+    amount,
+    { rowKey = "" } = {},
+  ) {
     assertEditable("setFinalBudget");
     const { key, entry } = entryFor(
       stableBlockId,
       costCategoryKey,
       "setFinalBudget",
+      rowKey,
     );
     const value = normalizedAmount(amount, "setFinalBudget");
     const dirtyKey = `${key}${KEY_DELIMITER}final`;
@@ -258,7 +292,9 @@ export function createActualsMatrixModel({
   // Patch-style mutation used by the UI. Keys are YYYY-MM month columns or
   // "finalBudget". Every budget attribute / computed metric is rejected —
   // Y10: 予算属性は表示のみ, the actual tab never writes budget data back.
-  function updateActualRow(stableBlockId, costCategoryKey, patch) {
+  // Optional {rowKey} routes the write to a specific 明細行 (App757 row_key);
+  // omit for the legacy block-level cell.
+  function updateActualRow(stableBlockId, costCategoryKey, patch, opts = {}) {
     if (!patch || typeof patch !== "object") {
       throw new TypeError("updateActualRow: patch must be an object");
     }
@@ -269,14 +305,15 @@ export function createActualsMatrixModel({
         );
       }
     }
+    const rowKey = opts && opts.rowKey ? opts.rowKey : "";
     for (const [key, value] of Object.entries(patch)) {
       if (key === "finalBudget") {
-        setFinalBudget(stableBlockId, costCategoryKey, value);
+        setFinalBudget(stableBlockId, costCategoryKey, value, { rowKey });
       } else {
-        setMonthlyAmount(stableBlockId, costCategoryKey, key, value);
+        setMonthlyAmount(stableBlockId, costCategoryKey, key, value, { rowKey });
       }
     }
-    return rowStateKey(stableBlockId, costCategoryKey);
+    return rowStateKey(stableBlockId, costCategoryKey, normalizedRowKey(rowKey));
   }
 
   // Y9 (M2): BC率 = 現行予算÷①, EC率 = 最終予算額÷①. Q12/D-47: ①=0 → 0.
@@ -286,9 +323,63 @@ export function createActualsMatrixModel({
     return ratio(amount, contractTotal1, { zero: "zero" });
   }
 
-  function rowFromBlock(block, monthList, contractTotal1, budgetAttrs = null) {
-    const key = rowStateKey(block.stableBlockId, block.costCategory);
-    const entry = state.get(key);
+  // 2026-07-29-ver02-actual-detail-expand: build one 明細行 child row bound to
+  // an App757 rowKey. currentBudget is the detail line amount (数量×単価,
+  // rounded to yen); metrics use the same actual/EC/BC formulas as the parent.
+  function childRowFromDetail(block, detail, monthList, contractTotal1) {
+    const entry = state.get(
+      rowStateKey(block.stableBlockId, block.costCategory, detail.rowKey),
+    );
+    // detail.amount is provided by detail-block-model snapshot (P-22 rounding);
+    // fall back to a fresh compute if the caller passed a raw row.
+    const rawAmount =
+      detail.amount !== undefined && detail.amount !== null
+        ? detail.amount
+        : detailLineAmount({
+            quantity: detail.quantity,
+            unitPrice: detail.unitPrice,
+            unit: detail.unit,
+          });
+    const currentBudget = displayInteger(rawAmount) ?? "0";
+    const monthly = {};
+    for (const month of monthList) {
+      monthly[month] = entry?.monthly.get(month) ?? null;
+    }
+    const monthlyAmounts = entry ? [...entry.monthly.values()] : [];
+    const finalBudgetInput = entry?.finalBudget ?? null;
+    const finalBudget = finalBudgetInput ?? currentBudget;
+    const metrics = actualMetrics({ monthlyAmounts, currentBudget, finalBudget });
+    return Object.freeze({
+      rowKey: detail.rowKey,
+      name1: detail.name1 ?? "",
+      name2: detail.name2 ?? "",
+      name3: detail.name3 ?? "",
+      nameSpecGroup: detail.nameSpecGroup ?? "",
+      unit: detail.unit ?? "",
+      quantity: detail.quantity ?? "",
+      unitPrice: detail.unitPrice ?? "",
+      currentBudget,
+      bcRate: rateTo1(currentBudget, contractTotal1),
+      monthly: Object.freeze(monthly),
+      actual: metrics.actual,
+      finalBudget,
+      finalBudgetManual: finalBudgetInput !== null,
+      ecRate: rateTo1(finalBudget, contractTotal1),
+      remainingBudget: metrics.remainingBudget,
+      futureRequired: metrics.futureRequired,
+      consumptionRatio: metrics.consumptionRatio,
+    });
+  }
+
+  function rowFromBlock(
+    block,
+    monthList,
+    contractTotal1,
+    budgetAttrs = null,
+    detailRows = null,
+  ) {
+    const parentKey = rowStateKey(block.stableBlockId, block.costCategory, "");
+    const parentEntry = state.get(parentKey);
     const retired = block.status === "retired";
     // P-39/R-11: retired blocks keep their actuals anchor but no longer carry
     // budget — the current budget contribution is 0.
@@ -296,14 +387,44 @@ export function createActualsMatrixModel({
     const currentBudget = retired
       ? "0"
       : displayInteger(block.total) ?? "0";
+
+    // Build children only if actual detailRows were supplied. Rows without a
+    // rowKey (defensive) are skipped — we can't route their actual writes.
+    const children = Array.isArray(detailRows)
+      ? detailRows
+          .filter((detail) => actualsHasText(detail && detail.rowKey))
+          .map((detail) => childRowFromDetail(block, detail, monthList, contractTotal1))
+      : [];
+
+    // Aggregate policy (Hamada 2026-07-29): per cell, if ANY child holds a
+    // value for that cell → use the sum of children (ignoring the legacy
+    // block-level cell). Otherwise fall back to the legacy block-level cell.
+    // This lets a project that never entered detail-level actuals keep its
+    // Ver.01 block-level readings, but the moment the operator drills into a
+    // block the child sum wins for consistency.
     const monthly = {};
     for (const month of monthList) {
-      monthly[month] = entry?.monthly.get(month) ?? null;
+      const childAmounts = children
+        .map((child) => child.monthly[month])
+        .filter((value) => value !== null && value !== undefined);
+      if (childAmounts.length > 0) {
+        monthly[month] = sum(childAmounts);
+      } else {
+        monthly[month] = parentEntry?.monthly.get(month) ?? null;
+      }
     }
-    const monthlyAmounts = entry ? [...entry.monthly.values()] : [];
-    const finalBudgetInput = entry?.finalBudget ?? null;
-    // Y3 案B: default final = current budget until manually raised.
+    const parentFinalRaw = parentEntry?.finalBudget ?? null;
+    const childFinalInputs = children
+      .filter((child) => child.finalBudgetManual)
+      .map((child) => child.finalBudget);
+    const finalFromChildren = childFinalInputs.length > 0;
+    const finalBudgetInput = finalFromChildren
+      ? sum(childFinalInputs)
+      : parentFinalRaw;
     const finalBudget = finalBudgetInput ?? currentBudget;
+    const monthlyAmounts = Object.values(monthly).filter(
+      (value) => value !== null && value !== undefined,
+    );
     const metrics = actualMetrics({ monthlyAmounts, currentBudget, finalBudget });
     const attrs = budgetAttrs && typeof budgetAttrs === "object" ? budgetAttrs : {};
     return Object.freeze({
@@ -327,10 +448,13 @@ export function createActualsMatrixModel({
       actual: metrics.actual,
       finalBudget,
       finalBudgetManual: finalBudgetInput !== null,
+      finalBudgetFromChildren: finalFromChildren,
       ecRate: rateTo1(finalBudget, contractTotal1),
       remainingBudget: metrics.remainingBudget,
       futureRequired: metrics.futureRequired,
       consumptionRatio: metrics.consumptionRatio,
+      children: Object.freeze(children),
+      hasChildren: children.length > 0,
     });
   }
 
@@ -339,14 +463,22 @@ export function createActualsMatrixModel({
   // same way the summary projection holds them, and salary never enters here
   // because salary lives on App1 salary_lines, not in 内訳 blocks.
   // contractTotal1 (①, from the 総括 contract lines) feeds the Y9 BC/EC rates.
+  // detailRowsByBlockId (2026-07-29-ver02-actual-detail-expand): optional
+  // Map<stableBlockId, detailRows[]> so parent rows expose per-detail children.
   function matrixRows(
     blocks,
-    { contractTotal1 = null, budgetAttrsByBlockId = null } = {},
+    {
+      contractTotal1 = null,
+      budgetAttrsByBlockId = null,
+      detailRowsByBlockId = null,
+    } = {},
   ) {
     if (!Array.isArray(blocks)) throw new TypeError("blocks must be an array");
     const monthList = months();
     const attrsMap =
       budgetAttrsByBlockId instanceof Map ? budgetAttrsByBlockId : null;
+    const detailMap =
+      detailRowsByBlockId instanceof Map ? detailRowsByBlockId : null;
     return Object.freeze(
       blocks
         .filter((block) => ACTUAL_COST_CATEGORY_KEYS.includes(block.costCategory))
@@ -356,6 +488,7 @@ export function createActualsMatrixModel({
             monthList,
             contractTotal1,
             attrsMap?.get(block.stableBlockId) ?? null,
+            detailMap?.get(block.stableBlockId) ?? null,
           ),
         ),
     );
@@ -363,8 +496,11 @@ export function createActualsMatrixModel({
 
   // Y7 (partial 4d scope): 施工計/保安計 column sums. 工事原価/粗利 rows are
   // deferred with the version tab (they need ⑧/給与 context on this pane).
-  function sectionTotals(blocks, { contractTotal1 = null } = {}) {
-    const rows = matrixRows(blocks, { contractTotal1 });
+  function sectionTotals(
+    blocks,
+    { contractTotal1 = null, detailRowsByBlockId = null } = {},
+  ) {
+    const rows = matrixRows(blocks, { contractTotal1, detailRowsByBlockId });
     const monthList = months();
     const totals = {};
     for (const category of ACTUAL_COST_CATEGORY_KEYS) {
@@ -462,9 +598,14 @@ export function createActualsMatrixModel({
   // (schema §5 / field catalog §3). Computed values are never emitted
   // (§3.2). Version ids are audit-only (P-27) and resolved by the save
   // layer at save time — offline they default to null.
+  // 2026-07-29-ver02-actual-detail-expand: rows tagged with rowKey emit a
+  // detail-variant actual_record_key and carry detail_row_key. Legacy
+  // block-level rows (rowKey === "") still emit the original 60-char key so
+  // existing App758 records load / save round-trip.
   function toApp3Records({ projectId, registeredVersionId = null } = {}) {
     const records = [];
     for (const entry of state.values()) {
+      const hasRow = entry.rowKey && entry.rowKey !== "";
       const base = {
         project_id: projectId,
         stable_block_id: entry.stableBlockId,
@@ -472,7 +613,8 @@ export function createActualsMatrixModel({
         source_kind: ACTUAL_SOURCE_KIND,
         write_channel: ACTUAL_WRITE_CHANNEL,
       };
-      const key = rowStateKey(entry.stableBlockId, entry.costCategoryKey);
+      if (hasRow) base.detail_row_key = entry.rowKey;
+      const key = rowStateKey(entry.stableBlockId, entry.costCategoryKey, entry.rowKey);
       for (const [month, amount] of [...entry.monthly.entries()].sort()) {
         if (!dirty.has(`${key}${KEY_DELIMITER}monthly${KEY_DELIMITER}${month}`)) {
           continue;
@@ -486,6 +628,7 @@ export function createActualsMatrixModel({
               costCategoryKey: entry.costCategoryKey,
               recordKind: "monthly_consumption",
               targetMonth: month,
+              rowKey: hasRow ? entry.rowKey : null,
             }),
             record_kind: "monthly_consumption",
             target_month: monthStartDate(month),
@@ -503,6 +646,7 @@ export function createActualsMatrixModel({
               stableBlockId: entry.stableBlockId,
               costCategoryKey: entry.costCategoryKey,
               recordKind: "final_budget",
+              rowKey: hasRow ? entry.rowKey : null,
             }),
             record_kind: "final_budget",
             amount: entry.finalBudget,

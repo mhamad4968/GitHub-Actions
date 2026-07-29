@@ -452,7 +452,9 @@ test("pivot rejects duplicates and malformed vertical rows (unique actual_record
       amount: { value: "9" },
     },
   ]);
-  assert.equal(wrapped.get("blk-a|施工").monthly.get("2026-02"), "9");
+  // 2026-07-29-ver02-actual-detail-expand: pivot key now includes rowKey
+  // as a trailing segment (empty for legacy block-level rows).
+  assert.equal(wrapped.get("blk-a|施工|").monthly.get("2026-02"), "9");
 });
 
 test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", () => {
@@ -491,6 +493,15 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   // Y10 note + Y4 exclusion are stated on the pane.
   assert.match(source, /予算属性は表示のみ/);
   assert.match(source, /給与手当は対象外/);
+  // 2026-07-29-ver02-actual-detail-expand: parent-only display, +/- expand,
+  // and child rows carry the actual writes.
+  assert.match(source, /jy2ActualChildRow/);
+  assert.match(source, /jy2-actual-expand-btn/);
+  assert.match(source, /jy2-actual-child-row/);
+  assert.match(source, /detailRowsByBlockId/);
+  assert.match(source, /rowKey: child\.rowKey/);
+  assert.match(source, /明細行を開く/);
+  assert.match(source, /2026-07-29-ver02-actual-detail-expand/);
   // 内訳 mutations refresh the 予実 current budgets too.
   assert.match(source, /refreshSummary\(true\);\s*refreshActuals\(\);/);
   assert.doesNotMatch(source, /className\s*=\s*["']jy-/);
@@ -548,6 +559,9 @@ test("rebuild bundles actuals-matrix before the UI, 736 untouched", () => {
       "ACTUAL_COST_CATEGORY_KEYS",
       "jy2RenderActualPane",
       "jy2ActualRow",
+      // 2026-07-29-ver02-actual-detail-expand: child row + expand UI must be bundled.
+      "jy2ActualChildRow",
+      "jy2ActualExpandState",
     ]) {
       assert.match(bundle, new RegExp(symbol));
     }

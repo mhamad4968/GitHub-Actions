@@ -105,26 +105,76 @@ export function seriesGuardKey({ initial, projectBusinessKey: businessKey, budge
     : `version${DELIMITER}${requiredSegment(budgetVersionId, "budgetVersionId")}`;
 }
 
+// 予実（App758）unique actual_record_key は 64 文字上限。詳細行変種は同一
+// (projectId, stableBlockId, cost, month) 群内で rowKey を 8 hex に圧縮した
+// r{FNV1a} セグメントを付ける。segment 名も m/f に短縮し、月は YY-MM に
+// 詰めることで、詳細変種の全体長を 64 文字以下に収める（レガシー変種は
+// 影響を受けず、後方互換性を保つ）。
+const DETAIL_ROW_HASH_LENGTH = 8;
+
+/** 32-bit FNV-1a — Node/ブラウザどちらでも同一結果、ハッシュ長 8 hex。 */
+function fnv1a32Hex(input) {
+  const text = String(input);
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < text.length; i += 1) {
+    hash ^= text.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193) >>> 0;
+  }
+  return hash.toString(16).padStart(DETAIL_ROW_HASH_LENGTH, "0");
+}
+
+/**
+ * 詳細行の rowKey（`row-…` など任意）から 8 hex を返す。決定的。
+ * detail_row_key フィールドを介した保存往復では元の rowKey を保持するので、
+ * この短縮値は actual_record_key の一意性確保にだけ使う。
+ */
+export function compactRowKeyHash(rowKey) {
+  return fnv1a32Hex(requiredSegment(rowKey, "rowKey"));
+}
+
 export function actualRecordKey({
   projectId,
   stableBlockId,
   costCategoryKey,
   recordKind,
   targetMonth,
+  rowKey = null,
 }) {
   const prefix = [
     requiredSegment(projectId, "projectId"),
     requiredSegment(stableBlockId, "stableBlockId"),
     requiredSegment(costCategoryKey, "costCategoryKey"),
   ];
+  const hasRow = rowKey !== null && rowKey !== undefined && rowKey !== "";
+  const rowSegment = hasRow ? `r${compactRowKeyHash(rowKey)}` : null;
+  let key;
   if (recordKind === "final_budget") {
-    return [...prefix, "final"].join(DELIMITER);
-  }
-  if (recordKind !== "monthly_consumption") {
+    // 詳細変種は kind を `f` に、レガシーは `final` を維持（互換性）。
+    key = hasRow
+      ? [...prefix, "f", rowSegment].join(DELIMITER)
+      : [...prefix, "final"].join(DELIMITER);
+  } else if (recordKind === "monthly_consumption") {
+    const month = requiredSegment(targetMonth, "targetMonth");
+    const match = /^(\d{4})-(0[1-9]|1[0-2])(?:-01)?$/.exec(month);
+    if (!match) throw new RangeError("targetMonth must be YYYY-MM or YYYY-MM-01");
+    if (hasRow) {
+      // 詳細変種: `m|YY-MM|r{8}` に詰めて 64 文字以内に収める。
+      key = [
+        ...prefix,
+        "m",
+        `${match[1].slice(-2)}-${match[2]}`,
+        rowSegment,
+      ].join(DELIMITER);
+    } else {
+      key = [...prefix, "monthly", `${match[1]}-${match[2]}`].join(DELIMITER);
+    }
+  } else {
     throw new RangeError("recordKind must be monthly_consumption or final_budget");
   }
-  const month = requiredSegment(targetMonth, "targetMonth");
-  const match = /^(\d{4})-(0[1-9]|1[0-2])(?:-01)?$/.exec(month);
-  if (!match) throw new RangeError("targetMonth must be YYYY-MM or YYYY-MM-01");
-  return [...prefix, "monthly", `${match[1]}-${match[2]}`].join(DELIMITER);
+  if (key.length > 64) {
+    throw new RangeError(
+      `actualRecordKey exceeds 64-char unique limit (${key.length}): ${key}`,
+    );
+  }
+  return key;
 }

@@ -472,6 +472,15 @@ export function app3RowToRecord(row, keys) {
     source_kind: TEXT(row.source_kind ?? ACTUAL_SOURCE_KIND),
     write_channel: TEXT(row.write_channel ?? ACTUAL_WRITE_CHANNEL),
   };
+  // 2026-07-29-ver02-actual-detail-expand: 明細行変種は detail_row_key に
+  // App757 rowKey（`row-…`）を保持し、actual_record_key の一意性は 8hex に
+  // 圧縮した rXXXXXXXX セグメントで担保する。App758 に detail_row_key フィー
+  // ルドが存在しない環境では書き込み時に無視されるだけなので、初期展開時に
+  // 追加フィールドとして SINGLE_LINE_TEXT を用意しておくこと（手順は
+  // docs/plans/…redesign-spec-draft.md 冒頭 changelog 参照）。
+  if (row.detail_row_key !== undefined && row.detail_row_key !== null && row.detail_row_key !== "") {
+    record.detail_row_key = TEXT(row.detail_row_key);
+  }
   if (row.record_kind === "monthly_consumption") {
     const month = row.target_month ?? row.targetMonth;
     record.target_month = TEXT(monthStartDate(normalizeMonth(String(month), "target_month")));
@@ -489,11 +498,13 @@ export function app3RecordsToActualRows(records) {
   if (!Array.isArray(records)) throw new TypeError("records must be an array");
   return records.map((record, index) => {
     const kind = v(record, "record_kind");
+    const detailRowKey = v(record, "detail_row_key");
     const row = {
       stable_block_id: v(record, "stable_block_id"),
       cost_category_key: v(record, "cost_category_key"),
       record_kind: kind,
       amount: v(record, "amount"),
+      detail_row_key: detailRowKey ?? "",
     };
     if (kind === "monthly_consumption") {
       row.target_month = v(record, "target_month");
