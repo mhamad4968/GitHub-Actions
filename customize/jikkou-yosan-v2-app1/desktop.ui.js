@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-29-ver02-ditto-mark-u27
+  // @JY_V2_BUILD 2026-07-29-ver02-ditto-no-continued-bg
   // U34: 保存・セル編集の再描画／reload でページ上部へ跳ばない（縦・横位置を維持）
 
   const JY2_STYLE_ID = "jy2-shell-style";
@@ -627,7 +627,7 @@
     }
     if (cell.classList.contains("jy2-incomplete")) return;
     if (continued && label) {
-      cell.classList.add("jy2-name-continued");
+      // U27/U33 (2026-07-29): 継続は「〃」が目印。薄い青背景は付けない。
       cell.title = `（上の${kind}「${label}」と同一・〃表示）`;
     } else {
       cell.classList.add("jy2-name-unset");
