@@ -29,7 +29,7 @@
 
 ## Cursor ルール逆引き（自動生成・編集禁止）
 
-**更新**: `npm run rules:sync-mdc-index`（2026-07-26 JST）
+**更新**: `npm run rules:sync-mdc-index`（2026-07-29 JST）
 
 | トピック | ファイル | description（frontmatter） |
 |----------|----------|---------------------------|
@@ -67,6 +67,7 @@
 | customize deploy | [`composer-mcp-audit-gate.mdc`](.cursor/rules/composer-mcp-audit-gate.mdc) | 方式B — Composer 2.5 必須 MCP 監査（eslint-mcp / repo-tree）§50-3-11 第4ステップ |
 | customize deploy | [`preflight-checklist.mdc`](.cursor/rules/preflight-checklist.mdc) | deploy 前 preflight — 正本 cio-discipline-always + push-deploy-quality-gates-v2 |
 | customize deploy | [`jikkou-yosan-v2-ui-chrome.mdc`](.cursor/rules/jikkou-yosan-v2-ui-chrome.mdc) | Ver.02 App756 UI クロム不変条件（overflow×sticky / th display / SPEC同一ターン） |
+| customize deploy | [`ui-acceptance-smoke.mdc`](.cursor/rules/ui-acceptance-smoke.mdc) | UI変更の受け入れ条件と最小スモークを先に固定する |
 | MCP・ツール | [`mcp-server-use-triggers.mdc`](.cursor/rules/mcp-server-use-triggers.mdc) | MCP §50 — 先出し義務・1行トリガー表（descriptor は mcp-tool-discipline） |
 | MCP・ツール | [`mcp-tool-discipline.mdc`](.cursor/rules/mcp-tool-discipline.mdc) | MCP descriptor 必読・認証順序・curl 優先度 + アイドル時間の有効活用（メンテ枠） |
 | MCP・ツール | [`mcp-frontend-shadcn-chrome.mdc`](.cursor/rules/mcp-frontend-shadcn-chrome.mdc) | Shadcn UI MCP を必ず参照・Chrome DevTools MCP で事実確認・不明時は関連 MCP で先に調査（mcp.json 同期手順付き） |
@@ -97,7 +98,7 @@
 | ドメイン特化・その他 | [`persist-policies.mdc`](.cursor/rules/persist-policies.mdc) | 恒久方針の永続化 — 正本は .rag/extra-docs/persist-policies.md |
 | ドメイン特化・その他 | [`spec-round-ai-agreement.mdc`](.cursor/rules/spec-round-ai-agreement.mdc) | 仕様ラウンド無条件合意・依頼者リスト4見出し（#R-SPEC-01/#R-REQ-01） |
 | ドメイン特化・その他 | [`constitution.mdc`](.cursor/rules/constitution.mdc) | 網羅統合版 — 憲法・索引・WORKFLOW・全mdc・予実・plans・chat・handoff・docs全（plans除く重複）・security-next・yojitsu README等（再生成=本スクリプト）。Cursor 常時枠の |
-| （未分類） | [`ui-acceptance-smoke.mdc`](.cursor/rules/ui-acceptance-smoke.mdc) | UI変更の受け入れ条件と最小スモークを先に固定する |
+| （未分類） | [`cio-ops-hard-request-clarity.mdc`](.cursor/rules/cio-ops-hard-request-clarity.mdc) | 難要望の粒度合意・日程語禁止・未push可視化・確認資料切替（2026-07-29 浜田全承認） |
 
 索引: [`.cursor/rules/README.md`](.cursor/rules/README.md) / [`data/cursor-rules-topic-index.json`](data/cursor-rules-topic-index.json)
 
