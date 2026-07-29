@@ -90,11 +90,11 @@
       "note": null
     },
     "688": {
-      "build": "2026-07-13-688-heat-closed",
-      "fileKey": "acf5c402-9b86-4d13-bff7-c76285eda63b",
-      "revision": "90",
-      "relPath": ".kintone-deploy/upload-688.js",
-      "deployedAt": "2026-07-13T10:21:03.011Z",
+      "build": "2026-07-29-688-boot-idle-no-auto-new",
+      "fileKey": "5d253754-9278-4538-8632-8059b4b5b530",
+      "revision": "91",
+      "relPath": "customize/688/desktop.js",
+      "deployedAt": "2026-07-29T09:39:09.576Z",
       "note": null
     },
     "693": {

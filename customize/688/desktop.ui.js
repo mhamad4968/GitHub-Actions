@@ -1,3 +1,4 @@
+  // @WORKDAYS_BUILD 2026-07-29-688-boot-idle-no-auto-new
   const APP_DATA = 687;
   const FC = {
     project: 'project_name',
@@ -2705,6 +2706,20 @@
     }
   }
 
+  function bootIdleEmpty() {
+    state = emptyState();
+    activeTab = 'scaffold';
+    fillFormFromState();
+    const sel = document.getElementById('wd688-project-select');
+    if (sel) sel.value = '';
+    try {
+      sessionStorage.removeItem(SESSION_RECORD_KEY);
+    } catch (_e) {
+      /* noop */
+    }
+    updateDirtyBanner();
+  }
+
   function refresh688Dash() {
     buildDashboard();
     loadProjectList()
@@ -2717,8 +2732,18 @@
             /* noop */
           }
         }
-        if (id) return loadRecord(id);
-        createNewProject();
+        if (id) {
+          return loadRecord(id).catch(function (err) {
+            console.warn(BUILD, 'loadRecord failed, idle empty', id, err);
+            try {
+              sessionStorage.removeItem(SESSION_RECORD_KEY);
+            } catch (_e3) {
+              /* noop */
+            }
+            bootIdleEmpty();
+          });
+        }
+        bootIdleEmpty();
         return null;
       })
       .catch(function (e) {
