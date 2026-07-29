@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-07-29-ver02-ditto-no-continued-bg",
-      "fileKey": "c8a965e6-77d0-4696-ab34-57799553d97a",
-      "revision": "163",
+      "build": "2026-07-29-ver02-hide-summary-tax-cols",
+      "fileKey": "042c5856-d5cd-4755-8524-b41e91d00a92",
+      "revision": "164",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-07-29T10:13:20.434Z",
+      "deployedAt": "2026-07-29T10:28:01.871Z",
       "note": null
     },
     "757": {

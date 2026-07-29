@@ -1,8 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-29-ver02-ditto-no-continued-bg
-  // U34: 保存・セル編集の再描画／reload でページ上部へ跳ばない（縦・横位置を維持）
+  // @JY_V2_BUILD 2026-07-29-ver02-hide-summary-tax-cols
+  // 総括表: 消費税率・金額税込列を非表示（依頼者要望）。保存フィールドは後方互換で残す。
 
   const JY2_STYLE_ID = "jy2-shell-style";
   const JY2_ACTIVE_TAB_KEY = `jy2:${APP1_ID}:activeTab`;
@@ -11,7 +11,6 @@
   const JY2_FONT_SCALE_KEY = "jy2-font-scale";
   const JY2_FONT_SCALES = Object.freeze(["standard", "large", "xlarge"]);
   const JY2_TAX_RATE_LABELS = { "0": "0％", "0.08": "8％", "0.1": "10％" };
-  const JY2_TAX_RATE_VALUES = Object.freeze(["0", "0.08", "0.1"]);
   // 種別・消費税・単位・数量・単価・金額・備考（計算基準は非表示）
   const JY2_ACTUAL_ATTR_COLS = 7;
 
@@ -683,34 +682,6 @@
     } catch {
       return text;
     }
-  }
-
-  function jy2TaxRateSelect(documentRef, value, onCommit) {
-    const select = documentRef.createElement("select");
-    select.className = "jy2-select";
-    for (const rate of JY2_TAX_RATE_VALUES) {
-      const option = documentRef.createElement("option");
-      option.value = rate;
-      option.textContent = JY2_TAX_RATE_LABELS[rate] || rate;
-      select.appendChild(option);
-    }
-    // App1 キャッシュの「10％」等も 0.1 に揃えて選択する。
-    let current = value === null || value === undefined ? "" : String(value);
-    if (current === "0％" || current === "0%") current = "0";
-    else if (current === "8％" || current === "8%" || current === "8") current = "0.08";
-    else if (
-      current === "10％" ||
-      current === "10%" ||
-      current === "10" ||
-      current === "0.10"
-    ) {
-      current = "0.1";
-    }
-    select.value = JY2_TAX_RATE_VALUES.includes(current)
-      ? current
-      : JY2_TAX_RATE_VALUES[2];
-    select.addEventListener("change", () => onCommit(select.value));
-    return select;
   }
 
   function jy2Cell(documentRef, tag, className, text) {
@@ -5218,8 +5189,8 @@
     return table;
   }
 
-  // 給与手当 (D-30/X7/Imp-04): 総括直入力, 消費税・税込は「－」, at least 1 row.
-  // 氏名は専用列（複数人は行追加運用）。
+  // 給与手当 (D-30/X7/Imp-04): 総括直入力。消費税率・金額税込列は非表示（依頼者 2026-07-29）。
+  // 氏名は専用列（複数人は行追加運用）。at least 1 row.
   function jy2SalaryTable(documentRef, summaryModel, editable, rerender) {
     const snapshot = summaryModel.snapshot();
     const table = documentRef.createElement("table");
@@ -5233,8 +5204,6 @@
         "数量（入力）",
         "単価（入力）",
         "金額（自動）",
-        "消費税（自動）",
-        "金額税込（自動）",
         "備考（入力）",
         "",
       ]),
@@ -5276,8 +5245,6 @@
         row.appendChild(
           jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(line.amount)),
         );
-        row.appendChild(jy2Cell(documentRef, "td", "", SALARY_TAX_DISPLAY));
-        row.appendChild(jy2Cell(documentRef, "td", "", SALARY_TAX_DISPLAY));
         row.appendChild(note);
         const action = jy2Cell(documentRef, "td", "", "");
         action.appendChild(
@@ -5310,8 +5277,6 @@
         row.appendChild(
           jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(line.amount)),
         );
-        row.appendChild(jy2Cell(documentRef, "td", "", SALARY_TAX_DISPLAY));
-        row.appendChild(jy2Cell(documentRef, "td", "", SALARY_TAX_DISPLAY));
         row.appendChild(jy2Cell(documentRef, "td", "", line.note));
         row.appendChild(jy2Cell(documentRef, "td", "", ""));
       }
@@ -5332,13 +5297,13 @@
       ),
     );
     const totalTail = jy2Cell(documentRef, "td", "", "");
-    totalTail.colSpan = 4;
+    totalTail.colSpan = 2;
     totalRow.appendChild(totalTail);
     body.appendChild(totalRow);
 
     const footRow = documentRef.createElement("tr");
     const footCell = jy2Cell(documentRef, "td", "", "");
-    footCell.colSpan = 10;
+    footCell.colSpan = 8;
     if (editable) {
       footCell.appendChild(
         jy2RowButton(documentRef, "行追加", () => {
@@ -5357,6 +5322,7 @@
   // 総括原価投影 (P-21/P-33): amounts are read-only from App2.
   // 種別 / 備考 are App1 hand-entry (previousLines)。計算基準・消化率は非表示
   // （消化率は工事原価管理タブで管理）。
+  // 消費税率・金額税込列は非表示（依頼者 2026-07-29）。保存フィールドは後方互換で残す。
   // X5: 表下に原価・施工計／原価・保安計を出す（⑧は給与計込みでフッタ）。
   function jy2ProjectionTable(
     documentRef,
@@ -5379,8 +5345,6 @@
         "数量（自動）",
         "単価（自動）",
         "金額（自動）",
-        "消費税率（選択）",
-        "金額税込（自動）",
         "備考（入力）",
       ]),
     );
@@ -5392,7 +5356,7 @@
         "jy2-empty",
         "内訳ブロックなし（内訳タブで追加すると自動反映されます）",
       );
-      emptyCell.colSpan = 12;
+      emptyCell.colSpan = 10;
       emptyRow.appendChild(emptyCell);
       body.appendChild(emptyRow);
     }
@@ -5457,28 +5421,6 @@
           jy2AmountDisplay(line.summary_amount_excl_tax),
         ),
       );
-      const taxCell = jy2Cell(documentRef, "td", "", "");
-      if (editable) {
-        taxCell.appendChild(
-          jy2TaxRateSelect(documentRef, line.summary_tax_rate, (value) => {
-            onManualPatch(line.summary_stable_block_id, {
-              summary_tax_rate: value,
-            });
-          }),
-        );
-      } else {
-        taxCell.textContent =
-          JY2_TAX_RATE_LABELS[line.summary_tax_rate] || line.summary_tax_rate || "";
-      }
-      row.appendChild(taxCell);
-      row.appendChild(
-        jy2Cell(
-          documentRef,
-          "td",
-          "jy2-amount",
-          jy2AmountDisplay(line.summary_amount_incl_tax),
-        ),
-      );
       const noteCell = jy2Cell(documentRef, "td", "", "");
       if (editable) {
         noteCell.appendChild(
@@ -5505,8 +5447,6 @@
         totalRow.appendChild(
           jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(amount)),
         );
-        totalRow.appendChild(jy2Cell(documentRef, "td", "", ""));
-        totalRow.appendChild(jy2Cell(documentRef, "td", "", ""));
         totalRow.appendChild(jy2Cell(documentRef, "td", "", ""));
         body.appendChild(totalRow);
       };
